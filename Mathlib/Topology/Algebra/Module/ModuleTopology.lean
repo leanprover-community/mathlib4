@@ -327,42 +327,43 @@ lemma isOpenMap_of_coinduced {A : Type*} [AddCommGroup A] {B : Type*} [τA : Top
     use x + k, hx
     rw [AddMonoidHom.map_add, hk, add_zero]
 
-/-
-theorem continuous_of_continuousAt_one {M hom : Type*} [MulOneClass M] [TopologicalSpace M]
-    [ContinuousMul M] [FunLike hom G M] [MonoidHomClass hom G M] (f : hom)
--/
--- **TODO** In good shape, but should be elsewhere
-/-- Let `A` and `B` be topological groups, and `φ : A → B` is a continuous surjective group
-homomorphism. Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
-is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in particular an open map. -/
-@[to_additive "Let `A` and `B` be topological additive groups, and `φ : A → B` is a continuous
-surjective additive group homomorphism. Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
-is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in particular an open map."]
-lemma _root_.MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
-    [TopologicalSpace A] [TopologicalGroup A] {B : Type*} [Group B] [TopologicalSpace B]
-    [TopologicalGroup B] {F : Type*} [FunLike F A B] [MonoidHomClass F A B] {φ : F}
-    (hφ : Topology.IsQuotientMap φ) : IsOpenQuotientMap φ where
-    surjective := hφ.surjective
-    continuous := hφ.continuous
-    isOpenMap := by
-      -- We need to check that if `U ⊆ A` is open then `φ⁻¹ (φ U)` is open.
-      intro U hU
-      rw [← Topology.IsQuotientMap.isOpen_preimage hφ]
-      -- But `φ⁻¹ (φ U) = ⋃ (k + U)` as `k` runs through the kernel of φ,
-      suffices ⇑φ ⁻¹' (⇑φ '' U) = ⋃ k ∈ MonoidHom.ker (φ : A →* B), (fun x ↦ x * k) ⁻¹' U by
-        exact this ▸ isOpen_biUnion (fun k _ ↦ Continuous.isOpen_preimage (by fun_prop) _ hU)
-      ext x
-      constructor
-        -- and `k + U` is open because `k + ⬝` is a homeomorphism.
-        -- Remark: here is where we use that we have additive groups not monoids
-        -- (the inverse of the homeomorphism is `(-k) + ⬝`).
-      · rintro ⟨y, hyU, hyx⟩
-        apply Set.mem_iUnion_of_mem (x⁻¹ * y)
-        suffices y / x ∈ MonoidHom.ker (φ : A →* B) by simp_all
-        rwa [MonoidHom.div_mem_ker_iff]
-      · rintro ⟨_, ⟨k, rfl⟩, _, ⟨(hk : φ k = 1), rfl⟩, hx⟩
-        use x * k, hx
-        rw [map_mul, hk, mul_one]
+-- /-
+-- theorem continuous_of_continuousAt_one {M hom : Type*} [MulOneClass M] [TopologicalSpace M]
+--     [ContinuousMul M] [FunLike hom G M] [MonoidHomClass hom G M] (f : hom)
+-- -/
+-- -- **TODO** In good shape, but should be elsewhere
+-- /-- Let `A` and `B` be topological groups, and `φ : A → B` is a continuous surjective group
+-- homomorphism. Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
+-- is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in particular an open map. -/
+-- @[to_additive "Let `A` and `B` be topological additive groups, and `φ : A → B` is a continuous
+-- surjective additive group homomorphism.
+-- Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
+-- is open iff `φ⁻¹ V` is open). Then `φ` is an open quotient map, and in particular an open map."]
+-- lemma _root_.MonoidHom.isOpenQuotientMap_of_isQuotientMap {A : Type*} [Group A]
+--     [TopologicalSpace A] [TopologicalGroup A] {B : Type*} [Group B] [TopologicalSpace B]
+--     [TopologicalGroup B] {F : Type*} [FunLike F A B] [MonoidHomClass F A B] {φ : F}
+--     (hφ : Topology.IsQuotientMap φ) : IsOpenQuotientMap φ where
+--     surjective := hφ.surjective
+--     continuous := hφ.continuous
+--     isOpenMap := by
+--       -- We need to check that if `U ⊆ A` is open then `φ⁻¹ (φ U)` is open.
+--       intro U hU
+--       rw [← Topology.IsQuotientMap.isOpen_preimage hφ]
+--       -- But `φ⁻¹ (φ U) = ⋃ (k + U)` as `k` runs through the kernel of φ,
+--       suffices ⇑φ ⁻¹' (⇑φ '' U) = ⋃ k ∈ MonoidHom.ker (φ : A →* B), (fun x ↦ x * k) ⁻¹' U by
+--         exact this ▸ isOpen_biUnion (fun k _ ↦ Continuous.isOpen_preimage (by fun_prop) _ hU)
+--       ext x
+--       constructor
+--         -- and `k + U` is open because `k + ⬝` is a homeomorphism.
+--         -- Remark: here is where we use that we have additive groups not monoids
+--         -- (the inverse of the homeomorphism is `(-k) + ⬝`).
+--       · rintro ⟨y, hyU, hyx⟩
+--         apply Set.mem_iUnion_of_mem (x⁻¹ * y)
+--         suffices y / x ∈ MonoidHom.ker (φ : A →* B) by simp_all
+--         rwa [MonoidHom.div_mem_ker_iff]
+--       · rintro ⟨_, ⟨k, rfl⟩, _, ⟨(hk : φ k = 1), rfl⟩, hx⟩
+--         use x * k, hx
+--         rw [map_mul, hk, mul_one]
 
 open TopologicalSpace in
 -- **TODO** Should no longer be necessary. `IsOpenQuotientMap.prodMap` is a stronger assertion.
@@ -445,7 +446,7 @@ theorem coinduced_of_surjective {φ : A →ₗ[R] B} (hφ : Function.Surjective 
     · apply @Continuous.prodMap _ _ _ _ (_) (_) (_) (_) <;>
       · rw [continuous_iff_coinduced_le, eq_moduleTopology R A]; rfl
     · rw [← eq_moduleTopology R A]
-      exact coinduced_prod_eq_prod_coinduced φ φ hφ hφ
+      exact coinduced_prod_eq_prod_coinduced (X := A) (Y := A) (S := B) (T := B) φ φ hφ hφ
 
 end surjection
 
