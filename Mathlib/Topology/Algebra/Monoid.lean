@@ -439,7 +439,7 @@ theorem tendsto_mul_coprod_nhds_zero_inf_of_disjoint_cocompact {l : Filter (M ×
     _ ≤ (𝓝 0).coprod (𝓝 0) ⊓ map Prod.fst l ×ˢ map Prod.snd l :=
       inf_le_inf_left _ le_prod_map_fst_snd
     _ ≤ 𝓝 0 ×ˢ map Prod.snd l ⊔ map Prod.fst l ×ˢ 𝓝 0 :=
-      Filter.coprod_inf_prod_le _ _ _ _
+      coprod_inf_prod_le _ _ _ _
   apply (Tendsto.sup _ _).mono_left this
   · apply tendsto_mul_nhds_zero_prod_of_disjoint_cocompact
     exact disjoint_map_cocompact continuous_snd hl
@@ -478,39 +478,19 @@ theorem tendsto_mul_cocompact_nhds_zero [TopologicalSpace α] [TopologicalSpace 
     {f : α → M} {g : β → M} (f_cont : Continuous f) (g_cont : Continuous g)
     (hf : Tendsto f (cocompact α) (𝓝 0)) (hg : Tendsto g (cocompact β) (𝓝 0)) :
     Tendsto (fun (i : α × β) ↦ (f i.1) * (g i.2)) (cocompact (α × β)) (𝓝 0) := by
-  -- We use the notation `⊤` for `Set.univ` in this proof.
-  have h'f : Disjoint (map f ⊤) (cocompact M) := by
-    apply (disjoint_cocompact_right _).mpr
-    use insert 0 (range f), by simp, Tendsto.isCompact_insert_range_of_cocompact hf f_cont
-  have h'g : Disjoint (map g ⊤) (cocompact M) := by
-    apply (disjoint_cocompact_right _).mpr
-    use insert 0 (range g), by simp, Tendsto.isCompact_insert_range_of_cocompact hg g_cont
-  have h₁ : Tendsto (Prod.map f g) ((cocompact α) ×ˢ ⊤) (𝓝ˢ ({0} ×ˢ ⊤)) := calc
-    map (Prod.map f g) ((cocompact α) ×ˢ ⊤)
-    _ = map f (cocompact α) ×ˢ map g ⊤ := (prod_map_map_eq' _ _ _ _).symm
-    _ ≤ 𝓝 0 ×ˢ map g ⊤                := prod_mono_left _ hf
-    _ = 𝓝ˢ {0} ×ˢ map g ⊤             := congrArg (· ×ˢ map g ⊤) nhdsSet_singleton.symm
-    _ ≤ 𝓝ˢ ({0} ×ˢ ⊤)                 :=
-      nhdsSet_prod_le_of_disjoint_cocompact isCompact_singleton h'g
-  have h₂ : Tendsto (Prod.map f g) (⊤ ×ˢ (cocompact β)) (𝓝ˢ (⊤ ×ˢ {0})) := calc
-    map (Prod.map f g) (⊤ ×ˢ (cocompact β))
-    _ = map f ⊤ ×ˢ map g (cocompact β) := (prod_map_map_eq' _ _ _ _).symm
-    _ ≤ map f ⊤ ×ˢ 𝓝 0                := prod_mono_right _ hg
-    _ = map f ⊤ ×ˢ 𝓝ˢ {0}             := congrArg (map f ⊤ ×ˢ ·) nhdsSet_singleton.symm
-    _ ≤ 𝓝ˢ (⊤ ×ˢ {0})                 :=
-      prod_nhdsSet_le_of_disjoint_cocompact isCompact_singleton h'f
-  have h₃ : Tendsto (Prod.map f g) (cocompact (α × β)) (𝓝ˢ ({0} ×ˢ ⊤ ∪ ⊤ ×ˢ {0})) := by
-    convert h₁.sup_sup h₂
-    · exact coprod_cocompact.symm.trans (coprod_eq_prod_top_sup_top_prod _ _)
-    · exact nhdsSet_union _ _
-  have h₄ : MapsTo (fun (p : M × M) ↦ p.1 * p.2) ({0} ×ˢ ⊤ ∪ ⊤ ×ˢ {0}) {0} := by
-    rintro ⟨x, y⟩ (⟨rfl, _⟩ | ⟨_, rfl⟩)
-    · exact zero_mul y
-    · exact mul_zero x
-  have h₅ : Tendsto (fun (p : M × M) ↦ p.1 * p.2) (𝓝ˢ ({0} ×ˢ ⊤ ∪ ⊤ ×ˢ {0})) (𝓝 0) := by
-    rw [← nhdsSet_singleton]
-    exact continuous_mul.tendsto_nhdsSet h₄
-  exact h₅.comp h₃
+  set l : Filter (M × M) := map (Prod.map f g) (cocompact (α × β)) with l_def
+  set K : Set (M × M) := (insert 0 (range f)) ×ˢ (insert 0 (range g))
+  have K_compact : IsCompact K := .prod (hf.isCompact_insert_range_of_cocompact f_cont)
+    (hg.isCompact_insert_range_of_cocompact g_cont)
+  have K_mem_l : K ∈ l := eventually_map.mpr <| .of_forall fun ⟨x, y⟩ ↦
+    ⟨mem_insert_of_mem _ (mem_range_self _), mem_insert_of_mem _ (mem_range_self _)⟩
+  have l_compact : Disjoint l (cocompact (M × M)) := by
+    rw [disjoint_cocompact_right]
+    exact ⟨K, K_mem_l, K_compact⟩
+  have l_le_coprod : l ≤ (𝓝 0).coprod (𝓝 0) := by
+    rw [l_def, ← coprod_cocompact]
+    exact hf.prod_map_coprod hg
+  exact tendsto_mul_nhds_zero_of_disjoint_cocompact l_compact l_le_coprod |>.comp tendsto_map
 
 /-- If `f : α → M` and `g : β → M` both tend to zero on the cofinite filter, then so does
 `fun (i : α × β) ↦ (f i.1) * (g i.2)`. -/
