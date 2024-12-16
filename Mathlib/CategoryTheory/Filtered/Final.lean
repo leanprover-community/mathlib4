@@ -358,6 +358,15 @@ instance StructuredArrow.final_map₂_id {C : Type v₁} [Category.{v₁} C] [Is
   have := (T ⋙ S).final_iff_isFiltered_structuredArrow.mp inferInstance e
   apply final_of_natIso (map₂IsoPreEquivalenceInverseCompProj T S d e u).symm
 
+/-- The functor `CostructuredArrow T d ⥤ CostructuredArrow (T ⋙ S) e` that `u : S.obj d ⟶ e`
+induces via `CostructuredArrow.map₂` is initial, if `T` and `S` are initial and the domain of `T` is
+filtered. -/
+instance CostructuredArrow.initial_map₂_id {C : Type v₁} [Category.{v₁} C] [IsCofiltered C]
+    {E : Type u₃} [Category.{v₁} E] (T : C ⥤ D) [T.Initial] (S : D ⥤ E) [S.Initial] (d : D) (e : E)
+    (u : S.obj d ⟶ e) : Initial (map₂ (F := 𝟭 _) (U := T ⋙ S) (𝟙 (T ⋙ S)) u) := by
+  have := (T ⋙ S).initial_iff_isCofiltered_costructuredArrow.mp inferInstance e
+  apply initial_of_natIso (map₂IsoPreEquivalenceInverseCompProj T S d e u).symm
+
 section Pi
 
 variable {α : Type u₁} {I : α → Type u₂} [∀ s, Category.{v₂} (I s)]
