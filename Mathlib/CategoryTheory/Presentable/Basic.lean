@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 
 import Mathlib.CategoryTheory.Filtered.Basic
-import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.SetTheory.Cardinal.HasCardinalLT
@@ -44,11 +43,15 @@ class IsAccessible : Prop where
     PreservesColimitsOfShape J F
 
 lemma preservesColimitsOfShape_of_isAccessible [F.IsAccessible κ]
+    (J : Type w) [SmallCategory J] [IsCardinalFiltered J κ] :
+    PreservesColimitsOfShape J F :=
+  IsAccessible.preservesColimitOfShape κ _
+
+lemma preservesColimitsOfShape_of_isAccessible_of_essentiallySmall [F.IsAccessible κ]
     (J : Type u'') [Category.{v''} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] :
     PreservesColimitsOfShape J F := by
   have := IsCardinalFiltered.of_equivalence κ (equivSmallModel.{w} J)
-  have : PreservesColimitsOfShape (SmallModel.{w} J) F :=
-    IsAccessible.preservesColimitOfShape κ _
+  have := F.preservesColimitsOfShape_of_isAccessible κ (SmallModel.{w} J)
   exact preservesColimitsOfShape_of_equiv (equivSmallModel.{w} J).symm F
 
 variable {κ} in
@@ -76,9 +79,14 @@ when the functor `Hom(X, _)` preserves colimits indexed by
 abbrev IsPresentable : Prop := (coyoneda.obj (op X)).IsAccessible κ
 
 lemma preservesColimitsOfShape_of_isPresentable [IsPresentable X κ]
-    (J : Type u'') [Category.{v''} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] :
+    (J : Type w) [SmallCategory.{w} J] [IsCardinalFiltered J κ] :
     PreservesColimitsOfShape J (coyoneda.obj (op X)) :=
   (coyoneda.obj (op X)).preservesColimitsOfShape_of_isAccessible κ J
+
+lemma preservesColimitsOfShape_of_isPresentable_of_essentiallySmall [IsPresentable X κ]
+    (J : Type u'') [Category.{v''} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] :
+    PreservesColimitsOfShape J (coyoneda.obj (op X)) :=
+  (coyoneda.obj (op X)).preservesColimitsOfShape_of_isAccessible_of_essentiallySmall κ J
 
 variable {κ} in
 lemma isPresentable_of_le [IsPresentable X κ]
