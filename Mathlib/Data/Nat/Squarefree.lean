@@ -269,7 +269,7 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
       rw [UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors h0.1] at hsq
       rw [Multiset.toFinset_subset, Multiset.toFinset_val, hsq.dedup, ← associated_iff_eq,
         normalizedFactors_mul h0.1 h0.2]
-      exact ⟨Multiset.subset_of_le (Multiset.le_add_right _ _), normalizedFactors_prod h0.1⟩
+      exact ⟨Multiset.subset_of_le (Multiset.le_add_right _ _), prod_normalizedFactors h0.1⟩
     · rintro ⟨s, hs, rfl⟩
       rw [Finset.mem_powerset, ← Finset.val_le_iff, Multiset.toFinset_val] at hs
       have hs0 : s.val.prod ≠ 0 := by
@@ -278,14 +278,14 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
         apply
           not_irreducible_zero
             (irreducible_of_normalized_factor 0 (Multiset.mem_dedup.1 (Multiset.mem_of_le hs con)))
-      rw [(normalizedFactors_prod h0).symm.dvd_iff_dvd_right]
+      rw [(prod_normalizedFactors h0).symm.dvd_iff_dvd_right]
       refine ⟨⟨Multiset.prod_dvd_prod_of_le (le_trans hs (Multiset.dedup_le _)), h0⟩, ?_⟩
       have h :=
         UniqueFactorizationMonoid.factors_unique irreducible_of_normalized_factor
           (fun x hx =>
             irreducible_of_normalized_factor x
               (Multiset.mem_of_le (le_trans hs (Multiset.dedup_le _)) hx))
-          (normalizedFactors_prod hs0)
+          (prod_normalizedFactors hs0)
       rw [associated_eq_eq, Multiset.rel_eq] at h
       rw [UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors hs0, h]
       apply s.nodup
