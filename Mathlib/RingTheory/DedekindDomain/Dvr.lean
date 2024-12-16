@@ -165,7 +165,7 @@ instance IsDedekindDomainDvr.ring_dimensionLEOne [h : IsDedekindDomainDvr A] :
 instance IsDedekindDomainDvr.isIntegrallyClosed [h : IsDedekindDomainDvr A] :
     IsIntegrallyClosed A :=
   IsIntegrallyClosed.of_localization_maximal <| fun p hp0 hpm ↦
-    let ⟨_ ,_⟩ := (IsDiscreteValuationRing.iff_pid_with_one_nonzero_prime
+    let ⟨_, _⟩ := (IsDiscreteValuationRing.iff_pid_with_one_nonzero_prime
       (Localization.AtPrime p)).mp (h.is_dvr_at_nonzero_prime p hp0 hpm.isPrime)
     inferInstance
 
