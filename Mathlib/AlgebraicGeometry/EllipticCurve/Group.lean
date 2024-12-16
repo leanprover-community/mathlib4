@@ -12,7 +12,7 @@ import Mathlib.RingTheory.Polynomial.UniqueFactorization
 /-!
 # Group law on Weierstrass curves
 
-This file proves that the nonsingular rational points on a Weierstrass curve forms an abelian group
+This file proves that the nonsingular rational points on a Weierstrass curve form an abelian group
 under the geometric group law defined in `Mathlib/AlgebraicGeometry/EllipticCurve/Affine.lean`, in
 `Mathlib/AlgebraicGeometry/EllipticCurve/Jacobian.lean`, and in
 `Mathlib/AlgebraicGeometry/EllipticCurve/Projective.lean`.
