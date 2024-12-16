@@ -205,7 +205,7 @@ noncomputable instance forget_createsLimit :
 @[to_additive]
 noncomputable instance forget_createsLimitsOfShape :
     CreatesLimitsOfShape J (forget Grp.{u}) where
-      CreatesLimit := inferInstance
+  CreatesLimit := inferInstance
 
 /-- The forgetful functor from groups to types creates all limits.
 -/
