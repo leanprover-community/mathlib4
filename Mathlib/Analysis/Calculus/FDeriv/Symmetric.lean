@@ -478,7 +478,7 @@ this is `ω` as only analytic functions are well behaved on `ℚₚ`, say. -/
 noncomputable irreducible_def minSmoothness (n : WithTop ℕ∞) :=
   if IsRCLikeNormedField 𝕜 then n else ω
 
-@[simp] lemma minSmoothness_of_IsRCLikeNormedField [h : IsRCLikeNormedField 𝕜] {n : WithTop ℕ∞} :
+@[simp] lemma minSmoothness_of_isRCLikeNormedField [h : IsRCLikeNormedField 𝕜] {n : WithTop ℕ∞} :
     minSmoothness 𝕜 n = n := by
   simp [minSmoothness, h]
 
