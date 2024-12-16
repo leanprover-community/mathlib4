@@ -2113,6 +2113,30 @@ theorem symm_neg [ContinuousNeg M] :
 
 end AddCommGroup
 
+section SMul
+
+variable {R S M : Type*} [Semiring R] [Semifield S] [AddCommGroup M] [Module R M] [Module S M]
+  [SMulCommClass S R M] [TopologicalSpace M] [ContinuousConstSMul S M]
+
+variable (R) in
+/-- Scalar multiplication by a constant as a continuous linear equivalence. -/
+def smulRight {a : S} (ha : a ≠ 0) : M ≃L[R] M :=
+  { LinearEquiv.smulRight R ha with
+    continuous_toFun := continuous_const_smul a
+    continuous_invFun := continuous_const_smul a⁻¹ }
+
+@[simp]
+theorem coe_smulRight {a : S} (ha : a ≠ 0) : (smulRight R ha : M → M) = fun x ↦ a • x := rfl
+
+@[simp]
+theorem smulRight_apply {a : S} (ha : a ≠ 0) (x : M) : smulRight R ha x = a • x := rfl
+
+@[simp]
+theorem symm_smulRight {a : S} (ha : a ≠ 0) :
+    (smulRight R ha (M := M)).symm = smulRight R (inv_ne_zero ha) := ext <| funext fun _ ↦ rfl
+
+end SMul
+
 section Ring
 
 variable {R : Type*} [Ring R] {R₂ : Type*} [Ring R₂] {M : Type*} [TopologicalSpace M]

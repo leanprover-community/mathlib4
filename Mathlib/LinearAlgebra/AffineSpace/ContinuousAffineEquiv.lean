@@ -305,4 +305,31 @@ lemma constVAdd_coe [ContinuousConstVAdd V₁ P₁] (v : V₁) :
 
 end
 
+section
+
+variable {E : Type*} [AddCommGroup E] [Module k E] [TopologicalSpace E]
+
+variable (k) in
+/-- The map `p ↦ v +ᵥ p` as a continuous affine automorphism of an affine space
+  on which addition is continuous. -/
+def neg [ContinuousNeg E] : E ≃ᵃL[k] E := ContinuousLinearEquiv.toContinuousAffineEquiv (.neg k)
+
+variable (k) in
+/-- The map `p ↦ v -ᵥ p` as a continuous affine automorphism of an affine space
+  on which addition is continuous. -/
+def constVSub [ContinuousSub E] (v : E) : E ≃ᵃL[k] E :=
+  { AffineEquiv.constVSub k v with
+    continuous_toFun := continuous_sub_left v
+    continuous_invFun := by simpa [neg_add_eq_sub] using continuous_sub_left v }
+
+variable {S : Type*} [Semifield S] [Module S E] [SMulCommClass S k E]
+  [TopologicalSpace S] [ContinuousSMul S E]
+
+variable (k) in
+/-- Scalar multiplication by a constant as a continuous affine equivalence. -/
+def smulRight {a : S} (ha : a ≠ 0) : E ≃ᵃL[k] E :=
+  ContinuousLinearEquiv.toContinuousAffineEquiv (.smulRight k ha)
+
+end
+
 end ContinuousAffineEquiv

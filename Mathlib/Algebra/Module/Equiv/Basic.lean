@@ -481,6 +481,25 @@ theorem symm_neg : (neg R : M ≃ₗ[R] M).symm = neg R :=
 
 end Neg
 
+section SMul
+
+variable [Semiring R] [Semifield S] [AddCommGroup M] [Module R M] [Module S M] [SMulCommClass S R M]
+
+variable (R) in
+/-- `x ↦ a • x` as a `LinearEquiv` -/
+def smulRight {a : S} (ha : a ≠ 0) : M ≃ₗ[R] M :=
+  { Equiv.smulRight ha with
+    map_add' x y := by simp
+    map_smul' x y := by simpa using smul_comm a x y }
+
+theorem smulRight_apply {a : S} (ha : a ≠ 0) (x : M) : smulRight R ha x = a • x := rfl
+
+@[simp]
+theorem symm_smulRight {a : S} (ha : a ≠ 0) :
+    (smulRight R ha (M := M)).symm = smulRight R (inv_ne_zero ha) := ext fun _ ↦ rfl
+
+end SMul
+
 section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
