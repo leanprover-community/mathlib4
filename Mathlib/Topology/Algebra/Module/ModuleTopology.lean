@@ -283,7 +283,7 @@ theorem continuous_of_distribMulActionHom (φ : A →+[R] B) : Continuous φ := 
     continuousAdd_induced φ.toAddMonoidHom⟩
 
 @[fun_prop, continuity]
-theorem continuous_of_linearMap (φ : A →ₗ[R] B) : Continuous φ :=
+instance continuous_of_linearMap (φ : A →ₗ[R] B) : Continuous φ :=
   continuous_of_distribMulActionHom φ.toDistribMulActionHom
 
 -- REPLACE WITH THIS
@@ -325,7 +325,7 @@ lemma isOpenMap_of_coinduced' {A : Type*} [AddCommGroup A] {B : Type*} [τA : To
     (⟨hnew, h.symm⟩ : Topology.IsQuotientMap φ)
   exact this.isOpenMap
 
--- #check IsOpenQuotientMap.prodMap
+--#check IsOpenQuotientMap.prodMap
 open TopologicalSpace in
 -- should be removed because it's just `IsOpenQuotientMap.prodMap`
 theorem coinduced_prod_eq_prod_coinduced {X Y S T : Type*} [AddCommGroup X] [AddCommGroup Y]
@@ -340,79 +340,88 @@ theorem coinduced_prod_eq_prod_coinduced {X Y S T : Type*} [AddCommGroup X] [Add
   letI : TopologicalSpace T := (coinduced g τY)
   have hgc : Continuous g := { isOpen_preimage := fun s a ↦ a }
   have hg2 : IsOpenQuotientMap g := ⟨hg, hgc, isOpenMap_of_coinduced' _ rfl hg⟩
-  have := IsOpenQuotientMap.prodMap hf2 hg2
+  have := IsOpenQuotientMap.prodMap hf2 hg2 -- all the work
   symm
   apply Topology.IsQuotientMap.eq_coinduced
   exact IsOpenQuotientMap.isQuotientMap this
 
 variable {R : Type*} [τR : TopologicalSpace R] [Ring R] [TopologicalRing R]
-variable {A : Type*} [AddCommGroup A] [Module R A]
-variable {B : Type*} [AddCommGroup B] [Module R B]
+variable {A : Type*} [AddCommGroup A] [Module R A] [TopologicalSpace A] [IsModuleTopology R A]
+variable {B : Type*} [AddCommGroup B] [Module R B] [τB : TopologicalSpace B] [IsModuleTopology R B]
 
-/-- The pushforward of the module topology along a surjective linear map is
+open Topology in
+/-- A linear surjection between modules with the module topology is a quotient map.
+Equivalently, the pushforward of the module topology along a surjective linear map is
 again the module topology. -/
 theorem coinduced_of_surjective {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
-    TopologicalSpace.coinduced φ (moduleTopology R A) = moduleTopology R B := by
-  letI : TopologicalSpace A := moduleTopology R A
-  letI τB : TopologicalSpace B := moduleTopology R B
-  haveI : IsModuleTopology R A := ⟨rfl⟩
-  haveI : ContinuousAdd A := ModuleTopology.continuousAdd R A
-  haveI : ContinuousNeg A := continuousNeg R A
-  haveI : IsModuleTopology R B := ⟨rfl⟩
-  haveI : ContinuousAdd B := ModuleTopology.continuousAdd R B
-  have : Continuous φ := continuous_of_linearMap φ
-  rw [continuous_iff_coinduced_le, eq_moduleTopology R A, eq_moduleTopology R B] at this
-  apply le_antisymm this
-  have : ContinuousAdd A := ModuleTopology.continuousAdd R A
-  refine sInf_le ⟨?_, ?_⟩
-  · apply @ContinuousSMul.mk R B _ _ (_)
-    obtain ⟨foo⟩ : ContinuousSMul R A := inferInstance
-    rw [continuous_def] at foo ⊢
-    intro U hU
-    rw [isOpen_coinduced, ← eq_moduleTopology R A] at hU
-    specialize foo _ hU; clear hU
-    rw [← Set.preimage_comp, show φ ∘ (fun p ↦ p.1 • p.2 : R × A → A) =
-      (fun p ↦ p.1 • p.2 : R × B → B) ∘
-      (Prod.map id ⇑φ.toAddMonoidHom) by ext; simp, Set.preimage_comp] at foo
-    clear! τB -- easiest to just remove topology on B completely now so typeclass inference
-    -- never sees it
-    convert isOpenMap_of_coinduced' (AddMonoidHom.prodMap (AddMonoidHom.id R) φ.toAddMonoidHom)
-      (_) (_) _ foo
-    · -- aesop would do this if `Function.surjective_id : Surjective ⇑(AddMonoidHom.id R)`
-      -- was known by it
-      apply (Set.image_preimage_eq _ _).symm
-      rw [AddMonoidHom.coe_prodMap, Prod.map_surjective]
-      exact ⟨Function.surjective_id, by simp_all⟩
-    · exact TopologicalAddGroup.mk
-    · rw [← eq_moduleTopology R A]
-      letI : TopologicalSpace B := (TopologicalSpace.coinduced (⇑φ) inferInstance)
-      haveI : TopologicalAddGroup A := topologicalAddGroup R A
-      exact coinduced_prod_eq_prod_coinduced (AddMonoidHom.id R) φ.toAddMonoidHom
-       (Function.surjective_id) hφ
-    · rintro ⟨r, b⟩
-      obtain ⟨a, rfl⟩ := hφ b
-      exact ⟨⟨r, a⟩, rfl⟩
-  · apply @ContinuousAdd.mk _ (_)
-    obtain ⟨bar⟩ := ModuleTopology.continuousAdd R A
-    rw [continuous_def] at bar ⊢
-    intro U hU
-    rw [isOpen_coinduced, ← eq_moduleTopology R A] at hU
-    specialize bar _ hU; clear hU
-    rw [← Set.preimage_comp, show φ ∘ (fun p ↦ p.1 + p.2 : A × A → A) =
-      (fun p ↦ p.1 + p.2 : B × B → B) ∘
-      (Prod.map ⇑φ.toAddMonoidHom ⇑φ.toAddMonoidHom) by ext; simp, Set.preimage_comp] at bar
-    clear! τB -- easiest to just remove topology on B completely now
-    convert isOpenMap_of_coinduced' (AddMonoidHom.prodMap φ.toAddMonoidHom φ.toAddMonoidHom)
-      (_) (_) _ bar
-    · aesop
-    · exact TopologicalAddGroup.mk
-    · rw [← eq_moduleTopology R A]
-      haveI : TopologicalAddGroup A := topologicalAddGroup R A
-      exact coinduced_prod_eq_prod_coinduced (X := A) (Y := A) (S := B) (T := B) φ φ hφ hφ
-    · rintro ⟨b₁, b₂⟩
-      obtain ⟨a₁, rfl⟩ := hφ b₁
-      obtain ⟨a₂, rfl⟩ := hφ b₂
-      exact ⟨⟨a₁, a₂⟩, rfl⟩
+    IsQuotientMap φ where
+  surjective := hφ
+  eq_coinduced := by
+    -- We need to prove that the topology on B is coinduced from that on A.
+    -- First tell the typeclass inference system that A and B are topological groups.
+    haveI := topologicalAddGroup R A
+    haveI := topologicalAddGroup R B
+    -- Because φ is continuous...
+    have this : Continuous φ := continuous_of_linearMap φ
+    -- the coinduced topology is finer than the module topology on B.
+    rw [continuous_iff_coinduced_le] at this
+    -- So it suffices to prove that the module topology on B is ≤
+    -- the topology coinduced from A
+    refine le_antisymm ?_ this
+    rw [eq_moduleTopology R B]
+    -- Now let's remove B's topology from the typeclass system
+    clear! τB
+    -- and replace it with the coinduced topology.
+    letI : TopologicalSpace B := .coinduced φ inferInstance
+    -- The module topology on B is the Inf of the topologies on B making addition
+    -- and scalar multiplication continuous, so it suffices to prove
+    -- that the coinduced topology on B has these properties.
+    refine sInf_le ⟨?_, ?_⟩
+    · -- First we prove that `• : R × B → B` is continuous for the coinduced topology.
+      apply ContinuousSMul.mk
+      -- Let `hA` be the fact that `• : R × A → A` is continuous.
+      obtain ⟨hA⟩ : ContinuousSMul R A := inferInstance
+      rw [continuous_def] at hA ⊢
+      -- Let `U` be open in `B` for the coinduced topology.
+      intro U hU
+      -- then `φ⁻¹(U)` is open in `A` by definition of coinduced topology.
+      rw [isOpen_coinduced] at hU
+      -- so its preimage in `R × A` is also open
+      -- Conclusion so far: the preimage in `R × A` of `U` under the map `(r,a) ↦ φ (r•a)` is open.
+      specialize hA _ hU
+      -- But the is latter map is also the composite of `(r,a) ↦ (r,φ a)` and `• : R × B → B`.
+      rw [← Set.preimage_comp, show φ ∘ (fun p ↦ p.1 • p.2 : R × A → A) =
+        (fun p ↦ p.1 • p.2 : R × B → B) ∘
+        (Prod.map id ⇑φ.toAddMonoidHom) by ext; simp, Set.preimage_comp] at hA
+      convert isOpenMap_of_coinduced' (AddMonoidHom.prodMap (AddMonoidHom.id R) φ.toAddMonoidHom)
+        (_) (_) _ hA
+      · -- aesop would do this if `Function.surjective_id : Surjective ⇑(AddMonoidHom.id R)`
+        -- was known by it
+        apply (Set.image_preimage_eq _ _).symm
+        rw [AddMonoidHom.coe_prodMap, Prod.map_surjective]
+        exact ⟨Function.surjective_id, by simp_all⟩
+      · exact coinduced_prod_eq_prod_coinduced (AddMonoidHom.id R) φ.toAddMonoidHom
+          (Function.surjective_id) hφ
+      · rintro ⟨r, b⟩
+        obtain ⟨a, rfl⟩ := hφ b
+        exact ⟨⟨r, a⟩, rfl⟩
+    · apply ContinuousAdd.mk
+      obtain ⟨bar⟩ := IsModuleTopology.toContinuousAdd R A
+      rw [continuous_def] at bar ⊢
+      intro U hU
+      rw [isOpen_coinduced] at hU
+      specialize bar _ hU; clear hU
+      rw [← Set.preimage_comp, show φ ∘ (fun p ↦ p.1 + p.2 : A × A → A) =
+        (fun p ↦ p.1 + p.2 : B × B → B) ∘
+        (Prod.map ⇑φ.toAddMonoidHom ⇑φ.toAddMonoidHom) by ext; simp, Set.preimage_comp] at bar
+      convert isOpenMap_of_coinduced' (AddMonoidHom.prodMap φ.toAddMonoidHom φ.toAddMonoidHom)
+        (_) (_) _ bar
+      · aesop
+      · exact coinduced_prod_eq_prod_coinduced (X := A) (Y := A) (S := B) (T := B) φ φ hφ hφ
+      · rintro ⟨b₁, b₂⟩
+        obtain ⟨a₁, rfl⟩ := hφ b₁
+        obtain ⟨a₂, rfl⟩ := hφ b₂
+        exact ⟨⟨a₁, a₂⟩, rfl⟩
 
 end surjection
 
