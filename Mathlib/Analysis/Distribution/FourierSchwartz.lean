@@ -84,8 +84,7 @@ variable [CompleteSpace E]
 Schwartz space. -/
 noncomputable def fourierTransformCLE : 𝓢(V, E) ≃L[𝕜] 𝓢(V, E) where
   __ := fourierTransformCLM 𝕜
-  invFun := (compCLMOfContinuousLinearEquiv 𝕜 (LinearIsometryEquiv.neg ℝ (E := V)))
-      ∘L (fourierTransformCLM 𝕜)
+  invFun := compCLMOfContinuousLinearEquiv 𝕜 (.neg ℝ) ∘L fourierTransformCLM 𝕜
   left_inv := by
     intro f
     ext x

@@ -596,6 +596,13 @@ lemma _root_.ContinuousAffineMap.hasTemperateGrowth (f : E →ᴬ[ℝ] F) :
   exact Function.HasTemperateGrowth.add f.contLinear.hasTemperateGrowth
     (Function.HasTemperateGrowth.const _)
 
+/-- Any Schwartz function `HasTemperateGrowth`. -/
+lemma hasTemperateGrowth (f : 𝓢(E, F)) : Function.HasTemperateGrowth f := by
+  refine ⟨f.smooth', ?_⟩
+  intro n
+  rcases f.decay' 0 n with ⟨C, hC⟩
+  exact ⟨0, C, by simpa using hC⟩
+
 variable [NormedAddCommGroup D] [MeasurableSpace D]
 
 open MeasureTheory Module
@@ -840,6 +847,43 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
   simp
 
 end Multiplication
+
+section Mul
+
+variable [NormedRing G] [NormedSpace ℝ G] [IsScalarTower ℝ G G] [SMulCommClass ℝ G G]
+  (f : 𝓢(E, G)) {g : E → G} (hg : g.HasTemperateGrowth)
+
+/-- Multiplication on the right by a `HasTemperateGrowth` function is a Schwartz function. -/
+def mulRight : 𝓢(E, G) := bilinLeftCLM (.mul ℝ G) hg f
+
+lemma mulRight_apply (x : E) : f.mulRight hg x = f x * g x := rfl
+
+/-- Multiplication on the left by a `HasTemperateGrowth` function is a Schwartz function. -/
+def mulLeft : 𝓢(E, G) := bilinLeftCLM (.flip (.mul ℝ G)) hg f
+
+lemma mulLeft_apply (x : E) : f.mulLeft hg x = g x * f x := rfl
+
+end Mul
+
+section SMul
+
+variable [NormedField 𝕜] [NormedAlgebra ℝ 𝕜] [NormedSpace 𝕜 F]
+
+/-- Scalar multiplication on the right by a `HasTemperateGrowth` function is a Schwartz function. -/
+def smulRight (f : 𝓢(E, 𝕜)) {g : E → F} (hg : g.HasTemperateGrowth) : 𝓢(E, F) :=
+  bilinLeftCLM (.lsmul ℝ 𝕜 (E := F)) hg f
+
+lemma smulRight_apply (f : 𝓢(E, 𝕜)) {g : E → F} (hg : g.HasTemperateGrowth) (x : E) :
+    f.smulRight hg x = f x • g x := rfl
+
+/-- Scalar multiplication on the left by a `HasTemperateGrowth` function is a Schwartz function. -/
+def smulLeft (f : 𝓢(E, F)) {g : E → 𝕜} (hg : g.HasTemperateGrowth) : 𝓢(E, F) :=
+  bilinLeftCLM (.flip (.lsmul ℝ 𝕜 (E := F))) hg f
+
+lemma smulLeft_apply (f : 𝓢(E, F)) {g : E → 𝕜} (hg : g.HasTemperateGrowth) (x : E) :
+    f.smulLeft hg x = g x • f x := rfl
+
+end SMul
 
 section Comp
 
