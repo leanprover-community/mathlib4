@@ -175,7 +175,7 @@ lemma chainsMap_id_eq_mapRange {A B : Rep k G} (i : ℕ) (φ : A ⟶ B) :
   refine lhom_ext fun _ _ => ?_
   simp [moduleCat_simps, chainsMap_f, MonoidHom.coe_id]
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma chainsMap_comp {G H K : Type u} [Group G] [Group H] [Group K]
     [DecidableEq G] [DecidableEq H] [DecidableEq K] {A : Rep k G} {B : Rep k H} {C : Rep k K}
     (f : G →* H) (g : H →* K) (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) :
@@ -184,7 +184,7 @@ lemma chainsMap_comp {G H K : Type u} [Group G] [Group H] [Group K]
   refine lhom_ext fun _ _ => ?_
   simp [chainsMap_f, moduleCat_simps, Function.comp_assoc]
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma chainsMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     chainsMap (MonoidHom.id G) (φ ≫ ψ) =
       chainsMap (MonoidHom.id G) φ ≫ chainsMap (MonoidHom.id G) ψ :=
@@ -222,7 +222,7 @@ noncomputable abbrev cyclesMap (n : ℕ) :
     groupHomology.cycles A n ⟶ groupHomology.cycles B n :=
   HomologicalComplex.cyclesMap (chainsMap f φ) n
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem cyclesMap_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
     cyclesMap (MonoidHom.id G) (φ ≫ ψ) n =
       cyclesMap (MonoidHom.id G) φ n ≫ cyclesMap (MonoidHom.id G) ψ n := by
@@ -235,7 +235,7 @@ noncomputable abbrev map (n : ℕ) :
   groupHomology A n ⟶ groupHomology B n :=
 HomologicalComplex.homologyMap (chainsMap f φ) n
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) (n : ℕ) :
     map (MonoidHom.id G) (φ ≫ ψ) n =
       map (MonoidHom.id G) φ n ≫ map (MonoidHom.id G) ψ n := by
@@ -310,7 +310,7 @@ omit [DecidableEq G] in
 theorem H0Map_id : H0Map (MonoidHom.id G) (𝟙 A) = 𝟙 _ :=
   Submodule.linearMap_qext _ rfl
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem H0Map_comp {G H K : Type u} [Group G] [Group H] [Group K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
     (φ : A ⟶ (Action.res _ f).obj B) (ψ : B ⟶ (Action.res _ g).obj C) :
@@ -371,7 +371,7 @@ theorem mapShortComplexH1_id : mapShortComplexH1 (MonoidHom.id G) (𝟙 A) = �
     show Finsupp.mapRange.linearMap LinearMap.id _ = Finsupp.single _ _
     simp [MonoidHom.coe_id] }
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem mapShortComplexH1_comp {G H K : Type u} [Group G] [Group H] [Group K]
     [DecidableEq G] [DecidableEq H] [DecidableEq K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
@@ -383,7 +383,7 @@ theorem mapShortComplexH1_comp {G H K : Type u} [Group G] [Group H] [Group K]
   { refine lhom_ext fun _ _ => ?_
     simp [moduleCat_simps, shortComplexH1, Prod.map, fTwo, fOne] }
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem mapShortComplexH1_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     mapShortComplexH1 (MonoidHom.id G) (φ ≫ ψ) =
       mapShortComplexH1 (MonoidHom.id G) φ ≫ mapShortComplexH1 (MonoidHom.id G) ψ :=
@@ -409,7 +409,7 @@ theorem H1Map_id : H1Map (MonoidHom.id G) (𝟙 A) = 𝟙 _ := by
   simp only [H1Map, shortComplexH1, mapShortComplexH1_id, leftHomologyMap'_id]
   rfl
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem H1Map_comp {G H K : Type u} [Group G] [Group H] [Group K]
     [DecidableEq G] [DecidableEq H] [DecidableEq K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
@@ -417,18 +417,22 @@ theorem H1Map_comp {G H K : Type u} [Group G] [Group H] [Group K]
     H1Map (g.comp f) (φ ≫ (Action.res _ f).map ψ) = H1Map f φ ≫ H1Map g ψ := by
   simpa [H1Map, shortComplexH1, mapShortComplexH1_comp] using leftHomologyMap'_comp _ _ _ _ _
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem H1Map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     H1Map (MonoidHom.id G) (φ ≫ ψ) = H1Map (MonoidHom.id G) φ ≫ H1Map (MonoidHom.id G) ψ :=
   H1Map_comp (MonoidHom.id G) (MonoidHom.id G) _ _
 
-@[simp]
-lemma subtype_comp_mapOneCycles :
-    (oneCycles B).subtype ∘ₗ mapOneCycles f φ = fOne f φ ∘ₗ (oneCycles A).subtype :=
+@[reassoc (attr := simp), elementwise]
+lemma mapOneCycles_comp_subtype :
+    mapOneCycles f φ ≫ ModuleCat.asHom (oneCycles B).subtype =
+      ModuleCat.asHom (fOne f φ ∘ₗ (oneCycles A).subtype) :=
   ShortComplex.cyclesMap'_i (mapShortComplexH1 f φ) (moduleCatLeftHomologyData _)
     (moduleCatLeftHomologyData _)
 
-@[simp]
+lemma coe_mapOneCycles (x : oneCycles A) :
+    (mapOneCycles f φ x).1 = fOne f φ (x.1) := rfl
+
+@[reassoc (attr := simp)]
 lemma H1π_comp_H1Map :
     H1π A ≫ H1Map f φ = mapOneCycles f φ ≫ H1π B :=
   leftHomologyπ_naturality' (mapShortComplexH1 f φ) _ _
@@ -482,7 +486,7 @@ theorem mapShortComplexH2_id : mapShortComplexH2 (MonoidHom.id _) (𝟙 A) = �
     show Finsupp.mapRange.linearMap LinearMap.id _ = Finsupp.single _ _
     simp [MonoidHom.coe_id] }
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem mapShortComplexH2_comp {G H K : Type u} [Group G] [Group H] [Group K]
     [DecidableEq G] [DecidableEq H] [DecidableEq K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
@@ -494,7 +498,7 @@ theorem mapShortComplexH2_comp {G H K : Type u} [Group G] [Group H] [Group K]
   { refine Finsupp.lhom_ext fun _ _ => ?_
     simp [shortComplexH2, moduleCat_simps, Prod.map, fThree, fTwo, fOne] }
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem mapShortComplexH2_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     mapShortComplexH2 (MonoidHom.id G) (φ ≫ ψ) =
       mapShortComplexH2 (MonoidHom.id G) φ ≫ mapShortComplexH2 (MonoidHom.id G) ψ :=
@@ -520,7 +524,7 @@ theorem H2Map_id : H2Map (MonoidHom.id G) (𝟙 A) = 𝟙 _ := by
   simp only [H2Map, shortComplexH2, mapShortComplexH2_id, leftHomologyMap'_id]
   rfl
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem H2Map_comp {G H K : Type u} [Group G] [Group H] [Group K]
     [DecidableEq G] [DecidableEq H] [DecidableEq K]
     {A : Rep k G} {B : Rep k H} {C : Rep k K} (f : G →* H) (g : H →* K)
@@ -528,20 +532,21 @@ theorem H2Map_comp {G H K : Type u} [Group G] [Group H] [Group K]
     H2Map (g.comp f) (φ ≫ (Action.res _ f).map ψ) = H2Map f φ ≫ H2Map g ψ := by
   simpa [H2Map, shortComplexH2, mapShortComplexH2_comp] using leftHomologyMap'_comp _ _ _ _ _
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem H2Map_id_comp {A B C : Rep k G} (φ : A ⟶ B) (ψ : B ⟶ C) :
     H2Map (MonoidHom.id G) (φ ≫ ψ) = H2Map (MonoidHom.id G) φ ≫ H2Map (MonoidHom.id G) ψ :=
   H2Map_comp (MonoidHom.id G) (MonoidHom.id G) _ _
 
-@[simp]
-lemma subtype_comp_mapTwoCycles :
-    (twoCycles B).subtype ∘ₗ mapTwoCycles f φ = fTwo f φ ∘ₗ (twoCycles A).subtype :=
+@[reassoc (attr := simp)]
+lemma mapTwoCycles_comp_subtype :
+    mapTwoCycles f φ ≫ ModuleCat.asHom (twoCycles B).subtype =
+      ModuleCat.asHom (fTwo f φ ∘ₗ (twoCycles A).subtype) :=
   ShortComplex.cyclesMap'_i (mapShortComplexH2 f φ) (moduleCatLeftHomologyData _)
     (moduleCatLeftHomologyData _)
 
-@[simp]
+@[reassoc (attr := simp)]
 lemma H2π_comp_H2Map :
-    H2Map f φ ∘ₗ H2π A = H2π B ∘ₗ mapTwoCycles f φ :=
+     H2π A ≫ H2Map f φ = mapTwoCycles f φ ≫ H2π B :=
   leftHomologyπ_naturality' (mapShortComplexH2 f φ) _ _
 
 @[reassoc (attr := simp)]
@@ -555,9 +560,7 @@ lemma cyclesMap_comp_isoTwoCycles_hom :
 @[reassoc (attr := simp)]
 lemma map_comp_isoH2_hom :
     map f φ 2 ≫ (isoH2 B).hom = (isoH2 A).hom ≫ H2Map f φ := by
-  simpa [← cancel_epi (groupHomologyπ _ _), H2Map, Category.assoc]
-    using (leftHomologyπ_naturality' (mapShortComplexH2 f φ)
-    (moduleCatLeftHomologyData _) (moduleCatLeftHomologyData _)).symm
+  simp [← cancel_epi (groupHomologyπ _ _), H2Map, Category.assoc]
 
 variable (k G) in
 /-- The functor sending a representation to its complex of inhomogeneous chains. -/

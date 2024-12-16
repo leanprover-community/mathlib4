@@ -313,17 +313,19 @@ section QuotientGroup
 variable {k G V : Type*} [CommRing k] [Group G] [AddCommGroup V] [Module k V]
 variable (ρ : Representation k G V) (S : Subgroup G)
 
+lemma augmentationSubmodule_le_comap_ρ_of_normal [S.Normal] (g : G) :
+    augmentationSubmodule (ρ.comp S.subtype) ≤
+      (augmentationSubmodule <| ρ.comp S.subtype).comap (ρ g) :=
+  Submodule.span_le.2 fun y ⟨⟨s, x⟩, hs⟩ => by
+    simpa [← hs] using mem_augmentationSubmodule_of_eq
+      ⟨g * s * g⁻¹, Subgroup.Normal.conj_mem ‹_› s.1 s.2 g⟩ (ρ g x) _ <| by simp
+
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` restricts to a `G`-representation on
 the augmentation submodule of `ρ|_S`. -/
 @[simps]
 noncomputable def toAugmentationSubmoduleOfNormal [S.Normal] :
     Representation k G (augmentationSubmodule <| ρ.comp S.subtype) where
-  toFun g := LinearMap.restrict (ρ g) <|
-      show (augmentationSubmodule <| ρ.comp S.subtype) ≤
-        (augmentationSubmodule <| ρ.comp S.subtype).comap (ρ g) from Submodule.span_le.2
-          fun y ⟨⟨s, x⟩, hs⟩ => by
-            simpa [← hs] using mem_augmentationSubmodule_of_eq
-              ⟨g * s * g⁻¹, Subgroup.Normal.conj_mem ‹_› s.1 s.2 g⟩ (ρ g x) _ <| by simp
+  toFun g := LinearMap.restrict (ρ g) <| augmentationSubmodule_le_comap_ρ_of_normal ρ S g
   map_one' := by ext; simp
   map_mul' _ _ := by ext; simp
 
@@ -511,6 +513,9 @@ lemma coinvariantsShortComplex_shortExact : (coinvariantsShortComplex A S).Short
       augmentationSubmodule <| A.ρ.comp S.subtype), rfl⟩
   mono_f := (Rep.mono_iff_injective _).2 fun _ _ h => Subtype.ext h
   epi_g := (Rep.epi_iff_surjective _).2 <| Submodule.mkQ_surjective _
+
+instance [S.Normal] : IsTrivial ((A.toCoinvariantsOfNormal S).ρ.comp S.subtype) where
+  out g := Submodule.linearMap_qext _ <| by ext; simp
 
 /-- Given a normal subgroup `S ≤ G`, a `G`-representation `ρ` induces a `G ⧸ S`-representation on
 the coinvariants of `ρ|_S`. -/

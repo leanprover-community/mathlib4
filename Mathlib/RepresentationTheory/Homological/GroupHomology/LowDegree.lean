@@ -18,6 +18,8 @@ the cohomology of a complex `inhomogeneousChains A`, whose objects are `(Fin n �
 unnecessarily unwieldy in low degree. Moreover, homology of a complex is defined as an abstract
 cokernel, whereas the definitions here are explicit quotients of cocycles by coboundaries.
 
+We also show that when the representation on `A` is trivial, `H₁(G, A) ≃+ Gᵃᵇ ⊗[ℤ] A`.
+
 Given an additive abelian group `A` with an appropriate scalar action of `G`, we provide support
 for turning a finsupp `f : G →₀ A` satisfying the 1-cycle identity into an element of the
 `oneCycles` of the representation on `A` corresponding to the scalar action. We also do this for
@@ -35,6 +37,8 @@ The file also contains an identification between the definitions in
 * `groupHomology.H2 A`: 2-cycles (i.e. `Z₁(G, A) := Ker(d₁ : (G² →₀ A) → (G →₀ A)`) modulo
 2-boundaries (i.e. `B₁(G, A) := Im(d₂ : (G³ →₀ A) → (G² →₀ A))`).
 * `groupHomology.isoHn` for `n = 0, 1, 2`: an isomorphism `groupHomology A n ≅ groupHomology.Hn A`.
+* `groupHomology.H1LEquivOfIsTrivial`: an isomorphism `H₁(G, A) ≃+ Gᵃᵇ ⊗[ℤ] A` when the
+representation on `A` is trivial.
 
 -/
 
@@ -332,8 +336,16 @@ theorem dOne_apply_mem_oneCycles [DecidableEq G] (x : G × G →₀ A) :
     dOne A x ∈ oneCycles A :=
   congr($(dZero_comp_dOne A) x)
 
+variable (A) in
 theorem oneCycles_eq_top_of_isTrivial [A.ρ.IsTrivial] : oneCycles A = ⊤ := by
   rw [oneCycles, dZero_eq_zero_of_isTrivial, LinearMap.ker_zero]
+
+variable (A) in
+/-- The natural inclusion `Z₁(G, A) →ₗ[k] C₁(G, A)` is an isomorphism when the representation
+on `A` is trivial. -/
+abbrev oneCyclesLEquivOfIsTrivial [A.ρ.IsTrivial] :
+    oneCycles A ≃ₗ[k] (G →₀ A) :=
+  LinearEquiv.ofTop _ (oneCycles_eq_top_of_isTrivial A)
 
 theorem mem_twoCycles_iff (x : G × G →₀ A) :
     x ∈ twoCycles A ↔ x.sum (fun g a => single g.2 (A.ρ g.1⁻¹ a) + single g.1 a) =
@@ -722,9 +734,11 @@ def shortComplexH0 : ShortComplex (ModuleCat k) :=
 
 abbrev H0π : ModuleCat.of k A ⟶ ModuleCat.of k (H0 A) := (shortComplexH0 A).g
 
-@[simp]
-lemma H0π_ker : LinearMap.ker (H0π A) = augmentationSubmodule A.ρ :=
-  Submodule.ker_mkQ _
+lemma H0π_eq_zero_iff (x : A) : H0π A x = 0 ↔ x ∈ augmentationSubmodule A.ρ :=
+  Submodule.Quotient.mk_eq_zero _
+
+lemma H0π_eq_iff (x y : A) : H0π A x = H0π A y ↔ x - y ∈ augmentationSubmodule A.ρ :=
+  Submodule.Quotient.eq _
 
 instance : Epi (H0π A) := by
   rw [ModuleCat.epi_iff_surjective]
@@ -816,6 +830,12 @@ lemma H1π_eq_zero_iff (x : oneCycles A) : H1π A x = 0 ↔ x.1 ∈ oneBoundarie
   rw [Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero, LinearMap.range_codRestrict]
   rfl
 
+variable {A} in
+lemma H1π_eq_iff (x y : oneCycles A) :
+    H1π A x = H1π A y ↔ x.1 - y.1 ∈ oneBoundaries A := by
+  rw [← sub_eq_zero, ← map_sub]
+  exact H1π_eq_zero_iff (x - y)
+
 /-- The short complex `(G² →₀ A) --dOne--> (G →₀ A) --dZero--> A` is isomorphic to the 1st
 short complex associated to the complex of inhomogeneous chains of `A`. -/
 @[simps! hom inv]
@@ -871,6 +891,74 @@ lemma groupHomologyπ_comp_isoH1_hom  :
     groupHomologyπ A 1 ≫ (isoH1 A).hom = (isoOneCycles A).hom ≫ H1π A := by
   simp [isoH1, isoOneCycles]
 
+section Trivial
+
+variable [A.ρ.IsTrivial]
+
+open TensorProduct
+
+/-- If a `G`-representation on `A` is trivial, this is the natural map `Gᵃᵇ → A → H₁(G, A)`
+sending `⟦g⟧, a` to `⟦single g a⟧`. -/
+def mkH1OfIsTrivial : Additive (Abelianization G) →ₗ[ℤ] A →ₗ[ℤ] H1 A :=
+  AddMonoidHom.toIntLinearMap <| AddMonoidHom.toMultiplicative'.symm <| Abelianization.lift {
+    toFun := fun g => Multiplicative.ofAdd <| AddMonoidHom.toIntLinearMap <|
+      (H1π A ∘ₗ (oneCyclesLEquivOfIsTrivial A).symm.toLinearMap ∘ₗ lsingle g).toAddMonoidHom
+    map_one' := Multiplicative.toAdd.bijective.1 <|
+      LinearMap.ext fun _ => (H1π_eq_zero_iff _).2 <| single_one_mem_oneBoundaries _
+    map_mul' := fun g h => Multiplicative.toAdd.bijective.1 <| LinearMap.ext fun a => by
+      simp only [toAdd_ofAdd, toAdd_mul, moduleCat_simps, ← map_add]
+      refine Eq.symm <| (H1π_eq_iff _ _).2 ⟨single (g, h) a, ?_⟩
+      simp [shortComplexH1, ShortComplex.moduleCatToCycles, sub_add_eq_add_sub,
+        add_comm (single h a)] }
+
+variable {A} in
+@[simp]
+lemma mkH1OfIsTrivial_apply (g : G) (a : A) :
+    mkH1OfIsTrivial A (Additive.ofMul (Abelianization.of g)) a =
+      H1π A ((oneCyclesLEquivOfIsTrivial A).symm (single g a)) := rfl
+
+/-- If a `G`-representation on `A` is trivial, this is the group isomorphism between
+`H₁(G, A) ≃ Gᵃᵇ ⊗[ℤ] A` sending `⟦single g a⟧ ↦ ⟦g⟧ ⊗ a`. -/
+@[simps! (config := .lemmasOnly)]
+def H1LEquivOfIsTrivial :
+    H1 A ≃+ (Additive <| Abelianization G) ⊗[ℤ] A :=
+  LinearEquiv.toAddEquiv (LinearEquiv.ofLinear
+    (QuotientAddGroup.lift _ ((Finsupp.liftAddHom fun g => (TensorProduct.mk ℤ _ _
+        (Additive.ofMul (Abelianization.of g))).toAddMonoidHom).comp
+        (oneCycles A).toAddSubgroup.subtype)
+      fun ⟨y, hy⟩ ⟨z, hz⟩ => AddMonoidHom.mem_ker.2 <| by
+        simp [← hz, LinearMap.codRestrict, AddSubgroup.subtype, dOne, sum_sum_index, sum_add_index,
+        tmul_add, sum_sub_index, tmul_sub]).toIntLinearMap
+    (lift <| mkH1OfIsTrivial A)
+    (ext <| LinearMap.toAddMonoidHom_injective <|
+      AddMonoidHom.toMultiplicative'.bijective.1 <| Abelianization.hom_ext _ _ <| MonoidHom.ext
+      fun g => Multiplicative.toAdd.bijective.1 <| LinearMap.ext fun a => by
+        simp only [MonoidHom.coe_comp, AddMonoidHom.coe_toMultiplicative',
+          LinearMap.toAddMonoidHom_coe, Function.comp_apply, toAdd_ofAdd, LinearMap.compr₂_apply,
+          LinearMap.coe_comp, AddMonoidHom.coe_toIntLinearMap]
+        show QuotientAddGroup.lift _ _ _
+          (QuotientAddGroup.mk ((oneCyclesLEquivOfIsTrivial A).symm (single g a))) = _
+        simp [QuotientAddGroup.lift_mk, oneCyclesLEquivOfIsTrivial, AddSubgroup.subtype])
+    (LinearMap.toAddMonoidHom_injective <| QuotientAddGroup.addMonoidHom_ext _ <|
+      (oneCyclesLEquivOfIsTrivial A).symm.toAddEquiv.comp_left_injective <| Finsupp.addHom_ext
+      fun _ _ => show lift _ ((single _ _).sum _) = _ by aesop) : _ ≃ₗ[ℤ] _)
+
+@[simp]
+lemma H1LEquivOfIsTrivial_single (g : G) (a : A) :
+    H1LEquivOfIsTrivial A (H1π A <| (oneCyclesLEquivOfIsTrivial A).symm <| single g a) =
+      Additive.ofMul (Abelianization.of g) ⊗ₜ[ℤ] a := by
+  rw [H1LEquivOfIsTrivial_apply]
+  show QuotientAddGroup.lift _ _ _
+    (QuotientAddGroup.mk ((oneCyclesLEquivOfIsTrivial A).symm (single g a))) = _
+  simp [QuotientAddGroup.lift_mk, oneCyclesLEquivOfIsTrivial, AddSubgroup.subtype]
+
+@[simp]
+lemma H1LEquivOfIsTrivial_symm_tmul (g : G) (a : A) :
+    (H1LEquivOfIsTrivial A).symm (Additive.ofMul (Abelianization.of g) ⊗ₜ[ℤ] a) =
+      H1π A ((oneCyclesLEquivOfIsTrivial A).symm <| single g a) := by
+  rfl
+
+end Trivial
 end H1
 
 section H2
@@ -890,6 +978,12 @@ lemma H2π_eq_zero_iff (x : twoCycles A) : H2π A x = 0 ↔ x.1 ∈ twoBoundarie
   show (LinearMap.range ((dTwo A).codRestrict (twoCycles A) _)).mkQ _ = 0 ↔ _
   rw [Submodule.mkQ_apply, Submodule.Quotient.mk_eq_zero, LinearMap.range_codRestrict]
   rfl
+
+variable {A} in
+lemma H2π_eq_iff (x y : twoCycles A) :
+    H2π A x = H2π A y ↔ x.1 - y.1 ∈ twoBoundaries A := by
+  rw [← sub_eq_zero, ← map_sub]
+  exact H2π_eq_zero_iff (x - y)
 
 /-- The short complex `(G³ →₀ A) --dTwo--> (G² →₀ A) --dOne--> (G →₀ A)` is
 isomorphic to the 2nd short complex associated to the complex of inhomogeneous chains of `A`. -/
