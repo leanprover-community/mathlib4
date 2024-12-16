@@ -29,8 +29,9 @@ Grothendieck category in the former strict sense.
 The invariance under equivalences of categories is established in
 `IsGrothendieckAbelian.of_equivalence`.
 
-Conversely, `ShrinkHoms.isGrothendieckAbelian C` shows that `C` satisfies the strict definition
-of a Grothendieck category after shrinking its hom sets.
+In particular, `ShrinkHoms.isGrothendieckAbelian C` shows that `ShrinkHoms C` satisfies our
+definition of a Grothendieck category after shrinking its hom sets, which coincides with the strict
+definition in this case.
 
 Relevant implications of `IsGrothendieckAbelian` are established in
 `IsGrothendieckAbelian.hasLimits` and `IsGrothendieckAbelian.hasColimits`.
