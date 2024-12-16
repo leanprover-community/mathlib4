@@ -18,6 +18,13 @@ Then take their Lie bracket at the identity: this is by definition the bracket o
 
 Due to general properties of the Lie bracket of vector fields, this gives a Lie algebra structure
 on `LieGroupAlgebra I G`.
+
+Note that one can also define a Lie algebra on the space of left-invariant derivations on `C^∞`
+functions (see `LeftInvariantDerivation.instLieAlgebra`). For `C^∞` real manifolds, this space of
+derivations can be canonically identified with the tangent space, and we recover the same Lie
+algebra structure (TODO: prove this). In other smoothness classes or on other fields, the
+derivations point of view does not work, though. Therefore, the point of view in the current file
+is more general, and should be favored when possible.
 -/
 
 noncomputable section
