@@ -358,6 +358,12 @@ instance StructuredArrow.final_map₂_id {C : Type v₁} [Category.{v₁} C] [Is
   have := (T ⋙ S).final_iff_isFiltered_structuredArrow.mp inferInstance e
   apply final_of_natIso (map₂IsoPreEquivalenceInverseCompProj T S d e u).symm
 
+/-- `StructuredArrow.post X T S` is final if `T` and `S` are final and the domain of `T` is
+filtered. -/
+instance StructuredArrow.final_post {C : Type v₁} [Category.{v₁} C] [IsFiltered C] {E : Type u₃}
+    [Category.{v₁} E] (X : D) (T : C ⥤ D) [T.Final] (S : D ⥤ E) [S.Final] : Final (post X T S) := by
+  apply final_of_natIso (postIsoMap₂ X T S).symm
+
 /-- The functor `CostructuredArrow T d ⥤ CostructuredArrow (T ⋙ S) e` that `u : S.obj d ⟶ e`
 induces via `CostructuredArrow.map₂` is initial, if `T` and `S` are initial and the domain of `T` is
 filtered. -/
