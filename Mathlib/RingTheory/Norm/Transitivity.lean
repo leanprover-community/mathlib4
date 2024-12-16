@@ -79,13 +79,15 @@ def mulAuxMatBlock : Matrix { a // (a = k) = False } { a // (a = k) = False } S 
 
 lemma det_mul_corner_pow :
     M.det * M k k ^ (Fintype.card m - 1) = M k k * (mulAuxMatBlock M k).det := by
-  convert Eq.refl (M * auxMat M k).det
+  trans (M * auxMat M k).det
   · simp [det_mul, (auxMat_blockTriangular M k).det_fintype,
       auxMat_toSquareBlock_true, auxMat_toSquareBlock_false]
   rw [(mul_auxMat_blockTriangular M k).det_fintype, Fintype.prod_Prop,
     mulAuxMatBlock, mul_auxMat_toSquareBlock_true]
-  simp_rw [det_smul_of_tower, eq_iff_iff, iff_true, Fintype.card_ofSubsingleton,
+  simp_rw [det_smul_of_tower, eq_iff_iff, iff_true, Fintype.card_unique,
     pow_one, det_one, smul_eq_mul, mul_one]
+  -- `Decidable (P = Q)` diamond induced by `Prop.linearOrder`, which is classical, when `P` and `Q`
+  -- are themselves decidable.
   convert rfl
 
 /-- A matrix with X added to the corner. -/
@@ -111,7 +113,8 @@ lemma eval_zero_compRingEquiv_det :
     ← RingHom.comp_assoc, evalRingHom_mapMatrix_comp_compRingEquiv, RingHom.comp_assoc,
     RingHom.mapMatrix_comp, evalRingHom_mapMatrix_comp_polyToMatrix, ← RingHom.mapMatrix_comp,
     RingHom.comp_apply]
-  congr; ext; simp [cornerAddX, diagonal, apply_ite]
+  congr with i j
+  simp [cornerAddX, diagonal, apply_ite]
 
 theorem compRingEquiv_det_mul_pow :
     ((f.mapMatrix M).compRingEquiv m n R).det * (f (M k k)).det ^ (Fintype.card m - 1) =
