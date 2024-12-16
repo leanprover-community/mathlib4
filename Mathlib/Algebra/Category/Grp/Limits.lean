@@ -215,11 +215,6 @@ noncomputable instance forget_createsLimitsOfShape :
 noncomputable instance forget_createsLimitsOfSize :
     CreatesLimitsOfSize.{w, v} (forget Grp.{u}) where
   CreatesLimitsOfShape := inferInstance
-
-@[to_additive]
-noncomputable instance forget_createsLimits :
-    CreatesLimits (forget Grp.{u}) := Grp.forget_createsLimitsOfSize.{u,u}
-
 end Grp
 
 namespace CommGrp
