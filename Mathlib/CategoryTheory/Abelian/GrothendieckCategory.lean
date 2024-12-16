@@ -8,9 +8,7 @@ import Mathlib.CategoryTheory.Abelian.GrothendieckAxioms.Basic
 import Mathlib.CategoryTheory.Abelian.Subobject
 import Mathlib.CategoryTheory.Abelian.Transfer
 import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
-import Mathlib.CategoryTheory.Adjunction.Opposites
 import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
 
@@ -20,12 +18,23 @@ This file defines Grothendieck categories and proves basic facts about them.
 
 ## Definitions
 
-A `GrothendieckCategory` is an abelian category provided that it has `AB5` and a separator.
+A Grothendieck category according to the Stacks project is an abelian category provided that it
+has `AB5` and a separator. However, this definition is not invariant under equivalences of
+categories. Therefore, if `C` is an abelian category, the class `IsGrothendieckAbelian.{w} C` has a
+weaker definition that is also satisfied for categories that are merely equivalent to a
+Grothendieck category in the former strict sense.
 
 ## Theorems
 
-Relevant implications of `GrothendieckCategory` are established in `GrothendieckCategory.hasLimits`
-and `GrothendieckCategory.hasColimits`.
+The invariance under equivalences of categories is established in
+`IsGrothendieckAbelian.of_equivalence`.
+
+In particular, `ShrinkHoms.isGrothendieckAbelian C` shows that `ShrinkHoms C` satisfies our
+definition of a Grothendieck category after shrinking its hom sets, which coincides with the strict
+definition in this case.
+
+Relevant implications of `IsGrothendieckAbelian` are established in
+`IsGrothendieckAbelian.hasLimits` and `IsGrothendieckAbelian.hasColimits`.
 
 ## References
 
@@ -41,15 +50,21 @@ universe w v u w₂ v₂ u₂
 variable (C : Type u) [Category.{v} C] (D : Type u₂) [Category.{v₂} D]
 
 /--
-In the literature, an abelian category `C` is called a Grothendieck category provided that it has
-`AB5` and a separator (see `HasSeparator`).
+If `C` is an abelian category, we shall say that it satisfies `IsGrothendieckAbelian.{w} C`
+if it is locally small (relative to `w`), has exact filtered colimits of size `w` (AB5) and has a
+separator.
+If `[Category.{v} C]` and `w = v`, this means that `C` satisfies `AB5` and has a separator;
+general results about Grothendieck abelian categories can be
+reduced to this case using the instance `ShrinkHoms.isGrothendieckAbelian` below.
 
-`IsGrothendieckAbelian C` is defined such that it holds if and only if `C` is equivalent to a
-Grothendieck category -- more concretely, if and only if `ShrinkHoms.{w} C` is a Grothendieck
-category.
+The introduction of the auxiliary universe `w` shall be needed for certain
+applications to categories of sheaves. That the present definition still preserves essential
+properties of Grothendieck categories is ensured by `IsGrothendieckAbelian.of_equivalence`,
+which shows that every instance for `C` implies an instance for `ShrinkHoms C` with hom sets in
+`Type w`.
 -/
 @[stacks 079B]
-class IsGrothendieckAbelian : Prop where
+class IsGrothendieckAbelian [Abelian C] : Prop where
   locallySmall : LocallySmall.{w} C := by infer_instance
   hasFilteredColimitsOfSize : HasFilteredColimitsOfSize.{w, w} C := by infer_instance
   ab5OfSize : AB5OfSize.{w, w} C := by infer_instance
@@ -60,7 +75,7 @@ attribute [instance] IsGrothendieckAbelian.locallySmall
   IsGrothendieckAbelian.hasSeparator
 
 variable {C} {D} in
-theorem IsGrothendieckAbelian.of_equivalence
+theorem IsGrothendieckAbelian.of_equivalence [Abelian C] [Abelian D]
     [IsGrothendieckAbelian.{w} C] (α : C ≌ D) : IsGrothendieckAbelian.{w} D := by
   have hasFilteredColimits : HasFilteredColimitsOfSize.{w, w, v₂, u₂} D :=
     ⟨fun _ _ _ => Adjunction.hasColimitsOfShape_of_equivalence α.inverse⟩
@@ -70,56 +85,18 @@ theorem IsGrothendieckAbelian.of_equivalence
     exact HasExactColimitsOfShape.of_codomain_equivalence _ α
   · exact HasSeparator.of_equivalence α
 
-section ShrinkHoms
-
-instance ShrinkHoms.is_grothendieck_abelian [IsGrothendieckAbelian.{w} C] :
+instance ShrinkHoms.isGrothendieckAbelian [Abelian C] [IsGrothendieckAbelian.{w} C] :
     IsGrothendieckAbelian.{w, w} (ShrinkHoms C) :=
   IsGrothendieckAbelian.of_equivalence <| ShrinkHoms.equivalence C
-
-noncomputable instance ShrinkHoms.preadditive [LocallySmall.{w} C] [Preadditive C] :
-    Preadditive.{w} (ShrinkHoms C) where
-  homGroup P Q := Equiv.addCommGroup (equivShrink _).symm
-  add_comp _ _ _ _ _ _ := by
-    apply congr_arg (equivShrink _)
-    conv => congr <;> congr <;> try apply Equiv.symm_apply_apply
-    apply Preadditive.add_comp
-  comp_add _ _ _ _ _ _ := by
-    apply congr_arg (equivShrink _)
-    conv => congr <;> congr <;> try apply Equiv.symm_apply_apply
-    apply Preadditive.comp_add
-
--- Alternative? Not sure which is cleaner
--- noncomputable instance ShrinkHoms.preadditive [Preadditive C] : Preadditive (ShrinkHoms C) := by
---   refine ⟨fun _ _ => Equiv.addCommGroup (equivShrink _).symm, ?_, ?_⟩
---   all_goals
---     intros
---     apply congr_arg (equivShrink _)
---     conv => congr <;> congr <;> try apply (equivShrink _).symm_apply_apply
---     first | apply Preadditive.add_comp | apply Preadditive.comp_add
-
-instance ShrinkHoms.has_limits [LocallySmall.{w} C] {J : Type*} [Category J]
-    [HasLimitsOfShape J C] : HasLimitsOfShape.{_, _, w} J (ShrinkHoms C) :=
-  Adjunction.hasLimitsOfShape_of_equivalence (ShrinkHoms.equivalence C).inverse
-
-instance ShrinkHoms.has_finite_limits [LocallySmall.{w} C] [HasFiniteLimits C] :
-    HasFiniteLimits.{w} (ShrinkHoms C) :=
-  ⟨fun _ => inferInstance⟩
-
-universe w2 in
-noncomputable instance ShrinkHoms.abelian [Abelian C] [LocallySmall.{w} C] :
-    Abelian.{w} (ShrinkHoms C) :=
-  abelianOfEquivalence (ShrinkHoms.equivalence C |>.inverse)
-
-end ShrinkHoms
 
 section Instances
 
 variable [Abelian C] [IsGrothendieckAbelian.{w} C]
 
-instance IsGrothendieckAbelian.has_colimits : HasColimitsOfSize.{w, w} C :=
+instance IsGrothendieckAbelian.hasColimits : HasColimitsOfSize.{w, w} C :=
   has_colimits_of_finite_and_filtered
 
-instance IsGrothendieckAbelian.has_limits : HasLimitsOfSize.{w, w} C :=
+instance IsGrothendieckAbelian.hasLimits : HasLimitsOfSize.{w, w} C :=
   have : HasLimits.{w, u} (ShrinkHoms C) := hasLimits_of_hasColimits_of_hasSeparator
   Adjunction.has_limits_of_equivalence (ShrinkHoms.equivalence C |>.functor)
 
