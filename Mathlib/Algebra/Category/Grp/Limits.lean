@@ -199,8 +199,6 @@ instance forget_preservesLimits : PreservesLimits (forget Grp.{u}) :=
 @[to_additive]
 noncomputable instance forget_createsLimit :
     CreatesLimit F (forget Grp.{u}) := by
-  have : CreatesLimit F (forget₂ Grp.{u} MonCat.{u} ⋙ forget MonCat.{u}) := by
-    exact compCreatesLimit (forget₂ Grp.{u} MonCat.{u}) (forget MonCat.{u})
   set e : forget₂ Grp.{u} MonCat.{u} ⋙ forget MonCat.{u} ≅ forget Grp.{u} := Iso.refl _
   exact createsLimitOfNatIso e
 
