@@ -32,7 +32,7 @@ final can be restated. We show:
 
 -/
 
-universe v₁ v₂ u₁ u₂
+universe v₁ v₂ v₃ u₁ u₂ u₃
 
 namespace CategoryTheory
 
@@ -348,6 +348,15 @@ instance CostructuredArrow.initial_proj_of_isCofiltered [IsCofilteredOrEmpty C]
   refine ⟨fun X => ?_⟩
   rw [isConnected_iff_of_equivalence (ofCostructuredArrowProjEquivalence T Y X)]
   exact (initial_comp (Over.forget X) T).out _
+
+/-- The functor `StructuredArrow d T ⥤ StructuredArrow e (T ⋙ S)` that `u : e ⟶ S.obj d`
+induces via `StructuredArrow.map₂` is final, if `T` and `S` are final and the domain of `T` is
+filtered. -/
+instance StructuredArrow.final_map₂_id {C : Type v₁} [Category.{v₁} C] [IsFiltered C] {E : Type u₃}
+    [Category.{v₁} E] (T : C ⥤ D) [T.Final] (S : D ⥤ E) [S.Final] (d : D) (e : E)
+    (u : e ⟶ S.obj d) : Final (map₂ (R' := T ⋙ S) (F := 𝟭 _) u (𝟙 (T ⋙ S))) := by
+  have := (T ⋙ S).final_iff_isFiltered_structuredArrow.mp inferInstance e
+  apply final_of_natIso (map₂IsoPreEquivalenceInverseCompProj T S d e u).symm
 
 section Pi
 
