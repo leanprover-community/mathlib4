@@ -160,14 +160,14 @@ lemma TensorProduct.eq_repr_basis_left :
 omit [DecidableEq ι] in
 lemma TensorProduct.sum_tmul_basis_left_injective :
     Function.Injective (Finsupp.lsum R fun i ↦ (TensorProduct.mk R M N) (ℬ i)) :=
-  have := Classical.decEq ι]
+  have := Classical.decEq ι
   (equivFinsuppOfBasisLeft_symm (N := N) ℬ).symm ▸
     (TensorProduct.equivFinsuppOfBasisLeft ℬ).symm.injective
 
 omit [DecidableEq ι] in
 lemma TensorProduct.sum_tmul_basis_left_eq_zero
     (b : ι →₀ N) (h : (b.sum fun i n ↦ ℬ i ⊗ₜ[R] n) = 0) : b = 0 :=
-  have := Classical.decEq ι]
+  have := Classical.decEq ι
   (TensorProduct.equivFinsuppOfBasisLeft ℬ).symm.injective (a₂ := 0) <| by simpa
 
 end
