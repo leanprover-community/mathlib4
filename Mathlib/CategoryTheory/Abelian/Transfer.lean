@@ -220,7 +220,7 @@ instance : (inverse C).Additive where
 instance : (functor C).Additive where
   map_add := by apply functor_map_add
 
-instance hasLimits (J : Type*) [Category J]
+instance hasLimitsOfShape (J : Type*) [Category J]
     [HasLimitsOfShape J C] : HasLimitsOfShape.{_, _, w} J (ShrinkHoms C) :=
   Adjunction.hasLimitsOfShape_of_equivalence (inverse C)
 
