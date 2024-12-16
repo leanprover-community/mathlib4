@@ -3,8 +3,9 @@ Copyright (c) 2021 Gabriel Ebner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Mario Carneiro
 -/
-import Mathlib.Tactic.ToAdditive
 import Mathlib.Logic.Nonempty
+import Mathlib.Logic.Nontrivial.Basic
+import Mathlib.Tactic.ToAdditive
 
 /-!
 ## Typeclass `One`
@@ -34,3 +35,7 @@ instance (priority := 20) Zero.instNonempty [Zero α] : Nonempty α :=
 
 instance (priority := 20) One.instNonempty [One α] : Nonempty α :=
   ⟨1⟩
+
+@[to_additive]
+theorem Subsingleton.eq_one [One α] [Subsingleton α] (a : α) : a = 1 :=
+  Subsingleton.elim _ _
