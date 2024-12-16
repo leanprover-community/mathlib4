@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gabriel Ebner, Mario Carneiro
 -/
 import Mathlib.Tactic.ToAdditive
+import Mathlib.Logic.Nonempty
 
 /-!
 ## Typeclass `One`
@@ -25,3 +26,11 @@ instance (priority := 200) One.ofOfNat1 {α} [OfNat α (nat_lit 1)] : One α whe
   one := 1
 
 attribute [to_additive_change_numeral 2] OfNat OfNat.ofNat
+
+variable {α : Type u}
+
+instance (priority := 20) Zero.instNonempty [Zero α] : Nonempty α :=
+  ⟨0⟩
+
+instance (priority := 20) One.instNonempty [One α] : Nonempty α :=
+  ⟨1⟩
