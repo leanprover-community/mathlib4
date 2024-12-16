@@ -3,14 +3,14 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
 # The property of being of cardinality less than a cardinal
 
 Given `X : Type u` and `κ : Cardinal.{v}`, we introduce a predicate
 `HasCardinalLT X κ` expressing that
-`Cardinal.mk (ULift.{v} X) < Cardinal.lift κ`.
+`Cardinal.lift.{v} (Cardinal.mk X) < Cardinal.lift κ`.
 
 -/
 
@@ -18,7 +18,7 @@ universe w v u u'
 
 /-- The property that the cardinal of a type `X : Type u` is less than `κ : Cardinal.{v}`. -/
 def HasCardinalLT (X : Type u) (κ : Cardinal.{v}) : Prop :=
-  Cardinal.mk (ULift.{v} X) < Cardinal.lift κ
+  Cardinal.lift.{v} (Cardinal.mk X) < Cardinal.lift κ
 
 lemma hasCardinalLT_iff_cardinal_mk_lt (X : Type u) (κ : Cardinal.{u}) :
     HasCardinalLT X κ ↔ Cardinal.mk X < κ := by
@@ -33,11 +33,9 @@ variable {X : Type u} {κ : Cardinal.{v}} (h : HasCardinalLT X κ)
 include h
 
 lemma small : Small.{v} X := by
-  induction' κ using Cardinal.inductionOn  with Y
-  replace h := (Cardinal.le_def _ _).1 h.le
-  obtain ⟨f, hf⟩ := h
-  exact small_of_injective (Function.Injective.comp ULift.down_injective
-    (Function.Injective.comp hf ULift.up_injective))
+  dsimp [HasCardinalLT] at h
+  rw [← Cardinal.lift_lt.{_, v + 1}, Cardinal.lift_lift, Cardinal.lift_lift] at h
+  simpa only [Cardinal.small_iff_lift_mk_lt_univ] using h.trans (Cardinal.lift_lt_univ' κ)
 
 lemma of_le {κ' : Cardinal.{v}} (hκ' : κ ≤ κ') :
     HasCardinalLT X κ' :=
@@ -73,6 +71,6 @@ lemma hasCardinalLT_iff_of_equiv {X : Type u} {Y : Type u'} (e : X ≃ Y) (κ : 
     fun h ↦ h.of_injective _ e.injective⟩
 
 @[simp]
-lemma hasCardinalLT_aleph0 (X : Type u) :
+lemma hasCardinalLT_aleph0_iff (X : Type u) :
     HasCardinalLT X Cardinal.aleph0.{v} ↔ Finite X := by
   simpa [HasCardinalLT] using Cardinal.mk_lt_aleph0_iff
