@@ -1170,6 +1170,9 @@ theorem moveRight_neg {x : PGame} (i) :
 @[deprecated moveRight_neg (since := "2024-10-30")]
 alias moveRight_neg' := moveRight_neg
 
+theorem moveRight_neg_toRightMovesNeg {x : PGame} (i) :
+    (-x).moveRight (toRightMovesNeg i) = -x.moveLeft i := by simp
+
 @[deprecated moveRight_neg (since := "2024-10-30")]
 theorem moveLeft_neg_symm {x : PGame} (i) :
     x.moveLeft (toRightMovesNeg.symm i) = -(-x).moveRight i := by simp
