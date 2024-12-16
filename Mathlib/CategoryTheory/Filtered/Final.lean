@@ -373,6 +373,13 @@ instance CostructuredArrow.initial_map₂_id {C : Type v₁} [Category.{v₁} C]
   have := (T ⋙ S).initial_iff_isCofiltered_costructuredArrow.mp inferInstance e
   apply initial_of_natIso (map₂IsoPreEquivalenceInverseCompProj T S d e u).symm
 
+/-- `CostructuredArrow.post T S X` is initial if `T` and `S` are initial and the domain of `T` is
+cofiltered. -/
+instance CostructuredArrow.initial_post {C : Type v₁} [Category.{v₁} C] [IsCofiltered C]
+    {E : Type u₃} [Category.{v₁} E] (X : D) (T : C ⥤ D) [T.Initial] (S : D ⥤ E) [S.Initial] :
+    Initial (post T S X) := by
+  apply initial_of_natIso (postIsoMap₂ X T S).symm
+
 section Pi
 
 variable {α : Type u₁} {I : α → Type u₂} [∀ s, Category.{v₂} (I s)]
