@@ -18,12 +18,22 @@ This file defines Grothendieck categories and proves basic facts about them.
 
 ## Definitions
 
-A `GrothendieckCategory` is an abelian category provided that it has `AB5` and a separator.
+A Grothendieck category according to the Stacks project is an abelian category provided that it
+has `AB5` and a separator. However, this definition is not invariant under equivalences of
+categories. Therefore, if `C` is an abelian category, the class `IsGrothendieckAbelian.{w} C` has a
+weaker definition that is also satisfied for categories that are merely equivalent to a
+Grothendieck category in the former strict sense.
 
 ## Theorems
 
-Relevant implications of `GrothendieckCategory` are established in `GrothendieckCategory.hasLimits`
-and `GrothendieckCategory.hasColimits`.
+The invariance under equivalences of categories is established in
+`IsGrothendieckAbelian.of_equivalence`.
+
+Conversely, `ShrinkHoms.isGrothendieckAbelian C` shows that `C` satisfies the strict definition
+of a Grothendieck category after shrinking its hom sets.
+
+Relevant implications of `IsGrothendieckAbelian` are established in
+`IsGrothendieckAbelian.hasLimits` and `IsGrothendieckAbelian.hasColimits`.
 
 ## References
 
@@ -39,12 +49,18 @@ universe w v u w₂ v₂ u₂
 variable (C : Type u) [Category.{v} C] (D : Type u₂) [Category.{v₂} D]
 
 /--
-In the literature, an abelian category `C` is called a Grothendieck category provided that it has
-`AB5` and a separator (see `HasSeparator`).
+If `C` is an abelian category, we shall say that it satisfies `IsGrothendieckAbelian.{w} C`
+if it is locally small (relative to `w`), has exact filtered colimits of size `w` (AB5) and has a
+separator.
+If `[Category.{v} C]` and `w = v`, this means that `C` satisfies `AB5` and has a separator;
+general results about Grothendieck abelian categories can be
+reduced to this case using the instance `ShrinkHoms.isGrothendieckAbelian` below.
 
-`IsGrothendieckAbelian.{w} C` is defined such that it holds if and only if `C` is equivalent to a
-Grothendieck category -- more concretely, if and only if `ShrinkHoms.{w} C` is a Grothendieck
-category.
+The introduction of the auxiliary universe `w` shall be needed for certain
+applications to categories of sheaves. That the present definition still preserves essential
+properties of Grothendieck categories is ensured by `IsGrothendieckAbelian.of_equivalence`,
+which shows that every instance for `C` implies an instance for `ShrinkHoms C` with hom sets in
+`Type w`.
 -/
 @[stacks 079B]
 class IsGrothendieckAbelian [Abelian C] : Prop where

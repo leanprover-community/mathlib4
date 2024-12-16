@@ -18,7 +18,7 @@ basic facts about them.
 
 ## Definitions
 
-- `HasExactColimitsOfShape J` -- colimits of shape `J` are exact.
+- `HasExactColimitsOfShape J C` -- colimits of shape `J` in `C` are exact.
 - The dual of the above definitions, called `HasExactLimitsOfShape`.
 - `AB4` -- coproducts are exact (this is formulated in terms of `HasExactColimitsOfShape`).
 - `AB5` -- filtered colimits are exact (this is formulated in terms of `HasExactColimitsOfShape`).
@@ -26,6 +26,9 @@ basic facts about them.
 ## Theorems
 
 - The implication from `AB5` to `AB4` is established in `AB4.ofAB5`.
+- That `HasExactColimitsOfShape J C` is invariant under equivalences in both parameters is shown
+in `HasExactColimitsOfShape.of_domain_equivalence` and
+`HasExactColimitsOfShape.of_codomain_equivalence`.
 
 ## Remarks
 

@@ -18,6 +18,9 @@ we have `F : C ⥤ D` `G : D ⥤ C` (both preserving zero morphisms),
 and further we have `adj : G ⊣ F` and `i : F ⋙ G ≅ 𝟭 C`,
 then `C` is also abelian.
 
+A particular example is the transfer of `Abelian` instances from a category `C` to `ShrinkHoms C`;
+see `ShrinkHoms.abelian`. In this case, we also transfer the `Preadditive` structure.
+
 See <https://stacks.math.columbia.edu/tag/03A3>
 
 ## Notes
@@ -180,24 +183,30 @@ namespace ShrinkHoms
 
 universe w
 
-variable (C : Type*) [Category C] [LocallySmall.{w} C] [Preadditive C]
+variable {C : Type*} [Category C] [LocallySmall.{w} C]
+
+section Preadditive
+
+variable [Preadditive C]
 
 noncomputable instance homGroup (P Q : ShrinkHoms C) : AddCommGroup (P ⟶ Q : Type w) :=
   Equiv.addCommGroup (equivShrink _).symm
 
 lemma functor_map_add {P Q : C} (f g : P ⟶ Q) :
     (functor C).map (f + g) =
-      (functor C).map f + (functor C).map g :=
-  map_add (equivShrink.{w} (P ⟶ Q)).symm.addEquiv.symm f g
+      (functor C).map f + (functor C).map g := by
+  exact map_add (equivShrink.{w} (P ⟶ Q)).symm.addEquiv.symm f g
 
 lemma inverse_map_add {P Q : ShrinkHoms C} (f g : P ⟶ Q) :
     (inverse C).map (f + g) =
       (inverse C).map f + (ShrinkHoms.inverse C).map g :=
   map_add (equivShrink.{w} (P.fromShrinkHoms ⟶ Q.fromShrinkHoms)).symm.addEquiv f g
 
-noncomputable instance preadditive [Preadditive C] :
+variable (C)
+
+noncomputable instance preadditive :
     Preadditive.{w} (ShrinkHoms C) where
-  homGroup P Q := Equiv.addCommGroup (equivShrink _).symm
+  homGroup := homGroup
   add_comp _ _ _ _ _ _ := by
     apply (inverse C).map_injective
     simp only [inverse_map_add, Functor.map_comp, Preadditive.add_comp]
@@ -211,14 +220,17 @@ instance : (inverse C).Additive where
 instance : (functor C).Additive where
   map_add := by apply functor_map_add
 
-instance hasLimits [LocallySmall.{w} C] {J : Type*} [Category J]
+instance hasLimits (J : Type*) [Category J]
     [HasLimitsOfShape J C] : HasLimitsOfShape.{_, _, w} J (ShrinkHoms C) :=
   Adjunction.hasLimitsOfShape_of_equivalence (inverse C)
 
-instance hasFiniteLimits [LocallySmall.{w} C] [HasFiniteLimits C] :
+instance hasFiniteLimits [HasFiniteLimits C] :
     HasFiniteLimits.{w} (ShrinkHoms C) := ⟨fun _ => inferInstance⟩
 
-noncomputable instance abelian [Abelian C] [LocallySmall.{w} C] :
+end Preadditive
+
+variable (C) in
+noncomputable instance abelian [Abelian C] :
     Abelian.{w} (ShrinkHoms C) := abelianOfEquivalence (inverse C)
 
 end ShrinkHoms
