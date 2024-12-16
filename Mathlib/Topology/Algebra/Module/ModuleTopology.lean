@@ -287,11 +287,17 @@ instance continuous_of_linearMap (φ : A →ₗ[R] B) : Continuous φ :=
   continuous_of_distribMulActionHom φ.toDistribMulActionHom
 
 variable (R) in
+theorem continuous_neg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
+    [IsModuleTopology R C] : Continuous (fun a ↦ -a : C → C) :=
+  haveI : ContinuousAdd C := IsModuleTopology.toContinuousAdd R C
+  continuous_of_linearMap (LinearEquiv.neg R).toLinearMap
+
+variable (R) in
 theorem continuousNeg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
     [IsModuleTopology R C] : ContinuousNeg C where
   continuous_neg :=
-  haveI : ContinuousAdd C := IsModuleTopology.toContinuousAdd R C
-  continuous_of_linearMap (LinearEquiv.neg R).toLinearMap
+    haveI : ContinuousAdd C := IsModuleTopology.toContinuousAdd R C
+    continuous_of_linearMap (LinearEquiv.neg R).toLinearMap
 
 variable (R) in
 theorem topologicalAddGroup (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
