@@ -23,9 +23,6 @@ namespace SelbergSieve
 
 variable [s : SelbergSieve]
 
-scoped notation3 "y" => level
-scoped notation3 "hy" => one_le_level
-
 @[simp]
 def selbergBoundingSum : ℝ :=
   ∑ l in divisors P, if l ^ 2 ≤ y then g l else 0
@@ -158,8 +155,8 @@ theorem selbergWeights_eq_dvds_sum (d : ℕ) :
     exfalso; exact h_dvd (dvd_trans h hl.left)
   dsimp only [selbergWeights]
   rw [if_pos h_dvd]
-  repeat rw [mul_sum]
   -- change of variables l=m*d
+  repeat rw [mul_sum]
   apply symm
   rw [sum_mul_subst d P]
   · apply sum_congr rfl

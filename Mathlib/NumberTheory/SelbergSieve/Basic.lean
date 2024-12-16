@@ -10,13 +10,59 @@ import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.NumberTheory.SelbergSieve.Temp
 
+/-!
+# The Selberg Sieve
+
+We set up the working assumptions of the Selberg sieve and define the notion of an upper bound sieve
+and show that every upper bound sieve yields an upper bound on the size of the sifted set. We also
+define the Λ² sieve and prove that Λ² sieves are upper bound sieves. We then diagonalise the main
+term of the Λ² sieve.
+
+We mostly follow the treatment outlined by Heath-Brown in the notes to an old graduate course. One
+minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(n)}{n}$.
+
+## Results
+
+
+## Notation
+The `SelbergSieve.Notation` namespace includes common shorthand for the variables included in the
+`SelbergSieve` structure.
+ * `A` for `support`
+ * `𝒜 d` for `multSum d`
+ * `P` for `prodPrimes`
+ * `a` for `weights`
+ * `X` for `totalMass`
+ * `ν` for `nu`
+ * `y` for `level`
+ * `R d` for `rem d`
+ * `g d` for `selbergTerms d`
+
+## References
+
+ * [Heath-Brown, *Lectures on sieves*][heathbrown2002lecturessieves]
+ * [Koukoulopoulos, *The Distribution of Prime Numbers*][MR3971232]
+
+-/
+
 noncomputable section
 
 open scoped BigOperators ArithmeticFunction
 
 open Finset Real Nat Aux
 
-class SelbergSieve where mk ::
+
+/-!
+We set up the Selberg sieve as follows. Take a finite set of natural numbers `A`, whose elements
+are weighted by a sequence `a n`. Also take a finite set of primes `P`, represented as a squarefree
+natural number. These are the primes that we will sift from our set `A`. Suppose we can approximate
+`∑ n ∈ {k ∈ A | d ∣ k}, a n = ν d * X + R d`, where `X` is an approximation to the total size of `A`
+and `ν` is a multiplicative arithmetic function such that `0 < ν p < 1` for all primes `p ∣ P`.
+
+Then the fundamental theorem of the Selberg sieve will give us an upper bound on the size of the
+sifted sum `∑ n ∈ {k ∈ support | k.Coprime P}, a n`, obtained by removing any elements of `A` that
+are a multiple of a prime in `P`.
+-/
+class SelbergSieve where
   support : Finset ℕ
   prodPrimes : ℕ
   prodPrimes_squarefree : Squarefree prodPrimes
@@ -34,11 +80,19 @@ attribute [arith_mult] SelbergSieve.nu_mult
 
 namespace SelbergSieve
 
+namespace Notation
+
 scoped notation3 "ν" => nu
 scoped notation3 "P" => prodPrimes
 scoped notation3 "a" => weights
 scoped notation3 "X" => totalMass
 scoped notation3 "A" => support
+scoped notation3 "y" => level
+scoped notation3 "hy" => one_le_level
+
+end Notation
+
+open Notation
 
 section SelbergSieve
 
@@ -60,8 +114,11 @@ scoped notation3 "R" => rem
 def siftedSum : ℝ :=
   ∑ d in A, if Coprime P d then a d else 0
 
--- S = ∑_{l|P, l≤√y} g(l)
--- Used in statement of the simple form of the selberg bound
+/-!
+These are the terms that appear in the sum `S` in the main term of the fundamental theorem.
+
+$S = ∑_{l|P, l≤\sqrt{y}} g(l)$
+-/
 def selbergTerms : ArithmeticFunction ℝ :=
   nu.pmul (.prodPrimeFactors fun p =>  1 / (1 - ν p))
 
@@ -92,15 +149,6 @@ structure UpperBoundSieve where mk ::
   hμPlus : UpperMoebius μPlus
 
 instance ubToμPlus : CoeFun UpperBoundSieve fun _ => ℕ → ℝ where coe ub := ub.μPlus
-
-def LowerMoebius (μMinus : ℕ → ℝ) : Prop :=
-  ∀ n : ℕ, ∑ d in n.divisors, μMinus d ≤ (if n=1 then 1 else 0)
-
-structure LowerBoundSieve where mk ::
-  μMinus : ℕ → ℝ
-  hμMinus : LowerMoebius μMinus
-
-instance lbToμMinus : CoeFun LowerBoundSieve fun _ => ℕ → ℝ where coe lb := lb.μMinus
 
 end UpperBoundSieve
 
@@ -147,7 +195,6 @@ theorem siftedSum_as_delta : siftedSum = ∑ d in support, a d * if Nat.gcd P d 
   dsimp only [siftedSum]
   simp_rw [mul_ite, mul_one, mul_zero]
 
--- Unused ?
 theorem nu_lt_self_of_dvd_prodPrimes (d : ℕ) (hdP : d ∣ P) (hd_ne_one : d ≠ 1) : ν d < 1 := by
   have hd_sq : Squarefree d := Squarefree.squarefree_of_dvd hdP prodPrimes_squarefree
   calc
@@ -164,7 +211,12 @@ theorem nu_lt_self_of_dvd_prodPrimes (d : ℕ) (hdP : d ∣ P) (hd_ne_one : d �
     _ = 1 := by
       simp
 
--- Facts about g
+section SelbergTerms
+/-!
+
+
+-/
+
 @[aesop safe]
 theorem selbergTerms_pos (l : ℕ) (hl : l ∣ P) : 0 < g l := by
   rw [selbergTerms_apply]
@@ -229,6 +281,8 @@ theorem conv_selbergTerms_eq_selbergTerms_mul_nu {d : ℕ} (hd : d ∣ P) :
       · apply _root_.ne_of_gt; rw [mem_divisors] at hl ; apply selbergTerms_pos; exact hl.left
     _ = g d * (ν d)⁻¹ := by rw [← nu_eq_conv_one_div_selbergTerms d hd]
 
+end SelbergTerms
+
 theorem upper_bound_of_UpperBoundSieve (μPlus : UpperBoundSieve) :
     siftedSum ≤ ∑ d in divisors P, μPlus d * multSum d := by
   have hμ : ∀ n, (if n = 1 then 1 else 0) ≤ ∑ d in n.divisors, μPlus d := μPlus.hμPlus
@@ -276,8 +330,8 @@ section LambdaSquared
 def lambdaSquared (weights : ℕ → ℝ) : ℕ → ℝ := fun d =>
   ∑ d1 in d.divisors, ∑ d2 in d.divisors, if d = Nat.lcm d1 d2 then weights d1 * weights d2 else 0
 
-private theorem lambdaSquared_eq_zero_of_support_wlog {w : ℕ → ℝ} {y : ℝ}
-  (hw : ∀ (d : ℕ), ¬d ^ 2 ≤ y → w d = 0) {d : ℕ} (hd : ¬↑d ≤ y) (d1 : ℕ) (d2 : ℕ)
+private theorem lambdaSquared_eq_zero_of_support_wlog {w : ℕ → ℝ} {height : ℝ}
+  (hw : ∀ (d : ℕ), ¬d ^ 2 ≤ height → w d = 0) {d : ℕ} (hd : ¬↑d ≤ height) (d1 : ℕ) (d2 : ℕ)
   (h : d = Nat.lcm d1 d2) (hle : d1 ≤ d2) :
     w d1 * w d2 = 0 := by
   rw [hw d2]
@@ -290,13 +344,13 @@ private theorem lambdaSquared_eq_zero_of_support_wlog {w : ℕ → ℝ} {y : ℝ
       _ ≤ _       := ?_
   · rw [sq]; gcongr
 
-theorem lambdaSquared_eq_zero_of_support (w : ℕ → ℝ) (y : ℝ)
-    (hw : ∀ d : ℕ, ¬d ^ 2 ≤ y → w d = 0) (d : ℕ) (hd : ¬d ≤ y) :
+theorem lambdaSquared_eq_zero_of_support (w : ℕ → ℝ) (height : ℝ)
+    (hw : ∀ d : ℕ, ¬d ^ 2 ≤ height → w d = 0) (d : ℕ) (hd : ¬d ≤ height) :
     lambdaSquared w d = 0 := by
   dsimp only [lambdaSquared]
-  by_cases hy : 0 ≤ y
+  by_cases hheight : 0 ≤ height
   swap
-  · push_neg at hd hy
+  · push_neg at hd hheight
     have : ∀ d' : ℕ, w d' = 0 := by
       intro d'; apply hw
       have : (0:ℝ) ≤ (d') ^ 2 := by norm_num
@@ -338,7 +392,7 @@ theorem upperMoebius_of_lambda_sq (weights : ℕ → ℝ) (hw : weights 1 = 1) :
 variable [s : SelbergSieve]
 
 theorem lambdaSquared_mainSum_eq_quad_form (w : ℕ → ℝ) :
-    s.mainSum (lambdaSquared w) =
+    mainSum (lambdaSquared w) =
       ∑ d1 in divisors P, ∑ d2 in divisors P,
         ν d1 * w d1 * ν d2 * w d2 * (ν (d1.gcd d2))⁻¹ := by
   calc mainSum (lambdaSquared w)
@@ -358,8 +412,8 @@ theorem lambdaSquared_mainSum_eq_quad_form (w : ℕ → ℝ) :
     rw [sum_comm, sum_congr rfl]; intro d1 hd1
     rw [sum_comm, sum_congr rfl]; intro d2 hd2
     have h : d1.lcm d2 ∣ P := Nat.lcm_dvd_iff.mpr ⟨dvd_of_mem_divisors hd1, dvd_of_mem_divisors hd2⟩
-    rw [←sum_intro (divisors P) (d1.lcm d2) (mem_divisors.mpr ⟨h, s.prodPrimes_ne_zero⟩ )]
-    rw [s.nu_mult.mult_lcm_eq_of_ne_zero]
+    rw [←sum_intro (divisors P) (d1.lcm d2) (mem_divisors.mpr ⟨h, prodPrimes_ne_zero⟩ )]
+    rw [nu_mult.mult_lcm_eq_of_ne_zero]
     · ring
     refine _root_.ne_of_gt (nu_pos_of_dvd_prodPrimes ?_)
     trans d1
