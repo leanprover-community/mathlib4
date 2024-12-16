@@ -275,7 +275,6 @@ theorem binomialSum_ODE {a : ℝ} {x : ℝ} (hx : |x| < 1) :
   have := HasFPowerSeriesOnBall.unique h_afun h_rhs
   have hx_mem : x ∈ EMetric.ball 0 1 := by
     simp [EMetric.ball]
-    have := coe_nnnorm x
     rw [← NNReal.coe_lt_coe, coe_nnnorm x]
     rw [Real.norm_eq_abs, NNReal.coe_one]
     rw [abs_lt]
@@ -312,13 +311,6 @@ theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) :
   · convert Set.eqOn_empty _ _
     apply Set.Icc_eq_empty
     linarith
-  have h_sum_analytic : AnalyticOnNhd ℝ (binomialSum a) (EMetric.ball 0 1) := by
-    apply AnalyticOnNhd.mono _ (EMetric.ball_subset_ball
-      (binomialSeries_radius_ge_one (𝔸 := ℝ) (a := a)))
-    apply HasFPowerSeriesOnBall.analyticOnNhd (p := binomialSeries ℝ a)
-    apply FormalMultilinearSeries.hasFPowerSeriesOnBall
-    apply lt_of_lt_of_le _ binomialSeries_radius_ge_one
-    simp
   let v : ℝ → ℝ → ℝ := fun t x ↦ a * x / (1 + t)
   let s : ℝ → Set ℝ := fun _ ↦ Set.univ
   apply ODE_solution_unique_of_mem_Icc (v := v) (s := s) (t₀ := 0)
