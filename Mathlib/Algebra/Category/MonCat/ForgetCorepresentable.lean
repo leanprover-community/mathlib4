@@ -21,26 +21,6 @@ open CategoryTheory Opposite
 
 namespace MonoidHom
 
-/-- The equivalence `(β →* γ) ≃ (α →* γ)` obtained by precomposition with
-a multiplicative equivalence `e : α ≃* β`. -/
-@[simps]
-def precompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
-    (β →* γ) ≃ (α →* γ) where
-  toFun f := f.comp e
-  invFun g := g.comp e.symm
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
-
-/-- The equivalence `(γ →* α) ≃ (γ →* β)` obtained by postcomposition with
-a multiplicative equivalence `e : α ≃* β`. -/
-@[simps]
-def postcompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
-    (γ →* α) ≃ (γ →* β) where
-  toFun f := e.toMonoidHom.comp f
-  invFun g := e.symm.toMonoidHom.comp g
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
-
 /-- The equivalence `(Multiplicative ℕ →* α) ≃ α` for any monoid `α`. -/
 @[simps]
 def fromMultiplicativeNatEquiv (α : Type u) [Monoid α] : (Multiplicative ℕ →* α) ≃ α where
@@ -58,26 +38,6 @@ def fromULiftMultiplicativeNatEquiv (α : Type u) [Monoid α] :
 end MonoidHom
 
 namespace AddMonoidHom
-
-/-- The equivalence `(β →+ γ) ≃ (α →+ γ)` obtained by precomposition with
-an additive equivalence `e : α ≃+ β`. -/
-@[simps]
-def precompEquiv {α β : Type*} [AddMonoid α] [AddMonoid β] (e : α ≃+ β) (γ : Type*) [AddMonoid γ] :
-    (β →+ γ) ≃ (α →+ γ) where
-  toFun f := f.comp e
-  invFun g := g.comp e.symm
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
-
-/-- The equivalence `(γ →* α) ≃ (γ →* β)` obtained by postcomposition with
-an additive equivalence `e : α ≃* β`. -/
-@[simps]
-def postcompEquiv {α β : Type*} [AddMonoid α] [AddMonoid β] (e : α ≃+ β) (γ : Type*) [AddMonoid γ] :
-    (γ →+ α) ≃ (γ →+ β) where
-  toFun f := e.toAddMonoidHom.comp f
-  invFun g := e.symm.toAddMonoidHom.comp g
-  left_inv _ := by ext; simp
-  right_inv _ := by ext; simp
 
 /-- The equivalence `(ℤ →+ α) ≃ α` for any additive group `α`. -/
 @[simps]
