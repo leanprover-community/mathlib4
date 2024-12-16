@@ -958,7 +958,7 @@ abbrev associated' : QuadraticMap R M N →ₗ[ℤ] BilinMap R M N :=
 attribute [local instance] starAddMonoidOfAddMonoid in
 attribute [local instance] starRingOfComm in
 /-- Symmetric bilinear forms can be lifted to quadratic forms -/
-instance canLift [Invertible (2 : R)] :
+instance canLift :
     CanLift (BilinMap R M N) (QuadraticMap R M N) (associatedHom ℕ) LinearMap.IsSymm where
   prf B hB := ⟨B.toQuadraticMap, associated_left_inverse _ hB⟩
 
