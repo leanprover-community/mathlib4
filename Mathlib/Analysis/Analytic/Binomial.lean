@@ -1,12 +1,8 @@
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
-import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
-import Mathlib.Analysis.Analytic.Basic
-import Mathlib.Tactic.MoveAdd
 import Mathlib.Analysis.ODE.Gronwall
+import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.RingTheory.Binomial
-import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
+import Mathlib.Tactic.MoveAdd
+
 
 namespace TendstoTactic
 
