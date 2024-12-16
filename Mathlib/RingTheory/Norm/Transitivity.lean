@@ -119,18 +119,18 @@ lemma eval_zero_compRingEquiv_det :
 theorem compRingEquiv_det_mul_pow :
     ((f.mapMatrix M).compRingEquiv m n R).det * (f (M k k)).det ^ (Fintype.card m - 1) =
       (f (M k k)).det * ((f.mapMatrix (mulAuxMatBlock M k)).compRingEquiv _ n R).det := by
-  convert Eq.refl ((f.mapMatrix (M * auxMat M k)).compRingEquiv m n R).det
+  trans ((f.mapMatrix (M * auxMat M k)).compRingEquiv m n R).det
   · simp_rw [_root_.map_mul, det_mul, ((auxMat_blockTriangular M k).mapMatrix f).compRingEquiv
-      |>.det_fintype, Fintype.prod_Prop, compRingEquiv_toSquareBlock (b := (· ≠ k)),
+      |>.det_fintype, Fintype.prod_Prop, compRingEquiv_apply, comp_toSquareBlock (b := (· ≠ k)),
       det_reindex_self, f.mapMatrix_apply, toSquareBlock_map, auxMat_toSquareBlock_true,
       auxMat_toSquareBlock_false, smul_one_eq_diagonal, ← diagonal_one,
-      diagonal_map (map_zero _), compRingEquiv_diagonal, det_reindex_self]
+      diagonal_map (map_zero _), comp_diagonal, det_reindex_self]
     simp
   · simp_rw [((mul_auxMat_blockTriangular M k).mapMatrix f).compRingEquiv.det_fintype,
-      Fintype.prod_Prop, compRingEquiv_toSquareBlock (b := (· = k)), det_reindex_self,
+      Fintype.prod_Prop, compRingEquiv_apply, comp_toSquareBlock (b := (· = k)), det_reindex_self,
       f.mapMatrix_apply, toSquareBlock_map, mul_auxMat_toSquareBlock_true, smul_one_eq_diagonal,
-      diagonal_map (map_zero _), compRingEquiv_diagonal, det_reindex_self]
-    simp; rfl
+      diagonal_map (map_zero _), comp_diagonal, det_reindex_self]
+    simp [mulAuxMatBlock]
 
 variable {M f} in
 lemma det_det_aux

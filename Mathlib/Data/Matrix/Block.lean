@@ -844,19 +844,17 @@ lemma Matrix.toSquareBlock_map
     (M.map f).toSquareBlock b i = (M.toSquareBlock b i).map f :=
   submatrix_map _ _ _ _
 
-variable [Fintype m] [Fintype n] [Semiring R]
-
-lemma compRingEquiv_toSquareBlock [DecidableEq α] {b : m → α}
+lemma comp_toSquareBlock [DecidableEq α] {b : m → α}
     (M : Matrix m m (Matrix n n R)) (a : α) :
     letI equiv := Equiv.prodSubtypeFstEquivSubtypeProd.symm
-    (M.compRingEquiv m n R).toSquareBlock (fun i ↦ b i.1) a =
-      ((M.toSquareBlock b a).compRingEquiv _ n R).reindex equiv equiv :=
+    (M.comp m m n n R).toSquareBlock (fun i ↦ b i.1) a =
+      ((M.toSquareBlock b a).comp _ _ n n R).reindex equiv equiv :=
   rfl
 
-variable [DecidableEq m]
+variable [Zero R] [DecidableEq m]
 
-lemma Matrix.compRingEquiv_diagonal (d) :
-    compRingEquiv m n R (diagonal d) =
+lemma Matrix.comp_diagonal (d) :
+    comp m m n n R (diagonal d) =
       (blockDiagonal d).reindex (.prodComm ..) (.prodComm ..) := by
   ext
   simp [diagonal, blockDiagonal, Matrix.ite_apply]
