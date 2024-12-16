@@ -896,11 +896,13 @@ theorem associated_apply (x y : M) :
   rw [← LinearMap.smul_apply, nsmul_eq_mul, Nat.cast_ofNat, mul_invOf_self', LinearMap.one_apply,
     polar]
 
-attribute [local instance] starRingOfComm
-theorem associated_isSymm (Q : QuadraticForm R M) [Invertible (2 : R)] :
+attribute [local instance] starAddMonoidOfAddMonoid in
+attribute [local instance] starRingOfComm in
+theorem associated_isSymm (Q : QuadraticMap R M N) [Invertible (2 : R)] :
     (associatedHom S Q).IsSymm := fun x y ↦ by
-  rw [star_id_of_comm, associated_apply, add_comm x, sub_eq_add_neg, sub_eq_add_neg, add_assoc,
+  rw [associated_apply, add_comm x, sub_eq_add_neg, sub_eq_add_neg, add_assoc,
     add_comm (-Q x), ← add_assoc, ← sub_eq_add_neg, ← sub_eq_add_neg, associated_apply]
+  rfl
 
 /-- A version of `QuadraticMap.associated_isSymm` for general targets
 (using `flip` because `IsSymm` does not apply here). -/
@@ -921,10 +923,12 @@ theorem associated_toQuadraticMap (B : BilinMap R M N) (x y : M) :
     LinearMap.smul_def, _root_.map_sub]
   abel_nf
 
-theorem associated_left_inverse [Invertible (2 : R)] {B₁ : BilinMap R M R} (h : B₁.IsSymm) :
+attribute [local instance] starAddMonoidOfAddMonoid in
+attribute [local instance] starRingOfComm in
+theorem associated_left_inverse [Invertible (2 : R)] {B₁ : BilinMap R M N} (h : B₁.IsSymm) :
     associatedHom S B₁.toQuadraticMap = B₁ :=
   LinearMap.ext₂ fun x y ↦ by
-    rw [associated_toQuadraticMap, ← h.eq x y, star_id_of_comm, ← two_mul, ← smul_eq_mul,
+    rw [associated_toQuadraticMap, ← h.eq x y, TrivialStar.star_trivial, ← (two_smul R),
       invOf_smul_eq_iff, two_smul, two_smul]
 
 /-- A version of `QuadraticMap.associated_left_inverse` for general targets. -/
@@ -953,9 +957,11 @@ associated symmetric bilinear form. -/
 abbrev associated' : QuadraticMap R M N →ₗ[ℤ] BilinMap R M N :=
   associatedHom ℤ
 
+attribute [local instance] starAddMonoidOfAddMonoid in
+attribute [local instance] starRingOfComm in
 /-- Symmetric bilinear forms can be lifted to quadratic forms -/
 instance canLift [Invertible (2 : R)] :
-    CanLift (BilinMap R M R) (QuadraticForm R M) (associatedHom ℕ) LinearMap.IsSymm where
+    CanLift (BilinMap R M N) (QuadraticMap R M N) (associatedHom ℕ) LinearMap.IsSymm where
   prf B hB := ⟨B.toQuadraticMap, associated_left_inverse _ hB⟩
 
 /-- Symmetric bilinear maps can be lifted to quadratic maps -/
