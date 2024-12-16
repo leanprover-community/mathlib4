@@ -201,11 +201,17 @@ lemma eq_zero_of_character_apply {a : A} (h : ∀ c : CharacterModule A, c a = 0
 
 variable (A)
 
+/-- For an abelian group `A`, this is the morphism from `A` into the product of copies of
+`ℚ / ℤ` indexed by `CharacterModule A` sending `a : A` to the family `c ↦ a`.
+-/
 def hom_to_pi : A →+ (_ : CharacterModule A) → AddCircle (1 : ℚ) where
   toFun a c := c a
   map_zero' := by ext _; simp
   map_add' _ _ := by ext _; simp
 
+/-- For an abelian group `A`, the morphism from `A` into the product of copies of `ℚ / ℤ`
+indexed by `CharacterModule A` sending `a : A` to the family `c ↦ a` is injective.
+-/
 lemma hom_to_pi_injective : Function.Injective (hom_to_pi A) := by
   refine (injective_iff_map_eq_zero _).mpr (fun a ha ↦ CharacterModule.eq_zero_of_character_apply
     (fun c ↦ ?_))
@@ -214,6 +220,9 @@ lemma hom_to_pi_injective : Function.Injective (hom_to_pi A) := by
 
 variable {A A'}
 
+/-- For a morphism of abelian groups `f : A →+ A'`, we have `f = 0` if
+the composition of `f` with any character of `A'` is `0`.
+-/
 lemma hom_eq_zero_of_character_apply {f : A →+ A'}
     (h : ∀ (c : CharacterModule A'), c.comp f = 0) : f = 0 := by
   ext a
