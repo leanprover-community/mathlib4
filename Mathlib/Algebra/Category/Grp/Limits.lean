@@ -201,8 +201,7 @@ noncomputable instance forget_createsLimit :
     CreatesLimit F (forget Grp.{u}) := by
   have : CreatesLimit F (forget₂ Grp.{u} MonCat.{u} ⋙ forget MonCat.{u}) := by
     exact compCreatesLimit (forget₂ Grp.{u} MonCat.{u}) (forget MonCat.{u})
-  set e : forget₂ Grp.{u} MonCat.{u} ⋙ forget MonCat.{u} ≅ forget Grp.{u} :=
-    NatIso.ofComponents (fun _ ↦ Iso.refl _) (fun _ ↦ rfl)
+  set e : forget₂ Grp.{u} MonCat.{u} ⋙ forget MonCat.{u} ≅ forget Grp.{u} := Iso.refl _
   exact createsLimitOfNatIso e
 
 @[to_additive]
