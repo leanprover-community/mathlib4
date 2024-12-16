@@ -79,6 +79,9 @@ theorem Discrete.essentiallySmallOfSmall {α : Type u} [Small.{w} α] :
 theorem essentiallySmallSelf : EssentiallySmall.{max w v u} C :=
   EssentiallySmall.mk' (AsSmall.equiv : C ≌ AsSmall.{w} C)
 
+instance (C : Type w) [SmallCategory C] : EssentiallySmall.{w} C where
+  equiv_smallCategory := ⟨C, inferInstance, ⟨Equivalence.refl⟩⟩
+
 /-- A category is `w`-locally small if every hom set is `w`-small.
 
 See `ShrinkHoms C` for a category instance where every hom set has been replaced by a small model.
