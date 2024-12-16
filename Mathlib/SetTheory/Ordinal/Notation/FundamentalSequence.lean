@@ -33,7 +33,7 @@ variable {α β : Type*}
 namespace Ordinal
 
 /-- The type of sequences with length 0, 1, or `ω`. These are the possible different lengths for a
-fundamental sequence. -/
+fundamental sequence on a countable well-order. -/
 inductive Sequence (α : Type u) : Type u
   /-- The empty sequence, whose limit is the bottom element. -/
   | empty : Sequence α
@@ -137,7 +137,7 @@ theorem pmap_singleton (y : α) (f : ∀ x ∈ ({y} : Sequence α), β) : pmap _
 
 @[simp]
 theorem pmap_ofFun (g : ℕ → α) (f : ∀ x ∈ ofFun g, β) :
-    pmap _ f = ofFun fun n ↦ f (g n) (Set.mem_range_self _) :=
+    pmap _ f = ofFun fun n ↦ f (g n) ⟨n, rfl⟩ :=
   rfl
 
 @[simp]
