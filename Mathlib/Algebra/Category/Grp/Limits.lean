@@ -428,8 +428,7 @@ noncomputable instance forget_preservesLimits : PreservesLimits (forget CommGrp.
 @[to_additive]
 noncomputable instance forget_createsLimit :
     CreatesLimit F (forget CommGrp.{u}) := by
-  set e : forget₂ CommGrp.{u} Grp.{u} ⋙ forget Grp.{u} ≅ forget CommGrp.{u} :=
-    NatIso.ofComponents (fun _ ↦ Iso.refl _) (fun _ ↦ rfl)
+  set e : forget₂ CommGrp.{u} Grp.{u} ⋙ forget Grp.{u} ≅ forget CommGrp.{u} := Iso.refl _
   exact createsLimitOfNatIso e
 
 @[to_additive]
