@@ -15,10 +15,13 @@ import Mathlib.SetTheory.Cardinal.Arithmetic
 /-! # κ-filtered category
 
 If `κ` is a regular cardinal, we introduce the notion of `κ`-filtered
-category, which generalizes the notion of filtered category.
+category `J`: it means that any functor `A ⥤ J` from a small category such
+that `Arrow A` is of cardinality `< κ` admits a cocone.
+This notion generalizes the notion of filtered category.
 Indeed, we obtain the equivalence `IsCardinalFiltered J ℵ₀ ↔ IsFiltered J`.
+The API is mostly parallel to that of filtered categories.
 
-A preordered type `J` is a `κ`-filtered category (or a `κ`-directed set)
+A preordered type `J` is a `κ`-filtered category (i.e. `κ`-directed set)
 if any subset of `J` of cardinality `< κ` has an upper bound.
 
 ## References
@@ -26,7 +29,7 @@ if any subset of `J` of cardinality `< κ` has an upper bound.
 
 -/
 
-universe w v'' v' v u'' u' u
+universe w v' v u' u
 
 namespace CategoryTheory
 
