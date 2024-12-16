@@ -117,7 +117,7 @@ scoped notation3 "R" => rem
 def siftedSum : ℝ :=
   ∑ d in A, if Coprime P d then a d else 0
 
-/-!
+/--
 These are the terms that appear in the sum `S` in the main term of the fundamental theorem.
 
 $S = ∑_{l|P, l≤\sqrt{y}} g(l)$
