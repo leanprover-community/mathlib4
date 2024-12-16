@@ -837,7 +837,14 @@ end Matrix
 
 section Maps
 
-variable {R α β ι : Type*} [Fintype m] [Fintype n] [Semiring R]
+variable {R α β ι : Type*}
+
+lemma Matrix.toSquareBlock_map
+    (f : α → β) {M : Matrix m m α} {ι} {b : m → ι} {i : ι} :
+    (M.map f).toSquareBlock b i = (M.toSquareBlock b i).map f :=
+  submatrix_map _ _ _ _
+
+variable [Fintype m] [Fintype n] [Semiring R]
 
 lemma compRingEquiv_toSquareBlock [DecidableEq α] {b : m → α}
     (M : Matrix m m (Matrix n n R)) (a : α) :
@@ -847,11 +854,6 @@ lemma compRingEquiv_toSquareBlock [DecidableEq α] {b : m → α}
   rfl
 
 variable [DecidableEq m]
-
-lemma RingHom.mapMatrix_toSquareBlock [NonAssocSemiring α] [NonAssocSemiring β]
-    (f : α →+* β) {M : Matrix m m α} {ι} [DecidableEq ι] {b : m → ι} {i : ι} :
-    (f.mapMatrix M).toSquareBlock b i = f.mapMatrix (M.toSquareBlock b i) := by
-  ext; simp [toSquareBlock_def]
 
 lemma Matrix.compRingEquiv_diagonal (d) :
     compRingEquiv m n R (diagonal d) =
