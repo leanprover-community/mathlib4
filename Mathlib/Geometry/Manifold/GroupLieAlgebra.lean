@@ -20,11 +20,12 @@ Due to general properties of the Lie bracket of vector fields, this gives a Lie 
 on `LieGroupAlgebra I G`.
 
 Note that one can also define a Lie algebra on the space of left-invariant derivations on `C^∞`
-functions (see `LeftInvariantDerivation.instLieAlgebra`). For `C^∞` real manifolds, this space of
-derivations can be canonically identified with the tangent space, and we recover the same Lie
-algebra structure (TODO: prove this). In other smoothness classes or on other fields, the
-derivations point of view does not work, though. Therefore, the point of view in the current file
-is more general, and should be favored when possible.
+functions (see `LeftInvariantDerivation.instLieAlgebra`). For finite-dimensional `C^∞` real
+manifolds, this space of derivations can be canonically identified with the tangent space, and we
+recover the same Lie algebra structure (TODO: prove this). In other smoothness classes or on other
+fields, this identification is not always true, though, so the derivations point of view does not
+work in these settings. Therefore, the point of view in the current file is more general, and
+should be favored when possible.
 -/
 
 noncomputable section
