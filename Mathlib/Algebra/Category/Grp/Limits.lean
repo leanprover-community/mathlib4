@@ -444,11 +444,6 @@ noncomputable instance forget_createsLimitsOfShape (J : Type v) [Category.{w} J]
 noncomputable instance forget_createsLimitsOfSize :
     CreatesLimitsOfSize.{w, v} (forget CommGrp.{u}) where
   CreatesLimitsOfShape := inferInstance
-
-@[to_additive]
-noncomputable instance forget_createsLimits : CreatesLimits (forget Grp.{u}) :=
-  Grp.forget_createsLimitsOfSize.{u, u}
-
 -- Verify we can form limits indexed over smaller categories.
 example (f : ℕ → AddCommGrp) : HasProduct f := by infer_instance
 
