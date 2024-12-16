@@ -857,10 +857,6 @@ lemma Matrix.compRingEquiv_diagonal (d) :
     compRingEquiv m n R (diagonal d) =
       (blockDiagonal d).reindex (.prodComm ..) (.prodComm ..) := by
   ext
-  simp only [diagonal, compRingEquiv_apply, of_apply, blockDiagonal, reindex_apply,
-    Equiv.prodComm_symm, Equiv.coe_prodComm, submatrix_apply, Prod.snd_swap, Prod.fst_swap]
-  -- simp [diagonal, blockDiagonal, ite_apply] doesn't work
-  rw [ite_apply, ite_apply]
-  rfl
+  simp [diagonal, blockDiagonal, Matrix.ite_apply]
 
 end Maps
