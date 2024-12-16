@@ -38,8 +38,8 @@ def auxMat : Matrix m m S :=
 /-- `aux M k` is lower triangular. -/
 lemma auxMat_blockTriangular : (auxMat M k).BlockTriangular (· ≠ k) :=
   fun i j lt ↦ by
-    simp_rw [LT.lt, LE.le, Classical.not_imp, not_not] at lt
-    rw [auxMat, if_pos lt.2.2, if_neg lt.2.1]
+    simp_rw [lt_iff_not_le, le_Prop_eq, Classical.not_imp, not_not] at lt
+    rw [auxMat, if_pos lt.2, if_neg lt.1]
 
 lemma auxMat_toSquareBlock_true : (auxMat M k).toSquareBlock (· ≠ k) True = M k k • 1 := by
   ext i j
@@ -56,11 +56,11 @@ variable [Fintype m]
 /-- `M * aux M k` is upper triangular. -/
 lemma mul_auxMat_blockTriangular : (M * auxMat M k).BlockTriangular (· = k) :=
   fun i j lt ↦ by
-    simp_rw [LT.lt, LE.le, Classical.not_imp] at lt
-    simp_rw [Matrix.mul_apply, auxMat, if_neg lt.2.2, mul_ite, mul_neg, mul_zero]
+    simp_rw [lt_iff_not_le, le_Prop_eq, Classical.not_imp] at lt
+    simp_rw [Matrix.mul_apply, auxMat, if_neg lt.2, mul_ite, mul_neg, mul_zero]
     rw [Finset.sum_ite, Finset.filter_eq', if_pos (Finset.mem_univ _), Finset.sum_singleton,
-      Finset.sum_ite_eq', if_pos, lt.2.1, mul_comm, neg_add_cancel]
-    exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, lt.2.2⟩
+      Finset.sum_ite_eq', if_pos, lt.1, mul_comm, neg_add_cancel]
+    exact Finset.mem_filter.mpr ⟨Finset.mem_univ _, lt.2⟩
 
 /-- The lower-right corner of `M * aux M k` is the same as the corner of `M`. -/
 lemma mul_auxMat_corner : (M * auxMat M k) k k = M k k := by simp [Matrix.mul_apply, auxMat]
