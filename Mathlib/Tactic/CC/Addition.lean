@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
 import Mathlib.Data.Option.Defs
+import Mathlib.Lean.Expr.Basic
 import Mathlib.Tactic.CC.MkProof
 
 /-!
