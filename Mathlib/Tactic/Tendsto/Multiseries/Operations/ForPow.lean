@@ -14,7 +14,25 @@ namespace TendstoTactic
 
 namespace ForPow
 
-theorem ascPochhammer_nonneg {a : ℝ} {n : ℕ} (ha : 0 ≤ a) : 0 ≤ (ascPochhammer ℕ n).smeval a := by
+open scoped Nat
+
+universe u v w
+
+theorem Ring.choose_eq_div {𝕂 : Type v} [Field 𝕂] [CharZero 𝕂]
+    {a : 𝕂} {n : ℕ} :
+    Ring.choose a n = (n ! : 𝕂)⁻¹ • (descPochhammer ℤ n).smeval a := by
+  rw [Ring.descPochhammer_eq_factorial_smul_choose]
+  trans (n ! : 𝕂)⁻¹ • ((n ! : 𝕂) • Ring.choose a n)
+  · rw [smul_smul]
+    rw [inv_mul_cancel₀]
+    · simp
+    rw [Nat.cast_ne_zero]
+    exact Nat.factorial_ne_zero n
+  · congr
+    apply Nat.cast_smul_eq_nsmul
+
+theorem ascPochhammer_nonneg {R : Type u} [LinearOrderedCommRing R] {a : R} {n : ℕ} (ha : 0 ≤ a) :
+    0 ≤ (ascPochhammer ℕ n).smeval a := by
   cases n with
   | zero => simp
   | succ m =>
@@ -23,52 +41,39 @@ theorem ascPochhammer_nonneg {a : ℝ} {n : ℕ} (ha : 0 ≤ a) : 0 ≤ (ascPoch
     · exact ascPochhammer_nonneg ha
     · linarith
 
-theorem descPochhammer_bound_ascPochhammer {a : ℝ} {n : ℕ} :
-    |(descPochhammer ℤ n).smeval a| ≤ (ascPochhammer ℕ n).smeval |a| := by
+section
+
+variable {𝕂 : Type v} [NormedField 𝕂]
+variable (𝔸 : Type u) [NormedDivisionRing 𝔸] [Algebra 𝕂 𝔸]
+
+noncomputable def binomialSeries [CharZero 𝕂] (a : 𝕂) : FormalMultilinearSeries 𝕂 𝔸 𝔸 := fun n =>
+  (Ring.choose a n) • ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸
+
+theorem descPochhammer_bound_ascPochhammer {a : 𝕂} {n : ℕ} :
+    ‖(descPochhammer ℤ n).smeval a‖ ≤ (ascPochhammer ℕ n).smeval ‖a‖ := by
   cases n with
   | zero => simp
   | succ m =>
     simp [ascPochhammer_succ_right, Polynomial.smeval_mul, Polynomial.smeval_natCast,
-      descPochhammer_succ_right, abs_mul]
+      descPochhammer_succ_right]
     apply mul_le_mul
     · exact descPochhammer_bound_ascPochhammer
-    · convert abs_sub a (↑m)
+    · trans ‖a‖ + ‖(m : 𝕂)‖
+      · apply norm_sub_le
+      simp
+      -- the following should be simpler
+      conv => lhs; rw [← nsmul_one]
+      trans m * ‖(1 : 𝕂)‖
+      · apply norm_nsmul_le
       simp
     · simp
     · apply ascPochhammer_nonneg
       simp
 
-open Filter Asymptotics
+end
 
-open scoped Nat
-
-universe u v w
-
--- variable (𝔸 : Type*) [Ring 𝔸] [Algebra ℝ 𝔸] [TopologicalSpace 𝔸] [TopologicalRing 𝔸]
-
-noncomputable def binomialCoef (a : ℝ) (n : ℕ) : ℝ := Ring.choose a n
-
-@[simp]
-theorem binomialCoef_zero {a : ℝ} : binomialCoef a 0 = 1 := by
-  simp [binomialCoef]
-
-@[simp]
-theorem binomialCoef_one {a : ℝ} : binomialCoef a 1 = a := by
-  simp [binomialCoef]
-
-noncomputable def binomialSeries (a : ℝ) : FormalMultilinearSeries ℝ ℝ ℝ := fun n =>
-  (binomialCoef a n) • ContinuousMultilinearMap.mkPiAlgebraFin ℝ n ℝ
-
--- variable [NormedAddCommGroup 𝔸] [NormedSpace ℝ 𝔸] [NormedAddCommGroup 𝔸] [NormedSpace ℝ 𝔸]
-
-lemma Ring.choose_eq_div {a : ℝ} {n : ℕ} :
-    Ring.choose a n = (descPochhammer ℤ n).smeval a / n.factorial := by
-  apply eq_div_of_mul_eq (by simp [Nat.factorial_ne_zero])
-  convert_to n ! • Ring.choose a n = (descPochhammer ℤ n).smeval a
-  · ring
-  rw [Ring.descPochhammer_eq_factorial_smul_choose]
-
-theorem binomialSeries_radius_ge_one {a : ℝ} : 1 ≤ (binomialSeries a).radius := by
+theorem binomialSeries_radius_ge_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type u} [NormedDivisionRing 𝔸]
+    [NormedAlgebra 𝕂 𝔸] {a : 𝕂} : 1 ≤ (binomialSeries 𝔸 a).radius := by
   apply le_of_forall_ge_of_dense
   intro r hr
   cases' r with r <;> simp at hr
@@ -76,21 +81,20 @@ theorem binomialSeries_radius_ge_one {a : ℝ} : 1 ≤ (binomialSeries a).radius
   · simp [hr_pos]
   replace hr_pos : 0 < r := lt_of_le_of_ne (zero_le r) (by solve_by_elim)
   apply FormalMultilinearSeries.le_radius_of_isBigO
-  have : ∃ M : ℕ, |a| * r < M * (1 - r) := by
+  have : ∃ M : ℕ, ‖a‖ * r < M * (1 - r) := by
     conv => arg 1; ext M; rw [← div_lt_iff₀ (by simpa)]
     apply exists_nat_gt
   obtain ⟨M, hM⟩ := this
-  have : ∀ k, (ascPochhammer ℕ (M + k)).smeval |a| / (M + k).factorial * r^k ≤
-      (ascPochhammer ℕ M).smeval |a| / M.factorial := by
+  have : ∀ k, (ascPochhammer ℕ (M + k)).smeval ‖a‖ * ((M + k)! : ℝ)⁻¹ * r^k ≤
+      (ascPochhammer ℕ M).smeval ‖a‖ * (M ! : ℝ)⁻¹ := by
     intro k
     induction k with
     | zero => simp
     | succ l ih =>
       simp [← add_assoc, Nat.factorial, pow_succ, ascPochhammer_succ_right, Polynomial.smeval_mul,
         Polynomial.smeval_natCast] at ih ⊢
-      convert_to (ascPochhammer ℕ (M + l)).smeval |a| / ↑(M + l)! * ↑r ^ l * (r * (|a| + (↑M + ↑l)) / (↑M + ↑l + 1)) ≤ (ascPochhammer ℕ M).smeval |a| / ↑M !
-      · simp only [div_eq_mul_inv, mul_inv_rev]
-        ring_nf
+      convert_to (ascPochhammer ℕ (M + l)).smeval ‖a‖ * ((M + l)! : ℝ)⁻¹ * ↑r ^ l * (r * (‖a‖ + (↑M + ↑l)) * (M + l + 1 : ℝ)⁻¹) ≤ (ascPochhammer ℕ M).smeval ‖a‖ * (M ! : ℝ)⁻¹
+      · ring_nf
       trans
       swap
       · exact ih
@@ -101,7 +105,7 @@ theorem binomialSeries_radius_ge_one {a : ℝ} : 1 ≤ (binomialSeries a).radius
             simp
           · simp
         · simp
-      rw [div_le_one (by linarith)]
+      rw [← div_eq_mul_inv, div_le_one (by linarith)]
       ring_nf at hM ⊢
       have : (r : ℝ) * l ≤ l := by -- for linarith
         apply mul_le_of_le_one_left
@@ -109,14 +113,14 @@ theorem binomialSeries_radius_ge_one {a : ℝ} : 1 ≤ (binomialSeries a).radius
         · simp
           exact hr.le
       linarith
-  apply Asymptotics.IsBigO.of_bound (c := r^M * (ascPochhammer ℕ M).smeval |a| / ↑M.factorial)
+  apply Asymptotics.IsBigO.of_bound (c := r^M * (ascPochhammer ℕ M).smeval ‖a‖ * ‖(M ! : 𝕂)‖⁻¹)
   simp [binomialSeries]
   use M
   intro b hb
   replace hb := Nat.exists_eq_add_of_le hb
   obtain ⟨k, hk⟩ := hb
   subst hk
-  trans ‖binomialCoef a (M + k)‖ * ‖ContinuousMultilinearMap.mkPiAlgebraFin ℝ (M + k) ℝ‖ * ↑r ^ (M + k)
+  trans ‖Ring.choose a (M + k)‖ * ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 (M + k) 𝔸‖ * ↑r ^ (M + k)
   · rw [mul_le_mul_right]
     · apply ContinuousMultilinearMap.opNorm_smul_le
     · apply pow_pos
@@ -124,33 +128,32 @@ theorem binomialSeries_radius_ge_one {a : ℝ} : 1 ≤ (binomialSeries a).radius
   simp [pow_add, div_eq_mul_inv]
   move_mul [r.toReal^M, r.toReal^M]
   apply mul_le_mul_of_nonneg_right _ (by simp)
-  simp [binomialCoef, Ring.choose_eq_div, abs_div]
-  trans (ascPochhammer ℕ (M + k)).smeval |a| * (↑(M + k)!)⁻¹ * ↑r ^ k
-  · simp only [div_eq_mul_inv]
-    rw [mul_le_mul_right, mul_le_mul_right]
+  simp [Ring.choose_eq_div]
+  trans ((M + k) ! : ℝ)⁻¹ * (ascPochhammer ℕ (M + k)).smeval ‖a‖ * ↑r ^ k
+  · rw [mul_le_mul_right, mul_le_mul_left]
     · exact descPochhammer_bound_ascPochhammer
     · simp
-      linarith [Nat.factorial_pos (M + k)]
+      apply Nat.factorial_pos
     · apply pow_pos
       simpa
-  simp only [div_eq_mul_inv] at this ⊢
+  conv => lhs; arg 1; rw [mul_comm]
   apply this
 
 open ContinuousLinearMap FormalMultilinearSeries
 
 theorem binomialSeries_ODE {a : ℝ} :
-    let dSeries := (binomialSeries a).derivSeries
-    a • binomialSeries a = (compFormalMultilinearSeries (ContinuousLinearMap.apply ℝ ℝ 1) dSeries) +
+    let dSeries := (binomialSeries ℝ a).derivSeries
+    a • binomialSeries ℝ a = (compFormalMultilinearSeries (.apply ℝ ℝ 1) dSeries) +
       dSeries.unshift 0
     := by
-  have h_coeff : ∀ k, (binomialSeries a).coeff k = (binomialCoef a k) := by
+  have h_coeff : ∀ k, (binomialSeries ℝ a).coeff k = (Ring.choose a k) := by
     intro k
     unfold binomialSeries
     simp [coeff]
     rw [List.prod_eq_one] -- cringe
     · simp
     · simp [List.forall_mem_ofFn_iff]
-  have h_deriv_coeff : ∀ k, ((binomialSeries a).derivSeries.coeff k) 1 = (binomialCoef a (k + 1)) * (k + 1) := by
+  have h_deriv_coeff : ∀ k, ((binomialSeries ℝ a).derivSeries.coeff k) 1 = (Ring.choose a (k + 1)) * (k + 1) := by
     intro k
     simp [derivSeries]
     unfold coeff
@@ -170,8 +173,8 @@ theorem binomialSeries_ODE {a : ℝ} :
   simp
   cases n with
   | zero =>
-    simp [FormalMultilinearSeries.unshift]
-    simp [binomialSeries, binomialCoef]
+    simp [unshift]
+    simp [binomialSeries]
     apply ContinuousMultilinearMap.ext
     intro m
     simp [h_deriv_coeff]
@@ -187,23 +190,24 @@ theorem binomialSeries_ODE {a : ℝ} :
     simp [smul_eq_mul]
     ring_nf
     rw [show m (Fin.last k) * ∏ i : Fin k, Fin.init m i = ∏ i : Fin (k + 1), m i by rw [Fin.prod_univ_castSucc, mul_comm]; rfl]
-    trans (∏ i : Fin (k + 1), m i) * (((binomialSeries a).derivSeries.coeff (1 + k)) 1 +
-        ((binomialSeries a).derivSeries.coeff k) 1)
+    trans (∏ i : Fin (k + 1), m i) * (((binomialSeries ℝ a).derivSeries.coeff (1 + k)) 1 +
+        ((binomialSeries ℝ a).derivSeries.coeff k) 1)
     swap
     · ring
     move_mul [a]
     rw [mul_assoc, mul_eq_mul_left_iff]
     left
-    simp [h_coeff, h_deriv_coeff]
-    simp [binomialCoef, Ring.choose_eq_div]
-    conv => rhs; arg 1; simp [descPochhammer_succ_right,  Polynomial.smeval_mul,
+    simp [h_coeff, h_deriv_coeff, Ring.choose_eq_div]
+    conv => rhs; arg 1; simp [descPochhammer_succ_right, Polynomial.smeval_mul,
       Polynomial.smeval_natCast]
     rw [add_comm 1 k]
-    trans (descPochhammer ℤ (k + 1)).smeval a * ((a - (1 + ↑k)) / ↑(k + 1 + 1)! * (1 + ↑k + 1) +
-        1 / ↑(k + 1)! * (↑k + 1))
+    move_mul [← (descPochhammer ℤ (k + 1)).smeval a]
+    conv => lhs; rw [mul_assoc]
+    trans (descPochhammer ℤ (k + 1)).smeval a * ((a - (1 + ↑k)) * ((k + 1 + 1)! : ℝ)⁻¹ * (1 + ↑k + 1) +
+        ((k + 1)! : ℝ)⁻¹ * (↑k + 1))
     swap
     · ring_nf
-    rw [div_eq_mul_inv, mul_assoc, mul_eq_mul_left_iff]
+    rw [mul_assoc, mul_eq_mul_left_iff]
     left
     rw [Nat.factorial_succ (k + 1)]
     simp [div_eq_mul_inv]
@@ -217,7 +221,7 @@ theorem binomialSeries_ODE {a : ℝ} :
     rw [inv_mul_cancel_right₀ (by linarith)]
     ring
 
-noncomputable def binomialSum (a : ℝ) (x : ℝ) := (binomialSeries a).sum x
+noncomputable def binomialSum (a : ℝ) (x : ℝ) := (binomialSeries ℝ a).sum x
 
 -- TODO: move
 theorem HasFPowerSeriesOnBall.unique {𝕜 : Type u} {E : Type v} {F : Type w} [NontriviallyNormedField 𝕜]
@@ -312,23 +316,23 @@ theorem HasFPowerSeriesOnBall.unshift {𝕜 : Type u} [NontriviallyNormedField �
 
 theorem binomialSum_ODE {a : ℝ} {x : ℝ} (hx : |x| < 1) :
     HasDerivAt (binomialSum a) (a * binomialSum a x / (1 + x)) x := by
-  have h_fun : HasFPowerSeriesOnBall (binomialSum a) (binomialSeries a) 0 1 := by
-    apply HasFPowerSeriesOnBall.mono _ (by simp) (@binomialSeries_radius_ge_one a)
+  have h_fun : HasFPowerSeriesOnBall (binomialSum a) (binomialSeries ℝ a) 0 1 := by
+    apply HasFPowerSeriesOnBall.mono _ (by simp) (binomialSeries_radius_ge_one (𝔸 := ℝ) (a := a))
     apply FormalMultilinearSeries.hasFPowerSeriesOnBall
     apply lt_of_lt_of_le _ binomialSeries_radius_ge_one
     simp
-  have h_afun : HasFPowerSeriesOnBall (a • binomialSum a) (a • binomialSeries a) 0 1 := by
+  have h_afun : HasFPowerSeriesOnBall (a • binomialSum a) (a • binomialSeries ℝ a) 0 1 := by
     exact HasFPowerSeriesOnBall.smul h_fun
   have h_fderiv := HasFPowerSeriesOnBall.fderiv h_fun
   have h_deriv : HasFPowerSeriesOnBall (deriv (binomialSum a))
-    (compFormalMultilinearSeries (ContinuousLinearMap.apply ℝ ℝ 1) (binomialSeries a).derivSeries) 0 1 := by
-    convert ContinuousLinearMap.comp_hasFPowerSeriesOnBall _ h_fderiv
+    (compFormalMultilinearSeries (.apply ℝ ℝ 1) (binomialSeries ℝ a).derivSeries) 0 1 := by
+    convert comp_hasFPowerSeriesOnBall _ h_fderiv
     rfl
-  have h_xfderiv : HasFPowerSeriesOnBall (fun x ↦ fderiv ℝ (binomialSum a) x x) ((binomialSeries a).derivSeries.unshift 0) 0 1 := by
+  have h_xfderiv : HasFPowerSeriesOnBall (fun x ↦ fderiv ℝ (binomialSum a) x x) ((binomialSeries ℝ a).derivSeries.unshift 0) 0 1 := by
     convert HasFPowerSeriesOnBall.unshift h_fderiv using 1
     ext y
     simp
-  have h_xderiv : HasFPowerSeriesOnBall (fun x ↦ x * deriv (binomialSum a) x) ((binomialSeries a).derivSeries.unshift 0) 0 1 := by
+  have h_xderiv : HasFPowerSeriesOnBall (fun x ↦ x * deriv (binomialSum a) x) ((binomialSeries ℝ a).derivSeries.unshift 0) 0 1 := by
     convert h_xfderiv using 1
     ext x
     conv => rhs; arg 2; rw [show x = x • 1 by simp]
@@ -395,7 +399,7 @@ theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) : Set.EqOn (
     rw [tsum_eq_zero_add']
     · simp
       unfold FormalMultilinearSeries.coeff binomialSeries
-      simp [binomialCoef]
+      simp
     · simp
       exact summable_zero
   rcases lt_trichotomy ε 1 with (hε' | hε' | hε')
@@ -405,9 +409,8 @@ theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) : Set.EqOn (
     apply Set.Icc_eq_empty
     linarith
   have h_sum_analytic : AnalyticOnNhd ℝ (binomialSum a) (EMetric.ball 0 1) := by
-    apply AnalyticOnNhd.mono _ (EMetric.ball_subset_ball (@binomialSeries_radius_ge_one a))
-    unfold binomialSum
-    apply HasFPowerSeriesOnBall.analyticOnNhd (p := binomialSeries a)
+    apply AnalyticOnNhd.mono _ (EMetric.ball_subset_ball (binomialSeries_radius_ge_one (𝔸 := ℝ) (a := a)))
+    apply HasFPowerSeriesOnBall.analyticOnNhd (p := binomialSeries ℝ a)
     apply FormalMultilinearSeries.hasFPowerSeriesOnBall
     apply lt_of_lt_of_le _ binomialSeries_radius_ge_one
     simp
@@ -430,7 +433,7 @@ theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) : Set.EqOn (
       simp
       exact div_le_div_of_nonneg_left (by simp) hε (by linarith)
   · simpa
-  · apply ContinuousOn.mono (s := EMetric.ball 0 (binomialSeries a).radius)
+  · apply ContinuousOn.mono (s := EMetric.ball 0 (binomialSeries ℝ a).radius)
     · unfold binomialSum
       convert FormalMultilinearSeries.continuousOn
       infer_instance -- why asked?

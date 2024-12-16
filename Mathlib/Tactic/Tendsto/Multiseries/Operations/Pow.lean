@@ -72,10 +72,10 @@ theorem powSeriesFrom_get {a acc : ℝ} {n m : ℕ} : (powSeriesFrom a acc n).ge
     simp [show a - n = a - (n + 1) + 1 by ring, descPochhammer_succ_left, Polynomial.smeval_X_mul,
       Polynomial.smeval_comp]
 
-theorem powSeries_get {a : ℝ} {n : ℕ} : (powSeries a).get? n = .some (binomialCoef a n) := by
-  simp [powSeries, powSeriesFrom_get, binomialCoef, Ring.choose_eq_div]
+theorem powSeries_get {a : ℝ} {n : ℕ} : (powSeries a).get? n = .some (Ring.choose a n) := by
+  field_simp [powSeries, powSeriesFrom_get, Ring.choose_eq_div]
 
-theorem powSeries_eq_binomialSeries {a : ℝ} : (powSeries a).toFormalMultilinearSeries = binomialSeries a := by
+theorem powSeries_eq_binomialSeries {a : ℝ} : (powSeries a).toFormalMultilinearSeries = binomialSeries ℝ a := by
   ext n f
   simp [binomialSeries, toFormalMultilinearSeries_coeff, powSeries_get]
   rw [mul_comm]
@@ -84,7 +84,7 @@ theorem powSeries_eq_binomialSeries {a : ℝ} : (powSeries a).toFormalMultilinea
 
 theorem powSeries_analytic {a : ℝ} : analytic (powSeries a) := by
   simp [analytic, powSeries_eq_binomialSeries]
-  have := @binomialSeries_radius_ge_one a
+  have : 1 ≤ (binomialSeries ℝ a).radius := by apply binomialSeries_radius_ge_one
   apply lt_of_lt_of_le _ this
   simp
 
