@@ -844,7 +844,7 @@ lemma Matrix.toSquareBlock_map
     (M.map f).toSquareBlock b i = (M.toSquareBlock b i).map f :=
   submatrix_map _ _ _ _
 
-lemma comp_toSquareBlock [DecidableEq α] {b : m → α}
+lemma comp_toSquareBlock {b : m → α}
     (M : Matrix m m (Matrix n n R)) (a : α) :
     letI equiv := Equiv.prodSubtypeFstEquivSubtypeProd.symm
     (M.comp m m n n R).toSquareBlock (fun i ↦ b i.1) a =
