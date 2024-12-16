@@ -1,16 +1,46 @@
+/-
+Copyright (c) 2024 Vasilii Nesterov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Vasilii Nesterov
+-/
 import Mathlib.Analysis.ODE.Gronwall
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.RingTheory.Binomial
 import Mathlib.Tactic.MoveAdd
 
+/-!
 
-namespace TendstoTactic
+# Binomial Series
 
-namespace ForPow
+We introduce the binomial series:
+$$
+\sum_{k=0}^{\infty} \; \binom{a}{k} \; x^k = 1 + a x + \frac{a(a-1)}{2!} x^2 +
+  \frac{a(a-1)(a-2)}{3!} x^3 + \cdots
+$$
+where $a$ is an element of a normed field $\mathbb{K}$,
+and $x$ is an element of a normed algebra over $\mathbb{K}$.
+
+## Main Statements
+
+* `binomialSeries_radius_ge_one`: The radius of convergence of the binomial series is at least $1$.
+* `binomialSum_eq_rpow`: The series converges to $(1 + x)^a$ for real $a$ and $|x| < 1$.
+
+## Implementation Details
+
+We use `RCLike 𝕂` to leverage the fact that `‖(n : 𝕂)‖ = n` for natural numbers `n`. Without this,
+we cannot apply the `descPochhammer_bound_ascPochhammer` bound in our proof.
+
+## TODO
+
+* Generalize `binomialSeries_radius_ge_one` from `RCLike 𝕂` to `NontriviallyNormedField 𝕂`.
+* Prove that the radius of convergence of the binomial series is *exactly* $1$.
+* Prove the `binomialSum_eq_cpow` variant of `binomialSum_eq_rpow` for complex $a$ and $x$.
+
+-/
 
 open scoped Nat
 
-universe u v w
+universe u v
 
 theorem Ring.choose_eq_div {𝕂 : Type v} [Field 𝕂] [CharZero 𝕂]
     {a : 𝕂} {n : ℕ} :
@@ -360,7 +390,3 @@ theorem binomialSum_eq_rpow {a x : ℝ} (hx : |x| < 1) : binomialSum a x = (1 + 
   rw [abs_lt] at hx
   dsimp [ε]
   constructor <;> linarith [le_abs_self x, neg_abs_le x]
-
-end ForPow
-
-end TendstoTactic
