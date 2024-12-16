@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.SetTheory.Ordinal.Basic
+import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # The property of being of cardinality less than a cardinal
@@ -74,3 +74,15 @@ lemma hasCardinalLT_iff_of_equiv {X : Type u} {Y : Type u'} (e : X ≃ Y) (κ : 
 lemma hasCardinalLT_aleph0_iff (X : Type u) :
     HasCardinalLT X Cardinal.aleph0.{v} ↔ Finite X := by
   simpa [HasCardinalLT] using Cardinal.mk_lt_aleph0_iff
+
+lemma hasCardinalLT_option_iff (X : Type u) (κ' : Cardinal.{w})
+    (hκ' : Cardinal.aleph0 ≤ κ') :
+    HasCardinalLT (Option X) κ' ↔ HasCardinalLT X κ' := by
+  constructor
+  · intro h
+    exact h.of_injective _ (Option.some_injective _)
+  · intro h
+    dsimp [HasCardinalLT] at h ⊢
+    simp only [Cardinal.mk_option, Cardinal.lift_add, Cardinal.lift_one]
+    exact Cardinal.add_lt_of_lt (by simpa using hκ') h
+      (lt_of_lt_of_le Cardinal.one_lt_aleph0 (by simpa using hκ'))
