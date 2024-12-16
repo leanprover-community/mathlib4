@@ -69,6 +69,12 @@ section
 
 variable {𝕂 : Type v} [NormedField 𝕂]
 
+/-- Binomial series:
+$$
+\sum_{k=0}^{\infty} \; \binom{a}{k} \; x^k = 1 + a x + \frac{a(a-1)}{2!} x^2 +
+  \frac{a(a-1)(a-2)}{3!} x^3 + \cdots
+$$
+-/
 noncomputable def binomialSeries [CharZero 𝕂] (𝔸 : Type u) [NormedDivisionRing 𝔸] [Algebra 𝕂 𝔸]
     (a : 𝕂) : FormalMultilinearSeries 𝕂 𝔸 𝔸 := fun n =>
   (Ring.choose a n) • ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 n 𝔸
@@ -96,6 +102,7 @@ theorem descPochhammer_bound_ascPochhammer {a : 𝕂} {n : ℕ} :
 
 end
 
+/-- The radius of convergence of the binomial series is at least 1. -/
 theorem binomialSeries_radius_ge_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type u} [NormedDivisionRing 𝔸]
     [NormedAlgebra 𝕂 𝔸] {a : 𝕂} : 1 ≤ (binomialSeries 𝔸 a).radius := by
   apply le_of_forall_ge_of_dense
@@ -161,6 +168,8 @@ theorem binomialSeries_radius_ge_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type 
 
 open ContinuousLinearMap FormalMultilinearSeries
 
+/-- Let `f` denote the binomial series $\sum_{k=0}^{\infty} \binom{a}{k} s^k$.
+Then $a \cdot f'(s) = (1 + s) f(s)$, where $f'$ is the formal derivative of the series. -/
 theorem binomialSeries_ODE {a : ℝ} :
     let dSeries := (binomialSeries ℝ a).derivSeries
     a • binomialSeries ℝ a = (compFormalMultilinearSeries (.apply ℝ ℝ 1) dSeries) +
@@ -245,6 +254,8 @@ theorem binomialSeries_ODE {a : ℝ} :
 
 noncomputable def binomialSum (a : ℝ) (x : ℝ) := (binomialSeries ℝ a).sum x
 
+/-- Let `f` denote the sum of binomial series $\sum_{k=0}^{\infty} \binom{a}{k} s^k$.
+Then $a \cdot f'(s) = (1 + s) f(s)$. -/
 theorem binomialSum_ODE {a : ℝ} {x : ℝ} (hx : |x| < 1) :
     HasDerivAt (binomialSum a) (a * binomialSum a x / (1 + x)) x := by
   have h_fun : HasFPowerSeriesOnBall (binomialSum a) (binomialSeries ℝ a) 0 1 := by
@@ -373,6 +384,7 @@ theorem binomialSum_eq_rpow_aux {a : ℝ} {ε : ℝ} (hε : 0 < ε) :
   · simp [s]
   · simp [binomialSum_zero]
 
+/-- The binomial series converges to `(1 + x).rpow a` for real `a` and `|x| < 1`. -/
 theorem binomialSum_eq_rpow {a x : ℝ} (hx : |x| < 1) : binomialSum a x = (1 + x)^a := by
   let ε := (1 - |x|) / 2
   have hε : 0 < ε := by dsimp [ε]; linarith
