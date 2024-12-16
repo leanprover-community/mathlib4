@@ -36,7 +36,9 @@ to do this. The idea is to use that `AddCommGrp.{max v u}` has a small cogenerat
 which is just the additive (rational) circle `ℚ / ℤ`, so any abelian group of
 any size can be recovered from its morphisms into `ℚ / ℤ`. More precisely, the functor
 sending an abelian group `A` to its dual `A →+ ℚ / ℤ` is fully faithful, *if* we consider
-the dual as a (right) module over the endomorphism ring of `ℚ / ℤ`.
+the dual as a (right) module over the endomorphism ring of `ℚ / ℤ`. So an abelian
+group `C` is totally determined by the restriction of the coyoneda
+functor `A ↦ (C →+ A)` to the category of abelian groups at a smaller universe level.
 
 We do not develop this totally here but do a direct construction. Every time we have
 a morphism from `lc.pt` into `ℚ / ℤ`, or more generally into any small abelian group
@@ -52,6 +54,17 @@ groups, so our construction extends). To show that the image of `c.pt` in this p
 is contained in that of `lc.pt`, we use the compatibility with postcomposition and the
 fact that we can detect elements of the image just by applying morphisms from
 `Π (_ : lc.pt →+ ℚ / ℤ), ℚ / ℤ` to `ℚ / ℤ`.
+
+Note that this does *not* work for noncommutative groups, because the existence of
+simple groups of arbitrary size implies that a general object `G` of `Grp` is not
+determined by the restriction of `coyoneda.obj G` to the category of groups at
+a smaller universe level. Indeed, the functor `Grp.uliftFunctor` does not commute
+with arbitrary colimits: if we take an increasing family `K` of simple groups in
+`Grp.{u}` of unbounded cardinality indexed by a linearly ordered type
+(for example finitary alternating groups on a family of types in `u` of unbouded cardinality),
+then the colimit of `K` in `Grp.{u}` exists and is the trivial group; meanwhile, the colimit
+of `K ⋙ Grp.uliftFunctor.{u + 1}` is nontrivial (it is the "union" of all the `K j`, which is
+too big to be in `Grp.{u}`).
 -/
 
 universe v w w' u
