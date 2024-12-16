@@ -25,40 +25,47 @@ open Nat ArithmeticFunction Finset
 namespace ArithmeticFunction.IsMultiplicative
 
 variable {R : Type*}
-
-theorem mult_lcm_eq_of_ne_zero [CommGroupWithZero R] (f : ArithmeticFunction R)
+--basic
+theorem map_lcm [CommGroupWithZero R] (f : ArithmeticFunction R)
     (h_mult : f.IsMultiplicative) (x y : ℕ) (hf : f (x.gcd y) ≠ 0) :
     f (x.lcm y) = f x * f y / f (x.gcd y) := by
   rw [←h_mult.lcm_apply_mul_gcd_apply]
   field_simp
-
-theorem prod_factors_of_mult (f : ArithmeticFunction ℝ) (h_mult : f.IsMultiplicative)
+--basic
+theorem prod_primeFactors_of_squarefree (f : ArithmeticFunction ℝ) (h_mult : f.IsMultiplicative)
     {l : ℕ} (hl : Squarefree l) :
-    ∏ a : ℕ in l.primeFactors, f a = f l := by
+    ∏ p : ℕ in l.primeFactors, f p = f l := by
   rw [←IsMultiplicative.map_prod_of_subset_primeFactors h_mult l _ Finset.Subset.rfl,
     Nat.prod_primeFactors_of_squarefree hl]
 
+theorem map_dvd_of_squarefree (f : ArithmeticFunction ℝ) (h_mult : IsMultiplicative f)
+    (l d : ℕ) (hdl : d ∣ l) (hl : Squarefree l) (hd : f d ≠ 0) : f (l / d) = f l / f d := by
+  apply (div_eq_of_eq_mul hd ..).symm
+  rw [← h_mult.right, Nat.div_mul_cancel hdl]
+  apply coprime_of_squarefree_mul
+  convert hl
+  exact Nat.div_mul_cancel hdl
+
 end ArithmeticFunction.IsMultiplicative
 
-namespace Aux
+--basic
 theorem sum_over_dvd_ite {α : Type _} [Ring α] {P : ℕ} (hP : P ≠ 0) {n : ℕ} (hn : n ∣ P)
     {f : ℕ → α} : ∑ d in n.divisors, f d = ∑ d in P.divisors, if d ∣ n then f d else 0 :=
   by
   rw [←Finset.sum_filter, Nat.divisors_filter_dvd_of_dvd hP hn]
-
+--basic
 theorem sum_intro {α M: Type _} [AddCommMonoid M] [DecidableEq α] (s : Finset α) {f : α → M} (d : α)
      (hd : d ∈ s) :
     f d = ∑ k in s, if k = d then f k else 0 := by
-  trans (∑ k in s, if k = d then f d else 0)
-  · rw [sum_eq_single_of_mem d hd, if_pos rfl]
-    intro _ _ h; rw [if_neg h]
-  apply sum_congr rfl; intro k _; apply if_ctx_congr Iff.rfl _ (fun _ => rfl)
-  intro h; rw [h]
-
-theorem ite_sum_zero {p : Prop} [Decidable p] (s : Finset ℕ) (f : ℕ → ℝ) :
-    (if p then (∑ x in s, f x) else 0) = ∑ x in s, if p then f x else 0 := by
+  rw [← Finset.sum_filter, Finset.filter_eq', if_pos hd, sum_singleton]
+--temp
+@[to_additive]
+theorem ite_prod_one {R ι : Type*} [CommMonoid R] {p : Prop} [Decidable p] (s : Finset ι)
+    (f : ι → R) :
+    (if p then (∏ x in s, f x) else 1) = ∏ x in s, if p then f x else 1 := by
   split_ifs <;> simp
 
+--basic
 theorem conv_lambda_sq_larger_sum (f : ℕ → ℕ → ℕ → ℝ) (n : ℕ) :
     (∑ d in n.divisors,
         ∑ d1 in d.divisors,
@@ -77,6 +84,7 @@ theorem conv_lambda_sq_larger_sum (f : ℕ → ℕ → ℕ → ℝ) (n : ℕ) :
   rintro rfl
   exact ⟨Nat.dvd_lcm_left d1 d2, Nat.dvd_lcm_right d1 d2, rfl⟩
 
+--selberg
 theorem moebius_inv_dvd_lower_bound (l m : ℕ) (hm : Squarefree m) :
     (∑ d in m.divisors, if l ∣ d then (μ d:ℤ) else 0) = if l = m then (μ l:ℤ) else 0 := by
   have hm_pos : 0 < m := Nat.pos_of_ne_zero <| Squarefree.ne_zero hm
@@ -113,29 +121,17 @@ theorem moebius_inv_dvd_lower_bound_real {P : ℕ} (hP : Squarefree P) (l m : �
   norm_cast
   apply moebius_inv_dvd_lower_bound' hP l m hm
 
-theorem gcd_dvd_mul (m n : ℕ) : m.gcd n ∣ m * n := by
-  calc
-    m.gcd n ∣ m := Nat.gcd_dvd_left m n
-    _ ∣ m * n := ⟨n, rfl⟩
-
+--basic
 theorem multiplicative_zero_of_zero_dvd (f : ArithmeticFunction ℝ) (h_mult : IsMultiplicative f)
     {m n : ℕ}
     (h_sq : Squarefree n) (hmn : m ∣ n) (h_zero : f m = 0) : f n = 0 := by
   rcases hmn with ⟨k, rfl⟩
   simp only [MulZeroClass.zero_mul, eq_self_iff_true, h_mult.map_mul_of_coprime
     (coprime_of_squarefree_mul h_sq), h_zero]
-
+--basic
 theorem primeDivisors_nonempty (n : ℕ) (hn : 2 ≤ n) : n.primeFactors.Nonempty := by
   unfold Finset.Nonempty
   simp_rw [Nat.mem_primeFactors_of_ne_zero (by positivity)]
   apply Nat.exists_prime_and_dvd (by linarith)
 
-theorem div_mult_of_dvd_squarefree (f : ArithmeticFunction ℝ) (h_mult : IsMultiplicative f)
-    (l d : ℕ) (hdl : d ∣ l) (hl : Squarefree l) (hd : f d ≠ 0) : f l / f d = f (l / d) := by
-  apply div_eq_of_eq_mul hd
-  rw [← h_mult.right, Nat.div_mul_cancel hdl]
-  apply coprime_of_squarefree_mul
-  convert hl
-  exact Nat.div_mul_cancel hdl
-
-end Aux
+--basic

@@ -15,7 +15,7 @@ This file proves `selberg_bound_simple`, the main theorem of the Selberg.
 
 noncomputable section
 
-open scoped BigOperators Classical
+open scoped BigOperators Classical SelbergSieve.Notation
 
 open Finset Real Nat SelbergSieve.UpperBoundSieve ArithmeticFunction
 
@@ -132,7 +132,7 @@ lemma sum_mul_subst (k n: ℕ) {f : ℕ → ℝ} (h : ∀ l, l ∣ n → ¬ k �
       exact ⟨(Nat.div_dvd_of_dvd hkl).trans (dvd_of_mem_divisors hl), hn⟩
   · rw [sum_comm, sum_congr rfl]; intro m _
     split_ifs with hdvd
-    · rw [←Aux.sum_intro]
+    · rw [←sum_intro]
       simp only [mem_divisors, hdvd, ne_eq, hn, not_false_eq_true, and_self]
     · apply sum_eq_zero; intro l hl
       apply if_neg;
@@ -208,9 +208,9 @@ theorem selbergWeights_diagonalisation (l : ℕ) (hl : l ∈ divisors P) :
       · tauto
       intro _; ring
     _ = if l ^ 2 ≤ y then g l * μ l * S⁻¹ else 0 := by
-      rw [Aux.sum_intro (f:=fun _ => if l^2 ≤ y then g l * μ l * S⁻¹ else 0) (divisors P) l hl]
+      rw [sum_intro (f:=fun _ => if l^2 ≤ y then g l * μ l * S⁻¹ else 0) (divisors P) l hl]
       apply sum_congr rfl; intro k hk
-      rw [Aux.moebius_inv_dvd_lower_bound_real s.prodPrimes_squarefree l _ (dvd_of_mem_divisors hk),
+      rw [moebius_inv_dvd_lower_bound_real s.prodPrimes_squarefree l _ (dvd_of_mem_divisors hk),
         ←ite_and, ite_zero_mul, ite_zero_mul, ← ite_and]
       apply if_ctx_congr _ _ fun _ => rfl
       · rw [and_comm, eq_comm]
@@ -234,13 +234,12 @@ theorem weight_one_of_selberg : γ 1 = 1 := by
 
 theorem selbergμPlus_eq_zero (d : ℕ) (hd : ¬d ≤ y) : μ⁺ d = 0 :=
   by
-  apply lambdaSquared_eq_zero_of_support _ y _ d hd
+  apply lambdaSquared_eq_zero_of_not_le_height _ y _ d hd
   apply selbergWeights_eq_zero
 
 def selbergUbSieve : UpperBoundSieve :=
-  ⟨μ⁺, upperMoebius_of_lambda_sq γ (s.weight_one_of_selberg)⟩
+  ⟨μ⁺, upperMoebius_lambdaSquared γ (s.weight_one_of_selberg)⟩
 
--- proved for general lambda squared sieves
 theorem mainSum_eq_diag_quad_form :
     s.mainSum μ⁺ =
       ∑ l in divisors P,
@@ -305,7 +304,7 @@ theorem selbergBoundingSum_ge {d : ℕ} (hdP : d ∣ P) :
     dsimp only [selbergBoundingSum]
     rw [sum_comm, sum_congr rfl]; intro l _
     simp_rw [ite_and]
-    rw [←Aux.sum_intro]
+    rw [←sum_intro]
     · rw [mem_divisors]
       exact ⟨(Nat.gcd_dvd_left d l).trans (hdP), s.prodPrimes_ne_zero⟩
   _ = (∑ k in divisors P,

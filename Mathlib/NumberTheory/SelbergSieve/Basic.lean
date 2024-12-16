@@ -23,6 +23,10 @@ minor notational difference is that we write $\nu(n)$ in place of $\frac{\omega(
 
 ## Results
 
+ * `siftedSum_le_mainSum_errSum_of_UpperBoundSieve` - Every upper bound sieve gives an upper bound
+ on the size of the sifted set in terms of `mainSum` and `errSum`
+ * `upperMoebius_of_lambda_sq` - Lambda squared weights produce upper bound sieves
+ * `lambdaSquared_mainSum_eq_diag_quad_form` - The main sum of a Λ² sieve has a nice diagonalisation
 
 ## Notation
 The `SelbergSieve.Notation` namespace includes common shorthand for the variables included in the
@@ -48,8 +52,7 @@ noncomputable section
 
 open scoped BigOperators ArithmeticFunction
 
-open Finset Real Nat Aux
-
+open Finset Real Nat
 
 /-!
 We set up the Selberg sieve as follows. Take a finite set of natural numbers `A`, whose elements
@@ -174,7 +177,7 @@ theorem nu_pos_of_dvd_prodPrimes {d : ℕ} (hd : d ∣ P) : 0 < ν d := by
       have hp_prime : p.Prime := prime_of_mem_primeFactors hpd
       have hp_dvd : p ∣ P := (dvd_of_mem_primeFactors hpd).trans hd
       exact nu_pos_of_prime p hp_prime hp_dvd
-    _ = ν d := nu_mult.prod_factors_of_mult ν
+    _ = ν d := nu_mult.prod_primeFactors_of_squarefree ν
                 (Squarefree.squarefree_of_dvd hd prodPrimes_squarefree)
 
 theorem nu_ne_zero {d : ℕ} (hd : d ∣ P) : ν d ≠ 0 := by
@@ -199,7 +202,7 @@ theorem nu_lt_self_of_dvd_prodPrimes (d : ℕ) (hdP : d ∣ P) (hd_ne_one : d �
   have hd_sq : Squarefree d := Squarefree.squarefree_of_dvd hdP prodPrimes_squarefree
   calc
     ν d = ∏ p in d.primeFactors, ν p :=
-      eq_comm.mp (nu_mult.prod_factors_of_mult ν hd_sq)
+      eq_comm.mp (nu_mult.prod_primeFactors_of_squarefree ν hd_sq)
     _ < ∏ p in d.primeFactors, 1 := by
       apply prod_lt_prod_of_nonempty
       · intro p hp
@@ -213,11 +216,9 @@ theorem nu_lt_self_of_dvd_prodPrimes (d : ℕ) (hdP : d ∣ P) (hd_ne_one : d �
 
 section SelbergTerms
 /-!
-
-
+Now follow some important identities involving `g`
 -/
 
-@[aesop safe]
 theorem selbergTerms_pos (l : ℕ) (hl : l ∣ P) : 0 < g l := by
   rw [selbergTerms_apply]
   apply mul_pos <| nu_pos_of_dvd_prodPrimes hl
@@ -275,7 +276,7 @@ theorem conv_selbergTerms_eq_selbergTerms_mul_nu {d : ℕ} (hd : d ∣ P) :
       rw [mul_sum]; apply sum_congr rfl; intro l hl
       rw [mul_ite_zero]
       apply if_ctx_congr Iff.rfl _ (fun _ => rfl); intro h
-      rw [← div_mult_of_dvd_squarefree g selbergTerms_mult d l h
+      rw [selbergTerms_mult.map_dvd_of_squarefree _ d l h
         (prodPrimes_squarefree.squarefree_of_dvd hd)]
       · ring
       · apply _root_.ne_of_gt; rw [mem_divisors] at hl ; apply selbergTerms_pos; exact hl.left
@@ -324,7 +325,6 @@ theorem siftedSum_le_mainSum_errSum_of_UpperBoundSieve (μPlus : UpperBoundSieve
 
 end SieveLemmas
 
--- Results about Λ²-Sieves
 section LambdaSquared
 
 def lambdaSquared (weights : ℕ → ℝ) : ℕ → ℝ := fun d =>
@@ -344,7 +344,7 @@ private theorem lambdaSquared_eq_zero_of_support_wlog {w : ℕ → ℝ} {height 
       _ ≤ _       := ?_
   · rw [sq]; gcongr
 
-theorem lambdaSquared_eq_zero_of_support (w : ℕ → ℝ) (height : ℝ)
+theorem lambdaSquared_eq_zero_of_not_le_height (w : ℕ → ℝ) (height : ℝ)
     (hw : ∀ d : ℕ, ¬d ^ 2 ≤ height → w d = 0) (d : ℕ) (hd : ¬d ≤ height) :
     lambdaSquared w d = 0 := by
   dsimp only [lambdaSquared]
@@ -368,7 +368,7 @@ theorem lambdaSquared_eq_zero_of_support (w : ℕ → ℝ) (height : ℝ)
   · rw[mul_comm]
     apply lambdaSquared_eq_zero_of_support_wlog hw hd d2 d1 (Nat.lcm_comm d1 d2 ▸ h) hle
 
-theorem upperMoebius_of_lambda_sq (weights : ℕ → ℝ) (hw : weights 1 = 1) :
+theorem upperMoebius_lambdaSquared (weights : ℕ → ℝ) (hw : weights 1 = 1) :
     UpperMoebius <| lambdaSquared weights := by
   dsimp [UpperMoebius, lambdaSquared]
   intro n
@@ -380,7 +380,7 @@ theorem upperMoebius_of_lambda_sq (weights : ℕ → ℝ) (hw : weights 1 = 1) :
     apply sum_congr rfl; intro d1 hd1
     rw [sum_mul, sum_comm]
     apply sum_congr rfl; intro d2 hd2
-    rw [←Aux.sum_intro]
+    rw [←sum_intro]
     ring
     rw [mem_divisors, Nat.lcm_dvd_iff]
     exact ⟨⟨dvd_of_mem_divisors hd1, dvd_of_mem_divisors hd2⟩, (mem_divisors.mp hd1).2⟩
@@ -413,7 +413,7 @@ theorem lambdaSquared_mainSum_eq_quad_form (w : ℕ → ℝ) :
     rw [sum_comm, sum_congr rfl]; intro d2 hd2
     have h : d1.lcm d2 ∣ P := Nat.lcm_dvd_iff.mpr ⟨dvd_of_mem_divisors hd1, dvd_of_mem_divisors hd2⟩
     rw [←sum_intro (divisors P) (d1.lcm d2) (mem_divisors.mpr ⟨h, prodPrimes_ne_zero⟩ )]
-    rw [nu_mult.mult_lcm_eq_of_ne_zero]
+    rw [nu_mult.map_lcm]
     · ring
     refine _root_.ne_of_gt (nu_pos_of_dvd_prodPrimes ?_)
     trans d1
