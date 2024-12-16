@@ -5,7 +5,7 @@ Authors: Fox Thomson, Markus Himmel
 -/
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Game.Impartial
-import Mathlib.SetTheory.Ordinal.Nimber
+import Mathlib.SetTheory.Nimber.Basic
 
 /-!
 # Nim and the Sprague-Grundy theorem
@@ -84,16 +84,26 @@ theorem toRightMovesNim_symm_lt {o : Ordinal} (i : (nim o).RightMoves) :
   (toRightMovesNim.symm i).prop
 
 @[simp]
-theorem moveLeft_nim' {o : Ordinal} (i) : (nim o).moveLeft i = nim (toLeftMovesNim.symm i).val :=
+theorem moveLeft_nim {o : Ordinal} (i) : (nim o).moveLeft i = nim (toLeftMovesNim.symm i).val :=
   (congr_heq (moveLeft_nim_hEq o).symm (cast_heq _ i)).symm
 
-theorem moveLeft_nim {o : Ordinal} (i) : (nim o).moveLeft (toLeftMovesNim i) = nim i := by simp
+@[deprecated moveLeft_nim (since := "2024-10-30")]
+alias moveLeft_nim' := moveLeft_nim
+
+theorem moveLeft_toLeftMovesNim {o : Ordinal} (i) :
+    (nim o).moveLeft (toLeftMovesNim i) = nim i := by
+  simp
 
 @[simp]
-theorem moveRight_nim' {o : Ordinal} (i) : (nim o).moveRight i = nim (toRightMovesNim.symm i).val :=
+theorem moveRight_nim {o : Ordinal} (i) : (nim o).moveRight i = nim (toRightMovesNim.symm i).val :=
   (congr_heq (moveRight_nim_hEq o).symm (cast_heq _ i)).symm
 
-theorem moveRight_nim {o : Ordinal} (i) : (nim o).moveRight (toRightMovesNim i) = nim i := by simp
+@[deprecated moveRight_nim (since := "2024-10-30")]
+alias moveRight_nim' := moveRight_nim
+
+theorem moveRight_toRightMovesNim {o : Ordinal} (i) :
+    (nim o).moveRight (toRightMovesNim i) = nim i := by
+  simp
 
 /-- A recursion principle for left moves of a nim game. -/
 @[elab_as_elim]
@@ -232,7 +242,7 @@ theorem grundyValue_ne_moveLeft {G : PGame} (i : G.LeftMoves) :
     grundyValue (G.moveLeft i) ≠ grundyValue G := by
   conv_rhs => rw [grundyValue_eq_sInf_moveLeft]
   have := csInf_mem (nonempty_of_not_bddAbove <|
-    not_bddAbove_compl_of_small (Set.range fun i => grundyValue (G.moveLeft i)))
+    Nimber.not_bddAbove_compl_of_small (Set.range fun i => grundyValue (G.moveLeft i)))
   rw [Set.mem_compl_iff, Set.mem_range, not_exists] at this
   exact this _
 
@@ -268,7 +278,7 @@ theorem equiv_nim_grundyValue (G : PGame.{u}) [G.Impartial] :
   · rw [add_moveLeft_inr, ← Impartial.exists_left_move_equiv_iff_fuzzy_zero]
     obtain ⟨j, hj⟩ := exists_grundyValue_moveLeft_of_lt <| toLeftMovesNim_symm_lt i
     use toLeftMovesAdd (Sum.inl j)
-    rw [add_moveLeft_inl, moveLeft_nim']
+    rw [add_moveLeft_inl, moveLeft_nim]
     exact Equiv.trans (add_congr_left (equiv_nim_grundyValue _)) (hj ▸ Impartial.add_self _)
 termination_by G
 
@@ -329,7 +339,7 @@ theorem exists_grundyValue_moveRight_of_lt {G : PGame} [G.Impartial] {o : Nimber
   rw [← grundyValue_neg] at h
   obtain ⟨i, hi⟩ := exists_grundyValue_moveLeft_of_lt h
   use toLeftMovesNeg.symm i
-  rwa [← grundyValue_neg, ← moveLeft_neg']
+  rwa [← grundyValue_neg, ← moveLeft_neg]
 
 theorem grundyValue_le_of_forall_moveRight {G : PGame} [G.Impartial] {o : Nimber}
     (h : ∀ i, grundyValue (G.moveRight i) ≠ o) : G.grundyValue ≤ o := by

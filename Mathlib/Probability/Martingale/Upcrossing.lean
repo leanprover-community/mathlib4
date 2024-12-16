@@ -762,7 +762,7 @@ noncomputable def upcrossings [Preorder ι] [OrderBot ι] [InfSet ι] (a b : ℝ
 
 theorem Adapted.measurable_upcrossings (hf : Adapted ℱ f) (hab : a < b) :
     Measurable (upcrossings a b f) :=
-  measurable_iSup fun _ => measurable_from_top.comp (hf.measurable_upcrossingsBefore hab)
+  .iSup fun _ => measurable_from_top.comp (hf.measurable_upcrossingsBefore hab)
 
 theorem upcrossings_lt_top_iff :
     upcrossings a b f ω < ∞ ↔ ∃ k, ∀ N, upcrossingsBefore a b f N ω ≤ k := by

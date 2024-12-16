@@ -141,8 +141,8 @@ square commutes:
 ```
 where the vertical arrows are `zeroCochainsLEquiv` and `oneCochainsLEquiv` respectively.
 -/
-theorem dZero_comp_eq : dZero A ∘ₗ (zeroCochainsLEquiv A) =
-    oneCochainsLEquiv A ∘ₗ (inhomogeneousCochains A).d 0 1 := by
+theorem dZero_comp_eq : dZero A ∘ₗ (zeroCochainsLequiv A) =
+    oneCochainsLequiv A ∘ₗ ((inhomogeneousCochains A).d 0 1).hom := by
   ext x y
   show A.ρ y (x default) - x default = _ + ({0} : Finset _).sum _
   simp_rw [Fin.val_eq_zero, zero_add, pow_one, neg_smul, one_smul,
@@ -162,8 +162,8 @@ square commutes:
 ```
 where the vertical arrows are `oneCochainsLEquiv` and `twoCochainsLEquiv` respectively.
 -/
-theorem dOne_comp_eq : dOne A ∘ₗ oneCochainsLEquiv A =
-    twoCochainsLEquiv A ∘ₗ (inhomogeneousCochains A).d 1 2 := by
+theorem dOne_comp_eq : dOne A ∘ₗ oneCochainsLequiv A =
+    twoCochainsLequiv A ∘ₗ ((inhomogeneousCochains A).d 1 2).hom := by
   ext x y
   show A.ρ y.1 (x _) - x _ + x _ =  _ + _
   rw [Fin.sum_univ_two]
@@ -185,7 +185,8 @@ square commutes:
 where the vertical arrows are `twoCochainsLEquiv` and `threeCochainsLEquiv` respectively.
 -/
 theorem dTwo_comp_eq :
-    dTwo A ∘ₗ twoCochainsLEquiv A = threeCochainsLEquiv A ∘ₗ (inhomogeneousCochains A).d 2 3 := by
+    dTwo A ∘ₗ twoCochainsLequiv A =
+      threeCochainsLequiv A ∘ₗ ((inhomogeneousCochains A).d 2 3).hom := by
   ext x y
   show A.ρ y.1 (x _) - x _ + x _ - x _ = _ + _
   dsimp
@@ -201,12 +202,13 @@ theorem dOne_comp_dZero : dOne A ∘ₗ dZero A = 0 := by
   rfl
 
 theorem dTwo_comp_dOne : dTwo A ∘ₗ dOne A = 0 := by
-  show ModuleCat.asHom (dOne A) ≫ ModuleCat.asHom (dTwo A) = _
-  have h1 : _ ≫ ModuleCat.asHom (dOne A) = _ ≫ _ := congr_arg ModuleCat.asHom (dOne_comp_eq A)
-  have h2 : _ ≫ ModuleCat.asHom (dTwo A) = _ ≫ _ := congr_arg ModuleCat.asHom (dTwo_comp_eq A)
-  simp only [← LinearEquiv.toModuleIso_hom] at h1 h2
-  simp only [(Iso.eq_inv_comp _).2 h2, (Iso.eq_inv_comp _).2 h1,
-    Category.assoc, Iso.hom_inv_id_assoc, HomologicalComplex.d_comp_d_assoc, zero_comp, comp_zero]
+  show (ModuleCat.ofHom (dOne A) ≫ ModuleCat.ofHom (dTwo A)).hom = _
+  have h1 := congr_arg ModuleCat.ofHom (dOne_comp_eq A)
+  have h2 := congr_arg ModuleCat.ofHom (dTwo_comp_eq A)
+  simp only [ModuleCat.ofHom_comp, ModuleCat.ofHom_comp, ← LinearEquiv.toModuleIso_hom_hom] at h1 h2
+  simp only [(Iso.eq_inv_comp _).2 h2, (Iso.eq_inv_comp _).2 h1, ModuleCat.ofHom_hom,
+    ModuleCat.hom_ofHom, Category.assoc, Iso.hom_inv_id_assoc, HomologicalComplex.d_comp_d_assoc,
+    zero_comp, comp_zero, ModuleCat.hom_zero]
 
 end Differentials
 
@@ -223,6 +225,18 @@ def twoCocycles : Submodule k (G × G → A) := LinearMap.ker (dTwo A)
 
 variable {A}
 
+instance : FunLike (oneCocycles A) G A := ⟨Subtype.val, Subtype.val_injective⟩
+
+@[simp]
+theorem oneCocycles.coe_mk (f : G → A) (hf) : ((⟨f, hf⟩ : oneCocycles A) : G → A) = f := rfl
+
+@[simp]
+theorem oneCocycles.val_eq_coe (f : oneCocycles A) : f.1 = f := rfl
+
+@[ext]
+theorem oneCocycles_ext {f₁ f₂ : oneCocycles A} (h : ∀ g : G, f₁ g = f₂ g) : f₁ = f₂ :=
+  DFunLike.ext f₁ f₂ h
+
 theorem mem_oneCocycles_def (f : G → A) :
     f ∈ oneCocycles A ↔ ∀ g h : G, A.ρ g (f h) - f (g * h) + f g = 0 :=
   LinearMap.mem_ker.trans <| by
@@ -233,14 +247,14 @@ theorem mem_oneCocycles_iff (f : G → A) :
     f ∈ oneCocycles A ↔ ∀ g h : G, f (g * h) = A.ρ g (f h) + f g := by
   simp_rw [mem_oneCocycles_def, sub_add_eq_add_sub, sub_eq_zero, eq_comm]
 
-@[simp] theorem oneCocycles_map_one (f : oneCocycles A) : f.1 1 = 0 := by
-  have := (mem_oneCocycles_def f.1).1 f.2 1 1
+@[simp] theorem oneCocycles_map_one (f : oneCocycles A) : f 1 = 0 := by
+  have := (mem_oneCocycles_def f).1 f.2 1 1
   simpa only [map_one, LinearMap.one_apply, mul_one, sub_self, zero_add] using this
 
 @[simp] theorem oneCocycles_map_inv (f : oneCocycles A) (g : G) :
-    A.ρ g (f.1 g⁻¹) = - f.1 g := by
+    A.ρ g (f g⁻¹) = - f g := by
   rw [← add_eq_zero_iff_eq_neg, ← oneCocycles_map_one f, ← mul_inv_cancel g,
-    (mem_oneCocycles_iff f.1).1 f.2 g g⁻¹]
+    (mem_oneCocycles_iff f).1 f.2 g g⁻¹]
 
 theorem dZero_apply_mem_oneCocycles (x : A) :
     dZero A x ∈ oneCocycles A :=
@@ -264,7 +278,7 @@ group homs `G → A`. -/
 @[simps] def oneCocyclesLEquivOfIsTrivial [hA : A.ρ.IsTrivial] :
     oneCocycles A ≃ₗ[k] Additive G →+ A where
   toFun f :=
-    { toFun := f.1 ∘ Additive.toMul
+    { toFun := f ∘ Additive.toMul
       map_zero' := oneCocycles_map_one f
       map_add' := oneCocycles_map_mul_of_isTrivial f }
   map_add' _ _ := rfl
@@ -276,6 +290,18 @@ group homs `G → A`. -/
   right_inv f := by ext; rfl
 
 variable {A}
+
+instance : FunLike (twoCocycles A) (G × G) A := ⟨Subtype.val, Subtype.val_injective⟩
+
+@[simp]
+theorem twoCocycles.coe_mk (f : G × G → A) (hf) : ((⟨f, hf⟩ : twoCocycles A) : G × G → A) = f := rfl
+
+@[simp]
+theorem twoCocycles.val_eq_coe (f : twoCocycles A) : f.1 = f := rfl
+
+@[ext]
+theorem twoCocycles_ext {f₁ f₂ : twoCocycles A} (h : ∀ g h : G, f₁ (g, h) = f₂ (g, h)) : f₁ = f₂ :=
+  DFunLike.ext f₁ f₂ (Prod.forall.mpr h)
 
 theorem mem_twoCocycles_def (f : G × G → A) :
     f ∈ twoCocycles A ↔ ∀ g h j : G,
@@ -292,19 +318,19 @@ theorem mem_twoCocycles_iff (f : G × G → A) :
     add_comm (f (_ * _, _))]
 
 theorem twoCocycles_map_one_fst (f : twoCocycles A) (g : G) :
-    f.1 (1, g) = f.1 (1, 1) := by
-  have := ((mem_twoCocycles_iff f.1).1 f.2 1 1 g).symm
+    f (1, g) = f (1, 1) := by
+  have := ((mem_twoCocycles_iff f).1 f.2 1 1 g).symm
   simpa only [map_one, LinearMap.one_apply, one_mul, add_right_inj, this]
 
 theorem twoCocycles_map_one_snd (f : twoCocycles A) (g : G) :
-    f.1 (g, 1) = A.ρ g (f.1 (1, 1)) := by
-  have := (mem_twoCocycles_iff f.1).1 f.2 g 1 1
+    f (g, 1) = A.ρ g (f (1, 1)) := by
+  have := (mem_twoCocycles_iff f).1 f.2 g 1 1
   simpa only [mul_one, add_left_inj, this]
 
 lemma twoCocycles_ρ_map_inv_sub_map_inv (f : twoCocycles A) (g : G) :
-    A.ρ g (f.1 (g⁻¹, g)) - f.1 (g, g⁻¹)
-      = f.1 (1, 1) - f.1 (g, 1) := by
-  have := (mem_twoCocycles_iff f.1).1 f.2 g g⁻¹ g
+    A.ρ g (f (g⁻¹, g)) - f (g, g⁻¹)
+      = f (1, 1) - f (g, 1) := by
+  have := (mem_twoCocycles_iff f).1 f.2 g g⁻¹ g
   simp only [mul_inv_cancel, inv_mul_cancel, twoCocycles_map_one_fst _ g]
     at this
   exact sub_eq_sub_iff_add_eq_add.2 this.symm
@@ -369,6 +395,11 @@ abbrev twoCoboundariesToTwoCocycles : twoCoboundaries A →ₗ[k] twoCocycles A 
 @[simp]
 lemma twoCoboundariesToTwoCocycles_apply (x : twoCoboundaries A) :
     (twoCoboundariesToTwoCocycles A x).1 = x.1 := rfl
+
+theorem mem_twoCoboundaries_iff (f : twoCocycles A) : f ∈ twoCoboundaries A ↔
+    ∃ x : G → A, ∀ g h : G, A.ρ g (x h) - x (g * h) + x g = f (g, h) := exists_congr fun x ↦ by
+  simpa only [LinearMap.codRestrict, dOne, LinearMap.coe_mk, AddHom.coe_mk] using
+    groupCohomology.twoCocycles_ext_iff
 
 end Coboundaries
 
@@ -698,9 +729,9 @@ lemma shortComplexH0_exact : (shortComplexH0 A).Exact := by
 `(inhomogeneousCochains A).d 0 1` of the complex of inhomogeneous cochains of `A`. -/
 @[simps! hom_left hom_right inv_left inv_right]
 def dZeroArrowIso : Arrow.mk ((inhomogeneousCochains A).d 0 1) ≅
-    Arrow.mk (ModuleCat.asHom (dZero A)) :=
-  Arrow.isoMk (zeroCochainsLEquiv A).toModuleIso
-    (oneCochainsLEquiv A).toModuleIso (dZero_comp_eq A)
+    Arrow.mk (ModuleCat.ofHom (dZero A)) :=
+  Arrow.isoMk (zeroCochainsLequiv A).toModuleIso
+    (oneCochainsLequiv A).toModuleIso (ModuleCat.hom_ext (dZero_comp_eq A))
 
 /-- The 0-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `A.ρ.invariants`, which is a simpler type. -/
@@ -711,8 +742,8 @@ def isoZeroCocycles : cocycles A 0 ≅ ModuleCat.of k A.ρ.invariants :=
 
 @[reassoc (attr := simp)]
 lemma isoZeroCocycles_hom_comp_subtype :
-    (isoZeroCocycles A).hom ≫ ModuleCat.asHom A.ρ.invariants.subtype =
-      iCocycles A 0 ≫ (zeroCochainsLEquiv A).toModuleIso.hom := by
+    (isoZeroCocycles A).hom ≫ ModuleCat.ofHom A.ρ.invariants.subtype =
+      iCocycles A 0 ≫ (zeroCochainsLequiv A).toModuleIso.hom := by
   dsimp [isoZeroCocycles]
   apply KernelFork.mapOfIsLimit_ι
 
@@ -779,8 +810,10 @@ lemma H1π_eq_zero_iff (x : oneCocycles A) : H1π A x = 0 ↔ x.1 ∈ oneCobound
 short complex associated to the complex of inhomogeneous cochains of `A`. -/
 @[simps! hom inv]
 def shortComplexH1Iso : (inhomogeneousCochains A).sc' 0 1 2 ≅ shortComplexH1 A :=
-    isoMk (zeroCochainsLEquiv A).toModuleIso (oneCochainsLEquiv A).toModuleIso
-      (twoCochainsLEquiv A).toModuleIso (dZero_comp_eq A) (dOne_comp_eq A)
+    isoMk (zeroCochainsLequiv A).toModuleIso (oneCochainsLequiv A).toModuleIso
+      (twoCochainsLequiv A).toModuleIso
+        (ModuleCat.hom_ext (dZero_comp_eq A))
+        (ModuleCat.hom_ext (dOne_comp_eq A))
 
 /-- The 1-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `oneCocycles A`, which is a simpler type. -/
@@ -790,10 +823,10 @@ def isoOneCocycles : cocycles A 1 ≅ ModuleCat.of k (oneCocycles A) :=
 
 @[reassoc (attr := simp)]
 lemma isoOneCocycles_hom_comp_subtype :
-    (isoOneCocycles A).hom ≫ ModuleCat.asHom (oneCocycles A).subtype =
+    (isoOneCocycles A).hom ≫ ModuleCat.ofHom (oneCocycles A).subtype =
       iCocycles A 1 ≫ (oneCochainsLEquiv A).toModuleIso.hom := by
   have := (shortComplexH1 A).moduleCatCyclesIso_hom_subtype
-  simp_all [shortComplexH1, ModuleCat.asHom, isoOneCocycles, oneCocycles]
+  simp_all [shortComplexH1, ModuleCat.ofHom, isoOneCocycles, oneCocycles]
 
 @[reassoc (attr := simp)]
 lemma isoOneCocycles_inv_comp_iCocycles :
@@ -804,10 +837,9 @@ lemma isoOneCocycles_inv_comp_iCocycles :
 @[reassoc (attr := simp)]
 lemma toCocycles_comp_isoOneCocycles_hom :
     toCocycles A 0 1 ≫ (isoOneCocycles A).hom =
-      (zeroCochainsLEquiv A).toModuleIso.hom ≫
-        ModuleCat.asHom (shortComplexH1 A).moduleCatToCycles := by
+      (zeroCochainsLequiv A).toModuleIso.hom ≫
+        ModuleCat.ofHom (shortComplexH1 A).moduleCatToCycles := by
   simp [isoOneCocycles]
-  rfl
 
 lemma cocyclesIso_1_eq :
     cocyclesIso A 1 = isoOneCocycles A ≪≫ (LinearEquiv.kerLEquivOfCompEqComp _ _ <| by
@@ -877,8 +909,10 @@ isomorphic to the 2nd short complex associated to the complex of inhomogeneous c
 @[simps! hom inv]
 def shortComplexH2Iso :
     (inhomogeneousCochains A).sc' 1 2 3 ≅ shortComplexH2 A :=
-  isoMk (oneCochainsLEquiv A).toModuleIso (twoCochainsLEquiv A).toModuleIso
-    (threeCochainsLEquiv A).toModuleIso (dOne_comp_eq A) (dTwo_comp_eq A)
+  isoMk (oneCochainsLequiv A).toModuleIso (twoCochainsLequiv A).toModuleIso
+    (threeCochainsLequiv A).toModuleIso
+      (ModuleCat.hom_ext (dOne_comp_eq A))
+      (ModuleCat.hom_ext (dTwo_comp_eq A))
 
 /-- The 2-cocycles of the complex of inhomogeneous cochains of `A` are isomorphic to
 `twoCocycles A`, which is a simpler type. -/
@@ -888,10 +922,10 @@ def isoTwoCocycles : cocycles A 2 ≅ ModuleCat.of k (twoCocycles A) :=
 
 @[reassoc (attr := simp)]
 lemma isoTwoCocycles_hom_comp_subtype :
-    (isoTwoCocycles A).hom ≫ ModuleCat.asHom (twoCocycles A).subtype =
+    (isoTwoCocycles A).hom ≫ ModuleCat.ofHom (twoCocycles A).subtype =
       iCocycles A 2 ≫ (twoCochainsLEquiv A).toModuleIso.hom := by
   have := (shortComplexH2 A).moduleCatCyclesIso_hom_subtype
-  simp_all [shortComplexH2, ModuleCat.asHom, isoTwoCocycles, twoCocycles]
+  simp_all [shortComplexH2, ModuleCat.ofHom, isoTwoCocycles, twoCocycles]
 
 @[reassoc (attr := simp)]
 lemma isoTwoCocycles_inv_comp_iCocycles :
@@ -902,10 +936,9 @@ lemma isoTwoCocycles_inv_comp_iCocycles :
 @[reassoc (attr := simp)]
 lemma toCocycles_comp_isoTwoCocycles_hom :
     toCocycles A 1 2 ≫ (isoTwoCocycles A).hom =
-      (oneCochainsLEquiv A).toModuleIso.hom ≫
-        ModuleCat.asHom (shortComplexH2 A).moduleCatToCycles := by
+      (oneCochainsLequiv A).toModuleIso.hom ≫
+        ModuleCat.ofHom (shortComplexH2 A).moduleCatToCycles := by
   simp [isoTwoCocycles]
-  rfl
 
 lemma cocyclesIso_2_eq :
     cocyclesIso A 2 = isoTwoCocycles A ≪≫ (LinearEquiv.kerLEquivOfCompEqComp _ _ <| by

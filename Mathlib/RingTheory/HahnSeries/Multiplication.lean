@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Scott Carnahan
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Finset.MulAntidiagonal
 import Mathlib.Data.Finset.SMulAntidiagonal
 import Mathlib.GroupTheory.GroupAction.Ring
@@ -653,11 +654,9 @@ def C : R →+* HahnSeries Γ R where
     by_cases h : a = 0 <;> simp [h]
   map_mul' x y := by rw [single_mul_single, zero_add]
 
---@[simp] Porting note (#10618): simp can prove it
 theorem C_zero : C (0 : R) = (0 : HahnSeries Γ R) :=
   C.map_zero
 
---@[simp] Porting note (#10618): simp can prove it
 theorem C_one : C (1 : R) = (1 : HahnSeries Γ R) :=
   C.map_one
 

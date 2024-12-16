@@ -106,7 +106,7 @@ instance Prop.countable' : Countable Prop :=
 
 instance (priority := 500) Quotient.countable [Countable α] {r : α → α → Prop} :
     Countable (Quot r) :=
-  (surjective_quot_mk r).countable
+  Quot.mk_surjective.countable
 
 instance (priority := 500) [Countable α] {s : Setoid α} : Countable (Quotient s) :=
   (inferInstance : Countable (@Quot α _))

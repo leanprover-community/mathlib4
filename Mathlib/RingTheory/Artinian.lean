@@ -3,11 +3,16 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Data.SetLike.Fintype
 import Mathlib.Algebra.Divisibility.Prod
+import Mathlib.Algebra.Polynomial.FieldDivision
+import Mathlib.Data.SetLike.Fintype
+import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.Tactic.RSuffices
+import Mathlib.Tactic.StacksAttribute
+import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
 # Artinian rings and modules
@@ -97,8 +102,14 @@ instance isArtinian_of_quotient_of_artinian
 
 variable {M}
 
+instance isArtinian_range (f : M →ₗ[R] P) [IsArtinian R M] : IsArtinian R (LinearMap.range f) :=
+  isArtinian_of_surjective _ _ f.surjective_rangeRestrict
+
 theorem isArtinian_of_linearEquiv (f : M ≃ₗ[R] P) [IsArtinian R M] : IsArtinian R P :=
   isArtinian_of_surjective _ f.toLinearMap f.toEquiv.surjective
+
+theorem LinearEquiv.isArtinian_iff (f : M ≃ₗ[R] P) : IsArtinian R M ↔ IsArtinian R P :=
+  ⟨fun _ ↦ isArtinian_of_linearEquiv f, fun _ ↦ isArtinian_of_linearEquiv f.symm⟩
 
 theorem isArtinian_of_range_eq_ker [IsArtinian R M] [IsArtinian R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
     (h : LinearMap.range f = LinearMap.ker g) : IsArtinian R N :=
@@ -125,8 +136,15 @@ instance (priority := 100) isArtinian_of_finite [Finite M] : IsArtinian R M :=
 -- Porting note: elab_as_elim can only be global and cannot be changed on an imported decl
 -- attribute [local elab_as_elim] Finite.induction_empty_option
 
-instance isArtinian_pi {R ι : Type*} [Finite ι] :
-    ∀ {M : ι → Type*} [Ring R] [∀ i, AddCommGroup (M i)]
+instance isArtinian_sup (M₁ M₂ : Submodule R P) [IsArtinian R M₁] [IsArtinian R M₂] :
+    IsArtinian R ↥(M₁ ⊔ M₂) := by
+  have := isArtinian_range (M₁.subtype.coprod M₂.subtype)
+  rwa [LinearMap.range_coprod, Submodule.range_subtype, Submodule.range_subtype] at this
+
+variable {ι : Type*} [Finite ι]
+
+instance isArtinian_pi :
+    ∀ {M : ι → Type*} [∀ i, AddCommGroup (M i)]
       [∀ i, Module R (M i)] [∀ i, IsArtinian R (M i)], IsArtinian R (∀ i, M i) := by
   apply Finite.induction_empty_option _ _ _ ι
   · exact fun e h ↦ isArtinian_of_linearEquiv (LinearEquiv.piCongrLeft R _ e)
@@ -136,14 +154,19 @@ instance isArtinian_pi {R ι : Type*} [Finite ι] :
 /-- A version of `isArtinian_pi` for non-dependent functions. We need this instance because
 sometimes Lean fails to apply the dependent version in non-dependent settings (e.g., it fails to
 prove that `ι → ℝ` is finite dimensional over `ℝ`). -/
-instance isArtinian_pi' {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
-    [IsArtinian R M] : IsArtinian R (ι → M) :=
+instance isArtinian_pi' [IsArtinian R M] : IsArtinian R (ι → M) :=
   isArtinian_pi
 
---porting note (#10754): new instance
-instance isArtinian_finsupp {R ι M : Type*} [Ring R] [AddCommGroup M] [Module R M] [Finite ι]
-    [IsArtinian R M] : IsArtinian R (ι →₀ M) :=
+--Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
+instance isArtinian_finsupp [IsArtinian R M] : IsArtinian R (ι →₀ M) :=
   isArtinian_of_linearEquiv (Finsupp.linearEquivFunOnFinite _ _ _).symm
+
+instance isArtinian_iSup :
+    ∀ {M : ι → Submodule R P} [∀ i, IsArtinian R (M i)], IsArtinian R ↥(⨆ i, M i) := by
+  apply Finite.induction_empty_option _ _ _ ι
+  · intro _ _ e h _ _; rw [← e.iSup_comp]; apply h
+  · intros; rw [iSup_of_empty]; infer_instance
+  · intro _ _ ih _ _; rw [iSup_option]; infer_instance
 
 end
 
@@ -223,7 +246,7 @@ theorem eventually_codisjoint_ker_pow_range_pow (f : M →ₗ[R] M) :
   intro x
   rsuffices ⟨y, hy⟩ : ∃ y, (f ^ m) ((f ^ n) y) = (f ^ m) x
   · exact ⟨x - (f ^ n) y, by simp [hy], (f ^ n) y, by simp⟩
-  -- Note: #8386 had to change `mem_range` into `mem_range (f := _)`
+  -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `mem_range` into `mem_range (f := _)`
   simp_rw [f.pow_apply n, f.pow_apply m, ← iterate_add_apply, ← f.pow_apply (m + n),
     ← f.pow_apply m, ← mem_range (f := _), ← hn _ (n.le_add_left m), hn _ hm]
   exact LinearMap.mem_range_self (f ^ m) x
@@ -327,6 +350,7 @@ end CommRing
 
 Strictly speaking, this should be called `IsLeftArtinianRing` but we omit the `Left` for
 convenience in the commutative case. For a right Artinian ring, use `IsArtinian Rᵐᵒᵖ R`. -/
+@[stacks 00J5]
 abbrev IsArtinianRing (R) [Ring R] :=
   IsArtinian R R
 
@@ -398,6 +422,7 @@ open IsArtinian
 
 variable {R : Type*} [CommRing R] [IsArtinianRing R]
 
+@[stacks 00J8]
 theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) := by
   let Jac := Ideal.jacobson (⊥ : Ideal R)
   let f : ℕ →o (Ideal R)ᵒᵈ := ⟨fun n => Jac ^ n, fun _ _ h => Ideal.pow_le_pow_right h⟩
@@ -484,9 +509,7 @@ lemma primeSpectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
   rwa [← Subtype.ext <| (@isMaximal_of_isPrime _ _ _ _ q.2).eq_of_le p.2.1 hq2]
 
 variable (R)
-/--
-[Stacks Lemma 00J7](https://stacks.math.columbia.edu/tag/00J7)
--/
+@[stacks 00J7]
 lemma maximal_ideals_finite : {I : Ideal R | I.IsMaximal}.Finite := by
   simp_rw [← isPrime_iff_isMaximal]
   apply primeSpectrum_finite R
@@ -521,8 +544,5 @@ instance [IsReduced R] : DecompositionMonoid (Polynomial R) :=
 
 theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
   (equivPi R).symm.isSemisimpleRing
-
-proof_wanted IsSemisimpleRing.isArtinianRing (R : Type*) [Ring R] [IsSemisimpleRing R] :
-    IsArtinianRing R
 
 end IsArtinianRing

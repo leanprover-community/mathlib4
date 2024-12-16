@@ -3,7 +3,7 @@ Copyright (c) 2024 Yaël Dillies, Kin Yau James Wong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kin Yau James Wong, Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.MeasureCompProd
+import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 
 /-!
 # Disintegration of measures and kernels
@@ -163,7 +163,7 @@ instance condKernelCountable.instIsCondKernel [∀ a, IsMarkovKernel (κCond a)]
   constructor
   ext a s hs
   conv_rhs => rw [← (κ a).disintegrate (κCond a)]
-  simp_rw [compProd_apply _ _ _ hs, condKernelCountable_apply, Measure.compProd_apply hs]
+  simp_rw [compProd_apply hs, condKernelCountable_apply, Measure.compProd_apply hs]
   congr
 
 end Countable

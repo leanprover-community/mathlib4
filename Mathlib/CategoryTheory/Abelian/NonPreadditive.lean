@@ -265,7 +265,6 @@ abbrev σ {A : C} : A ⨯ A ⟶ A :=
 
 end
 
--- Porting note (#10618): simp can prove these
 @[reassoc]
 theorem diag_σ {X : C} : diag X ≫ σ = 0 := by rw [cokernel.condition_assoc, zero_comp]
 
