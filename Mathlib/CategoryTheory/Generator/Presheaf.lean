@@ -24,7 +24,7 @@ open Limits Opposite
 namespace Presheaf
 
 variable {C : Type u} [Category.{v} C] {A : Type u'} [Category.{v'} A]
-  [∀ (ι : Type v), HasCoproductsOfShape ι A]
+  [HasCoproducts.{v} A]
 
 /-- Given `X : C` and `M : A`, this is the presheaf `Cᵒᵖ ⥤ A` which sends
 `Y : Cᵒᵖ` to the coproduct of copies of `M` indexed by `Y.unop ⟶ X`. -/
@@ -79,8 +79,7 @@ lemma isSeparator {ι : Type w} {S : ι → A} (hS : IsSeparating (Set.range S))
   (isSeparating C hS).isSeparator_coproduct
 
 variable (A) in
-instance hasSeparator [HasSeparator A] [HasZeroMorphisms A]
-    [∀ (ι : Type u), HasCoproductsOfShape ι A] :
+instance hasSeparator [HasSeparator A] [HasZeroMorphisms A] [HasCoproducts.{u} A] :
     HasSeparator (Cᵒᵖ ⥤ A) where
   hasSeparator := ⟨_, isSeparator C (S := fun (_ : Unit) ↦ separator A)
       (by simpa using isSeparator_separator A)⟩

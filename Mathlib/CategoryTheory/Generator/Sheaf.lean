@@ -26,8 +26,7 @@ namespace Sheaf
 
 variable {C : Type u} [Category.{v} C]
   (J : GrothendieckTopology C) {A : Type u'} [Category.{v'} A]
-  [∀ (ι : Type v), HasCoproductsOfShape ι A]
-  [HasWeakSheafify J A]
+  [HasCoproducts.{v} A] [HasWeakSheafify J A]
 
 /-- Given `J : GrothendieckTopology C`, `X : C` and `M : A`, this is the associated
 sheaf to the presheaf `Presheaf.freeYoneda X M`. -/
@@ -44,9 +43,8 @@ noncomputable def freeYonedaHomEquiv {X : C} {M : A} {F : Sheaf J A} :
 lemma isSeparating {ι : Type w} {S : ι → A} (hS : IsSeparating (Set.range S)) :
     IsSeparating (Set.range (fun (⟨X, i⟩ : C × ι) ↦ freeYoneda J X (S i))) := by
   intro F G f g hfg
-  refine (sheafToPresheaf J A).map_injective ((Presheaf.isSeparating C hS) _ _ ?_)
+  refine (sheafToPresheaf J A).map_injective (Presheaf.isSeparating C hS _ _ ?_)
   rintro _ ⟨⟨X, i⟩, rfl⟩ a
-  dsimp at a
   apply ((sheafificationAdjunction _ _).homEquiv _ _).symm.injective
   simpa only [← Adjunction.homEquiv_naturality_right_symm] using
     hfg _ ⟨⟨X, i⟩, rfl⟩ (((sheafificationAdjunction _ _).homEquiv _ _).symm a)
@@ -57,8 +55,7 @@ lemma isSeparator {ι : Type w} {S : ι → A} (hS : IsSeparating (Set.range S))
   (isSeparating J hS).isSeparator_coproduct
 
 variable (A) in
-instance hasSeparator [HasSeparator A] [Preadditive A]
-    [∀ (ι : Type u), HasCoproductsOfShape ι A] :
+instance hasSeparator [HasSeparator A] [Preadditive A] [HasCoproducts.{u} A] :
     HasSeparator (Sheaf J A) where
   hasSeparator := ⟨_, isSeparator J (S := fun (_ : Unit) ↦ separator A)
       (by simpa using isSeparator_separator A)⟩
