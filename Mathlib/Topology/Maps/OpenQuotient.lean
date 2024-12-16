@@ -69,9 +69,4 @@ theorem dense_preimage_iff (h : IsOpenQuotientMap f) {s : Set Y} : Dense (f ⁻�
   ⟨fun hs ↦ h.surjective.denseRange.dense_of_mapsTo h.continuous hs (mapsTo_preimage _ _),
     fun hs ↦ hs.preimage h.isOpenMap⟩
 
-theorem isOpen_preimage_iff (h : IsOpenQuotientMap f) {s : Set Y} :
-    IsOpen (f ⁻¹' s) ↔ IsOpen s := by
-  refine ⟨fun hs ↦ ?_, h.continuous.isOpen_preimage s⟩
-  exact (Set.image_preimage_eq s h.surjective) ▸ h.isOpenMap (f ⁻¹' s) hs
-
 end IsOpenQuotientMap

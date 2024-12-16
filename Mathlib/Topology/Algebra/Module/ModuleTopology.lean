@@ -383,7 +383,7 @@ theorem coinduced_of_surjective {φ : A →ₗ[R] B} (hφ : Function.Surjective 
       apply ContinuousSMul.mk
       -- We know that `• : R × A → A` is continuous, by assumption.
       obtain ⟨hA⟩ : ContinuousSMul R A := inferInstance
-      rw [continuous_def] at hA ⊢
+      --rw [continuous_def] at hA ⊢
       /- By linearity of φ, this diagram commutes:
         R × A --(•)--> A
           |            |
@@ -391,34 +391,22 @@ theorem coinduced_of_surjective {φ : A →ₗ[R] B} (hφ : Function.Surjective 
           |            |
          \/            \/
         R × B --(•)--> B
-
-      If `B` has the coinduced topology, then all maps apart from the bottom arrow
-      are known to be continuous, and our goal is to prove that the bottom arrow is continuous.
       -/
-      -- Let `U` be open in `B` for the coinduced topology.
-      intro U hU
-      -- then `φ⁻¹(U)` is open in `A` by definition of coinduced topology.
-      rw [isOpen_coinduced] at hU
-      -- so its preimage in `R × A` under `•` is also open.
-      -- Conclusion so far: the preimage in `R × A` of `U` under the map `(r,a) ↦ φ (r•a)` is open.
-      specialize hA _ hU
-      -- But the is latter map is also the composite of `(r,a) ↦ (r,φ a)` and `• : R × B → B`
-      -- by linearity of φ
-      have hφ2 : φ ∘ (fun p ↦ p.1 • p.2 : R × A → A) = (fun p ↦ p.1 • p.2 : R × B → B) ∘
-        (AddMonoidHom.prodMap (AddMonoidHom.id R) φ.toAddMonoidHom) := by ext; simp
-      -- so we know that the preimage in `R × A` under the map `(id,φ)`
-      -- of the set `((r,b) ↦ r • b)⁻¹ U ⊆ R × B` is open
-      rw [← Set.preimage_comp, hφ2, Set.preimage_comp] at hA; clear hφ2
-      -- The upshot: we want to prove that the set `((r,b) ↦ r • b)⁻¹ U` is open
-      -- and we know its preimage under the map `id × φ : R × A → R × B` is open.
-      -- as is the identity from R to R
+      have hφ2 : (fun p ↦ p.1 • p.2 : R × B → B) ∘ (Prod.map id φ) =
+        φ ∘ (fun p ↦ p.1 • p.2 : R × A → A) := by ext; simp
+        --(AddMonoidHom.prodMap (AddMonoidHom.id R) φ.toAddMonoidHom) := by ext; simp
+      -- Furthermore, the identity from R to R is an open quotient map
       have hido : IsOpenQuotientMap (AddMonoidHom.id R) := .id
-      -- so their product `id × φ` is also an open quotient map, by a result in the library.
+      -- as is `φ`, so the product `id × φ` is an open quotient map, by a result in the library.
       have foo : IsOpenQuotientMap (_ : R × A → R × B) := IsOpenQuotientMap.prodMap .id hφo
-      -- But this is a general fact about open quotient maps (indeed, about open surjections)
-      -- and a product of open quotient maps is an open quotient map.
-      rwa [← foo.isOpen_preimage_iff]
-    · -- It remains to prove that addition is continuous for the coinduced topology on `B`.
+      -- So by a standard fact about open quotient maps, it suffices to prove
+      -- that the diagonal map is continuous.
+      rw [← foo.continuous_comp_iff]
+      -- but the diagonal is the composite of the continuous maps `φ` and `• : R × A → A`
+      rw [hφ2]
+      -- so we're done
+      exact Continuous.comp hφo.continuous hA
+    · -- In this branch we show that addition is continuous for the coinduced topology on `B`.
       apply ContinuousAdd.mk
       -- We know addition is continuous on A
       obtain ⟨hA⟩ := IsModuleTopology.toContinuousAdd R A
