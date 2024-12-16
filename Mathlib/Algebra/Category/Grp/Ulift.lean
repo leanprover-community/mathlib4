@@ -89,8 +89,7 @@ instance : uliftFunctor.{u, v}.Faithful where
 @[to_additive
   "The universe lift functor for additive groups is full."]
 instance : uliftFunctor.{u, v}.Full where
-  map_surjective f :=
-    ⟨ofHom (MonoidHom.mk (OneHom.mk (fun x => (f (ULift.up x)).down)
+  map_surjective f := ⟨ofHom (MonoidHom.mk (OneHom.mk (fun x => (f (ULift.up x)).down)
     (by change (f 1).down = ?_; rw [f.map_one]; rfl))
     (fun _ _ ↦ by simp only [uliftFunctor_obj, coe_of];
                   change (f (_ * _)).down = _; rw [f.map_mul]; rfl)), rfl⟩
@@ -244,8 +243,7 @@ lemma descChar_uniq (f : lc.pt →+ A) (m : c.pt →+ A) (hm : ∀ (j : J) (a : 
   refine AddMonoidHom.ext_iff.mpr (congrFun ?_)
   dsimp [descChar]
   rw [← AddEquiv.symm_comp_eq]
-  suffices AddEquiv.ulift.symm.toAddMonoidHom.comp m = hc.desc (coconeOfChar f) by
-    rw [← this]; rfl
+  suffices AddEquiv.ulift.symm.toAddMonoidHom.comp m = hc.desc (coconeOfChar f) by rw [← this]; rfl
   refine hc.uniq (coconeOfChar f) ((@AddEquiv.ulift A _).symm.toAddMonoidHom.comp m) (fun j ↦ ?_)
   ext a
   change ({down := m (c.ι.app j a)} : ULift A) = _
@@ -273,13 +271,11 @@ Let `K : J ⥤ AddCommGrp.{u}`, `c` be a colimit cocone of `K` and `lc` be a coc
 to the zero morphism `c.pt →+ A`.
 -/
 lemma descChar_zero_eq_zero : descChar hc (0 : lc.pt →+ A) = 0 := by
-  have heq : (0 : lc.pt →+ A) = (0 : Unit →+ A).comp (0 : lc.pt →+ Unit) := by
-    ext _; simp
+  have heq : (0 : lc.pt →+ A) = (0 : Unit →+ A).comp (0 : lc.pt →+ Unit) := by ext _; simp
   rw [heq, descChar_comp]
   simp
 
-variable {ι : Type*} (B : ι → Type) [∀ (i : ι), AddCommGroup (B i)]
-    (f : (i : ι) → lc.pt →+ B i)
+variable {ι : Type*} (B : ι → Type) [∀ (i : ι), AddCommGroup (B i)] (f : (i : ι) → lc.pt →+ B i)
 
 /-- Let `K : J ⥤ AddCommGrp.{u}`, `c` be a colimit cocone of `K`, `lc` be a cocone of
 `K ⋙ uliftFunctor` and `f i` be a family of morphisms from `lc.pt` to small abelian
@@ -308,7 +304,7 @@ lemma descCharFamily_comp (g : ((i : ι) → B i) →+ A) :
   congr 1
   ext i
   simp [descCharFamily]
-  conv_lhs => erw [descChar_fac hc (f i) j a]
+  erw [descChar_fac hc (f i) j a]
   rfl
 
 variable (lc)
@@ -341,13 +337,10 @@ lemma descHom_property (χ : lc.pt →+ AddCircle (1 : ℚ)) : χ.comp (descHom 
   change ((Pi.evalAddMonoidHom (fun (_ : CharacterModule lc.pt) ↦ AddCircle (1 : ℚ)) χ).comp
     (hom_to_pi lc.pt)).comp (descHom hc lc) = _
   refine AddMonoidHom.ext (fun a ↦ ?_)
-  conv_lhs => rw [AddMonoidHom.comp_assoc, AddMonoidHom.comp_apply]
+  rw [AddMonoidHom.comp_assoc, AddMonoidHom.comp_apply]
   erw [AddMonoidHom.apply_ofInjective_symm (hom_to_pi_injective lc.pt),
-    AddMonoidHom.coe_rangeRestrict]
-  conv_lhs => erw [← AddMonoidHom.comp_apply (Pi.evalAddMonoidHom (fun x ↦ AddCircle 1) χ)
-                (descCharFamily hc (fun x ↦ AddCircle 1) fun c ↦ c)]
-              rw [← descCharFamily_comp]
-  rfl
+    AddMonoidHom.coe_rangeRestrict, ← AddMonoidHom.comp_apply (Pi.evalAddMonoidHom
+    (fun x ↦ AddCircle 1) χ) (descCharFamily hc (fun x ↦ AddCircle 1) fun c ↦ c)]
 
 /-- Let `K : J ⥤ AddCommGrp.{u}`, `c` be a colimit cocone of `K` and `lc` be a cocone of
 `K ⋙ uliftFunctor`. The morphism `descHom: c.pt →+ lc.pt` underlies a morphism of
