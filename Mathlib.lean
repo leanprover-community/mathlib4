@@ -2115,6 +2115,7 @@ import Mathlib.CategoryTheory.Sites.EpiMono
 import Mathlib.CategoryTheory.Sites.EqualizerSheafCondition
 import Mathlib.CategoryTheory.Sites.Equivalence
 import Mathlib.CategoryTheory.Sites.Grothendieck
+import Mathlib.CategoryTheory.Sites.GrothendieckAbelian
 import Mathlib.CategoryTheory.Sites.IsSheafFor
 import Mathlib.CategoryTheory.Sites.IsSheafOneHypercover
 import Mathlib.CategoryTheory.Sites.LeftExact
