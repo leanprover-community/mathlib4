@@ -214,7 +214,7 @@ noncomputable instance forget_createsLimitsOfShape :
   to_additive_relevant_arg 2]
 noncomputable instance forget_createsLimitsOfSize :
     CreatesLimitsOfSize.{w, v} (forget Grp.{u}) where
-      CreatesLimitsOfShape := inferInstance
+  CreatesLimitsOfShape := inferInstance
 
 @[to_additive]
 noncomputable instance forget_createsLimits :
