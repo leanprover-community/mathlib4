@@ -126,7 +126,7 @@ end Adjunction
 
 namespace Sheaf
 
--- part of this should be moved to Abelian.GrothendieckAxioms.Sheaf
+-- this should be moved to Abelian.GrothendieckAxioms.Sheaf
 
 instance hasExactColimitsOfShape
     {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
