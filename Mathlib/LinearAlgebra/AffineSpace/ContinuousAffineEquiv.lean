@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Rothgang
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
+import Mathlib.Topology.Algebra.ContinuousAffineMap
 import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
@@ -94,6 +95,15 @@ theorem coe_coe (e : P₁ ≃ᵃL[k] P₂) : ⇑(e : P₁ ≃ᵃ[k] P₂) = e :=
 @[simp]
 theorem coe_toEquiv (e : P₁ ≃ᵃL[k] P₂) : ⇑e.toEquiv = e :=
   rfl
+
+/-- A continuous affine equivalence induces a continuous affine map. -/
+@[coe]
+def toContinuousAffineMap (e : P₁ ≃ᵃL[k] P₂) : P₁ →ᴬ[k] P₂ :=
+  { e with cont := e.continuous_toFun }
+
+/-- Coerce continuous affine equivs to continuous affine maps. -/
+instance ContinuousAffineMap.coe : Coe (P₁ ≃ᵃL[k] P₂) (P₁ →ᴬ[k] P₂) :=
+  ⟨toContinuousAffineMap⟩
 
 /-- See Note [custom simps projection].
   We need to specify this projection explicitly in this case,

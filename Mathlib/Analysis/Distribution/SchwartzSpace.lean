@@ -7,6 +7,7 @@ import Mathlib.Analysis.Calculus.ContDiff.Bounds
 import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
 import Mathlib.Analysis.Calculus.LineDeriv.Basic
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
+import Mathlib.Analysis.Normed.Affine.ContinuousAffineMap
 import Mathlib.Analysis.Normed.Group.ZeroAtInfty
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 import Mathlib.Analysis.SpecialFunctions.JapaneseBracket
@@ -569,6 +570,32 @@ lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
     simpa [this] using .const _
   · exact (f.le_opNorm x).trans (by simp [mul_add])
 
+/-- The addition of two `HasTemperateGrowth` functions is a `HasTemperateGrowth` function. -/
+lemma _root_.Function.HasTemperateGrowth.add {f : E → F} (hf : f.HasTemperateGrowth) {g : E → F}
+    (hg : g.HasTemperateGrowth) : Function.HasTemperateGrowth fun x ↦ f x + g x := by
+  refine ⟨hf.1.add hg.1, ?_⟩
+  intro n
+  rcases hf.2 n with ⟨kf, Cf, hCf⟩
+  rcases hg.2 n with ⟨kg, Cg, hCg⟩
+  have hCf_nn : 0 ≤ Cf := by simpa using le_trans (norm_nonneg _) (hCf 0)
+  have hCg_nn : 0 ≤ Cg := by simpa using le_trans (norm_nonneg _) (hCg 0)
+  use kf ⊔ kg, Cf + Cg
+  intro x
+  rw [iteratedFDeriv_add_apply' (contDiff_infty.mp hf.1 n) (contDiff_infty.mp hg.1 n)]
+  refine le_trans (norm_add_le _ _) ?_
+  rw [add_mul]
+  refine add_le_add ?_ ?_
+  · refine le_trans (hCf x) (mul_le_mul_of_nonneg_left ?_ hCf_nn)
+    simp [pow_le_pow_right₀]
+  · refine le_trans (hCg x) (mul_le_mul_of_nonneg_left ?_ hCg_nn)
+    simp [pow_le_pow_right₀]
+
+lemma _root_.ContinuousAffineMap.hasTemperateGrowth (f : E →ᴬ[ℝ] F) :
+    Function.HasTemperateGrowth f := by
+  rw [ContinuousAffineMap.decomp]
+  exact Function.HasTemperateGrowth.add f.contLinear.hasTemperateGrowth
+    (Function.HasTemperateGrowth.const _)
+
 variable [NormedAddCommGroup D] [MeasurableSpace D]
 
 open MeasureTheory Module
@@ -923,6 +950,14 @@ def compCLMOfContinuousLinearEquiv (g : D ≃L[ℝ] E) :
 
 @[simp] lemma compCLMOfContinuousLinearEquiv_apply (g : D ≃L[ℝ] E) (f : 𝓢(E, F)) :
     compCLMOfContinuousLinearEquiv 𝕜 g f = f ∘ g := rfl
+
+/-- Composition with a continuous affine equiv on the right is a continuous linear map on
+Schwartz space. -/
+def compCLMOfContinuousAffineEquiv (g : D ≃ᵃL[ℝ] E) : 𝓢(E, F) →L[𝕜] 𝓢(D, F) :=
+  compCLMOfAntilipschitz 𝕜 (g.toContinuousAffineMap.hasTemperateGrowth) g.antilipschitz
+
+@[simp] lemma compCLMOfContinuousAffineEquiv_apply (g : D ≃ᵃL[ℝ] E) (f : 𝓢(E, F)) :
+    compCLMOfContinuousAffineEquiv 𝕜 g f = f ∘ g := rfl
 
 end Comp
 

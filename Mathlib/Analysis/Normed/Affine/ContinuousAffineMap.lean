@@ -6,6 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Analysis.Normed.Affine.Isometry
 import Mathlib.Topology.Algebra.ContinuousAffineMap
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
+import Mathlib.LinearAlgebra.AffineSpace.ContinuousAffineEquiv
 
 /-!
 # Continuous affine maps between normed spaces.
@@ -235,3 +236,22 @@ theorem toConstProdContinuousLinearMap_snd (f : V →ᴬ[𝕜] W) :
 end NormedSpaceStructure
 
 end ContinuousAffineMap
+
+section Lipschitz
+
+variable {𝕜 V W : Type*} [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup V] [NormedAddCommGroup W] [NormedSpace 𝕜 V] [NormedSpace 𝕜 W]
+
+theorem ContinuousAffineMap.lipschitz (f : V →ᴬ[𝕜] W) : LipschitzWith ‖f.contLinear‖₊ f := by
+  rw [decomp]
+  simpa using f.contLinear.lipschitz.add (.const (f 0))
+
+theorem ContinuousAffineEquiv.lipschitz (e : V ≃ᵃL[𝕜] W) :
+    LipschitzWith ‖e.toContinuousAffineMap.contLinear‖₊ e :=
+  e.toContinuousAffineMap.lipschitz
+
+theorem ContinuousAffineEquiv.antilipschitz (e : V ≃ᵃL[𝕜] W) :
+    AntilipschitzWith ‖e.symm.toContinuousAffineMap.contLinear‖₊ e :=
+  e.symm.lipschitz.to_rightInverse e.left_inv
+
+end Lipschitz
