@@ -253,6 +253,7 @@ theorem binomialSeries_ODE {a : ℝ} :
     rw [inv_mul_cancel_right₀ (by linarith)]
     ring
 
+/-- Sum of the binomial series $\sum_{k=0}^{\infty} \binom{a}{k} s^k$. -/
 noncomputable def binomialSum (a : ℝ) (x : ℝ) := (binomialSeries ℝ a).sum x
 
 /-- Let `f` denote the sum of binomial series $\sum_{k=0}^{\infty} \binom{a}{k} s^k$.
@@ -349,7 +350,6 @@ theorem binomialSum_eq_rpow {a x : ℝ} (hx : |x| < 1) : binomialSum a x = (1 + 
     · intro x hx
       simp at hx
       simp [EMetric.ball]
-      have := coe_nnnorm x
       apply lt_of_lt_of_le _ binomialSeries_radius_ge_one
       rw [← ENNReal.coe_one, ENNReal.coe_one, ENNReal.coe_lt_one_iff]
       rw [← NNReal.coe_lt_coe, coe_nnnorm x]
