@@ -67,6 +67,23 @@ variable (M)
 theorem centralizer_univ : centralizer Set.univ = center M :=
   SetLike.ext' (Set.centralizer_univ M)
 
+variable {M} in
+@[to_additive]
+lemma closure_le_centralizer_centralizer (s : Set M) :
+    closure s ≤ centralizer (centralizer s) :=
+  closure_le.mpr Set.subset_centralizer_centralizer
+
+/-- If all the elements of a set `s` commute, then `closure s` is a commutative semigroup. -/
+@[to_additive
+      "If all the elements of a set `s` commute, then `closure s` forms an additive
+      commutative semigroup."]
+abbrev closureCommSemigroupOfComm {s : Set M} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
+    CommSemigroup (closure s) :=
+  { MulMemClass.toSemigroup (closure s) with
+    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦
+      have := closure_le_centralizer_centralizer s
+      Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
+
 end
 
 end Subsemigroup

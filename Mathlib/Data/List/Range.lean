@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Kim Morrison
 -/
 import Mathlib.Data.List.Chain
-import Mathlib.Data.List.Nodup
 
 /-!
 # Ranges of naturals as lists
@@ -42,58 +41,10 @@ theorem chain_range_succ (r : ℕ → ℕ → Prop) (n a : ℕ) :
   rw [range_succ_eq_map, chain_cons, and_congr_right_iff, ← chain'_range_succ, range_succ_eq_map]
   exact fun _ => Iff.rfl
 
-@[simp]
-theorem finRange_zero : finRange 0 = [] :=
-  rfl
-
-@[simp]
-theorem mem_finRange {n : ℕ} (a : Fin n) : a ∈ finRange n :=
-  mem_pmap.2
-    ⟨a.1, mem_range.2 a.2, by
-      cases a
-      rfl⟩
-
-theorem nodup_finRange (n : ℕ) : (finRange n).Nodup :=
-  (Pairwise.pmap (nodup_range n) _) fun _ _ _ _ => @Fin.ne_of_val_ne _ ⟨_, _⟩ ⟨_, _⟩
-
-@[simp]
-theorem length_finRange (n : ℕ) : (finRange n).length = n := by
-  rw [finRange, length_pmap, length_range]
-
-@[simp]
-theorem finRange_eq_nil {n : ℕ} : finRange n = [] ↔ n = 0 := by
-  rw [← length_eq_zero, length_finRange]
-
-theorem pairwise_lt_finRange (n : ℕ) : Pairwise (· < ·) (finRange n) :=
-  (List.pairwise_lt_range n).pmap (by simp) (by simp)
-
-theorem pairwise_le_finRange (n : ℕ) : Pairwise (· ≤ ·) (finRange n) :=
-  (List.pairwise_le_range n).pmap (by simp) (by simp)
-
-@[simp]
-theorem getElem_finRange {n : ℕ} {i : ℕ} (h) :
-    (finRange n)[i] = ⟨i, length_finRange n ▸ h⟩ := by
-  simp [finRange, getElem_range, getElem_pmap]
-
--- Porting note (#10756): new theorem
-theorem get_finRange {n : ℕ} {i : ℕ} (h) :
-    (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
-  simp
-
 @[deprecated (since := "2024-08-19")] alias nthLe_range' := get_range'
 @[deprecated (since := "2024-08-19")] alias nthLe_range'_1 := getElem_range'_1
 @[deprecated (since := "2024-08-19")] alias nthLe_range := get_range
-@[deprecated (since := "2024-08-19")] alias nthLe_finRange := get_finRange
 
-@[simp]
-theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
-  List.ext_get (by simp) (by simp)
-
-@[simp] theorem indexOf_finRange {k : ℕ} (i : Fin k) : (finRange k).indexOf i = i := by
-  have : (finRange k).indexOf i < (finRange k).length := indexOf_lt_length.mpr (by simp)
-  have h₁ : (finRange k).get ⟨(finRange k).indexOf i, this⟩ = i := indexOf_get this
-  have h₂ : (finRange k).get ⟨i, by simp⟩ = i := get_finRange _
-  simpa using (Nodup.get_inj_iff (nodup_finRange k)).mp (Eq.trans h₁ h₂.symm)
 
 section Ranges
 
@@ -137,20 +88,22 @@ theorem ranges_length (l : List ℕ) :
     intro s _
     simp only [Function.comp_apply, length_map]
 
-/-- See `List.ranges_join` for the version about `List.sum`. -/
-lemma ranges_join' : ∀ l : List ℕ, l.ranges.join = range (Nat.sum l)
+set_option linter.deprecated false in
+/-- See `List.ranges_flatten` for the version about `List.sum`. -/
+@[deprecated "Use `List.ranges_flatten`." (since := "2024-10-17")]
+lemma ranges_flatten' : ∀ l : List ℕ, l.ranges.flatten = range (Nat.sum l)
   | [] => rfl
-  | a :: l => by simp only [sum_cons, join, ← map_join, ranges_join', range_add]
+  | a :: l => by simp only [Nat.sum_cons, flatten, ← map_flatten, ranges_flatten', range_add]
 
+@[deprecated (since := "2024-10-15")] alias ranges_join' := ranges_flatten'
+
+set_option linter.deprecated false in
 /-- Any entry of any member of `l.ranges` is strictly smaller than `Nat.sum l`.
 See `List.mem_mem_ranges_iff_lt_sum` for the version about `List.sum`. -/
+@[deprecated "Use `List.mem_mem_ranges_iff_lt_sum`." (since := "2024-11-18")]
 lemma mem_mem_ranges_iff_lt_natSum (l : List ℕ) {n : ℕ} :
     (∃ s ∈ l.ranges, n ∈ s) ↔ n < Nat.sum l := by
-  rw [← mem_range, ← ranges_join', mem_join]
-
-/-- The members of `l.ranges` have no duplicate -/
-theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
-  (List.pairwise_join.mp <| by rw [ranges_join']; exact nodup_range _).1 s hs
+  rw [← mem_range, ← ranges_flatten', mem_flatten]
 
 end Ranges
 

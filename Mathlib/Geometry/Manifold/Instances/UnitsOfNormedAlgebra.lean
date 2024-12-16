@@ -27,6 +27,9 @@ example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V
 noncomputable section
 
 open scoped Manifold
+/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
+Later, replace with `open scoped ContDiff`. -/
+local notation "∞" => (⊤ : ℕ∞)
 
 namespace Units
 
