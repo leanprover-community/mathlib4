@@ -283,7 +283,7 @@ theorem continuous_of_distribMulActionHom (φ : A →+[R] B) : Continuous φ := 
     continuousAdd_induced φ.toAddMonoidHom⟩
 
 @[fun_prop, continuity]
-instance continuous_of_linearMap (φ : A →ₗ[R] B) : Continuous φ :=
+theorem continuous_of_linearMap (φ : A →ₗ[R] B) : Continuous φ :=
   continuous_of_distribMulActionHom φ.toDistribMulActionHom
 
 variable (R) in
@@ -369,9 +369,8 @@ theorem coinduced_of_surjective {φ : A →ₗ[R] B} (hφ : Function.Surjective 
       -/
       have hφ2 : (fun p ↦ p.1 • p.2 : R × B → B) ∘ (Prod.map id φ) =
         φ ∘ (fun p ↦ p.1 • p.2 : R × A → A) := by ext; simp
-      -- Furthermore, the identity from R to R is an open quotient map
-      have hido : IsOpenQuotientMap (AddMonoidHom.id R) := .id
-      -- as is `φ`, so the product `id × φ` is an open quotient map, by a result in the library.
+      -- Furthermore, the identity from R to R is an open quotient map as is `φ`,
+      -- so the product `id × φ` is an open quotient map, by a result in the library.
       have hoq : IsOpenQuotientMap (_ : R × A → R × B) := IsOpenQuotientMap.prodMap .id hφo
       -- This is the left map in the diagram. So by a standard fact about open quotient maps,
       -- to prove that the bottom map is continuous, it suffices to prove
