@@ -12,13 +12,9 @@ import Mathlib.SetTheory.Cardinal.HasCardinalLT
 
 /-! # Presentable objects
 
-If `κ` is a regular cardinal, we introduce the notion of `κ`-filtered
-category, which generalizes the notion of filtered category.
-Indeed, we obtain the equivalence
-`IsCardinalFiltered J ℵ₀ ↔ IsFiltered J`.
-
 A functor `F : C ⥤ D` is `κ`-accessible (`Functor.IsAccessible`)
-if it commutes with colimits of shape `J` where `J` is any `κ`-filtered category.
+if it commutes with colimits of shape `J` where `J` is any `κ`-filtered category
+(that is essentially small relative to the universe `w` such that `κ : Cardinal.{w}`.).
 
 An object `X` of a category is `κ`-presentable (`IsPresentable`)
 if the functor `Hom(X, _)` (i.e. `coyoneda.obj (op X)`) is `κ`-accessible.
