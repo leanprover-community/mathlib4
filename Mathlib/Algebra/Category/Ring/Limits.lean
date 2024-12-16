@@ -85,8 +85,8 @@ namespace HasLimits
 def limitCone : Cone F where
   pt := SemiRingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
   π :=
-    { app := limitπRingHom.{v, u} F
-      naturality := fun {_ _} f => RingHom.coe_inj
+    { app := fun j ↦ SemiRingCat.ofHom <| limitπRingHom.{v, u} F j
+      naturality := fun {_ _} f ↦ hom_ext <| RingHom.coe_inj
         ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) }
 
 /-- Witness that the limit cone in `SemiRingCat` is a limit cone.
@@ -94,7 +94,7 @@ def limitCone : Cone F where
 -/
 def limitConeIsLimit : IsLimit (limitCone F) := by
   refine IsLimit.ofFaithful (forget SemiRingCat.{u}) (Types.Small.limitConeIsLimit.{v, u} _)
-    (fun s => { toFun := _, map_one' := ?_, map_mul' := ?_, map_zero' := ?_, map_add' := ?_})
+    (fun s => ofHom { toFun := _, map_one' := ?_, map_mul' := ?_, map_zero' := ?_, map_add' := ?_})
     (fun s => rfl)
   · simp only [Functor.mapCone_π_app, forget_map, map_one]
     rfl
@@ -184,11 +184,6 @@ instance forget_preservesLimits : PreservesLimits (forget SemiRingCat.{u}) :=
 
 end SemiRingCat
 
--- Porting note: typemax hack to fix universe complaints
-/-- An alias for `CommSemiring.{max u v}`, to deal with unification issues. -/
-@[nolint checkUnivs]
-abbrev CommSemiRingCatMax.{u1, u2} := CommSemiRingCat.{max u1 u2}
-
 namespace CommSemiRingCat
 
 variable {J : Type v} [Category.{w} J] (F : J ⥤ CommSemiRingCat.{u})
@@ -228,8 +223,9 @@ instance :
       π :=
         { app := fun j => CommSemiRingCat.ofHom <| SemiRingCat.limitπRingHom.{v, u} (J := J)
             (F ⋙ forget₂ CommSemiRingCat.{u} SemiRingCat.{u}) j
-          naturality := (SemiRingCat.HasLimits.limitCone.{v, u}
-            (F ⋙ forget₂ CommSemiRingCat.{u} SemiRingCat.{u})).π.naturality } }
+          naturality := fun _ _ f ↦ hom_ext <| congrArg SemiRingCat.Hom.hom <|
+            (SemiRingCat.HasLimits.limitCone.{v, u}
+            (F ⋙ forget₂ CommSemiRingCat.{u} SemiRingCat.{u})).π.naturality f } }
   createsLimitOfReflectsIso fun c' t =>
     { liftedCone := c
       validLift := IsLimit.uniqueUpToIso (SemiRingCat.HasLimits.limitConeIsLimit.{v, u} _) t
@@ -291,11 +287,6 @@ instance forget_preservesLimits : PreservesLimits (forget CommSemiRingCat.{u}) :
 
 end CommSemiRingCat
 
--- Porting note: typemax hack to fix universe complaints
-/-- An alias for `RingCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev RingCatMax.{u1, u2} := RingCat.{max u1 u2}
-
 namespace RingCat
 
 variable {J : Type v} [Category.{w} J] (F : J ⥤ RingCat.{u})
@@ -334,7 +325,7 @@ instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
   { pt := RingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
     π :=
       { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} (F ⋙ forget₂ _ SemiRingCat) x
-        naturality := fun _ _ f => RingHom.coe_inj
+        naturality := fun _ _ f => hom_ext <| RingHom.coe_inj
           ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) } }
   createsLimitOfReflectsIso fun c' t =>
     { liftedCone := c
@@ -422,11 +413,6 @@ instance forget_preservesLimits : PreservesLimits (forget RingCat.{u}) :=
 
 end RingCat
 
--- Porting note: typemax hack to fix universe complaints
-/-- An alias for `CommRingCat.{max u v}`, to deal around unification issues. -/
-@[nolint checkUnivs]
-abbrev CommRingCatMax.{u1, u2} := CommRingCat.{max u1 u2}
-
 namespace CommRingCat
 
 variable {J : Type v} [Category.{w} J] (F : J ⥤ CommRingCat.{u})
@@ -469,7 +455,7 @@ instance :
       π :=
         { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} F' x
           naturality :=
-            fun _ _ f => RingHom.coe_inj
+            fun _ _ f => hom_ext <| RingHom.coe_inj
               ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) } }
     createsLimitOfReflectsIso fun _ t =>
     { liftedCone := c
@@ -477,10 +463,10 @@ instance :
       makesLimit :=
         IsLimit.ofFaithful (forget₂ _ RingCat.{u})
           (RingCat.limitConeIsLimit.{v, u} (F ⋙ forget₂ CommRingCat.{u} RingCat.{u}))
-          (fun s : Cone F => ofHom <|
+          (fun s : Cone F => CommRingCat.ofHom <|
               (RingCat.limitConeIsLimit.{v, u}
                 (F ⋙ forget₂ CommRingCat.{u} RingCat.{u})).lift
-                ((forget₂ _ RingCat.{u}).mapCone s)) fun _ => rfl }
+                ((forget₂ _ RingCat.{u}).mapCone s) |>.hom) fun _ => rfl }
 
 /-- A choice of limit cone for a functor into `CommRingCat`.
 (Generally, you'll just want to use `limit F`.)
