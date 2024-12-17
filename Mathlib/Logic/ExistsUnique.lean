@@ -116,6 +116,7 @@ theorem existsUnique_const {b : Prop} (α : Sort*) [i : Nonempty α] [Subsinglet
 
 @[deprecated (since := "2024-12-17")] alias exists_unique_eq := existsUnique_eq
 
+/-- The difference with `existsUnique_eq` is that the equality is reversed. -/
 @[simp] theorem existsUnique_eq' {a' : α} : ∃! a, a' = a := by
   simp only [ExistsUnique, and_self, forall_eq', exists_eq']
 
