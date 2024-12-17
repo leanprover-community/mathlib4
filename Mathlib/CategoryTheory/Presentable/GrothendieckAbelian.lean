@@ -84,10 +84,20 @@ def mapShortComplex : ShortComplex C :=
 
 include hc₂ hc₃ hS in
 lemma mapShortComplex_exact : (mapShortComplex S c₁ hc₁ c₂ c₃ f g hf hg).Exact := by
-  have := hc₂
-  have := hc₃
-  have := hS
-  sorry
+  refine (ShortComplex.exact_iff_of_iso ?_).2 (hS.map colim)
+  refine ShortComplex.isoMk
+    (IsColimit.coconePointUniqueUpToIso hc₁ (colimit.isColimit _))
+    (IsColimit.coconePointUniqueUpToIso hc₂ (colimit.isColimit _))
+    (IsColimit.coconePointUniqueUpToIso hc₃ (colimit.isColimit _))
+    (hc₁.hom_ext (fun j ↦ ?_)) (hc₂.hom_ext (fun j ↦ ?_))
+  · dsimp
+    rw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc,
+      colimit.cocone_ι, ι_colimMap, reassoc_of% (hf j),
+      IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]
+  · dsimp
+    rw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc,
+      colimit.cocone_ι, ι_colimMap, reassoc_of% (hg j),
+      IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]
 
 end
 
@@ -98,11 +108,21 @@ variable {X₁ X₂ : J ⥤ C} (φ : X₁ ⟶ X₂) [∀ j, Mono (φ.app j)]
   (f : c₁.pt ⟶ c₂.pt) (hf : ∀ j, c₁.ι.app j ≫ f = φ.app j ≫ c₂.ι.app j)
 
 include hf hc₁ hc₂ in
-lemma map_mono : Mono f :=
+lemma map_mono : Mono f := by
+  have : Mono φ := NatTrans.mono_of_mono_app φ
   have := hf
-  have := hc₁
-  have := hc₂
-  sorry
+  have : Mono (colim.map φ) := inferInstance
+  have e : Arrow.mk f ≅ Arrow.mk (colim.map φ) :=
+    Arrow.isoMk
+      (IsColimit.coconePointUniqueUpToIso hc₁ (colimit.isColimit _))
+      (IsColimit.coconePointUniqueUpToIso hc₂ (colimit.isColimit _))
+      (hc₁.hom_ext (fun j ↦ by
+        dsimp
+        rw [IsColimit.comp_coconePointUniqueUpToIso_hom_assoc,
+          colimit.cocone_ι, ι_colimMap, reassoc_of% (hf j),
+          IsColimit.comp_coconePointUniqueUpToIso_hom, colimit.cocone_ι]))
+  exact ((MorphismProperty.monomorphisms C).arrow_mk_iso_iff e).2
+    (inferInstanceAs (Mono (colim.map φ)))
 
 end
 
