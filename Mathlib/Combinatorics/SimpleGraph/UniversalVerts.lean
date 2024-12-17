@@ -38,7 +38,7 @@ lemma isClique_universalVerts (G : SimpleGraph V) : G.IsClique G.universalVerts 
 def deleteUniversalVerts (G : SimpleGraph V) : Subgraph G :=
   ((⊤ : Subgraph G).deleteVerts G.universalVerts)
 
-lemma Subgraph.IsMatching.exists_of_universalVerts [Fintype V] [DecidableEq V] {s : Set V}
+lemma Subgraph.IsMatching.exists_of_universalVerts [Fintype V] {s : Set V}
     (h : Disjoint G.universalVerts s) (hc : s.ncard ≤ G.universalVerts.ncard) :
     ∃ t ⊆ G.universalVerts, ∃ (M : Subgraph G), M.IsMatching ∧ M.verts = s ∪ t := by
   obtain ⟨t, ht⟩ := Set.exists_subset_card_eq hc
