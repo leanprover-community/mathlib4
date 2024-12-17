@@ -81,8 +81,6 @@ initialize_simps_projections Algebra.Generators (σ' → σ)
 @[simp]
 lemma aeval_val_σ (s) : aeval P.val (P.σ s) = s := P.aeval_val_σ' s
 
-instance : Algebra P.Ring S := inferInstance
-
 noncomputable instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     IsScalarTower R₀ P.Ring S := IsScalarTower.of_algebraMap_eq' <|
   P.algebraMap_eq ▸ ((aeval (R := R) P.val).comp_algebraMap_of_tower R₀).symm
