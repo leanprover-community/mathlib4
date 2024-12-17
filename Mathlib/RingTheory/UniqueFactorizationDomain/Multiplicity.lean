@@ -75,7 +75,7 @@ theorem le_emultiplicity_iff_replicate_le_normalizedFactors {a b : R} {n : ℕ} 
     apply Dvd.intro _ rfl
   · rw [Multiset.le_iff_exists_add]
     rintro ⟨u, hu⟩
-    rw [← (normalizedFactors_prod hb).dvd_iff_dvd_right, hu, prod_add, prod_replicate]
+    rw [← (prod_normalizedFactors hb).dvd_iff_dvd_right, hu, prod_add, prod_replicate]
     exact (Associated.pow_pow <| associated_normalize a).dvd.trans (Dvd.intro u.prod rfl)
 
 /-- The multiplicity of an irreducible factor of a nonzero element is exactly the number of times

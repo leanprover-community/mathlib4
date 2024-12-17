@@ -455,7 +455,7 @@ theorem IsReduced.nodup_leftInvSeq {ω : List B} (rω : cs.IsReduced ω) : List.
 lemma getElem_succ_leftInvSeq_alternatingWord
     (i j : B) (p k : ℕ) (h : k + 1 < 2 * p) :
     (lis (alternatingWord i j (2 * p)))[k + 1]'(by simp; exact h) =
-    MulAut.conj (s i) ((lis (alternatingWord j i (2 * p)))[k]'(by simp; linarith)) := by
+    MulAut.conj (s i) ((lis (alternatingWord j i (2 * p)))[k]'(by simp; omega)) := by
   rw [cs.getElem_leftInvSeq (alternatingWord i j (2 * p)) (k + 1) (by simp[h]),
     cs.getElem_leftInvSeq (alternatingWord j i (2 * p)) k (by simp[h]; omega)]
   simp only [MulAut.conj, listTake_succ_alternatingWord i j p k h, cs.wordProd_cons, mul_assoc,
@@ -466,7 +466,7 @@ lemma getElem_succ_leftInvSeq_alternatingWord
 
 theorem getElem_leftInvSeq_alternatingWord
     (i j : B) (p k : ℕ) (h : k < 2 * p) :
-    (lis (alternatingWord i j (2 * p)))[k]'(by simp; linarith) =
+    (lis (alternatingWord i j (2 * p)))[k]'(by simp; omega) =
     π alternatingWord j i (2 * k + 1) := by
   revert i j
   induction k with
