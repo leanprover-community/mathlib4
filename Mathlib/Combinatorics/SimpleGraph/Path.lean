@@ -1037,6 +1037,17 @@ lemma top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
 
 end ConnectedComponent
 
+lemma disjoint_deleteVerts_connectedComponentSupp {s : Set V}
+    {K : ((⊤ : Subgraph G).deleteVerts s).coe.ConnectedComponent} :
+    Disjoint s (Subtype.val '' K.supp) := by
+  rw [Set.disjoint_right]
+  aesop
+
+lemma disjoint_deleteVerts_iUnion_connectedComponentSupp {s : Set V} : Disjoint s
+    (⋃ K : ((⊤ : Subgraph G).deleteVerts s).coe.ConnectedComponent, Subtype.val '' K.supp) := by
+  rw [Set.disjoint_right]
+  aesop
+
 -- TODO: Extract as lemma about general equivalence relation
 lemma pairwise_disjoint_supp_connectedComponent (G : SimpleGraph V) :
     Pairwise fun c c' : ConnectedComponent G ↦ Disjoint c.supp c'.supp := by
@@ -1052,6 +1063,47 @@ lemma iUnion_connectedComponentSupp (G : SimpleGraph V) :
   refine Set.eq_univ_of_forall fun v ↦ ⟨G.connectedComponentMk v, ?_⟩
   simp only [Set.mem_range, SetLike.mem_coe]
   exact ⟨by use G.connectedComponentMk v; exact rfl, rfl⟩
+
+namespace ConnectedComponent
+
+/--
+  The representant of a component is the rep in the underlying `Quot`.
+-/
+noncomputable def rep (c : G.ConnectedComponent) : V := c.exists_rep.choose
+
+lemma rep_spec (c : G.ConnectedComponent) :
+    G.connectedComponentMk c.rep = c := c.exists_rep.choose_spec
+
+lemma rep_unique {C : Set (G.ConnectedComponent)}
+    (c : G.ConnectedComponent) (h : c ∈ C) : ∃! v, v ∈ rep '' C ∩ c.supp := by
+  use c.rep
+  simp only [Set.mem_inter_iff, mem_supp_iff, and_imp]
+  refine ⟨⟨by aesop, rep_spec c⟩, ?_⟩
+  intro y hy hyc
+  obtain ⟨_, ⟨_, rfl⟩⟩ := hy
+  rw [← hyc, rep_spec]
+
+lemma disjoint_rep_image_supp {C : Set (G.ConnectedComponent)}
+    (c : G.ConnectedComponent) (h : c ∉ C) : Disjoint (rep '' C) c.supp := by
+  rw [Set.disjoint_right]
+  intro v hv hvr
+  obtain ⟨c', ⟨hc', rfl⟩⟩ := hvr
+  rw [mem_supp_iff] at hv
+  have : c = c' := by
+    rw [← hv]
+    exact rep_spec c'
+  subst this
+  contradiction
+
+lemma disjoint_rep_image_components_of_deleteVerts {s : Set V}
+    (C : Set ((⊤ : Subgraph G).deleteVerts s).coe.ConnectedComponent) : Disjoint s
+    (Subtype.val '' (rep '' C)) := by
+  rw [Set.disjoint_right]
+  intro v hv
+  obtain ⟨v', ⟨v'', rfl⟩⟩ := hv
+  exact v'.prop.2
+
+end ConnectedComponent
 
 theorem Preconnected.set_univ_walk_nonempty (hconn : G.Preconnected) (u v : V) :
     (Set.univ : Set (G.Walk u v)).Nonempty := by
