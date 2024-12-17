@@ -109,7 +109,7 @@ theorem chromaticNumber_even_cycleGraph (n : ℕ) (h : 2 ≤ n) (hEven : Even n)
       simp [cycleGraph_adj', Fin.sub_val_of_le]
     exact two_le_chromaticNumber_of_adj hAdj
 
-/-- Bicoloring of a cycle graph -/
+/-- Tricoloring of a cycle graph -/
 def cycleGraph.odd_tricoloring (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n)
   (Fin 3) := Coloring.mk (fun u ↦ if u.val = n - 1 then 2 else ⟨u.val % 2, by fin_omega⟩) <| by
     intro u v hAdj
