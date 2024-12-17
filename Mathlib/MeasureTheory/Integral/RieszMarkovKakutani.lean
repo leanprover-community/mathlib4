@@ -131,7 +131,7 @@ section PartitionOfUnity
 
 variable [T2Space X] [LocallyCompactSpace X]
 
-lemma exists_sum_one_of_isCompact_nnreal
+lemma exists_continuous_add_one_of_isCompact_nnreal
     {s₀ s₁ : Set X} {t : Set X} (s₀_compact : IsCompact s₀) (s₁_compact : IsCompact s₁)
     (t_compact : IsCompact t) (disj : Disjoint s₀ s₁) (hst : s₀ ∪ s₁ ⊆ t) :
     ∃ (f₀ f₁ : C_c(X, ℝ≥0)), EqOn f₀ 1 s₀ ∧ EqOn f₁ 1 s₁ ∧ EqOn (f₀ + f₁) 1 t := by
