@@ -136,16 +136,11 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
     (t_compact : IsCompact t) (disj : Disjoint s₀ s₁) (hst : s₀ ∪ s₁ ⊆ t) :
     ∃ (f₀ f₁ : C_c(X, ℝ≥0)), EqOn f₀ 1 s₀ ∧ EqOn f₁ 1 s₁ ∧ EqOn (f₀ + f₁) 1 t := by
   set so : Fin 2 → Set X := fun j => if j = 0 then s₀ᶜ else s₁ᶜ with hso
-  have soopen : ∀ j, IsOpen (so j) := by
-    intro j
-    by_cases h0 : j = 0
-    · rw [h0, hso]
-      simp only [Fin.isValue, ↓reduceIte, isOpen_compl_iff]
+  have soopen (j : Fin 2) :  IsOpen (so j) := by
+    fin_cases j
+    · simp only [hso, Fin.zero_eta, Fin.isValue, ↓reduceIte, isOpen_compl_iff]
       exact IsCompact.isClosed <| s₀_compact
-    · rw [hso]
-      simp only [Fin.isValue]
-      rw [if_neg h0]
-      simp only [Fin.isValue, isOpen_compl_iff]
+    · simp only [hso, Fin.isValue, Fin.mk_one, one_ne_zero, ↓reduceIte, isOpen_compl_iff]
       exact IsCompact.isClosed <| s₁_compact
   have hsot : t ⊆ ⋃ j, so j := by
     rw [hso]
