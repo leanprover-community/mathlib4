@@ -143,7 +143,7 @@ def OneTruncation₂.nerveHomEquiv' (X Y : OneTruncation₂ ((SSet.truncation 2)
 
 -- TODO: Fix universes.
 /-- The refl quiver underlying a nerve is isomorphic to the refl quiver underlying the category. -/
-def OneTruncation₂.ofNerve₂' (C : Type 0) [Category.{0} C] :
+def OneTruncation₂.ofNerve₂' (C : Type u) [Category.{u} C] :
     ReflQuiv.of (OneTruncation₂ (nerveFunctor₂.obj (Cat.of C))) ≅ ReflQuiv.of C := by
   apply ReflQuiv.isoOfEquiv OneTruncation₂.nerveEquiv' OneTruncation₂.nerveHomEquiv' ?_
   intro X
@@ -164,7 +164,7 @@ def OneTruncation₂.ofNerve₂' (C : Type 0) [Category.{0} C] :
 category. -/
 @[simps! hom_app_obj hom_app_map inv_app_obj_obj inv_app_obj_map inv_app_map]
 def OneTruncation₂.ofNerve₂.natIso' :
-    nerveFunctor₂.{0,0} ⋙ SSet.oneTruncation₂ ≅ ReflQuiv.forget := by
+    nerveFunctor₂.{u,u} ⋙ SSet.oneTruncation₂ ≅ ReflQuiv.forget := by
   refine NatIso.ofComponents (fun C => OneTruncation₂.ofNerve₂' C) ?nat
   · intro C D F
     fapply ReflPrefunctor.ext <;> simp

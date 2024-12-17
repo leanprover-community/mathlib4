@@ -113,11 +113,8 @@ def homEquivOfIso {V W : Quiv} (e : V ≅ W) {X Y : V} :
     (X ⟶ Y) ≃ (e.hom.obj X ⟶ e.hom.obj Y) where
   toFun f := e.hom.map f
   invFun g := Quiver.homOfEq (e.inv.map g) (by simp) (by simp)
-  left_inv f := by
-    simp only [inv_map_hom_map_of_iso, Quiver.homOfEq_trans, Quiver.homOfEq_rfl]
-  right_inv g := by
-    simp only [hom_map_inv_map_of_iso, Prefunctor.homOfEq_map, Quiver.homOfEq_trans,
-      Quiver.homOfEq_rfl]
+  left_inv f := by simp [inv_map_hom_map_of_iso]
+  right_inv g := by simp [hom_map_inv_map_of_iso]
 
 end
 
