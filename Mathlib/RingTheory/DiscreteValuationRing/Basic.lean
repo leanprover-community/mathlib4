@@ -456,6 +456,6 @@ section
 variable (A : Type u) [CommRing A] [IsDomain A] [IsDiscreteValuationRing A]
 
 /-- A DVR is a valuation ring. -/
-instance (priority := 100) of_IsDiscreteValuationRing : ValuationRing A := inferInstance
+instance (priority := 100) of_isDiscreteValuationRing : ValuationRing A := inferInstance
 
 end
