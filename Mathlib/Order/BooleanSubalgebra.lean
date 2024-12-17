@@ -49,7 +49,8 @@ lemma sdiff_mem (ha : a ∈ L) (hb : b ∈ L) : a \ b ∈ L := by
 lemma himp_mem (ha : a ∈ L) (hb : b ∈ L) : a ⇨ b ∈ L := by
   simpa [himp_eq] using L.supClosed hb (compl_mem ha)
 
-@[simp] lemma mem_carrier : a ∈ L.carrier ↔ a ∈ L := .rfl
+lemma mem_carrier : a ∈ L.carrier ↔ a ∈ L := .rfl
+@[simp] lemma mem_toSublattice : a ∈ L.toSublattice ↔ a ∈ L := .rfl
 @[simp] lemma mem_mk {L : Sublattice α} (h_compl h_bot) : a ∈ mk L h_compl h_bot ↔ a ∈ L := .rfl
 @[simp] lemma coe_mk (L : Sublattice α) (h_compl h_bot) : (mk L h_compl h_bot : Set α) = L := rfl
 @[simp] lemma mk_le_mk {L M : Sublattice α} (hL_compl hL_bot hM_compl hM_bot) :
