@@ -5,7 +5,6 @@ Authors: Iván Renison, Bhavik Mehta
 -/
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Combinatorics.SimpleGraph.Hasse
-import Mathlib.Combinatorics.SimpleGraph.Trails
 
 /-!
 # Definition of circulant graphs
