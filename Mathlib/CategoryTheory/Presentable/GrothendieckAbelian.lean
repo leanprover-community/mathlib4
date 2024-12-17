@@ -110,8 +110,6 @@ variable {X₁ X₂ : J ⥤ C} (φ : X₁ ⟶ X₂) [∀ j, Mono (φ.app j)]
 include hf hc₁ hc₂ in
 lemma map_mono : Mono f := by
   have : Mono φ := NatTrans.mono_of_mono_app φ
-  have := hf
-  have : Mono (colim.map φ) := inferInstance
   have e : Arrow.mk f ≅ Arrow.mk (colim.map φ) :=
     Arrow.isoMk
       (IsColimit.coconePointUniqueUpToIso hc₁ (colimit.isColimit _))
@@ -135,7 +133,7 @@ variable {C : Type u} [Category.{v} C] {X : C}
 instance mono_obj_hom (S : MonoOver X) :
     Mono S.obj.hom := S.2
 
-lemma subobject_mk_of_hom {S T : MonoOver X} (f : S ⟶ T) :
+lemma subobject_mk_le_mk_of_hom {S T : MonoOver X} (f : S ⟶ T) :
     Subobject.mk S.obj.hom ≤ Subobject.mk T.obj.hom :=
   Subobject.mk_le_mk_of_comm f.left (by simp)
 
@@ -208,7 +206,6 @@ lemma exists_isIso_of_functor_from_monoOver (h : Epi f) :
   have := mono_of_isColimit_monoOver F hc f hf
   rw [Subobject.epi_iff_mk_eq_top f,
     subobject_mk_of_isColimit_eq_iSup F hc f hf] at h
-  have := hXκ
   let s (j : J) : Subobject X := Subobject.mk (F.obj j).obj.hom
   let S := Set.range s
   have h' : Function.Surjective (fun (j : J) ↦ (⟨s j, _, rfl⟩ : S)) := by
@@ -224,7 +221,7 @@ lemma exists_isIso_of_functor_from_monoOver (h : Epi f) :
   trans Subobject.mk (F.obj (σ t)).obj.hom
   · have := le_of_eq (hσ t).symm
     exact this
-  · exact MonoOver.subobject_mk_of_hom
+  · exact MonoOver.subobject_mk_le_mk_of_hom
       (F.map (IsCardinalFiltered.toMax σ hS t))
 
 end
@@ -357,8 +354,6 @@ include hXκ hc hy
 
 open injectivity₀ in
 lemma injectivity₀ : ∃ (j : J) (φ : j₀ ⟶ j), y ≫ Y.map φ = 0 := by
-  have := isFiltered_of_isCardinalDirected J κ
-  have := epi_f κ hc hy
   obtain ⟨j, h⟩ := exists_isIso_of_functor_from_monoOver (F y) hXκ _
       (colimit.isColimit (kernel (γ y))) (f y) (fun j ↦ by simpa using hf y j)
       (epi_f κ hc hy)
