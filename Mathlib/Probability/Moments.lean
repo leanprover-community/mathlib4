@@ -611,13 +611,13 @@ It can be described by exponential tilting.-/
 theorem cgf_deriv_one [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
     {X : Ω → ℝ} (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     let f := fun t ↦ cgf X μ t
-    let f' := fun t ↦ (μ.tilted (fun ω ↦ t * X ω)) [X]
+    let f' := fun t ↦ (μ.tilted (fun ω ↦ t * X ω))[X]
     ∀ x : ℝ, HasDerivAt f (f' x) x := by
   intros f f' t
   set g := fun t ↦ μ[fun ω ↦ rexp (t * X ω)]
   set g' := fun t ↦ μ[fun ω ↦ rexp (t * X ω) * X ω]
   dsimp [f']
-  have r0 : ((μ.tilted (fun ω ↦ t * X ω)) [fun ω ↦ id (X ω)]) =
+  have r0 : ((μ.tilted (fun ω ↦ t * X ω))[fun ω ↦ id (X ω)]) =
     μ[fun ω ↦ rexp (t * X ω) * id (X ω)] / μ[fun ω ↦ rexp (t * X ω)] :=
     integral_tilted t id hX
   simp at r0
@@ -630,7 +630,7 @@ theorem cgf_deriv_one [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
 theorem cgf_deriv_two [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
     {X : Ω → ℝ} (hX : AEMeasurable X μ) (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
     let g' := fun t ↦ (μ.tilted (fun ω ↦ t * X ω))[X];
-    let g'' := fun t ↦ (μ.tilted (fun ω ↦ t * X ω)) [X ^ 2] - (μ.tilted (fun ω ↦ t * X ω))[X] ^ 2;
+    let g'' := fun t ↦ (μ.tilted (fun ω ↦ t * X ω))[X ^ 2] - (μ.tilted (fun ω ↦ t * X ω))[X] ^ 2;
     ∀ x : ℝ, HasDerivAt g' (g'' x) x := by
   intro g' g'' t
   have r0 : (fun t ↦ ((μ.tilted (fun ω ↦ t * X ω))[fun ω ↦ id (X ω)])) =
@@ -690,6 +690,12 @@ theorem cgf_deriv_two [IsFiniteMeasure μ] [NeZero μ] (a b : ℝ)
   · apply (tilt_first_deriv _ _ _ hX h)
           (integrable_deriv_expt t a b hX h)
   · exact (mgf_pos' (NeZero.ne μ) (integrable_expt_bound hX h)).ne'
+
+theorem cgf_zero_deriv [IsProbabilityMeasure μ] {X : Ω → ℝ} (h0 : μ[X] = 0) :
+    let f' := fun t ↦ ∫ (x : Ω), X x ∂Measure.tilted μ fun ω ↦ t * X ω;
+  f' 0 = 0 := by
+  simp only [zero_mul, tilted_const', measure_univ, inv_one, one_smul]
+  exact h0
 
 end GeneratingFunctionDerivatives
 
