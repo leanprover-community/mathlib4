@@ -265,13 +265,13 @@ def functorCategoryEquivalenceCompEvaluation :
     (functorCategoryEquivalence V G).functor ⋙ (evaluation _ _).obj PUnit.unit ≅ forget V G :=
   Iso.refl _
 
-noncomputable instance instPreservesLimitsForget [HasLimits V] :
-    Limits.PreservesLimits (forget V G) :=
-  Limits.preservesLimitsOfNatIso (Action.functorCategoryEquivalenceCompEvaluation V G)
+noncomputable instance preservesLimits_forget [HasLimits V] :
+    PreservesLimits (forget V G) :=
+  Limits.preservesLimits_of_natIso (Action.functorCategoryEquivalenceCompEvaluation V G)
 
-noncomputable instance instPreservesColimitsForget [HasColimits V] :
+noncomputable instance preservesColimits_forget [HasColimits V] :
     PreservesColimits (forget V G) :=
-  preservesColimitsOfNatIso (Action.functorCategoryEquivalenceCompEvaluation V G)
+  preservesColimits_of_natIso (Action.functorCategoryEquivalenceCompEvaluation V G)
 
 -- TODO construct categorical images?
 end Forget

@@ -6,6 +6,7 @@ Authors: Jineon Baek, Seewoo Lee
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.RingTheory.Polynomial.Wronskian
 import Mathlib.RingTheory.Radical
+import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicative
 
 /-!
 # Radical of a polynomial
