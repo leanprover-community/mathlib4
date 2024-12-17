@@ -174,10 +174,6 @@ theorem irreducible_iff_prime_of_existsUnique_irreducible_factors [CancelCommMon
             _ ~ᵤ fa.prod * fb.prod := hfa.2.symm.mul_mul hfb.2.symm
             _ = _ := by rw [Multiset.prod_add]
 
-@[deprecated (since := "2024-12-17")]
-alias irreducible_iff_prime_of_exists_unique_irreducible_factors :=
-  irreducible_iff_prime_of_existsUnique_irreducible_factors
-
         exact
           let ⟨q, hqf, hq⟩ := Multiset.exists_mem_of_rel_of_mem h (Multiset.mem_cons_self p _)
           (Multiset.mem_add.1 hqf).elim
@@ -186,6 +182,10 @@ alias irreducible_iff_prime_of_exists_unique_irreducible_factors :=
             fun hqb =>
             Or.inr <| hq.dvd_iff_dvd_left.2 <| hfb.2.dvd_iff_dvd_right.1 (Multiset.dvd_prod hqb)⟩,
     Prime.irreducible⟩
+
+@[deprecated (since := "2024-12-17")]
+alias irreducible_iff_prime_of_exists_unique_irreducible_factors :=
+  irreducible_iff_prime_of_existsUnique_irreducible_factors
 
 namespace UniqueFactorizationMonoid
 

@@ -156,17 +156,17 @@ end NonAssocSemiring
 end CharP
 
 /-- Noncomputable function that outputs the unique characteristic of a semiring. -/
-noncomputable def ringChar [NonAssocSemiring R] : ℕ := Classical.choose (CharP.exists_unique R)
+noncomputable def ringChar [NonAssocSemiring R] : ℕ := Classical.choose (CharP.existsUnique R)
 
 namespace ringChar
 variable [NonAssocSemiring R]
 
 lemma spec : ∀ x : ℕ, (x : R) = 0 ↔ ringChar R ∣ x := by
-  letI : CharP R (ringChar R) := (Classical.choose_spec (CharP.exists_unique R)).1
+  letI : CharP R (ringChar R) := (Classical.choose_spec (CharP.existsUnique R)).1
   exact CharP.cast_eq_zero_iff R (ringChar R)
 
 lemma eq (p : ℕ) [C : CharP R p] : ringChar R = p :=
-  ((Classical.choose_spec (CharP.exists_unique R)).2 p C).symm
+  ((Classical.choose_spec (CharP.existsUnique R)).2 p C).symm
 
 instance charP : CharP R (ringChar R) :=
   ⟨spec R⟩
