@@ -53,8 +53,15 @@ structure Algebra.Generators where
   /-- A section of `R[X] → S`. -/
   σ' : S → MvPolynomial vars R
   aeval_val_σ' : ∀ s, aeval val (σ' s) = s
+  /-- An `R[X]`-algebra instance on `S`. The default is the one induced by the map `R[X] → S`,
+  but this causes a diamond if there is an existing instance. -/
+  algebra : Algebra (MvPolynomial vars R) S := (aeval val).toAlgebra
+  algebraMap_eq :
+    algebraMap (MvPolynomial vars R) S = aeval (R := R) val := by rfl
 
 namespace Algebra.Generators
+
+attribute [instance] algebra
 
 variable {R S}
 variable (P : Generators.{w} R S)
@@ -74,16 +81,15 @@ initialize_simps_projections Algebra.Generators (σ' → σ)
 @[simp]
 lemma aeval_val_σ (s) : aeval P.val (P.σ s) = s := P.aeval_val_σ' s
 
-instance : Algebra P.Ring S := (aeval P.val).toAlgebra
+instance : Algebra P.Ring S := inferInstance
 
 noncomputable instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
-    IsScalarTower R₀ P.Ring S := IsScalarTower.of_algebraMap_eq'
-  ((aeval (R := R) P.val).comp_algebraMap_of_tower R₀).symm
-
-lemma algebraMap_eq : algebraMap P.Ring S = ↑(aeval (R := R) P.val) := rfl
+    IsScalarTower R₀ P.Ring S := IsScalarTower.of_algebraMap_eq' <|
+  P.algebraMap_eq ▸ ((aeval (R := R) P.val).comp_algebraMap_of_tower R₀).symm
 
 @[simp]
-lemma algebraMap_apply (x) : algebraMap P.Ring S x = aeval (R := R) P.val x := rfl
+lemma algebraMap_apply (x) : algebraMap P.Ring S x = aeval (R := R) P.val x := by
+  simp [algebraMap_eq]
 
 @[simp]
 lemma σ_smul (x y) : P.σ x • y = x * y := by
@@ -93,7 +99,8 @@ lemma σ_injective : P.σ.Injective := by
   intro x y e
   rw [← P.aeval_val_σ x, ← P.aeval_val_σ y, e]
 
-lemma algebraMap_surjective : Function.Surjective (algebraMap P.Ring S) := (⟨_, P.aeval_val_σ ·⟩)
+lemma algebraMap_surjective : Function.Surjective (algebraMap P.Ring S) :=
+  (⟨_, P.algebraMap_apply _ ▸ P.aeval_val_σ ·⟩)
 
 section Construction
 
@@ -148,7 +155,7 @@ noncomputable
 def toExtension : Extension R S where
   Ring := P.Ring
   σ := P.σ
-  algebraMap_σ := P.aeval_val_σ
+  algebraMap_σ := by simp
 
 section Localization
 
@@ -408,7 +415,8 @@ end Hom
 /-- The kernel of a presentation. -/
 noncomputable abbrev ker : Ideal P.Ring := P.toExtension.ker
 
-lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) :=
+lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) := by
+  simp only [ker, Extension.ker, toExtension_Ring, algebraMap_eq]
   rfl
 
 end Algebra.Generators
