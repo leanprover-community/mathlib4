@@ -1995,6 +1995,9 @@ theorem prod_subsingleton {α β : Type*} [CommMonoid β] [Subsingleton α] [Fin
   have : Unique α := uniqueOfSubsingleton a
   rw [prod_unique f, Subsingleton.elim default a]
 
+@[to_additive] theorem prod_Prop {β} [CommMonoid β] (f : Prop → β) :
+    ∏ p, f p = f True * f False := by simp
+
 @[to_additive]
 theorem prod_subtype_mul_prod_subtype {α β : Type*} [Fintype α] [CommMonoid β] (p : α → Prop)
     (f : α → β) [DecidablePred p] :

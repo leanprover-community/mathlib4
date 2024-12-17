@@ -41,7 +41,7 @@ instance : CoeSort (SemiRingCat) (Type u) :=
 attribute [coe] SemiRingCat.carrier
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `AlgebraCat R`. -/
+typeclasses. This is the preferred way to construct a term of `SemiRingCat`. -/
 abbrev of (R : Type u) [Semiring R] : SemiRingCat :=
   ⟨R⟩
 
@@ -180,7 +180,7 @@ instance : CoeSort (RingCat) (Type u) :=
 attribute [coe] RingCat.carrier
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `AlgebraCat R`. -/
+typeclasses. This is the preferred way to construct a term of `RingCat`. -/
 abbrev of (R : Type u) [Ring R] : RingCat :=
   ⟨R⟩
 
@@ -224,7 +224,7 @@ lemma comp_apply {R S T : RingCat} (f : R ⟶ S) (g : S ⟶ T) (r : R) :
 lemma hom_ext {R S : RingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
-/-- Typecheck an `AlgHom` as a morphism in `AlgebraCat R`. -/
+/-- Typecheck a `RingHom` as a morphism in `RingCat`. -/
 abbrev ofHom {R S : Type u} [Ring R] [Ring S] (f : R →+* S) : of R ⟶ of S :=
   ⟨f⟩
 
@@ -319,7 +319,7 @@ instance : CoeSort (CommSemiRingCat) (Type u) :=
 attribute [coe] CommSemiRingCat.carrier
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `AlgebraCat R`. -/
+typeclasses. This is the preferred way to construct a term of `CommSemiRingCat`. -/
 abbrev of (R : Type u) [CommSemiring R] : CommSemiRingCat :=
   ⟨R⟩
 
@@ -363,7 +363,7 @@ lemma comp_apply {R S T : CommSemiRingCat} (f : R ⟶ S) (g : S ⟶ T) (r : R) :
 lemma hom_ext {R S : CommSemiRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
-/-- Typecheck an `AlgHom` as a morphism in `AlgebraCat R`. -/
+/-- Typecheck a `RingHom` as a morphism in `CommSemiRingCat`. -/
 abbrev ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) : of R ⟶ of S :=
   ⟨f⟩
 
@@ -461,7 +461,7 @@ instance : CoeSort (CommRingCat) (Type u) :=
 attribute [coe] CommRingCat.carrier
 
 /-- The object in the category of R-algebras associated to a type equipped with the appropriate
-typeclasses. This is the preferred way to construct a term of `AlgebraCat R`. -/
+typeclasses. This is the preferred way to construct a term of `CommRingCat`. -/
 abbrev of (R : Type u) [CommRing R] : CommRingCat :=
   ⟨R⟩
 
@@ -505,7 +505,7 @@ lemma comp_apply {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) (r : R) :
 lemma hom_ext {R S : CommRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
-/-- Typecheck an `AlgHom` as a morphism in `AlgebraCat R`. -/
+/-- Typecheck a `RingHom` as a morphism in `CommRingCat`. -/
 abbrev ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : of R ⟶ of S :=
   ⟨f⟩
 
