@@ -75,7 +75,7 @@ lemma mul_auxMat_toSquareBlock_eq :
 
 set_option quotPrecheck false in
 /-- The upper-left block of `M * aux M k`. -/
-local notation "mulAuxMatBlock" => (M * auxMat M k).toSquareBlock (· = k) False
+scoped notation "mulAuxMatBlock" => (M * auxMat M k).toSquareBlock (· = k) False
 
 lemma det_mul_corner_pow :
     M.det * M k k ^ (Fintype.card m - 1) = M k k * (mulAuxMatBlock).det := by
