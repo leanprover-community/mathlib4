@@ -103,7 +103,7 @@ a regular cardinal`κ : Cardinal.{w}` such that `HasCardinalLT (X i) κ` for all
 lemma exists_regular_cardinal' {ι : Type v} {X : ι → Type u} [Small.{w} ι]
     [∀ i, Small.{w} (X i)] :
     ∃ (κ : Cardinal.{w}), κ.IsRegular ∧ ∀ (i : ι), HasCardinalLT (X i) κ := by
-  obtain ⟨κ, hκ, lt⟩ := exists_regular_cardinal.{w} (Sigma X)
-  exact ⟨κ, hκ, fun i ↦ lt.of_injective _ sigma_mk_injective⟩
+  obtain ⟨κ, hκ, h⟩ := exists_regular_cardinal.{w} (Sigma X)
+  exact ⟨κ, hκ, fun i ↦ h.of_injective _ sigma_mk_injective⟩
 
 end HasCardinalLT
