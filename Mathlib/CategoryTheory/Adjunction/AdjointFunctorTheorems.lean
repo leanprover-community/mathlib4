@@ -140,13 +140,13 @@ theorem hasLimits_of_hasColimits_of_isSeparating [HasColimits C] [WellPowered.{v
 /-- A consequence of the special adjoint functor theorem: if `C` is complete, well-powered and
     has a separator, then it is complete. -/
 theorem hasLimits_of_hasColimits_of_hasSeparator [HasColimits C] [HasSeparator C]
-    [WellPowered Cᵒᵖ] : HasLimits C :=
+    [WellPowered.{v} Cᵒᵖ] : HasLimits C :=
   hasLimits_of_hasColimits_of_isSeparating <| isSeparator_separator C
 
 /-- A consequence of the special adjoint functor theorem: if `C` is complete, well-powered and
     has a coseparator, then it is cocomplete. -/
 theorem hasColimits_of_hasLimits_of_hasCoseparator [HasLimits C] [HasCoseparator C]
-    [WellPowered C] : HasColimits C :=
+    [WellPowered.{v} C] : HasColimits C :=
   hasColimits_of_hasLimits_of_isCoseparating <| isCoseparator_coseparator C
 
 end Limits
