@@ -115,6 +115,10 @@ variable {C : Type u} [Category.{v} C] {X : C}
 instance mono_obj_hom (S : MonoOver X) :
     Mono S.obj.hom := S.2
 
+lemma subobject_mk_of_hom {S T : MonoOver X} (f : S ⟶ T) :
+    Subobject.mk S.obj.hom ≤ Subobject.mk T.obj.hom :=
+  Subobject.mk_le_mk_of_comm f.left (by simp)
+
 end MonoOver
 
 namespace Subobject
@@ -147,12 +151,24 @@ lemma mono_of_isColimit_monoOver : Mono f := by
     (hc₂ := constCoconeIsColimit J X) f (by simpa using hf)
 
 lemma subobject_mk_of_isColimit_eq_iSup :
-    have := mono_of_isColimit_monoOver F hc f hf
-    Subobject.mk f = by
-      have := fun j ↦ Subobject.mk (F.obj j).obj.hom
-      exact iSup this
-      sorry := by
-  sorry
+    haveI := mono_of_isColimit_monoOver F hc f hf
+    Subobject.mk f = ⨆ j, Subobject.mk (F.obj j).obj.hom := by
+  haveI := mono_of_isColimit_monoOver F hc f hf
+  apply le_antisymm
+  · rw [le_iSup_iff]
+    intro s H
+    induction' s using Subobject.ind with Z g _
+    let c' : Cocone (F ⋙ MonoOver.forget _ ⋙ Over.forget _) := Cocone.mk Z
+      { app j := Subobject.ofMkLEMk _ _ (H j)
+        naturality j j' f := by
+          dsimp
+          simpa only [← cancel_mono g, Category.assoc, Subobject.ofMkLEMk_comp,
+            Category.comp_id] using MonoOver.w (F.map f) }
+    exact Subobject.mk_le_mk_of_comm (hc.desc c')
+      (hc.hom_ext (fun j ↦ by rw [hc.fac_assoc c' j, hf, Subobject.ofMkLEMk_comp]))
+  · rw [iSup_le_iff]
+    intro j
+    exact Subobject.mk_le_mk_of_comm (c.ι.app j) (hf j)
 
 end
 
@@ -169,17 +185,27 @@ lemma exists_isIso_of_functor_from_monoOver (h : Epi f) :
     ∃ (j : J), IsIso (F.obj j).obj.hom := by
   have := isFiltered_of_isCardinalDirected J κ
   simp only [Subobject.isIso_iff_mk_eq_top]
-  have : ∀ j, Mono (c.ι.app j) := sorry
-  have : Mono f := by
-    have := hf
-    let α : F ⋙ MonoOver.forget _ ⋙ Over.forget _ ⟶ (Functor.const _).obj X :=
-      { app j := (F.obj j).obj.hom
-        naturality _ _ f := (F.map f).w }
-    exact HasExactColimitsOfShape.map_mono (φ := α) (hc₁ := hc)
-      (hc₂ := constCoconeIsColimit J X) f (by simpa using hf)
-  rw [Subobject.epi_iff_mk_eq_top f] at h
+  have := mono_of_isColimit_monoOver F hc f hf
+  rw [Subobject.epi_iff_mk_eq_top f,
+    subobject_mk_of_isColimit_eq_iSup F hc f hf] at h
   have := hXκ
-  sorry
+  let s (j : J) : Subobject X := Subobject.mk (F.obj j).obj.hom
+  let S := Set.range s
+  have h' : Function.Surjective (fun (j : J) ↦ (⟨s j, _, rfl⟩ : S)) := by
+    rintro ⟨_, j, rfl⟩
+    exact ⟨j, rfl⟩
+  obtain ⟨σ, hσ⟩ := h'.hasRightInverse
+  have hS : HasCardinalLT S κ :=
+    hXκ.of_injective (f := Subtype.val) Subtype.val_injective
+  refine ⟨IsCardinalFiltered.max σ hS, ?_⟩
+  rw [← top_le_iff, ← h, iSup_le_iff]
+  intro j
+  let t : S := ⟨_, j, rfl⟩
+  trans Subobject.mk (F.obj (σ t)).obj.hom
+  · have := le_of_eq (hσ t).symm
+    exact this
+  · exact MonoOver.subobject_mk_of_hom
+      (F.map (IsCardinalFiltered.toMax σ hS t))
 
 end
 
