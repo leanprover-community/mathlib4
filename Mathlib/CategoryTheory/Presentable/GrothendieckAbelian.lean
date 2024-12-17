@@ -7,6 +7,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Presentable.Basic
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory
 import Mathlib.CategoryTheory.Limits.TypesFiltered
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.CategoryTheory.Filtered.Final
 
@@ -33,6 +34,16 @@ universe w v' v u' u
 namespace CategoryTheory
 
 open Limits Opposite
+
+instance {C : Type u} [Category.{v} C] {J : Type u'} [Category.{v'} J]
+    {F G : J ⥤ C} (f : F ⟶ G) [Mono f] (j : J) [HasLimitsOfShape WalkingCospan C] :
+    Mono (f.app j) :=
+  inferInstanceAs (Mono (((evaluation J C).obj j).map f))
+
+instance {C : Type u} [Category.{v} C] {J : Type u'} [Category.{v'} J]
+    {F G : J ⥤ C} (f : F ⟶ G) [Epi f] (j : J) [HasColimitsOfShape WalkingSpan C] :
+    Epi (f.app j) :=
+  inferInstanceAs (Epi (((evaluation J C).obj j).map f))
 
 namespace Limits
 
@@ -62,11 +73,10 @@ namespace HasExactColimitsOfShape
 
 variable {C : Type u} [Category.{v} C] [Abelian C]
     {J : Type u'} [Category.{v'} J]
-    [HasColimitsOfShape J C] [HasExactColimitsOfShape J C]
 
 section
 
-variable
+variable [HasColimitsOfShape J C] [HasExactColimitsOfShape J C]
     {S : ShortComplex (J ⥤ C)} (hS : S.Exact)
     {c₁ : Cocone S.X₁} (hc₁ : IsColimit c₁) {c₂ : Cocone S.X₂} (hc₂ : IsColimit c₂)
     {c₃ : Cocone S.X₃} (hc₃ : IsColimit c₃)
@@ -103,7 +113,8 @@ end
 
 section
 
-variable {X₁ X₂ : J ⥤ C} (φ : X₁ ⟶ X₂) [∀ j, Mono (φ.app j)]
+variable [HasColimitsOfShape J C] [HasExactColimitsOfShape J C]
+  {X₁ X₂ : J ⥤ C} (φ : X₁ ⟶ X₂) [∀ j, Mono (φ.app j)]
   {c₁ : Cocone X₁} (hc₁ : IsColimit c₁) {c₂ : Cocone X₂} (hc₂ : IsColimit c₂)
   (f : c₁.pt ⟶ c₂.pt) (hf : ∀ j, c₁.ι.app j ≫ f = φ.app j ≫ c₂.ι.app j)
 
@@ -123,6 +134,19 @@ lemma map_mono : Mono f := by
     (inferInstanceAs (Mono (colim.map φ)))
 
 end
+
+lemma mono_ι_app_of_isColimit_of_mono_map_of_isFiltered
+    {Y : J ⥤ C} [∀ (j j' : J) (φ : j ⟶ j'), Mono (Y.map φ)]
+    (c : Cocone Y) (hc : IsColimit c) [IsFiltered J] (j₀ : J)
+    [HasColimitsOfShape (Under j₀) C] [HasExactColimitsOfShape (Under j₀) C] :
+    Mono (c.ι.app j₀) := by
+  let f : (Functor.const _).obj (Y.obj j₀) ⟶ Under.forget j₀ ⋙ Y :=
+    { app j := Y.map j.hom
+      naturality _ _ g := by
+        dsimp
+        simp only [Category.id_comp, ← Y.map_comp, Under.w] }
+  exact map_mono f (hc₁ := constCoconeIsColimit _ _)
+    (hc₂ := (Functor.Final.isColimitWhiskerEquiv _ _).symm hc) (c.ι.app j₀) (by simp)
 
 end HasExactColimitsOfShape
 
@@ -317,11 +341,6 @@ lemma S_exact : (S y).Exact :=
 variable (c j₀) in
 abbrev c₃ : Cocone (Under.forget j₀ ⋙ Y) := c.whisker _
 
-instance (j : Under j₀) : Mono ((kernel.ι (γ y)).app j) := by
-  -- this should already be an instance
-  change Mono (((evaluation _ _).obj j).map (kernel.ι (γ y)))
-  infer_instance
-
 @[simps]
 noncomputable def F : Under j₀ ⥤ MonoOver X where
   obj j := MonoOver.mk' ((kernel.ι (γ y)).app j)
@@ -367,18 +386,54 @@ end injectivity
 section surjectivity
 
 variable {Y} {c : Cocone Y} (hc : IsColimit c)
-  [∀ (j j' : J) (φ : j ⟶ j'), Mono (Y.map φ)] (z : X ⟶ c.pt)
 
-include hXκ hc
+namespace surjectivity
 
-/-lemma surjectivity : ∃ (j₀ : J) (y : X ⟶ Y.obj j₀), z = y ≫ c.ι.app j₀ := by
-  have := hXκ
+variable [Mono c.ι] (z : X ⟶ c.pt)
+
+@[simps]
+noncomputable def F : J ⥤ MonoOver X where
+  obj j := MonoOver.mk' ((pullback.snd c.ι ((Functor.const _).map z)).app j)
+  map {j j'} f := MonoOver.homMk ((pullback c.ι ((Functor.const _).map z)).map f)
+
+noncomputable def f : colimit (F z ⋙ MonoOver.forget X ⋙ Over.forget X) ⟶ X :=
+  colimit.desc _ (Cocone.mk X
+    { app j := (pullback.snd c.ι ((Functor.const _).map z)).app j })
+
+@[reassoc (attr := simp)]
+lemma hf (j : J) :
+    colimit.ι _ j ≫ f z =
+      (pullback.snd c.ι ((Functor.const J).map z)).app j :=
+  colimit.ι_desc _ _
+
+include hc in
+lemma epi_f : Epi (f z) := by
   have := hc
-  sorry-/
+  sorry
 
 end surjectivity
 
-/-include hXκ in
+variable [∀ (j j' : J) (φ : j ⟶ j'), Mono (Y.map φ)] (z : X ⟶ c.pt)
+
+include hXκ hc
+
+open surjectivity in
+lemma surjectivity : ∃ (j₀ : J) (y : X ⟶ Y.obj j₀), z = y ≫ c.ι.app j₀ := by
+  have := isFiltered_of_isCardinalDirected J κ
+  have : ∀ (j : J), Mono (c.ι.app j) := fun j ↦
+    HasExactColimitsOfShape.mono_ι_app_of_isColimit_of_mono_map_of_isFiltered c hc j
+  have := NatTrans.mono_of_mono_app c.ι
+  have := hc
+  obtain ⟨j, _⟩ := exists_isIso_of_functor_from_monoOver (F z) hXκ _
+    (colimit.isColimit _) (f z) (by simp) (epi_f hc z)
+  refine ⟨j, inv ((F z).obj j).obj.hom ≫ (pullback.fst c.ι _).app j, ?_⟩
+  dsimp
+  rw [Category.assoc, IsIso.eq_inv_comp, ← NatTrans.comp_app, pullback.condition,
+    NatTrans.comp_app, Functor.const_map_app]
+
+end surjectivity
+
+include hXκ in
 lemma preservesColimit_of_mono [∀ (j j' : J) (φ : j ⟶ j'), Mono (Y.map φ)] :
     PreservesColimit Y ((coyoneda.obj (op X))) where
   preserves {c} hc := ⟨by
@@ -388,7 +443,7 @@ lemma preservesColimit_of_mono [∀ (j j' : J) (φ : j ⟶ j'), Mono (Y.map φ)]
         dsimp at y₁ y₂ hy ⊢
         rw [← sub_eq_zero, ← Preadditive.sub_comp] at hy
         obtain ⟨j, f, hf⟩ := injectivity₀ hXκ hc hy
-        exact ⟨j, f, by simpa only [Preadditive.sub_comp, sub_eq_zero] using hf⟩)⟩-/
+        exact ⟨j, f, by simpa only [Preadditive.sub_comp, sub_eq_zero] using hf⟩)⟩
 
 end IsPresentable
 
