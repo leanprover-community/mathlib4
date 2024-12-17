@@ -77,7 +77,7 @@ theorem forget_forgetToQuiv : forget ⋙ forgetToQuiv = Quiv.forget := rfl
 
 /-- An isomorphism of quivers lifts to an isomorphism of reflexive quivers given a suitable
 compatibility with the identities. -/
-def isoOfQuivIso {V W : Type u} [ReflQuiver.{v + 1} V] [ReflQuiver.{v + 1} W]
+def isoOfQuivIso {V W : Type u} [ReflQuiver V] [ReflQuiver W]
     (e : Quiv.of V ≅ Quiv.of W)
     (h_id : ∀ (X : V), e.hom.map (𝟙rq X) = ReflQuiver.id (obj := W) (e.hom.obj X)) :
     ReflQuiv.of V ≅ ReflQuiv.of W where
@@ -92,7 +92,7 @@ def isoOfQuivIso {V W : Type u} [ReflQuiver.{v + 1} V] [ReflQuiver.{v + 1} W]
     exact e.inv_hom_id
 
 section
-variable {V W : Type u } [ReflQuiver.{v + 1} V] [ReflQuiver.{v + 1} W]
+variable {V W : Type u } [ReflQuiver V] [ReflQuiver W]
   (e : V ≃ W) (he : ∀ (X Y : V), (X ⟶ Y) ≃ (e X ⟶ e Y))
 
 /-- Compatible equivalences of types and hom-types induce an isomorphism of quivers. -/
