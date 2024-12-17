@@ -376,14 +376,14 @@ variable {Y} {c : Cocone Y} (hc : IsColimit c)
 
 include hXκ hc
 
-lemma surjectivity : ∃ (j₀ : J) (y : X ⟶ Y.obj j₀), z = y ≫ c.ι.app j₀ := by
+/-lemma surjectivity : ∃ (j₀ : J) (y : X ⟶ Y.obj j₀), z = y ≫ c.ι.app j₀ := by
   have := hXκ
   have := hc
-  sorry
+  sorry-/
 
 end surjectivity
 
-include hXκ in
+/-include hXκ in
 lemma preservesColimit_of_mono [∀ (j j' : J) (φ : j ⟶ j'), Mono (Y.map φ)] :
     PreservesColimit Y ((coyoneda.obj (op X))) where
   preserves {c} hc := ⟨by
@@ -393,7 +393,7 @@ lemma preservesColimit_of_mono [∀ (j j' : J) (φ : j ⟶ j'), Mono (Y.map φ)]
         dsimp at y₁ y₂ hy ⊢
         rw [← sub_eq_zero, ← Preadditive.sub_comp] at hy
         obtain ⟨j, f, hf⟩ := injectivity₀ hXκ hc hy
-        exact ⟨j, f, by simpa only [Preadditive.sub_comp, sub_eq_zero] using hf⟩)⟩
+        exact ⟨j, f, by simpa only [Preadditive.sub_comp, sub_eq_zero] using hf⟩)⟩-/
 
 end IsPresentable
 
