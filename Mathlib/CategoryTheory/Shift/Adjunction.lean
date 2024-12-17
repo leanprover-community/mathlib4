@@ -264,32 +264,13 @@ lemma iso_inv_app (Y : D) :
                     (F.obj (G.obj Y)))) ≫
                 G.map ((shiftFunctor D a).map (adj.counit.app Y)) := by
   obtain rfl : b = -a := by rw [← add_left_inj a, h, neg_add_cancel]
-  simp only [Functor.comp_obj, iso, iso', shiftEquiv'_functor, shiftEquiv'_inverse,
-    Equiv.toFun_as_coe, conjugateIsoEquiv_apply_inv, conjugateEquiv_apply_app, comp_unit_app,
-    Functor.id_obj, Equivalence.toAdjunction_unit, Functor.comp_map, comp_counit_app,
-    Equivalence.toAdjunction_counit, Functor.map_comp, assoc]
-  congr 2
-  rw [← assoc, ← assoc]
-  congr 1
-  conv_rhs => rw [← G.map_comp, ← Functor.map_comp]
-  conv_lhs => rw [← G.map_comp, ← Functor.map_comp]
-  congr 2
-  have this := F.commShiftIso_add' (add_neg_cancel a)
-  apply_fun (fun x ↦ x.inv.app (G.obj Y)) at this
-  rw [← cancel_epi ((shiftFunctorAdd' D a (-a) 0 (add_neg_cancel _)).inv.app _),
-    ← cancel_mono (F.map ((shiftFunctorAdd' C a (-a) 0 (add_neg_cancel _)).hom.app _))] at this
-  simp only [Functor.comp_obj, assoc, Functor.CommShift.isoAdd'_inv_app, Iso.inv_hom_id_app_assoc,
-    ← Functor.map_comp, Iso.inv_hom_id_app, Functor.map_id, comp_id] at this
-  rw [← cancel_epi (((F.commShiftIso a).inv.app _)⟦-a⟧'), ← assoc, ← this, ← assoc, ← assoc,
-    ← Functor.map_comp, Iso.inv_hom_id_app, Functor.map_id, id_comp, F.commShiftIso_zero]
-  simp only [Functor.comp_obj, Functor.CommShift.isoZero_inv_app, assoc]
-  rw [shiftEquiv'_counit, shiftFunctorCompIsoId]
-  simp only [Iso.trans_hom, Iso.symm_hom, NatTrans.comp_app, Functor.comp_obj, Functor.id_obj,
-    Functor.map_comp]
-  slice_lhs 4 5 => rw [← F.map_comp, Iso.hom_inv_id_app, F.map_id]
-  rw [id_comp, ← F.map_comp, Iso.inv_hom_id_app]
-  erw [F.map_id]; rw [comp_id]
-  rfl
+  simp only [Functor.comp_obj, iso, iso', shiftEquiv', Equiv.toFun_as_coe,
+    conjugateIsoEquiv_apply_inv, conjugateEquiv_apply_app, comp_unit_app, Functor.id_obj,
+    Equivalence.toAdjunction_unit, Equivalence.Equivalence_mk'_unit, Iso.symm_hom, Functor.comp_map,
+    comp_counit_app, Equivalence.toAdjunction_counit, Equivalence.Equivalence_mk'_counit,
+    Functor.map_shiftFunctorCompIsoId_hom_app, assoc, Functor.map_comp]
+  slice_lhs 3 4 => rw [← Functor.map_comp, ← Functor.map_comp, Iso.inv_hom_id_app]
+  simp
 
 lemma iso_compat_unit (a : A) : CommShift.compat_unit adj a (F.commShiftIso a) (iso adj a) := by
   intro X
