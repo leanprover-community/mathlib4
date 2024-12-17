@@ -38,6 +38,7 @@ theorem prod_primeFactors_of_squarefree (f : ArithmeticFunction ℝ) (h_mult : f
   rw [←IsMultiplicative.map_prod_of_subset_primeFactors h_mult l _ Finset.Subset.rfl,
     Nat.prod_primeFactors_of_squarefree hl]
 
+--basic
 theorem map_dvd_of_squarefree (f : ArithmeticFunction ℝ) (h_mult : IsMultiplicative f)
     (l d : ℕ) (hdl : d ∣ l) (hl : Squarefree l) (hd : f d ≠ 0) : f (l / d) = f l / f d := by
   apply (div_eq_of_eq_mul hd ..).symm
@@ -128,10 +129,3 @@ theorem multiplicative_zero_of_zero_dvd (f : ArithmeticFunction ℝ) (h_mult : I
   rcases hmn with ⟨k, rfl⟩
   simp only [MulZeroClass.zero_mul, eq_self_iff_true, h_mult.map_mul_of_coprime
     (coprime_of_squarefree_mul h_sq), h_zero]
---basic
-theorem primeDivisors_nonempty (n : ℕ) (hn : 2 ≤ n) : n.primeFactors.Nonempty := by
-  unfold Finset.Nonempty
-  simp_rw [Nat.mem_primeFactors_of_ne_zero (by positivity)]
-  apply Nat.exists_prime_and_dvd (by linarith)
-
---basic

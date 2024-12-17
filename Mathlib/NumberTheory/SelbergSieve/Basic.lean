@@ -2,8 +2,6 @@
 Copyright (c) 2023 Arend Mellendijk. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Author: Arend Mellendijk
-
-! This file was ported from Lean 3 source module sieve
 -/
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Analysis.Asymptotics.Asymptotics
@@ -200,6 +198,7 @@ theorem siftedSum_as_delta : siftedSum = ∑ d in support, a d * if Nat.gcd P d 
 
 theorem nu_lt_self_of_dvd_prodPrimes (d : ℕ) (hdP : d ∣ P) (hd_ne_one : d ≠ 1) : ν d < 1 := by
   have hd_sq : Squarefree d := Squarefree.squarefree_of_dvd hdP prodPrimes_squarefree
+  have := hd_sq.ne_zero
   calc
     ν d = ∏ p in d.primeFactors, ν p :=
       eq_comm.mp (nu_mult.prod_primeFactors_of_squarefree ν hd_sq)
@@ -210,7 +209,7 @@ theorem nu_lt_self_of_dvd_prodPrimes (d : ℕ) (hdP : d ∣ P) (hd_ne_one : d �
         apply nu_pos_of_prime p (by aesop) (hp.2.1.trans hdP)
       · intro p hpd; rw [mem_primeFactors_of_ne_zero hd_sq.ne_zero] at hpd
         apply nu_lt_one_of_prime p hpd.left (hpd.2.trans hdP)
-      · apply primeDivisors_nonempty _ <| (two_le_iff d).mpr ⟨hd_sq.ne_zero, hd_ne_one⟩
+      · simp only [nonempty_primeFactors, show 1 < d by omega]
     _ = 1 := by
       simp
 
