@@ -97,16 +97,11 @@ def isoOfQuivIso {V W : Type u} [ReflQuiver.{v + 1} V] [ReflQuiver.{v + 1} W]
     rw [← Prefunctor.homOfEq_map _ _ hY hY]
     simp only [of_val, ReflQuiver.homOfEq_id]
   hom_inv_id := by
-    apply forgetToQuiv_faithful
-    simp only [Functor.map_comp]
-    simp only [forgetToQuiv_obj, of_val, forgetToQuiv_map, Iso.hom_inv_id]
-    rfl
+    apply forgetToQuiv.map_injective
+    exact e.hom_inv_id
   inv_hom_id := by
-    apply forgetToQuiv_faithful
-    simp only [Functor.map_comp]
-    simp only [forgetToQuiv_obj, of_val, forgetToQuiv_map, Iso.hom_inv_id]
-    rw [e.inv_hom_id]
-    rfl
+    apply forgetToQuiv.map_injective
+    exact e.inv_hom_id
 
 
 section
