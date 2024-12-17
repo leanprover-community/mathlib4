@@ -30,12 +30,6 @@ universe u
 
 variable {Ω : Type u} [MeasurableSpace Ω] (μ : Measure Ω := by volume_tac)
 
-theorem cgf_zero_deriv [IsProbabilityMeasure μ] {X : Ω → ℝ} (h0 : μ[X] = 0) :
-    let f' := fun t ↦ ∫ (x : Ω), X x ∂Measure.tilted μ fun ω ↦ t * X ω;
-  f' 0 = 0 := by
-  simp only [zero_mul, tilted_const', measure_univ, inv_one, one_smul]
-  exact h0
-
 theorem ProbabilityTheory.extracted_1 [IsProbabilityMeasure μ]
     (t a b : ℝ) {X : Ω → ℝ} (ht : 0 ≤ t) (hX : AEMeasurable X μ)
     (h : ∀ᵐ (ω : Ω) ∂μ, X ω ∈ Set.Icc a b) (h0 : ∫ (x : Ω), X x ∂μ = 0) (w : ¬t = 0) :
@@ -43,7 +37,7 @@ theorem ProbabilityTheory.extracted_1 [IsProbabilityMeasure μ]
   let f := fun t ↦ cgf X μ t
   have hf : f 0 = 0 := cgf_zero
   set f' : ℝ → ℝ := fun t ↦ (μ.tilted (fun ω ↦ t * X ω))[X]
-  have hf' : f' 0 = 0 := cgf_zero_deriv μ h0
+  have hf' : f' 0 = 0 := cgf_zero_deriv h0
   set f'' : ℝ → ℝ := fun t ↦ variance X (μ.tilted (fun ω ↦ t * X ω))
   have q : ∀ x : ℝ, ∃ c ∈ (Set.Ioo 0 t), f t = f 0 + f' 0 * t + f'' c * t ^ 2 / 2 := by
     let A := (f t - f 0 - f' 0 * t) * 2 / t ^ 2
