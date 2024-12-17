@@ -257,6 +257,10 @@ theorem det_zero [Module.Free A M] :
     LinearMap.det (0 : M →ₗ[A] M) = (0 : A) ^ Module.finrank A M := by
   simp only [← zero_smul A (1 : M →ₗ[A] M), det_smul, mul_one, MonoidHom.map_one]
 
+theorem det_eq_one_of_not_module_finite (h : ¬Module.Finite R M) (f : M →ₗ[R] M) : f.det = 1 := by
+  rw [LinearMap.det, dif_neg, MonoidHom.one_apply]
+  exact fun ⟨_, ⟨b⟩⟩ ↦ h (Module.Finite.of_basis b)
+
 theorem det_eq_one_of_subsingleton [Subsingleton M] (f : M →ₗ[R] M) :
     LinearMap.det (f : M →ₗ[R] M) = 1 := by
   have b : Basis (Fin 0) R M := Basis.empty M
