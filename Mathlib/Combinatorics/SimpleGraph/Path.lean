@@ -1074,8 +1074,8 @@ noncomputable def rep (c : G.ConnectedComponent) : V := c.exists_rep.choose
 lemma rep_spec (c : G.ConnectedComponent) :
     G.connectedComponentMk c.rep = c := c.exists_rep.choose_spec
 
-lemma rep_unique {C : Set (G.ConnectedComponent)}
-    (c : G.ConnectedComponent) (h : c ∈ C) : ∃! v, v ∈ rep '' C ∩ c.supp := by
+lemma rep_unique {C : Set (G.ConnectedComponent)} (c : G.ConnectedComponent) (h : c ∈ C) :
+    ∃! v, v ∈ rep '' C ∩ c.supp := by
   use c.rep
   simp only [Set.mem_inter_iff, mem_supp_iff, and_imp]
   refine ⟨⟨by aesop, rep_spec c⟩, ?_⟩
@@ -1083,8 +1083,8 @@ lemma rep_unique {C : Set (G.ConnectedComponent)}
   obtain ⟨_, ⟨_, rfl⟩⟩ := hy
   rw [← hyc, rep_spec]
 
-lemma disjoint_rep_image_supp {C : Set (G.ConnectedComponent)}
-    (c : G.ConnectedComponent) (h : c ∉ C) : Disjoint (rep '' C) c.supp := by
+lemma disjoint_rep_image_supp {C : Set (G.ConnectedComponent)} (c : G.ConnectedComponent)
+    (h : c ∉ C) : Disjoint (rep '' C) c.supp := by
   rw [Set.disjoint_right]
   intro v hv hvr
   obtain ⟨c', ⟨hc', rfl⟩⟩ := hvr
