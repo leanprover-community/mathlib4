@@ -83,6 +83,7 @@ theorem Walk.three_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u :
   have : ¬c' u ↔ c' u := (c'.odd_length_iff_not_congr p).mp hOdd
   simp_all
 
+/-- Bicoloring of a cycle graph of even size -/
 def cycleGraph.even_bicoloring (n : ℕ) (h : Even n) : Coloring (cycleGraph n) Bool :=
   Coloring.mk (fun u ↦ u.val % 2 = 0) <| by
     intro u v hAdj
@@ -108,7 +109,8 @@ theorem chromaticNumber_even_cycleGraph (n : ℕ) (h : 2 ≤ n) (hEven : Even n)
       simp [cycleGraph_adj', Fin.sub_val_of_le]
     exact two_le_chromaticNumber_of_adj hAdj
 
-def cycleGraph.odd_tricoloring (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n) : Coloring (cycleGraph n)
+/-- Bicoloring of a cycle graph -/
+def cycleGraph.odd_tricoloring (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n)
   (Fin 3) := Coloring.mk (fun u ↦ if u.val = n - 1 then 2 else ⟨u.val % 2, by fin_omega⟩) <| by
     intro u v hAdj
     match n with
@@ -136,7 +138,7 @@ def cycleGraph.odd_tricoloring (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n) : Coloring
 
 theorem chromaticNumber_odd_cycleGraph (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n) :
     (cycleGraph n).chromaticNumber = 3 := by
-  have hc := (cycleGraph.odd_tricoloring n h hOdd).colorable
+  have hc := (cycleGraph.odd_tricoloring n h).colorable
   apply le_antisymm
   · apply hc.chromaticNumber_le
   · have hn3 : n - 3 + 3 = n := by
