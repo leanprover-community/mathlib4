@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Presentable.Basic
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory
 import Mathlib.CategoryTheory.Limits.TypesFiltered
@@ -389,27 +390,44 @@ variable {Y} {c : Cocone Y} (hc : IsColimit c)
 
 namespace surjectivity
 
-variable [Mono c.ι] (z : X ⟶ c.pt)
+variable (z : X ⟶ c.pt)
 
 @[simps]
-noncomputable def F : J ⥤ MonoOver X where
+noncomputable def F [Mono c.ι] : J ⥤ MonoOver X where
   obj j := MonoOver.mk' ((pullback.snd c.ι ((Functor.const _).map z)).app j)
   map {j j'} f := MonoOver.homMk ((pullback c.ι ((Functor.const _).map z)).map f)
 
-noncomputable def f : colimit (F z ⋙ MonoOver.forget X ⋙ Over.forget X) ⟶ X :=
+noncomputable def f : colimit (pullback c.ι ((Functor.const J).map z)) ⟶ X :=
   colimit.desc _ (Cocone.mk X
     { app j := (pullback.snd c.ι ((Functor.const _).map z)).app j })
 
-@[reassoc (attr := simp)]
 lemma hf (j : J) :
     colimit.ι _ j ≫ f z =
       (pullback.snd c.ι ((Functor.const J).map z)).app j :=
   colimit.ι_desc _ _
 
-include hc in
+variable (κ) in
+include hc κ in
 lemma epi_f : Epi (f z) := by
-  have := hc
-  sorry
+  have := isFiltered_of_isCardinalDirected J κ
+  have isPullback := (IsPullback.of_hasPullback c.ι ((Functor.const _).map z)).map colim
+  have : IsIso (f z) := by
+    refine ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff ?_).1
+      (MorphismProperty.of_isPullback isPullback ?_)
+    · refine Arrow.isoMk (Iso.refl _)
+        (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _) (constCoconeIsColimit J X)) ?_
+      dsimp
+      ext j
+      dsimp
+      rw [Category.id_comp, ι_colimMap_assoc, colimit.comp_coconePointUniqueUpToIso_hom,
+        constCocone_ι, NatTrans.id_app, Category.comp_id]
+      apply hf
+    · refine ((MorphismProperty.isomorphisms C).arrow_mk_iso_iff ?_).2
+        (inferInstanceAs (IsIso (𝟙 c.pt)))
+      exact Arrow.isoMk (IsColimit.coconePointUniqueUpToIso (colimit.isColimit Y) hc)
+        (IsColimit.coconePointUniqueUpToIso (colimit.isColimit _)
+          (constCoconeIsColimit J c.pt))
+  infer_instance
 
 end surjectivity
 
@@ -423,9 +441,8 @@ lemma surjectivity : ∃ (j₀ : J) (y : X ⟶ Y.obj j₀), z = y ≫ c.ι.app j
   have : ∀ (j : J), Mono (c.ι.app j) := fun j ↦
     HasExactColimitsOfShape.mono_ι_app_of_isColimit_of_mono_map_of_isFiltered c hc j
   have := NatTrans.mono_of_mono_app c.ι
-  have := hc
   obtain ⟨j, _⟩ := exists_isIso_of_functor_from_monoOver (F z) hXκ _
-    (colimit.isColimit _) (f z) (by simp) (epi_f hc z)
+    (colimit.isColimit _) (f z) (hf z) (epi_f κ hc z)
   refine ⟨j, inv ((F z).obj j).obj.hom ≫ (pullback.fst c.ι _).app j, ?_⟩
   dsimp
   rw [Category.assoc, IsIso.eq_inv_comp, ← NatTrans.comp_app, pullback.condition,
