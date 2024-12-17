@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.SetTheory.Cardinal.Ordinal
+import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Cardinality of continuum
@@ -23,14 +23,14 @@ universe u v
 
 open Cardinal
 
-/-- Cardinality of continuum. -/
+/-- Cardinality of the continuum. -/
 def continuum : Cardinal.{u} :=
   2 ^ ℵ₀
 
 scoped notation "𝔠" => Cardinal.continuum
 
 @[simp]
-theorem two_power_aleph0 : 2 ^ aleph0.{u} = continuum.{u} :=
+theorem two_power_aleph0 : 2 ^ ℵ₀ = 𝔠 :=
   rfl
 
 @[simp]
@@ -65,7 +65,7 @@ theorem aleph0_le_continuum : ℵ₀ ≤ 𝔠 :=
   aleph0_lt_continuum.le
 
 @[simp]
-theorem beth_one : beth 1 = 𝔠 := by simpa using beth_succ 0
+theorem beth_one : ℶ_ 1 = 𝔠 := by simpa using beth_succ 0
 
 theorem nat_lt_continuum (n : ℕ) : ↑n < 𝔠 :=
   (nat_lt_aleph0 n).trans aleph0_lt_continuum
@@ -78,7 +78,7 @@ theorem continuum_pos : 0 < 𝔠 :=
 theorem continuum_ne_zero : 𝔠 ≠ 0 :=
   continuum_pos.ne'
 
-theorem aleph_one_le_continuum : aleph 1 ≤ 𝔠 := by
+theorem aleph_one_le_continuum : ℵ₁ ≤ 𝔠 := by
   rw [← succ_aleph0]
   exact Order.succ_le_of_lt aleph0_lt_continuum
 
@@ -87,8 +87,8 @@ theorem continuum_toNat : toNat continuum = 0 :=
   toNat_apply_of_aleph0_le aleph0_le_continuum
 
 @[simp]
-theorem continuum_toPartENat : toPartENat continuum = ⊤ :=
-  toPartENat_apply_of_aleph0_le aleph0_le_continuum
+theorem continuum_toENat : toENat continuum = ⊤ :=
+  (toENat_eq_top.2 aleph0_le_continuum)
 
 /-!
 ### Addition
@@ -166,15 +166,22 @@ theorem continuum_mul_ofNat {n : ℕ} [Nat.AtLeastTwo n] : 𝔠 * no_index (OfNa
 
 
 @[simp]
-theorem aleph0_power_aleph0 : aleph0.{u} ^ aleph0.{u} = 𝔠 :=
+theorem aleph0_power_aleph0 : ℵ₀ ^ ℵ₀ = 𝔠 :=
   power_self_eq le_rfl
 
 @[simp]
-theorem nat_power_aleph0 {n : ℕ} (hn : 2 ≤ n) : (n ^ aleph0.{u} : Cardinal.{u}) = 𝔠 :=
+theorem nat_power_aleph0 {n : ℕ} (hn : 2 ≤ n) : n ^ ℵ₀ = 𝔠 :=
   nat_power_eq le_rfl hn
 
 @[simp]
-theorem continuum_power_aleph0 : continuum.{u} ^ aleph0.{u} = 𝔠 := by
+theorem continuum_power_aleph0 : 𝔠 ^ ℵ₀ = 𝔠 := by
   rw [← two_power_aleph0, ← power_mul, mul_eq_left le_rfl le_rfl aleph0_ne_zero]
+
+theorem power_aleph0_of_le_continuum {x : Cardinal} (h₁ : 2 ≤ x) (h₂ : x ≤ 𝔠) : x ^ ℵ₀ = 𝔠 := by
+  apply le_antisymm
+  · rw [← continuum_power_aleph0]
+    exact power_le_power_right h₂
+  · rw [← two_power_aleph0]
+    exact power_le_power_right h₁
 
 end Cardinal

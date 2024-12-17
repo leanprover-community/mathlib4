@@ -155,7 +155,7 @@ theorem comp_Hσ_eq_zero {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : Higher
         omega
       · intro h
         simp only [Fin.pred, Fin.subNat, Fin.ext_iff, Nat.succ_add_sub_one,
-          Fin.val_zero, add_eq_zero, false_and] at h
+          Fin.val_zero, add_eq_zero, false_and, reduceCtorEq] at h
       · simp only [Fin.pred, Fin.subNat, Nat.pred_eq_sub_one, Nat.succ_add_sub_one]
         omega
 
@@ -196,7 +196,7 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVa
     swap
     · rw [Fin.le_iff_val_le_val]
       dsimp
-      linarith
+      omega
     simp only [← assoc, v j (by omega), zero_comp]
   · -- in the last case, a=m, q=1 and j=a+1
     rw [X.δ_comp_δ_self'_assoc]

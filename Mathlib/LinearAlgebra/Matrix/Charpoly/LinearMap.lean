@@ -28,7 +28,7 @@ variable (b : ι → M)
 open Polynomial Matrix
 
 /-- The composition of a matrix (as an endomorphism of `ι → R`) with the projection
-`(ι → R) →ₗ[R] M`.  -/
+`(ι → R) →ₗ[R] M`. -/
 def PiToModule.fromMatrix [DecidableEq ι] : Matrix ι ι R →ₗ[R] (ι → R) →ₗ[R] M :=
   (LinearMap.llcomp R _ _ _ (Fintype.linearCombination R R b)).comp algEquivMatrix'.symm.toLinearMap
 
@@ -71,7 +71,7 @@ section
 variable {R} [DecidableEq ι]
 
 /-- We say that a matrix represents an endomorphism of `M` if the matrix acting on `ι → R` is
-equal to `f` via the projection `(ι → R) →ₗ[R] M` given by a fixed (spanning) set.  -/
+equal to `f` via the projection `(ι → R) →ₗ[R] M` given by a fixed (spanning) set. -/
 def Matrix.Represents (A : Matrix ι ι R) (f : Module.End R M) : Prop :=
   PiToModule.fromMatrix R b A = PiToModule.fromEnd R b f
 
@@ -93,8 +93,7 @@ theorem Matrix.represents_iff' {A : Matrix ι ι R} {f : Module.End R M} :
     have := LinearMap.congr_fun h (Pi.single i 1)
     rwa [PiToModule.fromEnd_apply_single_one, PiToModule.fromMatrix_apply_single_one] at this
   · intro h
-    -- Porting note: was `ext`
-    refine LinearMap.pi_ext' (fun i => LinearMap.ext_ring ?_)
+    ext
     simp_rw [LinearMap.comp_apply, LinearMap.coe_single, PiToModule.fromEnd_apply_single_one,
       PiToModule.fromMatrix_apply_single_one]
     apply h
@@ -229,4 +228,4 @@ theorem LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_s
 theorem LinearMap.exists_monic_and_aeval_eq_zero [Module.Finite R M] (f : Module.End R M) :
     ∃ p : R[X], p.Monic ∧ Polynomial.aeval f p = 0 :=
   (LinearMap.exists_monic_and_coeff_mem_pow_and_aeval_eq_zero_of_range_le_smul R f ⊤ (by simp)).imp
-    fun p h => h.imp_right And.right
+    fun _ h => h.imp_right And.right

@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin
 -/
 import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Composition
+import Mathlib.Data.Matrix.ConjTranspose
 
 /-!
 # Block Matrices
@@ -20,7 +22,6 @@ import Mathlib.Data.Matrix.Basic
   ring homomorphisms, `Matrix.blockDiagonal'RingHom`.
 * `Matrix.blockDiag'`: extract the blocks from the diagonal of a block diagonal matrix.
 -/
-
 
 variable {l m n o p q : Type*} {m' n' p' : o → Type*}
 variable {R : Type*} {S : Type*} {α : Type*} {β : Type*}
@@ -40,7 +41,7 @@ dimensions. -/
 @[pp_nodot]
 def fromBlocks (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α) :
     Matrix (n ⊕ o) (l ⊕ m) α :=
-  of <| Sum.elim (fun i => Sum.elim (A i) (B i)) fun i => Sum.elim (C i) (D i)
+  of <| Sum.elim (fun i => Sum.elim (A i) (B i)) (fun j => Sum.elim (C j) (D j))
 
 @[simp]
 theorem fromBlocks_apply₁₁ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
@@ -318,7 +319,7 @@ See also `Matrix.blockDiagonal'` if the matrices may not have the same size ever
 def blockDiagonal (M : o → Matrix m n α) : Matrix (m × o) (n × o) α :=
   of <| (fun ⟨i, k⟩ ⟨j, k'⟩ => if k = k' then M k i j else 0 : m × o → n × o → α)
 
--- TODO: set as an equation lemma for `blockDiagonal`, see mathlib4#3024
+-- TODO: set as an equation lemma for `blockDiagonal`, see https://github.com/leanprover-community/mathlib4/pull/3024
 theorem blockDiagonal_apply' (M : o → Matrix m n α) (i k j k') :
     blockDiagonal M ⟨i, k⟩ ⟨j, k'⟩ = if k = k' then M k i j else 0 :=
   rfl
@@ -455,7 +456,7 @@ This is the block form of `Matrix.diag`, and the left-inverse of `Matrix.blockDi
 def blockDiag (M : Matrix (m × o) (n × o) α) (k : o) : Matrix m n α :=
   of fun i j => M (i, k) (j, k)
 
--- TODO: set as an equation lemma for `blockDiag`, see mathlib4#3024
+-- TODO: set as an equation lemma for `blockDiag`, see https://github.com/leanprover-community/mathlib4/pull/3024
 theorem blockDiag_apply (M : Matrix (m × o) (n × o) α) (k : o) (i j) :
     blockDiag M k i j = M (i, k) (j, k) :=
   rfl
@@ -564,7 +565,7 @@ def blockDiagonal' (M : ∀ i, Matrix (m' i) (n' i) α) : Matrix (Σi, m' i) (Σ
     (fun ⟨k, i⟩ ⟨k', j⟩ => if h : k = k' then M k i (cast (congr_arg n' h.symm) j) else 0 :
       (Σi, m' i) → (Σi, n' i) → α)
 
--- TODO: set as an equation lemma for `blockDiagonal'`, see mathlib4#3024
+-- TODO: set as an equation lemma for `blockDiagonal'`, see https://github.com/leanprover-community/mathlib4/pull/3024
 theorem blockDiagonal'_apply' (M : ∀ i, Matrix (m' i) (n' i) α) (k i k' j) :
     blockDiagonal' M ⟨k, i⟩ ⟨k', j⟩ =
       if h : k = k' then M k i (cast (congr_arg n' h.symm) j) else 0 :=
@@ -716,7 +717,7 @@ This is the block form of `Matrix.diag`, and the left-inverse of `Matrix.blockDi
 def blockDiag' (M : Matrix (Σi, m' i) (Σi, n' i) α) (k : o) : Matrix (m' k) (n' k) α :=
   of fun i j => M ⟨k, i⟩ ⟨k, j⟩
 
--- TODO: set as an equation lemma for `blockDiag'`, see mathlib4#3024
+-- TODO: set as an equation lemma for `blockDiag'`, see https://github.com/leanprover-community/mathlib4/pull/3024
 theorem blockDiag'_apply (M : Matrix (Σi, m' i) (Σi, n' i) α) (k : o) (i j) :
     blockDiag' M k i j = M ⟨k, i⟩ ⟨k, j⟩ :=
   rfl
@@ -833,3 +834,29 @@ theorem toBlock_mul_eq_add {m n k : Type*} [Fintype n] (p : m → Prop) (q : n �
 end
 
 end Matrix
+
+section Maps
+
+variable {R α β ι : Type*}
+
+lemma Matrix.map_toSquareBlock
+    (f : α → β) {M : Matrix m m α} {ι} {b : m → ι} {i : ι} :
+    (M.map f).toSquareBlock b i = (M.toSquareBlock b i).map f :=
+  submatrix_map _ _ _ _
+
+lemma Matrix.comp_toSquareBlock {b : m → α}
+    (M : Matrix m m (Matrix n n R)) (a : α) :
+    letI equiv := Equiv.prodSubtypeFstEquivSubtypeProd.symm
+    (M.comp m m n n R).toSquareBlock (fun i ↦ b i.1) a =
+      ((M.toSquareBlock b a).comp _ _ n n R).reindex equiv equiv :=
+  rfl
+
+variable [Zero R] [DecidableEq m]
+
+lemma Matrix.comp_diagonal (d) :
+    comp m m n n R (diagonal d) =
+      (blockDiagonal d).reindex (.prodComm ..) (.prodComm ..) := by
+  ext
+  simp [diagonal, blockDiagonal, Matrix.ite_apply]
+
+end Maps

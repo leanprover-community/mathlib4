@@ -208,6 +208,17 @@ instance (priority := 100) separatesPoints_of_measurableSingletonClass [Measurab
   simp_rw [mem_singleton_iff, forall_true_left] at h
   exact h.symm
 
+instance (priority := 50) MeasurableSingletonClass.of_separatesPoints [MeasurableSpace α]
+    [Countable α] [SeparatesPoints α] : MeasurableSingletonClass α where
+  measurableSet_singleton x := by
+    choose s hsm hxs hys using fun y (h : x ≠ y) ↦ exists_measurableSet_of_ne h
+    convert MeasurableSet.iInter fun y ↦ .iInter fun h ↦ hsm y h
+    ext y
+    rcases eq_or_ne x y with rfl | h
+    · simpa
+    · simp only [mem_singleton_iff, h.symm, false_iff, mem_iInter, not_forall]
+      exact ⟨y, h, hys y h⟩
+
 instance hasCountableSeparatingOn_of_countablySeparated_subtype
     [MeasurableSpace α] {s : Set α} [h : CountablySeparated s] :
     HasCountableSeparatingOn _ MeasurableSet s := CountablySeparated.subtype_iff.mp h
@@ -322,12 +333,11 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
     MeasurableSet[generateFrom (memPartition t n)] s
       ↔ ∃ S : Finset (Set α), ↑S ⊆ memPartition t n ∧ s = ⋃₀ S := by
   refine ⟨fun h ↦ ?_, fun ⟨S, hS_subset, hS_eq⟩ ↦ ?_⟩
-  · refine MeasurableSpace.generateFrom_induction
-      (p := fun u ↦ ∃ S : Finset (Set α), ↑S ⊆ memPartition t n ∧ u = ⋃₀ ↑S)
-      (C := memPartition t n) ?_ ?_ ?_ ?_ h
-    · exact fun u hu ↦ ⟨{u}, by simp [hu], by simp⟩
-    · exact ⟨∅, by simp, by simp⟩
-    · rintro u ⟨S, hS_subset, rfl⟩
+  · induction s, h using generateFrom_induction with
+    | hC u hu _ => exact ⟨{u}, by simp [hu], by simp⟩
+    | empty => exact ⟨∅, by simp, by simp⟩
+    | compl u _ hu =>
+      obtain ⟨S, hS_subset, rfl⟩ := hu
       classical
       refine ⟨(memPartition t n).toFinset \ S, ?_, ?_⟩
       · simp only [Finset.coe_sdiff, coe_toFinset]
@@ -341,7 +351,7 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
         · rw [codisjoint_iff]
           simp only [sup_eq_union, top_eq_univ]
           rw [← sUnion_memPartition t n, union_comm, ← sUnion_union, union_diff_cancel hS_subset]
-    · intro f h
+    | iUnion f _ h =>
       choose S hS_subset hS_eq using h
       have : Fintype (⋃ n, (S n : Set (Set α))) := by
         refine (Finite.subset (finite_memPartition t n) ?_).fintype
@@ -495,25 +505,52 @@ lemma countablePartitionSet_of_mem {n : ℕ} {a : α} {s : Set α} (hs : s ∈ c
     countablePartitionSet n a = s :=
   memPartitionSet_of_mem hs ha
 
+@[measurability]
 lemma measurableSet_countablePartitionSet (n : ℕ) (a : α) :
     MeasurableSet (countablePartitionSet n a) :=
   measurableSet_countablePartition n (countablePartitionSet_mem n a)
 
 section CountableOrCountablyGenerated
 
-variable [MeasurableSpace β]
+variable {α γ : Type*} [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
 
 /-- A class registering that either `α` is countable or `β` is a countably generated
 measurable space. -/
-class CountableOrCountablyGenerated (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] : Prop :=
+class CountableOrCountablyGenerated (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] :
+    Prop where
   countableOrCountablyGenerated : Countable α ∨ MeasurableSpace.CountablyGenerated β
 
 instance instCountableOrCountablyGeneratedOfCountable [h1 : Countable α] :
     CountableOrCountablyGenerated α β := ⟨Or.inl h1⟩
 
-instance instCountableOrCountablyGeneratedOfCountablyGenerated
-    [h : MeasurableSpace.CountablyGenerated β] :
+instance instCountableOrCountablyGeneratedOfCountablyGenerated [h : CountablyGenerated β] :
     CountableOrCountablyGenerated α β := ⟨Or.inr h⟩
+
+instance [hα : CountableOrCountablyGenerated α γ] [hβ : CountableOrCountablyGenerated β γ] :
+    CountableOrCountablyGenerated (α × β) γ := by
+  rcases hα with (hα | hα) <;> rcases hβ with (hβ | hβ) <;> infer_instance
+
+lemma countableOrCountablyGenerated_left_of_prod_left_of_nonempty [Nonempty β]
+    [h : CountableOrCountablyGenerated (α × β) γ] :
+    CountableOrCountablyGenerated α γ := by
+  rcases h.countableOrCountablyGenerated with (h | h)
+  · have := countable_left_of_prod_of_nonempty h
+    infer_instance
+  · infer_instance
+
+lemma countableOrCountablyGenerated_right_of_prod_left_of_nonempty [Nonempty α]
+    [h : CountableOrCountablyGenerated (α × β) γ] :
+    CountableOrCountablyGenerated β γ := by
+  rcases h.countableOrCountablyGenerated with (h | h)
+  · have := countable_right_of_prod_of_nonempty h
+    infer_instance
+  · infer_instance
+
+lemma countableOrCountablyGenerated_prod_left_swap [h : CountableOrCountablyGenerated (α × β) γ] :
+    CountableOrCountablyGenerated (β × α) γ := by
+  rcases h with (h | h)
+  · refine ⟨Or.inl countable_prod_swap⟩
+  · exact ⟨Or.inr h⟩
 
 end CountableOrCountablyGenerated
 

@@ -23,6 +23,7 @@ jobs:
         topic: 'Mathlib status updates'
         content: |
           ❌ The latest CI for Mathlib's branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})).
+          You can `git fetch; git checkout nightly-testing` and push a fix.
 
   handle_success:
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'nightly-testing' }}
@@ -50,7 +51,7 @@ jobs:
               git tag "nightly-testing-${version}"
               git push origin "nightly-testing-${version}"
               hash="$(git rev-parse "nightly-testing-${version}")"
-              curl -X POST "http://speed.lean-fro.org/mathlib4/api/queue/commit/e7b27246-a3e6-496a-b552-ff4b45c7236e/$hash" -u "admin:${{ secrets.SPEED }}"
+              curl -X POST "https://speed.lean-lang.org/mathlib4/api/queue/commit/e7b27246-a3e6-496a-b552-ff4b45c7236e/$hash" -u "admin:${{ secrets.SPEED }}"
           fi
           hash="$(git rev-parse "nightly-testing-${version}")"
           printf 'SHA=%s\n' "${hash}" >> "${GITHUB_ENV}"
@@ -210,7 +211,7 @@ jobs:
             bump_branch_suffix = bump_branch.replace('bump/', '')
             payload = f"🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing (specifically {sha}), and then PR that to {bump_branch}. "
             payload += "To do so semi-automatically, run the following script from mathlib root:\n\n"
-            payload += f"```bash\n./scripts/create-adaptation-pr.sh {bump_branch_suffix} {current_version}\n```\n"
+            payload += f"```bash\n./scripts/create-adaptation-pr.sh --bumpversion={bump_branch_suffix} --nightlydate={current_version} --nightlysha={sha}\n```\n"
             # Only post if the message is different
             # We compare the first 160 characters, since that includes the date and bump version
             if not messages or messages[0]['content'][:160] != payload[:160]:

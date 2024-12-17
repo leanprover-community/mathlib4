@@ -91,7 +91,7 @@ end
 
 section Layercake
 
-variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ} {s : Set α}
+variable {α : Type*} [MeasurableSpace α] {f : α → ℝ} {g : ℝ → ℝ}
 
 /-- An auxiliary version of the layer cake formula (Cavalieri's principle, tail probability
 formula), with a measurability assumption that would also essentially follow from the
@@ -122,9 +122,9 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
     congr
     exact intervalIntegral.integral_of_le (f_nn ω)
   rw [lintegral_congr integrand_eq]
-  simp_rw [← lintegral_indicator (fun t => ENNReal.ofReal (g t)) measurableSet_Ioc]
+  simp_rw [← lintegral_indicator measurableSet_Ioc]
   -- Porting note: was part of `simp_rw` on the previous line, but didn't trigger.
-  rw [← lintegral_indicator _ measurableSet_Ioi, lintegral_lintegral_swap]
+  rw [← lintegral_indicator measurableSet_Ioi, lintegral_lintegral_swap]
   · apply congr_arg
     funext s
     have aux₁ :
@@ -141,7 +141,7 @@ theorem lintegral_comp_eq_lintegral_meas_le_mul_of_measurable_of_sigmaFinite
         · simp only [h_copy, h h', indicator_of_not_mem, not_false_iff, mem_Ici, not_le, mul_zero]
         · have : s ∉ Ioi (0 : ℝ) := h'
           simp only [this, h', indicator_of_not_mem, not_false_iff, mul_zero,
-            zero_mul, mem_Ioc, false_and_iff]
+            zero_mul, mem_Ioc, false_and]
     simp_rw [aux₁]
     rw [lintegral_const_mul']
     swap
@@ -458,9 +458,8 @@ end Layercake
 
 section LayercakeLT
 
-variable {α : Type*} [MeasurableSpace α] (μ : Measure α)
-variable {β : Type*} [MeasurableSpace β] [MeasurableSingletonClass β]
-variable {f : α → ℝ} {g : ℝ → ℝ} {s : Set α}
+variable {α : Type*} [MeasurableSpace α]
+variable {f : α → ℝ} {g : ℝ → ℝ}
 
 /-- The layer cake formula / Cavalieri's principle / tail probability formula:
 
@@ -548,7 +547,7 @@ lemma Integrable.integral_eq_integral_Ioc_meas_le {f : α → ℝ} {M : ℝ}
     ∫ ω, f ω ∂μ = ∫ t in Ioc 0 M, ENNReal.toReal (μ {a : α | t ≤ f a}) := by
   rw [f_intble.integral_eq_integral_meas_le f_nn]
   rw [setIntegral_eq_of_subset_of_ae_diff_eq_zero
-      measurableSet_Ioi.nullMeasurableSet Ioc_subset_Ioi_self ?_]
+      nullMeasurableSet_Ioi Ioc_subset_Ioi_self ?_]
   apply Eventually.of_forall (fun t ht ↦ ?_)
   have htM : M < t := by simp_all only [mem_diff, mem_Ioi, mem_Ioc, not_and, not_le]
   have obs : μ {a | M < f a} = 0 := by

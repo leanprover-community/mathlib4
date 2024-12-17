@@ -5,7 +5,6 @@ Authors: David Wärn, Antoine Labelle, Rémi Bottinelli
 -/
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Push
-import Batteries.Data.Sum.Lemmas
 
 /-!
 ## Symmetric quivers and arrow reversal
@@ -45,7 +44,7 @@ class HasReverse where
 def reverse {V} [Quiver.{v + 1} V] [HasReverse V] {a b : V} : (a ⟶ b) → (b ⟶ a) :=
   HasReverse.reverse'
 
-/-- A quiver `HasInvolutiveReverse` if reversing twice is the identity. -/
+/-- A quiver `HasInvolutiveReverse` if reversing twice is the identity. -/
 class HasInvolutiveReverse extends HasReverse V where
   /-- `reverse` is involutive -/
   inv' : ∀ {a b : V} (f : a ⟶ b), reverse (reverse f) = f

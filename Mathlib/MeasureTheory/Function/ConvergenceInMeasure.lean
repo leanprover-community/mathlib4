@@ -191,8 +191,8 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
     fun k => ExistsSeqTendstoAe.seqTendstoAeSeq_spec hfg k (ns k) le_rfl
   set s := Filter.atTop.limsup S with hs
   have hμs : μ s = 0 := by
-    refine measure_limsup_eq_zero (ne_of_lt <| lt_of_le_of_lt (ENNReal.tsum_le_tsum hμS_le) ?_)
-    simp only [ENNReal.tsum_geometric, ENNReal.one_sub_inv_two, ENNReal.two_lt_top, inv_inv]
+    refine measure_limsup_atTop_eq_zero (ne_top_of_le_ne_top ?_ (ENNReal.tsum_le_tsum hμS_le))
+    simpa only [ENNReal.tsum_geometric, ENNReal.one_sub_inv_two, inv_inv] using ENNReal.two_ne_top
   have h_tendsto : ∀ x ∈ sᶜ, Tendsto (fun i => f (ns i) x) atTop (𝓝 (g x)) := by
     refine fun x hx => Metric.tendsto_atTop.mpr fun ε hε => ?_
     rw [hs, limsup_eq_iInf_iSup_of_nat] at hx
@@ -203,12 +203,13 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
     refine ⟨max N (k - 1), fun n hn_ge => lt_of_le_of_lt ?_ hk_lt_ε⟩
     specialize hNx n ((le_max_left _ _).trans hn_ge)
     have h_inv_n_le_k : (2 : ℝ)⁻¹ ^ n ≤ 2 * (2 : ℝ)⁻¹ ^ k := by
-      rw [mul_comm, ← inv_mul_le_iff' (zero_lt_two' ℝ)]
+      rw [mul_comm, ← inv_mul_le_iff₀' (zero_lt_two' ℝ)]
       conv_lhs =>
         congr
         rw [← pow_one (2 : ℝ)⁻¹]
       rw [← pow_add, add_comm]
-      exact pow_le_pow_of_le_one (one_div (2 : ℝ) ▸ one_half_pos.le) (inv_le_one one_le_two)
+      exact pow_le_pow_of_le_one (one_div (2 : ℝ) ▸ one_half_pos.le)
+        (inv_le_one_of_one_le₀ one_le_two)
         ((le_tsub_add.trans (add_le_add_right (le_max_right _ _) 1)).trans
           (add_le_add_right hn_ge 1))
     exact le_trans hNx.le h_inv_n_le_k
@@ -249,7 +250,7 @@ section TendstoInMeasureOf
 variable [NormedAddCommGroup E] {p : ℝ≥0∞}
 variable {f : ι → α → E} {g : α → E}
 
-/-- This lemma is superceded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
+/-- This lemma is superseded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
 allow `p = ∞` and only require `AEStronglyMeasurable`. -/
 theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) (hf : ∀ n, StronglyMeasurable (f n)) (hg : StronglyMeasurable g)
@@ -278,7 +279,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable (hp_ne_zero : 
 alias tendstoInMeasure_of_tendsto_snorm_of_stronglyMeasurable :=
   tendstoInMeasure_of_tendsto_eLpNorm_of_stronglyMeasurable
 
-/-- This lemma is superceded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
+/-- This lemma is superseded by `MeasureTheory.tendstoInMeasure_of_tendsto_eLpNorm` where we
 allow `p = ∞`. -/
 theorem tendstoInMeasure_of_tendsto_eLpNorm_of_ne_top (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞)
     (hf : ∀ n, AEStronglyMeasurable (f n) μ) (hg : AEStronglyMeasurable g μ) {l : Filter ι}
@@ -306,7 +307,7 @@ theorem tendstoInMeasure_of_tendsto_eLpNorm_top {E} [NormedAddCommGroup E] {f : 
   specialize hfg (ENNReal.ofReal δ / 2)
       (ENNReal.div_pos_iff.2 ⟨(ENNReal.ofReal_pos.2 hδ).ne.symm, ENNReal.two_ne_top⟩)
   refine hfg.mono fun n hn => ?_
-  simp only [true_and_iff, gt_iff_lt, zero_tsub, zero_le, zero_add, Set.mem_Icc,
+  simp only [gt_iff_lt, zero_tsub, zero_le, zero_add, Set.mem_Icc,
     Pi.sub_apply] at *
   have : essSup (fun x : α => (‖f n x - g x‖₊ : ℝ≥0∞)) μ < ENNReal.ofReal δ :=
     lt_of_le_of_lt hn

@@ -30,7 +30,7 @@ class Denumerable (α : Type*) extends Encodable α where
   /-- `decode` and `encode` are inverses. -/
   decode_inv : ∀ n, ∃ a ∈ decode n, encode a = n
 
-open Nat
+open Finset Nat
 
 namespace Denumerable
 
@@ -121,7 +121,6 @@ instance option : Denumerable (Option α) :=
       · rw [decode_option_succ, decode_eq_ofNat, Option.map_some', Option.mem_def]
       rw [encode_some, encode_ofNat]⟩
 
-set_option linter.deprecated false in
 /-- If `α` and `β` are denumerable, then so is their sum. -/
 instance sum : Denumerable (α ⊕ β) :=
   ⟨fun n => by
@@ -274,7 +273,7 @@ private def toFunAux (x : s) : ℕ :=
   (List.range x).countP (· ∈ s)
 
 private theorem toFunAux_eq {s : Set ℕ} [DecidablePred (· ∈ s)] (x : s) :
-    toFunAux x = ((Finset.range x).filter (· ∈ s)).card := by
+    toFunAux x = #{y ∈ Finset.range x | y ∈ s} := by
   rw [toFunAux, List.countP_eq_length_filter]
   rfl
 
@@ -288,13 +287,13 @@ private theorem right_inverse_aux : ∀ n, toFunAux (ofNat s n) = n
     exact bot_le.not_lt (show (⟨n, hn.2⟩ : s) < ⊥ from hn.1)
   | n + 1 => by
     have ih : toFunAux (ofNat s n) = n := right_inverse_aux n
-    have h₁ : (ofNat s n : ℕ) ∉ (range (ofNat s n)).filter (· ∈ s) := by simp
-    have h₂ : (range (succ (ofNat s n))).filter (· ∈ s) =
-        insert ↑(ofNat s n) ((range (ofNat s n)).filter (· ∈ s)) := by
+    have h₁ : (ofNat s n : ℕ) ∉ {x ∈ range (ofNat s n) | x ∈ s} := by simp
+    have h₂ : {x ∈ range (succ (ofNat s n)) | x ∈ s} =
+        insert ↑(ofNat s n) {x ∈ range (ofNat s n) | x ∈ s} := by
       simp only [Finset.ext_iff, mem_insert, mem_range, mem_filter]
       exact fun m =>
         ⟨fun h => by
-          simp only [h.2, and_true_iff]
+          simp only [h.2, and_true]
           exact Or.symm (lt_or_eq_of_le ((@lt_succ_iff_le _ _ _ ⟨m, h.2⟩ _).1 h.1)),
          fun h =>
           h.elim (fun h => h.symm ▸ ⟨lt_succ_self _, (ofNat s n).prop⟩) fun h =>

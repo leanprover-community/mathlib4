@@ -240,7 +240,7 @@ variable {G : Type*} [Group G] {Γ : Subgroup G}
 @[to_additive "Given a subgroup `Γ` of an additive group `G`, and a function `f : G → M`, we
   automorphize `f` to a function `G ⧸ Γ → M` by summing over `Γ` orbits,
   `g ↦ ∑' (γ : Γ), f(γ • g)`."]
-noncomputable def QuotientGroup.automorphize  (f : G → M) : G ⧸ Γ → M := MulAction.automorphize f
+noncomputable def QuotientGroup.automorphize (f : G → M) : G ⧸ Γ → M := MulAction.automorphize f
 
 /-- Automorphization of a function into an `R`-`Module` distributes, that is, commutes with the
 `R`-scalar multiplication. -/

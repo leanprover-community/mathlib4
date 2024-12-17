@@ -30,9 +30,6 @@ to the corresponding germ of functions `X → Z` at `x ∈ X` resp. `Y → Z` at
 `f` is constant.
 -/
 
-variable {F G : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedAddCommGroup G] [NormedSpace ℝ G]
-
 open scoped Topology
 
 open Filter Set

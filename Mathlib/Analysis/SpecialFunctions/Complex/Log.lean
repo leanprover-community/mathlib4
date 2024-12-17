@@ -142,6 +142,11 @@ theorem exp_eq_exp_iff_exp_sub_eq_one {x y : ℂ} : exp x = exp y ↔ exp (x - y
 theorem exp_eq_exp_iff_exists_int {x y : ℂ} : exp x = exp y ↔ ∃ n : ℤ, x = y + n * (2 * π * I) := by
   simp only [exp_eq_exp_iff_exp_sub_eq_one, exp_eq_one_iff, sub_eq_iff_eq_add']
 
+theorem log_exp_exists (z : ℂ) :
+    ∃ n : ℤ, log (exp z) = z + n * (2 * π * I) := by
+  rw [← exp_eq_exp_iff_exists_int, exp_log]
+  exact exp_ne_zero z
+
 @[simp]
 theorem countable_preimage_exp {s : Set ℂ} : (exp ⁻¹' s).Countable ↔ s.Countable := by
   refine ⟨fun hs => ?_, fun hs => ?_⟩
@@ -250,7 +255,7 @@ variable {α ι: Type*}
 
 open Real
 
-lemma Real.HasSum_rexp_HasProd  (f : ι → α → ℝ) (hfn : ∀ x n, 0 < f n x)
+lemma Real.HasSum_rexp_HasProd (f : ι → α → ℝ) (hfn : ∀ x n, 0 < f n x)
     (hf : ∀ x : α, HasSum (fun n => log (f n x)) (∑' i, log (f i x))) (a : α) :
        HasProd (fun b ↦ f b a) (∏' n : ι, (f n a)) := by
   have : HasProd (fun b ↦ f b a) ((rexp ∘ fun a ↦ ∑' (n : ι), log (f n a)) a) := by

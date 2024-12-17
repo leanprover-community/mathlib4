@@ -223,7 +223,7 @@ instance : Inhabited IntegrationParams :=
   ⟨⊥⟩
 
 instance : DecidableRel ((· ≤ ·) : IntegrationParams → IntegrationParams → Prop) :=
-  fun _ _ => And.decidable
+  fun _ _ => inferInstanceAs (Decidable (_ ∧ _))
 
 instance : DecidableEq IntegrationParams :=
   fun _ _ => decidable_of_iff _ IntegrationParams.ext_iff.symm
@@ -408,19 +408,19 @@ nonrec theorem RCond.min {ι : Type*} {r₁ r₂ : (ι → ℝ) → Ioi (0 : ℝ
     (h₂ : l.RCond r₂) : l.RCond fun x => min (r₁ x) (r₂ x) :=
   fun hR x => congr_arg₂ min (h₁ hR x) (h₂ hR x)
 
-@[mono]
+@[gcongr, mono]
 theorem toFilterDistortion_mono (I : Box ι) (h : l₁ ≤ l₂) (hc : c₁ ≤ c₂) :
     l₁.toFilterDistortion I c₁ ≤ l₂.toFilterDistortion I c₂ :=
   iInf_mono fun _ =>
     iInf_mono' fun hr =>
       ⟨hr.mono h, principal_mono.2 fun _ => MemBaseSet.mono I h hc fun _ _ => le_rfl⟩
 
-@[mono]
+@[gcongr, mono]
 theorem toFilter_mono (I : Box ι) {l₁ l₂ : IntegrationParams} (h : l₁ ≤ l₂) :
     l₁.toFilter I ≤ l₂.toFilter I :=
   iSup_mono fun _ => toFilterDistortion_mono I h le_rfl
 
-@[mono]
+@[gcongr, mono]
 theorem toFilteriUnion_mono (I : Box ι) {l₁ l₂ : IntegrationParams} (h : l₁ ≤ l₂)
     (π₀ : Prepartition I) : l₁.toFilteriUnion I π₀ ≤ l₂.toFilteriUnion I π₀ :=
   iSup_mono fun _ => inf_le_inf_right _ <| toFilterDistortion_mono _ h le_rfl

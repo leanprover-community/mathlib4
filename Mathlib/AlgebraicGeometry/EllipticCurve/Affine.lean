@@ -5,6 +5,7 @@ Authors: David Kurniadi Angdinata
 -/
 import Mathlib.Algebra.Polynomial.Bivariate
 import Mathlib.AlgebraicGeometry.EllipticCurve.Weierstrass
+import Mathlib.AlgebraicGeometry.EllipticCurve.VariableChange
 
 /-!
 # Affine coordinates for Weierstrass curves
@@ -13,7 +14,7 @@ This file defines the type of points on a Weierstrass curve as an inductive, con
 at infinity and affine points satisfying a Weierstrass equation with a nonsingular condition. This
 file also defines the negation and addition operations of the group law for this type, and proves
 that they respect the Weierstrass equation and the nonsingular condition. The fact that they form an
-abelian group is proven in `Mathlib.AlgebraicGeometry.EllipticCurve.Group`.
+abelian group is proven in `Mathlib/AlgebraicGeometry/EllipticCurve/Group.lean`.
 
 ## Mathematical background
 
@@ -64,7 +65,7 @@ The group law on this set is then uniquely determined by these constructions.
  * `WeierstrassCurve.Affine.nonsingular_add`: addition preserves the nonsingular condition.
  * `WeierstrassCurve.Affine.nonsingular_of_Δ_ne_zero`: an affine Weierstrass curve is nonsingular at
     every point if its discriminant is non-zero.
- * `EllipticCurve.Affine.nonsingular`: an affine elliptic curve is nonsingular at every point.
+ * `WeierstrassCurve.Affine.nonsingular`: an affine elliptic curve is nonsingular at every point.
 
 ## Notations
 
@@ -80,6 +81,7 @@ elliptic curve, rational point, affine coordinates
 -/
 
 open Polynomial
+open scoped Polynomial.Bivariate
 
 local macro "C_simp" : tactic =>
   `(tactic| simp only [map_ofNat, C_0, C_1, C_neg, C_add, C_sub, C_mul, C_pow])
@@ -163,7 +165,6 @@ lemma irreducible_polynomial [IsDomain R] : Irreducible W.polynomial := by
   iterate 2 rw [degree_add_eq_right_of_degree_lt] <;> simp only [h] <;> decide
   iterate 2 rw [degree_add_eq_left_of_degree_lt] <;> simp only [h] <;> decide
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma evalEval_polynomial (x y : R) : W.polynomial.evalEval x y =
     y ^ 2 + W.a₁ * x * y + W.a₃ * y - (x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆) := by
   simp only [polynomial]
@@ -182,7 +183,6 @@ lemma equation_iff' (x y : R) : W.Equation x y ↔
     y ^ 2 + W.a₁ * x * y + W.a₃ * y - (x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆) = 0 := by
   rw [Equation, evalEval_polynomial]
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma equation_iff (x y : R) :
     W.Equation x y ↔ y ^ 2 + W.a₁ * x * y + W.a₃ * y = x ^ 3 + W.a₂ * x ^ 2 + W.a₄ * x + W.a₆ := by
   rw [equation_iff', sub_eq_zero]
@@ -209,7 +209,6 @@ TODO: define this in terms of `Polynomial.derivative`. -/
 noncomputable def polynomialX : R[X][Y] :=
   C (C W.a₁) * Y - C (C 3 * X ^ 2 + C (2 * W.a₂) * X + C W.a₄)
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma evalEval_polynomialX (x y : R) :
     W.polynomialX.evalEval x y = W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) := by
   simp only [polynomialX]
@@ -225,7 +224,6 @@ TODO: define this in terms of `Polynomial.derivative`. -/
 noncomputable def polynomialY : R[X][Y] :=
   C (C 2) * Y + C (C W.a₁ * X + C W.a₃)
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma evalEval_polynomialY (x y : R) : W.polynomialY.evalEval x y = 2 * y + W.a₁ * x + W.a₃ := by
   simp only [polynomialY]
   eval_simp
@@ -254,7 +252,6 @@ lemma nonsingular_iff' (x y : R) : W.Nonsingular x y ↔ W.Equation x y ∧
     (W.a₁ * y - (3 * x ^ 2 + 2 * W.a₂ * x + W.a₄) ≠ 0 ∨ 2 * y + W.a₁ * x + W.a₃ ≠ 0) := by
   rw [Nonsingular, equation_iff', evalEval_polynomialX, evalEval_polynomialY]
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma nonsingular_iff (x y : R) : W.Nonsingular x y ↔
     W.Equation x y ∧ (W.a₁ * y ≠ 3 * x ^ 2 + 2 * W.a₂ * x + W.a₄ ∨ y ≠ -y - W.a₁ * x - W.a₃) := by
   rw [nonsingular_iff', sub_ne_zero, ← sub_ne_zero (a := y)]
@@ -314,7 +311,6 @@ lemma negY_negY (x y : R) : W.negY x (W.negY x y) = y := by
   simp only [negY]
   ring1
 
--- Porting note (#10619): removed `@[simp]` to avoid a `simpNF` linter error
 lemma eval_negPolynomial (x y : R) : W.negPolynomial.evalEval x y = W.negY x y := by
   rw [negY, sub_sub, negPolynomial]
   eval_simp
@@ -601,7 +597,7 @@ scoped notation3:max W "⟮" S "⟯" => Affine.Point <| baseChange W S
 variable {W}
 
 /-- The equivalence between the nonsingular rational points on a Weierstrass curve `W` satisfying a
-predicate `p` with the union of zero and the set of pairs `⟨x, y⟩` satisfying `W.Nonsingular x y`. -/
+predicate `p` with the union of `0` and the set of pairs `⟨x, y⟩` satisfying `W.Nonsingular x y`. -/
 def pointEquivNonsingularSubtype {p : W.Point → Prop} (p0 : p .zero) : {P : W.Point // p P} ≃
     WithZero {xy : R × R // ∃ h : W.Nonsingular xy.fst xy.snd, p <| .some h} where
   toFun P := match P with
@@ -697,7 +693,10 @@ lemma neg_some {x y : R} (h : W.Nonsingular x y) : -some h = some (nonsingular_n
   rfl
 
 instance : InvolutiveNeg W.Point :=
-  ⟨by rintro (_ | _); rfl; simp only [neg_some, negY_negY]⟩
+  ⟨by
+    rintro (_ | _)
+    · rfl
+    · simp only [neg_some, negY_negY]⟩
 
 variable {F : Type u} [Field F] {W : Affine F}
 
@@ -1015,25 +1014,15 @@ end BaseChange
 @[deprecated (since := "2024-06-03")] alias baseChange_addY' := baseChange_negAddY
 @[deprecated (since := "2024-06-03")] alias map_addY' := map_negAddY
 
-end WeierstrassCurve.Affine
-
 /-! ## Elliptic curves -/
 
-/-- The coercion from an elliptic curve to a Weierstrass curve in affine coordinates. -/
-abbrev EllipticCurve.toAffine {R : Type u} [CommRing R] (E : EllipticCurve R) :
-    WeierstrassCurve.Affine R :=
-  E.toWeierstrassCurve.toAffine
+section EllipticCurve
 
-namespace EllipticCurve.Affine
-
-variable {R : Type u} [Nontrivial R] [CommRing R] {E : EllipticCurve R}
-
-lemma equation_iff_nonsingular {x y : R} : E.toAffine.Equation x y ↔ E.toAffine.Nonsingular x y :=
-  E.toAffine.equation_iff_nonsingular <| E.coe_Δ' ▸ E.Δ'.ne_zero
+variable {R : Type u} [Nontrivial R] [CommRing R] {E : WeierstrassCurve R} [E.IsElliptic]
 
 /-- An affine point on an elliptic curve `E` over `R`. -/
 def Point.mk {x y : R} (h : E.toAffine.Equation x y) : E.toAffine.Point :=
-  .some <| equation_iff_nonsingular.mp h
+  .some <| (equation_iff_nonsingular IsElliptic.isUnit.ne_zero).mp h
 
 /-- The equivalence between the rational points on an elliptic curve `E` satisfying a predicate `p`
 with the union of zero and the set of pairs `⟨x, y⟩` satisfying `E.Equation x y`. -/
@@ -1041,7 +1030,8 @@ def pointEquivEquationSubtype {p : E.toAffine.Point → Prop} (p0 : p .zero) :
     {P : E.toAffine.Point // p P} ≃
       WithZero {xy : R × R // ∃ h : E.toAffine.Equation xy.fst xy.snd, p <| Point.mk h} :=
   (WeierstrassCurve.Affine.pointEquivNonsingularSubtype p0).trans
-    (Equiv.setCongr <| by simpa only [equation_iff_nonsingular] using by rfl).optionCongr
+    (Equiv.setCongr <| by
+      simpa only [equation_iff_nonsingular IsElliptic.isUnit.ne_zero] using by rfl).optionCongr
 
 @[simp]
 lemma pointEquivEquationSubtype_zero {p : E.toAffine.Point → Prop} (p0 : p .zero) :
@@ -1093,4 +1083,6 @@ lemma pointEquivEquation_symm_some {x y : R} {h : E.toAffine.Equation x y} :
     (pointEquivEquation E).symm (.some ⟨⟨x, y⟩, h⟩) = Point.mk h :=
   rfl
 
-end EllipticCurve.Affine
+end EllipticCurve
+
+end WeierstrassCurve.Affine

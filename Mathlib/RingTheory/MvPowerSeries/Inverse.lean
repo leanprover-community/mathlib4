@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
 -/
 
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.MvPowerSeries.NoZeroDivisors
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Formal (multivariate) power series - Inverses
@@ -31,7 +31,7 @@ Instances are defined:
 
 * Formal power series over a local ring form a local ring.
 * The morphism `MvPowerSeries.map σ f : MvPowerSeries σ A →* MvPowerSeries σ B`
-  induced by a local morphism `f : A →+* B` (`IsLocalRingHom f`)
+  induced by a local morphism `f : A →+* B` (`IsLocalHom f`)
   of commutative rings is a *local* morphism.
 
 -/
@@ -154,10 +154,10 @@ section CommRing
 variable [CommRing R]
 
 /-- Multivariate formal power series over a local ring form a local ring. -/
-instance [LocalRing R] : LocalRing (MvPowerSeries σ R) :=
-  LocalRing.of_isUnit_or_isUnit_one_sub_self <| by
+instance [IsLocalRing R] : IsLocalRing (MvPowerSeries σ R) :=
+  IsLocalRing.of_isUnit_or_isUnit_one_sub_self <| by
     intro φ
-    rcases LocalRing.isUnit_or_isUnit_one_sub_self (constantCoeff σ R φ) with (⟨u, h⟩ | ⟨u, h⟩) <;>
+    obtain ⟨u, h⟩ | ⟨u, h⟩ := IsLocalRing.isUnit_or_isUnit_one_sub_self (constantCoeff σ R φ) <;>
         [left; right] <;>
       · refine isUnit_of_mul_eq_one _ _ (mul_invOfUnit _ u ?_)
         simpa using h.symm
@@ -165,25 +165,29 @@ instance [LocalRing R] : LocalRing (MvPowerSeries σ R) :=
 -- TODO(jmc): once adic topology lands, show that this is complete
 end CommRing
 
-section LocalRing
+section IsLocalRing
 
-variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalRingHom f]
+variable {S : Type*} [CommRing R] [CommRing S] (f : R →+* S) [IsLocalHom f]
 
 -- Thanks to the linter for informing us that this instance does
 -- not actually need R and S to be local rings!
 /-- The map between multivariate formal power series over the same indexing set
  induced by a local ring hom `A → B` is local -/
-instance map.isLocalRingHom : IsLocalRingHom (map σ f) :=
+@[instance]
+theorem map.isLocalHom : IsLocalHom (map σ f) :=
   ⟨by
     rintro φ ⟨ψ, h⟩
     replace h := congr_arg (constantCoeff σ S) h
     rw [constantCoeff_map] at h
-    have : IsUnit (constantCoeff σ S ↑ψ) := isUnit_constantCoeff (↑ψ) ψ.isUnit
+    have : IsUnit (constantCoeff σ S ↑ψ) := isUnit_constantCoeff _ ψ.isUnit
     rw [h] at this
     rcases isUnit_of_map_unit f _ this with ⟨c, hc⟩
     exact isUnit_of_mul_eq_one φ (invOfUnit φ c) (mul_invOfUnit φ c hc.symm)⟩
 
-end LocalRing
+@[deprecated (since := "2024-10-10")]
+alias map.isLocalRingHom := map.isLocalHom
+
+end IsLocalRing
 
 section Field
 
@@ -224,8 +228,7 @@ theorem inv_eq_zero {φ : MvPowerSeries σ k} : φ⁻¹ = 0 ↔ constantCoeff σ
 theorem zero_inv : (0 : MvPowerSeries σ k)⁻¹ = 0 := by
   rw [inv_eq_zero, constantCoeff_zero]
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem invOfUnit_eq (φ : MvPowerSeries σ k) (h : constantCoeff σ k φ ≠ 0) :
     invOfUnit φ (Units.mk0 _ h) = φ⁻¹ :=
   rfl
