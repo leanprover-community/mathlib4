@@ -227,15 +227,10 @@ variable (G : K ⥤ J) [HasEnrichedHom V F₁ F₂]
 then this is the induced morphism
 `enrichedHom V F₁ F₂ ⟶ enrichedHom V (G ⋙ F₁) (G ⋙ F₂)` in `V`
 when `C` is a category enriched in `V`. -/
-noncomputable def precompEnrichedHom :
+noncomputable abbrev precompEnrichedHom :
     enrichedHom V F₁ F₂ ⟶ enrichedHom V (G ⋙ F₁) (G ⋙ F₂) :=
-  end_.lift (fun _ ↦ enrichedHomπ _ _ _ _)
+  end_.lift (fun x ↦ enrichedHomπ V F₁ F₂ (G.obj x))
     (fun _ _ f ↦ enrichedHom_condition V F₁ F₂ (G.map f))
-
-@[reassoc (attr := simp)]
-lemma precompEnrichedHom_π (k : K) :
-    precompEnrichedHom V F₁ F₂ G ≫ enrichedHomπ _ _ _ k = enrichedHomπ _ _ _ (G.obj k) := by
-  apply end_.lift_π
 
 end
 
@@ -262,15 +257,16 @@ noncomputable def functorEnrichedHom : J ⥤ V where
   map_id X := by
     dsimp
     ext j
-    rw [precompEnrichedHom_π, id_comp]
+    dsimp
+    simp only [end_.lift_π, id_comp]
     congr 1
     simp [Under.map, Comma.mapLeft]
     rfl
   map_comp f g := by
     dsimp
     ext j
-    rw [assoc, precompEnrichedHom_π]
-    erw [precompEnrichedHom_π, precompEnrichedHom_π]
+    rw [end_.lift_π, assoc]
+    erw [end_.lift_π, end_.lift_π]
     congr 1
     simp [Under.map, Comma.mapLeft]
 
@@ -287,9 +283,9 @@ noncomputable def coneFunctorEnrichedHom : Cone (functorEnrichedHom V F₁ F₂)
         dsimp
         rw [id_comp]
         ext k
-        rw [assoc, precompEnrichedHom_π]
-        erw [precompEnrichedHom_π]
-        rw [precompEnrichedHom_π]
+        rw [assoc, end_.lift_π]
+        erw [end_.lift_π]
+        rw [end_.lift_π]
         rfl }
 
 namespace isLimitConeFunctorEnrichedHom
@@ -302,7 +298,7 @@ noncomputable def lift : s.pt ⟶ enrichedHom V F₁ F₂ :=
     dsimp
     rw [← s.w f, assoc, assoc, assoc]
     dsimp [functorEnrichedHom]
-    erw [precompEnrichedHom_π_assoc,
+    erw [end_.lift_π_assoc,
       enrichedHom_condition V (Under.forget j ⋙ F₁) (Under.forget j ⋙ F₂)
       (Under.homMk f : Under.mk (𝟙 j) ⟶ Under.mk f)]
     congr 3
@@ -315,7 +311,8 @@ lemma fac (j : J) : lift s ≫ (coneFunctorEnrichedHom V F₁ F₂).π.app j = s
   rw [assoc]
   erw [end_.lift_π, end_.lift_π, ← s.w k.hom]
   rw [assoc]
-  erw [precompEnrichedHom_π]
+  dsimp
+  erw [end_.lift_π]
   congr
   simp [Under.map, Comma.mapLeft]
   rfl
@@ -333,7 +330,7 @@ noncomputable def isLimitConeFunctorEnrichedHom :
     ext j
     have := ((hm j).trans (fac s j).symm) =≫ enrichedHomπ V _ _ (Under.mk (𝟙 j))
     dsimp [coneFunctorEnrichedHom] at this
-    rw [assoc, assoc, precompEnrichedHom_π] at this
+    rw [assoc, assoc, end_.lift_π] at this
     exact this
 
 end
