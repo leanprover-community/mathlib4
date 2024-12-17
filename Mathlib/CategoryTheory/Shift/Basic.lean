@@ -404,6 +404,34 @@ def shiftEquiv' (i j : A) (h : i + j = 0) : C ≌ C where
       simp only [Category.assoc, eqToHom_map]
       rfl
 
+lemma shiftEquiv'_unit (a a' : A) (h : a + a' = 0) :
+    (shiftEquiv' C a a' h).unit = (shiftFunctorCompIsoId C a a' h).inv := by
+  ext _
+  change (shiftEquiv' C a a' h).unitIso.hom.app _ = _
+  rw [shiftEquiv'_unitIso]
+  rfl
+
+lemma shiftEquiv'_counit (a a' : A) (h : a + a' = 0) :
+    (shiftEquiv' C a a' h).counit = (shiftFunctorCompIsoId C a' a
+    (by simp only [eq_neg_of_add_eq_zero_left h, add_neg_cancel])).hom := by
+  ext _
+  change (shiftEquiv' C a a' h).counitIso.hom.app _ = _
+  rw [shiftEquiv'_counitIso]
+
+lemma shiftEquiv'_symm_unit (a a' : A) (h : a + a' = 0) :
+    (shiftEquiv' C a a' h).symm.unit = (shiftFunctorCompIsoId C a' a
+    (by simp [eq_neg_of_add_eq_zero_left h])).inv := by
+  ext _
+  change (shiftEquiv' C a a' h).counitIso.inv.app _ = _
+  rw [shiftEquiv'_counitIso]
+
+lemma shiftEquiv'_symm_counit (a a' : A) (h : a + a' = 0) :
+    (shiftEquiv' C a a' h).symm.counit = (shiftFunctorCompIsoId C a a' h).hom := by
+  ext _
+  change (shiftEquiv' C a a' h).unitIso.inv.app _ = _
+  rw [shiftEquiv'_unitIso]
+  rfl
+
 /-- Shifting by `n` and shifting by `-n` forms an equivalence. -/
 abbrev shiftEquiv (n : A) : C ≌ C := shiftEquiv' C n (-n) (add_neg_cancel n)
 

@@ -15,14 +15,7 @@ namespace CategoryTheory
 
 open Category
 
-/-- Variant of `Iso.ext`. -/
-lemma Iso.ext' {C : Type*} [Category C] {X Y : C} {e₁ e₂ : X ≅ Y}
-    (h : e₁.inv = e₂.inv) : e₁ = e₂ := by
-  change e₁.symm.symm = e₂.symm.symm
-  congr 1
-  ext
-  exact h
-
+/-
 namespace Adjunction
 
 variable {C D : Type*} [Category C] [Category D]
@@ -78,29 +71,29 @@ def natIsoEquiv' : (G₁ ≅ G₂) ≃ (F₁ ≅ F₂) where
   right_inv e := by dsimp; ext1; simp only [Equiv.apply_symm_apply]
 
 end Adjunction
+-/
 
 namespace Adjunction
 
 variable {C D : Type*} [Category C] [Category D]
-  {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) (A Z : Type*) [AddMonoid A] [AddGroup Z]
-  [HasShift C A] [HasShift D A] [F.CommShift A] [G.CommShift A]
-  [HasShift C Z] [HasShift D Z]
+  {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) {A : Type*} [AddMonoid A] [HasShift C A] [HasShift D A]
 
-variable {A}
+namespace CommShift
 
-abbrev compat_unit (a : A) (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
-    (e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a) :=
-  ∀ (X : C),
-  (adj.unit.app X)⟦a⟧' = adj.unit.app (X⟦a⟧) ≫ G.map (e₁.hom.app X) ≫ e₂.hom.app (F.obj X)
+variable (a b : A) (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
+    (e₁' : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
+    (f₁ : shiftFunctor C b ⋙ F ≅ F ⋙ shiftFunctor D b)
+    (e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a)
+    (e₂' : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a)
+    (f₂ : shiftFunctor D b ⋙ G ≅ G ⋙ shiftFunctor C b)
 
-abbrev compat_counit (a : A) (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
-    (e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a) :=
-  ∀ (Y : D),
-  adj.counit.app (Y⟦a⟧) = F.map (e₂.hom.app Y) ≫ e₁.hom.app (G.obj Y) ≫ (adj.counit.app Y)⟦a⟧'
+abbrev compat_unit :=
+  ∀ (X : C), (adj.unit.app X)⟦a⟧' = adj.unit.app (X⟦a⟧) ≫ G.map (e₁.hom.app X) ≫ e₂.hom.app _
 
-lemma compat_unit_to_counit (a : A) (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
-    (e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a) (h : adj.compat_unit a e₁ e₂) :
-    adj.compat_counit a e₁ e₂ := by
+abbrev compat_counit :=
+  ∀ (Y : D), adj.counit.app (Y⟦a⟧) = F.map (e₂.hom.app Y) ≫ e₁.hom.app _ ≫ (adj.counit.app Y)⟦a⟧'
+
+lemma compat_counit_of_compat_unit (h : compat_unit adj a e₁ e₂) : compat_counit adj a e₁ e₂ := by
   intro Y
   have eq := h (G.obj Y)
   rw [← cancel_mono (e₂.inv.app _ ≫ G.map (e₁.inv.app _))] at eq
@@ -115,8 +108,7 @@ lemma compat_unit_to_counit (a : A) (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shi
   simp only [Functor.id_obj, Functor.comp_obj, right_triangle_components, Functor.map_id, id_comp,
     Iso.hom_inv_id_app]
 
-lemma compat_unit_right (a : A) (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
-    (e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a) (h : adj.compat_unit a e₁ e₂) (Y : D) :
+lemma compat_unit_right (h : compat_unit adj a e₁ e₂) (Y : D) :
     e₂.inv.app Y = adj.unit.app _ ≫ G.map (e₁.hom.app _) ≫ G.map ((adj.counit.app _)⟦a⟧') := by
   have := h (G.obj Y)
   rw [← cancel_mono (e₂.inv.app _), assoc, assoc, Iso.hom_inv_id_app] at this
@@ -126,8 +118,7 @@ lemma compat_unit_right (a : A) (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFu
   simp only [Functor.comp_obj, Iso.inv_hom_id_app, Functor.id_obj, Functor.comp_map, assoc, comp_id,
     ← (shiftFunctor C a).map_comp, right_triangle_components, Functor.map_id]
 
-lemma compat_counit_left (a : A) (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
-    (e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a) (h : adj.compat_counit a e₁ e₂) (X : C) :
+lemma compat_counit_left (h : compat_counit adj a e₁ e₂) (X : C) :
     e₁.hom.app X = F.map ((adj.unit.app X)⟦a⟧') ≫ F.map (e₂.inv.app _) ≫ adj.counit.app _ := by
   have := h (F.obj X)
   rw [← cancel_epi (F.map (e₂.inv.app _)), ← assoc, ← F.map_comp, Iso.inv_hom_id_app, F.map_id,
@@ -137,26 +128,21 @@ lemma compat_counit_left (a : A) (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftF
   rw [Functor.comp_map, ← Functor.map_comp, left_triangle_components]
   simp only [Functor.comp_obj, Functor.id_obj, Functor.map_id, comp_id]
 
-lemma compat_unique_right (a : A) (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
-    (e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a)
-    (e₂' : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a)
-    (h : adj.compat_unit a e₁ e₂) (h' : adj.compat_unit a e₁ e₂') : e₂ = e₂' := by
+lemma compat_unit_unique_right (h : compat_unit adj a e₁ e₂) (h' : compat_unit adj a e₁ e₂') :
+    e₂ = e₂' := by
   rw [← Iso.symm_eq_iff]
   ext _
-  rw [Iso.symm_hom, Iso.symm_hom, adj.compat_unit_right a e₁ e₂ h,
-    adj.compat_unit_right a e₁ e₂' h']
+  rw [Iso.symm_hom, Iso.symm_hom, compat_unit_right adj a e₁ e₂ h,
+    compat_unit_right adj a e₁ e₂' h']
 
-lemma compat_unique_left (a : A) (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
-    (e₁' : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
-    (e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a)
-    (h : adj.compat_unit a e₁ e₂) (h' : adj.compat_unit a e₁' e₂) : e₁ = e₁' := by
+lemma compat_counit_unique_left (h : compat_counit adj a e₁ e₂) (h' : compat_counit adj a e₁' e₂) :
+    e₁ = e₁' := by
   ext _
-  rw [adj.compat_counit_left a e₁ e₂ (adj.compat_unit_to_counit a e₁ e₂ h),
-    adj.compat_counit_left a e₁' e₂ (adj.compat_unit_to_counit a e₁' e₂ h')]
+  rw [compat_counit_left adj a e₁ e₂ h, compat_counit_left adj a e₁' e₂ h']
 
-lemma compat_unit_isoZero : adj.compat_unit 0 (Functor.CommShift.isoZero F A)
+lemma compat_unit_isoZero : compat_unit adj 0 (Functor.CommShift.isoZero F A)
     (Functor.CommShift.isoZero G A) := by
-  intro X
+  intro _
   simp only [Functor.id_obj, Functor.comp_obj, Functor.CommShift.isoZero_hom_app, Functor.map_comp,
     assoc, unit_naturality_assoc]
   slice_rhs 3 4 => rw [← G.map_comp, Iso.inv_hom_id_app]
@@ -164,21 +150,16 @@ lemma compat_unit_isoZero : adj.compat_unit 0 (Functor.CommShift.isoZero F A)
   simp only [Functor.id_obj, NatTrans.naturality, Functor.id_map, Functor.map_id, id_comp, assoc,
     Iso.inv_hom_id_app, comp_id]
 
-lemma compat_unit_add (a b : A) (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
-    (e₁' : shiftFunctor C b ⋙ F ≅ F ⋙ shiftFunctor D b)
-    (e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a)
-    (e₂' : shiftFunctor D b ⋙ G ≅ G ⋙ shiftFunctor C b)
-    (h : adj.compat_unit a e₁ e₂) (h' : adj.compat_unit b e₁' e₂') :
-    adj.compat_unit (a + b) (Functor.CommShift.isoAdd e₁ e₁') (Functor.CommShift.isoAdd e₂ e₂') :=
-  by
+lemma compat_unit_isoAdd (h : compat_unit adj a e₁ e₂) (h' : compat_unit adj b f₁ f₂) :
+    compat_unit adj (a + b) (Functor.CommShift.isoAdd e₁ f₁) (Functor.CommShift.isoAdd e₂ f₂) := by
   intro X
   simp only [Functor.id_obj, Functor.comp_obj, Functor.CommShift.isoAdd_hom_app, Functor.map_comp,
     assoc, unit_naturality_assoc]
   slice_rhs 5 6 => rw [← G.map_comp, Iso.inv_hom_id_app]
   simp only [Functor.comp_obj, Functor.map_id, id_comp, assoc]
-  slice_rhs 4 5 => erw [e₂'.hom.naturality]
+  slice_rhs 4 5 => erw [f₂.hom.naturality]
   have := h' (X⟦a⟧)
-  rw [← cancel_mono (e₂'.inv.app _), assoc, assoc, Iso.hom_inv_id_app] at this
+  rw [← cancel_mono (f₂.inv.app _), assoc, assoc, Iso.hom_inv_id_app] at this
   simp only [Functor.id_obj, Functor.comp_obj, comp_id] at this
   slice_rhs 2 3 => rw [← this]
   simp only [Functor.comp_obj, assoc, Iso.inv_hom_id_app, comp_id, Functor.comp_map]
@@ -187,8 +168,9 @@ lemma compat_unit_add (a b : A) (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFu
   rw [← (shiftFunctor C b).map_comp, ← (shiftFunctor C b).map_comp, ← h X]
   simp only [Functor.comp_obj, NatTrans.naturality, Functor.comp_map, Functor.id_obj]
 
+end CommShift
 
-variable (A)
+variable (A) [F.CommShift A] [G.CommShift A]
 
 class CommShift : Prop where
   commShift_unit : NatTrans.CommShift adj.unit A := by infer_instance
@@ -203,19 +185,15 @@ lemma mk' (h : NatTrans.CommShift adj.unit A) :
     adj.CommShift A where
   commShift_counit := ⟨by
     intro a
-    ext X
-    have eq := NatTrans.CommShift.app_shift adj.unit a (F.obj X)
-    dsimp at eq ⊢
-    simp only [Functor.commShiftIso_id_hom_app, Functor.comp_obj,
-      Functor.id_obj, Functor.commShiftIso_comp_inv_app, id_comp,
-      Functor.commShiftIso_comp_hom_app, assoc, comp_id] at eq ⊢
-    apply (adj.homEquiv _ _).injective
-    rw [adj.homEquiv_unit, adj.homEquiv_unit, F.map_comp]
-    dsimp
-    rw [adj.unit_naturality_assoc]
-    simp only [eq, assoc, ← F.map_comp, Iso.inv_hom_id_app_assoc, right_triangle_components,
-      ← F.commShiftIso_inv_naturality, ← Functor.map_comp_assoc, Functor.map_id, id_comp,
-      Iso.hom_inv_id_app, Functor.comp_obj]⟩
+    ext _
+    simp [Functor.commShiftIso_comp_hom_app]
+    refine (compat_counit_of_compat_unit adj a (F.commShiftIso a) (G.commShiftIso a) ?_ _).symm
+    intro X
+    have := h.comm' a
+    apply_fun (fun x ↦ x.app X) at this
+    simp [Functor.commShiftIso_comp_hom_app] at this
+    exact this
+  ⟩
 
 end CommShift
 
@@ -225,17 +203,210 @@ variable {A}
 lemma shift_unit_app [adj.CommShift A] (a : A) (X : C) :
     (adj.unit.app X)⟦a⟧' =
       adj.unit.app (X⟦a⟧) ≫
-        F.map ((G.commShiftIso a).hom.app X) ≫
-          (F.commShiftIso a).hom.app (G.obj X) := by
+        G.map ((F.commShiftIso a).hom.app X) ≫
+          (G.commShiftIso a).hom.app (F.obj X) := by
   simpa [Functor.commShiftIso_comp_hom_app] using NatTrans.CommShift.comm_app adj.unit a X
 
 @[reassoc]
-lemma shift_counit_app [adj.CommShift A] (a : A) (X : D) :
-    (adj.counit.app X)⟦a⟧' =
-      (G.commShiftIso a).inv.app (F.obj X) ≫ G.map ((F.commShiftIso a).inv.app X)
-        ≫ adj.counit.app (X⟦a⟧) := by
-  have eq := NatTrans.CommShift.comm_app adj.counit a X
+lemma shift_counit_app [adj.CommShift A] (a : A) (Y : D) :
+    (adj.counit.app Y)⟦a⟧' =
+      (F.commShiftIso a).inv.app (G.obj Y) ≫ F.map ((G.commShiftIso a).inv.app Y)
+        ≫ adj.counit.app (Y⟦a⟧) := by
+  have eq := NatTrans.CommShift.comm_app adj.counit a Y
   simp only [Functor.comp_obj, Functor.id_obj, Functor.commShiftIso_comp_hom_app, assoc,
     Functor.CommShift.commShiftIso_id_hom_app, comp_id] at eq
-  simp only [← eq, Functor.comp_obj, ← G.map_comp_assoc, Iso.inv_hom_id_app,
-    Functor.map_id, id_comp, Iso.inv_hom_id_app_assoc]
+  rw [← eq, ← assoc (F.map ((G.commShiftIso a).inv.app _)), ← F.map_comp, Iso.inv_hom_id_app,
+    F.map_id, id_comp, Iso.inv_hom_id_app_assoc]
+
+end Adjunction
+
+namespace Adjunction
+
+variable {C D : Type*} [Category C] [Category D]
+  {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) {A : Type*} [AddGroup A] [HasShift C A] [HasShift D A]
+
+namespace RightAdjointCommShift
+
+variable (a b : A) (h : b + a = 0) [F.CommShift A]
+
+/-- Auxiliary definition for `iso`. -/
+noncomputable def iso' : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a :=
+  (conjugateIsoEquiv (Adjunction.comp adj (shiftEquiv' D b a h).toAdjunction)
+  (Adjunction.comp (shiftEquiv' C b a h).toAdjunction adj)).toFun (F.commShiftIso b)
+
+noncomputable def iso : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a :=
+  iso' adj _ _ (neg_add_cancel a)
+
+lemma iso_hom_app (X : D) :
+    (iso adj a).hom.app X =
+      (shiftFunctorCompIsoId C b a h).inv.app (G.obj ((shiftFunctor D a).obj X)) ≫
+        (adj.unit.app ((shiftFunctor C b).obj (G.obj ((shiftFunctor D a).obj X))))⟦a⟧' ≫
+          (G.map ((F.commShiftIso b).hom.app (G.obj ((shiftFunctor D a).obj X))))⟦a⟧' ≫
+            (G.map ((shiftFunctor D b).map (adj.counit.app ((shiftFunctor D a).obj X))))⟦a⟧' ≫
+              (G.map ((shiftFunctorCompIsoId D a b
+                (by rw [← add_left_inj a, add_assoc, h, zero_add, add_zero])).hom.app X))⟦a⟧' := by
+  obtain rfl : b = -a := by rw [← add_left_inj a, h, neg_add_cancel]
+  simp only [Functor.comp_obj, iso, iso', shiftEquiv'_functor, shiftEquiv'_inverse,
+    Equiv.toFun_as_coe, conjugateIsoEquiv_apply_hom, conjugateEquiv_apply_app, comp_unit_app,
+    Functor.id_obj, Equivalence.toAdjunction_unit, Functor.comp_map, comp_counit_app,
+    Equivalence.toAdjunction_counit, Functor.map_comp, assoc]
+  rfl
+
+lemma iso_inv_app (Y : D) :
+    (iso adj a).inv.app Y =
+      adj.unit.app ((shiftFunctor C a).obj (G.obj Y)) ≫
+          G.map ((shiftFunctorCompIsoId D b a h).inv.app
+              (F.obj ((shiftFunctor C a).obj (G.obj Y)))) ≫
+            G.map ((shiftFunctor D a).map ((shiftFunctor D b).map
+                ((F.commShiftIso a).hom.app (G.obj Y)))) ≫
+              G.map ((shiftFunctor D a).map ((shiftFunctorCompIsoId D a b
+                  (by rw [eq_neg_of_add_eq_zero_left h, add_neg_cancel])).hom.app
+                    (F.obj (G.obj Y)))) ≫
+                G.map ((shiftFunctor D a).map (adj.counit.app Y)) := by
+  obtain rfl : b = -a := by rw [← add_left_inj a, h, neg_add_cancel]
+  simp only [Functor.comp_obj, iso, iso', shiftEquiv'_functor, shiftEquiv'_inverse,
+    Equiv.toFun_as_coe, conjugateIsoEquiv_apply_inv, conjugateEquiv_apply_app, comp_unit_app,
+    Functor.id_obj, Equivalence.toAdjunction_unit, Functor.comp_map, comp_counit_app,
+    Equivalence.toAdjunction_counit, Functor.map_comp, assoc]
+  congr 2
+  rw [← assoc, ← assoc]
+  congr 1
+  conv_rhs => rw [← G.map_comp, ← Functor.map_comp]
+  conv_lhs => rw [← G.map_comp, ← Functor.map_comp]
+  congr 2
+  have this := F.commShiftIso_add' (add_neg_cancel a)
+  apply_fun (fun x ↦ x.inv.app (G.obj Y)) at this
+  rw [← cancel_epi ((shiftFunctorAdd' D a (-a) 0 (add_neg_cancel _)).inv.app _),
+    ← cancel_mono (F.map ((shiftFunctorAdd' C a (-a) 0 (add_neg_cancel _)).hom.app _))] at this
+  simp only [Functor.comp_obj, assoc, Functor.CommShift.isoAdd'_inv_app, Iso.inv_hom_id_app_assoc,
+    ← Functor.map_comp, Iso.inv_hom_id_app, Functor.map_id, comp_id] at this
+  rw [← cancel_epi (((F.commShiftIso a).inv.app _)⟦-a⟧'), ← assoc, ← this, ← assoc, ← assoc,
+    ← Functor.map_comp, Iso.inv_hom_id_app, Functor.map_id, id_comp, F.commShiftIso_zero]
+  simp only [Functor.comp_obj, Functor.CommShift.isoZero_inv_app, assoc]
+  rw [shiftEquiv'_counit, shiftFunctorCompIsoId]
+  simp only [Iso.trans_hom, Iso.symm_hom, NatTrans.comp_app, Functor.comp_obj, Functor.id_obj,
+    Functor.map_comp]
+  slice_lhs 4 5 => rw [← F.map_comp, Iso.hom_inv_id_app, F.map_id]
+  rw [id_comp, ← F.map_comp, Iso.inv_hom_id_app]
+  erw [F.map_id]; rw [comp_id]
+  rfl
+
+lemma iso_compat_unit (a : A) : CommShift.compat_unit adj a (F.commShiftIso a) (iso adj a) := by
+  intro X
+  rw [← cancel_mono ((RightAdjointCommShift.iso adj a).inv.app (F.obj X)), assoc, assoc,
+    Iso.hom_inv_id_app]
+  dsimp
+  rw [comp_id]
+  simp [RightAdjointCommShift.iso_inv_app adj _ _ (neg_add_cancel a)]
+  apply (adj.homEquiv _ _).symm.injective
+  dsimp
+  simp [homEquiv_counit]
+  erw [← NatTrans.naturality_assoc]
+  dsimp
+  rw [shift_shiftFunctorCompIsoId_hom_app, Iso.inv_hom_id_app_assoc,
+    Functor.commShiftIso_hom_naturality_assoc, ← Functor.map_comp,
+    left_triangle_components, Functor.map_id, comp_id]
+
+end RightAdjointCommShift
+
+variable (A)
+
+@[simps]
+noncomputable def rightAdjointCommShift [F.CommShift A] : G.CommShift A where
+  iso a := RightAdjointCommShift.iso adj a
+  zero := by
+    refine CommShift.compat_unit_unique_right adj 0 (F.commShiftIso 0)  _ _
+      (RightAdjointCommShift.iso_compat_unit adj 0) ?_
+    rw [F.commShiftIso_zero]
+    exact CommShift.compat_unit_isoZero adj
+  add a b := by
+    refine CommShift.compat_unit_unique_right adj (a + b) (F.commShiftIso (a + b))  _ _
+      (RightAdjointCommShift.iso_compat_unit adj (a + b)) ?_
+    rw [F.commShiftIso_add]
+    exact CommShift.compat_unit_isoAdd adj a b _ _ _ _
+      (RightAdjointCommShift.iso_compat_unit adj a) (RightAdjointCommShift.iso_compat_unit adj b)
+
+lemma commShift_of_leftAdjoint [F.CommShift A] :
+    letI := adj.rightAdjointCommShift A
+    adj.CommShift A := by
+  letI := adj.rightAdjointCommShift A
+  apply CommShift.mk'
+  refine ⟨fun a => ?_⟩
+  ext X
+  dsimp
+  simp only [Functor.CommShift.commShiftIso_id_hom_app, Functor.comp_obj,
+    Functor.id_obj, id_comp, Functor.commShiftIso_comp_hom_app]
+  exact RightAdjointCommShift.iso_compat_unit adj a X
+
+end Adjunction
+
+namespace Equivalence
+
+variable {C D : Type*} [Category C] [Category D] (E : C ≌ D)
+  (A Z : Type*) [AddMonoid A] [AddGroup Z]
+  [HasShift C A] [HasShift D A] [HasShift C Z] [HasShift D Z]
+
+class CommShift [E.functor.CommShift A] [E.inverse.CommShift A] : Prop where
+  commShift_unitIso_hom : NatTrans.CommShift E.unitIso.hom A := by infer_instance
+  commShift_counitIso_hom : NatTrans.CommShift E.counitIso.hom A := by infer_instance
+
+namespace CommShift
+
+attribute [instance] commShift_unitIso_hom commShift_counitIso_hom
+
+instance [h : E.functor.CommShift A] : E.symm.inverse.CommShift A := h
+instance [h : E.inverse.CommShift A] : E.symm.functor.CommShift A := h
+
+/-- Constructor for `Equivalence.CommShift`. -/
+lemma mk' [E.functor.CommShift A] [E.inverse.CommShift A]
+    (h : NatTrans.CommShift E.unitIso.hom A) :
+    E.CommShift A where
+  commShift_counitIso_hom :=
+    (Adjunction.CommShift.mk' E.toAdjunction A h).commShift_counit
+
+/-- Constructor for `Equivalence.CommShift`. -/
+lemma mk'' [E.functor.CommShift A] [E.inverse.CommShift A]
+    (h : NatTrans.CommShift E.counitIso.hom A) :
+    E.CommShift A where
+  commShift_unitIso_hom := by
+    have h' := NatTrans.CommShift.of_iso_inv E.counitIso A
+    have : NatTrans.CommShift E.unitIso.symm.hom A :=
+      (Adjunction.CommShift.mk' E.symm.toAdjunction A h').commShift_counit
+    exact NatTrans.CommShift.of_iso_inv E.unitIso.symm A
+
+instance [E.functor.CommShift A] [E.inverse.CommShift A] [E.CommShift A] :
+    E.toAdjunction.CommShift A where
+  commShift_unit := commShift_unitIso_hom
+  commShift_counit := commShift_counitIso_hom
+
+instance [E.functor.CommShift A] [E.inverse.CommShift A] [E.CommShift A] :
+    E.symm.CommShift A := mk' _ _ (by
+  dsimp only [Equivalence.symm, Iso.symm]
+  infer_instance)
+
+end CommShift
+
+noncomputable def commShiftInverse [E.functor.CommShift Z] : E.inverse.CommShift Z :=
+  E.toAdjunction.rightAdjointCommShift Z
+
+lemma commShift_of_functor [E.functor.CommShift Z] :
+    letI := E.commShiftInverse Z
+    E.CommShift Z := by
+  letI := E.commShiftInverse Z
+  exact CommShift.mk' _ _ (E.toAdjunction.commShift_of_leftAdjoint Z).commShift_unit
+
+noncomputable def commShiftFunctor [E.inverse.CommShift Z] : E.functor.CommShift Z :=
+  E.symm.toAdjunction.rightAdjointCommShift Z
+
+lemma commShift_of_inverse [E.inverse.CommShift Z] :
+    letI := E.commShiftFunctor Z
+    E.CommShift Z := by
+  letI := E.commShiftFunctor Z
+  apply CommShift.mk''
+  have : NatTrans.CommShift E.counitIso.symm.hom Z :=
+    (E.symm.toAdjunction.commShift_of_leftAdjoint Z).commShift_unit
+  exact NatTrans.CommShift.of_iso_inv E.counitIso.symm Z
+
+end Equivalence
+
+end CategoryTheory
