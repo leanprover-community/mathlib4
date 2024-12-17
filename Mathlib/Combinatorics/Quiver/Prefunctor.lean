@@ -111,6 +111,7 @@ theorem congr_hom {U V : Type*} [Quiver U] [Quiver V] {F G : U ⥤q V} (e : F = 
   simp
 
 /-- Prefunctors commute with `homOfEq`. -/
+@[simp]
 theorem homOfEq_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} (f : X ⟶ Y)
     {X' Y' : U} (hX : X = X') (hY : Y = Y') :
     F.map (Quiver.homOfEq f hX hY) =
