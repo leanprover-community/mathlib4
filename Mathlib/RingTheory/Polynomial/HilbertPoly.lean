@@ -142,10 +142,14 @@ lemma hilbertPoly_smul_nat (a : F) (p : F[X]) (d : ℕ) :
       simp only [smul_assoc]
 
 variable (F) in
-theorem isLinearMap_hilbertPoly (d : ℕ) :
-    IsLinearMap F (fun (p : F[X]) => hilbertPoly p d) where
-  map_add := fun _ _ => hilbertPoly_add_nat ..
-  map_smul := fun _ _ ↦ hilbertPoly_smul_nat ..
+/--
+The function that sends any `p : F[X]` to `Polynomial.hilbertPoly p d` is an `F`-linear map from
+`F[X]` to `F[X]`.
+-/
+noncomputable def hilbertPoly_linearMap (d : ℕ) : F[X] →ₗ[F] F[X] where
+  toFun p := hilbertPoly p d
+  map_add' p q := hilbertPoly_add_nat p q d
+  map_smul' r p := hilbertPoly_smul_nat r p d
 
 variable [CharZero F]
 
