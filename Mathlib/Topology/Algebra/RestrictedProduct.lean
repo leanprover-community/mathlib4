@@ -415,6 +415,9 @@ instance {G : Type*} [TopologicalSpace G] [Π i, SMul G (R i)] [∀ i, SMulMemCl
 instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, TopologicalGroup (R i)] :
     TopologicalGroup (Pre R (fun i ↦ A i) T) where
 
+instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] [∀ i, TopologicalRing (R i)] :
+    TopologicalRing (Pre R (fun i ↦ A i) T) where
+
 end Pre
 
 -- Results for `RestrPi` depending only on the fact that it has an inductive limit topology
@@ -458,6 +461,13 @@ instance {G : Type*} [TopologicalSpace G] [Π i, SMul G (R i)] [∀ i, SMulMemCl
   continuous_smul := by
     rw [continuous_dom_prod_left hAopen.out]
     exact fun S hS ↦ (continuous_ofPre R _ hS).comp continuous_smul
+
+@[to_additive]
+instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, TopologicalGroup (R i)] :
+    TopologicalGroup (RestrPi R (fun i ↦ A i)) where
+
+instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] [∀ i, TopologicalRing (R i)] :
+    TopologicalRing (RestrPi R (fun i ↦ A i)) where
 
 end StrIndLimit
 
