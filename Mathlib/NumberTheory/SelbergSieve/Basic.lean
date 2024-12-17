@@ -167,6 +167,10 @@ theorem squarefree_of_mem_divisors_prodPrimes {d : ℕ} (hd : d ∈ divisors P) 
   simp only [Nat.mem_divisors] at hd
   exact Squarefree.squarefree_of_dvd hd.left prodPrimes_squarefree
 
+theorem prod_primeFactors_nu {d : ℕ} (hd : d ∣ P) : ∏ p in d.primeFactors, ν p = ν d := by
+  rw [← nu_mult.map_prod_of_subset_primeFactors _ _ subset_rfl,
+    Nat.prod_primeFactors_of_squarefree <| Squarefree.squarefree_of_dvd hd prodPrimes_squarefree]
+
 theorem nu_pos_of_dvd_prodPrimes {d : ℕ} (hd : d ∣ P) : 0 < ν d := by
   calc
     0 < ∏ p in d.primeFactors, ν p := by
@@ -175,8 +179,7 @@ theorem nu_pos_of_dvd_prodPrimes {d : ℕ} (hd : d ∣ P) : 0 < ν d := by
       have hp_prime : p.Prime := prime_of_mem_primeFactors hpd
       have hp_dvd : p ∣ P := (dvd_of_mem_primeFactors hpd).trans hd
       exact nu_pos_of_prime p hp_prime hp_dvd
-    _ = ν d := nu_mult.prod_primeFactors_of_squarefree ν
-                (Squarefree.squarefree_of_dvd hd prodPrimes_squarefree)
+    _ = ν d := prod_primeFactors_nu hd
 
 theorem nu_ne_zero {d : ℕ} (hd : d ∣ P) : ν d ≠ 0 := by
   apply _root_.ne_of_gt
@@ -200,8 +203,7 @@ theorem nu_lt_self_of_dvd_prodPrimes (d : ℕ) (hdP : d ∣ P) (hd_ne_one : d �
   have hd_sq : Squarefree d := Squarefree.squarefree_of_dvd hdP prodPrimes_squarefree
   have := hd_sq.ne_zero
   calc
-    ν d = ∏ p in d.primeFactors, ν p :=
-      eq_comm.mp (nu_mult.prod_primeFactors_of_squarefree ν hd_sq)
+    ν d = ∏ p in d.primeFactors, ν p := (prod_primeFactors_nu hdP).symm
     _ < ∏ p in d.primeFactors, 1 := by
       apply prod_lt_prod_of_nonempty
       · intro p hp
@@ -244,7 +246,7 @@ theorem one_div_selbergTerms_eq_conv_moebius_nu (l : ℕ) (hl : Squarefree l)
   obtain ⟨rfl, _⟩ := hd
   have : ν e ≠ 0 := by
     revert hnu_nonzero; contrapose!
-    exact multiplicative_zero_of_zero_dvd ν nu_mult hl (Nat.dvd_mul_left e d)
+    exact nu_mult.eq_zero_of_squarefree_of_dvd_eq_zero hl (Nat.dvd_mul_left e d)
   simp only [squarefree_mul_iff] at hl ⊢
   field_simp
   rw [nu_mult.map_mul_of_coprime hl.1, mul_comm (ν d)]
@@ -275,8 +277,7 @@ theorem conv_selbergTerms_eq_selbergTerms_mul_nu {d : ℕ} (hd : d ∣ P) :
       rw [mul_sum]; apply sum_congr rfl; intro l hl
       rw [mul_ite_zero]
       apply if_ctx_congr Iff.rfl _ (fun _ => rfl); intro h
-      rw [selbergTerms_mult.map_dvd_of_squarefree _ d l h
-        (prodPrimes_squarefree.squarefree_of_dvd hd)]
+      rw [selbergTerms_mult.map_div_of_squarefree h (prodPrimes_squarefree.squarefree_of_dvd hd)]
       · ring
       · apply _root_.ne_of_gt; rw [mem_divisors] at hl ; apply selbergTerms_pos; exact hl.left
     _ = g d * (ν d)⁻¹ := by rw [← nu_eq_conv_one_div_selbergTerms d hd]
@@ -379,7 +380,7 @@ theorem upperMoebius_lambdaSquared (weights : ℕ → ℝ) (hw : weights 1 = 1) 
     apply sum_congr rfl; intro d1 hd1
     rw [sum_mul, sum_comm]
     apply sum_congr rfl; intro d2 hd2
-    rw [←sum_intro]
+    rw [sum_ite_eq_of_mem']
     ring
     rw [mem_divisors, Nat.lcm_dvd_iff]
     exact ⟨⟨dvd_of_mem_divisors hd1, dvd_of_mem_divisors hd2⟩, (mem_divisors.mp hd1).2⟩
@@ -411,8 +412,8 @@ theorem lambdaSquared_mainSum_eq_quad_form (w : ℕ → ℝ) :
     rw [sum_comm, sum_congr rfl]; intro d1 hd1
     rw [sum_comm, sum_congr rfl]; intro d2 hd2
     have h : d1.lcm d2 ∣ P := Nat.lcm_dvd_iff.mpr ⟨dvd_of_mem_divisors hd1, dvd_of_mem_divisors hd2⟩
-    rw [←sum_intro (divisors P) (d1.lcm d2) (mem_divisors.mpr ⟨h, prodPrimes_ne_zero⟩ )]
-    rw [nu_mult.map_lcm]
+    rw [sum_ite_eq_of_mem' (divisors P) (d1.lcm d2) _ (mem_divisors.mpr ⟨h, prodPrimes_ne_zero⟩ ),
+      nu_mult.map_lcm]
     · ring
     refine _root_.ne_of_gt (nu_pos_of_dvd_prodPrimes ?_)
     trans d1

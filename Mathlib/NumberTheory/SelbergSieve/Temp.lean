@@ -25,40 +25,50 @@ open Nat ArithmeticFunction Finset
 namespace ArithmeticFunction.IsMultiplicative
 
 variable {R : Type*}
---basic
-theorem map_lcm [CommGroupWithZero R] (f : ArithmeticFunction R)
-    (h_mult : f.IsMultiplicative) (x y : ℕ) (hf : f (x.gcd y) ≠ 0) :
+
+theorem map_lcm [CommGroupWithZero R] {f : ArithmeticFunction R}
+    (h_mult : f.IsMultiplicative) {x y : ℕ} (hf : f (x.gcd y) ≠ 0) :
     f (x.lcm y) = f x * f y / f (x.gcd y) := by
   rw [←h_mult.lcm_apply_mul_gcd_apply]
   field_simp
---basic
-theorem prod_primeFactors_of_squarefree (f : ArithmeticFunction ℝ) (h_mult : f.IsMultiplicative)
-    {l : ℕ} (hl : Squarefree l) :
-    ∏ p : ℕ in l.primeFactors, f p = f l := by
-  rw [←IsMultiplicative.map_prod_of_subset_primeFactors h_mult l _ Finset.Subset.rfl,
-    Nat.prod_primeFactors_of_squarefree hl]
 
---basic
-theorem map_dvd_of_squarefree (f : ArithmeticFunction ℝ) (h_mult : IsMultiplicative f)
-    (l d : ℕ) (hdl : d ∣ l) (hl : Squarefree l) (hd : f d ≠ 0) : f (l / d) = f l / f d := by
+theorem map_div_of_squarefree {f : ArithmeticFunction ℝ} (h_mult : IsMultiplicative f)
+    {l d : ℕ} (hdl : d ∣ l) (hl : Squarefree l) (hd : f d ≠ 0) : f (l / d) = f l / f d := by
   apply (div_eq_of_eq_mul hd ..).symm
   rw [← h_mult.right, Nat.div_mul_cancel hdl]
   apply coprime_of_squarefree_mul
   convert hl
   exact Nat.div_mul_cancel hdl
 
+theorem eq_zero_of_squarefree_of_dvd_eq_zero {f : ArithmeticFunction ℝ}
+    (h_mult : IsMultiplicative f)
+    {m n : ℕ}
+    (h_sq : Squarefree n) (hmn : m ∣ n) (h_zero : f m = 0) : f n = 0 := by
+  rcases hmn with ⟨k, rfl⟩
+  simp only [MulZeroClass.zero_mul, eq_self_iff_true, h_mult.map_mul_of_coprime
+    (coprime_of_squarefree_mul h_sq), h_zero]
+
 end ArithmeticFunction.IsMultiplicative
 
 --basic
 theorem sum_over_dvd_ite {α : Type _} [Ring α] {P : ℕ} (hP : P ≠ 0) {n : ℕ} (hn : n ∣ P)
-    {f : ℕ → α} : ∑ d in n.divisors, f d = ∑ d in P.divisors, if d ∣ n then f d else 0 :=
-  by
+    {f : ℕ → α} : ∑ d in n.divisors, f d = ∑ d in P.divisors, if d ∣ n then f d else 0 := by
   rw [←Finset.sum_filter, Nat.divisors_filter_dvd_of_dvd hP hn]
---basic
-theorem sum_intro {α M: Type _} [AddCommMonoid M] [DecidableEq α] (s : Finset α) {f : α → M} (d : α)
-     (hd : d ∈ s) :
-    f d = ∑ k in s, if k = d then f k else 0 := by
-  rw [← Finset.sum_filter, Finset.filter_eq', if_pos hd, sum_singleton]
+
+
+@[to_additive]
+theorem prod_ite_eq_of_mem {α β : Type*} [CommMonoid β] [DecidableEq α] (s : Finset α) (a : α)
+  (b : α → β) (h : a ∈ s) :
+    (∏ x ∈ s, if a = x then b x else 1) = b a := by
+  simp only [prod_ite_eq, h, ↓reduceIte]
+
+/-- -/
+@[to_additive]
+theorem prod_ite_eq_of_mem' {α β : Type*} [CommMonoid β] [DecidableEq α] (s : Finset α) (a : α)
+  (b : α → β) (h : a ∈ s) :
+    (∏ x ∈ s, if x = a then b x else 1) = b a := by
+  simp only [prod_ite_eq', h, ↓reduceIte]
+
 --temp
 @[to_additive]
 theorem ite_prod_one {R ι : Type*} [CommMonoid R] {p : Prop} [Decidable p] (s : Finset ι)
@@ -123,9 +133,3 @@ theorem moebius_inv_dvd_lower_bound_real {P : ℕ} (hP : Squarefree P) (l m : �
   apply moebius_inv_dvd_lower_bound' hP l m hm
 
 --basic
-theorem multiplicative_zero_of_zero_dvd (f : ArithmeticFunction ℝ) (h_mult : IsMultiplicative f)
-    {m n : ℕ}
-    (h_sq : Squarefree n) (hmn : m ∣ n) (h_zero : f m = 0) : f n = 0 := by
-  rcases hmn with ⟨k, rfl⟩
-  simp only [MulZeroClass.zero_mul, eq_self_iff_true, h_mult.map_mul_of_coprime
-    (coprime_of_squarefree_mul h_sq), h_zero]

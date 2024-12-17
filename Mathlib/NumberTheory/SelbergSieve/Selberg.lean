@@ -132,7 +132,7 @@ lemma sum_mul_subst (k n: ℕ) {f : ℕ → ℝ} (h : ∀ l, l ∣ n → ¬ k �
       exact ⟨(Nat.div_dvd_of_dvd hkl).trans (dvd_of_mem_divisors hl), hn⟩
   · rw [sum_comm, sum_congr rfl]; intro m _
     split_ifs with hdvd
-    · rw [←sum_intro]
+    · rw [sum_ite_eq_of_mem']
       simp only [mem_divisors, hdvd, ne_eq, hn, not_false_eq_true, and_self]
     · apply sum_eq_zero; intro l hl
       apply if_neg;
@@ -208,10 +208,11 @@ theorem selbergWeights_diagonalisation (l : ℕ) (hl : l ∈ divisors P) :
       · tauto
       intro _; ring
     _ = if l ^ 2 ≤ y then g l * μ l * S⁻¹ else 0 := by
-      rw [sum_intro (f:=fun _ => if l^2 ≤ y then g l * μ l * S⁻¹ else 0) (divisors P) l hl]
+      rw [← sum_ite_eq_of_mem'
+        (b:=fun _ => if l^2 ≤ y then g l * μ l * S⁻¹ else 0) (divisors P) l hl]
       apply sum_congr rfl; intro k hk
       rw [moebius_inv_dvd_lower_bound_real s.prodPrimes_squarefree l _ (dvd_of_mem_divisors hk),
-        ←ite_and, ite_zero_mul, ite_zero_mul, ← ite_and]
+        ← ite_and, ite_zero_mul, ite_zero_mul, ← ite_and]
       apply if_ctx_congr _ _ fun _ => rfl
       · rw [and_comm, eq_comm]
         refine and_congr_right (fun heq ↦ ?_)
@@ -304,7 +305,7 @@ theorem selbergBoundingSum_ge {d : ℕ} (hdP : d ∣ P) :
     dsimp only [selbergBoundingSum]
     rw [sum_comm, sum_congr rfl]; intro l _
     simp_rw [ite_and]
-    rw [←sum_intro]
+    rw [sum_ite_eq_of_mem']
     · rw [mem_divisors]
       exact ⟨(Nat.gcd_dvd_left d l).trans (hdP), s.prodPrimes_ne_zero⟩
   _ = (∑ k in divisors P,
