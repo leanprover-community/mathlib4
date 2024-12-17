@@ -5,6 +5,7 @@ Authors: Iván Renison, Bhavik Mehta
 -/
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
 import Mathlib.Combinatorics.SimpleGraph.Hasse
+import Mathlib.Combinatorics.SimpleGraph.Trails
 
 /-!
 # Definition of circulant graphs
@@ -132,5 +133,31 @@ theorem cycleGraph_preconnected {n : ℕ} : (cycleGraph n).Preconnected :=
 
 theorem cycleGraph_connected {n : ℕ} : (cycleGraph (n + 1)).Connected :=
   (pathGraph_connected n).mono pathGraph_le_cycleGraph
+
+private def cycleGraph_EulerianTrail_cons (n : ℕ) : ∀ m : Fin (n + 3), (cycleGraph (n + 3)).Walk m 0
+  | ⟨0, h⟩ => Walk.nil
+  | ⟨m + 1, h⟩ =>
+    have hAdj : (cycleGraph (n + 3)).Adj ⟨m + 1, h⟩ ⟨m, Nat.lt_of_succ_lt h⟩ := by
+      simp [cycleGraph_adj, Fin.ext_iff, Fin.sub_val_of_le]
+    Walk.cons hAdj (cycleGraph_EulerianTrail_cons n ⟨m, Nat.lt_of_succ_lt h⟩)
+
+def cycleGraph_EulerianTrail (n : ℕ) : (cycleGraph (n + 3)).Walk 0 0 :=
+  have hAdj : (cycleGraph (n + 3)).Adj 0 (Fin.last (n + 2)) := by
+    simp [cycleGraph_adj]
+  Walk.cons hAdj (cycleGraph_EulerianTrail_cons n (Fin.last (n + 2)))
+
+private theorem cycleGraph_EulerianTrail_cons_length (n : ℕ) : ∀ m : Fin (n + 3),
+    (cycleGraph_EulerianTrail_cons n m).length = m.val
+  | ⟨0, h⟩ => by
+    unfold cycleGraph_EulerianTrail_cons
+    rfl
+  | ⟨m + 1, h⟩ => by
+    unfold cycleGraph_EulerianTrail_cons
+    simp only [Walk.length_cons]
+    rw [cycleGraph_EulerianTrail_cons_length n]
+
+theorem cycleGraph_EulerianTrail_length {n : ℕ} : (cycleGraph_EulerianTrail n).length = n + 3 := by
+  unfold cycleGraph_EulerianTrail
+  simp [cycleGraph_EulerianTrail_cons_length]
 
 end SimpleGraph
