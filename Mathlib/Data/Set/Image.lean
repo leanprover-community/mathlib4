@@ -1116,15 +1116,9 @@ theorem Injective.mem_range_iff_existsUnique (hf : Injective f) {b : β} :
 alias ⟨Injective.existsUnique_of_mem_range, _⟩ := Injective.mem_range_iff_existsUnique
 
 @[deprecated (since := "2024-09-25")]
-alias Injective.mem_range_iff_existsUnique := Injective.mem_range_iff_existsUnique
-
-@[deprecated (since := "2024-12-17")]
 alias Injective.mem_range_iff_exists_unique := Injective.mem_range_iff_existsUnique
 
 @[deprecated (since := "2024-09-25")]
-alias Injective.existsUnique_of_mem_range := Injective.existsUnique_of_mem_range
-
-@[deprecated (since := "2024-12-17")]
 alias Injective.exists_unique_of_mem_range := Injective.existsUnique_of_mem_range
 
 theorem Injective.compl_image_eq (hf : Injective f) (s : Set α) :
