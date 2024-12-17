@@ -75,17 +75,28 @@ lemma hasCardinalLT_aleph0_iff (X : Type u) :
     HasCardinalLT X Cardinal.aleph0.{v} ↔ Finite X := by
   simpa [HasCardinalLT] using Cardinal.mk_lt_aleph0_iff
 
-lemma hasCardinalLT_option_iff (X : Type u) (κ' : Cardinal.{w})
-    (hκ' : Cardinal.aleph0 ≤ κ') :
-    HasCardinalLT (Option X) κ' ↔ HasCardinalLT X κ' := by
+lemma hasCardinalLT_sum_iff (X : Type u) (Y : Type u') (κ : Cardinal.{w})
+    (hκ : Cardinal.aleph0 ≤ κ) :
+    HasCardinalLT (X ⊕ Y) κ ↔ HasCardinalLT X κ ∧ HasCardinalLT Y κ := by
   constructor
   · intro h
-    exact h.of_injective _ (Option.some_injective _)
-  · intro h
-    dsimp [HasCardinalLT] at h ⊢
-    simp only [Cardinal.mk_option, Cardinal.lift_add, Cardinal.lift_one]
-    exact Cardinal.add_lt_of_lt (by simpa using hκ') h
-      (lt_of_lt_of_le Cardinal.one_lt_aleph0 (by simpa using hκ'))
+    exact ⟨h.of_injective _ Sum.inl_injective,
+      h.of_injective _ Sum.inr_injective⟩
+  · rintro ⟨hX, hY⟩
+    dsimp [HasCardinalLT] at hX hY ⊢
+    rw [← Cardinal.lift_lt.{_, u'}, Cardinal.lift_lift, Cardinal.lift_lift] at hX
+    rw [← Cardinal.lift_lt.{_, u}, Cardinal.lift_lift, Cardinal.lift_lift] at hY
+    simp only [Cardinal.mk_sum, Cardinal.lift_add, Cardinal.lift_lift]
+    exact Cardinal.add_lt_of_lt (by simpa using hκ) hX hY
+
+lemma hasCardinalLT_option_iff (X : Type u) (κ : Cardinal.{w})
+    (hκ : Cardinal.aleph0 ≤ κ) :
+    HasCardinalLT (Option X) κ ↔ HasCardinalLT X κ := by
+  rw [hasCardinalLT_iff_of_equiv (Equiv.optionEquivSumPUnit.{0} X),
+    hasCardinalLT_sum_iff _ _ _ hκ, and_iff_left_iff_imp]
+  refine fun _ ↦ HasCardinalLT.of_le ?_ hκ
+  rw [hasCardinalLT_aleph0_iff]
+  infer_instance
 
 namespace HasCardinalLT
 
