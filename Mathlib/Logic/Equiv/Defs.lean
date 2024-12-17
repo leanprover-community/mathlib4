@@ -745,19 +745,15 @@ protected lemma existsUnique_congr_left : (∃! a, p a) ↔ ∃! b, p (e.symm b)
   e.symm.existsUnique_congr_right.symm
 
 @[deprecated (since := "2024-06-11")]
-alias existsUnique_congr_left := Equiv.existsUnique_congr_right
-
-@[deprecated (since := "2024-12-17")] alias exists_unique_congr_left := existsUnique_congr_left
+alias exists_unique_congr_left := Equiv.existsUnique_congr_right
 
 @[deprecated (since := "2024-06-11")]
-alias existsUnique_congr_left' := Equiv.existsUnique_congr_left
-
-@[deprecated (since := "2024-12-17")] alias exists_unique_congr_left' := existsUnique_congr_left'
+alias exists_unique_congr_left' := Equiv.existsUnique_congr_left
 
 protected lemma existsUnique_congr (h : ∀ a, p a ↔ q (e a)) : (∃! a, p a) ↔ ∃! b, q b :=
   e.existsUnique_congr_left.trans <| by simp [h]
 
-@[deprecated (since := "2024-06-11")] alias existsUnique_congr := Equiv.existsUnique_congr
+@[deprecated (since := "2024-06-11")] alias exists_unique_congr := Equiv.existsUnique_congr
 
 protected lemma existsUnique_congr' (h : ∀ b, p (e.symm b) ↔ q b) : (∃! a, p a) ↔ ∃! b, q b :=
   e.existsUnique_congr_left.trans <| by simp [h]
