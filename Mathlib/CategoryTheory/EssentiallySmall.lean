@@ -177,6 +177,9 @@ noncomputable def equivalence : C ≌ ShrinkHoms C where
   unitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
   counitIso := NatIso.ofComponents (fun _ ↦ Iso.refl _)
 
+instance : (functor C).IsEquivalence := (equivalence C).isEquivalence_functor
+instance : (inverse C).IsEquivalence := (equivalence C).isEquivalence_inverse
+
 end ShrinkHoms
 
 namespace Shrink
