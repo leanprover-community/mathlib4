@@ -166,7 +166,7 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
     (nnrealPart (⟨f 0, f_hcs 0⟩ : C_c(X, ℝ)))
   simp only [Fin.isValue, CompactlySupportedContinuousMap.coe_add]
   have sum_one_x (x : X) (hx : x ∈ t) : (f 0) x + (f 1) x = 1 := by
-    simpa only [Finset.sum_apply, Fin.sum_univ_two, Fin.isValue, Pi.one_apply] 
+    simpa only [Finset.sum_apply, Fin.sum_univ_two, Fin.isValue, Pi.one_apply]
       using sum_f_one_on_t hx
   refine ⟨?_, ?_, ?_⟩
   · intro x hx
@@ -221,8 +221,8 @@ lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X}
     rw [mem_support]
     exact Ne.symm (ne_of_lt <| lt_of_lt_of_le (zero_lt_one' ℝ≥0) (hf x hx))
   have hsubsuppf : (K₁ : Set X) ∪ (K₂ : Set X) ⊆ tsupport f := subset_trans hsuppf subset_closure
-  obtain ⟨g₁, g₂, hg₁, hg₂, sum_g⟩ := exists_sum_one_of_isCompact_nnreal K₁.isCompact' K₂.isCompact'
-    f.hasCompactSupport'.isCompact disj hsubsuppf
+  obtain ⟨g₁, g₂, hg₁, hg₂, sum_g⟩ := exists_continuous_add_one_of_isCompact_nnreal K₁.isCompact'
+    K₂.isCompact' f.hasCompactSupport'.isCompact disj hsubsuppf
   have f_eq_sum : f = g₁ * f + g₂ * f := by
     ext x
     simp only [CompactlySupportedContinuousMap.coe_add, CompactlySupportedContinuousMap.coe_mul,
