@@ -70,7 +70,7 @@ theorem forgetToQuiv_faithful {V W : ReflQuiv} (F G : V ⥤rq W)
     (hyp : forgetToQuiv.map F = forgetToQuiv.map G) : F = G := by
   cases F; cases G; cases hyp; rfl
 
-theorem forgetToQuiv.Faithful : Functor.Faithful (forgetToQuiv) where
+instance forgetToQuiv.Faithful : Functor.Faithful (forgetToQuiv) where
   map_injective := fun hyp ↦ forgetToQuiv_faithful _ _ hyp
 
 theorem forget_forgetToQuiv : forget ⋙ forgetToQuiv = Quiv.forget := rfl
