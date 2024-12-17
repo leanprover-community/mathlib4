@@ -253,13 +253,8 @@ lemma RelCWComplex.closure_openCell_eq_closedCell [RelCWComplex C D] [T2Space X]
 lemma RelCWComplex.closed (C : Set X) {D : Set X} [RelCWComplex C D] [T2Space X] (A : Set X)
     (asubc : A ⊆ C) :
     IsClosed A ↔ (∀ n (j : cell C n), IsClosed (A ∩ closedCell n j)) ∧ IsClosed (A ∩ D) := by
-  constructor
-  · intro closedA
-    constructor
-    · intro n j
-      exact closedA.inter isClosed_closedCell
-    · exact closedA.inter (isClosedBase C)
-  · exact RelCWComplex.closed' A asubc
+  refine ⟨?_, closed' A asubc⟩
+  exact fun closedA ↦ ⟨fun _ _ ↦ closedA.inter isClosed_closedCell, closedA.inter (isClosedBase C)⟩
 
 lemma ClasCWComplex.closed (C : Set X) [ClasCWComplex C] [T2Space X] (A : Set X) (asubc : A ⊆ C) :
     IsClosed A ↔ ∀ n (j : cell C n), IsClosed (A ∩ closedCell n j) := by
@@ -364,7 +359,7 @@ lemma RelCWComplex.base_subset_complex [RelCWComplex C D] : D ⊆ C := by
   exact base_subset_level ⊤
 
 lemma RelCWComplex.isClosed [T2Space X] [RelCWComplex C D] : IsClosed C := by
-  rw [closed (C := C) (D := D) C (by rfl)]
+  rw [closed (C := C) C (by rfl)]
   constructor
   · intros
     rw [inter_eq_right.2 (closedCell_subset_complex _ _)]
