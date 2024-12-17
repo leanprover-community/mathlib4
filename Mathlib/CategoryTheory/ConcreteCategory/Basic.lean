@@ -190,6 +190,12 @@ example [inst : HasForget C] :
     @forget C _ ((HasForget.toConcreteCategory _).toHasForget) = @forget C _ inst := by
   with_reducible_and_instances rfl
 
+/--
+Note that the `ConcreteCategory` and `HasForget` instances here differ from `forget_map_eq_coe`.
+-/
+theorem forget_eq_ConcreteCategory_hom [HasForget C] {X Y : C} (f : X ⟶ Y) :
+  (forget C).map f = @ConcreteCategory.hom _ _ _ _ _ (HasForget.toConcreteCategory C) _ _ f := rfl
+
 end
 
 theorem forget_obj (X : C) : (forget C).obj X = carrier X := rfl

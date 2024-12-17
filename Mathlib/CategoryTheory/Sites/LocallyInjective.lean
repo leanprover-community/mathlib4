@@ -89,10 +89,12 @@ instance [IsIso φ] : IsLocallyInjective J φ :=
     infer_instance))
 
 -- This ends up in `Type` so we can't say that it is indeed a concrete category...
+attribute [local instance] HasForget.toFunLike HasForget.toConcreteCategory in
 instance isLocallyInjective_forget [IsLocallyInjective J φ] :
     IsLocallyInjective J (whiskerRight φ (forget D)) where
   equalizerSieve_mem x y h := equalizerSieve_mem J φ x y h
 
+attribute [local instance] HasForget.toFunLike HasForget.toConcreteCategory in
 lemma isLocallyInjective_forget_iff :
     IsLocallyInjective J (whiskerRight φ (forget D)) ↔ IsLocallyInjective J φ := by
   constructor
@@ -102,7 +104,7 @@ lemma isLocallyInjective_forget_iff :
     infer_instance
 
 lemma isLocallyInjective_iff_equalizerSieve_mem_imp :
-    IsLocallyInjective J φ ↔ ∀ ⦃X : Cᵒᵖ⦄ (x y : F₁.obj X),
+    IsLocallyInjective J φ ↔ ∀ ⦃X : Cᵒᵖ⦄ (x y : CD (F₁.obj X)),
       equalizerSieve (φ.app _ x) (φ.app _ y) ∈ J X.unop → equalizerSieve x y ∈ J X.unop := by
   constructor
   · intro _ X x y h
@@ -121,7 +123,7 @@ lemma isLocallyInjective_iff_equalizerSieve_mem_imp :
     exact ⟨fun {X} x y h => hφ x y (by simp [h])⟩
 
 lemma equalizerSieve_mem_of_equalizerSieve_app_mem
-    {X : Cᵒᵖ} (x y : F₁.obj X) (h : equalizerSieve (φ.app _ x) (φ.app _ y) ∈ J X.unop)
+    {X : Cᵒᵖ} (x y : CD (F₁.obj X)) (h : equalizerSieve (φ.app _ x) (φ.app _ y) ∈ J X.unop)
     [IsLocallyInjective J φ] :
     equalizerSieve x y ∈ J X.unop :=
   (isLocallyInjective_iff_equalizerSieve_mem_imp J φ).1 inferInstance x y h
@@ -166,6 +168,7 @@ lemma isLocallyInjective_iff_injective_of_separated
     exact (hsep _ (equalizerSieve_mem J φ x y h)).ext (fun _ _ hf => hf)
   · apply isLocallyInjective_of_injective
 
+attribute [local instance] HasForget.toFunLike HasForget.toConcreteCategory in
 instance (F : Cᵒᵖ ⥤ Type w) (G : Subpresheaf F) :
     IsLocallyInjective J G.ι :=
   isLocallyInjective_of_injective _ _ (fun X => by
@@ -176,22 +179,28 @@ section
 
 open GrothendieckTopology.Plus
 
+attribute [local instance] HasForget.toFunLike HasForget.toConcreteCategory in
 instance isLocallyInjective_toPlus (P : Cᵒᵖ ⥤ Type max u v) :
     IsLocallyInjective J (J.toPlus P) where
   equalizerSieve_mem {X} x y h := by
+    -- Transfer instances from the "identity" forgetful functor to the "concrete" forgetful functor
+    have : (forget (Type (max u v))).IsCorepresentable := instIsCorepresentableIdType
+    have : (forget (Type (max u v))).IsEquivalence := Functor.isEquivalence_refl
     rw [toPlus_eq_mk, toPlus_eq_mk, eq_mk_iff_exists] at h
     obtain ⟨W, h₁, h₂, eq⟩ := h
     exact J.superset_covering (fun Y f hf => congr_fun (congr_arg Subtype.val eq) ⟨Y, f, hf⟩) W.2
 
+attribute [local instance] HasForget.toFunLike HasForget.toConcreteCategory in
 instance isLocallyInjective_toSheafify (P : Cᵒᵖ ⥤ Type max u v) :
     IsLocallyInjective J (J.toSheafify P) := by
   dsimp [GrothendieckTopology.toSheafify]
   rw [GrothendieckTopology.plusMap_toPlus]
   infer_instance
 
-instance isLocallyInjective_toSheafify' [ConcreteCategory.{max u v} D]
+attribute [local instance] HasForget.toFunLike HasForget.toConcreteCategory in
+instance isLocallyInjective_toSheafify' {D : Type*} [Category D] [HasForget.{max u v} D]
     (P : Cᵒᵖ ⥤ D) [HasWeakSheafify J D] [J.HasSheafCompose (forget D)]
-    [J.PreservesSheafification (forget D)] :
+    [i : J.PreservesSheafification (forget D)] :
     IsLocallyInjective J (toSheafify J P) := by
   rw [← isLocallyInjective_forget_iff, ← sheafComposeIso_hom_fac,
     ← toSheafify_plusPlusIsoSheafify_hom]
@@ -226,6 +235,7 @@ lemma mono_of_injective
 
 variable [J.HasSheafCompose (forget D)]
 
+attribute [local instance] HasForget.toFunLike HasForget.toConcreteCategory in
 instance isLocallyInjective_forget [IsLocallyInjective φ] :
     IsLocallyInjective ((sheafCompose J (forget D)).map φ) :=
   Presheaf.isLocallyInjective_forget J φ.1
@@ -242,6 +252,7 @@ lemma mono_of_isLocallyInjective [IsLocallyInjective φ] : Mono φ := by
   rw [← isLocallyInjective_iff_injective]
   infer_instance
 
+attribute [local instance] HasForget.toFunLike HasForget.toConcreteCategory in
 instance {F G : Sheaf J (Type w)} (f : F ⟶ G) :
     IsLocallyInjective (imageSheafι f) := by
   dsimp [imageSheafι]

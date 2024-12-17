@@ -110,19 +110,18 @@ lemma map_germ_eq_Γgerm (F : X.Presheaf C) {U : Opens X} {i : U ⟶ ⊤} (x : X
     F.map i.op ≫ F.germ U x hx = F.Γgerm x :=
   germ_res F i x hx
 
-attribute [local instance] ConcreteCategory.instFunLike in
+variable {FC : C → C → Type*} {CC : C → Type*} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+
 theorem germ_res_apply (F : X.Presheaf C)
-    {U V : Opens X} (i : U ⟶ V) (x : X) (hx : x ∈ U) [ConcreteCategory C] (s) :
+    {U V : Opens X} (i : U ⟶ V) (x : X) (hx : x ∈ U) [ConcreteCategory C FC CC] (s) :
   F.germ U x hx (F.map i.op s) = F.germ V x (i.le hx) s := by rw [← comp_apply, germ_res]
 
-attribute [local instance] ConcreteCategory.instFunLike in
 theorem germ_res_apply' (F : X.Presheaf C)
-    {U V : Opens X} (i : op V ⟶ op U) (x : X) (hx : x ∈ U) [ConcreteCategory C] (s) :
+    {U V : Opens X} (i : op V ⟶ op U) (x : X) (hx : x ∈ U) [ConcreteCategory C FC CC] (s) :
   F.germ U x hx (F.map i s) = F.germ V x (i.unop.le hx) s := by rw [← comp_apply, germ_res']
 
-attribute [local instance] ConcreteCategory.instFunLike in
 lemma Γgerm_res_apply (F : X.Presheaf C)
-    {U : Opens X} {i : U ⟶ ⊤} (x : X) (hx : x ∈ U) [ConcreteCategory C] (s) :
+    {U : Opens X} {i : U ⟶ ⊤} (x : X) (hx : x ∈ U) [ConcreteCategory C FC CC] (s) :
   F.germ U x hx (F.map i.op s) = F.Γgerm x s := F.germ_res_apply i x hx s
 
 /-- A morphism from the stalk of `F` at `x` to some object `Y` is completely determined by its
@@ -139,19 +138,18 @@ theorem stalkFunctor_map_germ {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x
     F.germ U x hx ≫ (stalkFunctor C x).map f = f.app (op U) ≫ G.germ U x hx :=
   colimit.ι_map (whiskerLeft (OpenNhds.inclusion x).op f) (op ⟨U, hx⟩)
 
-attribute [local instance] ConcreteCategory.instFunLike in
-theorem stalkFunctor_map_germ_apply [ConcreteCategory C]
+theorem stalkFunctor_map_germ_apply [ConcreteCategory C FC CC]
     {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x ∈ U) (f : F ⟶ G) (s) :
     (stalkFunctor C x).map f (F.germ U x hx s) = G.germ U x hx (f.app (op U) s) := by
   rw [← comp_apply, ← stalkFunctor_map_germ]
   exact (comp_apply _ _ _).symm
 
 -- a variant of `stalkFunctor_map_germ_apply` that makes simpNF happy.
-attribute [local instance] ConcreteCategory.instFunLike in
 @[simp]
-theorem stalkFunctor_map_germ_apply' [ConcreteCategory C]
+theorem stalkFunctor_map_germ_apply' [ConcreteCategory C FC CC]
     {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x ∈ U) (f : F ⟶ G) (s) :
-    DFunLike.coe (F := F.stalk x ⟶ G.stalk x) ((stalkFunctor C x).map f) (F.germ U x hx s) =
+    DFunLike.coe (F := FC (F.stalk x) (G.stalk x))
+        (ConcreteCategory.hom ((stalkFunctor C x).map f)) (F.germ U x hx s) =
       G.germ U x hx (f.app (op U) s) :=
   stalkFunctor_map_germ_apply U x hx f s
 
@@ -392,15 +390,14 @@ end stalkSpecializes
 
 section Concrete
 
-variable {C}
-variable [ConcreteCategory.{v} C]
-
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
+variable {C} {FC : C → C → Type*} {CC : C → Type v} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+variable [instC : ConcreteCategory.{v} C FC CC]
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: @[ext] attribute only applies to structures or lemmas proving x = y
 -- @[ext]
 theorem germ_ext (F : X.Presheaf C) {U V : Opens X} {x : X} {hxU : x ∈ U} {hxV : x ∈ V}
-    (W : Opens X) (hxW : x ∈ W) (iWU : W ⟶ U) (iWV : W ⟶ V) {sU : F.obj (op U)} {sV : F.obj (op V)}
+    (W : Opens X) (hxW : x ∈ W) (iWU : W ⟶ U) (iWV : W ⟶ V) {sU : CC (F.obj (op U))}
+    {sV : CC (F.obj (op V))}
     (ih : F.map iWU.op sU = F.map iWV.op sV) :
       F.germ _ x hxU sU = F.germ _ x hxV sV := by
   rw [← F.germ_res iWU x hxW, ← F.germ_res iWV x hxW, comp_apply, comp_apply, ih]
@@ -411,8 +408,8 @@ variable [PreservesFilteredColimits (forget C)]
 For presheaves valued in a concrete category whose forgetful functor preserves filtered colimits,
 every element of the stalk is the germ of a section.
 -/
-theorem germ_exist (F : X.Presheaf C) (x : X) (t : (stalk.{v, u} F x : Type v)) :
-    ∃ (U : Opens X) (m : x ∈ U) (s : F.obj (op U)), F.germ _ x m s = t := by
+theorem germ_exist (F : X.Presheaf C) (x : X) (t : CC (stalk.{v, u} F x)) :
+    ∃ (U : Opens X) (m : x ∈ U) (s : CC (F.obj (op U))), F.germ _ x m s = t := by
   obtain ⟨U, s, e⟩ :=
     Types.jointly_surjective.{v, v} _ (isColimitOfPreserves (forget C) (colimit.isColimit _)) t
   revert s e
@@ -422,11 +419,12 @@ theorem germ_exist (F : X.Presheaf C) (x : X) (t : (stalk.{v, u} F x : Type v)) 
   exact ⟨V, m, s, e⟩
 
 theorem germ_eq (F : X.Presheaf C) {U V : Opens X} (x : X) (mU : x ∈ U) (mV : x ∈ V)
-    (s : F.obj (op U)) (t : F.obj (op V)) (h : F.germ U x mU s = F.germ V x mV t) :
+    (s : CC (F.obj (op U))) (t : CC (F.obj (op V))) (h : F.germ U x mU s = F.germ V x mV t) :
     ∃ (W : Opens X) (_m : x ∈ W) (iU : W ⟶ U) (iV : W ⟶ V), F.map iU.op s = F.map iV.op t := by
   obtain ⟨W, iU, iV, e⟩ :=
     (Types.FilteredColimit.isColimit_eq_iff.{v, v} _
-          (isColimitOfPreserves _ (colimit.isColimit ((OpenNhds.inclusion x).op ⋙ F)))).mp h
+          (isColimitOfPreserves (forget C) (colimit.isColimit ((OpenNhds.inclusion x).op ⋙ F)))).mp
+            h
   exact ⟨(unop W).1, (unop W).2, iU.unop, iV.unop, e⟩
 
 theorem stalkFunctor_map_injective_of_app_injective {F G : Presheaf C X} (f : F ⟶ G)
@@ -446,7 +444,7 @@ variable [HasLimits C] [PreservesLimits (forget C)] [(forget C).ReflectsIsomorph
 /-- Let `F` be a sheaf valued in a concrete category, whose forgetful functor reflects isomorphisms,
 preserves limits and filtered colimits. Then two sections who agree on every stalk must be equal.
 -/
-theorem section_ext (F : Sheaf C X) (U : Opens X) (s t : F.1.obj (op U))
+theorem section_ext (F : Sheaf C X) (U : Opens X) (s t : CC (F.1.obj (op U)))
     (h : ∀ (x : X) (hx : x ∈ U), F.presheaf.germ U x hx s = F.presheaf.germ U x hx t) : s = t := by
   -- We use `germ_eq` and the axiom of choice, to pick for every point `x` a neighbourhood
   -- `V x`, such that the restrictions of `s` and `t` to `V x` coincide.
@@ -478,8 +476,17 @@ theorem app_injective_iff_stalkFunctor_map_injective {F : Sheaf C X} {G : Preshe
   ⟨fun h U => app_injective_of_stalkFunctor_map_injective f U fun x _ => h x,
     stalkFunctor_map_injective_of_app_injective f⟩
 
+end Concrete
+
+section HasForget
+
+variable {C} [HasForget C] [PreservesFilteredColimits (forget C)] [HasLimits C]
+variable [PreservesLimits (forget C)] [(forget C).ReflectsIsomorphisms]
+
 instance stalkFunctor_preserves_mono (x : X) :
     Functor.PreservesMonomorphisms (Sheaf.forget C X ⋙ stalkFunctor C x) :=
+  let _ := HasForget.toFunLike C
+  let _ := HasForget.toConcreteCategory C
   ⟨@fun _𝓐 _𝓑 f _ =>
     ConcreteCategory.mono_of_injective _ <|
       (app_injective_iff_stalkFunctor_map_injective f.1).mpr
@@ -496,6 +503,8 @@ theorem stalk_mono_of_mono {F G : Sheaf C X} (f : F ⟶ G) [Mono f] :
 
 theorem mono_of_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) [∀ x, Mono <| (stalkFunctor C x).map f.1] :
     Mono f :=
+  let _ := HasForget.toFunLike C
+  let _ := HasForget.toConcreteCategory C
   (Sheaf.Hom.mono_iff_presheaf_mono _ _ _).mpr <|
     (NatTrans.mono_iff_mono_app _).mpr fun U =>
       (ConcreteCategory.mono_iff_injective_of_preservesPullback _).mpr <|
@@ -504,7 +513,17 @@ theorem mono_of_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) [∀ x, Mono <| (stal
 
 theorem mono_iff_stalk_mono {F G : Sheaf C X} (f : F ⟶ G) :
     Mono f ↔ ∀ x, Mono ((stalkFunctor C x).map f.1) :=
+  let _ := HasForget.toFunLike C
+  let _ := HasForget.toConcreteCategory C
   ⟨fun _ => stalk_mono_of_mono _, fun _ => mono_of_stalk_mono _⟩
+
+end HasForget
+
+section Concrete
+
+variable {C} {FC : C → C → Type*} {CC : C → Type v} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+variable [ConcreteCategory.{v} C FC CC] [PreservesFilteredColimits (forget C)] [HasLimits C]
+variable [PreservesLimits (forget C)] [(forget C).ReflectsIsomorphisms]
 
 /-- For surjectivity, we are given an arbitrary section `t` and need to find a preimage for it.
 We claim that it suffices to find preimages *locally*. That is, for each `x : U` we construct
@@ -512,8 +531,8 @@ a neighborhood `V ≤ U` and a section `s : F.obj (op V))` such that `f.app (op 
 agree on `V`. -/
 theorem app_surjective_of_injective_of_locally_surjective {F G : Sheaf C X} (f : F ⟶ G)
     (U : Opens X) (hinj : ∀ x ∈ U, Function.Injective ((stalkFunctor C x).map f.1))
-    (hsurj : ∀ (t x) (_ : x ∈ U), ∃ (V : Opens X) (_ : x ∈ V) (iVU : V ⟶ U) (s : F.1.obj (op V)),
-          f.1.app (op V) s = G.1.map iVU.op t) :
+    (hsurj : ∀ (t x) (_ : x ∈ U), ∃ (V : Opens X) (_ : x ∈ V) (iVU : V ⟶ U)
+      (s : CC (F.1.obj (op V))), f.1.app (op V) s = G.1.map iVU.op t) :
     Function.Surjective (f.1.app (op U)) := by
   conv at hsurj =>
     enter [t]
@@ -570,13 +589,22 @@ theorem app_bijective_of_stalkFunctor_map_bijective {F G : Sheaf C X} (f : F ⟶
   ⟨app_injective_of_stalkFunctor_map_injective f.1 U fun x hx => (h x hx).1,
     app_surjective_of_stalkFunctor_map_bijective f U h⟩
 
+end Concrete
+
+section HasForget
+
+variable {C} [HasForget C] [PreservesFilteredColimits (forget C)] [HasLimits C]
+variable [PreservesLimits (forget C)] [(forget C).ReflectsIsomorphisms]
+
 theorem app_isIso_of_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) (U : Opens X)
     [∀ x : U, IsIso ((stalkFunctor C x.val).map f.1)] : IsIso (f.1.app (op U)) := by
+  let _ := HasForget.toFunLike
+  let _ := HasForget.toConcreteCategory
   -- Since the forgetful functor of `C` reflects isomorphisms, it suffices to see that the
   -- underlying map between types is an isomorphism, i.e. bijective.
   suffices IsIso ((forget C).map (f.1.app (op U))) by
     exact isIso_of_reflects_iso (f.1.app (op U)) (forget C)
-  rw [isIso_iff_bijective]
+  rw [isIso_iff_bijective, forget_eq_ConcreteCategory_hom]
   apply app_bijective_of_stalkFunctor_map_bijective
   intro x hx
   apply (isIso_iff_bijective _).mp
@@ -608,6 +636,6 @@ theorem isIso_iff_stalkFunctor_map_iso {F G : Sheaf C X} (f : F ⟶ G) :
     @Functor.map_isIso _ _ _ _ _ _ (stalkFunctor C x) f.1 ((Sheaf.forget C X).map_isIso f),
    fun _ => isIso_of_stalkFunctor_map_iso f⟩
 
-end Concrete
+end HasForget
 
 end TopCat.Presheaf
