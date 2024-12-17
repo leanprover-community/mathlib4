@@ -168,6 +168,20 @@ instance comp [F.CommShift A] [G.CommShift A] : (F ⋙ G).CommShift A where
     simp only [comp_id, id_comp, assoc, ← Functor.map_comp_assoc, Iso.inv_hom_id_app, comp_obj]
     simp only [map_comp, assoc, commShiftIso_hom_naturality_assoc]
 
+variable {F G}
+
+@[simp]
+lemma commShiftIso_id_hom_app (a : A) (X : C) :
+    ((𝟭 C).commShiftIso a).hom.app X = 𝟙 _ := by
+  dsimp [commShiftIso, iso]
+  rw [id_comp]
+
+@[simp]
+lemma commShiftIso_id_inv_app (a : A) (X : C) :
+    ((𝟭 C).commShiftIso a).inv.app X = 𝟙 _ := by
+  dsimp [commShiftIso, iso]
+  rw [id_comp]
+
 end CommShift
 
 @[simp]
