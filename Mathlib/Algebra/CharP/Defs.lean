@@ -146,9 +146,11 @@ lemma «exists» : ∃ p, CharP R p :=
             of_not_not (not_not_of_not_imp <| Nat.find_spec (not_forall.1 H)),
             zero_mul]⟩⟩⟩
 
-lemma exists_unique : ∃! p, CharP R p :=
+lemma existsUnique : ∃! p, CharP R p :=
   let ⟨c, H⟩ := CharP.exists R
   ⟨c, H, fun _y H2 => CharP.eq R H2 H⟩
+
+@[deprecated (since := "2024-12-17")] alias exists_unique := existsUnique
 
 end NonAssocSemiring
 end CharP
