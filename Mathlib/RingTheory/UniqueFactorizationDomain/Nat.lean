@@ -15,8 +15,6 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 * `Nat.instUniqueFactorizationMonoid`: the natural numbers have unique factorization
 -/
 
-variable {α : Type*}
-
 namespace Nat
 
 instance instWfDvdMonoid : WfDvdMonoid ℕ where
@@ -29,7 +27,7 @@ instance instWfDvdMonoid : WfDvdMonoid ℕ where
       revert h
       simp [DvdNotUnit]
     cases b
-    · simpa [succ_ne_zero] using WithTop.coe_lt_top (a + 1)
+    · simpa [succ_ne_zero] using ENat.coe_lt_top (a + 1)
     cases' dvd_and_not_dvd_iff.2 h with h1 h2
     simp only [succ_ne_zero, cast_lt, if_false]
     refine lt_of_le_of_ne (Nat.le_of_dvd (Nat.succ_pos _) h1) fun con => h2 ?_
@@ -46,7 +44,7 @@ lemma factors_eq : ∀ n : ℕ, normalizedFactors n = n.primeFactorsList
     rw [← Multiset.rel_eq, ← associated_eq_eq]
     apply UniqueFactorizationMonoid.factors_unique irreducible_of_normalized_factor _
     · rw [Multiset.prod_coe, Nat.prod_primeFactorsList n.succ_ne_zero]
-      exact normalizedFactors_prod n.succ_ne_zero
+      exact prod_normalizedFactors n.succ_ne_zero
     · intro x hx
       rw [Nat.irreducible_iff_prime, ← Nat.prime_iff]
       exact Nat.prime_of_mem_primeFactorsList hx
@@ -55,7 +53,7 @@ lemma factors_multiset_prod_of_irreducible {s : Multiset ℕ} (h : ∀ x : ℕ, 
     normalizedFactors s.prod = s := by
   rw [← Multiset.rel_eq, ← associated_eq_eq]
   apply UniqueFactorizationMonoid.factors_unique irreducible_of_normalized_factor h
-    (normalizedFactors_prod _)
+    (prod_normalizedFactors _)
   rw [Ne, Multiset.prod_eq_zero_iff]
   exact fun con ↦ not_irreducible_zero (h 0 con)
 

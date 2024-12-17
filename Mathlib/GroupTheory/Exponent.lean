@@ -439,7 +439,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
     nth_rw 1 [← pow_one p]
     have : 1 = (Nat.factorization (orderOf (t ^ p ^ k))) p + 1 := by
      rw [hpk', Nat.factorization_div hpk]
-     simp [hp]
+     simp [k, hp]
     rw [this]
     -- Porting note: convert made to_additive complain
     apply Nat.pow_succ_factorization_not_dvd (hG.orderOf_pos <| t ^ p ^ k).ne' hp
@@ -644,7 +644,8 @@ lemma inv_eq_self_of_orderOf_eq_two {x : G} (hx : orderOf x = 2) :
 
 -- TODO: delete
 /-- Any group of exponent two is abelian. -/
-@[to_additive (attr := reducible, deprecated (since := "2024-02-17"))
+@[to_additive (attr := reducible,
+  deprecated "No deprecation message was provided." (since := "2024-02-17"))
   "Any additive group of exponent two is abelian."]
 def instCommGroupOfExponentTwo (hG : Monoid.exponent G = 2) : CommGroup G where
   mul_comm := mul_comm_of_exponent_two hG

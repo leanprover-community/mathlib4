@@ -70,12 +70,10 @@ theorem embeddingOfSubset_isometry (H : DenseRange x) : Isometry (embeddingOfSub
         rw [C]
         gcongr
       _ ≤ 2 * (e / 2) + dist (embeddingOfSubset x b) (embeddingOfSubset x a) := by
-        have : |embeddingOfSubset x b n - embeddingOfSubset x a n| ≤
-            dist (embeddingOfSubset x b) (embeddingOfSubset x a) := by
-          simp only [dist_eq_norm]
-          exact lp.norm_apply_le_norm ENNReal.top_ne_zero
-            (embeddingOfSubset x b - embeddingOfSubset x a) n
-        nlinarith
+        gcongr
+        simp only [dist_eq_norm]
+        exact lp.norm_apply_le_norm ENNReal.top_ne_zero
+          (embeddingOfSubset x b - embeddingOfSubset x a) n
       _ = dist (embeddingOfSubset x b) (embeddingOfSubset x a) + e := by ring
   simpa [dist_comm] using this
 
