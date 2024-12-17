@@ -204,13 +204,15 @@ lemma RelCWComplex.map_zero_mem_closedCell [RelCWComplex C D] (n : ℕ) (i : cel
     map n i 0 ∈ closedCell n i :=
   openCell_subset_closedCell _ _ (map_zero_mem_openCell _ _)
 
-/-- A non-standard definition of the `n`-skeleton of a CW complex for `n ∈ ℕ ∪ ∞` useful for
-  induction. The standard `skeleton` is defined in terms of `skeletonLT`. `skeletonLT` is preferred
+/-- A non-standard definition of the `n`-skeleton of a CW complex for `n ∈ ℕ ∪ {∞}`.
+  This allows the base case of induction to be about the base instead of being about the union of
+  the base and some points.
+  The standard `skeleton` is defined in terms of `skeletonLT`. `skeletonLT` is preferred
   in statements. You should then derive the statement about `skeleton`. -/
 def RelCWComplex.skeletonLT (C : Set X) {D : Set X} [RelCWComplex C D] (n : ℕ∞) : Set X :=
   D ∪ ⋃ (m : ℕ) (_ : m < n) (j : cell C m), closedCell m j
 
-/-- The `n`-skeleton of a CW complex, for `n ∈ ℕ ∪ ∞`. For statements use `skeletonLT` instead
+/-- The `n`-skeleton of a CW complex, for `n ∈ ℕ ∪ {∞}`. For statements use `skeletonLT` instead
   and then derive the statement about `skeleton`. -/
 def RelCWComplex.skeleton (C : Set X) {D : Set X} [RelCWComplex C D] (n : ℕ∞) : Set X :=
   skeletonLT C (n + 1)
