@@ -108,6 +108,7 @@ lemma inv_map_hom_map_of_iso {V W : Quiv} (e : V ≅ W) {X Y : V} (f : X ⟶ Y) 
     e.inv.map (e.hom.map f) = Quiver.homOfEq f (by simp) (by simp) :=
   hom_map_inv_map_of_iso e.symm f
 
+/-- An isomorphism of quivers defines an equivalence on hom types. -/
 @[simps]
 def homEquivOfIso {V W : Quiv} (e : V ≅ W) {X Y : V} :
     (X ⟶ Y) ≃ (e.hom.obj X ⟶ e.hom.obj Y) where
