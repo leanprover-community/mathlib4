@@ -105,7 +105,7 @@ theorem radical_dvd_self (a : M) : radical a ∣ a := by
   by_cases ha : a = 0
   · rw [ha]
     apply dvd_zero
-  · rw [radical, ← Finset.prod_val, ← (normalizedFactors_prod ha).dvd_iff_dvd_right]
+  · rw [radical, ← Finset.prod_val, ← (prod_normalizedFactors ha).dvd_iff_dvd_right]
     apply Multiset.prod_dvd_prod_of_le
     rw [primeFactors, Multiset.toFinset_val]
     apply Multiset.dedup_le
