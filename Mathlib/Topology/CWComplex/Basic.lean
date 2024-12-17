@@ -89,7 +89,7 @@ class RelCWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) (D : outPar
 
 
 /-- Characterizing when a subspace `C` of a topological space `X` is a CW complex. Note that this
-  requires `C` and `D` to be closed subspaces. If `C` is not closed choose `X` to be `C`. -/
+  requires `C` to be closed subspaces. If `C` is not closed choose `X` to be `C`. -/
 abbrev ClasCWComplex {X : Type*} [TopologicalSpace X] (C : Set X) := RelCWComplex C ∅
 
 /-- A constructor for `ClasCWComplex`. -/
