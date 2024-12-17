@@ -83,6 +83,45 @@ end Cat
 namespace Quiv
 
 section
+variable {V W : Quiv} (e : V ≅ W)
+
+/-- An isomorphism of quivers defines an equivalence on carrier types. -/
+@[simps]
+def equivOfIso : V ≃ W where
+  toFun := e.hom.obj
+  invFun := e.inv.obj
+  left_inv := Prefunctor.congr_obj e.hom_inv_id
+  right_inv := Prefunctor.congr_obj e.inv_hom_id
+
+@[simp]
+lemma inv_obj_hom_obj_of_iso (X : V) : e.inv.obj (e.hom.obj X) = X := (equivOfIso e).left_inv X
+
+@[simp]
+lemma hom_obj_inv_obj_of_iso (Y : W) : e.hom.obj (e.inv.obj Y) = Y := (equivOfIso e).right_inv Y
+
+lemma hom_map_inv_map_of_iso {V W : Quiv} (e : V ≅ W) {X Y : W} (f : X ⟶ Y) :
+    e.hom.map (e.inv.map f) = Quiver.homOfEq f (by simp) (by simp) := by
+  rw [← Prefunctor.comp_map]
+  exact (Prefunctor.congr_hom e.inv_hom_id.symm f).symm
+
+lemma inv_map_hom_map_of_iso {V W : Quiv} (e : V ≅ W) {X Y : V} (f : X ⟶ Y) :
+    e.inv.map (e.hom.map f) = Quiver.homOfEq f (by simp) (by simp) :=
+  hom_map_inv_map_of_iso e.symm f
+
+@[simps]
+def homEquivOfIso {V W : Quiv} (e : V ≅ W) {X Y : V} :
+    (X ⟶ Y) ≃ (e.hom.obj X ⟶ e.hom.obj Y) where
+  toFun f := e.hom.map f
+  invFun g := Quiver.homOfEq (e.inv.map g) (by simp) (by simp)
+  left_inv f := by
+    simp only [inv_map_hom_map_of_iso, Quiver.homOfEq_trans, Quiver.homOfEq_rfl]
+  right_inv g := by
+    simp only [hom_map_inv_map_of_iso, Prefunctor.homOfEq_map, Quiver.homOfEq_trans,
+      Quiver.homOfEq_rfl]
+
+end
+
+section
 variable {V W : Type u } [Quiver V] [Quiver W]
   (e : V ≃ W) (he : ∀ X Y : V, (X ⟶ Y) ≃ (e X ⟶ e Y))
 
@@ -109,6 +148,7 @@ def isoOfEquiv : Quiv.of V ≅ Quiv.of W where
   inv_hom_id := Prefunctor.ext' e.right_inv (by simp [Quiv.id_eq_id, Quiv.comp_eq_comp])
 
 end
+
 /-- Any prefunctor into a category lifts to a functor from the path category. -/
 @[simps]
 def lift {V : Type u} [Quiver.{v + 1} V] {C : Type*} [Category C] (F : Prefunctor V C) :

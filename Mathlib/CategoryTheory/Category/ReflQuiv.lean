@@ -82,27 +82,14 @@ def isoOfQuivIso {V W : Type u} [ReflQuiver.{v + 1} V] [ReflQuiver.{v + 1} W]
     (h_id : ∀ (X : V), e.hom.map (𝟙rq X) = ReflQuiver.id (obj := W) (e.hom.obj X)) :
     ReflQuiv.of V ≅ ReflQuiv.of W where
   hom := ReflPrefunctor.mk e.hom h_id
-  inv := by
-    refine ReflPrefunctor.mk e.inv ?_
-    intro Y
-    have : Quiver.homOfEq (e.inv.map (e.hom.map _)) _ _ = (𝟭q _).map _ :=
-      Prefunctor.congr_hom e.hom_inv_id (ReflQuiver.id (obj := V) (e.inv.obj Y))
-    simp only [Prefunctor.id_obj, Prefunctor.id_map] at this
-    rw [congrArg e.inv.map (h_id (e.inv.obj Y))] at this
-    rw [← this]
-    have hY : e.hom.obj (e.inv.obj Y) = Y := by
-      rw [← Prefunctor.comp_obj]
-      show (e.inv ≫ e.hom).obj _ = _
-      rw [e.inv_hom_id, Quiv.id_eq_id, Prefunctor.id_obj]
-    rw [← Prefunctor.homOfEq_map _ _ hY hY]
-    simp only [of_val, ReflQuiver.homOfEq_id]
+  inv := ReflPrefunctor.mk e.inv
+    (fun Y => (Quiv.homEquivOfIso e).injective (by simp [Quiv.hom_map_inv_map_of_iso, h_id]))
   hom_inv_id := by
     apply forgetToQuiv.map_injective
     exact e.hom_inv_id
   inv_hom_id := by
     apply forgetToQuiv.map_injective
     exact e.inv_hom_id
-
 
 section
 variable {V W : Type u } [ReflQuiver.{v + 1} V] [ReflQuiver.{v + 1} W]
