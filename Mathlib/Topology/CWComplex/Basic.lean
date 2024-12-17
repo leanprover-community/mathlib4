@@ -452,7 +452,7 @@ lemma RelCWComplex.iUnion_openCell_eq_level [RelCWComplex C D] (n : ℕ∞) :
     D ∪ ⋃ (m : ℕ) (_ : m < n + 1) (j : cell C m), openCell m j = level C n :=
   iUnion_openCell_eq_levelaux _
 
-lemma ClasCWComplex.iUnion_openCell_eq_levelAB [ClasCWComplex C] (n : ℕ∞) :
+lemma ClasCWComplex.iUnion_openCell_eq_level [ClasCWComplex C] (n : ℕ∞) :
     ⋃ (m : ℕ) (_ : m < n + 1) (j : cell C m), openCell m j = level C n :=
   ClasCWComplex.iUnion_openCell_eq_levelaux _
 
@@ -659,7 +659,7 @@ lemma RelCWComplex.cellFrontier_subset_finite_openCell [RelCWComplex C D] (n : �
 
 /-- A version of `cellFrontier_subset_finite_closedCell` using open cells: The boundary of a cell is
   contained in a finite union of open cells of a lower dimension. -/
-lemma ClasCWComplex.cellFrontier_subset_finite_openCellAB [ClasCWComplex C] (n : ℕ) (i : cell C n) :
+lemma ClasCWComplex.cellFrontier_subset_finite_openCell [ClasCWComplex C] (n : ℕ) (i : cell C n) :
     ∃ I : Π m, Finset (cell C m),
     cellFrontier n i ⊆ ⋃ (m < n) (j ∈ I m), openCell m j := by
   have := RelCWComplex.cellFrontier_subset_finite_openCell n i
