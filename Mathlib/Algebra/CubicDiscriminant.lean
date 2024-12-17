@@ -40,8 +40,6 @@ structure Cubic (R : Type*) where
 
 namespace Cubic
 
-open Cubic Polynomial
-
 open Polynomial
 
 variable {R S F K : Type*}
@@ -194,7 +192,6 @@ theorem leadingCoeff_of_c_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) :
     P.toPoly.leadingCoeff = P.d := by
   rw [of_c_eq_zero ha hb hc, leadingCoeff_C]
 
--- @[simp] -- porting note (#10618): simp can prove this
 theorem leadingCoeff_of_c_eq_zero' : (toPoly ⟨0, 0, 0, d⟩).leadingCoeff = d :=
   leadingCoeff_of_c_eq_zero rfl rfl rfl
 
@@ -304,7 +301,6 @@ theorem degree_of_d_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) (hd : P
     P.toPoly.degree = ⊥ := by
   rw [of_d_eq_zero ha hb hc hd, degree_zero]
 
--- @[simp] -- porting note (#10618): simp can prove this
 theorem degree_of_d_eq_zero' : (⟨0, 0, 0, 0⟩ : Cubic R).toPoly.degree = ⊥ :=
   degree_of_d_eq_zero rfl rfl rfl rfl
 
@@ -354,7 +350,6 @@ theorem natDegree_of_c_eq_zero (ha : P.a = 0) (hb : P.b = 0) (hc : P.c = 0) :
     P.toPoly.natDegree = 0 := by
   rw [of_c_eq_zero ha hb hc, natDegree_C]
 
--- @[simp] -- porting note (#10618): simp can prove this
 theorem natDegree_of_c_eq_zero' : (toPoly ⟨0, 0, 0, d⟩).natDegree = 0 :=
   natDegree_of_c_eq_zero rfl rfl rfl
 
@@ -473,12 +468,8 @@ def disc {R : Type*} [Ring R] (P : Cubic R) : R :=
 
 theorem disc_eq_prod_three_roots (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :
     φ P.disc = (φ P.a * φ P.a * (x - y) * (x - z) * (y - z)) ^ 2 := by
-  simp only [disc, RingHom.map_add, RingHom.map_sub, RingHom.map_mul, map_pow]
-  -- Porting note: Replaced `simp only [RingHom.map_one, map_bit0, map_bit1]` with f4, f18, f27
-  have f4 : φ 4 = 4 := map_natCast φ 4
-  have f18 : φ 18 = 18 := map_natCast φ 18
-  have f27 : φ 27 = 27 := map_natCast φ 27
-  rw [f4, f18, f27, b_eq_three_roots ha h3, c_eq_three_roots ha h3, d_eq_three_roots ha h3]
+  simp only [disc, RingHom.map_add, RingHom.map_sub, RingHom.map_mul, map_pow, map_ofNat]
+  rw [b_eq_three_roots ha h3, c_eq_three_roots ha h3, d_eq_three_roots ha h3]
   ring1
 
 theorem disc_ne_zero_iff_roots_ne (ha : P.a ≠ 0) (h3 : (map φ P).roots = {x, y, z}) :

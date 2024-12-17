@@ -3,9 +3,9 @@ Copyright (c) 2024 Yoh Tanimoto. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yoh Tanimoto
 -/
+import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.ContinuousMap.CocompactMap
 import Mathlib.Topology.ContinuousMap.ZeroAtInfty
-import Mathlib.Topology.Support
 
 /-!
 # Compactly supported continuous functions
@@ -447,8 +447,6 @@ theorem zero_comp (g : β →co γ) : (0 : C_c(γ, δ)).comp g = 0 :=
 
 end
 
-variable [T2Space γ]
-
 /-- Composition as an additive monoid homomorphism. -/
 def compAddMonoidHom [AddMonoid δ] [ContinuousAdd δ] (g : β →co γ) : C_c(γ, δ) →+ C_c(β, δ) where
   toFun f := f.comp g
@@ -524,3 +522,25 @@ instance : ZeroAtInftyContinuousMapClass F β γ where
 end ZeroAtInfty
 
 end CompactlySupportedContinuousMapClass
+
+section NonnegativePart
+
+open NNReal
+
+namespace CompactlySupportedContinuousMap
+
+/-- The nonnegative part of a bounded continuous `ℝ`-valued function as a bounded
+continuous `ℝ≥0`-valued function. -/
+noncomputable def nnrealPart (f : C_c(α, ℝ)) : C_c(α, ℝ≥0) where
+  toFun := Real.toNNReal.comp f.toFun
+  continuous_toFun := Continuous.comp continuous_real_toNNReal f.continuous
+  hasCompactSupport' := by
+    apply HasCompactSupport.comp_left f.hasCompactSupport' Real.toNNReal_zero
+
+@[simp]
+lemma nnrealPart_apply (f : C_c(α, ℝ)) (x : α) :
+    f.nnrealPart x = Real.toNNReal (f x) := rfl
+
+end CompactlySupportedContinuousMap
+
+end NonnegativePart

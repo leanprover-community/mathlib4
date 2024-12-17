@@ -69,7 +69,7 @@ open scoped ENNReal Topology MeasureTheory
 
 namespace MeasureTheory
 
-variable {α F F' 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
+variable {α F F' 𝕜 : Type*} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- F' for integrals on a Lp submodule
   [NormedAddCommGroup F']

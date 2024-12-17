@@ -48,7 +48,7 @@ noncomputable section
 
 namespace MeasureTheory
 
-variable {E : Type*} [MeasurableSpace E] {m : Measure E} {μ : Measure E}
+variable {E : Type*} [MeasurableSpace E] {μ : Measure E}
 
 namespace pdf
 
@@ -206,7 +206,7 @@ end MeasureTheory
 
 namespace PMF
 
-variable {α β γ : Type*}
+variable {α : Type*}
 
 open scoped Classical NNReal ENNReal
 

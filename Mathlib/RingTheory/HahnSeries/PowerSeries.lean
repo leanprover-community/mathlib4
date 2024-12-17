@@ -118,7 +118,7 @@ theorem ofPowerSeries_C (r : R) : ofPowerSeries Γ R (PowerSeries.C R r) = HahnS
     simp only [not_exists, Set.mem_image, toPowerSeries_symm_apply_coeff, mem_support,
       PowerSeries.coeff_C]
     intro
-    simp (config := { contextual := true }) [Ne.symm hn]
+    simp +contextual [Ne.symm hn]
 
 @[simp]
 theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
@@ -131,7 +131,7 @@ theorem ofPowerSeries_X : ofPowerSeries Γ R PowerSeries.X = single 1 1 := by
     simp only [not_exists, Set.mem_image, toPowerSeries_symm_apply_coeff, mem_support,
       PowerSeries.coeff_X]
     intro
-    simp (config := { contextual := true }) [Ne.symm hn]
+    simp +contextual [Ne.symm hn]
 
 theorem ofPowerSeries_X_pow {R} [Semiring R] (n : ℕ) :
     ofPowerSeries Γ R (PowerSeries.X ^ n) = single (n : Γ) 1 := by

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+import Mathlib.MeasureTheory.MeasurableSpace.Prod
 
 /-!
 # Borel (measurable) spaces ℝ, ℝ≥0, ℝ≥0∞
@@ -280,7 +281,7 @@ theorem measurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
     exact ((lim y).comp hx).liminf_eq
   rw [← this]
   show Measurable fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop
-  exact measurable_liminf fun n => hf (x n)
+  exact .liminf fun n => hf (x n)
 
 @[deprecated (since := "2024-03-09")] alias
 _root_.measurable_of_tendsto_ennreal' := ENNReal.measurable_of_tendsto'
@@ -308,7 +309,7 @@ lemma aemeasurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
   set aeSeqLim := fun x ↦ ite (x ∈ aeSeqSet h'f p) (g x) (⟨f (v 0) x⟩ : Nonempty ℝ≥0∞).some
   refine ⟨aeSeqLim, measurable_of_tendsto' atTop (aeSeq.measurable h'f p)
     (tendsto_pi_nhds.mpr fun x ↦ ?_), ?_⟩
-  · unfold_let aeSeqLim
+  · unfold aeSeqLim
     simp_rw [aeSeq]
     split_ifs with hx
     · simp_rw [aeSeq.mk_eq_fun_of_mem_aeSeqSet h'f hx]
@@ -360,8 +361,7 @@ theorem AEMeasurable.ennreal_toReal {f : α → ℝ≥0∞} {μ : Measure α} (h
 theorem Measurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
     Measurable fun x => ∑' i, f i x := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
-  apply measurable_iSup
-  exact fun s => s.measurable_sum fun i _ => h i
+  exact .iSup fun s ↦ s.measurable_sum fun i _ => h i
 
 @[measurability, fun_prop]
 theorem Measurable.ennreal_tsum' {ι} [Countable ι] {f : ι → α → ℝ≥0∞} (h : ∀ i, Measurable (f i)) :
@@ -379,8 +379,7 @@ theorem Measurable.nnreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0} (
 theorem AEMeasurable.ennreal_tsum {ι} [Countable ι] {f : ι → α → ℝ≥0∞} {μ : Measure α}
     (h : ∀ i, AEMeasurable (f i) μ) : AEMeasurable (fun x => ∑' i, f i x) μ := by
   simp_rw [ENNReal.tsum_eq_iSup_sum]
-  apply aemeasurable_iSup
-  exact fun s => Finset.aemeasurable_sum s fun i _ => h i
+  exact .iSup fun s ↦ Finset.aemeasurable_sum s fun i _ => h i
 
 @[measurability, fun_prop]
 theorem AEMeasurable.nnreal_tsum {α : Type*} {_ : MeasurableSpace α} {ι : Type*} [Countable ι]
@@ -466,6 +465,72 @@ theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0} {g : α → ℝ≥0} 
 _root_.measurable_of_tendsto_nnreal := NNReal.measurable_of_tendsto
 
 end NNReal
+
+namespace EReal
+
+lemma measurableEmbedding_coe : MeasurableEmbedding Real.toEReal :=
+  isOpenEmbedding_coe.measurableEmbedding
+
+instance : MeasurableAdd₂ EReal := ⟨EReal.lowerSemicontinuous_add.measurable⟩
+
+section MeasurableMul
+
+variable {α β γ : Type*} {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
+
+lemma measurable_of_real_prod {f : EReal × β → γ}
+    (h_real : Measurable fun p : ℝ × β ↦ f (p.1, p.2))
+    (h_bot : Measurable fun x ↦ f (⊥, x)) (h_top : Measurable fun x ↦ f (⊤, x)) : Measurable f :=
+  .of_union₃_range_cover (measurableEmbedding_prod_mk_left _) (measurableEmbedding_prod_mk_left _)
+    (measurableEmbedding_coe.prodMap .id) (by simp [-univ_subset_iff, subset_def, EReal.forall])
+    h_bot h_top h_real
+
+lemma measurable_of_real_real {f : EReal × EReal → β}
+    (h_real : Measurable fun p : ℝ × ℝ ↦ f (p.1, p.2))
+    (h_bot_left : Measurable fun r : ℝ ↦ f (⊥, r))
+    (h_top_left : Measurable fun r : ℝ ↦ f (⊤, r))
+    (h_bot_right : Measurable fun r : ℝ ↦ f (r, ⊥))
+    (h_top_right : Measurable fun r : ℝ ↦ f (r, ⊤)) :
+    Measurable f := by
+  refine measurable_of_real_prod ?_ ?_ ?_
+  · refine measurable_swap_iff.mp <| measurable_of_real_prod ?_ h_bot_right h_top_right
+    exact h_real.comp measurable_swap
+  · exact measurable_of_measurable_real h_bot_left
+  · exact measurable_of_measurable_real h_top_left
+
+private lemma measurable_const_mul (c : EReal) : Measurable fun (x : EReal) ↦ c * x := by
+  refine measurable_of_measurable_real ?_
+  have h1 : (fun (p : ℝ) ↦ (⊥ : EReal) * p)
+      = fun p ↦ if p = 0 then (0 : EReal) else (if p < 0 then ⊤ else ⊥) := by
+    ext p
+    split_ifs with h1 h2
+    · simp [h1]
+    · rw [bot_mul_coe_of_neg h2]
+    · rw [bot_mul_coe_of_pos]
+      exact lt_of_le_of_ne (not_lt.mp h2) (Ne.symm h1)
+  have h2 : Measurable fun (p : ℝ) ↦ if p = 0 then (0 : EReal) else if p < 0 then ⊤ else ⊥ := by
+    refine Measurable.piecewise (measurableSet_singleton _) measurable_const ?_
+    exact Measurable.piecewise measurableSet_Iio measurable_const measurable_const
+  induction c with
+  | h_bot => rwa [h1]
+  | h_real c => exact (measurable_id.const_mul _).coe_real_ereal
+  | h_top =>
+    simp_rw [← neg_bot, neg_mul]
+    apply Measurable.neg
+    rwa [h1]
+
+instance : MeasurableMul₂ EReal := by
+  refine ⟨measurable_of_real_real ?_ ?_ ?_ ?_ ?_⟩
+  · exact (measurable_fst.mul measurable_snd).coe_real_ereal
+  · exact (measurable_const_mul _).comp measurable_coe_real_ereal
+  · exact (measurable_const_mul _).comp measurable_coe_real_ereal
+  · simp_rw [mul_comm _ ⊥]
+    exact (measurable_const_mul _).comp measurable_coe_real_ereal
+  · simp_rw [mul_comm _ ⊤]
+    exact (measurable_const_mul _).comp measurable_coe_real_ereal
+
+end MeasurableMul
+
+end EReal
 
 /-- If a function `f : α → ℝ≥0` is measurable and the measure is σ-finite, then there exists
 spanning measurable sets with finite measure on which `f` is bounded.
