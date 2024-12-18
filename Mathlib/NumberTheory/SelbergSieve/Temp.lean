@@ -62,6 +62,21 @@ theorem ite_prod_one {R ι : Type*} [CommMonoid R] {p : Prop} [Decidable p] (s :
     (if p then (∏ x in s, f x) else 1) = ∏ x in s, if p then f x else 1 := by
   split_ifs <;> simp
 
+@[to_additive]
+theorem prod_filter_prod {R ι ι' : Type*} [CommMonoid R] {p : ι → Prop}
+    [DecidablePred p] (s : Finset ι) (t : ι → Finset ι')
+    (f : ι → ι' → R) :
+    ∏ x ∈ s with p x, ∏ y ∈ t x, f x y = ∏ x ∈ s, ∏ y ∈ t x with p x, f x y := by
+  simp_rw [prod_filter, ite_prod_one]
+
+@[to_additive]
+theorem prod_filter_prod_filter {R ι ι' : Type*} [CommMonoid R] {p : ι → Prop} {q : ι → ι' → Prop}
+    [DecidablePred p] [∀ i, DecidablePred (q i)] (s : Finset ι) (t : ι → Finset ι')
+    (f : ι → ι' → R) :
+    ∏ x ∈ s with p x, ∏ y ∈ t x with q x y, f x y = ∏ x ∈ s, ∏ y ∈ t x with q x y ∧ p x, f x y := by
+  simp_rw [prod_filter_prod, Finset.filter_filter]
+
+
 --basic
 theorem conv_lambda_sq_larger_sum (f : ℕ → ℕ → ℕ → ℝ) (n : ℕ) :
     (∑ d in n.divisors,
@@ -72,14 +87,13 @@ theorem conv_lambda_sq_larger_sum (f : ℕ → ℕ → ℕ → ℝ) (n : ℕ) :
           ∑ d2 in n.divisors, if d = Nat.lcm d1 d2 then f d1 d2 d else 0 := by
   apply sum_congr rfl; intro d hd
   rw [mem_divisors] at hd
-  simp_rw [←Nat.divisors_filter_dvd_of_dvd hd.2 hd.1, sum_filter, ←ite_and, ite_sum_zero, ←ite_and]
+  simp_rw [←Nat.divisors_filter_dvd_of_dvd hd.2 hd.1, ← sum_filter, Finset.filter_filter,
+    sum_filter_sum_filter]
   congr with d1
   congr with d2
-  congr
-  rw [eq_iff_iff]
-  refine ⟨fun ⟨_, _, h⟩ ↦ h, ?_⟩
+  refine ⟨fun ⟨⟨_, h⟩, _, _⟩ ↦ h, ?_⟩
   rintro rfl
-  exact ⟨Nat.dvd_lcm_left d1 d2, Nat.dvd_lcm_right d1 d2, rfl⟩
+  exact ⟨⟨Nat.dvd_lcm_right d1 d2, rfl⟩, Nat.dvd_lcm_left d1 d2⟩
 
 --selberg
 theorem moebius_inv_dvd_lower_bound (l m : ℕ) (hm : Squarefree m) :

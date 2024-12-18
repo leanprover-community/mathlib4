@@ -186,25 +186,17 @@ theorem selbergWeights_diagonalisation (l : ℕ) (hl : l ∈ divisors P) :
       if l ^ 2 ≤ y then g l * μ l * S⁻¹ else 0 := by
   calc
     (∑ d ∈ divisors P, if l ∣ d then ν d * γ d else 0) =
-        ∑ d ∈ divisors P, ∑ k ∈ divisors P,
-          if l ∣ d ∧ d ∣ k ∧ k ^ 2 ≤ y then g k * S⁻¹ * (μ d:ℝ) else 0 := by
-      apply sum_congr rfl; intro d _
-      rw [selbergWeights_eq_dvds_sum, ← boole_mul, mul_sum, mul_sum]
-      apply sum_congr rfl; intro k _
-      rw [mul_ite_zero, ite_zero_mul_ite_zero]
-      apply if_ctx_congr Iff.rfl _ (fun _ => rfl);
-      intro _; ring
-    _ = ∑ k ∈ divisors P, if k ^ 2 ≤ y then
+      ∑ k ∈ divisors P, if k ^ 2 ≤ y then
             (∑ d ∈ divisors P, if l ∣ d ∧ d ∣ k then (μ d:ℝ) else 0) * g k * S⁻¹
           else 0 := by
-      rw [sum_comm]; apply sum_congr rfl; intro k _
-      apply symm
-      rw [← boole_mul, sum_mul, sum_mul, mul_sum, sum_congr rfl]
-      intro d _
-      rw [ite_zero_mul, ite_zero_mul, ite_zero_mul, one_mul, ←ite_and]
-      apply if_ctx_congr _ _ (fun _ => rfl)
-      · tauto
-      intro _; ring
+      simp_rw [selbergWeights_eq_dvds_sum, ← sum_filter, mul_sum, sum_mul, sum_filter_sum,
+        filter_filter, sum_filter]
+      rw [sum_comm]
+      congr with d
+      simp_rw [← sum_filter]
+      apply sum_congr
+      · ext x; simp only [mem_filter, mem_divisors, ne_eq, and_congr_right_iff, and_imp]; tauto
+      intros; ring
     _ = if l ^ 2 ≤ y then g l * μ l * S⁻¹ else 0 := by
       rw [← sum_ite_eq_of_mem'
         (b:=fun _ => if l^2 ≤ y then g l * μ l * S⁻¹ else 0) (divisors P) l hl]
