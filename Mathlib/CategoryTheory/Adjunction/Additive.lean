@@ -1,4 +1,14 @@
+/-
+Copyright (c) 2024 Sophie Morel. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Sophie More, Joël Riou
+-/
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
+
+/-!
+Doc doc.
+
+-/
 
 universe u₁ u₂ v₁ v₂
 
