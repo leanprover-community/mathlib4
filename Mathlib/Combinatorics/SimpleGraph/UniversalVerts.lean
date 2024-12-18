@@ -52,7 +52,7 @@ lemma Subgraph.IsMatching.exists_of_universalVerts [Fintype V] {s : Set V}
         (Set.mem_Iio.mpr t.toFinite.lt_aleph0) ht.2.symm
     exact Classical.arbitrary _
   have hd := (Set.disjoint_of_subset_left ht.1 h).symm
-  have hadj : ∀ (v : ↑s), G.Adj v (f v) := by
+  have hadj : ∀ (v : s), G.Adj v (f v) := by
     intro v
     have : ((f v) : V) ∈ G.universalVerts := ht.1 (f v).coe_prop
     simp only [universalVerts, Set.mem_setOf_eq] at this
