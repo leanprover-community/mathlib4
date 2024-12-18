@@ -6,7 +6,7 @@ Authors: Floris van Doorn, Patrick Massot
 import Mathlib.Algebra.GroupWithZero.Indicator
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Topology.Separation.Regular
+import Mathlib.Topology.Separation.Hausdorff
 
 /-!
 # The topological support of a function
