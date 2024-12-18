@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel, Joël Riou
 -/
 import Mathlib.CategoryTheory.Shift.CommShift
-import Mathlib.CategoryTheory.Adjunction.Unique
+import Mathlib.CategoryTheory.Adjunction.Mates
 
 /-!
 # Adjoints commute with shifts
