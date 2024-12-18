@@ -130,7 +130,7 @@ noncomputable def commShiftOp [CommShift F A] :
   zero := by
     simp only
     rw [commShiftIso_zero]
-    ext _
+    ext
     simp only [op_obj, comp_obj, Iso.symm_hom, NatIso.op_inv, NatTrans.op_app,
       CommShift.isoZero_inv_app, op_comp, CommShift.isoZero_hom_app, op_map]
     erw [oppositeShiftFunctorZero_inv_app, oppositeShiftFunctorZero_hom_app]
