@@ -672,6 +672,7 @@ import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Algebra.Order.Group.Lattice
 import Mathlib.Algebra.Order.Group.MinMax
+import Mathlib.Algebra.Order.Group.Multiset
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Group.Opposite
 import Mathlib.Algebra.Order.Group.OrderIso
