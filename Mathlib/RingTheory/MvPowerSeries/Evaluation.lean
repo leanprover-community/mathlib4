@@ -12,7 +12,7 @@ import Mathlib.Topology.Algebra.Algebra
 import Mathlib.Topology.Algebra.TopologicallyNilpotent
 import Mathlib.Topology.Algebra.UniformRing
 
-/-! # Evaluation of (multivariate) power series
+/-! # Evaluation of multivariate power series
 
 Let `σ`, `R` `S` be types, with `CommRing R`, `CommRing S`.
 One assumes that `TopologicalRing R` and `UniformAddGroup R`,
@@ -65,7 +65,7 @@ structure EvalDomain (a : σ → S) : Prop where
   tendsto_zero : Tendsto a cofinite (nhds 0)
 
 /-- The domain of evaluation of `MvPowerSeries`, as an ideal -/
-def EvalDomain_ideal [TopologicalRing S] [LinearTopology S] :
+def EvalDomain_ideal [TopologicalRing S] [IsLinearTopology S] :
     Ideal (σ → S) where
   carrier := setOf EvalDomain
   add_mem' {a} {b} ha hb := {
@@ -83,8 +83,8 @@ def EvalDomain_ideal [TopologicalRing S] [LinearTopology S] :
   smul_mem' c {x} hx := {
     hpow := fun s ↦ by
       simp only [IsTopologicallyNilpotent, Pi.smul_apply', smul_eq_mul, mul_pow]
-      exact LinearTopology.tendsto_zero_mul _ _ (hx.hpow s)
-    tendsto_zero := LinearTopology.tendsto_zero_mul _ _ hx.tendsto_zero }
+      exact IsLinearTopology.tendsto_mul_zero_of_right _ _ (hx.hpow s)
+    tendsto_zero := IsLinearTopology.tendsto_mul_zero_of_right _ _ hx.tendsto_zero }
 
 theorem EvalDomain.comp {a : σ → R} (ha : EvalDomain a) {ε : R →+* S} (hε : Continuous ε) :
     EvalDomain (ε ∘ a) := by
@@ -165,14 +165,14 @@ variable {a : σ → S}
 
 /- The coercion of polynomials into power series is uniformly continuous. -/
 theorem _root_.MvPolynomial.coeToMvPowerSeries_uniformContinuous
-    [UniformAddGroup R] [UniformAddGroup S] [TopologicalRing S] [LinearTopology S]
+    [UniformAddGroup R] [UniformAddGroup S] [TopologicalRing S] [IsLinearTopology S]
     (hφ : Continuous φ) (ha : EvalDomain a):
     UniformContinuous (MvPolynomial.eval₂Hom φ a) := by
   classical
   apply uniformContinuous_of_continuousAt_zero
   intro u hu
   simp only [coe_eval₂Hom, (induced_iff_nhds_eq _).mp rfl, coe_zero, mem_map, mem_comap]
-  rw [map_zero, LinearTopology.mem_nhds_zero_iff] at hu
+  rw [map_zero, IsLinearTopology.hasBasis_ideal.mem_iff] at hu
   rcases hu with ⟨I, hI, hI'⟩
   let tendsto_zero := ha.tendsto_zero
   let hpow := ha.hpow
@@ -259,7 +259,7 @@ theorem eval₂_X (s : σ) :
 
 variable [TopologicalSemiring R] [UniformAddGroup R]
     [UniformAddGroup S] [CompleteSpace S] [T2Space S]
-    [TopologicalRing S] [LinearTopology S]
+    [TopologicalRing S] [IsLinearTopology S]
 
 variable {φ a}
 
@@ -324,7 +324,7 @@ theorem eval₂_unique (hφ : Continuous φ) (ha : EvalDomain a)
 
 theorem comp_eval₂ (hφ : Continuous φ) (ha : EvalDomain a)
     {T : Type*} [UniformSpace T] [CompleteSpace T] [T2Space T]
-    [CommRing T] [TopologicalRing T] [LinearTopology T] [UniformAddGroup T]
+    [CommRing T] [TopologicalRing T] [IsLinearTopology T] [UniformAddGroup T]
     {ε : S →+* T} (hε : Continuous ε) :
     ε ∘ eval₂ φ a = eval₂ (ε.comp φ) (ε ∘ a) := by
   rw [← coe_eval₂Hom hφ ha, ← coe_comp]
@@ -390,8 +390,9 @@ theorem aeval_eq_sum (ha : EvalDomain a) (f : MvPowerSeries σ R) :
   (hasSum_aeval ha f).tsum_eq.symm
 
 theorem comp_aeval (ha : EvalDomain a)
-    {T : Type*} [CommRing T] [UniformSpace T] [CompleteSpace T] [UniformAddGroup T] [T2Space T]
-    [TopologicalRing T] [LinearTopology T] [Algebra R T] [ContinuousSMul R T]
+    {T : Type*} [CommRing T] [UniformSpace T] [UniformAddGroup T]
+    [TopologicalRing T] [IsLinearTopology T]
+    [T2Space T] [TopologicalRing T] [Algebra R T] [ContinuousSMul R T] [CompleteSpace T]
     {ε : S →ₐ[R] T} (hε : Continuous ε) :
     ε.comp (aeval ha) = aeval (ha.map hε)  := by
   apply DFunLike.coe_injective

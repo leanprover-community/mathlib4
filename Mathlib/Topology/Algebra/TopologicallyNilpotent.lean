@@ -10,10 +10,12 @@ import Mathlib.RingTheory.Ideal.Basic
 
 open Filter
 
+open scoped Topology
+
 /-- An element is topologically nilpotent if its powers converge to `0`. -/
 def IsTopologicallyNilpotent
     {α : Type*} [Semiring α] [TopologicalSpace α] (a : α) : Prop :=
-  Tendsto (fun n : ℕ => a ^ n) atTop (nhds 0)
+  Tendsto (fun n : ℕ => a ^ n) atTop (𝓝 0)
 
 namespace IsTopologicallyNilpotent
 
@@ -30,12 +32,12 @@ theorem zero [Semiring α] :
     IsTopologicallyNilpotent (0 : α) := tendsto_atTop_of_eventually_const (i₀ := 1)
     (fun _ hi => by rw [zero_pow (Nat.ne_zero_iff_zero_lt.mpr hi)])
 
-variable [CommRing α] [TopologicalRing α] [LinearTopology α]
+variable [CommRing α] [TopologicalRing α] [IsLinearTopology α]
 
 theorem mul_right {a : α} (ha : IsTopologicallyNilpotent a) (b : α) :
     IsTopologicallyNilpotent (a * b) := by
   intro v hv
-  rw [LinearTopology.mem_nhds_zero_iff] at hv
+  rw [IsLinearTopology.hasBasis_ideal.mem_iff] at hv
   rcases hv with ⟨I, I_mem_nhds, I_subset⟩
   specialize ha I_mem_nhds
   simp only [mem_map, mem_atTop_sets, ge_iff_le, Set.mem_preimage, SetLike.mem_coe] at ha ⊢
@@ -52,7 +54,7 @@ theorem mul_right {a : α} (ha : IsTopologicallyNilpotent a) (b : α) :
 theorem add {a b : α} (ha : IsTopologicallyNilpotent a) (hb : IsTopologicallyNilpotent b) :
     IsTopologicallyNilpotent (a + b) := by
   intro v hv
-  rw [LinearTopology.mem_nhds_zero_iff] at hv
+  rw [IsLinearTopology.hasBasis_ideal.mem_iff] at hv
   rcases hv with ⟨I, I_mem_nhds, I_subset⟩
   specialize ha I_mem_nhds
   specialize hb I_mem_nhds
