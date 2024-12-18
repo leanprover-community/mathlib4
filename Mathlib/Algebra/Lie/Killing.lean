@@ -38,7 +38,7 @@ This file contains basic definitions and results for such Lie algebras.
 
 -/
 
-variable (R K L M : Type*) [CommRing R] [Field K] [LieRing L] [LieAlgebra R L] [LieAlgebra K L]
+variable (R K L : Type*) [CommRing R] [Field K] [LieRing L] [LieAlgebra R L] [LieAlgebra K L]
 
 namespace LieAlgebra
 
@@ -46,7 +46,7 @@ namespace LieAlgebra
 
 NB: This is not standard terminology (the literature does not seem to name Lie algebras with this
 property). -/
-class IsKilling : Prop :=
+class IsKilling : Prop where
   /-- We say a Lie algebra is Killing if its Killing form is non-singular. -/
   killingCompl_top_eq_bot : LieIdeal.killingCompl R L ⊤ = ⊥
 
@@ -111,7 +111,7 @@ lemma isKilling_of_equiv [IsKilling R L] (e : L ≃ₗ⁅R⁆ L') : IsKilling R 
   refine ⟨fun hx' ↦ ?_, fun hx y _ ↦ hx ▸ LinearMap.map_zero₂ (killingForm R L') y⟩
   suffices e.symm x' ∈ LinearMap.ker (killingForm R L) by
     rw [IsKilling.ker_killingForm_eq_bot] at this
-    simpa using (e : L ≃ₗ[R] L').congr_arg this
+    simpa [map_zero] using (e : L ≃ₗ[R] L').congr_arg this
   ext y
   replace hx' : ∀ y', killingForm R L' x' y' = 0 := by simpa using hx'
   specialize hx' (e y)

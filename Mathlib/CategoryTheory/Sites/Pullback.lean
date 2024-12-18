@@ -37,16 +37,11 @@ variable {C : Type v₁} [SmallCategory C] {D : Type v₁} [SmallCategory D] (G 
 variable (A : Type u₁) [Category.{v₁} A]
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 
--- Porting note: there was an explicit call to
--- CategoryTheory.Sheaf.CategoryTheory.SheafToPresheaf.CategoryTheory.createsLimits.{u₁, v₁, v₁}
--- but it is not necessary (it was not either in mathlib)
-instance [HasLimits A] : CreatesLimits (sheafToPresheaf J A) := inferInstance
-
 -- The assumptions so that we have sheafification
 variable [ConcreteCategory.{v₁} A] [PreservesLimits (forget A)] [HasColimits A] [HasLimits A]
 variable [PreservesFilteredColimits (forget A)] [(forget A).ReflectsIsomorphisms]
 
-attribute [local instance] reflectsLimitsOfReflectsIsomorphisms
+attribute [local instance] reflectsLimits_of_reflectsIsomorphisms
 
 instance {X : C} : IsCofiltered (J.Cover X) :=
   inferInstance
@@ -59,8 +54,8 @@ def Functor.sheafPullback : Sheaf J A ⥤ Sheaf K A :=
 
 instance [RepresentablyFlat G] : PreservesFiniteLimits (G.sheafPullback A J K) := by
   have : PreservesFiniteLimits (G.op.lan ⋙ presheafToSheaf K A) :=
-    compPreservesFiniteLimits _ _
-  apply compPreservesFiniteLimits
+    comp_preservesFiniteLimits _ _
+  apply comp_preservesFiniteLimits
 
 /-- The pullback functor is left adjoint to the pushforward functor. -/
 def Functor.sheafAdjunctionContinuous [Functor.IsContinuous.{v₁} G J K] :

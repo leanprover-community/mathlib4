@@ -3,12 +3,13 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.Trace.Defs
+import Mathlib.FieldTheory.Galois.Basic
+import Mathlib.FieldTheory.Minpoly.MinpolyDiv
+import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.LinearAlgebra.Determinant
-import Mathlib.FieldTheory.Galois
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Vandermonde
-import Mathlib.FieldTheory.Minpoly.MinpolyDiv
+import Mathlib.RingTheory.Trace.Defs
 
 /-!
 # Trace for (finite) ring extensions.
@@ -47,7 +48,7 @@ variable [Algebra R S] [Algebra R T]
 variable {K L : Type*} [Field K] [Field L] [Algebra K L]
 variable {ι κ : Type w} [Fintype ι]
 
-open FiniteDimensional
+open Module
 
 open LinearMap (BilinForm)
 open LinearMap
@@ -119,13 +120,9 @@ variable (K)
 
 theorem trace_eq_trace_adjoin [FiniteDimensional K L] (x : L) :
     Algebra.trace K L x = finrank K⟮x⟯ L • trace K K⟮x⟯ (AdjoinSimple.gen K x) := by
-  -- Porting note: `conv` was
-  -- `conv in x => rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]`
-  -- and it was after the first `rw`.
-  conv =>
-    lhs
-    rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]
-  rw [← trace_trace (S := K⟮x⟯), trace_algebraMap, LinearMap.map_smul_of_tower]
+  rw [← trace_trace (S := K⟮x⟯)]
+  conv in x => rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]
+  rw [trace_algebraMap, LinearMap.map_smul_of_tower]
 
 variable {K}
 
@@ -247,12 +244,9 @@ theorem trace_eq_sum_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L
   have hx := Algebra.IsSeparable.isIntegral K x
   let pb := adjoin.powerBasis hx
   rw [trace_eq_trace_adjoin K x, Algebra.smul_def, RingHom.map_mul, ← adjoin.powerBasis_gen hx,
-    trace_eq_sum_embeddings_gen E pb (IsAlgClosed.splits_codomain _)]
-  -- Porting note: the following `convert` was `exact`, with `← Algebra.smul_def, algebraMap_smul`
-  -- in the previous `rw`.
-  · convert (sum_embeddings_eq_finrank_mul L E pb).symm
-    ext
-    simp
+    trace_eq_sum_embeddings_gen E pb (IsAlgClosed.splits_codomain _), ← Algebra.smul_def,
+    algebraMap_smul]
+  · exact (sum_embeddings_eq_finrank_mul L E pb).symm
   · haveI := Algebra.isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
     exact Algebra.IsSeparable.isSeparable K _
 
@@ -261,10 +255,8 @@ theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L
   apply NoZeroSMulDivisors.algebraMap_injective L (AlgebraicClosure L)
   rw [_root_.map_sum (algebraMap L (AlgebraicClosure L))]
   rw [← Fintype.sum_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
-  · rw [← trace_eq_sum_embeddings (AlgebraicClosure L)]
-    · simp only [algebraMap_eq_smul_one]
-      -- Porting note: `smul_one_smul` was in the `simp only`.
-      apply smul_one_smul
+  · rw [← trace_eq_sum_embeddings (AlgebraicClosure L) (x := x)]
+    simp only [algebraMap_eq_smul_one, smul_one_smul]
   · intro σ
     simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
       AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, id.map_eq_id, RingHom.id_apply]
@@ -285,7 +277,7 @@ open Finset
 noncomputable def traceMatrix (b : κ → B) : Matrix κ κ A :=
   of fun i j => traceForm A B (b i) (b j)
 
--- TODO: set as an equation lemma for `traceMatrix`, see mathlib4#3024
+-- TODO: set as an equation lemma for `traceMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem traceMatrix_apply (b : κ → B) (i j) : traceMatrix A b i j = traceForm A B (b i) (b j) :=
   rfl
@@ -356,7 +348,7 @@ variable (A)
 def embeddingsMatrix (b : κ → B) : Matrix κ (B →ₐ[A] C) C :=
   of fun i (σ : B →ₐ[A] C) => σ (b i)
 
--- TODO: set as an equation lemma for `embeddingsMatrix`, see mathlib4#3024
+-- TODO: set as an equation lemma for `embeddingsMatrix`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem embeddingsMatrix_apply (b : κ → B) (i) (σ : B →ₐ[A] C) :
     embeddingsMatrix A C b i σ = σ (b i) :=
@@ -441,10 +433,13 @@ theorem det_traceForm_ne_zero [Algebra.IsSeparable K L] [DecidableEq ι] (b : Ba
 
 variable (K L)
 
+/-- Let $L/K$ be a finite extension of fields. If $L/K$ is separable,
+then `traceForm` is nondegenerate. -/
+@[stacks 0BIL "(1) => (3)"]
 theorem traceForm_nondegenerate [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     (traceForm K L).Nondegenerate :=
   BilinForm.nondegenerate_of_det_ne_zero (traceForm K L) _
-    (det_traceForm_ne_zero (FiniteDimensional.finBasis K L))
+    (det_traceForm_ne_zero (Module.finBasis K L))
 
 theorem Algebra.trace_ne_zero [FiniteDimensional K L] [Algebra.IsSeparable K L] :
     Algebra.trace K L ≠ 0 := by
@@ -492,3 +487,22 @@ lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [Algebra.IsSepar
   ring
 
 end DetNeZero
+
+section isNilpotent
+
+namespace Algebra
+
+/-- The trace of a nilpotent element is nilpotent. -/
+lemma trace_isNilpotent_of_isNilpotent {R S : Type*} [CommRing R] [CommRing S] [Algebra R S] {x : S}
+    (hx : IsNilpotent x) : IsNilpotent (trace R S x) := by
+  by_cases hS : ∃ s : Finset S, Nonempty (Basis s R S)
+  · obtain ⟨s, ⟨b⟩⟩ := hS
+    have := Module.Finite.of_basis b
+    have := (Module.free_def R S).mpr ⟨s, ⟨b⟩⟩
+    apply LinearMap.isNilpotent_trace_of_isNilpotent (hx.map (lmul R S))
+  · rw [trace_eq_zero_of_not_exists_basis _ hS, LinearMap.zero_apply]
+    exact IsNilpotent.zero
+
+end Algebra
+
+end isNilpotent

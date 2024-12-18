@@ -111,7 +111,8 @@ def equivInduced {M : ModelType.{u, v, w} T} {N : Type w'} (e : M ≃ N) :
     ModelType.{u, v, w'} T where
   Carrier := N
   struc := e.inducedStructure
-  is_model := @Equiv.theory_model L M N _ e.inducedStructure T e.inducedStructureEquiv _
+  is_model := @StrongHomClass.theory_model L M N _ e.inducedStructure T
+    _ _ _ e.inducedStructureEquiv _
   nonempty' := e.symm.nonempty
 
 instance of_small (M : Type w) [Nonempty M] [L.Structure M] [M ⊨ T] [h : Small.{w'} M] :

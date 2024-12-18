@@ -35,7 +35,7 @@ namespace Matrix
 
 /-- `vandermonde v` is the square matrix with `i`th row equal to `1, v i, v i ^ 2, v i ^ 3, ...`.
 -/
-def vandermonde {n : ℕ} (v : Fin n → R) : Matrix (Fin n) (Fin n) R := fun i j => v i ^ (j : ℕ)
+def vandermonde {n : ℕ} (v : Fin n → R) : Matrix (Fin n) (Fin n) R := .of fun i j => v i ^ (j : ℕ)
 
 @[simp]
 theorem vandermonde_apply {n : ℕ} (v : Fin n → R) (i j) : vandermonde v i j = v i ^ (j : ℕ) :=
@@ -52,7 +52,7 @@ theorem vandermonde_cons {n : ℕ} (v0 : R) (v : Fin n → R) :
   simp [pow_succ']
 
 theorem vandermonde_succ {n : ℕ} (v : Fin n.succ → R) :
-    vandermonde v =
+    vandermonde v = .of
       Fin.cons (fun (j : Fin n.succ) => v 0 ^ (j : ℕ)) fun i =>
         Fin.cons 1 fun j => v i.succ * vandermonde (Fin.tail v) i j := by
   conv_lhs => rw [← Fin.cons_self_tail v, vandermonde_cons]
@@ -102,11 +102,12 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
             ∑ k ∈ Finset.range (j + 1 : ℕ), v i.succ ^ k * v 0 ^ (j - k : ℕ) :=
       (det_mul_column (fun i => v (Fin.succ i) - v 0) _)
     _ = (∏ i ∈ Finset.univ, (v (Fin.succ i) - v 0)) *
-    det fun i j : Fin n => v (Fin.succ i) ^ (j : ℕ) := congr_arg _ ?_
+    det (of fun i j : Fin n => v (Fin.succ i) ^ (j : ℕ)) := congr_arg _ ?_
     _ = ∏ i : Fin n.succ, ∏ j ∈ Ioi i, (v j - v i) := by
       simp_rw [Fin.prod_univ_succ, Fin.prod_Ioi_zero, Fin.prod_Ioi_succ]
-      have h := ih (v ∘ Fin.succ)
-      unfold Function.comp at h
+      have h : (of fun i j : Fin n ↦ v i.succ ^ (j : ℕ)).det =
+          ∏ x : Fin n, ∏ y ∈ Ioi x, (v y.succ - v x.succ) := by
+        simpa using ih (v ∘ Fin.succ)
       rw [h]
 
   · intro i j
@@ -187,6 +188,7 @@ theorem eval_matrixOfPolynomials_eq_vandermonde_mul_matrixOfPolynomials {n : ℕ
   congr
   ext k
   rw [mul_comm, Matrix.of_apply, RingHom.id_apply]
+  rfl
 
 theorem det_eval_matrixOfPolynomials_eq_det_vandermonde {n : ℕ} (v : Fin n → R) (p : Fin n → R[X])
     (h_deg : ∀ i, (p i).natDegree = i) (h_monic : ∀ i, Monic <| p i) :

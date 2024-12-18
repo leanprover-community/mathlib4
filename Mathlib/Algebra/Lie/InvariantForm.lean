@@ -61,14 +61,12 @@ lemma _root_.LinearMap.BilinForm.lieInvariant_iff [LieAlgebra R L] [LieModule R 
       LinearMap.zero_apply, sub_eq_zero] at h
     simp [← h]
 
-variable (hΦ_inv : Φ.lieInvariant L)
-
 /--
 The orthogonal complement of a Lie submodule `N` with respect to an invariant bilinear form `Φ` is
 the Lie submodule of elements `y` such that `Φ x y = 0` for all `x ∈ N`.
 -/
 @[simps!]
-def orthogonal (N : LieSubmodule R L M) : LieSubmodule R L M where
+def orthogonal (hΦ_inv : Φ.lieInvariant L) (N : LieSubmodule R L M) : LieSubmodule R L M where
   __ := Φ.orthogonal N
   lie_mem {x y} := by
     suffices (∀ n ∈ N, Φ n y = 0) → ∀ n ∈ N, Φ n ⁅x, y⁆ = 0 by
@@ -78,6 +76,8 @@ def orthogonal (N : LieSubmodule R L M) : LieSubmodule R L M where
     intro H a ha
     rw [← neg_eq_zero, ← hΦ_inv]
     exact H _ <| N.lie_mem ha
+
+variable (hΦ_inv : Φ.lieInvariant L)
 
 @[simp]
 lemma orthogonal_toSubmodule (N : LieSubmodule R L M) :
@@ -124,14 +124,14 @@ variable (hΦ_inv : Φ.lieInvariant L) (hΦ_refl : Φ.IsRefl)
 variable (hL : ∀ I : LieIdeal K L, IsAtom I → ¬IsLieAbelian I)
 include hΦ_nondeg hΦ_refl hL
 
-open FiniteDimensional Submodule in
+open Module Submodule in
 lemma orthogonal_isCompl_coe_submodule (I : LieIdeal K L) (hI : IsAtom I) :
     IsCompl I.toSubmodule (orthogonal Φ hΦ_inv I).toSubmodule := by
   rw [orthogonal_toSubmodule, LinearMap.BilinForm.isCompl_orthogonal_iff_disjoint hΦ_refl,
       ← orthogonal_toSubmodule _ hΦ_inv, ← LieSubmodule.disjoint_iff_coe_toSubmodule]
   exact orthogonal_disjoint Φ hΦ_nondeg hΦ_inv hL I hI
 
-open FiniteDimensional Submodule in
+open Module Submodule in
 lemma orthogonal_isCompl (I : LieIdeal K L) (hI : IsAtom I) :
     IsCompl I (orthogonal Φ hΦ_inv I) := by
   rw [LieSubmodule.isCompl_iff_coe_toSubmodule]
@@ -151,7 +151,7 @@ lemma restrict_orthogonal_nondegenerate (I : LieIdeal K L) (hI : IsAtom I) :
     LinearMap.BilinForm.orthogonal_orthogonal hΦ_nondeg hΦ_refl]
   exact (orthogonal_isCompl_coe_submodule Φ hΦ_nondeg hΦ_inv hΦ_refl hL I hI).symm
 
-open FiniteDimensional Submodule in
+open Module Submodule in
 lemma atomistic : ∀ I : LieIdeal K L, sSup {J : LieIdeal K L | IsAtom J ∧ J ≤ I} = I := by
   intro I
   apply le_antisymm

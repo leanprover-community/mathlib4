@@ -1,12 +1,12 @@
 /-
-Copyright (c) 2021 Scott Morrison. All rights reserved.
+Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Hom.Basic
-import Mathlib.Data.Set.Finite
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
 
 /-!
 # The monotone sequence of partial supremums of a sequence
@@ -94,6 +94,9 @@ theorem Monotone.partialSups_eq {f : ℕ → α} (hf : Monotone f) : (partialSup
 theorem partialSups_mono : Monotone (partialSups : (ℕ → α) → ℕ →o α) := fun _f _g h _n ↦
   partialSups_le_iff.2 fun k hk ↦ (h k).trans (le_partialSups_of_le _ hk)
 
+lemma partialSups_monotone (f : ℕ → α) : Monotone (partialSups f) :=
+  fun n _ hnm ↦ partialSups_le f n _ (fun _ hm'n ↦ le_partialSups_of_le _ (hm'n.trans hnm))
+
 /-- `partialSups` forms a Galois insertion with the coercion from monotone functions to functions.
 -/
 def partialSups.gi : GaloisInsertion (partialSups : (ℕ → α) → ℕ →o α) (↑) where
@@ -157,12 +160,20 @@ end ConditionallyCompleteLattice
 
 section CompleteLattice
 
-variable [CompleteLattice α]
-
-theorem partialSups_eq_biSup (f : ℕ → α) (n : ℕ) : partialSups f n = ⨆ i ≤ n, f i := by
+theorem partialSups_eq_biSup [CompleteLattice α] (f : ℕ → α) (n : ℕ) :
+    partialSups f n = ⨆ i ≤ n, f i := by
   simpa only [iSup_subtype] using partialSups_eq_ciSup_Iic f n
 
--- Porting note (#10618): simp can prove this @[simp]
+lemma partialSups_eq_sUnion_image [DecidableEq (Set α)] (s : ℕ → Set α) (n : ℕ) :
+    partialSups s n = ⋃₀ ↑((Finset.range (n + 1)).image s) := by
+  ext; simp [partialSups_eq_biSup, Nat.lt_succ_iff]
+
+lemma partialSups_eq_biUnion_range (s : ℕ → Set α) (n : ℕ) :
+    partialSups s n = ⋃ i ∈ Finset.range (n + 1), s i := by
+  ext; simp [partialSups_eq_biSup, Nat.lt_succ]
+
+variable [CompleteLattice α]
+
 theorem iSup_partialSups_eq (f : ℕ → α) : ⨆ n, partialSups f n = ⨆ n, f n :=
   ciSup_partialSups_eq <| OrderTop.bddAbove _
 

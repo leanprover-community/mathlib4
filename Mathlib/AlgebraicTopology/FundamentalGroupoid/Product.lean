@@ -107,9 +107,9 @@ instance : IsIso (piTopToPiCone X) :=
   Limits.Cones.cone_iso_of_hom_iso (piTopToPiCone X)
 
 /-- The fundamental groupoid functor preserves products -/
-def preservesProduct : Limits.PreservesLimit (Discrete.functor X) π := by
+lemma preservesProduct : Limits.PreservesLimit (Discrete.functor X) π := by
   -- Porting note: check universe parameters here
-  apply Limits.preservesLimitOfPreservesLimitCone (TopCat.piFanIsLimit.{u,u} X)
+  apply Limits.preservesLimit_of_preserves_limit_cone (TopCat.piFanIsLimit.{u,u} X)
   apply (Limits.IsLimit.ofConeEquiv (coneDiscreteComp X)).toFun
   simp only [coneDiscreteComp_obj_mapCone]
   apply Limits.IsLimit.ofIsoLimit _ (asIso (piTopToPiCone X)).symm
@@ -150,14 +150,14 @@ def prodToProdTop : πₓ A × πₓ B ⥤ πₓ (TopCat.of (A × B)) where
   obj g := ⟨g.fst.as, g.snd.as⟩
   map {x y} p :=
     match x, y, p with
-    | (x₀, x₁), (y₀, y₁), (p₀, p₁) => @Path.Homotopic.prod _ _ (_) (_) _ _ _ _ p₀ p₁
+    | (_, _), (_, _), (p₀, p₁) => @Path.Homotopic.prod _ _ (_) (_) _ _ _ _ p₀ p₁
   map_id := by
     rintro ⟨x₀, x₁⟩
     simp only [CategoryTheory.prod_id, FundamentalGroupoid.id_eq_path_refl]
     rfl
   map_comp {x y z} f g :=
     match x, y, z, f, g with
-    | (x₀, x₁), (y₀, y₁), (z₀, z₁), (f₀, f₁), (g₀, g₁) =>
+    | (_, _), (_, _), (_, _), (f₀, f₁), (g₀, g₁) =>
       (Path.Homotopic.comp_prod_eq_prod_comp f₀ f₁ g₀ g₁).symm
 
 theorem prodToProdTop_map {x₀ x₁ : πₓ A} {y₀ y₁ : πₓ B} (p₀ : x₀ ⟶ x₁) (p₁ : y₀ ⟶ y₁) :

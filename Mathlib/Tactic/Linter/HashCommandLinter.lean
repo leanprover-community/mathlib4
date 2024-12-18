@@ -5,8 +5,9 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.Command
-import Lean.Linter.Util
-import Batteries.Lean.HashSet
+-- Import this linter explicitly to ensure that
+-- this file has a valid copyright header and module docstring.
+import Mathlib.Tactic.Linter.Header
 
 /-!
 # `#`-command linter
@@ -29,7 +30,7 @@ For example, `#guard true` and `#check_tactic True ~> True by skip` trigger a me
 There is a list of silent `#`-command that are allowed.
 -/
 register_option linter.hashCommand : Bool := {
-  defValue := true
+  defValue := false
   descr := "enable the `#`-command linter"
 }
 
@@ -53,7 +54,7 @@ private partial def withSetOptionIn' (cmd : CommandElab) : CommandElab := fun st
     cmd stx
 
 /-- `allowed_commands` is the `HashSet` of `#`-commands that are allowed in 'Mathlib'. -/
-private abbrev allowed_commands : HashSet String := { "#adaptation_note" }
+private abbrev allowed_commands : Std.HashSet String := { "#adaptation_note" }
 
 /-- Checks that no command beginning with `#` is present in 'Mathlib',
 except for the ones in `allowed_commands`.

@@ -5,7 +5,7 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.MetricSpace.Gluing
 import Mathlib.Topology.MetricSpace.HausdorffDistance
-import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
 /-!
 # The Gromov-Hausdorff distance is realized
@@ -100,7 +100,7 @@ private theorem maxVar_bound [CompactSpace X] [Nonempty X] [CompactSpace Y] [Non
     _ ≤ diam (range inl : Set (X ⊕ Y)) + dist (inl default) (inr default) +
         diam (range inr : Set (X ⊕ Y)) :=
       (diam_union (mem_range_self _) (mem_range_self _))
-    _ = diam (univ : Set X) + (dist default default + 1 + dist default default) +
+    _ = diam (univ : Set X) + (dist (α := X) default default + 1 + dist (α := Y) default default) +
         diam (univ : Set Y) := by
       rw [isometry_inl.diam_range, isometry_inr.diam_range]
       rfl
@@ -142,10 +142,10 @@ private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
   | inl x, inl y =>
     calc
       f (inl x, inl y) = dist x y := candidates_dist_inl fA x y
-      _ = dist (inl x) (inl y) := by
+      _ = dist (α := X ⊕ Y) (inl x) (inl y) := by
         rw [@Sum.dist_eq X Y]
         rfl
-      _ = 1 * dist (inl x) (inl y) := by ring
+      _ = 1 * dist (α := X ⊕ Y) (inl x) (inl y) := by ring
       _ ≤ maxVar X Y * dist (inl x) (inl y) := by gcongr; exact one_le_maxVar X Y
   | inl x, inr y =>
     calc
@@ -160,10 +160,10 @@ private theorem candidates_dist_bound (fA : f ∈ candidates X Y) :
   | inr x, inr y =>
     calc
       f (inr x, inr y) = dist x y := candidates_dist_inr fA x y
-      _ = dist (inr x) (inr y) := by
+      _ = dist (α := X ⊕ Y) (inr x) (inr y) := by
         rw [@Sum.dist_eq X Y]
         rfl
-      _ = 1 * dist (inr x) (inr y) := by ring
+      _ = 1 * dist (α := X ⊕ Y) (inr x) (inr y) := by ring
       _ ≤ maxVar X Y * dist (inr x) (inr y) := by gcongr; exact one_le_maxVar X Y
 
 /-- Technical lemma to prove that candidates are Lipschitz -/
@@ -432,20 +432,20 @@ predistance is given by the candidate. Then, we will identify points at `0` pred
 to obtain a genuine metric space. -/
 def premetricOptimalGHDist : PseudoMetricSpace (X ⊕ Y) where
   dist p q := optimalGHDist X Y (p, q)
-  dist_self x := candidates_refl (optimalGHDist_mem_candidatesB X Y)
-  dist_comm x y := candidates_symm (optimalGHDist_mem_candidatesB X Y)
-  dist_triangle x y z := candidates_triangle (optimalGHDist_mem_candidatesB X Y)
-  -- Porting note (#10888): added proof for `edist_dist`
+  dist_self _ := candidates_refl (optimalGHDist_mem_candidatesB X Y)
+  dist_comm _ _ := candidates_symm (optimalGHDist_mem_candidatesB X Y)
+  dist_triangle _ _ _ := candidates_triangle (optimalGHDist_mem_candidatesB X Y)
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof for `edist_dist`
   edist_dist x y := by
     simp only
     congr
-    simp only [max, left_eq_sup]
+    simp only [left_eq_sup]
     exact candidates_nonneg (optimalGHDist_mem_candidatesB X Y)
 
 attribute [local instance] premetricOptimalGHDist
 
 /-- A metric space which realizes the optimal coupling between `X` and `Y` -/
--- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
+-- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): This linter does not exist yet.
 def OptimalGHCoupling : Type _ :=
   @SeparationQuotient (X ⊕ Y) (premetricOptimalGHDist X Y).toUniformSpace.toTopologicalSpace
 

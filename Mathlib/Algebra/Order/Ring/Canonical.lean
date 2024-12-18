@@ -3,8 +3,9 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Order.Sub.Canonical
+import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Algebra.Ring.Parity
 
 /-!
@@ -26,7 +27,7 @@ open Function
 
 universe u
 
-variable {α : Type u} {β : Type*}
+variable {α : Type u}
 
 /-- A canonically ordered commutative semiring is an ordered, commutative semiring in which `a ≤ b`
 iff there exists `c` with `b = a + c`. This is satisfied by the natural numbers, for example, but
@@ -50,8 +51,8 @@ instance (priority := 100) toNoZeroDivisors : NoZeroDivisors α :=
   ⟨CanonicallyOrderedCommSemiring.eq_zero_or_eq_zero_of_mul_eq_zero⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) toCovariantClassMulLE : CovariantClass α α (· * ·) (· ≤ ·) := by
-  refine ⟨fun a b c h => ?_⟩
+instance (priority := 100) toMulLeftMono : MulLeftMono α := by
+  refine ⟨fun a b c h => ?_⟩; dsimp
   rcases exists_add_of_le h with ⟨c, rfl⟩
   rw [mul_add]
   apply self_le_add_right
@@ -64,8 +65,8 @@ instance (priority := 100) toOrderedCommMonoid : OrderedCommMonoid α where
 instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
   { ‹CanonicallyOrderedCommSemiring α› with
     zero_le_one := zero_le _,
-    mul_le_mul_of_nonneg_left := fun a b c h _ => mul_le_mul_left' h _,
-    mul_le_mul_of_nonneg_right := fun a b c h _ => mul_le_mul_right' h _ }
+    mul_le_mul_of_nonneg_left := fun _ _ _ h _ => mul_le_mul_left' h _,
+    mul_le_mul_of_nonneg_right := fun _ _ _ h _ => mul_le_mul_right' h _ }
 
 @[simp]
 protected theorem mul_pos : 0 < a * b ↔ 0 < a ∧ 0 < b := by
@@ -105,7 +106,7 @@ protected theorem tsub_mul (h : AddLECancellable (b * c)) : (a - b) * c = a * c 
 
 end AddLECancellable
 
-variable [ContravariantClass α α (· + ·) (· ≤ ·)]
+variable [AddLeftReflectLE α]
 
 theorem mul_tsub (a b c : α) : a * (b - c) = a * b - a * c :=
   Contravariant.AddLECancellable.mul_tsub

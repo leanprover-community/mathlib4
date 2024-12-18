@@ -137,6 +137,4 @@ def commutativeSquarePresenter : ExprPresenter where
 
 end Widget
 
-end Tactic
-
-end Mathlib
+end Mathlib.Tactic

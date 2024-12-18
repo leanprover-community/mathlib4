@@ -39,6 +39,13 @@ open Function
 namespace NeZero
 variable {F α β : Type*} [Zero α] [Zero β] [FunLike F α β] [ZeroHomClass F α β] {a : α}
 
+#adaptation_note
+/--
+We name `neZero` so it can be used as a named argument,
+but since https://github.com/leanprover/lean4/pull/5338, this is considered unused,
+so we need to disable the linter.
+-/
+set_option linter.unusedVariables false in
 lemma of_map (f : F) [neZero : NeZero (f a)] : NeZero a :=
   ⟨fun h ↦ ne (f a) <| by rw [h]; exact ZeroHomClass.map_zero f⟩
 
@@ -175,11 +182,11 @@ lemma comp_assoc (f : α →*₀ β) (g : β →*₀ γ) (h : γ →*₀ δ) :
 
 lemma cancel_right {g₁ g₂ : β →*₀ γ} {f : α →*₀ β} (hf : Surjective f) :
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
-  ⟨fun h ↦ ext $ hf.forall.2 (DFunLike.ext_iff.1 h), fun h ↦ h ▸ rfl⟩
+  ⟨fun h ↦ ext <| hf.forall.2 (DFunLike.ext_iff.1 h), fun h ↦ h ▸ rfl⟩
 
 lemma cancel_left {g : β →*₀ γ} {f₁ f₂ : α →*₀ β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
-  ⟨fun h ↦ ext fun x ↦ hg $ by rw [← comp_apply, h,
+  ⟨fun h ↦ ext fun x ↦ hg <| by rw [← comp_apply, h,
     comp_apply], fun h ↦ h ▸ rfl⟩
 
 lemma toMonoidHom_injective : Injective (toMonoidHom : (α →*₀ β) → α →* β) :=

@@ -27,13 +27,16 @@ example {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] [CompleteSpace V
 noncomputable section
 
 open scoped Manifold
+/- Next line is necessary while the manifold smoothness class is not extended to `ω`.
+Later, replace with `open scoped ContDiff`. -/
+local notation "∞" => (⊤ : ℕ∞)
 
 namespace Units
 
 variable {R : Type*} [NormedRing R] [CompleteSpace R]
 
 instance : ChartedSpace R Rˣ :=
-  openEmbedding_val.singletonChartedSpace
+  isOpenEmbedding_val.singletonChartedSpace
 
 theorem chartAt_apply {a : Rˣ} {b : Rˣ} : chartAt R a b = b :=
   rfl
@@ -44,17 +47,17 @@ theorem chartAt_source {a : Rˣ} : (chartAt R a).source = Set.univ :=
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 R]
 
 instance : SmoothManifoldWithCorners 𝓘(𝕜, R) Rˣ :=
-  openEmbedding_val.singleton_smoothManifoldWithCorners 𝓘(𝕜, R)
+  isOpenEmbedding_val.singleton_smoothManifoldWithCorners
 
 /-- For a complete normed ring `R`, the embedding of the units `Rˣ` into `R` is a smooth map between
 manifolds. -/
 lemma contMDiff_val {m : ℕ∞} : ContMDiff 𝓘(𝕜, R) 𝓘(𝕜, R) m (val : Rˣ → R) :=
-  contMDiff_openEmbedding 𝓘(𝕜, R) Units.openEmbedding_val
+  contMDiff_isOpenEmbedding Units.isOpenEmbedding_val
 
 /-- The units of a complete normed ring form a Lie group. -/
 instance : LieGroup 𝓘(𝕜, R) Rˣ where
   smooth_mul := by
-    apply ContMDiff.of_comp_openEmbedding Units.openEmbedding_val
+    apply ContMDiff.of_comp_isOpenEmbedding Units.isOpenEmbedding_val
     have : (val : Rˣ → R) ∘ (fun x : Rˣ × Rˣ => x.1 * x.2) =
       (fun x : R × R => x.1 * x.2) ∘ (fun x : Rˣ × Rˣ => (x.1, x.2)) := by ext; simp
     rw [this]
@@ -65,7 +68,7 @@ instance : LieGroup 𝓘(𝕜, R) Rˣ where
     rw [contMDiff_iff_contDiff]
     exact contDiff_mul
   smooth_inv := by
-    apply ContMDiff.of_comp_openEmbedding Units.openEmbedding_val
+    apply ContMDiff.of_comp_isOpenEmbedding Units.isOpenEmbedding_val
     have : (val : Rˣ → R) ∘ (fun x : Rˣ => x⁻¹) = Ring.inverse ∘ val := by ext; simp
     rw [this, ContMDiff]
     refine fun x => ContMDiffAt.comp x ?_ (contMDiff_val x)

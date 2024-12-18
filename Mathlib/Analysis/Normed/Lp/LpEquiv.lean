@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Analysis.Normed.Lp.lpSpace
 import Mathlib.Analysis.Normed.Lp.PiLp
-import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Topology.ContinuousMap.Bounded.Basic
 
 /-!
 # Equivalences among $L^p$ spaces
@@ -72,7 +72,7 @@ theorem coe_equiv_lpPiLp_symm (f : PiLp p E) : (Equiv.lpPiLp.symm f : ∀ i, E i
 def AddEquiv.lpPiLp : lp E p ≃+ PiLp p E :=
   { Equiv.lpPiLp with map_add' := fun _f _g ↦ rfl }
 
-theorem coe_addEquiv_lpPiLp  (f : lp E p) : AddEquiv.lpPiLp f = ⇑f :=
+theorem coe_addEquiv_lpPiLp (f : lp E p) : AddEquiv.lpPiLp f = ⇑f :=
   rfl
 
 theorem coe_addEquiv_lpPiLp_symm (f : PiLp p E) :
@@ -91,9 +91,6 @@ section Equivₗᵢ
 
 variable [Fintype α] (𝕜 : Type*) [NontriviallyNormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 variable (E)
-/- porting note: Lean is unable to work with `lpPiLpₗᵢ` if `E` is implicit without
-annotating with `(E := E)` everywhere, so we just make it explicit. This file has no
-dependencies. -/
 
 /-- The canonical `LinearIsometryEquiv` between `lp E p` and `PiLp p E` when `E : α → Type u`
 with `[Fintype α]` and `[Fact (1 ≤ p)]`. -/
@@ -145,14 +142,11 @@ theorem coe_addEquiv_lpBCF_symm (f : α →ᵇ E) : (AddEquiv.lpBCF.symm f : α 
   rfl
 
 variable (E)
-/- porting note: Lean is unable to work with `lpPiLpₗᵢ` if `E` is implicit without
-annotating with `(E := E)` everywhere, so we just make it explicit. This file has no
-dependencies. -/
 
 /-- The canonical map between `lp (fun _ : α ↦ E) ∞` and `α →ᵇ E` as a `LinearIsometryEquiv`. -/
 noncomputable def lpBCFₗᵢ : lp (fun _ : α ↦ E) ∞ ≃ₗᵢ[𝕜] α →ᵇ E :=
   { AddEquiv.lpBCF with
-    map_smul' := fun k f ↦ rfl
+    map_smul' := fun _ _ ↦ rfl
     norm_map' := fun f ↦ by simp only [norm_eq_iSup_norm, lp.norm_eq_ciSup]; rfl }
 
 @[deprecated (since := "2024-03-16")] alias lpBcfₗᵢ := lpBCFₗᵢ

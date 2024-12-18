@@ -52,6 +52,15 @@ theorem algebraMap_apply {_ : CommSemiring R} [_s : ∀ i, Semiring (f i)] [∀ 
 -- when each `A i` is an `R i`-algebra, although I'm not sure that it's useful.
 variable {I} (R)
 
+/-- A family of algebra homomorphisms `g i : A →ₐ[R] f i` defines a ring homomorphism
+`Pi.algHom g : A →ₐ[R] Π i, f i` given by `Pi.algHom g x i = f i x`. -/
+@[simps!]
+def algHom [CommSemiring R] [s : ∀ i, Semiring (f i)] [∀ i, Algebra R (f i)]
+    {A : Type*} [Semiring A] [Algebra R A] (g : ∀ i, A →ₐ[R] f i) :
+      A →ₐ[R] ∀ i, f i where
+  __ := Pi.ringHom fun i ↦ (g i).toRingHom
+  commutes' r := by ext; simp
+
 /-- `Function.eval` as an `AlgHom`. The name matches `Pi.evalRingHom`, `Pi.evalMonoidHom`,
 etc. -/
 @[simps]

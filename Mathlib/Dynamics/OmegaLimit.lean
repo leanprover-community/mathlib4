@@ -84,16 +84,16 @@ theorem mapsTo_omegaLimit' {α' β' : Type*} [TopologicalSpace β'] {f : Filter 
     MapsTo gb (ω f ϕ s) (ω f ϕ' s') := by
   simp only [omegaLimit_def, mem_iInter, MapsTo]
   intro y hy u hu
-  refine map_mem_closure hgc (hy _ (inter_mem hu hg)) (forall_image2_iff.2 fun t ht x hx ↦ ?_)
+  refine map_mem_closure hgc (hy _ (inter_mem hu hg)) (forall_mem_image2.2 fun t ht x hx ↦ ?_)
   calc
-    gb (ϕ t x) = ϕ' t (ga x) := ht.2 hx
-    _ ∈ image2 ϕ' u s' := mem_image2_of_mem ht.1 (hs hx)
+    ϕ' t (ga x) ∈ image2 ϕ' u s' := mem_image2_of_mem ht.1 (hs hx)
+    _ = gb (ϕ t x) := ht.2 hx |>.symm
 
 theorem mapsTo_omegaLimit {α' β' : Type*} [TopologicalSpace β'] {f : Filter τ} {ϕ : τ → α → β}
     {ϕ' : τ → α' → β'} {ga : α → α'} {s' : Set α'} (hs : MapsTo ga s s') {gb : β → β'}
     (hg : ∀ t x, gb (ϕ t x) = ϕ' t (ga x)) (hgc : Continuous gb) :
     MapsTo gb (ω f ϕ s) (ω f ϕ' s') :=
-  mapsTo_omegaLimit' _ hs (eventually_of_forall fun t x _hx ↦ hg t x) hgc
+  mapsTo_omegaLimit' _ hs (Eventually.of_forall fun t x _hx ↦ hg t x) hgc
 
 theorem omegaLimit_image_eq {α' : Type*} (ϕ : τ → α' → β) (f : Filter τ) (g : α → α') :
     ω f ϕ (g '' s) = ω f (fun t x ↦ ϕ t (g x)) s := by simp only [omegaLimit, image2_image_right]
@@ -191,6 +191,9 @@ theorem omegaLimit_subset_closure_fw_image {u : Set τ} (hu : u ∈ f) :
   intro _ hx
   rw [mem_iInter] at hx
   exact hx ⟨u, hu⟩
+
+-- An instance with better keys
+instance : Inhabited f.sets := Filter.inhabitedMem
 
 /-!
 ### ω-limits and compactness

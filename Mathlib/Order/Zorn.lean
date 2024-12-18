@@ -59,8 +59,6 @@ Originally ported from Isabelle/HOL. The
 Fleuriot, Tobias Nipkow, Christian Sternagel.
 -/
 
-
-open scoped Classical
 open Set
 
 variable {α β : Type*} {r : α → α → Prop} {c : Set α}
@@ -114,7 +112,7 @@ theorem zorn_le₀ (s : Set α) (ih : ∀ c ⊆ s, IsChain (· ≤ ·) c → ∃
           (by
             rintro _ ⟨p, hpc, rfl⟩ _ ⟨q, hqc, rfl⟩ hpq
             exact hc hpc hqc fun t => hpq (Subtype.ext_iff.1 t))
-      ⟨⟨ub, hubs⟩, fun ⟨y, hy⟩ hc => hub _ ⟨_, hc, rfl⟩⟩
+      ⟨⟨ub, hubs⟩, fun ⟨_, _⟩ hc => hub _ ⟨_, hc, rfl⟩⟩
   ⟨m, hms, fun z hzs hmz => @h ⟨z, hzs⟩ hmz⟩
 
 theorem zorn_le_nonempty₀ (s : Set α)
@@ -180,3 +178,23 @@ theorem IsChain.exists_maxChain (hc : IsChain r c) : ∃ M, @IsMaxChain _ r M �
   cases' hcs₁ hsy hsz hsseq with h h
   · exact (hcs₀ hsz).right (h hysy) hzsz hyz
   · exact (hcs₀ hsy).right hysy (h hzsz) hyz
+
+/-! ### Flags -/
+
+namespace Flag
+
+variable [Preorder α] {c : Set α} {s : Flag α} {a b : α}
+
+lemma _root_.IsChain.exists_subset_flag (hc : IsChain (· ≤ ·) c) : ∃ s : Flag α, c ⊆ s :=
+  let ⟨s, hs, hcs⟩ := hc.exists_maxChain; ⟨ofIsMaxChain s hs, hcs⟩
+
+lemma exists_mem (a : α) : ∃ s : Flag α, a ∈ s :=
+  let ⟨s, hs⟩ := Set.subsingleton_singleton (a := a).isChain.exists_subset_flag
+  ⟨s, hs rfl⟩
+
+lemma exists_mem_mem (hab : a ≤ b) : ∃ s : Flag α, a ∈ s ∧ b ∈ s := by
+  simpa [Set.insert_subset_iff] using (IsChain.pair hab).exists_subset_flag
+
+instance : Nonempty (Flag α) := ⟨.ofIsMaxChain _ maxChain_spec⟩
+
+end Flag

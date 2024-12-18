@@ -30,9 +30,6 @@ to the corresponding germ of functions `X → Z` at `x ∈ X` resp. `Y → Z` at
 `f` is constant.
 -/
 
-variable {F G : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
-  [NormedAddCommGroup G] [NormedSpace ℝ G]
-
 open scoped Topology
 
 open Filter Set
@@ -117,7 +114,7 @@ theorem forall_restrictGermPredicate_iff {P : ∀ x : X, Germ (𝓝 x) Y → Pro
 theorem forall_restrictGermPredicate_of_forall
     {P : ∀ x : X, Germ (𝓝 x) Y → Prop} (h : ∀ x, P x f) :
     ∀ x, RestrictGermPredicate P A x f :=
-  forall_restrictGermPredicate_iff.mpr (eventually_of_forall h)
+  forall_restrictGermPredicate_iff.mpr (Eventually.of_forall h)
 end RestrictGermPredicate
 
 namespace Filter.Germ

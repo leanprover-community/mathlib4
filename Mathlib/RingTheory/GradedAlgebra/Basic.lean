@@ -207,7 +207,7 @@ end DirectSum
 
 open DirectSum
 
-/-- The projection maps of graded algebra-/
+/-- The projection maps of graded algebra -/
 def GradedAlgebra.proj (𝒜 : ι → Submodule R A) [GradedAlgebra 𝒜] (i : ι) : A →ₗ[R] A :=
   (𝒜 i).subtype.comp <| (DFinsupp.lapply i).comp <| (decomposeAlgEquiv 𝒜).toAlgHom.toLinearMap
 
@@ -310,7 +310,7 @@ theorem coe_decompose_mul_of_right_mem_of_not_le (b_mem : b ∈ 𝒜 i) (h : ¬i
   lift b to 𝒜 i using b_mem
   rwa [decompose_mul, decompose_coe, coe_mul_of_apply_of_not_le]
 
-variable [Sub ι] [OrderedSub ι] [ContravariantClass ι ι (· + ·) (· ≤ ·)]
+variable [Sub ι] [OrderedSub ι] [AddLeftReflectLE ι]
 
 theorem coe_decompose_mul_of_left_mem_of_le (a_mem : a ∈ 𝒜 i) (h : i ≤ n) :
     (decompose 𝒜 (a * b) n : A) = a * decompose 𝒜 b (n - i) := by
@@ -350,7 +350,7 @@ noncomputable def coeAlgEquiv (hM : DirectSum.IsInternal M) :
 
 /-- Given an `R`-algebra `A` and a family `ι → Submodule R A` of submodules
 parameterized by an additive monoid `ι`
-and statisfying `SetLike.GradedMonoid M` (essentially, is multiplicative)
+and satisfying `SetLike.GradedMonoid M` (essentially, is multiplicative)
 such that `DirectSum.IsInternal M` (`A` is the direct sum of the `M i`),
 we endow `A` with the structure of a graded algebra.
 The submodules are the *homogeneous* parts. -/

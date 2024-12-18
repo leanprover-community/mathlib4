@@ -52,7 +52,7 @@ theorem decomposition_Q (n q : ℕ) :
       ∑ i ∈ Finset.filter (fun i : Fin (n + 1) => (i : ℕ) < q) Finset.univ,
         (P i).f (n + 1) ≫ X.δ i.rev.succ ≫ X.σ (Fin.rev i) := by
   induction' q with q hq
-  · simp only [Nat.zero_eq, Q_zero, HomologicalComplex.zero_f_apply, Nat.not_lt_zero,
+  · simp only [Q_zero, HomologicalComplex.zero_f_apply, Nat.not_lt_zero,
       Finset.filter_False, Finset.sum_empty]
   · by_cases hqn : q + 1 ≤ n + 1
     swap
@@ -66,7 +66,7 @@ theorem decomposition_Q (n q : ℕ) :
       symm
       conv_rhs => rw [sub_eq_add_neg, add_comm]
       let q' : Fin (n + 1) := ⟨q, Nat.succ_le_iff.mp hqn⟩
-      rw [← @Finset.add_sum_erase _ _ _ _ _ _ q' (by simp)]
+      rw [← @Finset.add_sum_erase _ _ _ _ _ _ q' (by simp [q'])]
       congr
       · have hnaq' : n = a + q := by omega
         simp only [Fin.val_mk, (HigherFacesVanish.of_P q n).comp_Hσ_eq hnaq',
@@ -80,7 +80,7 @@ theorem decomposition_Q (n q : ℕ) :
 
 variable (X)
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The structure `MorphComponents` is an ad hoc structure that is used in
 the proof that `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ))`
 reflects isomorphisms. The fields are the data that are needed in order to
