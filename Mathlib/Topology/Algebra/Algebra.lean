@@ -157,7 +157,7 @@ def Simps.apply (h : A →A[R] B) : A → B := h
 /-- See Note [custom simps projection]. -/
 def Simps.coe (h : A →A[R] B) : A →ₐ[R] B := h
 
-initialize_simps_projections ContinuousAlgHom (toAlgHom_toFun → apply, toAlgHom → coe)
+initialize_simps_projections ContinuousAlgHom (toFun → apply, toAlgHom → coe)
 
 @[ext]
 theorem ext {f g : A →A[R] B} (h : ∀ x, f x = g x) : f = g := DFunLike.ext f g h
