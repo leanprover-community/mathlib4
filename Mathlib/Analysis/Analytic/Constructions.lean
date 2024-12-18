@@ -165,16 +165,16 @@ theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 
 theorem HasFPowerSeriesWithinOnBall.const_smul (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
-    HasFPowerSeriesWithinOnBall (c • f) (c • pf) s x r :=
-  { r_le := le_trans hf.r_le pf.radius_le_smul,
-    r_pos := hf.r_pos
-    hasSum := fun hy h'y => (hf.hasSum hy h'y).const_smul _ }
+    HasFPowerSeriesWithinOnBall (c • f) (c • pf) s x r where
+  r_le := le_trans hf.r_le pf.radius_le_smul
+  r_pos := hf.r_pos
+  hasSum := fun hy h'y => (hf.hasSum hy h'y).const_smul _
 
 theorem HasFPowerSeriesOnBall.const_smul (hf : HasFPowerSeriesOnBall f pf x r) :
-    HasFPowerSeriesOnBall (c • f) (c • pf) x r :=
-  { r_le := le_trans hf.r_le pf.radius_le_smul,
-    r_pos := hf.r_pos
-    hasSum := fun hy => (hf.hasSum hy).const_smul _ }
+    HasFPowerSeriesOnBall (c • f) (c • pf) x r where
+  r_le := le_trans hf.r_le pf.radius_le_smul
+  r_pos := hf.r_pos
+  hasSum := fun hy => (hf.hasSum hy).const_smul _
 
 theorem HasFPowerSeriesWithinAt.const_smul (hf : HasFPowerSeriesWithinAt f pf s x) :
     HasFPowerSeriesWithinAt (c • f) (c • pf) s x :=
