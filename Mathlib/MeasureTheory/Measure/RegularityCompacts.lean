@@ -89,6 +89,13 @@ theorem exists_isCompact_closure_measure_compl_lt [UniformSpace α] [CompleteSpa
     [SecondCountableTopology α] [(uniformity α).IsCountablyGenerated]
     [OpensMeasurableSpace α] (P : Measure α) [IsFiniteMeasure P] (ε : ℝ≥0∞) (hε : 0 < ε) :
     ∃ K, IsCompact (closure K) ∧ P Kᶜ < ε := by
+  /-
+  If α is empty, the result is trivial.
+
+  Otherwise, fix a dense sequence `seq` and an antitone basis `t` of entourages. We find a sequence
+  of natural numbers `u n`, such that `interUnionBalls seq u t`, which is the intersection over
+  `n` of the `t n`-neighborhood of `seq 1, ..., seq (u n)`, covers the space arbitrarily well.
+  -/
   cases isEmpty_or_nonempty α
   case inl =>
     refine ⟨∅, by simp, ?_⟩
@@ -157,18 +164,41 @@ theorem innerRegularWRT_isCompact_isOpen [PseudoEMetricSpace α]
 
 /--
 A finite measure `μ` on a `PseudoEMetricSpace E` and `CompleteSpace E` with
-`SecondCountableTopology E` is inner regular with respect to compact sets. In other
-words, a finite measure on such a space is a tight measure.
+`SecondCountableTopology E` is inner regular. In other words, a finite measure
+on such a space is a tight measure.
 -/
-theorem InnerRegularCompactLTTop [PseudoEMetricSpace α]
+theorem InnerRegular_of_pseudoEMetricSpace_completeSpace_secondCountable [PseudoEMetricSpace α]
     [CompleteSpace α] [SecondCountableTopology α] [BorelSpace α]
     (P : Measure α) [IsFiniteMeasure P] :
-    P.InnerRegularCompactLTTop := by
-  refine ⟨Measure.InnerRegularWRT.measurableSet_of_isOpen ?_ ?_⟩
+    P.InnerRegular := by
+  refine @Measure.InnerRegularCompactLTTop.instInnerRegularOfSigmaFinite _ _ _ _
+      ⟨Measure.InnerRegularWRT.measurableSet_of_isOpen ?_ ?_⟩ _
   · exact innerRegularWRT_isCompact_isOpen P
   · exact fun s t hs_compact ht_open ↦ hs_compact.inter_right ht_open.isClosed_compl
 
-theorem innerRegular_isCompact_isClosed_measurableSet [PseudoEMetricSpace α]
+/--
+A measure `μ` on a `PseudoEMetricSpace E` and `CompleteSpace E` with
+`SecondCountableTopology E` is inner regular for finite measure sets with respect to compact sets.
+-/
+theorem InnerRegularCompactLTTop_of_pseudoEMetricSpace_completeSpace_secondCountable
+    [PseudoEMetricSpace α] [CompleteSpace α] [SecondCountableTopology α] [BorelSpace α]
+    (μ : Measure α) :
+    μ.InnerRegularCompactLTTop := by
+  constructor; intro A ⟨hA1, hA2⟩ r hr
+  have IRC : Measure.InnerRegularCompactLTTop (μ.restrict A) := by
+    exact @Measure.InnerRegular.instInnerRegularCompactLTTop _ _ _ _
+        (@InnerRegular_of_pseudoEMetricSpace_completeSpace_secondCountable _ _ _ _ _ _
+        (μ.restrict A) (@Restrict.isFiniteMeasure _ _ _ μ (fact_iff.mpr hA2.lt_top)))
+  have hA2' : (μ.restrict A) A ≠ ⊤ := by
+    rwa [Measure.restrict_apply_self]
+  have hr' : r < μ.restrict A A := by
+    rwa [Measure.restrict_apply_self]
+  obtain ⟨K, ⟨hK1, hK2, hK3⟩⟩ := @MeasurableSet.exists_lt_isCompact_of_ne_top
+      _ _ (μ.restrict A) _ IRC _ hA1 hA2' r hr'
+  use K, hK1, hK2
+  rwa [Measure.restrict_eq_self μ hK1] at hK3
+
+theorem innerRegular_isCompact_isClosed_measurableSet_of_finite [PseudoEMetricSpace α]
     [CompleteSpace α] [SecondCountableTopology α] [BorelSpace α]
     (P : Measure α) [IsFiniteMeasure P] :
     P.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) MeasurableSet := by
@@ -188,10 +218,10 @@ theorem innerRegular_isCompact_isClosed_measurableSet [PseudoEMetricSpace α]
 On a Polish space, any finite measure is regular with respect to compact and closed sets. In
 particular, a finite measure on a Polish space is a tight measure.
 -/
-theorem PolishSpace.innerRegular_isCompact_measurableSet [TopologicalSpace α] [PolishSpace α]
-    [BorelSpace α] (μ : Measure α) [IsFiniteMeasure μ] :
+theorem PolishSpace.innerRegular_isCompact_isClosed_measurableSet [TopologicalSpace α]
+    [PolishSpace α] [BorelSpace α] (μ : Measure α) [IsFiniteMeasure μ] :
     μ.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) MeasurableSet := by
   letI := upgradePolishSpace α
-  exact innerRegular_isCompact_isClosed_measurableSet μ
+  exact innerRegular_isCompact_isClosed_measurableSet_of_finite μ
 
 end MeasureTheory
