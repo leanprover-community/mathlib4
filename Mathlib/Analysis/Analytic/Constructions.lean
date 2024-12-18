@@ -164,36 +164,36 @@ theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
     AnalyticAt 𝕜 (f - g) x := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 
-theorem HasFPowerSeriesWithinOnBall.smul_const (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
+theorem HasFPowerSeriesWithinOnBall.const_smul (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
     HasFPowerSeriesWithinOnBall (c • f) (c • pf) s x r :=
-  { r_le := le_trans hf.r_le pf.radius_smul_ge,
+  { r_le := le_trans hf.r_le pf.radius_le_smul,
     r_pos := hf.r_pos
     hasSum := fun hy h'y => (hf.hasSum hy h'y).const_smul _ }
 
-theorem HasFPowerSeriesOnBall.smul_const (hf : HasFPowerSeriesOnBall f pf x r) :
+theorem HasFPowerSeriesOnBall.const_smul (hf : HasFPowerSeriesOnBall f pf x r) :
     HasFPowerSeriesOnBall (c • f) (c • pf) x r :=
-  { r_le := le_trans hf.r_le pf.radius_smul_ge,
+  { r_le := le_trans hf.r_le pf.radius_le_smul,
     r_pos := hf.r_pos
     hasSum := fun hy => (hf.hasSum hy).const_smul _ }
 
-theorem HasFPowerSeriesWithinAt.smul_const (hf : HasFPowerSeriesWithinAt f pf s x) :
+theorem HasFPowerSeriesWithinAt.const_smul (hf : HasFPowerSeriesWithinAt f pf s x) :
     HasFPowerSeriesWithinAt (c • f) (c • pf) s x :=
   let ⟨_, hrf⟩ := hf
-  hrf.smul_const.hasFPowerSeriesWithinAt
+  hrf.const_smul.hasFPowerSeriesWithinAt
 
-theorem HasFPowerSeriesAt.smul_const (hf : HasFPowerSeriesAt f pf x) :
+theorem HasFPowerSeriesAt.const_smul (hf : HasFPowerSeriesAt f pf x) :
     HasFPowerSeriesAt (c • f) (c • pf) x :=
   let ⟨_, hrf⟩ := hf
-  hrf.smul_const.hasFPowerSeriesAt
+  hrf.const_smul.hasFPowerSeriesAt
 
-theorem AnalyticWithinAt.smul_const (hf : AnalyticWithinAt 𝕜 f s x) :
+theorem AnalyticWithinAt.const_smul (hf : AnalyticWithinAt 𝕜 f s x) :
     AnalyticWithinAt 𝕜 (c • f) s x :=
   let ⟨_, hpf⟩ := hf
-  hpf.smul_const.analyticWithinAt
+  hpf.const_smul.analyticWithinAt
 
-theorem AnalyticAt.smul_const (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (c • f) x :=
+theorem AnalyticAt.const_smul (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (c • f) x :=
   let ⟨_, hpf⟩ := hf
-  hpf.smul_const.analyticAt
+  hpf.const_smul.analyticAt
 
 theorem AnalyticOn.add (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (f + g) s :=
