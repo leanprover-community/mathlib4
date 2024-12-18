@@ -3,7 +3,7 @@ Copyright (c) 2022 Jesse Reimann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jesse Reimann, Kalle Kytölä
 -/
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.Analysis.RCLike.Basic
 import Mathlib.MeasureTheory.Measure.Content
 import Mathlib.Topology.ContinuousMap.CompactlySupported
 import Mathlib.Topology.PartitionOfUnity
@@ -340,8 +340,7 @@ lemma rieszContentRegular : (rieszContent Λ).ContentRegular := by
       simp only [hp.1, ENNReal.toNNReal_coe, NNReal.val_eq_coe, map_smul, smul_eq_mul,
         NNReal.coe_mul, Real.coe_toNNReal', ge_iff_le]
       apply le_trans (NNReal.GCongr.toReal_le_toReal hp.2)
-      rw [rieszContent]
-      simp only
+      simp only [rieszContent]
       rw [rieszContentAux, ← Real.coe_toNNReal (α ⊔ 0) (le_max_right α 0), ← NNReal.coe_mul,
         NNReal.coe_le_coe]
       apply csInf_le
@@ -355,8 +354,6 @@ lemma rieszContentRegular : (rieszContent Λ).ContentRegular := by
           rw [← (left_eq_sup.mpr <| le_of_lt (lt_of_le_of_lt zero_le_one hα)), mul_comm]
           apply (inv_le_iff_one_le_mul₀ (lt_trans zero_lt_one hα)).mp
           rw [← Set.mem_Ici]
-          have hxK' : x ∈ K' := by exact hx
-          simp only [mem_preimage, mem_Ici] at hxK'
           simp only [mem_Ici, ge_iff_le]
           exact Real.toNNReal_le_iff_le_coe.mp hx
         · simp only [map_smul, smul_eq_mul, mul_eq_mul_right_iff]
