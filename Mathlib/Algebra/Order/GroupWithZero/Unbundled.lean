@@ -1637,7 +1637,7 @@ lemma mul_inv_lt_iff₀ (hc : 0 < c) : b * c⁻¹ < a ↔ b < a * c where
 lemma lt_div_iff₀ (hc : 0 < c) : a < b / c ↔ a * c < b := by
   rw [div_eq_mul_inv, lt_mul_inv_iff₀ hc]
 
-/-- See `div_le_iff₀'` for a version with multiplication on the other side. -/
+/-- See `div_lt_iff₀'` for a version with multiplication on the other side. -/
 lemma div_lt_iff₀ (hc : 0 < c) : b / c < a ↔ b < a * c := by
   rw [div_eq_mul_inv, mul_inv_lt_iff₀ hc]
 
