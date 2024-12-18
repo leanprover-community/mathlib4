@@ -36,7 +36,7 @@ lemma isClique_universalVerts (G : SimpleGraph V) : G.IsClique G.universalVerts 
 -/
 @[simps!]
 def deleteUniversalVerts (G : SimpleGraph V) : Subgraph G :=
-  ((⊤ : Subgraph G).deleteVerts G.universalVerts)
+  (⊤ : Subgraph G).deleteVerts G.universalVerts
 
 lemma Subgraph.IsMatching.exists_of_universalVerts [Fintype V] {s : Set V}
     (h : Disjoint G.universalVerts s) (hc : s.ncard ≤ G.universalVerts.ncard) :
@@ -45,7 +45,7 @@ lemma Subgraph.IsMatching.exists_of_universalVerts [Fintype V] {s : Set V}
   use t
   refine ⟨ht.1, ?_⟩
   have f : s ≃ t := by
-    simp only [← Set.Nat.card_coe_set_eq, Nat.card.eq_1] at ht
+    simp only [← Set.Nat.card_coe_set_eq, Nat.card] at ht
     have : Nonempty (s ≃ t) := by
       rw [← Cardinal.eq]
       exact Cardinal.toNat_injOn (Set.mem_Iio.mpr (Set.Finite.lt_aleph0 (s.toFinite)))
