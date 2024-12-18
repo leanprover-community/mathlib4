@@ -10,9 +10,9 @@ import Mathlib.Topology.Algebra.ClosedSubgroup
 
 # The Fundamental Theorem of Infinite Galois Theory
 
-In this file, we proved the fundamental theorem of infinite Galois theory and the special case for
-open subgroups and normal subgroups. We first verify that IntermediateField.fixingSubgroup and
-IntermediateField.fixedField are inverses of each other between IntermediateFields and
+In this file, we prove the fundamental theorem of infinite Galois theory and the special case for
+open subgroups and normal subgroups. We first verify that `IntermediateField.fixingSubgroup` and
+`IntermediateField.fixedField` are inverses of each other between intermediate fields and
 closed subgroups of the Galois group.
 
 # Main definitions and results
@@ -25,7 +25,7 @@ In `K/k`, for any intermediate field `L` :
 * `fixedField_fixingSubgroup` : the fixing field of the
   fixing subgroup of `L` is equal to `L` itself.
 
-For any subgroup of `Gal(K/k)` `H` :
+For any subgroup `H` of `Gal(K/k)` :
 
 * `restrict_fixedField` : For a Galois intermediate field `M`, the fixed field of the image of `H`
   restricted to `M` is equal to the fixed field of `H` intersected with `M`.
@@ -56,8 +56,6 @@ namespace InfiniteGalois
 open Pointwise FiniteGaloisIntermediateField AlgEquiv
 --Note: The `adjoin`s below are `FiniteGaloisIntermediateField.adjoin`
 
-instance : TopologicalSpace (K ≃ₐ[k] K) := inferInstance
-
 lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
     IsClosed (L.fixingSubgroup : Set (K ≃ₐ[k] K)) where
     isOpen_compl := isOpen_iff_mem_nhds.mpr fun σ h => by
@@ -81,7 +79,6 @@ lemma fixingSubgroup_isClosed (L : IntermediateField k K) [IsGalois k K] :
 
 lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
     IntermediateField.fixedField L.fixingSubgroup = L := by
-  letI : IsGalois L K := inferInstance
   apply le_antisymm
   · intro x hx
     rw [IntermediateField.mem_fixedField_iff] at hx
@@ -95,8 +92,7 @@ lemma fixedField_fixingSubgroup (L : IntermediateField k K) [IsGalois k K] :
       apply Subtype.val_injective
       rw [← hσ, restrictNormalHom_apply (adjoin L {x}).1 σ ⟨x, mem⟩]
       have := hx ((IntermediateField.fixingSubgroupEquiv L).symm σ)
-      simp only [SetLike.coe_mem, true_implies] at this
-      exact this
+      simpa only [SetLike.coe_mem, true_implies]
     rcases IntermediateField.mem_bot.mp this with ⟨y, hy⟩
     obtain ⟨rfl⟩ : y = x := congrArg Subtype.val hy
     exact y.2
@@ -201,13 +197,8 @@ def GaloisInsertionIntermediateFieldSubgroup [IsGalois k K] :
     GaloisInsertion (OrderDual.toDual ∘ fun (E : IntermediateField k K) ↦
       (⟨E.fixingSubgroup, fixingSubgroup_isClosed E⟩ : ClosedSubgroup (K ≃ₐ[k] K)))
       ((fun (H : ClosedSubgroup (K ≃ₐ[k] K)) ↦ IntermediateField.fixedField H) ∘
-        OrderDual.toDual) where
-  choice E _ := ⟨E.fixingSubgroup, fixingSubgroup_isClosed E⟩
-  gc E H := (IntermediateField.le_iff_le H.1 E).symm
-  le_l_u H := by
-    simp only [Function.comp_apply, fixingSubgroup_fixedField]
-    rfl
-  choice_eq _ _ := rfl
+        OrderDual.toDual) :=
+  OrderIso.toGaloisInsertion IntermediateFieldEquivClosedSubgroup
 
 /-- The Galois correspondence as a `GaloisCoinsertion` -/
 def GaloisCoinsertionIntermediateFieldSubgroup [IsGalois k K] :
