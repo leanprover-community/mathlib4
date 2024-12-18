@@ -292,7 +292,7 @@ lemma rieszContentRegular : (rieszContent Λ).ContentRegular := by
     simp only [NNReal.coe_le_coe, ← NNReal.coe_le_coe]
     apply le_iff_forall_pos_le_add.mpr
     intro ε hε
-    set εnn : ℝ≥0 := ⟨ε, le_of_lt hε⟩ with hεnn
+    set εnn : ℝ≥0 := ⟨ε, le_of_lt hε⟩
     have εnneq : ε.toNNReal = εnn := Real.toNNReal_of_nonneg (le_of_lt hε)
     rw [← NNReal.coe_mk ε (le_of_lt hε), ← NNReal.coe_add, NNReal.coe_le_coe]
     obtain ⟨f, hfleoneonK, hfle⟩ := exists_lt_rieszContentAux_add_pos Λ K (Real.toNNReal_pos.mpr hε)
