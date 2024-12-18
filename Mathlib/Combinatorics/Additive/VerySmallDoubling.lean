@@ -32,11 +32,11 @@ private lemma smul_stabilizer_of_no_doubling_aux (hA : #(A * A) ≤ #A) (ha : a 
     a •> (stabilizer G A : Set G) = A ∧ (stabilizer G A : Set G) <• a = A := by
   have smul_A {a} (ha : a ∈ A) : a •> A = A * A :=
     eq_of_subset_of_card_le (smul_finset_subset_mul ha) (by simpa)
-  have op_smul_A {a} (ha : a ∈ A) : A <• a = A * A :=
+  have A_smul {a} (ha : a ∈ A) : A <• a = A * A :=
     eq_of_subset_of_card_le (op_smul_finset_subset_mul ha) (by simpa)
-  have smul_A_eq_op_smul_A {a} (ha : a ∈ A) : a •> A = A <• a := by rw [smul_A ha, op_smul_A ha]
+  have smul_A_eq_A_smul {a} (ha : a ∈ A) : a •> A = A <• a := by rw [smul_A ha, A_smul ha]
   have mul_mem_A_comm {x a} (ha : a ∈ A) : x * a ∈ A ↔ a * x ∈ A := by
-    rw [← smul_mem_smul_finset_iff a, smul_A_eq_op_smul_A ha, ← op_smul_eq_mul, smul_comm,
+    rw [← smul_mem_smul_finset_iff a, smul_A_eq_A_smul ha, ← op_smul_eq_mul, smul_comm,
       smul_mem_smul_finset_iff, smul_eq_mul]
   let H := stabilizer G A
   have inv_smul_A {a} (ha : a ∈ A) : a⁻¹ • (A : Set G) = H := by
@@ -50,7 +50,7 @@ private lemma smul_stabilizer_of_no_doubling_aux (hA : #(A * A) ≤ #A) (ha : a 
   · rw [← inv_smul_A ha, smul_inv_smul]
   · rw [← inv_smul_A ha, smul_comm]
     norm_cast
-    rw [← smul_A_eq_op_smul_A ha, inv_smul_smul]
+    rw [← smul_A_eq_A_smul ha, inv_smul_smul]
 
 /-- A non-empty set with no doubling is the left translate of its stabilizer. -/
 @[to_additive "A non-empty set with no doubling is the left-translate of its stabilizer."]
