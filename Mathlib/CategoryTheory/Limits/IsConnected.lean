@@ -132,7 +132,7 @@ theorem isConnected_iff_of_final (F : C ⥤ D) [F.Final] : IsConnected C ↔ IsC
 
 /-- The domain of an initial functor is connected if and only if its codomain is connected. -/
 theorem isConnected_iff_of_initial (F : C ⥤ D) [F.Initial] : IsConnected C ↔ IsConnected D := by
-  rw [isConnected_iff_isConnected_op C, isConnected_iff_isConnected_op D]
+  rw [← isConnected_op_iff_isConnected C, ← isConnected_op_iff_isConnected D]
   exact isConnected_iff_of_final F.op
 
 end Functor
