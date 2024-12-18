@@ -126,7 +126,7 @@ variable {D : Type*} [Category D] [HasShift D B] (F : C ⥤ D) [F.CommShift B]
 their pullbacks by an additive map.
 -/
 @[simps]
-noncomputable def CommShift.pullback :
+noncomputable def commShiftPullback :
     F.CommShift A (C := PullbackShift C φ) (D := PullbackShift D φ)
     where
   iso a := isoWhiskerRight (pullbackShiftIso C φ a (φ a) rfl) F ≪≫
