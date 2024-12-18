@@ -985,32 +985,30 @@ variable {f : E → (E →L[𝕜] F)} {pf : FormalMultilinearSeries 𝕜 E (E �
   {r : ℝ≥0∞} {z : F}
 
 theorem HasFPowerSeriesWithinOnBall.unshift (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
-    HasFPowerSeriesWithinOnBall (fun y ↦ z + f y (y - x)) (pf.unshift z) s x r :=
-  { r_le := by
-      rw [FormalMultilinearSeries.radius_unshift]
-      exact hf.r_le
-    r_pos := hf.r_pos
-    hasSum := by
-      intro y hy h'y
-      apply HasSum.zero_add
-      simp only [FormalMultilinearSeries.unshift, Nat.succ_eq_add_one,
-        continuousMultilinearCurryRightEquiv_symm_apply', add_sub_cancel_left]
-      exact (ContinuousLinearMap.apply 𝕜 F y).hasSum (hf.hasSum hy h'y)
-  }
+    HasFPowerSeriesWithinOnBall (fun y ↦ z + f y (y - x)) (pf.unshift z) s x r where
+  r_le := by
+    rw [FormalMultilinearSeries.radius_unshift]
+    exact hf.r_le
+  r_pos := hf.r_pos
+  hasSum := by
+    intro y hy h'y
+    apply HasSum.zero_add
+    simp only [FormalMultilinearSeries.unshift, Nat.succ_eq_add_one,
+      continuousMultilinearCurryRightEquiv_symm_apply', add_sub_cancel_left]
+    exact (ContinuousLinearMap.apply 𝕜 F y).hasSum (hf.hasSum hy h'y)
 
 theorem HasFPowerSeriesOnBall.unshift (hf : HasFPowerSeriesOnBall f pf x r) :
-    HasFPowerSeriesOnBall (fun y ↦ z + f y (y - x)) (pf.unshift z) x r :=
-  { r_le := by
-      rw [FormalMultilinearSeries.radius_unshift]
-      exact hf.r_le
-    r_pos := hf.r_pos
-    hasSum := by
-      intro y hy
-      apply HasSum.zero_add
-      simp only [FormalMultilinearSeries.unshift, Nat.succ_eq_add_one,
-        continuousMultilinearCurryRightEquiv_symm_apply', add_sub_cancel_left]
-      exact (ContinuousLinearMap.apply 𝕜 F y).hasSum (hf.hasSum hy)
-  }
+    HasFPowerSeriesOnBall (fun y ↦ z + f y (y - x)) (pf.unshift z) x r where
+  r_le := by
+    rw [FormalMultilinearSeries.radius_unshift]
+    exact hf.r_le
+  r_pos := hf.r_pos
+  hasSum := by
+    intro y hy
+    apply HasSum.zero_add
+    simp only [FormalMultilinearSeries.unshift, Nat.succ_eq_add_one,
+      continuousMultilinearCurryRightEquiv_symm_apply', add_sub_cancel_left]
+    exact (ContinuousLinearMap.apply 𝕜 F y).hasSum (hf.hasSum hy)
 
 theorem HasFPowerSeriesWithinAt.unshift (hf : HasFPowerSeriesWithinAt f pf s x) :
     HasFPowerSeriesWithinAt (fun y ↦ z + f y (y - x)) (pf.unshift z) s x :=
