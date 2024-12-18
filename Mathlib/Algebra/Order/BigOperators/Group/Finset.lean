@@ -140,7 +140,7 @@ theorem prod_le_univ_prod_of_one_le' [Fintype ι] {s : Finset ι} (w : ∀ x, 1 
     ∏ x ∈ s, f x ≤ ∏ x, f x :=
   prod_le_prod_of_subset_of_one_le' (subset_univ s) fun a _ _ ↦ w a
 
--- Porting note (#11215): TODO -- The two next lemmas give the same lemma in additive version
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO -- The two next lemmas give the same lemma in additive version
 @[to_additive sum_eq_zero_iff_of_nonneg]
 theorem prod_eq_one_iff_of_one_le' :
     (∀ i ∈ s, 1 ≤ f i) → ((∏ i ∈ s, f i) = 1 ↔ ∀ i ∈ s, f i = 1) := by
@@ -399,7 +399,7 @@ strictly less than the corresponding summand `g i` of another nontrivial finite 
 `s.sum f < s.sum g`. -/
 add_decl_doc sum_lt_sum_of_nonempty
 
--- Porting note (#11215): TODO -- calc indentation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO -- calc indentation
 @[to_additive sum_lt_sum_of_subset]
 theorem prod_lt_prod_of_subset' (h : s ⊆ t) {i : ι} (ht : i ∈ t) (hs : i ∉ s) (hlt : 1 < f i)
     (hle : ∀ j ∈ t, j ∉ s → 1 ≤ f j) : ∏ j ∈ s, f j < ∏ j ∈ t, f j := by
@@ -550,10 +550,8 @@ end Fintype
 
 namespace Multiset
 
-theorem finset_sum_eq_sup_iff_disjoint [DecidableEq α] {β : Type*} {i : Finset β}
-    {f : β → Multiset α} :
-    i.sum f = i.sup f ↔
-      ∀ᵉ (x ∈ i) (y ∈ i), x ≠ y → Multiset.Disjoint (f x) (f y) := by
+theorem finset_sum_eq_sup_iff_disjoint [DecidableEq α] {i : Finset β} {f : β → Multiset α} :
+    i.sum f = i.sup f ↔ ∀ x ∈ i, ∀ y ∈ i, x ≠ y → Disjoint (f x) (f y) := by
   induction' i using Finset.cons_induction_on with z i hz hr
   · simp only [Finset.not_mem_empty, IsEmpty.forall_iff, imp_true_iff, Finset.sum_empty,
       Finset.sup_empty, bot_eq_zero, eq_self_iff_true]
@@ -561,12 +559,12 @@ theorem finset_sum_eq_sup_iff_disjoint [DecidableEq α] {β : Type*} {i : Finset
       forall_eq_or_imp, Ne, not_true_eq_false, IsEmpty.forall_iff, true_and,
       imp_and, forall_and, ← hr, @eq_comm _ z]
     have := fun x (H : x ∈ i) => ne_of_mem_of_not_mem H hz
-    simp (config := { contextual := true }) only [this, not_false_iff, true_imp_iff]
+    simp +contextual only [this, not_false_iff, true_imp_iff]
     simp_rw [← disjoint_finset_sum_left, ← disjoint_finset_sum_right, disjoint_comm, ← and_assoc,
       and_self_iff]
     exact add_eq_union_left_of_le (Finset.sup_le fun x hx => le_sum_of_mem (mem_map_of_mem f hx))
 
-theorem sup_powerset_len {α : Type*} [DecidableEq α] (x : Multiset α) :
+theorem sup_powerset_len [DecidableEq α] (x : Multiset α) :
     (Finset.sup (Finset.range (card x + 1)) fun k => x.powersetCard k) = x.powerset := by
   convert bind_powerset_len x using 1
   rw [Multiset.bind, Multiset.join, ← Finset.range_val, ← Finset.sum_eq_multiset_sum]

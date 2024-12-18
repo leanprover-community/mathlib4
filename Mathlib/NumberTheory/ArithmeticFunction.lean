@@ -299,7 +299,7 @@ theorem one_smul' (b : ArithmeticFunction M) : (1 : ArithmeticFunction R) • b 
   intro y ymem ynmem
   have y1ne : y.fst ≠ 1 := by
     intro con
-    simp only [Con, mem_divisorsAntidiagonal, one_mul, Ne] at ymem
+    simp only [mem_divisorsAntidiagonal, one_mul, Ne] at ymem
     simp only [mem_singleton, Prod.ext_iff] at ynmem
     -- Porting note: `tauto` worked from here.
     cases y
@@ -331,7 +331,7 @@ instance instMonoid : Monoid (ArithmeticFunction R) :=
       have y2ne : y.snd ≠ 1 := by
         intro con
         cases y; subst con -- Porting note: added
-        simp only [Con, mem_divisorsAntidiagonal, mul_one, Ne] at ymem
+        simp only [mem_divisorsAntidiagonal, mul_one, Ne] at ymem
         simp only [mem_singleton, Prod.ext_iff] at ynmem
         tauto
       simp [y2ne]
@@ -776,7 +776,7 @@ end IsMultiplicative
 section SpecialFunctions
 
 /-- The identity on `ℕ` as an `ArithmeticFunction`. -/
-nonrec  -- Porting note (#11445): added
+nonrec  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): added
 def id : ArithmeticFunction ℕ :=
   ⟨id, rfl⟩
 
@@ -849,7 +849,7 @@ theorem isMultiplicative_one [MonoidWithZero R] : IsMultiplicative (1 : Arithmet
 
 @[arith_mult]
 theorem isMultiplicative_zeta : IsMultiplicative ζ :=
-  IsMultiplicative.iff_ne_zero.2 ⟨by simp, by simp (config := { contextual := true })⟩
+  IsMultiplicative.iff_ne_zero.2 ⟨by simp, by simp +contextual⟩
 
 @[arith_mult]
 theorem isMultiplicative_id : IsMultiplicative ArithmeticFunction.id :=
@@ -1291,7 +1291,8 @@ theorem _root_.Nat.card_divisors {n : ℕ} (hn : n ≠ 0) :
   exact Finset.prod_congr n.support_factorization fun _ h =>
     sigma_zero_apply_prime_pow <| Nat.prime_of_mem_primeFactors h
 
-@[deprecated (since := "2024-06-09")] theorem card_divisors (n : ℕ) (hn : n ≠ 0) :
+@[deprecated "No deprecation message was provided." (since := "2024-06-09")]
+theorem card_divisors (n : ℕ) (hn : n ≠ 0) :
     #n.divisors = n.primeFactors.prod (n.factorization · + 1) := Nat.card_divisors hn
 
 theorem _root_.Nat.sum_divisors {n : ℕ} (hn : n ≠ 0) :

@@ -20,7 +20,7 @@ open Filter Finset Function
 
 open scoped Topology
 
-variable {α β γ δ : Type*}
+variable {α β γ : Type*}
 
 section TopologicalGroup
 
@@ -126,6 +126,30 @@ theorem hasProd_ite_div_hasProd [DecidableEq β] (hf : HasProd f a) (b : β) :
     rw [Function.update_apply]
   · rw [div_mul_eq_mul_div, one_mul]
 
+/-- A more general version of `Multipliable.congr`, allowing the functions to
+disagree on a finite set. -/
+@[to_additive "A more general version of `Summable.congr`, allowing the functions to
+disagree on a finite set."]
+theorem Multipliable.congr_cofinite (hf : Multipliable f) (hfg : f =ᶠ[cofinite] g) :
+    Multipliable g :=
+  hfg.multipliable_compl_iff.mp <| (hfg.multipliable_compl_iff.mpr hf).congr (by simp)
+
+/-- A more general version of `multipliable_congr`, allowing the functions to
+disagree on a finite set. -/
+@[to_additive "A more general version of `summable_congr`, allowing the functions to
+disagree on a finite set."]
+theorem multipliable_congr_cofinite (hfg : f =ᶠ[cofinite] g) :
+    Multipliable f ↔ Multipliable g :=
+  ⟨fun h ↦ h.congr_cofinite hfg, fun h ↦ h.congr_cofinite (hfg.mono fun _ h' ↦ h'.symm)⟩
+
+@[to_additive]
+theorem Multipliable.congr_atTop {f₁ g₁ : ℕ → α} (hf : Multipliable f₁) (hfg : f₁ =ᶠ[atTop] g₁) :
+    Multipliable g₁ := hf.congr_cofinite (Nat.cofinite_eq_atTop ▸ hfg)
+
+@[to_additive]
+theorem multipliable_congr_atTop {f₁ g₁ : ℕ → α} (hfg : f₁ =ᶠ[atTop] g₁) :
+    Multipliable f₁ ↔ Multipliable g₁ := multipliable_congr_cofinite (Nat.cofinite_eq_atTop ▸ hfg)
+
 section tprod
 
 variable [T2Space α]
@@ -173,7 +197,7 @@ theorem multipliable_iff_cauchySeq_finset [CompleteSpace α] {f : β → α} :
     Multipliable f ↔ CauchySeq fun s : Finset β ↦ ∏ b ∈ s, f b := by
   classical exact cauchy_map_iff_exists_tendsto.symm
 
-variable [UniformGroup α] {f g : β → α} {a a₁ a₂ : α}
+variable [UniformGroup α] {f g : β → α}
 
 @[to_additive]
 theorem cauchySeq_finset_iff_prod_vanishing :

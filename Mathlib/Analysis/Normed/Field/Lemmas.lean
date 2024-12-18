@@ -5,7 +5,8 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 
 import Mathlib.Algebra.Group.AddChar
-import Mathlib.Algebra.Order.Ring.Finset
+import Mathlib.Algebra.Group.TypeTags.Finite
+import Mathlib.Algebra.Order.GroupWithZero.Finset
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Analysis.Normed.Group.Rat
@@ -59,7 +60,7 @@ instance Pi.nonUnitalSeminormedRing {π : ι → Type*} [Fintype ι]
               Finset.univ.sup ((fun i => ‖x i‖₊) * fun i => ‖y i‖₊) :=
             Finset.sup_mono_fun fun _ _ => norm_mul_le _ _
           _ ≤ (Finset.univ.sup fun i => ‖x i‖₊) * Finset.univ.sup fun i => ‖y i‖₊ :=
-            Finset.sup_mul_le_mul_sup_of_nonneg _ (fun _ _ => zero_le _) fun _ _ => zero_le _
+            Finset.sup_mul_le_mul_sup_of_nonneg (fun _ _ => zero_le _) fun _ _ => zero_le _
            }
 
 end NonUnitalSeminormedRing
@@ -157,8 +158,7 @@ instance (priority := 100) NonUnitalSeminormedRing.toContinuousMul [NonUnitalSem
           intro e
           calc
             ‖e.1 * e.2 - x.1 * x.2‖ ≤ ‖e.1 * (e.2 - x.2) + (e.1 - x.1) * x.2‖ := by
-              rw [_root_.mul_sub, _root_.sub_mul, sub_add_sub_cancel]
-            -- Porting note: `ENNReal.{mul_sub, sub_mul}` should be protected
+              rw [mul_sub, sub_mul, sub_add_sub_cancel]
             _ ≤ ‖e.1‖ * ‖e.2 - x.2‖ + ‖e.1 - x.1‖ * ‖x.2‖ :=
               norm_add_le_of_le (norm_mul_le _ _) (norm_mul_le _ _)
         refine squeeze_zero (fun e => norm_nonneg _) this ?_
@@ -297,9 +297,8 @@ instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContin
     have e0 : e ≠ 0 := norm_pos_iff.1 (ε0.trans he)
     calc
       ‖e⁻¹ - r⁻¹‖ = ‖r‖⁻¹ * ‖r - e‖ * ‖e‖⁻¹ := by
-        rw [← norm_inv, ← norm_inv, ← norm_mul, ← norm_mul, _root_.mul_sub, _root_.sub_mul,
+        rw [← norm_inv, ← norm_inv, ← norm_mul, ← norm_mul, mul_sub, sub_mul,
           mul_assoc _ e, inv_mul_cancel₀ r0, mul_inv_cancel₀ e0, one_mul, mul_one]
-      -- Porting note: `ENNReal.{mul_sub, sub_mul}` should be `protected`
       _ = ‖r - e‖ / ‖r‖ / ‖e‖ := by field_simp [mul_comm]
       _ ≤ ‖r - e‖ / ‖r‖ / ε := by gcongr
   refine squeeze_zero' (Eventually.of_forall fun _ => norm_nonneg _) this ?_
@@ -430,7 +429,7 @@ lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormedFie
   · exact Metric.isClosed_ball.isComplete
   rcases NormedField.discreteTopology_or_nontriviallyNormedField K with _|⟨_, rfl⟩
   · rwa [completeSpace_iff_isComplete_univ,
-         ← NormedDivisionRing.discreteTopology_unit_closedBall_eq_univ]
+         ← NormedDivisionRing.unitClosedBall_eq_univ_of_discrete]
   refine Metric.complete_of_cauchySeq_tendsto fun u hu ↦ ?_
   obtain ⟨k, hk⟩ := hu.norm_bddAbove
   have kpos : 0 ≤ k := (_root_.norm_nonneg (u 0)).trans (hk (by simp))

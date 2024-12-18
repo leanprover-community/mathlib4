@@ -59,10 +59,10 @@ theorem coe_product (s : Finset α) (t : Finset β) :
   Set.ext fun _ => Finset.mem_product
 
 theorem subset_product_image_fst [DecidableEq α] : (s ×ˢ t).image Prod.fst ⊆ s := fun i => by
-  simp (config := { contextual := true }) [mem_image]
+  simp +contextual [mem_image]
 
 theorem subset_product_image_snd [DecidableEq β] : (s ×ˢ t).image Prod.snd ⊆ t := fun i => by
-  simp (config := { contextual := true }) [mem_image]
+  simp +contextual [mem_image]
 
 theorem product_image_fst [DecidableEq α] (ht : t.Nonempty) : (s ×ˢ t).image Prod.fst = s := by
   ext i
@@ -262,7 +262,7 @@ variable {s} {x : α × α}
 
 @[simp]
 theorem mem_diag : x ∈ s.diag ↔ x.1 ∈ s ∧ x.1 = x.2 := by
-  simp (config := { contextual := true }) [diag]
+  simp +contextual [diag]
 
 @[simp]
 theorem mem_offDiag : x ∈ s.offDiag ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 := by

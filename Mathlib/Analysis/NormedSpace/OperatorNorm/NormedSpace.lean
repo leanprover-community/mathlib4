@@ -16,7 +16,8 @@ underlying space has a norm (rather than just a seminorm).
 
 suppress_compilation
 
-open scoped NNReal Topology
+open Topology
+open scoped NNReal
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {𝕜 𝕜₂ 𝕜₃ E F Fₗ G : Type*}

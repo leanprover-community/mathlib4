@@ -76,9 +76,8 @@ Versions of these results are also given on the intervals `(-∞, a]` and `(-∞
 the corresponding versions of integration by parts.
 -/
 
-open MeasureTheory Filter Set TopologicalSpace
-
-open scoped ENNReal NNReal Topology
+open MeasureTheory Filter Set TopologicalSpace Topology
+open scoped ENNReal NNReal
 
 namespace MeasureTheory
 
@@ -389,9 +388,7 @@ theorem AECover.iSup_lintegral_eq_of_countably_generated [Nonempty ι] [l.NeBot]
   have := hφ.lintegral_tendsto_of_countably_generated hfm
   refine ciSup_eq_of_forall_le_of_forall_lt_exists_gt
     (fun i => lintegral_mono' Measure.restrict_le_self le_rfl) fun w hw => ?_
-  rcases exists_between hw with ⟨m, hm₁, hm₂⟩
-  rcases (eventually_ge_of_tendsto_gt hm₂ this).exists with ⟨i, hi⟩
-  exact ⟨i, lt_of_lt_of_le hm₁ hi⟩
+  exact (this.eventually_const_lt hw).exists
 
 end Lintegral
 
@@ -975,7 +972,7 @@ lemma _root_.HasCompactSupport.ennnorm_le_lintegral_Ici_deriv
     exact ennnorm_integral_le_lintegral_ennnorm _
   convert this with y
   · simp [f', I, Completion.nnnorm_coe]
-  · rw [fderiv.comp_deriv _ I.differentiableAt (hf.differentiable le_rfl _)]
+  · rw [fderiv_comp_deriv _ I.differentiableAt (hf.differentiable le_rfl _)]
     simp only [ContinuousLinearMap.fderiv]
     simp [I]
 
