@@ -525,7 +525,7 @@ instance : IsAdicComplete (maximalIdeal ℤ_[p]) ℤ_[p] where
       rw [← neg_sub, norm_neg]
       exact hx hn
     · refine ⟨x'.lim, fun n => ?_⟩
-      have : (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) := mod_cast zpow_pos hp.out.pos
+      have : (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) := zpow_pos (mod_cast hp.out.pos) _
       obtain ⟨i, hi⟩ := equiv_def₃ (equiv_lim x') this
       by_cases hin : i ≤ n
       · exact (hi i le_rfl n hin).le
