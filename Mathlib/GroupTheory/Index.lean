@@ -374,6 +374,15 @@ theorem card_eq_one : Nat.card H = 1 ↔ H = ⊥ :=
   H.relindex_bot_left ▸ relindex_eq_one.trans le_bot_iff
 
 @[to_additive]
+lemma inf_eq_bot_of_coprime {G : Type*} [Group G] {H K : Subgroup G}
+    (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
+  card_eq_one.mp (Nat.eq_one_of_dvd_coprimes h
+    (card_dvd_of_le inf_le_left) (card_dvd_of_le inf_le_right))
+
+@[deprecated (since := "2024-12-18")]
+alias _root_.add_inf_eq_bot_of_coprime := AddSubgroup.inf_eq_bot_of_coprime
+
+@[to_additive]
 theorem index_ne_zero_of_finite [hH : Finite (G ⧸ H)] : H.index ≠ 0 := by
   cases nonempty_fintype (G ⧸ H)
   rw [index_eq_card]
