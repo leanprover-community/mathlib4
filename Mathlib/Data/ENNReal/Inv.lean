@@ -91,7 +91,8 @@ protected theorem mul_inv_cancel (h0 : a ≠ 0) (ht : a ≠ ∞) : a * a⁻¹ = 
 protected theorem inv_mul_cancel (h0 : a ≠ 0) (ht : a ≠ ∞) : a⁻¹ * a = 1 :=
   mul_comm a a⁻¹ ▸ ENNReal.mul_inv_cancel h0 ht
 
-protected lemma inv_mul_cancel_left (ha₀ : a = 0 → b = 0) (ha : a = ∞ → b = 0) :
+/-- See `ENNReal.inv_mul_cancel_left` for a simpler version assuming `a ≠ 0`, `a ≠ ∞`. -/
+protected lemma inv_mul_cancel_left' (ha₀ : a = 0 → b = 0) (ha : a = ∞ → b = 0) :
     a⁻¹ * (a * b) = b := by
   obtain rfl | ha₀ := eq_or_ne a 0
   · simp_all
@@ -99,7 +100,12 @@ protected lemma inv_mul_cancel_left (ha₀ : a = 0 → b = 0) (ha : a = ∞ → 
   · simp_all
   · simp [← mul_assoc, ENNReal.inv_mul_cancel, *]
 
-protected lemma mul_inv_cancel_left (ha₀ : a = 0 → b = 0) (ha : a = ∞ → b = 0) :
+/-- See `ENNReal.inv_mul_cancel_left'` for a stronger version. -/
+protected lemma inv_mul_cancel_left (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a⁻¹ * (a * b) = b :=
+  ENNReal.inv_mul_cancel_left' (by simp [ha₀]) (by simp [ha])
+
+/-- See `ENNReal.mul_inv_cancel_left` for a simpler version assuming `a ≠ 0`, `a ≠ ∞`. -/
+protected lemma mul_inv_cancel_left' (ha₀ : a = 0 → b = 0) (ha : a = ∞ → b = 0) :
     a * (a⁻¹ * b) = b := by
   obtain rfl | ha₀ := eq_or_ne a 0
   · simp_all
@@ -107,7 +113,12 @@ protected lemma mul_inv_cancel_left (ha₀ : a = 0 → b = 0) (ha : a = ∞ → 
   · simp_all
   · simp [← mul_assoc, ENNReal.mul_inv_cancel, *]
 
-protected lemma mul_inv_cancel_right (hb₀ : b = 0 → a = 0) (hb : b = ∞ → a = 0) :
+/-- See `ENNReal.mul_inv_cancel_left'` for a stronger version. -/
+protected lemma mul_inv_cancel_left (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a * (a⁻¹ * b) = b :=
+  ENNReal.mul_inv_cancel_left' (by simp [ha₀]) (by simp [ha])
+
+/-- See `ENNReal.mul_inv_cancel_right` for a simpler version assuming `b ≠ 0`, `b ≠ ∞`. -/
+protected lemma mul_inv_cancel_right' (hb₀ : b = 0 → a = 0) (hb : b = ∞ → a = 0) :
     a * b * b⁻¹ = a := by
   obtain rfl | hb₀ := eq_or_ne b 0
   · simp_all
@@ -115,7 +126,12 @@ protected lemma mul_inv_cancel_right (hb₀ : b = 0 → a = 0) (hb : b = ∞ →
   · simp_all
   · simp [mul_assoc, ENNReal.mul_inv_cancel, *]
 
-protected lemma inv_mul_cancel_right (hb₀ : b = 0 → a = 0) (hb : b = ∞ → a = 0) :
+/-- See `ENNReal.mul_inv_cancel_right'` for a stronger version. -/
+protected lemma mul_inv_cancel_right (hb₀ : b ≠ 0) (hb : b ≠ ∞) : a * b * b⁻¹ = a :=
+  ENNReal.mul_inv_cancel_right' (by simp [hb₀]) (by simp [hb])
+
+/-- See `ENNReal.inv_mul_cancel_right` for a simpler version assuming `b ≠ 0`, `b ≠ ∞`. -/
+protected lemma inv_mul_cancel_right' (hb₀ : b = 0 → a = 0) (hb : b = ∞ → a = 0) :
     a * b⁻¹ * b = a := by
   obtain rfl | hb₀ := eq_or_ne b 0
   · simp_all
@@ -123,16 +139,33 @@ protected lemma inv_mul_cancel_right (hb₀ : b = 0 → a = 0) (hb : b = ∞ →
   · simp_all
   · simp [mul_assoc, ENNReal.inv_mul_cancel, *]
 
-protected lemma mul_div_cancel_right (hb₀ : b = 0 → a = 0) (hb : b = ∞ → a = 0) :
-    a * b / b = a := ENNReal.mul_inv_cancel_right hb₀ hb
+/-- See `ENNReal.inv_mul_cancel_right'` for a stronger version. -/
+protected lemma inv_mul_cancel_right (hb₀ : b ≠ 0) (hb : b ≠ ∞) : a * b⁻¹ * b = a :=
+  ENNReal.inv_mul_cancel_right' (by simp [hb₀]) (by simp [hb])
 
-protected theorem div_mul_cancel (ha₀ : a ≠ 0) (ha : a ≠ ∞) : b / a * a = b :=
-  ENNReal.inv_mul_cancel_right (by simp [ha₀]) (by simp [ha])
+/-- See `ENNReal.mul_div_cancel_right` for a simpler version assuming `b ≠ 0`, `b ≠ ∞`. -/
+protected lemma mul_div_cancel_right' (hb₀ : b = 0 → a = 0) (hb : b = ∞ → a = 0) :
+    a * b / b = a := ENNReal.mul_inv_cancel_right' hb₀ hb
 
-protected theorem mul_div_cancel (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a * (b / a) = b := by
-  rw [mul_comm, ENNReal.div_mul_cancel ha₀ ha]
+/-- See `ENNReal.mul_div_cancel_right'` for a stronger version. -/
+protected lemma mul_div_cancel_right (hb₀ : b ≠ 0) (hb : b ≠ ∞) : a * b / b = a :=
+  ENNReal.mul_div_cancel_right' (by simp [hb₀]) (by simp [hb])
 
-@[deprecated (since := "2024-12-10")] protected alias mul_div_cancel' := ENNReal.mul_div_cancel
+/-- See `ENNReal.div_mul_cancel` for a simpler version assuming `a ≠ 0`, `a ≠ ∞`. -/
+protected lemma div_mul_cancel' (ha₀ : a = 0 → b = 0) (ha : a = ∞ → b = 0) : b / a * a = b :=
+  ENNReal.inv_mul_cancel_right' ha₀ ha
+
+/-- See `ENNReal.div_mul_cancel'` for a stronger version. -/
+protected lemma div_mul_cancel (ha₀ : a ≠ 0) (ha : a ≠ ∞) : b / a * a = b :=
+  ENNReal.div_mul_cancel' (by simp [ha₀]) (by simp [ha])
+
+/-- See `ENNReal.mul_div_cancel` for a simpler version assuming `a ≠ 0`, `a ≠ ∞`. -/
+protected lemma mul_div_cancel' (ha₀ : a = 0 → b = 0) (ha : a = ∞ → b = 0) : a * (b / a) = b := by
+  rw [mul_comm, ENNReal.div_mul_cancel' ha₀ ha]
+
+/-- See `ENNReal.mul_div_cancel'` for a stronger version. -/
+protected lemma mul_div_cancel (ha₀ : a ≠ 0) (ha : a ≠ ∞) : a * (b / a) = b :=
+  ENNReal.mul_div_cancel' (by simp [ha₀]) (by simp [ha])
 
 -- Porting note: `simp only [div_eq_mul_inv, mul_comm, mul_assoc]` doesn't work in the following two
 protected theorem mul_comm_div : a / b * c = a * (c / b) := by
