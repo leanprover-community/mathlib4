@@ -24,24 +24,25 @@ choice of the fundamental domain of `L`.
 * `ZLattice.covolume_eq_det`: if `L` is a lattice in `ℝ^n`, then its covolume is the absolute
 value of the determinant of any `ℤ`-basis of `L`.
 
-* `Zlattice.covolume.tendsto_card_div_pow`: Let `s` be a bounded measurable set of `ι → ℝ`, then
+* `ZLattice.covolume.tendsto_card_div_pow`: Let `s` be a bounded measurable set of `ι → ℝ`, then
 the number of points in `s ∩ n⁻¹ • L` divided by `n ^ card ι` tends to `volume s / covolume L`
-when `n : ℕ` tends to infinity. See also `Zlattice.covolume.tendsto_card_div_pow'` for a version
-for `InnerProductSpace ℝ E` and `Zlattice.covolume.tendsto_card_div_pow''` for the general version.
+when `n : ℕ` tends to infinity. See also `ZLattice.covolume.tendsto_card_div_pow'` for a version
+for `InnerProductSpace ℝ E` and `ZLattice.covolume.tendsto_card_div_pow''` for the general version.
 
-* `Zlattice.covolume.tendsto_card_le_div`: Let `X` be a cone in `ι → ℝ` and let `F : (ι → ℝ) → ℝ`
+* `ZLattice.covolume.tendsto_card_le_div`: Let `X` be a cone in `ι → ℝ` and let `F : (ι → ℝ) → ℝ`
 be a function such that `F (c • x) = c ^ card ι * F x`. Then the number of points `x ∈ X` such that
 `F x ≤ c` divided by `c` tends to `volume {x ∈ X | F x ≤ 1} / covolume L` when `c : ℝ` tends to
-infinity. See also `Zlattice.covolume.tendsto_card_le_div'` for a version for
-`InnerProductSpace ℝ E` and `Zlattice.covolume.tendsto_card_le_div''` for the general version.
+infinity. See also `ZLattice.covolume.tendsto_card_le_div'` for a version for
+`InnerProductSpace ℝ E` and `ZLattice.covolume.tendsto_card_le_div''` for the general version.
 
 ## Naming convention
 
-Some results are true in the pi case `E` where is `ι → ℝ` and in the case `E` is an
-`InnerProductSpace`. We use the following convention: the plain name is for the pi case, for eg.
-`volume_image_eq_volume_div_covolume`. For the same result in the `InnerProductSpace` case, we add
-a `prime`, for eg. `volume_image_eq_volume_div_covolume'`. When the same result exists in the
-general case, we had two primes, eg. `Zlattice.covolume.tendsto_card_div_pow''`.
+Some results are true in the case where the ambient finite dimensional real vector space is the
+pi-space `ι → ℝ` and in the case where it is an `InnerProductSpace`. We use the following
+convention: the plain name is for the pi case, for eg. `volume_image_eq_volume_div_covolume`. For
+the same result in the `InnerProductSpace` case, we add a `prime`, for eg.
+`volume_image_eq_volume_div_covolume'`. When the same result exists in the
+general case, we had two primes, eg. `covolume.tendsto_card_div_pow''`.
 
 -/
 
@@ -121,7 +122,7 @@ theorem covolume_eq_det_inv {ι : Type*} [Fintype ι] [DecidableEq ι] (L : Subm
     covolume L = |(LinearEquiv.det (b.ofZLatticeBasis ℝ L).equivFun : ℝ)|⁻¹ := by
   rw [covolume_eq_det L b, ← Pi.basisFun_det_apply, show (((↑) : L → _) ∘ ⇑b) =
     (b.ofZLatticeBasis ℝ) by ext; simp, ← Basis.det_inv, ← abs_inv, Units.val_inv_eq_inv_val,
-    IsUnit.unit_spec, Basis.det_basis, LinearEquiv.coe_det]
+    IsUnit.unit_spec, ← Basis.det_basis, LinearEquiv.coe_det]
   rfl
 
 theorem volume_image_eq_volume_div_covolume {ι : Type*} [Fintype ι] [DecidableEq ι]
