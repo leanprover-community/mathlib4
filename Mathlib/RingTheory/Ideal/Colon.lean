@@ -102,7 +102,7 @@ lemma colon_eq_annihilator_map_mkQ : N.colon P = annihilator (P.map N.mkQ) := by
 theorem annihilator_quotient {N : Submodule R M} :
     Module.annihilator R (M ⧸ N) = N.colon ⊤ := by
   simp_rw [SetLike.ext_iff, Module.mem_annihilator, colon_eq_annihilator_map_mkQ, mem_annihilator,
-      map_top, LinearMap.range_eq_top.mpr (mkQ_surjective N), mem_top, forall_true_left
+      map_top, LinearMap.range_eq_top.mpr (mkQ_surjective N), mem_top, forall_true_left,
       forall_const]
 
 theorem _root_.Ideal.annihilator_quotient {I : Ideal R} : Module.annihilator R (R ⧸ I) = I := by
