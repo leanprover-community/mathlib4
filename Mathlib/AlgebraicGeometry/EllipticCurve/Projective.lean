@@ -1700,10 +1700,6 @@ section Map
 
 variable {S : Type v} [CommRing S] (f : R →+* S)
 
-lemma _root_.MvPolynomial.eval₂_comp {R S σ : Type _} [CommSemiring R] [CommSemiring S]
-    (k : R →+* S) (g : σ → R) (p : MvPolynomial σ R) : k (eval g p) = eval₂ k (k ∘ g) p := by
-  rw [← p.map_id, eval_map, eval₂_comp_right]
-
 @[simp]
 lemma map_polynomial : (W'.map f).toProjective.polynomial = MvPolynomial.map f W'.polynomial := by
   simp only [polynomial]
