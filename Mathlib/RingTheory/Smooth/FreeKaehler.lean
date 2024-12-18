@@ -430,7 +430,65 @@ def Presentation.naive {σ : Type t₁} {ι : Type t₂} (v : ι → MvPolynomia
 
 open _root_.TensorProduct
 
-lemma exists_presentation_of_free' [Algebra.FinitePresentation R S]
+open Pointwise in
+lemma _root_.IsLocalization.Away.of_sub_one_mem_ker {R S T : Type*}
+    [CommRing R] [CommRing S] [CommRing T] [Algebra R S] [Algebra R T]
+    [Algebra S T] [IsScalarTower R S T]
+    (h₁ : Function.Surjective (algebraMap S T))
+    (h₂ : Function.Surjective (algebraMap R S))
+    (r : R) (hr : r - 1 ∈ RingHom.ker (algebraMap R T))
+    {n : ℕ} (hn : r ^ n • RingHom.ker (algebraMap R T) ≤ RingHom.ker (algebraMap R S)) :
+    IsLocalization.Away (algebraMap R S r) T := by
+  apply IsLocalization.Away.mk
+  · rw [← IsScalarTower.algebraMap_apply]
+    have : algebraMap R T r = algebraMap R T 1 := by rwa [← RingHom.sub_mem_ker_iff]
+    simp [this]
+  · intro t
+    use 0
+    obtain ⟨s, rfl⟩ := h₁ t
+    simp
+  · intro x y h
+    obtain ⟨a, rfl⟩ := h₂ x
+    obtain ⟨b, rfl⟩ := h₂ y
+    rw [← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply] at h
+    use n
+    rw [← map_pow, ← map_mul, ← map_mul, ← RingHom.sub_mem_ker_iff, ← mul_sub]
+    apply hn
+    use a - b
+    simp [h]
+
+open Pointwise in
+lemma _root_.IsLocalization.Away.quotient_of {R : Type*}
+    [CommRing R] {I J : Ideal R} [Algebra (R ⧸ I) (R ⧸ J)] [IsScalarTower R (R ⧸ I) (R ⧸ J)]
+    (r : R) (hr : r - 1 ∈ J) {n : ℕ} (hn : r ^ n • J ≤ I) :
+    IsLocalization.Away (Ideal.Quotient.mk I r) (R ⧸ J) := by
+  have : (Ideal.Quotient.mk I) = algebraMap R (R ⧸ I) := rfl
+  apply IsLocalization.Away.mk
+  · rw [this]
+    rw [← IsScalarTower.algebraMap_apply]
+    have : Ideal.Quotient.mk J r = Ideal.Quotient.mk J 1 := by
+      rwa [Ideal.Quotient.mk_eq_mk_iff_sub_mem]
+    simp [this]
+  · intro s
+    use 0
+    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective s
+    use x
+    rw [this, ← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply]
+    simp
+  · intro a b h
+    obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective a
+    obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective b
+    use n
+    rw [this, ← IsScalarTower.algebraMap_apply, ← IsScalarTower.algebraMap_apply] at h
+    simp at h
+    rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem] at h
+    rw [← map_pow, ← map_mul, ← map_mul]
+    rw [Ideal.Quotient.mk_eq_mk_iff_sub_mem, ← mul_sub]
+    apply hn
+    use x - y
+    simp [h]
+
+lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
     (P : Generators.{t₁} R S) {σ : Type t₂} (b : Basis σ S P.toExtension.Cotangent)
     (u : σ → P.vars) (hu : Function.Injective u) :
     ∃ (P' : Presentation.{t₂, t₁} R S)
@@ -443,9 +501,18 @@ lemma exists_presentation_of_free' [Algebra.FinitePresentation R S]
   let v (i : σ) : P.ker := f (b i)
   have hv (i : σ) : Extension.Cotangent.mk (v i) = b i := hf (b i)
   let J : Ideal (MvPolynomial P.vars R) := Ideal.span (Set.range <| Subtype.val ∘ v)
+  have hJle : J ≤ P.ker := by
+    simp only [J]
+    rw [Ideal.span_le]
+    rintro - ⟨i, rfl⟩
+    simp
+  have hJ_fg : J.FG := by
+    sorry
+  have hJ : P.ker ≤ J ⊔ P.ker • J := sorry
   let T := MvPolynomial P.vars R ⧸ J
+  have hJ_eq_ker : J = RingHom.ker (algebraMap (MvPolynomial P.vars R) T) := by simp [T]
   let Q₁ : Presentation.{t₂, t₁} R T := Presentation.naive (Subtype.val ∘ v)
-  let g : MvPolynomial P.vars R := sorry
+  obtain ⟨g, hgmem, hg⟩ := Submodule.exists_sub_one_mem_and_smul_le_of_fg_of_le_sup hJ_fg hJle hJ
   let gbar : T := Ideal.Quotient.mk _ g
   let hom : T →ₐ[R] S := Ideal.Quotient.liftₐ J (aeval P.val) <| by
     intro a ha
@@ -457,7 +524,32 @@ lemma exists_presentation_of_free' [Algebra.FinitePresentation R S]
     · simp [h]
   letI : Algebra T S := hom.toAlgebra
   haveI : IsScalarTower R T S := IsScalarTower.of_algHom hom
-  have : IsLocalization.Away gbar S := sorry
+  haveI : IsScalarTower (MvPolynomial P.vars R) T S := by
+    constructor
+    intro x y z
+    obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective y
+    obtain ⟨z, rfl⟩ := P.algebraMap_surjective z
+    simp
+    rw [Algebra.smul_def]
+    rw [Algebra.smul_def]
+    rw [Algebra.smul_def]
+    simp [RingHom.algebraMap_toAlgebra, hom]
+    rw [Ideal.Quotient.liftₐ_apply]
+    rw [Ideal.Quotient.liftₐ_apply]
+    simp
+    sorry
+  have : IsLocalization.Away gbar S :=
+    IsLocalization.Away.of_sub_one_mem_ker
+      (by
+        apply Function.Surjective.of_comp (g := algebraMap (MvPolynomial P.vars R) T)
+        have : ⇑(algebraMap T S) ∘ ⇑(algebraMap (MvPolynomial P.vars R) T) = algebraMap _ S := by
+          ext
+          simp [← IsScalarTower.algebraMap_apply]
+        rw [this]
+        apply P.algebraMap_surjective)
+      (by simp [T, Ideal.Quotient.mk_surjective])
+      g hgmem (n := 1)
+      (by simpa [← hJ_eq_ker])
   let equiv1 : S ⊗[T] Q₁.toExtension.Cotangent ≃ₗ[S] P.toExtension.Cotangent := sorry
   let bQ₁ : Basis σ S (S ⊗[T] Q₁.toExtension.Cotangent) := b.map equiv1.symm
   let Q₂ : Presentation.{0} T S := Presentation.localizationAway S gbar
@@ -486,65 +578,6 @@ lemma exists_presentation_of_free' [Algebra.FinitePresentation R S]
       sorry
     · sorry
 
-lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
-    (P : Generators R S) {σ : Type*} (b : Basis σ S P.toExtension.Cotangent)
-    (u : σ → P.vars) (hu : Function.Injective u) :
-    ∃ (val : Unit ⊕ P.vars → S)
-      (relation : Unit ⊕ σ → MvPolynomial (Unit ⊕ P.vars) R)
-      (hspan : Ideal.span (Set.range relation) = RingHom.ker (aeval val))
-      (hcomp : val ∘ Sum.inr = P.val)
-      (b : Basis (Unit ⊕ σ) S (Generators.ofSurjective val <| by
-          apply Function.Surjective.of_comp (g := MvPolynomial.rename Sum.inr)
-          have : ⇑(aeval val) ∘ ⇑(rename Sum.inr) = ⇑(aeval (R := R) (val ∘ Sum.inr)) := by
-            ext
-            simp [aeval_rename]
-          rw [this, hcomp]
-          exact P.algebraMap_surjective).toExtension.Cotangent),
-      ∀ r, b r = Extension.Cotangent.mk ⟨relation r,
-        by
-          show relation r ∈ RingHom.ker (aeval val)
-          rw [← hspan]
-          apply Ideal.subset_span
-          use r⟩ := by
-  choose f hf using Extension.Cotangent.mk_surjective (P := P.toExtension)
-  let v (i : σ) : P.ker := f (b i)
-  have hv (i : σ) : Extension.Cotangent.mk (v i) = b i := hf (b i)
-  let J : Ideal (MvPolynomial P.vars R) := Ideal.span (Set.range <| Subtype.val ∘ v)
-  let T := MvPolynomial P.vars R ⧸ J
-  let Q₁ : Presentation R T := Presentation.naive (Subtype.val ∘ v)
-  let g : MvPolynomial P.vars R := sorry
-  let gbar : T := Ideal.Quotient.mk _ g
-  let hom : T →ₐ[R] S := Ideal.Quotient.liftₐ J (aeval P.val) <| by
-    intro a ha
-    induction' ha using Submodule.span_induction with _ hx _ _ _ _ hx hy _ _ _ h
-    · obtain ⟨i, rfl⟩ := hx
-      exact (v i).property
-    · simp
-    · simp [hx, hy]
-    · simp [h]
-  letI : Algebra T S := hom.toAlgebra
-  haveI : IsScalarTower R T S := IsScalarTower.of_algHom hom
-  have : IsLocalization.Away gbar S := sorry
-  let equiv1 : S ⊗[T] Q₁.toExtension.Cotangent ≃ₗ[S] P.toExtension.Cotangent := sorry
-  let Q₂ : Presentation.{0} T S := Presentation.localizationAway S gbar
-  let P' : Presentation R S := Q₂.comp Q₁
-  let equiv2 :
-      S ⊗[T] Q₁.toExtension.Cotangent ⊕ Q₂.toExtension.Cotangent ≃ₗ[S]
-      P'.toExtension.Cotangent :=
-    sorry
-  refine ⟨P'.val, P'.relation, P'.span_range_relation_eq_ker, ?_, ?_, ?_⟩
-  · ext i
-    simp only [Function.comp_apply, P']
-    erw [Generators.comp_val]
-    simp only [Sum.elim_inr, Function.comp_apply, Q₁]
-    erw [Generators.naive_val]
-    rw [RingHom.algebraMap_toAlgebra]
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, J, hom]
-    rw [Ideal.Quotient.liftₐ_apply]
-    simp
-  · sorry
-  · sorry
-
 theorem isStandardSmooth_of [Algebra.FinitePresentation R S]
     [Subsingleton (H1Cotangent R S)]
     {I : Type v} (b : Basis I S (Ω[S⁄R])) (hb : Set.range b ⊆ Set.range (D R S)) :
@@ -561,7 +594,7 @@ theorem isStandardSmooth_of [Algebra.FinitePresentation R S]
   let e := LinearEquiv.ofBijective (cotangentRestrict P u Subtype.val_injective) this
   let bcot' : Basis σ S P.toExtension.Cotangent := Basis.ofRepr e
   obtain ⟨Q, e₁, e₂, bcot, hcomp, hbcot⟩ :=
-    exists_presentation_of_free' P bcot' u Subtype.val_injective
+    exists_presentation_of_free P bcot' u Subtype.val_injective
   have : Finite Q.rels := Finite.of_equiv _ e₂
   let P' : PreSubmersivePresentation R S :=
     { toPresentation := Q
