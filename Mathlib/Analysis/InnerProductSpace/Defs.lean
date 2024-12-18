@@ -10,12 +10,13 @@ import Mathlib.Analysis.Complex.Basic
 import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.Normed.Module.Completion
 import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+import Batteries.Tactic.ShowUnused
 
 /-!
-# Inner product space
+# Inner product spaces
 
-This file defines inner product spaces and proves the basic properties.  We do not formally
-define Hilbert spaces, but they can be obtained using the set of assumptions
+This file defines inner product spaces.  We do not formally define Hilbert spaces, but they can be
+obtained using the set of assumptions
 `[NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [CompleteSpace E]`.
 
 An inner product space is a vector space endowed with an inner product. It generalizes the notion of
@@ -23,24 +24,23 @@ dot product in `ℝ^n` and provides the means of defining the length of a vector
 two vectors. In particular vectors `x` and `y` are orthogonal if their inner product equals zero.
 We define both the real and complex cases at the same time using the `RCLike` typeclass.
 
+Rather than defining the norm on an inner product space to be `√(re ⟪x, x⟫)`, we assume that a norm
+is given, and add a hypothesis stating that `‖x‖ ^ 2 = re (inner x x)`. This makes it possible to
+handle spaces where the norm is equal, but not defeq, to the square root of the
+inner product. Defining a norm starting from an inner product is handled via the
+`InnerProductSpace.Core` structure.
+
 This file is intended to contain the minimal amount of machinery needed to define inner product
-spaces. Many more general lemmas can be found in `Analysis.InnerProductSpace.Basic`. For the
-specific construction of an inner product structure on `n → 𝕜` for `𝕜 = ℝ` or `ℂ`, see
-`EuclideanSpace` in `Analysis.InnerProductSpace.PiL2`.
+spaces, and to construct a normed space from an inner product space. Many more general lemmas can
+be found in `Analysis.InnerProductSpace.Basic`. For the specific construction of an inner product
+structure on `n → 𝕜` for `𝕜 = ℝ` or `ℂ`, see `EuclideanSpace` in
+`Analysis.InnerProductSpace.PiL2`.
 
 ## Main results
 
 - We define the class `InnerProductSpace 𝕜 E` extending `NormedSpace 𝕜 E` with a number of basic
   properties, most notably the Cauchy-Schwarz inequality. Here `𝕜` is understood to be either `ℝ`
   or `ℂ`, through the `RCLike` typeclass.
-- We show that the inner product is continuous, `continuous_inner`, and bundle it as the
-  continuous sesquilinear map `innerSL` (see also `innerₛₗ` for the non-continuous version).
-- We define `Orthonormal`, a predicate on a function `v : ι → E`, and prove the existence of a
-  maximal orthonormal set, `exists_maximal_orthonormal`.  Bessel's inequality,
-  `Orthonormal.tsum_inner_products_le`, states that given an orthonormal set `v` and a vector `x`,
-  the sum of the norm-squares of the inner products `⟪v i, x⟫` is no more than the norm-square of
-  `x`. For the existence of orthonormal bases, Hilbert bases, etc., see the file
-  `Analysis.InnerProductSpace.projection`.
 
 ## Notation
 
@@ -67,9 +67,7 @@ The Coq code is available at the following address: <http://www.lri.fr/~sboldo/e
 
 noncomputable section
 
-open RCLike Real Filter
-
-open Topology ComplexConjugate Finsupp
+open RCLike Real Filter Topology ComplexConjugate Finsupp
 
 open LinearMap (BilinForm)
 
@@ -345,6 +343,9 @@ theorem cauchy_schwarz_aux (x y : F) : normSqF (⟪x, y⟫ • x - ⟪x, x⟫ �
 /-- **Cauchy–Schwarz inequality**.
 We need this for the `PreInnerProductSpace.Core` structure to prove the triangle inequality below
 when showing the core is a normed group and to take the quotient.
+
+(This is not intended for general use; see `Analysis.InnerProductSpace.Basic` for a variety of
+versions of Cauchy-Schwartz for an inner product space, rather than a `PreInnerProductSpace.Core`).
 -/
 theorem inner_mul_inner_self_le (x y : F) : ‖⟪x, y⟫‖ * ‖⟪y, x⟫‖ ≤ re ⟪x, x⟫ * re ⟪y, y⟫ := by
   suffices discrim (normSqF x) (2 * ‖⟪x, y⟫_𝕜‖) (normSqF y) ≤ 0 by
@@ -427,11 +428,7 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 F _ x y
 
 local notation "normSqK" => @RCLike.normSq 𝕜 _
 
-local notation "reK" => @RCLike.re 𝕜 _
-
 local notation "ext_iff" => @RCLike.ext_iff 𝕜 _
-
-local postfix:90 "†" => starRingEnd _
 
 /-- Inner product defined by the `InnerProductSpace.Core` structure. We can't reuse
 `InnerProductSpace.Core.toInner` because it takes `InnerProductSpace.Core` as an explicit
