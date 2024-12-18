@@ -47,7 +47,7 @@ noncomputable def isoZero : shiftFunctor C (0 : A) ⋙ F ≅ F ⋙ shiftFunctor 
   isoWhiskerRight (shiftFunctorZero C A) F ≪≫ F.leftUnitor ≪≫
      F.rightUnitor.symm ≪≫ isoWhiskerLeft F (shiftFunctorZero D A).symm
 
-/-- For any functor `F : C ⥤ D` and any `a` in `A` such that `a=0`,
+/-- For any functor `F : C ⥤ D` and any `a` in `A` such that `a = 0`,
 this is the obvious isomorphism `shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a` deduced from the
 isomorphisms `shiftFunctorZero'` on both categories `C` and `D`. -/
 @[simps!]
