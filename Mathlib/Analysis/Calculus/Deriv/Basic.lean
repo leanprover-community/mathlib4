@@ -215,23 +215,9 @@ theorem derivWithin_zero_of_not_differentiableWithinAt (h : ¬DifferentiableWith
   rw [fderivWithin_zero_of_not_differentiableWithinAt h]
   simp
 
-theorem derivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : derivWithin f s x = 0 := by
-  rw [derivWithin, fderivWithin_zero_of_isolated h, ContinuousLinearMap.zero_apply]
-
-theorem derivWithin_zero_of_nmem_closure (h : x ∉ closure s) : derivWithin f s x = 0 := by
-  rw [derivWithin, fderivWithin_zero_of_nmem_closure h, ContinuousLinearMap.zero_apply]
-
 theorem differentiableWithinAt_of_derivWithin_ne_zero (h : derivWithin f s x ≠ 0) :
     DifferentiableWithinAt 𝕜 f s x :=
   not_imp_comm.1 derivWithin_zero_of_not_differentiableWithinAt h
-
-theorem deriv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : deriv f x = 0 := by
-  unfold deriv
-  rw [fderiv_zero_of_not_differentiableAt h]
-  simp
-
-theorem differentiableAt_of_deriv_ne_zero (h : deriv f x ≠ 0) : DifferentiableAt 𝕜 f x :=
-  not_imp_comm.1 deriv_zero_of_not_differentiableAt h
 
 end TVS
 
@@ -243,6 +229,20 @@ variable {f' f₀' f₁' g' : F}
 variable {x : 𝕜}
 variable {s t : Set 𝕜}
 variable {L L₁ L₂ : Filter 𝕜}
+
+theorem derivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : derivWithin f s x = 0 := by
+  rw [derivWithin, fderivWithin_zero_of_isolated h, ContinuousLinearMap.zero_apply]
+
+theorem derivWithin_zero_of_nmem_closure (h : x ∉ closure s) : derivWithin f s x = 0 := by
+  rw [derivWithin, fderivWithin_zero_of_nmem_closure h, ContinuousLinearMap.zero_apply]
+
+theorem deriv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : deriv f x = 0 := by
+  unfold deriv
+  rw [fderiv_zero_of_not_differentiableAt h]
+  simp
+
+theorem differentiableAt_of_deriv_ne_zero (h : deriv f x ≠ 0) : DifferentiableAt 𝕜 f x :=
+  not_imp_comm.1 deriv_zero_of_not_differentiableAt h
 
 theorem UniqueDiffWithinAt.eq_deriv (s : Set 𝕜) (H : UniqueDiffWithinAt 𝕜 s x)
     (h : HasDerivWithinAt f f' s x) (h₁ : HasDerivWithinAt f f₁' s x) : f' = f₁' :=
