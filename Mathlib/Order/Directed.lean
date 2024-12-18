@@ -354,8 +354,6 @@ local infixl:50 " ≼₁ " => r
 /-- Local notation for a relation -/
 local infixl:50 " ≼₂ " => r₂
 
-namespace Prod
-
 lemma fst {d : Set (α × β)} (hd : DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ p.2 ≼₂ q.2) d) :
     DirectedOn (· ≼₁ ·) (Prod.fst '' d) := by
   intro a ⟨p,hp⟩ b ⟨q,hq⟩
@@ -368,14 +366,12 @@ lemma snd {d : Set (α × β)} (hd : DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ 
   obtain ⟨r,hr⟩ := hd p hp.1 q hq.1
   aesop
 
-lemma prodMk {d₁ : Set α} {d₂ : Set β} (h₁ : DirectedOn (· ≼₁ ·) d₁) (h₂ : DirectedOn (· ≼₂ ·) d₂) :
+lemma prod {d₁ : Set α} {d₂ : Set β} (h₁ : DirectedOn (· ≼₁ ·) d₁) (h₂ : DirectedOn (· ≼₂ ·) d₂) :
     DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ p.2 ≼₂ q.2) (d₁ ×ˢ d₂) := fun _ hpd _ hqd => by
   obtain ⟨r₁,hr₁⟩ := h₁ _ hpd.1 _ hqd.1
   obtain ⟨r₂,hr₂⟩ := h₂ _ hpd.2 _ hqd.2
   use (r₁, r₂)
   aesop
-
-end Prod
 
 end Prod
 
