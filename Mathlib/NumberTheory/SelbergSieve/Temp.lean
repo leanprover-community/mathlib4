@@ -55,20 +55,6 @@ theorem sum_over_dvd_ite {α : Type _} [Ring α] {P : ℕ} (hP : P ≠ 0) {n : �
     {f : ℕ → α} : ∑ d in n.divisors, f d = ∑ d in P.divisors, if d ∣ n then f d else 0 := by
   rw [←Finset.sum_filter, Nat.divisors_filter_dvd_of_dvd hP hn]
 
-
-@[to_additive]
-theorem prod_ite_eq_of_mem {α β : Type*} [CommMonoid β] [DecidableEq α] (s : Finset α) (a : α)
-  (b : α → β) (h : a ∈ s) :
-    (∏ x ∈ s, if a = x then b x else 1) = b a := by
-  simp only [prod_ite_eq, h, ↓reduceIte]
-
-/-- -/
-@[to_additive]
-theorem prod_ite_eq_of_mem' {α β : Type*} [CommMonoid β] [DecidableEq α] (s : Finset α) (a : α)
-  (b : α → β) (h : a ∈ s) :
-    (∏ x ∈ s, if x = a then b x else 1) = b a := by
-  simp only [prod_ite_eq', h, ↓reduceIte]
-
 --temp
 @[to_additive]
 theorem ite_prod_one {R ι : Type*} [CommMonoid R] {p : Prop} [Decidable p] (s : Finset ι)
