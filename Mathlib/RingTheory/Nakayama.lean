@@ -145,4 +145,32 @@ theorem smul_le_of_le_smul_of_le_jacobson_bot {I : Ideal R} {N N' : Submodule R 
     (hIJ : I ≤ jacobson ⊥) (hNN : N' ≤ N ⊔ I • N') : I • N' ≤ N :=
   smul_le_right.trans (le_of_le_smul_of_le_jacobson_bot hN' hIJ hNN)
 
+open Pointwise
+
+@[stacks 00DV "(3)"]
+lemma exists_sub_one_mem_and_smul_le_of_fg_of_le_sup {I : Ideal R}
+    {N N' P : Submodule R M} (hN' : N'.FG) (hN'le : N' ≤ P) (hNN' : P ≤ N ⊔ I • N') :
+    ∃ r : R, r - 1 ∈ I ∧ r • P ≤ N := by
+  have hNN'' : P ≤ N ⊔ N' := le_trans hNN' (by simpa using le_trans smul_le_right le_sup_right)
+  have h1 : P.map N.mkQ = N'.map N.mkQ := by
+    refine le_antisymm ?_ (map_mono hN'le)
+    simpa using map_mono (f := N.mkQ) hNN''
+  have h2 : P.map N.mkQ = (I • N').map N.mkQ := by
+    apply le_antisymm
+    · simpa using map_mono (f := N.mkQ) hNN'
+    · rw [h1]
+      simp [smul_le_right]
+  have hle : (P.map N.mkQ) ≤ I • P.map N.mkQ := by
+    conv_lhs => rw [h2]
+    simp [← h1]
+  obtain ⟨r, hmem, hr⟩ := exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul I _
+    (h1 ▸ hN'.map _) hle
+  refine ⟨r, hmem, fun x hx ↦ ?_⟩
+  induction' hx using Submodule.smul_inductionOn_pointwise with p hp _ _ _ h _ _ _ _ hx hy
+  · rw [← Submodule.Quotient.mk_eq_zero, Quotient.mk_smul]
+    exact hr _ ⟨p, hp, rfl⟩
+  · exact N.smul_mem _ h
+  · exact N.add_mem hx hy
+  · exact N.zero_mem
+
 end Submodule

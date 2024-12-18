@@ -141,8 +141,9 @@ noncomputable def aevalDifferential : (P.rels → S) →ₗ[S] (P.rels → S) :=
     (fun j i : P.rels ↦ aeval P.val <| pderiv (P.map i) (P.relation j))
 
 @[simp]
-lemma aevalDifferential_single [DecidableEq P.rels] (i j : P.rels) :
-    P.aevalDifferential (Pi.single i 1) j = aeval P.val (pderiv (P.map j) (P.relation i)) := by
+lemma aevalDifferential_single [DecidableEq P.rels] (i : P.rels) :
+    P.aevalDifferential (Pi.single i 1) =
+      fun j ↦ aeval P.val (pderiv (P.map j) (P.relation i)) := by
   dsimp only [aevalDifferential]
   rw [← Pi.basisFun_apply, Basis.constr_basis]
 
