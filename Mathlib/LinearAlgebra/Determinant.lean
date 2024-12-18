@@ -329,15 +329,14 @@ theorem bot_lt_ker_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] {f
   simp only [bot_lt_iff_ne_bot, Classical.not_not, ← isUnit_iff_ker_eq_bot] at hf
   exact isUnit_iff_ne_zero.1 (f.isUnit_det hf)
 
-@[simp] lemma det_mulLeft (a : R) : (mulLeft R a).det = a := by
+/-- When the function is over the base ring, the determinant is the evaluation at `1`. -/
+@[simp] lemma det_ring (f : R →ₗ[R] R) : f.det = f 1 := by
   classical
   rw [← det_toMatrix ⟨(Finsupp.LinearEquiv.finsuppUnique R R Unit).symm⟩, Matrix.det_unique]
-  exact mul_one _
+  rfl
 
-@[simp] lemma det_mulRight (a : R) : (mulRight R a).det = a := by
-  classical
-  rw [← det_toMatrix ⟨(Finsupp.LinearEquiv.finsuppUnique R R Unit).symm⟩, Matrix.det_unique]
-  exact one_mul _
+@[simp] lemma det_mulLeft (a : R) : (mulLeft R a).det = a := by simp
+@[simp] lemma det_mulRight (a : R) : (mulRight R a).det = a := by simp
 
 end LinearMap
 
