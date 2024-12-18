@@ -443,10 +443,8 @@ lemma commShift_of_inverse [E.inverse.CommShift A] :
     letI := E.commShiftFunctor A
     E.CommShift A := by
   letI := E.commShiftFunctor A
-  apply CommShift.mk''
-  have : NatTrans.CommShift E.counitIso.symm.hom A :=
-    (E.symm.toAdjunction.commShift_of_leftAdjoint A).commShift_unit
-  exact NatTrans.CommShift.of_iso_inv E.counitIso.symm A
+  have := E.symm.commShift_of_functor A
+  exact inferInstanceAs (E.symm.symm.CommShift A)
 
 end Equivalence
 
