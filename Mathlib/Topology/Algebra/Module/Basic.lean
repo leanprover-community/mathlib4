@@ -1195,7 +1195,7 @@ theorem range_prod_eq {f : M →L[R] M₂} {g : M →L[R] M₃} (h : ker f ⊔ k
     range (f.prod g) = (range f).prod (range g) :=
   LinearMap.range_prod_eq h
 
-theorem ker_prod_ker_le_ker_coprod [ContinuousAdd M₃] (f : M →L[R] M₃) (g : M₂ →L[R] M₃) :
+theorem ker_prod_ker_le_ker_coprod (f : M →L[R] M₃) (g : M₂ →L[R] M₃) :
     (LinearMap.ker f).prod (LinearMap.ker g) ≤ LinearMap.ker (f.coprod g) :=
   LinearMap.ker_prod_ker_le_ker_coprod f.toLinearMap g.toLinearMap
 
