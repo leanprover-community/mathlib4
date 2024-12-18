@@ -94,10 +94,6 @@ theorem _root_.Measurable.lmarginal [∀ i, SigmaFinite (μ i)] (hf : Measurable
   · simpa [hi, updateFinset] using measurable_pi_iff.1 measurable_snd _
   · simpa [hi, updateFinset] using measurable_pi_iff.1 measurable_fst _
 
-theorem _root_.Measurable.lmarginal_update [∀ i, SigmaFinite (μ i)] (hf : Measurable f) :
-    Measurable fun xᵢ ↦ (∫⋯∫⁻_s, f ∂μ) (Function.update x i xᵢ) :=
-  (Measurable.lmarginal _ hf).comp (measurable_update x)
-
 @[simp] theorem lmarginal_empty (f : (∀ i, π i) → ℝ≥0∞) : ∫⋯∫⁻_∅, f ∂μ = f := by
   ext1 x
   simp_rw [lmarginal, Measure.pi_of_empty fun i : (∅ : Finset δ) => μ i]

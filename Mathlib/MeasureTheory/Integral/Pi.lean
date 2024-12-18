@@ -19,7 +19,8 @@ in `MeasureTheory.integral_fintype_prod_eq_prod`.
 
 ## Polar coordinates change of variables
 
-
+The polar coordinates change of variables formula for the Lebesgue integral for a function
+defined on the product space `ι → ℂ`, see `integral_comp_pi_polarCoord_symm`.
 
 -/
 
@@ -113,54 +114,49 @@ end MeasureTheory
 
 section polarCoord
 
-variable {ι : Type*} [DecidableEq ι] (f : (ι → ℂ) → ENNReal)
+open ENNReal
 
-private theorem Complex.lintegral_pi_comp_polarCoord_symm_aux (hf : Measurable f) (s : Finset ι)
+variable {ι : Type*} [DecidableEq ι] (f : (ι → ℂ) → ℝ≥0∞)
+
+private theorem Complex.lintegral_comp_pi_polarCoord_symm_aux (hf : Measurable f) (s : Finset ι)
     (a : ι → ℝ × ℝ) :
     (∫⋯∫⁻_s, f ∂fun _ ↦ (volume : Measure ℂ)) (fun i ↦ Complex.polarCoord.symm (a i)) =
       (∫⋯∫⁻_s, fun p ↦
-          ((∏ i ∈ s, (p i).1.toNNReal) * f (fun i ↦ Complex.polarCoord.symm (p i)))
+          ((∏ i ∈ s, .ofReal (p i).1) * f (fun i ↦ Complex.polarCoord.symm (p i)))
             ∂fun _ ↦ ((volume : Measure (ℝ × ℝ)).restrict polarCoord.target)) a := by
   induction s using Finset.induction generalizing f a with
   | empty => simp
   | @insert i₀ s hi₀ h_ind =>
       have h : ∀ t : Finset ι, Measurable fun p : ι → ℝ × ℝ ↦
-          (∏ i ∈ t, (p i).1.toNNReal) * f fun i ↦ Complex.polarCoord.symm (p i) := by
+          (∏ i ∈ t, .ofReal (p i).1) * f fun i ↦ Complex.polarCoord.symm (p i) := by
         intro _
         refine Measurable.mul ?_ ?_
-        · exact measurable_coe_nnreal_ennreal_iff.mpr <|
-            Finset.measurable_prod _ fun _ _ ↦ by fun_prop
+        · exact Finset.measurable_prod _ (fun _ _ ↦ by fun_prop)
         · exact hf.comp <| measurable_pi_lambda _ fun _ ↦
             Complex.continuous_polarCoord_symm.measurable.comp (measurable_pi_apply _)
       calc
-        _ = ∫⁻ x in polarCoord.target, x.1.toNNReal •
+        _ = ∫⁻ x in polarCoord.target, ENNReal.ofReal x.1 •
               (∫⋯∫⁻_s, f ∂fun _ ↦ volume)
-                fun j ↦ Complex.polarCoord.symm (Function.update a i₀ x j) := by
-          rw [MeasureTheory.lmarginal_insert _ hf hi₀, ← Complex.lintegral_comp_polarCoord_symm _
-            (hf.lmarginal_update (fun _ ↦ (volume : Measure ℂ)))]
-          congr!
-          simp_rw [Function.update_apply]
-          split_ifs <;> rfl
+                fun j ↦ Complex.polarCoord.symm (Function.update a i₀ x j) := ?_
         _ = ∫⁻ (x : ℝ × ℝ) in polarCoord.target,
               (∫⋯∫⁻_s,
-                (fun p ↦ ↑(∏ i ∈ insert i₀ s, (p i).1.toNNReal) *
+                (fun p ↦ ↑(∏ i ∈ insert i₀ s, .ofReal (p i).1) *
                   (f fun i ↦ Complex.polarCoord.symm (p i))) ∘ fun p ↦ Function.update p i₀ x
-              ∂fun _ ↦ volume.restrict polarCoord.target) a := by
-            simp_rw [h_ind _ hf, lmarginal_update_of_not_mem (h s) hi₀, Function.comp_def,
-              ENNReal.smul_def, smul_eq_mul, ← lmarginal_const_smul' _ ENNReal.coe_ne_top,
-              Pi.smul_def, Finset.prod_insert hi₀, Function.update_same, smul_eq_mul,
-              ENNReal.coe_mul, mul_assoc]
-        _ = (∫⋯∫⁻_insert i₀ s, fun p ↦ (∏ i ∈ insert i₀ s, (p i).1.toNNReal) *
+              ∂fun _ ↦ volume.restrict polarCoord.target) a := ?_
+        _ = (∫⋯∫⁻_insert i₀ s, fun p ↦ (∏ i ∈ insert i₀ s, .ofReal (p i).1) *
               f (fun i ↦ Complex.polarCoord.symm (p i))
-                ∂fun _ ↦ volume.restrict polarCoord.target) a := by
-          simp_rw [← lmarginal_update_of_not_mem (h _) hi₀]
-          rw [MeasureTheory.lmarginal_insert _ (h _) hi₀]
+                ∂fun _ ↦ volume.restrict polarCoord.target) a := ?_
+      · simp_rw [lmarginal_insert _ hf hi₀, ← Complex.lintegral_comp_polarCoord_symm,
+          Function.apply_update (f := fun _ ↦ Complex.polarCoord.symm)]
+      · simp_rw [h_ind _ hf, lmarginal_update_of_not_mem (h s) hi₀, Function.comp_def,
+          Finset.prod_insert hi₀, Function.update_same, smul_eq_mul, mul_assoc,
+          ← lmarginal_const_smul' _ ofReal_ne_top, Pi.smul_def, smul_eq_mul]
+      · simp_rw [← lmarginal_update_of_not_mem (h _) hi₀, lmarginal_insert _ (h _) hi₀]
 
-theorem Complex.lintegral_pi_comp_polarCoord_symm [Fintype ι] (hf : Measurable f) :
-    ∫⁻ p, f p = ∫⁻ p in (Set.univ.pi fun _ : ι ↦ polarCoord.target),
-      (∏ i, (p i).1.toNNReal) * f (fun i ↦ Complex.polarCoord.symm (p i)) := by
-  rw [volume_pi, lintegral_eq_lmarginal_univ (fun _ ↦ Complex.polarCoord.symm 0),
-    Complex.lintegral_pi_comp_polarCoord_symm_aux _ hf, lmarginal_univ, ← restrict_pi_pi]
-  rfl
+theorem Complex.lintegral_comp_pi_polarCoord_symm [Fintype ι] (hf : Measurable f) :
+    ∫⁻ p in (Set.univ.pi fun _ : ι ↦ polarCoord.target),
+      (∏ i, .ofReal (p i).1) * f (fun i ↦ Complex.polarCoord.symm (p i)) = ∫⁻ p, f p := by
+  rw [volume_pi, volume_pi, lintegral_eq_lmarginal_univ (fun _ ↦ Complex.polarCoord.symm 0),
+    Complex.lintegral_comp_pi_polarCoord_symm_aux _ hf, lmarginal_univ, ← restrict_pi_pi]
 
 end polarCoord
