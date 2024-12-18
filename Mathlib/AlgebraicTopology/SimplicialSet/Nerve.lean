@@ -56,15 +56,4 @@ lemma δ₀_eq {x : nerve C _[n + 1]} : (nerve C).δ (0 : Fin (n + 2)) x = x.δ�
 
 end Nerve
 
-/-- We now introduce a version of the nerve functor valued in 2-truncated simplicial sets.-/
-def nerveFunctor₂ : Cat.{v, u} ⥤ SSet.Truncated 2 := nerveFunctor ⋙ truncation 2
-
-def nerve₂ (C : Type*) [Category C] : SSet.Truncated 2 := nerveFunctor₂.obj (Cat.of C)
-
-theorem nerve₂_restrictedNerve (C : Type*) [Category C] :
-    (Truncated.inclusion 2).op ⋙ nerve C = nerve₂ C := rfl
-
-def nerve₂RestrictedIso (C : Type*) [Category C] :
-    (Truncated.inclusion 2).op ⋙ nerve C ≅ nerve₂ C := Iso.refl _
-
 end CategoryTheory
