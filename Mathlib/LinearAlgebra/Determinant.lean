@@ -335,8 +335,8 @@ theorem bot_lt_ker_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] {f
   rw [← det_toMatrix ⟨(Finsupp.LinearEquiv.finsuppUnique R R Unit).symm⟩, Matrix.det_unique]
   rfl
 
-@[simp] lemma det_mulLeft (a : R) : (mulLeft R a).det = a := by simp
-@[simp] lemma det_mulRight (a : R) : (mulRight R a).det = a := by simp
+lemma det_mulLeft (a : R) : (mulLeft R a).det = a := by simp
+lemma det_mulRight (a : R) : (mulRight R a).det = a := by simp
 
 end LinearMap
 
