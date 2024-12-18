@@ -378,19 +378,25 @@ abbrev CommShift [E.functor.CommShift A] [E.inverse.CommShift A] : Prop :=
 
 namespace CommShift
 
+variable [E.functor.CommShift A] [E.inverse.CommShift A]
+
+instance [E.CommShift A] : NatTrans.CommShift E.unitIso.hom A :=
+  inferInstanceAs (NatTrans.CommShift E.toAdjunction.unit A)
+
+instance [E.CommShift A]: NatTrans.CommShift E.counitIso.hom A :=
+  inferInstanceAs (NatTrans.CommShift E.toAdjunction.counit A)
+
 instance [h : E.functor.CommShift A] : E.symm.inverse.CommShift A := h
 instance [h : E.inverse.CommShift A] : E.symm.functor.CommShift A := h
 
 /-- Constructor for `Equivalence.CommShift`. -/
-lemma mk' [E.functor.CommShift A] [E.inverse.CommShift A]
-    (h : NatTrans.CommShift E.unitIso.hom A) :
+lemma mk' (h : NatTrans.CommShift E.unitIso.hom A) :
     E.CommShift A where
   commShift_unit := h
   commShift_counit := (Adjunction.CommShift.mk' E.toAdjunction A h).commShift_counit
 
 /-- Constructor for `Equivalence.CommShift`. -/
-lemma mk'' [E.functor.CommShift A] [E.inverse.CommShift A]
-    (h : NatTrans.CommShift E.counitIso.hom A) :
+lemma mk'' (h : NatTrans.CommShift E.counitIso.hom A) :
     E.CommShift A where
   commShift_unit := by
     have h' := NatTrans.CommShift.of_iso_inv E.counitIso A
@@ -416,10 +422,7 @@ and `E.symm.inverse`.
 -/
 instance [E.functor.CommShift A] [E.inverse.CommShift A] [E.CommShift A] :
     E.symm.CommShift A := mk' _ _
-      (by dsimp only [Equivalence.symm, Iso.symm];
-          have : NatTrans.CommShift E.counitIso.hom A :=
-            Adjunction.CommShift.commShift_counit (adj := E.toAdjunction)
-          exact NatTrans.CommShift.of_iso_inv _ _)
+      (by dsimp only [Equivalence.symm, Iso.symm]; exact NatTrans.CommShift.of_iso_inv _ _)
 
 end CommShift
 
