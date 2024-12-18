@@ -127,8 +127,7 @@ their pullbacks by an additive map.
 -/
 @[simps]
 noncomputable def commShiftPullback :
-    F.CommShift A (C := PullbackShift C φ) (D := PullbackShift D φ)
-    where
+    F.CommShift A (C := PullbackShift C φ) (D := PullbackShift D φ) where
   iso a := isoWhiskerRight (pullbackShiftIso C φ a (φ a) rfl) F ≪≫
     CommShift.iso (F := F) (φ a) ≪≫ isoWhiskerLeft _  (pullbackShiftIso D φ a (φ a) rfl).symm
   zero := by
