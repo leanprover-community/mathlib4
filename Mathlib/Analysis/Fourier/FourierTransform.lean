@@ -5,6 +5,8 @@ Authors: David Loeffler
 -/
 import Mathlib.Algebra.Group.AddChar
 import Mathlib.Analysis.Complex.Circle
+import Mathlib.Analysis.InnerProductSpace.Adjoint
+import Mathlib.MeasureTheory.Constructions.BorelSpace.ContinuousLinearMap
 import Mathlib.MeasureTheory.Group.Integral
 import Mathlib.MeasureTheory.Integral.Prod
 import Mathlib.MeasureTheory.Integral.SetIntegral
@@ -452,5 +454,69 @@ theorem fourierIntegral_continuousMultilinearMap_apply {ι : Type*} [Fintype ι]
     {f : V → ContinuousMultilinearMap ℝ M E} {m : (i : ι) → M i} {v : V} (hf : Integrable f) :
     𝓕 f v m = 𝓕 (fun x ↦ f x m) v :=
   fourierIntegral_continuousMultilinearMap_apply' (L := innerSL ℝ) hf
+
+/-- A translation of the Fourier transform of a function is the Fourier transform of the function
+multiplied by a complex exponential. -/
+theorem fourierIntegral_apply_add_const (f : V → E) (a ξ : V) :
+    𝓕 f (ξ + a) = 𝓕 (fun x ↦ 𝐞 (-inner x a) • f x) ξ := by
+  simp only [Real.fourierIntegral_eq]
+  congr
+  ext x
+  simp only [inner_add_right, neg_add, AddChar.map_add_eq_mul, smul_smul]
+
+-- TODO: Can this be proved using `fourierIntegral_apply_add_const` (duality of Fourier transform)
+-- rather than `MeasurePreserving.integral_comp'`?
+theorem fourierIntegral_comp_add_const (f : V → E) (b ξ : V) :
+    𝓕 (fun x ↦ f (b + x)) ξ = 𝐞 (inner b ξ) • 𝓕 f ξ := by
+  simp only [Real.fourierIntegral_eq]
+  have he : MeasurePreserving
+      (⟨.constVAdd V b, measurable_const_add b, measurable_const_add (-b)⟩ : V ≃ᵐ V)
+      volume volume := by simpa using measurePreserving_add_left volume b
+  conv => rhs; rw [← MeasurePreserving.integral_comp' he]
+  simp only [MeasurableEquiv.coe_mk, Equiv.coe_constVAdd, vadd_eq_add, inner_add_left, neg_add,
+    AddChar.map_add_eq_mul]
+  simp only [← smul_smul, Circle.smul_def]
+  rw [integral_smul]
+  simp only [← Circle.smul_def, smul_smul]
+  simp [AddChar.map_neg_eq_inv]
+
+/-- The Fourier transform of the dilation of a function is a scaled dilation of its Fourier
+transform. -/
+theorem fourierIntegral_comp_const_smul (f : V → E) {c : ℝ} (hc : c ≠ 0) (ξ : V) :
+    𝓕 (fun x ↦ f (c • x)) ξ = (|c| ^ Module.finrank ℝ V)⁻¹ • 𝓕 f (c⁻¹ • ξ) := by
+  simp only [Real.fourierIntegral_eq]
+  have he : MeasurePreserving
+      (⟨.smulRight hc, measurable_const_smul c, measurable_const_smul c⁻¹⟩ : V ≃ᵐ V) _ _ :=
+    ⟨measurable_const_smul c, volume.map_addHaar_smul hc⟩
+  rw [← MeasurePreserving.integral_comp' he.symm]
+  simp [smul_smul, mul_inv_cancel₀ hc, inner_smul_left, inner_smul_right, abs_inv]
+
+-- TODO: Should this definition use `toLinearMap` rather than `toContinuousLinearMap`?
+/-- The Fourier transform of the linear dilation of a function is a scaled linear dilation of its
+Fourier transform. -/
+theorem fourierIntegral_comp_continuousLinearEquiv (f : V → E) (a : V ≃L[ℝ] V) (ξ : V) :
+    𝓕 (fun x ↦ f (a x)) ξ =
+    |(a : V →L[ℝ] V).det|⁻¹ • 𝓕 f ((a.symm : V →L[ℝ] V).adjoint ξ) := by
+  simp only [Real.fourierIntegral_eq]
+  have h_det : (a : V →L[ℝ] V).det ≠ 0 := by simpa using a.isUnit_det'
+  have he : MeasurePreserving
+      (⟨a, (a : V →L[ℝ] V).measurable, (a.symm : V →L[ℝ] V).measurable⟩ : V ≃ᵐ V) _ _ :=
+    ⟨(a : V →L[ℝ] V).measurable, volume.map_linearMap_addHaar_eq_smul_addHaar h_det⟩
+  rw [← MeasurePreserving.integral_comp' he.symm]
+  simp only [MeasurableEquiv.symm_mk, MeasurableEquiv.coe_mk, EquivLike.apply_coe_symm_apply,
+    integral_smul_measure, abs_nonneg, ENNReal.toReal_ofReal]
+  simp only [ContinuousLinearMap.adjoint_inner_right, abs_inv]
+  norm_cast
+
+/-- Dilation of the Fourier transform of a function is the Fourier transform of a scaled
+dilation. -/
+theorem fourierIntegral_apply_const_smul (f : V → E) {c : ℝ} (hc : c ≠ 0) (ξ : V) :
+    𝓕 f (c • ξ) = |(c ^ Module.finrank ℝ V)⁻¹| • 𝓕 (fun x ↦ f (c⁻¹ • x)) ξ := by
+  simp only [Real.fourierIntegral_eq]
+  have he : MeasurePreserving
+      (⟨.smulRight hc, measurable_const_smul c, measurable_const_smul c⁻¹⟩ : V ≃ᵐ V) _ _ :=
+    ⟨measurable_const_smul c, volume.map_addHaar_smul hc⟩
+  rw [← MeasurePreserving.integral_comp' he.symm]
+  simp [inner_smul_left, inner_smul_right, ← mul_assoc c c⁻¹, mul_inv_cancel₀ hc]
 
 end Real
