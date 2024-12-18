@@ -138,7 +138,7 @@ noncomputable def commShiftOp [CommShift F A] :
   add a b := by
     simp only
     rw [commShiftIso_add]
-    ext _
+    ext
     simp only [op_obj, comp_obj, Iso.symm_hom, NatIso.op_inv, NatTrans.op_app,
       CommShift.isoAdd_inv_app, op_comp, Category.assoc, CommShift.isoAdd_hom_app, op_map]
     erw [oppositeShiftFunctorAdd_inv_app, oppositeShiftFunctorAdd_hom_app]
@@ -156,7 +156,7 @@ noncomputable def commShiftUnop
   zero := by
     simp only
     rw [commShiftIso_zero]
-    ext _
+    ext
     simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
       CommShift.isoZero_inv_app, op_map, unop_comp, Quiver.Hom.unop_op, CommShift.isoZero_hom_app]
     erw [oppositeShiftFunctorZero_hom_app, oppositeShiftFunctorZero_inv_app]
@@ -164,7 +164,7 @@ noncomputable def commShiftUnop
   add a b := by
     simp only
     rw [commShiftIso_add]
-    ext _
+    ext
     simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
       CommShift.isoAdd_inv_app, op_map, unop_comp, Quiver.Hom.unop_op, Category.assoc,
       CommShift.isoAdd_hom_app]
