@@ -370,9 +370,8 @@ variable (A : Type*) [AddMonoid A] [HasShift C A] [HasShift D A]
 If `E : C ≌ D` is an equivalence, this expresses the compatibility of `CommShift`
 structures on `E.functor` and `E.inverse`.
 -/
-class CommShift [E.functor.CommShift A] [E.inverse.CommShift A] : Prop where
-  commShift_unitIso_hom : NatTrans.CommShift E.unitIso.hom A := by infer_instance
-  commShift_counitIso_hom : NatTrans.CommShift E.counitIso.hom A := by infer_instance
+abbrev CommShift [E.functor.CommShift A] [E.inverse.CommShift A] : Prop :=
+  E.toAdjunction.CommShift A
 
 namespace CommShift
 
