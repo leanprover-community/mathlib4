@@ -116,7 +116,7 @@ theorem exists_isCompact_closure_measure_compl_lt [UniformSpace α] [CompleteSpa
       · exact (measurable_prod_mk_left (IsOpen.measurableSet (hto n).2.1)).compl.nullMeasurableSet
       · rw [← compl_iUnion, h_univ, compl_univ]
     choose! s' s'bound using h3
-    rcases ENNReal.exists_seq_pos_lt ε hε with ⟨δ, hδ1, hδ2⟩
+    rcases ENNReal.exists_pos_sum_of_countable' (ne_of_gt hε) ℕ with ⟨δ, hδ1, hδ2⟩
     classical
     let u : ℕ → ℕ := fun n ↦ s' n (δ n)
     refine ⟨interUnionBalls seq u t, isCompact_closure_interUnionBalls h_basis.toHasBasis seq u, ?_⟩
