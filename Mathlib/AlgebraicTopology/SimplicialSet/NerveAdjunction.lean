@@ -633,7 +633,7 @@ noncomputable def nerveAdjunction : hoFunctor ⊣ nerveFunctor :=
   Adjunction.ofNatIsoRight ((SSet.coskAdj 2).comp nerve₂Adj) Nerve.cosk₂Iso.symm
 
 /-- Repleteness exists for full and faithful functors but not fully faithful functors, which is
-why we do this inefficiently.-/
+why we do this inefficiently. -/
 instance nerveFunctor.faithful : nerveFunctor.{u, u}.Faithful :=
   have : (Nerve.nerveFunctor₂ ⋙ SSet.Truncated.cosk 2).Faithful :=
     Faithful.comp nerveFunctor₂ (SSet.Truncated.cosk 2)
