@@ -133,7 +133,7 @@ noncomputable def Pullback.CommShift :
   iso a := isoWhiskerRight (pullbackShiftIso C φ a (φ a) rfl) F ≪≫
     CommShift.iso (F := F) (φ a) ≪≫ isoWhiskerLeft _  (pullbackShiftIso D φ a (φ a) rfl).symm
   zero := by
-    ext _
+    ext
     simp only [comp_obj, Iso.trans_hom, isoWhiskerRight_hom, isoWhiskerLeft_hom, Iso.symm_hom,
       NatTrans.comp_app, whiskerRight_app, whiskerLeft_app, CommShift.isoZero_hom_app,
       pullbackShiftFunctorZero'_hom_app, id_obj, map_comp, pullbackShiftFunctorZero'_inv_app, assoc]
@@ -141,7 +141,7 @@ noncomputable def Pullback.CommShift :
                 rw [F.commShiftIso_zero' (A := B) (φ 0) (by rw [map_zero])]
     simp only [CommShift.isoZero'_hom_app, assoc]
   add a b := by
-    ext _
+    ext
     simp only [comp_obj, Iso.trans_hom, isoWhiskerRight_hom, isoWhiskerLeft_hom, Iso.symm_hom,
       NatTrans.comp_app, whiskerRight_app, whiskerLeft_app, CommShift.isoAdd_hom_app, map_comp,
       assoc]
