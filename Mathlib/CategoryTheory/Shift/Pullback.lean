@@ -118,16 +118,15 @@ lemma pullbackShiftFunctorAdd'_hom_app :
     ← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
   rfl
 
-namespace CommShift
+namespace Functor
 
 variable {D : Type*} [Category D] [HasShift D B] (F : C ⥤ D) [F.CommShift B]
 
-open Functor in
 /-- If `F : C ⥤ D` commutes with the shifts on `C` and `D`, then it also commutes with
 their pullbacks by an additive map.
 -/
 @[simps]
-noncomputable def Pullback.CommShift :
+noncomputable def CommShift.pullback :
     F.CommShift A (C := PullbackShift C φ) (D := PullbackShift D φ)
     where
   iso a := isoWhiskerRight (pullbackShiftIso C φ a (φ a) rfl) F ≪≫
@@ -161,6 +160,6 @@ noncomputable def Pullback.CommShift :
     slice_rhs 4 5 => rw [← map_comp]; erw [← map_comp]; rw [Iso.inv_hom_id_app, map_id, map_id]
     rw [id_comp, id_comp, assoc, assoc]; rfl
 
-end CommShift
+end Functor
 
 end CategoryTheory
