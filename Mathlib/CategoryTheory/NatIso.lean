@@ -65,6 +65,16 @@ theorem inv_hom_id_app {F G : C ⥤ D} (α : F ≅ G) (X : C) :
     α.inv.app X ≫ α.hom.app X = 𝟙 (G.obj X) :=
   congr_fun (congr_arg NatTrans.app α.inv_hom_id) X
 
+@[reassoc (attr := simp)]
+lemma hom_inv_id_app_app {F G : C ⥤ D ⥤ E} (e : F ≅ G) (X₁ : C) (X₂ : D) :
+    (e.hom.app X₁).app X₂ ≫ (e.inv.app X₁).app X₂ = 𝟙 _ := by
+  rw [← NatTrans.comp_app, Iso.hom_inv_id_app, NatTrans.id_app]
+
+@[reassoc (attr := simp)]
+lemma inv_hom_id_app_app {F G : C ⥤ D ⥤ E} (e : F ≅ G) (X₁ : C) (X₂ : D) :
+    (e.inv.app X₁).app X₂ ≫ (e.hom.app X₁).app X₂ = 𝟙 _ := by
+  rw [← NatTrans.comp_app, Iso.inv_hom_id_app, NatTrans.id_app]
+
 end Iso
 
 namespace NatIso

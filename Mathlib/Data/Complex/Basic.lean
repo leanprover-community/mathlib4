@@ -283,7 +283,7 @@ theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
 diamond from the other actions they inherit through the `ℝ`-action on `ℂ` and action transitivity
 defined in `Data.Complex.Module`. -/
 instance : Nontrivial ℂ :=
-  pullback_nonzero re rfl rfl
+  domain_nontrivial re rfl rfl
 
 -- Porting note: moved from `Module/Data/Complex/Basic.lean`
 namespace SMul
@@ -741,7 +741,7 @@ lemma ofReal_nnqsmul (q : ℚ≥0) (r : ℝ) : ofReal (q • r) = q • r := by 
 lemma ofReal_qsmul (q : ℚ) (r : ℝ) : ofReal (q • r) = q • r := by simp [Rat.smul_def]
 
 theorem conj_inv (x : ℂ) : conj x⁻¹ = (conj x)⁻¹ :=
-  star_inv' _
+  star_inv₀ _
 
 @[simp, norm_cast]
 theorem ofReal_div (r s : ℝ) : ((r / s : ℝ) : ℂ) = r / s := map_div₀ ofRealHom r s

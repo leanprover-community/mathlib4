@@ -938,6 +938,18 @@ variable (f : A →ₐ[R] B)
 theorem range_comp_val : (f.comp S.val).range = S.map f := by
   rw [AlgHom.range_comp, range_val]
 
+/-- An `AlgHom` between two rings restricts to an `AlgHom` from any subalgebra of the
+domain onto the image of that subalgebra. -/
+def _root_.AlgHom.subalgebraMap : S →ₐ[R] S.map f :=
+  (f.comp S.val).codRestrict _ fun x ↦ ⟨_, x.2, rfl⟩
+
+variable {S} in
+@[simp]
+theorem _root_.AlgHom.subalgebraMap_coe_apply (x : S) : f.subalgebraMap S x = f x := rfl
+
+theorem _root_.AlgHom.subalgebraMap_surjective : Function.Surjective (f.subalgebraMap S) :=
+  f.toAddMonoidHom.addSubmonoidMap_surjective S.toAddSubmonoid
+
 variable (hf : Function.Injective f)
 
 /-- A subalgebra is isomorphic to its image under an injective `AlgHom` -/

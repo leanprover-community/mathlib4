@@ -286,13 +286,15 @@ lemma isQuotientMap_iff : IsQuotientMap f ↔ Surjective f ∧ ∀ s, IsOpen s �
 @[deprecated (since := "2024-10-22")]
 alias quotientMap_iff := isQuotientMap_iff
 
-theorem isQuotientMap_iff_closed :
+theorem isQuotientMap_iff_isClosed :
     IsQuotientMap f ↔ Surjective f ∧ ∀ s : Set Y, IsClosed s ↔ IsClosed (f ⁻¹' s) :=
   isQuotientMap_iff.trans <| Iff.rfl.and <| compl_surjective.forall.trans <| by
     simp only [isOpen_compl_iff, preimage_compl]
 
 @[deprecated (since := "2024-10-22")]
-alias quotientMap_iff_closed := isQuotientMap_iff_closed
+alias quotientMap_iff_closed := isQuotientMap_iff_isClosed
+@[deprecated (since := "2024-11-19")]
+alias isQuotientMap_iff_closed := isQuotientMap_iff_isClosed
 
 namespace IsQuotientMap
 
@@ -326,7 +328,7 @@ protected lemma isOpen_preimage (hf : IsQuotientMap f) {s : Set Y} : IsOpen (f �
 
 protected theorem isClosed_preimage (hf : IsQuotientMap f) {s : Set Y} :
     IsClosed (f ⁻¹' s) ↔ IsClosed s :=
-  ((isQuotientMap_iff_closed.1 hf).2 s).symm
+  ((isQuotientMap_iff_isClosed.1 hf).2 s).symm
 
 end IsQuotientMap
 
@@ -489,7 +491,7 @@ theorem isClosed_range (hf : IsClosedMap f) : IsClosed (range f) :=
 
 theorem isQuotientMap (hcl : IsClosedMap f) (hcont : Continuous f)
     (hsurj : Surjective f) : IsQuotientMap f :=
-  isQuotientMap_iff_closed.2 ⟨hsurj, fun s =>
+  isQuotientMap_iff_isClosed.2 ⟨hsurj, fun s =>
     ⟨fun hs => hs.preimage hcont, fun hs => hsurj.image_preimage s ▸ hcl _ hs⟩⟩
 
 @[deprecated (since := "2024-10-22")]

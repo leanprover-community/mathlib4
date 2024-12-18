@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Order.BoundedOrder
 import Mathlib.Order.TypeTags
 import Mathlib.Data.Option.NAry
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Lift
 import Mathlib.Data.Option.Basic
+import Mathlib.Order.Lattice
+import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # `WithBot`, `WithTop`
@@ -157,6 +158,13 @@ theorem eq_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
   induction b
   · simpa using h rfl
   · simp
+
+/-- The equivalence between the non-bottom elements of `WithBot α` and `α`. -/
+@[simps] def _root_.Equiv.withBotSubtypeNe : {y : WithBot α // y ≠ ⊥} ≃ α where
+  toFun := fun ⟨x,h⟩ => WithBot.unbot x h
+  invFun x := ⟨x, WithBot.coe_ne_bot⟩
+  left_inv _ := by simp
+  right_inv _ := by simp
 
 section LE
 
@@ -437,13 +445,13 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithBot α) :=
 instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) :=
   inferInstanceAs <| DecidableEq (Option α)
 
-instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] : @DecidableRel (WithBot α) (· ≤ ·)
+instance decidableLE [LE α] [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := WithBot α) (· ≤ ·)
   | none, _ => isTrue fun _ h => Option.noConfusion h
   | Option.some x, Option.some y =>
       if h : x ≤ y then isTrue (coe_le_coe.2 h) else isFalse <| by simp [*]
   | Option.some x, none => isFalse fun h => by rcases h x rfl with ⟨y, ⟨_⟩, _⟩
 
-instance decidableLT [LT α] [@DecidableRel α (· < ·)] : @DecidableRel (WithBot α) (· < ·)
+instance decidableLT [LT α] [DecidableRel (α := α) (· < ·)] : DecidableRel (α := WithBot α) (· < ·)
   | none, Option.some x => isTrue <| by exists x, rfl; rintro _ ⟨⟩
   | Option.some x, Option.some y =>
       if h : x < y then isTrue <| by simp [*] else isFalse <| by simp [*]
@@ -728,6 +736,13 @@ theorem untop_eq_iff {a : WithTop α} {b : α} (h : a ≠ ⊤) :
 theorem eq_untop_iff {a : α} {b : WithTop α} (h : b ≠ ⊤) :
     a = b.untop h ↔ a = b :=
   WithBot.eq_unbot_iff (α := αᵒᵈ) h
+
+/-- The equivalence between the non-top elements of `WithTop α` and `α`. -/
+@[simps] def _root_.Equiv.withTopSubtypeNe : {y : WithTop α // y ≠ ⊤} ≃ α where
+  toFun := fun ⟨x,h⟩ => WithTop.untop x h
+  invFun x := ⟨x, WithTop.coe_ne_top⟩
+  left_inv _ := by simp
+  right_inv _:= by simp
 
 section LE
 
@@ -1152,12 +1167,12 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithTop α) :=
 instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) :=
   inferInstanceAs <| DecidableEq (Option α)
 
-instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] :
-    @DecidableRel (WithTop α) (· ≤ ·) := fun _ _ =>
+instance decidableLE [LE α] [DecidableRel (α := α) (· ≤ ·)] :
+    DecidableRel (α := WithTop α) (· ≤ ·) := fun _ _ =>
   decidable_of_decidable_of_iff toDual_le_toDual_iff
 
-instance decidableLT [LT α] [@DecidableRel α (· < ·)] :
-    @DecidableRel (WithTop α) (· < ·) := fun _ _ =>
+instance decidableLT [LT α] [DecidableRel (α := α) (· < ·)] :
+    DecidableRel (α := WithTop α) (· < ·) := fun _ _ =>
   decidable_of_decidable_of_iff toDual_lt_toDual_iff
 
 instance isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithTop α) (· ≤ ·) :=

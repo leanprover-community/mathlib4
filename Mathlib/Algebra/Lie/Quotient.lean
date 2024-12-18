@@ -43,7 +43,7 @@ instance : HasQuotient M (LieSubmodule R L M) :=
 
 namespace Quotient
 
-variable {N I}
+variable {N}
 
 instance addCommGroup : AddCommGroup (M ⧸ N) :=
   Submodule.Quotient.addCommGroup _
