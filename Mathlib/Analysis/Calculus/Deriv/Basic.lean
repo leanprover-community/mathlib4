@@ -649,8 +649,9 @@ theorem deriv_const : deriv (fun _ => c) x = 0 :=
 theorem deriv_const' : (deriv fun _ : 𝕜 => c) = fun _ => 0 :=
   funext fun x => deriv_const x c
 
-theorem derivWithin_const (hxs : UniqueDiffWithinAt 𝕜 s x) : derivWithin (fun _ => c) s x = 0 :=
-  (hasDerivWithinAt_const _ _ _).derivWithin hxs
+@[simp]
+theorem derivWithin_const : derivWithin (fun _ => c) s = 0 := by
+  ext; simp [derivWithin]
 
 end Const
 

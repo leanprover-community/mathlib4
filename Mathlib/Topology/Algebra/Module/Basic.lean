@@ -309,6 +309,10 @@ instance (priority := 100) continuousSemilinearMapClass [EquivLike F M M₂]
     [s : ContinuousSemilinearEquivClass F σ M M₂] : ContinuousSemilinearMapClass F σ M M₂ :=
   { s with }
 
+instance (priority := 100) [EquivLike F M M₂]
+    [s : ContinuousSemilinearEquivClass F σ M M₂] : HomeomorphClass F M M₂ :=
+  { s with }
+
 end ContinuousSemilinearEquivClass
 
 section PointwiseLimits
@@ -408,7 +412,7 @@ def Simps.apply (h : M₁ →SL[σ₁₂] M₂) : M₁ → M₂ :=
 def Simps.coe (h : M₁ →SL[σ₁₂] M₂) : M₁ →ₛₗ[σ₁₂] M₂ :=
   h
 
-initialize_simps_projections ContinuousLinearMap (toLinearMap_toFun → apply, toLinearMap → coe)
+initialize_simps_projections ContinuousLinearMap (toFun → apply, toLinearMap → coe)
 
 @[ext]
 theorem ext {f g : M₁ →SL[σ₁₂] M₂} (h : ∀ x, f x = g x) : f = g :=
