@@ -65,7 +65,7 @@ variable (a b : A) (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
 `e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a`, this expresses the compatibility of
 `e₁` and `e₂` with the unit of the adjunction `adj`.
 -/
-abbrev compat_unit :=
+abbrev CompatibilityUnit :=
   ∀ (X : C), (adj.unit.app X)⟦a⟧' = adj.unit.app (X⟦a⟧) ≫ G.map (e₁.hom.app X) ≫ e₂.hom.app _
 
 /-- Given an adjunction `adj : F ⊣ G`, `a` in `A` and commutation isomorphisms
