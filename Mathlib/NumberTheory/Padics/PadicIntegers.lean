@@ -50,7 +50,7 @@ open Padic Metric IsLocalRing
 
 noncomputable section
 
-variable (p : ℕ) [Fact p.Prime]
+variable (p : ℕ) [hp : Fact p.Prime]
 
 /-- The `p`-adic integers `ℤ_[p]` are the `p`-adic numbers with norm `≤ 1`. -/
 def PadicInt : Type := {x : ℚ_[p] // ‖x‖ ≤ 1}
@@ -287,8 +287,8 @@ theorem exists_pow_neg_lt {ε : ℝ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℝ) ^ (
     norm_cast
     apply le_of_lt
     convert Nat.lt_pow_self _ using 1
-    exact (Fact.out : p.Prime).one_lt
-  · exact mod_cast NeZero.pos p
+    exact hp.1.one_lt
+  · exact mod_cast hp.1.pos
 
 theorem exists_pow_neg_lt_rat {ε : ℚ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℚ) ^ (-(k : ℤ)) < ε := by
   obtain ⟨k, hk⟩ := @exists_pow_neg_lt p _ ε (mod_cast hε)
@@ -316,7 +316,7 @@ lemma valuation_coe_nonneg : 0 ≤ (x : ℚ_[p]).valuation := by
   have := x.2
   rwa [Padic.norm_eq_zpow_neg_valuation <| coe_ne_zero.2 hx, zpow_le_one_iff_right₀, neg_nonpos]
     at this
-  exact mod_cast (Fact.out : p.Prime).one_lt
+  exact mod_cast hp.out.one_lt
 
 /-- `PadicInt.valuation` lifts the `p`-adic valuation on `ℚ` to `ℤ_[p]`. -/
 def valuation (x : ℤ_[p]) : ℕ := (x : ℚ_[p]).valuation.toNat
@@ -432,7 +432,7 @@ section NormLeIff
 theorem norm_le_pow_iff_le_valuation (x : ℤ_[p]) (hx : x ≠ 0) (n : ℕ) :
     ‖x‖ ≤ (p : ℝ) ^ (-n : ℤ) ↔ n ≤ x.valuation := by
   rw [norm_eq_zpow_neg_valuation hx, zpow_le_zpow_iff_right₀, neg_le_neg_iff, Nat.cast_le]
-  exact mod_cast (Fact.out : p.Prime).one_lt
+  exact mod_cast hp.one_lt
 
 theorem mem_span_pow_iff_le_valuation (x : ℤ_[p]) (hx : x ≠ 0) (n : ℕ) :
     x ∈ (Ideal.span {(p : ℤ_[p]) ^ n} : Ideal ℤ_[p]) ↔ n ≤ x.valuation := by
@@ -485,7 +485,7 @@ instance : IsLocalRing ℤ_[p] :=
   IsLocalRing.of_nonunits_add <| by simp only [mem_nonunits]; exact fun x y => norm_lt_one_add
 
 theorem p_nonnunit : (p : ℤ_[p]) ∈ nonunits ℤ_[p] := by
-  have : (p : ℝ)⁻¹ < 1 := inv_lt_one_of_one_lt₀ <| mod_cast (Fact.out : p.Prime).one_lt
+  have : (p : ℝ)⁻¹ < 1 := inv_lt_one_of_one_lt₀ <| mod_cast hp.out.one_lt
   rwa [← norm_p, ← mem_nonunits] at this
 
 theorem maximalIdeal_eq_span_p : maximalIdeal ℤ_[p] = Ideal.span {(p : ℤ_[p])} := by
@@ -525,9 +525,7 @@ instance : IsAdicComplete (maximalIdeal ℤ_[p]) ℤ_[p] where
       rw [← neg_sub, norm_neg]
       exact hx hn
     · refine ⟨x'.lim, fun n => ?_⟩
-      have : (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) := by
-        apply zpow_pos
-        exact mod_cast (Fact.out : p.Prime).pos
+      have : (0 : ℝ) < (p : ℝ) ^ (-n : ℤ) := mod_cast zpow_pos hp.out.pos
       obtain ⟨i, hi⟩ := equiv_def₃ (equiv_lim x') this
       by_cases hin : i ≤ n
       · exact (hi i le_rfl n hin).le
