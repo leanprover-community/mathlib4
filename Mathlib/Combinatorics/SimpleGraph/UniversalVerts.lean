@@ -57,7 +57,7 @@ lemma Subgraph.IsMatching.exists_of_universalVerts [Fintype V] {s : Set V}
     have : ((f v) : V) ∈ G.universalVerts := ht.1 (f v).coe_prop
     simp only [universalVerts, Set.mem_setOf_eq] at this
     apply this
-    exact (Disjoint.ne_of_mem hd v.coe_prop (f v).coe_prop).symm
+    exact (hd.ne_of_mem v.coe_prop (f v).coe_prop).symm
   obtain ⟨M1, hM1⟩ := Subgraph.IsMatching.exists_of_disjoint_sets_of_equiv hd f hadj
   aesop
 
