@@ -348,11 +348,9 @@ lemma pi {d : (i : ι) → Set (α i)} (hd : ∀ (i : ι), DirectedOn (r i) (d i
     constructor
     · intro i
       simp_all only [Set.mem_pi, Set.mem_univ, forall_const]
-    · constructor
-      · intro i
-        simp_all only [Set.mem_pi, Set.mem_univ, forall_const]
-      · intro i
-        simp_all only [Set.mem_pi, Set.mem_univ, forall_const]⟩
+    · constructor <;> (
+      intro i
+      simp_all only [Set.mem_pi, Set.mem_univ, forall_const])⟩
 
 end Pi
 
