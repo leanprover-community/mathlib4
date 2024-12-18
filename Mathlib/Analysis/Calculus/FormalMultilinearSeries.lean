@@ -76,7 +76,7 @@ theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := r
 theorem neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - f n := rfl
 
 @[simp]
-theorem add_apply (f g : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (f + g) n = f n + g n := rfl
+theorem add_apply (p q : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (p + q) n = p n + q n := rfl
 
 @[simp]
 theorem sub_apply (p q : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (p - q) n = p n - q n := rfl
