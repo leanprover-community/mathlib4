@@ -3,6 +3,7 @@ Copyright (c) 2022 Jesse Reimann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jesse Reimann, Kalle Kytölä
 -/
+import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Content
 import Mathlib.Topology.ContinuousMap.CompactlySupported
 import Mathlib.Topology.PartitionOfUnity
@@ -35,6 +36,14 @@ variable {X : Type*} [TopologicalSpace X]
 variable (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 
 /-! ### Construction of the content: -/
+
+section Λ_mono
+
+lemma Λ_mono (f₁ f₂ : C_c(X, ℝ≥0)) (h : f₁.1 ≤ f₂.1) : Λ f₁ ≤ Λ f₂ := by
+  obtain ⟨g, hg⟩ := exist_add_eq f₁ f₂ h
+  simp only [← hg, map_add, le_add_iff_nonneg_right, zero_le]
+
+end Λ_mono
 
 /-- Given a positive linear functional `Λ` on continuous compactly supported functions on `X`
 with values in `ℝ≥0`, for `K ⊆ X` compact define `λ(K) = inf {Λf | 1≤f on K}`.
@@ -208,6 +217,8 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
 
 end PartitionOfUnity
 
+section RieszContentAdditive
+
 variable [T2Space X] [LocallyCompactSpace X]
 
 lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X}
@@ -245,9 +256,114 @@ lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X}
     simp [hg₂ x_in_K₂, hf x (mem_union_right _ x_in_K₂)]
   exact add_le_add (rieszContentAux_le Λ aux₁) (rieszContentAux_le Λ aux₂)
 
+end RieszContentAdditive
+
+section RieszContentRegular
+
+variable [T2Space X] [LocallyCompactSpace X]
+
 /-- The content induced by the linear functional `Λ`. -/
 noncomputable def rieszContent (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) : Content X where
   toFun := rieszContentAux Λ
   mono' := fun _ _ ↦ rieszContentAux_mono Λ
   sup_disjoint' := fun _ _ disj _ _ ↦ rieszContentAux_union Λ disj
   sup_le' := rieszContentAux_sup_le Λ
+
+lemma rieszContent_neq_top {K : Compacts X} : rieszContent Λ K ≠ ⊤ := by
+  simp only [ne_eq, ENNReal.coe_ne_top, not_false_eq_true]
+
+lemma rieszContentRegular : (rieszContent Λ).ContentRegular := by
+  intro K
+  simp only [rieszContent]
+  apply le_antisymm
+  · apply le_iInf
+    simp only [le_iInf_iff, ENNReal.coe_le_coe]
+    intro K' hK'
+    exact rieszContentAux_mono Λ (Set.Subset.trans hK' interior_subset)
+  · rw [iInf_le_iff]
+    intro b hb
+    rw [rieszContentAux, ENNReal.le_coe_iff]
+    have : b < ⊤ := by
+      obtain ⟨F, hF⟩ := exists_compact_superset K.2
+      exact lt_of_le_of_lt (le_iInf_iff.mp (hb ⟨F, hF.1⟩) hF.2) ENNReal.coe_lt_top
+    use b.toNNReal
+    refine ⟨Eq.symm (ENNReal.coe_toNNReal (ne_of_lt this)), ?_⟩
+    apply NNReal.coe_le_coe.mp
+    simp only [NNReal.coe_le_coe, ← NNReal.coe_le_coe]
+    apply le_iff_forall_pos_le_add.mpr
+    intro ε hε
+    set εnn : ℝ≥0 := ⟨ε, le_of_lt hε⟩ with hεnn
+    have εnneq : ε.toNNReal = εnn := Real.toNNReal_of_nonneg (le_of_lt hε)
+    rw [← NNReal.coe_mk ε (le_of_lt hε), ← NNReal.coe_add, NNReal.coe_le_coe]
+    obtain ⟨f, hfleoneonK, hfle⟩ := exists_lt_rieszContentAux_add_pos Λ K (Real.toNNReal_pos.mpr hε)
+    rw [rieszContentAux, εnneq] at hfle
+    apply le_of_lt (lt_of_le_of_lt _ hfle)
+    rw [← NNReal.coe_le_coe]
+    apply (le_iff_forall_one_lt_le_mul₀ _).mpr
+    · intro α hα
+      have : (Λ f) * α = Λ (α.toNNReal • f) := by
+        simp only [map_smul, smul_eq_mul, NNReal.coe_mul, Real.coe_toNNReal',
+          max_eq_left <| le_of_lt (lt_of_le_of_lt zero_le_one hα)]
+        exact mul_comm _ _
+      rw [this]
+      set K' := f ⁻¹' (Ici α⁻¹.toNNReal) with hK'
+      have hKK' : K.carrier ⊆ interior K' := by
+        rw [subset_interior_iff]
+        use f ⁻¹' (Ioi α⁻¹.toNNReal)
+        refine ⟨IsOpen.preimage f.1.2 isOpen_Ioi, ?_, ?_⟩
+        · intro x hx
+          rw [Set.mem_preimage, Set.mem_Ioi]
+          exact lt_of_lt_of_le (Real.toNNReal_lt_one.mpr (inv_lt_one_of_one_lt₀ hα))
+            (hfleoneonK x hx)
+        · rw [hK']
+          intro x hx
+          simp only [mem_preimage, mem_Ioi] at hx
+          simp only [mem_preimage, mem_Ici]
+          exact le_of_lt hx
+      have hK'cp : IsCompact K' := by
+        apply IsCompact.of_isClosed_subset f.2
+        · exact IsClosed.preimage f.1.2 isClosed_Ici
+        · rw [hK']
+          apply Set.Subset.trans _ subset_closure
+          intro x hx
+          simp only [mem_preimage, mem_Ici] at hx
+          simp only [mem_support]
+          apply ne_of_gt
+          rw [Real.toNNReal_inv] at hx
+          exact (lt_of_lt_of_le
+            (inv_pos_of_pos (lt_trans zero_lt_one (Real.one_lt_toNNReal.mpr hα))) hx)
+      set hb' := hb ⟨K', hK'cp⟩
+      simp only [Compacts.coe_mk, le_iInf_iff] at hb'
+      have hbK' : b ≤ rieszContent Λ ⟨K', hK'cp⟩ := hb' hKK'
+      rw [ENNReal.le_coe_iff] at hbK'
+      obtain ⟨p, hp⟩ := hbK'
+      simp only [hp.1, ENNReal.toNNReal_coe, NNReal.val_eq_coe, map_smul, smul_eq_mul,
+        NNReal.coe_mul, Real.coe_toNNReal', ge_iff_le]
+      apply le_trans (NNReal.GCongr.toReal_le_toReal hp.2)
+      rw [rieszContent]
+      simp only
+      rw [rieszContentAux, ← Real.coe_toNNReal (α ⊔ 0) (le_max_right α 0), ← NNReal.coe_mul,
+        NNReal.coe_le_coe]
+      apply csInf_le
+      · simp only [OrderBot.bddBelow]
+      · simp only [mem_image, mem_setOf_eq]
+        use α.toNNReal • f
+        refine ⟨?_, ?_⟩
+        · intro x hx
+          simp only [CompactlySupportedContinuousMap.coe_smul, Pi.smul_apply, smul_eq_mul,
+            ← NNReal.coe_le_coe, NNReal.coe_one, NNReal.coe_mul, Real.coe_toNNReal']
+          rw [← (left_eq_sup.mpr <| le_of_lt (lt_of_le_of_lt zero_le_one hα)), mul_comm]
+          apply (inv_le_iff_one_le_mul₀ (lt_trans zero_lt_one hα)).mp
+          rw [← Set.mem_Ici]
+          have hxK' : x ∈ K' := by exact hx
+          simp only [mem_preimage, mem_Ici] at hxK'
+          simp only [mem_Ici, ge_iff_le]
+          exact Real.toNNReal_le_iff_le_coe.mp hx
+        · simp only [map_smul, smul_eq_mul, mul_eq_mul_right_iff]
+          left
+          rw [Real.toNNReal_eq_toNNReal_iff (le_of_lt (lt_of_le_of_lt zero_le_one hα))
+            (le_max_right α 0), left_eq_sup]
+          exact le_of_lt (lt_of_le_of_lt zero_le_one hα)
+    · exact zero_le (Λ f)
+
+end RieszContentRegular

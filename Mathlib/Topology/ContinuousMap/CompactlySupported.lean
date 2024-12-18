@@ -5,6 +5,7 @@ Authors: Yoh Tanimoto
 -/
 import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.ContinuousMap.CocompactMap
+import Mathlib.Topology.ContinuousMap.Ordered
 import Mathlib.Topology.ContinuousMap.ZeroAtInfty
 
 /-!
@@ -540,6 +541,27 @@ noncomputable def nnrealPart (f : C_c(α, ℝ)) : C_c(α, ℝ≥0) where
 @[simp]
 lemma nnrealPart_apply (f : C_c(α, ℝ)) (x : α) :
     f.nnrealPart x = Real.toNNReal (f x) := rfl
+
+lemma exist_add_eq (f₁ f₂ : C_c(α, ℝ≥0)) (h : f₁.1 ≤ f₂.1)  : ∃ (g : C_c(α, ℝ≥0)), f₁ + g = f₂ := by
+  set g_cf := f₂.1 - f₁.1 with hg_cf
+  have g_cp : HasCompactSupport g_cf := by
+    apply IsCompact.of_isClosed_subset
+      (IsCompact.union f₁.hasCompactSupport' f₂.hasCompactSupport') isClosed_closure
+    rw [tsupport, tsupport, ← closure_union]
+    apply closure_mono
+    intro x
+    simp only [Function.mem_support, ne_eq, ContinuousMap.toFun_eq_coe,
+      CompactlySupportedContinuousMap.coe_toContinuousMap, Set.mem_union, hg_cf,
+      ContinuousMap.sub_apply, CompactlySupportedContinuousMap.coe_toContinuousMap]
+    by_contra!
+    rw [this.2.1, this.2.2] at this
+    simp only [tsub_self, ne_eq, not_true_eq_false, and_self, and_true] at this
+  use ⟨g_cf, g_cp⟩
+  ext x
+  simp only [CompactlySupportedContinuousMap.coe_add, CompactlySupportedContinuousMap.coe_mk,
+    Pi.add_apply, NNReal.coe_inj, hg_cf, ContinuousMap.sub_apply,
+    CompactlySupportedContinuousMap.coe_toContinuousMap]
+  exact add_tsub_cancel_of_le (h x)
 
 end CompactlySupportedContinuousMap
 
