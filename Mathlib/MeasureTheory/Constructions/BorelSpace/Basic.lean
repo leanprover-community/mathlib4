@@ -35,9 +35,8 @@ import Mathlib.Topology.Instances.Rat
 
 noncomputable section
 
-open Set Filter MeasureTheory
-
-open scoped Topology NNReal ENNReal MeasureTheory
+open Filter MeasureTheory Set Topology
+open scoped NNReal ENNReal MeasureTheory
 
 universe u v w x y
 
@@ -211,16 +210,6 @@ instance (priority := 100) BorelSpace.countablyGenerated {α : Type*} [Topologic
   borelize α
   exact hb.borel_eq_generateFrom
 
-theorem MeasurableSet.induction_on_open [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α]
-    {C : Set α → Prop} (h_open : ∀ U, IsOpen U → C U)
-    (h_compl : ∀ t, MeasurableSet t → C t → C tᶜ)
-    (h_union :
-      ∀ f : ℕ → Set α,
-        Pairwise (Disjoint on f) → (∀ i, MeasurableSet (f i)) → (∀ i, C (f i)) → C (⋃ i, f i)) :
-    ∀ ⦃t⦄, MeasurableSet t → C t :=
-  MeasurableSpace.induction_on_inter BorelSpace.measurable_eq isPiSystem_isOpen
-    (h_open _ isOpen_empty) h_open h_compl h_union
-
 section
 
 variable [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] [TopologicalSpace β]
@@ -232,6 +221,16 @@ theorem IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
 
 theorem IsOpen.nullMeasurableSet {μ} (h : IsOpen s) : NullMeasurableSet s μ :=
   h.measurableSet.nullMeasurableSet
+
+@[elab_as_elim]
+theorem MeasurableSet.induction_on_open {C : ∀ s : Set γ, MeasurableSet s → Prop}
+    (isOpen : ∀ U (hU : IsOpen U), C U hU.measurableSet)
+    (compl : ∀ t (ht : MeasurableSet t), C t ht → C tᶜ ht.compl)
+    (iUnion : ∀ f : ℕ → Set γ, Pairwise (Disjoint on f) → ∀ (hf : ∀ i, MeasurableSet (f i)),
+      (∀ i, C (f i) (hf i)) → C (⋃ i, f i) (.iUnion hf)) :
+    ∀ t (ht : MeasurableSet t), C t ht := fun t ht ↦
+  MeasurableSpace.induction_on_inter BorelSpace.measurable_eq isPiSystem_isOpen
+    (isOpen _ isOpen_empty) isOpen compl iUnion t ht
 
 instance (priority := 1000) {s : Set α} [h : HasCountableSeparatingOn α IsOpen s] :
     CountablySeparated s := by
@@ -266,8 +265,8 @@ theorem IsCompact.nullMeasurableSet [T2Space α] {μ} (h : IsCompact s) : NullMe
 then they can't be separated by a Borel measurable set. -/
 theorem Inseparable.mem_measurableSet_iff {x y : γ} (h : Inseparable x y) {s : Set γ}
     (hs : MeasurableSet s) : x ∈ s ↔ y ∈ s :=
-  hs.induction_on_open (C := fun s ↦ (x ∈ s ↔ y ∈ s)) (fun _ ↦ h.mem_open_iff) (fun _ _ ↦ Iff.not)
-    fun _ _ _ h ↦ by simp [h]
+  MeasurableSet.induction_on_open (fun _ ↦ h.mem_open_iff) (fun _ _ ↦ Iff.not)
+    (fun _ _ _ h ↦ by simp [h]) s hs
 
 /-- If `K` is a compact set in an R₁ space and `s ⊇ K` is a Borel measurable superset,
 then `s` includes the closure of `K` as well. -/
@@ -331,7 +330,7 @@ instance (priority := 100) OpensMeasurableSpace.separatesPoints [T0Space α] :
   rw [separatesPoints_iff]
   intro x y hxy
   apply Inseparable.eq
-  rw [inseparable_iff_forall_open]
+  rw [inseparable_iff_forall_isOpen]
   exact fun s hs => hxy _ hs.measurableSet
 
 theorem borel_eq_top_of_countable {α : Type*} [TopologicalSpace α] [T0Space α] [Countable α] :
@@ -629,7 +628,7 @@ instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [DiscreteMeasurableSpace α] : BorelSpace α := by
   constructor; ext; simp [MeasurableSpace.measurableSet_generateFrom, MeasurableSet.of_discrete]
 
-protected theorem IsEmbedding.measurableEmbedding {f : α → β} (h₁ : IsEmbedding f)
+protected theorem Topology.IsEmbedding.measurableEmbedding {f : α → β} (h₁ : IsEmbedding f)
     (h₂ : MeasurableSet (range f)) : MeasurableEmbedding f :=
   show MeasurableEmbedding
       (((↑) : range f → β) ∘ (Homeomorph.ofIsEmbedding f h₁).toMeasurableEquiv) from
@@ -638,14 +637,14 @@ protected theorem IsEmbedding.measurableEmbedding {f : α → β} (h₁ : IsEmbe
 @[deprecated (since := "2024-10-26")]
 alias Embedding.measurableEmbedding := IsEmbedding.measurableEmbedding
 
-protected theorem IsClosedEmbedding.measurableEmbedding {f : α → β}
+protected theorem Topology.IsClosedEmbedding.measurableEmbedding {f : α → β}
     (h : IsClosedEmbedding f) : MeasurableEmbedding f :=
   h.isEmbedding.measurableEmbedding h.isClosed_range.measurableSet
 
 @[deprecated (since := "2024-10-20")]
 alias ClosedEmbedding.measurableEmbedding := IsClosedEmbedding.measurableEmbedding
 
-protected theorem IsOpenEmbedding.measurableEmbedding {f : α → β} (h : IsOpenEmbedding f) :
+protected theorem Topology.IsOpenEmbedding.measurableEmbedding {f : α → β} (h : IsOpenEmbedding f) :
     MeasurableEmbedding f :=
   h.isEmbedding.measurableEmbedding h.isOpen_range.measurableSet
 

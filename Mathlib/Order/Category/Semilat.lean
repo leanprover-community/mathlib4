@@ -113,7 +113,7 @@ instance : LargeCategory.{u} SemilatInfCat where
   comp_id := InfTopHom.id_comp
   assoc _ _ _ := InfTopHom.comp_assoc _ _ _
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance instFunLike (X Y : SemilatInfCat) : FunLike (X ⟶ Y) X Y :=
   show FunLike (InfTopHom X Y) X Y from inferInstance
 

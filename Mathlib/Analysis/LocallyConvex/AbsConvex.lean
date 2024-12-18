@@ -18,18 +18,22 @@ topological vector space has a basis consisting of absolutely convex sets.
 ## Main definitions
 
 * `absConvexHull`: the absolutely convex hull of a set `s` is the smallest absolutely convex set
-  containing `s`.
+  containing `s`;
+* `closedAbsConvexHull`: the closed absolutely convex hull of a set `s` is the smallest absolutely
+  convex set containing `s`;
 * `gaugeSeminormFamily`: the seminorm family induced by all open absolutely convex neighborhoods
-of zero.
+  of zero.
 
 ## Main statements
 
 * `absConvexHull_eq_convexHull_balancedHull`: when the locally convex space is a module, the
-  absolutely convex hull of a set `s` equals the convex hull of the balanced hull of `s`.
-* `convexHull_union_neg_eq_absConvexHull`: the convex hull of `s ∪ -s` is the absolute convex hull
-  of `s`.
+  absolutely convex hull of a set `s` equals the convex hull of the balanced hull of `s`;
+* `convexHull_union_neg_eq_absConvexHull`: the convex hull of `s ∪ -s` is the absolutely convex hull
+  of `s`;
+* `closedAbsConvexHull_closure_eq_closedAbsConvexHull` : the closed absolutely convex hull of the
+  closure of `s` equals the closed absolutely convex hull of `s`;
 * `with_gaugeSeminormFamily`: the topology of a locally convex space is induced by the family
-`gaugeSeminormFamily`.
+  `gaugeSeminormFamily`.
 
 ## Implementation notes
 
@@ -147,7 +151,67 @@ theorem absConvexHull_nonempty : (absConvexHull 𝕜 s).Nonempty ↔ s.Nonempty 
 
 protected alias ⟨_, Set.Nonempty.absConvexHull⟩ := absConvexHull_nonempty
 
+variable [TopologicalSpace E]
+
+theorem absConvex_closed_sInter {S : Set (Set E)} (h : ∀ s ∈ S, AbsConvex 𝕜 s ∧ IsClosed s) :
+    AbsConvex 𝕜 (⋂₀ S) ∧ IsClosed (⋂₀ S) :=
+  ⟨AbsConvex.sInter (fun s hs => (h s hs).1), isClosed_sInter fun _ hs => (h _ hs).2⟩
+
+variable (𝕜)
+
+/-- The absolutely convex closed hull of a set `s` is the minimal absolutely convex closed set that
+includes `s`. -/
+@[simps! isClosed]
+def closedAbsConvexHull : ClosureOperator (Set E) :=
+  .ofCompletePred (fun s => AbsConvex 𝕜 s ∧ IsClosed s) fun _ ↦ absConvex_closed_sInter
+
+variable {𝕜}
+
+theorem absConvex_convexClosedHull {s : Set E} :
+    AbsConvex 𝕜 (closedAbsConvexHull 𝕜 s) := ((closedAbsConvexHull 𝕜).isClosed_closure s).1
+
+theorem isClosed_closedAbsConvexHull {s : Set E} :
+    IsClosed (closedAbsConvexHull 𝕜 s) := ((closedAbsConvexHull 𝕜).isClosed_closure s).2
+
+theorem subset_closedAbsConvexHull {s : Set E} : s ⊆ closedAbsConvexHull 𝕜 s :=
+  (closedAbsConvexHull 𝕜).le_closure s
+
+theorem closure_subset_closedAbsConvexHull {s : Set E} : closure s ⊆ closedAbsConvexHull 𝕜 s :=
+  closure_minimal subset_closedAbsConvexHull isClosed_closedAbsConvexHull
+
+theorem closedAbsConvexHull_min {s t : Set E} (hst : s ⊆ t) (h_conv : AbsConvex 𝕜 t)
+    (h_closed : IsClosed t) : closedAbsConvexHull 𝕜 s ⊆ t :=
+  (closedAbsConvexHull 𝕜).closure_min hst ⟨h_conv, h_closed⟩
+
+theorem absConvexHull_subset_closedAbsConvexHull {s : Set E} :
+    (absConvexHull 𝕜) s ⊆ (closedAbsConvexHull 𝕜) s :=
+  absConvexHull_min subset_closedAbsConvexHull absConvex_convexClosedHull
+
+@[simp]
+theorem closedAbsConvexHull_closure_eq_closedAbsConvexHull {s : Set E} :
+    closedAbsConvexHull 𝕜 (closure s) = closedAbsConvexHull 𝕜 s :=
+  subset_antisymm (by simpa using ((closedAbsConvexHull 𝕜).monotone
+      (closure_subset_closedAbsConvexHull (𝕜 := 𝕜) (E := E))))
+    ((closedAbsConvexHull 𝕜).monotone subset_closure)
+
 end AbsolutelyConvex
+
+section NormedField
+
+variable [NormedField 𝕜]
+  [AddCommGroup E] [Module ℝ E] [Module 𝕜 E]  [TopologicalSpace E]
+  [TopologicalAddGroup E] [ContinuousSMul ℝ E] [ContinuousSMul 𝕜 E]
+
+theorem AbsConvex.closure {s : Set E} (hs : AbsConvex 𝕜 s) : AbsConvex 𝕜 (closure s) :=
+  ⟨Balanced.closure hs.1, Convex.closure hs.2⟩
+
+theorem closedAbsConvexHull_eq_closure_absConvexHull {s : Set E} :
+    closedAbsConvexHull 𝕜 s = closure (absConvexHull 𝕜 s) := subset_antisymm
+  (closedAbsConvexHull_min (subset_trans (subset_absConvexHull) subset_closure)
+    (AbsConvex.closure absConvex_absConvexHull) isClosed_closure)
+  (closure_minimal absConvexHull_subset_closedAbsConvexHull isClosed_closedAbsConvexHull)
+
+end NormedField
 
 section NontriviallyNormedField
 
@@ -217,17 +281,12 @@ lemma balancedHull_subset_convexHull_union_neg {s : Set E} :
   intro a ha
   obtain ⟨r, hr, y, hy, rfl⟩ := mem_balancedHull_iff.1 ha
   apply segment_subset_convexHull (mem_union_left (-s) hy) (mem_union_right _ (neg_mem_neg.mpr hy))
-  refine ⟨(1 + r)/2, (1 - r)/2, ?_, ?_⟩
-  · rw [← zero_div 2]
-    exact (div_le_div_right zero_lt_two).mpr (neg_le_iff_add_nonneg'.mp (neg_le_of_abs_le hr))
-  · constructor
-    · rw [← zero_div 2]
-      exact (div_le_div_right zero_lt_two).mpr (sub_nonneg_of_le (le_of_max_le_left hr))
-    · constructor
-      · ring_nf
-      · rw [smul_neg, ← sub_eq_add_neg, ← sub_smul]
-        apply congrFun (congrArg HSMul.hSMul _) y
-        ring_nf
+  have : 0 ≤ 1 + r := neg_le_iff_add_nonneg'.mp (neg_le_of_abs_le hr)
+  have : 0 ≤ 1 - r := sub_nonneg.2 (le_of_abs_le hr)
+  refine ⟨(1 + r)/2, (1 - r)/2, by positivity, by positivity, by ring, ?_⟩
+  rw [smul_neg, ← sub_eq_add_neg, ← sub_smul]
+  apply congrFun (congrArg HSMul.hSMul _) y
+  ring_nf
 
 @[simp]
 theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :

@@ -66,7 +66,7 @@ namespace CFC
 
 section NonUnital
 
-variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A]
+variable {A : Type*} [PartialOrder A] [NonUnitalRing A] [TopologicalSpace A] [StarRing A]
   [Module ℝ≥0 A] [SMulCommClass ℝ≥0 A A] [IsScalarTower ℝ≥0 A A]
   [NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
 
@@ -201,14 +201,17 @@ lemma sqrt_eq_iff (a b : A) (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc
     sqrt a = b ↔ b * b = a :=
   ⟨(mul_self_eq ·), (sqrt_unique ·)⟩
 
+lemma sqrt_eq_zero_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : sqrt a = 0 ↔ a = 0 := by
+  rw [sqrt_eq_iff a _, mul_zero, eq_comm]
+
 end sqrt
 
 end NonUnital
 
 section Unital
 
-variable {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A]
-  [NormedAlgebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
+variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
+  [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
 
 /- ## `rpow` -/
 

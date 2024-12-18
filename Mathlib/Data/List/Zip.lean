@@ -166,13 +166,4 @@ theorem mem_zip_inits_tails {l : List α} {init tail : List α} :
         use tl', tail
         simp_all
 
-theorem map_uncurry_zip_eq_zipWith (f : α → β → γ) (l : List α) (l' : List β) :
-    map (Function.uncurry f) (l.zip l') = zipWith f l l' := by
-  rw [zip]
-  induction' l with hd tl hl generalizing l'
-  · simp
-  · cases' l' with hd' tl'
-    · simp
-    · simp [hl]
-
 end List

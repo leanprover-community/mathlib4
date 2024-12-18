@@ -200,6 +200,29 @@ lemma KernelFork.IsLimit.isIso_ι {X Y : C} {f : X ⟶ Y} (c : KernelFork f)
     infer_instance
   exact IsIso.of_isIso_comp_left e.inv c.ι
 
+/-- If `c` is a limit kernel fork for `g : X ⟶ Y`, `e : X ≅ X'` and `g' : X' ⟶ Y` is a morphism,
+then there is a limit kernel fork for `g'` with the same point as `c` if for any
+morphism `φ : W ⟶ X`, there is an equivalence `φ ≫ g = 0 ↔ φ ≫ e.hom ≫ g' = 0`. -/
+def KernelFork.isLimitOfIsLimitOfIff {X Y : C} {g : X ⟶ Y} {c : KernelFork g} (hc : IsLimit c)
+    {X' Y' : C} (g' : X' ⟶ Y') (e : X ≅ X')
+    (iff : ∀ ⦃W : C⦄ (φ : W ⟶ X), φ ≫ g = 0 ↔ φ ≫ e.hom ≫ g' = 0) :
+    IsLimit (KernelFork.ofι (f := g') (c.ι ≫ e.hom) (by simp [← iff])) :=
+  KernelFork.IsLimit.ofι _ _
+    (fun s hs ↦ hc.lift (KernelFork.ofι (ι := s ≫ e.inv)
+      (by rw [iff, Category.assoc, Iso.inv_hom_id_assoc, hs])))
+    (fun s hs ↦ by simp [← cancel_mono e.inv])
+    (fun s hs m hm ↦ Fork.IsLimit.hom_ext hc (by simpa [← cancel_mono e.hom] using hm))
+
+/-- If `c` is a limit kernel fork for `g : X ⟶ Y`, and `g' : X ⟶ Y'` is a another morphism,
+then there is a limit kernel fork for `g'` with the same point as `c` if for any
+morphism `φ : W ⟶ X`, there is an equivalence `φ ≫ g = 0 ↔ φ ≫ g' = 0`. -/
+def KernelFork.isLimitOfIsLimitOfIff' {X Y : C} {g : X ⟶ Y} {c : KernelFork g} (hc : IsLimit c)
+    {Y' : C} (g' : X ⟶ Y')
+    (iff : ∀ ⦃W : C⦄ (φ : W ⟶ X), φ ≫ g = 0 ↔ φ ≫ g' = 0) :
+    IsLimit (KernelFork.ofι (f := g') c.ι (by simp [← iff])) :=
+  IsLimit.ofIsoLimit (isLimitOfIsLimitOfIff hc g' (Iso.refl _) (by simpa using iff))
+    (Fork.ext (Iso.refl _))
+
 end
 
 namespace KernelFork
@@ -631,6 +654,29 @@ lemma CokernelCofork.IsColimit.isIso_π {X Y : C} {f : X ⟶ Y} (c : CokernelCof
     dsimp
     infer_instance
   exact IsIso.of_isIso_comp_right c.π e.hom
+
+/-- If `c` is a colimit cokernel cofork for `f : X ⟶ Y`, `e : Y ≅ Y'` and `f' : X' ⟶ Y` is a
+morphism, then there is a colimit cokernel cofork for `f'` with the same point as `c` if for any
+morphism `φ : Y ⟶ W`, there is an equivalence `f ≫ φ = 0 ↔ f' ≫ e.hom ≫ φ = 0`. -/
+def CokernelCofork.isColimitOfIsColimitOfIff {X Y : C} {f : X ⟶ Y} {c : CokernelCofork f}
+    (hc : IsColimit c) {X' Y' : C} (f' : X' ⟶ Y') (e : Y' ≅ Y)
+    (iff : ∀ ⦃W : C⦄ (φ : Y ⟶ W), f ≫ φ = 0 ↔ f' ≫ e.hom ≫ φ = 0) :
+    IsColimit (CokernelCofork.ofπ (f := f') (e.hom ≫ c.π) (by simp [← iff])) :=
+  CokernelCofork.IsColimit.ofπ _ _
+    (fun s hs ↦ hc.desc (CokernelCofork.ofπ (π := e.inv ≫ s)
+      (by rw [iff, e.hom_inv_id_assoc, hs])))
+    (fun s hs ↦ by simp [← cancel_epi e.inv])
+    (fun s hs m hm ↦ Cofork.IsColimit.hom_ext hc (by simpa [← cancel_epi e.hom] using hm))
+
+/-- If `c` is a colimit cokernel cofork for `f : X ⟶ Y`, and `f' : X' ⟶ Y is another
+morphism, then there is a colimit cokernel cofork for `f'` with the same point as `c` if for any
+morphism `φ : Y ⟶ W`, there is an equivalence `f ≫ φ = 0 ↔ f' ≫ φ = 0`. -/
+def CokernelCofork.isColimitOfIsColimitOfIff' {X Y : C} {f : X ⟶ Y} {c : CokernelCofork f}
+    (hc : IsColimit c) {X' : C} (f' : X' ⟶ Y)
+    (iff : ∀ ⦃W : C⦄ (φ : Y ⟶ W), f ≫ φ = 0 ↔ f' ≫ φ = 0) :
+    IsColimit (CokernelCofork.ofπ (f := f') c.π (by simp [← iff])) :=
+  IsColimit.ofIsoColimit (isColimitOfIsColimitOfIff hc f' (Iso.refl _) (by simpa using iff))
+    (Cofork.ext (Iso.refl _))
 
 end
 
