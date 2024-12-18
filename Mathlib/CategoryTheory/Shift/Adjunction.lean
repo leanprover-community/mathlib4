@@ -409,8 +409,7 @@ If `E : C ≌ D` is an equivalence and we have compatible `CommShift` structures
 and `E.inverse`, then we also have compatible `CommShift` structures on `E.symm.functor`
 and `E.symm.inverse`.
 -/
-instance [E.functor.CommShift A] [E.inverse.CommShift A] [E.CommShift A] :
-    E.symm.CommShift A := mk' _ _
+instance [E.CommShift A] : E.symm.CommShift A := mk' _ _
       (by dsimp only [Equivalence.symm, Iso.symm]; exact NatTrans.CommShift.of_iso_inv _ _)
 
 end CommShift
