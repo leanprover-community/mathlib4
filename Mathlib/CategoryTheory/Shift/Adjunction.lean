@@ -378,8 +378,6 @@ abbrev CommShift [E.functor.CommShift A] [E.inverse.CommShift A] : Prop :=
 
 namespace CommShift
 
-attribute [instance] Adjunction.CommShift.commShift_unit Adjunction.CommShift.commShift_counit
-
 instance [h : E.functor.CommShift A] : E.symm.inverse.CommShift A := h
 instance [h : E.inverse.CommShift A] : E.symm.functor.CommShift A := h
 
@@ -387,19 +385,19 @@ instance [h : E.inverse.CommShift A] : E.symm.functor.CommShift A := h
 lemma mk' [E.functor.CommShift A] [E.inverse.CommShift A]
     (h : NatTrans.CommShift E.unitIso.hom A) :
     E.CommShift A where
-  commShift_unit := inferInstance
-  commShift_counit :=
-    (Adjunction.CommShift.mk' E.toAdjunction A h).commShift_counit
+  commShift_unit := h
+  commShift_counit := (Adjunction.CommShift.mk' E.toAdjunction A h).commShift_counit
 
 /-- Constructor for `Equivalence.CommShift`. -/
 lemma mk'' [E.functor.CommShift A] [E.inverse.CommShift A]
     (h : NatTrans.CommShift E.counitIso.hom A) :
     E.CommShift A where
-  commShift_unitIso_hom := by
+  commShift_unit := by
     have h' := NatTrans.CommShift.of_iso_inv E.counitIso A
     have : NatTrans.CommShift E.unitIso.symm.hom A :=
       (Adjunction.CommShift.mk' E.symm.toAdjunction A h').commShift_counit
     exact NatTrans.CommShift.of_iso_inv E.unitIso.symm A
+  commShift_counit := h
 
 /--
 If `E : C ≌ D` is an equivalence and we have compatible `CommShift` structures on `E.functor`
@@ -408,8 +406,8 @@ and `E.inverse`, then these structures are also compatible with the adjunction
 -/
 instance [E.functor.CommShift A] [E.inverse.CommShift A] [E.CommShift A] :
     E.toAdjunction.CommShift A where
-  commShift_unit := commShift_unitIso_hom
-  commShift_counit := commShift_counitIso_hom
+  commShift_unit := inferInstance
+  commShift_counit := inferInstance
 
 /--
 If `E : C ≌ D` is an equivalence and we have compatible `CommShift` structures on `E.functor`
@@ -417,9 +415,11 @@ and `E.inverse`, then we also have compatible `CommShift` structures on `E.symm.
 and `E.symm.inverse`.
 -/
 instance [E.functor.CommShift A] [E.inverse.CommShift A] [E.CommShift A] :
-    E.symm.CommShift A := mk' _ _ (by
-  dsimp only [Equivalence.symm, Iso.symm]
-  infer_instance)
+    E.symm.CommShift A := mk' _ _
+      (by dsimp only [Equivalence.symm, Iso.symm];
+          have : NatTrans.CommShift E.counitIso.hom A :=
+            Adjunction.CommShift.commShift_counit (adj := E.toAdjunction)
+          exact NatTrans.CommShift.of_iso_inv _ _)
 
 end CommShift
 
