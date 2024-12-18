@@ -143,8 +143,8 @@ instance {G : Type*} [Group G] : Group (MonCat.of G) := by assumption
 /-- Universe lift functor for monoids. -/
 @[to_additive (attr := simps)
   "Universe lift functor for additive monoids."]
-def uliftFunctor : MonCat.{u} ⥤ MonCat.{max u v} where
-  obj X := MonCat.of (ULift.{v, u} X)
+def uliftFunctor : MonCat.{v} ⥤ MonCat.{max v u} where
+  obj X := MonCat.of (ULift.{u, v} X)
   map {_ _} f := MonCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl
@@ -247,8 +247,8 @@ lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x
 /-- Universe lift functor for commutative monoids. -/
 @[to_additive (attr := simps)
   "Universe lift functor for additive commutative monoids."]
-def uliftFunctor : CommMonCat.{u} ⥤ CommMonCat.{max u v} where
-  obj X := CommMonCat.of (ULift.{v, u} X)
+def uliftFunctor : CommMonCat.{v} ⥤ CommMonCat.{max v u} where
+  obj X := CommMonCat.of (ULift.{u, v} X)
   map {_ _} f := CommMonCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl

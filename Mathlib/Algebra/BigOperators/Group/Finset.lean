@@ -1166,6 +1166,17 @@ theorem prod_ite_eq' [DecidableEq α] (s : Finset α) (a : α) (b : α → β) :
   prod_dite_eq' s a fun x _ => b x
 
 @[to_additive]
+theorem prod_ite_eq_of_mem [DecidableEq α] (s : Finset α) (a : α) (b : α → β) (h : a ∈ s) :
+    (∏ x ∈ s, if a = x then b x else 1) = b a := by
+  simp only [prod_ite_eq, if_pos h]
+
+/-- The difference with `Finset.prod_ite_eq_of_mem` is that the arguments to `Eq` are swapped. -/
+@[to_additive]
+theorem prod_ite_eq_of_mem' [DecidableEq α] (s : Finset α) (a : α) (b : α → β) (h : a ∈ s) :
+    (∏ x ∈ s, if x = a then b x else 1) = b a := by
+  simp only [prod_ite_eq', if_pos h]
+
+@[to_additive]
 theorem prod_ite_index (p : Prop) [Decidable p] (s t : Finset α) (f : α → β) :
     ∏ x ∈ if p then s else t, f x = if p then ∏ x ∈ s, f x else ∏ x ∈ t, f x :=
   apply_ite (fun s => ∏ x ∈ s, f x) _ _ _
@@ -1995,6 +2006,9 @@ theorem prod_subsingleton {α β : Type*} [CommMonoid β] [Subsingleton α] [Fin
   have : Unique α := uniqueOfSubsingleton a
   rw [prod_unique f, Subsingleton.elim default a]
 
+@[to_additive] theorem prod_Prop {β} [CommMonoid β] (f : Prop → β) :
+    ∏ p, f p = f True * f False := by simp
+
 @[to_additive]
 theorem prod_subtype_mul_prod_subtype {α β : Type*} [Fintype α] [CommMonoid β] (p : α → Prop)
     (f : α → β) [DecidablePred p] :
@@ -2181,6 +2195,16 @@ end Multiset
 theorem Units.coe_prod {M : Type*} [CommMonoid M] (f : α → Mˣ) (s : Finset α) :
     (↑(∏ i ∈ s, f i) : M) = ∏ i ∈ s, (f i : M) :=
   map_prod (Units.coeHom M) _ _
+
+@[to_additive (attr := simp)]
+lemma IsUnit.prod_iff [CommMonoid β] : IsUnit (∏ a ∈ s, f a) ↔ ∀ a ∈ s, IsUnit (f a) := by
+  induction s using Finset.cons_induction with
+  | empty => simp
+  | cons a s ha hs => rw [Finset.prod_cons, IsUnit.mul_iff, hs, Finset.forall_mem_cons]
+
+@[to_additive]
+lemma IsUnit.prod_univ_iff [Fintype α] [CommMonoid β] : IsUnit (∏ a, f a) ↔ ∀ a, IsUnit (f a) := by
+  simp
 
 theorem nat_abs_sum_le {ι : Type*} (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by
