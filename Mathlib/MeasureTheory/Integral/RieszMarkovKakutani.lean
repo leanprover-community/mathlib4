@@ -367,3 +367,38 @@ lemma rieszContentRegular : (rieszContent Λ).ContentRegular := by
     · exact zero_le (Λ f)
 
 end RieszContentRegular
+
+section RieszMeasure
+
+variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
+
+/-- `rieszContent` is promoted to a measure. -/
+def μ := (MeasureTheory.Content.measure (rieszContent Λ))
+
+lemma leRieszMeasure_Compacts {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1) {K : Compacts X}
+    (h : tsupport f ⊆ K) : ENNReal.ofReal (Λ f) ≤ (μ Λ) K := by
+  simp only [μ, MeasureTheory.Content.measure_eq_content_of_regular (rieszContent Λ)
+    (rieszContentRegular Λ)]
+  simp only [rieszContent, ENNReal.ofReal_coe_nnreal, ENNReal.coe_le_coe]
+  apply le_iff_forall_pos_le_add.mpr
+  intro ε hε
+  obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos Λ K hε
+  apply le_of_lt (lt_of_le_of_lt _ hg.2)
+  apply Λ_mono Λ
+  intro x
+  simp only [ContinuousMap.toFun_eq_coe, CompactlySupportedContinuousMap.coe_toContinuousMap]
+  by_cases hx : x ∈ tsupport f
+  · exact le_trans (hf x) (hg.1 x (Set.mem_of_subset_of_mem h hx))
+  · rw [image_eq_zero_of_nmem_tsupport hx]
+    exact zero_le (g x)
+
+lemma leRieszMeasure_Opens {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1) {V : Opens X}
+    (h : tsupport f ⊆ V) :
+    ENNReal.ofReal (Λ f) ≤ (μ Λ) V := by
+  apply le_trans _ (MeasureTheory.measure_mono h)
+  rw [← TopologicalSpace.Compacts.coe_mk (tsupport f) f.2]
+  apply leRieszMeasure_Compacts Λ hf
+  simp only [Compacts.coe_mk]
+  exact subset_rfl
+
+end RieszMeasure
