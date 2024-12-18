@@ -328,7 +328,7 @@ theorem radius_neg (p : FormalMultilinearSeries 𝕜 E F) : (-p).radius = p.radi
   simp only [radius, neg_apply, norm_neg]
 
 theorem radius_le_smul {p : FormalMultilinearSeries 𝕜 E F} {c : 𝕜} : p.radius ≤ (c • p).radius := by
-  simp only [radius, smul_apply, norm_smul]
+  simp only [radius, smul_apply]
   apply iSup_mono
   intro r
   apply iSup_mono'
@@ -338,7 +338,7 @@ theorem radius_le_smul {p : FormalMultilinearSeries 𝕜 E F} {c : 𝕜} : p.rad
   intro h
   simp
   intro n
-  rw [mul_assoc]
+  rw [norm_smul c (p n), mul_assoc]
   apply mul_le_mul_of_nonneg_left
   · apply h
   · simp
