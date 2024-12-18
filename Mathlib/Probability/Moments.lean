@@ -344,6 +344,14 @@ theorem measure_le_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
 
 end MomentGeneratingFunction
 
+theorem integrable_bounded [IsFiniteMeasure μ] (a b : ℝ) {X : Ω → ℝ} (hX : AEMeasurable X μ)
+    (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+     Integrable X μ := by
+   have m1 : HasFiniteIntegral X μ := by
+      apply (hasFiniteIntegral_const (max ‖a‖ ‖b‖)).mono'
+      filter_upwards [h.mono fun ω h ↦ h.1, h.mono fun ω h ↦ h.2] with ω using abs_le_max_abs_abs
+   exact ⟨aestronglyMeasurable_iff_aemeasurable.mpr hX, m1⟩
+
 lemma aemeasurable_expt {X : Ω → ℝ} (t : ℝ) (hX : AEMeasurable X μ) :
     AEStronglyMeasurable (fun ω ↦ rexp (t * (X ω))) μ :=
   aestronglyMeasurable_iff_aemeasurable.mpr <| measurable_exp.comp_aemeasurable' (hX.const_mul t)
