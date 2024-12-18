@@ -5353,7 +5353,11 @@ import Mathlib.Topology.Semicontinuous
 import Mathlib.Topology.SeparatedMap
 import Mathlib.Topology.Separation.Basic
 import Mathlib.Topology.Separation.GDelta
+import Mathlib.Topology.Separation.Hausdorff
 import Mathlib.Topology.Separation.NotNormal
+import Mathlib.Topology.Separation.Profinite
+import Mathlib.Topology.Separation.Regular
+import Mathlib.Topology.Separation.SeparatedNhds
 import Mathlib.Topology.Sequences
 import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sets.Compacts
