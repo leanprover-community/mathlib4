@@ -349,6 +349,45 @@ theorem radius_smul_eq (p : FormalMultilinearSeries 𝕜 E F) {c : 𝕜}
   conv => rhs; rw [show p = c⁻¹ • (c • p) by simp [smul_smul, inv_mul_cancel₀ hc]]
   apply radius_le_smul
 
+@[simp]
+theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p.radius := by
+  simp only [radius, shift, Nat.succ_eq_add_one, ContinuousMultilinearMap.curryRight_norm]
+  congr
+  ext r
+  apply eq_of_le_of_le
+  · apply iSup_mono'
+    intro C
+    use ‖p 0‖ ⊔ (C * r)
+    apply iSup_mono'
+    intro h
+    simp only [le_refl, le_sup_iff, exists_prop, and_true]
+    intro n
+    cases' n with m
+    · simp
+    right
+    rw [pow_succ, ← mul_assoc]
+    apply mul_le_mul_of_nonneg_right (h m) zero_le_coe
+  · apply iSup_mono'
+    intro C
+    use ‖p 1‖ ⊔ C / r
+    apply iSup_mono'
+    intro h
+    simp only [le_refl, le_sup_iff, exists_prop, and_true]
+    intro n
+    by_cases hr : r = 0
+    · rw [hr]
+      cases n <;> simp
+    right
+    replace hr : 0 < (r : ℝ) := pos_iff_ne_zero.mpr hr
+    specialize h (n + 1)
+    rw [le_div_iff₀ hr]
+    rwa [pow_succ, ← mul_assoc] at h
+
+@[simp]
+theorem radius_unshift (p : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z : F) :
+    (p.unshift z).radius = p.radius := by
+  rw [← radius_shift, unshift_shift]
+
 protected theorem hasSum [CompleteSpace F] (p : FormalMultilinearSeries 𝕜 E F) {x : E}
     (hx : x ∈ EMetric.ball (0 : E) p.radius) : HasSum (fun n : ℕ => p n fun _ => x) (p.sum x) :=
   (p.summable hx).hasSum
@@ -551,6 +590,15 @@ theorem HasFPowerSeriesAt.congr (hf : HasFPowerSeriesAt f p x) (hg : f =ᶠ[𝓝
   exact ⟨min r₁ r₂,
     (h₁.mono (lt_min h₁.r_pos h₂pos) inf_le_left).congr
       fun y hy => h₂ (EMetric.ball_subset_ball inf_le_right hy)⟩
+
+theorem HasFPowerSeriesWithinOnBall.unique (hf : HasFPowerSeriesWithinOnBall f p s x r)
+    (hg : HasFPowerSeriesWithinOnBall g p s x r) :
+    (insert x s ∩ EMetric.ball x r).EqOn f g := fun _ hy ↦
+  (hf.hasSum_sub hy).unique (hg.hasSum_sub hy)
+
+theorem HasFPowerSeriesOnBall.unique (hf : HasFPowerSeriesOnBall f p x r)
+    (hg : HasFPowerSeriesOnBall g p x r) : (EMetric.ball x r).EqOn f g := fun _ hy ↦
+  (hf.hasSum_sub hy).unique (hg.hasSum_sub hy)
 
 protected theorem HasFPowerSeriesWithinAt.eventually (hf : HasFPowerSeriesWithinAt f p s x) :
     ∀ᶠ r : ℝ≥0∞ in 𝓝[>] 0, HasFPowerSeriesWithinOnBall f p s x r :=

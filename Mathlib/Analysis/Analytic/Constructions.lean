@@ -974,3 +974,45 @@ theorem Finset.analyticOnNhd_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 
     {f : α → E → A} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticOnNhd 𝕜 (f n) s) :
     AnalyticOnNhd 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s :=
   fun z zs ↦ N.analyticAt_prod (fun n m ↦ h n m z zs)
+
+/-!
+### Unshifting
+-/
+
+section
+
+variable {f : E → (E →L[𝕜] F)} {pf : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)} {s : Set E} {x : E}
+  {r : ℝ≥0∞} {z : F}
+
+theorem HasFPowerSeriesWithinOnBall.unshift (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
+    HasFPowerSeriesWithinOnBall (fun y ↦ z + f y (y - x)) (pf.unshift z) s x r where
+  r_le := by
+    rw [FormalMultilinearSeries.radius_unshift]
+    exact hf.r_le
+  r_pos := hf.r_pos
+  hasSum := by
+    intro y hy h'y
+    apply HasSum.zero_add
+    simp only [FormalMultilinearSeries.unshift, Nat.succ_eq_add_one,
+      continuousMultilinearCurryRightEquiv_symm_apply', add_sub_cancel_left]
+    exact (ContinuousLinearMap.apply 𝕜 F y).hasSum (hf.hasSum hy h'y)
+
+theorem HasFPowerSeriesOnBall.unshift (hf : HasFPowerSeriesOnBall f pf x r) :
+    HasFPowerSeriesOnBall (fun y ↦ z + f y (y - x)) (pf.unshift z) x r where
+  r_le := by
+    rw [FormalMultilinearSeries.radius_unshift]
+    exact hf.r_le
+  r_pos := hf.r_pos
+  hasSum := by
+    intro y hy
+    apply HasSum.zero_add
+    simp only [FormalMultilinearSeries.unshift, Nat.succ_eq_add_one,
+      continuousMultilinearCurryRightEquiv_symm_apply', add_sub_cancel_left]
+    exact (ContinuousLinearMap.apply 𝕜 F y).hasSum (hf.hasSum hy)
+
+theorem HasFPowerSeriesWithinAt.unshift (hf : HasFPowerSeriesWithinAt f pf s x) :
+    HasFPowerSeriesWithinAt (fun y ↦ z + f y (y - x)) (pf.unshift z) s x :=
+  let ⟨_, hrf⟩ := hf
+  hrf.unshift.hasFPowerSeriesWithinAt
+
+end
