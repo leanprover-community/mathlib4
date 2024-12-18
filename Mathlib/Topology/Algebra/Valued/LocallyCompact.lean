@@ -73,12 +73,12 @@ lemma coe_span_singleton_eq_closedBall (x : 𝒪[K]) :
     · simpa [mem_iff] using div_le_one_of_le₀ h (_root_.norm_nonneg _)
     · simpa only [Subtype.ext_iff] using div_mul_cancel₀ (y : K) (by simpa using hx)
 
-lemma _root_.Irreducible.maximalIdeal_eq_closedBall [DiscreteValuationRing 𝒪[K]]
+lemma _root_.Irreducible.maximalIdeal_eq_closedBall [IsDiscreteValuationRing 𝒪[K]]
     {ϖ : 𝒪[K]} (h : Irreducible ϖ) :
     (𝓂[K] : Set 𝒪[K]) = Metric.closedBall 0 ‖ϖ‖ := by
   rw [← coe_span_singleton_eq_closedBall, ← h.maximalIdeal_eq]
 
-lemma _root_.Irreducible.maximalIdeal_pow_eq_closedBall_pow [DiscreteValuationRing 𝒪[K]]
+lemma _root_.Irreducible.maximalIdeal_pow_eq_closedBall_pow [IsDiscreteValuationRing 𝒪[K]]
     {ϖ : 𝒪[K]} (h : Irreducible ϖ) (n : ℕ) :
     ((𝓂[K] ^ n : Ideal 𝒪[K]) : Set 𝒪[K]) = Metric.closedBall 0 (‖ϖ‖ ^ n) := by
   have : ‖ϖ‖ ^ n = ‖ϖ ^ n‖ := by simp
@@ -90,7 +90,7 @@ variable {K : Type*} [NontriviallyNormedField K] [IsUltrametricDist K]
 
 open Valued
 
-lemma finite_quotient_maximalIdeal_pow_of_finite_residueField [DiscreteValuationRing 𝒪[K]]
+lemma finite_quotient_maximalIdeal_pow_of_finite_residueField [IsDiscreteValuationRing 𝒪[K]]
     (h : Finite 𝓀[K]) (n : ℕ) :
     Finite (𝒪[K] ⧸ 𝓂[K] ^ n) := by
   induction n with
@@ -105,14 +105,14 @@ lemma finite_quotient_maximalIdeal_pow_of_finite_residueField [DiscreteValuation
         (I := Ideal.map (Ideal.Quotient.mk _) (𝓂[K] ^ n))
     exact @Finite.of_equiv _ _ h
       ((Ideal.quotEquivPowQuotPowSuccEquiv (IsPrincipalIdealRing.principal 𝓂[K])
-        (DiscreteValuationRing.not_a_field _) n).trans
+        (IsDiscreteValuationRing.not_a_field _) n).trans
         (Ideal.powQuotPowSuccEquivMapMkPowSuccPow _ n))
 
-lemma totallyBounded_iff_finite_residueField [DiscreteValuationRing 𝒪[K]] :
+lemma totallyBounded_iff_finite_residueField [IsDiscreteValuationRing 𝒪[K]] :
     TotallyBounded (Set.univ (α := 𝒪[K])) ↔ Finite 𝓀[K] := by
   constructor
   · intro H
-    obtain ⟨p, hp⟩ := DiscreteValuationRing.exists_irreducible 𝒪[K]
+    obtain ⟨p, hp⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]
     have := Metric.finite_approx_of_totallyBounded H ‖p‖ (norm_pos_iff.mpr hp.ne_zero)
     simp only [Set.subset_univ, Set.univ_subset_iff, true_and] at this
     obtain ⟨t, ht, ht'⟩ := this
@@ -134,7 +134,7 @@ lemma totallyBounded_iff_finite_residueField [DiscreteValuationRing 𝒪[K]] :
   · intro H
     rw [Metric.totallyBounded_iff]
     intro ε εpos
-    obtain ⟨p, hp⟩ := DiscreteValuationRing.exists_irreducible 𝒪[K]
+    obtain ⟨p, hp⟩ := IsDiscreteValuationRing.exists_irreducible 𝒪[K]
     have hp' := norm_irreducible_lt_one hp
     obtain ⟨n, hn⟩ : ∃ n : ℕ, ‖p‖ ^ n < ε := exists_pow_lt_of_lt_one εpos hp'
     have hF := finite_quotient_maximalIdeal_pow_of_finite_residueField H n
