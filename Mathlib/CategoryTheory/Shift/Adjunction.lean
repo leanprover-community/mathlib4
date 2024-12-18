@@ -213,7 +213,7 @@ lemma mk' (h : NatTrans.CommShift adj.unit A) :
     have := h.comm' a
     apply_fun (fun x ↦ x.app X) at this
     simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app,
-      Functor.CommShift.commShiftIso_id_hom_app, whiskerRight_app, id_comp, whiskerLeft_app,
+      Functor.commShiftIso_id_hom_app, whiskerRight_app, id_comp, whiskerLeft_app,
       Functor.commShiftIso_comp_hom_app] at this
     exact this
   ⟩
@@ -237,7 +237,7 @@ lemma shift_counit_app [adj.CommShift A] (a : A) (Y : D) :
         ≫ adj.counit.app (Y⟦a⟧) := by
   have eq := NatTrans.CommShift.comm_app adj.counit a Y
   simp only [Functor.comp_obj, Functor.id_obj, Functor.commShiftIso_comp_hom_app, assoc,
-    Functor.CommShift.commShiftIso_id_hom_app, comp_id] at eq
+    Functor.commShiftIso_id_hom_app, comp_id] at eq
   rw [← eq, ← assoc (F.map ((G.commShiftIso a).inv.app _)), ← F.map_comp, Iso.inv_hom_id_app,
     F.map_id, id_comp, Iso.inv_hom_id_app_assoc]
 
@@ -352,7 +352,7 @@ lemma commShift_of_leftAdjoint [F.CommShift A] :
   refine ⟨fun a => ?_⟩
   ext X
   dsimp
-  simp only [Functor.CommShift.commShiftIso_id_hom_app, Functor.comp_obj,
+  simp only [Functor.commShiftIso_id_hom_app, Functor.comp_obj,
     Functor.id_obj, id_comp, Functor.commShiftIso_comp_hom_app]
   exact RightAdjointCommShift.iso_compat_unit adj a X
 
