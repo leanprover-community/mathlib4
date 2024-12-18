@@ -5,6 +5,7 @@ Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Variance
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog
+import Mathlib.Analysis.Calculus.SmoothSeries
 
 /-!
 # Moments and moment generating function
@@ -359,8 +360,8 @@ lemma mgf_anti_of_nonpos {Y : Ω → ℝ} (hXY : X ≤ᵐ[μ] Y) (ht : t ≤ 0)
   · rw [mgf_undef htY]
     exact mgf_nonneg
 
-lemma mgf_abs_le_add (ht_int_pos : Integrable (fun x ↦ rexp (t * X x)) μ)
-    (ht_int_neg : Integrable (fun x ↦ rexp (- t * X x)) μ) :
+lemma mgf_abs_le_add (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
     mgf (fun ω ↦ |X ω|) μ t ≤ mgf X μ t + mgf (-X) μ t := by
   simp_rw [mgf]
   rw [← integral_add ht_int_pos (by simpa using ht_int_neg)]
@@ -371,8 +372,8 @@ lemma mgf_abs_le_add (ht_int_pos : Integrable (fun x ↦ rexp (t * X x)) μ)
     (ae_of_all _ (fun ω ↦ exp_mul_abs_le_add (t := t) (u := X ω)))
   exact integrable_exp_mul_abs ht_int_pos ht_int_neg
 
-lemma summable_integral_abs_of_todo (ht_int_pos : Integrable (fun x ↦ rexp (t * X x)) μ)
-    (ht_int_neg : Integrable (fun x ↦ rexp (- t * X x)) μ) :
+lemma summable_integral_abs_of_todo (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
     Summable fun (i : ℕ) ↦ μ[fun ω ↦ |X ω| ^ i / i.factorial * |t| ^ i] := by
   by_cases ht : t = 0
   · simp only [ht, abs_zero]
@@ -397,8 +398,8 @@ lemma summable_integral_abs_of_todo (ht_int_pos : Integrable (fun x ↦ rexp (t 
     · exact integrable_exp_abs_mul_abs ht_int_pos ht_int_neg
   · exact fun i _ ↦ h_int _ i
 
-lemma mgf_abs_eq_tsum (ht_int_pos : Integrable (fun x ↦ rexp (t * X x)) μ)
-    (ht_int_neg : Integrable (fun x ↦ rexp (- t * X x)) μ) :
+lemma mgf_abs_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
     mgf (fun ω ↦ |X ω|) μ t = ∑' n, (μ[fun ω ↦ |X ω| ^ n]) / n.factorial * t ^ n := by
   by_cases ht : t = 0
   · rw [tsum_eq_single 0]
@@ -419,14 +420,14 @@ lemma mgf_abs_eq_tsum (ht_int_pos : Integrable (fun x ↦ rexp (t * X x)) μ)
     convert summable_integral_abs_of_todo ht_int_pos ht_int_neg with i ω
     ring
 
-lemma todo3 (ht_int_pos : Integrable (fun x ↦ rexp (t * X x)) μ)
-    (ht_int_neg : Integrable (fun x ↦ rexp (- t * X x)) μ) :
+lemma todo3 (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
     Summable fun (i : ℕ) ↦ μ[fun ω ↦ |X ω| ^ i] / i.factorial * |t| ^ i := by
   simp_rw [← integral_div, ← integral_mul_right]
   exact summable_integral_abs_of_todo ht_int_pos ht_int_neg
 
-lemma todo1 (ht_int_pos : Integrable (fun x ↦ rexp (t * X x)) μ)
-    (ht_int_neg : Integrable (fun x ↦ rexp (- t * X x)) μ) :
+lemma todo1 (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
     Summable fun (i : ℕ) ↦ μ[fun ω ↦ |X ω| ^ i] / i.factorial * t ^ i := by
   rw [← summable_abs_iff]
   simp [abs_mul, abs_div]
@@ -444,8 +445,8 @@ lemma _root_.Summable.mono {β E : Type*} [NormedAddCommGroup E] [NormedSpace �
   refine summable_of_sum_le (c := ∑' x, ‖g x‖) (fun _ ↦ by positivity) (fun s ↦ ?_)
   exact (sum_le_sum fun i _ ↦ hfg i).trans (sum_le_tsum s (fun _ _ ↦ by positivity) hg)
 
-lemma todo2 (ht_int_pos : Integrable (fun x ↦ rexp (t * X x)) μ)
-    (ht_int_neg : Integrable (fun x ↦ rexp (- t * X x)) μ) :
+lemma todo2 (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
     Summable fun (i : ℕ) ↦ μ[X ^ i] / i.factorial * t ^ i := by
   refine (todo3 ht_int_pos ht_int_neg).mono fun i ↦ ?_
   simp only [Pi.pow_apply, norm_mul, norm_div, norm_eq_abs, norm_natCast, norm_pow, abs_abs,
@@ -457,8 +458,8 @@ lemma todo2 (ht_int_pos : Integrable (fun x ↦ rexp (t * X x)) μ)
   refine (norm_integral_le_integral_norm _).trans ?_
   simp
 
-lemma mgf_eq_tsum (ht_int_pos : Integrable (fun x ↦ rexp (t * X x)) μ)
-    (ht_int_neg : Integrable (fun x ↦ rexp (- t * X x)) μ) :
+lemma mgf_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
     mgf X μ t = ∑' n, μ[X ^ n] / n.factorial * t ^ n := by
   by_cases ht : t = 0
   · rw [tsum_eq_single 0]
@@ -543,7 +544,12 @@ lemma mgf_eq_tsum (ht_int_pos : Integrable (fun x ↦ rexp (t * X x)) μ)
   · intro n
     positivity
 
-lemma iteratedDeriv_mgf_zero (n : ℕ) : iteratedDeriv n (mgf X μ) 0 = μ[X ^ n] := by
+-- lemma todo : HasFPowerSeriesAt (mgf X μ) p 0 := by
+--   sorry
+
+lemma iteratedDeriv_mgf_zero (hu_int_pos : Integrable (fun ω ↦ rexp (u * X ω)) μ)
+    (hu_int_neg : Integrable (fun ω ↦ rexp (- u * X ω)) μ) (n : ℕ) :
+    iteratedDeriv n (mgf X μ) 0 = μ[X ^ n] := by
   sorry
 
 section IndepFun
