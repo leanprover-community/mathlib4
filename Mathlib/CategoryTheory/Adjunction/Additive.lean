@@ -18,8 +18,8 @@ namespace Adjunction
 
 open CategoryTheory Category Functor
 
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
-  {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
+variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₂} D] [Preadditive C]
+  [Preadditive D] {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
 
 include adj
 lemma right_adjoint_additive [F.Additive] : G.Additive where
