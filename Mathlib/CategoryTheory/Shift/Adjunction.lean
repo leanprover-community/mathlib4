@@ -53,7 +53,7 @@ variable {C D : Type*} [Category C] [Category D]
 
 namespace CommShift
 
-variable (a b : A) (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
+variable {a b : A} (e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
     (e₁' : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a)
     (f₁ : shiftFunctor C b ⋙ F ≅ F ⋙ shiftFunctor D b)
     (e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a)
