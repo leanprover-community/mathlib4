@@ -14,9 +14,23 @@ import Mathlib.Order.Hom.Basic
 
 /-!
 # Multisets
-These are implemented as the quotient of a list by permutations.
+
+Multisets are finite sets with duplicates allowed. They are implemented here as the quotient of
+lists by permutation. This gives them computational content.
+
 ## Notation
-We define the global infix notation `::ₘ` for `Multiset.cons`.
+
+* `0`: The empty multiset.
+* `{a}`: The multiset containing a single occurrence of `a`.
+* `a ::ₘ s`: The multiset containing one more occurrence of `a` than `s` does.
+* `s + t`: The multiset for which the number of occurrences of each `a` is the sum of the
+  occurrences of `a` in `s` and `t`.
+* `s - t`: The multiset for which the number of occurrences of each `a` is the difference of the
+  occurrences of `a` in `s` and `t`.
+* `s ∪ t`: The multiset for which the number of occurrences of each `a` is the max of the
+  occurrences of `a` in `s` and `t`.
+* `s ∩ t`: The multiset for which the number of occurrences of each `a` is the min of the
+  occurrences of `a` in `s` and `t`.
 -/
 
 -- No bundled ordered algebra should be required
