@@ -193,6 +193,19 @@ theorem bot_right : A.LinearDisjoint ⊥ := by
   rw [Subalgebra.LinearDisjoint, Algebra.toSubmodule_bot]
   exact Submodule.LinearDisjoint.one_right _
 
+variable (R) in
+/-- Images of two `R`-algebras `A` and `B` in `A ⊗[R] B` are linearly disjoint. -/
+theorem include_range (A : Type v) [Semiring A] (B : Type w) [Semiring B]
+    [Algebra R A] [Algebra R B] :
+    (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B).range.LinearDisjoint
+      (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B).range := by
+  rw [Subalgebra.LinearDisjoint, Submodule.linearDisjoint_iff]
+  change Function.Injective <|
+    Submodule.mulMap (LinearMap.range Algebra.TensorProduct.includeLeft)
+      (LinearMap.range Algebra.TensorProduct.includeRight)
+  rw [← Algebra.TensorProduct.linearEquivIncludeRange_symm_toLinearMap]
+  exact LinearEquiv.injective _
+
 end LinearDisjoint
 
 end Semiring
@@ -471,28 +484,6 @@ variable {A B}
 
 variable (H : A.LinearDisjoint B)
 
-variable (R) in
-/-- If `A` and `B` are flat algebras over `R`, such that the algebra maps are injective, then
-their images in `A ⊗[R] B` are linearly disjoint. Note: they inject into `A ⊗[R] B`,
-see `Algebra.TensorProduct.includeLeft_injective` and
-`Algebra.TensorProduct.includeRight_injective`. -/
-theorem include_range_of_injective (A : Type v) [CommRing A] (B : Type w) [CommRing B]
-    [Algebra R A] [Algebra R B] [Module.Flat R A] [Module.Flat R B]
-    (ha : Function.Injective (algebraMap R A)) (hb : Function.Injective (algebraMap R B)) :
-    (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B).range.LinearDisjoint
-      (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B).range := by
-  set fa : A →ₐ[R] A ⊗[R] B := Algebra.TensorProduct.includeLeft
-  set fb : B →ₐ[R] A ⊗[R] B := Algebra.TensorProduct.includeRight
-  have hfa : Function.Injective fa := Algebra.TensorProduct.includeLeft_injective hb
-  have hfb : Function.Injective fb := Algebra.TensorProduct.includeRight_injective ha
-  rw [linearDisjoint_iff_injective]
-  let f := (fa.range.mulMap fb.range).comp (Algebra.TensorProduct.congr
-    (AlgEquiv.ofInjective fa hfa) (AlgEquiv.ofInjective fb hfb)).toAlgHom
-  have hf : f = AlgHom.id R _ := by ext <;> simp [f, fa, fb]
-  replace hf : Function.Injective f :=
-    hf ▸ (show Function.Injective (AlgHom.id R _) from Function.injective_id)
-  simpa only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
-    EquivLike.injective_comp, f] using hf
 
 variable (R) in
 /-- If `A` and `B` are flat algebras over `R`, such that `A ⊗[R] B` is a domain, and such that
@@ -512,7 +503,7 @@ theorem exists_field_of_isDomain_of_injective (A : Type v) [CommRing A] (B : Typ
     i.comp Algebra.TensorProduct.includeRight,
     hi.comp (Algebra.TensorProduct.includeLeft_injective hb),
     hi.comp (Algebra.TensorProduct.includeRight_injective ha), by
-      simpa only [AlgHom.range_comp] using (include_range_of_injective R A B ha hb).map i hi⟩
+      simpa only [AlgHom.range_comp] using (include_range R A B).map i hi⟩
 
 /-- If `A ⊗[R] B` is a field, then `A` and `B` are linearly disjoint. -/
 theorem of_isField (H : IsField (A ⊗[R] B)) : A.LinearDisjoint B := by
@@ -557,7 +548,7 @@ theorem _root_.Algebra.TensorProduct.not_isField_of_transcendental
   haveI : Module.Flat R (toSubmodule fa.range) :=
     .of_linearEquiv _ _ _ (AlgEquiv.ofInjective fa hfa).symm.toLinearEquiv
   have key1 : Module.rank R ↥(fa.range ⊓ fb.range) ≤ 1 :=
-    (include_range_of_injective R A B ha hb).rank_inf_le_one_of_flat_left
+    (include_range R A B).rank_inf_le_one_of_flat_left
   let ga : R[X] →ₐ[R] A := aeval a
   let gb : R[X] →ₐ[R] B := aeval b
   let gab := fa.comp ga
