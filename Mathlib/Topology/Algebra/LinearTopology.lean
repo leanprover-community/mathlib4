@@ -24,7 +24,7 @@ open Filter
 
 section Ring
 
-variable (α : Type*) [CommRing α]
+variable (α : Type*) [Ring α]
 
 /-- A topology on a ring is linear if its topology is defined by a family of ideals. -/
 class IsLinearTopology [TopologicalSpace α] [TopologicalRing α] where
