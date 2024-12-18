@@ -35,7 +35,9 @@ variable {x : ℕ → ℝ} {n : ℕ} (hn : n ≠ 0) (hx : Antitone x)
 namespace Imo1982Q3
 include hn hx
 
-/-- `x n` is at most the average of all previous terms in the sequence. -/
+/-- `x n` is at most the average of all previous terms in the sequence.
+
+This is expressed here with `∑ k ∈ range n, x k` added to both sides. -/
 lemma le_avg : ∑ k ∈ range (n + 1), x k ≤ (∑ k ∈ range n, x k) * (1 + 1 / n) := by
   rw [sum_range_succ, mul_one_add, add_le_add_iff_left, mul_one_div,
     le_div_iff₀ (mod_cast hn.bot_lt), mul_comm, ← nsmul_eq_mul]
