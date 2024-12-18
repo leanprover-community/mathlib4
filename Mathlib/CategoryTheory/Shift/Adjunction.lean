@@ -395,15 +395,14 @@ lemma mk' (h : NatTrans.CommShift E.unitIso.hom A) :
   commShift_unit := h
   commShift_counit := (Adjunction.CommShift.mk' E.toAdjunction A h).commShift_counit
 
+instance [E.CommShift A] : E.symm.CommShift A :=
+  mk' E.symm A (inferInstanceAs (NatTrans.CommShift E.counitIso.inv A))
+
 /-- Constructor for `Equivalence.CommShift`. -/
 lemma mk'' (h : NatTrans.CommShift E.counitIso.hom A) :
-    E.CommShift A where
-  commShift_unit := by
-    have h' := NatTrans.CommShift.of_iso_inv E.counitIso A
-    have : NatTrans.CommShift E.unitIso.symm.hom A :=
-      (Adjunction.CommShift.mk' E.symm.toAdjunction A h').commShift_counit
-    exact NatTrans.CommShift.of_iso_inv E.unitIso.symm A
-  commShift_counit := h
+    E.CommShift A :=
+  have := mk' E.symm A (inferInstanceAs (NatTrans.CommShift E.counitIso.inv A))
+  inferInstanceAs (E.symm.symm.CommShift A)
 
 /--
 If `E : C ≌ D` is an equivalence and we have compatible `CommShift` structures on `E.functor`
