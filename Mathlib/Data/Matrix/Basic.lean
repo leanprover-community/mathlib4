@@ -344,41 +344,6 @@ lemma entryLinearMap_eq_comp {i : m} {j : n} :
 
 end LinearMap
 
-/-!
-### Bundled versions of multiplication
--/
-
-section
-variable [Fintype m] [Semiring R] [NonUnitalNonAssocSemiring S] [Module R S]
-
-/-- A version of `LinearMap.mulLeft` for matrix multiplication. -/
-@[simps]
-def mulLeftLinearMap [SMulCommClass R S S] (X : Matrix l m S) :
-    Matrix m n S →ₗ[R] Matrix l n S where
-  toFun := (X * ·)
-  map_smul' := Matrix.mul_smul _
-  map_add' := Matrix.mul_add _
-
-/-- A version of `LinearMap.mulRight` for matrix multiplication. -/
-@[simps]
-def mulRightLinearMap [IsScalarTower R S S] (Y : Matrix m n S) :
-    Matrix l m S →ₗ[R] Matrix l n S where
-  toFun := (· * Y)
-  map_smul' _ _ := Matrix.smul_mul _ _ _
-  map_add' _ _ := Matrix.add_mul _ _ _
-
-end
-
-variable [Fintype m] [CommSemiring R] [NonUnitalNonAssocSemiring S] [Module R S]
-
-/-- A version of `LinearMap.mul` for matrix multiplication. -/
-@[simps!]
-def mulLinearMap [SMulCommClass R S S] [IsScalarTower R S S] :
-    Matrix l m S →ₗ[R] Matrix m n S →ₗ[R] Matrix l n S where
-  toFun := mulLeftLinearMap
-  map_add' _ _ := LinearMap.ext fun _ => Matrix.add_mul _ _ _
-  map_smul' _ _ := LinearMap.ext fun _ => Matrix.smul_mul _ _ _
-
 end Matrix
 
 /-!
