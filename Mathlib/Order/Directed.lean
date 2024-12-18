@@ -334,23 +334,17 @@ variable {ι : Type*} {α : ι → Type*}
 
 variable (r : (i : ι) →  α i →  α i → Prop)
 
-def R : ((i : ι) → α i) → ((i : ι) → α i) → Prop := fun x y => ∀ i, r i (x i)  (y i)
-
-lemma proj {d : Set (Π i, α i)} (hd : DirectedOn (R r) d) (i : ι) :
+lemma proj {d : Set (Π i, α i)} (hd : DirectedOn (fun x y => ∀ i, r i (x i)  (y i)) d) (i : ι) :
     DirectedOn (r i) ((fun a => a i) '' d) :=
   DirectedOn.mono_comp (fun _ _ h => h) (mono hd fun ⦃_ _⦄ h ↦ h i)
 
 lemma pi {d : (i : ι) → Set (α i)} (hd : ∀ (i : ι), DirectedOn (r i) (d i)) :
-    DirectedOn (R r) (Set.pi  Set.univ d) := by
+    DirectedOn (fun x y => ∀ i, r i (x i) (y i)) (Set.pi  Set.univ d) := by
   intro a ha b hb
   choose f hf using fun i => hd i (a i) (ha i trivial) (b i) (hb i trivial)
-  simpa [Pi.le_def, ← forall_and] using ⟨f, by
-    constructor
-    · intro i
-      simp_all only [Set.mem_pi, Set.mem_univ, forall_const]
-    · constructor <;> (
-      intro i
-      simp_all only [Set.mem_pi, Set.mem_univ, forall_const])⟩
+  simpa [Pi.le_def, ← forall_and] using ⟨f, fun i =>
+    ⟨by simp_all only [Set.mem_pi, Set.mem_univ, forall_const],
+       by constructor <;> (simp_all only [Set.mem_pi, Set.mem_univ, forall_const])⟩⟩
 
 end Pi
 
