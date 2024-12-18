@@ -19,11 +19,10 @@ closed subgroups of the Galois group.
 
 In `K/k`, for any intermediate field `L` :
 
-* `fixingSubgroup_isClosed` : the fixing subgroup of `L`
-  (`Gal(K/L)`) is closed.
+* `fixingSubgroup_isClosed` : the subgroup fixing `L` (`Gal(K/L)`) is closed.
 
-* `fixedField_fixingSubgroup` : the fixing field of the
-  fixing subgroup of `L` is equal to `L` itself.
+* `fixedField_fixingSubgroup` : the field fixed by the
+  subgroup fixing `L` is equal to `L` itself.
 
 For any subgroup `H` of `Gal(K/k)` :
 
@@ -32,19 +31,19 @@ For any subgroup `H` of `Gal(K/k)` :
 * `fixingSubgroup_fixedField` : If `H` is closed, the fixing subgroup of the fixed field of `H`
   is equal to `H` itself.
 
-The fundamental theorem of infinite galois theory :
+The fundamental theorem of infinite Galois theory :
 
 * `IntermediateFieldEquivClosedSubgroup` : The order equivalence is given by mapping any
-  intermediate field `L` to the fixing subgroup of `L`, with its inverse mapping any
+  intermediate field `L` to the subgroup fixing `L`, and the inverse maps any
   closed subgroup of `Gal(K/k)` `H` to the fixed field of `H`. The composition is equal to
   the identity as described in the lemmas above, and compatibility with the order follows easily.
 
 Special cases :
 
-* `OpeniffFinite` : The fixing subgroup of an intermediate field `L` is open iff
+* `open_iff_finite` : The fixing subgroup of an intermediate field `L` is open if and only if
   `L` is finite-dimensional.
 
-* `NormaliffGalois` : The fixing subgroup of an intermediate field `L` is normal iff
+* `normal_iff_isGalois` : The fixing subgroup of an intermediate field `L` is normal if and only if
   `L` is Galois.
 
 -/
@@ -175,7 +174,7 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup (K ≃ₐ[k] K)) [IsGalois k
   simpa only [this, Set.mem_compl_iff, Subsemigroup.mem_carrier, Submonoid.mem_toSubsemigroup,
     Subgroup.mem_toSubmonoid, not_not, true_and] using mem
 
-/-- The Galois correspondence from intermediate fields to ClosedSubgroup. -/
+/-- The Galois correspondence from intermediate fields to closed subgroups. -/
 def IntermediateFieldEquivClosedSubgroup [IsGalois k K] :
     IntermediateField k K ≃o (ClosedSubgroup (K ≃ₐ[k] K))ᵒᵈ where
   toFun := fun L =>
