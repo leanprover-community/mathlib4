@@ -5,8 +5,8 @@ Authors: Yury Kudryashov, Heather Macbeth, Sébastien Gouëzel
 -/
 import Mathlib.LinearAlgebra.Alternating.Basic
 import Mathlib.LinearAlgebra.BilinearMap
-import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 import Mathlib.Topology.Algebra.Module.Equiv
+import Mathlib.Topology.Algebra.Module.Multilinear.Basic
 
 /-!
 # Continuous alternating multilinear maps
