@@ -196,7 +196,7 @@ theorem induction {Y : C} {n q : ℕ} {φ : Y ⟶ X _[n + 1]} (v : HigherFacesVa
     swap
     · rw [Fin.le_iff_val_le_val]
       dsimp
-      linarith
+      omega
     simp only [← assoc, v j (by omega), zero_comp]
   · -- in the last case, a=m, q=1 and j=a+1
     rw [X.δ_comp_δ_self'_assoc]

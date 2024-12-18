@@ -3,13 +3,13 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Prime numbers in the naturals and the integers
 
-TODO: This file can probably be merged with `Data/Nat/Int/NatPrime.lean`.
+TODO: This file can probably be merged with `Mathlib/Data/Int/NatPrime.lean`.
 -/
 
 

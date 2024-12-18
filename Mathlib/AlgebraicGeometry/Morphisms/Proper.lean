@@ -53,12 +53,9 @@ instance : MorphismProperty.IsMultiplicative @IsProper := by
 
 instance (priority := 900) [IsClosedImmersion f] : IsProper f where
 
-lemma stableUnderBaseChange : MorphismProperty.StableUnderBaseChange @IsProper := by
+instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @IsProper := by
   rw [isProper_eq]
-  exact MorphismProperty.StableUnderBaseChange.inf
-    (MorphismProperty.StableUnderBaseChange.inf
-      IsSeparated.stableUnderBaseChange universallyClosed_stableUnderBaseChange)
-    locallyOfFiniteType_stableUnderBaseChange
+  infer_instance
 
 instance : IsLocalAtTarget @IsProper := by
   rw [isProper_eq]

@@ -65,15 +65,9 @@ theorem le_of_all_pow_lt_succ' {x y : ℝ} (hx : 1 < x) (hy : 0 < y)
   refine le_of_all_pow_lt_succ hx ?_ h
   by_contra! hy'' : y ≤ 1
   -- Then there exists y' such that 0 < y ≤ 1 < y' < x.
-  let y' := (x + 1) / 2
-  have h_y'_lt_x : y' < x :=
-    calc
-      (x + 1) / 2 < x * 2 / 2 := by linarith
-      _ = x := by field_simp
-  have h1_lt_y' : 1 < y' :=
-    calc
-      1 = 1 * 2 / 2 := by field_simp
-      _ < (x + 1) / 2 := by linarith
+  have h_y'_lt_x : (x + 1) / 2 < x := by linarith
+  have h1_lt_y' : 1 < (x + 1) / 2 := by linarith
+  set y' := (x + 1) / 2
   have h_y_lt_y' : y < y' := by linarith
   have hh : ∀ n, 0 < n → x ^ n - 1 < y' ^ n := by
     intro n hn

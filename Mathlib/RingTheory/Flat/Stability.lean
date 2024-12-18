@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Flat.Basic
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.Localization.BaseChange
-import Mathlib.Algebra.Module.LocalizedModule
+import Mathlib.Algebra.Module.LocalizedModule.Basic
 
 /-!
 # Flatness is stable under composition and base change
@@ -62,13 +62,13 @@ private noncomputable abbrev auxRightMul (I : Ideal R) : M ⊗[R] I →ₗ[S] M 
 
 private noncomputable abbrev J (I : Ideal R) : Ideal S := LinearMap.range (auxRightMul R S S I)
 
-private noncomputable abbrev auxIso [Module.Flat R S] {I : Ideal R} :
+private noncomputable abbrev auxIso [Flat R S] {I : Ideal R} :
     S ⊗[R] I ≃ₗ[S] J R S I := by
   apply LinearEquiv.ofInjective (auxRightMul R S S I)
   simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_injective]
-  exact (Module.Flat.iff_lTensor_injective' R S).mp inferInstance I
+  exact (Flat.iff_lTensor_injective' R S).mp inferInstance I
 
-private noncomputable abbrev auxLTensor [Module.Flat R S] (I : Ideal R) :
+private noncomputable abbrev auxLTensor [Flat R S] (I : Ideal R) :
     M ⊗[R] I →ₗ[S] M := by
   letI e1 : M ⊗[R] I ≃ₗ[S] M ⊗[S] (S ⊗[R] I) :=
     (AlgebraTensorModule.cancelBaseChange R S S M I).symm
@@ -78,24 +78,26 @@ private noncomputable abbrev auxLTensor [Module.Flat R S] (I : Ideal R) :
   letI e4 : M ⊗[S] S →ₗ[S] M := TensorProduct.rid S M
   exact e4 ∘ₗ e3 ∘ₗ (e1 ≪≫ₗ e2)
 
-private lemma auxLTensor_eq [Module.Flat R S] {I : Ideal R} :
+private lemma auxLTensor_eq [Flat R S] {I : Ideal R} :
     (auxLTensor R S M I : M ⊗[R] I →ₗ[R] M) =
-    TensorProduct.rid R M ∘ₗ lTensor M (I.subtype) := by
+    TensorProduct.rid R M ∘ₗ lTensor M I.subtype := by
   apply TensorProduct.ext'
   intro m x
   erw [TensorProduct.rid_tmul]
   simp
 
 /-- If `S` is a flat `R`-algebra, then any flat `S`-Module is also `R`-flat. -/
-theorem comp [Module.Flat R S] [Module.Flat S M] : Module.Flat R M := by
-  rw [Module.Flat.iff_lTensor_injective']
+theorem trans [Flat R S] [Flat S M] : Flat R M := by
+  rw [Flat.iff_lTensor_injective']
   intro I
   rw [← EquivLike.comp_injective _ (TensorProduct.rid R M)]
-  haveI h : TensorProduct.rid R M ∘ lTensor M (Submodule.subtype I) =
+  haveI h : TensorProduct.rid R M ∘ lTensor M I.subtype =
     TensorProduct.rid R M ∘ₗ lTensor M I.subtype := rfl
   simp only [h, ← auxLTensor_eq R S M, LinearMap.coe_restrictScalars, LinearMap.coe_comp,
     LinearEquiv.coe_coe, EquivLike.comp_injective, EquivLike.injective_comp]
-  exact (Module.Flat.iff_lTensor_injective' S M).mp inferInstance _
+  exact (Flat.iff_lTensor_injective' S M).mp inferInstance _
+
+@[deprecated (since := "2024-11-03")] alias comp := trans
 
 end Composition
 
@@ -124,27 +126,26 @@ private noncomputable abbrev auxRTensorBaseChange (I : Ideal S) :
     AlgebraTensorModule.cancelBaseChange R S S I M
   letI e2 : S ⊗[S] (S ⊗[R] M) ≃ₗ[S] S ⊗[R] M :=
     AlgebraTensorModule.cancelBaseChange R S S S M
-  letI f : I ⊗[R] M →ₗ[S] S ⊗[R] M := AlgebraTensorModule.map
-    (Submodule.subtype I) LinearMap.id
+  letI f : I ⊗[R] M →ₗ[S] S ⊗[R] M := AlgebraTensorModule.map I.subtype LinearMap.id
   e2.symm.toLinearMap ∘ₗ f ∘ₗ e1.toLinearMap
 
 private lemma auxRTensorBaseChange_eq (I : Ideal S) :
-    auxRTensorBaseChange R S M I = rTensor (S ⊗[R] M) (Submodule.subtype I) := by
+    auxRTensorBaseChange R S M I = rTensor (S ⊗[R] M) I.subtype := by
   ext
   simp
 
 /-- If `M` is a flat `R`-module and `S` is any `R`-algebra, `S ⊗[R] M` is `S`-flat. -/
-instance baseChange [Module.Flat R M] : Module.Flat S (S ⊗[R] M) := by
-  rw [Module.Flat.iff_rTensor_injective']
+instance baseChange [Flat R M] : Flat S (S ⊗[R] M) := by
+  rw [Flat.iff_rTensor_injective']
   intro I
   simp only [← auxRTensorBaseChange_eq, auxRTensorBaseChange, LinearMap.coe_comp,
     LinearEquiv.coe_coe, EmbeddingLike.comp_injective, EquivLike.injective_comp]
   exact rTensor_preserves_injective_linearMap (I.subtype : I →ₗ[R] S) Subtype.val_injective
 
 /-- A base change of a flat module is flat. -/
-theorem isBaseChange [Module.Flat R M] (N : Type t) [AddCommGroup N] [Module R N] [Module S N]
+theorem isBaseChange [Flat R M] (N : Type t) [AddCommGroup N] [Module R N] [Module S N]
     [IsScalarTower R S N] {f : M →ₗ[R] N} (h : IsBaseChange S f) :
-    Module.Flat S N :=
+    Flat S N :=
   of_linearEquiv S (S ⊗[R] M) N (IsBaseChange.equiv h).symm
 
 end BaseChange
@@ -155,16 +156,16 @@ variable {R : Type u} {M Mp : Type*} (Rp : Type v)
   [CommRing R] [AddCommGroup M] [Module R M] [CommRing Rp] [Algebra R Rp]
   [AddCommGroup Mp] [Module R Mp] [Module Rp Mp] [IsScalarTower R Rp Mp]
 
-instance localizedModule [Module.Flat R M] (S : Submonoid R) : Module.Flat (Localization S)
-    (LocalizedModule S M) := by
-  apply Module.Flat.isBaseChange (R := R) (S := Localization S)
+instance localizedModule [Flat R M] (S : Submonoid R) :
+    Flat (Localization S) (LocalizedModule S M) := by
+  apply Flat.isBaseChange (R := R) (S := Localization S)
     (f := LocalizedModule.mkLinearMap S M)
   rw [← isLocalizedModule_iff_isBaseChange S]
   exact localizedModuleIsLocalizedModule S
 
-theorem of_isLocalizedModule [Module.Flat R M] (S : Submonoid R) [IsLocalization S Rp]
-    (f : M →ₗ[R] Mp) [h : IsLocalizedModule S f] : Module.Flat Rp Mp := by
-  fapply Module.Flat.isBaseChange (R := R) (M := M) (S := Rp) (N := Mp)
+theorem of_isLocalizedModule [Flat R M] (S : Submonoid R) [IsLocalization S Rp]
+    (f : M →ₗ[R] Mp) [h : IsLocalizedModule S f] : Flat Rp Mp := by
+  fapply Flat.isBaseChange (R := R) (M := M) (S := Rp) (N := Mp)
   exact (isLocalizedModule_iff_isBaseChange S Rp f).mp h
 
 end Localization

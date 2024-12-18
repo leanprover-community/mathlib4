@@ -28,7 +28,7 @@ universe v₁ v₂ u₁ u₂
 -- morphism levels before object levels. See note [CategoryTheory universes].
 /-- The core of a category C is the groupoid whose morphisms are all the
 isomorphisms of C. -/
--- Porting note(#5171): linter not yet ported
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not yet ported
 -- @[nolint has_nonempty_instance]
 
 def Core (C : Type u₁) := C
