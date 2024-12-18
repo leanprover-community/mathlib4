@@ -48,17 +48,17 @@ lemma Subgraph.IsMatching.exists_of_universalVerts [Fintype V] {s : Set V}
     simp only [← Set.Nat.card_coe_set_eq, Nat.card] at ht
     have : Nonempty (s ≃ t) := by
       rw [← Cardinal.eq]
-      exact Cardinal.toNat_injOn (Set.mem_Iio.mpr (Set.Finite.lt_aleph0 (s.toFinite)))
-        (Set.mem_Iio.mpr (Set.Finite.lt_aleph0 (Set.toFinite t))) ht.2.symm
-    exact (Classical.inhabited_of_nonempty this).default
+      exact Cardinal.toNat_injOn (Set.mem_Iio.mpr s.toFinite.lt_aleph0)
+        (Set.mem_Iio.mpr t.toFinite.lt_aleph0) ht.2.symm
+    exact Classical.arbitrary _
   have hd := (Set.disjoint_of_subset_left ht.1 h).symm
-  obtain ⟨M1, hM1⟩ := Subgraph.IsMatching.exists_of_disjoint_sets_of_equiv hd f
-    (by
-      intro v
-      have : ((f v) : V) ∈ G.universalVerts := ht.1 (f v).coe_prop
-      simp only [universalVerts, Set.mem_setOf_eq] at this
-      apply this
-      exact (Disjoint.ne_of_mem hd v.coe_prop (f v).coe_prop).symm)
+  have hadj : ∀ (v : ↑s), G.Adj v (f v) := by
+    intro v
+    have : ((f v) : V) ∈ G.universalVerts := ht.1 (f v).coe_prop
+    simp only [universalVerts, Set.mem_setOf_eq] at this
+    apply this
+    exact (Disjoint.ne_of_mem hd v.coe_prop (f v).coe_prop).symm
+  obtain ⟨M1, hM1⟩ := Subgraph.IsMatching.exists_of_disjoint_sets_of_equiv hd f hadj
   aesop
 
 end SimpleGraph
