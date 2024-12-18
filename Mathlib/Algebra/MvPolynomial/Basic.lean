@@ -1188,6 +1188,10 @@ theorem eval₂_comp_right {S₂} [CommSemiring S₂] (k : S₁ →+* S₂) (f :
     rw [eval₂_mul, k.map_mul, (map f).map_mul, eval₂_mul, map_X, hp, eval₂_X, eval₂_X]
     rfl
 
+theorem eval₂_comp (k : R →+* S₁) (g : σ → R) (p : MvPolynomial σ R) :
+    k (eval g p) = eval₂ k (k ∘ g) p := by
+  rw [← p.map_id, eval_map, eval₂_comp_right]
+
 theorem map_eval₂ (f : R →+* S₁) (g : S₂ → MvPolynomial S₃ R) (p : MvPolynomial S₂ R) :
     map f (eval₂ C g p) = eval₂ C (map f ∘ g) (map f p) := by
   apply MvPolynomial.induction_on p
