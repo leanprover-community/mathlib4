@@ -4,19 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Module.LinearMap
+import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 
 /-!
-# Theory of topological modules and continuous linear maps.
+# Continuous linear equivalences
 
-We use the class `ContinuousSMul` for topological (semi) modules and topological vector spaces.
-
-In this file we define continuous (semi-)linear maps, as semilinear maps between topological
-modules which are continuous. The set of continuous semilinear maps between the topological
-`R₁`-module `M` and `R₂`-module `M₂` with respect to the `RingHom` `σ` is denoted by `M →SL[σ] M₂`.
-Plain linear maps are denoted by `M →L[R] M₂` and star-linear maps by `M →L⋆[R] M₂`.
-
-The corresponding notation for equivalences is `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
+Continuous semilinear / linear / star-linear equivalences between topological modules are denoted
+by `M ≃SL[σ] M₂`, `M ≃L[R] M₂` and `M ≃L⋆[R] M₂`.
 -/
 
 assert_not_exists Star.star
