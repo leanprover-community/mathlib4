@@ -359,24 +359,12 @@ lemma aemeasurable_expt {X : Ω → ℝ} (t : ℝ) (hX : AEMeasurable X μ) :
 lemma integrable_expt [IsFiniteMeasure μ] {X : Ω → ℝ} (t b : ℝ) (ht : t > 0)
     (hX : AEMeasurable X μ) (hb : ∀ᵐ ω ∂μ, X ω ≤ b) :
     Integrable (fun ω ↦ exp (t * (X ω))) μ := by
-  have hm1 : HasFiniteIntegral (fun ω ↦ rexp (t * X ω)) μ := by
-    have b' : ∀ᵐ ω ∂μ, rexp (t * X ω) ≤ rexp (t * b) := by
-      filter_upwards [hb] with ω hb
-      using exp_le_exp.mpr (mul_le_mul_of_nonneg_left hb (le_of_lt ht))
-    have p : ∀ᵐ ω ∂μ, ‖rexp (t * X ω)‖₊ ≤ rexp (t * b) := by
-      filter_upwards [b'] with ω b'
-      rw [(by simp only [coe_nnnorm, norm_eq_abs, abs_exp] : ‖rexp (t * X ω)‖₊ = rexp (t * X ω))]
-      exact b'
-    have p'' : ∫⁻ ω, ‖rexp (t * X ω)‖₊ ∂μ ≤ ∫⁻ _, ‖rexp (t * b)‖₊ ∂μ := by
-      apply lintegral_mono_ae
-      filter_upwards [p] with ω p
-      simp only [ENNReal.coe_le_coe]
-      rw [← (by simp only [coe_nnnorm, norm_eq_abs, abs_exp] : ‖rexp (t * b)‖₊ = rexp (t * b))] at p
-      exact p
-    suffices ∫⁻ _, ↑‖rexp (t * b)‖₊ ∂μ < ⊤ from lt_of_le_of_lt p'' this
-    simp only [lintegral_const]
-    apply ENNReal.mul_lt_top ENNReal.coe_lt_top (IsFiniteMeasure.measure_univ_lt_top)
-  exact ⟨aestronglyMeasurable_iff_aemeasurable.mpr <|
-    measurable_exp.comp_aemeasurable' (hX.const_mul t), hm1⟩
+  have h : ∀ᵐ ω ∂μ, rexp (t * X ω) ∈ Set.Icc 0 (rexp (t * b)) := by
+    filter_upwards [hb] with ω hb
+    constructor
+    · exact exp_nonneg (t * X ω)
+    · exact (exp_le_exp.mpr (mul_le_mul_of_nonneg_left hb (le_of_lt ht)))
+  exact integrable_bounded 0 (rexp (t * b))
+    (Measurable.comp_aemeasurable' measurable_exp (AEMeasurable.const_mul hX t)) h
 
 end ProbabilityTheory
