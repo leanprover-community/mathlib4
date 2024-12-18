@@ -27,7 +27,7 @@ section BooleanAlgebra
 variable [BooleanAlgebra α] [BooleanAlgebra β] [BooleanAlgebra γ] {L M : BooleanSubalgebra α}
   {f : BoundedLatticeHom α β} {s t : Set α} {a b : α}
 
-initialize_simps_projections BooleanSubalgebra (carrier → coe)
+initialize_simps_projections BooleanSubalgebra (carrier → coe, as_prefix coe)
 
 instance instSetLike : SetLike (BooleanSubalgebra α) α where
   coe L := L.carrier
@@ -185,7 +185,7 @@ instance instInfSet : InfSet (BooleanSubalgebra α) where
 
 instance instInhabited : Inhabited (BooleanSubalgebra α) := ⟨⊥⟩
 
-/-- The top boolean subalgebra is isomorphic to the lattice.
+/-- The top boolean subalgebra is isomorphic to the original boolean algebra.
 
 This is the boolean subalgebra version of `Equiv.Set.univ α`. -/
 def topEquiv : (⊤ : BooleanSubalgebra α) ≃o α where
@@ -330,7 +330,7 @@ lemma map_inf (L M : BooleanSubalgebra α) (f : BoundedLatticeHom α β) (hf : I
 lemma map_top (f : BoundedLatticeHom α β) (h : Surjective f) : BooleanSubalgebra.map f ⊤ = ⊤ :=
   SetLike.coe_injective <| by simp [h.range_eq]
 
-/-- The minimum boolean algebra containing a given set. -/
+/-- The minimum boolean subalgebra containing a given set. -/
 def closure (s : Set α) : BooleanSubalgebra α := sInf {L | s ⊆ L}
 
 variable {s : Set α}
@@ -341,6 +341,8 @@ lemma mem_closure {x : α} : x ∈ closure s ↔ ∀ ⦃L : BooleanSubalgebra α
 lemma subset_closure : s ⊆ closure s := fun _ hx ↦ mem_closure.2 fun _ hK ↦ hK hx
 
 @[simp] lemma closure_le : closure s ≤ L ↔ s ⊆ L := ⟨subset_closure.trans, fun h ↦ sInf_le h⟩
+
+lemma closure_mono (hst : s ⊆ t) : closure s ≤ closure t := sInf_le_sInf fun _L ↦ hst.trans
 
 /-- An induction principle for closure membership. If `p` holds for `⊥` and all elements of `s`, and
 is preserved under suprema and complement, then `p` holds for all elements of the closure of `s`. -/
