@@ -55,6 +55,10 @@ noncomputable def isoZero' (a : A) (ha : a = 0) : shiftFunctor C a ⋙ F ≅ F �
   isoWhiskerRight (shiftFunctorZero' C a ha) F ≪≫ F.leftUnitor ≪≫
      F.rightUnitor.symm ≪≫ isoWhiskerLeft F (shiftFunctorZero' D a ha).symm
 
+@[simp]
+lemma isoZero'_eq_isoZero : isoZero' F A 0 rfl = isoZero F A := by
+  ext; simp [isoZero', shiftFunctorZero']
+
 variable {F A}
 
 /-- If a functor `F : C ⥤ D` is equipped with "commutation isomorphisms" with the
@@ -141,14 +145,9 @@ lemma commShiftIso_zero :
   CommShift.zero
 
 set_option linter.docPrime false in
-lemma commShiftIso_zero' (a : A) (ha : a = 0) :
-    F.commShiftIso a = CommShift.isoZero' F A a ha := by
-  ext X
-  rw [← cancel_epi (F.mapIso (eqToIso (X := X⟦(0 : A)⟧) (Y := X⟦a⟧) (by rw [← ha]))).hom,
-    Functor.mapIso_hom, eqToIso.hom, eqToHom_map]
-  rw [← eqToHom_naturality (fun (a : A) ↦ (F.commShiftIso a).hom.app X) ha.symm]
-  rw [commShiftIso_zero, CommShift.isoZero']
-  simp [shiftFunctorZero', eqToHom_map]
+lemma commShiftIso_zero' (a : A) (h : a = 0) :
+    F.commShiftIso a = CommShift.isoZero' F A a h := by
+  subst h; rw [CommShift.isoZero'_eq_isoZero, commShiftIso_zero]
 
 variable {A}
 
