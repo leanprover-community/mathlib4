@@ -22,12 +22,15 @@ lists by permutation. This gives them computational content.
 
 * `0`: The empty multiset.
 * `{a}`: The multiset containing a single occurrence of `a`.
-* `a ::ₘ s`: The multiset containing one more occurrence of `a` than `s`.
-* `s + t`: The multiset containing for each `a` the sum of the occurrences of `a` in `s` and `t`.
-* `s - t`: The multiset containing for each `a` the difference of the occurrences of `a` in `s` and
-  `t`.
-* `s ∪ t`: The multiset containing for each `a` the max of the occurrences of `a` in `s` and `t`.
-* `s ∩ t`: The multiset containing for each `a` the min of the occurrences of `a` in `s` and `t`.
+* `a ::ₘ s`: The multiset containing one more occurrence of `a` than `s` does.
+* `s + t`: The multiset for which the number of occurrences of each `a` is the sum of the
+  occurrences of `a` in `s` and `t`.
+* `s - t`: The multiset for which the number of occurrences of each `a` is the difference of the
+  occurrences of `a` in `s` and `t`.
+* `s ∪ t`: The multiset for which the number of occurrences of each `a` is the max of the
+  occurrences of `a` in `s` and `t`.
+* `s ∩ t`: The multiset for which the number of occurrences of each `a` is the min of the
+  occurrences of `a` in `s` and `t`.
 -/
 
 -- No bundled ordered algebra should be required
