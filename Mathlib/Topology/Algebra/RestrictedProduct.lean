@@ -20,6 +20,9 @@ instance {S : Set ι} : DFunLike (Pre R A S) ι R where
   coe x i := x.1 i
   coe_injective' _ _ := Subtype.ext
 
+lemma Pre.range_coe {S : Set ι} : range ((↑) : Pre R A S → Π i, R i) = Sᶜ.pi A :=
+  subset_antisymm (range_subset_iff.mpr fun x ↦ x.2) (fun x hx ↦ mem_range.mpr ⟨⟨x, hx⟩, rfl⟩)
+
 def structureMap (x : Π i, A i) : RestrPi R A := ⟨fun i ↦ x i, .of_forall fun i ↦ (x i).2⟩
 def Pre.structureMap {S : Set ι} (x : Π i, A i) : Pre R A S := ⟨fun i ↦ x i, fun i _ ↦ (x i).2⟩
 
@@ -209,6 +212,31 @@ def Pre.homeo_empty : (Π i, A i) ≃ₜ (Pre R A ∅) where
   left_inv _ := rfl
   right_inv _ := rfl
 
+instance {S : Set ι} [hS : Fact (S.Finite)]
+    [∀ i, WeaklyLocallyCompactSpace (R i)] [hAcompact : ∀ i, CompactSpace (A i)] :
+    WeaklyLocallyCompactSpace (Pre R A S) where
+  exists_compact_mem_nhds := fun x ↦ by
+    classical
+    have : ∀ i, ∃ K, IsCompact K ∧ K ∈ 𝓝 (x i) := fun i ↦ exists_compact_mem_nhds (x i)
+    choose K K_compact hK using this
+    set Q : Set (Π i, R i) := univ.pi (fun i ↦ if i ∈ S then K i else A i) with Q_def
+    have Q_compact : IsCompact Q := isCompact_univ_pi fun i ↦ by
+      split_ifs
+      · exact K_compact i
+      · exact isCompact_iff_compactSpace.mpr inferInstance
+    set U : Set (Π i, R i) := S.pi K with U_def
+    have U_nhds : U ∈ 𝓝 (x : Π i, R i) := set_pi_mem_nhds hS.out fun i _ ↦ hK i
+    have QU : (↑) ⁻¹' U ⊆ ((↑) ⁻¹' Q : Set (Pre R A S)) := fun y H i _ ↦ by
+      dsimp only
+      split_ifs with hi
+      · exact H i hi
+      · exact y.2 i hi
+    refine ⟨((↑) ⁻¹' Q), ?_, mem_of_superset ?_ QU⟩
+    · refine Pre.isInducing_coe R A S |>.isCompact_preimage_iff ?_ |>.mpr Q_compact
+      simp_rw [Pre.range_coe, Q_def, pi_if, mem_univ, true_and]
+      exact inter_subset_right
+    · simpa only [nhds_induced] using preimage_mem_comap U_nhds
+
 end Pre
 
 -- Put the inductive limit topology on `RestrPi R A`
@@ -314,6 +342,19 @@ theorem nhds_eq_map_structureMap
     (x : Π i, A i) :
     (𝓝 (structureMap R A x)) = map (structureMap R A) (𝓝 x) := by
   rw [isOpenEmbedding_structureMap R A hAopen |>.map_nhds_eq x]
+
+instance [hAopen : Fact (∀ i, IsOpen (A i))] [∀ i, WeaklyLocallyCompactSpace (R i)]
+    [hAcompact : ∀ i, CompactSpace (A i)] :
+    WeaklyLocallyCompactSpace (RestrPi R A) where
+  exists_compact_mem_nhds := fun x ↦ by
+    set S := {i | x i ∉ A i}
+    have hS : S.Finite := x.2
+    haveI : Fact (S.Finite) := ⟨hS⟩
+    have hSx : ∀ i ∉ S, x i ∈ A i := fun i hi ↦ by_contra hi
+    rcases exists_ofPre_eq_of_forall R A hS hSx with ⟨x', hxx'⟩
+    rw [← hxx', nhds_eq_map_ofPre R A hAopen.out]
+    rcases exists_compact_mem_nhds x' with ⟨K, K_compact, hK⟩
+    exact ⟨ofPre R A hS '' K, K_compact.image (continuous_ofPre R A hS), image_mem_map hK⟩
 
 -- The key result for continuity of multiplication and addition
 include hAopen in
@@ -440,8 +481,18 @@ instance {G : Type*} [Π i, SMul G (R i)] [∀ i, SMulMemClass (S i) G (R i)]
 
 end IndLimit
 
--- Results for `RestrPi` depending only on the fact that it has a *strict* inductive limit topology
+-- Results for `RestrPi` depending on the fact that it has a *strict* inductive limit topology
 section StrIndLimit
+
+theorem nhds_zero_eq_map_ofPre [Π i, Zero (R i)] [∀ i, ZeroMemClass (S i) (R i)]
+    (hAopen : ∀ i, IsOpen (A i : Set (R i))) (hT : T.Finite) :
+    (𝓝 (ofPre R (fun i ↦ A i) hT 0)) = map (ofPre R (fun i ↦ A i) hT) (𝓝 0) :=
+  nhds_eq_map_ofPre R _ hAopen hT 0
+
+theorem nhds_zero_eq_map_structureMap [Π i, Zero (R i)] [∀ i, ZeroMemClass (S i) (R i)]
+    (hAopen : ∀ i, IsOpen (A i : Set (R i))) :
+    (𝓝 (structureMap R (fun i ↦ A i) 0)) = map (structureMap R (fun i ↦ A i)) (𝓝 0) :=
+  nhds_eq_map_structureMap R _ hAopen 0
 
 -- TODO: Make `IsOpen` a class like `IsClosed` ?
 variable [hAopen : Fact (∀ i, IsOpen (A i : Set (R i)))]
@@ -468,6 +519,16 @@ instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, Topologi
 
 instance [Π i, Ring (R i)] [∀ i, SubringClass (S i) (R i)] [∀ i, TopologicalRing (R i)] :
     TopologicalRing (RestrPi R (fun i ↦ A i)) where
+
+open Pointwise in
+instance [Π i, Group (R i)] [∀ i, SubgroupClass (S i) (R i)] [∀ i, TopologicalGroup (R i)]
+    [hAcompact : ∀ i, CompactSpace (A i)] : LocallyCompactSpace (RestrPi R (A ·)) :=
+  -- TODO: extract as a lemma
+  haveI : ∀ i, WeaklyLocallyCompactSpace (R i) := fun i ↦ .mk fun x ↦
+    ⟨x • (A i : Set (R i)), .smul _ (isCompact_iff_compactSpace.mpr inferInstance),
+      hAopen.out i |>.smul _ |>.mem_nhds <| by
+      simpa using smul_mem_smul_set (a := x) (one_mem (A i))⟩
+  inferInstance
 
 end StrIndLimit
 
