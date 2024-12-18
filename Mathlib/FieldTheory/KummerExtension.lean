@@ -146,6 +146,10 @@ theorem pow_ne_of_irreducible_X_pow_sub_C {n : ℕ} {a : K}
     Nat.cast_injective.eq_iff] at hq
   exact hm' ((mul_eq_right₀ (mul_ne_zero_iff.mp hn).2).mp hq)
 
+/--Let `p` be a prime number. Let `K` be a field.
+Let `t ∈ K` be an element which does not have a `p`th root in `K`.
+Then the polynomial `x ^ p - t` is irreducible over `K`.-/
+@[stacks 09HF "We proved the result without the condition that `K` is char p in 09HF."]
 theorem X_pow_sub_C_irreducible_of_prime {p : ℕ} (hp : p.Prime) {a : K} (ha : ∀ b : K, b ^ p ≠ a) :
     Irreducible (X ^ p - C a) := by
   -- First of all, We may find an irreducible factor `g` of `X ^ p - C a`.
@@ -421,8 +425,8 @@ def adjoinRootXPowSubCEquiv (hζ : (primitiveRoots n K).Nonempty) (H : Irreducib
   AlgEquiv.ofBijective (AdjoinRoot.liftHom (X ^ n - C a) α (by simp [hα])) <| by
     haveI := Fact.mk H
     letI := isSplittingField_AdjoinRoot_X_pow_sub_C hζ H
-    refine ⟨(AlgHom.toRingHom _).injective, ?_⟩
-    rw [← Algebra.range_top_iff_surjective, ← IsSplittingField.adjoin_rootSet _ (X ^ n - C a),
+    refine ⟨(liftHom (X ^ n - C a) α _).injective, ?_⟩
+    rw [← AlgHom.range_eq_top, ← IsSplittingField.adjoin_rootSet _ (X ^ n - C a),
       eq_comm, adjoin_rootSet_eq_range, IsSplittingField.adjoin_rootSet]
     exact IsSplittingField.splits _ _
 
@@ -438,9 +442,9 @@ lemma adjoinRootXPowSubCEquiv_symm_eq_root :
 include hζ H hα in
 lemma Algebra.adjoin_root_eq_top_of_isSplittingField :
     Algebra.adjoin K {α} = ⊤ := by
-  apply Subalgebra.map_injective (f := (adjoinRootXPowSubCEquiv hζ H hα).symm)
+  apply Subalgebra.map_injective (B := K[n√a]) (f := (adjoinRootXPowSubCEquiv hζ H hα).symm)
     (adjoinRootXPowSubCEquiv hζ H hα).symm.injective
-  rw [Algebra.map_top, (Algebra.range_top_iff_surjective _).mpr
+  rw [Algebra.map_top, (AlgHom.range_eq_top _).mpr
     (adjoinRootXPowSubCEquiv hζ H hα).symm.surjective, AlgHom.map_adjoin,
     Set.image_singleton, AlgHom.coe_coe, adjoinRootXPowSubCEquiv_symm_eq_root, adjoinRoot_eq_top]
 

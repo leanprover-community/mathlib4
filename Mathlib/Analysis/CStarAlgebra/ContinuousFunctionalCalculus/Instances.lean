@@ -31,6 +31,8 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 continuous functional calculus, normal, selfadjoint
 -/
 
+open Topology
+
 noncomputable section
 
 local notation "σₙ" => quasispectrum
@@ -463,7 +465,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
   have h_c_spec₀ : SpectrumRestricts (- (star c * c)) (ContinuousMap.realToNNReal ·) := by
     simp only [SpectrumRestricts.nnreal_iff, h_eq_a_neg]
     rw [← cfc_pow _ _ (ha := .star_mul_self b)]
-    simp only [cfc_map_spectrum (R := ℝ) (fun x => (-ContinuousMap.id ℝ ⊔ 0) x ^ 3) (star b * b)]
+    simp only [a, cfc_map_spectrum (R := ℝ) (fun x => (-ContinuousMap.id ℝ ⊔ 0) x ^ 3) (star b * b)]
     rintro - ⟨x, -, rfl⟩
     simp
   have c_eq := star_mul_self_add_self_mul_star c
@@ -613,7 +615,9 @@ variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℂ A]
   [UniqueContinuousFunctionalCalculus ℝ A]
 
 lemma cfcHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
-    cfcHom ha = ha.spectrumRestricts.starAlgHom (cfcHom ha.isStarNormal) (f := Complex.reCLM) :=
+    cfcHom ha =
+      ha.spectrumRestricts.starAlgHom (R := ℝ) (S := ℂ)
+        (cfcHom ha.isStarNormal) (f := Complex.reCLM) :=
   ha.spectrumRestricts.cfcHom_eq_restrict _ Complex.isometry_ofReal.isUniformEmbedding
     ha ha.isStarNormal
 
@@ -634,7 +638,7 @@ variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [Module
 
 lemma cfcₙHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
     cfcₙHom ha = (ha.quasispectrumRestricts.2).nonUnitalStarAlgHom (cfcₙHom ha.isStarNormal)
-      (f := Complex.reCLM) :=
+      (R := ℝ) (S := ℂ) (f := Complex.reCLM) :=
   ha.quasispectrumRestricts.2.cfcₙHom_eq_restrict _ Complex.isometry_ofReal.isUniformEmbedding
     ha ha.isStarNormal
 

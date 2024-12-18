@@ -282,6 +282,6 @@ end TotallyDisconnected
 instance krullTopology_discreteTopology_of_finiteDimensional (K L : Type) [Field K] [Field L]
     [Algebra K L] [FiniteDimensional K L] : DiscreteTopology (L ≃ₐ[K] L) := by
   rw [discreteTopology_iff_isOpen_singleton_one]
-  change IsOpen (⊥ : Subgroup (L ≃ₐ[K] L))
+  change IsOpen ((⊥ : Subgroup (L ≃ₐ[K] L)) : Set (L ≃ₐ[K] L))
   rw [← IntermediateField.fixingSubgroup_top]
   exact IntermediateField.fixingSubgroup_isOpen ⊤

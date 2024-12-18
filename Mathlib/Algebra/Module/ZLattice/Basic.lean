@@ -3,6 +3,7 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
+import Mathlib.LinearAlgebra.Countable
 import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.MeasureTheory.Group.FundamentalDomain
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
@@ -61,10 +62,16 @@ variable (b : Basis ι K E)
 
 theorem span_top : span K (span ℤ (Set.range b) : Set E) = ⊤ := by simp [span_span_of_tower]
 
-
 theorem map {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] (f : E ≃ₗ[K] F) :
     Submodule.map (f.restrictScalars ℤ) (span ℤ (Set.range b)) = span ℤ (Set.range (b.map f)) := by
   simp_rw [Submodule.map_span, LinearEquiv.restrictScalars_apply, Basis.coe_map, Set.range_comp]
+
+open scoped Pointwise in
+theorem smul {c : K} (hc : c ≠ 0) :
+    c • span ℤ (Set.range b) = span ℤ (Set.range (b.isUnitSMul (fun _ ↦ hc.isUnit))) := by
+  rw [smul_span, Set.smul_set_range]
+  congr!
+  rw [Basis.isUnitSMul_apply]
 
 /-- The fundamental domain of the ℤ-lattice spanned by `b`. See `ZSpan.isAddFundamentalDomain`
 for the proof that it is a fundamental domain. -/
@@ -307,6 +314,13 @@ instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
 
 instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup :=
   inferInstanceAs <| DiscreteTopology (span ℤ (Set.range b))
+
+theorem setFinite_inter [ProperSpace E] [Finite ι] {s : Set E} (hs : Bornology.IsBounded s) :
+    Set.Finite (s ∩ span ℤ (Set.range b)) := by
+  have : DiscreteTopology (span ℤ (Set.range b)) := inferInstance
+  refine Metric.finite_isBounded_inter_isClosed hs ?_
+  change IsClosed ((span ℤ (Set.range b)).toAddSubgroup : Set E)
+  exact AddSubgroup.isClosed_of_discrete
 
 @[measurability]
 theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :

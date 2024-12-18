@@ -56,16 +56,18 @@ theorem independent_iff : Independent f ↔ LinearIndependent K (Projectivizatio
 
 /-- A family of points in projective space is independent if and only if the family of
 submodules which the points determine is independent in the lattice-theoretic sense. -/
-theorem independent_iff_completeLattice_independent :
-    Independent f ↔ CompleteLattice.Independent fun i => (f i).submodule := by
+theorem independent_iff_iSupIndep : Independent f ↔ iSupIndep fun i => (f i).submodule := by
   refine ⟨?_, fun h => ?_⟩
   · rintro ⟨f, hf, hi⟩
     simp only [submodule_mk]
-    exact (CompleteLattice.independent_iff_linearIndependent_of_ne_zero (R := K) hf).mpr hi
+    exact (iSupIndep_iff_linearIndependent_of_ne_zero (R := K) hf).mpr hi
   · rw [independent_iff]
     refine h.linearIndependent (Projectivization.submodule ∘ f) (fun i => ?_) fun i => ?_
     · simpa only [Function.comp_apply, submodule_eq] using Submodule.mem_span_singleton_self _
     · exact rep_nonzero (f i)
+
+@[deprecated (since := "2024-11-24")]
+alias independent_iff_completeLattice_independent := independent_iff_iSupIndep
 
 /-- A linearly dependent family of nonzero vectors gives a dependent family of points
 in projective space. -/

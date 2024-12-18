@@ -17,9 +17,10 @@ here allows us to consider composites and scalar-multiply by multivariable Laure
 ## Main results
 * Ext
 ## TODO
-* `HahnSeries Γ R`-module structure on `HVertexOperator Γ R V W` (needs PR#10846).  This means we
-  can consider products of the form `(X-Y)^n A(X)B(Y)` for all integers `n`, where `(X-Y)^n` is
-  expanded as `X^n(1-Y/X)^n` in `R((X))((Y))`.
+* `HahnSeries Γ R`-module structure on `HVertexOperator Γ R V W`
+  (needs https://github.com/leanprover-community/mathlib4/pull/19062.
+  This means we can consider products of the form `(X-Y)^n A(X)B(Y)` for all integers `n`,
+  where `(X-Y)^n` is expanded as `X^n(1-Y/X)^n` in `R((X))((Y))`.
 * curry for tensor product inputs
 * more API to make ext comparisons easier.
 * formal variable API, e.g., like the `T` function for Laurent polynomials.
@@ -90,6 +91,16 @@ def of_coeff (f : Γ → V →ₗ[R] W)
   map_smul' _ _ := by ext; simp
 
 @[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.HetVertexOperator.of_coeff := of_coeff
+
+@[simp]
+theorem add_coeff (A B : HVertexOperator Γ R V W) : (A + B).coeff = A.coeff + B.coeff := by
+  ext
+  simp
+
+@[simp]
+theorem smul_coeff (A : HVertexOperator Γ R V W) (r : R) : (r • A).coeff = r • (A.coeff) := by
+  ext
+  simp
 
 end Coeff
 

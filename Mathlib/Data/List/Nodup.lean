@@ -70,7 +70,7 @@ theorem nodup_iff_injective_getElem {l : List α} :
       · exact (h j i hj hi hji hg.symm).elim,
       fun hinj i j hi hj hij h => Nat.ne_of_lt hij (Fin.val_eq_of_eq (@hinj ⟨i, hi⟩ ⟨j, hj⟩ h))⟩
 
--- Porting note (#10756): new theorem
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10756): new theorem
 theorem nodup_iff_injective_get {l : List α} :
     Nodup l ↔ Function.Injective l.get := by
   rw [nodup_iff_injective_getElem]
@@ -122,7 +122,7 @@ theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
 
 theorem indexOf_getElem [DecidableEq α] {l : List α} (H : Nodup l) (i : Nat) (h : i < l.length) :
     indexOf l[i] l = i :=
-  suffices (⟨indexOf l[i] l, indexOf_lt_length.2 (get_mem _ _ _)⟩ : Fin l.length) = ⟨i, h⟩
+  suffices (⟨indexOf l[i] l, indexOf_lt_length.2 (getElem_mem _)⟩ : Fin l.length) = ⟨i, h⟩
     from Fin.val_eq_of_eq this
   nodup_iff_injective_get.1 H (by simp)
 
@@ -227,6 +227,21 @@ theorem Nodup.filter (p : α → Bool) {l} : Nodup l → Nodup (filter p l) := b
 theorem nodup_reverse {l : List α} : Nodup (reverse l) ↔ Nodup l :=
   pairwise_reverse.trans <| by simp only [Nodup, Ne, eq_comm]
 
+lemma nodup_tail_reverse (l : List α) (h : l[0]? = l.getLast?) :
+    Nodup l.reverse.tail ↔ Nodup l.tail := by
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+    by_cases hl : l = []
+    · aesop
+    · simp_all only [List.get?_eq_getElem?, List.tail_reverse, List.nodup_reverse,
+        List.dropLast_cons_of_ne_nil hl, List.tail_cons]
+      simp only [length_cons, Nat.zero_lt_succ, getElem?_eq_getElem, getElem_cons_zero,
+        Nat.add_one_sub_one, Nat.lt_add_one, Option.some.injEq, List.getElem_cons,
+        show l.length ≠ 0 from by aesop, ↓reduceDIte, getLast?_eq_getElem?] at h
+      rw [h, show l.Nodup = (l.dropLast ++ [l.getLast hl]).Nodup from by
+        simp [List.dropLast_eq_take, ← List.drop_length_sub_one], List.nodup_append_comm]
+      simp [List.getLast_eq_getElem]
 
 theorem Nodup.erase_getElem [DecidableEq α] {l : List α} (hl : l.Nodup)
     (i : Nat) (h : i < l.length) : l.erase l[i] = l.eraseIdx ↑i := by
@@ -259,7 +274,7 @@ theorem nodup_flatten {L : List (List α)} :
 
 theorem nodup_flatMap {l₁ : List α} {f : α → List β} :
     Nodup (l₁.flatMap f) ↔
-      (∀ x ∈ l₁, Nodup (f x)) ∧ Pairwise (fun a b : α => Disjoint (f a) (f b)) l₁ := by
+      (∀ x ∈ l₁, Nodup (f x)) ∧ Pairwise (Disjoint on f) l₁ := by
   simp only [List.flatMap, nodup_flatten, pairwise_map, and_comm, and_left_comm, mem_map,
     exists_imp, and_imp]
   rw [show (∀ (l : List β) (x : α), f x = l → x ∈ l₁ → Nodup l) ↔ ∀ x : α, x ∈ l₁ → Nodup (f x)

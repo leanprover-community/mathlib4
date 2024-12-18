@@ -68,7 +68,7 @@ section
 
 variable (F R) (Γ₀ : Type*) [LinearOrderedCommMonoidWithZero Γ₀] [Ring R]
 
---porting note (#5171): removed @[nolint has_nonempty_instance]
+--Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- The type of `Γ₀`-valued valuations on `R`.
 
 When you extend this structure, make sure to extend `ValuationClass`. -/
@@ -128,7 +128,7 @@ theorem coe_mk (f : R →*₀ Γ₀) (h) : ⇑(Valuation.mk f h) = f := rfl
 
 theorem toFun_eq_coe (v : Valuation R Γ₀) : v.toFun = v := rfl
 
-@[simp] -- Porting note: requested by simpNF as toFun_eq_coe LHS simplifies
+@[simp]
 theorem toMonoidWithZeroHom_coe_eq_coe (v : Valuation R Γ₀) :
     (v.toMonoidWithZeroHom : R → Γ₀) = v := rfl
 
@@ -243,6 +243,10 @@ def map (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f) (v : Valuation R Γ₀) : V
         f (v (r + s)) ≤ f (max (v r) (v s)) := hf (v.map_add r s)
         _ = max (f (v r)) (f (v s)) := hf.map_max
          }
+
+@[simp]
+lemma map_apply (f : Γ₀ →*₀ Γ'₀) (hf : Monotone f) (v : Valuation R Γ₀) (r : R) :
+    v.map f hf r = f (v r) := rfl
 
 /-- Two valuations on `R` are defined to be equivalent if they induce the same preorder on `R`. -/
 def IsEquiv (v₁ : Valuation R Γ₀) (v₂ : Valuation R Γ'₀) : Prop :=
@@ -588,7 +592,7 @@ section AddMonoid
 variable (R) [Ring R] (Γ₀ : Type*) [LinearOrderedAddCommMonoidWithTop Γ₀]
 
 /-- The type of `Γ₀`-valued additive valuations on `R`. -/
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 def AddValuation :=
   Valuation R (Multiplicative Γ₀ᵒᵈ)
 
@@ -631,11 +635,41 @@ theorem of_apply : (of f h0 h1 hadd hmul) r = f r := rfl
 
 /-- The `Valuation` associated to an `AddValuation` (useful if the latter is constructed using
 `AddValuation.of`). -/
-def valuation : Valuation R (Multiplicative Γ₀ᵒᵈ) :=
-  v
+def toValuation : AddValuation R Γ₀ ≃ Valuation R (Multiplicative Γ₀ᵒᵈ) :=
+  Equiv.refl _
+
+@[deprecated (since := "2024-11-09")]
+alias valuation := toValuation
+
+/-- The `AddValuation` associated to a `Valuation`.
+-/
+def ofValuation : Valuation R (Multiplicative Γ₀ᵒᵈ) ≃ AddValuation R Γ₀ :=
+  Equiv.refl _
 
 @[simp]
-theorem valuation_apply (r : R) : v.valuation r = Multiplicative.ofAdd (OrderDual.toDual (v r)) :=
+lemma ofValuation_symm_eq : ofValuation.symm = toValuation (R := R) (Γ₀ := Γ₀) := rfl
+
+@[simp]
+lemma toValuation_symm_eq : toValuation.symm = ofValuation (R := R) (Γ₀ := Γ₀) := rfl
+
+@[simp]
+lemma ofValuation_toValuation : ofValuation (toValuation v) = v := rfl
+
+@[simp]
+lemma toValuation_ofValuation (v : Valuation R (Multiplicative Γ₀ᵒᵈ)) :
+    toValuation (ofValuation v) = v := rfl
+
+@[simp]
+theorem toValuation_apply (r : R) :
+    toValuation v r = Multiplicative.ofAdd (OrderDual.toDual (v r)) :=
+  rfl
+
+@[deprecated (since := "2024-11-09")]
+alias valuation_apply := toValuation_apply
+
+@[simp]
+theorem ofValuation_apply (v : Valuation R (Multiplicative Γ₀ᵒᵈ)) (r : R) :
+    ofValuation v r = OrderDual.ofDual (Multiplicative.toAdd (v r)) :=
   rfl
 
 end
@@ -730,6 +764,10 @@ def map (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v : AddVal
       map_one' := f.map_zero
       map_zero' := ht } (fun _ _ h => hf h) v
 
+@[simp]
+lemma map_apply (f : Γ₀ →+ Γ'₀) (ht : f ⊤ = ⊤) (hf : Monotone f) (v : AddValuation R Γ₀) (r : R) :
+    v.map f ht hf r = f (v r) := rfl
+
 /-- Two additive valuations on `R` are defined to be equivalent if they induce the same
   preorder on `R`. -/
 def IsEquiv (v₁ : AddValuation R Γ₀) (v₂ : AddValuation R Γ'₀) : Prop :=
@@ -743,11 +781,11 @@ variable [LinearOrderedAddCommGroupWithTop Γ₀] [Ring R] (v : AddValuation R �
 
 @[simp]
 theorem map_inv (v : AddValuation K Γ₀) {x : K} : v x⁻¹ = - (v x) :=
-  map_inv₀ v.valuation x
+  map_inv₀ (toValuation v) x
 
 @[simp]
 theorem map_div (v : AddValuation K Γ₀) {x y : K} : v (x / y) = v x - v y :=
-  map_div₀ v.valuation x y
+  map_div₀ (toValuation v) x y
 
 @[simp]
 theorem map_neg (x : R) : v (-x) = v x :=
@@ -851,3 +889,43 @@ end Supp
 
 -- end of section
 end AddValuation
+
+namespace Valuation
+
+
+variable {Γ₀ : Type*} [Ring R] [LinearOrderedCommMonoidWithZero Γ₀]
+
+/-- The `AddValuation` associated to a `Valuation`. -/
+def toAddValuation : Valuation R Γ₀ ≃ AddValuation R (Additive Γ₀)ᵒᵈ :=
+  AddValuation.ofValuation (R := R) (Γ₀ := (Additive Γ₀)ᵒᵈ)
+
+/-- The `Valuation` associated to a `AddValuation`.
+-/
+def ofAddValuation : AddValuation R (Additive Γ₀)ᵒᵈ ≃ Valuation R Γ₀ :=
+  AddValuation.toValuation
+
+@[simp]
+lemma ofAddValuation_symm_eq : ofAddValuation.symm = toAddValuation (R := R) (Γ₀ := Γ₀) := rfl
+
+@[simp]
+lemma toAddValuation_symm_eq : toAddValuation.symm = ofAddValuation (R := R) (Γ₀ := Γ₀) := rfl
+
+@[simp]
+lemma ofAddValuation_toAddValuation (v : Valuation R Γ₀) :
+  ofAddValuation (toAddValuation v) = v := rfl
+
+@[simp]
+lemma toValuation_ofValuation (v : AddValuation R (Additive Γ₀)ᵒᵈ) :
+    toAddValuation (ofAddValuation v) = v := rfl
+
+@[simp]
+theorem toAddValuation_apply (v : Valuation R Γ₀) (r : R) :
+    toAddValuation v r = OrderDual.toDual (Additive.ofMul (v r)) :=
+  rfl
+
+@[simp]
+theorem ofAddValuation_apply (v : AddValuation R (Additive Γ₀)ᵒᵈ) (r : R) :
+    ofAddValuation v r = Additive.toMul (OrderDual.ofDual (v r)) :=
+  rfl
+
+end Valuation

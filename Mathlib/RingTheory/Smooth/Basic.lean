@@ -115,7 +115,7 @@ theorem liftOfSurjective_apply [FormallySmooth R A] (f : A →ₐ[R] C) (g : B �
     g (FormallySmooth.liftOfSurjective f g hg hg' x) = f x := by
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).symm.injective
   change _ = ((Ideal.quotientKerAlgEquivOfSurjective hg).symm.toAlgHom.comp f) x
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [← FormallySmooth.mk_lift _ hg'
     ((Ideal.quotientKerAlgEquivOfSurjective hg).symm.toAlgHom.comp f)]
   apply (Ideal.quotientKerAlgEquivOfSurjective hg).injective

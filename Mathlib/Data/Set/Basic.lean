@@ -436,8 +436,9 @@ instance univ.nonempty [Nonempty α] : Nonempty (↥(Set.univ : Set α)) :=
 instance instNonemptyTop [Nonempty α] : Nonempty (⊤ : Set α) :=
   inferInstanceAs (Nonempty (univ : Set α))
 
-theorem nonempty_of_nonempty_subtype [Nonempty (↥s)] : s.Nonempty :=
-  nonempty_subtype.mp ‹_›
+theorem Nonempty.of_subtype [Nonempty (↥s)] : s.Nonempty := nonempty_subtype.mp ‹_›
+
+@[deprecated (since := "2024-11-23")] alias nonempty_of_nonempty_subtype := Nonempty.of_subtype
 
 /-! ### Lemmas about the empty set -/
 
@@ -501,8 +502,7 @@ alias ⟨Nonempty.ne_empty, _⟩ := nonempty_iff_ne_empty
 @[simp]
 theorem not_nonempty_empty : ¬(∅ : Set α).Nonempty := fun ⟨_, hx⟩ => hx
 
--- Porting note: removing `@[simp]` as it is competing with `isEmpty_subtype`.
--- @[simp]
+@[simp]
 theorem isEmpty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
   not_iff_not.1 <| by simpa using nonempty_iff_ne_empty
 
@@ -1006,7 +1006,6 @@ def subtypeInsertEquivOption
 
 /-! ### Lemmas about singletons -/
 
-/- porting note: instance was in core in Lean3 -/
 instance : LawfulSingleton α (Set α) :=
   ⟨fun x => Set.ext fun a => by
     simp only [mem_empty_iff_false, mem_insert_iff, or_false]
@@ -1031,7 +1030,7 @@ theorem setOf_eq_eq_singleton' {a : α} : { x | a = x } = {a} :=
   ext fun _ => eq_comm
 
 -- TODO: again, annotation needed
---Porting note (#11119): removed `simp` attribute
+--Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute
 theorem mem_singleton (a : α) : a ∈ ({a} : Set α) :=
   @rfl _ _
 
@@ -1204,7 +1203,7 @@ theorem eq_empty_of_ssubset_singleton {s : Set α} {x : α} (hs : s ⊂ {x}) : s
 
 theorem eq_of_nonempty_of_subsingleton {α} [Subsingleton α] (s t : Set α) [Nonempty s]
     [Nonempty t] : s = t :=
-  nonempty_of_nonempty_subtype.eq_univ.trans nonempty_of_nonempty_subtype.eq_univ.symm
+  Nonempty.of_subtype.eq_univ.trans Nonempty.of_subtype.eq_univ.symm
 
 theorem eq_of_nonempty_of_subsingleton' {α} [Subsingleton α] {s : Set α} (t : Set α)
     (hs : s.Nonempty) [Nonempty t] : s = t :=

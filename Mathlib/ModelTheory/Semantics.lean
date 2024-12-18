@@ -285,7 +285,7 @@ theorem realize_rel₂ {R : L.Relations 2} {t₁ t₂ : L.Term _} :
 
 @[simp]
 theorem realize_sup : (φ ⊔ ψ).Realize v xs ↔ φ.Realize v xs ∨ ψ.Realize v xs := by
-  simp only [realize, Sup.sup, realize_not, eq_iff_iff]
+  simp only [realize, max, realize_not, eq_iff_iff]
   tauto
 
 @[simp]
@@ -435,7 +435,7 @@ theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L �
     {n} {φ : L[[α]].BoundedFormula β n} {v : β → M} {xs : Fin n → M} :
     (constantsVarsEquiv φ).Realize (Sum.elim (fun a => ↑(L.con a)) v) xs ↔ φ.Realize v xs := by
   refine realize_mapTermRel_id (fun n t xs => realize_constantsVarsEquivLeft) fun n R xs => ?_
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [← (lhomWithConstants L α).map_onRelation
       (Equiv.sumEmpty (L.Relations n) ((constantsOn α).Relations n) R) xs]
   rcongr

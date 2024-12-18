@@ -3,16 +3,19 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Data.Set.Countable
+import Mathlib.Logic.Equiv.Fin
 import Mathlib.Logic.Small.Set
 import Mathlib.Logic.UnivLE
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
+import Mathlib.Algebra.Order.GroupWithZero.Canonical
+import Mathlib.Algebra.Order.Ring.Canonical
 
 /-!
 # Cardinal Numbers
@@ -81,7 +84,7 @@ Cantor's theorem, König's theorem, Konig's theorem
 
 assert_not_exists Field
 
-open Mathlib (Vector)
+open List (Vector)
 open Function Order Set
 
 noncomputable section
@@ -143,7 +146,7 @@ protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
 
 /-- Avoid using `Quotient.mk` to construct a `Cardinal` directly -/
-@[deprecated (since := "2024-10-24")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-24")]
 theorem mk'_def (α : Type u) : @Eq Cardinal ⟦α⟧ #α :=
   rfl
 
@@ -173,6 +176,93 @@ theorem map_mk (f : Type u → Type v) (hf : ∀ α β, α ≃ β → f α ≃ f
 def map₂ (f : Type u → Type v → Type w) (hf : ∀ α β γ δ, α ≃ β → γ ≃ δ → f α γ ≃ f β δ) :
     Cardinal.{u} → Cardinal.{v} → Cardinal.{w} :=
   Quotient.map₂ f fun α β ⟨e₁⟩ γ δ ⟨e₂⟩ => ⟨hf α β γ δ e₁ e₂⟩
+
+/-! ### Lifting cardinals to a higher universe -/
+
+/-- The universe lift operation on cardinals. You can specify the universes explicitly with
+  `lift.{u v} : Cardinal.{v} → Cardinal.{max v u}` -/
+@[pp_with_univ]
+def lift (c : Cardinal.{v}) : Cardinal.{max v u} :=
+  map ULift.{u, v} (fun _ _ e => Equiv.ulift.trans <| e.trans Equiv.ulift.symm) c
+
+@[simp]
+theorem mk_uLift (α) : #(ULift.{v, u} α) = lift.{v} #α :=
+  rfl
+
+/-- `lift.{max u v, u}` equals `lift.{v, u}`.
+
+Unfortunately, the simp lemma doesn't work. -/
+theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
+  funext fun a => inductionOn a fun _ => (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
+
+/-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
+@[deprecated lift_umax (since := "2024-10-24")]
+theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
+  lift_umax
+
+/-- A cardinal lifted to a lower or equal universe equals itself.
+
+Unfortunately, the simp lemma doesn't work. -/
+theorem lift_id' (a : Cardinal.{max u v}) : lift.{u} a = a :=
+  inductionOn a fun _ => mk_congr Equiv.ulift
+
+/-- A cardinal lifted to the same universe equals itself. -/
+@[simp]
+theorem lift_id (a : Cardinal) : lift.{u, u} a = a :=
+  lift_id'.{u, u} a
+
+/-- A cardinal lifted to the zero universe equals itself. -/
+@[simp]
+theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
+  lift_id'.{0, u} a
+
+@[simp]
+theorem lift_lift.{u_1} (a : Cardinal.{u_1}) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
+  inductionOn a fun _ => (Equiv.ulift.trans <| Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
+
+theorem out_lift_equiv (a : Cardinal.{u}) : Nonempty ((lift.{v} a).out ≃ a.out) := by
+  rw [← mk_out a, ← mk_uLift, mk_out]
+  exact ⟨outMkEquiv.trans Equiv.ulift⟩
+
+@[simp]
+lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s) := by
+  rw [← mk_uLift, Cardinal.eq]
+  constructor
+  let f : ULift.down ⁻¹' s → ULift s := fun x ↦ ULift.up (restrictPreimage s ULift.down x)
+  have : Function.Bijective f :=
+    ULift.up_bijective.comp (restrictPreimage_bijective _ (ULift.down_bijective))
+  exact Equiv.ofBijective f this
+
+theorem lift_mk_eq {α : Type u} {β : Type v} :
+    lift.{max v w} #α = lift.{max u w} #β ↔ Nonempty (α ≃ β) :=
+  Quotient.eq'.trans
+    ⟨fun ⟨f⟩ => ⟨Equiv.ulift.symm.trans <| f.trans Equiv.ulift⟩, fun ⟨f⟩ =>
+      ⟨Equiv.ulift.trans <| f.trans Equiv.ulift.symm⟩⟩
+
+/-- A variant of `Cardinal.lift_mk_eq` with specialized universes.
+Because Lean often can not realize it should use this specialization itself,
+we provide this statement separately so you don't have to solve the specialization problem either.
+-/
+theorem lift_mk_eq' {α : Type u} {β : Type v} : lift.{v} #α = lift.{u} #β ↔ Nonempty (α ≃ β) :=
+  lift_mk_eq.{u, v, 0}
+
+-- Porting note: simpNF is not happy with universe levels.
+@[simp, nolint simpNF]
+theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
+    Cardinal.lift.{max u w} #(Shrink.{v} α) = Cardinal.lift.{max v w} #α :=
+  lift_mk_eq.2 ⟨(equivShrink α).symm⟩
+
+@[simp]
+theorem lift_mk_shrink' (α : Type u) [Small.{v} α] :
+    Cardinal.lift.{u} #(Shrink.{v} α) = Cardinal.lift.{v} #α :=
+  lift_mk_shrink.{u, v, 0} α
+
+@[simp]
+theorem lift_mk_shrink'' (α : Type max u v) [Small.{v} α] :
+    Cardinal.lift.{u} #(Shrink.{v} α) = #α := by
+  rw [← lift_umax, lift_mk_shrink.{max u v, v, 0} α, ← lift_umax, lift_id]
+
+/-! ### Order on cardinals -/
 
 /-- We define the order on cardinal numbers by `#α ≤ #β` if and only if
   there exists an embedding (injective function) from α to β. -/
@@ -222,65 +312,6 @@ theorem mk_subtype_le {α : Type u} (p : α → Prop) : #(Subtype p) ≤ #α :=
 theorem mk_set_le (s : Set α) : #s ≤ #α :=
   mk_subtype_le s
 
-/-! ### Lifting cardinals to a higher universe -/
-
-/-- The universe lift operation on cardinals. You can specify the universes explicitly with
-  `lift.{u v} : Cardinal.{v} → Cardinal.{max v u}` -/
-@[pp_with_univ]
-def lift (c : Cardinal.{v}) : Cardinal.{max v u} :=
-  map ULift.{u, v} (fun _ _ e => Equiv.ulift.trans <| e.trans Equiv.ulift.symm) c
-
-@[simp]
-theorem mk_uLift (α) : #(ULift.{v, u} α) = lift.{v} #α :=
-  rfl
-
--- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
--- further down in this file
-/-- `lift.{max u v, u}` equals `lift.{v, u}`. -/
-@[simp, nolint simpNF]
-theorem lift_umax : lift.{max u v, u} = lift.{v, u} :=
-  funext fun a => inductionOn a fun _ => (Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
-
--- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
--- further down in this file
-/-- `lift.{max v u, u}` equals `lift.{v, u}`. -/
-@[simp, nolint simpNF]
-theorem lift_umax' : lift.{max v u, u} = lift.{v, u} :=
-  lift_umax
-
--- Porting note: simpNF is not happy with universe levels, but this is needed as simp lemma
--- further down in this file
-/-- A cardinal lifted to a lower or equal universe equals itself. -/
-@[simp, nolint simpNF]
-theorem lift_id' (a : Cardinal.{max u v}) : lift.{u} a = a :=
-  inductionOn a fun _ => mk_congr Equiv.ulift
-
-/-- A cardinal lifted to the same universe equals itself. -/
-@[simp]
-theorem lift_id (a : Cardinal) : lift.{u, u} a = a :=
-  lift_id'.{u, u} a
-
-/-- A cardinal lifted to the zero universe equals itself. -/
-theorem lift_uzero (a : Cardinal.{u}) : lift.{0} a = a :=
-  lift_id'.{0, u} a
-
-@[simp]
-theorem lift_lift.{u_1} (a : Cardinal.{u_1}) : lift.{w} (lift.{v} a) = lift.{max v w} a :=
-  inductionOn a fun _ => (Equiv.ulift.trans <| Equiv.ulift.trans Equiv.ulift.symm).cardinal_eq
-
-theorem out_lift_equiv (a : Cardinal.{u}) : Nonempty ((lift.{v} a).out ≃ a.out) := by
-  rw [← mk_out a, ← mk_uLift, mk_out]
-  exact ⟨outMkEquiv.trans Equiv.ulift⟩
-
-@[simp]
-lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s) := by
-  rw [← mk_uLift, Cardinal.eq]
-  constructor
-  let f : ULift.down ⁻¹' s → ULift s := fun x ↦ ULift.up (restrictPreimage s ULift.down x)
-  have : Function.Bijective f :=
-    ULift.up_bijective.comp (restrictPreimage_bijective _ (ULift.down_bijective))
-  exact Equiv.ofBijective f this
-
 theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.out) := by
   conv_lhs => rw [← Cardinal.mk_out c, ← Cardinal.mk_out c', le_def]
 
@@ -296,34 +327,7 @@ we provide this statement separately so you don't have to solve the specializati
 theorem lift_mk_le' {α : Type u} {β : Type v} : lift.{v} #α ≤ lift.{u} #β ↔ Nonempty (α ↪ β) :=
   lift_mk_le.{0}
 
-theorem lift_mk_eq {α : Type u} {β : Type v} :
-    lift.{max v w} #α = lift.{max u w} #β ↔ Nonempty (α ≃ β) :=
-  Quotient.eq'.trans
-    ⟨fun ⟨f⟩ => ⟨Equiv.ulift.symm.trans <| f.trans Equiv.ulift⟩, fun ⟨f⟩ =>
-      ⟨Equiv.ulift.trans <| f.trans Equiv.ulift.symm⟩⟩
-
-/-- A variant of `Cardinal.lift_mk_eq` with specialized universes.
-Because Lean often can not realize it should use this specialization itself,
-we provide this statement separately so you don't have to solve the specialization problem either.
--/
-theorem lift_mk_eq' {α : Type u} {β : Type v} : lift.{v} #α = lift.{u} #β ↔ Nonempty (α ≃ β) :=
-  lift_mk_eq.{u, v, 0}
-
--- Porting note: simpNF is not happy with universe levels.
-@[simp, nolint simpNF]
-theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
-    Cardinal.lift.{max u w} #(Shrink.{v} α) = Cardinal.lift.{max v w} #α :=
-  lift_mk_eq.2 ⟨(equivShrink α).symm⟩
-
-@[simp]
-theorem lift_mk_shrink' (α : Type u) [Small.{v} α] :
-    Cardinal.lift.{u} #(Shrink.{v} α) = Cardinal.lift.{v} #α :=
-  lift_mk_shrink.{u, v, 0} α
-
-@[simp]
-theorem lift_mk_shrink'' (α : Type max u v) [Small.{v} α] :
-    Cardinal.lift.{u} #(Shrink.{v} α) = #α := by
-  rw [← lift_umax', lift_mk_shrink.{max u v, v, 0} α, ← lift_umax, lift_id]
+/-! ### `lift` sends `Cardinal.{u}` to an initial segment of `Cardinal.{max u v}`. -/
 
 /-- `Cardinal.lift` as an `InitialSeg`. -/
 @[simps!]
@@ -446,7 +450,10 @@ theorem le_one_iff_subsingleton {α : Type u} : #α ≤ 1 ↔ Subsingleton α :=
 theorem mk_le_one_iff_set_subsingleton {s : Set α} : #s ≤ 1 ↔ s.Subsingleton :=
   le_one_iff_subsingleton.trans s.subsingleton_coe
 
-alias ⟨_, _root_.Set.Subsingleton.cardinal_mk_le_one⟩ := mk_le_one_iff_set_subsingleton
+alias ⟨_, _root_.Set.Subsingleton.cardinalMk_le_one⟩ := mk_le_one_iff_set_subsingleton
+
+@[deprecated (since := "2024-11-10")]
+alias _root_.Set.Subsingleton.cardinal_mk_le_one := Set.Subsingleton.cardinalMk_le_one
 
 instance : Add Cardinal.{u} :=
   ⟨map₂ Sum fun _ _ _ _ => Equiv.sumCongr⟩
@@ -812,19 +819,21 @@ protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧
 
 section deprecated
 
-set_option linter.deprecated false
-
+set_option linter.deprecated false in
 @[deprecated IsSuccLimit.isSuccPrelimit (since := "2024-09-17")]
 protected theorem IsLimit.isSuccPrelimit {c} (h : IsLimit c) : IsSuccPrelimit c :=
   h.2
 
+set_option linter.deprecated false in
 @[deprecated ne_zero_of_isSuccLimit (since := "2024-09-17")]
 protected theorem IsLimit.ne_zero {c} (h : IsLimit c) : c ≠ 0 :=
   h.1
 
+set_option linter.deprecated false in
 @[deprecated IsLimit.isSuccPrelimit (since := "2024-09-05")]
 alias IsLimit.isSuccLimit := IsLimit.isSuccPrelimit
 
+set_option linter.deprecated false in
 @[deprecated IsSuccLimit.succ_lt (since := "2024-09-17")]
 theorem IsLimit.succ_lt {x c} (h : IsLimit c) : x < c → succ x < c :=
   h.isSuccPrelimit.succ_lt
@@ -1200,7 +1209,7 @@ theorem prod_eq_of_fintype {α : Type u} [h : Fintype α] (f : α → Cardinal.{
   · intro f
     rw [Fintype.univ_pempty, Finset.prod_empty, lift_one, Cardinal.prod, mk_eq_one]
   · intro α hα h f
-    rw [Cardinal.prod, mk_congr Equiv.piOptionEquivProd, mk_prod, lift_umax'.{v, u}, mk_out, ←
+    rw [Cardinal.prod, mk_congr Equiv.piOptionEquivProd, mk_prod, lift_umax.{v, u}, mk_out, ←
         Cardinal.prod, lift_prod, Fintype.prod_option, lift_mul, ← h fun a => f (some a)]
     simp only [lift_id]
 
@@ -1516,17 +1525,18 @@ theorem aleph0_le_of_isSuccLimit {c : Cardinal} (h : IsSuccLimit c) : ℵ₀ ≤
 
 section deprecated
 
-set_option linter.deprecated false
-
+set_option linter.deprecated false in
 @[deprecated isSuccLimit_aleph0 (since := "2024-09-17")]
 theorem isLimit_aleph0 : IsLimit ℵ₀ :=
   ⟨aleph0_ne_zero, isSuccPrelimit_aleph0⟩
 
+set_option linter.deprecated false in
 @[deprecated not_isSuccLimit_natCast (since := "2024-09-17")]
 lemma not_isLimit_natCast : (n : ℕ) → ¬ IsLimit (n : Cardinal.{u})
   | 0, e => e.1 rfl
   | Nat.succ n, e => Order.not_isSuccPrelimit_succ _ (nat_succ n ▸ e.2)
 
+set_option linter.deprecated false in
 @[deprecated aleph0_le_of_isSuccLimit (since := "2024-09-17")]
 theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c := by
   by_contra! h'
@@ -1776,12 +1786,12 @@ theorem mk_plift_false : #(PLift False) = 0 :=
   mk_eq_zero _
 
 @[simp]
-theorem mk_vector (α : Type u) (n : ℕ) : #(Vector α n) = #α ^ n :=
+theorem mk_vector (α : Type u) (n : ℕ) : #(List.Vector α n) = #α ^ n :=
   (mk_congr (Equiv.vectorEquivFin α n)).trans <| by simp
 
 theorem mk_list_eq_sum_pow (α : Type u) : #(List α) = sum fun n : ℕ => #α ^ n :=
   calc
-    #(List α) = #(Σn, Vector α n) := mk_congr (Equiv.sigmaFiberEquiv List.length).symm
+    #(List α) = #(Σn, List.Vector α n) := mk_congr (Equiv.sigmaFiberEquiv List.length).symm
     _ = sum fun n : ℕ => #α ^ n := by simp
 
 theorem mk_quot_le {α : Type u} {r : α → α → Prop} : #(Quot r) ≤ #α :=
@@ -1879,13 +1889,13 @@ theorem mk_iUnion_le_sum_mk_lift {α : Type u} {ι : Type v} {f : ι → Set α}
     _ = sum fun i => #(f i) := mk_sigma _
 
 theorem mk_iUnion_eq_sum_mk {α ι : Type u} {f : ι → Set α}
-    (h : Pairwise fun i j => Disjoint (f i) (f j)) : #(⋃ i, f i) = sum fun i => #(f i) :=
+    (h : Pairwise (Disjoint on f)) : #(⋃ i, f i) = sum fun i => #(f i) :=
   calc
     #(⋃ i, f i) = #(Σi, f i) := mk_congr (Set.unionEqSigmaOfDisjoint h)
     _ = sum fun i => #(f i) := mk_sigma _
 
 theorem mk_iUnion_eq_sum_mk_lift {α : Type u} {ι : Type v} {f : ι → Set α}
-    (h : Pairwise fun i j => Disjoint (f i) (f j)) :
+    (h : Pairwise (Disjoint on f)) :
     lift.{v} #(⋃ i, f i) = sum fun i => #(f i) :=
   calc
     lift.{v} #(⋃ i, f i) = #(Σi, f i) :=

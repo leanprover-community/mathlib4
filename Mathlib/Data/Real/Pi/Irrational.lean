@@ -91,7 +91,7 @@ private lemma recursion' (n : ℕ) :
     ring
   have hv₂ (x) : HasDerivAt v₂ (v₂' x) x := (hasDerivAt_mul_const θ).cos
   convert_to (∫ (x : ℝ) in (-1)..1, u₁ x * v₁' x) * θ = _ using 1
-  · simp_rw [u₁, v₁', ← intervalIntegral.integral_mul_const, sq θ, mul_assoc]
+  · simp_rw [u₁, v₁', f, ← intervalIntegral.integral_mul_const, sq θ, mul_assoc]
   rw [integral_mul_deriv_eq_deriv_mul (fun x _ => hu₁ x) (fun x _ => hv₁ x)
     (hu₁d.intervalIntegrable _ _) (hv₁d.intervalIntegrable _ _), hu₁_eval_one, hu₁_eval_neg_one,
     zero_mul, zero_mul, sub_zero, zero_sub, ← integral_neg, ← integral_mul_const]
@@ -283,15 +283,15 @@ private lemma not_irrational_exists_rep {x : ℝ} :
     rwa [lt_div_iff₀ (by positivity), zero_mul] at this
   have k (n : ℕ) : 0 < (a : ℝ) ^ (2 * n + 1) / n ! := by positivity
   have j : ∀ᶠ n : ℕ in atTop, (a : ℝ) ^ (2 * n + 1) / n ! * I n (π / 2) < 1 := by
-    have := eventually_lt_of_tendsto_lt (show (0 : ℝ) < 1 / 2 by norm_num)
-              (tendsto_pow_div_factorial_at_top_aux a)
+    have := (tendsto_pow_div_factorial_at_top_aux a).eventually_lt_const
+      (show (0 : ℝ) < 1 / 2 by norm_num)
     filter_upwards [this] with n hn
     rw [lt_div_iff₀ (zero_lt_two : (0 : ℝ) < 2)] at hn
     exact hn.trans_le' (mul_le_mul_of_nonneg_left (I_le _) (by positivity))
   obtain ⟨n, hn⟩ := j.exists
   have hn' : 0 < a ^ (2 * n + 1) / n ! * I n (π / 2) := mul_pos (k _) I_pos
   obtain ⟨z, hz⟩ : ∃ z : ℤ, (sinPoly n).eval₂ (Int.castRingHom ℝ) (a / b) * b ^ (2 * n + 1) = z :=
-    is_integer a b ((sinPoly_natDegree_le _).trans (by linarith))
+    is_integer a b ((sinPoly_natDegree_le _).trans (by omega))
   have e := sinPoly_add_cosPoly_eval (π / 2) n
   rw [cos_pi_div_two, sin_pi_div_two, mul_zero, mul_one, add_zero] at e
   have : a ^ (2 * n + 1) / n ! * I n (π / 2) =

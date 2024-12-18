@@ -110,6 +110,10 @@ lemma baseChange_mul (f g : Module.End R M) :
 
 variable (R A M N)
 
+/-- `baseChange A e` for `e : M ≃ₗ[R] N` is the `A`-linear map `A ⊗[R] M ≃ₗ[A] A ⊗[R] N`. -/
+def _root_.LinearEquiv.baseChange (e : M ≃ₗ[R] N) : A ⊗[R] M ≃ₗ[A] A ⊗[R] N :=
+  AlgebraTensorModule.congr (.refl _ _) e
+
 /-- `baseChange` as a linear map.
 
 When `M = N`, this is true more strongly as `Module.End.baseChangeHom`. -/
@@ -561,7 +565,7 @@ theorem intCast_def' (z : ℤ) : (z : A ⊗[R] B) = (1 : A) ⊗ₜ (z : B) := by
 -- verify there are no diamonds
 example : (instRing : Ring (A ⊗[R] B)).toAddCommGroup = addCommGroup := by
   with_reducible_and_instances rfl
--- fails at `with_reducible_and_instances rfl` #10906
+-- fails at `with_reducible_and_instances rfl` https://github.com/leanprover-community/mathlib4/issues/10906
 example : (Ring.toIntAlgebra _ : Algebra ℤ (ℤ ⊗[ℤ] B)) = leftAlgebra := rfl
 
 end Ring
@@ -803,6 +807,53 @@ variable {A} in
 @[simp]
 theorem rid_symm_apply (a : A) : (TensorProduct.rid R S A).symm a = a ⊗ₜ 1 := rfl
 
+section CompatibleSMul
+
+variable (R S A B : Type*) [CommSemiring R] [CommSemiring S] [Semiring A] [Semiring B]
+variable [Algebra R A] [Algebra R B] [Algebra S A] [Algebra S B]
+variable [SMulCommClass R S A] [CompatibleSMul R S A B]
+
+/-- If A and B are both R- and S-algebras and their actions on them commute,
+and if the S-action on `A ⊗[R] B` can switch between the two factors, then there is a
+canonical S-algebra homomorphism from `A ⊗[S] B` to `A ⊗[R] B`. -/
+def mapOfCompatibleSMul : A ⊗[S] B →ₐ[S] A ⊗[R] B :=
+  .ofLinearMap (_root_.TensorProduct.mapOfCompatibleSMul R S A B) rfl fun x ↦
+    x.induction_on (by simp) (fun _ _ y ↦ y.induction_on (by simp) (by simp)
+      fun _ _ h h' ↦ by simp only [mul_add, map_add, h, h'])
+      fun _ _ h h' _ ↦ by simp only [add_mul, map_add, h, h']
+
+@[simp] theorem mapOfCompatibleSMul_tmul (m n) : mapOfCompatibleSMul R S A B (m ⊗ₜ n) = m ⊗ₜ n :=
+  rfl
+
+theorem mapOfCompatibleSMul_surjective : Function.Surjective (mapOfCompatibleSMul R S A B) :=
+  _root_.TensorProduct.mapOfCompatibleSMul_surjective R S A B
+
+attribute [local instance] SMulCommClass.symm
+
+/-- `mapOfCompatibleSMul R S A B` is also A-linear. -/
+def mapOfCompatibleSMul' : A ⊗[S] B →ₐ[R] A ⊗[R] B :=
+  .ofLinearMap (_root_.TensorProduct.mapOfCompatibleSMul' R S A B) rfl
+    (map_mul <| mapOfCompatibleSMul R S A B)
+
+/-- If the R- and S-actions on A and B satisfy `CompatibleSMul` both ways,
+then `A ⊗[S] B` is canonically isomorphic to `A ⊗[R] B`. -/
+def equivOfCompatibleSMul [CompatibleSMul S R A B] : A ⊗[S] B ≃ₐ[S] A ⊗[R] B where
+  __ := mapOfCompatibleSMul R S A B
+  invFun := mapOfCompatibleSMul S R A B
+  __ := _root_.TensorProduct.equivOfCompatibleSMul R S A B
+
+variable [Algebra R S] [CompatibleSMul R S S A] [CompatibleSMul S R S A]
+omit [SMulCommClass R S A]
+
+/-- If the R- and S- action on S and A satisfy `CompatibleSMul` both ways,
+then `S ⊗[R] A` is canonically isomorphic to `A`. -/
+def lidOfCompatibleSMul : S ⊗[R] A ≃ₐ[S] A :=
+  (equivOfCompatibleSMul R S S A).symm.trans (TensorProduct.lid _ _)
+
+theorem lidOfCompatibleSMul_tmul (s a) : lidOfCompatibleSMul R S A (s ⊗ₜ[R] a) = s • a := rfl
+
+end CompatibleSMul
+
 section
 
 variable (B)
@@ -896,6 +947,15 @@ theorem map_id : map (.id S A) (.id R C) = .id S _ :=
 theorem map_comp [Algebra S C] [IsScalarTower R S C]
     (f₂ : B →ₐ[S] C) (f₁ : A →ₐ[S] B) (g₂ : E →ₐ[R] F) (g₁ : D →ₐ[R] E) :
     map (f₂.comp f₁) (g₂.comp g₁) = (map f₂ g₂).comp (map f₁ g₁) :=
+  ext (AlgHom.ext fun _ => rfl) (AlgHom.ext fun _ => rfl)
+
+lemma map_id_comp (g₂ : E →ₐ[R] F) (g₁ : D →ₐ[R] E) :
+    map (AlgHom.id S A) (g₂.comp g₁) = (map (AlgHom.id S A) g₂).comp (map (AlgHom.id S A) g₁) :=
+  ext (AlgHom.ext fun _ => rfl) (AlgHom.ext fun _ => rfl)
+
+lemma map_comp_id [Algebra S C] [IsScalarTower R S C]
+    (f₂ : B →ₐ[S] C) (f₁ : A →ₐ[S] B) :
+    map (f₂.comp f₁) (AlgHom.id R E) = (map f₂ (AlgHom.id R E)).comp (map f₁ (AlgHom.id R E)) :=
   ext (AlgHom.ext fun _ => rfl) (AlgHom.ext fun _ => rfl)
 
 @[simp]
@@ -1032,11 +1092,21 @@ variable [Algebra R A] [Algebra R B] [Algebra R S]
 variable (f : A →ₐ[R] S) (g : B →ₐ[R] S)
 variable (R)
 
-/-- `LinearMap.mul'` is an `AlgHom` on commutative rings. -/
-def lmul' : S ⊗[R] S →ₐ[R] S :=
-  algHomOfLinearMapTensorProduct (LinearMap.mul' R S)
-    (fun a₁ a₂ b₁ b₂ => by simp only [LinearMap.mul'_apply, mul_mul_mul_comm]) <| by
-    simp only [LinearMap.mul'_apply, mul_one]
+/-- `LinearMap.mul'` as an `AlgHom` over the algebra. -/
+def lmul'' : S ⊗[R] S →ₐ[S] S :=
+  algHomOfLinearMapTensorProduct
+    { __ := LinearMap.mul' R S
+      map_smul' := fun s x ↦ x.induction_on (by simp)
+        (fun _ _ ↦ by simp [TensorProduct.smul_tmul', mul_assoc])
+        fun x y hx hy ↦ by simp_all [hx, hy, mul_add] }
+    (fun a₁ a₂ b₁ b₂ => by simp [mul_mul_mul_comm]) <| by simp
+
+theorem lmul''_eq_lid_comp_mapOfCompatibleSMul :
+    lmul'' R = (TensorProduct.lid S S).toAlgHom.comp (mapOfCompatibleSMul' _ _ _ _) := by
+  ext; rfl
+
+/-- `LinearMap.mul'` as an `AlgHom` over the base ring. -/
+def lmul' : S ⊗[R] S →ₐ[R] S := (lmul'' R).restrictScalars R
 
 variable {R}
 
@@ -1054,6 +1124,19 @@ theorem lmul'_comp_includeLeft : (lmul' R : _ →ₐ[R] S).comp includeLeft = Al
 @[simp]
 theorem lmul'_comp_includeRight : (lmul' R : _ →ₐ[R] S).comp includeRight = AlgHom.id R S :=
   AlgHom.ext <| one_mul
+
+variable (R S) in
+/-- If multiplication by elements of S can switch between the two factors of `S ⊗[R] S`,
+then `lmul''` is an isomorphism. -/
+def lmulEquiv [CompatibleSMul R S S S] : S ⊗[R] S ≃ₐ[S] S :=
+  .ofAlgHom (lmul'' R) includeLeft lmul'_comp_includeLeft <| AlgHom.ext fun x ↦ x.induction_on
+    (by simp) (fun x y ↦ show (x * y) ⊗ₜ[R] 1 = x ⊗ₜ[R] y by
+      rw [mul_comm, ← smul_eq_mul, smul_tmul, smul_eq_mul, mul_one])
+    fun _ _ hx hy ↦ by simp_all [hx, hy, add_tmul]
+
+theorem lmulEquiv_eq_lidOfCompatibleSMul [CompatibleSMul R S S S] :
+    lmulEquiv R S = lidOfCompatibleSMul R S S :=
+  AlgEquiv.coe_algHom_injective <| by ext; rfl
 
 /-- If `S` is commutative, for a pair of morphisms `f : A →ₐ[R] S`, `g : B →ₐ[R] S`,
 We obtain a map `A ⊗[R] B →ₐ[R] S` that commutes with `f`, `g` via `a ⊗ b ↦ f(a) * g(b)`.

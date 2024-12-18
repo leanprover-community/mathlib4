@@ -107,7 +107,7 @@ def subobjectEquiv [HasLimits C] [PreservesLimits T] (A : StructuredArrow S T) :
     · refine Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).right ?_
       exact congr_arg CommaMorphism.right (Subobject.ofMkLEMk_comp h)
 
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+-- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 attribute [nolint simpNF] CategoryTheory.StructuredArrow.subobjectEquiv_symm_apply
   CategoryTheory.StructuredArrow.subobjectEquiv_apply_coe
 
