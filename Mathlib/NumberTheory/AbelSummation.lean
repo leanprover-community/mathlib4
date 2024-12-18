@@ -298,15 +298,14 @@ theorem summable_mul_of_bigO_atTop
     (hf_diff : ∀ t ∈ Set.Ici 0, DifferentiableAt ℝ (fun x ↦ ‖f x‖) t)
     (hf_int : IntegrableOn (deriv (fun t ↦ ‖f t‖)) (Set.Ici 0))
     (h_bdd : (fun n : ℕ ↦ ‖f n‖ * ∑ k ∈ Icc 0 n, ‖c k‖) =O[atTop] fun _ ↦ (1 : ℝ))
-    {g : ℝ → ℝ}
-    (hg₁ : (fun t ↦ deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖) =O[atTop] g)
+    {g : ℝ → ℝ} (hg₁ : (fun t ↦ deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖) =O[atTop] g)
     (hg₂ : IntegrableAtFilter g atTop) :
     Summable (fun n : ℕ ↦ f n * c n) := by
   obtain ⟨C₁, hC₁⟩ := Asymptotics.isBigO_one_nat_atTop_iff.mp h_bdd
   let C₂ := ∫ t in Set.Ioi 0, ‖deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖‖
-  refine summable_iff_partial_sums_norm_bounded.mpr ⟨max (C₁ + C₂ + 1) 1, fun n ↦ ?_⟩
+  refine summable_of_sum_range_norm_le (c := max (C₁ + C₂) 1) fun n ↦ ?_
   cases n with
-  | zero => simp only [range_zero, sum_empty, lt_sup_iff, zero_lt_one, or_true]
+  | zero => simp only [range_zero, norm_mul, sum_empty, le_sup_iff, zero_le_one, or_true]
   | succ n =>
       have h_mes : Measurable fun t ↦ deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖ := by
         refine (measurable_deriv _).mul ?_
@@ -321,8 +320,7 @@ theorem summable_mul_of_bigO_atTop
         _ ≤ C₁ - ∫ t in Set.Ioc 0 ↑n, deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖ := ?_
         _ ≤ C₁ + ∫ t in Set.Ioc 0 ↑n, ‖deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖‖ := ?_
         _ ≤ C₁ + C₂ := ?_
-        _ < C₁ + C₂ + 1 := lt_add_one _
-        _ ≤ max (C₁ + C₂ + 1) 1 := le_max_left _ _
+        _ ≤ max (C₁ + C₂) 1 := le_max_left _ _
       · rw [sum_mul_eq_sub_integral_mul' _ _
           (fun _ ht ↦ hf_diff _ ht.1) (hf_int.mono_set Set.Icc_subset_Ici_self)]
       · refine tsub_le_tsub_right (le_of_eq_of_le (Real.norm_of_nonneg ?_).symm (hC₁ n)) _
@@ -339,15 +337,14 @@ theorem summable_mul_of_bigO_atTop₀ (hc : c 0 = 0)
     (hf_diff : ∀ t ∈ Set.Ici 1, DifferentiableAt ℝ (fun x ↦ ‖f x‖) t)
     (hf_int : IntegrableOn (deriv (fun t ↦ ‖f t‖)) (Set.Ici 1))
     (h_bdd : (fun n : ℕ ↦ ‖f n‖ * ∑ k ∈ Icc 0 n, ‖c k‖) =O[atTop] fun _ ↦ (1 : ℝ))
-    {g : ℝ → ℝ}
-    (hg₁ : (fun t ↦ deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖) =O[atTop] g)
+    {g : ℝ → ℝ} (hg₁ : (fun t ↦ deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖) =O[atTop] g)
     (hg₂ : IntegrableAtFilter g atTop) :
     Summable (fun n : ℕ ↦ f n * c n) := by
   obtain ⟨C₁, hC₁⟩ := Asymptotics.isBigO_one_nat_atTop_iff.mp h_bdd
   let C₂ := ∫ t in Set.Ioi 1, ‖deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖‖
-  refine summable_iff_partial_sums_norm_bounded.mpr ⟨max (C₁ + C₂ + 1) 1, fun n ↦ ?_⟩
+  refine summable_of_sum_range_norm_le (c := max (C₁ + C₂) 1) fun n ↦ ?_
   cases n with
-  | zero => simp only [range_zero, sum_empty, lt_sup_iff, zero_lt_one, or_true]
+  | zero => simp only [range_zero, norm_mul, sum_empty, le_sup_iff, zero_le_one, or_true]
   | succ n =>
       have h_mes : Measurable fun t ↦ deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖ := by
         refine (measurable_deriv _).mul ?_
@@ -362,8 +359,7 @@ theorem summable_mul_of_bigO_atTop₀ (hc : c 0 = 0)
         _ ≤ C₁ - ∫ t in Set.Ioc 1 ↑n, deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖ := ?_
         _ ≤ C₁ + ∫ t in Set.Ioc 1 ↑n, ‖deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖‖ := ?_
         _ ≤ C₁ + C₂ := ?_
-        _ < C₁ + C₂ + 1 := lt_add_one _
-        _ ≤ max (C₁ + C₂ + 1) 1 := le_max_left _ _
+        _ ≤ max (C₁ + C₂) 1 := le_max_left _ _
       · rw [sum_mul_eq_sub_integral_mul₀' (fun n ↦ ‖c n‖) (norm_eq_zero.mpr hc) _
           (fun _ ht ↦ hf_diff _ ht.1) (hf_int.mono_set Set.Icc_subset_Ici_self)]
       · refine tsub_le_tsub_right (le_of_eq_of_le (Real.norm_of_nonneg ?_).symm (hC₁ n)) _

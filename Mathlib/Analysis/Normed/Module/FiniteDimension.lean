@@ -655,10 +655,10 @@ theorem summable_norm_iff {α E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ
 
 alias ⟨_, Summable.norm⟩ := summable_norm_iff
 
-theorem summable_iff_partial_sums_norm_bounded {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E] {f : ℕ → E} :
-    Summable f ↔ ∃ C, ∀ n, ∑ i ∈ Finset.range n, ‖f i‖ < C := by
-  rw [← summable_norm_iff, summable_iff_partial_sums_bounded_of_nonneg (fun _ ↦ norm_nonneg _)]
+theorem summable_of_sum_range_norm_le {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [FiniteDimensional ℝ E] {c : ℝ} {f : ℕ → E} (h : ∀ n, ∑ i ∈ Finset.range n, ‖f i‖ ≤ c) :
+    Summable f :=
+  summable_norm_iff.mp <| summable_of_sum_range_le (fun _ ↦ norm_nonneg _)  h
 
 theorem summable_of_isBigO' {ι E F : Type*} [NormedAddCommGroup E] [CompleteSpace E]
     [NormedAddCommGroup F] [NormedSpace ℝ F] [FiniteDimensional ℝ F] {f : ι → E} {g : ι → F}
