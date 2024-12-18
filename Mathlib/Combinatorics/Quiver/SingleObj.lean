@@ -113,7 +113,7 @@ theorem listToPath_pathToList {x : SingleObj α} (p : Path (star α) x) :
     listToPath (pathToList p) = p.cast rfl ext := by
   induction p with
   | nil => rfl
-  | cons _ _ ih => dsimp at *; rw [ih]
+  | cons _ _ ih => dsimp [pathToList] at *; rw [ih]
 
 theorem pathToList_listToPath (l : List α) : pathToList (listToPath l) = l := by
   induction l with
