@@ -76,7 +76,7 @@ lemma pullbackShiftFunctorZero_hom_app :
 
 lemma pullbackShiftFunctorZero'_inv_app :
     (shiftFunctorZero _ A).inv.app X = (shiftFunctorZero' C (φ 0) (by rw [map_zero])).inv.app X ≫
-    (pullbackShiftIso C φ 0 (φ 0) rfl).inv.app X := by
+      (pullbackShiftIso C φ 0 (φ 0) rfl).inv.app X := by
   rw [pullbackShiftFunctorZero_inv_app]
   simp only [Functor.id_obj, pullbackShiftIso, eqToIso.inv, eqToHom_app, shiftFunctorZero',
     Iso.trans_inv, NatTrans.comp_app, eqToIso_refl, Iso.refl_inv, NatTrans.id_app, assoc]
