@@ -5,6 +5,8 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
+import Mathlib.RingTheory.Algebraic.Basic
+import Mathlib.LinearAlgebra.Dual
 
 /-!
 # Splitting fields
@@ -189,7 +191,7 @@ theorem adjoin_rootSet (n : ℕ) :
     classical
     rw [rootSet_def, aroots_def]
     rw [algebraMap_succ, ← map_map, ← X_sub_C_mul_removeFactor _ hndf, Polynomial.map_mul] at hmf0 ⊢
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [roots_mul hmf0, Polynomial.map_sub, map_X, map_C, roots_X_sub_C, Multiset.toFinset_add,
       Finset.coe_union, Multiset.toFinset_singleton, Finset.coe_singleton,
       Algebra.adjoin_union_eq_adjoin_adjoin, ← Set.image_singleton,
@@ -246,7 +248,7 @@ instance instGroupWithZero : GroupWithZero (SplittingField f) :=
   let e := algEquivSplittingFieldAux f
   { inv := fun a ↦ e.symm (e a)⁻¹
     inv_zero := by simp
-    mul_inv_cancel := fun a ha ↦ e.injective <| by simp [(AddEquivClass.map_ne_zero_iff _).2 ha]
+    mul_inv_cancel := fun a ha ↦ e.injective <| by simp [EmbeddingLike.map_ne_zero_iff.2 ha]
     __ := e.surjective.nontrivial }
 
 instance instField : Field (SplittingField f) where

@@ -116,20 +116,20 @@ theorem sum_tensor {P Q R S : C} {J : Type*} (s : Finset J) (f : P ⟶ Q) (g : J
 instance (X : C) : PreservesFiniteBiproducts (tensorLeft X) where
   preserves {J} :=
     { preserves := fun {f} =>
-        { preserves := fun {b} i => isBilimitOfTotal _ (by
+        { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
             dsimp
             simp_rw [← id_tensorHom]
             simp only [← tensor_comp, Category.comp_id, ← tensor_sum, ← tensor_id,
-              IsBilimit.total i]) } }
+              IsBilimit.total i])⟩ } }
 
 instance (X : C) : PreservesFiniteBiproducts (tensorRight X) where
   preserves {J} :=
     { preserves := fun {f} =>
-        { preserves := fun {b} i => isBilimitOfTotal _ (by
+        { preserves := fun {b} i => ⟨isBilimitOfTotal _ (by
             dsimp
             simp_rw [← tensorHom_id]
             simp only [← tensor_comp, Category.comp_id, ← sum_tensor, ← tensor_id,
-               IsBilimit.total i]) } }
+               IsBilimit.total i])⟩ } }
 
 variable [HasFiniteBiproducts C]
 

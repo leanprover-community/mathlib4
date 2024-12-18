@@ -133,17 +133,23 @@ end CommSemiring
 
 section Ring
 
-variable [CommRing R]
-variable (R)
-
 /-- A `Semiring` that is an `Algebra` over a commutative ring carries a natural `Ring` structure.
 See note [reducible non-instances]. -/
-abbrev semiringToRing [Semiring A] [Algebra R A] : Ring A :=
+abbrev semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring A :=
   { __ := (inferInstance : Semiring A)
     __ := Module.addCommMonoidToAddCommGroup R
     intCast := fun z => algebraMap R A z
     intCast_ofNat := fun z => by simp only [Int.cast_natCast, map_natCast]
     intCast_negSucc := fun z => by simp }
+
+instance {R : Type*} [Ring R] : Algebra (Subring.center R) R where
+  toFun := Subtype.val
+  map_one' := rfl
+  map_mul' _ _ := rfl
+  map_zero' := rfl
+  map_add' _ _ := rfl
+  commutes' r x := (Subring.mem_center_iff.1 r.2 x).symm
+  smul_def' _ _ := rfl
 
 end Ring
 
@@ -344,14 +350,14 @@ theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [IsDomain
 variable {A}
 
 -- see Note [lower instance priority]
--- priority manually adjusted in #11980, as it is a very common path
+-- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980, as it is a very common path
 instance (priority := 120) IsScalarTower.to_smulCommClass : SMulCommClass R A M :=
   ⟨fun r a m => by
     rw [algebra_compatible_smul A r (a • m), smul_smul, Algebra.commutes, mul_smul, ←
       algebra_compatible_smul]⟩
 
 -- see Note [lower instance priority]
--- priority manually adjusted in #11980, as it is a very common path
+-- priority manually adjusted in https://github.com/leanprover-community/mathlib4/pull/11980, as it is a very common path
 instance (priority := 110) IsScalarTower.to_smulCommClass' : SMulCommClass A R M :=
   SMulCommClass.symm _ _ _
 
@@ -367,7 +373,7 @@ namespace LinearMap
 
 variable (R)
 
--- Porting note (#11215): TODO: generalize to `CompatibleSMul`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `CompatibleSMul`
 /-- `A`-linearly coerce an `R`-linear map from `M` to `A` to a function, given an algebra `A` over
 a commutative semiring `R` and `M` a module over `R`. -/
 def ltoFun (R : Type u) (M : Type v) (A : Type w) [CommSemiring R] [AddCommMonoid M] [Module R M]

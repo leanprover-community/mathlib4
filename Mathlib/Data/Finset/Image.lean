@@ -313,8 +313,10 @@ theorem mem_image : b ∈ s.image f ↔ ∃ a ∈ s, f a = b := by
 theorem mem_image_of_mem (f : α → β) {a} (h : a ∈ s) : f a ∈ s.image f :=
   mem_image.2 ⟨_, h, rfl⟩
 
-theorem forall_image {p : β → Prop} : (∀ b ∈ s.image f, p b) ↔ ∀ a ∈ s, p (f a) := by
-  simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+lemma forall_mem_image {p : β → Prop} : (∀ y ∈ s.image f, p y) ↔ ∀ ⦃x⦄, x ∈ s → p (f x) := by simp
+lemma exists_mem_image {p : β → Prop} : (∃ y ∈ s.image f, p y) ↔ ∃ x ∈ s, p (f x) := by simp
+
+@[deprecated (since := "2024-11-23")] alias forall_image := forall_mem_image
 
 theorem map_eq_image (f : α ↪ β) (s : Finset α) : s.map f = s.image f :=
   eq_of_veq (s.map f).2.dedup.symm
@@ -360,10 +362,6 @@ protected theorem Nonempty.image (h : s.Nonempty) (f : α → β) : (s.image f).
   image_nonempty.2 h
 
 alias ⟨Nonempty.of_image, _⟩ := image_nonempty
-
-@[deprecated image_nonempty (since := "2023-12-29")]
-theorem Nonempty.image_iff (f : α → β) : (s.image f).Nonempty ↔ s.Nonempty :=
-  image_nonempty
 
 theorem image_toFinset [DecidableEq α] {s : Multiset α} :
     s.toFinset.image f = (s.map f).toFinset :=

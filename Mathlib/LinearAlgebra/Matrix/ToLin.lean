@@ -3,12 +3,13 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Patrick Massot, Casper Putz, Anne Baanen
 -/
-import Mathlib.Data.Matrix.Block
-import Mathlib.Data.Matrix.Notation
-import Mathlib.LinearAlgebra.StdBasis
-import Mathlib.RingTheory.AlgebraTower
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Data.Finite.Sum
+import Mathlib.Data.Matrix.Block
+import Mathlib.Data.Matrix.Notation
+import Mathlib.LinearAlgebra.Matrix.StdBasis
+import Mathlib.RingTheory.AlgebraTower
+import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Linear maps and matrices
@@ -793,7 +794,7 @@ namespace Algebra
 
 section Lmul
 
-variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
+variable {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
 variable {m : Type*} [Fintype m] [DecidableEq m] (b : Basis m R S)
 
 theorem toMatrix_lmul' (x : S) (i j) :
@@ -864,11 +865,21 @@ theorem smul_leftMulMatrix {G} [Group G] [DistribMulAction G S]
     Basis.repr_smul, Basis.smul_apply, LinearEquiv.trans_apply,
     DistribMulAction.toLinearEquiv_symm_apply, mul_smul_comm, inv_smul_smul]
 
+variable {A M n : Type*} [Fintype n] [DecidableEq n]
+  [CommSemiring A] [AddCommMonoid M] [Module R M] [Module A M] [Algebra R A] [IsScalarTower R A M]
+  (bA : Basis m R A) (bM : Basis n A M)
+
+lemma _root_.LinearMap.restrictScalars_toMatrix (f : M →ₗ[A] M) :
+    (f.restrictScalars R).toMatrix (bA.smulTower' bM) (bA.smulTower' bM) =
+      ((f.toMatrix bM bM).map (leftMulMatrix bA)).comp _ _ _ _ _ := by
+  ext; simp [toMatrix, Basis.repr, Algebra.leftMulMatrix_apply,
+    Basis.smulTower'_repr, Basis.smulTower'_apply, mul_comm]
+
 end Lmul
 
 section LmulTower
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [Ring T]
+variable {R S T : Type*} [CommSemiring R] [CommSemiring S] [Semiring T]
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 variable (b : Basis m R S) (c : Basis n S T)
@@ -900,9 +911,9 @@ end Algebra
 
 section
 
-variable {R : Type*} [CommRing R] {n : Type*} [DecidableEq n]
-variable {M M₁ M₂ : Type*} [AddCommGroup M] [Module R M]
-variable [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
+variable {R : Type*} [CommSemiring R] {n : Type*} [DecidableEq n]
+variable {M M₁ M₂ : Type*} [AddCommMonoid M] [Module R M]
+variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 
 /-- The natural equivalence between linear endomorphisms of finite free modules and square matrices
 is compatible with the algebra structures. -/

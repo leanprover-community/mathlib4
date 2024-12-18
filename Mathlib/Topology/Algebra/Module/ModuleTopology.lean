@@ -198,11 +198,11 @@ theorem iso (e : A ≃L[R] B) : IsModuleTopology R B where
     rw [Set.mem_image]
     constructor
     · rintro ⟨σ, ⟨hσ1, hσ2⟩, rfl⟩
-      exact ⟨continuousSMul_induced g', continuousAdd_induced h'⟩
+      exact ⟨continuousSMul_induced g'.toMulActionHom, continuousAdd_induced h'⟩
     · rintro ⟨h1, h2⟩
       use τ.induced e
       rw [induced_compose]
-      refine ⟨⟨continuousSMul_induced g, continuousAdd_induced h⟩, ?_⟩
+      refine ⟨⟨continuousSMul_induced g.toMulActionHom, continuousAdd_induced h⟩, ?_⟩
       nth_rw 2 [← induced_id (t := τ)]
       simp
 
@@ -261,5 +261,47 @@ instance _root_.TopologicalSemiring.toOppositeIsModuleTopology : IsModuleTopolog
   .iso (MulOpposite.opContinuousLinearEquiv Rᵐᵒᵖ).symm
 
 end MulOpposite
+
+section function
+
+variable {R : Type*} [τR : TopologicalSpace R] [Semiring R]
+variable {A : Type*} [AddCommMonoid A] [Module R A] [aA : TopologicalSpace A] [IsModuleTopology R A]
+variable {B : Type*} [AddCommMonoid B] [Module R B] [aB : TopologicalSpace B]
+    [ContinuousAdd B] [ContinuousSMul R B]
+
+/-- Every `R`-linear map between two topological `R`-modules, where the source has the module
+topology, is continuous. -/
+@[fun_prop, continuity]
+theorem continuous_of_distribMulActionHom (φ : A →+[R] B) : Continuous φ := by
+  -- the proof: We know that `+ : B × B → B` and `• : R × B → B` are continuous for the module
+  -- topology on `B`, and two earlier theorems (`continuousSMul_induced` and
+  -- `continuousAdd_induced`) say that hence `+` and `•` on `A` are continuous if `A`
+  -- is given the topology induced from `φ`. Hence the module topology is finer than
+  -- the induced topology, and so the function is continuous.
+  rw [eq_moduleTopology R A, continuous_iff_le_induced]
+  exact sInf_le <| ⟨continuousSMul_induced (φ.toMulActionHom),
+    continuousAdd_induced φ.toAddMonoidHom⟩
+
+@[fun_prop, continuity]
+theorem continuous_of_linearMap (φ : A →ₗ[R] B) : Continuous φ :=
+  continuous_of_distribMulActionHom φ.toDistribMulActionHom
+
+variable (R) in
+theorem continuous_neg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
+    [IsModuleTopology R C] : Continuous (fun a ↦ -a : C → C) :=
+  haveI : ContinuousAdd C := IsModuleTopology.toContinuousAdd R C
+  continuous_of_linearMap (LinearEquiv.neg R).toLinearMap
+
+@[fun_prop, continuity]
+theorem continuous_of_ringHom {R A B} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B]
+    [TopologicalSpace R] [TopologicalSpace A] [IsModuleTopology R A] [TopologicalSpace B]
+    [TopologicalSemiring B]
+    (φ : A →+* B) (hφ : Continuous (φ.comp (algebraMap R A))) : Continuous φ := by
+  let inst := Module.compHom B (φ.comp (algebraMap R A))
+  let φ' : A →ₗ[R] B := ⟨φ, fun r m ↦ by simp [Algebra.smul_def]; rfl⟩
+  have : ContinuousSMul R B := ⟨(hφ.comp continuous_fst).mul continuous_snd⟩
+  exact continuous_of_linearMap φ'
+
+end function
 
 end IsModuleTopology

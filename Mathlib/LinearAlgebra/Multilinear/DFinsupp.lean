@@ -135,6 +135,23 @@ theorem dfinsuppFamily_single [∀ i, DecidableEq (κ i)]
     apply (f q).map_coord_zero i
     simp_rw [DFinsupp.single_eq_of_ne hpqi]
 
+/-- When only one member of the family of multilinear maps is nonzero, the result consists only of
+the component from that member. -/
+@[simp]
+theorem dfinsuppFamily_single_left_apply [∀ i, DecidableEq (κ i)]
+    (p : Π i, κ i) (f : MultilinearMap R (fun i ↦ M i (p i)) (N p)) (x : Π i, Π₀ j, M i j) :
+    dfinsuppFamily (Pi.single p f) x = DFinsupp.single p (f fun i => x _ (p i)) := by
+  ext p'
+  obtain rfl | hp := eq_or_ne p p'
+  · simp
+  · simp [hp]
+
+theorem dfinsuppFamily_single_left [∀ i, DecidableEq (κ i)]
+    (p : Π i, κ i) (f : MultilinearMap R (fun i ↦ M i (p i)) (N p)) :
+    dfinsuppFamily (Pi.single p f) =
+      (DFinsupp.lsingle p).compMultilinearMap (f.compLinearMap fun i => DFinsupp.lapply (p i)) :=
+  ext <| dfinsuppFamily_single_left_apply _ _
+
 @[simp]
 theorem dfinsuppFamily_compLinearMap_lsingle [∀ i, DecidableEq (κ i)]
     (f : Π (p : Π i, κ i), MultilinearMap R (fun i ↦ M i (p i)) (N p)) (p : ∀ i, κ i) :

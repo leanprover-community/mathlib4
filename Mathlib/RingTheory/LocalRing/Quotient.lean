@@ -45,7 +45,8 @@ theorem quotient_span_eq_top_iff_span_eq_top (s : Set S) :
       rw [← this, ← comap_map_eq, mem_comap, ← H, hs, restrictScalars_top]
       exact mem_top
   · intro hs
-    rwa [hs, Submodule.map_top, LinearMap.range_eq_top.mpr, restrictScalars_eq_top_iff] at H
+    rwa [hs, Submodule.map_top, LinearMap.range_eq_top.mpr,
+      restrictScalars_eq_top_iff] at H
     rw [IsScalarTower.coe_toAlgHom', Ideal.Quotient.algebraMap_eq]
     exact Ideal.Quotient.mk_surjective
 
