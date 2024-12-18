@@ -490,6 +490,7 @@ instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
     induction' b using Real.ind_mk with b
     simpa using le_total a b⟩
 
+open scoped Classical in
 noncomputable instance linearOrder : LinearOrder ℝ :=
   Lattice.toLinearOrder ℝ
 
