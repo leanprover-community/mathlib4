@@ -193,7 +193,7 @@ def IntermediateFieldEquivClosedSubgroup [IsGalois k K] :
     rw [← fixedField_fixingSubgroup L₂, IntermediateField.le_iff_le, fixedField_fixingSubgroup L₂]
 
 /-- The Galois correspondence as a `GaloisInsertion` -/
-def GaloisInsertionIntermediateFieldSubgroup [IsGalois k K] :
+def GaloisInsertionIntermediateFieldClosedSubgroup [IsGalois k K] :
     GaloisInsertion (OrderDual.toDual ∘ fun (E : IntermediateField k K) ↦
       (⟨E.fixingSubgroup, fixingSubgroup_isClosed E⟩ : ClosedSubgroup (K ≃ₐ[k] K)))
       ((fun (H : ClosedSubgroup (K ≃ₐ[k] K)) ↦ IntermediateField.fixedField H) ∘
@@ -202,12 +202,11 @@ def GaloisInsertionIntermediateFieldSubgroup [IsGalois k K] :
 
 /-- The Galois correspondence as a `GaloisCoinsertion` -/
 def GaloisCoinsertionIntermediateFieldSubgroup [IsGalois k K] :
-    GaloisCoinsertion (OrderDual.toDual ∘ fun (E : IntermediateField k K) ↦
-      (⟨E.fixingSubgroup, fixingSubgroup_isClosed E⟩ : ClosedSubgroup (K ≃ₐ[k] K)))
-      ((fun (H : ClosedSubgroup (K ≃ₐ[k] K)) ↦ IntermediateField.fixedField H) ∘
+    GaloisCoinsertion (OrderDual.toDual ∘ fun (E : IntermediateField k K) ↦ E.fixingSubgroup)
+      ((fun (H : Subgroup (K ≃ₐ[k] K)) ↦ IntermediateField.fixedField H) ∘
         OrderDual.toDual) where
-  choice H _ := IntermediateField.fixedField H.1
-  gc E H := (IntermediateField.le_iff_le H.1 E).symm
+  choice H _ := IntermediateField.fixedField H
+  gc E H := (IntermediateField.le_iff_le H E).symm
   u_l_le K := le_of_eq (fixedField_fixingSubgroup K)
   choice_eq _ _ := rfl
 
