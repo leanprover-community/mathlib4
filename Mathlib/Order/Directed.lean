@@ -330,22 +330,18 @@ namespace DirectedOn
 
 section Pi
 
-namespace Pi
-
 variable {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)]
 
 lemma proj {d : Set (Π i, α i)} (hd : DirectedOn (· ≤ ·) d) (i : ι) :
     DirectedOn (· ≤ ·) ((fun a => a i) '' d) :=
   DirectedOn.mono_comp (fun _ _ h => h) (mono hd fun ⦃_ _⦄ h ↦ h i)
 
-lemma prodMk {d : (i : ι) → Set (α i)} (hd : ∀ (i : ι), DirectedOn (· ≤ ·) (d i)) :
+lemma pi {d : (i : ι) → Set (α i)} (hd : ∀ (i : ι), DirectedOn (· ≤ ·) (d i)) :
     DirectedOn (· ≤ ·) (Set.pi  Set.univ d) := by
   intro a ha b hb
   dsimp
   choose f hf using fun i => hd i (a i) (ha i trivial) (b i) (hb i trivial)
   simpa [Pi.le_def, ← forall_and] using ⟨f, hf⟩
-
-end Pi
 
 end Pi
 
