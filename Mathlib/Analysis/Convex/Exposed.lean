@@ -5,8 +5,8 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Analysis.Convex.Function
-import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.Order.OrderClosed
+import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
 # Exposed sets

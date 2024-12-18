@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
-import Mathlib.Topology.Algebra.Module.Equiv
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Non-unital topological (sub)algebras

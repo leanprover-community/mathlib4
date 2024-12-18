@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
 -/
 import Mathlib.RingTheory.SimpleModule
-import Mathlib.Topology.Algebra.Module.Equiv
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # The kernel of a linear function is closed or dense

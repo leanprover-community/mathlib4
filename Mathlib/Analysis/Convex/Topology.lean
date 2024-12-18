@@ -7,7 +7,7 @@ import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Strict
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Algebra.Affine
-import Mathlib.Topology.Algebra.Module.Equiv
+import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Topological properties of convex sets

@@ -6,6 +6,7 @@ Authors: Floris van Doorn
 import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Measure.Prod
 import Mathlib.Topology.ContinuousMap.CocompactMap
+import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # Measures on Groups

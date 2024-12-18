@@ -5,6 +5,8 @@ Authors: Jan-David Salchow, Sébastien Gouëzel, Jean Lo, Yury Kudryashov, Fréd
   Heather Macbeth
 -/
 import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.LinearAlgebra.Projection
+import Mathlib.Topology.Algebra.UniformGroup.Defs
 
 /-!
 # Continuous linear maps
