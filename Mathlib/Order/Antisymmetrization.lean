@@ -71,7 +71,7 @@ theorem AntisymmRel.trans [IsTrans α r] (hab : AntisymmRel r a b) (hbc : Antisy
   ⟨_root_.trans hab.1 hbc.1, _root_.trans hbc.2 hab.2⟩
 
 instance [IsTrans α r] : IsTrans α (AntisymmRel r) where
-  trans _ _ _ := AntisymmRel.trans
+  trans _ _ _ := .trans
 
 instance AntisymmRel.decidableRel [DecidableRel r] : DecidableRel (AntisymmRel r) :=
   fun _ _ ↦ instDecidableAnd
