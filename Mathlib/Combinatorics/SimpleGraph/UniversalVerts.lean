@@ -26,13 +26,13 @@ variable {V : Type*} {G : SimpleGraph V}
 /--
   The set of vertices that are connected to all other vertices.
 -/
-def universalVerts (G : SimpleGraph V) : Set V := {v : V | ∀ w, v ≠ w → G.Adj w v}
+def universalVerts (G : SimpleGraph V) : Set V := {v : V | ∀ ⦃w⦄, v ≠ w → G.Adj w v}
 
 lemma isClique_universalVerts (G : SimpleGraph V) : G.IsClique G.universalVerts :=
   fun x _ _ hy hxy ↦ hy x hxy.symm
 
 /--
-  The subgraph of `G` with the universal vertices removed.
+The subgraph of `G` with the universal vertices removed.
 -/
 @[simps!]
 def deleteUniversalVerts (G : SimpleGraph V) : Subgraph G :=
