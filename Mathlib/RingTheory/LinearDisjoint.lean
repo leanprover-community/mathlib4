@@ -482,9 +482,6 @@ theorem of_basis_left {ι : Type*} (a : Basis ι R A)
 
 variable {A B}
 
-variable (H : A.LinearDisjoint B)
-
-
 variable (R) in
 /-- If `A` and `B` are flat algebras over `R`, such that `A ⊗[R] B` is a domain, and such that
 the algebra maps are injective, then there exists an `R`-algebra `K` that is a field that `A`
@@ -587,6 +584,8 @@ theorem _root_.Algebra.TensorProduct.isAlgebraic_of_isField
   simp_rw [← Algebra.transcendental_iff_not_isAlgebraic] at h
   obtain ⟨_, _⟩ := h
   exact Algebra.TensorProduct.not_isField_of_transcendental R A B H
+
+variable (H : A.LinearDisjoint B)
 
 include H in
 theorem rank_inf_eq_one_of_flat_of_inj (hf : Module.Flat R A ∨ Module.Flat R B)
