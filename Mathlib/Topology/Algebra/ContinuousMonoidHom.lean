@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Thomas Browning
+Authors: Thomas Browning, Nailin Guan
 -/
 import Mathlib.Topology.Algebra.Equicontinuity
 import Mathlib.Topology.Algebra.Group.Compact
@@ -434,23 +434,26 @@ universe u v
 
 variable (G : Type u) [TopologicalSpace G] (H : Type v) [TopologicalSpace H]
 
-/-- Define the structure of two-sided continuous isomorphism of additive groups. -/
+/-- The structure of two-sided continuous isomorphisms between additive groups.
+Note that both the map and its inverse have to be continuous. -/
 structure ContinuousAddEquiv [Add G] [Add H] extends AddEquiv G H , Homeomorph G H
 
-/-- Define the structure of two-sided continuous isomorphism of groups. -/
-@[to_additive "The type of two-sided continuous isomorphism of additive groups."]
+/-- The structure of two-sided continuous isomorphisms between groups.
+Note that both the map and its inverse have to be continuous. -/
+@[to_additive "The structure of two-sided continuous isomorphisms between additive groups.
+Note that both the map and its inverse have to be continuous."]
 structure ContinuousMulEquiv [Mul G] [Mul H] extends MulEquiv G H , Homeomorph G H
 
-/-- The Homeomorphism induced from a two-sided continuous isomorphism of groups. -/
+/-- The homeomorphism induced from a two-sided continuous isomorphism of groups. -/
 add_decl_doc ContinuousMulEquiv.toHomeomorph
 
-/-- The Homeomorphism induced from a two-sided continuous isomorphism additive groups. -/
+/-- The homeomorphism induced from a two-sided continuous isomorphism additive groups. -/
 add_decl_doc ContinuousAddEquiv.toHomeomorph
 
-/-- Notation for a `ContinuousMulEquiv`. -/
+@[inherit_doc]
 infixl:25 " ≃ₜ* " => ContinuousMulEquiv
 
-/-- Notation for an `ContinuousAddEquiv`. -/
+@[inherit_doc]
 infixl:25 " ≃ₜ+ " => ContinuousAddEquiv
 
 section
@@ -532,7 +535,6 @@ protected theorem injective (e : M ≃ₜ* N) : Function.Injective e :=
 protected theorem surjective (e : M ≃ₜ* N) : Function.Surjective e :=
   EquivLike.surjective e
 
--- Porting note (#10618): `simp` can prove this
 @[to_additive]
 theorem apply_eq_iff_eq (e : M ≃ₜ* N) {x y : M} : e x = e y ↔ x = y :=
   e.injective.eq_iff
