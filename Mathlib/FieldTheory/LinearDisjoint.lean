@@ -449,11 +449,12 @@ theorem isField_of_forall (A : Type v) [Field A] (B : Type w) [Field B]
   change Function.Injective (Ideal.Quotient.mk M) at H
   rwa [RingHom.injective_iff_ker_eq_bot, Ideal.mk_ker] at H
 
--- This not only uses `Subalgebra.LinearDisjoint`,
--- but also uses `IntermediateField.sup_toSubalgebra_of_isAlgebraic`
 variable (F E) in
 /-- If `E` and `K` are field extensions of `F`, one of them is algebraic, such that
-`E ⊗[F] K` is a domain, then `E ⊗[F] K` is also a field. -/
+`E ⊗[F] K` is a domain, then `E ⊗[F] K` is also a field. It is a corollary of
+`Subalgebra.LinearDisjoint.exists_field_of_isDomain_of_injective` and
+`IntermediateField.sup_toSubalgebra_of_isAlgebraic`.
+See `Algebra.TensorProduct.isAlgebraic_of_isField` for its converse (in an earlier file). -/
 theorem _root_.Algebra.TensorProduct.isField_of_isAlgebraic
     (K : Type*) [Field K] [Algebra F K] [IsDomain (E ⊗[F] K)]
     (halg : Algebra.IsAlgebraic F E ∨ Algebra.IsAlgebraic F K) : IsField (E ⊗[F] K) :=
