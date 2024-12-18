@@ -93,6 +93,28 @@ def nerve₂Adj.counit : nerveFunctor₂ ⋙ hoFunctor₂.{u} ⟶ (𝟭 Cat) whe
 
 local notation (priority := high) "[" n "]" => SimplexCategory.mk n
 
+/-- Would be better to have a version of paths for 2-truncated simplicial sets `X` and `Y`.-/
+def pathMap {X Y : SSet}
+    (F : SSet.oneTruncation₂.obj ((SSet.truncation 2).obj X) ⟶
+      SSet.oneTruncation₂.obj ((SSet.truncation 2).obj Y)) (n : ℕ) :
+  Path X n → Path Y n := sorry
+
+/-- The components of a map of 2-truncated simplicial sets built from a map on underlying reflexive
+quivers, under the assumption that the codomain is `StrictSegal`. -/
+def toStrictSegal.mk.app {X : SSet.Truncated 2} {Y : SSet} [StrictSegal Y]
+    (F : SSet.oneTruncation₂.obj X ⟶ SSet.oneTruncation₂.obj ((SSet.truncation 2).obj Y))
+    (n : SimplexCategory.Truncated 2) :
+     X.obj (op n) ⟶ ((SSet.truncation 2).obj Y).obj (op n) := by
+  obtain ⟨n, hn⟩ := n
+  induction' n using SimplexCategory.rec with n
+  match n with
+  | 0 => exact fun x => F.obj x
+  | 1 => exact fun f => (F.map ⟨f, rfl, rfl⟩).edge
+  | 2 =>
+    intro φ
+    apply StrictSegal.spineToSimplex
+    sorry
+
 def toNerve₂.mk.app {X : SSet.Truncated 2} {C : Cat}
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
     (n : SimplexCategory.Truncated 2) :

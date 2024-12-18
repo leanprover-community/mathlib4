@@ -171,7 +171,7 @@ def OneTruncation₂.ofNerve₂.natIso :
     · intro X Y f
       obtain ⟨f, rfl, rfl⟩ := f
       unfold SSet.oneTruncation₂ nerveFunctor₂ SSet.truncation SimplicialObject.truncation
-        nerveFunctor mapComposableArrows toReflPrefunctor
+        nerveFunctor toReflPrefunctor
       simp only [comp_obj, whiskeringLeft_obj_obj, ReflQuiv.of_val, Functor.comp_map,
         whiskeringLeft_obj_map, whiskerLeft_app, op_obj, whiskeringRight_obj_obj, ofNerve₂,
         Cat.of_α, nerveEquiv, ComposableArrows.obj', Fin.zero_eta, Fin.isValue,
