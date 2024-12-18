@@ -5,7 +5,6 @@ Authors: Yury Kudryashov, Patrick Massot, Eric Wieser, Yaël Dillies
 -/
 import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # Basic facts about real (semi)normed spaces
