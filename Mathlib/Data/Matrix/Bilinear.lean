@@ -5,6 +5,7 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Module.LinearMap.End
 import Mathlib.Data.Matrix.Mul
+import Mathlib.Data.Matrix.Basis
 import Mathlib.Algebra.Algebra.Bilinear
 
 /-!
@@ -130,11 +131,16 @@ variable [Module R A] [SMulCommClass R A A]
 theorem mulLeftLinearMap_one : mulLeftLinearMap n R (1 : Matrix m m A) = LinearMap.id :=
   LinearMap.ext fun _ => Matrix.one_mul _
 
--- TODO: generalize `m R a` to `n R a`
+/-- A version of `LinearMap.mulLeft_eq_zero_iff` for matrix multiplication. -/
 @[simp]
-theorem mulLeftLinearMap_eq_zero_iff (a : Matrix l m A) : mulLeftLinearMap m R a = 0 ↔ a = 0 := by
+theorem mulLeftLinearMap_eq_zero_iff [Nonempty n] (a : Matrix l m A) :
+    mulLeftLinearMap n R a = 0 ↔ a = 0 := by
   constructor <;> intro h
-  · rw [← Matrix.mul_one a, ← mulLeftLinearMap_apply m R a 1, h, LinearMap.zero_apply]
+  · inhabit n
+    ext i j
+    classical
+    replace h := DFunLike.congr_fun h (Matrix.stdBasisMatrix j (default : n) 1)
+    simpa using Matrix.ext_iff.2 h i default
   · rw [h]
     exact mulLeftLinearMap_zero_eq_zero _ _
 
@@ -157,11 +163,16 @@ variable [Module R A] [IsScalarTower R A A]
 theorem mulRightLinearMap_one : mulRightLinearMap l R (1 : Matrix m m A) = LinearMap.id :=
   LinearMap.ext fun _ => Matrix.mul_one _
 
--- TODO: generalize `m R a` to `n R a`
+/-- A version of `LinearMap.mulRight_eq_zero_iff` for matrix multiplication. -/
 @[simp]
-theorem mulRightLinearMap_eq_zero_iff (a : Matrix m n A) : mulRightLinearMap m R a = 0 ↔ a = 0 := by
+theorem mulRightLinearMap_eq_zero_iff (a : Matrix m n A) [Nonempty l] :
+    mulRightLinearMap l R a = 0 ↔ a = 0 := by
   constructor <;> intro h
-  · rw [← Matrix.one_mul a, ← mulRightLinearMap_apply m R a 1, h, LinearMap.zero_apply]
+  · inhabit l
+    ext i j
+    classical
+    replace h := DFunLike.congr_fun h (Matrix.stdBasisMatrix (default : l) i 1)
+    simpa using Matrix.ext_iff.2 h default j
   · rw [h]
     exact mulRightLinearMap_zero_eq_zero _ _
 
