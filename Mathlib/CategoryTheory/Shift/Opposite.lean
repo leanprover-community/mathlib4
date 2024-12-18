@@ -117,9 +117,7 @@ end
 variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D) (A : Type*) [AddMonoid A]
   [HasShift C A] [HasShift D A]
 
-namespace CommShift
-
-open Functor
+namespace Functor
 
 /--
 Given a `CommShift` structure on `F`, this is the corresponding `CommShift` structure on
@@ -151,7 +149,7 @@ Given a `CommShift` structure on `F.op` (for the naive shifts on the opposite ca
 this is the corresponding `CommShift` structure on `F`.
 -/
 @[simps]
-noncomputable def commShiftRemoveOp
+noncomputable def commShiftUnop
     [CommShift (C := OppositeShift C A) (D := OppositeShift D A) F.op A] : CommShift F A where
   iso a := NatIso.removeOp (F.op.commShiftIso (C := OppositeShift C A)
     (D := OppositeShift D A) a).symm
@@ -173,6 +171,6 @@ noncomputable def commShiftRemoveOp
     erw [oppositeShiftFunctorAdd_hom_app, oppositeShiftFunctorAdd_inv_app]
     rfl
 
-end CommShift
+end Functor
 
 end CategoryTheory
