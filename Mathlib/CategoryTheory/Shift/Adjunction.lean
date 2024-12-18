@@ -407,16 +407,6 @@ lemma mk'' (h : NatTrans.CommShift E.counitIso.hom A) :
 
 /--
 If `E : C ≌ D` is an equivalence and we have compatible `CommShift` structures on `E.functor`
-and `E.inverse`, then these structures are also compatible with the adjunction
-`E.toAdjunction : E.functor ⊣ E.inverse`.
--/
-instance [E.functor.CommShift A] [E.inverse.CommShift A] [E.CommShift A] :
-    E.toAdjunction.CommShift A where
-  commShift_unit := inferInstance
-  commShift_counit := inferInstance
-
-/--
-If `E : C ≌ D` is an equivalence and we have compatible `CommShift` structures on `E.functor`
 and `E.inverse`, then we also have compatible `CommShift` structures on `E.symm.functor`
 and `E.symm.inverse`.
 -/
