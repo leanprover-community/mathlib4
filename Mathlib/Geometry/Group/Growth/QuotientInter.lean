@@ -59,19 +59,15 @@ lemma le_card_quotient_mul_sq_inter_subgroup (hAsymm : A⁻¹ = A) :
     #A ≤ #(A.image <| QuotientGroup.mk' H) * #{x ∈ A ^ 2 | x ∈ H} := by
   classical
   set π := QuotientGroup.mk' H
+  rw [card_eq_sum_card_image π]
+  refine sum_le_card_nsmul _ _ _ <| forall_mem_image.2 fun a ha ↦ ?_
   calc
-    #A = #A * 1 := by rw [mul_one]
-    _ ≤ #(A.image π) * #{x ∈ A ^ 2 | x ∈ H} :=
-      card_mul_le_card_mul (π · = ·) (by simp [Finset.Nonempty]; aesop) ?_
-  simp only [mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-  rintro a ha
-  calc
-    #(bipartiteBelow (π · = ·) A (π a))
-    _ ≤ #((bipartiteBelow (π · = ·) A (π a))⁻¹ * (bipartiteBelow (π · = ·) A (π a))) :=
-      card_le_card_mul_left _ ⟨a⁻¹, by simpa⟩
+    #{a' ∈ A | π a' = π a}
+    _ ≤ #({a' ∈ A | π a' = π a}⁻¹ * {a' ∈ A | π a' = π a}) :=
+      card_le_card_mul_left ⟨a⁻¹, by simpa⟩
     _ ≤ #{x ∈ A⁻¹ * A | x ∈ H} := by
       gcongr
-      simp only [mul_subset_iff, mem_inv', mem_bipartiteBelow, map_inv, Finset.mem_filter, and_imp]
+      simp only [mul_subset_iff, mem_inv', map_inv, mem_filter, and_imp]
       rintro x hx hxa y hy hya
       refine ⟨mul_mem_mul (by simpa) hy, (QuotientGroup.eq_one_iff _).1 (?_ : π _ = _)⟩
       simp [hya, ← hxa]
