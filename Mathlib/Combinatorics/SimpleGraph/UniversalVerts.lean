@@ -24,7 +24,7 @@ namespace SimpleGraph
 variable {V : Type*} {G : SimpleGraph V}
 
 /--
-  The set of vertices that are connected to all other vertices.
+The set of vertices that are connected to all other vertices.
 -/
 def universalVerts (G : SimpleGraph V) : Set V := {v : V | ∀ ⦃w⦄, v ≠ w → G.Adj w v}
 
