@@ -405,8 +405,6 @@ Some set instances do not appear here since they are consequences of others, for
 
 namespace Finite.Set
 
-open scoped Classical
-
 example {s : Set α} [Finite α] : Finite s :=
   inferInstance
 

@@ -18,10 +18,7 @@ We also prove basic properties of these functions.
 
 noncomputable section
 
-open scoped Classical
-open Real NNReal ENNReal ComplexConjugate
-
-open Finset Function Set
+open Real NNReal ENNReal ComplexConjugate Finset Function Set
 
 namespace NNReal
 variable {x : ℝ≥0} {w y z : ℝ}

@@ -11,7 +11,6 @@ import Mathlib.Analysis.SpecificLimits.Basic
 -/
 
 
-open scoped Classical
 open Filter Germ Topology
 
 /-- Hyperreal numbers on the ultrafilter extending the cofinite filter -/

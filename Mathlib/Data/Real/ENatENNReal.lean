@@ -14,7 +14,6 @@ In this file we define a coercion from `ℕ∞` to `ℝ≥0∞` and prove some b
 
 assert_not_exists Finset
 
-open scoped Classical
 open NNReal ENNReal
 
 noncomputable section
