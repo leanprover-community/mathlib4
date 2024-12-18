@@ -307,7 +307,7 @@ theorem hasStrictDerivAt_rpow_const_of_ne {x : ℝ} (hx : x ≠ 0) (p : ℝ) :
     HasStrictDerivAt (fun x => x ^ p) (p * x ^ (p - 1)) x := by
   cases' hx.lt_or_lt with hx hx
   · have := (hasStrictFDerivAt_rpow_of_neg (x, p) hx).comp_hasStrictDerivAt x
-      ((hasStrictDerivAt_id x).prod (hasStrictDerivAt_const _ _))
+      ((hasStrictDerivAt_id x).prod (hasStrictDerivAt_const x p))
     convert this using 1; simp
   · simpa using (hasStrictDerivAt_id x).rpow (hasStrictDerivAt_const x p) hx
 
