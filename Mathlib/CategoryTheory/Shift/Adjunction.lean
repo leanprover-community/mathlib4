@@ -210,7 +210,7 @@ lemma mk' (h : NatTrans.CommShift adj.unit A) :
     intro a
     ext _
     simp [Functor.commShiftIso_comp_hom_app]
-    refine (CompatibilityCounit_of_compatibilityUnit adj (F.commShiftIso a) (G.commShiftIso a)
+    refine (compatibilityCounit_of_compatibilityUnit adj (F.commShiftIso a) (G.commShiftIso a)
       (fun X ↦ ?_) _).symm
     have := h.comm' a
     apply_fun (fun x ↦ x.app X) at this
