@@ -81,7 +81,7 @@ abbrev CompatibilityCounit :=
 `e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a`, compatibility of `e₁` and `e₂` with the
 unit of the adjunction `adj` implies compatibility with the counit of `adj`.
 -/
-lemma CompatibilityCounit_of_compatibilityUnit (h : CompatibilityUnit adj e₁ e₂) :
+lemma compatibilityCounit_of_compatibilityUnit (h : CompatibilityUnit adj e₁ e₂) :
     CompatibilityCounit adj e₁ e₂ := by
   intro Y
   have eq := h (G.obj Y)
