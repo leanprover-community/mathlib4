@@ -125,4 +125,7 @@ theorem existsUnique_nilpotent_sub_and_aeval_eq_zero
     refine IsNilpotent.isUnit_add_left_of_commute ?_ this (Commute.all _ _)
     exact (Commute.all _ _).isNilpotent_mul_right <| (Commute.all _ _).isNilpotent_sub hr₂ hr₁
 
+@[deprecated (since := "2024-12-17")]
+alias exists_unique_nilpotent_sub_and_aeval_eq_zero := existsUnique_nilpotent_sub_and_aeval_eq_zero
+
 end Polynomial
