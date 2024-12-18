@@ -34,9 +34,6 @@ combinatorics:
   subgroup by squaring.
 -/
 
--- TODO: Unsimp in mathlib
-attribute [-simp] Set.image_subset_iff
-
 open scoped Finset Pointwise
 
 variable {G : Type*} [Group G] {A B : Set G} {K L : ℝ} {m n : ℕ}
