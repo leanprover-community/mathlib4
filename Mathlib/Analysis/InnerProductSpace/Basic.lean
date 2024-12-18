@@ -4,7 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
 
+import Mathlib.Analysis.Complex.Basic
+import Mathlib.Analysis.Convex.Uniform
 import Mathlib.Analysis.InnerProductSpace.Defs
+import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 
 /-!
 # Properties of inner product spaces
@@ -265,7 +268,6 @@ theorem real_inner_mul_inner_self_le (x y : F) : ⟪x, y⟫_ℝ * ⟪x, y⟫_ℝ
       rw [real_inner_comm y, ← norm_mul]
       exact le_abs_self _
     _ ≤ ⟪x, x⟫_ℝ * ⟪y, y⟫_ℝ := @inner_mul_inner_self_le ℝ _ _ _ _ x y
-
 
 end BasicProperties_Seminormed
 

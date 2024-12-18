@@ -3,14 +3,9 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Sébastien Gouëzel, Frédéric Dupuis
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.QuadraticDiscriminant
-import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.Convex.Uniform
-import Mathlib.Analysis.Normed.Module.Completion
-import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
-import Batteries.Tactic.ShowUnused
+import Mathlib.Analysis.RCLike.Basic
+import Mathlib.Data.Complex.Basic
 
 /-!
 # Inner product spaces
