@@ -3,7 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.Basic
+import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
@@ -74,6 +74,21 @@ lemma pullbackShiftFunctorZero_hom_app :
     pullbackShiftFunctorZero_inv_app, assoc, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app]
   rfl
 
+lemma pullbackShiftFunctorZero'_inv_app :
+    (shiftFunctorZero _ A).inv.app X = (shiftFunctorZero' C (φ 0) (by rw [map_zero])).inv.app X ≫
+    (pullbackShiftIso C φ 0 (φ 0) rfl).inv.app X := by
+  rw [pullbackShiftFunctorZero_inv_app]
+  simp only [Functor.id_obj, pullbackShiftIso, eqToIso.inv, eqToHom_app, shiftFunctorZero',
+    Iso.trans_inv, NatTrans.comp_app, eqToIso_refl, Iso.refl_inv, NatTrans.id_app, assoc]
+  erw [comp_id]
+
+lemma pullbackShiftFunctorZero'_hom_app :
+    (shiftFunctorZero _ A).hom.app X = (pullbackShiftIso C φ 0 (φ 0) rfl).hom.app X ≫
+    (shiftFunctorZero' C (φ 0) (by rw [map_zero])).hom.app X := by
+  rw [← cancel_epi ((shiftFunctorZero _ A).inv.app X), Iso.inv_hom_id_app,
+    pullbackShiftFunctorZero'_inv_app, assoc, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app]
+  rfl
+
 lemma pullbackShiftFunctorAdd'_inv_app :
     (shiftFunctorAdd' _ a₁ a₂ a₃ h).inv.app X =
       (shiftFunctor (PullbackShift C φ) a₂).map ((pullbackShiftIso C φ a₁ b₁ h₁).hom.app X) ≫
@@ -102,5 +117,50 @@ lemma pullbackShiftFunctorAdd'_hom_app :
     Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app_assoc,
     ← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
   rfl
+
+namespace CommShift
+
+variable {D : Type*} [Category D] [HasShift D B] (F : C ⥤ D) [F.CommShift B]
+
+open Functor in
+/-- If `F : C ⥤ D` commutes with the shifts on `C` and `D`, then it also commutes with
+their pullbacks by an additive map.
+-/
+@[simps]
+noncomputable def Pullback.CommShift :
+    F.CommShift A (C := PullbackShift C φ) (D := PullbackShift D φ)
+    where
+  iso a := isoWhiskerRight (pullbackShiftIso C φ a (φ a) rfl) F ≪≫
+    CommShift.iso (F := F) (φ a) ≪≫ isoWhiskerLeft _  (pullbackShiftIso D φ a (φ a) rfl).symm
+  zero := by
+    ext _
+    simp only [comp_obj, Iso.trans_hom, isoWhiskerRight_hom, isoWhiskerLeft_hom, Iso.symm_hom,
+      NatTrans.comp_app, whiskerRight_app, whiskerLeft_app, CommShift.isoZero_hom_app,
+      pullbackShiftFunctorZero'_hom_app, id_obj, map_comp, pullbackShiftFunctorZero'_inv_app, assoc]
+    conv_lhs => congr; rfl; congr; change (F.commShiftIso (φ 0)).hom.app _
+                rw [F.commShiftIso_zero' (A := B) (φ 0) (by rw [map_zero])]
+    simp only [CommShift.isoZero'_hom_app, assoc]
+  add a b := by
+    ext _
+    simp only [comp_obj, Iso.trans_hom, isoWhiskerRight_hom, isoWhiskerLeft_hom, Iso.symm_hom,
+      NatTrans.comp_app, whiskerRight_app, whiskerLeft_app, CommShift.isoAdd_hom_app, map_comp,
+      assoc]
+    conv_lhs => congr; rfl; congr; change (F.commShiftIso (φ (a + b))).hom.app _
+                rw [F.commShiftIso_add' (a := φ a) (b := φ b) (by rw [φ.map_add])]
+    rw [← shiftFunctorAdd'_eq_shiftFunctorAdd, ← shiftFunctorAdd'_eq_shiftFunctorAdd]
+    rw [pullbackShiftFunctorAdd'_hom_app φ _ a b (a + b) rfl (φ a) (φ b) (φ (a + b)) rfl rfl rfl]
+    rw [pullbackShiftFunctorAdd'_inv_app φ _ a b (a + b) rfl (φ a) (φ b) (φ (a + b)) rfl rfl rfl]
+    simp only [CommShift.isoAdd'_hom_app, assoc, comp_obj, map_comp, NatTrans.naturality_assoc,
+      Iso.inv_hom_id_app_assoc]
+    slice_rhs 9 10 => rw [← map_comp, Iso.inv_hom_id_app, map_id]
+    erw [id_comp]
+    slice_rhs 6 7 => erw [← (CommShift.iso (φ b)).hom.naturality]
+    slice_rhs 4 5 => rw [← map_comp, (pullbackShiftIso C φ b (φ b) rfl).hom.naturality, map_comp]
+    simp only [comp_obj, Functor.comp_map, assoc]
+    slice_rhs 3 4 => rw [← map_comp, Iso.inv_hom_id_app, map_id]
+    slice_rhs 4 5 => rw [← map_comp]; erw [← map_comp]; rw [Iso.inv_hom_id_app, map_id, map_id]
+    rw [id_comp, id_comp, assoc, assoc]; rfl
+
+end CommShift
 
 end CategoryTheory
