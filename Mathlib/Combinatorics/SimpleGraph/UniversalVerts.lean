@@ -29,7 +29,7 @@ variable {V : Type*} {G : SimpleGraph V}
 def universalVerts (G : SimpleGraph V) : Set V := {v : V | ∀ ⦃w⦄, v ≠ w → G.Adj w v}
 
 lemma isClique_universalVerts (G : SimpleGraph V) : G.IsClique G.universalVerts :=
-  fun x _ _ hy hxy ↦ hy x hxy.symm
+  fun _ _ _ hy hxy ↦ hy hxy.symm
 
 /--
 The subgraph of `G` with the universal vertices removed.
