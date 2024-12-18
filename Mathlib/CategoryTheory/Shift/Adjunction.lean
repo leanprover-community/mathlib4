@@ -233,8 +233,8 @@ lemma shift_unit_app [adj.CommShift A] (a : A) (X : C) :
 @[reassoc]
 lemma shift_counit_app [adj.CommShift A] (a : A) (Y : D) :
     (adj.counit.app Y)⟦a⟧' =
-      (F.commShiftIso a).inv.app (G.obj Y) ≫ F.map ((G.commShiftIso a).inv.app Y)
-        ≫ adj.counit.app (Y⟦a⟧) := by
+      (F.commShiftIso a).inv.app (G.obj Y) ≫ F.map ((G.commShiftIso a).inv.app Y) ≫
+        adj.counit.app (Y⟦a⟧) := by
   have eq := NatTrans.CommShift.comm_app adj.counit a Y
   simp only [Functor.comp_obj, Functor.id_obj, Functor.commShiftIso_comp_hom_app, assoc,
     Functor.commShiftIso_id_hom_app, comp_id] at eq
