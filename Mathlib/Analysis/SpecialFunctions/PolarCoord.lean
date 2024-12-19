@@ -89,6 +89,10 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
 
+theorem continuous_polarCoord_symm :
+    Continuous (polarCoord.symm) :=
+  Continuous.prod_mk (by fun_prop) (by fun_prop)
+
 theorem hasFDerivAt_polarCoord_symm (p : ℝ × ℝ) :
     HasFDerivAt polarCoord.symm
       (LinearMap.toContinuousLinearMap (Matrix.toLin (Basis.finTwoProd ℝ) (Basis.finTwoProd ℝ)
@@ -172,6 +176,10 @@ open scoped Real ENNReal
 It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
 protected noncomputable def polarCoord : PartialHomeomorph ℂ (ℝ × ℝ) :=
   equivRealProdCLM.toHomeomorph.transPartialHomeomorph polarCoord
+
+protected theorem continuous_polarCoord_symm :
+    Continuous (Complex.polarCoord.symm) :=
+  equivRealProdCLM.symm.continuous.comp continuous_polarCoord_symm
 
 protected theorem polarCoord_apply (a : ℂ) :
     Complex.polarCoord a = (Complex.abs a, Complex.arg a) := by
