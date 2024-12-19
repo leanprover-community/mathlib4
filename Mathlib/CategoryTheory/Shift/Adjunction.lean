@@ -299,18 +299,15 @@ lemma iso_inv_app (Y : D) :
 The commutation isomorphisms of `Adjunction.RightAdjointCommShift.iso` are compatible with
 the unit of the adjunction.
 -/
-lemma iso_CompatibilityUnit (a : A) : CommShift.CompatibilityUnit adj (F.commShiftIso a)
-    (iso adj a) := by
-  intro _
-  rw [← cancel_mono ((RightAdjointCommShift.iso adj a).inv.app _), assoc, assoc, Iso.hom_inv_id_app]
-  dsimp
-  rw [comp_id]
-  simp only [RightAdjointCommShift.iso_inv_app adj _ _ (neg_add_cancel a), Functor.id_obj,
-    Functor.comp_obj]
+lemma compatibilityUnit_iso (a : A) :
+    CommShift.CompatibilityUnit adj (F.commShiftIso a) (iso adj a) := by
+  intro
+  rw [← cancel_mono ((RightAdjointCommShift.iso adj a).inv.app _), assoc, assoc,
+    Iso.hom_inv_id_app, RightAdjointCommShift.iso_inv_app adj _ _ (neg_add_cancel a)]
   apply (adj.homEquiv _ _).symm.injective
   dsimp
-  simp only [homEquiv_counit, Functor.map_comp, assoc, counit_naturality, Functor.comp_obj,
-    Functor.id_obj, counit_naturality_assoc, left_triangle_components_assoc]
+  simp only [comp_id, homEquiv_counit, Functor.map_comp, assoc, counit_naturality,
+    counit_naturality_assoc, left_triangle_components_assoc]
   erw [← NatTrans.naturality_assoc]
   dsimp
   rw [shift_shiftFunctorCompIsoId_hom_app, Iso.inv_hom_id_app_assoc,
