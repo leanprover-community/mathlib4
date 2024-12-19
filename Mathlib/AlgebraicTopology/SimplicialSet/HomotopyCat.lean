@@ -42,10 +42,6 @@ section
 local macro:1000 (priority := high) X:term " _[" n:term "]₂" : term =>
     `(($X : SSet.Truncated 2).obj (Opposite.op ⟨SimplexCategory.mk $n, by decide⟩))
 
--- FIXME why doesn't this work?
--- local notation3:1000 (priority := high) (prettyPrint := false) " _[" n "]₂" =>
---     (X : SSet.Truncated 2).obj (Opposite.op ⟨SimplexCategory.mk n, by decide⟩)
-
 set_option quotPrecheck false
 local macro:max (priority := high) "[" n:term "]₂" : term =>
   `((⟨SimplexCategory.mk $n, by decide⟩ : SimplexCategory.Truncated 2))
