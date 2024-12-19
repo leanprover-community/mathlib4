@@ -109,7 +109,15 @@ def lintStyleCli (args : Cli.Parsed) : IO UInt32 := do
     allModuleNames := allModuleNames.append (← findImports s)
   -- Note: since "Batteries" is added explicitly to "Mathlib.lean", we remove it here manually.
   allModuleNames := allModuleNames.erase `Batteries
-  let mut numberErrors ← lintModules allModuleNames style fix
+
+  -- Read the `nolints` file, with manual exceptions for the linter.
+  -- NB. We pass these lints to `lintModules` explicitly to prevent cache invalidation bugs:
+  -- if the text-based linter read the file itself, replaying a cached build of that
+  -- file could re-use an outdated version of the nolints file.
+  -- (For syntax linters, such a bug actually occurred in mathlib.)
+  -- This script is re-run each time, hence is immune to such issues.
+  let nolints ← IO.FS.lines ("scripts" / "nolints-style.txt")
+  let mut numberErrors ← lintModules nolints allModuleNames style fix
   if ← checkInitImports then numberErrors := numberErrors + 1
   if !(← allScriptsDocumented) then numberErrors := numberErrors + 1
   -- If run with the `--fix` argument, return a zero exit code.
