@@ -1,10 +1,26 @@
--- import Mathlib
+/-
+Copyright (c) 2024 Bhavik Mehta. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Bhavik Mehta
+-/
 
 import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Order.Chain
 import Mathlib.Order.WellFoundedSet
 import Mathlib.Data.Setoid.Partition
+
+/-!
+# Disproof of the Aharoni-Korman conjecture
+
+The Aharoni-Korman conjecture (sometimes called the fishbone conjecture) says that every partial
+order satisfies at least one of the following:
+- It contains an infinite antichain
+- It contains a chain C, together with a partition into antichains such that every part meets C.
+
+In November 2024, Hollom disproved this conjecture. In this file, we construct Hollom's
+counterexample P_5 and show it satisfies neither of the above.
+-/
 
 def Hollom : Type := ℕ × ℕ × ℕ
 
