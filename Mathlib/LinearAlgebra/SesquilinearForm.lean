@@ -741,7 +741,7 @@ lemma disjoint_ker_of_nondegenerate_restrict {B : M →ₗ[R] M →ₗ[R] M₁} 
   simp_rw [Subtype.forall, domRestrict₁₂_apply]
   intro y hy
   rw [mem_ker] at hx'
-  simp [hx']
+  simp [x', hx']
 
 attribute [local instance] starRingOfComm
 lemma IsSymm.nondegenerate_restrict_of_isCompl_ker {B : M →ₗ[R] M →ₗ[R] R} (hB : B.IsSymm)

@@ -294,6 +294,14 @@ lemma geom_sum_of_lt_one {x : α} [CanonicallyLinearOrderedSemifield α] [Sub α
     ∑ i ∈ Finset.range n, x ^ i = (1 - x ^ n) / (1 - x) :=
   eq_div_of_mul_eq (tsub_pos_of_lt h).ne' (geom_sum_mul_of_le_one h.le n)
 
+theorem geom_sum_lt {x : α} [CanonicallyLinearOrderedSemifield α] [Sub α] [OrderedSub α]
+    (h0 : x ≠ 0) (h1 : x < 1) (n : ℕ) : ∑ i ∈ range n, x ^ i < (1 - x)⁻¹ := by
+  rw [← zero_lt_iff] at h0
+  rw [geom_sum_of_lt_one h1, div_lt_iff₀, inv_mul_cancel₀, tsub_lt_self_iff]
+  · exact ⟨h0.trans h1, pow_pos h0 n⟩
+  · rwa [ne_eq, tsub_eq_zero_iff_le, not_le]
+  · rwa [tsub_pos_iff_lt]
+
 protected theorem Commute.mul_geom_sum₂_Ico [Ring α] {x y : α} (h : Commute x y) {m n : ℕ}
     (hmn : m ≤ n) :
     ((x - y) * ∑ i ∈ Finset.Ico m n, x ^ i * y ^ (n - 1 - i)) = x ^ n - x ^ m * y ^ (n - m) := by
