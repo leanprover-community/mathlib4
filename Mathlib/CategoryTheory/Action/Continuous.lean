@@ -3,7 +3,7 @@ Copyright (c) 2024 Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
-import Mathlib.RepresentationTheory.Action.Basic
+import Mathlib.CategoryTheory.Action.Basic
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Category.TopCat.Basic
 

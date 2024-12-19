@@ -8,8 +8,8 @@ import Mathlib.CategoryTheory.Monoidal.Rigid.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Rigid.OfEquivalence
 import Mathlib.CategoryTheory.Monoidal.Transport
 import Mathlib.CategoryTheory.Monoidal.Types.Basic
-import Mathlib.RepresentationTheory.Action.Concrete
-import Mathlib.RepresentationTheory.Action.Limits
+import Mathlib.CategoryTheory.Action.Concrete
+import Mathlib.CategoryTheory.Action.Limits
 
 /-!
 # Induced monoidal structure on `Action V G`
