@@ -421,24 +421,20 @@ open Submodule in
 open scoped ComplexOrder in
 lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂ : IsMideal m₂) :
     ↑(polarSubmodule 𝕜 m₁ + polarSubmodule 𝕜 m₂) ∩ closedBall 0 1 =
-    convexHull ℝ (polar 𝕜 m₁ ∩ closedBall 0 1 ∪ polar 𝕜 m₂ ∩ closedBall (0 : Dual 𝕜 A) 1) := by
-  apply le_antisymm
-  · obtain ⟨P₁,hE₁⟩ := h₁.Lproj
+    convexHull ℝ (polar 𝕜 m₁ ∩ closedBall 0 1 ∪ polar 𝕜 m₂ ∩ closedBall (0 : Dual 𝕜 A) 1) :=
+  le_antisymm
+  ( by
+    obtain ⟨P₁,hE₁⟩ := h₁.Lproj
     obtain ⟨P₂,hE₂⟩ := h₂.Lproj
     let E := P₁ ⊔ P₂
     rw [ ← hE₁, ← hE₂, (IsLprojection.range_sum P₁ P₂)]
     intro x hx
-    --rw [Set.mem_inter_iff, IsLprojection.coe_sup] at hx
-    have ex : E x = x := proj_apply _ E.prop.proj _ (Set.mem_of_mem_inter_left hx)
-    simp only [IsLprojection.coe_sup, Set.mem_inter_iff, SetLike.mem_coe, LinearMap.mem_range,
-      ContinuousLinearMap.coe_sub', ContinuousLinearMap.coe_mul, Pi.sub_apply,
-      ContinuousLinearMap.add_apply, Function.comp_apply, mem_closedBall, dist_zero_right] at hx
     let E₁ := P₁.val
     let E₂ := P₂.val
     let y := E₁ x
     let z := E₂ ((1 - E₁) x)
     have e3 : x = y + z := calc
-      x = E x := by rw [ex]
+      x = E x := (proj_apply _ E.prop.proj x (Set.mem_of_mem_inter_left hx)).symm
       _ = E₁ x + E₂ x - (E₁ * E₂) x := rfl
       _ = E₁ x + E₂ x - (E₂ * E₁) x := by rw [IsLprojection.commute P₁.prop P₂.prop]
       _ = E₁ x + E₂ x - E₂ (E₁ x) := rfl
@@ -458,6 +454,7 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
         _ ≤ ‖E₁ • x‖ + ‖(1 - E₁) • x‖ := Preorder.le_refl (‖E₁ x‖ + ‖(1 - E₁) x‖)
         _ = ‖x‖ := by rw [← P₁.prop.Lnorm])
       (by rw [e3]; exact ContinuousLinearMap.opNorm_add_le y z)
+    simp at hx
     have e1 : y ∈ polar 𝕜 ↑m₁ ∩ closedBall 0 1 := by
       simp only [Set.mem_inter_iff, mem_closedBall, dist_zero_right]
       constructor
@@ -573,8 +570,9 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
                 _ = y + z := by
                   rw [CommGroupWithZero.mul_inv_cancel, one_smul]
                   exact div_ne_zero hznz hxnz
-                _ = x := by rw [e3]
-  · simp only [Submodule.add_eq_sup, Set.le_eq_subset, Set.subset_inter_iff]
+                _ = x := by rw [e3])
+  ( by
+    simp only [Submodule.add_eq_sup, Set.le_eq_subset, Set.subset_inter_iff]
     exact ⟨convexHull_min (Set.union_subset_iff.mpr ⟨subset_trans
           (Set.inter_subset_left (s := SetLike.coe (polarSubmodule 𝕜 m₁)))
           (SetLike.coe_subset_coe.mpr le_sup_left),
@@ -583,7 +581,7 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
           (SetLike.coe_subset_coe.mpr le_sup_right)⟩)
         (fun _ hx _ hy _ _ _ _ _ => add_mem (smul_of_tower_mem _ _ hx) (smul_of_tower_mem _ _ hy)),
       convexHull_min (Set.union_subset_iff.mpr
-        ⟨Set.inter_subset_right, Set.inter_subset_right⟩) (convex_closedBall _ _)⟩
+        ⟨Set.inter_subset_right, Set.inter_subset_right⟩) (convex_closedBall _ _)⟩)
 
 /-
 lemma IsMideal.inter (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂ : IsMideal m₂) :
