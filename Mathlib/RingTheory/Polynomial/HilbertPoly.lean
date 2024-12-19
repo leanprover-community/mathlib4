@@ -106,21 +106,21 @@ noncomputable def hilbertPoly (p : F[X]) : (d : ℕ) → F[X]
   | 0 => 0
   | d + 1 => ∑ i in p.support, (p.coeff i) • preHilbertPoly F d i
 
-lemma hilbertPoly_zero_nat (d : ℕ) : hilbertPoly (0 : F[X]) d = 0 := by
+lemma hilbertPoly_zero_left (d : ℕ) : hilbertPoly (0 : F[X]) d = 0 := by
   delta hilbertPoly; induction d with
   | zero => simp only
   | succ d _ => simp only [coeff_zero, zero_smul, Finset.sum_const_zero]
 
-lemma hilbertPoly_poly_zero (p : F[X]) : hilbertPoly p 0 = 0 := rfl
+lemma hilbertPoly_zero_right (p : F[X]) : hilbertPoly p 0 = 0 := rfl
 
-lemma hilbertPoly_poly_succ (p : F[X]) (d : ℕ) :
+lemma hilbertPoly_succ (p : F[X]) (d : ℕ) :
     hilbertPoly p (d + 1) = ∑ i in p.support, (p.coeff i) • preHilbertPoly F d i := rfl
 
 lemma hilbertPoly_X_pow_succ (d k : ℕ) :
     hilbertPoly ((X : F[X]) ^ k) (d + 1) = preHilbertPoly F d k := by
   delta hilbertPoly; simp
 
-lemma hilbertPoly_add_nat (p q : F[X]) (d : ℕ) :
+lemma hilbertPoly_add_left (p q : F[X]) (d : ℕ) :
     hilbertPoly (p + q) d = hilbertPoly p d + hilbertPoly q d := by
   delta hilbertPoly
   induction d with
@@ -130,7 +130,7 @@ lemma hilbertPoly_add_nat (p q : F[X]) (d : ℕ) :
       rw [← sum_def _ fun _ r => r • _]
       exact sum_add_index _ _ _ (fun _ => zero_smul ..) (fun _ _ _ => add_smul ..)
 
-lemma hilbertPoly_smul_nat (a : F) (p : F[X]) (d : ℕ) :
+lemma hilbertPoly_smul (a : F) (p : F[X]) (d : ℕ) :
     hilbertPoly (a • p) d = a • hilbertPoly p d := by
   delta hilbertPoly
   induction d with
@@ -148,8 +148,8 @@ The function that sends any `p : F[X]` to `Polynomial.hilbertPoly p d` is an `F`
 -/
 noncomputable def hilbertPoly_linearMap (d : ℕ) : F[X] →ₗ[F] F[X] where
   toFun p := hilbertPoly p d
-  map_add' p q := hilbertPoly_add_nat p q d
-  map_smul' r p := hilbertPoly_smul_nat r p d
+  map_add' p q := hilbertPoly_add_left p q d
+  map_smul' r p := hilbertPoly_smul r p d
 
 variable [CharZero F]
 
@@ -230,7 +230,7 @@ lemma hilbertPoly_eq_zero_of_le_rootMultiplicity_one
     {p : F[X]} {d : ℕ} (hdp : d ≤ p.rootMultiplicity 1) :
     hilbertPoly p d = 0 := by
   by_cases hp : p = 0
-  · rw [hp, hilbertPoly_zero_nat]
+  · rw [hp, hilbertPoly_zero_left]
   · rcases exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp 1 with ⟨q, hq1, hq2⟩
     have heq : p = q * (- 1) ^ p.rootMultiplicity 1 * (1 - X) ^ p.rootMultiplicity 1 := by
       simp only [mul_assoc, ← mul_pow, neg_mul, one_mul, neg_sub]
@@ -265,7 +265,7 @@ theorem natDegree_hilbertPoly_of_ne_zero
   have hp : p ≠ 0 := by
     intro h
     rw [h] at hh
-    exact hh (hilbertPoly_zero_nat d)
+    exact hh (hilbertPoly_zero_left d)
   have hpd : p.rootMultiplicity 1 < d := by
     by_contra h
     exact hh (hilbertPoly_eq_zero_of_le_rootMultiplicity_one <| not_lt.1 h)
