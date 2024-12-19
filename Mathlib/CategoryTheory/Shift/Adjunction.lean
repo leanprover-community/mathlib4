@@ -252,7 +252,7 @@ variable (a b : A) (h : b + a = 0) [F.CommShift A]
 /-- Auxiliary definition for `iso`. -/
 noncomputable def iso' : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a :=
   (conjugateIsoEquiv (Adjunction.comp adj (shiftEquiv' D b a h).toAdjunction)
-  (Adjunction.comp (shiftEquiv' C b a h).toAdjunction adj)).toFun (F.commShiftIso b)
+    (Adjunction.comp (shiftEquiv' C b a h).toAdjunction adj)) (F.commShiftIso b)
 
 /--
 Given an adjunction `F ⊣ G` and a `CommShift` structure on `F`, these are the candidate
