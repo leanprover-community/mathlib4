@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll
 -/
 import Mathlib.Analysis.InnerProductSpace.Adjoint
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 

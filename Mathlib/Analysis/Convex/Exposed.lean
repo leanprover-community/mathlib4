@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Analysis.Convex.Extreme
 import Mathlib.Analysis.Convex.Function
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.LinearMap
 import Mathlib.Topology.Order.OrderClosed
 
 /-!
