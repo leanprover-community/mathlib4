@@ -274,6 +274,7 @@ lemma iso_hom_app (X : D) :
   simp [iso, iso']
   rfl
 
+@[reassoc]
 lemma iso_inv_app (Y : D) :
     (iso adj a).inv.app Y =
       adj.unit.app ((shiftFunctor C a).obj (G.obj Y)) ≫
