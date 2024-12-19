@@ -24,6 +24,26 @@ open Category Opposite Limits
 
 variable {C : Type u} [Category.{v} C]
 
+namespace Subobject
+
+lemma mk_lt_mk_of_comm {X A₁ A₂ : C} {i₁ : A₁ ⟶ X} {i₂ : A₂ ⟶ X} [Mono i₁] [Mono i₂]
+    (f : A₁ ⟶ A₂) (fac : f ≫ i₂ = i₁) (hf : ¬ IsIso f) :
+    Subobject.mk i₁ < Subobject.mk i₂ := by
+  obtain _ | h := (mk_le_mk_of_comm _ fac).lt_or_eq
+  · assumption
+  · exfalso
+    refine hf ⟨ofMkLEMk i₂ i₁ (by rw [h]), ?_, ?_⟩
+    · simp only [← cancel_mono i₁, assoc, ofMkLEMk_comp, fac, id_comp]
+    · simp only [← cancel_mono i₂, assoc, ofMkLEMk_comp, fac, id_comp]
+
+lemma mk_lt_mk_iff_of_comm {X A₁ A₂ : C} {i₁ : A₁ ⟶ X} {i₂ : A₂ ⟶ X} [Mono i₁] [Mono i₂]
+    (f : A₁ ⟶ A₂) (fac : f ≫ i₂ = i₁) :
+    Subobject.mk i₁ < Subobject.mk i₂ ↔ ¬ IsIso f :=
+  ⟨fun h hf ↦ by simp only [mk_eq_mk_of_comm i₁ i₂ (asIso f) fac, lt_self_iff_false] at h,
+    mk_lt_mk_of_comm f fac⟩
+
+end Subobject
+
 section Preadditive
 
 variable [Preadditive C]
@@ -154,6 +174,10 @@ variable (G : C)
 
 abbrev generatingMonomorphismsPushouts := (generatingMonomorphisms G).pushouts
 
+lemma isomorphisms_le_generatingMonomorphismsPushouts :
+    MorphismProperty.isomorphisms C ≤ generatingMonomorphismsPushouts G :=
+  MorphismProperty.isomorphisms_le_pushouts _ (fun _ ↦ ⟨_, _, _, ⟨⊤⟩, 0, inferInstance⟩)
+
 variable {G} (hG : IsSeparator G)
 
 namespace transfiniteComposition
@@ -183,8 +207,57 @@ lemma exists_generatingMonomorphismsPushouts {X Y : C} (p : X ⟶ Y) [Mono p]
   · exact (IsPushout.of_hasPushout _ _).mono_of_isPushout_of_isPullback_of_mono
       (IsPullback.of_hasPullback p f) φ (by simp [φ]) (by simp [φ])
 
-variable [IsGrothendieckAbelian.{w} C]
+variable {X : C}
 
+lemma exists_larger_subobject {X : C} (A : Subobject X) (hA : A ≠ ⊤) :
+    ∃ (A' : Subobject X) (h : A < A'),
+      generatingMonomorphismsPushouts G (Subobject.ofLE _ _ h.le) := by
+  induction' A using Subobject.ind with Y f _
+  obtain ⟨X', i, p', hi, hi', hp', fac⟩ := exists_generatingMonomorphismsPushouts hG f
+    (by simpa only [Subobject.isIso_iff_mk_eq_top] using hA)
+  refine ⟨Subobject.mk p', Subobject.mk_lt_mk_of_comm i fac hi',
+    (MorphismProperty.arrow_mk_iso_iff _ ?_).2 hi⟩
+  refine Arrow.isoMk (Subobject.underlyingIso f) (Subobject.underlyingIso p') ?_
+  dsimp
+  simp only [← cancel_mono p', assoc, fac,
+    Subobject.underlyingIso_hom_comp_eq_mk, Subobject.ofLE_arrow]
+
+open Classical in
+noncomputable def largerSubobject (A : Subobject X) : Subobject X :=
+  if hA : A = ⊤ then ⊤ else (exists_larger_subobject hG A hA).choose
+
+variable (X) in
+@[simp]
+lemma largerSubobject_top : largerSubobject hG (⊤ : Subobject X) = ⊤ := dif_pos rfl
+
+lemma lt_largerSubobject (A : Subobject X) (hA : A ≠ ⊤) :
+    A < largerSubobject hG A := by
+  dsimp only [largerSubobject]
+  rw [dif_neg hA]
+  exact (exists_larger_subobject hG A hA).choose_spec.choose
+
+lemma le_largerSubobject (A : Subobject X) :
+    A ≤ largerSubobject hG A := by
+  by_cases hA : A = ⊤
+  · subst hA
+    simp only [largerSubobject_top, le_refl]
+  · exact (lt_largerSubobject hG A hA).le
+
+lemma generatingMonomorphismsPushouts_ofLE_le_largerSubobject (A : Subobject X) :
+      generatingMonomorphismsPushouts G (Subobject.ofLE _ _ (le_largerSubobject hG A)) := by
+  by_cases hA : A = ⊤
+  · subst hA
+    have := (Subobject.isIso_arrow_iff_eq_top (largerSubobject hG (⊤ : Subobject X))).2 (by simp)
+    exact (MorphismProperty.arrow_mk_iso_iff _
+      (Arrow.isoMk (asIso (Subobject.arrow _)) (asIso (Subobject.arrow _)) (by simp))).2
+        (isomorphisms_le_generatingMonomorphismsPushouts G (𝟙 X)
+          (MorphismProperty.isomorphisms.infer_property _))
+  · refine (MorphismProperty.arrow_mk_iso_iff _ ?_).1
+      (exists_larger_subobject hG A hA).choose_spec.choose_spec
+    exact Arrow.isoMk (Iso.refl _)
+      (Subobject.isoOfEq _ _ ((by simp [largerSubobject, dif_neg hA])))
+
+--variable [IsGrothendieckAbelian.{w} C]
 end transfiniteComposition
 
 end IsGrothendieckAbelian
