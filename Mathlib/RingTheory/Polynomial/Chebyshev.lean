@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Julian Kuelshammer, Heather Macbeth, Mitchell Lee
 -/
 import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -129,6 +130,32 @@ theorem T_natAbs (n : ℤ) : T R n.natAbs = T R n := by
 
 theorem T_neg_two : T R (-2) = 2 * X ^ 2 - 1 := by simp [T_two]
 
+@[simp]
+theorem T_eval_one (n : ℤ) : (T R n).eval 1 = 1 := by
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 => simp [T_add_two, ih1, ih2]; norm_num
+  | neg_add_one n ih1 ih2 => simp [T_sub_one, -T_neg, ih1, ih2]; norm_num
+
+@[simp]
+theorem T_eval_neg_one (n : ℤ) : (T R n).eval (-1) = n.negOnePow := by
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    simp only [T_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1,
+      Int.negOnePow_add, Int.negOnePow_one, Units.val_neg, Int.cast_neg, neg_mul, neg_neg, ih2,
+      Int.negOnePow_def 2]
+    norm_cast
+    norm_num
+    ring
+  | neg_add_one n ih1 ih2 =>
+    simp only [T_sub_one, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1, neg_mul,
+      ih2, Int.negOnePow_add, Int.negOnePow_one, Units.val_neg, Int.cast_neg, sub_neg_eq_add,
+      Int.negOnePow_sub]
+    ring
+
 /-- `U n` is the `n`-th Chebyshev polynomial of the second kind. -/
 -- Well-founded definitions are now irreducible by default;
 -- as this was implemented before this change,
@@ -193,6 +220,41 @@ theorem U_neg (n : ℤ) : U R (-n) = -U R (n - 2) := by simpa [sub_sub] using U_
 @[simp]
 theorem U_neg_sub_two (n : ℤ) : U R (-n - 2) = -U R n := by
   simpa [sub_eq_add_neg, add_comm] using U_neg R (n + 2)
+
+@[simp]
+theorem U_eval_one (n : ℤ) : (U R n).eval 1 = n + 1 := by
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp; norm_num
+  | add_two n ih1 ih2 =>
+    simp only [U_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_one, ih1,
+      Int.cast_add, Int.cast_natCast, Int.cast_one, ih2, Int.cast_ofNat]
+    ring
+  | neg_add_one n ih1 ih2 =>
+    simp only [U_sub_one, eval_sub, eval_mul, eval_ofNat, eval_X, mul_one,
+      ih1, Int.cast_neg, Int.cast_natCast, ih2, Int.cast_add, Int.cast_one, Int.cast_sub,
+      sub_add_cancel]
+    ring
+
+@[simp]
+theorem U_eval_neg_one (n : ℤ) : (U R n).eval (-1) = n.negOnePow * (n + 1) := by
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp; norm_num
+  | add_two n ih1 ih2 =>
+    simp only [U_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1,
+      Int.cast_add, Int.cast_natCast, Int.cast_one, neg_mul, ih2, Int.cast_ofNat, Int.negOnePow_add,
+      Int.negOnePow_def 2]
+    norm_cast
+    norm_num
+    ring
+  | neg_add_one n ih1 ih2 =>
+    simp only [U_sub_one, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1,
+      Int.cast_neg, Int.cast_natCast, Int.negOnePow_neg, neg_mul, ih2, Int.cast_add, Int.cast_one,
+      Int.cast_sub, sub_add_cancel, Int.negOnePow_sub, Int.negOnePow_add]
+    norm_cast
+    norm_num
+    ring
 
 theorem U_eq_X_mul_U_add_T (n : ℤ) : U R (n + 1) = X * U R n + T R (n + 1) := by
   induction n using Polynomial.Chebyshev.induct with
@@ -289,6 +351,32 @@ theorem C_comp_two_mul_X (n : ℤ) : (C R n).comp (2 * X) = 2 * T R n := by
     simp_rw [C_sub_one, T_sub_one, sub_comp, mul_comp, X_comp, ih1, ih2]
     ring
 
+@[simp]
+theorem C_eval_two (n : ℤ) : (C R n).eval 2 = 2 := by
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 => simp [C_add_two, ih1, ih2]; norm_num
+  | neg_add_one n ih1 ih2 => simp [C_sub_one, -C_neg, ih1, ih2]; norm_num
+
+@[simp]
+theorem C_eval_neg_two (n : ℤ) : (C R n).eval (-2) = 2 * n.negOnePow := by
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp
+  | add_two n ih1 ih2 =>
+    simp only [C_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1,
+      Int.negOnePow_add, Int.negOnePow_one, Units.val_neg, Int.cast_neg, neg_mul, neg_neg, ih2,
+      Int.negOnePow_def 2]
+    norm_cast
+    norm_num
+    ring
+  | neg_add_one n ih1 ih2 =>
+    simp only [C_sub_one, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1, neg_mul,
+      ih2, Int.negOnePow_add, Int.negOnePow_one, Units.val_neg, Int.cast_neg, sub_neg_eq_add,
+      Int.negOnePow_sub]
+    ring
+
 theorem C_eq_two_mul_T_comp_half_mul_X [Invertible (2 : R)] (n : ℤ) :
     C R n = 2 * (T R n).comp (Polynomial.C ⅟2 * X) := by
   have := congr_arg (·.comp (Polynomial.C ⅟2 * X)) (C_comp_two_mul_X R n)
@@ -364,6 +452,41 @@ theorem S_neg (n : ℤ) : S R (-n) = -S R (n - 2) := by simpa [sub_sub] using S_
 @[simp]
 theorem S_neg_sub_two (n : ℤ) : S R (-n - 2) = -S R n := by
   simpa [sub_eq_add_neg, add_comm] using S_neg R (n + 2)
+
+  @[simp]
+theorem S_eval_two (n : ℤ) : (S R n).eval 2 = n + 1 := by
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp; norm_num
+  | add_two n ih1 ih2 =>
+    simp only [S_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_one, ih1,
+      Int.cast_add, Int.cast_natCast, Int.cast_one, ih2, Int.cast_ofNat]
+    ring
+  | neg_add_one n ih1 ih2 =>
+    simp only [S_sub_one, eval_sub, eval_mul, eval_ofNat, eval_X, mul_one,
+      ih1, Int.cast_neg, Int.cast_natCast, ih2, Int.cast_add, Int.cast_one, Int.cast_sub,
+      sub_add_cancel]
+    ring
+
+@[simp]
+theorem S_eval_neg_two (n : ℤ) : (S R n).eval (-2) = n.negOnePow * (n + 1) := by
+  induction n using Polynomial.Chebyshev.induct with
+  | zero => simp
+  | one => simp; norm_num
+  | add_two n ih1 ih2 =>
+    simp only [S_add_two, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1,
+      Int.cast_add, Int.cast_natCast, Int.cast_one, neg_mul, ih2, Int.cast_ofNat, Int.negOnePow_add,
+      Int.negOnePow_def 2]
+    norm_cast
+    norm_num
+    ring
+  | neg_add_one n ih1 ih2 =>
+    simp only [S_sub_one, eval_sub, eval_mul, eval_ofNat, eval_X, mul_neg, mul_one, ih1,
+      Int.cast_neg, Int.cast_natCast, Int.negOnePow_neg, neg_mul, ih2, Int.cast_add, Int.cast_one,
+      Int.cast_sub, sub_add_cancel, Int.negOnePow_sub, Int.negOnePow_add]
+    norm_cast
+    norm_num
+    ring
 
 theorem S_comp_two_mul_X (n : ℤ) : (S R n).comp (2 * X) = U R n := by
   induction n using Polynomial.Chebyshev.induct with
