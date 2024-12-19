@@ -373,7 +373,7 @@ variable [E.functor.CommShift A] [E.inverse.CommShift A]
 instance [E.CommShift A] : NatTrans.CommShift E.unitIso.hom A :=
   inferInstanceAs (NatTrans.CommShift E.toAdjunction.unit A)
 
-instance [E.CommShift A]: NatTrans.CommShift E.counitIso.hom A :=
+instance [E.CommShift A] : NatTrans.CommShift E.counitIso.hom A :=
   inferInstanceAs (NatTrans.CommShift E.toAdjunction.counit A)
 
 instance [h : E.functor.CommShift A] : E.symm.inverse.CommShift A := h
