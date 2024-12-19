@@ -708,11 +708,14 @@ theorem le_div_iff {I J K : Submodule R A} : I ≤ J / K ↔ ∀ x ∈ I, ∀ z 
 theorem le_div_iff_mul_le {I J K : Submodule R A} : I ≤ J / K ↔ I * K ≤ J := by
   rw [le_div_iff, mul_le]
 
-@[simp]
 theorem one_le_one_div {I : Submodule R A} : 1 ≤ 1 / I ↔ I ≤ 1 := by
   constructor; all_goals intro hI
   · rwa [le_div_iff_mul_le, one_mul] at hI
   · rwa [le_div_iff_mul_le, one_mul]
+
+@[simp]
+theorem one_mem_div {I J : Submodule R A} : 1 ∈ I / J ↔ J ≤ I := by
+  rw [← one_le, le_div_iff_mul_le, one_mul]
 
 theorem le_self_mul_one_div {I : Submodule R A} (hI : I ≤ 1) : I ≤ I * (1 / I) := by
   refine (mul_one I).symm.trans_le ?_  -- Porting note: drop `rw {occs := _}` in favor of `refine`
