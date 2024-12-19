@@ -427,11 +427,11 @@ lemma prod_filter_not_mul_prod_filter (s : Finset α) (p : α → Prop) [Decidab
   rw [mul_comm, prod_filter_mul_prod_filter_not]
 
 @[to_additive]
-theorem prod_filter_xor (p q : α → Prop) [DecidableEq α] [DecidablePred p] [DecidablePred q] :
+theorem prod_filter_xor (p q : α → Prop) [DecidablePred p] [DecidablePred q] :
     (∏ x ∈ s with (Xor' (p x) (q x)), f x) =
       (∏ x ∈ s with (p x ∧ ¬ q x), f x) * (∏ x ∈ s with (q x ∧ ¬ p x), f x) := by
-  rw [← prod_union (disjoint_filter_and_not_filter _ _), ← filter_or]
-  rfl
+  classical rw [← prod_union (disjoint_filter_and_not_filter _ _), ← filter_or]
+  simp only [Xor']
 
 section ToList
 

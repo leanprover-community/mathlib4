@@ -253,9 +253,9 @@ theorem monomial_le_degreeOf (i : σ) {f : MvPolynomial σ R} {m : σ →₀ ℕ
   rw [degreeOf_eq_sup i]
   apply Finset.le_sup h_m
 
-lemma degreeOf_monomial_eq [DecidableEq σ] (s : σ →₀ ℕ) (i : σ) {a : R} (ha : a ≠ 0) :
+lemma degreeOf_monomial_eq (s : σ →₀ ℕ) (i : σ) {a : R} (ha : a ≠ 0) :
     (monomial s a).degreeOf i = s i := by
-  rw [degreeOf_def, degrees_monomial_eq _ _ ha, Finsupp.count_toMultiset]
+  classical rw [degreeOf_def, degrees_monomial_eq _ _ ha, Finsupp.count_toMultiset]
 
 -- TODO we can prove equality with `NoZeroDivisors R`
 theorem degreeOf_mul_le (i : σ) (f g : MvPolynomial σ R) :
