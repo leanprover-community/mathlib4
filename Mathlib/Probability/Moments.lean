@@ -221,6 +221,15 @@ lemma integrable_exp_mul_of_abs_le [IsFiniteMeasure μ]
     · rwa [abs_of_nonneg hu]
     · rwa [abs_of_nonpos hu, neg_neg]
 
+lemma integrable_exp_mul_of_le_of_le [IsFiniteMeasure μ] {a b : ℝ}
+    (ha : Integrable (fun ω ↦ exp (a * X ω)) μ)
+    (hb : Integrable (fun ω ↦ exp (b * X ω)) μ)
+    (hat : a ≤ t) (htb : t ≤ b) :
+    Integrable (fun ω ↦ exp (t * X ω)) μ := by
+  rcases le_total 0 t with ht | ht
+  · exact integrable_exp_mul_of_le hb ht htb
+  · exact integrable_exp_mul_of_ge ha ht hat
+
 lemma exp_mul_abs_add_le_add : exp (t * |u| + v * u) ≤ rexp ((v + t) * u) + rexp ((v - t) * u) := by
   rcases le_total 0 u with h_nonneg | h_nonpos
   · rw [abs_of_nonneg h_nonneg, ← add_mul, add_comm, le_add_iff_nonneg_right]
@@ -711,6 +720,46 @@ lemma mgf_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
   · simpa using ht_int_pos
   · simpa using ht_int_neg
 
+lemma hasFPowerSeriesOnBall_mgf' [IsFiniteMeasure μ] (ht : t ≠ 0)
+    (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
+    HasFPowerSeriesOnBall (mgf X μ)
+      (FormalMultilinearSeries.ofScalars ℝ
+        (fun n ↦ (μ[fun ω ↦ X ω ^ n * exp (v * X ω)] : ℝ) / n.factorial)) v ‖t‖₊ := by
+  constructor
+  · refine FormalMultilinearSeries.le_radius_of_summable _ ?_
+    simp only [Pi.pow_apply, FormalMultilinearSeries.ofScalars_norm, norm_eq_abs,
+      coe_nnnorm, abs_div, Nat.abs_cast]
+    have h := summable_integral_pow_mul_exp_mul ht_int_pos ht_int_neg
+    rw [← summable_abs_iff] at h
+    simp_rw [abs_mul, abs_div, abs_pow, Nat.abs_cast] at h
+    exact h
+  · simp [ht]
+  · intro y hy
+    simp_rw [FormalMultilinearSeries.ofScalars_apply_eq]
+    simp only [Pi.pow_apply, smul_eq_mul, zero_add]
+    simp only [Metric.emetric_ball_nnreal, coe_nnnorm, norm_eq_abs, Metric.mem_ball,
+      dist_zero_right] at hy
+    have hy_int_pos : Integrable (fun ω ↦ rexp ((v + y) * X ω)) μ := by
+      rcases le_total 0 t with ht | ht
+      · refine integrable_exp_mul_of_le_of_le ht_int_neg ht_int_pos ?_ ?_
+        · rw [sub_eq_add_neg]
+          gcongr
+          sorry
+        · gcongr
+          sorry
+      · refine integrable_exp_mul_of_le_of_le ht_int_pos ht_int_neg ?_ ?_
+        · gcongr
+          sorry
+        · rw [sub_eq_add_neg]
+          gcongr
+          sorry
+    have hy_int_neg : Integrable (fun ω ↦ rexp ((v - y) * X ω)) μ := by
+      sorry
+    rw [Summable.hasSum_iff]
+    · exact (mgf_add_eq_tsum hy_int_pos hy_int_neg).symm
+    · exact summable_integral_pow_mul_exp_mul hy_int_pos hy_int_neg
+
 lemma hasFPowerSeriesOnBall_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ rexp (-t * X ω)) μ) :
@@ -740,6 +789,14 @@ lemma hasFPowerSeriesOnBall_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
     · exact (mgf_eq_tsum hy_int_pos hy_int_neg).symm
     · exact summable_integral_pow_mul hy_int_pos hy_int_neg
 
+lemma hasFPowerSeriesAt_mgf' [IsFiniteMeasure μ] (ht : t ≠ 0)
+    (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
+    HasFPowerSeriesAt (mgf X μ)
+      (FormalMultilinearSeries.ofScalars ℝ
+        (fun n ↦ (μ[fun ω ↦ X ω ^ n * exp (v * X ω)] : ℝ) / n.factorial)) v :=
+  ⟨‖t‖₊, hasFPowerSeriesOnBall_mgf' ht ht_int_pos ht_int_neg⟩
+
 lemma hasFPowerSeriesAt_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ rexp (-t * X ω)) μ) :
@@ -747,11 +804,24 @@ lemma hasFPowerSeriesAt_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
       (FormalMultilinearSeries.ofScalars ℝ (fun n ↦ (μ[X ^ n] : ℝ) / n.factorial)) 0 :=
   ⟨‖t‖₊, hasFPowerSeriesOnBall_mgf ht ht_int_pos ht_int_neg⟩
 
+lemma analyticAt_mgf' [IsFiniteMeasure μ] (ht : t ≠ 0)
+    (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
+    AnalyticAt ℝ (mgf X μ) v :=
+  ⟨_, hasFPowerSeriesAt_mgf' ht ht_int_pos ht_int_neg⟩
+
 lemma analyticAt_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ rexp (-t * X ω)) μ) :
     AnalyticAt ℝ (mgf X μ) 0 :=
   ⟨_, hasFPowerSeriesAt_mgf ht ht_int_pos ht_int_neg⟩
+
+lemma analyticOnNhd_mgf [IsFiniteMeasure μ] :
+    AnalyticOnNhd ℝ (mgf X μ) (interior {x | Integrable (fun ω ↦ exp (x * X ω)) μ}) := by
+  intro x hx
+  rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hx
+  obtain ⟨l, u, hxlu, h_subset⟩ := hx
+  sorry
 
 lemma iteratedDeriv_mgf_zero [IsFiniteMeasure μ]
     (hu_int_pos : Integrable (fun ω ↦ rexp (u * X ω)) μ)
