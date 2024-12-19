@@ -653,8 +653,7 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
         | cons b bs =>
           apply le_of_lt
           rw [List.chain'_cons] at ha
-          have hlex := List.lt.head bs (b :: bs) ha.1
-          exact (List.lt_iff_lex_lt _ _).mp hlex
+          exact (List.lt_iff_lex_lt _ _).mp (List.Lex.rel ha.1)
 
 end Fin
 
