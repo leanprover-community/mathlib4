@@ -184,7 +184,6 @@ namespace IntermediateField
 def fixedField : IntermediateField F E :=
   FixedPoints.intermediateField H
 
-@[simp]
 theorem mem_fixedField_iff (x) :
     x ∈ fixedField H ↔ ∀ f ∈ H, f x = x := by
   show x ∈ MulAction.fixedPoints H E ↔ _
