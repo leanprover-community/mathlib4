@@ -46,7 +46,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 R]
 instance : IsManifold 𝓘(𝕜, R) n Rˣ :=
   isOpenEmbedding_val.isManifold_singleton
 
-/-- For a complete normed ring `R`, the embedding of the units `Rˣ` into `R` is a smooth map between
+/-- For a complete normed ring `R`, the embedding of the units `Rˣ` into `R` is a `C^n` map between
 manifolds. -/
 lemma contMDiff_val : ContMDiff 𝓘(𝕜, R) 𝓘(𝕜, R) n (val : Rˣ → R) :=
   contMDiff_isOpenEmbedding Units.isOpenEmbedding_val
