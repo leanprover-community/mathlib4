@@ -922,6 +922,15 @@ theorem of_mem_append {s₁ s₂ : Seq α} {a : α} (h : a ∈ append s₁ s₂)
 theorem mem_append_left {s₁ s₂ : Seq α} {a : α} (h : a ∈ s₁) : a ∈ append s₁ s₂ := by
   apply mem_rec_on h; intros; simp [*]
 
+@[simp]
+theorem ofList_append (l l' : List α) : ofList (l ++ l') = append (ofList l) (ofList l') := by
+  induction l <;> simp [*]
+
+@[simp]
+theorem ofStream_append (l : List α) (s : Stream' α) :
+    ofStream (l ++ₛ s) = append (ofList l) (ofStream s) := by
+  induction l <;> simp [*, Stream'.nil_append_stream, Stream'.cons_append_stream]
+
 end Append
 
 section Map
