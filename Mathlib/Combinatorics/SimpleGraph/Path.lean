@@ -258,10 +258,11 @@ lemma isCycle_reverse {p : G.Walk u u} : p.reverse.IsCycle ↔ p.IsCycle where
   mp h := by simpa using h.reverse
   mpr := .reverse
 
-lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) (hp' : ¬ p.Nil) : p.tail.IsPath := by
-  rw [Walk.isPath_def] at hp ⊢
-  rw [← cons_support_tail _ hp', List.nodup_cons] at hp
-  exact hp.2
+lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
+  cases p with
+  | nil => simp
+  | cons hadj p =>
+    simp_all [Walk.isPath_def]
 
 /-! ### About paths -/
 
