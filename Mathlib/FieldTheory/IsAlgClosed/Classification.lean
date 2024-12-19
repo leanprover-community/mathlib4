@@ -88,7 +88,7 @@ theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
       rw [lift_max, ← Cardinal.lift_mk_eq.2 ⟨hv.1.aevalEquiv.toEquiv⟩, lift_aleph0,
         ← lift_aleph0.{max u v w, max u w}, ← lift_max, lift_umax.{max u w, v}]
     _ ≤ Cardinal.lift.{v} (max (max (max (Cardinal.lift #R) (Cardinal.lift #ι)) ℵ₀) ℵ₀) :=
-        lift_le.2 (max_le_max MvPolynomial.cardinal_lift_mk_le_max le_rfl)
+        lift_le.2 (max_le_max MvPolynomial.cardinalMk_le_max_lift le_rfl)
     _ = _ := by simp
 
 /-- If `K` is an uncountable algebraically closed field, then its
