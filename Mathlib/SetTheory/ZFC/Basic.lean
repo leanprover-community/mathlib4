@@ -184,6 +184,22 @@ theorem Subset.congr_right : ∀ {x y z : PSet}, Equiv x y → (z ⊆ x ↔ z �
       let ⟨a, ab⟩ := βα b
       ⟨a, cb.trans (Equiv.symm ab)⟩⟩
 
+instance : Preorder PSet where
+  le := (· ⊆ ·)
+  le_refl := refl_of (· ⊆ ·)
+  le_trans _ _ _ := trans_of (· ⊆ ·)
+
+-- TODO: add lemmas relating `⊂` to `∈`.
+instance : HasSSubset PSet := ⟨(· < ·)⟩
+
+@[simp]
+theorem le_def (x y : PSet) : x ≤ y ↔ x ⊆ y :=
+  Iff.rfl
+
+@[simp]
+theorem lt_def (x y : PSet) : x < y ↔ x ⊂ y :=
+  Iff.rfl
+
 /-- `x ∈ y` as pre-sets if `x` is extensionally equivalent to a member of the family `y`. -/
 protected def Mem (y x : PSet.{u}) : Prop :=
   ∃ b, Equiv x (y.Func b)
@@ -816,6 +832,23 @@ theorem toSet_inj {x y : ZFSet} : x.toSet = y.toSet ↔ x = y :=
 
 instance : IsAntisymm ZFSet (· ⊆ ·) :=
   ⟨fun _ _ hab hba => ext fun c => ⟨@hab c, @hba c⟩⟩
+
+instance : PartialOrder ZFSet where
+  le := (· ⊆ ·)
+  le_refl := refl_of (· ⊆ ·)
+  le_trans _ _ _ := trans_of (· ⊆ ·)
+  le_antisymm _ _ := antisymm_of (· ⊆ ·)
+
+-- TODO: add lemmas relating `⊂` to `∈`.
+instance : HasSSubset ZFSet := ⟨(· < ·)⟩
+
+@[simp]
+theorem le_def (x y : ZFSet) : x ≤ y ↔ x ⊆ y :=
+  Iff.rfl
+
+@[simp]
+theorem lt_def (x y : ZFSet) : x < y ↔ x ⊂ y :=
+  Iff.rfl
 
 /-- The empty ZFC set -/
 protected def empty : ZFSet :=
@@ -1691,4 +1724,4 @@ noncomputable def toSet_equiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+
 
 end ZFSet
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1900
