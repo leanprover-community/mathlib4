@@ -1355,6 +1355,11 @@ def Relabelling.negCongr : ∀ {x y : PGame}, x ≡r y → -x ≡r -y
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, ⟨L, R, hL, hR⟩ =>
     ⟨R, L, fun j => (hR j).negCongr, fun i => (hL i).negCongr⟩
 
+/-- If `-x` has the same moves as `-y`, then `x` has the same moves as `y`. -/
+def Relabelling.negCongr' : ∀ {x y : PGame}, -x ≡r -y → x ≡r y
+  | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, ⟨L, R, hL, hR⟩ =>
+    ⟨R, L, fun j => (hR j).negCongr', fun i => (hL i).negCongr'⟩
+
 private theorem neg_le_lf_neg_iff : ∀ {x y : PGame.{u}}, (-y ≤ -x ↔ x ≤ y) ∧ (-y ⧏ -x ↔ x ⧏ y)
   | mk xl xr xL xR, mk yl yr yL yR => by
     simp_rw [neg_def, mk_le_mk, mk_lf_mk, ← neg_def]
