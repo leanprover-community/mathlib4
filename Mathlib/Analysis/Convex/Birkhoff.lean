@@ -46,13 +46,13 @@ private lemma exists_perm_eq_zero_implies_eq_zero [Nonempty n] {s : R} (hs : 0 <
     (hM : ∃ M' ∈ doublyStochastic R n, M = s • M') :
     ∃ σ : Equiv.Perm n, ∀ i j, M i j = 0 → σ.permMatrix R i j = 0 := by
   rw [exists_mem_doublyStochastic_eq_smul_iff hs.le] at hM
-  let f (i : n) : Finset n := univ.filter (M i · ≠ 0)
-  have hf (A : Finset n) : A.card ≤ (A.biUnion f).card := by
-    have (i) : ∑ j ∈ f i, M i j = s := by simp [sum_subset (filter_subset _ _), hM.2.1]
-    have h₁ : ∑ i ∈ A, ∑ j ∈ f i, M i j = A.card * s := by simp [this]
-    have h₂ : ∑ i, ∑ j ∈ A.biUnion f, M i j = (A.biUnion f).card * s := by
+  let f (i : n) : Finset n := {j | M i j ≠ 0}
+  have hf (A : Finset n) : #A ≤ #(A.biUnion f) := by
+    have (i) : ∑ j ∈ f i, M i j = s := by simp [f, sum_subset (filter_subset _ _), hM.2.1]
+    have h₁ : ∑ i ∈ A, ∑ j ∈ f i, M i j = #A * s := by simp [this]
+    have h₂ : ∑ i, ∑ j ∈ A.biUnion f, M i j = #(A.biUnion f) * s := by
       simp [sum_comm (t := A.biUnion f), hM.2.2, mul_comm s]
-    suffices A.card * s ≤ (A.biUnion f).card * s by exact_mod_cast le_of_mul_le_mul_right this hs
+    suffices #A * s ≤ #(A.biUnion f) * s by exact_mod_cast le_of_mul_le_mul_right this hs
     rw [← h₁, ← h₂]
     trans ∑ i ∈ A, ∑ j ∈ A.biUnion f, M i j
     · refine sum_le_sum fun i hi => ?_
@@ -86,7 +86,7 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
     ∃ w : Equiv.Perm n → R, (∀ σ, 0 ≤ w σ) ∧ ∑ σ, w σ • σ.permMatrix R = M := by
   rcases isEmpty_or_nonempty n
   case inl => exact ⟨1, by simp, Subsingleton.elim _ _⟩
-  set d : ℕ := (Finset.univ.filter fun i : n × n => M i.1 i.2 ≠ 0).card with ← hd
+  set d : ℕ := #{i : n × n | M i.1 i.2 ≠ 0} with ← hd
   clear_value d
   induction d using Nat.strongRecOn generalizing M s
   case ind d ih =>
@@ -110,11 +110,11 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
     simp only [sub_apply, smul_apply, PEquiv.toMatrix_apply, Equiv.toPEquiv_apply, Option.mem_def,
       Option.some.injEq, smul_eq_mul, mul_ite, mul_one, mul_zero, sub_nonneg,
       sum_sub_distrib, sum_ite_eq, mem_univ, ↓reduceIte, N]
-    refine ⟨fun i' j => ?_, by simp [hM.2.1], by simp [← σ.eq_symm_apply, hM]⟩
+    refine ⟨fun i' j => ?_, by simp [s', hM.2.1], by simp [s', ← σ.eq_symm_apply, hM]⟩
     split
     case isTrue h => exact (hi' i' (by simp)).trans_eq (by rw [h])
     case isFalse h => exact hM.1 _ _
-  have hd' : (univ.filter fun i : n × n => N i.1 i.2 ≠ 0).card < d := by
+  have hd' : #{i : n × n | N i.1 i.2 ≠ 0} < d := by
     rw [← hd]
     refine card_lt_card ?_
     rw [ssubset_iff_of_subset (monotone_filter_right _ _)]

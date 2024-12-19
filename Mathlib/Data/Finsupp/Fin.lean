@@ -17,6 +17,7 @@ In this context, we prove some usual properties of `tail` and `cons`, analogous 
 `Data.Fin.Tuple.Basic`.
 -/
 
+open Function
 
 noncomputable section
 
@@ -85,5 +86,9 @@ lemma cons_support : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succEmb
   apply (Fin.eq_zero_or_eq_succ i).imp id (Exists.imp _)
   rintro i rfl
   simpa [Finsupp.mem_support_iff] using hi
+
+lemma cons_right_injective {n : ℕ} {M : Type*} [Zero M] (y : M) :
+    Injective (Finsupp.cons y : (Fin n →₀ M) → Fin (n + 1) →₀ M) :=
+  (equivFunOnFinite.symm.injective.comp ((Fin.cons_right_injective _).comp DFunLike.coe_injective))
 
 end Finsupp

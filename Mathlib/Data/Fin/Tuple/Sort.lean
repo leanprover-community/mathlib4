@@ -48,7 +48,7 @@ theorem graph.card (f : Fin n → α) : (graph f).card = n := by
   rw [graph, Finset.card_image_of_injective]
   · exact Finset.card_fin _
   · intro _ _
-    -- porting note (#10745): was `simp`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was `simp`
     dsimp only
     rw [Prod.ext_iff]
     simp

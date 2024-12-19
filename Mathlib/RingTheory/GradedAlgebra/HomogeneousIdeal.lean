@@ -3,10 +3,11 @@ Copyright (c) 2021 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Eric Wieser
 -/
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.RingTheory.Ideal.Maps
-import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Ideal.BigOperators
+import Mathlib.RingTheory.Ideal.Maps
 
 /-!
 # Homogeneous ideals of a graded algebra
@@ -44,7 +45,7 @@ open SetLike DirectSum Set
 
 open Pointwise DirectSum
 
-variable {ι σ R A : Type*}
+variable {ι σ A : Type*}
 
 section HomogeneousDef
 
@@ -297,10 +298,10 @@ instance : Top (HomogeneousIdeal 𝒜) :=
 instance : Bot (HomogeneousIdeal 𝒜) :=
   ⟨⟨⊥, Ideal.IsHomogeneous.bot 𝒜⟩⟩
 
-instance : Sup (HomogeneousIdeal 𝒜) :=
+instance : Max (HomogeneousIdeal 𝒜) :=
   ⟨fun I J => ⟨_, I.isHomogeneous.sup J.isHomogeneous⟩⟩
 
-instance : Inf (HomogeneousIdeal 𝒜) :=
+instance : Min (HomogeneousIdeal 𝒜) :=
   ⟨fun I J => ⟨_, I.isHomogeneous.inf J.isHomogeneous⟩⟩
 
 instance : SupSet (HomogeneousIdeal 𝒜) :=
@@ -359,12 +360,10 @@ theorem toIdeal_iInf {κ : Sort*} (s : κ → HomogeneousIdeal 𝒜) :
     (⨅ i, s i).toIdeal = ⨅ i, (s i).toIdeal := by
   rw [iInf, toIdeal_sInf, iInf_range]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem toIdeal_iSup₂ {κ : Sort*} {κ' : κ → Sort*} (s : ∀ i, κ' i → HomogeneousIdeal 𝒜) :
     (⨆ (i) (j), s i j).toIdeal = ⨆ (i) (j), (s i j).toIdeal := by
   simp_rw [toIdeal_iSup]
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem toIdeal_iInf₂ {κ : Sort*} {κ' : κ → Sort*} (s : ∀ i, κ' i → HomogeneousIdeal 𝒜) :
     (⨅ (i) (j), s i j).toIdeal = ⨅ (i) (j), (s i j).toIdeal := by
   simp_rw [toIdeal_iInf]

@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.Fintype.Option
 import Mathlib.Data.Fintype.Shrink
 import Mathlib.Data.Fintype.Sum
+import Mathlib.Data.Finite.Prod
 
 /-!
 # The Hales-Jewett theorem
@@ -138,7 +139,7 @@ variable {η' α' ι' : Type*}
 def reindex (l : Subspace η α ι) (eη : η ≃ η') (eα : α ≃ α') (eι : ι ≃ ι') : Subspace η' α' ι' where
   idxFun i := (l.idxFun <| eι.symm i).map eα eη
   proper e := (eι.exists_congr fun i ↦ by cases h : idxFun l i <;>
-    simp [*, Function.funext_iff, Equiv.eq_symm_apply]).1 <| l.proper <| eη.symm e
+    simp [*, funext_iff, Equiv.eq_symm_apply]).1 <| l.proper <| eη.symm e
 
 @[simp] lemma reindex_apply (l : Subspace η α ι) (eη : η ≃ η') (eα : α ≃ α') (eι : ι ≃ ι') (x i) :
     l.reindex eη eα eι x i = eα (l (eα.symm ∘ x ∘ eη) <| eι.symm i) := by

@@ -124,5 +124,5 @@ def preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd :
   NatIso.ofComponents (fun _ => PartOrd.Iso.mk <| OrderIso.dualAntisymmetrization _)
     (fun _ => OrderHom.ext _ _ <| funext fun x => Quotient.inductionOn' x fun _ => rfl)
 
--- This lemma was always bad, but the linter only noticed after lean4#2644
+-- This lemma was always bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644
 attribute [nolint simpNF] preordToPartOrdCompToDualIsoToDualCompPreordToPartOrd_inv_app_coe

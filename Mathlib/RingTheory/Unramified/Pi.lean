@@ -31,7 +31,7 @@ theorem pi_iff :
   · intro _ i
     exact FormallyUnramified.of_surjective (Pi.evalAlgHom R f i) (Function.surjective_eval i)
   · intro H
-    constructor
+    rw [iff_comp_injective]
     intros B _ _ J hJ f₁ f₂ e
     ext g
     rw [← Finset.univ_sum_single g, map_sum, map_sum]

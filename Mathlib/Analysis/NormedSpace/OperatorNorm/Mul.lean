@@ -239,7 +239,7 @@ section Normed
 
 namespace ContinuousLinearMap
 
-variable [NormedAddCommGroup E] [NormedSpace 𝕜 E] (c : 𝕜)
+variable [NormedAddCommGroup E] [NormedSpace 𝕜 E]
 variable (𝕜) (𝕜' : Type*)
 
 section

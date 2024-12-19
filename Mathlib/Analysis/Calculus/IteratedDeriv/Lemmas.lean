@@ -15,6 +15,8 @@ This file contains a number of further results on `iteratedDerivWithin` that nee
 than are available in `Mathlib/Analysis/Calculus/IteratedDeriv/Defs.lean`.
 -/
 
+section one_dimensional
+
 variable
   {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
@@ -50,7 +52,7 @@ theorem iteratedDerivWithin_const_add (hn : 0 < n) (c : F) :
   intro y hy
   exact derivWithin_const_add (h.uniqueDiffWithinAt hy) _
 
-theorem iteratedDerivWithin_const_neg (hn : 0 < n) (c : F) :
+theorem iteratedDerivWithin_const_sub (hn : 0 < n) (c : F) :
     iteratedDerivWithin n (fun z => c - f z) s x = iteratedDerivWithin n (fun z => -f z) s x := by
   obtain ⟨n, rfl⟩ := n.exists_eq_succ_of_ne_zero hn.ne'
   rw [iteratedDerivWithin_succ' h hx, iteratedDerivWithin_succ' h hx]
@@ -60,12 +62,19 @@ theorem iteratedDerivWithin_const_neg (hn : 0 < n) (c : F) :
   rw [derivWithin.neg this]
   exact derivWithin_const_sub this _
 
+@[deprecated (since := "2024-12-10")]
+alias iteratedDerivWithin_const_neg := iteratedDerivWithin_const_sub
+
+/-- Note: this is unrelated to `iteratedDeriv_const_smul`, where the scalar multiplication works on
+the domain. -/
 theorem iteratedDerivWithin_const_smul (c : R) (hf : ContDiffOn 𝕜 n f s) :
     iteratedDerivWithin n (c • f) s x = c • iteratedDerivWithin n f s x := by
   simp_rw [iteratedDerivWithin]
   rw [iteratedFDerivWithin_const_smul_apply hf h hx]
   simp only [ContinuousMultilinearMap.smul_apply]
 
+/-- Note: this is unrelated to `iteratedDeriv_const_mul`, where the multiplication works on the
+domain. -/
 theorem iteratedDerivWithin_const_mul (c : 𝕜) {f : 𝕜 → 𝕜} (hf : ContDiffOn 𝕜 n f s) :
     iteratedDerivWithin n (fun z => c * f z) s x = c * iteratedDerivWithin n f s x := by
   simpa using iteratedDerivWithin_const_smul (F := 𝕜) hx h c hf
@@ -89,6 +98,35 @@ theorem iteratedDerivWithin_sub (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn �
 
 end
 
+lemma iteratedDeriv_add (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
+    iteratedDeriv n (f + g) x = iteratedDeriv n f x + iteratedDeriv n g x := by
+  simpa only [iteratedDerivWithin_univ] using
+    iteratedDerivWithin_add (Set.mem_univ _) uniqueDiffOn_univ
+      (contDiffOn_univ.mpr hf) (contDiffOn_univ.mpr hg)
+
+theorem iteratedDeriv_const_add (hn : 0 < n) (c : F) :
+    iteratedDeriv n (fun z => c + f z) x = iteratedDeriv n f x := by
+  simpa only [iteratedDerivWithin_univ] using
+    iteratedDerivWithin_const_add (Set.mem_univ _) uniqueDiffOn_univ hn c
+
+theorem iteratedDeriv_const_sub (hn : 0 < n) (c : F) :
+    iteratedDeriv n (fun z => c - f z) x = iteratedDeriv n (-f) x := by
+  simpa only [iteratedDerivWithin_univ] using
+    iteratedDerivWithin_const_sub (Set.mem_univ _) uniqueDiffOn_univ hn c
+
+lemma iteratedDeriv_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
+    iteratedDeriv n (fun x ↦ -(f x)) a = -(iteratedDeriv n f a) := by
+  simpa only [iteratedDerivWithin_univ] using
+    iteratedDerivWithin_neg (Set.mem_univ a) uniqueDiffOn_univ f
+
+lemma iteratedDeriv_sub (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
+    iteratedDeriv n (f - g) x = iteratedDeriv n f x - iteratedDeriv n g x := by
+  simpa only [iteratedDerivWithin_univ] using
+    iteratedDerivWithin_sub (Set.mem_univ _) uniqueDiffOn_univ
+      (contDiffOn_univ.mpr hf) (contDiffOn_univ.mpr hg)
+
+/-- Note: this is unrelated to `iteratedDerivWithin_const_smul`, where the scalar multiplication
+works on the codomain. -/
 theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n f) (c : 𝕜) :
     iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n • iteratedDeriv n f (c * x) := by
   induction n with
@@ -106,13 +144,11 @@ theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n
       ← Function.comp_def, deriv.scomp x h₀ (differentiableAt_id'.const_mul _),
       deriv_const_mul _ differentiableAt_id', deriv_id'', smul_smul, mul_one, pow_succ]
 
+/-- Note: this is unrelated to `iteratedDerivWithin_const_mul`, where the multiplication works on
+the codomain. -/
 theorem iteratedDeriv_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiff 𝕜 n f) (c : 𝕜) :
     iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n * iteratedDeriv n f (c * x) := by
   simpa only [smul_eq_mul] using iteratedDeriv_const_smul h c
-
-lemma iteratedDeriv_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
-    iteratedDeriv n (fun x ↦ -(f x)) a = -(iteratedDeriv n f a) := by
-  simp_rw [← iteratedDerivWithin_univ, iteratedDerivWithin_neg' (Set.mem_univ a) uniqueDiffOn_univ]
 
 lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     iteratedDeriv n (fun x ↦ f (-x)) a = (-1 : 𝕜) ^ n • iteratedDeriv n f (-a) := by
@@ -123,3 +159,43 @@ lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     rw [iteratedDeriv_succ, iteratedDeriv_succ, ih', pow_succ', neg_mul, one_mul,
       deriv_comp_neg (f := fun x ↦ (-1 : 𝕜) ^ n • iteratedDeriv n f x), deriv_const_smul',
       neg_smul]
+
+open Topology in
+lemma Filter.EventuallyEq.iteratedDeriv_eq (n : ℕ) {f g : 𝕜 → F} {x : 𝕜} (hfg : f =ᶠ[𝓝 x] g) :
+    iteratedDeriv n f x = iteratedDeriv n g x := by
+  simp only [← iteratedDerivWithin_univ, iteratedDerivWithin_eq_iteratedFDerivWithin]
+  rw [(hfg.filter_mono nhdsWithin_le_nhds).iteratedFDerivWithin_eq hfg.eq_of_nhds n]
+
+lemma Set.EqOn.iteratedDeriv_of_isOpen (hfg : Set.EqOn f g s) (hs : IsOpen s) (n : ℕ) :
+    Set.EqOn (iteratedDeriv n f) (iteratedDeriv n g) s := by
+  refine fun x hx ↦ Filter.EventuallyEq.iteratedDeriv_eq n ?_
+  filter_upwards [IsOpen.mem_nhds hs hx] with a ha
+  exact hfg ha
+
+end one_dimensional
+
+/-!
+### Invariance of iterated derivatives under translation
+-/
+
+section shift_invariance
+
+variable {𝕜 F} [NontriviallyNormedField 𝕜] [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+
+/-- The iterated derivative commutes with shifting the function by a constant on the left. -/
+lemma iteratedDeriv_comp_const_add (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
+    iteratedDeriv n (fun z ↦ f (s + z)) = fun t ↦ iteratedDeriv n f (s + t) := by
+  induction n with
+  | zero => simp only [iteratedDeriv_zero]
+  | succ n IH =>
+    simpa only [iteratedDeriv_succ, IH] using funext <| deriv_comp_const_add _ s
+
+/-- The iterated derivative commutes with shifting the function by a constant on the right. -/
+lemma iteratedDeriv_comp_add_const (n : ℕ) (f : 𝕜 → F) (s : 𝕜) :
+    iteratedDeriv n (fun z ↦ f (z + s)) = fun t ↦ iteratedDeriv n f (t + s) := by
+  induction n with
+  | zero => simp only [iteratedDeriv_zero]
+  | succ n IH =>
+    simpa only [iteratedDeriv_succ, IH] using funext <| deriv_comp_add_const _ s
+
+end shift_invariance

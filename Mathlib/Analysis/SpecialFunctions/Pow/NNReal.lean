@@ -79,7 +79,7 @@ theorem one_rpow (x : ℝ) : (1 : ℝ≥0) ^ x = 1 :=
   NNReal.eq <| Real.one_rpow _
 
 theorem rpow_add {x : ℝ≥0} (hx : x ≠ 0) (y z : ℝ) : x ^ (y + z) = x ^ y * x ^ z :=
-  NNReal.eq <| Real.rpow_add (pos_iff_ne_zero.2 hx) _ _
+  NNReal.eq <| Real.rpow_add ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hx) _ _
 
 theorem rpow_add' (h : y + z ≠ 0) (x : ℝ≥0) : x ^ (y + z) = x ^ y * x ^ z :=
   NNReal.eq <| Real.rpow_add' x.2 h
@@ -146,7 +146,7 @@ lemma rpow_mul_intCast (x : ℝ≥0) (y : ℝ) (n : ℤ) : x ^ (y * n) = (x ^ y)
 theorem rpow_neg_one (x : ℝ≥0) : x ^ (-1 : ℝ) = x⁻¹ := by simp [rpow_neg]
 
 theorem rpow_sub {x : ℝ≥0} (hx : x ≠ 0) (y z : ℝ) : x ^ (y - z) = x ^ y / x ^ z :=
-  NNReal.eq <| Real.rpow_sub (pos_iff_ne_zero.2 hx) y z
+  NNReal.eq <| Real.rpow_sub ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr hx) y z
 
 theorem rpow_sub' (h : y - z ≠ 0) (x : ℝ≥0) : x ^ (y - z) = x ^ y / x ^ z :=
   NNReal.eq <| Real.rpow_sub' x.2 h
