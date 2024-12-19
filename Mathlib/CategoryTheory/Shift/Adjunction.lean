@@ -84,6 +84,7 @@ unit of the adjunction `adj` implies compatibility with the counit of `adj`.
 lemma compatibilityCounit_of_compatibilityUnit (h : CompatibilityUnit adj e₁ e₂) :
     CompatibilityCounit adj e₁ e₂ := by
   intro Y
+  have eq := h (G.obj Y)
   simp only [← cancel_mono (e₂.inv.app _ ≫ G.map (e₁.inv.app _)),
     assoc, Iso.hom_inv_id_app_assoc, comp_id, ← Functor.map_comp,
     Iso.hom_inv_id_app, Functor.comp_obj, Functor.map_id] at eq
@@ -252,7 +253,7 @@ variable (a b : A) (h : b + a = 0) [F.CommShift A]
 /-- Auxiliary definition for `iso`. -/
 noncomputable def iso' : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a :=
   (conjugateIsoEquiv (Adjunction.comp adj (shiftEquiv' D b a h).toAdjunction)
-    (Adjunction.comp (shiftEquiv' C b a h).toAdjunction adj)) (F.commShiftIso b)
+    (Adjunction.comp (shiftEquiv' C b a h).toAdjunction adj)).toFun (F.commShiftIso b)
 
 /--
 Given an adjunction `F ⊣ G` and a `CommShift` structure on `F`, these are the candidate
@@ -327,16 +328,16 @@ noncomputable def rightAdjointCommShift [F.CommShift A] : G.CommShift A where
   iso a := RightAdjointCommShift.iso adj a
   zero := by
     refine CommShift.CompatibilityUnit_unique_right adj (F.commShiftIso 0)  _ _
-      (RightAdjointCommShift.iso_CompatibilityUnit adj 0) ?_
+      (RightAdjointCommShift.compatibilityUnit_iso adj 0) ?_
     rw [F.commShiftIso_zero]
     exact CommShift.CompatibilityUnit_isoZero adj
   add a b := by
     refine CommShift.CompatibilityUnit_unique_right adj (F.commShiftIso (a + b))  _ _
-      (RightAdjointCommShift.iso_CompatibilityUnit adj (a + b)) ?_
+      (RightAdjointCommShift.compatibilityUnit_iso adj (a + b)) ?_
     rw [F.commShiftIso_add]
     exact CommShift.CompatibilityUnit_isoAdd adj _ _ _ _
-      (RightAdjointCommShift.iso_CompatibilityUnit adj a)
-      (RightAdjointCommShift.iso_CompatibilityUnit adj b)
+      (RightAdjointCommShift.compatibilityUnit_iso adj a)
+      (RightAdjointCommShift.compatibilityUnit_iso adj b)
 
 lemma commShift_of_leftAdjoint [F.CommShift A] :
     letI := adj.rightAdjointCommShift A
