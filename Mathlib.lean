@@ -5226,6 +5226,7 @@ import Mathlib.Topology.Connected.LocallyConnected
 import Mathlib.Topology.Connected.PathConnected
 import Mathlib.Topology.Connected.Separation
 import Mathlib.Topology.Connected.TotallyDisconnected
+import Mathlib.Topology.Constructible
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Topology.ContinuousMap.Basic
