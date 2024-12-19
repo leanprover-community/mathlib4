@@ -220,24 +220,51 @@ instance clone_toSymmOperad [Clone A] : SymmOperad A where
 
   -- The following would be needed to improve this from `extends Operad` to `extends SymmOperad`
   act_at := fun i ↦ {
-    smul := fun s x ↦ x ∘∈ fun k ↦ proj i (s k),
-    one_smul := fun b ↦ proj_right b,
-    mul_smul := fun x y b ↦ by
-      dsimp [HSMul.hSMul]
-      simp_rw [superpose_assoc, proj_left]
+    smul s x := x ∘∈ fun k ↦ proj i (s k),
+    one_smul := proj_right,
+    mul_smul _ _ _ := by
+      simp_rw [HSMul.hSMul, superpose_assoc, proj_left]
+      rfl
     }
-  perm_left := fun {n m} s k x y ↦ by
+  perm_left {n m} s k hn x y := by
     dsimp [SigmaMul_smul, MultiComposable.compose, cloneCompose]
-    rw [superpose_assoc]
-    congr! with z
+    rw [superpose_assoc, superpose_assoc]
+    congr! 2 with z
     rw [proj_left]
     split
-    · split
-      · dsimp [clonePadTo]
-        congr!
-        sorry
+    · rename_i h₁
+      have h₂ : z.val = s.symm k := by
+        rw [← Fin.ext_iff] at h₁ ⊢
+        exact (Equiv.apply_eq_iff_eq_symm_apply s).mp h₁
+      simp_rw [dif_pos h₂]
+      rename_i h₂
+      simp_rw [clonePadTo, superpose_assoc, h₁, proj_left]
+      congr! with w
+      sorry
+    · have h₂ : z.val ≠ s.symm k := by
+        rename_i h₁
+        contrapose! h₁
+        rw [← Fin.ext_iff] at h₁ ⊢
+        exact (Equiv.apply_eq_iff_eq_symm_apply s).mpr h₁
+      simp_rw [dif_neg h₂]
+      split <;> split <;> rw [proj_left] <;> congr! 2
       · sorry
-    · sorry
-  perm_right := sorry
+      · sorry
+      · sorry
+      · sorry
+  perm_right {n m} s k x y := by
+    dsimp [SigmaMul_smul, MultiComposable.compose, cloneCompose, HSMul.hSMul]
+    rw [superpose_assoc]
+    congr! with z
+    split
+    · rename_i h₁
+      rw [← Fin.ext_iff] at h₁
+      subst z
+      simp_rw [clonePadTo, superpose_assoc, proj_left]
+      congr! with z
+      sorry
+    · split <;> rw [proj_left] <;> congr! 2
+      · sorry
+      · sorry
 
 end Clone
