@@ -1634,6 +1634,19 @@ end IntermediateField
 
 end ExtendScalars
 
+section Finite
+
+namespace IntermediateField
+
+lemma finiteDimensional_of_le {E F : Type*} [Field F] [Field E] [Algebra F E]
+    {M N : IntermediateField F E} (le : M ≤ N) [FiniteDimensional F N] : FiniteDimensional F M :=
+  FiniteDimensional.of_injective (AlgHom.toLinearMap (IntermediateField.inclusion le))
+    (IntermediateField.inclusion_injective le)
+
+end IntermediateField
+
+end Finite
+
 namespace IsFractionRing
 
 variable {F A K L : Type*} [Field F] [CommRing A] [Algebra F A]
@@ -1702,15 +1715,6 @@ theorem lift_cardinalMk_adjoin_le {E : Type v} [Field E] [Algebra F E] (s : Set 
 theorem cardinalMk_adjoin_le {E : Type u} [Field E] [Algebra F E] (s : Set E) :
     #(adjoin F s) ≤ #F ⊔ #s ⊔ ℵ₀ := by
   simpa using lift_cardinalMk_adjoin_le F s
-
-end IntermediateField
-
-namespace IntermediateField
-
-lemma finiteDimensional_of_le {E F : Type*} [Field F] [Field E] [Algebra F E]
-    {M N : IntermediateField F E} (le : M ≤ N) [FiniteDimensional F N] : FiniteDimensional F M :=
-  FiniteDimensional.of_injective (AlgHom.toLinearMap (IntermediateField.inclusion le))
-    (IntermediateField.inclusion_injective le)
 
 end IntermediateField
 
