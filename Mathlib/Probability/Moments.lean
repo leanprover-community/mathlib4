@@ -31,7 +31,15 @@ import Mathlib.Probability.Variance
   `ProbabilityTheory.measure_ge_le_exp_mul_mgf` and
   `ProbabilityTheory.measure_le_le_exp_mul_mgf` for versions of these results using `mgf` instead
   of `cgf`.
-
+* `ProbabilityTheory.tilt_first_deriv`: derivation of `mgf X μ t` is
+  `μ[exp (t * X ω) * X ω]`. In order to deal with the differentiation of parametric integrals,
+`hasDerivAt_integral_of_dominated_loc_of_deriv_le` are used in the proof.
+* `ProbabilityTheory.tilt_second_deriv`: derivation of `μ[fun ω ↦ rexp (t * X ω) * X ω]` is
+  `μ[fun ω ↦ rexp (t * X ω) * X ω ^ 2]`. In order to deal with the differentiation of
+  parametric integrals, `hasDerivAt_integral_of_dominated_loc_of_deriv_le` are used in the proof.
+* `ProbabilityTheory.cgf_deriv_one`: first derivative of cumulant `cgf X μ t`.
+  It can be described by exponential tilting.
+* `ProbabilityTheory.cgf_deriv_two`: second derivative of cumulant `cgf X μ t`.
 -/
 
 
@@ -335,5 +343,28 @@ theorem measure_le_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
   exact mul_le_mul le_rfl (le_exp_log _) mgf_nonneg (exp_pos _).le
 
 end MomentGeneratingFunction
+
+theorem integrable_bounded [IsFiniteMeasure μ] (a b : ℝ) {X : Ω → ℝ} (hX : AEMeasurable X μ)
+    (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+     Integrable X μ := by
+   have m1 : HasFiniteIntegral X μ := by
+      apply (hasFiniteIntegral_const (max ‖a‖ ‖b‖)).mono'
+      filter_upwards [h.mono fun ω h ↦ h.1, h.mono fun ω h ↦ h.2] with ω using abs_le_max_abs_abs
+   exact ⟨aestronglyMeasurable_iff_aemeasurable.mpr hX, m1⟩
+
+lemma aemeasurable_expt {X : Ω → ℝ} (t : ℝ) (hX : AEMeasurable X μ) :
+    AEStronglyMeasurable (fun ω ↦ rexp (t * (X ω))) μ :=
+  aestronglyMeasurable_iff_aemeasurable.mpr <| measurable_exp.comp_aemeasurable' (hX.const_mul t)
+
+lemma integrable_expt [IsFiniteMeasure μ] {X : Ω → ℝ} (t b : ℝ) (ht : t > 0)
+    (hX : AEMeasurable X μ) (hb : ∀ᵐ ω ∂μ, X ω ≤ b) :
+    Integrable (fun ω ↦ exp (t * (X ω))) μ := by
+  have h : ∀ᵐ ω ∂μ, rexp (t * X ω) ∈ Set.Icc 0 (rexp (t * b)) := by
+    filter_upwards [hb] with ω hb
+    constructor
+    · exact exp_nonneg (t * X ω)
+    · exact (exp_le_exp.mpr (mul_le_mul_of_nonneg_left hb (le_of_lt ht)))
+  exact integrable_bounded 0 (rexp (t * b))
+    (Measurable.comp_aemeasurable' measurable_exp (AEMeasurable.const_mul hX t)) h
 
 end ProbabilityTheory
