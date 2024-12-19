@@ -316,6 +316,8 @@ theorem mem_of_subset_of_mem {s₁ s₂ : Set α} {a : α} (h : s₁ ⊆ s₂) :
 theorem not_mem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
   mt <| mem_of_subset_of_mem h
 
+alias not_mem_mono := not_mem_subset
+
 theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
   simp only [subset_def, not_forall, exists_prop]
 
@@ -961,10 +963,6 @@ theorem insert_inter_distrib (a : α) (s t : Set α) : insert a (s ∩ t) = inse
 theorem insert_union_distrib (a : α) (s t : Set α) : insert a (s ∪ t) = insert a s ∪ insert a t :=
   ext fun _ => or_or_distrib_left
 
-theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
-  ⟨fun h => eq_of_not_mem_of_mem_insert (h ▸ mem_insert a s) ha,
-    congr_arg (fun x => insert x s)⟩
-
 -- useful in proofs by induction
 theorem forall_of_forall_insert {P : α → Prop} {a : α} {s : Set α} (H : ∀ x, x ∈ insert a s → P x)
     (x) (h : x ∈ s) : P x :=
@@ -1596,6 +1594,19 @@ theorem insert_diff_of_not_mem (s) (h : a ∉ t) : insert a s \ t = insert a (s 
 theorem insert_diff_self_of_not_mem {a : α} {s : Set α} (h : a ∉ s) : insert a s \ {a} = s := by
   ext x
   simp [and_iff_left_of_imp fun hx : x ∈ s => show x ≠ a from fun hxa => h <| hxa ▸ hx]
+
+lemma insert_diff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by
+  ext; simp +contextual [or_and_left, em, ha]
+
+lemma insert_erase_invOn :
+    InvOn (insert a) (fun s ↦ s \ {a}) {s : Set α | a ∈ s} {s : Set α | a ∉ s} :=
+  ⟨fun _s ha ↦ insert_diff_self_of_mem ha, fun _s ↦ insert_diff_self_of_not_mem⟩
+
+@[gcongr] protected alias ⟨_, GCongr.singleton_subset_singleton⟩ := singleton_subset_singleton
+
+theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
+  ⟨fun h => eq_of_not_mem_of_mem_insert (h ▸ mem_insert a s) ha,
+    congr_arg (fun x => insert x s)⟩
 
 @[simp]
 theorem insert_diff_eq_singleton {a : α} {s : Set α} (h : a ∉ s) : insert a s \ s = {a} := by
