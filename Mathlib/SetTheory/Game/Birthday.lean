@@ -274,7 +274,7 @@ theorem small_setOf_birthday_lt (o : Ordinal) : Small.{u} {x : Game.{u} // birth
   induction o using Ordinal.induction with | h o IH =>
   let S := ⋃ a ∈ Set.Iio o, {x : Game.{u} | birthday x < a}
   let H : Small.{u} S := @small_biUnion _ _ _ _ _ IH
-  obtain rfl | ⟨a, rfl⟩ | ho := zero_or_succ_or_limit o
+  obtain rfl | ⟨a, rfl⟩ | ho := zero_or_succ_or_isSuccLimit o
   · simp_rw [Ordinal.not_lt_zero]
     exact small_empty
   · simp_rw [Order.lt_succ_iff, le_iff_lt_or_eq]
@@ -301,7 +301,7 @@ theorem small_setOf_birthday_lt (o : Ordinal) : Small.{u} {x : Game.{u} // birth
         exact (birthday_quot_le_pGameBirthday _).trans_lt (PGame.birthday_moveRight_lt i)
   · convert H
     change birthday _ < o ↔ ∃ a, _
-    simpa using lt_limit ho
+    simpa using ho.lt_iff_exists_lt
 
 end Game
 
