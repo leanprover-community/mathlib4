@@ -140,10 +140,7 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
   · -- case `c < 0`: integrand is identically constant, *except* at `x = 0` if `r ≠ 0`.
     apply IntervalIntegrable.symm
     rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hc.le]
-    have : Ioc c 0 = Ioo c 0 ∪ {(0 : ℝ)} := by
-      rw [← Ioo_union_Icc_eq_Ioc hc (le_refl 0), ← Icc_def]
-      simp_rw [← le_antisymm_iff, setOf_eq_eq_singleton']
-    rw [this, integrableOn_union, and_comm]; constructor
+    rw [← Ioo_union_right hc, integrableOn_union, and_comm]; constructor
     · refine integrableOn_singleton_iff.mpr (Or.inr ?_)
       exact isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure.lt_top_of_isCompact
         isCompact_singleton
