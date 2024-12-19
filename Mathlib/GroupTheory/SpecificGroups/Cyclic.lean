@@ -118,7 +118,7 @@ alias isAddCyclic_iff_exists_ofOrder_eq_natCard := isAddCyclic_iff_exists_addOrd
 
 @[deprecated (since := "2024-12-20")]
 alias IsCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype :=
-  isAddCyclic_iff_exists_addOrderOf_eq_natCard
+  isCyclic_iff_exists_orderOf_eq_natCard
 
 @[deprecated (since := "2024-12-20")]
 alias IsAddCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype :=
