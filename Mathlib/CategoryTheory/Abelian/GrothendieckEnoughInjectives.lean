@@ -7,7 +7,8 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.MorphismProperty.Pushouts
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory
 import Mathlib.CategoryTheory.Abelian.Refinements
-import Mathlib.CategoryTheory.Subobject.Basic
+import Mathlib.CategoryTheory.Subobject.Lattice
+import Mathlib.Order.TransfiniteIteration
 
 /-!
 # Grothendieck abelian categories have enough injectives
@@ -257,7 +258,15 @@ lemma generatingMonomorphismsPushouts_ofLE_le_largerSubobject (A : Subobject X) 
     exact Arrow.isoMk (Iso.refl _)
       (Subobject.isoOfEq _ _ ((by simp [largerSubobject, dif_neg hA])))
 
---variable [IsGrothendieckAbelian.{w} C]
+variable [IsGrothendieckAbelian.{v} C]
+
+variable (J : Type w)
+
+variable [WellPowered C]
+#check largerSubobject hG (X := X)
+#check top_mem_range_transfiniteIterate (largerSubobject hG (X := X))
+
+--transfiniteIterate
 end transfiniteComposition
 
 end IsGrothendieckAbelian
