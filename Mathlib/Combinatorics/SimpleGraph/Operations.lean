@@ -5,6 +5,7 @@ Authors: Jeremy Tan
 -/
 import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Combinatorics.SimpleGraph.Maps
+import Mathlib.Combinatorics.SimpleGraph.Subgraph
 
 /-!
 # Local graph operations
@@ -167,6 +168,15 @@ lemma edge_edgeSet_of_ne (h : s ≠ t) : (edge s t).edgeSet = {s(s, t)} := by
 lemma sup_edge_of_adj (h : G.Adj s t) : G ⊔ edge s t = G := by
   rwa [sup_eq_left, ← edgeSet_subset_edgeSet, edge_edgeSet_of_ne h.ne, Set.singleton_subset_iff,
     mem_edgeSet]
+
+theorem Subgraph.spanningCoe_sup_edge_le {H : Subgraph (G ⊔ edge s t)} (h : ¬ H.Adj s t) :
+    H.spanningCoe ≤ G := by
+  intro v w hvw
+  have := hvw.adj_sub
+  simp only [Subgraph.spanningCoe_adj, SimpleGraph.sup_adj, SimpleGraph.edge_adj] at *
+  by_cases hs : s(v, w) = s(s, t)
+  · exact (h ((Subgraph.adj_congr_of_sym2 hs).mp hvw)).elim
+  · aesop
 
 variable [Fintype V] [DecidableRel G.Adj]
 
