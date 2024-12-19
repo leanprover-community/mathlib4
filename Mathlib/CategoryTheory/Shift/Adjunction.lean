@@ -235,7 +235,7 @@ lemma shift_counit_app [adj.CommShift A] (a : A) (Y : D) :
   have eq := NatTrans.CommShift.comm_app adj.counit a Y
   simp only [Functor.comp_obj, Functor.id_obj, Functor.commShiftIso_comp_hom_app, assoc,
     Functor.commShiftIso_id_hom_app, comp_id] at eq
-  rw [← eq, ← assoc (F.map ((G.commShiftIso a).inv.app _)), ← F.map_comp, Iso.inv_hom_id_app,
+  simp only [← eq, Functor.comp_obj, Functor.id_obj, ← F.map_comp_assoc, Iso.inv_hom_id_app,
     F.map_id, id_comp, Iso.inv_hom_id_app_assoc]
 
 end Adjunction
