@@ -23,7 +23,7 @@ section SMul
 
 open scoped Polynomial
 
-example : (SubNegMonoid.SMulInt : SMul ℤ ℂ) = (Complex.SMul.instSMulRealComplex : SMul ℤ ℂ) := by
+example : (SubNegMonoid.toZSMul : SMul ℤ ℂ) = (Complex.SMul.instSMulRealComplex : SMul ℤ ℂ) := by
   with_reducible_and_instances rfl
 
 example : RestrictScalars.module ℝ ℂ ℂ = Complex.instModule := by
@@ -38,7 +38,7 @@ example (α β : Type _) [AddMonoid α] [AddMonoid β] :
   with_reducible_and_instances rfl
 
 example (α β : Type _) [SubNegMonoid α] [SubNegMonoid β] :
-    (Prod.smul : SMul ℤ (α × β)) = SubNegMonoid.SMulInt := by
+    (Prod.smul : SMul ℤ (α × β)) = SubNegMonoid.toZSMul := by
   with_reducible_and_instances rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, AddMonoid (β a)] :
@@ -46,7 +46,7 @@ example (α : Type _) (β : α → Type _) [∀ a, AddMonoid (β a)] :
   with_reducible_and_instances rfl
 
 example (α : Type _) (β : α → Type _) [∀ a, SubNegMonoid (β a)] :
-    (Pi.instSMul : SMul ℤ (∀ a, β a)) = SubNegMonoid.SMulInt := by
+    (Pi.instSMul : SMul ℤ (∀ a, β a)) = SubNegMonoid.toZSMul := by
   with_reducible_and_instances rfl
 
 namespace TensorProduct
@@ -226,8 +226,8 @@ end Polynomial
 section Subtype
 
 -- this diamond is the reason that `Fintype.toLocallyFiniteOrder` is not an instance
-example {α} [Preorder α] [LocallyFiniteOrder α] [Fintype α] [@DecidableRel α (· < ·)]
-    [@DecidableRel α (· ≤ ·)] (p : α → Prop) [DecidablePred p] :
+example {α} [Preorder α] [LocallyFiniteOrder α] [Fintype α] [DecidableRel (α := α) (· < ·)]
+    [DecidableRel (α := α) (· ≤ ·)] (p : α → Prop) [DecidablePred p] :
     Subtype.instLocallyFiniteOrder p = Fintype.toLocallyFiniteOrder := by
   fail_if_success rfl
   exact Subsingleton.elim _ _
