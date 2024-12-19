@@ -9,6 +9,7 @@ import Mathlib.RingTheory.MaximalSpectrum
 import Mathlib.RingTheory.ChainOfDivisors
 import Mathlib.RingTheory.DedekindDomain.Basic
 import Mathlib.RingTheory.FractionalIdeal.Operations
+import Mathlib.Algebra.Squarefree.Basic
 
 /-!
 # Dedekind domains and ideals
@@ -855,7 +856,7 @@ variable {T : Type*} [CommRing T] [IsDedekindDomain T] {I J : Ideal T}
 open Multiset UniqueFactorizationMonoid Ideal
 
 theorem prod_normalizedFactors_eq_self (hI : I ≠ ⊥) : (normalizedFactors I).prod = I :=
-  associated_iff_eq.1 (normalizedFactors_prod hI)
+  associated_iff_eq.1 (prod_normalizedFactors hI)
 
 theorem count_le_of_ideal_ge [DecidableEq (Ideal T)]
     {I J : Ideal T} (h : I ≤ J) (hI : I ≠ ⊥) (K : Ideal T) :
@@ -1191,7 +1192,7 @@ theorem count_associates_factors_eq [DecidableEq (Ideal R)] [DecidableEq <| Asso
     rw [← Ideal.dvd_iff_le, ← Associates.mk_dvd_mk, Associates.mk_pow]
     simp only [Associates.dvd_eq_le]
     rw [Associates.prime_pow_dvd_iff_le hI hJ']
-  linarith
+  omega
 
 end
 

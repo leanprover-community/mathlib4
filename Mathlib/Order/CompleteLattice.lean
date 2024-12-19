@@ -623,11 +623,11 @@ theorem le_iSup (f : ι → α) (i : ι) : f i ≤ iSup f :=
 theorem iInf_le (f : ι → α) (i : ι) : iInf f ≤ f i :=
   sInf_le ⟨i, rfl⟩
 
-theorem le_iSup' (f : ι → α) (i : ι) : f i ≤ iSup f :=
-  le_sSup ⟨i, rfl⟩
+@[deprecated le_iSup (since := "2024-12-13")]
+theorem le_iSup' (f : ι → α) (i : ι) : f i ≤ iSup f := le_iSup f i
 
-theorem iInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i :=
-  sInf_le ⟨i, rfl⟩
+@[deprecated iInf_le (since := "2024-12-13")]
+theorem iInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i := iInf_le f i
 
 theorem isLUB_iSup : IsLUB (range f) (⨆ j, f j) :=
   isLUB_sSup _
