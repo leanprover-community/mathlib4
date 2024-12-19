@@ -89,6 +89,7 @@ theorem toSubMulAction_one : (1 : Submodule R A).toSubMulAction = 1 :=
 theorem one_eq_span_one_set : (1 : Submodule R A) = span R 1 :=
   one_eq_span
 
+@[simp]
 theorem one_le {P : Submodule R A} : (1 : Submodule R A) ≤ P ↔ (1 : A) ∈ P := by
   -- Porting note: simpa no longer closes refl goals, so added `SetLike.mem_coe`
   simp only [one_eq_span, span_le, Set.singleton_subset_iff, SetLike.mem_coe]

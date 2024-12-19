@@ -17,14 +17,14 @@ of `q`.
 -/
 
 namespace Polynomial
-variable {R : Type*} [Ring R]
+variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
 local notation "deg("p")" => natDegree p
 local notation3 "coeffs("p")" => Set.range (coeff p)
-local notation3 "spanCoeffs("p")" => 1 ⊔ Submodule.span ℤ coeffs(p)
+local notation3 "spanCoeffs("p")" => 1 ⊔ Submodule.span R coeffs(p)
 
 open Submodule Set in
-lemma coeff_divModByMonicAux_mem_span_pow_mul_span : ∀ (p q : R[X]) (hq : q.Monic) (i),
+lemma coeff_divModByMonicAux_mem_span_pow_mul_span : ∀ (p q : S[X]) (hq : q.Monic) (i),
     (p.divModByMonicAux hq).1.coeff i ∈ spanCoeffs(q) ^ deg(p) * spanCoeffs(p) ∧
     (p.divModByMonicAux hq).2.coeff i ∈ spanCoeffs(q) ^ deg(p) * spanCoeffs(p)
   | p, q, hq, i => by
@@ -43,7 +43,7 @@ lemma coeff_divModByMonicAux_mem_span_pow_mul_span : ∀ (p q : R[X]) (hq : q.Mo
         Prod.fst_zero, coeff_zero, add_zero, Prod.snd_zero, Submodule.zero_mem, and_true]
       split_ifs
       exacts [H₀ _, zero_mem _]
-    have H : span ℤ coeffs(r) ≤ span ℤ coeffs(p) ⊔ span ℤ coeffs(q) * span ℤ coeffs(p) := by
+    have H : span R coeffs(r) ≤ span R coeffs(p) ⊔ span R coeffs(q) * span R coeffs(p) := by
       rw [span_le, ← hr]
       rintro _ ⟨i, rfl⟩
       rw [coeff_sub, ← mul_assoc, coeff_mul_X_pow', coeff_mul_C]
@@ -56,7 +56,7 @@ lemma coeff_divModByMonicAux_mem_span_pow_mul_span : ∀ (p q : R[X]) (hq : q.Mo
     have H'' := calc
       spanCoeffs(q) ^ deg(r) * spanCoeffs(r)
       _ ≤ spanCoeffs(q) ^ deg(r) *
-          (1 ⊔ (span ℤ coeffs(p) ⊔ span ℤ coeffs(q) * span ℤ coeffs(p))) := by gcongr
+          (1 ⊔ (span R coeffs(p) ⊔ span R coeffs(q) * span R coeffs(p))) := by gcongr
       _ ≤ spanCoeffs(q) ^ deg(r) * (spanCoeffs(q) * spanCoeffs(p)) := by
         gcongr
         simp only [sup_le_iff]
@@ -76,24 +76,29 @@ lemma coeff_divModByMonicAux_mem_span_pow_mul_span : ∀ (p q : R[X]) (hq : q.Mo
 coefficients of `p` and `q`.
 
 Precisely, each summand needs at most one coefficient of `p` and `deg p` coefficients of `q`. -/
-lemma coeff_modByMonic_mem_span_pow_mul_span (p q : R[X]) (i : ℕ) :
-    (p %ₘ q).coeff i ∈ spanCoeffs(q) ^ deg(p) * spanCoeffs(p) := by
+lemma coeff_modByMonic_mem_span_pow_mul_span (p q : S[X])
+    (Mp : Submodule R S) (hp : ∀ i, p.coeff i ∈ Mp) (hp' : 1 ∈ Mp)
+    (Mq : Submodule R S) (hq : ∀ i, q.coeff i ∈ Mq) (hq' : 1 ∈ Mq) (i : ℕ) :
+    (p %ₘ q).coeff i ∈ Mq ^ p.natDegree * Mp := by
   delta modByMonic
   split_ifs with H
-  · exact (coeff_divModByMonicAux_mem_span_pow_mul_span p q H i).2
-  · refine Submodule.mul_le_mul_left (pow_le_pow_left' le_sup_left _) ?_
-    simp only [one_pow, one_mul]
-    exact SetLike.le_def.mp le_sup_right (Submodule.subset_span (Set.mem_range_self i))
+  · refine SetLike.le_def.mp ?_ (coeff_divModByMonicAux_mem_span_pow_mul_span (R := R) p q H i).2
+    gcongr <;> exact sup_le (by simpa) (by simpa [Submodule.span_le, Set.range_subset_iff])
+  · rw [← one_mul (p.coeff i), ← one_pow p.natDegree]
+    exact Submodule.mul_mem_mul (Submodule.pow_mem_pow Mq hq' _) (hp i)
 
 /-- For polynomials `p q : R[X]`, the coefficients of `p /ₘ q` can be written as sums of products of
 coefficients of `p` and `q`.
 
 Precisely, each summand needs at most one coefficient of `p` and `deg p` coefficients of `q`. -/
-lemma coeff_divByMonic_mem_span_pow_mul_span (p q : R[X]) (i : ℕ) :
-    (p /ₘ q).coeff i ∈ spanCoeffs(q) ^ deg(p) * spanCoeffs(p) := by
+lemma coeff_divByMonic_mem_span_pow_mul_span (p q : S[X])
+    (Mp : Submodule R S) (hp : ∀ i, p.coeff i ∈ Mp) (hp' : 1 ∈ Mp)
+    (Mq : Submodule R S) (hq : ∀ i, q.coeff i ∈ Mq) (hq' : 1 ∈ Mq) (i : ℕ) :
+    (p /ₘ q).coeff i ∈ Mq ^ p.natDegree * Mp := by
   delta divByMonic
   split_ifs with H
-  · exact (coeff_divModByMonicAux_mem_span_pow_mul_span p q H i).1
+  · refine SetLike.le_def.mp ?_ (coeff_divModByMonicAux_mem_span_pow_mul_span (R := R) p q H i).1
+    gcongr <;> exact sup_le (by simpa) (by simpa [Submodule.span_le, Set.range_subset_iff])
   · simp
 
 end Polynomial
