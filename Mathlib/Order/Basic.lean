@@ -1260,25 +1260,35 @@ instance [∀ i, Preorder (π i)] [∀ i, DenselyOrdered (π i)] :
           ⟨le_update_iff.2 ⟨ha.le, fun _ _ ↦ le_rfl⟩, i, by rwa [update_same]⟩,
           update_le_iff.2 ⟨hb.le, fun _ _ ↦ hab _⟩, i, by rwa [update_same]⟩⟩
 
-theorem le_of_forall_le_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α}
-    (h : ∀ a, a₂ < a → a₁ ≤ a) : a₁ ≤ a₂ :=
+section LinearOrder
+variable [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α}
+
+theorem le_of_forall_le_of_dense (h : ∀ a, a₂ < a → a₁ ≤ a) : a₁ ≤ a₂ :=
   le_of_not_gt fun ha ↦
     let ⟨a, ha₁, ha₂⟩ := exists_between ha
     lt_irrefl a <| lt_of_lt_of_le ‹a < a₁› (h _ ‹a₂ < a›)
 
-theorem eq_of_le_of_forall_le_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α} (h₁ : a₂ ≤ a₁)
+lemma forall_le_iff_le_of_dense : (∀ a, a₂ < a → a₁ ≤ a) ↔ a₁ ≤ a₂ where
+  mp := le_of_forall_le_of_dense
+  mpr ha _a ha₂ := ha.trans ha₂.le
+
+theorem eq_of_le_of_forall_le_of_dense (h₁ : a₂ ≤ a₁)
     (h₂ : ∀ a, a₂ < a → a₁ ≤ a) : a₁ = a₂ :=
   le_antisymm (le_of_forall_le_of_dense h₂) h₁
 
-theorem le_of_forall_ge_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α}
-    (h : ∀ a₃ < a₁, a₃ ≤ a₂) : a₁ ≤ a₂ :=
+theorem le_of_forall_ge_of_dense (h : ∀ a < a₁, a ≤ a₂) : a₁ ≤ a₂ :=
   le_of_not_gt fun ha ↦
     let ⟨a, ha₁, ha₂⟩ := exists_between ha
     lt_irrefl a <| lt_of_le_of_lt (h _ ‹a < a₁›) ‹a₂ < a›
 
-theorem eq_of_le_of_forall_ge_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α} (h₁ : a₂ ≤ a₁)
-    (h₂ : ∀ a₃ < a₁, a₃ ≤ a₂) : a₁ = a₂ :=
+lemma forall_ge_iff_le_of_dense : (∀ a < a₁, a ≤ a₂) ↔ a₁ ≤ a₂ where
+  mp := le_of_forall_ge_of_dense
+  mpr ha _a ha₁ := ha₁.le.trans ha
+
+theorem eq_of_le_of_forall_ge_of_dense (h₁ : a₂ ≤ a₁) (h₂ : ∀ a₃ < a₁, a₃ ≤ a₂) : a₁ = a₂ :=
   (le_of_forall_ge_of_dense h₂).antisymm h₁
+
+end LinearOrder
 
 theorem dense_or_discrete [LinearOrder α] (a₁ a₂ : α) :
     (∃ a, a₁ < a ∧ a < a₂) ∨ (∀ a, a₁ < a → a₂ ≤ a) ∧ ∀ a < a₂, a ≤ a₁ :=
