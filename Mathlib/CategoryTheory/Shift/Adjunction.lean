@@ -154,13 +154,12 @@ compatible with the unit of an adjunction `F ⊣ G`.
 -/
 lemma CompatibilityUnit_isoZero : CompatibilityUnit adj (Functor.CommShift.isoZero F A)
     (Functor.CommShift.isoZero G A) := by
-  intro _
-  simp only [Functor.id_obj, Functor.comp_obj, Functor.CommShift.isoZero_hom_app, Functor.map_comp,
-    assoc, unit_naturality_assoc]
-  slice_rhs 3 4 => rw [← G.map_comp, Iso.inv_hom_id_app]
-  rw [← cancel_mono ((shiftFunctorZero C A).hom.app _)]
-  simp only [Functor.id_obj, NatTrans.naturality, Functor.id_map, Functor.map_id, id_comp, assoc,
-    Iso.inv_hom_id_app, comp_id]
+  intro
+  simp only [Functor.id_obj, Functor.comp_obj, Functor.CommShift.isoZero_hom_app,
+    Functor.map_comp, assoc, unit_naturality_assoc]
+  simp only [← cancel_mono ((shiftFunctorZero C A).hom.app _), ← G.map_comp_assoc,
+    Iso.inv_hom_id_app, Functor.id_obj, Functor.map_id, id_comp, NatTrans.naturality,
+    Functor.id_map, assoc, comp_id]
 
 /-- Given an adjunction `adj : F ⊣ G`, `a, b` in `A` and commutation isomorphisms
 between shifts by `a` (resp. `b`) and `F` and `G`, if these commutation isomorphisms are
