@@ -46,7 +46,7 @@ assert_not_exists TopologicalSpace
 
 noncomputable section
 
-open scoped Classical
+open scoped Classical Pointwise
 
 universe u v
 
@@ -373,6 +373,18 @@ theorem mem_compl_zeroLocus_iff_not_mem {f : R} {I : PrimeSpectrum R} :
     I ∈ (zeroLocus {f} : Set (PrimeSpectrum R))ᶜ ↔ f ∉ I.asIdeal := by
   rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
 
+@[simp]
+lemma zeroLocus_union_singleton_zero (s : Set R) : zeroLocus (s ∪ {0}) = zeroLocus s := by
+  rw [zeroLocus_union, zeroLocus_singleton_zero, Set.inter_univ]
+
+@[simp]
+lemma zeroLocus_diff_singleton_zero (s : Set R) : zeroLocus (s \ {0}) = zeroLocus s := by
+  rw [← zeroLocus_union_singleton_zero, ← zeroLocus_union_singleton_zero (s := s)]; simp
+
+lemma zeroLocus_smul_of_isUnit {r : R} (hr : IsUnit r) (s : Set R) :
+    zeroLocus (r • s) = zeroLocus s := by
+  ext; simp [Set.subset_def, ← Set.image_smul, Ideal.unit_mul_mem_iff_mem _ hr]
+
 section Order
 
 /-!
@@ -539,6 +551,20 @@ theorem specComap_injective_of_surjective (f : R →+* S) (hf : Function.Surject
   PrimeSpectrum.ext
     (Ideal.comap_injective_of_surjective f hf
       (congr_arg PrimeSpectrum.asIdeal h : (f.specComap x).asIdeal = (f.specComap y).asIdeal))
+
+/-- `RingHom.specComap` of an isomorphism of rings as an equivalence of their prime spectra. -/
+@[simps apply symm_apply]
+def comapEquiv (e : R ≃+* S) : PrimeSpectrum R ≃ PrimeSpectrum S where
+  toFun := e.symm.toRingHom.specComap
+  invFun := e.toRingHom.specComap
+  left_inv x := by
+    rw [← specComap_comp_apply, RingEquiv.toRingHom_eq_coe,
+      RingEquiv.toRingHom_eq_coe, RingEquiv.symm_comp]
+    rfl
+  right_inv x := by
+    rw [← specComap_comp_apply, RingEquiv.toRingHom_eq_coe,
+      RingEquiv.toRingHom_eq_coe, RingEquiv.comp_symm]
+    rfl
 
 variable (S)
 
