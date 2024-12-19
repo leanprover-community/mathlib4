@@ -159,6 +159,9 @@ end Nimber
 theorem not_small_nimber : ¬ Small.{u} Nimber.{max u v} :=
   not_small_ordinal
 
+instance Nimber.uncountable : Uncountable Nimber :=
+  Ordinal.uncountable
+
 open Nimber
 
 namespace Ordinal
