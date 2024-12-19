@@ -237,17 +237,21 @@ def insert (a : α) (b : β a) (s : AList β) : AList β :=
   ⟨kinsert a b s.entries, kinsert_nodupKeys a b s.nodupKeys⟩
 
 @[simp]
-theorem insert_entries {a} {b : β a} {s : AList β} :
+theorem entries_insert {a} {b : β a} {s : AList β} :
     (insert a b s).entries = Sigma.mk a b :: kerase a s.entries :=
   rfl
 
-theorem insert_entries_of_neg {a} {b : β a} {s : AList β} (h : a ∉ s) :
-    (insert a b s).entries = ⟨a, b⟩ :: s.entries := by rw [insert_entries, kerase_of_not_mem_keys h]
+@[deprecated (since := "2024-12-17")] alias insert_entries := entries_insert
 
--- Todo: rename to `insert_of_not_mem`.
-theorem insert_of_neg {a} {b : β a} {s : AList β} (h : a ∉ s) :
+theorem entries_insert_of_not_mem {a} {b : β a} {s : AList β} (h : a ∉ s) :
+    (insert a b s).entries = ⟨a, b⟩ :: s.entries := by rw [entries_insert, kerase_of_not_mem_keys h]
+
+theorem insert_of_not_mem {a} {b : β a} {s : AList β} (h : a ∉ s) :
     insert a b s = ⟨⟨a, b⟩ :: s.entries, nodupKeys_cons.2 ⟨h, s.2⟩⟩ :=
-  ext <| insert_entries_of_neg h
+  ext <| entries_insert_of_not_mem h
+
+@[deprecated (since := "2024-12-14")] alias insert_entries_of_neg := entries_insert_of_not_mem
+@[deprecated (since := "2024-12-14")] alias insert_of_neg := insert_of_not_mem
 
 @[simp]
 theorem insert_empty (a) (b : β a) : insert a b ∅ = singleton a b :=
@@ -263,7 +267,7 @@ theorem keys_insert {a} {b : β a} (s : AList β) : (insert a b s).keys = a :: s
 
 theorem perm_insert {a} {b : β a} {s₁ s₂ : AList β} (p : s₁.entries ~ s₂.entries) :
     (insert a b s₁).entries ~ (insert a b s₂).entries := by
-  simp only [insert_entries]; exact p.kinsert s₁.nodupKeys
+  simp only [entries_insert]; exact p.kinsert s₁.nodupKeys
 
 @[simp]
 theorem lookup_insert {a} {b : β a} (s : AList β) : lookup a (insert a b s) = some b := by
@@ -287,17 +291,17 @@ theorem lookup_to_alist {a} (s : List (Sigma β)) : lookup a s.toAList = s.dlook
 @[simp]
 theorem insert_insert {a} {b b' : β a} (s : AList β) :
     (s.insert a b).insert a b' = s.insert a b' := by
-  ext : 1; simp only [AList.insert_entries, List.kerase_cons_eq]
+  ext : 1; simp only [AList.entries_insert, List.kerase_cons_eq]
 
 theorem insert_insert_of_ne {a a'} {b : β a} {b' : β a'} (s : AList β) (h : a ≠ a') :
     ((s.insert a b).insert a' b').entries ~ ((s.insert a' b').insert a b).entries := by
-  simp only [insert_entries]; rw [kerase_cons_ne, kerase_cons_ne, kerase_comm] <;>
+  simp only [entries_insert]; rw [kerase_cons_ne, kerase_cons_ne, kerase_comm] <;>
     [apply Perm.swap; exact h; exact h.symm]
 
 @[simp]
 theorem insert_singleton_eq {a : α} {b b' : β a} : insert a b (singleton a b') = singleton a b :=
   ext <| by
-    simp only [AList.insert_entries, List.kerase_cons_eq, and_self_iff, AList.singleton_entries,
+    simp only [AList.entries_insert, List.kerase_cons_eq, and_self_iff, AList.singleton_entries,
       heq_iff_eq, eq_self_iff_true]
 
 @[simp]
@@ -342,7 +346,7 @@ theorem insertRec_insert {C : AList β → Sort*} (H0 : C ∅)
       (IH c.1 c.2 ⟨l, hl⟩ h (@insertRec α β _ C H0 IH ⟨l, hl⟩)) by
     cases c
     apply eq_of_heq
-    convert this <;> rw [insert_of_neg h]
+    convert this <;> rw [insert_of_not_mem h]
   rw [insertRec]
   apply cast_heq
 
