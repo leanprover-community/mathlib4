@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Abelian.Transfer
 import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Linear.FunctorCategory
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.RepresentationTheory.Action.Basic
+import Mathlib.CategoryTheory.Action.Basic
 
 /-!
 # Categorical properties of `Action V G`
