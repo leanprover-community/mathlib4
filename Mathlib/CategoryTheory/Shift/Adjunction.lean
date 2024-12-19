@@ -84,18 +84,17 @@ unit of the adjunction `adj` implies compatibility with the counit of `adj`.
 lemma compatibilityCounit_of_compatibilityUnit (h : CompatibilityUnit adj e₁ e₂) :
     CompatibilityCounit adj e₁ e₂ := by
   intro Y
-  have eq := h (G.obj Y)
-  rw [← cancel_mono (e₂.inv.app _ ≫ G.map (e₁.inv.app _))] at eq
-  dsimp at eq ⊢
-  conv_rhs at eq => slice 3 4; rw [Iso.hom_inv_id_app]
-  conv_rhs at eq => erw [id_comp]; rw [← Functor.map_comp, Iso.hom_inv_id_app];
-                    erw [Functor.map_id]; rw [comp_id]
+  simp only [← cancel_mono (e₂.inv.app _ ≫ G.map (e₁.inv.app _)),
+    assoc, Iso.hom_inv_id_app_assoc, comp_id, ← Functor.map_comp,
+    Iso.hom_inv_id_app, Functor.comp_obj, Functor.map_id] at eq
   apply (adj.homEquiv _ _).injective
+  dsimp
   rw [adj.homEquiv_unit, adj.homEquiv_unit, G.map_comp, adj.unit_naturality_assoc, ← eq]
-  slice_rhs 4 5 => rw [← Functor.map_comp, ← assoc, Iso.inv_hom_id_app]; erw [id_comp]
-  erw [← e₂.inv.naturality]; rw [← assoc _ _ (e₂.inv.app Y), Functor.comp_map, ← Functor.map_comp]
-  simp only [Functor.id_obj, Functor.comp_obj, right_triangle_components, Functor.map_id, id_comp,
-    Iso.hom_inv_id_app]
+  simp only [assoc, ← Functor.map_comp, Iso.inv_hom_id_app_assoc]
+  erw [← e₂.inv.naturality]
+  dsimp
+  simp only [right_triangle_components, ← Functor.map_comp_assoc, Functor.map_id, id_comp,
+    Iso.hom_inv_id_app, Functor.comp_obj]
 
 /-- Given an adjunction `adj : F ⊣ G`, `a` in `A` and commutation isomorphisms
 `e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a` and
