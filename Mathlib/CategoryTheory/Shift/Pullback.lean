@@ -140,15 +140,15 @@ noncomputable def commShiftPullback :
     simp only [CommShift.isoZero'_hom_app, assoc]
   add a b := by
     ext
-    simp only [comp_obj, Iso.trans_hom, isoWhiskerRight_hom, isoWhiskerLeft_hom, Iso.symm_hom,
-      NatTrans.comp_app, whiskerRight_app, whiskerLeft_app, CommShift.isoAdd_hom_app, map_comp,
-      assoc]
-    conv_lhs => congr; rfl; congr; change (F.commShiftIso (φ (a + b))).hom.app _
-                rw [F.commShiftIso_add' (a := φ a) (b := φ b) (by rw [φ.map_add])]
-    rw [← shiftFunctorAdd'_eq_shiftFunctorAdd, ← shiftFunctorAdd'_eq_shiftFunctorAdd]
-    rw [pullbackShiftFunctorAdd'_hom_app φ _ a b (a + b) rfl (φ a) (φ b) (φ (a + b)) rfl rfl rfl]
-    rw [pullbackShiftFunctorAdd'_inv_app φ _ a b (a + b) rfl (φ a) (φ b) (φ (a + b)) rfl rfl rfl]
-    simp only [CommShift.isoAdd'_hom_app, assoc, comp_obj, map_comp, NatTrans.naturality_assoc,
+    dsimp
+    simp only [CommShift.isoAdd_hom_app, map_comp, assoc]
+    dsimp
+    rw [F.commShiftIso_add' (a := φ a) (b := φ b) (by rw [φ.map_add]),
+      ← shiftFunctorAdd'_eq_shiftFunctorAdd, ← shiftFunctorAdd'_eq_shiftFunctorAdd,
+      pullbackShiftFunctorAdd'_hom_app φ _ a b (a + b) rfl (φ a) (φ b) (φ (a + b)) rfl rfl rfl,
+      pullbackShiftFunctorAdd'_inv_app φ _ a b (a + b) rfl (φ a) (φ b) (φ (a + b)) rfl rfl rfl]
+    dsimp
+    simp only [CommShift.isoAdd'_hom_app, assoc, map_comp, NatTrans.naturality_assoc,
       Iso.inv_hom_id_app_assoc]
     slice_rhs 9 10 => rw [← map_comp, Iso.inv_hom_id_app, map_id]
     erw [id_comp]
