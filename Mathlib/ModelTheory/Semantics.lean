@@ -799,6 +799,7 @@ theorem realize_iExs [Finite γ] {f : α → β ⊕ γ}
       ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   rw [← Formula.realize_iExs, iff_iff_eq]; congr; simp [eq_iff_true_of_subsingleton]
 
+
 @[simp]
 theorem realize_toFormula (φ : L.BoundedFormula α n) (v : α ⊕ (Fin n) → M) :
     φ.toFormula.Realize v ↔ φ.Realize (v ∘ Sum.inl) (v ∘ Sum.inr) := by
@@ -842,6 +843,27 @@ theorem realize_iInf (s : Finset β) (f : β → L.BoundedFormula α n)
     (iInf s f).Realize v v' ↔ ∀ b ∈ s, (f b).Realize v v' := by
   simp only [iInf, realize_foldr_inf, List.mem_map, Finset.mem_toList,
     forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+
+@[simp]
+theorem _root_.FirstOrder.Language.Formula.realize_iExsUnique [Finite γ] {f : α → β ⊕ γ}
+    {φ : L.Formula α} {v : β → M} : (φ.iExsUnique f).Realize v ↔
+      ∃! (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
+  rw [Formula.iExsUnique, ExistsUnique]
+  simp only [Formula.realize_iExs, id_eq, Formula.realize_inf, Formula.realize_relabel,
+    Formula.realize_iAlls, Formula.realize_imp]
+  simp only [Formula.Realize, Function.comp_def, Term.equal, Term.relabel, realize_iInf,
+    Finset.mem_univ, realize_bdEqual, Term.realize_var, Sum.elim_inl, Sum.elim_inr, forall_const,
+    funext_iff]
+  refine exists_congr (fun i => and_congr_right' (forall_congr' (fun y => ?_)))
+  rw [iff_iff_eq]; congr with x
+  cases (f x) <;> simp
+
+@[simp]
+theorem realize_iExsUnique [Finite γ] {f : α → β ⊕ γ}
+    {φ : L.Formula α} {v : β → M} {v' : Fin 0 → M} :
+    BoundedFormula.Realize (φ.iExsUnique f) v v' ↔
+      ∃! (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
+  rw [← Formula.realize_iExsUnique, iff_iff_eq]; congr; simp [eq_iff_true_of_subsingleton]
 
 end BoundedFormula
 
