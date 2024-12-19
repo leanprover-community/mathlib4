@@ -799,7 +799,7 @@ lemma basicOpen_injOn_isIdempotentElem :
 @[stacks 00EE]
 lemma existsUnique_idempotent_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R)}
     (hs : IsClopen s) : ∃! e : R, IsIdempotentElem e ∧ s = basicOpen e := by
-  refine exists_unique_of_exists_of_unique ?_ ?_; swap
+  refine existsUnique_of_exists_of_unique ?_ ?_; swap
   · rintro x y ⟨hx, rfl⟩ ⟨hy, eq⟩
     exact basicOpen_injOn_isIdempotentElem hx hy (SetLike.ext' eq)
   cases subsingleton_or_nontrivial R
