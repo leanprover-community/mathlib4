@@ -266,7 +266,7 @@ instance {S} [CommRing S] [Algebra R S] [Module S M] [IsScalarTower R S M] [Flat
     Flat S (M ⊗[R] N) :=
   (iff_rTensor_injective' _ _).mpr fun I ↦ by
     simpa [AlgebraTensorModule.rTensor_tensor] using
-      rTensor_preserves_injective_linearMap (.restrictScalars R <| rTensor M I.subtype)
+      rTensor_preserves_injective_linearMap (.restrictScalars R <| I.subtype.rTensor M)
       (rTensor_preserves_injective_linearMap _ I.injective_subtype)
 
 example [Flat R M] [Flat R N] : Flat R (M ⊗[R] N) := inferInstance
