@@ -64,9 +64,6 @@ add_decl_doc AddEquiv.toAddHom
 /-- `MulEquiv α β` is the type of an equiv `α ≃ β` which preserves multiplication. -/
 @[to_additive]
 structure MulEquiv (M N : Type*) [Mul M] [Mul N] extends M ≃ N, M →ₙ* N
--- Porting note: remove when `to_additive` can do this
--- https://github.com/leanprover-community/mathlib4/issues/660
-attribute [to_additive existing] MulEquiv.toMulHom
 
 /-- The `Equiv` underlying a `MulEquiv`. -/
 add_decl_doc MulEquiv.toEquiv
