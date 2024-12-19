@@ -417,7 +417,7 @@ lemma card_le_card_of_injective {A : Finset α} {B : Finset β} {f : A → B} (h
   if emptiness : A = ∅ then
     simp_all
   else
-    obtain ⟨a₀, ha₀⟩ := Finset.nonempty_iff_ne_empty.mpr emptiness
+    obtain ⟨a₀, ha₀⟩ := nonempty_iff_ne_empty.mpr emptiness
     clear emptiness
     classical
     let f' : α → β := fun a => f (if ha : a ∈ A then ⟨a, ha⟩ else ⟨a₀, ha₀⟩)
