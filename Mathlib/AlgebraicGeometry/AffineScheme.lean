@@ -170,6 +170,10 @@ show (Scheme.Spec.essImageInclusion).Faithful from inferInstance
 def Γ : AffineSchemeᵒᵖ ⥤ CommRingCat :=
   forgetToScheme.op ⋙ Scheme.Γ
 
+/-- The canonical isomorphism `X ≅ Spec Γ(X)` in the category of affine schemes. -/
+def isoSpec (X : AffineScheme) : X ≅ Spec.obj (Γ.rightOp.obj X) :=
+  InducedCategory.isoMk X.obj.isoSpec
+
 /-- The category of affine schemes is equivalent to the category of commutative rings. -/
 def equivCommRingCat : AffineScheme ≌ CommRingCatᵒᵖ :=
   equivEssImageOfReflective.symm
@@ -177,6 +181,8 @@ def equivCommRingCat : AffineScheme ≌ CommRingCatᵒᵖ :=
 instance : Γ.{u}.rightOp.IsEquivalence := equivCommRingCat.isEquivalence_functor
 
 instance : Γ.{u}.rightOp.op.IsEquivalence := equivCommRingCat.op.isEquivalence_functor
+
+instance : Spec.IsEquivalence := equivCommRingCat.isEquivalence_inverse
 
 instance ΓIsEquiv : Γ.{u}.IsEquivalence :=
   inferInstanceAs (Γ.{u}.rightOp.op ⋙ (opOpEquivalence _).functor).IsEquivalence
@@ -192,12 +198,26 @@ instance hasLimits : HasLimits AffineScheme.{u} := by
 
 noncomputable instance Γ_preservesLimits : PreservesLimits Γ.{u}.rightOp := inferInstance
 
+instance Spec_preservesLimits : PreservesLimits Spec := inferInstance
+
+instance Spec_preservesColimits : PreservesColimits Spec := inferInstance
+
 noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetToScheme := by
   apply (config := { allowSynthFailures := true })
     @preservesLimits_of_natIso _ _ _ _ _ _
       (isoWhiskerRight equivCommRingCat.unitIso forgetToScheme).symm
   change PreservesLimits (equivCommRingCat.functor ⋙ Scheme.Spec)
   infer_instance
+
+/-- `Spec ℤ` is the terminal object in the category `AffineScheme`. -/
+def specZIsTerminal : IsTerminal (AffineScheme.Spec.obj (op (CommRingCat.of ℤ))) :=
+  IsTerminal.isTerminalObj AffineScheme.Spec (op (CommRingCat.of ℤ))
+    (terminalOpOfInitial CommRingCat.zIsInitial)
+
+/-- `Spec (ULift.{u} ℤ)` is the terminal object in the category `AffineScheme.{u}`. -/
+def isTerminal : IsTerminal (AffineScheme.Spec.obj (op (CommRingCat.of (ULift.{u} ℤ)))) :=
+  IsTerminal.isTerminalObj AffineScheme.Spec (op (CommRingCat.of (ULift.{u} ℤ)))
+    (terminalOpOfInitial CommRingCat.isInitial)
 
 end AffineScheme
 
