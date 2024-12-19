@@ -274,14 +274,13 @@ theorem conv_selbergTerms_eq_selbergTerms_mul_nu {d : ℕ} (hd : d ∣ P) :
         ← Nat.sum_divisorsAntidiagonal fun x _ => g x, Nat.sum_divisorsAntidiagonal' fun x _ => g x,
         sum_over_dvd_ite prodPrimes_ne_zero hd]
     _ = g d * ∑ l ∈ divisors P, if l ∣ d then 1 / g l else 0 := by
-      rw [mul_sum]; apply sum_congr rfl; intro l hl
-      rw [mul_ite_zero]
-      apply if_ctx_congr Iff.rfl _ (fun _ => rfl); intro h
-      rw [selbergTerms_mult.map_div_of_coprime h ]
+      simp_rw [← sum_filter, mul_sum]; apply sum_congr rfl; intro l hl
+      simp only [mem_filter, mem_divisors, ne_eq] at hl
+      rw [selbergTerms_mult.map_div_of_coprime hl.2]
       · ring
       · apply coprime_of_squarefree_mul <|
-          (Nat.div_mul_cancel h).symm ▸ (squarefree_of_dvd_prodPrimes hd)
-      · apply _root_.ne_of_gt; rw [mem_divisors] at hl ; apply selbergTerms_pos; exact hl.left
+          (Nat.div_mul_cancel hl.2).symm ▸ (squarefree_of_dvd_prodPrimes hd)
+      · exact (selbergTerms_pos _ hl.1.1).ne.symm
     _ = g d * (ν d)⁻¹ := by rw [← nu_eq_conv_one_div_selbergTerms d hd]
 
 end SelbergTerms
@@ -298,16 +297,14 @@ theorem upper_bound_of_UpperBoundSieve (μPlus : UpperBoundSieve) :
     apply Finset.sum_le_sum; intro n _
     exact mul_le_mul_of_nonneg_left (hμ (Nat.gcd P n)) (weights_nonneg n)
   case caseB =>
-    apply sum_congr rfl; intro n _;
-    rw [mul_sum, sum_over_dvd_ite prodPrimes_ne_zero (Nat.gcd_dvd_left _ _), sum_congr rfl]
-    intro d hd
-    apply if_congr _ rfl rfl
-    rw [Nat.dvd_gcd_iff, and_iff_right (dvd_of_mem_divisors hd)]
+    simp_rw [mul_sum, ← sum_filter]
+    congr with n
+    congr
+    · rw [← divisors_filter_dvd_of_dvd prodPrimes_ne_zero (Nat.gcd_dvd_left _ _)]
+      ext x; simp +contextual [dvd_gcd_iff]
   case caseC =>
-    rw [sum_comm, sum_congr rfl]; intro d _
-    dsimp only [multSum]
-    rw [mul_sum, sum_congr rfl]; intro n _
-    rw [←ite_zero_mul, mul_comm]
+    rw [sum_comm]
+    simp_rw [multSum, ← sum_filter, mul_sum, mul_comm]
 
 theorem siftedSum_le_mainSum_errSum_of_UpperBoundSieve (μPlus : UpperBoundSieve) :
     siftedSum ≤ X * mainSum μPlus + errSum μPlus := by
@@ -317,7 +314,7 @@ theorem siftedSum_le_mainSum_errSum_of_UpperBoundSieve (μPlus : UpperBoundSieve
   case caseA =>
     apply le_of_eq
     rw [mul_sum, ←sum_add_distrib]
-    apply sum_congr rfl; intro d _
+    congr with d
     dsimp only [rem]; ring
   case caseB =>
     apply _root_.add_le_add (le_rfl)
@@ -437,19 +434,18 @@ theorem lambdaSquared_mainSum_eq_diag_quad_form  (w : ℕ → ℝ) :
     rw [lambdaSquared_mainSum_eq_quad_form w]
     apply sum_congr rfl; intro d1 hd1; apply sum_congr rfl; intro d2 _
     have hgcd_dvd: d1.gcd d2 ∣ P := (Nat.gcd_dvd_left d1 d2).trans (dvd_of_mem_divisors hd1)
-    rw [nu_eq_conv_one_div_selbergTerms _ hgcd_dvd, mul_sum]
-    apply sum_congr rfl; intro l _
-    rw [mul_ite_zero]; apply if_congr Iff.rfl _ rfl
+    simp_rw [nu_eq_conv_one_div_selbergTerms _ hgcd_dvd, ← sum_filter, mul_sum]
+    congr with l
     ring
   case caseB =>
     apply symm; rw [sum_comm, sum_congr rfl]; intro d1 _; rw[sum_comm];
   case caseC =>
-    apply sum_congr rfl; intro l _
-    rw [sq, sum_mul, mul_sum, sum_congr rfl]; intro d1 _
-    rw [mul_sum, mul_sum, sum_congr rfl]; intro d2 _
-    rw [ite_zero_mul_ite_zero, mul_ite_zero]
-    apply if_congr (Nat.dvd_gcd_iff) _ rfl;
-    ring
+    congr with l
+    simp_rw [← sum_filter, sq, sum_mul, mul_sum, sum_filter_sum, filter_filter]
+    congr with d1
+    congr with d2
+    · rw [dvd_gcd_iff, and_comm]
+    · ring
 
 end LambdaSquared
 
