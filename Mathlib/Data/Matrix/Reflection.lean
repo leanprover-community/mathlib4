@@ -22,7 +22,7 @@ corresponding `*_eq` lemmas to be used in a place where they are definitionally 
 ## Main definitions
 
 * `Matrix.transposeᵣ`
-* `Matrix.dotProductᵣ`
+* `dotProductᵣ`
 * `Matrix.mulᵣ`
 * `Matrix.mulVecᵣ`
 * `Matrix.vecMulᵣ`
@@ -107,7 +107,7 @@ theorem transposeᵣ_eq : ∀ {m n} (A : Matrix (Fin m) (Fin n) α), transpose�
 example (a b c d : α) : transpose !![a, b; c, d] = !![a, c; b, d] :=
   (transposeᵣ_eq _).symm
 
-/-- `Matrix.dotProduct` with better defeq for `Fin` -/
+/-- `dotProduct` with better defeq for `Fin` -/
 def dotProductᵣ [Mul α] [Add α] [Zero α] {m} (a b : Fin m → α) : α :=
   FinVec.sum <| FinVec.seq (FinVec.map (· * ·) a) b
 
