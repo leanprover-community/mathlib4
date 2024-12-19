@@ -7,6 +7,7 @@ import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.LocallyConvex.WithSeminorms
 import Mathlib.Analysis.Convex.Gauge
 import Mathlib.Analysis.Convex.TotallyBounded
+import Mathlib.Topology.Algebra.Module.StrongTopology
 
 /-!
 # Absolutely convex sets
@@ -218,9 +219,9 @@ section NontriviallyNormedField
 variable (𝕜 E)
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
-variable [TopologicalSpace E] [LocallyConvexSpace ℝ E] [ContinuousSMul 𝕜 E]
+variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 
-theorem nhds_hasBasis_absConvex :
+theorem nhds_hasBasis_absConvex [LocallyConvexSpace ℝ E] :
     (𝓝 (0 : E)).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ AbsConvex 𝕜 s) id := by
   refine
     (LocallyConvexSpace.convex_basis_zero ℝ E).to_hasBasis (fun s hs => ?_) fun s hs =>
@@ -232,7 +233,7 @@ theorem nhds_hasBasis_absConvex :
 
 variable [ContinuousSMul ℝ E] [TopologicalAddGroup E]
 
-theorem nhds_hasBasis_absConvex_open :
+theorem nhds_hasBasis_absConvex_open [LocallyConvexSpace ℝ E] :
     (𝓝 (0 : E)).HasBasis (fun s => (0 : E) ∈ s ∧ IsOpen s ∧ AbsConvex 𝕜 s) id := by
   refine (nhds_hasBasis_absConvex 𝕜 E).to_hasBasis ?_ ?_
   · rintro s ⟨hs_nhds, hs_balanced, hs_convex⟩
@@ -242,6 +243,16 @@ theorem nhds_hasBasis_absConvex_open :
         hs_balanced.interior (mem_interior_iff_mem_nhds.mpr hs_nhds), hs_convex.interior⟩
   rintro s ⟨hs_zero, hs_open, hs_balanced, hs_convex⟩
   exact ⟨s, ⟨hs_open.mem_nhds hs_zero, hs_balanced, hs_convex⟩, rfl.subset⟩
+
+theorem locallyConvexSpace_iff_zero_abs : LocallyConvexSpace ℝ E ↔
+    (𝓝 0 : Filter E).HasBasis (fun s : Set E => s ∈ 𝓝 (0 : E) ∧ AbsConvex ℝ s) id :=
+  ⟨fun _ => nhds_hasBasis_absConvex ℝ _,
+   fun h => LocallyConvexSpace.ofBasisZero ℝ E _ _ h fun _ ⟨_,⟨_,hN₂⟩⟩ => hN₂⟩
+
+theorem locallyConvexSpace_iff_exists_absconvex_subset_zero :
+    LocallyConvexSpace ℝ E ↔
+    ∀ U ∈ (𝓝 0 : Filter E), ∃ S ∈ (𝓝 0 : Filter E), AbsConvex ℝ S ∧ S ⊆ U :=
+  (locallyConvexSpace_iff_zero_abs E).trans Filter.hasBasis_self
 
 end NontriviallyNormedField
 
@@ -298,8 +309,7 @@ theorem convexHull_union_neg_eq_absConvexHull {s : Set E} :
       rw [← Convex.convexHull_eq (convex_convexHull ℝ (s ∪ -s))]
       exact convexHull_mono balancedHull_subset_convexHull_union_neg)
 
-variable (E 𝕜) {s : Set E}
-variable [NontriviallyNormedField 𝕜] [Module 𝕜 E] [SMulCommClass ℝ 𝕜 E]
+variable (E) {s : Set E}
 variable [UniformSpace E] [UniformAddGroup E] [lcs : LocallyConvexSpace ℝ E] [ContinuousSMul ℝ E]
 
 -- TVS II.25 Prop3
@@ -309,6 +319,45 @@ theorem totallyBounded_absConvexHull (hs : TotallyBounded s) :
   apply totallyBounded_convexHull
   rw [totallyBounded_union]
   exact ⟨hs, totallyBounded_neg hs⟩
+
+/- TVS III.8 for complete spaces -/
+theorem isCompact_closedAbsConvexHull_of_totallyBounded [CompleteSpace E] {s : Set E}
+    (ht : TotallyBounded s) : IsCompact (closedAbsConvexHull ℝ s) := by
+  rw [closedAbsConvexHull_eq_closure_absConvexHull]
+  exact isCompact_closure_of_totallyBounded (totallyBounded_absConvexHull E ht)
+
+-- TVS IV.3 Example
+open RingHom in
+lemma easy_direction :
+    (UniformConvergenceCLM.instTopologicalSpace (id _) ℝ {(C : Set E) | IsCompact C }) ≤
+    (UniformConvergenceCLM.instTopologicalSpace (id ℝ) ℝ {(C : Set E) | IsCompact C ∧ Convex ℝ C })
+    := by
+  apply UniformConvergenceCLM.topologicalSpace_mono _ _
+  simp_all only [setOf_subset_setOf, implies_true]
+
+-- Maybe III.15 Prop 2 1) ?
+open RingHom in
+lemma hard_direction :
+    (UniformConvergenceCLM.instTopologicalSpace (id _) ℝ {(C : Set E) | IsCompact C ∧ Convex ℝ C })
+    ≤ (UniformConvergenceCLM.instTopologicalSpace (id ℝ) ℝ {(C : Set E) | IsCompact C })
+    := by
+  apply UniformConvergenceCLM.topologicalSpace_mono _ _
+  sorry
+  --simp_all only [setOf_subset_setOf, implies_true]
+
+/-
+  ext U
+  constructor
+  · intro h
+    apply?
+    --rw [IsOpen]
+    --simp at U
+    --aesop
+    sorry
+  · intro h
+    sorry
+  --UniformConvergenceCLM.topologicalSpace_mono _ _ (fun _ hC => IsCompact.totallyBounded hC)
+-/
 
 end
 
