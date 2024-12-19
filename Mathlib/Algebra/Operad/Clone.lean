@@ -1,19 +1,21 @@
 import Mathlib.Algebra.Operad.Operad
 import Mathlib.Tactic.Linarith.Frontend
 
+/-! TODO header-/
+
 /- An abstract clone is a set of operations that have composition and all projections.
   Here we define it with the multi-argument composition, typically called "superposition".
   Single-argument composition can be built from this using the identity `proj 1 0`. -/
 class Clone (A : ℕ → Type*) extends Superposable A, OneGradedOne A where
   /- Superposition is associative -/
   superpose_assoc {n m k : ℕ} (a : A n) (bs : Fin n → A m) (cs : Fin m → A k) :
-    (a ∘∈ bs) ∘∈ cs = a ∘∈ (fun i ↦ bs i ∘∈ cs)
+    (a ∘⚟ bs) ∘⚟ cs = a ∘⚟ (bs · ∘⚟ cs)
   /- All projections are accessible -/
   proj (n : ℕ) (k : Fin n) : A n
   /- Projections are compatible on the left -/
-  proj_left {n m : ℕ} (l : Fin n) (cs : Fin n → A m) : proj n l ∘∈ cs = cs l
+  proj_left {n m : ℕ} (l : Fin n) (cs : Fin n → A m) : proj n l ∘⚟ cs = cs l
   /- Projections are compatible on the right -/
-  proj_right {n : ℕ} (c : A n) : c ∘∈ (fun i ↦ proj n i) = c
+  proj_right {n : ℕ} (c : A n) : c ∘⚟ (proj n ·) = c
   /- The "1" element is the unary projection -/
   one_proj : 1 = proj 1 0
 
@@ -24,7 +26,7 @@ variable {A : ℕ → Type*} [Clone A]
 /- Pad a m-arity element of a clone to a larger arity, by adding projections that ignore
  the left- and right-most elements. -/
 def clonePadTo {m : ℕ} (p : A m) (n : ℕ) (k : Fin n) : A (n+m-1) :=
-  p ∘∈ fun i ↦ proj (n+m-1) ⟨k + i, Nat.lt_sub_of_add_lt (by omega)⟩
+  p ∘⚟ fun i ↦ proj (n+m-1) ⟨k + i, Nat.lt_sub_of_add_lt (by omega)⟩
 
 @[simp]
 theorem clonePadTo_zero {m} (p : A m) (k : Fin 1) :
@@ -38,7 +40,7 @@ theorem clonePadTo_zero {m} (p : A m) (k : Fin 1) :
 /- Clones are defined with the multi-argument superpose operation, but this gives a natural
  one-argument composition operation. -/
 def cloneCompose {n m : ℕ} (a : A n) (p : Fin n) (b : A m) : A (n + m - 1) :=
-  a ∘∈ (
+  a ∘⚟ (
     fun k ↦ if hkp1 : k = p.1 then
         clonePadTo b n k
       else if hkp : k < p.1 then
@@ -51,15 +53,15 @@ def cloneCompose {n m : ℕ} (a : A n) (p : Fin n) (b : A m) : A (n + m - 1) :=
 
 @[simp]
 theorem clone_proj_left {m n : ℕ} (l : Fin n) (cs : Fin n → A m) :
-    proj n l ∘∈ cs = cs l :=
+    proj n l ∘⚟ cs = cs l :=
   proj_left l cs
 
 @[simp]
-theorem clone_proj_right {n : ℕ} (c : A n) : c ∘∈ (fun i ↦ proj n i) = c :=
+theorem clone_proj_right {n : ℕ} (c : A n) : c ∘⚟ (proj n ·) = c :=
   proj_right c
 
 @[simp]
-theorem clone_id_left {n : ℕ} (a : Fin 1 → A n) : 1 ∘∈ a = a 0 := by
+theorem clone_id_left {n : ℕ} (a : Fin 1 → A n) : 1 ∘⚟ a = a 0 := by
   rw [one_proj]
   exact clone_proj_left 0 a
 
@@ -195,24 +197,24 @@ theorem cloneCompse_comm (a b c : Sigma A) (p1 p2 : Fin a.fst) (hp: p1 < p2)
 instance clone_toSymmOperad [Clone A] : SymmOperad A where
   compose := cloneCompose
 
-  id_right := fun a p ↦ by
+  id_right a p := by
     dsimp [composeAt]
     congr!
     exact cloneCompose_id a.snd p
 
-  id_left := fun a ↦ by
+  id_left a := by
     dsimp [composeAt, cloneCompose]
     congr!
     · exact add_tsub_cancel_left 1 a.fst
     · simp
 
-  assoc := fun a b c p1 p2 ↦ by
+  assoc a b c p1 p2 := by
     dsimp [composeAt]
     congr 1
     · have := p2.2; omega
     · exact cloneCompose_assoc a b c p1 p2
 
-  comm := fun {a} b c p1 p2 hp ↦ by
+  comm {a} b c p1 p2 hp := by
     dsimp [composeAt]
     congr 1
     · omega
@@ -220,14 +222,14 @@ instance clone_toSymmOperad [Clone A] : SymmOperad A where
 
   -- The following would be needed to improve this from `extends Operad` to `extends SymmOperad`
   act_at := fun i ↦ {
-    smul s x := x ∘∈ fun k ↦ proj i (s k),
+    smul s x := x ∘⚟ fun k ↦ proj i (s k),
     one_smul := proj_right,
     mul_smul _ _ _ := by
       simp_rw [HSMul.hSMul, superpose_assoc, proj_left]
       rfl
     }
   perm_left {n m} s k hn x y := by
-    dsimp [SigmaMul_smul, MultiComposable.compose, cloneCompose]
+    dsimp [MultiComposable.compose, cloneCompose, HSMul.hSMul]
     rw [superpose_assoc, superpose_assoc]
     congr! 2 with z
     rw [proj_left]
@@ -253,7 +255,7 @@ instance clone_toSymmOperad [Clone A] : SymmOperad A where
       · sorry
       · sorry
   perm_right {n m} s k x y := by
-    dsimp [SigmaMul_smul, MultiComposable.compose, cloneCompose, HSMul.hSMul]
+    dsimp [MultiComposable.compose, cloneCompose, HSMul.hSMul]
     rw [superpose_assoc]
     congr! with z
     split

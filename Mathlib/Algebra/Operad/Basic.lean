@@ -1,4 +1,7 @@
 import Mathlib.Algebra.Group.Action.Defs
+import Mathlib.Algebra.Operad.Perm
+
+/-! TODO header -/
 
 /-- A MultiComposable is a structure that allows composition from an m-arity object
  into a n-arity object at location p (in the range 0 to n-1) to produce an (n+m-1)
@@ -27,10 +30,14 @@ def composeAt [MultiComposable A] (x : Sigma A) (y : Sigma A) (p : Fin x.fst) : 
 def superpose [Superposable A] (x : Sigma A) (y : Fin x.fst → A m) : Sigma A :=
   ⟨m, Superposable.superpose x.snd y⟩
 
-notation:70 x:71 " ∘[ " p:70 " ] " y:70  => composeAt x y p
+--This notation works for the bare types A (first one), or for the Sigma types
+notation:70 x:71 " ∘⟨" p:70 "⟩ " y:70  => MultiComposable.compose x p y
+notation:70 x:71 " ∘[" p:70 "] " y:70  => composeAt x y p
 
-infixr:70 " ∘∈ " => Superposable.superpose
-infixr:70 " σ∘∈ " => superpose
+--This notation works for the bare types A (first one), or the Sigma types (second). Typography
+-- is reminiscent of "many arguments into one"
+infixr:70 " ∘⚟ " => Superposable.superpose
+infixr:70 " ∘∈ " => superpose
 
 /-- `OneGradedOne` yields a `One (Sigma A)` -/
 instance ComposableOne_toOne [OneGradedOne A] : One (Sigma A) :=
@@ -52,19 +59,13 @@ universe s t
 
 /- A SigmaMulAction exists on two sigma types with the same domain,
 and gives a MulAction at each matched level. -/
-class SigmaMulAction (M : ι → Type s) (A : ι → Type t) [m : ∀ i, Monoid (M i)] where
+class SigmaMulAction (M : outParam (ι → Type s)) (A : ι → Type t) [m : ∀ i, Monoid (M i)] where
   /- At each ι, there's a MulAction from M i on the type A i -/
   act_at (i : ι) : @MulAction (M i) (A i) (m i)
 
-variable {M : ι → Type s} {A : ι → Type t}
+variable {M : outParam (ι → Type s)} {A : ι → Type t} [m : ∀ i, Monoid (M i)] [SigmaMulAction M A]
 
-def SigmaMul_smul {i : ι} [∀ i, Monoid (M i)] [SigmaMulAction M A] : M i → A i → A i :=
-  (SigmaMulAction.act_at i).smul
-
--- General notation for a SigmaMul, where an instance is provided
-notation:70 x:71 " •σ[ " inst:70 " ] " y:70  => @SigmaMul_smul _ _ _ _ _ inst x y
-
--- Shortcut notation, where the instance is just inferred
-infixr:73 " •σ " => @SigmaMul_smul _ _ _ _ _ _
+instance sigmaMul_to_MulAction : ∀ (i : ι), MulAction (M i) (A i) :=
+  SigmaMulAction.act_at
 
 end SigmaMul
