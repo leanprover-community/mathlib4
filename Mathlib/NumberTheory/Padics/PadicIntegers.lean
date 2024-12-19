@@ -543,14 +543,14 @@ theorem prime_p : Prime (p : ℤ_[p]) := by
 
 theorem irreducible_p : Irreducible (p : ℤ_[p]) := Prime.irreducible prime_p
 
-instance : DiscreteValuationRing ℤ_[p] :=
-  DiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization
+instance : IsDiscreteValuationRing ℤ_[p] :=
+  IsDiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization
     ⟨p, irreducible_p, fun {x hx} =>
       ⟨x.valuation.natAbs, unitCoeff hx, by rw [mul_comm, ← unitCoeff_spec hx]⟩⟩
 
 theorem ideal_eq_span_pow_p {s : Ideal ℤ_[p]} (hs : s ≠ ⊥) :
     ∃ n : ℕ, s = Ideal.span {(p : ℤ_[p]) ^ n} :=
-  DiscreteValuationRing.ideal_eq_span_pow_irreducible hs irreducible_p
+  IsDiscreteValuationRing.ideal_eq_span_pow_irreducible hs irreducible_p
 
 open CauSeq
 

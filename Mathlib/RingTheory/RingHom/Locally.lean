@@ -218,7 +218,7 @@ lemma locally_stableUnderComposition (hPi : RespectsIso P) (hPl : LocalizationPr
       change _ = Localization.awayMap g' a.val (algebraMap S _ (f x))
       simp only [Localization.awayMap, IsLocalization.Away.map, IsLocalization.map_eq]
       rfl
-    simp only [this]
+    simp only [this, a']
     apply hPc _ _ (hsf a.val a.property)
     apply @hPl _ _ _ _ g' _ _ _ _ _ _ _ _ ?_ (hsg b.val b.property)
     exact IsLocalization.Away.instMapRingHomPowersOfCoe (Localization.Away (g' a.val)) a.val
@@ -323,10 +323,10 @@ lemma locally_localizationAwayPreserves (hPl : LocalizationAwayPreserves P) :
   haveI (a : s) : IsLocalization (Algebra.algebraMapSubmonoid (Localization.Away a.val)
     (Submonoid.map f (Submonoid.powers r))) (Sₐ a) := by
     convert inferInstanceAs (IsLocalization.Away (rₐ a) (Sₐ a))
-    simp [Algebra.algebraMapSubmonoid]
+    simp [rₐ, Sₐ, Algebra.algebraMapSubmonoid]
   have H (a : s) : Submonoid.powers (f r) ≤
       (Submonoid.powers (rₐ a)).comap (algebraMap S (Localization.Away a.val)) := by
-    simp [Submonoid.powers_le]
+    simp [rₐ, Sₐ, Submonoid.powers_le]
   letI (a : s) : Algebra S' (Sₐ a) :=
     (IsLocalization.map (Sₐ a) (algebraMap S (Localization.Away a.val)) (H a)).toAlgebra
   haveI (a : s) : IsScalarTower S S' (Sₐ a) :=
