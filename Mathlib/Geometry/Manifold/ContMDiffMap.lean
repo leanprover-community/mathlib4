@@ -6,7 +6,7 @@ Authors: Nicolò Cavalleri
 import Mathlib.Geometry.Manifold.ContMDiff.NormedSpace
 
 /-!
-# Smooth bundled map
+# `C^n` bundled maps
 
 In this file we define the type `ContMDiffMap` of `n` times continuously differentiable
 bundled maps.
@@ -40,8 +40,7 @@ scoped[Manifold]
 
 open scoped Manifold ContDiff
 
-
-namespace ContMDiffMap
+namespace ContMDiffMap -- TODO: does this need deprecations also?
 
 variable {M} {M'} {n}
 
@@ -76,11 +75,11 @@ theorem ext (h : ∀ x, f x = g x) : f = g := DFunLike.ext _ _ h
 instance : ContinuousMapClass C^n⟮I, M; I', M'⟯ M M' where
   map_continuous f := f.contMDiff.continuous
 
-/-- The identity as a smooth map. -/
+/-- The identity as a `C^n` map. -/
 nonrec def id : C^n⟮I, M; I, M⟯ :=
   ⟨id, contMDiff_id⟩
 
-/-- The composition of smooth maps, as a smooth map. -/
+/-- The composition of `C^n` maps, as a `C^n` map. -/
 def comp (f : C^n⟮I', M'; I'', M''⟯) (g : C^n⟮I, M; I', M'⟯) : C^n⟮I, M; I'', M''⟯ where
   val a := f (g a)
   property := f.contMDiff.comp g.contMDiff
@@ -93,19 +92,19 @@ theorem comp_apply (f : C^n⟮I', M'; I'', M''⟯) (g : C^n⟮I, M; I', M'⟯) (
 instance [Inhabited M'] : Inhabited C^n⟮I, M; I', M'⟯ :=
   ⟨⟨fun _ => default, contMDiff_const⟩⟩
 
-/-- Constant map as a smooth map -/
+/-- Constant map as a `C^n` map -/
 def const (y : M') : C^n⟮I, M; I', M'⟯ :=
   ⟨fun _ => y, contMDiff_const⟩
 
-/-- The first projection of a product, as a smooth map. -/
+/-- The first projection of a product, as a `C^n` map. -/
 def fst : C^n⟮I.prod I', M × M'; I, M⟯ :=
   ⟨Prod.fst, contMDiff_fst⟩
 
-/-- The second projection of a product, as a smooth map. -/
+/-- The second projection of a product, as a `C^n` map. -/
 def snd : C^n⟮I.prod I', M × M'; I', M'⟯ :=
   ⟨Prod.snd, contMDiff_snd⟩
 
-/-- Given two smooth maps `f` and `g`, this is the smooth map `x ↦ (f x, g x)`. -/
+/-- Given two `C^n` maps `f` and `g`, this is the `C^n` map `x ↦ (f x, g x)`. -/
 def prodMk (f : C^n⟮J, N; I, M⟯) (g : C^n⟮J, N; I', M'⟯) : C^n⟮J, N; I.prod I', M × M'⟯ :=
   ⟨fun x => (f x, g x), f.2.prod_mk g.2⟩
 
