@@ -40,25 +40,13 @@ def deleteUniversalVerts (G : SimpleGraph V) : Subgraph G :=
 
 lemma Subgraph.IsMatching.exists_of_universalVerts [Fintype V] {s : Set V}
     (h : Disjoint G.universalVerts s) (hc : s.ncard ≤ G.universalVerts.ncard) :
-    ∃ t ⊆ G.universalVerts, ∃ (M : Subgraph G), M.IsMatching ∧ M.verts = s ∪ t := by
+    ∃ t ⊆ G.universalVerts, ∃ (M : Subgraph G), M.verts = s ∪ t ∧ M.IsMatching := by
   obtain ⟨t, ht⟩ := Set.exists_subset_card_eq hc
-  use t
-  refine ⟨ht.1, ?_⟩
-  have f : s ≃ t := by
-    simp only [← Set.Nat.card_coe_set_eq, Nat.card] at ht
-    have : Nonempty (s ≃ t) := by
-      rw [← Cardinal.eq]
-      exact Cardinal.toNat_injOn (Set.mem_Iio.mpr s.toFinite.lt_aleph0)
-        (Set.mem_Iio.mpr t.toFinite.lt_aleph0) ht.2.symm
-    exact Classical.arbitrary _
-  have hd := (Set.disjoint_of_subset_left ht.1 h).symm
-  have hadj : ∀ (v : s), G.Adj v (f v) := by
-    intro v
-    have : ((f v) : V) ∈ G.universalVerts := ht.1 (f v).coe_prop
-    simp only [universalVerts, Set.mem_setOf_eq] at this
-    apply this
-    exact (hd.ne_of_mem v.coe_prop (f v).coe_prop).symm
-  obtain ⟨M1, hM1⟩ := Subgraph.IsMatching.exists_of_disjoint_sets_of_equiv hd f hadj
-  aesop
+  refine ⟨t, ht.1, ?_⟩
+  obtain ⟨f⟩ : Nonempty (s ≃ t) := by
+    rw [← Cardinal.eq, ← t.toFinite.cast_ncard, ← s.toFinite.cast_ncard, ht.2]
+  letI hd := Set.disjoint_of_subset_left ht.1 h
+  have hadj (v : s) : G.Adj v (f v) := ht.1 (f v).2 (hd.ne_of_mem (f v).2 v.2)
+  exact Subgraph.IsMatching.exists_of_disjoint_sets_of_equiv hd.symm f hadj
 
 end SimpleGraph
