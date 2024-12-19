@@ -134,7 +134,7 @@ unit of the adjunction `adj`, then `e₁` uniquely determines `e₂`.
 lemma CompatibilityUnit_unique_right (h : CompatibilityUnit adj e₁ e₂)
     (h' : CompatibilityUnit adj e₁ e₂') : e₂ = e₂' := by
   rw [← Iso.symm_eq_iff]
-  ext _
+  ext
   rw [Iso.symm_hom, Iso.symm_hom, CompatibilityUnit_right adj e₁ e₂ h,
     CompatibilityUnit_right adj e₁ e₂' h']
 
