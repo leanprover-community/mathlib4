@@ -96,6 +96,11 @@ theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
     Disjoint s t ↔ s = ∅ := by
   rw [disjoint_iff, inf_eq_left.mpr h, bot_eq_empty]
 
+lemma pairwiseDisjoint_iff {ι : Type*} {s : Set ι} {f : ι → Finset α} :
+    s.PairwiseDisjoint f ↔ ∀ ⦃i⦄, i ∈ s → ∀ ⦃j⦄, j ∈ s → (f i ∩ f j).Nonempty → i = j := by
+  simp [Set.PairwiseDisjoint, Set.Pairwise, Function.onFun, not_imp_comm (a := _ = _),
+    not_disjoint_iff_nonempty_inter]
+
 end Lattice
 
 instance isDirected_le : IsDirected (Finset α) (· ≤ ·) := by classical infer_instance
