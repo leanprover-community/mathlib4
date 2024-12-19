@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Abelian.GrothendieckCategory
 import Mathlib.CategoryTheory.Abelian.Refinements
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.Order.TransfiniteIteration
+import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
 # Grothendieck abelian categories have enough injectives
@@ -19,9 +20,20 @@ TODO
 
 universe w v u
 
+lemma Cardinal.zero_lt_ord_iff (κ : Cardinal.{w}) : 0 < κ.ord ↔ κ ≠ 0 := by
+  constructor
+  · intro h h'
+    simp only [h', ord_zero, lt_self_iff_false] at h
+  · intro h
+    by_contra!
+    exact h (ord_eq_zero.1 (le_antisymm this (Ordinal.zero_le _)))
+
 namespace CategoryTheory
 
 open Category Opposite Limits
+
+noncomputable instance (o : Ordinal.{w}) : SuccOrder o.toType :=
+  SuccOrder.ofLinearWellFoundedLT o.toType
 
 variable {C : Type u} [Category.{v} C]
 
@@ -181,7 +193,7 @@ lemma isomorphisms_le_generatingMonomorphismsPushouts :
 
 variable {G} (hG : IsSeparator G)
 
-namespace transfiniteComposition
+namespace TransfiniteCompositionMonoPushouts
 
 include hG
 
@@ -258,16 +270,24 @@ lemma generatingMonomorphismsPushouts_ofLE_le_largerSubobject (A : Subobject X) 
     exact Arrow.isoMk (Iso.refl _)
       (Subobject.isoOfEq _ _ ((by simp [largerSubobject, dif_neg hA])))
 
-variable [IsGrothendieckAbelian.{v} C]
+variable [IsGrothendieckAbelian.{w} C]
 
-variable (J : Type w)
+lemma top_mem_range (A₀ : Subobject X) {J : Type w} [LinearOrder J] [OrderBot J] [SuccOrder J]
+  [WellFoundedLT J] (hJ : Cardinal.mk (Shrink (Subobject X)) < Cardinal.mk J) :
+    ∃ (j : J), transfiniteIterate (largerSubobject hG) j A₀ = ⊤ :=
+  top_mem_range_transfiniteIterate (largerSubobject hG) A₀ (lt_largerSubobject hG) (by simp)
+    (fun h ↦ (lt_self_iff_false _).1 (lt_of_le_of_lt
+      (Cardinal.mk_le_of_injective ((equivShrink.{w} (Subobject X)).injective.comp h)) hJ))
 
-variable [WellPowered C]
-#check largerSubobject hG (X := X)
-#check top_mem_range_transfiniteIterate (largerSubobject hG (X := X))
+lemma exists_ordinal (A₀ : Subobject X) :
+    ∃ (o : Ordinal.{w}) (j : o.toType), transfiniteIterate (largerSubobject hG) j A₀ = ⊤ := by
+  let κ := Order.succ (Cardinal.mk (Shrink.{w} (Subobject X)))
+  have : OrderBot κ.ord.toType := Ordinal.toTypeOrderBotOfPos (by
+    rw [Cardinal.zero_lt_ord_iff]
+    exact Cardinal.succ_ne_zero _)
+  exact ⟨κ.ord, top_mem_range hG A₀ (lt_of_lt_of_le (Order.lt_succ _) (by simp))⟩
 
---transfiniteIterate
-end transfiniteComposition
+end TransfiniteCompositionMonoPushouts
 
 end IsGrothendieckAbelian
 
