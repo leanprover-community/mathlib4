@@ -49,6 +49,14 @@ theorem Real.exp_eq_tsum (x : ℝ) :
     Real.exp x = ∑' n, x^n / n.factorial := by
   rw [Real.exp_eq_exp_ℝ, NormedSpace.exp_eq_tsum_div]
 
+lemma _root_.Summable.mono {β E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [FiniteDimensional ℝ E] {f g : β → E} (hg : Summable g)
+    (hfg : ∀ b, ‖f b‖ ≤ ‖g b‖) :
+    Summable f := by
+  rw [← summable_norm_iff] at hg ⊢
+  refine summable_of_sum_le (c := ∑' x, ‖g x‖) (fun _ ↦ by positivity) (fun s ↦ ?_)
+  exact (sum_le_sum fun i _ ↦ hfg i).trans (sum_le_tsum s (fun _ _ ↦ by positivity) hg)
+
 namespace ProbabilityTheory
 
 variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ : Measure Ω}
@@ -114,6 +122,7 @@ lemma aemeasurable_of_aemeasurable_exp_mul (ht : t ≠ 0)
 
 section Integrable
 
+/-- Auxiliary lemma for `integrable_exp_mul_of_le`. -/
 lemma integrable_exp_mul_of_le_of_measurable [IsFiniteMeasure μ] (hX : Measurable X)
     (hu : Integrable (fun ω ↦ exp (u * X ω)) μ) (h_nonneg : 0 ≤ t) (htu : t ≤ u) :
     Integrable (fun ω ↦ exp (t * X ω)) μ := by
@@ -152,6 +161,7 @@ lemma integrable_exp_mul_of_le [IsFiniteMeasure μ]
   rw [integrable_congr (h_eq u)] at hu
   exact integrable_exp_mul_of_le_of_measurable hX.measurable_mk hu h_nonneg htu
 
+/-- Auxiliary lemma for `integrable_exp_mul_of_ge`. -/
 lemma integrable_exp_mul_of_ge_of_measurable [IsFiniteMeasure μ] (hX : Measurable X)
     (hu : Integrable (fun ω ↦ exp (u * X ω)) μ) (h_nonpos : t ≤ 0) (htu : u ≤ t) :
     Integrable (fun ω ↦ exp (t * X ω)) μ := by
@@ -459,6 +469,7 @@ theorem cgf_neg : cgf (-X) μ t = cgf X μ (-t) := by simp_rw [cgf, mgf_neg]
 theorem mgf_smul_left (α : ℝ) : mgf (α • X) μ t = mgf X μ (α * t) := by
   simp_rw [mgf, Pi.smul_apply, smul_eq_mul, mul_comm α t, mul_assoc]
 
+/-- The moment generating function is monotone in the random variable for `t ≥ 0`. -/
 lemma mgf_mono_of_nonneg {Y : Ω → ℝ} (hXY : X ≤ᵐ[μ] Y) (ht : 0 ≤ t)
     (htY : Integrable (fun ω ↦ exp (t * Y ω)) μ) :
     mgf X μ t ≤ mgf Y μ t := by
@@ -468,6 +479,7 @@ lemma mgf_mono_of_nonneg {Y : Ω → ℝ} (hXY : X ≤ᵐ[μ] Y) (ht : 0 ≤ t)
   · rw [mgf_undef htX]
     exact mgf_nonneg
 
+/-- The moment generating function is antitone in the random variable for `t ≤ 0`. -/
 lemma mgf_anti_of_nonpos {Y : Ω → ℝ} (hXY : X ≤ᵐ[μ] Y) (ht : t ≤ 0)
     (htX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     mgf Y μ t ≤ mgf X μ t := by
@@ -489,31 +501,86 @@ lemma mgf_abs_le_add (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
     (ae_of_all _ (fun ω ↦ exp_mul_abs_le_add (t := t) (u := X ω)))
   exact integrable_exp_mul_abs ht_int_pos ht_int_neg
 
-lemma summable_integral_abs_of_todo (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
-    Summable fun (i : ℕ) ↦ μ[fun ω ↦ |X ω| ^ i / i.factorial * |t| ^ i] := by
+lemma summable_integral_abs_mul_exp_of_todo
+    (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
+    Summable fun (i : ℕ) ↦ μ[fun ω ↦ |X ω| ^ i / i.factorial * |t| ^ i * exp (v * X ω)] := by
   by_cases ht : t = 0
   · simp only [ht, abs_zero]
     refine summable_of_ne_finset_zero (s := {0}) (fun n hn ↦ ?_)
     rw [zero_pow]
     · simp
     · simpa using hn
-  suffices Summable fun i ↦ ∫ ω, (|t| * |X ω|) ^ i / i.factorial ∂μ by
+  suffices Summable fun i ↦ ∫ ω, (|t| * |X ω|) ^ i / i.factorial * exp (v * X ω) ∂μ by
     simp_rw [mul_pow] at this
-    convert this with i ω
+    convert this using 4 with i ω
     ring
-  have h_int (u : ℝ) (i : ℕ) : Integrable (fun ω ↦ (u * |X ω|) ^ i / i.factorial) μ := by
-    refine Integrable.div_const ?_ _
+  have h_int (u : ℝ) (i : ℕ) :
+      Integrable (fun ω ↦ (u * |X ω|) ^ i / i.factorial * exp (v * X ω)) μ := by
     simp_rw [mul_pow]
+    simp_rw [mul_comm _ (exp (v * _)), mul_div]
+    refine Integrable.div_const ?_ _
+    simp_rw [mul_comm (exp _), mul_assoc]
     refine Integrable.const_mul ?_ _
-    exact integrable_pow_abs_of_integrable_exp_mul ht ht_int_pos ht_int_neg i
-  refine summable_of_sum_range_le (c := mgf (fun ω ↦ |X ω|) μ (|t|))
+    exact integrable_pow_abs_mul_exp_of_integrable_exp_mul ht ht_int_pos ht_int_neg i
+  refine summable_of_sum_range_le (c := μ[fun ω ↦ exp (|t| * |X ω| + v * X ω)])
     (fun _ ↦ integral_nonneg fun ω ↦ by positivity) fun n ↦ ?_
   rw [← integral_finset_sum]
-  · refine integral_mono ?_ ?_ fun ω ↦ sum_le_exp_of_nonneg (by positivity) _
+  · refine integral_mono ?_ ?_ ?_
     · exact integrable_finset_sum (range n) fun i a ↦ h_int |t| i
-    · exact integrable_exp_abs_mul_abs ht_int_pos ht_int_neg
+    · exact integrable_exp_abs_mul_abs_add ht_int_pos ht_int_neg
+    · intro ω
+      simp only
+      rw [← sum_mul, exp_add]
+      gcongr
+      exact sum_le_exp_of_nonneg (by positivity) _
   · exact fun i _ ↦ h_int _ i
+
+lemma summable_integral_abs_of_todo (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
+    Summable fun (i : ℕ) ↦ μ[fun ω ↦ |X ω| ^ i / i.factorial * |t| ^ i] := by
+  have h := summable_integral_abs_mul_exp_of_todo (μ := μ) (X := X) (v := 0) (t := t) ?_ ?_
+  · simpa using h
+  · simpa using ht_int_pos
+  · simpa using ht_int_neg
+
+lemma summable_integral_pow_abs_mul_exp_mul_abs
+    (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
+    Summable fun (i : ℕ) ↦ μ[fun ω ↦ |X ω| ^ i * exp (v * X ω)] / i.factorial * |t| ^ i := by
+  simp_rw [← integral_div, ← integral_mul_right]
+  have h_eq i ω : |X ω| ^ i * rexp (v * X ω) / i.factorial * |t| ^ i
+      = |X ω| ^ i / i.factorial * |t| ^ i * rexp (v * X ω) := by ring
+  simp_rw [h_eq]
+  exact summable_integral_abs_mul_exp_of_todo ht_int_pos ht_int_neg
+
+lemma summable_integral_pow_abs_mul_abs (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
+    Summable fun (i : ℕ) ↦ μ[fun ω ↦ |X ω| ^ i] / i.factorial * |t| ^ i := by
+  simp_rw [← integral_div, ← integral_mul_right]
+  exact summable_integral_abs_of_todo ht_int_pos ht_int_neg
+
+lemma summable_integral_pow_mul_exp_mul
+    (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
+    Summable fun (i : ℕ) ↦ μ[fun ω ↦ X ω ^ i * rexp (v * X ω)] / i.factorial * t ^ i := by
+  refine (summable_integral_pow_abs_mul_exp_mul_abs ht_int_pos ht_int_neg).mono fun i ↦ ?_
+  simp only [Pi.pow_apply, norm_mul, norm_div, norm_eq_abs, norm_natCast, norm_pow, abs_abs,
+    Nat.abs_cast]
+  refine mul_le_mul ?_ le_rfl (by positivity) (by positivity)
+  rw [div_le_div_iff_of_pos_right (by positivity)]
+  conv_rhs => rw [abs_of_nonneg (integral_nonneg (fun _ ↦ by positivity))]
+  simp_rw [← norm_eq_abs]
+  refine (norm_integral_le_integral_norm _).trans ?_
+  simp
+
+lemma summable_integral_pow_mul (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
+    Summable fun (i : ℕ) ↦ μ[X ^ i] / i.factorial * t ^ i := by
+  have h := summable_integral_pow_mul_exp_mul (μ := μ) (X := X) (v := 0) (t := t) ?_ ?_
+  · simpa using h
+  · simpa using ht_int_pos
+  · simpa using ht_int_neg
 
 lemma mgf_abs_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
@@ -537,117 +604,91 @@ lemma mgf_abs_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
     convert summable_integral_abs_of_todo ht_int_pos ht_int_neg with i ω
     ring
 
-lemma todo3 (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
-    Summable fun (i : ℕ) ↦ μ[fun ω ↦ |X ω| ^ i] / i.factorial * |t| ^ i := by
-  simp_rw [← integral_div, ← integral_mul_right]
-  exact summable_integral_abs_of_todo ht_int_pos ht_int_neg
-
-lemma todo1 (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
-    Summable fun (i : ℕ) ↦ μ[fun ω ↦ |X ω| ^ i] / i.factorial * t ^ i := by
-  rw [← summable_abs_iff]
-  simp [abs_mul, abs_div]
-  have h_abs i : |∫ ω, |X ω| ^ i ∂μ| = ∫ ω, |X ω| ^ i ∂μ := by
-    rw [abs_of_nonneg]
-    exact integral_nonneg fun ω ↦ by positivity
-  simp_rw [h_abs]
-  exact todo3 ht_int_pos ht_int_neg
-
-lemma _root_.Summable.mono {β E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-    [FiniteDimensional ℝ E] {f g : β → E} (hg : Summable g)
-    (hfg : ∀ b, ‖f b‖ ≤ ‖g b‖) :
-    Summable f := by
-  rw [← summable_norm_iff] at hg ⊢
-  refine summable_of_sum_le (c := ∑' x, ‖g x‖) (fun _ ↦ by positivity) (fun s ↦ ?_)
-  exact (sum_le_sum fun i _ ↦ hfg i).trans (sum_le_tsum s (fun _ _ ↦ by positivity) hg)
-
-lemma todo2 (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
-    Summable fun (i : ℕ) ↦ μ[X ^ i] / i.factorial * t ^ i := by
-  refine (todo3 ht_int_pos ht_int_neg).mono fun i ↦ ?_
-  simp only [Pi.pow_apply, norm_mul, norm_div, norm_eq_abs, norm_natCast, norm_pow, abs_abs,
-    Nat.abs_cast]
-  refine mul_le_mul ?_ le_rfl (by positivity) (by positivity)
-  rw [div_le_div_iff_of_pos_right (by positivity)]
-  conv_rhs => rw [abs_of_nonneg (integral_nonneg (fun _ ↦ by positivity))]
-  simp_rw [← norm_eq_abs]
-  refine (norm_integral_le_integral_norm _).trans ?_
-  simp
-
-lemma mgf_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
-    mgf X μ t = ∑' n, μ[X ^ n] / n.factorial * t ^ n := by
+lemma mgf_add_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
+    mgf X μ (v + t) = ∑' n, μ[fun ω ↦ X ω ^ n * exp (v * X ω)] / n.factorial * t ^ n := by
   by_cases ht : t = 0
   · rw [tsum_eq_single 0]
-    · simp [ht]
+    · simp [ht, mgf]
     · intro n hn
       simp [zero_pow hn, ht]
-  have h_int_pow i : Integrable (fun ω ↦ X ω ^ i / i.factorial * t ^ i) μ := by
+  have h_int_pow i : Integrable (fun ω ↦ X ω ^ i / i.factorial * t ^ i * exp (v * X ω)) μ := by
+    simp_rw [mul_comm _ (exp _), ← mul_assoc, ← mul_div_assoc, mul_comm (exp _)]
     refine (Integrable.div_const ?_ _).mul_const _
-    exact integrable_pow_of_integrable_exp_mul ht ht_int_pos ht_int_neg i
-  suffices Tendsto (fun n ↦ |mgf X μ t - μ[fun ω ↦ ∑ i in range n, X ω ^ i / i.factorial * t ^ i]|)
+    exact integrable_pow_mul_exp_of_integrable_exp_mul ht ht_int_pos ht_int_neg i
+  suffices Tendsto (fun n ↦ |mgf X μ (v + t)
+        - μ[fun ω ↦ ∑ i in range n, X ω ^ i / i.factorial * t ^ i * exp (v * X ω)]|)
       atTop (𝓝 0) by
     change Tendsto (abs ∘ _) _ _ at this
     rw [← tendsto_zero_iff_abs_tendsto_zero] at this
-    have h_eq n : μ[fun ω ↦ ∑ i ∈ range n, X ω ^ i / i.factorial * t ^ i]
-        = ∑ i ∈ range n, μ[X ^ i] / i.factorial * t ^ i := by
+    have h_eq n : μ[fun ω ↦ ∑ i ∈ range n, X ω ^ i / i.factorial * t ^ i * exp (v * X ω)]
+        = ∑ i ∈ range n, μ[fun ω ↦ X ω ^ i * exp (v * X ω)] / i.factorial * t ^ i := by
       rw [integral_finset_sum]
       · congr with n
-        rw [integral_mul_right, integral_div]
-        simp
+        rw [← integral_div, ← integral_mul_right]
+        congr with ω
+        ring
       · exact fun i _ ↦ h_int_pow i
     simp_rw [h_eq] at this
-    suffices Tendsto (fun n ↦ ∑ i ∈ range n, μ[X ^ i] / i.factorial * t ^ i)
-        atTop (𝓝 (mgf X μ t)) by
+    suffices Tendsto (fun n ↦
+          ∑ i ∈ range n, μ[fun ω ↦ X ω ^ i * exp (v * X ω)] / i.factorial * t ^ i)
+        atTop (𝓝 (mgf X μ (v + t))) by
       refine tendsto_nhds_unique this ?_
       refine HasSum.Multipliable.tendsto_sum_tsum_nat ?_
-      exact todo2 ht_int_pos ht_int_neg
-    rwa [← tendsto_const_sub_iff (b := mgf X μ t), sub_self]
-  have h_le n : |mgf X μ t - μ[fun ω ↦ ∑ i ∈ range n, X ω ^ i / ↑i.factorial * t ^ i]|
+      exact summable_integral_pow_mul_exp_mul ht_int_pos ht_int_neg
+    rwa [← tendsto_const_sub_iff (b := mgf X μ (v + t)), sub_self]
+  have h_le n : |mgf X μ (v + t)
+        - μ[fun ω ↦ ∑ i ∈ range n, X ω ^ i / ↑i.factorial * t ^ i * exp (v * X ω)]|
       ≤ ∑' i : {j // j ∉ range n},
-        μ[fun ω ↦ |X ω| ^ (i : ℕ)] / (i : ℕ).factorial * |t| ^ (i : ℕ) := by
-    calc |mgf X μ t - μ[fun ω ↦ ∑ i ∈ range n, X ω ^ i / ↑i.factorial * t ^ i]|
+        μ[fun ω ↦ |X ω| ^ (i : ℕ) * exp (v * X ω)] / (i : ℕ).factorial * |t| ^ (i : ℕ) := by
+    calc |mgf X μ (v + t)
+        - μ[fun ω ↦ ∑ i ∈ range n, X ω ^ i / ↑i.factorial * t ^ i * exp (v * X ω)]|
     _ = |μ[fun ω ↦ ∑' i : {j // j ∉ range n},
-        X ω ^ (i : ℕ) / (i : ℕ).factorial * t ^ (i : ℕ)]| := by
+        X ω ^ (i : ℕ) / (i : ℕ).factorial * t ^ (i : ℕ) * exp (v * X ω)]| := by
       simp_rw [mgf]
       rw [← integral_sub ht_int_pos (integrable_finset_sum _ (fun i _ ↦ h_int_pow i))]
       congr with ω
+      rw [add_mul, add_comm, exp_add]
       rw [exp_eq_tsum, sub_eq_iff_eq_add']
       have : ∑' n, (t * X ω) ^ n / n.factorial
           = ∑' n, X ω ^ n / n.factorial * t ^ n := by
         simp_rw [mul_pow]
         congr with n
         ring
-      rw [this]
+      rw [this, ← tsum_mul_right]
       symm
       refine sum_add_tsum_compl ?_
-      suffices Summable fun i ↦ (t * X ω) ^ i / i.factorial by
+      suffices Summable fun i ↦ (t * X ω) ^ i / i.factorial * exp (v * X ω) by
         convert this using 2 with i
         ring
+      refine Summable.mul_right _ ?_
       exact summable_pow_div_factorial _
-    _ = |∑' i : {j // j ∉ range n}, μ[X ^ (i : ℕ)] / (i : ℕ).factorial * t ^ (i : ℕ)| := by
+    _ = |∑' i : {j // j ∉ range n},
+        μ[fun ω ↦ X ω ^ (i : ℕ) * exp (v * X ω)] / (i : ℕ).factorial * t ^ (i : ℕ)| := by
+      have h_eq i ω : X ω ^ i / ↑i.factorial * t ^ i * exp (v * X ω)
+          = X ω ^ i * exp (v * X ω) / ↑i.factorial * t ^ i := by ring
+      simp_rw [h_eq]
       rw [← integral_tsum_of_summable_integral_norm]
       · congr with i
-        rw [integral_mul_right, integral_div]
-        simp
+        rw [← integral_div, ← integral_mul_right]
       · refine fun i ↦ (Integrable.div_const ?_ _).mul_const _
-        exact integrable_pow_of_integrable_exp_mul ht ht_int_pos ht_int_neg _
+        exact integrable_pow_mul_exp_of_integrable_exp_mul ht ht_int_pos ht_int_neg _
       · simp only [norm_mul, norm_div, norm_pow, norm_eq_abs, norm_natCast, Nat.abs_cast]
-        simp_rw [integral_mul_right, integral_div]
-        exact (todo3 ht_int_pos ht_int_neg).subtype (range n)ᶜ
-    _ ≤ ∑' i : {j // j ∉ range n}, |μ[X ^ (i : ℕ)] / (i : ℕ).factorial * t ^ (i : ℕ)| := by
+        simp_rw [integral_mul_right, integral_div, abs_exp]
+        exact (summable_integral_pow_abs_mul_exp_mul_abs ht_int_pos ht_int_neg).subtype (range n)ᶜ
+    _ ≤ ∑' i : {j // j ∉ range n},
+        |μ[fun ω ↦ X ω ^ (i : ℕ) * exp (v * X ω)] / (i : ℕ).factorial * t ^ (i : ℕ)| := by
       simp_rw [← norm_eq_abs]
       refine norm_tsum_le_tsum_norm ?_
       rw [summable_norm_iff]
-      exact (todo2 ht_int_pos ht_int_neg).subtype (range n)ᶜ
+      exact (summable_integral_pow_mul_exp_mul ht_int_pos ht_int_neg).subtype (range n)ᶜ
     _ ≤ ∑' i : {j // j ∉ range n},
-          μ[fun ω ↦ |X ω| ^ (i : ℕ)] / (i : ℕ).factorial * |t| ^ (i : ℕ) := by
+          μ[fun ω ↦ |X ω| ^ (i : ℕ) * exp (v * X ω)] / (i : ℕ).factorial * |t| ^ (i : ℕ) := by
       simp only [Pi.pow_apply]
       refine tsum_mono ?_ ?_ fun n ↦ ?_
       · rw [summable_abs_iff]
-        exact (todo2 ht_int_pos ht_int_neg).subtype (range n)ᶜ
-      · exact (todo3 ht_int_pos ht_int_neg).subtype (range n)ᶜ
+        exact (summable_integral_pow_mul_exp_mul ht_int_pos ht_int_neg).subtype (range n)ᶜ
+      · exact (summable_integral_pow_abs_mul_exp_mul_abs ht_int_pos ht_int_neg).subtype (range n)ᶜ
       · simp only
         rw [abs_mul, abs_div, Nat.abs_cast, abs_pow]
         gcongr
@@ -656,10 +697,19 @@ lemma mgf_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
         simp
   refine tendsto_of_tendsto_of_tendsto_of_le_of_le (tendsto_const_nhds) ?_ ?_ h_le
   · refine (tendsto_tsum_compl_atTop_zero
-      (fun i ↦ μ[fun ω ↦ |X ω| ^ (i : ℕ)] / (i : ℕ).factorial * |t| ^ (i : ℕ))).comp ?_
+      (fun i ↦ μ[fun ω ↦ |X ω| ^ (i : ℕ) * exp (v * X ω)]
+        / (i : ℕ).factorial * |t| ^ (i : ℕ))).comp ?_
     exact tendsto_finset_range
   · intro n
     positivity
+
+lemma mgf_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
+    mgf X μ t = ∑' n, μ[X ^ n] / n.factorial * t ^ n := by
+  have h := mgf_add_eq_tsum (μ := μ) (X := X) (v := 0) (t := t) ?_ ?_
+  · simpa using h
+  · simpa using ht_int_pos
+  · simpa using ht_int_neg
 
 lemma hasFPowerSeriesOnBall_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
@@ -670,7 +720,7 @@ lemma hasFPowerSeriesOnBall_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
   · refine FormalMultilinearSeries.le_radius_of_summable _ ?_
     simp only [Pi.pow_apply, FormalMultilinearSeries.ofScalars_norm, norm_eq_abs,
       coe_nnnorm, abs_div, Nat.abs_cast]
-    have h := todo2 ht_int_pos ht_int_neg
+    have h := summable_integral_pow_mul ht_int_pos ht_int_neg
     rw [← summable_abs_iff] at h
     simp_rw [abs_mul, abs_div, abs_pow, Nat.abs_cast, Pi.pow_apply] at h
     exact h
@@ -688,7 +738,7 @@ lemma hasFPowerSeriesOnBall_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
       exact hy.le
     rw [Summable.hasSum_iff]
     · exact (mgf_eq_tsum hy_int_pos hy_int_neg).symm
-    · exact todo2 hy_int_pos hy_int_neg
+    · exact summable_integral_pow_mul hy_int_pos hy_int_neg
 
 lemma hasFPowerSeriesAt_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
@@ -696,6 +746,12 @@ lemma hasFPowerSeriesAt_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
     HasFPowerSeriesAt (mgf X μ)
       (FormalMultilinearSeries.ofScalars ℝ (fun n ↦ (μ[X ^ n] : ℝ) / n.factorial)) 0 :=
   ⟨‖t‖₊, hasFPowerSeriesOnBall_mgf ht ht_int_pos ht_int_neg⟩
+
+lemma analyticAt_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
+    (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp (-t * X ω)) μ) :
+    AnalyticAt ℝ (mgf X μ) 0 :=
+  ⟨_, hasFPowerSeriesAt_mgf ht ht_int_pos ht_int_neg⟩
 
 lemma iteratedDeriv_mgf_zero [IsFiniteMeasure μ]
     (hu_int_pos : Integrable (fun ω ↦ rexp (u * X ω)) μ)
