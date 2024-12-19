@@ -575,7 +575,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     calc
       ∑ _i : Fin N, μ s / N = μ s := by
         simp only [Finset.card_fin, Finset.sum_const, nsmul_eq_mul]
-        rw [ENNReal.mul_div_cancel']
+        rw [ENNReal.mul_div_cancel]
         · simp only [Npos, Ne, Nat.cast_eq_zero, not_false_iff]
         · exact ENNReal.natCast_ne_top _
       _ ≤ ∑ i, μ (s ∩ v i) := by
