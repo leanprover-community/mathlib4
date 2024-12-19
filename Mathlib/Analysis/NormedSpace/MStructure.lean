@@ -439,30 +439,25 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
     let z := E₂ ((1 - E₁) x)
     have e3 : x = y + z := calc
       x = E x := by rw [ex]
-      _ = E₁ x + E₂ x - E₁ (E₂ x) := rfl
-      _ = E₁ x + E₂ x - (E₁ ∘ E₂) x := rfl
       _ = E₁ x + E₂ x - (E₁ * E₂) x := rfl
       _ = E₁ x + E₂ x - (E₂ * E₁) x := by rw [IsLprojection.commute P₁.prop P₂.prop]
       _ = E₁ x + E₂ x - E₂ (E₁ x) := rfl
       _ = E₁ x + (E₂ x - E₂ (E₁ x)) := add_sub_assoc (E₁ x) (E₂ x) (E₂ (E₁ x))
       _ = E₁ x + E₂ (x - E₁ x) := by rw [map_sub]
       _ = y + z := rfl
-    have e4 :  ‖y‖ + ‖z‖ = ‖x‖ := by
-      apply le_antisymm
-      · calc
+    have e4 :  ‖y‖ + ‖z‖ = ‖x‖ := le_antisymm
+      (calc
         ‖y‖ + ‖z‖ = ‖E₁ x‖ + ‖E₂ ((1 - E₁) x)‖ := rfl
         _ ≤ ‖E₁ x‖ + ‖E₂‖ * ‖(1 - E₁) x‖ :=  by
-          rw [add_le_add_iff_left]; apply ContinuousLinearMap.le_opNorm E₂ ((1 - E₁) x)
+          rw [add_le_add_iff_left]; exact ContinuousLinearMap.le_opNorm E₂ ((1 - E₁) x)
         _ ≤ ‖E₁ x‖ + 1 * ‖(1 - E₁) x‖ := by
           rw [add_le_add_iff_left]
-          apply mul_le_mul_of_nonneg_right
-          apply contractive P₂.prop
-          exact ContinuousLinearMap.opNorm_nonneg ((1 - E₁) x)
+          exact mul_le_mul_of_nonneg_right (contractive P₂.prop)
+            (ContinuousLinearMap.opNorm_nonneg ((1 - E₁) x))
         _ ≤ ‖E₁ x‖ + ‖(1 - E₁) x‖ := by rw [one_mul]
         _ ≤ ‖E₁ • x‖ + ‖(1 - E₁) • x‖ := Preorder.le_refl (‖E₁ x‖ + ‖(1 - E₁) x‖)
-        _ = ‖x‖ := by rw [← P₁.prop.Lnorm]
-      · rw [e3]
-        exact ContinuousLinearMap.opNorm_add_le y z
+        _ = ‖x‖ := by rw [← P₁.prop.Lnorm])
+      (by rw [e3]; exact ContinuousLinearMap.opNorm_add_le y z)
     have e1 : y ∈ polar 𝕜 ↑m₁ ∩ closedBall 0 1 := by
       simp only [Set.mem_inter_iff, mem_closedBall, dist_zero_right]
       constructor
@@ -490,18 +485,15 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
       rw [hxz]
       apply subset_convexHull
       simp only [Set.mem_union, Set.mem_inter_iff, mem_closedBall, dist_self, zero_le_one, and_true]
-      apply Or.intro_left
-      exact LinearMap.zero_mem_polar (dualPairing 𝕜 A).flip ↑m₁
+      exact Or.intro_left _ (LinearMap.zero_mem_polar (dualPairing 𝕜 A).flip ↑m₁)
     · rcases eq_or_ne ‖y‖ 0 with (hyz | hynz)
       · rw [norm_eq_zero] at hyz
         rw [e3, hyz, zero_add]
-        apply subset_convexHull
-        exact Set.mem_union_right (polar 𝕜 ↑m₁ ∩ closedBall 0 1) e2
+        exact subset_convexHull _ _ (Set.mem_union_right (polar 𝕜 ↑m₁ ∩ closedBall 0 1) e2)
       · rcases eq_or_ne ‖z‖ 0 with (hzz | hznz)
         · rw [norm_eq_zero] at hzz
           rw [e3, hzz, add_zero]
-          apply subset_convexHull
-          exact Set.mem_union_left (polar 𝕜 ↑m₂ ∩ closedBall 0 1) e1
+          exact subset_convexHull _ _ (Set.mem_union_left (polar 𝕜 ↑m₂ ∩ closedBall 0 1) e1)
         · let y₁ := (‖x‖/‖y‖) • y
           let z₁ := (‖x‖/‖z‖) • z
           have t₁ : y₁ ∈ polar 𝕜 ↑m₁ ∩ closedBall 0 1 ∪ polar 𝕜 ↑m₂ ∩ closedBall 0 1 := by
