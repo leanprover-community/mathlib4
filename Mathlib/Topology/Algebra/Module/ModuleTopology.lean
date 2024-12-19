@@ -292,6 +292,17 @@ theorem continuous_neg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpa
   haveI : ContinuousAdd C := IsModuleTopology.toContinuousAdd R C
   continuous_of_linearMap (LinearEquiv.neg R).toLinearMap
 
+variable (R) in
+theorem continuousNeg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
+    [IsModuleTopology R C] : ContinuousNeg C where
+  continuous_neg := continuous_neg R C
+
+variable (R) in
+theorem topologicalAddGroup (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
+    [IsModuleTopology R C] : TopologicalAddGroup C where
+      continuous_add := (IsModuleTopology.toContinuousAdd R C).1
+      continuous_neg := continuous_neg R C
+
 @[fun_prop, continuity]
 theorem continuous_of_ringHom {R A B} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B]
     [TopologicalSpace R] [TopologicalSpace A] [IsModuleTopology R A] [TopologicalSpace B]
@@ -303,5 +314,86 @@ theorem continuous_of_ringHom {R A B} [CommSemiring R] [Semiring A] [Algebra R A
   exact continuous_of_linearMap φ'
 
 end function
+
+section surjection
+
+variable {R : Type*} [τR : TopologicalSpace R] [Ring R]
+variable {A : Type*} [AddCommGroup A] [Module R A] [TopologicalSpace A] [IsModuleTopology R A]
+variable {B : Type*} [AddCommGroup B] [Module R B] [τB : TopologicalSpace B] [IsModuleTopology R B]
+
+open Topology in
+/-- A linear surjection between modules with the module topology is a quotient map.
+Equivalently, the pushforward of the module topology along a surjective linear map is
+again the module topology. -/
+theorem coinduced_of_surjective {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
+    IsQuotientMap φ where
+  surjective := hφ
+  eq_coinduced := by
+    -- We need to prove that the topology on B is coinduced from that on A.
+    -- First tell the typeclass inference system that A and B are topological groups.
+    haveI := topologicalAddGroup R A
+    haveI := topologicalAddGroup R B
+    -- Because φ is linear, it's continuous for the module topologies (by a previous result).
+    have this : Continuous φ := continuous_of_linearMap φ
+    -- So the coinduced topology is finer than the module topology on B.
+    rw [continuous_iff_coinduced_le] at this
+    -- So STP the module topology on B is ≤ the topology coinduced from A
+    refine le_antisymm ?_ this
+    rw [eq_moduleTopology R B]
+    -- Now let's remove B's topology from the typeclass system
+    clear! τB
+    -- and replace it with the coinduced topology (which will be the same, but that's what we're
+    -- trying to prove). This means we don't have to fight with the typeclass system.
+    letI : TopologicalSpace B := .coinduced φ inferInstance
+    -- With this new topology on `B`, φ is a quotient map by definition,
+    -- and hence an open quotient map by a result in the library.
+    have hφo : IsOpenQuotientMap φ := AddMonoidHom.isOpenQuotientMap_of_isQuotientMap ⟨hφ, rfl⟩
+    -- We're trying to prove the module topology on B is ≤ the coinduced topology.
+    -- But recall that the module topology is the Inf of the topologies on B making addition
+    -- and scalar multiplication continuous, so it suffices to prove
+    -- that the coinduced topology on B has these properties.
+    refine sInf_le ⟨?_, ?_⟩
+    · -- In this branch, we prove that `• : R × B → B` is continuous for the coinduced topology.
+      apply ContinuousSMul.mk
+      -- We know that `• : R × A → A` is continuous, by assumption.
+      obtain ⟨hA⟩ : ContinuousSMul R A := inferInstance
+      /- By linearity of φ, this diagram commutes:
+        R × A --(•)--> A
+          |            |
+          |id × φ      |φ
+          |            |
+         \/            \/
+        R × B --(•)--> B
+      -/
+      have hφ2 : (fun p ↦ p.1 • p.2 : R × B → B) ∘ (Prod.map id φ) =
+        φ ∘ (fun p ↦ p.1 • p.2 : R × A → A) := by ext; simp
+      -- Furthermore, the identity from R to R is an open quotient map as is `φ`,
+      -- so the product `id × φ` is an open quotient map, by a result in the library.
+      have hoq : IsOpenQuotientMap (_ : R × A → R × B) := IsOpenQuotientMap.prodMap .id hφo
+      -- This is the left map in the diagram. So by a standard fact about open quotient maps,
+      -- to prove that the bottom map is continuous, it suffices to prove
+      -- that the diagonal map is continuous.
+      rw [← hoq.continuous_comp_iff]
+      -- but the diagonal is the composite of the continuous maps `φ` and `• : R × A → A`
+      rw [hφ2]
+      -- so we're done
+      exact Continuous.comp hφo.continuous hA
+    · /- In this branch we show that addition is continuous for the coinduced topology on `B`.
+        The argument is basically the same, this time using commutativity of
+        A × A --(+)--> A
+          |            |
+          |φ × φ       |φ
+          |            |
+         \/            \/
+        B × B --(+)--> B
+      -/
+      apply ContinuousAdd.mk
+      obtain ⟨hA⟩ := IsModuleTopology.toContinuousAdd R A
+      have hφ2 : (fun p ↦ p.1 + p.2 : B × B → B) ∘ (Prod.map φ φ) =
+        φ ∘ (fun p ↦ p.1 + p.2 : A × A → A) := by ext; simp
+      rw [← (IsOpenQuotientMap.prodMap hφo hφo).continuous_comp_iff, hφ2]
+      exact Continuous.comp hφo.continuous hA
+
+end surjection
 
 end IsModuleTopology
