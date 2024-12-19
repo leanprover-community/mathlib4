@@ -270,10 +270,7 @@ lemma iso_hom_app (X : D) :
               (G.map ((shiftFunctorCompIsoId D a b
                 (by rw [← add_left_inj a, add_assoc, h, zero_add, add_zero])).hom.app X))⟦a⟧' := by
   obtain rfl : b = -a := by rw [← add_left_inj a, h, neg_add_cancel]
-  simp only [Functor.comp_obj, iso, iso', shiftEquiv'_functor, shiftEquiv'_inverse,
-    Equiv.toFun_as_coe, conjugateIsoEquiv_apply_hom, conjugateEquiv_apply_app, comp_unit_app,
-    Functor.id_obj, Equivalence.toAdjunction_unit, Functor.comp_map, comp_counit_app,
-    Equivalence.toAdjunction_counit, Functor.map_comp, assoc]
+  simp [iso, iso']
   rfl
 
 lemma iso_inv_app (Y : D) :
