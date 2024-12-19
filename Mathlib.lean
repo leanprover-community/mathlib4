@@ -3027,6 +3027,7 @@ import Mathlib.FieldTheory.KummerExtension
 import Mathlib.FieldTheory.Laurent
 import Mathlib.FieldTheory.LinearDisjoint
 import Mathlib.FieldTheory.Minpoly.Basic
+import Mathlib.FieldTheory.Minpoly.ConjRootClass
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.FieldTheory.Minpoly.IsConjRoot
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
@@ -3940,6 +3941,10 @@ import Mathlib.NumberTheory.SmoothNumbers
 import Mathlib.NumberTheory.SumFourSquares
 import Mathlib.NumberTheory.SumPrimeReciprocals
 import Mathlib.NumberTheory.SumTwoSquares
+import Mathlib.NumberTheory.Transcendental.Lindemann.Basic
+import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AlgebraicPart
+import Mathlib.NumberTheory.Transcendental.Lindemann.Init.AnalyticalPart
+import Mathlib.NumberTheory.Transcendental.Lindemann.Init.SumAEvalARoots
 import Mathlib.NumberTheory.Transcendental.Liouville.Basic
 import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleNumber
 import Mathlib.NumberTheory.Transcendental.Liouville.LiouvilleWith
@@ -4478,6 +4483,7 @@ import Mathlib.RingTheory.MvPolynomial.Ideal
 import Mathlib.RingTheory.MvPolynomial.Localization
 import Mathlib.RingTheory.MvPolynomial.MonomialOrder
 import Mathlib.RingTheory.MvPolynomial.Symmetric.Defs
+import Mathlib.RingTheory.MvPolynomial.Symmetric.Eval
 import Mathlib.RingTheory.MvPolynomial.Symmetric.FundamentalTheorem
 import Mathlib.RingTheory.MvPolynomial.Symmetric.NewtonIdentities
 import Mathlib.RingTheory.MvPolynomial.Tower
