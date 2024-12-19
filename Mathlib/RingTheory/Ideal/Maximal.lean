@@ -65,10 +65,7 @@ theorem isMaximal_iff {I : Ideal α} :
 theorem IsMaximal.eq_of_le {I J : Ideal α} (hI : I.IsMaximal) (hJ : J ≠ ⊤) (IJ : I ≤ J) : I = J :=
   eq_iff_le_not_lt.2 ⟨IJ, fun h => hJ (hI.1.2 _ h)⟩
 
-instance : IsCoatomic (Ideal α) := by
-  apply CompleteLattice.coatomic_of_top_compact
-  rw [← span_singleton_one]
-  exact Submodule.singleton_span_isCompactElement 1
+instance : IsCoatomic (Ideal α) := CompleteLattice.coatomic_of_top_compact isCompactElement_top
 
 theorem IsMaximal.coprime_of_ne {M M' : Ideal α} (hM : M.IsMaximal) (hM' : M'.IsMaximal)
     (hne : M ≠ M') : M ⊔ M' = ⊤ := by
