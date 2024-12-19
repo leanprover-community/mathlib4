@@ -45,8 +45,9 @@ any `b' < b` also belongs to the range). The type of these embeddings from `r` t
 `InitialSeg r s`, and denoted by `r ≼i s`.
 -/
 
-variable {α : Type*} {β : Type*} {γ : Type*} {r : α → α → Prop} {s : β → β → Prop}
-  {t : γ → γ → Prop}
+universe u
+
+variable {α β γ : Type*} {r : α → α → Prop} {s : β → β → Prop} {t : γ → γ → Prop}
 
 open Function
 
@@ -520,13 +521,12 @@ protected theorem acc [IsTrans β s] (f : r ≺i s) (a : α) : Acc r a ↔ Acc s
 
 end PrincipalSeg
 
-theorem wellFounded_iff_principalSeg.{u} {β : Type u} {s : β → β → Prop} [IsTrans β s] :
+theorem wellFounded_iff_principalSeg {β : Type u} {s : β → β → Prop} [IsTrans β s] :
     WellFounded s ↔ ∀ (α : Type u) (r : α → α → Prop) (_ : r ≺i s), WellFounded r :=
   ⟨fun wf _ _ f => RelHomClass.wellFounded f.toRelEmbedding wf, fun h =>
     wellFounded_iff_wellFounded_subrel.mpr fun b => h _ _ (PrincipalSeg.ofElement s b)⟩
 
 /-! ### Properties of initial and principal segments -/
-
 
 namespace InitialSeg
 
@@ -565,6 +565,14 @@ set_option linter.deprecated false in
 theorem leLT_apply [IsWellOrder β s] [IsTrans γ t] (f : r ≼i s) (g : s ≺i t) (a : α) :
     f.leLT g a = g (f a) :=
   transPrincipal_apply f g a
+
+theorem exists_relIso_sum {β : Type u} {s : β → β → Prop} [IsWellOrder β s] (f : r ≼i s) :
+    ∃ (γ : Type u) (t : γ → γ → Prop), Nonempty (Sum.Lex r t ≃r s) := by
+  classical
+  obtain f | f := f.principalSumRelIso
+  · exact ⟨_, _, ⟨(RelIso.sumLexCongr f.subrelIso.symm (RelIso.refl _)).trans
+      (sumLexLtLE _ f.top).symm⟩⟩
+  · exact ⟨PEmpty, nofun, ⟨(RelIso.sumLexEmpty r _).trans f⟩⟩
 
 end InitialSeg
 
