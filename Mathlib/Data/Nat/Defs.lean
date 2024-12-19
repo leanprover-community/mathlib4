@@ -670,6 +670,15 @@ protected lemma div_pow (h : a ∣ b) : (b / a) ^ c = b ^ c / a ^ c := by
   refine (Nat.div_eq_of_eq_mul_right (pos_pow_of_pos c ha) ?_).symm
   rw [← Nat.mul_pow, Nat.mul_div_cancel_left' h]
 
+lemma pow_self_pos : ∀ n : ℕ, 0 < n ^ n
+  | 0 => Nat.zero_lt_one
+  | n + 1 => by simpa [Nat.pow_succ] using Nat.pow_pos n.succ_pos
+
+lemma pow_self_mul_pow_self_le : m ^ m * n ^ n ≤ (m + n) ^ (m + n) := by
+  rw [Nat.pow_add]
+  exact Nat.mul_le_mul (Nat.pow_le_pow_left (le_add_right ..) _)
+    (Nat.pow_le_pow_left (le_add_left ..) _)
+
 /-!
 ### Recursion and induction principles
 
