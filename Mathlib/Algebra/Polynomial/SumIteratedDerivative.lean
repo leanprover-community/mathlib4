@@ -25,7 +25,7 @@ as a linear map. This is used in particular in the proof of the Lindemann-Weiers
   polynomials
 * `Polynomial.sumIDeriv_map`: `Polynomial.sumIDeriv` commutes with `Polynomial.map`
 * `Polynomial.sumIDeriv_derivative`: `Polynomial.sumIDeriv` commutes with `Polynomial.derivative`
-* `Polynomial.sumIDeriv_eq_self_add`: `sumIDeriv p = p + sumIDeriv (derivative p)`
+* `Polynomial.sumIDeriv_eq_self_add`: `sumIDeriv p = p + derivative (sumIDeriv p)`
 * `Polynomial.exists_iterate_derivative_eq_factorial_smul`: the `k`'th iterated derivative of a
   polynomial has a common factor `k!`
 * `Polynomial.aeval_iterate_derivative_of_lt`, `Polynomial.aeval_iterate_derivative_self`,
@@ -50,7 +50,7 @@ variable [Semiring R] [Semiring S]
 Sum of iterated derivatives of a polynomial, as a linear map
 
 This definition does not allow different weights for the derivatives. It is likely that it could be
-extended to allow them, but this was not needed for the initial use case (the integration by part
+extended to allow them, but this was not needed for the initial use case (the integration by parts
 of the integral $I_i$ in the
 [Lindemann-Weierstrass](https://en.wikipedia.org/wiki/Lindemann%E2%80%93Weierstrass_theorem)
 theorem).
@@ -158,7 +158,7 @@ theorem aeval_iterate_derivative_of_ge (p : R[X]) (q : ℕ) {k : ℕ} (hk : q �
   simp_rw [hp', nsmul_eq_mul, map_mul, map_natCast, ← mul_assoc, ← Nat.cast_mul,
     Nat.add_descFactorial_eq_ascFactorial, Nat.factorial_mul_ascFactorial]
 
-theorem aeval_sumIDeriv_eq_eval (p : R[X]) (r : A):
+theorem aeval_sumIDeriv_eq_eval (p : R[X]) (r : A) :
     aeval r (sumIDeriv p) = eval r (sumIDeriv (map (algebraMap R A) p)) := by
   rw [aeval_def, eval, sumIDeriv_map, eval₂_map, RingHom.id_comp]
 
