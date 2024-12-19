@@ -590,14 +590,11 @@ theorem map_prod_of_subset_primeFactors [CommSemiring R] {f : ArithmeticFunction
     f (∏ a ∈ t, a) = ∏ a ∈ t, f a :=
   map_prod_of_prime h_mult t fun _ a => prime_of_mem_primeFactors (ht a)
 
-theorem map_div_of_squarefree [CommGroupWithZero R] {f : ArithmeticFunction R}
-    (h_mult : IsMultiplicative f) {l d : ℕ} (hdl : d ∣ l) (hl : Squarefree l) (hd : f d ≠ 0) :
+theorem map_div_of_coprime [CommGroupWithZero R] {f : ArithmeticFunction R}
+    (hf : IsMultiplicative f) {l d : ℕ} (hdl : d ∣ l) (hl : (l/d).Coprime d) (hd : f d ≠ 0) :
     f (l / d) = f l / f d := by
   apply (div_eq_of_eq_mul hd ..).symm
-  rw [← h_mult.right, Nat.div_mul_cancel hdl]
-  apply coprime_of_squarefree_mul
-  convert hl
-  exact Nat.div_mul_cancel hdl
+  rw [← hf.right hl, Nat.div_mul_cancel hdl]
 
 @[arith_mult]
 theorem natCast {f : ArithmeticFunction ℕ} [Semiring R] (h : f.IsMultiplicative) :
@@ -780,18 +777,23 @@ theorem lcm_apply_mul_gcd_apply [CommMonoidWithZero R] {f : ArithmeticFunction R
     apply Finset.inter_subset_union
   · simp [factorization_lcm hx hy]
 
+theorem map_gcd [CommGroupWithZero R] {f : ArithmeticFunction R}
+    (hf : f.IsMultiplicative) {x y : ℕ} (hf_lcm : f (x.lcm y) ≠ 0) :
+    f (x.gcd y) = f x * f y / f (x.lcm y) := by
+  rw [←hf.lcm_apply_mul_gcd_apply, mul_div_cancel_left₀ _ hf_lcm]
+
 theorem map_lcm [CommGroupWithZero R] {f : ArithmeticFunction R}
-    (h_mult : f.IsMultiplicative) {x y : ℕ} (hf : f (x.gcd y) ≠ 0) :
+    (hf : f.IsMultiplicative) {x y : ℕ} (hf_gcd : f (x.gcd y) ≠ 0) :
     f (x.lcm y) = f x * f y / f (x.gcd y) := by
-  rw [←h_mult.lcm_apply_mul_gcd_apply, mul_div_cancel_right₀ _ hf]
+  rw [←hf.lcm_apply_mul_gcd_apply, mul_div_cancel_right₀ _ hf_gcd]
 
 theorem eq_zero_of_squarefree_of_dvd_eq_zero [CommMonoidWithZero R] {f : ArithmeticFunction R}
-    (h_mult : IsMultiplicative f) {m n : ℕ} (h_sq : Squarefree n) (hmn : m ∣ n)
+    (hf : IsMultiplicative f) {m n : ℕ} (hn : Squarefree n) (hmn : m ∣ n)
     (h_zero : f m = 0) :
     f n = 0 := by
   rcases hmn with ⟨k, rfl⟩
-  simp only [MulZeroClass.zero_mul, eq_self_iff_true, h_mult.map_mul_of_coprime
-    (coprime_of_squarefree_mul h_sq), h_zero]
+  simp only [MulZeroClass.zero_mul, eq_self_iff_true, hf.map_mul_of_coprime
+    (coprime_of_squarefree_mul hn), h_zero]
 
 end IsMultiplicative
 
