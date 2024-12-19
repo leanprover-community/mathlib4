@@ -261,6 +261,7 @@ Given an adjunction `F ⊣ G` and a `CommShift` structure on `F`, these are the 
 noncomputable def iso : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a :=
   iso' adj _ _ (neg_add_cancel a)
 
+@[reassoc]
 lemma iso_hom_app (X : D) :
     (iso adj a).hom.app X =
       (shiftFunctorCompIsoId C b a h).inv.app (G.obj ((shiftFunctor D a).obj X)) ≫
