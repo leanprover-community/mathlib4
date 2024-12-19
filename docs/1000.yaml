@@ -1710,6 +1710,7 @@ Q2226786:
 
 Q2226800:
   title: Schur–Zassenhaus theorem
+  decl: Subgroup.exists_left_complement'_of_coprime
 
 Q2226803:
   title: Tennenbaum's theorem
