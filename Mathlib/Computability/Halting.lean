@@ -350,7 +350,7 @@ theorem rfindOpt {n} {f : List.Vector ℕ (n + 1) → ℕ} (hf : @Partrec' (n + 
     ((prim Nat.Primrec'.pred).comp₁ Nat.pred hf)).of_eq
     fun v =>
     Part.ext fun b => by
-      simp only [Nat.rfindOpt, exists_prop, tsub_eq_zero_iff_le, PFun.coe_val, Part.mem_bind_iff,
+      simp only [Nat.rfindOpt, exists_prop, Nat.sub_eq_zero_iff_le, PFun.coe_val, Part.mem_bind_iff,
         Part.mem_some_iff, Option.mem_def, Part.mem_coe]
       refine
         exists_congr fun a => (and_congr (iff_of_eq ?_) Iff.rfl).trans (and_congr_right fun h => ?_)
