@@ -184,6 +184,46 @@ theorem IsIso.of_epi_section {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] [hf' : 
     IsIso f :=
   @IsIso.of_epi_section' _ _ _ _ _ hf.exists_splitEpi.some hf'
 
+def SplitMono.op {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : SplitEpi f.op where
+  section_ := sm.retraction.op
+  id := by
+    obtain ⟨ret, _⟩ := sm
+    observe: ret.op ≫ f.op = 𝟙 _
+    exact this
+
+def SplitMono.unop {X Y : C} {f : Opposite.op Y ⟶  Opposite.op X} (sm : SplitMono f) :
+    SplitEpi f.unop where
+  section_ := sm.retraction.unop
+  id := by
+    obtain ⟨ret, _⟩ := sm
+    observe: (f ≫ ret).unop = 𝟙 _
+    exact this
+
+def SplitEpi.op {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : SplitMono f.op where
+  retraction := se.section_.op
+  id := by
+    obtain ⟨sec, _⟩ := se
+    observe: f.op ≫ sec.op = 𝟙 _
+    exact this
+
+def SplitEpi.unop {X Y : C} {f : Opposite.op Y ⟶  Opposite.op X} (se : SplitEpi f) :
+    SplitMono f.unop where
+  retraction := se.section_.unop
+  id := by
+    obtain ⟨sec, _⟩ := se
+    observe : (sec ≫ f).unop = (𝟙 _).unop
+    exact this
+
+/-- A morphism is split epi iff its opposite is split mono.-/
+theorem isSplitEpi_iff_isSplitMono_unop {X Y : C} (f : Opposite.op X ⟶  Opposite.op Y) :
+    IsSplitEpi f ↔ IsSplitMono f.unop :=
+  ⟨λ ⟨⟨s⟩⟩ ↦ ⟨⟨SplitEpi.unop s⟩⟩, λ ⟨⟨s⟩⟩ ↦ ⟨⟨SplitMono.op s⟩⟩⟩
+
+/-- A morphism is split mono iff its opposite is split epi.-/
+theorem isSplitMono_iff_isSplitEpi_unop {X Y : C} (f : Opposite.op Y ⟶  Opposite.op Y) :
+    IsSplitMono f ↔ IsSplitEpi f.unop :=
+  ⟨λ ⟨⟨s⟩⟩ ↦ ⟨⟨SplitMono.unop s⟩⟩, λ ⟨⟨s⟩⟩ ↦ ⟨⟨SplitEpi.op s⟩⟩⟩
+
 -- FIXME this has unnecessarily become noncomputable!
 /-- A category where every morphism has a `Trunc` retraction is computably a groupoid. -/
 noncomputable def Groupoid.ofTruncSplitMono
