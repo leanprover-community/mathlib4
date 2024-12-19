@@ -71,6 +71,7 @@ lemma ideal_eq_bot_of_isLieAbelian
   rw [eq_bot_iff, ← killingCompl_top_eq_bot]
   exact I.le_killingCompl_top_of_isLieAbelian
 
+attribute [local instance] starRingOfComm
 instance instSemisimple [IsKilling K L] [Module.Finite K L] : IsSemisimple K L := by
   apply InvariantForm.isSemisimple_of_nondegenerate (Φ := killingForm K L)
   · exact IsKilling.killingForm_nondegenerate _ _
