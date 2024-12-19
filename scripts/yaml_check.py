@@ -73,7 +73,6 @@ class ThousandPlusTheorem:
     date: Optional[str] = None
     url: Optional[str] = None
     note: Optional[str] = None
-    url: Optional[str] = None
 
 hundred_yaml = sys.argv[1]
 thousand_yaml = sys.argv[2]
