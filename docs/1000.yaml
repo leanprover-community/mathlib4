@@ -2,10 +2,20 @@
 # 1000+ theorems project (https://1000-plus.github.io/).
 # This file and associated infrastructure are work in progress.
 #
+# This file, contains for each theorem in the project,
+# - an entry, labelled by its wikidata entry,
+# - |title|: a human-readable title
+# - (optional) |decl|: if a theorem is formalised in mathlib, the archive or counterexamples,
+#     the name of the corresponding declaration
+# - (optional) |decls|: like |decl|, but a list of declarations
+#     (if one theorem is split into multiple declarations)
+# - (optional) |author|: author(s) of a formalisation
+# - (optional) |date|: date of completion of the first formalisation
+# - (optional) |url|: for external projects, an URL referring to the result
+
 # Current TODOs/unresolved questions:
-# - should this file include further metadata, such as repository links, author names or dates?
 # - add infrastructure for updating the information upstream when formalisations are added
-# - perhaps add a wikidata version of the stacks tag, and generate this file automatically
+# - perhaps add a wikidata version of the stacks attribute, and generate this file automatically
 #   (can this handle formalisation of *statements* also?)
 # - complete the information which theorems are already formalised
 
@@ -140,9 +150,7 @@ Q207244:
 
 Q208416:
   title: Independence of the continuum hypothesis
-  url: https://github.com/flypitch/flypitch
-  identifiers:
-  - independence_of_CH
+  url: https://github.com/flypitch/flypitch/blob/d72904c17fbb874f01ffe168667ba12663a7b853/src/summary.lean#L90
   author: Floris van Doorn and Jesse Michael Han
   date: 2019-09-17
 
