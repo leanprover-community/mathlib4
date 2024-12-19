@@ -158,6 +158,14 @@ noncomputable def commShiftPullback :
     slice_rhs 4 5 => rw [← map_comp]; erw [← map_comp]; rw [Iso.inv_hom_id_app, map_id, map_id]
     rw [id_comp, id_comp, assoc, assoc]; rfl
 
+lemma commShiftPullback_iso_eq (a : A) (b : B) (h : b = φ a) :
+    letI : F.CommShift (C := PullbackShift C φ) (D := PullbackShift D φ) A := F.commShiftPullback φ
+    F.commShiftIso a (C := PullbackShift C φ) (D := PullbackShift D φ) =
+      isoWhiskerRight (pullbackShiftIso C φ a b h) F ≪≫ (F.commShiftIso b) ≪≫
+        isoWhiskerLeft F (pullbackShiftIso D φ a b h).symm := by
+  obtain rfl : b = φ a := h
+  rfl
+
 end Functor
 
 end CategoryTheory
