@@ -114,8 +114,7 @@ lemma aemeasurable_of_aemeasurable_exp_mul (ht : t ≠ 0)
 
 section Integrable
 
-/-- If `ω ↦ exp (u * X ω)` is integrable at `u ≥ 0`, then it is integrable on `[0, u]`. -/
-lemma integrable_exp_mul_of_le [IsFiniteMeasure μ] (hX : Measurable X)
+lemma integrable_exp_mul_of_le_of_measurable [IsFiniteMeasure μ] (hX : Measurable X)
     (hu : Integrable (fun ω ↦ exp (u * X ω)) μ) (h_nonneg : 0 ≤ t) (htu : t ≤ u) :
     Integrable (fun ω ↦ exp (t * X ω)) μ := by
   by_cases ht : t = 0
@@ -138,8 +137,22 @@ lemma integrable_exp_mul_of_le [IsFiniteMeasure μ] (hX : Measurable X)
         add_zero, exp_le_one_iff]
       exact mul_nonpos_of_nonneg_of_nonpos h_pos.le h_neg.le
 
-/-- If `ω ↦ exp (u * X ω)` is integrable at `u ≤ 0`, then it is integrable on `[u, 0]`. -/
-lemma integrable_exp_mul_of_ge [IsFiniteMeasure μ] (hX : Measurable X)
+/-- If `ω ↦ exp (u * X ω)` is integrable at `u ≥ 0`, then it is integrable on `[0, u]`. -/
+lemma integrable_exp_mul_of_le [IsFiniteMeasure μ]
+    (hu : Integrable (fun ω ↦ exp (u * X ω)) μ) (h_nonneg : 0 ≤ t) (htu : t ≤ u) :
+    Integrable (fun ω ↦ exp (t * X ω)) μ := by
+  by_cases ht : t = 0
+  · simp [ht]
+  have hX : AEMeasurable X μ := by
+    refine aemeasurable_of_aemeasurable_exp_mul ?_ hu.1.aemeasurable
+    exact ((lt_of_le_of_ne' h_nonneg ht).trans_le htu).ne'
+  have h_eq t : (fun ω ↦ exp (t * X ω)) =ᵐ[μ] fun ω ↦ exp (t * hX.mk X ω) := by
+    filter_upwards [hX.ae_eq_mk] with ω hω using by rw [hω]
+  rw [integrable_congr (h_eq t)]
+  rw [integrable_congr (h_eq u)] at hu
+  exact integrable_exp_mul_of_le_of_measurable hX.measurable_mk hu h_nonneg htu
+
+lemma integrable_exp_mul_of_ge_of_measurable [IsFiniteMeasure μ] (hX : Measurable X)
     (hu : Integrable (fun ω ↦ exp (u * X ω)) μ) (h_nonpos : t ≤ 0) (htu : u ≤ t) :
     Integrable (fun ω ↦ exp (t * X ω)) μ := by
   by_cases ht : t = 0
@@ -163,6 +176,40 @@ lemma integrable_exp_mul_of_ge [IsFiniteMeasure μ] (hX : Measurable X)
       _ ≤ 1 + exp (u * X ω) := by
         refine add_le_add le_rfl (exp_monotone ?_)
         exact mul_le_mul_of_nonpos_of_nonpos htu le_rfl (htu.trans h_neg.le) h_nonpos
+
+/-- If `ω ↦ exp (u * X ω)` is integrable at `u ≤ 0`, then it is integrable on `[u, 0]`. -/
+lemma integrable_exp_mul_of_ge [IsFiniteMeasure μ]
+    (hu : Integrable (fun ω ↦ exp (u * X ω)) μ) (h_nonpos : t ≤ 0) (htu : u ≤ t) :
+    Integrable (fun ω ↦ exp (t * X ω)) μ := by
+  by_cases ht : t = 0
+  · simp [ht]
+  have hX : AEMeasurable X μ := by
+    refine aemeasurable_of_aemeasurable_exp_mul ?_ hu.1.aemeasurable
+    refine (htu.trans_lt ?_).ne
+    exact lt_of_le_of_ne h_nonpos ht
+  have h_eq t : (fun ω ↦ exp (t * X ω)) =ᵐ[μ] fun ω ↦ exp (t * hX.mk X ω) := by
+    filter_upwards [hX.ae_eq_mk] with ω hω using by rw [hω]
+  rw [integrable_congr (h_eq t)]
+  rw [integrable_congr (h_eq u)] at hu
+  exact integrable_exp_mul_of_ge_of_measurable hX.measurable_mk hu h_nonpos htu
+
+/-- If `ω ↦ exp (u * X ω)` is integrable at `u` and `-u`, then it is integrable on `[-u, u]`. -/
+lemma integrable_exp_mul_of_abs_le [IsFiniteMeasure μ]
+    (hu_int_pos : Integrable (fun ω ↦ exp (u * X ω)) μ)
+    (hu_int_neg : Integrable (fun ω ↦ exp (- u * X ω)) μ)
+    (htu : |t| ≤ |u|) :
+    Integrable (fun ω ↦ exp (t * X ω)) μ := by
+  rcases le_total 0 t with ht | ht
+  · rw [abs_of_nonneg ht] at htu
+    refine integrable_exp_mul_of_le ?_ ht htu
+    rcases le_total 0 u with hu | hu
+    · rwa [abs_of_nonneg hu]
+    · rwa [abs_of_nonpos hu]
+  · rw [abs_of_nonpos ht, neg_le] at htu
+    refine integrable_exp_mul_of_ge ?_ ht htu
+    rcases le_total 0 u with hu | hu
+    · rwa [abs_of_nonneg hu]
+    · rwa [abs_of_nonpos hu, neg_neg]
 
 lemma exp_mul_abs_add_le_add : exp (t * |u| + v * u) ≤ rexp ((v + t) * u) + rexp ((v - t) * u) := by
   rcases le_total 0 u with h_nonneg | h_nonpos
@@ -614,31 +661,44 @@ lemma mgf_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
   · intro n
     positivity
 
-lemma todo (ht : t ≠ 0) (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
-    HasFPowerSeriesAt (mgf X μ)
-      (FormalMultilinearSeries.ofScalars ℝ (fun n ↦ (μ[X ^ n] : ℝ) / n.factorial)) 0 := by
-  refine ⟨‖t‖₊, ?_⟩
+lemma hasFPowerSeriesOnBall_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
+    (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp (-t * X ω)) μ) :
+    HasFPowerSeriesOnBall (mgf X μ)
+      (FormalMultilinearSeries.ofScalars ℝ (fun n ↦ (μ[X ^ n] : ℝ) / n.factorial)) 0 ‖t‖₊ := by
   constructor
   · refine FormalMultilinearSeries.le_radius_of_summable _ ?_
     simp only [Pi.pow_apply, FormalMultilinearSeries.ofScalars_norm, norm_eq_abs,
       coe_nnnorm, abs_div, Nat.abs_cast]
-    sorry
+    have h := todo2 ht_int_pos ht_int_neg
+    rw [← summable_abs_iff] at h
+    simp_rw [abs_mul, abs_div, abs_pow, Nat.abs_cast, Pi.pow_apply] at h
+    exact h
   · simp [ht]
   · intro y hy
     simp_rw [FormalMultilinearSeries.ofScalars_apply_eq]
     simp only [Pi.pow_apply, smul_eq_mul, zero_add]
     simp only [Metric.emetric_ball_nnreal, coe_nnnorm, norm_eq_abs, Metric.mem_ball,
       dist_zero_right] at hy
-    have hy_int_pos : Integrable (fun ω ↦ rexp (y * X ω)) μ := by
-      sorry
+    have hy_int_pos : Integrable (fun ω ↦ rexp (y * X ω)) μ :=
+      integrable_exp_mul_of_abs_le ht_int_pos ht_int_neg hy.le
     have hy_int_neg : Integrable (fun ω ↦ rexp (- y * X ω)) μ := by
-      sorry
+      refine integrable_exp_mul_of_abs_le ht_int_pos ht_int_neg ?_
+      simp only [abs_neg]
+      exact hy.le
     rw [Summable.hasSum_iff]
     · exact (mgf_eq_tsum hy_int_pos hy_int_neg).symm
     · exact todo2 hy_int_pos hy_int_neg
 
-lemma iteratedDeriv_mgf_zero (hu_int_pos : Integrable (fun ω ↦ rexp (u * X ω)) μ)
+lemma hasFPowerSeriesAt_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
+    (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp (-t * X ω)) μ) :
+    HasFPowerSeriesAt (mgf X μ)
+      (FormalMultilinearSeries.ofScalars ℝ (fun n ↦ (μ[X ^ n] : ℝ) / n.factorial)) 0 :=
+  ⟨‖t‖₊, hasFPowerSeriesOnBall_mgf ht ht_int_pos ht_int_neg⟩
+
+lemma iteratedDeriv_mgf_zero [IsFiniteMeasure μ]
+    (hu_int_pos : Integrable (fun ω ↦ rexp (u * X ω)) μ)
     (hu_int_neg : Integrable (fun ω ↦ rexp (- u * X ω)) μ) (n : ℕ) :
     iteratedDeriv n (mgf X μ) 0 = μ[X ^ n] := by
   sorry
