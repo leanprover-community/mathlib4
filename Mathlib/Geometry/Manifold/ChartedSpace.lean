@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.PartialHomeomorph
+import Mathlib.Topology.Connected.PathConnected
 
 /-!
 # Charted spaces
@@ -693,6 +694,23 @@ theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyCo
   · rintro x s ⟨⟨-, -, hsconn⟩, hssubset⟩
     exact hsconn.isPreconnected.image _ ((e x).continuousOn_symm.mono hssubset)
 
+/-- If a topological space `M` admits an atlas with locally path-connected charts,
+  then `M` itself is locally path-connected. -/
+theorem ChartedSpace.locPathConnectedSpace [LocPathConnectedSpace H] : LocPathConnectedSpace M := by
+  refine ⟨fun x ↦ ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨u, hu⟩ ↦ Filter.mem_of_superset hu.1.1 hu.2⟩⟩⟩
+  let e := chartAt H x
+  let t := s ∩ e.source
+  have ht : t ∈ 𝓝 x := Filter.inter_mem hs (chart_source_mem_nhds _ _)
+  refine ⟨e.symm '' pathComponentIn (e x) (e '' t), ⟨?_, ?_⟩, (?_ : _ ⊆ t).trans inter_subset_left⟩
+  · nth_rewrite 1 [← e.left_inv (mem_chart_source _ _)]
+    apply e.symm.image_mem_nhds (by simp [e])
+    exact pathComponentIn_mem_nhds <| e.image_mem_nhds (mem_chart_source _ _) ht
+  · refine (isPathConnected_pathComponentIn <| mem_image_of_mem e (mem_of_mem_nhds ht)).image' ?_
+    refine e.continuousOn_symm.mono <| subset_trans ?_ e.map_source''
+    exact (pathComponentIn_mono <| image_mono inter_subset_right).trans pathComponentIn_subset
+  · exact (image_mono pathComponentIn_subset).trans
+      (PartialEquiv.symm_image_image_of_subset_source _ inter_subset_right).subset
+
 /-- If `M` is modelled on `H'` and `H'` is itself modelled on `H`, then we can consider `M` as being
 modelled on `H`. -/
 def ChartedSpace.comp (H : Type*) [TopologicalSpace H] (H' : Type*) [TopologicalSpace H']
@@ -1050,6 +1068,10 @@ theorem StructureGroupoid.mem_maximalAtlas_of_mem_groupoid {f : PartialHomeomorp
     (hf : f ∈ G) : f ∈ G.maximalAtlas H := by
   rintro e (rfl : e = PartialHomeomorph.refl H)
   exact ⟨G.trans (G.symm hf) G.id_mem, G.trans (G.symm G.id_mem) hf⟩
+
+theorem StructureGroupoid.maximalAtlas_mono {G G' : StructureGroupoid H} (h : G ≤ G') :
+    G.maximalAtlas M ⊆ G'.maximalAtlas M :=
+  fun _ he e' he' ↦ ⟨h (he e' he').1, h (he e' he').2⟩
 
 end MaximalAtlas
 
