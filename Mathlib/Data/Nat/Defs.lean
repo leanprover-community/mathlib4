@@ -648,7 +648,6 @@ lemma one_lt_pow' (n m : ℕ) : 1 < (m + 2) ^ (n + 1) :=
  | 0 => by simp [Nat.zero_pow (Nat.pos_of_ne_zero hn)]
  | 1 => by simp
  | a + 2 => by simp [one_lt_pow hn]
-  -- one_lt_pow_iff_of_nonneg (zero_le _) h
 
 lemma one_lt_two_pow' (n : ℕ) : 1 < 2 ^ (n + 1) := one_lt_pow n.succ_ne_zero (by decide)
 

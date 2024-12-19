@@ -343,7 +343,7 @@ where additionally, the product of the leading coefficients must be nonzero.
 theorem leadingCoeff_multiset_prod :
     t.prod.leadingCoeff = (t.map fun f => leadingCoeff f).prod := by
   rw [← leadingCoeffHom_apply, MonoidHom.map_multiset_prod]
-  rfl
+  simp only [leadingCoeffHom_apply]
 
 /-- The leading coefficient of a product of polynomials is equal to
 the product of the leading coefficients.

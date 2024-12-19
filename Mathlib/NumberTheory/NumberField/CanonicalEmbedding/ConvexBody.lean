@@ -434,8 +434,7 @@ theorem convexBodySum_volume :
       _ = (2 : ℝ) ^ nrRealPlaces K * (π / 2) ^ nrComplexPlaces K := by
         simp_rw [div_one, one_add_one_eq_two, Gamma_add_one two_ne_zero, Gamma_two, mul_one,
           mul_assoc, ← Real.rpow_add_one two_ne_zero, show (-2 : ℝ) + 1 = -1 by norm_num,
-          Real.rpow_neg_one]
-        rfl
+          Real.rpow_neg_one, div_eq_mul_inv]
 
 end convexBodySum
 

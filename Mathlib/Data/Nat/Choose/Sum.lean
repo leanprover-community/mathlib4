@@ -133,8 +133,8 @@ theorem sum_Icc_choose (n k : ℕ) : ∑ m ∈ Icc k n, m.choose k = (n + 1).cho
   · induction n, h using le_induction with
     | base => simp
     | succ n _ ih =>
-      rw [← Ico_insert_right (by omega), sum_insert (by simp),
-        show Ico k (n + 1) = Icc k n by rfl, ih, choose_succ_succ' (n + 1)]
+      rw [← Ico_insert_right (by omega), sum_insert (by simp), Ico_succ_right, ih,
+        choose_succ_succ' (n + 1)]
 
 /-- **Zhu Shijie's identity** aka hockey-stick identity, version with `range`.
 Summing `(i + k).choose k` for `i ∈ [0, n]` gives `(n + k + 1).choose (k + 1)`.
