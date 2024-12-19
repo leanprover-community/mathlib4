@@ -202,6 +202,9 @@ theorem add_iSup {ι : Sort v} [Nonempty ι] (l : ι → Language α) (m : Langu
     (m + ⨆ i, l i) = ⨆ i, m + l i :=
   sup_iSup
 
+theorem mem_sum {ls : List (Language α)} {x : List α} :
+    x ∈ ls.sum ↔ ∃ l ∈ ls, x ∈ l := ls.recOn (by simp) (fun _ _ ih ↦ by simp [ih, mem_add])
+
 theorem mem_pow {l : Language α} {x : List α} {n : ℕ} :
     x ∈ l ^ n ↔ ∃ S : List (List α), x = S.flatten ∧ S.length = n ∧ ∀ y ∈ S, y ∈ l := by
   induction' n with n ihn generalizing x
