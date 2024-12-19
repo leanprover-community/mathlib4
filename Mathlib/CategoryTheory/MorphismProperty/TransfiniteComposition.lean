@@ -37,6 +37,49 @@ holds for any well ordered type `J` in a certain universe `u`.
 
 universe u
 
+instance (α : Type u) [Preorder α] [OrderBot α] (a : α) : OrderBot (Set.Iic a) where
+  bot := ⟨⊥, bot_le⟩
+  bot_le _ := bot_le
+
+lemma Set.Iic.succ_eq {α : Type u} [PartialOrder α] [SuccOrder α] {j : α}
+    (k : Set.Iic j) (hk : ¬ IsMax k) :
+    Order.succ k = Order.succ k.1 :=
+  coe_succ_of_mem (by
+    obtain ⟨k, hk'⟩ := k
+    simp only [mem_Iic] at hk' ⊢
+    rw [Order.succ_le_iff_of_not_isMax
+      (fun hk' ↦ hk (fun ⟨a, ha⟩ hka ↦ by exact hk' hka))]
+    obtain _ | rfl := hk'.lt_or_eq
+    · assumption
+    · exfalso
+      exact hk (fun x _ ↦ x.2))
+
+lemma Set.Iic.not_isMin_coe {α : Type u} [PartialOrder α] [SuccOrder α] {j : α}
+    {k : Set.Iic j} (hk : ¬ IsMin k) :
+    ¬ IsMin k.1 :=
+   fun h ↦ hk (fun _ ha' ↦ h ha')
+
+lemma Set.Iic.isSuccPrelimit_coe {α : Type u} [PartialOrder α] [SuccOrder α] {j : α}
+    {k : Set.Iic j} (hk : Order.IsSuccPrelimit k) :
+    Order.IsSuccPrelimit k.1 :=
+  fun a ha ↦ hk ⟨a, ha.1.le.trans k.2⟩ ⟨ha.1, fun ⟨_, _⟩ hb' ↦ ha.2 hb'⟩
+
+lemma Set.Iic.isSuccLimit_coe {α : Type u} [PartialOrder α] [SuccOrder α] {j : α}
+    {k : Set.Iic j} (hk : Order.IsSuccLimit k) :
+    Order.IsSuccLimit k.1 :=
+  ⟨not_isMin_coe hk.1, isSuccPrelimit_coe hk.2⟩
+
+@[simps]
+def Set.Iic.iioOrderIso {α : Type u} [PartialOrder α] [SuccOrder α] {j : α}
+    (k : Set.Iic j) :
+    Set.Iio k ≃o Set.Iio k.1 where
+  toFun := fun ⟨⟨x, _⟩, hx'⟩ ↦ ⟨x, hx'⟩
+  invFun := fun ⟨x, hx⟩ ↦ ⟨⟨x, hx.le.trans k.2⟩, hx⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_rel_iff' := by rfl
+
+
 namespace CategoryTheory
 
 open Category Limits
@@ -44,6 +87,14 @@ open Category Limits
 namespace Functor
 
 variable {C : Type*} [Category C] {J : Type u} [Preorder J]
+
+lemma map_comp_eqToHom_eq_map_of_preorder (F : J ⥤ C)
+    {a b c : J} (f : a ⟶ b) (g : a ⟶ c) (h : b = c) :
+    F.map f ≫ eqToHom (by rw [h]) = F.map g := by
+  subst h
+  simp only [eqToHom_refl, comp_id]
+  congr
+  apply Subsingleton.elim
 
 /-- Given a functor `F : J ⥤ C` and `m : J`, this is the cocone with point `F.obj m`
 for the restriction of `F` to `Set.Iio m`. -/
@@ -74,11 +125,28 @@ noncomputable def isColimitOfIsWellOrderContinuous (F : J ⥤ C) [F.IsWellOrderC
 instance (F : ℕ ⥤ C) : F.IsWellOrderContinuous where
   nonempty_isColimit m hm := by simp at hm
 
+@[simps!]
+def restrictionLE (F : J ⥤ C) (j : J) : Set.Iic j ⥤ C :=
+  Monotone.functor (f := fun k ↦ k.1) (fun _ _ ↦ id) ⋙ F
+
+instance {J : Type u} [PartialOrder J] [SuccOrder J] (F : J ⥤ C) [F.IsWellOrderContinuous] (j : J) :
+    (F.restrictionLE j).IsWellOrderContinuous where
+  nonempty_isColimit m hm := ⟨
+    IsColimit.ofWhiskerEquivalence (Set.Iic.iioOrderIso m).equivalence.symm
+      (F.isColimitOfIsWellOrderContinuous m.1 (Set.Iic.isSuccLimit_coe hm))⟩
+
 end Functor
 
 namespace MorphismProperty
 
 variable {C : Type*} [Category C] (W : MorphismProperty C)
+
+lemma of_eq {X Y : C} {f : X ⟶ Y} (hf : W f) {X' Y' : C} (f' : X' ⟶ Y')
+    (hX : X = X') (hY : Y = Y') (hf' : f' = eqToHom hX.symm ≫ f ≫ eqToHom hY) :
+    W f' := by
+  subst hX hY
+  obtain rfl : f' = f := by simpa using hf'
+  exact hf
 
 /-- A class of morphisms `W : MorphismProperty C` is stable under transfinite composition
 of shape `J` if for any well-order-continuous functor `F : J ⥤ C` such that
@@ -103,6 +171,39 @@ lemma mem_of_transfinite_composition
     (hF : ∀ (j : J) (_ : ¬IsMax j), W (F.map (homOfLE (Order.le_succ j))))
     {c : Cocone F} (hc : IsColimit c) : W (c.ι.app ⊥) :=
   IsStableUnderTransfiniteCompositionOfShape.mem F hF c hc
+
+lemma mem_map_of_transfinite_composition
+    {J : Type u} [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
+    {F : J ⥤ C} [F.IsWellOrderContinuous]
+    (hF : ∀ (j : J) (_ : ¬IsMax j), W (F.map (homOfLE (Order.le_succ j))))
+    (j : J) [W.IsStableUnderTransfiniteCompositionOfShape (Set.Iic j)] :
+    W (F.map (homOfLE (bot_le : ⊥ ≤ j))) := by
+  let c : Cocone (F.restrictionLE j) :=
+    { pt := F.obj j
+      ι :=
+        { app x := F.map (homOfLE x.2)
+          naturality _ _ f := by
+            dsimp
+            simp only [homOfLE_leOfHom, ← Functor.map_comp, comp_id]
+            rfl } }
+  have hc : IsColimit c :=
+    { desc s := s.ι.app ⟨j, by simp⟩
+      fac s k := by
+        simpa only [Functor.const_obj_obj, Functor.const_obj_map, comp_id]
+          using s.ι.naturality (homOfLE k.2 : k ⟶ ⟨j, by simp⟩)
+      uniq s m hm := by
+        dsimp
+        rw [← hm]
+        dsimp
+        rw [Functor.map_id]
+        exact (id_comp m).symm }
+  refine W.mem_of_transfinite_composition (fun ⟨k, hk⟩ hk' ↦ ?_) hc
+  refine W.of_eq (hF k (fun h ↦ hk' (fun ⟨a, ha⟩ ha' ↦ h ha'))) _ rfl ?_ ?_
+  · dsimp
+    simp only [Functor.comp_obj, Monotone.functor_obj, Set.Iic.succ_eq _ hk']
+  · dsimp
+    rw [id_comp]
+    exact (Functor.map_comp_eqToHom_eq_map_of_preorder _ _ _ (Set.Iic.succ_eq _ hk').symm).symm
 
 /-- A class of morphisms `W : MorphismProperty C` is stable under transfinite composition
 if it is multiplicative and stable under transfinite composition of any shape
