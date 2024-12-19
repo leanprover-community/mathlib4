@@ -150,7 +150,7 @@ Q207244:
 
 Q208416:
   title: Independence of the continuum hypothesis
-  url: https://github.com/flypitch/flypitch
+  url: https://github.com/flypitch/flypitch/blob/d72904c17fbb874f01ffe168667ba12663a7b853/src/summary.lean#L90
   author: Floris van Doorn and Jesse Michael Han
   date: 2019-09-17
 
