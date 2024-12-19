@@ -3553,6 +3553,7 @@ import Mathlib.Logic.Function.Iterate
 import Mathlib.Logic.Function.OfArity
 import Mathlib.Logic.Function.ULift
 import Mathlib.Logic.Godel.GodelBetaFunction
+import Mathlib.Logic.Godel.PartArith
 import Mathlib.Logic.Hydra
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Lemmas
