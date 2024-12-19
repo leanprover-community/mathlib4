@@ -318,25 +318,25 @@ end RightAdjointCommShift
 
 variable (A)
 
+open RightAdjointCommShift in
 /--
 Given an adjunction `F ⊣ G` and a `CommShift` structure on `F`, this constructs
 the unique compatible `CommShift` structure on `G`.
 -/
 @[simps]
 noncomputable def rightAdjointCommShift [F.CommShift A] : G.CommShift A where
-  iso a := RightAdjointCommShift.iso adj a
+  iso a := iso adj a
   zero := by
     refine CommShift.compatibilityUnit_unique_right adj (F.commShiftIso 0)  _ _
-      (RightAdjointCommShift.compatibilityUnit_iso adj 0) ?_
+      (compatibilityUnit_iso adj 0) ?_
     rw [F.commShiftIso_zero]
     exact CommShift.compatibilityUnit_isoZero adj
   add a b := by
     refine CommShift.compatibilityUnit_unique_right adj (F.commShiftIso (a + b))  _ _
-      (RightAdjointCommShift.compatibilityUnit_iso adj (a + b)) ?_
+      (compatibilityUnit_iso adj (a + b)) ?_
     rw [F.commShiftIso_add]
     exact CommShift.compatibilityUnit_isoAdd adj _ _ _ _
-      (RightAdjointCommShift.compatibilityUnit_iso adj a)
-      (RightAdjointCommShift.compatibilityUnit_iso adj b)
+      (compatibilityUnit_iso adj a) (compatibilityUnit_iso adj b)
 
 lemma commShift_of_leftAdjoint [F.CommShift A] :
     letI := adj.rightAdjointCommShift A
