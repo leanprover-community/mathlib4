@@ -129,14 +129,13 @@ jobs:
       run: |
         BRANCHES="${{ steps.find-branches.outputs.branches }}"
         {
-          printf "msg<<EOF\n"
-          printf "We will need to merge the following branches into \`nightly-testing\`:\n"
-          printf "\`\`\`bash\n"
+          printf $'msg<<EOF\nWe will need to merge the following branches into `nightly-testing`:\n'
+          printf $'```bash\n'
           for BRANCH in $BRANCHES; do
             PR_NUMBER=$(echo "$BRANCH" | grep -oP '\d+$')
-            printf "scripts/merge-lean-testing-pr.sh %s   # %s\n" "$PR_NUMBER" "$BRANCH"
+            printf $'scripts/merge-lean-testing-pr.sh %s   # %s\n' "$PR_NUMBER" "$BRANCH"
           done
-          printf "\`\`\`\n"
+          printf $'```\n'
           printf "EOF"
         } >> "$GITHUB_OUTPUT"
 
