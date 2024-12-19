@@ -205,19 +205,15 @@ attribute [instance] commShift_unit commShift_counit
 /-- Constructor for `Adjunction.CommShift`. -/
 lemma mk' (h : NatTrans.CommShift adj.unit A) :
     adj.CommShift A where
-  commShift_counit := ⟨by
-    intro a
-    ext _
-    simp [Functor.commShiftIso_comp_hom_app]
-    refine (compatibilityCounit_of_compatibilityUnit adj (F.commShiftIso a) (G.commShiftIso a)
-      (fun X ↦ ?_) _).symm
-    have := h.comm' a
-    apply_fun (fun x ↦ x.app X) at this
+  commShift_counit := ⟨fun a ↦ by
+    ext
     simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app,
-      Functor.commShiftIso_id_hom_app, whiskerRight_app, id_comp, whiskerLeft_app,
-      Functor.commShiftIso_comp_hom_app] at this
-    exact this
-  ⟩
+      Functor.commShiftIso_comp_hom_app, whiskerRight_app, assoc, whiskerLeft_app,
+      Functor.commShiftIso_id_hom_app, comp_id]
+    refine (compatibilityCounit_of_compatibilityUnit adj _ _ (fun X ↦ ?_) _).symm
+    simpa only [NatTrans.comp_app,
+      Functor.commShiftIso_id_hom_app, whiskerRight_app, id_comp,
+      Functor.commShiftIso_comp_hom_app] using congr_app (h.comm' a) X⟩
 
 end CommShift
 
