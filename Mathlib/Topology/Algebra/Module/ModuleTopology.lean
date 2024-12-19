@@ -295,15 +295,13 @@ theorem continuous_neg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpa
 variable (R) in
 theorem continuousNeg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
     [IsModuleTopology R C] : ContinuousNeg C where
-  continuous_neg :=
-    haveI : ContinuousAdd C := IsModuleTopology.toContinuousAdd R C
-    continuous_of_linearMap (LinearEquiv.neg R).toLinearMap
+  continuous_neg := continuous_neg R C
 
 variable (R) in
 theorem topologicalAddGroup (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
     [IsModuleTopology R C] : TopologicalAddGroup C where
       continuous_add := (IsModuleTopology.toContinuousAdd R C).1
-      continuous_neg := (continuousNeg R C).1
+      continuous_neg := continuous_neg R C
 
 @[fun_prop, continuity]
 theorem continuous_of_ringHom {R A B} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B]
