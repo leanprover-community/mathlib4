@@ -185,6 +185,49 @@ end Reflexive
 
 /-! ### Symmetric bilinear forms -/
 
+section ConjugateSymmetric
+
+variable [AddCommMonoid M₁] [AddCommMonoid M] [CommSemiring R] [Module R M₁] [Module R M]
+  {I : R →+* R} {J : M →+ M} {B : M₁ →ₛₗ[I] M₁ →ₗ[R] M}
+
+/-- The proposition that a sesquilinear form is conjugate symmetric -/
+def IsConjSymm (B : M₁ →ₛₗ[I] M₁ →ₗ[R] M) (J : M →+ M) : Prop :=
+  ∀ x y, J (B x y) = B y x
+
+namespace IsConjSymm
+
+protected theorem eq (H : B.IsConjSymm J) (x y) : J (B x y) = B y x :=
+  H x y
+
+theorem isRefl (H : B.IsConjSymm J) : B.IsRefl := fun x y H1 ↦ by
+  rw [← H.eq]
+  simp [H1]
+
+theorem ortho_comm (H : B.IsConjSymm J) {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
+  H.isRefl.ortho_comm
+
+theorem domRestrict (H : B.IsConjSymm J) (p : Submodule R M₁) :
+    (B.domRestrict₁₂ p p).IsConjSymm J :=
+  fun _ _ ↦ by
+  simp_rw [domRestrict₁₂_apply]
+  exact H _ _
+
+end IsConjSymm
+
+@[simp]
+theorem isConjSymm_zero : (0 : M₁ →ₛₗ[I] M₁ →ₗ[R] M).IsConjSymm J := fun _ _ => map_zero _
+
+theorem isConjSymm_iff_eq_flip {B : LinearMap.BilinMap R M₁ M} :
+    B.IsConjSymm (AddMonoidHom.id M) ↔ B = B.flip := by
+  constructor <;> intro h
+  · ext
+    rw [← h, flip_apply]
+    rfl
+  intro x y
+  conv_lhs => rw [h]
+  rfl
+
+end ConjugateSymmetric
 
 section Symmetric
 
@@ -192,37 +235,26 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M] {I : R →+* R} {B : M 
 
 /-- The proposition that a sesquilinear form is symmetric -/
 def IsSymm (B : M →ₛₗ[I] M →ₗ[R] R) : Prop :=
-  ∀ x y, I (B x y) = B y x
+  IsConjSymm B (J := I)
 
 namespace IsSymm
 
-protected theorem eq (H : B.IsSymm) (x y) : I (B x y) = B y x :=
-  H x y
+protected theorem eq (H : B.IsSymm) (x y) : I (B x y) = B y x := IsConjSymm.eq H x y
 
-theorem isRefl (H : B.IsSymm) : B.IsRefl := fun x y H1 ↦ by
-  rw [← H.eq]
-  simp [H1]
+theorem isRefl (H : B.IsSymm) : B.IsRefl := IsConjSymm.isRefl H
 
-theorem ortho_comm (H : B.IsSymm) {x y} : IsOrtho B x y ↔ IsOrtho B y x :=
-  H.isRefl.ortho_comm
+theorem ortho_comm (H : B.IsSymm) {x y} : IsOrtho B x y ↔ IsOrtho B y x := IsConjSymm.ortho_comm H
 
 theorem domRestrict (H : B.IsSymm) (p : Submodule R M) : (B.domRestrict₁₂ p p).IsSymm :=
-  fun _ _ ↦ by
-  simp_rw [domRestrict₁₂_apply]
-  exact H _ _
+  IsConjSymm.domRestrict H p
 
 end IsSymm
 
 @[simp]
-theorem isSymm_zero : (0 : M →ₛₗ[I] M →ₗ[R] R).IsSymm := fun _ _ => map_zero _
+theorem isSymm_zero : (0 : M →ₛₗ[I] M →ₗ[R] R).IsSymm := isConjSymm_zero
 
-theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.flip := by
-  constructor <;> intro h
-  · ext
-    rw [← h, flip_apply, RingHom.id_apply]
-  intro x y
-  conv_lhs => rw [h]
-  rfl
+theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.flip :=
+  isConjSymm_iff_eq_flip
 
 end Symmetric
 
@@ -870,7 +902,8 @@ lemma apply_mul_apply_le_of_forall_zero_le (hs : ∀ x, 0 ≤ B x x) (x y : M) :
 /-- The **Cauchy-Schwarz inequality** for positive semidefinite symmetric forms. -/
 lemma apply_sq_le_of_symm (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) (x y : M) :
     (B x y) ^ 2 ≤ (B x x) * (B y y) := by
-  rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB, RingHom.id_apply]]
+  rw [show (B x y) ^ 2 = (B x y) * (B y x) by
+    rw [sq, ← hB, RingHom.coe_addMonoidHom_id, AddMonoidHom.id_apply]]
   exact apply_mul_apply_le_of_forall_zero_le B hs x y
 
 /-- The equality case of **Cauchy-Schwarz**. -/
@@ -924,7 +957,8 @@ forms. -/
 lemma apply_sq_lt_iff_linearIndependent_of_symm [NoZeroSMulDivisors R M]
     (hp : ∀ x, x ≠ 0 → 0 < B x x) (hB: B.IsSymm) (x y : M) :
     (B x y) ^ 2 < (B x x) * (B y y) ↔ LinearIndependent R ![x, y] := by
-  rw [show (B x y) ^ 2 = (B x y) * (B y x) by rw [sq, ← hB, RingHom.id_apply]]
+  rw [show (B x y) ^ 2 = (B x y) * (B y x) by
+    rw [sq, ← hB, RingHom.coe_addMonoidHom_id, AddMonoidHom.id_apply]]
   exact apply_mul_apply_lt_iff_linearIndependent B hp x y
 
 lemma apply_apply_same_eq_zero_iff (hs : ∀ x, 0 ≤ B x x) (hB : B.IsSymm) {x : M} :

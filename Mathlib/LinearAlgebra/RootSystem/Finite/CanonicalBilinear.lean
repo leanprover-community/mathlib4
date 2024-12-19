@@ -136,7 +136,7 @@ lemma ker_copolarization_eq_ker_corootForm :
 
 lemma rootForm_symmetric :
     LinearMap.IsSymm P.RootForm := by
-  simp [LinearMap.IsSymm, mul_comm, rootForm_apply_apply]
+  simp [LinearMap.IsSymm, LinearMap.IsConjSymm, mul_comm, rootForm_apply_apply]
 
 @[simp]
 lemma rootForm_reflection_reflection_apply (i : ι) (x y : M) :
