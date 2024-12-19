@@ -330,6 +330,18 @@ lemma integrable_pow_abs_mul_exp_of_integrable_exp_mul (ht : t ≠ 0)
     gcongr
     exact h_le _
 
+lemma integrable_pow_abs_mul_exp_of_integrable_exp_mul'
+    (hv : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
+    Integrable (fun ω ↦ |X ω| ^ n * exp (v * X ω)) μ := by
+  rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hv
+  obtain ⟨l, u, hxlu, h_subset⟩ := hv
+  refine integrable_pow_abs_mul_exp_of_integrable_exp_mul (t := min (v - l) (u - v) / 2) ?_ ?_ ?_ n
+  · sorry
+  · refine h_subset ?_
+    sorry
+  · refine h_subset ?_
+    sorry
+
 /-- If `ω ↦ rexp (t * X ω)` is integrable at `t` and `-t` for `t ≠ 0`, then `ω ↦ |X ω| ^ n` is
 integrable for all `n : ℕ`. That is, all moments of `X` are finite. -/
 lemma integrable_pow_abs_of_integrable_exp_mul (ht : t ≠ 0)
@@ -356,6 +368,17 @@ lemma integrable_pow_mul_exp_of_integrable_exp_mul (ht : t ≠ 0)
           simpa [h_eq] using hvt
         exact aemeasurable_of_aemeasurable_exp_mul hvt' ht_int_neg.1.aemeasurable
       · exact aemeasurable_of_aemeasurable_exp_mul hvt ht_int_pos.1.aemeasurable
+    exact ((hX.pow_const _).mul
+      (measurable_exp.comp_aemeasurable (hX.const_mul _))).aestronglyMeasurable
+
+lemma integrable_pow_mul_exp_of_integrable_exp_mul'
+    (hv : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
+    Integrable (fun ω ↦ X ω ^ n * exp (v * X ω)) μ := by
+  rw [← integrable_norm_iff]
+  · simp_rw [norm_eq_abs, abs_mul, abs_pow, abs_exp]
+    exact integrable_pow_abs_mul_exp_of_integrable_exp_mul' hv n
+  · have hX : AEMeasurable X μ := by
+      sorry
     exact ((hX.pow_const _).mul
       (measurable_exp.comp_aemeasurable (hX.const_mul _))).aestronglyMeasurable
 
@@ -821,7 +844,13 @@ lemma analyticOnNhd_mgf [IsFiniteMeasure μ] :
   intro x hx
   rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hx
   obtain ⟨l, u, hxlu, h_subset⟩ := hx
-  sorry
+  let t := min (x - l) (u - x) / 2
+  have ht : t ≠ 0 := (ne_of_lt (by simpa [t])).symm
+  have hx_add_t_mem : x + t ∈ Set.Ioo l u := by
+    sorry
+  have hx_sub_t_mem : x - t ∈ Set.Ioo l u := by
+    sorry
+  exact analyticAt_mgf' ht (h_subset hx_add_t_mem) (h_subset hx_sub_t_mem)
 
 lemma iteratedDeriv_mgf_zero [IsFiniteMeasure μ]
     (hu_int_pos : Integrable (fun ω ↦ rexp (u * X ω)) μ)
