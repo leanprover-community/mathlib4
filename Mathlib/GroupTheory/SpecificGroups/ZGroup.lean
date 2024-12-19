@@ -267,11 +267,6 @@ theorem tada3_zero_smul (G : Type*) [Group G] [IsCyclic G] (g : G) :
   let _ : CommGroup G := IsCyclic.commGroup
   CommGroup.zmodModule.zero_smul _ g
 
-noncomputable def _root_.IsCyclic.mulAutMulEquiv {G : Type*} [Group G] [h : IsCyclic G] :
-    MulAut G ≃* (ZMod (Nat.card G))ˣ :=
-  ((MulAut.congr (zmodCyclicMulEquiv h)).symm.trans
-    (MulAutMultiplicative (ZMod (Nat.card G)))).trans (ZMod.AddAutEquivUnits (Nat.card G))
-
 noncomputable def _root_.IsCyclic.toMonoidHom
     (M G : Type*) [Monoid M] [Group G] [IsCyclic G] [MulDistribMulAction M G] :
     M →* ZMod (Nat.card G) where
