@@ -425,8 +425,7 @@
   "Mathlib.Analysis.Normed.Operator.LinearIsometry":
   ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Analysis.InnerProductSpace.PiL2": ["Mathlib.Util.Superscript"],
-  "Mathlib.Analysis.InnerProductSpace.Basic":
-  ["Mathlib.Algebra.Module.LinearMap.Basic"],
+  "Mathlib.Analysis.InnerProductSpace.Defs": ["Mathlib.Data.Complex.Basic"],
   "Mathlib.Analysis.Distribution.SchwartzSpace": ["Mathlib.Tactic.MoveAdd"],
   "Mathlib.Analysis.Convex.Star": ["Mathlib.Algebra.Order.Module.Synonym"],
   "Mathlib.Analysis.Convex.Basic":
