@@ -15,7 +15,7 @@ In particular we can avoid some assumptions about types being `Inhabited`,
   and make more general statements about `head` and `tail`.
 -/
 
-namespace Mathlib
+namespace List
 
 namespace Vector
 
@@ -73,4 +73,4 @@ theorem mem_map_succ_iff (b : β) (v : Vector α (n + 1)) (f : α → β) :
 
 end Vector
 
-end Mathlib
+end List

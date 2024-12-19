@@ -1479,7 +1479,7 @@ private theorem eLpNorm'_sum_norm_sub_le_tsum_of_cauchy_eLpNorm' {f : ℕ → α
     ∀ n,
       (fun x => ∑ i ∈ Finset.range (n + 1), ‖f (i + 1) x - f i x‖) =
         ∑ i ∈ Finset.range (n + 1), f_norm_diff i :=
-    fun n => funext fun x => by simp
+    fun n => funext fun x => by simp [f_norm_diff]
   rw [hgf_norm_diff]
   refine (eLpNorm'_sum_le (fun i _ => ((hf (i + 1)).sub (hf i)).norm) hp1).trans ?_
   simp_rw [eLpNorm'_norm]
