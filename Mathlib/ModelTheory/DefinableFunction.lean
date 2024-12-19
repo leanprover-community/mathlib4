@@ -15,83 +15,64 @@ namespace Theory
 
 variable {L : Language.{u, v}} (T : L.Theory) {α : Type w} {β : Type x}
 
-def IsDefFunc (φ : L.Formula (α ⊕ β)) : Prop :=
-  ∀ (M : Theory.ModelType.{_, _, max u v} T),
-      ∃ f : (α → M) → (β → M), ∀ x : α → M, ∀ y : β → M,
-        (f x = y) ↔ φ.Realize (Sum.elim x y)
+def IsFunctional [Finite β] (φ : L.Formula (α ⊕ β)) : Prop :=
+  T ⊨ᵇ Formula.iExsUnique id φ
 
-theorem finite_or_subsingleton_of_isDefFunc {φ : L.Formula (α ⊕ β)}
-    (h : T.IsDefFunc φ) : (Finite β) ∨
-    (∀ M : Theory.ModelType.{_, _, max u v} T, Subsingleton M) := by
-  refine or_iff_not_imp_right.2 (fun h => ?_)
-  simp only [subsingleton_iff, not_forall] at h
-  rcases h with ⟨M, x, y, hxy⟩
-  rcases h M with ⟨f, hf⟩
-  by_contra hβ
-  simp only [not_finite_iff_infinite] at hβ
-  classical
-  rcases Infinite.exists_not_mem_finset φ.freeVarFinset.toRight with ⟨b, hb⟩
-  have h1 := (hf (fun _ => x) (f (fun _ => x))).1 rfl
-  have k : { m : M // m ≠ f (fun _ => x) b } :=
-    ⟨if f (fun _ => x) b = y then x else y, by split_ifs <;> simp_all [eq_comm]⟩
-  have h2 := ((hf (fun _ => x)) (fun b' => if b' = b then k.val else f (fun _ => x) b')).2
-    (by
-      rwa [Formula.Realize, ← BoundedFormula.realize_restrictFreeVar' (Set.Subset.refl _),
-        BoundedFormula.realize_restrictFreeVar (Sum.elim (fun _ => x) (f (fun _ => x)))]
-      simp only [Finset.coe_sort_coe, Subtype.coe_eta, Function.comp_apply, Subtype.forall,
-        Sum.forall, Sum.elim_inl, implies_true, Sum.elim_inr, ite_eq_right_iff, true_and]
-      rintro b' hb' rfl
-      simp_all)
-  have := congr_fun h2 b
-  simp only [↓reduceIte] at this
-  exact k.2 this.symm
+def FunctionalFormula (α : Type w) (β : Type x) [Finite β] : Type _ :=
+  { φ : L.Formula (α ⊕ β) // T.IsFunctional φ }
 
-theorem isDefFunc_iff [DecidableEq (α ⊕ β)] {φ : L.Formula (α ⊕ β)} :
-    T.IsDefFunc φ ↔
-      (∃ (h : Finite β),
-        T ⊨ᵇ (Formula.iExsUnique (γ := β) id φ)) ∨
-    (T ⊨ᵇ (∀' ∀' ((Term.var (Sum.inr 0)) =' (Term.var (Sum.inr 1))) : L.Formula Empty) ∧
-      T ⊨ᵇ φ) := by
-  by_cases hM : T ⊨ᵇ ∀' ∀' ((var (Sum.inr 0) : L.Term (Empty ⊕ Fin 2)) =' var (Sum.inr 1)) ∧ T ⊨ᵇ φ
-  · refine iff_of_true ?_ (Or.inr hM)
-    intro M
-    let m : M := Classical.choice inferInstance
-    use fun _ _ => m
-    intro x y
-    have h1 : ∀ a b : M, a = b :=
-      by simpa [Sentence.Realize, Formula.Realize] using hM.1.realize_sentence M
-    exact iff_of_true (funext (fun _ => h1 _ _)) (hM.2.realize_formula M)
-  · rw [or_iff_left hM]
-    refine ⟨?_, ?_⟩
-    · intro h
-      have : Finite β := by
-        refine (finite_or_subsingleton_of_isDefFunc T h).resolve_right ?_
-        simp
-        simp [ModelsBoundedFormula, Fin.snoc] at hM
-    · intro h M
-      rcases h with ⟨_, h⟩
-      have := fun v => h.realize_formula M (v := v)
-      simp [Classical.skolem, Formula.realize_iExsUnique, ExistsUnique] at this
-      rcases this with ⟨f, hf⟩
-      use f
-      intro x y
-      refine ⟨?_, ?_⟩
-      · rintro rfl
-        exact (hf x).1
-      · intro h
-        exact ((hf x).2 y h).symm
+namespace FunctionalFormula
 
-/-- A definable  -/
-def DefFunc (α : Type w) (β : Type x) : Type _ :=
-  { φ : L.Formula (α ⊕ β) // ∀ (M : Type (max u v)) [L.Structure M] [T.Model M],
-      ∃ f : (α → M) → (β → M), ∀ x : α → M, ∀ y : β → M,
-        (f x = y) ↔ φ.Realize (Sum.elim x y) }
+variable [Finite β] {T} {M : Type w} [L.Structure M] [T.Model M] [Nonempty M]
 
-namespace DefFunc
+theorem exists_fun_eq_iff (f : T.FunctionalFormula α β) : ∃ f' : (α → M) → (β → M),
+    ∀ x, ∀ y, f' x = y ↔ f.1.Realize (Sum.elim x y) := by
+  rcases f with ⟨φ, h⟩
+  have := fun x : α → M => h.realize_formula M (v := x)
+  simp only [Formula.realize_iExsUnique, ExistsUnique, id_eq, Classical.skolem] at this
+  rcases this with ⟨f, hf⟩
+  use f
+  intro x y
+  refine ⟨?_, ?_⟩
+  · rintro rfl
+    exact (hf x).1
+  · rintro h
+    exact ((hf x).2 y h).symm
 
+noncomputable def realize (f : T.FunctionalFormula α β) : (α → M) → (β → M) :=
+  Classical.choose (f.exists_fun_eq_iff)
 
+theorem realize_spec {f : T.FunctionalFormula α β} {x : α → M} {y : β → M} :
+    f.realize x = y ↔ f.1.Realize (Sum.elim x y) :=
+  Classical.choose_spec (f.exists_fun_eq_iff) x y
 
-end DefFunc
+def ofTerm (t : L.Term α) : T.FunctionalFormula α Unit :=
+  ⟨Term.equal (t.relabel Sum.inl) (var (Sum.inr ())), by
+    simp only [IsFunctional, ModelsBoundedFormula, BoundedFormula.realize_iExsUnique, id_eq,
+      Formula.realize_equal, Term.realize_relabel, Sum.elim_comp_inl, Term.realize_var,
+      Sum.elim_inr, forall_const]
+    intro M x
+    use fun _ => t.realize x
+    simp [funext_iff, eq_comm]⟩
+
+end FunctionalFormula
+
+open FunctionalFormula
+
+def FunctionalFormulaLang : Language where
+  Functions := fun n => FunctionalFormula.{u, v, 0, 0} T (Fin n) Unit
+  Relations := L.Relations
+
+namespace FunctionalFormulaLang
+
+def of : L →ᴸ FunctionalFormulaLang T where
+  onFunction := fun _ f => ofTerm (func f var)
+  onRelation := fun _ R => R
+
+def theory : (FunctionalFormulaLang T).Theory :=
+  T.map of
+
+end FunctionalFormulaLang
 
 end Theory
 
