@@ -8,6 +8,7 @@ import Mathlib.Data.Finset.Card
 import Mathlib.Data.List.NodupEquivFin
 import Mathlib.Data.Set.Image
 import Mathlib.Order.WellFounded
+import Mathlib.Tactic.Linter.UnusedAssumptionInType
 
 /-!
 # Cardinalities of finite types
@@ -367,13 +368,13 @@ In this section we prove that `α : Type*` is `Finite` if and only if `Fintype �
 -/
 
 
--- @[nolint fintype_finite] -- Porting note: do we need this
+@[nolint finiteFintype]
 protected theorem Fintype.finite {α : Type*} (_inst : Fintype α) : Finite α :=
   ⟨Fintype.equivFin α⟩
 
 /-- For efficiency reasons, we want `Finite` instances to have higher
 priority than ones coming from `Fintype` instances. -/
--- @[nolint fintype_finite] -- Porting note: do we need this
+@[nolint finiteFintype]
 instance (priority := 900) Finite.of_fintype (α : Type*) [Fintype α] : Finite α :=
   Fintype.finite ‹_›
 
@@ -864,7 +865,7 @@ instance Bool.instWellFoundedGT : WellFoundedGT Bool := inferInstance
 instance Prop.instWellFoundedLT : WellFoundedLT Prop := inferInstance
 instance Prop.instWellFoundedGT : WellFoundedGT Prop := inferInstance
 
--- @[nolint fintype_finite] -- Porting note: do we need this?
+@[nolint finiteFintype]
 protected theorem Fintype.false [Infinite α] (_h : Fintype α) : False :=
   not_finite α
 
