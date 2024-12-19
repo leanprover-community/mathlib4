@@ -192,7 +192,7 @@ theorem cloneCompse_comm (a b c : Sigma A) (p1 p2 : Fin a.fst) (hp: p1 < p2)
 /- Every abstract clone naturally induces a (symmetric) operad. Currently this only shows the
  (nonsymmetric) `Operad` instance; extending it to `SymmOperad` requires some annoying lemmas with
   permutations. -/
-instance clone_toSymmOperad [Clone A] : Operad A where
+instance clone_toSymmOperad [Clone A] : SymmOperad A where
   compose := cloneCompose
 
   id_right := fun a p ↦ by
@@ -219,25 +219,25 @@ instance clone_toSymmOperad [Clone A] : Operad A where
     · exact cloneCompse_comm a b c p1 p2 hp _ _ rfl rfl
 
   -- The following would be needed to improve this from `extends Operad` to `extends SymmOperad`
-  -- act_at := fun i ↦ {
-  --   smul := fun s x ↦ x ∘∈ fun k ↦ proj i (s k),
-  --   one_smul := fun b ↦ proj_right b,
-  --   mul_smul := fun x y b ↦ by
-  --     dsimp [HSMul.hSMul]
-  --     simp_rw [superpose_assoc, proj_left]
-  --   }
-  -- perm_left := fun s k x y ↦ by
-  --   dsimp [SigmaMul_smul, MultiComposable.compose, cloneCompose]
-  --   rw [superpose_assoc]
-  --   congr! with z
-  --   rw [proj_left]
-  --   split
-  --   · split
-  --     · dsimp [clonePadTo]
-  --       congr!
-  --       sorry
-  --     · sorry
-  --   · sorry
-  -- perm_right := sorry
+  act_at := fun i ↦ {
+    smul := fun s x ↦ x ∘∈ fun k ↦ proj i (s k),
+    one_smul := fun b ↦ proj_right b,
+    mul_smul := fun x y b ↦ by
+      dsimp [HSMul.hSMul]
+      simp_rw [superpose_assoc, proj_left]
+    }
+  perm_left := fun {n m} s k x y ↦ by
+    dsimp [SigmaMul_smul, MultiComposable.compose, cloneCompose]
+    rw [superpose_assoc]
+    congr! with z
+    rw [proj_left]
+    split
+    · split
+      · dsimp [clonePadTo]
+        congr!
+        sorry
+      · sorry
+    · sorry
+  perm_right := sorry
 
 end Clone
