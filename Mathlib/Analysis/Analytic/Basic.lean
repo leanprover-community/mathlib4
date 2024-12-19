@@ -327,6 +327,39 @@ theorem min_radius_le_radius_add (p q : FormalMultilinearSeries 𝕜 E F) :
 theorem radius_neg (p : FormalMultilinearSeries 𝕜 E F) : (-p).radius = p.radius := by
   simp only [radius, neg_apply, norm_neg]
 
+theorem radius_smul_ge {p : FormalMultilinearSeries 𝕜 E F} {c : 𝕜} : p.radius ≤ (c • p).radius := by
+  simp only [radius, smul_apply, ContinuousMultilinearMap.opNorm_smul_eq]
+  apply iSup_mono
+  intro r
+  apply iSup_mono'
+  intro C
+  use ‖c‖ * C
+  apply iSup_mono'
+  intro h
+  simp
+  intro n
+  rw [mul_assoc]
+  apply mul_le_mul_of_nonneg_left
+  · apply h
+  · simp
+
+theorem radius_smul_eq (p : FormalMultilinearSeries 𝕜 E F) {c : 𝕜}
+    (hc : c ≠ 0) : (c • p).radius = p.radius := by
+  apply eq_of_le_of_le _ radius_smul_ge
+  simp only [radius, smul_apply, ContinuousMultilinearMap.opNorm_smul_eq]
+  apply iSup_mono
+  intro r
+  apply iSup_mono'
+  intro C
+  use C / ‖c‖
+  apply iSup_mono'
+  intro h
+  simp
+  intro n
+  rw [le_div_iff₀ (norm_pos_iff.mpr hc)]
+  convert h n using 1
+  ring
+
 @[simp]
 theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p.radius := by
   simp only [radius, shift, Nat.succ_eq_add_one, ContinuousMultilinearMap.curryRight_norm]
