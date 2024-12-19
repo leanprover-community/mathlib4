@@ -1280,7 +1280,7 @@ span. -/
 lemma affineSpan_le_toAffineSubspace_span {s : Set V} :
     affineSpan k s ≤ (Submodule.span k s).toAffineSubspace := by
   intro x hx
-  show x ∈ Submodule.span k s
+  simp only [SetLike.mem_coe, Submodule.mem_toAffineSubspace]
   induction hx using affineSpan_induction' with
   | mem x hx => exact Submodule.subset_span hx
   | smul_vsub_vadd c u _ v _ w _ hu hv hw =>

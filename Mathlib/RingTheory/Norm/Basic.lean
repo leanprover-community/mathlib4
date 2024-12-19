@@ -93,10 +93,10 @@ theorem norm_zero [Nontrivial S] [Module.Free R S] [Module.Finite R S] : norm R 
 theorem norm_eq_zero_iff [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Finite R S] {x : S} :
     norm R x = 0 ↔ x = 0 := by
   constructor
-  on_goal 1 => let b := Module.Free.chooseBasis R S
   swap
   · rintro rfl; exact norm_zero
-  · letI := Classical.decEq (Module.Free.ChooseBasisIndex R S)
+  · let b := Module.Free.chooseBasis R S
+    let decEq := Classical.decEq (Module.Free.ChooseBasisIndex R S)
     rw [norm_eq_matrix_det b, ← Matrix.exists_mulVec_eq_zero_iff]
     rintro ⟨v, v_ne, hv⟩
     rw [← b.equivFun.apply_symm_apply v, b.equivFun_symm_apply, b.equivFun_apply,
@@ -165,8 +165,7 @@ theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
   · simp [minpoly.eq_zero hx, IntermediateField.AdjoinSimple.norm_gen_eq_one hx, aroots_def]
   rw [← adjoin.powerBasis_gen hx, PowerBasis.norm_gen_eq_prod_roots] <;>
     rw [adjoin.powerBasis_gen hx, ← minpoly.algebraMap_eq injKxL] <;>
-    try simp only [AdjoinSimple.algebraMap_gen _ _]
-  exact hf
+    simp only [AdjoinSimple.algebraMap_gen _ _, hf]
 
 end IntermediateField
 
