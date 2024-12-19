@@ -41,7 +41,7 @@ def fiberwiseColimitLimitIso (K : J ⥤ Grothendieck F ⥤ H)
       preservesLimitIso colim _ ≪≫
       HasLimit.isoOfNatIso
         (Functor.associator _ _ _ ≪≫
-        isoWhiskerLeft _ (fiberwiseColimcompEvaluationIso _).symm ≪≫
+        isoWhiskerLeft _ (fiberwiseColimCompEvaluationIso _).symm ≪≫
         (Functor.associator _ _ _).symm) ≪≫
       (limitObjIsoLimitCompEvaluation _ c).symm)
     fun {c₁ c₂} f => by
@@ -89,7 +89,7 @@ instance preservesLimitsOfShape_colim_Grothendieck [HasColimitsOfShape C H] [Has
       Functor.comp_obj, fiberwiseColim_obj, HasLimit.isoOfNatIso_hom_π_assoc,
       whiskeringLeft_obj_obj, colim_obj, evaluation_obj_obj, Iso.trans_hom, isoWhiskerLeft_hom,
       NatTrans.comp_app, Functor.associator_hom_app, whiskerLeft_app,
-      fiberwiseColimcompEvaluationIso_inv_app, Functor.associator_inv_app, Category.comp_id,
+      fiberwiseColimCompEvaluationIso_inv_app, Functor.associator_inv_app, Category.comp_id,
       Category.id_comp, preservesLimitIso_hom_π_assoc, colim_map, Grothendieck.ι_obj,
       ι_colimitFiberwiseColimitIso_hom]
     simp [← Category.assoc, ← NatTrans.comp_app]

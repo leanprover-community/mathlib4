@@ -218,7 +218,7 @@ def fiberwiseColimCompColimIso : fiberwiseColim F H ⋙ colim ≅ colim :=
 /-- Composing `fiberwiseColim F H` with the evaluation functor `(evaluation C H).obj c` is
 naturally isomorphic to precomposing the Grothendieck inclusion `Grothendieck.ι` to `colim`. -/
 @[simps!]
-def fiberwiseColimcompEvaluationIso (c : C) :
+def fiberwiseColimCompEvaluationIso (c : C) :
     fiberwiseColim F H ⋙ (evaluation C H).obj c ≅
     (whiskeringLeft _ _ _).obj (Grothendieck.ι F c) ⋙ colim :=
   Iso.refl _
