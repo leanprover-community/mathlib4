@@ -159,8 +159,8 @@ def OneTruncation₂.ofNerve₂ (C : Type u) [Category.{u} C] :
 category. -/
 @[simps! hom_app_obj hom_app_map inv_app_obj_obj inv_app_obj_map inv_app_map]
 def OneTruncation₂.ofNerve₂.natIso :
-    nerveFunctor₂.{u,u} ⋙ SSet.oneTruncation₂ ≅ ReflQuiv.forget := by
-  refine NatIso.ofComponents (fun C => OneTruncation₂.ofNerve₂ C) ?nat
+    nerveFunctor₂.{u,u} ⋙ SSet.oneTruncation₂ ≅ ReflQuiv.forget :=
+  NatIso.ofComponents (fun C => OneTruncation₂.ofNerve₂ C) (by
   · intro C D F
     fapply ReflPrefunctor.ext <;> simp
     · exact fun _ ↦ rfl
@@ -174,7 +174,7 @@ def OneTruncation₂.ofNerve₂.natIso :
         ReflQuiv.comp_eq_comp, Nat.reduceAdd, SimplexCategory.len_mk, id_eq, op_map,
         Quiver.Hom.unop_op, nerve_map, SimplexCategory.toCat_map, ReflPrefunctor.comp_obj,
         ReflPrefunctor.comp_map]
-      simp [nerveHomEquiv, ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso, Quiv.isoOfEquiv]
+      simp [nerveHomEquiv, ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso, Quiv.isoOfEquiv])
 
 end
 
