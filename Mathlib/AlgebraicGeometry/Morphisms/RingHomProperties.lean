@@ -170,9 +170,16 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso P)
     rwa [IsAffineOpen.appLE_eq_away_map f (isAffineOpen_top Y) U.2,
       ← h₁.is_localization_away_iff] at this
 
+variable {P}
+
+lemma affineLocally_le {Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+    (hPQ : ∀ {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}, P f → Q f) :
+    affineLocally P ≤ affineLocally Q :=
+  fun _ _ _ hf U V ↦ hPQ (hf U V)
+
 open RingHom
 
-variable {P} {X Y : Scheme.{u}} {f : X ⟶ Y}
+variable {X Y : Scheme.{u}} {f : X ⟶ Y}
 
 /-- If `P` holds for `f` over affine opens `U₂` of `Y` and `V₂` of `X` and `U₁` (resp. `V₁`) are
 open affine neighborhoods of `x` (resp. `f.base x`), then `P` also holds for `f`
