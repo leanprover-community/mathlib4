@@ -14,9 +14,23 @@ import Mathlib.Order.Hom.Basic
 
 /-!
 # Multisets
-These are implemented as the quotient of a list by permutations.
+
+Multisets are finite sets with duplicates allowed. They are implemented here as the quotient of
+lists by permutation. This gives them computational content.
+
 ## Notation
-We define the global infix notation `::ₘ` for `Multiset.cons`.
+
+* `0`: The empty multiset.
+* `{a}`: The multiset containing a single occurrence of `a`.
+* `a ::ₘ s`: The multiset containing one more occurrence of `a` than `s` does.
+* `s + t`: The multiset for which the number of occurrences of each `a` is the sum of the
+  occurrences of `a` in `s` and `t`.
+* `s - t`: The multiset for which the number of occurrences of each `a` is the difference of the
+  occurrences of `a` in `s` and `t`.
+* `s ∪ t`: The multiset for which the number of occurrences of each `a` is the max of the
+  occurrences of `a` in `s` and `t`.
+* `s ∩ t`: The multiset for which the number of occurrences of each `a` is the min of the
+  occurrences of `a` in `s` and `t`.
 -/
 
 -- No bundled ordered algebra should be required
@@ -665,10 +679,7 @@ theorem nsmul_cons {s : Multiset α} (n : ℕ) (a : α) :
 
 /-- The cardinality of a multiset is the sum of the multiplicities
   of all its elements, or simply the length of the underlying list. -/
-def card : Multiset α →+ ℕ where
-  toFun s := (Quot.liftOn s length) fun _l₁ _l₂ => Perm.length_eq
-  map_zero' := rfl
-  map_add' s t := Quotient.inductionOn₂ s t length_append
+def card (s : Multiset α) : ℕ := Quot.liftOn s length fun _l₁ _l₂ => Perm.length_eq
 
 @[simp]
 theorem coe_card (l : List α) : card (l : Multiset α) = length l :=
@@ -682,11 +693,18 @@ theorem length_toList (s : Multiset α) : s.toList.length = card s := by
 theorem card_zero : @card α 0 = 0 :=
   rfl
 
-theorem card_add (s t : Multiset α) : card (s + t) = card s + card t :=
-  card.map_add s t
+@[simp] lemma card_add (s t : Multiset α) : card (s + t) = card s + card t :=
+  Quotient.inductionOn₂ s t length_append
 
-theorem card_nsmul (s : Multiset α) (n : ℕ) : card (n • s) = n * card s := by
-  rw [card.map_nsmul s n, Nat.nsmul_eq_mul]
+/-- `Multiset.card` bundled as a monoid hom. -/
+@[simps]
+def cardHom : Multiset α →+ ℕ where
+  toFun := card
+  map_zero' := card_zero
+  map_add' := card_add
+
+@[simp]
+lemma card_nsmul (s : Multiset α) (n : ℕ) : card (n • s) = n * card s := cardHom.map_nsmul ..
 
 @[simp]
 theorem card_cons (a : α) (s : Multiset α) : card (a ::ₘ s) = card s + 1 :=
