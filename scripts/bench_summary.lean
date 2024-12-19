@@ -192,9 +192,9 @@ def addBenchSummaryComment (PR : Nat) (repo : String) (jobID : String := "")
   -- retrieve the data from the speed-center
   let curlSpeedCenter : IO.Process.SpawnArgs :=
     { cmd := "curl"
-      args := #[s!"http://speed.lean-fro.org/mathlib4/api/compare/{source}/to/{target}?all_values=true"] }
+      args := #[s!"https://speed.lean-lang.org/mathlib4/api/compare/{source}/to/{target}?all_values=true"] }
   dbg_trace "\n#running\n\
-    curl http://speed.lean-fro.org/mathlib4/api/compare/{source}/to/{target}?all_values=true > {tempFile}.src"
+    curl https://speed.lean-lang.org/mathlib4/api/compare/{source}/to/{target}?all_values=true > {tempFile}.src"
   let bench ← IO.Process.run curlSpeedCenter
   IO.FS.writeFile (tempFile ++ ".src") bench
 

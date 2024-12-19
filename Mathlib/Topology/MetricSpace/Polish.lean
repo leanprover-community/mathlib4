@@ -372,7 +372,7 @@ theorem _root_.IsClosed.isClopenable [TopologicalSpace α] [PolishSpace α] {s :
     simp only [preimage_preimage, f]
     have inl (x : s) : (Equiv.Set.sumCompl s) (Sum.inl x) = x := Equiv.Set.sumCompl_apply_inl ..
     have inr (x : ↑sᶜ) : (Equiv.Set.sumCompl s) (Sum.inr x) = x := Equiv.Set.sumCompl_apply_inr ..
-    simp_rw [inl, inr, Subtype.coe_preimage_self]
+    simp_rw [t, inl, inr, Subtype.coe_preimage_self]
     simp only [isOpen_univ, true_and]
     rw [Subtype.preimage_coe_compl']
     simp
