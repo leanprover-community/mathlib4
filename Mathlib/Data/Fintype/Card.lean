@@ -540,12 +540,14 @@ theorem exists_pair_of_one_lt_card (h : 1 < card α) : ∃ a b : α, a ≠ b :=
 theorem card_eq_one_of_forall_eq {i : α} (h : ∀ j, j = i) : card α = 1 :=
   Fintype.card_eq_one_iff.2 ⟨i, h⟩
 
-theorem exists_unique_iff_card_one {α} [Fintype α] (p : α → Prop) [DecidablePred p] :
+theorem existsUnique_iff_card_one {α} [Fintype α] (p : α → Prop) [DecidablePred p] :
     (∃! a : α, p a) ↔ #{x | p x} = 1 := by
   rw [Finset.card_eq_one]
   refine exists_congr fun x => ?_
   simp only [forall_true_left, Subset.antisymm_iff, subset_singleton_iff', singleton_subset_iff,
       true_and, and_comm, mem_univ, mem_filter]
+
+@[deprecated (since := "2024-12-17")] alias exists_unique_iff_card_one := existsUnique_iff_card_one
 
 theorem one_lt_card [h : Nontrivial α] : 1 < Fintype.card α :=
   Fintype.one_lt_card_iff_nontrivial.mpr h
@@ -706,14 +708,28 @@ theorem set_fintype_card_eq_univ_iff [Fintype α] (s : Set α) [Fintype s] :
 namespace Function.Embedding
 
 /-- An embedding from a `Fintype` to itself can be promoted to an equivalence. -/
-noncomputable def equivOfFintypeSelfEmbedding [Finite α] (e : α ↪ α) : α ≃ α :=
+noncomputable def equivOfFiniteSelfEmbedding [Finite α] (e : α ↪ α) : α ≃ α :=
   Equiv.ofBijective e e.2.bijective_of_finite
 
+@[deprecated (since := "2024-12-05")]
+alias equivOfFintypeSelfEmbedding := equivOfFiniteSelfEmbedding
+
 @[simp]
-theorem equiv_of_fintype_self_embedding_to_embedding [Finite α] (e : α ↪ α) :
-    e.equivOfFintypeSelfEmbedding.toEmbedding = e := by
+theorem toEmbedding_equivOfFiniteSelfEmbedding [Finite α] (e : α ↪ α) :
+    e.equivOfFiniteSelfEmbedding.toEmbedding = e := by
   ext
   rfl
+
+@[deprecated (since := "2024-12-05")]
+alias equiv_of_fintype_self_embedding_to_embedding := toEmbedding_equivOfFiniteSelfEmbedding
+
+/-- On a finite type, equivalence between the self-embeddings and the bijections. -/
+@[simps] noncomputable def _root_.Equiv.embeddingEquivOfFinite (α : Type*) [Finite α] :
+    (α ↪ α) ≃ (α ≃ α) where
+  toFun e := e.equivOfFiniteSelfEmbedding
+  invFun e := e.toEmbedding
+  left_inv e := rfl
+  right_inv e := by ext; rfl
 
 /-- If `‖β‖ < ‖α‖` there are no embeddings `α ↪ β`.
 This is a formulation of the pigeonhole principle.
@@ -750,7 +766,7 @@ end Function.Embedding
 
 @[simp]
 theorem Finset.univ_map_embedding {α : Type*} [Fintype α] (e : α ↪ α) : univ.map e = univ := by
-  rw [← e.equiv_of_fintype_self_embedding_to_embedding, univ_map_equiv_to_embedding]
+  rw [← e.toEmbedding_equivOfFiniteSelfEmbedding, univ_map_equiv_to_embedding]
 
 namespace Fintype
 
@@ -1100,7 +1116,7 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
     intro a ha
     conv_rhs => rw [← List.map_id a]
     rw [List.map_pmap]
-    simp only [Fin.valEmbedding_apply, Fin.val_mk, List.pmap_eq_map, List.map_id', List.map_id]
+    simp [klift, Fin.valEmbedding_apply, Fin.val_mk, List.pmap_eq_map, List.map_id']
   use l.map (List.map (Fintype.equivFin α).symm)
   constructor
   · -- length
