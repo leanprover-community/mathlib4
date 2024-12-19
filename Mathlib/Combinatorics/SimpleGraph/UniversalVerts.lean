@@ -44,7 +44,7 @@ lemma Subgraph.IsMatching.exists_of_universalVerts [Fintype V] {s : Set V}
   obtain ⟨t, ht⟩ := Set.exists_subset_card_eq hc
   refine ⟨t, ht.1, ?_⟩
   obtain ⟨f⟩ : Nonempty (s ≃ t) := by
-    rw [← Cardinal.eq, ← t.toFinite.cast_ncard, ← s.toFinite.cast_ncard, ht.2]
+    rw [← Cardinal.eq, ← t.cast_ncard t.toFinite, ← s.cast_ncard s.toFinite, ht.2]
   letI hd := Set.disjoint_of_subset_left ht.1 h
   have hadj (v : s) : G.Adj v (f v) := ht.1 (f v).2 (hd.ne_of_mem (f v).2 v.2)
   exact Subgraph.IsMatching.exists_of_disjoint_sets_of_equiv hd.symm f hadj
