@@ -113,9 +113,11 @@ theorem comp_map (F : C ⥤ D) (G : D ⥤ E) {X Y : C} (f : X ⟶ Y) :
 -- These are not simp lemmas because rewriting along equalities between functors
 -- is not necessarily a good idea.
 -- Natural isomorphisms are also provided in `Whiskering.lean`.
-protected theorem comp_id (F : C ⥤ D) : F ⋙ 𝟭 D = F := by cases F; rfl
+@[simp]
+protected theorem comp_id (F : C ⥤ D) : F ⋙ 𝟭 D = F := rfl
 
-protected theorem id_comp (F : C ⥤ D) : 𝟭 C ⋙ F = F := by cases F; rfl
+@[simp]
+protected theorem id_comp (F : C ⥤ D) : 𝟭 C ⋙ F = F := rfl
 
 @[simp]
 theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
