@@ -538,6 +538,6 @@ lemma adicCompletion.mul_nonZeroDivisor_mem_adicCompletionIntegers (v : HeightOn
         Int.natCast_natAbs, smul_eq_mul],
       ← Int.eq_natAbs_of_zero_le ha.le, smul_eq_mul]
     -- and now it's easy
-    linarith
+    omega
 
 end IsDedekindDomain.HeightOneSpectrum

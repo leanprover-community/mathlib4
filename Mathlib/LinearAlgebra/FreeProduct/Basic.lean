@@ -68,7 +68,7 @@ universe uS uA uB
 then their quotients are also `R`-equivalent.
 
 (Special case of the third isomorphism theorem.)-/
-def algEquiv_quot_algEquiv
+def algEquivQuotAlgEquiv
     {R : Type u} [CommSemiring R] {A B : Type v} [Semiring A] [Semiring B]
     [Algebra R A] [Algebra R B] (f : A ≃ₐ[R] B) (rel : A → A → Prop) :
     RingQuot rel ≃ₐ[R] RingQuot (rel on f.symm) :=
@@ -83,16 +83,20 @@ def algEquiv_quot_algEquiv
       fun x y h ↦ by apply RingQuot.mkAlgHom_rel; simpa⟩))
     (by ext b; simp) (by ext a; simp)
 
+@[deprecated (since := "2024-12-07")] alias algEquiv_quot_algEquiv := algEquivQuotAlgEquiv
+
 /--If two (semi)rings are equivalent and their quotients by a relation `rel` are defined,
 then their quotients are also equivalent.
 
 (Special case of `algEquiv_quot_algEquiv` when `R = ℕ`, which in turn is a special
 case of the third isomorphism theorem.)-/
-def equiv_quot_equiv {A B : Type v} [Semiring A] [Semiring B] (f : A ≃+* B) (rel : A → A → Prop)  :
+def equivQuotEquiv {A B : Type v} [Semiring A] [Semiring B] (f : A ≃+* B) (rel : A → A → Prop) :
     RingQuot rel ≃+* RingQuot (rel on f.symm) :=
   let f_alg : A ≃ₐ[ℕ] B :=
     AlgEquiv.ofRingEquiv (f := f) (fun n ↦ by simp)
-  algEquiv_quot_algEquiv f_alg rel |>.toRingEquiv
+  algEquivQuotAlgEquiv f_alg rel |>.toRingEquiv
+
+@[deprecated (since := "2024-12-07")] alias equiv_quot_equiv := equivQuotEquiv
 
 end RingQuot
 
@@ -143,11 +147,14 @@ theorem rel_id (i : I) : rel R A (ι R <| lof R I A i 1) 1 := rel.id
 @[reducible] def _root_.LinearAlgebra.FreeProduct := RingQuot <| FreeProduct.rel R A
 
 /--The free product of the collection of `R`-algebras `A i`, as a quotient of `PowerAlgebra R A`-/
-@[reducible] def _root_.LinearAlgebra.FreeProduct_ofPowers := RingQuot <| FreeProduct.rel' R A
+@[reducible] def _root_.LinearAlgebra.FreeProductOfPowers := RingQuot <| FreeProduct.rel' R A
+
+@[deprecated (since := "2024-12-07")]
+alias _root_.LinearAlgebra.FreeProduct_ofPowers := LinearAlgebra.FreeProductOfPowers
 
 /--The `R`-algebra equivalence relating `FreeProduct` and `FreeProduct_ofPowers`-/
-noncomputable def equivPowerAlgebra : FreeProduct_ofPowers R A ≃ₐ[R] FreeProduct R A :=
-  RingQuot.algEquiv_quot_algEquiv
+noncomputable def equivPowerAlgebra : FreeProductOfPowers R A ≃ₐ[R] FreeProduct R A :=
+  RingQuot.algEquivQuotAlgEquiv
     (FreeProduct.powerAlgebra_equiv_freeAlgebra R A |>.symm) (FreeProduct.rel R A)
   |>.symm
 
