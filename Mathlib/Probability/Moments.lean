@@ -6,6 +6,7 @@ Authors: Rémy Degenne
 import Mathlib.Probability.Variance
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog
 import Mathlib.Analysis.Calculus.SmoothSeries
+import Mathlib.Analysis.Analytic.OfScalars
 
 /-!
 # Moments and moment generating function
@@ -97,7 +98,7 @@ theorem centralMoment_two_eq_variance [IsFiniteMeasure μ] (hX : Memℒp X 2 μ)
 
 section MomentGeneratingFunction
 
-variable {t u : ℝ}
+variable {t u v : ℝ}
 
 lemma _root_.AEMeasurable.abs (hX : AEMeasurable X μ) : AEMeasurable (fun ω ↦ |X ω|) μ :=
   hX.max (aemeasurable_neg_iff.mpr hX)
@@ -163,30 +164,60 @@ lemma integrable_exp_mul_of_ge [IsFiniteMeasure μ] (hX : Measurable X)
         refine add_le_add le_rfl (exp_monotone ?_)
         exact mul_le_mul_of_nonpos_of_nonpos htu le_rfl (htu.trans h_neg.le) h_nonpos
 
-lemma exp_mul_abs_le_add : exp (t * |u|) ≤ rexp (t * u) + rexp (-(t * u)) := by
+lemma exp_mul_abs_add_le_add : exp (t * |u| + v * u) ≤ rexp ((v + t) * u) + rexp ((v - t) * u) := by
   rcases le_total 0 u with h_nonneg | h_nonpos
-  · simp only [abs_of_nonneg h_nonneg, le_add_iff_nonneg_right]
+  · rw [abs_of_nonneg h_nonneg, ← add_mul, add_comm, le_add_iff_nonneg_right]
     positivity
-  · simp only [abs_of_nonpos h_nonpos, mul_neg, le_add_iff_nonneg_left]
+  · rw [abs_of_nonpos h_nonpos, mul_neg, mul_comm, ← mul_neg, mul_comm, ← add_mul, add_comm,
+      ← sub_eq_add_neg, le_add_iff_nonneg_left]
     positivity
+
+lemma exp_mul_abs_le_add : exp (t * |u|) ≤ rexp (t * u) + rexp (-(t * u)) := by
+  have h := exp_mul_abs_add_le_add (t := t) (u := u) (v := 0)
+  simpa using h
+
+lemma integrable_exp_mul_abs_add (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
+    Integrable (fun ω ↦ rexp (t * |X ω| + v * X ω)) μ := by
+  have h_int_add : Integrable (fun a ↦ rexp ((v + t) * X a) + rexp ((v - t) * X a)) μ :=
+    ht_int_pos.add <| by simpa using ht_int_neg
+  refine Integrable.mono h_int_add ?_ (ae_of_all _ fun ω ↦ ?_)
+  · by_cases ht : t = 0
+    · simp only [ht, zero_mul, zero_add]
+      simp only [ht, add_zero] at ht_int_pos
+      exact ht_int_pos.1
+    have hX : AEMeasurable X μ := by
+      by_cases hvt : v + t = 0
+      · have hvt' : v - t ≠ 0 := by
+          rw [sub_ne_zero]
+          refine fun h_eq ↦ ht ?_
+          simpa [h_eq] using hvt
+        exact aemeasurable_of_aemeasurable_exp_mul hvt' ht_int_neg.1.aemeasurable
+      · exact aemeasurable_of_aemeasurable_exp_mul hvt ht_int_pos.1.aemeasurable
+    refine AEMeasurable.aestronglyMeasurable ?_
+    exact measurable_exp.comp_aemeasurable ((hX.abs.const_mul _).add (hX.const_mul _))
+  · simp only [norm_eq_abs, abs_exp]
+    conv_rhs => rw [abs_of_nonneg (by positivity)]
+    exact exp_mul_abs_add_le_add
 
 /-- If `ω ↦ rexp (t * X ω)` is integrable at `t` and `-t`, then `ω ↦ rexp (t * |X ω|)` is
 integrable. -/
 lemma integrable_exp_mul_abs (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
     Integrable (fun ω ↦ rexp (t * |X ω|)) μ := by
-  have h_int_add : Integrable (fun a ↦ rexp (t * X a) + rexp (-(t * X a))) μ :=
-    ht_int_pos.add <| by simpa using ht_int_neg
-  refine Integrable.mono h_int_add ?_ (ae_of_all _ fun ω ↦ ?_)
-  · by_cases ht : t = 0
-    · simp only [ht, zero_mul, exp_zero]
-      exact aestronglyMeasurable_const
-    have hX : AEMeasurable X μ := aemeasurable_of_aemeasurable_exp_mul ht ht_int_pos.1.aemeasurable
-    refine AEMeasurable.aestronglyMeasurable ?_
-    refine measurable_exp.comp_aemeasurable (hX.abs.const_mul _)
-  · simp only [norm_eq_abs, abs_exp, Pi.neg_apply, mul_neg]
-    conv_rhs => rw [abs_of_nonneg (by positivity)]
-    exact exp_mul_abs_le_add
+  have h := integrable_exp_mul_abs_add (t := t) (μ := μ) (X := X) (v := 0) ?_ ?_
+  · simpa using h
+  · simpa using ht_int_pos
+  · simpa using ht_int_neg
+
+lemma integrable_exp_abs_mul_abs_add (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
+    Integrable (fun ω ↦ rexp (|t| * |X ω| + v * X ω)) μ := by
+  rcases le_total 0 t with ht_nonneg | ht_nonpos
+  · simp_rw [abs_of_nonneg ht_nonneg]
+    exact integrable_exp_mul_abs_add ht_int_pos ht_int_neg
+  · simp_rw [abs_of_nonpos ht_nonpos]
+    exact integrable_exp_mul_abs_add ht_int_neg (by simpa using ht_int_pos)
 
 /-- If `ω ↦ rexp (t * X ω)` is integrable at `t` and `-t`, then `ω ↦ rexp (|t| * |X ω|)` is
 integrable. -/
@@ -199,28 +230,68 @@ lemma integrable_exp_abs_mul_abs (ht_int_pos : Integrable (fun ω ↦ rexp (t * 
   · simp_rw [abs_of_nonpos ht_nonpos]
     exact integrable_exp_mul_abs ht_int_neg (by simpa using ht_int_pos)
 
+lemma integrable_pow_abs_mul_exp_of_integrable_exp_mul (ht : t ≠ 0)
+    (ht_int_pos : Integrable (fun x ↦ rexp ((v + t) * X x)) μ)
+    (ht_int_neg : Integrable (fun x ↦ rexp ((v - t) * X x)) μ) (n : ℕ) :
+    Integrable (fun ω ↦ |X ω| ^ n * exp (v * X ω)) μ := by
+  suffices Integrable (fun ω ↦ (t * |X ω|) ^ n / n.factorial * exp (v * X ω)) μ by
+    have h_eq ω : |X ω| ^ n * exp (v * X ω)
+        = ((t * |X ω|) ^ n / n.factorial * exp (v * X ω)) * n.factorial / t ^ n := by
+      rw [mul_pow]
+      field_simp
+      ring
+    simp_rw [h_eq]
+    exact (this.mul_const _).div_const _
+  have h_le ω : (|t| * |X ω|) ^ n / n.factorial ≤ exp (|t| * |X ω|) :=
+    pow_div_factorial_le_exp _ (by positivity) _
+  have h_int := integrable_exp_abs_mul_abs_add ht_int_pos ht_int_neg
+  refine Integrable.mono h_int ?_ (ae_of_all _ fun ω ↦ ?_)
+  · have hX : AEMeasurable X μ := by
+      by_cases hvt : v + t = 0
+      · have hvt' : v - t ≠ 0 := by
+          rw [sub_ne_zero]
+          refine fun h_eq ↦ ht ?_
+          simpa [h_eq] using hvt
+        exact aemeasurable_of_aemeasurable_exp_mul hvt' ht_int_neg.1.aemeasurable
+      · exact aemeasurable_of_aemeasurable_exp_mul hvt ht_int_pos.1.aemeasurable
+    simp_rw [mul_pow]
+    refine AEMeasurable.aestronglyMeasurable ?_
+    exact (((hX.abs.pow_const _).const_mul _).div_const _).mul
+      (measurable_exp.comp_aemeasurable (hX.const_mul _))
+  · simp only [norm_div, norm_pow, norm_mul, norm_eq_abs, abs_abs, norm_natCast, abs_exp,
+      Nat.abs_cast]
+    rw [exp_add]
+    gcongr
+    exact h_le _
+
 /-- If `ω ↦ rexp (t * X ω)` is integrable at `t` and `-t` for `t ≠ 0`, then `ω ↦ |X ω| ^ n` is
 integrable for all `n : ℕ`. That is, all moments of `X` are finite. -/
 lemma integrable_pow_abs_of_integrable_exp_mul (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun x ↦ rexp (t * X x)) μ)
     (ht_int_neg : Integrable (fun x ↦ rexp (- t * X x)) μ) (n : ℕ) :
     Integrable (fun ω ↦ |X ω| ^ n) μ := by
-  suffices Integrable (fun ω ↦ (t * |X ω|) ^ n / n.factorial) μ by
-    have h_eq ω : |X ω| ^ n = ((t * |X ω|) ^ n / n.factorial) * n.factorial / t ^ n := by
-      rw [mul_pow]
-      field_simp
-    simp_rw [h_eq]
-    exact (this.mul_const _).div_const _
-  have h_le ω : (|t| * |X ω|) ^ n / n.factorial ≤ exp (|t| * |X ω|) :=
-    pow_div_factorial_le_exp _ (by positivity) _
-  have h_int := integrable_exp_abs_mul_abs ht_int_pos ht_int_neg
-  refine Integrable.mono h_int ?_ (ae_of_all _ fun ω ↦ ?_)
-  · have hX : AEMeasurable X μ := aemeasurable_of_aemeasurable_exp_mul ht ht_int_pos.1.aemeasurable
-    simp_rw [mul_pow]
-    exact (((hX.abs.pow_const _).const_mul _).div_const _).aestronglyMeasurable
-  · simp only [norm_div, norm_pow, norm_mul, norm_eq_abs, abs_abs, norm_natCast, abs_exp,
-      Nat.abs_cast]
-    exact h_le _
+  have h := integrable_pow_abs_mul_exp_of_integrable_exp_mul (μ := μ) (X := X) ht (v := 0) ?_ ?_ n
+  · simpa using h
+  · simpa using ht_int_pos
+  · simpa using ht_int_neg
+
+lemma integrable_pow_mul_exp_of_integrable_exp_mul (ht : t ≠ 0)
+    (ht_int_pos : Integrable (fun x ↦ rexp ((v + t) * X x)) μ)
+    (ht_int_neg : Integrable (fun x ↦ rexp ((v - t) * X x)) μ) (n : ℕ) :
+    Integrable (fun ω ↦ X ω ^ n * exp (v * X ω)) μ := by
+  rw [← integrable_norm_iff]
+  · simp_rw [norm_eq_abs, abs_mul, abs_pow, abs_exp]
+    exact integrable_pow_abs_mul_exp_of_integrable_exp_mul ht ht_int_pos ht_int_neg n
+  · have hX : AEMeasurable X μ := by
+      by_cases hvt : v + t = 0
+      · have hvt' : v - t ≠ 0 := by
+          rw [sub_ne_zero]
+          refine fun h_eq ↦ ht ?_
+          simpa [h_eq] using hvt
+        exact aemeasurable_of_aemeasurable_exp_mul hvt' ht_int_neg.1.aemeasurable
+      · exact aemeasurable_of_aemeasurable_exp_mul hvt ht_int_pos.1.aemeasurable
+    exact ((hX.pow_const _).mul
+      (measurable_exp.comp_aemeasurable (hX.const_mul _))).aestronglyMeasurable
 
 /-- If `ω ↦ rexp (t * X ω)` is integrable at `t` and `-t` for `t ≠ 0`, then `ω ↦ X ω ^ n` is
 integrable for all `n : ℕ`. -/
@@ -228,11 +299,10 @@ lemma integrable_pow_of_integrable_exp_mul (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun x ↦ rexp (t * X x)) μ)
     (ht_int_neg : Integrable (fun x ↦ rexp (- t * X x)) μ) (n : ℕ) :
     Integrable (fun ω ↦ X ω ^ n) μ := by
-  rw [← integrable_norm_iff]
-  · simp_rw [norm_eq_abs, abs_pow]
-    exact integrable_pow_abs_of_integrable_exp_mul ht ht_int_pos ht_int_neg n
-  · have hX : AEMeasurable X μ := aemeasurable_of_aemeasurable_exp_mul ht ht_int_pos.1.aemeasurable
-    exact (hX.pow_const _).aestronglyMeasurable
+  have h := integrable_pow_mul_exp_of_integrable_exp_mul (μ := μ) (X := X) ht (v := 0) ?_ ?_ n
+  · simpa using h
+  · simpa using ht_int_pos
+  · simpa using ht_int_neg
 
 end Integrable
 
@@ -544,8 +614,29 @@ lemma mgf_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
   · intro n
     positivity
 
--- lemma todo : HasFPowerSeriesAt (mgf X μ) p 0 := by
---   sorry
+lemma todo (ht : t ≠ 0) (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
+    HasFPowerSeriesAt (mgf X μ)
+      (FormalMultilinearSeries.ofScalars ℝ (fun n ↦ (μ[X ^ n] : ℝ) / n.factorial)) 0 := by
+  refine ⟨‖t‖₊, ?_⟩
+  constructor
+  · refine FormalMultilinearSeries.le_radius_of_summable _ ?_
+    simp only [Pi.pow_apply, FormalMultilinearSeries.ofScalars_norm, norm_eq_abs,
+      coe_nnnorm, abs_div, Nat.abs_cast]
+    sorry
+  · simp [ht]
+  · intro y hy
+    simp_rw [FormalMultilinearSeries.ofScalars_apply_eq]
+    simp only [Pi.pow_apply, smul_eq_mul, zero_add]
+    simp only [Metric.emetric_ball_nnreal, coe_nnnorm, norm_eq_abs, Metric.mem_ball,
+      dist_zero_right] at hy
+    have hy_int_pos : Integrable (fun ω ↦ rexp (y * X ω)) μ := by
+      sorry
+    have hy_int_neg : Integrable (fun ω ↦ rexp (- y * X ω)) μ := by
+      sorry
+    rw [Summable.hasSum_iff]
+    · exact (mgf_eq_tsum hy_int_pos hy_int_neg).symm
+    · exact todo2 hy_int_pos hy_int_neg
 
 lemma iteratedDeriv_mgf_zero (hu_int_pos : Integrable (fun ω ↦ rexp (u * X ω)) μ)
     (hu_int_neg : Integrable (fun ω ↦ rexp (- u * X ω)) μ) (n : ℕ) :
