@@ -349,7 +349,7 @@ lemma commShift_of_leftAdjoint [F.CommShift A] :
   dsimp
   simp only [Functor.commShiftIso_id_hom_app, Functor.comp_obj,
     Functor.id_obj, id_comp, Functor.commShiftIso_comp_hom_app]
-  exact RightAdjointCommShift.iso_CompatibilityUnit adj a X
+  exact RightAdjointCommShift.compatibilityUnit_iso adj a X
 
 end Adjunction
 
