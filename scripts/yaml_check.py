@@ -9,7 +9,8 @@ Usage:
  of theorems. The order of these files is important.)
 
 """
-from typing import Dict, Optional, Union, Tuple, List
+from typing import Dict, Mapping, Optional, Union, Tuple, List
+from dataclasses import dataclass
 import yaml
 import json
 import sys
@@ -37,6 +38,43 @@ def print_list(fn: str, pairs: List[Tuple[str, str]]) -> None:
     for (id, val) in pairs:
       out.write(f'{id}\n{val.strip()}\n\n')
 
+# keep in sync with make_site.py in the leanprover-community.github.io repo
+@dataclass
+class DocDecl:
+    name: str
+    decl_header_html: str
+    docs_link: str
+    src_link: str
+
+# keep in sync with make_site.py in the leanprover-community.github.io repo
+@dataclass
+class HundredTheorem:
+    number: str
+    title: str
+    decl: Optional[str] = None
+    decls: Optional[List[str]] = None
+    doc_decls: Optional[List[DocDecl]] = None
+    author: Optional[str] = None
+    links: Optional[Mapping[str, str]] = None
+    note: Optional[str] = None
+
+# keep in sync with make_site.py in the leanprover-community.github.io repo
+@dataclass
+class ThousandPlusTheorem:
+    # Wikidata identifier (the letter Q followed by a string as digits),
+    # optionally followed by a letter (such as "A", "B" or "X" for disambiguation).
+    # "Q1008566" and "Q4724004A" are valid identifiers, for example.
+    wikidata: str
+    title: str
+    decl: Optional[str] = None
+    decls: Optional[List[str]] = None
+    doc_decls: Optional[List[DocDecl]] = None
+    author: Optional[str] = None
+    date: Optional[str] = None
+    url: Optional[str] = None
+    note: Optional[str] = None
+    url: Optional[str] = None
+
 hundred_yaml = sys.argv[1]
 thousand_yaml = sys.argv[2]
 overview_yaml = sys.argv[3]
@@ -54,6 +92,8 @@ with open(undergrad_yaml, 'r', encoding='utf8') as hy:
 hundred_decls: List[Tuple[str, str]] = []
 
 for index, entry in hundred.items():
+  # check that the YAML fits the dataclass used in the website
+  _thm = HundredTheorem(index, **entry)
   title = entry['title']
   if 'decl' in entry:
     hundred_decls.append((f'{index} {title}', entry['decl']))
@@ -64,6 +104,8 @@ for index, entry in hundred.items():
 
 thousand_decls: List[Tuple[str, str]] = []
 for index, entry in thousand.items():
+  # check that the YAML fits the dataclass used in the website
+  _thm = ThousandPlusTheorem(index, **entry)
   title = entry['title']
   if 'decl' in entry:
     thousand_decls.append((f'{index} {title}', entry['decl']))
