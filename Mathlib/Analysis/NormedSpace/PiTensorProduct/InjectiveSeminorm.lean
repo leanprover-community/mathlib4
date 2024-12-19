@@ -430,13 +430,13 @@ protected theorem mapL_smul [DecidableEq ι] (i : ι) (c : 𝕜) (u : E i →L[�
     Pi.smul_apply]
 
 theorem mapL_opNorm : ‖mapL f‖ ≤ ∏ i, ‖f i‖ := by
-  rw [ContinuousLinearMap.opNorm_le_iff (Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _))]
+  rw [ContinuousLinearMap.opNorm_le_iff (by positivity)]
   intro x
   rw [mapL, liftIsometry]
   simp only [LinearIsometryEquiv.coe_mk, liftEquiv_apply, LinearMap.mkContinuous_apply]
   refine le_trans (norm_eval_le_injectiveSeminorm _ _)
     (mul_le_mul_of_nonneg_right ?_ (norm_nonneg x))
-  rw [ContinuousMultilinearMap.opNorm_le_iff _ (Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _))]
+  rw [ContinuousMultilinearMap.opNorm_le_iff (Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _))]
   intro m
   simp only [ContinuousMultilinearMap.compContinuousLinearMap_apply]
   refine le_trans (injectiveSeminorm_tprod_le (fun i ↦ (f i) (m i))) ?_

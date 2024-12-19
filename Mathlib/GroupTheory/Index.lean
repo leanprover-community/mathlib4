@@ -80,7 +80,7 @@ theorem index_comap (f : G' →* G) :
 @[to_additive]
 theorem relindex_comap (f : G' →* G) (K : Subgroup G') :
     relindex (comap f H) K = relindex H (map f K) := by
-  rw [relindex, subgroupOf, comap_comap, index_comap, ← f.map_range, K.subtype_range]
+  rw [relindex, subgroupOf, comap_comap, index_comap, ← f.map_range, K.range_subtype]
 
 variable {H K L}
 
@@ -262,7 +262,7 @@ theorem index_map_of_injective {f : G →* G'} (hf : Function.Injective f) :
 @[to_additive]
 theorem index_map_subtype {H : Subgroup G} (K : Subgroup H) :
     (K.map H.subtype).index = K.index * H.index := by
-  rw [K.index_map_of_injective H.subtype_injective, H.subtype_range]
+  rw [K.index_map_of_injective H.subtype_injective, H.range_subtype]
 
 @[to_additive]
 theorem index_eq_card : H.index = Nat.card (G ⧸ H) :=
@@ -372,6 +372,14 @@ theorem relindex_eq_one : H.relindex K = 1 ↔ K ≤ H :=
 @[to_additive (attr := simp) card_eq_one]
 theorem card_eq_one : Nat.card H = 1 ↔ H = ⊥ :=
   H.relindex_bot_left ▸ relindex_eq_one.trans le_bot_iff
+
+@[to_additive]
+lemma inf_eq_bot_of_coprime (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
+  card_eq_one.1 <| Nat.eq_one_of_dvd_coprimes h
+    (card_dvd_of_le inf_le_left) (card_dvd_of_le inf_le_right)
+
+@[deprecated (since := "2024-12-18")]
+alias _root_.add_inf_eq_bot_of_coprime := AddSubgroup.inf_eq_bot_of_coprime
 
 @[to_additive]
 theorem index_ne_zero_of_finite [hH : Finite (G ⧸ H)] : H.index ≠ 0 := by

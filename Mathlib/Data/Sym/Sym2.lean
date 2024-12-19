@@ -44,7 +44,7 @@ symmetric square, unordered pairs, symmetric powers
 
 assert_not_exists MonoidWithZero
 
-open Mathlib (Vector)
+open List (Vector)
 open Finset Function Sym
 
 universe u
@@ -584,9 +584,9 @@ section SymEquiv
 /-! ### Equivalence to the second symmetric power -/
 
 
-attribute [local instance] Vector.Perm.isSetoid
+attribute [local instance] List.Vector.Perm.isSetoid
 
-private def fromVector : Vector α 2 → α × α
+private def fromVector : List.Vector α 2 → α × α
   | ⟨[a, b], _⟩ => (a, b)
 
 private theorem perm_card_two_iff {a₁ b₁ a₂ b₂ : α} :
