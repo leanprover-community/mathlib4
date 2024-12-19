@@ -607,6 +607,7 @@ import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.Algebra.MvPolynomial.PDeriv
 import Mathlib.Algebra.MvPolynomial.Polynomial
 import Mathlib.Algebra.MvPolynomial.Rename
+import Mathlib.Algebra.MvPolynomial.SchwartzZippel
 import Mathlib.Algebra.MvPolynomial.Supported
 import Mathlib.Algebra.MvPolynomial.Variables
 import Mathlib.Algebra.NeZero
