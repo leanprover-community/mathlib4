@@ -277,8 +277,10 @@ theorem conv_selbergTerms_eq_selbergTerms_mul_nu {d : ℕ} (hd : d ∣ P) :
       rw [mul_sum]; apply sum_congr rfl; intro l hl
       rw [mul_ite_zero]
       apply if_ctx_congr Iff.rfl _ (fun _ => rfl); intro h
-      rw [selbergTerms_mult.map_div_of_squarefree h (prodPrimes_squarefree.squarefree_of_dvd hd)]
+      rw [selbergTerms_mult.map_div_of_coprime h ]
       · ring
+      · apply coprime_of_squarefree_mul <|
+          (Nat.div_mul_cancel h).symm ▸ (squarefree_of_dvd_prodPrimes hd)
       · apply _root_.ne_of_gt; rw [mem_divisors] at hl ; apply selbergTerms_pos; exact hl.left
     _ = g d * (ν d)⁻¹ := by rw [← nu_eq_conv_one_div_selbergTerms d hd]
 

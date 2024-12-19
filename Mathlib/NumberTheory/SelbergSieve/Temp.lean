@@ -32,13 +32,12 @@ theorem map_lcm [CommGroupWithZero R] {f : ArithmeticFunction R}
   rw [←h_mult.lcm_apply_mul_gcd_apply]
   field_simp
 
-theorem map_div_of_squarefree {f : ArithmeticFunction ℝ} (h_mult : IsMultiplicative f)
-    {l d : ℕ} (hdl : d ∣ l) (hl : Squarefree l) (hd : f d ≠ 0) : f (l / d) = f l / f d := by
+theorem map_div_of_coprime [CommGroupWithZero R] {f : ArithmeticFunction R}
+    (hf : IsMultiplicative f) {l d : ℕ} (hdl : d ∣ l) (hl : (l/d).Coprime d) (hd : f d ≠ 0) :
+    f (l / d) = f l / f d := by
   apply (div_eq_of_eq_mul hd ..).symm
-  rw [← h_mult.right, Nat.div_mul_cancel hdl]
-  apply coprime_of_squarefree_mul
-  convert hl
-  exact Nat.div_mul_cancel hdl
+  rw [← hf.right, Nat.div_mul_cancel hdl]
+  exact hl
 
 theorem eq_zero_of_squarefree_of_dvd_eq_zero {f : ArithmeticFunction ℝ}
     (h_mult : IsMultiplicative f)
