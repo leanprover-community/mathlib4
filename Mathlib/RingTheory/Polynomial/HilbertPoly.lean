@@ -158,7 +158,7 @@ theorem coeff_mul_invOneSubPow_eq_hilbertPoly_eval
 /--
 The polynomial satisfying the key property of `Polynomial.hilbertPoly p d` is unique.
 -/
-theorem exists_unique_hilbertPoly (p : F[X]) (d : ℕ) :
+theorem existsUnique_hilbertPoly (p : F[X]) (d : ℕ) :
     ∃! h : F[X], ∃ N : ℕ, ∀ n > N,
     PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F) := by
   use hilbertPoly p d; constructor
@@ -171,6 +171,8 @@ theorem exists_unique_hilbertPoly (p : F[X]) (d : ℕ) :
     simp only [Set.mem_Ioi, sup_lt_iff, Set.mem_setOf_eq] at hn ⊢
     rw [← coeff_mul_invOneSubPow_eq_hilbertPoly_eval d hn.2, hhN n hn.1]
 
+@[deprecated (since := "2024-12-17")] alias exists_unique_hilbertPoly := existsUnique_hilbertPoly
+
 /--
 If `h : F[X]` and there exists some `N : ℕ` such that for any number `n : ℕ` bigger than `N`
 we have `PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F)`, then `h` is exactly
@@ -180,7 +182,7 @@ theorem eq_hilbertPoly_of_forall_coeff_eq_eval
     {p h : F[X]} {d : ℕ} (N : ℕ) (hhN : ∀ n > N,
     PowerSeries.coeff F n (p * invOneSubPow F d) = h.eval (n : F)) :
     h = hilbertPoly p d :=
-  ExistsUnique.unique (exists_unique_hilbertPoly p d) ⟨N, hhN⟩
+  ExistsUnique.unique (existsUnique_hilbertPoly p d) ⟨N, hhN⟩
     ⟨p.natDegree, fun _ x => coeff_mul_invOneSubPow_eq_hilbertPoly_eval d x⟩
 
 lemma hilbertPoly_mul_one_sub_succ (p : F[X]) (d : ℕ) :
