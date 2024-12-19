@@ -89,7 +89,7 @@ theorem map_permutationsAux2' {α' β'} (g : α → α') (g' : β → β') (t : 
   induction' ys with ys_hd _ ys_ih generalizing f f'
   · simp
   · simp only [map, permutationsAux2_snd_cons, cons_append, cons.injEq]
-    rw [ys_ih, permutationsAux2_fst]
+    rw [ys_ih]
     · refine ⟨?_, rfl⟩
       simp only [← map_cons, ← map_append]; apply H
     · intro a; apply H
