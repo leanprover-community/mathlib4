@@ -1634,6 +1634,7 @@ Q2071632:
 
 Q2093886:
   title: Primitive element theorem
+  decl: Field.exists_primitive_element
 
 Q2094241:
   title: Hopf–Rinow theorem
