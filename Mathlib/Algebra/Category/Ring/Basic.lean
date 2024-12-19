@@ -126,6 +126,10 @@ instance : ConcreteCategory.{u} SemiRingCat where
       map := fun f => f.hom }
   forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
 
+/-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier C`. -/
+unif_hint forget_obj_eq_coe (R : SemiRingCat) where ⊢
+  (forget SemiRingCat).obj R ≟ SemiRingCat.carrier R
+
 lemma forget_obj {R : SemiRingCat} : (forget SemiRingCat).obj R = R := rfl
 
 lemma forget_map {R S : SemiRingCat} (f : R ⟶ S) :
@@ -264,6 +268,14 @@ instance : ConcreteCategory.{u} RingCat where
     { obj := fun R => R
       map := fun f => f.hom }
   forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
+
+/-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier C`.
+
+An example where this is needed is in applying
+`PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective`.
+-/
+unif_hint forget_obj_eq_coe (R : RingCat) where ⊢
+  (forget RingCat).obj R ≟ RingCat.carrier R
 
 lemma forget_obj {R : RingCat} : (forget RingCat).obj R = R := rfl
 
@@ -404,6 +416,10 @@ instance : ConcreteCategory.{u} CommSemiRingCat where
     { obj := fun R => R
       map := fun f => f.hom }
   forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
+
+/-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier C`. -/
+unif_hint forget_obj_eq_coe (R : CommSemiRingCat) where ⊢
+  (forget CommSemiRingCat).obj R ≟ CommSemiRingCat.carrier R
 
 lemma forget_obj {R : CommSemiRingCat} : (forget CommSemiRingCat).obj R = R := rfl
 
@@ -548,6 +564,13 @@ instance : ConcreteCategory.{u} CommRingCat where
   forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
 
 lemma forget_obj {R : CommRingCat} : (forget CommRingCat).obj R = R := rfl
+
+/-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier C`.
+
+An example where this is needed is in applying `TopCat.Presheaf.restrictOpen` to commutative rings.
+-/
+unif_hint forget_obj_eq_coe (R : CommRingCat) where ⊢
+  (forget CommRingCat).obj R ≟ CommRingCat.carrier R
 
 lemma forget_map {R S : CommRingCat} (f : R ⟶ S) :
     (forget CommRingCat).map f = f :=
