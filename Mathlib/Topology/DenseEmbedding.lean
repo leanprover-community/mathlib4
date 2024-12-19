@@ -39,6 +39,10 @@ structure IsDenseInducing [TopologicalSpace α] [TopologicalSpace β] (i : α �
 namespace IsDenseInducing
 
 variable [TopologicalSpace α] [TopologicalSpace β]
+
+theorem _root_.Dense.isDenseInducing_val {s : Set α} (hs : Dense s) :
+    IsDenseInducing (@Subtype.val α s) := ⟨IsInducing.subtypeVal, hs.denseRange_val⟩
+
 variable {i : α → β}
 
 lemma isInducing (di : IsDenseInducing i) : IsInducing i := di.toIsInducing

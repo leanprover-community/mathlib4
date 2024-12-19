@@ -672,9 +672,6 @@ section DenseExtension
 
 variable {α β : Type*}
 
-theorem Dense.isDenseInducing_val [TopologicalSpace α] {s : Set α} (hs : Dense s) :
-    IsDenseInducing (@Subtype.val α s) := ⟨IsInducing.subtypeVal, hs.denseRange_val⟩
-
 /-- This is a shortcut for `hs.isDenseInducing_val.extend f`. It is useful because if `s : Set α`
 is dense then the coercion `(↑) : s → α` automatically satisfies `IsUniformInducing` and
 `IsDenseInducing` so this gives access to the theorems satisfied by a uniform extension by simply
