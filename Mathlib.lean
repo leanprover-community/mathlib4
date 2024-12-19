@@ -2199,6 +2199,7 @@ import Mathlib.Combinatorics.Additive.RuzsaCovering
 import Mathlib.Combinatorics.Additive.SmallTripling
 import Mathlib.Combinatorics.Additive.VerySmallDoubling
 import Mathlib.Combinatorics.Colex
+import Mathlib.Combinatorics.CombinatorialMap
 import Mathlib.Combinatorics.Configuration
 import Mathlib.Combinatorics.Derangements.Basic
 import Mathlib.Combinatorics.Derangements.Exponential
