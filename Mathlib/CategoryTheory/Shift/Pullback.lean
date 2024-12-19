@@ -125,19 +125,18 @@ variable {D : Type*} [Category D] [HasShift D B] (F : C ⥤ D) [F.CommShift B]
 /-- If `F : C ⥤ D` commutes with the shifts on `C` and `D`, then it also commutes with
 their pullbacks by an additive map.
 -/
-@[simps]
 noncomputable def commShiftPullback :
     F.CommShift A (C := PullbackShift C φ) (D := PullbackShift D φ) where
   iso a := isoWhiskerRight (pullbackShiftIso C φ a (φ a) rfl) F ≪≫
-    CommShift.iso (F := F) (φ a) ≪≫ isoWhiskerLeft _  (pullbackShiftIso D φ a (φ a) rfl).symm
+    F.commShiftIso (φ a) ≪≫ isoWhiskerLeft _  (pullbackShiftIso D φ a (φ a) rfl).symm
   zero := by
     ext
-    simp only [comp_obj, Iso.trans_hom, isoWhiskerRight_hom, isoWhiskerLeft_hom, Iso.symm_hom,
-      NatTrans.comp_app, whiskerRight_app, whiskerLeft_app, CommShift.isoZero_hom_app,
-      pullbackShiftFunctorZero'_hom_app, id_obj, map_comp, pullbackShiftFunctorZero'_inv_app, assoc]
-    conv_lhs => congr; rfl; congr; change (F.commShiftIso (φ 0)).hom.app _
-                rw [F.commShiftIso_zero' (A := B) (φ 0) (by rw [map_zero])]
-    simp only [CommShift.isoZero'_hom_app, assoc]
+    dsimp
+    simp only [F.commShiftIso_zero' (A := B) (φ 0) (by rw [map_zero]), CommShift.isoZero'_hom_app,
+      assoc, CommShift.isoZero_hom_app, pullbackShiftFunctorZero'_hom_app, map_comp,
+      pullbackShiftFunctorZero'_inv_app]
+    dsimp
+    rfl
   add a b := by
     ext
     dsimp
