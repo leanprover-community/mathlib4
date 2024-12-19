@@ -198,9 +198,6 @@ theorem principal_add_iff_add_lt_ne_self : Principal (· + ·) a ↔ ∀ b < a, 
 theorem principal_add_omega0 : Principal (· + ·) ω :=
   principal_add_iff_add_left_eq_self.2 fun _ => add_omega0
 
-@[deprecated (since := "2024-09-30")]
-alias principal_add_omega := principal_add_omega0
-
 theorem add_omega0_opow (h : a < ω ^ b) : a + ω ^ b = ω ^ b := by
   refine le_antisymm ?_ (le_add_left _ a)
   induction' b using limitRecOn with b _ b l IH
@@ -351,9 +348,6 @@ theorem principal_mul_omega0 : Principal (· * ·) ω := fun a b ha hb =>
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
     dsimp only; rw [← natCast_mul]
     apply nat_lt_omega0
-
-@[deprecated (since := "2024-09-30")]
-alias principal_mul_omega := principal_mul_omega0
 
 theorem mul_omega0 (a0 : 0 < a) (ha : a < ω) : a * ω = ω :=
   principal_mul_iff_mul_left_eq.1 principal_mul_omega0 a a0 ha
