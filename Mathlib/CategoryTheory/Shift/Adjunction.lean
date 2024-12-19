@@ -342,8 +342,7 @@ lemma commShift_of_leftAdjoint [F.CommShift A] :
     letI := adj.rightAdjointCommShift A
     adj.CommShift A := by
   letI := adj.rightAdjointCommShift A
-  apply CommShift.mk'
-  refine ⟨fun a => ?_⟩
+  refine CommShift.mk' _ _ ⟨fun a ↦ ?_⟩
   ext X
   dsimp
   simpa only [Functor.commShiftIso_id_hom_app, Functor.comp_obj, Functor.id_obj, id_comp,
