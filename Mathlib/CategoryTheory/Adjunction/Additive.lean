@@ -6,7 +6,18 @@ Authors: Sophie More, Joël Riou
 import Mathlib.CategoryTheory.Preadditive.Yoneda.Basic
 
 /-!
-Doc doc.
+# Adjunctions between additive functors.
+
+This provides some results and constructions for adjunctions between functors on
+preadditive categories:
+* If one of the adjoint functors is additive, so is the other.
+* If one of the adjoint functors is additive, the equivalence `Adjunction.homEquiv` lifts to
+an additive equivalence `Adjunction.homAddEquivOfLeftAdjoint` resp.
+`Adjunction.homAddEquivOfRightAdjoint`.
+* We also give a version of this additive equivalence as an isomorphism of `preadditiveYoneda`
+functors (analogous to `Adjunction.compYonedaIso`), in
+`Adjunction.compPreadditiveYonedaIsoOfLeftAdjoint` resp.
+`Adjunction.compPreadditiveYonedaIsoOfRightAdjoint`.
 
 -/
 
@@ -31,24 +42,22 @@ lemma left_adjoint_additive [G.Additive] : F.Additive where
 /-- If we have an adjunction `adj : F ⊣ G` of functors between preadditive categories,
 and if `F` is additive, then the hom set equivalence upgrades to an `AddEquiv`.-/
 @[simps! (config := .lemmasOnly)]
-def homAddEquiv_of_leftAdjoint [F.Additive] (X : C) (Y : D) :
+def homAddEquivOfLeftAdjoint [F.Additive] (X : C) (Y : D) :
     AddEquiv (F.obj X ⟶ Y) (X ⟶ G.obj Y) :=
   {
     adj.homEquiv _ _ with
     map_add' _ _ := by
       have := adj.right_adjoint_additive
-      simp only [Equiv.toFun_as_coe, homEquiv_apply, comp_obj, Functor.map_add,
-        Preadditive.comp_add] }
+      simp [homEquiv_apply] }
 
 /-- If we have an adjunction `adj : F ⊣ G` of functors between preadditive categories,
 and if `G` is additive, then the hom set equivalence upgrades to an `AddEquiv`.-/
 @[simps! (config := .lemmasOnly)]
-def homAddEquiv_of_right_adjoint_additive [G.Additive] (X : C) (Y : D) :
+def homAddEquivOfRightAdjoint [G.Additive] (X : C) (Y : D) :
     AddEquiv (F.obj X ⟶ Y) (X ⟶ G.obj Y) :=
   {
     adj.homEquiv _ _ with
-    map_add' _ _ := by
-      simp only [Equiv.toFun_as_coe, homEquiv_apply, Functor.map_add, Preadditive.comp_add] }
+    map_add' _ _ := by simp [homEquiv_apply] }
 
 open Opposite in
 /-- If we have an adjunction `adj : F ⊣ G` of functors between preadditive categories,
@@ -56,25 +65,16 @@ and if `F` is additive, then the hom set equivalence upgrades to an isomorphism 
 `G ⋙ preadditiveYoneda` and `preadditiveYoneda ⋙ F`, once we throw in the ncessary
 universe lifting functors.-/
 @[simps! (config := .lemmasOnly)]
-def compPreadditiveYonedaIso_of_leftAdjoint [F.Additive] :
+def compPreadditiveYonedaIsoOfLeftAdjoint [F.Additive] :
     G ⋙ preadditiveYoneda ⋙ (whiskeringRight _ _ _).obj AddCommGrp.uliftFunctor.{max v₁ v₂} ≅
-    preadditiveYoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙
-    (whiskeringRight _ _ _).obj AddCommGrp.uliftFunctor.{max v₁ v₂} := by
+      preadditiveYoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙
+        (whiskeringRight _ _ _).obj AddCommGrp.uliftFunctor.{max v₁ v₂} := by
   refine NatIso.ofComponents (fun Y ↦ ?_) (fun _ ↦ ?_)
   · refine NatIso.ofComponents
-      (fun X ↦ ((AddEquiv.ulift.trans (adj.homAddEquiv_of_leftAdjoint (unop X) Y)).trans
+      (fun X ↦ ((AddEquiv.ulift.trans (adj.homAddEquivOfLeftAdjoint (unop X) Y)).trans
                AddEquiv.ulift.symm).toAddCommGrpIso.symm) (fun _ ↦ ?_)
     ext
-    simp only [comp_obj, preadditiveYoneda_obj, whiskeringLeft_obj_obj, whiskeringRight_obj_obj,
-      op_obj, ModuleCat.forget₂_obj, preadditiveYonedaObj_obj_carrier,
-      preadditiveYonedaObj_obj_isAddCommGroup, AddCommGrp.uliftFunctor_obj, AddCommGrp.coe_of,
-      Functor.comp_map, ModuleCat.forget₂_map, preadditiveYonedaObj_obj_isModule,
-      AddCommGrp.uliftFunctor_map, AddEquiv.toAddMonoidHom_eq_coe, Iso.symm_hom,
-      AddEquiv.toAddCommGrpIso_inv, AddCommGrp.coe_comp', AddMonoidHom.coe_coe, Function.comp_apply,
-      AddCommGrp.ofHom_apply, AddMonoidHom.coe_comp, LinearMap.toAddMonoidHom_coe,
-      preadditiveYonedaObj_map_hom_apply, AddEquiv.symm_trans_apply, AddEquiv.symm_symm,
-      AddEquiv.apply_symm_apply, op_map]
-    erw [adj.homEquiv_naturality_left_symm]
+    simp [homAddEquivOfLeftAdjoint, adj.homEquiv_naturality_left_symm]
     rfl
   · ext
     simp only [comp_obj, preadditiveYoneda_obj, whiskeringLeft_obj_obj, whiskeringRight_obj_obj,
@@ -94,25 +94,16 @@ and if `G` is additive, then the hom set equivalence upgrades to an isomorphism 
 `G ⋙ preadditiveYoneda` and `preadditiveYoneda ⋙ F`, once we throw in the ncessary
 universe lifting functors.-/
 @[simps! (config := .lemmasOnly)]
-def compPreadditiveYonedaIso_of_right_adjoint_additive [G.Additive] :
+def compPreadditiveYonedaIsoOfRightAdjoint [G.Additive] :
     G ⋙ preadditiveYoneda ⋙ (whiskeringRight _ _ _).obj AddCommGrp.uliftFunctor.{max v₁ v₂} ≅
-    preadditiveYoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙
-    (whiskeringRight _ _ _).obj AddCommGrp.uliftFunctor.{max v₁ v₂} := by
+      preadditiveYoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙
+      (whiskeringRight _ _ _).obj AddCommGrp.uliftFunctor.{max v₁ v₂} := by
   refine NatIso.ofComponents (fun Y ↦ ?_) (fun _ ↦ ?_)
   · refine NatIso.ofComponents
-      (fun X ↦ ((AddEquiv.ulift.trans (adj.homAddEquiv_of_right_adjoint_additive (unop X) Y)).trans
+      (fun X ↦ ((AddEquiv.ulift.trans (adj.homAddEquivOfRightAdjoint (unop X) Y)).trans
                AddEquiv.ulift.symm).toAddCommGrpIso.symm) (fun _ ↦ ?_)
     ext
-    simp only [comp_obj, preadditiveYoneda_obj, whiskeringLeft_obj_obj, whiskeringRight_obj_obj,
-      op_obj, ModuleCat.forget₂_obj, preadditiveYonedaObj_obj_carrier,
-      preadditiveYonedaObj_obj_isAddCommGroup, AddCommGrp.uliftFunctor_obj, AddCommGrp.coe_of,
-      Functor.comp_map, ModuleCat.forget₂_map, preadditiveYonedaObj_obj_isModule,
-      AddCommGrp.uliftFunctor_map, AddEquiv.toAddMonoidHom_eq_coe, Iso.symm_hom,
-      AddEquiv.toAddCommGrpIso_inv, AddCommGrp.coe_comp', AddMonoidHom.coe_coe, Function.comp_apply,
-      AddCommGrp.ofHom_apply, AddMonoidHom.coe_comp, LinearMap.toAddMonoidHom_coe,
-      preadditiveYonedaObj_map_hom_apply, AddEquiv.symm_trans_apply, AddEquiv.symm_symm,
-      AddEquiv.apply_symm_apply, op_map]
-    erw [adj.homEquiv_naturality_left_symm]
+    simp [homAddEquivOfRightAdjoint, adj.homEquiv_naturality_left_symm]
     rfl
   · ext
     simp only [comp_obj, preadditiveYoneda_obj, whiskeringLeft_obj_obj, whiskeringRight_obj_obj,
