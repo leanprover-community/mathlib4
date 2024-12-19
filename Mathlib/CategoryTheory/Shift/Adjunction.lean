@@ -170,20 +170,21 @@ lemma CompatibilityUnit_isoAdd (h : CompatibilityUnit adj e₁ e₂)
     (h' : CompatibilityUnit adj f₁ f₂) :
     CompatibilityUnit adj (Functor.CommShift.isoAdd e₁ f₁) (Functor.CommShift.isoAdd e₂ f₂) := by
   intro X
-  simp only [Functor.id_obj, Functor.comp_obj, Functor.CommShift.isoAdd_hom_app, Functor.map_comp,
-    assoc, unit_naturality_assoc]
+  have := h' (X⟦a⟧)
+  simp only [← cancel_mono (f₂.inv.app _), assoc, Iso.hom_inv_id_app,
+    Functor.id_obj, Functor.comp_obj, comp_id] at this
+  simp only [Functor.id_obj, Functor.comp_obj, Functor.CommShift.isoAdd_hom_app,
+    Functor.map_comp, assoc, unit_naturality_assoc]
   slice_rhs 5 6 => rw [← G.map_comp, Iso.inv_hom_id_app]
   simp only [Functor.comp_obj, Functor.map_id, id_comp, assoc]
-  slice_rhs 4 5 => erw [f₂.hom.naturality]
-  have := h' (X⟦a⟧)
-  rw [← cancel_mono (f₂.inv.app _), assoc, assoc, Iso.hom_inv_id_app] at this
-  simp only [Functor.id_obj, Functor.comp_obj, comp_id] at this
-  slice_rhs 2 3 => rw [← this]
-  simp only [Functor.comp_obj, assoc, Iso.inv_hom_id_app, comp_id, Functor.comp_map]
-  rw [← cancel_mono ((shiftFunctorAdd C a b).hom.app _), assoc, assoc, assoc, assoc,
-    Iso.inv_hom_id_app]; erw [comp_id]
-  rw [← (shiftFunctor C b).map_comp, ← (shiftFunctor C b).map_comp, ← h X]
-  simp only [Functor.comp_obj, NatTrans.naturality, Functor.comp_map, Functor.id_obj]
+  erw [f₂.hom.naturality_assoc]
+  rw [← reassoc_of% this, ← cancel_mono ((shiftFunctorAdd C a b).hom.app _),
+    assoc, assoc, assoc, assoc, assoc, assoc, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app]
+  dsimp
+  rw [← (shiftFunctor C b).map_comp_assoc, ← (shiftFunctor C b).map_comp_assoc,
+    assoc, ← h X, NatTrans.naturality]
+  dsimp
+  rw [comp_id]
 
 end CommShift
 
