@@ -7,6 +7,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.MorphismProperty.Pushouts
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory
 import Mathlib.CategoryTheory.Abelian.Refinements
+import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.Order.TransfiniteIteration
 import Mathlib.SetTheory.Ordinal.Basic
@@ -286,6 +287,55 @@ lemma exists_ordinal (A₀ : Subobject X) :
     rw [Cardinal.zero_lt_ord_iff]
     exact Cardinal.succ_ne_zero _)
   exact ⟨κ.ord, top_mem_range hG A₀ (lt_of_lt_of_le (Order.lt_succ _) (by simp))⟩
+
+section
+
+variable (A₀ : Subobject X) (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrder J]
+  [WellFoundedLT J]
+
+@[simps]
+noncomputable def functorToMonoOver : J ⥤ MonoOver X where
+  obj j := MonoOver.mk' (transfiniteIterate (largerSubobject hG) j A₀).arrow
+  map {j j'} f := MonoOver.homMk (Subobject.ofLE _ _
+      (monotone_transfiniteIterate _ _ (le_largerSubobject hG) (leOfHom f)))
+
+noncomputable abbrev functor : J ⥤ C :=
+  functorToMonoOver hG A₀ J ⋙ MonoOver.forget _ ⋙ Over.forget _
+
+/-instance : (functor hG A₀ J).IsWellOrderContinuous where
+  nonempty_isColimit m hm := by
+    -- use variant of `subobject_mk_of_isColimit_eq_iSup` from
+    -- `CategoryTheory.Presentable.GrothendieckAbelian` in #20014
+    sorry
+
+--example (j : J) : ((functor hG A₀ J).restrictionLE j).IsWellOrderContinuous := inferInstance -/
+
+lemma mono_functor_map_le_succ (j : J) (hj : ¬IsMax j) :
+    generatingMonomorphismsPushouts G ((functor hG A₀ J).map (homOfLE (Order.le_succ j))) := by
+  refine (MorphismProperty.arrow_mk_iso_iff _ ?_).2
+    (generatingMonomorphismsPushouts_ofLE_le_largerSubobject hG
+      (transfiniteIterate (largerSubobject hG) j A₀))
+  exact Arrow.isoMk (Iso.refl _) (Subobject.isoOfEq _ _ (transfiniteIterate_succ _ _ _ hj))
+    (by simp [MonoOver.forget])
+
+end
+
+section
+
+variable {A : C} {f : A ⟶ X} [Mono f] (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrder J]
+  [WellFoundedLT J]
+variable {j : J} (hj : transfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤)
+
+noncomputable def arrowIso :
+    Arrow.mk f ≅ Arrow.mk (((functor hG (Subobject.mk f) J).coconeLE j).ι.app ⊥) := by
+  let t := transfiniteIterate (largerSubobject hG) j (Subobject.mk f)
+  have := (Subobject.isIso_arrow_iff_eq_top t).mpr hj
+  refine (Arrow.isoMk (Subobject.isoOfEq _ _ (transfiniteIterate_bot _ _) ≪≫
+    Subobject.underlyingIso f) (asIso t.arrow) ?_).symm
+  simp [MonoOver.forget]
+  rfl
+
+end
 
 end TransfiniteCompositionMonoPushouts
 

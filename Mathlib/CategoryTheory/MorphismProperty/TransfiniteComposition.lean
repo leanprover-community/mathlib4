@@ -129,6 +129,25 @@ instance (F : ℕ ⥤ C) : F.IsWellOrderContinuous where
 def restrictionLE (F : J ⥤ C) (j : J) : Set.Iic j ⥤ C :=
   Monotone.functor (f := fun k ↦ k.1) (fun _ _ ↦ id) ⋙ F
 
+@[simps!]
+def coconeLE (F : J ⥤ C) (j : J) :
+    Cocone (F.restrictionLE j) where
+  pt := F.obj j
+  ι :=
+    { app x := F.map (homOfLE x.2)
+      naturality _ _ f := by
+        dsimp
+        simp only [homOfLE_leOfHom, ← Functor.map_comp, comp_id]
+        rfl }
+
+def isColimitCoconeLE (F : J ⥤ C) (j : J) :
+    IsColimit (F.coconeLE j) where
+  desc s := s.ι.app ⟨j, by simp⟩
+  fac s k := by
+    simpa only [Functor.const_obj_obj, Functor.const_obj_map, comp_id]
+      using s.ι.naturality (homOfLE k.2 : k ⟶ ⟨j, by simp⟩)
+  uniq s m hm := by simp [← hm]
+
 instance {J : Type u} [PartialOrder J] [SuccOrder J] (F : J ⥤ C) [F.IsWellOrderContinuous] (j : J) :
     (F.restrictionLE j).IsWellOrderContinuous where
   nonempty_isColimit m hm := ⟨
@@ -178,26 +197,8 @@ lemma mem_map_of_transfinite_composition
     (hF : ∀ (j : J) (_ : ¬IsMax j), W (F.map (homOfLE (Order.le_succ j))))
     (j : J) [W.IsStableUnderTransfiniteCompositionOfShape (Set.Iic j)] :
     W (F.map (homOfLE (bot_le : ⊥ ≤ j))) := by
-  let c : Cocone (F.restrictionLE j) :=
-    { pt := F.obj j
-      ι :=
-        { app x := F.map (homOfLE x.2)
-          naturality _ _ f := by
-            dsimp
-            simp only [homOfLE_leOfHom, ← Functor.map_comp, comp_id]
-            rfl } }
-  have hc : IsColimit c :=
-    { desc s := s.ι.app ⟨j, by simp⟩
-      fac s k := by
-        simpa only [Functor.const_obj_obj, Functor.const_obj_map, comp_id]
-          using s.ι.naturality (homOfLE k.2 : k ⟶ ⟨j, by simp⟩)
-      uniq s m hm := by
-        dsimp
-        rw [← hm]
-        dsimp
-        rw [Functor.map_id]
-        exact (id_comp m).symm }
-  refine W.mem_of_transfinite_composition (fun ⟨k, hk⟩ hk' ↦ ?_) hc
+  refine W.mem_of_transfinite_composition (fun ⟨k, hk⟩ hk' ↦ ?_)
+    (F.isColimitCoconeLE j)
   refine W.of_eq (hF k (fun h ↦ hk' (fun ⟨a, ha⟩ ha' ↦ h ha'))) _ rfl ?_ ?_
   · dsimp
     simp only [Functor.comp_obj, Monotone.functor_obj, Set.Iic.succ_eq _ hk']
