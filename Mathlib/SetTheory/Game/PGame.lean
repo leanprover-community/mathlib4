@@ -414,6 +414,8 @@ lemma Identical.moveRight : ∀ {x y}, x ≡ y →
     ∀ i, ∃ j, x.moveRight i ≡ y.moveRight j
   | mk _ _ _ _, mk _ _ _ _, ⟨_, hr⟩, i => hr.1 i
 
+theorem identical_of_eq {x y : PGame} (h : x = y) : x ≡ y := by subst h; rfl
+
 /-- Uses `∈ₗ` and `∈ᵣ` instead of `≡`. -/
 theorem identical_iff' : ∀ {x y : PGame}, x ≡ y ↔
     ((∀ i, x.moveLeft i ∈ₗ y) ∧ (∀ j, y.moveLeft j ∈ₗ x)) ∧
@@ -1308,34 +1310,43 @@ between them. -/
 def toRightMovesNeg {x : PGame} : x.LeftMoves ≃ (-x).RightMoves :=
   Equiv.cast (rightMoves_neg x).symm
 
-theorem moveLeft_neg {x : PGame} (i) : (-x).moveLeft (toLeftMovesNeg i) = -x.moveRight i := by
+@[simp]
+theorem moveLeft_neg {x : PGame} (i) :
+    (-x).moveLeft i = -x.moveRight (toLeftMovesNeg.symm i) := by
   cases x
   rfl
+
+@[deprecated moveLeft_neg (since := "2024-10-30")]
+alias moveLeft_neg' := moveLeft_neg
+
+theorem moveLeft_neg_toLeftMovesNeg {x : PGame} (i) :
+    (-x).moveLeft (toLeftMovesNeg i) = -x.moveRight i := by simp
 
 @[simp]
-theorem moveLeft_neg' {x : PGame} (i) : (-x).moveLeft i = -x.moveRight (toLeftMovesNeg.symm i) := by
-  cases x
-  rfl
-
-theorem moveRight_neg {x : PGame} (i) : (-x).moveRight (toRightMovesNeg i) = -x.moveLeft i := by
-  cases x
-  rfl
-
-@[simp]
-theorem moveRight_neg' {x : PGame} (i) :
+theorem moveRight_neg {x : PGame} (i) :
     (-x).moveRight i = -x.moveLeft (toRightMovesNeg.symm i) := by
   cases x
   rfl
 
+@[deprecated moveRight_neg (since := "2024-10-30")]
+alias moveRight_neg' := moveRight_neg
+
+theorem moveRight_neg_toRightMovesNeg {x : PGame} (i) :
+    (-x).moveRight (toRightMovesNeg i) = -x.moveLeft i := by simp
+
+@[deprecated moveRight_neg (since := "2024-10-30")]
 theorem moveLeft_neg_symm {x : PGame} (i) :
     x.moveLeft (toRightMovesNeg.symm i) = -(-x).moveRight i := by simp
 
+@[deprecated moveRight_neg (since := "2024-10-30")]
 theorem moveLeft_neg_symm' {x : PGame} (i) :
     x.moveLeft i = -(-x).moveRight (toRightMovesNeg i) := by simp
 
+@[deprecated moveLeft_neg (since := "2024-10-30")]
 theorem moveRight_neg_symm {x : PGame} (i) :
     x.moveRight (toLeftMovesNeg.symm i) = -(-x).moveLeft i := by simp
 
+@[deprecated moveLeft_neg (since := "2024-10-30")]
 theorem moveRight_neg_symm' {x : PGame} (i) :
     x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) := by simp
 

@@ -364,7 +364,7 @@ def map (f : α → β) : RegularExpression α → RegularExpression β
 @[simp]
 protected theorem map_pow (f : α → β) (P : RegularExpression α) :
     ∀ n : ℕ, map f (P ^ n) = map f P ^ n
-  | 0 => by dsimp; rfl
+  | 0 => by unfold map; rfl
   | n + 1 => (congr_arg (· * map f P) (RegularExpression.map_pow f P n) : _)
 
 #adaptation_note /-- around nightly-2024-02-25,

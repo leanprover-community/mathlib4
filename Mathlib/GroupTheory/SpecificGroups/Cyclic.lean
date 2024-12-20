@@ -81,6 +81,9 @@ def IsCyclic.commGroup [hg : Group α] [IsCyclic α] : CommGroup α :=
       let ⟨_, hm⟩ := hg y
       hm ▸ hn ▸ zpow_mul_comm _ _ _ }
 
+instance [Group G] (H : Subgroup G) [IsCyclic H] : H.IsCommutative :=
+  ⟨⟨IsCyclic.commGroup.mul_comm⟩⟩
+
 variable [Group α] [Group G] [Group G']
 
 /-- A non-cyclic multiplicative group is non-trivial. -/
