@@ -34,16 +34,17 @@ section CommSemiring
 variable {R : Type*} [CommSemiring R] [RingKrullDimZero R] (I : Ideal R)
 
 variable {I} in
-lemma Ideal.IsPrime.isMaximal (hI : I.IsPrime) : I.IsMaximal :=
+/-- Also see `Ideal.IsPrime.isMaximal` for the analogous statement for dedekind domains. -/
+lemma Ideal.IsPrime.isMaximal' (hI : I.IsPrime) : I.IsMaximal :=
   I.isMaximal_of_isPrime
 
 variable {I} in
 lemma Ideal.isMaximal_iff_isPrime : I.IsMaximal ↔ I.IsPrime :=
-  ⟨fun h ↦ h.isPrime, fun h ↦ h.isMaximal⟩
+  ⟨fun h ↦ h.isPrime, fun h ↦ h.isMaximal'⟩
 
 lemma RingKrullDimZero.mem_minimalPrimes_iff {I J : Ideal R} :
     I ∈ J.minimalPrimes ↔ I.IsPrime ∧ J ≤ I :=
-  ⟨fun H ↦ H.1, fun H ↦ ⟨H, fun _ h e ↦ (h.1.isMaximal.eq_of_le H.1.ne_top e).ge⟩⟩
+  ⟨fun H ↦ H.1, fun H ↦ ⟨H, fun _ h e ↦ (h.1.isMaximal'.eq_of_le H.1.ne_top e).ge⟩⟩
 
 lemma RingKrullDimZero.mem_minimalPrimes_iff_le {I J : Ideal R} [I.IsPrime] :
     I ∈ J.minimalPrimes ↔ J ≤ I := by
