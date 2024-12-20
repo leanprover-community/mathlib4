@@ -35,8 +35,8 @@ Weyl group.
    non-degenerate if the coefficients are a field and the pairing is crystallographic.
 
 ## References:
- * [N. Bourbaki, *Lie groups and {L}ie algebras. {C}hapters 4--6*][bourbaki1968]
- * [M. Demazure, *SGA III, Expos\'{e} XXI, Don\'{e}es Radicielles*][demazure1970]
+ * [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
+ * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
 
 ## Todo
  * Weyl-invariance of `RootForm` and `CorootForm`
