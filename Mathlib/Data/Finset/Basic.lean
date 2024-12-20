@@ -92,9 +92,10 @@ theorem disjoint_or_nonempty_inter (s t : Finset α) : Disjoint s t ∨ (s ∩ t
   rw [← not_disjoint_iff_nonempty_inter]
   exact em _
 
+omit [DecidableEq α] in
 theorem disjoint_of_subset_iff_left_eq_empty (h : s ⊆ t) :
-    Disjoint s t ↔ s = ∅ := by
-  rw [disjoint_iff, inf_eq_left.mpr h, bot_eq_empty]
+    Disjoint s t ↔ s = ∅ :=
+  disjoint_of_le_iff_left_eq_bot h
 
 end Lattice
 
