@@ -34,7 +34,7 @@ theorem nsmul_le {F α : Type*} [AddGroup α] [FunLike F α ℝ]
   let _ := AddGroupSeminormClass.toSeminormedAddGroup f
   have := AddGroupSeminormClass.isUltrametricDist hna
   simp only [← AddGroupSeminormClass.toSeminormedAddGroup_norm_eq]
-  exact norm_nsmul_le _ _
+  exact norm_nsmul_le
 
 /-- If `f` is a nonarchimedean additive group seminorm on `α`, then for every `n : ℕ` and `a : α`,
   we have `f (n * a) ≤ (f a)`. -/
