@@ -257,6 +257,7 @@ instance instDivInvMonoid : DivInvMonoid αˣ where
 instance instGroup : Group αˣ where
   inv_mul_cancel := fun u => ext u.inv_val
 
+-- TODO rename
 /-- Units of a commutative monoid form a commutative group. -/
 @[to_additive /-- Additive units of an additive commutative monoid form
 an additive commutative group. -/]

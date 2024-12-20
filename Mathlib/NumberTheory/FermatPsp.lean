@@ -177,6 +177,7 @@ greater than `p`, see `psp_from_prime_gt_p`.
 This lemma is intended to be used when `2 ≤ b`, `2 < p`, `p` is prime, and `¬p ∣ b * (b ^ 2 - 1)`,
 because those are the hypotheses for `psp_from_prime_psp`.
 -/
+-- TODO rename
 private def psp_from_prime (b : ℕ) (p : ℕ) : ℕ :=
   (b ^ p - 1) / (b - 1) * ((b ^ p + 1) / (b + 1))
 

@@ -40,6 +40,7 @@ field at an infinite place is then derived in this file, as `InfinitePlace` is a
 ## Main results
 - `NumberField.Completion.locallyCompactSpace` : the completion of a number field at
   an infinite place is locally compact.
+-- TODO rename
 - `NumberField.Completion.isometry_extensionEmbedding` : the embedding `v.Completion →+* ℂ` is
   an isometry. See also `isometry_extensionEmbeddingOfIsReal` for the corresponding result on
   `v.Completion →+* ℝ` when `v` is real.
@@ -102,6 +103,7 @@ def extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) : v.Complet
 theorem extensionEmbedding_coe (x : K) : extensionEmbedding v x = v.embedding x :=
   extensionEmbedding_of_comp_coe v.norm_embedding_eq x
 
+-- TODO rename
 @[simp]
 theorem extensionEmbeddingOfIsReal_coe {v : InfinitePlace K} (hv : IsReal v) (x : K) :
     extensionEmbeddingOfIsReal hv x = embedding_of_isReal hv x :=
@@ -114,6 +116,7 @@ alias extensionEmbedding_of_isReal_coe := extensionEmbeddingOfIsReal_coe
 theorem isometry_extensionEmbedding : Isometry (extensionEmbedding v) :=
   Isometry.of_dist_eq (extensionEmbedding_dist_eq_of_comp v.norm_embedding_eq)
 
+-- TODO rename
 /-- The embedding `v.Completion →+* ℝ` at a real infinite place is an isometry. -/
 theorem isometry_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
     Isometry (extensionEmbeddingOfIsReal hv) :=
@@ -126,6 +129,7 @@ alias isometry_extensionEmbedding_of_isReal := isometry_extensionEmbeddingOfIsRe
 theorem isClosed_image_extensionEmbedding : IsClosed (Set.range (extensionEmbedding v)) :=
   (isClosedEmbedding_extensionEmbedding_of_comp v.norm_embedding_eq).isClosed_range
 
+-- TODO rename
 /-- The embedding `v.Completion →+* ℝ` associated to a real infinite place has closed image
 inside `ℝ`. -/
 theorem isClosed_image_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
@@ -167,6 +171,7 @@ def isometryEquivComplexOfIsComplex {v : InfinitePlace K} (hv : IsComplex v) :
   toEquiv := ringEquivComplexOfIsComplex hv
   isometry_toFun := isometry_extensionEmbedding v
 
+-- TODO rename _surjective
 /-- If `v` is a real infinite place, then the embedding `v.Completion →+* ℝ` is surjective. -/
 theorem surjective_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
     Function.Surjective (extensionEmbeddingOfIsReal hv) := by
@@ -176,6 +181,7 @@ theorem surjective_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal
 @[deprecated (since := "2025-09-24")]
 alias surjective_extensionEmbedding_of_isReal := surjective_extensionEmbeddingOfIsReal
 
+-- TODO rename _bijective
 /-- If `v` is a real infinite place, then the embedding `v.Completion →+* ℝ` is bijective. -/
 theorem bijective_extensionEmbeddingOfIsReal {v : InfinitePlace K} (hv : IsReal v) :
     Function.Bijective (extensionEmbeddingOfIsReal hv) :=
