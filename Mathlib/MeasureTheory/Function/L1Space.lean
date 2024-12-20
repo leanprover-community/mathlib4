@@ -101,7 +101,7 @@ theorem hasFiniteIntegral_def {_ : MeasurableSpace α} (f : α → ε) (μ : Mea
     HasFiniteIntegral f μ ↔ ((∫⁻ a, ‖f a‖ₑ ∂μ) < ∞) :=
   Iff.rfl
 
-theorem hasFiniteIntegral_iff_nnnorm (f : α → β) :
+theorem hasFiniteIntegral_iff_nnnorm {f : α → β} :
     HasFiniteIntegral f μ ↔ (∫⁻ a, ‖f a‖₊ ∂μ) < ∞ := by
   simp only [HasFiniteIntegral, ofReal_norm_eq_coe_nnnorm, enorm_eq_nnnorm]
 
