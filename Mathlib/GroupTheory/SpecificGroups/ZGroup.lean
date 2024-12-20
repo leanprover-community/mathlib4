@@ -24,10 +24,8 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
 * `IsZGroup.isCyclic_abelianization`: `abelianization G` is cyclic.
 * `IsZGroup.isCyclic_commutator`: `commutator G` is cyclic.
 * `IsZGroup.coprime_commutator_index`: `commutator G` is a Hall subgroup of `G`.
-* `G` is a semidirect product of two cyclic groups (probably should right this explicitly)
-
-TODO: Show that if `G` is a Z-group with commutator subgroup `G'`, then `G = G' ⋊ G/G'` where `G'`
-and `G/G'` are cyclic of coprime orders.
+* `isZGroup_iff_mulEquiv`: `G` is a Z-group if and only if `G` is isomorphic to a semidirect
+  product of two cyclic groups of coprime order.
 
 -/
 
@@ -93,6 +91,19 @@ namespace IsZGroup
 
 instance [IsZGroup G] {p : ℕ} [Fact p.Prime] (P : Sylow p G) : IsCyclic P :=
   isZGroup p Fact.out P
+
+theorem _root_.isCyclic_of_injective {G G' : Type*} [Group G] [Group G'] [IsCyclic G']
+    (f : G →* G') (hf : Function.Injective f) : IsCyclic G :=
+  isCyclic_of_surjective (MonoidHom.ofInjective hf).symm (MonoidHom.ofInjective hf).symm.surjective
+
+theorem _root_.isCyclic_of_le {G : Type*} [Group G] {H K : Subgroup G} (h : H ≤ K) [IsCyclic K] :
+    IsCyclic H :=
+  isCyclic_of_injective (Subgroup.inclusion h) (Subgroup.inclusion_injective h)
+
+theorem _root_.IsPGroup.isCyclic [IsZGroup G] {p : ℕ} [Fact p.Prime]
+    {P : Subgroup G} (hP : IsPGroup p P) : IsCyclic P := by
+  obtain ⟨Q, hQ⟩ := hP.exists_le_sylow
+  exact isCyclic_of_le hQ
 
 theorem of_squarefree (hG : Squarefree (Nat.card G)) : IsZGroup G := by
   have : Finite G := Nat.finite_of_card_ne_zero hG.ne_zero
@@ -457,8 +468,89 @@ noncomputable def SemidirectProduct.congr
     {N G N' G' : Type*} [Group N] [Group G] [Group N'] [Group G'] (φ : G →* MulAut N)
     (eN : N ≃* N') (eG : G ≃* G') :
     SemidirectProduct N G φ ≃* SemidirectProduct N' G'
-      ((MulAut.congr eN).toMonoidHom.comp (φ.comp eG.symm)) :=
-  sorry
+      ((MulAut.congr eN).toMonoidHom.comp (φ.comp eG.symm)) where
+  toFun := fun ⟨n, g⟩ ↦ ⟨eN n, eG g⟩
+  invFun := fun ⟨n', g'⟩ ↦ ⟨eN.symm n', eG.symm g'⟩
+  left_inv := fun _ ↦ by simp
+  right_inv := fun _ ↦ by simp
+  map_mul' := fun x y ↦ by simp [SemidirectProduct.ext_iff]
+
+/-- tada -/
+noncomputable def _root_.Subgroup.IsComplement'.mulEquiv
+    {G : Type*} [Group G] {H K : Subgroup G} [K.Normal]
+    (h : H.IsComplement' K) :
+    H ≃* G ⧸ K :=
+  { (Subgroup.MemLeftTransversals.toEquiv h).symm with
+    map_mul' := fun _ _ ↦ rfl }
+
+theorem _root_.Subgroup.card_map_dvd {G G' : Type*} [Group G] [Group G']
+    (H : Subgroup G) (f : G →* G') :
+    Nat.card (H.map f) ∣ Nat.card H :=
+  Subgroup.card_dvd_of_surjective (f.subgroupMap H) (f.subgroupMap_surjective H)
+
+theorem _root_.MonoidHom.ker_subgroupMap {G G' : Type*} [Group G] [Group G'] (f : G →* G')
+    (H : Subgroup G) : (f.subgroupMap H).ker = f.ker.subgroupOf H := by
+  ext h
+  exact Subtype.ext_iff
+
+theorem _root_.MonoidHom.card_range_dvd {G G' : Type*} [Group G] [Group G'] (f : G →* G') :
+    Nat.card f.range ∣ Nat.card G :=
+  Subgroup.card_dvd_of_surjective f.rangeRestrict f.rangeRestrict_surjective
+
+theorem isZGroup_of_coprime {G H K : Type*} [Group G] [Group H] [Group K] [Finite G]
+    [IsZGroup G] [IsZGroup K]
+    (f : G →* H) (g : H →* K) (h : g.ker ≤ f.range)
+      (h' : (Nat.card G).Coprime (Nat.card K)) : IsZGroup H := by
+  by_cases hK : Nat.card K = 0
+  · rw [hK, Nat.coprime_zero_right] at h'
+    have key := f.card_range_dvd
+    rw [h', Nat.dvd_one, Subgroup.card_eq_one] at key
+    rw [key, le_bot_iff, MonoidHom.ker_eq_bot_iff] at h
+    exact IsZGroup.of_injective h
+  have : Finite K := Nat.finite_of_card_ne_zero hK
+  have : Finite H := by
+    refine Nat.finite_of_card_ne_zero ?_
+    rw [← g.ker.card_mul_index, Subgroup.index_ker]
+    refine mul_ne_zero ?_ Finite.card_pos.ne'
+    refine ne_zero_of_dvd_ne_zero ?_ (Subgroup.card_dvd_of_le h)
+    refine ne_zero_of_dvd_ne_zero Finite.card_pos.ne' (MonoidHom.card_range_dvd f)
+  rw [isZGroup_iff]
+  intro p hp P
+  have := Fact.mk hp
+  have key : (Nat.card G).Coprime (Nat.card P) ∨ (Nat.card K).Coprime (Nat.card P) := by
+    obtain ⟨k, hk⟩ := P.2.exists_card_eq
+    rw [hk]
+    refine Or.imp hp.coprime_pow_of_not_dvd hp.coprime_pow_of_not_dvd ?_
+    contrapose! h'
+    rw [Nat.Prime.not_coprime_iff_dvd]
+    exact ⟨p, hp, h'⟩
+  rcases key with h'' | h''
+  · -- p maps into its image
+    have key : P ≃* P.map g := by
+      refine MulEquiv.ofBijective (g.subgroupMap P) ⟨?_, g.subgroupMap_surjective P⟩
+      rw [← MonoidHom.ker_eq_bot_iff, ← Subgroup.card_eq_one, g.ker_subgroupMap]
+      refine Nat.eq_one_of_dvd_coprimes h'' ?_ (g.ker.subgroupOf P).card_subgroup_dvd_card
+      refine (g.ker.card_comap_dvd_of_injective P.1.subtype P.1.subtype_injective).trans ?_
+      exact (Subgroup.card_dvd_of_le h).trans f.card_range_dvd
+    have h2 : IsPGroup p (P.map g) := P.2.map g
+    have := h2.isCyclic
+    exact isCyclic_of_surjective key.symm key.symm.surjective
+  · have h1 : P ≤ g.ker := by
+      rw [← Subgroup.map_eq_bot_iff, ← Subgroup.card_eq_one]
+      exact Nat.eq_one_of_dvd_coprimes h'' (P.map g).card_subgroup_dvd_card (P.card_map_dvd g)
+    replace h1 := h1.trans h
+    let f' := f.rangeRestrict
+    obtain ⟨Q, hQ⟩ := Sylow.mapSurjective_surjective f.rangeRestrict_surjective p (P.subtype h1)
+    rw [Sylow.ext_iff, Sylow.coe_mapSurjective, Sylow.coe_subtype] at hQ
+    have : IsCyclic (P.subgroupOf f.range) := by
+      rw [← hQ]
+      refine isCyclic_of_surjective (f.rangeRestrict.subgroupMap Q)
+        (f.rangeRestrict.subgroupMap_surjective Q)
+    have key := Subgroup.subgroupOfEquivOfLe h1
+    exact isCyclic_of_surjective key key.surjective
+
+instance {G : Type*} [Group G] [IsCyclic G] : IsZGroup G :=
+  ⟨inferInstance⟩
 
 theorem isZGroup_iff_mulEquiv [Finite G] :
     IsZGroup G ↔ ∃ (m n : ℕ) (φ : Multiplicative (ZMod m) →* MulAut (Multiplicative (ZMod n)))
@@ -466,10 +558,21 @@ theorem isZGroup_iff_mulEquiv [Finite G] :
   refine ⟨fun hG ↦ ?_, ?_⟩
   · obtain ⟨H, hH⟩ := Subgroup.exists_right_complement'_of_coprime
       (IsZGroup.coprime_commutator_index G)
-    let h5 : H ≃* Abelianization G := sorry
-    refine ⟨_, _, _, (SemidirectProduct.mulEquiv hH).symm.trans
+    exact ⟨_, _, _, (SemidirectProduct.mulEquiv hH).symm.trans
       (SemidirectProduct.congr _ (zmodCyclicMulEquiv (IsZGroup.isCyclic_commutator G)).symm
-        (h5.trans (zmodCyclicMulEquiv (IsZGroup.isCyclic_abelianization G)).symm)),
+        (hH.symm.mulEquiv.trans (zmodCyclicMulEquiv (IsZGroup.isCyclic_abelianization G)).symm)),
           (IsZGroup.coprime_commutator_index G).symm⟩
-  · rintro ⟨m, n, φ, e⟩
-    sorry
+  · rintro ⟨m, n, φ, e, h⟩
+    have : Finite (Multiplicative (ZMod n)) := by
+      have key := e.symm.toMonoidHom.comp (SemidirectProduct.inl (φ := φ))
+      refine Nat.finite_of_card_ne_zero ?_
+      refine ne_zero_of_dvd_ne_zero ?_
+        (Subgroup.card_dvd_of_injective (SemidirectProduct.inl (φ := φ))
+          SemidirectProduct.inl_injective)
+      rw [Nat.card_congr e.symm.toEquiv]
+      exact Finite.card_pos.ne'
+    rw [← m.card_zmod, ← n.card_zmod, Nat.coprime_comm] at h
+    have key : IsZGroup (Multiplicative (ZMod n) ⋊[φ] Multiplicative (ZMod m)) :=
+      isZGroup_of_coprime SemidirectProduct.inl SemidirectProduct.rightHom
+        SemidirectProduct.range_inl_eq_ker_rightHom.ge h
+    exact IsZGroup.of_injective (f := e.toMonoidHom) e.injective
