@@ -181,23 +181,25 @@ theorem exists_mem_range : ∃ n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p]
   apply max_lt hr
   simpa using hn
 
-theorem exists_unique_mem_range : ∃! n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p] := by
+theorem existsUnique_mem_range : ∃! n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p] := by
   obtain ⟨n, hn₁, hn₂⟩ := exists_mem_range x
   use n, ⟨hn₁, hn₂⟩, fun m ⟨hm₁, hm₂⟩ ↦ ?_
   have := (zmod_congr_of_sub_mem_max_ideal x n m hn₂ hm₂).symm
   rwa [ZMod.natCast_eq_natCast_iff, ModEq, mod_eq_of_lt hn₁, mod_eq_of_lt hm₁] at this
 
+@[deprecated (since := "2024-12-17")] alias exists_unique_mem_range := existsUnique_mem_range
+
 /-- `zmod_repr x` is the unique natural number smaller than `p`
 satisfying `‖(x - zmod_repr x : ℤ_[p])‖ < 1`.
 -/
 def zmodRepr : ℕ :=
-  Classical.choose (exists_unique_mem_range x).exists
+  Classical.choose (existsUnique_mem_range x).exists
 
 theorem zmodRepr_spec : zmodRepr x < p ∧ x - zmodRepr x ∈ maximalIdeal ℤ_[p] :=
-  Classical.choose_spec (exists_unique_mem_range x).exists
+  Classical.choose_spec (existsUnique_mem_range x).exists
 
 theorem zmodRepr_unique (y : ℕ) (hy₁ : y < p) (hy₂ : x - y ∈ maximalIdeal ℤ_[p]) : y = zmodRepr x :=
-  have h := (Classical.choose_spec (exists_unique_mem_range x)).right
+  have h := (Classical.choose_spec (existsUnique_mem_range x)).right
   (h y ⟨hy₁, hy₂⟩).trans (h (zmodRepr x) (zmodRepr_spec x)).symm
 
 theorem zmodRepr_lt_p : zmodRepr x < p :=
@@ -374,7 +376,7 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
       -- TODO: write a `CanLift` instance for units
       rw [Int.natAbs_eq_zero] at hc0
       rw [isUnit_iff, norm_eq_pow_val hc', hc0, neg_zero, zpow_zero]
-    rw [DiscreteValuationRing.unit_mul_pow_congr_unit _ _ _ _ _ hc]
+    rw [IsDiscreteValuationRing.unit_mul_pow_congr_unit _ _ _ _ _ hc]
     exact irreducible_p
   · simp only [zero_pow hc0, sub_zero, ZMod.cast_zero, mul_zero]
     rw [unitCoeff_spec hc']

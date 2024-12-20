@@ -1032,6 +1032,15 @@ theorem cons_get_drop_succ {l : List α} {n} :
     l.get n :: l.drop (n.1 + 1) = l.drop n.1 :=
   (drop_eq_getElem_cons n.2).symm
 
+lemma drop_length_sub_one {l : List α} (h : l ≠ []) : l.drop (l.length - 1) = [l.getLast h] := by
+  induction l with
+  | nil => aesop
+  | cons a l ih =>
+    by_cases hl : l = []
+    · aesop
+    rw [length_cons, Nat.add_one_sub_one, List.drop_length_cons hl a]
+    aesop
+
 section TakeI
 
 variable [Inhabited α]
@@ -1224,11 +1233,11 @@ theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
   induction i generalizing b l with
   | zero =>
     cases l
-    · simp only [length, zero_eq, lt_self_iff_false] at h
+    · simp only [scanl, length, zero_eq, lt_self_iff_false] at h
     · simp
   | succ i hi =>
     cases l
-    · simp only [length] at h
+    · simp only [scanl, length] at h
       exact absurd h (by omega)
     · simp_rw [scanl_cons]
       rw [getElem_append_right]
