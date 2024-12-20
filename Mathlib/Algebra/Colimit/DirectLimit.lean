@@ -17,20 +17,27 @@ of modules and rings, showing that they are indeed colimits in the respective ca
 ## Implementation notes
 
 The first 400 lines are boilerplate code that defines algebraic instances on `DirectLimit`
-from magma (Mul) to `Field`. To make everything "hom-polymorphic", we work with `DirectedSystem`s
-of `FunLike`s rather than plain/unbundled functions, and we use algebraic hom typeclasses
+from magma (`Mul`) to `Field`. To make everything "hom-polymorphic", we work with `DirectedSystem`s
+of `FunLike`s rather than plain unbundled functions, and we use algebraic hom typeclasses
 (e.g. `LinearMapClass`, `RingHomClass`) everywhere.
 
-In `Mathlib.Algebra.Colimit.DirectLimit`, `Module.DirectLimit`, `AddCommGroup.DirectLimit` and
+In `Mathlib.Algebra.Colimit.ModuleRing`, `Module.DirectLimit`, `AddCommGroup.DirectLimit` and
 `Ring.DirectLimit` are defined as quotients of the universal objects (`DirectSum` and
 `FreeCommRing`). These definitions are more general and suitable for arbitrary colimits,
 but do not immediately provide criteria to determine when two elements in a component are equal
-in the direct limit. On the other hand, the `DirectLimit` in this file is only defined for
-directed systems and does not work for general colimits, but the equivalence relation defining
-`DirectLimit` is very explicit. We can put all kinds of algebraic instances on `DirectLimit` and
-show it is the colimit of the directed system in the respective category of algebraic structures,
-and since any two colimits are isomorphic, this allows us to golf proofs of equality criteria for
-`Module/AddCommGroup/Ring.DirectLimit`.
+in the direct limit.
+
+On the other hand, the `DirectLimit` in this file is only defined for directed systems
+and does not work for general colimits, but the equivalence relation defining `DirectLimit`
+is very explicit. For colimits of directed systems there is no need to construct the
+universal object for each type of algebraic structure; the same type `DirectLimit` simply
+works for all of them. This file is therefore more general than the `ModuleRing` file in
+terms of the variety of algebraic structures supported.
+
+So far we only show that `DirectLimit` is the colimit in the categories of modules and rings,
+but for the other algebraic structures the constructions and proofs will be easy following
+the same pattern. Since any two colimits are isomorphic, this allows us to golf proofs of
+equality criteria for `Module/AddCommGroup/Ring.DirectLimit`.
 -/
 
 suppress_compilation
