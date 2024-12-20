@@ -9,9 +9,11 @@ import Mathlib.Order.UpperLower.Basic
 /-!
 # Definition of direct systems, inverse systems, and cardinalities in specific inverse systems
 
-The first part of this file concerns directed systems, defines `DirectLimit` and introduces
-recursion and induction principles for defining functions from and to `DirectLimit` and proving
-things about elements in `DirectLimit`.
+The first part of this file concerns directed systems: `DirectLimit` is defined as the quotient
+of the disjoint union (`Sigma` type) by an equivalence relation (`Setoid`): compare
+`CategoryTheory.Limits.Types.Quot`, which is a quotient by a plain relation.
+Recursion and induction principles for constructing functions from and to `DirectLimit` and
+proving things about elements in `DirectLimit`.
 
 In the second part we compute the cardinality of each node in an inverse system `F i` indexed by a
 well-order in which every map between successive nodes has constant fiber `X i`, and every limit

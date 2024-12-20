@@ -11,9 +11,26 @@ import Mathlib.Tactic.SuppressCompilation
 /-!
 # Direct limit of algebraic structures
 
-We introduce all kinds of algebraic instances on `DirectLimit`,
-and specialize to the case of modules, commutative monoids, and rings.
+We introduce all kinds of algebraic instances on `DirectLimit`, and specialize to the cases
+of modules and rings, showing that they are indeed colimits in the respective categories.
 
+## Implementation notes
+
+The first 400 lines are boilerplate code that defines algebraic instances on `DirectLimit`
+from magma (Mul) to `Field`. To make everything "hom-polymorphic", we work with `DirectedSystem`s
+of `FunLike`s rather than plain/unbundled functions, and we use algebraic hom typeclasses
+(e.g. `LinearMapClass`, `RingHomClass`) everywhere.
+
+In `Mathlib.Algebra.Colimit.DirectLimit`, `Module.DirectLimit`, `AddCommGroup.DirectLimit` and
+`Ring.DirectLimit` are defined as quotients of the universal objects (`DirectSum` and
+`FreeCommRing`). These definitions are more general and suitable for arbitrary colimits,
+but do not immediately provide criteria to determine when two elements in a component are equal
+in the direct limit. On the other hand, the `DirectLimit` in this file is only defined for
+directed systems and does not work for general colimits, but the equivalence relation defining
+`DirectLimit` is very explicit. We can put all kinds of algebraic instances on `DirectLimit` and
+show it is the colimit of the directed system in the respective category of algebraic structures,
+and since any two colimits are isomorphic, this allows us to golf proofs of equality criteria for
+`Module/AddCommGroup/Ring.DirectLimit`.
 -/
 
 suppress_compilation
