@@ -351,6 +351,9 @@ Q472883:
 
 Q474881:
   title: Cantor's theorem
+  # a.k.a. Cantor's diagonal argument
+  decl: Function.cantor_surjective
+  author: Johannes Hölzl and Mario Carneiro
 
 Q476776:
   title: Solutions of a general quartic equation
@@ -945,6 +948,11 @@ Q1056283:
 
 Q1057919:
   title: Sylow theorems
+  decls:
+   - Sylow.exists_subgroup_card_pow_prime
+   - Sylow.isPretransitive_of_finite
+   - Sylow.card_dvd_index
+   - card_sylow_modEq_one
 
 Q1058662:
   title: Darboux's theorem
