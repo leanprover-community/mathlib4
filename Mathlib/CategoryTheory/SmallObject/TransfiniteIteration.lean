@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.SmallObject.Iteration.Nonempty
 import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
-import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Transfinite iteration of a functor
