@@ -7,7 +7,6 @@ import Mathlib.Algebra.Order.ZeroLEOne
 import Mathlib.Logic.Relation
 import Mathlib.Logic.Small.Defs
 import Mathlib.Order.GameAdd
-import Mathlib.Order.Defs.PartialOrder
 
 /-!
 # Combinatorial (pre-)games.
