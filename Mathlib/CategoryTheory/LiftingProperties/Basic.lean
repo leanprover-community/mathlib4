@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Scholbach, Joël Riou
 -/
 import Mathlib.CategoryTheory.CommSq
+import Mathlib.CategoryTheory.MorphismProperty.Retract
+
 
 /-!
 # Lifting properties
@@ -126,17 +128,6 @@ theorem iff_of_arrow_iso_right {A B X Y X' Y' : C} (i : A ⟶ B) {p : X ⟶ Y} {
     (e : Arrow.mk p ≅ Arrow.mk p') : HasLiftingProperty i p ↔ HasLiftingProperty i p' := by
   constructor <;> intro
   exacts [of_arrow_iso_right i e, of_arrow_iso_right i e.symm]
-
-variable {i p} (h : HasLiftingProperty i p)
-  {f : A ⟶ X} {g : B ⟶ Y} (sq : CommSq f i p g)
-
-/-- A choice of a diagonal morphism that is part of a `LiftStruct` when
-the square has a lift. -/
-noncomputable abbrev lift : B ⟶ X := sq.lift
-
-theorem fac_left : i ≫ h.lift sq = f := sq.fac_left
-
-theorem fac_right : h.lift sq ≫ p = g := sq.fac_right
 
 end HasLiftingProperty
 
