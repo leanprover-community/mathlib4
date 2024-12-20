@@ -193,6 +193,11 @@ theorem _root_.Subgroup.map_subtype_commutator {G : Type*} [Group G] (H : Subgro
     (commutator H).map H.subtype = ⁅H, H⁆ := by
   rw [commutator_def, Subgroup.map_commutator, ← MonoidHom.range_eq_map, H.range_subtype]
 
+-- PRed (with rename)
+theorem _root_.Subgroup.norma_eq_top {G : Type*} [Group G] (H : Subgroup G) [h : H.Normal] :
+    H.normalizer = ⊤ :=
+  Subgroup.normalizer_eq_top.mpr h
+
 variable (G) in
 /-- A finite Z-group has cyclic commutator subgroup. -/
 theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) := by
@@ -218,20 +223,15 @@ theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) :=
         Subgroup.centralizer (commutator H) by
       simpa [SetLike.le_def, Subgroup.mem_center_iff, Subgroup.mem_centralizer_iff] using h
     rw [Subgroup.map_subtype_commutator, Subgroup.le_centralizer_iff]
-    have key' : ⁅commutator H, commutator H⁆.normalizer = ⊤ :=
-      Subgroup.normalizer_eq_top.mpr inferInstance
-    -- read through up to here, but want to do the normalizer refactor
     let _ : CommGroup (MulAut (⁅commutator H, commutator H⁆ : Subgroup H)) :=
       ⟨fun g h ↦ by
         let f := hH.mulAutMulEquiv
-        rw [← f.apply_eq_iff_eq, map_mul, mul_comm, ← map_mul, f.apply_eq_iff_eq]⟩
-    let f := Subgroup.normalizerMonoidHom ⁅commutator H, commutator H⁆
-    have key := Abelianization.commutator_subset_ker f
-    rw [Subgroup.normalizerMonoidHom_ker, key'] at key
-    have key := Subgroup.map_mono (f := Subgroup.subtype _) key
-    simp_rw [commutator_def, Subgroup.map_commutator, ← MonoidHom.range_eq_map,
-      Subgroup.range_subtype, ← commutator_def] at key
-    rwa [Subgroup.subgroupOf, Subgroup.map_comap_eq_self] at key
+        rw [← f.apply_eq_iff_eq, map_mul, mul_comm, ← map_mul]⟩
+    have key := Abelianization.commutator_subset_ker
+      (Subgroup.normalizerMonoidHom ⁅commutator H, commutator H⁆)
+    rwa [Subgroup.normalizerMonoidHom_ker, ⁅commutator H, commutator H⁆.norma_eq_top,
+      ← Subgroup.map_subtype_le_map_subtype, Subgroup.map_subtype_commutator,
+        Subgroup.subgroupOf, Subgroup.map_comap_eq_self] at key
     rw [Subgroup.range_subtype]
     exact le_top
 
@@ -346,7 +346,7 @@ theorem _root_.IsCyclic.commutator_eq_bot_or_commutator_eq [Finite G] {p : ℕ} 
     {P : Sylow p G} [IsCyclic P] [P.Normal] {K : Subgroup G} (h : K.IsComplement' P) :
     ⁅K, P.1⁆ = ⊥ ∨ ⁅K, P.1⁆ = P := by
   have hK : K ≤ P.normalizer := by
-    rw [Subgroup.normalizer_eq_top.mpr inferInstance]
+    rw [P.norma_eq_top]
     exact le_top
   let _ := MulDistribMulAction.compHom P (P.normalizerMonoidHom.comp (Subgroup.inclusion hK))
   let ϕ := IsCyclic.toMonoidHom K P
@@ -442,12 +442,12 @@ def SemidirectProduct.equiv (N G : Type*) [Group N] [Group G] (φ : G →* MulAu
     left_inv := fun _ ↦ rfl
     right_inv := fun _ ↦ rfl }
 
-/-- tada -/
+/-- tada (can be golfed with normalizer_eq_top) -/
 noncomputable def SemidirectProduct.mulEquiv
-    {G : Type*} [Group G] {H K : Subgroup G} [hH : H.Normal]
+    {G : Type*} [Group G] {H K : Subgroup G} [H.Normal]
     (h : H.IsComplement' K) :
-    SemidirectProduct H K ((H.normalizerMonoidHom).comp (Subgroup.inclusion
-      (Subgroup.normalizer_eq_top.mpr hH ▸ le_top))) ≃* G :=
+    SemidirectProduct H K ((H.normalizerMonoidHom).comp
+      (Subgroup.inclusion (H.norma_eq_top ▸ le_top))) ≃* G :=
   MulEquiv.ofBijective (monoidHom _) (((equiv H K _).bijective_comp _).mpr h)
 
 /-- tada -/
@@ -547,7 +547,7 @@ theorem isZGroup_iff_mulEquiv [Finite G] :
       (IsZGroup.coprime_commutator_index G)
     exact ⟨_, _, _, (SemidirectProduct.mulEquiv hH).symm.trans
       (SemidirectProduct.congr _ (zmodCyclicMulEquiv (IsZGroup.isCyclic_commutator G)).symm
-        (hH.symm.mulEquiv.trans (zmodCyclicMulEquiv (IsZGroup.isCyclic_abelianization G)).symm)),
+        (hH.symm.mulEquiv.trans (zmodCyclicMulEquiv IsZGroup.isCyclic_abelianization).symm)),
           (IsZGroup.coprime_commutator_index G).symm⟩
   · rintro ⟨m, n, φ, e, h⟩
     have : Finite (Multiplicative (ZMod n)) := by
