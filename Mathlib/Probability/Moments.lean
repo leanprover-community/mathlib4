@@ -180,6 +180,13 @@ theorem mgf_pos [IsProbabilityMeasure μ] (h_int_X : Integrable (fun ω => exp (
     0 < mgf X μ t :=
   mgf_pos' (IsProbabilityMeasure.ne_zero μ) h_int_X
 
+lemma mgf_id_map {Ω : Type*} {m : MeasurableSpace Ω} {μ : Measure Ω}
+  (X : Ω → ℝ) (hX : AEMeasurable X μ) : mgf id (μ.map X) = mgf X μ := by
+  ext t
+  rw [mgf, integral_map hX]
+  · rfl
+  · exact (measurable_exp.comp (measurable_const_mul _)).aestronglyMeasurable
+
 theorem mgf_neg : mgf (-X) μ t = mgf X μ (-t) := by simp_rw [mgf, Pi.neg_apply, mul_neg, neg_mul]
 
 theorem cgf_neg : cgf (-X) μ t = cgf X μ (-t) := by simp_rw [cgf, mgf_neg]

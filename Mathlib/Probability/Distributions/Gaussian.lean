@@ -350,14 +350,13 @@ end Transformations
 
 open Measurable Real
 
-theorem mgf_gaussian {Ω : Type*} {m : MeasurableSpace Ω} {μ : Measure Ω}
-  (X : Ω → ℝ) (hXm : Measurable X) (hX : μ.map X = gaussianReal 0 1) (t : ℝ) :
-  mgf X μ t = exp (t ^ 2 / 2) := calc
+theorem mgf_gaussianReal {Ω : Type*} {m : MeasurableSpace Ω} {μ : Measure Ω}
+    (X : Ω → ℝ) (hX : μ.map X = gaussianReal 0 1) (t : ℝ) :
+    mgf X μ t = exp (t ^ 2 / 2) := calc
   mgf X μ t = (μ.map X)[fun x => exp (t * x)] := by
-    have : AEStronglyMeasurable (fun x ↦ exp (t * x)) (μ.map X) :=
-      (aemeasurable (measurable_exp.comp (continuous_const.mul
-      continuous_id).measurable)).aestronglyMeasurable
-    rw [mgf, MeasureTheory.integral_map (aemeasurable hXm) this]
+    rw [← mgf_id_map, mgf]
+    · rfl
+    · exact aemeasurable_of_map_ne_zero hX (IsProbabilityMeasure.ne_zero (gaussianReal 0 1))
   _ = ∫ x, exp (t * x) * gaussianPDFReal 0 1 x := by
     rw [hX, gaussianReal_of_var_ne_zero 0 one_ne_zero, gaussianPDF_def]
     simp only [ENNReal.ofReal]
