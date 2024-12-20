@@ -48,21 +48,7 @@ def tensorProductColimit : IsColimit (tensorProductCocone A B) where
   desc (s : BinaryCofan A B) :=
     ofHom (Algebra.TensorProduct.lift s.inl.hom.toIntAlgHom s.inr.hom.toIntAlgHom
       (fun _ _ => by apply Commute.all)).toRingHom
-  fac (s : BinaryCofan A B) := by
-    rintro ⟨j⟩
-    cases j <;> ext a
-    · simp only [forget_obj, pair_obj_left, tensorProductCocone_pt, Functor.const_obj_obj,
-        BinaryCofan.ι_app_left, pair_obj_right, AlgHom.toRingHom_eq_coe, CommRingCat.comp_apply,
-        coe_of]
-      erw [Algebra.TensorProduct.lift_tmul (hfg := fun _ _ => by apply Commute.all)]
-      rw [map_one, mul_one]
-      rfl
-    · simp only [forget_obj, pair_obj_right, tensorProductCocone_pt, Functor.const_obj_obj,
-        BinaryCofan.ι_app_right, pair_obj_left, AlgHom.toRingHom_eq_coe, CommRingCat.comp_apply,
-        coe_of]
-      erw [Algebra.TensorProduct.lift_tmul (hfg := fun _ _ => by apply Commute.all)]
-      rw [map_one, one_mul]
-      rfl
+  fac (s : BinaryCofan A B) := fun ⟨j⟩ => by cases j <;> ext a <;> simp
   uniq (s : BinaryCofan A B) := by
     rintro ⟨m : A ⊗[ℤ] B →+* s.pt⟩ hm
     apply CommRingCat.hom_ext
