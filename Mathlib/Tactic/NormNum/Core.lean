@@ -291,7 +291,7 @@ Elaborates a call to `norm_num only? [args]` or `norm_num1`.
   of `simp` will be used, not any of the post-processing that `simp only` does without lemmas
 -/
 -- FIXME: had to inline a bunch of stuff from `mkSimpContext` and `simpLocation` here
-def elabNormNum (cfg args loc : Syntax) (simpOnly := false) (useSimp := true) : TacticM Unit :=
+def elabNormNum (cfg args loc : Syntax) (simpOnly := false) (useSimp := true) : TacticM Unit := do
   let g ← getMainGoal
   g.withContext do
   let ctx ← getSimpContext cfg args (!useSimp || simpOnly)
