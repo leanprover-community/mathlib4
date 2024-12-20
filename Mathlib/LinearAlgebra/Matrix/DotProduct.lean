@@ -22,7 +22,7 @@ vectors `v w : n → R` to the sum of the entrywise products `v i * w i`.
 
 ## Tags
 
-matrix, reindex
+matrix
 
 -/
 

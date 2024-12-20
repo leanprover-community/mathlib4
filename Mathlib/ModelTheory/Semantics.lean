@@ -167,13 +167,13 @@ theorem realize_constantsToVars [L[[α]].Structure M] [(lhomWithConstants L α).
   · simp
   · cases n
     · cases f
-      · simp only [realize, ih, constantsOn, constantsOnFunc]
+      · simp only [realize, ih, constantsOn, constantsOnFunc, constantsToVars]
         -- Porting note: below lemma does not work with simp for some reason
         rw [withConstants_funMap_sum_inl]
       · simp only [realize, constantsToVars, Sum.elim_inl, funMap_eq_coe_constants]
         rfl
     · cases' f with _ f
-      · simp only [realize, ih, constantsOn, constantsOnFunc]
+      · simp only [realize, ih, constantsOn, constantsOnFunc, constantsToVars]
         -- Porting note: below lemma does not work with simp for some reason
         rw [withConstants_funMap_sum_inl]
       · exact isEmptyElim f
@@ -187,7 +187,7 @@ theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).
     -- Porting note: both cases were `simp [Language.con]`
     · simp [Language.con, realize, funMap_eq_coe_constants]
     · simp [realize, constantMap]
-  · simp only [realize, constantsOn, constantsOnFunc, ih]
+  · simp only [realize, constantsOn, constantsOnFunc, ih, varsToConstants]
     -- Porting note: below lemma does not work with simp for some reason
     rw [withConstants_funMap_sum_inl]
 
@@ -434,7 +434,7 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
     rw [realize_restrictVarLeft v' (by simp [hv']), realize_restrictVarLeft v' (by simp [hv'])]
     simp [Function.comp_apply]
   | rel =>
-    simp only [Realize, freeVarFinset.eq_3, Finset.biUnion_val]
+    simp only [Realize, freeVarFinset.eq_3, Finset.biUnion_val, restrictFreeVar]
     congr!
     rw [realize_restrictVarLeft v' (by simp [hv'])]
     simp [Function.comp_apply]

@@ -7,8 +7,9 @@ import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
 import Mathlib.Data.Bool.Basic
 import Mathlib.Logic.Unique
-import Mathlib.Tactic.Substs
 import Mathlib.Tactic.Conv
+import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.Substs
 
 /-!
 # Equivalence between types
@@ -42,7 +43,7 @@ Then we define
   - `Equiv.decidableEq` takes `e : α ≃ β` and `[DecidableEq β]` and returns `DecidableEq α`.
 
   More definitions of this kind can be found in other files.
-  E.g., `Mathlib.Logic.Equiv.TransferInstance` does it for many algebraic type classes like
+  E.g., `Mathlib.Algebra.Equiv.TransferInstance` does it for many algebraic type classes like
   `Group`, `Module`, etc.
 
 Many more such isomorphisms and operations are defined in `Mathlib.Logic.Equiv.Basic`.
