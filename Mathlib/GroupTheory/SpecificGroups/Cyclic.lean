@@ -643,11 +643,13 @@ end CommSimpleGroup
 
 end IsSimpleGroup
 
+-- TODO rename
 @[to_additive]
 theorem Group.is_simple_iff_prime_card [Group α] [IsMulCommutative α] :
     IsSimpleGroup α ↔ (Nat.card α).Prime :=
   ⟨fun h ↦ h.prime_card, fun h ↦ isSimpleGroup_of_prime_card (hp := ⟨h⟩) rfl⟩
 
+-- TODO rename
 @[to_additive]
 theorem CommGroup.is_simple_iff_prime_card [CommGroup α] :
     IsSimpleGroup α ↔ (Nat.card α).Prime :=
@@ -793,6 +795,7 @@ noncomputable def zmodAddCyclicAddEquiv [AddGroup G] (h : IsAddCyclic G) :
     |>.symm.trans <| QuotientAddGroup.quotientAddEquivOfEq kereq
     |>.symm.trans <| QuotientAddGroup.quotientKerEquivOfSurjective (zmultiplesHom G g) surj
 
+-- TODO rename
 /-- A commutative simple group is isomorphic to `ZMod p` from some prime `p`. -/
 theorem exists_prime_addEquiv_ZMod [CommGroup G] [IsSimpleGroup G] :
     ∃ p : ℕ, Nat.Prime p ∧ Nonempty (Additive G ≃+ ZMod p) := by

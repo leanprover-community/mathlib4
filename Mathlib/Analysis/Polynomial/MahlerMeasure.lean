@@ -55,6 +55,7 @@ theorem logMahlerMeasure_zero : (0 : ℂ[X]).logMahlerMeasure = 0 := by
 theorem logMahlerMeasure_one : (1 : ℂ[X]).logMahlerMeasure = 0 := by
   simp [logMahlerMeasure_def, circleAverage_def]
 
+-- TODO rename logMahlerMeasure_C
 @[simp]
 theorem logMahlerMeasure_const (z : ℂ) : (C z).logMahlerMeasure = log ‖z‖ := by
   simp [logMahlerMeasure_def, circleAverage_def, mul_assoc]
@@ -76,6 +77,7 @@ theorem mahlerMeasure_def_of_ne_zero (hp : p ≠ 0) : p.mahlerMeasure =
     exp ((2 * π)⁻¹ * ∫ (x : ℝ) in (0)..(2 * π), log ‖eval (circleMap 0 1 x) p‖) := by
   simp [mahlerMeasure, hp, logMahlerMeasure_def, circleAverage_def]
 
+-- TODO rename logMahlerMeasure_eq_log_mahlerMeasure
 variable {p} in
 theorem logMahlerMeasure_eq_log_MahlerMeasure : p.logMahlerMeasure = log p.mahlerMeasure := by
   rw [mahlerMeasure]
@@ -87,6 +89,7 @@ theorem mahlerMeasure_zero : (0 : ℂ[X]).mahlerMeasure = 0 := by simp [mahlerMe
 @[simp]
 theorem mahlerMeasure_one : (1 : ℂ[X]).mahlerMeasure = 1 := by simp [mahlerMeasure]
 
+-- TODO rename mahlerMeasure_const
 @[simp]
 theorem mahlerMeasure_const (z : ℂ) : (C z).mahlerMeasure = ‖z‖ := by
   simp only [mahlerMeasure, ne_eq, map_eq_zero, logMahlerMeasure_const, ite_not]

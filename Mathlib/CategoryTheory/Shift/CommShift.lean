@@ -110,6 +110,7 @@ lemma isoAdd'_isoZero {a : A}
   simp [shiftFunctorAdd'_add_zero_hom_app, ← Functor.map_comp_assoc,
     shiftFunctorAdd'_add_zero_inv_app]
 
+-- TODO rename
 lemma isoZero_isoAdd'_ {a : A}
     (e : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a) :
     isoAdd' (zero_add a) (isoZero F A) e = e := by

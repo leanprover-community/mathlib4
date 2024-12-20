@@ -132,6 +132,7 @@ theorem proximity_sub_proximity_inv_eq_circleAverage {f : ℂ → ℂ} (h₁f : 
   · simp_rw [← norm_inv]
     apply circleIntegrable_posLog_norm_meromorphicOn h₁f.inv.meromorphicOn
 
+-- TODO rename
 /--
 The proximity function is even.
 -/

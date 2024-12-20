@@ -42,6 +42,7 @@ section summable
 
 variable {f : ℕ → ℂ} {r : ℝ} {s : ℂ}
 
+-- TODO isBigO
 private theorem LSeriesSummable_of_sum_norm_bigO_aux (hf : f 0 = 0)
     (hO : (fun n ↦ ∑ k ∈ Icc 1 n, ‖f k‖) =O[atTop] fun n ↦ (n : ℝ) ^ r)
     (hr : 0 ≤ r) (hs : r < s.re) :

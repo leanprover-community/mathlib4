@@ -262,6 +262,7 @@ theorem mem_offDiag : x ∈ s.offDiag ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.
   rcases s with ⟨⟨s⟩, hs⟩
   exact hs.mem_offDiag
 
+-- TODO rename nonempty_diag
 @[simp, grind =]
 theorem diag_nonempty : s.diag.Nonempty ↔ s.Nonempty := by
   simp [diag]

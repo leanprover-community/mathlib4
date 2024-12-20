@@ -42,6 +42,7 @@ variable {n : ℕ}
 def Prime (p : ℕ) :=
   Irreducible p
 
+-- TODO rename natPrime
 theorem irreducible_iff_nat_prime (a : ℕ) : Irreducible a ↔ Nat.Prime a :=
   Iff.rfl
 

@@ -41,6 +41,7 @@ namespace Fin.Embedding
 
 variable {α : Type*} {m n : ℕ} {s : Set α}
 
+-- TODO rename
 theorem exists_embedding_disjoint_range_of_add_le_ENat_card
     [Finite s] (hs : s.ncard + n ≤ ENat.card α) :
     ∃ y : Fin n ↪ α, Disjoint s (range y) := by
@@ -59,12 +60,14 @@ theorem exists_embedding_disjoint_range_of_add_le_ENat_card
         ← ENat.card_eq_coe_natCard, ENat.coe_add]
   · exact ⟨valEmbedding.trans s.toFinite.infinite_compl.to_subtype.natEmbedding⟩
 
+-- TODO rename
 theorem exists_embedding_disjoint_range_of_add_le_Nat_card
     [Finite α] (hs : s.ncard + n ≤ Nat.card α) :
     ∃ y : Fin n ↪ α, Disjoint s (range y) := by
   apply exists_embedding_disjoint_range_of_add_le_ENat_card
   rwa [← ENat.coe_add, ENat.card_eq_coe_natCard, ENat.coe_le_coe]
 
+-- TODO rename
 theorem restrictSurjective_of_add_le_ENatCard (hn : m + n ≤ ENat.card α) :
     Surjective (fun (x : Fin (m + n) ↪ α) ↦ (Fin.castAddEmb n).trans x) := by
   intro x
@@ -75,6 +78,7 @@ theorem restrictSurjective_of_add_le_ENatCard (hn : m + n ≤ ENat.card α) :
   ext i
   simp [trans_apply, coe_castAddEmb, append]
 
+-- TODO rename
 theorem restrictSurjective_of_le_ENatCard (hmn : m ≤ n) (hn : n ≤ ENat.card α) :
     Function.Surjective (fun x : Fin n ↪ α ↦ (castLEEmb hmn).trans x) := by
   obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn

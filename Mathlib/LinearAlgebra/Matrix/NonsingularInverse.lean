@@ -122,6 +122,7 @@ def unitOfDetInvertible [Invertible A.det] : (Matrix n n α)ˣ :=
 theorem isUnit_iff_isUnit_det : IsUnit A ↔ IsUnit A.det := by
   simp only [← nonempty_invertible_iff_isUnit, (invertibleEquivDetInvertible A).nonempty_congr]
 
+-- TODO rename
 @[simp]
 theorem isUnits_det_units (A : (Matrix n n α)ˣ) : IsUnit (A : Matrix n n α).det :=
   isUnit_iff_isUnit_det _ |>.mp A.isUnit

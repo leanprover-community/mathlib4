@@ -41,6 +41,7 @@ namespace IsIdempotentElem
 section Mul
 variable [Mul M] {a : M}
 
+-- TODO rename
 lemma of_isIdempotent [Std.IdempotentOp (α := M) (· * ·)] (a : M) : IsIdempotentElem a :=
   Std.IdempotentOp.idempotent a
 

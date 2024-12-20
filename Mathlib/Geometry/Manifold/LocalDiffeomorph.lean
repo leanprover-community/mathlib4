@@ -75,7 +75,9 @@ section PartialDiffeomorph
 diffeomorphism `s → t` between open subsets of `M` and `N`, respectively.
 This is an auxiliary definition and should not be used outside of this file. -/
 structure PartialDiffeomorph extends PartialEquiv M N where
+  -- TODO rename
   open_source : IsOpen source
+  -- TODO rename
   open_target : IsOpen target
   contMDiffOn_toFun : ContMDiffOn I J n toFun source
   contMDiffOn_invFun : ContMDiffOn J I n invFun target

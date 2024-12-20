@@ -73,6 +73,7 @@ lemma characteristic_sub_characteristic_eq_proximity_sub_proximity (h : Meromorp
     characteristic f ⊤ - characteristic (f · - a₀) ⊤ = proximity f ⊤ - proximity (f · - a₀) ⊤ := by
   simp [← Pi.sub_def, characteristic, logCounting_sub_const h]
 
+-- TODO rename
 /--
 The characteristic function is even.
 -/

@@ -34,6 +34,7 @@ theorem irreducible_iff_isSimpleModule_asModule :
   rw [isSimpleModule_iff, isIrreducible_iff]
   exact OrderIso.isSimpleOrder_iff Subrepresentation.subrepresentationSubmoduleOrderIso
 
+-- TODO rename
 theorem is_simple_module_iff_irreducible_ofModule (M : Type*) [AddCommGroup M] [Module k[G] M] :
     IsSimpleModule k[G] M ↔ IsIrreducible (ofModule (k := k) (G := G) M) := by
   rw [isSimpleModule_iff, isIrreducible_iff]

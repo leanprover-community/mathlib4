@@ -745,6 +745,7 @@ instance (priority := 100) SecondCountableTopology.toHereditarilyLindelof
     use t, htc
     exact subset_of_subset_of_eq hcover (id htu.symm)
 
+-- TODO rename
 lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type*} (U : ι → Set X)
     (h : ∀ i, IsOpen (U i)) : ∃ t : Set ι, t.Countable ∧ ⋃ i ∈ t, U i = ⋃ i, U i := by
   have : IsLindelof (⋃ i, U i) := HereditarilyLindelofSpace.isLindelof (⋃ i, U i)
@@ -752,6 +753,7 @@ lemma eq_open_union_countable [HereditarilyLindelofSpace X] {ι : Type*} (U : ι
   use t, htc
   apply eq_of_subset_of_subset (iUnion₂_subset_iUnion (fun i ↦ i ∈ t) fun i ↦ U i) htu
 
+-- TODO rename
 lemma eq_open_union_nat [HereditarilyLindelofSpace X] {ι : Type*} [Nonempty ι] (U : ι → Set X)
     (h : ∀ i, IsOpen (U i)) : ∃ k : ℕ → ι, ⋃ n, U (k n) = ⋃ i, U i := by
   obtain ⟨t, htc, htu⟩ := eq_open_union_countable U h
@@ -763,11 +765,13 @@ lemma eq_open_union_nat [HereditarilyLindelofSpace X] {ι : Type*} [Nonempty ι]
     use k
     rwa [biUnion_range] at htu
 
+-- TODO rename
 lemma eq_closed_inter_countable [HereditarilyLindelofSpace X] {ι : Type*} (C : ι → Set X)
     (h : ∀ i, IsClosed (C i)) : ∃ t : Set ι, t.Countable ∧ ⋂ i ∈ t, C i = ⋂ i, C i := by
   conv in _ = _ => rw [← compl_inj_iff]; simp
   exact eq_open_union_countable (fun i ↦ (C i)ᶜ) (fun i ↦ (h i).isOpen_compl)
 
+-- TODO rename
 lemma eq_closed_inter_nat [HereditarilyLindelofSpace X] {ι : Type*} [Nonempty ι] (C : ι → Set X)
     (h : ∀ i, IsClosed (C i)) : ∃ k : ℕ → ι, ⋂ n, C (k n) = ⋂ i, C i := by
   conv in _ = _ => rw [← compl_inj_iff]; simp

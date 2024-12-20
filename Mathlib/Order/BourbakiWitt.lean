@@ -39,6 +39,7 @@ variable {α : Type*}
 structure NonemptyChain (α : Type*) [LE α] where
   /-- The underlying set of a nonempty chain -/
   carrier : Set α
+  -- TODO rename `nonempty'`
   Nonempty' : carrier.Nonempty
   isChain' : IsChain (· ≤ ·) carrier
 
@@ -76,6 +77,7 @@ variable [ChainCompletePartialOrder α] {x : α} {f : α → α}
 and is closed under applying `f` and `cSup`. -/
 structure IsAdmissible (x : α) (f : α → α) (s : Set α) : Prop where
   /-- The base point is the least element of an admissible set -/
+  -- TODO rename `isLeast_base`
   base_isLeast : IsLeast s x
   /-- The image of an admissible set under `f` is a subset of itself -/
   image_self_subset_self : f '' s ⊆ s

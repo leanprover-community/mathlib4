@@ -54,6 +54,7 @@ section Jordan
 
 variable {G α : Type*} [Group G] [MulAction G α]
 
+-- TODO rename normalClosure_stabilizer_eq_top
 /-- In a 2-transitive action, the normal closure of stabilizers is the full group. -/
 theorem normalClosure_of_stabilizer_eq_top (hsn' : 2 < ENat.card α)
     (hG' : IsMultiplyPretransitive G α 2) {a : α} :

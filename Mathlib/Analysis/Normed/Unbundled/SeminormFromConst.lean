@@ -50,6 +50,7 @@ section Ring
 
 variable {R : Type*} [CommRing R] (c : R) (f : RingSeminorm R)
 
+-- TODO rename
 /-- For a ring seminorm `f` on `R` and `c ∈ R`, the sequence given by `(f (x * c^n))/((f c)^n)`. -/
 def seminormFromConst_seq (x : R) : ℕ → ℝ := fun n ↦ f (x * c ^ n) / f c ^ n
 

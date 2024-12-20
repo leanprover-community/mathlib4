@@ -72,6 +72,7 @@ variable {G α : Type*} [Group G] [MulAction G α]
 variable {H β : Type*} [Group H] [MulAction H β]
 variable {σ : G → H} {f : α →ₑ[σ] β} {ι : Type*}
 
+-- TODO rename
 variable (ι) in
 /-- An injective equivariant map `α →ₑ[σ] β` induces
 an equivariant map on embedding types `(ι ↪ α) → (ι ↪ β)`. -/
@@ -82,11 +83,13 @@ def Function.Injective.mulActionHom_embedding (hf : Function.Injective f) :
   toFun x := ⟨f.toFun ∘ x.toFun, hf.comp x.inj'⟩
   map_smul' m x := by ext; simp [f.map_smul']
 
+-- TODO rename
 @[to_additive (attr := simp)]
 theorem Function.Injective.mulActionHom_embedding_apply
     (hf : Function.Injective f) {x : ι ↪ α} {i : ι} :
     hf.mulActionHom_embedding ι x i = f (x i) := rfl
 
+-- TODO rename. isInjective????
 @[to_additive]
 theorem Function.Injective.mulActionHom_embedding_isInjective
     (hf : Function.Injective f) :
@@ -98,6 +101,7 @@ theorem Function.Injective.mulActionHom_embedding_isInjective
 
 variable (hf' : Function.Bijective f)
 
+-- TODO rename
 @[to_additive]
 theorem Function.Bijective.mulActionHom_embedding_isBijective (hf : Function.Bijective f) :
     Function.Bijective (hf.injective.mulActionHom_embedding ι) := by

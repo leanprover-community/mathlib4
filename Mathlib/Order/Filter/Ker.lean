@@ -30,6 +30,7 @@ lemma ker_def (f : Filter α) : f.ker = ⋂ s ∈ f, s := sInter_eq_biInter
 @[simp] lemma mem_ker : a ∈ f.ker ↔ ∀ s ∈ f, a ∈ s := mem_sInter
 @[simp] lemma subset_ker : s ⊆ f.ker ↔ ∀ t ∈ f, s ⊆ t := subset_sInter_iff
 
+-- TODO rename
 /-- `Filter.principal` forms a Galois coinsertion with `Filter.ker`. -/
 def gi_principal_ker : GaloisCoinsertion (𝓟 : Set α → Filter α) ker :=
   GaloisConnection.toGaloisCoinsertion (fun s f ↦ by simp [principal_le_iff]) <| by

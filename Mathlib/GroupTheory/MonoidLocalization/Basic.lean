@@ -88,6 +88,7 @@ variable {N} in
 commutative triangle with the canonical map from `M` to its localization at `S` and
 some isomorphism between `N` and the localization. -/
 structure IsLocalizationMap (S : AddSubmonoid M) (f : M → N) where
+  -- TODO rename
   map_addUnits (y : S) : IsAddUnit (f y)
   surj (z : N) : ∃ x : M × S, z + f x.2 = f x.1
   exists_of_eq {x y} : f x = f y → ∃ c : S, c + x = c + y
@@ -115,6 +116,7 @@ commutative triangle with the canonical map from `M` to its localization at `S` 
 some isomorphism between `N` and the localization. -/
 @[to_additive (attr := mk_iff)]
 structure IsLocalizationMap (S : Submonoid M) (f : M → N) where
+  -- TODO rename
   map_units (y : S) : IsUnit (f y)
   surj (z : N) : ∃ x : M × S, z * f x.2 = f x.1
   exists_of_eq {x y} : f x = f y → ∃ c : S, c * x = c * y

@@ -53,7 +53,9 @@ variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}
 /-- Partial homeomorphisms, defined on open subsets of the space -/
 structure OpenPartialHomeomorph (X : Type*) (Y : Type*) [TopologicalSpace X]
     [TopologicalSpace Y] extends PartialEquiv X Y where
+  -- TODO rename
   open_source : IsOpen source
+  -- TODO rename
   open_target : IsOpen target
   continuousOn_toFun : ContinuousOn toFun source
   continuousOn_invFun : ContinuousOn invFun target

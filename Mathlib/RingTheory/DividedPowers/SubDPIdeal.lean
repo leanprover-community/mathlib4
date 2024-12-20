@@ -247,6 +247,7 @@ theorem coe_def (J : SubDPIdeal hI) : J.toIdeal = J.carrier := rfl
 @[simp]
 theorem memCarrier {s : SubDPIdeal hI} {x : A} : x ∈ s.carrier ↔ x ∈ s := Iff.rfl
 
+-- TODO rename isSubDPIdealsSubDPIdeal
 set_option linter.style.whitespace false in -- manual alignment is not recognised
 lemma toIsSubDPIdeal (J : SubDPIdeal hI) : IsSubDPIdeal hI J.carrier where
   isSubideal := J.isSubideal

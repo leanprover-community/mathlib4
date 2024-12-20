@@ -36,6 +36,7 @@ theorem DirectSum.SetLike.IsHomogeneous.mem_iff (hR : IsHomogeneous 𝒜 R) {a} 
 
 /-- A `HomogeneousSubsemiring` is a `Subsemiring` that satisfies `IsHomogeneous`. -/
 structure HomogeneousSubsemiring extends Subsemiring A where
+  -- TODO rename
   is_homogeneous' : IsHomogeneous 𝒜 toSubsemiring
 
 variable {𝒜}

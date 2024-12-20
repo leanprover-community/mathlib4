@@ -76,10 +76,12 @@ variable (A : Matrix n n α) (b : n → α)
 def cramerMap (i : n) : α :=
   (A.updateCol i b).det
 
+-- TODO rename
 theorem cramerMap_is_linear (i : n) : IsLinearMap α fun b => cramerMap A b i :=
   { map_add := det_updateCol_add _ _
     map_smul := det_updateCol_smul _ _ }
 
+-- TODO rename
 theorem cramer_is_linear : IsLinearMap α (cramerMap A) := by
   constructor <;> intros <;> ext i
   · apply (cramerMap_is_linear A i).1

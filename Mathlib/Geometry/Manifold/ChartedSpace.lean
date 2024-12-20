@@ -575,8 +575,11 @@ structure ChartedSpaceCore (H : Type*) [TopologicalSpace H] (M : Type*) where
   atlas : Set (PartialEquiv M H)
   /-- The preferred chart at each point -/
   chartAt : M → PartialEquiv M H
+  -- TODO rename
   mem_chart_source : ∀ x, x ∈ (chartAt x).source
+  -- TODO rename
   chart_mem_atlas : ∀ x, chartAt x ∈ atlas
+  -- TODO rename
   open_source : ∀ e e' : PartialEquiv M H, e ∈ atlas → e' ∈ atlas → IsOpen (e.symm.trans e').source
   continuousOn_toFun : ∀ e e' : PartialEquiv M H, e ∈ atlas → e' ∈ atlas →
     ContinuousOn (e.symm.trans e') (e.symm.trans e').source

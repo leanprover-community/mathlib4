@@ -142,6 +142,7 @@ theorem not_nonempty_iff : ¬Nonempty α ↔ IsEmpty α :=
 theorem not_isEmpty_iff : ¬IsEmpty α ↔ Nonempty α :=
   not_iff_comm.mp not_nonempty_iff
 
+-- TODO rename
 @[simp]
 theorem isEmpty_Prop {p : Prop} : IsEmpty p ↔ ¬p := by
   simp only [← not_nonempty_iff, nonempty_prop]

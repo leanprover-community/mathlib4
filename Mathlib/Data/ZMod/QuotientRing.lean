@@ -44,6 +44,7 @@ def quotientSpanNatEquivZMod : ℤ ⧸ Ideal.span {(n : ℤ)} ≃+* ZMod n :=
 def quotientSpanEquivZMod (a : ℤ) : ℤ ⧸ Ideal.span ({a} : Set ℤ) ≃+* ZMod a.natAbs :=
   (Ideal.quotEquivOfEq (span_natAbs a)).symm.trans (quotientSpanNatEquivZMod a.natAbs)
 
+-- TODO rename?
 @[simp]
 theorem quotientSpanNatEquivZMod_comp_Quotient_mk (n : ℕ) :
     (Int.quotientSpanNatEquivZMod n : _ →+* _).comp (Ideal.Quotient.mk (Ideal.span {(n : ℤ)})) =
@@ -54,6 +55,7 @@ theorem quotientSpanNatEquivZMod_comp_castRingHom (n : ℕ) :
     ((Int.quotientSpanNatEquivZMod n).symm : _ →+* _).comp (Int.castRingHom (ZMod n)) =
       Ideal.Quotient.mk (Ideal.span {(n : ℤ)}) := by ext; simp
 
+-- TODO rename?
 @[simp]
 theorem quotientSpanEquivZMod_comp_Quotient_mk (n : ℤ) :
     (Int.quotientSpanEquivZMod n : _ →+* _).comp (Ideal.Quotient.mk (Ideal.span {(n : ℤ)})) =

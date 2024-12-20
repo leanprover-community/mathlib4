@@ -71,6 +71,7 @@ lemma toClosedBall_divisor {r : ℝ} {f : ℂ → ℂ} (h : Meromorphic f) :
     (divisor f (closedBall 0 |r|)) = (locallyFinsuppWithin.toClosedBall r) (divisor f univ) := by
   simp_all [locallyFinsuppWithin.toClosedBall]
 
+-- TODO rename
 lemma toClosedBall_support_subset_closedBall {E : Type*} [NormedAddCommGroup E] {r : ℝ}
     (f : locallyFinsuppWithin (univ : Set E) ℤ) :
     (toClosedBall r f).support ⊆ closedBall 0 |r| := by
@@ -124,6 +125,7 @@ Evaluation of the logarithmic counting function at zero yields zero.
     logCounting D 0 = 0 := by
   simp [logCounting]
 
+-- TODO rename
 /--
 The logarithmic counting function is even.
 -/
@@ -278,6 +280,7 @@ Evaluation of the logarithmic counting function at zero yields zero.
     logCounting f a 0 = 0 := by
   by_cases h : a = ⊤ <;> simp [logCounting, h]
 
+-- TODO rename logCounting_zero_sub_logCounting_top
 /--
 The logarithmic counting function associated with the divisor of `f` is the difference between
 `logCounting f 0` and `logCounting f ⊤`.
@@ -299,6 +302,7 @@ The logarithmic counting function of the constant function zero is zero.
 @[simp] theorem logCounting_const_zero {e : WithTop E} :
     logCounting (0 : 𝕜 → E) e = 0 := logCounting_const
 
+-- TODO rename
 /--
 The logarithmic counting function is even.
 -/

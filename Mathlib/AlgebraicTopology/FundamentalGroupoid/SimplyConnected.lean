@@ -41,6 +41,7 @@ class SimplyConnectedSpace (X : Type*) [TopologicalSpace X] : Prop where
 @[deprecated (since := "2026-01-08")]
 alias simply_connected_def := simplyConnectedSpace_iff
 
+-- TODO rename simplyConnectedSpace
 theorem simply_connected_iff_unique_homotopic (X : Type*) [TopologicalSpace X] :
     SimplyConnectedSpace X ↔
       Nonempty X ∧ ∀ x y : X, Nonempty (Unique (Path.Homotopic.Quotient x y)) := by
@@ -83,6 +84,7 @@ end SimplyConnectedSpace
 
 /-- A space is simply connected iff it is path connected, and there is at most one path
   up to homotopy between any two points. -/
+-- TODO rename simplyConnectedSpace
 theorem simply_connected_iff_paths_homotopic :
     SimplyConnectedSpace Y ↔
       PathConnectedSpace Y ∧ ∀ x y : Y, Subsingleton (Path.Homotopic.Quotient x y) :=
@@ -91,6 +93,7 @@ theorem simply_connected_iff_paths_homotopic :
     exact ⟨inferInstance, fun x y => ⟨uniqueOfSubsingleton ⟦PathConnectedSpace.somePath x y⟧⟩⟩⟩
 
 /-- Another version of `simply_connected_iff_paths_homotopic` -/
+-- TODO rename simplyConnectedSpace
 theorem simply_connected_iff_paths_homotopic' :
     SimplyConnectedSpace Y ↔
       PathConnectedSpace Y ∧ ∀ {x y : Y} (p₁ p₂ : Path x y), Path.Homotopic p₁ p₂ := by
@@ -100,6 +103,7 @@ theorem simply_connected_iff_paths_homotopic' :
 open Path.Homotopic.Quotient in
 /-- A space is simply connected if and only if it is path-connected and every loop
     at any basepoint is null-homotopic (i.e., homotopic to the constant loop). -/
+-- TODO rename simplyConnectedSpace
 theorem simply_connected_iff_loops_nullhomotopic :
     SimplyConnectedSpace Y ↔
       PathConnectedSpace Y ∧ ∀ (x : Y) (γ : Path x x), Path.Homotopic γ (Path.refl x) := by

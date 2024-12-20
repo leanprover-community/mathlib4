@@ -258,6 +258,7 @@ def orderTop (x : R⟦Γ⟧) : WithTop Γ :=
 theorem orderTop_zero : orderTop (0 : R⟦Γ⟧) = ⊤ :=
   dif_pos rfl
 
+-- TODO rename capitalization
 @[simp]
 theorem orderTop_of_subsingleton [Subsingleton R] : x.orderTop = ⊤ :=
   (Subsingleton.eq_zero x) ▸ orderTop_zero
