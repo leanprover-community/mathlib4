@@ -61,6 +61,9 @@ theorem ι_comp_sigmaObjIso_inv (f : α → D ⥤ C) (d : D) (s : α) :
     Sigma.ι (fun s => (f s).obj d) s ≫ (sigmaObjIso f d).inv = (Sigma.ι f s).app d := by
   simp [sigmaObjIso]
 
+
+
+
 end Coproduct
 
 end CategoryTheory.Limits

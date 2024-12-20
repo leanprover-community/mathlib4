@@ -6,36 +6,70 @@ Authors: Sina Hazratpour
 
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Monoidal.Category
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.MonoCoprod
-import Mathlib.Tactic.TFAE
-
+import Mathlib.CategoryTheory.Monoidal.End
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.BinaryProducts
 
 /-!
 
-# Distributive categories
+# Distributive monoidal categories
 
 ## Main definitions
 
-A (finitary) distributive monoidal category is a monoidal category `C` with coproducts such that
-the canonical distributivity isomorphism `(X ⊗ Y) ⨿ (X ⊗ Z) ⟶ X ⊗ (Y ⨿ Z)` is an isomorphism
-for all objects `X`, `Y`, and `Z` in `C`.
+A monoidal category `C` tensor product is distributive if the tensor product
+preserves binary coproducts in each variable separately. More precisely,
 
-## Main results
+A left distributive monoidal category is a monoidal category `C` with coproducts such that
+the canonical left distributivity morphism (aka "left distributor")
+`(X ⊗ Y) ⨿ (X ⊗ Z) ⟶ X ⊗ (Y ⨿ Z)` is an isomorphism for all objects `X`, `Y`, and `Z` in `C`.
 
-- A monoidal category `C` tensor product is distributive if the tensor product preserves
-  coproducts in each variable separately.
+A right distributive monoidal category is a monoidal category `C` with
+coproducts such that the canonical right distributivity morphism (aka "right distributor")
+`(Y ⊗ X) ⨿ (Z ⊗ X) ⟶ (Y ⨿ Z) ⊗ X` is an isomorphism for all objects `X`, `Y`, and `Z` in `C`.
 
-## Monic coprojections
-conjecture: In the case of semicartesian monoidal categories, the coprojections are monic.
+A distributive monoidal category is a monoidal category that is both left and right distributive.
+
+A distributive monoidal category is finitary left (resp. right) distributive if moreover,
+`X ⊗ -` (resp. `- ⊗ X`) preserves the initial object for all `X`.
+
+## Examples
+
+- A symmetric monoidal category is left distributive if and only if it is right distributive.
+
+- A closed monoidal category is left distributive.
+
+- For a category `C` the category of endofunctors `C ⥤ C` is left distributive, but almost
+  never right distributive. The left distributivity is tentamount to the fact that the coproduct in
+  the functor categories is computed pointwise.
+
+- For a category `C` the category of finite-coproduct-preserving functors `C ⥤ C` is
+  distributive.
+
+## TODO
+
+Show that a distributive monoidal category whose unit is weakly terminal is finitary distributive.
+
+Provide more examples of the distributive monoidal structure on the following categories:
+
+- The category of abelian groups with the monoidal structure given by the tensor product of
+  abelian groups.
+- The category of R-modules with the monoidal structure given by the tensor product of modules.
+- The category of vector bundles over a topological space where the monoidal structure is given by
+  the tensor product of vector bundles.
+- The category of pointed types with the monoidal structure given by the smash product of
+  pointed types and the coproduct given by the wedge sum.
 
 ## References
-- when is a semicartesian monoidal category cartesian?
-https://mathoverflow.net/questions/348480/a-semicartesian-monoidal-category-with-diagonals-is-cartesian-proof
 
--
+[Hans-Joachim Baues, Mamuka Jibladze, Andy Tonks, first page of: Cohomology of
+ monoids in monoidal categories, in: Operads: Proceedings of Renaissance
+ Conferences, Contemporary Mathematics 202, AMS (1997) 137-166][]
+
 -/
 
 universe v v₂ u u₂
@@ -44,37 +78,121 @@ noncomputable section
 
 namespace CategoryTheory
 
-open Category MonoidalCategory Limits
+open Category MonoidalCategory Limits Iso
 
-variable (C : Type u) [Category.{v} C] [MonoidalCategory.{v} C]
+variable {C : Type u} [Category.{v} C] [MonoidalCategory.{v} C] [HasBinaryCoproducts C]
 
-class TensorCoprodLeftDistrib [HasBinaryCoproducts C] where
-  mor (X Y Z : C) : (X ⊗ Y) ⨿ (X ⊗ Z) ⟶ X ⊗ (Y ⨿ Z) :=
-    coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr)
-  iso {X Y Z : C} : IsIso (mor X Y Z)
+def distributorLeft (X Y Z : C) : (X ⊗ Y) ⨿ (X ⊗ Z) ⟶ X ⊗ (Y ⨿ Z) :=
+  coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr)
 
-class TensorCoprodRightDistrib [HasBinaryCoproducts C] where
-  mor (X Y Z : C) : (Y ⊗ X) ⨿ (Z ⊗ X) ⟶ (Y ⨿ Z) ⊗ X :=
-    coprod.desc (coprod.inl ▷ _) (coprod.inr ▷ _)
-  iso {X Y Z : C} : IsIso (mor X Y Z)
+def distributorRight (X Y Z : C) : (Y ⊗ X) ⨿ (Z ⊗ X) ⟶ (Y ⨿ Z) ⊗ X :=
+  coprod.desc (coprod.inl ▷ _) (coprod.inr ▷ _)
 
-/-- In a symmetric monoidal category, if the tensor product is left distributive over coproducts
-then it is right distributive over coproducts.-/
-instance tensor_coprod_right_distrib_of_tensor_coprod_left_distrib
-    [SymmetricCategory C] [HasBinaryCoproducts C] [TensorCoprodLeftDistrib C] :
-  TensorCoprodRightDistrib C where
-    mor (X Y Z : C) := coprod.desc (coprod.inl ▷ _) (coprod.inr ▷ _)
-    iso {X Y Z} := sorry
+/-- Notation for the left distributor. -/
+notation "∂L " => distributorLeft
 
-attribute [instance] tensor_coprod_right_distrib_of_tensor_coprod_left_distrib
+/-- Notation for the right distributor. -/
+notation "∂R " => distributorRight
 
-/-- A monoidal category is distributive if the tensor product is left and right distributive
-over coproducts.-/
-class MonoidalDistributive [HasBinaryCoproducts C] where
-  left_distrib : TensorCoprodLeftDistrib C
+@[reassoc (attr := simp)]
+lemma coprod_inl_comp_distributorLeft {X Y Z : C} : coprod.inl ≫ (∂L X Y Z) = (X ◁ coprod.inl) :=
+by
+  rw [distributorLeft, coprod.inl_desc]
+
+@[reassoc (attr := simp)]
+lemma coprod_inr_comp_distributorLeft {X Y Z : C} : coprod.inr ≫ (∂L X Y Z) = (X ◁ coprod.inr) :=
+by
+  rw [distributorLeft, coprod.inr_desc]
+
+@[reassoc (attr := simp)]
+lemma coprod_inl_comp_distributorRight {X Y Z : C} : coprod.inl ≫ (∂R X Y Z) = (coprod.inl ▷ X) :=
+by
+  rw [distributorRight, coprod.inl_desc]
+
+@[reassoc (attr := simp)]
+lemma coprod_inr_comp_distributorRight {X Y Z : C} : coprod.inr ≫ (∂R X Y Z) = (coprod.inr ▷ X) :=
+by
+  rw [distributorRight, coprod.inr_desc]
+
+/-- In a ymmetric monoidal category, the right distributor equals
+the left distributor up to braidings. -/
+@[reassoc (attr := simp)]
+lemma right_distributor_braiding_left_distributor [SymmetricCategory C]
+    {X Y Z : C} :
+  ∂R X Y Z ≫ (β_ (Y ⨿ Z) X).hom = (coprod.map (β_ Y X).hom (β_ Z X).hom) ≫ ∂L X Y Z := by
+    ext
+    · simp
+    · simp
+
+@[reassoc (attr := simp)]
+lemma left_distributor_braiding_right_distributor [SymmetricCategory C]
+    {X Y Z : C} :
+  ∂L X Y Z ≫ (β_ X (Y ⨿ Z)).hom = (coprod.map (β_ X Y).hom (β_ X Z).hom) ≫ ∂R X Y Z := by
+    ext
+    · simp
+    · simp
+
+variable (C)
+
+class MonoidalLeftDistributive where
+  isoLeft {X Y Z : C} : IsIso (∂L X Y Z) := by infer_instance
+
+class MonoidalFinitaryLeftDistributive
+extends MonoidalLeftDistributive C where
+  tensor_left_preserves_finite_colimits : ∀ X : C, PreservesFiniteColimits (tensorLeft X)
+
+class MonoidalRightDistributive where
+  isoRight {X Y Z : C} : IsIso (∂R X Y Z) := by infer_instance
+
+class MonoidalFinitaryRightDistributive
+extends MonoidalRightDistributive C where
+  tensor_right_preserves_finite_colimits : ∀ X : C, PreservesFiniteColimits (tensorRight X)
+
+class MonoidalDistibutive extends
+  MonoidalLeftDistributive C, MonoidalRightDistributive C
+
+class MonoidalFinitaryDistributive extends
+  MonoidalFinitaryLeftDistributive C, MonoidalFinitaryRightDistributive C
+
+namespace MonoidalDistributive
+
+variable {C} [MonoidalLeftDistributive C]
+
+attribute [local instance] MonoidalLeftDistributive.isoLeft
+
+/-- The composite  `(X ◁ coprod.inl) ≫ (inv (∂L X Y Z)) : X ⊗ Y ⟶ X ⊗ (Y ⨿ Z) ⟶ (X ⊗ Y) ⨿ (X ⊗ Z)`
+equals the left coprojection. -/
+@[simp]
+lemma whisker_inl_comp_inv_distributor
+    {X Y Z : C} :
+  (X ◁ coprod.inl) ≫ (inv (∂L X Y Z)) = coprod.inl := by
+    apply (cancel_iso_hom_right _ _ (asIso <| ∂L X Y Z)).mp
+    simp only [asIso_hom, assoc, IsIso.inv_hom_id, comp_id]
+    rw [distributorLeft, coprod.inl_desc]
+
+/-- In a distributive symmetric monoidal category, the right distributor is also an isomorphism. -/
+instance right_distributor_iso [SymmetricCategory C]
+    {X Y Z : C} :
+  IsIso (∂R X Y Z) :=
+    by
+      refine ⟨?_⟩
+      have : IsIso (∂L X Y Z) := by infer_instance
+      obtain ⟨inv, hom_inv_id, inv_hom_id⟩ := this
+      use (β_ (Y ⨿ Z) X).hom ≫  inv ≫ (coprod.map (β_ X Y).hom (β_ X Z).hom)
+      constructor
+      · slice_lhs 1 2 =>
+          rw [right_distributor_braiding_left_distributor]
+        slice_lhs 2 3 => rw [hom_inv_id]
+        simp only [id_comp, coprod.map_map, SymmetricCategory.symmetry, coprod.map_id_id]
+      · slice_lhs 3 4 =>
+          rw [← left_distributor_braiding_right_distributor]
+        slice_lhs 2 3 => rw [inv_hom_id]
+        simp only [id_comp, coprod.map_map, SymmetricCategory.symmetry, coprod.map_id_id]
+
+instance [SymmetricCategory C] : MonoidalDistibutive C where
 
 /-- A closed monoidal category is distributive. -/
-def leftDistribOfClosed [HasBinaryCoproducts C] [MonoidalClosed C] (X Y Z : C) :
+def isoDistributorOfClosed [HasBinaryCoproducts C] [MonoidalClosed C] (X Y Z : C) :
   (X ⊗ Y) ⨿ (X ⊗ Z) ≅ X ⊗ (Y ⨿ Z) where
     hom := coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr)
     inv := MonoidalClosed.uncurry
@@ -95,9 +213,26 @@ def leftDistribOfClosed [HasBinaryCoproducts C] [MonoidalClosed C] (X Y Z : C) :
         coprod.inr_desc, ← MonoidalClosed.curry_natural_left,
         comp_id]
 
-instance distributive_of_closed [HasBinaryCoproducts C] [MonoidalClosed C] : MonoidalDistributive C where
-  left_distrib := {
-    iso {X Y Z} := Iso.isIso_hom (leftDistribOfClosed C X Y Z)
-  }
+instance distributive_of_closed [HasBinaryCoproducts C] [MonoidalClosed C] :
+    MonoidalLeftDistributive C where
+  isoLeft {X Y Z} := Iso.isIso_hom (isoDistributorOfClosed X Y Z)
+
+attribute [local instance] endofunctorMonoidalCategory
+
+instance endofunctors :
+    MonoidalLeftDistributive (C ⥤ C) where
+  isoLeft := by
+    intro X Y Z
+    refine ⟨?_, ?_, ?_⟩
+    · exact {
+    app (c : C) :=
+    coprodObjIso Y Z (X.obj c) ≪≫ (coprodObjIso (X ⊗ Y) (X ⊗ Z) c).symm |>.hom
+    }
+    · ext c <;> simp [coprodObjIso]
+    · ext c
+      simp only [coprodObjIso, distributorLeft]
+      aesop
+
+end MonoidalDistributive
 
 end CategoryTheory

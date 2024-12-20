@@ -11,6 +11,7 @@ import Mathlib.CategoryTheory.Limits.MonoCoprod
 import Mathlib.Tactic.TFAE
 import Mathlib.CategoryTheory.Distributive.Monoidal
 import Mathlib.CategoryTheory.Monoidal.Category
+import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
 
 
 /-!
@@ -53,24 +54,36 @@ noncomputable section
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits MonoidalCategory MonoidalDistributive
 
+variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
+[HasBinaryCoproducts C] [MonoidalLeftDistributive C]
 
-#check MonoidalDistributive
+attribute [local instance] monoidalOfHasFiniteProducts
 
-variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C] [HasBinaryCoproducts C]
+attribute [local instance] MonoidalLeftDistributive.isoLeft
 
-#check SplitMono
 
 /-- The coproduct coprojections are monic in a distributive category. -/
-instance [MonoidalDistributive C]  : MonoCoprod C where
+instance [MonoidalLeftDistributive C]  : MonoCoprod C where
   binaryCofan_inl A B cocone hcolim := {
     right_cancellation := by
       intro Z f g he
       dsimp at f
       dsimp at g
-      --haveI : IsSplitMono (Z ◁ cocone.inl) := by
+      let u := inv (∂L Z A B)
+      haveI : IsIso u := by exact IsIso.inv_isIso
+      let q := (Z ◁ coprod.inl) ≫ u ≫ (coprod.desc (𝟙 _) (prod.fst ≫ prod.lift (𝟙 Z) f))
+      have : q = 𝟙 _ := by
+        unfold q
+        rw [← assoc]
+        simp [whisker_inl_comp_inv_distributor]
+        --simp [coprod.inl_desc]
 
+
+
+
+      --
 
   }
 
