@@ -100,4 +100,13 @@ lemma linTilted_apply_eq_ofReal_integral_cgf [IsProbabilityMeasure μ] (s : Set 
   rw [exp_cgf]
   exact ht
 
+lemma integral_linTilted_self [IsFiniteMeasure μ]
+    (ht : t ∈ interior {x | Integrable (fun ω ↦ rexp (x * X ω)) μ}):
+    (μ.linTilted X t)[X] = deriv (cgf X μ) t := by
+  rw [Measure.linTilted, integral_tilted] -- todo: add integral_linTilted
+  rw [deriv_cgf ht, ← integral_div]
+  congr with ω
+  rw [mgf, smul_eq_mul]
+  ring
+
 end ProbabilityTheory
