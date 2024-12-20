@@ -50,8 +50,15 @@ theorem stdBasisMatrix_zero (i : m) (j : n) : stdBasisMatrix i j (0 : α) = 0 :=
   simp
 
 @[simp]
-lemma transpose_stdBasisMatrix (i j : n) (a : α) :
+lemma transpose_stdBasisMatrix (i : m) (j : n) (a : α) :
     (stdBasisMatrix i j a)ᵀ = stdBasisMatrix j i a := by
+  unfold stdBasisMatrix
+  aesop
+
+@[simp]
+lemma map_stdBasisMatrix (i : m) (j : n) (a : α) {β : Type*} [Zero β]
+    {F : Type*} [FunLike F α β] [ZeroHomClass F α β] (f : F) :
+    (stdBasisMatrix i j a).map f = stdBasisMatrix i j (f a) := by
   unfold stdBasisMatrix
   aesop
 
