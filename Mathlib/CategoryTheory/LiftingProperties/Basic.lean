@@ -5,7 +5,6 @@ Authors: Jakob Scholbach, Joël Riou
 -/
 import Mathlib.CategoryTheory.CommSq
 
-
 /-!
 # Lifting properties
 
