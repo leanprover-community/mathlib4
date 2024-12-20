@@ -42,7 +42,7 @@ lemma toPEquiv_toMatrix_vecMul_apply [Fintype m] [DecidableEq n]
   induction' a using Pi.induction_add with f g hf hg x y
   · simp
   · simp [hf, hg, Matrix.add_vecMul]
-  · simp only [single_vecMul, PEquiv.toMatrix_apply, Option.mem_def, toPEquiv_eq_some_iff, mul_ite,
+  · simp [single_vecMul, PEquiv.toMatrix_apply, Option.mem_def, mul_ite,
       mul_one, mul_zero, Pi.single_apply, symm_apply_eq]
     simp_rw [eq_comm]
 
