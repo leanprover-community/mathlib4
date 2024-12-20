@@ -33,9 +33,9 @@ noncomputable def tensor :
   G := relations₁.G × relations₂.G
   R := Sum (relations₁.R × relations₂.G) (relations₁.G × relations₂.R)
   relation r := match r with
-    | .inl ⟨r₁, g₂⟩ => Finsupp.embDomain (Function.Embedding.sectl relations₁.G g₂)
+    | .inl ⟨r₁, g₂⟩ => Finsupp.embDomain (Function.Embedding.sectL relations₁.G g₂)
         (relations₁.relation r₁)
-    | .inr ⟨g₁, r₂⟩ => Finsupp.embDomain (Function.Embedding.sectr g₁ relations₂.G)
+    | .inr ⟨g₁, r₂⟩ => Finsupp.embDomain (Function.Embedding.sectR g₁ relations₂.G)
         (relations₂.relation r₂)
 
 namespace Solution
@@ -68,7 +68,7 @@ noncomputable def isPresentationCoreTensor :
         { var := fun g₂ ↦ s.var ⟨g₁, g₂⟩
           linearCombination_var_relation := fun r₂ ↦ by
             erw [← Finsupp.linearCombination_embDomain A
-              (Function.Embedding.sectr g₁ relations₂.G)]
+              (Function.Embedding.sectR g₁ relations₂.G)]
             exact s.linearCombination_var_relation (.inr ⟨g₁, r₂⟩) }
       linearCombination_var_relation := fun r₁ ↦ h₂.postcomp_injective (by
         ext g₂
