@@ -66,13 +66,21 @@ theorem extendScalars_of_isIntegral [Algebra.IsIntegral R S]
   have := Module.nontrivial R S
   exact hx.extendScalars inj
 
+protected theorem subalgebra (S : Subalgebra R A) [NoZeroDivisors A] [Algebra.IsAlgebraic R S] :
+    AlgebraicIndependent S x :=
+  hx.extendScalars Subtype.val_injective
+
+theorem subalgebra_of_isIntegral (S : Subalgebra R A) [NoZeroDivisors A] [Algebra.IsIntegral R S] :
+    AlgebraicIndependent S x :=
+  hx.extendScalars_of_isIntegral Subtype.val_injective
+
 theorem subalgebraAlgebraicClosure [IsDomain R] [NoZeroDivisors A] :
     AlgebraicIndependent (Subalgebra.algebraicClosure R A) x :=
-  hx.extendScalars Subtype.val_injective
+  hx.subalgebra _
 
 protected theorem integralClosure [NoZeroDivisors A] :
     AlgebraicIndependent (integralClosure R A) x :=
-  hx.extendScalars_of_isIntegral Subtype.val_injective
+  hx.subalgebra_of_isIntegral _
 
 omit hx in
 protected theorem algebraicClosure {F E : Type*} [Field F] [Field E] [Algebra F E] {x : ι → E}
