@@ -152,17 +152,9 @@ def coproductCoconeIsColimit : IsColimit (coproductCocone A B) where
     rw [Algebra.TensorProduct.liftEquiv_symm_apply_coe, Prod.mk.injEq]
     constructor
     · ext a
-      dsimp
-      rw [map_one, mul_one]
-      have : _ = s.inl := hm (Discrete.mk WalkingPair.left)
-      rw [←this]
-      rfl
+      simp [map_one, mul_one, ←hm (Discrete.mk WalkingPair.left)]
     · ext b
-      dsimp
-      rw [map_one, one_mul]
-      have : _ = s.inr := hm (Discrete.mk WalkingPair.right)
-      rw [←this]
-      rfl
+      simp [map_one, mul_one, ←hm (Discrete.mk WalkingPair.right)]
 
 /-- The limit cone of the tensor product `A ⊗[ℤ] B` in `CommRingCat`. -/
 def coproductColimitCocone : Limits.ColimitCocone (pair A B) :=
