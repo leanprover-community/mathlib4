@@ -110,6 +110,16 @@ def isoMk {f g : Over X} (hl : f.left ≅ g.left) (hw : hl.hom ≫ g.hom = f.hom
 -- Porting note: simp solves this; simpNF still sees them after `-simp` (?)
 attribute [-simp, nolint simpNF] isoMk_hom_right_down_down isoMk_inv_right_down_down
 
+@[reassoc (attr := simp)]
+lemma hom_left_inv_left {f g : Over X} (e : f ≅ g) :
+    e.hom.left ≫ e.inv.left = 𝟙 f.left := by
+  simp [← Over.comp_left]
+
+@[reassoc (attr := simp)]
+lemma inv_left_hom_left {f g : Over X} (e : f ≅ g) :
+    e.inv.left ≫ e.hom.left = 𝟙 g.left := by
+  simp [← Over.comp_left]
+
 section
 
 variable (X)
@@ -478,6 +488,16 @@ theorem isoMk_inv_right {f g : Under X} (hr : f.right ≅ g.right) (hw : f.hom �
     (isoMk hr hw).inv.right = hr.inv :=
   rfl
 
+@[reassoc (attr := simp)]
+lemma hom_right_inv_right {f g : Under X} (e : f ≅ g) :
+    e.hom.right ≫ e.inv.right = 𝟙 f.right := by
+  simp [← Under.comp_right]
+
+@[reassoc (attr := simp)]
+lemma inv_right_hom_right {f g : Under X} (e : f ≅ g) :
+    e.inv.right ≫ e.hom.right = 𝟙 g.right := by
+  simp [← Under.comp_right]
+
 section
 
 variable (X)
@@ -832,7 +852,8 @@ def ofDiagEquivalence (X : T × T) :
 
 /-- A version of `StructuredArrow.ofDiagEquivalence` with the roles of the first and second
 projection swapped. -/
-def ofDiagEquivalence' (X : T × T) :
+-- noncomputability is only for performance
+noncomputable def ofDiagEquivalence' (X : T × T) :
     StructuredArrow X (Functor.diag _) ≌ StructuredArrow X.1 (Under.forget X.2) :=
   (ofDiagEquivalence X).trans <|
     (ofStructuredArrowProjEquivalence (𝟭 T) X.1 X.2).trans <|
@@ -899,7 +920,8 @@ def ofDiagEquivalence (X : T × T) :
 
 /-- A version of `CostructuredArrow.ofDiagEquivalence` with the roles of the first and second
 projection swapped. -/
-def ofDiagEquivalence' (X : T × T) :
+-- noncomputability is only for performance
+noncomputable def ofDiagEquivalence' (X : T × T) :
     CostructuredArrow (Functor.diag _) X ≌ CostructuredArrow (Over.forget X.2) X.1 :=
   (ofDiagEquivalence X).trans <|
     (ofCostructuredArrowProjEquivalence (𝟭 T) X.1 X.2).trans <|

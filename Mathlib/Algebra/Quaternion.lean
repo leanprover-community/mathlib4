@@ -148,7 +148,7 @@ theorem coe_injective : Function.Injective (coe : R → ℍ[R,c₁,c₂]) := fun
 theorem coe_inj {x y : R} : (x : ℍ[R,c₁,c₂]) = y ↔ x = y :=
   coe_injective.eq_iff
 
--- Porting note: removed `simps`, added simp lemmas manually
+-- Porting note: removed `simps`, added simp lemmas manually. Should adjust `simps` to name properly
 instance : Zero ℍ[R,c₁,c₂] := ⟨⟨0, 0, 0, 0⟩⟩
 
 @[simp] theorem zero_re : (0 : ℍ[R,c₁,c₂]).re = 0 := rfl
@@ -169,7 +169,7 @@ instance : Inhabited ℍ[R,c₁,c₂] := ⟨0⟩
 section One
 variable [One R]
 
--- Porting note: removed `simps`, added simp lemmas manually
+-- Porting note: removed `simps`, added simp lemmas manually. Should adjust `simps` to name properly
 instance : One ℍ[R,c₁,c₂] := ⟨⟨1, 0, 0, 0⟩⟩
 
 @[simp] theorem one_re : (1 : ℍ[R,c₁,c₂]).re = 1 := rfl
@@ -190,7 +190,7 @@ end Zero
 section Add
 variable [Add R]
 
--- Porting note: removed `simps`, added simp lemmas manually
+-- Porting note: removed `simps`, added simp lemmas manually. Should adjust `simps` to name properly
 instance : Add ℍ[R,c₁,c₂] :=
   ⟨fun a b => ⟨a.1 + b.1, a.2 + b.2, a.3 + b.3, a.4 + b.4⟩⟩
 
@@ -223,7 +223,7 @@ end AddZeroClass
 section Neg
 variable [Neg R]
 
--- Porting note: removed `simps`, added simp lemmas manually
+-- Porting note: removed `simps`, added simp lemmas manually. Should adjust `simps` to name properly
 instance : Neg ℍ[R,c₁,c₂] := ⟨fun a => ⟨-a.1, -a.2, -a.3, -a.4⟩⟩
 
 @[simp] theorem neg_re : (-a).re = -a.re := rfl
@@ -718,6 +718,7 @@ end QuaternionAlgebra
 def Quaternion (R : Type*) [One R] [Neg R] :=
   QuaternionAlgebra R (-1) (-1)
 
+@[inherit_doc]
 scoped[Quaternion] notation "ℍ[" R "]" => Quaternion R
 
 /-- The equivalence between the quaternions over `R` and `R × R × R × R`. -/
@@ -743,8 +744,6 @@ instance {R : Type*} [One R] [Neg R] [Nontrivial R] : Nontrivial ℍ[R] :=
 namespace Quaternion
 
 variable {S T R : Type*} [CommRing R] (r x y : R) (a b : ℍ[R])
-
-export QuaternionAlgebra (re imI imJ imK)
 
 /-- Coercion `R → ℍ[R]`. -/
 @[coe] def coe : R → ℍ[R] := QuaternionAlgebra.coe
@@ -1191,7 +1190,7 @@ theorem normSq_le_zero : normSq a ≤ 0 ↔ a = 0 :=
   normSq_nonneg.le_iff_eq.trans normSq_eq_zero
 
 instance instNontrivial : Nontrivial ℍ[R] where
-  exists_pair_ne := ⟨0, 1, mt (congr_arg re) zero_ne_one⟩
+  exists_pair_ne := ⟨0, 1, mt (congr_arg QuaternionAlgebra.re) zero_ne_one⟩
 
 instance : NoZeroDivisors ℍ[R] where
   eq_zero_or_eq_zero_of_mul_eq_zero {a b} hab :=
@@ -1226,8 +1225,6 @@ instance instGroupWithZero : GroupWithZero ℍ[R] :=
     inv := Inv.inv
     inv_zero := by rw [instInv_inv, star_zero, smul_zero]
     mul_inv_cancel := fun a ha => by
-      -- Porting note: the aliased definition confuse TC search
-      letI : Semiring ℍ[R] := inferInstanceAs (Semiring ℍ[R,-1,-1])
       rw [instInv_inv, Algebra.mul_smul_comm (normSq a)⁻¹ a (star a), self_mul_star, smul_coe,
         inv_mul_cancel₀ (normSq_ne_zero.2 ha), coe_one] }
 

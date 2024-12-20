@@ -9,6 +9,7 @@ import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.Notation
 import Mathlib.LinearAlgebra.Matrix.StdBasis
 import Mathlib.RingTheory.AlgebraTower
+import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Linear maps and matrices
@@ -561,6 +562,11 @@ theorem LinearMap.toMatrix_one : LinearMap.toMatrix v₁ v₁ 1 = 1 :=
   LinearMap.toMatrix_id v₁
 
 @[simp]
+lemma LinearMap.toMatrix_singleton {ι : Type*} [Unique ι] (f : R →ₗ[R] R) (i j : ι) :
+    f.toMatrix (.singleton ι R) (.singleton ι R) i j = f 1 := by
+  simp [toMatrix, Subsingleton.elim j default]
+
+@[simp]
 theorem Matrix.toLin_one : Matrix.toLin v₁ v₁ 1 = LinearMap.id := by
   rw [← LinearMap.toMatrix_id v₁, Matrix.toLin_toMatrix]
 
@@ -764,7 +770,7 @@ theorem Matrix.toLinAlgEquiv_mul (A B : Matrix n n R) :
 theorem Matrix.toLin_finTwoProd_apply (a b c d : R) (x : R × R) :
     Matrix.toLin (Basis.finTwoProd R) (Basis.finTwoProd R) !![a, b; c, d] x =
       (a * x.fst + b * x.snd, c * x.fst + d * x.snd) := by
-  simp [Matrix.toLin_apply, Matrix.mulVec, Matrix.dotProduct]
+  simp [Matrix.toLin_apply, Matrix.mulVec, dotProduct]
 
 theorem Matrix.toLin_finTwoProd (a b c d : R) :
     Matrix.toLin (Basis.finTwoProd R) (Basis.finTwoProd R) !![a, b; c, d] =
@@ -793,7 +799,7 @@ namespace Algebra
 
 section Lmul
 
-variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
+variable {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
 variable {m : Type*} [Fintype m] [DecidableEq m] (b : Basis m R S)
 
 theorem toMatrix_lmul' (x : S) (i j) :
@@ -864,11 +870,21 @@ theorem smul_leftMulMatrix {G} [Group G] [DistribMulAction G S]
     Basis.repr_smul, Basis.smul_apply, LinearEquiv.trans_apply,
     DistribMulAction.toLinearEquiv_symm_apply, mul_smul_comm, inv_smul_smul]
 
+variable {A M n : Type*} [Fintype n] [DecidableEq n]
+  [CommSemiring A] [AddCommMonoid M] [Module R M] [Module A M] [Algebra R A] [IsScalarTower R A M]
+  (bA : Basis m R A) (bM : Basis n A M)
+
+lemma _root_.LinearMap.restrictScalars_toMatrix (f : M →ₗ[A] M) :
+    (f.restrictScalars R).toMatrix (bA.smulTower' bM) (bA.smulTower' bM) =
+      ((f.toMatrix bM bM).map (leftMulMatrix bA)).comp _ _ _ _ _ := by
+  ext; simp [toMatrix, Basis.repr, Algebra.leftMulMatrix_apply,
+    Basis.smulTower'_repr, Basis.smulTower'_apply, mul_comm]
+
 end Lmul
 
 section LmulTower
 
-variable {R S T : Type*} [CommRing R] [CommRing S] [Ring T]
+variable {R S T : Type*} [CommSemiring R] [CommSemiring S] [Semiring T]
 variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
 variable {m n : Type*} [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n]
 variable (b : Basis m R S) (c : Basis n S T)
@@ -900,9 +916,9 @@ end Algebra
 
 section
 
-variable {R : Type*} [CommRing R] {n : Type*} [DecidableEq n]
-variable {M M₁ M₂ : Type*} [AddCommGroup M] [Module R M]
-variable [AddCommGroup M₁] [Module R M₁] [AddCommGroup M₂] [Module R M₂]
+variable {R : Type*} [CommSemiring R] {n : Type*} [DecidableEq n]
+variable {M M₁ M₂ : Type*} [AddCommMonoid M] [Module R M]
+variable [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
 
 /-- The natural equivalence between linear endomorphisms of finite free modules and square matrices
 is compatible with the algebra structures. -/

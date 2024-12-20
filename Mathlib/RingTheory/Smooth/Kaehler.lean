@@ -347,7 +347,7 @@ def retractionKerCotangentToTensorEquivSection :
     fun ⟨l, hl⟩ ↦ ⟨e₁.symm.toLinearMap ∘ₗ l.restrictScalars P ∘ₗ e₂.symm.toLinearMap, ?_⟩, ?_, ?_⟩
   · rintro x y
     obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
-    simp only [← Ideal.Quotient.algebraMap_eq, IsScalarTower.algebraMap_smul]
+    simp only [P', ← Ideal.Quotient.algebraMap_eq, IsScalarTower.algebraMap_smul]
     exact (e₁.toLinearMap ∘ₗ l ∘ₗ e₂.toLinearMap).map_smul x y
   · ext1 x
     rw [H] at hl
