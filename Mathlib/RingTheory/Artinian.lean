@@ -429,8 +429,7 @@ lemma isField_of_isDomain [IsDomain R] :
   rw [mul_eq_zero, sub_eq_zero] at hy
   exact ⟨_, hy.resolve_left <| pow_ne_zero _ hx⟩
 
-instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] :
-    p.IsMaximal :=
+instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal :=
   Ideal.Quotient.maximal_of_isField _ (isField_of_isDomain _)
 
 lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=
