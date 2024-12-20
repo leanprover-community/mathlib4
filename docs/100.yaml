@@ -236,8 +236,10 @@
   author : Kexing Ying
 63:
   title  : Cantor’s Theorem
-  decl   : Cardinal.cantor
-  author : mathlib <!-- Mario and/or Johannes -->
+  decls  :
+    - Cardinal.cantor
+    - cantor_surjective
+  author : Johannes Hölzl and Mario Carneiro
 64:
   title  : L’Hopital’s Rule
   decl   : deriv.lhopital_zero_nhds
