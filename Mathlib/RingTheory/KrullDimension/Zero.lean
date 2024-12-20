@@ -174,6 +174,9 @@ lemma RingKrullDimZero.isField_of_isReduced [IsReduced R] [IsLocalRing R] : IsFi
   rw [IsLocalRing.isField_iff_maximalIdeal_eq, ← nilradical_eq_maximalIdeal,
     nilradical_eq_zero, Ideal.zero_eq_bot]
 
+instance PrimeSpectrum.unique_of_ringKrullDimZero [IsLocalRing R] : Unique (PrimeSpectrum R) :=
+  ⟨⟨IsLocalRing.closedPoint _⟩, fun _ ↦ PrimeSpectrum.ext (RingKrullDimZero.unique_isPrime _)⟩
+
 end IsLocalRing
 
 end CommSemiring
@@ -231,6 +234,10 @@ alias nilpotent_iff_mem_maximal_of_minimal := RingKrullDimZero.isNilpotent_iff_m
 alias nilpotent_iff_not_unit_of_minimal := RingKrullDimZero.isNilpotent_iff_mem_nonunits
 
 end Localization.AtPrime
+
+@[deprecated (since := "2024-12-20")]
+alias PrimeSpectrum.primeSpectrum_unique_of_localization_at_minimal :=
+  PrimeSpectrum.unique_of_ringKrullDimZero
 
 section Nilrad_max_localization
 

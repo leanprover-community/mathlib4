@@ -6,6 +6,7 @@ Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Localization.Ideal
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Noetherian.Basic
 
@@ -409,6 +410,11 @@ lemma isMax_iff {x : PrimeSpectrum R} :
   by_contra e
   obtain ⟨m, hm, hm'⟩ := Ideal.exists_le_maximal I e
   exact hx.not_lt (show x < ⟨m, hm.isPrime⟩ from hI.trans_le hm')
+
+/-- The closed point in the prime spectrum of a local ring. -/
+-- See `AlgebraicGeometry.PrimeSpectrum.Basic` for more API
+def _root_.IsLocalRing.closedPoint (R : Type*) [CommSemiring R] [IsLocalRing R] : PrimeSpectrum R :=
+  ⟨IsLocalRing.maximalIdeal R, inferInstance⟩
 
 end Order
 
