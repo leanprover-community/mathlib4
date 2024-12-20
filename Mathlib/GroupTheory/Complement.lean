@@ -614,6 +614,7 @@ theorem IsComplement'.index_eq_card (h : IsComplement' H K) : K.index = Nat.card
   (card_left_transversal h).symm
 
 /-- If `H` and `K` are complementary with `K` normal, then `G ⧸ K` is isomorphic to `H`. -/
+@[simps!]
 noncomputable def _root_.IsComplement'.QuotientMulEquiv [K.Normal] (h : H.IsComplement' K) :
     G ⧸ K ≃* H :=
   MulEquiv.symm
