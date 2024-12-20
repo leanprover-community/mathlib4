@@ -225,12 +225,13 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     · have pp : Prime n :=
         prime_def_le_sqrt.2
           ⟨n2, fun m m2 l d => not_lt_of_ge l <| lt_of_lt_of_le (sqrt_lt.2 h) (a m m2 d)⟩
-      simpa [h] using ⟨n2, dvd_rfl, fun m m2 d => le_of_eq ((dvd_prime_two_le pp m2).1 d).symm⟩
+      simpa only [k, h] using
+        ⟨n2, dvd_rfl, fun m m2 d => le_of_eq ((dvd_prime_two_le pp m2).1 d).symm⟩
     have k2 : 2 ≤ k := by
       subst e
       apply Nat.le_add_left
-    simp only [h, ↓reduceIte]
-    by_cases dk : k ∣ n <;> simp only [dk, ↓reduceIte]
+    simp only [k, h, ↓reduceIte]
+    by_cases dk : k ∣ n <;> simp only [k, dk, ↓reduceIte]
     · exact ⟨k2, dk, a⟩
     · refine
         have := minFac_lemma n k h
