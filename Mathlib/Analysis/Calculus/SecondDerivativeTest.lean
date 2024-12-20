@@ -34,22 +34,18 @@ section SecondDeriv
 
 variable {f : ℝ → ℝ} {x₀ : ℝ}
 
-/-- If the slope from a critical point `x₀` to `b > x₀` is positive then so is the derivative
- at `b`. -/
-lemma deriv_pos_of_lt_of_slope_pos {b : ℝ} (hb : x₀ < b) (hbf : 0 < slope (deriv f) x₀ b)
-    (hf : deriv f x₀ = 0) : 0 < deriv f b := by
+lemma pos_of_lt_of_slope_pos {b : ℝ} (hb : x₀ < b) (hbf : 0 < slope f x₀ b)
+    (hf : f x₀ = 0) : 0 < f b := by
   unfold slope at hbf
   rw [hf] at hbf
   simp_all
 
-/-- If the slope from a critical point `x₀` to `b < x₀` is positive then the derivative
- at `b` is negative. -/
-lemma deriv_neg_of_gt_of_slope_pos {b : ℝ} (hb : b < x₀) (hbf : 0 < slope (deriv f) x₀ b)
-    (hf : deriv f x₀ = 0) : deriv f b < 0 := by
+lemma neg_of_gt_of_slope_pos {b : ℝ} (hb : b < x₀) (hbf : 0 < slope f x₀ b)
+    (hf : f x₀ = 0) : f b < 0 := by
   unfold slope at hbf
   simp_rw [smul_eq_mul, hf] at hbf
   rw [mul_comm] at hbf
-  have : 0 < deriv f b / (b - x₀) := sub_zero (deriv f b) ▸ hbf
+  have : 0 < f b / (b - x₀) := sub_zero (f b) ▸ hbf
   contrapose this
   exact not_lt.mpr <| div_nonpos_of_nonneg_of_nonpos (not_lt.mp this) (by linarith)
 
@@ -65,38 +61,31 @@ theorem eventually_differentiable_of_deriv_nonzero {ε : ℝ}
     fun _ hb => differentiableAt_of_deriv_ne_zero <| hb.elim (hε₀ _) (hε₁ _)
 
 
-/-- If `f''(x) > 0` then `f' < 0` on an interval to the left of `x`. -/
-lemma deriv_neg_of_deriv_deriv_pos (hf : deriv (deriv f) x₀ > 0)
-    (hd : deriv f x₀ = 0) : ∃ u < x₀, ∀ b ∈ Ioo u x₀, deriv f b < 0 := by
+lemma neg_of_deriv_pos (hf : deriv f x₀ > 0)
+    (hd : f x₀ = 0) : ∃ u < x₀, ∀ b ∈ Ioo u x₀, f b < 0 := by
   obtain ⟨u,hu⟩ := (mem_nhdsWithin_Iio_iff_exists_mem_Ico_Ioo_subset
     (show x₀ - 1 < x₀ by simp)).mp
       <| nhds_left'_le_nhds_ne x₀ <| (tendsto_nhds.mp <| hasDerivAt_iff_tendsto_slope.mp
       (differentiableAt_of_deriv_ne_zero <| ne_of_gt hf).hasDerivAt) (Ioi 0) isOpen_Ioi hf
-  exact ⟨u, hu.1.2, fun b hb => deriv_neg_of_gt_of_slope_pos hb.2 (hu.2 hb) hd⟩
+  exact ⟨u, hu.1.2, fun b hb => neg_of_gt_of_slope_pos hb.2 (hu.2 hb) hd⟩
 
-
-/-- If `f''(x) > 0` then `f' > 0` on an interval to the right of `x`. -/
-lemma deriv_pos_of_deriv_deriv_pos (hf : deriv (deriv f) x₀ > 0)
-    (hd : deriv f x₀ = 0) : ∃ u > x₀, ∀ b ∈ Ioo x₀ u, deriv f b > 0 := by
+lemma pos_of_deriv_pos (hf : deriv f x₀ > 0)
+    (hd : f x₀ = 0) : ∃ u > x₀, ∀ b ∈ Ioo x₀ u, f b > 0 := by
   obtain ⟨u,hu⟩ := (mem_nhdsWithin_Ioi_iff_exists_mem_Ioc_Ioo_subset (show x₀ < x₀ + 1 by simp)).mp
     <| nhds_right'_le_nhds_ne x₀ <|(tendsto_nhds.mp <| hasDerivAt_iff_tendsto_slope.mp
     (differentiableAt_of_deriv_ne_zero <| ne_of_gt hf).hasDerivAt) (Ioi 0) isOpen_Ioi hf
-  exact ⟨u, hu.1.1, fun b hb => deriv_pos_of_lt_of_slope_pos hb.1 (hu.2 hb) hd⟩
+  exact ⟨u, hu.1.1, fun b hb => pos_of_lt_of_slope_pos hb.1 (hu.2 hb) hd⟩
 
-/-- If `f''(x) > 0` then `f'` changes sign at `x`.
-This lemma applies to functions like `x^2 + 1[x ≥ 0]` as well as twice differentiable
-functions.
--/
-lemma deriv_neg_pos_of_deriv_deriv_pos
-    (hf : deriv (deriv f) x₀ > 0) (hd : deriv f x₀ = 0) :
-    ∃ ε > 0, (∀ b ∈ Ioo (x₀-ε) x₀, deriv f b < 0) ∧
-              ∀ b ∈ Ioo x₀ (x₀ + ε), 0 < deriv f b := by
-  obtain ⟨u₀,hu₀⟩ := deriv_pos_of_deriv_deriv_pos hf hd
+lemma neg_pos_of_deriv_pos
+    (hf : deriv (f) x₀ > 0) (hd : f x₀ = 0) :
+    ∃ ε > 0, (∀ b ∈ Ioo (x₀-ε) x₀, f b < 0) ∧
+              ∀ b ∈ Ioo x₀ (x₀ + ε), 0 < f b := by
+  obtain ⟨u₀,hu₀⟩ := pos_of_deriv_pos hf hd
   have h₀ : 2 * (x₀ + 2⁻¹ * (u₀ - x₀)) < 2 * u₀ := by
     ring_nf
     rw [mul_two, add_lt_add_iff_right]
     exact hu₀.1
-  obtain ⟨u₁,hu₁⟩ := deriv_neg_of_deriv_deriv_pos hf hd
+  obtain ⟨u₁,hu₁⟩ := neg_of_deriv_pos hf hd
   have h₁ : x₀ - (x₀ - u₁) < x₀ - 2⁻¹ * (x₀ - u₁) := sub_lt_sub_left
     ((inv_mul_lt_iff₀ zero_lt_two).mpr <|lt_two_mul_self <|sub_pos.mpr hu₁.1) x₀
   use 2⁻¹ * min (u₀ - x₀) (x₀ - u₁)
@@ -114,11 +103,14 @@ lemma deriv_neg_pos_of_deriv_deriv_pos
              _ < _                    := by rw[← mul_lt_mul_left zero_lt_two]; exact h₀⟩
 
 
-/-- The Second-Derivative Test from calculus, minimum version. -/
+/-- The Second-Derivative Test from calculus, minimum version.
+This version applies to functions like `x^2 + 1[x ≥ 0]` as well as twice differentiable
+functions.
+ -/
 theorem isLocalMin_of_deriv_deriv_pos
     (hf : deriv (deriv f) x₀ > 0) (hd : deriv f x₀ = 0)
     (hc : ContinuousAt f x₀) : IsLocalMin f x₀ := by
-  obtain ⟨ε,hε⟩    := deriv_neg_pos_of_deriv_deriv_pos hf hd
+  obtain ⟨ε,hε⟩    := neg_pos_of_deriv_pos hf hd
   obtain ⟨p,hp⟩    := eventually_differentiable_of_deriv_nonzero hε.1
     (fun b hb => ne_of_lt <| hε.2.1 b hb) (fun b hb => ne_of_gt <| hε.2.2 b hb)
   obtain ⟨l,u,hlu⟩ := mem_nhds_iff_exists_Ioo_subset.mp hp.1
@@ -137,5 +129,33 @@ theorem isLocalMin_of_deriv_deriv_pos
       hb.1 <| ne_of_gt hx.1⟩).differentiableWithinAt)
     (fun _ hx => le_of_lt <| hε.2.1 _ ⟨by simp only [mem_Ioo] at hx;linarith, hx.2⟩)
     (fun _ hx => le_of_lt <| hε.2.2 _ ⟨hx.1, by simp only [mem_Ioo] at hx;linarith⟩)
+
+lemma pos_of_slope_pos {b : ℝ} (hb : x₀ < b) (hbf : 0 < slope f x₀ b)
+    (hf : f x₀ = 0) : 0 < f b := by
+  simp_all [slope, hf]
+
+lemma neg_of_slope_pos {b : ℝ} (hb : b < x₀) (hbf : 0 < slope f x₀ b)
+    (hf : f x₀ = 0) : f b < 0 := by
+  simp_all [slope, hf]
+  exact neg_of_mul_pos_right hbf <| le_of_lt <| inv_lt_zero.mpr <| by linarith
+
+lemma neg_of_slope_neg {b : ℝ} (hb : b < x₀) (hbf : 0 < slope f x₀ b)
+    (hf : f x₀ = 0) : f b < 0 := by
+  simp_all [slope]
+  exact neg_of_mul_pos_right hbf <| le_of_lt <| inv_lt_zero.mpr <| by linarith
+
+open SignType in
+lemma eventually_nhdsWithin_sign_eq_of_deriv_pos (hf : deriv f x₀ > 0) (hx : f x₀ = 0) :
+    ∀ᶠ x in 𝓝 x₀, sign (f x) = sign (x - x₀) := by
+  rw [← nhdsWithin_compl_singleton_sup_pure x₀, eventually_sup]
+  refine ⟨?_, by simpa⟩
+  have h_tendsto := hasDerivAt_iff_tendsto_slope.mp
+    (differentiableAt_of_deriv_ne_zero <| ne_of_gt hf).hasDerivAt
+  filter_upwards [(h_tendsto.eventually <| eventually_gt_nhds hf),
+    self_mem_nhdsWithin] with x hx₀ hx₁
+  rw [mem_compl_iff, mem_singleton_iff, ← Ne.eq_def] at hx₁
+  obtain (hx' | hx') := hx₁.lt_or_lt
+  · rw [sign_neg (neg_of_slope_pos hx' hx₀ hx), sign_neg (sub_neg.mpr hx')]
+  · rw [sign_pos (pos_of_slope_pos hx' hx₀ hx), sign_pos (sub_pos.mpr hx')]
 
 end SecondDeriv
