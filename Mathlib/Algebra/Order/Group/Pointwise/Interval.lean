@@ -630,6 +630,7 @@ end PosMul
 variable {G₀ : Type*} [GroupWithZero G₀] [PartialOrder G₀] [PosMulReflectLT G₀]
   [MulPosReflectLT G₀] {a : G₀}
 
+-- TODO rename
 /-- The (pre)image under `inv` of `Ioo 0 a` is `Ioi a⁻¹`. -/
 theorem inv_Ioo_0_left (ha : 0 < a) : (Ioo 0 a)⁻¹ = Ioi a⁻¹ := by
   ext x
@@ -861,6 +862,7 @@ theorem image_const_mul_uIcc (a b c : α) : (a * ·) '' [[b, c]] = [[a * b, a * 
 theorem image_div_const_uIcc (a b c : α) : (fun x => x / a) '' [[b, c]] = [[b / a, c / a]] := by
   simp only [div_eq_mul_inv, image_mul_const_uIcc]
 
+-- TODO rename
 /-- The (pre)image under `inv` of `Ioo a 0` is `Iio a⁻¹`. -/
 theorem inv_Ioo_0_right {a : α} (ha : a < 0) : (Ioo a 0)⁻¹ = Iio a⁻¹ := by
   ext x
