@@ -133,17 +133,16 @@ namespace Algebra.TensorProduct
 variable (R S T)
 
 /-- Given `R`-algebras `S,T`, there is a natural `R`-linear isomorphism from `S ⊗[R] T` to
-`S' ⊗[R] T'` where `S',T'` are images of `S,T` in `S ⊗[R] T`.
+`S' ⊗[R] T'` where `S',T'` are the images of `S,T` in `S ⊗[R] T` respectively.
 This is promoted to an `R`-algebra isomorphism `Algebra.TensorProduct.algEquivIncludeRange`. -/
 def linearEquivIncludeRange :
     S ⊗[R] T ≃ₗ[R] (includeLeft : S →ₐ[R] S ⊗[R] T).range ⊗[R]
       (includeRight : T →ₐ[R] S ⊗[R] T).range := .ofLinear
   (_root_.TensorProduct.map
     includeLeft.toLinearMap.rangeRestrict includeRight.toLinearMap.rangeRestrict)
-  (Submodule.mulMap (LinearMap.range includeLeft) (LinearMap.range includeRight))
-  (_root_.TensorProduct.ext' fun ⟨x, hx⟩ ⟨y, hy⟩ ↦ by
-    obtain ⟨x', rfl : x' ⊗ₜ 1 = x⟩ := hx
-    obtain ⟨y', rfl : 1 ⊗ₜ y' = y⟩ := hy
+  ((LinearMap.range includeLeft).mulMap (LinearMap.range includeRight))
+  (_root_.TensorProduct.ext' <| by
+    rintro ⟨x', x, rfl : x ⊗ₜ 1 = x'⟩ ⟨y', y, rfl : 1 ⊗ₜ y = y'⟩
     rw [LinearMap.comp_apply, LinearMap.id_apply]
     erw [Submodule.mulMap_tmul]
     rw [tmul_mul_tmul, mul_one, one_mul, _root_.TensorProduct.map_tmul]
@@ -161,7 +160,7 @@ theorem linearEquivIncludeRange_toLinearMap :
 
 theorem linearEquivIncludeRange_symm_toLinearMap :
     (linearEquivIncludeRange R S T).symm.toLinearMap =
-      Submodule.mulMap (LinearMap.range includeLeft) (LinearMap.range includeRight) := rfl
+      (LinearMap.range includeLeft).mulMap (LinearMap.range includeRight) := rfl
 
 @[simp]
 theorem linearEquivIncludeRange_tmul (x y) :
@@ -174,7 +173,7 @@ theorem linearEquivIncludeRange_symm_tmul (x y) :
     (linearEquivIncludeRange R S T).symm (x ⊗ₜ[R] y) = x.1 * y.1 := rfl
 
 /-- Given `R`-algebras `S,T`, there is a natural `R`-algebra isomorphism from `S ⊗[R] T` to
-`S' ⊗[R] T'` where `S',T'` are images of `S,T` in `S ⊗[R] T`. -/
+`S' ⊗[R] T'` where `S',T'` are the images of `S,T` in `S ⊗[R] T` respectively. -/
 def algEquivIncludeRange :
     S ⊗[R] T ≃ₐ[R] (includeLeft : S →ₐ[R] S ⊗[R] T).range ⊗[R]
       (includeRight : T →ₐ[R] S ⊗[R] T).range :=
@@ -212,8 +211,7 @@ def Subalgebra.mulMap : A ⊗[R] B →ₐ[R] S := Algebra.TensorProduct.productM
 variable (R S T) in
 theorem Algebra.TensorProduct.algEquivIncludeRange_symm_toAlgHom :
     (algEquivIncludeRange R S T).symm.toAlgHom =
-      Subalgebra.mulMap (includeLeft : S →ₐ[R] S ⊗[R] T).range
-        (includeRight : T →ₐ[R] S ⊗[R] T).range := rfl
+      (includeLeft : S →ₐ[R] S ⊗[R] T).range.mulMap includeRight.range := rfl
 
 namespace Subalgebra
 
