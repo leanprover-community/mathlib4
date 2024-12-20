@@ -751,7 +751,7 @@ noncomputable def iAlls [Finite γ] (f : α → β ⊕ γ)
   (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).alls
 
 /-- Given a map `f : α → β ⊕ γ`, `iExs f φ` transforms a `L.Formula α`
-into a `L.Formula β` by renaming variables with the map `f` and then universally
+into a `L.Formula β` by renaming variables with the map `f` and then existentially
 quantifying over all variables `Sum.inr _`. -/
 noncomputable def iExs [Finite γ] (f : α → β ⊕ γ)
     (φ : L.Formula α) : L.Formula β :=
