@@ -17,7 +17,7 @@ classes of morphisms named "fibrations", "cofibrations" and "weak equivalences"
 with satisfy the axioms of (closed) model categories.
 
 As a given category `C` may have several model category structures, it is advisable
-to define only local instances of `ModelCategory`.
+to define only local instances of `ModelCategory`, or to set these instances on type synonyms.
 
 ## References
 * [Daniel G. Quillen, Homotopical algebra][Quillen1967]
