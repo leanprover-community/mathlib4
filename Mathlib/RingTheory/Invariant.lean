@@ -11,7 +11,7 @@ import Mathlib.RingTheory.Ideal.Over
 
 In algebraic number theory, if `L/K` is a finite Galois extension of number fields, with rings of
 integers `𝓞L/𝓞K`, and if `q` is prime ideal of `𝓞L` lying over a prime ideal `p` of `𝓞K`, then
-there exists unique a **Frobenius element** `Frob p` in `Gal(L/K)` with the property that
+there exists a **Frobenius element** `Frob p` in `Gal(L/K)` with the property that
 `Frob p x ≡ x ^ #(𝓞K/p) (mod q)` for all `x ∈ 𝓞L`.
 
 This file proves the existence of Frobenius elements in a more general setting.
@@ -100,7 +100,7 @@ theorem isIntegral [Finite G] : Algebra.IsIntegral A B := by
     (charpoly_mem_lifts A B G b) (monic_charpoly G b)
   exact ⟨p, hp2, by rw [← eval_map, hp1, eval_charpoly]⟩
 
-/-- `G` acts transitively on primes ideals of `B` above a given prime ideal of `A`. -/
+/-- `G` acts transitively on the prime ideals of `B` above a given prime ideal of `A`. -/
 theorem exists_smul_of_under_eq [Finite G] [SMulCommClass G A B]
     (P Q : Ideal B) [hP : P.IsPrime] [hQ : Q.IsPrime]
     (hPQ : P.under A = Q.under A) :
@@ -228,9 +228,7 @@ private theorem fixed_of_fixed1 [NoZeroSMulDivisors (B ⧸ Q) L] (f : L ≃ₐ[K
     f (algebraMap (B ⧸ Q) L b) = (algebraMap (B ⧸ Q) L b) := by
   classical
   cases nonempty_fintype G
-  revert hx
   obtain ⟨b₀, rfl⟩ := Ideal.Quotient.mk_surjective b
-  intro hx
   rw [← Ideal.Quotient.algebraMap_eq]
   obtain ⟨a, b, ha1, ha2, hb⟩ := fixed_of_fixed1_aux2 G Q b₀ (fun g hg ↦ hx ⟨g, hg⟩)
   obtain ⟨M, key⟩ := (mem_lifts _).mp (Algebra.IsInvariant.charpoly_mem_lifts A B G b)
