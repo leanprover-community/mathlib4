@@ -711,7 +711,7 @@ end comap
 section NormedLinearOrderedField_comap
 
 variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
-variable {E : Type*} [NormedAddCommGroup E]  [NormedSpace K E] [FiniteDimensional K E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
   [ProperSpace E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]  [FiniteDimensional K F]
   [ProperSpace F]

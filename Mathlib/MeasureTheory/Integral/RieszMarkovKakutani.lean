@@ -150,7 +150,7 @@ lemma exists_continuous_add_one_of_isCompact_nnreal
     rw [← subset_compl_iff_disjoint_right, ← compl_compl s₀, compl_subset_iff_union] at disj
     have h : x ∈ s₀ᶜ ∨ x ∈ s₁ᶜ := by
       rw [← mem_union, disj]
-      trivial
+      exact mem_univ _
     apply Or.elim h
     · intro h0
       use 0
@@ -219,7 +219,7 @@ lemma rieszContentAux_union {K₁ K₂ : TopologicalSpace.Compacts X}
   have hsuppf : ∀ x ∈ K₁ ⊔ K₂, x ∈ support f := by
     intro x hx
     rw [mem_support]
-    exact Ne.symm (ne_of_lt <| lt_of_lt_of_le (zero_lt_one' ℝ≥0) (hf x hx))
+    exact ne_of_gt <| lt_of_lt_of_le (zero_lt_one' ℝ≥0) (hf x hx)
   have hsubsuppf : (K₁ : Set X) ∪ (K₂ : Set X) ⊆ tsupport f := subset_trans hsuppf subset_closure
   obtain ⟨g₁, g₂, hg₁, hg₂, sum_g⟩ := exists_continuous_add_one_of_isCompact_nnreal K₁.isCompact'
     K₂.isCompact' f.hasCompactSupport'.isCompact disj hsubsuppf

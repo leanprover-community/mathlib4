@@ -567,7 +567,7 @@ lemma getVert_eq_support_get? {u v n} (p : G.Walk u v) (h2 : n ≤ p.length) :
     · simp only [hn, getVert_zero, List.length_cons, Nat.zero_lt_succ, List.getElem?_eq_getElem,
       List.getElem_cons_zero]
     · push_neg at hn
-      nth_rewrite 2 [show n = (n - 1) + 1 from by omega]
+      nth_rewrite 2 [← Nat.sub_one_add_one hn]
       rw [Walk.getVert_cons q h hn, List.getElem?_cons_succ]
       exact getVert_eq_support_get? q (Nat.sub_le_of_le_add (Walk.length_cons _ _ ▸ h2))
 
