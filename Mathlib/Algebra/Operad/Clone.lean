@@ -1,7 +1,25 @@
+/-
+Copyright (c) 2024 Alex Meiburg. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alex Meiburg
+-/
 import Mathlib.Algebra.Operad.Operad
-import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Algebra.Order.Ring.Nat
 
-/-! TODO header-/
+/-! This file defines `Clone`s, which represent functions (or generally, some sort of composable
+  objects) of different arities that can be "superposed": if the type is indiced as `A : ℕ → Type*`,
+  the superposition has signature `A n → (Fin n → A m) → A m`. This is captured in the typeclass
+  `Superposable A`.
+
+  A clone must have a `1` element (an arity-1 identity), projection functions of all arities and
+  indices, and superposition must be associative.
+
+  The main result in this file is that Clones also admit a `SymmOperad` structure, as given in the
+  `clone_toSymmOperad` instance. This is defined in terms of the two-function `cloneCompose`
+  operation, which plugs one object into the other and projectors at all other indices.
+
+  Interesting examples of Clones are given in `Mathlib.Algebra.Operad.Instances`.
+-/
 
 /- An abstract clone is a set of operations that have composition and all projections.
   Here we define it with the multi-argument composition, typically called "superposition".
@@ -195,6 +213,7 @@ theorem cloneCompse_comm (a b c : Sigma A) (p1 p2 : Fin a.fst) (hp: p1 < p2)
  (nonsymmetric) `Operad` instance; extending it to `SymmOperad` requires some annoying lemmas with
   permutations. -/
 instance clone_toSymmOperad [Clone A] : SymmOperad A where
+
   compose := cloneCompose
 
   id_right a p := by
@@ -220,7 +239,6 @@ instance clone_toSymmOperad [Clone A] : SymmOperad A where
     · omega
     · exact cloneCompse_comm a b c p1 p2 hp _ _ rfl rfl
 
-  -- The following would be needed to improve this from `extends Operad` to `extends SymmOperad`
   act_at := fun i ↦ {
     smul s x := x ∘⚟ fun k ↦ proj i (s k),
     one_smul := proj_right,
@@ -228,6 +246,7 @@ instance clone_toSymmOperad [Clone A] : SymmOperad A where
       simp_rw [HSMul.hSMul, superpose_assoc, proj_left]
       rfl
     }
+
   perm_left {n m} s k hn x y := by
     dsimp [MultiComposable.compose, cloneCompose, HSMul.hSMul]
     rw [superpose_assoc, superpose_assoc]
@@ -242,18 +261,21 @@ instance clone_toSymmOperad [Clone A] : SymmOperad A where
       rename_i h₂
       simp_rw [clonePadTo, superpose_assoc, h₁, proj_left]
       congr! with w
-      sorry
+      simp_rw [h₂, PermFinPadAt_eq_position, Equiv.apply_symm_apply]
     · have h₂ : z.val ≠ s.symm k := by
         rename_i h₁
         contrapose! h₁
         rw [← Fin.ext_iff] at h₁ ⊢
         exact (Equiv.apply_eq_iff_eq_symm_apply s).mpr h₁
       simp_rw [dif_neg h₂]
-      split <;> split <;> rw [proj_left] <;> congr! 2
-      · sorry
-      · sorry
-      · sorry
-      · sorry
+      split <;> split <;> rw [proj_left] <;> congr! 2 <;> symm
+      focus apply PermFinPadAt_lt_lt_position
+      rotate_right; focus apply PermFinPadAt_gt_gt_position
+      rotate_right; focus apply PermFinPadAt_lt_gt_position
+      rotate_right; focus apply PermFinPadAt_gt_lt_position
+      all_goals try rw [Equiv.apply_symm_apply]
+      all_goals omega
+
   perm_right {n m} s k x y := by
     dsimp [MultiComposable.compose, cloneCompose, HSMul.hSMul]
     rw [superpose_assoc]
@@ -264,9 +286,12 @@ instance clone_toSymmOperad [Clone A] : SymmOperad A where
       subst z
       simp_rw [clonePadTo, superpose_assoc, proj_left]
       congr! with z
-      sorry
-    · split <;> rw [proj_left] <;> congr! 2
-      · sorry
-      · sorry
+      symm
+      apply PermFinPadTo_eq_position
+    · split <;> rw [proj_left] <;> congr! 2 <;> symm
+      · apply PermFinPadTo_lt_position
+        assumption
+      · apply PermFinPadTo_gt_position
+        omega
 
 end Clone

@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Alex Meiburg. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alex Meiburg
+-/
 import Mathlib.Data.Fin.Basic
 import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Data.Fintype.Card
@@ -7,9 +12,12 @@ This file defines various operations on permutations, necessary for working with
 They seem unlikely to be of much use elsewhere, hence why they are all under the Operad folder.
 
 Definitions:
-  - PermFinPadLeftRight
-  - PermFinPadTo
-  - PermFinPadAt
+  - `PermFinPadLeftRight`: Extend a permutation on `Fin n` to a permutation on `Fim (m+n+k)`,
+    by acting as the identity on the first m and last k elements.
+  - `PermFinPadTo`: HEq to `PermfinPadLeftRight`, but with a different type. It
+    starts the permutation on `Fin m` at location k out of n, and creates a perm of length `n+m-1`.
+  - `PermFinPadAt`: Takes the permutation on `Fim m` and "expands" location k out of m, into a
+    block of n indices that get permuted together, and creates a perm of length `m+n-1`.
 -/
 open Equiv
 
@@ -27,12 +35,49 @@ def PermFinPadLeftRight {n : ℕ} (p : Perm (Fin n)) (m k : ℕ) : (Perm (Fin (m
       omega
     ⟩
 
-/-- PermfindPadTo is morally equivalent to PermfinPadLeftRight, but with a different type. It
-  starts the permutation Sm at location k out of n, and creates a perm of length (n+m-1). -/
+/-- PermfindPadTo is morally equivalent (`HEq`) to PermfinPadLeftRight, but with a different type.
+ It starts the permutation Sm at location k out of n, and creates a perm of length (n+m-1). -/
+@[irreducible]
 def PermFinPadTo {m : ℕ} (p : Perm (Fin m)) (n : ℕ) (k : Fin n) : Perm (Fin (n+m-1)) :=
   have h : (k + m + (n - (k + 1))) = n + m - 1 := by
     omega
   h ▸ PermFinPadLeftRight p k (n-(k+1))
+
+section PermFinPadTo
+
+theorem PermFinPadTo_eq_PermFinPadLeftRight {m : ℕ} (p : Perm (Fin m)) (n : ℕ) (k) (x) {pf} :
+    (PermFinPadTo p n k ⟨x, pf⟩ : ℕ) = PermFinPadLeftRight p k (n-(k+1)) ⟨x, by omega⟩ := by
+  rw [PermFinPadTo]
+  have : n + m - 1 = ↑k + m + (n - (↑k + 1)) := by omega
+  congr! 1
+  congr!
+  simp
+
+/-- These three theorems specify the action of PermFinPadTo, based on whether the input is below,
+  within, or above the interval [m,m+n) that the permutation is mapped to -/
+theorem PermFinPadTo_eq_position {m : ℕ} (p : Perm (Fin m)) (n : ℕ) (k : Fin n) (x : Fin m) {pf} :
+    PermFinPadTo p n k ⟨k + x, pf⟩ = (k : ℕ) + (p x) := by
+  rw [PermFinPadTo_eq_PermFinPadLeftRight, PermFinPadLeftRight,
+    Equiv.Perm.extendDomain_apply_subtype]
+  · simp
+  · dsimp
+    constructor <;> omega
+
+theorem PermFinPadTo_lt_position {m : ℕ} (p : Perm (Fin m)) (n : ℕ) (k : Fin n) (x : ℕ) (h : x < k)
+    {pf} : PermFinPadTo p n k ⟨x, pf⟩ = x := by
+  rw [PermFinPadTo_eq_PermFinPadLeftRight, PermFinPadLeftRight,
+    Equiv.Perm.extendDomain_apply_not_subtype]
+  simp only [not_and, not_lt]
+  omega
+
+theorem PermFinPadTo_gt_position {m : ℕ} (p : Perm (Fin m)) (n : ℕ) (k : Fin n) (x : ℕ)
+    (h : x + 1 > k + m) {pf} : PermFinPadTo p n k ⟨x, pf⟩ = x := by
+  rw [PermFinPadTo_eq_PermFinPadLeftRight, PermFinPadLeftRight,
+    Equiv.Perm.extendDomain_apply_not_subtype]
+  simp only [not_and, not_lt]
+  omega
+
+end PermFinPadTo
 
 def PermFinPadAt_core {m n : ℕ} (p : Perm (Fin m)) (hn : 0 < n) (k : Fin m) (x : Fin (m+n-1)) :
     Fin (m+n-1) :=
@@ -164,3 +209,44 @@ def PermFinPadAt {n m : ℕ} (p : Perm (Fin m)) (hn : 0 < n) (k : Fin m) : Perm 
   by
     apply Function.LeftInverse.rightInverse_of_card_le (PermFinPadAt_core.LeftInverse p hn k)
     simp only [Fintype.card_fin, le_refl]⟩
+
+section PermFinPadAt
+
+variable {n m : ℕ} (p : Perm (Fin n)) (h : 0 < m) (k : Fin n) (x : Fin n)
+
+theorem PermFinPadAt_symm : (PermFinPadAt p h k).symm = PermFinPadAt p.symm h (p k) := by
+  ext
+  simp [PermFinPadAt]
+
+/-- These five theorems fully specify the functionality of PermFinPadAt, based on whether x is
+ equal to, less than, or greater than k; and in the latter two cases, whether `s x` is greater
+ or less than `s k`. -/
+theorem PermFinPadAt_eq_position (w : Fin m) {pf} :
+    PermFinPadAt p h k ⟨k + w, pf⟩ = (p k : ℕ) + w := by
+  have h₂ : (k:ℕ) + w ≤ k + m - 1 := by omega
+  have h₃ : (p k) + (k + w : ℕ) - k = (p k) + ↑w := by omega
+  simp [PermFinPadAt, PermFinPadAt_core,  h₂, h₃]
+
+theorem PermFinPadAt_lt_lt_position (h₁ : x < k) (h₂ : p x < p k) {pf} :
+    PermFinPadAt p h k ⟨x, pf⟩ = (p x : ℕ) := by
+  simp [PermFinPadAt, PermFinPadAt_core, h₁, Nat.not_le_of_lt h₁, h₂]
+
+theorem PermFinPadAt_lt_gt_position (h₁ : x < k) (h₂ : p x > p k) {pf} :
+    PermFinPadAt p h k ⟨x, pf⟩ = (p x + m - 1: ℕ) := by
+  simp [PermFinPadAt, PermFinPadAt_core, h₁, Nat.not_le_of_lt h₁, Fin.lt_asymm h₂]
+
+theorem PermFinPadAt_gt_lt_position (h₁ : x > k) (h₂ : p x < p k) {pf} :
+    PermFinPadAt p h k ⟨x + m - 1, pf⟩ = (p x : ℕ) := by
+  have h₃ : ¬(↑x + m ≤ ↑k + m - 1 + 1) := by omega
+  have h₄ : ¬(x + m - 1 < k) := by omega
+  have h₅ : ↑x + m - 1 - (m - 1) = x := by omega
+  simp [PermFinPadAt, PermFinPadAt_core, h₂, h₃, h₄, h₅]
+
+theorem PermFinPadAt_gt_gt_position (h₁ : x > k) (h₂ : p x > p k) {pf} :
+    PermFinPadAt p h k ⟨x + m - 1, pf⟩ = (p x + m - 1 : ℕ) := by
+  have h₃ : ¬(↑x + m ≤ k + m - 1 + 1) := by omega
+  have h₄ : ¬(↑x + m - 1 < k) := by omega
+  have h₅ : ↑x + m - 1 - (m - 1) = x := by omega
+  simp [PermFinPadAt, PermFinPadAt_core, Fin.lt_asymm h₂, h₃, h₄, h₅]
+
+end PermFinPadAt

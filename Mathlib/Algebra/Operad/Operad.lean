@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2024 Alex Meiburg. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alex Meiburg
+-/
 import Mathlib.Algebra.Operad.Basic
 import Mathlib.Algebra.Operad.Perm
 
@@ -5,8 +10,8 @@ import Mathlib.Algebra.Operad.Perm
   closed under composition, with an identity, that obey the "natural" commutative and associative
   constraints - the ones satisfied by composition of arbitrary multi-argument functions.
 
-  A `SymmOperad` is an `Operad` equipped with an action by permutation groups, that rearrange
-  the arguments.
+  A `SymmOperad` is an `Operad` equipped with a `MulAction` by `Perm (Fin n)` for all n, that
+  rearrange the arguments in the natural way.
 -/
 
 section Operad
@@ -102,7 +107,7 @@ open Equiv
 class SymmOperad (A) extends Operad A, SigmaMulAction (Perm <| Fin ·) A where
   /- Permutations on the left side of function composition permute where it gets composed. -/
   perm_left {n m : ℕ} (s : Perm (Fin n)) (k : Fin n) (hm : 0 < m) (x : A n) (y : A m) :
-    s • x ∘⟨k⟩ y = PermFinPadAt s hm k • (x ∘⟨s.symm k⟩ y)
+    s • x ∘⟨k⟩ y = PermFinPadAt s hm (s.symm k) • (x ∘⟨s.symm k⟩ y)
   /- Permutations on the right side of function composition extend to a
     permutation of the whole object. -/
   perm_right {n m : ℕ} (s : Perm (Fin m)) (k : Fin n) (x : A n) (y : A m) :
@@ -116,12 +121,14 @@ instance : ∀ (i : ℕ), MulAction (Perm (Fin i)) (A i) :=
 
 open MultiComposable
 
-theorem SymmOperad.sigmaMul_compose {n m : ℕ} (s : Perm (Fin n)) (k : Fin n)
+/- Alias of `SymmOperad.perm_left` -/
+theorem SymmOperad.smul_compose {n m : ℕ} (s : Perm (Fin n)) (k : Fin n)
     (hm : 0 < m) (x : A n) (y : A m) :
-    s • x ∘⟨k⟩ y = PermFinPadAt s hm k • (x ∘⟨s.symm k⟩ y) :=
+    s • x ∘⟨k⟩ y = PermFinPadAt s hm (s.symm k) • (x ∘⟨s.symm k⟩ y) :=
   SymmOperad.perm_left s k hm x y
 
-theorem SymmOperad.compose_sigmaMul {n m : ℕ} (s : Perm (Fin m)) (k : Fin n) (x : A n) (y : A m) :
+/- Alias of `SymmOperad.perm_right` -/
+theorem SymmOperad.compose_smul {n m : ℕ} (s : Perm (Fin m)) (k : Fin n) (x : A n) (y : A m) :
     x ∘⟨k⟩ s • y = PermFinPadTo s n k • (x ∘⟨k⟩ y):=
   SymmOperad.perm_right s k x y
 

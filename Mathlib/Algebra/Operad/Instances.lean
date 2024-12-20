@@ -1,17 +1,36 @@
+/-
+Copyright (c) 2024 Alex Meiburg. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Alex Meiburg
+-/
 import Mathlib.Algebra.Operad.Clone
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.Tactic.Ring.RingNF
 import Mathlib.LinearAlgebra.StdBasis
 
-universe u v
+/-! This file provides several important examples of `Clone`s, enough to build all of Post's
+  Lattice. Functions indexed by arity, i.e. `(Fin k → α) → α`, form the most basic example of
+  a clone. This is given as `Func_Clone`.
+
+  Then, there are certain predicates `P` so that the subtype of functions obeying this predicate,
+  `{ f : (Fin k → α) → α // P f}`, form a clone. The definition `ClonalProperty` gives necessary
+  conditions for such a predicate to form a clone, as proved in `clone_ClonalProperty`.
+
+  There are several such properties given, and proved to be clonal:
+  - `clonal_Monotone`, for `Monotone` functions on a `Preorder α`
+  - `clonal_Conjunctive`, for `Function.Conjunctive` functions on `Min α`
+  - `clonal_Disjunctive`, for `Function.Disjunctive` functions on `Max α`
+  - `clonal_CommutesWithEndo`, for `Function.CommutesWithEndo`
+  - `clonal_EssentiallyUnary`, for `Function.EssentiallyUnary`
+  - `clonal_IsMultiargAffine`, for `Function.IsMultiargAffine` functions on a `Semiring α`
+  -/
 
 variable {α β γ : Type*}
 
 open BigOperators
 
---Defining conjunctive and disjunctive functions
-
+/-- A function is Conjunctive if `f (min a b) = min (f a) (f b)`. -/
 def Function.Conjunctive [Min α] [Min β] (f : α → β) : Prop :=
   ∀ ⦃a b⦄, f (min a b) = min (f a) (f b)
 
@@ -20,6 +39,7 @@ theorem conjunctive_min [Min α] [Min β] {f : α → β} (a b : α) (h : f.Conj
   min (f a) (f b) = f (min a b) :=
     Eq.symm (@h a b)
 
+/-- A function is Disjunctive if `f (max a b) = max (f a) (f b)`. -/
 def Function.Disjunctive [Max α] [Max β] (f : α → β) : Prop :=
   ∀ ⦃a b⦄, f (max a b) = max (f a) (f b)
 
@@ -28,18 +48,18 @@ theorem disjunctive_max [Max α] [Max β] {f : α → β} (a b : α) (h : f.Disj
   max (f a) (f b) = f (max a b) :=
     Eq.symm (@h a b)
 
-/- States that the multiargument funtion `f`, whose arguments are indexed by the type `α`
+/-- States that the multiargument funtion `f`, whose arguments are indexed by the type `α`
   commutes with an endomorphism `φ : t → t` applied argumentwise. -/
 def Function.CommutesWithEndo {α t : Type*} (φ : t → t) (f : (α → t) → t) : Prop :=
   ∀ ts, φ (f ts) = f (fun i ↦ φ (ts i))
 
-/- The standard notion of superposition in a clone, for functions. Usually stated for `Fin n`
+/-- The standard notion of superposition in a clone, for functions. Usually stated for `Fin n`
  and `Fin m` indexed lists of arguments, here we generalize to arbitrary index types α and β.-/
 @[reducible]
 def function_superpose (a : (α → γ) → γ) (b : α → (β → γ) → γ) : (β → γ) → γ :=
   fun ts ↦ a (b · ts)
 
-/- The k-indexed family of "k-argument functions from T to T" forms a clone. -/
+/-- The k-indexed family of "k-argument functions from T to T" forms a clone. -/
 instance Func_Clone {t : Type*} : Clone (fun k ↦ (Fin k → t) → t) where
   superpose := function_superpose
   proj := fun _ k ts ↦ ts k
@@ -63,7 +83,7 @@ def SuperposableProperty (p : {k : ℕ} → ((Fin k → γ) → γ) → Prop) : 
 def ProjectableProperty (p : {k : ℕ} → ((Fin k → γ) → γ) → Prop) : Prop
   := ∀ (n : ℕ) (k : Fin n), p (fun ts ↦ ts k)
 
-/-- A function property is clonal iff it is both superposable and projectable. -/
+/-- A function property is a `ClonalProperty` iff it is both superposable and projectable. -/
 def ClonalProperty (t : Type*) (p : {k : ℕ} → ((Fin k → t) → t) → Prop) : Prop :=
   (SuperposableProperty p) ∧ (ProjectableProperty p)
 
@@ -75,7 +95,7 @@ theorem and_ClonalProperty {p1 p2} (h₁ : ClonalProperty γ p1)
     h₂.1 ⟨_, a.2.2⟩ fun i ↦ ⟨_, (b i).2.2⟩⟩,
   fun _ _ ↦ ⟨h₁.2 _ _, h₂.2 _ _⟩⟩
 
-/- The subtype of functions `t^k ↦ t` that obey a clonal property, form a clone. -/
+/-- The subtype of functions `t^k ↦ t` that obey a `ClonalProperty`, form a clone. -/
 instance clone_ClonalProperty {p} (h : ClonalProperty γ p) :
     Clone (fun k ↦ Subtype (p (k := k))) where
   superpose := fun a b ↦ ⟨function_superpose a.1 (Subtype.val ∘ b), h.1 a b⟩
@@ -86,12 +106,11 @@ instance clone_ClonalProperty {p} (h : ClonalProperty γ p) :
   proj_left := fun _ _ ↦ rfl
   proj_right := fun _ ↦ rfl
 
-/- Monotonicity is a `clonal_function_property` - monotone functions from a clone. -/
+/-- Monotonicity is a `clonal_function_property`; monotone functions from a clone. -/
 theorem clonal_Monotone [Preorder γ] : ClonalProperty γ (fun {_} ↦ Monotone) :=
   ⟨fun a b _ _ h ↦ a.2 fun _ ↦ (b _).2 h, fun _ _ _ _ h ↦ h _⟩
 
-/- Functions that are `Function.Conjunctive` over a preorder form a clone. A function is
-  conjunctive is f(min(x,y)) = min(f(x), f(y)), and this extends to pi-types in the natural way. -/
+/-- Functions that are `Function.Conjunctive` over a preorder form a clone. -/
 theorem clonal_Conjunctive [Min γ] : ClonalProperty γ (fun {_} ↦ Function.Conjunctive) :=
   ⟨fun a b _ _ ↦ by
     rw [← a.property, function_superpose]
@@ -99,8 +118,7 @@ theorem clonal_Conjunctive [Min γ] : ClonalProperty γ (fun {_} ↦ Function.Co
     apply (b z).property,
   fun _ _ _ _ ↦ rfl⟩
 
-/- Functions that are `Function.Disjunctive` over a preorder form a clone. A function is
-  disjunctive is f(max(x,y)) = max(f(x), f(y)), and this extends to pi-types in the natural way. -/
+/-- Functions that are `Function.Disjunctive` over a preorder form a clone. -/
 theorem clonal_Disjunctive [Max γ] : ClonalProperty γ (fun {_} ↦ Function.Disjunctive) :=
   ⟨fun a b _ _ ↦ by
     rw [← a.property, function_superpose]
@@ -108,8 +126,8 @@ theorem clonal_Disjunctive [Max γ] : ClonalProperty γ (fun {_} ↦ Function.Di
     apply (b z).property,
   fun _ _ _ _ ↦ rfl⟩
 
-/- For an endomorphism `φ : t → t`, the multiargument functions that commute with `φ` form
-  a clone. -/
+/-- For an endomorphism `φ : t → t`, the multiargument functions that commute with `φ` form
+  a clone (the `Function.CommutesWithEndo`) -/
 theorem clonal_CommutesWithEndo (φ : γ → γ) :
   ClonalProperty γ (fun {_} ↦ Function.CommutesWithEndo φ) :=
   ⟨fun a b _ ↦ by
@@ -118,7 +136,7 @@ theorem clonal_CommutesWithEndo (φ : γ → γ) :
     congr!
     exact (b _).property _, fun _ _ _ ↦ rfl⟩
 
-/- A multiargument function is _essentially unary_ if there is one argument that entirely
+/-- A multiargument function is _essentially unary_ if there is one argument that entirely
   determines the value of the function. -/
 def Function.EssentiallyUnary {α t : Type*} (f : (α → t) → t) : Prop :=
   ∃(i : α) (fi : t → t), ∀ts, f ts = fi (ts i)
@@ -170,7 +188,7 @@ def Function.IsMultiargAffine [NonUnitalNonAssocSemiring γ] (f : (α → γ) �
 section semiring
 variable [Semiring γ]
 
-/-- Affine maps form a clone. -/
+/-- `Function.IsMultiargAffine` maps over a `Semiring` form a clone. -/
 theorem clonal_IsMultiargAffine : ClonalProperty γ Function.IsMultiargAffine :=
   ⟨fun ⟨av, ⟨ca, csa, hca⟩⟩ b ↦ by
     unfold Function.IsMultiargAffine at b
@@ -191,10 +209,11 @@ theorem clonal_IsMultiargAffine : ClonalProperty γ Function.IsMultiargAffine :=
 end semiring
 section ring
 
+/-- A function `IsAffineMap` if it is equal to some `AffineMap`. -/
 def Function.IsAffineMap [Ring γ] (f : (α → γ) → γ) : Prop :=
   ∃ a : AffineMap γ (α → γ) γ, a = f
 
-/- `AffineMap`s form a clone. -/
+/-- `AffineMap`s form a clone. -/
 instance clone_AffineMap [Ring γ] : Clone (fun {k} ↦ AffineMap γ (Fin k → γ) γ) where
   superpose := (AffineMap.comp · <| AffineMap.pi ·)
   proj _ k := AffineMap.mk' (· k) ⟨⟨(· k), fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩
@@ -210,29 +229,27 @@ instance clone_AffineMap [Ring γ] : Clone (fun {k} ↦ AffineMap γ (Fin k → 
 end ring
 section commring
 
-/- A function is `multiargIsAffine` iff there is an equivalent AffineMap. -/
+/-- A function is `Function.IsMultiargAffine` iff there is an equivalent AffineMap. -/
 theorem IsMultiargAffine_iff_IsAffineMap [CommRing γ] (f : (α → γ) → γ) :
   f.IsMultiargAffine ↔ f.IsAffineMap := by
     constructor
     · rintro ⟨c, cs, hc⟩
-      use AffineMap.mk' f (by
-        apply LinearMap.mk _ _
-        · apply AddHom.mk (f · - f 0)
-          intros
-          simp_rw [hc, Pi.add_apply, mul_add, Finset.sum_add_distrib, Pi.zero_apply,
-            mul_zero, Finset.sum_const_zero]
-          abel
-        · simp only [RingHom.id_apply, smul_eq_mul]
-          intro r _
-          simp_rw [hc, Pi.zero_apply, mul_zero, Finset.sum_const_zero, Pi.smul_apply, smul_eq_mul,
-            mul_sub, add_zero, mul_add, Finset.mul_sum, ← mul_assoc, mul_comm r (cs _)]
-          abel
-      ) 0 (by simp)
+      use AffineMap.mk' f ⟨⟨(f · - f 0), by
+        intros
+        simp_rw [hc, Pi.add_apply, mul_add, Finset.sum_add_distrib, Pi.zero_apply,
+          mul_zero, Finset.sum_const_zero]
+        abel
+      ⟩, by
+        intros
+        simp_rw [RingHom.id_apply, smul_eq_mul, hc, Pi.zero_apply, mul_zero, Finset.sum_const_zero,
+          Pi.smul_apply, smul_eq_mul, mul_sub, add_zero, mul_add, Finset.mul_sum, ← mul_assoc,
+          mul_comm _ (cs _)]
+        abel
+      ⟩ 0 (by simp)
       apply AffineMap.coe_mk'
     · rintro ⟨f, rfl⟩
       use f 0, fun i ↦ f (Pi.single i 1) - f 0
       intro x
-      beta_reduce
       rw [add_comm]
       convert f.map_vadd 0 x using 2
       · simp only [vadd_eq_add, add_zero]
@@ -244,7 +261,7 @@ theorem IsMultiargAffine_iff_IsAffineMap [CommRing γ] (f : (α → γ) → γ) 
       convert Pi.single_apply _ _ _ using 2
       exact eq_comm
 
-/-- Functions that are `IsAffineMap` form a clone-/
+/-- Functions that `IsAffineMap` form a clone-/
 theorem clonal_IsAffineMap [CommRing γ] : ClonalProperty γ Function.IsAffineMap := by
   convert clonal_IsMultiargAffine
   · ext
@@ -256,36 +273,26 @@ end affine
 
 local notation "FuncWithProperty[ " t "," p "]" => (fun k ↦ @Subtype ((Fin k → t) → t) p)
 
-/- Monotone functions form a clone. -/
 instance Monotone_Clone [Preorder γ] : Clone FuncWithProperty[γ, Monotone] :=
   clone_ClonalProperty clonal_Monotone
 
-/- Functions that are *conjunctive* over a preorder form a clone. A function is conjunctive
-  is f(min(x,y)) = min(f(x), f(y)), and this extends to pi-types in the natural way. -/
 instance Conjunctive_Clone [Min γ] : Clone FuncWithProperty[γ, Function.Conjunctive] :=
   clone_ClonalProperty clonal_Conjunctive
 
-/- Functions that are *disjunctive* over a preorder form a clone. A function is conjunctive
-  is f(min(x,y)) = min(f(x), f(y)), and this extends to pi-types in the natural way. -/
 instance Disjunctive_Clone [Max γ] : Clone FuncWithProperty[γ, Function.Disjunctive] :=
   clone_ClonalProperty clonal_Disjunctive
 
-/- Functions t^k → t that commute with a fixed function (φ : t → t) form a clone. -/
 instance Commute_with_φ_Clone (φ : γ → γ) :
     Clone FuncWithProperty[γ, Function.CommutesWithEndo φ] :=
   clone_ClonalProperty (clonal_CommutesWithEndo φ)
 
-/- Functions t^k → t that only depend on one argument form a clone -/
 instance EssentiallyUnary_Clone : Clone FuncWithProperty[γ, Function.EssentiallyUnary] :=
   clone_ClonalProperty clonal_EssentiallyUnary
 
-/- Functions that map k-tuples that elementwise obey P to at least one element that obeys P,
- form a clone. See `kWisePropPreserving` for the precise definition. -/
 instance kWisePropPreserving_Clone (k : WithTop ℕ) (P : γ → Prop) :
     Clone FuncWithProperty[γ, kWisePropPreserving k P] :=
   clone_ClonalProperty (clonal_kWisePropPreserving k P)
 
-/- Functions that `IsMultiargAffine` form a clone. -/
 instance IsMultiargAffine_Clone [Semiring γ] :
     Clone FuncWithProperty[γ, Function.IsMultiargAffine] :=
   clone_ClonalProperty clonal_IsMultiargAffine
