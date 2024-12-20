@@ -216,7 +216,7 @@ theorem card_plift (α : Type*) : Nat.card (PLift α) = Nat.card α :=
   card_congr Equiv.plift
 
 theorem card_sigma {β : α → Type*} [Fintype α] [∀ a, Finite (β a)] :
-    Nat.card (Σ a, β a) = ∑ a, Nat.card (β a) := by
+    Nat.card (Sigma β) = ∑ a, Nat.card (β a) := by
   letI _ (a : α) : Fintype (β a) := Fintype.ofFinite (β a)
   simp_rw [Nat.card_eq_fintype_card, Fintype.card_sigma]
 
