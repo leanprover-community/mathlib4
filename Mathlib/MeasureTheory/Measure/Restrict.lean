@@ -423,17 +423,18 @@ theorem ext_of_generateFrom_of_cover {S T : Set (Set α)} (h_gen : ‹_› = gen
   refine ext_of_sUnion_eq_univ hc hU fun t ht => ?_
   ext1 u hu
   simp only [restrict_apply hu]
-  refine induction_on_inter h_gen h_inter ?_ (ST_eq t ht) ?_ ?_ hu
-  · simp only [Set.empty_inter, measure_empty]
-  · intro v hv hvt
+  induction u, hu using induction_on_inter h_gen h_inter with
+  | empty => simp only [Set.empty_inter, measure_empty]
+  | basic u hu => exact ST_eq _ ht _ hu
+  | compl u hu ihu =>
     have := T_eq t ht
-    rw [Set.inter_comm] at hvt ⊢
-    rwa [← measure_inter_add_diff t hv, ← measure_inter_add_diff t hv, ← hvt,
+    rw [Set.inter_comm] at ihu ⊢
+    rwa [← measure_inter_add_diff t hu, ← measure_inter_add_diff t hu, ← ihu,
       ENNReal.add_right_inj] at this
     exact ne_top_of_le_ne_top (htop t ht) (measure_mono Set.inter_subset_left)
-  · intro f hfd hfm h_eq
-    simp only [← restrict_apply (hfm _), ← restrict_apply (MeasurableSet.iUnion hfm)] at h_eq ⊢
-    simp only [measure_iUnion hfd hfm, h_eq]
+  | iUnion f hfd hfm ihf =>
+    simp only [← restrict_apply (hfm _), ← restrict_apply (MeasurableSet.iUnion hfm)] at ihf ⊢
+    simp only [measure_iUnion hfd hfm, ihf]
 
 /-- Two measures are equal if they are equal on the π-system generating the σ-algebra,
   and they are both finite on an increasing spanning sequence of sets in the π-system.

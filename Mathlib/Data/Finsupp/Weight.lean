@@ -24,17 +24,17 @@ We fix a type `σ` and an `AddCommMonoid M`, as well as a function `w : σ → M
 with respect to `w`: it is the sum `∑ (f i) • (w i)`.
 It is an `AddMonoidHom` map defined using `Finsupp.linearCombination`.
 
-- `Finsupp.le_weight`says that `f s ≤ f.weight w` when `M = ℕ``
+- `Finsupp.le_weight` says that `f s ≤ f.weight w` when `M = ℕ`
 
-- `Finsupp.le_weight_of_nonneg'` says that `w s ≤ f.weight w`
+- `Finsupp.le_weight_of_ne_zero` says that `w s ≤ f.weight w`
 for `OrderedAddCommMonoid M`, when `f s ≠ 0` and all `w i` are nonnegative.
 
-- `Finsupp.le_weight'` is the same statement for `CanonicallyOrderedAddCommMonoid M`.
+- `Finsupp.le_weight_of_ne_zero'` is the same statement for `CanonicallyOrderedAddCommMonoid M`.
 
 - `NonTorsionWeight`: all values `w s` are non torsion in `M`.
 
 - `Finsupp.weight_eq_zero_iff_eq_zero` says that `f.weight w = 0` iff
-`f = 0` for `NonTorsion Weight w` and `CanonicallyOrderedAddCommMonoid M`.
+`f = 0` for `NonTorsionWeight w` and `CanonicallyOrderedAddCommMonoid M`.
 
 - For `w : σ → ℕ` and `Finite σ`, `Finsupp.finite_of_nat_weight_le` proves that
 there are finitely many `f : σ →₀ ℕ` of bounded weight.
@@ -75,7 +75,7 @@ section AddCommMonoid
 
 variable [AddCommMonoid M]
 /-- The `weight` of the finitely supported function `f : σ →₀ ℕ`
-with respect to `w : σ → M` is the sum `∑(f i)•(w i)`. -/
+with respect to `w : σ → M` is the sum `∑ i, f i • w i`. -/
 noncomputable def weight : (σ →₀ ℕ) →+ M :=
   (Finsupp.linearCombination ℕ w).toAddMonoidHom
 
