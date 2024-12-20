@@ -14,13 +14,14 @@ namespace Language
 namespace Theory
 
 variable {L : Language.{u, v}} (T : L.Theory) {α : Type w} {β : Type x} {γ : Type y}
+variable [Finite β] {M : Type z} [L.Structure M] [T.Model M] [Nonempty M]
 
 def FunctionalFormula (α : Type w) (β : Type x) [Finite β] : Type _ :=
   { φ : L.Formula (α ⊕ β) // T ⊨ᵇ Formula.iExsUnique id φ }
 
 namespace FunctionalFormula
 
-variable [Finite β] {T} {M : Type z} [L.Structure M] [T.Model M] [Nonempty M]
+variable {T}
 
 theorem exists_fun_eq_iff (f : T.FunctionalFormula α β) : ∃ f' : (α → M) → (β → M),
     ∀ x, ∀ y, f' x = y ↔ f.1.Realize (Sum.elim x y) := by
@@ -157,6 +158,7 @@ def FunctionalFormulaLang : Language where
 
 namespace FunctionalFormulaLang
 
+
 def of : L →ᴸ FunctionalFormulaLang T where
   onFunction := fun _ f => ofTerm (func f var)
   onRelation := fun _ R => R
@@ -167,6 +169,16 @@ def theory : (FunctionalFormulaLang T).Theory :=
       Formula.iAlls (γ := Fin n ⊕ Unit) Sum.inr <|
         (Term.equal (func f (fun i => var (Sum.inl i))) (var (Sum.inr ()))).iff
         ((of T).onFormula f.1))
+
+noncomputable instance : (FunctionalFormulaLang T).Structure M where
+  funMap := fun f x => f.realize x ()
+  RelMap := fun R => Structure.RelMap (L := L) R
+
+noncomputable instance : (FunctionalFormulaLang.theory T).Model M where
+  realize_of_mem := fun φ hφ => by
+    simp only [theory, Set.mem_union, LHom.mem_onTheory, Set.mem_iUnion, Set.mem_range] at hφ
+    rcases hφ with ⟨φ₀, hφ₀, rfl⟩ | ⟨i, hi, rfl⟩
+    · simp [of, onSentence, LHom.onSentence, LHom.onFormula]
 
 end FunctionalFormulaLang
 
