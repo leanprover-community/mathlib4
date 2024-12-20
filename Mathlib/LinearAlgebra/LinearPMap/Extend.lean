@@ -26,29 +26,18 @@ noncomputable def extend : E →L[𝕜] F :=
   { toFun := hdf.extend f
     map_add' := fun x y ↦ by
       let e : f.domain → E := Subtype.val
-      have he : e = Subtype.val := rfl
       refine @tendsto_nhds_unique _ (f.domain × f.domain) _ _ (fun x ↦ f x.1 + f x.2)
         (comap (Prod.map e e) (𝓝 (x, y))) _ _ ?_ ?_ ?_
       · rw [nhds_prod_eq, comap_prodMap_prod, prod_neBot]
         constructor <;> rw [← mem_closure_iff_comap_neBot] <;> apply hdf
       · simp_rw [← map_add]
-        apply hdf.extend_tendsto hf
-        have : e ∘ (fun x ↦ x.1 + x.2) = (fun x ↦ x.1 + x.2) ∘ (Prod.map e e) := by
-          ext x; simp [e]
-        change Tendsto (e ∘ _) _ _
-        rw [this, ← tendsto_map'_iff]
-        exact (continuous_add.tendsto (x, y)).mono_left map_comap_le
-      · apply Tendsto.add <;>
-        apply hdf.extend_tendsto hf <;>
-        change Tendsto (e ∘ _) _ _
-        · have : e ∘ (Prod.fst : f.domain × f.domain → _) = Prod.fst ∘ (Prod.map e e) := by
-            ext x; simp
-          rw [this, ← tendsto_map'_iff]
-          exact (continuous_fst.tendsto (x, y)).mono_left map_comap_le
-        · have : e ∘ (Prod.snd : f.domain × f.domain → _) = Prod.snd ∘ (Prod.map e e) := by
-            ext x; simp
-          rw [this, ← tendsto_map'_iff]
-          exact (continuous_snd.tendsto (x, y)).mono_left map_comap_le
+        exact hdf.extend_spec hf (x + y) |>.comp <|
+          tendsto_comap_iff.2 <| tendsto_add.comp tendsto_comap
+      · exact Tendsto.add
+          (hdf.extend_spec hf x |>.comp <|
+            tendsto_comap_iff.2 <| (continuous_fst.tendsto (x, y)).comp tendsto_comap)
+          (hdf.extend_spec hf y |>.comp <|
+            tendsto_comap_iff.2 <| (continuous_snd.tendsto (x, y)).comp tendsto_comap)
     map_smul' := fun m x ↦ by
       let e : f.domain → E := Subtype.val
       simp only [RingHom.id_apply]
