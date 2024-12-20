@@ -350,13 +350,15 @@ end Transformations
 
 open Measurable Real
 
-theorem mgf_gaussianReal {Ω : Type*} {m : MeasurableSpace Ω} {μ : Measure Ω}
-    (X : Ω → ℝ) (hX : μ.map X = gaussianReal 0 1) (t : ℝ) :
-    mgf X μ t = exp (t ^ 2 / 2) := calc
-  mgf X μ t = (μ.map X)[fun x => exp (t * x)] := by
+variable {Ω : Type} [MeasureSpace Ω]
+
+theorem mgf_standard_gaussianReal
+    {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal 0 1) (t : ℝ) :
+    mgf X ℙ t = exp (t ^ 2 / 2) := calc
+  mgf X ℙ t = (Measure.map X ℙ)[fun x => exp (t * x)] := by
     rw [← mgf_id_map, mgf]
     · rfl
-    · exact aemeasurable_of_map_ne_zero hX (IsProbabilityMeasure.ne_zero (gaussianReal 0 1))
+    · exact Measure.aemeasurable_of_map_ne_zero hX (IsProbabilityMeasure.ne_zero (gaussianReal 0 1))
   _ = ∫ x, exp (t * x) * gaussianPDFReal 0 1 x := by
     rw [hX, gaussianReal_of_var_ne_zero 0 one_ne_zero, gaussianPDF_def]
     simp only [ENNReal.ofReal]
@@ -368,8 +370,7 @@ theorem mgf_gaussianReal {Ω : Type*} {m : MeasurableSpace Ω} {μ : Measure Ω}
     simp only [gaussianPDFReal, NNReal.coe_one, mul_one, Nat.ofNat_nonneg, sqrt_mul,
       mul_inv_rev, sub_zero]
     rw [← integral_mul_left]
-    apply congrArg (integral ℙ)
-    ext x
+    congr with x
     field_simp only [mul_sub, sub_eq_zero, mul_assoc, mul_comm, mul_left_comm,
       ← exp_sub, ← exp_add]
     ring_nf
