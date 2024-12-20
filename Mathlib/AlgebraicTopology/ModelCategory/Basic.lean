@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.CategoryTheory.MorphismProperty.Factorization
+import Mathlib.CategoryTheory.MorphismProperty.Retract
 import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 
 /-!
@@ -26,20 +27,6 @@ to define only local instances of `ModelCategory`, or to set these instances on 
 -/
 
 universe v u
-
-namespace CategoryTheory
-
-namespace MorphismProperty
-
-variable {C : Type u} [Category.{v} C]
-
--- wait until #19135 is merged
-class IsStableUnderRetracts (W : MorphismProperty C) : Prop where
-  condition : 0 = 1
-
-end MorphismProperty
-
-end CategoryTheory
 
 namespace HomotopicalAlgebra
 
@@ -61,19 +48,12 @@ class ModelCategory where
   cm3b : (fibrations C).IsStableUnderRetracts := by infer_instance
   cm3c : (cofibrations C).IsStableUnderRetracts := by infer_instance
   cm4a {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y) [Cofibration i] [WeakEquivalence i] [Fibration p] :
-      HasLiftingProperty i p := by infer_instance
+      HasLiftingProperty i p := by intros; infer_instance
   cm4b {A B X Y : C} (i : A ⟶ B) (p : X ⟶ Y) [Cofibration i] [Fibration p] [WeakEquivalence p] :
-      HasLiftingProperty i p := by infer_instance
+      HasLiftingProperty i p := by intros; infer_instance
   cm5a : MorphismProperty.HasFactorization (trivialCofibrations C) (fibrations C) := by
     infer_instance
   cm5b : MorphismProperty.HasFactorization (cofibrations C) (trivialFibrations C) := by
     infer_instance
-
-namespace ModelCategory
-
-attribute [instance] categoryWithFibrations categoryWithCofibrations categoryWithWeakEquivalences
-  cm1a cm1b cm2 cm3a cm3b cm3c cm4a cm4b cm5a cm5b
-
-end ModelCategory
 
 end HomotopicalAlgebra
