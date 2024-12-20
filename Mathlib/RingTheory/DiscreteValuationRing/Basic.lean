@@ -294,10 +294,12 @@ theorem ofHasUnitMulPowIrreducibleFactorization {R : Type u} [CommRing R] [IsDom
   exact ⟨p, hp⟩
 
 /- If a ring is equivalent to a DVR, it is itself a DVR. -/
-theorem RingEquiv.isDiscreteValuationRing {A B : Type*} [CommRing A] [IsDomain A] [CommRing B]
-    [IsDomain B] [IsDiscreteValuationRing A] (e : A ≃+* B) : IsDiscreteValuationRing B where
-  principal := (isPrincipalIdealRing_iff _).1 <| IsPrincipalIdealRing.of_surjective _ e.surjective
-  __ : IsLocalRing B := e.isLocalRing
+theorem RingEquivClass.isDiscreteValuationRing {A B E : Type*} [CommRing A] [IsDomain A]
+    [CommRing B] [IsDomain B] [IsDiscreteValuationRing A] [EquivLike E A B] [RingEquivClass E A B]
+    (e : E) : IsDiscreteValuationRing B where
+  principal := (isPrincipalIdealRing_iff _).1 <|
+    IsPrincipalIdealRing.of_surjective _ (e : A ≃+* B).surjective
+  __ : IsLocalRing B := (e : A ≃+* B).isLocalRing
   not_a_field' := by
     obtain ⟨a, ha⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr
       <| IsDiscreteValuationRing.not_a_field A)
@@ -306,7 +308,6 @@ theorem RingEquiv.isDiscreteValuationRing {A B : Type*} [CommRing A] [IsDomain A
       ha, not_false_eq_true]⟩⟩
     rw [IsLocalRing.mem_maximalIdeal, map_mem_nonunits_iff e, ← IsLocalRing.mem_maximalIdeal]
     exact a.2
-
 
 section
 
