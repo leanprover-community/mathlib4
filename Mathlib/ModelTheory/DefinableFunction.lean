@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 
-universe u v w x y
+universe u v w x y z
 
 namespace FirstOrder
 
@@ -13,17 +13,14 @@ namespace Language
 
 namespace Theory
 
-variable {L : Language.{u, v}} (T : L.Theory) {α : Type w} {β : Type x}
-
-def IsFunctional [Finite β] (φ : L.Formula (α ⊕ β)) : Prop :=
-  T ⊨ᵇ Formula.iExsUnique id φ
+variable {L : Language.{u, v}} (T : L.Theory) {α : Type w} {β : Type x} {γ : Type y}
 
 def FunctionalFormula (α : Type w) (β : Type x) [Finite β] : Type _ :=
-  { φ : L.Formula (α ⊕ β) // T.IsFunctional φ }
+  { φ : L.Formula (α ⊕ β) // T ⊨ᵇ Formula.iExsUnique id φ }
 
 namespace FunctionalFormula
 
-variable [Finite β] {T} {M : Type w} [L.Structure M] [T.Model M] [Nonempty M]
+variable [Finite β] {T} {M : Type z} [L.Structure M] [T.Model M] [Nonempty M]
 
 theorem exists_fun_eq_iff (f : T.FunctionalFormula α β) : ∃ f' : (α → M) → (β → M),
     ∀ x, ∀ y, f' x = y ↔ f.1.Realize (Sum.elim x y) := by
@@ -48,14 +45,43 @@ theorem realize_spec {f : T.FunctionalFormula α β} {x : α → M} {y : β → 
 
 def ofTerm (t : L.Term α) : T.FunctionalFormula α Unit :=
   ⟨Term.equal (t.relabel Sum.inl) (var (Sum.inr ())), by
-    simp only [IsFunctional, ModelsBoundedFormula, BoundedFormula.realize_iExsUnique, id_eq,
+    simp only [ModelsBoundedFormula, BoundedFormula.realize_iExsUnique, id_eq,
       Formula.realize_equal, Term.realize_relabel, Sum.elim_comp_inl, Term.realize_var,
       Sum.elim_inr, forall_const]
     intro M x
     use fun _ => t.realize x
     simp +contextual [funext_iff, eq_comm]⟩
 
-def comp {γ : β → Type y}
+variable (T)
+noncomputable def comap (f : β → α) : T.FunctionalFormula α β :=
+  let e := Fintype.ofFinite β
+  ⟨Formula.iAlls (γ := β) Sum.inl
+    (BoundedFormula.iInf (Finset.univ : Finset β)
+      (fun b => Term.equal (var (Sum.inr b)) (var (Sum.inl (f b))))), by
+  simp only [ModelsBoundedFormula, BoundedFormula.realize_iExsUnique, id_eq, Formula.realize_iAlls,
+    Sum.elim_inl, forall_const]
+  intro M x
+  use fun y => x (f y)
+  simp [Formula.Realize, Term.equal, funext_iff]⟩
+
+variable {T}
+@[simp]
+theorem realize_comap (f : β → α) (x : α → M) : (comap T f).realize x = x ∘ f := by
+  rw [realize_spec]
+  simp [comap, Formula.Realize, Term.equal]
+
+variable (T)
+protected noncomputable def id : T.FunctionalFormula β β :=
+  comap T id
+
+@[simp]
+theorem realize_id (x : β → M) :
+    (FunctionalFormula.id T).realize (T := T) (M := M) x = x := by
+  simp [FunctionalFormula.id]
+
+def comp [Finite γ] (f : T.FunctionalFormula β γ) (g : T.FunctionalFormula α β) :
+    T.FunctionalFormula α γ :=
+  ⟨_, _⟩
 
 end FunctionalFormula
 
