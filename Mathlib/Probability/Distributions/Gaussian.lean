@@ -351,20 +351,19 @@ end Transformations
 open Measurable Real
 
 theorem mgf_gaussian {Ω : Type*} {m : MeasurableSpace Ω} {μ : Measure Ω}
-    (X : Ω → ℝ) (hXm : Measurable X) (hX : μ.map X = gaussianReal 0 1) (t : ℝ) :
-    mgf X μ t = exp (t ^ 2 / 2) := calc
-  mgf X μ t = μ.map X[fun x => exp (t * x)] := by
-    have : AEStronglyMeasurable (fun x ↦ exp (t * x)) μ.map X :=
-      AEMeasurable.aestronglyMeasurable (aemeasurable
-      (measurable_exp.comp (continuous_const.mul continuous_id).measurable))
+  (X : Ω → ℝ) (hXm : Measurable X) (hX : μ.map X = gaussianReal 0 1) (t : ℝ) :
+  mgf X μ t = exp (t ^ 2 / 2) := calc
+  mgf X μ t = (μ.map X)[fun x => exp (t * x)] := by
+    have : AEStronglyMeasurable (fun x ↦ exp (t * x)) (μ.map X) :=
+      (aemeasurable (measurable_exp.comp (continuous_const.mul
+      continuous_id).measurable)).aestronglyMeasurable
     rw [mgf, MeasureTheory.integral_map (aemeasurable hXm) this]
-  _ = ∫ (x : ℝ), exp (t * x) * (gaussianPDFReal 0 1 x) := by
+  _ = ∫ x, exp (t * x) * gaussianPDFReal 0 1 x := by
     rw [hX, gaussianReal_of_var_ne_zero 0 one_ne_zero, gaussianPDF_def]
     simp only [ENNReal.ofReal]
     rw [integral_withDensity_eq_integral_smul
       (measurable_gaussianPDFReal 0 1).real_toNNReal]
-    apply congrArg (integral ℙ)
-    ext x
+    congr with x
     rw [NNReal.smul_def, coe_toNNReal _ (gaussianPDFReal_nonneg 0 1 x), smul_eq_mul, mul_comm]
   _ = exp (t ^ 2 / 2) * ∫ x, (√(2 * π))⁻¹ * exp (-(x - t) ^ 2 / 2) := by
     simp only [gaussianPDFReal, NNReal.coe_one, mul_one, Nat.ofNat_nonneg, sqrt_mul,
@@ -375,7 +374,7 @@ theorem mgf_gaussian {Ω : Type*} {m : MeasurableSpace Ω} {μ : Measure Ω}
     field_simp only [mul_sub, sub_eq_zero, mul_assoc, mul_comm, mul_left_comm,
       ← exp_sub, ← exp_add]
     ring_nf
-  _ = exp (t ^ 2 / 2) * ∫ (x : ℝ), (gaussianPDFReal t 1 x) := by
+  _ = exp (t ^ 2 / 2) * ∫ x, gaussianPDFReal t 1 x := by
     field_simp [gaussianPDFReal_def]
   _ = exp (t ^ 2 / 2) := by
     rw [integral_gaussianPDFReal_eq_one t one_ne_zero, mul_one]
