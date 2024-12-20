@@ -500,6 +500,47 @@ lemma natCast_strictMono (hbn : b ≤ n) (hab : a < b) : (a : Fin (n + 1)) < b :
 
 end OfNatCoe
 
+section hAdd
+
+/-- Add two Fin's of different ranges, growing the range appropriately. -/
+def hAdd (x : Fin n) (y : Fin m) : Fin (n+m-1) :=
+  ⟨x.val + y.val, Nat.lt_sub_of_add_lt (add_succ_lt_add x.2 y.2)⟩
+
+@[simp]
+theorem val_hAdd (x : Fin n) (y : Fin m) : (x.hAdd y).val = x.val + y.val :=
+  rfl
+
+theorem hAdd_comm (x : Fin n) (y : Fin m) : (x.hAdd y).val = (y.hAdd x).val :=
+  (x.val_hAdd y).trans <| (x.val.add_comm _).trans <| y.val_hAdd x
+
+/-- `Fin.hAdd` with a Nat on the right is `Fin.addNat`. -/
+@[simp]
+theorem hAdd_Nat_eq_addNat (x : Fin n) (y : ℕ) :
+    (x.hAdd y : Fin (n + (y+1)-1)) = x.addNat y := by
+  ext
+  simp
+
+/-- `Fin.hAdd` with `Fin.last` on the right is `Fin.addNat`. -/
+@[simp]
+theorem hAdd_last_eq_addNat (x : Fin n) (y : ℕ) :
+    x.hAdd (Fin.last y) = x.addNat y := by
+  rfl
+
+/-- `Fin.hAdd` with 0 on the right is `Fin.castAdd`. -/
+@[simp]
+theorem hAdd_zero_eq_castNat (x : Fin n) (y : ℕ) :
+    (x.hAdd 0 : Fin (n + (y+1)-1)) = x.castAdd y := by
+  rfl
+
+/-- `Fin.hAdd` with 0 on the left is `Fin.castLE`. -/
+@[simp]
+theorem zero_hAdd_eq_castNat (x : Fin n) (y : ℕ) [NeZero y] :
+    hAdd 0 x = x.castLE (y.add_comm n ▸ y.add_sub_assoc size_positive' n ▸ le_add_right n _) := by
+  ext
+  simp
+
+end hAdd
+
 end Add
 
 section Succ

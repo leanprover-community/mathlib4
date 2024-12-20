@@ -621,6 +621,7 @@ import Mathlib.Algebra.NoZeroSMulDivisors.Pi
 import Mathlib.Algebra.NoZeroSMulDivisors.Prod
 import Mathlib.Algebra.Notation
 import Mathlib.Algebra.Operad.Basic
+import Mathlib.Algebra.Operad.Operad
 import Mathlib.Algebra.Operad.Perm
 import Mathlib.Algebra.Opposites
 import Mathlib.Algebra.Order.AbsoluteValue
