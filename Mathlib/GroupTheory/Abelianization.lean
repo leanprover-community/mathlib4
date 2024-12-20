@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Michael Howes
 -/
 import Mathlib.Data.Finite.Card
-import Mathlib.GroupTheory.Finiteness
+import Mathlib.Data.Finite.Prod
 import Mathlib.GroupTheory.Commutator.Basic
-import Mathlib.Data.Finite.Basic
+import Mathlib.GroupTheory.Coset.Basic
+import Mathlib.GroupTheory.Finiteness
 
 /-!
 # The abelianization of a group
@@ -110,6 +111,11 @@ def of : G →* Abelianization G where
 @[simp]
 theorem mk_eq_of (a : G) : Quot.mk _ a = of a :=
   rfl
+
+variable (G) in
+@[simp]
+theorem ker_of : of.ker = commutator G :=
+  QuotientGroup.ker_mk' (commutator G)
 
 section lift
 

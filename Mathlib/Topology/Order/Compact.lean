@@ -3,10 +3,10 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Order.LocalExtr
+import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.Order.IntermediateValue
-import Mathlib.Topology.Support
 import Mathlib.Topology.Order.IsLUB
+import Mathlib.Topology.Order.LocalExtr
 
 /-!
 # Compactness of a closed interval
@@ -53,12 +53,12 @@ export CompactIccSpace (isCompact_Icc)
 
 variable {α : Type*}
 
--- Porting note (#11215): TODO: make it the definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it the definition
 lemma CompactIccSpace.mk' [TopologicalSpace α] [Preorder α]
     (h : ∀ {a b : α}, a ≤ b → IsCompact (Icc a b)) : CompactIccSpace α where
   isCompact_Icc {a b} := by_cases h fun hab => by rw [Icc_eq_empty hab]; exact isCompact_empty
 
--- Porting note (#11215): TODO: drop one `'`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: drop one `'`
 lemma CompactIccSpace.mk'' [TopologicalSpace α] [PartialOrder α]
     (h : ∀ {a b : α}, a < b → IsCompact (Icc a b)) : CompactIccSpace α :=
   .mk' fun hab => hab.eq_or_lt.elim (by rintro rfl; simp) h
@@ -489,7 +489,7 @@ theorem eq_Icc_of_connected_compact {s : Set α} (h₁ : IsConnected s) (h₂ : 
 /-- If `f : γ → β → α` is a function that is continuous as a function on `γ × β`, `α` is a
 conditionally complete linear order, and `K : Set β` is a compact set, then
 `fun x ↦ sSup (f x '' K)` is a continuous function. -/
-/- Porting note (#11215): TODO: generalize. The following version seems to be true:
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize. The following version seems to be true:
 ```
 theorem IsCompact.tendsto_sSup {f : γ → β → α} {g : β → α} {K : Set β} {l : Filter γ}
     (hK : IsCompact K) (hf : ∀ y ∈ K, Tendsto ↿f (l ×ˢ 𝓝[K] y) (𝓝 (g y)))

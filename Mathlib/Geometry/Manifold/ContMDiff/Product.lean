@@ -36,6 +36,9 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {F' : Type*}
   [NormedAddCommGroup F'] [NormedSpace 𝕜 F'] {G' : Type*} [TopologicalSpace G']
   {J' : ModelWithCorners 𝕜 F' G'} {N' : Type*} [TopologicalSpace N'] [ChartedSpace G' N']
+  -- declare a few vector spaces
+  {F₁ : Type*} [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
+  {F₂ : Type*} [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
   -- declare functions, sets, points and smoothness indices
   {f : M → M'} {s : Set M} {x : M} {n : ℕ∞}
 
@@ -78,38 +81,22 @@ theorem ContMDiff.prod_mk_space {f : M → E'} {g : M → F'} (hf : ContMDiff I 
     (hg : ContMDiff I 𝓘(𝕜, F') n g) : ContMDiff I 𝓘(𝕜, E' × F') n fun x => (f x, g x) := fun x =>
   (hf x).prod_mk_space (hg x)
 
-nonrec theorem SmoothWithinAt.prod_mk {f : M → M'} {g : M → N'} (hf : SmoothWithinAt I I' f s x)
-    (hg : SmoothWithinAt I J' g s x) : SmoothWithinAt I (I'.prod J') (fun x => (f x, g x)) s x :=
-  hf.prod_mk hg
+@[deprecated (since := "2024-11-20")] alias SmoothWithinAt.prod_mk := ContMDiffWithinAt.prod_mk
 
-nonrec theorem SmoothWithinAt.prod_mk_space {f : M → E'} {g : M → F'}
-    (hf : SmoothWithinAt I 𝓘(𝕜, E') f s x) (hg : SmoothWithinAt I 𝓘(𝕜, F') g s x) :
-    SmoothWithinAt I 𝓘(𝕜, E' × F') (fun x => (f x, g x)) s x :=
-  hf.prod_mk_space hg
+@[deprecated (since := "2024-11-20")]
+alias SmoothWithinAt.prod_mk_space := ContMDiffWithinAt.prod_mk_space
 
-nonrec theorem SmoothAt.prod_mk {f : M → M'} {g : M → N'} (hf : SmoothAt I I' f x)
-    (hg : SmoothAt I J' g x) : SmoothAt I (I'.prod J') (fun x => (f x, g x)) x :=
-  hf.prod_mk hg
+@[deprecated (since := "2024-11-20")] alias SmoothAt.prod_mk := ContMDiffAt.prod_mk
 
-nonrec theorem SmoothAt.prod_mk_space {f : M → E'} {g : M → F'} (hf : SmoothAt I 𝓘(𝕜, E') f x)
-    (hg : SmoothAt I 𝓘(𝕜, F') g x) : SmoothAt I 𝓘(𝕜, E' × F') (fun x => (f x, g x)) x :=
-  hf.prod_mk_space hg
+@[deprecated (since := "2024-11-20")] alias SmoothAt.prod_mk_space := ContMDiffAt.prod_mk_space
 
-nonrec theorem SmoothOn.prod_mk {f : M → M'} {g : M → N'} (hf : SmoothOn I I' f s)
-    (hg : SmoothOn I J' g s) : SmoothOn I (I'.prod J') (fun x => (f x, g x)) s :=
-  hf.prod_mk hg
+@[deprecated (since := "2024-11-20")] alias SmoothOn.prod_mk := ContMDiffOn.prod_mk
 
-nonrec theorem SmoothOn.prod_mk_space {f : M → E'} {g : M → F'} (hf : SmoothOn I 𝓘(𝕜, E') f s)
-    (hg : SmoothOn I 𝓘(𝕜, F') g s) : SmoothOn I 𝓘(𝕜, E' × F') (fun x => (f x, g x)) s :=
-  hf.prod_mk_space hg
+@[deprecated (since := "2024-11-20")] alias SmoothOn.prod_mk_space := ContMDiffOn.prod_mk_space
 
-nonrec theorem Smooth.prod_mk {f : M → M'} {g : M → N'} (hf : Smooth I I' f) (hg : Smooth I J' g) :
-    Smooth I (I'.prod J') fun x => (f x, g x) :=
-  hf.prod_mk hg
+@[deprecated (since := "2024-11-20")] alias Smooth.prod_mk := ContMDiff.prod_mk
 
-nonrec theorem Smooth.prod_mk_space {f : M → E'} {g : M → F'} (hf : Smooth I 𝓘(𝕜, E') f)
-    (hg : Smooth I 𝓘(𝕜, F') g) : Smooth I 𝓘(𝕜, E' × F') fun x => (f x, g x) :=
-  hf.prod_mk_space hg
+@[deprecated (since := "2024-11-20")] alias Smooth.prod_mk_space := ContMDiff.prod_mk_space
 
 end ProdMk
 
@@ -143,18 +130,13 @@ theorem contMDiffOn_fst {s : Set (M × N)} : ContMDiffOn (I.prod J) I n Prod.fst
 
 theorem contMDiff_fst : ContMDiff (I.prod J) I n (@Prod.fst M N) := fun _ => contMDiffAt_fst
 
-theorem smoothWithinAt_fst {s : Set (M × N)} {p : M × N} :
-    SmoothWithinAt (I.prod J) I Prod.fst s p :=
-  contMDiffWithinAt_fst
+@[deprecated (since := "2024-11-20")] alias smoothWithinAt_fst := contMDiffWithinAt_fst
 
-theorem smoothAt_fst {p : M × N} : SmoothAt (I.prod J) I Prod.fst p :=
-  contMDiffAt_fst
+@[deprecated (since := "2024-11-20")] alias smoothAt_fst := contMDiffAt_fst
 
-theorem smoothOn_fst {s : Set (M × N)} : SmoothOn (I.prod J) I Prod.fst s :=
-  contMDiffOn_fst
+@[deprecated (since := "2024-11-20")] alias smoothOn_fst := contMDiffOn_fst
 
-theorem smooth_fst : Smooth (I.prod J) I (@Prod.fst M N) :=
-  contMDiff_fst
+@[deprecated (since := "2024-11-20")] alias smooth_fst := contMDiff_fst
 
 theorem ContMDiffAt.fst {f : N → M × M'} {x : N} (hf : ContMDiffAt J (I.prod I') n f x) :
     ContMDiffAt J I n (fun x => (f x).1) x :=
@@ -164,12 +146,9 @@ theorem ContMDiff.fst {f : N → M × M'} (hf : ContMDiff J (I.prod I') n f) :
     ContMDiff J I n fun x => (f x).1 :=
   contMDiff_fst.comp hf
 
-theorem SmoothAt.fst {f : N → M × M'} {x : N} (hf : SmoothAt J (I.prod I') f x) :
-    SmoothAt J I (fun x => (f x).1) x :=
-  smoothAt_fst.comp x hf
+@[deprecated (since := "2024-11-20")] alias SmoothAt.fst := ContMDiffAt.fst
 
-theorem Smooth.fst {f : N → M × M'} (hf : Smooth J (I.prod I') f) : Smooth J I fun x => (f x).1 :=
-  smooth_fst.comp hf
+@[deprecated (since := "2024-11-20")] alias Smooth.fst := ContMDiff.fst
 
 theorem contMDiffWithinAt_snd {s : Set (M × N)} {p : M × N} :
     ContMDiffWithinAt (I.prod J) J n Prod.snd s p := by
@@ -199,18 +178,13 @@ theorem contMDiffOn_snd {s : Set (M × N)} : ContMDiffOn (I.prod J) J n Prod.snd
 
 theorem contMDiff_snd : ContMDiff (I.prod J) J n (@Prod.snd M N) := fun _ => contMDiffAt_snd
 
-theorem smoothWithinAt_snd {s : Set (M × N)} {p : M × N} :
-    SmoothWithinAt (I.prod J) J Prod.snd s p :=
-  contMDiffWithinAt_snd
+@[deprecated (since := "2024-11-20")] alias smoothWithinAt_snd := contMDiffWithinAt_snd
 
-theorem smoothAt_snd {p : M × N} : SmoothAt (I.prod J) J Prod.snd p :=
-  contMDiffAt_snd
+@[deprecated (since := "2024-11-20")] alias smoothAt_snd := contMDiffAt_snd
 
-theorem smoothOn_snd {s : Set (M × N)} : SmoothOn (I.prod J) J Prod.snd s :=
-  contMDiffOn_snd
+@[deprecated (since := "2024-11-20")] alias smoothOn_snd := contMDiffOn_snd
 
-theorem smooth_snd : Smooth (I.prod J) J (@Prod.snd M N) :=
-  contMDiff_snd
+@[deprecated (since := "2024-11-20")] alias smooth_snd := contMDiff_snd
 
 theorem ContMDiffAt.snd {f : N → M × M'} {x : N} (hf : ContMDiffAt J (I.prod I') n f x) :
     ContMDiffAt J I' n (fun x => (f x).2) x :=
@@ -220,41 +194,69 @@ theorem ContMDiff.snd {f : N → M × M'} (hf : ContMDiff J (I.prod I') n f) :
     ContMDiff J I' n fun x => (f x).2 :=
   contMDiff_snd.comp hf
 
-theorem SmoothAt.snd {f : N → M × M'} {x : N} (hf : SmoothAt J (I.prod I') f x) :
-    SmoothAt J I' (fun x => (f x).2) x :=
-  smoothAt_snd.comp x hf
+@[deprecated (since := "2024-11-20")] alias SmoothAt.snd := ContMDiffAt.snd
 
-theorem Smooth.snd {f : N → M × M'} (hf : Smooth J (I.prod I') f) : Smooth J I' fun x => (f x).2 :=
-  smooth_snd.comp hf
+@[deprecated (since := "2024-11-20")] alias Smooth.snd := ContMDiff.snd
 
 end Projections
 
-theorem contMDiffWithinAt_prod_iff (f : M → M' × N') {s : Set M} {x : M} :
+theorem contMDiffWithinAt_prod_iff (f : M → M' × N') :
     ContMDiffWithinAt I (I'.prod J') n f s x ↔
       ContMDiffWithinAt I I' n (Prod.fst ∘ f) s x ∧ ContMDiffWithinAt I J' n (Prod.snd ∘ f) s x :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.prod_mk h.2⟩
 
-theorem contMDiffAt_prod_iff (f : M → M' × N') {x : M} :
+theorem contMDiffWithinAt_prod_module_iff (f : M → F₁ × F₂) :
+    ContMDiffWithinAt I 𝓘(𝕜, F₁ × F₂) n f s x ↔
+      ContMDiffWithinAt I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) s x ∧
+      ContMDiffWithinAt I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) s x := by
+  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
+  exact contMDiffWithinAt_prod_iff f
+
+theorem contMDiffAt_prod_iff (f : M → M' × N') :
     ContMDiffAt I (I'.prod J') n f x ↔
       ContMDiffAt I I' n (Prod.fst ∘ f) x ∧ ContMDiffAt I J' n (Prod.snd ∘ f) x := by
   simp_rw [← contMDiffWithinAt_univ]; exact contMDiffWithinAt_prod_iff f
+
+theorem contMDiffAt_prod_module_iff (f : M → F₁ × F₂) :
+    ContMDiffAt I 𝓘(𝕜, F₁ × F₂) n f x ↔
+      ContMDiffAt I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) x ∧ ContMDiffAt I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) x := by
+  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
+  exact contMDiffAt_prod_iff f
+
+theorem contMDiffOn_prod_iff (f : M → M' × N') :
+    ContMDiffOn I (I'.prod J') n f s ↔
+      ContMDiffOn I I' n (Prod.fst ∘ f) s ∧ ContMDiffOn I J' n (Prod.snd ∘ f) s :=
+  ⟨fun h ↦ ⟨fun x hx ↦ ((contMDiffWithinAt_prod_iff f).1 (h x hx)).1,
+      fun x hx ↦ ((contMDiffWithinAt_prod_iff f).1 (h x hx)).2⟩ ,
+    fun h x hx ↦ (contMDiffWithinAt_prod_iff f).2 ⟨h.1 x hx, h.2 x hx⟩⟩
+
+theorem contMDiffOn_prod_module_iff (f : M → F₁ × F₂) :
+    ContMDiffOn I 𝓘(𝕜, F₁ × F₂) n f s ↔
+      ContMDiffOn I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) s ∧ ContMDiffOn I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) s := by
+  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
+  exact contMDiffOn_prod_iff f
 
 theorem contMDiff_prod_iff (f : M → M' × N') :
     ContMDiff I (I'.prod J') n f ↔
       ContMDiff I I' n (Prod.fst ∘ f) ∧ ContMDiff I J' n (Prod.snd ∘ f) :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => by convert h.1.prod_mk h.2⟩
 
-theorem smoothAt_prod_iff (f : M → M' × N') {x : M} :
-    SmoothAt I (I'.prod J') f x ↔ SmoothAt I I' (Prod.fst ∘ f) x ∧ SmoothAt I J' (Prod.snd ∘ f) x :=
-  contMDiffAt_prod_iff f
+theorem contMDiff_prod_module_iff (f : M → F₁ × F₂) :
+    ContMDiff I 𝓘(𝕜, F₁ × F₂) n f ↔
+      ContMDiff I 𝓘(𝕜, F₁) n (Prod.fst ∘ f) ∧ ContMDiff I 𝓘(𝕜, F₂) n (Prod.snd ∘ f) := by
+  rw [modelWithCornersSelf_prod, ← chartedSpaceSelf_prod]
+  exact contMDiff_prod_iff f
 
-theorem smooth_prod_iff (f : M → M' × N') :
-    Smooth I (I'.prod J') f ↔ Smooth I I' (Prod.fst ∘ f) ∧ Smooth I J' (Prod.snd ∘ f) :=
-  contMDiff_prod_iff f
+theorem contMDiff_prod_assoc :
+    ContMDiff ((I.prod I').prod J) (I.prod (I'.prod J)) n
+      fun x : (M × M') × N => (x.1.1, x.1.2, x.2) :=
+  contMDiff_fst.fst.prod_mk <| contMDiff_fst.snd.prod_mk contMDiff_snd
 
-theorem smooth_prod_assoc :
-    Smooth ((I.prod I').prod J) (I.prod (I'.prod J)) fun x : (M × M') × N => (x.1.1, x.1.2, x.2) :=
-  smooth_fst.fst.prod_mk <| smooth_fst.snd.prod_mk smooth_snd
+@[deprecated (since := "2024-11-20")] alias smoothAt_prod_iff := contMDiffAt_prod_iff
+
+@[deprecated (since := "2024-11-20")] alias smooth_prod_iff := contMDiff_prod_iff
+
+@[deprecated (since := "2024-11-20")] alias smooth_prod_assoc := contMDiff_prod_assoc
 
 section prodMap
 
@@ -294,22 +296,13 @@ theorem ContMDiff.prod_map (hf : ContMDiff I I' n f) (hg : ContMDiff J J' n g) :
   intro p
   exact (hf p.1).prod_map' (hg p.2)
 
-nonrec theorem SmoothWithinAt.prod_map (hf : SmoothWithinAt I I' f s x)
-    (hg : SmoothWithinAt J J' g r y) :
-    SmoothWithinAt (I.prod J) (I'.prod J') (Prod.map f g) (s ×ˢ r) (x, y) :=
-  hf.prod_map hg
+@[deprecated (since := "2024-11-20")] alias SmoothWithinAt.prod_map := ContMDiffWithinAt.prod_map
 
-nonrec theorem SmoothAt.prod_map (hf : SmoothAt I I' f x) (hg : SmoothAt J J' g y) :
-    SmoothAt (I.prod J) (I'.prod J') (Prod.map f g) (x, y) :=
-  hf.prod_map hg
+@[deprecated (since := "2024-11-20")] alias SmoothAt.prod_map := ContMDiffAt.prod_map
 
-nonrec theorem SmoothOn.prod_map (hf : SmoothOn I I' f s) (hg : SmoothOn J J' g r) :
-    SmoothOn (I.prod J) (I'.prod J') (Prod.map f g) (s ×ˢ r) :=
-  hf.prod_map hg
+@[deprecated (since := "2024-11-20")] alias SmoothOn.prod_map := ContMDiffOn.prod_map
 
-nonrec theorem Smooth.prod_map (hf : Smooth I I' f) (hg : Smooth J J' g) :
-    Smooth (I.prod J) (I'.prod J') (Prod.map f g) :=
-  hf.prod_map hg
+@[deprecated (since := "2024-11-20")] alias Smooth.prod_map := ContMDiff.prod_map
 
 end prodMap
 
@@ -345,20 +338,12 @@ theorem contMDiff_pi_space :
     ContMDiff I 𝓘(𝕜, ∀ i, Fi i) n φ ↔ ∀ i, ContMDiff I 𝓘(𝕜, Fi i) n fun x => φ x i :=
   ⟨fun h i x => contMDiffAt_pi_space.1 (h x) i, fun h x => contMDiffAt_pi_space.2 fun i => h i x⟩
 
-theorem smoothWithinAt_pi_space :
-    SmoothWithinAt I 𝓘(𝕜, ∀ i, Fi i) φ s x ↔
-      ∀ i, SmoothWithinAt I 𝓘(𝕜, Fi i) (fun x => φ x i) s x :=
-  contMDiffWithinAt_pi_space
+@[deprecated (since := "2024-11-20")] alias smoothWithinAt_pi_space := contMDiffWithinAt_pi_space
 
-theorem smoothOn_pi_space :
-    SmoothOn I 𝓘(𝕜, ∀ i, Fi i) φ s ↔ ∀ i, SmoothOn I 𝓘(𝕜, Fi i) (fun x => φ x i) s :=
-  contMDiffOn_pi_space
+@[deprecated (since := "2024-11-20")] alias smoothAt_pi_space := contMDiffAt_pi_space
 
-theorem smoothAt_pi_space :
-    SmoothAt I 𝓘(𝕜, ∀ i, Fi i) φ x ↔ ∀ i, SmoothAt I 𝓘(𝕜, Fi i) (fun x => φ x i) x :=
-  contMDiffAt_pi_space
+@[deprecated (since := "2024-11-20")] alias smoothOn_pi_space := contMDiffOn_pi_space
 
-theorem smooth_pi_space : Smooth I 𝓘(𝕜, ∀ i, Fi i) φ ↔ ∀ i, Smooth I 𝓘(𝕜, Fi i) fun x => φ x i :=
-  contMDiff_pi_space
+@[deprecated (since := "2024-11-20")] alias smooth_pi_space := contMDiff_pi_space
 
 end PiSpace

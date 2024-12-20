@@ -37,7 +37,7 @@ instance sheafIsAbelian : Abelian (Sheaf J D) :=
   let adj := sheafificationAdjunction J D
   abelianOfAdjunction _ _ (asIso adj.counit) adj
 
-attribute [local instance] preservesBinaryBiproductsOfPreservesBinaryProducts
+attribute [local instance] preservesBinaryBiproducts_of_preservesBinaryProducts
 
 instance presheafToSheaf_additive : (presheafToSheaf J D).Additive :=
   (presheafToSheaf J D).additive_of_preservesBinaryBiproducts

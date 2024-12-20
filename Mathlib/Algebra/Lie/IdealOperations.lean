@@ -192,12 +192,10 @@ theorem sup_lie : ⁅I ⊔ J, N⁆ = ⁅I, N⁆ ⊔ ⁅J, N⁆ := by
   use ⁅((⟨x₂, hx₂⟩ : J) : L), (n : N)⁆; constructor; · apply lie_coe_mem_lie
   simp [← h, ← hx']
 
--- @[simp] -- Porting note: not in simpNF
 theorem lie_inf : ⁅I, N ⊓ N'⁆ ≤ ⁅I, N⁆ ⊓ ⁅I, N'⁆ := by
   rw [le_inf_iff]; constructor <;>
   apply mono_lie_right <;> [exact inf_le_left; exact inf_le_right]
 
--- @[simp] -- Porting note: not in simpNF
 theorem inf_lie : ⁅I ⊓ J, N⁆ ≤ ⁅I, N⁆ ⊓ ⁅J, N⁆ := by
   rw [le_inf_iff]; constructor <;>
   apply mono_lie_left <;> [exact inf_le_left; exact inf_le_right]

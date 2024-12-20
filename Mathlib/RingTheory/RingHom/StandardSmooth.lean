@@ -19,7 +19,6 @@ This contribution was created as part of the AIM workshop "Formalizing algebraic
 in June 2024.
 
 -/
-
 universe t t' w w' u v
 
 variable (n m : ℕ)
@@ -103,8 +102,9 @@ lemma isStandardSmoothOfRelativeDimension_respectsIso :
     rw [← add_zero n]
     exact hf.comp (IsStandardSmoothOfRelativeDimension.equiv e)
 
-lemma isStandardSmooth_stableUnderBaseChange : StableUnderBaseChange @IsStandardSmooth.{t, w} := by
-  apply StableUnderBaseChange.mk
+lemma isStandardSmooth_isStableUnderBaseChange :
+    IsStableUnderBaseChange @IsStandardSmooth.{t, w} := by
+  apply IsStableUnderBaseChange.mk
   · exact isStandardSmooth_respectsIso
   · introv h
     replace h : Algebra.IsStandardSmooth R T := by
@@ -115,9 +115,9 @@ lemma isStandardSmooth_stableUnderBaseChange : StableUnderBaseChange @IsStandard
 
 variable (n)
 
-lemma isStandardSmoothOfRelativeDimension_stableUnderBaseChange :
-    StableUnderBaseChange (@IsStandardSmoothOfRelativeDimension.{t, w} n) := by
-  apply StableUnderBaseChange.mk
+lemma isStandardSmoothOfRelativeDimension_isStableUnderBaseChange :
+    IsStableUnderBaseChange (@IsStandardSmoothOfRelativeDimension.{t, w} n) := by
+  apply IsStableUnderBaseChange.mk
   · exact isStandardSmoothOfRelativeDimension_respectsIso
   · introv h
     replace h : Algebra.IsStandardSmoothOfRelativeDimension n R T := by
@@ -139,11 +139,11 @@ lemma IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway {Rᵣ : 
   exact Algebra.IsStandardSmoothOfRelativeDimension.localization_away r
 
 lemma isStandardSmooth_localizationPreserves : LocalizationPreserves IsStandardSmooth.{t, w} :=
-  isStandardSmooth_stableUnderBaseChange.localizationPreserves
+  isStandardSmooth_isStableUnderBaseChange.localizationPreserves
 
 lemma isStandardSmoothOfRelativeDimension_localizationPreserves :
     LocalizationPreserves (IsStandardSmoothOfRelativeDimension.{t, w} n) :=
-  (isStandardSmoothOfRelativeDimension_stableUnderBaseChange n).localizationPreserves
+  (isStandardSmoothOfRelativeDimension_isStableUnderBaseChange n).localizationPreserves
 
 lemma isStandardSmooth_holdsForLocalizationAway :
     HoldsForLocalizationAway IsStandardSmooth.{0, 0} := by
@@ -162,13 +162,13 @@ lemma isStandardSmooth_stableUnderCompositionWithLocalizationAway :
 
 lemma isStandardSmoothOfRelativeDimension_stableUnderCompositionWithLocalizationAway :
     StableUnderCompositionWithLocalizationAway (IsStandardSmoothOfRelativeDimension.{0, 0} n) where
-  left _ S T _ _ _ _ s _ _ hf :=
-    have : (algebraMap S T).IsStandardSmoothOfRelativeDimension 0 :=
-      IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway s
-    zero_add n ▸ IsStandardSmoothOfRelativeDimension.comp this hf
-  right R S _ _ _ _ _ r _ _ hf :=
+  left R S _ _ _ _ _ r _ _ hf :=
     have : (algebraMap R S).IsStandardSmoothOfRelativeDimension 0 :=
       IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway r
     add_zero n ▸ IsStandardSmoothOfRelativeDimension.comp hf this
+  right _ S T _ _ _ _ s _ _ hf :=
+    have : (algebraMap S T).IsStandardSmoothOfRelativeDimension 0 :=
+      IsStandardSmoothOfRelativeDimension.algebraMap_isLocalizationAway s
+    zero_add n ▸ IsStandardSmoothOfRelativeDimension.comp this hf
 
 end RingHom

@@ -391,7 +391,7 @@ theorem Prime.prod_divisors {α : Type*} [CommMonoid α] {p : ℕ} {f : ℕ → 
 theorem properDivisors_eq_singleton_one_iff_prime : n.properDivisors = {1} ↔ n.Prime := by
   refine ⟨?_, ?_⟩
   · intro h
-    refine Nat.prime_def_lt''.mpr ⟨?_, fun m hdvd => ?_⟩
+    refine Nat.prime_def.mpr ⟨?_, fun m hdvd => ?_⟩
     · match n with
       | 0 => contradiction
       | 1 => contradiction

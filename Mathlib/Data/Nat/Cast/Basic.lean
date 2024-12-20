@@ -3,7 +3,9 @@ Copyright (c) 2014 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Divisibility.Basic
+import Mathlib.Algebra.Divisibility.Hom
+import Mathlib.Algebra.Group.Even
+import Mathlib.Algebra.Group.TypeTags.Hom
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.Nat
 
@@ -125,13 +127,6 @@ theorem map_ofNat' {A} [AddMonoidWithOne A] [FunLike F A B] [AddMonoidHomClass F
     (f : F) (h : f 1 = 1) (n : ℕ) [n.AtLeastTwo] : f (OfNat.ofNat n) = OfNat.ofNat n :=
   map_natCast' f h n
 
-@[simp] lemma nsmul_one {A} [AddMonoidWithOne A] : ∀ n : ℕ, n • (1 : A) = n := by
-  let f : ℕ →+ A :=
-  { toFun := fun n ↦ n • (1 : A)
-    map_zero' := zero_nsmul _
-    map_add' := add_nsmul _ }
-  exact eq_natCast' f <| by simp [f]
-
 end AddMonoidHomClass
 
 section MonoidWithZeroHomClass
@@ -164,6 +159,11 @@ theorem eq_natCast [FunLike F ℕ R] [RingHomClass F ℕ R] (f : F) : ∀ n, f n
 theorem map_natCast [FunLike F R S] [RingHomClass F R S] (f : F) : ∀ n : ℕ, f (n : R) = n :=
   map_natCast' f <| map_one f
 
+/-- This lemma is not marked `@[simp]` lemma because its `#discr_tree_key` (for the LHS) would just
+be `DFunLike.coe _ _`, due to the `no_index` that https://github.com/leanprover/lean4/issues/2867
+forces us to include, and therefore it would negatively impact performance.
+
+If that issue is resolved, this can be marked `@[simp]`. -/
 theorem map_ofNat [FunLike F R S] [RingHomClass F R S] (f : F) (n : ℕ) [Nat.AtLeastTwo n] :
     (f (no_index (OfNat.ofNat n)) : S) = OfNat.ofNat n :=
   map_natCast f n
@@ -227,7 +227,7 @@ lemma multiplesHom_apply (x : β) (n : ℕ) : multiplesHom β x n = n • x := r
 
 @[to_additive existing (attr := simp)]
 lemma powersHom_apply (x : α) (n : Multiplicative ℕ) :
-    powersHom α x n = x ^ Multiplicative.toAdd n := rfl
+    powersHom α x n = x ^ n.toAdd := rfl
 
 lemma multiplesHom_symm_apply (f : ℕ →+ β) : (multiplesHom β).symm f = f 1 := rfl
 
@@ -236,7 +236,7 @@ lemma powersHom_symm_apply (f : Multiplicative ℕ →* α) :
     (powersHom α).symm f = f (Multiplicative.ofAdd 1) := rfl
 
 lemma MonoidHom.apply_mnat (f : Multiplicative ℕ →* α) (n : Multiplicative ℕ) :
-    f n = f (Multiplicative.ofAdd 1) ^ (Multiplicative.toAdd n) := by
+    f n = f (Multiplicative.ofAdd 1) ^ n.toAdd := by
   rw [← powersHom_symm_apply, ← powersHom_apply, Equiv.apply_symm_apply]
 
 @[ext]
@@ -263,7 +263,7 @@ def powersMulHom : α ≃* (Multiplicative ℕ →* α) :=
 @[simp] lemma multiplesAddHom_apply (x : β) (n : ℕ) : multiplesAddHom β x n = n • x := rfl
 
 @[simp]
-lemma powersMulHom_apply (x : α) (n : Multiplicative ℕ) : powersMulHom α x n = x ^ toAdd n := rfl
+lemma powersMulHom_apply (x : α) (n : Multiplicative ℕ) : powersMulHom α x n = x ^ n.toAdd := rfl
 
 @[simp] lemma multiplesAddHom_symm_apply (f : ℕ →+ β) : (multiplesAddHom β).symm f = f 1 := rfl
 

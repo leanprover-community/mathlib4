@@ -320,19 +320,26 @@ theorem invFunIdAssoc_inv_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
 
 /-- If `C` is equivalent to `D`, then `C ⥤ E` is equivalent to `D ⥤ E`. -/
 @[simps! functor inverse unitIso counitIso]
-def congrLeft (e : C ≌ D) : C ⥤ E ≌ D ⥤ E :=
-  Equivalence.mk ((whiskeringLeft _ _ _).obj e.inverse) ((whiskeringLeft _ _ _).obj e.functor)
-    (NatIso.ofComponents fun F => (e.funInvIdAssoc F).symm)
-    (NatIso.ofComponents fun F => e.invFunIdAssoc F)
+def congrLeft (e : C ≌ D) : C ⥤ E ≌ D ⥤ E where
+  functor := (whiskeringLeft _ _ _).obj e.inverse
+  inverse := (whiskeringLeft _ _ _).obj e.functor
+  unitIso := (NatIso.ofComponents fun F => (e.funInvIdAssoc F).symm)
+  counitIso := (NatIso.ofComponents fun F => e.invFunIdAssoc F)
+  functor_unitIso_comp F := by
+    ext X
+    dsimp
+    simp only [funInvIdAssoc_inv_app, id_obj, comp_obj, invFunIdAssoc_hom_app,
+      Functor.comp_map, ← F.map_comp, unit_inverse_comp, map_id]
 
 /-- If `C` is equivalent to `D`, then `E ⥤ C` is equivalent to `E ⥤ D`. -/
 @[simps! functor inverse unitIso counitIso]
-def congrRight (e : C ≌ D) : E ⥤ C ≌ E ⥤ D :=
-  Equivalence.mk ((whiskeringRight _ _ _).obj e.functor) ((whiskeringRight _ _ _).obj e.inverse)
-    (NatIso.ofComponents
-      fun F => F.rightUnitor.symm ≪≫ isoWhiskerLeft F e.unitIso ≪≫ Functor.associator _ _ _)
-    (NatIso.ofComponents
-      fun F => Functor.associator _ _ _ ≪≫ isoWhiskerLeft F e.counitIso ≪≫ F.rightUnitor)
+def congrRight (e : C ≌ D) : E ⥤ C ≌ E ⥤ D where
+  functor := (whiskeringRight _ _ _).obj e.functor
+  inverse := (whiskeringRight _ _ _).obj e.inverse
+  unitIso := NatIso.ofComponents
+      fun F => F.rightUnitor.symm ≪≫ isoWhiskerLeft F e.unitIso ≪≫ Functor.associator _ _ _
+  counitIso := NatIso.ofComponents
+      fun F => Functor.associator _ _ _ ≪≫ isoWhiskerLeft F e.counitIso ≪≫ F.rightUnitor
 
 section CancellationLemmas
 

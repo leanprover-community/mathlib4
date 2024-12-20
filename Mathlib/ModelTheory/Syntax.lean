@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 import Mathlib.Data.Set.Prod
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.ModelTheory.LanguageMap
+import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
 # Basics on First-Order Syntax
@@ -365,10 +366,10 @@ protected def ex (φ : L.BoundedFormula α (n + 1)) : L.BoundedFormula α n :=
 instance : Top (L.BoundedFormula α n) :=
   ⟨BoundedFormula.not ⊥⟩
 
-instance : Inf (L.BoundedFormula α n) :=
+instance : Min (L.BoundedFormula α n) :=
   ⟨fun f g => (f.imp g.not).not⟩
 
-instance : Sup (L.BoundedFormula α n) :=
+instance : Max (L.BoundedFormula α n) :=
   ⟨fun f g => f.not.imp g⟩
 
 /-- The biimplication between two bounded formulas. -/
@@ -641,7 +642,7 @@ theorem comp_onBoundedFormula {L'' : Language} (φ : L' →ᴸ L'') (ψ : L →�
   ext f
   induction f with
   | falsum => rfl
-  | equal => simp only [onBoundedFormula, comp_onTerm, Function.comp_apply]
+  | equal => simp [Term.bdEqual]
   | rel => simp only [onBoundedFormula, comp_onRelation, comp_onTerm, Function.comp_apply]; rfl
   | imp _ _ ih1 ih2 =>
     simp only [onBoundedFormula, Function.comp_apply, ih1, ih2, eq_self_iff_true, and_self_iff]
@@ -750,7 +751,7 @@ noncomputable def iAlls [Finite γ] (f : α → β ⊕ γ)
   (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).alls
 
 /-- Given a map `f : α → β ⊕ γ`, `iExs f φ` transforms a `L.Formula α`
-into a `L.Formula β` by renaming variables with the map `f` and then universally
+into a `L.Formula β` by renaming variables with the map `f` and then existentially
 quantifying over all variables `Sum.inr _`. -/
 noncomputable def iExs [Finite γ] (f : α → β ⊕ γ)
     (φ : L.Formula α) : L.Formula β :=

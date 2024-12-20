@@ -84,10 +84,10 @@ protected lemma lift_mk {α : Type*} (f : { v : V // v ≠ 0 } → α)
 
 /-- Choose a representative of `v : Projectivization K V` in `V`. -/
 protected noncomputable def rep (v : ℙ K V) : V :=
-  v.out'
+  v.out
 
 theorem rep_nonzero (v : ℙ K V) : v.rep ≠ 0 :=
-  v.out'.2
+  v.out.2
 
 @[simp]
 theorem mk_rep (v : ℙ K V) : mk K v.rep v.rep_nonzero = v := Quotient.out_eq' _

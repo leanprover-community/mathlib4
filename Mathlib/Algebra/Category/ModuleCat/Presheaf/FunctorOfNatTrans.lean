@@ -12,8 +12,12 @@ import Mathlib.CategoryTheory.Bicategory.NaturalTransformation.Oplax
 
 In this file, we show that any oplax natural transformation from
 `CommRingCat.moduleCatRestrictScalarsPseudofunctor` to itself induces
-a functor `PresheafOfModules.{v} R ⥤ PresheafOfModules.{v} R`
-for any presheaf of commutative rings.
+a functor `PresheafOfModules R ⥤ PresheafOfModules R`
+for any presheaf of commutative rings `R`. In other words, one may
+obtain a functor `PresheafOfModules R ⥤ PresheafOfModules R`
+from a family of functors `ModuleCat A ⥤ ModuleCat A` for all
+commutative rings `A`, which satisfies certain compatibilities
+with respect to the restriction of scalars.
 
 -/
 
@@ -21,14 +25,16 @@ universe v v₁ u₁ u
 
 open CategoryTheory
 
+-- should be moved
 @[simp]
 lemma CommRingCat.forgetToRingCat_map {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    (forget₂ _ RingCat).map f = f := rfl
+    (forget₂ _ RingCat).map f = RingCat.ofHom f.hom := rfl
 
 namespace CategoryTheory
 
 open Bicategory
 
+-- should be moved
 namespace OplaxFunctor
 
 variable {B C : Type*} [Bicategory B] [Bicategory C]
@@ -90,7 +96,7 @@ open CategoryTheory Category Limits Opposite
 lemma CommRingCat.moduleCatRestrictScalarsPseudofunctor_mapId' {R : CommRingCat.{u}} (f : R ⟶ R)
     (hf : f = 𝟙 _) :
   CommRingCat.moduleCatRestrictScalarsPseudofunctor.toOplax.mapId'
-    ⟨f.op⟩ (by subst hf; rfl) = (ModuleCat.restrictScalarsId' f hf).hom := by
+    ⟨f.op⟩ (by subst hf; rfl) = (ModuleCat.restrictScalarsId' f.hom (by simp [hf])).hom := by
   subst hf
   apply OplaxFunctor.mapId'_eq_mapId
 
@@ -100,7 +106,7 @@ lemma CommRingCat.moduleCatRestrictScalarsPseudofunctor_mapComp' {R₀ R₁ R₂
     (f : R₀ ⟶ R₁) (g : R₁ ⟶ R₂) (fg : R₀ ⟶ R₂) (h : fg = f ≫ g) :
   CommRingCat.moduleCatRestrictScalarsPseudofunctor.toOplax.mapComp'
     ⟨g.op⟩ ⟨f.op⟩ ⟨fg.op⟩ (by subst h; rfl) =
-    (ModuleCat.restrictScalarsComp' f g fg h).hom := by
+    (ModuleCat.restrictScalarsComp' f.hom g.hom fg.hom (by simp [h])).hom := by
   subst h
   apply OplaxFunctor.mapComp'_eq_mapComp
 
@@ -111,6 +117,10 @@ variable (τ : OplaxNatTrans CommRingCat.moduleCatRestrictScalarsPseudofunctor.{
   {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ CommRingCat.{u}}
 
 set_option maxHeartbeats 400000 in
+/-- Given an oplax natural transformation `τ` from
+`CommRingCat.moduleCatRestrictScalarsPseudofunctor` to itself, and `M` a presheaf
+of modules over a presheaf of commutative rings `R`, this is the presheaf
+of modules over `R` obtained by applying `τ` to all modules `M.obj X`. -/
 @[simps]
 noncomputable def functorOfOplaxNatTransObj (M : PresheafOfModules.{v} (R ⋙ forget₂ _ _)) :
     PresheafOfModules.{v} (R ⋙ forget₂ _ _) where
@@ -119,12 +129,13 @@ noncomputable def functorOfOplaxNatTransObj (M : PresheafOfModules.{v} (R ⋙ fo
     (τ.naturality (Quiver.Hom.toLoc (R.map f).op)).app (M.obj Y)
   map_id X := by
     dsimp only [Functor.comp_map, CommRingCat.forgetToRingCat_map]
-    rw [map_id, ← cancel_mono ((ModuleCat.restrictScalarsId' _ (R.map_id X)).hom.app _),
+    rw [map_id, ← cancel_mono ((ModuleCat.restrictScalarsId' _ (by simp)).hom.app _),
       assoc, Iso.inv_hom_id_app]
     have := NatTrans.congr_app
       (τ.naturality_id' (b := ⟨⟨R.obj X⟩⟩) ⟨⟨R.map (𝟙 X)⟩⟩ (by rw [R.map_id]; rfl)) (M.obj X)
     dsimp at this
-    erw [CommRingCat.moduleCatRestrictScalarsPseudofunctor_mapId'] at this
+    erw [CommRingCat.moduleCatRestrictScalarsPseudofunctor_mapId' _ (by simp)] at this
+    dsimp
     erw [this, Iso.hom_inv_id_app]
     dsimp
     rw [comp_id, ← Functor.map_comp, Iso.inv_hom_id, CategoryTheory.Functor.map_id]
@@ -137,7 +148,8 @@ noncomputable def functorOfOplaxNatTransObj (M : PresheafOfModules.{v} (R ⋙ fo
     erw [CommRingCat.moduleCatRestrictScalarsPseudofunctor_mapComp' _ _ _ (by simp)] at this
     dsimp [Bicategory.associator] at this
     rw [id_comp, id_comp, comp_id] at this
-    rw [assoc, ← cancel_mono ((ModuleCat.restrictScalarsComp' _ _ _ (R.map_comp f g)).hom.app _),
+    rw [assoc, ← cancel_mono ((ModuleCat.restrictScalarsComp'
+        (R.map f).hom (R.map g).hom _ (by simp)).hom.app _),
       assoc, assoc, assoc, assoc, Iso.inv_hom_id_app]
     erw [this, comp_id, map_comp]
     dsimp
@@ -159,9 +171,8 @@ noncomputable def functorOfOplaxNatTrans :
   map {M N} φ :=
     { app := fun X ↦ (τ.app _).map (φ.app X)
       naturality := fun {X Y} f ↦ by
-        dsimp [functorOfOplaxNatTransObj]
-        rw [assoc, ← Functor.map_comp_assoc, ← φ.naturality,
-          Functor.map_comp_assoc]
+        dsimp
+        rw [assoc, ← Functor.map_comp_assoc, ← φ.naturality, Functor.map_comp_assoc]
         erw [← NatTrans.naturality]
         rfl }
 
