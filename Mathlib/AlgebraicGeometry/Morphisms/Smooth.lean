@@ -176,6 +176,7 @@ instance (priority := 100) [hf : IsSmooth f] : LocallyOfFinitePresentation f := 
       finitePresentation_ofLocalizationSpanTarget] at hf
   · introv hf
     algebraize [f]
+    -- TODO: why is `algebraize` not generating the following instance?
     haveI : Algebra.IsStandardSmooth R S := hf
     exact this.finitePresentation
 
