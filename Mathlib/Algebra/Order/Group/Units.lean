@@ -13,6 +13,7 @@ import Mathlib.Algebra.Order.Monoid.Units
 
 variable {α : Type*}
 
+-- TODO rename inst
 /-- The units of an ordered commutative monoid form an ordered commutative group. -/
 @[to_additive
       /-- The units of an ordered commutative additive monoid form an ordered commutative
