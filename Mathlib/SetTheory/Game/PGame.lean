@@ -637,7 +637,6 @@ instance : IsIrrefl _ (· ⧏ ·) :=
 
 protected theorem not_lt {x y : PGame} : ¬(x < y) ↔ y ⧏ x ∨ y ≤ x := not_lt_iff_not_le_or_ge
 
-
 @[trans]
 theorem lf_of_le_of_lf {x y z : PGame} (h₁ : x ≤ y) (h₂ : y ⧏ z) : x ⧏ z := by
   rw [← PGame.not_le] at h₂ ⊢
