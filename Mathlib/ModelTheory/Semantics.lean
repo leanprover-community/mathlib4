@@ -822,7 +822,6 @@ theorem realize_iExs [Finite γ] {f : α → β ⊕ γ}
       ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   rw [← Formula.realize_iExs, iff_iff_eq]; congr; simp [eq_iff_true_of_subsingleton]
 
-
 @[simp]
 theorem realize_toFormula (φ : L.BoundedFormula α n) (v : α ⊕ (Fin n) → M) :
     φ.toFormula.Realize v ↔ φ.Realize (v ∘ Sum.inl) (v ∘ Sum.inr) := by
