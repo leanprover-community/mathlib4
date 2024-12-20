@@ -877,20 +877,27 @@ end Analytic
 
 section Deriv
 
-lemma deriv_mgf [IsFiniteMeasure μ]
-    (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
+variable [IsFiniteMeasure μ]
+
+lemma deriv_mgf (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
     deriv (mgf X μ) v = μ[fun ω ↦ X ω * exp (v * X ω)] := by
   simp [(hasFPowerSeriesAt_mgf_of_mem_interior h).deriv]
 
-lemma deriv_mgf_zero [IsFiniteMeasure μ]
-    (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
+lemma deriv_cgf (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
+    deriv (cgf X μ) v = μ[fun ω ↦ X ω * exp (v * X ω - cgf X μ v)] := by
+  sorry
+
+lemma deriv_mgf_zero (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
     deriv (mgf X μ) 0 = μ[X] := by
   simp [deriv_mgf h]
 
+lemma deriv_cgf_zero (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
+    deriv (cgf X μ) 0 = μ[X] := by
+  sorry
+
 /-- The nth derivative of the moment generating function of `X` at `v` in the interior of its
 domain is `μ[X^n * exp(v * X)]`. -/
-lemma iteratedDeriv_mgf [IsFiniteMeasure μ]
-    (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
+lemma iteratedDeriv_mgf (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
     iteratedDeriv n (mgf X μ) v = μ[fun ω ↦ X ω ^ n * exp (v * X ω)] := by
   rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at h
   obtain ⟨l, u, hvlu, h_subset⟩ := h
@@ -905,10 +912,19 @@ lemma iteratedDeriv_mgf [IsFiniteMeasure μ]
   · simp [n.factorial_ne_zero]
 
 /-- The derivatives of the moment generating function at zero are the moments. -/
-lemma iteratedDeriv_mgf_zero [IsFiniteMeasure μ]
-    (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
+lemma iteratedDeriv_mgf_zero (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
     iteratedDeriv n (mgf X μ) 0 = μ[X ^ n] := by
   simp [iteratedDeriv_mgf h n]
+
+lemma iteratedDeriv_two_cgf (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
+    iteratedDeriv 2 (cgf X μ) v
+      = μ[fun ω ↦ (X ω - deriv (cgf X μ) v)^2 * exp (v * X ω - cgf X μ v)] := by
+  sorry
+
+lemma iteratedDeriv_three_cgf (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
+    iteratedDeriv 3 (cgf X μ) v
+      = μ[fun ω ↦ (X ω - deriv (cgf X μ) v)^3 * exp (v * X ω - cgf X μ v)] := by
+  sorry
 
 end Deriv
 
