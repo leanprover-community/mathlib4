@@ -77,6 +77,6 @@ protected theorem integralClosure [NoZeroDivisors A] :
 omit hx in
 protected theorem algebraicClosure {F E : Type*} [Field F] [Field E] [Algebra F E] {x : ι → E}
     (hx : AlgebraicIndependent F x) : AlgebraicIndependent (algebraicClosure F E) x :=
-  hx.extendScalars Subtype.val_injective
+  hx.extendScalars_of_isSimpleRing
 
 end AlgebraicIndependent
