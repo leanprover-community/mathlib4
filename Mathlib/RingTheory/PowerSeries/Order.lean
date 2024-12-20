@@ -264,6 +264,7 @@ theorem order_eq_emultiplicity_X {R : Type*} [Semiring R] (φ : R⟦X⟧) :
         · rw [← hn, ENat.coe_lt_coe]
           simp
 
+-- TODO rename
 /-- Given a non-zero power series `f`, `divided_by_X_pow_order f` is the power series obtained by
   dividing out the largest power of X that divides `f`, that is its order -/
 def divided_by_X_pow_order {f : PowerSeries R} (hf : f ≠ 0) : R⟦X⟧ :=
@@ -285,6 +286,7 @@ variable [Semiring R] [Nontrivial R]
 theorem order_one : order (1 : R⟦X⟧) = 0 := by
   simpa using order_monomial_of_ne_zero 0 (1 : R) one_ne_zero
 
+-- TODO rename isUnit
 /-- The order of an invertible power series is `0`. -/
 theorem order_zero_of_unit {f : PowerSeries R} : IsUnit f → f.order = 0 := by
   rintro ⟨⟨u, v, hu, hv⟩, hf⟩
