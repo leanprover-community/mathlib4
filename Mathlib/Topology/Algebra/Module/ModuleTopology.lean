@@ -3,7 +3,7 @@ Copyright (c) 2024 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Will Sawin
 -/
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # A "module topology" for modules over a topological ring
@@ -291,6 +291,16 @@ theorem continuous_neg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpa
     [IsModuleTopology R C] : Continuous (fun a ↦ -a : C → C) :=
   haveI : ContinuousAdd C := IsModuleTopology.toContinuousAdd R C
   continuous_of_linearMap (LinearEquiv.neg R).toLinearMap
+
+@[fun_prop, continuity]
+theorem continuous_of_ringHom {R A B} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B]
+    [TopologicalSpace R] [TopologicalSpace A] [IsModuleTopology R A] [TopologicalSpace B]
+    [TopologicalSemiring B]
+    (φ : A →+* B) (hφ : Continuous (φ.comp (algebraMap R A))) : Continuous φ := by
+  let inst := Module.compHom B (φ.comp (algebraMap R A))
+  let φ' : A →ₗ[R] B := ⟨φ, fun r m ↦ by simp [Algebra.smul_def]; rfl⟩
+  have : ContinuousSMul R B := ⟨(hφ.comp continuous_fst).mul continuous_snd⟩
+  exact continuous_of_linearMap φ'
 
 end function
 
