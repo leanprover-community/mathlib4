@@ -21,12 +21,12 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
 
 ## Main results
 
-* `IsZGroup.isCyclic_abelianization`: A finite Z-group has cyclic abelianization.
-* `IsZGroup.isCyclic_commutator`: A finite Z-group has cyclic commutator subgroup.
-* `IsZGroup.coprime_commutator_index`: If `G` is a finite Z-group, then `commutator G` is a Hall
+* `IsZGroup.isCyclic_abelianization`: a finite Z-group has cyclic abelianization.
+* `IsZGroup.isCyclic_commutator`: a finite Z-group has cyclic commutator subgroup.
+* `IsZGroup.coprime_commutator_index`: if `G` is a finite Z-group, then `commutator G` is a Hall
   subgroup of `G` (`commutator G` has cardinality coprime to its index in `G`).
-* `isZGroup_iff_mulEquiv`: `G` is a Z-group if and only if `G` is isomorphic to a semidirect
-  product of two cyclic groups of coprime order.
+* `isZGroup_iff_mulEquiv`: a finite group `G` is a Z-group if and only if `G` is isomorphic to a
+  semidirect product of two cyclic groups of coprime order.
 
 -/
 
