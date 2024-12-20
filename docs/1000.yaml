@@ -351,6 +351,9 @@ Q472883:
 
 Q474881:
   title: Cantor's theorem
+  # a.k.a. Cantor's diagonal argument
+  decl: Function.cantor_surjective
+  author: Johannes Hölzl and Mario Carneiro
 
 Q476776:
   title: Solutions of a general quartic equation
