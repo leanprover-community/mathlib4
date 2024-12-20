@@ -245,8 +245,7 @@ theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
   refine RingHom.congr_arg _ ?_
   rw [mul_one_div (↑(n.choose x) : ℚ), one_div_mul_one_div]
   symm
-  #adaptation_note /-- `_root_` can be removed again after nightly-2024-12-20. -/
-  rw [_root_.div_eq_iff, div_mul_eq_mul_div, one_mul, choose_eq_factorial_div_factorial]
+  rw [div_eq_iff, div_mul_eq_mul_div, one_mul, choose_eq_factorial_div_factorial]
   · norm_cast
     rw [cast_div_charZero]
     apply factorial_mul_factorial_dvd_factorial (mem_range_succ_iff.1 hx)

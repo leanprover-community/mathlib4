@@ -297,9 +297,8 @@ theorem totient_eq_mul_prod_factors (n : ℕ) :
   have hpQ : (∏ p ∈ n.primeFactors, (p : ℚ)) ≠ 0 := by
     rw [← cast_prod, cast_ne_zero, ← zero_lt_iff, prod_primeFactors_prod_factorization]
     exact prod_pos fun p hp => pos_of_mem_primeFactors hp
-  #adaptation_note /-- `_root_` can be removed again after nightly-2024-12-20. -/
   simp only [totient_eq_div_primeFactors_mul n, prod_primeFactors_dvd n, cast_mul, cast_prod,
-    cast_div_charZero, mul_comm_div, mul_right_inj' hn', _root_.div_eq_iff hpQ, ← prod_mul_distrib]
+    cast_div_charZero, mul_comm_div, mul_right_inj' hn', div_eq_iff hpQ, ← prod_mul_distrib]
   refine prod_congr rfl fun p hp => ?_
   have hp := pos_of_mem_primeFactorsList (List.mem_toFinset.mp hp)
   have hp' : (p : ℚ) ≠ 0 := cast_ne_zero.mpr hp.ne.symm

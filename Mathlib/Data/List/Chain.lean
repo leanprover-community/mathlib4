@@ -420,12 +420,14 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
     apply hm.cons
     cases as with
     | nil =>
-      simp only [le_iff_lt_or_eq, reduceCtorEq, or_false] at hmas
+      #adaptation_note /-- `_root_` will not be needed after `nightly-2024-12-21`. -/
+      simp only [_root_.le_iff_lt_or_eq, reduceCtorEq, or_false] at hmas
       exact (List.Lex.not_nil_right (·<·) _ hmas).elim
     | cons a' as =>
       rw [List.chain'_cons] at ha
       refine gt_of_gt_of_ge ha.1 ?_
-      rw [le_iff_lt_or_eq] at hmas
+      #adaptation_note /-- `_root_` will not be needed after `nightly-2024-12-21`. -/
+      rw [_root_.le_iff_lt_or_eq] at hmas
       cases' hmas with hmas hmas
       · by_contra! hh
         rw [← not_le] at hmas
