@@ -31,7 +31,7 @@ The Sylow theorems are the following results for every finite group `G` and ever
   Every `p`-subgroup is contained in a Sylow `p`-subgroup.
 * `Sylow.card_eq_multiplicity`: The cardinality of a Sylow subgroup is `p ^ n`
  where `n` is the multiplicity of `p` in the group order.
-* `instIsPretransitiveSylowOfFactPrimeOfFinite`: a generalization of Sylow's second theorem:
+* `Sylow.isPretransitive_of_finite`: a generalization of Sylow's second theorem:
   If the number of Sylow `p`-subgroups is finite, then all Sylow `p`-subgroups are conjugate.
 * `card_sylow_modEq_one`: a generalization of Sylow's third theorem:
   If the number of Sylow `p`-subgroups is finite, then it is congruent to `1` modulo `p`.
@@ -281,7 +281,8 @@ theorem IsPGroup.sylow_mem_fixedPoints_iff {P : Subgroup G} (hP : IsPGroup p P) 
 
 /-- A generalization of **Sylow's second theorem**.
   If the number of Sylow `p`-subgroups is finite, then all Sylow `p`-subgroups are conjugate. -/
-instance [hp : Fact p.Prime] [Finite (Sylow p G)] : IsPretransitive G (Sylow p G) :=
+instance Sylow.isPretransitive_of_finite [hp : Fact p.Prime] [Finite (Sylow p G)] :
+    IsPretransitive G (Sylow p G) :=
   ⟨fun P Q => by
     classical
       have H := fun {R : Sylow p G} {S : orbit G P} =>

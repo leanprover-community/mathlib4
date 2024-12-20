@@ -48,7 +48,7 @@ General algebra:
     permutation group of a type: 'Equiv.Perm'
     structure of finitely generated abelian groups: 'AddCommGroup.equiv_free_prod_directSum_zmod'
     first Sylow theorem: Sylow.exists_subgroup_card_pow_prime
-    second Sylow theorem: instIsPretransitiveSylowOfFactPrimeOfFinite
+    second Sylow theorem: Sylow.isPretransitive_of_finite
     third Sylow theorem: card_sylow_modEq_one
 
   Rings:
