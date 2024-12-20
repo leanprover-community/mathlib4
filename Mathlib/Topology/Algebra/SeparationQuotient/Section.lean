@@ -15,6 +15,8 @@ In this file we construct a section of the quotient map `E → SeparationQuotien
 linear map `SeparationQuotient E →L[K] E`.
 -/
 
+open Topology
+
 namespace SeparationQuotient
 section VectorSpace
 
@@ -83,7 +85,7 @@ theorem outCLM_isUniformInducing : IsUniformInducing (outCLM K E) := by
 alias outCLM_uniformInducing := outCLM_isUniformInducing
 
 theorem outCLM_isUniformEmbedding : IsUniformEmbedding (outCLM K E) where
-  inj := outCLM_injective K E
+  injective := outCLM_injective K E
   toIsUniformInducing := outCLM_isUniformInducing K E
 
 @[deprecated (since := "2024-10-01")]

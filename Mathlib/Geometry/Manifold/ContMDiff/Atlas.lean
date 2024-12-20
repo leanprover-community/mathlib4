@@ -13,7 +13,7 @@ and that local structomorphisms are smooth with smooth inverses.
 -/
 
 open Set ChartedSpace SmoothManifoldWithCorners
-open scoped Manifold
+open scoped Manifold ContDiff
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   -- declare a smooth manifold `M` over the pair `(E, H)`.
@@ -46,18 +46,14 @@ theorem contMDiffOn_model_symm : ContMDiffOn 𝓘(𝕜, E) I n I.symm (range I) 
 
 /-- An atlas member is `C^n` for any `n`. -/
 theorem contMDiffOn_of_mem_maximalAtlas (h : e ∈ maximalAtlas I M) : ContMDiffOn I I n e e.source :=
-  ContMDiffOn.of_le
-    ((contDiffWithinAt_localInvariantProp ∞).liftPropOn_of_mem_maximalAtlas
-      contDiffWithinAtProp_id h)
-    le_top
+  ContMDiffOn.of_le ((contDiffWithinAt_localInvariantProp ⊤).liftPropOn_of_mem_maximalAtlas
+      contDiffWithinAtProp_id h) le_top
 
 /-- The inverse of an atlas member is `C^n` for any `n`. -/
 theorem contMDiffOn_symm_of_mem_maximalAtlas (h : e ∈ maximalAtlas I M) :
     ContMDiffOn I I n e.symm e.target :=
-  ContMDiffOn.of_le
-    ((contDiffWithinAt_localInvariantProp ∞).liftPropOn_symm_of_mem_maximalAtlas
-      contDiffWithinAtProp_id h)
-    le_top
+  ContMDiffOn.of_le ((contDiffWithinAt_localInvariantProp ⊤).liftPropOn_symm_of_mem_maximalAtlas
+      contDiffWithinAtProp_id h) le_top
 
 theorem contMDiffAt_of_mem_maximalAtlas (h : e ∈ maximalAtlas I M) (hx : x ∈ e.source) :
     ContMDiffAt I I n e x :=
@@ -112,7 +108,7 @@ theorem contMDiffWithinAt_extChartAt_symm_range
 
 /-- An element of `contDiffGroupoid ⊤ I` is `C^n` for any `n`. -/
 theorem contMDiffOn_of_mem_contDiffGroupoid {e' : PartialHomeomorph H H}
-    (h : e' ∈ contDiffGroupoid ⊤ I) : ContMDiffOn I I n e' e'.source :=
+    (h : e' ∈ contDiffGroupoid ∞ I) : ContMDiffOn I I n e' e'.source :=
   (contDiffWithinAt_localInvariantProp n).liftPropOn_of_mem_groupoid contDiffWithinAtProp_id h
 
 end Atlas
@@ -124,8 +120,8 @@ section IsLocalStructomorph
 variable [ChartedSpace H M'] [IsM' : SmoothManifoldWithCorners I M']
 
 theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : PartialHomeomorph M M'}
-    (hf : LiftPropOn (contDiffGroupoid ⊤ I).IsLocalStructomorphWithinAt f f.source) :
-    SmoothOn I I f f.source := by
+    (hf : LiftPropOn (contDiffGroupoid ∞ I).IsLocalStructomorphWithinAt f f.source) :
+    ContMDiffOn I I ⊤ f f.source := by
   -- It suffices to show smoothness near each `x`
   apply contMDiffOn_of_locally_contMDiffOn
   intro x hx
@@ -151,7 +147,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : PartialHomeomorph M 
     have he'' : ContMDiffOn I I ⊤ e _ := contMDiffOn_of_mem_contDiffGroupoid he
     have hc : ContMDiffOn I I ⊤ c _ := contMDiffOn_chart
     refine (hc'.comp' (he''.comp' hc)).mono ?_
-    dsimp [s]
+    dsimp [s, c, c']
     mfld_set_tac
   have H₂ : EqOn f (c'.symm ∘ e ∘ c) s := by
     intro y hy
@@ -170,8 +166,8 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff_aux {f : PartialHomeomorph M 
 is a local structomorphism for `I`, if and only if it is manifold-smooth on the domain of definition
 in both directions. -/
 theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') :
-    LiftPropOn (contDiffGroupoid ⊤ I).IsLocalStructomorphWithinAt f f.source ↔
-      SmoothOn I I f f.source ∧ SmoothOn I I f.symm f.target := by
+    LiftPropOn (contDiffGroupoid ∞ I).IsLocalStructomorphWithinAt f f.source ↔
+      ContMDiffOn I I ⊤ f f.source ∧ ContMDiffOn I I ⊤ f.symm f.target := by
   constructor
   · intro h
     refine ⟨isLocalStructomorphOn_contDiffGroupoid_iff_aux h,
@@ -186,22 +182,22 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
     refine ⟨(f.symm.continuousAt hX).continuousWithinAt, fun h2x => ?_⟩
     obtain ⟨e, he, h2e, hef, hex⟩ :
       ∃ e : PartialHomeomorph H H,
-        e ∈ contDiffGroupoid ⊤ I ∧
+        e ∈ contDiffGroupoid ∞ I ∧
           e.source ⊆ (c.symm ≫ₕ f ≫ₕ c').source ∧
             EqOn (c' ∘ f ∘ c.symm) e e.source ∧ c x ∈ e.source := by
-      have h1 : c' = chartAt H (f x) := by simp only [f.right_inv hX]
+      have h1 : c' = chartAt H (f x) := by simp only [x, c', f.right_inv hX]
       have h2 : c' ∘ f ∘ c.symm = ⇑(c.symm ≫ₕ f ≫ₕ c') := rfl
       have hcx : c x ∈ c.symm ⁻¹' f.source := by simp only [c, hx, mfld_simps]
       rw [h2]
       rw [← h1, h2, PartialHomeomorph.isLocalStructomorphWithinAt_iff'] at hxf
       · exact hxf hcx
-      · mfld_set_tac
+      · dsimp [x, c]; mfld_set_tac
       · apply Or.inl
         simp only [c, hx, h1, mfld_simps]
     have h2X : c' X = e (c (f.symm X)) := by
       rw [← hef hex]
       dsimp only [Function.comp_def]
-      have hfX : f.symm X ∈ c.source := by simp only [c, hX, mfld_simps]
+      have hfX : f.symm X ∈ c.source := by simp only [c, x, hX, mfld_simps]
       rw [c.left_inv hfX, f.right_inv hX]
     have h3e : EqOn (c ∘ f.symm ∘ c'.symm) e.symm (c'.symm ⁻¹' f.target ∩ e.target) := by
       have h1 : EqOn (c.symm ≫ₕ f ≫ₕ c').symm e.symm (e.target ∩ e.target) := by
@@ -234,28 +230,30 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
       simp only [mfld_simps] at hy
       have H : ContMDiffWithinAt I I ⊤ f (f ≫ₕ c').source ((extChartAt I x).symm y) := by
         refine (h₁ ((extChartAt I x).symm y) ?_).mono ?_
-        · simp only [hy, mfld_simps]
+        · simp only [c, hy, mfld_simps]
         · mfld_set_tac
-      have hy' : (extChartAt I x).symm y ∈ c.source := by simp only [hy, mfld_simps]
-      have hy'' : f ((extChartAt I x).symm y) ∈ c'.source := by simp only [hy, mfld_simps]
+      have hy' : (extChartAt I x).symm y ∈ c.source := by simp only [c, hy, mfld_simps]
+      have hy'' : f ((extChartAt I x).symm y) ∈ c'.source := by
+        simp only [c, hy, mfld_simps]
       rw [contMDiffWithinAt_iff_of_mem_source hy' hy''] at H
       convert H.2.mono _
-      · simp only [hy, mfld_simps]
-      · mfld_set_tac
+      · simp only [c, hy, mfld_simps]
+      · dsimp [c, c']; mfld_set_tac
     · -- smoothness of the candidate local structomorphism in the reverse direction
       intro y hy
       simp only [mfld_simps] at hy
       have H : ContMDiffWithinAt I I ⊤ f.symm (f.symm ≫ₕ c).source
           ((extChartAt I (f x)).symm y) := by
         refine (h₂ ((extChartAt I (f x)).symm y) ?_).mono ?_
-        · simp only [hy, mfld_simps]
+        · simp only [c', hy, mfld_simps]
         · mfld_set_tac
-      have hy' : (extChartAt I (f x)).symm y ∈ c'.source := by simp only [hy, mfld_simps]
-      have hy'' : f.symm ((extChartAt I (f x)).symm y) ∈ c.source := by simp only [hy, mfld_simps]
+      have hy' : (extChartAt I (f x)).symm y ∈ c'.source := by simp only [c', hy, mfld_simps]
+      have hy'' : f.symm ((extChartAt I (f x)).symm y) ∈ c.source := by
+        simp only [c', hy, mfld_simps]
       rw [contMDiffWithinAt_iff_of_mem_source hy' hy''] at H
       convert H.2.mono _
-      · simp only [hy, mfld_simps]
-      · mfld_set_tac
+      · simp only [c', hy, mfld_simps]
+      · dsimp [c, c']; mfld_set_tac
     -- now check the candidate local structomorphism agrees with `f` where it is supposed to
     · simp only [mfld_simps]; apply eqOn_refl
     · simp only [c, c', hx', mfld_simps]

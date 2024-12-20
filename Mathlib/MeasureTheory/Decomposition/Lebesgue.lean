@@ -229,6 +229,18 @@ lemma absolutelyContinuous_withDensity_rnDeriv [HaveLebesgueDecomposition ν μ]
     · exact measure_mono_null Set.inter_subset_left hνs
   · exact measure_mono_null Set.inter_subset_right ht2
 
+lemma AbsolutelyContinuous.withDensity_rnDeriv {ξ : Measure α} [μ.HaveLebesgueDecomposition ν]
+    (hξμ : ξ ≪ μ) (hξν : ξ ≪ ν) :
+    ξ ≪ ν.withDensity (μ.rnDeriv ν) := by
+  conv_rhs at hξμ => rw [μ.haveLebesgueDecomposition_add ν, add_comm]
+  refine absolutelyContinuous_of_add_of_mutuallySingular hξμ ?_
+  exact MutuallySingular.mono_ac (mutuallySingular_singularPart μ ν).symm hξν .rfl
+
+lemma absolutelyContinuous_withDensity_rnDeriv_swap [ν.HaveLebesgueDecomposition μ] :
+    ν.withDensity (μ.rnDeriv ν) ≪ μ.withDensity (ν.rnDeriv μ) :=
+  (withDensity_absolutelyContinuous ν (μ.rnDeriv ν)).withDensity_rnDeriv
+    (absolutelyContinuous_of_le (withDensity_rnDeriv_le _ _))
+
 lemma singularPart_eq_zero_of_ac (h : μ ≪ ν) : μ.singularPart ν = 0 := by
   rw [← MutuallySingular.self_iff]
   exact MutuallySingular.mono_ac (mutuallySingular_singularPart _ _)
@@ -745,7 +757,6 @@ theorem zero_mem_measurableLE : (0 : α → ℝ≥0∞) ∈ measurableLE μ ν :
 
 theorem sup_mem_measurableLE {f g : α → ℝ≥0∞} (hf : f ∈ measurableLE μ ν)
     (hg : g ∈ measurableLE μ ν) : (fun a ↦ f a ⊔ g a) ∈ measurableLE μ ν := by
-  simp_rw [ENNReal.sup_eq_max]
   refine ⟨Measurable.max hf.1 hg.1, fun A hA ↦ ?_⟩
   have h₁ := hA.inter (measurableSet_le hf.1 hg.1)
   have h₂ := hA.inter (measurableSet_lt hg.1 hf.1)

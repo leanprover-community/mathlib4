@@ -70,23 +70,20 @@ variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : Measure γ}
   a measurable function. `measurable_measure_prod_mk_left` is strictly more general. -/
 theorem measurable_measure_prod_mk_left_finite [IsFiniteMeasure ν] {s : Set (α × β)}
     (hs : MeasurableSet s) : Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
-  classical
-  refine induction_on_inter (C := fun s => Measurable fun x => ν (Prod.mk x ⁻¹' s))
-    generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ hs
-  · simp
-  · rintro _ ⟨s, hs, t, _, rfl⟩
-    simp only [mk_preimage_prod_right_eq_if, measure_if]
-    exact measurable_const.indicator hs
-  · intro t ht h2t
-    simp_rw [preimage_compl, measure_compl (measurable_prod_mk_left ht) (measure_ne_top ν _)]
-    exact h2t.const_sub _
-  · intro f h1f h2f h3f
-    simp_rw [preimage_iUnion]
-    have : ∀ b, ν (⋃ i, Prod.mk b ⁻¹' f i) = ∑' i, ν (Prod.mk b ⁻¹' f i) := fun b =>
-      measure_iUnion (fun i j hij => Disjoint.preimage _ (h1f hij)) fun i =>
-        measurable_prod_mk_left (h2f i)
-    simp_rw [this]
-    apply Measurable.ennreal_tsum h3f
+  induction s, hs using induction_on_inter generateFrom_prod.symm isPiSystem_prod with
+  | empty => simp
+  | basic s hs =>
+    obtain ⟨s, hs, t, -, rfl⟩ := hs
+    classical simpa only [mk_preimage_prod_right_eq_if, measure_if]
+      using measurable_const.indicator hs
+  | compl s hs ihs =>
+    simp_rw [preimage_compl, measure_compl (measurable_prod_mk_left hs) (measure_ne_top ν _)]
+    exact ihs.const_sub _
+  | iUnion f hfd hfm ihf =>
+    have (a : α) : ν (Prod.mk a ⁻¹' ⋃ i, f i) = ∑' i, ν (Prod.mk a ⁻¹' f i) := by
+      rw [preimage_iUnion, measure_iUnion]
+      exacts [hfd.mono fun _ _ ↦ .preimage _, fun i ↦ measurable_prod_mk_left (hfm i)]
+    simpa only [this] using Measurable.ennreal_tsum ihf
 
 /-- If `ν` is an s-finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }`
   is a measurable function. -/
@@ -194,7 +191,7 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
       μ.prod ν (s ×ˢ t) ≤ μ.prod ν (S ×ˢ T) := by gcongr <;> apply subset_toMeasurable
       _ = μ S * ν T := by
         rw [prod_apply hSTm]
-        simp_rw [mk_preimage_prod_right_eq_if, measure_if,
+        simp_rw [S, mk_preimage_prod_right_eq_if, measure_if,
           lintegral_indicator (measurableSet_toMeasurable _ _), lintegral_const,
           restrict_apply_univ, mul_comm]
       _ = μ s * ν t := by rw [measure_toMeasurable, measure_toMeasurable]
@@ -874,6 +871,17 @@ theorem fst_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α}
     (hY : Measurable Y) : (μ.map fun a => (X a, Y a)).fst = μ.map X :=
   fst_map_prod_mk₀ hY.aemeasurable
 
+@[simp]
+lemma fst_add {μ ν : Measure (α × β)} : (μ + ν).fst = μ.fst + ν.fst := by
+  ext s hs
+  simp_rw [coe_add, Pi.add_apply, fst_apply hs, coe_add, Pi.add_apply]
+
+lemma fst_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).fst = sum (fun n ↦ (μ n).fst) := by
+  ext s hs
+  rw [fst_apply hs, sum_apply, sum_apply _ hs]
+  · simp_rw [fst_apply hs]
+  · exact measurable_fst hs
+
 @[gcongr]
 theorem fst_mono {μ : Measure (α × β)} (h : ρ ≤ μ) : ρ.fst ≤ μ.fst := map_mono h measurable_fst
 
@@ -921,6 +929,17 @@ theorem snd_map_prod_mk {X : α → β} {Y : α → γ} {μ : Measure α} (hX : 
     (μ.map fun a => (X a, Y a)).snd = μ.map Y :=
   snd_map_prod_mk₀ hX.aemeasurable
 
+@[simp]
+lemma snd_add {μ ν : Measure (α × β)} : (μ + ν).snd = μ.snd + ν.snd := by
+  ext s hs
+  simp_rw [coe_add, Pi.add_apply, snd_apply hs, coe_add, Pi.add_apply]
+
+lemma snd_sum {ι : Type*} (μ : ι → Measure (α × β)) : (sum μ).snd = sum (fun n ↦ (μ n).snd) := by
+  ext s hs
+  rw [snd_apply hs, sum_apply, sum_apply _ hs]
+  · simp_rw [snd_apply hs]
+  · exact measurable_snd hs
+
 @[gcongr]
 theorem snd_mono {μ : Measure (α × β)} (h : ρ ≤ μ) : ρ.snd ≤ μ.snd := map_mono h measurable_snd
 
@@ -933,5 +952,33 @@ theorem snd_mono {μ : Measure (α × β)} (h : ρ ≤ μ) : ρ.snd ≤ μ.snd :
   rfl
 
 end Measure
+
+section MeasurePreserving
+
+-- Note that these results cannot be put in the previous `measurePreserving` section since
+-- they use `lintegral_prod`.
+
+/-- The measurable equiv induced by the equiv `(α × β) × γ ≃ α × (β × γ)` is measure preserving. -/
+theorem _root_.MeasureTheory.measurePreserving_prodAssoc (μa : Measure α) (μb : Measure β)
+    (μc : Measure γ) [SFinite μb] [SFinite μc] :
+    MeasurePreserving (MeasurableEquiv.prodAssoc : (α × β) × γ ≃ᵐ α × β × γ)
+      ((μa.prod μb).prod μc) (μa.prod (μb.prod μc)) where
+  measurable := MeasurableEquiv.prodAssoc.measurable
+  map_eq := by
+    ext s hs
+    have A (x : α) : MeasurableSet (Prod.mk x ⁻¹' s) := measurable_prod_mk_left hs
+    have B : MeasurableSet (MeasurableEquiv.prodAssoc ⁻¹' s) :=
+      MeasurableEquiv.prodAssoc.measurable hs
+    simp_rw [map_apply MeasurableEquiv.prodAssoc.measurable hs, prod_apply hs, prod_apply (A _),
+      prod_apply B, lintegral_prod _ (measurable_measure_prod_mk_left B).aemeasurable]
+    rfl
+
+theorem _root_.MeasureTheory.volume_preserving_prodAssoc {α₁ β₁ γ₁ : Type*} [MeasureSpace α₁]
+    [MeasureSpace β₁] [MeasureSpace γ₁] [SFinite (volume : Measure β₁)]
+    [SFinite (volume : Measure γ₁)] :
+    MeasurePreserving (MeasurableEquiv.prodAssoc : (α₁ × β₁) × γ₁ ≃ᵐ α₁ × β₁ × γ₁) :=
+  MeasureTheory.measurePreserving_prodAssoc volume volume volume
+
+end MeasurePreserving
 
 end MeasureTheory

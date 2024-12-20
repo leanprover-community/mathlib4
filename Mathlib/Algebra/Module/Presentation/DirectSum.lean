@@ -61,7 +61,7 @@ def directSumEquiv :
   invFun t :=
     { var := fun ⟨i, g⟩ ↦ (t i).var g
       linearCombination_var_relation := fun ⟨i, r⟩ ↦ by
-        erw [← (t i).linearCombination_var_relation r]
+        rw [← (t i).linearCombination_var_relation r]
         apply Finsupp.linearCombination_embDomain }
   left_inv _ := rfl
   right_inv _ := rfl

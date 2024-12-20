@@ -154,13 +154,13 @@ theorem realize_constantsToVars [L[[α]].Structure M] [(lhomWithConstants L α).
   · simp
   · cases n
     · cases f
-      · simp only [realize, ih, constantsOn, constantsOnFunc]
+      · simp only [realize, ih, constantsOn, constantsOnFunc, constantsToVars]
         -- Porting note: below lemma does not work with simp for some reason
         rw [withConstants_funMap_sum_inl]
       · simp only [realize, constantsToVars, Sum.elim_inl, funMap_eq_coe_constants]
         rfl
     · cases' f with _ f
-      · simp only [realize, ih, constantsOn, constantsOnFunc]
+      · simp only [realize, ih, constantsOn, constantsOnFunc, constantsToVars]
         -- Porting note: below lemma does not work with simp for some reason
         rw [withConstants_funMap_sum_inl]
       · exact isEmptyElim f
@@ -174,7 +174,7 @@ theorem realize_varsToConstants [L[[α]].Structure M] [(lhomWithConstants L α).
     -- Porting note: both cases were `simp [Language.con]`
     · simp [Language.con, realize, funMap_eq_coe_constants]
     · simp [realize, constantMap]
-  · simp only [realize, constantsOn, constantsOnFunc, ih]
+  · simp only [realize, constantsOn, constantsOnFunc, ih, varsToConstants]
     -- Porting note: below lemma does not work with simp for some reason
     rw [withConstants_funMap_sum_inl]
 
@@ -285,7 +285,7 @@ theorem realize_rel₂ {R : L.Relations 2} {t₁ t₂ : L.Term _} :
 
 @[simp]
 theorem realize_sup : (φ ⊔ ψ).Realize v xs ↔ φ.Realize v xs ∨ ψ.Realize v xs := by
-  simp only [realize, Sup.sup, realize_not, eq_iff_iff]
+  simp only [realize, max, realize_not, eq_iff_iff]
   tauto
 
 @[simp]
@@ -417,16 +417,16 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
   induction φ with
   | falsum => rfl
   | equal =>
-    simp only [Realize, freeVarFinset.eq_2]
+    simp only [Realize, freeVarFinset.eq_2, restrictFreeVar]
     rw [Set.inclusion_comp_inclusion, Set.inclusion_comp_inclusion]
     simp
   | rel =>
-    simp only [Realize, freeVarFinset.eq_3, Finset.biUnion_val]
+    simp only [Realize, freeVarFinset.eq_3, Finset.biUnion_val, restrictFreeVar]
     congr!
     erw [Set.inclusion_comp_inclusion _ h]
     simp
   | imp _ _ ih1 ih2 =>
-    simp only [Realize, freeVarFinset.eq_4]
+    simp only [Realize, freeVarFinset.eq_4, restrictFreeVar]
     rw [Set.inclusion_comp_inclusion, Set.inclusion_comp_inclusion]
     simp [ih1, ih2]
   | all _ ih3 => simp [restrictFreeVar, Realize, ih3]
@@ -435,7 +435,7 @@ theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L �
     {n} {φ : L[[α]].BoundedFormula β n} {v : β → M} {xs : Fin n → M} :
     (constantsVarsEquiv φ).Realize (Sum.elim (fun a => ↑(L.con a)) v) xs ↔ φ.Realize v xs := by
   refine realize_mapTermRel_id (fun n t xs => realize_constantsVarsEquivLeft) fun n R xs => ?_
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [← (lhomWithConstants L α).map_onRelation
       (Equiv.sumEmpty (L.Relations n) ((constantsOn α).Relations n) R) xs]
   rcongr

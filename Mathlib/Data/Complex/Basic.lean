@@ -60,6 +60,9 @@ theorem ext : ∀ {z w : ℂ}, z.re = w.re → z.im = w.im → z = w
 
 attribute [local ext] Complex.ext
 
+lemma «forall» {p : ℂ → Prop} : (∀ x, p x) ↔ ∀ a b, p ⟨a, b⟩ := by aesop
+lemma «exists» {p : ℂ → Prop} : (∃ x, p x) ↔ ∃ a b, p ⟨a, b⟩ := by aesop
+
 theorem re_surjective : Surjective re := fun x => ⟨⟨x, 0⟩, rfl⟩
 
 theorem im_surjective : Surjective im := fun y => ⟨⟨0, y⟩, rfl⟩
@@ -106,11 +109,13 @@ instance canLift : CanLift ℂ ℝ (↑) fun z => z.im = 0 where
 
 /-- The product of a set on the real axis and a set on the imaginary axis of the complex plane,
 denoted by `s ×ℂ t`. -/
-def Set.reProdIm (s t : Set ℝ) : Set ℂ :=
+def reProdIm (s t : Set ℝ) : Set ℂ :=
   re ⁻¹' s ∩ im ⁻¹' t
 
+@[deprecated (since := "2024-12-03")] protected alias Set.reProdIm := reProdIm
+
 @[inherit_doc]
-infixl:72 " ×ℂ " => Set.reProdIm
+infixl:72 " ×ℂ " => reProdIm
 
 theorem mem_reProdIm {z : ℂ} {s t : Set ℝ} : z ∈ s ×ℂ t ↔ z.re ∈ s ∧ z.im ∈ t :=
   Iff.rfl
@@ -283,7 +288,7 @@ theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
 diamond from the other actions they inherit through the `ℝ`-action on `ℂ` and action transitivity
 defined in `Data.Complex.Module`. -/
 instance : Nontrivial ℂ :=
-  pullback_nonzero re rfl rfl
+  domain_nontrivial re rfl rfl
 
 -- Porting note: moved from `Module/Data/Complex/Basic.lean`
 namespace SMul
@@ -495,7 +500,7 @@ theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : �
   map_ofNat _ _
 
 -- @[simp]
-/- Porting note (#11119): `simp` attribute removed as the result could be proved
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as the result could be proved
 by `simp only [@map_neg, Complex.conj_i, @neg_neg]`
 -/
 theorem conj_neg_I : conj (-I) = I :=
@@ -574,13 +579,13 @@ theorem normSq_eq_conj_mul_self {z : ℂ} : (normSq z : ℂ) = conj z * z := by
   ext <;> simp [normSq, mul_comm, ofReal]
 
 -- @[simp]
-/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_zero]` -/
 theorem normSq_zero : normSq 0 = 0 :=
   normSq.map_zero
 
 -- @[simp]
-/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_one]` -/
 theorem normSq_one : normSq 1 = 1 :=
   normSq.map_one
@@ -741,7 +746,7 @@ lemma ofReal_nnqsmul (q : ℚ≥0) (r : ℝ) : ofReal (q • r) = q • r := by 
 lemma ofReal_qsmul (q : ℚ) (r : ℝ) : ofReal (q • r) = q • r := by simp [Rat.smul_def]
 
 theorem conj_inv (x : ℂ) : conj x⁻¹ = (conj x)⁻¹ :=
-  star_inv' _
+  star_inv₀ _
 
 @[simp, norm_cast]
 theorem ofReal_div (r s : ℝ) : ((r / s : ℝ) : ℂ) = r / s := map_div₀ ofRealHom r s
@@ -758,13 +763,13 @@ theorem inv_I : I⁻¹ = -I := by
   rw [inv_eq_one_div, div_I, one_mul]
 
 -- @[simp]
-/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_inv₀]` -/
 theorem normSq_inv (z : ℂ) : normSq z⁻¹ = (normSq z)⁻¹ :=
   map_inv₀ normSq z
 
 -- @[simp]
-/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_div₀]` -/
 theorem normSq_div (z w : ℂ) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
@@ -838,5 +843,72 @@ unsafe instance instRepr : Repr ℂ where
   reprPrec f p :=
     (if p > 65 then (Std.Format.bracket "(" · ")") else (·)) <|
       reprPrec f.re 65 ++ " + " ++ reprPrec f.im 70 ++ "*I"
+
+section reProdIm
+
+/-- The preimage under `equivRealProd` of `s ×ˢ t` is `s ×ℂ t`. -/
+lemma preimage_equivRealProd_prod (s t : Set ℝ) : equivRealProd ⁻¹' (s ×ˢ t) = s ×ℂ t := rfl
+
+/-- The inequality `s × t ⊆ s₁ × t₁` holds in `ℂ` iff it holds in `ℝ × ℝ`. -/
+lemma reProdIm_subset_iff {s s₁ t t₁ : Set ℝ} : s ×ℂ t ⊆ s₁ ×ℂ t₁ ↔ s ×ˢ t ⊆ s₁ ×ˢ t₁ := by
+  rw [← @preimage_equivRealProd_prod s t, ← @preimage_equivRealProd_prod s₁ t₁]
+  exact Equiv.preimage_subset equivRealProd _ _
+
+/-- If `s ⊆ s₁ ⊆ ℝ` and `t ⊆ t₁ ⊆ ℝ`, then `s × t ⊆ s₁ × t₁` in `ℂ`. -/
+lemma reProdIm_subset_iff' {s s₁ t t₁ : Set ℝ} :
+    s ×ℂ t ⊆ s₁ ×ℂ t₁ ↔ s ⊆ s₁ ∧ t ⊆ t₁ ∨ s = ∅ ∨ t = ∅ := by
+  convert prod_subset_prod_iff
+  exact reProdIm_subset_iff
+
+variable {s t : Set ℝ}
+
+@[simp] lemma reProdIm_nonempty : (s ×ℂ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty := by
+  simp [Set.Nonempty, reProdIm, Complex.exists]
+
+@[simp] lemma reProdIm_eq_empty : s ×ℂ t = ∅ ↔ s = ∅ ∨ t = ∅ := by
+  simp [← not_nonempty_iff_eq_empty, reProdIm_nonempty, -not_and, not_and_or]
+
+end reProdIm
+
+open scoped Interval
+
+section Rectangle
+
+/-- A `Rectangle` is an axis-parallel rectangle with corners `z` and `w`. -/
+def Rectangle (z w : ℂ) : Set ℂ := [[z.re, w.re]] ×ℂ [[z.im, w.im]]
+
+end Rectangle
+
+section Segments
+
+/-- A real segment `[a₁, a₂]` translated by `b * I` is the complex line segment. -/
+lemma horizontalSegment_eq (a₁ a₂ b : ℝ) :
+    (fun (x : ℝ) ↦ x + b * I) '' [[a₁, a₂]] = [[a₁, a₂]] ×ℂ {b} := by
+  rw [← preimage_equivRealProd_prod]
+  ext x
+  constructor
+  · intro hx
+    obtain ⟨x₁, hx₁, hx₁'⟩ := hx
+    simp [← hx₁', mem_preimage, mem_prod, hx₁]
+  · intro hx
+    obtain ⟨x₁, hx₁, hx₁', hx₁''⟩ := hx
+    refine ⟨x.re, x₁, by simp⟩
+
+/-- A vertical segment `[b₁, b₂]` translated by `a` is the complex line segment. -/
+lemma verticalSegment_eq (a b₁ b₂ : ℝ) :
+    (fun (y : ℝ) ↦ a + y * I) '' [[b₁, b₂]] = {a} ×ℂ [[b₁, b₂]] := by
+  rw [← preimage_equivRealProd_prod]
+  ext x
+  constructor
+  · intro hx
+    obtain ⟨x₁, hx₁, hx₁'⟩ := hx
+    simp [← hx₁', mem_preimage, mem_prod, hx₁]
+  · intro hx
+    simp only [equivRealProd_apply, singleton_prod, mem_image, Prod.mk.injEq,
+      exists_eq_right_right, mem_preimage] at hx
+    obtain ⟨x₁, hx₁, hx₁', hx₁''⟩ := hx
+    refine ⟨x.im, x₁, by simp⟩
+
+end Segments
 
 end Complex

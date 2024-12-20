@@ -43,7 +43,7 @@ instance : HasQuotient M (LieSubmodule R L M) :=
 
 namespace Quotient
 
-variable {N I}
+variable {N}
 
 instance addCommGroup : AddCommGroup (M ⧸ N) :=
   Submodule.Quotient.addCommGroup _
@@ -174,7 +174,8 @@ def mk' : M →ₗ⁅R,L⁆ M ⧸ N :=
 theorem surjective_mk' : Function.Surjective (mk' N) := Quot.mk_surjective
 
 @[simp]
-theorem range_mk' : LieModuleHom.range (mk' N) = ⊤ := by simp [LieModuleHom.range_eq_top]
+theorem range_mk' : LieModuleHom.range (mk' N) = ⊤ := by
+  simp [LieModuleHom.range_eq_top]
 
 instance isNoetherian [IsNoetherian R M] : IsNoetherian R (M ⧸ N) :=
   inferInstanceAs (IsNoetherian R (M ⧸ (N : Submodule R M)))

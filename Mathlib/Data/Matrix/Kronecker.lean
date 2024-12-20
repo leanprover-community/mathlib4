@@ -43,8 +43,6 @@ These require `open Kronecker`:
 
 
 namespace Matrix
-
-open Matrix
 open scoped RightActions
 
 variable {R α α' β β' γ γ' : Type*}
@@ -56,7 +54,7 @@ section KroneckerMap
 def kroneckerMap (f : α → β → γ) (A : Matrix l m α) (B : Matrix n p β) : Matrix (l × n) (m × p) γ :=
   of fun (i : l × n) (j : m × p) => f (A i.1 j.1) (B i.2 j.2)
 
--- TODO: set as an equation lemma for `kroneckerMap`, see mathlib4#3024
+-- TODO: set as an equation lemma for `kroneckerMap`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem kroneckerMap_apply (f : α → β → γ) (A : Matrix l m α) (B : Matrix n p β) (i j) :
     kroneckerMap f A B i j = f (A i.1 j.1) (B i.2 j.2) :=

@@ -7,8 +7,9 @@ import Mathlib.Data.FunLike.Equiv
 import Mathlib.Data.Quot
 import Mathlib.Data.Bool.Basic
 import Mathlib.Logic.Unique
-import Mathlib.Tactic.Substs
 import Mathlib.Tactic.Conv
+import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.Substs
 
 /-!
 # Equivalence between types
@@ -19,7 +20,7 @@ In this file we define two types:
   not equality!) to express that various `Type`s or `Sort`s are equivalent.
 
 * `Equiv.Perm α`: the group of permutations `α ≃ α`. More lemmas about `Equiv.Perm` can be found in
-  `GroupTheory.Perm`.
+  `Mathlib.GroupTheory.Perm`.
 
 Then we define
 
@@ -41,10 +42,11 @@ Then we define
   - `Equiv.unique` takes `e : α ≃ β` and `[Unique β]` and returns `Unique α`;
   - `Equiv.decidableEq` takes `e : α ≃ β` and `[DecidableEq β]` and returns `DecidableEq α`.
 
-  More definitions of this kind can be found in other files. E.g., `Data.Equiv.TransferInstance`
-  does it for many algebraic type classes like `Group`, `Module`, etc.
+  More definitions of this kind can be found in other files.
+  E.g., `Mathlib.Algebra.Equiv.TransferInstance` does it for many algebraic type classes like
+  `Group`, `Module`, etc.
 
-Many more such isomorphisms and operations are defined in `Logic.Equiv.Basic`.
+Many more such isomorphisms and operations are defined in `Mathlib.Logic.Equiv.Basic`.
 
 ## Tags
 
@@ -854,3 +856,22 @@ protected def congrRight {r r' : Setoid α}
   Quot.congrRight eq
 
 end Quotient
+
+/-- Equivalence between `Fin 0` and `Empty`. -/
+def finZeroEquiv : Fin 0 ≃ Empty := .equivEmpty _
+
+/-- Equivalence between `Fin 0` and `PEmpty`. -/
+def finZeroEquiv' : Fin 0 ≃ PEmpty.{u} := .equivPEmpty _
+
+/-- Equivalence between `Fin 1` and `Unit`. -/
+def finOneEquiv : Fin 1 ≃ Unit := .equivPUnit _
+
+/-- Equivalence between `Fin 2` and `Bool`. -/
+def finTwoEquiv : Fin 2 ≃ Bool where
+  toFun i := i == 1
+  invFun b := bif b then 1 else 0
+  left_inv i :=
+    match i with
+    | 0 => by simp
+    | 1 => by simp
+  right_inv b := by cases b <;> simp
