@@ -143,6 +143,10 @@ lemma isUnit_iff_valuation_eq_one (hv : Integers v O) {x : O} :
     IsUnit x ↔ v (algebraMap O F x) = 1 :=
   ⟨hv.one_of_isUnit, hv.isUnit_of_one'⟩
 
+lemma valuation_unit (hv : Integers v O) (x : Oˣ) :
+    v (algebraMap O F x) = 1 := by
+  simp [← hv.isUnit_iff_valuation_eq_one]
+
 lemma valuation_pos_iff_ne_zero (hv : Integers v O) {x : O} :
     0 < v (algebraMap O F x) ↔ x ≠ 0 := by
   rw [← not_le]

@@ -969,12 +969,6 @@ lemma Nat.Coprime.pow_left_bijective {G} [Group G] (hn : (Nat.card G).Coprime n)
     Bijective (· ^ n : G → G) :=
   (powCoprime hn).bijective
 
-@[to_additive add_inf_eq_bot_of_coprime]
-theorem inf_eq_bot_of_coprime {G : Type*} [Group G] {H K : Subgroup G}
-    (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
-  card_eq_one.mp (Nat.eq_one_of_dvd_coprimes h
-    (card_dvd_of_le inf_le_left) (card_dvd_of_le inf_le_right))
-
 /- TODO: Generalise to `Submonoid.powers`. -/
 @[to_additive]
 theorem image_range_orderOf [DecidableEq G] :
