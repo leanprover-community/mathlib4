@@ -373,7 +373,7 @@ def toNerve₂.mk {X : SSet.Truncated.{u} 2} {C : Cat}
         | 1 => apply nat1m
         | 2 => apply nat2m
 
-/-- We might prefer this version where we are missing the analogue of the hypothesis hyp
+/-- We might prefer this version where we are using the analogue of the hypothesis hyp
 conjugated by the isomorphism nerve₂Adj.NatIso.app C -/
 @[simps!] def toNerve₂.mk' {X : SSet.Truncated.{u} 2} {C : Cat}
     (f : SSet.oneTruncation₂.obj X ⟶ SSet.oneTruncation₂.obj (nerveFunctor₂.obj C))
@@ -385,6 +385,7 @@ conjugated by the isomorphism nerve₂Adj.NatIso.app C -/
     : X ⟶ nerveFunctor₂.obj C :=
   toNerve₂.mk (f ≫ (OneTruncation₂.ofNerve₂.natIso.app C).hom) hyp
 
+/-- A computation about `toNerve₂.mk'`. -/
 theorem oneTruncation₂_toNerve₂Mk' {X : SSet.Truncated 2} {C : Cat}
     (f : SSet.oneTruncation₂.obj X ⟶ SSet.oneTruncation₂.obj (nerveFunctor₂.obj C))
     (hyp : (φ : X _[2]₂) →
