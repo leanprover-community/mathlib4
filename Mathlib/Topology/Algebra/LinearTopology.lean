@@ -11,10 +11,13 @@ import Mathlib.Topology.Algebra.OpenSubgroup
 /-! # Linear topologies on rings
 
 Following Bourbaki, *Algebra II*, chapter 4, §2, n° 3, a topology on a ring `R` is *linear* if
-it is invariant by translation and there admits a basis of neighborhoods of 0 consisting of
+it is invariant by translation and admits a basis of neighborhoods of 0 consisting of
 two-sided ideals.
 
-- `IsLinearTopology.tendsto_zero_mul`: for `f, g : ι → R` such that `f i` converges to `0`,
+- `IsLinearTopology.tendsto_mul_zero_of_left`: for `f, g : ι → R` such that `f i` converges to `0`,
+`f i * g i` converges to `0`.
+
+- `IsLinearTopology.tendsto_mul_zero_of_right`: for `f, g : ι → R` such that `g i` converges to `0`,
 `f i * g i` converges to `0`.
 
 -/
