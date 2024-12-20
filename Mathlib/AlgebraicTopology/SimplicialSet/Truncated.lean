@@ -138,6 +138,8 @@ def toStrictSegal₂.mk.app {X Y : SSet.Truncated 2} [StrictSegal₂ Y]
     (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y) (φ : X _[2]₂) :
     mk.app F [2]₂ φ = StrictSegal₂.spineToSimplex₂ (reflPrefunctorPathMap F (X.spine₂ φ)) := rfl
 
+/-- A map of 2-truncated simplicial sets built from a map on underlying reflexive quivers, under
+the assumption that the codomain is `StrictSegal`. -/
 @[simps!]
 def toStrictSegal₂.mk {X Y : SSet.Truncated 2} [StrictSegal₂ Y]
     (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y)
