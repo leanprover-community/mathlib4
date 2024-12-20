@@ -432,12 +432,8 @@ theorem toPEquiv_trans (f : α ≃ β) (g : β ≃ γ) :
 theorem toPEquiv_symm (f : α ≃ β) : f.symm.toPEquiv = f.toPEquiv.symm :=
   rfl
 
+@[simp]
 theorem toPEquiv_apply (f : α ≃ β) (x : α) : f.toPEquiv x = some (f x) :=
   rfl
-
-@[simp]
-lemma toPEquiv_eq_some_iff (f : α ≃ β) (x : α) (y : β) :
-    f.toPEquiv x = some y ↔ f x = y := by
-  simp [toPEquiv_apply]
 
 end Equiv

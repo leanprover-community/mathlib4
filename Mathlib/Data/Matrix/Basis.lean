@@ -51,7 +51,7 @@ theorem stdBasisMatrix_zero (i : m) (j : n) : stdBasisMatrix i j (0 : α) = 0 :=
 
 @[simp]
 lemma transpose_stdBasisMatrix (i j : n) (a : α) :
-    (stdBasisMatrix i j a).transpose = stdBasisMatrix j i a := by
+    (stdBasisMatrix i j a)ᵀ = stdBasisMatrix j i a := by
   unfold stdBasisMatrix
   aesop
 
