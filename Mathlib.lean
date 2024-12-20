@@ -4241,6 +4241,13 @@ import Mathlib.Probability.Process.Stopping
 import Mathlib.Probability.StrongLaw
 import Mathlib.Probability.UniformOn
 import Mathlib.Probability.Variance
+import Mathlib.ProofTheory.Calculus
+import Mathlib.ProofTheory.FirstOrder.Arith.Language
+import Mathlib.ProofTheory.FirstOrder.Basic.Syntax.Term
+import Mathlib.ProofTheory.LogicSymbol
+import Mathlib.ProofTheory.Matrix
+import Mathlib.ProofTheory.Semantics
+import Mathlib.ProofTheory.System
 import Mathlib.RepresentationTheory.Action.Basic
 import Mathlib.RepresentationTheory.Action.Concrete
 import Mathlib.RepresentationTheory.Action.Continuous
