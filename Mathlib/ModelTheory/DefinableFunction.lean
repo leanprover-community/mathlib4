@@ -43,6 +43,10 @@ theorem realize_spec {f : T.FunctionalFormula α β} {x : α → M} {y : β → 
     f.realize x = y ↔ f.1.Realize (Sum.elim x y) :=
   Classical.choose_spec (f.exists_fun_eq_iff) x y
 
+theorem realize_spec' {f : T.FunctionalFormula α β} {x : α ⊕ β → M} :
+    f.1.Realize x ↔ f.realize (x ∘ Sum.inl) = x ∘ Sum.inr := by
+  rw [realize_spec]; simp
+
 def ofTerm (t : L.Term α) : T.FunctionalFormula α Unit :=
   ⟨Term.equal (t.relabel Sum.inl) (var (Sum.inr ())), by
     simp only [ModelsBoundedFormula, BoundedFormula.realize_iExsUnique, id_eq,
@@ -79,9 +83,36 @@ theorem realize_id (x : β → M) :
     (FunctionalFormula.id T).realize (T := T) (M := M) x = x := by
   simp [FunctionalFormula.id]
 
-def comp [Finite γ] (f : T.FunctionalFormula β γ) (g : T.FunctionalFormula α β) :
+variable {T}
+noncomputable def comp [Finite γ] (f : T.FunctionalFormula β γ) (g : T.FunctionalFormula α β) :
     T.FunctionalFormula α γ :=
-  ⟨_, _⟩
+  ⟨Formula.iExs (α := (α ⊕ γ) ⊕ β) (γ := β) id
+    (f.1.relabel (Sum.elim Sum.inr (Sum.inl ∘ Sum.inr)) ⊓
+     g.1.relabel (Sum.elim (Sum.inl ∘ Sum.inl) Sum.inr)), by
+  simp only [ModelsBoundedFormula, BoundedFormula.realize_iExsUnique, id_eq, Formula.realize_iExs,
+    Formula.realize_inf, Formula.realize_relabel, forall_const]
+  intro M x
+  use f.realize (g.realize x)
+  simp only [Function.comp_def, Formula.realize_iExs, id_eq, Formula.realize_relabel,
+    forall_exists_index]
+  refine ⟨?_, ?_⟩
+  · use g.realize x
+    simp [realize_spec', Function.comp_def]
+  · intro y z
+    simp only [realize_spec', Function.comp_def, Sum.elim_inl, Sum.elim_inr, funext_iff, and_imp]
+    intro h1 h2 g
+    simp only [← h1, ← h2]⟩
+
+@[simp]
+theorem realize_comp [Finite γ] (f : T.FunctionalFormula β γ) (g : T.FunctionalFormula α β)
+    (x : α → M) : (f.comp g).realize x = f.realize (g.realize x) := by
+  rw [realize_spec]
+  simp only [comp, Function.comp_def, Formula.realize_iExs, id_eq, Formula.realize_inf,
+    Formula.realize_relabel]
+  use g.realize x
+  simp [Function.comp_def, realize_spec']
+
+noncomputable def pi
 
 end FunctionalFormula
 
