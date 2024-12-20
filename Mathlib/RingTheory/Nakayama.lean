@@ -151,7 +151,7 @@ theorem smul_le_of_le_smul_of_le_jacobson_bot {I : Ideal R} {N N' : Submodule R 
 
 open Pointwise
 
-@[stacks 00DV "(3)"]
+@[stacks 00DV "(3) see `Submodule.localized₀_le_localized₀_of_smul_le` for the second conclusion."]
 lemma exists_sub_one_mem_and_smul_le_of_fg_of_le_sup {I : Ideal R}
     {N N' P : Submodule R M} (hN' : N'.FG) (hN'le : N' ≤ P) (hNN' : P ≤ N ⊔ I • N') :
     ∃ r : R, r - 1 ∈ I ∧ r • P ≤ N := by
