@@ -23,15 +23,12 @@ Instances for the following typeclasses are defined:
 * `TopologicalSemiring ℝ≥0`
 * `SecondCountableTopology ℝ≥0`
 * `OrderTopology ℝ≥0`
-* `IsOrderBornology ℝ≥0`
 * `ProperSpace ℝ≥0`
 * `ContinuousSub ℝ≥0`
 * `HasContinuousInv₀ ℝ≥0` (continuity of `x⁻¹` away from `0`)
 * `ContinuousSMul ℝ≥0 α` (whenever `α` has a continuous `MulAction ℝ α`)
 
 Everything is inherited from the corresponding structures on the reals.
-(TODO: As for `IsOrderBornology`, there might be a general argument to prove it for a subtype with
-appropriate assumtions)
 
 ## Main statements
 
