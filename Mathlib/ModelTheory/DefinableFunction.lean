@@ -62,6 +62,13 @@ def ofTerm (t : L.Term α) : T.FunctionalFormula α Unit :=
     use fun _ => t.realize x
     simp +contextual [funext_iff, eq_comm]⟩
 
+@[simp]
+theorem realize_ofTerm (t : L.Term α) (x : α → M) :
+    (ofTerm (T := T) t).realize x = fun _ => t.realize x := by
+  rw [realize_spec]
+  simp [ofTerm, Formula.Realize, Term.realize_relabel, Term.realize_var, Term.equal,
+    Function.comp_def]
+
 variable (T)
 noncomputable def comap (f : β → α) : T.FunctionalFormula α β :=
   let e := Fintype.ofFinite β
@@ -158,7 +165,6 @@ def FunctionalFormulaLang : Language where
 
 namespace FunctionalFormulaLang
 
-
 def of : L →ᴸ FunctionalFormulaLang T where
   onFunction := fun _ f => ofTerm (func f var)
   onRelation := fun _ R => R
@@ -170,15 +176,29 @@ def theory : (FunctionalFormulaLang T).Theory :=
         (Term.equal (func f (fun i => var (Sum.inl i))) (var (Sum.inr ()))).iff
         ((of T).onFormula f.1))
 
+@[simps]
 noncomputable instance : (FunctionalFormulaLang T).Structure M where
   funMap := fun f x => f.realize x ()
   RelMap := fun R => Structure.RelMap (L := L) R
+
+instance : (of T).IsExpansionOn M where
+    map_onFunction := by intros; simp [of]
+    map_onRelation := by intros; simp [of]
 
 noncomputable instance : (FunctionalFormulaLang.theory T).Model M where
   realize_of_mem := fun φ hφ => by
     simp only [theory, Set.mem_union, LHom.mem_onTheory, Set.mem_iUnion, Set.mem_range] at hφ
     rcases hφ with ⟨φ₀, hφ₀, rfl⟩ | ⟨i, hi, rfl⟩
-    · simp [of, onSentence, LHom.onSentence, LHom.onFormula]
+    · simp only [LHom.realize_onSentence]
+      exact realize_sentence_of_mem T hφ₀
+    · simp only [Sentence.Realize, Formula.realize_iAlls, Sum.elim_inr, Formula.realize_iff,
+        Formula.realize_equal, Term.realize_func, Term.realize_var, instStructure_funMap,
+        LHom.realize_onFormula, realize_spec', Function.comp_def, funext_iff]
+      intro i
+      refine ⟨?_, ?_⟩
+      · rintro h ⟨⟩; exact h
+      · intro h; exact h _
+
 
 end FunctionalFormulaLang
 
