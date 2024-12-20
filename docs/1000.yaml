@@ -18,6 +18,8 @@
 # - perhaps add a wikidata version of the stacks attribute, and generate this file automatically
 #   (can this handle formalisation of *statements* also?)
 # - complete the information which theorems are already formalised
+#
+# TODO: display a less ambiguous title for e.g. "Liouville's theorem"
 
 Q11518:
   title: Pythagorean theorem
@@ -85,6 +87,7 @@ Q180345:
 
 Q182505:
   title: Bayes' theorem
+  decl: ProbabilityTheory.cond_eq_inv_mul_cond_mul
 
 Q184410:
   title: Four color theorem
@@ -98,6 +101,8 @@ Q188745:
 Q189136:
   title: Mean value theorem
   decl: exists_deriv_eq_slope
+  # XXX: other branch found exists_ratio_deriv_eq_ratio_slope,
+  # is about Cauchy's vs Lagrange's Mean Value Theorem, TODO decide!
   author: Yury G. Kudryashov
 
 Q190026:
@@ -123,9 +128,11 @@ Q192760:
 
 Q193286:
   title: Rolle's theorem
+  decl: exists_deriv_eq_zero
 
 Q193878:
   title: Chinese remainder theorem
+  decl: Ideal.quotientInfRingEquivPiQuotient
 
 Q193882:
   title: Menelaus's theorem
@@ -182,6 +189,8 @@ Q213603:
 
 Q220680:
   title: Banach fixed-point theorem
+  ## Contraction mapping theorem in mathlib
+  decl: ContractingWith.exists_fixedPoint
 
 Q225973:
   title: Ore's theorem
@@ -208,6 +217,7 @@ Q245098:
 
 Q245098X:
   title: Bolzano's theorem
+  # variant of the intermediate value theorem above, TODO should exist in mathlib, add decl
 
 Q245902:
   title: Riesz–Thorin theorem
@@ -217,6 +227,9 @@ Q248931:
 
 Q253214:
   title: Heine–Borel theorem
+  # TODO: two versions in mathlib, which one do we want?
+  # decl: Metric.isCompact_iff_isClosed_bounded
+  # decl: FiniteDimensional.proper
 
 Q255996:
   title: Equipartition theorem
@@ -273,12 +286,18 @@ Q287347:
 
 Q288465:
   title: Orbit-stabilizer theorem
+  decl: orbitEquivQuotientStabilizer
 
 Q303402:
   title: Rank–nullity theorem
+  # TODO: this is also in mathlib, TODO add decl (and mention in overview)
 
 Q318767:
   title: Abel's theorem
+  decls:
+    - Complex.tendsto_tsum_powerSeries_nhdsWithin_stolzCone
+    - Real.tendsto_tsum_powerSeries_nhdsWithin_lt
+  author: Jeremy Tan
 
 Q321237:
   title: Green's theorem
@@ -330,21 +349,27 @@ Q384142:
 
 Q386292:
   title: Prime number theorem
+  # also in 100.yaml
 
 Q388525:
   title: Bell's theorem
 
 Q401319:
   title: Puiseux's theorem
+  # also in 100.yaml
 
 Q401905:
   title: Skorokhod's representation theorem
 
 Q420714:
   title: Akra–Bazzi theorem
+  decl: AkraBazziRecurrence.isBigO_asympBound
 
 Q422187:
   title: Myhill–Nerode theorem
+  # two in-progress formalisations, none merged as of end of 2024
+  # https://github.com/atarnoam/lean-automata/blob/main/src/regular_languages.lean
+  # https://github.com/leanprover-community/mathlib4/pull/11311
 
 Q425432:
   title: Laurent expansion theorem
@@ -365,6 +390,9 @@ Q467756:
 
 Q468391:
   title: Bolzano–Weierstrass theorem
+  decls:
+    - tendsto_subseq_of_frequently_bounded # less standard version
+    - tendsto_subseq_of_bounded
 
 Q470877:
   title: Stirling's theorem
@@ -403,6 +431,8 @@ Q504843:
 
 Q505798:
   title: Lagrange's theorem
+  # group theorem result; exist additive and multiplicative version
+  decl: card_subgroup_dvd_card
 
 Q510197:
   title: Tutte theorem
@@ -424,15 +454,18 @@ Q528987:
 
 Q530152:
   title: Picard&ndash;Lindelöf theorem
+  decl: IsPicardLindelof.exists_forall_hasDerivWithinAt_Icc_eq
 
 Q535366:
   title: Montel's theorem
 
 Q536640:
   title: Hall's marriage theorem
+  decl: Finset.all_card_le_biUnion_card_iff_exists_injective
 
 Q537618:
   title: Banach–Alaoglu theorem
+  decl: WeakDual.isCompact_polar
 
 Q544292:
   title: Lagrange inversion theorem
@@ -453,12 +486,14 @@ Q567843:
 
 Q570779:
   title: Vieta's formulas
+  decl: Multiset.prod_X_add_C_eq_sum_esymm
 
 Q574902:
   title: Tarski's indefinability theorem
 
 Q576478:
   title: Liouville's theorem
+  decl: Differentiable.apply_eq_apply_of_bounded
 
 Q578555:
   title: Noether's theorem
@@ -468,6 +503,8 @@ Q579515:
 
 Q583147:
   title: Sard's theorem
+  # exists a statement in Lean, WIP formalisations in https://github.com/urkud/SardMoreira
+  # and https://github.com/fpvandoorn/sard (manifold version)
 
 Q586051:
   title: Haag–Łopuszański–Sohnius theorem
@@ -501,12 +538,15 @@ Q617417:
 
 Q619985:
   title: Multinomial theorem
+  decl: Finset.sum_pow_eq_sum_piAntidiag_of_commute
+  # TODO: is Finset.sum_pow_of_commute better?
 
 Q620602:
   title: Virial theorem
 
 Q631561:
   title: Closed range theorem
+  # TODO: this surely exists in mathlib, add decl!
 
 Q632546X:
   title: Sylvester's theorem
@@ -521,6 +561,7 @@ Q637418:
 
 Q642620:
   title: Krein–Milman theorem
+  decl: closure_convexHull_extremePoints
 
 Q643513:
   title: Riesz–Fischer theorem
@@ -534,6 +575,7 @@ Q646523:
 
 Q649469:
   title: Modularity theorem
+  # far away; FLT project is working on a special case
 
 Q649977:
   title: Shirshov–Cohn theorem
@@ -549,9 +591,11 @@ Q656176:
 
 Q656198:
   title: Maschke's theorem
+  # `RepresentationTheory/Maschke` comes very close, but doesn't prove the standard form yet...
 
 Q656645:
   title: Hilbert's basis theorem
+  # search mathlib or zulip; mathlib is close to this!
 
 Q656772:
   title: Cayley–Hamilton theorem
@@ -574,6 +618,8 @@ Q657903:
 
 Q660799:
   title: Darboux's theorem
+  # "all derivatives have the intermediate value property"
+  # TODO should exist in mathlib, add decl!
 
 Q670235:
   title: Fundamental theorem of arithmetic
@@ -606,6 +652,7 @@ Q693083:
 
 Q716171:
   title: Erdős–Ginzburg–Ziv theorem
+  decl: ZMod.erdos_ginzburg_ziv
 
 Q718875:
   title: Erdős–Ko–Rado theorem
@@ -630,9 +677,11 @@ Q730222:
 
 Q733081:
   title: Impossibility of angle trisection
+  # first part of problem 8 in 100.yaml
 
 Q737851:
   title: Banach–Tarski theorem
+  # WIP formalisation at https://github.com/Bergschaf/banach-tarski
 
 Q737892:
   title: Bendixson–Dulac theorem
@@ -657,6 +706,7 @@ Q751120:
 
 Q752375:
   title: Extreme value theorem
+  decl: IsCompact.exists_isMinOn
 
 Q755986:
   title: Atiyah–Bott fixed-point theorem
@@ -671,15 +721,20 @@ Q756946:
 
 Q764287:
   title: Van der Waerden's theorem
+  decl: Combinatorics.exists_mono_homothetic_copy
+  # TODO: this is only some version; should this entry be modified accordingly?
 
 Q765987:
   title: Heine–Cantor theorem
+  # XXX: does mathlib have this?
 
 Q766722:
   title: Liouville's theorem
+  # theorem about Hamiltonian mechanics
 
 Q776578:
   title: Artin–Wedderburn theorem
+  # WIP formalisation, but not complete yet (Dec 1, 2024)
 
 Q777924:
   title: Tijdeman's theorem
@@ -750,6 +805,7 @@ Q848092:
 
 Q848375:
   title: Implicit function theorem
+  decl: ImplicitFunctionData.implicitFunction
 
 Q848810:
   title: Kronecker's theorem
@@ -794,6 +850,7 @@ Q865665:
 
 Q866116:
   title: Hahn–Banach theorem
+  decl: exists_extension_norm_eq
 
 Q867141:
   title: Ehresmann's theorem
@@ -880,6 +937,7 @@ Q929547:
 
 Q931001:
   title: Inverse function theorem
+  decl: HasStrictFDerivAt.to_localInverse
 
 Q931001X:
   title: Constant rank theorem
@@ -898,12 +956,16 @@ Q942046:
 
 Q943246:
   title: Wedderburn's little theorem
+  decl: littleWedderburn
 
 Q944297:
   title: Open mapping theorem
+  # TODO: this entry points to Wikipedia's disambiguation page => wikipedia should be fixed
+  # Banach open mapping theorem/Banach-Schauder theorem in functional analysis is in mathlib (ContinuousLinearMap.isOpenMap)
 
 Q948664:
   title: Kneser's theorem
+  # TODO: is this in mathlib already?
 
 Q951327:
   title: Pasch's theorem
@@ -922,6 +984,7 @@ Q966837:
 
 Q967972:
   title: Open mapping theorem
+  # result in complex analysis. TODO does mathlib have this?
 
 Q973359:
   title: Rado's theorem
@@ -960,6 +1023,7 @@ Q1008566:
 
 Q1032886:
   title: Hales–Jewett theorem
+  decl: Combinatorics.Line.exists_mono_in_high_dimension
 
 Q1033910:
   title: Cantor–Bernstein–Schroeder theorem
@@ -971,12 +1035,15 @@ Q1037559:
 
 Q1038716:
   title: Identity theorem
+  # complex analysis, holomorphic functions: TODO add decl!
 
 Q1046232:
   title: Szemerédi's theorem
 
 Q1047749:
   title: Turán's theorem
+  decl: SimpleGraph.isTuranMaximal_iff_nonempty_iso_turanGraph
+  author: Jeremy Tan
 
 Q1048589:
   title: Hohenberg–Kohn theorems
@@ -1517,6 +1584,7 @@ Q1752516:
 
 Q1752621:
   title: Sylvester's law of inertia
+  decl: equivalent_one_zero_neg_one_weighted_sum_squared
 
 Q1752988:
   title: Kutta–Joukowski theorem
