@@ -9,7 +9,6 @@ import Mathlib.LinearAlgebra.AnnihilatingPolynomial
 import Mathlib.RingTheory.ArtinianRing
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 
-
 /-!
 # Semisimple linear endomorphisms
 
