@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.LiftingProperties.Basic
 Let `C` be a category, and `p : X ⟶ Y` be a morphism in `C`. In this file,
 we show that a transfinite composition of morphisms that have the left
 lifting property with respect to `p` also has the left lifting property with
-respect to `p`.
+respect to `p`, see `HasLiftingProperty.transfiniteComposition.hasLiftingProperty_ι_app_bot`.
 
 TODO: Given `P : MorphismProperty C`, deduce that the class of morphisms
 that have the left lifting property with respect to `P` is stable
