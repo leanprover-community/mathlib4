@@ -18,8 +18,6 @@ and provide an `IsFractionRing (R ⧸ I) I.ResidueField` instance.
 variable {R A} [CommRing R] [CommRing A] [Algebra R A]
 variable (I : Ideal R) [I.IsPrime]
 
-open Polynomial
-
 /--
 The residue field at a prime ideal, defined to be the residue field of the local ring
 `Localization.Prime I`.
@@ -101,3 +99,8 @@ instance : IsFractionRing (R ⧸ I) I.ResidueField where
       IsLocalization.AtPrime.to_map_mem_maximal_iff _ I, ← Ideal.Quotient.mk_eq_mk_iff_sub_mem] at e
     use 1
     simp [e]
+
+lemma Ideal.bijective_algebraMap_quotient_residueField (I : Ideal R) [I.IsMaximal] :
+    Function.Bijective (algebraMap (R ⧸ I) I.ResidueField) :=
+  ⟨I.injective_algebraMap_quotient_residueField, IsFractionRing.surjective_iff_isField.mpr
+    ((Quotient.maximal_ideal_iff_isField_quotient I).mp inferInstance)⟩
