@@ -77,6 +77,7 @@ instance : CompleteSpace ℝ≥0 :=
 instance : ContinuousStar ℝ≥0 where
   continuous_star := continuous_id
 
+-- TODO: generalize this to a broader class of subtypes
 instance : IsOrderBornology ℝ≥0 where
   isBounded_iff_bddBelow_bddAbove s := by
     refine ⟨fun bdd ↦ ?_, fun h ↦ isBounded_of_bddAbove_of_bddBelow h.2 h.1⟩
