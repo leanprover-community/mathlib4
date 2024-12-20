@@ -140,6 +140,7 @@ theorem span_mFourier_closure_eq_top :
   rw [← mFourierSubalgebra_coe]
   exact congr_arg (Subalgebra.toSubmodule <| StarSubalgebra.toSubalgebra ·)
     mFourierSubalgebra_closure_eq_top
+  -- TODO missing API
 
 end Algebra
 
