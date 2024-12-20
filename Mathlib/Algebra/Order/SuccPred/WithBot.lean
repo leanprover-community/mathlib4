@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Yaël Dillies Andrew Yang. All rights reserved.
+Copyright (c) 2024 Yaël Dillies, Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies Andrew Yang
+Authors: Yaël Dillies, Andrew Yang
 -/
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Algebra.Order.SuccPred
@@ -27,4 +27,3 @@ lemma succ_ofNat (n : ℕ) [n.AtLeastTwo] :
     succ (no_index (OfNat.ofNat n) : WithBot α) = OfNat.ofNat n + 1 := succ_natCast n
 
 end WithBot
-
