@@ -249,24 +249,27 @@ theorem localRingHom_comp {S : Type*} [CommSemiring S] (J : Ideal S) [hJ : J.IsP
   localRingHom_unique _ _ _ _ fun r => by
     simp only [Function.comp_apply, RingHom.coe_comp, localRingHom_to_map]
 
+namespace AtPrime
+
+variable {ι : Type*} {R : ι → Type*} [∀ i, CommSemiring (R i)]
+variable {i : ι} (I : Ideal (R i)) [I.IsPrime]
+
+/-- `Localization.localRingHom` specialized to a projection homomorphism from a product ring. -/
+noncomputable abbrev mapPiEvalRingHom :
+    Localization.AtPrime (I.comap <| Pi.evalRingHom R i) →+* Localization.AtPrime I :=
+  localRingHom _ _ _ rfl
+
+theorem mapPiEvalRingHom_bijective : Function.Bijective (mapPiEvalRingHom I) :=
+  Localization.mapPiEvalRingHom_bijective _
+
+theorem mapPiEvalRingHom_comp_algebraMap :
+    (mapPiEvalRingHom I).comp (algebraMap _ _) = (algebraMap _ _).comp (Pi.evalRingHom R i) :=
+  IsLocalization.map_comp _
+
+theorem mapPiEvalRingHom_algebraMap_apply {r : Π i, R i} :
+    mapPiEvalRingHom I (algebraMap _ _ r) = algebraMap _ _ (r i) :=
+  localRingHom_to_map ..
+
+end AtPrime
+
 end Localization
-
-namespace RingHom
-
-variable (R)
-
-/-- The canonical ring homomorphism from a commutative semiring to the product of its
-localizations at all maximal ideals. It is always injective. -/
-def toLocalizationIsMaximal : R →+*
-    Π I : {I : Ideal R // I.IsMaximal}, haveI : I.1.IsMaximal := I.2; Localization.AtPrime I.1 :=
-  Pi.ringHom fun _ ↦ algebraMap R _
-
-theorem toLocalizationIsMaximal_injective :
-    Function.Injective (RingHom.toLocalizationIsMaximal R) := fun r r' eq ↦ by
-  rw [← one_mul r, ← one_mul r']
-  by_contra ne
-  have ⟨I, mI, hI⟩ := (Module.eqIdeal R r r').exists_le_maximal ((Ideal.ne_top_iff_one _).mpr ne)
-  have ⟨s, hs⟩ := (IsLocalization.eq_iff_exists I.primeCompl _).mp (congr_fun eq ⟨I, mI⟩)
-  exact s.2 (hI hs)
-
-end RingHom
