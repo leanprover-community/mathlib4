@@ -242,6 +242,7 @@ def orderTop (x : HahnSeries Γ R) : WithTop Γ :=
 theorem orderTop_zero : orderTop (0 : HahnSeries Γ R) = ⊤ :=
   dif_pos rfl
 
+-- TODO rename capitalization
 @[simp]
 theorem orderTop_of_Subsingleton [Subsingleton R] {x : HahnSeries Γ R} : x.orderTop = ⊤ :=
   (Subsingleton.eq_zero x) ▸ orderTop_zero
@@ -482,6 +483,7 @@ section LocallyFiniteLinearOrder
 
 variable [Zero R] [LinearOrder Γ]
 
+-- TODO rename capitalization
 theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀ (m : Γ), m < n → f m = 0) :
     BddBelow (Function.support f) := by
   simp only [BddBelow, Set.Nonempty, lowerBounds]
@@ -490,11 +492,13 @@ theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀ (m : Γ),
   rw [Function.mem_support, ne_eq] at hm
   exact not_lt.mp (mt (hn m) hm)
 
+-- TODO rename capitalization
 theorem BddBelow_zero [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R)) := by
   simp only [support_zero', bddBelow_empty]
 
 variable [LocallyFiniteOrder Γ]
 
+-- TODO rename without dumb abbreviations
 theorem suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)) :
     (Function.support f).IsPWO :=
   hf.isWF.isPWO
@@ -509,6 +513,7 @@ def ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) : HahnSer
 theorem zero_ofSuppBddBelow [Nonempty Γ] : ofSuppBddBelow 0 BddBelow_zero = (0 : HahnSeries Γ R) :=
   rfl
 
+-- TODO rename capitalization
 theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
     (hn : ∀ (m : Γ), m < n → f m = 0) :
     n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by

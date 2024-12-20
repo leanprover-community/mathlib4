@@ -154,6 +154,7 @@ lemma iIndepSets.isProbabilityMeasure (h : iIndepSets π μ) : IsProbabilityMeas
 lemma iIndepSets.meas_iInter [Fintype ι] (h : iIndepSets π μ) (hs : ∀ i, s i ∈ π i) :
     μ (⋂ i, s i) = ∏ i, μ (s i) := by simp [← h.meas_biInter _ fun _i _ ↦ hs _]
 
+-- TODO rename; also below
 lemma IndepSets_iff (s1 s2 : Set (Set Ω)) (μ : Measure Ω) :
     IndepSets s1 s2 μ ↔ ∀ t1 t2 : Set Ω, t1 ∈ s1 → t2 ∈ s2 → (μ (t1 ∩ t2) = μ t1 * μ t2) := by
   simp only [IndepSets, Kernel.IndepSets, ae_dirac_eq, Filter.eventually_pure, Kernel.const_apply]
