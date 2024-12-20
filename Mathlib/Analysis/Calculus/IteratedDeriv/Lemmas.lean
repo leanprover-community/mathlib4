@@ -65,15 +65,15 @@ theorem iteratedDerivWithin_const_sub (hn : 0 < n) (c : F) :
 @[deprecated (since := "2024-12-10")]
 alias iteratedDerivWithin_const_neg := iteratedDerivWithin_const_sub
 
-/-- Note: this is unrelated to `iteratedDeriv_const_smul`, where the scalar multiplication works on
-the domain. -/
+/-- Note: this is unrelated to `iteratedDeriv_comp_const_smul`, where the scalar multiplication
+works on the domain. -/
 theorem iteratedDerivWithin_const_smul (c : R) (hf : ContDiffOn 𝕜 n f s) :
     iteratedDerivWithin n (c • f) s x = c • iteratedDerivWithin n f s x := by
   simp_rw [iteratedDerivWithin]
   rw [iteratedFDerivWithin_const_smul_apply hf h hx]
   simp only [ContinuousMultilinearMap.smul_apply]
 
-/-- Note: this is unrelated to `iteratedDeriv_const_mul`, where the multiplication works on the
+/-- Note: this is unrelated to `iteratedDeriv_comp_const_mul`, where the multiplication works on the
 domain. -/
 theorem iteratedDerivWithin_const_mul (c : 𝕜) {f : 𝕜 → 𝕜} (hf : ContDiffOn 𝕜 n f s) :
     iteratedDerivWithin n (fun z => c * f z) s x = c * iteratedDerivWithin n f s x := by
@@ -127,7 +127,7 @@ lemma iteratedDeriv_sub (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
 
 /-- Note: this is unrelated to `iteratedDerivWithin_const_smul`, where the scalar multiplication
 works on the codomain. -/
-theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n f) (c : 𝕜) :
+theorem iteratedDeriv_comp_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n f) (c : 𝕜) :
     iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n • iteratedDeriv n f (c * x) := by
   induction n with
   | zero => simp
@@ -144,11 +144,17 @@ theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n
       ← Function.comp_def, deriv.scomp x h₀ (differentiableAt_id'.const_mul _),
       deriv_const_mul _ differentiableAt_id', deriv_id'', smul_smul, mul_one, pow_succ]
 
+@[deprecated (since := "2024-12-20")]
+alias iteratedDeriv_const_smul := iteratedDeriv_comp_const_smul
+
 /-- Note: this is unrelated to `iteratedDerivWithin_const_mul`, where the multiplication works on
 the codomain. -/
-theorem iteratedDeriv_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiff 𝕜 n f) (c : 𝕜) :
+theorem iteratedDeriv_comp_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiff 𝕜 n f) (c : 𝕜) :
     iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n * iteratedDeriv n f (c * x) := by
-  simpa only [smul_eq_mul] using iteratedDeriv_const_smul h c
+  simpa only [smul_eq_mul] using iteratedDeriv_comp_const_smul h c
+
+@[deprecated (since := "2024-12-20")]
+alias iteratedDeriv_const_mul := iteratedDeriv_comp_const_mul
 
 lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     iteratedDeriv n (fun x ↦ f (-x)) a = (-1 : 𝕜) ^ n • iteratedDeriv n f (-a) := by
