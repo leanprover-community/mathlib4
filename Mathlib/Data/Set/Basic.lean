@@ -502,8 +502,7 @@ alias ⟨Nonempty.ne_empty, _⟩ := nonempty_iff_ne_empty
 @[simp]
 theorem not_nonempty_empty : ¬(∅ : Set α).Nonempty := fun ⟨_, hx⟩ => hx
 
--- Porting note: removing `@[simp]` as it is competing with `isEmpty_subtype`.
--- @[simp]
+@[simp]
 theorem isEmpty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
   not_iff_not.1 <| by simpa using nonempty_iff_ne_empty
 
@@ -1007,7 +1006,6 @@ def subtypeInsertEquivOption
 
 /-! ### Lemmas about singletons -/
 
-/- porting note: instance was in core in Lean3 -/
 instance : LawfulSingleton α (Set α) :=
   ⟨fun x => Set.ext fun a => by
     simp only [mem_empty_iff_false, mem_insert_iff, or_false]

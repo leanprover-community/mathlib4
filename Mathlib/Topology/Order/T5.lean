@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Order.Interval.Set.OrdConnectedComponent
 import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Separation.Regular
 
 /-!
 # Linear order is a completely normal Hausdorff topological space
