@@ -9,7 +9,7 @@ import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # (Semi-)linear isometries
