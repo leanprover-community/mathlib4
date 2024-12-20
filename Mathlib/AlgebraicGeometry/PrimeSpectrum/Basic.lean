@@ -968,10 +968,6 @@ namespace IsLocalRing
 
 variable [CommSemiring R] [IsLocalRing R]
 
-/-- The closed point in the prime spectrum of a local ring. -/
-def closedPoint : PrimeSpectrum R :=
-  ⟨maximalIdeal R, (maximalIdeal.isMaximal R).isPrime⟩
-
 variable {R}
 
 theorem isLocalHom_iff_comap_closedPoint {S : Type v} [CommSemiring S] [IsLocalRing S]
