@@ -20,8 +20,12 @@ to the colimit of the `F.obj j` for `j < m`.
 Given `W : MorphismProperty C`, we say that
 `W.IsStableUnderTransfiniteCompositionOfShape J` if for any
 colimit cocone `c` for a well-order-continuous functor `F : J ⥤ C`
-such that `F.obj i ⟶ F.obj (Order.succ i)` belongs to `W`, we can
-conclude that `c.ι.app ⊥ : F.obj ⊥ ⟶ c.pt` belongs to `W`.
+such that `F.obj j ⟶ F.obj (Order.succ j)` belongs to `W`, we can
+conclude that `c.ι.app ⊥ : F.obj ⊥ ⟶ c.pt` belongs to `W`. The
+morphisms of this form `c.ι.app ⊥` for any `F` and `c` are
+part of the morphism property `W.transfiniteCompositionsOfShape J`.
+The condition of being stable by transfinite composition of shape `J`
+is actually phrased as `W.transfiniteCompositionsOfShape J ≤ W`.
 
 In particular, if `J := ℕ`, we define `W.IsStableUnderInfiniteComposition`,
 which means that if `F : ℕ ⥤ C` is such that `F.obj n ⟶ F.obj (n + 1)`
@@ -35,21 +39,29 @@ holds for any well ordered type `J` in a certain universe `u`.
 
 -/
 
-universe u
+universe w v u
 
 namespace CategoryTheory
 
 open Category Limits
 
+variable {C : Type u} [Category.{v} C]
+
 namespace Functor
 
-variable {C : Type*} [Category C] {J : Type u} [Preorder J]
+variable {J : Type w} [Preorder J]
+
+/-- Given a functor `F : J ⥤ C` and `m : J`, this is the induced
+functor `Set.Iio j ⥤ C`. -/
+@[simps!]
+def restrictionLT (F : J ⥤ C) (j : J) : Set.Iio j ⥤ C :=
+  Monotone.functor (f := fun k ↦ k.1) (fun _ _ ↦ id) ⋙ F
 
 /-- Given a functor `F : J ⥤ C` and `m : J`, this is the cocone with point `F.obj m`
 for the restriction of `F` to `Set.Iio m`. -/
 @[simps]
 def coconeLT (F : J ⥤ C) (m : J) :
-    Cocone ((OrderHom.Subtype.val (· ∈ Set.Iio m)).monotone.functor ⋙ F) where
+    Cocone (F.restrictionLT m) where
   pt := F.obj m
   ι :=
     { app := fun ⟨i, hi⟩ ↦ F.map (homOfLE hi.le)
@@ -74,21 +86,79 @@ noncomputable def isColimitOfIsWellOrderContinuous (F : J ⥤ C) [F.IsWellOrderC
 instance (F : ℕ ⥤ C) : F.IsWellOrderContinuous where
   nonempty_isColimit m hm := by simp at hm
 
+lemma isWellOrderContinuous_of_iso {F G : J ⥤ C} (e : F ≅ G) [F.IsWellOrderContinuous] :
+    G.IsWellOrderContinuous where
+  nonempty_isColimit (m : J) (hm : Order.IsSuccLimit m) :=
+    ⟨(IsColimit.precomposeHomEquiv (isoWhiskerLeft _ e) _).1
+      (IsColimit.ofIsoColimit (F.isColimitOfIsWellOrderContinuous m hm)
+        (Cocones.ext (e.app _)))⟩
+
 end Functor
 
 namespace MorphismProperty
 
-variable {C : Type*} [Category C] (W : MorphismProperty C)
+variable (W : MorphismProperty C)
 
-/-- A class of morphisms `W : MorphismProperty C` is stable under transfinite composition
-of shape `J` if for any well-order-continuous functor `F : J ⥤ C` such that
-`F.obj i ⟶ F.obj (Order.succ i)` is in `W`, then `F.obj ⊥ ⟶ c.pt` is in `W`
-for any colimit cocone `c : Cocone F`. -/
-class IsStableUnderTransfiniteCompositionOfShape
-    (J : Type u) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J] : Prop where
-  mem (F : J ⥤ C) [F.IsWellOrderContinuous]
+-- for Basic.lean
+section
+
+variable (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J]
+
+/-- Given `W : MorphismProperty C` and a well-ordered type `J`, we say
+that a morphism in `C` is a transfinite composition of morphisms in `W`
+of shape `J` if it is of the form `c.ι.app ⊥ : F.obj ⊥ ⟶ c.pt`
+where `c` is a colimit cocone for a well-order-continuous functor
+`F : J ⥤ C` such that for any non-maximal `j : J`, the map
+`F.map j ⟶ F.map (Order.succ j)` is in `W`. -/
+inductive transfiniteCompositionsOfShape [WellFoundedLT J] : MorphismProperty C
+  | mk (F : J ⥤ C) [F.IsWellOrderContinuous]
     (hF : ∀ (j : J) (_ : ¬IsMax j), W (F.map (homOfLE (Order.le_succ j))))
-    (c : Cocone F) (hc : IsColimit c) : W (c.ι.app ⊥)
+    (c : Cocone F) (hc : IsColimit c) : transfiniteCompositionsOfShape (c.ι.app ⊥)
+
+variable [WellFoundedLT J]
+
+instance [W.RespectsIso] : RespectsIso (W.transfiniteCompositionsOfShape J) where
+  precomp := by
+    rintro X' X Y i (_ : IsIso i) _ ⟨F, hF, c, hc⟩
+    let F' := F.copyObj (fun j ↦ if j = ⊥ then X' else F.obj j)
+      (fun j ↦ if hj : j = ⊥ then
+          eqToIso (by rw [hj]) ≪≫ (asIso i).symm ≪≫ eqToIso (if_pos hj).symm
+        else eqToIso (if_neg hj).symm)
+    let e : F ≅ F' := F.isoCopyObj _ _
+    have := Functor.isWellOrderContinuous_of_iso e
+    let c' : Cocone F' := (Cocones.precompose e.inv).obj c
+    have : W.transfiniteCompositionsOfShape J (c'.ι.app ⊥) := by
+      constructor
+      · intro j hj
+        exact (arrow_mk_iso_iff _ (((Functor.mapArrowFunctor _ _).mapIso e).app
+          (Arrow.mk (homOfLE (Order.le_succ j))))).1 (hF j hj)
+      · exact (IsColimit.precomposeInvEquiv e c).2 hc
+    exact MorphismProperty.of_eq _ this (if_pos rfl) rfl (by simp [c', e])
+  postcomp := by
+    rintro _ _ _ i (_ : IsIso i) _ ⟨F, hF, c, hc⟩
+    exact ⟨_, hF, { ι := c.ι ≫ (Functor.const _).map i },
+      IsColimit.ofIsoColimit hc (Cocones.ext (asIso i))⟩
+
+/-- A class of morphisms `W : MorphismProperty C` is stable under transfinite compositions
+of shape `J` if for any well-order-continuous functor `F : J ⥤ C` such that
+`F.obj j ⟶ F.obj (Order.succ j)` is in `W`, then `F.obj ⊥ ⟶ c.pt` is in `W`
+for any colimit cocone `c : Cocone F`. -/
+class IsStableUnderTransfiniteCompositionOfShape : Prop where
+  le : W.transfiniteCompositionsOfShape J ≤ W
+
+variable [W.IsStableUnderTransfiniteCompositionOfShape J]
+
+lemma transfiniteCompositionsOfShape_le  :
+    W.transfiniteCompositionsOfShape J ≤ W :=
+  IsStableUnderTransfiniteCompositionOfShape.le
+
+variable {J} in
+lemma mem_of_transfinite_composition {F : J ⥤ C} [F.IsWellOrderContinuous]
+    (hF : ∀ (j : J) (_ : ¬IsMax j), W (F.map (homOfLE (Order.le_succ j))))
+    {c : Cocone F} (hc : IsColimit c) : W (c.ι.app ⊥) :=
+  W.transfiniteCompositionsOfShape_le J _ (by constructor <;> assumption)
+
+end
 
 /-- A class of morphisms `W : MorphismProperty C` is stable under infinite composition
 if for any functor `F : ℕ ⥤ C` such that `F.obj n ⟶ F.obj (n + 1)` is in `W` for any `n : ℕ`,
@@ -96,23 +166,19 @@ the map `F.obj 0 ⟶ c.pt` is in `W` for any colimit cocone `c : Cocone F`. -/
 abbrev IsStableUnderInfiniteComposition : Prop :=
   W.IsStableUnderTransfiniteCompositionOfShape ℕ
 
-lemma mem_of_transfinite_composition
-    {J : Type u} [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
-    [W.IsStableUnderTransfiniteCompositionOfShape J]
-    {F : J ⥤ C} [F.IsWellOrderContinuous]
-    (hF : ∀ (j : J) (_ : ¬IsMax j), W (F.map (homOfLE (Order.le_succ j))))
-    {c : Cocone F} (hc : IsColimit c) : W (c.ι.app ⊥) :=
-  IsStableUnderTransfiniteCompositionOfShape.mem F hF c hc
-
 /-- A class of morphisms `W : MorphismProperty C` is stable under transfinite composition
 if it is multiplicative and stable under transfinite composition of any shape
 (in a certain universe). -/
 class IsStableUnderTransfiniteComposition extends W.IsMultiplicative : Prop where
   isStableUnderTransfiniteCompositionOfShape
-    (J : Type u) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J] :
+    (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J] :
     W.IsStableUnderTransfiniteCompositionOfShape J
 
-attribute [instance] IsStableUnderTransfiniteComposition.isStableUnderTransfiniteCompositionOfShape
+namespace IsStableUnderTransfiniteComposition
+
+attribute [instance] isStableUnderTransfiniteCompositionOfShape
+
+end IsStableUnderTransfiniteComposition
 
 end MorphismProperty
 
