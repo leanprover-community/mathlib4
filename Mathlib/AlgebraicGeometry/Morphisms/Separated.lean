@@ -79,7 +79,7 @@ instance : IsLocalAtTarget @IsSeparated := by
 
 instance (R S : CommRingCat.{u}) (f : R ⟶ S) : IsSeparated (Spec.map f) := by
   constructor
-  letI := f.toAlgebra
+  letI := f.hom.toAlgebra
   show IsClosedImmersion (Limits.pullback.diagonal (Spec.map (CommRingCat.ofHom (algebraMap R S))))
   rw [diagonal_Spec_map, MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion]
   exact .spec_of_surjective _ fun x ↦ ⟨.tmul R 1 x,
