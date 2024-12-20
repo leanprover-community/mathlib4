@@ -319,13 +319,14 @@ section surjection
 
 variable {R : Type*} [τR : TopologicalSpace R] [Ring R]
 variable {A : Type*} [AddCommGroup A] [Module R A] [TopologicalSpace A] [IsModuleTopology R A]
-variable {B : Type*} [AddCommGroup B] [Module R B] [τB : TopologicalSpace B] [IsModuleTopology R B]
+variable {B : Type*} [AddCommGroup B] [Module R B]
 
 open Topology in
 /-- A linear surjection between modules with the module topology is a quotient map.
 Equivalently, the pushforward of the module topology along a surjective linear map is
 again the module topology. -/
-theorem coinduced_of_surjective {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
+theorem isQuotientMap_of_surjective [τB : TopologicalSpace B] [IsModuleTopology R B]
+    {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
     IsQuotientMap φ where
   surjective := hφ
   eq_coinduced := by
@@ -393,6 +394,13 @@ theorem coinduced_of_surjective {φ : A →ₗ[R] B} (hφ : Function.Surjective 
         φ ∘ (fun p ↦ p.1 + p.2 : A × A → A) := by ext; simp
       rw [← (IsOpenQuotientMap.prodMap hφo hφo).continuous_comp_iff, hφ2]
       exact Continuous.comp hφo.continuous hA
+
+lemma _root_.ModuleTopology.eq_coinduced_of_surjective
+    {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
+    moduleTopology R B = TopologicalSpace.coinduced φ inferInstance := by
+  letI : TopologicalSpace B := moduleTopology R B
+  haveI : IsModuleTopology R B := ⟨rfl⟩
+  exact (isQuotientMap_of_surjective hφ).eq_coinduced
 
 end surjection
 
