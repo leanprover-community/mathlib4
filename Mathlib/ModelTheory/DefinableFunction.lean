@@ -47,6 +47,11 @@ theorem realize_spec' {f : T.FunctionalFormula α β} {x : α ⊕ β → M} :
     f.1.Realize x ↔ f.realize (x ∘ Sum.inl) = x ∘ Sum.inr := by
   rw [realize_spec]; simp
 
+theorem realize_spec2 {f : T.FunctionalFormula α β} {x : α ⊕ β → M} {y : Fin 0 → M} :
+    BoundedFormula.Realize f.1 x y ↔ f.realize (x ∘ Sum.inl) = x ∘ Sum.inr := by
+  rw [← realize_spec', Formula.Realize, iff_iff_eq]
+  congr; ext x; exact Fin.elim0 x
+
 def ofTerm (t : L.Term α) : T.FunctionalFormula α Unit :=
   ⟨Term.equal (t.relabel Sum.inl) (var (Sum.inr ())), by
     simp only [ModelsBoundedFormula, BoundedFormula.realize_iExsUnique, id_eq,
@@ -112,7 +117,35 @@ theorem realize_comp [Finite γ] (f : T.FunctionalFormula β γ) (g : T.Function
   use g.realize x
   simp [Function.comp_def, realize_spec']
 
-noncomputable def pi
+noncomputable def toSigma {γ : β → Type y} [∀ b, Finite (γ b)]
+    (f : ∀ b, T.FunctionalFormula α (γ b)) :
+    T.FunctionalFormula α (Σ b, γ b) :=
+  let e := Fintype.ofFinite β
+  ⟨BoundedFormula.iInf (Finset.univ : Finset β)
+    (fun b => (f b).1.relabel (Sum.elim Sum.inl (fun g => Sum.inr ⟨_, g⟩))), by
+  simp only [ModelsBoundedFormula, BoundedFormula.realize_iExsUnique, id_eq, forall_const]
+  intro M x
+  use (fun i : Σ b, γ b => (f i.1).realize x i.2)
+  simp only [Formula.Realize, Formula.relabel, Function.comp_def, BoundedFormula.realize_iInf,
+    Finset.mem_univ, BoundedFormula.realize_relabel, Nat.add_zero, Fin.castAdd_zero, Fin.cast_refl,
+    CompTriple.comp_eq, Sum.elim_inl, Fin.natAdd_zero, realize_spec2, Sum.elim_inr, imp_self,
+    implies_true, funext_iff, eq_comm, forall_const, true_and]
+  intro y h z
+  cases z
+  rw [h]⟩
+
+@[simp]
+theorem realize_toSigma {γ : β → Type y} [∀ b, Finite (γ b)]
+    (f : ∀ b, T.FunctionalFormula α (γ b)) (x : α → M) :
+    (toSigma f).realize x = fun i => (f i.1).realize x i.2 := by
+  rw [realize_spec]
+  simp only [Formula.Realize, toSigma, Formula.relabel, Function.comp_def,
+    BoundedFormula.realize_iInf, Finset.mem_univ, BoundedFormula.realize_relabel, Nat.add_zero,
+    Fin.castAdd_zero, Fin.cast_refl, CompTriple.comp_eq, Sum.elim_inl, Fin.natAdd_zero,
+    forall_const]
+  intro b
+  rw [realize_spec2]
+  congr
 
 end FunctionalFormula
 
