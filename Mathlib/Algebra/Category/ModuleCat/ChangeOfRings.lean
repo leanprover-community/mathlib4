@@ -341,8 +341,9 @@ variable {f}
 lemma hom_ext {M : ModuleCat R} {N : ModuleCat S}
     {α β : (extendScalars f).obj M ⟶ N}
     (h : ∀ (m : M), α ((1 : S) ⊗ₜ m) = β ((1 : S) ⊗ₜ m)) : α = β := by
-  letI := f.toAlgebra
   apply (restrictScalars f).map_injective
+  letI := f.toAlgebra
+  ext : 1
   apply TensorProduct.ext'
   intro (s : S) m
   change α (s ⊗ₜ m) = β (s ⊗ₜ m)

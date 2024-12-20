@@ -35,9 +35,9 @@ noncomputable def CommRingCat.moduleCatRestrictScalarsPseudofunctor :
     Pseudofunctor (LocallyDiscrete CommRingCat.{u}ᵒᵖ) Cat :=
   LocallyDiscrete.mkPseudofunctor
     (fun R ↦ Cat.of (ModuleCat.{v} R.unop))
-    (fun f ↦ restrictScalars f.unop)
+    (fun f ↦ restrictScalars f.unop.hom)
     (fun R ↦ restrictScalarsId R.unop)
-    (fun f g ↦ restrictScalarsComp g.unop f.unop)
+    (fun f g ↦ restrictScalarsComp g.unop.hom f.unop.hom)
 
 /-- The pseudofunctor from `LocallyDiscrete RingCatᵒᵖ` to `Cat` which sends a ring `R`
 to its category of modules. The functoriality is given by the restriction of scalars. -/
@@ -46,9 +46,9 @@ noncomputable def RingCat.moduleCatRestrictScalarsPseudofunctor :
     Pseudofunctor (LocallyDiscrete RingCat.{u}ᵒᵖ) Cat :=
   LocallyDiscrete.mkPseudofunctor
     (fun R ↦ Cat.of (ModuleCat.{v} R.unop))
-    (fun f ↦ restrictScalars f.unop)
+    (fun f ↦ restrictScalars f.unop.hom)
     (fun R ↦ restrictScalarsId R.unop)
-    (fun f g ↦ restrictScalarsComp g.unop f.unop)
+    (fun f g ↦ restrictScalarsComp g.unop.hom f.unop.hom)
 
 /-- The pseudofunctor from `LocallyDiscrete CommRingCat` to `Cat` which sends
 a commutative ring `R` to its category of modules. The functoriality is given by
@@ -58,9 +58,9 @@ noncomputable def CommRingCat.moduleCatExtendScalarsPseudofunctor :
     Pseudofunctor (LocallyDiscrete CommRingCat.{u}) Cat :=
   LocallyDiscrete.mkPseudofunctor
     (fun R ↦ Cat.of (ModuleCat.{u} R))
-    (fun f ↦ extendScalars f)
+    (fun f ↦ extendScalars f.hom)
     (fun R ↦ extendScalarsId R)
-    (fun f g ↦ extendScalarsComp f g)
+    (fun f g ↦ extendScalarsComp f.hom g.hom)
     (fun _ _ _ ↦ extendScalars_assoc' _ _ _)
     (fun _ ↦ extendScalars_id_comp _)
     (fun _ ↦ extendScalars_comp_id _)
