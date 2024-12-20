@@ -26,31 +26,6 @@ variable {𝕜 E F G : Type*}
   [NormedAddCommGroup F] [NormedSpace 𝕜 F]
   [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 
-@[simp]
-theorem dist_iteratedFDerivWithin_zero (f : E → F) (s : Set E) (x : E)
-    (g : E → F) (t : Set E) (y : E) :
-    dist (iteratedFDerivWithin 𝕜 0 f s x) (iteratedFDerivWithin 𝕜 0 g t y) = dist (f x) (g y) := by
-  simp only [iteratedFDerivWithin_zero_eq_comp, comp_apply, LinearIsometryEquiv.dist_map]
-
-@[simp]
-theorem dist_iteratedFDerivWithin_one (f g : E → F) {s t : Set E} {x y : E}
-    (hsx : UniqueDiffWithinAt 𝕜 s x) (hyt : UniqueDiffWithinAt 𝕜 t y) :
-    dist (iteratedFDerivWithin 𝕜 1 f s x) (iteratedFDerivWithin 𝕜 1 g t y)
-      = dist (fderivWithin 𝕜 f s x) (fderivWithin 𝕜 g t y) := by
-  simp only [iteratedFDerivWithin_succ_eq_comp_left, comp_apply,
-    LinearIsometryEquiv.dist_map, iteratedFDerivWithin_zero_eq_comp,
-    LinearIsometryEquiv.comp_fderivWithin, hsx, hyt]
-  apply (continuousMultilinearCurryFin0 𝕜 E F).symm.toLinearIsometry.postcomp.dist_map
-
--- TODO: deduce from the `dist` version once we redefine `fderiv`, see `YK-fderiv-def`
-@[simp]
-theorem norm_iteratedFDerivWithin_one (f : E → F) {s : Set E} {x : E}
-    (h : UniqueDiffWithinAt 𝕜 s x) :
-    ‖iteratedFDerivWithin 𝕜 1 f s x‖ = ‖fderivWithin 𝕜 f s x‖ := by
-  simp only [← norm_fderivWithin_iteratedFDerivWithin,
-    iteratedFDerivWithin_zero_eq_comp, LinearIsometryEquiv.comp_fderivWithin _ h]
-  apply (continuousMultilinearCurryFin0 𝕜 E F).symm.toLinearIsometry.norm_toContinuousLinearMap_comp
-
 theorem ContDiffWithinAt.contDiffOn_inter_isOpen_subset
     {f : E → F} {s t : Set E} {m n : WithTop ℕ∞} {x : E} (h : ContDiffWithinAt 𝕜 n f s x)
     (hle : m ≤ n) (htop : m = ∞ → n = ω) (ht : t ∈ 𝓝[s] x) :
