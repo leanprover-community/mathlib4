@@ -1616,7 +1616,8 @@ theorem stepAux_write (q : Stmt'₁) (v : σ) (a b : Γ) (L R : ListBlank Γ) :
   cases' l₂' with b l₂' <;>
     simp only [List.length_nil, List.length_cons, Nat.succ_inj', reduceCtorEq] at e
   rw [List.reverseAux, ← IH (a :: l₁) l₂' e]
-  simp [stepAux, ListBlank.append, write]
+  simp only [stepAux, ListBlank.append, Tape.write_mk', Tape.move_right_mk', ListBlank.head_cons,
+    ListBlank.tail_cons]
 
 variable (encdec : ∀ a, dec (enc a) = a)
 include encdec
@@ -1828,12 +1829,12 @@ theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b ↦ trCfg 
       cases' s with d a <;> rfl
     intro e
     refine TransGen.head ?_ (TransGen.head' this ?_)
-    · simp only [TM1.step, TM1.stepAux, tr]
+    · simp only [TM1.step, TM1.stepAux]
       rw [e]
       rfl
     cases e' : M q' _
     · apply ReflTransGen.single
-      simp only [TM1.step, TM1.stepAux, tr]
+      simp only [TM1.step, TM1.stepAux]
       rw [e']
       rfl
     · rfl
@@ -2292,7 +2293,7 @@ noncomputable def trStmts₁ : Stmt₂ → Finset Λ'₂₁
 
 theorem trStmts₁_run {k : K} {s : StAct₂ k} {q : Stmt₂} :
     trStmts₁ (stRun s q) = {go k s q, ret q} ∪ trStmts₁ q := by
-  cases s <;> simp only [trStmts₁, stRun]
+  cases s <;> simp only [trStmts₁]
 
 theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (Γ k)}
     {L : ListBlank (∀ k, Option (Γ k))}
