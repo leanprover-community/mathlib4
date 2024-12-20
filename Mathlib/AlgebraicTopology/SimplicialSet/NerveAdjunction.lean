@@ -93,6 +93,8 @@ def nerve₂Adj.counit : nerveFunctor₂ ⋙ hoFunctor₂.{u} ⟶ (𝟭 Cat) whe
 
 local notation (priority := high) "[" n "]" => SimplexCategory.mk n
 
+/-- Because nerves are 2-coskeletal, the components of a map of 2-truncated simplicial sets valued
+in a nerve can be recovered from the underlying ReflPrefunctor. -/
 def toNerve₂.mk.app {X : SSet.Truncated 2} {C : Cat}
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
     (n : SimplexCategory.Truncated 2) :
@@ -142,7 +144,10 @@ instance (C : Cat) : Mono (nerve₂.seagull C) where
     · exact (conj_eqToHom_iff_heq' _ _ _ _).2 (congr_arg_heq (·.hom) <| eq1)
     · exact (conj_eqToHom_iff_heq' _ _ _ _).2 (congr_arg_heq (·.hom) <| eq2)
 
-@[simps!] def toNerve₂.mk {X : SSet.Truncated.{u} 2} {C : Cat}
+/-- Because nerves are 2-coskeletal, a map of 2-truncated simplicial sets valued in a nerve can be
+recovered from the underlying ReflPrefunctor. -/
+@[simps!]
+def toNerve₂.mk {X : SSet.Truncated.{u} 2} {C : Cat}
     (F : SSet.oneTruncation₂.obj X ⟶ ReflQuiv.of C)
     (hyp : (φ : X _[2]₂) →
       F.map (ev02₂ φ) =
@@ -435,7 +440,7 @@ theorem toNerve₂.ext' {X : SSet.Truncated 2} {C : Cat} (f g : X ⟶ nerveFunct
   let g' : X ⟶ nerveFunctor₂.obj C := g
   exact toNerve₂.ext f' g' hyp
 
--- @[simps! toPrefunctor obj map]
+/-- The components of the 2-truncated nerve adjunction unit. -/
 def nerve₂Adj.unit.component (X : SSet.Truncated.{u} 2) :
     X ⟶ nerveFunctor₂.obj (hoFunctor₂.obj X) := by
   fapply toNerve₂.mk' (C := hoFunctor₂.obj X)
@@ -451,6 +456,7 @@ theorem nerve₂Adj.unit.component_eq (X : SSet.Truncated.{u} 2) :
     (OneTruncation₂.ofNerve₂.natIso).inv.app (hoFunctor₂.obj X) := by
   apply oneTruncation₂_toNerve₂Mk'
 
+/-- The 2-truncated nerve adjunction unit. -/
 def nerve₂Adj.unit : 𝟭 (SSet.Truncated.{u} 2) ⟶ hoFunctor₂ ⋙ nerveFunctor₂ where
   app := nerve₂Adj.unit.component
   naturality := by
@@ -465,9 +471,8 @@ def nerve₂Adj.unit : 𝟭 (SSet.Truncated.{u} 2) ⟶ hoFunctor₂ ⋙ nerveFun
     rw [← nat₁]
     rfl
 
-/--
-The adjunction between forming the free category on a quiver, and forgetting a category to a quiver.
--/
+/-- The adjunction between the 2-truncated nerve functor and the 2-truncated homotopy category
+functor. -/
 nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ := by
   refine Adjunction.mkOfUnitCounit {
     unit := nerve₂Adj.unit
@@ -540,7 +545,6 @@ nonrec def nerve₂Adj : hoFunctor₂.{u} ⊣ nerveFunctor₂ := by
     simp
 
 instance nerveFunctor₂.faithful : nerveFunctor₂.{u, u}.Faithful := by
-  haveI lem := ReflQuiv.forget.Faithful -- TODO: why is this needed
   exact Functor.Faithful.of_comp_iso
     (G := oneTruncation₂) (H := ReflQuiv.forget) OneTruncation₂.ofNerve₂.natIso
 
@@ -621,7 +625,8 @@ instance nerveFunctor₂.full : nerveFunctor₂.{u, u}.Full where
       exact (Iso.cancel_iso_hom_right (oneTruncation₂.map (nerveFunctor₂.map fF))
         (oneTruncation₂.map F) (OneTruncation₂.ofNerve₂.natIso.app Y)).mp nat
 
-noncomputable instance nerveFunctor₂.fullyfaithful : nerveFunctor₂.FullyFaithful :=
+/-- The 2-truncated nerve functor is both full and faithful and thus is fully faithful. -/
+noncomputable def nerveFunctor₂.fullyfaithful : nerveFunctor₂.FullyFaithful :=
   FullyFaithful.ofFullyFaithful nerveFunctor₂
 
 instance nerve₂Adj.reflective : Reflective nerveFunctor₂.{u, u} :=
@@ -629,6 +634,8 @@ instance nerve₂Adj.reflective : Reflective nerveFunctor₂.{u, u} :=
 
 end
 
+/-- The adjunction between the nerve functor and the homotopy category functor is, up to
+isomorphism, the composite of the adjunctions `SSet.coskAdj 2` and `nerve₂Adj`. -/
 noncomputable def nerveAdjunction : hoFunctor ⊣ nerveFunctor :=
   Adjunction.ofNatIsoRight ((SSet.coskAdj 2).comp nerve₂Adj) Nerve.cosk₂Iso.symm
 
@@ -644,12 +651,15 @@ instance nerveFunctor.full : nerveFunctor.{u, u}.Full :=
     Full.comp nerveFunctor₂ (SSet.Truncated.cosk 2)
   Functor.Full.of_iso Nerve.cosk₂Iso.symm
 
-noncomputable instance nerveFunctor.fullyfaithful : nerveFunctor.FullyFaithful :=
+/-- The nerve functor is both full and faithful and thus is fully faithful. -/
+noncomputable def nerveFunctor.fullyfaithful : nerveFunctor.FullyFaithful :=
   FullyFaithful.ofFullyFaithful nerveFunctor
 
 instance nerveCounit_isIso : IsIso nerveAdjunction.counit :=
   Adjunction.counit_isIso_of_R_fully_faithful _
 
+/-- The counit map of `nerveAdjunction` is an isomorphism since the nerve functor is fully
+faithful. -/
 noncomputable def nerveCounitNatIso : nerveFunctor ⋙ hoFunctor ≅ 𝟭 Cat :=
   asIso (nerveAdjunction.counit)
 
