@@ -21,7 +21,7 @@ satisfy.
 
 1. For all $i$, we have $k_{i, i} = 2$.
 2. For all $i, i'$ with $2 \leq M_{i, i'}$, the number $k_{i, i'}k_{i', i}$ is of the form
-  $4 \cos^2(\pi \ell / M_{i, i'})$, where $\ell$ is an integer with $0 < \ell \leq M_{i, i'} / 2$.
+  $4 \cos^2(\pi m / M_{i, i'})$, where $m$ is an integer with $0 < m \leq M_{i, i'} / 2$.
 3. For all $i, i'$, we have $k_{i, i'} = 0$ if and only if $k_{i', i} = 0$.
 4. (strengthening of 2) For all $i, i'$ with $M_{i, i'} \neq 0$, we have
   $k_{i,i'}k_{i', i} = 4 \cos^2(\pi / M_{i, i'})$.
@@ -132,15 +132,15 @@ We say that $k$ is a *Cartan reflective matrix* for $M$ if it satisfies properti
 from the top of this page. That is:
 1. For all $i$, we have $k_{i, i} = 2$.
 2. For all $i, i'$ with $2 \leq M_{i, i'}$, the number $k_{i, i'}k_{i', i}$ is of the form
-  $4 \cos^2(\pi \ell / M_{i, i'})$, where $\ell$ is an integer with $0 < \ell \leq M_{i, i'} / 2$.
+  $4 \cos^2(\pi m / M_{i, i'})$, where $m$ is an integer with $0 < m \leq M_{i, i'} / 2$.
 3. For all $i, i'$, we have $k_{i, i'} = 0$ if and only if $k_{i', i} = 0$.
 This is equivalent to the previous definition of a Cartan reflective matrix (`IsCartanReflective`),
 but specialized to matrices with real entries. -/
 @[mk_iff]
 structure IsRealCartanReflective (M : CoxeterMatrix B) (k : Matrix B B ℝ) : Prop where
   diagonal i : k i i = 2
-  mul_eq_four_mul_cos_sq i i' : 2 ≤ M i i' → ∃ (ℓ : ℕ),
-    0 < ℓ ∧ 2 * ℓ ≤ M i i' ∧ k i i' * k i' i = 4 * cos (ℓ * π / M i i') ^ 2
+  mul_eq_four_mul_cos_sq i i' : 2 ≤ M i i' → ∃ (m : ℕ),
+    0 < m ∧ 2 * m ≤ M i i' ∧ k i i' * k i' i = 4 * cos (m * π / M i i') ^ 2
   eq_zero_iff i i' : k i i' = 0 ↔ k i' i = 0
 
 theorem isRealCartanReflective_of_isCartanReflective (M : CoxeterMatrix B) (k : Matrix B B ℝ)
@@ -153,16 +153,16 @@ theorem isRealCartanReflective_of_isCartanReflective (M : CoxeterMatrix B) (k : 
     have eq_two_mul_cos_theta : ((k i i' * k i' i - 2 : ℝ) : ℂ) = 2 * Complex.cos θ := by
       rw [hθ]
       ring
-    /- It suffices to show that `cos θ ≠ 1` and that there exists an integer `ℓ` such that
-    `θ = ℓ * (2 * π) / M i i'`. -/
-    have suffices_exists_ℓ : Complex.cos θ ≠ 1 → (∃ (ℓ : ℤ), θ = ℓ * (2 * π) / M i i')
-      → ∃ ℓ, 0 < ℓ ∧ 2 * ℓ ≤ M i i' ∧ k i i' * k i' i = 4 * cos (ℓ * π / M i i') ^ 2 := by
-      intro cos_θ_ne_one ⟨ℓ, hℓ⟩
-      set ℓ' := Int.natAbs (Int.bmod ℓ (M i i')) with hℓ'
-      set θ' := ℓ' * (2 * π) / (M i i') with hθ'
+    /- It suffices to show that `cos θ ≠ 1` and that there exists an integer `m` such that
+    `θ = m * (2 * π) / M i i'`. -/
+    have suffices_exists_m : Complex.cos θ ≠ 1 → (∃ (m : ℤ), θ = m * (2 * π) / M i i')
+      → ∃ m, 0 < m ∧ 2 * m ≤ M i i' ∧ k i i' * k i' i = 4 * cos (m * π / M i i') ^ 2 := by
+      intro cos_θ_ne_one ⟨m, hm⟩
+      set m' := Int.natAbs (Int.bmod m (M i i')) with hm'
+      set θ' := m' * (2 * π) / (M i i') with hθ'
       have cos_θ'_eq_cos_θ : Real.cos θ' = Complex.cos θ := by
-        unfold θ' ℓ'
-        rw [hℓ, Int.cast_natAbs, Int.cast_abs, mul_div_assoc,
+        unfold θ' m'
+        rw [hm, Int.cast_natAbs, Int.cast_abs, mul_div_assoc,
           ← abs_eq_self.mpr (show (2 * π) / M i i' ≥ 0 by positivity), ← abs_mul, cos_abs,
           Int.bmod_def, Int.emod_def]
         norm_cast
@@ -174,24 +174,24 @@ theorem isRealCartanReflective_of_isCartanReflective (M : CoxeterMatrix B) (k : 
           rw [sub_mul, sub_mul, mul_comm (M i i' : ℝ), mul_assoc,
             mul_div_cancel₀ _ (mod_cast Mii'_ne_zero), cos_sub_two_pi, cos_sub_int_mul_two_pi,
             ← mul_div_assoc]
-      use ℓ'
+      use m'
       refine ⟨?_, ?_, ?_⟩
-      · show 0 < ℓ'
+      · show 0 < m'
         have cos_θ'_ne_one : cos θ' ≠ 1 := by
           intro h
           rw [h, Complex.ofReal_one] at cos_θ'_eq_cos_θ
           tauto
-        have ℓ'_ne_zero : ℓ' ≠ 0 := by
+        have m'_ne_zero : m' ≠ 0 := by
           intro h
           rw [h] at hθ'
           simp [hθ'] at cos_θ'_ne_one
-        exact Nat.zero_lt_of_ne_zero ℓ'_ne_zero
-      · show 2 * ℓ' ≤ M i i'
-        unfold ℓ'
-        have := Int.bmod_le (x := ℓ) (Nat.zero_lt_of_ne_zero Mii'_ne_zero)
-        have := Int.le_bmod (x := ℓ) (Nat.zero_lt_of_ne_zero Mii'_ne_zero)
+        exact Nat.zero_lt_of_ne_zero m'_ne_zero
+      · show 2 * m' ≤ M i i'
+        unfold m'
+        have := Int.bmod_le (x := m) (Nat.zero_lt_of_ne_zero Mii'_ne_zero)
+        have := Int.le_bmod (x := m) (Nat.zero_lt_of_ne_zero Mii'_ne_zero)
         omega
-      · show k i i' * k i' i = 4 * cos (ℓ' * π / M i i') ^ 2
+      · show k i i' * k i' i = 4 * cos (m' * π / M i i') ^ 2
         apply Complex.ofReal_injective
         rw [Real.cos_sq, mul_div, mul_left_comm, ← hθ']
         push_cast at eq_two_mul_cos_theta cos_θ'_eq_cos_θ ⊢
@@ -204,7 +204,7 @@ theorem isRealCartanReflective_of_isCartanReflective (M : CoxeterMatrix B) (k : 
           mul_div_mul_right π 2 (show (j : ℝ) ≠ 0 by norm_cast; omega)]
       · have S_eval_eq_zero_complex : (S ℂ (j - 1)).eval (2 * Complex.cos θ) = 0 :=
           eq_two_mul_cos_theta ▸ mod_cast S_eval_eq_zero
-        apply suffices_exists_ℓ
+        apply suffices_exists_m
         · show Complex.cos θ ≠ 1
           intro cos_θ_eq_one
           rw [cos_θ_eq_one] at S_eval_eq_zero_complex
@@ -217,11 +217,11 @@ theorem isRealCartanReflective_of_isCartanReflective (M : CoxeterMatrix B) (k : 
           -- If `M i i' = 2 * j` is even, then we conclude that `sin (j * θ) = 0`.
           guard_hyp eval_s_mul_sin_eq_zero : Complex.sin (j * θ) = 0
           -- It follows that `j * θ` is an integer multiple of `π`.
-          obtain ⟨ℓ, hℓ⟩ := Complex.sin_eq_zero_iff.mp eval_s_mul_sin_eq_zero
-          use ℓ * j
+          obtain ⟨m, hm⟩ := Complex.sin_eq_zero_iff.mp eval_s_mul_sin_eq_zero
+          use m * j
           rw [hj]
           push_cast
-          linear_combination (norm := field_simp) (1 / j) * hℓ
+          linear_combination (norm := field_simp) (1 / j) * hm
           sorry
     · sorry
   eq_zero_iff i i' := by
