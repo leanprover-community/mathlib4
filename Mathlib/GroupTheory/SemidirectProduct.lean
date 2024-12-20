@@ -5,6 +5,8 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Group.Aut
 import Mathlib.Algebra.Group.Subgroup.Ker
+import Mathlib.GroupTheory.Complement
+import Mathlib.GroupTheory.Subgroup.Centralizer
 
 /-!
 # Semidirect product
@@ -29,6 +31,7 @@ This file introduces the global notation `N ⋊[φ] G` for `SemidirectProduct N 
 group, semidirect product
 -/
 
+open Subgroup
 
 variable (N : Type*) (G : Type*) {H : Type*} [Group N] [Group G] [Group H]
 
@@ -175,6 +178,14 @@ theorem range_inl_eq_ker_rightHom : (inl : N →* N ⋊[φ] G).range = rightHom.
   le_antisymm (fun _ ↦ by simp +contextual [MonoidHom.mem_ker, eq_comm])
     fun x hx ↦ ⟨x.left, by ext <;> simp_all [MonoidHom.mem_ker]⟩
 
+/-- The bijection between the semidirect product and the product. -/
+@[simps!]
+def equivProd : N ⋊[φ] G ≃ N × G :=
+  { toFun := fun ⟨n, g⟩ ↦ ⟨n, g⟩
+    invFun := fun ⟨n, g⟩ ↦ ⟨n, g⟩
+    left_inv := fun _ ↦ rfl
+    right_inv := fun _ ↦ rfl }
+
 section lift
 
 variable (f₁ : N →* H) (f₂ : G →* H)
@@ -215,6 +226,18 @@ theorem hom_ext {f g : N ⋊[φ] G →* H} (hl : f.comp inl = g.comp inl)
     (hr : f.comp inr = g.comp inr) : f = g := by
   rw [lift_unique f, lift_unique g]
   simp only [*]
+
+/-- The homomorphism from a semidirect product of subgroups to the ambient group. -/
+@[simps!]
+def monoidHomSubgroup {H K : Subgroup G} (h : K ≤ H.normalizer) :
+    H ⋊[(H.normalizerMonoidHom).comp (inclusion h)] K →* G :=
+  lift H.subtype K.subtype (by simp [DFunLike.ext_iff])
+
+/-- The isomorphism from a semidirect product of complementary subgroups to the ambient group. -/
+@[simps!]
+noncomputable def mulEquivSubgroup {H K : Subgroup G} [hH : H.Normal] (h : H.IsComplement' K) :
+    H ⋊[(H.normalizerMonoidHom).comp (inclusion (normalizer_eq_top.mpr hH ▸ le_top))] K ≃* G :=
+  MulEquiv.ofBijective (monoidHomSubgroup _) ((equivProd.bijective_comp _).mpr h)
 
 end lift
 
@@ -258,5 +281,28 @@ theorem map_inr (g : G) : map f₁ f₂ h (inr g) = inr (f₂ g) := by simp [map
 theorem map_comp_inr : (map f₁ f₂ h).comp inr = inr.comp f₂ := by ext <;> simp [map]
 
 end Map
+
+section Congr
+
+variable {N₁ : Type*} {G₁ : Type*} [Group N₁] [Group G₁] {φ₁ : G₁ →* MulAut N₁}
+
+/-- Define an isomorphism from `N ⋊[φ] G` to `N₁ ⋊[φ₁] G₁` given isomorphisms `N ≃* N₁` and
+  `G ≃* G₁` that satisfy a commutativity condition `∀ n g, f₁ (φ g n) = φ₁ (f₂ g) (f₁ n)`. -/
+@[simps]
+def congr (f₁ : N ≃* N₁) (f₂ : G ≃* G₁) (h : ∀ g : G, (φ g).trans f₁ = f₁.trans (φ₁ (f₂ g))) :
+    N ⋊[φ] G →* N₁ ⋊[φ₁] G₁ where
+  toFun x := ⟨f₁ x.1, f₂ x.2⟩
+  map_one' := by simp
+  map_mul' x y := by
+    replace h := DFunLike.ext_iff.1 (h x.right) y.left
+    ext <;> simp_all
+
+/-- Define a isomorphism from `N ⋊[φ] G` to `N₁ ⋊[φ₁] G₁` without specifying `φ₁`. -/
+@[simps!]
+def congr' (f₁ : N ≃* N₁) (f₂ : G ≃* G₁) :
+    N ⋊[φ] G →* N₁ ⋊[(MulAut.congr f₁).toMonoidHom.comp (φ.comp f₂.symm)] G₁ :=
+  congr f₁ f₂ (fun _ ↦ by ext; simp)
+
+end Congr
 
 end SemidirectProduct
