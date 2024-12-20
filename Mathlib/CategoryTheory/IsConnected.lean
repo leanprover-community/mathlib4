@@ -259,15 +259,20 @@ theorem isPreconnected_of_isPreconnected_op [IsPreconnected Jᵒᵖ] : IsPreconn
 theorem isConnected_of_isConnected_op [IsConnected Jᵒᵖ] : IsConnected J :=
   isConnected_of_equivalent (opOpEquivalence J)
 
+variable (J) in
+@[simp]
+theorem isConnected_op_iff_isConnected : IsConnected Jᵒᵖ ↔ IsConnected J :=
+  ⟨fun _ => isConnected_of_isConnected_op, fun _ => isConnected_op⟩
+
 /-- j₁ and j₂ are related by `Zag` if there is a morphism between them. -/
 def Zag (j₁ j₂ : J) : Prop :=
   Nonempty (j₁ ⟶ j₂) ∨ Nonempty (j₂ ⟶ j₁)
 
-theorem Zag.refl (X : J) : Zag X X := Or.inl ⟨𝟙 _⟩
+@[refl] theorem Zag.refl (X : J) : Zag X X := Or.inl ⟨𝟙 _⟩
 
 theorem zag_symmetric : Symmetric (@Zag J _) := fun _ _ h => h.symm
 
-theorem Zag.symm {j₁ j₂ : J} (h : Zag j₁ j₂) : Zag j₂ j₁ := zag_symmetric h
+@[symm] theorem Zag.symm {j₁ j₂ : J} (h : Zag j₁ j₂) : Zag j₂ j₁ := zag_symmetric h
 
 theorem Zag.of_hom {j₁ j₂ : J} (f : j₁ ⟶ j₂) : Zag j₁ j₂ := Or.inl ⟨f⟩
 
@@ -286,11 +291,12 @@ theorem zigzag_equivalence : _root_.Equivalence (@Zigzag J _) :=
   _root_.Equivalence.mk Relation.reflexive_reflTransGen (fun h => zigzag_symmetric h)
   (fun h g => Relation.transitive_reflTransGen h g)
 
-theorem Zigzag.refl (X : J) : Zigzag X X := zigzag_equivalence.refl _
+@[refl] theorem Zigzag.refl (X : J) : Zigzag X X := zigzag_equivalence.refl _
 
-theorem Zigzag.symm {j₁ j₂ : J} (h : Zigzag j₁ j₂) : Zigzag j₂ j₁ := zigzag_symmetric h
+@[symm] theorem Zigzag.symm {j₁ j₂ : J} (h : Zigzag j₁ j₂) : Zigzag j₂ j₁ := zigzag_symmetric h
 
-theorem Zigzag.trans {j₁ j₂ j₃ : J} (h₁ : Zigzag j₁ j₂) (h₂ : Zigzag j₂ j₃) : Zigzag j₁ j₃ :=
+@[trans] theorem Zigzag.trans {j₁ j₂ j₃ : J} (h₁ : Zigzag j₁ j₂) (h₂ : Zigzag j₂ j₃) :
+    Zigzag j₁ j₃ :=
   zigzag_equivalence.trans h₁ h₂
 
 theorem Zigzag.of_zag {j₁ j₂ : J} (h : Zag j₁ j₂) : Zigzag j₁ j₂ :=

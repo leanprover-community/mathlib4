@@ -129,6 +129,11 @@ theorem card_Ioc_of_le (h : a ≤ b) : (#(Ioc a b) : ℤ) = b - a := by
 theorem card_Ioo_of_lt (h : a < b) : (#(Ioo a b) : ℤ) = b - a - 1 := by
   rw [card_Ioo, sub_sub, toNat_sub_of_le h]
 
+theorem Icc_eq_pair : Finset.Icc a (a + 1) = {a, a + 1} := by
+  ext
+  simp
+  omega
+
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Icc : Fintype.card (Set.Icc a b) = (b + 1 - a).toNat := by
   rw [← card_Icc, Fintype.card_ofFinset]

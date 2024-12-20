@@ -9,6 +9,7 @@ import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 import Mathlib.RingTheory.SimpleModule
+import Mathlib.Algebra.Module.Torsion
 
 /-!
 # Semisimple linear endomorphisms
@@ -296,7 +297,7 @@ theorem IsSemisimple.of_mem_adjoin_pair {a : End K M} (ha : a ∈ Algebra.adjoin
   rotate_left 1
   · rw [Ideal.span, ← minpoly.ker_aeval_eq_span_minpoly]; exact id
   · rintro ⟨p⟩; exact p.induction_on (fun k ↦ by simp [R, Algebra.commute_algebraMap_left])
-      (fun p q hp hq ↦ by simpa using hp.add_left hq)
+      (fun p q hp hq ↦ by simpa [R] using hp.add_left hq)
       fun n k ↦ by simpa [R, pow_succ, ← mul_assoc _ _ X] using (·.mul_left comm)
   · simpa only [RingHom.mem_ker, eval₂AlgHom'_apply, eval₂_map, AlgHom.comp_algebraMap_of_tower]
       using minpoly.aeval K g

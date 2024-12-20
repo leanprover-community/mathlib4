@@ -610,6 +610,8 @@ lemma InjOn.image_diff_subset {f : α → β} {t : Set α} (h : InjOn f s) (hst 
     f '' (s \ t) = f '' s \ f '' t := by
   rw [h.image_diff, inter_eq_self_of_subset_right hst]
 
+alias image_diff_of_injOn := InjOn.image_diff_subset
+
 theorem InjOn.imageFactorization_injective (h : InjOn f s) :
     Injective (s.imageFactorization f) :=
   fun ⟨x, hx⟩ ⟨y, hy⟩ h' ↦ by simpa [imageFactorization, h.eq_iff hx hy] using h'
@@ -1664,5 +1666,56 @@ lemma bijOn_swap (ha : a ∈ s) (hb : b ∈ s) : BijOn (swap a b) s s :=
     simp [*, swap_apply_of_ne_of_ne]
 
 end Equiv
+
+/-! ### Vertical line test -/
+
+namespace Set
+
+/-- **Vertical line test** for functions.
+
+Let `f : α → β × γ` be a function to a product. Assume that `f` is surjective on the first factor
+and that the image of `f` intersects every "vertical line" `{(b, c) | c : γ}` at most once.
+Then the image of `f` is the graph of some monoid homomorphism `f' : β → γ`. -/
+lemma exists_range_eq_graphOn_univ {f : α → β × γ} (hf₁ : Surjective (Prod.fst ∘ f))
+    (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 → (f g₁).2 = (f g₂).2) :
+    ∃ f' : β → γ, range f = univ.graphOn f' := by
+  refine ⟨fun h ↦ (f (hf₁ h).choose).snd, ?_⟩
+  ext x
+  simp only [mem_range, comp_apply, mem_graphOn, mem_univ, true_and]
+  refine ⟨?_, fun hi ↦ ⟨(hf₁ x.1).choose, Prod.ext (hf₁ x.1).choose_spec hi⟩⟩
+  rintro ⟨g, rfl⟩
+  exact hf _ _ (hf₁ (f g).1).choose_spec
+
+/-- **Line test** for equivalences.
+
+Let `f : α → β × γ` be a homomorphism to a product of monoids. Assume that `f` is surjective on both
+factors and that the image of `f` intersects every "vertical line" `{(b, c) | c : γ}` and every
+"horizontal line" `{(b, c) | b : β}` at most once. Then the image of `f` is the graph of some
+equivalence `f' : β ≃ γ`. -/
+lemma exists_equiv_range_eq_graphOn_univ {f : α → β × γ} (hf₁ : Surjective (Prod.fst ∘ f))
+    (hf₂ : Surjective (Prod.snd ∘ f)) (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 ↔ (f g₁).2 = (f g₂).2) :
+    ∃ e : β ≃ γ, range f = univ.graphOn e := by
+  obtain ⟨e₁, he₁⟩ := exists_range_eq_graphOn_univ hf₁ fun _ _ ↦ (hf _ _).1
+  obtain ⟨e₂, he₂⟩ := exists_range_eq_graphOn_univ (f := Equiv.prodComm _ _ ∘ f) (by simpa) <|
+    by simp [hf]
+  have he₁₂ h i : e₁ h = i ↔ e₂ i = h := by
+    rw [Set.ext_iff] at he₁ he₂
+    aesop (add simp [Prod.swap_eq_iff_eq_swap])
+  exact ⟨
+  { toFun := e₁
+    invFun := e₂
+    left_inv := fun h ↦ by rw [← he₁₂]
+    right_inv := fun i ↦ by rw [he₁₂] }, he₁⟩
+
+/-- **Vertical line test** for functions.
+
+Let `s : Set (β × γ)` be a set in a product. Assume that `s` maps bijectively to the first factor.
+Then `s` is the graph of some function `f : β → γ`. -/
+lemma exists_eq_mgraphOn_univ {s : Set (β × γ)}
+    (hs₁ : Bijective (Prod.fst ∘ (Subtype.val : s → β × γ))) : ∃ f : β → γ, s = univ.graphOn f := by
+  simpa using exists_range_eq_graphOn_univ hs₁.surjective
+    fun a b h ↦ congr_arg (Prod.snd ∘ (Subtype.val : s → β × γ)) (hs₁.injective h)
+
+end Set
 
 set_option linter.style.longFile 1800

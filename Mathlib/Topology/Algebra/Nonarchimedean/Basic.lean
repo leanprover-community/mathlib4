@@ -105,8 +105,6 @@ end NonarchimedeanGroup
 
 namespace NonarchimedeanRing
 
-open NonarchimedeanRing
-
 open NonarchimedeanAddGroup
 
 variable {R S : Type*}

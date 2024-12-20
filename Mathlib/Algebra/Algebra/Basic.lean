@@ -133,17 +133,23 @@ end CommSemiring
 
 section Ring
 
-variable [CommRing R]
-variable (R)
-
 /-- A `Semiring` that is an `Algebra` over a commutative ring carries a natural `Ring` structure.
 See note [reducible non-instances]. -/
-abbrev semiringToRing [Semiring A] [Algebra R A] : Ring A :=
+abbrev semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring A :=
   { __ := (inferInstance : Semiring A)
     __ := Module.addCommMonoidToAddCommGroup R
     intCast := fun z => algebraMap R A z
     intCast_ofNat := fun z => by simp only [Int.cast_natCast, map_natCast]
     intCast_negSucc := fun z => by simp }
+
+instance {R : Type*} [Ring R] : Algebra (Subring.center R) R where
+  toFun := Subtype.val
+  map_one' := rfl
+  map_mul' _ _ := rfl
+  map_zero' := rfl
+  map_add' _ _ := rfl
+  commutes' r x := (Subring.mem_center_iff.1 r.2 x).symm
+  smul_def' _ _ := rfl
 
 end Ring
 
@@ -181,21 +187,21 @@ variable {R M}
 
 theorem End_algebraMap_isUnit_inv_apply_eq_iff {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
-    (↑(h.unit⁻¹) : Module.End S M) m = m' ↔ m = x • m' :=
-  { mp := fun H => H ▸ (End_isUnit_apply_inv_apply_of_isUnit h m).symm
-    mpr := fun H =>
-      H.symm ▸ by
-        apply_fun ⇑h.unit.val using ((Module.End_isUnit_iff _).mp h).injective
-        simpa using End_isUnit_apply_inv_apply_of_isUnit h (x • m') }
+    (↑(h.unit⁻¹) : Module.End S M) m = m' ↔ m = x • m' where
+  mp H := H ▸ (End_isUnit_apply_inv_apply_of_isUnit h m).symm
+  mpr H :=
+    H.symm ▸ by
+      apply_fun ⇑h.unit.val using ((Module.End_isUnit_iff _).mp h).injective
+      simpa using End_isUnit_apply_inv_apply_of_isUnit h (x • m')
 
 theorem End_algebraMap_isUnit_inv_apply_eq_iff' {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
-    m' = (↑h.unit⁻¹ : Module.End S M) m ↔ m = x • m' :=
-  { mp := fun H => H ▸ (End_isUnit_apply_inv_apply_of_isUnit h m).symm
-    mpr := fun H =>
-      H.symm ▸ by
-        apply_fun (↑h.unit : M → M) using ((Module.End_isUnit_iff _).mp h).injective
-        simpa using End_isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm }
+    m' = (↑h.unit⁻¹ : Module.End S M) m ↔ m = x • m' where
+  mp H := H ▸ (End_isUnit_apply_inv_apply_of_isUnit h m).symm
+  mpr H :=
+    H.symm ▸ by
+      apply_fun (↑h.unit : M → M) using ((Module.End_isUnit_iff _).mp h).injective
+      simpa using End_isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm
 
 end
 

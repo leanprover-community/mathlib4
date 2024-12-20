@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Logic.Small.Defs
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstance
 
 /-!
 # Transfer group structures from `α` to `Shrink α`.
@@ -36,6 +36,18 @@ lemma equivShrink_symm_mul [Mul α] [Small α] (x y : Shrink α) :
 lemma equivShrink_mul [Mul α] [Small α] (x y : α) :
     equivShrink α (x * y) = equivShrink α x * equivShrink α y := by
   rw [Equiv.mul_def]
+  simp
+
+@[simp]
+lemma equivShrink_symm_smul {R : Type*} [SMul R α] [Small α] (r : R) (x : Shrink α) :
+    (equivShrink α).symm (r • x) = r • (equivShrink α).symm x := by
+  rw [Equiv.smul_def]
+  simp
+
+@[simp]
+lemma equivShrink_smul {R : Type*} [SMul R α] [Small α] (r : R) (x : α) :
+    equivShrink α (r • x) = r • equivShrink α x := by
+  rw [Equiv.smul_def]
   simp
 
 -- TODO: noncomputable has to be specified explicitly. https://github.com/leanprover-community/mathlib4/issues/1074 (item 8)
