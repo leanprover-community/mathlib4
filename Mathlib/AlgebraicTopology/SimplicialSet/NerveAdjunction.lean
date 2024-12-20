@@ -646,7 +646,7 @@ instance nerveFunctor.faithful : nerveFunctor.{u, u}.Faithful :=
     Faithful.comp nerveFunctor₂ (SSet.Truncated.cosk 2)
   Functor.Faithful.of_iso Nerve.cosk₂Iso.symm
 
-instance nerveFunctor.full : nerveFunctor.{u, u}.Full :=
+instance nerveFunctor.full : nerveFunctor.{u,u}.Full :=
   have : (Nerve.nerveFunctor₂ ⋙ SSet.Truncated.cosk 2).Full :=
     Full.comp nerveFunctor₂ (SSet.Truncated.cosk 2)
   Functor.Full.of_iso Nerve.cosk₂Iso.symm
@@ -660,7 +660,7 @@ instance nerveCounit_isIso : IsIso nerveAdjunction.counit :=
 
 /-- The counit map of `nerveAdjunction` is an isomorphism since the nerve functor is fully
 faithful. -/
-noncomputable def nerveCounitNatIso : nerveFunctor ⋙ hoFunctor ≅ 𝟭 Cat :=
+noncomputable def nerveCounitNatIso : nerveFunctor.{u,u} ⋙ hoFunctor ≅ 𝟭 Cat :=
   asIso (nerveAdjunction.counit)
 
 noncomputable instance : Reflective nerveFunctor where
