@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 import Mathlib.CategoryTheory.LiftingProperties.Basic
 
 /-!
-# The left lifting property is stable by transfinite composition
+# The left lifting property is stable under transfinite composition
 
 Let `C` be a category, and `p : X ⟶ Y` be a morphism in `C`. In this file,
 we show that a transfinite composition of morphisms that have the left
