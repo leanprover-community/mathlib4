@@ -93,11 +93,11 @@ theorem hasBinaryProducts_of_hasTerminal_and_pullbacks [HasTerminal C] [HasPullb
 variable {C}
 
 /-- A functor that preserves terminal objects and pullbacks preserves binary products. -/
-noncomputable def preservesBinaryProductsOfPreservesTerminalAndPullbacks [HasTerminal C]
+lemma preservesBinaryProducts_of_preservesTerminal_and_pullbacks [HasTerminal C]
     [HasPullbacks C] [PreservesLimitsOfShape (Discrete.{0} PEmpty) F]
     [PreservesLimitsOfShape WalkingCospan F] : PreservesLimitsOfShape (Discrete WalkingPair) F :=
   ⟨fun {K} =>
-    preservesLimitOfPreservesLimitCone (limitConeOfTerminalAndPullbacks K).2
+    preservesLimit_of_preserves_limit_cone (limitConeOfTerminalAndPullbacks K).2
       (by
         apply
           isBinaryProductOfIsTerminalIsPullback _ _ (isLimitOfHasTerminalOfPreservesLimit F)
@@ -199,11 +199,11 @@ theorem hasBinaryCoproducts_of_hasInitial_and_pushouts [HasInitial C] [HasPushou
 variable {C}
 
 /-- A functor that preserves initial objects and pushouts preserves binary coproducts. -/
-noncomputable def preservesBinaryCoproductsOfPreservesInitialAndPushouts [HasInitial C]
+lemma preservesBinaryCoproducts_of_preservesInitial_and_pushouts [HasInitial C]
     [HasPushouts C] [PreservesColimitsOfShape (Discrete.{0} PEmpty) F]
     [PreservesColimitsOfShape WalkingSpan F] : PreservesColimitsOfShape (Discrete WalkingPair) F :=
   ⟨fun {K} =>
-    preservesColimitOfPreservesColimitCocone (colimitCoconeOfInitialAndPushouts K).2 (by
+    preservesColimit_of_preserves_colimit_cocone (colimitCoconeOfInitialAndPushouts K).2 (by
       apply
         isBinaryCoproductOfIsInitialIsPushout _ _
           (isColimitOfHasInitialOfPreservesColimit F)

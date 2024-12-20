@@ -3,9 +3,11 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Data.Set.Finite
+import Mathlib.Algebra.Group.Subgroup.Map
+import Mathlib.Data.Finite.Sigma
+import Mathlib.Data.Set.Finite.Range
 import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
@@ -14,13 +16,6 @@ import Mathlib.GroupTheory.GroupAction.Defs
 This file primarily concerns itself with orbits, stabilizers, and other objects defined in terms of
 actions. Despite this file being called `basic`, low-level helper lemmas for algebraic manipulation
 of `•` belong elsewhere.
-
-## Main definitions
-
-* `MulAction.orbit`
-* `MulAction.fixedPoints`
-* `MulAction.fixedBy`
-* `MulAction.stabilizer`
 
 -/
 
@@ -287,30 +282,5 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
     · apply hyp g⁻¹ (inv_mem hg)
       simp only [Set.smul_mem_smul_set_iff, hx]
     · simp only [smul_inv_smul]
-
-/-- To prove membership to stabilizer of a *finite set*, it is enough to prove one inclusion. -/
-theorem mem_stabilizer_of_finite_iff_smul_le (s : Set α) (hs : s.Finite) (g : G) :
-    g ∈ stabilizer G s ↔ g • s ⊆ s := by
-  haveI : Fintype s := Set.Finite.fintype hs
-  haveI : Finite (g • s : Set α) := Finite.Set.finite_image ..
-  haveI : Fintype (g • s : Set α) := Fintype.ofFinite _
-  rw [mem_stabilizer_iff]
-  constructor
-  · exact Eq.subset
-  · rw [← Set.toFinset_inj, ← Set.toFinset_subset_toFinset]
-    intro h
-    apply Finset.eq_of_subset_of_card_le h
-    apply le_of_eq
-    suffices (g • s).toFinset = Finset.map ⟨_, MulAction.injective g⟩ hs.toFinset by
-      rw [this, Finset.card_map, Set.toFinite_toFinset]
-    rw [← Finset.coe_inj]
-    simp only [Set.coe_toFinset, Set.toFinite_toFinset, Finset.coe_map,
-      Function.Embedding.coeFn_mk, Set.image_smul]
-
-/-- To prove membership to stabilizer of a *finite set*, it is enough to prove one inclusion. -/
-theorem mem_stabilizer_of_finite_iff_le_smul (s : Set α) (hs : s.Finite) (g : G) :
-    g ∈ stabilizer G s ↔ s ⊆ g • s := by
-  rw [← @inv_mem_iff, mem_stabilizer_of_finite_iff_smul_le s hs]
-  exact Set.subset_set_smul_iff.symm
 
 end MulAction

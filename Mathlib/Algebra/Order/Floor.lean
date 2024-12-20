@@ -13,7 +13,7 @@ import Mathlib.Order.GaloisConnection
 import Mathlib.Tactic.Abel
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Linarith
-import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Floor and ceil
@@ -53,6 +53,8 @@ many lemmas.
 
 rounding, floor, ceil
 -/
+
+assert_not_exists Finset
 
 open Set
 
@@ -1042,7 +1044,6 @@ theorem fract_div_natCast_eq_div_natCast_mod {m n : ℕ} : fract ((m : k) / n) =
     norm_cast
     rw [← Nat.cast_add, Nat.mod_add_div m n]
 
--- TODO Generalise this to allow `n : ℤ` using `Int.fmod` instead of `Int.mod`.
 theorem fract_div_intCast_eq_div_intCast_mod {m : ℤ} {n : ℕ} :
     fract ((m : k) / n) = ↑(m % n) / n := by
   rcases n.eq_zero_or_pos with (rfl | hn)
@@ -1502,7 +1503,7 @@ theorem abs_sub_round_div_natCast_eq {m n : ℕ} :
 
 @[bound]
 theorem sub_half_lt_round (x : α) : x - 1 / 2 < round x := by
-  rw [round_eq x, show x - 1 / 2 = x + 1 / 2 - 1 by nlinarith]
+  rw [round_eq x, show x - 1 / 2 = x + 1 / 2 - 1 by linarith]
   exact Int.sub_one_lt_floor (x + 1 / 2)
 
 @[bound]

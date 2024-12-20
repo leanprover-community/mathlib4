@@ -338,8 +338,9 @@ variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
 variable [AddCommMonoid N] [Module R N]
 variable [AddCommMonoid P] [Module A P]
+variable [AddCommMonoid P'] [Module A P']
 variable [AddCommMonoid Q] [Module R Q]
-variable (R A B M N P Q)
+variable (R A B M N P P' Q)
 
 attribute [local ext high] TensorProduct.ext
 
@@ -371,6 +372,11 @@ theorem assoc_tmul (m : M) (p : P) (q : Q) :
 theorem assoc_symm_tmul (m : M) (p : P) (q : Q) :
     (assoc R A B M P Q).symm (m ⊗ₜ (p ⊗ₜ q)) = (m ⊗ₜ p) ⊗ₜ q :=
   rfl
+
+theorem rTensor_tensor [Module R P'] [IsScalarTower R A P'] (g : P →ₗ[A] P') :
+    rTensor (M ⊗[R] N) g =
+      assoc R A A P' M N ∘ₗ map (rTensor M g) id ∘ₗ (assoc R A A P M N).symm.toLinearMap :=
+  TensorProduct.ext <| LinearMap.ext fun _ ↦ ext fun _ _ ↦ rfl
 
 end assoc
 

@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
 import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.RingTheory.UniqueFactorizationDomain
+import Mathlib.RingTheory.Coprime.Basic
+import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Radical of an element of a unique factorization normalization monoid
@@ -82,14 +83,14 @@ theorem radical_eq_of_associated {a b : M} (h : Associated a b) : radical a = ra
   unfold radical
   rw [h.primeFactors_eq]
 
-theorem radical_unit_eq_one {a : M} (h : IsUnit a) : radical a = 1 :=
+theorem radical_of_isUnit {a : M} (h : IsUnit a) : radical a = 1 :=
   (radical_eq_of_associated (associated_one_iff_isUnit.mpr h)).trans radical_one_eq
 
-theorem radical_unit_mul {u : Mˣ} {a : M} : radical ((↑u : M) * a) = radical a :=
-  radical_eq_of_associated (associated_unit_mul_left _ _ u.isUnit)
+theorem radical_mul_of_isUnit_left {a u : M} (h : IsUnit u) : radical (u * a) = radical a :=
+  radical_eq_of_associated (associated_unit_mul_left _ _ h)
 
-theorem radical_mul_unit {u : Mˣ} {a : M} : radical (a * (↑u : M)) = radical a :=
-  radical_eq_of_associated (associated_mul_unit_left _ _ u.isUnit)
+theorem radical_mul_of_isUnit_right {a u : M} (h : IsUnit u) : radical (a * u) = radical a :=
+  radical_eq_of_associated (associated_mul_unit_left _ _ h)
 
 theorem primeFactors_pow (a : M) {n : ℕ} (hn : 0 < n) : primeFactors (a ^ n) = primeFactors a := by
   simp_rw [primeFactors]
@@ -104,7 +105,7 @@ theorem radical_dvd_self (a : M) : radical a ∣ a := by
   by_cases ha : a = 0
   · rw [ha]
     apply dvd_zero
-  · rw [radical, ← Finset.prod_val, ← (normalizedFactors_prod ha).dvd_iff_dvd_right]
+  · rw [radical, ← Finset.prod_val, ← (prod_normalizedFactors ha).dvd_iff_dvd_right]
     apply Multiset.prod_dvd_prod_of_le
     rw [primeFactors, Multiset.toFinset_val]
     apply Multiset.dedup_le
@@ -161,17 +162,17 @@ theorem mul_primeFactors_disjUnion {a b : R} (ha : a ≠ 0) (hb : b ≠ 0)
 
 @[simp]
 theorem radical_neg_one : radical (-1 : R) = 1 :=
-  radical_unit_eq_one isUnit_one.neg
+  radical_of_isUnit isUnit_one.neg
 
 /-- Radical is multiplicative for coprime elements. -/
 theorem radical_mul {a b : R} (hc : IsCoprime a b) :
     radical (a * b) = radical a * radical b := by
   by_cases ha : a = 0
   · subst ha; rw [isCoprime_zero_left] at hc
-    simp only [zero_mul, radical_zero_eq, one_mul, radical_unit_eq_one hc]
+    simp only [zero_mul, radical_zero_eq, one_mul, radical_of_isUnit hc]
   by_cases hb : b = 0
   · subst hb; rw [isCoprime_zero_right] at hc
-    simp only [mul_zero, radical_zero_eq, mul_one, radical_unit_eq_one hc]
+    simp only [mul_zero, radical_zero_eq, mul_one, radical_of_isUnit hc]
   simp_rw [radical]
   rw [mul_primeFactors_disjUnion ha hb hc]
   rw [Finset.prod_disjUnion (disjoint_primeFactors hc)]
@@ -204,7 +205,7 @@ theorem divRadical_ne_zero {a : E} (ha : a ≠ 0) : divRadical a ≠ 0 := by
   exact right_ne_zero_of_mul ha
 
 theorem divRadical_isUnit {u : E} (hu : IsUnit u) : IsUnit (divRadical u) := by
-  rwa [divRadical, radical_unit_eq_one hu, EuclideanDomain.div_one]
+  rwa [divRadical, radical_of_isUnit hu, EuclideanDomain.div_one]
 
 theorem eq_divRadical {a x : E} (h : radical a * x = a) : x = divRadical a := by
   apply EuclideanDomain.eq_div_of_mul_eq_left (radical_ne_zero a)

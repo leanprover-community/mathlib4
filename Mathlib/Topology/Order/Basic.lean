@@ -472,9 +472,10 @@ theorem atBot_le_nhds_bot [OrderBot α] : (atBot : Filter α) ≤ 𝓝 ⊥ := by
   rw [OrderBot.atBot_eq]
   apply pure_le_nhds
 
+set_option linter.deprecated false in
 @[deprecated OrderTop.atTop_eq (since := "2024-02-14")]
 theorem atTop_le_nhds_top [OrderTop α] : (atTop : Filter α) ≤ 𝓝 ⊤ :=
-  set_option linter.deprecated false in @atBot_le_nhds_bot αᵒᵈ _ _ _
+  @atBot_le_nhds_bot αᵒᵈ _ _ _
 
 variable (α)
 

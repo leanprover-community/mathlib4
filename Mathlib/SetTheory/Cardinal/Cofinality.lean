@@ -3,6 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 -/
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.SetTheory.Cardinal.Arithmetic
 import Mathlib.SetTheory.Ordinal.FixedPoint
 
@@ -49,7 +50,7 @@ open scoped Ordinal
 
 universe u v w
 
-variable {α : Type*} {r : α → α → Prop}
+variable {α : Type u} {β : Type v} {r : α → α → Prop} {s : β → β → Prop}
 
 /-! ### Cofinality of orders -/
 
@@ -70,7 +71,7 @@ private theorem cof_nonempty (r : α → α → Prop) [IsRefl α r] :
 theorem cof_le (r : α → α → Prop) {S : Set α} (h : ∀ a, ∃ b ∈ S, r a b) : cof r ≤ #S :=
   csInf_le' ⟨S, h, rfl⟩
 
-theorem le_cof {r : α → α → Prop} [IsRefl α r] (c : Cardinal) :
+theorem le_cof [IsRefl α r] (c : Cardinal) :
     c ≤ cof r ↔ ∀ {S : Set α}, (∀ a, ∃ b ∈ S, r a b) → c ≤ #S := by
   rw [cof, le_csInf_iff'' (cof_nonempty r)]
   use fun H S h => H _ ⟨S, h, rfl⟩
@@ -79,8 +80,10 @@ theorem le_cof {r : α → α → Prop} [IsRefl α r] (c : Cardinal) :
 
 end Order
 
-theorem RelIso.cof_le_lift {α : Type u} {β : Type v} {r : α → α → Prop} {s} [IsRefl β s]
-    (f : r ≃r s) : Cardinal.lift.{v} (Order.cof r) ≤ Cardinal.lift.{u} (Order.cof s) := by
+namespace RelIso
+
+private theorem cof_le_lift [IsRefl β s] (f : r ≃r s) :
+    Cardinal.lift.{v} (Order.cof r) ≤ Cardinal.lift.{u} (Order.cof s) := by
   rw [Order.cof, Order.cof, lift_sInf, lift_sInf, le_csInf_iff'' ((Order.cof_nonempty s).image _)]
   rintro - ⟨-, ⟨u, H, rfl⟩, rfl⟩
   apply csInf_le'
@@ -89,17 +92,21 @@ theorem RelIso.cof_le_lift {α : Type u} {β : Type v} {r : α → α → Prop} 
   refine ⟨f.symm b, mem_image_of_mem _ hb, f.map_rel_iff.1 ?_⟩
   rwa [RelIso.apply_symm_apply]
 
-theorem RelIso.cof_eq_lift {α : Type u} {β : Type v} {r s} [IsRefl α r] [IsRefl β s] (f : r ≃r s) :
+theorem cof_eq_lift [IsRefl β s] (f : r ≃r s) :
     Cardinal.lift.{v} (Order.cof r) = Cardinal.lift.{u} (Order.cof s) :=
-  (RelIso.cof_le_lift f).antisymm (RelIso.cof_le_lift f.symm)
+  have := f.toRelEmbedding.isRefl
+  (f.cof_le_lift).antisymm (f.symm.cof_le_lift)
 
-theorem RelIso.cof_le {α β : Type u} {r : α → α → Prop} {s} [IsRefl β s] (f : r ≃r s) :
-    Order.cof r ≤ Order.cof s :=
-  lift_le.1 (RelIso.cof_le_lift f)
-
-theorem RelIso.cof_eq {α β : Type u} {r s} [IsRefl α r] [IsRefl β s] (f : r ≃r s) :
+theorem cof_eq {α β : Type u} {r : α → α → Prop} {s} [IsRefl β s] (f : r ≃r s) :
     Order.cof r = Order.cof s :=
-  lift_inj.1 (RelIso.cof_eq_lift f)
+  lift_inj.1 (f.cof_eq_lift)
+
+@[deprecated cof_eq (since := "2024-10-22")]
+theorem cof_le {α β : Type u} {r : α → α → Prop} {s} [IsRefl β s] (f : r ≃r s) :
+    Order.cof r ≤ Order.cof s :=
+  f.cof_eq.le
+
+end RelIso
 
 /-- Cofinality of a strict order `≺`. This is the smallest cardinality of a set `S : Set α` such
 that `∀ a, ∃ b ∈ S, ¬ b ≺ a`. -/
@@ -108,7 +115,7 @@ def StrictOrder.cof (r : α → α → Prop) : Cardinal :=
   Order.cof (swap rᶜ)
 
 /-- The set in the definition of `Order.StrictOrder.cof` is nonempty. -/
-@[deprecated (since := "2024-10-22")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-22")]
 theorem StrictOrder.cof_nonempty (r : α → α → Prop) [IsIrrefl α r] :
     { c | ∃ S : Set α, Unbounded r S ∧ #S = c }.Nonempty :=
   @Order.cof_nonempty α _ (IsRefl.swap rᶜ)
@@ -229,26 +236,11 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
 
 @[simp]
 theorem lift_cof (o) : Cardinal.lift.{u, v} (cof o) = cof (Ordinal.lift.{u, v} o) := by
-  refine inductionOn o ?_
-  intro α r _
-  apply le_antisymm
-  · refine le_cof_type.2 fun S H => ?_
-    have : Cardinal.lift.{u, v} #(ULift.up ⁻¹' S) ≤ #(S : Type (max u v)) := by
-      rw [← Cardinal.lift_umax.{v, u}, ← Cardinal.lift_id'.{v, u} #S]
-      exact mk_preimage_of_injective_lift.{v, max u v} ULift.up S (ULift.up_injective.{v, u})
-    refine (Cardinal.lift_le.2 <| cof_type_le ?_).trans this
-    exact fun a =>
-      let ⟨⟨b⟩, bs, br⟩ := H ⟨a⟩
-      ⟨b, bs, br⟩
-  · rcases cof_eq r with ⟨S, H, e'⟩
-    have : #(ULift.down.{u, v} ⁻¹' S) ≤ Cardinal.lift.{u, v} #S :=
-      ⟨⟨fun ⟨⟨x⟩, h⟩ => ⟨⟨x, h⟩⟩, fun ⟨⟨x⟩, h₁⟩ ⟨⟨y⟩, h₂⟩ e => by
-          simp at e; congr⟩⟩
-    rw [e'] at this
-    refine (cof_type_le ?_).trans this
-    exact fun ⟨a⟩ =>
-      let ⟨b, bs, br⟩ := H a
-      ⟨⟨b⟩, bs, br⟩
+  refine inductionOn o fun α r _ ↦ ?_
+  rw [← type_uLift, cof_type, cof_type, ← Cardinal.lift_id'.{v, u} (Order.cof _),
+    ← Cardinal.lift_umax]
+  apply RelIso.cof_eq_lift ⟨Equiv.ulift.symm, _⟩
+  simp [swap]
 
 theorem cof_le_card (o) : cof o ≤ card o := by
   rw [cof_eq_sInf_lsub]
@@ -296,7 +288,6 @@ theorem lsub_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) 
     (∀ i, f i < c) → lsub.{u, u} f < c :=
   lsub_lt_ord_lift (by rwa [(#ι).lift_id])
 
-set_option linter.deprecated false in
 theorem cof_iSup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
     cof (iSup f) ≤ Cardinal.lift.{v, u} #ι := by
   rw [← Ordinal.sup] at *
@@ -673,8 +664,10 @@ theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsLimit o := by
       exact not_succ_isLimit _ l
 
 @[simp]
-theorem cof_preOmega {o : Ordinal} (ho : o.IsLimit) : (preOmega o).cof = o.cof :=
-  isNormal_preOmega.cof_eq ho
+theorem cof_preOmega {o : Ordinal} (ho : IsSuccPrelimit o) : (preOmega o).cof = o.cof := by
+  by_cases h : IsMin o
+  · simp [h.eq_bot]
+  · exact isNormal_preOmega.cof_eq ⟨h, ho⟩
 
 @[simp]
 theorem cof_omega {o : Ordinal} (ho : o.IsLimit) : (ω_ o).cof = o.cof :=
@@ -705,7 +698,7 @@ theorem cof_eq' (r : α → α → Prop) [IsWellOrder α r] (h : IsLimit (type r
     ∃ S : Set α, (∀ a, ∃ b ∈ S, r a b) ∧ #S = cof (type r) :=
   let ⟨S, H, e⟩ := cof_eq r
   ⟨S, fun a =>
-    let a' := enum r ⟨_, h.2 _ (typein_lt_type r a)⟩
+    let a' := enum r ⟨_, h.succ_lt (typein_lt_type r a)⟩
     let ⟨b, h, ab⟩ := H a'
     ⟨b, h,
       (IsOrderConnected.conn a b a' <|
@@ -843,11 +836,13 @@ theorem isStrongLimit_beth {o : Ordinal} (H : IsSuccPrelimit o) : IsStrongLimit 
   · rw [beth_zero]
     exact isStrongLimit_aleph0
   · refine ⟨beth_ne_zero o, fun a ha => ?_⟩
-    rw [beth_limit ⟨h, isSuccPrelimit_iff_succ_lt.1 H⟩] at ha
-    rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
-    have := power_le_power_left two_ne_zero ha.le
-    rw [← beth_succ] at this
-    exact this.trans_lt (beth_lt.2 (H.succ_lt hi))
+    rw [beth_limit] at ha
+    · rcases exists_lt_of_lt_ciSup' ha with ⟨⟨i, hi⟩, ha⟩
+      have := power_le_power_left two_ne_zero ha.le
+      rw [← beth_succ] at this
+      exact this.trans_lt (beth_lt.2 (H.succ_lt hi))
+    · rw [isLimit_iff]
+      exact ⟨h, H⟩
 
 theorem mk_bounded_subset {α : Type*} (h : ∀ x < #α, (2^x) < #α) {r : α → α → Prop}
     [IsWellOrder α r] (hr : (#α).ord = type r) : #{ s : Set α // Bounded r s } = #α := by
@@ -907,6 +902,9 @@ theorem IsRegular.aleph0_le {c : Cardinal} (H : c.IsRegular) : ℵ₀ ≤ c :=
 
 theorem IsRegular.cof_eq {c : Cardinal} (H : c.IsRegular) : c.ord.cof = c :=
   (cof_ord_le c).antisymm H.2
+
+theorem IsRegular.cof_omega_eq {o : Ordinal} (H : (ℵ_ o).IsRegular) : (ω_ o).cof = ℵ_ o := by
+  rw [← ord_aleph, H.cof_eq]
 
 theorem IsRegular.pos {c : Cardinal} (H : c.IsRegular) : 0 < c :=
   aleph0_pos.trans_le H.1
@@ -1146,7 +1144,7 @@ theorem derivFamily_lt_ord_lift {ι : Type u} {f : ι → Ordinal → Ordinal} {
     rw [derivFamily_succ]
     exact
       nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf
-        ((isLimit_ord hc.1).2 _ (hb ((lt_succ b).trans hb')))
+        ((isLimit_ord hc.1).succ_lt (hb ((lt_succ b).trans hb')))
   | H₃ b hb H =>
     intro hb'
     -- TODO: generalize the universes of the lemmas in this file so we don't have to rely on bsup

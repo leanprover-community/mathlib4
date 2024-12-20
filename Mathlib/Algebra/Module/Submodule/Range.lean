@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Fréd�
   Heather Macbeth
 -/
 import Mathlib.Algebra.Module.Submodule.Ker
+import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Range of linear maps

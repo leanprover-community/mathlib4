@@ -122,14 +122,14 @@ add_decl_doc AddMonCat.ofHom
 lemma ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
 
----- Porting note: added to ease the port of `RepresentationTheory.Action.Basic`
+---- Porting note: added to ease the port of `CategoryTheory.Action.Basic`
 @[to_additive]
 instance (X Y : MonCat.{u}) : One (X ⟶ Y) := ⟨ofHom 1⟩
 
 @[to_additive (attr := simp)]
 lemma oneHom_apply (X Y : MonCat.{u}) (x : X) : (1 : X ⟶ Y) x = 1 := rfl
 
----- Porting note: added to ease the port of `RepresentationTheory.Action.Basic`
+---- Porting note: added to ease the port of `CategoryTheory.Action.Basic`
 @[to_additive (attr := simp)]
 lemma one_of {A : Type*} [Monoid A] : (1 : MonCat.of A) = (1 : A) := rfl
 
@@ -143,8 +143,8 @@ instance {G : Type*} [Group G] : Group (MonCat.of G) := by assumption
 /-- Universe lift functor for monoids. -/
 @[to_additive (attr := simps)
   "Universe lift functor for additive monoids."]
-def uliftFunctor : MonCat.{u} ⥤ MonCat.{max u v} where
-  obj X := MonCat.of (ULift.{v, u} X)
+def uliftFunctor : MonCat.{v} ⥤ MonCat.{max v u} where
+  obj X := MonCat.of (ULift.{u, v} X)
   map {_ _} f := MonCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl
@@ -247,8 +247,8 @@ lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x
 /-- Universe lift functor for commutative monoids. -/
 @[to_additive (attr := simps)
   "Universe lift functor for additive commutative monoids."]
-def uliftFunctor : CommMonCat.{u} ⥤ CommMonCat.{max u v} where
-  obj X := CommMonCat.of (ULift.{v, u} X)
+def uliftFunctor : CommMonCat.{v} ⥤ CommMonCat.{max v u} where
+  obj X := CommMonCat.of (ULift.{u, v} X)
   map {_ _} f := CommMonCat.ofHom <|
     MulEquiv.ulift.symm.toMonoidHom.comp <| f.comp MulEquiv.ulift.toMonoidHom
   map_id X := by rfl

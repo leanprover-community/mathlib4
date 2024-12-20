@@ -73,6 +73,63 @@ theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
 
 end leftTransversals
 
+open Equiv Function MemLeftTransversals MulAction ZMod
+
+variable (g : G)
+
+variable (H) in
+/-- The transfer transversal as a function. Given a `⟨g⟩`-orbit `q₀, g • q₀, ..., g ^ (m - 1) • q₀`
+  in `G ⧸ H`, an element `g ^ k • q₀` is mapped to `g ^ k • g₀` for a fixed choice of
+  representative `g₀` of `q₀`. -/
+noncomputable def transferFunction : G ⧸ H → G := fun q =>
+  g ^ (cast (quotientEquivSigmaZMod H g q).2 : ℤ) * (quotientEquivSigmaZMod H g q).1.out.out
+
+lemma transferFunction_apply (q : G ⧸ H) :
+    transferFunction H g q =
+      g ^ (cast (quotientEquivSigmaZMod H g q).2 : ℤ) *
+        (quotientEquivSigmaZMod H g q).1.out.out := rfl
+
+lemma coe_transferFunction (q : G ⧸ H) : ↑(transferFunction H g q) = q := by
+  rw [transferFunction_apply, ← smul_eq_mul, Quotient.coe_smul_out,
+    ← quotientEquivSigmaZMod_symm_apply, Sigma.eta, symm_apply_apply]
+
+variable (H) in
+/-- The transfer transversal as a set. Contains elements of the form `g ^ k • g₀` for fixed choices
+of representatives `g₀` of fixed choices of representatives `q₀` of `⟨g⟩`-orbits in `G ⧸ H`. -/
+def transferSet : Set G := Set.range (transferFunction H g)
+
+lemma mem_transferSet (q : G ⧸ H) : transferFunction H g q ∈ transferSet H g := ⟨q, rfl⟩
+
+variable (H) in
+/-- The transfer transversal. Contains elements of the form `g ^ k • g₀` for fixed choices
+  of representatives `g₀` of fixed choices of representatives `q₀` of `⟨g⟩`-orbits in `G ⧸ H`. -/
+def transferTransversal : leftTransversals (H : Set G) :=
+  ⟨transferSet H g, range_mem_leftTransversals (coe_transferFunction g)⟩
+
+lemma transferTransversal_apply (q : G ⧸ H) :
+    ↑(toEquiv (transferTransversal H g).2 q) = transferFunction H g q :=
+  toEquiv_apply (coe_transferFunction g) q
+
+lemma transferTransversal_apply' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
+    (k : ZMod (minimalPeriod (g • ·) q.out)) :
+    ↑(toEquiv (transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out)) =
+      g ^ (cast k : ℤ) * q.out.out := by
+  rw [transferTransversal_apply, transferFunction_apply, ← quotientEquivSigmaZMod_symm_apply,
+    apply_symm_apply]
+
+lemma transferTransversal_apply'' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
+    (k : ZMod (minimalPeriod (g • ·) q.out)) :
+    ↑(toEquiv (g • transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out)) =
+      if k = 0 then g ^ minimalPeriod (g • ·) q.out * q.out.out
+      else g ^ (cast k : ℤ) * q.out.out := by
+  rw [smul_apply_eq_smul_apply_inv_smul, transferTransversal_apply, transferFunction_apply, ←
+    mul_smul, ← zpow_neg_one, ← zpow_add, quotientEquivSigmaZMod_apply, smul_eq_mul, ← mul_assoc,
+    ← zpow_one_add, Int.cast_add, Int.cast_neg, Int.cast_one, intCast_cast, cast_id', id, ←
+    sub_eq_neg_add, cast_sub_one, add_sub_cancel]
+  by_cases hk : k = 0
+  · rw [if_pos hk, if_pos hk, zpow_natCast]
+  · rw [if_neg hk, if_neg hk]
+
 end Subgroup
 
 namespace MonoidHom
@@ -103,8 +160,8 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
     transfer ϕ g =
       ∏ q : Quotient (orbitRel (zpowers g) (G ⧸ H)),
         ϕ
-          ⟨q.out'.out'⁻¹ * g ^ Function.minimalPeriod (g • ·) q.out' * q.out'.out',
-            QuotientGroup.out'_conj_pow_minimalPeriod_mem H g q.out'⟩ := by
+          ⟨q.out.out⁻¹ * g ^ Function.minimalPeriod (g • ·) q.out * q.out.out,
+            QuotientGroup.out_conj_pow_minimalPeriod_mem H g q.out⟩ := by
   classical
     letI := H.fintypeQuotientOfFiniteIndex
     calc
@@ -115,7 +172,7 @@ theorem transfer_eq_prod_quotient_orbitRel_zpowers_quot [FiniteIndex H] (g : G)
         refine Fintype.prod_congr _ _ (fun q => ?_)
         simp only [quotientEquivSigmaZMod_symm_apply, transferTransversal_apply',
           transferTransversal_apply'']
-        rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod (g • ·) q.out')) _]
+        rw [Fintype.prod_eq_single (0 : ZMod (Function.minimalPeriod (g • ·) q.out)) _]
         · simp only [if_pos, ZMod.cast_zero, zpow_zero, one_mul, mul_assoc]
         · intro k hk
           simp only [if_neg hk, inv_mul_cancel]
@@ -133,11 +190,11 @@ theorem transfer_eq_pow_aux (g : G)
     replace key : ∀ (k : ℕ) (g₀ : G), g₀⁻¹ * g ^ k * g₀ ∈ H → g ^ k ∈ H := fun k g₀ hk =>
       (congr_arg (· ∈ H) (key k g₀ hk)).mp hk
     replace key : ∀ q : G ⧸ H, g ^ Function.minimalPeriod (g • ·) q ∈ H := fun q =>
-      key (Function.minimalPeriod (g • ·) q) q.out'
-        (QuotientGroup.out'_conj_pow_minimalPeriod_mem H g q)
+      key (Function.minimalPeriod (g • ·) q) q.out
+        (QuotientGroup.out_conj_pow_minimalPeriod_mem H g q)
     let f : Quotient (orbitRel (zpowers g) (G ⧸ H)) → zpowers g := fun q =>
-      (⟨g, mem_zpowers g⟩ : zpowers g) ^ Function.minimalPeriod (g • ·) q.out'
-    have hf : ∀ q, f q ∈ H.subgroupOf (zpowers g) := fun q => key q.out'
+      (⟨g, mem_zpowers g⟩ : zpowers g) ^ Function.minimalPeriod (g • ·) q.out
+    have hf : ∀ q, f q ∈ H.subgroupOf (zpowers g) := fun q => key q.out
     replace key :=
       Subgroup.prod_mem (H.subgroupOf (zpowers g)) fun q (_ : q ∈ Finset.univ) => hf q
     simpa only [f, minimalPeriod_eq_card, Finset.prod_pow_eq_pow_sum, Fintype.card_sigma,

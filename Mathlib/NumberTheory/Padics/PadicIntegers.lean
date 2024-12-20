@@ -153,8 +153,7 @@ def Coe.ringHom : ℤ_[p] →+* ℚ_[p] := (subring p).subtype
 @[simp, norm_cast]
 theorem coe_pow (x : ℤ_[p]) (n : ℕ) : (↑(x ^ n) : ℚ_[p]) = (↑x : ℚ_[p]) ^ n := rfl
 
--- @[simp] -- Porting note: not in simpNF
-theorem mk_coe (k : ℤ_[p]) : (⟨k, k.2⟩ : ℤ_[p]) = k := Subtype.coe_eta _ _
+theorem mk_coe (k : ℤ_[p]) : (⟨k, k.2⟩ : ℤ_[p]) = k := by simp
 
 /-- The inverse of a `p`-adic integer with norm equal to `1` is also a `p`-adic integer.
 Otherwise, the inverse is defined to be `0`. -/
@@ -165,10 +164,8 @@ instance : CharZero ℤ_[p] where
   cast_injective m n h :=
     Nat.cast_injective (R := ℚ_[p]) (by rw [Subtype.ext_iff] at h; norm_cast at h)
 
-@[norm_cast] -- @[simp] -- Porting note: not in simpNF
-theorem intCast_eq (z1 z2 : ℤ) : (z1 : ℤ_[p]) = z2 ↔ z1 = z2 := by
-  suffices (z1 : ℚ_[p]) = z2 ↔ z1 = z2 from Iff.trans (by norm_cast) this
-  norm_cast
+@[norm_cast]
+theorem intCast_eq (z1 z2 : ℤ) : (z1 : ℤ_[p]) = z2 ↔ z1 = z2 := by simp
 
 @[deprecated (since := "2024-04-05")] alias coe_int_eq := intCast_eq
 
@@ -280,8 +277,7 @@ theorem norm_eq_padic_norm {q : ℚ_[p]} (hq : ‖q‖ ≤ 1) : @norm ℤ_[p] _ 
 @[simp]
 theorem norm_p : ‖(p : ℤ_[p])‖ = (p : ℝ)⁻¹ := padicNormE.norm_p
 
--- @[simp] -- Porting note: not in simpNF
-theorem norm_p_pow (n : ℕ) : ‖(p : ℤ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := padicNormE.norm_p_pow n
+theorem norm_p_pow (n : ℕ) : ‖(p : ℤ_[p]) ^ n‖ = (p : ℝ) ^ (-n : ℤ) := by simp
 
 private def cauSeq_to_rat_cauSeq (f : CauSeq ℤ_[p] norm) : CauSeq ℚ_[p] fun a => ‖a‖ :=
   ⟨fun n => f n, fun _ hε => by simpa [norm, norm_def] using f.cauchy hε⟩
@@ -309,7 +305,7 @@ theorem exists_pow_neg_lt {ε : ℝ} (hε : 0 < ε) : ∃ k : ℕ, (p : ℝ) ^ (
     apply lt_of_lt_of_le hk
     norm_cast
     apply le_of_lt
-    convert Nat.lt_pow_self _ _ using 1
+    convert Nat.lt_pow_self _ using 1
     exact hp.1.one_lt
   · exact mod_cast hp.1.pos
 
@@ -413,9 +409,11 @@ theorem norm_lt_one_mul {z1 z2 : ℤ_[p]} (hz2 : ‖z2‖ < 1) : ‖z1 * z2‖ <
     ‖z1 * z2‖ = ‖z1‖ * ‖z2‖ := by simp
     _ < 1 := mul_lt_one_of_nonneg_of_lt_one_right (norm_le_one _) (norm_nonneg _) hz2
 
--- @[simp] -- Porting note: not in simpNF
 theorem mem_nonunits {z : ℤ_[p]} : z ∈ nonunits ℤ_[p] ↔ ‖z‖ < 1 := by
   rw [lt_iff_le_and_ne]; simp [norm_le_one z, nonunits, isUnit_iff]
+
+theorem not_isUnit_iff {z : ℤ_[p]} : ¬IsUnit z ↔ ‖z‖ < 1 := by
+  simpa using mem_nonunits
 
 /-- A `p`-adic number `u` with `‖u‖ = 1` is a unit of `ℤ_[p]`. -/
 def mkUnits {u : ℚ_[p]} (h : ‖u‖ = 1) : ℤ_[p]ˣ :=
@@ -545,14 +543,14 @@ theorem prime_p : Prime (p : ℤ_[p]) := by
 
 theorem irreducible_p : Irreducible (p : ℤ_[p]) := Prime.irreducible prime_p
 
-instance : DiscreteValuationRing ℤ_[p] :=
-  DiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization
+instance : IsDiscreteValuationRing ℤ_[p] :=
+  IsDiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization
     ⟨p, irreducible_p, fun {x hx} =>
       ⟨x.valuation.natAbs, unitCoeff hx, by rw [mul_comm, ← unitCoeff_spec hx]⟩⟩
 
 theorem ideal_eq_span_pow_p {s : Ideal ℤ_[p]} (hs : s ≠ ⊥) :
     ∃ n : ℕ, s = Ideal.span {(p : ℤ_[p]) ^ n} :=
-  DiscreteValuationRing.ideal_eq_span_pow_irreducible hs irreducible_p
+  IsDiscreteValuationRing.ideal_eq_span_pow_irreducible hs irreducible_p
 
 open CauSeq
 
@@ -617,8 +615,8 @@ instance isFractionRing : IsFractionRing ℤ_[p] ℚ_[p] where
       use
         (⟨a, le_of_eq ha_norm⟩,
           ⟨(p ^ n : ℤ_[p]), mem_nonZeroDivisors_iff_ne_zero.mpr (NeZero.ne _)⟩)
-      simp only [map_pow, map_natCast, algebraMap_apply, PadicInt.coe_pow, PadicInt.coe_natCast,
-        Subtype.coe_mk, Nat.cast_pow]
+      simp only [a, map_pow, map_natCast, algebraMap_apply, PadicInt.coe_pow,
+        PadicInt.coe_natCast, Subtype.coe_mk, Nat.cast_pow]
   exists_of_eq := by
     simp_rw [algebraMap_apply, Subtype.coe_inj]
     exact fun h => ⟨1, by rw [h]⟩
