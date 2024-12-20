@@ -435,7 +435,7 @@ theorem iInf_sets_eq {f : ι → Filter α} (h : Directed (· ≥ ·) f) [ne : N
         exact ⟨c, inter_mem (ha hx) (hb hy)⟩ }
   have : u = iInf f := eq_iInf_of_mem_iff_exists_mem mem_iUnion
   -- Porting note: it was just `congr_arg filter.sets this.symm`
-  (congr_arg Filter.sets this.symm).trans <| by simp only
+  (congr_arg Filter.sets this.symm).trans <| by simp only [u]
 
 theorem mem_iInf_of_directed {f : ι → Filter α} (h : Directed (· ≥ ·) f) [Nonempty ι] (s) :
     s ∈ iInf f ↔ ∃ i, s ∈ f i := by
@@ -646,6 +646,10 @@ theorem eventually_or_distrib_right {f : Filter α} {p : α → Prop} {q : Prop}
     (∀ᶠ x in f, p x ∨ q) ↔ (∀ᶠ x in f, p x) ∨ q := by
   simp only [@or_comm _ q, eventually_or_distrib_left]
 
+theorem eventually_imp_distrib_left {f : Filter α} {p : Prop} {q : α → Prop} :
+    (∀ᶠ x in f, p → q x) ↔ p → ∀ᶠ x in f, q x := by
+  simp only [imp_iff_not_or, eventually_or_distrib_left]
+
 @[simp]
 theorem eventually_bot {p : α → Prop} : ∀ᶠ x in ⊥, p x :=
   ⟨⟩
@@ -797,6 +801,16 @@ theorem frequently_imp_distrib_right {f : Filter α} [NeBot f] {p : α → Prop}
 theorem eventually_imp_distrib_right {f : Filter α} {p : α → Prop} {q : Prop} :
     (∀ᶠ x in f, p x → q) ↔ (∃ᶠ x in f, p x) → q := by
   simp only [imp_iff_not_or, eventually_or_distrib_right, not_frequently]
+
+@[simp]
+theorem frequently_and_distrib_left {f : Filter α} {p : Prop} {q : α → Prop} :
+    (∃ᶠ x in f, p ∧ q x) ↔ p ∧ ∃ᶠ x in f, q x := by
+  simp only [Filter.Frequently, not_and, eventually_imp_distrib_left, Classical.not_imp]
+
+@[simp]
+theorem frequently_and_distrib_right {f : Filter α} {p : α → Prop} {q : Prop} :
+    (∃ᶠ x in f, p x ∧ q) ↔ (∃ᶠ x in f, p x) ∧ q := by
+  simp only [@and_comm _ q, frequently_and_distrib_left]
 
 @[simp]
 theorem frequently_bot {p : α → Prop} : ¬∃ᶠ x in ⊥, p x := by simp
