@@ -107,7 +107,7 @@ theorem iSup_maxGenEigenspace_eq_top [IsAlgClosed K] [FiniteDimensional K V] (f 
       rw [Module.End.genEigenspace_nat, Module.End.genEigenrange_nat]
       apply LinearMap.finrank_range_add_finrank_ker
     -- Therefore the dimension `ER` mus be smaller than `finrank K V`.
-    have h_dim_ER : finrank K ER < n.succ := by linarith
+    have h_dim_ER : finrank K ER < n.succ := by omega
     -- This allows us to apply the induction hypothesis on `ER`:
     have ih_ER : ⨆ (μ : K), f'.maxGenEigenspace μ = ⊤ :=
       ih (finrank K ER) h_dim_ER f' rfl

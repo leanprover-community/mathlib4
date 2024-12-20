@@ -36,7 +36,7 @@ def evaluationJointlyReflectsLimits (c : Cone F)
   lift s :=
     { app := fun X => (hc X).lift ((evaluation R X).mapCone s)
       naturality := fun {X Y} f ↦ by
-        apply (isLimitOfPreserves (ModuleCat.restrictScalars (R.map f)) (hc Y)).hom_ext
+        apply (isLimitOfPreserves (ModuleCat.restrictScalars (R.map f).hom) (hc Y)).hom_ext
         intro j
         have h₁ := (c.π.app j).naturality f
         have h₂ := (hc X).fac ((evaluation R X).mapCone s) j
@@ -54,8 +54,8 @@ def evaluationJointlyReflectsLimits (c : Cone F)
     rw [← hm, comp_app]
 
 instance {X Y : Cᵒᵖ} (f : X ⟶ Y) :
-    HasLimit (F ⋙ evaluation R Y ⋙ ModuleCat.restrictScalars (R.map f)) := by
-  change HasLimit ((F ⋙ evaluation R Y) ⋙ ModuleCat.restrictScalars (R.map f))
+    HasLimit (F ⋙ evaluation R Y ⋙ ModuleCat.restrictScalars (R.map f).hom) := by
+  change HasLimit ((F ⋙ evaluation R Y) ⋙ ModuleCat.restrictScalars (R.map f).hom)
   infer_instance
 
 /-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the presheaf of modules obtained by
@@ -64,7 +64,7 @@ taking a limit in the category of modules over `R.obj X` for all `X`. -/
 noncomputable def limitPresheafOfModules : PresheafOfModules R where
   obj X := limit (F ⋙ evaluation R X)
   map {_ Y} f := limMap (whiskerLeft F (restriction R f)) ≫
-    (preservesLimitIso (ModuleCat.restrictScalars (R.map f)) (F ⋙ evaluation R Y)).inv
+    (preservesLimitIso (ModuleCat.restrictScalars (R.map f).hom) (F ⋙ evaluation R Y)).inv
   map_id X := by
     dsimp
     rw [← cancel_mono (preservesLimitIso _ _).hom, assoc, Iso.inv_hom_id, comp_id]
