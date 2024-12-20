@@ -350,8 +350,9 @@ end Transformations
 
 open Measurable Real
 
-theorem mgf_gaussianReal {Ω : Type} [MeasureSpace Ω] (μ : ℝ) (v : ℝ≥0) (hv : v ≠ 0)
-    {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v) (t : ℝ) :
+variable {Ω : Type} [MeasureSpace Ω] {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
+
+theorem mgf_gaussianReal (hv : v ≠ 0) (hX : Measure.map X ℙ = gaussianReal μ v) (t : ℝ) :
     mgf X ℙ t = exp (μ * t + v * t ^ 2 / 2) := calc
   mgf X ℙ t = (Measure.map X ℙ)[fun x => exp (t * x)] := by
     rw [← mgf_id_map, mgf]
@@ -374,6 +375,10 @@ theorem mgf_gaussianReal {Ω : Type} [MeasureSpace Ω] (μ : ℝ) (v : ℝ≥0) 
     field_simp [gaussianPDFReal_def]
   _ = exp (μ * t + v * t ^ 2 / 2) := by
     rw [integral_gaussianPDFReal_eq_one (μ + v * t) hv, mul_one]
+
+theorem cgf_gaussianReal (hv : v ≠ 0) (hX : Measure.map X ℙ = gaussianReal μ v) (t : ℝ) :
+    cgf X ℙ t = μ * t + v * t ^ 2 / 2 := by
+  rw [cgf, mgf_gaussianReal hv hX t, log_exp]
 
 end GaussianReal
 
