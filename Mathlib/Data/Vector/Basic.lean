@@ -7,7 +7,6 @@ import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Data.Vector.Defs
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
-import Mathlib.Data.List.InsertIdx
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 
@@ -21,9 +20,7 @@ universe u
 
 variable {α β γ σ φ : Type*} {m n : ℕ}
 
-namespace Mathlib
-
-namespace Vector
+namespace List.Vector
 
 @[inherit_doc]
 infixr:67 " ::ᵥ " => Vector.cons
@@ -135,9 +132,12 @@ theorem getElem_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector
     (v.pmap f hp)[i] = f v[i] (hp _ (by simp [getElem_def, List.getElem_mem])) := by
   simp only [getElem_def, toList_pmap, List.getElem_pmap]
 
-theorem get_eq_get (v : Vector α n) (i : Fin n) :
+theorem get_eq_get_toList (v : Vector α n) (i : Fin n) :
     v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
   rfl
+
+@[deprecated (since := "2024-12-20")]
+alias get_eq_get := get_eq_get_toList
 
 @[simp]
 theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a := by
@@ -146,7 +146,7 @@ theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a :=
 @[simp]
 theorem get_map {β : Type*} (v : Vector α n) (f : α → β) (i : Fin n) :
     (v.map f).get i = f (v.get i) := by
-  cases v; simp [Vector.map, get_eq_get]
+  cases v; simp [Vector.map, get_eq_get_toList]
 
 @[simp]
 theorem map₂_nil (f : α → β → γ) : Vector.map₂ f nil nil = nil :=
@@ -160,7 +160,7 @@ theorem map₂_cons (hd₁ : α) (tl₁ : Vector α n) (hd₂ : β) (tl₂ : Vec
 @[simp]
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f i := by
   conv_rhs => erw [← List.get_ofFn f ⟨i, by simp⟩]
-  simp only [get_eq_get]
+  simp only [get_eq_get_toList]
   congr <;> simp [Fin.heq_ext_iff]
 
 @[simp]
@@ -183,7 +183,7 @@ theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by ome
 
 @[simp]
 theorem get_tail_succ : ∀ (v : Vector α n.succ) (i : Fin n), get (tail v) i = get v i.succ
-  | ⟨a :: l, e⟩, ⟨i, h⟩ => by simp [get_eq_get]; rfl
+  | ⟨a :: l, e⟩, ⟨i, h⟩ => by simp [get_eq_get_toList]; rfl
 
 @[simp]
 theorem tail_val : ∀ v : Vector α n.succ, v.tail.val = v.val.tail
@@ -283,7 +283,7 @@ theorem last_def {v : Vector α (n + 1)} : v.last = v.get (Fin.last n) :=
 
 /-- The `last` element of a vector is the `head` of the `reverse` vector. -/
 theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
-  rw [← get_zero, last_def, get_eq_get, get_eq_get]
+  rw [← get_zero, last_def, get_eq_get_toList, get_eq_get_toList]
   simp_rw [toList_reverse]
   rw [List.get_eq_getElem, List.get_eq_getElem, ← Option.some_inj, Fin.cast, Fin.cast,
     ← List.getElem?_eq_getElem, ← List.getElem?_eq_getElem, List.getElem?_reverse]
@@ -351,7 +351,7 @@ theorem scanl_head : (scanl f b v).head = b := by
   · have : v = nil := by simp only [eq_iff_true_of_subsingleton]
     simp only [this, scanl_nil, head_cons]
   · rw [← cons_head_tail v]
-    simp only [← get_zero, get_eq_get, toList_scanl, toList_cons, List.scanl, Fin.val_zero,
+    simp only [← get_zero, get_eq_get_toList, toList_scanl, toList_cons, List.scanl, Fin.val_zero,
       List.get]
 
 /-- For an index `i : Fin n`, the nth element of `scanl` of a
@@ -368,7 +368,7 @@ theorem scanl_get (i : Fin n) :
   · exact i.elim0
   induction' n with n hn generalizing b
   · have i0 : i = 0 := Fin.eq_zero _
-    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get, List.get]
+    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get_toList, List.get]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine Fin.cases ?_ ?_ i
     · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
@@ -527,8 +527,7 @@ variable {a : α}
 def insertIdx (a : α) (i : Fin (n + 1)) (v : Vector α n) : Vector α (n + 1) :=
   ⟨v.1.insertIdx i a, by
     rw [List.length_insertIdx, v.2]
-    rw [v.2, ← Nat.succ_le_succ_iff]
-    exact i.2⟩
+    split <;> omega⟩
 
 @[deprecated (since := "2024-10-21")] alias insertNth := insertIdx
 
@@ -605,12 +604,12 @@ theorem toList_set (v : Vector α n) (i : Fin n) (a : α) :
 
 @[simp]
 theorem get_set_same (v : Vector α n) (i : Fin n) (a : α) : (v.set i a).get i = a := by
-  cases v; cases i; simp [Vector.set, get_eq_get]
+  cases v; cases i; simp [Vector.set, get_eq_get_toList]
 
 theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
     (v.set i a).get j = v.get j := by
   cases v; cases i; cases j
-  simp only [get_eq_get, toList_set, toList_mk, Fin.cast_mk, List.get_eq_getElem]
+  simp only [get_eq_get_toList, toList_set, toList_mk, Fin.cast_mk, List.get_eq_getElem]
   rw [List.getElem_set_of_ne]
   · simpa using h
 
@@ -624,11 +623,13 @@ theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
   refine (List.prod_set v.toList i a).trans ?_
   simp_all
 
-@[to_additive]
+/-- Variant of `List.Vector.prod_set` that multiplies by the inverse of the replaced element.-/
+@[to_additive
+  "Variant of `List.Vector.sum_set` that subtracts the inverse of the replaced element."]
 theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
   refine (List.prod_set' v.toList i a).trans ?_
-  simp [get_eq_get, mul_assoc]
+  simp [get_eq_get_toList, mul_assoc]
 
 end Set
 
@@ -792,6 +793,4 @@ theorem mapAccumr₂_cons {f : α → β → σ → σ × φ} :
 
 end Simp
 
-end Vector
-
-end Mathlib
+end List.Vector

@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Polynomial.Cardinal
-import Mathlib.RingTheory.Algebraic
+import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.RingTheory.Algebraic.Defs
 
 /-!
 # Cardinality of algebraic extensions

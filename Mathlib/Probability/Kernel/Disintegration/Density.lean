@@ -3,7 +3,7 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition
+import Mathlib.Probability.Kernel.Composition.Basic
 import Mathlib.Probability.Martingale.Convergence
 import Mathlib.Probability.Process.PartitionFiltration
 
@@ -560,18 +560,21 @@ lemma setIntegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set γ} (hA : MeasurableSet A) :
     ∫ x in A, density κ ν a x s ∂(ν a) = (κ a (A ×ˢ s)).toReal := by
   have : IsFiniteKernel κ := isFiniteKernel_of_isFiniteKernel_fst (h := isFiniteKernel_of_le hκν)
-  have hA' : MeasurableSet[⨆ n, countableFiltration γ n] A := by rwa [iSup_countableFiltration]
-  refine induction_on_inter (m := ⨆ n, countableFiltration γ n)
-    (C := fun A ↦ ∫ x in A, density κ ν a x s ∂(ν a) = (κ a (A ×ˢ s)).toReal)
-    (measurableSpace_iSup_eq (countableFiltration γ)) ?_ ?_ ?_ ?_ ?_ hA'
-  · rintro s ⟨n, hs⟩ t ⟨m, ht⟩ _
-    exact ⟨max n m, ((countableFiltration γ).mono (le_max_left n m) _ hs).inter
-      ((countableFiltration γ).mono (le_max_right n m) _ ht)⟩
-  · simp
-  · intro A ⟨n, hA⟩
-    exact setIntegral_density_of_measurableSet hκν n a hs hA
-  · intro A hA hA_eq
-    rw [iSup_countableFiltration] at hA
+  have hgen : ‹MeasurableSpace γ› =
+      .generateFrom {s | ∃ n, MeasurableSet[countableFiltration γ n] s} := by
+    rw [setOf_exists, generateFrom_iUnion_measurableSet (countableFiltration γ),
+      iSup_countableFiltration]
+  have hpi : IsPiSystem {s | ∃ n, MeasurableSet[countableFiltration γ n] s} := by
+    rw [setOf_exists]
+    exact isPiSystem_iUnion_of_monotone _
+      (fun n ↦ @isPiSystem_measurableSet _ (countableFiltration γ n))
+      fun _ _ ↦ (countableFiltration γ).mono
+  induction A, hA using induction_on_inter hgen hpi with
+  | empty => simp
+  | basic s hs =>
+    rcases hs with ⟨n, hn⟩
+    exact setIntegral_density_of_measurableSet hκν n a hs hn
+  | compl A hA hA_eq =>
     have h := integral_add_compl hA (integrable_density hκν a hs)
     rw [hA_eq, integral_density hκν a hs] at h
     have : Aᶜ ×ˢ s = univ ×ˢ s \ A ×ˢ s := by
@@ -582,18 +585,14 @@ lemma setIntegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     rw [eq_tsub_iff_add_eq_of_le, add_comm]
     · exact h
     · gcongr <;> simp
-  · intro f hf_disj hf h_eq
-    rw [integral_iUnion _ hf_disj (integrable_density hκν _ hs).integrableOn]
-    · simp_rw [h_eq]
-      rw [← ENNReal.tsum_toReal_eq (fun _ ↦ measure_ne_top _ _)]
-      congr
-      rw [iUnion_prod_const, measure_iUnion]
-      · intro i j hij
-        rw [Function.onFun, Set.disjoint_prod]
-        exact Or.inl (hf_disj hij)
-      · rw [iSup_countableFiltration] at hf
-        exact fun i ↦ (hf i).prod hs
-    · rwa [iSup_countableFiltration] at hf
+  | iUnion f hf_disj hf h_eq =>
+    rw [integral_iUnion hf hf_disj (integrable_density hκν _ hs).integrableOn]
+    simp_rw [h_eq]
+    rw [← ENNReal.tsum_toReal_eq (fun _ ↦ measure_ne_top _ _)]
+    congr
+    rw [iUnion_prod_const, measure_iUnion]
+    · exact hf_disj.mono fun _ _ h ↦ h.set_prod_left _ _
+    · exact fun i ↦ (hf i).prod hs
 
 @[deprecated (since := "2024-04-17")]
 alias set_integral_density := setIntegral_density
