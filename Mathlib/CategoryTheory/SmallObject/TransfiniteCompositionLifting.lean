@@ -15,6 +15,31 @@ we show that a transfinite composition of morphisms that have the left
 lifting property with respect to `p` also has the left lifting property with
 respect to `p`, see `HasLiftingProperty.transfiniteComposition.hasLiftingProperty_ι_app_bot`.
 
+About the proof, given a colimit cocone `c` for a well-order-continuous
+functor `F : J ⥤ C` from a well-ordered type `J`, we introduce a projective
+system `sqFunctor c p f g : Jᵒᵖ ⥤ Type _` which associates to any `j : J`
+the structure `SqStruct c p f g j` which consists of those morphisms `f'`
+which makes the diagram below commute. The data of such compatible `f'` for
+all `j` shall give the expected lifting `c.pt ⟶ X` for the outer square.
+
+```
+         f
+F.obj ⊥ --> X
+   |      Λ |
+   |   f'╱  |
+   v    ╱   |
+F.obj j     | p
+   |        |
+   |        |
+   v    g   v
+  c.pt ---> Y
+```
+This is constructed by transfinite induction on `j`:
+* When `j = ⊥`, this is `f`;
+* In order to pass from `j` to `Order.succ j`, we use the assumption that
+`F.obj j ⟶ F.obj (Order.succ j)` has the left lifting property with respect to `p`;
+* When `j` is a limit element, we use the "continuity" of `F`.
+
 TODO: Given `P : MorphismProperty C`, deduce that the class of morphisms
 that have the left lifting property with respect to `P` is stable
 by transfinite composition.
@@ -37,13 +62,27 @@ variable {W : MorphismProperty C}
 namespace transfiniteComposition
 
 variable {F : J ⥤ C} (c : Cocone F) (hc : IsColimit c)
-  {X Y : C} (p : X ⟶ Y)
-  (f : F.obj ⊥ ⟶ X) (g : c.pt ⟶ Y)
+  {X Y : C} (p : X ⟶ Y) (f : F.obj ⊥ ⟶ X) (g : c.pt ⟶ Y)
 
-/-- Given a colimit cocone `c` for a functor `F : J ⥤ C` from a well-ordered type,
+/-- Given a cocone `c` for a functor `F : J ⥤ C` from a well-ordered type,
 and maps `p : X ⟶ Y`, `f : F.obj ⊥ ⟶ X`, `g : c.pt ⟶ Y`, this structure
 contains the data of a map `F.obj j ⟶ X` such that `F.map (homOfLE bot_le) ≫ f' = f`
-and `f' ≫ p = c.ι.app j ≫ g`. -/
+and `f' ≫ p = c.ι.app j ≫ g`. (This implies that the outer square below
+commutes, see `SqStruct.w`.)
+
+```
+         f
+F.obj ⊥ --> X
+   |      Λ |
+   |   f'╱  |
+   v    ╱   |
+F.obj j     | p
+   |        |
+   |        |
+   v    g   v
+  c.pt ---> Y
+```
+-/
 @[ext]
 structure SqStruct (j : J) where
   /-- a morphism `F.obj j ⟶ X` -/
@@ -57,6 +96,25 @@ attribute [reassoc (attr := simp)] w₁ w₂
 
 variable {c p f g} {j : J} (sq' : SqStruct c p f g j)
 
+include sq' in
+@[reassoc]
+lemma w : f ≫ p = c.ι.app ⊥ ≫ g := by
+  rw [← sq'.w₁, assoc, sq'.w₂, Cocone.w_assoc]
+
+/--
+Given `sq' : SqStruct c p f g j`, this is the commutative square
+```
+               sq'.f'
+F.obj j --------------------> X
+   |                          |
+   |                          |p
+   v                      g   v
+F.obj (succ j) ---> c.pt ---> Y
+```
+
+(Using the lifting property for this square is the key ingredient
+in the proof that the left lifting property with respect to `p`
+is stable under transfinite composition.) -/
 lemma sq [SuccOrder J] :
     CommSq sq'.f' (F.map (homOfLE (Order.le_succ j))) p (c.ι.app _ ≫ g) where
   w := by simp
