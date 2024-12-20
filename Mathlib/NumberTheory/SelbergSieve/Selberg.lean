@@ -197,9 +197,7 @@ theorem selbergWeights_diagonalisation (l : ℕ) (hl : l ∈ divisors P) :
       apply sum_congr
       · ext x; simp only [mem_filter, mem_divisors, ne_eq, and_congr_right_iff, and_imp]; tauto
       intros; ring
-    _ = if l ^ 2 ≤ y then g l * μ l * S⁻¹ else 0 := by
-      rw [← sum_ite_eq_of_mem'
-        (b:=fun _ => if l^2 ≤ y then g l * μ l * S⁻¹ else 0) (divisors P) l hl]
+    _ = ∑ x ∈ divisors P, if x = l then if ↑l ^ 2 ≤ y then g l * ↑(μ l) * S⁻¹ else 0 else 0 := by
       apply sum_congr rfl; intro k hk
       rw [moebius_inv_dvd_lower_bound_real s.prodPrimes_squarefree l _ (dvd_of_mem_divisors hk),
         ← ite_and, ite_zero_mul, ite_zero_mul, ← ite_and]
@@ -208,6 +206,8 @@ theorem selbergWeights_diagonalisation (l : ℕ) (hl : l ∈ divisors P) :
         refine and_congr_right (fun heq ↦ ?_)
         rw [heq]
       intro h; rw[h.1]; ring
+    _ = if l ^ 2 ≤ y then g l * μ l * S⁻¹ else 0 := by
+      rw [sum_ite_eq_of_mem' _ _ _ hl]
 
 def selbergMuPlus : ℕ → ℝ :=
   lambdaSquared γ
