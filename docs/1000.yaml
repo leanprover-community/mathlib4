@@ -946,8 +946,8 @@ Q1056283:
 Q1057919:
   title: Sylow theorems
   decls:
-   - exists_subgroup_card_pow_prime
-   - sylow_conjugate
+   - Sylow.exists_subgroup_card_pow_prime
+   - instIsPretransitiveSylowOfFactPrimeOfFinite
    - Sylow.card_dvd_index
    - card_sylow_modEq_one
 

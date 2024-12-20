@@ -281,7 +281,7 @@
   title  : Sylow’s Theorem
   decls  :
     - Sylow.exists_subgroup_card_pow_prime
-    - sylow_conjugate
+    - instIsPretransitiveSylowOfFactPrimeOfFinite
     - Sylow.card_dvd_index
     - card_sylow_modEq_one
   author : Chris Hughes
