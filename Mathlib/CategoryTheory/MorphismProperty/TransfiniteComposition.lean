@@ -41,23 +41,25 @@ holds for any well ordered type `J` in a certain universe `u`.
 
 universe w v v' u u'
 
-lemma Set.Iic.not_isMin_coe {α : Type u} [PartialOrder α] [SuccOrder α] {j : α}
+lemma Set.Iic.not_isMin_coe {α : Type u} [Preorder α] {j : α}
     {k : Set.Iic j} (hk : ¬ IsMin k) :
     ¬ IsMin k.1 :=
    fun h ↦ hk (fun _ ha' ↦ h ha')
 
-lemma Set.Iic.isSuccPrelimit_coe {α : Type u} [PartialOrder α] [SuccOrder α] {j : α}
+lemma Set.Iic.isSuccPrelimit_coe {α : Type u} [Preorder α] {j : α}
     {k : Set.Iic j} (hk : Order.IsSuccPrelimit k) :
     Order.IsSuccPrelimit k.1 :=
   fun a ha ↦ hk ⟨a, ha.1.le.trans k.2⟩ ⟨ha.1, fun ⟨_, _⟩ hb' ↦ ha.2 hb'⟩
 
-lemma Set.Iic.isSuccLimit_coe {α : Type u} [PartialOrder α] [SuccOrder α] {j : α}
+lemma Set.Iic.isSuccLimit_coe {α : Type u} [Preorder α] {j : α}
     {k : Set.Iic j} (hk : Order.IsSuccLimit k) :
     Order.IsSuccLimit k.1 :=
   ⟨not_isMin_coe hk.1, isSuccPrelimit_coe hk.2⟩
 
+/-- Given an element `j` in a preordered type `α`, and `k : Set.Iic j`,
+this is the order isomorphism between `Set.Iio k` and `Set.Iio k.1`. -/
 @[simps]
-def Set.Iic.iioOrderIso {α : Type u} [PartialOrder α] [SuccOrder α] {j : α}
+def Set.Iic.iioOrderIso {α : Type u} [Preorder α] {j : α}
     (k : Set.Iic j) :
     Set.Iio k ≃o Set.Iio k.1 where
   toFun := fun ⟨⟨x, _⟩, hx'⟩ ↦ ⟨x, hx'⟩
@@ -95,10 +97,14 @@ def coconeLT (F : J ⥤ C) (m : J) :
         rw [← F.map_comp, comp_id]
         rfl }
 
+/-- Given a functor `F : J ⥤ C` and `j : J`, this is the induced
+functor `Set.Iic j ⥤ C`. -/
 @[simps!]
 def restrictionLE (F : J ⥤ C) (j : J) : Set.Iic j ⥤ C :=
   Monotone.functor (f := fun k ↦ k.1) (fun _ _ ↦ id) ⋙ F
 
+/-- Given a functor `F : J ⥤ C` and `j : J`, this is the (colimit) cocone
+with point `F.obj j` for the restriction of `F` to `Set.Iic m`. -/
 @[simps!]
 def coconeLE (F : J ⥤ C) (j : J) :
     Cocone (F.restrictionLE j) where
@@ -110,6 +116,7 @@ def coconeLE (F : J ⥤ C) (j : J) :
         simp only [homOfLE_leOfHom, ← Functor.map_comp, comp_id]
         rfl }
 
+/-- The colimit of `F.cocone j` is `F.obj j`. -/
 def isColimitCoconeLE (F : J ⥤ C) (j : J) :
     IsColimit (F.coconeLE j) where
   desc s := s.ι.app ⟨j, by simp⟩
@@ -141,7 +148,7 @@ lemma isWellOrderContinuous_of_iso {F G : J ⥤ C} (e : F ≅ G) [F.IsWellOrderC
       (IsColimit.ofIsoColimit (F.isColimitOfIsWellOrderContinuous m hm)
         (Cocones.ext (e.app _)))⟩
 
-instance {J : Type w} [PartialOrder J] [SuccOrder J]
+instance {J : Type w} [Preorder J]
     (F : J ⥤ C) [F.IsWellOrderContinuous] (j : J) :
     (F.restrictionLE j).IsWellOrderContinuous where
   nonempty_isColimit m hm := ⟨
@@ -154,6 +161,9 @@ namespace Limits
 
 variable (J : Type w) [Preorder J]
 
+/-- A functor `G : C ⥤ D` satisfies `PreservesWellOrderContinuousOfShape J G`
+if for any limit element `j` in the preordered type `J`, the functor `G`
+preserves colimits of shape `Set.Iio j`. -/
 class PreservesWellOrderContinuousOfShape (G : C ⥤ D) : Prop where
   preservesColimitsOfShape (j : J) (hj : Order.IsSuccLimit j) :
     PreservesColimitsOfShape (Set.Iio j) G := by infer_instance
