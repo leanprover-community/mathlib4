@@ -868,6 +868,16 @@ theorem realize_iInf (s : Finset β) (f : β → L.BoundedFormula α n)
     forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
 
 @[simp]
+theorem _root_.FirstOrder.Language.Formula.realize_iSup (s : Finset β) (f : β → L.Formula α)
+    (v : α → M) : (Formula.iSup s f).Realize v ↔ ∃ b ∈ s, (f b).Realize v  := by
+  simp [Formula.iSup, Formula.Realize]
+
+@[simp]
+theorem _root_.FirstOrder.Language.Formula.realize_iInf (s : Finset β) (f : β → L.Formula α)
+    (v : α → M) : (Formula.iInf s f).Realize v ↔ ∀ b ∈ s, (f b).Realize v  := by
+  simp [Formula.iInf, Formula.Realize]
+
+@[simp]
 theorem _root_.FirstOrder.Language.Formula.realize_iExsUnique [Finite γ] {f : α → β ⊕ γ}
     {φ : L.Formula α} {v : β → M} : (φ.iExsUnique f).Realize v ↔
       ∃! (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
@@ -887,6 +897,8 @@ theorem realize_iExsUnique [Finite γ] {f : α → β ⊕ γ}
     BoundedFormula.Realize (φ.iExsUnique f) v v' ↔
       ∃! (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
   rw [← Formula.realize_iExsUnique, iff_iff_eq]; congr; simp [eq_iff_true_of_subsingleton]
+
+
 
 end BoundedFormula
 

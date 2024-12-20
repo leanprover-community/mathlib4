@@ -73,10 +73,10 @@ variable (T)
 noncomputable def comap (f : β → α) : T.FunctionalFormula α β :=
   let e := Fintype.ofFinite β
   ⟨Formula.iAlls (γ := β) Sum.inl
-    (BoundedFormula.iInf (Finset.univ : Finset β)
+    (Formula.iInf (Finset.univ : Finset β)
       (fun b => Term.equal (var (Sum.inr b)) (var (Sum.inl (f b))))), by
-  simp only [ModelsBoundedFormula, BoundedFormula.realize_iExsUnique, id_eq, Formula.realize_iAlls,
-    Sum.elim_inl, forall_const]
+  simp only [models_formula_iff, Formula.realize_iExsUnique, id_eq, Formula.realize_iAlls,
+    Sum.elim_inl, forall_const, Formula.realize_iInf]
   intro M x
   use fun y => x (f y)
   simp [Formula.Realize, Term.equal, funext_iff]⟩
@@ -84,8 +84,7 @@ noncomputable def comap (f : β → α) : T.FunctionalFormula α β :=
 variable {T}
 @[simp]
 theorem realize_comap (f : β → α) (x : α → M) : (comap T f).realize x = x ∘ f := by
-  rw [realize_spec]
-  simp [comap, Formula.Realize, Term.equal]
+  rw [realize_spec]; simp [comap]
 
 variable (T)
 protected noncomputable def id : T.FunctionalFormula β β :=
@@ -129,15 +128,14 @@ noncomputable def toSigma {γ : β → Type y} [∀ b, Finite (γ b)]
     (f : ∀ b, T.FunctionalFormula α (γ b)) :
     T.FunctionalFormula α (Σ b, γ b) :=
   let e := Fintype.ofFinite β
-  ⟨BoundedFormula.iInf (Finset.univ : Finset β)
+  ⟨Formula.iInf (Finset.univ : Finset β)
     (fun b => (f b).1.relabel (Sum.elim Sum.inl (fun g => Sum.inr ⟨_, g⟩))), by
-  simp only [ModelsBoundedFormula, BoundedFormula.realize_iExsUnique, id_eq, forall_const]
+  simp only [models_formula_iff, Formula.realize_iExsUnique, id_eq, forall_const]
   intro M x
   use (fun i : Σ b, γ b => (f i.1).realize x i.2)
-  simp only [Formula.Realize, Formula.relabel, Function.comp_def, BoundedFormula.realize_iInf,
-    Finset.mem_univ, BoundedFormula.realize_relabel, Nat.add_zero, Fin.castAdd_zero, Fin.cast_refl,
-    CompTriple.comp_eq, Sum.elim_inl, Fin.natAdd_zero, realize_spec2, Sum.elim_inr, imp_self,
-    implies_true, funext_iff, eq_comm, forall_const, true_and]
+  simp only [Formula.realize_iInf, Finset.mem_univ, Formula.realize_relabel, Function.comp_def,
+    realize_spec', Sum.elim_inl, Sum.elim_inr, imp_self, implies_true, funext_iff, forall_const,
+    true_and]
   intro y h z
   cases z
   rw [h]⟩
@@ -147,13 +145,8 @@ theorem realize_toSigma {γ : β → Type y} [∀ b, Finite (γ b)]
     (f : ∀ b, T.FunctionalFormula α (γ b)) (x : α → M) :
     (toSigma f).realize x = fun i => (f i.1).realize x i.2 := by
   rw [realize_spec]
-  simp only [Formula.Realize, toSigma, Formula.relabel, Function.comp_def,
-    BoundedFormula.realize_iInf, Finset.mem_univ, BoundedFormula.realize_relabel, Nat.add_zero,
-    Fin.castAdd_zero, Fin.cast_refl, CompTriple.comp_eq, Sum.elim_inl, Fin.natAdd_zero,
-    forall_const]
-  intro b
-  rw [realize_spec2]
-  congr
+  simp only [toSigma, Formula.realize_iInf, Finset.mem_univ, Formula.realize_relabel,
+    Function.comp_def, realize_spec', Sum.elim_inl, Sum.elim_inr, imp_self, implies_true]
 
 end FunctionalFormula
 
