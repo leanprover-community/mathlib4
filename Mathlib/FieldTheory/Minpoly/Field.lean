@@ -5,7 +5,8 @@ Authors: Riccardo Brasca, Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.FieldTheory.Minpoly.Basic
-import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.Algebraic.Integral
+import Mathlib.RingTheory.LocalRing.Basic
 
 /-!
 # Minimal polynomials on an algebra over a field
@@ -306,8 +307,8 @@ lemma minpoly_algEquiv_toLinearMap (σ : L ≃ₐ[K] L) (hσ : IsOfFinOrder σ) 
 lemma minpoly_algHom_toLinearMap (σ : L →ₐ[K] L) (hσ : IsOfFinOrder σ) :
     minpoly K σ.toLinearMap = X ^ (orderOf σ) - C 1 := by
   have : orderOf σ = orderOf (AlgEquiv.algHomUnitsEquiv _ _ hσ.unit) := by
-    rw [← MonoidHom.coe_coe, orderOf_injective (AlgEquiv.algHomUnitsEquiv K L)
-      (AlgEquiv.algHomUnitsEquiv K L).injective, ← orderOf_units, IsOfFinOrder.val_unit]
+    rw [← MonoidHom.coe_coe, orderOf_injective, ← orderOf_units, IsOfFinOrder.val_unit]
+    exact (AlgEquiv.algHomUnitsEquiv K L).injective
   rw [this, ← minpoly_algEquiv_toLinearMap]
   · apply congr_arg
     ext

@@ -3,6 +3,7 @@ Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
 -/
+import Mathlib.MeasureTheory.Integral.IntegrableOn
 import Mathlib.MeasureTheory.Integral.SetToL1
 
 /-!
@@ -146,9 +147,8 @@ assert_not_exists Differentiable
 
 noncomputable section
 
-open scoped Topology NNReal ENNReal MeasureTheory
-
-open Set Filter TopologicalSpace ENNReal EMetric
+open Filter ENNReal EMetric Set TopologicalSpace Topology
+open scoped NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
 
@@ -638,7 +638,7 @@ theorem integral_sub (f g : α →₁[μ] E) : integral (f - g) = integral f - i
 theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c • integral f := by
   simp only [integral]
   show (integralCLM' (E := E) 𝕜) (c • f) = c • (integralCLM' (E := E) 𝕜) f
-  exact map_smul (integralCLM' (E := E) 𝕜) c f
+  exact _root_.map_smul (integralCLM' (E := E) 𝕜) c f
 
 local notation "Integral" => @integralCLM α E _ _ μ _ _
 
@@ -1168,7 +1168,8 @@ lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
     simp [f', ha (zero_le n)]
   have hf'_meas : ∀ n, Integrable (f' n) μ := fun n ↦ (hf n).sub (hf 0)
   suffices Tendsto (fun n ↦ ∫ x, f' n x ∂μ) atTop (𝓝 (∫ x, (F - f 0) x ∂μ)) by
-    simp_rw [integral_sub (hf _) (hf _), integral_sub' hF (hf 0), tendsto_sub_const_iff] at this
+    simp_rw [f', integral_sub (hf _) (hf _), integral_sub' hF (hf 0),
+      tendsto_sub_const_iff] at this
     exact this
   have hF_ge : 0 ≤ᵐ[μ] fun x ↦ (F - f 0) x := by
     filter_upwards [h_tendsto, h_mono] with x hx_tendsto hx_mono
@@ -1334,7 +1335,7 @@ theorem integral_mono_ae {f g : α → ℝ} (hf : Integrable f μ) (hg : Integra
   exact setToFun_mono (dominatedFinMeasAdditive_weightedSMul μ)
     (fun s _ _ => weightedSMul_nonneg s) hf hg h
 
-@[mono]
+@[gcongr, mono]
 theorem integral_mono {f g : α → ℝ} (hf : Integrable f μ) (hg : Integrable g μ) (h : f ≤ g) :
     ∫ a, f a ∂μ ≤ ∫ a, g a ∂μ :=
   integral_mono_ae hf hg <| Eventually.of_forall h
@@ -1352,10 +1353,9 @@ theorem integral_mono_measure {f : α → ℝ} {ν} (hle : μ ≤ ν) (hf : 0 �
     (hfi : Integrable f ν) : ∫ a, f a ∂μ ≤ ∫ a, f a ∂ν := by
   have hfi' : Integrable f μ := hfi.mono_measure hle
   have hf' : 0 ≤ᵐ[μ] f := hle.absolutelyContinuous hf
-  rw [integral_eq_lintegral_of_nonneg_ae hf' hfi'.1, integral_eq_lintegral_of_nonneg_ae hf hfi.1,
-    ENNReal.toReal_le_toReal]
-  exacts [lintegral_mono' hle le_rfl, ((hasFiniteIntegral_iff_ofReal hf').1 hfi'.2).ne,
-    ((hasFiniteIntegral_iff_ofReal hf).1 hfi.2).ne]
+  rw [integral_eq_lintegral_of_nonneg_ae hf' hfi'.1, integral_eq_lintegral_of_nonneg_ae hf hfi.1]
+  refine ENNReal.toReal_mono ?_ (lintegral_mono' hle le_rfl)
+  exact ((hasFiniteIntegral_iff_ofReal hf).1 hfi.2).ne
 
 theorem norm_integral_le_integral_norm (f : α → G) : ‖∫ a, f a ∂μ‖ ≤ ∫ a, ‖f a‖ ∂μ := by
   have le_ae : ∀ᵐ a ∂μ, 0 ≤ ‖f a‖ := Eventually.of_forall fun a => norm_nonneg _
@@ -1574,13 +1574,13 @@ theorem _root_.MeasurableEmbedding.integral_map {β} {_ : MeasurableSpace β} {f
   · rw [integral_non_aestronglyMeasurable hgm, integral_non_aestronglyMeasurable]
     exact fun hgf => hgm (hf.aestronglyMeasurable_map_iff.2 hgf)
 
-theorem _root_.IsClosedEmbedding.integral_map {β} [TopologicalSpace α] [BorelSpace α]
+theorem _root_.Topology.IsClosedEmbedding.integral_map {β} [TopologicalSpace α] [BorelSpace α]
     [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] {φ : α → β} (hφ : IsClosedEmbedding φ)
     (f : β → G) : ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ :=
   hφ.measurableEmbedding.integral_map _
 
 @[deprecated (since := "2024-10-20")]
-alias _root_.ClosedEmbedding.integral_map := _root_.IsClosedEmbedding.integral_map
+alias _root_.ClosedEmbedding.integral_map := IsClosedEmbedding.integral_map
 
 theorem integral_map_equiv {β} [MeasurableSpace β] (e : α ≃ᵐ β) (f : β → G) :
     ∫ y, f y ∂Measure.map e μ = ∫ x, f (e x) ∂μ :=
@@ -1744,11 +1744,11 @@ theorem integral_singleton [MeasurableSingletonClass α] {μ : Measure α} (f : 
     mul_comm]
 
 theorem integral_countable [MeasurableSingletonClass α] (f : α → E) {s : Set α} (hs : s.Countable)
-    (hf : Integrable f (μ.restrict s)) :
+    (hf : IntegrableOn f s μ) :
     ∫ a in s, f a ∂μ = ∑' a : s, (μ {(a : α)}).toReal • f a := by
   have hi : Countable { x // x ∈ s } := Iff.mpr countable_coe_iff hs
   have hf' : Integrable (fun (x : s) => f x) (Measure.comap Subtype.val μ) := by
-    rw [← map_comap_subtype_coe, integrable_map_measure] at hf
+    rw [IntegrableOn, ← map_comap_subtype_coe, integrable_map_measure] at hf
     · apply hf
     · exact Integrable.aestronglyMeasurable hf
     · exact Measurable.aemeasurable measurable_subtype_coe
@@ -1761,7 +1761,7 @@ theorem integral_countable [MeasurableSingletonClass α] (f : α → E) {s : Set
   simp
 
 theorem integral_finset [MeasurableSingletonClass α] (s : Finset α) (f : α → E)
-    (hf : Integrable f (μ.restrict s)) :
+    (hf : IntegrableOn f s μ) :
     ∫ x in s, f x ∂μ = ∑ x ∈ s, (μ {x}).toReal • f x := by
   rw [integral_countable _ s.countable_toSet hf, ← Finset.tsum_subtype']
 
@@ -1770,7 +1770,7 @@ theorem integral_fintype [MeasurableSingletonClass α] [Fintype α] (f : α → 
     ∫ x, f x ∂μ = ∑ x, (μ {x}).toReal • f x := by
   -- NB: Integrable f does not follow from Fintype, because the measure itself could be non-finite
   rw [← integral_finset .univ, Finset.coe_univ, Measure.restrict_univ]
-  simp only [Finset.coe_univ, Measure.restrict_univ, hf]
+  simp [Finset.coe_univ, Measure.restrict_univ, hf]
 
 theorem integral_unique [Unique α] (f : α → E) : ∫ x, f x ∂μ = (μ univ).toReal • f default :=
   calc

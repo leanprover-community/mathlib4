@@ -27,7 +27,7 @@ This is ultimately converted into a `Linexp` in the obvious way.
 `linearFormsAndMaxVar` is the main entry point into this file. Everything else is contained.
 -/
 
-open Linarith.Ineq Batteries
+open Mathlib.Ineq Batteries
 
 section
 open Lean Elab Tactic Meta

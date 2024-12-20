@@ -47,6 +47,7 @@ encoded in the `UniqueNonUnitalContinuousFunctionalCalculus` class.
 -/
 local notation "σₙ" => quasispectrum
 
+open Topology
 open scoped ContinuousMapZero
 
 /-- A non-unital star `R`-algebra `A` has a *continuous functional calculus* for elements
@@ -319,7 +320,7 @@ lemma eqOn_of_cfcₙ_eq_cfcₙ {f g : R → R} {a : A} (h : cfcₙ f a = cfcₙ 
     (hg : ContinuousOn g (σₙ R a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac) :
     (σₙ R a).EqOn f g := by
   rw [cfcₙ_apply f a, cfcₙ_apply g a] at h
-  have := (cfcₙHom_isClosedEmbedding (show p a from ha) (R := R)).inj h
+  have := (cfcₙHom_isClosedEmbedding (show p a from ha) (R := R)).injective h
   intro x hx
   congrm($(this) ⟨x, hx⟩)
 

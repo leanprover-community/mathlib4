@@ -117,7 +117,7 @@ theorem addHaarMeasure_eq_volume_pi (ι : Type*) [Fintype ι] :
   simp only [piIcc01, volume_pi_pi fun _ => Icc (0 : ℝ) 1, PositiveCompacts.coe_mk,
     Compacts.coe_mk, Finset.prod_const_one, ENNReal.ofReal_one, Real.volume_Icc, one_smul, sub_zero]
 
--- Porting note (#11215): TODO: remove this instance?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: remove this instance?
 instance isAddHaarMeasure_volume_pi (ι : Type*) [Fintype ι] :
     IsAddHaarMeasure (volume : Measure (ι → ℝ)) :=
   inferInstance
@@ -186,7 +186,7 @@ theorem addHaar_submodule {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     convert s.sub_mem hym hyn using 1
     simp only [sub_smul, neg_sub_neg, add_sub_add_right_eq_sub]
   have H : c ^ n - c ^ m ≠ 0 := by
-    simpa only [sub_eq_zero, Ne] using (pow_right_strictAnti cpos cone).injective.ne hmn.symm
+    simpa only [sub_eq_zero, Ne] using (pow_right_strictAnti₀ cpos cone).injective.ne hmn.symm
   have : x ∈ s := by
     convert s.smul_mem (c ^ n - c ^ m)⁻¹ A
     rw [smul_smul, inv_mul_cancel₀ H, one_smul]
@@ -461,7 +461,7 @@ theorem addHaar_closedBall' (x : E) {r : ℝ} (hr : 0 ≤ r) :
     μ (closedBall x r) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (closedBall 0 1) := by
   rw [← addHaar_closedBall_mul μ x hr zero_le_one, mul_one]
 
-theorem addHaar_closed_unit_ball_eq_addHaar_unit_ball :
+theorem addHaar_unitClosedBall_eq_addHaar_unitBall :
     μ (closedBall (0 : E) 1) = μ (ball 0 1) := by
   apply le_antisymm _ (measure_mono ball_subset_closedBall)
   have A : Tendsto
@@ -476,9 +476,12 @@ theorem addHaar_closed_unit_ball_eq_addHaar_unit_ball :
   rw [← addHaar_closedBall' μ (0 : E) hr.1.le]
   exact measure_mono (closedBall_subset_ball hr.2)
 
+@[deprecated (since := "2024-12-01")]
+alias addHaar_closed_unit_ball_eq_addHaar_unit_ball := addHaar_unitClosedBall_eq_addHaar_unitBall
+
 theorem addHaar_closedBall (x : E) {r : ℝ} (hr : 0 ≤ r) :
     μ (closedBall x r) = ENNReal.ofReal (r ^ finrank ℝ E) * μ (ball 0 1) := by
-  rw [addHaar_closedBall' μ x hr, addHaar_closed_unit_ball_eq_addHaar_unit_ball]
+  rw [addHaar_closedBall' μ x hr, addHaar_unitClosedBall_eq_addHaar_unitBall]
 
 theorem addHaar_closedBall_eq_addHaar_ball [Nontrivial E] (x : E) (r : ℝ) :
     μ (closedBall x r) = μ (ball x r) := by
@@ -695,8 +698,8 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
         (𝓝 (μ (⋂ n : ℕ, t \ closedBall 0 n))) := by
       have N : ∃ n : ℕ, μ (t \ closedBall 0 n) ≠ ∞ :=
         ⟨0, ((measure_mono diff_subset).trans_lt h''t.lt_top).ne⟩
-      refine tendsto_measure_iInter (fun n ↦ (ht.diff measurableSet_closedBall).nullMeasurableSet)
-        (fun m n hmn ↦ ?_) N
+      refine tendsto_measure_iInter_atTop
+        (fun n ↦ (ht.diff measurableSet_closedBall).nullMeasurableSet) (fun m n hmn ↦ ?_) N
       exact diff_subset_diff Subset.rfl (closedBall_subset_closedBall (Nat.cast_le.2 hmn))
     have : ⋂ n : ℕ, t \ closedBall 0 n = ∅ := by
       simp_rw [diff_eq, ← inter_iInter, iInter_eq_compl_iUnion_compl, compl_compl,

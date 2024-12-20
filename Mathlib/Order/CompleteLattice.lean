@@ -296,8 +296,6 @@ class CompleteLinearOrder (α : Type*) extends CompleteLattice α, BiheytingAlge
 
 instance CompleteLinearOrder.toLinearOrder [i : CompleteLinearOrder α] : LinearOrder α where
   __ := i
-  min := Inf.inf
-  max := Sup.sup
   min_def a b := by
     split_ifs with h
     · simp [h]
@@ -625,11 +623,11 @@ theorem le_iSup (f : ι → α) (i : ι) : f i ≤ iSup f :=
 theorem iInf_le (f : ι → α) (i : ι) : iInf f ≤ f i :=
   sInf_le ⟨i, rfl⟩
 
-theorem le_iSup' (f : ι → α) (i : ι) : f i ≤ iSup f :=
-  le_sSup ⟨i, rfl⟩
+@[deprecated le_iSup (since := "2024-12-13")]
+theorem le_iSup' (f : ι → α) (i : ι) : f i ≤ iSup f := le_iSup f i
 
-theorem iInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i :=
-  sInf_le ⟨i, rfl⟩
+@[deprecated iInf_le (since := "2024-12-13")]
+theorem iInf_le' (f : ι → α) (i : ι) : iInf f ≤ f i := iInf_le f i
 
 theorem isLUB_iSup : IsLUB (range f) (⨆ j, f j) :=
   isLUB_sSup _
@@ -1004,12 +1002,12 @@ theorem iSup_subtype'' {ι} (s : Set ι) (f : ι → α) : ⨆ i : s, f i = ⨆ 
 theorem iInf_subtype'' {ι} (s : Set ι) (f : ι → α) : ⨅ i : s, f i = ⨅ (t : ι) (_ : t ∈ s), f t :=
   iInf_subtype
 
-theorem biSup_const {ι : Sort _} {a : α} {s : Set ι} (hs : s.Nonempty) : ⨆ i ∈ s, a = a := by
+theorem biSup_const {a : α} {s : Set β} (hs : s.Nonempty) : ⨆ i ∈ s, a = a := by
   haveI : Nonempty s := Set.nonempty_coe_sort.mpr hs
   rw [← iSup_subtype'', iSup_const]
 
-theorem biInf_const {ι : Sort _} {a : α} {s : Set ι} (hs : s.Nonempty) : ⨅ i ∈ s, a = a :=
-  @biSup_const αᵒᵈ _ ι _ s hs
+theorem biInf_const {a : α} {s : Set β} (hs : s.Nonempty) : ⨅ i ∈ s, a = a :=
+  biSup_const (α := αᵒᵈ) hs
 
 theorem iSup_sup_eq : ⨆ x, f x ⊔ g x = (⨆ x, f x) ⊔ ⨆ x, g x :=
   le_antisymm (iSup_le fun _ => sup_le_sup (le_iSup _ _) <| le_iSup _ _)
@@ -1729,7 +1727,7 @@ end CompleteLattice
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteLattice` along an injection. -/
-protected abbrev Function.Injective.completeLattice [Sup α] [Inf α] [SupSet α] [InfSet α] [Top α]
+protected abbrev Function.Injective.completeLattice [Max α] [Min α] [SupSet α] [InfSet α] [Top α]
     [Bot α] [CompleteLattice β] (f : α → β) (hf : Function.Injective f)
     (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b)
     (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a) (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a)

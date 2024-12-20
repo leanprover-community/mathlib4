@@ -4,14 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Update
-import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.Data.Int.Cast.Pi
+import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Prod.TProd
 import Mathlib.Data.Set.UnionLift
 import Mathlib.GroupTheory.Coset.Defs
-import Mathlib.Logic.Equiv.Fin
 import Mathlib.MeasureTheory.MeasurableSpace.Instances
 import Mathlib.Order.Filter.SmallSets
 import Mathlib.Order.LiminfLimsup
+import Mathlib.Order.Filter.AtTopBot.CountablyGenerated
+import Mathlib.Tactic.FinCases
 
 /-!
 # Measurable spaces and measurable functions
@@ -55,7 +57,7 @@ open Set Encodable Function Equiv Filter MeasureTheory
 
 universe uι
 
-variable {α β γ δ δ' : Type*} {ι : Sort uι} {s t u : Set α}
+variable {α β γ δ δ' : Type*} {ι : Sort uι} {s : Set α}
 
 namespace MeasurableSpace
 
@@ -212,7 +214,7 @@ lemma Measurable.sup_of_right {mα mα' : MeasurableSpace α} {_ : MeasurableSpa
 theorem measurable_id'' {m mα : MeasurableSpace α} (hm : m ≤ mα) : @Measurable α α mα m id :=
   measurable_id.mono le_rfl hm
 
--- Porting note (#11215): TODO: add TC `DiscreteMeasurable` + instances
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add TC `DiscreteMeasurable` + instances
 
 @[measurability]
 theorem measurable_from_top [MeasurableSpace β] {f : α → β} : Measurable[⊤] f := fun _ _ => trivial
@@ -225,7 +227,7 @@ variable {f g : α → β}
 
 section TypeclassMeasurableSpace
 
-variable [MeasurableSpace α] [MeasurableSpace β] [MeasurableSpace γ]
+variable [MeasurableSpace α] [MeasurableSpace β]
 
 @[nontriviality, measurability]
 theorem Subsingleton.measurable [Subsingleton α] : Measurable f := fun _ _ =>
@@ -625,7 +627,6 @@ lemma MeasurableSet.measurableAtom_of_countable [Countable β] (x : β) :
     · intro z hz
       simp only [mem_iInter, mem_compl_iff]
       intro i hi
-      show z ∈ s i
       exact mem_of_mem_measurableAtom hz (hs i hi).2.1 (hs i hi).1
     · apply compl_subset_compl.1
       intro z hz
@@ -801,7 +802,7 @@ theorem exists_measurable_piecewise {ι} [Countable ι] [Nonempty ι] (t : ι �
     ∃ f : α → β, Measurable f ∧ ∀ n, EqOn f (g n) (t n) := by
   inhabit ι
   set g' : (i : ι) → t i → β := fun i => g i ∘ (↑)
-  -- see #2184
+  -- see https://github.com/leanprover-community/mathlib4/issues/2184
   have ht' : ∀ (i j) (x : α) (hxi : x ∈ t i) (hxj : x ∈ t j), g' i ⟨x, hxi⟩ = g' j ⟨x, hxj⟩ := by
     intro i j x hxi hxj
     rcases eq_or_ne i j with rfl | hij
@@ -1182,7 +1183,66 @@ namespace MeasurableSpace
   rintro _ ⟨u, -, rfl⟩
   exact (show MeasurableSet s from GenerateMeasurable.basic _ <| mem_singleton s).mem trivial
 
+lemma generateFrom_singleton_le {m : MeasurableSpace α} {s : Set α} (hs : MeasurableSet s) :
+    MeasurableSpace.generateFrom {s} ≤ m :=
+  generateFrom_le (fun _ ht ↦ mem_singleton_iff.1 ht ▸ hs)
+
 end MeasurableSpace
+
+namespace MeasureTheory
+
+theorem measurableSet_generateFrom_singleton_iff {s t : Set α} :
+    MeasurableSet[MeasurableSpace.generateFrom {s}] t ↔ t = ∅ ∨ t = s ∨ t = sᶜ ∨ t = univ := by
+  simp_rw [MeasurableSpace.generateFrom_singleton]
+  change t ∈ {t | _} ↔ _
+  simp_rw [MeasurableSpace.measurableSet_top, true_and, mem_setOf_eq]
+  constructor
+  · rintro ⟨x, rfl⟩
+    by_cases hT : True ∈ x
+    · by_cases hF : False ∈ x
+      · refine Or.inr <| Or.inr <| Or.inr <| subset_antisymm (subset_univ _) ?_
+        suffices x = univ by simp only [this, preimage_univ, subset_refl]
+        refine subset_antisymm (subset_univ _) ?_
+        rw [univ_eq_true_false]
+        rintro - (rfl | rfl)
+        · assumption
+        · assumption
+      · have hx : x = {True} := by
+          ext p
+          refine ⟨fun hp ↦ mem_singleton_iff.2 ?_, fun hp ↦ hp ▸ hT⟩
+          by_contra hpneg
+          rw [eq_iff_iff, iff_true, ← false_iff] at hpneg
+          exact hF (by convert hp)
+        simp [hx]
+    · by_cases hF : False ∈ x
+      · have hx : x = {False} := by
+          ext p
+          refine ⟨fun hp ↦ mem_singleton_iff.2 ?_, fun hp ↦ hp ▸ hF⟩
+          by_contra hpneg
+          simp only [eq_iff_iff, iff_false, not_not] at hpneg
+          refine hT ?_
+          convert hp
+          simpa
+        refine Or.inr <| Or.inr <| Or.inl <| ?_
+        simp [hx]
+        rfl
+      · refine Or.inl <| subset_antisymm ?_ <| empty_subset _
+        suffices x ⊆ ∅ by
+          rw [subset_empty_iff] at this
+          simp only [this, preimage_empty, subset_refl]
+        intro p hp
+        fin_cases p
+        · contradiction
+        · contradiction
+  · rintro (rfl | rfl | rfl | rfl)
+    on_goal 1 => use ∅
+    on_goal 2 => use {True}
+    on_goal 3 => use {False}
+    on_goal 4 => use Set.univ
+    all_goals
+      simp [compl_def]
+
+end MeasureTheory
 
 namespace Filter
 
@@ -1360,7 +1420,7 @@ instance Subtype.instUnion : Union (Subtype (MeasurableSet : Set α → Prop)) :
 theorem coe_union (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∪ t) = (s ∪ t : Set α) :=
   rfl
 
-instance Subtype.instSup : Sup (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instSup : Max (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∪ y⟩
 
 @[simp]
@@ -1373,7 +1433,7 @@ instance Subtype.instInter : Inter (Subtype (MeasurableSet : Set α → Prop)) :
 theorem coe_inter (s t : Subtype (MeasurableSet : Set α → Prop)) : ↑(s ∩ t) = (s ∩ t : Set α) :=
   rfl
 
-instance Subtype.instInf : Inf (Subtype (MeasurableSet : Set α → Prop)) :=
+instance Subtype.instInf : Min (Subtype (MeasurableSet : Set α → Prop)) :=
   ⟨fun x y => x ∩ y⟩
 
 @[simp]

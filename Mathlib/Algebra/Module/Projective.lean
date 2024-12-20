@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Antoine Labelle
 -/
 import Mathlib.Algebra.Module.Defs
-import Mathlib.LinearAlgebra.Finsupp
+import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 
@@ -157,6 +157,7 @@ theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := 
 instance (priority := 100) Projective.of_free [Module.Free R P] : Module.Projective R P :=
   .of_basis <| Module.Free.chooseBasis R P
 
+/-- A direct summand of a projective module is projective. -/
 theorem Projective.of_split [Module.Projective R M]
     (i : P →ₗ[R] M) (s : M →ₗ[R] P) (H : s.comp i = LinearMap.id) : Module.Projective R P := by
   obtain ⟨g, hg⟩ := projective_lifting_property (Finsupp.linearCombination R id) s
@@ -193,13 +194,13 @@ end Semiring
 
 section Ring
 
-variable {R : Type u} [Ring R] {P : Type v} [AddCommMonoid P] [Module R P]
-variable {R₀ M N} [CommRing R₀] [Algebra R₀ R] [AddCommGroup M] [Module R₀ M] [Module R M]
-variable [IsScalarTower R₀ R M] [AddCommGroup N] [Module R₀ N]
+variable {R : Type u} [Semiring R] {P : Type v} [AddCommMonoid P] [Module R P]
+variable {R₀ M N} [CommSemiring R₀] [Algebra R₀ R] [AddCommMonoid M] [Module R₀ M] [Module R M]
+variable [IsScalarTower R₀ R M] [AddCommMonoid N] [Module R₀ N]
 
 /-- A module is projective iff it is the direct summand of a free module. -/
 theorem Projective.iff_split : Module.Projective R P ↔
-    ∃ (M : Type max u v) (_ : AddCommGroup M) (_ : Module R M) (_ : Module.Free R M)
+    ∃ (M : Type max u v) (_ : AddCommMonoid M) (_ : Module R M) (_ : Module.Free R M)
       (i : P →ₗ[R] M) (s : M →ₗ[R] P), s.comp i = LinearMap.id :=
   ⟨fun ⟨i, hi⟩ ↦ ⟨P →₀ R, _, _, inferInstance, i, Finsupp.linearCombination R id, LinearMap.ext hi⟩,
     fun ⟨_, _, _, _, i, s, H⟩ ↦ Projective.of_split i s H⟩
@@ -226,7 +227,7 @@ end Ring
 --This is in a different section because special universe restrictions are required.
 section OfLiftingProperty
 
--- Porting note (#11215): TODO: generalize to `P : Type v`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `P : Type v`?
 /-- A module which satisfies the universal property is projective. Note that the universe variables
 in `huniv` are somewhat restricted. -/
 theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max u v}
@@ -239,7 +240,7 @@ theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max 
     Projective R P :=
   .of_lifting_property'' (huniv · _)
 
--- Porting note (#11215): TODO: generalize to `P : Type v`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `P : Type v`?
 /-- A variant of `of_lifting_property'` when we're working over a `[Ring R]`,
 which only requires quantifying over modules with an `AddCommGroup` instance. -/
 theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]

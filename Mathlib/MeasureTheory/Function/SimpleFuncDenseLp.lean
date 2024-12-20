@@ -789,7 +789,8 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
       (Lp.stronglyMeasurable (g : Lp G p μ)).isSeparable_range.union
         (finite_singleton _).isSeparable
   have g_meas : Measurable (g : α → G) := (Lp.stronglyMeasurable (g : Lp G p μ)).measurable
-  let x n := SimpleFunc.approxOn g g_meas ((range (g : α → G) ∪ {0}) ∩ { y | 0 ≤ y }) 0 zero_mem n
+  let x n := SimpleFunc.approxOn (g : α → G) g_meas
+    ((range (g : α → G) ∪ {0}) ∩ { y | 0 ≤ y }) 0 zero_mem n
   have hx_nonneg : ∀ n, 0 ≤ x n := by
     intro n a
     change x n a ∈ { y : G | 0 ≤ y }

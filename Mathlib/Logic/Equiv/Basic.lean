@@ -22,7 +22,7 @@ import Mathlib.Tactic.CC
 /-!
 # Equivalence between types
 
-In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lean`, defining
+In this file we continue the work on equivalences begun in `Mathlib/Logic/Equiv/Defs.lean`, defining
 
 * canonical isomorphisms between various types: e.g.,
 
@@ -38,7 +38,7 @@ In this file we continue the work on equivalences begun in `Logic/Equiv/Defs.lea
     `eb : β₁ ≃ β₂` using `Prod.map`.
 
   More definitions of this kind can be found in other files.
-  E.g., `Logic/Equiv/TransferInstance.lean` does it for many algebraic type classes like
+  E.g., `Mathlib/Algebra/Equiv/TransferInstance.lean` does it for many algebraic type classes like
   `Group`, `Module`, etc.
 
 ## Tags
@@ -627,6 +627,7 @@ section
 
 /-- A family of equivalences `∀ a, β₁ a ≃ β₂ a` generates an equivalence between `∀ a, β₁ a` and
 `∀ a, β₂ a`. -/
+@[simps]
 def piCongrRight {β₁ β₂ : α → Sort*} (F : ∀ a, β₁ a ≃ β₂ a) : (∀ a, β₁ a) ≃ (∀ a, β₂ a) :=
   ⟨Pi.map fun a ↦ F a, Pi.map fun a ↦ (F a).symm, fun H => funext <| by simp,
     fun H => funext <| by simp⟩
@@ -1716,6 +1717,14 @@ theorem piCongr'_symm_apply_symm_apply (f : ∀ b, Z b) (b : β) :
   simp [piCongr', piCongr_apply_apply]
 
 end
+
+/-- Transport dependent functions through an equality of sets. -/
+@[simps!] def piCongrSet {α} {W : α → Sort w} {s t : Set α} (h : s = t) :
+    (∀ i : {i // i ∈ s}, W i) ≃ (∀ i : {i // i ∈ t}, W i) where
+  toFun f i := f ⟨i, h ▸ i.2⟩
+  invFun f i := f ⟨i, h.symm ▸ i.2⟩
+  left_inv f := rfl
+  right_inv f := rfl
 
 section BinaryOp
 

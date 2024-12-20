@@ -38,7 +38,7 @@ variable {C : Type u} [Category.{v} C] [HasZeroObject C] [HasZeroMorphisms C]
 An `InjectiveResolution Z` consists of a bundled `ℕ`-indexed cochain complex of injective objects,
 along with a quasi-isomorphism from the complex consisting of just `Z` supported in degree `0`.
 -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure InjectiveResolution (Z : C) where
   /-- the cochain complex involved in the resolution -/

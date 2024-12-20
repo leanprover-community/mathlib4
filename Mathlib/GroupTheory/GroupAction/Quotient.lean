@@ -3,15 +3,15 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
+import Mathlib.Algebra.Group.Subgroup.Actions
+import Mathlib.Algebra.Group.Subgroup.ZPowers.Lemmas
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Dynamics.PeriodicPts
+import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.GroupTheory.Coset.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.GroupTheory.Coset.Basic
-import Mathlib.GroupTheory.Commutator.Basic
-import Mathlib.Algebra.Group.Subgroup.Actions
-import Mathlib.Data.Finite.Prod
 
 /-!
 # Properties of group actions involving quotient groups
@@ -90,18 +90,42 @@ theorem Quotient.smul_coe [QuotientAction β H] (b : β) (a : α) :
   rfl
 
 @[to_additive (attr := simp)]
-theorem Quotient.mk_smul_out' [QuotientAction β H] (b : β) (q : α ⧸ H) :
-    QuotientGroup.mk (b • q.out') = b • q := by rw [← Quotient.smul_mk, QuotientGroup.out_eq']
+theorem Quotient.mk_smul_out [QuotientAction β H] (b : β) (q : α ⧸ H) :
+    QuotientGroup.mk (b • q.out) = b • q := by rw [← Quotient.smul_mk, QuotientGroup.out_eq']
 
 -- Porting note: removed simp attribute, simp can prove this
 @[to_additive]
-theorem Quotient.coe_smul_out' [QuotientAction β H] (b : β) (q : α ⧸ H) : ↑(b • q.out') = b • q :=
-  Quotient.mk_smul_out' H b q
+theorem Quotient.coe_smul_out [QuotientAction β H] (b : β) (q : α ⧸ H) : ↑(b • q.out) = b • q :=
+  Quotient.mk_smul_out H b q
 
-theorem _root_.QuotientGroup.out'_conj_pow_minimalPeriod_mem (a : α) (q : α ⧸ H) :
-    q.out'⁻¹ * a ^ Function.minimalPeriod (a • ·) q * q.out' ∈ H := by
-  rw [mul_assoc, ← QuotientGroup.eq, QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out',
+theorem _root_.QuotientGroup.out_conj_pow_minimalPeriod_mem (a : α) (q : α ⧸ H) :
+    q.out⁻¹ * a ^ Function.minimalPeriod (a • ·) q * q.out ∈ H := by
+  rw [mul_assoc, ← QuotientGroup.eq, QuotientGroup.out_eq', ← smul_eq_mul, Quotient.mk_smul_out,
     eq_comm, pow_smul_eq_iff_minimalPeriod_dvd]
+
+@[to_additive]
+alias Quotient.mk_smul_out' := Quotient.mk_smul_out
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated Quotient.mk_smul_out (since := "2024-10-19")] Quotient.mk_smul_out'
+attribute [deprecated AddAction.Quotient.mk_vadd_out (since := "2024-10-19")]
+AddAction.Quotient.mk_vadd_out'
+
+-- Porting note: removed simp attribute, simp can prove this
+@[to_additive]
+alias Quotient.coe_smul_out' := Quotient.coe_smul_out
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated Quotient.coe_smul_out (since := "2024-10-19")] Quotient.coe_smul_out'
+attribute [deprecated AddAction.Quotient.coe_vadd_out (since := "2024-10-19")]
+AddAction.Quotient.coe_vadd_out'
+
+
+@[deprecated (since := "2024-10-19")]
+alias _root_.QuotientGroup.out'_conj_pow_minimalPeriod_mem :=
+  QuotientGroup.out_conj_pow_minimalPeriod_mem
 
 end QuotientAction
 
@@ -192,14 +216,14 @@ local notation "Ω" => Quotient <| orbitRel α β
 /-- **Class formula** : given `G` a group acting on `X` and `φ` a function mapping each orbit of `X`
 under this action (that is, each element of the quotient of `X` by the relation `orbitRel G X`) to
 an element in this orbit, this gives a (noncomputable) bijection between `X` and the disjoint union
-of `G/Stab(φ(ω))` over all orbits `ω`. In most cases you'll want `φ` to be `Quotient.out'`, so we
+of `G/Stab(φ(ω))` over all orbits `ω`. In most cases you'll want `φ` to be `Quotient.out`, so we
 provide `MulAction.selfEquivSigmaOrbitsQuotientStabilizer'` as a special case. -/
 @[to_additive
       "**Class formula** : given `G` an additive group acting on `X` and `φ` a function
       mapping each orbit of `X` under this action (that is, each element of the quotient of `X` by
       the relation `orbit_rel G X`) to an element in this orbit, this gives a (noncomputable)
       bijection between `X` and the disjoint union of `G/Stab(φ(ω))` over all orbits `ω`. In most
-      cases you'll want `φ` to be `Quotient.out'`, so we provide
+      cases you'll want `φ` to be `Quotient.out`, so we provide
       `AddAction.selfEquivSigmaOrbitsQuotientStabilizer'` as a special case. "]
 noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
     (hφ : LeftInverse Quotient.mk'' φ) : β ≃ Σω : Ω, α ⧸ stabilizer α (φ ω) :=
@@ -212,11 +236,11 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
 
 /-- **Class formula** for a finite group acting on a finite type. See
 `MulAction.card_eq_sum_card_group_div_card_stabilizer` for a specialized version using
-`Quotient.out'`. -/
+`Quotient.out`. -/
 @[to_additive
       "**Class formula** for a finite group acting on a finite type. See
       `AddAction.card_eq_sum_card_addGroup_div_card_stabilizer` for a specialized version using
-      `Quotient.out'`."]
+      `Quotient.out`."]
 theorem card_eq_sum_card_group_div_card_stabilizer' [Fintype α] [Fintype β] [Fintype Ω]
     [∀ b : β, Fintype <| stabilizer α b] {φ : Ω → β} (hφ : LeftInverse Quotient.mk'' φ) :
     Fintype.card β = ∑ ω : Ω, Fintype.card α / Fintype.card (stabilizer α (φ ω)) := by
@@ -231,18 +255,18 @@ theorem card_eq_sum_card_group_div_card_stabilizer' [Fintype α] [Fintype β] [F
       Fintype.card_congr (selfEquivSigmaOrbitsQuotientStabilizer' α β hφ)]
 
 /-- **Class formula**. This is a special case of
-`MulAction.self_equiv_sigma_orbits_quotient_stabilizer'` with `φ = Quotient.out'`. -/
+`MulAction.self_equiv_sigma_orbits_quotient_stabilizer'` with `φ = Quotient.out`. -/
 @[to_additive
       "**Class formula**. This is a special case of
-      `AddAction.self_equiv_sigma_orbits_quotient_stabilizer'` with `φ = Quotient.out'`. "]
-noncomputable def selfEquivSigmaOrbitsQuotientStabilizer : β ≃ Σω : Ω, α ⧸ stabilizer α ω.out' :=
+      `AddAction.self_equiv_sigma_orbits_quotient_stabilizer'` with `φ = Quotient.out`. "]
+noncomputable def selfEquivSigmaOrbitsQuotientStabilizer : β ≃ Σω : Ω, α ⧸ stabilizer α ω.out :=
   selfEquivSigmaOrbitsQuotientStabilizer' α β Quotient.out_eq'
 
 /-- **Class formula** for a finite group acting on a finite type. -/
 @[to_additive "**Class formula** for a finite group acting on a finite type."]
 theorem card_eq_sum_card_group_div_card_stabilizer [Fintype α] [Fintype β] [Fintype Ω]
     [∀ b : β, Fintype <| stabilizer α b] :
-    Fintype.card β = ∑ ω : Ω, Fintype.card α / Fintype.card (stabilizer α ω.out') :=
+    Fintype.card β = ∑ ω : Ω, Fintype.card α / Fintype.card (stabilizer α ω.out) :=
   card_eq_sum_card_group_div_card_stabilizer' α β Quotient.out_eq'
 
 /-- **Burnside's lemma** : a (noncomputable) bijection between the disjoint union of all
@@ -259,16 +283,16 @@ noncomputable def sigmaFixedByEquivOrbitsProdGroup : (Σa : α, fixedBy β a) �
     _ ≃ { ba : β × α // ba.2 • ba.1 = ba.1 } := (Equiv.prodComm α β).subtypeEquiv fun _ => Iff.rfl
     _ ≃ Σb : β, stabilizer α b :=
       Equiv.subtypeProdEquivSigmaSubtype fun (b : β) a => a ∈ stabilizer α b
-    _ ≃ Σωb : Σω : Ω, orbit α ω.out', stabilizer α (ωb.2 : β) :=
+    _ ≃ Σωb : Σω : Ω, orbit α ω.out, stabilizer α (ωb.2 : β) :=
       (selfEquivSigmaOrbits α β).sigmaCongrLeft'
-    _ ≃ Σω : Ω, Σb : orbit α ω.out', stabilizer α (b : β) :=
-      Equiv.sigmaAssoc fun (ω : Ω) (b : orbit α ω.out') => stabilizer α (b : β)
-    _ ≃ Σω : Ω, Σ _ : orbit α ω.out', stabilizer α ω.out' :=
+    _ ≃ Σω : Ω, Σb : orbit α ω.out, stabilizer α (b : β) :=
+      Equiv.sigmaAssoc fun (ω : Ω) (b : orbit α ω.out) => stabilizer α (b : β)
+    _ ≃ Σω : Ω, Σ _ : orbit α ω.out, stabilizer α ω.out :=
       Equiv.sigmaCongrRight fun _ =>
         Equiv.sigmaCongrRight fun ⟨_, hb⟩ => (stabilizerEquivStabilizerOfOrbitRel hb).toEquiv
-    _ ≃ Σω : Ω, orbit α ω.out' × stabilizer α ω.out' :=
+    _ ≃ Σω : Ω, orbit α ω.out × stabilizer α ω.out :=
       Equiv.sigmaCongrRight fun _ => Equiv.sigmaEquivProd _ _
-    _ ≃ Σ _ : Ω, α := Equiv.sigmaCongrRight fun ω => orbitProdStabilizerEquivGroup α ω.out'
+    _ ≃ Σ _ : Ω, α := Equiv.sigmaCongrRight fun ω => orbitProdStabilizerEquivGroup α ω.out
     _ ≃ Ω × α := Equiv.sigmaEquivProd Ω α
 
 /-- **Burnside's lemma** : given a finite group `G` acting on a set `X`, the average number of
