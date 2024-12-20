@@ -265,10 +265,12 @@ theorem isCoseparating_iff_mono (𝒢 : Set C)
 
     In fact, it follows from the Special Adjoint Functor Theorem that `C` is already cocomplete,
     see `hasColimits_of_hasLimits_of_isCoseparating`. -/
-theorem hasInitial_of_isCoseparating [WellPowered C] [HasLimits C] {𝒢 : Set C} [Small.{v₁} 𝒢]
+theorem hasInitial_of_isCoseparating [LocallySmall.{w} C] [WellPowered.{w} C]
+    [HasLimitsOfSize.{w, w} C] {𝒢 : Set C} [Small.{w} 𝒢]
     (h𝒢 : IsCoseparating 𝒢) : HasInitial C := by
+  have := hasFiniteLimits_of_hasLimitsOfSize C
   haveI : HasProductsOfShape 𝒢 C := hasProductsOfShape_of_small C 𝒢
-  haveI := fun A => hasProductsOfShape_of_small.{v₁} C (ΣG : 𝒢, A ⟶ (G : C))
+  haveI := fun A => hasProductsOfShape_of_small.{w} C (ΣG : 𝒢, A ⟶ (G : C))
   letI := completeLatticeOfCompleteSemilatticeInf (Subobject (piObj (Subtype.val : 𝒢 → C)))
   suffices ∀ A : C, Unique (((⊥ : Subobject (piObj (Subtype.val : 𝒢 → C))) : C) ⟶ A) by
     exact hasInitial_of_unique ((⊥ : Subobject (piObj (Subtype.val : 𝒢 → C))) : C)
@@ -290,9 +292,10 @@ theorem hasInitial_of_isCoseparating [WellPowered C] [HasLimits C] {𝒢 : Set C
 
     In fact, it follows from the Special Adjoint Functor Theorem that `C` is already complete, see
     `hasLimits_of_hasColimits_of_isSeparating`. -/
-theorem hasTerminal_of_isSeparating [WellPowered Cᵒᵖ] [HasColimits C] {𝒢 : Set C} [Small.{v₁} 𝒢]
+theorem hasTerminal_of_isSeparating [LocallySmall.{w} Cᵒᵖ] [WellPowered.{w} Cᵒᵖ]
+    [HasColimitsOfSize.{w, w} C] {𝒢 : Set C} [Small.{w} 𝒢]
     (h𝒢 : IsSeparating 𝒢) : HasTerminal C := by
-  haveI : Small.{v₁} 𝒢.op := small_of_injective (Set.opEquiv_self 𝒢).injective
+  haveI : Small.{w} 𝒢.op := small_of_injective (Set.opEquiv_self 𝒢).injective
   haveI : HasInitial Cᵒᵖ := hasInitial_of_isCoseparating ((isCoseparating_op_iff _).2 h𝒢)
   exact hasTerminal_of_hasInitial_op
 
@@ -325,8 +328,8 @@ theorem eq_of_isDetecting [HasPullbacks C] {𝒢 : Set C} (h𝒢 : IsDetecting �
 end Subobject
 
 /-- A category with pullbacks and a small detecting set is well-powered. -/
-theorem wellPowered_of_isDetecting [HasPullbacks C] {𝒢 : Set C} [Small.{v₁} 𝒢]
-    (h𝒢 : IsDetecting 𝒢) : WellPowered C :=
+theorem wellPowered_of_isDetecting [HasPullbacks C] {𝒢 : Set C} [Small.{w} 𝒢]
+    [LocallySmall.{w} C] (h𝒢 : IsDetecting 𝒢) : WellPowered.{w} C :=
   ⟨fun X =>
     @small_of_injective _ _ _ (fun P : Subobject X => { f : ΣG : 𝒢, G.1 ⟶ X | P.Factors f.2 })
       fun P Q h => Subobject.eq_of_isDetecting h𝒢 _ _
@@ -596,13 +599,14 @@ theorem isCodetector_iff_reflectsIsomorphisms_yoneda_obj (G : C) :
       exact @isIso_of_reflects_iso _ _ _ _ _ _ _ (yoneda.obj G) _ h
     rwa [isIso_iff_bijective, Function.bijective_iff_existsUnique]
 
-theorem wellPowered_of_isDetector [HasPullbacks C] (G : C) (hG : IsDetector G) : WellPowered C :=
+theorem wellPowered_of_isDetector [HasPullbacks C] (G : C) (hG : IsDetector G) :
+    WellPowered.{v₁} C :=
   -- Porting note: added the following `haveI` to prevent universe issues
   haveI := small_subsingleton ({G} : Set C)
   wellPowered_of_isDetecting hG
 
 theorem wellPowered_of_isSeparator [HasPullbacks C] [Balanced C] (G : C) (hG : IsSeparator G) :
-    WellPowered C := wellPowered_of_isDetecting hG.isDetector
+    WellPowered.{v₁} C := wellPowered_of_isDetecting hG.isDetector
 
 section HasGenerator
 
@@ -728,11 +732,11 @@ theorem HasCoseparator.hasCodetector [Balanced C] [HasCoseparator C] : HasCodete
 theorem HasCodetector.hasCoseparator [HasCoequalizers C] [HasCodetector C] : HasCoseparator C :=
   ⟨_, isCoseparator_codetector C⟩
 
-instance HasDetector.wellPowered [HasPullbacks C] [HasDetector C] : WellPowered C :=
+instance HasDetector.wellPowered [HasPullbacks C] [HasDetector C] : WellPowered.{v₁} C :=
   isDetector_detector C |> wellPowered_of_isDetector _
 
 instance HasSeparator.wellPowered [HasPullbacks C] [Balanced C] [HasSeparator C] :
-    WellPowered C := HasSeparator.hasDetector.wellPowered
+    WellPowered.{v₁} C := HasSeparator.hasDetector.wellPowered
 
 end Instances
 

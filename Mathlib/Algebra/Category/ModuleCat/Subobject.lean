@@ -68,7 +68,7 @@ noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
           exact (Submodule.range_subtype _).symm
         · exact (Submodule.range_subtype _).symm }
 
-instance wellPowered_moduleCat : WellPowered (ModuleCat.{v} R) :=
+instance wellPowered_moduleCat : WellPowered.{v} (ModuleCat.{v} R) :=
   ⟨fun M => ⟨⟨_, ⟨(subobjectModule M).toEquiv⟩⟩⟩⟩
 
 attribute [local instance] hasKernels_moduleCat
