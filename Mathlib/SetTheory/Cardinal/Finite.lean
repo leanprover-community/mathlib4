@@ -215,6 +215,11 @@ theorem card_ulift (α : Type*) : Nat.card (ULift α) = Nat.card α :=
 theorem card_plift (α : Type*) : Nat.card (PLift α) = Nat.card α :=
   card_congr Equiv.plift
 
+theorem card_sigma {β : α → Type*} [Fintype α] [∀ a, Finite (β a)] :
+    Nat.card (Σ a, β a) = ∑ a, Nat.card (β a) := by
+  letI _ (a : α) : Fintype (β a) := Fintype.ofFinite (β a)
+  simp_rw [Nat.card_eq_fintype_card, Fintype.card_sigma]
+
 theorem card_pi {β : α → Type*} [Fintype α] : Nat.card (∀ a, β a) = ∏ a, Nat.card (β a) := by
   simp_rw [Nat.card, mk_pi, prod_eq_of_fintype, toNat_lift, map_prod]
 
