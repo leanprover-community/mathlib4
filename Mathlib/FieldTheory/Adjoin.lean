@@ -1634,19 +1634,6 @@ end IntermediateField
 
 end ExtendScalars
 
-section Finite
-
-namespace IntermediateField
-
-lemma finiteDimensional_of_le {E F : Type*} [Field F] [Field E] [Algebra F E]
-    {M N : IntermediateField F E} (le : M ≤ N) [FiniteDimensional F N] : FiniteDimensional F M :=
-  FiniteDimensional.of_injective (AlgHom.toLinearMap (IntermediateField.inclusion le))
-    (IntermediateField.inclusion_injective le)
-
-end IntermediateField
-
-end Finite
-
 namespace IsFractionRing
 
 variable {F A K L : Type*} [Field F] [CommRing A] [Algebra F A]

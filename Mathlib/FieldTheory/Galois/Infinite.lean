@@ -226,13 +226,12 @@ theorem isOpen_iff_finite (L : IntermediateField k K) [IsGalois k K] :
     normalClosure k M K with
     finiteDimensional := normalClosure.is_finiteDimensional k M K
     isGalois := IsGalois.normalClosure k M K }
-  have : L'.1.fixingSubgroup.carrier ⊆ (IntermediateFieldEquivClosedSubgroup.1.1 L).carrier := by
-    have : M ≤ L'.1 := IntermediateField.le_normalClosure M
-    rw [←  fixedField_fixingSubgroup L'.1, IntermediateField.le_iff_le] at this
-    exact this.trans sub
-  apply IntermediateField.finiteDimensional_of_le (N := L'.1)
-  rw [← fixedField_fixingSubgroup L'.1, IntermediateField.le_iff_le]
-  exact this
+  have : L ≤ L'.1 := by
+    apply LE.le.trans _ (IntermediateField.le_normalClosure M)
+    rw [←  fixedField_fixingSubgroup M, IntermediateField.le_iff_le]
+    exact sub
+  let _ : Algebra L L'.1 := RingHom.toAlgebra (IntermediateField.inclusion this)
+  exact FiniteDimensional.left k L L'.1
 
 theorem normal_iff_isGalois (L : IntermediateField k K) [IsGalois k K] :
     Subgroup.Normal (IntermediateFieldEquivClosedSubgroup L).1 ↔
