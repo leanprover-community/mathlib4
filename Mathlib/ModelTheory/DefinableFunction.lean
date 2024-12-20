@@ -5,7 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 
-universe u v w x
+universe u v w x y
 
 namespace FirstOrder
 
@@ -53,7 +53,9 @@ def ofTerm (t : L.Term α) : T.FunctionalFormula α Unit :=
       Sum.elim_inr, forall_const]
     intro M x
     use fun _ => t.realize x
-    simp [funext_iff, eq_comm]⟩
+    simp +contextual [funext_iff, eq_comm]⟩
+
+def comp {γ : β → Type y}
 
 end FunctionalFormula
 
@@ -70,7 +72,11 @@ def of : L →ᴸ FunctionalFormulaLang T where
   onRelation := fun _ R => R
 
 def theory : (FunctionalFormulaLang T).Theory :=
-  T.map of
+  (of T).onTheory T ∪
+    ⋃ (n : ℕ), Set.range (fun f : FunctionalFormula T (Fin n) Unit =>
+      Formula.iAlls (γ := Fin n ⊕ Unit) Sum.inr <|
+        (Term.equal (func f (fun i => var (Sum.inl i))) (var (Sum.inr ()))).iff
+        ((of T).onFormula f.1))
 
 end FunctionalFormulaLang
 
