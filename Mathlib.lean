@@ -2644,6 +2644,7 @@ import Mathlib.Data.MLList.Split
 import Mathlib.Data.Matrix.Auto
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Basis
+import Mathlib.Data.Matrix.Bilinear
 import Mathlib.Data.Matrix.Block
 import Mathlib.Data.Matrix.CharP
 import Mathlib.Data.Matrix.ColumnRowPartitioned
