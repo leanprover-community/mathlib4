@@ -91,7 +91,7 @@ private lemma recursion' (n : ℕ) :
     ring
   have hv₂ (x) : HasDerivAt v₂ (v₂' x) x := (hasDerivAt_mul_const θ).cos
   convert_to (∫ (x : ℝ) in (-1)..1, u₁ x * v₁' x) * θ = _ using 1
-  · simp_rw [u₁, v₁', ← intervalIntegral.integral_mul_const, sq θ, mul_assoc]
+  · simp_rw [u₁, v₁', f, ← intervalIntegral.integral_mul_const, sq θ, mul_assoc]
   rw [integral_mul_deriv_eq_deriv_mul (fun x _ => hu₁ x) (fun x _ => hv₁ x)
     (hu₁d.intervalIntegrable _ _) (hv₁d.intervalIntegrable _ _), hu₁_eval_one, hu₁_eval_neg_one,
     zero_mul, zero_mul, sub_zero, zero_sub, ← integral_neg, ← integral_mul_const]

@@ -4,11 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Mario Carneiro, Yury Kudryashov, Heather Macbeth
 -/
 import Mathlib.Algebra.Module.MinimalAxioms
-import Mathlib.Topology.ContinuousMap.Algebra
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
-import Mathlib.Topology.Bornology.BoundedOperation
 import Mathlib.Tactic.Monotonicity
+import Mathlib.Topology.Algebra.Indicator
+import Mathlib.Topology.Bornology.BoundedOperation
+import Mathlib.Topology.ContinuousMap.Algebra
 
 /-!
 # Bounded continuous functions
@@ -1086,13 +1087,11 @@ instance instModule : Module 𝕜 (α →ᵇ β) :=
 variable (𝕜)
 
 /-- The evaluation at a point, as a continuous linear map from `α →ᵇ β` to `β`. -/
+@[simps]
 def evalCLM (x : α) : (α →ᵇ β) →L[𝕜] β where
   toFun f := f x
   map_add' _ _ := add_apply _ _
   map_smul' _ _ := smul_apply _ _ _
-
-@[simp]
-theorem evalCLM_apply (x : α) (f : α →ᵇ β) : evalCLM 𝕜 x f = f x := rfl
 
 variable (α β)
 
