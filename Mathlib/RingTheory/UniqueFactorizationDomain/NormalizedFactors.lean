@@ -270,6 +270,7 @@ theorem normalizedFactors_prod_of_prime [Subsingleton αˣ] {m : Multiset α}
       prime_factors_unique prime_of_normalized_factor h
         (prod_normalizedFactors (m.prod_ne_zero_of_prime h))
 
+-- TODO rename eq_of_mem_normalizedFactors_of_associated
 theorem mem_normalizedFactors_eq_of_associated {a b c : α} (ha : a ∈ normalizedFactors c)
     (hb : b ∈ normalizedFactors c) (h : Associated a b) : a = b := by
   rw [← normalize_normalized_factor a ha, ← normalize_normalized_factor b hb,
