@@ -632,7 +632,7 @@ noncomputable def OnePointSubmodule_homeo_sphere : Homeomorph
     (OnePoint ((span ℝ {v})ᗮ)) (sphere (0 : EuclideanSpace ℝ (Fin n.succ)) 1) := by
   apply OnePoint.equivOfIsEmbeddingOfRangeEq (f := stereoInvFun hv)
   · constructor
-    · apply (isInducing_iff _).mpr
+    · apply (Topology.isInducing_iff _).mpr
       ext s
       constructor
       · exact fun h => isOpen_mk.mpr <| by
