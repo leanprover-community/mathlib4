@@ -3836,7 +3836,8 @@ import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 import Mathlib.NumberTheory.Cyclotomic.Rat
 import Mathlib.NumberTheory.Cyclotomic.Three
 import Mathlib.NumberTheory.Dioph
-import Mathlib.NumberTheory.DiophantineApproximation
+import Mathlib.NumberTheory.DiophantineApproximation.Basic
+import Mathlib.NumberTheory.DiophantineApproximation.ContinuedFractions
 import Mathlib.NumberTheory.DirichletCharacter.Basic
 import Mathlib.NumberTheory.DirichletCharacter.Bounds
 import Mathlib.NumberTheory.DirichletCharacter.GaussSum
