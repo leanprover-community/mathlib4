@@ -295,7 +295,6 @@ theorem eventually_liminf_le (hf : IsBoundedUnder (· ≥ ·) f u := by isBounde
     ∀ᶠ b in f, f.liminf u ≤ u b :=
   eventually_le_limsup (α := αᵒᵈ) hf
 
-
 end ConditionallyCompleteLinearOrder
 
 section CompleteLinearOrder
