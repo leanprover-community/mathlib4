@@ -90,7 +90,7 @@ theorem submatrix {M : Matrix n n R} (hM : M.PosSemidef) (e : m → n) :
 theorem transpose {M : Matrix n n R} (hM : M.PosSemidef) : Mᵀ.PosSemidef := by
   refine ⟨IsHermitian.transpose hM.1, fun x => ?_⟩
   convert hM.2 (star x) using 1
-  rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
+  rw [mulVec_transpose, dotProduct_mulVec, star_star, dotProduct_comm]
 
 theorem conjTranspose {M : Matrix n n R} (hM : M.PosSemidef) : Mᴴ.PosSemidef := hM.1.symm ▸ hM
 
@@ -243,7 +243,7 @@ lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B 
   have aux : star v ⬝ᵥ (A - B) *ᵥ v = 0 := by
     rw [sub_mulVec, dotProduct_sub, h_van.1, h_van.2, sub_zero]
   rw [hv', dotProduct_smul, RCLike.real_smul_eq_coe_mul, ← mul_zero ↑t] at aux
-  exact hv <| Matrix.dotProduct_star_self_eq_zero.mp <| mul_left_cancel₀
+  exact hv <| dotProduct_star_self_eq_zero.mp <| mul_left_cancel₀
     (RCLike.ofReal_ne_zero.mpr ht) aux
 
 lemma sqrt_sq : (hA.pow 2 : PosSemidef (A ^ 2)).sqrt = A :=
@@ -345,7 +345,7 @@ theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
 theorem transpose {M : Matrix n n R} (hM : M.PosDef) : Mᵀ.PosDef := by
   refine ⟨IsHermitian.transpose hM.1, fun x hx => ?_⟩
   convert hM.2 (star x) (star_ne_zero.2 hx) using 1
-  rw [mulVec_transpose, Matrix.dotProduct_mulVec, star_star, dotProduct_comm]
+  rw [mulVec_transpose, dotProduct_mulVec, star_star, dotProduct_comm]
 
 protected theorem diagonal [StarOrderedRing R] [DecidableEq n] [NoZeroDivisors R]
     {d : n → R} (h : ∀ i, 0 < d i) :
