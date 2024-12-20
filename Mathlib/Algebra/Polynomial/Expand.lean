@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.CharP.Lemmas
-import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.RingDivision
+import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
@@ -176,6 +175,11 @@ theorem expand_aeval {A : Type*} [Semiring A] [Algebra R A] (p : ℕ) (P : R[X])
   refine Polynomial.induction_on P (fun a => by simp) (fun f g hf hg => ?_) fun n a _ => by simp
   rw [map_add, aeval_add, aeval_add, hf, hg]
 
+theorem expand_dvd {a b : R[X]} (p : ℕ) (h : a ∣ b) : expand R p a ∣ expand R p b := by
+  rcases h with ⟨t, eqn⟩
+  use expand R p t
+  rw [eqn, map_mul]
+
 /-- The opposite of `expand`: sends `∑ aₙ xⁿᵖ` to `∑ aₙ xⁿ`. -/
 noncomputable def contract (p : ℕ) (f : R[X]) : R[X] :=
   ∑ n ∈ range (f.natDegree + 1), monomial n (f.coeff (n * p))
@@ -295,5 +299,19 @@ theorem of_irreducible_expand_pow {p : ℕ} (hp : p ≠ 0) {f : R[X]} {n : ℕ} 
       rwa [expand_expand]
 
 end IsDomain
+
+variable (k : Type u) [Field k] [DecidableEq k]
+
+theorem is_coprime_of_expand {a b : k[X]} {n : ℕ} (hn : n ≠ 0) :
+    IsCoprime (expand k n a) (expand k n b) → IsCoprime a b := by
+  simp_rw [← EuclideanDomain.gcd_isUnit_iff]
+  cases' EuclideanDomain.gcd_dvd a b with ha hb
+  have he := EuclideanDomain.dvd_gcd (expand_dvd n ha) (expand_dvd n hb)
+  intro hu
+  have heu := isUnit_of_dvd_unit he hu
+  rw [Polynomial.isUnit_iff] at heu ⊢
+  rcases heu with ⟨r, hur, eq_r⟩
+  rw [eq_comm, expand_eq_C (zero_lt_iff.mpr hn), eq_comm] at eq_r
+  exact ⟨r, hur, eq_r⟩
 
 end Polynomial
