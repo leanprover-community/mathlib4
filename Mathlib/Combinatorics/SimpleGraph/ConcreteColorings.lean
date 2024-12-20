@@ -84,7 +84,7 @@ theorem Walk.three_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u :
   simp_all
 
 /-- Bicoloring of a cycle graph of even size -/
-def cycleGraph.even_bicoloring (n : ℕ) (h : Even n) : Coloring (cycleGraph n) Bool :=
+def cycleGraph.bicoloring_of_even (n : ℕ) (h : Even n) : Coloring (cycleGraph n) Bool :=
   Coloring.mk (fun u ↦ u.val % 2 = 0) <| by
     intro u v hAdj
     match n with
@@ -100,9 +100,9 @@ def cycleGraph.even_bicoloring (n : ℕ) (h : Even n) : Coloring (cycleGraph n) 
         apply Classical.not_iff.mpr
         simp [Fin.not_odd_iff_even_of_even h, Fin.not_even_iff_odd_of_even h]
 
-theorem chromaticNumber_even_cycleGraph (n : ℕ) (h : 2 ≤ n) (hEven : Even n) :
+theorem chromaticNumber_cycleGraph_of_even (n : ℕ) (h : 2 ≤ n) (hEven : Even n) :
     (cycleGraph n).chromaticNumber = 2 := by
-  have hc := (cycleGraph.even_bicoloring n hEven).colorable
+  have hc := (cycleGraph.bicoloring_of_even n hEven).colorable
   apply le_antisymm
   · apply hc.chromaticNumber_le
   · have hAdj : (cycleGraph n).Adj ⟨0, Nat.zero_lt_of_lt h⟩ ⟨1, h⟩ := by
@@ -137,7 +137,7 @@ def cycleGraph.tricoloring (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n)
           simp only [Nat.not_even_one, iff_false, not_iff_self, iff_not_self]
           exact id
 
-theorem chromaticNumber_odd_cycleGraph (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n) :
+theorem chromaticNumber_cycleGraph_of_odd (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n) :
     (cycleGraph n).chromaticNumber = 3 := by
   have hc := (cycleGraph.tricoloring n h).colorable
   apply le_antisymm
