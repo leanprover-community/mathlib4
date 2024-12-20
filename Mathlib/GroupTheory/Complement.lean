@@ -613,6 +613,13 @@ theorem IsComplement'.disjoint (h : IsComplement' H K) : Disjoint H K :=
 theorem IsComplement'.index_eq_card (h : IsComplement' H K) : K.index = Nat.card H :=
   (card_left_transversal h).symm
 
+/-- If `H` and `K` are complementary with `K` normal, then `G ⧸ K` is isomorphic to `H`. -/
+noncomputable def _root_.IsComplement'.QuotientMulEquiv [K.Normal] (h : H.IsComplement' K) :
+    G ⧸ K ≃* H :=
+  MulEquiv.symm
+  { (Subgroup.MemLeftTransversals.toEquiv h).symm with
+    map_mul' := fun _ _ ↦ rfl }
+
 theorem IsComplement.card_mul (h : IsComplement S T) :
     Nat.card S * Nat.card T = Nat.card G :=
   (Nat.card_prod _ _).symm.trans (Nat.card_eq_of_bijective _ h)
