@@ -697,9 +697,7 @@ import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Lemmas
 import Mathlib.Algebra.Order.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Hom.Monoid
-import Mathlib.Algebra.Order.Hom.Normed
 import Mathlib.Algebra.Order.Hom.Ring
-import Mathlib.Algebra.Order.Hom.Ultra
 import Mathlib.Algebra.Order.Interval.Basic
 import Mathlib.Algebra.Order.Interval.Finset
 import Mathlib.Algebra.Order.Interval.Multiset
@@ -1446,6 +1444,8 @@ import Mathlib.Analysis.Normed.Operator.Compact
 import Mathlib.Analysis.Normed.Operator.ContinuousLinearMap
 import Mathlib.Analysis.Normed.Operator.LinearIsometry
 import Mathlib.Analysis.Normed.Order.Basic
+import Mathlib.Analysis.Normed.Order.Hom.Basic
+import Mathlib.Analysis.Normed.Order.Hom.Ultra
 import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.Normed.Order.UpperLower
 import Mathlib.Analysis.Normed.Ring.IsPowMulFaithful
@@ -1597,6 +1597,11 @@ import Mathlib.CategoryTheory.Abelian.RightDerived
 import Mathlib.CategoryTheory.Abelian.Subobject
 import Mathlib.CategoryTheory.Abelian.Transfer
 import Mathlib.CategoryTheory.Action
+import Mathlib.CategoryTheory.Action.Basic
+import Mathlib.CategoryTheory.Action.Concrete
+import Mathlib.CategoryTheory.Action.Continuous
+import Mathlib.CategoryTheory.Action.Limits
+import Mathlib.CategoryTheory.Action.Monoidal
 import Mathlib.CategoryTheory.Adhesive
 import Mathlib.CategoryTheory.Adjunction.AdjointFunctorTheorems
 import Mathlib.CategoryTheory.Adjunction.Basic
@@ -4241,11 +4246,6 @@ import Mathlib.Probability.Process.Stopping
 import Mathlib.Probability.StrongLaw
 import Mathlib.Probability.UniformOn
 import Mathlib.Probability.Variance
-import Mathlib.RepresentationTheory.Action.Basic
-import Mathlib.RepresentationTheory.Action.Concrete
-import Mathlib.RepresentationTheory.Action.Continuous
-import Mathlib.RepresentationTheory.Action.Limits
-import Mathlib.RepresentationTheory.Action.Monoidal
 import Mathlib.RepresentationTheory.Basic
 import Mathlib.RepresentationTheory.Character
 import Mathlib.RepresentationTheory.FDRep
