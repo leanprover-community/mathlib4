@@ -214,9 +214,8 @@ theorem Polynomial.flt_catalan_aux
     · intros; solve_by_elim
     · intros a b c eq_d heq ha hb hc hab
       -- have derivatives of `a, b, c` zero
-      have hderiv := flt_catalan_deriv
+      obtain ⟨ad, bd, cd⟩ := flt_catalan_deriv
         hp hq hr hineq chp chq chr ha hb hc hab hu hv hw heq
-      rcases hderiv with ⟨ad, bd, cd⟩
       -- find contracts `ca, cb, cc` so that `a(k) = ca(k^ch)`
       rcases find_contract ha ad chn0 with ⟨ca, ca_nz, eq_a, eq_deg_a⟩
       rcases find_contract hb bd chn0 with ⟨cb, cb_nz, eq_b, eq_deg_b⟩
