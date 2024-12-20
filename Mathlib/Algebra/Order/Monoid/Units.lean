@@ -27,6 +27,7 @@ theorem val_le_val [Monoid α] [Preorder α] {a b : αˣ} : (a : α) ≤ b ↔ a
 theorem val_lt_val [Monoid α] [Preorder α] {a b : αˣ} : (a : α) < b ↔ a < b :=
   Iff.rfl
 
+-- TODO rename
 @[to_additive]
 instance instPartialOrderUnits [Monoid α] [PartialOrder α] : PartialOrder αˣ :=
   PartialOrder.lift val val_injective

@@ -16,6 +16,7 @@ namespace ZMod
 
 variable (n : ℕ)
 
+-- TODO rename capitalization
 /-- The automorphism group of `ZMod n` is isomorphic to the group of units of `ZMod n`. -/
 @[simps]
 def AddAutEquivUnits : AddAut (ZMod n) ≃* (ZMod n)ˣ :=
