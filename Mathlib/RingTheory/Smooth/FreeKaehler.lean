@@ -489,7 +489,7 @@ lemma _root_.IsLocalization.Away.quotient_of {R : Type*}
     simp [h]
 
 lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
-    (P : Generators.{t₁} R S) {σ : Type t₂} (b : Basis σ S P.toExtension.Cotangent)
+    (P : Generators.{t₁} R S) [Finite P.vars] {σ : Type t₂} (b : Basis σ S P.toExtension.Cotangent)
     (u : σ → P.vars) (hu : Function.Injective u) :
     ∃ (P' : Presentation.{t₂, t₁} R S)
       (e₁ : Unit ⊕ P.vars ≃ P'.vars)
@@ -498,17 +498,31 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
       P'.val ∘ e₁ ∘ Sum.inr = P.val ∧
       ∀ r, b r = Extension.Cotangent.mk ⟨P'.relation r, P'.relation_mem_ker r⟩ := by
   choose f hf using Extension.Cotangent.mk_surjective (P := P.toExtension)
+  have hf' : Extension.Cotangent.mk (P := P.toExtension) ∘ f ∘ b = b := by
+    ext i : 1
+    simp only [Function.comp_apply, hf (b i)]
   let v (i : σ) : P.ker := f (b i)
   have hv (i : σ) : Extension.Cotangent.mk (v i) = b i := hf (b i)
   let J : Ideal (MvPolynomial P.vars R) := Ideal.span (Set.range <| Subtype.val ∘ v)
-  have hJle : J ≤ P.ker := by
-    simp only [J]
-    rw [Ideal.span_le]
-    rintro - ⟨i, rfl⟩
-    simp
-  have hJ_fg : J.FG := by
-    sorry
-  have hJ : P.ker ≤ J ⊔ P.ker • J := sorry
+  have hJle : P.ker ≤ P.ker := le_rfl
+  have hJ_fg : P.ker.FG := by
+    apply FinitePresentation.ker_fG_of_surjective
+    apply P.algebraMap_surjective
+  have hJ : P.ker ≤ J ⊔ P.ker • P.ker := by
+    intro x hx
+    let y := Extension.Cotangent.mk (P := P.toExtension) ⟨x, hx⟩
+    have : y ∈ Submodule.span S (Set.range b) := by
+      rw [b.span_eq]
+      trivial
+    have := b.linearCombination_repr y
+    rw [← hf'] at this
+    have : ∃ a ∈ P.ker ^ 2, x - a ∈ J := sorry
+    obtain ⟨a, ha₁, ha₂⟩ := this
+    have : x = x - a + a := by simp
+    rw [this]
+    apply Submodule.add_mem_sup
+    exact ha₂
+    simpa [← pow_two]
   let T := MvPolynomial P.vars R ⧸ J
   have hJ_eq_ker : J = RingHom.ker (algebraMap (MvPolynomial P.vars R) T) := by simp [T]
   let Q₁ : Presentation.{t₂, t₁} R T := Presentation.naive (Subtype.val ∘ v)
