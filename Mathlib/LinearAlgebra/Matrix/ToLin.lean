@@ -562,6 +562,11 @@ theorem LinearMap.toMatrix_one : LinearMap.toMatrix v₁ v₁ 1 = 1 :=
   LinearMap.toMatrix_id v₁
 
 @[simp]
+lemma LinearMap.toMatrix_singleton {ι : Type*} [Unique ι] (f) (i j : ι) :
+    LinearMap.toMatrix (Basis.singleton ι R) (Basis.singleton ι R) f i j = f 1 := by
+  simp [toMatrix, Subsingleton.elim j default]
+
+@[simp]
 theorem Matrix.toLin_one : Matrix.toLin v₁ v₁ 1 = LinearMap.id := by
   rw [← LinearMap.toMatrix_id v₁, Matrix.toLin_toMatrix]
 
