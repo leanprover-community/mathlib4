@@ -601,6 +601,7 @@ theorem norm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖ 
 
 theorem nnnorm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖₊ ≤ 1 :=
   norm_Integral_le_one
+-- TODO rename capitalisation ^
 
 theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
   calc

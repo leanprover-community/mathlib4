@@ -61,6 +61,7 @@ theorem single_apply [Decidable (a = a')] : single a b a' = if a = a' then b els
 theorem single_apply_left {f : α → β} (hf : Function.Injective f) (x z : α) (y : M) :
     single (f x) y (f z) = single x y z := by classical simp only [single_apply, hf.eq_iff]
 
+-- TODO rename setIndicator
 theorem single_eq_set_indicator : ⇑(single a b) = Set.indicator {a} fun _ => b := by
   classical
   ext
@@ -82,6 +83,7 @@ theorem single_eq_update [DecidableEq α] (a : α) (b : M) :
     ⇑(single a b) = Function.update (0 : _) a b := by
   classical rw [single_eq_set_indicator, ← Set.piecewise_eq_indicator, Set.piecewise_singleton]
 
+-- TODO rename piSingle
 theorem single_eq_pi_single [DecidableEq α] (a : α) (b : M) : ⇑(single a b) = Pi.single a b :=
   single_eq_update a b
 
@@ -290,6 +292,7 @@ theorem support_update_zero [DecidableEq α] : support (f.update a 0) = f.suppor
 
 variable {b}
 
+-- TODO rename support_update_of_ne_zero
 theorem support_update_ne_zero [DecidableEq α] (h : b ≠ 0) :
     support (f.update a b) = insert a f.support := by
   grind

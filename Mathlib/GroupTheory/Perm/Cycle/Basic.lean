@@ -309,6 +309,7 @@ protected theorem IsSwap.isCycle : IsSwap f → IsCycle f := by
   rintro ⟨x, y, hxy, rfl⟩
   exact isCycle_swap hxy
 
+-- TODO rename
 theorem swap_isSwap_iff {a b : α} :
     (swap a b).IsSwap ↔ a ≠ b := by
   constructor

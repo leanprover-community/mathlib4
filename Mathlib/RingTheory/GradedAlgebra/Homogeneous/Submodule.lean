@@ -66,7 +66,7 @@ structure HomogeneousSubmodule (𝒜 : ιA → σA) (ℳ : ιM → σM)
     [DecidableEq ιM] [SetLike σM M] [AddSubmonoidClass σM M] [Decomposition ℳ]
     [VAdd ιA ιM] [GradedSMul 𝒜 ℳ]
     extends Submodule A M where
-  is_homogeneous' : toSubmodule.IsHomogeneous ℳ
+  is_homogeneous' : toSubmodule.IsHomogeneous ℳ -- TODO rename
 
 variable (𝒜 : ιA → σA) (ℳ : ιM → σM)
 variable [DecidableEq ιA] [AddMonoid ιA] [SetLike σA A] [AddSubmonoidClass σA A] [GradedRing 𝒜]

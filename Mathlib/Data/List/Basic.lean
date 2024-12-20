@@ -1224,6 +1224,7 @@ end lookup
 
 section range'
 
+-- TODO rename range'_zero
 @[simp]
 lemma range'_0 (a b : ℕ) : range' a b 0 = replicate b a := by
   induction b with

@@ -756,6 +756,7 @@ theorem primeIdealOf_eq_map_closedPoint (x : U) :
     hU.primeIdealOf x = Spec.map (X.presheaf.germ _ x x.2) (closedPoint _) :=
   hU.isoSpec_hom_apply _
 
+-- TODO rename isMaximal_primeIdealOf_of_isClosed
 /-- If a point `x : U` is a closed point, then its corresponding prime ideal is maximal. -/
 theorem primeIdealOf_isMaximal_of_isClosed (x : U) (hx : IsClosed {(x : X)}) :
     (hU.primeIdealOf x).asIdeal.IsMaximal := by

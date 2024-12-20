@@ -43,6 +43,7 @@ variable {R : Type*}
 
 namespace ArithmeticFunction
 
+-- TODO rename carmichael
 /-- `λ` is the Carmichael function, also known as the reduced totient function,
 defined as the exponent of the unit group of `ZMod n`. -/
 def Carmichael : ArithmeticFunction ℕ where
@@ -118,6 +119,7 @@ theorem carmichael_factorization (n : ℕ) [NeZero n] :
   nth_rw 1 [← n.factorization_prod_pow_eq_self <| NeZero.ne _]
   exact carmichael_finset_prod pairwise_coprime_pow_primeFactors_factorization.set_of_subtype
 
+-- TODO rename carmichael_two_pow_eq_totient_of_le_two
 theorem carmichael_two_pow_of_le_two_eq_totient {n : ℕ} (hn : n ≤ 2) :
     Carmichael (2 ^ n) = (2 ^ n).totient := by
   rw [carmichael_eq_exponent', ← ZMod.card_units_eq_totient, Fintype.card_eq_nat_card]
@@ -148,11 +150,13 @@ theorem carmichael_two_pow_of_ne_two {n : ℕ} (hn : n ≠ 2) :
       show (5 : ZMod (2 ^ n)) = five by rfl, orderOf_units]
     exact order_dvd_exponent five
 
+-- TODO rename two_mul_carmichael_two_pow_eq_totient_of_three_le
 theorem two_mul_carmichael_two_pow_of_three_le_eq_totient {n : ℕ} (hn : 3 ≤ n) :
     2 * Carmichael (2 ^ n) = (2 ^ n).totient := by
   rw [carmichael_two_pow_of_ne_two, ← pow_succ', totient_prime_pow prime_two]
   all_goals lia
 
+-- TODO rename carmichael_pow_of_prime_of_ne_two
 @[simp]
 theorem carmichael_pow_of_prime_ne_two {p : ℕ} (n : ℕ) (hp : p.Prime) (hp₂ : p ≠ 2) :
     Carmichael (p ^ n) = (p ^ n).totient := by

@@ -88,6 +88,7 @@ lemma IsTotallyUnimodular.transpose {A : Matrix m n R} (hA : A.IsTotallyUnimodul
   intro _ _ _
   apply hA
 
+-- TODO rename isTotallyUnimodular_transpose_iff
 lemma transpose_isTotallyUnimodular_iff (A : Matrix m n R) :
     Aᵀ.IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   constructor <;> apply IsTotallyUnimodular.transpose
@@ -97,11 +98,13 @@ lemma IsTotallyUnimodular.reindex {A : Matrix m n R} (em : m ≃ m') (en : n ≃
     (A.reindex em en).IsTotallyUnimodular :=
   hA.submatrix _ _
 
+-- TODO rename isTotallyUnimodular_reindex
 lemma reindex_isTotallyUnimodular (A : Matrix m n R) (em : m ≃ m') (en : n ≃ n') :
     (A.reindex em en).IsTotallyUnimodular ↔ A.IsTotallyUnimodular :=
   ⟨fun hA => by simpa [Equiv.symm_apply_eq] using hA.reindex em.symm en.symm,
    fun hA => hA.reindex _ _⟩
 
+-- TODO rename isTotallyUnimodular_of_isEmpty_rows
 /-- If `A` has no rows, then it is totally unimodular. -/
 @[simp]
 lemma emptyRows_isTotallyUnimodular [IsEmpty m] (A : Matrix m n R) :
@@ -111,6 +114,7 @@ lemma emptyRows_isTotallyUnimodular [IsEmpty m] (A : Matrix m n R) :
   | zero => use 1; rw [submatrix_empty, det_fin_zero, SignType.coe_one]
   | succ => exact (IsEmpty.false (f 0)).elim
 
+-- TODO rename isTotallyUnimodular_of_isEmpty_cols
 /-- If `A` has no columns, then it is totally unimodular. -/
 @[simp]
 lemma emptyCols_isTotallyUnimodular [IsEmpty n] (A : Matrix m n R) :
@@ -157,6 +161,7 @@ lemma IsTotallyUnimodular.fromRows_unitlike [DecidableEq n] {A : Matrix m n R} {
     · rw [isTotallyUnimodular_iff] at hA
       apply hA
 
+-- TODO rename
 /-- If `A` is totally unimodular and each row of `B` is all zeros except for at most a single `1`,
 then `fromRows A B` is totally unimodular. -/
 lemma fromRows_isTotallyUnimodular_iff_rows [DecidableEq n] {A : Matrix m n R} {B : Matrix m' n R}
@@ -164,11 +169,13 @@ lemma fromRows_isTotallyUnimodular_iff_rows [DecidableEq n] {A : Matrix m n R} {
     (fromRows A B).IsTotallyUnimodular ↔ A.IsTotallyUnimodular :=
   ⟨.submatrix Sum.inl id, fun hA => hA.fromRows_unitlike hB⟩
 
+-- TODO rename
 lemma fromRows_one_isTotallyUnimodular_iff [DecidableEq n] (A : Matrix m n R) :
     (fromRows A (1 : Matrix n n R)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular :=
   fromRows_isTotallyUnimodular_iff_rows <| fun h i ↦
     ⟨i, 1, funext fun j ↦ by simp [one_apply, Pi.single_apply, eq_comm]⟩
 
+-- TODO rename
 lemma one_fromRows_isTotallyUnimodular_iff [DecidableEq n] (A : Matrix m n R) :
     (fromRows (1 : Matrix n n R) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   have hA :
@@ -177,11 +184,13 @@ lemma one_fromRows_isTotallyUnimodular_iff [DecidableEq n] (A : Matrix m n R) :
     aesop
   rw [hA, reindex_isTotallyUnimodular, fromRows_one_isTotallyUnimodular_iff]
 
+-- TODO rename
 lemma fromCols_one_isTotallyUnimodular_iff [DecidableEq m] (A : Matrix m n R) :
     (fromCols A (1 : Matrix m m R)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   rw [← transpose_isTotallyUnimodular_iff, transpose_fromCols, transpose_one,
     fromRows_one_isTotallyUnimodular_iff, transpose_isTotallyUnimodular_iff]
 
+-- TODO rename
 lemma one_fromCols_isTotallyUnimodular_iff [DecidableEq m] (A : Matrix m n R) :
     (fromCols (1 : Matrix m m R) A).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   rw [← transpose_isTotallyUnimodular_iff, transpose_fromCols, transpose_one,
@@ -192,6 +201,7 @@ alias ⟨_, IsTotallyUnimodular.one_fromRows⟩ := one_fromRows_isTotallyUnimodu
 alias ⟨_, IsTotallyUnimodular.fromCols_one⟩ := fromCols_one_isTotallyUnimodular_iff
 alias ⟨_, IsTotallyUnimodular.one_fromCols⟩ := one_fromCols_isTotallyUnimodular_iff
 
+-- TODO rename
 lemma fromRows_replicateRow0_isTotallyUnimodular_iff (A : Matrix m n R) :
     (fromRows A (replicateRow m' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   classical
@@ -201,6 +211,7 @@ lemma fromRows_replicateRow0_isTotallyUnimodular_iff (A : Matrix m n R) :
   ext x
   simp [Pi.single_apply]
 
+-- TODO rename
 lemma fromCols_replicateCol0_isTotallyUnimodular_iff (A : Matrix m n R) :
     (fromCols A (replicateCol n' 0)).IsTotallyUnimodular ↔ A.IsTotallyUnimodular := by
   rw [← transpose_isTotallyUnimodular_iff, transpose_fromCols, transpose_replicateCol,

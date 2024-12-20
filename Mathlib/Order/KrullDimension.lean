@@ -1023,6 +1023,7 @@ lemma krullDim_int : krullDim ℤ = ⊤ := krullDim_of_noMaxOrder ..
 @[simp] lemma coheight_coe_withBot (x : α) : coheight (x : WithBot α) = coheight x :=
   height_coe_withTop (α := αᵒᵈ) x
 
+-- TODO rename
 @[simp] lemma krullDim_WithTop [Nonempty α] : krullDim (WithTop α) = krullDim α + 1 := by
   rw [← height_top_eq_krullDim, krullDim_eq_iSup_height_of_nonempty, height_eq_iSup_lt_height]
   norm_cast

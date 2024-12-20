@@ -133,7 +133,9 @@ theorem isGLB_congr (h : lowerBounds s = lowerBounds t) : IsGLB s a ↔ IsGLB t 
 @[simp] lemma IsCoinitialFor.of_subset (hst : s ⊆ t) : IsCoinitialFor s t :=
   fun a ha ↦ ⟨a, hst ha, le_rfl⟩
 
+-- TODO rename?
 alias HasSubset.Subset.iscofinalfor := IsCofinalFor.of_subset
+-- TODO rename?
 alias HasSubset.Subset.iscoinitialfor := IsCoinitialFor.of_subset
 
 @[refl] protected lemma IsCofinalFor.rfl : IsCofinalFor s s := .of_subset .rfl
@@ -176,10 +178,12 @@ theorem upperBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : upperBounds t 
 theorem lowerBounds_mono_set ⦃s t : Set α⦄ (hst : s ⊆ t) : lowerBounds t ⊆ lowerBounds s :=
   fun _ hb _ h => hb <| hst h
 
+-- TODO rename?
 @[gcongr]
 lemma upperBounds_mono_of_isCofinalFor (hst : IsCofinalFor s t) : upperBounds t ⊆ upperBounds s :=
   fun _a ha _b hb ↦ let ⟨_c, hc, hbc⟩ := hst hb; hbc.trans (ha hc)
 
+-- TODO rename?
 @[gcongr]
 lemma lowerBounds_mono_of_isCoinitialFor (hst : IsCoinitialFor s t) :
     lowerBounds t ⊆ lowerBounds s :=

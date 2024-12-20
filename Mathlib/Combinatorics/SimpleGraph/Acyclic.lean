@@ -59,6 +59,7 @@ structure IsTree : Prop where
   /-- Graph is connected. -/
   protected isConnected : G.Connected
   /-- Graph is acyclic. -/
+  -- TODO rename isAcyclic
   protected IsAcyclic : G.IsAcyclic
 
 variable {G G'}

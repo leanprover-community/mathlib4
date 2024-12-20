@@ -832,6 +832,7 @@ variable (C) [HasImages C]
 
 /-- If a category `HasImageMaps`, then all commutative squares induce morphisms on images. -/
 class HasImageMaps : Prop where
+  -- TODO rename hasImageMap
   has_image_map : ∀ {f g : Arrow C} (st : f ⟶ g), HasImageMap st
 
 attribute [instance 100] HasImageMaps.has_image_map

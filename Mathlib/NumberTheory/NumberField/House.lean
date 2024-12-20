@@ -61,6 +61,7 @@ theorem house_add_le (α β : K) : house (α + β) ≤ house α + house β := by
 theorem house_pow_le (α : K) (i : ℕ) : house (α ^ i) ≤ house α ^ i := by
   simpa only [house, map_pow] using norm_pow_le ((canonicalEmbedding K) α) i
 
+-- TODO rename house_natCast_mul
 theorem house_nat_mul (α : K) (c : ℕ) : house (c * α) = c * house α := by
   rw [house_eq_sup', house_eq_sup', Finset.sup'_eq_sup, Finset.sup'_eq_sup]
   norm_cast

@@ -229,6 +229,7 @@ Evaluation of the logarithmic counting function at zero yields zero.
     logCounting f a 0 = 0 := by
   by_cases h : a = ⊤ <;> simp [logCounting, h]
 
+-- TODO rename logCounting_zero_sub_logCounting_top
 /--
 The logarithmic counting function associated with the divisor of `f` is the difference between
 `logCounting f 0` and `logCounting f ⊤`.

@@ -26,16 +26,19 @@ bound.
 
 open MeasureTheory intervalIntegral Interval Finset HasDerivWithinAt Set
 
+-- TODO rename
 /-- Integration of `f` from `a` to `b` using the trapezoidal rule with `N+1` total evaluations of
 `f`.  (Note the off-by-one problem here: `N` counts the number of trapezoids, not the number of
 evaluations.) -/
 noncomputable def trapezoidal_integral (f : ℝ → ℝ) (N : ℕ) (a b : ℝ) : ℝ :=
   ((b - a) / N) * ((f a + f b) / 2 + ∑ k ∈ range (N - 1), f (a + (k + 1) * (b - a) / N))
 
+-- TODO rename
 /-- The absolute error of trapezoidal integration. -/
 noncomputable def trapezoidal_error (f : ℝ → ℝ) (N : ℕ) (a b : ℝ) : ℝ :=
   (trapezoidal_integral f N a b) - (∫ x in a..b, f x)
 
+-- TODO rename
 /-- Just like exact integration, the trapezoidal approximation retains the same magnitude but
 changes sign when the endpoints are swapped. -/
 theorem trapezoidal_integral_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N) (a b : ℝ) :
@@ -50,28 +53,33 @@ theorem trapezoidal_integral_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N
   apply congr_arg
   field
 
+-- TODO rename
 /-- The absolute error of the trapezoidal rule does not change when the endpoints are swapped. -/
 theorem trapezoidal_error_symm (f : ℝ → ℝ) {N : ℕ} (N_nonzero : 0 < N) (a b : ℝ) :
     trapezoidal_error f N a b = -trapezoidal_error f N b a := by
   unfold trapezoidal_error
   rw [trapezoidal_integral_symm f N_nonzero a b, integral_symm, neg_sub_neg, neg_sub]
 
+-- TODO rename
 /-- Just like exact integration, the trapezoidal integration from `a` to `a` is zero. -/
 @[simp]
 theorem trapezoidal_integral_eq (f : ℝ → ℝ) (N : ℕ) (a : ℝ) : trapezoidal_integral f N a a = 0 := by
   simp [trapezoidal_integral]
 
+-- TODO rename
 /-- The error of the trapezoidal integration from `a` to `a` is zero. -/
 @[simp]
 theorem trapezoidal_error_eq (f : ℝ → ℝ) (N : ℕ) (a : ℝ) : trapezoidal_error f N a a = 0 := by
   simp [trapezoidal_error]
 
+-- TODO rename
 /-- An exact formula for integration with a single trapezoid (the "midpoint rule"). -/
 @[simp]
 theorem trapezoidal_integral_one (f : ℝ → ℝ) (a b : ℝ) :
     trapezoidal_integral f 1 a b = (b - a) / 2 * (f a + f b) := by
   simp [trapezoidal_integral, mul_comm_div]
 
+-- TODO rename
 /-- A basic trapezoidal equivalent to `IntervalIntegral.sum_integral_adjacent_intervals`. More
 general theorems are certainly possible, but many of them can be derived from repeated applications
 of this one. -/
@@ -85,6 +93,7 @@ theorem sum_trapezoidal_integral_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} 
   simp_rw [Nat.cast_sub N_nonzero, Nat.cast_add, Nat.cast_one, ← two_mul, ← mul_sum]
   ring_nf
 
+-- TODO rename
 /-- A simplified version of the previous theorem, for use in proofs by induction and the like. -/
 theorem trapezoidal_integral_ext {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N_nonzero : 0 < N) :
     trapezoidal_integral f N a (a + N * h) + trapezoidal_integral f 1 (a + N * h) (a + (N + 1) * h)
@@ -93,6 +102,7 @@ theorem trapezoidal_integral_ext {f : ℝ → ℝ} {N : ℕ} {a h : ℝ} (N_nonz
       ← sum_trapezoidal_integral_adjacent_intervals (Nat.add_pos_left N_nonzero 1),
       sum_range_succ, Nat.cast_add_one]
 
+-- TODO rename
 /-- Since we have `sum_[]_adjacent_intervals` theorems for both exact and trapezoidal integration,
 it's natural to combine them into a similar formula for the error.  This theorem is in particular
 used in the proof of the general error bound. -/
@@ -113,6 +123,7 @@ theorem sum_trapezoidal_error_adjacent_intervals {f : ℝ → ℝ} {N : ℕ} {a 
         ⟨mul_le_mul_of_nonpos_right hk h_neg, mul_nonpos_of_nonneg_of_nonpos k.cast_nonneg h_neg⟩
     · exact Set.mem_uIcc_of_le (le_add_of_nonneg_right (by positivity)) (by grw [hk])
 
+-- TODO rename
 /-- The most basic case possible: two ordered points, with N = 1. This lemma is used in the proof of
 the general error bound later on. -/
 private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ} (a_lt_b : a < b)
@@ -176,6 +187,7 @@ private lemma trapezoidal_error_le_of_lt' {f : ℝ → ℝ} {ζ : ℝ} {a b : �
     (ContinuousOn.intervalIntegrable_of_Icc a_lt_b.le fun x hx ↦ (h_ddg x hx).continuousWithinAt)
   exact (bound_g b ⟨a_lt_b.le, le_rfl⟩).trans_eq (by ring_nf)
 
+-- TODO rename
 /-- The hard part of the trapezoidal rule error bound: proving it in the case of a non-empty closed
 interval with ordered endpoints. This lemma is used in the proof of the general error bound later
 on. -/
@@ -230,6 +242,7 @@ private lemma trapezoidal_error_le_of_lt {f : ℝ → ℝ} {ζ : ℝ} {a b : ℝ
       (h6.mono (Set.uIoc_subset_uIcc.trans_eq (Set.uIcc_of_lt h4)))
   · rw [h0, mul_div_assoc, mul_comm]
 
+-- TODO rename
 /-- The standard error bound for trapezoidal integration on the general interval `[[a, b]]`. -/
 theorem trapezoidal_error_le {f : ℝ → ℝ} {a b : ℝ}
     (h_df : DifferentiableOn ℝ f [[a, b]])
@@ -250,6 +263,7 @@ theorem trapezoidal_error_le {f : ℝ → ℝ} {a b : ℝ}
     rw [abs_of_neg (sub_neg.mpr h_gt), neg_sub, trapezoidal_error_symm f N_nonzero a b, abs_neg]
     exact trapezoidal_error_le_of_lt h_gt h_df h_ddf h_ddf_integrable.symm fpp_bound N_nonzero
 
+-- TODO rename
 /-- The error bound for trapezoidal integration in the slightly weaker, but very common, case where
 `f` is `C^2`. -/
 theorem trapezoidal_error_le_of_c2 {f : ℝ → ℝ} {a b : ℝ} (h_f_c2 : ContDiffOn ℝ 2 f [[a, b]])

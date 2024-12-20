@@ -250,6 +250,7 @@ theorem addContent_iUnion_eq_tsum_of_disjoint_of_addContent_iUnion_le {m : AddCo
   · simp only [Finset.mem_image, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
     exact fun i _ ↦ subset_iUnion _ i
 
+-- TODO rename
 /-- If an `AddContent` is σ-subadditive on a semi-ring of sets, then it is σ-additive. -/
 theorem addContent_iUnion_eq_tsum_of_disjoint_of_IsSigmaSubadditive {m : AddContent C}
     (hC : IsSetSemiring C) (m_subadd : m.IsSigmaSubadditive)
