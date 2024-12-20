@@ -4134,6 +4134,7 @@ import Mathlib.Order.ModularLattice
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.Monotone.Extension
 import Mathlib.Order.Monotone.Monovary
+import Mathlib.Order.Monotone.MonovaryOrder
 import Mathlib.Order.Monotone.Odd
 import Mathlib.Order.Monotone.Union
 import Mathlib.Order.Nat
