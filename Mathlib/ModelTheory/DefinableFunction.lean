@@ -192,6 +192,8 @@ noncomputable instance : (FunctionalFormulaLang.theory T).Model M where
       · rintro h ⟨⟩; exact h
       · intro h; exact h _
 
+def toFormula : ∀ {n : ℕ} (φ : (FunctionalFormulaLang T).BoundedFormula α n),
+    { φ' : L.BoundedFormula α n // ∀  }
 
 end FunctionalFormulaLang
 
