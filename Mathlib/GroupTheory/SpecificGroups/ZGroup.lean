@@ -17,7 +17,11 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
 
 ## Main definitions
 
-* `IsZGroup G`: A predicate stating that all Sylow subgroups of `G` are cyclic.
+* `IsZGroup G`: a predicate stating that all Sylow subgroups of `G` are cyclic.
+
+## Main results
+
+* `IsZGroup.isCyclic_abelianization`: a finite Z-group has cyclic abelianization.
 
 ## Main results
 
@@ -192,6 +196,7 @@ instance [Finite G] [IsZGroup G] [hG : Group.IsNilpotent G] : IsCyclic G := by
     ⟨fun g h ↦ by rw [← ϕ.symm.injective.eq_iff, map_mul, mul_comm, ← map_mul]⟩
   exact IsCyclic.of_exponent_eq_card (exponent_eq_card G)
 
+/-- A finite Z-group has cyclic abelianization. -/
 instance isCyclic_abelianization [Finite G] [IsZGroup G] : IsCyclic (Abelianization G) :=
   let _ : IsZGroup (Abelianization G) := inferInstanceAs (IsZGroup (G ⧸ commutator G))
   inferInstance
