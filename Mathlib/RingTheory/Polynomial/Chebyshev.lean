@@ -3,6 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Julian Kuelshammer, Heather Macbeth, Mitchell Lee
 -/
+import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Algebra.Ring.NegOnePow
 import Mathlib.Tactic.LinearCombination
@@ -575,6 +576,42 @@ theorem map_S (f : R →+* R') (n : ℤ) : map f (S R n) = S R' n := by
     simp_rw [S_add_two, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2]
   | neg_add_one n ih1 ih2 =>
     simp_rw [S_sub_one, Polynomial.map_sub, Polynomial.map_mul, map_X, ih1, ih2]
+
+@[simp]
+theorem aeval_T [Algebra R R'] (x : R') (n : ℤ) : aeval x (T R n) = (T R' n).eval x := by
+  rw [aeval_def, eval₂_eq_eval_map, map_T]
+
+@[simp]
+theorem aeval_U [Algebra R R'] (x : R') (n : ℤ) : aeval x (U R n) = (U R' n).eval x := by
+  rw [aeval_def, eval₂_eq_eval_map, map_U]
+
+@[simp]
+theorem aeval_C [Algebra R R'] (x : R') (n : ℤ) : aeval x (C R n) = (C R' n).eval x := by
+  rw [aeval_def, eval₂_eq_eval_map, map_C]
+
+@[simp]
+theorem aeval_S [Algebra R R'] (x : R') (n : ℤ) : aeval x (S R n) = (S R' n).eval x := by
+  rw [aeval_def, eval₂_eq_eval_map, map_S]
+
+@[simp]
+theorem algebraMap_eval_T [Algebra R R'] (x : R) (n : ℤ) :
+    algebraMap R R' ((T R n).eval x) = (T R' n).eval (algebraMap R R' x) := by
+  rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_T]
+
+@[simp]
+theorem algebraMap_eval_U [Algebra R R'] (x : R) (n : ℤ) :
+    algebraMap R R' ((U R n).eval x) = (U R' n).eval (algebraMap R R' x) := by
+  rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_U]
+
+@[simp]
+theorem algebraMap_eval_C [Algebra R R'] (x : R) (n : ℤ) :
+    algebraMap R R' ((C R n).eval x) = (C R' n).eval (algebraMap R R' x) := by
+  rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_C]
+
+@[simp]
+theorem algebraMap_eval_S [Algebra R R'] (x : R) (n : ℤ) :
+    algebraMap R R' ((S R n).eval x) = (S R' n).eval (algebraMap R R' x) := by
+  rw [← aeval_algebraMap_apply_eq_algebraMap_eval, aeval_S]
 
 theorem T_derivative_eq_U (n : ℤ) : derivative (T R n) = n * U R (n - 1) := by
   induction n using Polynomial.Chebyshev.induct with
