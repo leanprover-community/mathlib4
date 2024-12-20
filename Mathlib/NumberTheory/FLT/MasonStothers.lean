@@ -61,7 +61,7 @@ protected theorem Polynomial.abc
     rw [← hsum, IsCoprime.neg_right_iff]
     convert IsCoprime.add_mul_left_right hab.symm 1
     rw [mul_one]
-  have hsum' : b + c + a = 0 := by rw [add_rotate] at hsum; exact hsum
+  have hsum' : b + c + a = 0 := by rwa [add_rotate] at hsum
   have hca : IsCoprime c a := by
     rw [add_eq_zero_iff_neg_eq] at hsum'
     rw [← hsum', IsCoprime.neg_right_iff]

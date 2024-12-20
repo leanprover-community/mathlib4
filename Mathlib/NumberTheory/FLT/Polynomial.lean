@@ -16,13 +16,13 @@ For `n ≥ 3` not divisible by the characteristic of the coefficient field `k` a
 coprime polynomials `a, b, c` (over a field) with `a ^ n + b ^ n = c ^ n`,
 all polynomials must be constants.
 
-More generally, we can prove non-solvability of Fermat-Catalan equation: there are no
+More generally, we can prove non-solvability of the Fermat-Catalan equation: there are no
 non-constant polynomial solution of the equation `u * a ^ p + v * b ^ q + w * c ^ r = 0`, where
 `p, q, r ≥ 3` with `p * q + q * r + r * p ≤ p * q * r` and not divisible by `char k`
 and `u, v, w` are nonzero elements in `k`.
 
-The proof uses Mason-Stothers theorem (Polynomial ABC theorem) and infinite descent
-(for characteristic p case).
+The proof uses the Mason-Stothers theorem (Polynomial ABC theorem) and infinite descent
+(in the characteristic p case).
 -/
 
 open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain
@@ -49,7 +49,7 @@ private lemma rot_coprime
   convert IsCoprime.add_mul_left_right hab.symm 1 using 2
   rw [mul_one]
 
-private lemma ineq_pqr_contradiction {p q r a b c : Nat}
+private lemma ineq_pqr_contradiction {p q r a b c : ℕ}
     (hp : 0 < p) (hq : 0 < q) (hr : 0 < r)
     (hineq : q * r + r * p + p * q ≤ p * q * r)
     (hpa : p * a < a + b + c)
@@ -67,7 +67,7 @@ private lemma ineq_pqr_contradiction {p q r a b c : Nat}
         <;> apply (Nat.mul_lt_mul_right ?_).mpr
         <;> assumption
     _ = (q * r + r * p + p * q) * (a + b + c) := by ring
-    _ ≤ _ := Nat.mul_le_mul_right _ hineq
+    _ ≤ _ := by gcongr
 
 private lemma derivative_pow_eq_zero_iff {n : ℕ} (chn : ¬ringChar k ∣ n) {a : k[X]}  :
     derivative (a ^ n) = 0 ↔ derivative a = 0 := by
@@ -232,8 +232,7 @@ theorem Polynomial.flt_catalan_aux
       by_contra hnca; apply hnca
       apply ih_d _ _ rfl _ ca_nz cb_nz cc_nz <;> clear ih_d <;> try rfl
       · apply is_coprime_of_expand chn0
-        rw [← eq_a, ← eq_b]
-        exact hab
+        rwa [← eq_a, ← eq_b]
       · have _ : ch ≠ 1 := CharP.ringChar_ne_one
         have hch2 : 2 ≤ ch := by omega
         rw [← add_le_add_iff_right 1, eq_d, eq_deg_a]
@@ -241,8 +240,7 @@ theorem Polynomial.flt_catalan_aux
         omega
       · rw [eq_a, eq_b, eq_c, ← expand_C ch u, ← expand_C ch v, ← expand_C ch w] at heq
         simp_rw [← map_pow, ← map_mul, ← map_add] at heq
-        rw [Polynomial.expand_eq_zero (zero_lt_iff.mpr chn0)] at heq
-        exact heq
+        rwa [Polynomial.expand_eq_zero (zero_lt_iff.mpr chn0)] at heq
 
 -- Nonsolvability of Fermat-Catalan equation.
 theorem Polynomial.flt_catalan
@@ -257,7 +255,7 @@ theorem Polynomial.flt_catalan
   have hbc : IsCoprime b c := by
     apply rot_coprime heq hab <;> assumption
   have heq' : C v * b ^ q + C w * c ^ r + C u * a ^ p = 0 := by
-    rw [add_rotate] at heq; exact heq
+    rwa [add_rotate] at heq
   have hca : IsCoprime c a := by
     apply rot_coprime heq' hbc <;> assumption
   refine ⟨?_, ?_, ?_⟩
@@ -278,16 +276,16 @@ theorem Polynomial.flt
     (hab : IsCoprime a b) (heq : a ^ n + b ^ n = c ^ n) :
     a.natDegree = 0 ∧ b.natDegree = 0 ∧ c.natDegree = 0 := by
   have hn' : 0 < n := by linarith
-  rw [← sub_eq_zero, ← one_mul (a ^ n), ← one_mul (b ^ n), ← one_mul (c ^ n), sub_eq_add_neg, ←
-    neg_mul] at heq
+  rw [← sub_eq_zero, ← one_mul (a ^ n), ← one_mul (b ^ n), ← one_mul (c ^ n), sub_eq_add_neg,
+    ← neg_mul] at heq
   have hone : (1 : k[X]) = C 1 := by rfl
   have hneg_one : (-1 : k[X]) = C (-1) := by simp only [map_neg, map_one]
   simp_rw [hneg_one, hone] at heq
   apply flt_catalan hn' hn' hn' _
     chn chn chn ha hb hc hab one_ne_zero one_ne_zero (neg_ne_zero.mpr one_ne_zero) heq
-  have eq_lhs : n * n + n * n + n * n = 3 * n * n := by ring_nf
-  rw [eq_lhs]; rw [mul_assoc, mul_assoc]
-  apply Nat.mul_le_mul_right (n * n); exact hn
+  have eq_lhs : n * n + n * n + n * n = 3 * n * n := by ring
+  rw [eq_lhs, mul_assoc, mul_assoc]
+  exact Nat.mul_le_mul_right (n * n) hn
 
 theorem fermatLastTheoremPolynomial {n : ℕ} (hn : 3 ≤ n) (chn : ¬ringChar k ∣ n):
     FermatLastTheoremWith' k[X] n := by
