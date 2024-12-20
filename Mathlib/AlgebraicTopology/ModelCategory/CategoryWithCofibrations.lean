@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Basic
 # Categories with classes of fibrations, cofibrations, weak equivalences
 
 We introduce typeclasses `CategoryWithFibrations`, `CategoryWithCofibrations` and
-`CategoryWithWeakEquivalences` to expresses that a category `C` is equipped with
+`CategoryWithWeakEquivalences` to express that a category `C` is equipped with
 classes of morphisms named "fibrations", "cofibrations" or "weak equivalences".
 
 -/
