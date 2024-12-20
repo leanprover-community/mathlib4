@@ -5,8 +5,8 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Algebra.Polynomial.FieldDivision
+import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
