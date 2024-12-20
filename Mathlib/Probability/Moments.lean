@@ -287,26 +287,21 @@ theorem iIndepFun.cgf_sum {X : ι → Ω → ℝ}
   · exact (mgf_pos (h_int j hj)).ne'
 
 theorem mgf_ident_distrib
-    (X : Ω → ℝ) {Ω' : Type u_1} {m' : MeasurableSpace Ω'} {μ' : Measure Ω'} (X' : Ω' → ℝ)
+    (X : Ω → ℝ) {Ω' : Type*} {m' : MeasurableSpace Ω'} {μ' : Measure Ω'} (X' : Ω' → ℝ)
     (hident : IdentDistrib X X' μ μ') (t : ℝ) :
     mgf X μ t = mgf X' μ' t := by
-  rw [mgf, mgf]
   apply IdentDistrib.integral_eq
-  let u := fun x => Real.exp (t * x)
-  have compX : (fun ω ↦ Real.exp (t * X ω)) = u ∘ X := rfl
-  have compX' : (fun ω ↦ Real.exp (t * X' ω)) = u ∘ X' := rfl
-  rw [compX, compX']
-  exact IdentDistrib.comp hident (Measurable.exp (measurable_const_mul t))
+  apply IdentDistrib.comp hident (Measurable.exp (measurable_const_mul t))
 
 theorem mgf_sum_iid
     {X : ι → Ω → ℝ}
     (h_meas : ∀ (i : ι), Measurable (X i))
     (h_indep : ProbabilityTheory.iIndepFun (fun _ => inferInstance) X μ)
-    (hident : ∀ (i j : ι), ProbabilityTheory.IdentDistrib (X i) (X j) μ μ)
-    (s : Finset ι) (j : ι) : ∀ t : ℝ, mgf (∑ i ∈ s, X i) μ t = (mgf (X j) μ (t)) ^ s.card := by
-  intro t
+    (s : Finset ι) (j : s)
+    (hident : ∀ (i j : s), ProbabilityTheory.IdentDistrib (X i) (X j) μ μ)
+    (t : ℝ) : mgf (∑ i ∈ s, X i) μ t = (mgf (X j) μ (t)) ^ s.card := by
   rw [iIndepFun.mgf_sum h_indep h_meas]
-  exact Finset.prod_eq_pow_card (fun i si => mgf_ident_distrib (X i) (X j) (hident i j) t)
+  exact Finset.prod_eq_pow_card (fun i si => mgf_ident_distrib (X i) (X j) (hident ⟨i,si⟩ j) t)
 
 /-- **Chernoff bound** on the upper tail of a real random variable. -/
 theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
