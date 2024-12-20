@@ -102,6 +102,14 @@ theorem map_coe (f : α → β) (a : α) : map f a = f a :=
 lemma map_eq_bot_iff {f : α → β} {a : WithBot α} :
     map f a = ⊥ ↔ a = ⊥ := Option.map_eq_none'
 
+theorem map_eq_some_iff {α β : Type*} {f : α → β} {y : β} {v : WithBot α} :
+    WithBot.map f v = .some y ↔ ∃ x, v = .some x ∧ f x = y := by
+  cases v <;> simp
+
+theorem some_eq_map_iff {α β : Type*} {f : α → β} {y : β} {v : WithBot α} :
+    .some y = WithBot.map f v ↔ ∃ x, v = .some x ∧ f x = y := by
+  cases v <;> simp [eq_comm]
+
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) :
     map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
@@ -234,6 +242,17 @@ theorem unbot'_le_iff {a : WithBot α} {b c : α} (h : a = ⊥ → b ≤ c) :
   · simpa using h rfl
   · simp
 
+@[simp]
+lemma map_le {f : β → α} {a : WithBot β} {b : WithBot α} :
+    map f a ≤ b ↔ ∀ v, a = some v → f v ≤ b where
+  mp h := by
+    rintro v rfl
+    exact h
+  mpr h := by
+    cases a
+    · simp
+    · simp_all
+
 end LE
 
 section LT
@@ -296,6 +315,17 @@ theorem unbot'_lt_iff {a : WithBot α} {b c : α} (h : a = ⊥ → b < c) :
   induction a
   · simpa [bot_lt_coe] using h rfl
   · simp
+
+@[simp]
+lemma map_lt {f : β → α} {a : WithBot β} {b : α} :
+    map f a < b ↔ ∀ v, a = some v → f v < b where
+  mp h := by
+    rintro v rfl
+    simpa using h
+  mpr h := by
+    cases a
+    · simp
+    · simp_all
 
 end LT
 
@@ -670,6 +700,14 @@ theorem map_coe (f : α → β) (a : α) : map f a = f a :=
 lemma map_eq_top_iff {f : α → β} {a : WithTop α} :
     map f a = ⊤ ↔ a = ⊤ := Option.map_eq_none'
 
+theorem map_eq_some_iff {α β : Type*} {f : α → β} {y : β} {v : WithTop α} :
+    WithTop.map f v = .some y ↔ ∃ x, v = .some x ∧ f x = y := by
+  cases v <;> simp
+
+theorem some_eq_map_iff {α β : Type*} {f : α → β} {y : β} {v : WithTop α} :
+    .some y = WithTop.map f v ↔ ∃ x, v = .some x ∧ f x = y := by
+  cases v <;> simp [eq_comm]
+
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) : map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
   Option.map_comm h _
@@ -831,6 +869,11 @@ theorem le_untop'_iff {a : WithTop α} {b c : α} (h : a = ⊤ → c ≤ b) :
     c ≤ a.untop' b ↔ c ≤ a :=
   WithBot.unbot'_le_iff (α := αᵒᵈ) h
 
+@[simp]
+lemma le_map {f : β → α} {a : WithTop β} {b : WithTop α} :
+    b ≤ map f a ↔ ∀ v, a = some v → b ≤ f v :=
+  @WithBot.map_le αᵒᵈ _ _ _ _ _
+
 end LE
 
 section LT
@@ -875,6 +918,11 @@ theorem untop_lt_iff {a : WithTop α} {b : α} (h : a ≠ ⊤) :
 theorem lt_untop'_iff {a : WithTop α} {b c : α} (h : a = ⊤ → c < b) :
     c < a.untop' b ↔ c < a :=
   WithBot.unbot'_lt_iff (α := αᵒᵈ) h
+
+@[simp]
+lemma lt_map {f : β → α} {a : WithTop β} {b : α} :
+    b < map f a ↔ ∀ v, a = some v → b < f v :=
+  @WithBot.map_lt αᵒᵈ _ _ _ _ _
 
 end LT
 
