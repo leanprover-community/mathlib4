@@ -106,7 +106,7 @@ theorem lt_def [LT α] {a b : DegLex (α →₀ ℕ)} :
 theorem lt_iff [LT α] {a b : DegLex (α →₀ ℕ)} :
     a < b ↔ (ofDegLex a).degree < (ofDegLex b).degree ∨
     (((ofDegLex a).degree = (ofDegLex b).degree) ∧ toLex (ofDegLex a) < toLex (ofDegLex b)) := by
-  simp only [lt_def, Prod.Lex.lt_iff]
+  simp only [lt_def, Prod.Lex.toLex_lt_toLex]
 
 variable [LinearOrder α]
 
