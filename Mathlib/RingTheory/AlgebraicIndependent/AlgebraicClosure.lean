@@ -53,6 +53,13 @@ theorem extendScalars [alg : Algebra.IsAlgebraic R S]
   show Transcendental St (x i)
   exact (hx.transcendental_adjoin hi).extendScalars Subtype.val_injective
 
+theorem extendScalars_of_isSimpleRing [Algebra.IsAlgebraic R S] [IsSimpleRing S] :
+    AlgebraicIndependent S x :=
+  hx.extendScalars <|
+    have := Module.nontrivial R S
+    have := hx.algebraMap_injective.nontrivial
+    RingHom.injective _
+
 theorem extendScalars_of_isIntegral [Algebra.IsIntegral R S]
     (inj : Injective (algebraMap S A)) : AlgebraicIndependent S x := by
   nontriviality S
