@@ -88,13 +88,12 @@ theorem mono_iff_injective : Mono f ↔ Function.Injective f :=
 
 namespace SurjectiveOfEpiAuxs
 
-set_option quotPrecheck false in
-local notation "X" => Set.range (· • (f.range : Set B) : B → Set B)
+local notation3 "X" => Set.range (· • (f.range : Set B) : B → Set B)
 
 /-- Define `X'` to be the set of all left cosets with an extra point at "infinity".
 -/
 inductive XWithInfinity
-  | fromCoset : Set.range (· • (f.range : Set B) : B → Set B) → XWithInfinity
+  | fromCoset : X → XWithInfinity
   | infinity : XWithInfinity
 
 open XWithInfinity Equiv.Perm
@@ -222,7 +221,7 @@ The strategy is the following: assuming `epi f`
 -/
 
 
-theorem g_apply_fromCoset (x : B) (y : Set.range (· • (f.range : Set B) : B → Set B)) :
+theorem g_apply_fromCoset (x : B) (y : X) :
     g x (fromCoset y) = fromCoset ⟨x • ↑y,
       by obtain ⟨z, hz⟩ := y.2; exact ⟨x * z, by simp [← hz, smul_smul]⟩⟩ := rfl
 
