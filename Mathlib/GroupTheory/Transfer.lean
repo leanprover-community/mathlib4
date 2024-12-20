@@ -302,18 +302,16 @@ end BurnsideTransfer
 
 end MonoidHom
 
-@[to_additive]
-theorem Subgroup.relindex_dvd_card {G : Type*} [Group G] (H K : Subgroup G) :
-    H.relindex K ∣ Nat.card G :=
-  (H.subgroupOf K).index_dvd_card.trans K.card_subgroup_dvd_card
-
 namespace IsCyclic
 
 open Subgroup
 
-variable {G : Type*} [Group G] [Finite G] {P : Sylow (Nat.card G).minFac G}
+-- we could supress the variable `p`, but that might introduce `motive not type correct` issues.
+variable {G : Type*} [Group G] [Finite G] {p : ℕ} (hp : (Nat.card G).minFac = p) {P : Sylow p G}
 
+include hp in
 theorem normalizer_le_centralizer (hP : IsCyclic P) : P.normalizer ≤ centralizer (P : Set G) := by
+  subst hp
   by_cases hn : Nat.card G = 1
   · have := (Nat.card_eq_one_iff_unique.mp hn).1
     rw [Subsingleton.elim P.normalizer (centralizer P)]
@@ -342,15 +340,17 @@ theorem normalizer_le_centralizer (hP : IsCyclic P) : P.normalizer ≤ centraliz
     refine Nat.sub_one_lt_of_le (Nat.card G).minFac_pos (Nat.minFac_le_of_dvd ?_ h1)
     exact (Nat.two_le_iff _).mpr ⟨ne_zero_of_dvd_ne_zero Nat.card_pos.ne' h1, h2⟩
 
+include hp in
 /-- A cyclic Sylow subgroup for the smallest prime has a normal complement. -/
 theorem isComplement' (hP : IsCyclic P) :
-    (MonoidHom.transferSylow P hP.normalizer_le_centralizer).ker.IsComplement' P := by
+    (MonoidHom.transferSylow P (hP.normalizer_le_centralizer hp)).ker.IsComplement' P := by
+  subst hp
   by_cases hn : Nat.card G = 1
   · have := (Nat.card_eq_one_iff_unique.mp hn).1
-    rw [Subsingleton.elim (MonoidHom.transferSylow P hP.normalizer_le_centralizer).ker ⊥,
+    rw [Subsingleton.elim (MonoidHom.transferSylow P (hP.normalizer_le_centralizer rfl)).ker ⊥,
       Subsingleton.elim P.1 ⊤]
     exact isComplement'_bot_top
   have := Fact.mk (Nat.minFac_prime hn)
-  exact MonoidHom.ker_transferSylow_isComplement' P hP.normalizer_le_centralizer
+  exact MonoidHom.ker_transferSylow_isComplement' P (hP.normalizer_le_centralizer rfl)
 
 end IsCyclic
