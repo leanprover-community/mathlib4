@@ -67,8 +67,7 @@ theorem not_disjoint_segment_convexHull_triple {p q u v x y z : E} (hz : z ∈ s
       ((az * av * bu) • p + ((bz * au * bv) • q + (au * av) • (az • x + bz • y)))
     · module
     congr 3
-    simp only [smul_add, List.foldr, Fin.reduceFinMk, id_eq, Fin.isValue, Matrix.cons_val_two,
-      Nat.succ_eq_add_one, Nat.reduceAdd, Matrix.tail_cons, Matrix.head_cons, add_zero, w, z]
+    simp [w, z]
 
 /-- **Stone's Separation Theorem** -/
 theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜 t) (hst : Disjoint s t) :
