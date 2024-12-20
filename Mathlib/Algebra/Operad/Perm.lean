@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Meiburg
 -/
 import Mathlib.Data.Fin.Basic
-import Mathlib.GroupTheory.Perm.Basic
 import Mathlib.Data.Fintype.Card
 
 /-!

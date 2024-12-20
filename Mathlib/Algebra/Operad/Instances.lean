@@ -3,11 +3,9 @@ Copyright (c) 2024 Alex Meiburg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Meiburg
 -/
+import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Operad.Clone
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
-import Mathlib.LinearAlgebra.TensorProduct.Pi
-import Mathlib.Tactic.Ring.RingNF
-import Mathlib.LinearAlgebra.StdBasis
 
 /-! This file provides several important examples of `Clone`s, enough to build all of Post's
   Lattice. Functions indexed by arity, i.e. `(Fin k → α) → α`, form the most basic example of

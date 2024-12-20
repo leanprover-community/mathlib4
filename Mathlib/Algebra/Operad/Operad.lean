@@ -5,6 +5,7 @@ Authors: Alex Meiburg
 -/
 import Mathlib.Algebra.Operad.Basic
 import Mathlib.Algebra.Operad.Perm
+import Mathlib.GroupTheory.Perm.Basic
 
 /-! Defines `Operad` and `SymmOperad`. An `Operad` is a ℕ-graded set of operations that are
   closed under composition, with an identity, that obey the "natural" commutative and associative
