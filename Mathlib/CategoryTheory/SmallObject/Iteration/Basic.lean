@@ -300,6 +300,6 @@ variable {J}
 lemma hasColimitOfShape_of_isSuccLimit [HasIterationOfShape C J] (j : J)
     (hj : Order.IsSuccLimit j) :
     HasColimitsOfShape (Set.Iio j) C :=
-    HasIterationOfShape.hasColimitsOfShape_of_isSuccLimit j hj
+  HasIterationOfShape.hasColimitsOfShape_of_isSuccLimit j hj
 
 end CategoryTheory
