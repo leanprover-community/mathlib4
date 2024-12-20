@@ -153,7 +153,7 @@ lemma integrable_exp_mul_of_le [IsFiniteMeasure μ]
   by_cases ht : t = 0
   · simp [ht]
   have hX : AEMeasurable X μ := by
-    refine aemeasurable_of_aemeasurable_exp_mul ?_ hu.1.aemeasurable
+    refine aemeasurable_of_aemeasurable_exp_mul ?_ hu.aemeasurable
     exact ((lt_of_le_of_ne' h_nonneg ht).trans_le htu).ne'
   have h_eq t : (fun ω ↦ exp (t * X ω)) =ᵐ[μ] fun ω ↦ exp (t * hX.mk X ω) := by
     filter_upwards [hX.ae_eq_mk] with ω hω using by rw [hω]
@@ -194,7 +194,7 @@ lemma integrable_exp_mul_of_ge [IsFiniteMeasure μ]
   by_cases ht : t = 0
   · simp [ht]
   have hX : AEMeasurable X μ := by
-    refine aemeasurable_of_aemeasurable_exp_mul ?_ hu.1.aemeasurable
+    refine aemeasurable_of_aemeasurable_exp_mul ?_ hu.aemeasurable
     refine (htu.trans_lt ?_).ne
     exact lt_of_le_of_ne h_nonpos ht
   have h_eq t : (fun ω ↦ exp (t * X ω)) =ᵐ[μ] fun ω ↦ exp (t * hX.mk X ω) := by
@@ -258,8 +258,8 @@ lemma integrable_exp_mul_abs_add (ht_int_pos : Integrable (fun ω ↦ rexp ((v +
           rw [sub_ne_zero]
           refine fun h_eq ↦ ht ?_
           simpa [h_eq] using hvt
-        exact aemeasurable_of_aemeasurable_exp_mul hvt' ht_int_neg.1.aemeasurable
-      · exact aemeasurable_of_aemeasurable_exp_mul hvt ht_int_pos.1.aemeasurable
+        exact aemeasurable_of_aemeasurable_exp_mul hvt' ht_int_neg.aemeasurable
+      · exact aemeasurable_of_aemeasurable_exp_mul hvt ht_int_pos.aemeasurable
     refine AEMeasurable.aestronglyMeasurable ?_
     exact measurable_exp.comp_aemeasurable ((hX.abs.const_mul _).add (hX.const_mul _))
   · simp only [norm_eq_abs, abs_exp]
@@ -318,8 +318,8 @@ lemma integrable_pow_abs_mul_exp_of_integrable_exp_mul (ht : t ≠ 0)
           rw [sub_ne_zero]
           refine fun h_eq ↦ ht ?_
           simpa [h_eq] using hvt
-        exact aemeasurable_of_aemeasurable_exp_mul hvt' ht_int_neg.1.aemeasurable
-      · exact aemeasurable_of_aemeasurable_exp_mul hvt ht_int_pos.1.aemeasurable
+        exact aemeasurable_of_aemeasurable_exp_mul hvt' ht_int_neg.aemeasurable
+      · exact aemeasurable_of_aemeasurable_exp_mul hvt ht_int_pos.aemeasurable
     simp_rw [mul_pow]
     refine AEMeasurable.aestronglyMeasurable ?_
     exact (((hX.abs.pow_const _).const_mul _).div_const _).mul
@@ -330,17 +330,40 @@ lemma integrable_pow_abs_mul_exp_of_integrable_exp_mul (ht : t ≠ 0)
     gcongr
     exact h_le _
 
-lemma integrable_pow_abs_mul_exp_of_integrable_exp_mul'
+lemma add_half_inf_sub_mem_Ioo {l u v : ℝ} (hv : v ∈ Set.Ioo l u) :
+    v + ((v - l) ⊓ (u - v)) / 2 ∈ Set.Ioo l u := by
+  have h_pos : 0 < (v - l) ⊓ (u - v) := by simp [hv.1, hv.2]
+  constructor
+  · calc l < v := hv.1
+    _ ≤ v + ((v - l) ⊓ (u - v)) / 2 := le_add_of_nonneg_right (by positivity)
+  · calc v + ((v - l) ⊓ (u - v)) / 2
+    _ < v + ((v - l) ⊓ (u - v)) := by gcongr; exact half_lt_self (by positivity)
+    _ ≤ v + (u - v) := by gcongr; exact inf_le_right
+    _ = u := by abel
+
+lemma sub_half_inf_sub_mem_Ioo {l u v : ℝ} (hv : v ∈ Set.Ioo l u) :
+    v - ((v - l) ⊓ (u - v)) / 2 ∈ Set.Ioo l u := by
+  have h_pos : 0 < (v - l) ⊓ (u - v) := by simp [hv.1, hv.2]
+  constructor
+  · calc l = v - (v - l) := by abel
+    _ ≤ v - ((v - l) ⊓ (u - v)) := by gcongr; exact inf_le_left
+    _ < v - ((v - l) ⊓ (u - v)) / 2 := by gcongr; exact half_lt_self (by positivity)
+  · calc v - ((v - l) ⊓ (u - v)) / 2
+    _ ≤ v := by
+      rw [sub_le_iff_le_add]
+      exact le_add_of_nonneg_right (by positivity)
+    _ < u := hv.2
+
+lemma integrable_pow_abs_mul_exp_of_mem_interior
     (hv : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
     Integrable (fun ω ↦ |X ω| ^ n * exp (v * X ω)) μ := by
   rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hv
-  obtain ⟨l, u, hxlu, h_subset⟩ := hv
+  obtain ⟨l, u, hvlu, h_subset⟩ := hv
+  have h_pos : 0 < (v - l) ⊓ (u - v) := by simp [hvlu.1, hvlu.2]
   refine integrable_pow_abs_mul_exp_of_integrable_exp_mul (t := min (v - l) (u - v) / 2) ?_ ?_ ?_ n
-  · sorry
-  · refine h_subset ?_
-    sorry
-  · refine h_subset ?_
-    sorry
+  · positivity
+  · exact h_subset (add_half_inf_sub_mem_Ioo hvlu)
+  · exact h_subset (sub_half_inf_sub_mem_Ioo hvlu)
 
 /-- If `ω ↦ rexp (t * X ω)` is integrable at `t` and `-t` for `t ≠ 0`, then `ω ↦ |X ω| ^ n` is
 integrable for all `n : ℕ`. That is, all moments of `X` are finite. -/
@@ -366,19 +389,36 @@ lemma integrable_pow_mul_exp_of_integrable_exp_mul (ht : t ≠ 0)
           rw [sub_ne_zero]
           refine fun h_eq ↦ ht ?_
           simpa [h_eq] using hvt
-        exact aemeasurable_of_aemeasurable_exp_mul hvt' ht_int_neg.1.aemeasurable
-      · exact aemeasurable_of_aemeasurable_exp_mul hvt ht_int_pos.1.aemeasurable
+        exact aemeasurable_of_aemeasurable_exp_mul hvt' ht_int_neg.aemeasurable
+      · exact aemeasurable_of_aemeasurable_exp_mul hvt ht_int_pos.aemeasurable
     exact ((hX.pow_const _).mul
       (measurable_exp.comp_aemeasurable (hX.const_mul _))).aestronglyMeasurable
 
-lemma integrable_pow_mul_exp_of_integrable_exp_mul'
+lemma aemeasurable_of_mem_interior_integrable_exp
+    (hv : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
+    AEMeasurable X μ := by
+  rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hv
+  obtain ⟨l, u, hvlu, h_subset⟩ := hv
+  let t := ((v - l) ⊓ (u - v)) / 2
+  have h_pos : 0 < (v - l) ⊓ (u - v) := by simp [hvlu.1, hvlu.2]
+  have ht : 0 < t := half_pos h_pos
+  by_cases hvt : v + t = 0
+  · have hvt' : v - t ≠ 0 := by
+      rw [sub_ne_zero]
+      refine fun h_eq ↦ ht.ne' ?_
+      simpa [h_eq] using hvt
+    exact aemeasurable_of_aemeasurable_exp_mul hvt'
+      (h_subset (sub_half_inf_sub_mem_Ioo hvlu)).aemeasurable
+  · exact aemeasurable_of_aemeasurable_exp_mul hvt
+      (h_subset (add_half_inf_sub_mem_Ioo hvlu)).aemeasurable
+
+lemma integrable_pow_mul_exp_of_mem_interior
     (hv : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
     Integrable (fun ω ↦ X ω ^ n * exp (v * X ω)) μ := by
   rw [← integrable_norm_iff]
   · simp_rw [norm_eq_abs, abs_mul, abs_pow, abs_exp]
-    exact integrable_pow_abs_mul_exp_of_integrable_exp_mul' hv n
-  · have hX : AEMeasurable X μ := by
-      sorry
+    exact integrable_pow_abs_mul_exp_of_mem_interior hv n
+  · have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrable_exp hv
     exact ((hX.pow_const _).mul
       (measurable_exp.comp_aemeasurable (hX.const_mul _))).aestronglyMeasurable
 
@@ -533,7 +573,7 @@ lemma mgf_abs_le_add (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
     (ae_of_all _ (fun ω ↦ exp_mul_abs_le_add (t := t) (u := X ω)))
   exact integrable_exp_mul_abs ht_int_pos ht_int_neg
 
-lemma summable_integral_abs_mul_exp_of_todo
+lemma summable_integral_abs_mul_exp
     (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
     Summable fun (i : ℕ) ↦ μ[fun ω ↦ |X ω| ^ i / i.factorial * |t| ^ i * exp (v * X ω)] := by
@@ -568,14 +608,6 @@ lemma summable_integral_abs_mul_exp_of_todo
       exact sum_le_exp_of_nonneg (by positivity) _
   · exact fun i _ ↦ h_int _ i
 
-lemma summable_integral_abs_of_todo (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
-    Summable fun (i : ℕ) ↦ μ[fun ω ↦ |X ω| ^ i / i.factorial * |t| ^ i] := by
-  have h := summable_integral_abs_mul_exp_of_todo (μ := μ) (X := X) (v := 0) (t := t) ?_ ?_
-  · simpa using h
-  · simpa using ht_int_pos
-  · simpa using ht_int_neg
-
 lemma summable_integral_pow_abs_mul_exp_mul_abs
     (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
@@ -584,13 +616,7 @@ lemma summable_integral_pow_abs_mul_exp_mul_abs
   have h_eq i ω : |X ω| ^ i * rexp (v * X ω) / i.factorial * |t| ^ i
       = |X ω| ^ i / i.factorial * |t| ^ i * rexp (v * X ω) := by ring
   simp_rw [h_eq]
-  exact summable_integral_abs_mul_exp_of_todo ht_int_pos ht_int_neg
-
-lemma summable_integral_pow_abs_mul_abs (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
-    Summable fun (i : ℕ) ↦ μ[fun ω ↦ |X ω| ^ i] / i.factorial * |t| ^ i := by
-  simp_rw [← integral_div, ← integral_mul_right]
-  exact summable_integral_abs_of_todo ht_int_pos ht_int_neg
+  exact summable_integral_abs_mul_exp ht_int_pos ht_int_neg
 
 lemma summable_integral_pow_mul_exp_mul
     (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
@@ -613,28 +639,6 @@ lemma summable_integral_pow_mul (ht_int_pos : Integrable (fun ω ↦ rexp (t * X
   · simpa using h
   · simpa using ht_int_pos
   · simpa using ht_int_neg
-
-lemma mgf_abs_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
-    mgf (fun ω ↦ |X ω|) μ t = ∑' n, (μ[fun ω ↦ |X ω| ^ n]) / n.factorial * t ^ n := by
-  by_cases ht : t = 0
-  · rw [tsum_eq_single 0]
-    · simp [ht]
-    · intro n hn
-      simp [zero_pow hn, ht]
-  simp_rw [mgf, exp_eq_tsum]
-  have h_int (u : ℝ) (i : ℕ) : Integrable (fun ω ↦ (u * |X ω|) ^ i / i.factorial) μ := by
-    refine Integrable.div_const ?_ _
-    simp_rw [mul_pow]
-    refine Integrable.const_mul ?_ _
-    exact integrable_pow_abs_of_integrable_exp_mul ht ht_int_pos ht_int_neg i
-  rw [← integral_tsum_of_summable_integral_norm (h_int _)]
-  · congr with n
-    simp_rw [integral_div, mul_pow, integral_mul_left]
-    ring
-  · simp only [norm_div, norm_pow, norm_mul, norm_eq_abs, abs_abs, norm_natCast, Nat.abs_cast]
-    convert summable_integral_abs_of_todo ht_int_pos ht_int_neg with i ω
-    ring
 
 lemma mgf_add_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
@@ -737,7 +741,14 @@ lemma mgf_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
   · simpa using ht_int_pos
   · simpa using ht_int_neg
 
-lemma hasFPowerSeriesOnBall_mgf' [IsFiniteMeasure μ] (ht : t ≠ 0)
+lemma mgf_abs_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
+    mgf (fun ω ↦ |X ω|) μ t = ∑' n, (μ[fun ω ↦ |X ω| ^ n]) / n.factorial * t ^ n := by
+  refine mgf_eq_tsum (X := fun ω ↦ |X ω|) (μ := μ) (t := t) ?_ ?_
+  · exact integrable_exp_mul_abs ht_int_pos ht_int_neg
+  · exact integrable_exp_mul_abs ht_int_neg (by simpa using ht_int_pos)
+
+lemma hasFPowerSeriesOnBall_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
     HasFPowerSeriesOnBall (mgf X μ)
@@ -795,42 +806,42 @@ lemma hasFPowerSeriesOnBall_mgf' [IsFiniteMeasure μ] (ht : t ≠ 0)
     · exact (mgf_add_eq_tsum hy_int_pos hy_int_neg).symm
     · exact summable_integral_pow_mul_exp_mul hy_int_pos hy_int_neg
 
-lemma hasFPowerSeriesOnBall_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
+lemma hasFPowerSeriesOnBall_mgf_zero [IsFiniteMeasure μ] (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ rexp (-t * X ω)) μ) :
     HasFPowerSeriesOnBall (mgf X μ)
       (FormalMultilinearSeries.ofScalars ℝ (fun n ↦ (μ[X ^ n] : ℝ) / n.factorial)) 0 ‖t‖₊ := by
-  have h := hasFPowerSeriesOnBall_mgf' ht ?_ ?_ (μ := μ) (X := X) (v := 0)
+  have h := hasFPowerSeriesOnBall_mgf ht ?_ ?_ (μ := μ) (X := X) (v := 0)
   · simpa using h
   · simpa using ht_int_pos
   · simpa using ht_int_neg
 
-lemma hasFPowerSeriesAt_mgf' [IsFiniteMeasure μ] (ht : t ≠ 0)
+lemma hasFPowerSeriesAt_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
     HasFPowerSeriesAt (mgf X μ)
       (FormalMultilinearSeries.ofScalars ℝ
         (fun n ↦ (μ[fun ω ↦ X ω ^ n * exp (v * X ω)] : ℝ) / n.factorial)) v :=
-  ⟨‖t‖₊, hasFPowerSeriesOnBall_mgf' ht ht_int_pos ht_int_neg⟩
+  ⟨‖t‖₊, hasFPowerSeriesOnBall_mgf ht ht_int_pos ht_int_neg⟩
 
-lemma hasFPowerSeriesAt_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
+lemma hasFPowerSeriesAt_mgf_zero [IsFiniteMeasure μ] (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ rexp (-t * X ω)) μ) :
     HasFPowerSeriesAt (mgf X μ)
       (FormalMultilinearSeries.ofScalars ℝ (fun n ↦ (μ[X ^ n] : ℝ) / n.factorial)) 0 :=
-  ⟨‖t‖₊, hasFPowerSeriesOnBall_mgf ht ht_int_pos ht_int_neg⟩
+  ⟨‖t‖₊, hasFPowerSeriesOnBall_mgf_zero ht ht_int_pos ht_int_neg⟩
 
-lemma analyticAt_mgf' [IsFiniteMeasure μ] (ht : t ≠ 0)
+lemma analyticAt_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
     AnalyticAt ℝ (mgf X μ) v :=
-  ⟨_, hasFPowerSeriesAt_mgf' ht ht_int_pos ht_int_neg⟩
+  ⟨_, hasFPowerSeriesAt_mgf ht ht_int_pos ht_int_neg⟩
 
-lemma analyticAt_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
+lemma analyticAt_mgf_zero [IsFiniteMeasure μ] (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ rexp (-t * X ω)) μ) :
     AnalyticAt ℝ (mgf X μ) 0 :=
-  ⟨_, hasFPowerSeriesAt_mgf ht ht_int_pos ht_int_neg⟩
+  ⟨_, hasFPowerSeriesAt_mgf_zero ht ht_int_pos ht_int_neg⟩
 
 /-- The moment generating function is analytic on the interior of the interval on which it is
 defined. -/
@@ -839,33 +850,9 @@ lemma analyticOnNhd_mgf [IsFiniteMeasure μ] :
   intro x hx
   rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hx
   obtain ⟨l, u, hxlu, h_subset⟩ := hx
-  let t := min (x - l) (u - x) / 2
-  have ht : t ≠ 0 := (ne_of_lt (by simpa [t])).symm
-  have h_pos : 0 < (x - l) ⊓ (u - x) := by simp [hxlu.1, hxlu.2]
-  have hx_add_t_mem : x + t ∈ Set.Ioo l u := by
-    constructor
-    · simp only [t]
-      calc l < x := hxlu.1
-      _ ≤ x + ((x - l) ⊓ (u - x)) / 2 := le_add_of_nonneg_right (by positivity)
-    · simp only [t]
-      calc x + ((x - l) ⊓ (u - x)) / 2
-      _ < x + ((x - l) ⊓ (u - x)) := by gcongr; exact half_lt_self (by positivity)
-      _ ≤ x + (u - x) := by gcongr; exact inf_le_right
-      _ = u := by abel
-  have hx_sub_t_mem : x - t ∈ Set.Ioo l u := by
-    constructor
-    · simp only [t]
-      calc l
-      _ = x - (x - l) := by abel
-      _ ≤ x - ((x - l) ⊓ (u - x)) := by gcongr; exact inf_le_left
-      _ < x - ((x - l) ⊓ (u - x)) / 2 := by gcongr; exact half_lt_self (by positivity)
-    · simp only [t]
-      calc x - ((x - l) ⊓ (u - x)) / 2
-      _ ≤ x := by
-        rw [sub_le_iff_le_add]
-        exact le_add_of_nonneg_right (by positivity)
-      _ < u := hxlu.2
-  exact analyticAt_mgf' ht (h_subset hx_add_t_mem) (h_subset hx_sub_t_mem)
+  have ht : min (x - l) (u - x) / 2 ≠ 0 := (ne_of_lt (by simpa)).symm
+  exact analyticAt_mgf ht (h_subset (add_half_inf_sub_mem_Ioo hxlu))
+    (h_subset (sub_half_inf_sub_mem_Ioo hxlu))
 
 lemma iteratedDeriv_mgf_zero [IsFiniteMeasure μ]
     (hu_int_pos : Integrable (fun ω ↦ rexp (u * X ω)) μ)
