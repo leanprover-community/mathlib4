@@ -619,6 +619,7 @@ theorem mem_union_right {x : α} {b : Set α} (a : Set α) : x ∈ b → x ∈ a
 theorem mem_or_mem_of_mem_union {x : α} {a b : Set α} (H : x ∈ a ∪ b) : x ∈ a ∨ x ∈ b :=
   H
 
+-- XXX?
 theorem MemUnion.elim {x : α} {a b : Set α} {P : Prop} (H₁ : x ∈ a ∪ b) (H₂ : x ∈ a → P)
     (H₃ : x ∈ b → P) : P :=
   Or.elim H₁ H₂ H₃

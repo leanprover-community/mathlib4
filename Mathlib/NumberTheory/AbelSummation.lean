@@ -301,6 +301,7 @@ section summable
 
 open Filter abelSummationProof
 
+-- TODO isBigO
 private theorem summable_mul_of_bigO_atTop_aux (m : ℕ)
     (h_bdd : (fun n : ℕ ↦ ‖f n‖ * ∑ k ∈ Icc 0 n, ‖c k‖) =O[atTop] fun _ ↦ (1 : ℝ))
     (hf_int : LocallyIntegrableOn (deriv (fun t ↦ ‖f t‖)) (Set.Ici (m : ℝ)))

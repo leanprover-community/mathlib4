@@ -316,11 +316,13 @@ instance [DecidableRel G.Adj] [DecidablePred (· ∈ s)] [DecidablePred (· ∈ 
     DecidableRel (G.between s t).Adj :=
   inferInstanceAs (DecidableRel fun v w ↦ G.Adj v w ∧ (v ∈ s ∧ w ∈ t ∨ v ∈ t ∧ w ∈ s))
 
+-- TODO rename
 /-- `G.between s t` is bipartite if the sets `s` and `t` are disjoint. -/
 theorem between_isBipartiteWith (h : Disjoint s t) : (G.between s t).IsBipartiteWith s t where
   disjoint := h
   mem_of_adj _ _ h := h.2
 
+-- TODO rename
 /-- `G.between s t` is bipartite if the sets `s` and `t` are disjoint. -/
 theorem between_isBipartite (h : Disjoint s t) : (G.between s t).IsBipartite :=
   (between_isBipartiteWith h).isBipartite

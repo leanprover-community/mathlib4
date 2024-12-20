@@ -62,6 +62,7 @@ variable [PartialOrder G] [PartialOrder P] [SMul G P] [IsOrderedCancelSMul G P] 
     {t : Set P} (hs : s.IsPWO) (ht : t.IsPWO) (a : P) {u : Set G} {hu : u.IsPWO} {v : Set P}
     {hv : v.IsPWO} {x : G × P}
 
+-- TODO rename
 /-- `Finset.SMulAntidiagonal hs ht a` is the set of all pairs of an element in `s` and an
 element in `t` whose scalar multiplication yields `a`, but its construction requires proofs that `s`
 and `t` are well-ordered. -/

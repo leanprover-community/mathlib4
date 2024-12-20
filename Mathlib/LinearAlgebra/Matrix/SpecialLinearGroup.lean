@@ -258,6 +258,7 @@ theorem mem_center_iff {A : SpecialLinearGroup n R} :
   · suffices ↑ₘ(B * A) = ↑ₘ(A * B) from Subtype.val_injective this
     simpa only [coe_mul, ← hr] using (scalar_commute (n := n) r (Commute.all r) B).symm
 
+-- TODO rename
 /-- An equivalence of groups, from the center of the special linear group to the roots of unity. -/
 @[simps]
 def center_equiv_rootsOfUnity' (i : n) :
@@ -284,6 +285,7 @@ def center_equiv_rootsOfUnity' (i : n) :
     rw [← scalar_eq_coe_self_center A i, ← scalar_eq_coe_self_center B i]
     simp
 
+-- TODO rename
 open scoped Classical in
 /-- An equivalence of groups, from the center of the special linear group to the roots of unity.
 

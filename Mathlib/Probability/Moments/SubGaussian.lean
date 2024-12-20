@@ -276,6 +276,7 @@ lemma congr {Y : Ω → ℝ} (h : HasSubgaussianMGF X c κ ν) (h' : X =ᵐ[κ �
     rw [mgf_congr (Filter.EventuallyEq.symm h')]
     exact h_mgf t
 
+-- todo rename
 lemma _root_.ProbabilityTheory.Kernel.HasSubgaussianMGF_congr {Y : Ω → ℝ} (h : X =ᵐ[κ ∘ₘ ν] Y) :
     HasSubgaussianMGF X c κ ν ↔ HasSubgaussianMGF Y c κ ν :=
   ⟨fun hX ↦ congr hX h, fun hY ↦ congr hY (ae_eq_symm h)⟩
@@ -584,6 +585,7 @@ structure HasSubgaussianMGF (X : Ω → ℝ) (c : ℝ≥0) (μ : Measure Ω := b
   integrable_exp_mul : ∀ t : ℝ, Integrable (fun ω ↦ exp (t * X ω)) μ
   mgf_le : ∀ t : ℝ, mgf X μ t ≤ exp (c * t ^ 2 / 2)
 
+-- todo rename
 lemma HasSubgaussianMGF_iff_kernel :
     HasSubgaussianMGF X c μ
       ↔ Kernel.HasSubgaussianMGF X c (Kernel.const Unit μ) (Measure.dirac ()) :=
@@ -794,6 +796,7 @@ a sub-sigma-algebra `m` and `Y` is conditionally sub-Gaussian with parameter `cY
 
 `HasSubgaussianMGF X cX (μ.trim hm)` can be obtained from `HasSubgaussianMGF X cX μ` if `X` is
 `m`-measurable. See `HasSubgaussianMGF.trim`. -/
+-- todo rename
 lemma HasSubgaussianMGF_add_of_HasCondSubgaussianMGF [IsFiniteMeasure μ]
     {Y : Ω → ℝ} {cX cY : ℝ≥0} (hm : m ≤ mΩ)
     (hX : HasSubgaussianMGF X cX (μ.trim hm)) (hY : HasCondSubgaussianMGF m hm Y cY μ) :

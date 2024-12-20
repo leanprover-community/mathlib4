@@ -165,6 +165,7 @@ lemma mem_ker_toLin'_lapMatrix_of_connectedComponent {G : SimpleGraph V} [Decida
     exact (h₁ (h₃ ▸ h)).elim
   · rfl
 
+-- TODO rename
 /-- Given a connected component `c` of a graph `G`, `lapMatrix_ker_basis_aux c` is the map
 `V → ℝ` which is `1` on the vertices in `c` and `0` elsewhere.
 The family of these maps indexed by the connected components of `G` proves to be a basis
@@ -203,6 +204,7 @@ lemma top_le_span_range_lapMatrix_ker_basis_aux :
     mul_zero, sum_ite_eq, mem_univ, ↓reduceIte]
   rfl
 
+-- TODO rename
 /-- `lapMatrix_ker_basis G` is a basis of the nullspace indexed by its connected components,
 the basis is made up of the functions `V → ℝ` which are `1` on the vertices of the given
 connected component and `0` elsewhere. -/
@@ -212,6 +214,7 @@ noncomputable def lapMatrix_ker_basis :=
 
 end
 
+-- TODO rename
 /-- The number of connected components in `G` is the dimension of the nullspace of its Laplacian. -/
 theorem card_connectedComponent_eq_finrank_ker_toLin'_lapMatrix :
     Fintype.card G.ConnectedComponent =

@@ -72,6 +72,7 @@ theorem isBounded_iff_asymptoticCone_subset_singleton {s : Set P} :
   by_contra h'
   exact Metric.ne_of_mem_sphere hv one_ne_zero (h h')
 
+-- TODO rename
 /-- In a finite dimensional normed affine space over `ℝ`, a set is unbounded if and only if its
 asymptotic cone contains a nonzero vector. -/
 theorem not_bounded_iff_exists_ne_zero_mem_asymptoticCone {s : Set P} :

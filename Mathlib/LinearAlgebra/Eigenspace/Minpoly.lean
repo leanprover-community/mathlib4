@@ -107,6 +107,7 @@ section Field
 
 variable {K : Type v} {V : Type w} [Field K] [AddCommGroup V] [Module K V]
 
+-- TODO rename
 theorem eigenspace_aeval_polynomial_degree_1 (f : End K V) (q : K[X]) (hq : degree q = 1) :
     eigenspace f (-q.coeff 0 / q.leadingCoeff) = LinearMap.ker (aeval f q) :=
   calc

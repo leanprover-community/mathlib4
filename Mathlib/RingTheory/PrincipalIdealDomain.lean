@@ -69,6 +69,7 @@ class IsBezout : Prop where
 instance (priority := 100) IsBezout.of_isPrincipalIdealRing [IsPrincipalIdealRing R] : IsBezout R :=
   ⟨fun I _ => IsPrincipalIdealRing.principal I⟩
 
+-- TODO rename
 instance (priority := 100) DivisionSemiring.isPrincipalIdealRing (K : Type u) [DivisionSemiring K] :
     IsPrincipalIdealRing K where
   principal S := by
@@ -229,6 +230,7 @@ namespace IsPrime
 
 open Submodule.IsPrincipal Ideal
 
+-- TODO rename
 -- TODO -- for a non-ID one could perhaps prove that if p < q are prime then q maximal;
 -- 0 isn't prime in a non-ID PIR but the Krull dimension is still <= 1.
 -- The below result follows from this, but we could also use the below result to
@@ -262,6 +264,7 @@ theorem mod_mem_iff {S : Ideal R} {x y : R} (hy : y ∈ S) : x % y ∈ S ↔ x �
   ⟨fun hxy => div_add_mod x y ▸ S.add_mem (S.mul_mem_right _ hy) hxy, fun hx =>
     (mod_eq_sub_mul_div x y).symm ▸ S.sub_mem hx (S.mul_mem_right _ hy)⟩
 
+-- TODO rename
 -- see Note [lower instance priority]
 instance (priority := 100) EuclideanDomain.to_principal_ideal_domain : IsPrincipalIdealRing R where
   principal S := by classical exact
@@ -340,6 +343,7 @@ theorem ringHom_mem_submonoid_of_factors_subset_of_units_subset {R S : Type*} [C
     (a : R) (ha : a ≠ 0) (h : ∀ b ∈ factors a, f b ∈ s) (hf : ∀ c : Rˣ, f c ∈ s) : f a ∈ s :=
   mem_submonoid_of_factors_subset_of_units_subset (s.comap f.toMonoidHom) ha h hf
 
+-- TODO rename
 -- see Note [lower instance priority]
 /-- A principal ideal domain has unique factorization -/
 instance (priority := 100) to_uniqueFactorizationMonoid : UniqueFactorizationMonoid R :=

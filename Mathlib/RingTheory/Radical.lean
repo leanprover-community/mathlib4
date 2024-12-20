@@ -122,6 +122,7 @@ theorem primeFactors_eq_empty_iff (ha : a ≠ 0) : primeFactors a = ∅ ↔ IsUn
   classical
   rw [primeFactors, Multiset.toFinset_eq_empty, normalizedFactors_eq_zero_iff ha]
 
+-- TODO rename val_primeFactors?
 lemma primeFactors_val_eq_normalizedFactors (ha : IsRadical a) :
     (primeFactors a).val = normalizedFactors a := by
   classical

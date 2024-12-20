@@ -122,6 +122,7 @@ def Equiv.altCongrHom {β : Type*} [Fintype β] [DecidableEq β] (e : α ≃ β)
   e.permCongrHom.subgroupMap (alternatingGroup α) |>.trans <|
     MulEquiv.subgroupCongr <| by simp [Subgroup.ext_iff, Subgroup.map_equiv_eq_comap_symm]
 
+-- TODO rename natCard
 theorem two_mul_nat_card_alternatingGroup [Nontrivial α] :
     2 * Nat.card (alternatingGroup α) = Nat.card (Perm α) := by
   simp only [← alternatingGroup.index_eq_two (α := α), index_mul_card]
@@ -134,6 +135,7 @@ theorem card_alternatingGroup [Nontrivial α] :
     card (alternatingGroup α) = (card α).factorial / 2 :=
   Nat.eq_div_of_mul_eq_right two_ne_zero (two_mul_card_alternatingGroup.trans card_perm)
 
+-- TODO rename natCard
 theorem nat_card_alternatingGroup [Nontrivial α] :
     Nat.card (alternatingGroup α) = (Nat.card α).factorial / 2 := by
   simp only [Nat.card_eq_fintype_card, card_alternatingGroup]

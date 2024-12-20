@@ -264,6 +264,7 @@ theorem mem_diag : x ∈ s.diag ↔ x.1 ∈ s ∧ x.1 = x.2 := by
 theorem mem_offDiag : x ∈ s.offDiag ↔ x.1 ∈ s ∧ x.2 ∈ s ∧ x.1 ≠ x.2 := by
   simp [offDiag, and_assoc]
 
+-- TODO rename nonempty_diag
 @[simp, grind =]
 theorem diag_nonempty : s.diag.Nonempty ↔ s.Nonempty := by
   simp [Finset.Nonempty]

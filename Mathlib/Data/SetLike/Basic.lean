@@ -247,6 +247,7 @@ lemma mem_of_subsingleton {A F} [Subsingleton A] [SetLike F A] (S : F) [h : None
   obtain ⟨s, hs⟩ := nonempty_subtype.mp h
   simpa [Subsingleton.elim a s]
 
+-- TODO rename notMem
 /-- If `s` is a proper element of a `SetLike` structure (i.e., `s ≠ ⊤`) and the top element
 coerces to the universal set, then there exists an element not in `s`. -/
 lemma exists_not_mem_of_ne_top [PartialOrder A] [OrderTop A] (s : A) (hs : s ≠ ⊤)

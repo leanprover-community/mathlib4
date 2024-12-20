@@ -641,6 +641,7 @@ theorem isSplittingField_X_pow_sub_one : IsSplittingField K L (X ^ n - 1) :=
 
 scoped[Cyclotomic] attribute [instance] IsCyclotomicExtension.isSplittingField_X_pow_sub_one
 
+-- TODO rename isSplittingField_cyclotomic
 /-- If `IsCyclotomicExtension {n} K L`, then `L` is the splitting field of `cyclotomic n K`. -/
 theorem splitting_field_cyclotomic : IsSplittingField K L (cyclotomic n K) :=
   { splits' := splits_cyclotomic K L (mem_singleton n)

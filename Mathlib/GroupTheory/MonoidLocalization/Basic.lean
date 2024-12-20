@@ -86,6 +86,7 @@ variable {M : Type*} [AddCommMonoid M] (S : AddSubmonoid M) (N : Type*) [AddComm
 /-- The type of AddMonoid homomorphisms satisfying the characteristic predicate: if `f : M →+ N`
 satisfies this predicate, then `N` is isomorphic to the localization of `M` at `S`. -/
 structure LocalizationMap extends AddMonoidHom M N where
+  -- TODO rename
   map_add_units' : ∀ y : S, IsAddUnit (toFun y)
   surj' : ∀ z : N, ∃ x : M × S, z + toFun x.2 = toFun x.1
   exists_of_eq : ∀ x y, toFun x = toFun y → ∃ c : S, ↑c + x = ↑c + y
@@ -105,6 +106,7 @@ namespace Submonoid
 /-- The type of monoid homomorphisms satisfying the characteristic predicate: if `f : M →* N`
 satisfies this predicate, then `N` is isomorphic to the localization of `M` at `S`. -/
 structure LocalizationMap extends MonoidHom M N where
+  -- TODO rename
   map_units' : ∀ y : S, IsUnit (toFun y)
   surj' : ∀ z : N, ∃ x : M × S, z * toFun x.2 = toFun x.1
   exists_of_eq : ∀ x y, toFun x = toFun y → ∃ c : S, ↑c * x = c * y

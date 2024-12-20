@@ -476,6 +476,7 @@ def ofPrime {p : Ideal R} (hp : Prime p) : HeightOneSpectrum R :=
 theorem irreducible : Irreducible v.asIdeal :=
   UniqueFactorizationMonoid.irreducible_iff_prime.mpr v.prime
 
+-- TODO rename
 theorem associates_irreducible : Irreducible <| Associates.mk v.asIdeal :=
   Associates.irreducible_mk.mpr v.irreducible
 

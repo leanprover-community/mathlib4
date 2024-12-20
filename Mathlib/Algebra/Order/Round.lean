@@ -61,6 +61,7 @@ theorem round_ofNat (n : ℕ) [n.AtLeastTwo] : round (ofNat(n) : α) = ofNat(n) 
 @[simp]
 theorem round_intCast (n : ℤ) : round (n : α) = n := by simp [round]
 
+-- TODO: should be round_add_intCast, also below for nat and
 @[simp]
 theorem round_add_intCast (x : α) (y : ℤ) : round (x + y) = round x + y := by
   rw [round, round, Int.fract_add_intCast, Int.floor_add_intCast, Int.ceil_add_intCast,

@@ -153,7 +153,7 @@ variable {p : ℕ} (hp0 : 0 < f p) (hp1 : f p < 1) (hmin : ∀ m : ℕ, 0 < f m 
 
 include hp0 hp1 hmin in
 /-- The minimal positive integer with absolute value smaller than 1 is a prime number. -/
-lemma is_prime_of_minimal_nat_zero_lt_and_lt_one : p.Prime := by
+lemma is_prime_of_minimal_nat_zero_lt_and_lt_one : p.Prime := by -- TODO rename
   rw [← Nat.irreducible_iff_nat_prime]
   constructor -- Two goals: p is not a unit and any product giving p must contain a unit.
   · rw [Nat.isUnit_iff]

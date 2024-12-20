@@ -162,11 +162,13 @@ def simplicialInsert (a : ℕ) : List ℕ → List ℕ
   | [] => [a]
   | b :: l => if a < b then a :: b :: l else b :: simplicialInsert (a + 1) l
 
+-- TODO rename length_simplicialInsert
 /-- `simplicialInsert` just adds one to the length. -/
 lemma simplicialInsert_length (a : ℕ) (L : List ℕ) :
     (simplicialInsert a L).length = L.length + 1 := by
   induction L generalizing a <;> grind
 
+-- TODO rename isAdmissible_simplicialInsert
 /-- `simplicialInsert` preserves admissibility -/
 theorem simplicialInsert_isAdmissible (L : List ℕ) (hL : IsAdmissible (m + 1) L) (j : ℕ)
     (hj : j ≤ m) :
