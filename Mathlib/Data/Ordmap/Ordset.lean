@@ -1378,7 +1378,7 @@ theorem Valid'.map_aux {β} [Preorder β] {f : α → β} (f_strict_mono : Stric
     simp only [map, size_nil, and_true]; apply valid'_nil
     cases a₁; · trivial
     cases a₂; · trivial
-    simp only [Bounded]
+    simp only [Option.map, Bounded]
     exact f_strict_mono h.ord
   | node _ _ _ _ t_ih_l t_ih_r =>
     have t_ih_l' := t_ih_l h.left
