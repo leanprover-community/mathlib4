@@ -276,14 +276,13 @@ instance Subgroup.isCyclic [IsCyclic α] (H : Subgroup α) : IsCyclic H :=
     subst this; infer_instance
 
 @[to_additive]
-lemma Subgroup.isCyclic_of_le {H H' : Subgroup G} (h : H ≤ H')
-    [IsCyclic H'] :
-    IsCyclic H := by
-  let e := Subgroup.subgroupOfEquivOfLe h
-  obtain ⟨g, hg⟩ := Subgroup.isCyclic <| H.subgroupOf H'
-  refine ⟨e g, fun x ↦ ?_⟩
-  obtain ⟨n, hn⟩ := hg (e.symm x)
-  exact ⟨n, by simp only at hn ⊢; rw [← map_zpow, hn, MulEquiv.apply_symm_apply]⟩
+theorem isCyclic_of_injective [IsCyclic G'] (f : G →* G') (hf : Function.Injective f) :
+    IsCyclic G :=
+  isCyclic_of_surjective (MonoidHom.ofInjective hf).symm (MonoidHom.ofInjective hf).symm.surjective
+
+@[to_additive]
+lemma Subgroup.isCyclic_of_le {H H' : Subgroup G} (h : H ≤ H') [IsCyclic H'] : IsCyclic H :=
+  isCyclic_of_injective (Subgroup.inclusion h) (Subgroup.inclusion_injective h)
 
 open Finset Nat
 
