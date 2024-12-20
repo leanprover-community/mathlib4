@@ -290,9 +290,11 @@ variable {N₁ : Type*} {G₁ : Type*} [Group N₁] [Group G₁] {φ₁ : G₁ �
   `G ≃* G₁` that satisfy a commutativity condition `∀ n g, f₁ (φ g n) = φ₁ (f₂ g) (f₁ n)`. -/
 @[simps]
 def congr (f₁ : N ≃* N₁) (f₂ : G ≃* G₁) (h : ∀ g : G, (φ g).trans f₁ = f₁.trans (φ₁ (f₂ g))) :
-    N ⋊[φ] G →* N₁ ⋊[φ₁] G₁ where
+    N ⋊[φ] G ≃* N₁ ⋊[φ₁] G₁ where
   toFun x := ⟨f₁ x.1, f₂ x.2⟩
-  map_one' := by simp
+  invFun x := ⟨f₁.symm x.1, f₂.symm x.2⟩
+  left_inv _ := by simp
+  right_inv _ := by simp
   map_mul' x y := by
     replace h := DFunLike.ext_iff.1 (h x.right) y.left
     ext <;> simp_all
@@ -300,7 +302,7 @@ def congr (f₁ : N ≃* N₁) (f₂ : G ≃* G₁) (h : ∀ g : G, (φ g).trans
 /-- Define a isomorphism from `N ⋊[φ] G` to `N₁ ⋊[φ₁] G₁` without specifying `φ₁`. -/
 @[simps!]
 def congr' (f₁ : N ≃* N₁) (f₂ : G ≃* G₁) :
-    N ⋊[φ] G →* N₁ ⋊[(MulAut.congr f₁).toMonoidHom.comp (φ.comp f₂.symm)] G₁ :=
+    N ⋊[φ] G ≃* N₁ ⋊[MonoidHom.comp (MulAut.congr f₁) (φ.comp f₂.symm)] G₁ :=
   congr f₁ f₂ (fun _ ↦ by ext; simp)
 
 end Congr
