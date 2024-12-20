@@ -680,29 +680,24 @@ lemma mgf_add_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)
       simp_rw [mgf]
       rw [← integral_sub ht_int_pos (integrable_finset_sum _ (fun i _ ↦ h_int_pow i))]
       congr with ω
-      rw [add_mul, add_comm, exp_add]
-      rw [exp_eq_tsum, sub_eq_iff_eq_add']
-      have : ∑' n, (t * X ω) ^ n / n.factorial
-          = ∑' n, X ω ^ n / n.factorial * t ^ n := by
+      rw [add_mul, add_comm, exp_add, exp_eq_tsum, sub_eq_iff_eq_add']
+      have : ∑' n, (t * X ω) ^ n / n.factorial = ∑' n, X ω ^ n / n.factorial * t ^ n := by
         simp_rw [mul_pow]
         congr with n
         ring
       rw [this, ← tsum_mul_right]
-      symm
-      refine sum_add_tsum_compl ?_
+      refine (sum_add_tsum_compl ?_).symm
       suffices Summable fun i ↦ (t * X ω) ^ i / i.factorial * exp (v * X ω) by
         convert this using 2 with i
         ring
-      refine Summable.mul_right _ ?_
-      exact summable_pow_div_factorial _
+      exact Summable.mul_right _ <| summable_pow_div_factorial _
     _ = |∑' i : {j // j ∉ range n},
         μ[fun ω ↦ X ω ^ (i : ℕ) * exp (v * X ω)] / (i : ℕ).factorial * t ^ (i : ℕ)| := by
       have h_eq i ω : X ω ^ i / ↑i.factorial * t ^ i * exp (v * X ω)
           = X ω ^ i * exp (v * X ω) / ↑i.factorial * t ^ i := by ring
       simp_rw [h_eq]
       rw [← integral_tsum_of_summable_integral_norm]
-      · congr with i
-        rw [← integral_div, ← integral_mul_right]
+      · simp_rw [← integral_div, ← integral_mul_right]
       · refine fun i ↦ (Integrable.div_const ?_ _).mul_const _
         exact integrable_pow_mul_exp_of_integrable_exp_mul ht ht_int_pos ht_int_neg _
       · simp only [norm_mul, norm_div, norm_pow, norm_eq_abs, norm_natCast, Nat.abs_cast]
@@ -721,8 +716,7 @@ lemma mgf_add_eq_tsum (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)
       · rw [summable_abs_iff]
         exact (summable_integral_pow_mul_exp_mul ht_int_pos ht_int_neg).subtype (range n)ᶜ
       · exact (summable_integral_pow_abs_mul_exp_mul_abs ht_int_pos ht_int_neg).subtype (range n)ᶜ
-      · simp only
-        rw [abs_mul, abs_div, Nat.abs_cast, abs_pow]
+      · rw [abs_mul, abs_div, Nat.abs_cast, abs_pow]
         gcongr
         simp_rw [← norm_eq_abs]
         refine (norm_integral_le_integral_norm _).trans ?_
@@ -765,20 +759,38 @@ lemma hasFPowerSeriesOnBall_mgf' [IsFiniteMeasure μ] (ht : t ≠ 0)
       dist_zero_right] at hy
     have hy_int_pos : Integrable (fun ω ↦ rexp ((v + y) * X ω)) μ := by
       rcases le_total 0 t with ht | ht
-      · refine integrable_exp_mul_of_le_of_le ht_int_neg ht_int_pos ?_ ?_
+      · rw [abs_of_nonneg ht, abs_lt] at hy
+        refine integrable_exp_mul_of_le_of_le ht_int_neg ht_int_pos ?_ ?_
         · rw [sub_eq_add_neg]
           gcongr
-          sorry
+          exact hy.1.le
         · gcongr
-          sorry
-      · refine integrable_exp_mul_of_le_of_le ht_int_pos ht_int_neg ?_ ?_
+          exact hy.2.le
+      · rw [abs_of_nonpos ht, abs_lt, neg_neg] at hy
+        refine integrable_exp_mul_of_le_of_le ht_int_pos ht_int_neg ?_ ?_
         · gcongr
-          sorry
+          exact hy.1.le
         · rw [sub_eq_add_neg]
           gcongr
-          sorry
+          exact hy.2.le
     have hy_int_neg : Integrable (fun ω ↦ rexp ((v - y) * X ω)) μ := by
-      sorry
+      rcases le_total 0 t with ht | ht
+      · rw [abs_of_nonneg ht, abs_lt] at hy
+        refine integrable_exp_mul_of_le_of_le ht_int_neg ht_int_pos ?_ ?_
+        · gcongr
+          exact hy.2.le
+        · rw [sub_eq_add_neg]
+          gcongr
+          rw [neg_le]
+          exact hy.1.le
+      · rw [abs_of_nonpos ht, abs_lt, neg_neg] at hy
+        refine integrable_exp_mul_of_le_of_le ht_int_pos ht_int_neg ?_ ?_
+        · rw [sub_eq_add_neg]
+          gcongr
+          rw [le_neg]
+          exact hy.2.le
+        · gcongr
+          exact hy.1.le
     rw [Summable.hasSum_iff]
     · exact (mgf_add_eq_tsum hy_int_pos hy_int_neg).symm
     · exact summable_integral_pow_mul_exp_mul hy_int_pos hy_int_neg
@@ -788,29 +800,10 @@ lemma hasFPowerSeriesOnBall_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
     (ht_int_neg : Integrable (fun ω ↦ rexp (-t * X ω)) μ) :
     HasFPowerSeriesOnBall (mgf X μ)
       (FormalMultilinearSeries.ofScalars ℝ (fun n ↦ (μ[X ^ n] : ℝ) / n.factorial)) 0 ‖t‖₊ := by
-  constructor
-  · refine FormalMultilinearSeries.le_radius_of_summable _ ?_
-    simp only [Pi.pow_apply, FormalMultilinearSeries.ofScalars_norm, norm_eq_abs,
-      coe_nnnorm, abs_div, Nat.abs_cast]
-    have h := summable_integral_pow_mul ht_int_pos ht_int_neg
-    rw [← summable_abs_iff] at h
-    simp_rw [abs_mul, abs_div, abs_pow, Nat.abs_cast, Pi.pow_apply] at h
-    exact h
-  · simp [ht]
-  · intro y hy
-    simp_rw [FormalMultilinearSeries.ofScalars_apply_eq]
-    simp only [Pi.pow_apply, smul_eq_mul, zero_add]
-    simp only [Metric.emetric_ball_nnreal, coe_nnnorm, norm_eq_abs, Metric.mem_ball,
-      dist_zero_right] at hy
-    have hy_int_pos : Integrable (fun ω ↦ rexp (y * X ω)) μ :=
-      integrable_exp_mul_of_abs_le ht_int_pos ht_int_neg hy.le
-    have hy_int_neg : Integrable (fun ω ↦ rexp (- y * X ω)) μ := by
-      refine integrable_exp_mul_of_abs_le ht_int_pos ht_int_neg ?_
-      simp only [abs_neg]
-      exact hy.le
-    rw [Summable.hasSum_iff]
-    · exact (mgf_eq_tsum hy_int_pos hy_int_neg).symm
-    · exact summable_integral_pow_mul hy_int_pos hy_int_neg
+  have h := hasFPowerSeriesOnBall_mgf' ht ?_ ?_ (μ := μ) (X := X) (v := 0)
+  · simpa using h
+  · simpa using ht_int_pos
+  · simpa using ht_int_neg
 
 lemma hasFPowerSeriesAt_mgf' [IsFiniteMeasure μ] (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
@@ -839,6 +832,8 @@ lemma analyticAt_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
     AnalyticAt ℝ (mgf X μ) 0 :=
   ⟨_, hasFPowerSeriesAt_mgf ht ht_int_pos ht_int_neg⟩
 
+/-- The moment generating function is analytic on the interior of the interval on which it is
+defined. -/
 lemma analyticOnNhd_mgf [IsFiniteMeasure μ] :
     AnalyticOnNhd ℝ (mgf X μ) (interior {x | Integrable (fun ω ↦ exp (x * X ω)) μ}) := by
   intro x hx
@@ -846,10 +841,30 @@ lemma analyticOnNhd_mgf [IsFiniteMeasure μ] :
   obtain ⟨l, u, hxlu, h_subset⟩ := hx
   let t := min (x - l) (u - x) / 2
   have ht : t ≠ 0 := (ne_of_lt (by simpa [t])).symm
+  have h_pos : 0 < (x - l) ⊓ (u - x) := by simp [hxlu.1, hxlu.2]
   have hx_add_t_mem : x + t ∈ Set.Ioo l u := by
-    sorry
+    constructor
+    · simp only [t]
+      calc l < x := hxlu.1
+      _ ≤ x + ((x - l) ⊓ (u - x)) / 2 := le_add_of_nonneg_right (by positivity)
+    · simp only [t]
+      calc x + ((x - l) ⊓ (u - x)) / 2
+      _ < x + ((x - l) ⊓ (u - x)) := by gcongr; exact half_lt_self (by positivity)
+      _ ≤ x + (u - x) := by gcongr; exact inf_le_right
+      _ = u := by abel
   have hx_sub_t_mem : x - t ∈ Set.Ioo l u := by
-    sorry
+    constructor
+    · simp only [t]
+      calc l
+      _ = x - (x - l) := by abel
+      _ ≤ x - ((x - l) ⊓ (u - x)) := by gcongr; exact inf_le_left
+      _ < x - ((x - l) ⊓ (u - x)) / 2 := by gcongr; exact half_lt_self (by positivity)
+    · simp only [t]
+      calc x - ((x - l) ⊓ (u - x)) / 2
+      _ ≤ x := by
+        rw [sub_le_iff_le_add]
+        exact le_add_of_nonneg_right (by positivity)
+      _ < u := hxlu.2
   exact analyticAt_mgf' ht (h_subset hx_add_t_mem) (h_subset hx_sub_t_mem)
 
 lemma iteratedDeriv_mgf_zero [IsFiniteMeasure μ]
