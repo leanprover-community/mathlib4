@@ -21,27 +21,14 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
 
 ## Main results
 
-* `IsZGroup.isCyclic_abelianization`: a finite Z-group has cyclic abelianization.
-
-## Main results
-
-* `IsZGroup.isCyclic_abelianization`: `abelianization G` is cyclic.
-* `IsZGroup.isCyclic_commutator`: `commutator G` is cyclic.
-* `IsZGroup.coprime_commutator_index`: `commutator G` is a Hall subgroup of `G`.
+* `IsZGroup.isCyclic_abelianization`: A finite Z-group has cyclic abelianization.
+* `IsZGroup.isCyclic_commutator`: A finite Z-group has cyclic commutator subgroup.
+* `IsZGroup.coprime_commutator_index`: If `G` is a finite Z-group, then `commutator G` is a Hall
+  subgroup of `G` (`commutator G` has cardinality coprime to its index in `G`).
 * `isZGroup_iff_mulEquiv`: `G` is a Z-group if and only if `G` is isomorphic to a semidirect
   product of two cyclic groups of coprime order.
 
 -/
-
-@[to_additive]
-theorem Subgroup.map_lt_map_iff_of_injective {G G' : Type*} [Group G] [Group G'] {f : G →* G'}
-    (hf : Function.Injective f) {H K : Subgroup G} : H.map f < K.map f ↔ H < K := by
-  simp_rw [lt_iff_le_not_le, map_le_map_iff_of_injective hf]
-
-@[to_additive (attr := simp)]
-theorem Subgroup.map_subtype_lt_map_subtype {G : Type*} [Group G] {G' : Subgroup G}
-    {H K : Subgroup G'} : H.map G'.subtype < K.map G'.subtype ↔ H < K :=
-  map_lt_map_iff_of_injective G'.subtype_injective -- also clean up map_subtype_le_map_subtype
 
 theorem IsSolvable.commutator_lt_top_of_nontrivial (G : Type*) [Group G] [hG : IsSolvable G]
     [Nontrivial G] : commutator G < ⊤ := by
@@ -205,12 +192,8 @@ end Nilpotent
 
 section Cyclic
 
-variable (G)
-
-theorem _root_.Abelianization.ker_of (G : Type*) [Group G] :
-    (Abelianization.of : G →* Abelianization G).ker = commutator G :=
-  QuotientGroup.ker_mk' (commutator G)
-
+variable (G) in
+/-- A finite Z-group has cyclic commutator subgroup. -/
 theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) := by
   refine WellFoundedLT.induction (C := fun H ↦ IsCyclic (⁅H, H⁆ : Subgroup G)) (⊤ : Subgroup G) ?_
   intro H hH
@@ -429,7 +412,7 @@ theorem _root_.IsCyclic.not_dvd_card_commutator_or_not_dvd_index_commutator [Fin
 
 variable (G)
 
-/-- If `G` is a finite Z-group, then the commutator subgroup `G'` is a Hall subgroup of `G`. -/
+/-- If `G` is a finite Z-group, then `commutator G` is a Hall subgroup of `G`. -/
 theorem coprime_commutator_index [Finite G] [IsZGroup G] :
     (Nat.card (commutator G)).Coprime (commutator G).index := by
   suffices h : ∀ p, p.Prime → (¬ p ∣ Nat.card (commutator G) ∨ ¬ p ∣ (commutator G).index) by
