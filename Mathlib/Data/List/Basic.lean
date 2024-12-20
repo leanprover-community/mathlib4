@@ -1233,11 +1233,11 @@ theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
   induction i generalizing b l with
   | zero =>
     cases l
-    · simp only [length, zero_eq, lt_self_iff_false] at h
+    · simp only [scanl, length, zero_eq, lt_self_iff_false] at h
     · simp
   | succ i hi =>
     cases l
-    · simp only [length] at h
+    · simp only [scanl, length] at h
       exact absurd h (by omega)
     · simp_rw [scanl_cons]
       rw [getElem_append_right]

@@ -209,7 +209,7 @@ theorem rightInvSeq_concat (ω : List B) (i : B) :
     ris (ω.concat i) = (List.map (MulAut.conj (s i)) (ris ω)).concat (s i) := by
   induction' ω with j ω ih
   · simp
-  · dsimp [rightInvSeq]
+  · dsimp [rightInvSeq, concat]
     rw [ih]
     simp only [concat_eq_append, wordProd_append, wordProd_cons, wordProd_nil, mul_one, mul_inv_rev,
       inv_simple, cons_append, cons.injEq, and_true]
