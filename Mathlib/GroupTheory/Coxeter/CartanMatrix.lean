@@ -47,7 +47,7 @@ described as follows.
   $s_i v = v - \alpha^\vee_i (v)\alpha_i$.
 
 However, we do not actually need the matrix $k$ to satisfy all 10 of the above properties in order
-to get a reflection representation of $$W$$ as above. Namely:
+to get a reflection representation of $W$ as above. Namely:
 
 * Only properties 1, 2, and 3 are necessary for the matrix $k$ to actually yield a reflection
   representation of $W$.
@@ -59,7 +59,7 @@ to get a reflection representation of $$W$$ as above. Namely:
 * If $k$ satisfies properties 1, 2, 3, and 7, then this reflection representation is
   *crystallographic*. That is, it fixes the root lattice $\bigoplus_i\mathbb{Z} \alpha_i$.
 * If $k$ satisfies properties 1, 2, 3, and 8, then this reflection representation comes with its own
-  invariant bilinear form. This bilinear form, considered as a linear map $$V \to V^*$$, sends each
+  invariant bilinear form. This bilinear form, considered as a linear map $V \to V^*$, sends each
   simple root $\alpha_i$ to a positive multiple of the corresponding simple coroot $\alpha^\vee_i$.
 * If $k$ satisfies properties 1, 2, 3, 8, and 9, then the aforementioned bilinear form is an inner
   product on $V$. (If $k$ satisfies properties 1, 2, 3, 4, 5, 6, 8, and 9, then this implies that
