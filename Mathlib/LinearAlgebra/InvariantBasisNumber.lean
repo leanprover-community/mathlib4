@@ -7,6 +7,7 @@ import Mathlib.RingTheory.Ideal.Quotient.Basic
 import Mathlib.RingTheory.Noetherian.Orzech
 import Mathlib.RingTheory.OrzechProperty
 import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.LinearAlgebra.Finsupp.Pi
 
 /-!
 # Invariant basis number property
@@ -23,10 +24,10 @@ Let `R` be a (not necessary commutative) ring.
 
 It is also useful to consider the following stronger conditions:
 
-- the *rank condition*, witnessed by the type class `RankCondition R`, states that
-  the existence of a surjective linear map `(Fin n → R) →ₗ[R] (Fin m → R)` implies `m ≤ n`
+- The *rank condition*, witnessed by the type class `RankCondition R`, states that
+  the existence of a surjective linear map `(Fin n → R) →ₗ[R] (Fin m → R)` implies `m ≤ n`.
 
-- the *strong rank condition*, witnessed by the type class `StrongRankCondition R`, states
+- The *strong rank condition*, witnessed by the type class `StrongRankCondition R`, states
   that the existence of an injective linear map `(Fin n → R) →ₗ[R] (Fin m → R)`
   implies `n ≤ m`.
 

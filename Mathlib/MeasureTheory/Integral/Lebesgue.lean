@@ -78,7 +78,7 @@ theorem SimpleFunc.lintegral_eq_lintegral {m : MeasurableSpace α} (f : α →�
   exact le_antisymm (iSup₂_le fun g hg => lintegral_mono hg <| le_rfl)
     (le_iSup₂_of_le f le_rfl le_rfl)
 
-@[mono]
+@[gcongr, mono]
 theorem lintegral_mono' {m : MeasurableSpace α} ⦃μ ν : Measure α⦄ (hμν : μ ≤ ν) ⦃f g : α → ℝ≥0∞⦄
     (hfg : f ≤ g) : ∫⁻ a, f a ∂μ ≤ ∫⁻ a, g a ∂ν := by
   rw [lintegral, lintegral]

@@ -75,7 +75,7 @@ class SemilatticeSup (α : Type u) extends PartialOrder α where
   /-- The supremum is the *least* upper bound -/
   protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → sup a b ≤ c
 
-instance [SemilatticeSup α] : Max α where max a b := SemilatticeSup.sup a b
+instance SemilatticeSup.toMax [SemilatticeSup α] : Max α where max a b := SemilatticeSup.sup a b
 
 /--
 A type with a commutative, associative and idempotent binary `sup` operation has the structure of a
@@ -94,12 +94,6 @@ def SemilatticeSup.mk' {α : Type*} [Max α] (sup_comm : ∀ a b : α, a ⊔ b =
   le_sup_left a b := by dsimp; rw [← sup_assoc, sup_idem]
   le_sup_right a b := by dsimp; rw [sup_comm, sup_assoc, sup_idem]
   sup_le a b c hac hbc := by dsimp; rwa [sup_assoc, hbc]
-
-instance OrderDual.instSup (α : Type*) [Min α] : Max αᵒᵈ :=
-  ⟨((· ⊓ ·) : α → α → α)⟩
-
-instance OrderDual.instInf (α : Type*) [Max α] : Min αᵒᵈ :=
-  ⟨((· ⊔ ·) : α → α → α)⟩
 
 section SemilatticeSup
 
@@ -285,7 +279,7 @@ class SemilatticeInf (α : Type u) extends PartialOrder α where
   /-- The infimum is the *greatest* lower bound -/
   protected le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ inf b c
 
-instance [SemilatticeInf α] : Min α where min a b := SemilatticeInf.inf a b
+instance SemilatticeInf.toMin [SemilatticeInf α] : Min α where min a b := SemilatticeInf.inf a b
 
 instance OrderDual.instSemilatticeSup (α) [SemilatticeInf α] : SemilatticeSup αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
@@ -666,6 +660,14 @@ instance (priority := 100) LinearOrder.toLattice {α : Type u} [o : LinearOrder 
 section LinearOrder
 
 variable [LinearOrder α] {a b c d : α}
+
+@[deprecated "is syntactical" (since := "2024-11-13"), nolint synTaut]
+theorem sup_eq_max : a ⊔ b = max a b :=
+  rfl
+
+@[deprecated "is syntactical" (since := "2024-11-13"), nolint synTaut]
+theorem inf_eq_min : a ⊓ b = min a b :=
+  rfl
 
 theorem sup_ind (a b : α) {p : α → Prop} (ha : p a) (hb : p b) : p (a ⊔ b) :=
   (IsTotal.total a b).elim (fun h : a ≤ b => by rwa [sup_eq_right.2 h]) fun h => by

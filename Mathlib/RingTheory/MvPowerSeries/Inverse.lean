@@ -179,7 +179,7 @@ theorem map.isLocalHom : IsLocalHom (map σ f) :=
     rintro φ ⟨ψ, h⟩
     replace h := congr_arg (constantCoeff σ S) h
     rw [constantCoeff_map] at h
-    have : IsUnit (constantCoeff σ S ↑ψ) := isUnit_constantCoeff (↑ψ) ψ.isUnit
+    have : IsUnit (constantCoeff σ S ↑ψ) := isUnit_constantCoeff _ ψ.isUnit
     rw [h] at this
     rcases isUnit_of_map_unit f _ this with ⟨c, hc⟩
     exact isUnit_of_mul_eq_one φ (invOfUnit φ c) (mul_invOfUnit φ c hc.symm)⟩

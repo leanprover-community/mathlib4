@@ -140,10 +140,7 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
   · -- case `c < 0`: integrand is identically constant, *except* at `x = 0` if `r ≠ 0`.
     apply IntervalIntegrable.symm
     rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hc.le]
-    have : Ioc c 0 = Ioo c 0 ∪ {(0 : ℝ)} := by
-      rw [← Ioo_union_Icc_eq_Ioc hc (le_refl 0), ← Icc_def]
-      simp_rw [← le_antisymm_iff, setOf_eq_eq_singleton']
-    rw [this, integrableOn_union, and_comm]; constructor
+    rw [← Ioo_union_right hc, integrableOn_union, and_comm]; constructor
     · refine integrableOn_singleton_iff.mpr (Or.inr ?_)
       exact isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure.lt_top_of_isCompact
         isCompact_singleton
@@ -501,7 +498,7 @@ theorem integral_cos_mul_complex {z : ℂ} (hz : z ≠ 0) (a b : ℝ) :
   intro x _
   have a := Complex.hasDerivAt_sin (↑x * z)
   have b : HasDerivAt (fun y => y * z : ℂ → ℂ) z ↑x := hasDerivAt_mul_const _
-  have c : HasDerivAt (fun y : ℂ => Complex.sin (y * z)) _ ↑x := HasDerivAt.comp (𝕜 := ℂ) x a b
+  have c : HasDerivAt (Complex.sin ∘ fun y : ℂ => (y * z)) _ ↑x := HasDerivAt.comp (𝕜 := ℂ) x a b
   have d := HasDerivAt.comp_ofReal (c.div_const z)
   simp only [mul_comm] at d
   convert d using 1
@@ -664,7 +661,7 @@ theorem integral_cos_pow_aux :
   · calc
       (∫ x in a..b, cos x ^ (n + 2)) = ∫ x in a..b, cos x ^ (n + 1) * cos x := by
         simp only [_root_.pow_succ]
-      _ = C + (n + 1) * ∫ x in a..b, sin x ^ 2 * cos x ^ n := by simp [H, h, sq, -neg_add_rev]
+      _ = C + (n + 1) * ∫ x in a..b, sin x ^ 2 * cos x ^ n := by simp [C, H, h, sq, -neg_add_rev]
       _ = C + (n + 1) * ∫ x in a..b, cos x ^ n - cos x ^ (n + 2) := by
         simp [sin_sq, sub_mul, ← pow_add, add_comm]
       _ = (C + (n + 1) * ∫ x in a..b, cos x ^ n) - (n + 1) * ∫ x in a..b, cos x ^ (n + 2) := by

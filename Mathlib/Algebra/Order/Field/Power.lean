@@ -43,9 +43,6 @@ protected theorem Nat.zpow_pos_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : 0 < (a :
 theorem Nat.zpow_ne_zero_of_pos {a : ℕ} (h : 0 < a) (n : ℤ) : (a : α) ^ n ≠ 0 :=
   zpow_ne_zero _ (mod_cast h.ne')
 
-@[deprecated one_lt_zpow₀ (since := "2024-10-08")]
-theorem one_lt_zpow (ha : 1 < a) (n : ℤ) (hn : 0 < n) : 1 < a ^ n := one_lt_zpow₀ ha hn
-
 @[deprecated zpow_right_strictMono₀ (since := "2024-10-08")]
 theorem zpow_strictMono (hx : 1 < a) : StrictMono (a ^ · : ℤ → α) :=
   zpow_right_strictMono₀ hx
@@ -76,13 +73,13 @@ theorem zpow_injective (h₀ : 0 < a) (h₁ : a ≠ 1) : Injective (a ^ · : ℤ
 theorem zpow_inj (h₀ : 0 < a) (h₁ : a ≠ 1) : a ^ m = a ^ n ↔ m = n :=
   zpow_right_inj₀ h₀ h₁
 
-@[deprecated (since := "2024-10-08")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-08")]
 theorem zpow_le_max_of_min_le {x : α} (hx : 1 ≤ x) {a b c : ℤ} (h : min a b ≤ c) :
     x ^ (-c) ≤ max (x ^ (-a)) (x ^ (-b)) :=
   have : Antitone fun n : ℤ => x ^ (-n) := fun _ _ h => zpow_le_zpow_right₀ hx (neg_le_neg h)
   (this h).trans_eq this.map_min
 
-@[deprecated (since := "2024-10-08")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-08")]
 theorem zpow_le_max_iff_min_le {x : α} (hx : 1 < x) {a b c : ℤ} :
     x ^ (-c) ≤ max (x ^ (-a)) (x ^ (-b)) ↔ min a b ≤ c := by
   simp_rw [le_max_iff, min_le_iff, zpow_le_zpow_iff_right₀ hx, neg_le_neg_iff]

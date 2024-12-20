@@ -5,6 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Measure.Prod
+import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.ContinuousMap.CocompactMap
 
 /-!
@@ -271,7 +272,7 @@ end Group
 
 namespace Measure
 
--- TODO: noncomputable has to be specified explicitly. #1074 (item 8)
+-- TODO: noncomputable has to be specified explicitly. https://github.com/leanprover-community/mathlib4/issues/1074 (item 8)
 
 /-- The measure `A ↦ μ (A⁻¹)`, where `A⁻¹` is the pointwise inverse of `A`. -/
 @[to_additive "The measure `A ↦ μ (- A)`, where `- A` is the pointwise negation of `A`."]
@@ -502,7 +503,7 @@ theorem isOpenPosMeasure_of_mulLeftInvariant_of_compact (K : Set G) (hK : IsComp
 @[to_additive "A nonzero left-invariant regular measure gives positive mass to any open set."]
 instance (priority := 80) isOpenPosMeasure_of_mulLeftInvariant_of_regular [Regular μ] [NeZero μ] :
     IsOpenPosMeasure μ :=
-  let ⟨K, hK, h2K⟩ := Regular.exists_compact_not_null.mpr (NeZero.ne μ)
+  let ⟨K, hK, h2K⟩ := Regular.exists_isCompact_not_null.mpr (NeZero.ne μ)
   isOpenPosMeasure_of_mulLeftInvariant_of_compact K hK h2K
 
 /-- A nonzero left-invariant inner regular measure gives positive mass to any open set. -/
@@ -510,7 +511,7 @@ instance (priority := 80) isOpenPosMeasure_of_mulLeftInvariant_of_regular [Regul
 instance (priority := 80) isOpenPosMeasure_of_mulLeftInvariant_of_innerRegular
     [InnerRegular μ] [NeZero μ] :
     IsOpenPosMeasure μ :=
-  let ⟨K, hK, h2K⟩ := InnerRegular.exists_compact_not_null.mpr (NeZero.ne μ)
+  let ⟨K, hK, h2K⟩ := InnerRegular.exists_isCompact_not_null.mpr (NeZero.ne μ)
   isOpenPosMeasure_of_mulLeftInvariant_of_compact K hK h2K
 
 @[to_additive]
@@ -603,19 +604,10 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
 @[to_additive]
 lemma _root_.MeasurableSet.mul_closure_one_eq {s : Set G} (hs : MeasurableSet s) :
     s * (closure {1} : Set G) = s := by
-  apply MeasurableSet.induction_on_open (C := fun t ↦ t • (closure {1} : Set G) = t) ?_ ?_ ?_ hs
-  · intro U hU
-    exact hU.mul_closure_one_eq
-  · rintro t - ht
-    exact compl_mul_closure_one_eq_iff.2 ht
-  · rintro f - - h''f
-    simp only [iUnion_smul, h''f]
-
-/-- If a compact set is included in a measurable set, then so is its closure. -/
-@[to_additive (attr := deprecated IsCompact.closure_subset_measurableSet (since := "2024-01-28"))]
-lemma _root_.IsCompact.closure_subset_of_measurableSet_of_group {k s : Set G}
-    (hk : IsCompact k) (hs : MeasurableSet s) (h : k ⊆ s) : closure k ⊆ s :=
-  hk.closure_subset_measurableSet hs h
+  induction s, hs using MeasurableSet.induction_on_open with
+  | isOpen U hU => exact hU.mul_closure_one_eq
+  | compl t _ iht => exact compl_mul_closure_one_eq_iff.2 iht
+  | iUnion f _ _ ihf => simp_rw [iUnion_mul f, ihf]
 
 @[to_additive (attr := simp)]
 lemma measure_mul_closure_one (s : Set G) (μ : Measure G) :
@@ -627,11 +619,6 @@ lemma measure_mul_closure_one (s : Set G) (μ : Measure G) :
   apply measure_mono
   rw [← t_meas.mul_closure_one_eq]
   exact smul_subset_smul_right kt
-
-@[to_additive (attr := deprecated IsCompact.measure_closure (since := "2024-01-28"))]
-lemma _root_.IsCompact.measure_closure_eq_of_group {k : Set G} (hk : IsCompact k) (μ : Measure G) :
-    μ (closure k) = μ k :=
-  hk.measure_closure μ
 
 end IsMulLeftInvariant
 
@@ -775,7 +762,12 @@ nonrec theorem _root_.MulEquiv.isHaarMeasure_map [BorelSpace G] [TopologicalGrou
     [TopologicalGroup H] (e : G ≃* H) (he : Continuous e) (hesymm : Continuous e.symm) :
     IsHaarMeasure (Measure.map e μ) :=
   let f : G ≃ₜ H := .mk e
-  isHaarMeasure_map μ e he e.surjective f.isClosedEmbedding.tendsto_cocompact
+  #adaptation_note
+  /--
+  After https://github.com/leanprover/lean4/pull/6024
+  we needed to write `e.toMonoidHom` instead of just `e`, to avoid unification issues.
+  -/
+  isHaarMeasure_map μ e.toMonoidHom he e.surjective f.isClosedEmbedding.tendsto_cocompact
 
 /-- A convenience wrapper for MeasureTheory.Measure.isAddHaarMeasure_map`. -/
 instance _root_.ContinuousLinearEquiv.isAddHaarMeasure_map

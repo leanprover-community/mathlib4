@@ -14,7 +14,7 @@ This file contains the results concerning the interaction of list big operators 
 groups/monoids.
 -/
 
-variable {ι α M N P M₀ G R : Type*}
+variable {ι α M N : Type*}
 
 namespace List
 section Monoid
