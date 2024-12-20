@@ -27,10 +27,10 @@ the data that is not used for the construction of the homotopy category) and the
 analogously defined `SSet.hoFunctor₂ : SSet.Truncated.{u} 2 ⥤ Cat.{u,u}` implemented relative to
 the syntax of the 2-truncated simplex category.
 
-In the file `AlgebraicTopology.SimplicialSet.NerveAdjunction` we show the functor `SSet.hoFunctor`
-to be left adjoint to the nerve by providing an analogous decomposition of the nerve functor, made
-by possible by the fact that nerves of categories are 2-coskeletal, and then composing a pair of
-adjunctions, which factor through the category of 2-truncated simplicial sets.
+TODO: Future work will show the functor `SSet.hoFunctor` to be left adjoint to the nerve by
+providing an analogous decomposition of the nerve functor, made by possible by the fact that nerves
+of categories are 2-coskeletal, and then composing a pair of adjunctions, which factor through the
+category of 2-truncated simplicial sets.
 -/
 
 namespace SSet
@@ -41,10 +41,6 @@ section
 
 local macro:1000 (priority := high) X:term " _[" n:term "]₂" : term =>
     `(($X : SSet.Truncated 2).obj (Opposite.op ⟨SimplexCategory.mk $n, by decide⟩))
-
--- FIXME why doesn't this work?
--- local notation3:1000 (priority := high) (prettyPrint := false) " _[" n "]₂" =>
---     (X : SSet.Truncated 2).obj (Opposite.op ⟨SimplexCategory.mk n, by decide⟩)
 
 set_option quotPrecheck false
 local macro:max (priority := high) "[" n:term "]₂" : term =>
@@ -110,7 +106,7 @@ def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u, u} where
       rw [← FunctorToTypes.naturality]) }
 
 @[ext]
-lemma OneTruncation₂.Hom_ext {S : SSet.Truncated 2} {x y : OneTruncation₂ S} {f g : x ⟶ y} :
+lemma OneTruncation₂.hom_ext {S : SSet.Truncated 2} {x y : OneTruncation₂ S} {f g : x ⟶ y} :
     f.edge = g.edge → f = g := OneTruncation₂.Hom.ext
 
 section
@@ -163,8 +159,8 @@ def OneTruncation₂.ofNerve₂ (C : Type u) [Category.{u} C] :
 category. -/
 @[simps! hom_app_obj hom_app_map inv_app_obj_obj inv_app_obj_map inv_app_map]
 def OneTruncation₂.ofNerve₂.natIso :
-    nerveFunctor₂.{u,u} ⋙ SSet.oneTruncation₂ ≅ ReflQuiv.forget := by
-  refine NatIso.ofComponents (fun C => OneTruncation₂.ofNerve₂ C) ?nat
+    nerveFunctor₂.{u,u} ⋙ SSet.oneTruncation₂ ≅ ReflQuiv.forget :=
+  NatIso.ofComponents (fun C => OneTruncation₂.ofNerve₂ C) (by
   · intro C D F
     fapply ReflPrefunctor.ext <;> simp
     · exact fun _ ↦ rfl
@@ -178,7 +174,7 @@ def OneTruncation₂.ofNerve₂.natIso :
         ReflQuiv.comp_eq_comp, Nat.reduceAdd, SimplexCategory.len_mk, id_eq, op_map,
         Quiver.Hom.unop_op, nerve_map, SimplexCategory.toCat_map, ReflPrefunctor.comp_obj,
         ReflPrefunctor.comp_map]
-      simp [nerveHomEquiv, ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso, Quiv.isoOfEquiv]
+      simp [nerveHomEquiv, ReflQuiv.isoOfEquiv, ReflQuiv.isoOfQuivIso, Quiv.isoOfEquiv])
 
 end
 
