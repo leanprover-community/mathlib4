@@ -824,6 +824,17 @@ lemma hasFPowerSeriesAt_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
         (fun n ↦ (μ[fun ω ↦ X ω ^ n * exp (v * X ω)] : ℝ) / n.factorial)) v :=
   ⟨‖t‖₊, hasFPowerSeriesOnBall_mgf ht ht_int_pos ht_int_neg⟩
 
+lemma hasFPowerSeriesAt_mgf_of_mem_interior [IsFiniteMeasure μ]
+    (hv : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
+    HasFPowerSeriesAt (mgf X μ)
+      (FormalMultilinearSeries.ofScalars ℝ
+        (fun n ↦ (μ[fun ω ↦ X ω ^ n * exp (v * X ω)] : ℝ) / n.factorial)) v := by
+  rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hv
+  obtain ⟨l, u, hvlu, h_subset⟩ := hv
+  have ht : min (v - l) (u - v) / 2 ≠ 0 := (ne_of_lt (by simpa)).symm
+  exact hasFPowerSeriesAt_mgf ht (h_subset (add_half_inf_sub_mem_Ioo hvlu))
+    (h_subset (sub_half_inf_sub_mem_Ioo hvlu))
+
 lemma hasFPowerSeriesAt_mgf_zero [IsFiniteMeasure μ] (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ rexp (-t * X ω)) μ) :
@@ -837,6 +848,11 @@ lemma analyticAt_mgf [IsFiniteMeasure μ] (ht : t ≠ 0)
     AnalyticAt ℝ (mgf X μ) v :=
   ⟨_, hasFPowerSeriesAt_mgf ht ht_int_pos ht_int_neg⟩
 
+lemma analyticAt_mgf_of_mem_interior [IsFiniteMeasure μ]
+    (hv : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
+    AnalyticAt ℝ (mgf X μ) v :=
+  ⟨_, hasFPowerSeriesAt_mgf_of_mem_interior hv⟩
+
 lemma analyticAt_mgf_zero [IsFiniteMeasure μ] (ht : t ≠ 0)
     (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ rexp (-t * X ω)) μ) :
@@ -846,19 +862,43 @@ lemma analyticAt_mgf_zero [IsFiniteMeasure μ] (ht : t ≠ 0)
 /-- The moment generating function is analytic on the interior of the interval on which it is
 defined. -/
 lemma analyticOnNhd_mgf [IsFiniteMeasure μ] :
-    AnalyticOnNhd ℝ (mgf X μ) (interior {x | Integrable (fun ω ↦ exp (x * X ω)) μ}) := by
-  intro x hx
-  rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hx
-  obtain ⟨l, u, hxlu, h_subset⟩ := hx
-  have ht : min (x - l) (u - x) / 2 ≠ 0 := (ne_of_lt (by simpa)).symm
-  exact analyticAt_mgf ht (h_subset (add_half_inf_sub_mem_Ioo hxlu))
-    (h_subset (sub_half_inf_sub_mem_Ioo hxlu))
+    AnalyticOnNhd ℝ (mgf X μ) (interior {x | Integrable (fun ω ↦ exp (x * X ω)) μ}) :=
+  fun _ hx ↦ analyticAt_mgf_of_mem_interior hx
+
+@[simp]
+lemma FormalMultilinearSeries.coeff_ofScalars {p : ℕ → ℝ} {n : ℕ} :
+    (FormalMultilinearSeries.ofScalars ℝ p).coeff n = p n := by
+  simp [FormalMultilinearSeries.coeff, FormalMultilinearSeries.ofScalars, List.prod_ofFn]
+
+lemma deriv_mgf [IsFiniteMeasure μ]
+    (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
+    deriv (mgf X μ) v = μ[fun ω ↦ X ω * exp (v * X ω)] := by
+  simp [(hasFPowerSeriesAt_mgf_of_mem_interior h).deriv]
+
+lemma deriv_mgf_zero [IsFiniteMeasure μ]
+    (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
+    deriv (mgf X μ) 0 = μ[X] := by
+  simp [deriv_mgf h]
+
+lemma iteratedDeriv_mgf [IsFiniteMeasure μ]
+    (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
+    iteratedDeriv n (mgf X μ) v = μ[fun ω ↦ X ω ^ n * exp (v * X ω)] := by
+  rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at h
+  obtain ⟨l, u, hvlu, h_subset⟩ := h
+  have ht : min (v - l) (u - v) / 2 ≠ 0 := (ne_of_lt (by simpa)).symm
+  have h_series := hasFPowerSeriesOnBall_mgf ht (h_subset (add_half_inf_sub_mem_Ioo hvlu))
+    (h_subset (sub_half_inf_sub_mem_Ioo hvlu))
+  have h_fact_smul := h_series.factorial_smul 1 n
+  simp only [FormalMultilinearSeries.apply_eq_prod_smul_coeff, prod_const_one,
+    FormalMultilinearSeries.coeff_ofScalars, smul_eq_mul, one_mul, nsmul_eq_mul] at h_fact_smul
+  rw [mul_div_cancel₀] at h_fact_smul
+  · exact h_fact_smul.symm
+  · simp [n.factorial_ne_zero]
 
 lemma iteratedDeriv_mgf_zero [IsFiniteMeasure μ]
-    (hu_int_pos : Integrable (fun ω ↦ rexp (u * X ω)) μ)
-    (hu_int_neg : Integrable (fun ω ↦ rexp (- u * X ω)) μ) (n : ℕ) :
+    (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
     iteratedDeriv n (mgf X μ) 0 = μ[X ^ n] := by
-  sorry
+  simp [iteratedDeriv_mgf h n]
 
 section IndepFun
 
