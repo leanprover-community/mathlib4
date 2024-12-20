@@ -21,18 +21,19 @@ import Mathlib.Probability.Moments
 
 open MeasureTheory Real
 
-open scoped ENNReal InnerProductSpace
+open scoped ENNReal ProbabilityTheory
 
 namespace ProbabilityTheory
 
-variable {μ : Measure ℝ} {t : ℝ}
+variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {μ : Measure Ω} {X : Ω → ℝ} {t : ℝ}
 
 /-- Exponentially tilted measure. When `x ↦ exp (t * x)` is integrable, `μ.linTilted t` is the
 probability measure with density with respect to `μ` proportional to `exp (t * x)`.
 Otherwise it is 0.
 -/
 noncomputable
-def _root_.MeasureTheory.Measure.linTilted (μ : Measure ℝ) (t : ℝ) : Measure ℝ := μ.tilted (t * ·)
+def _root_.MeasureTheory.Measure.linTilted (X : Ω → ℝ) (μ : Measure Ω) (t : ℝ) : Measure Ω :=
+  μ.tilted (fun ω ↦ t * X ω)
 
 /- API needed:
 - zero measure
@@ -49,52 +50,52 @@ def _root_.MeasureTheory.Measure.linTilted (μ : Measure ℝ) (t : ℝ) : Measur
 
 -/
 
-instance : IsZeroOrProbabilityMeasure (μ.linTilted t) := by
+instance : IsZeroOrProbabilityMeasure (μ.linTilted X t) := by
   rw [Measure.linTilted]; infer_instance
 
 @[simp]
-lemma linTilted_zero_measure : (0 : Measure ℝ).linTilted t = 0 := by simp [Measure.linTilted]
+lemma linTilted_zero_measure : (0 : Measure Ω).linTilted X t = 0 := by simp [Measure.linTilted]
 
 @[simp]
-lemma linTilted_zero' : μ.linTilted (0 : ℝ) = (μ Set.univ)⁻¹ • μ := by simp [Measure.linTilted]
+lemma linTilted_zero' : μ.linTilted X (0 : ℝ) = (μ Set.univ)⁻¹ • μ := by simp [Measure.linTilted]
 
 @[simp]
-lemma linTilted_zero [IsZeroOrProbabilityMeasure μ] : μ.linTilted (0 : ℝ) = μ := by
+lemma linTilted_zero [IsZeroOrProbabilityMeasure μ] : μ.linTilted X (0 : ℝ) = μ := by
   rw [linTilted_zero']
   cases eq_zero_or_isProbabilityMeasure μ with
   | inl h => simp [h]
   | inr h => simp [h]
 
-lemma linTilted_apply' {s : Set ℝ} (hs : MeasurableSet s) :
-    μ.linTilted t s = ∫⁻ a in s, ENNReal.ofReal (exp (t * a) / mgf id μ t) ∂μ := by
+lemma linTilted_apply' {s : Set Ω} (hs : MeasurableSet s) :
+    μ.linTilted X t s = ∫⁻ a in s, ENNReal.ofReal (exp (t * X a) / mgf X μ t) ∂μ := by
   rw [Measure.linTilted, tilted_apply' _ _ hs]
   rfl
 
-lemma linTilted_apply [SFinite μ] (s : Set ℝ) :
-    μ.linTilted t s = ∫⁻ a in s, ENNReal.ofReal (exp (t * a) / mgf id μ t) ∂μ := by
+lemma linTilted_apply [SFinite μ] (s : Set Ω) :
+    μ.linTilted X t s = ∫⁻ a in s, ENNReal.ofReal (exp (t * X a) / mgf X μ t) ∂μ := by
   rw [Measure.linTilted, tilted_apply _ _]
   rfl
 
-lemma linTilted_apply_cgf [IsProbabilityMeasure μ] (s : Set ℝ)
-    (ht : Integrable (fun ω ↦ exp (t * ω)) μ) :
-    μ.linTilted t s = ∫⁻ a in s, ENNReal.ofReal (exp (t * a - cgf id μ t)) ∂μ := by
+lemma linTilted_apply_cgf [IsProbabilityMeasure μ] (s : Set Ω)
+    (ht : Integrable (fun ω ↦ exp (t * X ω)) μ) :
+    μ.linTilted X t s = ∫⁻ a in s, ENNReal.ofReal (exp (t * X a - cgf X μ t)) ∂μ := by
   simp_rw [linTilted_apply s, exp_sub]
   rw [exp_cgf]
   exact ht
 
-lemma linTilted_apply_eq_ofReal_integral' {s : Set ℝ} (hs : MeasurableSet s) :
-    μ.linTilted t s = ENNReal.ofReal (∫ a in s, exp (t * a) / mgf id μ t ∂μ) := by
+lemma linTilted_apply_eq_ofReal_integral' {s : Set Ω} (hs : MeasurableSet s) :
+    μ.linTilted X t s = ENNReal.ofReal (∫ a in s, exp (t * X a) / mgf X μ t ∂μ) := by
   rw [Measure.linTilted, tilted_apply_eq_ofReal_integral' _ hs]
   rfl
 
-lemma linTilted_apply_eq_ofReal_integral [SFinite μ] (s : Set ℝ) :
-    μ.linTilted t s = ENNReal.ofReal (∫ a in s, exp (t * a) / mgf id μ t ∂μ) := by
+lemma linTilted_apply_eq_ofReal_integral [SFinite μ] (s : Set Ω) :
+    μ.linTilted X t s = ENNReal.ofReal (∫ a in s, exp (t * X a) / mgf X μ t ∂μ) := by
   rw [Measure.linTilted, tilted_apply_eq_ofReal_integral _ s]
   rfl
 
-lemma linTilted_apply_eq_ofReal_integral_cgf [IsProbabilityMeasure μ] (s : Set ℝ)
-    (ht : Integrable (fun ω ↦ exp (t * ω)) μ) :
-    μ.linTilted t s = ENNReal.ofReal (∫ a in s, exp (t * a - cgf id μ t) ∂μ) := by
+lemma linTilted_apply_eq_ofReal_integral_cgf [IsProbabilityMeasure μ] (s : Set Ω)
+    (ht : Integrable (fun ω ↦ exp (t * X ω)) μ) :
+    μ.linTilted X t s = ENNReal.ofReal (∫ a in s, exp (t * X a - cgf X μ t) ∂μ) := by
   simp_rw [linTilted_apply_eq_ofReal_integral s, exp_sub]
   rw [exp_cgf]
   exact ht

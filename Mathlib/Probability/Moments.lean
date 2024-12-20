@@ -875,7 +875,7 @@ lemma analyticOnNhd_mgf [IsFiniteMeasure μ] :
 
 end Analytic
 
-section Deriv
+section MgfDeriv
 
 variable [IsFiniteMeasure μ]
 
@@ -883,17 +883,9 @@ lemma deriv_mgf (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) 
     deriv (mgf X μ) v = μ[fun ω ↦ X ω * exp (v * X ω)] := by
   simp [(hasFPowerSeriesAt_mgf_of_mem_interior h).deriv]
 
-lemma deriv_cgf (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
-    deriv (cgf X μ) v = μ[fun ω ↦ X ω * exp (v * X ω - cgf X μ v)] := by
-  sorry
-
 lemma deriv_mgf_zero (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
     deriv (mgf X μ) 0 = μ[X] := by
   simp [deriv_mgf h]
-
-lemma deriv_cgf_zero (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
-    deriv (cgf X μ) 0 = μ[X] := by
-  sorry
 
 /-- The nth derivative of the moment generating function of `X` at `v` in the interior of its
 domain is `μ[X^n * exp(v * X)]`. -/
@@ -916,6 +908,23 @@ lemma iteratedDeriv_mgf_zero (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp
     iteratedDeriv n (mgf X μ) 0 = μ[X ^ n] := by
   simp [iteratedDeriv_mgf h n]
 
+end MgfDeriv
+
+section CgfDeriv
+
+variable [IsFiniteMeasure μ]
+
+lemma deriv_cgf (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
+    deriv (cgf X μ) v = μ[fun ω ↦ X ω * exp (v * X ω)] / mgf X μ v := by
+  calc deriv (fun t ↦ log (mgf X μ t)) v
+  _ = deriv (mgf X μ) v / mgf X μ v := by
+    sorry
+  _ = μ[fun ω ↦ X ω * rexp (v * X ω)] / mgf X μ v := by rw [deriv_mgf h]
+
+lemma deriv_cgf_zero (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
+    deriv (cgf X μ) 0 = μ[X] / (μ Set.univ).toReal := by
+  simp [deriv_cgf h]
+
 lemma iteratedDeriv_two_cgf (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
     iteratedDeriv 2 (cgf X μ) v
       = μ[fun ω ↦ (X ω - deriv (cgf X μ) v)^2 * exp (v * X ω - cgf X μ v)] := by
@@ -926,7 +935,7 @@ lemma iteratedDeriv_three_cgf (h : v ∈ interior {t | Integrable (fun ω ↦ ex
       = μ[fun ω ↦ (X ω - deriv (cgf X μ) v)^3 * exp (v * X ω - cgf X μ v)] := by
   sorry
 
-end Deriv
+end CgfDeriv
 
 section IndepFun
 
