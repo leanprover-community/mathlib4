@@ -294,6 +294,14 @@ theorem stereographic_neg_apply (v : sphere (0 : E) 1) :
   ext1
   simp
 
+/-- The inverse stereographic projection is injective. -/
+theorem stereo_inj (hv : ‖v‖ = 1) :
+    Injective (stereoInvFun hv) :=
+  fun x y h =>
+  (stereographic hv).right_inv' (show x ∈ (stereographic hv).target by trivial) ▸
+  (stereographic hv).right_inv' (show y ∈ (stereographic hv).target by trivial) ▸
+  congrArg (stereographic hv).toPartialEquiv h
+
 end StereographicProjection
 
 section ChartedSpace
@@ -595,20 +603,12 @@ variable (hv' : v ∈ sphere 0 (1:ℝ))
 
 open Set Submodule
 
-/-- The inverse stereographic projection is injective. -/
-theorem stereo_inj : Injective (stereoInvFun hv) := fun x y h =>
-  (stereographic hv).right_inv' (show x ∈ (stereographic hv).target by trivial) ▸
-  (stereographic hv).right_inv' (show y ∈ (stereographic hv).target by trivial) ▸
-  congrArg (stereographic hv).toPartialEquiv h
-
-
-/-- Instance needed by `Submodule_homeo_Euclidean`. -/
-instance {n : ℕ} : Fact (finrank ℝ (EuclideanSpace ℝ (Fin n.succ)) = n + 1) := {out := by simp}
-
-/-- A codimension 1 subspace of Euclidean space is homeomorphic to a sphere. -/
+/-- The orthogonal complement of the span of a point on the sphere
+is homeomorphic to a Euclidean space of codimension 1. -/
 noncomputable def Submodule_homeo_Euclidean {n : ℕ}
     (v : sphere (0 : (EuclideanSpace ℝ (Fin n.succ))) 1) :
     Homeomorph ((span ℝ {v.1})ᗮ) (EuclideanSpace ℝ (Fin n)) :=
+  letI fact {n : ℕ} : Fact (finrank ℝ (EuclideanSpace ℝ (Fin n.succ)) = n + 1) := ⟨by simp⟩
   (OrthonormalBasis.fromOrthogonalSpanSingleton n (ne_zero_of_mem_unit_sphere v)).repr.toHomeomorph
 
 /-- `stereoInvFun` agrees with the inverse image of
