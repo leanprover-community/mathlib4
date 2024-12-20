@@ -945,6 +945,11 @@ Q1056283:
 
 Q1057919:
   title: Sylow theorems
+  decls:
+   - Sylow.exists_subgroup_card_pow_prime
+   - Sylow.isPretransitive_of_finite
+   - Sylow.card_dvd_index
+   - card_sylow_modEq_one
 
 Q1058662:
   title: Darboux's theorem
