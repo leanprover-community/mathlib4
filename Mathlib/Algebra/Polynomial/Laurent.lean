@@ -510,22 +510,26 @@ instance isLocalization : IsLocalization.Away (X : R[X]) R[T;T⁻¹] :=
       rintro rfl
       exact ⟨1, rfl⟩ }
 
+@[simp]
 theorem mk'_mul_T (p : R[X]) (n : ℕ) :
-  IsLocalization.mk' R[T;T⁻¹] p (⟨X^n,n,rfl⟩ : Submonoid.powers (X : R[X])) * T n =
+  IsLocalization.mk' R[T;T⁻¹] p (⟨X^n, n, rfl⟩ : Submonoid.powers (X : R[X])) * T n =
     toLaurent p := by
   rw [←toLaurent_X_pow, ←algebraMap_eq_toLaurent, IsLocalization.mk'_spec, algebraMap_eq_toLaurent]
 
+@[simp]
 theorem mk'_eq (p : R[X]) (n : ℕ) : IsLocalization.mk' R[T;T⁻¹] p
-  (⟨X^n,n,rfl⟩ : Submonoid.powers (X : R[X])) = toLaurent p * T (-n) := by
+  (⟨X^n, n, rfl⟩ : Submonoid.powers (X : R[X])) = toLaurent p * T (-n) := by
   rw [←IsUnit.mul_left_inj (isUnit_T n), mul_T_assoc, neg_add_cancel, T_zero, mul_one]
   exact mk'_mul_T p n
 
+@[simp]
 theorem mk'_one_X_pow (n : ℕ) : IsLocalization.mk' R[T;T⁻¹] 1
-  (⟨X^n,n,rfl⟩ : Submonoid.powers (X : R[X])) = T (-n) := by
+  (⟨X^n, n, rfl⟩ : Submonoid.powers (X : R[X])) = T (-n) := by
   rw [mk'_eq 1 n, toLaurent_one, one_mul]
 
+@[simp]
 theorem mk'_one_X : IsLocalization.mk' R[T;T⁻¹] 1
-  (⟨X,1,pow_one X⟩ : Submonoid.powers (X : R[X])) = T (-1) := by
+  (⟨X, 1, pow_one X⟩ : Submonoid.powers (X : R[X])) = T (-1) := by
   convert mk'_one_X_pow 1
   exact (pow_one X).symm
 
