@@ -345,6 +345,10 @@ variable {S : Type*}
 instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R (MonoidAlgebra k G) :=
   Finsupp.smulZeroClass
 
+instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
+    NoZeroSMulDivisors R (MonoidAlgebra k G) :=
+  Finsupp.noZeroSMulDivisors
+
 instance distribSMul [Semiring k] [DistribSMul R k] : DistribSMul R (MonoidAlgebra k G) :=
   Finsupp.distribSMul _ _
 
@@ -1062,6 +1066,10 @@ section Semiring
 
 instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R k[G] :=
   Finsupp.smulZeroClass
+
+instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
+    NoZeroSMulDivisors R k[G] :=
+  Finsupp.noZeroSMulDivisors
 
 variable [Semiring k] [AddMonoid G]
 

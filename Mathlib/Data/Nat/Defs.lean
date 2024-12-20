@@ -438,12 +438,23 @@ protected lemma div_le_div_right (h : a ≤ b) : a / c ≤ b / c :=
 lemma lt_of_div_lt_div (h : a / c < b / c) : a < b :=
   Nat.lt_of_not_le fun hab ↦ Nat.not_le_of_lt h <| Nat.div_le_div_right hab
 
-protected lemma div_pos (hba : b ≤ a) (hb : 0 < b) : 0 < a / b :=
-  Nat.pos_of_ne_zero fun h ↦ Nat.lt_irrefl a <|
-    calc
-      a = a % b := by simpa [h] using (mod_add_div a b).symm
-      _ < b := mod_lt a hb
-      _ ≤ a := hba
+@[simp] protected lemma div_eq_zero_iff : a / b = 0 ↔ b = 0 ∨ a < b where
+  mp h := by
+    rw [← mod_add_div a b, h, Nat.mul_zero, Nat.add_zero, or_iff_not_imp_left]
+    exact mod_lt _ ∘ Nat.pos_iff_ne_zero.2
+  mpr := by
+    obtain rfl | hb := eq_or_ne b 0
+    · simp
+    simp only [hb, false_or]
+    rw [← Nat.mul_right_inj hb, ← Nat.add_left_cancel_iff, mod_add_div]
+    simp +contextual [mod_eq_of_lt]
+
+protected lemma div_ne_zero_iff : a / b ≠ 0 ↔ b ≠ 0 ∧ b ≤ a := by simp
+
+@[simp] protected lemma div_pos_iff : 0 < a / b ↔ 0 < b ∧ b ≤ a := by
+  simp [Nat.pos_iff_ne_zero]
+
+protected lemma div_pos (hba : b ≤ a) (hb : 0 < b) : 0 < a / b := Nat.div_pos_iff.2 ⟨hb, hba⟩
 
 lemma lt_mul_of_div_lt (h : a / c < b) (hc : 0 < c) : a < b * c :=
   Nat.lt_of_not_ge <| Nat.not_le_of_gt h ∘ (Nat.le_div_iff_mul_le hc).2
@@ -622,15 +633,6 @@ lemma le_self_pow (hn : n ≠ 0) : ∀ a : ℕ, a ≤ a ^ n
   | 0 => zero_le _
   | a + 1 => by simpa using Nat.pow_le_pow_right a.succ_pos (Nat.one_le_iff_ne_zero.2 hn)
 
-lemma lt_pow_self (ha : 1 < a) : ∀ n : ℕ, n < a ^ n
-  | 0 => by simp
-  | n + 1 =>
-    calc
-      n + 1 < a ^ n + 1 := Nat.add_lt_add_right (lt_pow_self ha _) _
-      _ ≤ a ^ (n + 1) := Nat.pow_lt_pow_succ ha
-
-lemma lt_two_pow (n : ℕ) : n < 2 ^ n := lt_pow_self (by decide) n
-
 lemma one_le_pow (n m : ℕ) (h : 0 < m) : 1 ≤ m ^ n := by simpa using Nat.pow_le_pow_of_le_left h n
 
 lemma one_le_pow' (n m : ℕ) : 1 ≤ (m + 1) ^ n := one_le_pow n (m + 1) (succ_pos m)
@@ -646,14 +648,13 @@ lemma one_lt_pow' (n m : ℕ) : 1 < (m + 2) ^ (n + 1) :=
  | 0 => by simp [Nat.zero_pow (Nat.pos_of_ne_zero hn)]
  | 1 => by simp
  | a + 2 => by simp [one_lt_pow hn]
-  -- one_lt_pow_iff_of_nonneg (zero_le _) h
 
 lemma one_lt_two_pow' (n : ℕ) : 1 < 2 ^ (n + 1) := one_lt_pow n.succ_ne_zero (by decide)
 
 lemma mul_lt_mul_pow_succ (ha : 0 < a) (hb : 1 < b) : n * b < a * b ^ (n + 1) := by
   rw [Nat.pow_succ, ← Nat.mul_assoc, Nat.mul_lt_mul_right (Nat.lt_trans Nat.zero_lt_one hb)]
   exact Nat.lt_of_le_of_lt (Nat.le_mul_of_pos_left _ ha)
-    ((Nat.mul_lt_mul_left ha).2 <| Nat.lt_pow_self hb _)
+    ((Nat.mul_lt_mul_left ha).2 <| Nat.lt_pow_self hb)
 
 lemma sq_sub_sq (a b : ℕ) : a ^ 2 - b ^ 2 = (a + b) * (a - b) := by
   simpa [Nat.pow_succ] using Nat.mul_self_sub_mul_self_eq a b
@@ -1002,17 +1003,6 @@ lemma div_eq_iff_eq_of_dvd_dvd (hn : n ≠ 0) (ha : a ∣ n) (hb : b ∣ n) : n 
     exact Nat.eq_mul_of_div_eq_right ha h
   · rw [h]
 
-protected lemma div_eq_zero_iff (hb : 0 < b) : a / b = 0 ↔ a < b where
-  mp h := by rw [← mod_add_div a b, h, Nat.mul_zero, Nat.add_zero]; exact mod_lt _ hb
-  mpr h := by rw [← Nat.mul_right_inj (Nat.ne_of_gt hb), ← Nat.add_left_cancel_iff, mod_add_div,
-      mod_eq_of_lt h, Nat.mul_zero, Nat.add_zero]
-
-protected lemma div_ne_zero_iff (hb : b ≠ 0) : a / b ≠ 0 ↔ b ≤ a := by
-  rw [ne_eq, Nat.div_eq_zero_iff (Nat.pos_of_ne_zero hb), not_lt]
-
-protected lemma div_pos_iff (hb : b ≠ 0) : 0 < a / b ↔ b ≤ a := by
-  rw [Nat.pos_iff_ne_zero, Nat.div_ne_zero_iff hb]
-
 lemma le_iff_ne_zero_of_dvd (ha : a ≠ 0) (hab : a ∣ b) : a ≤ b ↔ b ≠ 0 where
   mp := by rw [← Nat.pos_iff_ne_zero] at ha ⊢; exact Nat.lt_of_lt_of_le ha
   mpr hb := Nat.le_of_dvd (Nat.pos_iff_ne_zero.2 hb) hab
@@ -1033,7 +1023,7 @@ lemma not_pos_pow_dvd : ∀ {a n : ℕ} (_ : 1 < a) (_ : 1 < n), ¬ a ^ n ∣ a
     have : succ a * succ a ^ n ∣ succ a * 1 := by simpa [pow_succ'] using h
     have : succ a ^ n ∣ 1 := Nat.dvd_of_mul_dvd_mul_left (succ_pos _) this
     have he : succ a ^ n = 1 := eq_one_of_dvd_one this
-    have : n < succ a ^ n := lt_pow_self hp n
+    have : n < succ a ^ n := n.lt_pow_self hp
     have : n < 1 := by rwa [he] at this
     have : n = 0 := Nat.eq_zero_of_le_zero <| le_of_lt_succ this
     have : 1 < 1 := by rwa [this] at hk
@@ -1041,7 +1031,7 @@ lemma not_pos_pow_dvd : ∀ {a n : ℕ} (_ : 1 < a) (_ : 1 < n), ¬ a ^ n ∣ a
 
 lemma lt_of_pow_dvd_right (hb : b ≠ 0) (ha : 2 ≤ a) (h : a ^ n ∣ b) : n < b := by
   rw [← Nat.pow_lt_pow_iff_right (succ_le_iff.1 ha)]
-  exact Nat.lt_of_le_of_lt (le_of_dvd (Nat.pos_iff_ne_zero.2 hb) h) (lt_pow_self ha _)
+  exact Nat.lt_of_le_of_lt (le_of_dvd (Nat.pos_iff_ne_zero.2 hb) h) (Nat.lt_pow_self ha)
 
 lemma div_dvd_of_dvd (h : n ∣ m) : m / n ∣ m := ⟨n, (Nat.div_mul_cancel h).symm⟩
 
@@ -1275,7 +1265,7 @@ lemma dvd_mul_of_div_dvd (h : b ∣ a) (hdiv : a / b ∣ c) : a ∣ b * c := by
 /-- If a small natural number is divisible by a larger natural number,
 the small number is zero. -/
 lemma eq_zero_of_dvd_of_lt (w : a ∣ b) (h : b < a) : b = 0 :=
-  Nat.eq_zero_of_dvd_of_div_eq_zero w ((Nat.div_eq_zero_iff (lt_of_le_of_lt (zero_le b) h)).mpr h)
+  Nat.eq_zero_of_dvd_of_div_eq_zero w (by simp [h])
 
 lemma le_of_lt_add_of_dvd (h : a < b + n) : n ∣ a → n ∣ b → a ≤ b := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩

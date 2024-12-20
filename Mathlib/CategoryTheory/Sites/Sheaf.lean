@@ -149,12 +149,12 @@ theorem isLimit_iff_isSheafFor :
   · intro hu E x hx
     specialize hu hx.cone
     rw [(homEquivAmalgamation hx).uniqueCongr.nonempty_congr] at hu
-    exact (unique_subtype_iff_exists_unique _).1 hu
+    exact (unique_subtype_iff_existsUnique _).1 hu
   · rintro h ⟨E, π⟩
     let eqv := conesEquivSieveCompatibleFamily P S (op E)
     rw [← eqv.left_inv π]
     erw [(homEquivAmalgamation (eqv π).2).uniqueCongr.nonempty_congr]
-    rw [unique_subtype_iff_exists_unique]
+    rw [unique_subtype_iff_existsUnique]
     exact h _ _ (eqv π).2
 
 /-- Given sieve `S` and presheaf `P : Cᵒᵖ ⥤ A`, their natural associated cone admits at most one
@@ -267,21 +267,24 @@ variable {P : Cᵒᵖ ⥤ A} (hP : Presheaf.IsSheaf J P) {I : Type*} {S : C} {X 
     a ≫ f i = b ≫ f j → x i ≫ P.map a.op = x j ≫ P.map b.op)
 include hP hf hx
 
-lemma IsSheaf.exists_unique_amalgamation_ofArrows :
+lemma IsSheaf.existsUnique_amalgamation_ofArrows :
     ∃! (g : E ⟶ P.obj (op S)), ∀ (i : I), g ≫ P.map (f i).op = x i :=
   (Presieve.isSheafFor_arrows_iff _ _).1
     ((Presieve.isSheafFor_iff_generate _).2 (hP E _ hf)) x (fun _ _ _ _ _ w => hx _ _ w)
+
+@[deprecated (since := "2024-12-17")]
+alias IsSheaf.exists_unique_amalgamation_ofArrows := IsSheaf.existsUnique_amalgamation_ofArrows
 
 /-- If `P : Cᵒᵖ ⥤ A` is a sheaf and `f i : X i ⟶ S` is a covering family, then
 a morphism `E ⟶ P.obj (op S)` can be constructed from a compatible family of
 morphisms `x : E ⟶ P.obj (op (X i))`. -/
 def IsSheaf.amalgamateOfArrows : E ⟶ P.obj (op S) :=
-  (hP.exists_unique_amalgamation_ofArrows f hf x hx).choose
+  (hP.existsUnique_amalgamation_ofArrows f hf x hx).choose
 
 @[reassoc (attr := simp)]
 lemma IsSheaf.amalgamateOfArrows_map (i : I) :
     hP.amalgamateOfArrows f hf x hx ≫ P.map (f i).op = x i :=
-  (hP.exists_unique_amalgamation_ofArrows f hf x hx).choose_spec.1 i
+  (hP.existsUnique_amalgamation_ofArrows f hf x hx).choose_spec.1 i
 
 end
 

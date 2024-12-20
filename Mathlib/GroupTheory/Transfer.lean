@@ -73,6 +73,63 @@ theorem smul_diff_smul (g : G) : diff ϕ (g • S) (g • T) = diff ϕ S T :=
 
 end leftTransversals
 
+open Equiv Function MemLeftTransversals MulAction ZMod
+
+variable (g : G)
+
+variable (H) in
+/-- The transfer transversal as a function. Given a `⟨g⟩`-orbit `q₀, g • q₀, ..., g ^ (m - 1) • q₀`
+  in `G ⧸ H`, an element `g ^ k • q₀` is mapped to `g ^ k • g₀` for a fixed choice of
+  representative `g₀` of `q₀`. -/
+noncomputable def transferFunction : G ⧸ H → G := fun q =>
+  g ^ (cast (quotientEquivSigmaZMod H g q).2 : ℤ) * (quotientEquivSigmaZMod H g q).1.out.out
+
+lemma transferFunction_apply (q : G ⧸ H) :
+    transferFunction H g q =
+      g ^ (cast (quotientEquivSigmaZMod H g q).2 : ℤ) *
+        (quotientEquivSigmaZMod H g q).1.out.out := rfl
+
+lemma coe_transferFunction (q : G ⧸ H) : ↑(transferFunction H g q) = q := by
+  rw [transferFunction_apply, ← smul_eq_mul, Quotient.coe_smul_out,
+    ← quotientEquivSigmaZMod_symm_apply, Sigma.eta, symm_apply_apply]
+
+variable (H) in
+/-- The transfer transversal as a set. Contains elements of the form `g ^ k • g₀` for fixed choices
+of representatives `g₀` of fixed choices of representatives `q₀` of `⟨g⟩`-orbits in `G ⧸ H`. -/
+def transferSet : Set G := Set.range (transferFunction H g)
+
+lemma mem_transferSet (q : G ⧸ H) : transferFunction H g q ∈ transferSet H g := ⟨q, rfl⟩
+
+variable (H) in
+/-- The transfer transversal. Contains elements of the form `g ^ k • g₀` for fixed choices
+  of representatives `g₀` of fixed choices of representatives `q₀` of `⟨g⟩`-orbits in `G ⧸ H`. -/
+def transferTransversal : leftTransversals (H : Set G) :=
+  ⟨transferSet H g, range_mem_leftTransversals (coe_transferFunction g)⟩
+
+lemma transferTransversal_apply (q : G ⧸ H) :
+    ↑(toEquiv (transferTransversal H g).2 q) = transferFunction H g q :=
+  toEquiv_apply (coe_transferFunction g) q
+
+lemma transferTransversal_apply' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
+    (k : ZMod (minimalPeriod (g • ·) q.out)) :
+    ↑(toEquiv (transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out)) =
+      g ^ (cast k : ℤ) * q.out.out := by
+  rw [transferTransversal_apply, transferFunction_apply, ← quotientEquivSigmaZMod_symm_apply,
+    apply_symm_apply]
+
+lemma transferTransversal_apply'' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
+    (k : ZMod (minimalPeriod (g • ·) q.out)) :
+    ↑(toEquiv (g • transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out)) =
+      if k = 0 then g ^ minimalPeriod (g • ·) q.out * q.out.out
+      else g ^ (cast k : ℤ) * q.out.out := by
+  rw [smul_apply_eq_smul_apply_inv_smul, transferTransversal_apply, transferFunction_apply, ←
+    mul_smul, ← zpow_neg_one, ← zpow_add, quotientEquivSigmaZMod_apply, smul_eq_mul, ← mul_assoc,
+    ← zpow_one_add, Int.cast_add, Int.cast_neg, Int.cast_one, intCast_cast, cast_id', id, ←
+    sub_eq_neg_add, cast_sub_one, add_sub_cancel]
+  by_cases hk : k = 0
+  · rw [if_pos hk, if_pos hk, zpow_natCast]
+  · rw [if_neg hk, if_neg hk]
+
 end Subgroup
 
 namespace MonoidHom
