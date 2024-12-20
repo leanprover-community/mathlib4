@@ -53,23 +53,36 @@ variable {I} {x y : R}
 instance one (I : Ideal R) : One (R ⧸ I) :=
   ⟨Submodule.Quotient.mk 1⟩
 
+section IsTwoSided
+
+variable {R : Type*} [Ring R]
+
 /-- On `Ideal`s, `Submodule.quotientRel` is a ring congruence. -/
-protected def ringCon (I : Ideal R) : RingCon R :=
+protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R :=
   { QuotientAddGroup.con I.toAddSubgroup with
     mul' := fun {a₁ b₁ a₂ b₂} h₁ h₂ => by
       rw [Submodule.quotientRel_def] at h₁ h₂ ⊢
-      have F := I.add_mem (I.mul_mem_left a₂ h₁) (I.mul_mem_right b₁ h₂)
-      have : a₁ * a₂ - b₁ * b₂ = a₂ * (a₁ - b₁) + (a₂ - b₂) * b₁ := by
-        rw [mul_sub, sub_mul, sub_add_sub_cancel, mul_comm, mul_comm b₁]
-      rwa [← this] at F }
+      convert I.add_mem (I.mul_mem_left a₁ h₂) (mul_mem_right b₂ _ h₁) using 1
+      rw [mul_sub, sub_mul, sub_add_sub_cancel] }
 
 -- This instance makes use of the existing AddCommGroup instance to boost performance.
-instance commRing (I : Ideal R) : CommRing (R ⧸ I) where
+instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) where
   __ : AddCommGroup (R ⧸ I) := inferInstance
-  __ : CommRing (Quotient.ringCon I).Quotient := inferInstance
+  __ : Ring (Quotient.ringCon I).Quotient := inferInstance
+
+end IsTwoSided
+
+variable (I)
+instance commRing : CommRing (R ⧸ I) where
+  mul_comm := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (mul_comm a b)
+
+instance : Ring (R ⧸ I) := inferInstance
+instance commSemiring : CommSemiring (R ⧸ I) := inferInstance
+instance semiring : Semiring (R ⧸ I) := inferInstance
 
 -- Sanity test to make sure no diamonds have emerged in `commRing`
 example : (commRing I).toAddCommGroup = Submodule.Quotient.addCommGroup I := rfl
+variable {I}
 
 /-- The ring homomorphism from a ring `R` to a quotient ring `R/I`. -/
 def mk (I : Ideal R) : R →+* R ⧸ I where
