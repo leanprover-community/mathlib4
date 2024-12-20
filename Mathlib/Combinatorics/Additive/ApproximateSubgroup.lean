@@ -4,12 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Group.Subgroup.Pointwise
-import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Combinatorics.Additive.CovBySMul
 import Mathlib.Combinatorics.Additive.RuzsaCovering
 import Mathlib.Combinatorics.Additive.SmallTripling
 import Mathlib.Combinatorics.Additive.VerySmallDoubling
-import Mathlib.Tactic.Bound
 
 /-!
 # Approximate subgroups
