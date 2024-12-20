@@ -56,4 +56,11 @@ class ModelCategory where
   cm5b : MorphismProperty.HasFactorization (cofibrations C) (trivialFibrations C) := by
     infer_instance
 
+namespace ModelCategory
+
+attribute [instance] categoryWithFibrations categoryWithCofibrations categoryWithWeakEquivalences
+  cm1a cm1b cm2 cm3a cm3b cm3c cm4a cm4b cm5a cm5b
+
+end ModelCategory
+
 end HomotopicalAlgebra
