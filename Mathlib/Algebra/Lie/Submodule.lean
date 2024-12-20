@@ -514,9 +514,12 @@ theorem isCompl_iff_coe_toSubmodule :
     IsCompl N N' ↔ IsCompl (N : Submodule R M) (N' : Submodule R M) := by
   simp only [isCompl_iff, disjoint_iff_coe_toSubmodule, codisjoint_iff_coe_toSubmodule]
 
-theorem independent_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
-    CompleteLattice.Independent N ↔ CompleteLattice.Independent fun i ↦ (N i : Submodule R M) := by
-  simp [CompleteLattice.independent_def, disjoint_iff_coe_toSubmodule]
+theorem iSupIndep_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
+    iSupIndep N ↔ iSupIndep fun i ↦ (N i : Submodule R M) := by
+  simp [iSupIndep_def, disjoint_iff_coe_toSubmodule]
+
+@[deprecated (since := "2024-11-24")]
+alias independent_iff_coe_toSubmodule := iSupIndep_iff_coe_toSubmodule
 
 theorem iSup_eq_top_iff_coe_toSubmodule {ι : Sort*} {N : ι → LieSubmodule R L M} :
     ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := by
@@ -835,7 +838,7 @@ theorem comap_incl_eq_bot : N₂.comap N.incl = ⊥ ↔ N ⊓ N₂ = ⊥ := by
     inf_coe_toSubmodule]
   rw [← Submodule.disjoint_iff_comap_eq_bot, disjoint_iff]
 
-@[mono]
+@[gcongr, mono]
 theorem map_mono (h : N ≤ N₂) : N.map f ≤ N₂.map f :=
   Set.image_subset _ h
 
@@ -1206,15 +1209,9 @@ lemma incl_injective (I : LieIdeal R L) : Function.Injective I.incl :=
 
 @[simp]
 theorem comap_incl_self : comap I.incl I = ⊤ := by ext; simp
-  --  porting note: `ext; simp` works also in mathlib3, though the proof used to be
-  --  rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.top_coeSubmodule,
-  --    LieIdeal.comap_coeSubmodule, LieIdeal.incl_coe, Submodule.comap_subtype_self]
 
 @[simp]
 theorem ker_incl : I.incl.ker = ⊥ := by ext; simp
-  --  porting note: `ext; simp` works also in mathlib3, though the proof used to be
-  --  rw [← LieSubmodule.coe_toSubmodule_eq_iff, I.incl.ker_coeSubmodule,
-  --    LieSubmodule.bot_coeSubmodule, incl_coe, Submodule.ker_subtype]
 
 @[simp]
 theorem incl_idealRange : I.incl.idealRange = I := by

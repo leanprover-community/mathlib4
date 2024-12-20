@@ -117,7 +117,7 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
       (hf'.and_eventually (HB.and (Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, hy⟩))).exists
     refine ⟨z, ?_, hz⟩
     have := (hfz.trans hzB).le
-    rwa [slope_def_field, slope_def_field, div_le_div_right (sub_pos.2 hz.1), hxB,
+    rwa [slope_def_field, slope_def_field, div_le_div_iff_of_pos_right (sub_pos.2 hz.1), hxB,
       sub_le_sub_iff_right] at this
 
 /-- General fencing theorem for continuous functions with an estimate on the derivative.
@@ -552,7 +552,7 @@ theorem norm_image_sub_le_of_norm_hasFDerivWithin_le'
   calc
     ‖f y - f x - φ (y - x)‖ = ‖f y - f x - (φ y - φ x)‖ := by simp
     _ = ‖f y - φ y - (f x - φ x)‖ := by congr 1; abel
-    _ = ‖g y - g x‖ := by simp
+    _ = ‖g y - g x‖ := by simp [g]
     _ ≤ C * ‖y - x‖ := Convex.norm_image_sub_le_of_norm_hasFDerivWithin_le hg bound hs xs ys
 
 /-- Variant of the mean value inequality on a convex set. Version with `fderivWithin`. -/

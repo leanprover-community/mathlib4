@@ -120,7 +120,7 @@ def reflectiveChosenFiniteProducts [ChosenFiniteProducts C] [Reflective i] :
         ((reflector i).map (fst (i.obj X) (i.obj Y)) ≫ (reflectorAdjunction i).counit.app _)
         ((reflector i).map (snd (i.obj X) (i.obj Y)) ≫ (reflectorAdjunction i).counit.app _)
       isLimit := by
-        apply (by infer_instance : ReflectsLimit _ i).reflects
+        apply isLimitOfReflects i
         apply IsLimit.equivOfNatIsoOfIso (pairComp X Y _) _ _ _|>.invFun
           (product (i.obj X) (i.obj Y)).isLimit
         fapply BinaryFan.ext
@@ -141,7 +141,7 @@ def reflectiveChosenFiniteProducts [ChosenFiniteProducts C] [Reflective i] :
   terminal :=
     { cone := Limits.asEmptyCone <| (reflector i).obj (𝟙_ C)
       isLimit := by
-        apply (by infer_instance : ReflectsLimit _ i).reflects
+        apply isLimitOfReflects i
         apply isLimitChangeEmptyCone _ ChosenFiniteProducts.terminal.isLimit
         letI : IsIso ((reflectorAdjunction i).unit.app (𝟙_ C)) := by
           apply Functor.essImage.unit_isIso
@@ -195,15 +195,15 @@ def cartesianClosedOfReflective : CartesianClosed D where
         · symm
           refine NatIso.ofComponents (fun X => ?_) (fun f => ?_)
           · haveI :=
-              Adjunction.rightAdjointPreservesLimits.{0, 0} (reflectorAdjunction i)
+              Adjunction.rightAdjoint_preservesLimits.{0, 0} (reflectorAdjunction i)
             apply asIso (prodComparison i B X)
           · dsimp [asIso]
             rw [prodComparison_natural_whiskerLeft]
         · apply (exponentialIdealReflective i _).symm }
 
 -- It's annoying that I need to do this.
-attribute [-instance] CategoryTheory.preservesLimitOfCreatesLimitAndHasLimit
-  CategoryTheory.preservesLimitOfShapeOfCreatesLimitsOfShapeAndHasLimitsOfShape
+attribute [-instance] CategoryTheory.preservesLimit_of_createsLimit_and_hasLimit
+  CategoryTheory.preservesLimitOfShape_of_createsLimitsOfShape_and_hasLimitsOfShape
 
 /-- We construct a bijection between morphisms `L(A ⊗ B) ⟶ X` and morphisms `LA ⊗ LB ⟶ X`.
 This bijection has two key properties:
@@ -231,8 +231,8 @@ noncomputable def bijection (A B : C) (X : D) :
     _ ≃ (i.obj ((reflector i).obj A) ⊗ i.obj ((reflector i).obj B) ⟶ i.obj X) :=
       ((exp.adjunction _).homEquiv _ _).symm
     _ ≃ (i.obj ((reflector i).obj A ⊗ (reflector i).obj B) ⟶ i.obj X) :=
-      haveI : Limits.PreservesLimits i := (reflectorAdjunction i).rightAdjointPreservesLimits
-      haveI := Limits.preservesSmallestLimitsOfPreservesLimits i
+      haveI : Limits.PreservesLimits i := (reflectorAdjunction i).rightAdjoint_preservesLimits
+      haveI := Limits.preservesSmallestLimits_of_preservesLimits i
       Iso.homCongr (prodComparisonIso _ _ _).symm (Iso.refl (i.obj X))
     _ ≃ ((reflector i).obj A ⊗ (reflector i).obj B ⟶ X) :=
       i.fullyFaithfulOfReflective.homEquiv.symm
@@ -292,21 +292,21 @@ open Limits
 If a reflective subcategory is an exponential ideal, then the reflector preserves binary products.
 This is the converse of `exponentialIdeal_of_preserves_binary_products`.
 -/
-noncomputable def preservesBinaryProductsOfExponentialIdeal :
+lemma preservesBinaryProducts_of_exponentialIdeal :
     PreservesLimitsOfShape (Discrete WalkingPair) (reflector i) where
   preservesLimit {K} :=
-    letI := preservesLimitPairOfIsIsoProdComparison
+    letI := preservesLimit_pair_of_isIso_prodComparison
       (reflector i) (K.obj ⟨WalkingPair.left⟩) (K.obj ⟨WalkingPair.right⟩)
-    Limits.preservesLimitOfIsoDiagram _ (diagramIsoPair K).symm
+    Limits.preservesLimit_of_iso_diagram _ (diagramIsoPair K).symm
 
 /--
 If a reflective subcategory is an exponential ideal, then the reflector preserves finite products.
 -/
-noncomputable def preservesFiniteProductsOfExponentialIdeal (J : Type) [Fintype J] :
+lemma preservesFiniteProducts_of_exponentialIdeal (J : Type) [Fintype J] :
     PreservesLimitsOfShape (Discrete J) (reflector i) := by
-  letI := preservesBinaryProductsOfExponentialIdeal i
-  letI : PreservesLimitsOfShape _ (reflector i) := leftAdjointPreservesTerminalOfReflective.{0} i
-  apply preservesFiniteProductsOfPreservesBinaryAndTerminal (reflector i) J
+  letI := preservesBinaryProducts_of_exponentialIdeal i
+  letI : PreservesLimitsOfShape _ (reflector i) := leftAdjoint_preservesTerminal_of_reflective.{0} i
+  apply preservesFiniteProducts_of_preserves_binary_and_terminal (reflector i) J
 
 end
 

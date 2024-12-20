@@ -5,7 +5,8 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 
 import Mathlib.Algebra.Group.AddChar
-import Mathlib.Algebra.Order.Ring.Finset
+import Mathlib.Algebra.Group.TypeTags.Finite
+import Mathlib.Algebra.Order.GroupWithZero.Finset
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Analysis.Normed.Group.Rat
@@ -59,7 +60,7 @@ instance Pi.nonUnitalSeminormedRing {π : ι → Type*} [Fintype ι]
               Finset.univ.sup ((fun i => ‖x i‖₊) * fun i => ‖y i‖₊) :=
             Finset.sup_mono_fun fun _ _ => norm_mul_le _ _
           _ ≤ (Finset.univ.sup fun i => ‖x i‖₊) * Finset.univ.sup fun i => ‖y i‖₊ :=
-            Finset.sup_mul_le_mul_sup_of_nonneg _ (fun _ _ => zero_le _) fun _ _ => zero_le _
+            Finset.sup_mul_le_mul_sup_of_nonneg (fun _ _ => zero_le _) fun _ _ => zero_le _
            }
 
 end NonUnitalSeminormedRing
@@ -428,7 +429,7 @@ lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormedFie
   · exact Metric.isClosed_ball.isComplete
   rcases NormedField.discreteTopology_or_nontriviallyNormedField K with _|⟨_, rfl⟩
   · rwa [completeSpace_iff_isComplete_univ,
-         ← NormedDivisionRing.discreteTopology_unit_closedBall_eq_univ]
+         ← NormedDivisionRing.unitClosedBall_eq_univ_of_discrete]
   refine Metric.complete_of_cauchySeq_tendsto fun u hu ↦ ?_
   obtain ⟨k, hk⟩ := hu.norm_bddAbove
   have kpos : 0 ≤ k := (_root_.norm_nonneg (u 0)).trans (hk (by simp))

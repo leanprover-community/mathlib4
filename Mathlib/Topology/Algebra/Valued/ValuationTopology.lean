@@ -42,9 +42,10 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
       cases' exists_square_le γ with γ₀ h
       use γ₀
       rintro - ⟨r, r_in, s, s_in, rfl⟩
+      simp only [ltAddSubgroup, AddSubgroup.coe_set_mk, mem_setOf_eq] at r_in s_in
       calc
         (v (r * s) : Γ₀) = v r * v s := Valuation.map_mul _ _ _
-        _ < γ₀ * γ₀ := mul_lt_mul₀ r_in s_in
+        _ < γ₀ * γ₀ := by gcongr <;> exact zero_le'
         _ ≤ γ := mod_cast h
     leftMul := by
       rintro x γ

@@ -53,14 +53,15 @@ def isTerminal_of_isSheafFor_empty_presieve : IsTerminal (F.obj (op I)) := by
   choose t h using hF (by tauto) (by tauto)
   exact ⟨⟨fun _ ↦ t⟩, fun a ↦ by ext; exact h.2 _ (by tauto)⟩
 
+include hF in
 /--
 If `F` is a presheaf which satisfies the sheaf condition with respect to the empty presieve on the
 initial object, then `F` preserves terminal objects.
 -/
-noncomputable
-def preservesTerminalOfIsSheafForEmpty (hI : IsInitial I) : PreservesLimit (Functor.empty Cᵒᵖ) F :=
+lemma preservesTerminal_of_isSheaf_for_empty (hI : IsInitial I) :
+    PreservesLimit (Functor.empty.{0} Cᵒᵖ) F :=
   have := hI.hasInitial
-  (preservesTerminalOfIso F
+  (preservesTerminal_of_iso F
     ((F.mapIso (terminalIsoIsTerminal (terminalOpOfInitial initialIsInitial)) ≪≫
     (F.mapIso (initialIsoIsInitial hI).symm.op) ≪≫
     (terminalIsoIsTerminal (isTerminal_of_isSheafFor_empty_presieve I F hF)).symm)))
@@ -114,9 +115,8 @@ theorem isSheafFor_of_preservesProduct [PreservesLimit (Discrete.functor (fun x 
 
 variable [HasInitial C] [∀ i, Mono (c.inj i)]
   (hd : Pairwise fun i j => IsPullback (initial.to _) (initial.to _) (c.inj i) (c.inj j))
-include hd
 
-include hF hI in
+include hd hF hI in
 /--
 The two parallel maps in the equalizer diagram for the sheaf condition corresponding to the
 inclusion maps in a disjoint coproduct are equal.
@@ -129,34 +129,33 @@ theorem firstMap_eq_secondMap :
     Equalizer.Presieve.Arrows.secondMap]
   by_cases hi : i = j
   · rw [hi, Mono.right_cancellation _ _ pullback.condition]
-  · have := preservesTerminalOfIsSheafForEmpty F hF hI
+  · have := preservesTerminal_of_isSheaf_for_empty F hF hI
     apply_fun (F.mapIso ((hd hi).isoPullback).op ≪≫ F.mapIso (terminalIsoIsTerminal
       (terminalOpOfInitial initialIsInitial)).symm ≪≫ (PreservesTerminal.iso F)).hom using
       injective_of_mono _
     ext ⟨i⟩
     exact i.elim
 
+include hc hd hF hI in
 /--
 If `F` is a presheaf which `IsSheafFor` a presieve of arrows and the empty presieve, then it
 preserves the product corresponding to the presieve of arrows.
 -/
-noncomputable
-def preservesProductOfIsSheafFor
-    (hd : Pairwise fun i j => IsPullback (initial.to _) (initial.to _) (c.inj i) (c.inj j))
+lemma preservesProduct_of_isSheafFor
     (hF' : (ofArrows X c.inj).IsSheafFor F) :
     PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F := by
   have : HasCoproduct X := ⟨⟨c, hc⟩⟩
-  refine @PreservesProduct.ofIsoComparison _ _ _ _ F _ (fun x ↦ op (X x)) _ _ ?_
+  refine @PreservesProduct.of_iso_comparison _ _ _ _ F _ (fun x ↦ op (X x)) _ _ ?_
   rw [piComparison_fac (hc := hc)]
   refine IsIso.comp_isIso' inferInstance ?_
   rw [isIso_iff_bijective, Function.bijective_iff_existsUnique]
   rw [Equalizer.Presieve.Arrows.sheaf_condition, Limits.Types.type_equalizer_iff_unique] at hF'
   exact fun b ↦ hF' b (congr_fun (firstMap_eq_secondMap F hF hI c hd) b)
 
-include hF hI hc in
+include hc hd hF hI in
 theorem isSheafFor_iff_preservesProduct : (ofArrows X c.inj).IsSheafFor F ↔
     Nonempty (PreservesLimit (Discrete.functor (fun x ↦ op (X x))) F) := by
-  refine ⟨fun hF' ↦ ⟨preservesProductOfIsSheafFor _ hF hI c hc hd hF'⟩, fun hF' ↦ ?_⟩
+  refine ⟨fun hF' ↦ ⟨preservesProduct_of_isSheafFor _ hF hI c hc hd hF'⟩, fun hF' ↦ ?_⟩
   let _ := hF'.some
   exact isSheafFor_of_preservesProduct F c hc
 

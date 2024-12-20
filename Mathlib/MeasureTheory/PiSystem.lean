@@ -664,26 +664,34 @@ theorem generateFrom_eq {s : Set (Set α)} (hs : IsPiSystem s) :
 
 end DynkinSystem
 
-theorem induction_on_inter {C : Set α → Prop} {s : Set (Set α)} [m : MeasurableSpace α]
-    (h_eq : m = generateFrom s) (h_inter : IsPiSystem s) (h_empty : C ∅) (h_basic : ∀ t ∈ s, C t)
-    (h_compl : ∀ t, MeasurableSet t → C t → C tᶜ)
-    (h_union :
-      ∀ f : ℕ → Set α,
-        Pairwise (Disjoint on f) → (∀ i, MeasurableSet (f i)) → (∀ i, C (f i)) → C (⋃ i, f i)) :
-    ∀ ⦃t⦄, MeasurableSet t → C t :=
+/-- Induction principle for measurable sets.
+If `s` is a π-system that generates the product `σ`-algebra on `α`
+and a predicate `C` defined on measurable sets is true
+
+- on the empty set;
+- on each set `t ∈ s`;
+- on the complement of a measurable set that satisfies `C`;
+- on the union of a sequence of pairwise disjoint measurable sets that satisfy `C`,
+
+then it is true on all measurable sets in `α`. -/
+@[elab_as_elim]
+theorem induction_on_inter {m : MeasurableSpace α} {C : ∀ s : Set α, MeasurableSet s → Prop}
+    {s : Set (Set α)} (h_eq : m = generateFrom s) (h_inter : IsPiSystem s)
+    (empty : C ∅ .empty) (basic : ∀ t (ht : t ∈ s), C t <| h_eq ▸ .basic t ht)
+    (compl : ∀ t (htm : MeasurableSet t), C t htm → C tᶜ htm.compl)
+    (iUnion : ∀ (f : ℕ → Set α), Pairwise (Disjoint on f) → ∀ (hfm : ∀ i, MeasurableSet (f i)),
+      (∀ i, C (f i) (hfm i)) → C (⋃ i, f i) (.iUnion hfm)) :
+    ∀ t (ht : MeasurableSet t), C t ht := by
   have eq : MeasurableSet = DynkinSystem.GenerateHas s := by
     rw [h_eq, DynkinSystem.generateFrom_eq h_inter]
     rfl
-  fun t ht =>
-  have : DynkinSystem.GenerateHas s t := by rwa [eq] at ht
-  this.recOn h_basic h_empty
-    (fun {t} ht =>
-      h_compl t <| by
-        rw [eq]
-        exact ht)
-    fun {f} hf ht =>
-    h_union f hf fun i => by
-      rw [eq]
-      exact ht _
+  suffices ∀ t (ht : DynkinSystem.GenerateHas s t), C t (eq ▸ ht) from
+    fun t ht ↦ this t (eq ▸ ht)
+  intro t ht
+  induction ht with
+  | basic u hu => exact basic u hu
+  | empty => exact empty
+  | @compl u hu ihu => exact compl _ (eq ▸ hu) ihu
+  | @iUnion f hfd hf ihf => exact iUnion f hfd (eq ▸ hf) ihf
 
 end MeasurableSpace
