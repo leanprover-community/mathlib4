@@ -74,7 +74,7 @@ variable {A : Type*} [CommSemiring A] (I : Ideal A)
 structure DividedPowers where
   /-- The divided power function underlying a divided power structure -/
   dpow : ℕ → A → A
-  dpow_null : ∀ {n x} (_ : x ∉ I), dpow n x = 0
+  dpow_null : ∀ {n x} (_ : x ∉ I), dpow n x = 0 -- TODO rename away from "null"
   dpow_zero : ∀ {x} (_ : x ∈ I), dpow 0 x = 1
   dpow_one : ∀ {x} (_ : x ∈ I), dpow 1 x = x
   dpow_mem : ∀ {n x} (_ : n ≠ 0) (_ : x ∈ I), dpow n x ∈ I
