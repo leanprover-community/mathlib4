@@ -350,34 +350,30 @@ end Transformations
 
 open Measurable Real
 
-variable {Ω : Type} [MeasureSpace Ω]
-
-theorem mgf_standard_gaussianReal
-    {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal 0 1) (t : ℝ) :
-    mgf X ℙ t = exp (t ^ 2 / 2) := calc
+theorem mgf_gaussianReal {Ω : Type} [MeasureSpace Ω] (μ : ℝ) (v : ℝ≥0) (hv : v ≠ 0)
+    {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussianReal μ v) (t : ℝ) :
+    mgf X ℙ t = exp (μ * t + v * t ^ 2 / 2) := calc
   mgf X ℙ t = (Measure.map X ℙ)[fun x => exp (t * x)] := by
     rw [← mgf_id_map, mgf]
     · rfl
-    · exact Measure.aemeasurable_of_map_ne_zero hX (IsProbabilityMeasure.ne_zero (gaussianReal 0 1))
-  _ = ∫ x, exp (t * x) * gaussianPDFReal 0 1 x := by
-    rw [hX, gaussianReal_of_var_ne_zero 0 one_ne_zero, gaussianPDF_def]
+    · exact Measure.aemeasurable_of_map_ne_zero hX (IsProbabilityMeasure.ne_zero (gaussianReal μ v))
+  _ = ∫ x, exp (t * x) * gaussianPDFReal μ v x := by
+    rw [hX, gaussianReal_of_var_ne_zero μ hv, gaussianPDF_def]
     simp only [ENNReal.ofReal]
     rw [integral_withDensity_eq_integral_smul
-      (measurable_gaussianPDFReal 0 1).real_toNNReal]
+      (measurable_gaussianPDFReal μ v).real_toNNReal]
     congr with x
-    rw [NNReal.smul_def, coe_toNNReal _ (gaussianPDFReal_nonneg 0 1 x), smul_eq_mul, mul_comm]
-  _ = exp (t ^ 2 / 2) * ∫ x, (√(2 * π))⁻¹ * exp (-(x - t) ^ 2 / 2) := by
-    simp only [gaussianPDFReal, NNReal.coe_one, mul_one, Nat.ofNat_nonneg, sqrt_mul,
-      mul_inv_rev, sub_zero]
-    rw [← integral_mul_left]
+    rw [NNReal.smul_def, coe_toNNReal _ (gaussianPDFReal_nonneg μ v x), smul_eq_mul, mul_comm]
+  _ = exp (μ * t + v * t ^ 2 / 2)
+      * ∫ x, (√(2 * π * v))⁻¹ * exp (-(x - (μ + v * t)) ^ 2 / (2 * v)) := by
+    rw [gaussianPDFReal_def, ← integral_mul_left]
     congr with x
-    field_simp only [mul_sub, sub_eq_zero, mul_assoc, mul_comm, mul_left_comm,
-      ← exp_sub, ← exp_add]
+    field_simp only [mul_left_comm, ← exp_sub, ← exp_add]
     ring_nf
-  _ = exp (t ^ 2 / 2) * ∫ x, gaussianPDFReal t 1 x := by
+  _ = exp (μ * t + v * t ^ 2 / 2) * ∫ x, gaussianPDFReal (μ + v * t) v x := by
     field_simp [gaussianPDFReal_def]
-  _ = exp (t ^ 2 / 2) := by
-    rw [integral_gaussianPDFReal_eq_one t one_ne_zero, mul_one]
+  _ = exp (μ * t + v * t ^ 2 / 2) := by
+    rw [integral_gaussianPDFReal_eq_one (μ + v * t) hv, mul_one]
 
 end GaussianReal
 
