@@ -249,6 +249,11 @@ lemma truncFunctor_map_iso_hom {i : J} (hi : i ≤ j) :
       (iso (iter₁.trunc hi) (iter₂.trunc hi)).hom :=
   Subsingleton.elim _ _
 
+lemma iso_trunc_hom_natTrans_app {i : J} (hi : i ≤ j) (k : J) (hk : k ≤ i) :
+    (iso (iter₁.trunc hi) (iter₂.trunc hi)).hom.natTrans.app ⟨k, hk⟩ =
+      (iso iter₁ iter₂).hom.natTrans.app ⟨k, hk.trans hi⟩ := by
+  simp [← truncFunctor_map_iso_hom _ _ hi]
+
 end Iteration
 
 end Functor
