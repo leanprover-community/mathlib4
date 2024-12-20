@@ -233,8 +233,8 @@ def monoidHomSubgroup {H K : Subgroup G} (h : K ≤ H.normalizer) :
 
 /-- The isomorphism from a semidirect product of complementary subgroups to the ambient group. -/
 @[simps!]
-noncomputable def mulEquivSubgroup {H K : Subgroup G} [hH : H.Normal] (h : H.IsComplement' K) :
-    H ⋊[(H.normalizerMonoidHom).comp (inclusion (normalizer_eq_top.mpr hH ▸ le_top))] K ≃* G :=
+noncomputable def mulEquivSubgroup {H K : Subgroup G} [H.Normal] (h : H.IsComplement' K) :
+    H ⋊[(H.normalizerMonoidHom).comp (inclusion (H.normalizer_eq_top ▸ le_top))] K ≃* G :=
   MulEquiv.ofBijective (monoidHomSubgroup _) ((equivProd.bijective_comp _).mpr h)
 
 end lift
