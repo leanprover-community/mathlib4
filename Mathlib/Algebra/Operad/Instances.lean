@@ -95,8 +95,9 @@ theorem and_ClonalProperty {p1 p2} (h₁ : ClonalProperty γ p1)
     h₂.1 ⟨_, a.2.2⟩ fun i ↦ ⟨_, (b i).2.2⟩⟩,
   fun _ _ ↦ ⟨h₁.2 _ _, h₂.2 _ _⟩⟩
 
-/-- The subtype of functions `t^k ↦ t` that obey a `ClonalProperty`, form a clone. -/
-instance clone_ClonalProperty {p} (h : ClonalProperty γ p) :
+/-- The subtype of functions `t^k ↦ t` that obey a `ClonalProperty`, form a clone. This is a def,
+  not an instance, because `h : ClonalProperty γ p` can't be inferred by instances. -/
+def clone_ClonalProperty {p} (h : ClonalProperty γ p) :
     Clone (fun k ↦ Subtype (p (k := k))) where
   superpose := fun a b ↦ ⟨function_superpose a.1 (Subtype.val ∘ b), h.1 a b⟩
   proj := fun _ _ ↦ ⟨fun ts ↦ ts _, h.2 _ _⟩

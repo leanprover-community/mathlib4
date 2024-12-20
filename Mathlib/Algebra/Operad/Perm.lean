@@ -79,6 +79,9 @@ theorem PermFinPadTo_gt_position {m : ℕ} (p : Perm (Fin m)) (n : ℕ) (k : Fin
 
 end PermFinPadTo
 
+/-- Forward function that powers `PermFinPadAt`. Proofs should avoid unfolding into this and use
+one of the `PermFinPadAt_*_position` theorems instead.
+-/
 def PermFinPadAt_core {m n : ℕ} (p : Perm (Fin m)) (hn : 0 < n) (k : Fin m) (x : Fin (m+n-1)) :
     Fin (m+n-1) :=
   if h : k.1 ≤ x.1 ∧ x.1 ≤ k + n - 1 then
@@ -201,7 +204,8 @@ theorem PermFinPadAt_core.LeftInverse {m n : ℕ} (p : Perm (Fin m)) (hn : 0 < n
           simpa [h₄] using fun h ↦ (h₂ h).elim
 
 /-- PermfindPadAt takes the permutation in Sm and "expands" location k out of m, into a block
- of n indices that get permuted together, and creates a perm of length (m+n-1).-/
+ of n indices that get permuted together, and creates a perm of length (m+n-1). Proofs should
+ avoid unfolding this and use one of the `PermFinPadAt_*_position` theorems instead. -/
 @[irreducible]
 def PermFinPadAt {n m : ℕ} (p : Perm (Fin m)) (hn : 0 < n) (k : Fin m) : Perm (Fin (m+n-1)) :=
   ⟨PermFinPadAt_core p hn k, PermFinPadAt_core p.symm hn (p k),

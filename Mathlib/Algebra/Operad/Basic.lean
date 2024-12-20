@@ -33,37 +33,39 @@ import Mathlib.Algebra.Group.Action.Defs
  into a n-arity object at location p (in the range 0 to n-1) to produce an (n+m-1)
  arity object. `Operad` is the canonical example. -/
 class MultiComposable  (A : ℕ → Type*) where
-  /- Compose the (n+1)-arity object at location p on the m-arity object. -/
+  /-- Compose the (n+1)-arity object at location p on the m-arity object. -/
   compose {n m} : A n → Fin n → A m → A (n+m-1)
 
 /-- A Superposable is a structure that allows "superposition": given an n-arity object
  and n many m-arity objects, they can all enter and share arguments to make a new m-arity
 object. `Clone` is the canonical example. -/
 class Superposable (A : ℕ → Type*) where
-  /- Compose the (n+1)-arity object at location p on the m-arity object. -/
+  /-- Compose the (n+1)-arity object at location p on the m-arity object. -/
   superpose {n m} : A n → (Fin n → A m) → A m
 
-/- Families that have a "one" at grading 1. -/
+/-- Families that have a "one" at grading 1. -/
 class OneGradedOne (A : ℕ → Type*) extends One (A 1) where
 
 variable {A} {m : ℕ}
 
-/- Upgrade `MultiComposable.compose` to an operation on Sigma types. -/
+/-- Upgrade `MultiComposable.compose` to an operation on Sigma types. -/
 def composeAt [MultiComposable A] (x : Sigma A) (y : Sigma A) (p : Fin x.fst) : Sigma A :=
   ⟨_, MultiComposable.compose x.snd p y.snd⟩
 
-/- Upgrade `Superposable.superpose` to an operation on Sigma types. -/
+/-- Upgrade `Superposable.superpose` to an operation on Sigma types. -/
 def superpose [Superposable A] (x : Sigma A) (y : Fin x.fst → A m) : Sigma A :=
   ⟨m, Superposable.superpose x.snd y⟩
 
---This notation works for the bare types A (first one), or for the Sigma types
+/-- Notation for `MultiComposable.compose`, for working with `A n` graded types. -/
 notation:70 x:71 " ∘⟨" p:70 "⟩ " y:70  => MultiComposable.compose x p y
+/-- Notation for `composeAt`, for working with Sigma types. -/
 notation:70 x:71 " ∘[" p:70 "] " y:70  => composeAt x y p
 
---This notation works for the bare types A (first one), or the Sigma types (second). Typography
--- is reminiscent of "many arguments into one"
+/-- Notation for `Superposable.superpose`, for working with `A n` graded types. -/
 infixr:70 " ∘⚟ " => Superposable.superpose
+
 --Commented out since it's currently not used anywhere. Could easily be useful though.
+-- /-- Notation for `superpose`, for working with Sigma types. -/
 -- infixr:70 " ∘∈ " => superpose
 
 /-- `OneGradedOne` yields a `One (Sigma A)` -/
@@ -84,10 +86,10 @@ variable {ι : Type*}
 
 universe s t
 
-/- A SigmaMulAction exists on two sigma types with the same domain, and gives a MulAction
+/-- A SigmaMulAction exists on two sigma types with the same domain, and gives a MulAction
   at each matched level. -/
 class SigmaMulAction (M : (ι → Type s)) (A : ι → Type t) [m : ∀ i, Monoid (M i)] where
-  /- At each ι, there's a MulAction from M i on the type A i -/
+  /-- At each ι, there's a MulAction from M i on the type A i -/
   act_at (i : ι) : @MulAction (M i) (A i) (m i)
 
 variable {M : (ι → Type s)} {A : ι → Type t} [m : ∀ i, Monoid (M i)] [SigmaMulAction M A]

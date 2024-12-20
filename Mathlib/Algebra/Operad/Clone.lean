@@ -21,27 +21,27 @@ import Mathlib.Algebra.Order.Ring.Nat
   Interesting examples of Clones are given in `Mathlib.Algebra.Operad.Instances`.
 -/
 
-/- An abstract clone is a set of operations that have composition and all projections.
+/-- An abstract clone is a set of operations that have composition and all projections.
   Here we define it with the multi-argument composition, typically called "superposition".
   Single-argument composition can be built from this using the identity `proj 1 0`. -/
 class Clone (A : ℕ → Type*) extends Superposable A, OneGradedOne A where
-  /- Superposition is associative -/
+  /-- Superposition is associative -/
   superpose_assoc {n m k : ℕ} (a : A n) (bs : Fin n → A m) (cs : Fin m → A k) :
     (a ∘⚟ bs) ∘⚟ cs = a ∘⚟ (bs · ∘⚟ cs)
-  /- All projections are accessible -/
+  /-- All projections are accessible -/
   proj (n : ℕ) (k : Fin n) : A n
-  /- Projections are compatible on the left -/
+  /-- Projections are compatible on the left -/
   proj_left {n m : ℕ} (l : Fin n) (cs : Fin n → A m) : proj n l ∘⚟ cs = cs l
-  /- Projections are compatible on the right -/
+  /-- Projections are compatible on the right -/
   proj_right {n : ℕ} (c : A n) : c ∘⚟ (proj n ·) = c
-  /- The "1" element is the unary projection -/
+  /-- The "1" element is the unary projection -/
   one_proj : 1 = proj 1 0
 
 namespace Clone
 
 variable {A : ℕ → Type*} [Clone A]
 
-/- Pad a m-arity element of a clone to a larger arity, by adding projections that ignore
+/-- Pad a m-arity element of a clone to a larger arity, by adding projections that ignore
  the left- and right-most elements. -/
 def clonePadTo {m : ℕ} (p : A m) (n : ℕ) (k : Fin n) : A (n+m-1) :=
   p ∘⚟ fun i ↦ proj (n+m-1) ⟨k + i, Nat.lt_sub_of_add_lt (by omega)⟩
@@ -55,7 +55,7 @@ theorem clonePadTo_zero {m} (p : A m) (k : Fin 1) :
   simp only [heq_rec_iff_heq, clonePadTo, Fin.val_eq_zero, zero_add]
   congr!
 
-/- Clones are defined with the multi-argument superpose operation, but this gives a natural
+/-- Clones are defined with the multi-argument superpose operation, but this gives a natural
  one-argument composition operation. -/
 def cloneCompose {n m : ℕ} (a : A n) (p : Fin n) (b : A m) : A (n + m - 1) :=
   a ∘⚟ (
@@ -87,7 +87,7 @@ theorem clone_id_left {n : ℕ} (a : Fin 1 → A n) : 1 ∘⚟ a = a 0 := by
 theorem cloneCompose_id {n : ℕ} (a : A n) (b : Fin n) : cloneCompose a b (1 : A 1) = a := by
   simp [cloneCompose, clonePadTo]
 
-/- The `cloneCompose` one-argument composition induced by a clone's
+/-- The `cloneCompose` one-argument composition induced by a clone's
   superpose operation is associative. -/
 theorem cloneCompose_assoc (a b c : Sigma A) (p1 : Fin a.fst) (p2 : Fin b.fst) :
   HEq (cloneCompose a.snd p1 (cloneCompose b.snd p2 c.snd))
@@ -134,7 +134,7 @@ theorem cloneCompose_assoc (a b c : Sigma A) (p1 : Fin a.fst) (p2 : Fin b.fst) :
         · omega
         · omega
 
-/- The `cloneCompose` one-argument composition induced by a clone's superpose operation
+/-- The `cloneCompose` one-argument composition induced by a clone's superpose operation
   is commutative: it doesn't matter whether the p1'th or p2'th argument is provided first. -/
 theorem cloneCompse_comm (a b c : Sigma A) (p1 p2 : Fin a.fst) (hp: p1 < p2)
   (p1' : Fin (a.fst + c.fst - 1)) (p2' : Fin (a.fst + b.fst - 1))
@@ -209,7 +209,7 @@ theorem cloneCompse_comm (a b c : Sigma A) (p1 p2 : Fin a.fst) (hp: p1 < p2)
           congr! 2
           omega
 
-/- Every abstract clone naturally induces a (symmetric) operad. Currently this only shows the
+/-- Every abstract clone naturally induces a (symmetric) operad. Currently this only shows the
  (nonsymmetric) `Operad` instance; extending it to `SymmOperad` requires some annoying lemmas with
   permutations. -/
 instance clone_toSymmOperad [Clone A] : SymmOperad A where
