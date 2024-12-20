@@ -110,7 +110,7 @@ theorem chromaticNumber_even_cycleGraph (n : ℕ) (h : 2 ≤ n) (hEven : Even n)
     exact two_le_chromaticNumber_of_adj hAdj
 
 /-- Tricoloring of a cycle graph -/
-def cycleGraph.odd_tricoloring (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n)
+def cycleGraph.tricoloring (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n)
   (Fin 3) := Coloring.mk (fun u ↦ if u.val = n - 1 then 2 else ⟨u.val % 2, by fin_omega⟩) <| by
     intro u v hAdj
     match n with
@@ -132,13 +132,14 @@ def cycleGraph.odd_tricoloring (n : ℕ) (h : 2 ≤ n) : Coloring (cycleGraph n)
         | inl huv | inr huv =>
           rw [← add_eq_of_eq_sub' huv.symm]
           simp only [Fin.val_add_eq_of_add_lt hv', Fin.val_add_eq_of_add_lt hu', Fin.val_one]
-          rw [← Nat.even_iff_iff_mod_two_eq, Nat.even_add]
+          rw [show ∀x y : ℕ, x % 2 = y % 2 ↔ (Even x ↔ Even y) by simp [Nat.even_iff]; omega,
+            Nat.even_add]
           simp only [Nat.not_even_one, iff_false, not_iff_self, iff_not_self]
           exact id
 
 theorem chromaticNumber_odd_cycleGraph (n : ℕ) (h : 2 ≤ n) (hOdd : Odd n) :
     (cycleGraph n).chromaticNumber = 3 := by
-  have hc := (cycleGraph.odd_tricoloring n h).colorable
+  have hc := (cycleGraph.tricoloring n h).colorable
   apply le_antisymm
   · apply hc.chromaticNumber_le
   · have hn3 : n - 3 + 3 = n := by

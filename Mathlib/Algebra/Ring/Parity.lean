@@ -299,10 +299,6 @@ lemma div_two_mul_two_add_one_of_odd (h : Odd n) : n / 2 * 2 + 1 = n := by
 lemma one_add_div_two_mul_two_of_odd (h : Odd n) : 1 + n / 2 * 2 = n := by
   rw [← odd_iff.mp h, mod_add_div']
 
-lemma odd_iff_iff_mod_two_eq : (Odd n ↔ Odd m) ↔ n % 2 = m % 2 := by
-  simp [odd_iff]
-  omega
-
 section
 
 end
