@@ -307,7 +307,7 @@ namespace IsCyclic
 open Subgroup
 
 -- we could supress the variable `p`, but that might introduce `motive not type correct` issues.
-variable {G : Type*} [Group G] [Finite G] {p : ℕ} (hp : p = (Nat.card G).minFac) {P : Sylow p G}
+variable {G : Type*} [Group G] [Finite G] {p : ℕ} (hp : (Nat.card G).minFac = p) {P : Sylow p G}
 
 include hp in
 theorem normalizer_le_centralizer (hP : IsCyclic P) : P.normalizer ≤ centralizer (P : Set G) := by
