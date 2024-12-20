@@ -6,7 +6,7 @@ Authors: Andrew Yang, Jujian Zhang
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstance
 
 /-!
 # Localized Module
