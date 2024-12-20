@@ -18,8 +18,8 @@ This file is concerned with folding binary lattice operations over finsets.
 
 For the special case of maximum and minimum of a finset, see Max.lean.
 
-See also SetLattice.lean, which is instead concerned with how big lattice or set operations behave
-when indexed by a finset.
+See also `Mathlib/Order/CompleteLattice/Finset.lean`, which is instead concerned with how big
+lattice or set operations behave when indexed by a finset.
 -/
 
 assert_not_exists OrderedCommMonoid
@@ -105,6 +105,9 @@ theorem sup_const_le : (s.sup fun _ => a) ≤ a :=
 
 theorem le_sup {b : β} (hb : b ∈ s) : f b ≤ s.sup f :=
   Finset.sup_le_iff.1 le_rfl _ hb
+
+theorem isLUB_sup (s : Finset α) : IsLUB s (sup s id) :=
+  ⟨fun x h => id_eq x ▸ le_sup h, fun _ h => Finset.sup_le h⟩
 
 theorem le_sup_of_le {b : β} (hb : b ∈ s) (h : a ≤ f b) : a ≤ s.sup f := h.trans <| le_sup hb
 
@@ -336,6 +339,9 @@ theorem le_inf_const_le : a ≤ s.inf fun _ => a :=
 
 theorem inf_le {b : β} (hb : b ∈ s) : s.inf f ≤ f b :=
   Finset.le_inf_iff.1 le_rfl _ hb
+
+theorem isGLB_inf (s : Finset α) : IsGLB s (inf s id) :=
+  ⟨fun x h => id_eq x ▸ inf_le h, fun _ h => Finset.le_inf h⟩
 
 theorem inf_le_of_le {b : β} (hb : b ∈ s) (h : f b ≤ a) : s.inf f ≤ a := (inf_le hb).trans h
 
@@ -634,6 +640,22 @@ protected theorem sup_lt_iff (ha : ⊥ < a) : s.sup f < a ↔ ∀ b ∈ s, f b <
     Finset.cons_induction_on s (fun _ => ha) fun c t hc => by
       simpa only [sup_cons, sup_lt_iff, mem_cons, forall_eq_or_imp] using And.imp_right⟩
 
+theorem sup_mem_of_nonempty (hs : s.Nonempty) : s.sup f ∈ f '' s := by
+  classical
+  induction s using Finset.induction with
+  | empty => exfalso; simp only [Finset.not_nonempty_empty] at hs
+  | @insert a s _ h =>
+    rw [Finset.sup_insert (b := a) (s := s) (f := f)]
+    by_cases hs : s = ∅
+    · simp [hs]
+    · rw [← ne_eq, ← Finset.nonempty_iff_ne_empty] at hs
+      simp only [Finset.coe_insert]
+      rcases le_total (f a) (s.sup f) with (ha | ha)
+      · rw [sup_eq_right.mpr ha]
+        exact Set.image_mono (Set.subset_insert a s) (h hs)
+      · rw [sup_eq_left.mpr ha]
+        apply Set.mem_image_of_mem _ (Set.mem_insert a ↑s)
+
 end OrderBot
 
 section OrderTop
@@ -729,6 +751,10 @@ alias ⟨_, sup'_le⟩ := sup'_le_iff
 
 theorem le_sup' {b : β} (h : b ∈ s) : f b ≤ s.sup' ⟨b, h⟩ f :=
   (sup'_le_iff ⟨b, h⟩ f).1 le_rfl b h
+
+set_option linter.docPrime false in
+theorem isLUB_sup' {s : Finset α} (hs : s.Nonempty) : IsLUB s (sup' s hs id) :=
+  ⟨fun x h => id_eq x ▸ le_sup' id h, fun _ h => Finset.sup'_le hs id h⟩
 
 theorem le_sup'_of_le {a : α} {b : β} (hb : b ∈ s) (h : a ≤ f b) : a ≤ s.sup' ⟨b, hb⟩ f :=
   h.trans <| le_sup' _ hb
@@ -899,6 +925,10 @@ theorem le_inf' {a : α} (hs : ∀ b ∈ s, a ≤ f b) : a ≤ s.inf' H f :=
 
 theorem inf'_le {b : β} (h : b ∈ s) : s.inf' ⟨b, h⟩ f ≤ f b :=
   le_sup' (α := αᵒᵈ) f h
+
+set_option linter.docPrime false in
+theorem isGLB_inf' {s : Finset α} (hs : s.Nonempty) : IsGLB s (inf' s hs id) :=
+  ⟨fun x h => id_eq x ▸ inf'_le id h, fun _ h => Finset.le_inf' hs id h⟩
 
 theorem inf'_le_of_le {a : α} {b : β} (hb : b ∈ s) (h : f b ≤ a) :
     s.inf' ⟨b, hb⟩ f ≤ a := (inf'_le _ hb).trans h
