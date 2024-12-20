@@ -51,7 +51,7 @@ theorem log_apply {n : ℕ} : log n = Real.log n :=
 /--
 The `vonMangoldt` function is the function on natural numbers that returns `log p` if the input can
 be expressed as `p^k` for a prime `p`.
-In the case when `n` is a prime power, `min_fac` will give the appropriate prime, as it is the
+In the case when `n` is a prime power, `Nat.minFac` will give the appropriate prime, as it is the
 smallest prime factor.
 
 In the `ArithmeticFunction` locale, we have the notation `Λ` for this function.
