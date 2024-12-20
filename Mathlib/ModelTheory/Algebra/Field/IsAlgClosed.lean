@@ -163,7 +163,7 @@ theorem ACF_categorical {p : ℕ} (κ : Cardinal) (hκ : ℵ₀ < κ) :
   constructor
   refine languageEquivEquivRingEquiv.symm ?_
   apply Classical.choice
-  refine IsAlgClosed.ringEquivOfCardinalEqOfCharEq p ?_ ?_
+  refine IsAlgClosed.ringEquiv_of_equiv_of_char_eq p ?_ ?_
   · rw [hM]; exact hκ
   · rw [← Cardinal.eq, hM, hN]
 

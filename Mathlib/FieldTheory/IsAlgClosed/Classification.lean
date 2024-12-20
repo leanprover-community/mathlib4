@@ -76,6 +76,15 @@ section Cardinal
 variable {R : Type u} {K : Type v} [CommRing R] [Field K] [Algebra R K] [IsAlgClosed K]
 variable {ι : Type w} (v : ι → K)
 
+variable {K' : Type u} [Field K'] [Algebra R K'] [IsAlgClosed K']
+variable {ι' : Type u} (v' : ι' → K')
+
+/-- The cardinality of an algebraically closed `R`-algebra is less than or equal to
+the maximum of of the cardinality of `R`, the cardinality of a transcendence basis and
+`ℵ₀`
+
+For a simpler, but less universe-polymorphic statement, see
+`IsAlgCLosed.cardinal_le_max_transcendence_basis'`  -/
 theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
     Cardinal.lift.{max u w} #K ≤ max (max (Cardinal.lift.{max v w} #R)
       (Cardinal.lift.{max u v} #ι)) ℵ₀ :=
@@ -91,8 +100,21 @@ theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
         lift_le.2 (max_le_max MvPolynomial.cardinalMk_le_max_lift le_rfl)
     _ = _ := by simp
 
+/-- The cardinality of an algebraically closed `R`-algebra is less than or equal to
+the maximum of of the cardinality of `R`, the cardinality of a transcendence basis and
+`ℵ₀`
+
+A less-universe polymorphic, but simpler statement of
+`IsAlgCLosed.cardinal_le_max_transcendence_basis`  -/
+theorem cardinal_le_max_transcendence_basis' (hv : IsTranscendenceBasis R v') :
+    #K' ≤ max (max #R #ι') ℵ₀ := by
+  simpa using cardinal_le_max_transcendence_basis v' hv
+
 /-- If `K` is an uncountable algebraically closed field, then its
-cardinality is the same as that of a transcendence basis. -/
+cardinality is the same as that of a transcendence basis.
+
+For a simpler, but less universe-polymorphic statement, see
+`IsAlgCLosed.cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt'` -/
 theorem cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt [Nontrivial R]
     (hv : IsTranscendenceBasis R v) (hR : #R ≤ ℵ₀) (hK : ℵ₀ < #K) :
     Cardinal.lift.{w} #K = Cardinal.lift.{v} #ι :=
@@ -115,13 +137,22 @@ theorem cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt [Nontrivial R]
         · exact le_max_of_le_right this)
     (lift_mk_le.2 ⟨⟨v, hv.1.injective⟩⟩)
 
+/-- If `K` is an uncountable algebraically closed field, then its
+cardinality is the same as that of a transcendence basis.
+
+This is a simpler, but less general statement of
+`cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt`. -/
+theorem cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt' [Nontrivial R]
+    (hv : IsTranscendenceBasis R v') (hR : #R ≤ ℵ₀) (hK : ℵ₀ < #K') : #K' = #ι' := by
+  simpa using cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt v' hv hR hK
+
 end Cardinal
 
 variable {K : Type u} {L : Type v} [Field K] [Field L] [IsAlgClosed K] [IsAlgClosed L]
 
 /-- Two uncountable algebraically closed fields of characteristic zero are isomorphic
 if they have the same cardinality. -/
-theorem ringEquivOfCardinalEqOfCharZero [CharZero K] [CharZero L] (hK : ℵ₀ < #K)
+theorem ringEquiv_of_equiv_of_charZero [CharZero K] [CharZero L] (hK : ℵ₀ < #K)
     (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
   cases' exists_isTranscendenceBasis ℤ
     (show Function.Injective (algebraMap ℤ K) from Int.cast_injective) with s hs
@@ -138,7 +169,7 @@ theorem ringEquivOfCardinalEqOfCharZero [CharZero K] [CharZero L] (hK : ℵ₀ <
   cases' Cardinal.lift_mk_eq'.1 this with e
   exact ⟨equivOfTranscendenceBasis _ _ e hs ht⟩
 
-private theorem ringEquivOfCardinalEqOfCharP (p : ℕ) [Fact p.Prime] [CharP K p] [CharP L p]
+private theorem ringEquiv_of_Cardinal_eq_of_charP (p : ℕ) [Fact p.Prime] [CharP K p] [CharP L p]
     (hK : ℵ₀ < #K) (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
   letI : Algebra (ZMod p) K := ZMod.algebra _ _
   letI : Algebra (ZMod p) L := ZMod.algebra _ _
@@ -159,14 +190,14 @@ private theorem ringEquivOfCardinalEqOfCharP (p : ℕ) [Fact p.Prime] [CharP K p
 
 /-- Two uncountable algebraically closed fields are isomorphic
 if they have the same cardinality and the same characteristic. -/
-theorem ringEquivOfCardinalEqOfCharEq (p : ℕ) [CharP K p] [CharP L p] (hK : ℵ₀ < #K)
+theorem ringEquiv_of_equiv_of_char_eq (p : ℕ) [CharP K p] [CharP L p] (hK : ℵ₀ < #K)
     (hKL : Nonempty (K ≃ L)) : Nonempty (K ≃+* L) := by
   rcases CharP.char_is_prime_or_zero K p with (hp | hp)
   · haveI : Fact p.Prime := ⟨hp⟩
-    exact ringEquivOfCardinalEqOfCharP p hK hKL
+    exact ringEquiv_of_Cardinal_eq_of_charP p hK hKL
   · simp only [hp] at *
     letI : CharZero K := CharP.charP_to_charZero K
     letI : CharZero L := CharP.charP_to_charZero L
-    exact ringEquivOfCardinalEqOfCharZero hK hKL
+    exact ringEquiv_of_equiv_of_charZero hK hKL
 
 end IsAlgClosed
