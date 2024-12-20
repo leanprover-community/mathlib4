@@ -352,9 +352,7 @@ Q472883:
 Q474881:
   title: Cantor's theorem
   # a.k.a. Cantor's diagonal argument
-  decls:
-    - Cardinal.cantor
-    - cantor_surjective
+  decl: Function.cantor_surjective
   author: Johannes Hölzl and Mario Carneiro
 
 Q476776:

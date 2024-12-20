@@ -236,9 +236,7 @@
   author : Kexing Ying
 63:
   title  : Cantor’s Theorem
-  decls  :
-    - Cardinal.cantor
-    - cantor_surjective
+  decl: Function.cantor_surjective
   author : Johannes Hölzl and Mario Carneiro
 64:
   title  : L’Hopital’s Rule
