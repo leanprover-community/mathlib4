@@ -833,6 +833,8 @@ end AddAut
 
 variable (G)
 
+-- TODO rename next two defs
+
 /-- `Multiplicative G` and `G` have isomorphic automorphism groups. -/
 @[simps!]
 def MulAutMultiplicative [AddGroup G] : MulAut (Multiplicative G) ≃* AddAut G :=
