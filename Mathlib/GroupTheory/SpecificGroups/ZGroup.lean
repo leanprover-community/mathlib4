@@ -158,9 +158,6 @@ instance [Finite G] [IsZGroup G] : IsSolvable G := by
 
 end Solvable
 
-instance {G : Type*} [Group G] (H : Subgroup G) [IsCyclic H] : H.IsCommutative :=
-  ⟨⟨IsCyclic.commGroup.mul_comm⟩⟩
-
 section Nilpotent
 
 variable (G) in
@@ -189,7 +186,12 @@ instance isCyclic_abelianization [Finite G] [IsZGroup G] : IsCyclic (Abelianizat
 
 end Nilpotent
 
-section Cyclic
+section Commutator
+
+-- check if this can be used to golf some proofs after #20107 is merged?
+theorem _root_.Subgroup.map_subtype_commutator {G : Type*} [Group G] (H : Subgroup G) :
+    (commutator H).map H.subtype = ⁅H, H⁆ := by
+  rw [commutator_def, Subgroup.map_commutator, ← MonoidHom.range_eq_map, H.range_subtype]
 
 variable (G) in
 /-- A finite Z-group has cyclic commutator subgroup. -/
@@ -202,25 +204,23 @@ theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) :=
   · specialize hH ⁅H, H⁆ (IsSolvable.commutator_lt_of_ne_bot h)
     replace hH : IsCyclic (⁅commutator H, commutator H⁆ : Subgroup H) := by
       let f := Subgroup.equivMapOfInjective ⁅commutator H, commutator H⁆ _ H.subtype_injective
-      rw [commutator_def, Subgroup.map_commutator, Subgroup.map_commutator,
-        ← MonoidHom.range_eq_map, H.range_subtype, ← commutator_def] at f
+      rw [Subgroup.map_commutator, Subgroup.map_subtype_commutator] at f
       exact isCyclic_of_surjective f.symm f.symm.surjective
     suffices IsCyclic (commutator H) by
-      let f := Subgroup.equivMapOfInjective (commutator H) H.subtype H.subtype_injective
-      rw [commutator_def, Subgroup.map_commutator, ← MonoidHom.range_eq_map, H.range_subtype,
-        ← commutator_def] at f
+      let f := Subgroup.equivMapOfInjective (commutator H) _ H.subtype_injective
+      rw [Subgroup.map_subtype_commutator] at f
       exact isCyclic_of_surjective f f.surjective
     suffices h : commutator (commutator H) ≤ Subgroup.center (commutator H) by
-      conv_lhs at h => rw [← Abelianization.ker_of]
+      rw [← Abelianization.ker_of (commutator H)] at h
       let _ := commGroupOfCyclicCenterQuotient Abelianization.of h
       infer_instance
     suffices h : (commutator (commutator H)).map (commutator H).subtype ≤
         Subgroup.centralizer (commutator H) by
       simpa [SetLike.le_def, Subgroup.mem_center_iff, Subgroup.mem_centralizer_iff] using h
-    rw [commutator_def (commutator H), Subgroup.map_commutator, ← MonoidHom.range_eq_map,
-      Subgroup.range_subtype, Subgroup.le_centralizer_iff]
+    rw [Subgroup.map_subtype_commutator, Subgroup.le_centralizer_iff]
     have key' : ⁅commutator H, commutator H⁆.normalizer = ⊤ :=
       Subgroup.normalizer_eq_top.mpr inferInstance
+    -- read through up to here, but want to do the normalizer refactor
     let _ : CommGroup (MulAut (⁅commutator H, commutator H⁆ : Subgroup H)) :=
       ⟨fun g h ↦ by
         let f := hH.mulAutMulEquiv
@@ -235,7 +235,7 @@ theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) :=
     rw [Subgroup.range_subtype]
     exact le_top
 
-end Cyclic
+end Commutator
 
 section Hall
 
