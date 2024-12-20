@@ -5,9 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 import Mathlib.CategoryTheory.ComposableArrows
-import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
-import Mathlib.CategoryTheory.Functor.KanExtension.Basic
-
 
 /-!
 
@@ -18,16 +15,12 @@ which is a simplicial set `nerve C` (see [goerss-jardine-2009], Example I.1.4).
 By definition, the type of `n`-simplices of `nerve C` is `ComposableArrows C n`,
 which is the category `Fin (n + 1) ⥤ C`.
 
-It also proves that `nerve C` is 2-coskeletal, meaning that the canonical map to the right
-Kan extension of its restriction to the category of 2-truncated simplicial sets is an isomorphism.
-
 ## References
 * [Paul G. Goerss, John F. Jardine, *Simplicial Homotopy Theory*][goerss-jardine-2009]
 
 -/
 
-open CategoryTheory.Category Simplicial SSet SimplexCategory Opposite CategoryTheory.Functor
-  CategoryTheory.Limits
+open CategoryTheory.Category Simplicial
 
 universe v u
 
