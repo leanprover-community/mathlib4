@@ -216,6 +216,7 @@ def IsDescendingCentralSeries (H : ℕ → Subgroup G) :=
   H 0 = ⊤ ∧ ∀ (x : G) (n : ℕ), x ∈ H n → ∀ g, x * g * x⁻¹ * g⁻¹ ∈ H (n + 1)
 
 /-- Any ascending central series for a group is bounded above by the upper central series. -/
+-- todo rename IsAscendingCentralSeries.le_upperCentralSeries
 theorem ascending_central_series_le_upper (H : ℕ → Subgroup G) (hH : IsAscendingCentralSeries H) :
     ∀ n : ℕ, H n ≤ upperCentralSeries G n
   | 0 => hH.1.symm ▸ le_refl ⊥
@@ -227,6 +228,7 @@ theorem ascending_central_series_le_upper (H : ℕ → Subgroup G) (hH : IsAscen
 variable (G)
 
 /-- The upper central series of a group is an ascending central series. -/
+-- todo rename isAscendingCentralSeries_upperCentralSeries
 theorem upperCentralSeries_isAscendingCentralSeries :
     IsAscendingCentralSeries (upperCentralSeries G) :=
   ⟨rfl, fun _x _n h => h⟩
@@ -239,6 +241,7 @@ theorem upperCentralSeries_mono : Monotone (upperCentralSeries G) := by
 
 /-- A group `G` is nilpotent iff there exists an ascending central series which reaches `G` in
   finitely many steps. -/
+-- todo rename isNilpotent_iff_finite_isAscendingCentralSeries
 theorem nilpotent_iff_finite_ascending_central_series :
     IsNilpotent G ↔ ∃ n : ℕ, ∃ H : ℕ → Subgroup G, IsAscendingCentralSeries H ∧ H n = ⊤ := by
   constructor
@@ -249,6 +252,7 @@ theorem nilpotent_iff_finite_ascending_central_series :
     rw [eq_top_iff, ← hn]
     exact ascending_central_series_le_upper H hH n
 
+-- todo rename IsAscendingCentralSeries.isDescendingCentralSeries
 theorem is_descending_rev_series_of_is_ascending {H : ℕ → Subgroup G} {n : ℕ} (hn : H n = ⊤)
     (hasc : IsAscendingCentralSeries H) : IsDescendingCentralSeries fun m : ℕ => H (n - m) := by
   obtain ⟨h0, hH⟩ := hasc
@@ -264,6 +268,7 @@ theorem is_descending_rev_series_of_is_ascending {H : ℕ → Subgroup G} {n : �
     convert hx using 1
     rw [tsub_add_eq_add_tsub (Nat.succ_le_of_lt hm), Nat.succ_eq_add_one, Nat.add_sub_add_right]
 
+-- todo rename IsDescendingCentralSeries.isAscendingCentralSeries
 theorem is_ascending_rev_series_of_is_descending {H : ℕ → Subgroup G} {n : ℕ} (hn : H n = ⊥)
     (hdesc : IsDescendingCentralSeries H) : IsAscendingCentralSeries fun m : ℕ => H (n - m) := by
   obtain ⟨h0, hH⟩ := hdesc
@@ -279,6 +284,7 @@ theorem is_ascending_rev_series_of_is_descending {H : ℕ → Subgroup G} {n : �
 
 /-- A group `G` is nilpotent iff there exists a descending central series which reaches the
   trivial group in a finite time. -/
+-- todo rename isNilpotent_iff_finite_isDescendingCentralSeries
 theorem nilpotent_iff_finite_descending_central_series :
     IsNilpotent G ↔ ∃ n : ℕ, ∃ H : ℕ → Subgroup G, IsDescendingCentralSeries H ∧ H n = ⊥ := by
   rw [nilpotent_iff_finite_ascending_central_series]
@@ -318,6 +324,7 @@ theorem lowerCentralSeries_succ (n : ℕ) :
       closure { x | ∃ p ∈ lowerCentralSeries G n, ∃ q ∈ (⊤ : Subgroup G), p * q * p⁻¹ * q⁻¹ = x } :=
   rfl
 
+-- todo rename normal_lowerCentralSeries
 instance lowerCentralSeries_normal (n : ℕ) : Normal (lowerCentralSeries G n) := by
   induction n with
   | zero => exact (⊤ : Subgroup G).normal_of_characteristic
@@ -335,6 +342,7 @@ theorem lowerCentralSeries_antitone : Antitone (lowerCentralSeries G) := by
 
 
 /-- The lower central series of a group is a descending central series. -/
+-- todo rename isDescendingCentralSeries_lowerCentralSeries
 theorem lowerCentralSeries_isDescendingCentralSeries :
     IsDescendingCentralSeries (lowerCentralSeries G) := by
   constructor
@@ -343,6 +351,7 @@ theorem lowerCentralSeries_isDescendingCentralSeries :
   exact commutator_mem_commutator hxn (mem_top g)
 
 /-- Any descending central series for a group is bounded below by the lower central series. -/
+-- todo IsDescendingCentralSeries.ge_lowerCentralSeries
 theorem descending_central_series_ge_lower (H : ℕ → Subgroup G) (hH : IsDescendingCentralSeries H) :
     ∀ n : ℕ, lowerCentralSeries G n ≤ H n
   | 0 => hH.1.symm ▸ le_refl ⊤
@@ -389,6 +398,7 @@ theorem upperCentralSeries_eq_top_iff_nilpotencyClass_le {n : ℕ} :
 open scoped Classical in
 /-- The nilpotency class of a nilpotent `G` is equal to the smallest `n` for which an ascending
 central series reaches `G` in its `n`-th term. -/
+-- todo rename least_isAscendingCentralSeries_length_eq_nilpotencyClass
 theorem least_ascending_central_series_length_eq_nilpotencyClass :
     Nat.find ((nilpotent_iff_finite_ascending_central_series G).mp hG) =
     Group.nilpotencyClass G := by
@@ -402,6 +412,7 @@ theorem least_ascending_central_series_length_eq_nilpotencyClass :
 open scoped Classical in
 /-- The nilpotency class of a nilpotent `G` is equal to the smallest `n` for which the descending
 central series reaches `⊥` in its `n`-th term. -/
+-- todo rename least_isDescendingCentralSeries_length_eq_nilpotencyClass
 theorem least_descending_central_series_length_eq_nilpotencyClass :
     Nat.find ((nilpotent_iff_finite_descending_central_series G).mp hG) =
     Group.nilpotencyClass G := by
@@ -534,6 +545,7 @@ theorem nilpotencyClass_le_of_ker_le_center {H : Type*} [Group H] (f : G →* H)
   simp only [lowerCentralSeries_nilpotencyClass, le_bot_iff]
 
 /-- The range of a surjective homomorphism from a nilpotent group is nilpotent -/
+-- todo rename isNilpotent_of_surjective
 theorem nilpotent_of_surjective {G' : Type*} [Group G'] [h : IsNilpotent G] (f : G →* G')
     (hf : Function.Surjective f) : IsNilpotent G' := by
   rcases h with ⟨n, hn⟩
@@ -560,11 +572,13 @@ theorem nilpotencyClass_le_of_surjective {G' : Type*} [Group G'] (f : G →* G')
     _ ≤ upperCentralSeries G' n := upperCentralSeries.map hf n
 
 /-- Nilpotency respects isomorphisms -/
+-- todo rename isNilpotent_of_mulEquiv
 theorem nilpotent_of_mulEquiv {G' : Type*} [Group G'] [_h : IsNilpotent G] (f : G ≃* G') :
     IsNilpotent G' :=
   nilpotent_of_surjective f.toMonoidHom (MulEquiv.surjective f)
 
 /-- A quotient of a nilpotent group is nilpotent -/
+-- todo rename isNilpotent_quotient_of_isNilpotent
 instance nilpotent_quotient_of_nilpotent (H : Subgroup G) [H.Normal] [_h : IsNilpotent G] :
     IsNilpotent (G ⧸ H) :=
   nilpotent_of_surjective (QuotientGroup.mk' H) QuotientGroup.mk_surjective
@@ -633,6 +647,7 @@ theorem nilpotencyClass_eq_quotient_center_plus_one [hH : IsNilpotent G] [Nontri
   · simp
 
 /-- If the quotient by `center G` is nilpotent, then so is G. -/
+-- todo rename isNilpotent_of_quotient_center
 theorem of_quotient_center_nilpotent (h : IsNilpotent (G ⧸ center G)) : IsNilpotent G := by
   obtain ⟨n, hn⟩ := h.nilpotent
   use n.succ
@@ -641,6 +656,7 @@ theorem of_quotient_center_nilpotent (h : IsNilpotent (G ⧸ center G)) : IsNilp
 /-- A custom induction principle for nilpotent groups. The base case is a trivial group
 (`subsingleton G`), and in the induction step, one can assume the hypothesis for
 the group quotiented by its center. -/
+-- todo rename isNilpotent_center_quotient_ind?
 @[elab_as_elim]
 theorem nilpotent_center_quotient_ind {P : ∀ (G) [Group G] [IsNilpotent G], Prop}
     (G : Type*) [Group G] [IsNilpotent G]
@@ -656,6 +672,7 @@ theorem nilpotent_center_quotient_ind {P : ∀ (G) [Group G] [IsNilpotent G], Pr
       simp [nilpotencyClass_quotient_center, h]
     exact hstep _ (ih _ hn)
 
+-- todo rename derivedSeries_le_lowerCentralSeries
 theorem derived_le_lower_central (n : ℕ) : derivedSeries G n ≤ lowerCentralSeries G n := by
   induction n with
   | zero => simp
@@ -735,6 +752,7 @@ theorem lowerCentralSeries_pi_le (n : ℕ) :
       _ = pi fun i => lowerCentralSeries (Gs i) n.succ := rfl
 
 /-- products of nilpotent groups are nilpotent if their nilpotency class is bounded -/
+-- todo rename isNilpotent_pi_of_bounded_nilpotencyClass
 theorem isNilpotent_pi_of_bounded_class [∀ i, IsNilpotent (Gs i)] (n : ℕ)
     (h : ∀ i, Group.nilpotencyClass (Gs i) ≤ n) : IsNilpotent (∀ i, Gs i) := by
   rw [nilpotent_iff_lowerCentralSeries]
@@ -843,6 +861,7 @@ theorem IsPGroup.isNilpotent [Finite G] {p : ℕ} [hp : Fact (Nat.Prime p)] (h :
 variable [Finite G]
 
 /-- If a finite group is the direct product of its Sylow groups, it is nilpotent -/
+-- todo rename isNilpotent_of_mulEquiv_sylow
 theorem isNilpotent_of_product_of_sylow_group
     (e : (∀ p : (Nat.card G).primeFactors, ∀ P : Sylow p G, (↑P : Subgroup G)) ≃* G) :
     IsNilpotent G := by
@@ -857,6 +876,7 @@ theorem isNilpotent_of_product_of_sylow_group
 /-- A finite group is nilpotent iff the normalizer condition holds, and iff all maximal groups are
 normal and iff all Sylow groups are normal and iff the group is the direct product of its Sylow
 groups. -/
+-- todo rename isNilpotent_tfae_of_finite
 theorem isNilpotent_of_finite_tfae :
     List.TFAE
       [IsNilpotent G, NormalizerCondition G, ∀ H : Subgroup G, IsCoatom H → H.Normal,
