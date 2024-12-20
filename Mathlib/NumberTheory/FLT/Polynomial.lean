@@ -60,12 +60,7 @@ private lemma ineq_pqr_contradiction {p q r a b c : ℕ}
     _ = (p * a) * (q * r) + (q * b) * (r * p) + (r * c) * (p * q) + 1 := by ring
     _ ≤ (a + b + c) * (q * r) + (a + b + c) * (r * p) + (a + b + c) * (p * q) := by
       rw [Nat.succ_le]
-      have hpq := Nat.mul_pos hp hq
-      have hqr := Nat.mul_pos hq hr
-      have hrp := Nat.mul_pos hr hp
-      refine (Nat.add_lt_add (Nat.add_lt_add ?_ ?_) ?_)
-        <;> apply (Nat.mul_lt_mul_right ?_).mpr
-        <;> assumption
+      gcongr
     _ = (q * r + r * p + p * q) * (a + b + c) := by ring
     _ ≤ _ := by gcongr
 
