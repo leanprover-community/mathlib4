@@ -16,7 +16,7 @@ a functor `PresheafOfModules R ⥤ PresheafOfModules R`
 for any presheaf of commutative rings `R`. In other words, one may
 obtain a functor `PresheafOfModules R ⥤ PresheafOfModules R`
 from a family of functors `ModuleCat A ⥤ ModuleCat A` for all
-commutative rings `A`, which satisfies certain compatibilities
+commutative rings `A` which satisfies certain compatibilities
 with respect to the restriction of scalars.
 
 -/
