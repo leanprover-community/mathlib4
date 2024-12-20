@@ -315,9 +315,6 @@ theorem mem_of_subset_of_mem {s₁ s₂ : Set α} {a : α} (h : s₁ ⊆ s₂) :
 
 theorem not_mem_subset (h : s ⊆ t) : a ∉ t → a ∉ s :=
   mt <| mem_of_subset_of_mem h
-
-alias not_mem_mono := not_mem_subset
-
 theorem not_subset : ¬s ⊆ t ↔ ∃ a ∈ s, a ∉ t := by
   simp only [subset_def, not_forall, exists_prop]
 
