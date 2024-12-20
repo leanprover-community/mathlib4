@@ -63,14 +63,19 @@ class NNNorm (E : Type*) where
   /-- the `ℝ≥0`-valued norm function. -/
   nnnorm : E → ℝ≥0
 
+/-- Auxiliary class, endowing a type `α` with a function `enorm : α → ℝ≥0∞` with notation `‖x‖ₑ`. -/
+@[notation_class]
+class ENorm (E : Type*) where
+  /-- the `ℝ≥0∞`-valued norm function. -/
+  enorm : E → ℝ≥0∞
+
 export Norm (norm)
 export NNNorm (nnnorm)
+export ENorm (enorm)
 
-@[inherit_doc]
-notation "‖" e "‖" => norm e
-
-@[inherit_doc]
-notation "‖" e "‖₊" => nnnorm e
+@[inherit_doc] notation "‖" e "‖" => norm e
+@[inherit_doc] notation "‖" e "‖₊" => nnnorm e
+@[inherit_doc] notation "‖" e "‖ₑ" => enorm e
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
@@ -815,6 +820,20 @@ theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball (1 : E) r
 
 end NNNorm
 
+section ENNNorm
+
+instance {E : Type*} [NNNorm E] : ENorm E where
+  enorm := (‖·‖₊ : E → ℝ≥0∞)
+
+lemma enorm_eq_nnnorm {E : Type*} [NNNorm E] {x : E} : ‖x‖ₑ = ‖x‖₊ := rfl
+
+instance : ENorm ℝ≥0∞ where
+  enorm x := x
+
+@[simp] lemma enorm_eq_self (x : ℝ≥0∞) : ‖x‖ₑ = x := rfl
+
+end ENNNorm
+
 @[to_additive]
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
     Tendsto f a (𝓝 b) ↔ Tendsto (fun e => ‖f e / b‖) a (𝓝 0) := by
@@ -1494,3 +1513,5 @@ instance (priority := 75) normedCommGroup [NormedCommGroup E] {S : Type*} [SetLi
 end SubgroupClass
 
 lemma tendsto_norm_atTop_atTop : Tendsto (norm : ℝ → ℝ) atTop atTop := tendsto_abs_atTop_atTop
+
+set_option linter.style.longFile 1700
