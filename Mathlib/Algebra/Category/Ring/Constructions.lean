@@ -14,6 +14,7 @@ import Mathlib.RingTheory.TensorProduct.Basic
 
 In this file we provide the explicit (co)cones for various (co)limits in `CommRingCat`, including
 * tensor product is the pushout
+* tensor product over `Z` is the binary coproduct
 * `Z` is the initial object
 * `0` is the strict terminal object
 * cartesian product is the product
@@ -115,6 +116,52 @@ lemma isPushout_tensorProduct (R A B : Type u) [CommRing R] [CommRing A] [CommRi
   isColimit' := ⟨pushoutCoconeIsColimit R A B⟩
 
 end Pushout
+
+section BinaryCoproduct
+
+variable (A B : CommRingCat.{u})
+
+/-- The tensor product `A ⊗[ℤ] B` forms a cocone for `A` and `B`. -/
+@[simps! pt ι]
+def coproductCocone : BinaryCofan A B :=
+BinaryCofan.mk
+  (ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom : A ⟶  of (A ⊗[ℤ] B))
+  (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶  of (A ⊗[ℤ] B))
+
+@[simp]
+theorem coproductCocone_inl : (coproductCocone A B).inl =
+  ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom := rfl
+
+@[simp]
+theorem coproductCocone_inr : (coproductCocone A B).inr =
+  ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom := rfl
+
+/-- The tensor product `A ⊗[ℤ] B` is a coproduct for `A` and `B`. -/
+@[simps]
+def coproductCoconeIsColimit : IsColimit (coproductCocone A B) where
+  desc (s : BinaryCofan A B) :=
+    ofHom (Algebra.TensorProduct.lift s.inl.hom.toIntAlgHom s.inr.hom.toIntAlgHom
+      (fun _ _ => by apply Commute.all)).toRingHom
+  fac (s : BinaryCofan A B) := fun ⟨j⟩ => by cases j <;> ext a <;> simp
+  uniq (s : BinaryCofan A B) := by
+    rintro ⟨m : A ⊗[ℤ] B →+* s.pt⟩ hm
+    apply CommRingCat.hom_ext
+    apply RingHom.toIntAlgHom_injective
+    apply Algebra.TensorProduct.liftEquiv.symm.injective
+    apply Subtype.ext
+    rw [Algebra.TensorProduct.liftEquiv_symm_apply_coe, Prod.mk.injEq]
+    constructor
+    · ext a
+      simp [map_one, mul_one, ←hm (Discrete.mk WalkingPair.left)]
+    · ext b
+      simp [map_one, mul_one, ←hm (Discrete.mk WalkingPair.right)]
+
+/-- The limit cone of the tensor product `A ⊗[ℤ] B` in `CommRingCat`. -/
+def coproductColimitCocone : Limits.ColimitCocone (pair A B) :=
+  ⟨_, coproductCoconeIsColimit A B⟩
+
+end BinaryCoproduct
+
 
 section Terminal
 
