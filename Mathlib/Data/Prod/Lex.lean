@@ -45,7 +45,7 @@ instance instLE (α β : Type*) [LT α] [LE β] : LE (α ×ₗ β) where le := P
 
 instance instLT (α β : Type*) [LT α] [LT β] : LT (α ×ₗ β) where lt := Prod.Lex (· < ·) (· < ·)
 
-theorem toLex_le_toLex [LT α] [LE β] {x y :  α × β} :
+theorem toLex_le_toLex [LT α] [LE β] {x y : α × β} :
     toLex x ≤ toLex y ↔ x.1 < y.1 ∨ x.1 = y.1 ∧ x.2 ≤ y.2 :=
   Prod.lex_def
 
