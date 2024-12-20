@@ -93,14 +93,31 @@ lemma card'' [Finite k] : Nat.card (ℙ k V) = (Nat.card V - 1) / (Nat.card k - 
   have h : 0 ≠ (Nat.card k - 1) := by omega
   exact Nat.eq_div_of_mul_eq_left (Ne.symm h) rfl
 
+lemma card_of_finrank [Finite k] {n : ℕ} (h : Module.finrank k V = n) :
+    Nat.card (ℙ k V) = ∑ i ∈ Finset.range n, Nat.card k ^ i := by
+  wlog hf : Finite V
+  · simp only [not_finite_iff_infinite] at hf
+    have : Infinite (ℙ k V) := by
+      rw [← not_finite_iff_infinite, not_iff_not.mpr (finite_iff_of_finite k V)]
+      simpa
+    have : n = 0 := by
+      rw [← h]
+      apply Module.finrank_of_not_finite
+      contrapose! hf
+      simpa using Module.finite_of_finite k
+    simp [this]
+  have : 1 < Nat.card k := Finite.one_lt_card
+  refine Nat.mul_right_cancel (m := Nat.card k - 1) (by omega) ?_
+  let e : V ≃ₗ[k] (Fin n → k) := LinearEquiv.ofFinrankEq _ _ (by simpa)
+  have hc : Nat.card V = Nat.card k ^ n := by simp [Nat.card_congr e.toEquiv, Nat.card_fun]
+  zify
+  have hn : 1 ≤ Nat.card k := Nat.one_le_of_lt Finite.one_lt_card
+  conv_rhs => rw [Int.natCast_sub hn, Int.natCast_one, geom_sum_mul]
+  rw [← Int.natCast_mul, ← card k V, hc]
+  simp
+
 lemma card_of_finrank_two [Finite k] (h : Module.finrank k V = 2) :
     Nat.card (ℙ k V) = Nat.card k + 1 := by
-  have : Module.Finite k V := Module.finite_of_finrank_eq_succ h
-  let e : V ≃ₗ[k] (Fin 2 → k) := LinearEquiv.ofFinrankEq _ _ (by simpa)
-  have : Nat.card V = Nat.card k ^ 2 := by
-    simp only [Nat.card_congr e.toEquiv, Nat.card_fun, Nat.card_eq_fintype_card, Fintype.card_fin]
-  rw [card'', this, Nat.sq_sub_sq _ 1]
-  have : 1 < Nat.card k := Finite.one_lt_card
-  exact (Nat.eq_div_of_mul_eq_left (by omega) rfl).symm
+  simp [card_of_finrank k V h]
 
 end Projectivization
