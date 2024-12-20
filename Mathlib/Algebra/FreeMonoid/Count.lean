@@ -27,7 +27,8 @@ def countP : FreeAddMonoid α →+ ℕ where
   map_add' := List.countP_append _
 
 theorem countP_of (x : α) : countP p (of x) = if p x = true then 1 else 0 := by
-  simp [countP, List.countP, List.countP.go]
+  change List.countP p [x] = _
+  simp [List.countP_cons]
 
 theorem countP_apply (l : FreeAddMonoid α) : countP p l = List.countP p l := rfl
 
@@ -36,8 +37,8 @@ theorem countP_apply (l : FreeAddMonoid α) : countP p l = List.countP p l := rf
 def count [DecidableEq α] (x : α) : FreeAddMonoid α →+ ℕ := countP (· = x)
 
 theorem count_of [DecidableEq α] (x y : α) : count x (of y) = (Pi.single x 1 : α → ℕ) y := by
-  simp [Pi.single, Function.update, count, countP, List.countP, List.countP.go,
-    Bool.beq_eq_decide_eq]
+  change List.count x [y] = _
+  simp [Pi.single, Function.update, List.count_cons]
 
 theorem count_apply [DecidableEq α] (x : α) (l : FreeAddMonoid α) : count x l = List.count x l :=
   rfl

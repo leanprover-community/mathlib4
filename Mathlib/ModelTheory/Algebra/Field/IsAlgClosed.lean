@@ -208,10 +208,9 @@ theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
       have := modelField_of_modelACF q K
       let _ := compatibleRingOfModelField K
       have := charP_of_model_fieldOfChar q K
-      simp only [eqZero, Term.equal, Term.relabel, BoundedFormula.realize_not,
-        BoundedFormula.realize_bdEqual, Term.realize_relabel, Sum.elim_comp_inl,
-        realize_termOfFreeCommRing, map_natCast, Term.realize_func, CompatibleRing.funMap_zero,
-        ne_eq, ← CharP.charP_iff_prime_eq_zero hp]
+      simp only [eqZero, Term.equal, BoundedFormula.realize_not, BoundedFormula.realize_bdEqual,
+        Term.realize_relabel, Sum.elim_comp_inl, realize_termOfFreeCommRing, map_natCast,
+        realize_zero, ← CharP.charP_iff_prime_eq_zero hp]
       intro _
       exact hqp <| CharP.eq K inferInstance inferInstance
   let s : Finset Nat.Primes := T0.attach.biUnion (fun φ => f φ.1 (hT0 φ.2))

@@ -515,11 +515,11 @@ def Cont.then : Cont → Cont → Cont
 theorem Cont.then_eval {k k' : Cont} {v} : (k.then k').eval v = k.eval v >>= k'.eval := by
   induction k generalizing v with
   | halt => simp only [Cont.eval, Cont.then, pure_bind]
-  | cons₁ => simp only [Cont.eval, bind_assoc, *]
-  | cons₂ => simp only [Cont.eval, *]
-  | comp _ _ k_ih => simp only [Cont.eval, bind_assoc, ← k_ih]
+  | cons₁ => simp only [Cont.eval, Cont.then, bind_assoc, *]
+  | cons₂ => simp only [Cont.eval, Cont.then, *]
+  | comp _ _ k_ih => simp only [Cont.eval, Cont.then, bind_assoc, ← k_ih]
   | fix _ _ k_ih =>
-    simp only [Cont.eval, *]
+    simp only [Cont.eval, Cont.then, *]
     split_ifs <;> [rfl; simp only [← k_ih, bind_assoc]]
 
 /-- The `then k` function is a "configuration homomorphism". Its operation on states is to append
