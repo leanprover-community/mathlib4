@@ -3,10 +3,11 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.Analysis.Calculus.IteratedDeriv.Defs
+import Mathlib.Analysis.SpecialFunctions.Exponential
+import Mathlib.Data.Real.StarOrdered
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.Probability.Variance
-import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.ExpLog
-import Mathlib.Analysis.Calculus.SmoothSeries
-import Mathlib.Analysis.Analytic.OfScalars
 
 /-!
 # Moments and moment generating function
@@ -107,6 +108,11 @@ theorem centralMoment_two_eq_variance [IsFiniteMeasure μ] (hX : Memℒp X 2 μ)
 section MomentGeneratingFunction
 
 variable {t u v : ℝ}
+
+@[simp]
+lemma FormalMultilinearSeries.coeff_ofScalars {p : ℕ → ℝ} {n : ℕ} :
+    (FormalMultilinearSeries.ofScalars ℝ p).coeff n = p n := by
+  simp [FormalMultilinearSeries.coeff, FormalMultilinearSeries.ofScalars, List.prod_ofFn]
 
 lemma _root_.AEMeasurable.abs (hX : AEMeasurable X μ) : AEMeasurable (fun ω ↦ |X ω|) μ :=
   hX.max (aemeasurable_neg_iff.mpr hX)
@@ -573,6 +579,8 @@ lemma mgf_abs_le_add (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
     (ae_of_all _ (fun ω ↦ exp_mul_abs_le_add (t := t) (u := X ω)))
   exact integrable_exp_mul_abs ht_int_pos ht_int_neg
 
+section Analytic
+
 lemma summable_integral_abs_mul_exp
     (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
     (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
@@ -865,10 +873,9 @@ lemma analyticOnNhd_mgf [IsFiniteMeasure μ] :
     AnalyticOnNhd ℝ (mgf X μ) (interior {x | Integrable (fun ω ↦ exp (x * X ω)) μ}) :=
   fun _ hx ↦ analyticAt_mgf_of_mem_interior hx
 
-@[simp]
-lemma FormalMultilinearSeries.coeff_ofScalars {p : ℕ → ℝ} {n : ℕ} :
-    (FormalMultilinearSeries.ofScalars ℝ p).coeff n = p n := by
-  simp [FormalMultilinearSeries.coeff, FormalMultilinearSeries.ofScalars, List.prod_ofFn]
+end Analytic
+
+section Deriv
 
 lemma deriv_mgf [IsFiniteMeasure μ]
     (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
@@ -880,6 +887,8 @@ lemma deriv_mgf_zero [IsFiniteMeasure μ]
     deriv (mgf X μ) 0 = μ[X] := by
   simp [deriv_mgf h]
 
+/-- The nth derivative of the moment generating function of `X` at `v` in the interior of its
+domain is `μ[X^n * exp(v * X)]`. -/
 lemma iteratedDeriv_mgf [IsFiniteMeasure μ]
     (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
     iteratedDeriv n (mgf X μ) v = μ[fun ω ↦ X ω ^ n * exp (v * X ω)] := by
@@ -895,10 +904,13 @@ lemma iteratedDeriv_mgf [IsFiniteMeasure μ]
   · exact h_fact_smul.symm
   · simp [n.factorial_ne_zero]
 
+/-- The derivatives of the moment generating function at zero are the moments. -/
 lemma iteratedDeriv_mgf_zero [IsFiniteMeasure μ]
     (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
     iteratedDeriv n (mgf X μ) 0 = μ[X ^ n] := by
   simp [iteratedDeriv_mgf h n]
+
+end Deriv
 
 section IndepFun
 
