@@ -44,6 +44,7 @@ section MulActionWithZero
 variable {R : Type*} [Semiring R] (r : R) (p : R[X]) {S : Type*} [AddCommMonoid S] [Pow S ℕ]
   [MulActionWithZero R S] (x : S)
 
+-- TODO rename
 /-- Scalar multiplication together with taking a natural number power. -/
 def smul_pow : ℕ → R → S := fun n r => r • x^n
 
