@@ -83,8 +83,10 @@ lemma Even.pow_of_ne_zero (ha : Even a) : ∀ {n : ℕ}, n ≠ 0 → Even (a ^ n
 /-- An element `a` of a semiring is odd if there exists `k` such `a = 2*k + 1`. -/
 def Odd (a : α) : Prop := ∃ k, a = 2 * k + 1
 
+-- TODO rename
 lemma odd_iff_exists_bit1 : Odd a ↔ ∃ b, a = 2 * b + 1 := exists_congr fun b ↦ by rw [two_mul]
 
+-- TODO rename
 alias ⟨Odd.exists_bit1, _⟩ := odd_iff_exists_bit1
 
 @[simp] lemma range_two_mul_add_one (α : Type*) [Semiring α] :

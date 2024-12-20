@@ -97,6 +97,7 @@ theorem mem_ofFixingSubgroup_iff {x : α} :
 
 variable {M}
 
+-- TODO rename notMem
 @[to_additive]
 theorem not_mem_of_mem_ofFixingSubgroup (x : ofFixingSubgroup M s) :
     ↑x ∉ s := x.prop

@@ -470,6 +470,7 @@ and the presentation is finite.
 -/
 @[nolint checkUnivs]
 structure SubmersivePresentation extends PreSubmersivePresentation.{t, w} R S ι σ where
+  -- TODO rename isUnit_jacobian
   jacobian_isUnit : IsUnit toPreSubmersivePresentation.jacobian
 
 namespace SubmersivePresentation

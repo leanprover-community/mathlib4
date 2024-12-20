@@ -169,7 +169,7 @@ theorem coe_toPermHom (k : centralizer {g}) (c : g.cycleFactorsFinset) :
 /-- The range of `Equiv.Perm.OnCycleFactors.toPermHom`.
 
 The equality is proved by `Equiv.Perm.OnCycleFactors.range_toPermHom_eq_range_toPermHom'`. -/
-def range_toPermHom' : Subgroup (Perm g.cycleFactorsFinset) where
+def range_toPermHom' : Subgroup (Perm g.cycleFactorsFinset) where -- TODO rename
   carrier := {τ | ∀ c, #(τ c).val.support = #c.val.support}
   one_mem' := by simp
   mul_mem' hσ hτ := by
@@ -630,7 +630,7 @@ variable (g : Perm α)
 
 -- Should one parenthesize the product ?
 /-- Cardinality of the centralizer in `Equiv.Perm α` of a permutation given `cycleType` -/
-theorem nat_card_centralizer :
+theorem nat_card_centralizer : -- TODO rename
     Nat.card (centralizer {g}) =
       (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod *
         (∏ n ∈ g.cycleType.toFinset, (g.cycleType.count n)!) := by

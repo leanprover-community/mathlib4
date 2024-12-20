@@ -21,11 +21,13 @@ open Function
 
 namespace OrderDual
 
+-- TODO rename inst
 @[to_additive]
 instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
     IsOrderedMonoid αᵒᵈ where
   mul_le_mul_left _ _ h c := mul_le_mul_left h c
 
+-- TODO rename inst
 @[to_additive]
 instance isOrderedCancelMonoid [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] :
     IsOrderedCancelMonoid αᵒᵈ where

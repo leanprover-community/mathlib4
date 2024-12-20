@@ -66,6 +66,8 @@ def toCommGrp : AddCommGrpCat ⥤ CommGrpCat where
 
 end AddCommGrpCat
 
+-- TODO rename below defs
+
 /-- The equivalence of categories between `GrpCat` and `AddGrpCat`
 -/
 @[simps]

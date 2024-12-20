@@ -335,6 +335,7 @@ variable [Semiring R] [Nontrivial R]
 theorem order_one : order (1 : R⟦X⟧) = 0 := by
   simpa using order_monomial_of_ne_zero 0 (1 : R) one_ne_zero
 
+-- TODO rename isUnit
 /-- The order of an invertible power series is `0`. -/
 theorem order_zero_of_unit {f : R⟦X⟧} : IsUnit f → f.order = 0 := by
   rintro ⟨⟨u, v, hu, hv⟩, hf⟩

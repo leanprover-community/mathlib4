@@ -61,6 +61,7 @@ def ofStabilizer (a : α) : SubMulAction (stabilizer G a) α where
     rw [hgx, ← smul_eq_iff_eq_inv_smul]
     exact g.prop
 
+-- TODO rename
 @[to_additive]
 theorem ofStabilizer_carrier (a : α) : (ofStabilizer G a).carrier = {a}ᶜ :=
   rfl
@@ -69,16 +70,19 @@ theorem ofStabilizer_carrier (a : α) : (ofStabilizer G a).carrier = {a}ᶜ :=
 theorem mem_ofStabilizer_iff (a : α) {x : α} : x ∈ ofStabilizer G a ↔ x ≠ a :=
   Iff.rfl
 
+-- TODO rename
 @[to_additive]
 theorem notMem_val_image {a : α} (t : Set (ofStabilizer G a)) :
     a ∉ Subtype.val '' t := by
   rintro ⟨b, hb⟩
   exact b.prop (by simp [hb])
 
+-- TODO rename
 @[to_additive]
 theorem neq_of_mem_ofStabilizer (a : α) {x : ofStabilizer G a} : ↑x ≠ a :=
   x.prop
 
+-- TODO rename
 @[to_additive]
 lemma ENat_card_ofStabilizer_add_one_eq (a : α) :
     ENat.card (ofStabilizer G a) + 1 = ENat.card α := by
@@ -90,6 +94,7 @@ lemma ENat_card_ofStabilizer_add_one_eq (a : α) :
 @[deprecated (since := "2025-07-15")]
 alias Enat_card_ofStabilizer_eq_add_one := ENat_card_ofStabilizer_add_one_eq
 
+-- TODO rename natCard
 @[to_additive]
 lemma nat_card_ofStabilizer_add_one_eq [Finite α] (a : α) :
     Nat.card (ofStabilizer G a) + 1 = Nat.card α := by
@@ -102,6 +107,7 @@ lemma nat_card_ofStabilizer_add_one_eq [Finite α] (a : α) :
 @[deprecated  (since := "2025-10-03")]
 alias nat_card_ofStabilizer_eq_add_one := nat_card_ofStabilizer_add_one_eq
 
+-- TODO rename natCard
 @[to_additive]
 lemma nat_card_ofStabilizer_eq [Finite α] (a : α) :
     Nat.card (ofStabilizer G a) = Nat.card α - 1 :=

@@ -118,6 +118,7 @@ theorem Ideal.height_mono {I J : Ideal R} (h : I ≤ J) : I.height ≤ J.height 
   haveI := Ideal.minimalPrimes_isPrime hq
   exact (iInf₂_le q hq).trans (Ideal.primeHeight_mono e)
 
+-- TODO rename _of_isPrime
 @[gcongr]
 lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
     (h : I < J) [I.FiniteHeight] : I.height < J.height := by

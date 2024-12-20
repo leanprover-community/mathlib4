@@ -170,6 +170,7 @@ theorem projRestricts_comp_projRestrict (h : ∀ i, J i → K i) :
 
 variable (J)
 
+-- TODO rename
 /-- The objectwise map in the isomorphism `spanFunctor ≅ Profinite.indexFunctor`. -/
 def iso_map : C(π C J, (IndexFunctor.obj C J)) :=
   ⟨fun x ↦ ⟨fun i ↦ x.val i.val, by
@@ -180,6 +181,7 @@ def iso_map : C(π C J, (IndexFunctor.obj C J)) :=
     refine Continuous.subtype_mk (continuous_pi fun i ↦ ?_) _
     exact (continuous_apply i.val).comp continuous_subtype_val⟩
 
+-- TODO rename
 lemma iso_map_bijective : Function.Bijective (iso_map C J) := by
   refine ⟨fun a b h ↦ ?_, fun a ↦ ?_⟩
   · ext i
@@ -321,6 +323,7 @@ instance [WellFoundedLT I] : WellFoundedLT (Products I) := by
 /-- The evaluation `e C i₁ ··· e C iᵣ : C → ℤ` of a formal product `[i₁, i₂, ..., iᵣ]`. -/
 def eval (l : Products I) := (l.1.map (e C)).prod
 
+-- TODO rename IsGood?
 /--
 The predicate on products which we prove picks out a basis of `LocallyConstant C ℤ`. We call such a
 product "good".
@@ -358,6 +361,7 @@ theorem injective : Function.Injective (eval C) := by
 /-- The image of the good products in the module `LocallyConstant C ℤ`. -/
 def range := Set.range (GoodProducts.eval C)
 
+-- TODO rename
 /-- The type of good products is equivalent to its image. -/
 noncomputable
 def equiv_range : GoodProducts C ≃ range C :=
