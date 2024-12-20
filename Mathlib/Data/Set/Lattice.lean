@@ -691,6 +691,7 @@ lemma iInter_sum {s : α ⊕ β → Set γ} : ⋂ x, s x = (⋂ x, s (.inl x)) �
 theorem iUnion_psigma {γ : α → Type*} (s : PSigma γ → Set β) : ⋃ ia, s ia = ⋃ i, ⋃ a, s ⟨i, a⟩ :=
   iSup_psigma _
 
+/-- A reversed version of `iUnion_psigma` with a curried map. -/
 theorem iUnion_psigma' {γ : α → Type*} (s : ∀ i, γ i → Set β) :
     ⋃ i, ⋃ a, s i a = ⋃ ia : PSigma γ, s ia.1 ia.2 :=
   iSup_psigma' _
@@ -698,6 +699,7 @@ theorem iUnion_psigma' {γ : α → Type*} (s : ∀ i, γ i → Set β) :
 theorem iInter_psigma {γ : α → Type*} (s : PSigma γ → Set β) : ⋂ ia, s ia = ⋂ i, ⋂ a, s ⟨i, a⟩ :=
   iInf_psigma _
 
+/-- A reversed version of `iInter_psigma` with a curried map. -/
 theorem iInter_psigma' {γ : α → Type*} (s : ∀ i, γ i → Set β) :
     ⋂ i, ⋂ a, s i a = ⋂ ia : PSigma γ, s ia.1 ia.2 :=
   iInf_psigma' _
