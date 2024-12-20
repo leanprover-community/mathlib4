@@ -5,7 +5,6 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.Defs
-import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Lift
@@ -347,6 +346,11 @@ lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by
   simp [Int.pow_succ, Int.pow_zero, Int.natAbs_mul_self']
 
 alias natAbs_pow_two := natAbs_sq
+
+theorem sign_mul_self_eq_natAbs : ∀ a : Int, sign a * a = natAbs a
+  | 0      => rfl
+  | Nat.succ _ => Int.one_mul _
+  | -[_+1] => (Int.neg_eq_neg_one_mul _).symm
 
 /-! ### `/`  -/
 

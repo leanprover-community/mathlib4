@@ -146,10 +146,8 @@ theorem ACF_isSatisfiable {p : ℕ} (hp : p.Prime ∨ p = 0) :
 
 open Cardinal
 
-/-- The Theory `Theory.ACF p` is `κ`-categorical whenever `κ` is an uncountable cardinal.
-At the moment this is not as universe polymorphic as it could be,
-it currently requires `κ : Cardinal.{0}`, but it is true for any universe. -/
-theorem ACF_categorical {p : ℕ} (κ : Cardinal.{0}) (hκ : ℵ₀ < κ) :
+/-- The Theory `Theory.ACF p` is `κ`-categorical whenever `κ` is an uncountable cardinal. -/
+theorem ACF_categorical {p : ℕ} (κ : Cardinal) (hκ : ℵ₀ < κ) :
     Categorical κ (Theory.ACF p) := by
   rintro ⟨M⟩ ⟨N⟩ hM hN
   let _ := fieldOfModelACF p M
@@ -165,9 +163,9 @@ theorem ACF_categorical {p : ℕ} (κ : Cardinal.{0}) (hκ : ℵ₀ < κ) :
   constructor
   refine languageEquivEquivRingEquiv.symm ?_
   apply Classical.choice
-  refine IsAlgClosed.ringEquivOfCardinalEqOfCharEq p ?_ ?_
+  refine IsAlgClosed.ringEquiv_of_equiv_of_char_eq p ?_ ?_
   · rw [hM]; exact hκ
-  · rw [hM, hN]
+  · rw [← Cardinal.eq, hM, hN]
 
 theorem ACF_isComplete {p : ℕ} (hp : p.Prime ∨ p = 0) :
     (Theory.ACF p).IsComplete := by
@@ -208,10 +206,9 @@ theorem finite_ACF_prime_not_realize_of_ACF_zero_realize
       have := modelField_of_modelACF q K
       let _ := compatibleRingOfModelField K
       have := charP_of_model_fieldOfChar q K
-      simp only [eqZero, Term.equal, Term.relabel, BoundedFormula.realize_not,
-        BoundedFormula.realize_bdEqual, Term.realize_relabel, Sum.elim_comp_inl,
-        realize_termOfFreeCommRing, map_natCast, Term.realize_func, CompatibleRing.funMap_zero,
-        ne_eq, ← CharP.charP_iff_prime_eq_zero hp]
+      simp only [eqZero, Term.equal, BoundedFormula.realize_not, BoundedFormula.realize_bdEqual,
+        Term.realize_relabel, Sum.elim_comp_inl, realize_termOfFreeCommRing, map_natCast,
+        realize_zero, ← CharP.charP_iff_prime_eq_zero hp]
       intro _
       exact hqp <| CharP.eq K inferInstance inferInstance
   let s : Finset Nat.Primes := T0.attach.biUnion (fun φ => f φ.1 (hT0 φ.2))

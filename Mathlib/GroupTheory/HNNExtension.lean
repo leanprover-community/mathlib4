@@ -3,7 +3,7 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-
+import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.GroupTheory.Coprod.Basic
 import Mathlib.GroupTheory.Complement
 
@@ -679,8 +679,8 @@ theorem toList_eq_nil_of_mem_of_range (w : ReducedWord G A B)
     w.toList = [] := by
   rcases hw with ⟨g, hg⟩
   let w' : ReducedWord G A B := { ReducedWord.empty G A B with head := g }
-  have : w.prod φ = w'.prod φ := by simp [ReducedWord.prod, hg]
-  simpa using (map_fst_eq_and_of_prod_eq φ this).1
+  have : w.prod φ = w'.prod φ := by simp [w', ReducedWord.prod, hg]
+  simpa [w'] using (map_fst_eq_and_of_prod_eq φ this).1
 
 end ReducedWord
 
