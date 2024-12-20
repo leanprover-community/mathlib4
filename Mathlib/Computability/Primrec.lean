@@ -1206,7 +1206,7 @@ theorem vector_tail {n} : Primrec (@List.Vector.tail α n) :=
 theorem vector_get {n} : Primrec₂ (@List.Vector.get α n) :=
   option_some_iff.1 <|
     (list_get?.comp (vector_toList.comp fst) (fin_val.comp snd)).of_eq fun a => by
-      rw [Vector.get_eq_get, ← List.get?_eq_get]
+      rw [Vector.get_eq_get_toList, ← List.get?_eq_get]
       rfl
 
 theorem list_ofFn :
