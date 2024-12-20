@@ -307,7 +307,6 @@ theorem RingEquiv.isDiscreteValuationRing {A B : Type*} [CommRing A] [IsDomain A
     rw [IsLocalRing.mem_maximalIdeal, map_mem_nonunits_iff e, ← IsLocalRing.mem_maximalIdeal]
     exact a.2
 
-
 section
 
 variable [CommRing R] [IsDomain R] [IsDiscreteValuationRing R]
