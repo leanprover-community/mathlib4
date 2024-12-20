@@ -670,47 +670,38 @@ end UniformExtension
 
 section DenseExtension
 
-variable {α β : Type*}
-
-/-- This is a shortcut for `hs.isDenseInducing_val.extend f`. It is useful because if `s : Set α`
-is dense then the coercion `(↑) : s → α` automatically satisfies `IsUniformInducing` and
-`IsDenseInducing` so this gives access to the theorems satisfied by a uniform extension by simply
-mentioning the density hypothesis. -/
-noncomputable def Dense.extend [TopologicalSpace α] [TopologicalSpace β]
-    {s : Set α} (hs : Dense s) (f : s → β) : α → β := hs.isDenseInducing_val.extend f
-
-variable [UniformSpace α] [UniformSpace β]
+variable {α β : Type*} [UniformSpace α] [UniformSpace β]
 
 theorem isUniformInducing_val (s : Set α) :
     IsUniformInducing (@Subtype.val α s) := ⟨uniformity_setCoe⟩
 
+namespace Dense
+
 variable {s : Set α} {f : s → β}
 
-theorem Dense.extend_exists [CompleteSpace β] (hs : Dense s) (hf : UniformContinuous f) (a : α) :
+theorem extend_exists [CompleteSpace β] (hs : Dense s) (hf : UniformContinuous f) (a : α) :
     ∃ b, Tendsto f (comap (↑) (𝓝 a)) (𝓝 b) :=
   uniformly_extend_exists (isUniformInducing_val s) hs.denseRange_val hf a
 
-theorem Dense.extend_spec [CompleteSpace β] (hs : Dense s) (hf : UniformContinuous f) (a : α) :
+theorem extend_spec [CompleteSpace β] (hs : Dense s) (hf : UniformContinuous f) (a : α) :
     Tendsto f (comap (↑) (𝓝 a)) (𝓝 (hs.extend f a)) :=
   uniformly_extend_spec (isUniformInducing_val s) hs.denseRange_val hf a
 
-theorem Dense.extend_tendsto [CompleteSpace β] (hs : Dense s) (hf : UniformContinuous f) {γ : Type*}
+theorem extend_tendsto [CompleteSpace β] (hs : Dense s) (hf : UniformContinuous f) {γ : Type*}
     {a : α} {x : γ → s} {ℱ : Filter γ} (hx : Tendsto ((↑) ∘ x) ℱ (𝓝 a)) :
     Tendsto (f ∘ x) ℱ (𝓝 (hs.extend f a)) :=
   uniformly_extend_tendsto (isUniformInducing_val s) hs.denseRange_val hf hx
 
-theorem Dense.uniformContinuous_extend [CompleteSpace β] (hs : Dense s) (hf : UniformContinuous f) :
+theorem uniformContinuous_extend [CompleteSpace β] (hs : Dense s) (hf : UniformContinuous f) :
     UniformContinuous (hs.extend f) :=
   uniformContinuous_uniformly_extend (isUniformInducing_val s) hs.denseRange_val hf
 
 variable [T0Space β]
 
-theorem Dense.extend_of_ind (hs : Dense s) (hf : UniformContinuous f) (x : s) :
+theorem extend_of_ind (hs : Dense s) (hf : UniformContinuous f) (x : s) :
     hs.extend f x = f x :=
   IsDenseInducing.extend_eq_at _ hf.continuous.continuousAt
 
-theorem Dense.extend_unique (hs : Dense s) {g : α → β} (hg : ∀ x : s, g x = f x)
-    (hc : Continuous g) : hs.extend f = g :=
-  IsDenseInducing.extend_unique _ hg hc
+end Dense
 
 end DenseExtension
