@@ -452,7 +452,6 @@ end RingHom
 
 namespace RingHom.FinitePresentation
 universe u v
-variable {R : Type u} [CommRing R]
 
 open Polynomial
 
@@ -460,7 +459,13 @@ open Polynomial
 
 For a property to hold for all finitely presented ring homs, it suffices for it to hold for
 `Polynomial.C : R → R[X]`, surjective ring homs with finitely generated kernels, and to be closed
-under composition. -/
+under composition.
+
+Note that to state this conveniently for ring homs between rings of different universes, we carry
+around two predicates `P` and `Q`, which should be "the same" apart from universes:
+* `P`, for ring homs `(R : Type u) → (S : Type u)`.
+* `Q`, for ring homs `(R : Type u) → (S : Type v)`.
+-/
 lemma polynomial_induction
     (P : ∀ (R : Type u) [CommRing R] (S : Type u) [CommRing S], (R →+* S) → Prop)
     (Q : ∀ (R : Type u) [CommRing R] (S : Type v) [CommRing S], (R →+* S) → Prop)
@@ -469,13 +474,14 @@ lemma polynomial_induction
       Surjective f → (ker f).FG → Q R S f)
     (comp : ∀ (R) [CommRing R] (S) [CommRing S] (T) [CommRing T] (f : R →+* S) (g : S →+* T),
       P R S f → Q S T g → Q R T (g.comp f))
-    {R S} [CommRing R] [CommRing S] (f : R →+* S) (hf : f.FinitePresentation) :
+    {R : Type u} {S : Type v} [CommRing R] [CommRing S] (f : R →+* S) (hf : f.FinitePresentation) :
     Q R S f := by
+  letI := f.toAlgebra
   obtain ⟨n, g, hg, hg'⟩ := hf
-  let g' := letI := f.toAlgebra; g.toRingHom
-  replace hg : Surjective g' := hg
-  replace hg' : (ker g').FG := hg'
-  have : g'.comp MvPolynomial.C = f := letI := f.toAlgebra; g.comp_algebraMap
+  let g' := g.toRingHom
+  change Surjective g' at hg
+  change (ker g').FG at hg'
+  have : g'.comp MvPolynomial.C = f := g.comp_algebraMap
   clear_value g'
   subst this
   clear g
