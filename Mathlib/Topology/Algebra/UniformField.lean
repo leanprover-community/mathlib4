@@ -102,7 +102,7 @@ theorem hatInv_extends {x : K} (h : x ≠ 0) : hatInv (x : hat K) = ↑(x⁻¹ :
 variable [CompletableTopField K]
 
 @[norm_cast]
-theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
+theorem coe_inv_of_field (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
   by_cases h : x = 0
   · rw [h, inv_zero]
     dsimp [Inv.inv]
@@ -112,6 +112,8 @@ theorem coe_inv (x : K) : (x : hat K)⁻¹ = ((x⁻¹ : K) : hat K) := by
     rw [if_neg]
     · exact hatInv_extends h
     · exact fun H => h (isDenseEmbedding_coe.injective H)
+
+@[deprecated (since := "2024-12-06")] alias coe_inv := coe_inv_of_field
 
 variable [UniformAddGroup K]
 
