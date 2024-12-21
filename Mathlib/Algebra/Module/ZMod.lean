@@ -10,13 +10,30 @@ import Mathlib.Data.ZMod.Basic
 # The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`
 -/
 
-variable {n : ℕ} {M M₁ : Type*}
+namespace AddCommMonoid
+
+@[nolint unusedArguments]
+def toZModModule (M : Type*) [AddCommMonoid M] (n : ℕ) (_ : ∀ x : M, n • x = 0) := M
+
+section AddCommMonoid
+
+variable {M : Type*} [AddCommMonoid M] {n : ℕ} {h : ∀ x : M, n • x = 0}
+
+variable (n) in
+def toZModModule.of (m : M) : toZModModule M n h := m
+
+def toZModModule.to (m : toZModModule M n h) : M := m
+
+instance : AddCommMonoid (toZModModule M n h) :=
+  inferInstanceAs (AddCommMonoid M)
+
+theorem toZModModule.smul_eq_zero (x : toZModModule M n h) : n • x = 0 :=
+  h x
 
 /-- The `ZMod n`-module structure on commutative monoids whose elements have order dividing `n ≠ 0`.
 Also implies a group structure via `Module.addCommMonoidToAddCommGroup`.
 See note [reducible non-instances]. -/
-abbrev AddCommMonoid.zmodModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n • x = 0) :
-    Module (ZMod n) M := by
+instance [NeZero n] : Module (ZMod n) (toZModModule M n h) := by
   have h_mod (c : ℕ) (x : M) : (c % n) • x = c • x := by
     suffices (c % n + c / n * n) • x = c • x by rwa [add_nsmul, mul_nsmul, h, add_zero] at this
     rw [Nat.mod_add_div']
@@ -32,16 +49,23 @@ abbrev AddCommMonoid.zmodModule [NeZero n] [AddCommMonoid M] (h : ∀ (x : M), n
     mul_smul := fun _ _ _ ↦ (h_mod _ _).trans <| mul_nsmul' _ _ _
   }
 
+end AddCommMonoid
+
+section AddCommGroup
+
+variable {G : Type*} [AddCommGroup G] {n : ℕ} {h : ∀ g : G, n • g = 0}
+
+instance : AddCommGroup (toZModModule G n h) :=
+  inferInstanceAs (AddCommGroup G)
+
 /-- The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`.
 See note [reducible non-instances]. -/
-abbrev AddCommGroup.zmodModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n • x = 0) :
-    Module (ZMod n) G :=
+instance zmodModule : Module (ZMod n) (toZModModule G n h) :=
   match n with
   | 0 => AddCommGroup.toIntModule G
-  | _ + 1 => AddCommMonoid.zmodModule h
+  | _ + 1 => inferInstance
 
-theorem AddCommGroup.zmodModule.coe_smul {G : Type*} [AddCommGroup G] (h : ∀ (g : G), n • g = 0)
-    (k : ℤ) (g : G) : let _ := AddCommGroup.zmodModule h; (k : ZMod n) • g = k • g :=
+theorem toZModModule.coe_smul (k : ℤ) (g : toZModModule G n h) : (k : ZMod n) • g = k • g :=
   match n with
   | 0 => rfl
   | m + 1 => by
@@ -49,47 +73,62 @@ theorem AddCommGroup.zmodModule.coe_smul {G : Type*} [AddCommGroup G] (h : ∀ (
       (Int.natCast_dvd_natCast.mpr (addOrderOf_dvd_iff_nsmul_eq_zero.mpr (h g)))
     rwa [← zsmul_eq_zsmul_iff_modEq, ← ZMod.val_intCast, Nat.cast_smul_eq_nsmul] at H
 
-/-- The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`.
-See note [reducible non-instances]. -/
-abbrev CommGroup.zmodModule {G : Type*} [CommGroup G] (h : ∀ (g : G), g ^ n = 1) :
-    MulDistribMulAction (ZMod n) G :=
-  let _ := (AddCommGroup.zmodModule (G := Additive G) h).toDistribMulAction
-  { smul m a := m • Additive.ofMul a
-    one_smul a := one_smul (ZMod n) (Additive.ofMul a)
-    mul_smul m n a := mul_smul m n (Additive.ofMul a)
-    smul_mul m a b := smul_add m (Additive.ofMul a) (Additive.ofMul b)
-    smul_one m := smul_zero (A := Additive G) m }
+end AddCommGroup
 
-theorem CommGroup.zmodModule.coe_smul {G : Type*} [CommGroup G] (h : ∀ (g : G), g ^ n = 1)
-    (k : ℤ) (g : G) : let _ := CommGroup.zmodModule h; (k : ZMod n) • g = g ^ k :=
-  AddCommGroup.zmodModule.coe_smul (G := Additive G) h k g
+end AddCommMonoid
 
-theorem CommGroup.zmodModule.zero_smul {G : Type*} [CommGroup G] (h : ∀ (g : G), g ^ n = 1)
-    (g : G) : let _ := CommGroup.zmodModule h; (0 : ZMod n) • g = 1 :=
-  let _ := AddCommGroup.zmodModule (G := Additive G) h
-  _root_.zero_smul (M := Additive G) (ZMod n) g
+namespace CommGroup
 
-theorem CommGroup.zmodModule.neg_smul {G : Type*} [CommGroup G] (h : ∀ (g : G), g ^ n = 1)
-    (k : ZMod n) (g : G) : let _ := CommGroup.zmodModule h; -k • g = (k • g)⁻¹ :=
-  let _ := AddCommGroup.zmodModule (G := Additive G) h
-  _root_.neg_smul (M := Additive G) k g
+@[nolint unusedArguments]
+def toZModModule (G : Type*) [CommGroup G] (n : ℕ) (_ : ∀ g : G, g ^ n = 1) := G
 
-theorem CommGroup.zmodModule.add_smul {G : Type*} [CommGroup G] (h : ∀ (g : G), g ^ n = 1)
-    (k m : ZMod n) (g : G) : let _ := CommGroup.zmodModule h; (k + m) • g = k • g * m • g :=
-  let _ := AddCommGroup.zmodModule (G := Additive G) h
-  _root_.add_smul (M := Additive G) k m g
+variable {G : Type*} [CommGroup G] {n : ℕ} {h : ∀ g : G, g ^ n = 1}
 
-theorem CommGroup.zmodModule.sub_smul {G : Type*} [CommGroup G] (h : ∀ (g : G), g ^ n = 1)
-    (k m : ZMod n) (g : G) : let _ := CommGroup.zmodModule h; (k - m) • g = k • g / m • g :=
-  let _ := AddCommGroup.zmodModule (G := Additive G) h
-  _root_.sub_smul (M := Additive G) k m g
+instance : CommGroup (toZModModule G n h) :=
+  inferInstanceAs (CommGroup G)
+
+instance : MulDistribMulAction (ZMod n) (toZModModule G n h) :=
+  { smul m a := m • AddCommMonoid.toZModModule.of n (Additive.ofMul a)
+    one_smul a := one_smul (ZMod n) (AddCommMonoid.toZModModule.of n (Additive.ofMul a))
+    mul_smul m m' a := mul_smul m m' (AddCommMonoid.toZModModule.of n (Additive.ofMul a))
+    smul_mul m a b := smul_add m (AddCommMonoid.toZModModule.of n (Additive.ofMul a))
+      (AddCommMonoid.toZModModule.of n (Additive.ofMul b))
+    smul_one m := smul_zero (A := AddCommMonoid.toZModModule (Additive G) n h) m }
+
+theorem toZModModule.coe_smul (k : ℤ) (g : toZModModule G n h) : (k : ZMod n) • g = g ^ k :=
+  AddCommMonoid.toZModModule.coe_smul (G := Additive G) k g
+
+theorem toZModModule.zero_smul (g : toZModModule G n h) : (0 : ZMod n) • g = 1 :=
+  _root_.zero_smul (M := AddCommMonoid.toZModModule (Additive G) n h) (ZMod n) g
+
+theorem toZModModule.neg_smul (k : ZMod n) (g : toZModModule G n h) : -k • g = (k • g)⁻¹ :=
+  _root_.neg_smul (M := AddCommMonoid.toZModModule (Additive G) n h) k g
+
+theorem toZModModule.add_smul (k m : ZMod n) (g : toZModModule G n h) :
+    (k + m) • g = k • g * m • g :=
+  _root_.add_smul (M := AddCommMonoid.toZModModule (Additive G) n h) k m g
+
+theorem toZModModule.sub_smul (k m : ZMod n) (g : toZModModule G n h) :
+    (k - m) • g = k • g / m • g :=
+  _root_.sub_smul (M := AddCommMonoid.toZModModule (Additive G) n h) k m g
+
+end CommGroup
+
+variable {n : ℕ} {M M₁ : Type*}
+
+def QuotientAddGroup.toZModModule {G : Type*} [AddCommGroup G] {H : AddSubgroup G}
+    (_ : ∀ x, n • x ∈ H) := G ⧸ H
+
+instance {G : Type*} [AddCommGroup G] {H : AddSubgroup G} (hH : ∀ x, n • x ∈ H) :
+    AddCommMonoid (QuotientAddGroup.toZModModule hH) :=
+  inferInstanceAs (AddCommMonoid (G ⧸ H))
 
 /-- The quotient of an abelian group by a subgroup containing all multiples of `n` is a
 `n`-torsion group. -/
 -- See note [reducible non-instances]
-abbrev QuotientAddGroup.zmodModule {G : Type*} [AddCommGroup G] {H : AddSubgroup G}
-    (hH : ∀ x, n • x ∈ H) : Module (ZMod n) (G ⧸ H) :=
-  AddCommGroup.zmodModule <| by simpa [QuotientAddGroup.forall_mk, ← QuotientAddGroup.mk_nsmul]
+instance QuotientAddGroup.zmodModule {G : Type*} [AddCommGroup G] {H : AddSubgroup G}
+    (hH : ∀ x, n • x ∈ H) : Module (ZMod n) (QuotientAddGroup.toZModModule hH) :=
+  AddCommMonoid.zmodModule (h := by simpa [forall_mk, ← mk_nsmul])
 
 variable {F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [FunLike F M M₁]
   [AddMonoidHomClass F M M₁] [Module (ZMod n) M] [Module (ZMod n) M₁] [SetLike S M]
