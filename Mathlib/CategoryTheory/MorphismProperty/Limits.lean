@@ -19,7 +19,7 @@ The following predicates are introduces for morphism properties `P`:
 We define `P.universally` for the class of morphisms which satisfy `P` after any base change.
 
 We also introduce properties `IsStableUnderProductsOfShape`, `IsStableUnderLimitsOfShape`,
-`IsStableUnderFiniteProducts`.
+`IsStableUnderFiniteProducts`, and similar properties for colimits and coproducts.
 
 -/
 
@@ -158,6 +158,13 @@ theorem IsStableUnderCobaseChange.mk' {P : MorphismProperty C} [RespectsIso P]
     rw [← P.cancel_right_of_respectsIso _ e.hom, sq.flip.inr_isoPushout_hom]
     exact hP₂ _ _ _ f g hf
 
+instance IsStableUnderCobaseChange.isomorphisms :
+    (isomorphisms C).IsStableUnderCobaseChange where
+  of_isPushout {_ _ _ _ f g _ _} h hf :=
+    have : IsIso f := hf
+    have := hasPushout_of_right_iso g f
+    h.inl_isoPushout_inv ▸ inferInstanceAs (IsIso _)
+
 variable (C) in
 instance IsStableUnderCobaseChange.epimorphisms :
     (epimorphisms C).IsStableUnderCobaseChange where
@@ -226,6 +233,13 @@ def IsStableUnderLimitsOfShape (J : Type*) [Category J] : Prop :=
     (_ : IsLimit c₁) (h₂ : IsLimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f),
       W (h₂.lift (Cone.mk _ (c₁.π ≫ f)))
 
+/-- The property that a morphism property `W` is stable under colimits
+indexed by a category `J`. -/
+def IsStableUnderColimitsOfShape (J : Type*) [Category J] : Prop :=
+  ∀ (X₁ X₂ : J ⥤ C) (c₁ : Cocone X₁) (c₂ : Cocone X₂)
+    (h₁ : IsColimit c₁) (_ : IsColimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f),
+      W (h₁.desc (Cocone.mk _ (f ≫ c₂.ι)))
+
 variable {W}
 
 lemma IsStableUnderLimitsOfShape.lim_map {J : Type*} [Category J]
@@ -234,10 +248,19 @@ lemma IsStableUnderLimitsOfShape.lim_map {J : Type*} [Category J]
     W (lim.map f) :=
   hW X Y _ _ (limit.isLimit X) (limit.isLimit Y) f hf
 
+lemma IsStableUnderColimitsOfShape.colim_map {J : Type*} [Category J]
+    (hW : W.IsStableUnderColimitsOfShape J) {X Y : J ⥤ C}
+    (f : X ⟶ Y) [HasColimitsOfShape J C] (hf : W.functorCategory _ f) :
+    W (colim.map f) :=
+  hW X Y _ _ (colimit.isColimit X) (colimit.isColimit Y) f hf
+
 variable (W)
 
 /-- The property that a morphism property `W` is stable under products indexed by a type `J`. -/
 abbrev IsStableUnderProductsOfShape (J : Type*) := W.IsStableUnderLimitsOfShape (Discrete J)
+
+/-- The property that a morphism property `W` is stable under coproducts indexed by a type `J`. -/
+abbrev IsStableUnderCoproductsOfShape (J : Type*) := W.IsStableUnderColimitsOfShape (Discrete J)
 
 lemma IsStableUnderProductsOfShape.mk (J : Type*)
     [W.RespectsIso] [HasProductsOfShape J C]
@@ -254,14 +277,39 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*)
   rintro ⟨j⟩
   simp [φ]
 
+lemma IsStableUnderCoproductsOfShape.mk (J : Type*)
+    [W.RespectsIso] [HasCoproductsOfShape J C]
+    (hW : ∀ (X₁ X₂ : J → C) (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
+      W (Limits.Sigma.map f)) : W.IsStableUnderCoproductsOfShape J := by
+  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
+  let φ := fun j => f.app (Discrete.mk j)
+  have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
+  refine (W.arrow_mk_iso_iff ?_).1 hf'
+  refine Arrow.isoMk
+    ((Sigma.isoColimit _) ≪≫ IsColimit.coconePointUniqueUpToIso (colimit.isColimit X₁) hc₁)
+    ((Sigma.isoColimit _) ≪≫ IsColimit.coconePointUniqueUpToIso (colimit.isColimit X₂) hc₂)
+    ?_
+  apply colimit.hom_ext
+  rintro ⟨j⟩
+  simp [φ]
+
 /-- The condition that a property of morphisms is stable by finite products. -/
 class IsStableUnderFiniteProducts : Prop where
   isStableUnderProductsOfShape (J : Type) [Finite J] : W.IsStableUnderProductsOfShape J
+
+/-- The condition that a property of morphisms is stable by finite coproducts. -/
+class IsStableUnderFiniteCoproducts : Prop where
+  isStableUnderCoproductsOfShape (J : Type) [Finite J] : W.IsStableUnderCoproductsOfShape J
 
 lemma isStableUnderProductsOfShape_of_isStableUnderFiniteProducts
     (J : Type) [Finite J] [W.IsStableUnderFiniteProducts] :
     W.IsStableUnderProductsOfShape J :=
   IsStableUnderFiniteProducts.isStableUnderProductsOfShape J
+
+lemma isStableUnderCoproductsOfShape_of_isStableUnderFiniteCoproducts
+    (J : Type) [Finite J] [W.IsStableUnderFiniteCoproducts] :
+    W.IsStableUnderCoproductsOfShape J :=
+  IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape J
 
 end
 
