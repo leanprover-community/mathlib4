@@ -72,14 +72,14 @@ instance rlp_isMultiplicative : T.rlp.IsMultiplicative where
 
 lemma llp_IsStableUnderCoproductsOfShape (J : Type*) :
     T.llp.IsStableUnderCoproductsOfShape J := by
-  apply IsStableUnderCoproductsOfShape.mk'
+  apply IsStableUnderCoproductsOfShape.mk
   intro A B _ _ f hf X Y p hp
   have := fun j ↦ hf j _ hp
   infer_instance
 
 lemma rlp_IsStableUnderProductsOfShape (J : Type*) :
     T.rlp.IsStableUnderProductsOfShape J := by
-  apply IsStableUnderProductsOfShape.mk'
+  apply IsStableUnderProductsOfShape.mk
   intro A B _ _ f hf X Y p hp
   have := fun j ↦ hf j _ hp
   infer_instance

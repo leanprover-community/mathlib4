@@ -261,23 +261,7 @@ abbrev IsStableUnderProductsOfShape (J : Type*) := W.IsStableUnderLimitsOfShape 
 /-- The property that a morphism property `W` is stable under coproducts indexed by a type `J`. -/
 abbrev IsStableUnderCoproductsOfShape (J : Type*) := W.IsStableUnderColimitsOfShape (Discrete J)
 
-lemma IsStableUnderProductsOfShape.mk (J : Type*)
-    [W.RespectsIso] [HasProductsOfShape J C]
-    (hW : ∀ (X₁ X₂ : J → C) (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
-      W (Limits.Pi.map f)) : W.IsStableUnderProductsOfShape J := by
-  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
-  let φ := fun j => f.app (Discrete.mk j)
-  have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
-  refine (W.arrow_mk_iso_iff ?_).2 hf'
-  refine Arrow.isoMk
-    (IsLimit.conePointUniqueUpToIso hc₁ (limit.isLimit X₁) ≪≫ (Pi.isoLimit _).symm)
-    (IsLimit.conePointUniqueUpToIso hc₂ (limit.isLimit X₂) ≪≫ (Pi.isoLimit _).symm) ?_
-  apply limit.hom_ext
-  rintro ⟨j⟩
-  simp [φ]
-
-/-- another version of `IsStableUnderProductsOfShape.mk`. -/
-lemma IsStableUnderProductsOfShape.mk' (J : Type*) [W.RespectsIso]
+lemma IsStableUnderProductsOfShape.mk (J : Type*) [W.RespectsIso]
     (hW : ∀ (X₁ X₂ : J → C) [HasProduct X₁] [HasProduct X₂]
       (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
       W (Limits.Pi.map f)) : W.IsStableUnderProductsOfShape J := by
@@ -298,23 +282,7 @@ lemma IsStableUnderProductsOfShape.mk' (J : Type*) [W.RespectsIso]
   rintro ⟨j⟩
   simp [φ]
 
-lemma IsStableUnderCoproductsOfShape.mk (J : Type*)
-    [W.RespectsIso] [HasCoproductsOfShape J C]
-    (hW : ∀ (X₁ X₂ : J → C) (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
-      W (Limits.Sigma.map f)) : W.IsStableUnderCoproductsOfShape J := by
-  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
-  let φ := fun j => f.app (Discrete.mk j)
-  have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
-  refine (W.arrow_mk_iso_iff ?_).1 hf'
-  refine Arrow.isoMk
-    ((Sigma.isoColimit _) ≪≫ IsColimit.coconePointUniqueUpToIso (colimit.isColimit X₁) hc₁)
-    ((Sigma.isoColimit _) ≪≫ IsColimit.coconePointUniqueUpToIso (colimit.isColimit X₂) hc₂) ?_
-  apply colimit.hom_ext
-  rintro ⟨j⟩
-  simp [φ]
-
-/-- another version of `IsStableUnderCoproductsOfShape.mk`. -/
-lemma IsStableUnderCoproductsOfShape.mk' (J : Type*) [W.RespectsIso]
+lemma IsStableUnderCoproductsOfShape.mk (J : Type*) [W.RespectsIso]
     (hW : ∀ (X₁ X₂ : J → C) [HasCoproduct X₁] [HasCoproduct X₂]
       (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
       W (Limits.Sigma.map f)) : W.IsStableUnderCoproductsOfShape J := by
