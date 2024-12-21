@@ -1902,6 +1902,49 @@ theorem insertRight_insertLeft {x x' x'' : PGame} :
   cases x; cases x'; cases x''
   dsimp [insertLeft, insertRight]
 
+/-! ### Removing an option -/
+
+/-- The pregame constructed by removing `'x` as a left option from `x`. -/
+def removeLeft (x x' : PGame.{u}) : PGame :=
+  match x with
+  | mk _ xr xL xR => mk { x // ¬(xL x ≡ x') } xr (fun i ↦ xL (↑i)) xR
+
+/-- One less left option will not empower Left. -/
+theorem removeLeft_le (x x' : PGame) : x.removeLeft x' ≤ x := by
+  rw [le_def]
+  constructor
+  · intro i
+    left
+    rcases x with ⟨xl, xr, xL, xR⟩
+    simp only [moveLeft_mk]
+    constructor
+    rfl
+  · intro j
+    right
+    rcases x with ⟨xl, xr, xL, xR⟩
+    simp only [moveRight_mk]
+    use j
+    rfl
+
+def removeRight (x x' : PGame.{u}) : PGame :=
+  match x with
+  | mk xl _ xL xR => mk xl { x // ¬(xR x ≡ x') } xL (fun i ↦ xR (↑i))
+
+theorem neg_removeRight_neg (x x' : PGame.{u}) : (-x).removeLeft (-x') = -x.removeRight x' := by
+  induction x with | mk =>
+    rw [neg_def, removeLeft, removeRight, neg_def]
+    simp only [mk.injEq, neg_identical_neg_iff, heq_eq_eq, and_true, true_and]
+    refine Function.hfunext (congrArg Subtype (by simp)) ?_
+    simp only [heq_eq_eq, neg_inj, Subtype.forall, neg_identical_neg_iff]
+    rintro a ha b hb h
+    simp only [neg_identical_neg_iff, implies_true, Subtype.heq_iff_coe_eq] at h
+    rw [h]
+
+/-- One less right option will not empower Right. -/
+theorem removeRight_le (x x' : PGame) : x ≤ x.removeRight x' := by
+  rw [← neg_le_neg_iff, ← neg_removeRight_neg]
+  simp only [removeLeft_le]
+
 /-! ### Special pre-games -/
 
 
