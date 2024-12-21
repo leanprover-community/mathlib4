@@ -287,8 +287,8 @@ def domCongrAut : MulAut G →* MonoidAlgebra A G ≃ₐ[k] MonoidAlgebra A G wh
   map_one' := by ext; rfl
   map_mul' _ _ := by ext; rfl
 
-/-- If `f : R →ₐ[k] S` is an algebra homomorphism between two `k`-algebras, then
-`Finsupp.mapRange f` is an algebra homomorphism between their monoid algebras. -/
+/-- If `f` is an algebra homomorphism between two `k`-algebras `R` and `S`, then
+`MonoidAlgebra.mapRangeAlgHom f` is an algebra homomorphism between their monoid algebras. -/
 def mapRangeAlgHom {k R S G} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
     [Algebra k S] [Monoid G] {F} [FunLike F R S] [AlgHomClass F k R S] (f : F) :
     MonoidAlgebra R G →ₐ[k] MonoidAlgebra S G :=
@@ -319,8 +319,9 @@ lemma mapRangeAlgHom_comp {k R S T G} [CommSemiring k] [Semiring R] [Algebra k R
       (mapRangeAlgHom (G := G) g).comp (mapRangeAlgHom (G := G) f) := by
   ext; simp
 
-/-- If `f : R ≃ₐ[k] S` is an algebra equivalence between two `k`-algebras, then
-`Finsupp.mapRange f` is an algebra equivalence between their additive monoid algebras. -/
+/-- If `f` is an algebra equivalence between two `k`-algebras `R` and `S`, then
+`MonoidAlgebra.mapRangeAlgEquiv f` is an algebra equivalence between their additive monoid
+algebras. -/
 @[simps!]
 def mapRangeAlgEquiv {k R S G} [CommSemiring k] [Semiring R] [Algebra k R] [Semiring S]
     [Algebra k S] [Monoid G] {F} [EquivLike F R S] [AlgEquivClass F k R S] (f : F) :
