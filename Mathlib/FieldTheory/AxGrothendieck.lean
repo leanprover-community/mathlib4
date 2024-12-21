@@ -116,12 +116,11 @@ theorem realize_genericPolyMapSurjOnOfInjOn
         let S : Set (ι → K) := { x | φ.Realize (Sum.elim v x) }
         S.MapsTo f S → S.InjOn f → S.SurjOn f S := by
   classical
-  simp only [Equiv.forall_congr_left (mvPolynomialSupportLEEquiv mons)]
   simp only [Sentence.Realize, genericPolyMapSurjOnOfInjOn, Function.comp_def,
     Formula.realize_iAlls, Formula.realize_relabel, Sum.elim_inr, Formula.realize_imp,
     realize_mapsTo, realize_relabelLeft, realize_relabelRight, realize_toSigma, realize_ofTerm,
     realize_termOfFreeCommRing, lift_genericPolyMap, Sum.elim_inl, realize_injOn, realize_surjOn,
-    Sum.forall_sum]
+    Sum.forall_sum, Equiv.forall_congr_left (mvPolynomialSupportLEEquiv mons)]
   simp +singlePass only [← Sum.elim_comp_inl_inr]
   simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr, lift_genericPolyMap]
 
