@@ -13,7 +13,11 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
 
 ## Main definitions
 
-* `IsZGroup G`: A predicate stating that all Sylow subgroups of `G` are cyclic.
+* `IsZGroup G`: a predicate stating that all Sylow subgroups of `G` are cyclic.
+
+## Main results
+
+* `IsZGroup.isCyclic_abelianization`: a finite Z-group has cyclic abelianization.
 
 TODO: Show that if `G` is a Z-group with commutator subgroup `G'`, then `G = G' ⋊ G/G'` where `G'`
 and `G/G'` are cyclic of coprime orders.
@@ -62,6 +66,9 @@ theorem of_surjective [Finite G] [hG : IsZGroup G] (hf : Function.Surjective f) 
 instance [Finite G] [IsZGroup G] (H : Subgroup G) [H.Normal] : IsZGroup (G ⧸ H) :=
   of_surjective (QuotientGroup.mk'_surjective H)
 
+section Nilpotent
+
+variable (G) in
 theorem exponent_eq_card [Finite G] [IsZGroup G] : Monoid.exponent G = Nat.card G := by
   refine dvd_antisymm Group.exponent_dvd_nat_card ?_
   rw [← Nat.factorization_prime_le_iff_dvd Nat.card_pos.ne' Monoid.exponent_ne_zero_of_finite]
@@ -75,11 +82,16 @@ theorem exponent_eq_card [Finite G] [IsZGroup G] : Monoid.exponent G = Nat.card 
 instance [Finite G] [IsZGroup G] [hG : Group.IsNilpotent G] : IsCyclic G := by
   have (p : { x // x ∈ (Nat.card G).primeFactors }) : Fact p.1.Prime :=
     ⟨Nat.prime_of_mem_primeFactors p.2⟩
-  let h (p : { x // x ∈ (Nat.card G).primeFactors }) (P : Sylow p G) : CommGroup P :=
-    IsCyclic.commGroup
   obtain ⟨ϕ⟩ := ((isNilpotent_of_finite_tfae (G := G)).out 0 4).mp hG
   let _ : CommGroup G :=
     ⟨fun g h ↦ by rw [← ϕ.symm.injective.eq_iff, map_mul, mul_comm, ← map_mul]⟩
-  exact IsCyclic.of_exponent_eq_card exponent_eq_card
+  exact IsCyclic.of_exponent_eq_card (exponent_eq_card G)
+
+/-- A finite Z-group has cyclic abelianization. -/
+instance isCyclic_abelianization [Finite G] [IsZGroup G] : IsCyclic (Abelianization G) :=
+  let _ : IsZGroup (Abelianization G) := inferInstanceAs (IsZGroup (G ⧸ commutator G))
+  inferInstance
+
+end Nilpotent
 
 end IsZGroup

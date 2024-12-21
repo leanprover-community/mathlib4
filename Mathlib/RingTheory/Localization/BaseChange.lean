@@ -6,6 +6,7 @@ Authors: Andrew Yang, Jujian Zhang
 import Mathlib.RingTheory.IsTensorProduct
 import Mathlib.RingTheory.Localization.Module
 import Mathlib.LinearAlgebra.DirectSum.Finsupp
+import Mathlib.Algebra.Equiv.TransferInstance
 
 /-!
 # Localized Module
@@ -131,3 +132,33 @@ instance (R M : Type*) [CommRing R] [AddCommGroup M] [Module R M]
   split_ifs with h
   · simp [e, IsBaseChange.equiv_tmul]
   · simp only [tmul_zero, LinearEquiv.trans_apply, LinearEquiv.restrictScalars_apply, map_zero]
+
+section
+
+variable (S : Submonoid A) {N : Type*} [AddCommMonoid N] [Module R N]
+variable [Module A M] [IsScalarTower R A M]
+
+open TensorProduct
+
+/-- `S⁻¹M ⊗[R] N = S⁻¹(M ⊗[R] N)`. -/
+instance IsLocalizedModule.rTensor (g : M →ₗ[A] M') [h : IsLocalizedModule S g] :
+    IsLocalizedModule S (AlgebraTensorModule.rTensor R N g) := by
+  let Aₚ := Localization S
+  letI : Module Aₚ M' := (IsLocalizedModule.iso S g).symm.toAddEquiv.module Aₚ
+  haveI : IsScalarTower A Aₚ M' := (IsLocalizedModule.iso S g).symm.isScalarTower Aₚ
+  haveI : IsScalarTower R Aₚ M' :=
+    IsScalarTower.of_algebraMap_smul <| fun r x ↦ by simp [IsScalarTower.algebraMap_apply R A Aₚ]
+  rw [isLocalizedModule_iff_isBaseChange (S := S) (A := Aₚ)] at h ⊢
+  exact isBaseChange_tensorProduct_map _ h
+
+variable {P : Type*} [AddCommMonoid P] [Module R P] (f : N →ₗ[R] P)
+
+lemma IsLocalizedModule.map_lTensor (g : M →ₗ[A] M') [h : IsLocalizedModule S g] :
+    IsLocalizedModule.map S (AlgebraTensorModule.rTensor R N g) (AlgebraTensorModule.rTensor R P g)
+      (AlgebraTensorModule.lTensor A M f) = AlgebraTensorModule.lTensor A M' f := by
+  apply linearMap_ext S (AlgebraTensorModule.rTensor R N g) (AlgebraTensorModule.rTensor R P g)
+  rw [map_comp]
+  ext
+  simp
+
+end
