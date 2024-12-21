@@ -4,30 +4,36 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.IsLimit
+import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.Limit
 
 /-! # Transfinite iterations of a functor
 
 In this file, given a functor `Φ : C ⥤ C` and a natural transformation
-`ε : 𝟭 C ⟶ Φ`, we shall define the transfinite iterations of `Φ` (TODO).
+`ε : 𝟭 C ⟶ Φ`, we shall study the transfinite iterations of `Φ`.
 
 Given `j : J` where `J` is a well ordered set, we first introduce
 a category `Iteration ε j`. An object in this category consists of
 a functor `F : Set.Iic j ⥤ C ⥤ C` equipped with the data
 which makes it the `i`th-iteration of `Φ` for all `i` such that `i ≤ j`.
 Under suitable assumptions on `C`, we shall show that this category
-`Iteration ε j` is equivalent to the punctual category (TODO).
+`Iteration ε j` is equivalent to the punctual category.
 In this file, we show that the there is at most one morphism between
 two objects. In `SmallObject.Iteration.UniqueHom`, we shall show
 that there does always exist a unique morphism between
-two objects (TODO). Then, we shall show the existence of
-an object (TODO). In these proofs, which are all done using
+two objects. Then, we shall show the existence of
+an object in `SmallObject.Iteration.Nonempty`.
+In these proofs, which are all done using
 transfinite induction, we have to treat three cases separately:
 * the case `j = ⊥`;
 * the case `j` is a successor;
 * the case `j` is a limit element.
+
+In the file `SmallObject.TransfiniteIteration`, we consider
+the colimit over all `j : J` of the `j`th iteration of `Φ`.
 
 -/
 
@@ -239,6 +245,14 @@ def trunc (iter : Iteration ε j) {i : J} (hi : i ≤ j) : Iteration ε i where
   mapSucc'_eq k hk := iter.mapSucc'_eq k (lt_of_lt_of_le hk hi)
   isColimit k hk' hk := iter.isColimit k hk' (hk.trans hi)
 
+@[simp]
+lemma trunc_refl (iter : Iteration ε j) :
+    iter.trunc (Preorder.le_refl j) = iter := rfl
+
+@[simp]
+lemma trunc_trunc (iter : Iteration ε j) {i : J} (hi : i ≤ j) {k : J} (hk : k ≤ i) :
+    (iter.trunc hi).trunc hk = iter.trunc (hk.trans hi) := rfl
+
 variable (ε) in
 /-- The truncation functor `Iteration ε j ⥤ Iteration ε i` when `i ≤ j`. -/
 @[simps obj]
@@ -271,5 +285,34 @@ end Hom
 end Iteration
 
 end Functor
+
+open Limits
+
+variable (C J) [Preorder J]
+
+/-- A category `C` has iterations of shape `J` when certain shapes
+of colimits exists. When `J` is well ordered, this assumption is used in
+order to show that the category `Iteration ε j` is nonempty for any `j : J`,
+see the file `CategoryTheory.SmallObject.Iteration.Nonempty`. The API is developed
+further in `CategoryTheory.SmallObject.TransfiniteIteration`. -/
+class HasIterationOfShape : Prop where
+  hasColimitsOfShape_of_isSuccLimit (j : J) (hj : Order.IsSuccLimit j) :
+    HasColimitsOfShape (Set.Iio j) C := by infer_instance
+  hasColimitsOfShape : HasColimitsOfShape J C := by infer_instance
+
+attribute [instance] HasIterationOfShape.hasColimitsOfShape
+
+variable {J}
+
+lemma hasColimitsOfShape_of_isSuccLimit [HasIterationOfShape C J] (j : J)
+    (hj : Order.IsSuccLimit j) :
+    HasColimitsOfShape (Set.Iio j) C :=
+  HasIterationOfShape.hasColimitsOfShape_of_isSuccLimit j hj
+
+instance [HasIterationOfShape C J] (K : Type*) [Category K] (X : K) :
+    PreservesWellOrderContinuousOfShape J ((evaluation K C).obj X) where
+  preservesColimitsOfShape j hj := by
+    have := hasColimitsOfShape_of_isSuccLimit C j hj
+    infer_instance
 
 end CategoryTheory
