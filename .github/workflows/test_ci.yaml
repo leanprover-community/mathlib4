@@ -21,7 +21,8 @@ jobs:
           printf $'```bash\n'
           PR_NUMBER = '18818'
           GITHUB_DIFF="https://github.com/leanprover-community/mathlib4/compare/nightly-testing...lean-pr-testing-$PR_NUMBER"
-          printf $'# Diff: %s\n' "$GITHUB_DIFF"
+          printf "$GITHUB_DIFF"
+          # printf $'# Diff: %s\n' "$GITHUB_DIFF"
           # printf $'scripts/merge-lean-testing-pr.sh %s   # %s\n' "[pr number goes here]" "[branch goes here]"
           printf '# # # # #\n'
           printf $'```\n'
