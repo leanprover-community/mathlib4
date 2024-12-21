@@ -38,8 +38,7 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
       fun w ↦ (norm_embedding_eq w (x : K)).symm
   refine (inv_eq_of_mul_eq_one_left ?_).symm
   norm_cast
-  have h_span_nezero : span {x} ≠ 0 := by
-    simp [h_x_nezero]
+  have h_span_nezero : span {x} ≠ 0 := by simp [h_x_nezero]
   rw [Int.abs_eq_natAbs, ← Ideal.absNorm_span_singleton,
     ← Ideal.finprod_heightOneSpectrum_factorization h_span_nezero, Int.cast_natCast]
   --GOAL: transform the two finprod into Finset.prod
@@ -47,7 +46,7 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
   have h_fin₀ : t₀.Finite := by
     simp only [← dvd_span_singleton, finite_factors h_span_nezero, t₀]
   let s := h_fin₀.toFinset
-  let t₁ := (fun v : HeightOneSpectrum (𝓞 K) ↦ ‖(embedding v) x‖).mulSupport
+  let t₁ := (fun v : HeightOneSpectrum (𝓞 K) ↦ ‖embedding v x‖).mulSupport
   let t₂ := (fun v : HeightOneSpectrum (𝓞 K) ↦ v.maxPowDividing (span {x})).mulSupport
   have h_subs₁ : t₁ ⊆ t₀ := by simp [norm_eq_one_iff_not_mem, t₁, t₀]
   have h_subs₂ : t₂ ⊆ t₀ := by
@@ -75,7 +74,7 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
   norm_cast
   rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' (Nat.card (𝓞 K ⧸ v.asIdeal)))
     (by exact ne_of_gt (one_lt_norm v))]
-  simp [valuation_eq_intValuationDef v x, intValuationDef_if_neg v h_x_nezero]
+  simp [valuation_eq_intValuationDef, intValuationDef_if_neg, h_x_nezero]
 
 /-- For any non-zero `x` in `K`, the prduct of `w x`, where `w` runs over `FinitePlace K`, is
 equal to the inverse of the absolute value of `Algebra.norm ℚ x`. -/
