@@ -133,7 +133,7 @@ instance {G : Type*} [AddCommGroup G] {H : AddSubgroup G} (hH : ∀ x, n • x �
 -- See note [reducible non-instances]
 instance QuotientAddGroup.zmodModule {G : Type*} [AddCommGroup G] {H : AddSubgroup G}
     (hH : ∀ x, n • x ∈ H) : Module (ZMod n) (QuotientAddGroup.toZModModule hH) :=
-  AddCommGroup.zmodModule <| by simpa [forall_mk, ← mk_nsmul]
+  AddCommGroup.zmodModule <| by simpa [QuotientAddGroup.forall_mk, ← QuotientAddGroup.mk_nsmul]
 
 variable {F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [FunLike F M M₁]
   [AddMonoidHomClass F M M₁] [Module (ZMod n) M] [Module (ZMod n) M₁] [SetLike S M]
