@@ -19,6 +19,9 @@ jobs:
           echo "hi blizzard"
           {
           printf $'msg<<EOF\nWe will need to merge the following branches into `nightly-testing`:\n'
+          printf $'```bash\n'
+          printf $'echo test\n'
+          printf $'```\n'
           printf $'EOF'
           # PR_NUMBER= '18818'
           # printf $'# Diff: %s' "[diff goes here]"
