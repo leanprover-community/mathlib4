@@ -1350,7 +1350,7 @@ theorem moveRight_neg_symm {x : PGame} (i) :
 theorem moveRight_neg_symm' {x : PGame} (i) :
     x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) := by simp
 
-theorem neg_identical_neg_iff : ∀ {x y : PGame.{u}}, x ≡ y ↔ -x ≡ -y
+@[simp] theorem neg_identical_neg_iff : ∀ {x y : PGame.{u}}, -x ≡ -y ↔ x ≡ y 
   | mk xl xr xL xR, mk yl yr yL yR => by
     rw [neg_def, identical_iff, identical_iff, ← neg_def, and_comm]
     simp only [neg_def, rightMoves_mk, moveRight_mk, leftMoves_mk, moveLeft_mk]
