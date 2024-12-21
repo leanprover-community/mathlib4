@@ -100,8 +100,7 @@ jobs:
 
             # Check if the diff contains files other than the specified ones
             if echo "$DIFF_FILES" | grep -v -e 'lake-manifest.json' -e 'lakefile.lean' -e 'lean-toolchain'; then
-                # Extract the PR number and actual branch name
-                PR_NUMBER=$(echo "$BRANCH" | grep -oP '\d+$')
+                # Extract the actual branch name
                 ACTUAL_BRANCH=${BRANCH#origin/}
 
                 # Append the branch details to RELEVANT_BRANCHES
