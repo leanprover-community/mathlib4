@@ -1362,6 +1362,9 @@ theorem neg_identical_neg_iff : ∀ {x y : PGame.{u}}, x ≡ y ↔ -x ≡ -y
         simp only [imp_self]
 termination_by x y => (x, y)
 
+theorem Identical.neg {x y : PGame} : x ≡ y ↔ -x ≡ -y :=
+  neg_identical_neg_iff
+
 /-- If `x` has the same moves as `y`, then `-x` has the same moves as `-y`. -/
 def Relabelling.negCongr : ∀ {x y : PGame}, x ≡r y → -x ≡r -y
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, ⟨L, R, hL, hR⟩ =>
