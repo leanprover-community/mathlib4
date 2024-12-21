@@ -144,7 +144,7 @@ class MonoidalFinitaryRightDistributive
 extends MonoidalRightDistributive C where
   tensor_right_preserves_finite_colimits : ∀ X : C, PreservesFiniteColimits (tensorRight X)
 
-class MonoidalDistibutive extends
+class MonoidalDistributive extends
   MonoidalLeftDistributive C, MonoidalRightDistributive C
 
 class MonoidalFinitaryDistributive extends
@@ -186,7 +186,7 @@ instance right_distributor_iso [SymmetricCategory C]
         slice_lhs 2 3 => rw [inv_hom_id]
         simp only [id_comp, coprod.map_map, SymmetricCategory.symmetry, coprod.map_id_id]
 
-instance [SymmetricCategory C] : MonoidalDistibutive C where
+instance [SymmetricCategory C] : MonoidalDistributive C where
 
 /-- A closed monoidal category is distributive. -/
 def isoDistributorOfClosed [HasBinaryCoproducts C] [MonoidalClosed C] (X Y Z : C) :

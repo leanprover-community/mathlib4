@@ -5,8 +5,10 @@ Authors: Sina Hazratpour
 -/
 
 import Mathlib.CategoryTheory.ChosenFiniteProducts
-import Mathlib.CategoryTheory.Distributive.Monoidal
 import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
+import Mathlib.CategoryTheory.Distributive.Monoidal
+import Mathlib.CategoryTheory.Limits.MonoCoprod
+
 
 /-!
 
@@ -23,12 +25,6 @@ for all objects `X`, `Y`, and `Z` in `C`.
 Given a category with chosen finite products, the cartesian monoidal structure is provided by the
 instance `monoidalOfChosenFiniteProducts`. A cartesian distributive category is then defined as a
 monoidal distributive category with respect to this monoidal structure.
-
-Cartesian closed categories require a `ChosenFiniteProducts` instance.
-If one whishes to state that a category that `hasFiniteProducts` is cartesian closed,
-they should first promote the `hasFiniteProducts` instance to a `ChosenFiniteProducts` one using
-`CategoryTheory.ChosenFiniteProducts.ofFiniteProducts`.
-
 
 ## Main results
 
@@ -53,12 +49,21 @@ namespace CategoryTheory
 
 open Category Limits MonoidalCategory MonoidalDistributive
 
-variable {C : Type u} [Category.{v} C] [ChosenFiniteProducts C]
-[HasBinaryCoproducts C] [MonoidalLeftDistributive C]
+variable (C : Type u) [Category.{v} C] [ChosenFiniteProducts C] [HasBinaryCoproducts C]
 
 attribute [local instance] monoidalOfHasFiniteProducts
 
 attribute [local instance] MonoidalLeftDistributive.isoLeft
+
+/-- A category `C` with finite products is cartesian distributive if is monoidal distributive
+with respect to the cartesian monoidal structure. -/
+abbrev CartesianDistribuitve :=
+  MonoidalLeftDistributive C
+
+attribute [local instance] symmetricOfHasFiniteProducts
+
+/-- Every cartesian distributive category is left and right distributive. -/
+instance [CartesianDistribuitve C] : MonoidalDistributive C := by infer_instance
 
 /-- The coproduct coprojections are monic in a cartesian distributive category. -/
 instance [MonoidalLeftDistributive C]  : MonoCoprod C :=
