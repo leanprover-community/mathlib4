@@ -31,15 +31,6 @@ import Mathlib.Probability.Variance
   `ProbabilityTheory.measure_ge_le_exp_mul_mgf` and
   `ProbabilityTheory.measure_le_le_exp_mul_mgf` for versions of these results using `mgf` instead
   of `cgf`.
-* `ProbabilityTheory.tilt_first_deriv`: derivation of `mgf X μ t` is
-  `μ[exp (t * X ω) * X ω]`. In order to deal with the differentiation of parametric integrals,
-`hasDerivAt_integral_of_dominated_loc_of_deriv_le` are used in the proof.
-* `ProbabilityTheory.tilt_second_deriv`: derivation of `μ[fun ω ↦ rexp (t * X ω) * X ω]` is
-  `μ[fun ω ↦ rexp (t * X ω) * X ω ^ 2]`. In order to deal with the differentiation of
-  parametric integrals, `hasDerivAt_integral_of_dominated_loc_of_deriv_le` are used in the proof.
-* `ProbabilityTheory.cgf_deriv_one`: first derivative of cumulant `cgf X μ t`.
-  It can be described by exponential tilting.
-* `ProbabilityTheory.cgf_deriv_two`: second derivative of cumulant `cgf X μ t`.
 -/
 
 
