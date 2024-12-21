@@ -469,17 +469,6 @@ nonrec theorem AEMeasurable.min {f g : δ → α} {μ : Measure δ} (hf : AEMeas
   ⟨fun a => min (hf.mk f a) (hg.mk g a), hf.measurable_mk.min hg.measurable_mk,
     EventuallyEq.comp₂ hf.ae_eq_mk _ hg.ae_eq_mk⟩
 
-@[measurability]
-lemma Measurable.abs [AddGroup α] [MeasurableNeg α] {f : δ → α} (hf : Measurable f) :
-    Measurable (fun x ↦ |f x|) :=
-  hf.max (measurable_neg_iff.mpr hf)
-
-@[measurability]
-lemma AEMeasurable.abs [AddGroup α] [MeasurableNeg α] {f : δ → α}
-    {μ : Measure δ} (hf : AEMeasurable f μ) :
-    AEMeasurable (fun x ↦ |f x|) μ :=
-  hf.max (aemeasurable_neg_iff.mpr hf)
-
 end LinearOrder
 
 section Lattice

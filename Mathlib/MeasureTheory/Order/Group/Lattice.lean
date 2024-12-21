@@ -47,3 +47,8 @@ theorem measurable_mabs : Measurable (mabs : α → α) :=
 @[to_additive (attr := measurability)]
 protected theorem Measurable.mabs (hf : Measurable f) : Measurable fun x ↦ mabs (f x) :=
   measurable_mabs.comp hf
+
+@[to_additive (attr := measurability)]
+lemma AEMeasurable.mabs {μ : MeasureTheory.Measure β} (hf : AEMeasurable f μ) :
+    AEMeasurable (fun x ↦ mabs (f x)) μ :=
+  measurable_mabs.comp_aemeasurable hf
