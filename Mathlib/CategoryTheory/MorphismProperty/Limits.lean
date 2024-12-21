@@ -107,7 +107,7 @@ lemma of_isPullback [P.IsStableUnderBaseChange]
     (sq : IsPullback f' g' g f) (hg : P g) : P g' :=
   IsStableUnderBaseChange.of_isPullback sq hg
 
-lemma isStableUnderBaseChange_iff_pulbacks_le :
+lemma isStableUnderBaseChange_iff_pullbacks_le :
     P.IsStableUnderBaseChange ↔ P.pullbacks ≤ P := by
   constructor
   · intro h _ _ _ ⟨_, _, _, _, _, h₁, h₂⟩
