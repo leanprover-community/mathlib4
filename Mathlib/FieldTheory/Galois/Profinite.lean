@@ -372,7 +372,7 @@ noncomputable def continuousMulEquivtoLimit [IsGalois k K] :
 
 /--Turn `Gal(K/k)` into a profinite group using the continuousMulEquiv above-/
 noncomputable def ProfiniteGalGrp [IsGalois k K] : ProfiniteGrp :=
-  ProfiniteGrp.ofContinuousMulEquivProfiniteGrp (continuousMulEquivtoLimit k K).symm
+  ProfiniteGrp.ofContinuousMulEquiv (continuousMulEquivtoLimit k K).symm
 
 variable {k K} in
 theorem restrictNormalHomContinuous (L : IntermediateField k K) [Normal k L] :
