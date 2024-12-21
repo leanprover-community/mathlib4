@@ -917,6 +917,9 @@ import Mathlib.Algebra.Ring.WithZero
 import Mathlib.Algebra.RingQuot
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.SkewMonoidAlgebra.Basic
+import Mathlib.Algebra.Small.Group
+import Mathlib.Algebra.Small.Module
+import Mathlib.Algebra.Small.Ring
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Algebra.Star.BigOperators
@@ -3588,10 +3591,7 @@ import Mathlib.Logic.Relation
 import Mathlib.Logic.Relator
 import Mathlib.Logic.Small.Basic
 import Mathlib.Logic.Small.Defs
-import Mathlib.Logic.Small.Group
 import Mathlib.Logic.Small.List
-import Mathlib.Logic.Small.Module
-import Mathlib.Logic.Small.Ring
 import Mathlib.Logic.Small.Set
 import Mathlib.Logic.Unique
 import Mathlib.Logic.UnivLE
