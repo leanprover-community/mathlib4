@@ -1122,6 +1122,7 @@ theorem get?_zipWith (f : α → β → γ) (s s' n) :
     (zipWith f s s').get? n = Option.map₂ f (s.get? n) (s'.get? n) :=
   rfl
 
+@[simp]
 theorem get?_zip (s : Seq α) (t : Seq β) (n : ℕ) :
     get? (zip s t) n = Option.map₂ Prod.mk (get? s n) (get? t n) :=
   get?_zipWith _ _ _ _
@@ -1177,6 +1178,41 @@ theorem enum_cons (s : Seq α) (x : α) :
   · simp
   · simp only [get?_enum, get?_cons_succ, map_get?, Option.map_map]
     congr
+
+universe u' v'
+variable {α' : Type u'} {β' : Type v'}
+
+theorem zipWith_map (s₁ : Seq α) (s₂ : Seq β) (f₁ : α → α') (f₂ : β → β') (g : α' → β' → γ) :
+    zipWith g (s₁.map f₁) (s₂.map f₂) = zipWith (fun a b ↦ g (f₁ a) (f₂ b)) s₁ s₂ := by
+  ext1 n
+  simp only [get?_zipWith, map_get?]
+  cases s₁.get? n <;> cases s₂.get? n <;> simp
+
+theorem zipWith_map_left (s₁ : Seq α) (s₂ : Seq β) (f : α → α') (g : α' → β → γ) :
+    zipWith g (s₁.map f) s₂ = zipWith (fun a b ↦ g (f a) b) s₁ s₂ := by
+  convert zipWith_map _ _ _ (@id β) _
+  simp
+
+theorem zipWith_map_right (s₁ : Seq α) (s₂ : Seq β) (f : β → β') (g : α → β' → γ) :
+    zipWith g s₁ (s₂.map f) = zipWith (fun a b ↦ g a (f b)) s₁ s₂ := by
+  convert zipWith_map _ _ (@id α) _ _
+  simp
+
+theorem zip_map (s₁ : Seq α) (s₂ : Seq β) (f₁ : α → α') (f₂ : β → β') :
+    (s₁.map f₁).zip (s₂.map f₂) = (s₁.zip s₂).map (Prod.map f₁ f₂) := by
+  ext1 n
+  simp
+  cases s₁.get? n <;> cases s₂.get? n <;> simp
+
+theorem zip_map_left (s₁ : Seq α) (s₂ : Seq β) (f : α → α') :
+    (s₁.map f).zip s₂ = (s₁.zip s₂).map (Prod.map f id) := by
+  convert zip_map _ _ _ _
+  simp
+
+theorem zip_map_right (s₁ : Seq α) (s₂ : Seq β) (f : β → β') :
+    s₁.zip (s₂.map f) = (s₁.zip s₂).map (Prod.map id f) := by
+  convert zip_map _ _ _ _
+  simp
 
 end ZipWith
 
