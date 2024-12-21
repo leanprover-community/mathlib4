@@ -1,11 +1,9 @@
-import Mathlib.Tactic.ExtractLets
-
 set_option linter.unusedVariables false
 
 example (h : let x := 1; x = x) : True := by
   extract_lets y at h
   fail_if_success extract_lets a at h
-  extract_lets at h
+  fail_if_success extract_lets at h
   guard_hyp y : Nat := 1
   guard_hyp h :ₛ y = y
   trivial
@@ -87,8 +85,6 @@ Unused 'let' bindings were being miscounted.
 
 /--
 info: ok✝ : Prop := True
-_also_ok✝ : Prop := True
-_not_ok✝ : Prop := True
 h : ok✝
 ⊢ True
 -/
@@ -96,6 +92,6 @@ h : ok✝
 def a (h : let ok := True; let _not_ok := True; ok) : let _also_ok := True; True := by
   extract_lets _ at h
   extract_lets _
-  extract_lets _ at h
+  fail_if_success extract_lets _ at h
   trace_state
   trivial
