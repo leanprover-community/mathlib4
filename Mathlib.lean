@@ -3805,6 +3805,7 @@ import Mathlib.ModelTheory.Basic
 import Mathlib.ModelTheory.Bundled
 import Mathlib.ModelTheory.Complexity
 import Mathlib.ModelTheory.Definability
+import Mathlib.ModelTheory.DefinableFunction
 import Mathlib.ModelTheory.DirectLimit
 import Mathlib.ModelTheory.ElementaryMaps
 import Mathlib.ModelTheory.ElementarySubstructures

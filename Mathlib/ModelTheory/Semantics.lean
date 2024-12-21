@@ -823,7 +823,6 @@ theorem realize_iExs [Finite γ] {φ : L.Formula (α ⊕ γ)} {v : α → M} {v'
       ∃ (i : γ → M), φ.Realize (Sum.elim v i) := by
   rw [← Formula.realize_iExs, iff_iff_eq]; congr; simp [eq_iff_true_of_subsingleton]
 
-
 @[simp]
 theorem realize_toFormula (φ : L.BoundedFormula α n) (v : α ⊕ (Fin n) → M) :
     φ.toFormula.Realize v ↔ φ.Realize (v ∘ Sum.inl) (v ∘ Sum.inr) := by
@@ -879,9 +878,9 @@ theorem _root_.FirstOrder.Language.Formula.realize_iInf (s : Finset β) (f : β 
   simp [Formula.iInf, Formula.Realize]
 
 @[simp]
-theorem _root_.FirstOrder.Language.Formula.realize_iExsUnique [Finite γ] {f : α → β ⊕ γ}
-    {φ : L.Formula α} {v : β → M} : (φ.iExsUnique f).Realize v ↔
-      ∃! (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
+theorem _root_.FirstOrder.Language.Formula.realize_iExsUnique [Finite γ]
+    {φ : L.Formula (α ⊕ γ)} {v : α → M} : (φ.iExsUnique γ).Realize v ↔
+      ∃! (i : γ → M), φ.Realize (Sum.elim v i) := by
   rw [Formula.iExsUnique, ExistsUnique]
   simp only [Formula.realize_iExs, id_eq, Formula.realize_inf, Formula.realize_relabel,
     Formula.realize_iAlls, Formula.realize_imp]
@@ -890,16 +889,13 @@ theorem _root_.FirstOrder.Language.Formula.realize_iExsUnique [Finite γ] {f : �
     funext_iff]
   refine exists_congr (fun i => and_congr_right' (forall_congr' (fun y => ?_)))
   rw [iff_iff_eq]; congr with x
-  cases (f x) <;> simp
+  cases x <;> simp
 
 @[simp]
-theorem realize_iExsUnique [Finite γ] {f : α → β ⊕ γ}
-    {φ : L.Formula α} {v : β → M} {v' : Fin 0 → M} :
-    BoundedFormula.Realize (φ.iExsUnique f) v v' ↔
-      ∃! (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
+theorem realize_iExsUnique [Finite γ] {φ : L.Formula (α ⊕ γ)} {v : α → M} {v' : Fin 0 → M} :
+    BoundedFormula.Realize (φ.iExsUnique γ) v v' ↔
+      ∃! (i : γ → M), φ.Realize (Sum.elim v i) := by
   rw [← Formula.realize_iExsUnique, iff_iff_eq]; congr; simp [eq_iff_true_of_subsingleton]
-
-
 
 end BoundedFormula
 

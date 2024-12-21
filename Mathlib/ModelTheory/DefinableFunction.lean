@@ -17,7 +17,7 @@ variable {L : Language.{u, v}} (T : L.Theory) {α : Type w} {β : Type x} {γ : 
 variable [Finite β] {M : Type z} [L.Structure M] [T.Model M] [Nonempty M]
 
 def FunctionalFormulaSetoid (α : Type w) (β : Type x) [Finite β] :
-    Setoid {φ : L.Formula (α ⊕ β) // T ⊨ᵇ Formula.iExsUnique id φ } where
+    Setoid {φ : L.Formula (α ⊕ β) // T ⊨ᵇ Formula.iExsUnique β φ } where
   r := fun x y => T ⊨ᵇ x.1.iff y.1
   iseqv := by
     refine ⟨?_, ?_, ?_⟩
@@ -34,7 +34,7 @@ namespace FunctionalFormula
 
 variable {T}
 
-def mk (φ : L.Formula (α ⊕ β)) (h : T ⊨ᵇ Formula.iExsUnique id φ) : FunctionalFormula T α β :=
+def mk (φ : L.Formula (α ⊕ β)) (h : T ⊨ᵇ Formula.iExsUnique β φ) : FunctionalFormula T α β :=
   ofQuotient (Quotient.mk _ ⟨φ, h⟩)
 
 def Realize (f : FunctionalFormula T α β) (x : α → M) (y : β → M) : Prop :=
@@ -53,11 +53,11 @@ theorem realize_toFormula (f : FunctionalFormula T α β) (x : α ⊕ β → M) 
     simp only [toFormula, Realize, Sum.elim_comp_inl_inr]
     conv_rhs => rw [← Quotient.out_eq (Quotient.mk _ f), Quotient.lift_mk]
 
-theorem toFormula_spec (f : FunctionalFormula T α β) : T ⊨ᵇ Formula.iExsUnique id f.toFormula :=
+theorem toFormula_spec (f : FunctionalFormula T α β) : T ⊨ᵇ Formula.iExsUnique β f.toFormula :=
   f.1.out.2
 
 @[simp]
-theorem realize_mk (φ : L.Formula (α ⊕ β)) (h : T ⊨ᵇ Formula.iExsUnique id φ) (x : α → M)
+theorem realize_mk (φ : L.Formula (α ⊕ β)) (h : T ⊨ᵇ Formula.iExsUnique β φ) (x : α → M)
     (y : β → M) : (mk φ h).Realize x y ↔ φ.Realize (Sum.elim x y) := by
   simp [Realize, mk]
 
@@ -119,11 +119,12 @@ theorem realize_ofTerm (t : L.Term α) (x : α → M) :
 variable (T)
 noncomputable def comap (f : β → α) : T.FunctionalFormula α β :=
   let e := Fintype.ofFinite β
-  mk (Formula.iAlls (γ := β) Sum.inl
+  mk (Formula.iAlls β <|
     (Formula.iInf (Finset.univ : Finset β)
-      (fun b => Term.equal (var (Sum.inr b)) (var (Sum.inl (f b)))))) <| by
-  simp only [models_formula_iff, Formula.realize_iExsUnique, id_eq, Formula.realize_iAlls,
-    Sum.elim_inl, forall_const, Formula.realize_iInf]
+      (fun b => Term.equal (var (Sum.inr b)) (var (Sum.inl (f b))))).relabel Sum.inl) <| by
+  simp only [models_formula_iff, Formula.realize_iExsUnique, Formula.realize_iAlls,
+    Formula.realize_relabel, Sum.elim_comp_inl, Formula.realize_iInf, Finset.mem_univ,
+    Formula.realize_equal, Term.realize_var, Sum.elim_inr, Sum.elim_inl, forall_const]
   intro M x
   use fun y => x (f y)
   simp [Formula.Realize, Term.equal, funext_iff]
@@ -145,7 +146,7 @@ theorem realize_id (x : β → M) :
 variable {T}
 noncomputable def comp [Finite γ] (f : T.FunctionalFormula β γ) (g : T.FunctionalFormula α β) :
     T.FunctionalFormula α γ :=
-  mk (Formula.iExs (α := (α ⊕ γ) ⊕ β) (γ := β) id
+  mk (Formula.iExs β
     (f.toFormula.relabel (Sum.elim Sum.inr (Sum.inl ∘ Sum.inr)) ⊓
      g.toFormula.relabel (Sum.elim (Sum.inl ∘ Sum.inl) Sum.inr))) <| by
   simp only [ModelsBoundedFormula, BoundedFormula.realize_iExsUnique, id_eq, Formula.realize_iExs,
@@ -201,7 +202,7 @@ theorem realize_relabelRight [Finite γ] (f : γ → β) (g : T.FunctionalFormul
 
 noncomputable def toSigma {γ : β → Type y} [∀ b, Finite (γ b)]
     (f : ∀ b, T.FunctionalFormula α (γ b)) :
-    T.FunctionalFormula α (Σ b, γ b) :=
+    T.FunctionalFormula α (Sigma γ) :=
   let e := Fintype.ofFinite β
   mk (Formula.iInf (Finset.univ : Finset β)
     (fun b => (f b).toFormula.relabel (Sum.elim Sum.inl (fun g => Sum.inr ⟨_, g⟩)))) <| by
@@ -226,7 +227,7 @@ theorem realize_toSigma {γ : β → Type y} [∀ b, Finite (γ b)]
 
 noncomputable def rel {γ : β → Type y} [∀ b, Finite (γ b)] (φ : L.Formula (Sigma γ))
     (f : ∀ b, T.FunctionalFormula α (γ b)) : L.Formula α :=
-  Formula.iAlls id ((toSigma f).toFormula.imp (φ.relabel Sum.inr))
+  Formula.iAlls (Sigma γ) ((toSigma f).toFormula.imp (φ.relabel Sum.inr))
 
 @[simp]
 theorem realize_rel {γ : β → Type y} [∀ b, Finite (γ b)] (φ : L.Formula (Sigma γ))
@@ -246,7 +247,7 @@ theorem realize_equal (f g : T.FunctionalFormula α β) (x : α → M) :
   simp [equal, funext_iff]
 
 noncomputable def injective [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) : L.Formula α :=
-  Formula.iAlls (γ := γ ⊕ γ) id
+  Formula.iAlls (γ ⊕ γ)
     ((equal (f.relabelLeft (Sum.elim Sum.inl (Sum.inr ∘ Sum.inl)))
            (f.relabelLeft (Sum.elim Sum.inl (Sum.inr ∘ Sum.inr)))).imp
      (equal (comap T (Sum.inr ∘ Sum.inl)) (comap T (Sum.inr ∘ (Sum.inr)))))
@@ -262,7 +263,7 @@ theorem realize_injective [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) (
   simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr]
 
 noncomputable def surjective [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) : L.Formula α :=
-  Formula.iAlls (γ := β) id (Formula.iExs (γ := γ) id (f.toFormula.relabel
+  Formula.iAlls β (Formula.iExs γ (f.toFormula.relabel
     (Sum.elim (Sum.elim (Sum.inl ∘ Sum.inl) Sum.inr) (Sum.inl ∘ Sum.inr))))
 
 @[simp]
@@ -291,9 +292,9 @@ def of : L →ᴸ FunctionalFormulaLang T where
 def theory : (FunctionalFormulaLang T).Theory :=
   (of T).onTheory T ∪
     ⋃ (n : ℕ), Set.range (fun f : FunctionalFormula T (Fin n) Unit =>
-      Formula.iAlls (γ := Fin n ⊕ Unit) Sum.inr <|
-        (Term.equal (func f (fun i => var (Sum.inl i))) (var (Sum.inr ()))).iff
-        ((of T).onFormula f.toFormula))
+      Formula.iAlls (Fin n ⊕ Unit) <|
+        ((Term.equal (func f (fun i => var (Sum.inl i))) (var (Sum.inr ()))).iff
+        ((of T).onFormula f.toFormula)).relabel Sum.inr)
 
 @[simps]
 noncomputable instance : (FunctionalFormulaLang T).Structure M where
@@ -310,10 +311,10 @@ noncomputable instance : (FunctionalFormulaLang.theory T).Model M where
     rcases hφ with ⟨φ₀, hφ₀, rfl⟩ | ⟨i, hi, rfl⟩
     · simp only [LHom.realize_onSentence]
       exact realize_sentence_of_mem T hφ₀
-    · simp only [Sentence.Realize, Formula.realize_iAlls, Sum.elim_inr, Formula.realize_iff,
-        Formula.realize_equal, Term.realize_func, Term.realize_var, instStructure_funMap,
-        LHom.realize_onFormula, realize_toFormula, Function.comp_def, realize_iff_realize_eq,
-        funext_iff]
+    · simp only [Sentence.Realize, Formula.realize_iAlls, Formula.realize_relabel,
+        Function.comp_def, Sum.elim_inr, Formula.realize_iff, Formula.realize_equal,
+        Term.realize_func, Term.realize_var, instStructure_funMap, LHom.realize_onFormula,
+        realize_toFormula, realize_iff_realize_eq, funext_iff]
       intro i
       refine ⟨?_, ?_⟩
       · rintro h ⟨⟩; exact h
@@ -359,9 +360,9 @@ noncomputable def modelTypeEquiv : Theory.ModelType.{_, _, w} T ≃
     · have := models_sentence_of_mem (T := FunctionalFormulaLang.theory T)
         (Set.mem_union_right _ (Set.mem_iUnion.2 ⟨n, Set.mem_range.2 ⟨f, rfl⟩⟩))
       have := this.realize_formula M (v := Empty.elim)
-      simp only [Formula.realize_iAlls, Sum.elim_inr, Formula.realize_iff, Formula.realize_equal,
-        Term.realize_func, Term.realize_var, LHom.realize_onFormula, realize_toFormula,
-        Function.comp_def, realize_iff_realize_eq, funext_iff] at this
+      simp only [Formula.realize_iAlls, Formula.realize_relabel, Function.comp_def, Sum.elim_inr,
+        Formula.realize_iff, Formula.realize_equal, Term.realize_func, Term.realize_var,
+        LHom.realize_onFormula, realize_toFormula, realize_iff_realize_eq, funext_iff] at this
       have := (this (Sum.elim x (fun _ => S.funMap f x))).1 (by simp) ()
       simpa
     · simp [Structure.RelMap]
