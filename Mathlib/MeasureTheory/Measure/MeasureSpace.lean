@@ -1194,12 +1194,11 @@ theorem map_zero (f : α → β) : (0 : Measure α).map f = 0 := by
 theorem map_of_not_aemeasurable {f : α → β} {μ : Measure α} (hf : ¬AEMeasurable f μ) :
     μ.map f = 0 := by simp [map, hf]
 
-theorem aemeasurable_of_map_ne_zero {μ : Measure α} {μ' : Measure β} {f : α → β}
-  (hf : μ.map f = μ') (nezero : μ' ≠ 0) : AEMeasurable f μ := by
+theorem aemeasurable_of_map_ne_zero {μ : Measure α} {f : α → β}
+  (hf : μ.map f ≠ 0) : AEMeasurable f μ := by
     by_contra h
     simp only [h, not_false_eq_true, Measure.map_of_not_aemeasurable] at hf
-    apply nezero
-    rw [hf]
+    apply hf rfl
 
 theorem map_congr {f g : α → β} (h : f =ᵐ[μ] g) : Measure.map f μ = Measure.map g μ := by
   by_cases hf : AEMeasurable f μ

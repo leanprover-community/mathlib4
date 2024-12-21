@@ -180,8 +180,7 @@ theorem mgf_pos [IsProbabilityMeasure μ] (h_int_X : Integrable (fun ω => exp (
     0 < mgf X μ t :=
   mgf_pos' (IsProbabilityMeasure.ne_zero μ) h_int_X
 
-lemma mgf_id_map {Ω : Type*} {m : MeasurableSpace Ω} {μ : Measure Ω}
-  (X : Ω → ℝ) (hX : AEMeasurable X μ) : mgf id (μ.map X) = mgf X μ := by
+lemma mgf_id_map (hX : AEMeasurable X μ) : mgf id (μ.map X) = mgf X μ := by
   ext t
   rw [mgf, integral_map hX]
   · rfl
@@ -194,11 +193,14 @@ theorem cgf_neg : cgf (-X) μ t = cgf X μ (-t) := by simp_rw [cgf, mgf_neg]
 theorem mgf_smul_left (α : ℝ) : mgf (α • X) μ t = mgf X μ (α * t) := by
   simp_rw [mgf, Pi.smul_apply, smul_eq_mul, mul_comm α t, mul_assoc]
 
-theorem mgf_const_add_left (α : ℝ) : mgf (fun ω => α + X ω) μ t = exp (t * α) * mgf X μ t := by
+theorem mgf_const_add (α : ℝ) : mgf (fun ω => α + X ω) μ t = exp (t * α) * mgf X μ t := by
   rw [mgf, mgf, ← integral_mul_left]
   congr with x
   dsimp
   rw [mul_add, exp_add]
+
+theorem mgf_add_const (α : ℝ) : mgf (fun ω => X ω + α) μ t = exp (t * α) * mgf X μ t := by
+  simp only [add_comm, mgf_const_add]
 
 /-- This is a trivial application of `IndepFun.comp` but it will come up frequently. -/
 theorem IndepFun.exp_mul {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (s t : ℝ) :
