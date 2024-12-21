@@ -74,11 +74,20 @@ is isomorphism-invariant.
     `B` are `R`-modules with topologies, if `e` is a topological isomorphism between them,
     and if `A` has the module topology, then `B` has the module topology.
 
+Now say `φ : A →ₗ[R] B` is an `R`-linear map between `R`-modules equipped with
+the module topology.
+
+* `IsModuleTopology.continuous_of_linearMap φ` is the proof that `φ` is automatically
+continuous.
+* `IsModuleTopology.isQuotientMap_of_surjective (hφ : Function.Surjective φ)`
+is the proof that if furthermore `φ` is surjective then it is a quotient map,
+that is, the module topology on `B` is the pushforward of the module topology
+on `A`.
+
 ## TODO
 
-Forthcoming PRs from the FLT repo will show that the module topology on a (binary or finite) product
-of modules is the product of the module topologies, and that the module topology on the quotient
-of a module `M` is the quotient topology when `M` is equipped with the module topology.
+A forthcoming PR from the FLT repo will show that the module topology on a (binary or finite)
+product of modules is the product of the module topologies.
 
 We will also show the slightly more subtle result that if `M`, `N` and `P` are `R`-modules
 equipped with the module topology and if furthermore `M` is finite as an `R`-module,
