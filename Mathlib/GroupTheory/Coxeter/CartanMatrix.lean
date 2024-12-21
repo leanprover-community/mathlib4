@@ -22,7 +22,7 @@ satisfy.
 1. For all $i$, we have $k_{i, i} = 2$.
 2. For all $i, i'$ with $2 \leq M_{i, i'}$, the number $k_{i, i'}k_{i', i}$ is of the form
   $4 \cos^2(\pi m / M_{i, i'})$, where $m$ is an integer with $0 < m \leq M_{i, i'} / 2$.
-3. For all $i, i'$, we have $k_{i, i'} = 0$ if and only if $k_{i', i} = 0$.
+3. For all $i, i'$ with $M i i' \neq 0$, we have $k_{i, i'} = 0$ if and only if $k_{i', i} = 0$.
 4. (strengthening of 2) For all $i, i'$ with $M_{i, i'} \neq 0$, we have
   $k_{i,i'}k_{i', i} = 4 \cos^2(\pi / M_{i, i'})$.
 5. For all $i, i'$ with $M_{i, i'} = 0$, we have $k_{i,i'}k_{i', i} \geq 4$.
@@ -113,7 +113,7 @@ We say that $k$ is a *Cartan reflective matrix* for $M$ if:
 * For all $i, i'$, if $m = M_{i, i'}$ is even, then either $k_{i, i'} = k_{i', i} = 0$ or
   $S_{m/2 - 1}(k_{i, i'} k_{i', i} - 2) = 0$, where $S$ refers to a Chebyshev $S$-polynomial
   (`Polynomial.Chebyshev.S`).
-* For all $i, i'$, if $m = M_{i, i'}$ is odd, then either $i = i'$ or
+* For all $i \neq i'$, if $m = M_{i, i'}$ is odd, then
   $S_{(m-1)/2}(k_{i, i'} k_{i', i} - 2) + S_{(m-3)/2}(k_{i, i'} k_{i', i} - 2) = 0$.
 Cartan reflective matrices can be used to define reflection representations of the Coxeter group
 corresponding to the Coxeter matrix $M$. -/
@@ -123,8 +123,17 @@ structure IsCartanReflective [CommRing R] (M : CoxeterMatrix B) (k : Matrix B B 
   s_eval_eq_zero_of_even i i' j :
     M i i' = 2 * j → k i i' = 0 ∧ k i' i = 0 ∨ (S R (j - 1)).eval (k i i' * k i' i - 2) = 0
   s_eval_eq_zero_of_odd i i' j :
-    M i i' = 2 * j + 1 → i = i' ∨ (S R (j - 1)).eval (k i i' * k i' i - 2) +
+    i ≠ i' → M i i' = 2 * j + 1 → (S R (j - 1)).eval (k i i' * k i' i - 2) +
       (S R j).eval (k i i' * k i' i - 2) = 0
+
+lemma IsCartanReflective.s_eval_eq_zero [CommRing R] {M : CoxeterMatrix B} {k : Matrix B B R}
+    (h : M.IsCartanReflective k) {i i' : B} (i_ne_i' : i ≠ i') :
+    ∃ j, M i i' = 2 * j ∧ (k i i' = 0 ∧ k i' i = 0 ∨ (S R (j - 1)).eval (k i i' * k i' i - 2) = 0)
+      ∨ M i i' = 2 * j + 1 ∧ (S R (j - 1)).eval (k i i' * k i' i - 2) +
+        (S R j).eval (k i i' * k i' i - 2) = 0 := by
+  obtain ⟨j, hj | hj⟩ := Nat.even_or_odd' (M i i')
+  · exact ⟨j, Or.inl ⟨hj, h.s_eval_eq_zero_of_even i i' j hj⟩⟩
+  · exact ⟨j, Or.inr ⟨hj, h.s_eval_eq_zero_of_odd i i' j i_ne_i' hj⟩⟩
 
 /-- Fix a Coxeter matrix (`CoxeterMatrix`) $M$ whose rows and columns are indexed by a type $B$.
 Let $(k_{i, i'})_{i, i' \in B}$ be a matrix with real entries.
@@ -133,7 +142,7 @@ from the top of this page. That is:
 1. For all $i$, we have $k_{i, i} = 2$.
 2. For all $i, i'$ with $2 \leq M_{i, i'}$, the number $k_{i, i'}k_{i', i}$ is of the form
   $4 \cos^2(\pi m / M_{i, i'})$, where $m$ is an integer with $0 < m \leq M_{i, i'} / 2$.
-3. For all $i, i'$, we have $k_{i, i'} = 0$ if and only if $k_{i', i} = 0$.
+3. For all $i, i'$ with $M i i' \neq 0$, we have $k_{i, i'} = 0$ if and only if $k_{i', i} = 0$.
 This is equivalent to the previous definition of a Cartan reflective matrix (`IsCartanReflective`),
 but specialized to matrices with real entries. -/
 @[mk_iff]
@@ -141,9 +150,9 @@ structure IsRealCartanReflective (M : CoxeterMatrix B) (k : Matrix B B ℝ) : Pr
   diagonal i : k i i = 2
   mul_eq_four_mul_cos_sq i i' : 2 ≤ M i i' → ∃ (m : ℕ),
     0 < m ∧ 2 * m ≤ M i i' ∧ k i i' * k i' i = 4 * cos (m * π / M i i') ^ 2
-  eq_zero_iff i i' : k i i' = 0 ↔ k i' i = 0
+  eq_zero_iff i i' : M i i' ≠ 0 → (k i i' = 0 ↔ k i' i = 0)
 
-theorem isRealCartanReflective_of_isCartanReflective (M : CoxeterMatrix B) (k : Matrix B B ℝ)
+theorem isRealCartanReflective_of_isCartanReflective {M : CoxeterMatrix B} {k : Matrix B B ℝ}
     (h : M.IsCartanReflective k) : M.IsRealCartanReflective k where
   diagonal i := h.diagonal i
   mul_eq_four_mul_cos_sq i i' (hii' : 2 ≤ M i i') := by
@@ -197,7 +206,7 @@ theorem isRealCartanReflective_of_isCartanReflective (M : CoxeterMatrix B) (k : 
         push_cast at eq_two_mul_cos_theta cos_θ'_eq_cos_θ ⊢
         rw [cos_θ'_eq_cos_θ]
         linear_combination eq_two_mul_cos_theta
-    obtain ⟨j, hj | hj⟩ := Nat.even_or_odd' (M.M i i')
+    obtain ⟨j, hj | hj⟩ := Nat.even_or_odd' (M i i')
     · obtain ⟨hkii', hki'i⟩ | S_eval_eq_zero := h.s_eval_eq_zero_of_even i i' j hj
       · use j, by omega, by omega
         simp [hkii', hki'i, hj, mul_comm _ π,
@@ -218,15 +227,62 @@ theorem isRealCartanReflective_of_isCartanReflective (M : CoxeterMatrix B) (k : 
           guard_hyp eval_s_mul_sin_eq_zero : Complex.sin (j * θ) = 0
           -- It follows that `j * θ` is an integer multiple of `π`.
           obtain ⟨m, hm⟩ := Complex.sin_eq_zero_iff.mp eval_s_mul_sin_eq_zero
-          use m * j
+          use m
           rw [hj]
           push_cast
-          linear_combination (norm := field_simp) (1 / j) * hm
-          sorry
-    · sorry
-  eq_zero_iff i i' := by
-    suffices ∀ i i', k i i' = 0 → k i' i = 0 from ⟨this i i', this i' i⟩
-    intro i i' hii'
-    sorry
+          rw [eq_div_iff_mul_eq (by norm_cast; omega)]
+          linear_combination 2 * hm
+    · obtain j_eq_zero | j_ne_zero := Classical.em (j = 0)
+      · omega
+      · have S_eval_eq_zero := h.s_eval_eq_zero_of_odd i i' j j_ne_zero hj
+        have S_eval_eq_zero_complex :
+            (S ℂ (j - 1)).eval (2 * Complex.cos θ) + (S ℂ j).eval (2 * Complex.cos θ) = 0 :=
+          eq_two_mul_cos_theta ▸ mod_cast S_eval_eq_zero
+        apply suffices_exists_m
+        · show Complex.cos θ ≠ 1
+          intro cos_θ_eq_one
+          rw [cos_θ_eq_one] at S_eval_eq_zero_complex
+          simp at S_eval_eq_zero_complex
+          norm_cast at S_eval_eq_zero_complex
+        · have eval_s_mul_sin_eq_zero := congrArg (· * Complex.sin θ) S_eval_eq_zero_complex
+          simp only [S_two_mul_complex_cos, add_mul, zero_mul, Complex.sin_add_sin]
+            at eval_s_mul_sin_eq_zero
+          push_cast at eval_s_mul_sin_eq_zero
+          simp only [one_mul, add_sub_add_right_eq_sub, mul_eq_zero, OfNat.ofNat_ne_zero,
+            false_or] at eval_s_mul_sin_eq_zero
+          ring_nf at eval_s_mul_sin_eq_zero
+          obtain sin_eq_zero | cos_eq_zero := eval_s_mul_sin_eq_zero
+          · obtain ⟨m, hm⟩ := Complex.sin_eq_zero_iff.mp sin_eq_zero
+            use m
+            rw [hj]
+            push_cast
+            rw [eq_div_iff_mul_eq (by norm_cast)]
+            linear_combination 2 * hm
+          · have cos_θ_eq_neg_one := calc
+              Complex.cos θ
+              _ = Complex.cos (-θ) := (Complex.cos_neg θ).symm
+              _ = Complex.cos (2 * (θ * (-1 / 2))) := by ring_nf
+              _ = 2 * Complex.cos (θ * (-1 / 2)) ^ 2 - 1 := Complex.cos_two_mul _
+              _ = -1 := by rw [cos_eq_zero]; norm_num
+            have two_mul_cos_θ_eq_neg_two : 2 * Complex.cos θ = -2 := by
+              linear_combination 2 * cos_θ_eq_neg_one
+            simp [two_mul_cos_θ_eq_neg_two, Int.negOnePow_sub, neg_mul, ← mul_neg, ← mul_add]
+              at S_eval_eq_zero_complex
+  eq_zero_iff i i' Mii'_ne_zero := by
+    suffices ∀ i i', M i i' ≠ 0 → k i i' = 0 → k i' i = 0 from
+      ⟨this i i' Mii'_ne_zero, this i' i (M.symmetric i i' ▸ Mii'_ne_zero)⟩
+    intro i i' Mii'_ne_zero hkii'
+    obtain ⟨j, hj | hj⟩ := Nat.even_or_odd' (M i i')
+    · obtain ⟨_, hki'i⟩ | S_eval_eq_zero := h.s_eval_eq_zero_of_even i i' j hj
+      · exact hki'i
+      · simp [hkii'] at S_eval_eq_zero
+        omega
+    · exfalso
+      obtain j_eq_zero | j_ne_zero := Classical.em (j = 0)
+      · have : M i i' = 1 := by omega
+        have : i = i' := M.index_eq_index_of_eq_one this
+        have : k i i' = 2 := this ▸ h.diagonal i
+        linarith [hkii', this]
+      ·
 
 end CoxeterMatrix

@@ -82,6 +82,15 @@ attribute [simp] diagonal
 
 theorem symmetric (i i' : B) : M i i' = M i' i := M.isSymm.apply i' i
 
+theorem index_eq_index_of_eq_one {M : CoxeterMatrix B} {i i' : B} (h : M i i' = 1) : i = i' := by
+  by_contra h₁
+  exact M.off_diagonal i i' h₁ h
+
+theorem eq_one {i i' : B} (h : i = i') : M i i' = 1 := h ▸ M.diagonal i
+
+theorem eq_one_iff (i i' : B) : M i i' = 1 ↔ i = i' :=
+  ⟨M.index_eq_index_of_eq_one, M.eq_one⟩
+
 /-- The Coxeter matrix formed by reindexing via the bijection `e : B ≃ B'`. -/
 protected def reindex : CoxeterMatrix B' where
   M := Matrix.reindex e e M
