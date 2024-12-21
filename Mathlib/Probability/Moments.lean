@@ -77,9 +77,16 @@ theorem moment_zero (hp : p ≠ 0) : moment 0 p μ = 0 := by
     smul_eq_mul, mul_zero, integral_zero]
 
 @[simp]
+lemma moment_zero_measure : moment X p (0 : Measure Ω) = 0 := by simp [moment]
+
+@[simp]
 theorem centralMoment_zero (hp : p ≠ 0) : centralMoment 0 p μ = 0 := by
   simp only [centralMoment, hp, Pi.zero_apply, integral_const, smul_eq_mul,
     mul_zero, zero_sub, Pi.pow_apply, Pi.neg_apply, neg_zero, zero_pow, Ne, not_false_iff]
+
+@[simp]
+lemma centralMoment_zero_measure : centralMoment X p (0 : Measure Ω) = 0 := by
+  simp [centralMoment]
 
 theorem centralMoment_one' [IsFiniteMeasure μ] (h_int : Integrable X μ) :
     centralMoment X 1 μ = (1 - (μ Set.univ).toReal) * μ[X] := by

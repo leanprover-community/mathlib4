@@ -100,13 +100,35 @@ lemma linTilted_apply_eq_ofReal_integral_cgf [IsProbabilityMeasure μ] (s : Set 
   rw [exp_cgf]
   exact ht
 
+section Integral
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+
+/-- For a version that does not assume that the set is measurable, but works only for s-finite
+measures, see `setIntegral_linTilted`. -/
+lemma setIntegral_linTilted' (g : Ω → E) {s : Set Ω} (hs : MeasurableSet s) :
+    ∫ x in s, g x ∂(μ.linTilted X t) = ∫ x in s, (exp (t * X x) / mgf X μ t) • (g x) ∂μ := by
+  rw [Measure.linTilted, setIntegral_tilted' _ _ hs]
+  rfl
+
+lemma setIntegral_linTilted [SFinite μ] (g : Ω → E) (s : Set Ω) :
+    ∫ x in s, g x ∂(μ.linTilted X t) = ∫ x in s, (exp (t * X x) / mgf X μ t) • (g x) ∂μ := by
+  rw [Measure.linTilted, setIntegral_tilted]
+  rfl
+
+lemma integral_linTilted (g : Ω → E) :
+    ∫ ω, g ω ∂(μ.linTilted X t) = ∫ ω, (exp (t * X ω) / mgf X μ t) • (g ω) ∂μ := by
+  rw [Measure.linTilted, integral_tilted]
+  rfl
+
 lemma integral_linTilted_self [IsFiniteMeasure μ]
     (ht : t ∈ interior {x | Integrable (fun ω ↦ rexp (x * X ω)) μ}):
     (μ.linTilted X t)[X] = deriv (cgf X μ) t := by
-  rw [Measure.linTilted, integral_tilted] -- todo: add integral_linTilted
-  rw [deriv_cgf ht, ← integral_div]
+  rw [integral_linTilted, deriv_cgf ht, ← integral_div]
   congr with ω
   rw [mgf, smul_eq_mul]
   ring
+
+end Integral
 
 end ProbabilityTheory
