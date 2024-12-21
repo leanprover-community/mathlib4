@@ -125,7 +125,7 @@ lemma AbsolutelyContinuous.comp [SFinite μ] [SFinite ν] [IsSFiniteKernel κ] [
     (hμν : μ ≪ ν) (hκη : ∀ᵐ a ∂μ, κ a ≪ η a) :
     κ ∘ₘ μ ≪ η ∘ₘ ν := by
   simp_rw [← snd_compProd, Measure.snd]
-  exact (absolutelyContinuous_compProd hμν hκη).map measurable_snd
+  exact (hμν.compProd hκη).map measurable_snd
 
 lemma AbsolutelyContinuous.comp_right [SFinite μ] [SFinite ν]
     (hμν : μ ≪ ν) (κ : Kernel α γ) [IsSFiniteKernel κ]  :
