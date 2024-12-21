@@ -913,6 +913,12 @@ theorem clusterPt_iff_not_disjoint {F : Filter X} :
     ClusterPt x F ↔ ¬Disjoint (𝓝 x) F := by
   rw [disjoint_iff, ClusterPt, neBot_iff]
 
+@[simp]
+theorem clusterPt_nhds_inf {F : Filter X} : ClusterPt x (𝓝 x ⊓ F) ↔ ClusterPt x F := by
+  simp [ClusterPt]
+
+alias ⟨_, ClusterPt.nhds_inf⟩ := clusterPt_nhds_inf
+
 /-- `x` is a cluster point of a set `s` if every neighbourhood of `x` meets `s` on a nonempty
 set. See also `mem_closure_iff_clusterPt`. -/
 theorem clusterPt_principal_iff :
