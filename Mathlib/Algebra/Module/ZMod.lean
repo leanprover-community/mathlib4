@@ -28,7 +28,7 @@ instance : AddCommMonoid (toZModModule M n h) :=
 theorem toZModModule.smul_eq_zero (x : toZModModule M n h) : n • x = 0 :=
   h x
 
-variables (h) in
+variable (h) in
 /-- The `ZMod n`-module structure on commutative monoids whose elements have order dividing `n ≠ 0`.
 Also implies a group structure via `Module.addCommMonoidToAddCommGroup`.
 See note [reducible non-instances]. -/
@@ -95,7 +95,7 @@ instance : MulDistribMulAction (ZMod n) (toZModModule G n h) :=
     smul_one m := smul_zero (A := AddCommMonoid.toZModModule (Additive G) n h) m }
 
 theorem toZModModule.coe_smul (k : ℤ) (g : toZModModule G n h) : (k : ZMod n) • g = g ^ k :=
-  AddCommMonoid.toZModModule.coe_smul (G := Additive G) k g
+  AddCommGroup.toZModModule.coe_smul (G := Additive G) k g
 
 theorem toZModModule.zero_smul (g : toZModModule G n h) : (0 : ZMod n) • g = 1 :=
   _root_.zero_smul (M := AddCommMonoid.toZModModule (Additive G) n h) (ZMod n) g
@@ -127,7 +127,7 @@ instance {G : Type*} [AddCommGroup G] {H : AddSubgroup G} (hH : ∀ x, n • x �
 -- See note [reducible non-instances]
 instance QuotientAddGroup.zmodModule {G : Type*} [AddCommGroup G] {H : AddSubgroup G}
     (hH : ∀ x, n • x ∈ H) : Module (ZMod n) (QuotientAddGroup.toZModModule hH) :=
-  AddCommMonoid.zmodModule (h := by simpa [forall_mk, ← mk_nsmul])
+  AddCommGroup.zmodModule (h := by simpa [forall_mk, ← mk_nsmul])
 
 variable {F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [FunLike F M M₁]
   [AddMonoidHomClass F M M₁] [Module (ZMod n) M] [Module (ZMod n) M₁] [SetLike S M]
