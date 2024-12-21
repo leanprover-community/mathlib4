@@ -7,6 +7,9 @@ import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Order.Basic
 import Mathlib.Tactic.NoncommRing
+import Mathlib.Analysis.LocallyConvex.Polar
+import Mathlib.Analysis.Normed.Module.Dual
+import Mathlib.Analysis.Convex.Normed
 
 /-!
 # M-structure
@@ -311,3 +314,292 @@ instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
     sdiff_eq := fun P Q => Subtype.ext <| by rw [coe_sdiff, ← coe_compl, coe_inf] }
 
 end IsLprojection
+
+variable {𝕜 A F : Type*}
+
+variable [RCLike 𝕜] [NormedAddCommGroup A] [NormedSpace 𝕜 A]
+
+theorem contractive {P : A →L[𝕜] A} (h : IsLprojection A P) : ‖P‖ ≤ 1 := by
+  apply (ContinuousLinearMap.opNorm_le_iff (zero_le_one' ℝ)).mpr
+  intro x
+  rw [(h.Lnorm x)]
+  simp only [ContinuousLinearMap.smul_def, ContinuousLinearMap.coe_sub', Pi.sub_apply,
+    ContinuousLinearMap.one_apply, one_mul, le_add_iff_nonneg_right, norm_nonneg]
+
+/-- The subtype of L-projections -/
+notation "Pₗ[" 𝕜 "](" A ")" => { P : A →L[𝕜] A // IsLprojection A P }
+
+variable (P : Pₗ[𝕜](A))
+
+instance : FunLike Pₗ[𝕜](A) A A where
+  coe f := f.val
+  coe_injective' := by
+    intro f g h
+    simp only [DFunLike.coe_fn_eq] at h
+    exact Subtype.eq h
+
+lemma range_prod_of_commute {P Q : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)}
+    (h : Commute P Q) : Set.range (P * Q) ⊆ Set.range P ∩ Set.range Q := by
+  · simp only [Set.le_eq_subset, Set.subset_inter_iff]
+    constructor
+    · exact Set.range_comp_subset_range ⇑Q ⇑P
+    · rw [commute_iff_eq] at h
+      rw [h]
+      exact Set.range_comp_subset_range ⇑P ⇑Q
+
+lemma proj_apply (P : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)) (hP : IsIdempotentElem P)
+    (a : (NormedSpace.Dual 𝕜 A)) (ha: a ∈ Set.range P) : P a = a := by
+  obtain ⟨c,hc⟩ := ha
+  rw [← hc]
+  have e2 : P (P c) = (P * P) c := rfl
+  rw [e2]
+  rw [hP.eq]
+
+lemma IsIdempotentElem.range_prod__of_commute
+    {P Q : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)} (hPQ : Commute P Q)
+    (hP : IsIdempotentElem P) (hQ : IsIdempotentElem Q) :
+    Set.range (P * Q) = Set.range P ∩ Set.range Q := by
+  apply le_antisymm
+  · simp only [Set.le_eq_subset]
+    exact range_prod_of_commute hPQ
+  · intro a ha
+    simp only [ContinuousLinearMap.coe_mul, Set.mem_range, Function.comp_apply]
+    use a
+    rw [proj_apply Q hQ _ (Set.mem_of_mem_inter_right ha),
+      proj_apply P hP _ (Set.mem_of_mem_inter_left ha)]
+
+lemma IsLprojection.range_inter (P Q : Pₗ[𝕜](NormedSpace.Dual 𝕜 A)) :
+    Set.range P.val ∩ Set.range Q.val = Set.range (P ⊓ Q).val := by
+  rw [← IsIdempotentElem.range_prod__of_commute (IsLprojection.commute P.prop Q.prop)
+    P.prop.1 Q.prop.1]
+  rfl
+
+lemma IsLprojection.range_sum (P Q : Pₗ[𝕜](NormedSpace.Dual 𝕜 A)) :
+    LinearMap.range P.val + LinearMap.range Q.val = LinearMap.range (P ⊔ Q).val := by
+  apply le_antisymm
+  · intro z hz
+    rw [Submodule.add_eq_sup, Submodule.mem_sup] at hz
+    simp only [LinearMap.mem_range, exists_exists_eq_and] at hz
+    obtain ⟨x,⟨y,hxy⟩⟩ := hz
+    simp only [coe_sup, LinearMap.mem_range, ContinuousLinearMap.coe_sub',
+      ContinuousLinearMap.coe_mul, Pi.sub_apply, ContinuousLinearMap.add_apply, Function.comp_apply]
+    use z
+    rw [← hxy]
+    simp only [map_add]
+    rw [← Function.comp_apply (f := P.val), ← ContinuousLinearMap.coe_mul, P.prop.proj]
+    rw [← Function.comp_apply (f := Q.val) (g := Q.val), ← ContinuousLinearMap.coe_mul, Q.prop.proj]
+    rw [← Function.comp_apply (f := Q.val) (g := P.val), ← ContinuousLinearMap.coe_mul]
+    rw [IsLprojection.commute Q.prop P.prop]
+    rw [← Function.comp_apply (f := P.val) (g := (P.val * Q.val)), ← ContinuousLinearMap.coe_mul]
+    rw [← mul_assoc]
+    rw [P.prop.proj]
+    abel
+  · intro z hz
+    simp only [coe_sup, LinearMap.mem_range, ContinuousLinearMap.coe_sub',
+      ContinuousLinearMap.coe_mul, Pi.sub_apply, ContinuousLinearMap.add_apply,
+      Function.comp_apply] at hz
+    obtain ⟨x,hx⟩ := hz
+    have e1 : z = P.val (x - Q.val x) + Q.val x := by
+      rw [map_sub, ← hx]
+      abel
+    rw [e1]
+    exact Submodule.add_mem_sup (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _ )
+
+/--
+A closed subspace of a Banach space is said to be an M-ideal if the topological annihilator is the
+range of an L-projection.
+-/
+structure IsMideal (m : Submodule 𝕜 A) : Prop where
+  Closed: IsClosed (m : Set A)
+  Lproj:  ∃ (P : Pₗ[𝕜](NormedSpace.Dual 𝕜 A)),
+    (LinearMap.range P.val) = NormedSpace.polarSubmodule (E := A) 𝕜 m
+
+set_option maxHeartbeats 400000
+open NormedSpace in
+open Metric in
+open Submodule in
+open scoped ComplexOrder in
+lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂ : IsMideal m₂) :
+    ↑(polarSubmodule 𝕜 m₁ + polarSubmodule 𝕜 m₂) ∩ closedBall 0 1 =
+    convexHull ℝ (polar 𝕜 m₁ ∩ closedBall 0 1 ∪ polar 𝕜 m₂ ∩ closedBall (0 : Dual 𝕜 A) 1) :=
+  le_antisymm
+  ( by
+    obtain ⟨P₁,hE₁⟩ := h₁.Lproj
+    obtain ⟨P₂,hE₂⟩ := h₂.Lproj
+    let E := P₁ ⊔ P₂
+    rw [ ← hE₁, ← hE₂, (IsLprojection.range_sum P₁ P₂)]
+    intro x hx
+    let E₁ := P₁.val
+    let E₂ := P₂.val
+    let y := E₁ x
+    let z := E₂ ((1 - E₁) x)
+    have e3 : x = y + z := calc
+      x = E x := (proj_apply _ E.prop.proj x (Set.mem_of_mem_inter_left hx)).symm
+      _ = E₁ x + E₂ x - (E₁ * E₂) x := rfl
+      _ = E₁ x + E₂ x - (E₂ * E₁) x := by rw [IsLprojection.commute P₁.prop P₂.prop]
+      _ = E₁ x + E₂ x - E₂ (E₁ x) := rfl
+      _ = E₁ x + (E₂ x - E₂ (E₁ x)) := add_sub_assoc (E₁ x) (E₂ x) (E₂ (E₁ x))
+      _ = E₁ x + E₂ (x - E₁ x) := by rw [map_sub]
+      _ = y + z := rfl
+    have e4 :  ‖y‖ + ‖z‖ = ‖x‖ := le_antisymm
+      (calc
+        ‖y‖ + ‖z‖ = ‖E₁ x‖ + ‖E₂ ((1 - E₁) x)‖ := rfl
+        _ ≤ ‖E₁ x‖ + ‖E₂‖ * ‖(1 - E₁) x‖ :=  by
+          rw [add_le_add_iff_left]; exact ContinuousLinearMap.le_opNorm E₂ ((1 - E₁) x)
+        _ ≤ ‖E₁ x‖ + 1 * ‖(1 - E₁) x‖ := by
+          rw [add_le_add_iff_left]
+          exact mul_le_mul_of_nonneg_right (contractive P₂.prop)
+            (ContinuousLinearMap.opNorm_nonneg ((1 - E₁) x))
+        _ ≤ ‖E₁ x‖ + ‖(1 - E₁) x‖ := by rw [one_mul]
+        _ ≤ ‖E₁ • x‖ + ‖(1 - E₁) • x‖ := Preorder.le_refl (‖E₁ x‖ + ‖(1 - E₁) x‖)
+        _ = ‖x‖ := by rw [← P₁.prop.Lnorm])
+      (by rw [e3]; exact ContinuousLinearMap.opNorm_add_le y z)
+    simp at hx
+    have e1 : y ∈ polar 𝕜 ↑m₁ ∩ closedBall 0 1 := by
+      simp only [Set.mem_inter_iff, mem_closedBall, dist_zero_right]
+      constructor
+      · have e : polar 𝕜 ↑m₁ = SetLike.coe (LinearMap.range E₁) := by
+          rw [hE₁]
+          rfl
+        rw [e]
+        simp only [SetLike.mem_coe, LinearMap.mem_range, exists_apply_eq_apply]
+      · apply le_trans _ hx.2
+        rw [← e4]
+        exact ((le_add_iff_nonneg_right ‖y‖).mpr (norm_nonneg _))
+    have e2 : z ∈ polar 𝕜 ↑m₂ ∩ closedBall 0 1 := by
+      simp only [Set.mem_inter_iff, mem_closedBall, dist_zero_right]
+      constructor
+      · have e : polar 𝕜 ↑m₂ = SetLike.coe (LinearMap.range E₂) := by
+          rw [hE₂]
+          rfl
+        rw [e]
+        simp only [SetLike.mem_coe, LinearMap.mem_range, exists_apply_eq_apply]
+      · apply le_trans _ hx.2
+        rw [← e4]
+        exact ((le_add_iff_nonneg_left ‖z‖).mpr (norm_nonneg _))
+    rcases eq_or_ne ‖x‖ 0 with (hxz | hxnz)
+    · rw [norm_eq_zero] at hxz
+      rw [hxz]
+      apply subset_convexHull
+      simp only [Set.mem_union, Set.mem_inter_iff, mem_closedBall, dist_self, zero_le_one, and_true]
+      exact Or.intro_left _ (LinearMap.zero_mem_polar (dualPairing 𝕜 A).flip ↑m₁)
+    · rcases eq_or_ne ‖y‖ 0 with (hyz | hynz)
+      · rw [norm_eq_zero] at hyz
+        rw [e3, hyz, zero_add]
+        exact subset_convexHull _ _ (Set.mem_union_right (polar 𝕜 ↑m₁ ∩ closedBall 0 1) e2)
+      · rcases eq_or_ne ‖z‖ 0 with (hzz | hznz)
+        · rw [norm_eq_zero] at hzz
+          rw [e3, hzz, add_zero]
+          exact subset_convexHull _ _ (Set.mem_union_left (polar 𝕜 ↑m₂ ∩ closedBall 0 1) e1)
+        · let y₁ := (‖x‖/‖y‖) • y
+          let z₁ := (‖x‖/‖z‖) • z
+          have t₁ : y₁ ∈ polar 𝕜 ↑m₁ ∩ closedBall 0 1 ∪ polar 𝕜 ↑m₂ ∩ closedBall 0 1 := by
+            apply Set.mem_union_left
+            simp only [Set.mem_inter_iff, mem_closedBall, dist_zero_right]
+            constructor
+            · have e : polar 𝕜 ↑m₁ = SetLike.coe (LinearMap.range E₁) := by
+                rw [hE₁]
+                rfl
+              rw [e]
+              simp only [SetLike.mem_coe, LinearMap.mem_range]
+              use y₁
+              calc
+              E₁ y₁ = E₁ ((‖x‖/‖y‖) • y) := rfl
+              _ = (‖x‖/‖y‖) • E₁  y := ContinuousLinearMap.map_smul_of_tower E₁ (‖x‖ / ‖y‖) y
+              _ = (‖x‖/‖y‖) • y := by
+                rw [proj_apply E₁ P₁.prop.proj _ _]
+                exact Set.mem_range_self x
+              _ = y₁ := rfl
+            · calc
+              ‖y₁‖ = ‖(‖x‖/‖y‖) • y‖ := rfl
+              --_ = |1 := by
+              _ = ‖‖x‖/‖y‖‖ * ‖y‖ := norm_smul (‖x‖ / ‖y‖) y
+              _ = ‖x‖/‖y‖ * ‖y‖ := by simp only [norm_div, norm_norm]
+              _ = ‖x‖ := div_mul_cancel₀ ‖x‖ hynz
+              _ ≤ 1 := hx.2
+          have t₂ : z₁ ∈ polar 𝕜 ↑m₁ ∩ closedBall 0 1 ∪ polar 𝕜 ↑m₂ ∩ closedBall 0 1 := by
+            apply Set.mem_union_right
+            simp only [Set.mem_inter_iff, mem_closedBall, dist_zero_right]
+            constructor
+            · have e : polar 𝕜 ↑m₂ = SetLike.coe (LinearMap.range E₂) := by
+                rw [hE₂]
+                rfl
+              rw [e]
+              simp only [SetLike.mem_coe, LinearMap.mem_range]
+              use z₁
+              calc
+              E₂ z₁ = E₂ ((‖x‖/‖z‖) • z) := rfl
+              _ = (‖x‖/‖z‖) • E₂  z := ContinuousLinearMap.map_smul_of_tower E₂ (‖x‖ / ‖z‖) z
+              _ = (‖x‖/‖z‖) • z := by
+                rw [proj_apply E₂ P₂.prop.proj _ _]
+                exact Set.mem_range_self ((1 - E₁) x)
+              _ = z₁ := rfl
+            · calc
+              ‖z₁‖ = ‖(‖x‖/‖z‖) • z‖ := rfl
+              _ = ‖‖x‖/‖z‖‖ * ‖z‖ := norm_smul (‖x‖ / ‖z‖) z
+              _ = ‖x‖/‖z‖ * ‖z‖ := by simp only [norm_div, norm_norm]
+              _ = ‖x‖ := div_mul_cancel₀ ‖x‖ hznz
+              _ ≤ 1 := hx.2
+          apply segment_subset_convexHull t₁ t₂
+          rw [segment]
+          simp only [exists_and_left, Set.mem_setOf_eq]
+          use ‖y‖/‖x‖
+          constructor
+          · exact div_nonneg (ContinuousLinearMap.opNorm_nonneg y)
+              (ContinuousLinearMap.opNorm_nonneg x)
+          · use ‖z‖/‖x‖
+            constructor
+            · exact div_nonneg (ContinuousLinearMap.opNorm_nonneg z)
+                (ContinuousLinearMap.opNorm_nonneg x)
+            · constructor
+              · calc
+                ‖y‖ / ‖x‖ + ‖z‖ / ‖x‖ = (‖y‖ + ‖z‖) / ‖x‖ := div_add_div_same ‖y‖ ‖z‖ ‖x‖
+                _ = 1 := (div_eq_one_iff_eq hxnz).mpr e4
+              · calc
+                (‖y‖ / ‖x‖) • y₁ + (‖z‖ / ‖x‖) • z₁ =
+                  (‖y‖ / ‖x‖) • ((‖x‖/‖y‖) • y) + (‖z‖ / ‖x‖) • ((‖x‖/‖z‖) • z) := rfl
+                _ = ((‖y‖ / ‖x‖) • (‖x‖/‖y‖)) • y + ((‖z‖ / ‖x‖) • (‖x‖/‖z‖)) • z := by
+                  rw [← smul_assoc, ← smul_assoc]
+                _ = ((‖y‖ / ‖x‖) * (‖x‖/‖y‖)) • y + ((‖z‖ / ‖x‖) * (‖x‖/‖z‖)) • z := by
+                  simp only [smul_eq_mul]
+                _ = ((‖y‖ / ‖x‖) * (‖y‖ / ‖x‖)⁻¹) • y + ((‖z‖ / ‖x‖) * (‖z‖ / ‖x‖)⁻¹) • z := by
+                  rw [inv_div, inv_div]
+                _ = y + ((‖z‖ / ‖x‖) * (‖z‖ / ‖x‖)⁻¹) • z := by
+                  rw [CommGroupWithZero.mul_inv_cancel, one_smul, inv_div]
+                  exact div_ne_zero hynz hxnz
+                _ = y + z := by
+                  rw [CommGroupWithZero.mul_inv_cancel, one_smul]
+                  exact div_ne_zero hznz hxnz
+                _ = x := by rw [e3])
+  ( by
+    simp only [Submodule.add_eq_sup, Set.le_eq_subset, Set.subset_inter_iff]
+    exact ⟨convexHull_min (Set.union_subset_iff.mpr ⟨subset_trans
+          (Set.inter_subset_left (s := SetLike.coe (polarSubmodule 𝕜 m₁)))
+          (SetLike.coe_subset_coe.mpr le_sup_left),
+        subset_trans
+          (Set.inter_subset_left (s := SetLike.coe (polarSubmodule 𝕜 m₂)))
+          (SetLike.coe_subset_coe.mpr le_sup_right)⟩)
+        (fun _ hx _ hy _ _ _ _ _ => add_mem (smul_of_tower_mem _ _ hx) (smul_of_tower_mem _ _ hy)),
+      convexHull_min (Set.union_subset_iff.mpr
+        ⟨Set.inter_subset_right, Set.inter_subset_right⟩) (convex_closedBall _ _)⟩)
+
+/-
+lemma IsMideal.inter (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂ : IsMideal m₂) :
+    WeakDual.polar 𝕜 (m₁ ⊓ m₂) = closure (WeakDual.polar 𝕜 m₁ + WeakDual.polar (E := A) 𝕜 m₂) :=
+    sorry
+-/
+
+/- The M-ideals are a sub-lattice of the lattice of submodules -/
+/-
+lemma IsMideal.isSublattice : IsSublattice {m : Submodule 𝕜 A | IsMideal m } where
+  supClosed m₁ hm₁ m₂ hm₂ := by
+    rw [Set.mem_setOf_eq] at *
+    constructor
+    · sorry
+    · sorry
+  infClosed m₁ hm₁ m₂ hm₂ := by
+    rw [Set.mem_setOf_eq] at *
+    constructor
+    · sorry
+    · sorry
+-/
