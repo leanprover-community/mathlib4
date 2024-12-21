@@ -1116,6 +1116,38 @@ theorem fold_head (init : β) (f : β → α → β) (s : Seq α) :
     (s.fold init f).head = init := by
   simp [fold]
 
+@[simp]
+theorem zipWith_nil_left {f : α → β → γ} {s} :
+    zipWith f nil s = nil :=
+  rfl
+
+@[simp]
+theorem zipWith_nil_right {f : α → β → γ} {s} :
+    zipWith f s nil = nil := by
+  ext1
+  simp
+
+@[simp]
+theorem zipWith_cons_cons {f : α → β → γ} {x s x' s'} :
+    zipWith f (cons x s) (cons x' s') = cons (f x x') (zipWith f s s') := by
+  ext1 n
+  cases' n <;> simp
+
+@[simp]
+theorem zip_nil_left {s : Seq α} :
+    zip (@nil α) s = nil :=
+  rfl
+
+@[simp]
+theorem zip_nil_right {s : Seq α} :
+    zip s (@nil α) = nil :=
+  zipWith_nil_right
+
+@[simp]
+theorem zip_cons_cons {s s' : Seq α} {x x'} :
+    zip (cons x s) (cons x' s') = cons (x, x') (zip s s') :=
+  zipWith_cons_cons
+
 end Seq
 
 namespace Seq1
