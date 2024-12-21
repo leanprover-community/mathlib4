@@ -1,0 +1,15 @@
+name: Send Blizzard a message on zulip
+on:
+  push:
+    branches:
+      - blizzard_inc/ci_debug**
+
+
+jobs:
+  log-event-info:
+    runs-on: ubuntu-latest
+    steps:
+      - name: name
+        run: |
+          # for debugging, we print the available variables
+          echo "github.event.action: '${{ github.event.action }}'"
