@@ -571,21 +571,15 @@ lemma compProd_add_right (μ : Kernel α β) (κ η : Kernel (α × β) γ)
 lemma comapRight_compProd_id_prod {δ : Type*} {mδ : MeasurableSpace δ}
     (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ) [IsSFiniteKernel η]
     {f : δ → γ} (hf : MeasurableEmbedding f) :
-    comapRight (κ ⊗ₖ η) (MeasurableEmbedding.id.prod_mk hf) = κ ⊗ₖ (comapRight η hf) := by
+    comapRight (κ ⊗ₖ η) (MeasurableEmbedding.id.prodMap hf) = κ ⊗ₖ (comapRight η hf) := by
   ext a t ht
   rw [comapRight_apply' _ _ _ ht, compProd_apply, compProd_apply ht]
-  swap; · exact (MeasurableEmbedding.id.prod_mk hf).measurableSet_image.mpr ht
-  refine lintegral_congr (fun b ↦ ?_)
-  simp only [id_eq, Set.mem_image, Prod.mk.injEq, Prod.exists]
-  rw [comapRight_apply']
-  swap; · exact measurable_prod_mk_left ht
-  congr with x
-  simp only [Set.mem_setOf_eq, Set.mem_image]
-  constructor
-  · rintro ⟨b', c, h, rfl, rfl⟩
-    exact ⟨c, h, rfl⟩
-  · rintro ⟨c, h, rfl⟩
-    exact ⟨b, c, h, rfl, rfl⟩
+  · refine lintegral_congr fun b ↦ ?_
+    rw [comapRight_apply']
+    · congr with x
+      aesop
+    · exact measurable_prod_mk_left ht
+  · exact (MeasurableEmbedding.id.prodMap hf).measurableSet_image.mpr ht
 
 end CompositionProduct
 
@@ -726,6 +720,12 @@ instance IsMarkovKernel.comap (κ : Kernel α β) [IsMarkovKernel κ] (hg : Meas
     IsMarkovKernel (comap κ g hg) :=
   ⟨fun a => ⟨by rw [comap_apply' κ hg a Set.univ, measure_univ]⟩⟩
 
+instance IsZeroOrMarkovKernel.comap (κ : Kernel α β) [IsZeroOrMarkovKernel κ] (hg : Measurable g) :
+    IsZeroOrMarkovKernel (comap κ g hg) := by
+  rcases eq_zero_or_isMarkovKernel κ with rfl | h
+  · simp only [comap_zero]; infer_instance
+  · have := IsMarkovKernel.comap κ hg; infer_instance
+
 instance IsFiniteKernel.comap (κ : Kernel α β) [IsFiniteKernel κ] (hg : Measurable g) :
     IsFiniteKernel (comap κ g hg) := by
   refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
@@ -801,6 +801,12 @@ instance IsMarkovKernel.prodMkLeft (κ : Kernel α β) [IsMarkovKernel κ] :
 
 instance IsMarkovKernel.prodMkRight (κ : Kernel α β) [IsMarkovKernel κ] :
     IsMarkovKernel (prodMkRight γ κ) := by rw [Kernel.prodMkRight]; infer_instance
+
+instance IsZeroOrMarkovKernel.prodMkLeft (κ : Kernel α β) [IsZeroOrMarkovKernel κ] :
+    IsZeroOrMarkovKernel (prodMkLeft γ κ) := by rw [Kernel.prodMkLeft]; infer_instance
+
+instance IsZeroOrMarkovKernel.prodMkRight (κ : Kernel α β) [IsZeroOrMarkovKernel κ] :
+    IsZeroOrMarkovKernel (prodMkRight γ κ) := by rw [Kernel.prodMkRight]; infer_instance
 
 instance IsFiniteKernel.prodMkLeft (κ : Kernel α β) [IsFiniteKernel κ] :
     IsFiniteKernel (prodMkLeft γ κ) := by rw [Kernel.prodMkLeft]; infer_instance
