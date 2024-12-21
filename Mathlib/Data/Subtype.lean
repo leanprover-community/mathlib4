@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Subtypes

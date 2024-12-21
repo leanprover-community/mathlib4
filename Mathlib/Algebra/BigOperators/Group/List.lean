@@ -649,7 +649,7 @@ lemma length_sigma {σ : α → Type*} (l₁ : List α) (l₂ : ∀ a, List (σ 
 
 lemma ranges_flatten : ∀ (l : List ℕ), l.ranges.flatten = range l.sum
   | [] => rfl
-  | a :: l => by simp only [flatten, ← map_flatten, ranges_flatten, sum_cons, range_add]
+  | a :: l => by simp [ranges, ← map_flatten, ranges_flatten, range_add]
 
 /-- The members of `l.ranges` have no duplicate -/
 theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
