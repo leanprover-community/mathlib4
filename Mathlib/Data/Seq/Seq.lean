@@ -721,6 +721,31 @@ def fold (s : Seq α) (init : β) (f : β → α → β) : Seq β :=
     | some (x, s) => .some (f acc x, f acc x, s)
   cons init <| corec f (init, s)
 
+/-- Apply `f` to the nth element of the list, if it exists, replacing that element
+with the result. -/
+def modify (s : Seq α) (n : ℕ) (f : α → α) : Seq α where
+  val := fun i =>
+    if i = n then
+      (s.val i).map f
+    else
+      s.val i
+  property := by
+    simp only [IsSeq]
+    intro i h
+    split_ifs with h_if
+    · split_ifs at h
+      · omega
+      · rw [s.property h]
+        rfl
+    · split_ifs at h with h_if'
+      · simp only [Option.map_eq_none'] at h
+        exact s.property h
+      · exact s.property h
+
+/-- `s.set n a` sets the value of sequence `s` at (zero-based) index `n` to `a`. -/
+def set (s : Seq α) (n : ℕ) (a : α) : Seq α :=
+  modify s n (fun _ ↦ a)
+
 section OfStream
 
 @[simp]
@@ -1203,6 +1228,73 @@ theorem fold_head (init : β) (f : β → α → β) (s : Seq α) :
   simp [fold]
 
 end Fold
+
+section Modify
+
+@[simp]
+theorem modify_nil {f : α → α} {n} :
+    modify nil n f = nil := by
+  simp [modify]
+  rfl
+
+@[simp]
+theorem set_nil {n : ℕ} {x : α} :
+    set nil n x = nil :=
+  modify_nil
+
+@[simp]
+theorem modify_cons_zero {f : α → α} {hd : α} {tl : Seq α} :
+    (cons hd tl).modify 0 f = cons (f hd) tl := by
+  ext1 n
+  cases n <;> simp [modify]
+
+@[simp]
+theorem set_cons_zero {hd hd' : α} {tl : Seq α} :
+    (cons hd tl).set 0 hd' = cons hd' tl :=
+  modify_cons_zero
+
+@[simp]
+theorem modify_cons_succ {hd : α} {f : α → α} {n : ℕ} {tl : Seq α} :
+    (cons hd tl).modify (n + 1) f = cons hd (tl.modify n f) := by
+  ext1 n
+  cases n <;> simp [modify]
+
+@[simp]
+theorem set_cons_succ {hd x : α} {n : ℕ} {tl : Seq α} :
+    (cons hd tl).set (n + 1) x = cons hd (tl.set n x) :=
+  modify_cons_succ
+
+theorem set_get_of_not_terminated {s : Seq α} {x : α} {n : ℕ}
+    (h_not_terminated : ¬ s.TerminatedAt n) :
+    (s.set n x).get? n = x := by
+  simp [set, modify]
+  simp [TerminatedAt] at h_not_terminated
+  cases h : s.get? n with
+  | none => simp [h] at h_not_terminated
+  | some => simp
+
+theorem set_get_of_terminated {s : Seq α} {x : α} {n : ℕ}
+    (h_terminated : s.TerminatedAt n) :
+    (s.set n x).get? n = .none := by
+  simp [set, modify]
+  simpa [TerminatedAt] using h_terminated
+
+theorem set_get_stable {s : Seq α} {x : α} {n m : ℕ}
+    (h : n ≠ m) :
+    (s.set m x).get? n = s.get? n := by
+  simp [set, modify]
+  intro h'
+  exact (h h').elim
+
+theorem set_dropn_stable_of_lt {s : Seq α} {m n : ℕ} {x : α}
+    (h : m < n) :
+    (s.set m x).drop n = s.drop n := by
+  ext1 i
+  simp
+  rw [set_get_stable]
+  omega
+
+end Modify
 
 instance : Functor Seq where map := @map
 
