@@ -37,7 +37,7 @@ namespace IsZGroup
 instance [IsZGroup G] {p : ℕ} [Fact p.Prime] (P : Sylow p G) : IsCyclic P :=
   isZGroup p Fact.out P
 
-theorem _root_.IsPGroup.isCyclic_of_zgroup [IsZGroup G] {p : ℕ} [Fact p.Prime]
+theorem _root_.IsPGroup.isCyclic_of_isZGroup [IsZGroup G] {p : ℕ} [Fact p.Prime]
     {P : Subgroup G} (hP : IsPGroup p P) : IsCyclic P := by
   obtain ⟨Q, hQ⟩ := hP.exists_le_sylow
   exact Subgroup.isCyclic_of_le hQ
@@ -124,7 +124,7 @@ theorem isZGroup_of_coprime
     contrapose! h_cop
     exact Nat.Prime.not_coprime_iff_dvd.mpr ⟨p, hp, h_cop⟩
   rcases h_cop with hP | hP
-  · have := (P.2.map f').isCyclic_of_zgroup
+  · have := (P.2.map f').isCyclic_of_isZGroup
     refine isCyclic_of_injective (f'.subgroupMap P) ?_
     rw [← MonoidHom.ker_eq_bot_iff, P.ker_subgroupMap f', Subgroup.subgroupOf_eq_bot, disjoint_iff]
     exact Subgroup.inf_eq_bot_of_coprime (hP.coprime_dvd_left h_dvd)
