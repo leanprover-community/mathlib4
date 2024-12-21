@@ -422,7 +422,7 @@ theorem Chain'.cons_of_le [LinearOrder α] {a : α} {as m : List α}
     | nil =>
       #adaptation_note /-- `_root_` will not be needed after `nightly-2024-12-21`. -/
       simp only [_root_.le_iff_lt_or_eq, reduceCtorEq, or_false] at hmas
-      exact (List.Lex.not_nil_right (·<·) _ hmas).elim
+      exact (List.not_lex_nil (·<·) _ hmas).elim
     | cons a' as =>
       rw [List.chain'_cons] at ha
       refine gt_of_gt_of_ge ha.1 ?_
