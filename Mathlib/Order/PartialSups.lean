@@ -251,7 +251,6 @@ variable [Preorder β] [LocallyFiniteOrderBot β] [CompleteLattice α]
 
 /-- Version of `ciSup_partialSups_eq` without boundedness assumptions, but requiring a
 `CompleteLattice` rather than just a `ConditionallyCompleteLattice`. -/
-@[simp]
 theorem iSup_partialSups_eq (f : β → α) :
     ⨆ n, partialSups f n = ⨆ n, f n :=
   ciSup_partialSups_eq <| OrderTop.bddAbove _
