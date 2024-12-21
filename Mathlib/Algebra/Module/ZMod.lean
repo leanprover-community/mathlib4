@@ -15,8 +15,6 @@ namespace AddCommMonoid
 @[nolint unusedArguments]
 def toZModModule (M : Type*) [AddCommMonoid M] (n : ℕ) (_ : ∀ x : M, n • x = 0) := M
 
-section AddCommMonoid
-
 variable {M : Type*} [AddCommMonoid M] {n : ℕ} {h : ∀ x : M, n • x = 0}
 
 variable (n) in
@@ -30,10 +28,11 @@ instance : AddCommMonoid (toZModModule M n h) :=
 theorem toZModModule.smul_eq_zero (x : toZModModule M n h) : n • x = 0 :=
   h x
 
+variables (h) in
 /-- The `ZMod n`-module structure on commutative monoids whose elements have order dividing `n ≠ 0`.
 Also implies a group structure via `Module.addCommMonoidToAddCommGroup`.
 See note [reducible non-instances]. -/
-instance [NeZero n] : Module (ZMod n) (toZModModule M n h) := by
+instance zmodModule [NeZero n] : Module (ZMod n) (toZModModule M n h) := by
   have h_mod (c : ℕ) (x : M) : (c % n) • x = c • x := by
     suffices (c % n + c / n * n) • x = c • x by rwa [add_nsmul, mul_nsmul, h, add_zero] at this
     rw [Nat.mod_add_div']
@@ -51,7 +50,9 @@ instance [NeZero n] : Module (ZMod n) (toZModModule M n h) := by
 
 end AddCommMonoid
 
-section AddCommGroup
+namespace AddCommGroup
+
+open AddCommMonoid
 
 variable {G : Type*} [AddCommGroup G] {n : ℕ} {h : ∀ g : G, n • g = 0}
 
@@ -63,7 +64,7 @@ See note [reducible non-instances]. -/
 instance zmodModule : Module (ZMod n) (toZModModule G n h) :=
   match n with
   | 0 => AddCommGroup.toIntModule G
-  | _ + 1 => inferInstance
+  | _ + 1 => AddCommMonoid.zmodModule h
 
 theorem toZModModule.coe_smul (k : ℤ) (g : toZModModule G n h) : (k : ZMod n) • g = k • g :=
   match n with
@@ -74,8 +75,6 @@ theorem toZModModule.coe_smul (k : ℤ) (g : toZModModule G n h) : (k : ZMod n) 
     rwa [← zsmul_eq_zsmul_iff_modEq, ← ZMod.val_intCast, Nat.cast_smul_eq_nsmul] at H
 
 end AddCommGroup
-
-end AddCommMonoid
 
 namespace CommGroup
 
