@@ -854,18 +854,18 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : α ⊕ (Fin n) → M
     · exact Fin.elim0 x
 
 @[simp]
-theorem realize_iSup (s : Finset β) (f : β → L.BoundedFormula α n)
+theorem realize_iSup [Finite β](f : β → L.BoundedFormula α n)
     (v : α → M) (v' : Fin n → M) :
-    (iSup s f).Realize v v' ↔ ∃ b ∈ s, (f b).Realize v v' := by
-  simp only [iSup, realize_foldr_sup, List.mem_map, Finset.mem_toList,
-    exists_exists_and_eq_and]
+    (iSup f).Realize v v' ↔ ∃ b, (f b).Realize v v' := by
+  simp only [iSup, realize_foldr_sup, List.mem_map, Finset.mem_toList, Finset.mem_univ, true_and,
+    exists_exists_eq_and]
 
 @[simp]
-theorem realize_iInf (s : Finset β) (f : β → L.BoundedFormula α n)
+theorem realize_iInf [Finite β] (f : β → L.BoundedFormula α n)
     (v : α → M) (v' : Fin n → M) :
-    (iInf s f).Realize v v' ↔ ∀ b ∈ s, (f b).Realize v v' := by
-  simp only [iInf, realize_foldr_inf, List.mem_map, Finset.mem_toList,
-    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+    (iInf f).Realize v v' ↔ ∀ b, (f b).Realize v v' := by
+  simp only [iInf, realize_foldr_inf, List.mem_map, Finset.mem_toList, Finset.mem_univ, true_and,
+    forall_exists_index, forall_apply_eq_imp_iff]
 
 @[simp]
 theorem _root_.FirstOrder.Language.Formula.realize_iSup (s : Finset β) (f : β → L.Formula α)
