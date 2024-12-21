@@ -76,8 +76,6 @@ variable (I)
 instance commRing : CommRing (R ⧸ I) where
   mul_comm := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (mul_comm a b)
 
-instance : Ring (R ⧸ I) := inferInstance
-
 -- Sanity test to make sure no diamonds have emerged in `commRing`
 example : (commRing I).toAddCommGroup = Submodule.Quotient.addCommGroup I := rfl
 variable {I}
