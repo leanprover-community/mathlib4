@@ -3,7 +3,8 @@ Copyright (c) 2024 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
+import Mathlib.Data.Finite.Sum
+import Mathlib.ModelTheory.Satisfiability
 
 universe u v w x y z
 
