@@ -253,11 +253,12 @@ theorem realize_ofTerm : ∀ (t : (FunctionalFormulaLang T).Term α) (x : α →
 noncomputable def toBoundedFormulaAux : ∀ {n : ℕ}
     (φ : (FunctionalFormulaLang T).BoundedFormula α n),
     { φ' : L.BoundedFormula α n // ∀ (M : Theory.ModelType.{_, _, max u v} T)
-        (x : α → M) (y : Fin n → M), φ'.Realize x y ↔ φ.Realize x y }
-  | _, BoundedFormula.falsum => ⟨BoundedFormula.falsum, by simp [BoundedFormula.Realize]⟩
+        (x : α → M) (y : Fin n → M), φ'.Realize x y = φ.Realize x y }
+  | _, BoundedFormula.falsum => ⟨BoundedFormula.falsum, by
+    simp [ModelsBoundedFormula, BoundedFormula.Realize]⟩
   | _, @BoundedFormula.equal _ _ n t₁ t₂ =>
     ⟨BoundedFormula.relabel id ((ofTerm t₁).equal (ofTerm t₂)), by
-      simp [Formula.boundedFormula_realize_eq_realize, funext_iff,
+      simp [ModelsBoundedFormula, Formula.boundedFormula_realize_eq_realize, funext_iff,
           BoundedFormula.Realize]⟩
   | _, @BoundedFormula.rel _ _ m n R x =>
       let φ := (BoundedFormula.rel (L := L) (n := n) (α := Empty) (R : L.Relations n)
@@ -274,10 +275,14 @@ noncomputable def toBoundedFormulaAux : ∀ {n : ℕ}
   | _, BoundedFormula.all φ =>
       let ψ := toBoundedFormulaAux φ
       ⟨ψ.1.all, fun M x y => by simp only [BoundedFormula.Realize, ψ.2]⟩
-#print BoundedFormula.iff
+
 noncomputable def toBoundedFormula {n : ℕ} (φ : (FunctionalFormulaLang T).BoundedFormula α n) :
     L.BoundedFormula α n :=
   (toBoundedFormulaAux φ).1
+
+theorem realize_toBoundedFormula {n : ℕ} (φ : (FunctionalFormulaLang T).BoundedFormula α n)
+    (x : α → M) (y : Fin n → M) : (toBoundedFormula φ).Realize x y = φ.Realize x y := by
+
 
 end FunctionalFormulaLang
 
