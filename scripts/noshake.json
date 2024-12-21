@@ -115,7 +115,6 @@
   "Mathlib.Tactic.Lemma",
   "Mathlib.Tactic.LibrarySearch",
   "Mathlib.Tactic.Lift",
-  "Mathlib.Tactic.LiftLets",
   "Mathlib.Tactic.Linarith",
   "Mathlib.Tactic.Linarith.Frontend",
   "Mathlib.Tactic.Linarith.Lemmas",
