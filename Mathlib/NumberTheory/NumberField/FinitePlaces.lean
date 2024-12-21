@@ -98,7 +98,7 @@ noncomputable instance instNormedFieldValuedAdicCompletion : NormedField (adicCo
 /-- A finite place of a number field `K` is a place associated to an embedding into a completion
 with respect to a maximal ideal. -/
 def FinitePlace (K : Type*) [Field K] [NumberField K] :=
-    {w : AbsoluteValue K ℝ // ∃ v : HeightOneSpectrum (𝓞 K), place (embedding v) = w}
+  {w : AbsoluteValue K ℝ // ∃ v : HeightOneSpectrum (𝓞 K), place (embedding v) = w}
 
 /-- Return the finite place defined by a maximal ideal `v`. -/
 noncomputable def FinitePlace.mk (v : HeightOneSpectrum (𝓞 K)) : FinitePlace K :=
@@ -191,7 +191,7 @@ theorem mk_eq_iff {v₁ v₂ : HeightOneSpectrum (𝓞 K)} : mk v₁ = mk v₂ �
     exact h <| HeightOneSpectrum.ext_iff.mpr <| IsMaximal.eq_of_le (isMaximal v₁) IsPrime.ne_top' H
   use x
   simp only [apply]
-  rw [← norm_lt_one_iff_mem ] at hx1
+  rw [← norm_lt_one_iff_mem] at hx1
   rw [← norm_eq_one_iff_not_mem] at hx2
   linarith
 
