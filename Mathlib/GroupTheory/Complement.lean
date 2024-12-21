@@ -45,12 +45,14 @@ abbrev IsComplement' :=
   IsComplement (H : Set G) (K : Set G)
 
 /-- The set of left-complements of `T : Set G` -/
-@[to_additive "The set of left-complements of `T : Set G`"]
+@[to_additive (attr := deprecated IsComplement (since := "2024-12-18"))
+"The set of left-complements of `T : Set G`"]
 def leftTransversals : Set (Set G) :=
   { S : Set G | IsComplement S T }
 
 /-- The set of right-complements of `S : Set G` -/
-@[to_additive "The set of right-complements of `S : Set G`"]
+@[to_additive (attr := deprecated IsComplement (since := "2024-12-18"))
+"The set of right-complements of `S : Set G`"]
 def rightTransversals : Set (Set G) :=
   { T : Set G | IsComplement S T }
 
@@ -169,6 +171,16 @@ theorem isComplement'_top_right : IsComplement' H ⊤ ↔ H = ⊥ :=
   isComplement_univ_right.trans coe_eq_singleton
 
 @[to_additive]
+lemma isComplement_iff_existsUnique_inv_mul_mem :
+    IsComplement S T ↔ ∀ g, ∃! s : S, (s : G)⁻¹ * g ∈ T := by
+  convert isComplement_iff_existsUnique with g
+  constructor <;> rintro ⟨x, hx, hx'⟩
+  · exact ⟨(x, ⟨_, hx⟩), by simp, by aesop⟩
+  · exact ⟨x.1, by simp [← hx], fun y hy ↦ (Prod.ext_iff.1 <| by simpa using hx' (y, ⟨_, hy⟩)).1⟩
+
+set_option linter.deprecated false in
+@[to_additive
+  (attr := deprecated isComplement_iff_existsUnique_inv_mul_mem (since := "2024-12-18"))]
 theorem mem_leftTransversals_iff_existsUnique_inv_mul_mem :
     S ∈ leftTransversals T ↔ ∀ g : G, ∃! s : S, (s : G)⁻¹ * g ∈ T := by
   rw [leftTransversals, Set.mem_setOf_eq, isComplement_iff_existsUnique]
@@ -183,6 +195,16 @@ theorem mem_leftTransversals_iff_existsUnique_inv_mul_mem :
     exact Prod.ext hf (Subtype.ext (eq_inv_mul_of_mul_eq (hf ▸ hy)))
 
 @[to_additive]
+lemma isComplement_iff_existsUnique_mul_inv_mem :
+    IsComplement S T ↔ ∀ g, ∃! t : T, g * (t : G)⁻¹ ∈ S := by
+  convert isComplement_iff_existsUnique with g
+  constructor <;> rintro ⟨x, hx, hx'⟩
+  · exact ⟨(⟨_, hx⟩, x), by simp, by aesop⟩
+  · exact ⟨x.2, by simp [← hx], fun y hy ↦ (Prod.ext_iff.1 <| by simpa using hx' (⟨_, hy⟩, y)).2⟩
+
+set_option linter.deprecated false in
+@[to_additive
+  (attr := deprecated isComplement_iff_existsUnique_mul_inv_mem (since := "2024-12-18"))]
 theorem mem_rightTransversals_iff_existsUnique_mul_inv_mem :
     S ∈ rightTransversals T ↔ ∀ g : G, ∃! s : S, g * (s : G)⁻¹ ∈ T := by
   rw [rightTransversals, Set.mem_setOf_eq, isComplement_iff_existsUnique]
@@ -197,6 +219,15 @@ theorem mem_rightTransversals_iff_existsUnique_mul_inv_mem :
     exact Prod.ext (Subtype.ext (eq_mul_inv_of_mul_eq (hf ▸ hy))) hf
 
 @[to_additive]
+lemma isComplement_subgroup_right_iff_existsUnique_quotientGroupMk :
+    IsComplement S H ↔ ∀ q : G ⧸ H, ∃! s : S, QuotientGroup.mk s.1 = q := by
+  simp_rw [isComplement_iff_existsUnique_inv_mul_mem, SetLike.mem_coe, ← QuotientGroup.eq,
+    QuotientGroup.forall_mk]
+
+set_option linter.deprecated false in
+@[to_additive
+  (attr := deprecated isComplement_subgroup_right_iff_existsUnique_quotientGroupMk
+    (since := "2024-12-18"))]
 theorem mem_leftTransversals_iff_existsUnique_quotient_mk''_eq :
     S ∈ leftTransversals (H : Set G) ↔
       ∀ q : Quotient (QuotientGroup.leftRel H), ∃! s : S, Quotient.mk'' s.1 = q := by
@@ -205,6 +236,15 @@ theorem mem_leftTransversals_iff_existsUnique_quotient_mk''_eq :
   exact ⟨fun h q => Quotient.inductionOn' q h, fun h g => h (Quotient.mk'' g)⟩
 
 @[to_additive]
+lemma isComplement_subgroup_left_iff_existsUnique_quotientGroupMk [H.Normal] :
+    IsComplement H T ↔ ∀ q : G ⧸ H, ∃! t : T, QuotientGroup.mk t.1 = q := by
+  simp_rw [isComplement_iff_existsUnique_mul_inv_mem, SetLike.mem_coe, ← div_eq_mul_inv,
+    ← QuotientGroup.eq_iff_div_mem, QuotientGroup.forall_mk, eq_comm]
+
+set_option linter.deprecated false in
+@[to_additive
+  (attr := deprecated isComplement_subgroup_left_iff_existsUnique_quotientGroupMk
+    (since := "2024-12-18"))]
 theorem mem_rightTransversals_iff_existsUnique_quotient_mk''_eq :
     S ∈ rightTransversals (H : Set G) ↔
       ∀ q : Quotient (QuotientGroup.rightRel H), ∃! s : S, Quotient.mk'' s.1 = q := by
