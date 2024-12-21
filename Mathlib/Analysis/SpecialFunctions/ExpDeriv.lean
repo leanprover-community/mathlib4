@@ -12,7 +12,7 @@ import Mathlib.Analysis.SpecialFunctions.Exponential
 /-!
 # Complex and real exponential
 
-In this file we prove that `Complex.exp` and `Real.exp` are infinitely smooth functions.
+In this file we prove that `Complex.exp` and `Real.exp` are analytic functions.
 
 ## Tags
 
