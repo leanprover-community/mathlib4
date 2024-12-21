@@ -4,16 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
 
-import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
-import Mathlib.CategoryTheory.Monoidal.Category
+
+import Mathlib.CategoryTheory.Closed.Monoidal
+import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
-import Mathlib.CategoryTheory.Closed.Monoidal
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.MonoCoprod
 import Mathlib.CategoryTheory.Monoidal.End
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.BinaryProducts
 
 /-!
 

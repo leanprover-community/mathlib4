@@ -4,15 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sina Hazratpour
 -/
 
-import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.ChosenFiniteProducts
-import Mathlib.CategoryTheory.Limits.Shapes.Terminal
-import Mathlib.CategoryTheory.Limits.MonoCoprod
-import Mathlib.Tactic.TFAE
 import Mathlib.CategoryTheory.Distributive.Monoidal
-import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
-
 
 /-!
 
@@ -20,10 +14,9 @@ import Mathlib.CategoryTheory.Monoidal.OfHasFiniteProducts
 
 ## Main definitions
 
-A category `C` with finite products and finite coproducts is called (finitary) distributive if
-the canonical distributivity isomorphism `X ⨯ (Y ⨿ Z) ⟶ (X ⨯ Y) ⨿ (X ⨯ Z)` is an isomorphism
+A category `C` with finite products and binary coproducts is called distributive if the
+canonical distributivity isomorphism `X ⨯ (Y ⨿ Z) ⟶ (X ⨯ Y) ⨿ (X ⨯ Z)` is an isomorphism
 for all objects `X`, `Y`, and `Z` in `C`.
-
 
 ## Implementation Details
 
