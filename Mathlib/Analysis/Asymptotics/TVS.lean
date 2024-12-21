@@ -28,6 +28,9 @@ thus reducing the definition to the classical one.
 
 This frees the user from having to chose a canonical norm, at the expense of having to pick a
 specific base ring.
+This is exactly the tradeoff we want in `HasFDerivAtFilter`,
+as there the base ring is already chosen,
+and this removes the choice of norm being part of the statement.
 
 This definition was added to the library in order to migrate Fréchet derivatives
 from normed vector spaces to topological vector spaces.
@@ -50,10 +53,6 @@ until someone will need it (e.g., to prove properties of the Fréchet derivative
 * `isLittleOTVS_iff_tendsto_inv_smul`: the equivalence to convergence of the ratio to zero
   in case of a topological vector space.
 
-## TODO
-
-Use this to redefine `HasFDerivAtFilter`, as the base ring is already chosen there, and this removes
-the choice of norm being part of the statement.
 -/
 
 open Set Filter Asymptotics Metric
