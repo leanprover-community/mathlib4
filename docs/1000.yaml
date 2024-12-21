@@ -286,7 +286,7 @@ Q287347:
 
 Q288465:
   title: Orbit-stabilizer theorem
-  decl: orbitEquivQuotientStabilizer
+  decl: MulAction.orbitEquivQuotientStabilizer
 
 Q303402:
   title: Rank–nullity theorem
@@ -432,7 +432,7 @@ Q504843:
 Q505798:
   title: Lagrange's theorem
   # group theorem result; exist additive and multiplicative version
-  decl: card_subgroup_dvd_card
+  decl: Subgroup.card_subgroup_dvd_card
 
 Q510197:
   title: Tutte theorem
@@ -1584,7 +1584,7 @@ Q1752516:
 
 Q1752621:
   title: Sylvester's law of inertia
-  decl: equivalent_one_zero_neg_one_weighted_sum_squared
+  decl: QuadraticForm.equivalent_one_zero_neg_one_weighted_sum_squared
 
 Q1752988:
   title: Kutta–Joukowski theorem
