@@ -548,6 +548,7 @@ import Mathlib.Algebra.Module.LocalizedModule.IsLocalization
 import Mathlib.Algebra.Module.LocalizedModule.Submodule
 import Mathlib.Algebra.Module.MinimalAxioms
 import Mathlib.Algebra.Module.NatInt
+import Mathlib.Algebra.Module.NestAlgebra
 import Mathlib.Algebra.Module.Opposite
 import Mathlib.Algebra.Module.PID
 import Mathlib.Algebra.Module.Pi
