@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - nightly-testing
+    paths:
+      - lean-toolchain
 
 jobs:
   discover-lean-pr-testing:
