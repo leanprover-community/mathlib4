@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2022 Rémy Degenne. All rights reserved.
+Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
@@ -9,38 +9,27 @@ import Mathlib.MeasureTheory.Integral.IntegrableOn
 import Mathlib.MeasureTheory.Order.Group.Lattice
 
 /-!
-# Moments and moment generating function
+# Domain of the moment generating function
 
-## Main definitions
-
-* `ProbabilityTheory.moment X p μ`: `p`th moment of a real random variable `X` with respect to
-  measure `μ`, `μ[X^p]`
-* `ProbabilityTheory.centralMoment X p μ`:`p`th central moment of `X` with respect to measure `μ`,
-  `μ[(X - μ[X])^p]`
-* `ProbabilityTheory.mgf X μ t`: moment generating function of `X` with respect to measure `μ`,
-  `μ[exp(t*X)]`
-* `ProbabilityTheory.cgf X μ t`: cumulant generating function, logarithm of the moment generating
-  function
+For `X` a real random variable and `μ` a finite measure, the set
+`{t | Integrable (fun ω ↦ exp (t * X ω)) μ}` is an interval containing zero. This is the set of
+points for which the moment generating function `mgf X μ t` is well defined.
+We prove the integrability of other functions for `t` in the interior of that interval.
 
 ## Main results
 
-* `ProbabilityTheory.IndepFun.mgf_add`: if two real random variables `X` and `Y` are independent
-  and their mgfs are defined at `t`, then `mgf (X + Y) μ t = mgf X μ t * mgf Y μ t`
-* `ProbabilityTheory.IndepFun.cgf_add`: if two real random variables `X` and `Y` are independent
-  and their cgfs are defined at `t`, then `cgf (X + Y) μ t = cgf X μ t + cgf Y μ t`
-* `ProbabilityTheory.measure_ge_le_exp_cgf` and `ProbabilityTheory.measure_le_le_exp_cgf`:
-  Chernoff bound on the upper (resp. lower) tail of a random variable. For `t` nonnegative such that
-  the cgf exists, `ℙ(ε ≤ X) ≤ exp(- t*ε + cgf X ℙ t)`. See also
-  `ProbabilityTheory.measure_ge_le_exp_mul_mgf` and
-  `ProbabilityTheory.measure_le_le_exp_mul_mgf` for versions of these results using `mgf` instead
-  of `cgf`.
+* `ProbabilityTheory.integrable_exp_mul_of_le`: if `exp (u * X)` is integrable for `0 ≤ u`, then
+  it is integrable on `[0, u]`.
+* `ProbabilityTheory.integrable_exp_mul_of_ge`: if `exp (u * X)` is integrable for `u ≤ 0`, then
+  it is integrable on `[u, 0]`.
+* `ProbabilityTheory.integrable_pow_abs_mul_exp_of_mem_interior`: for `v` in the interior of the
+  interval in which `exp (t * X)` is integrable, for all `n : ℕ`, `|X| ^ n * exp (v * X)` is
+  integrable.
 
 -/
 
 
 open MeasureTheory Filter Finset Real
-
-noncomputable section
 
 open scoped MeasureTheory ProbabilityTheory ENNReal NNReal Topology
 
