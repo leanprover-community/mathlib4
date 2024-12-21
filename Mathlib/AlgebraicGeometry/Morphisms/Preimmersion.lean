@@ -15,12 +15,6 @@ is an embedding and the induced morphisms of stalks are all surjective. This is 
 in the literature but it is useful for generalizing results on immersions to other maps including
 `Spec 𝒪_{X, x} ⟶ X` and inclusions of fibers `κ(x) ×ₓ Y ⟶ Y`.
 
-## TODO
-
-* Show preimmersions are local at the target.
-* Show preimmersions are stable under pullback.
-* Show that `Spec f` is a preimmersion for `f : R ⟶ S` if every `s : S` is of the form `f a / f b`.
-
 -/
 
 universe v u
@@ -46,11 +40,6 @@ lemma isPreimmersion_eq_inf :
   ext
   rw [isPreimmersion_iff]
   rfl
-
-/-- Being surjective on stalks is local at the target. -/
-instance isSurjectiveOnStalks_isLocalAtTarget : IsLocalAtTarget
-    (stalkwise (Function.Surjective ·)) :=
-  stalkwiseIsLocalAtTarget_of_respectsIso RingHom.surjective_respectsIso
 
 namespace IsPreimmersion
 
