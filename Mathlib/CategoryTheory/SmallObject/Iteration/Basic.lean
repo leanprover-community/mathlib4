@@ -26,8 +26,8 @@ two objects. In `SmallObject.Iteration.UniqueHom`, we shall show
 that there does always exist a unique morphism between
 two objects. Then, we shall show the existence of
 an object in `SmallObject.Iteration.Nonempty`.
-In these proofs, which are all done using
-transfinite induction, we have to treat three cases separately:
+In these proofs, which are all done using transfinite induction,
+we have to treat three cases separately:
 * the case `j = ⊥`;
 * the case `j` is a successor;
 * the case `j` is a limit element.
