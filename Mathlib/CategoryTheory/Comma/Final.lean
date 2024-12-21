@@ -115,17 +115,14 @@ lemma map_final : (Comma.map iL.hom iR.inv).Final := by
   haveI : H.Final := final_of_final_comp R H
   fconstructor
   rintro ⟨i₂, j₂, u₂⟩
-  let φ' : StructuredArrow i₂ F ⥤ StructuredArrow (L'.obj i₂) H :=
-    StructuredArrow.map₂ (𝟙 _) iL.hom
-  let ψ' : StructuredArrow j₂ G ⥤ StructuredArrow (L'.obj i₂) H :=
-    StructuredArrow.map₂ u₂ iR.hom
-  have : StructuredArrow ⟨i₂, j₂, u₂⟩ (map iL.hom iR.inv) ≌ Comma φ' ψ' := by
+  have : StructuredArrow ⟨i₂, j₂, u₂⟩ (map iL.hom iR.inv) ≌
+      Comma (StructuredArrow.map₂ (𝟙 _) iL.hom) (StructuredArrow.map₂ u₂ iR.hom) := by
     sorry
   rw [isConnected_iff_of_equivalence this]
   haveI : (StructuredArrow.map₂ (R := G ⋙ R') (G := 𝟭 _) u₂ iR.hom).Final := by
     sorry
-  have : ψ' ≅ StructuredArrow.post j₂ G R' ⋙ StructuredArrow.map₂ (G := 𝟭 _) u₂ iR.hom :=
-    Iso.refl ψ'
+  have : StructuredArrow.map₂ u₂ iR.hom ≅ StructuredArrow.post j₂ G R' ⋙
+      StructuredArrow.map₂ (G := 𝟭 _) u₂ iR.hom := Iso.refl _
   haveI := final_of_natIso this.symm
   infer_instance
 
