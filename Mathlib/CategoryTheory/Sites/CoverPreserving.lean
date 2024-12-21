@@ -164,7 +164,7 @@ This result is basically <https://stacks.math.columbia.edu/tag/00WW>.
 lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{w} K F)
     (hF₂ : CoverPreserving J K F) : Functor.IsContinuous.{w} F J K where
   op_comp_isSheaf_of_types G X S hS x hx := by
-    apply exists_unique_of_exists_of_unique
+    apply existsUnique_of_exists_of_unique
     · have H := (isSheaf_iff_isSheaf_of_type _ _).1 G.2 _ (hF₂.cover_preserve hS)
       exact ⟨H.amalgamate (x.functorPushforward F) (hx.functorPushforward hF₁),
         fun V f hf => (H.isAmalgamation (hx.functorPushforward hF₁) (F.map f) _).trans
