@@ -26,13 +26,7 @@ jobs:
 
           printf $'echo test\n'
           printf $'```\n'
-          printf $'EOF'
-          # PR_NUMBER= '18818'
-          # printf $'# Diff: %s' "[diff goes here]"
-          # printf $'scripts/merge-lean-testing-pr.sh %s   # %s\n' "[pr number goes here]" "[branch goes here]"
-          # printf '# # # # #'
-          # printf $'\`\`\`\n'
-          # printf "EOF"
+          printf 'EOF'
           } >> "$GITHUB_OUTPUT"
 
       - name: send zulip test message
