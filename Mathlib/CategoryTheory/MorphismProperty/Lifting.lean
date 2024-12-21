@@ -111,30 +111,25 @@ instance rlp.IsMultiplicative : T.rlp.IsMultiplicative where
     have := hj _ hp
     infer_instance
 
-section
-
-variable {J : Type*} {X₁ X₂ : Discrete J ⥤ C} {c₁ : Limits.Cocone X₁} {c₂ : Limits.Cocone X₂}
-  {h₁ : Limits.IsColimit c₁} {f : X₁ ⟶ X₂}
-
-variable {A B : C} {g : A ⟶ B} {u : c₁.pt ⟶ A} {v : c₂.pt ⟶ B}
-
-lemma newCoconeSq (sq : CommSq u (h₁.desc (Limits.Cocone.mk c₂.pt (f ≫ c₂.ι))) g v)
-    (j : Discrete J) : CommSq (c₁.ι.app j ≫ u) (f.app j) g (c₂.ι.app j ≫ v) := {
-  w := by simp [sq.w]}
-
 /-- -/
 @[simp]
 noncomputable
-def newCocone (sq : CommSq u (h₁.desc (Limits.Cocone.mk c₂.pt (f ≫ c₂.ι))) g v)
+def newCocone {J : Type*} {X₁ X₂ : Discrete J ⥤ C}
+    {c₁ : Limits.Cocone X₁} {c₂ : Limits.Cocone X₂} {h₁ : Limits.IsColimit c₁} {f : X₁ ⟶ X₂}
+    {A B : C} {g : A ⟶ B} {u : c₁.pt ⟶ A} {v : c₂.pt ⟶ B}
+    (sq : CommSq u (h₁.desc (Limits.Cocone.mk c₂.pt (f ≫ c₂.ι))) g v)
     [∀ j, HasLiftingProperty (f.app j) g] : Limits.Cocone X₂ where
   pt := A
-  ι := { app := fun j ↦ (newCoconeSq sq j).lift
+  ι := { app j :=
+          have w : (c₁.ι.app j ≫ u) ≫ g = f.app j ≫ c₂.ι.app j ≫ v := by
+            simp [sq.w]
+          (CommSq.mk w).lift
          naturality := fun j j' h ↦ by
           cases j with | mk as =>
           have := Discrete.eq_of_hom h
-          aesop }
+          aesop}
 
-lemma llp.IsStableUnderCoproductsOfShape :
+lemma llp.IsStableUnderCoproductsOfShape (J : Type*) :
     T.llp.IsStableUnderCoproductsOfShape J := fun _ _ _ _ h₁ h₂ f hf _ _ g hg ↦ {
   sq_hasLift sq :=
     ⟨⟨{ l :=
@@ -143,34 +138,26 @@ lemma llp.IsStableUnderCoproductsOfShape :
         fac_left := h₁.hom_ext (by simp)
         fac_right := h₂.hom_ext (by simp)}⟩⟩}
 
-end
-
-section
-
-variable {J : Type*} {X₁ X₂ : Discrete J ⥤ C} {c₁ : Limits.Cone X₁} {c₂ : Limits.Cone X₂}
-  {h₂ : Limits.IsLimit c₂} {f : X₁ ⟶ X₂}
-
-variable {A B : C} {g : A ⟶ B} {u : A ⟶ c₁.pt} {v : B ⟶ c₂.pt}
-
-lemma newConeSq (sq : CommSq u g (h₂.lift (Limits.Cone.mk c₁.pt (c₁.π ≫ f))) v)
-    (j : Discrete J) : CommSq (u ≫ c₁.π.app j) g (f.app j) (v ≫ c₂.π.app j) := {
-  w := by
-    rw [← Category.assoc, ← sq.w]
-    simp only [Category.assoc, Limits.IsLimit.fac, NatTrans.comp_app, Functor.const_obj_obj]}
-
 /-- -/
 @[simp]
 noncomputable
-def newCone (sq : CommSq u g (h₂.lift (Limits.Cone.mk _ (c₁.π ≫ f))) v)
+def newCone {J : Type*} {X₁ X₂ : Discrete J ⥤ C}
+    {c₁ : Limits.Cone X₁} {c₂ : Limits.Cone X₂} {h₂ : Limits.IsLimit c₂} {f : X₁ ⟶ X₂}
+    {A B : C} {g : A ⟶ B} {u : A ⟶ c₁.pt} {v : B ⟶ c₂.pt}
+    (sq : CommSq u g (h₂.lift (Limits.Cone.mk c₁.pt (c₁.π ≫ f))) v)
     [∀ j, HasLiftingProperty g (f.app j)] : Limits.Cone X₁ where
   pt := B
-  π := { app := fun j ↦ (newConeSq sq j).lift
+  π := { app j :=
+          have w : (u ≫ c₁.π.app j) ≫ f.app j = g ≫ v ≫ c₂.π.app j := by
+            rw [← Category.assoc, ← sq.w]
+            simp only [Category.assoc, Limits.IsLimit.fac, NatTrans.comp_app, Functor.const_obj_obj]
+          (CommSq.mk w).lift
          naturality := fun j j' h ↦ by
           cases j with | mk as =>
           have := Discrete.eq_of_hom h
           aesop}
 
-lemma rlp.IsStableUnderProductsOfShape :
+lemma rlp.IsStableUnderProductsOfShape (J : Type*) :
     T.rlp.IsStableUnderProductsOfShape J := fun _ _ _ _ h₁ h₂ f hf _ _ g hg ↦ {
   sq_hasLift sq :=
     ⟨⟨{ l :=
@@ -178,8 +165,6 @@ lemma rlp.IsStableUnderProductsOfShape :
           h₁.lift (newCone sq)
         fac_left := h₁.hom_ext (by simp)
         fac_right := h₂.hom_ext (by simp)}⟩⟩}
-
-end
 
 end MorphismProperty
 

@@ -19,7 +19,7 @@ The following predicates are introduces for morphism properties `P`:
 We define `P.universally` for the class of morphisms which satisfy `P` after any base change.
 
 We also introduce properties `IsStableUnderProductsOfShape`, `IsStableUnderLimitsOfShape`,
-`IsStableUnderFiniteProducts`.
+`IsStableUnderFiniteProducts`, and similar properties for colimits and coproducts.
 
 -/
 
