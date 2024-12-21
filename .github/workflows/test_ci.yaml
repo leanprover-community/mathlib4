@@ -26,7 +26,7 @@ jobs:
 
           printf $'echo test\n'
           printf $'```\n'
-          printf 'EOF'
+          printf "EOF"
           } >> "$GITHUB_OUTPUT"
 
       - name: send zulip test message
