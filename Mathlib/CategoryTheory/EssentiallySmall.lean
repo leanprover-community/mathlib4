@@ -22,7 +22,7 @@ the type `Skeleton C` is `w`-small, and `C` is `w`-locally small.
 -/
 
 
-universe w v v' u u'
+universe w w' v v' u u'
 
 open CategoryTheory
 
@@ -188,8 +188,32 @@ noncomputable instance [Small.{w} C] : Category.{v} (Shrink.{w} C) :=
   InducedCategory.category (equivShrink C).symm
 
 /-- The categorical equivalence between `C` and `Shrink C`, when `C` is small. -/
-noncomputable def equivalence [Small.{w} C] : C ≌ Shrink.{w} C :=
-  (inducedFunctor (equivShrink C).symm).asEquivalence.symm
+noncomputable def equivalence [Small.{w} C] : C ≌ Shrink.{w} C where
+  functor :=
+    { obj := equivShrink C
+      map {X Y} f := by
+        change (equivShrink C).symm _ ⟶ (equivShrink C).symm _
+        exact eqToHom (by simp) ≫ f ≫ eqToHom (by simp)
+      map_comp f g := by
+        dsimp
+        erw [Category.assoc, Category.assoc, Category.assoc]
+        rw [eqToHom_trans_assoc, eqToHom_refl, Category.id_comp] }
+  inverse := inducedFunctor (equivShrink C).symm
+  unitIso := NatIso.ofComponents (fun X ↦ eqToIso (by simp))
+  counitIso := NatIso.ofComponents (fun X ↦ eqToIso (by simp)) (fun {X Y} f ↦ by
+    dsimp
+    erw [Category.assoc, Category.assoc, eqToHom_trans, eqToHom_refl, Category.comp_id]
+    · rfl
+    · simp)
+  functor_unitIso_comp X := by
+    dsimp
+    simp only [eqToHom_trans]
+    exact eqToHom_trans (by simp) _
+
+instance (C : Type u) [Category.{v} C] [Small.{w'} C] [LocallySmall.{w} C] :
+    LocallySmall.{w} (Shrink.{w'} C) where
+  hom_small _ _ := small_of_injective
+    (fun _ _ h ↦ (Shrink.equivalence.{w'} C).inverse.map_injective h)
 
 end Shrink
 
