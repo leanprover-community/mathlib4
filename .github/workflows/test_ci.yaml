@@ -12,4 +12,4 @@ jobs:
       - name: name
         run: |
           # for debugging, we print the available variables
-          echo "github.event.action: '${{ toJSON( github.event.keys ) }}'"
+          echo "github.event.action: '${{ toJSON( github.event.commits ) }}'"
