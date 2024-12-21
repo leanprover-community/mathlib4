@@ -101,7 +101,7 @@ variable {T : Type u₃} [Category.{v₃} T]
 variable {L : A ⥤ T} {R : B ⥤ T}
 variable {A' : Type u₄} [Category.{v₄} A']
 variable {B' : Type u₅} [Category.{v₅} B']
-variable {T' : Type u₆} [Category.{u₂} T']
+variable {T' : Type u₂} [Category.{u₂} T']
 variable {L' : A' ⥤ T'} {R' : B' ⥤ T'}
 variable {F : A ⥤ A'} {G : B ⥤ B'} {H : T ⥤ T'}
 variable (iL : F ⋙ L' ≅ L ⋙ H) (iR : G ⋙ R' ≅ R ⋙ H)
@@ -115,15 +115,14 @@ lemma map_final : (Comma.map iL.hom iR.inv).Final := by
   haveI : H.Final := final_of_final_comp R H
   fconstructor
   rintro ⟨i₂, j₂, u₂⟩
-  have : StructuredArrow ⟨i₂, j₂, u₂⟩ (map iL.hom iR.inv) ≌
-      Comma (StructuredArrow.map₂ (𝟙 _) iL.hom) (StructuredArrow.map₂ u₂ iR.hom) := by
-    sorry
+  have := StructuredArrow.commaMapEquivalence iL.hom iR.inv ⟨i₂, j₂, u₂⟩
   rw [isConnected_iff_of_equivalence this]
   haveI : (StructuredArrow.map₂ (R := G ⋙ R') (G := 𝟭 _) u₂ iR.hom).Final := by
     sorry
   have : StructuredArrow.map₂ u₂ iR.hom ≅ StructuredArrow.post j₂ G R' ⋙
       StructuredArrow.map₂ (G := 𝟭 _) u₂ iR.hom := Iso.refl _
   haveI := final_of_natIso this.symm
+  rw [IsIso.Iso.inv_inv]
   infer_instance
 
 end Small
