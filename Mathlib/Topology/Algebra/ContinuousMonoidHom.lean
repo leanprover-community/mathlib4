@@ -505,11 +505,18 @@ protected theorem congr_fun {f g : M ≃ₜ* N} (h : f = g) (x : M) : f x = g x 
   DFunLike.congr_fun h x
 
 @[to_additive (attr := simp)]
-theorem coe_mk (f : M ≃* N) (hf1 : Continuous f.toFun) (hf2 : Continuous f.invFun) :
-    (mk f hf1 hf2 : M → N) = f := rfl
+theorem coe_mk (f : M ≃* N) (hf1 hf2) : (mk f hf1 hf2 : M → N) = f := rfl
 
 @[to_additive]
 theorem toEquiv_eq_coe (f : M ≃ₜ* N) : f.toEquiv = f :=
+  rfl
+
+@[to_additive, simp]
+theorem toMulEquiv_eq_coe (f : M ≃ₜ* N) : f.toMulEquiv = f :=
+  rfl
+
+@[to_additive]
+theorem toHomeomorph_eq_coe (f : M ≃ₜ* N) : f.toHomeomorph = f :=
   rfl
 
 /-- Makes a continuous multiplicative isomorphism from
@@ -518,6 +525,10 @@ a homeomorphism which preserves multiplication. -/
 a homeomorphism which preserves addition."]
 def mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃ₜ* N :=
   ⟨⟨f.toEquiv,h⟩, f.continuous_toFun, f.continuous_invFun⟩
+
+/--The coersion for `ContinuousMulEquiv.mk'`, so the name end with `'`-/
+@[simp]
+lemma coe_mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y)  : ⇑(mk' f h) = f := rfl
 
 end coe
 
@@ -548,9 +559,7 @@ variable (M)
 /-- The identity map is a continuous multiplicative isomorphism. -/
 @[to_additive (attr := refl) "The identity map is a continuous additive isomorphism."]
 def refl : M ≃ₜ* M :=
-  { MulEquiv.refl _ with
-  continuous_toFun := by continuity
-  continuous_invFun := by continuity }
+  { MulEquiv.refl _ with }
 
 @[to_additive]
 instance : Inhabited (M ≃ₜ* M) := ⟨ContinuousMulEquiv.refl M⟩
@@ -566,7 +575,7 @@ end refl
 section symm
 
 /-- The inverse of a ContinuousMulEquiv. -/
-@[to_additive "The inverse of a ContinuousAddEquiv."]
+@[to_additive (attr := symm) "The inverse of a ContinuousAddEquiv."]
 def symm (cme : M ≃ₜ* N) : N ≃ₜ* M :=
   { cme.toMulEquiv.symm with
   continuous_toFun := cme.continuous_invFun
