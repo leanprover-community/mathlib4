@@ -40,7 +40,7 @@ sheaves over `X` shall be in `Type u`.
 
 -/
 
-universe w' w v u
+universe w'' w' w v u
 
 namespace CategoryTheory
 
@@ -206,33 +206,33 @@ private lemma zero_hom' : (0 : Ext X Y n).hom' = 0 :=
 @[simp]
 lemma add_comp (α₁ α₂ : Ext X Y n) {m : ℕ} (β : Ext Y Z m) {p : ℕ} (h : n + m = p) :
     (α₁ + α₂).comp β h = α₁.comp β h + α₂.comp β h := by
-  letI := HasDerivedCategory.standard C; ext; simp [add_hom']
+  letI := HasDerivedCategory.standard C; ext; simp [this, add_hom']
 
 @[simp]
 lemma comp_add (α : Ext X Y n) {m : ℕ} (β₁ β₂ : Ext Y Z m) {p : ℕ} (h : n + m = p) :
     α.comp (β₁ + β₂) h = α.comp β₁ h + α.comp β₂ h := by
-  letI := HasDerivedCategory.standard C; ext; simp [add_hom']
+  letI := HasDerivedCategory.standard C; ext; simp [this, add_hom']
 
 @[simp]
 lemma neg_comp (α : Ext X Y n) {m : ℕ} (β : Ext Y Z m) {p : ℕ} (h : n + m = p) :
     (-α).comp β h = -α.comp β h := by
-  letI := HasDerivedCategory.standard C; ext; simp [neg_hom']
+  letI := HasDerivedCategory.standard C; ext; simp [this, neg_hom']
 
 @[simp]
 lemma comp_neg (α : Ext X Y n) {m : ℕ} (β : Ext Y Z m) {p : ℕ} (h : n + m = p) :
     α.comp (-β) h = -α.comp β h := by
-  letI := HasDerivedCategory.standard C; ext; simp [neg_hom']
+  letI := HasDerivedCategory.standard C; ext; simp [this, neg_hom']
 
 variable (X n) in
 @[simp]
 lemma zero_comp {m : ℕ} (β : Ext Y Z m) (p : ℕ) (h : n + m = p) :
     (0 : Ext X Y n).comp β h = 0 := by
-  letI := HasDerivedCategory.standard C; ext; simp [zero_hom']
+  letI := HasDerivedCategory.standard C; ext; simp [this, zero_hom']
 
 @[simp]
 lemma comp_zero (α : Ext X Y n) (Z : C) (m : ℕ) (p : ℕ) (h : n + m = p) :
     α.comp (0 : Ext Y Z m) h = 0 := by
-  letI := HasDerivedCategory.standard C; ext; simp [zero_hom']
+  letI := HasDerivedCategory.standard C; ext; simp [this, zero_hom']
 
 @[simp]
 lemma mk₀_id_comp (α : Ext X Y n) :
@@ -247,7 +247,7 @@ lemma comp_mk₀_id (α : Ext X Y n) :
 variable (X Y) in
 @[simp]
 lemma mk₀_zero : mk₀ (0 : X ⟶ Y) = 0 := by
-  letI := HasDerivedCategory.standard C; ext; simp [zero_hom']
+  letI := HasDerivedCategory.standard C; ext; simp [this, zero_hom']
 
 section
 
@@ -364,6 +364,24 @@ noncomputable def extFunctor (n : ℕ) : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{w} where
     rw [← Ext.mk₀_comp_mk₀]
     apply Ext.comp_assoc
     all_goals omega
+
+section ChangeOfUniverse
+
+namespace Ext
+
+variable [HasExt.{w'} C] {X Y : C} {n : ℕ}
+
+/-- Up to an equivalence, the type `Ext.{w} X Y n` does not depend on the universe `w`. -/
+noncomputable def chgUniv : Ext.{w} X Y n ≃ Ext.{w'} X Y n :=
+  SmallShiftedHom.chgUniv.{w', w}
+
+lemma homEquiv_chgUniv [HasDerivedCategory.{w''} C] (e : Ext.{w} X Y n) :
+    homEquiv.{w'', w'} (chgUniv.{w'} e) = homEquiv.{w'', w} e := by
+  apply SmallShiftedHom.equiv_chgUniv
+
+end Ext
+
+end ChangeOfUniverse
 
 end Abelian
 

@@ -93,18 +93,21 @@ theorem permanent_smul (M : Matrix n n R) (c : R) :
   exact prod_mul_pow_card.symm
 
 @[simp]
-theorem permanent_updateColumn_smul (M : Matrix n n R) (j : n) (c : R) (u : n → R) :
-    permanent (updateColumn M j <| c • u) = c * permanent (updateColumn M j u) := by
-  simp only [permanent, ← mul_prod_erase _ _ (mem_univ j), updateColumn_self, Pi.smul_apply,
+theorem permanent_updateCol_smul (M : Matrix n n R) (j : n) (c : R) (u : n → R) :
+    permanent (updateCol M j <| c • u) = c * permanent (updateCol M j u) := by
+  simp only [permanent, ← mul_prod_erase _ _ (mem_univ j), updateCol_self, Pi.smul_apply,
     smul_eq_mul, mul_sum, ← mul_assoc]
   congr 1 with p
   rw [Finset.prod_congr rfl (fun i hi ↦ ?_)]
-  simp only [ne_eq, ne_of_mem_erase hi, not_false_eq_true, updateColumn_ne]
+  simp only [ne_eq, ne_of_mem_erase hi, not_false_eq_true, updateCol_ne]
+
+@[deprecated (since := "2024-12-11")]
+alias permanent_updateColumn_smul := permanent_updateCol_smul
 
 @[simp]
 theorem permanent_updateRow_smul (M : Matrix n n R) (j : n) (c : R) (u : n → R) :
     permanent (updateRow M j <| c • u) = c * permanent (updateRow M j u) := by
-  rw [← permanent_transpose, ← updateColumn_transpose, permanent_updateColumn_smul,
-    updateColumn_transpose, permanent_transpose]
+  rw [← permanent_transpose, ← updateCol_transpose, permanent_updateCol_smul,
+    updateCol_transpose, permanent_transpose]
 
 end Matrix

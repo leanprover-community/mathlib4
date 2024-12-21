@@ -595,6 +595,14 @@ theorem le_pointwise_smul_iff₀ {a : α} (ha : a ≠ 0) {S T : AddSubgroup A} :
 
 end GroupWithZero
 
+section Semiring
+variable {R M : Type*} [Semiring R] [AddCommGroup M] [Module R M]
+
+@[simp] protected lemma zero_smul (s : AddSubgroup M) : (0 : R) • s = ⊥ := by
+  simp [eq_bot_iff_forall, pointwise_smul_def]
+
+end Semiring
+
 section Mul
 
 variable {R : Type*} [NonUnitalNonAssocRing R]
