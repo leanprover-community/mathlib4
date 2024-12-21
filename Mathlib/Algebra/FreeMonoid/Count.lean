@@ -21,10 +21,10 @@ variable {α : Type*} (p : α → Prop) [DecidablePred p]
 namespace FreeMonoid
 /-- `List.countP` lifted to free monoids-/
 @[to_additive "`List.countP` lifted to free additive monoids"]
-def countP' (l:FreeMonoid α) : ℕ := l.toList.countP p
+def countP' (l : FreeMonoid α) : ℕ := l.toList.countP p
 
 @[to_additive]
-lemma countP'_one : (1:FreeMonoid α).countP' p = 0 := rfl
+lemma countP'_one : (1 : FreeMonoid α).countP' p = 0 := rfl
 
 @[to_additive]
 lemma countP'_mul (l₁ l₂ : FreeMonoid α) : (l₁ * l₂).countP' p = l₁.countP' p + l₂.countP' p := by
@@ -33,19 +33,17 @@ lemma countP'_mul (l₁ l₂ : FreeMonoid α) : (l₁ * l₂).countP' p = l₁.c
 
 /-- `List.countP` as a bundled multiplicative monoid homomorphism. -/
 def countP : FreeMonoid α →* Multiplicative ℕ where
-  toFun := FreeMonoid.countP' p
+  toFun := .ofAdd ∘ FreeMonoid.countP' p
   map_one' := by
-    rw [countP'_one p]
-    rfl -- i'd prefer to use a lemma here, but none of the usual tactics suggest one
-  map_mul' := by
-    simp_rw [countP'_mul p]
-    exact fun x y ↦ rfl -- see above comment
+    simp [countP'_one p]
+  map_mul' x y := by
+    simp [countP'_mul p]
 
 theorem countP_apply (l : FreeMonoid α) : l.countP p = .ofAdd (l.toList.countP p) := rfl
 
 lemma countP_of (x : α) : (of x).countP p =
     if p x then Multiplicative.ofAdd 1 else Multiplicative.ofAdd 0 := by
-  rw [countP_apply, toList_of,List.countP_singleton,apply_ite (Multiplicative.ofAdd)]
+  rw [countP_apply, toList_of, List.countP_singleton, apply_ite (Multiplicative.ofAdd)]
   simp only [decide_eq_true_eq, ofAdd_zero]
 
 
@@ -71,8 +69,9 @@ def countP : FreeAddMonoid α →+ ℕ where
 
 theorem countP_apply (l : FreeAddMonoid α) : l.countP p = l.toList.countP p := rfl
 
-theorem countP_of (x : α) : countP p (of x) = if decide (p x) then 1 else 0 := by
-  rw [countP_apply,toList_of,List.countP_singleton]
+theorem countP_of (x : α) : countP p (of x) = if p x then 1 else 0 := by
+  rw [countP_apply, toList_of, List.countP_singleton]
+  simp only [decide_eq_true_eq]
 
 /-- `List.count` as a bundled additive monoid homomorphism. -/
 -- Porting note: was (x = ·)
