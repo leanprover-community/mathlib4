@@ -98,6 +98,49 @@ theorem quadratic_eq_zero_iff_of_discrim_eq_zero (ha : a ≠ 0) (h : discrim a b
   have : discrim a b c = 0 * 0 := by rw [h, mul_zero]
   rw [quadratic_eq_zero_iff ha this, add_zero, sub_zero, or_self_iff]
 
+theorem discrim_eq_zero_iff_exist_unique (ha : a ≠ 0) :
+    discrim a b c = 0 ↔ ∃! x, a * (x * x) + b * x + c = 0 := by
+  constructor
+  · intro h
+    use -b / (2 * a)
+    constructor
+    · simp_rw [quadratic_eq_zero_iff_of_discrim_eq_zero ha h]
+    · intro y
+      apply (quadratic_eq_zero_iff_of_discrim_eq_zero ha h y).mp
+  · intro hx
+    obtain ⟨x, hx, h⟩ := hx
+    simp at h
+    obtain ⟨s, hs⟩ := show ∃s, discrim a b c = s^2 by
+      by_contra!
+      absurd quadratic_ne_zero_of_discrim_ne_sq this x
+      exact hx
+    have exist_s : ∃ s, discrim a b c = s * s := by use s; rw [hs, pow_two]
+    have : (-b + s) / (2 * a) = (-b - s) / (2 * a) := by
+      by_contra! p
+      have : a * ((-b + s) / (2 * a)) ^ 2 + b * ((-b + s) / (2 * a)) + c = 0 := by
+        rw [pow_two]
+        rw [pow_two] at hs
+        apply (quadratic_eq_zero_iff ha hs _).mpr
+        simp
+      rw [pow_two] at this
+      have eq₁ := h ((-b + s) / (2 * a)) this
+      have : a * ((-b - s) / (2 * a)) ^ 2 + b * ((-b - s) / (2 * a)) + c = 0 := by
+        rw [pow_two]
+        rw [pow_two] at hs
+        apply (quadratic_eq_zero_iff ha hs _).mpr
+        simp
+      rw [pow_two] at this
+      have eq₂ := h ((-b - s) / (2 * a)) this
+      rw [eq₁, eq₂] at p
+      absurd p
+      rfl
+    rw [div_left_inj' (mul_ne_zero two_ne_zero ha), sub_eq_add_neg, add_left_cancel_iff] at this
+    rw [←sub_eq_zero, sub_neg_eq_add, ←two_mul, mul_eq_zero] at this
+    rw [hs, pow_two, mul_eq_zero]
+    obtain (r | r) := this
+    · simp [two_ne_zero] at r
+    · exact Or.inl r
+
 end Field
 
 section LinearOrderedField
