@@ -194,6 +194,9 @@ theorem eq_or_coprime_of_le_prime {n p} (n_pos : 0 < n) (hle : n ≤ p) (pp : Pr
     p = n ∨ Coprime p n :=
   hle.eq_or_lt.imp Eq.symm fun h => coprime_of_lt_prime n_pos h pp
 
+theorem prime_eq_prime_of_dvd_pow {m p q} (pp : Prime p) (pq : Prime q) (h : p ∣ q ^ m) : p = q :=
+  (prime_dvd_prime_iff_eq pp pq).mp (pp.dvd_of_dvd_pow h)
+
 theorem dvd_prime_pow {p : ℕ} (pp : Prime p) {m i : ℕ} : i ∣ p ^ m ↔ ∃ k ≤ m, i = p ^ k := by
   simp_rw [_root_.dvd_prime_pow (prime_iff.mp pp) m, associated_eq_eq]
 
