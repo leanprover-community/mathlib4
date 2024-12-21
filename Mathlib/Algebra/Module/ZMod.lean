@@ -18,7 +18,7 @@ def toZModModule (M : Type*) [AddCommMonoid M] (n : ℕ) (_ : ∀ x : M, n • x
 
 variable {M : Type*} [AddCommMonoid M] {n : ℕ} {h : ∀ x : M, n • x = 0}
 
-variable (n h) in
+variable (h) in
 /-- Convert an element of `m` to an element of `toZModModule M n h`. -/
 def toZModModule.of (m : M) : toZModModule M n h := m
 
@@ -62,6 +62,7 @@ variable {G : Type*} [AddCommGroup G] {n : ℕ} {h : ∀ g : G, n • g = 0}
 instance : AddCommGroup (toZModModule G n h) :=
   inferInstanceAs (AddCommGroup G)
 
+variable (h) in
 /-- The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`.
 See note [reducible non-instances]. -/
 instance zmodModule : Module (ZMod n) (toZModModule G n h) :=
@@ -91,11 +92,11 @@ instance : CommGroup (toZModModule G n h) :=
   inferInstanceAs (CommGroup G)
 
 instance : MulDistribMulAction (ZMod n) (toZModModule G n h) :=
-  { smul m a := m • AddCommMonoid.toZModModule.of n h (Additive.ofMul a)
-    one_smul a := one_smul (ZMod n) (AddCommMonoid.toZModModule.of n h (Additive.ofMul a))
-    mul_smul m m' a := mul_smul m m' (AddCommMonoid.toZModModule.of n h (Additive.ofMul a))
-    smul_mul m a b := smul_add m (AddCommMonoid.toZModModule.of n h (Additive.ofMul a))
-      (AddCommMonoid.toZModModule.of n h (Additive.ofMul b))
+  { smul m a := m • AddCommMonoid.toZModModule.of h (Additive.ofMul a)
+    one_smul a := one_smul (ZMod n) (AddCommMonoid.toZModModule.of h (Additive.ofMul a))
+    mul_smul m m' a := mul_smul m m' (AddCommMonoid.toZModModule.of h (Additive.ofMul a))
+    smul_mul m a b := smul_add m (AddCommMonoid.toZModModule.of h (Additive.ofMul a))
+      (AddCommMonoid.toZModModule.of h (Additive.ofMul b))
     smul_one m := smul_zero (A := AddCommMonoid.toZModModule (Additive G) n h) m }
 
 theorem toZModModule.coe_smul (k : ℤ) (g : toZModModule G n h) : (k : ZMod n) • g = g ^ k :=
@@ -132,7 +133,7 @@ instance {G : Type*} [AddCommGroup G] {H : AddSubgroup G} (hH : ∀ x, n • x �
 -- See note [reducible non-instances]
 instance QuotientAddGroup.zmodModule {G : Type*} [AddCommGroup G] {H : AddSubgroup G}
     (hH : ∀ x, n • x ∈ H) : Module (ZMod n) (QuotientAddGroup.toZModModule hH) :=
-  AddCommGroup.zmodModule (h := by simpa [forall_mk, ← mk_nsmul])
+  AddCommGroup.zmodModule <| by simpa [forall_mk, ← mk_nsmul]
 
 variable {F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [FunLike F M M₁]
   [AddMonoidHomClass F M M₁] [Module (ZMod n) M] [Module (ZMod n) M₁] [SetLike S M]
