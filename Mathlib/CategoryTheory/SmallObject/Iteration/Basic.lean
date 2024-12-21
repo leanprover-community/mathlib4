@@ -304,7 +304,7 @@ attribute [instance] HasIterationOfShape.hasColimitsOfShape
 
 variable {J}
 
-lemma hasColimitOfShape_of_isSuccLimit [HasIterationOfShape C J] (j : J)
+lemma hasColimitsOfShape_of_isSuccLimit [HasIterationOfShape C J] (j : J)
     (hj : Order.IsSuccLimit j) :
     HasColimitsOfShape (Set.Iio j) C :=
   HasIterationOfShape.hasColimitsOfShape_of_isSuccLimit j hj
@@ -312,7 +312,7 @@ lemma hasColimitOfShape_of_isSuccLimit [HasIterationOfShape C J] (j : J)
 instance [HasIterationOfShape C J] (K : Type*) [Category K] (X : K) :
     PreservesWellOrderContinuousOfShape J ((evaluation K C).obj X) where
   preservesColimitsOfShape j hj := by
-    have := hasColimitOfShape_of_isSuccLimit C j hj
+    have := hasColimitsOfShape_of_isSuccLimit C j hj
     infer_instance
 
 end CategoryTheory

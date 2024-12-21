@@ -219,7 +219,7 @@ instance [WellFoundedLT J] [HasIterationOfShape C J] (j : J) : Nonempty (Iterati
       exact ⟨mkOfBot ε J⟩
   | hs i hi hi' => exact ⟨mkOfSucc hi hi'.some⟩
   | hl i hi hi' =>
-      have := hasColimitOfShape_of_isSuccLimit C i hi
+      have := hasColimitsOfShape_of_isSuccLimit C i hi
       exact ⟨mkOfLimit hi (fun a ha ↦ (hi' a ha).some)⟩
 
 end Iteration
