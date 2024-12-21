@@ -116,13 +116,16 @@ theorem realize_genericPolyMapSurjOnOfInjOn
         let S : Set (ι → K) := { x | φ.Realize (Sum.elim v x) }
         S.MapsTo f S → S.InjOn f → S.SurjOn f S := by
   classical
+  /- This line is seperated from the `simp` block below it because it is very important that it
+  comes before `Subtype.forall` is applied. -/
+  simp only [Equiv.forall_congr_left (mvPolynomialSupportLEEquiv mons)]
   simp only [Sentence.Realize, genericPolyMapSurjOnOfInjOn, Function.comp_def,
     Formula.realize_iAlls, Formula.realize_relabel, Sum.elim_inr, Formula.realize_imp,
     realize_mapsTo, realize_relabelLeft, realize_relabelRight, realize_toSigma, realize_ofTerm,
     realize_termOfFreeCommRing, lift_genericPolyMap, Sum.elim_inl, realize_injOn, realize_surjOn,
-    Sum.forall_sum, Equiv.forall_congr_left (mvPolynomialSupportLEEquiv mons)]
+    Sum.forall_sum]
   simp +singlePass only [← Sum.elim_comp_inl_inr]
-  simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr, lift_genericPolyMap]
+  simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr]
 
 theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Fintype ι]
     {p : ℕ} (hp : p.Prime) (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
