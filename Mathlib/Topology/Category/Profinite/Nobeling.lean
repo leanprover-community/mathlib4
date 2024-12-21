@@ -653,8 +653,7 @@ theorem GoodProducts.spanFin [WellFoundedLT I] :
         | cons b bs =>
           apply le_of_lt
           rw [List.chain'_cons] at ha
-          have hlex := List.lt.head bs (b :: bs) ha.1
-          exact (List.lt_iff_lex_lt _ _).mp hlex
+          exact (List.lt_iff_lex_lt _ _).mp (List.Lex.rel ha.1)
 
 end Fin
 
@@ -783,7 +782,7 @@ def Products.nil : Products I := ⟨[], by simp only [List.chain'_nil]⟩
 theorem Products.lt_nil_empty {I} [LinearOrder I] : { m : Products I | m < Products.nil } = ∅ := by
   ext ⟨m, hm⟩
   refine ⟨fun h ↦ ?_, by tauto⟩
-  simp only [Set.mem_setOf_eq, lt_iff_lex_lt, nil, List.Lex.not_nil_right] at h
+  simp only [Set.mem_setOf_eq, lt_iff_lex_lt, nil, List.not_lex_nil] at h
 
 instance {α : Type*} [TopologicalSpace α] [Nonempty α] : Nontrivial (LocallyConstant α ℤ) :=
   ⟨0, 1, ne_of_apply_ne DFunLike.coe <| (Function.const_injective (β := ℤ)).ne zero_ne_one⟩
@@ -1588,7 +1587,7 @@ theorem chain'_cons_of_lt (l : MaxProducts C ho)
   refine lt_of_le_of_lt (Products.head!_le_of_lt hq (q.val.ne_nil_of_mem ha)) ?_
   by_cases hM : l.val.Tail.val = []
   · rw [Products.lt_iff_lex_lt, hM] at hq
-    simp only [List.Lex.not_nil_right] at hq
+    simp only [List.not_lex_nil] at hq
   · have := l.val.prop
     rw [max_eq_o_cons_tail C hsC ho l, List.chain'_iff_pairwise] at this
     exact List.rel_of_pairwise_cons this (List.head!_mem_self hM)
