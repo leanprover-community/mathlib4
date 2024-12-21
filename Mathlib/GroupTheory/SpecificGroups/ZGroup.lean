@@ -101,8 +101,6 @@ end Nilpotent
 
 section Classification
 
-#where
-
 /-- An extension of coprime Z-groups is a Z-group. -/
 theorem isZGroup_of_coprime
     [Finite G] [IsZGroup G] [IsZGroup G''] (h_le : f'.ker ≤ f.range)
