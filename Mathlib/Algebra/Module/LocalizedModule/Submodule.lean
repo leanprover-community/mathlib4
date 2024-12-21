@@ -3,7 +3,7 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.Algebra.Module.LocalizedModule.Basic
+import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.Localization.Module
 
@@ -139,6 +139,18 @@ instance : IsLocalizedModule p (M'.toLocalized₀ p f) where
 
 instance isLocalizedModule : IsLocalizedModule p (M'.toLocalized' S p f) :=
   inferInstanceAs (IsLocalizedModule p (M'.toLocalized₀ p f))
+
+open Pointwise
+
+lemma localized₀_le_localized₀_of_smul_le {P Q : Submodule R M} (x : p) (h : x • P ≤ Q) :
+    P.localized₀ p f ≤ Q.localized₀ p f := by
+  rintro - ⟨a, ha, r, rfl⟩
+  refine ⟨x • a, h ⟨a, ha, rfl⟩, x * r, ?_⟩
+  simp
+
+lemma localized'_le_localized'_of_smul_le {P Q : Submodule R M} (x : p) (h : x • P ≤ Q) :
+    P.localized' S p f ≤ Q.localized' S p f :=
+  localized₀_le_localized₀_of_smul_le p f x h
 
 end Submodule
 
