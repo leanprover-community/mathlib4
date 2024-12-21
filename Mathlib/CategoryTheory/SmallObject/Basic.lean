@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.SmallObject.Construction
 import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Limits.Over
 
 /-!
@@ -114,6 +115,14 @@ noncomputable def πInductiveSystemForgetObj (j : J) :
 lemma inductiveSystem_map_left {j j' : J} (φ : j ⟶ j') :
     ((inductiveSystem f J p).map φ).left = (inductiveSystemForget f J p).map φ := rfl
 
+noncomputable def inductiveSystemObjBotIso :
+    (inductiveSystem f J p).obj ⊥ ≅ Over.mk p :=
+  ((functor f Y).transfiniteIterationObjBotIso (ε f Y) J).app _
+
+noncomputable def inductiveSystemForgetObjBotIso :
+    (inductiveSystemForget f J p).obj ⊥ ≅ X :=
+  (Over.forget _).mapIso (inductiveSystemObjBotIso f J p)
+
 /-- The object `(inductiveSystem f J p).obj (Order.succ j)` identifies to the
 image of `(inductiveSystem f J p).obj j` by the functor `functor f Y : Over Y ⥤ Over Y`. -/
 noncomputable def inductiveSystemObjSuccIso (j : J) (hj : ¬ IsMax j) :
@@ -136,6 +145,13 @@ noncomputable def inductiveSystemForgetObjSuccIso (j : J) (hj : ¬ IsMax j) :
     (inductiveSystemForget f J p).obj (Order.succ j) ≅
       ((functor f Y).obj ((inductiveSystem f J p).obj j)).left :=
   (Over.forget _).mapIso (inductiveSystemObjSuccIso f J p j hj)
+
+@[reassoc]
+lemma inductiveSystemForget_map_le_succ (j : J) (hj : ¬ IsMax j) :
+    (inductiveSystemForget f J p).map (homOfLE (Order.le_succ j)) =
+      ((ε f Y).app ((inductiveSystem f J p).obj j)).left ≫
+        (inductiveSystemObjSuccIso f J p j hj).inv.left :=
+  (Over.forget _).congr_map (inductiveSystem_map_le_succ f J p j hj)
 
 @[reassoc]
 lemma ιFunctorObj_inductiveSystemForgetObjSuccIso_inv (j : J) (hj : ¬ IsMax j) :
@@ -173,6 +189,46 @@ noncomputable def isColimitInductiveSystemForgetCocone :
   isColimitOfPreserves _
     (((functor f Y).isColimitTransfiniteIterationCocone (ε f Y) J))
 
+@[reassoc (attr := simp)]
+lemma inductiveSystemForgetObjBotIso_inv_comp_ι_app :
+    (inductiveSystemForgetObjBotIso f J p).inv ≫
+        (inductiveSystemForgetCocone f J p).ι.app ⊥ = ιObj f J p :=
+  (Over.forget _).congr_map
+    ((functor f Y).transfiniteIterationObjBotIso_inv_app_ι_app
+      (ε f Y) J (Over.mk p))
+
+@[reassoc (attr := simp)]
+lemma inductiveSystemForgetObjBotIso_hom_ιObj :
+    (inductiveSystemForgetObjBotIso f J p).hom ≫ ιObj f J p =
+      (inductiveSystemForgetCocone f J p).ι.app ⊥ := by
+  rw [← inductiveSystemForgetObjBotIso_inv_comp_ι_app, Iso.hom_inv_id_assoc]
+
+instance : (inductiveSystem f J p).IsWellOrderContinuous :=
+  inferInstanceAs ((functor f Y).transfiniteIterationFunctor (ε f Y) J ⋙
+    (evaluation _ _).obj (Over.mk p)).IsWellOrderContinuous
+
+instance : (inductiveSystemForget f J p).IsWellOrderContinuous :=
+  inferInstanceAs (inductiveSystem f J p ⋙ Over.forget Y).IsWellOrderContinuous
+
+open MorphismProperty in
+lemma transfiniteCompositionsOfShape_ιObj :
+    (coproducts.{max v t} (ofHoms f)).pushouts.transfiniteCompositionsOfShape J
+      (ιObj f J p) := by
+  let e : Arrow.mk ((inductiveSystemForgetCocone f J p).ι.app ⊥) ≅
+      Arrow.mk (ιObj f J p) :=
+    Arrow.isoMk (inductiveSystemForgetObjBotIso f J p) (Iso.refl _)
+  refine (arrow_iso_iff _ e).1 ?_
+  apply (transfiniteCompositionsOfShape.mk
+    (hc := isColimitInductiveSystemForgetCocone f J p))
+  intro j hj
+  rw [inductiveSystemForget_map_le_succ _ _ _ _ hj]
+  apply RespectsIso.postcomp
+  apply MorphismProperty.pushouts_mk _
+    ((functorObj_isPushout f ((inductiveSystem f J p).obj j).hom))
+  rw [coproducts_iff]
+  exact ⟨FunctorObjIndex f ((inductiveSystem f J p).obj j).hom,
+    colimitsOfShape_colimMap _ _ (fun _ ↦ ⟨_⟩)⟩
+
 variable [∀ i, PreservesColimit (inductiveSystemForget f J p) (coyoneda.obj (op (A i)))]
   [NoMaxOrder J]
 
@@ -180,8 +236,8 @@ instance hasLiftingProperty_πObj (i : ι) :
     HasLiftingProperty (f i) (πObj f J p) where
   sq_hasLift {g h} sq := by
     obtain ⟨j, t, ht⟩ := Types.jointly_surjective _
-      ((isColimitOfPreserves (coyoneda.obj (op (A i)))
-        (isColimitInductiveSystemForgetCocone f J p))) g
+      (isColimitOfPreserves (coyoneda.obj (op (A i)))
+        (isColimitInductiveSystemForgetCocone f J p)) g
     dsimp at t ht
     let x : FunctorObjIndex f ((inductiveSystem f J p).obj j).hom :=
       { i := i

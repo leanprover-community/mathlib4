@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+import Mathlib.CategoryTheory.Limits.Over
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.Limit
 
@@ -311,6 +312,12 @@ lemma hasColimitsOfShape_of_isSuccLimit [HasIterationOfShape C J] (j : J)
 
 instance [HasIterationOfShape C J] (K : Type*) [Category K] (X : K) :
     PreservesWellOrderContinuousOfShape J ((evaluation K C).obj X) where
+  preservesColimitsOfShape j hj := by
+    have := hasColimitsOfShape_of_isSuccLimit C j hj
+    infer_instance
+
+instance [HasIterationOfShape C J] (Y : C) :
+    PreservesWellOrderContinuousOfShape J (Over.forget Y) where
   preservesColimitsOfShape j hj := by
     have := hasColimitsOfShape_of_isSuccLimit C j hj
     infer_instance
