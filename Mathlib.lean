@@ -3216,6 +3216,8 @@ import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.GroupTheory.GroupAction.SubMulAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.Support
+import Mathlib.GroupTheory.GroupExtension.Abelian
+import Mathlib.GroupTheory.GroupExtension.Basic
 import Mathlib.GroupTheory.GroupExtension.Defs
 import Mathlib.GroupTheory.HNNExtension
 import Mathlib.GroupTheory.Index
