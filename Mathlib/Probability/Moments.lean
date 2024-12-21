@@ -829,9 +829,13 @@ section MgfDeriv
 
 variable [IsFiniteMeasure μ]
 
+lemma hasDerivAt_mgf (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
+    HasDerivAt (mgf X μ) (μ[fun ω ↦ X ω * exp (v * X ω)]) v := by
+  simpa using (hasFPowerSeriesAt_mgf_of_mem_interior h).hasDerivAt
+
 lemma deriv_mgf (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
-    deriv (mgf X μ) v = μ[fun ω ↦ X ω * exp (v * X ω)] := by
-  simp [(hasFPowerSeriesAt_mgf_of_mem_interior h).deriv]
+    deriv (mgf X μ) v = μ[fun ω ↦ X ω * exp (v * X ω)] :=
+  (hasDerivAt_mgf h).deriv
 
 lemma deriv_mgf_zero (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
     deriv (mgf X μ) 0 = μ[X] := by
