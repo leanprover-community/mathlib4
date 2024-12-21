@@ -25,64 +25,66 @@ variable {C : Type u} [Category.{v} C] (T : MorphismProperty C)
 
 namespace MorphismProperty
 
-/-- The left lifting property (llp) with respect to a class of morphisms. -/
+/-- Given `T : MorphismProperty C`, this is the class of morphisms that have the
+left lifting property (llp) with respect to `T`. -/
 def llp : MorphismProperty C := fun _ _ f ↦
   ∀ ⦃X Y : C⦄ (g : X ⟶ Y) (_ : T g), HasLiftingProperty f g
 
-/-- The right lifting property (rlp) with respect to a class of morphisms. -/
+/-- Given `T : MorphismProperty C`, this is the class of morphisms that have the
+right lifting property (rlp) with respect to `T`. -/
 def rlp : MorphismProperty C := fun _ _ f ↦
   ∀ ⦃X Y : C⦄ (g : X ⟶ Y) (_ : T g), HasLiftingProperty g f
 
-lemma llp.IsStableUnderRetracts : T.llp.IsStableUnderRetracts where
+lemma llp_isStableUnderRetracts : T.llp.IsStableUnderRetracts where
   of_retract h hg _ _ f hf :=
     letI := hg _ hf
-    RetractArrow.leftLiftingProperty h f
+    h.leftLiftingProperty f
 
-lemma rlp.IsStableUnderRetracts : T.rlp.IsStableUnderRetracts where
+lemma rlp_isStableUnderRetracts : T.rlp.IsStableUnderRetracts where
   of_retract h hf _ _ g hg :=
     letI := hf _ hg
-    RetractArrow.rightLiftingProperty h g
+    h.rightLiftingProperty g
 
-instance llp.IsStableUnderCobaseChange : T.llp.IsStableUnderCobaseChange where
+instance llp_isStableUnderCobaseChange : T.llp.IsStableUnderCobaseChange where
   of_isPushout h hf _ _ g' hg' :=
     letI := hf _ hg'
-    IsPushout.HasLiftingProperty h g'
+    h.hasLiftingProperty g'
 
 open IsPullback in
-instance rlp.IsStableUnderBaseChange : T.rlp.IsStableUnderBaseChange where
+instance rlp_isStableUnderBaseChange : T.rlp.IsStableUnderBaseChange where
   of_isPullback h hf _ _ f' hf' :=
     letI := hf _ hf'
-    IsPullback.HasLiftingProperty h f'
+    h.hasLiftingProperty f'
 
-instance llp.IsMultiplicative : T.llp.IsMultiplicative where
+instance llp_isMultiplicative : T.llp.IsMultiplicative where
   id_mem X _ _ p hp := by infer_instance
   comp_mem i j hi hj _ _ p hp := by
     have := hi _ hp
     have := hj _ hp
     infer_instance
 
-instance rlp.IsMultiplicative : T.rlp.IsMultiplicative where
+instance rlp_isMultiplicative : T.rlp.IsMultiplicative where
   id_mem X _ _ p hp := by infer_instance
   comp_mem i j hi hj _ _ p hp := by
     have := hi _ hp
     have := hj _ hp
     infer_instance
 
-lemma llp_IsStableUnderCoproductsOfShape (J : Type*) :
+lemma llp_isStableUnderCoproductsOfShape (J : Type*) :
     T.llp.IsStableUnderCoproductsOfShape J := fun _ _ _ _ h₁ h₂ f hf _ _ g hg ↦ {
   sq_hasLift sq :=
     ⟨⟨{ l :=
           letI : ∀ j, HasLiftingProperty (f.app j) g := fun j ↦ hf j g hg
-          h₂.desc (Limits.coproductOfShapeLiftingCocone sq)
+          h₂.desc (HasLiftingProperty.coproductLiftingCocone sq)
         fac_left := h₁.hom_ext (by simp)
         fac_right := h₂.hom_ext (by simp)}⟩⟩}
 
-lemma rlp_IsStableUnderProductsOfShape (J : Type*) :
+lemma rlp_isStableUnderProductsOfShape (J : Type*) :
     T.rlp.IsStableUnderProductsOfShape J := fun _ _ _ _ h₁ h₂ f hf _ _ g hg ↦ {
   sq_hasLift sq :=
     ⟨⟨{ l :=
           letI : ∀ j, HasLiftingProperty g (f.app j) := fun j ↦ hf j g hg
-          h₁.lift (Limits.productOfShapeLiftingCone sq)
+          h₁.lift (HasLiftingProperty.productLiftingCone sq)
         fac_left := h₁.hom_ext (by simp)
         fac_right := h₂.hom_ext (by simp)}⟩⟩}
 

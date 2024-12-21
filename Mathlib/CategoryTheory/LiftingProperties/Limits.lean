@@ -22,7 +22,7 @@ open Category Limits
 variable {C : Type*} [Category C] {X Y Z W : C}
   {f : X ⟶ Y} {s : X ⟶ Z} {g : Z ⟶ W} {t : Y ⟶ W}
 
-lemma IsPushout.HasLiftingProperty (h : IsPushout s f g t)
+lemma IsPushout.hasLiftingProperty (h : IsPushout s f g t)
     {Z' W' : C} (g' : Z' ⟶ W') [HasLiftingProperty f g'] : HasLiftingProperty g g' where
   sq_hasLift := fun {u v} sq ↦ by
     have w : (s ≫ u) ≫ g' = f ≫ (t ≫ v) := by
@@ -30,7 +30,7 @@ lemma IsPushout.HasLiftingProperty (h : IsPushout s f g t)
     exact ⟨h.desc u (CommSq.mk w).lift (by rw [CommSq.fac_left]), h.inl_desc ..,
       h.hom_ext (by rw [h.inl_desc_assoc, sq.w]) (by rw [h.inr_desc_assoc, CommSq.fac_right])⟩
 
-lemma IsPullback.HasLiftingProperty (h : IsPullback s f g t)
+lemma IsPullback.hasLiftingProperty (h : IsPullback s f g t)
     {X' Y' : C} (f' : X' ⟶ Y') [HasLiftingProperty f' g] : HasLiftingProperty f' f where
   sq_hasLift := fun {u v} sq ↦ by
     have w : (u ≫ s) ≫ g = f' ≫ v ≫ t := by
@@ -55,7 +55,7 @@ whose components `B ⟶ X₁.obj j` are given by solutions of the lifting proble
 -/
 @[simp]
 noncomputable
-def Limits.productOfShapeLiftingCone {J : Type*} {X₁ X₂ : Discrete J ⥤ C}
+def HasLiftingProperty.productLiftingCone {J : Type*} {X₁ X₂ : Discrete J ⥤ C}
     {c₁ : Cone X₁} {c₂ : Cone X₂} {h₂ : IsLimit c₂} {f : X₁ ⟶ X₂}
     {A B : C} {g : A ⟶ B} {u : A ⟶ c₁.pt} {v : B ⟶ c₂.pt}
     (sq : CommSq u g (h₂.lift (Cone.mk c₁.pt (c₁.π ≫ f))) v)
@@ -87,7 +87,7 @@ whose components `X₂.obj j ⟶ A` are given by solutions of the lifting proble
 -/
 @[simp]
 noncomputable
-def Limits.coproductOfShapeLiftingCocone {J : Type*} {X₁ X₂ : Discrete J ⥤ C}
+def HasLiftingProperty.coproductLiftingCocone {J : Type*} {X₁ X₂ : Discrete J ⥤ C}
     {c₁ : Cocone X₁} {c₂ : Cocone X₂} {h₁ : IsColimit c₁} {f : X₁ ⟶ X₂}
     {A B : C} {g : A ⟶ B} {u : c₁.pt ⟶ A} {v : c₂.pt ⟶ B}
     (sq : CommSq u (h₁.desc (Cocone.mk c₂.pt (f ≫ c₂.ι))) g v)
