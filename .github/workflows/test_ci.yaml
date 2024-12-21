@@ -22,6 +22,7 @@ jobs:
           printf $'```bash\n'
           printf $'# Diff: %s\n' "[diff goes here]"
           printf $'scripts/merge-lean-testing-pr.sh %s   # %s\n' "[pr number goes here]" "[branch goes here]"
+          printf $'# # # # #\n'
 
           printf $'echo test\n'
           printf $'```\n'
