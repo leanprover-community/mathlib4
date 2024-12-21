@@ -105,7 +105,7 @@ jobs:
                 ACTUAL_BRANCH=${BRANCH#origin/}
 
                 # Append the branch details to RELEVANT_BRANCHES
-                RELEVANT_BRANCHES="$RELEVANT_BRANCHES"$'\n- '"$ACTUAL_BRANCH (lean4#$PR_NUMBER)"
+                RELEVANT_BRANCHES="$RELEVANT_BRANCHES""$ACTUAL_BRANCH"$' '
             fi
         done
 
@@ -131,9 +131,9 @@ jobs:
           for BRANCH in $BRANCHES; do
             PR_NUMBER=$(echo "$BRANCH" | grep -oP '\d+$')
             GITHUB_DIFF="https://github.com/leanprover-community/mathlib4/compare/nightly-testing...lean-pr-testing-$PR_NUMBER"
-            printf $'# Diff: %s' "$GITHUB_DIFF"
+            printf $'# Diff: %s\n' "$GITHUB_DIFF"
             printf $'scripts/merge-lean-testing-pr.sh %s   # %s\n' "$PR_NUMBER" "$BRANCH"
-            printf '# # # # #\n'
+            printf '\n'
           done
           printf $'```\n'
           printf "EOF"
