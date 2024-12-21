@@ -12,14 +12,18 @@ import Mathlib.Data.ZMod.Basic
 
 namespace AddCommMonoid
 
+/-- A type synonym for a commutative monoid whose elements have order dividing `n`. -/
 @[nolint unusedArguments]
 def toZModModule (M : Type*) [AddCommMonoid M] (n : ℕ) (_ : ∀ x : M, n • x = 0) := M
 
 variable {M : Type*} [AddCommMonoid M] {n : ℕ} {h : ∀ x : M, n • x = 0}
 
-variable (n) in
+
+variable (n h) in
+/-- Convert an element of `m` to an element of `toZModModule M n h`. -/
 def toZModModule.of (m : M) : toZModModule M n h := m
 
+/-- Convert an element of `toZModModule M n h` to an element of `M`. -/
 def toZModModule.to (m : toZModModule M n h) : M := m
 
 instance : AddCommMonoid (toZModModule M n h) :=
@@ -78,6 +82,7 @@ end AddCommGroup
 
 namespace CommGroup
 
+/-- A type synonym for a commutative groups whose elements have order dividing `n`. -/
 @[nolint unusedArguments]
 def toZModModule (G : Type*) [CommGroup G] (n : ℕ) (_ : ∀ g : G, g ^ n = 1) := G
 
@@ -87,11 +92,11 @@ instance : CommGroup (toZModModule G n h) :=
   inferInstanceAs (CommGroup G)
 
 instance : MulDistribMulAction (ZMod n) (toZModModule G n h) :=
-  { smul m a := m • AddCommMonoid.toZModModule.of n (Additive.ofMul a)
-    one_smul a := one_smul (ZMod n) (AddCommMonoid.toZModModule.of n (Additive.ofMul a))
-    mul_smul m m' a := mul_smul m m' (AddCommMonoid.toZModModule.of n (Additive.ofMul a))
-    smul_mul m a b := smul_add m (AddCommMonoid.toZModModule.of n (Additive.ofMul a))
-      (AddCommMonoid.toZModModule.of n (Additive.ofMul b))
+  { smul m a := m • AddCommMonoid.toZModModule.of n h (Additive.ofMul a)
+    one_smul a := one_smul (ZMod n) (AddCommMonoid.toZModModule.of n h (Additive.ofMul a))
+    mul_smul m m' a := mul_smul m m' (AddCommMonoid.toZModModule.of n h (Additive.ofMul a))
+    smul_mul m a b := smul_add m (AddCommMonoid.toZModModule.of n h (Additive.ofMul a))
+      (AddCommMonoid.toZModModule.of n h (Additive.ofMul b))
     smul_one m := smul_zero (A := AddCommMonoid.toZModModule (Additive G) n h) m }
 
 theorem toZModModule.coe_smul (k : ℤ) (g : toZModModule G n h) : (k : ZMod n) • g = g ^ k :=
@@ -115,6 +120,7 @@ end CommGroup
 
 variable {n : ℕ} {M M₁ : Type*}
 
+/-- A type synonym for a commutative quotient groups whose elements have order dividing `n`. -/
 def QuotientAddGroup.toZModModule {G : Type*} [AddCommGroup G] {H : AddSubgroup G}
     (_ : ∀ x, n • x ∈ H) := G ⧸ H
 
