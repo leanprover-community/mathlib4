@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Thomas Browning
+Authors: Thomas Browning, Nailin Guan
 -/
 import Mathlib.Topology.Algebra.Equicontinuity
 import Mathlib.Topology.Algebra.Group.Compact
@@ -434,23 +434,26 @@ universe u v
 
 variable (G : Type u) [TopologicalSpace G] (H : Type v) [TopologicalSpace H]
 
-/-- Define the structure of two-sided continuous isomorphism of additive groups. -/
+/-- The structure of two-sided continuous isomorphisms between additive groups.
+Note that both the map and its inverse have to be continuous. -/
 structure ContinuousAddEquiv [Add G] [Add H] extends AddEquiv G H , Homeomorph G H
 
-/-- Define the structure of two-sided continuous isomorphism of groups. -/
-@[to_additive "The type of two-sided continuous isomorphism of additive groups."]
+/-- The structure of two-sided continuous isomorphisms between groups.
+Note that both the map and its inverse have to be continuous. -/
+@[to_additive "The structure of two-sided continuous isomorphisms between additive groups.
+Note that both the map and its inverse have to be continuous."]
 structure ContinuousMulEquiv [Mul G] [Mul H] extends MulEquiv G H , Homeomorph G H
 
-/-- The Homeomorphism induced from a two-sided continuous isomorphism of groups. -/
+/-- The homeomorphism induced from a two-sided continuous isomorphism of groups. -/
 add_decl_doc ContinuousMulEquiv.toHomeomorph
 
-/-- The Homeomorphism induced from a two-sided continuous isomorphism additive groups. -/
+/-- The homeomorphism induced from a two-sided continuous isomorphism additive groups. -/
 add_decl_doc ContinuousAddEquiv.toHomeomorph
 
-/-- Notation for a `ContinuousMulEquiv`. -/
+@[inherit_doc]
 infixl:25 " ≃ₜ* " => ContinuousMulEquiv
 
-/-- Notation for an `ContinuousAddEquiv`. -/
+@[inherit_doc]
 infixl:25 " ≃ₜ+ " => ContinuousAddEquiv
 
 section
@@ -502,11 +505,18 @@ protected theorem congr_fun {f g : M ≃ₜ* N} (h : f = g) (x : M) : f x = g x 
   DFunLike.congr_fun h x
 
 @[to_additive (attr := simp)]
-theorem coe_mk (f : M ≃* N) (hf1 : Continuous f.toFun) (hf2 : Continuous f.invFun) :
-    (mk f hf1 hf2 : M → N) = f := rfl
+theorem coe_mk (f : M ≃* N) (hf1 hf2) : (mk f hf1 hf2 : M → N) = f := rfl
 
 @[to_additive]
 theorem toEquiv_eq_coe (f : M ≃ₜ* N) : f.toEquiv = f :=
+  rfl
+
+@[to_additive, simp]
+theorem toMulEquiv_eq_coe (f : M ≃ₜ* N) : f.toMulEquiv = f :=
+  rfl
+
+@[to_additive]
+theorem toHomeomorph_eq_coe (f : M ≃ₜ* N) : f.toHomeomorph = f :=
   rfl
 
 /-- Makes a continuous multiplicative isomorphism from
@@ -515,6 +525,10 @@ a homeomorphism which preserves multiplication. -/
 a homeomorphism which preserves addition."]
 def mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃ₜ* N :=
   ⟨⟨f.toEquiv,h⟩, f.continuous_toFun, f.continuous_invFun⟩
+
+/--The coersion for `ContinuousMulEquiv.mk'`, so the name end with `'`-/
+@[simp]
+lemma coe_mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y)  : ⇑(mk' f h) = f := rfl
 
 end coe
 
@@ -532,7 +546,6 @@ protected theorem injective (e : M ≃ₜ* N) : Function.Injective e :=
 protected theorem surjective (e : M ≃ₜ* N) : Function.Surjective e :=
   EquivLike.surjective e
 
--- Porting note (#10618): `simp` can prove this
 @[to_additive]
 theorem apply_eq_iff_eq (e : M ≃ₜ* N) {x y : M} : e x = e y ↔ x = y :=
   e.injective.eq_iff
@@ -546,9 +559,7 @@ variable (M)
 /-- The identity map is a continuous multiplicative isomorphism. -/
 @[to_additive (attr := refl) "The identity map is a continuous additive isomorphism."]
 def refl : M ≃ₜ* M :=
-  { MulEquiv.refl _ with
-  continuous_toFun := by continuity
-  continuous_invFun := by continuity }
+  { MulEquiv.refl _ with }
 
 @[to_additive]
 instance : Inhabited (M ≃ₜ* M) := ⟨ContinuousMulEquiv.refl M⟩
@@ -564,7 +575,7 @@ end refl
 section symm
 
 /-- The inverse of a ContinuousMulEquiv. -/
-@[to_additive "The inverse of a ContinuousAddEquiv."]
+@[to_additive (attr := symm) "The inverse of a ContinuousAddEquiv."]
 def symm (cme : M ≃ₜ* N) : N ≃ₜ* M :=
   { cme.toMulEquiv.symm with
   continuous_toFun := cme.continuous_invFun
