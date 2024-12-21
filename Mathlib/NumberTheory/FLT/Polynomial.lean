@@ -289,7 +289,7 @@ theorem fermatLastTheoremPolynomial {n : ℕ} (hn : 3 ≤ n) (chn : ¬ringChar k
   rw [eq_a, eq_b, mul_pow, mul_pow, ← mul_add] at heq
   have hdc : d ∣ c := by
     have hn : 0 < n := by omega
-    have hdncn : d^n ∣ c^n := ⟨_, heq.symm⟩
+    have hdncn : d ^ n ∣ c ^ n := ⟨_, heq.symm⟩
 
     rw [dvd_iff_normalizedFactors_le_normalizedFactors hd hc]
     rw [dvd_iff_normalizedFactors_le_normalizedFactors
