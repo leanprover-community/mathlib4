@@ -488,6 +488,13 @@ lemma _root_.IsLocalization.Away.quotient_of {R : Type*}
     use x - y
     simp [h]
 
+lemma _root_.Algebra.Extension.Cotangent.mk_eq_mk_iff_sub_mem {R S : Type*}
+    [CommRing R] [CommRing S] [Algebra R S] {P : Algebra.Extension R S}
+    (x y : P.ker) :
+    Algebra.Extension.Cotangent.mk x = Algebra.Extension.Cotangent.mk y ↔
+      x.val - y.val ∈ P.ker ^ 2 := by
+  sorry
+
 lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
     (P : Generators.{t₁} R S) [Finite P.vars] {σ : Type t₂} (b : Basis σ S P.toExtension.Cotangent)
     (u : σ → P.vars) (hu : Function.Injective u) :
@@ -498,6 +505,7 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
       P'.val ∘ e₁ ∘ Sum.inr = P.val ∧
       ∀ r, b r = Extension.Cotangent.mk ⟨P'.relation r, P'.relation_mem_ker r⟩ := by
   choose f hf using Extension.Cotangent.mk_surjective (P := P.toExtension)
+  choose s hs using P.algebraMap_surjective
   have hf' : Extension.Cotangent.mk (P := P.toExtension) ∘ f ∘ b = b := by
     ext i : 1
     simp only [Function.comp_apply, hf (b i)]
@@ -510,19 +518,31 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
     apply P.algebraMap_surjective
   have hJ : P.ker ≤ J ⊔ P.ker • P.ker := by
     intro x hx
-    let y := Extension.Cotangent.mk (P := P.toExtension) ⟨x, hx⟩
-    have : y ∈ Submodule.span S (Set.range b) := by
+    have : Extension.Cotangent.mk (P := P.toExtension) ⟨x, hx⟩ ∈
+        Submodule.span S (Set.range b) := by
       rw [b.span_eq]
       trivial
-    have := b.linearCombination_repr y
-    rw [← hf'] at this
-    have : ∃ a ∈ P.ker ^ 2, x - a ∈ J := sorry
-    obtain ⟨a, ha₁, ha₂⟩ := this
-    have : x = x - a + a := by simp
+    rw [Finsupp.mem_span_range_iff_exists_finsupp] at this
+    obtain ⟨c, hc⟩ := this
+    have (a : S) (i : σ) : a • b i = Extension.Cotangent.mk (P.σ a • v i) := by
+      ext
+      simp only [Extension.Cotangent.val_smul, Generators.toExtension_σ, map_smul]
+      rw [hv i, Extension.Cotangent.val_smul']
+    simp_rw [this] at hc
+    rw [← map_finsupp_sum, Eq.comm] at hc
+    rw [Algebra.Extension.Cotangent.mk_eq_mk_iff_sub_mem] at hc
+    simp only [Finsupp.sum, AddSubmonoidClass.coe_finset_sum, SetLike.val_smul, smul_eq_mul] at hc
+    have : x = ∑ x ∈ c.support, P.σ (c x) * v x + (x - ∑ x ∈ c.support, P.σ (c x) * ↑(v x)) := by
+      simp
     rw [this]
     apply Submodule.add_mem_sup
-    exact ha₂
-    simpa [← pow_two]
+    · apply J.sum_mem
+      rintro i -
+      apply Ideal.mul_mem_left
+      apply Ideal.subset_span
+      use i
+      simp
+    · simpa [← pow_two]
   let T := MvPolynomial P.vars R ⧸ J
   have hJ_eq_ker : J = RingHom.ker (algebraMap (MvPolynomial P.vars R) T) := by simp [T]
   let Q₁ : Presentation.{t₂, t₁} R T := Presentation.naive (Subtype.val ∘ v)
@@ -538,20 +558,25 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
     · simp [h]
   letI : Algebra T S := hom.toAlgebra
   haveI : IsScalarTower R T S := IsScalarTower.of_algHom hom
+  have (x : MvPolynomial P.vars R) (y : T) :
+      x • y = algebraMap (MvPolynomial P.vars R) T x * y :=
+    rfl
   haveI : IsScalarTower (MvPolynomial P.vars R) T S := by
     constructor
     intro x y z
+    rw [Algebra.smul_def]
+    rw [Algebra.smul_def]
+    rw [Algebra.smul_def]
+    rw [this]
     obtain ⟨y, rfl⟩ := Ideal.Quotient.mk_surjective y
     obtain ⟨z, rfl⟩ := P.algebraMap_surjective z
-    simp
-    rw [Algebra.smul_def]
-    rw [Algebra.smul_def]
-    rw [Algebra.smul_def]
-    simp [RingHom.algebraMap_toAlgebra, hom]
+    simp only [map_mul, Generators.algebraMap_apply]
+    simp only [RingHom.algebraMap_toAlgebra, AlgHom.toRingHom_eq_coe, id.map_eq_id,
+      RingHomCompTriple.comp_eq, RingHom.coe_coe, hom]
     rw [Ideal.Quotient.liftₐ_apply]
     rw [Ideal.Quotient.liftₐ_apply]
-    simp
-    sorry
+    simp only [RingHom.coe_comp, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
+      Function.comp_apply, Ideal.Quotient.lift_mk, RingHom.coe_coe, ← mul_assoc]
   have : IsLocalization.Away gbar S :=
     IsLocalization.Away.of_sub_one_mem_ker
       (by
