@@ -93,14 +93,6 @@ namespace Functor
 
 variable {J : Type w} [Preorder J]
 
-lemma map_comp_eqToHom_eq_map_of_preorder (F : J ⥤ C)
-    {a b c : J} (f : a ⟶ b) (g : a ⟶ c) (h : b = c) :
-    F.map f ≫ eqToHom (by rw [h]) = F.map g := by
-  subst h
-  simp only [eqToHom_refl, comp_id]
-  congr
-  apply Subsingleton.elim
-
 /-- Given a functor `F : J ⥤ C` and `m : J`, this is the induced
 functor `Set.Iio j ⥤ C`. -/
 @[simps!]
@@ -244,12 +236,9 @@ lemma mem_map_of_transfinite_composition
     W (F.map (homOfLE (bot_le : ⊥ ≤ j))) := by
   refine W.mem_of_transfinite_composition (fun ⟨k, hk⟩ hk' ↦ ?_)
     (F.isColimitCoconeLE j)
-  refine W.of_eq (hF k (fun h ↦ hk' (fun ⟨a, ha⟩ ha' ↦ h ha'))) rfl ?_ ?_
-  · dsimp
-    simp only [Functor.comp_obj, Monotone.functor_obj, Set.Iic.succ_eq _ hk']
-  · dsimp
-    rw [id_comp]
-    exact (Functor.map_comp_eqToHom_eq_map_of_preorder _ _ _ (Set.Iic.succ_eq _ hk').symm).symm
+  rw [← W.inverseImage_iff]
+  exact (W.inverseImage _).of_eq (hF k (fun h ↦ hk' (fun ⟨a, ha⟩ ha' ↦ h ha'))) rfl
+    ((Set.Iic.succ_eq _ hk').symm) rfl
 
 end
 
