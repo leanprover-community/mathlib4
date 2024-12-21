@@ -192,7 +192,8 @@ def fixedNumeralTest {α} [One α] :=
 def fixedNumeralTest2 {α} [One α] :=
   @OfNat.ofNat ((fun _ => ℕ) (1 : α)) 1 (@One.toOfNat1 ((fun _ => ℕ) (1 : α)) _)
 
-/-! Test the namespace bug (https://github.com/leanprover-community/mathlib4/pull/8733). This code should *not* generate a lemma
+/-! Test the namespace bug (https://github.com/leanprover-community/mathlib4/pull/8733).
+This code should *not* generate a lemma
   `add_some_def.in_namespace`. -/
 def some_def.in_namespace : Bool := false
 
@@ -206,7 +207,8 @@ instance : One (myFin n) := ⟨(1 : ℕ)⟩
 @[to_additive bar]
 def myFin.foo : myFin (n+1) := 1
 
-/-- We can pattern-match with `1`, which creates a term with a pure nat literal. See https://github.com/leanprover-community/mathlib4/pull/2046 -/
+/-- We can pattern-match with `1`, which creates a term with a pure nat literal.
+See https://github.com/leanprover-community/mathlib4/pull/2046 -/
 @[to_additive]
 def mul_foo {α} [Monoid α] (a : α) : ℕ → α
   | 0 => 1
@@ -336,6 +338,28 @@ run_cmd do
   unless (q((fun x _ => x) 3 4) : Q(Nat)).isConstantApplication do throwError "2"
   unless !(q((fun x => x) 3) : Q(Nat)).isConstantApplication do throwError "3"
   unless (q((fun _ => 5) 3) : Q(Nat)).isConstantApplication do throwError "4"
+
+@[to_additive, to_additive_dont_translate]
+def MonoidEnd : Type := Unit
+
+run_cmd do
+  let stx ← `(Semigroup MonoidEnd)
+  liftTermElabM do
+    let e ← Term.elabTerm stx none
+    guard <| additiveTest (← getEnv) e == some `Test.MonoidEnd
+
+
+@[to_additive instSemiGroupAddMonoidEnd]
+instance : Semigroup MonoidEnd where
+  mul _ _ := ()
+  mul_assoc _ _ _ := rfl
+
+@[to_additive]
+lemma monoidEnd_lemma (x y z : MonoidEnd) : x * (y * z) = (x * y) * z := mul_assoc .. |>.symm
+
+/-- info: Test.addMonoidEnd_lemma (x y z : AddMonoidEnd) : x * (y * z) = x * y * z -/
+#guard_msgs in
+#check addMonoidEnd_lemma
 
 /-!
 Some arbitrary tests to check whether additive names are guessed correctly.
