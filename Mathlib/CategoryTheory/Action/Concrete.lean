@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.RepresentationTheory.Action.Basic
+import Mathlib.CategoryTheory.Action.Basic
 
 /-!
 # Constructors for `Action V G` for some concrete categories

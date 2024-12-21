@@ -194,8 +194,7 @@ theorem List.applyId_zip_eq [DecidableEq α] {xs ys : List α} (h₀ : List.Nodu
       subst h₂
       cases ys
       · cases h₁
-      · simp only [applyId, map, Prod.toSigma, dlookup_cons_eq, Option.getD_some,
-          getElem?_cons_zero, Option.some.injEq]
+      · simp
     · cases ys
       · cases h₁
       · cases' h₀ with _ _ h₀ h₁

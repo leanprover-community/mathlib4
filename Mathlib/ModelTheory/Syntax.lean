@@ -642,7 +642,7 @@ theorem comp_onBoundedFormula {L'' : Language} (φ : L' →ᴸ L'') (ψ : L →�
   ext f
   induction f with
   | falsum => rfl
-  | equal => simp only [onBoundedFormula, comp_onTerm, Function.comp_apply]
+  | equal => simp [Term.bdEqual]
   | rel => simp only [onBoundedFormula, comp_onRelation, comp_onTerm, Function.comp_apply]; rfl
   | imp _ _ ih1 ih2 =>
     simp only [onBoundedFormula, Function.comp_apply, ih1, ih2, eq_self_iff_true, and_self_iff]
@@ -742,21 +742,18 @@ protected nonrec abbrev not (φ : L.Formula α) : L.Formula α :=
 protected abbrev imp : L.Formula α → L.Formula α → L.Formula α :=
   BoundedFormula.imp
 
-/-- Given a map `f : α → β ⊕ γ`, `iAlls f φ` transforms a `L.Formula α`
-into a `L.Formula β` by renaming variables with the map `f` and then universally
+variable (β)
+/-- `iAlls f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by universally
 quantifying over all variables `Sum.inr _`. -/
-noncomputable def iAlls [Finite γ] (f : α → β ⊕ γ)
-    (φ : L.Formula α) : L.Formula β :=
-  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
-  (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).alls
+noncomputable def iAlls [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin β))
+  (BoundedFormula.relabel (fun a => Sum.map id e a) φ).alls
 
-/-- Given a map `f : α → β ⊕ γ`, `iExs f φ` transforms a `L.Formula α`
-into a `L.Formula β` by renaming variables with the map `f` and then existentially
+/-- `iExs f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by existentially
 quantifying over all variables `Sum.inr _`. -/
-noncomputable def iExs [Finite γ] (f : α → β ⊕ γ)
-    (φ : L.Formula α) : L.Formula β :=
-  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
-  (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).exs
+noncomputable def iExs [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin β))
+  (BoundedFormula.relabel (fun a => Sum.map id e a) φ).exs
 
 /-- Given a map `f : α → β ⊕ γ`, `iExs f φ` transforms a `L.Formula α`
 into a `L.Formula β` by renaming variables with the map `f` and then existentially
