@@ -8,18 +8,20 @@ import Mathlib.Algebra.Order.Star.Basic
 import Mathlib.Data.Nat.Cast.Order.Ring
 import Mathlib.Order.Chain
 import Mathlib.Order.WellFoundedSet
+import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Data.Setoid.Partition
 
 /-!
-# Disproof of the Aharoni-Korman conjecture
+# Disproof of the Aharoni–Korman conjecture
 
-The Aharoni-Korman conjecture (sometimes called the fishbone conjecture) says that every partial
+The Aharoni–Korman conjecture (sometimes called the fishbone conjecture) says that every partial
 order satisfies at least one of the following:
 - It contains an infinite antichain
 - It contains a chain C, together with a partition into antichains such that every part meets C.
 
 In November 2024, Hollom disproved this conjecture. In this file, we construct Hollom's
-counterexample P_5 and show it satisfies neither of the above.
+counterexample P_5 and show it satisfies neither of the above, and thus disprove the conjecture.
+See https://arxiv.org/abs/2411.16844 for further details.
 -/
 
 def Hollom : Type := ℕ × ℕ × ℕ
@@ -306,10 +308,90 @@ lemma partition_iff_function {α : Type*} [PartialOrder α] {C : Set α} (hC : I
         simp only [Set.mem_setOf_eq]
         rw [hf' _ hx]
 
+variable {n : ℕ} {f : Hollom → Hollom}
+  (hn : (C ∩ level n).Finite)
+  (hfC : ∀ x, f x ∈ C) (hfCid : ∀ x ∈ C, f x = x) (hf : ∀ x, IsAntichain (· ≤ ·) (f ⁻¹' {x}))
+
+include hf in
+lemma not_le_of_eq {x y : Hollom} (hfxy : f x = f y) (hxy : x ≠ y) : ¬ x ≤ y :=
+  hf (f y) (by simp [hfxy]) (by simp) hxy
+
+include hf in
+lemma incomp_of_eq {x y : Hollom} (hfxy : f x = f y) (hxy : x ≠ y) : ¬ (x ≤ y ∨ y ≤ x) := by
+  simp only [not_or]
+  exact ⟨not_le_of_eq hf hfxy hxy, not_le_of_eq hf hfxy.symm hxy.symm⟩
+
+include hfC hfCid hf in
+lemma incomp_apply {x : Hollom} (hx : f x ≠ x) : ¬ (f x ≤ x ∨ x ≤ f x) :=
+  incomp_of_eq hf (hfCid _ (hfC _)) hx
+
+-- lemma incomp_apply {x : Hollom} : ¬ f x ≤ x := by
+--   sorry
+
+def R (n : ℕ) (C : Set Hollom) : Set Hollom := {x ∈ level n | ∀ y ∈ C ∩ level n, x ≤ y ∨ y ≤ x}
+
+lemma R_subset_level : R n C ⊆ level n := Set.sep_subset (level n) _
+
+lemma mem_R {n : ℕ} {C : Set Hollom} {x} :
+  x ∈ R n C ↔ x ∈ level n ∧ ∀ y ∈ C ∩ level n, x ≤ y ∨ y ≤ x := Iff.rfl
+
+lemma square_subset_R (h : (C ∩ level n).Finite) :
+    ∃ a, (fun t ↦ toHollom (t.1, t.2, n)) '' Set.Ici (a, a) ⊆ R n C := by
+  obtain h | hne := (C ∩ level n).eq_empty_or_nonempty
+  · refine ⟨0, ?_⟩
+    intro x
+    induction x
+    rw [R, h]
+    aesop
+
+  obtain ⟨a, ha⟩ : ∃ a : ℕ, ∀ x ∈ C ∩ level n, (ofHollom x).1 ≤ a := by
+    obtain ⟨a, ha⟩ := (h.image (fun t ↦ (ofHollom t).1)).bddAbove
+    use a
+    rw [Set.inter_comm]
+    simpa [mem_upperBounds] using ha
+  obtain ⟨b, hb⟩ : ∃ b : ℕ, ∀ x ∈ C ∩ level n, (ofHollom x).2.1 ≤ b := by
+    obtain ⟨b, hb⟩ := (h.image (fun t ↦ (ofHollom t).2.1)).bddAbove
+    use b
+    rw [Set.inter_comm]
+    simp only [mem_upperBounds, Set.mem_image, Set.mem_inter_iff, «exists», toHollom_mem_level_iff,
+      ofHollom_toHollom, Prod.exists, exists_and_right, exists_eq_right, forall_exists_index] at hb
+    simp
+    aesop
+
+  refine ⟨max a b, ?_⟩
+  rw [Set.subset_def]
+  simp +contextual only [Set.mem_image, Set.mem_Ici, Prod.exists, Prod.mk_le_mk, sup_le_iff, R,
+    Set.mem_inter_iff, and_imp, «forall», toHollom_mem_level_iff, Prod.forall, Set.mem_setOf_eq,
+    forall_exists_index, EmbeddingLike.apply_eq_iff_eq, Prod.mk.injEq,
+    toHollom_le_toHollom_iff_fixed_right, true_and]
+
+  rintro _ _ _ c d haf hbf hag hbg rfl rfl rfl e f n hef rfl
+  specialize ha _ ⟨hef, by simp⟩
+  specialize hb _ ⟨hef, by simp⟩
+  simp only [ofHollom_toHollom] at ha hb
+  omega
+
+lemma R_infinite (h : (C ∩ level n).Finite) : (R n C).Infinite := by
+  obtain ⟨a, ha⟩ := square_subset_R h
+  refine ((Set.Ici_infinite _).image ?_).mono ha
+  aesop (add norm unfold Set.InjOn)
+
+lemma R_diff_infinite (h : (C ∩ level n).Finite) : (R n C \ (C ∩ level n)).Infinite :=
+  (R_infinite h).diff h
+
+include hfC hfCid hf
+
+-- we could state this as Disjoint (f '' (R n C)) (C ∩ level n), but this is more
+-- annoying than helpful
+lemma R_maps {x : Hollom} (hx : x ∈ R n C) (hx' : x ∉ C ∩ level n) : f x ∉ C ∩ level n := by
+  intro hfx
+  apply incomp_apply hfC hfCid hf _ (hx.2 _ hfx).symm
+  exact ne_of_mem_of_not_mem hfx hx'
+
 end Hollom
 
 /--
-The Aharoni-Korman conjecture (sometimes called the fishbone conjecture) says that every partial
+The Aharoni–Korman conjecture (sometimes called the fishbone conjecture) says that every partial
 order satisfies one of the following:
 - It contains an infinite antichain
 - It contains a chain C, and has a partition into antichains such that every part meets C.
