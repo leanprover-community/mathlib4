@@ -330,14 +330,14 @@ namespace DirectedOn
 
 section Pi
 
-variable {ι : Type*} {α : ι → Type*} {r : (i : ι) →  α i →  α i → Prop}
+variable {ι : Type*} {α : ι → Type*} {r : (i : ι) → α i → α i → Prop}
 
-lemma proj {d : Set (Π i, α i)} (hd : DirectedOn (fun x y => ∀ i, r i (x i)  (y i)) d) (i : ι) :
+lemma proj {d : Set (Π i, α i)} (hd : DirectedOn (fun x y => ∀ i, r i (x i) (y i)) d) (i : ι) :
     DirectedOn (r i) ((fun a => a i) '' d) :=
   DirectedOn.mono_comp (fun _ _ h => h) (mono hd fun ⦃_ _⦄ h ↦ h i)
 
 lemma pi {d : (i : ι) → Set (α i)} (hd : ∀ (i : ι), DirectedOn (r i) (d i)) :
-    DirectedOn (fun x y => ∀ i, r i (x i) (y i)) (Set.pi  Set.univ d) := by
+    DirectedOn (fun x y => ∀ i, r i (x i) (y i)) (Set.pi Set.univ d) := by
   intro a ha b hb
   choose f hfd haf hbf using fun i => hd i (a i) (ha i trivial) (b i) (hb i trivial)
   exact ⟨f, fun i _ => hfd i, haf, hbf⟩
