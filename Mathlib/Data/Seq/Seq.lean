@@ -178,7 +178,7 @@ theorem get?_mem {s : Seq α} {n : ℕ} {x : α} (h : s.get? n = .some x) : x �
 def destruct (s : Seq α) : Option (Seq1 α) :=
   (fun a' => (a', s.tail)) <$> get? s 0
 
-theorem destruct_eq_nil {s : Seq α} : destruct s = none → s = nil := by
+theorem destruct_eq_none {s : Seq α} : destruct s = none → s = nil := by
   dsimp [destruct]
   induction' f0 : get? s 0 <;> intro h
   · apply Subtype.eq
@@ -243,7 +243,7 @@ def recOn {motive : Seq α → Sort v} (s : Seq α) (nil : motive nil)
     (cons : ∀ x s, motive (cons x s)) :
     motive s := by
   cases' H : destruct s with v
-  · rw [destruct_eq_nil H]
+  · rw [destruct_eq_none H]
     apply nil
   · cases' v with a s'
     rw [destruct_eq_cons H]
@@ -351,7 +351,7 @@ theorem corec_eq (f : β → Option (α × β)) (b : β) :
 
 theorem corec_nil (f : β → Option (α × β)) (b : β)
     (h : f b = .none) : corec f b = nil := by
-  apply destruct_eq_nil
+  apply destruct_eq_none
   simp [h]
 
 theorem corec_cons {f : β → Option (α × β)} {b : β} {x : α} {s : β}
@@ -662,7 +662,7 @@ theorem getElem?_take : ∀ (n k : ℕ) (s : Seq α),
     rw [take]
     cases h : destruct s with
     | none =>
-      simp [destruct_eq_nil h]
+      simp [destruct_eq_none h]
     | some a =>
       match a with
       | (x, r) =>
@@ -936,7 +936,7 @@ instance : LawfulFunctor Seq where
 
 @[simp]
 theorem join_nil : join nil = (nil : Seq α) :=
-  destruct_eq_nil rfl
+  destruct_eq_none rfl
 
 --@[simp] -- Porting note: simp can prove: `join_cons` is more general
 theorem join_cons_nil (a : α) (S) : join (cons (a, nil) S) = cons a (join S) :=
