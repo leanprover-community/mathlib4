@@ -62,7 +62,8 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
   have h_sub₁ : h_fin₁.toFinset ⊆ s := Set.Finite.toFinset_subset_toFinset.mpr h_subs₁
   have h_sub₂ : h_fin₂.toFinset ⊆ s := Set.Finite.toFinset_subset_toFinset.mpr h_subs₂
   rw [finprod_eq_prod_of_mulSupport_toFinset_subset _ h_fin₁ h_sub₁,
-    finprod_eq_prod_of_mulSupport_toFinset_subset _ h_fin₂ h_sub₂, map_prod, Nat.cast_prod,
+    finprod_eq_prod_of_mulSupport_toFinset_subset _ h_fin₂ h_sub₂,
+    map_prod, Nat.cast_prod, -- absNorm and cast go inside the Finset.prod
     ← Finset.prod_mul_distrib, Finset.prod_eq_one]
   intro v _
   rw [maxPowDividing, map_pow, Nat.cast_pow, norm_def, vadicAbv_def,
