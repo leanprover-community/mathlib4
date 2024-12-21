@@ -55,69 +55,6 @@ instance [HasPullback g t] {T₁ T₂ : C} (p : T₁ ⟶ T₂) [HasLiftingProper
     HasLiftingProperty p (pullback.fst g t) :=
   (IsPullback.of_hasPullback g t).flip.hasLiftingProperty p
 
-/--
-```
-A ---u---> c₁.pt ---π---> X₁.obj j
-|           |                |
-g           |              f.app j
-|           |                |
-v           v                v
-B ---v---> c₂.pt ---π---> X₂.obj j
-```
-
-Given lifting problems indexed by `J` of the above form, construct a cone of `X₁` with point `B`
-whose components `B ⟶ X₁.obj j` are given by solutions of the lifting problems.
-
--/
-@[simp]
-noncomputable
-def HasLiftingProperty.productLiftingCone {J : Type*} {X₁ X₂ : Discrete J ⥤ C}
-    {c₁ : Cone X₁} {c₂ : Cone X₂} {h₂ : IsLimit c₂} {f : X₁ ⟶ X₂}
-    {A B : C} {g : A ⟶ B} {u : A ⟶ c₁.pt} {v : B ⟶ c₂.pt}
-    (sq : CommSq u g (h₂.lift (Cone.mk c₁.pt (c₁.π ≫ f))) v)
-    [∀ j, HasLiftingProperty g (f.app j)] : Cone X₁ where
-  pt := B
-  π := { app j :=
-          have w : (u ≫ c₁.π.app j) ≫ f.app j = g ≫ v ≫ c₂.π.app j := by
-            rw [← Category.assoc, ← sq.w]
-            simp only [Category.assoc, IsLimit.fac, NatTrans.comp_app, Functor.const_obj_obj]
-          (CommSq.mk w).lift
-         naturality := fun j j' h ↦ by
-          cases j with | mk as =>
-          have := Discrete.eq_of_hom h
-          aesop}
-
-/--
-```
-X₁.obj j ---ι---> c₁.pt ---u---> A
-    |               |            |
- f.app j            |            g
-    |               |            |
-    v               v            v
-X₂.obj j ---ι---> c₂.pt ---v---> B
-```
-
-Given lifting problems indexed by `J` of the above form, construct a cocone of `X₂` with point `A`
-whose components `X₂.obj j ⟶ A` are given by solutions of the lifting problems.
-
--/
-@[simp]
-noncomputable
-def HasLiftingProperty.coproductLiftingCocone {J : Type*} {X₁ X₂ : Discrete J ⥤ C}
-    {c₁ : Cocone X₁} {c₂ : Cocone X₂} {h₁ : IsColimit c₁} {f : X₁ ⟶ X₂}
-    {A B : C} {g : A ⟶ B} {u : c₁.pt ⟶ A} {v : c₂.pt ⟶ B}
-    (sq : CommSq u (h₁.desc (Cocone.mk c₂.pt (f ≫ c₂.ι))) g v)
-    [∀ j, HasLiftingProperty (f.app j) g] : Cocone X₂ where
-  pt := A
-  ι := { app j :=
-          have w : (c₁.ι.app j ≫ u) ≫ g = f.app j ≫ c₂.ι.app j ≫ v := by
-            simp [sq.w]
-          (CommSq.mk w).lift
-         naturality := fun j j' h ↦ by
-          cases j with | mk as =>
-          have := Discrete.eq_of_hom h
-          aesop}
-
 instance {J : Type*} {A B : J → C} [HasProduct A] [HasProduct B]
     (f : (j : J) → A j ⟶ B j) {X Y : C} (p : X ⟶ Y)
     [∀ j, HasLiftingProperty p (f j)] :
