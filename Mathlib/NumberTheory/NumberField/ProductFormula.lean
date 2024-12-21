@@ -40,7 +40,7 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
   refine (inv_eq_of_mul_eq_one_left ?_).symm
   norm_cast
   have h_span_nezero : span {x} ≠ 0 := by
-    simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, h_x_nezero, not_false_eq_true]
+    simp [h_x_nezero]
   rw [Int.abs_eq_natAbs, ← Ideal.absNorm_span_singleton,
     ← Ideal.finprod_heightOneSpectrum_factorization h_span_nezero, Int.cast_natCast]
   --Aim: transform the two finprod into Finset.prod
