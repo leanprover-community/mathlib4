@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Yaël Dillies
+Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Combinatorics.Additive.CovBySMul
@@ -30,21 +30,32 @@ combinatorics:
 * `IsApproximateSubgroup.card_pow_le`: An approximate subgroup has small powers.
 * `IsApproximateSubgroup.of_small_tripling`: A set of small tripling can be made an approximate
   subgroup by squaring.
+
+It can be readily confirmed that approximate subgroups are a weakening of subgroups:
+* `isApproximateSubgroup_one`: A 1-approximate subgroup is the same thing as a subgroup.
 -/
 
 open scoped Finset Pointwise
 
 variable {G : Type*} [Group G] {A B : Set G} {K L : ℝ} {m n : ℕ}
 
-/-- An approximate subgroup in a group is a symmetric set `A` containing the identity and such that
-`A + A` can be covered by a small number of translates of `A`. -/
+/--
+An approximate subgroup in a group is a symmetric set `A` containing the identity and such that
+`A + A` can be covered by a small number of translates of `A`.
+
+In practice, we will take `K` fixed and `A` large but finite.
+-/
 structure IsApproximateAddSubgroup {G : Type*} [AddGroup G] (K : ℝ) (A : Set G) : Prop where
   zero_mem : 0 ∈ A
   neg_eq_self : -A = A
   two_nsmul_covByVAdd : CovByVAdd G K (2 • A) A
 
-/-- An approximate subgroup in a group is a symmetric set `A` containing the identity and such that
-`A * A` can be covered by a small number of translates of `A`. -/
+/--
+An approximate subgroup in a group is a symmetric set `A` containing the identity and such that
+`A * A` can be covered by a small number of translates of `A`.
+
+In practice, we will take `K` fixed and `A` large but finite.
+-/
 @[to_additive]
 structure IsApproximateSubgroup (K : ℝ) (A : Set G) : Prop where
   one_mem : 1 ∈ A
@@ -165,21 +176,36 @@ lemma pow_inter_pow (hA : IsApproximateSubgroup K A) (hB : IsApproximateSubgroup
 
 end IsApproximateSubgroup
 
-open MulAction in
-/-- A finite `1`-approximate subgroup is the same thing as a finite subgroup.
-
-Note that various sources claim this with no proof, some of them without the necessary assumptions
-to make it true (eg Wikipedia before Yaël fixed it). -/
+open Set in
+/-- A `1`-approximate subgroup is the same thing as a subgroup. -/
 @[to_additive (attr := simp)
-"A finite `1`-approximate subgroup is the same thing as a finite subgroup.
-
-Note that various sources claim this with no proof, some of them without the necessary assumptions
-to make it true (eg Wikipedia before Yaël fixed it)."]
-lemma isApproximateSubgroup_one {A : Set G} (hA : A.Finite) :
+"A `1`-approximate subgroup is the same thing as a subgroup."]
+lemma isApproximateSubgroup_one {A : Set G} :
     IsApproximateSubgroup 1 (A : Set G) ↔ ∃ H : Subgroup G, H = A where
-  mp hA' := by
-    classical
-    lift A to Finset G using hA
-    exact ⟨stabilizer G A, by simpa using
-      Finset.smul_stabilizer_of_no_doubling (by simpa using hA'.card_mul_self_le) hA'.one_mem⟩
+  mp hA := by
+    suffices A * A ⊆ A from
+      let H : Subgroup G :=
+        { carrier := A
+          one_mem' := hA.one_mem
+          inv_mem' hx := by dsimp; rwa [← hA.inv_eq_self, inv_mem_inv]
+          mul_mem' hx hy := this (mul_mem_mul hx hy) }
+      ⟨H, rfl⟩
+    obtain ⟨x, hx⟩ : ∃ x : G, A * A ⊆ x • A := by
+      obtain ⟨K, hK, hKA⟩ := hA.sq_covBySMul
+      simp only [Nat.cast_le_one, smul_eq_mul, Finset.card_le_one_iff_subset_singleton] at hK
+      obtain ⟨x, hx⟩ := hK
+      obtain rfl | rfl := Finset.subset_singleton_iff.1 hx
+      · simp [hA.nonempty.ne_empty] at hKA
+      · rw [Finset.coe_singleton, singleton_smul, sq] at hKA
+        use x
+    have hx' : x ⁻¹ • (A * A) ⊆ A := by rwa [← subset_set_smul_iff]
+    have hx_inv : x⁻¹ ∈ A := by
+      simpa using hx' (smul_mem_smul_set (mul_mem_mul hA.one_mem hA.one_mem))
+    have hx_sq : x * x ∈ A := by
+      rw [← hA.inv_eq_self]
+      simpa using hx' (smul_mem_smul_set (mul_mem_mul hx_inv hA.one_mem))
+    calc A * A ⊆ x • A := by assumption
+      _ = x⁻¹ • (x * x) • A := by simp [sq, smul_smul]
+      _ ⊆ x⁻¹ • (A • A) := smul_set_mono (smul_set_subset_smul hx_sq)
+      _ ⊆ A := hx'
   mpr := by rintro ⟨H, rfl⟩; exact .subgroup
