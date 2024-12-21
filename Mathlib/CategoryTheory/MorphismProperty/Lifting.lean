@@ -111,7 +111,20 @@ instance rlp.IsMultiplicative : T.rlp.IsMultiplicative where
     have := hj _ hp
     infer_instance
 
-/-- -/
+/--
+```
+X₁.obj j ---ι---> c₁.pt ---u---> A
+    |               |            |
+ f.app j            |            g
+    |               |            |
+    v               v            v
+X₂.obj j ---ι---> c₂.pt ---v---> B
+```
+
+Given lifting problems indexed by `J` of the above form, construct a cocone of `X₂` with point `A`
+whose components `X₂.obj j ⟶ A` are given by solutions of the lifting problems.
+
+-/
 @[simp]
 noncomputable
 def newCocone {J : Type*} {X₁ X₂ : Discrete J ⥤ C}
@@ -138,7 +151,20 @@ lemma llp.IsStableUnderCoproductsOfShape (J : Type*) :
         fac_left := h₁.hom_ext (by simp)
         fac_right := h₂.hom_ext (by simp)}⟩⟩}
 
-/-- -/
+/--
+```
+A ---u---> c₁.pt ---π---> X₁.obj j
+|           |                |
+g           |              f.app j
+|           |                |
+v           v                v
+B ---v---> c₂.pt ---π---> X₂.obj j
+```
+
+Given lifting problems indexed by `J` of the above form, construct a cone of `X₁` with point `B`
+whose components `B ⟶ X₁.obj j` are given by solutions of the lifting problems.
+
+-/
 @[simp]
 noncomputable
 def newCone {J : Type*} {X₁ X₂ : Discrete J ⥤ C}
