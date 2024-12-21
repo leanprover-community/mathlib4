@@ -513,13 +513,6 @@ theorem val_hAdd (x : Fin n) (y : Fin m) : (x.hAdd y).val = x.val + y.val :=
 theorem hAdd_comm (x : Fin n) (y : Fin m) : (x.hAdd y).val = (y.hAdd x).val :=
   (x.val_hAdd y).trans <| (x.val.add_comm _).trans <| y.val_hAdd x
 
-/-- `Fin.hAdd` with a Nat on the right is `Fin.addNat`. -/
-@[simp]
-theorem hAdd_Nat_eq_addNat (x : Fin n) (y : ℕ) :
-    (x.hAdd y : Fin (n + (y+1)-1)) = x.addNat y := by
-  ext
-  simp
-
 /-- `Fin.hAdd` with `Fin.last` on the right is `Fin.addNat`. -/
 @[simp]
 theorem hAdd_last_eq_addNat (x : Fin n) (y : ℕ) :
