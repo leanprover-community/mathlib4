@@ -115,10 +115,12 @@ noncomputable def πInductiveSystemForgetObj (j : J) :
 lemma inductiveSystem_map_left {j j' : J} (φ : j ⟶ j') :
     ((inductiveSystem f J p).map φ).left = (inductiveSystemForget f J p).map φ := rfl
 
+/-- The isomorphism `(inductiveSystem f J p).obj ⊥ ≅ Over.mk p`. -/
 noncomputable def inductiveSystemObjBotIso :
     (inductiveSystem f J p).obj ⊥ ≅ Over.mk p :=
   ((functor f Y).transfiniteIterationObjBotIso (ε f Y) J).app _
 
+/-- The isomorphism `(inductiveSystemForget f J p).obj ⊥ ≅ X`. -/
 noncomputable def inductiveSystemForgetObjBotIso :
     (inductiveSystemForget f J p).obj ⊥ ≅ X :=
   (Over.forget _).mapIso (inductiveSystemObjBotIso f J p)
