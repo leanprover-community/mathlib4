@@ -9,8 +9,8 @@ jobs:
     - name: Checkout mathlib repository
       uses: actions/checkout@v4
       with:
-          sparse-checkout: |
-            scripts/zulip_emoji_merge_delegate.py
+        sparse-checkout: |
+          scripts/zulip_emoji_merge_delegate.py
 
     - name: Set up Python
       uses: actions/setup-python@v5
