@@ -154,7 +154,7 @@ theorem Pairwise.biUnion_injective (h₀ : Pairwise (Disjoint on f)) (h₁ : ∀
 theorem pairwiseDisjoint_unique {y : α}
     (h_disjoint : PairwiseDisjoint s f)
     (hy : y ∈ (⋃ i ∈ s, f i)) : ∃! i, i ∈ s ∧ y ∈ f i := by
-  refine exists_unique_of_exists_of_unique ?ex ?unique
+  refine existsUnique_of_exists_of_unique ?ex ?unique
   · simpa only [mem_iUnion, exists_prop] using hy
   · rintro i j ⟨his, hi⟩ ⟨hjs, hj⟩
     exact h_disjoint.elim his hjs <| not_disjoint_iff.mpr ⟨y, ⟨hi, hj⟩⟩

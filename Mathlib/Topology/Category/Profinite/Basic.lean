@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Calle Sönne, Dagur Asgeirsson
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.Topology.LocallyConstant.Basic
+import Mathlib.Topology.Separation.Profinite
 
 /-!
 # The category of Profinite Types

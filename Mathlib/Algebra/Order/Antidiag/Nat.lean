@@ -156,7 +156,7 @@ lemma image_piFinTwoEquiv_finMulAntidiag {n : ℕ} :
   ext x
   simp [(piFinTwoEquiv <| fun _ => ℕ).symm.surjective.exists]
 
-lemma finMulAntidiag_exists_unique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
+lemma finMulAntidiag_existsUnique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
     (hp : p ∈ n.primeFactorsList) (f : Fin d → ℕ) (hf : f ∈ finMulAntidiag d n) :
     ∃! i, p ∣ f i := by
   rw [mem_finMulAntidiag] at hf
@@ -171,6 +171,9 @@ lemma finMulAntidiag_exists_unique_prime_dvd {d n p : ℕ} (hn : Squarefree n)
   rw [← hf.1, ← Finset.mul_prod_erase _ _ (his),
     ← Finset.mul_prod_erase _ _ (mem_erase.mpr ⟨hij, mem_univ _⟩), ← mul_assoc]
   apply Nat.dvd_mul_right
+
+@[deprecated (since := "2024-12-17")]
+alias finMulAntidiag_exists_unique_prime_dvd := finMulAntidiag_existsUnique_prime_dvd
 
 private def primeFactorsPiBij (d n : ℕ) :
     ∀ f ∈ (n.primeFactors.pi fun _ => (univ : Finset <| Fin d)), Fin d → ℕ :=
@@ -212,10 +215,10 @@ private theorem primeFactorsPiBij_inj (d n : ℕ)
 private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
     (t : Fin d → ℕ) (ht : t ∈ finMulAntidiag d n) : ∃ (g : _)
     (hg : g ∈ pi n.primeFactors fun _ => univ), Nat.primeFactorsPiBij d n g hg = t := by
-  have exists_unique := fun (p : ℕ) (hp : p ∈ n.primeFactors) =>
-    (finMulAntidiag_exists_unique_prime_dvd hn
+  have existsUnique := fun (p : ℕ) (hp : p ∈ n.primeFactors) =>
+    (finMulAntidiag_existsUnique_prime_dvd hn
       (mem_primeFactors_iff_mem_primeFactorsList.mp hp) t ht)
-  choose f hf hf_unique using exists_unique
+  choose f hf hf_unique using existsUnique
   refine ⟨f, ?_, ?_⟩
   · simp only [mem_pi, mem_univ, forall_true_iff]
   funext i
