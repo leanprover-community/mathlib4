@@ -1350,6 +1350,18 @@ theorem moveRight_neg_symm {x : PGame} (i) :
 theorem moveRight_neg_symm' {x : PGame} (i) :
     x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) := by simp
 
+theorem neg_identical_neg_iff : ∀ {x y : PGame.{u}}, x ≡ y ↔ -x ≡ -y
+  | mk xl xr xL xR, mk yl yr yL yR => by
+    rw [neg_def, identical_iff, identical_iff, ← neg_def, and_comm]
+    simp only [neg_def, rightMoves_mk, moveRight_mk, leftMoves_mk, moveLeft_mk]
+    apply and_congr <;>
+    · constructor
+      · conv in (_ ≡ _) => rw [neg_identical_neg_iff]
+        simp only [imp_self]
+      · conv in (_ ≡ _) => rw [← neg_identical_neg_iff]
+        simp only [imp_self]
+termination_by x y => (x, y)
+
 /-- If `x` has the same moves as `y`, then `-x` has the same moves as `-y`. -/
 def Relabelling.negCongr : ∀ {x y : PGame}, x ≡r y → -x ≡r -y
   | ⟨_, _, _, _⟩, ⟨_, _, _, _⟩, ⟨L, R, hL, hR⟩ =>
