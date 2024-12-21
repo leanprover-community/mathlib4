@@ -18,14 +18,7 @@ jobs:
         run: |
           echo "hi blizzard"
           {
-          printf $'msg<<EOF\nWe will need to merge the following branches into \`nightly-testing\`:\n'
-          printf $'\`\`\`bash\n'
-          PR_NUMBER= '18818'
-          printf $'# Diff: %s' "[diff goes here]"
-          printf $'scripts/merge-lean-testing-pr.sh %s   # %s\n' "[pr number goes here]" "[branch goes here]"
-          printf '# # # # #'
-          printf $'\`\`\`\n'
-          printf "EOF"
+          printf $'msg<<EOF\nWe will need to merge the following branches into \`nightly-testing\`:\nfoo\nEOF'
           } >> "$GITHUB_OUTPUT"
 
       - name: send zulip test message
