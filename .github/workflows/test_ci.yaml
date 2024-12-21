@@ -16,7 +16,7 @@ jobs:
     - name: format message
       id: form_the_message
       run: |
-        BRANCHES='lean-pr-testing-1\nlean-pr-testing-2\nlean-pr-testing-3489\n'
+        BRANCHES='lean-pr-testing-1 lean-pr-testing-2 lean-pr-testing-3489 '
         for BRANCH in $BRANCHES; do
           echo $BRANCH
         done
@@ -26,7 +26,7 @@ jobs:
           BRANCH='lean-pr-testing-2'
           PR_NUMBER=$(echo "$BRANCH" | grep -oP '\d+$')
           GITHUB_DIFF="https://github.com/leanprover-community/mathlib4/compare/nightly-testing...lean-pr-testing-$PR_NUMBER"
-          printf $'# Diff: %s' "$GITHUB_DIFF"
+          printf $'# Diff: %s\n' "$GITHUB_DIFF"
           printf $'scripts/merge-lean-testing-pr.sh %s   # %s\n' "$PR_NUMBER" "$BRANCH"
           printf '# # # # #\n'
           printf $'```\n'
