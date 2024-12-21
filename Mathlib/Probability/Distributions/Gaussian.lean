@@ -6,6 +6,7 @@ Authors: Lorenzo Luccioli, Rémy Degenne, Alexander Bentkamp
 import Mathlib.Analysis.SpecialFunctions.Gaussian.GaussianIntegral
 import Mathlib.Probability.Notation
 import Mathlib.MeasureTheory.Decomposition.Lebesgue
+import Mathlib.Probability.Moments
 
 /-!
 # Gaussian distributions over ℝ
@@ -346,6 +347,38 @@ lemma gaussianReal_mul_const {X : Ω → ℝ} (hX : Measure.map X ℙ = gaussian
   exact gaussianReal_const_mul hX c
 
 end Transformations
+
+open Measurable Real
+
+variable {Ω : Type} [MeasureSpace Ω] {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
+
+theorem mgf_gaussianReal (hv : v ≠ 0) (hX : Measure.map X ℙ = gaussianReal μ v) (t : ℝ) :
+    mgf X ℙ t = exp (μ * t + v * t ^ 2 / 2) := calc
+  mgf X ℙ t = (Measure.map X ℙ)[fun x => exp (t * x)] := by
+    rw [← mgf_id_map, mgf]
+    · rfl
+    · exact Measure.aemeasurable_of_map_ne_zero hX (IsProbabilityMeasure.ne_zero (gaussianReal μ v))
+  _ = ∫ x, exp (t * x) * gaussianPDFReal μ v x := by
+    rw [hX, gaussianReal_of_var_ne_zero μ hv, gaussianPDF_def]
+    simp only [ENNReal.ofReal]
+    rw [integral_withDensity_eq_integral_smul
+      (measurable_gaussianPDFReal μ v).real_toNNReal]
+    congr with x
+    rw [NNReal.smul_def, coe_toNNReal _ (gaussianPDFReal_nonneg μ v x), smul_eq_mul, mul_comm]
+  _ = exp (μ * t + v * t ^ 2 / 2)
+      * ∫ x, (√(2 * π * v))⁻¹ * exp (-(x - (μ + v * t)) ^ 2 / (2 * v)) := by
+    rw [gaussianPDFReal_def, ← integral_mul_left]
+    congr with x
+    field_simp only [mul_left_comm, ← exp_sub, ← exp_add]
+    ring_nf
+  _ = exp (μ * t + v * t ^ 2 / 2) * ∫ x, gaussianPDFReal (μ + v * t) v x := by
+    field_simp [gaussianPDFReal_def]
+  _ = exp (μ * t + v * t ^ 2 / 2) := by
+    rw [integral_gaussianPDFReal_eq_one (μ + v * t) hv, mul_one]
+
+theorem cgf_gaussianReal (hv : v ≠ 0) (hX : Measure.map X ℙ = gaussianReal μ v) (t : ℝ) :
+    cgf X ℙ t = μ * t + v * t ^ 2 / 2 := by
+  rw [cgf, mgf_gaussianReal hv hX t, log_exp]
 
 end GaussianReal
 
