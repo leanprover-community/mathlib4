@@ -43,7 +43,7 @@ they should first promote the `hasFiniteProducts` instance to a `ChosenFinitePro
 
 ## TODO
 
-- Every cartesian distributive category is a finitary distributive monoidal category, meaning that
+- Every cartesian distributive category is finitary distributive, meaning that
   the left tensor product functor `X ⊗ -` preserves all finite coproducts.
 
 
