@@ -193,9 +193,8 @@ theorem Polynomial.flt_catalan_aux
     a.natDegree = 0 := by
   cases' eq_or_ne (ringChar k) 0 with ch0 chn0
   -- characteristic zero
-  · have hderiv := flt_catalan_deriv
+  · obtain ⟨da, -, -⟩ := flt_catalan_deriv
       hp hq hr hineq chp chq chr ha hb hc hab hu hv hw heq
-    obtain ⟨da, -, -⟩ := hderiv
     have czk : CharZero k := by
       apply charZero_of_inj_zero
       intro n
@@ -207,13 +206,11 @@ theorem Polynomial.flt_catalan_aux
   · set d := a.natDegree with eq_d; clear_value d
     -- set up infinite descent
     -- strong induct on `d := a.natDegree`
-    revert ha hb hc hab heq
-    revert eq_d
-    revert a b c
-    induction' d using Nat.case_strong_induction_on with d ih_d
-    · intros; solve_by_elim
-    · intros a b c eq_d heq ha hb hc hab
-      -- have derivatives of `a, b, c` zero
+    induction d
+      using Nat.case_strong_induction_on
+      generalizing a b c ha hb hc hab heq with
+    | hz => rfl
+    | hi d ih_d => -- have derivatives of `a, b, c` zero
       obtain ⟨ad, bd, cd⟩ := flt_catalan_deriv
         hp hq hr hineq chp chq chr ha hb hc hab hu hv hw heq
       -- find contracts `ca, cb, cc` so that `a(k) = ca(k^ch)`
@@ -224,7 +221,7 @@ theorem Polynomial.flt_catalan_aux
       suffices hca : ca.natDegree = 0 by
         rw [eq_d, eq_deg_a, hca, zero_mul]
       by_contra hnca; apply hnca
-      apply ih_d _ _ rfl _ ca_nz cb_nz cc_nz <;> clear ih_d <;> try rfl
+      apply ih_d _ _ _ ca_nz cb_nz cc_nz <;> clear ih_d <;> try rfl
       · apply is_coprime_of_expand chn0
         rwa [← eq_a, ← eq_b]
       · have _ : ch ≠ 1 := CharP.ringChar_ne_one
