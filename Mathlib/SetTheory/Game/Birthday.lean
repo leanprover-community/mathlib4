@@ -207,7 +207,7 @@ theorem birthday_ordinalToGame (o : Ordinal) : birthday o.toGame = o := by
     apply birthday_quot_le_pGameBirthday
   · let ⟨x, hx₁, hx₂⟩ := birthday_eq_pGameBirthday o.toGame
     rw [← hx₂, ← toPGame_le_iff]
-    rw [← PGame.equiv_iff_game_eq] at hx₁
+    rw [← mk_toPGame, ← PGame.equiv_iff_game_eq] at hx₁
     exact hx₁.2.trans (PGame.le_birthday x)
 
 @[simp, norm_cast]
