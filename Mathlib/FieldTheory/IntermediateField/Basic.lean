@@ -390,13 +390,6 @@ theorem coe_smul {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] 
 
 @[simp] lemma coe_algebraMap_apply (x : K) : ↑(algebraMap K S x) = algebraMap K L x := rfl
 
--- note: giving this instance the default priority may trigger trouble with synthesizing instances
--- for field extensions with more than one intermediate field. For example, in a field extension
--- `E/F`, and with `K₁ ≤ K₂` of type `IntermediateField F E`, this instance will cause a search
--- for `SMul K₁ K₂` to trigger a search for `SMul E K₂` which may
--- take a long time to fail.
-instance (priority := 900) {R : Type*} [Semiring R] [Algebra L R] : SMul S R := S.instSMulSubtypeMem
-
 instance isScalarTower_bot {R : Type*} [Semiring R] [Algebra L R] : IsScalarTower S L R :=
   IsScalarTower.subalgebra _ _ _ S.toSubalgebra
 
