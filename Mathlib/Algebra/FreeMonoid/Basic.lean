@@ -358,6 +358,14 @@ theorem map_comp (g : β → γ) (f : α → β) : map (g ∘ f) = (map g).comp 
 @[to_additive (attr := simp)]
 theorem map_id : map (@id α) = MonoidHom.id (FreeMonoid α) := hom_eq fun _ ↦ rfl
 
+@[to_additive (attr := simp)]
+theorem map_symm_apply_map_eq {x : FreeMonoid α} (e : α ≃ β) :
+    (map ⇑e.symm) ((map ⇑e) x) = x := by simp [map_map]
+
+@[to_additive (attr := simp)]
+theorem map_apply_map_symm_eq {x : FreeMonoid β} (e : α ≃ β) :
+    (map ⇑e) ((map ⇑e.symm) x) = x := by simp [map_map]
+
 /-- The only invertible element of the free monoid is 1; this instance enables `units_eq_one`. -/
 @[to_additive]
 instance uniqueUnits : Unique (FreeMonoid α)ˣ where
@@ -414,5 +422,38 @@ theorem length_reverse {a : FreeMonoid α} : a.reverse.length = a.length :=
   List.length_reverse _
 
 end Reverse
+
+section IsomorphicTypes
+
+variable {α β : Type*}
+
+/-- free monoids over isomorphic types are isomorphic -/
+@[to_additive "if two types are isomorphic, the additive free monoids over those types are
+isomorphic"]
+def congrEquiv (e : α ≃ β) : FreeMonoid α ≃* FreeMonoid β :=
+  MulEquiv.mk' ⟨FreeMonoid.map e.toFun, FreeMonoid.map e.invFun, fun _ => map_symm_apply_map_eq e,
+    fun _ => map_apply_map_symm_eq e⟩ (by simp [map_mul])
+
+@[to_additive (attr := simp)]
+theorem congrEquiv_of (e : α ≃ β) (a : α) : congrEquiv e (of a) = of (e a) := rfl
+
+@[to_additive (attr := simp)]
+theorem congrEquiv_symm_of (e : α ≃ β) (b : β) : congrEquiv e.symm (of b) = of (e.symm b) := rfl
+
+/-- given a function from β to α, convert a relation predicate on FreeMonoid α to
+have an underlying type of β -/
+@[to_additive "given a function from β to α, convert a relation predicate to
+have an underlying type of β"]
+def mapRel (f : β → α) (rel : FreeMonoid α → FreeMonoid α → Prop) : FreeMonoid β → FreeMonoid β  →
+    Prop := fun a b ↦ rel (.map f a) (.map f b)
+
+/-- given a function from α to β, convert a relation predicate with underlying type β to
+one with underlying type α -/
+@[to_additive "given afunction from α to β, convert a relation predicate with underlying
+type β to one with underlying type α "]
+def comapRel (f : α → β) (rel : FreeMonoid β → FreeMonoid β → Prop) : FreeMonoid α → FreeMonoid α →
+    Prop := fun a b ↦ rel (.map f a) (.map f b)
+
+end IsomorphicTypes
 
 end FreeMonoid
