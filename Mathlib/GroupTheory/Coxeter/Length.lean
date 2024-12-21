@@ -203,8 +203,12 @@ represent the same element of `W`. -/
 def IsReduced (ω : List B) : Prop := ℓ (π ω) = ω.length
 
 @[simp]
-theorem isReduced_reverse (ω : List B) : cs.IsReduced (ω.reverse) ↔ cs.IsReduced ω := by
+theorem isReduced_reverse_iff (ω : List B) : cs.IsReduced (ω.reverse) ↔ cs.IsReduced ω := by
   simp [IsReduced]
+
+theorem IsReduced.reverse {cs : CoxeterSystem M W} {ω : List B}
+    (hω : cs.IsReduced ω) : cs.IsReduced (ω.reverse) :=
+  (cs.isReduced_reverse_iff ω).mpr hω
 
 theorem exists_reduced_word' (w : W) : ∃ ω : List B, cs.IsReduced ω ∧ w = π ω := by
   rcases cs.exists_reduced_word w with ⟨ω, hω, rfl⟩
@@ -224,10 +228,12 @@ private theorem isReduced_take_and_drop {ω : List B} (hω : cs.IsReduced ω) (j
   unfold IsReduced
   omega
 
-theorem isReduced_take {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.take j) :=
+theorem IsReduced.take {cs : CoxeterSystem M W} {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) :
+    cs.IsReduced (ω.take j) :=
   (isReduced_take_and_drop _ hω _).1
 
-theorem isReduced_drop {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.drop j) :=
+theorem IsReduced.drop {cs : CoxeterSystem M W} {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) :
+    cs.IsReduced (ω.drop j) :=
   (isReduced_take_and_drop _ hω _).2
 
 theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (hm : m > M i i') :
@@ -254,7 +260,7 @@ theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (
   · -- Inductive step
     contrapose! ih
     rw [alternatingWord_succ'] at ih
-    apply isReduced_drop (j := 1) at ih
+    apply IsReduced.drop (j := 1) at ih
     simpa using ih
 
 /-! ### Descents -/
