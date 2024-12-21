@@ -126,25 +126,38 @@ theorem realize_subst {t : L.Term α} {tf : α → L.Term β} {v : β → M} :
   | var => rfl
   | func _ _ ih => simp [ih]
 
-@[simp]
-theorem realize_restrictVar [DecidableEq α] {t : L.Term α} {s : Set α} (h : ↑t.varFinset ⊆ s)
-    {v : α → M} : (t.restrictVar (Set.inclusion h)).realize (v ∘ (↑)) = t.realize v := by
+theorem realize_restrictVar [DecidableEq α] {t : L.Term α} {f : t.varFinset → β}
+    {v : β → M} (v' : α → M) (hv' : ∀ a, v (f a) = v' a) :
+     (t.restrictVar f).realize v = t.realize v' := by
   induction t with
-  | var => rfl
+  | var => simp [restrictVar, hv']
   | func _ _ ih =>
-    simp_rw [varFinset, Finset.coe_biUnion, Set.iUnion_subset_iff] at h
-    exact congr rfl (funext fun i => ih i (h i (Finset.mem_univ i)))
+    exact congr rfl (funext fun i => ih i ((by simp [Function.comp_apply, hv'])))
 
+/-- A special case of `realize_restrictVar`, included because we can add the `simp` attribute
+to it -/
 @[simp]
-theorem realize_restrictVarLeft [DecidableEq α] {γ : Type*} {t : L.Term (α ⊕ γ)} {s : Set α}
+theorem realize_restrictVar' [DecidableEq α] {t : L.Term α} {s : Set α} (h : ↑t.varFinset ⊆ s)
+    {v : α → M} : (t.restrictVar (Set.inclusion h)).realize (v ∘ (↑)) = t.realize v :=
+  realize_restrictVar _ (by simp)
+
+theorem realize_restrictVarLeft [DecidableEq α] {γ : Type*} {t : L.Term (α ⊕ γ)}
+    {f : t.varFinsetLeft → β}
+    {xs : β ⊕ γ → M} (xs' : α → M) (hxs' : ∀ a, xs (Sum.inl (f a)) = xs' a) :
+    (t.restrictVarLeft f).realize xs = t.realize (Sum.elim xs' (xs ∘ Sum.inr)) := by
+  induction t with
+  | var a => cases a <;> simp [restrictVarLeft, hxs']
+  | func _ _ ih =>
+    exact congr rfl (funext fun i => ih i (by simp [hxs']))
+
+/-- A special case of `realize_restrictVarLeft`, included because we can add the `simp` attribute
+to it -/
+@[simp]
+theorem realize_restrictVarLeft' [DecidableEq α] {γ : Type*} {t : L.Term (α ⊕ γ)} {s : Set α}
     (h : ↑t.varFinsetLeft ⊆ s) {v : α → M} {xs : γ → M} :
     (t.restrictVarLeft (Set.inclusion h)).realize (Sum.elim (v ∘ (↑)) xs) =
-      t.realize (Sum.elim v xs) := by
-  induction t with
-  | var a => cases a <;> rfl
-  | func _ _ ih =>
-    simp_rw [varFinsetLeft, Finset.coe_biUnion, Set.iUnion_subset_iff] at h
-    exact congr rfl (funext fun i => ih i (h i (Finset.mem_univ i)))
+      t.realize (Sum.elim v xs) :=
+  realize_restrictVarLeft _ (by simp)
 
 @[simp]
 theorem realize_constantsToVars [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
@@ -410,26 +423,36 @@ theorem realize_subst {φ : L.BoundedFormula α n} {tf : α → L.Term β} {v : 
       · rfl)
     (by simp)
 
-@[simp]
-theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormula α n} {s : Set α}
-    (h : ↑φ.freeVarFinset ⊆ s) {v : α → M} {xs : Fin n → M} :
-    (φ.restrictFreeVar (Set.inclusion h)).Realize (v ∘ (↑)) xs ↔ φ.Realize v xs := by
+theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormula α n}
+    {f : φ.freeVarFinset → β} {v : β → M} {xs : Fin n → M}
+    (v' : α → M) (hv' : ∀ a, v (f a) = v' a) :
+    (φ.restrictFreeVar f).Realize v xs ↔ φ.Realize v' xs := by
   induction φ with
   | falsum => rfl
   | equal =>
-    simp only [Realize, freeVarFinset.eq_2, restrictFreeVar]
-    rw [Set.inclusion_comp_inclusion, Set.inclusion_comp_inclusion]
-    simp
+    simp only [Realize, freeVarFinset.eq_2]
+    rw [realize_restrictVarLeft v' (by simp [hv']), realize_restrictVarLeft v' (by simp [hv'])]
+    simp [Function.comp_apply]
   | rel =>
     simp only [Realize, freeVarFinset.eq_3, Finset.biUnion_val, restrictFreeVar]
     congr!
-    erw [Set.inclusion_comp_inclusion _ h]
-    simp
+    rw [realize_restrictVarLeft v' (by simp [hv'])]
+    simp [Function.comp_apply]
   | imp _ _ ih1 ih2 =>
-    simp only [Realize, freeVarFinset.eq_4, restrictFreeVar]
-    rw [Set.inclusion_comp_inclusion, Set.inclusion_comp_inclusion]
-    simp [ih1, ih2]
-  | all _ ih3 => simp [restrictFreeVar, Realize, ih3]
+    simp only [Realize, freeVarFinset.eq_4]
+    rw [ih1, ih2] <;> simp [hv']
+  | all _ ih3 =>
+    simp only [restrictFreeVar, Realize]
+    refine forall_congr' (fun _ => ?_)
+    rw [ih3]; simp [hv']
+
+/-- A special case of `realize_restrictFreeVar`, included because we can add the `simp` attribute
+to it -/
+@[simp]
+theorem realize_restrictFreeVar' [DecidableEq α] {n : ℕ} {φ : L.BoundedFormula α n} {s : Set α}
+    (h : ↑φ.freeVarFinset ⊆ s) {v : α → M} {xs : Fin n → M} :
+    (φ.restrictFreeVar (Set.inclusion h)).Realize (v ∘ (↑)) xs ↔ φ.Realize v xs :=
+  realize_restrictFreeVar _ (by simp)
 
 theorem realize_constantsVarsEquiv [L[[α]].Structure M] [(lhomWithConstants L α).IsExpansionOn M]
     {n} {φ : L[[α]].BoundedFormula β n} {v : β → M} {xs : Fin n → M} :

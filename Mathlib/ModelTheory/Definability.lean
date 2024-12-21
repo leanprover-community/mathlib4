@@ -191,7 +191,7 @@ theorem definable_iff_finitely_definable :
       simp only [Formula.Realize, BoundedFormula.realize_relabel,
         Set.mem_setOf_eq]
       apply Iff.symm
-      convert BoundedFormula.realize_restrictFreeVar _
+      convert BoundedFormula.realize_restrictFreeVar' _
       ext a
       rcases a with ⟨_ | _, _⟩ <;> simp
   · rintro ⟨A0, hA0, hd⟩
