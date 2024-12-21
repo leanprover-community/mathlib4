@@ -41,30 +41,34 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
   have h_span_nezero : span {x} ≠ 0 := by simp [h_x_nezero]
   rw [Int.abs_eq_natAbs, ← Ideal.absNorm_span_singleton,
     ← Ideal.finprod_heightOneSpectrum_factorization h_span_nezero, Int.cast_natCast]
-  --GOAL: transform the two finprod into Finset.prod
   let t₀ := {v : HeightOneSpectrum (𝓞 K) | x ∈ v.asIdeal}
-  have h_fin₀ : t₀.Finite := by
-    simp only [← dvd_span_singleton, finite_factors h_span_nezero, t₀]
-  let s := h_fin₀.toFinset
+  have h_fin₀ : t₀.Finite := by simp only [← dvd_span_singleton, finite_factors h_span_nezero, t₀]
   let t₁ := (fun v : HeightOneSpectrum (𝓞 K) ↦ ‖embedding v x‖).mulSupport
-  let t₂ := (fun v : HeightOneSpectrum (𝓞 K) ↦ v.maxPowDividing (span {x})).mulSupport
+  let t₂ :=
+    (fun v : HeightOneSpectrum (𝓞 K) ↦ (absNorm (v.maxPowDividing (span {x})) : ℝ)).mulSupport
   have h_subs₁ : t₁ ⊆ t₀ := by simp [norm_eq_one_iff_not_mem, t₁, t₀]
   have h_subs₂ : t₂ ⊆ t₀ := by
     simp only [Set.le_eq_subset, mulSupport_subset_iff, Set.mem_setOf_eq, t₂, t₀,
       maxPowDividing, ← dvd_span_singleton]
     intro v hv
-    rw [← pow_zero v.asIdeal] at hv
-    replace hv := fun h ↦ hv (congrArg (HPow.hPow v.asIdeal) h)
-    rwa [imp_false, ← ne_eq, Associates.count_ne_zero_iff_dvd h_span_nezero (irreducible v)] at hv
+    simp only [map_pow, Nat.cast_pow, ← pow_zero (absNorm v.asIdeal : ℝ)] at hv
+    replace hv := fun h ↦ hv (congrArg (HPow.hPow (absNorm v.asIdeal : ℝ)) h)
+    simp only [imp_false, Associates.count_ne_zero_iff_dvd h_span_nezero (irreducible v)] at hv
+    exact hv
   have h_fin₁ : t₁.Finite := h_fin₀.subset h_subs₁
   have h_fin₂ : t₂.Finite := h_fin₀.subset h_subs₂
-  have h_sub₁ : h_fin₁.toFinset ⊆ s := Set.Finite.toFinset_subset_toFinset.mpr h_subs₁
-  have h_sub₂ : h_fin₂.toFinset ⊆ s := Set.Finite.toFinset_subset_toFinset.mpr h_subs₂
-  rw [finprod_eq_prod_of_mulSupport_toFinset_subset _ h_fin₁ h_sub₁,
-    finprod_eq_prod_of_mulSupport_toFinset_subset _ h_fin₂ h_sub₂,
-    map_prod, Nat.cast_prod, -- absNorm and cast go inside the Finset.prod
-    ← Finset.prod_mul_distrib, Finset.prod_eq_one]
-  intro v _
+  have h_prod : (absNorm (∏ᶠ (v : HeightOneSpectrum (𝓞 K)), v.maxPowDividing (span {x})) : ℝ) =
+      ∏ᶠ (v : HeightOneSpectrum (𝓞 K)), (absNorm (v.maxPowDividing (span {x})) : ℝ) := by
+    let f : Ideal (𝓞 K) →* ℝ := {
+      toFun := fun I ↦ (absNorm (S := (𝓞 K)) I : ℝ),
+      map_one' := by simp only [one_eq_top, absNorm_top, Nat.cast_one],
+      map_mul' := by simp only [_root_.map_mul, Nat.cast_mul, implies_true]
+    }
+    let g := fun v : HeightOneSpectrum (𝓞 K) ↦ v.maxPowDividing (span {x})
+    exact MonoidHom.map_finprod_of_preimage_one f (by simp [t₁, t₀, t₂, f]) g
+  rw [h_prod, ← finprod_mul_distrib h_fin₁ h_fin₂]
+  apply finprod_eq_one_of_forall_eq_one
+  intro v
   rw [maxPowDividing, map_pow, Nat.cast_pow, norm_def, vadicAbv_def,
     WithZeroMulInt.toNNReal_neg_apply _ (v.valuation.ne_zero_iff.mpr
     (RingOfIntegers.coe_ne_zero_iff.mpr h_x_nezero))]
