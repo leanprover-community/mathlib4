@@ -2,7 +2,7 @@ on:
   pull_request:
     types: [labeled, unlabeled]
     branches:
-      - '**/ci_debug_**'
+      - '**/ci_debug**'
 
 jobs:
   print_context:
