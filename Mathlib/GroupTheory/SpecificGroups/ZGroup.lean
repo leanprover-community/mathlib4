@@ -24,13 +24,13 @@ and `G/G'` are cyclic of coprime orders.
 
 -/
 
-variable (G G' : Type*) [Group G] [Group G'] (f : G →* G')
+variable (G G' G'' : Type*) [Group G] [Group G'] [Group G''] (f : G →* G') (f' : G' →* G'')
 
 /-- A Z-group is a group whose Sylow subgroups are all cyclic. -/
 @[mk_iff] class IsZGroup : Prop where
   isZGroup : ∀ p : ℕ, p.Prime → ∀ P : Sylow p G, IsCyclic P
 
-variable {G G' f}
+variable {G G' G'' f f'}
 
 namespace IsZGroup
 
@@ -99,42 +99,48 @@ instance isCyclic_abelianization [Finite G] [IsZGroup G] : IsCyclic (Abelianizat
 
 end Nilpotent
 
-end IsZGroup
+section Classification
+
+#where
 
 /-- An extension of coprime Z-groups is a Z-group. -/
-theorem isZGroup_of_coprime {G H K : Type*} [Group G] [Group H] [Group K]
-    [Finite G] [IsZGroup G] [IsZGroup K] (f : G →* H) (g : H →* K) (h_le : g.ker ≤ f.range)
-    (h_cop : (Nat.card G).Coprime (Nat.card K)) : IsZGroup H := by
-  have h_dvd : Nat.card g.ker ∣ Nat.card G :=
+theorem isZGroup_of_coprime
+    [Finite G] [IsZGroup G] [IsZGroup G''] (h_le : f'.ker ≤ f.range)
+    (h_cop : (Nat.card G).Coprime (Nat.card G'')) : IsZGroup G' := by
+  have h_dvd : Nat.card f'.ker ∣ Nat.card G :=
     (Subgroup.card_dvd_of_le h_le).trans (Subgroup.card_range_dvd f)
-  by_cases hK : Nat.card K = 0
-  · rw [hK, Nat.coprime_zero_right] at h_cop
+  by_cases hG'' : Nat.card G'' = 0
+  · rw [hG'', Nat.coprime_zero_right] at h_cop
     rw [h_cop, Nat.dvd_one, Subgroup.card_eq_one, MonoidHom.ker_eq_bot_iff] at h_dvd
     exact IsZGroup.of_injective h_dvd
-  have : Finite K := Nat.finite_of_card_ne_zero hK
-  have : Finite H := by
+  have : Finite G'' := Nat.finite_of_card_ne_zero hG''
+  have : Finite G' := by
     refine Nat.finite_of_card_ne_zero ?_
-    rw [← g.ker.card_mul_index, Subgroup.index_ker]
+    rw [← f'.ker.card_mul_index, Subgroup.index_ker]
     exact mul_ne_zero (ne_zero_of_dvd_ne_zero Finite.card_pos.ne' h_dvd) Finite.card_pos.ne'
   refine ⟨fun p hp P ↦ ?_⟩
   have := Fact.mk hp
-  replace h_cop : (Nat.card G).Coprime (Nat.card P) ∨ (Nat.card K).Coprime (Nat.card P) := by
+  replace h_cop : (Nat.card G).Coprime (Nat.card P) ∨ (Nat.card G'').Coprime (Nat.card P) := by
     obtain ⟨k, hk⟩ := P.2.exists_card_eq
     refine hk ▸ Or.imp hp.coprime_pow_of_not_dvd hp.coprime_pow_of_not_dvd ?_
     contrapose! h_cop
     exact Nat.Prime.not_coprime_iff_dvd.mpr ⟨p, hp, h_cop⟩
   rcases h_cop with hP | hP
-  · have := (P.2.map g).isCyclic_of_zgroup
-    refine isCyclic_of_injective (g.subgroupMap P) ?_
-    rw [← MonoidHom.ker_eq_bot_iff, P.ker_subgroupMap g, Subgroup.subgroupOf_eq_bot, disjoint_iff]
+  · have := (P.2.map f').isCyclic_of_zgroup
+    refine isCyclic_of_injective (f'.subgroupMap P) ?_
+    rw [← MonoidHom.ker_eq_bot_iff, P.ker_subgroupMap f', Subgroup.subgroupOf_eq_bot, disjoint_iff]
     exact Subgroup.inf_eq_bot_of_coprime (hP.coprime_dvd_left h_dvd)
   · replace h_le : P ≤ f.range := by
       refine le_trans ?_ h_le
       rw [← Subgroup.map_eq_bot_iff, ← Subgroup.card_eq_one]
-      exact Nat.eq_one_of_dvd_coprimes hP (P.map g).card_subgroup_dvd_card (P.card_map_dvd g)
+      exact Nat.eq_one_of_dvd_coprimes hP (P.map f').card_subgroup_dvd_card (P.card_map_dvd f')
     suffices IsCyclic (P.subgroupOf f.range) by
       have key := Subgroup.subgroupOfEquivOfLe h_le
       exact isCyclic_of_surjective key key.surjective
     obtain ⟨Q, hQ⟩ := Sylow.mapSurjective_surjective f.rangeRestrict_surjective p (P.subtype h_le)
     rw [Sylow.ext_iff, Sylow.coe_mapSurjective, Sylow.coe_subtype] at hQ
     exact hQ ▸ isCyclic_of_surjective _ (f.rangeRestrict.subgroupMap_surjective Q)
+
+end Classification
+
+end IsZGroup
