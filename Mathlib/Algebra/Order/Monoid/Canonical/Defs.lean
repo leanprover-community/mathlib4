@@ -203,8 +203,6 @@ class CanonicallyLinearOrderedAddCommMonoid (α : Type*)
 class CanonicallyLinearOrderedCommMonoid (α : Type*)
   extends CanonicallyOrderedCommMonoid α, LinearOrderedCommMonoid α
 
-attribute [to_additive existing] CanonicallyLinearOrderedCommMonoid.toLinearOrderedCommMonoid
-
 section CanonicallyLinearOrderedCommMonoid
 
 variable [CanonicallyLinearOrderedCommMonoid α]
