@@ -112,7 +112,7 @@ theorem isSquare_iff {q : ℚ} : IsSquare q ↔ IsSquare q.num ∧ IsSquare q.de
   constructor
   · rintro ⟨qr, rfl⟩
     rw [Rat.mul_self_num, mul_self_den]
-    simp only [isSquare_mul_self, and_self]
+    simp only [IsSquare.mul_self, and_self]
   · rintro ⟨⟨nr, hnr⟩, ⟨dr, hdr⟩⟩
     refine ⟨nr / dr, ?_⟩
     rw [div_mul_div_comm, ← Int.cast_mul, ← Nat.cast_mul, ← hnr, ← hdr, num_div_den]

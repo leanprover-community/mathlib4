@@ -161,7 +161,7 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
       have m : Q(ℕ) := mkRawNatLit (n / 2)
       haveI' : $b =Q $m + $m := ⟨⟩
       haveI' : $e =Q $a ^ $b := ⟨⟩
-      pure (.nonnegative q(Even.zpow_nonneg (even_add_self _) $a))
+      pure (.nonnegative q(Even.zpow_nonneg (Even.add_self _) $a))
     | .app (.app (.app (.const `Neg.neg _) _) _) b' =>
       let b' ← whnfR b'
       let .true := b'.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ -n where n is a literal"
@@ -170,7 +170,7 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
       have m : Q(ℕ) := mkRawNatLit (n / 2)
       haveI' : $b =Q (-$m) + (-$m) := ⟨⟩
       haveI' : $e =Q $a ^ $b := ⟨⟩
-      pure (.nonnegative q(Even.zpow_nonneg (even_add_self _) $a))
+      pure (.nonnegative q(Even.zpow_nonneg (Even.add_self _) $a))
     | _ => throwError "not a ^ n where n is a literal or a negated literal"
   orElse result do
     let ra ← core zα pα a

@@ -45,7 +45,10 @@ for some `r : α`. -/
 for some `r : α`."]
 def IsSquare (a : α) : Prop := ∃ r, a = r * r
 
-@[to_additive (attr := simp)] lemma isSquare_mul_self (m : α) : IsSquare (m * m) := ⟨m, rfl⟩
+@[to_additive (attr := simp)] lemma IsSquare.mul_self (m : α) : IsSquare (m * m) := ⟨m, rfl⟩
+
+@[deprecated (since := "2024-08-27")] alias isSquare_mul_self := IsSquare.mul_self
+@[deprecated (since := "2024-08-27")] alias even_add_self := Even.add_self
 
 @[to_additive]
 lemma isSquare_op_iff {a : α} : IsSquare (op a) ↔ IsSquare a :=
