@@ -37,7 +37,7 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
   · exact (finprod_eq_of_bijective maximalIdeal ((bijective_iff_existsUnique _).mpr
       <| fun v ↦ ⟨mk v, maximalIdeal_mk v, fun _ a ↦ by rw [← a, mk_maximalIdeal]⟩)
       (fun w ↦ (norm_embedding_eq w (x : K)).symm))
-  apply (inv_eq_of_mul_eq_one_left _).symm
+  refine (inv_eq_of_mul_eq_one_left ?_).symm
   norm_cast
   have h_span_nezero : span {x} ≠ 0 := by
     simp only [Submodule.zero_eq_bot, ne_eq, span_singleton_eq_bot, h_x_nezero, not_false_eq_true]
