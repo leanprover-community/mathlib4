@@ -33,6 +33,7 @@ if such exists (`IsIntegral A x`) or zero otherwise.
 For example, if `V` is a `𝕜`-vector space for some field `𝕜` and `f : V →ₗ[𝕜] V` then
 the minimal polynomial of `f` is `minpoly 𝕜 f`.
 -/
+@[stacks 09GM]
 noncomputable def minpoly (x : B) : A[X] :=
   if hx : IsIntegral A x then degree_lt_wf.min _ hx else 0
 

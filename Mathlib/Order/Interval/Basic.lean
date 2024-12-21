@@ -109,7 +109,6 @@ theorem mem_mk {hx : x.1 ≤ x.2} : a ∈ mk x hx ↔ x.1 ≤ a ∧ a ≤ x.2 :=
 theorem mem_def : a ∈ s ↔ s.fst ≤ a ∧ a ≤ s.snd :=
   Iff.rfl
 
--- @[simp] -- Porting note: not in simpNF
 theorem coe_nonempty (s : NonemptyInterval α) : (s : Set α).Nonempty :=
   nonempty_Icc.2 s.fst_le_snd
 
@@ -153,7 +152,7 @@ theorem map_map (g : β →o γ) (f : α →o β) (a : NonemptyInterval α) :
 
 @[simp]
 theorem dual_map (f : α →o β) (a : NonemptyInterval α) :
-    dual (a.map f) = a.dual.map (OrderHom.dual f) :=
+    dual (a.map f) = a.dual.map f.dual :=
   rfl
 
 /-- Binary pushforward of nonempty intervals. -/
@@ -240,7 +239,7 @@ section Lattice
 
 variable [Lattice α]
 
-instance : Sup (NonemptyInterval α) :=
+instance : Max (NonemptyInterval α) :=
   ⟨fun s t => ⟨⟨s.fst ⊓ t.fst, s.snd ⊔ t.snd⟩, inf_le_left.trans <| s.fst_le_snd.trans le_sup_left⟩⟩
 
 instance : SemilatticeSup (NonemptyInterval α) :=
@@ -360,7 +359,7 @@ theorem map_map (g : β →o γ) (f : α →o β) (s : Interval α) : (s.map f).
   Option.map_map _ _ _
 
 @[simp]
-theorem dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.map (OrderHom.dual f) := by
+theorem dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.map f.dual := by
   cases s
   · rfl
   · exact WithBot.map_comm rfl _
@@ -452,7 +451,7 @@ instance semilatticeSup : SemilatticeSup (Interval α) :=
 
 section Decidable
 
-variable [@DecidableRel α (· ≤ ·)]
+variable [DecidableRel (α := α) (· ≤ ·)]
 
 instance lattice : Lattice (Interval α) :=
   { Interval.semilatticeSup with
@@ -517,7 +516,8 @@ theorem coe_inf : ∀ s t : Interval α, (↑(s ⊓ t) : Set α) = ↑s ∩ ↑t
     rw [inf_bot_eq]
     exact (inter_empty _).symm
   | (s : NonemptyInterval α), (t : NonemptyInterval α) => by
-    simp only [Inf.inf, coe_coe, NonemptyInterval.coe_def, Icc_inter_Icc]
+    simp only [Min.min, coe_coe, NonemptyInterval.coe_def, Icc_inter_Icc,
+      SemilatticeInf.inf, Lattice.inf]
     split_ifs with h
     · simp only [coe_coe, NonemptyInterval.coe_def]
     · refine (Icc_eq_empty <| mt ?_ h).symm
@@ -574,7 +574,7 @@ section CompleteLattice
 
 variable [CompleteLattice α]
 
-noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
+noncomputable instance completeLattice [DecidableRel (α := α) (· ≤ ·)] :
     CompleteLattice (Interval α) := by
   classical
   exact
@@ -589,7 +589,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
                 lift s to NonemptyInterval α using ha
                 exact iInf₂_le_of_le s hs (le_iSup₂_of_le s hs s.fst_le_snd)⟩
         le_sSup := fun s s ha => by
-          dsimp only -- Porting note (#10752): added `dsimp only`
+          dsimp only -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10752): added `dsimp only`
           split_ifs with h
           · exact (h ha).le
           cases s
@@ -603,7 +603,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
               exact ha
             · exact le_iSup₂_of_le _ ha le_rfl
         sSup_le := fun s s ha => by
-          dsimp only -- Porting note (#10752): added `dsimp only`
+          dsimp only -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10752): added `dsimp only`
           split_ifs with h
           · exact bot_le
           obtain ⟨b, hs, hb⟩ := not_subset.1 h
@@ -623,7 +623,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
                 iSup₂_le fun s hs => le_iInf₂ <| h.2 hs⟩
           else ⊥
         sInf_le := fun s₁ s ha => by
-          dsimp only -- Porting note (#10752): added `dsimp only`
+          dsimp only -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10752): added `dsimp only`
           split_ifs with h
           · lift s to NonemptyInterval α using ne_of_mem_of_not_mem ha h.1
             -- Porting note: Lean failed to figure out the function `f` by itself,
@@ -636,7 +636,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
           cases s with
           | bot => exact bot_le
           | coe s =>
-            dsimp -- Porting note (#11227): added a `dsimp`
+            dsimp -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11227): added a `dsimp`
             split_ifs with h
             · exact WithBot.coe_le_coe.2
                 ⟨iSup₂_le fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).1,
@@ -659,7 +659,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
   }
 
 @[simp, norm_cast]
-theorem coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
+theorem coe_sInf [DecidableRel (α := α) (· ≤ ·)] (S : Set (Interval α)) :
     ↑(sInf S) = ⋂ s ∈ S, (s : Set α) := by
   classical -- Porting note: added
   -- Porting note: this `change` was
@@ -678,12 +678,12 @@ theorem coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
     exact h fun s ha t hb => (hx _ ha).1.trans (hx _ hb).2
 
 @[simp, norm_cast]
-theorem coe_iInf [@DecidableRel α (· ≤ ·)] (f : ι → Interval α) :
+theorem coe_iInf [DecidableRel (α := α) (· ≤ ·)] (f : ι → Interval α) :
     ↑(⨅ i, f i) = ⋂ i, (f i : Set α) := by simp [iInf]
 
 -- @[simp] -- Porting note: not in simpNF
 @[norm_cast]
-theorem coe_iInf₂ [@DecidableRel α (· ≤ ·)] (f : ∀ i, κ i → Interval α) :
+theorem coe_iInf₂ [DecidableRel (α := α) (· ≤ ·)] (f : ∀ i, κ i → Interval α) :
     ↑(⨅ (i) (j), f i j) = ⋂ (i) (j), (f i j : Set α) := by simp_rw [coe_iInf]
 
 end CompleteLattice

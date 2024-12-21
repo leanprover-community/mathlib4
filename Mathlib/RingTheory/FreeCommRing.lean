@@ -94,7 +94,7 @@ theorem of_ne_one (x : α) : of x ≠ 1 :=
 theorem one_ne_of (x : α) : 1 ≠ of x :=
   FreeAbelianGroup.of_injective.ne <| Multiset.zero_ne_singleton _
 
--- Porting note: added to ease a proof in `Algebra.DirectLimit`
+-- Porting note: added to ease a proof in `Mathlib.Algebra.Colimit.ModuleRing`
 lemma of_cons (a : α) (m : Multiset α) : (FreeAbelianGroup.of (Multiplicative.ofAdd (a ::ₘ m))) =
     @HMul.hMul _ (FreeCommRing α) (FreeCommRing α) _ (of a)
     (FreeAbelianGroup.of (Multiplicative.ofAdd m)) := by
@@ -134,7 +134,7 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
   left_inv f := funext fun x => show (Multiset.map f {x}).prod = _ by simp
   right_inv F := MonoidHom.ext fun x =>
     let F' := MonoidHom.toAdditive'' F
-    let x' := Multiplicative.toAdd x
+    let x' := x.toAdd
     show (Multiset.map (fun a => F' {a}) x').sum = F' x' by
       erw [← Multiset.map_map (fun x => F' x) (fun x => {x}), ← AddMonoidHom.map_multiset_sum]
       exact DFunLike.congr_arg F (Multiset.sum_map_singleton x')

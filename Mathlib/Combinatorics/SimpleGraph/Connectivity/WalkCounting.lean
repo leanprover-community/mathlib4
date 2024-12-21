@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Ring.Nat
 import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Counting walks of a given length
@@ -205,9 +206,9 @@ instance : Fintype G.ConnectedComponent :=
 instance : Decidable G.Preconnected :=
   inferInstanceAs <| Decidable (∀ u v, G.Reachable u v)
 
-instance : Decidable G.Connected := by
-  rw [connected_iff, ← Finset.univ_nonempty_iff]
-  infer_instance
+instance : Decidable G.Connected :=
+  decidable_of_iff (G.Preconnected ∧ (Finset.univ : Finset V).Nonempty) <| by
+    rw [connected_iff, ← Finset.univ_nonempty_iff]
 
 instance Path.instFintype {u v : V} : Fintype (G.Path u v) where
   elems := (univ (α := { p : G.Walk u v | p.IsPath ∧ p.length < Fintype.card V })).map

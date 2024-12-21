@@ -20,7 +20,7 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 variable (R S T : Type*) [CommRing R] [CommRing S] [Algebra R S]
 variable [CommRing T] [Algebra R T]
 
-open TensorProduct
+open TensorProduct Topology
 
 /-- The canonical map from `Spec(S ⊗[R] T)` to the cartesian product `Spec S × Spec T`. -/
 noncomputable

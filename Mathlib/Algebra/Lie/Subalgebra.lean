@@ -410,7 +410,7 @@ theorem _root_.LieHom.range_eq_map : f.range = map f ⊤ := by
   ext
   simp
 
-instance : Inf (LieSubalgebra R L) :=
+instance : Min (LieSubalgebra R L) :=
   ⟨fun K K' ↦
     { (K ⊓ K' : Submodule R L) with
       lie_mem' := fun hx hy ↦ mem_inter (K.lie_mem hx.1 hy.1) (K'.lie_mem hx.2 hy.2) }⟩
@@ -465,7 +465,7 @@ instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
     inf_le_left := fun _ _ _ ↦ And.left
     inf_le_right := fun _ _ _ ↦ And.right }
 
-instance : Add (LieSubalgebra R L) where add := Sup.sup
+instance : Add (LieSubalgebra R L) where add := max
 
 instance : Zero (LieSubalgebra R L) where zero := ⊥
 
