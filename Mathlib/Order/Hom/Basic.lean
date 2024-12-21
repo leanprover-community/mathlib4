@@ -488,16 +488,13 @@ protected def dual : (α →o β) ≃ (αᵒᵈ →o βᵒᵈ) where
   left_inv _ := rfl
   right_inv _ := rfl
 
--- Porting note: We used to be able to write `(OrderHom.id : α →o α).dual` here rather than
--- `OrderHom.dual (OrderHom.id : α →o α)`.
--- See https://github.com/leanprover/lean4/issues/1910
 @[simp]
-theorem dual_id : OrderHom.dual (OrderHom.id : α →o α) = OrderHom.id :=
+theorem dual_id : (OrderHom.id : α →o α).dual = OrderHom.id :=
   rfl
 
 @[simp]
 theorem dual_comp (g : β →o γ) (f : α →o β) :
-    OrderHom.dual (g.comp f) = (OrderHom.dual g).comp (OrderHom.dual f) :=
+    (g.comp f).dual = g.dual.comp f.dual :=
   rfl
 
 @[simp]
@@ -523,6 +520,12 @@ protected def withBotMap (f : α →o β) : WithBot α →o WithBot β :=
 @[simps (config := .asFn)]
 protected def withTopMap (f : α →o β) : WithTop α →o WithTop β :=
   ⟨WithTop.map f, f.mono.withTop_map⟩
+
+/-- Lift an order homomorphism `f : α →o β` to an order homomorphism `ULift α →o ULift β` in a
+higher universe. -/
+@[simps!]
+def uliftMap (f : α →o β) : ULift α →o ULift β :=
+  ⟨fun i => ⟨f i.down⟩, fun _ _ h ↦ f.monotone h⟩
 
 end OrderHom
 

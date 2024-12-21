@@ -1131,6 +1131,57 @@ end Centralizer
 
 end NonUnitalSubalgebra
 
+namespace NonUnitalAlgebra
+
+open NonUnitalSubalgebra
+
+variable {R A : Type*} [CommSemiring R] [NonUnitalSemiring A]
+variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+
+variable (R) in
+lemma adjoin_le_centralizer_centralizer (s : Set A) :
+    adjoin R s ≤ centralizer R (centralizer R s) :=
+  adjoin_le Set.subset_centralizer_centralizer
+
+lemma commute_of_mem_adjoin_of_forall_mem_commute {a b : A} {s : Set A}
+    (hb : b ∈ adjoin R s) (h : ∀ b ∈ s, Commute a b) :
+    Commute a b := by
+  have : a ∈ centralizer R s := by simpa only [Commute.symm_iff (a := a)] using h
+  exact adjoin_le_centralizer_centralizer R s hb a this
+
+lemma commute_of_mem_adjoin_singleton_of_commute {a b c : A}
+    (hc : c ∈ adjoin R {b}) (h : Commute a b) :
+    Commute a c :=
+  commute_of_mem_adjoin_of_forall_mem_commute hc <| by simpa
+
+lemma commute_of_mem_adjoin_self {a b : A} (hb : b ∈ adjoin R {a}) :
+    Commute a b :=
+  commute_of_mem_adjoin_singleton_of_commute hb rfl
+
+variable (R) in
+
+/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
+semiring.
+
+See note [reducible non-instances]. -/
+abbrev adjoinNonUnitalCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
+    NonUnitalCommSemiring (adjoin R s) :=
+  { (adjoin R s).toNonUnitalSemiring with
+    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦
+      have := adjoin_le_centralizer_centralizer R s
+      Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
+
+/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
+ring.
+
+See note [reducible non-instances]. -/
+abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [NonUnitalRing A]
+    [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] {s : Set A}
+    (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) : NonUnitalCommRing (adjoin R s) :=
+  { (adjoin R s).toNonUnitalRing, adjoinNonUnitalCommSemiringOfComm R hcomm with }
+
+end NonUnitalAlgebra
+
 section Nat
 
 variable {R : Type*} [NonUnitalNonAssocSemiring R]

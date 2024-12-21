@@ -488,9 +488,9 @@ theorem length_mapAccumr₂ :
 
 end MapAccumr
 
-/-- All elements of `Fin n`, from `0` to `n-1`. The corresponding finset is `Finset.univ`. -/
-def finRange (n : ℕ) : List (Fin n) :=
-  (range n).pmap Fin.mk fun _ => List.mem_range.1
+/- #adaptation_note: this attribute should be removed after Mathlib moves to v4.15.0-rc1. -/
+set_option allowUnsafeReducibility true in
+attribute [semireducible] Fin.foldr.loop
 
 section Deprecated
 
