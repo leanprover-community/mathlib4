@@ -25,7 +25,7 @@ jobs:
         GITHUB_DIFF="https://github.com/leanprover-community/mathlib4/compare/nightly-testing...lean-pr-testing-$PR_NUMBER"
         # printf "$GITHUB_DIFF"
         printf $'# Diff: %s\n' "$GITHUB_DIFF"
-        printf $'scripts/merge-lean-testing-pr.sh %s   # %s\n' "[pr number goes here]" "[branch goes here]"
+        printf $'scripts/merge-lean-testing-pr.sh %s   # %s\n' "$PR_NUMBER" "$BRANCH"
         printf $'# # # # #\n'
         printf $'```\n'
         printf "EOF"
