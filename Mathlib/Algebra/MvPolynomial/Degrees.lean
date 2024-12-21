@@ -253,9 +253,9 @@ theorem monomial_le_degreeOf (i : σ) {f : MvPolynomial σ R} {m : σ →₀ ℕ
   rw [degreeOf_eq_sup i]
   apply Finset.le_sup h_m
 
-lemma degreeOf_monomial_eq [DecidableEq σ] (s : σ →₀ ℕ) (i : σ) {a : R} (ha : a ≠ 0) :
+lemma degreeOf_monomial_eq (s : σ →₀ ℕ) (i : σ) {a : R} (ha : a ≠ 0) :
     (monomial s a).degreeOf i = s i := by
-  rw [degreeOf_def, degrees_monomial_eq _ _ ha, Finsupp.count_toMultiset]
+  classical rw [degreeOf_def, degrees_monomial_eq _ _ ha, Finsupp.count_toMultiset]
 
 -- TODO we can prove equality with `NoZeroDivisors R`
 theorem degreeOf_mul_le (i : σ) (f g : MvPolynomial σ R) :
@@ -499,6 +499,15 @@ theorem coeff_eq_zero_of_totalDegree_lt {f : MvPolynomial σ R} {d : σ →₀ �
       refine not_not.mp (mt h ?_)
       exact lt_irrefl _
     · exact lt_of_le_of_lt (Nat.zero_le _) h
+
+theorem totalDegree_eq_zero_iff_eq_C {p : MvPolynomial σ R} :
+    p.totalDegree = 0 ↔ p = C (p.coeff 0) := by
+  constructor <;> intro h
+  · ext m; classical rw [coeff_C]; split_ifs with hm; · rw [← hm]
+    apply coeff_eq_zero_of_totalDegree_lt; rw [h]
+    exact Finset.sum_pos (fun i hi ↦ Nat.pos_of_ne_zero <| Finsupp.mem_support_iff.mp hi)
+      (Finsupp.support_nonempty_iff.mpr <| Ne.symm hm)
+  · rw [h, totalDegree_C]
 
 theorem totalDegree_rename_le (f : σ → τ) (p : MvPolynomial σ R) :
     (rename f p).totalDegree ≤ p.totalDegree :=
