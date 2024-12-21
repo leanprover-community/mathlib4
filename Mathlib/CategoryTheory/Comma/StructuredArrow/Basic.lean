@@ -926,6 +926,11 @@ def StructuredArrow.map₂IsoPreEquivalenceInverseCompProj {T : C ⥤ D} {S : D 
       map₂ (F := 𝟭 _) (G := 𝟭 _) (𝟙 _) α :=
   NatIso.ofComponents fun _ => isoMk (Iso.refl _)
 
+def StructuredArrow.map₂IsoMapCompMap₂ {T : C ⥤ D} {S : D ⥤ E} {T' : C ⥤ E}
+    (d : D) (e : E) (u : e ⟶ S.obj d) (α : T' ⟶ T ⋙ S) :
+    map₂ (G := 𝟭 _) u α ≅ map u ⋙  map₂ (G := 𝟭 _) (𝟙 _) α :=
+  NatIso.ofComponents fun _ => isoMk (Iso.refl _)
+
 /-- The functor establishing the equivalence `CostructuredArrow.preEquivalence`. -/
 @[simps!]
 def CostructuredArrow.preEquivalence.functor (f : CostructuredArrow G e) :
