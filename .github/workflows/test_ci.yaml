@@ -17,7 +17,7 @@ jobs:
       id: form_the_message
       run: |
         {
-        printf $'msg<<EOF\nWe will need to merge the following branches into `nightly-testing`:\n'
+        printf $'msg<<EOF\nWe will need to merge the following branches into \`nightly-testing\`:\n'
         printf $'```bash\n'
         BRANCH='lean-pr-testing-18818'
         PR_NUMBER=$(echo "$BRANCH" | grep -oP '\d+$')
