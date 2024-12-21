@@ -284,11 +284,11 @@ instance : IsLocalRing R⟦X⟧ :=
 
 end IsLocalRing
 
-section DiscreteValuationRing
+section IsDiscreteValuationRing
 
 variable {k : Type*} [Field k]
 
-open DiscreteValuationRing
+open IsDiscreteValuationRing
 
 theorem hasUnitMulPowIrreducibleFactorization :
     HasUnitMulPowIrreducibleFactorization k⟦X⟧ :=
@@ -303,7 +303,7 @@ theorem hasUnitMulPowIrreducibleFactorization :
 instance : UniqueFactorizationMonoid k⟦X⟧ :=
   hasUnitMulPowIrreducibleFactorization.toUniqueFactorizationMonoid
 
-instance : DiscreteValuationRing k⟦X⟧ :=
+instance : IsDiscreteValuationRing k⟦X⟧ :=
   ofHasUnitMulPowIrreducibleFactorization hasUnitMulPowIrreducibleFactorization
 
 instance isNoetherianRing : IsNoetherianRing k⟦X⟧ :=
@@ -376,7 +376,7 @@ def residueFieldOfPowerSeries : ResidueField k⟦X⟧ ≃+* k :=
   (Ideal.quotEquivOfEq (ker_coeff_eq_max_ideal).symm).trans
     (RingHom.quotientKerEquivOfSurjective constantCoeff_surj)
 
-end DiscreteValuationRing
+end IsDiscreteValuationRing
 
 
 end PowerSeries
