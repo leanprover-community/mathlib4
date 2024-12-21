@@ -3,7 +3,6 @@ Copyright (c) 2024 Justus Springer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justus Springer
 -/
-import Mathlib.Algebra.Category.Ring.BinaryCoproducts
 import Mathlib.AlgebraicGeometry.AffineScheme
 import Mathlib.CategoryTheory.ChosenFiniteProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Countable
@@ -59,13 +58,13 @@ def chosen_finite_products_aux :
 instance : ChosenFiniteProducts AffineScheme.{0} where
   product (X Y : AffineScheme) := ⟨_, IsLimit.ofPreservesConeTerminal
     (chosen_finite_products_aux X Y).functor <|
-    isLimitOfPreserves Spec <| IsColimit.op <| tensorProductColimit (Γ.obj (op X)) (Γ.obj (op Y))⟩
+    isLimitOfPreserves Spec <| IsColimit.op <| coproductCoconeIsColimit _ _⟩
   terminal := ⟨_, AffineScheme.specZIsTerminal⟩
 
 instance (priority := 100) : ChosenFiniteProducts AffineScheme.{u} where
   product (X Y : AffineScheme) := ⟨_, IsLimit.ofPreservesConeTerminal
     (chosen_finite_products_aux X Y).functor <|
-    isLimitOfPreserves Spec <| IsColimit.op <| tensorProductColimit (Γ.obj (op X)) (Γ.obj (op Y))⟩
+    isLimitOfPreserves Spec <| IsColimit.op <| coproductCoconeIsColimit _ _⟩
   terminal := ⟨_, AffineScheme.isTerminal⟩
 
 lemma tensorObj : X ⊗ Y = Spec.obj (op (of (Γ.obj (op X) ⊗[ℤ] Γ.obj (op Y)))) := rfl
