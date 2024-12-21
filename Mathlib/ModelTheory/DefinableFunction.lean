@@ -226,6 +226,23 @@ theorem realize_toSigma {γ : β → Type y} [∀ b, Finite (γ b)]
     ← realize_iff_realize_eq]
   simp only [realize_iff_realize_eq, implies_true]
 
+noncomputable def toSum [Finite γ] (f : T.FunctionalFormula α β) (g : T.FunctionalFormula α γ) :
+    T.FunctionalFormula α (β ⊕ γ) :=
+  mk (f.toFormula.relabel (Sum.elim Sum.inl (Sum.inr ∘ Sum.inl)) ⊓
+     (g.toFormula.relabel (Sum.elim Sum.inl (Sum.inr ∘ Sum.inr)))) <| by
+    simp only [Function.comp_def, models_formula_iff, Formula.realize_iExsUnique,
+      Formula.realize_inf, Formula.realize_relabel, realize_toFormula, Sum.elim_inl, Sum.elim_inr]
+    intro M x
+    use Sum.elim (f.realize x) (g.realize x)
+    simp +contextual [realize_iff_realize_eq, funext_iff]
+
+@[simp]
+theorem realize_toSum [Finite γ] (f : T.FunctionalFormula α β) (g : T.FunctionalFormula α γ)
+    (x : α → M) : (toSum f g).realize x = Sum.elim (f.realize x) (g.realize x) := by
+  simp only [toSum, Function.comp_def, ← realize_iff_realize_eq, realize_mk, Formula.realize_inf,
+    Formula.realize_relabel, realize_toFormula, Sum.elim_inl, Sum.elim_inr]
+  simp only [realize_iff_realize_eq, and_self]
+
 noncomputable def rel {γ : β → Type y} [∀ b, Finite (γ b)] (φ : L.Formula (Sigma γ))
     (f : ∀ b, T.FunctionalFormula α (γ b)) : L.Formula α :=
   Formula.iAlls (Sigma γ) ((toSigma f).toFormula.imp (φ.relabel Sum.inr))
@@ -236,11 +253,22 @@ theorem realize_rel {γ : β → Type y} [∀ b, Finite (γ b)] (φ : L.Formula 
     (rel φ f).Realize x ↔ φ.Realize (fun b => (f b.1).realize x b.2) := by
   simp [rel, realize_iff_realize_eq]
 
+noncomputable def rel2 [Finite γ] (φ : L.Formula (β ⊕ γ))
+    (f : T.FunctionalFormula α β) (g : T.FunctionalFormula α γ) :
+    L.Formula α :=
+  Formula.iAlls (β ⊕ γ) ((toSum f g).toFormula.imp (φ.relabel Sum.inr))
+
+@[simp]
+theorem realize_rel2 [Finite γ] (φ : L.Formula (β ⊕ γ))
+    (f : T.FunctionalFormula α β) (g : T.FunctionalFormula α γ) (x : α → M) :
+    (rel2 φ f g).Realize x ↔ φ.Realize (Sum.elim (f.realize x) (g.realize x)) := by
+  simp [rel2, realize_iff_realize_eq]
+
 noncomputable def equal (f g : T.FunctionalFormula α β) : L.Formula α :=
   let _ := Fintype.ofFinite β
-  rel (Formula.iInf (Finset.univ : Finset β)
-    (fun b => Term.equal (var ⟨true, b⟩) (var ⟨false, b⟩)))
-    (fun b : Bool => if b then f else g)
+  rel2 (Formula.iInf (Finset.univ : Finset β)
+    (fun b => Term.equal (var (Sum.inl b)) (var (Sum.inr b))))
+    f g
 
 @[simp]
 theorem realize_equal (f g : T.FunctionalFormula α β) (x : α → M) :
@@ -248,18 +276,18 @@ theorem realize_equal (f g : T.FunctionalFormula α β) (x : α → M) :
   simp [equal, funext_iff]
 
 noncomputable def injOn [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β)
-    (S : L.Formula γ) : L.Formula α :=
+    (S : L.Formula (α ⊕ γ)) : L.Formula α :=
   Formula.iAlls (γ ⊕ γ) (
-    (S.relabel (Sum.inr ∘ Sum.inl)).imp <|
-    (S.relabel (Sum.inr ∘ Sum.inr)).imp <|
+    (S.relabel (Sum.elim Sum.inl (Sum.inr ∘ Sum.inl))).imp <|
+    (S.relabel (Sum.elim Sum.inl (Sum.inr ∘ Sum.inr))).imp <|
     (equal (f.relabelLeft (Sum.elim Sum.inl (Sum.inr ∘ Sum.inl)))
           (f.relabelLeft (Sum.elim Sum.inl (Sum.inr ∘ Sum.inr)))).imp <|
-    equal (comap T (Sum.inr ∘ Sum.inl)) (comap T (Sum.inr ∘ (Sum.inr))))
+    equal (comap T (Sum.inr ∘ Sum.inl)) (comap T (Sum.inr ∘ Sum.inr)))
 
 @[simp]
-theorem realize_injOn [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) (S : L.Formula γ)
+theorem realize_injOn [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) (S : L.Formula (α ⊕ γ))
     (x : α → M) : (injOn f S).Realize x ↔
-      Set.InjOn (fun y : γ → M => f.realize (Sum.elim x y)) { y | S.Realize y } := by
+      Set.InjOn (fun y : γ → M => f.realize (Sum.elim x y)) { y | S.Realize (Sum.elim x y) } := by
   simp only [injOn, Function.comp_def, Formula.realize_iAlls, Formula.realize_imp,
     Formula.realize_relabel, Sum.elim_inr, realize_equal, realize_relabelLeft, funext_iff,
     Sum.forall_sum, Set.InjOn, Set.mem_setOf_eq]
@@ -277,17 +305,17 @@ theorem realize_injective [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) (
   simp [injective, Set.InjOn, Function.Injective]
 
 noncomputable def surjOn [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β)
-    (S : L.Formula γ) (T : L.Formula β) : L.Formula α :=
-  Formula.iAlls β ((T.relabel Sum.inr).imp <| Formula.iExs γ <|
-    S.relabel Sum.inr ⊓
+    (S : L.Formula (α ⊕ γ)) (T : L.Formula (α ⊕ β)) : L.Formula α :=
+  Formula.iAlls β (T.imp <| Formula.iExs γ <|
+    S.relabel (Sum.elim (Sum.inl ∘ Sum.inl) Sum.inr) ⊓
     (f.toFormula.relabel
     (Sum.elim (Sum.elim (Sum.inl ∘ Sum.inl) Sum.inr) (Sum.inl ∘ Sum.inr))))
 
 @[simp]
-theorem realize_surjOn [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) (S : L.Formula γ)
-    (T : L.Formula β) (x : α → M) : (surjOn f S T).Realize x ↔
+theorem realize_surjOn [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) (S : L.Formula (α ⊕ γ))
+    (T : L.Formula (α ⊕ β)) (x : α → M) : (surjOn f S T).Realize x ↔
       Set.SurjOn (fun y : γ → M => f.realize (Sum.elim x y))
-        { y | S.Realize y } {b | T.Realize b} := by
+        { y | S.Realize (Sum.elim x y) } {b | T.Realize (Sum.elim x b)} := by
   simp only [surjOn, Function.comp_def, Formula.realize_iAlls, Formula.realize_imp,
     Formula.realize_relabel, Sum.elim_inr, Formula.realize_iExs, Formula.realize_inf,
     realize_toFormula, Sum.elim_inl, realize_iff_realize_eq, funext_iff, Set.SurjOn, Set.subset_def,
@@ -304,17 +332,20 @@ theorem realize_surjective [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) 
   simp [surjective, Set.SurjOn, Function.Surjective, Set.eq_univ_iff_forall]
 
 noncomputable def mapsTo [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β)
-    (S : L.Formula γ) (T : L.Formula β) : L.Formula α :=
-  Formula.iAlls γ ((S.relabel Sum.inr).imp <| rel (T.relabel (fun b => ⟨(), b⟩))
-    (fun _ : Unit => f))
+    (S : L.Formula (α ⊕ γ)) (T : L.Formula (α ⊕ β)) : L.Formula α :=
+  Formula.iAlls γ (S.imp <| Formula.iAlls β (f.toFormula.imp
+    (T.relabel (Sum.elim (Sum.inl ∘ Sum.inl) Sum.inr))))
 
 @[simp]
-theorem realize_mapsTo [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) (S : L.Formula γ)
-    (T : L.Formula β) (x : α → M) : (mapsTo f S T).Realize x ↔
+theorem realize_mapsTo [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) (S : L.Formula (α ⊕ γ))
+    (T : L.Formula (α ⊕ β)) (x : α → M) : (mapsTo f S T).Realize x ↔
       Set.MapsTo (fun y : γ → M => f.realize (Sum.elim x y))
-        { y | S.Realize y } {b | T.Realize b} := by
-  simp only [mapsTo, Formula.realize_iAlls, Formula.realize_imp, Formula.realize_relabel,
-    Function.comp_def, Sum.elim_inr, realize_rel, Set.MapsTo, Set.mem_setOf_eq]
+        { y | S.Realize (Sum.elim x y) } {b | T.Realize (Sum.elim x b)} := by
+  simp +contextual only [mapsTo, Function.comp_def, Formula.realize_iAlls, Formula.realize_imp,
+    realize_toFormula, Sum.elim_inl, Sum.elim_inr, realize_iff_realize_eq, Formula.realize_relabel,
+    forall_eq', Set.MapsTo, Set.mem_setOf_eq]
+  simp +singlePass [← Sum.elim_comp_inl_inr]
+  simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr]
 
 end FunctionalFormula
 
