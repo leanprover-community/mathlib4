@@ -1926,7 +1926,6 @@ section
 variable [DecidableEq K]
 
 /-- The step function for the TM2 model. -/
-@[simp]
 def stepAux : Stmt₂ → σ → (∀ k, List (Γ k)) → Cfg₂
   | push k f q, v, S => stepAux q v (update S k (f v :: S k))
   | peek k f q, v, S => stepAux q (f v (S k).head?) S
@@ -1937,10 +1936,12 @@ def stepAux : Stmt₂ → σ → (∀ k, List (Γ k)) → Cfg₂
   | halt, v, S => ⟨none, v, S⟩
 
 /-- The step function for the TM2 model. -/
-@[simp]
 def step (M : Λ → Stmt₂) : Cfg₂ → Option Cfg₂
   | ⟨none, _, _⟩ => none
   | ⟨some l, v, S⟩ => some (stepAux (M l) v S)
+
+attribute [simp] stepAux.eq_1 stepAux.eq_2 stepAux.eq_3
+  stepAux.eq_4 stepAux.eq_5 stepAux.eq_6 stepAux.eq_7 step.eq_1 step.eq_2
 
 /-- The (reflexive) reachability relation for the TM2 model. -/
 def Reaches (M : Λ → Stmt₂) : Cfg₂ → Cfg₂ → Prop :=
