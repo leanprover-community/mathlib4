@@ -19,7 +19,7 @@ jobs:
           echo "hi blizzard"
           {
 
-            printf 'msg<<EOF\n%s\nEOF' "have a backtick: `"
+            printf 'msg<<EOF\n%s\nEOF' "have a backtick: \`"
             # printf $'msg<<EOF\nWe will need to merge the following branches into \`nightly-testing\`:\n'
             # printf $'\`\`\`bash\n'
             # PR_NUMBER= '18818'
