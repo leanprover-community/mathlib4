@@ -203,7 +203,7 @@ theorem Polynomial.flt_catalan_aux
     rw [eq_C_of_derivative_eq_zero da]
     exact natDegree_C _
   -- characteristic p > 0
-  · set d := a.natDegree with eq_d; clear_value d
+  · generalize eq_d : a.natDegree = d
     -- set up infinite descent
     -- strong induct on `d := a.natDegree`
     induction d
@@ -219,14 +219,14 @@ theorem Polynomial.flt_catalan_aux
       obtain ⟨cc, cc_nz, eq_c, eq_deg_c⟩ := find_contract hc cd chn0
       set ch := ringChar k
       suffices hca : ca.natDegree = 0 by
-        rw [eq_d, eq_deg_a, hca, zero_mul]
+        rw [← eq_d, eq_deg_a, hca, zero_mul]
       by_contra hnca; apply hnca
       apply ih_d _ _ _ ca_nz cb_nz cc_nz <;> clear ih_d <;> try rfl
       · apply is_coprime_of_expand chn0
         rwa [← eq_a, ← eq_b]
       · have _ : ch ≠ 1 := CharP.ringChar_ne_one
         have hch2 : 2 ≤ ch := by omega
-        rw [← add_le_add_iff_right 1, eq_d, eq_deg_a]
+        rw [← add_le_add_iff_right 1, ← eq_d, eq_deg_a]
         refine le_trans ?_ (Nat.mul_le_mul_left _ hch2)
         omega
       · rw [eq_a, eq_b, eq_c, ← expand_C ch u, ← expand_C ch v, ← expand_C ch w] at heq
