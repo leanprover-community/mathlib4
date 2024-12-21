@@ -338,23 +338,23 @@ end MomentGeneratingFunction
 theorem integrable_bounded [IsFiniteMeasure μ] (a b : ℝ) {X : Ω → ℝ} (hX : AEMeasurable X μ)
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
      Integrable X μ := by
-   have m1 : HasFiniteIntegral X μ := by
+  have m1 : HasFiniteIntegral X μ := by
       apply (hasFiniteIntegral_const (max ‖a‖ ‖b‖)).mono'
       filter_upwards [h.mono fun ω h ↦ h.1, h.mono fun ω h ↦ h.2] with ω using abs_le_max_abs_abs
-   exact ⟨aestronglyMeasurable_iff_aemeasurable.mpr hX, m1⟩
+  exact ⟨hX.aestronglyMeasurable, m1⟩
 
-lemma aemeasurable_expt {X : Ω → ℝ} (t : ℝ) (hX : AEMeasurable X μ) :
+lemma aemeasurable_exp_mul {X : Ω → ℝ} (t : ℝ) (hX : AEMeasurable X μ) :
     AEStronglyMeasurable (fun ω ↦ rexp (t * (X ω))) μ :=
-  aestronglyMeasurable_iff_aemeasurable.mpr <| measurable_exp.comp_aemeasurable' (hX.const_mul t)
+  (measurable_exp.comp_aemeasurable (hX.const_mul t)).aestronglyMeasurable
 
-lemma integrable_expt [IsFiniteMeasure μ] {X : Ω → ℝ} (t b : ℝ) (ht : t > 0)
+lemma integrable_exp_mul_of_le [IsFiniteMeasure μ] {X : Ω → ℝ} (t b : ℝ) (ht : 0 ≤ t)
     (hX : AEMeasurable X μ) (hb : ∀ᵐ ω ∂μ, X ω ≤ b) :
-    Integrable (fun ω ↦ exp (t * (X ω))) μ := by
+    Integrable (fun ω ↦ exp (t * X ω)) μ := by
   have h : ∀ᵐ ω ∂μ, rexp (t * X ω) ∈ Set.Icc 0 (rexp (t * b)) := by
     filter_upwards [hb] with ω hb
     constructor
     · exact exp_nonneg (t * X ω)
-    · exact (exp_le_exp.mpr (mul_le_mul_of_nonneg_left hb (le_of_lt ht)))
+    · exact (exp_le_exp.mpr (mul_le_mul_of_nonneg_left hb ht))
   exact integrable_bounded 0 (rexp (t * b))
     (Measurable.comp_aemeasurable' measurable_exp (AEMeasurable.const_mul hX t)) h
 
