@@ -1135,6 +1135,38 @@ theorem get?_enum (s : Seq α) (n : ℕ) : get? (enum s) n = Option.map (Prod.mk
   get?_zip _ _ _
 
 @[simp]
+theorem zipWith_nil_left {f : α → β → γ} {s} :
+    zipWith f nil s = nil :=
+  rfl
+
+@[simp]
+theorem zipWith_nil_right {f : α → β → γ} {s} :
+    zipWith f s nil = nil := by
+  ext1
+  simp
+
+@[simp]
+theorem zipWith_cons_cons {f : α → β → γ} {x s x' s'} :
+    zipWith f (cons x s) (cons x' s') = cons (f x x') (zipWith f s s') := by
+  ext1 n
+  cases' n <;> simp
+
+@[simp]
+theorem zip_nil_left {s : Seq α} :
+    zip (@nil α) s = nil :=
+  rfl
+
+@[simp]
+theorem zip_nil_right {s : Seq α} :
+    zip s (@nil α) = nil :=
+  zipWith_nil_right
+
+@[simp]
+theorem zip_cons_cons {s s' : Seq α} {x x'} :
+    zip (cons x s) (cons x' s') = cons (x, x') (zip s s') :=
+  zipWith_cons_cons
+
+@[simp]
 theorem enum_nil : enum (nil : Seq α) = nil :=
   rfl
 
