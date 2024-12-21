@@ -15,14 +15,6 @@ additive homomorphisms from `FreeMonoid` and `FreeAddMonoid`.
 
 We do not use `to_additive` because it can't map `Multiplicative ℕ` to `ℕ`.
 
-## TODO
-
-There is lots of defeq abuse here of `FreeAddMonoid α = List α`, e.g. in statements like
-```
-theorem countP_apply (l : FreeAddMonoid α) : countP p l = List.countP p l := rfl
-```
-This needs cleaning up.
-
 -/
 
 variable {α : Type*} (p : α → Prop) [DecidablePred p]
