@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Johannes Hölzl, Reid Barton, Kim Morrison, Patrick Massot, Kyle Miller,
 Minchao Wu, Yury Kudryashov, Floris van Doorn
 -/
+import Mathlib.Data.Set.CoeSort
 import Mathlib.Data.SProd
 import Mathlib.Data.Subtype
 import Mathlib.Order.Notation
@@ -19,7 +20,6 @@ More advanced theorems about these definitions are located in other files in `Ma
 ## Main definitions
 
 - complement of a set and set difference;
-- `Set.Elem`: coercion of a set to a type; it is reducibly equal to `{x // x ∈ s}`;
 - `Set.preimage f s`, a.k.a. `f ⁻¹' s`: preimage of a set;
 - `Set.range f`: the range of a function;
   it is more general than `f '' univ` because it allows functions from `Sort*`;
@@ -88,18 +88,6 @@ theorem diff_eq (s t : Set α) : s \ t = s ∩ tᶜ := rfl
 @[simp] theorem mem_diff {s t : Set α} (x : α) : x ∈ s \ t ↔ x ∈ s ∧ x ∉ t := Iff.rfl
 
 theorem mem_diff_of_mem {s t : Set α} {x : α} (h1 : x ∈ s) (h2 : x ∉ t) : x ∈ s \ t := ⟨h1, h2⟩
-
--- Porting note: I've introduced this abbreviation, with the `@[coe]` attribute,
--- so that `norm_cast` has something to index on.
--- It is currently an abbreviation so that instance coming from `Subtype` are available.
--- If you're interested in making it a `def`, as it probably should be,
--- you'll then need to create additional instances (and possibly prove lemmas about them).
--- The first error should appear below at `monotoneOn_iff_monotone`.
-/-- Given the set `s`, `Elem s` is the `Type` of element of `s`. -/
-@[coe, reducible] def Elem (s : Set α) : Type u := {x // x ∈ s}
-
-/-- Coercion from a set to the corresponding subtype. -/
-instance : CoeSort (Set α) (Type u) := ⟨Elem⟩
 
 /-- The preimage of `s : Set β` by `f : α → β`, written `f ⁻¹' s`,
   is the set of `x : α` such that `f x ∈ s`. -/
