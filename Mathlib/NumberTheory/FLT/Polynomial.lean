@@ -129,7 +129,7 @@ private theorem Polynomial.flt_catalan_deriv [DecidableEq k]
         ← radical_mul hab,
         ← radical_mul (hca.symm.mul_left hbc)] at nd_lt
 
-    rcases nd_lt with ⟨hpa', hqb', hrc'⟩
+    obtain ⟨hpa', hqb', hrc'⟩ := nd_lt
     have habc := mul_ne_zero (mul_ne_zero ha hb) hc
     have hpa := hpa'.trans (radical_natDegree_le habc)
     have hqb := hqb'.trans (radical_natDegree_le habc)
@@ -163,7 +163,7 @@ private lemma find_contract {a : k[X]}
 
 private theorem expand_dvd {a b : k[X]} (n : ℕ) (h : a ∣ b) :
     expand k n a ∣ expand k n b := by
-  rcases h with ⟨t, eqn⟩
+  obtain ⟨t, eqn⟩ := h
   use expand k n t
   rw [eqn, map_mul]
 
@@ -178,7 +178,7 @@ private theorem is_coprime_of_expand
   intro hu
   have heu := isUnit_of_dvd_unit he hu
   rw [Polynomial.isUnit_iff] at heu ⊢
-  rcases heu with ⟨r, hur, eq_r⟩
+  obtain ⟨r, hur, eq_r⟩ := heu
   rw [eq_comm, expand_eq_C (zero_lt_iff.mpr hn), eq_comm] at eq_r
   exact ⟨r, hur, eq_r⟩
 
@@ -195,7 +195,7 @@ theorem Polynomial.flt_catalan_aux
   -- characteristic zero
   · have hderiv := flt_catalan_deriv
       hp hq hr hineq chp chq chr ha hb hc hab hu hv hw heq
-    rcases hderiv with ⟨da, -, -⟩
+    obtain ⟨da, -, -⟩ := hderiv
     have czk : CharZero k := by
       apply charZero_of_inj_zero
       intro n
@@ -217,9 +217,9 @@ theorem Polynomial.flt_catalan_aux
       obtain ⟨ad, bd, cd⟩ := flt_catalan_deriv
         hp hq hr hineq chp chq chr ha hb hc hab hu hv hw heq
       -- find contracts `ca, cb, cc` so that `a(k) = ca(k^ch)`
-      rcases find_contract ha ad chn0 with ⟨ca, ca_nz, eq_a, eq_deg_a⟩
-      rcases find_contract hb bd chn0 with ⟨cb, cb_nz, eq_b, eq_deg_b⟩
-      rcases find_contract hc cd chn0 with ⟨cc, cc_nz, eq_c, eq_deg_c⟩
+      obtain ⟨ca, ca_nz, eq_a, eq_deg_a⟩ := find_contract ha ad chn0
+      obtain ⟨cb, cb_nz, eq_b, eq_deg_b⟩ := find_contract hb bd chn0
+      obtain ⟨cc, cc_nz, eq_c, eq_deg_c⟩ := find_contract hc cd chn0
       set ch := ringChar k
       suffices hca : ca.natDegree = 0 by
         rw [eq_d, eq_deg_a, hca, zero_mul]
@@ -285,8 +285,8 @@ theorem fermatLastTheoremPolynomial {n : ℕ} (hn : 3 ≤ n) (chn : ¬ringChar k
     FermatLastTheoremWith' k[X] n := by
   rw [FermatLastTheoremWith']
   intros a b c ha hb hc heq
-  rcases gcd_dvd_left a b with ⟨a', eq_a⟩
-  rcases gcd_dvd_right a b with ⟨b', eq_b⟩
+  obtain ⟨a', eq_a⟩ := gcd_dvd_left a b
+  obtain ⟨b', eq_b⟩ := gcd_dvd_right a b
   set d := gcd a b
   have hd : d ≠ 0 := gcd_ne_zero_of_left ha
   rw [eq_a, eq_b, mul_pow, mul_pow, ← mul_add] at heq
@@ -301,7 +301,7 @@ theorem fermatLastTheoremPolynomial {n : ℕ} (hn : 3 ≤ n) (chn : ¬ringChar k
     simp_rw [Multiset.le_iff_count, Multiset.count_nsmul,
       mul_le_mul_left hn] at hdncn ⊢
     exact hdncn
-  rcases hdc with ⟨c', eq_c⟩
+  obtain ⟨c', eq_c⟩ := hdc
   rw [eq_a, mul_ne_zero_iff] at ha
   rw [eq_b, mul_ne_zero_iff] at hb
   rw [eq_c, mul_ne_zero_iff] at hc
@@ -310,7 +310,7 @@ theorem fermatLastTheoremPolynomial {n : ℕ} (hn : 3 ≤ n) (chn : ¬ringChar k
   rw [eq_c, mul_pow, mul_comm, mul_left_inj' (pow_ne_zero n hd)] at heq
   suffices goal : a'.natDegree = 0 ∧ b'.natDegree = 0 ∧ c'.natDegree = 0 by
     simp [natDegree_eq_zero] at goal
-    rcases goal with ⟨⟨ca', ha'⟩, ⟨cb', hb'⟩, ⟨cc', hc'⟩⟩
+    obtain ⟨⟨ca', ha'⟩, ⟨cb', hb'⟩, ⟨cc', hc'⟩⟩ := goal
     rw [← ha', ← hb', ← hc']
     rw [← ha', C_ne_zero] at ha
     rw [← hb', C_ne_zero] at hb
