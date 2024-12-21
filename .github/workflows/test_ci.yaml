@@ -9,7 +9,16 @@ jobs:
   log-event-info:
     runs-on: ubuntu-latest
     steps:
-      - name: name
+      - name: print event info
         run: |
           # for debugging, we print the available variables
           echo "github.event.action: '${{ toJSON( github.event.commits ) }}'"
+      - name: send zulip test message
+        uses: zulip/github-actions-zulip/send-message@v1
+        with:
+          api-key: ${{ secrets.ZULIP_API_KEY }}
+          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+          organization-url: 'https://leanprover.zulipchat.com'
+          to: "684366"
+          type: 'private'
+          content: 'hi blizzard, ping'
