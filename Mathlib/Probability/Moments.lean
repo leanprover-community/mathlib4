@@ -174,47 +174,13 @@ lemma integrable_exp_mul_of_le [IsFiniteMeasure μ]
   rw [integrable_congr (h_eq u)] at hu
   exact integrable_exp_mul_of_le_of_measurable hX.measurable_mk hu h_nonneg htu
 
-/-- Auxiliary lemma for `integrable_exp_mul_of_ge`. -/
-lemma integrable_exp_mul_of_ge_of_measurable [IsFiniteMeasure μ] (hX : Measurable X)
-    (hu : Integrable (fun ω ↦ exp (u * X ω)) μ) (h_nonpos : t ≤ 0) (htu : u ≤ t) :
-    Integrable (fun ω ↦ exp (t * X ω)) μ := by
-  by_cases ht : t = 0
-  · simp [ht]
-  have h_neg : t < 0 := lt_of_le_of_ne h_nonpos ht
-  have hu' : Integrable (1 + {w | X w ≤ 0}.indicator (fun ω ↦ exp (u * X ω))) μ :=
-    (integrable_const _).add (hu.indicator (hX measurableSet_Iic))
-  refine hu'.mono ?_ (ae_of_all _ fun ω ↦ ?_)
-  · have hX : AEMeasurable X μ := aemeasurable_of_aemeasurable_exp_mul (htu.trans_lt h_neg).ne
-      hu.aemeasurable
-    exact (measurable_exp.comp_aemeasurable (hX.const_mul _)).aestronglyMeasurable
-  · simp only [norm_eq_abs, abs_exp, Pi.add_apply, Pi.one_apply]
-    rw [abs_of_nonneg]
-    swap; · exact add_nonneg zero_le_one (Set.indicator_nonneg (fun ω _ ↦ by positivity) _)
-    rcases lt_or_le 0 (X ω) with h_pos | h_nonpos
-    · simp only [Set.mem_setOf_eq, not_le, h_pos, Set.indicator_of_not_mem, add_zero,
-        exp_le_one_iff]
-      exact mul_nonpos_of_nonpos_of_nonneg h_neg.le h_pos.le
-    · simp only [Set.mem_setOf_eq, h_nonpos, Set.indicator_of_mem]
-      calc rexp (t * X ω) ≤ 1 + rexp (t * X ω) := (le_add_iff_nonneg_left _).mpr zero_le_one
-      _ ≤ 1 + exp (u * X ω) := by
-        refine add_le_add le_rfl (exp_monotone ?_)
-        exact mul_le_mul_of_nonpos_of_nonpos htu le_rfl (htu.trans h_neg.le) h_nonpos
-
 /-- If `ω ↦ exp (u * X ω)` is integrable at `u ≤ 0`, then it is integrable on `[u, 0]`. -/
 lemma integrable_exp_mul_of_ge [IsFiniteMeasure μ]
     (hu : Integrable (fun ω ↦ exp (u * X ω)) μ) (h_nonpos : t ≤ 0) (htu : u ≤ t) :
     Integrable (fun ω ↦ exp (t * X ω)) μ := by
-  by_cases ht : t = 0
-  · simp [ht]
-  have hX : AEMeasurable X μ := by
-    refine aemeasurable_of_aemeasurable_exp_mul ?_ hu.aemeasurable
-    refine (htu.trans_lt ?_).ne
-    exact lt_of_le_of_ne h_nonpos ht
-  have h_eq t : (fun ω ↦ exp (t * X ω)) =ᵐ[μ] fun ω ↦ exp (t * hX.mk X ω) := by
-    filter_upwards [hX.ae_eq_mk] with ω hω using by rw [hω]
-  rw [integrable_congr (h_eq t)]
-  rw [integrable_congr (h_eq u)] at hu
-  exact integrable_exp_mul_of_ge_of_measurable hX.measurable_mk hu h_nonpos htu
+  suffices Integrable (fun ω ↦ exp (- t * (-X) ω)) μ by simpa using this
+  exact integrable_exp_mul_of_le (u := -u) (t := -t)
+    (by simpa using hu) (by simp [h_nonpos]) (by simp [htu])
 
 /-- If `ω ↦ exp (u * X ω)` is integrable at `u` and `-u`, then it is integrable on `[-u, u]`. -/
 lemma integrable_exp_mul_of_abs_le [IsFiniteMeasure μ]
