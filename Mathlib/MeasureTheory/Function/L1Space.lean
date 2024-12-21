@@ -444,6 +444,14 @@ theorem integrable_const_iff {c : β} : Integrable (fun _ : α => c) μ ↔ c = 
   have : AEStronglyMeasurable (fun _ : α => c) μ := aestronglyMeasurable_const
   rw [Integrable, and_iff_right this, hasFiniteIntegral_const_iff]
 
+theorem integrable_of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ} (hX : AEMeasurable X μ)
+    (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+     Integrable X μ := by
+  have m1 : HasFiniteIntegral X μ := by
+      apply (hasFiniteIntegral_const (max ‖a‖ ‖b‖)).mono'
+      filter_upwards [h.mono fun ω h ↦ h.1, h.mono fun ω h ↦ h.2] with ω using abs_le_max_abs_abs
+  exact ⟨hX.aestronglyMeasurable, m1⟩
+
 @[simp]
 theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α => c) μ :=
   integrable_const_iff.2 <| Or.inr <| measure_lt_top _ _

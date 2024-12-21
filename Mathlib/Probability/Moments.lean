@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Variance
+import Mathlib.MeasureTheory.Function.L1Space
 
 /-!
 # Moments and moment generating function
@@ -335,14 +336,6 @@ theorem measure_le_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
 
 end MomentGeneratingFunction
 
-theorem integrable_bounded [IsFiniteMeasure μ] (a b : ℝ) {X : Ω → ℝ} (hX : AEMeasurable X μ)
-    (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
-     Integrable X μ := by
-  have m1 : HasFiniteIntegral X μ := by
-      apply (hasFiniteIntegral_const (max ‖a‖ ‖b‖)).mono'
-      filter_upwards [h.mono fun ω h ↦ h.1, h.mono fun ω h ↦ h.2] with ω using abs_le_max_abs_abs
-  exact ⟨hX.aestronglyMeasurable, m1⟩
-
 lemma aemeasurable_exp_mul {X : Ω → ℝ} (t : ℝ) (hX : AEMeasurable X μ) :
     AEStronglyMeasurable (fun ω ↦ rexp (t * (X ω))) μ :=
   (measurable_exp.comp_aemeasurable (hX.const_mul t)).aestronglyMeasurable
@@ -355,7 +348,6 @@ lemma integrable_exp_mul_of_le [IsFiniteMeasure μ] {X : Ω → ℝ} (t b : ℝ)
     constructor
     · exact exp_nonneg (t * X ω)
     · exact (exp_le_exp.mpr (mul_le_mul_of_nonneg_left hb ht))
-  exact integrable_bounded 0 (rexp (t * b))
-    (Measurable.comp_aemeasurable' measurable_exp (AEMeasurable.const_mul hX t)) h
+  exact integrable_of_mem_Icc 0 (rexp (t * b)) (measurable_exp.comp_aemeasurable (hX.const_mul t)) h
 
 end ProbabilityTheory
