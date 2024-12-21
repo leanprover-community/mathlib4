@@ -330,9 +330,7 @@ namespace DirectedOn
 
 section Pi
 
-variable {ι : Type*} {α : ι → Type*}
-
-variable (r : (i : ι) →  α i →  α i → Prop)
+variable {ι : Type*} {α : ι → Type*} {r : (i : ι) →  α i →  α i → Prop}
 
 lemma proj {d : Set (Π i, α i)} (hd : DirectedOn (fun x y => ∀ i, r i (x i)  (y i)) d) (i : ι) :
     DirectedOn (r i) ((fun a => a i) '' d) :=
