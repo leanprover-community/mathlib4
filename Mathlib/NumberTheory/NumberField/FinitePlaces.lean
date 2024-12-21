@@ -198,11 +198,18 @@ theorem mk_eq_iff {v₁ v₂ : HeightOneSpectrum (𝓞 K)} : mk v₁ = mk v₂ �
 theorem maximalIdeal_mk (v : HeightOneSpectrum (𝓞 K)) : maximalIdeal (mk v) = v := by
   rw [← mk_eq_iff, mk_maximalIdeal]
 
+noncomputable def equivHeightOneSpectrum :
+    FinitePlace K ≃ HeightOneSpectrum (𝓞 K) where
+  toFun := maximalIdeal
+  invFun := mk
+  left_inv := mk_maximalIdeal
+  right_inv := maximalIdeal_mk
+
 lemma maximalIdeal_injective : (fun w : FinitePlace K ↦ maximalIdeal w).Injective :=
-  Function.HasLeftInverse.injective ⟨mk, mk_maximalIdeal⟩
+  equivHeightOneSpectrum.injective
 
 lemma maximalIdeal_inj (w₁ w₂ : FinitePlace K) : maximalIdeal w₁ = maximalIdeal w₂ ↔ w₁ = w₂ :=
-  maximalIdeal_injective.eq_iff
+  equivHeightOneSpectrum.injective.eq_iff
 
 theorem mulSupport_finite_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
     (Function.mulSupport fun w : FinitePlace K ↦ w x).Finite := by
