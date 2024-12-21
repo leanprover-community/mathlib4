@@ -763,7 +763,7 @@ noncomputable def iExsUnique [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formul
   let _ := Fintype.ofFinite β
   iExs β (φ ⊓ iAlls β
     ((φ.relabel (fun a => Sum.elim (Sum.inl ∘ Sum.inl) Sum.inr a)).imp
-    (BoundedFormula.iInf (Finset.univ : Finset β)
+    (BoundedFormula.iInf
       (fun g => Term.equal (var (Sum.inr g)) (var (Sum.inl (Sum.inr g)))))))
 
 variable {β}
@@ -771,11 +771,11 @@ variable {β}
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
   φ.iff ψ
 
-noncomputable def iInf (s : Finset α) (f : α → L.Formula β) : L.Formula β :=
-  BoundedFormula.iInf s f
+noncomputable def iInf [Finite α] (f : α → L.Formula β) : L.Formula β :=
+  BoundedFormula.iInf f
 
-noncomputable def iSup (s : Finset α) (f : α → L.Formula β) : L.Formula β :=
-  BoundedFormula.iSup s f
+noncomputable def iSup [Finite α] (f : α → L.Formula β) : L.Formula β :=
+  BoundedFormula.iSup f
 
 /-- A bijection sending formulas to sentences with constants. -/
 def equivSentence : L.Formula α ≃ L[[α]].Sentence :=

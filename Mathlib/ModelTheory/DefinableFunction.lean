@@ -121,7 +121,7 @@ variable (T)
 noncomputable def comap (f : β → α) : T.FunctionalFormula α β :=
   let e := Fintype.ofFinite β
   mk (Formula.iAlls β <|
-    (Formula.iInf (Finset.univ : Finset β)
+    (Formula.iInf
       (fun b => Term.equal (var (Sum.inr b)) (var (Sum.inl (f b))))).relabel Sum.inl) <| by
   simp only [models_formula_iff, Formula.realize_iExsUnique, Formula.realize_iAlls,
     Formula.realize_relabel, Sum.elim_comp_inl, Formula.realize_iInf, Finset.mem_univ,
@@ -205,7 +205,7 @@ noncomputable def toSigma {γ : β → Type y} [∀ b, Finite (γ b)]
     (f : ∀ b, T.FunctionalFormula α (γ b)) :
     T.FunctionalFormula α (Sigma γ) :=
   let e := Fintype.ofFinite β
-  mk (Formula.iInf (Finset.univ : Finset β)
+  mk (Formula.iInf
     (fun b => (f b).toFormula.relabel (Sum.elim Sum.inl (fun g => Sum.inr ⟨_, g⟩)))) <| by
   simp only [models_formula_iff, Formula.realize_iExsUnique, id_eq, Formula.realize_iInf,
     Finset.mem_univ, Formula.realize_relabel, Function.comp_def, realize_toFormula, Sum.elim_inl,
@@ -266,7 +266,7 @@ theorem realize_rel2 [Finite γ] (φ : L.Formula (β ⊕ γ))
 
 noncomputable def equal (f g : T.FunctionalFormula α β) : L.Formula α :=
   let _ := Fintype.ofFinite β
-  rel2 (Formula.iInf (Finset.univ : Finset β)
+  rel2 (Formula.iInf
     (fun b => Term.equal (var (Sum.inl b)) (var (Sum.inr b))))
     f g
 
