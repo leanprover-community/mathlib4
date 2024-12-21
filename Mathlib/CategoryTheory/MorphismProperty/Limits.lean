@@ -160,8 +160,7 @@ theorem IsStableUnderCobaseChange.mk' {P : MorphismProperty C} [RespectsIso P]
 
 instance IsStableUnderCobaseChange.isomorphisms :
     (isomorphisms C).IsStableUnderCobaseChange where
-  of_isPushout {_ _ _ _ f g _ _} h hf :=
-    have : IsIso f := hf
+  of_isPushout {_ _ _ _ f g _ _} h (_ : IsIso f) :=
     have := hasPushout_of_right_iso g f
     h.inl_isoPushout_inv ▸ inferInstanceAs (IsIso _)
 
@@ -277,6 +276,28 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*)
   rintro ⟨j⟩
   simp [φ]
 
+/-- another version of `IsStableUnderProductsOfShape.mk`. -/
+lemma IsStableUnderProductsOfShape.mk' (J : Type*) [W.RespectsIso]
+    (hW : ∀ (X₁ X₂ : J → C) [HasProduct X₁] [HasProduct X₂]
+      (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
+      W (Limits.Pi.map f)) : W.IsStableUnderProductsOfShape J := by
+  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
+  let φ := fun j => f.app (Discrete.mk j)
+  have : HasLimit X₁ := ⟨c₁, hc₁⟩
+  have : HasLimit X₂ := ⟨c₂, hc₂⟩
+  have : HasProduct fun j ↦ X₁.obj (Discrete.mk j) :=
+    hasLimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
+  have : HasProduct fun j ↦ X₂.obj (Discrete.mk j) :=
+    hasLimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
+  have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
+  refine (W.arrow_mk_iso_iff ?_).2 hf'
+  refine Arrow.isoMk
+    (IsLimit.conePointUniqueUpToIso hc₁ (limit.isLimit X₁) ≪≫ (Pi.isoLimit X₁).symm)
+    (IsLimit.conePointUniqueUpToIso hc₂ (limit.isLimit X₂) ≪≫ (Pi.isoLimit _).symm) ?_
+  apply limit.hom_ext
+  rintro ⟨j⟩
+  simp [φ]
+
 lemma IsStableUnderCoproductsOfShape.mk (J : Type*)
     [W.RespectsIso] [HasCoproductsOfShape J C]
     (hW : ∀ (X₁ X₂ : J → C) (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
@@ -287,8 +308,29 @@ lemma IsStableUnderCoproductsOfShape.mk (J : Type*)
   refine (W.arrow_mk_iso_iff ?_).1 hf'
   refine Arrow.isoMk
     ((Sigma.isoColimit _) ≪≫ IsColimit.coconePointUniqueUpToIso (colimit.isColimit X₁) hc₁)
-    ((Sigma.isoColimit _) ≪≫ IsColimit.coconePointUniqueUpToIso (colimit.isColimit X₂) hc₂)
-    ?_
+    ((Sigma.isoColimit _) ≪≫ IsColimit.coconePointUniqueUpToIso (colimit.isColimit X₂) hc₂) ?_
+  apply colimit.hom_ext
+  rintro ⟨j⟩
+  simp [φ]
+
+/-- another version of `IsStableUnderCoproductsOfShape.mk`. -/
+lemma IsStableUnderCoproductsOfShape.mk' (J : Type*) [W.RespectsIso]
+    (hW : ∀ (X₁ X₂ : J → C) [HasCoproduct X₁] [HasCoproduct X₂]
+      (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
+      W (Limits.Sigma.map f)) : W.IsStableUnderCoproductsOfShape J := by
+  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
+  let φ := fun j => f.app (Discrete.mk j)
+  have : HasColimit X₁ := ⟨c₁, hc₁⟩
+  have : HasColimit X₂ := ⟨c₂, hc₂⟩
+  have : HasCoproduct fun j ↦ X₁.obj (Discrete.mk j) :=
+    hasColimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
+  have : HasCoproduct fun j ↦ X₂.obj (Discrete.mk j) :=
+    hasColimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
+  have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
+  refine (W.arrow_mk_iso_iff ?_).1 hf'
+  refine Arrow.isoMk
+    ((Sigma.isoColimit _) ≪≫ IsColimit.coconePointUniqueUpToIso (colimit.isColimit X₁) hc₁)
+    ((Sigma.isoColimit _) ≪≫ IsColimit.coconePointUniqueUpToIso (colimit.isColimit X₂) hc₂) ?_
   apply colimit.hom_ext
   rintro ⟨j⟩
   simp [φ]

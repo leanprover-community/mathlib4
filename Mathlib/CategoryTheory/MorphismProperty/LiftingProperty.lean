@@ -70,23 +70,19 @@ instance rlp_isMultiplicative : T.rlp.IsMultiplicative where
     have := hj _ hp
     infer_instance
 
-lemma llp_isStableUnderCoproductsOfShape (J : Type*) :
-    T.llp.IsStableUnderCoproductsOfShape J := fun _ _ _ _ h₁ h₂ f hf _ _ g hg ↦ {
-  sq_hasLift sq :=
-    ⟨⟨{ l :=
-          letI : ∀ j, HasLiftingProperty (f.app j) g := fun j ↦ hf j g hg
-          h₂.desc (HasLiftingProperty.coproductLiftingCocone sq)
-        fac_left := h₁.hom_ext (by simp)
-        fac_right := h₂.hom_ext (by simp)}⟩⟩}
+lemma llp_IsStableUnderCoproductsOfShape (J : Type*) :
+    T.llp.IsStableUnderCoproductsOfShape J := by
+  apply IsStableUnderCoproductsOfShape.mk'
+  intro A B _ _ f hf X Y p hp
+  have := fun j ↦ hf j _ hp
+  infer_instance
 
-lemma rlp_isStableUnderProductsOfShape (J : Type*) :
-    T.rlp.IsStableUnderProductsOfShape J := fun _ _ _ _ h₁ h₂ f hf _ _ g hg ↦ {
-  sq_hasLift sq :=
-    ⟨⟨{ l :=
-          letI : ∀ j, HasLiftingProperty g (f.app j) := fun j ↦ hf j g hg
-          h₁.lift (HasLiftingProperty.productLiftingCone sq)
-        fac_left := h₁.hom_ext (by simp)
-        fac_right := h₂.hom_ext (by simp)}⟩⟩}
+lemma rlp_IsStableUnderProductsOfShape (J : Type*) :
+    T.rlp.IsStableUnderProductsOfShape J := by
+  apply IsStableUnderProductsOfShape.mk'
+  intro A B _ _ f hf X Y p hp
+  have := fun j ↦ hf j _ hp
+  infer_instance
 
 end MorphismProperty
 
