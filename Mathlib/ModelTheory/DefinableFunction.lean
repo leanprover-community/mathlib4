@@ -124,6 +124,32 @@ theorem realize_comp [Finite γ] (f : T.FunctionalFormula β γ) (g : T.Function
   use g.realize x
   simp [Function.comp_def, realize_spec']
 
+def relabelLeft (f : α → γ) (g : T.FunctionalFormula α β) : T.FunctionalFormula γ β :=
+  ⟨g.1.relabel (Sum.map f id), by
+    simp only [Sum.map, Function.comp_def, CompTriple.comp_eq, models_formula_iff,
+      Formula.realize_iExsUnique, id_eq, Formula.realize_relabel, realize_spec', Sum.elim_inl,
+      Sum.elim_inr, funext_iff]
+    intro M v
+    simpa only [Function.comp_def, Formula.realize_iExsUnique, id_eq, realize_spec', Sum.elim_inl,
+      Sum.elim_inr, funext_iff] using g.2.realize_formula M (v := v ∘ f)⟩
+
+@[simp]
+theorem realize_relabelLeft (f : α → γ) (g : T.FunctionalFormula α β) (x : γ → M) :
+    (relabelLeft f g).realize x = g.realize (x ∘ f) := by
+  simp only [relabelLeft, Sum.map, Function.comp_def, CompTriple.comp_eq, realize_spec,
+    Formula.realize_relabel]
+  rw [realize_spec']
+  simp [funext_iff, Function.comp_def]
+
+noncomputable def relabelRight [Finite γ] (f : γ → β) (g : T.FunctionalFormula α β) :
+    T.FunctionalFormula α γ :=
+  (comap T f).comp g
+
+@[simp]
+theorem realize_relabelRight [Finite γ] (f : γ → β) (g : T.FunctionalFormula α β) (x : α → M) :
+    (relabelRight f g).realize x = g.realize x ∘ f := by
+  simp only [relabelRight, realize_comp, realize_comap, Function.comp_def]
+
 noncomputable def toSigma {γ : β → Type y} [∀ b, Finite (γ b)]
     (f : ∀ b, T.FunctionalFormula α (γ b)) :
     T.FunctionalFormula α (Σ b, γ b) :=
@@ -147,6 +173,27 @@ theorem realize_toSigma {γ : β → Type y} [∀ b, Finite (γ b)]
   rw [realize_spec]
   simp only [toSigma, Formula.realize_iInf, Finset.mem_univ, Formula.realize_relabel,
     Function.comp_def, realize_spec', Sum.elim_inl, Sum.elim_inr, imp_self, implies_true]
+
+noncomputable def rel {γ : β → Type y} [∀ b, Finite (γ b)] (φ : L.Formula (Sigma γ))
+    (f : ∀ b, T.FunctionalFormula α (γ b)) : L.Formula α :=
+  Formula.iAlls id ((toSigma f).1.imp (φ.relabel Sum.inr))
+
+@[simp]
+theorem realize_rel {γ : β → Type y} [∀ b, Finite (γ b)] (φ : L.Formula (Sigma γ))
+    (f : ∀ b, T.FunctionalFormula α (γ b)) (x : α → M) :
+    (rel φ f).Realize x ↔ φ.Realize (fun b => (f b.1).realize x b.2) := by
+  simp [rel, realize_spec']
+
+noncomputable def equal (f g : T.FunctionalFormula α β) : L.Formula α :=
+  let _ := Fintype.ofFinite β
+  rel (Formula.iInf (Finset.univ : Finset β)
+    (fun b => Term.equal (var ⟨true, b⟩) (var ⟨false, b⟩)))
+    (fun b : Bool => if b then f else g)
+
+@[simp]
+theorem realize_equal (f g : T.FunctionalFormula α β) (x : α → M) :
+    (equal f g).Realize x ↔ f.realize x = g.realize x := by
+  simp [equal, funext_iff]
 
 end FunctionalFormula
 
@@ -192,8 +239,45 @@ noncomputable instance : (FunctionalFormulaLang.theory T).Model M where
       · rintro h ⟨⟩; exact h
       · intro h; exact h _
 
-def toFormula : ∀ {n : ℕ} (φ : (FunctionalFormulaLang T).BoundedFormula α n),
-    { φ' : L.BoundedFormula α n // ∀  }
+variable {T}
+noncomputable def ofTerm : (FunctionalFormulaLang T).Term α → T.FunctionalFormula α Unit
+  | Term.var x => FunctionalFormula.ofTerm (var x)
+  | Term.func f x => f.comp ((toSigma (fun i => ofTerm (x i))).relabelRight (fun i => ⟨i, ()⟩))
+
+@[simp]
+theorem realize_ofTerm : ∀ (t : (FunctionalFormulaLang T).Term α) (x : α → M) (u : Unit),
+    (ofTerm t).realize x u = t.realize x
+  | Term.var v, x, u => by simp [ofTerm, FunctionalFormula.realize_ofTerm]
+  | Term.func f x, y, u => by simp [ofTerm, Function.comp_def, realize_ofTerm]
+
+noncomputable def toBoundedFormulaAux : ∀ {n : ℕ}
+    (φ : (FunctionalFormulaLang T).BoundedFormula α n),
+    { φ' : L.BoundedFormula α n // ∀ (M : Theory.ModelType.{_, _, max u v} T)
+        (x : α → M) (y : Fin n → M), φ'.Realize x y ↔ φ.Realize x y }
+  | _, BoundedFormula.falsum => ⟨BoundedFormula.falsum, by simp [BoundedFormula.Realize]⟩
+  | _, @BoundedFormula.equal _ _ n t₁ t₂ =>
+    ⟨BoundedFormula.relabel id ((ofTerm t₁).equal (ofTerm t₂)), by
+      simp [Formula.boundedFormula_realize_eq_realize, funext_iff,
+          BoundedFormula.Realize]⟩
+  | _, @BoundedFormula.rel _ _ m n R x =>
+      let φ := (BoundedFormula.rel (L := L) (n := n) (α := Empty) (R : L.Relations n)
+        (fun i => (var (Sum.inr i)))).toFormula
+      let φ' := BoundedFormula.relabel id
+        (rel (β := Fin n) (φ.relabel (Sum.elim Empty.elim (fun i => ⟨i, ()⟩))) (ofTerm ∘ x))
+      ⟨φ', by
+        simp [φ, φ', Formula.boundedFormula_realize_eq_realize, funext_iff,
+          BoundedFormula.Realize]⟩
+  | _, BoundedFormula.imp φ₁ φ₂ =>
+      let ψ₁ := toBoundedFormulaAux φ₁
+      let ψ₂ := toBoundedFormulaAux φ₂
+      ⟨ψ₁.1.imp ψ₂.1, fun M x y => by simp only [BoundedFormula.Realize, ψ₁.2, ψ₂.2]⟩
+  | _, BoundedFormula.all φ =>
+      let ψ := toBoundedFormulaAux φ
+      ⟨ψ.1.all, fun M x y => by simp only [BoundedFormula.Realize, ψ.2]⟩
+#print BoundedFormula.iff
+noncomputable def toBoundedFormula {n : ℕ} (φ : (FunctionalFormulaLang T).BoundedFormula α n) :
+    L.BoundedFormula α n :=
+  (toBoundedFormulaAux φ).1
 
 end FunctionalFormulaLang
 
