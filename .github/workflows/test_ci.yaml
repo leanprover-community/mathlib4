@@ -9,32 +9,34 @@ jobs:
   log-event-info:
     runs-on: ubuntu-latest
     steps:
-      - name: print event info
-        run: |
-          # for debugging, we print the available variables
-          echo "github.event.action: '${{ toJSON( github.event.commits ) }}'"
-      - name: format message
-        id: form_the_message
-        run: |
-          {
-          printf $'msg<<EOF\nWe will need to merge the following branches into `nightly-testing`:\n'
-          printf $'```bash\n'
-          PR_NUMBER='18818'
-          GITHUB_DIFF="https://github.com/leanprover-community/mathlib4/compare/nightly-testing...lean-pr-testing-$PR_NUMBER"
-          # printf "$GITHUB_DIFF"
-          printf $'# Diff: %s\n' "$GITHUB_DIFF"
-          printf $'scripts/merge-lean-testing-pr.sh %s   # %s\n' "[pr number goes here]" "[branch goes here]"
-          printf '# # # # #\n'
-          printf $'```\n'
-          printf "EOF"
-          } >> "$GITHUB_OUTPUT"
+    - name: print event info
+      run: |
+        # for debugging, we print the available variables
+        echo "github.event.action: '${{ toJSON( github.event.commits ) }}'"
+    - name: format message
+      id: form_the_message
+      run: |
+        {
+        printf $'msg<<EOF\nWe will need to merge the following branches into `nightly-testing`:\n'
+        printf $'```bash\n'
+        BRANCH='lean-pr-testing-18818'
+        PR_NUMBER=$(echo "$BRANCH" | grep -oP '\d+$')
 
-      - name: send zulip test message
-        uses: zulip/github-actions-zulip/send-message@v1
-        with:
-          api-key: ${{ secrets.ZULIP_API_KEY }}
-          email: 'github-mathlib4-bot@leanprover.zulipchat.com'
-          organization-url: 'https://leanprover.zulipchat.com'
-          to: "684366"
-          type: 'private'
-          content: ${{steps.form_the_message.outputs.msg}}
+        GITHUB_DIFF="https://github.com/leanprover-community/mathlib4/compare/nightly-testing...lean-pr-testing-$PR_NUMBER"
+        # printf "$GITHUB_DIFF"
+        printf $'# Diff: %s\n' "$GITHUB_DIFF"
+        printf $'scripts/merge-lean-testing-pr.sh %s   # %s\n' "[pr number goes here]" "[branch goes here]"
+        printf $'# # # # #\n'
+        printf $'```\n'
+        printf "EOF"
+        } >> "$GITHUB_OUTPUT"
+
+    - name: send zulip test message
+      uses: zulip/github-actions-zulip/send-message@v1
+      with:
+        api-key: ${{ secrets.ZULIP_API_KEY }}
+        email: 'github-mathlib4-bot@leanprover.zulipchat.com'
+        organization-url: 'https://leanprover.zulipchat.com'
+        to: "684366"
+        type: 'private'
+        content: ${{steps.form_the_message.outputs.msg}}
