@@ -341,10 +341,8 @@ lemma proj {d : Set (Π i, α i)} (hd : DirectedOn (fun x y => ∀ i, r i (x i) 
 lemma pi {d : (i : ι) → Set (α i)} (hd : ∀ (i : ι), DirectedOn (r i) (d i)) :
     DirectedOn (fun x y => ∀ i, r i (x i) (y i)) (Set.pi  Set.univ d) := by
   intro a ha b hb
-  choose f hf using fun i => hd i (a i) (ha i trivial) (b i) (hb i trivial)
-  simpa [Pi.le_def, ← forall_and] using ⟨f, fun i =>
-    ⟨by simp_all only [Set.mem_pi, Set.mem_univ, forall_const],
-       by constructor <;> (simp_all only [Set.mem_pi, Set.mem_univ, forall_const])⟩⟩
+  choose f hfd haf hbf using fun i => hd i (a i) (ha i trivial) (b i) (hb i trivial)
+  exact ⟨f, fun i _ => hfd i, haf, hbf⟩
 
 end Pi
 
