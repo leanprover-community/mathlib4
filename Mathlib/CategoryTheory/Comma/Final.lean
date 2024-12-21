@@ -5,6 +5,7 @@ Authors: Jakob von Raumer
 -/
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Limits.IsConnected
+import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Grothendieck
 
 /-!
@@ -19,7 +20,7 @@ final and `A` is connected.
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 3.4.3
 -/
 
-universe v₁ v₂ v₃ u₁ u₂ u₃
+universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
 namespace CategoryTheory
 
@@ -52,6 +53,8 @@ private lemma final_fst_small [R.Final] : (fst L R).Final := by
   simp
 
 end Small
+
+section NonSmall
 
 variable {A : Type u₁} [Category.{v₁} A]
 variable {B : Type u₂} [Category.{v₂} B]
@@ -87,6 +90,46 @@ instance isConnected_comma_of_final [IsConnected A] [R.Final] : IsConnected (Com
 connected. -/
 instance isConnected_comma_of_initial [IsConnected B] [L.Initial] : IsConnected (Comma L R) := by
   rwa [isConnected_iff_of_initial (snd L R)]
+
+end NonSmall
+
+section Small
+
+variable {A : Type u₁} [Category.{v₁} A]
+variable {B : Type u₂} [Category.{u₂} B]
+variable {T : Type u₃} [Category.{v₃} T]
+variable {L : A ⥤ T} {R : B ⥤ T}
+variable {A' : Type u₄} [Category.{v₄} A']
+variable {B' : Type u₅} [Category.{v₅} B']
+variable {T' : Type u₆} [Category.{u₂} T']
+variable {L' : A' ⥤ T'} {R' : B' ⥤ T'}
+variable {F : A ⥤ A'} {G : B ⥤ B'} {H : T ⥤ T'}
+variable (iL : F ⋙ L' ≅ L ⋙ H) (iR : G ⋙ R' ≅ R ⋙ H)
+variable [IsFiltered B] [IsFiltered B']
+variable [R.Final] [R'.Final] [F.Final] [G.Final]
+
+lemma map_final : (Comma.map iL.hom iR.inv).Final := by
+  haveI : IsFiltered T := IsFiltered.of_final R
+  haveI : IsFiltered T' := IsFiltered.of_final R'
+  haveI := final_of_natIso iR
+  haveI : H.Final := final_of_final_comp R H
+  fconstructor
+  rintro ⟨i₂, j₂, u₂⟩
+  let φ' : StructuredArrow i₂ F ⥤ StructuredArrow (L'.obj i₂) H :=
+    StructuredArrow.map₂ (𝟙 _) iL.hom
+  let ψ' : StructuredArrow j₂ G ⥤ StructuredArrow (L'.obj i₂) H :=
+    StructuredArrow.map₂ u₂ iR.hom
+  have : StructuredArrow ⟨i₂, j₂, u₂⟩ (map iL.hom iR.inv) ≌ Comma φ' ψ' := by
+    sorry
+  rw [isConnected_iff_of_equivalence this]
+  haveI : (StructuredArrow.map₂ (R := G ⋙ R') (G := 𝟭 _) u₂ iR.hom).Final := by
+    sorry
+  have : ψ' ≅ StructuredArrow.post j₂ G R' ⋙ StructuredArrow.map₂ (G := 𝟭 _) u₂ iR.hom :=
+    Iso.refl ψ'
+  haveI := final_of_natIso this.symm
+  infer_instance
+
+end Small
 
 end Comma
 
