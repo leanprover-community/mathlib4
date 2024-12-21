@@ -112,6 +112,11 @@ def of : G →* Abelianization G where
 theorem mk_eq_of (a : G) : Quot.mk _ a = of a :=
   rfl
 
+variable (G) in
+@[simp]
+theorem ker_of : of.ker = commutator G :=
+  QuotientGroup.ker_mk' (commutator G)
+
 section lift
 
 -- So far we have built Gᵃᵇ and proved it's an abelian group.

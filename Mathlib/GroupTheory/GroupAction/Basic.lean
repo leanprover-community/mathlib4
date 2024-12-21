@@ -17,13 +17,6 @@ This file primarily concerns itself with orbits, stabilizers, and other objects 
 actions. Despite this file being called `basic`, low-level helper lemmas for algebraic manipulation
 of `•` belong elsewhere.
 
-## Main definitions
-
-* `MulAction.orbit`
-* `MulAction.fixedPoints`
-* `MulAction.fixedBy`
-* `MulAction.stabilizer`
-
 -/
 
 
