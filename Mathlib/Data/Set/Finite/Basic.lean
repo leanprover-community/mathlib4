@@ -715,7 +715,13 @@ end
 theorem empty_card : Fintype.card (∅ : Set α) = 0 :=
   rfl
 
-theorem empty_card' {h : Fintype.{u} (∅ : Set α)} : @Fintype.card (∅ : Set α) h = 0 := by
+theorem empty_card' {h : Fintype (∅ : Set α)} : @Fintype.card (∅ : Set α) h = 0 := by
+  simp
+
+@[simp]
+theorem card_univ [Fintype α] {h : Fintype (@univ α)} :
+    @Fintype.card (@univ α) h = Fintype.card α := by
+  apply Fintype.card_of_finset'
   simp
 
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
@@ -724,7 +730,7 @@ theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ 
 
 @[simp]
 theorem card_insert {a : α} (s : Set α) [Fintype s] (h : a ∉ s)
-    {d : Fintype.{u} (insert a s : Set α)} : @Fintype.card _ d = Fintype.card s + 1 := by
+    {d : Fintype (insert a s : Set α)} : @Fintype.card _ d = Fintype.card s + 1 := by
   rw [← card_fintypeInsertOfNotMem s h]; congr!
 
 theorem card_image_of_inj_on {s : Set α} [Fintype s] {f : α → β} [Fintype (f '' s)]
