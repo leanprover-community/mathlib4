@@ -121,6 +121,7 @@ end CommGroup
 variable {n : ℕ} {M M₁ : Type*}
 
 /-- A type synonym for a commutative quotient groups whose elements have order dividing `n`. -/
+@[nolint unusedArguments]
 def QuotientAddGroup.toZModModule {G : Type*} [AddCommGroup G] {H : AddSubgroup G}
     (_ : ∀ x, n • x ∈ H) := G ⧸ H
 
