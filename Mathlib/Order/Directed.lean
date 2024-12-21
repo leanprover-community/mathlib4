@@ -356,16 +356,12 @@ local infixl:50 " ≼₁ " => r
 local infixl:50 " ≼₂ " => r₂
 
 lemma fst {d : Set (α × β)} (hd : DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ p.2 ≼₂ q.2) d) :
-    DirectedOn (· ≼₁ ·) (Prod.fst '' d) := by
-  intro a ⟨p,hp⟩ b ⟨q,hq⟩
-  obtain ⟨r,hr⟩ := hd p hp.1 q hq.1
-  aesop
+    DirectedOn (· ≼₁ ·) (Prod.fst '' d) :=
+  DirectedOn.mono_comp (fun ⦃_ _⦄ h ↦ h) (mono hd fun ⦃_ _⦄ h ↦ h.1)
 
 lemma snd {d : Set (α × β)} (hd : DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ p.2 ≼₂ q.2) d) :
-    DirectedOn (· ≼₂ ·) (Prod.snd '' d) := by
-  intro a ⟨p,hp⟩ b ⟨q,hq⟩
-  obtain ⟨r,hr⟩ := hd p hp.1 q hq.1
-  aesop
+    DirectedOn (· ≼₂ ·) (Prod.snd '' d) :=
+  DirectedOn.mono_comp (fun ⦃_ _⦄ h ↦ h) (mono hd fun ⦃_ _⦄ h ↦ h.2)
 
 lemma prod {d₁ : Set α} {d₂ : Set β} (h₁ : DirectedOn (· ≼₁ ·) d₁) (h₂ : DirectedOn (· ≼₂ ·) d₂) :
     DirectedOn (fun p q ↦ p.1 ≼₁ q.1 ∧ p.2 ≼₂ q.2) (d₁ ×ˢ d₂) := fun _ hpd _ hqd => by
