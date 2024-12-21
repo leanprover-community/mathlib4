@@ -173,6 +173,16 @@ lemma noncommPiCoprod_apply (h : (i : ι) → N i) :
       (Pairwise.set_pairwise (fun ⦃i j⦄ a ↦ hcomm a (h i) (h j)) _) := by
   dsimp only [MonoidHom.noncommPiCoprod, MonoidHom.coe_mk, OneHom.coe_mk]
 
+theorem comp_noncommPiCoprod {P : Type*} [Monoid P] {f : M →* P}
+    (hcomm' : Pairwise fun i j => ∀ x y, Commute (f.comp (ϕ i) x) (f.comp (ϕ j) y) :=
+      Pairwise.mono hcomm (fun i j ↦ forall_imp (fun x h y ↦ by
+        simp only [MonoidHom.coe_comp, Function.comp_apply, Commute.map  (h y) f]))) :
+    f.comp (MonoidHom.noncommPiCoprod ϕ hcomm) =
+      MonoidHom.noncommPiCoprod (fun i ↦ f.comp (ϕ i)) hcomm' :=
+  MonoidHom.ext fun _ ↦ by
+    simp only [MonoidHom.noncommPiCoprod, MonoidHom.coe_comp, MonoidHom.coe_mk, OneHom.coe_mk,
+      Function.comp_apply, Finset.map_noncommProd]
+
 end MonoidHom
 
 end FamilyOfMonoids
