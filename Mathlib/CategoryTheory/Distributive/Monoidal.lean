@@ -66,7 +66,7 @@ Provide more examples of the distributive monoidal structure on the following ca
 
 ## References
 
-[Hans-Joachim Baues, Mamuka Jibladze, Andy Tonks, first page of: Cohomology of
+[Hans-Joachim Baues, Mamuka Jibladze, Andy Tonks, Cohomology of
  monoids in monoidal categories, in: Operads: Proceedings of Renaissance
  Conferences, Contemporary Mathematics 202, AMS (1997) 137-166][]
 
@@ -160,8 +160,9 @@ variable {C} [MonoidalLeftDistributive C]
 
 attribute [local instance] MonoidalLeftDistributive.isoLeft
 
-/-- The composite  `(X ◁ coprod.inl) ≫ (inv (∂L X Y Z)) : X ⊗ Y ⟶ X ⊗ (Y ⨿ Z) ⟶ (X ⊗ Y) ⨿ (X ⊗ Z)`
-equals the left coprojection. -/
+/-- The composite  `(X ◁ coprod.inl) : X ⊗ Y ⟶ X ⊗ (Y ⨿ Z)` and
+`inv (∂L X Y Z) :  X ⊗ (Y ⨿ Z) ⟶ (X ⊗ Y) ⨿ (X ⊗ Z)`
+equals the left coprojection `coprod.inl : X ⊗ Y ⟶ (X ⊗ Y) ⨿ (X ⊗ Z)`. -/
 @[simp]
 lemma whisker_inl_comp_inv_distributor
     {X Y Z : C} :
