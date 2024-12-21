@@ -179,7 +179,7 @@ theorem isAddUnit_detp_smul_mul_adjp (hAB : A * B = 1) :
   rw [← prod_mul_prod_compl {τ⁻¹ j}, mul_mul_mul_comm, mul_comm, ← smul_eq_mul]
   apply IsAddUnit.smul_right
   have h0 : ∀ k, k ∈ ({τ⁻¹ j} : Finset n)ᶜ ↔ τ k ∈ ({j} : Finset n)ᶜ := by
-    simp [show τ⁻¹ = τ.symm from rfl, eq_symm_apply]
+    simp [inv_def, eq_symm_apply]
   rw [← prod_equiv τ h0 fun _ _ ↦ rfl, ← prod_mul_distrib, ← mul_prod_erase _ _ hl2, ← smul_eq_mul]
   exact (isAddUnit_mul hAB l (σ (τ l)) (τ l) hl1).smul_right _
 

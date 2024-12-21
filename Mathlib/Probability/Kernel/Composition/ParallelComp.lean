@@ -101,17 +101,15 @@ lemma swap_parallelComp {κ : Kernel α β} [IsSFiniteKernel κ]
   ext ac s hs
   rw [comp_apply, swap_apply, Measure.bind_apply hs (Kernel.measurable _),
     lintegral_dirac' _ (Kernel.measurable_coe _ hs), prod_apply, prod_apply, prodMkLeft_apply,
-    prodMkLeft_apply, prodMkRight_apply, prodMkRight_apply]
-  rfl
+    prodMkLeft_apply, prodMkRight_apply, prodMkRight_apply, Prod.fst_swap, Prod.snd_swap]
 
 /-- For a deterministic kernel, copying then applying the kernel to the two copies is the same
 as first applying the kernel then copying. -/
 lemma deterministic_comp_copy {f : α → β} (hf : Measurable f) :
     (Kernel.deterministic f hf ∥ₖ Kernel.deterministic f hf) ∘ₖ Kernel.copy α
       = Kernel.copy β ∘ₖ Kernel.deterministic f hf := by
-  rw [Kernel.parallelComp_comp_copy, Kernel.deterministic_prod_deterministic,
-    Kernel.copy, Kernel.deterministic_comp_deterministic]
-  rfl
+  simp_rw [Kernel.parallelComp_comp_copy, Kernel.deterministic_prod_deterministic,
+    Kernel.copy, Kernel.deterministic_comp_deterministic, Function.comp_def]
 
 end ParallelComp
 
