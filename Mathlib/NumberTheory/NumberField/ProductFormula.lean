@@ -50,9 +50,7 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
   let s := h_fin₀.toFinset
   let t₁ := (fun v : HeightOneSpectrum (𝓞 K) ↦ ‖(embedding v) x‖).mulSupport
   let t₂ := (fun v : HeightOneSpectrum (𝓞 K) ↦ v.maxPowDividing (span {x})).mulSupport
-  have h_subs₁ : t₁ ⊆ t₀ := by
-    simp only [mulSupport_subset_iff, ne_eq, norm_eq_one_iff_not_mem, Decidable.not_not,
-    Set.mem_setOf_eq, imp_self, implies_true, t₁, t₀]
+  have h_subs₁ : t₁ ⊆ t₀ := by simp [norm_eq_one_iff_not_mem, t₁, t₀]
   have h_subs₂ : t₂ ⊆ t₀ := by
     simp only [Set.le_eq_subset, mulSupport_subset_iff, Set.mem_setOf_eq, t₂, t₀,
       maxPowDividing, ← dvd_span_singleton]
