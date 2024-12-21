@@ -12,7 +12,25 @@ jobs:
       - name: print event info
         run: |
           # for debugging, we print the available variables
-          echo "github.event.action: '${{ toJSON( github.event.commits ) }}'"
+          # echo "github.event.action: '${{ toJSON( github.event.commits ) }}'"
+          echo "step done"
+      - name: format message
+        id: form_the_message
+        run: |
+          echo "hi blizzard"
+          {
+
+            printf 'msg<<EOF\n%s\nEOF' "have a backtick: `"
+            # printf $'msg<<EOF\nWe will need to merge the following branches into \`nightly-testing\`:\n'
+            # printf $'\`\`\`bash\n'
+            # PR_NUMBER= '18818'
+            # printf $'# Diff: %s' "[diff goes here]"
+            # printf $'scripts/merge-lean-testing-pr.sh %s   # %s\n' "[pr number goes here]" "[branch goes here]"
+            # printf '# # # # #'
+            # printf $'\`\`\`\n'
+            # printf "EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: send zulip test message
         uses: zulip/github-actions-zulip/send-message@v1
         with:
@@ -21,4 +39,4 @@ jobs:
           organization-url: 'https://leanprover.zulipchat.com'
           to: "684366"
           type: 'private'
-          content: 'hi blizzard, ping'
+          content: ${{steps.form_the_message.outputs.msg}}
