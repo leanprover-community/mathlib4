@@ -576,22 +576,20 @@ theorem isPWO_iUnion_support_powers [LinearOrderedCancelAddCommMonoid Γ] [Semir
     fun _ hg => le_trans hx (order_le_of_coeff_ne_zero (Function.mem_support.mp hg))).mono
     (Set.iUnion_subset fun n => support_pow_subset_closure x n)
 
-variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
-
-theorem co_support_zero (g : Γ) : {a | ¬((0 : HahnSeries Γ R) ^ a).coeff g = 0} ⊆ {0} := by
-  simp_all only [Set.subset_singleton_iff, Set.mem_setOf_eq]
+theorem co_support_zero [OrderedCancelAddCommMonoid Γ] [Semiring R] (g : Γ) :
+    {a | ¬((0 : HahnSeries Γ R) ^ a).coeff g = 0} ⊆ {0} := by
+  simp only [Set.subset_singleton_iff, Set.mem_setOf_eq]
   intro n hn
   by_contra h'
   simp_all only [ne_eq, not_false_eq_true, zero_pow, zero_coeff, not_true_eq_false]
 
-variable {x : HahnSeries Γ R}
+variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
 
-theorem pow_finite_co_support (hx : 0 < x.orderTop) (g : Γ) :
+theorem pow_finite_co_support {x : HahnSeries Γ R} (hx : 0 < x.orderTop) (g : Γ) :
     Set.Finite {a | ((fun n ↦ x ^ n) a).coeff g ≠ 0} := by
   have hpwo : Set.IsPWO (⋃ n, support (x ^ n)) :=
     isPWO_iUnion_support_powers (zero_le_orderTop_iff.mp <| le_of_lt hx)
-  by_cases hox : x = 0
-  · exact hox ▸ Set.Finite.subset (Set.finite_singleton 0) (co_support_zero g)
+  by_cases h0 : x = 0; · exact h0 ▸ Set.Finite.subset (Set.finite_singleton 0) (co_support_zero g)
   by_cases hg : g ∈ ⋃ n : ℕ, { g | (x ^ n).coeff g ≠ 0 }
   swap; · exact Set.finite_empty.subset fun n hn => hg (Set.mem_iUnion.2 ⟨n, hn⟩)
   apply hpwo.isWF.induction hg
@@ -600,7 +598,7 @@ theorem pow_finite_co_support (hx : 0 < x.orderTop) (g : Γ) :
     fun ij hij => hy ij.snd (mem_addAntidiagonal.1 (mem_coe.1 hij)).2.1 ?_).image Nat.succ).union
       (Set.finite_singleton 0)).subset ?_
   · obtain ⟨hi, _, rfl⟩ := mem_addAntidiagonal.1 (mem_coe.1 hij)
-    exact lt_add_of_pos_left ij.2 <| lt_of_lt_of_le ((zero_lt_orderTop_iff hox).mp hx) <|
+    exact lt_add_of_pos_left ij.2 <| lt_of_lt_of_le ((zero_lt_orderTop_iff h0).mp hx) <|
       order_le_of_coeff_ne_zero <| Function.mem_support.mp hi
   · rintro (_ | n) hn
     · exact Set.mem_union_right _ (Set.mem_singleton 0)
