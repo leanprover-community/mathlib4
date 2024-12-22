@@ -712,10 +712,10 @@ end
 
 /-! ### Cardinality -/
 
-theorem empty_card : Fintype.card (∅ : Set α) = 0 :=
+theorem card_empty : Fintype.card (∅ : Set α) = 0 :=
   rfl
 
-theorem empty_card' {h : Fintype (∅ : Set α)} : @Fintype.card (∅ : Set α) h = 0 := by
+theorem card_empty' {h : Fintype (∅ : Set α)} : @Fintype.card (∅ : Set α) h = 0 := by
   simp
 
 @[simp]
