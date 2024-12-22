@@ -79,8 +79,7 @@ instance [Finite G] [IsZGroup G] (H : Subgroup G) [H.Normal] : IsZGroup (G ⧸ H
 
 section Solvable
 
-variable (G)
-
+variable (G) in
 theorem commutator_lt [Finite G] [IsZGroup G] [Nontrivial G] : commutator G < ⊤ := by
   let p := (Nat.card G).minFac
   have hp : p.Prime := Nat.minFac_prime Finite.one_lt_card.ne'
@@ -88,17 +87,11 @@ theorem commutator_lt [Finite G] [IsZGroup G] [Nontrivial G] : commutator G < �
   let P : Sylow p G := default
   have hP := isZGroup p hp P
   let f := MonoidHom.transferSylow P (hP.normalizer_le_centralizer rfl)
-  let K := f.ker
-  have key : f.ker.IsComplement' P := (hP.isComplement' rfl)
-  have key1 : commutator G ≤ f.ker := by
-    let _ := hP.commGroup
-    exact Abelianization.commutator_subset_ker f
-  have key2 : f.ker < ⊤ := by
-    rw [lt_top_iff_ne_top]
-    intro h
-    rw [h, Subgroup.isComplement'_top_left] at key
-    exact P.ne_bot_of_dvd_card (Nat.card G).minFac_dvd key
-  exact lt_of_le_of_lt key1 key2
+  refine lt_of_le_of_lt (Abelianization.commutator_subset_ker f) ?_
+  have h := P.ne_bot_of_dvd_card (Nat.card G).minFac_dvd
+  contrapose! h
+  rw [← Subgroup.isComplement'_top_left, ← (not_lt_top_iff.mp h)]
+  exact hP.isComplement' rfl
 
 instance [Finite G] [IsZGroup G] : IsSolvable G := by
   rw [isSolvable_iff_commutator_lt]
