@@ -124,6 +124,10 @@ lemma of_eq (P : MorphismProperty C) {X Y : C} {f : X ⟶ Y} (hf : P f)
   obtain rfl : f' = f := by simpa using h
   exact hf
 
+/-- The class of morphisms given by a family of morphisms `f i : X i ⟶ Y i`. -/
+inductive ofHoms {ι : Type*} {X Y : ι → C} (f : ∀ i, X i ⟶ Y i) : MorphismProperty C
+  | mk (i : ι) : ofHoms f (f i)
+
 /-- A morphism property `P` satisfies `P.RespectsRight Q` if it is stable under post-composition
 with morphisms satisfying `Q`, i.e. whenever `P` holds for `f` and `Q` holds for `i` then `P`
 holds for `f ≫ i`. -/

@@ -189,8 +189,8 @@ namespace IsGrothendieckAbelian
 
 variable [Abelian C]
 
-inductive generatingMonomorphisms (G : C) : MorphismProperty C
-  | mono (X : Subobject G) : generatingMonomorphisms G X.arrow
+def generatingMonomorphisms (G : C) : MorphismProperty C :=
+  MorphismProperty.ofHoms (fun (X : Subobject G) ↦ X.arrow)
 
 variable (G : C)
 
