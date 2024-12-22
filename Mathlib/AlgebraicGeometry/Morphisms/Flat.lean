@@ -27,7 +27,7 @@ namespace AlgebraicGeometry
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
 /-- A morphism of schemes `f : X ⟶ Y` is flat if for each affine `U ⊆ Y` and
-`V ⊆ f ⁻¹' U`, The induced map `Γ(Y, U) ⟶ Γ(X, V)` is flat.
+`V ⊆ f ⁻¹' U`, the induced map `Γ(Y, U) ⟶ Γ(X, V)` is flat.
 -/
 @[mk_iff]
 class Flat (f : X ⟶ Y) : Prop where
