@@ -138,8 +138,8 @@ will have computable inverses (and `qsmul`, `ratCast`) in some applications.
 See note [reducible non-instances]. -/
 protected noncomputable abbrev field {R} [CommRing R] (I : Ideal R) [I.IsMaximal] :
     Field (R ⧸ I) where
-  __ := Quotient.divisionRing I
   __ := commRing _
+  __ := Quotient.divisionRing I
 
 /-- If the quotient by an ideal is a field, then the ideal is maximal. -/
 theorem maximal_of_isField {R} [CommRing R] (I : Ideal R) (hqf : IsField (R ⧸ I)) :
