@@ -7,11 +7,17 @@ import Mathlib.NumberTheory.NumberField.FinitePlaces
 
 /-!
 # The Product Formula for number fields
+
 In this file we prove the Product Formula for number fields: for any non-zero element `x` of a
 number field `K`, we have `∏ |x|ᵥ=1` where the product runs over the equivalence classes of absolute
-values of `K` and the `|⬝|ᵥ` are suitably normalized.
+values of `K`. The `|⬝|ᵥ` are normalized as follows:
+- for the infinite places, `|⬝|ᵥ` is the absolute value on `K` induced by the corresponding field
+embedding in `ℂ` and the usual absolute value on `ℂ`;
+- for the finite places and a non-zero `x`, `|x|ᵥ` is equal to the norm of the corresponding maximal
+ideal of `𝓞 K` raised to the power of the `v`-adic valuation of `x`.
 
 ## Main Results
+
 * `NumberField.FinitePlace.prod_eq_inv_abs_norm`: for any non-zero element `x` of a number field
 `K`, the product `∏ |x|ᵥ` of the absolute values of `x` associated to the finite places of `K` is
 equal to the inverse of the norm of `x`.
@@ -22,64 +28,69 @@ equal to the inverse of the norm of `x`.
 number field, embeddings, places, infinite places, finite places, product formula
 -/
 
-namespace NumberField
-
 variable {K : Type*} [Field K] [NumberField K]
 
-open Algebra Classical FinitePlace Function Ideal IsDedekindDomain
-  IsDedekindDomain.HeightOneSpectrum
+namespace IsDedekindDomain.HeightOneSpectrum
+
+open NumberField FinitePlace
+
+lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) :
+    (equivHeightOneSpectrum.symm v) x = ‖embedding v x‖ := by
+  have : v = (equivHeightOneSpectrum.symm v).maximalIdeal := by
+    show v = equivHeightOneSpectrum (equivHeightOneSpectrum.symm v)
+    exact (Equiv.apply_symm_apply _ v).symm
+  convert (norm_embedding_eq (equivHeightOneSpectrum.symm v) x).symm
+
+open Ideal in
+lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
+    ‖(embedding v) ↑x‖ * absNorm (v.maxPowDividing (span {x})) = 1 := by
+  rw [maxPowDividing, map_pow, Nat.cast_pow, norm_def, vadicAbv_def,
+    WithZeroMulInt.toNNReal_neg_apply _
+      (v.valuation.ne_zero_iff.mpr (RingOfIntegers.coe_ne_zero_iff.mpr h_x_nezero))]
+  push_cast
+  rw [← zpow_natCast, ← zpow_add₀ <| mod_cast (zero_lt_one.trans (one_lt_norm v)).ne']
+  norm_cast
+  rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' _) (mod_cast (one_lt_norm v).ne')]
+  simp [valuation_eq_intValuationDef, intValuationDef_if_neg, h_x_nezero]
+
+end IsDedekindDomain.HeightOneSpectrum
+
+namespace NumberField
+
+open Algebra
 
 open Function Ideal IsDedekindDomain HeightOneSpectrum in
 /-- For any non-zero `x` in `𝓞 K`, the prduct of `w x`, where `w` runs over `FinitePlace K`, is
 equal to the inverse of the absolute value of `Algebra.norm ℤ x`. -/
 theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
     ∏ᶠ w : FinitePlace K, w x = (|norm ℤ x| : ℝ)⁻¹ := by
-  convert_to ∏ᶠ v : HeightOneSpectrum (𝓞 K), ‖embedding v x‖ = |↑(norm ℤ x)|⁻¹
-  · exact finprod_eq_of_bijective maximalIdeal equivHeightOneSpectrum.bijective
-      fun w ↦ (norm_embedding_eq w (x : K)).symm
+  simp only [← finprod_comp_equiv equivHeightOneSpectrum.symm, equivHeightOneSpectrum_symm_apply]
   refine (inv_eq_of_mul_eq_one_left ?_).symm
   norm_cast
   have h_span_nezero : span {x} ≠ 0 := by simp [h_x_nezero]
-  rw [Int.abs_eq_natAbs, ← Ideal.absNorm_span_singleton,
-    ← Ideal.finprod_heightOneSpectrum_factorization h_span_nezero, Int.cast_natCast]
+  rw [Int.abs_eq_natAbs, ← absNorm_span_singleton,
+    ← finprod_heightOneSpectrum_factorization h_span_nezero, Int.cast_natCast]
   let t₀ := {v : HeightOneSpectrum (𝓞 K) | x ∈ v.asIdeal}
   have h_fin₀ : t₀.Finite := by simp only [← dvd_span_singleton, finite_factors h_span_nezero, t₀]
   let t₁ := (fun v : HeightOneSpectrum (𝓞 K) ↦ ‖embedding v x‖).mulSupport
   let t₂ :=
     (fun v : HeightOneSpectrum (𝓞 K) ↦ (absNorm (v.maxPowDividing (span {x})) : ℝ)).mulSupport
-  have h_subs₁ : t₁ ⊆ t₀ := by simp [norm_eq_one_iff_not_mem, t₁, t₀]
-  have h_subs₂ : t₂ ⊆ t₀ := by
+  have h_fin₁ : t₁.Finite := h_fin₀.subset <| by simp [norm_eq_one_iff_not_mem, t₁, t₀]
+  have h_fin₂ : t₂.Finite := by
+    refine h_fin₀.subset ?_
     simp only [Set.le_eq_subset, mulSupport_subset_iff, Set.mem_setOf_eq, t₂, t₀,
       maxPowDividing, ← dvd_span_singleton]
     intro v hv
     simp only [map_pow, Nat.cast_pow, ← pow_zero (absNorm v.asIdeal : ℝ)] at hv
     replace hv := fun h ↦ hv (congrArg (HPow.hPow (absNorm v.asIdeal : ℝ)) h)
-    simp only [imp_false, Associates.count_ne_zero_iff_dvd h_span_nezero (irreducible v)] at hv
-    exact hv
-  have h_fin₁ : t₁.Finite := h_fin₀.subset h_subs₁
-  have h_fin₂ : t₂.Finite := h_fin₀.subset h_subs₂
+    classical
+    simpa only [imp_false, Associates.count_ne_zero_iff_dvd h_span_nezero (irreducible v)] using hv
   have h_prod : (absNorm (∏ᶠ (v : HeightOneSpectrum (𝓞 K)), v.maxPowDividing (span {x})) : ℝ) =
-      ∏ᶠ (v : HeightOneSpectrum (𝓞 K)), (absNorm (v.maxPowDividing (span {x})) : ℝ) := by
-    let f : Ideal (𝓞 K) →* ℝ := {
-      toFun := fun I ↦ (absNorm (S := (𝓞 K)) I : ℝ),
-      map_one' := by simp only [one_eq_top, absNorm_top, Nat.cast_one],
-      map_mul' := by simp only [_root_.map_mul, Nat.cast_mul, implies_true]
-    }
-    let g := fun v : HeightOneSpectrum (𝓞 K) ↦ v.maxPowDividing (span {x})
-    exact MonoidHom.map_finprod_of_preimage_one f (by simp [t₁, t₀, t₂, f]) g
+      ∏ᶠ (v : HeightOneSpectrum (𝓞 K)), (absNorm (v.maxPowDividing (span {x})) : ℝ) :=
+    ((Nat.castRingHom ℝ).toMonoidHom.comp absNorm.toMonoidHom).map_finprod_of_preimage_one
+      (by simp) _
   rw [h_prod, ← finprod_mul_distrib h_fin₁ h_fin₂]
-  apply finprod_eq_one_of_forall_eq_one
-  intro v
-  rw [maxPowDividing, map_pow, Nat.cast_pow, norm_def, vadicAbv_def,
-    WithZeroMulInt.toNNReal_neg_apply _ (v.valuation.ne_zero_iff.mpr
-    (RingOfIntegers.coe_ne_zero_iff.mpr h_x_nezero))]
-  push_cast
-  rw [← Real.rpow_natCast, ← Real.rpow_intCast, ← Real.rpow_add (mod_cast Nat.zero_lt_of_lt
-    (mod_cast one_lt_norm v))]
-  norm_cast
-  rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' (Nat.card (𝓞 K ⧸ v.asIdeal)))
-    (by exact ne_of_gt (one_lt_norm v))]
-  simp [valuation_eq_intValuationDef, intValuationDef_if_neg, h_x_nezero]
+  exact finprod_eq_one_of_forall_eq_one fun v ↦ v.embedding_mul_absNorm h_x_nezero
 
 /-- For any non-zero `x` in `K`, the prduct of `w x`, where `w` runs over `FinitePlace K`, is
 equal to the inverse of the absolute value of `Algebra.norm ℚ x`. -/
@@ -95,8 +106,8 @@ theorem FinitePlace.prod_eq_inv_abs_norm {x : K} (h_x_nezero : x ≠ 0) :
     (mulSupport_finite_int hb), prod_eq_inv_abs_norm_int ha, prod_eq_inv_abs_norm_int hb]
   rw [← inv_eq_iff_eq_inv, inv_inv_div_inv, ← abs_div]
   congr
-  apply (eq_div_of_mul_eq (by simp only [ne_eq, Int.cast_eq_zero, norm_eq_zero_iff, hb,
-    not_false_eq_true]) ?_).symm
+  have hb₀ : ((Algebra.norm ℤ) b : ℝ) ≠ 0 := by simp [hb]
+  refine (eq_div_of_mul_eq hb₀ ?_).symm
   norm_cast
   rw [coe_norm_int a, coe_norm_int b, ← MonoidHom.map_mul, div_mul_cancel₀ _
     (RingOfIntegers.coe_ne_zero_iff.mpr hb)]
