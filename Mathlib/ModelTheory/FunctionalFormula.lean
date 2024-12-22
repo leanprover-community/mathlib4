@@ -296,19 +296,22 @@ theorem realize_equal (f g : T.FunctionalFormula α β) (x : α → M) :
     (equal f g).Realize x ↔ f.realize x = g.realize x := by
   simp [equal, funext_iff]
 
+/-- Given `f : T.FunctionFormula (α ⊕ γ) β` and `s : L.Formula (α ⊕ γ)`, `injOn f S` is the
+formula whose semantics on `x : α → M` are that `f` partially applied at `x` is injective
+on the predicate `S` partially applied at `x` -/
 noncomputable def injOn [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β)
-    (S : L.Formula (α ⊕ γ)) : L.Formula α :=
+    (s : L.Formula (α ⊕ γ)) : L.Formula α :=
   Formula.iAlls (γ ⊕ γ) (
-    (S.relabel (Sum.elim Sum.inl (Sum.inr ∘ Sum.inl))).imp <|
-    (S.relabel (Sum.elim Sum.inl (Sum.inr ∘ Sum.inr))).imp <|
+    (s.relabel (Sum.elim Sum.inl (Sum.inr ∘ Sum.inl))).imp <|
+    (s.relabel (Sum.elim Sum.inl (Sum.inr ∘ Sum.inr))).imp <|
     (equal (f.relabelLeft (Sum.elim Sum.inl (Sum.inr ∘ Sum.inl)))
           (f.relabelLeft (Sum.elim Sum.inl (Sum.inr ∘ Sum.inr)))).imp <|
     equal (comap T (Sum.inr ∘ Sum.inl)) (comap T (Sum.inr ∘ Sum.inr)))
 
 @[simp]
-theorem realize_injOn [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) (S : L.Formula (α ⊕ γ))
-    (x : α → M) : (injOn f S).Realize x ↔
-      Set.InjOn (fun y : γ → M => f.realize (Sum.elim x y)) { y | S.Realize (Sum.elim x y) } := by
+theorem realize_injOn [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) (s : L.Formula (α ⊕ γ))
+    (x : α → M) : (injOn f s).Realize x ↔
+      Set.InjOn (fun y : γ → M => f.realize (Sum.elim x y)) { y | s.Realize (Sum.elim x y) } := by
   simp only [injOn, Function.comp_def, Formula.realize_iAlls, Formula.realize_imp,
     Formula.realize_relabel, Sum.elim_inr, realize_equal, realize_relabelLeft, funext_iff,
     Sum.forall_sum, Set.InjOn, Set.mem_setOf_eq]
@@ -316,6 +319,8 @@ theorem realize_injOn [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) (S : 
   simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr]
   tauto
 
+/-- Given `f : T.FunctionFormula (α ⊕ γ) β`, `injective f` is the formula whose semantics on
+`x : α → M` are that `f` partially applied at `x` is injective -/
 noncomputable def injective [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) : L.Formula α :=
   injOn f ⊤
 
@@ -325,18 +330,22 @@ theorem realize_injective [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) (
       (fun y : γ → M => f.realize (Sum.elim x y)) := by
   simp [injective, Set.InjOn, Function.Injective]
 
+/-- Given `f : T.FunctionFormula (α ⊕ γ) β` and `s : L.Formula (α ⊕ γ)`, and
+`t : L.Formula (α ⊕ β)`, `surjOn f s t` is the formula whose semantics on `x : α → M` are that
+`t` is contained in the image of `f` on the set `s`, when `f`, `s` and `t` are partially applied at
+`x` -/
 noncomputable def surjOn [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β)
-    (S : L.Formula (α ⊕ γ)) (T : L.Formula (α ⊕ β)) : L.Formula α :=
-  Formula.iAlls β (T.imp <| Formula.iExs γ <|
-    S.relabel (Sum.elim (Sum.inl ∘ Sum.inl) Sum.inr) ⊓
+    (s : L.Formula (α ⊕ γ)) (t : L.Formula (α ⊕ β)) : L.Formula α :=
+  Formula.iAlls β (t.imp <| Formula.iExs γ <|
+    s.relabel (Sum.elim (Sum.inl ∘ Sum.inl) Sum.inr) ⊓
     (f.toFormula.relabel
     (Sum.elim (Sum.elim (Sum.inl ∘ Sum.inl) Sum.inr) (Sum.inl ∘ Sum.inr))))
 
 @[simp]
-theorem realize_surjOn [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) (S : L.Formula (α ⊕ γ))
-    (T : L.Formula (α ⊕ β)) (x : α → M) : (surjOn f S T).Realize x ↔
+theorem realize_surjOn [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) (s : L.Formula (α ⊕ γ))
+    (t : L.Formula (α ⊕ β)) (x : α → M) : (surjOn f s t).Realize x ↔
       Set.SurjOn (fun y : γ → M => f.realize (Sum.elim x y))
-        { y | S.Realize (Sum.elim x y) } {b | T.Realize (Sum.elim x b)} := by
+        { y | s.Realize (Sum.elim x y) } {b | t.Realize (Sum.elim x b)} := by
   simp only [surjOn, Function.comp_def, Formula.realize_iAlls, Formula.realize_imp,
     Formula.realize_relabel, Sum.elim_inr, Formula.realize_iExs, Formula.realize_inf,
     realize_toFormula, Sum.elim_inl, realize_iff_realize_eq, funext_iff, Set.SurjOn, Set.subset_def,
@@ -344,6 +353,8 @@ theorem realize_surjOn [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) (S :
   simp +singlePass [← Sum.elim_comp_inl_inr]
   simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr]
 
+/-- Given `f : T.FunctionFormula (α ⊕ γ) β`, `surjective f` is the formula whose semantics on
+`x : α → M` are that `f` partially applied at `x` is surjective -/
 noncomputable def surjective [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) : L.Formula α :=
   surjOn f ⊤ ⊤
 
@@ -352,10 +363,14 @@ theorem realize_surjective [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) 
     (surjective f).Realize x ↔ Function.Surjective (fun y : γ → M => f.realize (Sum.elim x y)) := by
   simp [surjective, Set.SurjOn, Function.Surjective, Set.eq_univ_iff_forall]
 
+/-- Given `f : T.FunctionFormula (α ⊕ γ) β` and `s : L.Formula (α ⊕ γ)`, and
+`t : L.Formula (α ⊕ β)`, `mapsTo f s t` is the formula whose semantics on `x : α → M` are that
+the image of `f` on the set `s` is contained in `t`, when `f`, `s` and `t` are partially applied at
+`x` -/
 noncomputable def mapsTo [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β)
-    (S : L.Formula (α ⊕ γ)) (T : L.Formula (α ⊕ β)) : L.Formula α :=
-  Formula.iAlls γ (S.imp <| Formula.iAlls β (f.toFormula.imp
-    (T.relabel (Sum.elim (Sum.inl ∘ Sum.inl) Sum.inr))))
+    (s : L.Formula (α ⊕ γ)) (t : L.Formula (α ⊕ β)) : L.Formula α :=
+  Formula.iAlls γ (s.imp <| Formula.iAlls β (f.toFormula.imp
+    (t.relabel (Sum.elim (Sum.inl ∘ Sum.inl) Sum.inr))))
 
 @[simp]
 theorem realize_mapsTo [Finite γ] (f : T.FunctionalFormula (α ⊕ γ) β) (S : L.Formula (α ⊕ γ))
@@ -372,12 +387,15 @@ end FunctionalFormula
 
 open FunctionalFormula
 
+/-- Given a `Language`, `L` and a `Theory`,  `T` we can extend `L` to a language whose function
+symbols are the definable functions in the `Theory` `T` -/
 def FunctionalFormulaLang : Language where
   Functions := fun n => FunctionalFormula.{u, v, 0, 0} T (Fin n) Unit
   Relations := L.Relations
 
 namespace FunctionalFormulaLang
 
+/-- The canonical language map from `L` to `FunctionalFormulaLang T` -/
 def of : L →ᴸ FunctionalFormulaLang T where
   onFunction := fun _ f => ofTerm (func f var)
   onRelation := fun _ R => R
