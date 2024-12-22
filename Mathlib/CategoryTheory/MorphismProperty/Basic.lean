@@ -124,6 +124,7 @@ lemma of_eq (P : MorphismProperty C) {X Y : C} {f : X ⟶ Y} (hf : P f)
   obtain rfl : f' = f := by simpa using h
   exact hf
 
+/-- The class of morphisms given by a family of morphisms `f i : X i ⟶ Y i`. -/
 inductive ofHoms {ι : Type*} {X Y : ι → C} (f : ∀ i, X i ⟶ Y i) : MorphismProperty C
   | mk (i : ι) : ofHoms f (f i)
 
