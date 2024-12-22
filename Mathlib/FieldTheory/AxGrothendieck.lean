@@ -9,7 +9,7 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 import Mathlib.ModelTheory.Algebra.Ring.Definability
 import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.ModelTheory.DefinableFunction
+import Mathlib.ModelTheory.FunctionalFormula
 
 /-!
 # Ax-Grothendieck
