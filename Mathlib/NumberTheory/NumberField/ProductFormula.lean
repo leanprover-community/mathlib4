@@ -93,7 +93,7 @@ theorem FinitePlace.prod_eq_inv_abs_norm {x : K} (h_x_nezero : x ≠ 0) :
     simp at h_x_nezero
   simp_rw [map_div₀, Rat.cast_inv, Rat.cast_abs, finprod_div_distrib (mulSupport_finite_int ha)
     (mulSupport_finite_int hb), prod_eq_inv_abs_norm_int ha, prod_eq_inv_abs_norm_int hb]
-  rw [← inv_eq_iff_eq_inv, div_inv_eq_mul, mul_inv_rev, inv_inv, inv_mul_eq_div, ← abs_div]
+  rw [← inv_eq_iff_eq_inv, inv_inv_div_inv, ← abs_div]
   congr
   apply (eq_div_of_mul_eq (by simp only [ne_eq, Int.cast_eq_zero, norm_eq_zero_iff, hb,
     not_false_eq_true]) ?_).symm
