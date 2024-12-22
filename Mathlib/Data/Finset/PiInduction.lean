@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.Sigma
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Induction principles for `∀ i, Finset (α i)`

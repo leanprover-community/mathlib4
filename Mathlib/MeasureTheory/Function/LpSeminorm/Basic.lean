@@ -744,7 +744,7 @@ theorem memℒp_of_bounded [IsFiniteMeasure μ]
   have hb : ∀ᵐ x ∂μ, f x ≤ b := h.mono fun ω h => h.2
   (memℒp_const (max |a| |b|)).mono' hX (by filter_upwards [ha, hb] with x using abs_le_max_abs_abs)
 
-@[mono]
+@[gcongr, mono]
 theorem eLpNorm'_mono_measure (f : α → F) (hμν : ν ≤ μ) (hq : 0 ≤ q) :
     eLpNorm' f q ν ≤ eLpNorm' f q μ := by
   simp_rw [eLpNorm']
@@ -754,7 +754,7 @@ theorem eLpNorm'_mono_measure (f : α → F) (hμν : ν ≤ μ) (hq : 0 ≤ q) 
 @[deprecated (since := "2024-07-27")]
 alias snorm'_mono_measure := eLpNorm'_mono_measure
 
-@[mono]
+@[gcongr, mono]
 theorem eLpNormEssSup_mono_measure (f : α → F) (hμν : ν ≪ μ) :
     eLpNormEssSup f ν ≤ eLpNormEssSup f μ := by
   simp_rw [eLpNormEssSup]
@@ -763,7 +763,7 @@ theorem eLpNormEssSup_mono_measure (f : α → F) (hμν : ν ≪ μ) :
 @[deprecated (since := "2024-07-27")]
 alias snormEssSup_mono_measure := eLpNormEssSup_mono_measure
 
-@[mono]
+@[gcongr, mono]
 theorem eLpNorm_mono_measure (f : α → F) (hμν : ν ≤ μ) : eLpNorm f p ν ≤ eLpNorm f p μ := by
   by_cases hp0 : p = 0
   · simp [hp0]
