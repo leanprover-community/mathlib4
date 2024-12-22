@@ -17,6 +17,8 @@ namespace Theory
 variable {L : Language.{u, v}} (T : L.Theory) {α : Type w} {β : Type x} {γ : Type y}
 variable [Finite β] {M : Type z} [L.Structure M] [T.Model M] [Nonempty M]
 
+/-- The equivalence relation on `FunctionFormula`. Two `FunctionalFormula` are equivalent
+if they have the same semantics in all models. -/
 def FunctionalFormulaSetoid (α : Type w) (β : Type x) [Finite β] :
     Setoid {φ : L.Formula (α ⊕ β) // T ⊨ᵇ Formula.iExsUnique β φ } where
   r := fun x y => T ⊨ᵇ x.1.iff y.1
@@ -28,6 +30,9 @@ def FunctionalFormulaSetoid (α : Type w) (β : Type x) [Finite β] :
     · rintro ⟨x, _⟩ ⟨y, _⟩ ⟨z, _⟩
       simp +contextual [ModelsBoundedFormula, Formula.iff, BoundedFormula.realize_iff]
 
+/-- For a Theory `T`, a `FunctionalFormula T α β` is a formula `φ : L.Formula (α ⊕ β)` such that
+in all Models `M`, the set of elements of `(α ⊕ β) → M` satisfying `φ` is the graph of a function.
+We quotient by semantic equivalence.  -/
 structure FunctionalFormula (α : Type w) (β : Type x) [Finite β] : Type _ where
   ofQuotient :: toQuotient : Quotient (FunctionalFormulaSetoid T α β)
 
@@ -35,15 +40,21 @@ namespace FunctionalFormula
 
 variable {T}
 
+/-- The constructor for a `FunctionalFormula`. To make a `FunctionalFormula`, we need a formula,
+and a proof that it is the graph of a function in all models, stated using `ExistsUnique` -/
 def mk (φ : L.Formula (α ⊕ β)) (h : T ⊨ᵇ Formula.iExsUnique β φ) : FunctionalFormula T α β :=
   ofQuotient (Quotient.mk _ ⟨φ, h⟩)
 
+/-- The semantics of a `T.FunctionalFormula α β` as a relation on `α → M` and `β → M`. See
+also `realize` for the semantics as a function.  -/
 def Realize (f : FunctionalFormula T α β) (x : α → M) (y : β → M) : Prop :=
   Quotient.lift (fun φ => φ.1.Realize (Sum.elim x y)) (by
     intro a b hab
     simpa using hab.realize_formula M (v := Sum.elim x y)) f.toQuotient
 
-noncomputable def toFormula : FunctionalFormula T α β → L.Formula (α ⊕ β) := fun f => f.1.out.1
+/-- A `Formula` corresponding to a `FunctionalFormula`. This is non-unique, so we used the
+axiom of choice to select one.  -/
+noncomputable def toFormula (f : FunctionalFormula T α β) : L.Formula (α ⊕ β) := f.1.out.1
 
 @[simp]
 theorem realize_toFormula (f : FunctionalFormula T α β) (x : α ⊕ β → M) :
@@ -62,7 +73,7 @@ theorem realize_mk (φ : L.Formula (α ⊕ β)) (h : T ⊨ᵇ Formula.iExsUnique
     (y : β → M) : (mk φ h).Realize x y ↔ φ.Realize (Sum.elim x y) := by
   simp [Realize, mk]
 
-theorem exists_fun_eq_iff (f : T.FunctionalFormula α β) : ∃ f' : (α → M) → (β → M),
+private theorem exists_fun_eq_iff (f : T.FunctionalFormula α β) : ∃ f' : (α → M) → (β → M),
     ∀ x, ∀ y, f' x = y ↔ f.Realize x y := by
   rcases f with ⟨φ, h⟩
   have := fun x : α → M => h.realize_formula M (v := x)
@@ -100,6 +111,7 @@ theorem ext {f g : T.FunctionalFormula α β}
         Quotient.lift_mk] at this
       exact this
 
+/-- The `FunctionalFormula` corresponding to a `Term` in a language. -/
 def ofTerm (t : L.Term α) : T.FunctionalFormula α Unit :=
   mk (Term.equal (t.relabel Sum.inl) (var (Sum.inr ())))
   (by
@@ -118,8 +130,8 @@ theorem realize_ofTerm (t : L.Term α) (x : α → M) :
     Function.comp_def]
 
 variable (T)
+/-- `comap T f` is the `FunctionalFormula` corresponding to a relabelling of variables by `f` -/
 noncomputable def comap (f : β → α) : T.FunctionalFormula α β :=
-  let e := Fintype.ofFinite β
   mk (Formula.iAlls β <|
     (Formula.iInf
       (fun b => Term.equal (var (Sum.inr b)) (var (Sum.inl (f b))))).relabel Sum.inl) <| by
@@ -136,6 +148,7 @@ theorem realize_comap (f : β → α) (x : α → M) : (comap T f).realize x = x
   rw [← realize_iff_realize_eq]; simp [comap]
 
 variable (T)
+/-- The identity functional as a `FunctionalFormula` -/
 protected noncomputable def id : T.FunctionalFormula β β :=
   comap T id
 
@@ -145,6 +158,7 @@ theorem realize_id (x : β → M) :
   simp [FunctionalFormula.id]
 
 variable {T}
+/-- Composing two functional formulas -/
 noncomputable def comp [Finite γ] (f : T.FunctionalFormula β γ) (g : T.FunctionalFormula α β) :
     T.FunctionalFormula α γ :=
   mk (Formula.iExs β
