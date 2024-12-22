@@ -149,6 +149,14 @@ lemma mono_ι_app_of_isColimit_of_mono_map_of_isFiltered
   exact map_mono f (hc₁ := constCoconeIsColimit _ _)
     (hc₂ := (Functor.Final.isColimitWhiskerEquiv _ _).symm hc) (c.ι.app j₀) (by simp)
 
+variable (C J) in
+lemma isStableUnderColimitsOfShape
+    [HasColimitsOfShape J C] [HasExactColimitsOfShape J C] :
+    (MorphismProperty.monomorphisms C).IsStableUnderColimitsOfShape J := by
+  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
+  have : ∀ (j : J), Mono (f.app j) := hf
+  exact map_mono f hc₁ hc₂ _ (by simp)
+
 end HasExactColimitsOfShape
 
 namespace MonoOver

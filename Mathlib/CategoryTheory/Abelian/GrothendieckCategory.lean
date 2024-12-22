@@ -103,6 +103,10 @@ instance IsGrothendieckAbelian.hasLimits : HasLimitsOfSize.{w, w} C :=
 instance IsGrothendieckAbelian.wellPowered : WellPowered.{w} C :=
   wellPowered_of_equiv.{w} (ShrinkHoms.equivalence.{w} C).symm
 
+instance IsGrothendieckAbelian.ab4OfSize : AB4OfSize.{w} C := by
+  have : HasFiniteBiproducts C := HasFiniteBiproducts.of_hasFiniteProducts
+  apply AB4.of_AB5
+
 end Instances
 
 end CategoryTheory

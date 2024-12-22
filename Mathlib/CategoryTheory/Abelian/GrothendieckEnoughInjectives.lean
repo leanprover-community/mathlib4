@@ -246,12 +246,6 @@ end IsDetecting
 
 namespace IsGrothendieckAbelian
 
-variable (C) in
-lemma monomorphisms_isStableUnderCoproductsOfShape
-    [Abelian C] [IsGrothendieckAbelian.{w} C] (J : Type w) :
-    (MorphismProperty.monomorphisms C).IsStableUnderCoproductsOfShape J := by
-  sorry
-
 def generatingMonomorphisms (G : C) : MorphismProperty C :=
   MorphismProperty.ofHoms (fun (X : Subobject G) ↦ X.arrow)
 
@@ -469,20 +463,6 @@ instance : HasIterationOfShape C J where
   hasColimitsOfShape_of_isSuccLimit j hj := inferInstance
 
 instance {Z : C} (π : Z ⟶ Y) :
-    Small.{w} (SmallObject.FunctorObjIndex (Subobject.arrow (X := G)) π) := by
-  have : IsGrothendieckAbelian.{w} C := inferInstance
-  let φ : SmallObject.FunctorObjIndex (Subobject.arrow (X := G)) π →
-    Σ (i : Shrink.{w} (Subobject G)),
-      Shrink.{w} ((Subobject.underlying.obj ((equivShrink (Subobject G)).symm i) ⟶ Z) ×
-        (G ⟶ Y)) := fun x ↦ ⟨equivShrink _ x.i, equivShrink _
-            ⟨Subobject.underlying.map (eqToHom (by simp)) ≫ x.t, x.b⟩⟩
-  have hφ : Function.Injective φ := by
-    rintro ⟨i₁, t₁, b₁, _⟩ ⟨i₂, t₂, b₂, _⟩ h
-    obtain rfl : i₁ = i₂ := by simpa using congr_arg Sigma.fst h
-    simpa [cancel_epi, φ] using h
-  exact small_of_injective hφ
-
-instance {Z : C} (π : Z ⟶ Y) :
     HasCoproductsOfShape (SmallObject.FunctorObjIndex
       (Subobject.arrow (X := G)) π) C :=
   hasColimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{w} _).symm)
@@ -499,18 +479,13 @@ lemma ιObj_πObj : ιObj G J f ≫ πObj G J f = f := by simp [ιObj, πObj]
 open MorphismProperty in
 lemma transfiniteCompositionsOfShape_ιObj :
     (monomorphisms C).transfiniteCompositionsOfShape J (ιObj G J f) := by
-  have : (coproducts.{max w}
-    (ofHoms (Subobject.arrow (X := G)))).pushouts.transfiniteCompositionsOfShape J
-      (SmallObject.ιObj (Subobject.arrow (X := G)) J f) := by
-    have := SmallObject.transfiniteCompositionsOfShape_ιObj (Subobject.arrow (X := G)) J f
-    -- this needs a little improvement
-    sorry
-  refine monotone_transfiniteCompositionsOfShape ?_ _ _ this
+  refine monotone_transfiniteCompositionsOfShape ?_ _ _
+    (SmallObject.transfiniteCompositionsOfShape_ιObj (Subobject.arrow (X := G)) J f)
   refine (monotone_pushouts ?_).trans (monomorphisms C).pushouts_le
   intro A B i hi
   rw [coproducts_iff] at hi
   obtain ⟨J, hi⟩ := hi
-  refine (monomorphisms_isStableUnderCoproductsOfShape C J).colimitsOfShape_le _
+  refine (HasExactColimitsOfShape.isStableUnderColimitsOfShape _ _).colimitsOfShape_le _
     (monotone_colimitsOfShape ?_ _ _ hi)
   rintro _ _ _ ⟨i⟩
   apply MorphismProperty.monomorphisms.infer_property
@@ -522,7 +497,8 @@ instance : Mono (ιObj G J f) :=
 variable [NoMaxOrder J]
 
 instance (j j' : J) (φ : j ⟶ j') :
-    Mono ((SmallObject.inductiveSystemForget (Subobject.arrow (X := G)) J f).map φ) := sorry
+    Mono ((SmallObject.inductiveSystemForget (Subobject.arrow (X := G)) J f).map φ) := by
+  sorry
 
 variable {κ : Cardinal.{w}} [Fact κ.IsRegular] [IsCardinalFiltered J κ]
   (hκ : HasCardinalLT (Subobject G) κ)

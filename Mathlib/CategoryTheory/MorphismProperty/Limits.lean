@@ -5,6 +5,7 @@ Authors: Andrew Yang, Joël Riou
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
@@ -23,7 +24,7 @@ We also introduce properties `IsStableUnderProductsOfShape`, `IsStableUnderLimit
 
 -/
 
-universe w v u
+universe w w' v u
 
 namespace CategoryTheory
 
@@ -415,6 +416,28 @@ lemma monotone_colimitsOfShape {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W�
   rintro _ _ _ ⟨_, _, _, _, _, h₂, f, hf⟩
   exact ⟨_, _, _, _, _, h₂, f, fun j ↦ h _ (hf j)⟩
 
+variable {J} in
+lemma colimitsOfShape_le_of_final {J' : Type*} [Category J'] (F : J ⥤ J') [F.Final] :
+    W.colimitsOfShape J' ≤ W.colimitsOfShape J := by
+  intro _ _ _ ⟨X₁, X₂, c₁, c₂, h₁, h₂, f, hf⟩
+  let x := F ⋙ X₁
+  have h₁' : IsColimit (c₁.whisker F) := (Functor.Final.isColimitWhiskerEquiv F c₁).symm h₁
+  have h₂' : IsColimit (c₂.whisker F) := (Functor.Final.isColimitWhiskerEquiv F c₂).symm h₂
+  have : h₁.desc (Cocone.mk c₂.pt (f ≫ c₂.ι)) =
+      h₁'.desc (Cocone.mk c₂.pt (whiskerLeft _ f ≫ (c₂.whisker F).ι)) :=
+    h₁'.hom_ext (fun j ↦ by
+      have := h₁'.fac (Cocone.mk c₂.pt (whiskerLeft F f ≫ whiskerLeft F c₂.ι)) j
+      dsimp at this ⊢
+      simp [this])
+  rw [this]
+  exact ⟨_, _, _, _, h₁', h₂', _, fun j ↦ hf _⟩
+
+variable {J} in
+lemma colimitsOfShape_eq_of_equivalence {J' : Type*} [Category J'] (e : J ≌ J') :
+    W.colimitsOfShape J = W.colimitsOfShape J' :=
+  le_antisymm (W.colimitsOfShape_le_of_final e.inverse)
+    (W.colimitsOfShape_le_of_final e.functor)
+
 instance : (W.colimitsOfShape J).RespectsIso :=
   RespectsIso.of_respects_arrow_iso _ (by
     rintro ⟨_, _, f⟩ ⟨Y₁, Y₂, g⟩ e ⟨X₁, X₂, c₁, c₂, h₁, h₂, f, hf⟩
@@ -483,6 +506,13 @@ lemma colimitsOfShape_le_coproducts (J : Type w) :
 lemma coproducts_iff {X Y : C} (f : X ⟶ Y) :
     coproducts.{w} W f ↔ ∃ (J : Type w), W.colimitsOfShape (Discrete J) f := by
   simp only [coproducts, iSup_iff]
+
+lemma coproducts_of_small {X Y : C} (f : X ⟶ Y) {J : Type w'}
+    (hf : W.colimitsOfShape (Discrete J) f) [Small.{w} J] :
+    coproducts.{w} W f := by
+  rw [coproducts_iff]
+  refine ⟨Shrink J, ?_⟩
+  rwa [← W.colimitsOfShape_eq_of_equivalence (Discrete.equivalence (equivShrink.{w} J))]
 
 end Coproducts
 
