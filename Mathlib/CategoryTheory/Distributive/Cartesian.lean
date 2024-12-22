@@ -28,15 +28,20 @@ monoidal distributive category with respect to this monoidal structure.
 
 ## Main results
 
+- Cartesian distributive categories are both left and right distributive.
+
 - The coproduct coprojections are monic in a cartesian distributive category.
+
 
 ## TODO
 
 - Every cartesian distributive category is finitary distributive, meaning that
   the left tensor product functor `X ⊗ -` preserves all finite coproducts.
 
+- Show that any extensive distributive category can be embedded into a topos.
 
 ## References
+
 - [J.R.B.Cockett, Introduction to distributive categories, 1992][]
 - [Carboni et al, Introduction to extensive and distributive categories][CARBONI1993145]
 -/
@@ -62,7 +67,7 @@ abbrev CartesianDistribuitve :=
 
 attribute [local instance] symmetricOfHasFiniteProducts
 
-/-- Every cartesian distributive category is left and right distributive. -/
+/-- Every cartesian distributive category is both left and right distributive. -/
 instance [CartesianDistribuitve C] : MonoidalDistributive C := by infer_instance
 
 /-- The coproduct coprojections are monic in a cartesian distributive category. -/
@@ -90,6 +95,5 @@ instance [MonoidalLeftDistributive C]  : MonoCoprod C :=
       convert prod.lift_snd (𝟙 Z) g
       rw [← this]
       simp only [prod.lift_snd]
-
 
 end CategoryTheory

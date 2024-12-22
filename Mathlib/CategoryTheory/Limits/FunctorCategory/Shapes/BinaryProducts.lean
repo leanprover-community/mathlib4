@@ -60,8 +60,7 @@ theorem piObjIso_inv_comp_prod_snd (X Y : K ⥤ C) (k : K) :
 theorem prodObjIso_hom_naturality (X Y : K ⥤ C) {k k' : K} (f : k ⟶ k') :
     (X ⨯ Y).map f ≫ (prodObjIso X Y k').hom =
       (prodObjIso X Y k).hom ≫ prod.map (X.map f) (Y.map f)  := by
-  have := limit_map_limitObjIsoLimitCompEvaluation_hom (F:= pair X Y) f
-  simp only [prodObjIso, this]
+  simp only [prodObjIso, limit_map_limitObjIsoLimitCompEvaluation_hom]
   aesop
 
 /-- The naturality of the isomorphism `(prodObjIso _ _ _).inv` -/
@@ -69,8 +68,7 @@ theorem prodObjIso_hom_naturality (X Y : K ⥤ C) {k k' : K} (f : k ⟶ k') :
 theorem prodObjIso_inv_naturality (X Y : K ⥤ C) {k k' : K} (f : k ⟶ k') :
     (prodObjIso X Y k).inv ≫ (X ⨯ Y).map f =
       prod.map (X.map f) (Y.map f) ≫ (prodObjIso X Y k').inv  := by
-  have := limitObjIsoLimitCompEvaluation_inv_limit_map (F:= pair X Y) f
-  simp only [prodObjIso, this]
+  simp only [prodObjIso, limitObjIsoLimitCompEvaluation_inv_limit_map]
   aesop
 
 /-- Given a product cocone `α : Z ⟶ X` and `β : Z ⟶ Y`, the component of the gap map
@@ -123,8 +121,7 @@ theorem coprodObjIso_inv_comp_coprod_inr (X Y : K ⥤ C) (k : K) :
 theorem coprodObjIso_hom_naturality (X Y : K ⥤ C) {k k' : K} (f : k ⟶ k') :
     (X ⨿ Y).map f ≫ (coprodObjIso X Y k').hom =
       (coprodObjIso X Y k).hom ≫ coprod.map (X.map f) (Y.map f)  := by
-  have := colimit_map_colimitObjIsoColimitCompEvaluation_hom (F:= pair X Y) f
-  simp only [coprodObjIso, this]
+  simp only [coprodObjIso, colimit_map_colimitObjIsoColimitCompEvaluation_hom]
   aesop
 
 /-- The naturality of the isomorphism `(coprodObjIso _ _ _).inv` -/
@@ -132,8 +129,7 @@ theorem coprodObjIso_hom_naturality (X Y : K ⥤ C) {k k' : K} (f : k ⟶ k') :
 theorem coprodObjIso_inv_naturality (X Y : K ⥤ C) {k k' : K} (f : k ⟶ k') :
     (coprodObjIso X Y k).inv ≫ (X ⨿ Y).map f =
       coprod.map (X.map f) (Y.map f) ≫ (coprodObjIso X Y k').inv  := by
-  have := colimitObjIsoColimitCompEvaluation_inv_colimit_map (F:= pair X Y) f
-  simp only [coprodObjIso, this]
+  simp only [coprodObjIso, colimitObjIsoColimitCompEvaluation_inv_colimit_map]
   aesop
 
 /-- Given a coproduct cocone `α : X ⟶ Z` and `β : Y ⟶ Z`, the component of the cogap map
