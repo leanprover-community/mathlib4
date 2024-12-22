@@ -5,9 +5,11 @@ Authors: Joël Riou
 -/
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.SuccPred.Limit
+import Mathlib.Order.LatticeIntervals
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Limits.Over
+import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
@@ -40,12 +42,26 @@ holds for any well ordered type `J` in a certain universe `u`.
 
 -/
 
-universe w v v' u u'
+universe w w' v v' u u'
 
-def Set.Icc.orderBot {α : Type u} [Preorder α] {j j' : α} (h : j ≤ j') :
-    OrderBot (Set.Icc j j') where
-  bot := ⟨j, by simpa using h⟩
-  bot_le a := a.2.1
+lemma Subtype.monotone_val {α : Type u} [Preorder α] (p : α → Prop) :
+    Monotone (Subtype.val : Subtype p → _) := fun _ _ h ↦ h
+
+lemma Set.monotone_coe {α : Type u} [Preorder α] (S : Set α) :
+    Monotone (fun (x : S) ↦ x.1) := by
+  apply Subtype.monotone_val
+
+lemma Set.not_isMin_coe {α : Type u} [Preorder α] {S : Set α} (k : S)
+    (hk : ¬ IsMin k) : ¬ IsMin k.1 := by
+  simp only [not_isMin_iff, Subtype.exists] at hk ⊢
+  obtain ⟨a, _, ha⟩ := hk
+  exact ⟨a, ha⟩
+
+lemma Set.not_isMax_coe {α : Type u} [Preorder α] {S : Set α} (k : S)
+    (hk : ¬ IsMax k) : ¬ IsMax k.1 := by
+  simp only [not_isMax_iff, Subtype.exists] at hk ⊢
+  obtain ⟨a, _, ha⟩ := hk
+  exact ⟨a, ha⟩
 
 lemma Set.Iic.not_isMin_coe {α : Type u} [Preorder α] {j : α}
     {k : Set.Iic j} (hk : ¬ IsMin k) :
@@ -61,6 +77,24 @@ lemma Set.Iic.isSuccLimit_coe {α : Type u} [Preorder α] {j : α}
     {k : Set.Iic j} (hk : Order.IsSuccLimit k) :
     Order.IsSuccLimit k.1 :=
   ⟨not_isMin_coe hk.1, isSuccPrelimit_coe hk.2⟩
+
+lemma Set.Ici.not_isMin_coe {α : Type u} [Preorder α] {j : α}
+    {k : Set.Ici j} (hk : ¬ IsMin k) :
+    ¬ IsMin k.1 :=
+   fun h ↦ hk (fun _ ha' ↦ h ha')
+
+lemma Set.Ici.isSuccLimit_coe {α : Type u} [LinearOrder α] {j : α}
+    {k : Set.Ici j} (hk : Order.IsSuccLimit k) :
+    Order.IsSuccLimit k.1 :=
+  ⟨not_isMin_coe hk.1, fun a ⟨h₁, h₂⟩ ↦ by
+    refine hk.2 ⟨a, ?_⟩ ⟨h₁, fun b hb' ↦ h₂ hb'⟩
+    · simp only [mem_Ici]
+      by_contra!
+      apply hk.1
+      obtain rfl : k = ⟨j, by simp⟩ :=
+        le_antisymm (by simpa using h₂ this) k.2
+      rw [isMin_iff_eq_bot]
+      rfl⟩
 
 /-- Given an element `j` in a preordered type `α`, and `k : Set.Iic j`,
 this is the order isomorphism between `Set.Iio k` and `Set.Iio k.1`. -/
@@ -91,11 +125,61 @@ lemma Set.Iic.succ_eq {α : Type u} [PartialOrder α] [SuccOrder α] {j : α}
     · exfalso
       exact hk (fun x _ ↦ x.2))
 
-lemma Set.Iic.not_isMax_coe {α : Type u} [Preorder α] {j : α} (k : Set.Iic j)
-    (hk : ¬ IsMax k) : ¬ IsMax k.1 := by
-  simp only [not_isMax_iff, Subtype.exists, mem_Iic] at hk ⊢
-  obtain ⟨l, hl, hk⟩ := hk
-  exact ⟨j, lt_of_lt_of_le hk hl⟩
+lemma Set.Ici.succ_eq {α : Type u} [PartialOrder α] [SuccOrder α] {j : α}
+    (k : Set.Ici j) :
+    Order.succ k = Order.succ k.1 :=
+  coe_succ_of_mem (k.2.trans (Order.le_succ k.1))
+
+def Set.Icc.orderIso {α : Type u} [Preorder α] {j j' : α} (h : j ≤ j') :
+    Set.Icc j j' ≃o Set.Iic (⟨j', h⟩ : Set.Ici j) where
+  toFun := fun ⟨a, h⟩ ↦ ⟨⟨a, h.1⟩, h.2⟩
+  invFun := fun ⟨⟨a, h₁⟩, h₂⟩ ↦ ⟨a, h₁, h₂⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_rel_iff' := Iff.rfl
+
+section
+
+variable {α : Type u} [Preorder α]
+
+def Set.coeIci {S : Set α} (m : S) (x : Set.Iio m) : Set.Iio m.1 :=
+  ⟨_, x.2⟩
+
+lemma Set.monotone_coeIci {S : Set α} (m : S) :
+    Monotone (Set.coeIci m) := fun _ _ h ↦ h
+
+end
+
+section
+
+variable {α β : Type*} [Preorder α] [Preorder β] (e : α ≃o β)
+
+lemma OrderIso.map_isSuccPrelimit (i : α) (hi : Order.IsSuccPrelimit i) :
+    Order.IsSuccPrelimit (e i) := by
+  intro b
+  obtain ⟨j, rfl⟩ := e.surjective b
+  simp only [apply_covBy_apply_iff]
+  apply hi
+
+@[simp]
+lemma OrderIso.isSuccPrelimit_apply (i : α) :
+    Order.IsSuccPrelimit (e i) ↔ Order.IsSuccPrelimit i :=
+  ⟨fun h ↦ by simpa using e.symm.map_isSuccPrelimit _ h,
+    fun h ↦ e.map_isSuccPrelimit i h⟩
+
+lemma OrderIso.map_isSuccLimit (i : α) (hi : Order.IsSuccLimit i) :
+    Order.IsSuccLimit (e i) := by
+  simpa only [Order.IsSuccLimit, isMin_apply, isSuccPrelimit_apply] using hi
+
+def OrderIso.setIio (j : α) :
+    Set.Iio j ≃o Set.Iio (e j) where
+  toFun := fun ⟨k, hk⟩ ↦ ⟨e k, by simpa using hk⟩
+  invFun := fun ⟨k, hk⟩ ↦ ⟨e.symm k, by simpa using e.symm.strictMono hk⟩
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+  map_rel_iff' {k l} := e.map_rel_iff (a := k.1) (b := l.1)
+
+end
 
 namespace CategoryTheory
 
@@ -274,20 +358,72 @@ instance [W.RespectsIso] : RespectsIso (W.transfiniteCompositionsOfShape J) wher
 of shape `J` if for any well-order-continuous functor `F : J ⥤ C` such that
 `F.obj j ⟶ F.obj (Order.succ j)` is in `W`, then `F.obj ⊥ ⟶ c.pt` is in `W`
 for any colimit cocone `c : Cocone F`. -/
+@[mk_iff]
 class IsStableUnderTransfiniteCompositionOfShape : Prop where
   le : W.transfiniteCompositionsOfShape J ≤ W
 
-variable [W.IsStableUnderTransfiniteCompositionOfShape J]
-
-lemma transfiniteCompositionsOfShape_le  :
+lemma transfiniteCompositionsOfShape_le [W.IsStableUnderTransfiniteCompositionOfShape J] :
     W.transfiniteCompositionsOfShape J ≤ W :=
   IsStableUnderTransfiniteCompositionOfShape.le
 
 variable {J} in
-lemma mem_of_transfinite_composition {F : J ⥤ C} [F.IsWellOrderContinuous]
+lemma mem_of_transfinite_composition [W.IsStableUnderTransfiniteCompositionOfShape J]
+    {F : J ⥤ C} [F.IsWellOrderContinuous]
     (hF : ∀ (j : J) (_ : ¬IsMax j), W (F.map (homOfLE (Order.le_succ j))))
     {c : Cocone F} (hc : IsColimit c) : W (c.ι.app ⊥) :=
   W.transfiniteCompositionsOfShape_le J _ (by constructor <;> assumption)
+
+section
+
+variable {J} {J' : Type w'} [LinearOrder J'] [SuccOrder J']
+  [OrderBot J'] [WellFoundedLT J']
+
+instance (e : J ≃o J') (F : J' ⥤ C) [F.IsWellOrderContinuous] :
+    (e.equivalence.functor ⋙ F).IsWellOrderContinuous where
+  nonempty_isColimit j hj := ⟨(F.isColimitOfIsWellOrderContinuous (e j)
+    (e.map_isSuccLimit j hj)).whiskerEquivalence (e.setIio j).equivalence⟩
+
+instance (e : J ≃o J') (F : J ⥤ C) [F.IsWellOrderContinuous] :
+    (e.equivalence.inverse ⋙ F).IsWellOrderContinuous :=
+  inferInstanceAs (e.symm.equivalence.functor ⋙ F).IsWellOrderContinuous
+
+variable [W.RespectsIso]
+
+lemma transfiniteCompositionsOfShape_le_of_orderIso (e : J ≃o J') :
+    W.transfiniteCompositionsOfShape J ≤ W.transfiniteCompositionsOfShape J' := by
+  rintro _ _ _ ⟨F, hF, c, hc⟩
+  let F' : J' ⥤ C := e.equivalence.inverse ⋙ F
+  let c' := c.whisker e.equivalence.inverse
+  have hc' : IsColimit c' := IsColimit.whiskerEquivalence hc e.symm.equivalence
+  have : W.transfiniteCompositionsOfShape J' (c'.ι.app ⊥) := by
+    refine ⟨_, fun j hj ↦ ?_, _, hc'⟩
+    refine (W.arrow_mk_iso_iff ?_).1
+      (hF (e.symm j) (by simpa only [← OrderIso.isMax_apply e.symm] using hj))
+    have e : Arrow.mk (homOfLE (Order.le_succ (e.symm j))) ≅
+      (e.equivalence.inverse.mapArrow.obj
+        (Arrow.mk (homOfLE (Order.le_succ j)))) :=
+          Arrow.isoMk (Iso.refl _) (eqToIso (e.symm.map_succ j).symm)
+    exact F.mapArrow.mapIso e
+  have e : Arrow.mk (c'.ι.app ⊥) ≅ Arrow.mk (c.ι.app ⊥) :=
+    Arrow.isoMk (eqToIso (by dsimp; rw [e.symm.map_bot])) (Iso.refl _) (by
+      dsimp [c']
+      rw [← c.w (eqToHom e.symm.map_bot), eqToHom_map, assoc, comp_id])
+  exact ((W.transfiniteCompositionsOfShape J').arrow_iso_iff e).1 this
+
+lemma transfiniteCompositionsOfShape_eq_of_orderIso (e : J ≃o J') :
+    W.transfiniteCompositionsOfShape J = W.transfiniteCompositionsOfShape J' :=
+  le_antisymm (W.transfiniteCompositionsOfShape_le_of_orderIso e)
+    (W.transfiniteCompositionsOfShape_le_of_orderIso e.symm)
+
+lemma isStableUnderTransfiniteCompositionOfShape_iff_of_orderIso (e : J ≃o J') :
+    W.IsStableUnderTransfiniteCompositionOfShape J ↔
+      W.IsStableUnderTransfiniteCompositionOfShape J' := by
+  simp only [isStableUnderTransfiniteCompositionOfShape_iff,
+    W.transfiniteCompositionsOfShape_eq_of_orderIso e]
+
+end
+
+variable [W.IsStableUnderTransfiniteCompositionOfShape J]
 
 lemma mem_map_from_bot_of_transfinite_composition
     {J : Type w} [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
@@ -301,15 +437,48 @@ lemma mem_map_from_bot_of_transfinite_composition
   exact (W.inverseImage _).of_eq (hF k (fun h ↦ hk' (fun ⟨a, ha⟩ ha' ↦ h ha'))) rfl
     ((Set.Iic.succ_eq _ hk').symm) rfl
 
-lemma mem_map_of_transfinite_composition
+instance (F : J ⥤ C) (j : J) [F.IsWellOrderContinuous] :
+    ((Set.Ici j).monotone_coe.functor ⋙ F).IsWellOrderContinuous where
+  nonempty_isColimit m hm := ⟨by
+    have : (Set.monotone_coeIci m).functor.Final := by
+      obtain ⟨m, hm'⟩ := m
+      apply Functor.final_of_exists_of_isFiltered
+      · rintro ⟨a, ha⟩
+        have h₁ : j < m := by
+          by_contra!
+          obtain rfl : m = j := le_antisymm this hm'
+          have := hm.1
+          simp only [isMin_iff_eq_bot] at this
+          exact this rfl
+        have h₂ := hm.2 ⟨max a j, le_max_right a j⟩
+        rw [not_covBy_iff (by exact sup_lt_iff.2 ⟨ha, h₁⟩)] at h₂
+        obtain ⟨⟨b, hb₁⟩, hb₂, hb₃⟩ := h₂
+        exact ⟨⟨⟨b, hb₁⟩, hb₃⟩, ⟨homOfLE ((le_max_left a j).trans hb₂.le)⟩⟩
+      · rintro a b f g
+        exact ⟨b, 𝟙 _, rfl⟩
+    exact (Functor.Final.isColimitWhiskerEquiv (F := (Set.monotone_coeIci m).functor) _).2
+      (F.isColimitOfIsWellOrderContinuous m.1 (Set.Ici.isSuccLimit_coe hm))⟩
+
+lemma mem_map_of_transfinite_composition [W.RespectsIso]
     {J : Type w} [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
     {F : J ⥤ C} [F.IsWellOrderContinuous]
     (hF : ∀ (j : J) (_ : ¬IsMax j), W (F.map (homOfLE (Order.le_succ j))))
     {j j' : J} (φ : j ⟶ j')
-    [letI := Set.Icc.orderBot (leOfHom φ);
+    [letI : Fact (j ≤ j') := ⟨leOfHom φ⟩;
       W.IsStableUnderTransfiniteCompositionOfShape (Set.Icc j j')] :
     W (F.map φ) := by
-  sorry
+  have : Fact (j ≤ j') := ⟨leOfHom φ⟩
+  have hF' (j : J) (hj : ¬IsMax j) (k : J) (hk : k = Order.succ j) :
+      W (F.map (homOfLE (by rw [hk]; exact Order.le_succ j) : j ⟶ k)) := by
+    subst hk
+    exact hF j hj
+  let j'' : Set.Ici j := ⟨j', leOfHom φ⟩
+  have : W.IsStableUnderTransfiniteCompositionOfShape (Set.Iic j'') := by
+    rwa [← W.isStableUnderTransfiniteCompositionOfShape_iff_of_orderIso
+      (Set.Icc.orderIso (leOfHom φ))]
+  exact mem_map_from_bot_of_transfinite_composition W
+    (F := (Set.Ici j).monotone_coe.functor ⋙ F)
+    (fun k hk ↦ hF' k (Set.not_isMax_coe k hk) _ (Set.Ici.succ_eq k)) j''
 
 end
 

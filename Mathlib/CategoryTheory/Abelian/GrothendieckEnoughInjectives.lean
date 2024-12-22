@@ -418,7 +418,7 @@ lemma generatingMonomorphismsPushouts_transfiniteCompositionOfShape :
   convert generatingMonomorphismsPushouts_ofLE_le_largerSubobject hG
     (transfiniteIterate (largerSubobject hG) k (Subobject.mk f)) using 2
   all_goals
-    rw [Set.Iic.succ_eq _ hk', transfiniteIterate_succ _ _ _ (Set.Iic.not_isMax_coe _ hk')]
+  · rw [Set.Iic.succ_eq _ hk', transfiniteIterate_succ _ _ _ (Set.not_isMax_coe _ hk')]
 
 end
 
