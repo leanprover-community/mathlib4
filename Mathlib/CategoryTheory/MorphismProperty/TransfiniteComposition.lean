@@ -7,6 +7,7 @@ import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Over
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
@@ -40,6 +41,11 @@ holds for any well ordered type `J` in a certain universe `u`.
 -/
 
 universe w v v' u u'
+
+def Set.Icc.orderBot {α : Type u} [Preorder α] {j j' : α} (h : j ≤ j') :
+    OrderBot (Set.Icc j j') where
+  bot := ⟨j, by simpa using h⟩
+  bot_le a := a.2.1
 
 lemma Set.Iic.not_isMin_coe {α : Type u} [Preorder α] {j : α}
     {k : Set.Iic j} (hk : ¬ IsMin k) :
@@ -283,8 +289,8 @@ lemma mem_of_transfinite_composition {F : J ⥤ C} [F.IsWellOrderContinuous]
     {c : Cocone F} (hc : IsColimit c) : W (c.ι.app ⊥) :=
   W.transfiniteCompositionsOfShape_le J _ (by constructor <;> assumption)
 
-lemma mem_map_of_transfinite_composition
-    {J : Type u} [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
+lemma mem_map_from_bot_of_transfinite_composition
+    {J : Type w} [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
     {F : J ⥤ C} [F.IsWellOrderContinuous]
     (hF : ∀ (j : J) (_ : ¬IsMax j), W (F.map (homOfLE (Order.le_succ j))))
     (j : J) [W.IsStableUnderTransfiniteCompositionOfShape (Set.Iic j)] :
@@ -294,6 +300,16 @@ lemma mem_map_of_transfinite_composition
   rw [← W.inverseImage_iff]
   exact (W.inverseImage _).of_eq (hF k (fun h ↦ hk' (fun ⟨a, ha⟩ ha' ↦ h ha'))) rfl
     ((Set.Iic.succ_eq _ hk').symm) rfl
+
+lemma mem_map_of_transfinite_composition
+    {J : Type w} [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
+    {F : J ⥤ C} [F.IsWellOrderContinuous]
+    (hF : ∀ (j : J) (_ : ¬IsMax j), W (F.map (homOfLE (Order.le_succ j))))
+    {j j' : J} (φ : j ⟶ j')
+    [letI := Set.Icc.orderBot (leOfHom φ);
+      W.IsStableUnderTransfiniteCompositionOfShape (Set.Icc j j')] :
+    W (F.map φ) := by
+  sorry
 
 end
 

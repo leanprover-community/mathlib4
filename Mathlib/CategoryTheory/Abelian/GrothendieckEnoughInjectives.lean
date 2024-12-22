@@ -217,13 +217,6 @@ end IsPushout
 
 end Abelian
 
-namespace Abelian
-
-variable [Abelian C]
-
-
-end Abelian
-
 namespace IsDetecting
 
 lemma isIso_iff_of_mono {S : Set C} (hS : IsDetecting S)
@@ -467,6 +460,12 @@ instance {Z : C} (π : Z ⟶ Y) :
       (Subobject.arrow (X := G)) π) C :=
   hasColimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{w} _).symm)
 
+instance {Z : C} (π : Z ⟶ Y) :
+    HasExactColimitsOfShape (Discrete (SmallObject.FunctorObjIndex
+      (Subobject.arrow (X := G)) π)) C :=
+  HasExactColimitsOfShape.of_domain_equivalence C
+    (Discrete.equivalence (equivShrink.{w} _).symm)
+
 noncomputable def obj : C := SmallObject.obj (Subobject.arrow (X := G)) J f
 
 noncomputable def ιObj : X ⟶ obj G J f := SmallObject.ιObj _ _ f
@@ -485,8 +484,8 @@ lemma transfiniteCompositionsOfShape_ιObj :
   intro A B i hi
   rw [coproducts_iff] at hi
   obtain ⟨J, hi⟩ := hi
-  refine (HasExactColimitsOfShape.isStableUnderColimitsOfShape _ _).colimitsOfShape_le _
-    (monotone_colimitsOfShape ?_ _ _ hi)
+  refine (HasExactColimitsOfShape.monomorphisms_isStableUnderColimitsOfShape
+    _ _).colimitsOfShape_le _ (monotone_colimitsOfShape ?_ _ _ hi)
   rintro _ _ _ ⟨i⟩
   apply MorphismProperty.monomorphisms.infer_property
 
@@ -496,9 +495,16 @@ instance : Mono (ιObj G J f) :=
 
 variable [NoMaxOrder J]
 
+open MorphismProperty in
 instance (j j' : J) (φ : j ⟶ j') :
     Mono ((SmallObject.inductiveSystemForget (Subobject.arrow (X := G)) J f).map φ) := by
-  sorry
+  apply (monomorphisms C).mem_map_of_transfinite_composition
+  intro k hk
+  rw [SmallObject.inductiveSystemForget_map_le_succ _ _ _ _ hk]
+  apply RespectsIso.postcomp
+  apply of_isPushout (IsPushout.of_hasPushout _ _) _
+  exact (HasExactColimitsOfShape.monomorphisms_isStableUnderColimitsOfShape C _).colimMap _
+    (fun ⟨j⟩ ↦ inferInstanceAs (Mono j.i.arrow))
 
 variable {κ : Cardinal.{w}} [Fact κ.IsRegular] [IsCardinalFiltered J κ]
   (hκ : HasCardinalLT (Subobject G) κ)
