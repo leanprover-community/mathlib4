@@ -93,7 +93,7 @@ open MvPolynomial FreeCommRing Language Field Ring BoundedFormula
 variable {ι α : Type*} [Finite α] {K : Type*} [Field K] [CompatibleRing K]
 
 /-- The collection of first order formulas corresponding to the Ax-Grothendieck theorem. -/
-noncomputable def genericPolyMapSurjOnOfInjOn [Fintype ι]
+noncomputable def genericPolyMapSurjOnOfInjOn [Finite ι]
     (φ : ring.Formula (α ⊕ ι))
     (mons : ι → Finset (ι →₀ ℕ)) : Language.ring.Sentence :=
   let l1 : ι → Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
