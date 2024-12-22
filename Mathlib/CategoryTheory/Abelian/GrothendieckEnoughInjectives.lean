@@ -441,10 +441,65 @@ lemma generatingMonomorphismsPushouts_rlp [IsGrothendieckAbelian.{w} C] (hG : Is
       (by simpa only [MorphismProperty.pushouts_rlp] using hp)
   · exact MorphismProperty.antitone_rlp (generatingMonomorphisms_le_monomorphisms _)
 
-instance [IsGrothendieckAbelian.{w} C] :
+namespace monomorphisms_isStableUnderTransfiniteComposition
+
+variable [IsGrothendieckAbelian.{w} C]
+  {J : Type w} [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
+  {F : J ⥤ C} [F.IsWellOrderContinuous]
+  (hF : ∀ (j : J), ¬IsMax j → Mono (F.map (homOfLE (Order.le_succ j))))
+  {c : Cocone F} (hc : IsColimit c)
+
+include hF
+
+lemma mono_map_from_bot (j : J) :
+    Mono (F.map (homOfLE (bot_le : ⊥ ≤ j))) := by
+  induction j using SuccOrder.limitRecOn with
+  | hm j hj =>
+      obtain rfl : j = ⊥ := by simpa using hj
+      simp only [homOfLE_refl, Functor.map_id]
+      infer_instance
+  | hs j hj hj' =>
+      have := hF j hj
+      rw [← homOfLE_comp bot_le (Order.le_succ j), F.map_comp]
+      infer_instance
+  | hl j hj hj' =>
+      let φ : (Functor.const _).obj (F.obj ⊥) ⟶ F.restrictionLT j :=
+        { app j := F.map (homOfLE bot_le)
+          naturality j j' f := by
+            dsimp
+            rw [← F.map_comp, id_comp]
+            rfl }
+      have := IsFiltered.set_iio j hj
+      have : ∀ j, Mono (φ.app j) := fun ⟨j, hj⟩ ↦ hj' j hj
+      exact HasExactColimitsOfShape.map_mono φ
+        (constCoconeIsColimit _ (F.obj ⊥)) (F.isColimitOfIsWellOrderContinuous j hj)
+        (F.map (homOfLE bot_le)) (fun ⟨k, kj⟩ ↦ by
+          dsimp
+          rw [← F.map_comp, id_comp]
+          rfl)
+
+include hc
+
+lemma mono_ι_app : Mono (c.ι.app ⊥) := by
+  let φ : (Functor.const J).obj (F.obj ⊥) ⟶ F :=
+    { app j := F.map (homOfLE bot_le)
+      naturality j j' f := by
+        dsimp
+        rw [← F.map_comp, id_comp]
+        rfl }
+  have : ∀ (j : J), Mono (φ.app j) := mono_map_from_bot hF
+  exact HasExactColimitsOfShape.map_mono φ
+    (constCoconeIsColimit J (F.obj ⊥)) hc (c.ι.app ⊥) (by simp)
+
+end monomorphisms_isStableUnderTransfiniteComposition
+
+open monomorphisms_isStableUnderTransfiniteComposition in
+instance monomorphisms_isStableUnderTransfiniteComposition [IsGrothendieckAbelian.{w} C] :
     MorphismProperty.IsStableUnderTransfiniteComposition.{w}
-      (MorphismProperty.monomorphisms C) := by
-  sorry
+      (MorphismProperty.monomorphisms C) where
+  isStableUnderTransfiniteCompositionOfShape J _ _ _ _ := ⟨by
+    rintro _ _ _ ⟨F, hF, c, hc⟩
+    exact mono_ι_app hF hc⟩
 
 namespace enoughInjectives
 
