@@ -568,6 +568,12 @@ theorem realize_graph {f : L.Functions n} {x : Fin n → M} {y : M} :
   simp only [Formula.graph, Term.realize, realize_equal, Fin.cons_zero, Fin.cons_succ]
   rw [eq_comm]
 
+theorem boundedFormula_realize_eq_realize (φ : L.Formula α) (x : α → M) (y : Fin 0 → M) :
+    BoundedFormula.Realize φ x y ↔ φ.Realize x := by
+  rw [Formula.Realize, iff_iff_eq]
+  congr
+  ext i; exact Fin.elim0 i
+
 end Formula
 
 @[simp]
