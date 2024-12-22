@@ -52,8 +52,8 @@ theorem commutator_eq_normalClosure : commutator G = Subgroup.normalClosure (com
 
 variable {G} in
 theorem Subgroup.map_subtype_commutator (H : Subgroup G) :
-    (commutator H).map H.subtype = ⁅H, H⁆ := by
-  rw [commutator_def, Subgroup.map_commutator, ← MonoidHom.range_eq_map, H.range_subtype]
+    (_root_.commutator H).map H.subtype = ⁅H, H⁆ := by
+  rw [_root_.commutator_def, map_commutator, ← MonoidHom.range_eq_map, H.range_subtype]
 
 instance commutator_characteristic : (commutator G).Characteristic :=
   Subgroup.commutator_characteristic ⊤ ⊤
