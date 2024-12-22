@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.IsLimit
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
@@ -39,7 +39,34 @@ holds for any well ordered type `J` in a certain universe `u`.
 
 -/
 
-universe w v u
+universe w v v' u u'
+
+lemma Set.Iic.not_isMin_coe {α : Type u} [Preorder α] {j : α}
+    {k : Set.Iic j} (hk : ¬ IsMin k) :
+    ¬ IsMin k.1 :=
+   fun h ↦ hk (fun _ ha' ↦ h ha')
+
+lemma Set.Iic.isSuccPrelimit_coe {α : Type u} [Preorder α] {j : α}
+    {k : Set.Iic j} (hk : Order.IsSuccPrelimit k) :
+    Order.IsSuccPrelimit k.1 :=
+  fun a ha ↦ hk ⟨a, ha.1.le.trans k.2⟩ ⟨ha.1, fun ⟨_, _⟩ hb' ↦ ha.2 hb'⟩
+
+lemma Set.Iic.isSuccLimit_coe {α : Type u} [Preorder α] {j : α}
+    {k : Set.Iic j} (hk : Order.IsSuccLimit k) :
+    Order.IsSuccLimit k.1 :=
+  ⟨not_isMin_coe hk.1, isSuccPrelimit_coe hk.2⟩
+
+/-- Given an element `j` in a preordered type `α`, and `k : Set.Iic j`,
+this is the order isomorphism between `Set.Iio k` and `Set.Iio k.1`. -/
+@[simps]
+def Set.Iic.iioOrderIso {α : Type u} [Preorder α] {j : α}
+    (k : Set.Iic j) :
+    Set.Iio k ≃o Set.Iio k.1 where
+  toFun := fun ⟨⟨x, _⟩, hx'⟩ ↦ ⟨x, hx'⟩
+  invFun := fun ⟨x, hx⟩ ↦ ⟨⟨x, hx.le.trans k.2⟩, hx⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_rel_iff' := by rfl
 
 instance (α : Type u) [Preorder α] [OrderBot α] (a : α) : OrderBot (Set.Iic a) where
   bot := ⟨⊥, bot_le⟩
@@ -94,7 +121,7 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
 
 namespace Functor
 
@@ -118,6 +145,34 @@ def coconeLT (F : J ⥤ C) (m : J) :
         dsimp
         rw [← F.map_comp, comp_id]
         rfl }
+
+/-- Given a functor `F : J ⥤ C` and `j : J`, this is the induced
+functor `Set.Iic j ⥤ C`. -/
+@[simps!]
+def restrictionLE (F : J ⥤ C) (j : J) : Set.Iic j ⥤ C :=
+  Monotone.functor (f := fun k ↦ k.1) (fun _ _ ↦ id) ⋙ F
+
+/-- Given a functor `F : J ⥤ C` and `j : J`, this is the (colimit) cocone
+with point `F.obj j` for the restriction of `F` to `Set.Iic m`. -/
+@[simps!]
+def coconeLE (F : J ⥤ C) (j : J) :
+    Cocone (F.restrictionLE j) where
+  pt := F.obj j
+  ι :=
+    { app x := F.map (homOfLE x.2)
+      naturality _ _ f := by
+        dsimp
+        simp only [homOfLE_leOfHom, ← Functor.map_comp, comp_id]
+        rfl }
+
+/-- The colimit of `F.cocone j` is `F.obj j`. -/
+def isColimitCoconeLE (F : J ⥤ C) (j : J) :
+    IsColimit (F.coconeLE j) where
+  desc s := s.ι.app ⟨j, by simp⟩
+  fac s k := by
+    simpa only [Functor.const_obj_obj, Functor.const_obj_map, comp_id]
+      using s.ι.naturality (homOfLE k.2 : k ⟶ ⟨j, by simp⟩)
+  uniq s m hm := by simp [← hm]
 
 /-- A functor `F : J ⥤ C` is well-order-continuous if for any limit element `m : J`,
 `F.obj m` identifies to the colimit of the `F.obj j` for `j < m`. -/
@@ -171,7 +226,43 @@ lemma isWellOrderContinuous_of_iso {F G : J ⥤ C} (e : F ≅ G) [F.IsWellOrderC
       (IsColimit.ofIsoColimit (F.isColimitOfIsWellOrderContinuous m hm)
         (Cocones.ext (e.app _)))⟩
 
+instance {J : Type w} [Preorder J]
+    (F : J ⥤ C) [F.IsWellOrderContinuous] (j : J) :
+    (F.restrictionLE j).IsWellOrderContinuous where
+  nonempty_isColimit m hm := ⟨
+    IsColimit.ofWhiskerEquivalence (Set.Iic.iioOrderIso m).equivalence.symm
+      (F.isColimitOfIsWellOrderContinuous m.1 (Set.Iic.isSuccLimit_coe hm))⟩
+
 end Functor
+
+namespace Limits
+
+variable (J : Type w) [Preorder J]
+
+/-- A functor `G : C ⥤ D` satisfies `PreservesWellOrderContinuousOfShape J G`
+if for any limit element `j` in the preordered type `J`, the functor `G`
+preserves colimits of shape `Set.Iio j`. -/
+class PreservesWellOrderContinuousOfShape (G : C ⥤ D) : Prop where
+  preservesColimitsOfShape (j : J) (hj : Order.IsSuccLimit j) :
+    PreservesColimitsOfShape (Set.Iio j) G := by infer_instance
+
+variable {J} in
+lemma preservesColimitsOfShape_of_preservesWellOrderContinuousOfShape (G : C ⥤ D)
+    [PreservesWellOrderContinuousOfShape J G]
+    (j : J) (hj : Order.IsSuccLimit j) :
+    PreservesColimitsOfShape (Set.Iio j) G :=
+  PreservesWellOrderContinuousOfShape.preservesColimitsOfShape j hj
+
+variable {J}
+
+instance (F : J ⥤ C) (G : C ⥤ D) [F.IsWellOrderContinuous]
+    [PreservesWellOrderContinuousOfShape J G] :
+    (F ⋙ G).IsWellOrderContinuous where
+  nonempty_isColimit j hj := ⟨by
+    have := preservesColimitsOfShape_of_preservesWellOrderContinuousOfShape G j hj
+    exact isColimitOfPreserves G (F.isColimitOfIsWellOrderContinuous j hj)⟩
+
+end Limits
 
 namespace MorphismProperty
 
