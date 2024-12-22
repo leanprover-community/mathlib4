@@ -16,7 +16,7 @@ values of `K` and the `|⬝|ᵥ` are suitably normalized.
 `K`, the product `∏ |x|ᵥ` of the absolute values of `x` associated to the finite places of `K` is
 equal to the inverse of the norm of `x`.
 * `NumberField.prod_abs_eq_one`: for any non-zero element `x` of a number field `K`, we have
-`∏|x|ᵥ=1` where the product runs over the equivalence classes of absoulte values of `K`.
+`∏ |x|ᵥ=1`, where the product runs over the equivalence classes of absolute values of `K`.
 
 ## Tags
 number field, embeddings, places, infinite places, finite places, product formula
