@@ -7,21 +7,23 @@ variable {ι : Type*}
 variable (R : ι → Type*) (A : (i : ι) → Set (R i))
 variable (R' : ι → Type*) (A' : (i : ι) → Set (R' i))
 
-def RestrPi (𝓕 : Filter ι) : Type _ := {x : Π i, R i // ∀ᶠ i in 𝓕, x i ∈ A i}
-
--- We don't make this an `abbrev` because we want a separate topology instance
-def RestrPi.Pre (S : Set ι) : Type _ := {x : Π i, R i // ∀ i ∈ S, x i ∈ A i}
+def RestrictedProduct (𝓕 : Filter ι) : Type _ := {x : Π i, R i // ∀ᶠ i in 𝓕, x i ∈ A i}
 
 open Batteries.ExtendedBinder
 
+scoped[RestrictedProduct]
 notation3 "Πᶠ "(...)" in "f", ""["r:(scoped R => R)", "a:(scoped A => A)"]" =>
-  RestrPi r a f
+  RestrictedProduct r a f
+
+scoped[RestrictedProduct]
 notation3"Πᶠ "(...)", ""["r:(scoped R => R)", "a:(scoped A => A)"]" =>
-  RestrPi r a cofinite
+  RestrictedProduct r a cofinite
 
-namespace RestrPi
+namespace RestrictedProduct
 
-variable {𝓕 𝓖 : Filter ι}
+open scoped RestrictedProduct
+
+variable {𝓕 𝓖 : Filter ι} {S T : Set ι}
 
 instance : DFunLike (Πᶠ i in 𝓕, [R i, A i]) ι R where
   coe x i := x.1 i
@@ -31,7 +33,7 @@ lemma range_coe :
     range ((↑) : Πᶠ i in 𝓕, [R i, A i] → Π i, R i) = {x | ∀ᶠ i in 𝓕, x i ∈ A i} :=
   subset_antisymm (range_subset_iff.mpr fun x ↦ x.2) (fun x hx ↦ mem_range.mpr ⟨⟨x, hx⟩, rfl⟩)
 
-lemma range_coe_principal {S : Set ι} :
+lemma range_coe_principal :
     range ((↑) : Πᶠ i in 𝓟 S, [R i, A i] → Π i, R i) = S.pi A :=
   range_coe R A
 
@@ -531,4 +533,4 @@ end cofinite
 
 end Compatibility
 
-end RestrPi
+end RestrictedProduct
