@@ -134,12 +134,11 @@ lemma nth_ne_zero_of_M_le_of_lt {i k : ℕ} (hi : M a N ≤ a i) (hk : k < a (i 
 
 lemma apply_add_one_lt_of_apply_eq {i j : ℕ} (hi : N ≤ i) (hij : i < j) (ha : a i = a j) :
     a (i + 1) < a (j + 1) := by
-  rw [hc.apply_eq_card (by omega : N < i + 1), hc.apply_eq_card (by omega : N < j + 1)]
-  simp only [add_tsub_cancel_right, ha.symm]
+  rw [hc.apply_add_one_eq_card hi, hc.apply_add_one_eq_card (by omega), ha]
   refine Finset.card_lt_card (Finset.ssubset_def.mp ⟨Finset.filter_subset_filter _
     (by simp [hij.le]), Finset.not_subset.mpr ⟨j, ?_⟩⟩)
-  simp only [ha, Finset.mem_filter, Finset.mem_range, lt_add_iff_pos_right, zero_lt_one, and_self,
-    true_and]
+  simp only [Finset.mem_filter, Finset.mem_range, lt_add_iff_pos_right, zero_lt_one, true_and,
+    and_true]
   omega
 
 lemma apply_add_one_ne_of_apply_eq {i j : ℕ} (hi : N ≤ i) (hj : N ≤ j) (hij : i ≠ j)
