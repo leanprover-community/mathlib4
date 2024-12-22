@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.SmallObject.Construction
 import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 import Mathlib.CategoryTheory.Limits.Over
 
 /-!
@@ -258,6 +258,10 @@ instance hasLiftingProperty_πObj (i : ι) :
         erw [x.comm_assoc]
         simp [← ht, ιFunctorObj_inductiveSystemForgetObjSuccIso_inv_assoc]
       fac_right := by simp }⟩⟩
+
+lemma rlp_πObj : (MorphismProperty.ofHoms f).rlp (πObj f J p) := by
+  rintro _ _ _ ⟨i⟩
+  apply hasLiftingProperty_πObj
 
 end SmallObject
 

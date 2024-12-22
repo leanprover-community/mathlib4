@@ -84,6 +84,30 @@ lemma rlp_IsStableUnderProductsOfShape (J : Type*) :
   have := fun j ↦ hf j _ hp
   infer_instance
 
+lemma antitone_rlp : Antitone (rlp : MorphismProperty C → _) := by
+  intro P₁ P₂ h X Y p hp A B i hi
+  exact hp i (h _ hi)
+
+lemma antitone_llp : Antitone (llp : MorphismProperty C → _) := by
+  intro P₁ P₂ h A B i hi X Y p hp
+  exact hi p (h _ hp)
+
+@[simp]
+lemma pushouts_rlp : T.pushouts.rlp = T.rlp := by
+  apply le_antisymm
+  · exact antitone_rlp (le_pushouts T)
+  · rintro X Y p hp A B i ⟨_, _, j, _, _, hj, sq⟩
+    have := hp j hj
+    exact sq.hasLiftingProperty p
+
+@[simp]
+lemma pullback_llp : T.pullbacks.llp = T.llp := by
+  apply le_antisymm
+  · exact antitone_llp (le_pullbacks T)
+  · rintro A B i hi X Y p ⟨_, _, q, _, _, hq, sq⟩
+    have := hi q hq
+    exact sq.hasLiftingProperty i
+
 end MorphismProperty
 
 end CategoryTheory

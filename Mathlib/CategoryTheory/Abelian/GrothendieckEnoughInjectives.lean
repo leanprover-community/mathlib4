@@ -7,9 +7,11 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.Abelian.GrothendieckCategory
 import Mathlib.CategoryTheory.Abelian.Refinements
-import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.CategoryTheory.Presentable.GrothendieckAbelian
+import Mathlib.CategoryTheory.SmallObject.Basic
+import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 import Mathlib.Order.TransfiniteIteration
 import Mathlib.SetTheory.Ordinal.Basic
 
@@ -32,7 +34,7 @@ lemma Cardinal.zero_lt_ord_iff (κ : Cardinal.{w}) : 0 < κ.ord ↔ κ ≠ 0 := 
 
 namespace CategoryTheory
 
-open Category Opposite Limits
+open Category Opposite Limits ZeroObject
 
 lemma IsFiltered.set_iio {J : Type w} [LinearOrder J] [OrderBot J]
     (j : J) (hj : Order.IsSuccLimit j) : IsFiltered (Set.Iio j) := by
@@ -49,6 +51,39 @@ noncomputable instance (o : Ordinal.{w}) : SuccOrder o.toType :=
   SuccOrder.ofLinearWellFoundedLT o.toType
 
 variable {C : Type u} [Category.{v} C]
+
+section
+
+variable [Preadditive C]
+
+lemma Injective.hasLiftingProperty_of_isZero
+    {A B I Z : C} (i : A ⟶ B) [Mono i] [Injective I] (p : I ⟶ Z) (hZ : IsZero Z) :
+    HasLiftingProperty i p where
+  sq_hasLift {f g} sq := by
+    sorry
+
+instance {A B I : C} (i : A ⟶ B)  [Mono i] [Injective I] [HasZeroObject C] (p : I ⟶ 0) :
+    HasLiftingProperty i (p : I ⟶ 0) :=
+  Injective.hasLiftingProperty_of_isZero i p (isZero_zero C)
+
+lemma injective_iff_eq_zero {I Z : C} (p : I ⟶ Z) (hZ : IsZero Z) :
+    Injective I ↔ (MorphismProperty.monomorphisms C).rlp p := by
+  obtain rfl := hZ.eq_of_tgt p 0
+  constructor
+  · intro _ A B i (_ : Mono i)
+    exact Injective.hasLiftingProperty_of_isZero i 0 hZ
+  · intro h
+    constructor
+    intro A B f i hi
+    have := h _ hi
+    have sq : CommSq f i (0 : I ⟶ Z) 0 := ⟨by simp⟩
+    exact ⟨sq.lift, by simp⟩
+
+lemma injective_iff_monomorphisms_rlp_zero (I : C) [HasZeroObject C] :
+    Injective I ↔ (MorphismProperty.monomorphisms C).rlp (0 : I ⟶ 0) :=
+  injective_iff_eq_zero _ (isZero_zero C)
+
+end
 
 namespace Subobject
 
@@ -187,14 +222,19 @@ namespace Abelian
 
 namespace IsGrothendieckAbelian
 
-variable [Abelian C]
-
 def generatingMonomorphisms (G : C) : MorphismProperty C :=
   MorphismProperty.ofHoms (fun (X : Subobject G) ↦ X.arrow)
+
+lemma generatingMonomorphisms_le_monomorphisms (G : C) :
+    generatingMonomorphisms G ≤ MorphismProperty.monomorphisms C := by
+  rintro _ _ _ ⟨X⟩
+  exact inferInstanceAs (Mono _)
 
 variable (G : C)
 
 abbrev generatingMonomorphismsPushouts := (generatingMonomorphisms G).pushouts
+
+variable [Abelian C]
 
 lemma isomorphisms_le_generatingMonomorphismsPushouts :
     MorphismProperty.isomorphisms C ≤ generatingMonomorphismsPushouts G :=
@@ -347,6 +387,8 @@ noncomputable def arrowIso :
     Subobject.underlyingIso f) (asIso t.arrow) ?_).symm
   simp [MonoOver.forget]
 
+variable (f)
+
 include hj in
 lemma generatingMonomorphismsPushouts_transfiniteCompositionOfShape :
     (generatingMonomorphismsPushouts G).transfiniteCompositionsOfShape (Set.Iic j) f := by
@@ -363,6 +405,25 @@ lemma generatingMonomorphismsPushouts_transfiniteCompositionOfShape :
 end
 
 end TransfiniteCompositionMonoPushouts
+
+include hG in
+open TransfiniteCompositionMonoPushouts in
+@[simp]
+lemma generatingMonomorphismsPushouts_rlp [IsGrothendieckAbelian.{w} C] :
+    (generatingMonomorphisms G).rlp = (MorphismProperty.monomorphisms C).rlp := by
+  apply le_antisymm
+  · intro X Y p hp A B i (_ : Mono i)
+    obtain ⟨o, j, hj⟩ := exists_ordinal hG (Subobject.mk i)
+    have ho : Nonempty o.toType := ⟨j⟩
+    rw [o.toType_nonempty_iff_ne_zero] at ho
+    let _ : OrderBot o.toType := by
+      apply Ordinal.toTypeOrderBotOfPos
+      by_contra!
+      exact ho (by simpa using this)
+    exact MorphismProperty.hasLiftingProperty_of_transfiniteCompositionsOfShape _ i
+      (generatingMonomorphismsPushouts_transfiniteCompositionOfShape hG i hj) p
+      (by simpa only [MorphismProperty.pushouts_rlp] using hp)
+  · exact MorphismProperty.antitone_rlp (generatingMonomorphisms_le_monomorphisms _)
 
 end IsGrothendieckAbelian
 

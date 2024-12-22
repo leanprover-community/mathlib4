@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
-import Mathlib.CategoryTheory.LiftingProperties.Basic
+import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 
 /-!
 # The left lifting property is stable under transfinite composition
@@ -216,11 +216,32 @@ lemma hasLift : sq.HasLift := by
     fac_left := by rw [hl, hs]
     fac_right := hc.hom_ext (fun j ↦ by rw [reassoc_of% (hl j), SqStruct.w₂])}⟩⟩
 
+variable (p) in
 lemma hasLiftingProperty_ι_app_bot : HasLiftingProperty (c.ι.app ⊥) p where
   sq_hasLift sq := hasLift hc hF sq
 
 end transfiniteComposition
 
 end HasLiftingProperty
+
+namespace MorphismProperty
+
+variable (W : MorphismProperty C)
+
+instance : IsStableUnderTransfiniteComposition.{w} W.llp where
+  isStableUnderTransfiniteCompositionOfShape J _ _ _ _ := ⟨by
+    rintro _ _ _ ⟨F, hF, c, hc⟩ X Y p hp
+    exact HasLiftingProperty.transfiniteComposition.hasLiftingProperty_ι_app_bot hc p
+      (fun j hj ↦ hF j hj _ hp)⟩
+
+lemma hasLiftingProperty_of_transfiniteCompositionsOfShape
+    {J : Type w} [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
+    {A B : C} (i : A ⟶ B) (hf : W.transfiniteCompositionsOfShape J i)
+    {X Y : C} (p : X ⟶ Y) (hp : W.rlp p) : HasLiftingProperty i p := by
+  obtain ⟨F, hF, c, hc⟩ := hf
+  exact HasLiftingProperty.transfiniteComposition.hasLiftingProperty_ι_app_bot hc p
+    (fun j hj ↦ hp _ (hF j hj))
+
+end MorphismProperty
 
 end CategoryTheory
