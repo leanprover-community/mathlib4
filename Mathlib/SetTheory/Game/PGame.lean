@@ -1313,6 +1313,8 @@ def toRightMovesNeg {x : PGame} : x.LeftMoves ≃ (-x).RightMoves :=
 def asLeftMovesNeg {x : PGame} (i : x.RightMoves) : (-x).LeftMoves :=
   (leftMoves_neg x).mpr i
 
+def asRightMovesNeg {x : PGame} (i : x.LeftMoves) : (-x).RightMoves :=
+  (rightMoves_neg x).mpr i
 
 @[simp]
 theorem moveLeft_neg {x : PGame} (i) :
