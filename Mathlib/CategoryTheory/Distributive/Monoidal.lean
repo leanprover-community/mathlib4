@@ -131,14 +131,18 @@ lemma left_distributor_braiding_right_distributor [SymmetricCategory C]
 
 variable (C)
 
-/-- A monoidal category is left distributive if the left distributor is an isomorphism. -/
+/-- A monoidal category with binary coproducts is left distributive
+if the left distributor is an isomorphism. -/
 class MonoidalLeftDistributive where
   is_iso_distributorLeft {X Y Z : C} : IsIso (∂L X Y Z) := by infer_instance
 
-/-- A monoidal category is right distributive if the right distributor is an isomorphism. -/
+/-- A monoidal category with binary coproducts is right distributive
+if the right distributor is an isomorphism. -/
 class MonoidalRightDistributive where
   is_iso_distributorRight {X Y Z : C} : IsIso (∂R X Y Z) := by infer_instance
 
+/-- A monoidal category with binary coproducts is distributive
+if it is both left and right distributive. -/
 class MonoidalDistributive extends
   MonoidalLeftDistributive C, MonoidalRightDistributive C
 
