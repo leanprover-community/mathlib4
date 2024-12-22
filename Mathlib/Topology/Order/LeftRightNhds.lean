@@ -490,7 +490,7 @@ neighbourhood of `y`. -/
 lemma mem_nhdsLT (hS : OrdConnected S) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) : S ∈ 𝓝[<] y :=
   hS.dual.mem_nhdsGT hy hx hxy
 
-@[deprecated (since := "2024-12-22")] alias Set.OrdConnected.mem_nhdsWithin_Iio := mem_nhdsLT
+@[deprecated (since := "2024-12-22")] alias mem_nhdsWithin_Iio := mem_nhdsLT
 
 end OrdConnected
 
