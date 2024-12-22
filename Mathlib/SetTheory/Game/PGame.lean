@@ -1310,9 +1310,11 @@ between them. -/
 def toRightMovesNeg {x : PGame} : x.LeftMoves ≃ (-x).RightMoves :=
   Equiv.cast (rightMoves_neg x).symm
 
+/-- Converts x.RightMoves to (-x).LeftMoves, as proved in `toLeftMovesNeg`. -/
 def asLeftMovesNeg {x : PGame} (i : x.RightMoves) : (-x).LeftMoves :=
   (leftMoves_neg x).mpr i
 
+/-- Converts x.LeftMoves to (-x).RightMoves, as proved in `toRightMovesNeg`. -/
 def asRightMovesNeg {x : PGame} (i : x.LeftMoves) : (-x).RightMoves :=
   (rightMoves_neg x).mpr i
 
