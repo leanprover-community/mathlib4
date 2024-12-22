@@ -172,6 +172,11 @@ class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, N
 strictly monotone and multiplication by a positive number is strictly monotone. -/
 class StrictOrderedCommRing (α : Type*) extends StrictOrderedRing α, CommRing α
 
+attribute [instance 900] StrictOrderedRing.toRing
+attribute [instance 900] OrderedRing.toRing
+attribute [instance 900] StrictOrderedCommRing.toCommRing
+attribute [instance 900] OrderedCommRing.toCommRing
+
 /- It's not entirely clear we should assume `Nontrivial` at this point; it would be reasonable to
 explore changing this, but be warned that the instances involving `Domain` may cause typeclass
 search loops. -/
