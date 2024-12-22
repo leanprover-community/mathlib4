@@ -138,13 +138,9 @@ lemma mono_of_isPushout_of_isPullback_of_mono {A B X Y : C}
     {f : A ⟶ X} {i : A ⟶ B} {j : X ⟶ Y} {g : B ⟶ Y}
     (h₁ : IsPushout f i j g) {Z : C} {j' : X ⟶ Z} {g' : B ⟶ Z}
     (h₂ : IsPullback f i j' g') (k : Y ⟶ Z)
-    (fac₁ : j ≫ k = j') (fac₂ : g ≫ k = g') [Mono i] [Mono j'] : Mono k :=
+    (fac₁ : j ≫ k = j') (fac₂ : g ≫ k = g') [Mono j'] : Mono k :=
   Preadditive.mono_of_cancel_zero _ (fun {T₀} y hy ↦ by
     obtain ⟨T₁, π, _, b, x, eq⟩ := hom_eq_add_up_to_refinements h₁ y
-    have fac₃ : x ≫ j' = (-b) ≫ g' := by
-      rw [Preadditive.neg_comp, ← add_eq_zero_iff_eq_neg, ← fac₂, ← fac₁,
-        ← assoc, ← assoc, ← Preadditive.add_comp,
-        add_comm, ← eq, assoc, hy, comp_zero]
     have fac₃ : (-x) ≫ j' = b ≫ g' := by
       rw [Preadditive.neg_comp, neg_eq_iff_add_eq_zero, add_comm, ← fac₂, ← fac₁,
         ← assoc, ← assoc, ← Preadditive.add_comp, ← eq, assoc, hy, comp_zero]
@@ -339,7 +335,7 @@ end
 
 section
 
-variable {A : C} {f : A ⟶ X} [Mono f] (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrder J]
+variable {A : C} {f : A ⟶ X} [Mono f] {J : Type w} [LinearOrder J] [OrderBot J] [SuccOrder J]
   [WellFoundedLT J]
   {j : J} (hj : transfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤)
 
@@ -350,6 +346,19 @@ noncomputable def arrowIso :
   refine (Arrow.isoMk (Subobject.isoOfEq _ _ (transfiniteIterate_bot _ _) ≪≫
     Subobject.underlyingIso f) (asIso t.arrow) ?_).symm
   simp [MonoOver.forget]
+
+include hj in
+lemma generatingMonomorphismsPushouts_transfiniteCompositionOfShape :
+    (generatingMonomorphismsPushouts G).transfiniteCompositionsOfShape (Set.Iic j) f := by
+  refine (MorphismProperty.arrow_iso_iff _ (arrowIso hG hj)).2 ?_
+  dsimp [MonoOver.forget]
+  refine ⟨_, fun ⟨k, hk⟩ hk' ↦ ?_, _,
+    (functor hG (Subobject.mk f) J).isColimitCoconeLE j⟩
+  dsimp [MonoOver.forget]
+  convert generatingMonomorphismsPushouts_ofLE_le_largerSubobject hG
+    (transfiniteIterate (largerSubobject hG) k (Subobject.mk f)) using 2
+  all_goals
+    rw [Set.Iic.succ_eq _ hk', transfiniteIterate_succ _ _ _ (Set.Iic.not_isMax_coe _ hk')]
 
 end
 
