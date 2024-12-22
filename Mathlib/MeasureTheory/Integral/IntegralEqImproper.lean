@@ -433,10 +433,12 @@ theorem AECover.integrable_of_integral_norm_bounded [l.NeBot] [l.IsCountablyGene
     rw [integral_eq_lintegral_of_nonneg_ae (ae_of_all _ fun x => @norm_nonneg E _ (f x))
         hfm.norm.restrict]
   conv at hbounded in ENNReal.ofReal _ =>
-    rw [← coe_nnnorm]
-    rw [ENNReal.ofReal_coe_nnreal]
+    rw [← coe_nnnorm, ENNReal.ofReal_coe_nnreal]
   refine hbounded.mono fun i hi => ?_
-  rw [← ENNReal.ofReal_toReal (ne_top_of_lt (hfi i).2)]
+  have : ∫⁻ (a : α) in φ i, ↑‖f a‖₊ ∂μ < ⊤ := by
+    simpa [hasFiniteIntegral_iff_nnnorm] using (hfi i).2
+  rw [← ENNReal.ofReal_toReal (ne_top_of_lt this)]
+
   apply ENNReal.ofReal_le_ofReal hi
 
 theorem AECover.integrable_of_integral_norm_tendsto [l.NeBot] [l.IsCountablyGenerated]
