@@ -98,7 +98,7 @@ namespace Ideal
 variable [CommSemiring α] (I : Ideal α)
 
 instance : I.IsTwoSided := ⟨fun b ha ↦ mul_comm b _ ▸ I.smul_mem _ ha⟩
-instance {α} [CommRing α] (I : Ideal α) : I.IsTwoSided := inferInstance
+instance (priority := high) {α} [CommRing α] (I : Ideal α) : I.IsTwoSided := inferInstance
 
 @[simp]
 theorem mul_unit_mem_iff_mem {x y : α} (hy : IsUnit y) : x * y ∈ I ↔ x ∈ I :=
