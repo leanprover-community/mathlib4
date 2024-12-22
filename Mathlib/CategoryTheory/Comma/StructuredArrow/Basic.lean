@@ -924,10 +924,10 @@ def StructuredArrow.preEquivalence (f : StructuredArrow e G) :
 /-- The functor `StructuredArrow d T ⥤ StructuredArrow e (T ⋙ S)` that `u : e ⟶ S.obj d`
 induces via `StructuredArrow.map₂` can be expressed up to isomorphism by
 `StructuredArrow.preEquivalence` and `StructuredArrow.proj`. -/
-def StructuredArrow.map₂IsoPreEquivalenceInverseCompProj (T : C ⥤ D) (S : D ⥤ E) (d : D) (e : E)
-    (u : e ⟶ S.obj d) :
-    map₂ (F := 𝟭 _) u (𝟙 (T ⋙ S)) ≅
-      (preEquivalence T (mk u)).inverse ⋙ proj (mk u) (pre _ T S) :=
+def StructuredArrow.map₂IsoPreEquivalenceInverseCompProj {T : C ⥤ D} {S : D ⥤ E} {T' : C ⥤ E}
+    (d : D) (e : E) (u : e ⟶ S.obj d) (α : T ⋙ S ⟶ T') :
+    map₂ (F := 𝟭 _) u α ≅ (preEquivalence T (mk u)).inverse ⋙ proj (mk u) (pre _ T S) ⋙
+      map₂ (F := 𝟭 _) (G := 𝟭 _) (𝟙 _) α :=
   NatIso.ofComponents fun _ => isoMk (Iso.refl _)
 
 /-- The functor establishing the equivalence `CostructuredArrow.preEquivalence`. -/
