@@ -109,7 +109,7 @@ theorem isZGroup_of_coprime [Finite G] [IsZGroup G] [IsZGroup G'']
   have := Fact.mk hp
   replace h_cop := (h_cop.of_dvd ((Subgroup.card_dvd_of_le h_le).trans
     (Subgroup.card_range_dvd f)) (Subgroup.index_ker f' ▸ f'.range.card_subgroup_dvd_card))
-  rcases P.2.le_or_disjoint_of_coprime h_cop P with h | h
+  rcases P.2.le_or_disjoint_of_coprime h_cop with h | h
   · replace h_le : P ≤ f.range := h.trans h_le
     suffices IsCyclic (P.subgroupOf f.range) by
       have key := Subgroup.subgroupOfEquivOfLe h_le
