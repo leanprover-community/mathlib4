@@ -58,22 +58,19 @@ protected theorem nhdsGT (a : Ordinal) : 𝓝[>] a = ⊥ := SuccOrder.nhdsGT
 theorem nhdsLT_eq_nhdsNE (a : Ordinal) : 𝓝[<] a = 𝓝[≠] a := by
   rw [← nhdsLT_sup_nhdsGT, Ordinal.nhdsGT, sup_bot_eq]
 
-@[deprecated (since := "2024-12-22")]
-alias nhds_left'_eq_nhds_ne := nhdsLT_eq_nhdsNE
+@[deprecated (since := "2024-12-22")] alias nhds_left'_eq_nhds_ne := nhdsLT_eq_nhdsNE
 
 -- todo: generalize to a `SuccOrder`
 theorem nhdsLE_eq_nhds (a : Ordinal) : 𝓝[≤] a = 𝓝 a := by
   rw [← nhdsLE_sup_nhdsGT, SuccOrder.nhdsGT, sup_bot_eq]
 
-@[deprecated (since := "2024-12-22")]
-alias nhds_left_eq_nhds := nhdsLE_eq_nhds
+@[deprecated (since := "2024-12-22")] alias nhds_left_eq_nhds := nhdsLE_eq_nhds
 
 -- todo: generalize to a `SuccOrder`
 theorem hasBasis_nhds_Ioc (h : a ≠ 0) : (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
-  nhdsLE_eq_nhds a ▸ nhdsLE_basis' ⟨0, h.bot_lt⟩
+  nhdsLE_eq_nhds a ▸ nhdsLE_basis_of_exists_lt ⟨0, h.bot_lt⟩
 
-@[deprecated (since := "2024-12-22")]
-alias nhdsBasis_Ioc := hasBasis_nhds_Ioc
+@[deprecated (since := "2024-12-22")] alias nhdsBasis_Ioc := hasBasis_nhds_Ioc
 
 -- todo: generalize to a `SuccOrder`
 theorem nhds_eq_pure : 𝓝 a = pure a ↔ ¬IsLimit a :=

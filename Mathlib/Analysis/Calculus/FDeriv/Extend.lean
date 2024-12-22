@@ -112,7 +112,7 @@ theorem hasDerivWithinAt_Ici_of_tendsto_deriv {s : Set ℝ} {e : E} {a : ℝ} {f
     setting of this theorem, we need to work on an open interval with closure contained in
     `s ∪ {a}`, that we call `t = (a, b)`. Then, we check all the assumptions of this theorem and
     we apply it. -/
-  obtain ⟨b, ab : a < b, sab : Ioc a b ⊆ s⟩ := mem_nhdsWithin_Ioi_iff_exists_Ioc_subset.1 hs
+  obtain ⟨b, ab : a < b, sab : Ioc a b ⊆ s⟩ := mem_nhdsGT_iff_exists_Ioc_subset.1 hs
   let t := Ioo a b
   have ts : t ⊆ s := Subset.trans Ioo_subset_Ioc_self sab
   have t_diff : DifferentiableOn ℝ f t := f_diff.mono ts
@@ -150,7 +150,7 @@ theorem hasDerivWithinAt_Iic_of_tendsto_deriv {s : Set ℝ} {e : E} {a : ℝ}
     setting of this theorem, we need to work on an open interval with closure contained in
     `s ∪ {a}`, that we call `t = (b, a)`. Then, we check all the assumptions of this theorem and we
     apply it. -/
-  obtain ⟨b, ba, sab⟩ : ∃ b ∈ Iio a, Ico b a ⊆ s := mem_nhdsWithin_Iio_iff_exists_Ico_subset.1 hs
+  obtain ⟨b, ba, sab⟩ : ∃ b ∈ Iio a, Ico b a ⊆ s := mem_nhdsLT_iff_exists_Ico_subset.1 hs
   let t := Ioo b a
   have ts : t ⊆ s := Subset.trans Ioo_subset_Ico_self sab
   have t_diff : DifferentiableOn ℝ f t := f_diff.mono ts

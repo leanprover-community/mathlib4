@@ -386,7 +386,7 @@ theorem mem_frontier_of_gauge_eq_one (hc : Convex ℝ s) (hs₀ : 0 ∈ s) (ha :
     (interior_subset_gauge_lt_one s h').out.ne h⟩
 
 theorem tendsto_gauge_nhds_zero' (hs : s ∈ 𝓝 0) : Tendsto (gauge s) (𝓝 0) (𝓝[≥] 0) := by
-  refine nhdsWithin_Ici_basis_Icc.tendsto_right_iff.2 fun ε hε ↦ ?_
+  refine nhdsGE_basis_Icc.tendsto_right_iff.2 fun ε hε ↦ ?_
   rw [← set_smul_mem_nhds_zero_iff hε.ne'] at hs
   filter_upwards [hs] with x hx
   exact ⟨gauge_nonneg _, gauge_le_of_mem hε.le hx⟩

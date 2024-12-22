@@ -276,7 +276,7 @@ theorem lhopital_zero_nhds_right (hff' : ∀ᶠ x in 𝓝[>] a, HasDerivAt f (f'
   rcases hg' with ⟨s₃, hs₃, hg'⟩
   let s := s₁ ∩ s₂ ∩ s₃
   have hs : s ∈ 𝓝[>] a := inter_mem (inter_mem hs₁ hs₂) hs₃
-  rw [mem_nhdsWithin_Ioi_iff_exists_Ioo_subset] at hs
+  rw [mem_nhdsGT_iff_exists_Ioo_subset] at hs
   rcases hs with ⟨u, hau, hu⟩
   refine lhopital_zero_right_on_Ioo hau ?_ ?_ ?_ hfa hga hdiv <;>
     intro x hx <;> apply_assumption <;>
@@ -294,7 +294,7 @@ theorem lhopital_zero_nhds_left (hff' : ∀ᶠ x in 𝓝[<] a, HasDerivAt f (f' 
   rcases hg' with ⟨s₃, hs₃, hg'⟩
   let s := s₁ ∩ s₂ ∩ s₃
   have hs : s ∈ 𝓝[<] a := inter_mem (inter_mem hs₁ hs₂) hs₃
-  rw [mem_nhdsWithin_Iio_iff_exists_Ioo_subset] at hs
+  rw [mem_nhdsLT_iff_exists_Ioo_subset] at hs
   rcases hs with ⟨l, hal, hl⟩
   refine lhopital_zero_left_on_Ioo hal ?_ ?_ ?_ hfa hga hdiv <;> intro x hx <;> apply_assumption <;>
     first | exact (hl hx).1.1| exact (hl hx).1.2| exact (hl hx).2

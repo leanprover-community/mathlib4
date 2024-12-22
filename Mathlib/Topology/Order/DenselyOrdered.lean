@@ -220,7 +220,7 @@ theorem comap_coe_nhdsWithin_Iio_of_Ioo_subset (hb : s ⊆ Iio b)
   ext u; constructor
   · rintro ⟨t, ht, hts⟩
     obtain ⟨x, ⟨hxa : a ≤ x, hxb : x < b⟩, hxt : Ioo x b ⊆ t⟩ :=
-      (mem_nhdsWithin_Iio_iff_exists_mem_Ico_Ioo_subset h).mp ht
+      (mem_nhdsLT_iff_exists_mem_Ico_Ioo_subset h).mp ht
     obtain ⟨y, hxy, hyb⟩ := exists_between hxb
     refine mem_of_superset (mem_atTop ⟨y, hs ⟨hxa.trans_lt hxy, hyb⟩⟩) ?_
     rintro ⟨z, hzs⟩ (hyz : y ≤ z)
@@ -242,7 +242,7 @@ theorem map_coe_atTop_of_Ioo_subset (hb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a <
     rw [filter_eq_bot_of_isEmpty atTop, Filter.map_bot, hb', nhdsWithin_empty]
   · rw [← comap_coe_nhdsWithin_Iio_of_Ioo_subset hb fun _ => hs a ha, map_comap_of_mem]
     rw [Subtype.range_val]
-    exact (mem_nhdsWithin_Iio_iff_exists_Ioo_subset' ha).2 (hs a ha)
+    exact (mem_nhdsLT_iff_exists_Ioo_subset' ha).2 (hs a ha)
 
 theorem map_coe_atBot_of_Ioo_subset (ha : s ⊆ Ioi a) (hs : ∀ b' > a, ∃ b > a, Ioo a b ⊆ s) :
     map ((↑) : s → α) atBot = 𝓝[>] a := by

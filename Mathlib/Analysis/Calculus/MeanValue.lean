@@ -790,8 +790,8 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi (f : ℝ → ℝ) 
     rw [hasDerivWithinAt_iff_tendsto_slope, Set.diff_singleton_eq_self not_mem_Ioi_self] at hdiff
     have h₀ : ∀ᶠ b in 𝓝[>] a,
         ∀ x ∈ Ioc a b, max (derivWithin f (Ioi a) a + 1) 0 < derivWithin f (Ioi a) x := by
-      rw [(nhdsWithin_Ioi_basis a).eventually_iff]
-      rw [(nhdsWithin_Ioi_basis a).tendsto_left_iff] at hf
+      rw [(nhdsGT_basis a).eventually_iff]
+      rw [(nhdsGT_basis a).tendsto_left_iff] at hf
       obtain ⟨b, hab, hb⟩ := hf (Ioi (max (derivWithin f (Ioi a) a + 1) 0)) (Ioi_mem_atTop _)
       refine ⟨b, hab, fun x hx z hz => ?_⟩
       simp only [MapsTo, mem_Ioo, mem_Ioi, and_imp] at hb
@@ -851,8 +851,8 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atBot_Iio (f : ℝ → ℝ) 
   have hderiv : deriv f' =ᶠ[𝓝[>] (-a)] -(deriv f ∘ Neg.neg) := by
     rw [atBot_basis.tendsto_right_iff] at hf
     specialize hf (-1) trivial
-    rw [(nhdsWithin_Iio_basis a).eventually_iff] at hf
-    rw [EventuallyEq, (nhdsWithin_Ioi_basis (-a)).eventually_iff]
+    rw [(nhdsLT_basis a).eventually_iff] at hf
+    rw [EventuallyEq, (nhdsGT_basis (-a)).eventually_iff]
     obtain ⟨b, hb₁, hb₂⟩ := hf
     refine ⟨-b, by linarith, fun x hx => ?_⟩
     simp only [Pi.neg_apply, Function.comp_apply]

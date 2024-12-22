@@ -97,7 +97,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   have hcs : c ∈ s := by
     rcases hc.1.eq_or_lt with (rfl | hlt); · assumption
     refine ⟨hc, fun hcf => hf fun U hU => ?_⟩
-    rcases (mem_nhdsWithin_Iic_iff_exists_Ioc_subset' hlt).1 (mem_nhdsWithin_of_mem_nhds hU)
+    rcases (mem_nhdsLE_iff_exists_Ioc_subset' hlt).1 (mem_nhdsWithin_of_mem_nhds hU)
       with ⟨x, hxc, hxU⟩
     rcases ((hsc.frequently_mem ⟨a, ha⟩).and_eventually (Ioc_mem_nhdsLE hxc)).exists
       with ⟨y, ⟨_hyab, hyf⟩, hy⟩
@@ -109,9 +109,8 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   · exact hcs.2
   exfalso
   refine hf fun U hU => ?_
-  rcases (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
-      (mem_nhdsWithin_of_mem_nhds hU) with
-    ⟨y, hxy, hyU⟩
+  rcases (mem_nhdsGE_iff_exists_mem_Ioc_Ico_subset hlt).1 (mem_nhdsWithin_of_mem_nhds hU)
+    with ⟨y, hxy, hyU⟩
   refine mem_of_superset ?_ hyU; clear! U
   have hy : y ∈ Icc a b := ⟨hc.1.trans hxy.1.le, hxy.2⟩
   by_cases hay : Icc a y ∈ f

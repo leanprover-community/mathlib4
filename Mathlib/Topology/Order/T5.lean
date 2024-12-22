@@ -33,7 +33,7 @@ theorem compl_section_ordSeparatingSet_mem_nhdsWithin_Ici (hd : Disjoint s (clos
     refine mem_nhdsWithin_of_mem_nhds ?_
     rw [← mem_interior_iff_mem_nhds, interior_compl]
     exact disjoint_left.1 hd ha
-  rcases exists_Icc_mem_subset_of_mem_nhdsWithin_Ici hmem with ⟨b, hab, hmem', hsub⟩
+  rcases exists_Icc_mem_subset_of_mem_nhdsGE hmem with ⟨b, hab, hmem', hsub⟩
   by_cases H : Disjoint (Icc a b) (ordConnectedSection <| ordSeparatingSet s t)
   · exact mem_of_superset hmem' (disjoint_left.1 H)
   · simp only [Set.disjoint_left, not_forall, Classical.not_not] at H
