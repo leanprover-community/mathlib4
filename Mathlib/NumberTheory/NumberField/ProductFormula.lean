@@ -28,34 +28,9 @@ equal to the inverse of the norm of `x`.
 number field, embeddings, places, infinite places, finite places, product formula
 -/
 
-variable {K : Type*} [Field K] [NumberField K]
-
-namespace IsDedekindDomain.HeightOneSpectrum
-
-open NumberField FinitePlace
-
-lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K) :
-    (equivHeightOneSpectrum.symm v) x = ‖embedding v x‖ := by
-  have : v = (equivHeightOneSpectrum.symm v).maximalIdeal := by
-    show v = equivHeightOneSpectrum (equivHeightOneSpectrum.symm v)
-    exact (Equiv.apply_symm_apply _ v).symm
-  convert (norm_embedding_eq (equivHeightOneSpectrum.symm v) x).symm
-
-open Ideal in
-lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
-    ‖(embedding v) ↑x‖ * absNorm (v.maxPowDividing (span {x})) = 1 := by
-  rw [maxPowDividing, map_pow, Nat.cast_pow, norm_def, vadicAbv_def,
-    WithZeroMulInt.toNNReal_neg_apply _
-      (v.valuation.ne_zero_iff.mpr (RingOfIntegers.coe_ne_zero_iff.mpr h_x_nezero))]
-  push_cast
-  rw [← zpow_natCast, ← zpow_add₀ <| mod_cast (zero_lt_one.trans (one_lt_norm v)).ne']
-  norm_cast
-  rw [zpow_eq_one_iff_right₀ (Nat.cast_nonneg' _) (mod_cast (one_lt_norm v).ne')]
-  simp [valuation_eq_intValuationDef, intValuationDef_if_neg, h_x_nezero]
-
-end IsDedekindDomain.HeightOneSpectrum
-
 namespace NumberField
+
+variable {K : Type*} [Field K] [NumberField K]
 
 open Algebra
 
