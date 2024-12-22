@@ -355,7 +355,7 @@ induces via `StructuredArrow.map₂` is final, if `T` and `S` are final and the 
 filtered. -/
 instance StructuredArrow.final_map₂_id {D : Type u₂} [Category.{v₂} D]
     {C : Type v₁} [Category.{v₁} C] [IsFiltered C] {E : Type u₃} [Category.{v₁} E]
-    {T : C ⥤ D} [T.Final] {S : D ⥤ E} [S.Final] {T' : C ⥤ E} [T'.Final]
+    {T : C ⥤ D} [T.Final] {S : D ⥤ E} [S.Final] {T' : C ⥤ E}
     {d : D} {e : E} (u : e ⟶ S.obj d) (α : T ⋙ S ⟶ T') [IsIso α] :
     Final (map₂ (F := 𝟭 _) u α) := by
   haveI : IsFiltered (StructuredArrow e (T ⋙ S)) :=
