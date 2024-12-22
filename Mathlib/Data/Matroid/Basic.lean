@@ -685,6 +685,15 @@ theorem ext_iff_indep {M₁ M₂ : Matroid α} :
     M₁ = M₂ ↔ (M₁.E = M₂.E) ∧ ∀ ⦃I⦄, I ⊆ M₁.E → (M₁.Indep I ↔ M₂.Indep I) :=
 ⟨fun h ↦ by (subst h; simp), fun h ↦ ext_indep h.1 h.2⟩
 
+/-- If every base of `M₁` is independent in `M₂` and vice versa, then `M₁ = M₂`. -/
+lemma ext_base_indep {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E) (hM₁ : ∀ ⦃B⦄, M₁.Base B → M₂.Indep B)
+    (hM₂ : ∀ ⦃B⦄, M₂.Base B → M₁.Indep B) : M₁ = M₂ := by
+  refine ext_indep hE fun I hIE ↦ ⟨fun hI ↦ ?_, fun hI ↦ ?_⟩
+  · obtain ⟨B, hB, hIB⟩ := hI.exists_base_superset
+    exact (hM₁ hB).subset hIB
+  obtain ⟨B, hB, hIB⟩ := hI.exists_base_superset
+  exact (hM₂ hB).subset hIB
+
 /-- A `Finitary` matroid is one where a set is independent if and only if it all
   its finite subsets are independent, or equivalently a matroid whose circuits are finite. -/
 class Finitary (M : Matroid α) : Prop where
