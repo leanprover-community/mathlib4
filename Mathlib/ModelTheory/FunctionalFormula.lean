@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Data.Finite.Sum
 import Mathlib.ModelTheory.Satisfiability
+
 /-!
 
 # Functional Formulas in a First Order Theory
@@ -64,6 +65,7 @@ def FunctionalFormulaSetoid (α : Type w) (β : Type x) [Finite β] :
 in all Models `M`, the set of elements of `(α ⊕ β) → M` satisfying `φ` is the graph of a function.
 We quotient by semantic equivalence.  -/
 structure FunctionalFormula (α : Type w) (β : Type x) [Finite β] : Type _ where
+  /-- The map to the Quotient of a set of formulas -/
   ofQuotient :: toQuotient : Quotient (FunctionalFormulaSetoid T α β)
 
 namespace FunctionalFormula
