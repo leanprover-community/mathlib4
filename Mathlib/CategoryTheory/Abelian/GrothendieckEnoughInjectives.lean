@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Abelian.GrothendieckCategory
 import Mathlib.CategoryTheory.Abelian.Refinements
 import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 import Mathlib.CategoryTheory.Subobject.Lattice
+import Mathlib.CategoryTheory.Presentable.GrothendieckAbelian
 import Mathlib.Order.TransfiniteIteration
 import Mathlib.SetTheory.Ordinal.Basic
 
@@ -32,6 +33,17 @@ lemma Cardinal.zero_lt_ord_iff (κ : Cardinal.{w}) : 0 < κ.ord ↔ κ ≠ 0 := 
 namespace CategoryTheory
 
 open Category Opposite Limits
+
+lemma IsFiltered.set_iio {J : Type w} [LinearOrder J] [OrderBot J]
+    (j : J) (hj : Order.IsSuccLimit j) : IsFiltered (Set.Iio j) := by
+  have : Nonempty (Set.Iio j) := ⟨⟨⊥, by
+    simp only [Set.mem_Iio]
+    by_contra!
+    simp only [le_bot_iff] at this
+    subst this
+    have := hj.not_isMin
+    simp at this⟩⟩
+  infer_instance
 
 noncomputable instance (o : Ordinal.{w}) : SuccOrder o.toType :=
   SuccOrder.ofLinearWellFoundedLT o.toType
@@ -302,13 +314,18 @@ noncomputable def functorToMonoOver : J ⥤ MonoOver X where
 noncomputable abbrev functor : J ⥤ C :=
   functorToMonoOver hG A₀ J ⋙ MonoOver.forget _ ⋙ Over.forget _
 
-/-instance : (functor hG A₀ J).IsWellOrderContinuous where
-  nonempty_isColimit m hm := by
-    -- use variant of `subobject_mk_of_isColimit_eq_iSup` from
-    -- `CategoryTheory.Presentable.GrothendieckAbelian` in #20014
-    sorry
+instance : (functor hG A₀ J).IsWellOrderContinuous where
+  nonempty_isColimit m hm := ⟨by
+    have := IsFiltered.set_iio _ hm
+    let c := (functorToMonoOver hG A₀ J ⋙ MonoOver.forget _).coconeLT m
+    have : Mono c.pt.hom := by dsimp [c]; infer_instance
+    apply IsGrothendieckAbelian.isColimitMapCoconeOfSubobjectMkEqISup
+      ((functorToMonoOver hG A₀ J).restrictionLT m) c
+    dsimp [c]
+    simp only [Subobject.mk_arrow]
+    exact transfiniteIterate_limit (largerSubobject hG) A₀ m hm⟩
 
---example (j : J) : ((functor hG A₀ J).restrictionLE j).IsWellOrderContinuous := inferInstance -/
+example (j : J) : ((functor hG A₀ J).restrictionLE j).IsWellOrderContinuous := inferInstance
 
 lemma mono_functor_map_le_succ (j : J) (hj : ¬IsMax j) :
     generatingMonomorphismsPushouts G ((functor hG A₀ J).map (homOfLE (Order.le_succ j))) := by
@@ -324,7 +341,7 @@ section
 
 variable {A : C} {f : A ⟶ X} [Mono f] (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrder J]
   [WellFoundedLT J]
-variable {j : J} (hj : transfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤)
+  {j : J} (hj : transfiniteIterate (largerSubobject hG) j (Subobject.mk f) = ⊤)
 
 noncomputable def arrowIso :
     Arrow.mk f ≅ Arrow.mk (((functor hG (Subobject.mk f) J).coconeLE j).ι.app ⊥) := by
@@ -333,7 +350,6 @@ noncomputable def arrowIso :
   refine (Arrow.isoMk (Subobject.isoOfEq _ _ (transfiniteIterate_bot _ _) ≪≫
     Subobject.underlyingIso f) (asIso t.arrow) ?_).symm
   simp [MonoOver.forget]
-  rfl
 
 end
 
