@@ -234,6 +234,12 @@ inductive transfiniteCompositionsOfShape [WellFoundedLT J] : MorphismProperty C
     (hF : ∀ (j : J) (_ : ¬IsMax j), W (F.map (homOfLE (Order.le_succ j))))
     (c : Cocone F) (hc : IsColimit c) : transfiniteCompositionsOfShape (c.ι.app ⊥)
 
+lemma monotone_transfiniteCompositionsOfShape {W₁ W₂ : MorphismProperty C} (h : W₁ ≤ W₂)
+    (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J] :
+    W₁.transfiniteCompositionsOfShape J ≤ W₂.transfiniteCompositionsOfShape J := by
+  rintro _ _ _ ⟨F, hF, c, hc⟩
+  exact ⟨F, fun j hj ↦ h _ (hF j hj), c, hc⟩
+
 variable [WellFoundedLT J]
 
 instance [W.RespectsIso] : RespectsIso (W.transfiniteCompositionsOfShape J) where

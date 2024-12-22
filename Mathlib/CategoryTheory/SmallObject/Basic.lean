@@ -48,7 +48,7 @@ variable {C : Type u} [Category.{v} C]
   {ι : Type t} {A B : ι → C} (f : ∀ i, A i ⟶ B i)
   {X : C} (Y : C)
   [∀ {Z : C} (πZ : Z ⟶ Y), HasColimitsOfShape (Discrete (FunctorObjIndex f πZ)) C]
-  (J : Type u) [LinearOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J]
+  (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J]
   [HasIterationOfShape C J] [HasPushouts C]
 
 variable (Z : C) (πZ : Z ⟶ Y)
