@@ -287,11 +287,11 @@ lemma MonotoneOn.tendsto_nhdsWithin_Ioo_left {α β : Type*} [LinearOrder α] [T
   · obtain ⟨z, ⟨yz, zx⟩, lz⟩ : ∃ a : α, a ∈ Ioo y x ∧ l < f a := by
       simpa only [mem_image, exists_prop, exists_exists_and_eq_and] using
         exists_lt_of_lt_csSup (h_nonempty.image _) hl
-    refine mem_of_superset (Ioo_mem_nhdsWithin_Iio' zx) fun w hw => ?_
+    filter_upwards [Ioo_mem_nhdsLT zx] with w hw
     exact lz.trans_le <| Mf ⟨yz, zx⟩ ⟨yz.trans_le hw.1.le, hw.2⟩ hw.1.le
   · rcases h_nonempty with ⟨_, hy, hx⟩
-    refine mem_of_superset (Ioo_mem_nhdsWithin_Iio' (hy.trans hx)) fun w hw => lt_of_le_of_lt ?_ hm
-    exact le_csSup h_bdd (mem_image_of_mem _ hw)
+    filter_upwards [Ioo_mem_nhdsLT (hy.trans hx)] with w hw
+    exact (le_csSup h_bdd (mem_image_of_mem _ hw)).trans_lt hm
 
 lemma MonotoneOn.tendsto_nhdsWithin_Ioo_right {α β : Type*} [LinearOrder α] [TopologicalSpace α]
     [OrderTopology α] [ConditionallyCompleteLinearOrder β] [TopologicalSpace β] [OrderTopology β]
@@ -300,12 +300,12 @@ lemma MonotoneOn.tendsto_nhdsWithin_Ioo_right {α β : Type*} [LinearOrder α] [
     Tendsto f (𝓝[>] x) (𝓝 (sInf (f '' Ioo x y))) := by
   refine tendsto_order.2 ⟨fun l hl => ?_, fun m hm => ?_⟩
   · rcases h_nonempty with ⟨p, hy, hx⟩
-    refine mem_of_superset (Ioo_mem_nhdsWithin_Ioi' (hy.trans hx)) fun w hw => hl.trans_le ?_
-    exact csInf_le h_bdd (mem_image_of_mem _ hw)
+    filter_upwards [Ioo_mem_nhdsGT (hy.trans hx)] with w hw
+    exact hl.trans_le <| csInf_le h_bdd (mem_image_of_mem _ hw)
   · obtain ⟨z, ⟨xz, zy⟩, zm⟩ : ∃ a : α, a ∈ Ioo x y ∧ f a < m := by
       simpa [mem_image, exists_prop, exists_exists_and_eq_and] using
         exists_lt_of_csInf_lt (h_nonempty.image _) hm
-    refine mem_of_superset (Ioo_mem_nhdsWithin_Ioi' xz) fun w hw => ?_
+    filter_upwards [Ioo_mem_nhdsGT xz] with w hw
     exact (Mf ⟨hw.1, hw.2.trans zy⟩ ⟨xz, zy⟩ hw.2.le).trans_lt zm
 
 lemma MonotoneOn.tendsto_nhdsWithin_Iio {α β : Type*} [LinearOrder α] [TopologicalSpace α]
@@ -317,7 +317,7 @@ lemma MonotoneOn.tendsto_nhdsWithin_Iio {α β : Type*} [LinearOrder α] [Topolo
   · obtain ⟨z, zx, lz⟩ : ∃ a : α, a < x ∧ l < f a := by
       simpa only [mem_image, exists_prop, exists_exists_and_eq_and] using
         exists_lt_of_lt_csSup (h.image _) hl
-    exact mem_of_superset (Ioo_mem_nhdsWithin_Iio' zx) fun y hy => lz.trans_le (Mf zx hy.2 hy.1.le)
+    filter_upwards [Ioo_mem_nhdsLT zx] with y hy using lz.trans_le (Mf zx hy.2 hy.1.le)
   · refine mem_of_superset self_mem_nhdsWithin fun y hy => lt_of_le_of_lt ?_ hm
     exact le_csSup h_bdd (mem_image_of_mem _ hy)
 

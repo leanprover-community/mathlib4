@@ -44,12 +44,12 @@ theorem TFAE_mem_nhdsWithin_Ioi {a b : α} (hab : a < b) (s : Set α) :
       ∃ u ∈ Ioc a b, Ioo a u ⊆ s,
       ∃ u ∈ Ioi a, Ioo a u ⊆ s] := by
   tfae_have 1 ↔ 2 := by
-    rw [nhdsWithin_Ioc_eq_nhdsWithin_Ioi hab]
+    rw [nhdsWithin_Ioc_eq_nhdsGT hab]
   tfae_have 1 ↔ 3 := by
-    rw [nhdsWithin_Ioo_eq_nhdsWithin_Ioi hab]
+    rw [nhdsWithin_Ioo_eq_nhdsGT hab]
   tfae_have 4 → 5 := fun ⟨u, umem, hu⟩ => ⟨u, umem.1, hu⟩
   tfae_have 5 → 1
-  | ⟨u, hau, hu⟩ => mem_of_superset (Ioo_mem_nhdsWithin_Ioi ⟨le_refl a, hau⟩) hu
+  | ⟨u, hau, hu⟩ => mem_of_superset (Ioo_mem_nhdsGT hau) hu
   tfae_have 1 → 4
   | h => by
     rcases mem_nhdsWithin_iff_exists_mem_nhds_inter.1 h with ⟨v, va, hv⟩
@@ -182,10 +182,10 @@ theorem TFAE_mem_nhdsWithin_Ici {a b : α} (hab : a < b) (s : Set α) :
       ∃ u ∈ Ioc a b, Ico a u ⊆ s,
       ∃ u ∈ Ioi a , Ico a u ⊆ s] := by
   tfae_have 1 ↔ 2 := by
-    rw [nhdsWithin_Icc_eq_nhdsWithin_Ici hab]
+    rw [nhdsWithin_Icc_eq_nhdsGE hab]
   tfae_have 1 ↔ 3 := by
-    rw [nhdsWithin_Ico_eq_nhdsWithin_Ici hab]
-  tfae_have 1 ↔ 5 := (nhdsWithin_Ici_basis' ⟨b, hab⟩).mem_iff
+    rw [nhdsWithin_Ico_eq_nhdsGE hab]
+  tfae_have 1 ↔ 5 := (nhdsGE_basis' ⟨b, hab⟩).mem_iff
   tfae_have 4 → 5 := fun ⟨u, umem, hu⟩ => ⟨u, umem.1, hu⟩
   tfae_have 5 → 4
   | ⟨u, hua, hus⟩ => ⟨min u b, ⟨lt_min hua hab, min_le_right _ _⟩,
@@ -216,7 +216,7 @@ theorem nhdsWithin_Ici_basis_Ico [NoMaxOrder α] (a : α) :
 /-- The filter of right neighborhoods has a basis of closed intervals. -/
 theorem nhdsWithin_Ici_basis_Icc [NoMaxOrder α] [DenselyOrdered α] {a : α} :
     (𝓝[≥] a).HasBasis (a < ·) (Icc a) :=
-  (nhdsWithin_Ici_basis _).to_hasBasis
+  (nhdsGE_basis _).to_hasBasis
     (fun _u hu ↦ (exists_between hu).imp fun _v hv ↦ hv.imp_right Icc_subset_Ico_right)
     fun u hu ↦ ⟨u, hu, Ico_subset_Icc_self⟩
 

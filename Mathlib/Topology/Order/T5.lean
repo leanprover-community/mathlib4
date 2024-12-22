@@ -44,7 +44,7 @@ theorem compl_section_ordSeparatingSet_mem_nhdsWithin_Ici (hd : Disjoint s (clos
       disjoint_left_ordSeparatingSet.mono_right ordConnectedSection_subset
     replace hac : a < c := hac.lt_of_ne <| Ne.symm <| ne_of_mem_of_not_mem hc <|
       disjoint_left.1 hd ha
-    refine mem_of_superset (Ico_mem_nhdsWithin_Ici (left_mem_Ico.2 hac)) fun x hx hx' => ?_
+    filter_upwards [Ico_mem_nhdsGE hac] with x hx hx'
     refine hx.2.ne (eq_of_mem_ordConnectedSection_of_uIcc_subset hx' hc ?_)
     refine subset_inter (subset_iUnion₂_of_subset a ha ?_) ?_
     · exact OrdConnected.uIcc_subset inferInstance (hsub' ⟨hx.1, hx.2.le.trans hcb⟩)
@@ -68,7 +68,7 @@ theorem compl_section_ordSeparatingSet_mem_nhdsWithin_Iic (hd : Disjoint s (clos
 
 theorem compl_section_ordSeparatingSet_mem_nhds (hd : Disjoint s (closure t)) (ha : a ∈ s) :
     (ordConnectedSection <| ordSeparatingSet s t)ᶜ ∈ 𝓝 a := by
-  rw [← nhds_left_sup_nhds_right, mem_sup]
+  rw [← nhdsLE_sup_nhdsGE, mem_sup]
   exact
     ⟨compl_section_ordSeparatingSet_mem_nhdsWithin_Iic hd ha,
       compl_section_ordSeparatingSet_mem_nhdsWithin_Ici hd ha⟩

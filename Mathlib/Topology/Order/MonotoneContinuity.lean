@@ -47,7 +47,7 @@ theorem StrictMonoOn.continuousWithinAt_right_of_exists_between {f : α → β} 
       ((h_mono.le_iff_le has hxs).2 hxa)
   · rcases hfs b hb with ⟨c, hcs, hac, hcb⟩
     rw [h_mono.lt_iff_lt has hcs] at hac
-    filter_upwards [hs, Ico_mem_nhdsWithin_Ici (left_mem_Ico.2 hac)]
+    filter_upwards [hs, Ico_mem_nhdsGE hac]
     rintro x hx ⟨_, hxc⟩
     exact ((h_mono.lt_iff_lt hx hcs).2 hxc).trans_le hcb
 
@@ -67,7 +67,7 @@ theorem continuousWithinAt_right_of_monotoneOn_of_exists_between {f : α → β}
       (h_mono has hxs hxa)
   · rcases hfs b hb with ⟨c, hcs, hac, hcb⟩
     have : a < c := not_le.1 fun h => hac.not_le <| h_mono hcs has h
-    filter_upwards [hs, Ico_mem_nhdsWithin_Ici (left_mem_Ico.2 this)]
+    filter_upwards [hs, Ico_mem_nhdsGE this]
     rintro x hx ⟨_, hxc⟩
     exact (h_mono hx hcs hxc.le).trans_lt hcb
 

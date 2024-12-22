@@ -227,7 +227,7 @@ theorem comap_coe_nhdsWithin_Iio_of_Ioo_subset (hb : s ⊆ Iio b)
     exact hts (hxt ⟨hxy.trans_le hyz, hb hzs⟩)
   · intro hu
     obtain ⟨x : s, hx : ∀ z, x ≤ z → z ∈ u⟩ := mem_atTop_sets.1 hu
-    exact ⟨Ioo x b, Ioo_mem_nhdsWithin_Iio' (hb x.2), fun z hz => hx _ hz.1.le⟩
+    exact ⟨Ioo x b, Ioo_mem_nhdsLT (hb x.2), fun z hz => hx _ hz.1.le⟩
 
 set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem comap_coe_nhdsWithin_Ioi_of_Ioo_subset (ha : s ⊆ Ioi a)

@@ -367,7 +367,7 @@ instance (priority := 100) OrderTopology.to_orderClosedTopology [OrderTopology �
 
 theorem exists_Ioc_subset_of_mem_nhds [OrderTopology α] {a : α} {s : Set α} (hs : s ∈ 𝓝 a)
     (h : ∃ l, l < a) : ∃ l < a, Ioc l a ⊆ s :=
-  (nhdsWithin_Iic_basis' h).mem_iff.mp (nhdsWithin_le_nhds hs)
+  (nhdsLE_basis' h).mem_iff.mp (nhdsWithin_le_nhds hs)
 
 theorem exists_Ioc_subset_of_mem_nhds' [OrderTopology α] {a : α} {s : Set α} (hs : s ∈ 𝓝 a) {l : α}
     (hl : l < a) : ∃ l' ∈ Ico l a, Ioc l' a ⊆ s :=
@@ -391,11 +391,11 @@ theorem exists_Icc_mem_subset_of_mem_nhdsWithin_Ici [OrderTopology α] {a : α} 
   rcases (em (IsMax a)).imp_right not_isMax_iff.mp with (ha | ha)
   · use a
     simpa [ha.Ici_eq] using hs
-  · rcases (nhdsWithin_Ici_basis' ha).mem_iff.mp hs with ⟨b, hab, hbs⟩
+  · rcases (nhdsGE_basis' ha).mem_iff.mp hs with ⟨b, hab, hbs⟩
     rcases eq_empty_or_nonempty (Ioo a b) with (H | ⟨c, hac, hcb⟩)
     · have : Ico a b = Icc a a := by rw [← Icc_union_Ioo_eq_Ico le_rfl hab, H, union_empty]
-      exact ⟨a, le_rfl, this ▸ ⟨Ico_mem_nhdsWithin_Ici' hab, hbs⟩⟩
-    · refine ⟨c, hac.le, Icc_mem_nhdsWithin_Ici' hac, ?_⟩
+      exact ⟨a, le_rfl, this ▸ ⟨Ico_mem_nhdsGE hab, hbs⟩⟩
+    · refine ⟨c, hac.le, Icc_mem_nhdsGE hac, ?_⟩
       exact (Icc_subset_Ico_right hcb).trans hbs
 
 theorem exists_Icc_mem_subset_of_mem_nhdsWithin_Iic [OrderTopology α] {a : α} {s : Set α}
@@ -410,7 +410,7 @@ theorem exists_Icc_mem_subset_of_mem_nhds [OrderTopology α] {a : α} {s : Set �
   rcases exists_Icc_mem_subset_of_mem_nhdsWithin_Ici (nhdsWithin_le_nhds hs) with
     ⟨c, hac, hc_nhds, hcs⟩
   refine ⟨b, c, ⟨hba, hac⟩, ?_⟩
-  rw [← Icc_union_Icc_eq_Icc hba hac, ← nhds_left_sup_nhds_right]
+  rw [← Icc_union_Icc_eq_Icc hba hac, ← nhdsLE_sup_nhdsGE]
   exact ⟨union_mem_sup hb_nhds hc_nhds, union_subset hbs hcs⟩
 
 theorem IsOpen.exists_Ioo_subset [OrderTopology α] [Nontrivial α] {s : Set α} (hs : IsOpen s)

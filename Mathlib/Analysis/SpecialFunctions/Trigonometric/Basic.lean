@@ -953,8 +953,8 @@ theorem tendsto_cos_pi_div_two : Tendsto cos (𝓝[<] (π / 2)) (𝓝[>] 0) := b
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
   · convert continuous_cos.continuousWithinAt.tendsto
     simp
-  · filter_upwards [Ioo_mem_nhdsWithin_Iio
-        (right_mem_Ioc.mpr (neg_lt_self pi_div_two_pos))] with x hx using cos_pos_of_mem_Ioo hx
+  · filter_upwards [Ioo_mem_nhdsLT (neg_lt_self pi_div_two_pos)] with x hx
+    exact cos_pos_of_mem_Ioo hx
 
 theorem tendsto_tan_pi_div_two : Tendsto tan (𝓝[<] (π / 2)) atTop := by
   convert tendsto_cos_pi_div_two.inv_tendsto_zero.atTop_mul zero_lt_one tendsto_sin_pi_div_two
@@ -969,8 +969,8 @@ theorem tendsto_cos_neg_pi_div_two : Tendsto cos (𝓝[>] (-(π / 2))) (𝓝[>] 
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
   · convert continuous_cos.continuousWithinAt.tendsto
     simp
-  · filter_upwards [Ioo_mem_nhdsWithin_Ioi
-        (left_mem_Ico.mpr (neg_lt_self pi_div_two_pos))] with x hx using cos_pos_of_mem_Ioo hx
+  · filter_upwards [Ioo_mem_nhdsGT (neg_lt_self pi_div_two_pos)] with x hx
+    exact cos_pos_of_mem_Ioo hx
 
 theorem tendsto_tan_neg_pi_div_two : Tendsto tan (𝓝[>] (-(π / 2))) atBot := by
   convert tendsto_cos_neg_pi_div_two.inv_tendsto_zero.atTop_mul_neg (by norm_num)

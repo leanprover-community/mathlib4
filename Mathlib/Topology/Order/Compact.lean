@@ -99,8 +99,8 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
     refine ⟨hc, fun hcf => hf fun U hU => ?_⟩
     rcases (mem_nhdsWithin_Iic_iff_exists_Ioc_subset' hlt).1 (mem_nhdsWithin_of_mem_nhds hU)
       with ⟨x, hxc, hxU⟩
-    rcases ((hsc.frequently_mem ⟨a, ha⟩).and_eventually
-      (Ioc_mem_nhdsWithin_Iic ⟨hxc, le_rfl⟩)).exists with ⟨y, ⟨_hyab, hyf⟩, hy⟩
+    rcases ((hsc.frequently_mem ⟨a, ha⟩).and_eventually (Ioc_mem_nhdsLE hxc)).exists
+      with ⟨y, ⟨_hyab, hyf⟩, hy⟩
     refine mem_of_superset (f.diff_mem_iff.2 ⟨hcf, hyf⟩) (Subset.trans ?_ hxU)
     rw [diff_subset_iff]
     exact Subset.trans Icc_subset_Icc_union_Ioc <| union_subset_union Subset.rfl <|
