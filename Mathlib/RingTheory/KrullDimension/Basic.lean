@@ -33,7 +33,7 @@ lemma ringKrullDim_eq_bot_of_subsingleton [Subsingleton R] :
 
 lemma ringKrullDim_nonneg_of_nontrivial [Nontrivial R] :
     0 ≤ ringKrullDim R :=
-  krullDim_nonneg_of_nonempty
+  krullDim_nonneg
 
 /-- If `f : R →+* S` is surjective, then `ringKrullDim S ≤ ringKrullDim R`. -/
 theorem ringKrullDim_le_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
