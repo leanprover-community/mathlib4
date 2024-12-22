@@ -417,10 +417,10 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
       drop_drop, nil_append, min_eq_left_of_lt (j_lt_j'.trans j'_lt_length), Nat.add_comm,
       ← add_assoc, Nat.sub_add_cancel (by omega), mul_left_inj, mul_right_inj]
     congr 2
-    show (take j ω ++ drop (j + 1) ω)[j' - 1]? = ω[j']?
+    show (List.take j ω ++ List.drop (j + 1) ω)[j' - 1]? = ω[j']?
     rw [getElem?_append_right (by simp [Nat.le_sub_one_of_lt j_lt_j']), getElem?_drop]
     congr
-    show j + 1 + (j' - 1 - List.length (take j ω)) = j'
+    show j + 1 + (j' - 1 - List.length (List.take j ω)) = j'
     rw [length_take]
     omega
   have h₄ : t * t' = 1                                := by
@@ -449,7 +449,7 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
 theorem IsReduced.nodup_leftInvSeq {ω : List B} (rω : cs.IsReduced ω) : List.Nodup (lis ω) := by
   simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse, nodup_reverse]
   apply nodup_rightInvSeq
-  rwa [isReduced_reverse]
+  rwa [isReduced_reverse_iff]
 
 lemma getElem_succ_leftInvSeq_alternatingWord
     (i j : B) (p k : ℕ) (h : k + 1 < 2 * p) :
