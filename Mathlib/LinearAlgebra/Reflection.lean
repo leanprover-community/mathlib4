@@ -385,7 +385,8 @@ lemma reflection_reflection_iterate
   | succ n ih =>
     have hz : ∀ z : M, f y • g x • z = 2 • 2 • z := by
       intro z
-      rw [smul_smul, hgxfy, smul_smul, ← Nat.cast_smul_eq_nsmul R (2 * 2), Nat.cast_eq_ofNat]
+      rw [smul_smul, hgxfy, smul_smul, ← Nat.cast_smul_eq_nsmul R (2 * 2), show 2 * 2 = 4 from rfl,
+        Nat.cast_ofNat]
     simp only [iterate_succ', comp_apply, ih, two_smul, smul_sub, smul_add, map_add,
       LinearEquiv.trans_apply, reflection_apply_self, map_neg, reflection_apply, neg_sub, map_sub,
       map_nsmul, map_smul, smul_neg, hz, add_smul]
