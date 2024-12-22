@@ -7,7 +7,6 @@ Authors: Sina Hazratpour
 
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Monoidal.End
 
