@@ -58,7 +58,7 @@ variable (C : Type u) [Category.{v} C] [ChosenFiniteProducts C] [HasBinaryCoprod
 
 attribute [local instance] monoidalOfHasFiniteProducts
 
-attribute [local instance] MonoidalLeftDistributive.isoLeft
+attribute [local instance] MonoidalLeftDistributive.is_iso_distributorLeft
 
 /-- A category `C` with finite products is cartesian distributive if is monoidal distributive
 with respect to the cartesian monoidal structure. -/
