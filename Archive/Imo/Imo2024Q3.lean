@@ -149,17 +149,14 @@ lemma apply_add_one_ne_of_apply_eq {i j : ℕ} (hi : N ≤ i) (hj : N ≤ j) (hi
 
 lemma exists_infinite_setOf_apply_eq : ∃ m, {i | a i = m}.Infinite := by
   by_contra hi
-  simp only [not_exists, Set.not_infinite] at hi
   have hr : (Set.range a).Infinite := by
-    by_contra hr
+    contrapose! hi with hr
     rw [Set.not_infinite, ← Set.finite_coe_iff] at hr
     obtain ⟨n, hn⟩ := Finite.exists_infinite_fiber (Set.rangeFactorization a)
-    revert hi
-    simp only [imp_false, not_forall]
     rw [Set.infinite_coe_iff, Set.preimage] at hn
-    refine ⟨↑n, ?_⟩
-    convert hn
-    simp [Set.rangeFactorization, Subtype.ext_iff]
+    simp only [Set.mem_singleton_iff, Set.rangeFactorization, Subtype.ext_iff] at hn
+    exact ⟨↑n, hn⟩
+  simp only [not_exists, Set.not_infinite] at hi
   have hinj : Set.InjOn (fun i ↦ Nat.nth (a · = i) 0 + 1) (Set.range a \ Set.Ico 0 (M a N)) := by
     rintro _ ⟨⟨_, rfl⟩, hi⟩ _ ⟨⟨_, rfl⟩, hj⟩ h
     simp only [Set.mem_diff, Set.mem_range, Set.mem_Ico, zero_le, true_and, not_lt] at hi hj
