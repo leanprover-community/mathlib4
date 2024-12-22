@@ -65,8 +65,9 @@ def FunctionalFormulaSetoid (α : Type w) (β : Type x) [Finite β] :
 in all Models `M`, the set of elements of `(α ⊕ β) → M` satisfying `φ` is the graph of a function.
 We quotient by semantic equivalence.  -/
 structure FunctionalFormula (α : Type w) (β : Type x) [Finite β] : Type _ where
+  ofQuotient ::
   /-- The map to the Quotient of a set of formulas -/
-  ofQuotient :: toQuotient : Quotient (FunctionalFormulaSetoid T α β)
+  toQuotient : Quotient (FunctionalFormulaSetoid T α β)
 
 namespace FunctionalFormula
 
