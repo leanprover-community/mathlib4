@@ -77,14 +77,6 @@ class ModuleSplitting (f : M →ₗ⁅R⁆ L) where
   protected compatible : Prop := (LinearMap.fst R L f.ker) ∘ₗ splitting = (f : M →ₗ[R] L)
 
 /-!
-/-- A Lie algebra 2-cocycle. -/
-structure 2cocycle [AddCommGroup V] [LieModule L V] where
-  toFun : (Fin 2 → L) → V
-  map_add' :
-  map_smul' :
-  map_eq_zero_of_eq' :
-  cocycle-cond :
-
 
 /-- Make a cocycle from a module-split central extendion-/
 def cocycle_of_splitting (f : M →ₗ⁅R⁆ L) [IsCentralExtension f] [ModuleSplitting f] :
