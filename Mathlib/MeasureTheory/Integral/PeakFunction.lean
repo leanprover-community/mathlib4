@@ -321,11 +321,11 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
           _ ≤ ∫ y in s, c y ^ n ∂μ :=
             setIntegral_mono_set (I n) (J n) (Eventually.of_forall inter_subset_right)
       simp_rw [φ, ← div_eq_inv_mul, div_pow, div_div]
-      apply div_le_div (pow_nonneg t_pos n) _ _ B
-      · exact pow_le_pow_left₀ (hnc _ hx.1) (ht x hx) _
-      · apply mul_pos (pow_pos (t_pos.trans_lt tt') _) (ENNReal.toReal_pos (hμ v v_open x₀_v).ne' _)
-        have : μ (v ∩ s) ≤ μ s := measure_mono inter_subset_right
-        exact ne_of_lt (lt_of_le_of_lt this hs.measure_lt_top)
+      have := ENNReal.toReal_pos (hμ v v_open x₀_v).ne'
+        ((measure_mono inter_subset_right).trans_lt hs.measure_lt_top).ne
+      gcongr
+      · exact hnc _ hx.1
+      · exact ht x hx
     have N :
       Tendsto (fun n => (μ (v ∩ s)).toReal⁻¹ * (t / t') ^ n) atTop
         (𝓝 ((μ (v ∩ s)).toReal⁻¹ * 0)) := by

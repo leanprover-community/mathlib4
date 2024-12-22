@@ -59,6 +59,7 @@ with a head term (`seq1`) is then transformed to a generalized continued fractio
 numerics, number theory, approximations, fractions
 -/
 
+assert_not_exists Finset
 
 namespace GenContFract
 

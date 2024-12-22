@@ -118,6 +118,10 @@ theorem Function.Bijective.finite_iff {f : α → β} (h : Bijective f) : Finite
 theorem Finite.ofBijective [Finite α] {f : α → β} (h : Bijective f) : Finite β :=
   h.finite_iff.mp ‹_›
 
+variable (α) in
+theorem Finite.nonempty_decidableEq [Finite α] : Nonempty (DecidableEq α) :=
+  let ⟨_n, ⟨e⟩⟩ := Finite.exists_equiv_fin α; ⟨e.decidableEq⟩
+
 instance [Finite α] : Finite (PLift α) :=
   Finite.of_equiv α Equiv.plift.symm
 
@@ -161,6 +165,9 @@ protected theorem Infinite.false [Finite α] (_ : Infinite α) : False :=
   @Infinite.not_finite α ‹_› ‹_›
 
 alias ⟨Finite.of_not_infinite, Finite.not_infinite⟩ := not_infinite_iff_finite
+
+instance Bool.instFinite : Finite Bool := .intro finTwoEquiv.symm
+instance Prop.instFinite : Finite Prop := .of_equiv _ Equiv.propEquivBool.symm
 
 section Set
 

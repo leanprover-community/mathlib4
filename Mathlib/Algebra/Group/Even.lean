@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Group.TypeTags
+import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Squares and even elements
@@ -45,7 +45,10 @@ for some `r : α`. -/
 for some `r : α`."]
 def IsSquare (a : α) : Prop := ∃ r, a = r * r
 
-@[to_additive (attr := simp)] lemma isSquare_mul_self (m : α) : IsSquare (m * m) := ⟨m, rfl⟩
+@[to_additive (attr := simp)] lemma IsSquare.mul_self (m : α) : IsSquare (m * m) := ⟨m, rfl⟩
+
+@[deprecated (since := "2024-08-27")] alias isSquare_mul_self := IsSquare.mul_self
+@[deprecated (since := "2024-08-27")] alias even_add_self := Even.add_self
 
 @[to_additive]
 lemma isSquare_op_iff {a : α} : IsSquare (op a) ↔ IsSquare a :=
@@ -62,7 +65,7 @@ instance [DecidablePred (IsSquare : α → Prop)] : DecidablePred (IsSquare : α
 lemma even_ofMul_iff {a : α} : Even (Additive.ofMul a) ↔ IsSquare a := Iff.rfl
 
 @[simp]
-lemma isSquare_toMul_iff {a : Additive α} : IsSquare (Additive.toMul a) ↔ Even a := Iff.rfl
+lemma isSquare_toMul_iff {a : Additive α} : IsSquare (a.toMul) ↔ Even a := Iff.rfl
 
 instance Additive.instDecidablePredEven [DecidablePred (IsSquare : α → Prop)] :
     DecidablePred (Even : Additive α → Prop) :=
@@ -76,7 +79,7 @@ variable [Add α]
 @[simp] lemma isSquare_ofAdd_iff {a : α} : IsSquare (Multiplicative.ofAdd a) ↔ Even a := Iff.rfl
 
 @[simp]
-lemma even_toAdd_iff {a : Multiplicative α} : Even (Multiplicative.toAdd a) ↔ IsSquare a := Iff.rfl
+lemma even_toAdd_iff {a : Multiplicative α} : Even a.toAdd ↔ IsSquare a := Iff.rfl
 
 instance Multiplicative.instDecidablePredIsSquare [DecidablePred (Even : α → Prop)] :
     DecidablePred (IsSquare : Multiplicative α → Prop) :=

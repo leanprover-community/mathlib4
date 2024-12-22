@@ -4,12 +4,16 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 import Mathlib.Algebra.Order.Ring.Rat
-import Mathlib.SetTheory.Cardinal.Basic
+import Mathlib.Data.Rat.Encodable
+import Mathlib.Algebra.CharZero.Infinite
+import Mathlib.Logic.Denumerable
 
 /-!
 # Denumerability of ℚ
 
-This file proves that ℚ is infinite, denumerable, and deduces that it has cardinality `omega`.
+This file proves that ℚ is denumerable.
+
+The fact that ℚ has cardinality ℵ₀ is proved in `Mathlib.Data.Rat.Cardinal`
 -/
 
 assert_not_exists Module

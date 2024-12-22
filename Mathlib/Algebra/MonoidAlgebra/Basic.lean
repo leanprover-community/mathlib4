@@ -463,7 +463,7 @@ theorem lift_def (F : Multiplicative G →* A) :
 
 @[simp]
 theorem lift_symm_apply (F : k[G] →ₐ[k] A) (x : Multiplicative G) :
-    (lift k G A).symm F x = F (single (Multiplicative.toAdd x) 1) :=
+    (lift k G A).symm F x = F (single x.toAdd 1) :=
   rfl
 
 theorem lift_of (F : Multiplicative G →* A) (x : Multiplicative G) :

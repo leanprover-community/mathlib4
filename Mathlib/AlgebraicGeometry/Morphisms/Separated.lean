@@ -79,7 +79,7 @@ instance : IsLocalAtTarget @IsSeparated := by
 
 instance (R S : CommRingCat.{u}) (f : R ⟶ S) : IsSeparated (Spec.map f) := by
   constructor
-  letI := f.toAlgebra
+  letI := f.hom.toAlgebra
   show IsClosedImmersion (Limits.pullback.diagonal (Spec.map (CommRingCat.ofHom (algebraMap R S))))
   rw [diagonal_Spec_map, MorphismProperty.cancel_right_of_respectsIso @IsClosedImmersion]
   exact .spec_of_surjective _ fun x ↦ ⟨.tmul R 1 x,
@@ -239,6 +239,16 @@ lemma ext_of_isDominant_of_isSeparated [IsReduced X] {f g : X ⟶ Y}
   have := isIso_of_isClosedImmersion_of_surjective (Y := X) (equalizer.ι f' g').left
   rw [← cancel_epi (equalizer.ι f' g').left]
   exact congr($(equalizer.condition f' g').left)
+
+variable (S) in
+/--
+Suppose `X` is a reduced `S`-scheme and `Y` is a separated `S`-scheme.
+For any `S`-morphisms `f g : X ⟶ Y`, `f = g` if `ι ≫ f = ι ≫ g` for some dominant `ι`.
+-/
+lemma ext_of_isDominant_of_isSeparated' [X.Over S] [Y.Over S] [IsReduced X] [IsSeparated (Y ↘ S)]
+    {f g : X ⟶ Y} [f.IsOver S] [g.IsOver S] {W} (ι : W ⟶ X) [IsDominant ι]
+    (hU : ι ≫ f = ι ≫ g) : f = g :=
+  ext_of_isDominant_of_isSeparated (Y ↘ S) (by simp) ι hU
 
 namespace Scheme
 
