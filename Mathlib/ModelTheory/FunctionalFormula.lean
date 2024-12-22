@@ -5,6 +5,32 @@ Authors: Chris Hughes
 -/
 import Mathlib.Data.Finite.Sum
 import Mathlib.ModelTheory.Satisfiability
+/-!
+
+# Functional Formulas in a First Order Theory
+
+This file provides an interface for using definable functions of a first order theory, and
+proving that properties of these functions definable by first-order formulas.
+
+## Main definitions
+
+* `FirstOrder.Language.Theory.FunctionalFormula` - For a Theory `T`, a `FunctionalFormula T α β`
+  is a formula `φ : L.Formula (α ⊕ β)` such that in all models `M`, the set of elements of
+  `(α ⊕ β) → M` satisfying `φ` is the graph of a function. We quotient by semantic equivalence.
+* `FirstOrder.Language.Theory.FunctionalFormula.Realize` -The semantics of
+  `T.FunctionalFormula α β` as a relation on `α → M` and `β → M`.
+* `FirstOrder.Language.Theory.FunctionalFormula.realize` - The semantics of a
+  `T.FunctionalFormula α β` as a function `(α → M) → (β → M)`
+
+There are also examples of how properties of definable functions can be expressed with first
+order formulas, for example `FunctionalFormula.equal` and `FunctionalFormula.injOn`,
+
+* `FirstOrder.Language.Theory.FunctionalFormulaLang` - Given a `Language`, `L` and a `Theory`,
+  `T` we can extend `L` to a language whose function symbols are the definable functions in the
+  `Theory`, `T`
+* `FirstOrder.Language.Theory.FunctionalFormulaLangtoBoundedFormula` -  Every`BoundedFormula` in
+  `FunctionalFormulaLang T` is equivalent to a `BoundedFormula` in `T`
+-/
 
 universe u v w x y z
 
@@ -87,6 +113,7 @@ private theorem exists_fun_eq_iff (f : T.FunctionalFormula α β) : ∃ f' : (α
   · rintro h
     exact ((hf x).2 y h).symm
 
+/-- The semantics of a `T.FunctionalFormula α β` as a function `(α → M) → (β → M)` -/
 noncomputable def realize (f : T.FunctionalFormula α β) : (α → M) → (β → M) :=
   Classical.choose (f.exists_fun_eq_iff)
 
