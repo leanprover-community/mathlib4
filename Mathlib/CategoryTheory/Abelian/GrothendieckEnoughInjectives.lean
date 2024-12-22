@@ -602,6 +602,5 @@ instance enoughInjectives [IsGrothendieckAbelian.{w} C] :
           apply (isZero_zero C).eq_of_tgt }⟩
 
 end IsGrothendieckAbelian
-#check IsGrothendieckAbelian.enoughInjectives
 
 end CategoryTheory
