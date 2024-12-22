@@ -8,7 +8,7 @@ import Mathlib.NumberTheory.NumberField.FinitePlaces
 /-!
 # The Product Formula for number fields
 In this file we prove the Product Formula for number fields: for any non-zero element `x` of a
-number field `K`, we have `∏|x|ᵥ=1` where the product runs over the equivalence classes of absoulte
+number field `K`, we have `∏ |x|ᵥ=1` where the product runs over the equivalence classes of absolute
 values of `K` and the `|⬝|ᵥ` are suitably normalized.
 
 ## Main Results
