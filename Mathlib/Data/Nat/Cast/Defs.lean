@@ -58,6 +58,17 @@ instance (priority := 100) instOfNatAtLeastTwo {n : ℕ} [NatCast R] [Nat.AtLeas
     OfNat R n where
   ofNat := n.cast
 
+library_note "no_index around OfNat.ofNat"
+/--
+When writing lemmas about `OfNat.ofNat` that assume `Nat.AtLeastTwo`, the term needs to be wrapped
+in `no_index` so as not to confuse `simp`, as `no_index (OfNat.ofNat n)`.
+
+Rather than referencing this library note, use `ofNat(n)` as a shorthand for
+`no_index (OfNat.ofNat n)`.
+
+Some discussion is [on Zulip here](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20Polynomial.2Ecoeff.20example/near/395438147).
+-/
+
 @[simp, norm_cast] theorem Nat.cast_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
   (Nat.cast ofNat(n) : R) = ofNat(n) := rfl
 
