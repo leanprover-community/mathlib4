@@ -992,7 +992,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
     have I1 : ∀ᶠ u in 𝓝[>] t, (u - t) * y ≤ ∫ w in t..u, (G' w).toReal := by
       have B : ∀ᶠ u in 𝓝 t, (y : EReal) < G' u := G'cont.lowerSemicontinuousAt _ _ y_lt_G'
       rcases mem_nhds_iff_exists_Ioo_subset.1 B with ⟨m, M, ⟨hm, hM⟩, H⟩
-      have : Ioo t (min M b) ∈ 𝓝[>] t := Ioo_mem_nhdsWithin_Ioi' (lt_min hM ht.right.right)
+      have : Ioo t (min M b) ∈ 𝓝[>] t := Ioo_mem_nhdsGT (lt_min hM ht.right.right)
       filter_upwards [this] with u hu
       have I : Icc t u ⊆ Icc a b := Icc_subset_Icc ht.2.1 (hu.2.le.trans (min_le_right _ _))
       calc
@@ -1162,8 +1162,7 @@ theorem integral_eq_sub_of_hasDerivAt_of_tendsto (hab : a < b) {fa fb}
     · exact fun _ => ha.mono_left (nhdsWithin_mono _ Ioo_subset_Ioi_self)
     · rintro -
       refine (hb.congr' ?_).mono_left (nhdsWithin_mono _ Ico_subset_Iio_self)
-      filter_upwards [Ioo_mem_nhdsWithin_Iio (right_mem_Ioc.2 hab)] with _ hz using
-        (update_noteq hz.1.ne' _ _).symm
+      filter_upwards [Ioo_mem_nhdsLT hab] with _ hz using (update_noteq hz.1.ne' _ _).symm
   simpa [F, hab.ne, hab.ne'] using integral_eq_sub_of_hasDerivAt_of_le hab.le hcont Fderiv hint
 
 /-- Fundamental theorem of calculus-2: If `f : ℝ → E` is differentiable at every `x` in `[a, b]` and

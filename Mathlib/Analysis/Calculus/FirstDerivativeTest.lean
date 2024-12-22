@@ -102,13 +102,11 @@ theorem isLocalMax_of_deriv {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
     (hd : ∀ᶠ x in 𝓝[≠] b, DifferentiableAt ℝ f x)
     (h₀  : ∀ᶠ x in 𝓝[<] b, 0 ≤ deriv f x) (h₁  : ∀ᶠ x in 𝓝[>] b, deriv f x ≤ 0) :
     IsLocalMax f b :=
-  isLocalMax_of_deriv' h
-    (nhds_left'_le_nhds_ne _ (by tauto)) (nhds_right'_le_nhds_ne _ (by tauto)) h₀ h₁
+  isLocalMax_of_deriv' h (nhdsLT_le_nhdsNE _ (by tauto)) (nhdsGT_le_nhdsNE _ (by tauto)) h₀ h₁
 
 /-- The First Derivative test, minimum version. -/
 theorem isLocalMin_of_deriv {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
     (hd : ∀ᶠ x in 𝓝[≠] b, DifferentiableAt ℝ f x)
     (h₀  : ∀ᶠ x in 𝓝[<] b, deriv f x ≤ 0) (h₁  : ∀ᶠ x in 𝓝[>] b, 0 ≤ deriv f x) :
     IsLocalMin f b :=
-  isLocalMin_of_deriv' h
-    (nhds_left'_le_nhds_ne _ (by tauto)) (nhds_right'_le_nhds_ne _ (by tauto)) h₀ h₁
+  isLocalMin_of_deriv' h (nhdsLT_le_nhdsNE _ (by tauto)) (nhdsGT_le_nhdsNE _ (by tauto)) h₀ h₁
