@@ -278,6 +278,10 @@ def llcomp : (Nₗ →ₗ[R] Pₗ) →ₗ[R] (M →ₗ[R] Nₗ) →ₗ[R] M →�
       map_add' := fun _f _f' => ext₂ fun g _x => g.map_add _ _
       map_smul' := fun (_c : R) _f => ext₂ fun g _x => g.map_smul _ _ }
 
+variable {R M Nₗ Pₗ}
+
+variable (R N P  M )
+
 /-- Composing a linear map `M → N` and a linear map `N → P` to form a linear map `M → P`. -/
 def llcompₛₗ : (N →ₛₗ[σ₂₃] P) →ₗ[R₃] (M →ₛₗ[σ₁₂] N) →ₛₗ[σ₂₃] M →ₛₗ[σ₁₃] P :=
   flip
@@ -285,7 +289,7 @@ def llcompₛₗ : (N →ₛₗ[σ₂₃] P) →ₗ[R₃] (M →ₛₗ[σ₁₂]
       map_add' := fun _f _f' => ext₂ fun g _x => g.map_add _ _
       map_smul' := fun _ _f => ext₂ fun g _x => g.map_smulₛₗ _ _  }
 
-variable {R M Nₗ Pₗ}
+variable {R N P  M}
 
 section
 
@@ -347,10 +351,43 @@ theorem compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Q�
   · -- B₁ = B₂ → B₁.comp l r = B₂.comp l r
     subst h; rfl
 
+variable (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ)
+
+#check g ∘ₗ f
+
+#check llcomp R Nₗ Pₗ Qₗ g ∘ₗ f
+
 /-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
 form a bilinear map `M → N → Q`. -/
 def compr₂ (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) : M →ₗ[R] Nₗ →ₗ[R] Qₗ :=
   llcomp R Nₗ Pₗ Qₗ g ∘ₗ f
+
+--def llcompₛₗ : (N →ₛₗ[σ₂₃] P) →ₗ[R₃] (M →ₛₗ[σ₁₂] N) →ₛₗ[σ₂₃] M →ₛₗ[σ₁₃] P
+
+#check Q →ₛₗ[σ₄₃] P
+
+#check llcomp R Nₗ Pₗ Qₗ
+
+--def compl₂ {R₅ : Type*} [CommSemiring R₅] [Module R₅ P] [SMulCommClass R₃ R₅ P] {σ₁₅ : R →+* R₅}
+--    (h : M →ₛₗ[σ₁₅] N →ₛₗ[σ₂₃] P) (g : Q →ₛₗ[σ₄₂] N) : M →ₛₗ[σ₁₅] Q →ₛₗ[σ₄₃] P where
+
+#check M →ₛₗ[σ₁₂] N
+#check M →ₛₗ[σ₁₃] P
+
+variable {σ₄₁ : R₄ →+* R} [Module R N] [Module R P] [SMulCommClass R₂ R N]
+  [SMulCommClass R₃ R P] (f : Q →ₛₗ[σ₄₁] M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂₃] P)
+
+#check llcompₛₗ R M N P
+
+#check ((LinearMap.comp g f) : Q →ₛₗ[σ₄₁] M →ₛₗ[σ₁₃] P)
+
+#check llcompₛₗ R _ _ P (LinearMap.comp (σ₁₂ := σ₁₂) g (f : Q →ₛₗ[σ₄₁] M →ₛₗ[σ₁₂] N))
+
+/-- Composing a linear map `P → Q` and a bilinear map `M → N → P` to
+form a bilinear map `M → N → Q`. -/
+def compr₂ₛₗ  {σ₄₁ : R₄ →+* R} [Module R N] [Module R P] [SMulCommClass R₂ R N]
+  [SMulCommClass R₃ R P] (f : Q →ₛₗ[σ₄₁] M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂₃] P) :
+  Q →ₛₗ[σ₄₁] M →ₛₗ[σ₁₃] P := llcompₛₗ R M N P (LinearMap.comp g f)
 
 @[simp]
 theorem compr₂_apply (f : M →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Pₗ →ₗ[R] Qₗ) (m : M) (n : Nₗ) :
