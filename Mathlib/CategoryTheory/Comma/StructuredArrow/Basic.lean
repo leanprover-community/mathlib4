@@ -334,6 +334,10 @@ def postIsoMap₂ (S : C) (F : B ⥤ C) (G : C ⥤ D) :
     post S F G ≅ map₂ (F := 𝟭 _) (𝟙 _) (𝟙 (F ⋙ G)) :=
   NatIso.ofComponents fun _ => isoMk <| Iso.refl _
 
+/-- `StructuredArrow.map` is a special case of `StructuredArrow.map₂` up to natural isomorphism. -/
+def mapIsoMap₂ {S S' : D} (f : S ⟶ S') : map (T := T) f ≅ map₂ (F := 𝟭 _) (G := 𝟭 _) f (𝟙 T) :=
+  NatIso.ofComponents fun _ => isoMk <| Iso.refl _
+
 /-- A structured arrow is called universal if it is initial. -/
 abbrev IsUniversal (f : StructuredArrow S T) := IsInitial f
 
