@@ -1904,7 +1904,7 @@ theorem insertRight_insertLeft {x x' x'' : PGame} :
 
 /-! ### Removing an option -/
 
-/-- The pregame constructed by removing `'x` as a left option from `x`. -/
+/-- The PGame constructed by removing `'x` as a left option from `x`. -/
 def removeLeft (x x' : PGame.{u}) : PGame :=
   match x with
   | mk _ xr xL xR => mk { x // ¬(xL x ≡ x') } xr (fun i ↦ xL (↑i)) xR
@@ -1926,6 +1926,7 @@ theorem removeLeft_le (x x' : PGame) : x.removeLeft x' ≤ x := by
     use j
     rfl
 
+/-- The PGame constructed by removing `'x` as a right option from `x`. -/
 def removeRight (x x' : PGame.{u}) : PGame :=
   match x with
   | mk xl _ xL xR => mk xl { x // ¬(xR x ≡ x') } xL (fun i ↦ xR (↑i))
