@@ -1310,6 +1310,10 @@ between them. -/
 def toRightMovesNeg {x : PGame} : x.LeftMoves ≃ (-x).RightMoves :=
   Equiv.cast (rightMoves_neg x).symm
 
+def asLeftMovesNeg {x : PGame} (i : x.RightMoves) : (-x).LeftMoves :=
+  (leftMoves_neg x).mpr i
+
+
 @[simp]
 theorem moveLeft_neg {x : PGame} (i) :
     (-x).moveLeft i = -x.moveRight (toLeftMovesNeg.symm i) := by
@@ -1905,12 +1909,12 @@ theorem insertRight_insertLeft {x x' x'' : PGame} :
 /-! ### Removing an option -/
 
 /-- The PGame constructed by removing `'x` as a left option from `x`. -/
-def removeLeft (x x' : PGame.{u}) : PGame :=
+def removeLeft (x : PGame.{u}) (i : x.LeftMoves) : PGame :=
   match x with
-  | mk _ xr xL xR => mk { x // ¬(xL x ≡ x') } xr (fun i ↦ xL (↑i)) xR
+  | mk _ xr xL xR => mk ({ x // x ≠ i }) xr (fun k ↦ xL (k.val)) xR
 
 /-- One less left option will not empower Left. -/
-theorem removeLeft_le (x x' : PGame) : x.removeLeft x' ≤ x := by
+theorem removeLeft_le (x : PGame) (i : x.LeftMoves) : x.removeLeft i ≤ x := by
   rw [le_def]
   constructor
   · intro i
@@ -1927,22 +1931,18 @@ theorem removeLeft_le (x x' : PGame) : x.removeLeft x' ≤ x := by
     rfl
 
 /-- The PGame constructed by removing `'x` as a right option from `x`. -/
-def removeRight (x x' : PGame.{u}) : PGame :=
+def removeRight (x : PGame.{u}) (i : x.RightMoves) : PGame :=
   match x with
-  | mk xl _ xL xR => mk xl { x // ¬(xR x ≡ x') } xL (fun i ↦ xR (↑i))
+  | mk xl _ xL xR => mk xl { x // x ≠ i } xL (fun i ↦ xR (i.val))
 
-theorem neg_removeRight_neg (x x' : PGame.{u}) : (-x).removeLeft (-x') = -x.removeRight x' := by
-  induction x with | mk =>
-    rw [neg_def, removeLeft, removeRight, neg_def]
-    simp only [mk.injEq, neg_identical_neg_iff, heq_eq_eq, and_true, true_and]
-    refine Function.hfunext (congrArg Subtype (by simp)) ?_
-    simp only [heq_eq_eq, neg_inj, Subtype.forall, neg_identical_neg_iff]
-    rintro a ha b hb h
-    simp only [neg_identical_neg_iff, implies_true, Subtype.heq_iff_coe_eq] at h
-    rw [h]
+theorem neg_removeRight_neg (x : PGame.{u}) (i : x.RightMoves) :
+    (-x).removeLeft (asLeftMovesNeg i) = -x.removeRight i := by
+  cases x
+  dsimp [insertRight, insertLeft]
+  congr! with (i | j)
 
 /-- One less right option will not empower Right. -/
-theorem removeRight_le (x x' : PGame) : x ≤ x.removeRight x' := by
+theorem removeRight_le (x : PGame) (i : x.RightMoves) : x ≤ x.removeRight i := by
   rw [← neg_le_neg_iff, ← neg_removeRight_neg]
   simp only [removeLeft_le]
 
