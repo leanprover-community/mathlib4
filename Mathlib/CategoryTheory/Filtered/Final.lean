@@ -356,7 +356,7 @@ filtered. -/
 instance StructuredArrow.final_map₂_id {D : Type u₂} [Category.{v₂} D]
     {C : Type v₁} [Category.{v₁} C] [IsFiltered C] {E : Type u₃} [Category.{v₁} E]
     {T : C ⥤ D} [T.Final] {S : D ⥤ E} [S.Final] {T' : C ⥤ E} [T'.Final]
-    {d : D} {e : E} (u : e ⟶ S.obj d) (α : T ⋙ S ⟶ T') [IsIso α]:
+    {d : D} {e : E} (u : e ⟶ S.obj d) (α : T ⋙ S ⟶ T') [IsIso α] :
     Final (map₂ (F := 𝟭 _) u α) := by
   haveI : IsFiltered (StructuredArrow e (T ⋙ S)) :=
     (T ⋙ S).final_iff_isFiltered_structuredArrow.mp inferInstance e
@@ -364,10 +364,10 @@ instance StructuredArrow.final_map₂_id {D : Type u₂} [Category.{v₂} D]
 
 /-- `StructuredArrow.map` is final if the functor `T` is final` and its domain is filtered. -/
 instance StructuredArrow.final_map {C : Type v₁} [Category.{v₁} C] [IsFiltered C]
-    {D : Type v₁} [Category.{v₁} D]
-    {S S' : D} (f : S ⟶ S') (T : C ⥤ D) [T.Final] : Final (map (T := T) f) := by
-  have : IsIso (𝟙 T) := NatIso.isIso_of_isIso_app (𝟙 T)
-  have : (@map₂ C _ D _ C _ D _ S' T S T (𝟭 C) (𝟭 D) f (𝟙 T)).Final := by
+    {D : Type v₁} [Category.{v₁} D] {S S' : D} (f : S ⟶ S') (T : C ⥤ D) [T.Final] :
+    Final (map (T := T) f) := by
+  haveI := NatIso.isIso_of_isIso_app (𝟙 T)
+  have : (map₂ (F := 𝟭 C) (G := 𝟭 D) f (𝟙 T)).Final := by
     apply StructuredArrow.final_map₂_id (S := 𝟭 D) (T := T) (T' := T) f (𝟙 T)
   apply final_of_natIso (mapIsoMap₂ f).symm
 
