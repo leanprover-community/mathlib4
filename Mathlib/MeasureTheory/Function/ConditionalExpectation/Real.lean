@@ -71,10 +71,14 @@ theorem eLpNorm_one_condexp_le_eLpNorm (f : α → ℝ) : eLpNorm (μ[f|m]) 1 μ
       exact abs_le_abs hx₁ hx₂
     _ = eLpNorm f 1 μ := by
       rw [eLpNorm_one_eq_lintegral_nnnorm, eLpNorm_one_eq_lintegral_nnnorm, ←
-        ENNReal.toReal_eq_toReal (ne_of_lt integrable_condexp.2) (ne_of_lt hf.2), ←
-        integral_norm_eq_lintegral_nnnorm
+        ENNReal.toReal_eq_toReal, --(ne_of_lt integrable_condexp.2) (ne_of_lt hf.2), ←
+        ← integral_norm_eq_lintegral_nnnorm
           (stronglyMeasurable_condexp.mono hm).aestronglyMeasurable,
         ← integral_norm_eq_lintegral_nnnorm hf.1]
+      rotate_left
+      · apply ne_of_lt
+        apply integrable_condexp.2
+      · apply ne_of_lt hf.2
       simp_rw [Real.norm_eq_abs]
       rw (config := {occs := .pos [2]}) [← integral_condexp hm]
       refine integral_congr_ae ?_
