@@ -679,7 +679,7 @@ theorem coeff_ofNat_zero (a : ℕ) [a.AtLeastTwo] :
 theorem coeff_ofNat_succ (a n : ℕ) [h : a.AtLeastTwo] :
     coeff (no_index (OfNat.ofNat a : R[X])) (n + 1) = 0 := by
   rw [← Nat.cast_ofNat]
-  simp
+  simp [-Nat.cast_ofNat]
 
 theorem C_mul_X_pow_eq_monomial : ∀ {n : ℕ}, C a * X ^ n = monomial n a
   | 0 => mul_one _
