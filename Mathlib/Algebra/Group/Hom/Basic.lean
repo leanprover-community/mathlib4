@@ -228,4 +228,12 @@ lemma comp_div (f : G →* H) (g h : M →* G) : f.comp (g / h) = f.comp g / f.c
 
 end InvDiv
 
+def commGroupOfInjective [Group G] [CommGroup H] (f : G →* H) (hf : Function.Injective f) :
+    CommGroup G :=
+  ⟨by simp_rw [← hf.eq_iff, map_mul, mul_comm, implies_true]⟩
+
+def commGroupOfSurjective [CommGroup G] [Group H] (f : G →* H) (hf : Function.Surjective f) :
+    CommGroup H :=
+  ⟨by simp_rw [hf.forall₂, ← map_mul, mul_comm, implies_true]⟩
+
 end MonoidHom
