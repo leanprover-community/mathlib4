@@ -29,6 +29,7 @@ variable {K : Type*} [Field K] [NumberField K]
 open Algebra Classical FinitePlace Function Ideal IsDedekindDomain
   IsDedekindDomain.HeightOneSpectrum
 
+open Function Ideal IsDedekindDomain HeightOneSpectrum in
 /-- For any non-zero `x` in `𝓞 K`, the prduct of `w x`, where `w` runs over `FinitePlace K`, is
 equal to the inverse of the absolute value of `Algebra.norm ℤ x`. -/
 theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
