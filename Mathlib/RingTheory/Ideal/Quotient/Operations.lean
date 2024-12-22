@@ -193,11 +193,11 @@ def quotientInfToPiQuotient (I : ι → Ideal R) [∀ i, (I i).IsTwoSided] :
 
 lemma quotientInfToPiQuotient_mk (I : ι → Ideal R) [∀ i, (I i).IsTwoSided] (x : R) :
     quotientInfToPiQuotient I (Quotient.mk _ x) = fun i : ι ↦ Quotient.mk (I i) x :=
-rfl
+  rfl
 
 lemma quotientInfToPiQuotient_mk' (I : ι → Ideal R) [∀ i, (I i).IsTwoSided] (x : R) (i : ι) :
     quotientInfToPiQuotient I (Quotient.mk _ x) i = Quotient.mk (I i) x :=
-rfl
+  rfl
 
 lemma quotientInfToPiQuotient_inj (I : ι → Ideal R) [∀ i, (I i).IsTwoSided] :
     Injective (quotientInfToPiQuotient I) := by

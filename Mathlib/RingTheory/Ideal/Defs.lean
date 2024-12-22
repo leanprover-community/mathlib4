@@ -63,6 +63,14 @@ theorem mul_mem_right {α} {a : α} (b : α) [Semiring α] (I : Ideal α) [I.IsT
 
 variable {a}
 
+theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
+  Nat.casesOn n (Not.elim (by decide))
+    (fun m _hm => (pow_succ a m).symm ▸ I.mul_mem_left (a ^ m) ha) hn
+
+theorem pow_mem_of_pow_mem {m n : ℕ} (ha : a ^ m ∈ I) (h : m ≤ n) : a ^ n ∈ I := by
+  rw [← Nat.add_sub_of_le h, add_comm, pow_add]
+  exact I.mul_mem_left _ ha
+
 @[ext]
 theorem ext {I J : Ideal α} (h : ∀ x, x ∈ I ↔ x ∈ J) : I = J :=
   Submodule.ext h
@@ -98,6 +106,7 @@ namespace Ideal
 variable [CommSemiring α] (I : Ideal α)
 
 instance : I.IsTwoSided := ⟨fun b ha ↦ mul_comm b _ ▸ I.smul_mem _ ha⟩
+instance {α} [CommRing α] (I : Ideal α) : I.IsTwoSided := inferInstance
 
 @[simp]
 theorem mul_unit_mem_iff_mem {x y : α} (hy : IsUnit y) : x * y ∈ I ↔ x ∈ I :=
@@ -105,14 +114,6 @@ theorem mul_unit_mem_iff_mem {x y : α} (hy : IsUnit y) : x * y ∈ I ↔ x ∈ 
 
 lemma mem_of_dvd (hab : a ∣ b) (ha : a ∈ I) : b ∈ I := by
   obtain ⟨c, rfl⟩ := hab; exact I.mul_mem_right _ ha
-
-theorem pow_mem_of_mem (ha : a ∈ I) (n : ℕ) (hn : 0 < n) : a ^ n ∈ I :=
-  Nat.casesOn n (Not.elim (by decide))
-    (fun m _hm => (pow_succ a m).symm ▸ I.mul_mem_left (a ^ m) ha) hn
-
-theorem pow_mem_of_pow_mem {m n : ℕ} (ha : a ^ m ∈ I) (h : m ≤ n) : a ^ n ∈ I := by
-  rw [← Nat.add_sub_of_le h, pow_add]
-  exact I.mul_mem_right _ ha
 
 end Ideal
 
