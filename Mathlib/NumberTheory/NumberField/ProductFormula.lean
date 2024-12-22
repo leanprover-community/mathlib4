@@ -101,6 +101,7 @@ theorem FinitePlace.prod_eq_inv_abs_norm {x : K} (h_x_nezero : x ≠ 0) :
   rw [coe_norm_int a, coe_norm_int b, ← MonoidHom.map_mul, div_mul_cancel₀ _
     (RingOfIntegers.coe_ne_zero_iff.mpr hb)]
 
+open FinitePlace in
 /-- The Product Formula for the Number Field `K`. -/
 theorem prod_abs_eq_one {x : K} (h_x_nezero : x ≠ 0) :
     (∏ w : InfinitePlace K, w x ^ w.mult) * ∏ᶠ w : FinitePlace K, w x = 1 := by
