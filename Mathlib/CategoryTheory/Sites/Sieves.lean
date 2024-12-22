@@ -481,7 +481,7 @@ noncomputable def ofArrows.i : I := (ofArrows.exists hg).choose
 that `h ≫ f (i hg) = g`. -/
 noncomputable def ofArrows.h : W ⟶ Y (i hg) := (ofArrows.exists hg).choose_spec.choose
 
-@[reassoc]
+@[reassoc (attr := simp)]
 lemma ofArrows.fac : h hg ≫ f (i hg) = g :=
   (ofArrows.exists hg).choose_spec.choose_spec.symm
 
