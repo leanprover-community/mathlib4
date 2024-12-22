@@ -29,7 +29,7 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 
 variable (R) in
 /-- The identity of a ring is flat. -/
-lemma id  : RingHom.Flat (RingHom.id R) :=
+lemma id : RingHom.Flat (RingHom.id R) :=
   Module.Flat.self R
 
 /-- Composition of flat ring homomorphisms is flat. -/
@@ -71,16 +71,11 @@ lemma holdsForLocalizationAway : HoldsForLocalizationAway Flat := by
 lemma ofLocalizationSpanTarget : OfLocalizationSpanTarget Flat := by
   introv R hsp h
   algebraize_only [f]
-  replace h : ∀ r : s, Module.Flat R (Localization.Away (r : S)) := by
-    intro r; simp_rw [RingHom.Flat] at h;
-    convert h r; ext a x;
-    have : SMul.smul a x = (algebraMap R (Localization.Away r.val)) a * x := by
-      rw [← Algebra.smul_def]
-      rfl
-    rw [this]
-    rfl
-  let g (r : s) := (Algebra.linearMap S (Localization.Away r.val))
-  exact Module.flat_of_isLocalized_span _ _ s hsp _ g h
+  refine Module.flat_of_isLocalized_span _ _ s hsp _
+    (fun r ↦ Algebra.linearMap S <| Localization.Away r.1) ?_
+  dsimp only [RingHom.Flat] at h
+  convert h; ext
+  apply Algebra.smul_def
 
 /-- Flat is a local property of ring homomorphisms. -/
 lemma propertyIsLocal : PropertyIsLocal Flat where
