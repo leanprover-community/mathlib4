@@ -93,39 +93,40 @@ instance isConnected_comma_of_initial [IsConnected B] [L.Initial] : IsConnected 
 
 end NonSmall
 
-section Small
+/-- Let the following diagram commute up to isomorphism:
 
-variable {A : Type u₁} [Category.{v₁} A]
-variable {B : Type u₂} [Category.{u₂} B]
-variable {T : Type u₃} [Category.{v₃} T]
-variable {L : A ⥤ T} {R : B ⥤ T}
-variable {A' : Type u₄} [Category.{v₄} A']
-variable {B' : Type u₅} [Category.{v₅} B']
-variable {T' : Type u₂} [Category.{u₂} T']
-variable {L' : A' ⥤ T'} {R' : B' ⥤ T'}
-variable {F : A ⥤ A'} {G : B ⥤ B'} {H : T ⥤ T'}
-variable (iL : F ⋙ L' ≅ L ⋙ H) (iR : G ⋙ R' ≅ R ⋙ H)
-variable [IsFiltered B] [IsFiltered B']
-variable [R.Final] [R'.Final] [F.Final] [G.Final]
+      L       R
+  A  ---→ T  ←--- B
+  |       |       |
+  | F     | H     | G
+  ↓       ↓       ↓
+  A' ---→ T' ←--- B'
+      L'      R'
 
-lemma map_final : (Comma.map iL.hom iR.inv).Final := by
-  haveI : IsFiltered T := IsFiltered.of_final R
-  haveI : IsFiltered T' := IsFiltered.of_final R'
+Let `F`, `G`, `R` and `R'` be final and `B` be filtered. Then, the induced functor between the comma
+categories of the first and second row of the diagram is final. -/
+lemma map_final {A : Type u₁} [Category.{v₁} A] {B : Type u₂} [Category.{u₂} B] {T : Type u₃}
+    [Category.{v₃} T] {L : A ⥤ T} {R : B ⥤ T} {A' : Type u₄} [Category.{v₄} A'] {B' : Type u₅}
+    [Category.{v₅} B'] {T' : Type u₂} [Category.{u₂} T'] {L' : A' ⥤ T'} {R' : B' ⥤ T'} {F : A ⥤ A'}
+    {G : B ⥤ B'} {H : T ⥤ T'} (iL : F ⋙ L' ≅ L ⋙ H) (iR : G ⋙ R' ≅ R ⋙ H) [IsFiltered B]
+    [R.Final] [R'.Final] [F.Final] [G.Final] :
+    (Comma.map iL.hom iR.inv).Final := ⟨fun ⟨i₂, j₂, u₂⟩ => by
   haveI := final_of_natIso iR
-  haveI : H.Final := final_of_final_comp R H
-  fconstructor
-  rintro ⟨i₂, j₂, u₂⟩
-  have := StructuredArrow.commaMapEquivalence iL.hom iR.inv ⟨i₂, j₂, u₂⟩
-  rw [isConnected_iff_of_equivalence this]
-  haveI : (StructuredArrow.map₂ (R := G ⋙ R') (G := 𝟭 _) u₂ iR.hom).Final := by
-    sorry
+  rw [isConnected_iff_of_equivalence (StructuredArrow.commaMapEquivalence iL.hom iR.inv _)]
   have : StructuredArrow.map₂ u₂ iR.hom ≅ StructuredArrow.post j₂ G R' ⋙
-      StructuredArrow.map₂ (G := 𝟭 _) u₂ iR.hom := Iso.refl _
+      StructuredArrow.map₂ (G := 𝟭 _) (F := 𝟭 _) (R' := R ⋙ H) u₂ iR.hom ⋙
+      StructuredArrow.pre _ R H :=
+    eqToIso (by
+      congr
+      · simp
+      · ext; simp) ≪≫
+    (StructuredArrow.map₂CompMap₂Iso _ _ _ _).symm ≪≫
+    isoWhiskerLeft _ ((StructuredArrow.map₂CompMap₂Iso _ _ _ _).symm ≪≫
+      isoWhiskerLeft _ (StructuredArrow.preIsoMap₂ _ _ _).symm) ≪≫
+    isoWhiskerRight (StructuredArrow.postIsoMap₂ j₂ G R').symm _
   haveI := final_of_natIso this.symm
   rw [IsIso.Iso.inv_inv]
-  infer_instance
-
-end Small
+  infer_instance⟩
 
 end Comma
 
