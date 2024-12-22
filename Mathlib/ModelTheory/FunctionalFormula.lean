@@ -30,6 +30,10 @@ order formulas, for example `FunctionalFormula.equal` and `FunctionalFormula.inj
   `Theory`, `T`
 * `FirstOrder.Language.Theory.FunctionalFormulaLangtoBoundedFormula` -  Every`BoundedFormula` in
   `FunctionalFormulaLang T` is equivalent to a `BoundedFormula` in `T`
+
+## Tags
+
+definable function
 -/
 
 universe u v w x y z
