@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Data.Finite.Sum
 import Mathlib.ModelTheory.Satisfiability
+
 /-!
 
 # Functional Formulas in a First Order Theory
