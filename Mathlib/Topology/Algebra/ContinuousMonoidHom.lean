@@ -503,7 +503,7 @@ theorem coe_mk (f : M ≃* N) (hf1 hf2) : (mk f hf1 hf2 : M → N) = f := rfl
 theorem toEquiv_eq_coe (f : M ≃ₜ* N) : f.toEquiv = f :=
   rfl
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem toMulEquiv_eq_coe (f : M ≃ₜ* N) : f.toMulEquiv = f :=
   rfl
 
