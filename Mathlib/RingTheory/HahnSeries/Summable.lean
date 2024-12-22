@@ -226,6 +226,26 @@ theorem hsum_equiv (e : α ≃ β) (s : SummableFamily Γ R α) : (Equiv e s).hs
   simp only [hsum_coeff, Equiv_toFun]
   exact finsum_eq_of_bijective e.symm (Equiv.bijective e.symm) fun x => rfl
 
+/-- The summable family given by multiplying every series in a summable family by a scalar. -/
+@[simps]
+def smulFamily [AddCommMonoid V] [SMulWithZero R V] (f : α → R) (s : SummableFamily Γ V α) :
+    SummableFamily Γ V α where
+  toFun a := (f a) • s a
+  isPWO_iUnion_support' := by
+    refine Set.IsPWO.mono s.isPWO_iUnion_support fun g hg => ?_
+    simp_all only [Set.mem_iUnion, mem_support, smul_coeff, ne_eq]
+    obtain ⟨i, hi⟩ := hg
+    exact Exists.intro i <| right_ne_zero_of_smul hi
+  finite_co_support' g := by
+    refine Set.Finite.subset (s.finite_co_support g) fun i hi => ?_
+    simp_all only [smul_coeff, ne_eq, Set.mem_setOf_eq, Function.mem_support]
+    exact right_ne_zero_of_smul hi
+
+theorem hsum_smulFamily [AddCommMonoid V] [SMulWithZero R V] (f : α → R)
+    (s : SummableFamily Γ V α) (g : Γ) :
+    (smulFamily f s).hsum.coeff g = ∑ᶠ i, (f i) • ((s i).coeff g) :=
+  rfl
+
 end AddCommMonoid
 
 section AddCommGroup
