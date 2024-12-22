@@ -400,6 +400,9 @@ def of : L →ᴸ FunctionalFormulaLang T where
   onFunction := fun _ f => ofTerm (func f var)
   onRelation := fun _ R => R
 
+/-- The natural theory on `FunctionalFormulaLang T`, which includes all sentences in `T`,
+as well as sentences demanding that all the function symbols we have added have the expected
+semantics. -/
 def theory : (FunctionalFormulaLang T).Theory :=
   (of T).onTheory T ∪
     ⋃ (n : ℕ), Set.range (fun f : FunctionalFormula T (Fin n) Unit =>
@@ -431,60 +434,71 @@ noncomputable instance : (FunctionalFormulaLang.theory T).Model M where
       · rintro h ⟨⟩; exact h
       · intro h; exact h _
 
+/-- Every Model of `T` is also a mode of `FunctionalFormulaLang.theory T` and vice versa.
+This could be done with instances in both directions, but this would create instance diamonds.
+
+Instead we provie instances in one direction and we provide this equivalence and then whenever it
+is necessary to prove something of the form
+`∀ (M : Theory.ModelType (FunctionalFormulaLang.theory T))`, we can start with
+`rw [Equiv.forall_congr_left (modelTypeEquiv T).symm]` and we will then have to prove
+a similar formula `∀ (M : Theory.ModelType T)`, which will also be a model of
+`FunctionalFormulaLang.theory T`. This is used in the proof of
+`FunctionalFormulaLang.modelsBoundedFormula_iff` -/
 noncomputable def modelTypeEquiv : Theory.ModelType.{_, _, w} T ≃
-    Theory.ModelType (FunctionalFormulaLang.theory T) where
-  toFun := fun M => ⟨M⟩
-  invFun := fun M =>
-    let i1 : L.Structure M :=
-      { funMap := fun f x => Structure.funMap (L := FunctionalFormulaLang T)
-          (ofTerm (func f var)) x
-        RelMap := fun R => Structure.RelMap (L := FunctionalFormulaLang T) R }
-    let i2 : T.Model M :=
-      { realize_of_mem := by
-          intro φ hφ
-          simpa using (models_sentence_of_mem (T := FunctionalFormulaLang.theory T)
-            (φ := (of T).onSentence φ) (Set.mem_union_left _ ⟨φ, hφ, rfl⟩)).realize_sentence M  }
-    ⟨M⟩
-  left_inv := by
-    intro M
-    refine ModelType.casesOn M (fun M {S} _ _ => ?_)
-    cases S
-    simp only [instStructure_funMap, ModelType.mk.injEq, realize_ofTerm, Term.realize_func,
-      Term.realize_var, heq_eq_eq, true_and]
-    ext
-    · simp [Structure.funMap]
-    · simp [Structure.RelMap]
-  right_inv := by
-    intro M
-    refine ModelType.casesOn M (fun M {S} _ _ => ?_)
-    simp only [eq_mp_eq_cast, instStructure, ModelType.mk.injEq, heq_eq_eq, true_and]
-    let i1 : L.Structure M :=
-      { funMap := fun f x => Structure.funMap (L := FunctionalFormulaLang T)
-          (ofTerm (func f var)) x
-        RelMap := fun R => Structure.RelMap (L := FunctionalFormulaLang T) R }
-    let i2 : T.Model M :=
-      { realize_of_mem := by
-          intro φ hφ
-          simpa using (models_sentence_of_mem (T := FunctionalFormulaLang.theory T)
-            (φ := (of T).onSentence φ) (Set.mem_union_left _ ⟨φ, hφ, rfl⟩)).realize_sentence M  }
-    ext n f x
-    · have := models_sentence_of_mem (T := FunctionalFormulaLang.theory T)
-        (Set.mem_union_right _ (Set.mem_iUnion.2 ⟨n, Set.mem_range.2 ⟨f, rfl⟩⟩))
-      have := this.realize_formula M (v := Empty.elim)
-      simp only [Formula.realize_iAlls, Formula.realize_relabel, Function.comp_def, Sum.elim_inr,
-        Formula.realize_iff, Formula.realize_equal, Term.realize_func, Term.realize_var,
-        LHom.realize_onFormula, realize_toFormula, realize_iff_realize_eq, funext_iff] at this
-      have := (this (Sum.elim x (fun _ => S.funMap f x))).1 (by simp) ()
-      simpa
-    · simp [Structure.RelMap]
+    Theory.ModelType (FunctionalFormulaLang.theory T) :=
+  letI i1 : ∀ (M :  ModelType.{max u v, v, w} (theory.{u, v} T)), L.Structure M := fun M =>
+    { funMap := fun f x => Structure.funMap (L := FunctionalFormulaLang T)
+        (ofTerm (func f var)) x
+      RelMap := fun R => Structure.RelMap (L := FunctionalFormulaLang T) R }
+  letI i2 : ∀ (M : ModelType.{max u v, v, w} (theory.{u, v} T)), T.Model M := fun M =>
+    { realize_of_mem := by
+        intro φ hφ
+        simpa using (models_sentence_of_mem (T := FunctionalFormulaLang.theory T)
+          (φ := (of T).onSentence φ) (Set.mem_union_left _ ⟨φ, hφ, rfl⟩)).realize_sentence M  }
+  { toFun := fun M => ⟨M⟩
+    invFun := fun M => ⟨M⟩
+    left_inv := by
+      intro M
+      refine ModelType.casesOn M (fun M {S} _ _ => ?_)
+      cases S
+      simp only [instStructure_funMap, ModelType.mk.injEq, realize_ofTerm, Term.realize_func,
+        Term.realize_var, heq_eq_eq, true_and]
+      ext
+      · simp [Structure.funMap]
+      · simp [Structure.RelMap]
+    right_inv := by
+      intro M
+      let _ := i1 M; let _ := i2 M
+      induction M using ModelType.casesOn with
+      | @mk M S _ _ =>
+        simp only [eq_mp_eq_cast, instStructure, ModelType.mk.injEq, heq_eq_eq, true_and]
+        ext n f x
+        · have := models_sentence_of_mem (T := FunctionalFormulaLang.theory T)
+            (Set.mem_union_right _ (Set.mem_iUnion.2 ⟨n, Set.mem_range.2 ⟨f, rfl⟩⟩))
+          have := this.realize_formula M (v := Empty.elim)
+          simp only [Formula.realize_iAlls, Formula.realize_relabel, Function.comp_def,
+            Sum.elim_inr, Formula.realize_iff, Formula.realize_equal, Term.realize_func,
+            Term.realize_var, LHom.realize_onFormula, realize_toFormula, realize_iff_realize_eq,
+            funext_iff] at this
+          have := (this (Sum.elim x (fun _ => S.funMap f x))).1 (by simp) ()
+          simpa
+        · simp [Structure.RelMap] }
 
 variable {T}
+/-- Proving `FunctionalFormulaLang.theory T ⊨ᵇ φ` by proving it over all models of `T`
+(which are automatically models of `FunctionalFormulaLang.theory T`) instead of over
+all models `M` of `FunctionalFormulaLang.theory T` (which do not have an instance of `M ⊨ T` defined
+in mathlib).
+
+It is never a good idea to unfold the definition of `ModelsBoundedFormula` to prove
+`FunctionalFormulaLang.theory T ⊨ᵇ φ`, and this theorem should always be used instead. -/
 theorem modelsBoundedFormula_iff {n : ℕ} {φ : T.FunctionalFormulaLang.BoundedFormula α n} :
-    ((FunctionalFormulaLang.theory T) ⊨ᵇ φ) ↔ (∀ (N : Theory.ModelType.{_, _, max u v w} T)
-      (x : α → N) (y : Fin n → N), φ.Realize x y) := by
+    (FunctionalFormulaLang.theory T ⊨ᵇ φ) ↔ (∀ (M : Theory.ModelType.{_, _, max u v w} T)
+      (x : α → M) (y : Fin n → M), φ.Realize x y) := by
   rw [ModelsBoundedFormula, Equiv.forall_congr_left (modelTypeEquiv T).symm]
   simp [modelTypeEquiv]
 
+/-- Every `Term` in `FunctionalFormulaLang T` is a definable function in `T` -/
 noncomputable def ofTerm : (FunctionalFormulaLang T).Term α → T.FunctionalFormula α Unit
   | Term.var x => FunctionalFormula.ofTerm (var x)
   | Term.func f x => f.comp ((toSigma (fun i => ofTerm (x i))).relabelRight (fun i => ⟨i, ()⟩))
@@ -495,9 +509,11 @@ theorem realize_ofTerm : ∀ (t : (FunctionalFormulaLang T).Term α) (x : α →
   | Term.var v, x, u => by simp [ofTerm, FunctionalFormula.realize_ofTerm]
   | Term.func f x, y, u => by simp [ofTerm, Function.comp_def, realize_ofTerm]
 
+/-- Every`BoundedFormula` in `FunctionalFormulaLang T` is equivalent to a `BoundedFormula` in `T`.
+-/
 noncomputable def toBoundedFormulaAux : ∀ {n : ℕ}
     (φ : (FunctionalFormulaLang T).BoundedFormula α n),
-    { φ' : L.BoundedFormula α n // (FunctionalFormulaLang.theory T) ⊨ᵇ
+    { φ' : L.BoundedFormula α n // FunctionalFormulaLang.theory T ⊨ᵇ
         ((of T).onBoundedFormula φ').iff φ }
   | _, BoundedFormula.falsum => ⟨BoundedFormula.falsum, by
     simp [ModelsBoundedFormula, BoundedFormula.Realize]⟩
@@ -508,10 +524,9 @@ noncomputable def toBoundedFormulaAux : ∀ {n : ℕ}
   | _, @BoundedFormula.rel _ _ m n R x =>
       let φ := (BoundedFormula.rel (L := L) (n := n) (α := Empty) (R : L.Relations n)
         (fun i => (var (Sum.inr i)))).toFormula
-      let φ' := BoundedFormula.relabel id
-        (rel (β := Fin n) (φ.relabel (Sum.elim Empty.elim (fun i => ⟨i, ()⟩))) (ofTerm ∘ x))
-      ⟨φ', by
-        simp [φ, φ', Formula.boundedFormula_realize_eq_realize, funext_iff,
+      ⟨BoundedFormula.relabel id <| rel φ ((toSigma (ofTerm ∘ x)).relabelRight (
+          Sum.elim Empty.elim (fun i => ⟨i, ()⟩))), by
+        simp [φ, Formula.boundedFormula_realize_eq_realize, funext_iff,
           BoundedFormula.Realize, modelsBoundedFormula_iff]⟩
   | _, BoundedFormula.imp φ₁ φ₂ =>
       let ψ₁ := toBoundedFormulaAux φ₁
@@ -528,6 +543,8 @@ noncomputable def toBoundedFormulaAux : ∀ {n : ℕ}
         simp only [BoundedFormula.realize_iff, LHom.realize_onBoundedFormula] at h
         simp [modelsBoundedFormula_iff, BoundedFormula.Realize, h]⟩
 
+/-- Every`BoundedFormula` in `FunctionalFormulaLang T` is equivalent to a `BoundedFormula` in `T`.
+-/
 noncomputable def toBoundedFormula {n : ℕ} (φ : (FunctionalFormulaLang T).BoundedFormula α n) :
     L.BoundedFormula α n :=
   (toBoundedFormulaAux φ).1
