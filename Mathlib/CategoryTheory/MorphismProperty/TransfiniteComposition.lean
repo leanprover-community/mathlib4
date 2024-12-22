@@ -85,37 +85,11 @@ lemma Set.Iic.succ_eq {α : Type u} [PartialOrder α] [SuccOrder α] {j : α}
     · exfalso
       exact hk (fun x _ ↦ x.2))
 
-
 lemma Set.Iic.not_isMax_coe {α : Type u} [Preorder α] {j : α} (k : Set.Iic j)
     (hk : ¬ IsMax k) : ¬ IsMax k.1 := by
   simp only [not_isMax_iff, Subtype.exists, mem_Iic] at hk ⊢
   obtain ⟨l, hl, hk⟩ := hk
   exact ⟨j, lt_of_lt_of_le hk hl⟩
-
-lemma Set.Iic.not_isMin_coe {α : Type u} [Preorder α] {j : α}
-    {k : Set.Iic j} (hk : ¬ IsMin k) :
-    ¬ IsMin k.1 :=
-   fun h ↦ hk (fun _ ha' ↦ h ha')
-
-lemma Set.Iic.isSuccPrelimit_coe {α : Type u} [Preorder α] {j : α}
-    {k : Set.Iic j} (hk : Order.IsSuccPrelimit k) :
-    Order.IsSuccPrelimit k.1 :=
-  fun a ha ↦ hk ⟨a, ha.1.le.trans k.2⟩ ⟨ha.1, fun ⟨_, _⟩ hb' ↦ ha.2 hb'⟩
-
-lemma Set.Iic.isSuccLimit_coe {α : Type u} [Preorder α] {j : α}
-    {k : Set.Iic j} (hk : Order.IsSuccLimit k) :
-    Order.IsSuccLimit k.1 :=
-  ⟨not_isMin_coe hk.1, isSuccPrelimit_coe hk.2⟩
-
-@[simps]
-def Set.Iic.iioOrderIso {α : Type u} [Preorder α] {j : α}
-    (k : Set.Iic j) :
-    Set.Iio k ≃o Set.Iio k.1 where
-  toFun := fun ⟨⟨x, _⟩, hx'⟩ ↦ ⟨x, hx'⟩
-  invFun := fun ⟨x, hx⟩ ↦ ⟨⟨x, hx.le.trans k.2⟩, hx⟩
-  left_inv _ := rfl
-  right_inv _ := rfl
-  map_rel_iff' := by rfl
 
 namespace CategoryTheory
 
@@ -189,29 +163,6 @@ noncomputable def isColimitOfIsWellOrderContinuous (F : J ⥤ C) [F.IsWellOrderC
 
 instance (F : ℕ ⥤ C) : F.IsWellOrderContinuous where
   nonempty_isColimit m hm := by simp at hm
-
-@[simps!]
-def restrictionLE (F : J ⥤ C) (j : J) : Set.Iic j ⥤ C :=
-  Monotone.functor (f := fun k ↦ k.1) (fun _ _ ↦ id) ⋙ F
-
-@[simps!]
-def coconeLE (F : J ⥤ C) (j : J) :
-    Cocone (F.restrictionLE j) where
-  pt := F.obj j
-  ι :=
-    { app x := F.map (homOfLE x.2)
-      naturality _ _ f := by
-        dsimp
-        simp only [homOfLE_leOfHom, ← Functor.map_comp, comp_id]
-        rfl }
-
-def isColimitCoconeLE (F : J ⥤ C) (j : J) :
-    IsColimit (F.coconeLE j) where
-  desc s := s.ι.app ⟨j, by simp⟩
-  fac s k := by
-    simpa only [Functor.const_obj_obj, Functor.const_obj_map, comp_id]
-      using s.ι.naturality (homOfLE k.2 : k ⟶ ⟨j, by simp⟩)
-  uniq s m hm := by simp [← hm]
 
 instance [PartialOrder J] [SuccOrder J] (F : J ⥤ C) [F.IsWellOrderContinuous] (j : J) :
     (F.restrictionLE j).IsWellOrderContinuous where
