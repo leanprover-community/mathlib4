@@ -5,6 +5,7 @@ Authors: Thomas Browning
 -/
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.GroupTheory.Nilpotent
+import Mathlib.GroupTheory.Transfer
 
 /-!
 # Z-Groups
@@ -65,6 +66,32 @@ theorem of_surjective [Finite G] [hG : IsZGroup G] (hf : Function.Surjective f) 
 
 instance [Finite G] [IsZGroup G] (H : Subgroup G) [H.Normal] : IsZGroup (G ⧸ H) :=
   of_surjective (QuotientGroup.mk'_surjective H)
+
+section Solvable
+
+variable (G) in
+theorem commutator_lt [Finite G] [IsZGroup G] [Nontrivial G] : commutator G < ⊤ := by
+  let p := (Nat.card G).minFac
+  have hp : p.Prime := Nat.minFac_prime Finite.one_lt_card.ne'
+  have := Fact.mk hp
+  let P : Sylow p G := default
+  have hP := isZGroup p hp P
+  let f := MonoidHom.transferSylow P (hP.normalizer_le_centralizer rfl)
+  refine lt_of_le_of_lt (Abelianization.commutator_subset_ker f) ?_
+  have h := P.ne_bot_of_dvd_card (Nat.card G).minFac_dvd
+  contrapose! h
+  rw [← Subgroup.isComplement'_top_left, ← (not_lt_top_iff.mp h)]
+  exact hP.isComplement' rfl
+
+instance [Finite G] [IsZGroup G] : IsSolvable G := by
+  rw [isSolvable_iff_commutator_lt]
+  intro H h
+  rw [← H.nontrivial_iff_ne_bot] at h
+  rw [← H.range_subtype, MonoidHom.range_eq_map, ← Subgroup.map_commutator,
+    Subgroup.map_subtype_lt_map_subtype]
+  exact commutator_lt H
+
+end Solvable
 
 section Nilpotent
 
