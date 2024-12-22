@@ -800,12 +800,6 @@ theorem realize_iExs [Finite γ] {f : α → β ⊕ γ}
   rw [← Formula.realize_iExs, iff_iff_eq]; congr; simp [eq_iff_true_of_subsingleton]
 
 @[simp]
-theorem realize_iExs [Finite γ] {φ : L.Formula (α ⊕ γ)} {v : α → M} {v' : Fin 0 → M} :
-    BoundedFormula.Realize (φ.iExs γ) v v' ↔
-      ∃ (i : γ → M), φ.Realize (Sum.elim v i) := by
-  rw [← Formula.realize_iExs, iff_iff_eq]; congr; simp [eq_iff_true_of_subsingleton]
-
-@[simp]
 theorem realize_toFormula (φ : L.BoundedFormula α n) (v : α ⊕ (Fin n) → M) :
     φ.toFormula.Realize v ↔ φ.Realize (v ∘ Sum.inl) (v ∘ Sum.inr) := by
   induction φ with
