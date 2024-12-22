@@ -143,7 +143,7 @@ theorem IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → 
     lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' hnX hnY hXY''
   refine ⟨hX.1.mul hY.1, ?_⟩
   simp only [nX, nY] at hmul
-  simp_rw [HasFiniteIntegral, Pi.mul_apply, nnnorm_mul, ENNReal.coe_mul, hmul]
+  simp_rw [hasFiniteIntegral_iff_nnnorm, Pi.mul_apply, nnnorm_mul, ENNReal.coe_mul, hmul]
   exact ENNReal.mul_lt_top hX.2 hY.2
 
 /-- If the product of two independent real-valued random variables is integrable and
@@ -164,6 +164,7 @@ theorem IndepFun.integrable_left_of_integrable_mul {β : Type*} [MeasurableSpace
     apply IndepFun.comp hXY M M
   have A : (∫⁻ ω, ‖X ω * Y ω‖₊ ∂μ) < ∞ := h'XY.2
   simp only [nnnorm_mul, ENNReal.coe_mul] at A
+  simp_rw [enorm_eq_nnnorm] at H
   rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.ennnorm hY.ennnorm J, H] at A
   simp only [ENNReal.top_mul I, lt_self_iff_false] at A
 
@@ -185,6 +186,7 @@ theorem IndepFun.integrable_right_of_integrable_mul {β : Type*} [MeasurableSpac
     apply IndepFun.comp hXY M M
   have A : (∫⁻ ω, ‖X ω * Y ω‖₊ ∂μ) < ∞ := h'XY.2
   simp only [nnnorm_mul, ENNReal.coe_mul] at A
+  simp_rw [enorm_eq_nnnorm] at H
   rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.ennnorm hY.ennnorm J, H] at A
   simp only [ENNReal.mul_top I, lt_self_iff_false] at A
 
