@@ -247,59 +247,58 @@ instance orderTopology_of_ordConnected {α : Type u} [TopologicalSpace α] [Line
   ⟨(Subtype.strictMono_coe t).induced_topology_eq_preorder <| by
     rwa [← @Subtype.range_val _ t] at ht⟩
 
-theorem nhdsGE_eq'' [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
+theorem nhdsGE_eq_iInf_inf_principal [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
     𝓝[≥] a = (⨅ (u) (_ : a < u), 𝓟 (Iio u)) ⊓ 𝓟 (Ici a) := by
   rw [nhdsWithin, nhds_eq_order]
   refine le_antisymm (inf_le_inf_right _ inf_le_right) (le_inf (le_inf ?_ inf_le_left) inf_le_right)
   exact inf_le_right.trans (le_iInf₂ fun l hl => principal_mono.2 <| Ici_subset_Ioi.2 hl)
 
-@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ici_eq'' := nhdsGE_eq''
+@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ici_eq'' := nhdsGE_eq_iInf_inf_principal
 
-theorem nhdsLE_eq'' [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
+theorem nhdsLE_eq_iInf_inf_principal [TopologicalSpace α] [Preorder α] [OrderTopology α] (a : α) :
     𝓝[≤] a = (⨅ l < a, 𝓟 (Ioi l)) ⊓ 𝓟 (Iic a) :=
-  nhdsGE_eq'' (toDual a)
+  nhdsGE_eq_iInf_inf_principal (toDual a)
 
-@[deprecated (since := "2024-12-22")] alias nhdsWithin_Iic_eq'' := nhdsLE_eq''
+@[deprecated (since := "2024-12-22")] alias nhdsWithin_Iic_eq'' := nhdsLE_eq_iInf_inf_principal
 
-theorem nhdsGE_eq' [TopologicalSpace α] [Preorder α] [OrderTopology α] {a : α} (ha : ∃ u, a < u) :
-    𝓝[≥] a = ⨅ (u) (_ : a < u), 𝓟 (Ico a u) := by
-  simp only [nhdsGE_eq'', biInf_inf ha, inf_principal, Iio_inter_Ici]
+theorem nhdsGE_eq_iInf_principal [TopologicalSpace α] [Preorder α] [OrderTopology α] {a : α}
+    (ha : ∃ u, a < u) : 𝓝[≥] a = ⨅ (u) (_ : a < u), 𝓟 (Ico a u) := by
+  simp only [nhdsGE_eq_iInf_inf_principal, biInf_inf ha, inf_principal, Iio_inter_Ici]
 
-@[deprecated (since := "2024-12-22")]
-alias nhdsWithin_Ici_eq' := nhdsGE_eq'
+@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ici_eq' := nhdsGE_eq_iInf_principal
 
-theorem nhdsLE_eq' [TopologicalSpace α] [Preorder α] [OrderTopology α] {a : α} (ha : ∃ l, l < a) :
-    𝓝[≤] a = ⨅ l < a, 𝓟 (Ioc l a) := by
-  simp only [nhdsLE_eq'', biInf_inf ha, inf_principal, Ioi_inter_Iic]
+theorem nhdsLE_eq_iInf_principal [TopologicalSpace α] [Preorder α] [OrderTopology α] {a : α}
+    (ha : ∃ l, l < a) : 𝓝[≤] a = ⨅ l < a, 𝓟 (Ioc l a) := by
+  simp only [nhdsLE_eq_iInf_inf_principal, biInf_inf ha, inf_principal, Ioi_inter_Iic]
 
-@[deprecated (since := "2024-12-22")] alias nhdsWithin_Iic_eq' := nhdsLE_eq'
+@[deprecated (since := "2024-12-22")] alias nhdsWithin_Iic_eq' := nhdsLE_eq_iInf_principal
 
-theorem nhdsGE_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
+theorem nhdsGE_basis_of_exists_gt [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
     (ha : ∃ u, a < u) : (𝓝[≥] a).HasBasis (fun u => a < u) fun u => Ico a u :=
-  (nhdsGE_eq' ha).symm ▸
+  (nhdsGE_eq_iInf_principal ha).symm ▸
     hasBasis_biInf_principal
       (fun b hb c hc => ⟨min b c, lt_min hb hc, Ico_subset_Ico_right (min_le_left _ _),
         Ico_subset_Ico_right (min_le_right _ _)⟩)
       ha
 
-@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ici_basis' := nhdsGE_basis'
+@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ici_basis' := nhdsGE_basis_of_exists_gt
 
-theorem nhdsLE_basis' [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
+theorem nhdsLE_basis_of_exists_lt [TopologicalSpace α] [LinearOrder α] [OrderTopology α] {a : α}
     (ha : ∃ l, l < a) : (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a := by
-  convert nhdsGE_basis' (α := αᵒᵈ) ha using 2
+  convert nhdsGE_basis_of_exists_gt (α := αᵒᵈ) ha using 2
   exact dual_Ico.symm
 
-@[deprecated (since := "2024-12-22")] alias nhdsWithin_Iic_basis' := nhdsLE_basis'
+@[deprecated (since := "2024-12-22")] alias nhdsWithin_Iic_basis' := nhdsLE_basis_of_exists_lt
 
 theorem nhdsGE_basis [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [NoMaxOrder α] (a : α) :
     (𝓝[≥] a).HasBasis (fun u => a < u) fun u => Ico a u :=
-  nhdsGE_basis' (exists_gt a)
+  nhdsGE_basis_of_exists_gt (exists_gt a)
 
 @[deprecated (since := "2024-12-22")] alias nhdsWithin_Ici_basis := nhdsGE_basis
 
 theorem nhdsLE_basis [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [NoMinOrder α] (a : α) :
     (𝓝[≤] a).HasBasis (fun l => l < a) fun l => Ioc l a :=
-  nhdsLE_basis' (exists_lt a)
+  nhdsLE_basis_of_exists_lt (exists_lt a)
 
 @[deprecated (since := "2024-12-22")] alias nhdsWithin_Iic_basis := nhdsLE_basis
 
@@ -312,7 +311,7 @@ theorem nhds_bot_order [TopologicalSpace α] [Preorder α] [OrderBot α] [OrderT
 theorem nhds_top_basis [TopologicalSpace α] [LinearOrder α] [OrderTop α] [OrderTopology α]
     [Nontrivial α] : (𝓝 ⊤).HasBasis (fun a : α => a < ⊤) fun a : α => Ioi a := by
   have : ∃ x : α, x < ⊤ := (exists_ne ⊤).imp fun x hx => hx.lt_top
-  simpa only [Iic_top, nhdsWithin_univ, Ioc_top] using nhdsLE_basis' this
+  simpa only [Iic_top, nhdsWithin_univ, Ioc_top] using nhdsLE_basis_of_exists_lt this
 
 theorem nhds_bot_basis [TopologicalSpace α] [LinearOrder α] [OrderBot α] [OrderTopology α]
     [Nontrivial α] : (𝓝 ⊥).HasBasis (fun a : α => ⊥ < a) fun a : α => Iio a :=
@@ -367,7 +366,7 @@ instance (priority := 100) OrderTopology.to_orderClosedTopology [OrderTopology �
 
 theorem exists_Ioc_subset_of_mem_nhds [OrderTopology α] {a : α} {s : Set α} (hs : s ∈ 𝓝 a)
     (h : ∃ l, l < a) : ∃ l < a, Ioc l a ⊆ s :=
-  (nhdsLE_basis' h).mem_iff.mp (nhdsWithin_le_nhds hs)
+  (nhdsLE_basis_of_exists_lt h).mem_iff.mp (nhdsWithin_le_nhds hs)
 
 theorem exists_Ioc_subset_of_mem_nhds' [OrderTopology α] {a : α} {s : Set α} (hs : s ∈ 𝓝 a) {l : α}
     (hl : l < a) : ∃ l' ∈ Ico l a, Ioc l' a ⊆ s :=
@@ -386,28 +385,34 @@ theorem exists_Ico_subset_of_mem_nhds [OrderTopology α] {a : α} {s : Set α} (
   let ⟨l, hl⟩ := exists_Ico_subset_of_mem_nhds' hs hl'
   ⟨l, hl.1.1, hl.2⟩
 
-theorem exists_Icc_mem_subset_of_mem_nhdsWithin_Ici [OrderTopology α] {a : α} {s : Set α}
+theorem exists_Icc_mem_subset_of_mem_nhdsGE [OrderTopology α] {a : α} {s : Set α}
     (hs : s ∈ 𝓝[≥] a) : ∃ b, a ≤ b ∧ Icc a b ∈ 𝓝[≥] a ∧ Icc a b ⊆ s := by
   rcases (em (IsMax a)).imp_right not_isMax_iff.mp with (ha | ha)
   · use a
     simpa [ha.Ici_eq] using hs
-  · rcases (nhdsGE_basis' ha).mem_iff.mp hs with ⟨b, hab, hbs⟩
+  · rcases(nhdsGE_basis_of_exists_gt ha).mem_iff.mp hs with ⟨b, hab, hbs⟩
     rcases eq_empty_or_nonempty (Ioo a b) with (H | ⟨c, hac, hcb⟩)
     · have : Ico a b = Icc a a := by rw [← Icc_union_Ioo_eq_Ico le_rfl hab, H, union_empty]
       exact ⟨a, le_rfl, this ▸ ⟨Ico_mem_nhdsGE hab, hbs⟩⟩
     · refine ⟨c, hac.le, Icc_mem_nhdsGE hac, ?_⟩
       exact (Icc_subset_Ico_right hcb).trans hbs
 
-theorem exists_Icc_mem_subset_of_mem_nhdsWithin_Iic [OrderTopology α] {a : α} {s : Set α}
+@[deprecated (since := "2024-12-22")]
+alias exists_Icc_mem_subset_of_mem_nhdsWithin_Ici := exists_Icc_mem_subset_of_mem_nhdsGE
+
+theorem exists_Icc_mem_subset_of_mem_nhdsLE [OrderTopology α] {a : α} {s : Set α}
     (hs : s ∈ 𝓝[≤] a) : ∃ b ≤ a, Icc b a ∈ 𝓝[≤] a ∧ Icc b a ⊆ s := by
   simpa only [dual_Icc, toDual.surjective.exists] using
-    exists_Icc_mem_subset_of_mem_nhdsWithin_Ici (α := αᵒᵈ) (a := toDual a) hs
+    exists_Icc_mem_subset_of_mem_nhdsGE (α := αᵒᵈ) (a := toDual a) hs
+
+@[deprecated (since := "2024-12-22")]
+alias exists_Icc_mem_subset_of_mem_nhdsWithin_Iic := exists_Icc_mem_subset_of_mem_nhdsLE
 
 theorem exists_Icc_mem_subset_of_mem_nhds [OrderTopology α] {a : α} {s : Set α} (hs : s ∈ 𝓝 a) :
     ∃ b c, a ∈ Icc b c ∧ Icc b c ∈ 𝓝 a ∧ Icc b c ⊆ s := by
-  rcases exists_Icc_mem_subset_of_mem_nhdsWithin_Iic (nhdsWithin_le_nhds hs) with
+  rcases exists_Icc_mem_subset_of_mem_nhdsLE (nhdsWithin_le_nhds hs) with
     ⟨b, hba, hb_nhds, hbs⟩
-  rcases exists_Icc_mem_subset_of_mem_nhdsWithin_Ici (nhdsWithin_le_nhds hs) with
+  rcases exists_Icc_mem_subset_of_mem_nhdsGE (nhdsWithin_le_nhds hs) with
     ⟨c, hac, hc_nhds, hcs⟩
   refine ⟨b, c, ⟨hba, hac⟩, ?_⟩
   rw [← Icc_union_Icc_eq_Icc hba hac, ← nhdsLE_sup_nhdsGE]
