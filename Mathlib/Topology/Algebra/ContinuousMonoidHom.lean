@@ -436,13 +436,13 @@ variable (G : Type u) [TopologicalSpace G] (H : Type v) [TopologicalSpace H]
 
 /-- The structure of two-sided continuous isomorphisms between additive groups.
 Note that both the map and its inverse have to be continuous. -/
-structure ContinuousAddEquiv [Add G] [Add H] extends AddEquiv G H , Homeomorph G H
+structure ContinuousAddEquiv [Add G] [Add H] extends G ≃+ H , G ≃ₜ H
 
 /-- The structure of two-sided continuous isomorphisms between groups.
 Note that both the map and its inverse have to be continuous. -/
 @[to_additive "The structure of two-sided continuous isomorphisms between additive groups.
 Note that both the map and its inverse have to be continuous."]
-structure ContinuousMulEquiv [Mul G] [Mul H] extends MulEquiv G H , Homeomorph G H
+structure ContinuousMulEquiv [Mul G] [Mul H] extends G ≃* H , G ≃ₜ H
 
 /-- The homeomorphism induced from a two-sided continuous isomorphism of groups. -/
 add_decl_doc ContinuousMulEquiv.toHomeomorph
@@ -495,14 +495,6 @@ same underlying function. -/
   "Two continuous additive isomorphisms agree if they are defined by the same underlying function."]
 theorem ext {f g : M ≃ₜ* N} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
-
-@[to_additive]
-protected theorem congr_arg {f : M ≃ₜ* N} {x x' : M} : x = x' → f x = f x' :=
-  DFunLike.congr_arg f
-
-@[to_additive]
-protected theorem congr_fun {f g : M ≃ₜ* N} (h : f = g) (x : M) : f x = g x :=
-  DFunLike.congr_fun h x
 
 @[to_additive (attr := simp)]
 theorem coe_mk (f : M ≃* N) (hf1 hf2) : (mk f hf1 hf2 : M → N) = f := rfl
