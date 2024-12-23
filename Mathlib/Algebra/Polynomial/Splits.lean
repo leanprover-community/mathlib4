@@ -77,7 +77,7 @@ theorem splits_of_degree_le_one {f : K[X]} (hf : degree f ≤ 1) : Splits i f :=
   if hif : degree (f.map i) ≤ 0 then splits_of_map_eq_C i (degree_le_zero_iff.mp hif)
   else by
     push_neg at hif
-    rw [← Order.succ_le_iff, ← WithBot.coe_zero, WithBot.succ_coe, Nat.succ_eq_succ] at hif
+    rw [← Order.succ_le_iff, ← WithBot.coe_zero, WithBot.orderSucc_coe, Nat.succ_eq_succ] at hif
     exact splits_of_map_degree_eq_one i ((degree_map_le.trans hf).antisymm hif)
 
 theorem splits_of_degree_eq_one {f : K[X]} (hf : degree f = 1) : Splits i f :=
