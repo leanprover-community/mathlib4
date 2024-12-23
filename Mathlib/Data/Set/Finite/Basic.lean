@@ -715,15 +715,6 @@ end
 theorem card_empty : Fintype.card (∅ : Set α) = 0 :=
   rfl
 
-theorem card_empty' {h : Fintype (∅ : Set α)} : @Fintype.card (∅ : Set α) h = 0 := by
-  simp
-
-@[simp]
-theorem card_univ [Fintype α] {h : Fintype (@univ α)} :
-    @Fintype.card (@univ α) h = Fintype.card α := by
-  apply Fintype.card_of_finset'
-  simp
-
 theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ s) :
     @Fintype.card _ (fintypeInsertOfNotMem s h) = Fintype.card s + 1 := by
   simp [fintypeInsertOfNotMem, Fintype.card_ofFinset]
