@@ -896,12 +896,16 @@ theorem associated_apply (x y : M) :
   rw [← LinearMap.smul_apply, nsmul_eq_mul, Nat.cast_ofNat, mul_invOf_self', LinearMap.one_apply,
     polar]
 
-theorem associated_isSymm (Q : QuadraticForm R M) [Invertible (2 : R)] :
+theorem associated_isSymm (Q : QuadraticMap R M N) [Invertible (2 : R)] :
     ∀ x y, (associatedHom S Q) x y = (associatedHom S Q) y x := fun x y ↦ by
   simp only [associated_apply, sub_eq_add_neg, add_assoc, RingHom.id_apply, add_comm, add_left_comm]
 
 theorem _root_.QuadraticForm.associated_isSymm (Q : QuadraticForm R M) [Invertible (2 : R)] :
-    (associatedHom S Q).IsSymm := _root_.QuadraticMap.associated_isSymm _ _
+    (associatedHom S Q).IsSymm := by
+  rw [LinearMap.IsSymm]
+  intro _ _
+  rw [_root_.QuadraticMap.associated_isSymm]
+  rfl
 
 /-- A version of `QuadraticMap.associated_isSymm` for general targets
 (using `flip` because `IsSymm` does not apply here). -/
