@@ -721,7 +721,7 @@ is isomorphic to the value of this function at `()`.
 This is `Equiv.pUnitPiEquiv` as a `LinearEquiv`.
 -/
 def pUnitPiEquiv (R : Type*) [Semiring R] (f : PUnit → Type*) [∀ x, AddCommMonoid (f x)]
-    [∀ x, Module R (f x)] : ((t : PUnit) → (f t)) ≃ₗ[R] f () where
+    [∀ x, Module R (f x)] : (Π t : PUnit, f t) ≃ₗ[R] f () where
   __ := Equiv.pUnitPiEquiv _
   map_add' _ _ := rfl
   map_smul' _ _ := rfl

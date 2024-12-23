@@ -591,13 +591,13 @@ def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*)
   __ := Homeomorph.sumPiEquivProdPi S T A
 
 /-- The space of functions from `PUnit` into a family of topological modules
-is homeomorphic and isomorphic to the value of this function at `()`.
+is (both topologically and linearly) isomorphic to the value of this function at `()`.
 
 This is `Equiv.pUnitPiEquiv` as a `ContinuousLinearEquiv`.
 -/
 def pUnitPiEquiv (R : Type*) [Semiring R] (f : PUnit → Type*)
     [∀ x, AddCommMonoid (f x)] [∀ x, Module R (f x)] [∀ x, TopologicalSpace (f x)] :
-    ((t : PUnit) → f t) ≃L[R] f () where
+    (Π t : PUnit, f t) ≃L[R] f () where
   __ := LinearEquiv.pUnitPiEquiv R f
   __ := Homeomorph.pUnitPiEquiv f
 end Pi

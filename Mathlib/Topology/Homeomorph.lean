@@ -689,7 +689,7 @@ is homeomorphic to the value of this function at `()`.
 This is `Equiv.pUnitPiEquiv` as a `Homeomorph`.
 -/
 def pUnitPiEquiv (f : PUnit → Type*) [∀ x, TopologicalSpace (f x)] :
-    (∀ t, f t) ≃ₜ f () where
+    (Π t, f t) ≃ₜ f () where
   toFun a := a ()
   invFun a _t := a
   left_inv _ := rfl

@@ -835,7 +835,7 @@ def sumPiEquivProdPi {ι ι'} (π : ι ⊕ ι' → Type*) :
 /-- The space of functions from `PUnit` into a family of types
 is isomorphic to the value of this function at `()`.
 -/
-def pUnitPiEquiv (f : PUnit → Type*) : ((t : PUnit) → (f t)) ≃ f () where
+def pUnitPiEquiv (f : PUnit → Type*) : (∀ t : PUnit, f t) ≃ f () where
   toFun a := a ()
   invFun a _t := a
   left_inv _ := rfl
