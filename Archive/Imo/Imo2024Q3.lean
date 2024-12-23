@@ -198,8 +198,8 @@ lemma card_lt_M_of_M_le {n : ℕ} (h : M a N ≤ n) :
   have hi'' : ∀ j < i, M a N ≤ a j → a (j + 1) < M a N := by
     intro j hji hMj
     by_contra! hj1M
-    refine hi' (Nat.nth (a · = a j) (M a N - 1)) (lt_of_le_of_lt ?_ hji) ?_
-      (hc.apply_nth_add_one_eq (hc.lt_toFinset_card hj1M) (N_lt_of_M_le_apply (a := a) ?_).le)
+    refine hi' (Nat.nth (a · = a j) (M a N - 1)) (lt_of_le_of_lt ?_ hji) ?le2
+      (hc.apply_nth_add_one_eq (hc.lt_toFinset_card hj1M) (N_lt_of_M_le_apply (a := a) ?le2).le)
     · have hj := hc.nth_apply_add_one_eq (N_lt_of_M_le_apply hMj).le
       nth_rw 2 [← hj]
       refine Nat.nth_le_nth' (by omega) fun hf ↦ ?_
@@ -207,7 +207,7 @@ lemma card_lt_M_of_M_le {n : ℕ} (h : M a N ≤ n) :
       rw [← hj, Nat.nth_eq_zero] at hj0
       simp only [not_or, not_exists, not_le] at hj0
       exact hj0.2 _
-    all_goals (convert hMj using 1; exact Nat.nth_mem _ (hc.lt_toFinset_card hj1M))
+    · convert hMj using 1; exact Nat.nth_mem _ (hc.lt_toFinset_card hj1M)
   -- t is the set of indices before an appearance of the integer (a i).  For each j ∈ t, (a j)
   -- is the (a i)th appearance of that value, so each such value before index i appears at least
   -- M times before that index; since (a i) is the Mth appearance of that value, there are at
@@ -982,13 +982,10 @@ end Condition
 theorem result {a : ℕ → ℕ} {N : ℕ} (h : Condition a N) :
     EventuallyPeriodic (fun i ↦ a (2 * i)) ∨ EventuallyPeriodic (fun i ↦ a (2 * i + 1)) := by
   obtain ⟨b, c, hc, hbc⟩ := h.exists_a_apply_add_eq a N
-  by_cases h : Even (Condition.N' a N)
+  obtain ⟨t, _⟩ | ⟨t, _⟩ := Nat.even_or_odd (Condition.N' a N)
   · refine .inl ⟨c, Condition.N' a N / 2 + b + 1, hc, fun m hm ↦ ?_⟩
-    rcases h with ⟨t, _⟩
     convert hbc (m - t) (by omega) using 1 <;> dsimp only <;> congr <;> omega
   · refine .inr ⟨c, Condition.N' a N / 2 + b + 1, hc, fun m hm ↦ ?_⟩
-    simp only [Nat.not_even_iff_odd] at h
-    rcases h with ⟨t, _⟩
     convert hbc (m - t) (by omega) using 1 <;> dsimp only <;> congr 1 <;> omega
 
 end Imo2024Q3
