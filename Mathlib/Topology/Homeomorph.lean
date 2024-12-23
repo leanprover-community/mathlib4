@@ -671,20 +671,20 @@ def homeomorphOfUnique [Unique X] [Unique Y] : X ≃ₜ Y :=
     continuous_toFun := continuous_const
     continuous_invFun := continuous_const }
 
-/-- The space of functions from `S ⊕ T` into a family of topological spaces
-is homeomorphic to the product of the functions from `S` and the functions from `T`.
+/-- The product over `S ⊕ T` of a family of topological spaces
+is homeomorphic to the product of (the product over `S`) and (the product over `T`).
 
 This is `Equiv.sumPiEquivProdPi` as a `Homeomorph`.
 -/
 def sumPiEquivProdPi (S T : Type*) (A : S ⊕ T → Type*)
     [∀ st, TopologicalSpace (A st)] :
-    (∀ (st : S ⊕ T), A st) ≃ₜ (∀ (s : S), A (.inl s)) × (∀ (t : T), A (.inr t)) where
+    (Π (st : S ⊕ T), A st) ≃ₜ (Π (s : S), A (.inl s)) × (Π (t : T), A (.inr t)) where
   __ := Equiv.sumPiEquivProdPi _
   continuous_toFun := Continuous.prod_mk (by fun_prop) (by fun_prop)
   continuous_invFun := continuous_pi <| by rintro (s | t) <;> simp <;> fun_prop
 
-/-- The space of functions from `PUnit` into a family of topological spaces
-is homeomorphic to the value of this function at `()`.
+/-- The product over `PUnit` of a family of topological spaces
+is homeomorphic to the value of the family at `()`.
 
 This is `Equiv.pUnitPiEquiv` as a `Homeomorph`.
 -/

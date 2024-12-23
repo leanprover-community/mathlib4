@@ -703,20 +703,19 @@ section Pi
 
 namespace LinearEquiv
 
-/-- The space of functions from `S ⊕ T` into a family of modules
-is isomorphic to the product of the functions from `S` and the functions from `T`.
+/-- The product over `S ⊕ T` of a family of modules is isomorphic to the product of
+(the product over `S`) and (the product over `T`).
 
 This is `Equiv.sumPiEquivProdPi` as a `LinearEquiv`.
 -/
 def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*) (A : S ⊕ T → Type*)
     [∀ st, AddCommMonoid (A st)] [∀ st, Module R (A st)] :
-    (∀ (st : S ⊕ T), A st) ≃ₗ[R] (∀ (s : S), A (.inl s)) × (∀ (t : T), A (.inr t)) where
+    (Π (st : S ⊕ T), A st) ≃ₗ[R] (Π (s : S), A (.inl s)) × (Π (t : T), A (.inr t)) where
   __ := Equiv.sumPiEquivProdPi _
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- The space of functions from `PUnit` into a family of modules
-is isomorphic to the value of this function at `()`.
+/-- The product over `PUnit` of a family of modules is isomorphic to the module associated to `()`.
 
 This is `Equiv.pUnitPiEquiv` as a `LinearEquiv`.
 -/
