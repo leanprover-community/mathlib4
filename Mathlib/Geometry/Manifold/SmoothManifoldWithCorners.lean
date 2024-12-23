@@ -48,12 +48,14 @@ but add these assumptions later as needed. (Quite a few results still do not req
   `extChartAt I x` is the canonical such partial equiv around `x`.
 
 As specific examples of models with corners, we define (in `Geometry.Manifold.Instances.Real`)
-* `modelWithCornersSelf ℝ (EuclideanSpace ℝ (Fin n))` for the model space used to define
+* `modelWithCornersEuclideanHalfSpace n :
+  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
   `n`-dimensional real manifolds without boundary (with notation `𝓡 n` in the locale `Manifold`)
 * `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
   used to define `n`-dimensional real manifolds with boundary (with notation `𝓡∂ n` in the locale
   `Manifold`)
-* `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
+* `modelWithCornersEuclideanQuadrant n :
+  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
   to define `n`-dimensional real manifolds with corners
 
 With these definitions at hand, to invoke an `n`-dimensional real manifold without boundary,
@@ -369,7 +371,7 @@ protected theorem secondCountableTopology [SecondCountableTopology E] (I : Model
   I.isClosedEmbedding.isEmbedding.secondCountableTopology
 
 include I in
-/-- Every smooth manifold is a Fréchet space (T1 space) -- regardless of whether it is
+/-- Every manifold is a Fréchet space (T1 space) -- regardless of whether it is
 Hausdorff. -/
 protected theorem t1Space (M : Type*) [TopologicalSpace M] [ChartedSpace H M] : T1Space M := by
   have : T2Space H := I.isClosedEmbedding.toIsEmbedding.t2Space
@@ -1552,7 +1554,7 @@ lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 
   finite-dimensional space. This is the converse to
   `Manifold.locallyCompact_of_finiteDimensional`. -/
 theorem FiniteDimensional.of_locallyCompact_manifold
-    [CompleteSpace 𝕜] (I : ModelWithCorners 𝕜 E H) [Inhabited M] [LocallyCompactSpace M] :
+    [CompleteSpace 𝕜] (I : ModelWithCorners 𝕜 E H) [Nonempty M] [LocallyCompactSpace M] :
     FiniteDimensional 𝕜 E := by
   have := LocallyCompactSpace.of_locallyCompact_manifold M I
   exact FiniteDimensional.of_locallyCompactSpace 𝕜

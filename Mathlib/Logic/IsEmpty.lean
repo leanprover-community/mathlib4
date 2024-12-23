@@ -22,10 +22,10 @@ variable {α β γ : Sort*}
 class IsEmpty (α : Sort*) : Prop where
   protected false : α → False
 
-instance instIsEmptyEmpty : IsEmpty Empty :=
+instance Empty.instIsEmpty : IsEmpty Empty :=
   ⟨Empty.elim⟩
 
-instance instIsEmptyPEmpty : IsEmpty PEmpty :=
+instance PEmpty.instIsEmpty : IsEmpty PEmpty :=
   ⟨PEmpty.elim⟩
 
 instance : IsEmpty False :=
@@ -160,7 +160,6 @@ theorem isEmpty_sigma {α} {E : α → Type*} : IsEmpty (Sigma E) ↔ ∀ a, IsE
 theorem isEmpty_psigma {α} {E : α → Sort*} : IsEmpty (PSigma E) ↔ ∀ a, IsEmpty (E a) := by
   simp only [← not_nonempty_iff, nonempty_psigma, not_exists]
 
-@[simp]
 theorem isEmpty_subtype (p : α → Prop) : IsEmpty (Subtype p) ↔ ∀ x, ¬p x := by
   simp only [← not_nonempty_iff, nonempty_subtype, not_exists]
 

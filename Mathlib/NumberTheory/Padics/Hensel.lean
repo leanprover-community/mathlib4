@@ -432,7 +432,7 @@ private theorem soln_unique (z : ℤ_[p]) (hev : F.eval z = 0)
           _ ≤ 1 * ‖h‖ := by
             rw [PadicInt.norm_mul]
             exact mul_le_mul_of_nonneg_right (PadicInt.norm_le_one _) (norm_nonneg _)
-          _ = ‖z - soln‖ := by simp
+          _ = ‖z - soln‖ := by simp [h]
           _ < ‖F.derivative.eval soln‖ := by rw [soln_deriv_norm]; apply soln_dist
           )
   eq_of_sub_eq_zero (by rw [← this])

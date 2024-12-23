@@ -199,6 +199,9 @@ theorem image_preimage (h : X ≃ₜ Y) (s : Set Y) : h '' (h ⁻¹' s) = s :=
 theorem preimage_image (h : X ≃ₜ Y) (s : Set X) : h ⁻¹' (h '' s) = s :=
   h.toEquiv.preimage_image s
 
+theorem image_eq_preimage (h : X ≃ₜ Y) (s : Set X) : h '' s = h.symm ⁻¹' s :=
+  h.toEquiv.image_eq_preimage s
+
 lemma image_compl (h : X ≃ₜ Y) (s : Set X) : h '' (sᶜ) = (h '' s)ᶜ :=
   h.toEquiv.image_compl s
 
@@ -1062,9 +1065,9 @@ variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [EquivLik
 `Homeomorph`. This is declared as the default coercion from `F` to `α ≃ₜ β`. -/
 @[coe]
 def toHomeomorph [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :=
-  {(f : α ≃ β) with
-  continuous_toFun := h.map_continuous f
-  continuous_invFun := h.inv_continuous f }
+  { (f : α ≃ β) with
+    continuous_toFun := h.map_continuous f
+    continuous_invFun := h.inv_continuous f }
 
 @[simp]
 theorem coe_coe [h : HomeomorphClass F α β] (f : F) : ⇑(h.toHomeomorph f) = ⇑f := rfl
