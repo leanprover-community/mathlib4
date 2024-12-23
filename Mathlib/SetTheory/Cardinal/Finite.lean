@@ -198,7 +198,8 @@ theorem card_eq_two_iff' (x : α) : Nat.card α = 2 ↔ ∃! y, y ≠ x :=
   toNat_eq_ofNat.trans (mk_eq_two_iff' x)
 
 @[simp]
-theorem card_subtype_true : Nat.card {_a : α // True} = Nat.card α
+theorem card_subtype_true : Nat.card {_a : α // True} = Nat.card α :=
+  card_congr <| Equiv.subtypeUnivEquiv fun _ => trivial
 
 @[simp]
 theorem card_sum [Finite α] [Finite β] : Nat.card (α ⊕ β) = Nat.card α + Nat.card β := by
