@@ -30,20 +30,20 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
 
 -/
 
-variable (G G' : Type*) [Group G] [Group G'] (f : G →* G')
+variable (G G' G'' : Type*) [Group G] [Group G'] [Group G''] (f : G →* G') (f' : G' →* G'')
 
 /-- A Z-group is a group whose Sylow subgroups are all cyclic. -/
 @[mk_iff] class IsZGroup : Prop where
   isZGroup : ∀ p : ℕ, p.Prime → ∀ P : Sylow p G, IsCyclic P
 
-variable {G G' f}
+variable {G G' G'' f f'}
 
 namespace IsZGroup
 
 instance [IsZGroup G] {p : ℕ} [Fact p.Prime] (P : Sylow p G) : IsCyclic P :=
   isZGroup p Fact.out P
 
-theorem _root_.IsPGroup.isCyclic [IsZGroup G] {p : ℕ} [Fact p.Prime]
+theorem _root_.IsPGroup.isCyclic_of_isZGroup [IsZGroup G] {p : ℕ} [Fact p.Prime]
     {P : Subgroup G} (hP : IsPGroup p P) : IsCyclic P := by
   obtain ⟨Q, hQ⟩ := hP.exists_le_sylow
   exact Subgroup.isCyclic_of_le hQ
@@ -364,63 +364,31 @@ theorem coprime_commutator_index [Finite G] [IsZGroup G] :
 
 end Hall
 
-end IsZGroup
+section Classification
 
-theorem _root_.MonoidHom.ker_subgroupMap {G G' : Type*} [Group G] [Group G'] (f : G →* G')
-    (H : Subgroup G) : (f.subgroupMap H).ker = f.ker.subgroupOf H := by
-  ext h
-  exact Subtype.ext_iff
-
-theorem isZGroup_of_coprime {G H K : Type*} [Group G] [Group H] [Group K] [Finite G]
-    [IsZGroup G] [IsZGroup K]
-    (f : G →* H) (g : H →* K) (h : g.ker ≤ f.range)
-      (h' : (Nat.card G).Coprime (Nat.card K)) : IsZGroup H := by
-  by_cases hK : Nat.card K = 0
-  · rw [hK, Nat.coprime_zero_right] at h'
-    have key := Subgroup.card_range_dvd f
-    rw [h', Nat.dvd_one, Subgroup.card_eq_one] at key
-    rw [key, le_bot_iff, MonoidHom.ker_eq_bot_iff] at h
-    exact IsZGroup.of_injective h
-  have : Finite K := Nat.finite_of_card_ne_zero hK
-  have : Finite H := by
-    refine Nat.finite_of_card_ne_zero ?_
-    rw [← g.ker.card_mul_index, Subgroup.index_ker]
-    refine mul_ne_zero ?_ Finite.card_pos.ne'
-    refine ne_zero_of_dvd_ne_zero ?_ (Subgroup.card_dvd_of_le h)
-    refine ne_zero_of_dvd_ne_zero Finite.card_pos.ne' (Subgroup.card_range_dvd f)
-  rw [isZGroup_iff]
-  intro p hp P
+/-- An extension of coprime Z-groups is a Z-group. -/
+theorem isZGroup_of_coprime [Finite G] [IsZGroup G] [IsZGroup G'']
+    (h_le : f'.ker ≤ f.range) (h_cop : (Nat.card G).Coprime (Nat.card G'')) :
+    IsZGroup G' := by
+  refine ⟨fun p hp P ↦ ?_⟩
   have := Fact.mk hp
-  have key : (Nat.card G).Coprime (Nat.card P) ∨ (Nat.card K).Coprime (Nat.card P) := by
-    obtain ⟨k, hk⟩ := P.2.exists_card_eq
-    rw [hk]
-    refine Or.imp hp.coprime_pow_of_not_dvd hp.coprime_pow_of_not_dvd ?_
-    contrapose! h'
-    rw [Nat.Prime.not_coprime_iff_dvd]
-    exact ⟨p, hp, h'⟩
-  rcases key with h'' | h''
-  · have key : P ≃* P.map g := by
-      refine MulEquiv.ofBijective (g.subgroupMap P) ⟨?_, g.subgroupMap_surjective P⟩
-      rw [← MonoidHom.ker_eq_bot_iff, ← Subgroup.card_eq_one, g.ker_subgroupMap]
-      refine Nat.eq_one_of_dvd_coprimes h'' ?_ (g.ker.subgroupOf P).card_subgroup_dvd_card
-      refine (g.ker.card_comap_dvd_of_injective P.1.subtype P.1.subtype_injective).trans ?_
-      exact (Subgroup.card_dvd_of_le h).trans (Subgroup.card_range_dvd f)
-    have h2 : IsPGroup p (P.map g) := P.2.map g
-    have := h2.isCyclic
-    exact isCyclic_of_surjective key.symm key.symm.surjective
-  · have h1 : P ≤ g.ker := by
-      rw [← Subgroup.map_eq_bot_iff, ← Subgroup.card_eq_one]
-      exact Nat.eq_one_of_dvd_coprimes h'' (P.map g).card_subgroup_dvd_card (P.card_map_dvd g)
-    replace h1 := h1.trans h
-    let f' := f.rangeRestrict
-    obtain ⟨Q, hQ⟩ := Sylow.mapSurjective_surjective f.rangeRestrict_surjective p (P.subtype h1)
+  replace h_cop := (h_cop.of_dvd ((Subgroup.card_dvd_of_le h_le).trans
+    (Subgroup.card_range_dvd f)) (Subgroup.index_ker f' ▸ f'.range.card_subgroup_dvd_card))
+  rcases P.2.le_or_disjoint_of_coprime h_cop with h | h
+  · replace h_le : P ≤ f.range := h.trans h_le
+    suffices IsCyclic (P.subgroupOf f.range) by
+      have key := Subgroup.subgroupOfEquivOfLe h_le
+      exact isCyclic_of_surjective key key.surjective
+    obtain ⟨Q, hQ⟩ := Sylow.mapSurjective_surjective f.rangeRestrict_surjective p (P.subtype h_le)
     rw [Sylow.ext_iff, Sylow.coe_mapSurjective, Sylow.coe_subtype] at hQ
-    have : IsCyclic (P.subgroupOf f.range) := by
-      rw [← hQ]
-      refine isCyclic_of_surjective (f.rangeRestrict.subgroupMap Q)
-        (f.rangeRestrict.subgroupMap_surjective Q)
-    have key := Subgroup.subgroupOfEquivOfLe h1
-    exact isCyclic_of_surjective key key.surjective
+    exact hQ ▸ isCyclic_of_surjective _ (f.rangeRestrict.subgroupMap_surjective Q)
+  · have := (P.2.map f').isCyclic_of_isZGroup
+    apply isCyclic_of_injective (f'.subgroupMap P)
+    rwa [← MonoidHom.ker_eq_bot_iff, P.ker_subgroupMap f', Subgroup.subgroupOf_eq_bot]
+
+end Classification
+
+end IsZGroup
 
 instance {G : Type*} [Group G] [IsCyclic G] : IsZGroup G :=
   ⟨inferInstance⟩
