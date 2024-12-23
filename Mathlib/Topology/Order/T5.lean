@@ -27,7 +27,7 @@ theorem ordConnectedComponent_mem_nhds : ordConnectedComponent s a ∈ 𝓝 a �
   rcases exists_Icc_mem_subset_of_mem_nhds h with ⟨b, c, ha, ha', hs⟩
   exact mem_of_superset ha' (subset_ordConnectedComponent ha hs)
 
-theorem compl_section_ordSeparatingSet_mem_nhdsWithin_Ici (hd : Disjoint s (closure t))
+theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE (hd : Disjoint s (closure t))
     (ha : a ∈ s) : (ordConnectedSection (ordSeparatingSet s t))ᶜ ∈ 𝓝[≥] a := by
   have hmem : tᶜ ∈ 𝓝[≥] a := by
     refine mem_nhdsWithin_of_mem_nhds ?_
@@ -59,26 +59,36 @@ theorem compl_section_ordSeparatingSet_mem_nhdsWithin_Ici (hd : Disjoint s (clos
       have hya : y < a := not_le.1 fun hay => hsub ⟨hay, hyc.trans hcb⟩ hyt
       exact hxy (Icc_subset_uIcc ⟨hya.le, hx.1⟩) ha
 
-theorem compl_section_ordSeparatingSet_mem_nhdsWithin_Iic (hd : Disjoint s (closure t))
+@[deprecated (since := "2024-12-22")]
+alias compl_section_ordSeparatingSet_mem_nhdsWithin_Ici :=
+  compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE
+
+theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhdsLE (hd : Disjoint s (closure t))
     (ha : a ∈ s) : (ordConnectedSection <| ordSeparatingSet s t)ᶜ ∈ 𝓝[≤] a := by
   have hd' : Disjoint (ofDual ⁻¹' s) (closure <| ofDual ⁻¹' t) := hd
   have ha' : toDual a ∈ ofDual ⁻¹' s := ha
   simpa only [dual_ordSeparatingSet, dual_ordConnectedSection] using
-    compl_section_ordSeparatingSet_mem_nhdsWithin_Ici hd' ha'
+    compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE hd' ha'
 
-theorem compl_section_ordSeparatingSet_mem_nhds (hd : Disjoint s (closure t)) (ha : a ∈ s) :
-    (ordConnectedSection <| ordSeparatingSet s t)ᶜ ∈ 𝓝 a := by
+@[deprecated (since := "2024-12-22")]
+alias compl_section_ordSeparatingSet_mem_nhdsWithin_Iic :=
+  compl_ordConnectedSection_ordSeparatingSet_mem_nhdsLE
+
+theorem compl_ordConnectedSection_ordSeparatingSet_mem_nhds (hd : Disjoint s (closure t))
+    (ha : a ∈ s) : (ordConnectedSection <| ordSeparatingSet s t)ᶜ ∈ 𝓝 a := by
   rw [← nhdsLE_sup_nhdsGE, mem_sup]
-  exact
-    ⟨compl_section_ordSeparatingSet_mem_nhdsWithin_Iic hd ha,
-      compl_section_ordSeparatingSet_mem_nhdsWithin_Ici hd ha⟩
+  exact ⟨compl_ordConnectedSection_ordSeparatingSet_mem_nhdsLE hd ha,
+    compl_ordConnectedSection_ordSeparatingSet_mem_nhdsGE hd ha⟩
+
+@[deprecated (since := "2024-12-22")]
+alias compl_section_ordSeparatingSet_mem_nhds := compl_ordConnectedSection_ordSeparatingSet_mem_nhds
 
 theorem ordT5Nhd_mem_nhdsSet (hd : Disjoint s (closure t)) : ordT5Nhd s t ∈ 𝓝ˢ s :=
   bUnion_mem_nhdsSet fun x hx => ordConnectedComponent_mem_nhds.2 <| inter_mem
     (by
       rw [← mem_interior_iff_mem_nhds, interior_compl]
       exact disjoint_left.1 hd hx)
-    (compl_section_ordSeparatingSet_mem_nhds hd hx)
+    (compl_ordConnectedSection_ordSeparatingSet_mem_nhds hd hx)
 
 end Set
 
