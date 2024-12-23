@@ -24,14 +24,14 @@ variable {C₁ C₂ C₁₂ C₃ C₂₃ D₁ D₂ D₃ E : Type*}
 
 /-- The equivalence of categories `(C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ≌ C₁ × C₂ × C₃ ⥤ E`
 given by the curryfication of functors in three variables. -/
-def currying₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ≌ (C₁ × C₂ × C₃ ⥤ E) :=
+def currying₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ≌ C₁ × C₂ × C₃ ⥤ E :=
   currying.trans (currying.trans (prod.associativity C₁ C₂ C₃).congrLeft)
 
 /-- Uncurrying a functor in three variables. -/
-abbrev uncurry₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ (C₁ × C₂ × C₃ ⥤ E) := currying₃.functor
+abbrev uncurry₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ⥤ C₁ × C₂ × C₃ ⥤ E := currying₃.functor
 
 /-- Currying a functor in three variables. -/
-abbrev curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) := currying₃.inverse
+abbrev curry₃ : (C₁ × C₂ × C₃ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ E := currying₃.inverse
 
 /-- Uncurrying functors in three variables gives a fully faithful functor. -/
 def fullyFaithfulUncurry₃ :
