@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
+import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.Group.FiniteSupport
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
@@ -921,6 +922,14 @@ theorem finprod_mem_sUnion {t : Set (Set α)} (h : t.PairwiseDisjoint id) (ht₀
   exact finprod_mem_biUnion h ht₀ ht₁
 
 @[to_additive]
+lemma finprod_option [Finite α] (φ : Option α → M) : ∏ᶠ o, φ o = φ none * ∏ᶠ a, φ (some a) := by
+  rw [← finprod_mem_univ]
+  convert finprod_mem_insert φ (show none ∉ Set.range Option.some by aesop) (Set.finite_range some)
+  · exact (Set.insert_none_range_some α).symm
+  · rw [finprod_mem_range]
+    exact Option.some_injective _
+
+@[to_additive]
 theorem mul_finprod_cond_ne (a : α) (hf : (mulSupport f).Finite) :
     (f a * ∏ᶠ (i) (_ : i ≠ a), f i) = ∏ᶠ i, f i := by
   classical
@@ -1006,6 +1015,14 @@ theorem mul_finsum {R : Type*} [Semiring R] (f : α → R) (r : R) (h : (support
 theorem finsum_mul {R : Type*} [Semiring R] (f : α → R) (r : R) (h : (support f).Finite) :
     (∑ᶠ a : α, f a) * r = ∑ᶠ a : α, f a * r :=
   (AddMonoidHom.mulRight r).map_finsum h
+
+@[to_additive (attr := simp)]
+lemma finprod_apply {α ι : Type*} [Finite ι] (f : ι → α → N) (a : α) :
+    (∏ᶠ i, f i) a = ∏ᶠ i, f i a := by
+  classical
+  simp only [finprod_def, dif_pos (Set.toFinite _), Finset.prod_apply]
+  symm
+  apply Finset.prod_subset <;> aesop
 
 @[to_additive]
 theorem Finset.mulSupport_of_fiberwise_prod_subset_image [DecidableEq β] (s : Finset α) (f : α → M)
