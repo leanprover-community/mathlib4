@@ -111,7 +111,7 @@ value `sinh ((n + 1) * θ) / sinh θ`. -/
 @[simp]
 theorem U_complex_cosh (n : ℤ) : (U ℂ n).eval (cosh θ) * sinh θ = sinh ((n + 1) * θ) := calc
   (U ℂ n).eval (cosh θ) * sinh θ
-  _ = (U ℂ n).eval (cos (θ * I)) * sin (θ * I) * (-I)  := by simp [cos_mul_I, sin_mul_I, mul_assoc]
+  _ = (U ℂ n).eval (cos (θ * I)) * sin (θ * I) * (-I)   := by simp [cos_mul_I, sin_mul_I, mul_assoc]
   _ = sin ((n + 1) * (θ * I)) * (-I)                    := by rw [U_complex_cos]
   _ = sin ((n + 1) * θ * I) * (-I)                      := by rw [mul_assoc]
   _ = sinh ((n + 1) * θ)                                := by
