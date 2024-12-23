@@ -685,6 +685,8 @@ def sumPiEquivProdPi (S T : Type*) (A : S ⊕ T → Type*)
 
 /-- The space of functions from `PUnit` into a family of topological spaces
 is homeomorphic to the value of this function at `()`.
+
+This is `Equiv.pUnitPiEquiv` as a `Homeomorph`.
 -/
 def pUnitPiEquiv (f : PUnit → Type*) [∀ x, TopologicalSpace (f x)] :
     (∀ t, f t) ≃ₜ f () where
