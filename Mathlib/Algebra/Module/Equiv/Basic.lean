@@ -11,6 +11,7 @@ import Mathlib.Algebra.Module.Equiv.Defs
 import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.LinearMap.End
 import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.Module.Prod
 
 /-!
 # Further results on (semi)linear equivalences.
@@ -697,5 +698,36 @@ theorem funCongrLeft_symm (e : m ≃ n) : (funCongrLeft R M e).symm = funCongrLe
 end LinearEquiv
 
 end FunLeft
+
+section Pi
+
+namespace LinearEquiv
+
+/-- The space of functions from `S ⊕ T` into a family of modules
+is isomorphic to the product of the functions from `S` and the functions from `T`.
+
+This is `Equiv.sumPiEquivProdPi` as a `LinearEquiv`.
+-/
+def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*) (A : S ⊕ T → Type*)
+    [∀ st, AddCommMonoid (A st)] [∀ st, Module R (A st)] :
+    (∀ (st : S ⊕ T), A st) ≃ₗ[R] (∀ (s : S), A (.inl s)) × (∀ (t : T), A (.inr t)) where
+  __ := Equiv.sumPiEquivProdPi _
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+/-- The space of functions from `PUnit` into a family of modules
+is isomorphic to the value of this function at `()`.
+
+This is `Equiv.pUnitPiEquiv` as a `LinearEquiv`.
+-/
+def pUnitPiEquiv (R : Type*) [Semiring R] (f : PUnit → Type*) [∀ x, AddCommMonoid (f x)]
+    [∀ x, Module R (f x)] : ((t : PUnit) → (f t)) ≃ₗ[R] f () where
+  __ := Equiv.pUnitPiEquiv _
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+end LinearEquiv
+
+end Pi
 
 end AddCommMonoid

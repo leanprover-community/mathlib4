@@ -832,6 +832,15 @@ def sumPiEquivProdPi {ι ι'} (π : ι ⊕ ι' → Type*) :
   left_inv f := by ext (i | i) <;> rfl
   right_inv _ := Prod.ext rfl rfl
 
+/-- The space of functions from `PUnit` into a family of types
+is isomorphic to the value of this function at `()`.
+-/
+def pUnitPiEquiv (f : PUnit → Type*) : ((t : PUnit) → (f t)) ≃ f () where
+  toFun a := a ()
+  invFun a _t := a
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 /-- The equivalence between a product of two dependent functions types and a single dependent
 function type. Basically a symmetric version of `Equiv.sumPiEquivProdPi`. -/
 @[simps!]
