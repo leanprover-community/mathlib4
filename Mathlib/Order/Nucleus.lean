@@ -27,6 +27,14 @@ structure Nucleus (X : Type*) [SemilatticeInf X] where
   /-- A Nucleus preserves infima.-/
   preserves_inf (x y : X) : toFun (x ⊓ y) = toFun x ⊓ toFun y
 
+/--
+A stronger version of Nucleus.idempotent which follows from Nucleus.increasing.
+-/
+lemma Nucleus.idempotent' {n : Nucleus X} {x : X} : n.toFun (n.toFun x) = n.toFun x := by
+  apply le_antisymm
+  · exact n.idempotent x
+  · exact n.increasing (n.toFun x)
+
 instance : FunLike (Nucleus X) X X where
   coe := Nucleus.toFun
   coe_injective' f g h := by cases f; cases g; congr
