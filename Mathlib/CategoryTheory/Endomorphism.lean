@@ -133,6 +133,9 @@ theorem Aut_mul_def (f g : Aut X) : f * g = g.trans f := rfl
 
 theorem Aut_inv_def (f : Aut X) : f⁻¹ = f.symm := rfl
 
+@[simp] theorem one_hom : (1 : Aut X).hom = 𝟙 X := rfl
+@[simp] theorem one_inv : (1 : Aut X).inv = 𝟙 X := rfl
+
 /-- Units in the monoid of endomorphisms of an object
 are (multiplicatively) equivalent to automorphisms of that object.
 -/
