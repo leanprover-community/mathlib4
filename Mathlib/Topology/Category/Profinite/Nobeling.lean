@@ -7,6 +7,7 @@ import Mathlib.Algebra.Category.ModuleCat.Free
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.Category.Profinite.Product
 import Mathlib.Topology.LocallyConstant.Algebra
+import Mathlib.Topology.Separation.Profinite
 import Mathlib.Data.Bool.Basic
 
 /-!
@@ -790,8 +791,7 @@ instance {α : Type*} [TopologicalSpace α] [Nonempty α] : Nontrivial (LocallyC
 theorem Products.isGood_nil {I} [LinearOrder I] :
     Products.isGood ({fun _ ↦ false} : Set (I → Bool)) Products.nil := by
   intro h
-  simp only [Products.lt_nil_empty, Products.eval, List.map, List.prod_nil, Set.image_empty,
-    Submodule.span_empty, Submodule.mem_bot, one_ne_zero] at h
+  simp [Products.eval, Products.nil] at h
 
 theorem Products.span_nil_eq_top {I} [LinearOrder I] :
     Submodule.span ℤ (eval ({fun _ ↦ false} : Set (I → Bool)) '' {nil}) = ⊤ := by
@@ -799,7 +799,7 @@ theorem Products.span_nil_eq_top {I} [LinearOrder I] :
   intro f _
   rw [Submodule.mem_span_singleton]
   refine ⟨f default, ?_⟩
-  simp only [eval, List.map, List.prod_nil, zsmul_eq_mul, mul_one]
+  simp only [eval, List.map, List.prod_nil, zsmul_eq_mul, mul_one, Products.nil]
   ext x
   obtain rfl : x = default := by simp only [Set.default_coe_singleton, eq_iff_true_of_subsingleton]
   rfl
@@ -834,7 +834,7 @@ instance (α : Type*) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyCon
 theorem GoodProducts.linearIndependentSingleton {I} [LinearOrder I] :
     LinearIndependent ℤ (eval ({fun _ ↦ false} : Set (I → Bool))) := by
   refine linearIndependent_unique (eval ({fun _ ↦ false} : Set (I → Bool))) ?_
-  simp only [eval, Products.eval, List.map, List.prod_nil, ne_eq, one_ne_zero, not_false_eq_true]
+  simp [eval, Products.eval, Products.nil, default]
 
 end Zero
 
