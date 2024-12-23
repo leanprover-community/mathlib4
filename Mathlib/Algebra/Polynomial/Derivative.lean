@@ -668,14 +668,13 @@ theorem derivative_pow_eq_zero_iff {n : ℕ} (chn : (n : k) ≠ 0) {a : k[X]} :
     derivative (a ^ n) = 0 ↔ derivative a = 0 where
   mp apd := by
     rw [derivative_pow, C_eq_natCast, mul_eq_zero, mul_eq_zero] at apd
-    rcases apd with (nz | powz) | goal
+    rcases apd with nz | powz | goal
     · rw [← C_eq_natCast, C_eq_zero] at nz
       tauto
     · have az : a = 0 := pow_eq_zero powz
       rw [az, map_zero]
     · exact goal
-  · intro hd
-    rw [derivative_pow, hd, MulZeroClass.mul_zero]
+  mpr hd := by rw [derivative_pow, hd, MulZeroClass.mul_zero]
 
 end Field
 
