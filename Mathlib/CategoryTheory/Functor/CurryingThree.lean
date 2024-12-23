@@ -22,7 +22,7 @@ variable {C₁ C₂ C₁₂ C₃ C₂₃ D₁ D₂ D₃ E : Type*}
   [Category C₁] [Category C₂] [Category C₃] [Category C₁₂] [Category C₂₃]
   [Category D₁] [Category D₂] [Category D₃] [Category E]
 
-/-- The equivalence of categories `(C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ≌ (C₁ × C₂ × C₃ ⥤ E)`
+/-- The equivalence of categories `(C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ≌ C₁ × C₂ × C₃ ⥤ E`
 given by the curryfication of functors in three variables. -/
 def currying₃ : (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) ≌ (C₁ × C₂ × C₃ ⥤ E) :=
   currying.trans (currying.trans (prod.associativity C₁ C₂ C₃).congrLeft)
