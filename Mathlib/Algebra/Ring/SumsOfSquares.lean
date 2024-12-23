@@ -7,7 +7,6 @@ import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.Algebra.Group.Submonoid.Membership
 
 /-!
 # Sums of squares
