@@ -38,7 +38,7 @@ class IsSemireal [Add R] [Mul R] [One R] [Zero R] : Prop where
 @[deprecated (since := "2024-08-09")] alias isSemireal.neg_one_not_SumSq :=
   IsSemireal.add_one_ne_zero_of_isSumSq
 
-lemma IsSemireal.not_isSumSq_neg_one {R : Type*} [AddGroup R] [One R] [Mul R] [IsSemireal R]:
+theorem IsSemireal.not_isSumSq_neg_one {R : Type*} [AddGroup R] [One R] [Mul R] [IsSemireal R]:
     ¬ IsSumSq (-1 : R) := (by simpa using add_one_ne_zero_of_isSumSq ·)
 
 /-- Linearly ordered semirings in which the property `a ≤ b → ∃ c, a + c = b` holds are semireal. -/

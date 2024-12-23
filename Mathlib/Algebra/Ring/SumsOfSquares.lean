@@ -43,7 +43,7 @@ inductive IsSumSq [Mul R] [Add R] [Zero R] : R → Prop
 @[deprecated (since := "2024-08-09")] alias isSumSq := IsSumSq
 
 /-- Alternative induction scheme for `IsSumSq` using `IsSquare`. -/
-def IsSumSq.inductionOn' [Mul R] [Add R] [Zero R]
+theorem IsSumSq.inductionOn' [Mul R] [Add R] [Zero R]
     {p : (S : R) → (h : IsSumSq S) → Prop} {S : R} (hS : IsSumSq S)
     (zero : p 0 zero)
     (sq_add : ∀ {x S}, (hS : IsSumSq S) → (hx : IsSquare x) → p S hS →
@@ -76,8 +76,8 @@ def sumSqIn : AddSubmonoid T where
   zero_mem' := IsSumSq.zero
   add_mem' := IsSumSq.add
 
-@[simp] lemma mem_sumSqIn : a ∈ sumSqIn T ↔ IsSumSq a := Iff.rfl
-@[simp, norm_cast] lemma coe_sumSqIn : sumSqIn T = {x : T | IsSumSq x} := rfl
+@[simp] theorem mem_sumSqIn : a ∈ sumSqIn T ↔ IsSumSq a := Iff.rfl
+@[simp, norm_cast] theorem coe_sumSqIn : sumSqIn T = {x : T | IsSumSq x} := rfl
 
 end AddSubmonoid
 
@@ -183,9 +183,9 @@ def sumSqIn : Subsemiring T where
   mul_mem' := IsSumSq.mul
   one_mem' := IsSquare.isSumSq isSquare_one
 
-@[simp] lemma sumSqIn_toAddSubmonoid : (sumSqIn T).toAddSubmonoid = .sumSqIn T := rfl
-@[simp] lemma mem_sumSqIn : a ∈ sumSqIn T ↔ IsSumSq a := Iff.rfl
-@[simp, norm_cast] lemma coe_sumSqIn : sumSqIn T = {x : T | IsSumSq x} := rfl
+@[simp] theorem sumSqIn_toAddSubmonoid : (sumSqIn T).toAddSubmonoid = .sumSqIn T := rfl
+@[simp] theorem mem_sumSqIn : a ∈ sumSqIn T ↔ IsSumSq a := Iff.rfl
+@[simp, norm_cast] theorem coe_sumSqIn : sumSqIn T = {x : T | IsSumSq x} := rfl
 
 end Subsemiring
 
