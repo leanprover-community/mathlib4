@@ -671,15 +671,8 @@ protected lemma div_pow (h : a ∣ b) : (b / a) ^ c = b ^ c / a ^ c := by
   refine (Nat.div_eq_of_eq_mul_right (pos_pow_of_pos c ha) ?_).symm
   rw [← Nat.mul_pow, Nat.mul_div_cancel_left' h]
 
-protected lemma pow_pos_iff : 0 < a ^ n ↔ 0 < a ∨ n = 0 where
-  mp h := by
-    rw [Nat.pos_iff_ne_zero] at h ⊢
-    contrapose! h
-    simp [h.1, h.2]
-  mpr := by
-    rintro (ha | rfl)
-    · exact Nat.pow_pos ha
-    · simp
+protected lemma pow_pos_iff : 0 < a ^ n ↔ 0 < a ∨ n = 0 := by
+  simp [Nat.pos_iff_ne_zero, imp_iff_not_or]
 
 lemma pow_self_pos : 0 < n ^ n := by simp [Nat.pow_pos_iff, n.eq_zero_or_pos.symm]
 
