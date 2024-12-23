@@ -112,7 +112,7 @@ lemma IsRetroCompact.preimage_of_isOpenEmbedding {s : Set Y} (hf : IsOpenEmbeddi
 
 @[stacks 09YE] -- Extracted from the proof of `09YE`
 lemma IsRetroCompact.preimage_of_isClosedEmbedding {s : Set Y} (hf : IsClosedEmbedding f)
-    (hf' : IsCompact (range f)ᶜ) (hs : IsRetroCompact s)  : IsRetroCompact (f ⁻¹' s) := by
+    (hf' : IsCompact (range f)ᶜ) (hs : IsRetroCompact s) : IsRetroCompact (f ⁻¹' s) := by
   rintro U hUcomp hUopen
   have hfUopen : IsOpen (f '' U ∪ (range f)ᶜ) := by
     simpa [← range_diff_image hf.injective, sdiff_eq, compl_inter, union_comm]
