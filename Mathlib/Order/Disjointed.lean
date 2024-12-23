@@ -4,14 +4,15 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Order.PartialSups
+import Mathlib.Data.Nat.Cast.NeZero
 
 /-!
-# Consecutive differences of sets
+# Making a sequence disjoint
 
-This file defines the way to make a sequence of elements into a sequence of disjoint elements with
-the same partial sups.
+This file defines the way to make a sequence of sets, or more generally of elements in a
+(generalized) Boolean algebra, into a sequence of disjoint elements with the same partial sups.
 
-For a sequence `f : ℕ → α`, this new sequence will be `f 0`, `f 1 \ f 0`, `f 2 \ (f 0 ⊔ f 1)`.
+For a sequence `f : ℕ → α`, this new sequence will be `f 0`, `f 1 \ f 0`, `f 2 \ (f 0 ⊔ f 1) ⋯`.
 It is actually unique, as `disjointed_unique` shows.
 
 ## Main declarations
@@ -23,106 +24,178 @@ It is actually unique, as `disjointed_unique` shows.
   sups as `f`.
 * `iSup_disjointed`: `disjointed f` has the same supremum as `f`. Limiting case of
   `partialSups_disjointed`.
+* `Fintype.exists_disjointed_le`: for any finite family `f : ι → α`, there exists a pairwise
+  disjoint family `g : ι → α` which is bounded above by `f` and has the same supremum. This is
+  an analogue of `disjointed` for arbitrary finite index types (but without any uniqueness).
 
 We also provide set notation variants of some lemmas.
 
 ## TODO
 
 Find a useful statement of `disjointedRec_succ`.
-
-One could generalize `disjointed` to any locally finite bot preorder domain, in place of `ℕ`.
-Related to the TODO in the module docstring of `Mathlib.Order.PartialSups`.
 -/
 
+open Finset
 
-variable {α : Type*}
+variable {α β : Type*}
 
-section GeneralizedBooleanAlgebra
+section GeneralizedBooleanAlgebra -- the *target* is a GBA
 
 variable [GeneralizedBooleanAlgebra α]
 
-/-- If `f : ℕ → α` is a sequence of elements, then `disjointed f` is the sequence formed by
-subtracting each element from the nexts. This is the unique disjoint sequence whose partial sups
-are the same as the original sequence. -/
-def disjointed (f : ℕ → α) : ℕ → α
-  | 0 => f 0
-  | n + 1 => f (n + 1) \ partialSups f n
+section Preorder -- the *source* is a preorder
 
-@[simp]
-theorem disjointed_zero (f : ℕ → α) : disjointed f 0 = f 0 :=
-  rfl
+variable [Preorder β] [LocallyFiniteOrderBot β]
 
-theorem disjointed_succ (f : ℕ → α) (n : ℕ) : disjointed f (n + 1) = f (n + 1) \ partialSups f n :=
-  rfl
+def disjointed (f : β → α) (n : β) : α := f n \ (Iio n).sup f
 
-theorem disjointed_le_id : disjointed ≤ (id : (ℕ → α) → ℕ → α) := by
-  rintro f n
-  cases n
-  · rfl
-  · exact sdiff_le
+lemma disjointed_apply (f : β → α) (n : β) : disjointed f n = f n \ (Iio n).sup f := rfl
 
-theorem disjointed_le (f : ℕ → α) : disjointed f ≤ f :=
+lemma disjointed_of_isMin (f : β → α) {n : β} (hn : IsMin n) :
+    disjointed f n = f n := by
+  have : Iio n = ∅ := by rwa [← Finset.coe_eq_empty, coe_Iio, Set.Iio_eq_empty_iff]
+  simp only [disjointed_apply, this, sup_empty, sdiff_bot]
+
+theorem disjointed_le_id : disjointed ≤ (id : (β → α) → β → α) :=
+  fun _ _ ↦ sdiff_le
+
+theorem disjointed_le (f : β → α) : disjointed f ≤ f :=
   disjointed_le_id f
 
-theorem disjoint_disjointed (f : ℕ → α) : Pairwise (Disjoint on disjointed f) := by
-  refine (Symmetric.pairwise_on Disjoint.symm _).2 fun m n h => ?_
-  cases n
-  · exact (Nat.not_lt_zero _ h).elim
-  exact
-    disjoint_sdiff_self_right.mono_left
-      ((disjointed_le f m).trans (le_partialSups_of_le f (Nat.lt_add_one_iff.1 h)))
+theorem disjoint_disjointed_of_lt (f : β → α) {m n : β} (h : m < n) :
+    Disjoint (disjointed f m) (disjointed f n) :=
+  (disjoint_sdiff_self_right.mono_left <| le_sup (mem_Iio.mpr h)).mono_left (disjointed_le f m)
 
--- Porting note: `disjointedRec` had a change in universe level.
-/-- An induction principle for `disjointed`. To define/prove something on `disjointed f n`, it's
-enough to define/prove it for `f n` and being able to extend through diffs. -/
-def disjointedRec {f : ℕ → α} {p : α → Sort*} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i)) :
-    ∀ ⦃n⦄, p (f n) → p (disjointed f n)
-  | 0 => id
-  | n + 1 => fun h => by
-    suffices H : ∀ k, p (f (n + 1) \ partialSups f k) from H n
-    rintro k
-    induction' k with k ih
-    · exact hdiff h
-    rw [partialSups_natSucc, ← sdiff_sdiff_left]
-    exact hdiff ih
+lemma disjointed_eq_self {f : β → α} {n : β} (hf : ∀ m < n, Disjoint (f m) (f n)) :
+    disjointed f n = f n := by
+  rw [disjointed_apply, sdiff_eq_left, disjoint_iff, sup_inf_distrib_left,
+    sup_congr rfl <| fun m hm ↦ disjoint_iff.mp <| (hf _ (mem_Iio.mp hm)).symm]
+  exact sup_bot _
+
+/- NB: The original statement for `β = ℕ` was a `def` and worked for `p : α → Sort*`. I couldn't
+prove the `Sort*` version for general `β`, but all instances of `disjointedRec` in the library are
+for Prop anyway. -/
+/--
+An induction principle for `disjointed`. To prove something about `disjointed f n`, it's
+enough to prove it for `f n` and being able to extend through diffs.
+-/
+lemma disjointedRec {f : β → α} {p : α → Prop} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i)) :
+    ∀ ⦃n⦄, p (f n) → p (disjointed f n) := by
+  classical
+  intro n hpn
+  rw [disjointed]
+  suffices ∀ (s : Finset β), p (f n \ s.sup f) from this _
+  intro s
+  induction s using Finset.induction with
+  | empty => rw [sup_empty, sdiff_bot]; exact hpn
+  | insert ht IH => rw [sup_insert, sup_comm, ← sdiff_sdiff]; exact hdiff IH
+
+end Preorder
+
+section PartialOrder
+
+variable [PartialOrder β] [LocallyFiniteOrderBot β]
 
 @[simp]
-theorem disjointedRec_zero {f : ℕ → α} {p : α → Sort*} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i))
-    (h₀ : p (f 0)) : disjointedRec hdiff h₀ = h₀ :=
-  rfl
+theorem partialSups_disjointed (f : β → α) :
+    partialSups (disjointed f) = partialSups f := by
+  -- This seems to be much more awkward than the case of linear orders, because the supremum
+  -- in the definition of `disjointed` can involve multiple "paths" through the poset.
+  classical
+  -- We argue by induction on the size of `Iio n`.
+  suffices ∀ r n (hn : #(Iio n) ≤ r), partialSups (disjointed f) n = partialSups f n from
+    OrderHom.ext _ _ (funext fun n ↦ this _ n le_rfl)
+  intro r n hn
+  induction r generalizing n with
+  | zero =>
+   -- Base case: `n` is minimal, so `partialSups f n = partialSups (disjointed f) n = f n`.
+    simp only [Nat.le_zero, card_eq_zero] at hn
+    simp only [partialSups_apply, Iic_eq_cons_Iio, hn, disjointed_apply, sup'_eq_sup, sup_cons,
+      sup_empty, sdiff_bot]
+  | succ n ih =>
+    -- Induction step: first WLOG arrange that `#(Iio n) = r + 1`
+    rcases lt_or_eq_of_le hn with hn | hn
+    · exact ih _ <| Nat.le_of_lt_succ hn
+    simp only [partialSups_apply (disjointed f), Iic_eq_cons_Iio, sup'_eq_sup, sup_cons]
+    -- Key claim: we can write `Iio n` as a union of (finitely many) `Ici` intervals.
+    have hun : (Iio n).biUnion Iic = Iio n := by
+      ext r; simpa using ⟨fun ⟨a, ha⟩ ↦ ha.2.trans_lt ha.1, fun hr ↦ ⟨r, hr, le_rfl⟩⟩
+    -- Use claim and `sup_biUnion` to rewrite the supremum in the definition of `disjointed f`
+    -- in terms of suprema over `Iic`'s. Then the RHS is a `sup` over `partialSups`, which we
+    -- can rewrite via the induction hypothesis.
+    rw [← hun, sup_biUnion, sup_congr rfl (g := partialSups f)]
+    · simp only [funext (partialSups_apply f), sup'_eq_sup, ← sup_biUnion, hun]
+      simp only [disjointed, sdiff_sup_self, Iic_eq_cons_Iio, sup_cons]
+    · simp only [partialSups, sup'_eq_sup, OrderHom.coe_mk] at ih ⊢
+      refine fun x hx ↦ ih x ?_
+      -- Remains to show `∀ x in Iio n, #(Iio x) ≤ r`.
+      rw [← Nat.lt_add_one_iff, ← hn]
+      apply lt_of_lt_of_le (b := #(Iic x))
+      · simpa only [Iic_eq_cons_Iio, card_cons] using Nat.lt_succ_self _
+      · refine card_le_card (fun r hr ↦ ?_)
+        simp only [mem_Iic, mem_Iio] at hx hr ⊢
+        exact hr.trans_lt hx
 
--- TODO: Find a useful statement of `disjointedRec_succ`.
-protected lemma Monotone.disjointed_succ {f : ℕ → α} (hf : Monotone f) (n : ℕ) :
-    disjointed f (n + 1) = f (n + 1) \ f n := by rw [disjointed_succ, hf.partialSups_eq]
-
-protected lemma Monotone.disjointed_succ_sup {f : ℕ → α} (hf : Monotone f) (n : ℕ) :
-    disjointed f (n + 1) ⊔ f n = f (n + 1) := by
-  rw [hf.disjointed_succ, sdiff_sup_cancel]; exact hf n.le_succ
-
-@[simp]
-theorem partialSups_disjointed (f : ℕ → α) : partialSups (disjointed f) = partialSups f := by
+lemma disjointed_partialSups (f : β → α) :
+    disjointed (partialSups f) = disjointed f := by
+  classical
   ext n
-  induction' n with k ih
-  · rw [partialSups_zero, partialSups_zero, disjointed_zero]
-  · rw [partialSups_natSucc, partialSups_natSucc, disjointed_succ, ih, sup_sdiff_self_right]
+  have step1 : f n \ (Iio n).sup f = partialSups f n \ (Iio n).sup f := by
+    rw [sdiff_eq_symm (sdiff_le.trans (le_partialSups f n))]
+    simp only [funext (partialSups_apply f), sup'_eq_sup]
+    rw [sdiff_sdiff_eq_sdiff_sup (sup_mono Iio_subset_Iic_self), sup_eq_right]
+    simp only [Iic_eq_cons_Iio, sup_cons, sup_sdiff_left_self, sdiff_le_iff, le_sup_right]
+  simp only [disjointed_apply, step1, funext (partialSups_apply f), sup'_eq_sup, ← sup_biUnion]
+  congr 2 with r
+  simpa only [mem_biUnion, mem_Iio, mem_Iic] using
+    ⟨fun ⟨a, ha⟩ ↦ ha.2.trans_lt ha.1, fun hr ↦ ⟨r, hr, le_rfl⟩⟩
+
+/-- `disjointed f` is the unique map `d : β → α` such that `d` has the same partial sups as `f`,
+and `d i` and `d j` are disjoint whenever `i < j`. -/
+theorem disjointed_unique {f d : β → α} (hdisj : ∀ {i j : β} (_ : i < j), Disjoint (d i) (d j))
+    (hsups : partialSups d = partialSups f) :
+    d = disjointed f := by
+  rw [← disjointed_partialSups, ← hsups, disjointed_partialSups]
+  exact funext fun n ↦ (disjointed_eq_self (fun m hm ↦ hdisj hm)).symm
+
+end PartialOrder
+
+section LinearOrder
+
+variable [LinearOrder β] [LocallyFiniteOrderBot β]
+
+theorem disjoint_disjointed (f : β → α) : Pairwise (Disjoint on disjointed f) :=
+  (pairwise_disjoint_on _).mpr fun _ _ ↦ disjoint_disjointed_of_lt f
 
 /-- `disjointed f` is the unique sequence that is pairwise disjoint and has the same partial sups
 as `f`. -/
-theorem disjointed_unique {f d : ℕ → α} (hdisj : Pairwise (Disjoint on d))
-    (hsups : partialSups d = partialSups f) : d = disjointed f := by
-  ext n
-  cases' n with n
-  · rw [← partialSups_zero d, hsups, partialSups_zero, disjointed_zero]
-  suffices h : d n.succ = partialSups d n.succ \ partialSups d n by
-    rw [h, hsups, partialSups_natSucc, disjointed_succ, sup_sdiff, sdiff_self, bot_sup_eq]
-  rw [partialSups_natSucc, sup_sdiff, sdiff_self, bot_sup_eq, eq_comm, sdiff_eq_self_iff_disjoint]
-  suffices h : ∀ m ≤ n, Disjoint (partialSups d m) (d n.succ) from h n le_rfl
-  rintro m hm
-  induction' m with m ih
-  · exact hdisj (Nat.succ_ne_zero _).symm
-  rw [partialSups_natSucc, disjoint_iff, inf_sup_right, sup_eq_bot_iff,
-    ← disjoint_iff, ← disjoint_iff]
-  exact ⟨ih (Nat.le_of_succ_le hm), hdisj (Nat.lt_succ_of_le hm).ne⟩
+theorem disjointed_unique' {f d : β → α} (hdisj : Pairwise (Disjoint on d))
+    (hsups : partialSups d = partialSups f) : d = disjointed f :=
+  disjointed_unique (fun hij ↦ hdisj hij.ne) hsups
+
+lemma disjointed_succ (f : β → α) {n : β} (hn : ¬IsMax n) :
+    disjointed f (Order.succ n) = f (Order.succ n) \ partialSups f n := by
+  rw [disjointed_apply, partialSups_apply, sup'_eq_sup]
+  congr 2 with m
+  simpa only [mem_Iio, mem_Iic] using Order.lt_succ_iff_of_not_isMax hn
+
+protected lemma Monotone.disjointed_succ {f : β → α} (hf : Monotone f) {n : β} (hn : ¬IsMax n) :
+    disjointed f (Order.succ n) = f (Order.succ n) \ f n := by
+  rwa [disjointed_succ, hf.partialSups_eq]
+
+/-- Note this lemma does not require `¬IsMax n`, unlike `disjointed_succ`. -/
+lemma Monotone.disjointed_succ_sup {f : β → α} (hf : Monotone f) (n : β) :
+    disjointed f (Order.succ n) ⊔ f n = f (Order.succ n) := by
+  by_cases h : IsMax n
+  · simpa only [Order.succ_eq_iff_isMax.mpr h, sup_eq_right] using disjointed_le f n
+  · rw [disjointed_apply]
+    have : Iio (Order.succ n) = Iic n := by
+      ext; simp only [mem_Iio, Order.lt_succ_iff_eq_or_lt_of_not_isMax h, mem_Iic, le_iff_lt_or_eq,
+        Or.comm]
+    rw [this, ← sup'_eq_sup, ← partialSups_apply, hf.partialSups_eq,
+      sdiff_sup_cancel <| hf <| Order.le_succ n]
+
+end LinearOrder
 
 end GeneralizedBooleanAlgebra
 
@@ -130,31 +203,29 @@ section CompleteBooleanAlgebra
 
 variable [CompleteBooleanAlgebra α]
 
-theorem iSup_disjointed (f : ℕ → α) : ⨆ n, disjointed f n = ⨆ n, f n :=
+theorem iSup_disjointed [PartialOrder β] [LocallyFiniteOrderBot β] (f : β → α) :
+    ⨆ n, disjointed f n = ⨆ n, f n :=
   iSup_eq_iSup_of_partialSups_eq_partialSups (partialSups_disjointed f)
 
-theorem disjointed_eq_inf_compl (f : ℕ → α) (n : ℕ) : disjointed f n = f n ⊓ ⨅ i < n, (f i)ᶜ := by
-  cases n
-  · rw [disjointed_zero, eq_comm, inf_eq_left]
-    simp_rw [le_iInf_iff]
-    exact fun i hi => (i.not_lt_zero hi).elim
-  simp_rw [disjointed_succ, partialSups_eq_biSup, sdiff_eq, compl_iSup]
-  congr
-  ext i
-  rw [Nat.lt_succ_iff]
+theorem disjointed_eq_inf_compl [Preorder β] [LocallyFiniteOrderBot β] (f : β → α) (n : β) :
+    disjointed f n = f n ⊓ ⨅ i < n, (f i)ᶜ := by
+  simp only [disjointed_apply, Finset.sup_eq_iSup, mem_Iio, sdiff_eq, compl_iSup]
 
 end CompleteBooleanAlgebra
 
-/-! ### Set notation variants of lemmas -/
+section Set
 
+/-! ### Lemmas specific to set-valued functions -/
 
-theorem disjointed_subset (f : ℕ → Set α) (n : ℕ) : disjointed f n ⊆ f n :=
+theorem disjointed_subset [Preorder β] [LocallyFiniteOrderBot β] (f : β → Set α) (n : β) :
+    disjointed f n ⊆ f n :=
   disjointed_le f n
 
-theorem iUnion_disjointed {f : ℕ → Set α} : ⋃ n, disjointed f n = ⋃ n, f n :=
+theorem iUnion_disjointed [PartialOrder β] [LocallyFiniteOrderBot β] {f : β → Set α} :
+    ⋃ n, disjointed f n = ⋃ n, f n :=
   iSup_disjointed f
 
-theorem disjointed_eq_inter_compl (f : ℕ → Set α) (n : ℕ) :
+theorem disjointed_eq_inter_compl [Preorder β] [LocallyFiniteOrderBot β] (f : β → Set α) (n : β) :
     disjointed f n = f n ∩ ⋂ i < n, (f i)ᶜ :=
   disjointed_eq_inf_compl f n
 
@@ -162,3 +233,81 @@ theorem preimage_find_eq_disjointed (s : ℕ → Set α) (H : ∀ x, ∃ n, x �
     [∀ x n, Decidable (x ∈ s n)] (n : ℕ) : (fun x => Nat.find (H x)) ⁻¹' {n} = disjointed s n := by
   ext x
   simp [Nat.find_eq_iff, disjointed_eq_inter_compl]
+
+end Set
+
+section Nat
+
+/-! ### Functions on `ℕ` -/
+
+section GeneralizedBooleanAlgebra
+
+variable [GeneralizedBooleanAlgebra α]
+
+@[simp]
+theorem disjointed_zero (f : ℕ → α) : disjointed f 0 = f 0 :=
+  disjointed_of_isMin _ isMin_bot
+
+theorem disjointed_natSucc (f : ℕ → α) (n : ℕ) :
+    disjointed f (n + 1) = f (n + 1) \ partialSups f n := by
+  simpa only [Nat.orderSucc_eq_succ n] using disjointed_succ f (not_isMax n)
+
+protected lemma Monotone.disjointed_natSucc {f : ℕ → α} (hf : Monotone f) (n : ℕ) :
+    disjointed f (n + 1) = f (n + 1) \ f n := by
+  rw [← Nat.orderSucc_eq_succ, hf.disjointed_succ]
+  exact not_isMax n
+
+protected lemma Monotone.disjointed_natSucc_sup {f : ℕ → α} (hf : Monotone f) (n : ℕ) :
+    disjointed f (n + 1) ⊔ f n = f (n + 1) := by
+  rw [Monotone.disjointed_natSucc hf, sdiff_sup_cancel]
+  exact hf n.le_succ
+
+-- Porting note: `disjointedRec` had a change in universe level.
+/-- A recursion principle for `disjointed`. To construct / define something for `disjointed f n`,
+it's enough to construct / define it for `f n` and to able to extend through diffs.
+
+Note that this version allows an arbitrary `Sort*`, but requires the domain to be `Nat`, while
+the root-level `disjointedRec` allows more general domains but requires `p` to be `Prop`-valued. -/
+def Nat.disjointedRec {f : ℕ → α} {p : α → Sort*} (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i)) :
+    ∀ ⦃n⦄, p (f n) → p (disjointed f n)
+  | 0 => fun h₀ ↦ disjointed_zero f ▸ h₀
+  | n + 1 => fun h => by
+    suffices H : ∀ k, p (f (n + 1) \ partialSups f k) from disjointed_natSucc f n ▸ H n
+    intro k
+    induction k with
+    | zero => exact hdiff h
+    | succ k ih => simpa only [partialSups_natSucc, ← sdiff_sdiff_left] using hdiff ih
+
+@[simp]
+theorem disjointedRec_zero {f : ℕ → α} {p : α → Sort*}
+    (hdiff : ∀ ⦃t i⦄, p t → p (t \ f i)) (h₀ : p (f 0)) :
+    Nat.disjointedRec hdiff h₀ = (disjointed_zero f ▸ h₀) :=
+  rfl
+
+-- TODO: Find a useful statement of `disjointedRec_succ`.
+
+/-- For any finite family of elements `f : ι → α`, we can find a pairwise-disjoint family `g`
+bounded above by `f` and having the same supremum. -/
+lemma Fintype.exists_disjointed_le {ι : Type*} [Fintype ι] {f : ι → α} :
+    ∃ g, g ≤ f ∧ Finset.univ.sup g = Finset.univ.sup f ∧ Pairwise (Disjoint on g) := by
+  rcases isEmpty_or_nonempty ι with hι | hι
+  · exact ⟨f, le_rfl, rfl, Subsingleton.pairwise⟩ -- handle silly case `ι = ∅`
+  let R : ι ≃ Fin _ := Fintype.equivFin ι
+  let S : ι ↪ ℕ := ⟨(↑) ∘ R, Fin.val_injective.comp R.injective⟩
+  let f' : ℕ → α := f ∘ R.symm ∘ (↑)
+  rw [show f = f' ∘ S by ext; simp [S, f']]
+  refine ⟨disjointed f' ∘ S, fun j ↦ disjointed_le f' _, ?_,
+    fun i j h ↦ disjoint_disjointed f' <| S.injective.ne h⟩
+  simp_rw [← Finset.sup_map _ S, Finset.map_eq_image, S, Function.Embedding.coeFn_mk,
+    ← Finset.image_image, Finset.image_univ_equiv]
+  have h := congr_arg (fun g ↦ g (Fintype.card ι - 1)) (partialSups_disjointed f')
+  simp only [partialSups_eq_sup_range, Nat.sub_add_cancel NeZero.one_le] at h
+  suffices Finset.range _ = Finset.univ.image Fin.val from this ▸ h
+  -- surely there's a lemma for this?
+  ext i
+  simp only [Finset.mem_range, Finset.mem_image, Finset.mem_univ, true_and]
+  exact ⟨fun hi ↦ ⟨.mk i hi, rfl⟩, fun ⟨a, ha⟩ ↦ ha ▸ a.is_lt⟩
+
+end GeneralizedBooleanAlgebra
+
+end Nat
