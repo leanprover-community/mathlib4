@@ -66,7 +66,7 @@ lemma natCast_eq_natCast' (h : a ≡ b [MOD p]) : (a : R) = b := by
 -- is too expensive. If https://github.com/leanprover/lean4/issues/2867 is fixed in a performant way, this can be made `@[simp]`.
 --
 -- @[simp]
-lemma ofNat_eq_zero [p.AtLeastTwo] : ofNat(p) = 0 := cast_eq_zero R p
+lemma ofNat_eq_zero [p.AtLeastTwo] : (ofNat(p) : R) = 0 := cast_eq_zero R p
 
 lemma natCast_eq_natCast_mod (a : ℕ) : (a : R) = a % p :=
   natCast_eq_natCast' R p (Nat.mod_modEq a p).symm

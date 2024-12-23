@@ -59,7 +59,7 @@ theorem ofNat_pos' {n : ℕ} [n.AtLeastTwo] : 0 < (ofNat(n) : α) :=
 /-- Specialisation of `Nat.ofNat_pos'`, which seems to be easier for Lean to use. -/
 @[simp]
 theorem ofNat_pos {α} [OrderedSemiring α] [Nontrivial α] {n : ℕ} [n.AtLeastTwo] :
-    0 < (ofNat(n) : α)):=
+    0 < (ofNat(n) : α) :=
   ofNat_pos'
 
 end Nontrivial
