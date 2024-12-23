@@ -184,9 +184,9 @@ theorem integrable_inner (f g : α →₂[μ] E) : Integrable (fun x : α => ⟪
     (AEEqFun.integrable_iff_mem_L1.mpr (mem_L1_inner f g))
 
 private theorem add_left' (f f' g : α →₂[μ] E) : ⟪f + f', g⟫ = inner f g + inner f' g := by
-  simp_rw [inner_def]
-  rw [← integral_add (integrable_inner f g) (integrable_inner f' g)]
-  simp_rw [← inner_add_left]
+  -- simp_rw [inner_def]
+  simp_rw [inner_def, ← integral_add (integrable_inner (𝕜 := 𝕜) f g) (integrable_inner f' g),
+    ← inner_add_left]
   refine integral_congr_ae ((coeFn_add f f').mono fun x hx => ?_)
   -- Porting note: was
   -- congr
