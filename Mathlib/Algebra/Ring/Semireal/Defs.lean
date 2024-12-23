@@ -32,14 +32,16 @@ a multiplication, an addition, a multiplicative unit and an additive unit.
 -/
 @[mk_iff]
 class IsSemireal [Add R] [Mul R] [One R] [Zero R] : Prop where
-  add_one_ne_zero_of_isSumSq (a : R) (ssa : IsSumSq a) : 1 + a ≠ 0
+  add_one_ne_zero_of_isSumSq {a : R} (ssa : IsSumSq a) : 1 + a ≠ 0
 
 @[deprecated (since := "2024-08-09")] alias isSemireal := IsSemireal
 @[deprecated (since := "2024-08-09")] alias isSemireal.neg_one_not_SumSq :=
   IsSemireal.add_one_ne_zero_of_isSumSq
 
+lemma IsSemireal.not_isSumSq_neg_one {R : Type*} [AddGroup R] [One R] [Mul R] [IsSemireal R]:
+    ¬ IsSumSq (-1 : R) := (by simpa using add_one_ne_zero_of_isSumSq ·)
+
 /-- Linearly ordered semirings in which the property `a ≤ b → ∃ c, a + c = b` holds are semireal. -/
 instance [LinearOrderedSemiring R] [ExistsAddOfLE R] : IsSemireal R where
-  add_one_ne_zero_of_isSumSq _ ssa amo :=
-    zero_ne_one' R (le_antisymm zero_le_one
-      (le_of_le_of_eq (le_add_of_nonneg_right ssa.nonneg) amo))
+  add_one_ne_zero_of_isSumSq ssa amo := zero_ne_one' R (le_antisymm zero_le_one
+                                          (le_of_le_of_eq (le_add_of_nonneg_right ssa.nonneg) amo))
