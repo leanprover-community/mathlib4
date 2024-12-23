@@ -189,16 +189,17 @@ lemma injOn_setOf_apply_add_one_eq_of_M_le {n : ℕ} (h : M a N ≤ n) :
   have hj' := hj ▸ hc.nth_apply_add_one_eq (Nat.lt_add_one_iff.mp (N_lt_of_M_le_apply (hj ▸ h)))
   rw [← hi', ← hj', hij]
 
-lemma empty_setOf_apply_add_one_eq_M : {i | M a N ≤ a i ∧ M a N ≤ a (i + 1)} = ∅ := by
+lemma empty_consecutive_apply_ge_M : {i | M a N ≤ a i ∧ M a N ≤ a (i + 1)} = ∅ := by
   rw [Set.eq_empty_iff_forall_not_mem]
   intro i
   induction i using Nat.strong_induction_on with | h i ih =>
+  -- Let i be the first index where both `a i` and `a (i + 1)` are at least M.
   rintro ⟨hi1, hi2⟩
   have hi : ∀ j < i, M a N ≤ a j → a (j + 1) < M a N := by simp_all
   -- t is the set of indices before an appearance of the integer (a i).  For each j ∈ t, (a j)
   -- is the (a i)th appearance of that value, so each such value before index i appears at least
-  -- M times before that index; since (a i) is the Mth appearance of that value, there are at
-  -- least M positive integers appearing M times before (a i), a contradiction because one of
+  -- M times before that index; since (a i) is the (at least) Mth appearance of that value, there
+  -- are at least M positive integers appearing M times before (a i), a contradiction because one of
   -- those must be at least M.
   let t : Finset ℕ := {j ∈ Finset.range i | a (j + 1) = a i}
   let t' : Finset ℕ := {j ∈ Finset.range (i + 1) | a j = a i}
@@ -237,7 +238,7 @@ lemma empty_setOf_apply_add_one_eq_M : {i | M a N ≤ a i ∧ M a N ≤ a (i + 1
 
 lemma card_lt_M_of_M_le {n : ℕ} (h : M a N ≤ n) :
     ∃ hf : {i | a i = n}.Finite, #hf.toFinset < M a N := by
-  have := empty_setOf_apply_add_one_eq_M hc
+  have := empty_consecutive_apply_ge_M hc
   contrapose! this with hin
   use Nat.nth (a · = n) (M a N - 1)
   have hin' := fun hf ↦ Nat.sub_one_lt_of_le (M_pos a N) (hin hf)
