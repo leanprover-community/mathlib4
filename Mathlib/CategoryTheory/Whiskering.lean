@@ -380,4 +380,3 @@ def Functor.postcompose₃ {E' : Type*} [Category E'] :
 
 end CategoryTheory
 
-#lint
