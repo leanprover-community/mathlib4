@@ -281,7 +281,7 @@ protected theorem eLpNorm'_eq {p : ℝ} (f : α →ₛ F) (μ : Measure α) :
     eLpNorm' f p μ = (∑ y ∈ f.range, (‖y‖₊ : ℝ≥0∞) ^ p * μ (f ⁻¹' {y})) ^ (1 / p) := by
   have h_map : (fun a => (‖f a‖₊ : ℝ≥0∞) ^ p) = f.map fun a : F => (‖a‖₊ : ℝ≥0∞) ^ p := by
     simp; rfl
-  rw [eLpNorm', h_map, lintegral_eq_lintegral, map_lintegral]
+  rw [eLpNorm'_eq_lintegral_nnnorm, h_map, lintegral_eq_lintegral, map_lintegral]
 
 @[deprecated (since := "2024-07-27")]
 protected alias snorm'_eq := SimpleFunc.eLpNorm'_eq
