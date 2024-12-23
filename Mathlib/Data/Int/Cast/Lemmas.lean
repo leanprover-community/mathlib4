@@ -220,6 +220,11 @@ theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F
     ∀ n : ℤ, f n = n :=
   DFunLike.ext_iff.1 <| (f : ℤ →+ α).eq_intCastAddHom h₁
 
+/-- This version is primed so that the `RingHomClass` versions aren't. -/
+theorem map_intCast' [AddGroupWithOne α] [AddGroupWithOne β] [FunLike F α β]
+    [AddMonoidHomClass F α β] (f : F) (h₁ : f 1 = 1) : ∀ n : ℤ, f n = n :=
+  eq_intCast' ((f : α →+ β).comp <| Int.castAddHom _) (by simpa)
+
 @[simp]
 theorem Int.castAddHom_int : Int.castAddHom ℤ = AddMonoidHom.id ℤ :=
   ((AddMonoidHom.id ℤ).eq_intCastAddHom rfl).symm

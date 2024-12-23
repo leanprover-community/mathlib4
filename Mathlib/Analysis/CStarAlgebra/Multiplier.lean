@@ -630,7 +630,7 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
     On the other hand, for any `‖z‖ ≤ 1`, we may choose `x := star z` and `y := z` to get:
     `‖star (L (star x)) * L y‖ = ‖star (L z) * (L z)‖ = ‖L z‖ ^ 2`, and taking the supremum over
     all such `z` yields that the supremum is at least `‖L‖ ^ 2`. It is the latter part of the
-    argument where `DenselyNormedField 𝕜` is required (for `sSup_closed_unit_ball_eq_nnnorm`). -/
+    argument where `DenselyNormedField 𝕜` is required (for `sSup_unitClosedBall_eq_nnnorm`). -/
       have hball : (Metric.closedBall (0 : A) 1).Nonempty :=
         Metric.nonempty_closedBall.2 zero_le_one
       have key :
@@ -645,9 +645,9 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
               (a.fst.le_opNorm_of_le hy))
           _ ≤ ‖a‖₊ * ‖a‖₊ := by simp only [mul_one, nnnorm_fst, le_rfl]
       rw [← nnnorm_snd]
-      simp only [mul_snd, ← sSup_closed_unit_ball_eq_nnnorm, star_snd, mul_apply]
+      simp only [mul_snd, ← sSup_unitClosedBall_eq_nnnorm, star_snd, mul_apply]
       simp only [← @opNNNorm_mul_apply 𝕜 _ A]
-      simp only [← sSup_closed_unit_ball_eq_nnnorm, mul_apply']
+      simp only [← sSup_unitClosedBall_eq_nnnorm, mul_apply']
       refine csSup_eq_of_forall_le_of_forall_lt_exists_gt (hball.image _) ?_ fun r hr => ?_
       · rintro - ⟨x, hx, rfl⟩
         refine csSup_le (hball.image _) ?_
@@ -655,7 +655,7 @@ instance instCStarRing : CStarRing 𝓜(𝕜, A) where
         exact key x y (mem_closedBall_zero_iff.1 hx) (mem_closedBall_zero_iff.1 hy)
       · simp only [Set.mem_image, Set.mem_setOf_eq, exists_prop, exists_exists_and_eq_and]
         have hr' : NNReal.sqrt r < ‖a‖₊ := ‖a‖₊.sqrt_mul_self ▸ NNReal.sqrt_lt_sqrt.2 hr
-        simp_rw [← nnnorm_fst, ← sSup_closed_unit_ball_eq_nnnorm] at hr'
+        simp_rw [← nnnorm_fst, ← sSup_unitClosedBall_eq_nnnorm] at hr'
         obtain ⟨_, ⟨x, hx, rfl⟩, hxr⟩ := exists_lt_of_lt_csSup (hball.image _) hr'
         have hx' : ‖x‖₊ ≤ 1 := mem_closedBall_zero_iff.1 hx
         refine ⟨star x, mem_closedBall_zero_iff.2 ((nnnorm_star x).trans_le hx'), ?_⟩
