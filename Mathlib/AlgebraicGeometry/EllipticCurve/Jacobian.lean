@@ -1737,7 +1737,6 @@ lemma map_addXYZ (P Q : Fin 3 → R) :
     (W'.map f).toJacobian.addXYZ (f ∘ P) (f ∘ Q) = f ∘ addXYZ W' P Q := by
   simp only [addXYZ, map_addX, map_addY, map_addZ, comp_fin3]
 
-variable {f} in
 @[simp]
 protected lemma map_add {K : Type v} [Field K] (f : F →+* K) {P Q : Fin 3 → F}
     (hP : W.Nonsingular P) (hQ : W.Nonsingular Q) :
@@ -1760,10 +1759,10 @@ lemma baseChange_polynomial : (W'.baseChange B).toJacobian.polynomial =
     MvPolynomial.map f (W'.baseChange A).toJacobian.polynomial := by
   rw [← map_polynomial, map_baseChange]
 
-variable {g} in
+variable {f} in
 lemma baseChange_equation (hf : Function.Injective f) (P : Fin 3 → A) :
     (W'.baseChange B).toJacobian.Equation (f ∘ P) ↔ (W'.baseChange A).toJacobian.Equation P := by
-  rw [← map_equation hf, AlgHom.toRingHom_eq_coe, map_baseChange, RingHom.coe_coe]
+  rw [← RingHom.coe_coe, ← map_equation hf, AlgHom.toRingHom_eq_coe, map_baseChange]
 
 lemma baseChange_polynomialX : (W'.baseChange B).toJacobian.polynomialX =
     MvPolynomial.map f (W'.baseChange A).toJacobian.polynomialX := by
@@ -1781,67 +1780,55 @@ variable {f} in
 lemma baseChange_nonsingular (hf : Function.Injective f) (P : Fin 3 → A) :
     (W'.baseChange B).toJacobian.Nonsingular (f ∘ P) ↔
       (W'.baseChange A).toJacobian.Nonsingular P := by
-  rw [← map_nonsingular hf, AlgHom.toRingHom_eq_coe, map_baseChange, RingHom.coe_coe]
+  rw [← RingHom.coe_coe, ← map_nonsingular hf, AlgHom.toRingHom_eq_coe, map_baseChange]
 
 lemma baseChange_negY (P : Fin 3 → A) :
     (W'.baseChange B).toJacobian.negY (f ∘ P) = f ((W'.baseChange A).toJacobian.negY P) := by
-  erw [← map_negY, map_baseChange]
-  rfl
+  rw [← RingHom.coe_coe, ← map_negY, map_baseChange]
 
 protected lemma baseChange_neg (P : Fin 3 → A) :
     (W'.baseChange B).toJacobian.neg (f ∘ P) = f ∘ (W'.baseChange A).toJacobian.neg P := by
-  erw [← WeierstrassCurve.Jacobian.map_neg, map_baseChange]
-  rfl
+  rw [← RingHom.coe_coe, ← WeierstrassCurve.Jacobian.map_neg, map_baseChange]
 
 lemma baseChange_dblU (P : Fin 3 → A) : (W'.baseChange B).toJacobian.dblU (f ∘ P) =
     f ((W'.baseChange A).toJacobian.dblU P) := by
-  erw [← map_dblU, map_baseChange]
-  rfl
+  rw [← RingHom.coe_coe, ← map_dblU, map_baseChange]
 
 lemma baseChange_dblZ (P : Fin 3 → A) : (W'.baseChange B).toJacobian.dblZ (f ∘ P) =
     f ((W'.baseChange A).toJacobian.dblZ P) := by
-  erw [← map_dblZ, map_baseChange]
-  rfl
+  rw [← RingHom.coe_coe, ← map_dblZ, map_baseChange]
 
 lemma baseChange_dblX (P : Fin 3 → A) : (W'.baseChange B).toJacobian.dblX (f ∘ P) =
     f ((W'.baseChange A).toJacobian.dblX P) := by
-  erw [← map_dblX, map_baseChange]
-  rfl
+  rw [← RingHom.coe_coe, ← map_dblX, map_baseChange]
 
 lemma baseChange_negDblY (P : Fin 3 → A) : (W'.baseChange B).toJacobian.negDblY (f ∘ P) =
     f ((W'.baseChange A).toJacobian.negDblY P) := by
-  erw [← map_negDblY, map_baseChange]
-  rfl
+  rw [← RingHom.coe_coe, ← map_negDblY, map_baseChange]
 
 lemma baseChange_dblY (P : Fin 3 → A) : (W'.baseChange B).toJacobian.dblY (f ∘ P) =
     f ((W'.baseChange A).toJacobian.dblY P) := by
-  erw [← map_dblY, map_baseChange]
-  rfl
+  rw [← RingHom.coe_coe, ← map_dblY, map_baseChange]
 
 lemma baseChange_dblXYZ (P : Fin 3 → A) : (W'.baseChange B).toJacobian.dblXYZ (f ∘ P) =
     f ∘ (W'.baseChange A).toJacobian.dblXYZ P := by
-  erw [← map_dblXYZ, map_baseChange]
-  rfl
+  rw [← RingHom.coe_coe, ← map_dblXYZ, map_baseChange]
 
 lemma baseChange_addX (P Q : Fin 3 → A) : (W'.baseChange B).toJacobian.addX (f ∘ P) (f ∘ Q) =
     f ((W'.baseChange A).toJacobian.addX P Q) := by
-  erw [← map_addX, map_baseChange]
-  rfl
+  rw [← RingHom.coe_coe, ← map_addX, map_baseChange]
 
 lemma baseChange_negAddY (P Q : Fin 3 → A) : (W'.baseChange B).toJacobian.negAddY (f ∘ P) (f ∘ Q) =
     f ((W'.baseChange A).toJacobian.negAddY P Q) := by
-  erw [← map_negAddY, map_baseChange]
-  rfl
+  rw [← RingHom.coe_coe, ← map_negAddY, map_baseChange]
 
 lemma baseChange_addY (P Q : Fin 3 → A) : (W'.baseChange B).toJacobian.addY (f ∘ P) (f ∘ Q) =
     f ((W'.baseChange A).toJacobian.addY P Q) := by
-  erw [← map_addY, map_baseChange]
-  rfl
+  rw [← RingHom.coe_coe, ← map_addY, map_baseChange]
 
 lemma baseChange_addXYZ (P Q : Fin 3 → A) : (W'.baseChange B).toJacobian.addXYZ (f ∘ P) (f ∘ Q) =
     f ∘ (W'.baseChange A).toJacobian.addXYZ P Q := by
-  erw [← map_addXYZ, map_baseChange]
-  rfl
+  rw [← RingHom.coe_coe, ← map_addXYZ, map_baseChange]
 
 variable [Algebra R F] [Algebra S F] [IsScalarTower R S F] {K : Type v} [Field K] [Algebra R K]
   [Algebra S K] [IsScalarTower R S K] (f : F →ₐ[S] K)
@@ -1850,8 +1837,7 @@ lemma baseChange_add {P Q : Fin 3 → F} (hP : (W'.baseChange F).toJacobian.Nons
     (hQ : (W'.baseChange F).toJacobian.Nonsingular Q) :
     (W'.baseChange K).toJacobian.add (f ∘ P) (f ∘ Q) =
       f ∘ (W'.baseChange F).toJacobian.add P Q := by
-  erw [← WeierstrassCurve.Jacobian.map_add f.toRingHom hP hQ, map_baseChange]
-  rfl
+  rw [← RingHom.coe_coe, ← WeierstrassCurve.Jacobian.map_add f hP hQ (K := K), map_baseChange]
 
 end BaseChange
 
