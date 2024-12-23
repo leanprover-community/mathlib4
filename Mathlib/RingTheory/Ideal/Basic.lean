@@ -56,7 +56,7 @@ def pi : Ideal (ι → α) where
 theorem mem_pi (x : ι → α) : x ∈ I.pi ι ↔ ∀ i, x i ∈ I :=
   Iff.rfl
 
-instance [I.IsTwoSided] : (I.pi ι).IsTwoSided :=
+instance (priority := low) [I.IsTwoSided] : (I.pi ι).IsTwoSided :=
   ⟨fun _b hb i ↦ mul_mem_right _ _ (hb i)⟩
 
 end Pi
