@@ -109,7 +109,7 @@ noncomputable def genericPolyMapSurjOnOfInjOn [Finite ι]
     fun i => .var (Sum.inl (Sum.inr (0, i))) =' .var (Sum.inl (Sum.inr (1, i)))
   -- x = y as a formula
   let f2 : Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
-    iInf  l2
+    iInf l2
   let injOn : Language.ring.Formula (α ⊕ Σ i : ι, mons i) :=
     Formula.iAlls (γ := Fin 2 × ι) id
       (φ.relabel (Sum.map Sum.inl (fun i => (0, i))) ⟹
