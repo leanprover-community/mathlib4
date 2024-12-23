@@ -82,7 +82,7 @@ theorem qParam_tendsto (hh : 0 < h) : Tendsto (qParam h) I∞ (𝓝[≠] 0) := b
 theorem invQParam_tendsto (hh : 0 < h) : Tendsto (invQParam h) (𝓝[≠] 0) I∞ := by
   simp only [tendsto_comap_iff, comp_def, im_invQParam]
   apply Tendsto.const_mul_atBot_of_neg (div_neg_of_neg_of_pos (neg_lt_zero.mpr hh) (by positivity))
-  exact Real.tendsto_log_nhdsWithin_zero_right.comp tendsto_norm_nhdsWithin_zero
+  exact Real.tendsto_log_nhdsWithin_zero_right.comp tendsto_norm_nhdsNE_zero
 
 end qParam
 
