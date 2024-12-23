@@ -572,6 +572,7 @@ def symm (cme : M ≃ₜ* N) : N ≃ₜ* M :=
   { cme.toMulEquiv.symm with
   continuous_toFun := cme.continuous_invFun
   continuous_invFun := cme.continuous_toFun }
+initialize_simps_projections ContinuousMulEquiv (toFun → apply, invFun → symm_apply)
 
 @[to_additive]
 theorem invFun_eq_symm {f : M ≃ₜ* N} : f.invFun = f.symm := rfl
