@@ -352,14 +352,16 @@ theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p
     intro h
     simp only [le_refl, le_sup_iff, exists_prop, and_true]
     intro n
-    by_cases hr : r = 0
-    · rw [hr]
+    cases eq_zero_or_pos r with
+    | inl hr =>
+      rw [hr]
       cases n <;> simp
-    right
-    replace hr : 0 < (r : ℝ) := pos_iff_ne_zero.mpr hr
-    specialize h (n + 1)
-    rw [le_div_iff₀ hr]
-    rwa [pow_succ, ← mul_assoc] at h
+    | inr hr =>
+      right
+      rw [← NNReal.coe_pos] at hr
+      specialize h (n + 1)
+      rw [le_div_iff₀ hr]
+      rwa [pow_succ, ← mul_assoc] at h
 
 @[simp]
 theorem radius_unshift (p : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z : F) :
