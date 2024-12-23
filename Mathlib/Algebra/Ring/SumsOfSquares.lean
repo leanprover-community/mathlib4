@@ -101,8 +101,8 @@ theorem IsSquare.isSumSq [AddZeroClass R] [Mul R] {x : R} (hx : IsSquare x) :
 
 /-- A term of the form `∑ i ∈ I, x i`, where each `x i` is a square, satisfies `IsSumSq`. -/
 @[aesop safe apply]
-theorem IsSumSq.sum_mul_self [AddCommMonoid R] [Mul R]
-    {ι : Type*} {I : Finset ι} (x : ι → R) : IsSumSq (∑ i ∈ I, x i * x i) := sum (by aesop)
+theorem IsSumSq.sum_mul_self [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) (x : ι → R) :
+    IsSumSq (∑ i ∈ I, x i * x i) := sum (by aesop)
 
 @[deprecated (since := "2024-12-23")] alias isSumSq_sum_mul_self := IsSumSq.sum_mul_self
 
