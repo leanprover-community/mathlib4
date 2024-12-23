@@ -86,23 +86,16 @@ theorem _root_.isLinearTopology_iff_hasBasis_open_twoSidedIdeal [TopologicalRing
       (fun I : TwoSidedIdeal R ↦ IsOpen (I : Set R)) (fun I : TwoSidedIdeal R ↦ (I : Set R)) :=
   ⟨fun _ ↦ hasBasis_open_twoSidedIdeal, fun h ↦ .mk_of_twoSidedIdeal h⟩
 
-instance [IsLinearTopology R] : Nonempty { J : TwoSidedIdeal R | (J : Set R) ∈ 𝓝 0} := by
+/- instance [IsLinearTopology R] : Nonempty { J : TwoSidedIdeal R | (J : Set R) ∈ 𝓝 0} := by
   obtain ⟨J, hJ, _⟩ :=
     ((hasBasis_twoSidedIdeal (R := R)).mem_iff' Set.univ).mp (Filter.univ_mem)
-  exact ⟨J, hJ⟩
+  exact ⟨J, hJ⟩ -/
 
-instance [DiscreteTopology R] : IsLinearTopology R := by
- rw [isLinearTopology_iff_hasBasis_twoSidedIdeal]
- apply HasBasis.mk
- intro t
- simp only [mem_nhds_discrete, SetLike.mem_coe, TwoSidedIdeal.zero_mem, true_and]
- constructor
- · intro ht
-   use ⊥
-   change {0} ⊆ t
-   simp only [Set.singleton_subset_iff, ht]
- · rintro ⟨J, hJt⟩
-   exact hJt J.zero_mem
+instance [DiscreteTopology R] : IsLinearTopology R :=
+  have : HasBasis (𝓝 0 : Filter R) (fun _ ↦ True) (fun (_ : Unit) ↦ (⊥ : TwoSidedIdeal R)) := by
+    rw [nhds_discrete]
+    exact hasBasis_pure _
+  .mk_of_twoSidedIdeal this
 
 theorem tendsto_mul_zero_of_left [IsLinearTopology R] {ι : Type*} {f : Filter ι}
     (a b : ι → R) (ha : Tendsto a f (𝓝 0)) :
