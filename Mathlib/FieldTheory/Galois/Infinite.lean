@@ -213,8 +213,7 @@ def GaloisCoinsertionIntermediateFieldSubgroup [IsGalois k K] :
   choice_eq _ _ := rfl
 
 theorem isOpen_iff_finite (L : IntermediateField k K) [IsGalois k K] :
-    IsOpen (IntermediateFieldEquivClosedSubgroup L).carrier ↔
-    (FiniteDimensional k L) := by
+    IsOpen L.fixingSubgroup.carrier ↔ (FiniteDimensional k L) := by
   refine ⟨fun h ↦ ?_, fun h ↦ IntermediateField.fixingSubgroup_isOpen L⟩
   have : (IntermediateFieldEquivClosedSubgroup.toFun L).carrier ∈ nhds 1 :=
     IsOpen.mem_nhds h (congrFun rfl)
@@ -234,8 +233,7 @@ theorem isOpen_iff_finite (L : IntermediateField k K) [IsGalois k K] :
   exact FiniteDimensional.left k L L'.1
 
 theorem normal_iff_isGalois (L : IntermediateField k K) [IsGalois k K] :
-    Subgroup.Normal (IntermediateFieldEquivClosedSubgroup L).1 ↔
-    IsGalois k L := by
+    L.fixingSubgroup.Normal ↔ IsGalois k L := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · let f : L → IntermediateField k K := fun x => IntermediateField.lift <|
       IntermediateField.fixedField <| Subgroup.map (restrictNormalHom
@@ -266,5 +264,11 @@ theorem normal_iff_isGalois (L : IntermediateField k K) [IsGalois k K] :
     apply IsGalois.mk
   · simpa only [IntermediateFieldEquivClosedSubgroup, RelIso.coe_fn_mk, Equiv.coe_fn_mk,
       ← L.restrictNormalHom_ker] using MonoidHom.normal_ker (restrictNormalHom L)
+
+theorem isOpen_and_normal_iff_finite_and_isGalois (L : IntermediateField k K) [IsGalois k K] :
+    IsOpen L.fixingSubgroup.carrier ∧ L.fixingSubgroup.Normal ↔
+    FiniteDimensional k L ∧ IsGalois k L :=
+  ⟨fun h ↦ ⟨(isOpen_iff_finite L).mp h.1, (normal_iff_isGalois L).mp h.2⟩,
+   fun h ↦ ⟨(isOpen_iff_finite L).mpr h.1, (normal_iff_isGalois L).mpr h.2⟩⟩
 
 end InfiniteGalois
