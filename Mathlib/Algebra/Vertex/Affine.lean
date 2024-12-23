@@ -33,9 +33,9 @@ Write defs and proofs.  First, write something in the loop Lie algebra file.
 
 section LoopAlgebra
 
---def central extension (done already somewhere?)
---def central character of a representation
---def positive-energy representation
+--def central extension (do elsewhere)
+--def central character of an irreducible representation of a central extension (need alg. closed?)
+--def positive-energy representation (do in loop file)
 
 --def affineVertexOperator (x : g) (V : positiveEnergy) : VertexOperator R V :=
 --  of_coeff R fun n v => x t^n • v

@@ -909,13 +909,6 @@ def powers (x : HahnSeries Γ R) (hx : 0 < x.orderTop) : SummableFamily Γ R ℕ
   isPWO_iUnion_support' := isPWO_iUnion_support_powers (zero_le_orderTop_iff.mp <| le_of_lt hx)
   finite_co_support' g := pow_finite_co_support hx g
 
-/-- The powers of an element of positive valuation form a summable family. -/
-@[simps]
-def powers (x : HahnSeries Γ R) (hx : 0 < x.orderTop) : SummableFamily Γ R ℕ where
-  toFun n := x ^ n
-  isPWO_iUnion_support' := isPWO_iUnion_support_powers (zero_le_orderTop_iff.mp <| le_of_lt hx)
-  finite_co_support' g := pow_finite_co_support hx g
-
 variable {x : HahnSeries Γ R} (hx : 0 < x.orderTop)
 
 @[simp]
