@@ -162,7 +162,7 @@ theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt (hγt₀ : I.IsInteriorPoi
   -- main proof
   suffices (extChartAt I (γ t₀)) ∘ γ =ᶠ[𝓝 t₀] (extChartAt I (γ' t₀)) ∘ γ' from
     (heq hγ).trans <| (this.fun_comp (extChartAt I (γ t₀)).symm).trans (h ▸ (heq hγ').symm)
-  exact ODE_solution_unique_of_eventually hlip
+  exact ODE_solution_unique_of_eventually (.of_forall hlip)
     (hdrv hγ rfl) (hdrv hγ' h) (by rw [Function.comp_apply, Function.comp_apply, h])
 
 theorem isIntegralCurveAt_eventuallyEq_of_contMDiffAt_boundaryless [BoundarylessManifold I M]
@@ -250,7 +250,7 @@ theorem isIntegralCurve_Ioo_eq_of_contMDiff_boundaryless [BoundarylessManifold I
 period `a - b`. -/
 lemma IsIntegralCurve.periodic_of_eq [BoundarylessManifold I M]
     (hγ : IsIntegralCurve γ v)
-    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M)))
+    (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M)))
     (heq : γ a = γ b) : Periodic γ (a - b) := by
   intro t
   apply congrFun <|
@@ -260,7 +260,7 @@ lemma IsIntegralCurve.periodic_of_eq [BoundarylessManifold I M]
 /-- A global integral curve is injective xor periodic with positive period. -/
 lemma IsIntegralCurve.periodic_xor_injective [BoundarylessManifold I M]
     (hγ : IsIntegralCurve γ v)
-    (hv : ContMDiff I I.tangent 1 (fun x => (⟨x, v x⟩ : TangentBundle I M))) :
+    (hv : ContMDiff I I.tangent 1 (fun x ↦ (⟨x, v x⟩ : TangentBundle I M))) :
     Xor' (∃ T > 0, Periodic γ T) (Injective γ) := by
   rw [xor_iff_iff_not]
   refine ⟨fun ⟨T, hT, hf⟩ ↦ hf.not_injective (ne_of_gt hT), ?_⟩

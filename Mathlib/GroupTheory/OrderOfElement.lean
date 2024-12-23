@@ -10,6 +10,7 @@ import Mathlib.Algebra.Order.Group.Action
 import Mathlib.Algebra.Order.Ring.Abs
 import Mathlib.GroupTheory.Index
 import Mathlib.Order.Interval.Set.Infinite
+import Mathlib.Tactic.Positivity
 
 /-!
 # Order of an element
@@ -88,8 +89,13 @@ theorem not_isOfFinOrder_of_injective_pow {x : G} (h : Injective fun n : ℕ => 
 theorem IsOfFinOrder.one : IsOfFinOrder (1 : G) :=
   isOfFinOrder_iff_pow_eq_one.mpr ⟨1, Nat.one_pos, one_pow 1⟩
 
-@[to_additive (attr := deprecated (since := "2024-10-11"))]
+@[to_additive]
 alias isOfFinOrder_one := IsOfFinOrder.one
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated IsOfFinOrder.one (since := "2024-10-11")] isOfFinOrder_one
+attribute [deprecated IsOfFinAddOrder.zero (since := "2024-10-11")] isOfFinAddOrder_zero
 
 @[to_additive]
 lemma IsOfFinOrder.pow {n : ℕ} : IsOfFinOrder a → IsOfFinOrder (a ^ n) := by
@@ -963,12 +969,6 @@ lemma Nat.Coprime.pow_left_bijective {G} [Group G] (hn : (Nat.card G).Coprime n)
     Bijective (· ^ n : G → G) :=
   (powCoprime hn).bijective
 
-@[to_additive add_inf_eq_bot_of_coprime]
-theorem inf_eq_bot_of_coprime {G : Type*} [Group G] {H K : Subgroup G}
-    (h : Nat.Coprime (Nat.card H) (Nat.card K)) : H ⊓ K = ⊥ :=
-  card_eq_one.mp (Nat.eq_one_of_dvd_coprimes h
-    (card_dvd_of_le inf_le_left) (card_dvd_of_le inf_le_right))
-
 /- TODO: Generalise to `Submonoid.powers`. -/
 @[to_additive]
 theorem image_range_orderOf [DecidableEq G] :
@@ -1039,7 +1039,7 @@ def powCardSubgroup {G : Type*} [Group G] [Fintype G] (S : Set G) (hS : S.Nonemp
   have one_mem : (1 : G) ∈ S ^ Fintype.card G := by
     obtain ⟨a, ha⟩ := hS
     rw [← pow_card_eq_one]
-    exact Set.pow_mem_pow ha (Fintype.card G)
+    exact Set.pow_mem_pow ha
   subgroupOfIdempotent (S ^ Fintype.card G) ⟨1, one_mem⟩ <| by
     classical
     apply (Set.eq_of_subset_of_card_le (Set.subset_mul_left _ one_mem) (ge_of_eq _)).symm

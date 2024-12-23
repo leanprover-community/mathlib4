@@ -5,7 +5,7 @@ Authors: Michael Geißer, Michael Stoll
 -/
 import Mathlib.Tactic.Qify
 import Mathlib.Data.ZMod.Basic
-import Mathlib.NumberTheory.DiophantineApproximation
+import Mathlib.NumberTheory.DiophantineApproximation.Basic
 import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!

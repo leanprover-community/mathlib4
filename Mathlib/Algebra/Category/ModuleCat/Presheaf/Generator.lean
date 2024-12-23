@@ -92,7 +92,7 @@ lemma isDetecting : IsDetecting (freeYoneda R) :=
 end freeYoneda
 
 instance wellPowered {C₀ : Type u} [SmallCategory C₀] (R₀ : C₀ᵒᵖ ⥤ RingCat.{u}) :
-    WellPowered (PresheafOfModules.{u} R₀) :=
+    WellPowered.{u} (PresheafOfModules.{u} R₀) :=
   wellPowered_of_isDetecting (freeYoneda.isDetecting R₀)
 
 /-- The type of elements of a presheaf of modules. A term of this type is a pair

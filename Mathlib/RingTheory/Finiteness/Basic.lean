@@ -119,6 +119,17 @@ theorem fg_restrictScalars {R S M : Type*} [CommSemiring R] [Semiring S] [Algebr
   use X
   exact (Submodule.restrictScalars_span R S h (X : Set M)).symm
 
+lemma FG.of_restrictScalars (R) {A M} [CommSemiring R] [Semiring A] [AddCommMonoid M]
+    [Algebra R A] [Module R M] [Module A M] [IsScalarTower R A M] (S : Submodule A M)
+    (hS : (S.restrictScalars R).FG) : S.FG := by
+  obtain ⟨s, e⟩ := hS
+  refine ⟨s, Submodule.restrictScalars_injective R _ _ (le_antisymm ?_ ?_)⟩
+  · show Submodule.span A s ≤ S
+    have := Submodule.span_le.mp e.le
+    rwa [Submodule.span_le]
+  · rw [← e]
+    exact Submodule.span_le_restrictScalars _ _ _
+
 theorem FG.stabilizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →o Submodule R M)
     (H : iSup N = M') : ∃ n, M' = N n := by
   obtain ⟨S, hS⟩ := hM'

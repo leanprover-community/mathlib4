@@ -56,6 +56,8 @@ inductive StyleError where
   | adaptationNote
   /-- A line ends with windows line endings (\r\n) instead of unix ones (\n). -/
   | windowsLineEnding
+  /-- A line contains trailing whitespace. -/
+  | trailingWhitespace
 deriving BEq
 
 /-- How to format style errors -/
@@ -76,6 +78,7 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
     "Found the string \"Adaptation note:\", please use the #adaptation_note command instead"
   | windowsLineEnding => "This line ends with a windows line ending (\r\n): please use Unix line\
     endings (\n) instead"
+  | trailingWhitespace => "This line ends with some whitespace: please remove this"
 
 /-- The error code for a given style error. Keep this in sync with `parse?_errorContext` below! -/
 -- FUTURE: we're matching the old codes in `lint-style.py` for compatibility;
@@ -83,6 +86,7 @@ def StyleError.errorMessage (err : StyleError) : String := match err with
 def StyleError.errorCode (err : StyleError) : String := match err with
   | StyleError.adaptationNote => "ERR_ADN"
   | StyleError.windowsLineEnding => "ERR_WIN"
+  | StyleError.trailingWhitespace => "ERR_TWS"
 
 /-- Context for a style error: the actual error, the line number in the file we're reading
 and the path to the file. -/
@@ -160,6 +164,7 @@ def parse?_errorContext (line : String) : Option ErrorContext := Id.run do
         -- Use default values for parameters which are ignored for comparing style exceptions.
         -- NB: keep this in sync with `compare` above!
         | "ERR_ADN" => some (StyleError.adaptationNote)
+        | "ERR_TWS" => some (StyleError.trailingWhitespace)
         | "ERR_WIN" => some (StyleError.windowsLineEnding)
         | _ => none
       match String.toNat? lineNumber with
@@ -196,13 +201,23 @@ section
 /-- Lint on any occurrences of the string "Adaptation note:" or variants thereof. -/
 def adaptationNoteLinter : TextbasedLinter := fun lines ↦ Id.run do
   let mut errors := Array.mkEmpty 0
-  let mut lineNumber := 1
-  for line in lines do
+  for (line, idx) in lines.zipWithIndex do
     -- We make this shorter to catch "Adaptation note", "adaptation note" and a missing colon.
     if line.containsSubstr "daptation note" then
-      errors := errors.push (StyleError.adaptationNote, lineNumber)
-    lineNumber := lineNumber + 1
+      errors := errors.push (StyleError.adaptationNote, idx + 1)
   return (errors, none)
+
+
+/-- Lint a collection of input strings if one of them contains trailing whitespace. -/
+def trailingWhitespaceLinter : TextbasedLinter := fun lines ↦ Id.run do
+  let mut errors := Array.mkEmpty 0
+  let mut fixedLines := lines
+  for (line, idx) in lines.zipWithIndex do
+    if line.back == ' ' then
+      errors := errors.push (StyleError.trailingWhitespace, idx + 1)
+      fixedLines := fixedLines.set! idx line.trimRight
+  return (errors, if errors.size > 0 then some fixedLines else none)
+
 
 /-- Whether a collection of lines consists *only* of imports, blank lines and single-line comments.
 In practice, this means it's an imports-only file and exempt from almost all linting. -/
@@ -215,7 +230,7 @@ end
 
 /-- All text-based linters registered in this file. -/
 def allLinters : Array TextbasedLinter := #[
-    adaptationNoteLinter
+    adaptationNoteLinter, trailingWhitespaceLinter
   ]
 
 
@@ -256,7 +271,6 @@ def lintFile (path : FilePath) (exceptions : Array ErrorContext) :
   errors := errors.append
     (allOutput.flatten.filter (fun e ↦ (e.find?_comparable exceptions).isNone))
   return (errors, if changes_made then some changed else none)
-
 
 /-- Lint a collection of modules for style violations.
 Print formatted errors for all unexpected style violations to standard output;

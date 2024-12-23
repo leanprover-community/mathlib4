@@ -10,6 +10,8 @@ import Mathlib.Data.Real.Star
 # The non-negative real numbers are a `*`-ring, with the trivial `*`-structure
 -/
 
+assert_not_exists Finset
+
 open scoped NNReal
 
 instance : StarRing ℝ≥0 := starRingOfComm

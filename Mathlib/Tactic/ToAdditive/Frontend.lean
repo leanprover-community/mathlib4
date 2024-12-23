@@ -878,7 +878,7 @@ def additivizeLemmas {m : Type → Type} [Monad m] [MonadError m] [MonadLiftT Co
   for (nm, lemmas) in names.zip auxLemmas do
     unless lemmas.size == nLemmas do
       throwError "{names[0]!} and {nm} do not generate the same number of {desc}."
-  for (srcLemmas, tgtLemmas) in auxLemmas.zip <| auxLemmas.eraseIdx 0 do
+  for (srcLemmas, tgtLemmas) in auxLemmas.zip <| auxLemmas.eraseIdx! 0 do
     for (srcLemma, tgtLemma) in srcLemmas.zip tgtLemmas do
       insertTranslation srcLemma tgtLemma
 
@@ -1106,27 +1106,41 @@ def targetName (cfg : Config) (src : Name) : CoreM Name := do
   return res
 
 /-- if `f src = #[a_1, ..., a_n]` and `f tgt = #[b_1, ... b_n]` then `proceedFieldsAux src tgt f`
-  will insert translations from `src.a_i` to `tgt.b_i`. -/
-def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name)) : CoreM Unit := do
+will insert translations from `src.a_i` to `tgt.b_i`
+(or from `a_i` to `b_i` if `prependName` is false). -/
+def proceedFieldsAux (src tgt : Name) (f : Name → CoreM (Array Name))
+    (prependName := true) : CoreM Unit := do
   let srcFields ← f src
   let tgtFields ← f tgt
   if srcFields.size != tgtFields.size then
-    throwError "Failed to map fields of {src}, {tgt} with {srcFields} ↦ {tgtFields}"
+    throwError "Failed to map fields of {src}, {tgt} with {srcFields} ↦ {tgtFields}.\n \
+      Lengths do not match."
   for (srcField, tgtField) in srcFields.zip tgtFields do
+    let srcName := if prependName then src ++ srcField else srcField
+    let tgtName := if prependName then tgt ++ tgtField else tgtField
     if srcField != tgtField then
-      insertTranslation (src ++ srcField) (tgt ++ tgtField)
+      insertTranslation srcName tgtName
     else
-      trace[to_additive] "Translation {src ++ srcField} ↦ {tgt ++ tgtField} is automatic."
+      trace[to_additive] "Translation {srcName} ↦ {tgtName} is automatic."
 
 /-- Add the structure fields of `src` to the translations dictionary
 so that future uses of `to_additive` will map them to the corresponding `tgt` fields. -/
 def proceedFields (src tgt : Name) : CoreM Unit := do
-  let aux := proceedFieldsAux src tgt
+  let aux := @proceedFieldsAux src tgt
+  -- add translations for the structure fields
   aux fun declName ↦ do
     if isStructure (← getEnv) declName then
       return getStructureFields (← getEnv) declName
     else
       return #[]
+  -- add translations for the automatically generated instances with `extend`.
+  aux (prependName := false) fun declName ↦ do
+    if isStructure (← getEnv) declName then
+      return getStructureInfo (← getEnv) declName |>.parentInfo
+        |>.filterMap fun c ↦ if !c.subobject then c.projFn else none
+    else
+      return #[]
+  -- add translations for the constructors of an inductive type
   aux fun declName ↦ do match (← getEnv).find? declName with
     | some (ConstantInfo.inductInfo {ctors := ctors, ..}) =>
         return ctors.toArray.map (.mkSimple ·.lastComponentAsString)
