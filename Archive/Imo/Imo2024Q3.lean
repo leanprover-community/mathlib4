@@ -74,6 +74,17 @@ lemma toFinset_card_pos {a : ℕ → ℕ} {i : ℕ} (hf : {j | a j = a i}.Finite
 lemma apply_nth_zero (a : ℕ → ℕ) (i : ℕ) : a (Nat.nth (a · = a i) 0) = a i :=
   Nat.nth_mem (p := (a · = a i)) 0 toFinset_card_pos
 
+lemma map_add_one_range (p : ℕ → Prop) [DecidablePred p] (n : ℕ) (h0 : ¬ p 0) :
+    {x ∈ Finset.range n | p (x + 1)}.map ⟨(· + 1), add_left_injective 1⟩ =
+     {x ∈ Finset.range (n + 1) | p x } := by
+  ext x
+  simp only [Finset.mem_map]
+  constructor
+  · aesop
+  · intro hx
+    use x - 1
+    cases x <;> simp_all
+
 namespace Condition
 
 /-! ### The basic structure of the sequence, eventually alternating small and large numbers -/
@@ -178,104 +189,62 @@ lemma injOn_setOf_apply_add_one_eq_of_M_le {n : ℕ} (h : M a N ≤ n) :
   have hj' := hj ▸ hc.nth_apply_add_one_eq (Nat.lt_add_one_iff.mp (N_lt_of_M_le_apply (hj ▸ h)))
   rw [← hi', ← hj', hij]
 
-lemma card_lt_M_of_M_le {n : ℕ} (h : M a N ≤ n) :
-    ∃ hf : {i | a i = n}.Finite, #hf.toFinset < M a N := by
-  by_contra! hin
-  -- s is the set of indices where some integer ≥ M appears for the Mth time.
-  let s : Set ℕ := {i | M a N ≤ a i ∧ a (i + 1) = M a N}
-  have hs : s.Nonempty := by
-    use Nat.nth (a · = n) (M a N - 1)
-    have hin' := fun hf ↦ Nat.sub_one_lt_of_le (M_pos a N) (hin hf)
-    have ha : M a N ≤ a (Nat.nth (a · = n) (M a N - 1)) := (Nat.nth_mem _ hin').symm ▸ h
-    refine ⟨ha, ?_⟩
-    convert hc.apply_nth_add_one_eq hin' (N_lt_of_M_le_apply ha).le using 1
-  -- i is the index of the first place some integer ≥ M appears for the Mth time.
-  let i : ℕ := sInf s
-  obtain ⟨hi1, hi2⟩ : M a N ≤ a i ∧ a (i + 1) = M a N := Nat.sInf_mem hs
-  have hi' : ∀ j < i, M a N ≤ a j → a (j + 1) ≠ M a N := by
-    intro j hj
-    simpa [s] using Nat.not_mem_of_lt_sInf hj
-  have hi'' : ∀ j < i, M a N ≤ a j → a (j + 1) < M a N := by
-    intro j hji hMj
-    by_contra! hj1M
-    refine hi' (Nat.nth (a · = a j) (M a N - 1)) (lt_of_le_of_lt ?_ hji) ?le2
-      (hc.apply_nth_add_one_eq (hc.lt_toFinset_card hj1M) (N_lt_of_M_le_apply (a := a) ?le2).le)
-    · have hj := hc.nth_apply_add_one_eq (N_lt_of_M_le_apply hMj).le
-      nth_rw 2 [← hj]
-      refine Nat.nth_le_nth' (by omega) fun hf ↦ ?_
-      have hj0 := ne_eq j 0 ▸ (ne_zero_of_M_le_apply hMj)
-      rw [← hj, Nat.nth_eq_zero] at hj0
-      simp only [not_or, not_exists, not_le] at hj0
-      exact hj0.2 _
-    · convert hMj using 1; exact Nat.nth_mem _ (hc.lt_toFinset_card hj1M)
+lemma empty_setOf_apply_add_one_eq_M : {i | M a N ≤ a i ∧ M a N ≤ a (i + 1)} = ∅ := by
+  rw [Set.eq_empty_iff_forall_not_mem]
+  intro i
+  induction i using Nat.strong_induction_on with | h i ih =>
+  rintro ⟨hi1, hi2⟩
+  have hi : ∀ j < i, M a N ≤ a j → a (j + 1) < M a N := by simp_all
   -- t is the set of indices before an appearance of the integer (a i).  For each j ∈ t, (a j)
   -- is the (a i)th appearance of that value, so each such value before index i appears at least
   -- M times before that index; since (a i) is the Mth appearance of that value, there are at
   -- least M positive integers appearing M times before (a i), a contradiction because one of
   -- those must be at least M.
-  let t : Set ℕ := {j | a (j + 1) = a i} ∩ ↑(Finset.range i)
-  have ht'inj : Set.InjOn a t :=
-    (hc.injOn_setOf_apply_add_one_eq_of_M_le hi1).mono Set.inter_subset_left
+  let t : Finset ℕ := {j ∈ Finset.range i | a (j + 1) = a i}
+  let t' : Finset ℕ := {j ∈ Finset.range (i + 1) | a j = a i}
+  have t_map_eq_t' : t.map ⟨(· + 1), add_left_injective 1⟩ = t' := by
+    refine map_add_one_range (a · = a i) i ?_
+    intro H
+    rw [←H, M] at hi1
+    have a0_le : a 0 ≤ (Finset.range (N + 1)).sup a := Finset.le_sup (by simp)
+    omega
+  have card_t_eq_card_t' : #t = #t' := by simp [← t_map_eq_t', t]
   have htM : ∀ j ∈ t, a j < M a N := by
-    rintro j ⟨hj, hji⟩
-    simp only [Finset.coe_range, Set.mem_Iio] at hji
-    by_contra! hjM
-    exact (lt_self_iff_false _).mp ((hj ▸ hi'' j hji hjM).trans_le hi1)
-  have ht : t.Finite := Set.Finite.inter_of_right (Finset.finite_toSet _) _
-  have h0i : a 0 ≠ a i := apply_ne_of_M_le_apply hi1 (Nat.zero_le _)
-  have hMi : Nat.nth (fun j ↦ a (j + 1) = a i) '' ↑(Finset.range (M a N)) ⊆ t := by
-    simp only [Finset.coe_range, Set.image_subset_iff]
     intro j hj
-    simp only [Set.mem_Iio] at hj
-    simp only [Set.mem_preimage, Finset.coe_range, Set.mem_inter_iff, Set.mem_Iio, t,
-      Set.mem_setOf_eq]
-    refine ⟨Nat.nth_mem (p := fun k ↦ a (k + 1) = a i) _ fun hf ↦ hj.trans_le ?_, ?_⟩
-    · rw [hc.apply_eq_card ((N_lt_of_M_le_apply hi1).trans (Nat.lt_add_one _))] at hi2
-      rw [← hi2, add_tsub_cancel_right,
-        ← hf.toFinset.card_image_of_injective (add_left_injective 1)]
-      refine Finset.card_le_card ?_
-      simp only [Finset.subset_iff, Finset.mem_filter, Finset.mem_range, Finset.mem_image,
-        Set.Finite.mem_toFinset, Set.mem_setOf_eq, and_imp]
-      rintro k - hk
-      use k - 1
-      have : k ≠ 0 := fun h ↦ not_lt_zero' (N_lt_of_M_le_apply (h ▸ hk ▸ hi1))
-      simp only [show 1 ≤ k by omega, Nat.sub_add_cancel, hk, and_self]
-    · have h0j : Nat.nth (a · = a i) j ≠ 0 := hc.nth_ne_zero_of_M_le_of_lt hi1 (hi2 ▸ hj)
-      rw [Nat.nth_add_one_eq_sub (p := (a · = a i)) h0i h0j]
-      refine (Nat.sub_one_lt h0j).trans_le ?_
-      nth_rw 2 [← hc.nth_apply_add_one_eq (N_lt_of_M_le_apply hi1).le]
-      exact Nat.nth_le_nth' (by omega) (hi2 ▸ hc.lt_toFinset_card hi2.symm.le)
-  have hMif : (Nat.nth (fun j ↦ a (j + 1) = a i) '' ↑(Finset.range (M a N))).Finite :=
-    Set.Finite.image _ (Finset.finite_toSet _)
-  have hMc : M a N ≤ #ht.toFinset := by
-    have hMi' : hMif.toFinset ⊆ ht.toFinset := by simpa using hMi
-    convert Finset.card_le_card hMi'
-    simp only [Finset.coe_range, Set.toFinite_toFinset, Set.toFinset_image, Set.toFinset_Iio]
-    rw [Finset.card_image_of_injOn]
-    · exact (Nat.card_Iio _).symm
-    · intro k hk l hl hkl
-      simp only [Finset.coe_Iio, Set.mem_Iio] at hk hl
-      have h0k : Nat.nth (a · = a i) k ≠ 0 := hc.nth_ne_zero_of_M_le_of_lt hi1 (hi2 ▸ hk)
-      rw [Nat.nth_add_one_eq_sub (p := (a · = a i)) h0i h0k] at hkl
-      have h0l : Nat.nth (a · = a i) l ≠ 0 := hc.nth_ne_zero_of_M_le_of_lt hi1 (hi2 ▸ hl)
-      rw [Nat.nth_add_one_eq_sub (p := (a · = a i)) h0i h0l,
-        tsub_left_inj (by omega) (by omega), ← add_left_inj 1] at hkl
-      apply_fun a at hkl
-      rw [hc.apply_nth_add_one_eq (fun hf ↦ LE.le.trans_lt (by omega)
-            (hc.lt_toFinset_card hi2.symm.le hf)),
-          hc.apply_nth_add_one_eq (fun hf ↦ LE.le.trans_lt (by omega)
-            (hc.lt_toFinset_card hi2.symm.le hf))] at hkl
-      · simpa using hkl
-      all_goals (refine (N_lt_of_M_le_apply (a := a) ?_).le; convert hi1 using 1)
-      · exact Nat.nth_mem_of_ne_zero h0l
-      · exact Nat.nth_mem_of_ne_zero h0k
-  refine (lt_self_iff_false _).mp (hMc.trans_lt ?_)
-  rw [← Finset.card_image_of_injOn (show Set.InjOn a ↑(ht.toFinset) by simpa using ht'inj)]
-  convert (Finset.card_le_card (t := Finset.Ico 1 (M a N)) ?_).trans_lt ?_
-  · simp only [Set.toFinite_toFinset, Finset.subset_iff, Finset.mem_image, Set.mem_toFinset,
-      Finset.mem_Ico, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
-    exact fun j hj ↦ ⟨hc.pos _, htM j hj⟩
-  · simpa using M_pos a N
+    simp only [t, Finset.mem_filter, Finset.mem_range] at hj
+    obtain ⟨hj, hji⟩ := hj
+    by_contra! hjM
+    exact (lt_self_iff_false _).mp ((hji ▸ hi j hj hjM).trans_le hi1)
+  have N_le_i : N ≤ i := by
+    unfold M at hi1
+    by_contra! HH
+    have i_in_range : i ∈ Finset.range (N + 1) := by rw [Finset.mem_range]; omega
+    have ai_le_sup : a i ≤ (Finset.range (N + 1)).sup a := Finset.le_sup i_in_range
+    omega
+  have ht' : a (i + 1) = #t' := hc.apply_add_one_eq_card N_le_i
+  rw [← card_t_eq_card_t'] at ht'
+  have ht'inj : Set.InjOn a t := by
+    refine (hc.injOn_setOf_apply_add_one_eq_of_M_le hi1).mono ?_
+    simp_all [t, t']
+  have card_image_eq_card_t : #(Finset.image a t) = #t := Finset.card_image_of_injOn ht'inj
+  have card_image_lt_M : #(Finset.image a t) < M a N := by
+    refine (Finset.card_le_card (t := Finset.Ico 1 (M a N)) ?_).trans_lt ?_
+    · simp only [Finset.subset_iff, Finset.mem_image, Finset.mem_Ico, forall_exists_index, and_imp,
+                 forall_apply_eq_imp_iff₂]
+      exact fun j hj ↦ ⟨hc.pos _, htM j hj⟩
+    · simpa using M_pos a N
+  omega
+
+lemma card_lt_M_of_M_le {n : ℕ} (h : M a N ≤ n) :
+    ∃ hf : {i | a i = n}.Finite, #hf.toFinset < M a N := by
+  have := empty_setOf_apply_add_one_eq_M hc
+  contrapose! this with hin
+  use Nat.nth (a · = n) (M a N - 1)
+  have hin' := fun hf ↦ Nat.sub_one_lt_of_le (M_pos a N) (hin hf)
+  have ha : M a N ≤ a (Nat.nth (a · = n) (M a N - 1)) := (Nat.nth_mem _ hin').symm ▸ h
+  refine ⟨ha, ?_⟩
+  suffices H : a (Nat.nth (fun x ↦ a x = n) (M a N - 1) + 1) = M a N from Nat.le_of_eq H.symm
+  convert hc.apply_nth_add_one_eq hin' (N_lt_of_M_le_apply ha).le using 1
 
 lemma bddAbove_setOf_infinite_setOf_apply_eq : BddAbove {m | {i | a i = m}.Infinite} := by
   refine ⟨M a N, fun x hi ↦ ?_⟩
