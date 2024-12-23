@@ -35,6 +35,12 @@ order formulas, for example `FunctionalFormula.equal` and `FunctionalFormula.inj
 ## Tags
 
 definable function
+
+## TODO
+
+Define an interface for translating functional formulas across extensions of languages and
+theories.
+
 -/
 
 universe u v w x y z
