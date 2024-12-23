@@ -170,6 +170,7 @@ theorem coeff_injective : Injective (coeff : SkewMonoidAlgebra k G → G → k) 
 theorem coeff_inj (p q : SkewMonoidAlgebra k G) : p.coeff = q.coeff ↔ p = q :=
   coeff_injective.eq_iff
 
+@[simp]
 theorem toFinsupp_apply (f : SkewMonoidAlgebra k G) (g) : f.toFinsupp g = f.coeff g := rfl
 
 @[simp]
@@ -258,10 +259,11 @@ theorem single_injective (a : G) : Function.Injective (single a : k → SkewMono
   toFinsuppAddEquiv.symm.injective.comp (Finsupp.single_injective a)
 
 theorem _root_.IsSMulRegular.skewMonoidAlgebra_iff {S : Type*} [Monoid S] [DistribMulAction S k]
-    {a : S} [inst : Nonempty G]: IsSMulRegular k a ↔ IsSMulRegular (SkewMonoidAlgebra k G) a := by
+    {a : S} [Nonempty G] : IsSMulRegular k a ↔ IsSMulRegular (SkewMonoidAlgebra k G) a := by
+  inhabit G
   refine ⟨IsSMulRegular.skewMonoidAlgebra, fun ha b₁ b₂ inj ↦ ?_⟩
   rw [← (single_injective _).eq_iff, ← smul_single, ← smul_single] at inj
-  exact single_injective (Classical.choice inst) (ha inj)
+  exact single_injective (default) (ha inj)
 
 end Single
 
@@ -271,7 +273,7 @@ variable [One G] [One k]
 
 /-- The unit of the multiplication is `single 1 1`, i.e. the function that is `1` at `1` and
   zero elsewhere. -/
-instance one : One (SkewMonoidAlgebra k G) := ⟨single 1 1⟩
+instance instOne : One (SkewMonoidAlgebra k G) := ⟨single 1 1⟩
 
 theorem ofFinsupp_one : (⟨Finsupp.single 1 1⟩ : SkewMonoidAlgebra k G) = 1 := rfl
 
@@ -279,7 +281,7 @@ theorem ofFinsupp_one : (⟨Finsupp.single 1 1⟩ : SkewMonoidAlgebra k G) = 1 :
 theorem toFinsupp_one : (1 : SkewMonoidAlgebra k G).toFinsupp = Finsupp.single 1 1 := rfl
 
 @[simp]
-theorem toFinsupp_eq_one {a : SkewMonoidAlgebra k G} :
+theorem toFinsupp_eq_single_one_one_iff {a : SkewMonoidAlgebra k G} :
     a.toFinsupp = Finsupp.single 1 1 ↔ a = 1 := by
   rw [← toFinsupp_one, toFinsupp_inj]
 
@@ -311,7 +313,7 @@ instance [DecidableEq G] [DecidableEq k] : DecidableEq (SkewMonoidAlgebra k G) :
 
 /-- `sum f g` is the sum of `g a (f.coeff a)` over the support of `f`. -/
 def sum {N : Type*} [AddCommMonoid N] (f : SkewMonoidAlgebra k G) (g : G → k → N) : N :=
-  ∑ a ∈ f.support, g a (f.coeff a)
+  f.toFinsupp.sum g
 
 theorem sum_def {N : Type*} [AddCommMonoid N] (f : SkewMonoidAlgebra k G) (g : G → k → N) :
     sum f g = ∑ a ∈ f.support, g a (f.coeff a) := rfl
@@ -361,14 +363,9 @@ theorem sum_add_index {S : Type*} [DecidableEq G] [AddCommMonoid S]
   rw [show f + g = ⟨f.toFinsupp + g.toFinsupp⟩ by rw [ofFinsupp_add, eta]]
   exact Finsupp.sum_add_index h_zero h_add
 
-/-- η-reduced variant of `sum_add`. -/
-@[simp]
-theorem sum_add' {S : Type*} [AddCommMonoid S] (p : SkewMonoidAlgebra k G) (f g : G → k → S) :
-    p.sum (f + g) = p.sum f + p.sum g := Finsupp.sum_add
-
 @[simp]
 theorem sum_add {S : Type*} [AddCommMonoid S] (p : SkewMonoidAlgebra k G) (f g : G → k → S) :
-    (p.sum fun n x => f n x + g n x) = p.sum f + p.sum g := sum_add' _ _ _
+    (p.sum fun n x => f n x + g n x) = p.sum f + p.sum g := Finsupp.sum_add
 
 @[simp]
 theorem sum_zero_index {S : Type*} [AddCommMonoid S] {f : G → k → S} :
@@ -404,7 +401,7 @@ theorem mul_sum {S : Type*} [NonUnitalNonAssocSemiring S] (b : S) (s : SkewMonoi
 theorem sum_ite_eq' {N : Type*} [AddCommMonoid N] [DecidableEq G] (f : SkewMonoidAlgebra k G)
     (a : G) (b : G → k → N) : (f.sum fun (x : G) (v : k) => if x = a then b x v else 0) =
       if a ∈ f.support then b a (f.coeff a) else 0 := by
-  simp only [sum, Finsupp.sum, f.toFinsupp.support.sum_ite_eq', support]
+  simp only [sum_def, Finsupp.sum, f.toFinsupp.support.sum_ite_eq', support]
 
 theorem smul_sum {M : Type*} {R : Type*} [AddCommMonoid M] [DistribSMul R M]
     {v : SkewMonoidAlgebra k G} {c : R} {h : G → k → M} :
