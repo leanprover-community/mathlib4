@@ -312,10 +312,10 @@ theorem zero_rightMoves : RightMoves 0 = PEmpty :=
   rfl
 
 instance isEmpty_zero_leftMoves : IsEmpty (LeftMoves 0) :=
-  instIsEmptyPEmpty
+  PEmpty.instIsEmpty
 
 instance isEmpty_zero_rightMoves : IsEmpty (RightMoves 0) :=
-  instIsEmptyPEmpty
+  PEmpty.instIsEmpty
 
 instance : Inhabited PGame :=
   ⟨0⟩
@@ -337,10 +337,10 @@ theorem one_rightMoves : RightMoves 1 = PEmpty :=
   rfl
 
 instance uniqueOneLeftMoves : Unique (LeftMoves 1) :=
-  PUnit.unique
+  PUnit.instUnique
 
 instance isEmpty_one_rightMoves : IsEmpty (RightMoves 1) :=
-  instIsEmptyPEmpty
+  PEmpty.instIsEmpty
 
 /-! ### Identity -/
 
@@ -1926,10 +1926,10 @@ theorem star_moveRight (x) : star.moveRight x = 0 :=
   rfl
 
 instance uniqueStarLeftMoves : Unique star.LeftMoves :=
-  PUnit.unique
+  PUnit.instUnique
 
 instance uniqueStarRightMoves : Unique star.RightMoves :=
-  PUnit.unique
+  PUnit.instUnique
 
 theorem zero_lf_star : 0 ⧏ star := by
   rw [zero_lf]
