@@ -415,6 +415,5 @@ theorem isZGroup_iff_mulEquiv [Finite G] :
       exact Finite.card_pos.ne'
     rw [← m.card_zmod, ← n.card_zmod, Nat.coprime_comm] at h
     have key : IsZGroup (Multiplicative (ZMod n) ⋊[φ] Multiplicative (ZMod m)) :=
-      isZGroup_of_coprime SemidirectProduct.inl SemidirectProduct.rightHom
-        SemidirectProduct.range_inl_eq_ker_rightHom.ge h
+      IsZGroup.isZGroup_of_coprime SemidirectProduct.range_inl_eq_ker_rightHom.ge h
     exact IsZGroup.of_injective (f := e.toMonoidHom) e.injective
