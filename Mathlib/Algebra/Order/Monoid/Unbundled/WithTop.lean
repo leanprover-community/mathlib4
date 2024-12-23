@@ -325,7 +325,7 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
 @[deprecated (since := "2024-04-05")] alias top_ne_nat := top_ne_natCast
 
 @[simp] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (ofNat(n) : WithTop α) = ofNat(n) := rfl
+    ((ofNat(n) : α) : WithTop α) = ofNat(n) := rfl
 @[simp] lemma coe_eq_ofNat (n : ℕ) [n.AtLeastTwo] (m : α) :
     (m : WithTop α) = ofNat(n) ↔ m = ofNat(n) :=
   coe_eq_coe
@@ -533,7 +533,7 @@ instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWi
 @[deprecated (since := "2024-04-05")] alias bot_ne_nat := bot_ne_natCast
 
 @[simp] lemma coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (ofNat(n) : WithBot α) = ofNat(n) := rfl
+    ((ofNat(n) : α) : WithBot α) = ofNat(n) := rfl
 @[simp] lemma coe_eq_ofNat (n : ℕ) [n.AtLeastTwo] (m : α) :
     (m : WithBot α) = ofNat(n) ↔ m = ofNat(n) :=
   coe_eq_coe
