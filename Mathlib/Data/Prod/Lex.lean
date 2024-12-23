@@ -49,15 +49,15 @@ theorem toLex_le_toLex [LT α] [LE β] {x y : α × β} :
     toLex x ≤ toLex y ↔ x.1 < y.1 ∨ x.1 = y.1 ∧ x.2 ≤ y.2 :=
   Prod.lex_def
 
-theorem toLex_lt_toLex [LT α] [LT β] {x y :  α × β} :
+theorem toLex_lt_toLex [LT α] [LT β] {x y : α × β} :
     toLex x < toLex y ↔ x.1 < y.1 ∨ x.1 = y.1 ∧ x.2 < y.2 :=
   Prod.lex_def
 
-lemma le_iff [LT α] [LE β] {x y :  α ×ₗ β} :
+lemma le_iff [LT α] [LE β] {x y : α ×ₗ β} :
     x ≤ y ↔ (ofLex x).1 < (ofLex y).1 ∨ (ofLex x).1 = (ofLex y).1 ∧ (ofLex x).2 ≤ (ofLex y).2 :=
   Prod.lex_def
 
-lemma lt_iff [LT α] [LT β] {x y :  α ×ₗ β} :
+lemma lt_iff [LT α] [LT β] {x y : α ×ₗ β} :
     x < y ↔ (ofLex x).1 < (ofLex y).1 ∨ (ofLex x).1 = (ofLex y).1 ∧ (ofLex x).2 < (ofLex y).2 :=
   Prod.lex_def
 
