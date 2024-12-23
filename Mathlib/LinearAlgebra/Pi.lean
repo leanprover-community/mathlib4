@@ -326,6 +326,7 @@ open LinearMap
 /-- A version of `Set.pi` for submodules. Given an index set `I` and a family of submodules
 `p : (i : ι) → Submodule R (φ i)`, `pi I s` is the submodule of dependent functions
 `f : (i : ι) → φ i` such that `f i` belongs to `p a` whenever `i ∈ I`. -/
+@[simps]
 def pi (I : Set ι) (p : (i : ι) → Submodule R (φ i)) : Submodule R ((i : ι) → φ i) where
   carrier := Set.pi I fun i => p i
   zero_mem' i _ := (p i).zero_mem
@@ -338,10 +339,6 @@ variable {I : Set ι} {p q : (i : ι) → Submodule R (φ i)} {x : (i : ι) → 
 theorem mem_pi : x ∈ pi I p ↔ ∀ i ∈ I, x i ∈ p i :=
   Iff.rfl
 
-@[simp, norm_cast]
-theorem coe_pi : (pi I p : Set ((i : ι) → φ i)) = Set.pi I fun i => p i :=
-  rfl
-
 @[simp]
 theorem pi_empty (p : (i : ι) → Submodule R (φ i)) : pi ∅ p = ⊤ :=
   SetLike.coe_injective <| Set.empty_pi _
@@ -350,6 +347,7 @@ theorem pi_empty (p : (i : ι) → Submodule R (φ i)) : pi ∅ p = ⊤ :=
 theorem pi_top (s : Set ι) : (pi s fun i : ι => (⊤ : Submodule R (φ i))) = ⊤ :=
   SetLike.coe_injective <| Set.pi_univ _
 
+@[gcongr]
 theorem pi_mono {s : Set ι} (h : ∀ i ∈ s, p i ≤ q i) : pi s p ≤ pi s q :=
   Set.pi_mono h
 
