@@ -742,13 +742,14 @@ protected nonrec abbrev not (φ : L.Formula α) : L.Formula α :=
 protected abbrev imp : L.Formula α → L.Formula α → L.Formula α :=
   BoundedFormula.imp
 
-variable (β)
+
 /-- `iAlls f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by universally
 quantifying over all variables `Sum.inr _`. -/
 noncomputable def iAlls [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin β))
   (BoundedFormula.relabel (fun a => Sum.map id e a) φ).alls
 
+variable (β) in
 /-- `iExs f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by existentially
 quantifying over all variables `Sum.inr _`. -/
 noncomputable def iExs [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
