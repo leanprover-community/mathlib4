@@ -77,8 +77,8 @@ lemma isLocalMax_of_deriv' {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
     (hd₀ : ∀ᶠ x in 𝓝[<] b, DifferentiableAt ℝ f x) (hd₁ : ∀ᶠ x in 𝓝[>] b, DifferentiableAt ℝ f x)
     (h₀ : ∀ᶠ x in 𝓝[<] b, 0 ≤ deriv f x) (h₁ : ∀ᶠ x in 𝓝[>] b, deriv f x ≤ 0) :
     IsLocalMax f b := by
-  obtain ⟨a, ha⟩ := (nhdsWithin_Iio_basis' ⟨b - 1, sub_one_lt b⟩).eventually_iff.mp <| hd₀.and h₀
-  obtain ⟨c, hc⟩ := (nhdsWithin_Ioi_basis' ⟨b + 1, lt_add_one b⟩).eventually_iff.mp <| hd₁.and h₁
+  obtain ⟨a, ha⟩ := (nhdsLT_basis b).eventually_iff.mp <| hd₀.and h₀
+  obtain ⟨c, hc⟩ := (nhdsGT_basis b).eventually_iff.mp <| hd₁.and h₁
   exact isLocalMax_of_deriv_Ioo ha.1 hc.1 h
     (fun _ hx => (ha.2 hx).1.differentiableWithinAt)
     (fun _ hx => (hc.2 hx).1.differentiableWithinAt)
@@ -90,8 +90,8 @@ lemma isLocalMin_of_deriv' {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
     (hd₀ : ∀ᶠ x in 𝓝[<] b, DifferentiableAt ℝ f x) (hd₁ : ∀ᶠ x in 𝓝[>] b, DifferentiableAt ℝ f x)
     (h₀ : ∀ᶠ x in 𝓝[<] b, deriv f x ≤ 0) (h₁ : ∀ᶠ x in 𝓝[>] b, deriv f x ≥ 0) :
     IsLocalMin f b := by
-  obtain ⟨a, ha⟩ := (nhdsWithin_Iio_basis' ⟨b - 1, sub_one_lt b⟩).eventually_iff.mp <| hd₀.and h₀
-  obtain ⟨c, hc⟩ := (nhdsWithin_Ioi_basis' ⟨b + 1, lt_add_one b⟩).eventually_iff.mp <| hd₁.and h₁
+  obtain ⟨a, ha⟩ := (nhdsLT_basis b).eventually_iff.mp <| hd₀.and h₀
+  obtain ⟨c, hc⟩ := (nhdsGT_basis b).eventually_iff.mp <| hd₁.and h₁
   exact isLocalMin_of_deriv_Ioo ha.1 hc.1 h
     (fun _ hx => (ha.2 hx).1.differentiableWithinAt)
     (fun _ hx => (hc.2 hx).1.differentiableWithinAt)
@@ -102,13 +102,11 @@ theorem isLocalMax_of_deriv {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
     (hd : ∀ᶠ x in 𝓝[≠] b, DifferentiableAt ℝ f x)
     (h₀ : ∀ᶠ x in 𝓝[<] b, 0 ≤ deriv f x) (h₁ : ∀ᶠ x in 𝓝[>] b, deriv f x ≤ 0) :
     IsLocalMax f b :=
-  isLocalMax_of_deriv' h
-    (nhds_left'_le_nhds_ne _ (by tauto)) (nhds_right'_le_nhds_ne _ (by tauto)) h₀ h₁
+  isLocalMax_of_deriv' h (nhdsLT_le_nhdsNE _ (by tauto)) (nhdsGT_le_nhdsNE _ (by tauto)) h₀ h₁
 
 /-- The First Derivative test, minimum version. -/
 theorem isLocalMin_of_deriv {f : ℝ → ℝ} {b : ℝ} (h : ContinuousAt f b)
     (hd : ∀ᶠ x in 𝓝[≠] b, DifferentiableAt ℝ f x)
     (h₀ : ∀ᶠ x in 𝓝[<] b, deriv f x ≤ 0) (h₁ : ∀ᶠ x in 𝓝[>] b, 0 ≤ deriv f x) :
     IsLocalMin f b :=
-  isLocalMin_of_deriv' h
-    (nhds_left'_le_nhds_ne _ (by tauto)) (nhds_right'_le_nhds_ne _ (by tauto)) h₀ h₁
+  isLocalMin_of_deriv' h (nhdsLT_le_nhdsNE _ (by tauto)) (nhdsGT_le_nhdsNE _ (by tauto)) h₀ h₁
