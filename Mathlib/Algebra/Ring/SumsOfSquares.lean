@@ -127,7 +127,7 @@ theorem IsSumSq.exists_sum [AddCommMonoid R] [Mul R] {a : R} (ha : IsSumSq a) :
 
 /-- Universe-polymorphic version of `exists_sum`. -/
 theorem IsSumSq.exists_sum' [AddCommMonoid R] [Mul R] {a : R} (ha : IsSumSq a) :
-    (∃ (ι : Type u) (I : Finset ι) (x : ι → R), (∀ i ∈ I, IsSquare (x i)) ∧ ∑ i ∈ I, x i = a) := by
+    ∃ (ι : Type u) (I : Finset ι) (x : ι → R), (∀ i ∈ I, IsSquare (x i)) ∧ ∑ i ∈ I, x i = a := by
   rcases exists_sum ha with ⟨ι, I, x, _⟩
   exact ⟨ULift.{u} ι, .map (Equiv.ulift.symm.toEmbedding) I, x ∘ (Equiv.ulift.toEmbedding),
     by simpa⟩
@@ -136,19 +136,19 @@ theorem IsSumSq.exists_sum' [AddCommMonoid R] [Mul R] {a : R} (ha : IsSumSq a) :
 where each `x i` is a square in `R`. -/
 theorem isSumSq_iff_exists_sum [AddCommMonoid R] [Mul R] (a : R) :
     IsSumSq a ↔
-    (∃ (ι : Type) (I : Finset ι) (x : ι → R), (∀ i ∈ I, IsSquare (x i)) ∧ ∑ i ∈ I, x i = a) :=
+    ∃ (ι : Type) (I : Finset ι) (x : ι → R), (∀ i ∈ I, IsSquare (x i)) ∧ ∑ i ∈ I, x i = a :=
   ⟨IsSumSq.exists_sum, by aesop⟩
 
 /-- A term of `R` satisfying `IsSumSq` can be written as `∑ i ∈ I, x i * x i`. -/
 theorem IsSumSq.exists_sum_mul_self [AddCommMonoid R] [Mul R] {a : R} (ha : IsSumSq a) :
-    (∃ (ι : Type) (I : Finset ι) (x : ι → R), a = ∑ i ∈ I, x i * x i) := by
+    ∃ (ι : Type) (I : Finset ι) (x : ι → R), a = ∑ i ∈ I, x i * x i := by
   rcases exists_sum ha with ⟨_, I, _, y_cl, rfl⟩
   choose! x hx using y_cl
   exact ⟨_, I, x, Finset.sum_equiv (by rfl) (by simp) hx⟩
 
 /-- Universe-polymorphic version of `exists_sum_mul_self_of_isSumSq`. -/
 theorem IsSumSq.exists_sum_mul_self' [AddCommMonoid R] [Mul R] {a : R} (ha : IsSumSq a) :
-    (∃ (ι : Type u) (I : Finset ι) (x : ι → R), a = ∑ i ∈ I, x i * x i) := by
+    ∃ (ι : Type u) (I : Finset ι) (x : ι → R), a = ∑ i ∈ I, x i * x i := by
   obtain ⟨ι, I, x, _⟩ := exists_sum_mul_self ha
   exact ⟨ULift.{u} ι, .map (Equiv.ulift.symm.toEmbedding) I, x ∘ (Equiv.ulift.toEmbedding),
     by simpa⟩
@@ -156,7 +156,7 @@ theorem IsSumSq.exists_sum_mul_self' [AddCommMonoid R] [Mul R] {a : R} (ha : IsS
 /-- A term of `R` satisfies `IsSumSq` if and only if it can be written as `∑ i ∈ I, x i * x i`. -/
 theorem isSumSq_iff_exists_sum_mul_self [AddCommMonoid R] [Mul R] (a : R) :
     IsSumSq a ↔
-    (∃ (ι : Type) (I : Finset ι) (x : ι → R), a = ∑ i ∈ I, x i * x i) := by
+    ∃ (ι : Type) (I : Finset ι) (x : ι → R), a = ∑ i ∈ I, x i * x i := by
   refine ⟨IsSumSq.exists_sum_mul_self, by rintro ⟨_, _, _, rfl⟩; apply IsSumSq.sum_mul_self⟩
 
 /-- In a (not necessarily unital) commutative semiring,
