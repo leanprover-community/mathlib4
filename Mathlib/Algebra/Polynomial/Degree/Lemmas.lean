@@ -369,7 +369,7 @@ theorem leadingCoeff_comp (hq : natDegree q ≠ 0) :
 
 /-- When there are no zero divisors, multiplying a polynomial by a nonzero constant leaves the
     degree unchanged. -/
-theorem natDegree_mul_of_nonzero (ha : a ≠ 0) : natDegree (C a * p) = p.natDegree := by
+theorem natDegree_C_mul_of_nonzero (ha : a ≠ 0) : natDegree (C a * p) = p.natDegree := by
   by_cases hp : p = 0
   · simp only [hp, mul_zero, natDegree_zero]
   · rw [← zero_add p.natDegree, ← natDegree_C a]

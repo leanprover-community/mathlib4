@@ -46,20 +46,15 @@ theorem coeffList_of_ne_zero (h : P ≠ 0) :
   rw [coeffList, if_neg (mt support_eq_empty.mp h)]
 
 variable (α) in
-/-- coeffList 0 = [] -/
 @[simp]
 theorem coeffList_zero : (0 : α[X]).coeffList = [] := by
   simp [coeffList]
 
-/-- only the zero polynomial gives nil list -/
-theorem coeffList_nil (h : P.coeffList = []) : P = 0 := by
-  simp_all [coeffList]
-
+/-- Only the zero polynomial gives nil coeffList -/
 @[simp]
-theorem coeffList_zero_iff (P : α[X]) : P.coeffList = [] ↔ P = 0 :=
-  ⟨coeffList_nil, (· ▸ coeffList_zero α)⟩
+theorem coeffList_eq_nil_iff (P : α[X]) : P.coeffList = [] ↔ P = 0 :=
+  ⟨by simp_all [coeffList], (· ▸ coeffList_zero α)⟩
 
-/-- coeffList (C x) = [x] -/
 @[simp]
 theorem coeffList_C {x : α} (h : x ≠ 0) : (C x).coeffList = [x] := by
   simpa [coeffList, if_neg h, List.range_succ]
@@ -76,7 +71,7 @@ theorem head?_coeffList_eq_leadingCoeff (h : P ≠ 0) :
 
 /-- `List.head` of coeffList is leadingCoeff -/
 theorem head_coeffList_eq_leadingCoeff (h : P ≠ 0) :
-    P.coeffList.head (mt coeffList_nil h) = P.leadingCoeff :=
+    P.coeffList.head ((coeffList_eq_nil_iff P).not.mpr h) = P.leadingCoeff :=
   (coeffList_eq_cons_leadingCoeff h).casesOn fun _ _ ↦
     Option.some.injEq _ _ ▸ List.head?_eq_head _ ▸ head?_coeffList_eq_leadingCoeff h
 
@@ -170,11 +165,11 @@ variable [DivisionSemiring α] (P : α[X])
 
 /-- Over a division semiring, multiplying a polynomial by a nonzero constant multiplies
   the coefficient list. -/
-theorem coeffList_mul_C {x : α} (hη : x ≠ 0) : (C x * P).coeffList = P.coeffList.map (x * ·) := by
+theorem coeffList_C_mul {x : α} (hη : x ≠ 0) : (C x * P).coeffList = P.coeffList.map (x * ·) := by
   by_cases hp : P = 0
   · simp only [hp, mul_zero, coeffList_zero, List.map_nil]
   · have hcη := mul_ne_zero (mt (map_eq_zero C).mp hη) hp
-    simp [coeffList_of_ne_zero hcη, coeffList_of_ne_zero hp, natDegree_mul_of_nonzero hη]
+    simp [coeffList_of_ne_zero hcη, coeffList_of_ne_zero hp, natDegree_C_mul_of_nonzero hη]
 
 end DivisionSemiring
 end Polynomial
