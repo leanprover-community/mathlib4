@@ -465,7 +465,7 @@ theorem B_mem_nhdsGT {K : Set F} {r s ε x : ℝ} (hx : x ∈ B f K r s ε) :
   exact ⟨L, LK, hy₁, hy₂⟩
 
 theorem measurableSet_B {K : Set F} {r s ε : ℝ} : MeasurableSet (B f K r s ε) :=
-  measurableSet_of_mem_nhdsWithin_Ioi fun _ hx => B_mem_nhdsGT hx
+  .of_mem_nhdsGT fun _ hx => B_mem_nhdsGT hx
 
 theorem A_mono (L : F) (r : ℝ) {ε δ : ℝ} (h : ε ≤ δ) : A f L r ε ⊆ A f L r δ := by
   rintro x ⟨r', r'r, hr'⟩

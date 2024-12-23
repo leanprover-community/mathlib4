@@ -153,9 +153,9 @@ theorem lhopital_zero_atTop_on_Ioi (hff' : ∀ x ∈ Ioi a, HasDerivAt f (f' x) 
       intro x hx
       refine mul_ne_zero ?_ (neg_ne_zero.mpr <| inv_ne_zero <| pow_ne_zero _ <| fact1 x hx)
       exact hg' _ (fact2 x hx))
-    (hftop.comp tendsto_inv_zero_atTop) (hgtop.comp tendsto_inv_zero_atTop)
+    (hftop.comp tendsto_inv_nhdsGT_zero) (hgtop.comp tendsto_inv_nhdsGT_zero)
     (by
-      refine (tendsto_congr' ?_).mp (hdiv.comp tendsto_inv_zero_atTop)
+      refine (tendsto_congr' ?_).mp (hdiv.comp tendsto_inv_nhdsGT_zero)
       rw [eventuallyEq_iff_exists_mem]
       use Ioi 0, self_mem_nhdsWithin
       intro x hx
@@ -163,7 +163,7 @@ theorem lhopital_zero_atTop_on_Ioi (hff' : ∀ x ∈ Ioi a, HasDerivAt f (f' x) 
       simp only
       rw [mul_div_mul_right]
       exact neg_ne_zero.mpr (inv_ne_zero <| pow_ne_zero _ <| ne_of_gt hx))
-  have := this.comp tendsto_inv_atTop_zero'
+  have := this.comp tendsto_inv_atTop_nhdsGT_zero
   unfold Function.comp at this
   simpa only [inv_inv]
 
