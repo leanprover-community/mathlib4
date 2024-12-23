@@ -57,9 +57,9 @@ theorem FinitePlace.prod_eq_inv_abs_norm_int {x : 𝓞 K} (h_x_nezero : x ≠ 0)
       maxPowDividing, ← dvd_span_singleton]
     intro v hv
     simp only [map_pow, Nat.cast_pow, ← pow_zero (absNorm v.asIdeal : ℝ)] at hv
-    replace hv := fun h ↦ hv (congrArg (HPow.hPow (absNorm v.asIdeal : ℝ)) h)
     classical
-    simpa only [imp_false, Associates.count_ne_zero_iff_dvd h_span_nezero (irreducible v)] using hv
+    refine (Associates.count_ne_zero_iff_dvd h_span_nezero (irreducible v)).1 <| fun h ↦ hv ?_
+    congr
   have h_prod : (absNorm (∏ᶠ (v : HeightOneSpectrum (𝓞 K)), v.maxPowDividing (span {x})) : ℝ) =
       ∏ᶠ (v : HeightOneSpectrum (𝓞 K)), (absNorm (v.maxPowDividing (span {x})) : ℝ) :=
     ((Nat.castRingHom ℝ).toMonoidHom.comp absNorm.toMonoidHom).map_finprod_of_preimage_one
