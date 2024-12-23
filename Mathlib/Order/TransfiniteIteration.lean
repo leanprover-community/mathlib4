@@ -44,6 +44,7 @@ noncomputable def transfiniteIterate (j : J) : I → I :=
   SuccOrder.limitRecOn j
     (fun _ _ ↦ id) (fun _ _ g ↦ φ ∘ g) (fun y _ h ↦ ⨆ (x : Set.Iio y), h x.1 x.2)
 
+@[simp]
 lemma transfiniteIterate_bot [OrderBot J] (i₀ : I) :
     transfiniteIterate φ (⊥ : J) i₀ = i₀ := by
   dsimp [transfiniteIterate]
