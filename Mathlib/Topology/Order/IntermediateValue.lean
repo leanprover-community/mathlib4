@@ -338,7 +338,7 @@ theorem IsClosed.Icc_subset_of_forall_mem_nhdsWithin {a b : α} {s : Set α}
   apply hs.Icc_subset_of_forall_exists_gt ha
   rintro x ⟨hxs, hxab⟩ y hyxb
   have : s ∩ Ioc x y ∈ 𝓝[>] x := inter_mem (hgt x ⟨hxs, hxab⟩) (Ioc_mem_nhdsGT hyxb)
-  exact (nhdsWithin_Ioi_self_neBot' ⟨b, hxab.2⟩).nonempty_of_mem this
+  exact (nhdsGT_neBot_of_exists_gt ⟨b, hxab.2⟩).nonempty_of_mem this
 
 theorem isPreconnected_Icc_aux (x y : α) (s t : Set α) (hxy : x ≤ y) (hs : IsClosed s)
     (ht : IsClosed t) (hab : Icc a b ⊆ s ∪ t) (hx : x ∈ Icc a b ∩ s) (hy : y ∈ Icc a b ∩ t) :

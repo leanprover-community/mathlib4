@@ -194,7 +194,7 @@ theorem nhds_zero_basis_Iic : (𝓝 (0 : ℝ≥0∞)).HasBasis (fun a : ℝ≥0�
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add a TC for `≠ ∞`?
 @[instance]
 theorem nhdsWithin_Ioi_coe_neBot {r : ℝ≥0} : (𝓝[>] (r : ℝ≥0∞)).NeBot :=
-  nhdsWithin_Ioi_self_neBot' ⟨∞, ENNReal.coe_lt_top⟩
+  nhdsGT_neBot_of_exists_gt ⟨∞, ENNReal.coe_lt_top⟩
 
 @[instance]
 theorem nhdsWithin_Ioi_zero_neBot : (𝓝[>] (0 : ℝ≥0∞)).NeBot :=
