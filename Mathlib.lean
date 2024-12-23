@@ -2087,6 +2087,7 @@ import Mathlib.CategoryTheory.Retract
 import Mathlib.CategoryTheory.Shift.Adjunction
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Shift.CommShift
+import Mathlib.CategoryTheory.Shift.CommShiftBifunctor
 import Mathlib.CategoryTheory.Shift.CommShiftTwist
 import Mathlib.CategoryTheory.Shift.Induced
 import Mathlib.CategoryTheory.Shift.InducedShiftSequence
@@ -2100,6 +2101,7 @@ import Mathlib.CategoryTheory.Shift.ShiftSequence
 import Mathlib.CategoryTheory.Shift.ShiftedHom
 import Mathlib.CategoryTheory.Shift.ShiftedHomOpposite
 import Mathlib.CategoryTheory.Shift.SingleFunctors
+import Mathlib.CategoryTheory.Shift.Twist
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.Simple
 import Mathlib.CategoryTheory.SingleObj

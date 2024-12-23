@@ -51,8 +51,8 @@ def twistCommShift (_ : TwistCommShiftData A D) : C ⥤ D := F
 variable (t : TwistCommShiftData A D)
 
 instance : (F.twistCommShift t).CommShift A where
-  iso a := by
-    refine (Functor.rightUnitor _).symm ≪≫
+  iso a :=
+    (Functor.rightUnitor _).symm ≪≫
       isoWhiskerLeft _ (CatCenter.unitsMulEquiv (t.ε a)) ≪≫
       Functor.rightUnitor _ ≪≫ F.commShiftIso a
   zero := by

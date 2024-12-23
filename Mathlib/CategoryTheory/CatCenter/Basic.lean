@@ -33,8 +33,10 @@ lemma naturality (x : CatCenter C) {X Y : C} (f : X ⟶ Y) :
   NatTrans.naturality x f
 
 /-- `(x * y).app X = y.app X ≫ x.app X`. -/
+@[reassoc]
 lemma mul_app' (x y : CatCenter C) (X : C) : (x * y).app X = y.app X ≫ x.app X := rfl
 
+@[reassoc]
 lemma mul_app (x y : CatCenter C) (X : C) : (x * y).app X = x.app X ≫ y.app X := by
   rw [mul_app']
   exact x.naturality (y.app X)
