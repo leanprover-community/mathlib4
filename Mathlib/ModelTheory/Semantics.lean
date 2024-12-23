@@ -830,7 +830,7 @@ theorem realize_toFormula (φ : L.BoundedFormula α n) (v : α ⊕ (Fin n) → M
     · exact Fin.elim0 x
 
 @[simp]
-theorem realize_iSup [Finite β](f : β → L.BoundedFormula α n)
+theorem realize_iSup [Finite β] (f : β → L.BoundedFormula α n)
     (v : α → M) (v' : Fin n → M) :
     (iSup f).Realize v v' ↔ ∃ b, (f b).Realize v v' := by
   simp only [iSup, realize_foldr_sup, List.mem_map, Finset.mem_toList, Finset.mem_univ, true_and,
