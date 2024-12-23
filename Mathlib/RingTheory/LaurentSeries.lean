@@ -633,7 +633,7 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : K⸨X⸩}
   by_cases ord_nonpos : f.order ≤ 0
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat ord_nonpos
     obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (neg_le_iff_add_nonneg.mp (hs ▸ h_n_ord))
-    obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (a := D + s) (by linarith)
+    obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (a := D + s) (by omega)
     rw [eq_add_neg_of_add_eq hm, add_comm, ← hs, ← powerSeriesPart_coeff]
     apply (intValuation_le_iff_coeff_lt_eq_zero K F).mp _ m (by linarith)
     rwa [hF, ofPowerSeries_powerSeriesPart f, hs, neg_neg, ← hd, neg_add_rev, ofAdd_add, map_mul,
@@ -641,8 +641,8 @@ theorem coeff_zero_of_lt_valuation {n D : ℤ} {f : K⸨X⸩}
       mul_le_mul_left (by simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff, zero_lt_iff])]
   · rw [not_le] at ord_nonpos
     obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat (Int.neg_nonpos_of_nonneg (le_of_lt ord_nonpos))
-    obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (a := n - s) (by linarith)
-    obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (a := D - s) (by linarith)
+    obtain ⟨m, hm⟩ := Int.eq_ofNat_of_zero_le (a := n - s) (by omega)
+    obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (a := D - s) (by omega)
     rw [(sub_eq_iff_eq_add).mp hm, add_comm, ← neg_neg (s : ℤ), ← hs, neg_neg,
       ← powerSeriesPart_coeff]
     apply (intValuation_le_iff_coeff_lt_eq_zero K F).mp _ m (by linarith)
@@ -670,7 +670,7 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : K⸨X⸩} :
         intro n hn
         rw [powerSeriesPart_coeff f n, hs]
         apply h_val_f
-        linarith
+        omega
     · simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff, zero_lt_iff]
   · obtain ⟨s, hs⟩ := Int.exists_eq_neg_ofNat
       <| neg_nonpos_of_nonneg <| le_of_lt <| not_le.mp ord_nonpos
@@ -681,14 +681,14 @@ theorem valuation_le_iff_coeff_lt_eq_zero {D : ℤ} {f : K⸨X⸩} :
     · by_cases hDs : D - s ≤ 0
       · apply le_trans ((PowerSeries.idealX K).valuation_le_one F)
         rw [← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, Multiplicative.ofAdd_le]
-        linarith
+        omega
       · obtain ⟨d, hd⟩ := Int.eq_ofNat_of_zero_le (le_of_lt <| not_le.mp hDs)
         rw [← neg_neg (-D + ↑s), ← sub_eq_neg_add, neg_sub, hd]
         apply (intValuation_le_iff_coeff_lt_eq_zero K F).mpr
         intro n hn
         rw [powerSeriesPart_coeff f n, hs]
         apply h_val_f (s + n)
-        linarith
+        omega
     · simp only [ne_eq, WithZero.coe_ne_zero, not_false_iff, zero_lt_iff]
 
 /- Two Laurent series whose difference has small valuation have the same coefficients for
@@ -717,7 +717,7 @@ theorem val_le_one_iff_eq_coe (f : K⸨X⸩) : Valued.v f ≤ (1 : ℤₘ₀) �
       Set.mem_range, not_exists, Int.negSucc_lt_zero, reduceCtorEq]
     intro
   · simp only [not_false_eq_true]
-  · linarith
+  · omega
 
 end LaurentSeries
 
