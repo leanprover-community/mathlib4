@@ -319,12 +319,14 @@ def whiskeringLeft₂ :
   map ψ :=
     { app := fun F₂ ↦ whiskerLeft _ ((whiskeringLeft C₁ D₁ (C₂ ⥤ E)).map ψ) }
 
+/-- Auxiliary definition for `whiskeringLeft₃`. -/
 @[simps!]
 def whiskeringLeft₃ObjObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) (F₃ : C₃ ⥤ D₃) :
     (D₁ ⥤ D₂ ⥤ D₃ ⥤ E) ⥤ C₁ ⥤ C₂ ⥤ C₃ ⥤ E :=
   (whiskeringRight _ _ _).obj (((whiskeringLeft₂ E).obj F₂).obj F₃) ⋙
     (whiskeringLeft C₁ D₁ _).obj F₁
 
+/-- Auxiliary definition for `whiskeringLeft₃`. -/
 @[simps]
 def whiskeringLeft₃ObjObjMap (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) {F₃ F₃' : C₃ ⥤ D₃} (τ₃ : F₃ ⟶ F₃') :
     whiskeringLeft₃ObjObjObj E F₁ F₂ F₃ ⟶
@@ -332,6 +334,7 @@ def whiskeringLeft₃ObjObjMap (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) {F�
   app F := whiskerLeft _ (whiskerLeft _ (((whiskeringLeft₂ E).obj F₂).map τ₃))
 
 variable (C₃ D₃) in
+/-- Auxiliary definition for `whiskeringLeft₃`. -/
 @[simps]
 def whiskeringLeft₃ObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) :
     (C₃ ⥤ D₃) ⥤ (D₁ ⥤ D₂ ⥤ D₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) where
@@ -339,12 +342,14 @@ def whiskeringLeft₃ObjObj (F₁ : C₁ ⥤ D₁) (F₂ : C₂ ⥤ D₂) :
   map τ₃ := whiskeringLeft₃ObjObjMap E F₁ F₂ τ₃
 
 variable (C₃ D₃) in
+/-- Auxiliary definition for `whiskeringLeft₃`. -/
 @[simps]
 def whiskeringLeft₃ObjMap (F₁ : C₁ ⥤ D₁) {F₂ F₂' : C₂ ⥤ D₂} (τ₂ : F₂ ⟶ F₂') :
     whiskeringLeft₃ObjObj C₃ D₃ E F₁ F₂ ⟶ whiskeringLeft₃ObjObj C₃ D₃ E F₁ F₂' where
   app F₃ := whiskerRight ((whiskeringRight _ _ _).map (((whiskeringLeft₂ E).map τ₂).app F₃)) _
 
 variable (C₂ C₃ D₂ D₃) in
+/-- Auxiliary definition for `whiskeringLeft₃`. -/
 @[simps]
 def whiskeringLeft₃Obj (F₁ : C₁ ⥤ D₁) :
     (C₂ ⥤ D₂) ⥤ (C₃ ⥤ D₃) ⥤ (D₁ ⥤ D₂ ⥤ D₃ ⥤ E) ⥤ (C₁ ⥤ C₂ ⥤ C₃ ⥤ E) where
@@ -352,6 +357,7 @@ def whiskeringLeft₃Obj (F₁ : C₁ ⥤ D₁) :
   map τ₂ := whiskeringLeft₃ObjMap C₃ D₃ E F₁ τ₂
 
 variable (C₂ C₃ D₂ D₃) in
+/-- Auxiliary definition for `whiskeringLeft₃`. -/
 @[simps]
 def whiskeringLeft₃Map {F₁ F₁' : C₁ ⥤ D₁} (τ₁ : F₁ ⟶ F₁') :
     whiskeringLeft₃Obj C₂ C₃ D₂ D₃ E F₁ ⟶ whiskeringLeft₃Obj C₂ C₃ D₂ D₃ E F₁' where
@@ -373,3 +379,5 @@ def Functor.postcompose₃ {E' : Type*} [Category E'] :
   whiskeringRight C₃ _ _ ⋙ whiskeringRight C₂ _ _ ⋙ whiskeringRight C₁ _ _
 
 end CategoryTheory
+
+#lint
