@@ -16,11 +16,6 @@ any others. They are so named since they can't be the successors of anything sma
 For some applications, it is desirable to exclude minimal elements from being successor limits, or
 maximal elements from being predecessor limits. As such, we also provide `Order.IsSuccLimit` and
 `Order.IsPredLimit`, which exclude these cases.
-
-## TODO
-
-The plan is to eventually replace `Ordinal.IsLimit` and `Cardinal.IsLimit` with the common
-predicate `Order.IsSuccLimit`.
 -/
 
 
