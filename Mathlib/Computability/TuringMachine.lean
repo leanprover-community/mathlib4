@@ -1616,8 +1616,7 @@ theorem stepAux_write (q : Stmt'₁) (v : σ) (a b : Γ) (L R : ListBlank Γ) :
   cases' l₂' with b l₂' <;>
     simp only [List.length_nil, List.length_cons, Nat.succ_inj', reduceCtorEq] at e
   rw [List.reverseAux, ← IH (a :: l₁) l₂' e]
-  simp only [stepAux, ListBlank.append, Tape.write_mk', Tape.move_right_mk', ListBlank.head_cons,
-    ListBlank.tail_cons]
+  simp [stepAux, ListBlank.append, write]
 
 variable (encdec : ∀ a, dec (enc a) = a)
 include encdec

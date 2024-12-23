@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.Topology.CompactOpen
+import Mathlib.Topology.Separation.Profinite
 import Mathlib.Topology.Sets.Closeds
 
 /-!
