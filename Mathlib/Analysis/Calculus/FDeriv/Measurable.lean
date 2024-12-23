@@ -444,7 +444,7 @@ with a derivative in `K`. -/
 def D (f : ℝ → F) (K : Set F) : Set ℝ :=
   ⋂ e : ℕ, ⋃ n : ℕ, ⋂ (p ≥ n) (q ≥ n), B f K ((1 / 2) ^ p) ((1 / 2) ^ q) ((1 / 2) ^ e)
 
-theorem A_mem_nhdsWithin_Ioi {L : F} {r ε x : ℝ} (hx : x ∈ A f L r ε) : A f L r ε ∈ 𝓝[>] x := by
+theorem A_mem_nhdsGT {L : F} {r ε x : ℝ} (hx : x ∈ A f L r ε) : A f L r ε ∈ 𝓝[>] x := by
   rcases hx with ⟨r', rr', hr'⟩
   obtain ⟨s, s_gt, s_lt⟩ : ∃ s : ℝ, r / 2 < s ∧ s < r' := exists_between rr'.1
   have : s ∈ Ioc (r / 2) r := ⟨s_gt, le_of_lt (s_lt.trans_le rr'.2)⟩
@@ -456,16 +456,16 @@ theorem A_mem_nhdsWithin_Ioi {L : F} {r ε x : ℝ} (hx : x ∈ A f L r ε) : A 
   intro y hy z hz
   exact hr' y (A hy) z (A hz)
 
-theorem B_mem_nhdsWithin_Ioi {K : Set F} {r s ε x : ℝ} (hx : x ∈ B f K r s ε) :
+theorem B_mem_nhdsGT {K : Set F} {r s ε x : ℝ} (hx : x ∈ B f K r s ε) :
     B f K r s ε ∈ 𝓝[>] x := by
   obtain ⟨L, LK, hL₁, hL₂⟩ : ∃ L : F, L ∈ K ∧ x ∈ A f L r ε ∧ x ∈ A f L s ε := by
     simpa only [B, mem_iUnion, mem_inter_iff, exists_prop] using hx
-  filter_upwards [A_mem_nhdsWithin_Ioi hL₁, A_mem_nhdsWithin_Ioi hL₂] with y hy₁ hy₂
+  filter_upwards [A_mem_nhdsGT hL₁, A_mem_nhdsGT hL₂] with y hy₁ hy₂
   simp only [B, mem_iUnion, mem_inter_iff, exists_prop]
   exact ⟨L, LK, hy₁, hy₂⟩
 
 theorem measurableSet_B {K : Set F} {r s ε : ℝ} : MeasurableSet (B f K r s ε) :=
-  measurableSet_of_mem_nhdsWithin_Ioi fun _ hx => B_mem_nhdsWithin_Ioi hx
+  measurableSet_of_mem_nhdsWithin_Ioi fun _ hx => B_mem_nhdsGT hx
 
 theorem A_mono (L : F) (r : ℝ) {ε δ : ℝ} (h : ε ≤ δ) : A f L r ε ⊆ A f L r δ := by
   rintro x ⟨r', r'r, hr'⟩
