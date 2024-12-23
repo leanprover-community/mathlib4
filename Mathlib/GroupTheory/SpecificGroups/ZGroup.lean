@@ -395,7 +395,7 @@ instance {G : Type*} [Group G] [IsCyclic G] : IsZGroup G :=
 
 theorem isZGroup_iff_mulEquiv [Finite G] :
     IsZGroup G ↔ ∃ (m n : ℕ) (φ : Multiplicative (ZMod m) →* MulAut (Multiplicative (ZMod n)))
-      (e : G ≃* SemidirectProduct _ _ φ), Nat.Coprime m n := by
+      (_ : G ≃* SemidirectProduct _ _ φ), Nat.Coprime m n := by
   refine ⟨fun hG ↦ ?_, ?_⟩
   · obtain ⟨H, hH⟩ := Subgroup.exists_right_complement'_of_coprime
       (IsZGroup.coprime_commutator_index G)
@@ -406,7 +406,6 @@ theorem isZGroup_iff_mulEquiv [Finite G] :
             (IsZGroup.coprime_commutator_index G).symm⟩
   · rintro ⟨m, n, φ, e, h⟩
     have : Finite (Multiplicative (ZMod n)) := by
-      have key := e.symm.toMonoidHom.comp (SemidirectProduct.inl (φ := φ))
       refine Nat.finite_of_card_ne_zero ?_
       refine ne_zero_of_dvd_ne_zero ?_
         (Subgroup.card_dvd_of_injective (SemidirectProduct.inl (φ := φ))
