@@ -157,7 +157,7 @@ theorem IsSumSq.exists_sum_mul_self' [AddCommMonoid R] [Mul R] {a : R} (ha : IsS
 theorem isSumSq_iff_exists_sum_mul_self [AddCommMonoid R] [Mul R] (a : R) :
     IsSumSq a ↔
     ∃ (ι : Type) (I : Finset ι) (x : ι → R), a = ∑ i ∈ I, x i * x i := by
-  refine ⟨IsSumSq.exists_sum_mul_self, by rintro ⟨_, _, _, rfl⟩; apply IsSumSq.sum_mul_self⟩
+  refine ⟨IsSumSq.exists_sum_mul_self, by aesop⟩
 
 /-- In a (not necessarily unital) commutative semiring,
 if `S₁` and `S₂` are sums of squares, then `S₁ * S₂` is a sum of squares. -/
