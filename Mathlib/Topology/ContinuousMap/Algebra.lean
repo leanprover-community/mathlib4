@@ -6,8 +6,8 @@ Authors: Kim Morrison, Nicolò Cavalleri
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.Module.LinearMap
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
@@ -616,6 +616,13 @@ protected def _root_.ContinuousLinearMap.compLeftContinuous (α : Type*) [Topolo
 def coeFnLinearMap : C(α, M) →ₗ[R] α → M :=
   { (coeFnAddMonoidHom : C(α, M) →+ _) with
     map_smul' := coe_smul }
+
+/-- Evaluation at a point, as a continuous linear map. -/
+@[simps apply]
+def evalCLM (x : α) : C(α, M) →L[R] M where
+  toFun f := f x
+  map_add' _ _ := add_apply _ _ x
+  map_smul' _ _ := smul_apply _ _ x
 
 end ContinuousMap
 

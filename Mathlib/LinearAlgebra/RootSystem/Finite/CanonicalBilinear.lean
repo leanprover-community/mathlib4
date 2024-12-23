@@ -31,8 +31,8 @@ Weyl group.
  * `rootForm_self_non_neg`: `RootForm` is positive semidefinite.
 
 ## References:
- * [N. Bourbaki, *Lie groups and {L}ie algebras. {C}hapters 4--6*][bourbaki1968]
- * [M. Demazure, *SGA III, Expos\'{e} XXI, Don\'{e}es Radicielles*][demazure1970]
+ * [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
+ * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
 
 ## TODO (possibly in other files)
  * Weyl-invariance

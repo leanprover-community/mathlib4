@@ -72,7 +72,7 @@ namespace Set
 
 variable {α : Type u} {s t : Set α}
 
-instance instBooleanAlgebraSet : BooleanAlgebra (Set α) :=
+instance instBooleanAlgebra : BooleanAlgebra (Set α) :=
   { (inferInstance : BooleanAlgebra (α → Prop)) with
     sup := (· ∪ ·),
     le := (· ≤ ·),
@@ -502,8 +502,7 @@ alias ⟨Nonempty.ne_empty, _⟩ := nonempty_iff_ne_empty
 @[simp]
 theorem not_nonempty_empty : ¬(∅ : Set α).Nonempty := fun ⟨_, hx⟩ => hx
 
--- Porting note: removing `@[simp]` as it is competing with `isEmpty_subtype`.
--- @[simp]
+@[simp]
 theorem isEmpty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
   not_iff_not.1 <| by simpa using nonempty_iff_ne_empty
 
