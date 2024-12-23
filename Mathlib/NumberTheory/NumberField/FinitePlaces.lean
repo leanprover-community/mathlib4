@@ -258,7 +258,7 @@ lemma equivHeightOneSpectrum_symm_apply (v : HeightOneSpectrum (𝓞 K)) (x : K)
 
 open Ideal in
 lemma embedding_mul_absNorm (v : HeightOneSpectrum (𝓞 K)) {x : 𝓞 K} (h_x_nezero : x ≠ 0) :
-    ‖(embedding v) ↑x‖ * absNorm (v.maxPowDividing (span {x})) = 1 := by
+    ‖(embedding v) x‖ * absNorm (v.maxPowDividing (span {x})) = 1 := by
   rw [maxPowDividing, map_pow, Nat.cast_pow, norm_def, vadicAbv_def,
     WithZeroMulInt.toNNReal_neg_apply _
       (v.valuation.ne_zero_iff.mpr (RingOfIntegers.coe_ne_zero_iff.mpr h_x_nezero))]
