@@ -183,7 +183,7 @@ theorem topology_eq_ideals_basis_topology [IsLinearTopology R] [TopologicalRing 
 
 /-- The topology on `MvPowerSeries` is a linear topology when the ring of coefficients has
 the discrete topology. -/
-instance [IsLinearTopology R] [TopologicalRing R] :
+instance [IsLinearTopology R] [TopologicalRing R] :
     IsLinearTopology (MvPowerSeries σ R) :=
   IsLinearTopology.mk_of_twoSidedIdeal
     (p := fun Jd ↦ (Jd.1 : Set R) ∈ 𝓝 0) (s := fun Jd ↦ basis σ R Jd)
