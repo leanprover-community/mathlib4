@@ -20,12 +20,9 @@ two-sided ideals.
 - `tendsto_mul_zero_of_right`: for `f, g : ι → R` such that `g i` converges to `0`,
 `f i * g i` converges to `0`.
 
-## Instances
+## Instance
 
 - A discrete topology is a linear topology
-
-- If `R` has a linear topology, then the set of twosided ideals of `R` that are
-neighborhoods of 0 is nonempty
 
 ## Note on the implementation
 
@@ -85,11 +82,6 @@ theorem _root_.isLinearTopology_iff_hasBasis_open_twoSidedIdeal [TopologicalRing
     IsLinearTopology R ↔ (𝓝 0).HasBasis
       (fun I : TwoSidedIdeal R ↦ IsOpen (I : Set R)) (fun I : TwoSidedIdeal R ↦ (I : Set R)) :=
   ⟨fun _ ↦ hasBasis_open_twoSidedIdeal, fun h ↦ .mk_of_twoSidedIdeal h⟩
-
-/- instance [IsLinearTopology R] : Nonempty { J : TwoSidedIdeal R | (J : Set R) ∈ 𝓝 0} := by
-  obtain ⟨J, hJ, _⟩ :=
-    ((hasBasis_twoSidedIdeal (R := R)).mem_iff' Set.univ).mp (Filter.univ_mem)
-  exact ⟨J, hJ⟩ -/
 
 instance [DiscreteTopology R] : IsLinearTopology R :=
   have : HasBasis (𝓝 0 : Filter R) (fun _ ↦ True) (fun (_ : Unit) ↦ (⊥ : TwoSidedIdeal R)) := by
