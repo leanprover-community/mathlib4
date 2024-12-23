@@ -1701,6 +1701,7 @@ import Mathlib.CategoryTheory.CommSq
 import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Comma.Basic
 import Mathlib.CategoryTheory.Comma.Final
+import Mathlib.CategoryTheory.Comma.LocallySmall
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Comma.OverClass
 import Mathlib.CategoryTheory.Comma.Presheaf.Basic
@@ -2348,6 +2349,7 @@ import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.TMComputable
 import Mathlib.Computability.TMToPartrec
 import Mathlib.Computability.TuringMachine
+import Mathlib.Condensed.AB
 import Mathlib.Condensed.Basic
 import Mathlib.Condensed.CartesianClosed
 import Mathlib.Condensed.Discrete.Basic
