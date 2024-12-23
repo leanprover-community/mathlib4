@@ -30,12 +30,12 @@ localization, ring localization, commutative ring localization, commutative ring
 namespace IsLocalization
 
 variable {ι : Type*} (R S : ι → Type*)
-  [∀ i, CommSemiring (R i)] [∀ i, CommSemiring (S i)] [∀ i, Algebra (R i) (S i)]
+  [Π i, CommSemiring (R i)] [Π i, CommSemiring (S i)] [Π i, Algebra (R i) (S i)]
 
 /-- If `S i` is a localization of `R i` at the submonoid `M i` for each `i`,
-then `∀ i, S i` is a localization of `∀ i, R i` at the product submonoid. -/
-instance (M : ∀ i, Submonoid (R i)) [∀ i, IsLocalization (M i) (S i)] :
-    IsLocalization (.pi .univ M) (∀ i, S i) where
+then `Π i, S i` is a localization of `Π i, R i` at the product submonoid. -/
+instance (M : Π i, Submonoid (R i)) [∀ i, IsLocalization (M i) (S i)] :
+    IsLocalization (.pi .univ M) (Π i, S i) where
   map_units' m := Pi.isUnit_iff.mpr fun i ↦ map_units _ ⟨m.1 i, m.2 i ⟨⟩⟩
   surj' z := by
     choose rm h using fun i ↦ surj (M := M i) (z i)
@@ -44,7 +44,7 @@ instance (M : ∀ i, Submonoid (R i)) [∀ i, IsLocalization (M i) (S i)] :
     choose c hc using fun i ↦ exists_of_eq (M := M i) (congr_fun eq i)
     exact ⟨⟨_, fun i _ ↦ (c i).2⟩, funext hc⟩
 
-variable (S' : Type*) [CommSemiring S'] [Algebra (∀ i, R i) S'] (M : Submonoid (∀ i, R i))
+variable (S' : Type*) [CommSemiring S'] [Algebra (Π i, R i) S'] (M : Submonoid (Π i, R i))
 
 theorem iff_map_piEvalRingHom [Finite ι] :
     IsLocalization M S' ↔ IsLocalization (.pi .univ fun i ↦ M.map (Pi.evalRingHom R i)) S' :=
@@ -59,7 +59,7 @@ variable [∀ i, IsLocalization (M.map (Pi.evalRingHom R i)) (S i)]
 
 /-- Let `M` be a submonoid of a direct product of commutative rings `R i`, and let `M' i` denote
 the projection of `M` onto each corresponding factor. Given a ring homomorphism from the direct
-product `∏ i, R i` to the product of the localizations of each `R i` at `M' i`, every `y : M`
+product `Π i, R i` to the product of the localizations of each `R i` at `M' i`, every `y : M`
 maps to a unit under this homomorphism. -/
 lemma isUnit_piRingHom_algebraMap_comp_piEvalRingHom (y : M) :
     IsUnit ((Pi.ringHom fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i)) y) :=
@@ -67,12 +67,12 @@ lemma isUnit_piRingHom_algebraMap_comp_piEvalRingHom (y : M) :
 
 /-- Let `M` be a submonoid of a direct product of commutative rings `R i`, and let `M' i` denote
 the projection of `M` onto each factor. Then the canonical map from the localization of the direct
-product `∏ i, R i` at `M` to the direct product of the localizations of each `R i` at `M' i`
+product `Π i, R i` at `M` to the direct product of the localizations of each `R i` at `M' i`
 is bijective. -/
 theorem bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom [IsLocalization M S'] [Finite ι] :
     Function.Bijective (lift (S := S') (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M)) :=
-  have := (iff_map_piEvalRingHom R (∀ i, S i) M).mpr inferInstance
-  (ringEquivOfRingEquiv (M := M) (T := M) _ _ (.refl _) <| 
+  have := (iff_map_piEvalRingHom R (Π i, S i) M).mpr inferInstance
+  (ringEquivOfRingEquiv (M := M) (T := M) _ _ (.refl _) <|
     Submonoid.map_equiv_eq_comap_symm _ _).bijective
 
 end IsLocalization
