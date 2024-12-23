@@ -71,9 +71,7 @@ theorem eval_eq_smeval : p.eval r = p.smeval r := by
 theorem eval₂_smulOneHom_eq_smeval (R : Type*) [Semiring R] {S : Type*} [Semiring S] [Module R S]
     [IsScalarTower R S S] (p : R[X]) (x : S) :
     p.eval₂ RingHom.smulOneHom x = p.smeval x := by
-  rw [smeval_eq_sum, eval₂_eq_sum]
-  congr 1 with e a -- XXX review
-  simp only [RingHom.smulOneHom_apply, smul_one_mul, smul_pow]
+  simp [smeval_eq_sum, eval₂_eq_sum]
 
 variable (R)
 
