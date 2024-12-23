@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.Combinatorics.Additive.CovBySMul
 import Mathlib.Combinatorics.Additive.RuzsaCovering
 import Mathlib.Combinatorics.Additive.SmallTripling
-import Mathlib.Combinatorics.Additive.VerySmallDoubling
 
 /-!
 # Approximate subgroups
@@ -192,9 +191,9 @@ lemma isApproximateSubgroup_one {A : Set G} :
       ⟨H, rfl⟩
     obtain ⟨x, hx⟩ : ∃ x : G, A * A ⊆ x • A := by
       obtain ⟨K, hK, hKA⟩ := hA.sq_covBySMul
-      simp only [Nat.cast_le_one, smul_eq_mul, Finset.card_le_one_iff_subset_singleton] at hK
-      obtain ⟨x, hx⟩ := hK
-      obtain rfl | rfl := Finset.subset_singleton_iff.1 hx
+      simp only [Nat.cast_le_one, Finset.card_le_one_iff_subset_singleton,
+        Finset.subset_singleton_iff] at hK
+      obtain ⟨x, rfl | rfl⟩ := hK
       · simp [hA.nonempty.ne_empty] at hKA
       · rw [Finset.coe_singleton, singleton_smul, sq] at hKA
         use x
