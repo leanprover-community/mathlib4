@@ -3,6 +3,7 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
+import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Polynomial.Degree.Domain
 import Mathlib.Algebra.Polynomial.Degree.Support
@@ -660,6 +661,26 @@ theorem dvd_derivative_iff {P : R[X]} : P ∣ derivative P ↔ derivative P = 0 
   mpr h := by simp [h]
 
 end NoZeroDivisors
+
+section Field
+
+variable {k : Type u} [Field k]
+
+theorem derivative_pow_eq_zero_iff {n : ℕ} (chn : (n : k) ≠ 0) {a : k[X]} :
+    derivative (a ^ n) = 0 ↔ derivative a = 0 := by
+  constructor
+  · intro apd
+    rw [derivative_pow, C_eq_natCast, mul_eq_zero, mul_eq_zero] at apd
+    rcases apd with (nz | powz) | goal
+    · rw [← C_eq_natCast, C_eq_zero] at nz
+      tauto
+    · have az : a = 0 := pow_eq_zero powz
+      rw [az, map_zero]
+    · exact goal
+  · intro hd
+    rw [derivative_pow, hd, MulZeroClass.mul_zero]
+
+end Field
 
 end Derivative
 
