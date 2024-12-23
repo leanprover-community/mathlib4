@@ -3,40 +3,44 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-
-import Mathlib.Algebra.Order.Floor
-import Mathlib.Data.Nat.Prime.Basic
+import Mathlib.Data.Nat.Prime.Infinite
+import Mathlib.Topology.Algebra.Order.Floor
 
 /-!
 # Existence of a sufficiently large prime for which `a * c ^ p / (p - 1)! < 1`
 
 This is a technical result used in the proof of the Lindemann-Weierstrass theorem.
--/
 
-namespace FloorRing
+TODO: delete this file, as all its lemmas have been deprecated.
+-/
 
 open scoped Nat
 
+@[deprecated eventually_mul_pow_lt_factorial_sub (since := "2024-09-25")]
+theorem Nat.exists_prime_mul_pow_lt_factorial (n a c : ℕ) :
+    ∃ p > n, p.Prime ∧ a * c ^ p < (p - 1)! :=
+  ((Filter.frequently_atTop.mpr Nat.exists_infinite_primes).and_eventually
+    (eventually_mul_pow_lt_factorial_sub a c 1)).forall_exists_of_atTop (n + 1)
+
+namespace FloorRing
+
 variable {K : Type*}
 
+@[deprecated FloorSemiring.eventually_mul_pow_lt_factorial_sub (since := "2024-09-25")]
 theorem exists_prime_mul_pow_lt_factorial [LinearOrderedRing K] [FloorRing K] (n : ℕ) (a c : K) :
-    ∃ p > n, p.Prime ∧ a * c ^ p < (p - 1)! := by
-  obtain ⟨p, pn, pp, h⟩ := n.exists_prime_mul_pow_lt_factorial ⌈|a|⌉.natAbs ⌈|c|⌉.natAbs
-  use p, pn, pp
-  calc a * c ^ p
-    _ ≤ |a * c ^ p| := le_abs_self _
-    _ ≤ ⌈|a|⌉ * (⌈|c|⌉ : K) ^ p := ?_
-    _ = ↑(Int.natAbs ⌈|a|⌉ * Int.natAbs ⌈|c|⌉ ^ p) := ?_
-    _ < ↑(p - 1)! := Nat.cast_lt.mpr h
-  · rw [abs_mul, abs_pow]
-    gcongr <;> try first | positivity | apply Int.le_ceil
-  · simp_rw [Nat.cast_mul, Nat.cast_pow, Int.cast_natAbs,
-      abs_eq_self.mpr (Int.ceil_nonneg (abs_nonneg (_ : K)))]
+    ∃ p > n, p.Prime ∧ a * c ^ p < (p - 1)! :=
+  ((Filter.frequently_atTop.mpr Nat.exists_infinite_primes).and_eventually
+    (FloorSemiring.eventually_mul_pow_lt_factorial_sub a c 1)).forall_exists_of_atTop (n + 1)
 
+@[deprecated FloorSemiring.tendsto_mul_pow_div_factorial_sub_atTop (since := "2024-09-25")]
 theorem exists_prime_mul_pow_div_factorial_lt_one [LinearOrderedField K] [FloorRing K]
     (n : ℕ) (a c : K) :
-    ∃ p > n, p.Prime ∧ a * c ^ p / (p - 1)! < 1 := by
-  simp_rw [div_lt_one (α := K) (Nat.cast_pos.mpr (Nat.factorial_pos _))]
-  exact exists_prime_mul_pow_lt_factorial ..
+    ∃ p > n, p.Prime ∧ a * c ^ p / (p - 1)! < 1 :=
+  letI := Preorder.topology K
+  haveI : OrderTopology K := ⟨rfl⟩
+  ((Filter.frequently_atTop.mpr Nat.exists_infinite_primes).and_eventually
+    (Filter.Tendsto.eventually_lt_const zero_lt_one
+      (FloorSemiring.tendsto_mul_pow_div_factorial_sub_atTop a c 1))).forall_exists_of_atTop
+    (n + 1)
 
 end FloorRing

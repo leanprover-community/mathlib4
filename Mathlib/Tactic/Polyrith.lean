@@ -3,7 +3,6 @@ Copyright (c) 2022 Dhruv Bhatia. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dhruv Bhatia, Eric Wieser, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Tactic.LinearCombination
 
 /-!
@@ -61,7 +60,7 @@ remember to force recompilation of any files that call `polyrith`.
 -/
 
 namespace Mathlib.Tactic.Polyrith
-open Lean hiding Rat
+open Lean
 open Meta Ring Qq PrettyPrinter AtomM
 initialize registerTraceClass `Meta.Tactic.polyrith
 
@@ -128,12 +127,13 @@ def Poly.toSyntax : Poly → Unhygienic Syntax.Term
   | .pow p q => do `($(← p.toSyntax) ^ $(← q.toSyntax))
   | .neg p => do `(-$(← p.toSyntax))
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- Reifies a ring expression of type `α` as a `Poly`. -/
 partial def parse {u : Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     (c : Ring.Cache sα) (e : Q($α)) : AtomM Poly := do
   let els := do
     try pure <| Poly.const (← (← NormNum.derive e).toRat)
-    catch _ => pure <| Poly.var (← addAtom e)
+    catch _ => pure <| Poly.var (← addAtom e).1
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
   match n, c.rα with
   | ``HAdd.hAdd, _ | ``Add.add, _ => match e with
@@ -392,7 +392,6 @@ Notes:
   Many thanks to the Sage team and organization for allowing this use.
 * This tactic assumes that the user has `python3` installed and available on the path.
   (Test by opening a terminal and executing `python3 --version`.)
-  It also assumes that the `requests` library is installed: `python3 -m pip install requests`.
 
 Examples:
 

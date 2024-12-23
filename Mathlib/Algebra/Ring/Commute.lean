@@ -21,9 +21,9 @@ For the definitions of semirings and rings see `Mathlib.Algebra.Ring.Defs`.
 -/
 
 
-universe u v w x
+universe u
 
-variable {α : Type u} {β : Type v} {γ : Type w} {R : Type x}
+variable {R : Type u}
 
 open Function
 
@@ -75,15 +75,11 @@ end
 
 section
 
-variable [MulOneClass R] [HasDistribNeg R] {a : R}
+variable [MulOneClass R] [HasDistribNeg R]
 
--- Porting note (#10618): no longer needs to be `@[simp]` since `simp` can prove it.
--- @[simp]
 theorem neg_one_right (a : R) : Commute a (-1) :=
   SemiconjBy.neg_one_right a
 
--- Porting note (#10618): no longer needs to be `@[simp]` since `simp` can prove it.
--- @[simp]
 theorem neg_one_left (a : R) : Commute (-1) a :=
   SemiconjBy.neg_one_left a
 
@@ -147,7 +143,7 @@ alias neg_one_pow_two := neg_one_sq
 end HasDistribNeg
 
 section Ring
-variable [Ring R] {a b : R} {n : ℕ}
+variable [Ring R] {a : R} {n : ℕ}
 
 @[simp] lemma neg_one_pow_mul_eq_zero_iff : (-1) ^ n * a = 0 ↔ a = 0 := by
   rcases neg_one_pow_eq_or R n with h | h <;> simp [h]

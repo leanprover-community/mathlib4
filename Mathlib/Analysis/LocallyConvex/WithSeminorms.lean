@@ -135,7 +135,7 @@ theorem basisSets_smul_right (v : E) (U : Set E) (hU : U ∈ p.basisSets) :
   rw [hU, Filter.eventually_iff]
   simp_rw [(s.sup p).mem_ball_zero, map_smul_eq_mul]
   by_cases h : 0 < (s.sup p) v
-  · simp_rw [(lt_div_iff h).symm]
+  · simp_rw [(lt_div_iff₀ h).symm]
     rw [← _root_.ball_zero_eq]
     exact Metric.ball_mem_nhds 0 (div_pos hr h)
   simp_rw [le_antisymm (not_lt.mp h) (apply_nonneg _ v), mul_zero, hr]
@@ -623,14 +623,11 @@ protected theorem _root_.WithSeminorms.equicontinuous_TFAE {κ : Type*}
   clear u hu hq
   -- Now we can prove the equivalence in this setting
   simp only [List.map]
-  tfae_have 1 → 3
-  · exact uniformEquicontinuous_of_equicontinuousAt_zero f
-  tfae_have 3 → 2
-  · exact UniformEquicontinuous.equicontinuous
-  tfae_have 2 → 1
-  · exact fun H ↦ H 0
+  tfae_have 1 → 3 := uniformEquicontinuous_of_equicontinuousAt_zero f
+  tfae_have 3 → 2 := UniformEquicontinuous.equicontinuous
+  tfae_have 2 → 1 := fun H ↦ H 0
   tfae_have 3 → 5
-  · intro H
+  | H => by
     have : ∀ᶠ x in 𝓝 0, ∀ k, q i (f k x) ≤ 1 := by
       filter_upwards [Metric.equicontinuousAt_iff_right.mp (H.equicontinuous 0) 1 one_pos]
         with x hx k
@@ -642,17 +639,16 @@ protected theorem _root_.WithSeminorms.equicontinuous_TFAE {κ : Type*}
     refine ⟨bdd, Seminorm.continuous' (r := 1) ?_⟩
     filter_upwards [this] with x hx
     simpa only [closedBall_iSup bdd _ one_pos, mem_iInter, mem_closedBall_zero] using hx
-  tfae_have 5 → 4
-  · exact fun H ↦ ⟨⨆ k, (q i).comp (f k), Seminorm.coe_iSup_eq H.1 ▸ H.2, le_ciSup H.1⟩
+  tfae_have 5 → 4 := fun H ↦ ⟨⨆ k, (q i).comp (f k), Seminorm.coe_iSup_eq H.1 ▸ H.2, le_ciSup H.1⟩
   tfae_have 4 → 1 -- This would work over any `NormedField`
-  · intro ⟨p, hp, hfp⟩
-    exact Metric.equicontinuousAt_of_continuity_modulus p (map_zero p ▸ hp.tendsto 0) _ <|
+  | ⟨p, hp, hfp⟩ =>
+    Metric.equicontinuousAt_of_continuity_modulus p (map_zero p ▸ hp.tendsto 0) _ <|
       Eventually.of_forall fun x k ↦ by simpa using hfp k x
   tfae_finish
 
 theorem _root_.WithSeminorms.uniformEquicontinuous_iff_exists_continuous_seminorm {κ : Type*}
     {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [UniformAddGroup E] [u : UniformSpace F]
-    [hu : UniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
+    [UniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
     (f : κ → E →ₛₗ[σ₁₂] F) :
     UniformEquicontinuous ((↑) ∘ f) ↔
     ∀ i, ∃ p : Seminorm 𝕜 E, Continuous p ∧ ∀ k, (q i).comp (f k) ≤ p :=
@@ -660,7 +656,7 @@ theorem _root_.WithSeminorms.uniformEquicontinuous_iff_exists_continuous_seminor
 
 theorem _root_.WithSeminorms.uniformEquicontinuous_iff_bddAbove_and_continuous_iSup {κ : Type*}
     {q : SeminormFamily 𝕜₂ F ι'} [UniformSpace E] [UniformAddGroup E] [u : UniformSpace F]
-    [hu : UniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
+    [UniformAddGroup F] (hq : WithSeminorms q) [ContinuousSMul 𝕜 E]
     (f : κ → E →ₛₗ[σ₁₂] F) :
     UniformEquicontinuous ((↑) ∘ f) ↔ ∀ i,
     BddAbove (range fun k ↦ (q i).comp (f k)) ∧
@@ -869,10 +865,13 @@ theorem LinearMap.withSeminorms_induced [hι : Nonempty ι] {q : SeminormFamily 
   refine iInf_congr fun i => ?_
   exact Filter.comap_comap
 
-theorem Inducing.withSeminorms [hι : Nonempty ι] {q : SeminormFamily 𝕜₂ F ι} (hq : WithSeminorms q)
-    [TopologicalSpace E] {f : E →ₛₗ[σ₁₂] F} (hf : Inducing f) : WithSeminorms (q.comp f) := by
-  rw [hf.induced]
+lemma Topology.IsInducing.withSeminorms [hι : Nonempty ι] {q : SeminormFamily 𝕜₂ F ι}
+    (hq : WithSeminorms q) [TopologicalSpace E] {f : E →ₛₗ[σ₁₂] F} (hf : IsInducing f) :
+    WithSeminorms (q.comp f) := by
+  rw [hf.eq_induced]
   exact f.withSeminorms_induced hq
+
+@[deprecated (since := "2024-10-28")] alias Inducing.withSeminorms := IsInducing.withSeminorms
 
 /-- (Disjoint) union of seminorm families. -/
 protected def SeminormFamily.sigma {κ : ι → Type*} (p : (i : ι) → SeminormFamily 𝕜 E (κ i)) :
@@ -881,12 +880,21 @@ protected def SeminormFamily.sigma {κ : ι → Type*} (p : (i : ι) → Seminor
 
 theorem withSeminorms_iInf {κ : ι → Type*} [Nonempty ((i : ι) × κ i)] [∀ i, Nonempty (κ i)]
     {p : (i : ι) → SeminormFamily 𝕜 E (κ i)} {t : ι → TopologicalSpace E}
-    [∀ i, @TopologicalAddGroup E (t i) _] (hp : ∀ i, WithSeminorms (topology := t i) (p i)) :
+    (hp : ∀ i, WithSeminorms (topology := t i) (p i)) :
     WithSeminorms (topology := ⨅ i, t i) (SeminormFamily.sigma p) := by
-  have : @TopologicalAddGroup E (⨅ i, t i) _ := topologicalAddGroup_iInf (fun i ↦ inferInstance)
+  have : ∀ i, @TopologicalAddGroup E (t i) _ :=
+    fun i ↦ @WithSeminorms.topologicalAddGroup _ _ _ _ _ _ _ (t i) _ (hp i)
+  have : @TopologicalAddGroup E (⨅ i, t i) _ := topologicalAddGroup_iInf inferInstance
   simp_rw [@SeminormFamily.withSeminorms_iff_topologicalSpace_eq_iInf _ _ _ _ _ _ _ (_)] at hp ⊢
   rw [iInf_sigma]
   exact iInf_congr hp
+
+theorem withSeminorms_pi {κ : ι → Type*} {E : ι → Type*}
+    [∀ i, AddCommGroup (E i)] [∀ i, Module 𝕜 (E i)] [∀ i, TopologicalSpace (E i)]
+    [Nonempty ((i : ι) × κ i)] [∀ i, Nonempty (κ i)] {p : (i : ι) → SeminormFamily 𝕜 (E i) (κ i)}
+    (hp : ∀ i, WithSeminorms (p i)) :
+    WithSeminorms (SeminormFamily.sigma (fun i ↦ (p i).comp (LinearMap.proj i))) :=
+  withSeminorms_iInf fun i ↦ (LinearMap.proj i).withSeminorms_induced (hp i)
 
 end TopologicalConstructions
 
@@ -898,7 +906,7 @@ variable [TopologicalSpace E]
 
 /-- If the topology of a space is induced by a countable family of seminorms, then the topology
 is first countable. -/
-theorem WithSeminorms.first_countable (hp : WithSeminorms p) :
+theorem WithSeminorms.firstCountableTopology (hp : WithSeminorms p) :
     FirstCountableTopology E := by
   have := hp.topologicalAddGroup
   let _ : UniformSpace E := TopologicalAddGroup.toUniformSpace E
@@ -908,5 +916,8 @@ theorem WithSeminorms.first_countable (hp : WithSeminorms p) :
     exact Filter.iInf.isCountablyGenerated _
   have : (uniformity E).IsCountablyGenerated := UniformAddGroup.uniformity_countably_generated
   exact UniformSpace.firstCountableTopology E
+
+@[deprecated (since := "2024-11-13")] alias
+WithSeminorms.first_countable := WithSeminorms.firstCountableTopology
 
 end TopologicalProperties

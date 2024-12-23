@@ -3,7 +3,6 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Module.LinearMap.Defs
 
 /-!
@@ -82,6 +81,7 @@ the second approach only when you need to weaken a condition on either `R` or `A
 -/
 
 assert_not_exists Field
+assert_not_exists Finset
 assert_not_exists Module.End
 
 universe u v w u₁ v₁
@@ -97,7 +97,7 @@ section Prio
 
 See the implementation notes in this file for discussion of the details of this definition.
 -/
--- Porting note(#5171): unsupported @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): unsupported @[nolint has_nonempty_instance]
 class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SMul R A,
   R →+* A where
   commutes' : ∀ r x, toRingHom r * x = x * toRingHom r
@@ -165,26 +165,6 @@ theorem coe_sub (a b : R) :
 
 end CommRingRing
 
-section CommSemiringCommSemiring
-
-variable {R A : Type*} [CommSemiring R] [CommSemiring A] [Algebra R A]
-
--- direct to_additive fails because of some mix-up with polynomials
-@[norm_cast]
-theorem coe_prod {ι : Type*} {s : Finset ι} (a : ι → R) :
-    (↑(∏ i ∈ s, a i : R) : A) = ∏ i ∈ s, (↑(a i) : A) :=
-  map_prod (algebraMap R A) a s
-
--- to_additive fails for some reason
-@[norm_cast]
-theorem coe_sum {ι : Type*} {s : Finset ι} (a : ι → R) :
-    ↑(∑ i ∈ s, a i) = ∑ i ∈ s, (↑(a i) : A) :=
-  map_sum (algebraMap R A) a s
-
--- Porting note: removed attribute [to_additive] coe_prod; why should this be a `to_additive`?
-
-end CommSemiringCommSemiring
-
 end algebraMap
 
 /-- Creating an algebra from a morphism to the center of a semiring. -/
@@ -194,6 +174,19 @@ def RingHom.toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
   commutes' := h
   smul_def' _ _ := rfl
   toRingHom := i
+
+-- just simple lemmas for a declaration that is itself primed, no need for docstrings
+set_option linter.docPrime false in
+theorem RingHom.smul_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
+    (h : ∀ c x, i c * x = x * i c) (r : R) (s : S) :
+    let _ := RingHom.toAlgebra' i h
+    r • s = i r * s := rfl
+
+set_option linter.docPrime false in
+theorem RingHom.algebraMap_toAlgebra' {R S} [CommSemiring R] [Semiring S] (i : R →+* S)
+    (h : ∀ c x, i c * x = x * i c) :
+    @algebraMap R S _ _ (i.toAlgebra' h) = i :=
+  rfl
 
 /-- Creating an algebra from a morphism to a commutative semiring. -/
 def RingHom.toAlgebra {R S} [CommSemiring R] [CommSemiring S] (i : R →+* S) : Algebra R S :=
@@ -257,7 +250,8 @@ theorem algebra_ext {R : Type*} [CommSemiring R] {A : Type*} [Semiring A] (P Q :
   congr
 
 -- see Note [lower instance priority]
-instance (priority := 200) toModule : Module R A where
+instance (priority := 200) toModule {R A} {_ : CommSemiring R} {_ : Semiring A} [Algebra R A] :
+    Module R A where
   one_smul _ := by simp [smul_def']
   mul_smul := by simp [smul_def', mul_assoc]
   smul_add := by simp [smul_def', mul_add]
@@ -329,6 +323,36 @@ theorem _root_.smul_algebraMap {α : Type*} [Monoid α] [MulDistribMulAction α 
 section
 
 end
+
+section compHom
+
+variable (A) (f : S →+* R)
+
+/--
+Compose an `Algebra` with a `RingHom`, with action `f s • m`.
+
+This is the algebra version of `Module.compHom`.
+-/
+abbrev compHom : Algebra S A where
+  smul s a := f s • a
+  toRingHom := (algebraMap R A).comp f
+  commutes' _ _ := Algebra.commutes _ _
+  smul_def' _ _ := Algebra.smul_def _ _
+
+theorem compHom_smul_def (s : S) (x : A) :
+    letI := compHom A f
+    s • x = f s • x := rfl
+
+theorem compHom_algebraMap_eq :
+    letI := compHom A f
+    algebraMap S A = (algebraMap R A).comp f := rfl
+
+theorem compHom_algebraMap_apply (s : S) :
+    letI := compHom A f
+    algebraMap S A s = (algebraMap R A) (f s) := rfl
+
+end compHom
+
 
 variable (R A)
 

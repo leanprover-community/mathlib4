@@ -9,13 +9,15 @@ import Mathlib.Data.SProd
 /-!
 # Sets in product and pi types
 
-This file defines the product of sets in `α × β` and in `Π i, α i` along with the diagonal of a
-type.
+This file proves basic properties of product of sets in `α × β` and in `Π i, α i`, and of the
+diagonal of a type.
 
 ## Main declarations
 
+This file contains basic results on the following notions, which are defined in `Set.Operations`.
+
 * `Set.prod`: Binary product of sets. For `s : Set α`, `t : Set β`, we have
-  `s.prod t : Set (α × β)`.
+  `s.prod t : Set (α × β)`. Denoted by `s ×ˢ t`.
 * `Set.diagonal`: Diagonal of a type. `Set.diagonal α = {(x, x) | x : α}`.
 * `Set.offDiag`: Off-diagonal. `s ×ˢ s` without the diagonal.
 * `Set.pi`: Arbitrary product of sets.
@@ -38,7 +40,7 @@ theorem Subsingleton.prod (hs : s.Subsingleton) (ht : t.Subsingleton) :
   Prod.ext (hs hx.1 hy.1) (ht hx.2 hy.2)
 
 noncomputable instance decidableMemProd [DecidablePred (· ∈ s)] [DecidablePred (· ∈ t)] :
-    DecidablePred (· ∈ s ×ˢ t) := fun _ => And.decidable
+    DecidablePred (· ∈ s ×ˢ t) := fun x => inferInstanceAs (Decidable (x.1 ∈ s ∧ x.2 ∈ t))
 
 @[gcongr]
 theorem prod_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : s₁ ×ˢ t₁ ⊆ s₂ ×ˢ t₂ :=
@@ -72,17 +74,17 @@ theorem exists_prod_set {p : α × β → Prop} : (∃ x ∈ s ×ˢ t, p x) ↔ 
 @[simp]
 theorem prod_empty : s ×ˢ (∅ : Set β) = ∅ := by
   ext
-  exact and_false_iff _
+  exact iff_of_eq (and_false _)
 
 @[simp]
 theorem empty_prod : (∅ : Set α) ×ˢ t = ∅ := by
   ext
-  exact false_and_iff _
+  exact iff_of_eq (false_and _)
 
 @[simp, mfld_simps]
 theorem univ_prod_univ : @univ α ×ˢ @univ β = univ := by
   ext
-  exact true_and_iff _
+  exact iff_of_eq (true_and _)
 
 theorem univ_prod {t : Set β} : (univ : Set α) ×ˢ t = Prod.snd ⁻¹' t := by simp [prod_eq]
 
@@ -152,12 +154,12 @@ theorem Disjoint.set_prod_right (ht : Disjoint t₁ t₂) (s₁ s₂ : Set α) :
 
 theorem insert_prod : insert a s ×ˢ t = Prod.mk a '' t ∪ s ×ˢ t := by
   ext ⟨x, y⟩
-  simp (config := { contextual := true }) [image, iff_def, or_imp]
+  simp +contextual [image, iff_def, or_imp]
 
 theorem prod_insert : s ×ˢ insert b t = (fun a => (a, b)) '' s ∪ s ×ˢ t := by
   ext ⟨x, y⟩
-  -- porting note (#10745):
-  -- was `simp (config := { contextual := true }) [image, iff_def, or_imp, Imp.swap]`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745):
+  -- was `simp +contextual [image, iff_def, or_imp, Imp.swap]`
   simp only [mem_prod, mem_insert_iff, image, mem_union, mem_setOf_eq, Prod.mk.injEq]
   refine ⟨fun h => ?_, fun h => ?_⟩
   · obtain ⟨hx, rfl|hy⟩ := h
@@ -299,6 +301,9 @@ theorem fst_image_prod (s : Set β) {t : Set α} (ht : t.Nonempty) : Prod.fst ''
     let ⟨x, hx⟩ := ht
     ⟨(y, x), ⟨hy, hx⟩, rfl⟩
 
+lemma mapsTo_fst_prod {s : Set α} {t : Set β} : MapsTo Prod.fst (s ×ˢ t) s :=
+  fun _ hx ↦ (mem_prod.1 hx).1
+
 theorem prod_subset_preimage_snd (s : Set α) (t : Set β) : s ×ˢ t ⊆ Prod.snd ⁻¹' t :=
   inter_subset_right
 
@@ -309,6 +314,9 @@ theorem snd_image_prod {s : Set α} (hs : s.Nonempty) (t : Set β) : Prod.snd ''
   (snd_image_prod_subset _ _).antisymm fun y y_in =>
     let ⟨x, x_in⟩ := hs
     ⟨(x, y), ⟨x_in, y_in⟩, rfl⟩
+
+lemma mapsTo_snd_prod {s : Set α} {t : Set β} : MapsTo Prod.snd (s ×ˢ t) t :=
+  fun _ hx ↦ (mem_prod.1 hx).2
 
 theorem prod_diff_prod : s ×ˢ t \ s₁ ×ˢ t₁ = s ×ˢ (t \ t₁) ∪ (s \ s₁) ×ˢ t := by
   ext x
@@ -326,7 +334,7 @@ theorem prod_subset_prod_iff : s ×ˢ t ⊆ s₁ ×ˢ t₁ ↔ s ⊆ s₁ ∧ t 
   · have := image_subset (Prod.snd : α × β → β) H
     rwa [snd_image_prod st.1, snd_image_prod (h.mono H).fst] at this
   · intro H
-    simp only [st.1.ne_empty, st.2.ne_empty, or_false_iff] at H
+    simp only [st.1.ne_empty, st.2.ne_empty, or_false] at H
     exact prod_mono H.1 H.2
 
 theorem prod_eq_prod_iff_of_nonempty (h : (s ×ˢ t).Nonempty) :
@@ -335,7 +343,7 @@ theorem prod_eq_prod_iff_of_nonempty (h : (s ×ˢ t).Nonempty) :
   · intro heq
     have h₁ : (s₁ ×ˢ t₁ : Set _).Nonempty := by rwa [← heq]
     rw [prod_nonempty_iff] at h h₁
-    rw [← fst_image_prod s h.2, ← fst_image_prod s₁ h₁.2, heq, eq_self_iff_true, true_and_iff, ←
+    rw [← fst_image_prod s h.2, ← fst_image_prod s₁ h₁.2, heq, eq_self_iff_true, true_and, ←
       snd_image_prod h.1 t, ← snd_image_prod h₁.1 t₁, heq]
   · rintro ⟨rfl, rfl⟩
     rfl
@@ -344,18 +352,17 @@ theorem prod_eq_prod_iff :
     s ×ˢ t = s₁ ×ˢ t₁ ↔ s = s₁ ∧ t = t₁ ∨ (s = ∅ ∨ t = ∅) ∧ (s₁ = ∅ ∨ t₁ = ∅) := by
   symm
   rcases eq_empty_or_nonempty (s ×ˢ t) with h | h
-  · simp_rw [h, @eq_comm _ ∅, prod_eq_empty_iff, prod_eq_empty_iff.mp h, true_and_iff,
+  · simp_rw [h, @eq_comm _ ∅, prod_eq_empty_iff, prod_eq_empty_iff.mp h, true_and,
       or_iff_right_iff_imp]
     rintro ⟨rfl, rfl⟩
     exact prod_eq_empty_iff.mp h
   rw [prod_eq_prod_iff_of_nonempty h]
   rw [nonempty_iff_ne_empty, Ne, prod_eq_empty_iff] at h
-  simp_rw [h, false_and_iff, or_false_iff]
+  simp_rw [h, false_and, or_false]
 
 @[simp]
 theorem prod_eq_iff_eq (ht : t.Nonempty) : s ×ˢ t = s₁ ×ˢ t ↔ s = s₁ := by
-  simp_rw [prod_eq_prod_iff, ht.ne_empty, and_true_iff, or_iff_left_iff_imp,
-    or_false_iff]
+  simp_rw [prod_eq_prod_iff, ht.ne_empty, and_true, or_iff_left_iff_imp, or_false]
   rintro ⟨rfl, rfl⟩
   rfl
 
@@ -525,7 +532,7 @@ namespace Set
 
 section OffDiag
 
-variable {α : Type*} {s t : Set α} {x : α × α} {a : α}
+variable {α : Type*} {s t : Set α} {a : α}
 
 theorem offDiag_mono : Monotone (offDiag : Set α → Set (α × α)) := fun _ _ h _ =>
   And.imp (@h _) <| And.imp_left <| @h _
@@ -631,7 +638,7 @@ theorem pi_congr (h : s₁ = s₂) (h' : ∀ i ∈ s₁, t₁ i = t₂ i) : s₁
 
 theorem pi_eq_empty (hs : i ∈ s) (ht : t i = ∅) : s.pi t = ∅ := by
   ext f
-  simp only [mem_empty_iff_false, not_forall, iff_false_iff, mem_pi, Classical.not_imp]
+  simp only [mem_empty_iff_false, not_forall, iff_false, mem_pi, Classical.not_imp]
   exact ⟨i, hs, by simp [ht]⟩
 
 theorem univ_pi_eq_empty (ht : t i = ∅) : pi univ t = ∅ :=
@@ -678,15 +685,6 @@ theorem disjoint_pi : Disjoint (s.pi t₁) (s.pi t₂) ↔ ∃ i ∈ s, Disjoint
   simp only [disjoint_iff_inter_eq_empty, ← pi_inter_distrib, pi_eq_empty_iff']
 
 end Nonempty
-
--- Porting note: Removing `simp` - LHS does not simplify
-theorem range_dcomp (f : ∀ i, α i → β i) :
-    (range fun g : ∀ i, α i => fun i => f i (g i)) = pi univ fun i => range (f i) := by
-  refine Subset.antisymm ?_ fun x hx => ?_
-  · rintro _ ⟨x, rfl⟩ i -
-    exact ⟨x i, rfl⟩
-  · choose y hy using hx
-    exact ⟨fun i => y i trivial, funext fun i => hy i trivial⟩
 
 @[simp]
 theorem insert_pi (i : ι) (s : Set ι) (t : ∀ i, Set (α i)) :
@@ -802,8 +800,8 @@ theorem eval_image_univ_pi (ht : (pi univ t).Nonempty) :
     (fun f : ∀ i, α i => f i) '' pi univ t = t i :=
   eval_image_pi (mem_univ i) ht
 
-theorem dcomp_image_pi {f : ∀ i, α i → β i} (hf : ∀ i ∉ s, Surjective (f i)) (t : ∀ i, Set (α i)) :
-    (f _ ∘' ·) '' s.pi t = s.pi fun i ↦ f i '' t i := by
+theorem piMap_image_pi {f : ∀ i, α i → β i} (hf : ∀ i ∉ s, Surjective (f i)) (t : ∀ i, Set (α i)) :
+    Pi.map f '' s.pi t = s.pi fun i ↦ f i '' t i := by
   refine Subset.antisymm (image_subset_iff.2 fun a ha i hi ↦ mem_image_of_mem _ (ha _ hi)) ?_
   intro b hb
   have : ∀ i, ∃ a, f i a = b i ∧ (i ∈ s → a ∈ t i) := by
@@ -815,9 +813,19 @@ theorem dcomp_image_pi {f : ∀ i, α i → β i} (hf : ∀ i ∉ s, Surjective 
   choose a hab hat using this
   exact ⟨a, hat, funext hab⟩
 
-theorem dcomp_image_univ_pi (f : ∀ i, α i → β i) (t : ∀ i, Set (α i)) :
-    (f _ ∘' ·) '' univ.pi t = univ.pi fun i ↦ f i '' t i :=
-  dcomp_image_pi (by simp) t
+@[deprecated (since := "2024-10-06")] alias dcomp_image_pi := piMap_image_pi
+
+theorem piMap_image_univ_pi (f : ∀ i, α i → β i) (t : ∀ i, Set (α i)) :
+    Pi.map f '' univ.pi t = univ.pi fun i ↦ f i '' t i :=
+  piMap_image_pi (by simp) t
+
+@[deprecated (since := "2024-10-06")] alias dcomp_image_univ_pi := piMap_image_univ_pi
+
+@[simp]
+theorem range_piMap (f : ∀ i, α i → β i) : range (Pi.map f) = pi univ fun i ↦ range (f i) := by
+  simp only [← image_univ, ← piMap_image_univ_pi, pi_univ]
+
+@[deprecated (since := "2024-10-06")] alias range_dcomp := range_piMap
 
 theorem pi_subset_pi_iff : pi s t₁ ⊆ pi s t₂ ↔ (∀ i ∈ s, t₁ i ⊆ t₂ i) ∨ pi s t₁ = ∅ := by
   refine
@@ -831,12 +839,12 @@ theorem univ_pi_subset_univ_pi_iff :
     pi univ t₁ ⊆ pi univ t₂ ↔ (∀ i, t₁ i ⊆ t₂ i) ∨ ∃ i, t₁ i = ∅ := by simp [pi_subset_pi_iff]
 
 theorem eval_preimage [DecidableEq ι] {s : Set (α i)} :
-    eval i ⁻¹' s = pi univ (update (fun i => univ) i s) := by
+    eval i ⁻¹' s = pi univ (update (fun _ => univ) i s) := by
   ext x
   simp [@forall_update_iff _ (fun i => Set (α i)) _ _ _ _ fun i' y => x i' ∈ y]
 
 theorem eval_preimage' [DecidableEq ι] {s : Set (α i)} :
-    eval i ⁻¹' s = pi {i} (update (fun i => univ) i s) := by
+    eval i ⁻¹' s = pi {i} (update (fun _ => univ) i s) := by
   ext
   simp
 

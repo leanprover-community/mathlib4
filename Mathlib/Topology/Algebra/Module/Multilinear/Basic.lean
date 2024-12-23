@@ -3,8 +3,8 @@ Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.Multilinear.Basic
+import Mathlib.Topology.Algebra.Module.LinearMapPiProd
 
 /-!
 # Continuous multilinear maps
@@ -78,9 +78,6 @@ instance continuousMapClass :
     ContinuousMapClass (ContinuousMultilinearMap R M₁ M₂) (∀ i, M₁ i) M₂ where
   map_continuous := ContinuousMultilinearMap.cont
 
-instance : CoeFun (ContinuousMultilinearMap R M₁ M₂) fun _ => (∀ i, M₁ i) → M₂ :=
-  ⟨fun f => f⟩
-
 /-- See Note [custom simps projection]. We need to specify this projection explicitly in this case,
   because it is a composition of multiple projections. -/
 def Simps.apply (L₁ : ContinuousMultilinearMap R M₁ M₂) (v : ∀ i, M₁ i) : M₂ :=
@@ -102,14 +99,20 @@ theorem ext {f f' : ContinuousMultilinearMap R M₁ M₂} (H : ∀ x, f x = f' x
   DFunLike.ext _ _ H
 
 @[simp]
-theorem map_add [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :
+theorem map_update_add [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :
     f (update m i (x + y)) = f (update m i x) + f (update m i y) :=
-  f.map_add' m i x y
+  f.map_update_add' m i x y
+
+@[deprecated (since := "2024-11-03")]
+protected alias map_add := ContinuousMultilinearMap.map_update_add
 
 @[simp]
-theorem map_smul [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i) :
+theorem map_update_smul [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (c : R) (x : M₁ i) :
     f (update m i (c • x)) = c • f (update m i x) :=
-  f.map_smul' m i c x
+  f.map_update_smul' m i c x
+
+@[deprecated (since := "2024-11-03")]
+protected alias map_smul := ContinuousMultilinearMap.map_update_smul
 
 theorem map_coord_zero {m : ∀ i, M₁ i} (i : ι) (h : m i = 0) : f m = 0 :=
   f.toMultilinearMap.map_coord_zero i h
@@ -202,7 +205,7 @@ end ContinuousAdd
 /-- If `f` is a continuous multilinear map, then `f.toContinuousLinearMap m i` is the continuous
 linear map obtained by fixing all coordinates but `i` equal to those of `m`, and varying the
 `i`-th coordinate. -/
-def toContinuousLinearMap [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : M₁ i →L[R] M₂ :=
+@[simps!] def toContinuousLinearMap [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : M₁ i →L[R] M₂ :=
   { f.toMultilinearMap.toLinearMap m i with
     cont := f.cont.comp (continuous_const.update i continuous_id) }
 
@@ -421,9 +424,12 @@ variable [Ring R] [∀ i, AddCommGroup (M₁ i)] [AddCommGroup M₂] [∀ i, Mod
   [∀ i, TopologicalSpace (M₁ i)] [TopologicalSpace M₂] (f f' : ContinuousMultilinearMap R M₁ M₂)
 
 @[simp]
-theorem map_sub [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :
+theorem map_update_sub [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x y : M₁ i) :
     f (update m i (x - y)) = f (update m i x) - f (update m i y) :=
-  f.toMultilinearMap.map_sub _ _ _ _
+  f.toMultilinearMap.map_update_sub _ _ _ _
+
+@[deprecated (since := "2024-11-03")]
+protected alias map_sub := ContinuousMultilinearMap.map_update_sub
 
 section TopologicalAddGroup
 

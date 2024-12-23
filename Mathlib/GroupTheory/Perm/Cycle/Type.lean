@@ -33,7 +33,7 @@ In this file we define the cycle type of a permutation.
 
 namespace Equiv.Perm
 
-open Mathlib (Vector)
+open List (Vector)
 open Equiv List Multiset
 
 variable {α : Type*} [Fintype α]
@@ -68,6 +68,21 @@ theorem cycleType_eq {σ : Perm α} (l : List (Perm α)) (h0 : l.prod = σ)
   · simpa using h1
   · simpa [hl] using h2
   · simp [hl, h0]
+
+theorem CycleType.count_def {σ : Perm α} (n : ℕ) :
+    σ.cycleType.count n =
+      Fintype.card {c : σ.cycleFactorsFinset // (c : Perm α).support.card = n } := by
+  -- work on the LHS
+  rw [cycleType, Multiset.count_eq_card_filter_eq]
+  -- rewrite the `Fintype.card` as a `Finset.card`
+  rw [Fintype.subtype_card, Finset.univ_eq_attach, Finset.filter_attach',
+    Finset.card_map, Finset.card_attach]
+  simp only [Function.comp_apply, Finset.card, Finset.filter_val,
+    Multiset.filter_map, Multiset.card_map]
+  congr 1
+  apply Multiset.filter_congr
+  intro d h
+  simp only [Function.comp_apply, eq_comm, Finset.mem_val.mp h, exists_const]
 
 @[simp] -- Porting note: new attr
 theorem cycleType_eq_zero {σ : Perm α} : σ.cycleType = 0 ↔ σ = 1 := by
@@ -133,6 +148,11 @@ theorem sum_cycleType (σ : Perm α) : σ.cycleType.sum = σ.support.card := by
   | base_one => simp
   | base_cycles σ hσ => rw [hσ.cycleType, sum_coe, List.sum_singleton]
   | induction_disjoint σ τ hd _ hσ hτ => rw [hd.cycleType, sum_add, hσ, hτ, hd.card_support_mul]
+
+theorem card_fixedPoints (σ : Equiv.Perm α) :
+    Fintype.card (Function.fixedPoints σ) = Fintype.card α - σ.cycleType.sum := by
+  rw [Equiv.Perm.sum_cycleType, ← Finset.card_compl, Fintype.card_ofFinset]
+  congr; aesop
 
 theorem sign_of_cycleType' (σ : Perm α) :
     sign σ = (σ.cycleType.map fun n => -(-1 : ℤˣ) ^ n).prod := by
@@ -200,6 +220,33 @@ theorem cycleType_le_of_mem_cycleFactorsFinset {f g : Perm α} (hf : f ∈ g.cyc
   rw [cycleType_def, cycleType_def, hf'.left.cycleFactorsFinset_eq_singleton]
   refine map_le_map ?_
   simpa only [Finset.singleton_val, singleton_le, Finset.mem_val] using hf
+
+theorem Disjoint.cycleType_mul {f g : Perm α} (h : f.Disjoint g) :
+    (f * g).cycleType = f.cycleType + g.cycleType := by
+  simp only [Perm.cycleType]
+  rw [h.cycleFactorsFinset_mul_eq_union]
+  simp only [Finset.union_val, Function.comp_apply]
+  rw [← Multiset.add_eq_union_iff_disjoint.mpr _, Multiset.map_add]
+  simp only [Finset.disjoint_val, Disjoint.disjoint_cycleFactorsFinset h]
+
+theorem Disjoint.cycleType_noncommProd {ι : Type*} {k : ι → Perm α} {s : Finset ι}
+    (hs : Set.Pairwise s fun i j ↦ Disjoint (k i) (k j))
+    (hs' : Set.Pairwise s fun i j ↦ Commute (k i) (k j) :=
+      hs.imp (fun _ _ ↦ Perm.Disjoint.commute)) :
+    (s.noncommProd k hs').cycleType = s.sum fun i ↦ (k i).cycleType := by
+  classical
+  induction s using Finset.induction_on with
+  | empty => simp
+  | @insert i s hi hrec =>
+    have hs' : (s : Set ι).Pairwise fun i j ↦ Disjoint (k i) (k j) :=
+      hs.mono (by simp only [Finset.coe_insert, Set.subset_insert])
+    rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ hi, Finset.sum_insert hi]
+    rw [Equiv.Perm.Disjoint.cycleType_mul, hrec hs']
+    apply disjoint_noncommProd_right
+    intro j hj
+    apply hs _ _ (ne_of_mem_of_not_mem hj hi).symm <;>
+      simp only [Finset.coe_insert, Set.mem_insert_iff, Finset.mem_coe, hj, or_true, true_or]
+
 
 theorem cycleType_mul_inv_mem_cycleFactorsFinset_eq_sub
     {f g : Perm α} (hf : f ∈ g.cycleFactorsFinset) :
@@ -347,12 +394,12 @@ section Cauchy
 variable (G : Type*) [Group G] (n : ℕ)
 
 /-- The type of vectors with terms from `G`, length `n`, and product equal to `1:G`. -/
-def vectorsProdEqOne : Set (Vector G n) :=
+def vectorsProdEqOne : Set (List.Vector G n) :=
   { v | v.toList.prod = 1 }
 
 namespace VectorsProdEqOne
 
-theorem mem_iff {n : ℕ} (v : Vector G n) : v ∈ vectorsProdEqOne G n ↔ v.toList.prod = 1 :=
+theorem mem_iff {n : ℕ} (v : List.Vector G n) : v ∈ vectorsProdEqOne G n ↔ v.toList.prod = 1 :=
   Iff.rfl
 
 theorem zero_eq : vectorsProdEqOne G 0 = {Vector.nil} :=
@@ -374,7 +421,7 @@ instance oneUnique : Unique (vectorsProdEqOne G 1) := by
 /-- Given a vector `v` of length `n`, make a vector of length `n + 1` whose product is `1`,
 by appending the inverse of the product of `v`. -/
 @[simps]
-def vectorEquiv : Vector G n ≃ vectorsProdEqOne G (n + 1) where
+def vectorEquiv : List.Vector G n ≃ vectorsProdEqOne G (n + 1) where
   toFun v := ⟨v.toList.prod⁻¹ ::ᵥ v, by
     rw [mem_iff, Vector.toList_cons, List.prod_cons, inv_mul_cancel]⟩
   invFun v := v.1.tail
@@ -389,12 +436,12 @@ def vectorEquiv : Vector G n ≃ vectorsProdEqOne G (n + 1) where
 
 /-- Given a vector `v` of length `n` whose product is 1, make a vector of length `n - 1`,
 by deleting the last entry of `v`. -/
-def equivVector : ∀ n, vectorsProdEqOne G n ≃ Vector G (n - 1)
+def equivVector : ∀ n, vectorsProdEqOne G n ≃ List.Vector G (n - 1)
   | 0 => (equivOfUnique (vectorsProdEqOne G 0) (vectorsProdEqOne G 1)).trans (vectorEquiv G 0).symm
   | (n + 1) => (vectorEquiv G n).symm
 
 instance [Fintype G] : Fintype (vectorsProdEqOne G n) :=
-  Fintype.ofEquiv (Vector G (n - 1)) (equivVector G n).symm
+  Fintype.ofEquiv (List.Vector G (n - 1)) (equivVector G n).symm
 
 theorem card [Fintype G] : Fintype.card (vectorsProdEqOne G n) = Fintype.card G ^ (n - 1) :=
   (Fintype.card_congr (equivVector G n)).trans (card_vector (n - 1))
@@ -456,7 +503,7 @@ theorem _root_.exists_prime_orderOf_dvd_card {G : Type*} [Group G] [Fintype G] (
 /-- For every prime `p` dividing the order of a finite additive group `G` there exists an element of
 order `p` in `G`. This is the additive version of Cauchy's theorem. -/
 theorem _root_.exists_prime_addOrderOf_dvd_card {G : Type*} [AddGroup G] [Fintype G] (p : ℕ)
-    [hp : Fact p.Prime] (hdvd : p ∣ Fintype.card G) : ∃ x : G, addOrderOf x = p :=
+    [Fact p.Prime] (hdvd : p ∣ Fintype.card G) : ∃ x : G, addOrderOf x = p :=
   @exists_prime_orderOf_dvd_card (Multiplicative G) _ _ _ _ (by convert hdvd)
 
 attribute [to_additive existing] exists_prime_orderOf_dvd_card

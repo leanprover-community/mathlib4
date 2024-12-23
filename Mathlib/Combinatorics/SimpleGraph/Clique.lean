@@ -6,12 +6,14 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Data.Finset.Pairwise
+import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Nat.Lattice
 
 /-!
 # Graph cliques
 
-This file defines cliques in simple graphs. A clique is a set of vertices that are pairwise
-adjacent.
+This file defines cliques in simple graphs.
+A clique is a set of vertices that are pairwise adjacent.
 
 ## Main declarations
 
@@ -22,10 +24,8 @@ adjacent.
 
 ## TODO
 
-* Clique numbers
 * Dualise all the API to get independent sets
 -/
-
 
 open Finset Fintype Function SimpleGraph.Walk
 
@@ -140,8 +140,8 @@ theorem isClique_map_finset_iff_of_nontrivial (ht : t.Nontrivial) :
   simpa using hs.map (f := f)
 
 theorem isClique_map_finset_iff :
-    (G.map f).IsClique t ↔ t.card ≤ 1 ∨ ∃ (s : Finset α), G.IsClique s ∧ s.map f = t := by
-  obtain (ht | ht) := le_or_lt t.card 1
+    (G.map f).IsClique t ↔ #t ≤ 1 ∨ ∃ (s : Finset α), G.IsClique s ∧ s.map f = t := by
+  obtain (ht | ht) := le_or_lt #t 1
   · simp only [ht, true_or, iff_true]
     exact IsClique.of_subsingleton <| card_le_one.1 ht
   rw [isClique_map_finset_iff_of_nontrivial, ← not_lt]
@@ -163,10 +163,10 @@ variable {n : ℕ} {s : Finset α}
 
 /-- An `n`-clique in a graph is a set of `n` vertices which are pairwise connected. -/
 structure IsNClique (n : ℕ) (s : Finset α) : Prop where
-  clique : G.IsClique s
-  card_eq : s.card = n
+  isClique : G.IsClique s
+  card_eq : #s = n
 
-theorem isNClique_iff : G.IsNClique n s ↔ G.IsClique s ∧ s.card = n :=
+theorem isNClique_iff : G.IsNClique n s ↔ G.IsClique s ∧ #s = n :=
   ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
 
 instance [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α} :
@@ -196,10 +196,10 @@ theorem isNClique_map_iff (hn : 1 < n) {t : Finset β} {f : α ↪ β} :
   · rintro ⟨⟨s, hs, rfl⟩, rfl⟩
     simp [isNClique_iff, hs]
   rintro ⟨s, hs, rfl⟩
-  simp [hs.card_eq, hs.clique]
+  simp [hs.card_eq, hs.isClique]
 
 @[simp]
-theorem isNClique_bot_iff : (⊥ : SimpleGraph α).IsNClique n s ↔ n ≤ 1 ∧ s.card = n := by
+theorem isNClique_bot_iff : (⊥ : SimpleGraph α).IsNClique n s ↔ n ≤ 1 ∧ #s = n := by
   rw [isNClique_iff, isClique_bot_iff]
   refine and_congr_left ?_
   rintro rfl
@@ -270,14 +270,14 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n
     ¬G.CliqueFree n := by
   simp only [CliqueFree, isNClique_iff, isClique_iff_induce_eq, not_forall, Classical.not_not]
   use Finset.univ.map f.toEmbedding
-  simp only [card_map, Finset.card_fin, eq_self_iff_true, and_true_iff]
+  simp only [card_map, Finset.card_fin, eq_self_iff_true, and_true]
   ext ⟨v, hv⟩ ⟨w, hw⟩
-  simp only [coe_map, Set.mem_image, coe_univ, Set.mem_univ, true_and_iff] at hv hw
+  simp only [coe_map, Set.mem_image, coe_univ, Set.mem_univ, true_and] at hv hw
   obtain ⟨v', rfl⟩ := hv
   obtain ⟨w', rfl⟩ := hw
   simp only [coe_sort_coe, RelEmbedding.coe_toEmbedding, comap_adj, Function.Embedding.coe_subtype,
     f.map_adj_iff, top_adj, ne_eq, Subtype.mk.injEq, RelEmbedding.inj]
-  -- This used to be the end of the proof before leanprover/lean4#2644
+  -- This used to be the end of the proof before https://github.com/leanprover/lean4/pull/2644
   erw [Function.Embedding.coe_subtype, f.map_adj_iff]
   simp
 
@@ -286,7 +286,7 @@ noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
     (⊤ : SimpleGraph (Fin n)) ↪g G := by
   simp only [CliqueFree, isNClique_iff, isClique_iff_induce_eq, not_forall, Classical.not_not] at h
   obtain ⟨ha, hb⟩ := h.choose_spec
-  have : (⊤ : SimpleGraph (Fin h.choose.card)) ≃g (⊤ : SimpleGraph h.choose) := by
+  have : (⊤ : SimpleGraph (Fin #h.choose)) ≃g (⊤ : SimpleGraph h.choose) := by
     apply Iso.completeGraph
     simpa using (Fintype.equivFin h.choose).symm
   rw [← ha] at this
@@ -313,7 +313,7 @@ theorem cliqueFree_bot (h : 2 ≤ n) : (⊥ : SimpleGraph α).CliqueFree n := by
 theorem CliqueFree.mono (h : m ≤ n) : G.CliqueFree m → G.CliqueFree n := by
   intro hG s hs
   obtain ⟨t, hts, ht⟩ := exists_subset_card_eq (h.trans hs.card_eq.ge)
-  exact hG _ ⟨hs.clique.subset hts, ht⟩
+  exact hG _ ⟨hs.isClique.subset hts, ht⟩
 
 theorem CliqueFree.anti (h : G ≤ H) : H.CliqueFree n → G.CliqueFree n :=
   forall_imp fun _ ↦ mt <| IsNClique.mono h
@@ -413,7 +413,7 @@ protected theorem CliqueFree.sup_edge (h : G.CliqueFree n) (v w : α) :
 end CliqueFree
 
 section CliqueFreeOn
-variable {s s₁ s₂ : Set α} {t : Finset α} {a b : α} {m n : ℕ}
+variable {s s₁ s₂ : Set α} {a : α} {m n : ℕ}
 
 /-- `G.CliqueFreeOn s n` means that `G` has no `n`-cliques contained in `s`. -/
 def CliqueFreeOn (G : SimpleGraph α) (s : Set α) (n : ℕ) : Prop :=
@@ -425,7 +425,7 @@ theorem CliqueFreeOn.subset (hs : s₁ ⊆ s₂) (h₂ : G.CliqueFreeOn s₂ n) 
 theorem CliqueFreeOn.mono (hmn : m ≤ n) (hG : G.CliqueFreeOn s m) : G.CliqueFreeOn s n := by
   rintro t hts ht
   obtain ⟨u, hut, hu⟩ := exists_subset_card_eq (hmn.trans ht.card_eq.ge)
-  exact hG ((coe_subset.2 hut).trans hts) ⟨ht.clique.subset hut, hu⟩
+  exact hG ((coe_subset.2 hut).trans hts) ⟨ht.isClique.subset hut, hu⟩
 
 theorem CliqueFreeOn.anti (hGH : G ≤ H) (hH : H.CliqueFreeOn s n) : G.CliqueFreeOn s n :=
   fun _t hts ht => hH hts <| ht.mono hGH
@@ -446,7 +446,7 @@ theorem cliqueFreeOn_univ : G.CliqueFreeOn Set.univ n ↔ G.CliqueFree n := by
 protected theorem CliqueFree.cliqueFreeOn (hG : G.CliqueFree n) : G.CliqueFreeOn s n :=
   fun _t _ ↦ hG _
 
-theorem cliqueFreeOn_of_card_lt {s : Finset α} (h : s.card < n) : G.CliqueFreeOn s n :=
+theorem cliqueFreeOn_of_card_lt {s : Finset α} (h : #s < n) : G.CliqueFreeOn s n :=
   fun _t hts ht => h.not_le <| ht.2.symm.trans_le <| card_mono hts
 
 -- TODO: Restate using `SimpleGraph.IndepSet` once we have it
@@ -475,7 +475,7 @@ end CliqueFreeOn
 
 section CliqueSet
 
-variable {n : ℕ} {a b c : α} {s : Finset α}
+variable {n : ℕ} {s : Finset α}
 
 /-- The `n`-cliques in a graph as a set. -/
 def cliqueSet (n : ℕ) : Set (Finset α) :=
@@ -493,7 +493,7 @@ theorem cliqueSet_eq_empty_iff : G.cliqueSet n = ∅ ↔ G.CliqueFree n := by
 
 protected alias ⟨_, CliqueFree.cliqueSet⟩ := cliqueSet_eq_empty_iff
 
-@[mono]
+@[gcongr, mono]
 theorem cliqueSet_mono (h : G ≤ H) : G.cliqueSet n ⊆ H.cliqueSet n :=
   fun _ ↦ IsNClique.mono h
 
@@ -540,16 +540,77 @@ theorem cliqueSet_map_of_equiv (G : SimpleGraph α) (e : α ≃ β) (n : ℕ) :
 
 end CliqueSet
 
+/-! ### Clique number -/
+
+
+section CliqueNumber
+
+variable {α : Type*} {G : SimpleGraph α}
+
+/-- The maximum number of vertices in a clique of a graph `G`. -/
+noncomputable def cliqueNum (G : SimpleGraph α) : ℕ := sSup {n | ∃ s, G.IsNClique n s}
+
+private lemma fintype_cliqueNum_bddAbove [Fintype α] : BddAbove {n | ∃ s, G.IsNClique n s} := by
+  use Fintype.card α
+  rintro y ⟨s, syc⟩
+  rw [isNClique_iff] at syc
+  rw [← syc.right]
+  exact Finset.card_le_card (Finset.subset_univ s)
+
+lemma IsClique.card_le_cliqueNum [Fintype α] {t : Finset α} {tc : G.IsClique t} :
+    #t ≤ G.cliqueNum :=
+  le_csSup G.fintype_cliqueNum_bddAbove (Exists.intro t ⟨tc, rfl⟩)
+
+lemma exists_isNClique_cliqueNum [Fintype α] : ∃ s, G.IsNClique G.cliqueNum s :=
+  Nat.sSup_mem ⟨0, by simp [isNClique_empty.mpr rfl]⟩ G.fintype_cliqueNum_bddAbove
+
+/-- A maximum clique in a graph `G` is a clique with the largest possible size. -/
+structure IsMaximumClique [Fintype α] (G : SimpleGraph α) (s : Finset α) : Prop where
+  (isClique : G.IsClique s)
+  (maximum : ∀ t : Finset α, G.IsClique t → #t ≤ #s)
+
+theorem isMaximumClique_iff [Fintype α] {s : Finset α} :
+    G.IsMaximumClique s ↔ G.IsClique s ∧ ∀ t : Finset α, G.IsClique t → #t ≤ #s :=
+  ⟨fun h ↦ ⟨h.1, h.2⟩, fun h ↦ ⟨h.1, h.2⟩⟩
+
+/-- A maximal clique in a graph `G` is a clique that cannot be extended by adding more vertices. -/
+theorem isMaximalClique_iff {s : Set α} :
+    Maximal G.IsClique s ↔ G.IsClique s ∧ ∀ t : Set α, G.IsClique t → s ⊆ t → t ⊆ s :=
+  Iff.rfl
+
+lemma IsMaximumClique.isMaximalClique [Fintype α] (s : Finset α) (M : G.IsMaximumClique s) :
+    Maximal G.IsClique s :=
+  ⟨ M.isClique,
+    fun t ht hsub => by
+      by_contra hc
+      have fint : Fintype t := ofFinite ↑t
+      have ne : s ≠ t.toFinset := fun a ↦ by subst a; simp_all[Set.coe_toFinset, not_true_eq_false]
+      have hle : #t.toFinset ≤ #s := M.maximum t.toFinset (by simp [Set.coe_toFinset, ht])
+      have hlt : #s < #t.toFinset :=
+        card_lt_card (ssubset_of_ne_of_subset ne (Set.subset_toFinset.mpr hsub))
+      exact lt_irrefl _ (lt_of_lt_of_le hlt hle) ⟩
+
+lemma maximumClique_card_eq_cliqueNum [Fintype α] (s : Finset α) (sm : G.IsMaximumClique s) :
+    #s = G.cliqueNum := by
+  obtain ⟨sc, sm⟩ := sm
+  obtain ⟨t, tc, tcard⟩ := G.exists_isNClique_cliqueNum
+  exact eq_of_le_of_not_lt sc.card_le_cliqueNum (by simp [← tcard, sm t tc])
+
+lemma maximumClique_exists [Fintype α] : ∃ (s : Finset α), G.IsMaximumClique s := by
+  obtain ⟨s, snc⟩ := G.exists_isNClique_cliqueNum
+  exact ⟨s, ⟨snc.isClique, fun t ht => snc.card_eq.symm ▸ ht.card_le_cliqueNum⟩⟩
+
+end CliqueNumber
+
 /-! ### Finset of cliques -/
 
 
 section CliqueFinset
 
-variable [Fintype α] [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {a b c : α} {s : Finset α}
+variable [Fintype α] [DecidableEq α] [DecidableRel G.Adj] {n : ℕ} {s : Finset α}
 
 /-- The `n`-cliques in a graph as a finset. -/
-def cliqueFinset (n : ℕ) : Finset (Finset α) :=
-  univ.filter <| G.IsNClique n
+def cliqueFinset (n : ℕ) : Finset (Finset α) := {s | G.IsNClique n s}
 
 variable {G} in
 @[simp]
@@ -568,14 +629,14 @@ theorem cliqueFinset_eq_empty_iff : G.cliqueFinset n = ∅ ↔ G.CliqueFree n :=
 
 protected alias ⟨_, CliqueFree.cliqueFinset⟩ := cliqueFinset_eq_empty_iff
 
-theorem card_cliqueFinset_le : (G.cliqueFinset n).card ≤ (card α).choose n := by
+theorem card_cliqueFinset_le : #(G.cliqueFinset n) ≤ (card α).choose n := by
   rw [← card_univ, ← card_powersetCard]
   refine card_mono fun s => ?_
   simpa [mem_powersetCard_univ] using IsNClique.card_eq
 
 variable [DecidableRel H.Adj]
 
-@[mono]
+@[gcongr, mono]
 theorem cliqueFinset_mono (h : G ≤ H) : G.cliqueFinset n ⊆ H.cliqueFinset n :=
   monotone_filter_right _ fun _ ↦ IsNClique.mono h
 

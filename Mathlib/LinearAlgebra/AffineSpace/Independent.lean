@@ -77,14 +77,14 @@ theorem affineIndependent_iff_of_fintype [Fintype ι] (p : ι → P) :
 
 @[simp] lemma affineIndependent_vadd {p : ι → P} {v : V} :
     AffineIndependent k (v +ᵥ p) ↔ AffineIndependent k p := by
-  simp (config := { contextual := true }) [AffineIndependent, weightedVSub_vadd]
+  simp +contextual [AffineIndependent, weightedVSub_vadd]
 
 protected alias ⟨AffineIndependent.of_vadd, AffineIndependent.vadd⟩ := affineIndependent_vadd
 
 @[simp] lemma affineIndependent_smul {G : Type*} [Group G] [DistribMulAction G V]
     [SMulCommClass G k V] {p : ι → V} {a : G} :
     AffineIndependent k (a • p) ↔ AffineIndependent k p := by
-  simp (config := { contextual := true }) [AffineIndependent, weightedVSub_smul,
+  simp +contextual [AffineIndependent, weightedVSub_smul,
     ← smul_comm (α := V) a, ← smul_sum, smul_eq_zero_iff_eq]
 
 protected alias ⟨AffineIndependent.of_smul, AffineIndependent.smul⟩ := affineIndependent_smul
@@ -104,7 +104,7 @@ theorem affineIndependent_iff_linearIndependent_vsub (p : ι → P) (i1 : ι) :
         intro x
         rw [hfdef]
         dsimp only
-        erw [dif_neg x.property, Subtype.coe_eta]
+        rw [dif_neg x.property, Subtype.coe_eta]
       rw [hfg]
       have hf : ∑ ι ∈ s2, f ι = 0 := by
         rw [Finset.sum_insert
@@ -390,7 +390,7 @@ theorem AffineEquiv.affineIndependent_iff {p : ι → P} (e : P ≃ᵃ[k] P₂) 
 theorem AffineEquiv.affineIndependent_set_of_eq_iff {s : Set P} (e : P ≃ᵃ[k] P₂) :
     AffineIndependent k ((↑) : e '' s → P₂) ↔ AffineIndependent k ((↑) : s → P) := by
   have : e ∘ ((↑) : s → P) = ((↑) : e '' s → P₂) ∘ (e : P ≃ P₂).image s := rfl
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [← e.affineIndependent_iff, this, affineIndependent_equiv]
 
 end Composition
@@ -457,14 +457,14 @@ theorem exists_nontrivial_relation_sum_zero_of_not_affine_ind {t : Finset V}
     simp only [Finset.weightedVSub_eq_weightedVSubOfPoint_of_sum_eq_zero _ w ((↑) : t → V) hw 0,
       vsub_eq_sub, Finset.weightedVSubOfPoint_apply, sub_zero] at hwt
     let f : ∀ x : V, x ∈ t → k := fun x hx => w ⟨x, hx⟩
-    refine ⟨fun x => if hx : x ∈ t then f x hx else (0 : k), ?_, ?_, by use i; simp [hi]⟩
+    refine ⟨fun x => if hx : x ∈ t then f x hx else (0 : k), ?_, ?_, by use i; simp [f, hi]⟩
     on_goal 1 =>
       suffices (∑ e ∈ t, dite (e ∈ t) (fun hx => f e hx • e) fun _ => 0) = 0 by
         convert this
         rename V => x
         by_cases hx : x ∈ t <;> simp [hx]
     all_goals
-      simp only [Finset.sum_dite_of_true fun _ h => h, Finset.mk_coe, hwt, hw]
+      simp only [f, Finset.sum_dite_of_true fun _ h => h, Finset.mk_coe, hwt, hw]
 
 variable {s : Finset ι} {w w₁ w₂ : ι → k} {p : ι → V}
 
@@ -618,7 +618,7 @@ theorem affineIndependent_of_ne {p₁ p₂ : P} (h : p₁ ≠ p₂) : AffineInde
     ext
     fin_cases i
     · simp at hi
-    · simp only [Fin.val_one]
+    · simp [i₁]
   haveI : Unique { x // x ≠ (0 : Fin 2) } := ⟨⟨i₁⟩, he'⟩
   apply linearIndependent_unique
   rw [he' default]
@@ -687,7 +687,7 @@ theorem affineIndependent_of_ne_of_mem_of_mem_of_not_mem {s : AffineSubspace k P
   refine hp₃ ((AffineSubspace.le_def' _ s).1 ?_ p₃ h)
   simp_rw [affineSpan_le, Set.image_subset_iff, Set.subset_def, Set.mem_preimage]
   intro x
-  fin_cases x <;> simp (config := {decide := true}) [hp₁, hp₂]
+  fin_cases x <;> simp +decide [hp₁, hp₂]
 
 /-- If distinct points `p₁` and `p₃` lie in `s` but `p₂` does not, the three points are affinely
 independent. -/
@@ -810,19 +810,19 @@ add_decl_doc Affine.Simplex.ext_iff
 
 /-- A face of a simplex is a simplex with the given subset of
 points. -/
-def face {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {m : ℕ} (h : fs.card = m + 1) :
+def face {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {m : ℕ} (h : #fs = m + 1) :
     Simplex k P m :=
   ⟨s.points ∘ fs.orderEmbOfFin h, s.independent.comp_embedding (fs.orderEmbOfFin h).toEmbedding⟩
 
 /-- The points of a face of a simplex are given by `mono_of_fin`. -/
 theorem face_points {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {m : ℕ}
-    (h : fs.card = m + 1) (i : Fin (m + 1)) :
+    (h : #fs = m + 1) (i : Fin (m + 1)) :
     (s.face h).points i = s.points (fs.orderEmbOfFin h i) :=
   rfl
 
 /-- The points of a face of a simplex are given by `mono_of_fin`. -/
 theorem face_points' {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {m : ℕ}
-    (h : fs.card = m + 1) : (s.face h).points = s.points ∘ fs.orderEmbOfFin h :=
+    (h : #fs = m + 1) : (s.face h).points = s.points ∘ fs.orderEmbOfFin h :=
   rfl
 
 /-- A single-point face equals the 0-simplex constructed with
@@ -838,7 +838,7 @@ theorem face_eq_mkOfPoint {n : ℕ} (s : Simplex k P n) (i : Fin (n + 1)) :
 /-- The set of points of a face. -/
 @[simp]
 theorem range_face_points {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {m : ℕ}
-    (h : fs.card = m + 1) : Set.range (s.face h).points = s.points '' ↑fs := by
+    (h : #fs = m + 1) : Set.range (s.face h).points = s.points '' ↑fs := by
   rw [face_points', Set.range_comp, Finset.range_orderEmbOfFin]
 
 /-- Remap a simplex along an `Equiv` of index types. -/
@@ -889,7 +889,7 @@ variable {k : Type*} {V : Type*} {P : Type*} [DivisionRing k] [AddCommGroup V] [
 the points. -/
 @[simp]
 theorem face_centroid_eq_centroid {n : ℕ} (s : Simplex k P n) {fs : Finset (Fin (n + 1))} {m : ℕ}
-    (h : fs.card = m + 1) : Finset.univ.centroid k (s.face h).points = fs.centroid k s.points := by
+    (h : #fs = m + 1) : Finset.univ.centroid k (s.face h).points = fs.centroid k s.points := by
   convert (Finset.univ.centroid_map k (fs.orderEmbOfFin h).toEmbedding s.points).symm
   rw [← Finset.coe_inj, Finset.coe_map, Finset.coe_univ, Set.image_univ]
   simp
@@ -899,7 +899,7 @@ two subsets of the points of a simplex are equal if and only if those
 faces are given by the same subset of points. -/
 @[simp]
 theorem centroid_eq_iff [CharZero k] {n : ℕ} (s : Simplex k P n) {fs₁ fs₂ : Finset (Fin (n + 1))}
-    {m₁ m₂ : ℕ} (h₁ : fs₁.card = m₁ + 1) (h₂ : fs₂.card = m₂ + 1) :
+    {m₁ m₂ : ℕ} (h₁ : #fs₁ = m₁ + 1) (h₂ : #fs₂ = m₂ + 1) :
     fs₁.centroid k s.points = fs₂.centroid k s.points ↔ fs₁ = fs₂ := by
   refine ⟨fun h => ?_, @congrArg _ _ fs₁ fs₂ (fun z => Finset.centroid k z s.points)⟩
   rw [Finset.centroid_eq_affineCombination_fintype,
@@ -908,7 +908,7 @@ theorem centroid_eq_iff [CharZero k] {n : ℕ} (s : Simplex k P n) {fs₁ fs₂ 
     (affineIndependent_iff_indicator_eq_of_affineCombination_eq k s.points).1 s.independent _ _ _ _
       (fs₁.sum_centroidWeightsIndicator_eq_one_of_card_eq_add_one k h₁)
       (fs₂.sum_centroidWeightsIndicator_eq_one_of_card_eq_add_one k h₂) h
-  simp_rw [Finset.coe_univ, Set.indicator_univ, Function.funext_iff,
+  simp_rw [Finset.coe_univ, Set.indicator_univ, funext_iff,
     Finset.centroidWeightsIndicator_def, Finset.centroidWeights, h₁, h₂] at ha
   ext i
   specialize ha i
@@ -924,7 +924,7 @@ theorem centroid_eq_iff [CharZero k] {n : ℕ} (s : Simplex k P n) {fs₁ fs₂ 
 faces of a simplex are equal if and only if those faces are given by
 the same subset of points. -/
 theorem face_centroid_eq_iff [CharZero k] {n : ℕ} (s : Simplex k P n)
-    {fs₁ fs₂ : Finset (Fin (n + 1))} {m₁ m₂ : ℕ} (h₁ : fs₁.card = m₁ + 1) (h₂ : fs₂.card = m₂ + 1) :
+    {fs₁ fs₂ : Finset (Fin (n + 1))} {m₁ m₂ : ℕ} (h₁ : #fs₁ = m₁ + 1) (h₂ : #fs₂ = m₂ + 1) :
     Finset.univ.centroid k (s.face h₁).points = Finset.univ.centroid k (s.face h₂).points ↔
       fs₁ = fs₂ := by
   rw [face_centroid_eq_centroid, face_centroid_eq_centroid]

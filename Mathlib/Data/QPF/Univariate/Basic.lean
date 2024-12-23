@@ -218,7 +218,7 @@ def Wsetoid : Setoid q.P.W :=
 attribute [local instance] Wsetoid
 
 /-- inductive type defined as initial algebra of a Quotient of Polynomial Functor -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 def Fix (F : Type u → Type u) [q : QPF F] :=
   Quotient (Wsetoid : Setoid q.P.W)
@@ -512,8 +512,8 @@ elements `x y : F α` are in the same equivalence class if
 def quotientQPF (FG_abs_repr : ∀ {α} (x : G α), FG_abs (FG_repr x) = x)
     (FG_abs_map : ∀ {α β} (f : α → β) (x : F α), FG_abs (f <$> x) = f <$> FG_abs x) : QPF G where
   P := q.P
-  abs {α} p := FG_abs (abs p)
-  repr {α} x := repr (FG_repr x)
+  abs {_} p := FG_abs (abs p)
+  repr {_} x := repr (FG_repr x)
   abs_repr {α} x := by simp only; rw [abs_repr, FG_abs_repr]
   abs_map {α β} f x := by simp only; rw [abs_map, FG_abs_map]
 

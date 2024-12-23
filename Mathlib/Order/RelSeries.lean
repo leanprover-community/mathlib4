@@ -112,9 +112,9 @@ corresponds to each other. -/
 protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} where
   toFun x := ⟨_, x.toList_ne_nil, x.toList_chain'⟩
   invFun x := fromListChain' _ x.2.1 x.2.2
-  left_inv x := ext (by simp [toList]) <| by ext; apply List.get_ofFn
+  left_inv x := ext (by simp [toList]) <| by ext; dsimp; apply List.get_ofFn
   right_inv x := by
-    refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => List.get_ofFn _ _)
+    refine Subtype.ext (List.ext_get ?_ fun n hn1 _ => by dsimp; apply List.get_ofFn)
     have := Nat.succ_pred_eq_of_pos <| List.length_pos.mpr x.2.1
     simp_all [toList]
 
@@ -704,7 +704,7 @@ def injStrictMono (n : ℕ) :
     simp_rw [Subtype.mk_eq_mk, Sigma.mk.inj_iff, heq_eq_eq, true_and]
     have feq := fun i ↦ congr($(e).toFun i)
     simp_rw [mk_toFun lf f mf, mk_toFun lf g mg, mk_length lf f mf] at feq
-    rwa [Function.funext_iff]
+    rwa [funext_iff]
 
 /--
 For two preorders `α, β`, if `f : α → β` is strictly monotonic, then a strict chain of `α`
@@ -758,7 +758,7 @@ lemma apply_add_index_le_apply_add_index_nat (p : LTSeries ℕ) (i j : Fin (p.le
   have ⟨j, hj⟩ := j
   simp only [Fin.mk_le_mk] at hij
   simp only at *
-  induction j, hij using Nat.le_induction  with
+  induction j, hij using Nat.le_induction with
   | base => simp
   | succ j _hij ih =>
     specialize ih (Nat.lt_of_succ_lt hj)

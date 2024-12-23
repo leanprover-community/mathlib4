@@ -229,7 +229,7 @@ noncomputable def nondegComplexFunctor : Split C ⥤ ChainComplex C ℕ where
         apply S₁.s.hom_ext'
         intro A
         dsimp [alternatingFaceMapComplex]
-        erw [cofan_inj_naturality_symm_assoc Φ A]
+        rw [cofan_inj_naturality_symm_assoc Φ A]
         by_cases h : A.EqId
         · dsimp at h
           subst h

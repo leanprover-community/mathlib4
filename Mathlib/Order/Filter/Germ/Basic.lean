@@ -3,8 +3,11 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Abhimanyu Pallavi Sudhir
 -/
-import Mathlib.Order.Filter.Basic
 import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
+import Mathlib.Data.Int.Cast.Pi
+import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Order.Filter.Tendsto
 
 /-!
 # Germ of a function at a filter
@@ -79,7 +82,6 @@ def productSetoid (l : Filter α) (ε : α → Type*) : Setoid ((a : _) → ε a
 
 /-- The filter product `(a : α) → ε a` at a filter `l`. This is a dependent version of
   `Filter.Germ`. -/
--- Porting note: removed @[protected]
 def Product (l : Filter α) (ε : α → Type*) : Type _ :=
   Quotient (productSetoid l ε)
 
@@ -118,7 +120,7 @@ def IsConstant {l : Filter α} (P : Germ l β) : Prop :=
     exact fun f g b hfg hf ↦ (hfg.symm).trans hf
 
 theorem isConstant_coe {l : Filter α} {b} (h : ∀ x', f x' = b) : (↑f : Germ l β).IsConstant :=
-  ⟨b, Eventually.of_forall (fun x ↦ h x)⟩
+  ⟨b, Eventually.of_forall h⟩
 
 @[simp]
 theorem isConstant_coe_const {l : Filter α} {b : β} : (fun _ : α ↦ b : Germ l β).IsConstant := by
@@ -196,7 +198,7 @@ theorem map_map (op₁ : γ → δ) (op₂ : β → γ) (f : Germ l β) :
 
 /-- Lift a binary function `β → γ → δ` to a function `Germ l β → Germ l γ → Germ l δ`. -/
 def map₂ (op : β → γ → δ) : Germ l β → Germ l γ → Germ l δ :=
-  Quotient.map₂' (fun f g x => op (f x) (g x)) fun f f' Hf g g' Hg =>
+  Quotient.map₂ (fun f g x => op (f x) (g x)) fun f f' Hf g g' Hg =>
     Hg.mp <| Hf.mono fun x Hf Hg => by simp only [Hf, Hg]
 
 @[simp]
@@ -236,7 +238,9 @@ theorem coe_compTendsto (f : α → β) {lc : Filter γ} {g : γ → α} (hg : T
     (f : Germ l β).compTendsto g hg = f ∘ g :=
   rfl
 
-@[simp, nolint simpNF] -- Porting note (#10959): simp cannot prove this
+-- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
+-- simp can't match the LHS.
+@[simp, nolint simpNF]
 theorem compTendsto'_coe (f : Germ l β) {lc : Filter γ} {g : γ → α} (hg : Tendsto g lc l) :
     f.compTendsto' _ hg.germ_tendsto = f.compTendsto g hg :=
   rfl
@@ -393,10 +397,10 @@ theorem coe_pow [Pow G M] (f : α → G) (n : M) : ↑(f ^ n) = (f : Germ l G) ^
 theorem const_pow [Pow G M] (a : G) (n : M) : (↑(a ^ n) : Germ l G) = (↑a : Germ l G) ^ n :=
   rfl
 
--- TODO: #7432
+-- TODO: https://github.com/leanprover-community/mathlib4/pull/7432
 @[to_additive]
 instance instMonoid [Monoid M] : Monoid (Germ l M) :=
-  { Function.Surjective.monoid ofFun (surjective_quot_mk _) (by rfl)
+  { Function.Surjective.monoid ofFun Quot.mk_surjective (by rfl)
       (fun _ _ => by rfl) fun _ _ => by rfl with
     toSemigroup := instSemigroup
     toOne := instOne
@@ -690,7 +694,7 @@ theorem const_le_iff [LE β] [NeBot l] {x y : β} : (↑x : Germ l β) ≤ ↑y 
 instance instPreorder [Preorder β] : Preorder (Germ l β) where
   le := (· ≤ ·)
   le_refl f := inductionOn f <| EventuallyLE.refl l
-  le_trans f₁ f₂ f₃ := inductionOn₃ f₁ f₂ f₃ fun f₁ f₂ f₃ => EventuallyLE.trans
+  le_trans f₁ f₂ f₃ := inductionOn₃ f₁ f₂ f₃ fun _ _ _ => EventuallyLE.trans
 
 instance instPartialOrder [PartialOrder β] : PartialOrder (Germ l β) where
   le_antisymm f g := inductionOn₂ f g fun _ _ h₁ h₂ ↦ (EventuallyLE.antisymm h₁ h₂).germ_eq
@@ -716,23 +720,25 @@ instance instBoundedOrder [LE β] [BoundedOrder β] : BoundedOrder (Germ l β) w
   __ := instOrderBot
   __ := instOrderTop
 
-instance instSup [Sup β] : Sup (Germ l β) := ⟨map₂ (· ⊔ ·)⟩
-instance instInf [Inf β] : Inf (Germ l β) := ⟨map₂ (· ⊓ ·)⟩
+instance instSup [Max β] : Max (Germ l β) := ⟨map₂ (· ⊔ ·)⟩
+instance instInf [Min β] : Min (Germ l β) := ⟨map₂ (· ⊓ ·)⟩
 
 @[simp, norm_cast]
-theorem const_sup [Sup β] (a b : β) : ↑(a ⊔ b) = (↑a ⊔ ↑b : Germ l β) :=
+theorem const_sup [Max β] (a b : β) : ↑(a ⊔ b) = (↑a ⊔ ↑b : Germ l β) :=
   rfl
 
 @[simp, norm_cast]
-theorem const_inf [Inf β] (a b : β) : ↑(a ⊓ b) = (↑a ⊓ ↑b : Germ l β) :=
+theorem const_inf [Min β] (a b : β) : ↑(a ⊓ b) = (↑a ⊓ ↑b : Germ l β) :=
   rfl
 
 instance instSemilatticeSup [SemilatticeSup β] : SemilatticeSup (Germ l β) where
+  sup := max
   le_sup_left f g := inductionOn₂ f g fun _f _g => Eventually.of_forall fun _x ↦ le_sup_left
   le_sup_right f g := inductionOn₂ f g fun _f _g ↦ Eventually.of_forall fun _x ↦ le_sup_right
   sup_le f₁ f₂ g := inductionOn₃ f₁ f₂ g fun _f₁ _f₂ _g h₁ h₂ ↦ h₂.mp <| h₁.mono fun _x ↦ sup_le
 
 instance instSemilatticeInf [SemilatticeInf β] : SemilatticeInf (Germ l β) where
+  inf := min
   inf_le_left f g := inductionOn₂ f g fun _f _g ↦ Eventually.of_forall fun _x ↦ inf_le_left
   inf_le_right f g := inductionOn₂ f g fun _f _g ↦ Eventually.of_forall fun _x ↦ inf_le_right
   le_inf f₁ f₂ g := inductionOn₃ f₁ f₂ g fun _f₁ _f₂ _g h₁ h₂ ↦ h₂.mp <| h₁.mono fun _x ↦ le_inf

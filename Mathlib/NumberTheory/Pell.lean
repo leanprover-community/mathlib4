@@ -5,7 +5,7 @@ Authors: Michael Geißer, Michael Stoll
 -/
 import Mathlib.Tactic.Qify
 import Mathlib.Data.ZMod.Basic
-import Mathlib.NumberTheory.DiophantineApproximation
+import Mathlib.NumberTheory.DiophantineApproximation.Basic
 import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
@@ -200,13 +200,13 @@ theorem y_ne_zero_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : a.y ≠ 0 := 
   intro hy
   have prop := a.prop
   rw [hy, sq (0 : ℤ), zero_mul, mul_zero, sub_zero] at prop
-  exact lt_irrefl _ (((one_lt_sq_iff <| zero_le_one.trans ha.le).mpr ha).trans_eq prop)
+  exact lt_irrefl _ (((one_lt_sq_iff₀ <| zero_le_one.trans ha.le).mpr ha).trans_eq prop)
 
 /-- If a solution has `x > 1`, then `d` is positive. -/
 theorem d_pos_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : 0 < d := by
   refine pos_of_mul_pos_left ?_ (sq_nonneg a.y)
   rw [a.prop_y, sub_pos]
-  exact one_lt_pow ha two_ne_zero
+  exact one_lt_pow₀ ha two_ne_zero
 
 /-- If a solution has `x > 1`, then `d` is not a square. -/
 theorem d_nonsquare_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : ¬IsSquare d := by
@@ -305,8 +305,8 @@ theorem exists_pos_variant (h₀ : 0 < d) (a : Solution₁ d) :
         (lt_or_gt_of_ne (a.x_ne_zero h₀.le)).elim
           ((le_total 0 a.y).elim (fun hy hx => ⟨-a⁻¹, ?_, ?_, ?_⟩) fun hy hx => ⟨-a, ?_, ?_, ?_⟩)
           ((le_total 0 a.y).elim (fun hy hx => ⟨a, hx, hy, ?_⟩) fun hy hx => ⟨a⁻¹, hx, ?_, ?_⟩) <;>
-      simp only [neg_neg, inv_inv, neg_inv, Set.mem_insert_iff, Set.mem_singleton_iff, true_or_iff,
-        eq_self_iff_true, x_neg, x_inv, y_neg, y_inv, neg_pos, neg_nonneg, or_true_iff] <;>
+      simp only [neg_neg, inv_inv, neg_inv, Set.mem_insert_iff, Set.mem_singleton_iff, true_or,
+        eq_self_iff_true, x_neg, x_inv, y_neg, y_inv, neg_pos, neg_nonneg, or_true] <;>
     assumption
 
 end Solution₁
@@ -337,7 +337,8 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     refine Infinite.mono (fun q h => ?_) (infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational hξ)
     have h0 : 0 < (q.2 : ℝ) ^ 2 := pow_pos (Nat.cast_pos.mpr q.pos) 2
     have h1 : (q.num : ℝ) / (q.den : ℝ) = q := mod_cast q.num_div_den
-    rw [mem_setOf, abs_sub_comm, ← @Int.cast_lt ℝ, ← div_lt_div_right (abs_pos_of_pos h0)]
+    rw [mem_setOf, abs_sub_comm, ← @Int.cast_lt ℝ,
+      ← div_lt_div_iff_of_pos_right (abs_pos_of_pos h0)]
     push_cast
     rw [← abs_div, abs_sq, sub_div, mul_div_cancel_right₀ _ h0.ne', ← div_pow, h1, ←
       sq_sqrt (Int.cast_pos.mpr h₀).le, sq_sub_sq, abs_mul, ← mul_one_div]
@@ -461,7 +462,7 @@ theorem subsingleton {a b : Solution₁ d} (ha : IsFundamental a) (hb : IsFundam
   have hx := le_antisymm (ha.2.2 hb.1) (hb.2.2 ha.1)
   refine Solution₁.ext hx ?_
   have : d * a.y ^ 2 = d * b.y ^ 2 := by rw [a.prop_y, b.prop_y, hx]
-  exact (sq_eq_sq ha.2.1.le hb.2.1.le).mp (Int.eq_of_mul_eq_mul_left ha.d_pos.ne' this)
+  exact (sq_eq_sq₀ ha.2.1.le hb.2.1.le).mp (Int.eq_of_mul_eq_mul_left ha.d_pos.ne' this)
 
 /-- If `d` is positive and not a square, then a fundamental solution exists. -/
 theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :

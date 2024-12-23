@@ -69,7 +69,7 @@ theorem IsStoppingTime.measurableSet_lt_of_pred [PredOrder ι] (hτ : IsStopping
   by_cases hi_min : IsMin i
   · suffices {ω : Ω | τ ω < i} = ∅ by rw [this]; exact @MeasurableSet.empty _ (f i)
     ext1 ω
-    simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false_iff]
+    simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
     rw [isMin_iff_forall_not_lt] at hi_min
     exact hi_min (τ ω)
   have : {ω : Ω | τ ω < i} = τ ⁻¹' Set.Iic (pred i) := by ext; simp [Iic_pred_of_not_isMin hi_min]
@@ -152,7 +152,7 @@ theorem IsStoppingTime.measurableSet_lt_of_isLUB (hτ : IsStoppingTime f τ) (i 
   by_cases hi_min : IsMin i
   · suffices {ω | τ ω < i} = ∅ by rw [this]; exact @MeasurableSet.empty _ (f i)
     ext1 ω
-    simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false_iff]
+    simp only [Set.mem_setOf_eq, Set.mem_empty_iff_false, iff_false]
     exact isMin_iff_forall_not_lt.mp hi_min (τ ω)
   obtain ⟨seq, -, -, h_tendsto, h_bound⟩ :
       ∃ seq : ℕ → ι, Monotone seq ∧ (∀ j, seq j ≤ i) ∧ Tendsto seq atTop (𝓝 i) ∧ ∀ j, seq j < i :=
@@ -245,8 +245,8 @@ protected theorem min_const [LinearOrder ι] {f : Filtration ι m} {τ : Ω → 
     (hτ : IsStoppingTime f τ) (i : ι) : IsStoppingTime f fun ω => min (τ ω) i :=
   hτ.min (isStoppingTime_const f i)
 
-theorem add_const [AddGroup ι] [Preorder ι] [CovariantClass ι ι (Function.swap (· + ·)) (· ≤ ·)]
-    [CovariantClass ι ι (· + ·) (· ≤ ·)] {f : Filtration ι m} {τ : Ω → ι} (hτ : IsStoppingTime f τ)
+theorem add_const [AddGroup ι] [Preorder ι] [AddRightMono ι]
+    [AddLeftMono ι] {f : Filtration ι m} {τ : Ω → ι} (hτ : IsStoppingTime f τ)
     {i : ι} (hi : 0 ≤ i) : IsStoppingTime f fun ω => τ ω + i := by
   intro j
   simp_rw [← le_sub_iff_add_le]
@@ -261,7 +261,7 @@ theorem add_const_nat {f : Filtration ℕ m} {τ : Ω → ℕ} (hτ : IsStopping
   · rw [not_le] at hij
     convert @MeasurableSet.empty _ (f.1 j)
     ext ω
-    simp only [Set.mem_empty_iff_false, iff_false_iff, Set.mem_setOf]
+    simp only [Set.mem_empty_iff_false, iff_false, Set.mem_setOf]
     omega
 
 -- generalize to certain countable type?
@@ -387,8 +387,7 @@ theorem measurableSet_inter_eq_iff (hτ : IsStoppingTime f τ) (s : Set Ω) (i :
     by_cases hij : i ≤ j
     · simp only [hij, Set.setOf_true, Set.inter_univ]
       exact f.mono hij _ h
-    · set_option tactic.skipAssignedInstances false in simp [hij]
-      convert @MeasurableSet.empty _ (Filtration.seq f j)
+    · simp [hij]
 
 theorem measurableSpace_le_of_le_const (hτ : IsStoppingTime f τ) {i : ι} (hτ_le : ∀ ω, τ ω ≤ i) :
     hτ.measurableSpace ≤ f i :=
@@ -567,18 +566,17 @@ theorem measurableSet_inter_le [TopologicalSpace ι] [SecondCountableTopology ι
       s ∩ {ω | τ ω ≤ i} ∩ {ω | min (τ ω) (π ω) ≤ i} ∩
         {ω | min (τ ω) i ≤ min (min (τ ω) (π ω)) i} := by
     ext1 ω
-    simp only [min_le_iff, Set.mem_inter_iff, Set.mem_setOf_eq, le_min_iff, le_refl, true_and_iff,
-      and_true_iff, true_or_iff, or_true_iff]
+    simp only [min_le_iff, Set.mem_inter_iff, Set.mem_setOf_eq, le_min_iff, le_refl, true_and,
+      true_or]
     by_cases hτi : τ ω ≤ i
-    · simp only [hτi, true_or_iff, and_true_iff, and_congr_right_iff]
+    · simp only [hτi, true_or, and_true, and_congr_right_iff]
       intro
       constructor <;> intro h
       · exact Or.inl h
       · cases' h with h h
         · exact h
         · exact hτi.trans h
-    simp only [hτi, false_or_iff, and_false_iff, false_and_iff, iff_false_iff, not_and, not_le,
-      and_imp]
+    simp only [hτi, false_or, and_false, false_and, iff_false, not_and, not_le, and_imp]
     refine fun _ hτ_le_π => lt_of_lt_of_le ?_ hτ_le_π
     rw [← not_le]
     exact hτi
@@ -617,10 +615,10 @@ theorem measurableSet_le_stopping_time [TopologicalSpace ι] [SecondCountableTop
   intro j
   have : {ω | τ ω ≤ π ω} ∩ {ω | τ ω ≤ j} = {ω | min (τ ω) j ≤ min (π ω) j} ∩ {ω | τ ω ≤ j} := by
     ext1 ω
-    simp only [Set.mem_inter_iff, Set.mem_setOf_eq, min_le_iff, le_min_iff, le_refl, and_true_iff,
+    simp only [Set.mem_inter_iff, Set.mem_setOf_eq, min_le_iff, le_min_iff, le_refl,
       and_congr_left_iff]
     intro h
-    simp only [h, or_self_iff, and_true_iff]
+    simp only [h, or_self_iff, and_true]
     rw [Iff.comm, or_iff_left_iff_imp]
     exact h.trans
   rw [this]
@@ -754,7 +752,7 @@ theorem progMeasurable_min_stopping_time [MetrizableSpace ι] (hτ : IsStoppingT
     suffices h_min_eq_left :
       (fun x : sc => min (↑(x : Set.Iic i × Ω).fst) (τ (x : Set.Iic i × Ω).snd)) = fun x : sc =>
         ↑(x : Set.Iic i × Ω).fst by
-      simp (config := { unfoldPartialApp := true }) only [Set.restrict, h_min_eq_left]
+      simp +unfoldPartialApp only [sc, Set.restrict, h_min_eq_left]
       exact h_meas_fst _
     ext1 ω
     rw [min_eq_left]
@@ -806,7 +804,7 @@ end LinearOrder
 
 section StoppedValueOfMemFinset
 
-variable {μ : Measure Ω} {τ σ : Ω → ι} {E : Type*} {p : ℝ≥0∞} {u : ι → Ω → E}
+variable {μ : Measure Ω} {τ : Ω → ι} {E : Type*} {p : ℝ≥0∞} {u : ι → Ω → E}
 
 theorem stoppedValue_eq_of_mem_finset [AddCommMonoid E] {s : Finset ι} (hbdd : ∀ ω, τ ω ∈ s) :
     stoppedValue u τ = ∑ i ∈ s, Set.indicator {ω | τ ω = i} (u i) := by
@@ -957,7 +955,7 @@ section Nat
 
 open Filtration
 
-variable {f : Filtration ℕ m} {u : ℕ → Ω → β} {τ π : Ω → ℕ}
+variable {u : ℕ → Ω → β} {τ π : Ω → ℕ}
 
 theorem stoppedValue_sub_eq_sum [AddCommGroup β] (hle : τ ≤ π) :
     stoppedValue u π - stoppedValue u τ = fun ω =>

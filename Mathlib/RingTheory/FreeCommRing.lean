@@ -80,7 +80,21 @@ theorem of_injective : Function.Injective (of : α → FreeCommRing α) :=
   FreeAbelianGroup.of_injective.comp fun _ _ =>
     (Multiset.coe_eq_coe.trans List.singleton_perm_singleton).mp
 
--- Porting note: added to ease a proof in `Algebra.DirectLimit`
+@[simp]
+theorem of_ne_zero (x : α) : of x ≠ 0 := FreeAbelianGroup.of_ne_zero _
+
+@[simp]
+theorem zero_ne_of (x : α) : 0 ≠ of x := FreeAbelianGroup.zero_ne_of _
+
+@[simp]
+theorem of_ne_one (x : α) : of x ≠ 1 :=
+  FreeAbelianGroup.of_injective.ne <| Multiset.singleton_ne_zero _
+
+@[simp]
+theorem one_ne_of (x : α) : 1 ≠ of x :=
+  FreeAbelianGroup.of_injective.ne <| Multiset.zero_ne_singleton _
+
+-- Porting note: added to ease a proof in `Mathlib.Algebra.Colimit.ModuleRing`
 lemma of_cons (a : α) (m : Multiset α) : (FreeAbelianGroup.of (Multiplicative.ofAdd (a ::ₘ m))) =
     @HMul.hMul _ (FreeCommRing α) (FreeCommRing α) _ (of a)
     (FreeAbelianGroup.of (Multiplicative.ofAdd m)) := by
@@ -98,7 +112,7 @@ protected theorem induction_on {C : FreeCommRing α → Prop} (z : FreeCommRing 
     (fun m => Multiset.induction_on m h1 fun a m ih => by
       convert hm (of a) _ (hb a) ih
       apply of_cons)
-    (fun m ih => hn _ ih) ha
+    (fun _ ih => hn _ ih) ha
 
 section lift
 
@@ -120,7 +134,7 @@ private def liftToMultiset : (α → R) ≃ (Multiplicative (Multiset α) →* R
   left_inv f := funext fun x => show (Multiset.map f {x}).prod = _ by simp
   right_inv F := MonoidHom.ext fun x =>
     let F' := MonoidHom.toAdditive'' F
-    let x' := Multiplicative.toAdd x
+    let x' := x.toAdd
     show (Multiset.map (fun a => F' {a}) x').sum = F' x' by
       erw [← Multiset.map_map (fun x => F' x) (fun x => {x}), ← AddMonoidHom.map_multiset_sum]
       exact DFunLike.congr_arg F (Multiset.sum_map_singleton x')

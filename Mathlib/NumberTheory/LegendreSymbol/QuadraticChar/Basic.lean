@@ -64,7 +64,7 @@ theorem quadraticCharFun_eq_zero_iff {a : F} : quadraticCharFun F a = 0 ↔ a = 
   simp only [quadraticCharFun]
   by_cases ha : a = 0
   · simp only [ha, if_true]
-  · simp only [ha, if_false, iff_false_iff]
+  · simp only [ha, if_false]
     split_ifs <;> simp only [neg_eq_zero, one_ne_zero, not_false_iff]
 
 @[simp]
@@ -129,7 +129,6 @@ variable {F}
 theorem quadraticChar_eq_zero_iff {a : F} : quadraticChar F a = 0 ↔ a = 0 :=
   quadraticCharFun_eq_zero_iff
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem quadraticChar_zero : quadraticChar F 0 = 0 := by
   simp only [quadraticChar_apply, quadraticCharFun_zero]
 
@@ -223,7 +222,7 @@ theorem quadraticChar_isNontrivial (hF : ringChar F ≠ 2) : (quadraticChar F).I
 open Finset in
 /-- The number of solutions to `x^2 = a` is determined by the quadratic character. -/
 theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
-    ↑{x : F | x ^ 2 = a}.toFinset.card = quadraticChar F a + 1 := by
+    #{x : F | x ^ 2 = a}.toFinset = quadraticChar F a + 1 := by
   -- we consider the cases `a = 0`, `a` is a nonzero square and `a` is a nonsquare in turn
   by_cases h₀ : a = 0
   · simp only [h₀, sq_eq_zero_iff, Set.setOf_eq_eq_singleton, Set.toFinset_card,
@@ -247,7 +246,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       ext1
       -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
       -- added (Set.mem_toFinset), Set.mem_setOf
-      simp only [(Set.mem_toFinset), Set.mem_setOf, not_mem_empty, iff_false_iff]
+      simp only [s, (Set.mem_toFinset), Set.mem_setOf, not_mem_empty, iff_false]
       rw [isSquare_iff_exists_sq] at h
       exact fun h' ↦ h ⟨_, h'.symm⟩
 
@@ -284,7 +283,7 @@ theorem quadraticChar_neg_one [DecidableEq F] (hF : ringChar F ≠ 2) :
 theorem FiniteField.isSquare_neg_one_iff : IsSquare (-1 : F) ↔ Fintype.card F % 4 ≠ 3 := by
   classical -- suggested by the linter (instead of `[DecidableEq F]`)
   by_cases hF : ringChar F = 2
-  · simp only [FiniteField.isSquare_of_char_two hF, Ne, true_iff_iff]
+  · simp only [FiniteField.isSquare_of_char_two hF, Ne, true_iff]
     exact fun hf ↦
       one_ne_zero <|
         (Nat.odd_of_mod_four_eq_three hf).symm.trans <| FiniteField.even_card_of_char_two hF

@@ -217,9 +217,9 @@ theorem star_im (z : ℤ√d) : (star z).im = -z.im :=
   rfl
 
 instance : StarRing (ℤ√d) where
-  star_involutive x := Zsqrtd.ext rfl (neg_neg _)
+  star_involutive _ := Zsqrtd.ext rfl (neg_neg _)
   star_mul a b := by ext <;> simp <;> ring
-  star_add a b := Zsqrtd.ext rfl (neg_add _ _)
+  star_add _ _ := Zsqrtd.ext rfl (neg_add _ _)
 
 -- Porting note: proof was `by decide`
 instance nontrivial : Nontrivial (ℤ√d) :=
@@ -558,7 +558,7 @@ instance decidableNonnegg (c d a b) : Decidable (Nonnegg c d a b) := by
 instance decidableNonneg : ∀ a : ℤ√d, Decidable (Nonneg a)
   | ⟨_, _⟩ => Zsqrtd.decidableNonnegg _ _ _ _
 
-instance decidableLE : @DecidableRel (ℤ√d) (· ≤ ·) := fun _ _ => decidableNonneg _
+instance decidableLE : DecidableRel (α := ℤ√d) (· ≤ ·) := fun _ _ => decidableNonneg _
 
 open Int in
 theorem nonneg_cases : ∀ {a : ℤ√d}, Nonneg a → ∃ x y : ℕ, a = ⟨x, y⟩ ∨ a = ⟨x, -y⟩ ∨ a = ⟨-x, y⟩
@@ -654,7 +654,7 @@ instance preorder : Preorder (ℤ√d) where
   le_refl a := show Nonneg (a - a) by simp only [sub_self]; trivial
   le_trans a b c hab hbc := by simpa [sub_add_sub_cancel'] using hab.add hbc
   lt := (· < ·)
-  lt_iff_le_not_le a b := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
+  lt_iff_le_not_le _ _ := (and_iff_right_of_imp (Zsqrtd.le_total _ _).resolve_left).symm
 
 open Int in
 theorem le_arch (a : ℤ√d) : ∃ n : ℕ, a ≤ n := by
@@ -805,12 +805,12 @@ theorem not_divides_sq (x y) : (x + 1) * (x + 1) ≠ d * (y + 1) * (y + 1) := fu
 open Int in
 theorem nonneg_antisymm : ∀ {a : ℤ√d}, Nonneg a → Nonneg (-a) → a = 0
   | ⟨0, 0⟩, _, _ => rfl
-  | ⟨-[x+1], -[y+1]⟩, xy, _ => False.elim xy
-  | ⟨(x + 1 : Nat), (y + 1 : Nat)⟩, _, yx => False.elim yx
-  | ⟨-[x+1], 0⟩, xy, _ => absurd xy (not_sqLe_succ _ _ _ (by decide))
-  | ⟨(x + 1 : Nat), 0⟩, _, yx => absurd yx (not_sqLe_succ _ _ _ (by decide))
-  | ⟨0, -[y+1]⟩, xy, _ => absurd xy (not_sqLe_succ _ _ _ d_pos)
-  | ⟨0, (y + 1 : Nat)⟩, _, yx => absurd yx (not_sqLe_succ _ _ _ d_pos)
+  | ⟨-[_+1], -[_+1]⟩, xy, _ => False.elim xy
+  | ⟨(_ + 1 : Nat), (_ + 1 : Nat)⟩, _, yx => False.elim yx
+  | ⟨-[_+1], 0⟩, xy, _ => absurd xy (not_sqLe_succ _ _ _ (by decide))
+  | ⟨(_ + 1 : Nat), 0⟩, _, yx => absurd yx (not_sqLe_succ _ _ _ (by decide))
+  | ⟨0, -[_+1]⟩, xy, _ => absurd xy (not_sqLe_succ _ _ _ d_pos)
+  | ⟨0, (_ + 1 : Nat)⟩, _, yx => absurd yx (not_sqLe_succ _ _ _ d_pos)
   | ⟨(x + 1 : Nat), -[y+1]⟩, (xy : SqLe _ _ _ _), (yx : SqLe _ _ _ _) => by
     let t := le_antisymm yx xy
     rw [one_mul] at t
@@ -893,8 +893,8 @@ theorem norm_eq_zero {d : ℤ} (h_nonsquare : ∀ n : ℤ, d ≠ n * n) (a : ℤ
   · push_neg at h
     suffices a.re * a.re = 0 by
       rw [eq_zero_of_mul_self_eq_zero this] at ha ⊢
-      simpa only [true_and_iff, or_self_right, zero_re, zero_im, eq_self_iff_true, zero_eq_mul,
-        mul_zero, mul_eq_zero, h.ne, false_or_iff, or_self_iff] using ha
+      simpa only [true_and, or_self_right, zero_re, zero_im, eq_self_iff_true, zero_eq_mul,
+        mul_zero, mul_eq_zero, h.ne, false_or, or_self_iff] using ha
     apply _root_.le_antisymm _ (mul_self_nonneg _)
     rw [ha, mul_assoc]
     exact mul_nonpos_of_nonpos_of_nonneg h.le (mul_self_nonneg _)
@@ -931,8 +931,7 @@ def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R) where
     ext
     simp
   right_inv f := by
-    -- Porting note: was `ext`
-    refine hom_ext _ _ ?_
+    ext
     simp
 
 /-- `lift r` is injective if `d` is non-square, and R has characteristic zero (that is, the map from

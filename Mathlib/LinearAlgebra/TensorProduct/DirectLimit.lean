@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 
-import Mathlib.Algebra.DirectLimit
+import Mathlib.Algebra.Colimit.ModuleRing
 
 /-!
 # Tensor product and direct limits commute with each other.
@@ -42,7 +42,7 @@ given by `gᵢ ⊗ m ↦ [gᵢ] ⊗ m`.
 -/
 noncomputable def fromDirectLimit :
     DirectLimit (G · ⊗[R] M) (f ▷ M) →ₗ[R] DirectLimit G f ⊗[R] M :=
-  DirectLimit.lift _ _ _ _ (fun _ ↦ (of _ _ _ _ _).rTensor M)
+  Module.DirectLimit.lift _ _ _ _ (fun _ ↦ (of _ _ _ _ _).rTensor M)
     fun _ _ _ x ↦ by refine x.induction_on ?_ ?_ ?_ <;> aesop
 
 variable {M} in
@@ -56,7 +56,7 @@ by the family of maps `Gᵢ → M → limᵢ (Gᵢ ⊗ M)` where `gᵢ ↦ m ↦
 
 -/
 noncomputable def toDirectLimit : DirectLimit G f ⊗[R] M →ₗ[R] DirectLimit (G · ⊗[R] M) (f ▷ M) :=
-  TensorProduct.lift <| DirectLimit.lift _ _ _ _
+  TensorProduct.lift <| Module.DirectLimit.lift _ _ _ _
     (fun i ↦
       (TensorProduct.mk R _ _).compr₂ (of R ι _ (fun _i _j h ↦ (f _ _ h).rTensor M) i))
     fun _ _ _ g ↦ DFunLike.ext _ _ (of_f (G := (G · ⊗[R] M)) (x := g ⊗ₜ ·))
@@ -96,7 +96,7 @@ noncomputable def directLimitLeft :
 noncomputable def directLimitRight :
     M ⊗[R] DirectLimit G f ≃ₗ[R] DirectLimit (M ⊗[R] G ·) (M ◁ f) :=
   TensorProduct.comm _ _ _ ≪≫ₗ directLimitLeft f M ≪≫ₗ
-    Module.DirectLimit.congr (fun i ↦ TensorProduct.comm _ _ _)
+    Module.DirectLimit.congr (fun _ ↦ TensorProduct.comm _ _ _)
       (fun i j h ↦ TensorProduct.ext <| DFunLike.ext _ _ <| by aesop)
 
 @[simp] lemma directLimitRight_tmul_of {i : ι} (m : M) (g : G i) :

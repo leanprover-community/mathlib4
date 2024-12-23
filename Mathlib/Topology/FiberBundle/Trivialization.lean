@@ -33,7 +33,7 @@ We provide the following operations on `Trivialization`s.
 
 Previously, in mathlib, there was a structure `topological_vector_bundle.trivialization` which
 extended another structure `topological_fiber_bundle.trivialization` by a linearity hypothesis. As
-of PR leanprover-community/mathlib#17359, we have changed this to a single structure
+of PR https://github.com/leanprover-community/mathlib3/pull/17359, we have changed this to a single structure
 `Trivialization` (no namespace), together with a mixin class `Trivialization.IsLinear`.
 
 This permits all the *data* of a vector bundle to be held at the level of fiber bundles, so that the
@@ -50,7 +50,7 @@ type of linear trivializations is not even particularly well-behaved.
 open TopologicalSpace Filter Set Bundle Function
 open scoped Topology
 
-variable {ι : Type*} {B : Type*} (F : Type*) {E : B → Type*}
+variable {B : Type*} (F : Type*) {E : B → Type*}
 variable {Z : Type*} [TopologicalSpace B] [TopologicalSpace F] {proj : Z → B}
 
 /-- This structure contains the information left for a local trivialization (which is implemented
@@ -84,7 +84,7 @@ lemma ext' (e e' : Pretrivialization F proj) (h₁ : e.toPartialEquiv = e'.toPar
     (h₂ : e.baseSet = e'.baseSet) : e = e' := by
   cases e; cases e'; congr
 
--- Porting note (#11215): TODO: move `ext` here?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: move `ext` here?
 lemma ext {e e' : Pretrivialization F proj} (h₁ : ∀ x, e x = e' x)
     (h₂ : ∀ x, e.toPartialEquiv.symm x = e'.toPartialEquiv.symm x) (h₃ : e.baseSet = e'.baseSet) :
     e = e' := by
@@ -168,7 +168,7 @@ theorem preimage_symm_proj_inter (s : Set B) :
     e.toPartialEquiv.symm ⁻¹' (proj ⁻¹' s) ∩ e.baseSet ×ˢ univ = (s ∩ e.baseSet) ×ˢ univ := by
   ext ⟨x, y⟩
   suffices x ∈ e.baseSet → (proj (e.toPartialEquiv.symm (x, y)) ∈ s ↔ x ∈ s) by
-    simpa only [prod_mk_mem_set_prod_eq, mem_inter_iff, and_true_iff, mem_univ, and_congr_left_iff]
+    simpa only [prod_mk_mem_set_prod_eq, mem_inter_iff, and_true, mem_univ, and_congr_left_iff]
   intro h
   rw [e.proj_symm_apply' h]
 
@@ -194,7 +194,7 @@ theorem symm_trans_target_eq (e e' : Pretrivialization F proj) :
     (e.toPartialEquiv.symm.trans e'.toPartialEquiv).target = (e.baseSet ∩ e'.baseSet) ×ˢ univ := by
   rw [← PartialEquiv.symm_source, symm_trans_symm, symm_trans_source_eq, inter_comm]
 
-variable (e' : Pretrivialization F (π F E)) {x' : TotalSpace F E} {b : B} {y : E b}
+variable (e' : Pretrivialization F (π F E)) {b : B} {y : E b}
 
 @[simp]
 theorem coe_mem_source : ↑y ∈ e'.source ↔ b ∈ e'.baseSet :=
@@ -261,7 +261,7 @@ variable [TopologicalSpace Z] [TopologicalSpace (TotalSpace F E)]
 `proj : Z → B` with fiber `F`, as a partial homeomorphism between `Z` and `B × F` defined between
 two sets of the form `proj ⁻¹' baseSet` and `baseSet × F`, acting trivially on the first coordinate.
 -/
--- Porting note (#5171): was @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure Trivialization (proj : Z → B) extends PartialHomeomorph Z (B × F) where
   baseSet : Set B
   open_baseSet : IsOpen baseSet
@@ -502,7 +502,7 @@ theorem continuousAt_of_comp_left {X : Type*} [TopologicalSpace X] {f : X → Z}
   rw [e.source_eq, ← preimage_comp]
   exact hf_proj.preimage_mem_nhds (e.open_baseSet.mem_nhds he)
 
-variable (e' : Trivialization F (π F E)) {x' : TotalSpace F E} {b : B} {y : E b}
+variable (e' : Trivialization F (π F E)) {b : B} {y : E b}
 
 protected theorem continuousOn : ContinuousOn e' e'.source :=
   e'.continuousOn_toFun
@@ -642,8 +642,6 @@ protected def coordChangeHomeomorph (e₁ e₂ : Trivialization F proj) {b : B} 
 theorem coordChangeHomeomorph_coe (e₁ e₂ : Trivialization F proj) {b : B} (h₁ : b ∈ e₁.baseSet)
     (h₂ : b ∈ e₂.baseSet) : ⇑(e₁.coordChangeHomeomorph e₂ h₁ h₂) = e₁.coordChange e₂ b :=
   rfl
-
-variable {B' : Type*} [TopologicalSpace B']
 
 theorem isImage_preimage_prod (e : Trivialization F proj) (s : Set B) :
     e.toPartialHomeomorph.IsImage (proj ⁻¹' s) (s ×ˢ univ) := fun x hx => by simp [e.coe_fst', hx]

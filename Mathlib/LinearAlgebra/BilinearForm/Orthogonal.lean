@@ -148,7 +148,11 @@ theorem orthogonal_le (h : N ≤ L) : B.orthogonal L ≤ B.orthogonal N := fun _
 theorem le_orthogonal_orthogonal (b : B.IsRefl) : N ≤ B.orthogonal (B.orthogonal N) :=
   fun n hn _ hm => b _ _ (hm n hn)
 
-lemma orthogonal_top (hB : B.Nondegenerate) (hB₀ : B.IsRefl) :
+lemma orthogonal_top_eq_ker (hB : B.IsRefl) :
+    B.orthogonal ⊤ = LinearMap.ker B := by
+  ext; simp [LinearMap.BilinForm.IsOrtho, LinearMap.ext_iff, hB.eq_iff]
+
+lemma orthogonal_top_eq_bot (hB : B.Nondegenerate) (hB₀ : B.IsRefl) :
     B.orthogonal ⊤ = ⊥ :=
   (Submodule.eq_bot_iff _).mpr fun _ hx ↦ hB _ fun y ↦ hB₀ _ _ <| hx y Submodule.mem_top
 
@@ -283,7 +287,7 @@ lemma ker_restrict_eq_of_codisjoint {p q : Submodule R M} (hpq : Codisjoint p q)
     {B : LinearMap.BilinForm R M} (hB : ∀ x ∈ p, ∀ y ∈ q, B x y = 0) :
     LinearMap.ker (B.restrict p) = (LinearMap.ker B).comap p.subtype := by
   ext ⟨z, hz⟩
-  simp only [LinearMap.mem_ker, Submodule.mem_comap, Submodule.coeSubtype]
+  simp only [LinearMap.mem_ker, Submodule.mem_comap, Submodule.coe_subtype]
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · ext w
     obtain ⟨x, hx, y, hy, rfl⟩ := Submodule.exists_add_eq_of_codisjoint hpq w
@@ -294,7 +298,7 @@ lemma ker_restrict_eq_of_codisjoint {p q : Submodule R M} (hpq : Codisjoint p q)
 lemma inf_orthogonal_self_le_ker_restrict {W : Submodule R M} (b₁ : B.IsRefl) :
     W ⊓ B.orthogonal W ≤ (LinearMap.ker <| B.restrict W).map W.subtype := by
   rintro v ⟨hv : v ∈ W, hv' : v ∈ B.orthogonal W⟩
-  simp only [Submodule.mem_map, mem_ker, restrict_apply, Submodule.coeSubtype, Subtype.exists,
+  simp only [Submodule.mem_map, mem_ker, restrict_apply, Submodule.coe_subtype, Subtype.exists,
     exists_and_left, exists_prop, exists_eq_right_right]
   refine ⟨?_, hv⟩
   ext ⟨w, hw⟩
@@ -302,7 +306,7 @@ lemma inf_orthogonal_self_le_ker_restrict {W : Submodule R M} (b₁ : B.IsRefl) 
 
 variable [FiniteDimensional K V]
 
-open FiniteDimensional Submodule
+open Module Submodule
 
 variable {B : BilinForm K V}
 
@@ -320,7 +324,7 @@ theorem finrank_add_finrank_orthogonal (b₁ : B.IsRefl) (W : Submodule K V) :
 lemma finrank_orthogonal (hB : B.Nondegenerate) (hB₀ : B.IsRefl) (W : Submodule K V) :
     finrank K (B.orthogonal W) = finrank K V - finrank K W := by
   have := finrank_add_finrank_orthogonal hB₀ (W := W)
-  rw [B.orthogonal_top hB hB₀, inf_bot_eq, finrank_bot, add_zero] at this
+  rw [B.orthogonal_top_eq_bot hB hB₀, inf_bot_eq, finrank_bot, add_zero] at this
   have : finrank K W ≤ finrank K V := finrank_le W
   omega
 

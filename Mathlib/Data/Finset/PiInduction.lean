@@ -3,8 +3,9 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Finset.Sigma
-import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Fintype.Basic
 
 /-!
 # Induction principles for `∀ i, Finset (α i)`

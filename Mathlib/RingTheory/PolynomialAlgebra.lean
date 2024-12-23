@@ -1,10 +1,11 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Data.Matrix.Basis
+import Mathlib.Data.Matrix.Composition
 import Mathlib.Data.Matrix.DMatrix
 import Mathlib.RingTheory.MatrixAlgebra
 
@@ -251,7 +252,7 @@ theorem matPolyEquiv_coeff_apply (m : Matrix n n R[X]) (k : ℕ) (i j : n) :
   · intro p q hp hq
     simp [hp, hq]
   · intro i' j' x
-    erw [matPolyEquiv_coeff_apply_aux_2]
+    rw [matPolyEquiv_coeff_apply_aux_2]
     dsimp [stdBasisMatrix]
     split_ifs <;> rename_i h
     · rcases h with ⟨rfl, rfl⟩
@@ -285,3 +286,19 @@ theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
   intro hk
   rw [← matPolyEquiv_coeff_apply, hk]
   rfl
+
+variable {A}
+/-- Extend a ring hom `A → Mₙ(R)` to a ring hom `A[X] → Mₙ(R[X])`. -/
+def RingHom.polyToMatrix (f : A →+* Matrix n n R) : A[X] →+* Matrix n n R[X] :=
+  matPolyEquiv.symm.toRingHom.comp (mapRingHom f)
+
+variable {S : Type*} [CommSemiring S] (f : S →+* Matrix n n R)
+
+lemma evalRingHom_mapMatrix_comp_polyToMatrix :
+    (evalRingHom 0).mapMatrix.comp f.polyToMatrix = f.comp (evalRingHom 0) := by
+  ext <;> simp [RingHom.polyToMatrix, ← AlgEquiv.symm_toRingEquiv, diagonal, apply_ite]
+
+lemma evalRingHom_mapMatrix_comp_compRingEquiv {m} [Fintype m] [DecidableEq m] :
+    (evalRingHom 0).mapMatrix.comp (compRingEquiv m n R[X]) =
+      (compRingEquiv m n R).toRingHom.comp (evalRingHom 0).mapMatrix.mapMatrix := by
+  ext; simp

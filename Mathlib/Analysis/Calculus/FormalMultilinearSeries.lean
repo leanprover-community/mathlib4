@@ -75,6 +75,12 @@ theorem zero_apply (n : ℕ) : (0 : FormalMultilinearSeries 𝕜 E F) n = 0 := r
 @[simp]
 theorem neg_apply (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (-f) n = - f n := rfl
 
+@[simp]
+theorem add_apply (p q : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (p + q) n = p n + q n := rfl
+
+@[simp]
+theorem sub_apply (p q : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (p - q) n = p n - q n := rfl
+
 @[ext]
 protected theorem ext {p q : FormalMultilinearSeries 𝕜 E F} (h : ∀ n, p n = q n) : p = q :=
   funext h
@@ -87,6 +93,15 @@ space, but possibly different target spaces). -/
 def prod (p : FormalMultilinearSeries 𝕜 E F) (q : FormalMultilinearSeries 𝕜 E G) :
     FormalMultilinearSeries 𝕜 E (F × G)
   | n => (p n).prod (q n)
+
+/-- Product of formal multilinear series (with the same field `𝕜` and the same source
+space, but possibly different target spaces). -/
+@[simp] def pi {ι : Type*} {F : ι → Type*}
+    [∀ i, AddCommGroup (F i)] [∀ i, Module 𝕜 (F i)] [∀ i, TopologicalSpace (F i)]
+    [∀ i, TopologicalAddGroup (F i)] [∀ i, ContinuousConstSMul 𝕜 (F i)]
+    (p : Π i, FormalMultilinearSeries 𝕜 E (F i)) :
+    FormalMultilinearSeries 𝕜 E (Π i, F i)
+  | n => ContinuousMultilinearMap.pi (fun i ↦ p i n)
 
 /-- Killing the zeroth coefficient in a formal multilinear series -/
 def removeZero (p : FormalMultilinearSeries 𝕜 E F) : FormalMultilinearSeries 𝕜 E F
@@ -116,6 +131,10 @@ theorem congr (p : FormalMultilinearSeries 𝕜 E F) {m n : ℕ} {v : Fin m → 
   congr with ⟨i, hi⟩
   exact h2 i hi hi
 
+lemma congr_zero (p : FormalMultilinearSeries 𝕜 E F) {k l : ℕ} (h : k = l) (h' : p k = 0) :
+    p l = 0 := by
+  subst h; exact h'
+
 /-- Composing each term `pₙ` in a formal multilinear series with `(u, ..., u)` where `u` is a fixed
 continuous linear map, gives a new formal multilinear series `p.compContinuousLinearMap u`. -/
 def compContinuousLinearMap (p : FormalMultilinearSeries 𝕜 F G) (u : E →L[𝕜] F) :
@@ -142,7 +161,7 @@ end
 namespace FormalMultilinearSeries
 
 variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedAddCommGroup F]
-  [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
+  [NormedSpace 𝕜 F]
 
 variable (p : FormalMultilinearSeries 𝕜 E F)
 
@@ -158,9 +177,13 @@ corresponds to starting from a Taylor series (`HasFTaylorSeriesUpTo`) for the de
 function, and building a Taylor series for the function itself. -/
 def unshift (q : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z : F) : FormalMultilinearSeries 𝕜 E F
   | 0 => (continuousMultilinearCurryFin0 𝕜 E F).symm z
-  | n + 1 => -- Porting note: added type hint here and explicit universes to fix compile
-    (continuousMultilinearCurryRightEquiv' 𝕜 n E F :
-      (E [×n]→L[𝕜] E →L[𝕜] F) → (E [×n.succ]→L[𝕜] F)) (q n)
+  | n + 1 => (continuousMultilinearCurryRightEquiv' 𝕜 n E F).symm (q n)
+
+theorem unshift_shift {p : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)} {z : F} :
+    (p.unshift z).shift = p := by
+  ext1 n
+  simp [shift, unshift]
+  exact LinearIsometryEquiv.apply_symm_apply (continuousMultilinearCurryRightEquiv' 𝕜 n E F) (p n)
 
 end FormalMultilinearSeries
 
@@ -254,8 +277,8 @@ end Order
 
 section Coef
 
-variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] {s : E}
-  {p : FormalMultilinearSeries 𝕜 𝕜 E} {f : 𝕜 → E} {n : ℕ} {z z₀ : 𝕜} {y : Fin n → 𝕜}
+variable [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+  {p : FormalMultilinearSeries 𝕜 𝕜 E} {f : 𝕜 → E} {n : ℕ} {z : 𝕜} {y : Fin n → 𝕜}
 
 /-- The `n`th coefficient of `p` when seen as a power series. -/
 def coeff (p : FormalMultilinearSeries 𝕜 𝕜 E) (n : ℕ) : E :=
@@ -295,7 +318,7 @@ noncomputable def fslope (p : FormalMultilinearSeries 𝕜 𝕜 E) : FormalMulti
 theorem coeff_fslope : p.fslope.coeff n = p.coeff (n + 1) := by
   simp only [fslope, coeff, ContinuousMultilinearMap.curryLeft_apply]
   congr 1
-  exact Fin.cons_self_tail 1
+  exact Fin.cons_self_tail (fun _ => (1 : 𝕜))
 
 @[simp]
 theorem coeff_iterate_fslope (k n : ℕ) : (fslope^[k] p).coeff n = p.coeff (n + k) := by
@@ -316,7 +339,7 @@ def constFormalMultilinearSeries (𝕜 : Type*) [NontriviallyNormedField 𝕜] (
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] [ContinuousConstSMul 𝕜 E] [TopologicalAddGroup E]
     {F : Type*} [NormedAddCommGroup F] [TopologicalAddGroup F] [NormedSpace 𝕜 F]
     [ContinuousConstSMul 𝕜 F] (c : F) : FormalMultilinearSeries 𝕜 E F
-  | 0 => ContinuousMultilinearMap.curry0 _ _ c
+  | 0 => ContinuousMultilinearMap.uncurry0 _ _ c
   | _ => 0
 
 @[simp]
@@ -333,7 +356,7 @@ lemma constFormalMultilinearSeries_zero [NontriviallyNormedField 𝕜] [NormedAd
   simp only [FormalMultilinearSeries.zero_apply, ContinuousMultilinearMap.zero_apply,
     constFormalMultilinearSeries]
   induction n
-  · simp only [ContinuousMultilinearMap.curry0_apply]
+  · simp only [ContinuousMultilinearMap.uncurry0_apply]
   · simp only [constFormalMultilinearSeries.match_1.eq_2, ContinuousMultilinearMap.zero_apply]
 
 end Const
@@ -349,24 +372,23 @@ namespace ContinuousLinearMap
 /-- Formal power series of a continuous linear map `f : E →L[𝕜] F` at `x : E`:
 `f y = f x + f (y - x)`. -/
 def fpowerSeries (f : E →L[𝕜] F) (x : E) : FormalMultilinearSeries 𝕜 E F
-  | 0 => ContinuousMultilinearMap.curry0 𝕜 _ (f x)
+  | 0 => ContinuousMultilinearMap.uncurry0 𝕜 _ (f x)
   | 1 => (continuousMultilinearCurryFin1 𝕜 E F).symm f
   | _ => 0
 
+@[simp]
 theorem fpowerSeries_apply_zero (f : E →L[𝕜] F) (x : E) :
-    f.fpowerSeries x 0 = ContinuousMultilinearMap.curry0 𝕜 _ (f x) :=
+    f.fpowerSeries x 0 = ContinuousMultilinearMap.uncurry0 𝕜 _ (f x) :=
   rfl
 
+@[simp]
 theorem fpowerSeries_apply_one (f : E →L[𝕜] F) (x : E) :
     f.fpowerSeries x 1 = (continuousMultilinearCurryFin1 𝕜 E F).symm f :=
   rfl
 
+@[simp]
 theorem fpowerSeries_apply_add_two (f : E →L[𝕜] F) (x : E) (n : ℕ) : f.fpowerSeries x (n + 2) = 0 :=
   rfl
-
-attribute
-  [eqns fpowerSeries_apply_zero fpowerSeries_apply_one fpowerSeries_apply_add_two] fpowerSeries
-attribute [simp] fpowerSeries
 
 end ContinuousLinearMap
 

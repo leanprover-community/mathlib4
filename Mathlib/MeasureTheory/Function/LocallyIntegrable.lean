@@ -127,10 +127,10 @@ theorem LocallyIntegrableOn.aestronglyMeasurable [SecondCountableTopology X]
   rw [this, aestronglyMeasurable_iUnion_iff]
   exact fun i : ℕ => (hu i).aestronglyMeasurable
 
-/-- If `s` is either open, or closed, then `f` is locally integrable on `s` iff it is integrable on
-every compact subset contained in `s`. -/
+/-- If `s` is locally closed (e.g. open or closed), then `f` is locally integrable on `s` iff it is
+integrable on every compact subset contained in `s`. -/
 theorem locallyIntegrableOn_iff [LocallyCompactSpace X] (hs : IsLocallyClosed s) :
-    LocallyIntegrableOn f s μ ↔ ∀ (k : Set X), k ⊆ s → (IsCompact k → IntegrableOn f k μ) := by
+    LocallyIntegrableOn f s μ ↔ ∀ (k : Set X), k ⊆ s → IsCompact k → IntegrableOn f k μ := by
   refine ⟨fun hf k hk ↦ hf.integrableOn_compact_subset hk, fun hf x hx ↦ ?_⟩
   rcases hs with ⟨U, Z, hU, hZ, rfl⟩
   rcases exists_compact_subset hU hx.1 with ⟨K, hK, hxK, hKU⟩
@@ -498,7 +498,7 @@ theorem MonotoneOn.integrableOn_of_measure_ne_top (hmono : MonotoneOn f s) {a b 
   have : IsBounded (f '' s) := Metric.isBounded_of_bddAbove_of_bddBelow habove hbelow
   rcases isBounded_iff_forall_norm_le.mp this with ⟨C, hC⟩
   have A : IntegrableOn (fun _ => C) s μ := by
-    simp only [hs.lt_top, integrableOn_const, or_true_iff]
+    simp only [hs.lt_top, integrableOn_const, or_true]
   exact
     Integrable.mono' A (aemeasurable_restrict_of_monotoneOn h's hmono).aestronglyMeasurable
       ((ae_restrict_iff' h's).mpr <| ae_of_all _ fun y hy => hC (f y) (mem_image_of_mem f hy))

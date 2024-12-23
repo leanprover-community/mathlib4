@@ -3,10 +3,11 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
-import Mathlib.LinearAlgebra.Basis.Defs
-import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.BigOperators.Finprod
+import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Data.Fintype.BigOperators
+import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.LinearAlgebra.LinearIndependent
 
 /-!
@@ -24,18 +25,15 @@ universe u
 
 open Function Set Submodule Finsupp
 
-variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {K : Type*}
-variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
+variable {ι : Type*} {ι' : Type*} {R : Type*} {R₂ : Type*} {M : Type*} {M' : Type*}
 
 section Module
 
-variable [Semiring R]
-variable [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
-
+variable [Semiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
 
 namespace Basis
 
-variable (b b₁ : Basis ι R M) (i : ι) (c : R) (x : M)
+variable (b : Basis ι R M)
 
 section Coord
 
@@ -49,10 +47,8 @@ theorem coe_sumCoords_eq_finsum : (b.sumCoords : M → R) = fun m => ∑ᶠ i, b
 end Coord
 
 protected theorem linearIndependent : LinearIndependent R b :=
-  linearIndependent_iff.mpr fun l hl =>
-    calc
-      l = b.repr (Finsupp.linearCombination _ b l) := (b.repr_linearCombination l).symm
-      _ = 0 := by rw [hl, LinearEquiv.map_zero]
+  fun x y hxy => by
+    rw [← b.repr_linearCombination x, hxy, b.repr_linearCombination y]
 
 protected theorem ne_zero [Nontrivial R] (i) : b i ≠ 0 :=
   b.linearIndependent.ne_zero i
@@ -125,28 +121,15 @@ protected theorem noZeroSMulDivisors [NoZeroDivisors R] (b : Basis ι R M) :
     NoZeroSMulDivisors R M :=
   ⟨fun {c x} hcx => by
     exact or_iff_not_imp_right.mpr fun hx => by
-      rw [← b.linearCombination_repr x, ← LinearMap.map_smul] at hcx
-      have := linearIndependent_iff.mp b.linearIndependent (c • b.repr x) hcx
+      rw [← b.linearCombination_repr x, ← LinearMap.map_smul,
+        ← map_zero (linearCombination R b)] at hcx
+      have := b.linearIndependent hcx
       rw [smul_eq_zero] at this
       exact this.resolve_right fun hr => hx (b.repr.map_eq_zero_iff.mp hr)⟩
 
 protected theorem smul_eq_zero [NoZeroDivisors R] (b : Basis ι R M) {c : R} {x : M} :
     c • x = 0 ↔ c = 0 ∨ x = 0 :=
   @smul_eq_zero _ _ _ _ _ b.noZeroSMulDivisors _ _
-
-theorem eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : Submodule R M)
-    (rank_eq : ∀ {m : ℕ} (v : Fin m → N), LinearIndependent R ((↑) ∘ v : Fin m → M) → m = 0) :
-    N = ⊥ := by
-  rw [Submodule.eq_bot_iff]
-  intro x hx
-  contrapose! rank_eq with x_ne
-  refine ⟨1, fun _ => ⟨x, hx⟩, ?_, one_ne_zero⟩
-  rw [Fintype.linearIndependent_iff]
-  rintro g sum_eq i
-  cases' i with _ hi
-  simp only [Function.const_apply, Fin.default_eq_zero, Submodule.coe_mk, Finset.univ_unique,
-    Function.comp_const, Finset.sum_singleton] at sum_eq
-  convert (b.smul_eq_zero.mp sum_eq).resolve_right x_ne
 
 end NoZeroSMulDivisors
 
@@ -187,10 +170,24 @@ section Module
 open LinearMap
 
 variable {v : ι → M}
-variable [Ring R] [CommRing R₂] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M'']
-variable [Module R M] [Module R₂ M] [Module R M'] [Module R M'']
-variable {c d : R} {x y : M}
+variable [Ring R] [CommRing R₂] [AddCommGroup M]
+variable [Module R M] [Module R₂ M]
+variable {x y : M}
 variable (b : Basis ι R M)
+
+theorem Basis.eq_bot_of_rank_eq_zero [NoZeroDivisors R] (b : Basis ι R M) (N : Submodule R M)
+    (rank_eq : ∀ {m : ℕ} (v : Fin m → N), LinearIndependent R ((↑) ∘ v : Fin m → M) → m = 0) :
+    N = ⊥ := by
+  rw [Submodule.eq_bot_iff]
+  intro x hx
+  contrapose! rank_eq with x_ne
+  refine ⟨1, fun _ => ⟨x, hx⟩, ?_, one_ne_zero⟩
+  rw [Fintype.linearIndependent_iff]
+  rintro g sum_eq i
+  cases' i with _ hi
+  simp only [Function.const_apply, Fin.default_eq_zero, Submodule.coe_mk, Finset.univ_unique,
+    Function.comp_const, Finset.sum_singleton] at sum_eq
+  convert (b.smul_eq_zero.mp sum_eq).resolve_right x_ne
 
 namespace Basis
 
@@ -280,7 +277,7 @@ protected noncomputable def span : Basis ι R (span R (range v)) :=
       rfl
     have h₂ : map (Submodule.subtype (span R (range v))) (span R (range fun i => ⟨v i, this i⟩)) =
         span R (range v) := by
-      rw [← span_image, Submodule.coeSubtype]
+      rw [← span_image, Submodule.coe_subtype]
       -- Porting note: why doesn't `rw [h₁]` work here?
       exact congr_arg _ h₁
     have h₃ : (x : M) ∈ map (Submodule.subtype (span R (range v)))
@@ -361,6 +358,10 @@ def isUnitSMul (v : Basis ι R M) {w : ι → R} (hw : ∀ i, IsUnit (w i)) : Ba
 theorem isUnitSMul_apply {v : Basis ι R M} {w : ι → R} (hw : ∀ i, IsUnit (w i)) (i : ι) :
     v.isUnitSMul hw i = w i • v i :=
   unitsSMul_apply i
+
+theorem repr_isUnitSMul {v : Basis ι R₂ M} {w : ι → R₂} (hw : ∀ i, IsUnit (w i)) (x : M) (i : ι) :
+    (v.isUnitSMul hw).repr x i = (hw i).unit⁻¹ • v.repr x i :=
+  repr_unitsSMul _ _ _ _
 
 section Fin
 

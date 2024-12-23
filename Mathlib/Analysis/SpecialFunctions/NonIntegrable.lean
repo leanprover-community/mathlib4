@@ -58,7 +58,7 @@ theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter_aux
       (∀ x ∈ s, ∀ y ∈ s, ∀ z ∈ [[x, y]], DifferentiableAt ℝ f z) ∧
         ∀ x ∈ s, ∀ y ∈ s, ∀ z ∈ [[x, y]], ‖deriv f z‖ ≤ C * ‖g z‖ := by
     rcases hfg.exists_nonneg with ⟨C, C₀, hC⟩
-    have h : ∀ᶠ x : ℝ × ℝ in l.prod l,
+    have h : ∀ᶠ x : ℝ × ℝ in l ×ˢ l,
         ∀ y ∈ [[x.1, x.2]], (DifferentiableAt ℝ f y ∧ ‖deriv f y‖ ≤ C * ‖g y‖) ∧ y ∈ k :=
       (tendsto_fst.uIcc tendsto_snd).eventually ((hd.and hC.bound).and hl).smallSets
     rcases mem_prod_self_iff.1 h with ⟨s, hsl, hs⟩
@@ -109,7 +109,7 @@ theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter
     suffices (fun x ↦ ‖deriv f' x‖) =ᶠ[l] (fun x ↦ ‖deriv f x‖) by exact this.isBigO
     filter_upwards [hd] with x hx
     have : deriv f' x = a (deriv f x) := by
-      rw [fderiv.comp_deriv x _ hx]
+      rw [fderiv_comp_deriv x _ hx]
       · have : fderiv ℝ a (f x) = a.toContinuousLinearMap := a.toContinuousLinearMap.fderiv
         simp only [this]
         rfl

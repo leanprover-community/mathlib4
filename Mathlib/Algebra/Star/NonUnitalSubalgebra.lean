@@ -6,6 +6,7 @@ Authors: Jireh Loreaux
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Star.StarAlgHom
 import Mathlib.Algebra.Star.Center
+import Mathlib.Algebra.Star.SelfAdjoint
 
 /-!
 # Non-unital Star Subalgebras
@@ -97,7 +98,7 @@ variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [Module R B] [Star B]
 variable [NonUnitalNonAssocSemiring C] [Module R C] [Star C]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 
 instance instSetLike : SetLike (NonUnitalStarSubalgebra R A) A where
   coe {s} := s.carrier
@@ -398,7 +399,7 @@ variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
 variable [NonUnitalNonAssocSemiring B] [Module R B] [Star B]
 variable [NonUnitalNonAssocSemiring C] [Module R C] [Star C]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 
 /-- Range of an `NonUnitalAlgHom` as a `NonUnitalStarSubalgebra`. -/
 protected def range (φ : F) : NonUnitalStarSubalgebra R B where
@@ -471,7 +472,7 @@ variable [CommSemiring R]
 variable [NonUnitalSemiring A] [Module R A] [Star A]
 variable [NonUnitalSemiring B] [Module R B] [Star B]
 variable [NonUnitalSemiring C] [Module R C] [Star C]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 
 /-- Restrict a non-unital star algebra homomorphism with a left inverse to an algebra isomorphism
 to its range.
@@ -556,8 +557,8 @@ variable [IsScalarTower R A A] [SMulCommClass R A A]
 theorem star_adjoin_comm (s : Set A) :
     star (NonUnitalAlgebra.adjoin R s) = NonUnitalAlgebra.adjoin R (star s) :=
   have this :
-    ∀ t : Set A, NonUnitalAlgebra.adjoin R (star t) ≤ star (NonUnitalAlgebra.adjoin R t) := fun t =>
-    NonUnitalAlgebra.adjoin_le fun x hx => NonUnitalAlgebra.subset_adjoin R hx
+    ∀ t : Set A, NonUnitalAlgebra.adjoin R (star t) ≤ star (NonUnitalAlgebra.adjoin R t) := fun _ =>
+    NonUnitalAlgebra.adjoin_le fun _ hx => NonUnitalAlgebra.subset_adjoin R hx
   le_antisymm (by simpa only [star_star] using NonUnitalSubalgebra.star_mono (this (star s)))
     (this s)
 
@@ -600,7 +601,7 @@ namespace NonUnitalStarAlgebra
 variable [CommSemiring R] [StarRing R]
 variable [NonUnitalSemiring A] [StarRing A] [Module R A]
 variable [NonUnitalSemiring B] [StarRing B] [Module R B]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 
 section StarSubAlgebraA
 
@@ -645,17 +646,21 @@ theorem star_self_mem_adjoin_singleton (x : A) : star x ∈ adjoin R ({x} : Set 
   star_mem <| self_mem_adjoin_singleton R x
 
 @[elab_as_elim]
-lemma adjoin_induction' {s : Set A} {p : ∀ x, x ∈ adjoin R s → Prop} {a : A}
-    (ha : a ∈ adjoin R s) (mem : ∀ (x : A) (hx : x ∈ s), p x (subset_adjoin R s hx))
-    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
-    (zero : p 0 (zero_mem _)) (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+lemma adjoin_induction {s : Set A} {p : (x : A) → x ∈ adjoin R s → Prop}
+    (mem : ∀ (x : A) (hx : x ∈ s), p x (subset_adjoin R s hx))
+    (add : ∀ x y hx hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
+    (zero : p 0 (zero_mem _)) (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     (smul : ∀ (r : R) x hx, p x hx → p (r • x) (SMulMemClass.smul_mem r hx))
-    (star : ∀ x hx, p x hx → p (star x) (star_mem hx)) : p a ha := by
-  refine NonUnitalAlgebra.adjoin_induction' (fun x hx ↦ ?_) add zero mul smul ha
+    (star : ∀ x hx, p x hx → p (star x) (star_mem hx))
+    {a : A} (ha : a ∈ adjoin R s) : p a ha := by
+  refine NonUnitalAlgebra.adjoin_induction (fun x hx ↦ ?_) add zero mul smul ha
   simp only [Set.mem_union, Set.mem_star] at hx
   obtain (hx | hx) := hx
   · exact mem x hx
   · simpa using star _ (NonUnitalAlgebra.subset_adjoin R (by simpa using Or.inl hx)) (mem _ hx)
+
+@[deprecated adjoin_induction (since := "2024-10-10")]
+alias adjoin_induction' := adjoin_induction
 
 variable {R}
 
@@ -733,6 +738,11 @@ theorem map_sup [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f 
     ((S ⊔ T).map f : NonUnitalStarSubalgebra R B) = S.map f ⊔ T.map f :=
   (NonUnitalStarSubalgebra.gc_map_comap f).l_sup
 
+theorem map_inf [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : F)
+    (hf : Function.Injective f) (S T : NonUnitalStarSubalgebra R A) :
+    ((S ⊓ T).map f : NonUnitalStarSubalgebra R B) = S.map f ⊓ T.map f :=
+  SetLike.coe_injective (Set.image_inter hf)
+
 @[simp, norm_cast]
 theorem coe_inf (S T : NonUnitalStarSubalgebra R A) : (↑(S ⊓ T) : Set A) = (S : Set A) ∩ T :=
   rfl
@@ -766,6 +776,13 @@ theorem coe_iInf {ι : Sort*} {S : ι → NonUnitalStarSubalgebra R A} :
 theorem mem_iInf {ι : Sort*} {S : ι → NonUnitalStarSubalgebra R A} {x : A} :
     (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by simp only [iInf, mem_sInf, Set.forall_mem_range]
 
+theorem map_iInf {ι : Sort*} [Nonempty ι]
+    [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B] (f : F)
+    (hf : Function.Injective f) (S : ι → NonUnitalStarSubalgebra R A) :
+    ((⨅ i, S i).map f : NonUnitalStarSubalgebra R B) = ⨅ i, (S i).map f := by
+  apply SetLike.coe_injective
+  simpa using (Set.injOn_of_injective hf).image_iInter_eq (s := SetLike.coe ∘ S)
+
 @[simp]
 theorem iInf_toNonUnitalSubalgebra {ι : Sort*} (S : ι → NonUnitalStarSubalgebra R A) :
     (⨅ i, S i).toNonUnitalSubalgebra = ⨅ i, (S i).toNonUnitalSubalgebra :=
@@ -786,7 +803,7 @@ theorem toNonUnitalSubalgebra_bot :
 @[simp]
 theorem coe_bot : ((⊥ : NonUnitalStarSubalgebra R A) : Set A) = {0} := by
   simp only [Set.ext_iff, NonUnitalStarAlgebra.mem_bot, SetLike.mem_coe, Set.mem_singleton_iff,
-    iff_self_iff, forall_const]
+    forall_const]
 
 theorem eq_top_iff {S : NonUnitalStarSubalgebra R A} : S = ⊤ ↔ ∀ x : A, x ∈ S :=
   ⟨fun h x => by rw [h]; exact mem_top,
@@ -812,10 +829,12 @@ def toTop : A →⋆ₙₐ[R] (⊤ : NonUnitalStarSubalgebra R A) :=
 
 end StarSubAlgebraA
 
-theorem range_top_iff_surjective [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
+theorem range_eq_top [IsScalarTower R B B] [SMulCommClass R B B] [StarModule R B]
     (f : F) : NonUnitalStarAlgHom.range f = (⊤ : NonUnitalStarSubalgebra R B) ↔
       Function.Surjective f :=
   NonUnitalStarAlgebra.eq_top_iff
+
+@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
 
 @[simp]
 theorem map_top [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A] (f : F) :
@@ -831,7 +850,7 @@ open NonUnitalStarAlgebra
 variable [CommSemiring R]
 variable [NonUnitalSemiring A] [StarRing A] [Module R A]
 variable [NonUnitalSemiring B] [StarRing B] [Module R B]
-variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [NonUnitalStarAlgHomClass F R A B]
+variable [FunLike F A B] [NonUnitalAlgHomClass F R A B] [StarHomClass F A B]
 variable (S : NonUnitalStarSubalgebra R A)
 
 section StarSubalgebra
@@ -981,7 +1000,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalStarSubalgebra R A
             simp only
             rw [hf i k hik, hf j k hjk]
             rfl)
-          (↑(iSup K)) (by rw [coe_iSup_of_directed dir])
+          _ (by rw [coe_iSup_of_directed dir])
       map_zero' := by
         dsimp only [SetLike.coe_sort_coe, NonUnitalAlgHom.coe_comp, Function.comp_apply,
           inclusion_mk, Eq.ndrec, id_eq, eq_mpr_eq_cast]
@@ -1112,6 +1131,77 @@ theorem centralizer_le (s t : Set A) (h : s ⊆ t) : centralizer R t ≤ central
 theorem centralizer_univ : centralizer R Set.univ = center R A :=
   SetLike.ext' <| by rw [coe_centralizer, Set.univ_union, coe_center, Set.centralizer_univ]
 
+theorem centralizer_toNonUnitalSubalgebra (s : Set A) :
+    (centralizer R s).toNonUnitalSubalgebra = NonUnitalSubalgebra.centralizer R (s ∪ star s) :=
+  rfl
+
+theorem coe_centralizer_centralizer (s : Set A) :
+    (centralizer R (centralizer R s : Set A)) = (s ∪ star s).centralizer.centralizer := by
+  rw [coe_centralizer, StarMemClass.star_coe_eq, Set.union_self, coe_centralizer]
+
 end Centralizer
 
 end NonUnitalStarSubalgebra
+
+namespace NonUnitalStarAlgebra
+
+open NonUnitalStarSubalgebra
+
+variable [CommSemiring R] [StarRing R]
+variable [NonUnitalSemiring A] [StarRing A] [Module R A]
+variable [IsScalarTower R A A] [SMulCommClass R A A] [StarModule R A]
+
+variable (R) in
+lemma adjoin_le_centralizer_centralizer (s : Set A) :
+    adjoin R s ≤ centralizer R (centralizer R s) := by
+  rw [← toNonUnitalSubalgebra_le_iff, centralizer_toNonUnitalSubalgebra,
+    adjoin_toNonUnitalSubalgebra]
+  convert NonUnitalAlgebra.adjoin_le_centralizer_centralizer R (s ∪ star s)
+  rw [StarMemClass.star_coe_eq]
+  simp
+
+lemma commute_of_mem_adjoin_of_forall_mem_commute {a b : A} {s : Set A}
+    (hb : b ∈ adjoin R s) (h : ∀ b ∈ s, Commute a b) (h_star : ∀ b ∈ s, Commute a (star b)) :
+    Commute a b :=
+  NonUnitalAlgebra.commute_of_mem_adjoin_of_forall_mem_commute hb fun b hb ↦
+    hb.elim (h b) (by simpa using h_star (star b))
+
+lemma commute_of_mem_adjoin_singleton_of_commute {a b c : A}
+    (hc : c ∈ adjoin R {b}) (h : Commute a b) (h_star : Commute a (star b)) :
+    Commute a c :=
+  commute_of_mem_adjoin_of_forall_mem_commute hc (by simpa) (by simpa)
+
+lemma commute_of_mem_adjoin_self {a b : A} [IsStarNormal a] (hb : b ∈ adjoin R {a}) :
+    Commute a b :=
+  commute_of_mem_adjoin_singleton_of_commute hb rfl (isStarNormal_iff a |>.mp inferInstance).symm
+
+variable (R) in
+/-- If all elements of `s : Set A` commute pairwise and with elements of `star s`, then `adjoin R s`
+is a non-unital commutative semiring.
+
+See note [reducible non-instances]. -/
+abbrev adjoinNonUnitalCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a)
+    (hcomm_star : ∀ a ∈ s, ∀ b ∈ s, a * star b = star b * a) :
+    NonUnitalCommSemiring (adjoin R s) :=
+  { (adjoin R s).toNonUnitalSemiring with
+    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦ by
+      have hcomm : ∀ a ∈ s ∪ star s, ∀ b ∈ s ∪ star s, a * b = b * a := fun a ha b hb ↦
+        Set.union_star_self_comm (fun _ ha _ hb ↦ hcomm _ hb _ ha)
+          (fun _ ha _ hb ↦ hcomm_star _ hb _ ha) b hb a ha
+      have := adjoin_le_centralizer_centralizer R s
+      apply this at h₁
+      apply this at h₂
+      rw [← SetLike.mem_coe, coe_centralizer_centralizer] at h₁ h₂
+      exact Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ h₁ _ h₂ }
+
+/-- If all elements of `s : Set A` commute pairwise and with elements of `star s`, then `adjoin R s`
+is a non-unital commutative ring.
+
+See note [reducible non-instances]. -/
+abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [StarRing R]
+    [NonUnitalRing A] [StarRing A] [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+    [StarModule R A] {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a)
+    (hcomm_star : ∀ a ∈ s, ∀ b ∈ s, a * star b = star b * a) : NonUnitalCommRing (adjoin R s) :=
+  { (adjoin R s).toNonUnitalRing, adjoinNonUnitalCommSemiringOfComm R hcomm hcomm_star with }
+
+end NonUnitalStarAlgebra

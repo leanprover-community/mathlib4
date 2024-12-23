@@ -51,7 +51,7 @@ theorem rotate'_cons_succ (l : List α) (a : α) (n : ℕ) :
 @[simp]
 theorem length_rotate' : ∀ (l : List α) (n : ℕ), (l.rotate' n).length = l.length
   | [], _ => by simp
-  | a :: l, 0 => rfl
+  | _ :: _, 0 => rfl
   | a :: l, n + 1 => by rw [List.rotate', length_rotate' (l ++ [a]) n]; simp
 
 theorem rotate'_eq_drop_append_take :
@@ -116,7 +116,7 @@ theorem length_rotate (l : List α) (n : ℕ) : (l.rotate n).length = l.length :
 
 @[simp]
 theorem rotate_replicate (a : α) (n : ℕ) (k : ℕ) : (replicate n a).rotate k = replicate n a :=
-  eq_replicate.2 ⟨by rw [length_rotate, length_replicate], fun b hb =>
+  eq_replicate_iff.2 ⟨by rw [length_rotate, length_replicate], fun b hb =>
     eq_of_mem_replicate <| mem_rotate.1 hb⟩
 
 theorem rotate_eq_drop_append_take {l : List α} {n : ℕ} :
@@ -222,7 +222,7 @@ theorem get?_rotate {l : List α} {n m : ℕ} (hml : m < l.length) :
   simp only [get?_eq_getElem?, length_rotate, hml, getElem?_eq_getElem, getElem_rotate]
   rw [← getElem?_eq_getElem]
 
--- Porting note (#10756): new lemma
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10756): new lemma
 theorem get_rotate (l : List α) (n : ℕ) (k : Fin (l.rotate n).length) :
     (l.rotate n).get k = l.get ⟨(k + n) % l.length, mod_lt _ (length_rotate l n ▸ k.pos)⟩ := by
   simp [getElem_rotate]
@@ -473,7 +473,7 @@ theorem IsRotated.dropLast_tail {α}
   | [] => by simp
   | [_] => by simp
   | a :: b :: L => by
-    simp at hL' |-
+    simp only [head_cons, ne_eq, reduceCtorEq, not_false_eq_true, getLast_cons] at hL'
     simp [hL', IsRotated.cons_getLast_dropLast]
 
 /-- List of all cyclic permutations of `l`.
@@ -610,7 +610,7 @@ variable [DecidableEq α]
 instance isRotatedDecidable (l l' : List α) : Decidable (l ~r l') :=
   decidable_of_iff' _ isRotated_iff_mem_map_range
 
-instance {l l' : List α} : Decidable (@Setoid.r _ (IsRotated.setoid α) l l') :=
+instance {l l' : List α} : Decidable (IsRotated.setoid α l l') :=
   List.isRotatedDecidable _ _
 
 end Decidable

@@ -3,6 +3,7 @@ Copyright (c) 2020 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
 -/
+import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.ContinuedFractions.ContinuantsRecurrence
 import Mathlib.Algebra.ContinuedFractions.TerminatedStable
 import Mathlib.Tactic.FieldSimp
@@ -166,9 +167,6 @@ theorem succ_succ_nth_conv'Aux_eq_succ_nth_conv'Aux_squashSeq :
         gp_head.a / (gp_head.b + convs'Aux s.tail (m + 2)) =
           convs'Aux (squashSeq s (m + 1)) (m + 2)
         by simpa only [convs'Aux, s_head_eq]
-      have : convs'Aux s.tail (m + 2) = convs'Aux (squashSeq s.tail m) (m + 1) := by
-        refine IH gp_succ_n ?_
-        simpa [Stream'.Seq.get?_tail] using s_succ_nth_eq
       have : (squashSeq s (m + 1)).head = some gp_head :=
         (squashSeq_nth_of_lt m.succ_pos).trans s_head_eq
       simp_all [convs'Aux, squashSeq_succ_n_tail_eq_squashSeq_tail_n]
@@ -305,7 +303,7 @@ theorem succ_nth_conv_eq_squashGCF_nth_conv [Field K]
         ((pb + a / b) * pA + pa * ppA) / ((pb + a / b) * pB + pa * ppB) =
           (b * (pb * pA + pa * ppA) + a * pA) / (b * (pb * pB + pa * ppB) + a * pB) by
         obtain ⟨eq1, eq2, eq3, eq4⟩ : pA' = pA ∧ pB' = pB ∧ ppA' = ppA ∧ ppB' = ppB := by
-          simp [*, pA', pB', ppA', ppB',
+          simp [*, g', pA, pB, ppA, ppB, pA', pB', ppA', ppB',
             (contsAux_eq_contsAux_squashGCF_of_le <| le_refl <| n' + 1).symm,
             (contsAux_eq_contsAux_squashGCF_of_le n'.le_succ).symm]
         symm

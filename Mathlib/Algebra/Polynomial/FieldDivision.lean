@@ -1,11 +1,13 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Johannes Hölzl, Scott Morrison, Jens Wagemaker
+Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Polynomial.Derivative
+import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.RingTheory.EuclideanDomain
+import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Theory of univariate polynomials
@@ -167,6 +169,29 @@ theorem lt_rootMultiplicity_iff_isRoot_iterate_derivative
   ⟨fun hn _ hm ↦ isRoot_iterate_derivative_of_lt_rootMultiplicity <| Nat.lt_of_le_of_lt hm hn,
     fun hr ↦ lt_rootMultiplicity_of_isRoot_iterate_derivative h hr⟩
 
+/-- A sufficient condition for the set of roots of a nonzero polynomial `f` to be a subset of the
+set of roots of `g` is that `f` divides `f.derivative * g`. Over an algebraically closed field of
+characteristic zero, this is also a necessary condition.
+See `isRoot_of_isRoot_iff_dvd_derivative_mul` -/
+theorem isRoot_of_isRoot_of_dvd_derivative_mul [CharZero R] {f g : R[X]} (hf0 : f ≠ 0)
+    (hfd : f ∣ f.derivative * g) {a : R} (haf : f.IsRoot a) : g.IsRoot a := by
+  rcases hfd with ⟨r, hr⟩
+  have hdf0 : derivative f ≠ 0 := by
+    contrapose! haf
+    rw [eq_C_of_derivative_eq_zero haf] at hf0 ⊢
+    exact not_isRoot_C _ _ <| C_ne_zero.mp hf0
+  by_contra hg
+  have hdfg0 : f.derivative * g ≠ 0 := mul_ne_zero hdf0 (by rintro rfl; simp at hg)
+  have hr' := congr_arg (rootMultiplicity a) hr
+  rw [rootMultiplicity_mul hdfg0, derivative_rootMultiplicity_of_root haf,
+    rootMultiplicity_eq_zero hg, add_zero, rootMultiplicity_mul (hr ▸ hdfg0), add_comm,
+    Nat.sub_eq_iff_eq_add (Nat.succ_le_iff.2 ((rootMultiplicity_pos hf0).2 haf))] at hr'
+  refine lt_irrefl (rootMultiplicity a f) ?_
+  refine lt_of_lt_of_le (Nat.lt_succ_self _)
+    (le_trans (le_add_of_nonneg_left (Nat.zero_le (rootMultiplicity a r))) ?_)
+  conv_rhs => rw [hr']
+  simp [add_assoc]
+
 section NormalizationMonoid
 
 variable [NormalizationMonoid R]
@@ -195,12 +220,16 @@ instance instNormalizationMonoid : NormalizationMonoid R[X] where
 theorem coe_normUnit {p : R[X]} : (normUnit p : R[X]) = C ↑(normUnit p.leadingCoeff) := by
   simp [normUnit]
 
+@[simp]
 theorem leadingCoeff_normalize (p : R[X]) :
-    leadingCoeff (normalize p) = normalize (leadingCoeff p) := by simp
+    leadingCoeff (normalize p) = normalize (leadingCoeff p) := by simp [normalize_apply]
 
 theorem Monic.normalize_eq_self {p : R[X]} (hp : p.Monic) : normalize p = p := by
   simp only [Polynomial.coe_normUnit, normalize_apply, hp.leadingCoeff, normUnit_one,
     Units.val_one, Polynomial.C.map_one, mul_one]
+
+@[deprecated Polynomial.Monic.normalize_eq_self (since := "2024-10-21")]
+alias normalize_monic := Monic.normalize_eq_self
 
 theorem roots_normalize {p : R[X]} : (normalize p).roots = p.roots := by
   rw [normalize_apply, mul_comm, coe_normUnit, roots_C_mul _ (normUnit (leadingCoeff p)).ne_zero]
@@ -323,8 +352,8 @@ instance instEuclideanDomain : EuclideanDomain R[X] :=
     r := _
     r_wellFounded := degree_lt_wf
     quotient_mul_add_remainder_eq := quotient_mul_add_remainder_eq_aux
-    remainder_lt := fun p q hq => remainder_lt_aux _ hq
-    mul_left_not_lt := fun p q hq => not_lt_of_ge (degree_le_mul_left _ hq) }
+    remainder_lt := fun _ _ hq => remainder_lt_aux _ hq
+    mul_left_not_lt := fun _ _ hq => not_lt_of_ge (degree_le_mul_left _ hq) }
 
 theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
   ⟨fun h => h ▸ EuclideanDomain.mod_lt _ hq0, fun h => by
@@ -334,7 +363,7 @@ theorem mod_eq_self_iff (hq0 : q ≠ 0) : p % q = p ↔ degree p < degree q :=
     rw [mod_def, modByMonic, dif_pos (monic_mul_leadingCoeff_inv hq0)]
     unfold divModByMonicAux
     dsimp
-    simp only [this, false_and_iff, if_false]⟩
+    simp only [this, false_and, if_false]⟩
 
 theorem div_eq_zero_iff (hq0 : q ≠ 0) : p / q = 0 ↔ degree p < degree q :=
   ⟨fun h => by
@@ -381,6 +410,21 @@ theorem map_mod [Field k] (f : R →+* k) : (p % q).map f = p.map f % q.map f :=
   · simp [hq0]
   · rw [mod_def, mod_def, leadingCoeff_map f, ← map_inv₀ f, ← map_C f, ← Polynomial.map_mul f,
       map_modByMonic f (monic_mul_leadingCoeff_inv hq0)]
+
+lemma natDegree_mod_lt [Field k] (p : k[X]) {q : k[X]} (hq : q.natDegree ≠ 0) :
+    (p % q).natDegree < q.natDegree := by
+  have hq' : q.leadingCoeff ≠ 0 := by
+    rw [leadingCoeff_ne_zero]
+    contrapose! hq
+    simp [hq]
+  rw [mod_def]
+  refine (natDegree_modByMonic_lt p ?_ ?_).trans_le ?_
+  · refine monic_mul_C_of_leadingCoeff_mul_eq_one ?_
+    rw [mul_inv_eq_one₀ hq']
+  · contrapose! hq
+    rw [← natDegree_mul_C_eq_of_mul_eq_one ((inv_mul_eq_one₀ hq').mpr rfl)]
+    simp [hq]
+  · exact natDegree_mul_C_le q q.leadingCoeff⁻¹
 
 section
 
@@ -509,8 +553,6 @@ theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
   have : p.leadingCoeff ≠ 0 := mt leadingCoeff_eq_zero.mp hp
   simp [CommGroupWithZero.coe_normUnit _ this]
 
-theorem normalize_monic [DecidableEq R] (h : Monic p) : normalize p = p := by simp [h]
-
 theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map f ↔ x ∣ y := by
   by_cases H : x = 0
   · rw [H, Polynomial.map_zero, zero_dvd_iff, zero_dvd_iff, map_eq_zero]
@@ -520,7 +562,9 @@ theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map 
       leadingCoeff_map, ← map_inv₀ f, ← map_C, ← Polynomial.map_mul,
       map_dvd_map _ f.injective (monic_mul_leadingCoeff_inv H)]
 
-theorem degree_normalize [DecidableEq R] : degree (normalize p) = degree p := by simp
+@[simp]
+theorem degree_normalize [DecidableEq R] : degree (normalize p) = degree p := by
+  simp [normalize_apply]
 
 theorem prime_of_degree_eq_one (hp1 : degree p = 1) : Prime p := by
   classical
@@ -613,6 +657,19 @@ theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsU
       natDegree_mul_leadingCoeff_inv _ hp0]
   simp only [IsUnit.dvd_mul_right
     (isUnit_C.mpr (IsUnit.mk0 (leadingCoeff p)⁻¹ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))]
+
+open UniqueFactorizationMonoid in
+/--
+The normalized factors of a polynomial over a field times its leading coefficient give
+the polynomial.
+-/
+theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (a : R[X]) :
+    C a.leadingCoeff * (normalizedFactors a).prod = a := by
+  by_cases ha : a = 0
+  · simp [ha]
+  rw [prod_normalizedFactors_eq, normalize_apply, coe_normUnit, CommGroupWithZero.coe_normUnit,
+    mul_comm, mul_assoc, ← map_mul, inv_mul_cancel₀] <;>
+  simp_all
 
 end Field
 

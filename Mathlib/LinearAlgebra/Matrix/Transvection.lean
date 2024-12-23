@@ -63,8 +63,6 @@ universe u₁ u₂
 
 namespace Matrix
 
-open Matrix
-
 variable (n p : Type*) (R : Type u₂) {𝕜 : Type*} [Field 𝕜]
 variable [DecidableEq n] [DecidableEq p]
 variable [CommRing R]
@@ -101,7 +99,7 @@ theorem updateRow_eq_transvection [Finite n] (c : R) :
         StdBasisMatrix.apply_of_ne]
   · simp only [updateRow_ne, transvection, ha, Ne.symm ha, StdBasisMatrix.apply_of_ne, add_zero,
       Algebra.id.smul_eq_mul, Ne, not_false_iff, DMatrix.add_apply, Pi.smul_apply,
-      mul_zero, false_and_iff, add_apply]
+      mul_zero, false_and, add_apply]
 
 variable [Fintype n]
 
@@ -138,7 +136,7 @@ variable (R n)
 /-- A structure containing all the information from which one can build a nontrivial transvection.
 This structure is easier to manipulate than transvections as one has a direct access to all the
 relevant fields. -/
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 structure TransvectionStruct where
   (i j : n)
   hij : i ≠ j
@@ -405,7 +403,7 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
     have A :
       (listTransvecCol M)[n] =
         transvection (inl n') (inr unit) (-M (inl n') (inr unit) / M (inr unit) (inr unit)) := by
-      simp [listTransvecCol]
+      simp [n', listTransvecCol]
     simp only [Matrix.mul_assoc, A, List.prod_cons]
     by_cases h : n' = i
     · have hni : n = i := by
@@ -418,13 +416,13 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
     · have hni : n ≠ i := by
         rintro rfl
         cases i
-        simp at h
+        simp [n'] at h
       simp only [ne_eq, inl.injEq, Ne.symm h, not_false_eq_true, transvection_mul_apply_of_ne]
       rw [IH]
       rcases le_or_lt (n + 1) i with (hi | hi)
       · simp only [hi, n.le_succ.trans hi, if_true]
       · rw [if_neg, if_neg]
-        · simpa only [hni.symm, not_le, or_false_iff] using Nat.lt_succ_iff_lt_or_eq.1 hi
+        · simpa only [hni.symm, not_le, or_false] using Nat.lt_succ_iff_lt_or_eq.1 hi
         · simpa only [not_le] using hi
   | self =>
     simp only [length_listTransvecCol, le_refl, List.drop_eq_nil_of_le, List.prod_nil,
@@ -443,7 +441,7 @@ theorem mul_listTransvecRow_last_col_take (i : Fin r ⊕ Unit) {k : ℕ} (hk : k
       (listTransvecRow M)[k]? =
         ↑(transvection (inr Unit.unit) (inl k')
             (-M (inr Unit.unit) (inl k') / M (inr Unit.unit) (inr Unit.unit))) := by
-      simp only [listTransvecRow, List.ofFnNthVal, hkr, dif_pos, List.getElem?_ofFn]
+      simp only [k', listTransvecRow, List.ofFnNthVal, hkr, dif_pos, List.getElem?_ofFn]
     simp only [List.take_succ, ← Matrix.mul_assoc, this, List.prod_append, Matrix.mul_one,
       List.prod_cons, List.prod_nil, Option.toList_some]
     rw [mul_transvection_apply_of_ne, IH hkr.le]
@@ -478,7 +476,7 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
       (listTransvecRow M)[n]? =
         ↑(transvection (inr unit) (inl n')
         (-M (inr unit) (inl n') / M (inr unit) (inr unit))) := by
-      simp only [listTransvecRow, List.ofFnNthVal, hnr, dif_pos, List.getElem?_ofFn]
+      simp only [n', listTransvecRow, List.ofFnNthVal, hnr, dif_pos, List.getElem?_ofFn]
     simp only [List.take_succ, A, ← Matrix.mul_assoc, List.prod_append, Matrix.mul_one,
       List.prod_cons, List.prod_nil, Option.toList_some]
     by_cases h : n' = i
@@ -500,7 +498,7 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
       · simp [hi, n.le_succ.trans hi, if_true]
       · rw [if_neg, if_neg]
         · simpa only [not_le] using hi
-        · simpa only [hni.symm, not_le, or_false_iff] using Nat.lt_succ_iff_lt_or_eq.1 hi
+        · simpa only [hni.symm, not_le, or_false] using Nat.lt_succ_iff_lt_or_eq.1 hi
 
 /-- Multiplying by all the matrices either in `listTransvecCol M` and `listTransvecRow M` kills
 all the coefficients in the last row but the last one. -/

@@ -1,12 +1,13 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Scott Morrison
+Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Group.Action.Basic
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Regular.SMul
+import Mathlib.Data.Finsupp.SMulWithZero
 import Mathlib.Data.Rat.BigOperators
 
 /-!
@@ -471,7 +472,7 @@ theorem mapDomain_sum [Zero N] {f : α → β} {s : α →₀ N} {v : α → N �
 theorem mapDomain_support [DecidableEq β] {f : α → β} {s : α →₀ M} :
     (s.mapDomain f).support ⊆ s.support.image f :=
   Finset.Subset.trans support_sum <|
-    Finset.Subset.trans (Finset.biUnion_mono fun a _ => support_single_subset) <| by
+    Finset.Subset.trans (Finset.biUnion_mono fun _ _ => support_single_subset) <| by
       rw [Finset.biUnion_singleton]
 
 theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x.support : Set α) ⊆ S)
@@ -622,7 +623,7 @@ theorem sum_comapDomain [Zero M] [AddCommMonoid N] (f : α → β) (l : β →�
 theorem eq_zero_of_comapDomain_eq_zero [AddCommMonoid M] (f : α → β) (l : β →₀ M)
     (hf : Set.BijOn f (f ⁻¹' ↑l.support) ↑l.support) : comapDomain f l hf.injOn = 0 → l = 0 := by
   rw [← support_eq_empty, ← support_eq_empty, comapDomain]
-  simp only [Finset.ext_iff, Finset.not_mem_empty, iff_false_iff, mem_preimage]
+  simp only [Finset.ext_iff, Finset.not_mem_empty, iff_false, mem_preimage]
   intro h a ha
   cases' hf.2.2 ha with b hb
   exact h b (hb.2.symm ▸ ha)
@@ -773,7 +774,7 @@ def filter (p : α → Prop) [DecidablePred p] (f : α →₀ M) : α →₀ M w
   toFun a := if p a then f a else 0
   support := f.support.filter p
   mem_support_toFun a := by
-    beta_reduce -- Porting note(#12129): additional beta reduction needed to activate `split_ifs`
+    beta_reduce -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed to activate `split_ifs`
     split_ifs with h <;>
       · simp only [h, mem_filter, mem_support_iff]
         tauto
@@ -799,7 +800,7 @@ theorem filter_apply_pos {a : α} (h : p a) : f.filter p a = f a := if_pos h
 theorem filter_apply_neg {a : α} (h : ¬p a) : f.filter p a = 0 := if_neg h
 
 @[simp]
-theorem support_filter : (f.filter p).support = f.support.filter p := rfl
+theorem support_filter : (f.filter p).support = {x ∈ f.support | p x} := rfl
 
 theorem filter_zero : (0 : α →₀ M).filter p = 0 := by
   classical rw [← support_eq_empty, support_filter, support_zero, Finset.filter_empty]
@@ -1132,7 +1133,7 @@ def sumElim {α β γ : Type*} [Zero γ] (f : α →₀ γ) (g : β →₀ γ) :
     (Sum.elim f g) fun ab h => by
     cases' ab with a b <;>
     letI := Classical.decEq α <;> letI := Classical.decEq β <;>
-    -- porting note (#10754): had to add these `DecidableEq` instances
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): had to add these `DecidableEq` instances
     simp only [Sum.elim_inl, Sum.elim_inr] at h <;>
     simpa
 
@@ -1285,24 +1286,10 @@ end
 
 section
 
-instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass R (α →₀ M) where
-  smul a v := v.mapRange (a • ·) (smul_zero _)
-  smul_zero a := by
-    ext
-    apply smul_zero
-
 /-!
 Throughout this section, some `Monoid` and `Semiring` arguments are specified with `{}` instead of
 `[]`. See note [implicit instance arguments].
 -/
-
-@[simp, norm_cast]
-theorem coe_smul [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) : ⇑(b • v) = b • ⇑v :=
-  rfl
-
-theorem smul_apply [Zero M] [SMulZeroClass R M] (b : R) (v : α →₀ M) (a : α) :
-    (b • v) a = b • v a :=
-  rfl
 
 theorem _root_.IsSMulRegular.finsupp [Zero M] [SMulZeroClass R M] {k : R}
     (hk : IsSMulRegular M k) : IsSMulRegular (α →₀ M) k :=
@@ -1314,15 +1301,7 @@ instance faithfulSMul [Nonempty α] [Zero M] [SMulZeroClass R M] [FaithfulSMul R
     let ⟨a⟩ := ‹Nonempty α›
     eq_of_smul_eq_smul fun m : M => by simpa using DFunLike.congr_fun (h (single a m)) a
 
-instance instSMulWithZero [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (α →₀ M) where
-  zero_smul f := by ext i; exact zero_smul _ _
-
 variable (α M)
-
-instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul R (α →₀ M) where
-  smul := (· • ·)
-  smul_add _ _ _ := ext fun _ => smul_add _ _ _
-  smul_zero _ := ext fun _ => smul_zero _
 
 instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     DistribMulAction R (α →₀ M) :=
@@ -1330,29 +1309,12 @@ instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     one_smul := fun x => ext fun y => one_smul R (x y)
     mul_smul := fun r s x => ext fun y => mul_smul r s (x y) }
 
-instance isScalarTower [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMul R S]
-  [IsScalarTower R S M] : IsScalarTower R S (α →₀ M) where
-  smul_assoc _ _ _ := ext fun _ => smul_assoc _ _ _
-
-instance smulCommClass [Zero M] [SMulZeroClass R M] [SMulZeroClass S M] [SMulCommClass R S M] :
-  SMulCommClass R S (α →₀ M) where
-  smul_comm _ _ _ := ext fun _ => smul_comm _ _ _
-
-instance isCentralScalar [Zero M] [SMulZeroClass R M] [SMulZeroClass Rᵐᵒᵖ M] [IsCentralScalar R M] :
-  IsCentralScalar R (α →₀ M) where
-  op_smul_eq_smul _ _ := ext fun _ => op_smul_eq_smul _ _
-
 instance module [Semiring R] [AddCommMonoid M] [Module R M] : Module R (α →₀ M) :=
   { toDistribMulAction := Finsupp.distribMulAction α M
     zero_smul := fun _ => ext fun _ => zero_smul _ _
     add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _ }
 
 variable {α M}
-
-theorem support_smul [AddMonoid M] [SMulZeroClass R M] {b : R} {g : α →₀ M} :
-    (b • g).support ⊆ g.support := fun a => by
-  simp only [smul_apply, mem_support_iff, Ne]
-  exact mt fun h => h.symm ▸ smul_zero _
 
 @[simp]
 theorem support_smul_eq [Semiring R] [AddCommMonoid M] [Module R M] [NoZeroSMulDivisors R M] {b : R}
@@ -1376,24 +1338,10 @@ theorem mapDomain_smul {_ : Monoid R} [AddCommMonoid M] [DistribMulAction R M] {
     (v : α →₀ M) : mapDomain f (b • v) = b • mapDomain f v :=
   mapDomain_mapRange _ _ _ _ (smul_add b)
 
-@[simp]
-theorem smul_single [Zero M] [SMulZeroClass R M] (c : R) (a : α) (b : M) :
-    c • Finsupp.single a b = Finsupp.single a (c • b) :=
-  mapRange_single
-
 -- Porting note: removed `simp` because `simpNF` can prove it.
 theorem smul_single' {_ : Semiring R} (c : R) (a : α) (b : R) :
     c • Finsupp.single a b = Finsupp.single a (c * b) :=
   smul_single _ _ _
-
-theorem mapRange_smul {_ : Monoid R} [AddMonoid M] [DistribMulAction R M] [AddMonoid N]
-    [DistribMulAction R N] {f : M → N} {hf : f 0 = 0} (c : R) (v : α →₀ M)
-    (hsmul : ∀ x, f (c • x) = c • f x) : mapRange f hf (c • v) = c • mapRange f hf v := by
-  erw [← mapRange_comp]
-  · have : f ∘ (c • ·) = (c • ·) ∘ f := funext hsmul
-    simp_rw [this]
-    apply mapRange_comp
-  simp only [Function.comp_apply, smul_zero, hf]
 
 theorem smul_single_one [Semiring R] (a : α) (b : R) : b • single a (1 : R) = single a b := by
   rw [smul_single, smul_eq_mul, mul_one]
@@ -1427,16 +1375,13 @@ theorem sum_smul_index_addMonoidHom [AddMonoid M] [AddCommMonoid N] [DistribSMul
     {b : R} {h : α → M →+ N} : ((b • g).sum fun a => h a) = g.sum fun i c => h i (b • c) :=
   sum_mapRange_index fun i => (h i).map_zero
 
-instance noZeroSMulDivisors [Semiring R] [AddCommMonoid M] [Module R M] {ι : Type*}
+instance noZeroSMulDivisors [Zero R] [Zero M] [SMulZeroClass R M] {ι : Type*}
     [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R (ι →₀ M) :=
-  ⟨fun h =>
-    or_iff_not_imp_left.mpr fun hc =>
-      Finsupp.ext fun i => (smul_eq_zero.mp (DFunLike.ext_iff.mp h i)).resolve_left hc⟩
+  ⟨fun h => or_iff_not_imp_left.mpr fun hc => Finsupp.ext fun i =>
+    (eq_zero_or_eq_zero_of_smul_eq_zero (DFunLike.ext_iff.mp h i)).resolve_left hc⟩
 
 section DistribMulActionSemiHom
-
-variable [Semiring R]
-variable [AddCommMonoid M] [AddCommMonoid N] [DistribMulAction R M] [DistribMulAction R N]
+variable [Monoid R] [AddMonoid M] [AddMonoid N] [DistribMulAction R M] [DistribMulAction R N]
 
 /-- `Finsupp.single` as a `DistribMulActionSemiHom`.
 
@@ -1635,7 +1580,7 @@ def splitSupport (l : (Σi, αs i) →₀ M) : Finset ι :=
 theorem mem_splitSupport_iff_nonzero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
   rw [splitSupport, @mem_image _ _ (Classical.decEq _), Ne, ← support_eq_empty, ← Ne, ←
     Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
-  -- porting note (#10754): had to add the `Classical.decEq` instance manually
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): had to add the `Classical.decEq` instance manually
   simp only [exists_prop, Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
     Sigma.exists, Ne]
 
@@ -1653,7 +1598,7 @@ def splitComp [Zero N] (g : ∀ i, (αs i →₀ M) → N) (hg : ∀ i x, x = 0 
 theorem sigma_support : l.support = l.splitSupport.sigma fun i => (l.split i).support := by
   simp only [Finset.ext_iff, splitSupport, split, comapDomain, @mem_image _ _ (Classical.decEq _),
     mem_preimage, Sigma.forall, mem_sigma]
-  -- porting note (#10754): had to add the `Classical.decEq` instance manually
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): had to add the `Classical.decEq` instance manually
   tauto
 
 theorem sigma_sum [AddCommMonoid N] (f : (Σi : ι, αs i) → M → N) :
@@ -1669,7 +1614,7 @@ This is the `Finsupp` version of `Equiv.Pi_curry`. -/
 noncomputable def sigmaFinsuppEquivPiFinsupp : ((Σj, ιs j) →₀ α) ≃ ∀ j, ιs j →₀ α where
   toFun := split
   invFun f :=
-    onFinset (Finset.univ.sigma fun j => (f j).support) (fun ji => f ji.1 ji.2) fun g hg =>
+    onFinset (Finset.univ.sigma fun j => (f j).support) (fun ji => f ji.1 ji.2) fun _ hg =>
       Finset.mem_sigma.mpr ⟨Finset.mem_univ _, mem_support_iff.mpr hg⟩
   left_inv f := by
     ext
@@ -1704,4 +1649,4 @@ end Sigma
 
 end Finsupp
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 1700
