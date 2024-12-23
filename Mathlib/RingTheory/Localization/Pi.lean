@@ -15,16 +15,16 @@ import Mathlib.RingTheory.Localization.Basic
 
 ## Main Result
 
- * `injective_of_product_of_localizations` is a theorem stating that the canonical map from a
-    localization of a product of rings `R' i `at a monoid `M` to the direct product of
-    localizations `R' i` at the projection of `M` onto each corresponding factor is injective.
+ * `bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom`: the canonical map from a
+    localization of a finite product of rings `R i `at a monoid `M` to the direct product of
+    localizations `R i` at the projection of `M` onto each corresponding factor is bijective.
 
 ## Implementation notes
 
 See `Mathlib/RingTheory/Localization/Defs.lean` for a design overview.
 
 ## Tags
-localization, ring localization, commutative ring localization, commutative ring, field of fractions
+localization, commutative ring
 -/
 
 namespace IsLocalization
