@@ -21,7 +21,7 @@ variable (C : Type*) [Category C] (A : Type*) [AddMonoid A] [HasShift C A]
   {G : Type*} [AddGroup G] [HasShift C G]
 
 structure TwistShiftData where
-  ε (a b) : (CatCenter C)ˣ
+  ε (a b : A) : (CatCenter C)ˣ
   add_zero (a : A) : ε a (0 : A) = 1
   zero_add (b : A) : ε (0 : A) b = 1
   assoc (a b c : A) : ε (a + b) c * ε a b = ε a (b + c) * ε b c

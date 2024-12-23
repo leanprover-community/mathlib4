@@ -92,6 +92,10 @@ def currying : C ⥤ D ⥤ E ≌ C × D ⥤ E where
 def fullyFaithfulUncurry : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).FullyFaithful :=
   currying.fullyFaithfulFunctor
 
+/-- The functor `curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E ` is fully faithful. -/
+def fullyFaithfulCurry : (curry : (C × D ⥤ E) ⥤ C ⥤ D ⥤ E).FullyFaithful :=
+  currying.symm.fullyFaithfulFunctor
+
 instance : (uncurry : (C ⥤ D ⥤ E) ⥤ C × D ⥤ E).Full :=
   fullyFaithfulUncurry.full
 

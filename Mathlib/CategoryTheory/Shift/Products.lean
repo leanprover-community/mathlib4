@@ -36,6 +36,7 @@ namespace HasShift
 attribute [local simp] prod.eqTohom_fst prod.eqTohom_snd
   shiftFunctorAdd_add_zero_hom_app shiftFunctorAdd_zero_add_hom_app
   shiftFunctorAdd_assoc_hom_app shiftFunctorAdd' in
+
 def shiftMkCoreProd : ShiftMkCore (C₁ × C₂) (A₁ × A₂) where
   F := fun ⟨x₁, x₂⟩ ↦ Functor.prod (shiftFunctor C₁ x₁) (shiftFunctor C₂ x₂)
   zero := NatIso.ofComponents (fun ⟨X₁, X₂⟩ ↦
@@ -43,7 +44,7 @@ def shiftMkCoreProd : ShiftMkCore (C₁ × C₂) (A₁ × A₂) where
   add := fun ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ ↦ NatIso.ofComponents (fun ⟨X₁, X₂⟩ ↦
     Iso.prod ((shiftFunctorAdd C₁ x₁ y₁).app X₁) ((shiftFunctorAdd C₂ x₂ y₂).app X₂))
 
-instance : HasShift (C₁ × C₂) (A₁ × A₂) :=
+instance instProd : HasShift (C₁ × C₂) (A₁ × A₂) :=
   hasShiftMk _ _ (shiftMkCoreProd C₁ C₂ A₁ A₂)
 
 end HasShift

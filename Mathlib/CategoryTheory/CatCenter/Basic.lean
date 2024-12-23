@@ -79,13 +79,17 @@ namespace Functor
 variable {C}
 
 class CommutesWithCenterElement (F : C ⥤ C) (z : CatCenter C) : Prop where
-  map_app (X : C) : F.map (z.app X) = z.app (F.obj X)
+  map_app (X : C) : F.map (z.app X) = z.app (F.obj X) := by aesop_cat
 
 @[simp]
 lemma map_app_of_commutesWithCenterElement (F : C ⥤ C) (z : CatCenter C) (X : C)
     [F.CommutesWithCenterElement z] :
     F.map (z.app X) = z.app (F.obj X) :=
   CommutesWithCenterElement.map_app X
+
+instance (F : C ⥤ C) (z₁ z₂ : CatCenter C)
+    [F.CommutesWithCenterElement z₁] [F.CommutesWithCenterElement z₂] :
+    F.CommutesWithCenterElement (z₁ * z₂) where
 
 end Functor
 
