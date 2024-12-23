@@ -584,7 +584,7 @@ lemma tendsto_measure_Icc_nhdsWithin_right (b : ℝ) :
 
 lemma tendsto_measure_Icc [NoAtoms μ] (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝 (0 : ℝ)) (𝓝 0) := by
-  rw [← nhds_left'_sup_nhds_right, tendsto_sup]
+  rw [← nhdsLT_sup_nhdsGE, tendsto_sup]
   constructor
   · apply tendsto_const_nhds.congr'
     filter_upwards [self_mem_nhdsWithin] with r (hr : r < 0)
