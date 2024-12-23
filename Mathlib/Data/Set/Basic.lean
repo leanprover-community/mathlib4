@@ -1063,6 +1063,8 @@ theorem singleton_subset_iff {a : α} {s : Set α} : {a} ⊆ s ↔ a ∈ s :=
 
 theorem singleton_subset_singleton : ({a} : Set α) ⊆ {b} ↔ a = b := by simp
 
+@[gcongr] protected alias ⟨_, GCongr.singleton_subset_singleton⟩ := singleton_subset_singleton
+
 theorem set_compr_eq_eq_singleton {a : α} : { b | b = a } = {a} :=
   rfl
 
@@ -1599,8 +1601,6 @@ lemma insert_diff_self_of_mem (ha : a ∈ s) : insert a (s \ {a}) = s := by
 lemma insert_erase_invOn :
     InvOn (insert a) (fun s ↦ s \ {a}) {s : Set α | a ∈ s} {s : Set α | a ∉ s} :=
   ⟨fun _s ha ↦ insert_diff_self_of_mem ha, fun _s ↦ insert_diff_self_of_not_mem⟩
-
-@[gcongr] protected alias ⟨_, GCongr.singleton_subset_singleton⟩ := singleton_subset_singleton
 
 theorem insert_inj (ha : a ∉ s) : insert a s = insert b s ↔ a = b :=
   ⟨fun h => eq_of_not_mem_of_mem_insert (h ▸ mem_insert a s) ha,
