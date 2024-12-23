@@ -246,37 +246,40 @@ lemma IsConstructible.image_of_isClosedEmbedding (hf : IsClosedEmbedding f)
     exact (hfcomp.isConstructible hf.isClosed_range.isOpen_compl).of_compl.sdiff hs'
 
 section CompactSpace
-variable [CompactSpace X] {P : ∀ s : Set X, IsConstructible s → Prop} {b : ι → Set X}
+variable [CompactSpace X] {P : ∀ s : Set X, IsConstructible s → Prop} {B : Set (Set X)}
 
 lemma IsRetroCompact.isCompact (hs : IsRetroCompact s) : IsCompact s := by
   simpa using hs CompactSpace.isCompact_univ
 
 lemma TopologicalSpace.IsTopologicalBasis.isRetroCompact_iff_isCompact
-    (basis : IsTopologicalBasis (range b)) (compact_inter : ∀ i j, IsCompact (b i ∩ b j))
+    (basis : IsTopologicalBasis B) (compact_inter : ∀ U ∈ B, ∀ V ∈ B, IsCompact (U ∩ V))
     (hU : IsOpen U) : IsRetroCompact U ↔ IsCompact U := by
   refine ⟨IsRetroCompact.isCompact, fun hU' {V} hV' hV ↦ ?_⟩
-  have hb (i : PLift ι) : IsCompact (b i.down) := by simpa using compact_inter i.down i.down
-  have := isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis (b ∘ PLift.down)
-    (by simpa [PLift.down_surjective.range_comp] using basis) hb
-  obtain ⟨s, hs, rfl⟩ := (this U).mp ⟨hU', hU⟩
-  obtain ⟨t, ht, rfl⟩ := (this V).mp ⟨hV', hV⟩
-  simp only [Set.iUnion_inter, Set.inter_iUnion]
-  exact ht.isCompact_biUnion fun _ _ ↦ hs.isCompact_biUnion fun _ _ ↦ compact_inter ..
+  -- have hb (i : PLift ι) : IsCompact (b i.down) := by simpa using compact_inter i.down i.down
+  -- have := isCompact_open_iff_eq_finite_iUnion_of_isTopologicalBasis (b ∘ PLift.down)
+  --   (by simpa [PLift.down_surjective.range_comp] using basis) hb
+  obtain ⟨s, rfl⟩ := eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open _ basis _ hU' hU
+  obtain ⟨t, rfl⟩ := eq_sUnion_finset_of_isTopologicalBasis_of_isCompact_open _ basis _ hV' hV
+  rw [Set.sUnion_inter_sUnion]
+  refine ((s.finite_toSet.image _).prod (t.finite_toSet.image _)).isCompact_biUnion ?_
+  simp only [mem_prod, mem_image, Finset.mem_coe, Subtype.exists, exists_and_right, exists_eq_right,
+    and_imp, forall_exists_index, Prod.forall]
+  exact fun u v hu _ hv _ ↦ compact_inter _ hu _ hv
 
-lemma TopologicalSpace.IsTopologicalBasis.isRetroCompact (basis : IsTopologicalBasis (range b))
-    (compact_inter : ∀ i j, IsCompact (b i ∩ b j)) (i : ι) : IsRetroCompact (b i) :=
-  (basis.isRetroCompact_iff_isCompact compact_inter <| basis.isOpen <| mem_range_self _).2 <| by
-    simpa using compact_inter i i
+lemma TopologicalSpace.IsTopologicalBasis.isRetroCompact (basis : IsTopologicalBasis B)
+    (compact_inter : ∀ U ∈ B, ∀ V ∈ B, IsCompact (U ∩ V)) (hU : U ∈ B) : IsRetroCompact U :=
+  (basis.isRetroCompact_iff_isCompact compact_inter <| basis.isOpen hU).2 <| by
+    simpa using compact_inter _ hU _ hU
 
-lemma TopologicalSpace.IsTopologicalBasis.isConstructible (basis : IsTopologicalBasis (range b))
-    (compact_inter : ∀ i j, IsCompact (b i ∩ b j)) (i : ι) : IsConstructible (b i) :=
-  (basis.isRetroCompact compact_inter _).isConstructible <| basis.isOpen <| mem_range_self _
+lemma TopologicalSpace.IsTopologicalBasis.isConstructible (basis : IsTopologicalBasis B)
+    (compact_inter : ∀ U ∈ B, ∀ V ∈ B, IsCompact (U ∩ V)) (hU : U ∈ B) : IsConstructible U :=
+  (basis.isRetroCompact compact_inter hU).isConstructible <| basis.isOpen hU
 
-proof_wanted IsConstructible.induction_of_isTopologicalBasis {ι : Type*} (b : ι → Set X)
-    (basis : IsTopologicalBasis (range b)) (compact_inter : ∀ i j, IsCompact (b i ∩ b j))
-    (sdiff : ∀ i s (hs : Set.Finite s), P (b i \ ⋃ j ∈ s, b j)
-      ((basis.isConstructible compact_inter _).sdiff <| .biUnion hs fun i _ ↦
-        basis.isConstructible compact_inter _))
+proof_wanted IsConstructible.induction_of_isTopologicalBasis (basis : IsTopologicalBasis B)
+    (compact_inter : ∀ U ∈ B, ∀ V ∈ B, IsCompact (U ∩ V))
+    (sdiff : ∀ U (hU : U ∈ B) 𝒱 (h𝒱B : 𝒱 ⊆ B) (h𝒱 : 𝒱.Finite), P (U \ ⋃ V ∈ 𝒱, V)
+      ((basis.isConstructible compact_inter hU).sdiff <| .biUnion h𝒱 fun V hV ↦
+        basis.isConstructible compact_inter <| h𝒱B hV))
     (union : ∀ s hs t ht, P s hs → P t ht → P (s ∪ t) (hs.union ht))
     (s : Set X) (hs : IsConstructible s) : P s hs
 
