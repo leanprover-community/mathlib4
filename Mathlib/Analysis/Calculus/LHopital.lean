@@ -116,11 +116,11 @@ theorem lhopital_zero_left_on_Ioo (hab : a < b) (hff' : ∀ x ∈ Ioo a b, HasDe
     intro x hx h
     apply hg' _ (by rw [← neg_Ioo] at hx; exact hx)
     rwa [mul_comm, ← neg_eq_neg_one_mul, neg_eq_zero] at h)
-    (hfb.comp tendsto_neg_nhdsWithin_Ioi_neg) (hgb.comp tendsto_neg_nhdsWithin_Ioi_neg)
+    (hfb.comp tendsto_neg_nhdsGT_neg) (hgb.comp tendsto_neg_nhdsGT_neg)
     (by
       simp only [neg_div_neg_eq, mul_one, mul_neg]
-      exact (tendsto_congr fun x => rfl).mp (hdiv.comp tendsto_neg_nhdsWithin_Ioi_neg))
-  have := this.comp tendsto_neg_nhdsWithin_Iio
+      exact (tendsto_congr fun x => rfl).mp (hdiv.comp tendsto_neg_nhdsGT_neg))
+  have := this.comp tendsto_neg_nhdsLT
   unfold Function.comp at this
   simpa only [neg_neg]
 

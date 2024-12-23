@@ -93,11 +93,11 @@ include hf
 
 theorem leftLim_eq_sSup [TopologicalSpace α] [OrderTopology α] (h : 𝓝[<] x ≠ ⊥) :
     leftLim f x = sSup (f '' Iio x) :=
-  leftLim_eq_of_tendsto h (hf.tendsto_nhdsWithin_Iio x)
+  leftLim_eq_of_tendsto h (hf.tendsto_nhdsLT x)
 
 theorem rightLim_eq_sInf [TopologicalSpace α] [OrderTopology α] (h : 𝓝[>] x ≠ ⊥) :
     rightLim f x = sInf (f '' Ioi x) :=
-  rightLim_eq_of_tendsto h (hf.tendsto_nhdsWithin_Ioi x)
+  rightLim_eq_of_tendsto h (hf.tendsto_nhdsGT x)
 
 theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
   letI : TopologicalSpace α := Preorder.topology α
@@ -161,7 +161,7 @@ theorem tendsto_leftLim (x : α) : Tendsto f (𝓝[<] x) (𝓝 (leftLim f x)) :=
   rcases eq_or_ne (𝓝[<] x) ⊥ with (h' | h')
   · simp [h']
   rw [leftLim_eq_sSup hf h']
-  exact hf.tendsto_nhdsWithin_Iio x
+  exact hf.tendsto_nhdsLT x
 
 theorem tendsto_leftLim_within (x : α) : Tendsto f (𝓝[<] x) (𝓝[≤] leftLim f x) := by
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within f (hf.tendsto_leftLim x)

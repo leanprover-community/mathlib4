@@ -864,7 +864,7 @@ theorem not_differentiableWithinAt_of_deriv_tendsto_atBot_Iio (f : ℝ → ℝ) 
     exact ne_of_lt (by linarith)
   have hmain : ¬ DifferentiableWithinAt ℝ f' (Ioi (-a)) (-a) := by
     refine not_differentiableWithinAt_of_deriv_tendsto_atTop_Ioi f' <| Tendsto.congr' hderiv.symm ?_
-    refine Tendsto.comp (g := -deriv f) ?_ tendsto_neg_nhdsWithin_Ioi_neg
+    refine Tendsto.comp (g := -deriv f) ?_ tendsto_neg_nhdsGT_neg
     exact Tendsto.comp (g := Neg.neg) tendsto_neg_atBot_atTop hf
   intro h
   have : DifferentiableWithinAt ℝ f' (Ioi (-a)) (-a) := by

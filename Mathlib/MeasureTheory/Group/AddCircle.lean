@@ -41,8 +41,7 @@ theorem closedBall_ae_eq_ball {x : AddCircle T} {ε : ℝ} : closedBall x ε =�
     have : Tendsto (fun δ => volume (closedBall x δ)) (𝓝[<] ε) (𝓝 <| volume (closedBall x ε)) := by
       simp_rw [volume_closedBall]
       refine ENNReal.tendsto_ofReal (Tendsto.min tendsto_const_nhds <| Tendsto.const_mul _ ?_)
-      convert (@monotone_id ℝ _).tendsto_nhdsWithin_Iio ε
-      simp
+      exact nhdsWithin_le_nhds
     refine le_of_tendsto this <| mem_of_superset (Ioo_mem_nhdsLT hε) fun r hr ↦ ?_
     exact measure_mono (closedBall_subset_ball hr.2)
 
