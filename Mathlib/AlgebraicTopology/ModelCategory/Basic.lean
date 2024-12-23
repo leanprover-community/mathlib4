@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 import Mathlib.CategoryTheory.MorphismProperty.Factorization
-import Mathlib.CategoryTheory.MorphismProperty.Retract
+import Mathlib.CategoryTheory.MorphismProperty.RetractArgument
 import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 
 /-!
@@ -60,6 +60,46 @@ namespace ModelCategory
 
 attribute [instance] categoryWithFibrations categoryWithCofibrations categoryWithWeakEquivalences
   cm1a cm1b cm2 cm3a cm3b cm3c cm4a cm4b cm5a cm5b
+
+variable [ModelCategory C]
+
+instance : (trivialCofibrations C).IsStableUnderRetracts := by
+  dsimp [trivialCofibrations]
+  infer_instance
+
+instance : (trivialFibrations C).IsStableUnderRetracts := by
+  dsimp [trivialFibrations]
+  infer_instance
+
+lemma fibrations_llp :
+    (fibrations C).llp = trivialCofibrations C := by
+  apply MorphismProperty.llp_eq_of_le_llp_of_hasFactorization_of_isStableUnderRetracts
+  intro A B i hi X Y p hp
+  rw [mem_trivialCofibrations_iff] at hi
+  rw [← fibration_iff] at hp
+  have := hi.1
+  have := hi.2
+  infer_instance
+
+lemma trivialCofibrations_rlp :
+    (trivialCofibrations C).rlp = fibrations C := by
+  apply MorphismProperty.rlp_eq_of_le_rlp_of_hasFactorization_of_isStableUnderRetracts
+  rw [← MorphismProperty.le_llp_iff_le_rlp, fibrations_llp]
+
+lemma trivialFibrations_llp :
+    (trivialFibrations C).llp = cofibrations C := by
+  apply MorphismProperty.llp_eq_of_le_llp_of_hasFactorization_of_isStableUnderRetracts
+  intro A B i hi X Y p hp
+  rw [mem_trivialFibrations_iff] at hp
+  rw [← cofibration_iff] at hi
+  have := hp.1
+  have := hp.2
+  infer_instance
+
+lemma cofibrations_rlp :
+    (cofibrations C).rlp = trivialFibrations C := by
+  apply MorphismProperty.rlp_eq_of_le_rlp_of_hasFactorization_of_isStableUnderRetracts
+  rw [← MorphismProperty.le_llp_iff_le_rlp, trivialFibrations_llp]
 
 end ModelCategory
 

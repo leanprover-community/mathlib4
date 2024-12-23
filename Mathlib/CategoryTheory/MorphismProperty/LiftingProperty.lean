@@ -6,6 +6,7 @@ Authors: Jack McKoen
 import Mathlib.CategoryTheory.MorphismProperty.Limits
 import Mathlib.CategoryTheory.MorphismProperty.Retract
 import Mathlib.CategoryTheory.LiftingProperties.Limits
+import Mathlib.Order.GaloisConnection
 
 /-!
 # Left and right lifting properties
@@ -83,6 +84,16 @@ lemma rlp_IsStableUnderProductsOfShape (J : Type*) :
   intro A B _ _ f hf X Y p hp
   have := fun j ↦ hf j _ hp
   infer_instance
+
+lemma le_llp_iff_le_rlp (T' : MorphismProperty C) :
+    T ≤ T'.llp ↔ T' ≤ T.rlp :=
+  ⟨fun h _ _ _ hp _ _ _ hi ↦ h _ hi _ hp,
+    fun h _ _ _ hi _ _ _ hp ↦ h _ hp _ hi⟩
+
+lemma gc_llp_rlp :
+    GaloisConnection (OrderDual.toDual (α := MorphismProperty C) ∘ llp)
+      (rlp ∘ OrderDual.ofDual) :=
+  fun _ _ ↦ le_llp_iff_le_rlp _ _
 
 end MorphismProperty
 
