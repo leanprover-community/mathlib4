@@ -23,7 +23,7 @@ Also see `AlgebraicGeometry/AffineSpace` for the affine space over arbitrary sch
 - `Polynomial.exists_image_comap_of_monic`:
   If `g : R[X]` is monic, the image of `Z(g) ∩ D(f) : Spec R[X]` in `Spec R` is compact open.
 - `Polynomial.isOpenMap_comap_C`: The structure map `Spec R[X] → Spec R` is an open map.
-- `MvPolynomial.isOpenMap_comap_C`: The structure map `Spec R[X] → Spec R` is an open map.
+- `MvPolynomial.isOpenMap_comap_C`: The structure map `Spec R[X̲] → Spec R` is an open map.
 
 -/
 
