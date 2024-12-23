@@ -40,7 +40,7 @@ theorem Int.neg_sub_one_sub_nat (i : ℕ) (r s t : ℤ) (hi: i ≤ t) :
 
 theorem Int.neg_one_pow_sub (n i : ℕ) (hi : i ≤ n) : (-1) ^ (n - i) = (-1) ^ n * (-1) ^ i := by
   refine Int.eq_of_mul_eq_one ?_
-  rw [← pow_add, ← pow_add, add_rotate', Nat.add_sub_of_le hi, Even.neg_pow (even_add_self n),
+  rw [← pow_add, ← pow_add, add_rotate', Nat.add_sub_of_le hi, Even.neg_pow (Even.add_self n),
     one_pow]
 
 --#find_home Int.neg_sub_one_sub_nat
