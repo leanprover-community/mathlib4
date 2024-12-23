@@ -3,9 +3,12 @@ Copyright (c) 2024 Madison Crim. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Madison Crim
 -/
+import Mathlib.Algebra.Algebra.Pi
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.Divisibility.Prod
 import Mathlib.Algebra.Group.Submonoid.BigOperators
-import Mathlib.RingTheory.Localization.Defs
-import Mathlib.Algebra.Ring.Pi
+import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.RingTheory.Localization.Basic
 
 /-!
 # Localizing a product of commutative rings
@@ -24,64 +27,52 @@ See `Mathlib/RingTheory/Localization/Defs.lean` for a design overview.
 localization, ring localization, commutative ring localization, commutative ring, field of fractions
 -/
 
-section
+namespace IsLocalization
 
-open IsLocalization
+variable {ι : Type*} (R S : ι → Type*)
+  [∀ i, CommSemiring (R i)] [∀ i, CommSemiring (S i)] [∀ i, Algebra (R i) (S i)]
 
-variable (S : Type*) [CommRing S] {ι : Type*} (R' S' : ι → Type*) [∀ i, CommRing (R' i)]
-  [∀ i, CommRing (S' i)] [Algebra (∀ i, R' i) S] [∀ i, Algebra (R' i) (S' i)]
-  {M : Submonoid (∀ i, R' i)} [sloc : IsLocalization M S]
-  [isloc : ∀ i, IsLocalization (M.map (Pi.evalRingHom R' i)) (S' i)]
+/-- If `S i` is a localization of `R i` at the submonoid `M i` for each `i`,
+then `∀ i, S i` is a localization of `∀ i, R i` at the product submonoid. -/
+instance (M : ∀ i, Submonoid (R i)) [∀ i, IsLocalization (M i) (S i)] :
+    IsLocalization (.pi .univ M) (∀ i, S i) where
+  map_units' m := Pi.isUnit_iff.mpr fun i ↦ map_units _ ⟨m.1 i, m.2 i ⟨⟩⟩
+  surj' z := by
+    choose rm h using fun i ↦ surj (M := M i) (z i)
+    exact ⟨(fun i ↦ (rm i).1, ⟨_, fun i _ ↦ (rm i).2.2⟩), funext h⟩
+  exists_of_eq {x y} eq := by
+    choose c hc using fun i ↦ exists_of_eq (M := M i) (congr_fun eq i)
+    exact ⟨⟨_, fun i _ ↦ (c i).2⟩, funext hc⟩
 
-/-- Let `M` be a submonoid of a direct product of commutative rings `R' i`, and let `M' i` denote
+variable (S' : Type*) [CommSemiring S'] [Algebra (∀ i, R i) S'] (M : Submonoid (∀ i, R i))
+
+theorem iff_map_piEvalRingHom [Finite ι] :
+    IsLocalization M S' ↔ IsLocalization (.pi .univ fun i ↦ M.map (Pi.evalRingHom R i)) S' :=
+  iff_of_le_of_exists_dvd M _ (fun m hm i _ ↦ ⟨m, hm, rfl⟩) fun n hn ↦ by
+    choose m mem eq using hn
+    have := Fintype.ofFinite ι
+    refine ⟨∏ i, m i ⟨⟩, prod_mem fun i _ ↦ mem i _, pi_dvd_iff.mpr fun i ↦ ?_⟩
+    rw [Fintype.prod_apply]
+    exact (eq i ⟨⟩).symm.dvd.trans (Finset.dvd_prod_of_mem _ <| Finset.mem_univ _)
+
+variable [∀ i, IsLocalization (M.map (Pi.evalRingHom R i)) (S i)]
+
+/-- Let `M` be a submonoid of a direct product of commutative rings `R i`, and let `M' i` denote
 the projection of `M` onto each corresponding factor. Given a ring homomorphism from the direct
-product `∏ R' i` to the product of the localizations of each `R' i` at `M' i`, every `y : M`
-maps to a unit under this homomorphism.
--/
-lemma isUnit_of_product_of_localizations (y : M) :
-    IsUnit ((Pi.ringHom fun i ↦ (algebraMap (R' i) (S' i)).comp (Pi.evalRingHom R' i)) y) := by
-  let f' i : (∀i, R' i) →+* S' i := (algebraMap (R' i) (S' i)).comp (Pi.evalRingHom R' i)
-  refine isUnit_iff_exists_inv.mpr ?_
-  use fun i ↦ Ring.inverse (f' i y)
-  rw [mul_comm]
-  exact funext fun i ↦ Ring.inverse_mul_cancel (f' i y) ((isloc i).map_units (S' i) ⟨y.1 i,
-    Submonoid.mem_map_of_mem (Pi.evalRingHom R' i) y.2⟩)
+product `∏ i, R i` to the product of the localizations of each `R i` at `M' i`, every `y : M`
+maps to a unit under this homomorphism. -/
+lemma isUnit_piRingHom_algebraMap_comp_piEvalRingHom (y : M) :
+    IsUnit ((Pi.ringHom fun i ↦ (algebraMap (R i) (S i)).comp (Pi.evalRingHom R i)) y) :=
+  Pi.isUnit_iff.mpr fun i ↦ map_units _ (⟨y.1 i, y, y.2, rfl⟩ : M.map (Pi.evalRingHom R i))
 
-/-- Let `M` be a submonoid of a direct product of commutative rings `R' i`, and let `M' i` denote
+/-- Let `M` be a submonoid of a direct product of commutative rings `R i`, and let `M' i` denote
 the projection of `M` onto each factor. Then the canonical map from the localization of the direct
-product `∏ R' i` at `M` to the direct product of the localizations of each `R' i` at `M' i`
-is injective.
--/
-theorem injective_of_product_of_localizations [inst : Fintype ι] [DecidableEq ι] :
-    Function.Injective (sloc.lift (isUnit_of_product_of_localizations R' S')) := by
-  let R := ∀ i, R' i
-  let P := ∀ i, S' i
-  let f : S →+* P := sloc.lift (isUnit_of_product_of_localizations R' S')
-  let f' i : (∀i, R' i) →+* S' i := (algebraMap (R' i) (S' i)).comp (Pi.evalRingHom R' i)
-  let f'' : R →+* P := Pi.ringHom f'
-  refine (injective_iff_map_eq_zero _ ).mpr ?_
-  intro s s₀
-  rw [← sloc.mk'_sec S s] at s₀ ⊢
-  have h₁ (y : M) (i : ι) : y.1 i ∈ M.map (Pi.evalRingHom R' i) :=
-    Submonoid.mem_map_of_mem (Pi.evalRingHom R' i) y.2
-  have (x : R × M) : f (mk' S x.1 x.2) = fun i ↦ (isloc i).mk' (S' i) (x.1 i) ⟨x.2.1 i,
-    h₁ x.2 i⟩ := by
-    refine funext fun i ↦ eq_mk'_iff_mul_eq.mpr ?_
-    show _ * f'' _ _ = f'' (x.1) i
-    rw [← Pi.mul_apply, ← sloc.lift_eq (isUnit_of_product_of_localizations R' S') ↑x.2,
-      ← RingHom.map_mul, mk'_spec, lift_eq (isUnit_of_product_of_localizations R' S') x.1]
-  rw [this] at s₀
-  apply (sloc.mk'_eq_zero_iff (sec M s).1 (sec M s).2).mpr
-  choose m hm using fun i ↦ ((isloc i).mk'_eq_zero_iff ((sec M s).1 i)
-    ⟨(sec M s).2.1 i, h₁ (sec M s).2 i⟩).mp (congrFun s₀ i)
-  have (i : ι) : ∃ z ∈ M, Pi.evalRingHom R' i z = (m i) := by
-    apply (M.mem_map).mp
-    exact (m i).2
-  choose n hn using this
-  use ⟨∏ j : ι, n j, M.prod_mem fun i _ ↦ (hn i).left⟩
-  refine funext fun i ↦ ?_
-  simp_rw [Pi.mul_apply, Finset.prod_eq_mul_prod_diff_singleton (Finset.mem_univ i) n, Pi.mul_apply,
-    mul_comm ((n i) i), mul_assoc, ← Pi.evalRingHom_apply R' i (n i), (hn i).right, hm i, mul_zero,
-    Pi.zero_apply]
+product `∏ i, R i` at `M` to the direct product of the localizations of each `R i` at `M' i`
+is bijective. -/
+theorem bijective_lift_piRingHom_algebraMap_comp_piEvalRingHom [IsLocalization M S'] [Finite ι] :
+    Function.Bijective (lift (S := S') (isUnit_piRingHom_algebraMap_comp_piEvalRingHom R S M)) :=
+  have := (iff_map_piEvalRingHom R (∀ i, S i) M).mpr inferInstance
+  (ringEquivOfRingEquiv (M := M) (T := M) _ _ (.refl _) <| 
+    Submonoid.map_equiv_eq_comap_symm _ _).bijective
 
-end
+end IsLocalization
