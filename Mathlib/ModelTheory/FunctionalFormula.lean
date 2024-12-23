@@ -597,7 +597,7 @@ theorem realize_toBoundedFormula {n : ℕ} (φ : (FunctionalFormulaLang T).Bound
 
 /-- Every `Formula` in `FunctionalFormulaLang T` is equivalent to a `Formula` in `T`. -/
 noncomputable def toFormula (φ : (FunctionalFormulaLang T).Formula α) : L.Formula α :=
-  φ.toBoundedFormula
+  toBoundedFormula φ
 
 @[simp]
 theorem realize_toFormula (φ : (FunctionalFormulaLang T).Formula α) (x : α → M) :
@@ -605,12 +605,12 @@ theorem realize_toFormula (φ : (FunctionalFormulaLang T).Formula α) (x : α �
   simp [toFormula, Formula.Realize]
 
 /-- Every `Sentence` in `FunctionalFormulaLang T` is equivalent to a `Sentence` in `T`. -/
-def toSentence (φ : (FunctionalFormulaLang T).Sentence) : L.Sentence α :=
-  φ.toFormula
+noncomputable def toSentence (φ : (FunctionalFormulaLang T).Sentence) : L.Sentence :=
+  toFormula φ
 
 @[simp]
-theorem realize_toSentence (φ : (FunctionalFormulaLang T).Sentence) (x : α → M) :
-    (toSentence φ).Realize x ↔ φ.Realize x := by
+theorem realize_toSentence (φ : (FunctionalFormulaLang T).Sentence) :
+    M ⊨ toSentence φ ↔ M ⊨ φ := by
   simp [toSentence, Sentence.Realize]
 
 end FunctionalFormulaLang
