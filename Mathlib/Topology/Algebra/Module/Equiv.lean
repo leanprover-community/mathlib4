@@ -578,8 +578,9 @@ def piCongrLeft (R : Type*) [Semiring R] {ι ι' : Type*}
   __ := Homeomorph.piCongrLeft e
   __ := LinearEquiv.piCongrLeft R φ e
 
-/-- The space of functions from `S ⊕ T` into a family of topological modules
-is isomorphic to the product of the functions from `S` and the functions from `T`.
+/-- The produce over `S ⊕ T` of a family of topological modules
+is isomorphic (topologically and alegbraically) to the product of
+(the product over `S`) and (the product over `T`).
 
 This is `Equiv.sumPiEquivProdPi` as a `ContinuousLinearEquiv`.
 -/
@@ -590,8 +591,8 @@ def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*)
   __ := LinearEquiv.sumPiEquivProdPi R S T A
   __ := Homeomorph.sumPiEquivProdPi S T A
 
-/-- The space of functions from `PUnit` into a family of topological modules
-is (both topologically and linearly) isomorphic to the value of this function at `()`.
+/-- The product over `PUnit` of a family of topological modules is isomorphic (both topologically
+and algebraically) to the value of the family at `()`.
 
 This is `Equiv.pUnitPiEquiv` as a `ContinuousLinearEquiv`.
 -/
