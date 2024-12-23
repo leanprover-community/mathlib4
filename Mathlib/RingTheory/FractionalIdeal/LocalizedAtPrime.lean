@@ -26,7 +26,7 @@ This file defines the localization of a fractional ideal at a prime ideal.
     denominator.
 * `FractionalIdeal.localizedAtPrime_inv`: Localizing commutes with inverses for finitely-generated
     `I`.
-* `FractionalIdeal.not_le_of_localizedAtPrime_eq_one`: If `I.localizedAtPrime P = 1`,
+* `FractionalIdeal.not_le_of_localizedAtPrime_eq_one`: If `I.localizedAtPrime P Aₚ = 1`,
     then `¬ I ≤ P`.
 
 ## Tags
@@ -34,13 +34,13 @@ This file defines the localization of a fractional ideal at a prime ideal.
 fractional ideal, fractional ideals, localization
 -/
 
-open IsLocalization Localization Algebra FractionalIdeal Submodule nonZeroDivisors Finset Module
+open IsLocalization Submodule nonZeroDivisors Finset
 
 variable {A : Type*} [CommRing A] [IsDomain A]
 
 private lemma hf (P : Ideal A) [P.IsPrime] {Aₚ : Type*} [CommRing Aₚ] [Algebra A Aₚ]
     [h : IsLocalization P.primeCompl Aₚ] : A⁰ ≤ Submonoid.comap (algebraMap A Aₚ) Aₚ⁰ :=
-  have := h.noZeroDivisors_of_le_nonZeroDivisors P.primeCompl_le_nonZeroDivisors
+  have := h.noZeroDivisors_of_le_nonZeroDivisors A P.primeCompl_le_nonZeroDivisors
   nonZeroDivisors_le_comap_nonZeroDivisors_of_injective _ <|
     IsLocalization.injective Aₚ P.primeCompl_le_nonZeroDivisors
 
@@ -100,21 +100,29 @@ theorem mem_localizedAtPrime (x : K) : x ∈ I.localizedAtPrime P Aₚ ↔
     rw [algebra_compatible_smul Aₚ (s : A) x] at h
     rw [← MulAction.one_smul (α := Aₚ) x, ← h, ← smul_assoc]
     simp [← mk'_mul]
-  refine span_induction h (fun y yI ↦ ⟨⟨y, yI⟩, 1, by simp⟩) ⟨0, 1, by simp⟩ ?_ ?_
-  · rintro x y ⟨i₁, s₁, h₁⟩ ⟨i₂, s₂, h₂⟩
-    use s₂ • i₁ + s₁ • i₂, s₁ * s₂
+  refine span_induction (fun y yI ↦ ⟨⟨y, yI⟩, 1, by simp⟩) ⟨⟨0, zero_mem I⟩, 1, by simp⟩ ?_ ?_ h
+  · rintro x y hx hy ⟨i₁, s₁, h₁⟩ ⟨i₂, s₂, h₂⟩
+    let i := (s₂ : A) • (i₁ : K) + (s₁ : A) • (i₂ : K)
+    have hi : i ∈ I := by
+      apply Submodule.add_mem <;>
+        exact smul_mem _ _ (Subtype.coe_prop _)
+    use ⟨i, hi⟩, s₁ * s₂
     nth_rewrite 1 [smul_add, mul_comm s₁ s₂, Submonoid.coe_mul, Submonoid.coe_mul]
-    simp_rw [AddSubmonoid.coe_add, coe_toAddSubmonoid, coe_smul_of_tower, ← h₁, ← h₂, mul_smul]
-    rfl
-  · intro x y ⟨i, s, h⟩
-    obtain ⟨a, s', rfl⟩ := IsLocalization.mk'_surjective P.primeCompl x
-    use a • i, s * s'
-    rw [Submonoid.coe_mul, coe_smul_of_tower, ← h, algebra_compatible_smul Aₚ, smul_smul, smul_smul]
-    simp_rw [algebra_compatible_smul Aₚ (a * s), ← mk'_one (M := P.primeCompl), ← mk'_mul]
-    congr 1
-    apply IsLocalization.mk'_eq_of_eq
-    rw [one_mul, show ((1 : P.primeCompl) : A) = 1 by rfl]
-    ring
+    have h : ((s₂ : A) * (s₁ : A)) • x = (s₂ : A) • ((s₁ : A) • x) := by
+      simp_rw [Algebra.smul_def, _root_.map_mul, mul_assoc]
+    have h' : ((s₁ : A) * (s₂ : A)) • y = (s₁ : A) • ((s₂ : A) • y) := by
+      simp_rw [Algebra.smul_def, _root_.map_mul, mul_assoc]
+    rw [h, h₁, h', h₂]
+  · intro a k hk ⟨i, s, h⟩
+    obtain ⟨a', s', rfl⟩ := IsLocalization.mk'_surjective P.primeCompl a
+    use ⟨a' • (i : K), Submodule.smul_mem _ _ (Submodule.coe_mem i)⟩, s * s'
+    simp_rw [Submonoid.coe_mul, ← h, Algebra.smul_def, _root_.map_mul, mul_assoc, ← mul_assoc _ _ k]
+    suffices (algebraMap A K) ↑s' * (algebraMap Aₚ K) (mk' Aₚ a' s') = (algebraMap A K) a' by
+      rw [this]
+      ring
+    rw [IsScalarTower.algebraMap_eq (S := Aₚ)]
+    simp only [RingHom.coe_comp, Function.comp_apply, ← _root_.map_mul]
+    exact congr_arg _ (by simp only [mk'_spec'])
 
 variable {I} {P}
 
@@ -126,9 +134,9 @@ theorem exists_smul_mem_of_mem_localizedAtPrime {x : K} (hx : x ∈ I.localizedA
 -- `I.localizedAtPrime P` is actually the localization of `I` at `P`.
 instance : IsLocalizedModule P.primeCompl (I.localizedAtPrimeInclusion P Aₚ) where
   map_units s := by
-    refine (End_isUnit_iff _).mpr ⟨fun ⟨_, _⟩ ⟨_, _⟩ h ↦ ?_, fun x ↦ ⟨(mk' Aₚ 1 s) • x, ?_⟩⟩
+    refine (Module.End_isUnit_iff _).mpr ⟨fun ⟨_, _⟩ ⟨_, _⟩ h ↦ ?_, fun x ↦ ⟨(mk' Aₚ 1 s) • x, ?_⟩⟩
     · have s0 : (s : A) ≠ 0 := fun hs ↦ (hs ▸ Subtype.coe_prop s) P.zero_mem
-      rw [algebraMap_end_apply, algebraMap_end_apply, SetLike.mk_smul_of_tower_mk,
+      rw [Module.algebraMap_end_apply, Module.algebraMap_end_apply, SetLike.mk_smul_of_tower_mk,
         Subtype.mk.injEq] at h
       exact Subtype.ext_iff_val.mpr <| smul_right_injective K s0 h
     · simp [← smul_assoc]
@@ -170,39 +178,25 @@ theorem localizedAtPrime_mul :
   have := IsFractionRing.isFractionRing_of_isDomain_of_isLocalization P.primeCompl Aₚ K
   extended_mul K (hf P) I J
 
---instance : Div (FractionalIdeal A⁰ K) := by sorry
-/-  have := IsFractionRing.toField A (K := K)
-  apply FractionalIdeal.instDivNonZeroDivisors (R₁ := A) (K := K)
-  swap
-  sorry
-  exact this -/
-
---#check isDomain_of_le_nonZeroDivisors (S := Aₚ) A P.primeCompl_le_nonZeroDivisors
-
-instance : IsDomain Aₚ := by sorry
-
-instance : IsFractionRing Aₚ K := by sorry
-
+variable [IsDomain Aₚ] [IsFractionRing Aₚ K] in
 theorem localizedAtPrime_div_le :
     (I/J).localizedAtPrime P Aₚ ≤ I.localizedAtPrime P Aₚ / J.localizedAtPrime P Aₚ := by
   by_cases J0 : J = 0
   · rw [J0, localizedAtPrime_zero, div_zero, div_zero, localizedAtPrime_zero]
   intro t ht
   simp only [val_eq_coe, coe_localizedAtPrime] at ht
-  refine span_induction ht (fun x hx ↦ ?_) (zero_mem _)
-    (fun x y hx hy ↦ Submodule.add_mem _ hx hy) (fun x y hy ↦ smul_mem _ x hy)
+  refine span_induction (fun x hx ↦ ?_) (zero_mem _)
+    (fun x y _ _ hx hy ↦ Submodule.add_mem _ hx hy) (fun x y _ hy ↦ smul_mem _ x hy) ht
   simp_rw [val_eq_coe, mem_coe, mem_div_iff_of_nonzero (J.localizedAtPrime_ne_zero P Aₚ J0)]
   intro y hy
   rw [mem_localizedAtPrime_iff] at hy ⊢
-  refine span_induction hy (fun j hj ↦ subset_span ?_) (by simp)
-    (fun z w hz hw ↦ mul_add x z w ▸ Submodule.add_mem _ hz hw)
-    (fun a z hz ↦ Algebra.mul_smul_comm a x z ▸ Submodule.smul_mem _ a hz)
+  refine span_induction (fun j hj ↦ subset_span ?_) (by simp)
+    (fun z w _ _ hz hw ↦ mul_add x z w ▸ Submodule.add_mem _ hz hw)
+    (fun a z _ hz ↦ Algebra.mul_smul_comm a x z ▸ Submodule.smul_mem _ a hz) hy
   rw [div_nonzero J0] at hx
   exact (Submodule.mem_div_iff_forall_mul_mem).1 hx j hj
 
-variable {J}
-
-
+variable {J} [IsDomain Aₚ] [IsFractionRing Aₚ K] in
 theorem localizedAtPrime_div (hJ : J.coeToSubmodule.FG) :
     (I/J).localizedAtPrime P Aₚ = I.localizedAtPrime P Aₚ / J.localizedAtPrime P Aₚ := by
   by_cases J0 : J = 0
@@ -220,22 +214,16 @@ theorem localizedAtPrime_div (hJ : J.coeToSubmodule.FG) :
   let s := Finset.prod univ c
   let b := (algebraMap A Aₚ s) • t
   have hu : IsUnit (algebraMap A Aₚ s) := by
-    simp_rw [s, map_prod]
-    apply?
-
-
-
-    sorry
-  have : t = hu.unit⁻¹ • b := by sorry
-  --have : t = (mk 1 ⟨s, Submonoid.prod_mem _ (fun i _ ↦ cP i)⟩) • b := by
-  --  rw [smul_smul, mk_mul, one_mul, mul_one, mk_self ⟨s, _⟩, one_smul]
+    rw [map_prod]
+    exact IsUnit.prod_univ_iff.mpr (fun i ↦ (AtPrime.isUnit_to_map_iff Aₚ P (c i)).mpr (cP i))
+  have : t = hu.unit⁻¹ • b := eq_inv_smul_iff.mpr rfl
   rw [this]
   -- It remains only to check that b := s • t ∈ I/J
   refine smul_mem _ _ <| Submodule.subset_span <| (mem_div_iff_of_nonzero J0).2 (fun y hy ↦ ?_)
   rw [← mem_coe, ← hgJ] at hy
-  refine span_induction hy ?_ ((mul_zero b).symm ▸ zero_mem I)
-    (fun x y hx hy ↦ mul_add b x y ▸ Submodule.add_mem _ hx hy)
-    (fun a x hx ↦ mul_smul_comm a b x ▸ Submodule.smul_mem _ a hx)
+  refine span_induction ?_ ((mul_zero b).symm ▸ zero_mem I)
+    (fun x y _ _ hx hy ↦ mul_add b x y ▸ Submodule.add_mem _ hx hy)
+    (fun a x _ hx ↦ mul_smul_comm a b x ▸ Submodule.smul_mem _ a hx) hy
   rintro x ⟨i, rfl⟩
   simp_rw [b, s]
   rw [← mul_prod_erase univ c (mem_univ i), _root_.map_mul, mul_comm ((algebraMap A Aₚ) (c i))]
@@ -243,22 +231,17 @@ theorem localizedAtPrime_div (hJ : J.coeToSubmodule.FG) :
     Algebra.smul_mul_assoc]
   apply Submodule.smul_mem _ _ (hc i)
 
-variable {I}
-
+variable {I} [IsDomain Aₚ] [IsFractionRing Aₚ K] in
 @[simp]
 theorem localizedAtPrime_inv (hI : I.coeToSubmodule.FG) :
-    I⁻¹.localizedAtPrime P = (I.localizedAtPrime P)⁻¹ := by
-  rw [inv_eq, localizedAtPrime_div P 1 hI, localizedAtPrime_one, inv_eq]
+    I⁻¹.localizedAtPrime P Aₚ = (I.localizedAtPrime P Aₚ)⁻¹ := by
+  rw [inv_eq, localizedAtPrime_div P Aₚ 1 hI, localizedAtPrime_one, inv_eq]
 
-variable (I)
-
-theorem not_le_of_localizedAtPrime_eq_one (hI : I.localizedAtPrime P = 1) : ¬ I ≤ P := by
-  have ⟨i, s, h⟩ := (I.mem_localizedAtPrime 1).mp (hI.symm ▸ one_mem_one Aₚ⁰)
+theorem not_le_of_localizedAtPrime_eq_one (hI : I.localizedAtPrime P Aₚ = 1) : ¬ I ≤ P := by
+  have ⟨i, s, h⟩ := (I.mem_localizedAtPrime Aₚ 1).mp (hI.symm ▸ one_mem_one Aₚ⁰)
   unfold coeIdeal coeSubmodule
   refine Set.not_subset.2 ⟨i, Subtype.coe_prop i, ?_⟩
-  have : (i : K) = (algebraMap A K) (s : A) := calc
-    (i : K) = (s : A) • (Localization.mk 1 s • i) := by rw [← smul_assoc, smul_mk]; simp
-    _       = (algebraMap A K) s                  := by rw [← h, Algebra.algebraMap_eq_smul_one]
-  simpa [this] using Set.not_mem_of_mem_compl (Subtype.coe_prop s)
+  rw [← h, ← Algebra.algebraMap_eq_smul_one]
+  simpa using Set.not_mem_of_mem_compl (Subtype.coe_prop s)
 
 end FractionalIdeal
