@@ -578,7 +578,7 @@ def piCongrLeft (R : Type*) [Semiring R] {ι ι' : Type*}
   __ := Homeomorph.piCongrLeft e
   __ := LinearEquiv.piCongrLeft R φ e
 
-/-- The produce over `S ⊕ T` of a family of topological modules
+/-- The product over `S ⊕ T` of a family of topological modules
 is isomorphic (topologically and alegbraically) to the product of
 (the product over `S`) and (the product over `T`).
 
