@@ -348,10 +348,10 @@ def IsStableUnderLimitsOfShape : Prop :=
 
 lemma isStableUnderLimitsOfShape_iff_limitsOfShape_le :
     W.IsStableUnderLimitsOfShape J ↔ W.limitsOfShape J ≤ W := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rintro _ _ _ ⟨_, _, _, _, h₁, h₂, f, hf⟩
+  constructor
+  · rintro h _ _ _ ⟨_, _, _, _, h₁, h₂, f, hf⟩
     exact h _ _ _ _ h₁ h₂ f hf
-  · intro _ _ _ _ h₁ h₂ f hf
+  · intro h _ _ _ _ h₁ h₂ f hf
     exact h _ ⟨_, _, _, _, h₁, _, _, hf⟩
 
 variable {W J}
@@ -411,10 +411,10 @@ def IsStableUnderColimitsOfShape : Prop :=
 
 lemma isStableUnderColimitsOfShape_iff_colimitsOfShape_le :
     W.IsStableUnderColimitsOfShape J ↔ W.colimitsOfShape J ≤ W := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · rintro _ _ _ ⟨_, _, _, _, h₁, h₂, f, hf⟩
+  constructor
+  · rintro h _ _ _ ⟨_, _, _, _, h₁, h₂, f, hf⟩
     exact h _ _ _ _ h₁ h₂ f hf
-  · intro _ _ _ _ h₁ h₂ f hf
+  · intro h _ _ _ _ h₁ h₂ f hf
     exact h _ ⟨_, _, _, _, _, h₂, _, hf⟩
 
 variable {W J}
