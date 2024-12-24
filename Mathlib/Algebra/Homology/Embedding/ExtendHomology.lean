@@ -315,13 +315,11 @@ lemma extendCyclesIso_hom_iCycles :
     (K.extendCyclesIso e hj').hom ≫ K.iCycles j =
       (K.extend e).iCycles j' ≫ (K.extendXIso e hj').hom := by
   rw [← cancel_epi (K.extendCyclesIso e hj').inv, Iso.inv_hom_id_assoc]
-  dsimp [extendCyclesIso]
-  rw [assoc]
-  erw [ShortComplex.LeftHomologyData.cyclesIso_inv_comp_iCycles_assoc]
+  dsimp [extendCyclesIso, iCycles]
+  rw [assoc, ShortComplex.LeftHomologyData.cyclesIso_inv_comp_iCycles_assoc]
   dsimp
   rw [assoc, Iso.inv_hom_id, comp_id,
     ShortComplex.LeftHomologyData.cyclesIso_hom_comp_i]
-  rfl
 
 @[reassoc (attr := simp)]
 lemma extendCyclesIso_inv_iCycles :
@@ -334,11 +332,11 @@ lemma extendCyclesIso_inv_iCycles :
 lemma homologyπ_extendHomologyIso_hom :
     (K.extend e).homologyπ j' ≫ (K.extendHomologyIso e hj').hom =
       (K.extendCyclesIso e hj').hom ≫ K.homologyπ j := by
-  dsimp [extendHomologyIso]
-  erw [ShortComplex.LeftHomologyData.homologyπ_comp_homologyIso_hom_assoc]
-  rw [← cancel_mono (K.sc j).homologyData.left.homologyIso.hom,
-    assoc, assoc, assoc, Iso.inv_hom_id, comp_id]
-  erw [ShortComplex.LeftHomologyData.homologyπ_comp_homologyIso_hom]
+  dsimp [extendHomologyIso, homologyπ]
+  rw [ShortComplex.LeftHomologyData.homologyπ_comp_homologyIso_hom_assoc,
+    ← cancel_mono (K.sc j).homologyData.left.homologyIso.hom,
+    assoc, assoc, assoc, Iso.inv_hom_id, comp_id,
+    ShortComplex.LeftHomologyData.homologyπ_comp_homologyIso_hom]
   dsimp [extendCyclesIso]
   simp only [assoc, Iso.inv_hom_id_assoc]
 
@@ -354,8 +352,8 @@ lemma pOpcycles_extendOpcyclesIso_inv :
     K.pOpcycles j ≫ (K.extendOpcyclesIso e hj').inv =
       (K.extendXIso e hj').inv ≫ (K.extend e).pOpcycles j' := by
   rw [← cancel_mono (K.extendOpcyclesIso e hj').hom, assoc, assoc, Iso.inv_hom_id, comp_id]
-  dsimp [extendOpcyclesIso]
-  erw [ShortComplex.RightHomologyData.pOpcycles_comp_opcyclesIso_hom_assoc]
+  dsimp [extendOpcyclesIso, pOpcycles]
+  rw [ShortComplex.RightHomologyData.pOpcycles_comp_opcyclesIso_hom_assoc]
   dsimp
   rw [assoc, Iso.inv_hom_id_assoc, ShortComplex.RightHomologyData.p_comp_opcyclesIso_inv]
   rfl
