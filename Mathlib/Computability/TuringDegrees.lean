@@ -23,6 +23,7 @@ quotient under this relation.
 - `turing_equivalent`: A relation defining Turing equivalence between partial functions.
 - `TuringDegree`:
   The type of Turing degrees, defined as equivalence classes under `turing_equivalent`.
+- `join`: Combines two partial functions into one by mapping even and odd numbers to respective functions.
 
 ## Notation
 
@@ -41,11 +42,11 @@ numbers to the respective functions.
 ## References
 
 * [Carneiro2018] Carneiro, Mario.
- *Formalizing Computability Theory via Partial Recursive Functions*.
- arXiv preprint arXiv:1810.08380, 2018.
+  *Formalizing Computability Theory via Partial Recursive Functions*.
+  arXiv preprint arXiv:1810.08380, 2018.
 * [Odifreddi1989] Odifreddi, Piergiorgio.
- *Classical Recursion Theory: The Theory of Functions and Sets of Natural Numbers,
- Vol. I*. Springer-Verlag, 1989.
+  *Classical Recursion Theory: The Theory of Functions and Sets of Natural Numbers,
+  Vol. I*. Springer-Verlag, 1989.
 * [Soare1987] Soare, Robert I. *Recursively Enumerable Sets and Degrees*. Springer-Verlag, 1987.
 * [Gu2015] Gu, Yi-Zhi. *Turing Degrees*. Institute for Advanced Study, 2015.
 
@@ -86,6 +87,7 @@ inductive RecursiveIn (g : ℕ →. ℕ) : (ℕ →. ℕ) → Prop
 -/
 def turing_reducible (f g : ℕ →. ℕ) : Prop :=
   RecursiveIn g f
+
 /--
 Custom infix notation for `turing_reducible`.
 -/
@@ -96,6 +98,7 @@ infix:50 " ≤ᵀ " => turing_reducible
 -/
 def turing_equivalent (f g : ℕ →. ℕ) : Prop :=
   f ≤ᵀ g ∧ g ≤ᵀ f
+
 /--
 Custom infix notation for `turing_equivalent`.
 -/
@@ -147,7 +150,7 @@ lemma partrec_iff_partrec_in_zero
     case mpr.rfind _ _ ih =>
       apply Nat.Partrec.rfind ih }
 
- /--
+/--
 A partial function `f` is partial recursive if and only if it is recursive in
 every partial function `g`.
 -/
@@ -178,58 +181,58 @@ theorem partrec_iff_partrec_in_everything
     rw [← partrec_iff_partrec_in_zero] at lem
     exact lem }
 
- /--
+/--
 Proof that `turing_reducible` is reflexive.
 -/
 theorem turing_reducible_refl (f : ℕ →. ℕ) : f ≤ᵀ f :=
   RecursiveIn.oracle
 
- /--
+/--
 Proof that `turing_equivalent` is reflexive.
 -/
 theorem turing_equivalent_refl (f : ℕ →. ℕ) : f ≡ᵀ f :=
   ⟨turing_reducible_refl f, turing_reducible_refl f⟩
 
- /--
+/--
 Proof that `turing_equivalent` is symmetric.
 -/
 theorem turing_equivalent_symm {f g : ℕ →. ℕ} (h : f ≡ᵀ g) : g ≡ᵀ f :=
   ⟨h.2, h.1⟩
 
- /--
+/--
 Proof that `turing_reducible` is transitive.
 -/
 theorem turing_reducible_trans {f g h : ℕ →. ℕ} :
   f ≤ᵀ g → g ≤ᵀ h → f ≤ᵀ h := by
-  intro hg hh
-  induction hg
-  case zero =>
-    apply RecursiveIn.zero
-  case succ =>
-    apply RecursiveIn.succ
-  case left =>
-    apply RecursiveIn.left
-  case right =>
-    apply RecursiveIn.right
-  case oracle =>
-    exact hh
-  case pair f' h' _ _ hf_ih hh_ih =>
-    apply RecursiveIn.pair
-    { apply hf_ih }
-    { apply hh_ih }
-  case comp f' h' _ _ hf_ih hh_ih =>
-    apply RecursiveIn.comp
-    { apply hf_ih }
-    { apply hh_ih }
-  case prec f' h' _ _ hf_ih hh_ih =>
-    apply RecursiveIn.prec
-    { apply hf_ih }
-    { apply hh_ih }
-  case rfind f' _ hf_ih =>
-    apply RecursiveIn.rfind
-    { apply hf_ih }
+    intro hg hh
+    induction hg
+    case zero =>
+      apply RecursiveIn.zero
+    case succ =>
+      apply RecursiveIn.succ
+    case left =>
+      apply RecursiveIn.left
+    case right =>
+      apply RecursiveIn.right
+    case oracle =>
+      exact hh
+    case pair f' h' _ _ hf_ih hh_ih =>
+      apply RecursiveIn.pair
+      { apply hf_ih }
+      { apply hh_ih }
+    case comp f' h' _ _ hf_ih hh_ih =>
+      apply RecursiveIn.comp
+      { apply hf_ih }
+      { apply hh_ih }
+    case prec f' h' _ _ hf_ih hh_ih =>
+      apply RecursiveIn.prec
+      { apply hf_ih }
+      { apply hh_ih }
+    case rfind f' _ hf_ih =>
+      apply RecursiveIn.rfind
+      { apply hf_ih }
 
- /--
+/--
 Proof that `turing_equivalent` is transitive.
 -/
 theorem turing_equivalent_trans :
@@ -237,7 +240,7 @@ theorem turing_equivalent_trans :
   fun _ _ _ ⟨fg₁, fg₂⟩ ⟨gh₁, gh₂⟩ =>
     ⟨turing_reducible_trans fg₁ gh₁, turing_reducible_trans gh₂ fg₂⟩
 
- /--
+/--
 Instance declaring that `turing_equivalent` is an equivalence relation.
 -/
 instance : Equivalence turing_equivalent :=
@@ -268,4 +271,67 @@ def join (f g : ℕ →. ℕ) : ℕ →. ℕ :=
 /-- Join notation `f ⊔ g` is the "join" of partial functions `f` and `g`. -/
 infix:99 "⊔" => join
 
-#lint
+/--
+For any partial functions `a`, `b₁`, and `b₂`, if `b₁` is Turing equivalent to `b₂`,
+then `a` is Turing reducible to `b₁` if and only if `a` is Turing reducible to `b₂`.
+-/
+lemma reduce_lifts₁ : ∀ (a b₁ b₂ : ℕ →. ℕ), b₁≡ᵀb₂ → (a≤ᵀb₁) = (a≤ᵀb₂) := by
+  intros a b₁ b₂ bEqb
+  apply propext
+  constructor
+  · intro aRedb₁
+    apply turing_reducible_trans aRedb₁ bEqb.1
+  · intro aRedb₂
+    apply turing_reducible_trans aRedb₂ bEqb.2
+
+/--
+For any partial functions `f`, `g`, and `h`, if `f` is Turing equivalent to `g`,
+then `f` is Turing reducible to `h` if and only if `g` is Turing reducible to `h`.
+-/
+lemma reduce_lifts₂ : ∀ (f g h : ℕ →. ℕ),
+f ≡ᵀ g → (turing_reducible f h = turing_reducible g h) := by
+  intros f g h fEqg
+  apply propext
+  constructor
+  · intro fRedh
+    apply turing_reducible_trans fEqg.2 fRedh
+  · intro gRedh
+    apply turing_reducible_trans fEqg.1 gRedh
+
+/--
+Here we show how to lift the Turing reducibility relation from
+partial functions to theit Turing degrees, using the above lemmas.
+-/
+def TuringDegree.turing_red (d₁ d₂ : TuringDegree) : Prop :=
+  @Quot.lift₂ _ _ Prop (turing_equivalent)
+  (turing_equivalent) (turing_reducible) (reduce_lifts₁) (reduce_lifts₂) d₁ d₂
+
+/--
+Instance declaring that `TuringDegree.turing_red` is a partial order.
+-/
+instance : PartialOrder TuringDegree where
+  le := TuringDegree.turing_red
+  le_refl := by
+    apply Quot.ind
+    intro a
+    apply turing_reducible_refl
+  le_trans := by
+    apply Quot.ind
+    intro a
+    apply Quot.ind
+    intro b
+    apply Quot.ind
+    intro c
+    exact turing_reducible_trans
+  le_antisymm := by
+    apply Quot.ind
+    intro a
+    apply Quot.ind
+    intro b
+    intros aRedb bReda
+    apply Quot.sound
+    have aRedb' : a ≤ᵀ b := aRedb
+    have bReda' : b ≤ᵀ a := bReda
+    constructor
+    · exact aRedb'
+    · exact bReda'
