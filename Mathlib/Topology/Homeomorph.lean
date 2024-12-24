@@ -1065,9 +1065,9 @@ variable {F α β : Type*} [TopologicalSpace α] [TopologicalSpace β] [EquivLik
 `Homeomorph`. This is declared as the default coercion from `F` to `α ≃ₜ β`. -/
 @[coe]
 def toHomeomorph [h : HomeomorphClass F α β] (f : F) : α ≃ₜ β :=
-  {(f : α ≃ β) with
-  continuous_toFun := h.map_continuous f
-  continuous_invFun := h.inv_continuous f }
+  { (f : α ≃ β) with
+    continuous_toFun := h.map_continuous f
+    continuous_invFun := h.inv_continuous f }
 
 @[simp]
 theorem coe_coe [h : HomeomorphClass F α β] (f : F) : ⇑(h.toHomeomorph f) = ⇑f := rfl

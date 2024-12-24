@@ -83,7 +83,7 @@ theorem posTangentConeAt_mono : Monotone fun s => posTangentConeAt s a := by
 theorem mem_posTangentConeAt_of_frequently_mem (h : ∃ᶠ t : ℝ in 𝓝[>] 0, x + t • y ∈ s) :
     y ∈ posTangentConeAt s x := by
   obtain ⟨a, ha, has⟩ := Filter.exists_seq_forall_of_frequently h
-  refine ⟨a⁻¹, (a · • y), Eventually.of_forall has, tendsto_inv_zero_atTop.comp ha, ?_⟩
+  refine ⟨a⁻¹, (a · • y), Eventually.of_forall has, tendsto_inv_nhdsGT_zero.comp ha, ?_⟩
   refine tendsto_const_nhds.congr' ?_
   filter_upwards [(tendsto_nhdsWithin_iff.1 ha).2] with n (hn : 0 < a n)
   simp [ne_of_gt hn]

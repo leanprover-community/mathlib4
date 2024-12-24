@@ -1005,6 +1005,7 @@ import Mathlib.AlgebraicGeometry.PrimeSpectrum.Jacobson
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Maximal
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Module
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Noetherian
+import Mathlib.AlgebraicGeometry.PrimeSpectrum.Polynomial
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.TensorProduct
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Basic
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.Proper
@@ -1692,6 +1693,7 @@ import Mathlib.CategoryTheory.CommSq
 import Mathlib.CategoryTheory.Comma.Arrow
 import Mathlib.CategoryTheory.Comma.Basic
 import Mathlib.CategoryTheory.Comma.Final
+import Mathlib.CategoryTheory.Comma.LocallySmall
 import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Comma.OverClass
 import Mathlib.CategoryTheory.Comma.Presheaf.Basic
@@ -2339,6 +2341,7 @@ import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.TMComputable
 import Mathlib.Computability.TMToPartrec
 import Mathlib.Computability.TuringMachine
+import Mathlib.Condensed.AB
 import Mathlib.Condensed.Basic
 import Mathlib.Condensed.CartesianClosed
 import Mathlib.Condensed.Discrete.Basic
@@ -3942,6 +3945,7 @@ import Mathlib.NumberTheory.NumberField.FinitePlaces
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
 import Mathlib.NumberTheory.NumberField.House
 import Mathlib.NumberTheory.NumberField.Norm
+import Mathlib.NumberTheory.NumberField.ProductFormula
 import Mathlib.NumberTheory.NumberField.Units.Basic
 import Mathlib.NumberTheory.NumberField.Units.DirichletTheorem
 import Mathlib.NumberTheory.NumberField.Units.Regulator
@@ -4193,6 +4197,7 @@ import Mathlib.Order.SupClosed
 import Mathlib.Order.SupIndep
 import Mathlib.Order.SymmDiff
 import Mathlib.Order.Synonym
+import Mathlib.Order.TransfiniteIteration
 import Mathlib.Order.TypeTags
 import Mathlib.Order.ULift
 import Mathlib.Order.UpperLower.Basic
