@@ -26,7 +26,7 @@ to define only local instances of `ModelCategory`, or to set these instances on 
 
 -/
 
-universe v u
+universe w v u
 
 namespace HomotopicalAlgebra
 
@@ -100,6 +100,199 @@ lemma cofibrations_rlp :
     (cofibrations C).rlp = trivialFibrations C := by
   apply MorphismProperty.rlp_eq_of_le_rlp_of_hasFactorization_of_isStableUnderRetracts
   rw [← MorphismProperty.le_llp_iff_le_rlp, trivialFibrations_llp]
+
+section Pullbacks
+
+instance : (cofibrations C).IsStableUnderCobaseChange := by
+  rw [← trivialFibrations_llp]
+  infer_instance
+
+instance : (fibrations C).IsStableUnderBaseChange := by
+  rw [← trivialCofibrations_rlp]
+  infer_instance
+
+instance : (trivialCofibrations C).IsStableUnderCobaseChange := by
+  rw [← fibrations_llp]
+  infer_instance
+
+instance : (trivialFibrations C).IsStableUnderBaseChange := by
+  rw [← cofibrations_rlp]
+  infer_instance
+
+section
+
+variable {X Y Z : C} (f : X ⟶ Y) (g : X ⟶ Z)
+
+instance [hg : Cofibration g] : Cofibration (pushout.inl f g) := by
+  rw [cofibration_iff] at hg ⊢
+  exact MorphismProperty.of_isPushout (IsPushout.of_hasPushout f g) hg
+
+instance [hf : Cofibration f] : Cofibration (pushout.inr f g) := by
+  rw [cofibration_iff] at hf ⊢
+  exact MorphismProperty.of_isPushout (IsPushout.of_hasPushout f g).flip hf
+
+instance [Cofibration g] [WeakEquivalence g] : WeakEquivalence (pushout.inl f g) := by
+  rw [weakEquivalence_iff]
+  exact (MorphismProperty.of_isPushout (IsPushout.of_hasPushout f g)
+    (mem_trivialCofibrations g)).2
+
+instance [Cofibration f] [WeakEquivalence f] : WeakEquivalence (pushout.inr f g) := by
+  rw [weakEquivalence_iff]
+  exact (MorphismProperty.of_isPushout (IsPushout.of_hasPushout f g).flip
+    (mem_trivialCofibrations f)).2
+
+end
+
+section
+
+variable {X Y Z : C} (f : X ⟶ Z) (g : Y ⟶ Z)
+
+instance [hf : Fibration f] : Fibration (pullback.snd f g) := by
+  rw [fibration_iff] at hf ⊢
+  exact MorphismProperty.of_isPullback (IsPullback.of_hasPullback f g) hf
+
+instance [hg : Fibration g] : Fibration (pullback.fst f g) := by
+  rw [fibration_iff] at hg ⊢
+  exact MorphismProperty.of_isPullback (IsPullback.of_hasPullback f g).flip hg
+
+instance [Fibration f] [WeakEquivalence f] : WeakEquivalence (pullback.snd f g) := by
+  rw [weakEquivalence_iff]
+  exact (MorphismProperty.of_isPullback (IsPullback.of_hasPullback f g)
+    (mem_trivialFibrations f)).2
+
+instance [Fibration g] [WeakEquivalence g] : WeakEquivalence (pullback.fst f g) := by
+  rw [weakEquivalence_iff]
+  exact (MorphismProperty.of_isPullback (IsPullback.of_hasPullback f g).flip
+    (mem_trivialFibrations g)).2
+
+end
+
+end Pullbacks
+
+section Products
+
+variable (J : Type w)
+
+lemma cofibrations_isStableUnderCoproductsOfShape :
+    (cofibrations C).IsStableUnderCoproductsOfShape J := by
+  rw [← trivialFibrations_llp]
+  apply MorphismProperty.llp_IsStableUnderCoproductsOfShape
+
+instance trivialCofibrations_isStableUnderCoproductsOfShape :
+    (trivialCofibrations C).IsStableUnderCoproductsOfShape J := by
+  rw [← fibrations_llp]
+  apply MorphismProperty.llp_IsStableUnderCoproductsOfShape
+
+lemma fibrations_isStableUnderProductsOfShape :
+    (fibrations C).IsStableUnderProductsOfShape J := by
+  rw [← trivialCofibrations_rlp]
+  apply MorphismProperty.rlp_IsStableUnderProductsOfShape
+
+lemma trivialFibrations_isStableUnderProductsOfShape :
+    (trivialFibrations C).IsStableUnderProductsOfShape J := by
+  rw [← cofibrations_rlp]
+  apply MorphismProperty.rlp_IsStableUnderProductsOfShape
+
+variable {C J} {X Y : J → C} (f : ∀ i, X i ⟶ Y i)
+
+section
+
+variable [HasCoproduct X] [HasCoproduct Y]
+
+instance [h : ∀ i, Cofibration (f i)] : Cofibration (Limits.Sigma.map f) := by
+  simp only [cofibration_iff] at h ⊢
+  exact (cofibrations_isStableUnderCoproductsOfShape C J).colimMap _ (fun ⟨i⟩ ↦ h i)
+
+instance [h : ∀ i, Cofibration (f i)] [h : ∀ i, WeakEquivalence (f i)] :
+    WeakEquivalence (Limits.Sigma.map f) := by
+  rw [weakEquivalence_iff]
+  exact ((trivialCofibrations_isStableUnderCoproductsOfShape C J).colimMap _
+    (fun ⟨i⟩ ↦ mem_trivialCofibrations (f i))).2
+
+end
+
+section
+
+variable [HasProduct X] [HasProduct Y]
+
+instance [h : ∀ i, Fibration (f i)] : Fibration (Limits.Pi.map f) := by
+  simp only [fibration_iff] at h ⊢
+  exact (fibrations_isStableUnderProductsOfShape C J).limMap _ (fun ⟨i⟩ ↦ h i)
+
+instance [h : ∀ i, Fibration (f i)] [h : ∀ i, WeakEquivalence (f i)] :
+    WeakEquivalence (Limits.Pi.map f) := by
+  rw [weakEquivalence_iff]
+  exact ((trivialFibrations_isStableUnderProductsOfShape C J).limMap _
+    (fun ⟨i⟩ ↦ mem_trivialFibrations (f i))).2
+
+end
+
+end Products
+
+section IsMultiplicative
+
+instance : (cofibrations C).IsMultiplicative := by
+  rw [← trivialFibrations_llp]
+  infer_instance
+
+instance : (fibrations C).IsMultiplicative := by
+  rw [← trivialCofibrations_rlp]
+  infer_instance
+
+instance : (trivialCofibrations C).IsMultiplicative := by
+  rw [← fibrations_llp]
+  infer_instance
+
+instance : (trivialFibrations C).IsMultiplicative := by
+  rw [← cofibrations_rlp]
+  infer_instance
+
+variable {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+
+instance [hf : Cofibration f] [hg : Cofibration g] : Cofibration (f ≫ g) := by
+  rw [cofibration_iff] at hf hg ⊢
+  apply MorphismProperty.comp_mem <;> assumption
+
+instance [hf : Fibration f] [hg : Fibration g] : Fibration (f ≫ g) := by
+  rw [fibration_iff] at hf hg ⊢
+  apply MorphismProperty.comp_mem <;> assumption
+
+instance [hf : WeakEquivalence f] [hg : WeakEquivalence g] : WeakEquivalence (f ≫ g) := by
+  rw [weakEquivalence_iff] at hf hg ⊢
+  apply MorphismProperty.comp_mem <;> assumption
+
+end IsMultiplicative
+
+section
+
+variable {X Y : C} (f : X ⟶ Y)
+
+instance [IsIso f] : Cofibration f := by
+  have this := (fibrations C).llp_of_isIso f
+  rw [fibrations_llp] at this
+  simpa only [cofibration_iff] using this.1
+
+instance [IsIso f] : Fibration f := by
+  have this := (cofibrations C).rlp_of_isIso f
+  rw [cofibrations_rlp] at this
+  simpa only [fibration_iff] using this.1
+
+instance [IsIso f] : WeakEquivalence f := by
+  have h := MorphismProperty.factorizationData (trivialCofibrations C) (fibrations C) f
+  rw [weakEquivalence_iff]
+  exact MorphismProperty.of_retract (RetractArrow.ofLeftLiftingProperty h.fac) h.hi.2
+
+end
+
+instance : (weakEquivalences C).IsMultiplicative where
+  id_mem _ := by
+    rw [← weakEquivalence_iff]
+    infer_instance
+
+instance : (weakEquivalences C).RespectsIso :=
+  MorphismProperty.respectsIso_of_isStableUnderComposition (fun _ _ _ (_ : IsIso _) ↦ by
+    rw [← weakEquivalence_iff]
+    infer_instance)
 
 end ModelCategory
 
