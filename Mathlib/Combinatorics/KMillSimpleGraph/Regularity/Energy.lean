@@ -36,11 +36,9 @@ namespace Finpartition
 lemma.  -/
 def energy : ℚ :=
   ((∑ uv in P.parts.offDiag, G.edgeDensity uv.1 uv.2 ^ 2) : ℚ) / (P.parts.card ^ 2 : ℕ)
-#align finpartition.energy Finpartition.energy
 
 theorem energy_nonneg : 0 ≤ P.energy G := by
   refine' div_nonneg (Finset.sum_nonneg fun _ _ => sq_nonneg _) <| Nat.cast_nonneg _
-#align finpartition.energy_nonneg Finpartition.energy_nonneg
 
 theorem energy_le_one : P.energy G ≤ 1 :=
   div_le_of_nonneg_of_le_mul (Nat.cast_nonneg _) zero_le_one <|
@@ -54,6 +52,5 @@ theorem energy_le_one : P.energy G ≤ 1 :=
         norm_cast
         rw [sq]
         exact tsub_le_self
-#align finpartition.energy_le_one Finpartition.energy_le_one
 
 end Finpartition

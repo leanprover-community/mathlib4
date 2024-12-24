@@ -40,7 +40,6 @@ Axiom that the adjacency relation is symmetric.
 -/
 class IsAdjSymmetric (Γ : Type _) (V : outParam (Γ → Type _)) [HasAdj Γ V] : Prop where
   adj_symmetric (G : Γ) : Symmetric (HasAdj.Adj G)
-#align simple_graph.symm Graph.IsAdjSymmetric.adj_symmetric
 
 export IsAdjSymmetric (adj_symmetric)
 
@@ -49,7 +48,6 @@ Axiom that the adjacency relation has no loop edges (i.e., if it is irreflexive)
 -/
 class IsAdjIrreflexive (Γ : Type _) (V : outParam (Γ → Type _)) [HasAdj Γ V] : Prop where
   adj_irreflexive (G : Γ) : Irreflexive (HasAdj.Adj G)
-#align simple_graph.loopless Graph.IsAdjIrreflexive.adj_irreflexive
 
 export IsAdjIrreflexive (adj_irreflexive)
 
@@ -60,13 +58,10 @@ variable [IsAdjSymmetric Γ V] (G : Γ)
 
 protected theorem HasAdj.Adj.symm {G : Γ} {u v : V G} (h : Adj G u v) : Adj G v u :=
   IsAdjSymmetric.adj_symmetric G h
-#align simple_graph.adj.symm Graph.HasAdj.Adj.symm
 
 theorem adj_symm {u v : V G} (h : Adj G u v) : Adj G v u := h.symm
-#align simple_graph.adj_symm Graph.adj_symm
 
 theorem adj_comm {u v : V G} : Adj G u v ↔ Adj G v u := (adj_symmetric G).iff u v
-#align simple_graph.adj_comm Graph.adj_comm
 
 end symmetric
 
@@ -78,15 +73,12 @@ protected theorem HasAdj.Adj.loopless {G : Γ} {u : V G} : ¬ Adj G u u :=
 
 protected theorem HasAdj.Adj.ne {G : Γ} {u v : V G} (h : Adj G u v) : u ≠ v
   | rfl => h.loopless
-#align simple_graph.adj.ne Graph.HasAdj.Adj.ne
 
 protected theorem HasAdj.Adj.ne' {G : Γ} {u v : V G} (h : Adj G u v) : v ≠ u
   | rfl => h.loopless
-#align simple_graph.adj.ne' Graph.HasAdj.Adj.ne'
 
 @[simp]
 theorem adj_irrefl {u : V G} : ¬ Adj G u u | h => h.loopless
-#align simple_graph.irrefl Graph.adj_irrefl
 
 end irreflexive
 

@@ -27,7 +27,6 @@ This terminology comes from combinatorial maps, and they are also known as "half
 or "bonds." -/
 structure Dart (G : Γ) extends (V G) × (V G) where
   is_adj : Adj G fst snd
-#align simple_graph.dart Graph.Dart
 
 initialize_simps_projections Dart (+toProd, -fst, -snd)
 
@@ -37,12 +36,10 @@ variable {G : Γ}
 
 theorem Dart.ext_iff (d₁ d₂ : Dart G) : d₁ = d₂ ↔ d₁.toProd = d₂.toProd := by
   cases d₁; cases d₂; simp
-#align simple_graph.dart.ext_iff Graph.Dart.ext_iff
 
 @[ext]
 theorem Dart.ext (d₁ d₂ : Dart G) (h : d₁.toProd = d₂.toProd) : d₁ = d₂ :=
   (Dart.ext_iff d₁ d₂).mpr h
-#align simple_graph.dart.ext Graph.Dart.ext
 
 instance [DecidableEq (V G)] : DecidableEq (Dart G)
   | d₁, d₂ =>
@@ -55,7 +52,6 @@ instance [DecidableEq (V G)] : DecidableEq (Dart G)
 -- even though there is not actually a `SimpleGraph.Dart.fst` or `SimpleGraph.Dart.snd`.
 
 theorem Dart.toProd_injective : Function.Injective (Dart.toProd : Dart G → V G × V G) := Dart.ext
-#align simple_graph.dart.to_prod_injective Graph.Dart.toProd_injective
 
 instance Dart.fintype [Fintype (V G)] [DecidableRel (Adj G)] : Fintype (Dart G) :=
   Fintype.ofEquiv (Σ v, {w | Adj G v w})
@@ -63,18 +59,15 @@ instance Dart.fintype [Fintype (V G)] [DecidableRel (Adj G)] : Fintype (Dart G) 
       invFun := fun d => ⟨d.fst, d.snd, d.is_adj⟩
       left_inv := fun s => by ext <;> simp
       right_inv := fun d => by ext <;> simp }
-#align simple_graph.dart.fintype Graph.Dart.fintype
 
 namespace Hom
 variable {G : Γ} {G' : Γ'} (f : G →g G')
 
 /-- The map between darts induced by a homomorphism. -/
 def mapDart (d : Dart G) : Dart G' := ⟨d.1.map f f, f.map_adj d.2⟩
-#align simple_graph.hom.map_dart Graph.Hom.mapDart
 
 @[simp]
 theorem mapDart_apply (d : Dart G) : mapDart f d = ⟨d.1.map f f, f.map_adj d.2⟩ := rfl
-#align simple_graph.hom.map_dart_apply Graph.Hom.mapDart_apply
 
 end Hom
 

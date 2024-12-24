@@ -56,50 +56,42 @@ The subgraph `M` of `G` is a matching if every vertex of `M` is incident to exac
 We say that the vertices in `M.support` are *matched* or *saturated*.
 -/
 def IsMatching : Prop := ∀ ⦃v⦄, v ∈ M.verts → ∃! w, M.Adj v w
-#align simple_graph.subgraph.is_matching SimpleGraph.Subgraph.IsMatching
 
 /-- Given a vertex, returns the unique edge of the matching it is incident to. -/
 noncomputable def IsMatching.toEdge {M : Subgraph G} (h : M.IsMatching) (v : M.verts) : M.edgeSet :=
   ⟨⟦(v, (h v.property).choose)⟧, (h v.property).choose_spec.1⟩
-#align simple_graph.subgraph.is_matching.to_edge SimpleGraph.Subgraph.IsMatching.toEdge
 
 theorem IsMatching.toEdge_eq_of_adj {M : Subgraph G} (h : M.IsMatching) {v w : V} (hv : v ∈ M.verts)
     (hvw : M.Adj v w) : h.toEdge ⟨v, hv⟩ = ⟨⟦(v, w)⟧, hvw⟩ := by
   simp only [IsMatching.toEdge, Subtype.mk_eq_mk]
   congr
   exact ((h (M.edge_vert hvw)).choose_spec.2 w hvw).symm
-#align simple_graph.subgraph.is_matching.to_edge_eq_of_adj SimpleGraph.Subgraph.IsMatching.toEdge_eq_of_adj
 
 theorem IsMatching.toEdge.surjective {M : Subgraph G} (h : M.IsMatching) :
     Function.Surjective h.toEdge := by
   rintro ⟨e, he⟩
   refine Sym2.ind (fun x y he => ?_) e he
   exact ⟨⟨x, M.edge_vert he⟩, h.toEdge_eq_of_adj _ he⟩
-#align simple_graph.subgraph.is_matching.to_edge.surjective SimpleGraph.Subgraph.IsMatching.toEdge.surjective
 
 theorem IsMatching.toEdge_eq_toEdge_of_adj {M : Subgraph G} {v w : V} (h : M.IsMatching)
     (hv : v ∈ M.verts) (hw : w ∈ M.verts) (ha : M.Adj v w) :
     h.toEdge ⟨v, hv⟩ = h.toEdge ⟨w, hw⟩ := by
   rw [h.toEdge_eq_of_adj hv ha, h.toEdge_eq_of_adj hw (M.symm ha), Subtype.mk_eq_mk, Sym2.eq_swap]
-#align simple_graph.subgraph.is_matching.to_edge_eq_to_edge_of_adj SimpleGraph.Subgraph.IsMatching.toEdge_eq_toEdge_of_adj
 
 /--
 The subgraph `M` of `G` is a perfect matching on `G` if it's a matching and every vertex `G` is
 matched.
 -/
 def IsPerfectMatching : Prop := M.IsMatching ∧ M.IsSpanning
-#align simple_graph.subgraph.is_perfect_matching SimpleGraph.Subgraph.IsPerfectMatching
 
 theorem IsMatching.support_eq_verts {M : Subgraph G} (h : M.IsMatching) : M.support = M.verts := by
   refine M.support_subset_verts.antisymm fun v hv => ?_
   obtain ⟨w, hvw, -⟩ := h hv
   exact ⟨_, hvw⟩
-#align simple_graph.subgraph.is_matching.support_eq_verts SimpleGraph.Subgraph.IsMatching.support_eq_verts
 
 theorem isMatching_iff_forall_degree {M : Subgraph G} [∀ v : V, Fintype (M.neighborSet v)] :
     M.IsMatching ↔ ∀ v : V, v ∈ M.verts → M.degree v = 1 := by
   simp only [degree_eq_one_iff_unique_adj, IsMatching]
-#align simple_graph.subgraph.is_matching_iff_forall_degree SimpleGraph.Subgraph.isMatching_iff_forall_degree
 
 theorem IsMatching.even_card {M : Subgraph G} [Fintype M.verts] (h : M.IsMatching) :
     Even M.verts.toFinset.card := by
@@ -112,7 +104,6 @@ theorem IsMatching.even_card {M : Subgraph G} [Fintype M.verts] (h : M.IsMatchin
   -- Using a `convert_to` to swap out the `Fintype` instance to the "right" one.
   convert_to _ = Finset.sum Finset.univ fun v => SimpleGraph.degree (Subgraph.coe M) v using 3
   simp [h, Finset.card_univ]
-#align simple_graph.subgraph.is_matching.even_card SimpleGraph.Subgraph.IsMatching.even_card
 
 theorem isPerfectMatching_iff : M.IsPerfectMatching ↔ ∀ v, ∃! w, M.Adj v w := by
   refine' ⟨_, fun hm => ⟨fun v _ => hm v, fun v => _⟩⟩
@@ -120,18 +111,15 @@ theorem isPerfectMatching_iff : M.IsPerfectMatching ↔ ∀ v, ∃! w, M.Adj v w
     exact hm (hs v)
   · obtain ⟨w, hw, -⟩ := hm v
     exact M.edge_vert hw
-#align simple_graph.subgraph.is_perfect_matching_iff SimpleGraph.Subgraph.isPerfectMatching_iff
 
 theorem isPerfectMatching_iff_forall_degree {M : Subgraph G} [∀ v, Fintype (M.neighborSet v)] :
     M.IsPerfectMatching ↔ ∀ v, M.degree v = 1 := by
   simp [degree_eq_one_iff_unique_adj, isPerfectMatching_iff]
-#align simple_graph.subgraph.is_perfect_matching_iff_forall_degree SimpleGraph.Subgraph.isPerfectMatching_iff_forall_degree
 
 theorem IsPerfectMatching.even_card {M : Subgraph G} [Fintype V] (h : M.IsPerfectMatching) :
     Even (Fintype.card V) := by
   classical
   simpa only [h.2.card_verts] using IsMatching.even_card h.1
-#align simple_graph.subgraph.is_perfect_matching.even_card SimpleGraph.Subgraph.IsPerfectMatching.even_card
 
 end Subgraph
 
