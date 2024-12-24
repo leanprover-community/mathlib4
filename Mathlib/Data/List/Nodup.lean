@@ -238,9 +238,11 @@ lemma nodup_tail_reverse (l : List α) (h : l[0]? = l.getLast?) :
         List.dropLast_cons_of_ne_nil hl, List.tail_cons]
       simp only [length_cons, Nat.zero_lt_succ, getElem?_eq_getElem, getElem_cons_zero,
         Nat.add_one_sub_one, Nat.lt_add_one, Option.some.injEq, List.getElem_cons,
-        show l.length ≠ 0 from by aesop, ↓reduceDIte, getLast?_eq_getElem?] at h
-      rw [h, show l.Nodup = (l.dropLast ++ [l.getLast hl]).Nodup from by
-        simp [List.dropLast_eq_take, ← List.drop_length_sub_one], List.nodup_append_comm]
+        show l.length ≠ 0 by aesop, ↓reduceDIte, getLast?_eq_getElem?] at h
+      rw [h,
+        show l.Nodup = (l.dropLast ++ [l.getLast hl]).Nodup by
+          simp [List.dropLast_eq_take, ← List.drop_length_sub_one],
+        List.nodup_append_comm]
       simp [List.getLast_eq_getElem]
 
 theorem Nodup.erase_getElem [DecidableEq α] {l : List α} (hl : l.Nodup)
