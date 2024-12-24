@@ -124,9 +124,9 @@ variable (A B : CommRingCat.{u})
 /-- The tensor product `A ⊗[ℤ] B` forms a cocone for `A` and `B`. -/
 @[simps! pt ι]
 def coproductCocone : BinaryCofan A B :=
-BinaryCofan.mk
-  (ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom : A ⟶  of (A ⊗[ℤ] B))
-  (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶  of (A ⊗[ℤ] B))
+  BinaryCofan.mk
+    (ofHom (Algebra.TensorProduct.includeLeft (S := ℤ)).toRingHom : A ⟶  of (A ⊗[ℤ] B))
+    (ofHom (Algebra.TensorProduct.includeRight (R := ℤ)).toRingHom : B ⟶  of (A ⊗[ℤ] B))
 
 @[simp]
 theorem coproductCocone_inl : (coproductCocone A B).inl =
