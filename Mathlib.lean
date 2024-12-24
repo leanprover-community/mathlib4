@@ -4798,6 +4798,7 @@ import Mathlib.Tactic.ComputeDegree
 import Mathlib.Tactic.CongrExclamation
 import Mathlib.Tactic.CongrM
 import Mathlib.Tactic.Constructor
+import Mathlib.Tactic.Consume
 import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Continuity.Init
 import Mathlib.Tactic.ContinuousFunctionalCalculus
