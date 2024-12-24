@@ -1074,7 +1074,7 @@ structure _root_.Set.Represents (s : Set V) (C : Set (G.ConnectedComponent)) whe
   unique_rep {c : G.ConnectedComponent} (h : c ∈ C) : ∃! v, v ∈ s ∩ c.supp
   exact {c : G.ConnectedComponent} (h : c ∉ C) : s ∩ c.supp = ∅
 
-lemma Represents_of_image_exists_rep_choose (C : Set (G.ConnectedComponent)) :
+lemma represents_of_image_exists_rep_choose (C : Set (G.ConnectedComponent)) :
     ((fun c ↦ c.exists_rep.choose) '' C).Represents C where
   unique_rep {c} h := by
     use c.exists_rep.choose
