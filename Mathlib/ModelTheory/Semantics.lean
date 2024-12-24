@@ -128,7 +128,7 @@ theorem realize_subst {t : L.Term α} {tf : α → L.Term β} {v : β → M} :
 
 theorem realize_restrictVar [DecidableEq α] {t : L.Term α} {f : t.varFinset → β}
     {v : β → M} (v' : α → M) (hv' : ∀ a, v (f a) = v' a) :
-     (t.restrictVar f).realize v = t.realize v' := by
+    (t.restrictVar f).realize v = t.realize v' := by
   induction t with
   | var => simp [restrictVar, hv']
   | func _ _ ih =>
