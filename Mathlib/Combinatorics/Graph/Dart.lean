@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.Graph.Hom
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Fintype.Sigma
 
 /-! # Darts
 
@@ -19,6 +20,7 @@ a `HasAdj` instance.
 -/
 
 namespace Graph
+universe u u'
 variable {Γ Γ' : Type _} {V : Γ → Type u} {V' : Γ' → Type u'}
 variable [HasAdj Γ V] [HasAdj Γ' V']
 
@@ -30,7 +32,7 @@ structure Dart (G : Γ) extends (V G) × (V G) where
 
 initialize_simps_projections Dart (+toProd, -fst, -snd)
 
-pp_extended_field_notation Dart
+-- pp_extended_field_notation Dart
 
 variable {G : Γ}
 

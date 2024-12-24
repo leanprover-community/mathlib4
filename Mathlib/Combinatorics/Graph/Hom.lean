@@ -28,6 +28,7 @@ As such, these sorts of graph homomorphisms are most appropriate for graphs with
 -/
 
 namespace Graph
+universe u u' u''
 variable {Γ Γ' Γ'' : Type _} {V : Γ → Type u} {V' : Γ' → Type u'} {V'' : Γ'' → Type u''}
 variable [HasAdj Γ V] [HasAdj Γ' V'] [HasAdj Γ'' V'']
 
@@ -66,7 +67,7 @@ theorem map_adj {v w : V G} (h : Adj G v w) : Adj G' (f v) (f w) := f.map_rel' h
 /-- Composition of graph homomorphisms. -/
 protected abbrev comp (f' : G' →g G'') (f : G →g G') : G →g G'' := RelHom.comp f' f
 
-pp_extended_field_notation Hom.comp
+-- pp_extended_field_notation Hom.comp
 
 @[simp]
 theorem coe_comp (f' : G' →g G'') (f : G →g G') : (f'.comp f : V G → V'' G'') = f' ∘ f := rfl
@@ -88,7 +89,7 @@ theorem map_adj_iff {v w : V G} : Adj G' (f v) (f w) ↔ Adj G v w := f.map_rel_
 /-- Composition of graph embeddings. -/
 protected abbrev comp (f' : G' ↪g G'') (f : G ↪g G') : G ↪g G'' := f.trans f'
 
-pp_extended_field_notation Embedding.comp
+-- pp_extended_field_notation Embedding.comp
 
 @[simp]
 theorem coe_comp (f' : G' ↪g G'') (f : G ↪g G') : (f'.comp f : V G → V'' G'') = f' ∘ f := rfl
@@ -120,7 +121,7 @@ theorem card_eq_of_iso [Fintype (V G)] [Fintype (V' G')] (f : G ≃g G') :
 /-- Composition of graph isomorphisms. -/
 abbrev comp (f' : G' ≃g G'') (f : G ≃g G') : G ≃g G'' := f.trans f'
 
-pp_extended_field_notation Iso.comp
+-- pp_extended_field_notation Iso.comp
 
 @[simp]
 theorem coe_comp (f' : G' ≃g G'') (f : G ≃g G') : (f'.comp f : V G → V'' G'') = f' ∘ f := rfl
