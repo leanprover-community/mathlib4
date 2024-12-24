@@ -18,11 +18,11 @@ quotient under this relation.
 ## Main Definitions
 
 - `RecursiveIn g f`:
-An inductive definition representing that a partial function `f` is recursive in oracle `g`.
+  An inductive definition representing that a partial function `f` is recursive in oracle `g`.
 - `turing_reducible`: A relation defining Turing reducibility between partial functions.
 - `turing_equivalent`: A relation defining Turing equivalence between partial functions.
 - `TuringDegree`:
-The type of Turing degrees, defined as equivalence classes under `turing_equivalent`.
+  The type of Turing degrees, defined as equivalence classes under `turing_equivalent`.
 
 ## Notation
 
@@ -41,10 +41,11 @@ numbers to the respective functions.
 ## References
 
 * [Carneiro2018] Carneiro, Mario.
-*Formalizing Computability Theory via Partial Recursive Functions*.
-arXiv preprint arXiv:1810.08380, 2018.
+ *Formalizing Computability Theory via Partial Recursive Functions*.
+ arXiv preprint arXiv:1810.08380, 2018.
 * [Odifreddi1989] Odifreddi, Piergiorgio.
-*Classical Recursion Theory: The Theory of Functions and Sets of Natural Numbers, Vol. I*. 1989.
+ *Classical Recursion Theory: The Theory of Functions and Sets of Natural Numbers,
+ Vol. I*. Springer-Verlag, 1989.
 * [Soare1987] Soare, Robert I. *Recursively Enumerable Sets and Degrees*. Springer-Verlag, 1987.
 * [Gu2015] Gu, Yi-Zhi. *Turing Degrees*. Institute for Advanced Study, 2015.
 
@@ -86,7 +87,7 @@ inductive RecursiveIn (g : ℕ →. ℕ) : (ℕ →. ℕ) → Prop
 def turing_reducible (f g : ℕ →. ℕ) : Prop :=
   RecursiveIn g f
 /--
-custom infix notation for `turing_reducible`
+Custom infix notation for `turing_reducible`.
 -/
 infix:50 " ≤ᵀ " => turing_reducible
 
@@ -96,7 +97,7 @@ infix:50 " ≤ᵀ " => turing_reducible
 def turing_equivalent (f g : ℕ →. ℕ) : Prop :=
   f ≤ᵀ g ∧ g ≤ᵀ f
 /--
-custom infix notation for `turing_equivalent`
+Custom infix notation for `turing_equivalent`.
 -/
 infix:50 " ≡ᵀ " => turing_equivalent
 
@@ -105,7 +106,7 @@ A partial function `f` is partial recursive if and only if
 it is recursive in the constant zero function.
 -/
 lemma partrec_iff_partrec_in_zero
-(f : ℕ →. ℕ) : Nat.Partrec f ↔ RecursiveIn (fun _ => pure 0) f := by
+  (f : ℕ →. ℕ) : Nat.Partrec f ↔ RecursiveIn (fun _ => pure 0) f := by
   constructor
   { intro pF
     induction' pF
@@ -146,12 +147,12 @@ lemma partrec_iff_partrec_in_zero
     case mpr.rfind _ _ ih =>
       apply Nat.Partrec.rfind ih }
 
-/--
+ /--
 A partial function `f` is partial recursive if and only if it is recursive in
 every partial function `g`.
 -/
 theorem partrec_iff_partrec_in_everything
-(f : ℕ →. ℕ) : Nat.Partrec f ↔ (∀ g, RecursiveIn g f) := by
+  (f : ℕ →. ℕ) : Nat.Partrec f ↔ (∀ g, RecursiveIn g f) := by
   constructor
   { intro pF
     intro g
@@ -177,43 +178,25 @@ theorem partrec_iff_partrec_in_everything
     rw [← partrec_iff_partrec_in_zero] at lem
     exact lem }
 
-/--
+ /--
 Proof that `turing_reducible` is reflexive.
 -/
 theorem turing_reducible_refl (f : ℕ →. ℕ) : f ≤ᵀ f :=
   RecursiveIn.oracle
 
-/--
-Instance declaring that `turing_reducible` is reflexive.
--/
-instance : Reflexive turing_reducible :=
-  fun f => turing_reducible_refl f
-
-/--
+ /--
 Proof that `turing_equivalent` is reflexive.
 -/
 theorem turing_equivalent_refl (f : ℕ →. ℕ) : f ≡ᵀ f :=
   ⟨turing_reducible_refl f, turing_reducible_refl f⟩
 
-/--
-Instance declaring that `turing_equivalent` is reflexive.
--/
-instance : Reflexive turing_equivalent :=
-  fun f => turing_equivalent_refl f
-
-/--
+ /--
 Proof that `turing_equivalent` is symmetric.
 -/
 theorem turing_equivalent_symm {f g : ℕ →. ℕ} (h : f ≡ᵀ g) : g ≡ᵀ f :=
   ⟨h.2, h.1⟩
 
-/--
-Instance declaring that `turing_equivalent` is symmetric.
--/
-instance : Symmetric turing_equivalent :=
-  fun _ _ h => turing_equivalent_symm h
-
-/--
+ /--
 Proof that `turing_reducible` is transitive.
 -/
 theorem turing_reducible_trans {f g h : ℕ →. ℕ} :
@@ -246,7 +229,7 @@ theorem turing_reducible_trans {f g h : ℕ →. ℕ} :
     apply RecursiveIn.rfind
     { apply hf_ih }
 
-/--
+ /--
 Proof that `turing_equivalent` is transitive.
 -/
 theorem turing_equivalent_trans :
@@ -254,7 +237,7 @@ theorem turing_equivalent_trans :
   fun _ _ _ ⟨fg₁, fg₂⟩ ⟨gh₁, gh₂⟩ =>
     ⟨turing_reducible_trans fg₁ gh₁, turing_reducible_trans gh₂ fg₂⟩
 
-/--
+ /--
 Instance declaring that `turing_equivalent` is an equivalence relation.
 -/
 instance : Equivalence turing_equivalent :=
@@ -273,7 +256,7 @@ def TuringDegree :=
 /--
 The `join` function combines two partial functions `f` and `g` into a single partial function.
 It maps even numbers to the result of `f` applied to half the number,
- and odd numbers to the result of `g` applied to half the number.
+and odd numbers to the result of `g` applied to half the number.
 -/
 def join (f g : ℕ →. ℕ) : ℕ →. ℕ :=
   fun n =>
@@ -284,3 +267,5 @@ def join (f g : ℕ →. ℕ) : ℕ →. ℕ :=
 
 /-- Join notation `f ⊔ g` is the "join" of partial functions `f` and `g`. -/
 infix:99 "⊔" => join
+
+#lint
