@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Logic.Small.Basic
 import Mathlib.RingTheory.Ideal.Defs
 

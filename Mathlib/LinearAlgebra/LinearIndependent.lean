@@ -7,7 +7,6 @@ import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Lean.Expr.ExtraRecognizers
 import Mathlib.LinearAlgebra.Prod
-import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Module
@@ -82,12 +81,11 @@ linearly dependent, linear dependence, linearly independent, linear independence
 
 -/
 
+assert_not_exists Cardinal
 
 noncomputable section
 
 open Function Set Submodule
-
-open Cardinal
 
 universe u' u
 
@@ -402,18 +400,6 @@ theorem linearIndependent_finset_map_embedding_subtype (s : Set M)
   obtain ⟨b, _hb, rfl⟩ := hy
   simp only [f, imp_self, Subtype.mk_eq_mk]
 
-/-- If every finite set of linearly independent vectors has cardinality at most `n`,
-then the same is true for arbitrary sets of linearly independent vectors.
--/
-theorem linearIndependent_bounded_of_finset_linearIndependent_bounded {n : ℕ}
-    (H : ∀ s : Finset M, (LinearIndependent R fun i : s => (i : M)) → s.card ≤ n) :
-    ∀ s : Set M, LinearIndependent R ((↑) : s → M) → #s ≤ n := by
-  intro s li
-  apply Cardinal.card_le_of
-  intro t
-  rw [← Finset.card_map (Embedding.subtype s)]
-  apply H
-  apply linearIndependent_finset_map_embedding_subtype _ li
 
 section Subtype
 
@@ -1352,14 +1338,12 @@ theorem linearIndependent_fin2 {f : Fin 2 → V} :
 
 theorem exists_linearIndependent_extension (hs : LinearIndependent K ((↑) : s → V)) (hst : s ⊆ t) :
     ∃ b ⊆ t, s ⊆ b ∧ t ⊆ span K b ∧ LinearIndependent K ((↑) : b → V) := by
-  -- Porting note: The placeholder should be solved before `rcases`.
-  have := by
+  obtain ⟨b, sb, h⟩ := by
     refine zorn_subset_nonempty { b | b ⊆ t ∧ LinearIndependent K ((↑) : b → V) } ?_ _ ⟨hst, hs⟩
     · refine fun c hc cc _c0 => ⟨⋃₀ c, ⟨?_, ?_⟩, fun x => ?_⟩
       · exact sUnion_subset fun x xc => (hc xc).1
       · exact linearIndependent_sUnion_of_directed cc.directedOn fun x xc => (hc xc).2
       · exact subset_sUnion_of_mem
-  obtain ⟨b, sb, h⟩ := this
   refine ⟨b, h.prop.1, sb, fun x xt => by_contra fun hn ↦ hn ?_, h.prop.2⟩
   exact subset_span <| h.mem_of_prop_insert ⟨insert_subset xt h.prop.1, h.prop.2.insert hn⟩
 

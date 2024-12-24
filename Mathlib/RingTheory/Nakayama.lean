@@ -3,8 +3,9 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.RingTheory.Finiteness.Basic
 import Mathlib.RingTheory.Finiteness.Nakayama
-import Mathlib.RingTheory.JacobsonIdeal
+import Mathlib.RingTheory.Jacobson.Ideal
 
 /-!
 # Nakayama's lemma
@@ -48,6 +49,7 @@ namespace Submodule
 /-- **Nakayama's Lemma** - A slightly more general version of (2) in
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
 See also `eq_bot_of_le_smul_of_le_jacobson_bot` for the special case when `J = ⊥`. -/
+@[stacks 00DV "(2)"]
 theorem eq_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N : Submodule R M} (hN : N.FG)
     (hIN : N ≤ I • N) (hIjac : I ≤ jacobson J) : N = J • N := by
   refine le_antisymm ?_ (Submodule.smul_le.2 fun _ _ _ => Submodule.smul_mem _ _)
@@ -104,6 +106,7 @@ lemma top_ne_pointwise_smul_of_mem_jacobson_annihilator [Nontrivial M]
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
 See also `eq_smul_of_le_smul_of_le_jacobson` for a generalisation
 to the `jacobson` of any ideal -/
+@[stacks 00DV "(2)"]
 theorem eq_bot_of_le_smul_of_le_jacobson_bot (I : Ideal R) (N : Submodule R M) (hN : N.FG)
     (hIN : N ≤ I • N) (hIjac : I ≤ jacobson ⊥) : N = ⊥ := by
   rw [eq_smul_of_le_smul_of_le_jacobson hN hIN hIjac, Submodule.bot_smul]
@@ -126,6 +129,7 @@ theorem sup_eq_sup_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N N' : Submod
 /-- **Nakayama's Lemma** - A slightly more general version of (4) in
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
 See also `smul_le_of_le_smul_of_le_jacobson_bot` for the special case when `J = ⊥`. -/
+@[stacks 00DV "(4)"]
 theorem sup_smul_eq_sup_smul_of_le_smul_of_le_jacobson {I J : Ideal R} {N N' : Submodule R M}
     (hN' : N'.FG) (hIJ : I ≤ jacobson J) (hNN : N' ≤ N ⊔ I • N') : N ⊔ I • N' = N ⊔ J • N' :=
   ((sup_le_sup_left smul_le_right _).antisymm (sup_le le_sup_left hNN)).trans
@@ -140,8 +144,37 @@ theorem le_of_le_smul_of_le_jacobson_bot {R M} [CommRing R] [AddCommGroup M] [Mo
 [Stacks 00DV](https://stacks.math.columbia.edu/tag/00DV).
 See also `sup_smul_eq_sup_smul_of_le_smul_of_le_jacobson` for a generalisation
 to the `jacobson` of any ideal -/
+@[stacks 00DV "(4)"]
 theorem smul_le_of_le_smul_of_le_jacobson_bot {I : Ideal R} {N N' : Submodule R M} (hN' : N'.FG)
     (hIJ : I ≤ jacobson ⊥) (hNN : N' ≤ N ⊔ I • N') : I • N' ≤ N :=
   smul_le_right.trans (le_of_le_smul_of_le_jacobson_bot hN' hIJ hNN)
+
+open Pointwise
+
+@[stacks 00DV "(3) see `Submodule.localized₀_le_localized₀_of_smul_le` for the second conclusion."]
+lemma exists_sub_one_mem_and_smul_le_of_fg_of_le_sup {I : Ideal R}
+    {N N' P : Submodule R M} (hN' : N'.FG) (hN'le : N' ≤ P) (hNN' : P ≤ N ⊔ I • N') :
+    ∃ r : R, r - 1 ∈ I ∧ r • P ≤ N := by
+  have hNN'' : P ≤ N ⊔ N' := le_trans hNN' (by simpa using le_trans smul_le_right le_sup_right)
+  have h1 : P.map N.mkQ = N'.map N.mkQ := by
+    refine le_antisymm ?_ (map_mono hN'le)
+    simpa using map_mono (f := N.mkQ) hNN''
+  have h2 : P.map N.mkQ = (I • N').map N.mkQ := by
+    apply le_antisymm
+    · simpa using map_mono (f := N.mkQ) hNN'
+    · rw [h1]
+      simp [smul_le_right]
+  have hle : (P.map N.mkQ) ≤ I • P.map N.mkQ := by
+    conv_lhs => rw [h2]
+    simp [← h1]
+  obtain ⟨r, hmem, hr⟩ := exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul I _
+    (h1 ▸ hN'.map _) hle
+  refine ⟨r, hmem, fun x hx ↦ ?_⟩
+  induction' hx using Submodule.smul_inductionOn_pointwise with p hp _ _ _ h _ _ _ _ hx hy
+  · rw [← Submodule.Quotient.mk_eq_zero, Quotient.mk_smul]
+    exact hr _ ⟨p, hp, rfl⟩
+  · exact N.smul_mem _ h
+  · exact N.add_mem hx hy
+  · exact N.zero_mem
 
 end Submodule
