@@ -106,6 +106,22 @@ lemma IsLittleOTVS.mono {f : α → E} {g : α → F} {l₁ l₂ : Filter α}
     (hf : IsLittleOTVS 𝕜 f g l₁) (h : l₂ ≤ l₁) : IsLittleOTVS 𝕜 f g l₂ :=
   fun U hU => let ⟨V, hV0, hV⟩ := hf U hU; ⟨V, hV0, fun ε hε => (hV ε hε).filter_mono h⟩
 
+lemma IsLittleOTVS.sup {f : α → E} {g : α → F} {l₁ l₂ : Filter α}
+    (hf₁ : IsLittleOTVS 𝕜 f g l₁) (hf₂ : IsLittleOTVS 𝕜 f g l₂) :
+    IsLittleOTVS 𝕜 f g (l₁ ⊔ l₂) := by
+  intro U hU
+  let ⟨V₁, hV0₁, hV₁⟩ := hf₁ U hU
+  let ⟨V₂, hV0₂, hV₂⟩ := hf₂ U hU
+  refine ⟨V₁ ∩ V₂, Filter.inter_mem hV0₁ hV0₂, fun ε hε => ?_⟩
+  rw [eventually_sup]
+  constructor
+  · refine (hV₁ ε hε).mono fun x hx => hx.trans ?_
+    gcongr
+    exact inter_subset_left
+  · refine (hV₂ ε hε).mono fun x hx => hx.trans ?_
+    gcongr
+    exact inter_subset_right
+
 protected lemma IsLittleOTVS.smul_left {f : α → E} {g : α → F} {l : Filter α}
     (h : IsLittleOTVS 𝕜 f g l) (c : α → 𝕜) :
     IsLittleOTVS 𝕜 (fun x ↦ c x • f x) (fun x ↦ c x • g x) l := by
