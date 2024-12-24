@@ -20,7 +20,7 @@ universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
 noncomputable section
 
-variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₁} D]
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
   {T : Type u₃} [Category.{v₃} T] {L : C ⥤ T} {R : D ⥤ T}
   {C' : Type u₄} [Category.{v₄} C'] {D' : Type u₅} [Category.{v₅} D'] {T' : Type u₆}
   [Category.{u₆} T'] {L' : C' ⥤ T'} {R' : D' ⥤ T'} {F₁ : C ⥤ C'} {F₂ : D ⥤ D'} {F : T ⥤ T'}

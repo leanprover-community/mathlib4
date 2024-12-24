@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Limits.IsConnected
 import Mathlib.CategoryTheory.Filtered.Final
 import Mathlib.CategoryTheory.Grothendieck
+import Mathlib.CategoryTheory.Comma.StructuredArrow.CommaMap
 
 /-!
 # Finality of Projections in Comma Categories
@@ -15,9 +16,12 @@ We show that `fst L R` is final if `R` is and that `snd L R` is initial if `L` i
 As a corollary, we show that `Comma L R` with `L : A ⥤ T` and `R : B ⥤ T` is connected if `R` is
 final and `A` is connected.
 
+We then use this in a proof that derives finality of `map` between two comma categories
+on a quasi-commutative diagram of functors, some of which need to be final.
+
 ## References
 
-* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 3.4.3
+* [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Lemma 3.4.3 & 3.4.4
 -/
 
 universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
