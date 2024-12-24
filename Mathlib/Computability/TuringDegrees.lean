@@ -19,7 +19,6 @@ quotient under this relation.
 
 - `RecursiveIn g f`:
   An inductive definition representing that a partial function `f` is recursive in oracle `g`.
-- `turing_reducible`: A relation defining Turing reducibility between partial functions.
 - `turing_equivalent`: A relation defining Turing equivalence between partial functions.
 - `TuringDegree`:
   The type of Turing degrees, defined as equivalence classes under `turing_equivalent`.
@@ -62,6 +61,8 @@ open Primrec Nat.Partrec Part
 The type of partial functions `f` that are recursive in an oracle `g` is the smallest type
 containing the constant zero, the successor, left and right projections, the oracle `g`,
 and is closed under pairing, composition, primitive recursion, and μ-recursion.
+
+Equivalently one can say that `f` is turing reducible to `g` when `f` is recursive in `g`.
 -/
 inductive RecursiveIn : (ℕ →. ℕ) → (ℕ →. ℕ) → Prop
   | zero {g} : RecursiveIn (fun _ => 0) g
@@ -177,9 +178,9 @@ theorem partrec_iff_partrec_in_everything
     exact lem
 
 /--
-Proof that `turing_reducible` is reflexive.
+Proof that turing reducibility is reflexive.
 -/
-theorem turing_reducible_refl (f : ℕ →. ℕ) : RecursiveIn f f :=
+theorem recursive_in_refl (f : ℕ →. ℕ) : RecursiveIn f f :=
   RecursiveIn.oracle
 
 /--
@@ -187,7 +188,7 @@ Proof that `turing_equivalent` is reflexive.
 -/
 @[refl]
 theorem turing_equivalent_refl (f : ℕ →. ℕ) : f ≡ᵀ f :=
-  ⟨turing_reducible_refl f, turing_reducible_refl f⟩
+  ⟨recursive_in_refl f, recursive_in_refl f⟩
 
 /--
 Proof that `turing_equivalent` is symmetric.
@@ -197,10 +198,10 @@ theorem turing_equivalent_symm {f g : ℕ →. ℕ} (h : f ≡ᵀ g) : g ≡ᵀ 
   ⟨h.2, h.1⟩
 
 /--
-Proof that `turing_reducible` is transitive.
+Proof that turing reducibility is transitive.
 -/
 @[trans]
-theorem turing_reducible_trans {f g h : ℕ →. ℕ} :
+theorem recursive_in_trans {f g h : ℕ →. ℕ} :
   RecursiveIn f g → RecursiveIn g h → RecursiveIn f h := by
     intro hg hh
     induction hg
@@ -243,7 +244,7 @@ Proof that `turing_equivalent` is transitive.
 theorem turing_equivalent_trans :
   Transitive turing_equivalent :=
   fun _ _ _ ⟨fg₁, fg₂⟩ ⟨gh₁, gh₂⟩ =>
-    ⟨turing_reducible_trans fg₁ gh₁, turing_reducible_trans gh₂ fg₂⟩
+    ⟨recursive_in_trans fg₁ gh₁, recursive_in_trans gh₂ fg₂⟩
 
 /--
 Instance declaring that `turing_equivalent` is an equivalence relation.
@@ -259,8 +260,8 @@ instance : Equivalence turing_equivalent :=
 Instance declaring that `RecursiveIn` is a preorder.
 -/
 instance : IsPreorder (ℕ →. ℕ) RecursiveIn where
-  refl := turing_reducible_refl
-  trans := @turing_reducible_trans
+  refl := recursive_in_refl
+  trans := @recursive_in_trans
 
 /--
 The Turing degrees as the set of equivalence classes under Turing equivalence.
@@ -299,9 +300,9 @@ lemma reduce_lifts₁ : ∀ (a b₁ b₂ : ℕ →. ℕ), b₁≡ᵀb₂ → (Re
   apply propext
   constructor
   · intro aRedb₁
-    apply turing_reducible_trans aRedb₁ bEqb.1
+    apply recursive_in_trans aRedb₁ bEqb.1
   · intro aRedb₂
-    apply turing_reducible_trans aRedb₂ bEqb.2
+    apply recursive_in_trans aRedb₂ bEqb.2
 
 /--
 For any partial functions `f`, `g`, and `h`, if `f` is Turing equivalent to `g`,
@@ -313,9 +314,9 @@ f ≡ᵀ g → (RecursiveIn f h = RecursiveIn g h) := by
   apply propext
   constructor
   · intro fRedh
-    apply turing_reducible_trans fEqg.2 fRedh
+    apply recursive_in_trans fEqg.2 fRedh
   · intro gRedh
-    apply turing_reducible_trans fEqg.1 gRedh
+    apply recursive_in_trans fEqg.1 gRedh
 
 /--
 Here we show how to lift the Turing reducibility relation from
@@ -333,7 +334,7 @@ instance : PartialOrder TuringDegree where
   le_refl := by
     apply Quot.ind
     intro a
-    apply turing_reducible_refl
+    apply recursive_in_refl
   le_trans := by
     apply Quot.ind
     intro a
@@ -341,7 +342,7 @@ instance : PartialOrder TuringDegree where
     intro b
     apply Quot.ind
     intro c
-    exact turing_reducible_trans
+    exact recursive_in_trans
   le_antisymm := by
     apply Quot.ind
     intro a
