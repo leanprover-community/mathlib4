@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson, Chris Wong
 -/
 import Mathlib.Computability.Language
+import Mathlib.Data.Countable.Small
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.List.Indexes
 import Mathlib.Tactic.NormNum
@@ -250,6 +251,20 @@ end DFA
 def Language.IsRegular {T : Type u} (L : Language T) : Prop :=
   ∃ σ : Type, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L
 
-proof_wanted Language.isRegular_iff {T : Type u} {L : Language T} :
-    L.IsRegular ↔ ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L
--- probably needs `import Mathlib.Data.Countable.Small`
+/-- Lifts the state type `σ` inside `Language.IsRegular` to a different universe. -/
+private lemma Language.isRegular_iff.helper.{v'} {T : Type u} {L : Language T}
+    (hL : ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L) :
+    ∃ σ' : Type v', ∃ _ : Fintype σ', ∃ M : DFA T σ', M.accepts = L :=
+  have ⟨σ, _, M, hM⟩ := hL
+  have ⟨σ', ⟨f⟩⟩ := Small.equiv_small.{v', v} (α := σ)
+  ⟨σ', Fintype.ofEquiv σ f, M.reindex f, hM ▸ DFA.accepts_reindex M f⟩
+
+/--
+A language is regular if and only if it is defined by a DFA with finite states.
+
+This is more general than using the definition of `Language.IsRegular` directly, as the state type
+`σ` is universe-polymorphic.
+-/
+theorem Language.isRegular_iff {T : Type u} {L : Language T} :
+    L.IsRegular ↔ ∃ σ : Type v, ∃ _ : Fintype σ, ∃ M : DFA T σ, M.accepts = L :=
+  ⟨Language.isRegular_iff.helper, Language.isRegular_iff.helper⟩
