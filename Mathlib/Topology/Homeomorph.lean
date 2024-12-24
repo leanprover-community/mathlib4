@@ -671,6 +671,30 @@ def homeomorphOfUnique [Unique X] [Unique Y] : X ≃ₜ Y :=
     continuous_toFun := continuous_const
     continuous_invFun := continuous_const }
 
+/-- The product over `S ⊕ T` of a family of topological spaces
+is homeomorphic to the product of (the product over `S`) and (the product over `T`).
+
+This is `Equiv.sumPiEquivProdPi` as a `Homeomorph`.
+-/
+def sumPiEquivProdPi (S T : Type*) (A : S ⊕ T → Type*)
+    [∀ st, TopologicalSpace (A st)] :
+    (Π (st : S ⊕ T), A st) ≃ₜ (Π (s : S), A (.inl s)) × (Π (t : T), A (.inr t)) where
+  __ := Equiv.sumPiEquivProdPi _
+  continuous_toFun := Continuous.prod_mk (by fun_prop) (by fun_prop)
+  continuous_invFun := continuous_pi <| by rintro (s | t) <;> simp <;> fun_prop
+
+/-- The product `Π t : α, f t` of a family of topological spaces is homeomorphic to the
+space `f ⬝` when `α` only contains `⬝`.
+
+This is `Equiv.piUnique` as a `Homeomorph`.
+-/
+@[simps! (config := .asFn)]
+def piUnique {α : Type*} [Unique α] (f : α → Type*) [∀ x, TopologicalSpace (f x)] :
+    (Π t, f t) ≃ₜ f default where
+  __ := Equiv.piUnique f
+  continuous_toFun := by fun_prop
+  continuous_invFun := Equiv.continuous_symm_of_isOpenMap (.piUnique f) <| isOpenMap_eval _
+
 end prod
 
 /-- `Equiv.piCongrLeft` as a homeomorphism: this is the natural homeomorphism
