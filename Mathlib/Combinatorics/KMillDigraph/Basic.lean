@@ -22,6 +22,7 @@ theory of relations from a graph-theoretical point of view.
 open Function Graph
 universe u w x
 
+-- moved
 /-- A directed graph is a relation `Adj` on a vertex type `V`. -/
 structure Digraph (V : Type _) where
   protected Adj : V → V → Prop
@@ -30,24 +31,31 @@ structure Digraph (V : Type _) where
 
 variable {V : Type u}
 
+-- moved
 instance : HasAdj (Digraph V) (fun _ ↦ V) where
   Adj G := G.Adj
 
+-- moved
 /- Perhaps there is an elaborator/delaborator that could help here. -/
 @[simp] theorem Digraph.adj_eq_adj (G : Digraph V) : G.Adj = Adj G := rfl
 
+-- moved
 /-- See Note [custom simps projection] -/
 def Digraph.Simps.Adj (G : Digraph V) : V → V → Prop := Graph.Adj G
 
+-- moved
 initialize_simps_projections Digraph
 
+-- moved
 @[simp]
 theorem Digraph.Adj_mk (adj : V → V → Prop) : Adj (Digraph.mk adj) = adj := rfl
 
+-- moved
 @[ext]
 protected theorem Digraph.ext (G H : Digraph V) : Adj G = Adj H → G = H := by
   cases G; cases H; simp
 
+-- already exists
 /-- Constructor for directed graphs given a boolean function. -/
 @[simps]
 def Digraph.mk' : (V → V → Bool) ↪ Digraph V where
@@ -57,9 +65,11 @@ def Digraph.mk' : (V → V → Bool) ↪ Digraph V where
     funext v w
     simpa [Bool.coe_iff_coe] using congr_fun₂ h v w
 
+-- already exists
 instance (adj : V → V → Bool) : DecidableRel (Adj <| Digraph.mk' adj) :=
   show DecidableRel (fun v w ↦ adj v w) from inferInstance
 
+-- already exists
 instance [Fintype V] [DecidableEq V] : Fintype (Digraph V) where
   elems := Finset.univ.map Digraph.mk'
   complete := by
@@ -74,13 +84,16 @@ namespace Digraph
 variable {V : Type u} {W : Type w} {X : Type x}
 variable (G : Digraph V) (G' : Digraph W) (G'' : Digraph X)
 
+-- already exists
 theorem adj_injective : Injective (Adj : Digraph V → _) := Digraph.ext
 
+-- already exists
 @[simp]
 theorem adj_inj {G H : Digraph V} : Adj G = Adj H ↔ G = H := adj_injective.eq_iff
 
 section order
 
+-- already exists
 /-- The relation that one `Digraph` is a subgraph of another. -/
 instance : LE (Digraph V) := ⟨fun G H ↦ ∀ ⦃u v⦄, Adj G u v → Adj H u v⟩
 

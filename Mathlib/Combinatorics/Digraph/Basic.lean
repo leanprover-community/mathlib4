@@ -3,6 +3,7 @@ Copyright (c) 2024 Kyle Miller, Jack Cheverton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller, Jack Cheverton, Jeremy Tan
 -/
+import Mathlib.Combinatorics.Graph.Classes
 import Mathlib.Order.CompleteBooleanAlgebra
 import Mathlib.Data.Fintype.Pi
 
@@ -32,7 +33,7 @@ of digraphs on `V`.
   of the complete graph.
 -/
 
-open Finset Function
+open Finset Function Graph
 
 /--
 A digraph is a relation `Adj` on a vertex type `V`.
@@ -40,10 +41,36 @@ The relation describes which pairs of vertices are adjacent.
 
 In this treatment, a digraph may have self-loops.
 -/
-@[ext]
+-- @[ext] -- I think we need to remove this ext in favor of the HasAdj ext
 structure Digraph (V : Type*) where
   /-- The adjacency relation of a digraph. -/
-  Adj : V → V → Prop
+  protected Adj : V → V → Prop
+
+-- 2023
+instance {V : Type*} : HasAdj (Digraph V) (fun _ ↦ V) where
+  Adj G := G.Adj
+
+-- 2023
+/- Perhaps there is an elaborator/delaborator that could help here. -/
+@[simp] theorem Digraph.adj_eq_adj {V : Type*} (G : Digraph V) : G.Adj = Adj G := rfl
+
+/-
+Digraph.Simps.Adj and initialize_simps_projections were from the 2023 file, not sure if they are
+still needed
+-/
+/-- See Note [custom simps projection] -/
+def Digraph.Simps.Adj {V : Type*} (G : Digraph V) : V → V → Prop := Graph.Adj G
+
+initialize_simps_projections Digraph
+
+-- 2023
+@[simp]
+theorem Digraph.Adj_mk {V : Type*} (adj : V → V → Prop) : Adj (Digraph.mk adj) = adj := rfl
+
+-- 2023
+@[ext]
+protected theorem Digraph.ext {V : Type*} (G H : Digraph V) : Adj G = Adj H → G = H := by
+  cases G; cases H; simp
 
 /--
 Constructor for digraphs using a boolean function.
@@ -59,7 +86,7 @@ def Digraph.mk' {V : Type*} : (V → V → Bool) ↪ Digraph V where
     funext v w
     simpa only [eq_iff_iff, Bool.coe_iff_coe] using congr($h v w)
 
-instance {V : Type*} (adj : V → V → Bool) : DecidableRel (Digraph.mk' adj).Adj :=
+instance {V : Type*} (adj : V → V → Bool) : DecidableRel (Adj (Digraph.mk' adj)) :=
   inferInstanceAs <| DecidableRel (fun v w ↦ adj v w)
 
 instance {V : Type*} [DecidableEq V] [Fintype V] : Fintype (Digraph V) :=
@@ -67,7 +94,7 @@ instance {V : Type*} [DecidableEq V] [Fintype V] : Fintype (Digraph V) :=
     classical
     refine ⟨Embedding.injective _, ?_⟩
     intro G
-    use fun v w ↦ G.Adj v w
+    use fun v w ↦ Adj G v w
     ext v w
     simp
 
@@ -98,9 +125,9 @@ def completeBipartiteGraph (V W : Type*) : Digraph (Sum V W) where
 
 variable {ι : Sort*} {V : Type*} (G : Digraph V) {a b : V}
 
-theorem adj_injective : Injective (Adj : Digraph V → V → V → Prop) := fun _ _ ↦ Digraph.ext
+theorem adj_injective : Injective (Adj : Digraph V → V → V → Prop) := Digraph.ext
 
-@[simp] theorem adj_inj {G H : Digraph V} : G.Adj = H.Adj ↔ G = H := Digraph.ext_iff.symm
+@[simp] theorem adj_inj {G H : Digraph V} : Adj G = Adj H ↔ G = H := Digraph.ext_iff.symm
 
 section Order
 
@@ -109,7 +136,7 @@ The relation that one `Digraph` is a spanning subgraph of another.
 Note that `Digraph.IsSubgraph G H` should be spelled `G ≤ H`.
 -/
 protected def IsSubgraph (x y : Digraph V) : Prop :=
-  ∀ ⦃v w : V⦄, x.Adj v w → y.Adj v w
+  ∀ ⦃v w : V⦄, Adj x v w → Adj y v w
 
 instance : LE (Digraph V) := ⟨Digraph.IsSubgraph⟩
 
@@ -118,31 +145,31 @@ theorem isSubgraph_eq_le : (Digraph.IsSubgraph : Digraph V → Digraph V → Pro
 
 /-- The supremum of two digraphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
 instance : Max (Digraph V) where
-  max x y := { Adj := x.Adj ⊔ y.Adj }
+  max x y := { Adj := Adj x ⊔ Adj y }
 
 @[simp]
-theorem sup_adj (x y : Digraph V) (v w : V) : (x ⊔ y).Adj v w ↔ x.Adj v w ∨ y.Adj v w := Iff.rfl
+theorem sup_adj (x y : Digraph V) (v w : V) : Adj (x ⊔ y) v w ↔ Adj x v w ∨ Adj y v w := Iff.rfl
 
 /-- The infimum of two digraphs `x ⊓ y` has edges where both `x` and `y` have edges. -/
 instance : Min (Digraph V) where
-  min x y := { Adj := x.Adj ⊓ y.Adj }
+  min x y := { Adj := Adj x ⊓ Adj y }
 
 @[simp]
-theorem inf_adj (x y : Digraph V) (v w : V) : (x ⊓ y).Adj v w ↔ x.Adj v w ∧ y.Adj v w := Iff.rfl
+theorem inf_adj (x y : Digraph V) (v w : V) : Adj (x ⊓ y) v w ↔ Adj x v w ∧ Adj y v w := Iff.rfl
 
 /-- We define `Gᶜ` to be the `Digraph V` such that no two adjacent vertices in `G`
 are adjacent in the complement, and every nonadjacent pair of vertices is adjacent. -/
 instance hasCompl : HasCompl (Digraph V) where
-  compl G := { Adj := fun v w ↦ ¬G.Adj v w }
+  compl G := { Adj := fun v w ↦ ¬Adj G v w }
 
-@[simp] theorem compl_adj (G : Digraph V) (v w : V) : Gᶜ.Adj v w ↔ ¬G.Adj v w := Iff.rfl
+@[simp] theorem compl_adj (G : Digraph V) (v w : V) : Adj Gᶜ v w ↔ ¬Adj G v w := Iff.rfl
 
 /-- The difference of two digraphs `x \ y` has the edges of `x` with the edges of `y` removed. -/
 instance sdiff : SDiff (Digraph V) where
-  sdiff x y := { Adj := x.Adj \ y.Adj }
+  sdiff x y := { Adj := Adj x \ Adj y }
 
 @[simp]
-theorem sdiff_adj (x y : Digraph V) (v w : V) : (x \ y).Adj v w ↔ x.Adj v w ∧ ¬y.Adj v w := Iff.rfl
+theorem sdiff_adj (x y : Digraph V) (v w : V) : Adj (x \ y) v w ↔ Adj x v w ∧ ¬Adj y v w := Iff.rfl
 
 instance supSet : SupSet (Digraph V) where
   sSup s := { Adj := fun a b ↦ ∃ G ∈ s, Adj G a b }
@@ -151,21 +178,21 @@ instance infSet : InfSet (Digraph V) where
   sInf s := { Adj := fun a b ↦ (∀ ⦃G⦄, G ∈ s → Adj G a b) }
 
 @[simp]
-theorem sSup_adj {s : Set (Digraph V)} : (sSup s).Adj a b ↔ ∃ G ∈ s, Adj G a b := Iff.rfl
+theorem sSup_adj {s : Set (Digraph V)} : Adj (sSup s) a b ↔ ∃ G ∈ s, Adj G a b := Iff.rfl
 
 @[simp]
-theorem sInf_adj {s : Set (Digraph V)} : (sInf s).Adj a b ↔ ∀ G ∈ s, Adj G a b := Iff.rfl
+theorem sInf_adj {s : Set (Digraph V)} : Adj (sInf s) a b ↔ ∀ G ∈ s, Adj G a b := Iff.rfl
 
 @[simp]
-theorem iSup_adj {f : ι → Digraph V} : (⨆ i, f i).Adj a b ↔ ∃ i, (f i).Adj a b := by simp [iSup]
+theorem iSup_adj {f : ι → Digraph V} : Adj (⨆ i, f i) a b ↔ ∃ i, Adj (f i) a b := by simp [iSup]
 
 @[simp]
-theorem iInf_adj {f : ι → Digraph V} : (⨅ i, f i).Adj a b ↔ (∀ i, (f i).Adj a b) := by simp [iInf]
+theorem iInf_adj {f : ι → Digraph V} : Adj (⨅ i, f i) a b ↔ (∀ i, Adj (f i) a b) := by simp [iInf]
 
-/-- For digraphs `G`, `H`, `G ≤ H` iff `∀ a b, G.Adj a b → H.Adj a b`. -/
+/-- For digraphs `G`, `H`, `G ≤ H` iff `∀ a b, Adj G a b → Adj H a b`. -/
 instance distribLattice : DistribLattice (Digraph V) :=
-  { adj_injective.distribLattice Digraph.Adj (fun _ _ ↦ rfl) fun _ _ ↦ rfl with
-    le := fun G H ↦ ∀ ⦃a b⦄, G.Adj a b → H.Adj a b }
+  { adj_injective.distribLattice Adj (fun _ _ ↦ rfl) fun _ _ ↦ rfl with
+    le := fun G H ↦ ∀ ⦃a b⦄, Adj G a b → Adj H a b }
 
 instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V) :=
   { Digraph.distribLattice with
@@ -191,9 +218,9 @@ instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Digraph V)
     le_sInf := fun _ _ hG _ _ hab ↦ fun _ hH ↦ hG _ hH hab
     iInf_iSup_eq := fun f ↦ by ext; simp [Classical.skolem] }
 
-@[simp] theorem top_adj (v w : V) : (⊤ : Digraph V).Adj v w := trivial
+@[simp] theorem top_adj (v w : V) : Adj (⊤ : Digraph V) v w := trivial
 
-@[simp] theorem bot_adj (v w : V) : (⊥ : Digraph V).Adj v w ↔ False := Iff.rfl
+@[simp] theorem bot_adj (v w : V) : Adj (⊥ : Digraph V) v w ↔ False := Iff.rfl
 
 @[simp] theorem completeDigraph_eq_top (V : Type*) : Digraph.completeDigraph V = ⊤ := rfl
 
@@ -208,29 +235,29 @@ instance [IsEmpty V] : Unique (Digraph V) where
 instance [Nonempty V] : Nontrivial (Digraph V) := by
   use ⊥, ⊤
   have v := Classical.arbitrary V
-  exact ne_of_apply_ne (·.Adj v v) (by simp)
+  exact ne_of_apply_ne (Adj · v v) (by simp)
 
 section Decidable
 
-variable (V) (H : Digraph V) [DecidableRel G.Adj] [DecidableRel H.Adj]
+variable (V) (H : Digraph V) [DecidableRel (Adj G)] [DecidableRel (Adj H)]
 
-instance Bot.adjDecidable : DecidableRel (⊥ : Digraph V).Adj :=
+instance Bot.adjDecidable : DecidableRel (Adj (⊥ : Digraph V)) :=
   inferInstanceAs <| DecidableRel fun _ _ ↦ False
 
-instance Sup.adjDecidable : DecidableRel (G ⊔ H).Adj :=
-  inferInstanceAs <| DecidableRel fun v w ↦ G.Adj v w ∨ H.Adj v w
+instance Sup.adjDecidable : DecidableRel (Adj (G ⊔ H)) :=
+  inferInstanceAs <| DecidableRel fun v w ↦ (Adj G) v w ∨ (Adj H) v w
 
-instance Inf.adjDecidable : DecidableRel (G ⊓ H).Adj :=
-  inferInstanceAs <| DecidableRel fun v w ↦ G.Adj v w ∧ H.Adj v w
+instance Inf.adjDecidable : DecidableRel (Adj (G ⊓ H)) :=
+  inferInstanceAs <| DecidableRel fun v w ↦ (Adj G) v w ∧ (Adj H) v w
 
-instance SDiff.adjDecidable : DecidableRel (G \ H).Adj :=
-  inferInstanceAs <| DecidableRel fun v w ↦ G.Adj v w ∧ ¬H.Adj v w
+instance SDiff.adjDecidable : DecidableRel (Adj (G \ H)) :=
+  inferInstanceAs <| DecidableRel fun v w ↦ Adj G v w ∧ ¬Adj H v w
 
-instance Top.adjDecidable : DecidableRel (⊤ : Digraph V).Adj :=
+instance Top.adjDecidable : DecidableRel (Adj (⊤ : Digraph V)) :=
   inferInstanceAs <| DecidableRel fun _ _ ↦ True
 
-instance Compl.adjDecidable : DecidableRel (Gᶜ.Adj) :=
-  inferInstanceAs <| DecidableRel fun v w ↦ ¬G.Adj v w
+instance Compl.adjDecidable : DecidableRel (Adj Gᶜ) :=
+  inferInstanceAs <| DecidableRel fun v w ↦ ¬Adj G v w
 
 end Decidable
 
