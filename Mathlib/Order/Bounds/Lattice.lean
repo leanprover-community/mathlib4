@@ -12,7 +12,7 @@ Some results about upper and lower bounds over collections of sets.
 
 ## Implementation notes
 
-In a separate file as we need to import `Mathlib.Data.Set.Lattice` for `subset_iUnion_of_subset`.
+In a separate file as we need to import `Mathlib.Data.Set.Lattice`.
 
 -/
 
