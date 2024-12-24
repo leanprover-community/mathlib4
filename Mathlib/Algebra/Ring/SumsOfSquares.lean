@@ -177,7 +177,7 @@ theorem Subsemiring.closure_isSquare [CommSemiring R] :
 /- TODO : move to Group.Even and make multiplicative -/
 lemma IsSquare.nonneg {R : Type*} [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
     [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
-    {x : R} (h : IsSquare x) : x ≥ 0 := by
+    {x : R} (h : IsSquare x) : 0 ≤ x := by
   rcases h with ⟨y, rfl⟩
   exact mul_self_nonneg y
 
