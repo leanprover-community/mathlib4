@@ -20,17 +20,19 @@ variable {α : Type*} [Preorder α]
 
 open Set
 
+theorem upperBounds_lowerBounds_gc : GaloisConnection 
+    (OrderDual.toDual ∘ upperBounds : Set α → (Set α)ᵒᵈ)
+    (lowerBounds ∘ OrderDual.ofDual : (Set α)ᵒᵈ → Set α) := by
+  simpa [GaloisConnection, subset_def, mem_upperBounds, mem_lowerBounds] 
+    using fun S T ↦ forall₂_swap
+
 theorem upperBounds_iUnion {ι : Sort*} {s : ι → Set α} :
-    upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i)  := Subset.antisymm
-  (fun _ hb => mem_iInter.mpr
-    (fun i => upperBounds_mono_set (subset_iUnion_of_subset i (by rfl)) hb))
-  (fun _ _ _ _ => by aesop)
+    upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i)  := 
+  upperBounds_lowerBounds_gc.l_iSup
 
 theorem lowerBounds_iUnion {ι : Sort*} {s : ι → Set α} :
-    lowerBounds (⋃ i, s i) = ⋂ i, lowerBounds (s i) := Subset.antisymm
-  (fun _ hb => mem_iInter.mpr
-    (fun i => lowerBounds_mono_set (subset_iUnion_of_subset i (by rfl)) hb))
-  (fun _ _ _ _ => by aesop)
+    lowerBounds (⋃ i, s i) = ⋂ i, lowerBounds (s i) :=
+  upperBounds_lowerBounds_gc.u_iInf
 
 theorem IsLUB.iUnion {ι : Sort*} {u : ι → α}  {s : ι → Set α} (hs : ∀ (i : ι), IsLUB (s i) (u i))
     (c : α) (hc : IsLUB (Set.range u ) c) : IsLUB (⋃ i, s i) c := by
