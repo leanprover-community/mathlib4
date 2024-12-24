@@ -22,21 +22,33 @@ In this file we show that localizations are flat, and flatness is a local proper
   over `Localization.Away s`, then `M` is flat over `R`.
 -/
 
-open IsLocalizedModule LocalizedModule LinearMap TensorProduct
+variable {R S M N : Type*}
 
-variable {R : Type*} (S : Type*) [CommRing R] [CommRing S] [Algebra R S]
-variable (p : Submonoid R) [IsLocalization p S]
-variable (M : Type*) [AddCommGroup M] [Module R M] [Module S M] [IsScalarTower R S M]
+variable (S) [CommSemiring R] [CommSemiring S] [Algebra R S] (p : Submonoid R) [IsLocalization p S]
+variable [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
+variable (f : M →ₗ[R] N) (hf : Function.Injective f)
 
-include p in
-theorem IsLocalization.flat : Module.Flat R S :=
-  (Module.Flat.iff_lTensor_injective' _ _).mpr fun I ↦ by
-    have h := (I.isLocalizedModule S p (Algebra.linearMap R S)).isBaseChange _ S _
-    have : I.subtype.lTensor S = (TensorProduct.rid R S).symm.comp
-        ((Submodule.subtype _ ∘ₗ h.equiv.toLinearMap).restrictScalars R) := by
-      rw [LinearEquiv.eq_toLinearMap_symm_comp]; ext
-      simp [h.equiv_tmul, Algebra.smul_def, mul_comm, Algebra.ofId_apply]
-    simpa [this, - Subtype.val_injective] using Subtype.val_injective
+namespace IsLocalization
+
+include p hf
+
+theorem lTensor_preserves_injective_linearMap : Function.Injective (f.lTensor S) := by
+  have h := ((LinearMap.range f).isLocalizedModule S p (TensorProduct.mk R S N 1)).isBaseChange _ S
+  let e := (LinearEquiv.ofInjective f hf).lTensor S ≪≫ₗ h.equiv.restrictScalars R
+  have : f.lTensor S = Submodule.subtype _ ∘ₗ e.toLinearMap := by
+    ext; show _ = (h.equiv _).1; simp [h.equiv_tmul, TensorProduct.smul_tmul']
+  simpa [this] using e.injective
+
+theorem rTensor_preserves_injective_linearMap : Function.Injective (f.rTensor S) :=
+  (LinearMap.lTensor_inj_iff_rTensor_inj _ _).mp (lTensor_preserves_injective_linearMap S p f hf)
+
+omit hf
+
+theorem flat : Module.Flat R S :=
+  (Module.Flat.iff_lTensor_injective' _ _).mpr
+    fun _ ↦ lTensor_preserves_injective_linearMap S p _ Subtype.val_injective
+
+end IsLocalization
 
 instance Localization.flat : Module.Flat R (Localization p) := IsLocalization.flat _ p
 
