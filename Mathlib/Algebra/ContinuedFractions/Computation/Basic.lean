@@ -5,6 +5,7 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.ContinuedFractions.Basic
+import Mathlib.Tactic.ApplyFun
 
 /-!
 # Computable Continued Fractions
@@ -143,6 +144,55 @@ protected def stream (v : K) : Stream' <| Option (IntFractPair K)
     (IntFractPair.stream v n).bind fun ap_n =>
       if ap_n.fr = 0 then none else some (IntFractPair.of ap_n.fr⁻¹)
 
+theorem stream_fr_nonneg_and_lt_one {v : K} : ∀ {n : ℕ} (p : IntFractPair K),
+    p ∈ IntFractPair.stream v n → 0 ≤ p.fr ∧ p.fr < 1
+  | 0 => by simp [IntFractPair.stream, IntFractPair.of, Int.fract_lt_one]
+  | n + 1 => by
+    intro
+    simp [IntFractPair.stream]
+    cases IntFractPair.stream v n with
+    | none => simp
+    | some q =>
+      simp only [IntFractPair.of, Option.some_bind, Option.ite_none_left_eq_some, Option.some.injEq,
+        and_imp]
+      rintro _ rfl
+      exact ⟨Int.fract_nonneg _, Int.fract_lt_one _⟩
+
+theorem stream_b_pos {v : K} : ∀ {n : ℕ}, 0 < n → ∀ (p : IntFractPair K),
+    p ∈ IntFractPair.stream v n → 0 < p.b
+  | 0 => by simp
+  | n + 1 => by
+    intro
+    simp [IntFractPair.stream]
+    cases h : IntFractPair.stream v n with
+    | none => simp
+    | some q =>
+      simp only [IntFractPair.of, Option.some_bind, Option.ite_none_left_eq_some, Option.some.injEq,
+        and_imp, forall_apply_eq_imp_iff, Int.lt_floor_iff, Int.cast_zero, zero_add]
+      intro h0
+      exact (one_le_inv₀ (lt_of_le_of_ne (stream_fr_nonneg_and_lt_one _ h).1 (Ne.symm h0))).2
+        (le_of_lt (stream_fr_nonneg_and_lt_one _ h).2)
+
+
+theorem last_stream_ne_one (v : K) (n : ℕ) : ∀ (p : IntFractPair K),
+    p ∈ IntFractPair.stream v (n + 1) → IntFractPair.stream v (n + 2) = none →
+    p.b ≠ 1 := by
+  simp only [IntFractPair.stream, IntFractPair.of, Option.mem_def, Option.bind_eq_none,
+    ite_eq_left_iff, reduceCtorEq, imp_false, Decidable.not_not, ne_eq]
+  cases hq : IntFractPair.stream v n with
+  | none => simp
+  | some q =>
+    simp only [Option.some_bind, Option.ite_none_left_eq_some, Option.some.injEq, and_imp,
+      forall_apply_eq_imp_iff]
+    intro h₁ h₂
+    replace h₂ := h₂ h₁
+    rw [Int.fract_eq_iff, sub_zero] at h₂
+    let ⟨z, hz⟩ := h₂.2.2
+    rw [hz, Int.floor_intCast]
+    rintro rfl
+    simp only [Int.cast_one, inv_eq_one] at hz
+    exact ne_of_lt (stream_fr_nonneg_and_lt_one _ hq).2 hz
+
 /-- Shows that `IntFractPair.stream` has the sequence property, that is once we return `none` at
 position `n`, we also return `none` at `n + 1`.
 -/
@@ -167,6 +217,17 @@ protected def seq1 (v : K) : Stream'.Seq1 <| IntFractPair K :=
       ⟨IntFractPair.stream v, -- the underlying stream
         @stream_isSeq _ _ _ v⟩⟩ -- the proof that the stream is a sequence
 
+theorem one_not_mem_getLast_seq1 (v : K) (ht : (IntFractPair.seq1 v).2.Terminates) (a : K) :
+    ⟨1, a⟩ ∉ (((IntFractPair.seq1 v).2).toList ht).getLast? := by
+  cases h : (IntFractPair.seq1 v).2.length ht with
+  | zero => simp [Stream'.Seq.length_eq_zero.1 h]
+  | succ n =>
+    rw [Stream'.Seq.getLast?_toList]
+    intro hmem
+    refine last_stream_ne_one v _ _ hmem ?_ rfl
+    apply (Stream'.Seq.length_le_iff (s := (IntFractPair.seq1 v).2) (h := ht)).1
+    simp [h]
+
 end IntFractPair
 
 /-- Returns the `GenContFract` of a value. In fact, the returned gcf is also a `ContFract` that
@@ -187,3 +248,41 @@ protected def of [LinearOrderedField K] [FloorRing K] (v : K) : GenContFract K :
                             -- denominators; all partial numerators are simply 1
 
 end GenContFract
+
+namespace ContFract
+
+open GenContFract
+
+variable {K : Type*} [LinearOrderedField K] [FloorRing K]
+
+/-- Returns the `ContFract` of a value. The returned gcf is a `ContFract` that
+terminates if and only if `v` is rational
+(see `Algebra.ContinuedFractions.Computation.TerminatesIffRat`).
+
+The continued fraction representation of `v` is given by `[⌊v⌋; b₀, b₁, b₂,...]`, where
+`[b₀; b₁, b₂,...]` recursively is the continued fraction representation of `1 / (v - ⌊v⌋)`. This
+process stops when the fractional part `v - ⌊v⌋` hits 0 at some step.
+
+The implementation uses `IntFractPair.stream` to obtain the partial denominators of the continued
+fraction. Refer to said function for more details about the computation process.
+-/
+protected def of (v : K) : ContFract :=
+  let s := IntFractPair.seq1 v -- get the sequence of integer and fractional parts.
+  ⟨s.1.b, -- the head is just the first integer part
+    s.2.map fun p => p.b.toNat.toPNat',
+    by
+      intro h
+      have := IntFractPair.one_not_mem_getLast_seq1 v (Stream'.Seq.terminates_map_iff.1 h)
+      simp only [Stream'.Seq.getLast?_toList, Option.mem_def, Stream'.Seq.length_map,
+        Stream'.Seq.map_get?, Option.map_eq_some', not_exists, not_and] at *
+      rintro ⟨xb, xfr⟩ hx hx1
+      apply this xfr
+      simp only [hx, Option.some.injEq, IntFractPair.mk.injEq, and_true]
+      have h0xb : 0 < xb := IntFractPair.stream_b_pos (Nat.succ_pos _) _ hx
+      apply_fun ((↑) : ℕ+ → ℤ) at hx1
+      simp only [Nat.toPNat'_coe, Int.lt_toNat, Nat.cast_zero, Nat.cast_ite, Int.ofNat_toNat,
+        Nat.cast_one, PNat.val_ofNat, ite_eq_right_iff, max_eq_left (le_of_lt h0xb)] at hx1
+      exact hx1 h0xb⟩ -- the sequence consists of the remaining integer parts as the
+    -- partial denominators
+
+end ContFract
