@@ -70,16 +70,8 @@ lemma egauge_union (s t : Set E) (x : E) : egauge 𝕜 (s ∪ t) x = egauge 𝕜
   by_cases hs : x ∈ c • s <;> by_cases ht : x ∈ c • t <;> simp [hs, ht]
 
 lemma le_egauge_inter (s t : Set E) (x : E) :
-    egauge 𝕜 s x ⊔ egauge 𝕜 t x ≤ egauge 𝕜 (s ∩ t) x := by
-  unfold egauge
-  classical
-  refine (iInf_sup_iInf_le _ _).trans ?_
-  refine iInf_mono fun c => ?_
-  simp_rw [iInf_eq_if]
-  by_cases hs : x ∈ c • (s ∩ t)
-  · have : _ ∧ _ := smul_set_inter_subset hs
-    simp [hs, this.1, this.2]
-  · simp [hs]
+    egauge 𝕜 s x ⊔ egauge 𝕜 t x ≤ egauge 𝕜 (s ∩ t) x :=
+  max_le_iff.2 ⟨egauge_anti _ inter_subset_left _, egauge_anti _ inter_subset_right _⟩
 
 end SMul
 
