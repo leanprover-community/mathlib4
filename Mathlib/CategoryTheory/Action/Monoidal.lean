@@ -255,7 +255,6 @@ variable {W : Type (u + 1)} [LargeCategory W] [MonoidalCategory V] [MonoidalCate
 
 open Functor.LaxMonoidal Functor.OplaxMonoidal Functor.Monoidal
 
-set_option maxHeartbeats 400000 in
 /-- A lax monoidal functor induces a lax monoidal functor between
 the categories of `G`-actions within those categories. -/
 instance [F.LaxMonoidal] : (F.mapAction G).LaxMonoidal where
