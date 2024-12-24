@@ -129,6 +129,11 @@ lemma isLittleOTVS_insert [TopologicalSpace α] {f : α → E} {g : α → F} {x
     forall₂_congr fun ε hε => ?_
   simp [h, egauge_zero_right _ (Set.nonempty_of_mem <| mem_of_mem_nhds hU)]
 
+lemma IsLittleOTVS.insert [TopologicalSpace α] {f : α → E} {g : α → F} {x : α} {s : Set α}
+    (h : IsLittleOTVS 𝕜 f g (𝓝[s] x)) (hf : f x = 0) :
+    IsLittleOTVS 𝕜 f g (𝓝[insert x s] x) :=
+  (isLittleOTVS_insert hf).2 h
+
 protected lemma IsLittleOTVS.smul_left {f : α → E} {g : α → F} {l : Filter α}
     (h : IsLittleOTVS 𝕜 f g l) (c : α → 𝕜) :
     IsLittleOTVS 𝕜 (fun x ↦ c x • f x) (fun x ↦ c x • g x) l := by
