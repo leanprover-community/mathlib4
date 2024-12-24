@@ -63,14 +63,19 @@ class NNNorm (E : Type*) where
   /-- the `ℝ≥0`-valued norm function. -/
   nnnorm : E → ℝ≥0
 
+/-- Auxiliary class, endowing a type `α` with a function `enorm : α → ℝ≥0∞` with notation `‖x‖ₑ`. -/
+@[notation_class]
+class ENorm (E : Type*) where
+  /-- the `ℝ≥0∞`-valued norm function. -/
+  enorm : E → ℝ≥0∞
+
 export Norm (norm)
 export NNNorm (nnnorm)
+export ENorm (enorm)
 
-@[inherit_doc]
-notation "‖" e "‖" => norm e
-
-@[inherit_doc]
-notation "‖" e "‖₊" => nnnorm e
+@[inherit_doc] notation "‖" e "‖" => norm e
+@[inherit_doc] notation "‖" e "‖₊" => nnnorm e
+@[inherit_doc] notation "‖" e "‖ₑ" => enorm e
 
 /-- A seminormed group is an additive group endowed with a norm for which `dist x y = ‖x - y‖`
 defines a pseudometric space structure. -/
@@ -699,6 +704,15 @@ theorem ne_one_of_nnnorm_ne_zero {a : E} : ‖a‖₊ ≠ 0 → a ≠ 1 :=
 theorem nnnorm_mul_le' (a b : E) : ‖a * b‖₊ ≤ ‖a‖₊ + ‖b‖₊ :=
   NNReal.coe_le_coe.1 <| norm_mul_le' a b
 
+@[to_additive norm_nsmul_le]
+lemma norm_pow_le_mul_norm : ∀ {n : ℕ}, ‖a ^ n‖ ≤ n * ‖a‖
+  | 0 => by simp
+  | n + 1 => by simpa [pow_succ, add_mul] using norm_mul_le_of_le' norm_pow_le_mul_norm le_rfl
+
+@[to_additive nnnorm_nsmul_le]
+lemma nnnorm_pow_le_mul_norm {n : ℕ} : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by
+  simpa only [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_natCast] using norm_pow_le_mul_norm
+
 @[to_additive (attr := simp) nnnorm_neg]
 theorem nnnorm_inv' (a : E) : ‖a⁻¹‖₊ = ‖a‖₊ :=
   NNReal.eq <| norm_inv' a
@@ -805,6 +819,20 @@ theorem mem_emetric_ball_one_iff {r : ℝ≥0∞} : a ∈ EMetric.ball (1 : E) r
   rw [EMetric.mem_ball, edist_eq_coe_nnnorm']
 
 end NNNorm
+
+section ENNNorm
+
+instance {E : Type*} [NNNorm E] : ENorm E where
+  enorm := (‖·‖₊ : E → ℝ≥0∞)
+
+lemma enorm_eq_nnnorm {E : Type*} [NNNorm E] {x : E} : ‖x‖ₑ = ‖x‖₊ := rfl
+
+instance : ENorm ℝ≥0∞ where
+  enorm x := x
+
+@[simp] lemma enorm_eq_self (x : ℝ≥0∞) : ‖x‖ₑ = x := rfl
+
+end ENNNorm
 
 @[to_additive]
 theorem tendsto_iff_norm_div_tendsto_zero {f : α → E} {a : Filter α} {b : E} :
@@ -1111,29 +1139,18 @@ theorem preimage_mul_sphere (a b : E) (r : ℝ) : (b * ·) ⁻¹' sphere a r = s
   ext c
   simp only [Set.mem_preimage, mem_sphere_iff_norm', div_div_eq_mul_div, mul_comm]
 
-@[to_additive norm_nsmul_le]
-theorem norm_pow_le_mul_norm (n : ℕ) (a : E) : ‖a ^ n‖ ≤ n * ‖a‖ := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-    simpa only [pow_succ, Nat.cast_succ, add_mul, one_mul] using norm_mul_le_of_le' ih le_rfl
-
-@[to_additive nnnorm_nsmul_le]
-theorem nnnorm_pow_le_mul_norm (n : ℕ) (a : E) : ‖a ^ n‖₊ ≤ n * ‖a‖₊ := by
-  simpa only [← NNReal.coe_le_coe, NNReal.coe_mul, NNReal.coe_natCast] using
-    norm_pow_le_mul_norm n a
 
 @[to_additive]
 theorem pow_mem_closedBall {n : ℕ} (h : a ∈ closedBall b r) :
     a ^ n ∈ closedBall (b ^ n) (n • r) := by
   simp only [mem_closedBall, dist_eq_norm_div, ← div_pow] at h ⊢
-  refine (norm_pow_le_mul_norm n (a / b)).trans ?_
+  refine norm_pow_le_mul_norm.trans ?_
   simpa only [nsmul_eq_mul] using mul_le_mul_of_nonneg_left h n.cast_nonneg
 
 @[to_additive]
 theorem pow_mem_ball {n : ℕ} (hn : 0 < n) (h : a ∈ ball b r) : a ^ n ∈ ball (b ^ n) (n • r) := by
   simp only [mem_ball, dist_eq_norm_div, ← div_pow] at h ⊢
-  refine lt_of_le_of_lt (norm_pow_le_mul_norm n (a / b)) ?_
+  refine lt_of_le_of_lt norm_pow_le_mul_norm ?_
   replace hn : 0 < (n : ℝ) := by norm_cast
   rw [nsmul_eq_mul]
   nlinarith
@@ -1360,18 +1377,28 @@ lemma nnnorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnnorm_n
 
 /-- See `tendsto_norm_one` for a version with full neighborhoods. -/
 @[to_additive "See `tendsto_norm_zero` for a version with full neighborhoods."]
-lemma tendsto_norm_one' : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>] 0) :=
+lemma tendsto_norm_nhdsNE_one : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>] 0) :=
   tendsto_norm_one.inf <| tendsto_principal_principal.2 fun _ hx ↦ norm_pos_iff'.2 hx
 
+@[deprecated (since := "2024-12-22")]
+alias tendsto_norm_zero' := tendsto_norm_nhdsNE_zero
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_norm_one' := tendsto_norm_nhdsNE_one
+
+@[deprecated (since := "2024-12-22")]
+alias tendsto_norm_nhdsWithin_zero := tendsto_norm_nhdsNE_zero
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_norm_nhdsWithin_one := tendsto_norm_nhdsNE_one
+
 @[to_additive]
-theorem tendsto_norm_div_self_punctured_nhds (a : E) :
-    Tendsto (fun x => ‖x / a‖) (𝓝[≠] a) (𝓝[>] 0) :=
+theorem tendsto_norm_div_self_nhdsNE (a : E) : Tendsto (fun x => ‖x / a‖) (𝓝[≠] a) (𝓝[>] 0) :=
   (tendsto_norm_div_self a).inf <|
     tendsto_principal_principal.2 fun _x hx => norm_pos_iff'.2 <| div_ne_one.2 hx
 
-@[to_additive]
-theorem tendsto_norm_nhdsWithin_one : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>] 0) :=
-  tendsto_norm_one.inf <| tendsto_principal_principal.2 fun _x => norm_pos_iff'.2
+@[deprecated (since := "2024-12-22")]
+alias tendsto_norm_sub_self_punctured_nhds := tendsto_norm_sub_self_nhdsNE
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_norm_div_self_punctured_nhds := tendsto_norm_div_self_nhdsNE
 
 variable (E)
 
@@ -1384,9 +1411,15 @@ def normGroupNorm : GroupNorm E :=
 theorem coe_normGroupNorm : ⇑(normGroupNorm E) = norm :=
   rfl
 
-@[to_additive comap_norm_nhdsWithin_Ioi_zero]
-lemma comap_norm_nhdsWithin_Ioi_zero' : comap norm (𝓝[>] 0) = 𝓝[≠] (1 : E) := by
+/-- A version of `comap_norm_nhdsGT_zero` for a multiplicative normed group. -/
+@[to_additive comap_norm_nhdsGT_zero]
+lemma comap_norm_nhdsGT_zero' : comap norm (𝓝[>] 0) = 𝓝[≠] (1 : E) := by
   simp [nhdsWithin, comap_norm_nhds_one, Set.preimage, Set.compl_def]
+
+@[deprecated (since := "2024-12-22")]
+alias comap_norm_nhdsWithin_Ioi_zero := comap_norm_nhdsGT_zero
+@[to_additive existing comap_norm_nhdsWithin_Ioi_zero, deprecated (since := "2024-12-22")]
+alias comap_norm_nhdsWithin_Ioi_zero' := comap_norm_nhdsGT_zero'
 
 end NormedGroup
 
@@ -1496,3 +1529,5 @@ instance (priority := 75) normedCommGroup [NormedCommGroup E] {S : Type*} [SetLi
 end SubgroupClass
 
 lemma tendsto_norm_atTop_atTop : Tendsto (norm : ℝ → ℝ) atTop atTop := tendsto_abs_atTop_atTop
+
+set_option linter.style.longFile 1700

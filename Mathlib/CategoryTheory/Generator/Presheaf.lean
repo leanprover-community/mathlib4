@@ -10,8 +10,9 @@ import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 /-!
 # Generators in the category of presheaves
 
-In this file, we show that if `A` is a preadditive category that has a separator (and
-suitable coproducts), then the category of presheaves `Cᵒᵖ ⥤ A` also has a separator.
+In this file, we show that if `A` is a category with zero morphisms that
+has a separator (and suitable coproducts), then the category of
+presheaves `Cᵒᵖ ⥤ A` also has a separator.
 
 -/
 

@@ -91,6 +91,9 @@ class LocallySmall (C : Type u) [Category.{v} C] : Prop where
 instance (C : Type u) [Category.{v} C] [LocallySmall.{w} C] (X Y : C) : Small.{w, v} (X ⟶ Y) :=
   LocallySmall.hom_small X Y
 
+instance (C : Type u) [Category.{v} C] [LocallySmall.{w} C] : LocallySmall.{w} Cᵒᵖ where
+  hom_small X Y := small_of_injective (opEquiv X Y).injective
+
 theorem locallySmall_of_faithful {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
     (F : C ⥤ D) [F.Faithful] [LocallySmall.{w} D] : LocallySmall.{w} C where
   hom_small {_ _} := small_of_injective F.map_injective
