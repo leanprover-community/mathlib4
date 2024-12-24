@@ -453,7 +453,7 @@ theorem ceil_lt_add_one (ha : 0 ≤ a) : (⌈a⌉₊ : α) < a + 1 :=
 @[bound]
 theorem ceil_add_le (a b : α) : ⌈a + b⌉₊ ≤ ⌈a⌉₊ + ⌈b⌉₊ := by
   rw [ceil_le, Nat.cast_add]
-  exact _root_.add_le_add (le_ceil _) (le_ceil _)
+  gcongr <;> apply le_ceil
 
 end LinearOrderedSemiring
 
@@ -726,7 +726,7 @@ theorem floor_add_one (a : α) : ⌊a + 1⌋ = ⌊a⌋ + 1 := by
 @[bound]
 theorem le_floor_add (a b : α) : ⌊a⌋ + ⌊b⌋ ≤ ⌊a + b⌋ := by
   rw [le_floor, Int.cast_add]
-  exact add_le_add (floor_le _) (floor_le _)
+  gcongr <;> apply floor_le
 
 @[bound]
 theorem le_floor_add_floor (a b : α) : ⌊a + b⌋ - 1 ≤ ⌊a⌋ + ⌊b⌋ := by
@@ -1176,7 +1176,7 @@ theorem ceil_lt_add_one (a : α) : (⌈a⌉ : α) < a + 1 := by
 @[bound]
 theorem ceil_add_le (a b : α) : ⌈a + b⌉ ≤ ⌈a⌉ + ⌈b⌉ := by
   rw [ceil_le, Int.cast_add]
-  exact add_le_add (le_ceil _) (le_ceil _)
+  gcongr <;> apply le_ceil
 
 @[bound]
 theorem ceil_add_ceil_le (a b : α) : ⌈a⌉ + ⌈b⌉ ≤ ⌈a + b⌉ + 1 := by
