@@ -318,8 +318,8 @@ lemma extendCyclesIso_hom_iCycles :
   rw [assoc]
   erw [ShortComplex.LeftHomologyData.cyclesIso_inv_comp_iCycles_assoc]
   dsimp
-  rw [assoc, Iso.inv_hom_id, comp_id]
-  erw [ShortComplex.LeftHomologyData.cyclesIso_hom_comp_i]
+  rw [assoc, Iso.inv_hom_id, comp_id,
+    ShortComplex.LeftHomologyData.cyclesIso_hom_comp_i]
   rfl
 
 @[reassoc (attr := simp)]
@@ -356,8 +356,7 @@ lemma pOpcycles_extendOpcyclesIso_inv :
   dsimp [extendOpcyclesIso]
   erw [ShortComplex.RightHomologyData.pOpcycles_comp_opcyclesIso_hom_assoc]
   dsimp
-  rw [assoc, Iso.inv_hom_id_assoc]
-  erw [ShortComplex.RightHomologyData.p_comp_opcyclesIso_inv]
+  rw [assoc, Iso.inv_hom_id_assoc, ShortComplex.RightHomologyData.p_comp_opcyclesIso_inv]
   rfl
 
 @[reassoc (attr := simp)]
