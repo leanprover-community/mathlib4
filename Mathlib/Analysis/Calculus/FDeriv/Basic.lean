@@ -218,6 +218,29 @@ theorem fderivWithin_univ : fderivWithin 𝕜 f univ = fderiv 𝕜 f := by
   ext
   rw [fderiv]
 
+@[fun_prop]
+theorem HasFDerivWithinAt.differentiableWithinAt (h : HasFDerivWithinAt f f' s x) :
+    DifferentiableWithinAt 𝕜 f s x :=
+  ⟨f', h⟩
+
+@[fun_prop]
+theorem HasFDerivAt.differentiableAt (h : HasFDerivAt f f' x) : DifferentiableAt 𝕜 f x :=
+  ⟨f', h⟩
+
+@[simp]
+theorem hasFDerivWithinAt_univ : HasFDerivWithinAt f f' univ x ↔ HasFDerivAt f f' x := by
+  simp only [HasFDerivWithinAt, nhdsWithin_univ, HasFDerivAt]
+
+alias ⟨HasFDerivWithinAt.hasFDerivAt_of_univ, _⟩ := hasFDerivWithinAt_univ
+
+theorem differentiableWithinAt_univ :
+    DifferentiableWithinAt 𝕜 f univ x ↔ DifferentiableAt 𝕜 f x := by
+  simp only [DifferentiableWithinAt, hasFDerivWithinAt_univ, DifferentiableAt]
+
+theorem fderiv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : fderiv 𝕜 f x = 0 := by
+  rw [fderiv, fderivWithin_zero_of_not_differentiableWithinAt]
+  rwa [differentiableWithinAt_univ]
+
 end TVS
 
 section
@@ -388,28 +411,6 @@ theorem HasFDerivAt.hasFDerivAtFilter (h : HasFDerivAt f f' x) (hL : L ≤ 𝓝 
 theorem HasFDerivAt.hasFDerivWithinAt (h : HasFDerivAt f f' x) : HasFDerivWithinAt f f' s x :=
   h.hasFDerivAtFilter inf_le_left
 
-@[fun_prop]
-theorem HasFDerivWithinAt.differentiableWithinAt (h : HasFDerivWithinAt f f' s x) :
-    DifferentiableWithinAt 𝕜 f s x :=
-  ⟨f', h⟩
-
-@[fun_prop]
-theorem HasFDerivAt.differentiableAt (h : HasFDerivAt f f' x) : DifferentiableAt 𝕜 f x :=
-  ⟨f', h⟩
-
-@[simp]
-theorem hasFDerivWithinAt_univ : HasFDerivWithinAt f f' univ x ↔ HasFDerivAt f f' x := by
-  simp only [HasFDerivWithinAt, nhdsWithin_univ, HasFDerivAt]
-
-alias ⟨HasFDerivWithinAt.hasFDerivAt_of_univ, _⟩ := hasFDerivWithinAt_univ
-
-theorem differentiableWithinAt_univ :
-    DifferentiableWithinAt 𝕜 f univ x ↔ DifferentiableAt 𝕜 f x := by
-  simp only [DifferentiableWithinAt, hasFDerivWithinAt_univ, DifferentiableAt]
-
-theorem fderiv_zero_of_not_differentiableAt (h : ¬DifferentiableAt 𝕜 f x) : fderiv 𝕜 f x = 0 := by
-  rw [fderiv, fderivWithin_zero_of_not_differentiableWithinAt]
-  rwa [differentiableWithinAt_univ]
 
 theorem hasFDerivWithinAt_of_mem_nhds (h : s ∈ 𝓝 x) :
     HasFDerivWithinAt f f' s x ↔ HasFDerivAt f f' x := by
