@@ -3,6 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
+import Mathlib.Analysis.RCLike.Basic
 import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Normed.Module.FiniteDimension
 import Mathlib.Analysis.Calculus.ContDiff.Basic
@@ -144,12 +145,17 @@ open scoped Manifold Filter Topology ContDiff
 model vector space `E` over the field `𝕜`. This is all what is needed to
 define a smooth manifold with model space `H`, and model vector space `E`.
 
-We require two conditions `uniqueDiffOn'` and `target_subset_closure_interior`, which
+We require three conditions `uniqueDiffOn'`, `target_subset_closure_interior` and `TODO`, which
 are satisfied in the relevant cases (where `range I = univ` or a half space or a quadrant) and
-useful for technical reasons. The former makes sure that manifold derivatives are uniquely
-defined, the latter ensures that for `C^2` maps the second derivatives are symmetric even for points
-on the boundary, as these are limit points of interior points where symmetry holds. If further
-conditions turn out to be useful, they can be added here.
+useful for technical reasons. The former makes sure that manifold derivatives are uniquely defined,
+the second condition ensures that for `C^2` maps the second derivatives are symmetric even for
+points on the boundary, as these are limit points of interior points where symmetry holds.
+
+The last condition is required for a more subtle reason: a complex model with corners should also
+be a real model; since unique differentiability over `ℂ` is stronger than over `ℝ`, asking for just
+unique differentiability is too weak for this. At the same time, condition `xxx` is satisfied by
+all examples in practice, and also implies the other two conditions over `ℝ` or `ℂ`.
+If further conditions turn out to be useful, they can be added here.
 -/
 @[ext] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was nolint has_nonempty_instance
 structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
@@ -158,8 +164,26 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
   source_eq : source = univ
   uniqueDiffOn' : UniqueDiffOn 𝕜 toPartialEquiv.target
   target_subset_closure_interior : toPartialEquiv.target ⊆ closure (interior toPartialEquiv.target)
+  /-- For real or complex models, the interior of the model's range is convex. -/
+  convex_interior_range : IsRCLikeNormedField 𝕜 → Convex ℝ (interior (range toPartialEquiv))
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
+
+-- need a better constructor!
+def ModelWithCorners.mk_of_IsRCLikeNormedField {𝕜 E H : Type*}
+    [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H]
+    (hK : IsRCLikeNormedField 𝕜) (e : PartialEquiv H E) (hsource : e.source = univ)
+    (hcont : Continuous e) (hinv : Continuous e.symm) (hconvex : Convex ℝ (interior (range e))) :
+    ModelWithCorners 𝕜 E H where --:= sorry
+  __ := e
+  source_eq := hsource
+  continuous_toFun := hcont
+  continuous_invFun := hinv
+  convex_interior_range := sorry -- use hconvex
+  uniqueDiffOn' := sorry -- prove from hconvex
+  target_subset_closure_interior := sorry -- prove from hconvex
+
+-- TODO: toReal for a complex model...
 
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
 
