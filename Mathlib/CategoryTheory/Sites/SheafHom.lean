@@ -165,7 +165,7 @@ open PresheafHom.IsSheafFor in
 lemma presheafHom_isSheafFor  :
     Presieve.IsSheafFor (presheafHom F G) S.arrows := by
   intro x hx
-  apply exists_unique_of_exists_of_unique
+  apply existsUnique_of_exists_of_unique
   · refine ⟨
       { app := fun Y => app hG x hx Y.unop.hom
         naturality := by

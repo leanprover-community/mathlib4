@@ -5,6 +5,7 @@ Authors: Kevin Buzzard
 -/
 import Mathlib.RingTheory.AdicCompletion.Basic
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain.Basic
 import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 import Mathlib.RingTheory.Valuation.ValuationRing
@@ -136,10 +137,6 @@ theorem associated_of_irreducible {a b : R} (ha : Irreducible a) (hb : Irreducib
     Associated a b := by
   rw [irreducible_iff_uniformizer] at ha hb
   rw [← span_singleton_eq_span_singleton, ← ha, hb]
-
-end IsDiscreteValuationRing
-
-namespace IsDiscreteValuationRing
 
 variable (R : Type*)
 
@@ -295,6 +292,22 @@ theorem ofHasUnitMulPowIrreducibleFactorization {R : Type u} [CommRing R] [IsDom
   apply of_ufd_of_unique_irreducible _ hR.unique_irreducible
   obtain ⟨p, hp, H⟩ := hR
   exact ⟨p, hp⟩
+
+/- If a ring is equivalent to a DVR, it is itself a DVR. -/
+theorem RingEquivClass.isDiscreteValuationRing {A B E : Type*} [CommRing A] [IsDomain A]
+    [CommRing B] [IsDomain B] [IsDiscreteValuationRing A] [EquivLike E A B] [RingEquivClass E A B]
+    (e : E) : IsDiscreteValuationRing B where
+  principal := (isPrincipalIdealRing_iff _).1 <|
+    IsPrincipalIdealRing.of_surjective _ (e : A ≃+* B).surjective
+  __ : IsLocalRing B := (e : A ≃+* B).isLocalRing
+  not_a_field' := by
+    obtain ⟨a, ha⟩ := Submodule.nonzero_mem_of_bot_lt (bot_lt_iff_ne_bot.mpr
+      <| IsDiscreteValuationRing.not_a_field A)
+    rw [Submodule.ne_bot_iff]
+    refine ⟨e a, ⟨?_, by simp only [ne_eq, EmbeddingLike.map_eq_zero_iff, ZeroMemClass.coe_eq_zero,
+      ha, not_false_eq_true]⟩⟩
+    rw [IsLocalRing.mem_maximalIdeal, map_mem_nonunits_iff e, ← IsLocalRing.mem_maximalIdeal]
+    exact a.2
 
 section
 
