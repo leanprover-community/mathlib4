@@ -471,8 +471,7 @@ theorem addHaar_unitClosedBall_eq_addHaar_unitBall :
     exact ENNReal.tendsto_ofReal ((tendsto_id'.2 nhdsWithin_le_nhds).pow _)
   simp only [one_pow, one_mul, ENNReal.ofReal_one] at A
   refine le_of_tendsto A ?_
-  refine mem_nhdsWithin_Iio_iff_exists_Ioo_subset.2 ⟨(0 : ℝ), by simp, fun r hr => ?_⟩
-  dsimp
+  filter_upwards [Ioo_mem_nhdsLT zero_lt_one] with r hr
   rw [← addHaar_closedBall' μ (0 : E) hr.1.le]
   exact measure_mono (closedBall_subset_ball hr.2)
 

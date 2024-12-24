@@ -188,10 +188,8 @@ variable {E : Type*} [EuclideanDomain E] [NormalizationMonoid E] [UniqueFactoriz
 def divRadical (a : E) : E := a / radical a
 
 theorem radical_mul_divRadical (a : E) : radical a * divRadical a = a := by
-  rw [divRadical]
-  rw [← EuclideanDomain.mul_div_assoc]
-  ·refine mul_div_cancel_left₀ _ (radical_ne_zero a)
-  exact radical_dvd_self a
+  rw [divRadical, ← EuclideanDomain.mul_div_assoc _ (radical_dvd_self a),
+    mul_div_cancel_left₀ _ (radical_ne_zero a)]
 
 theorem divRadical_mul_radical (a : E) : divRadical a * radical a = a := by
   rw [mul_comm]
