@@ -27,7 +27,7 @@ theorem upperBounds_lowerBounds_gc : GaloisConnection
     using fun S T ↦ forall₂_swap
 
 theorem upperBounds_iUnion {ι : Sort*} {s : ι → Set α} :
-    upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i)  := 
+    upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i)  :=
   upperBounds_lowerBounds_gc.l_iSup
 
 theorem lowerBounds_iUnion {ι : Sort*} {s : ι → Set α} :
