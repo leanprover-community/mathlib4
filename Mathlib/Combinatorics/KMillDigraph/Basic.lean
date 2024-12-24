@@ -6,7 +6,8 @@ Authors: Kyle Miller
 import Mathlib.Combinatorics.Graph.Dart
 import Mathlib.Combinatorics.Graph.Hom
 import Mathlib.Data.Rel
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Fintype.Pi
 
 /-!
 # Directed graphs
@@ -19,12 +20,15 @@ theory of relations from a graph-theoretical point of view.
 -/
 
 open Function Graph
+universe u w x
 
 /-- A directed graph is a relation `Adj` on a vertex type `V`. -/
 structure Digraph (V : Type _) where
   protected Adj : V → V → Prop
 
-pp_extended_field_notation Digraph.Adj
+-- pp_extended_field_notation Digraph.Adj
+
+variable {V : Type u}
 
 instance : HasAdj (Digraph V) (fun _ ↦ V) where
   Adj G := G.Adj
@@ -51,9 +55,9 @@ def Digraph.mk' : (V → V → Bool) ↪ Digraph V where
   inj' b b' h := by
     rw [Digraph.mk.injEq] at h
     funext v w
-    simpa [Bool.coe_bool_iff] using congr_fun₂ h v w
+    simpa [Bool.coe_iff_coe] using congr_fun₂ h v w
 
-instance (adj : V → V → Bool): DecidableRel (Adj <| Digraph.mk' adj) :=
+instance (adj : V → V → Bool) : DecidableRel (Adj <| Digraph.mk' adj) :=
   show DecidableRel (fun v w ↦ adj v w) from inferInstance
 
 instance [Fintype V] [DecidableEq V] : Fintype (Digraph V) where
@@ -83,15 +87,15 @@ instance : LE (Digraph V) := ⟨fun G H ↦ ∀ ⦃u v⦄, Adj G u v → Adj H u
 @[simp] theorem adj_le_iff {G H : Digraph V} : Adj G ≤ Adj H ↔ G ≤ H := Iff.rfl
 
 /-- The supremum of two graphs `G ⊔ H` has an edge where either `G` or `H` has an edge. -/
-instance : Sup (Digraph V) where
-  sup G H := { Adj := Adj G ⊔ Adj H }
+instance : Max (Digraph V) where
+  max G H := { Adj := Adj G ⊔ Adj H }
 
 @[simp]
 theorem sup_adj (G H : Digraph V) (v w : V) : Adj (G ⊔ H) v w ↔ Adj G v w ∨ Adj H v w := Iff.rfl
 
 /-- The infimum of two graphs `G ⊔ H` has an edge where both `G` and `H` have an edge. -/
-instance : Inf (Digraph V) where
-  inf G H := { Adj := Adj G ⊓ Adj H }
+instance : Min (Digraph V) where
+  min G H := { Adj := Adj G ⊓ Adj H }
 
 @[simp]
 theorem inf_adj (G H : Digraph V) (v w : V) : Adj (G ⊓ H) v w ↔ Adj G v w ∧ Adj H v w := Iff.rfl
@@ -123,13 +127,15 @@ instance infSet : InfSet (Digraph V) where
 theorem sSup_adj {s : Set (Digraph V)} {a b : V} : Adj (sSup s) a b ↔ ∃ G ∈ s, Adj G a b := Iff.rfl
 
 @[simp]
-theorem sInf_adj {s : Set (Digraph V)} : Adj (sInf s) a b ↔ ∀ G ∈ s, Adj G a b := Iff.rfl
+theorem sInf_adj {s : Set (Digraph V)} {a b : V} : Adj (sInf s) a b ↔ ∀ G ∈ s, Adj G a b := Iff.rfl
 
 @[simp]
-theorem iSup_adj {f : ι → Digraph V} : Adj (⨆ i, f i) a b ↔ ∃ i, Adj (f i) a b := by simp [iSup]
+theorem iSup_adj {ι : Type w} {f : ι → Digraph V} {a b : V} : Adj (⨆ i, f i) a b
+  ↔ ∃ i, Adj (f i) a b := by simp [iSup]
 
 @[simp]
-theorem iInf_adj {f : ι → Digraph V} : Adj (⨅ i, f i) a b ↔ ∀ i, Adj (f i) a b := by simp [iInf]
+theorem iInf_adj {ι : Type w} {f : ι → Digraph V} {a b : V} : Adj (⨅ i, f i) a b
+  ↔ ∀ i, Adj (f i) a b := by simp [iInf]
 
 instance distribLattice : DistribLattice (Digraph V) :=
   { show DistribLattice (Digraph V) from
@@ -160,8 +166,13 @@ instance completeBooleanAlgebra : CompleteBooleanAlgebra (Digraph V) :=
     sInf := sInf
     sInf_le := fun s G hG a b hab => hab hG
     le_sInf := fun s G hG a b hab H hH => hG H hH hab
-    inf_sSup_le_iSup_inf := fun G s a b hab => by simpa using hab
-    iInf_sup_le_sup_sInf := fun G s a b hab => by simpa [forall_or_left] using hab }
+    inf_sSup_le_iSup_inf := fun G s a b hab => by
+      unfold iSup
+      aesop
+      -- Past proof: simpa using hab
+    iInf_sup_le_sup_sInf := fun G s a b hab => by
+      unfold iInf at hab
+      simpa [forall_or_left] using hab }
 
 @[simp]
 theorem top_adj (v w : V) : Adj (⊤ : Digraph V) v w := trivial
@@ -202,7 +213,7 @@ end order
 reversed orientation. -/
 protected def inv (G : Digraph V) : Digraph V := ⟨flip <| Adj G⟩
 
-pp_extended_field_notation Digraph.inv
+-- pp_extended_field_notation Digraph.inv
 
 @[simp] theorem Adj_inv {G : Digraph V} {v w : V} : Adj G.inv v w ↔ Adj G w v := by cases G; rfl
 
@@ -220,8 +231,8 @@ protected def inSupport : Set V := Rel.dom (Adj G)
 /-- `G.outSupport` is the set of vertices `v` such that there exists a `w` with `Adj G w v`. -/
 protected def outSupport : Set V := Rel.codom (Adj G)
 
-pp_extended_field_notation Digraph.inSupport
-pp_extended_field_notation Digraph.outSupport
+-- pp_extended_field_notation Digraph.inSupport
+-- pp_extended_field_notation Digraph.outSupport
 
 @[simp] theorem mem_inSupport {v : V} : v ∈ G.inSupport ↔ ∃ w, Adj G v w := Iff.rfl
 @[simp] theorem mem_outSupport {v : V} : v ∈ G.outSupport ↔ ∃ w, Adj G w v := Iff.rfl
@@ -240,11 +251,11 @@ protected def inNeighborSet (v : V) : Set V := {w | Adj G w v}
 /-- `G.outNeighborSet v` is the set of vertices that `v` is adjacent *to*. -/
 protected def outNeighborSet (v : V) : Set V := {w | Adj G v w}
 
-pp_extended_field_notation Digraph.inNeighborSet
-pp_extended_field_notation Digraph.outNeighborSet
+-- pp_extended_field_notation Digraph.inNeighborSet
+-- pp_extended_field_notation Digraph.outNeighborSet
 
-@[simp] theorem mem_inNeighborSet : v ∈ G.inNeighborSet w ↔ Adj G v w := Iff.rfl
-@[simp] theorem mem_outNeighborSet : v ∈ G.outNeighborSet w ↔ Adj G w v := Iff.rfl
+@[simp] theorem mem_inNeighborSet (v w : V) : v ∈ G.inNeighborSet w ↔ Adj G v w := Iff.rfl
+@[simp] theorem mem_outNeighborSet (v w : V) : v ∈ G.outNeighborSet w ↔ Adj G w v := Iff.rfl
 
 instance inNeighborSet.memDecidable (v : V) [DecidableRel (Adj G)] :
     DecidablePred (· ∈ G.inNeighborSet v) := show DecidablePred (Adj G · v) from inferInstance
@@ -356,15 +367,15 @@ locally finite at `v`. -/
 def outNeighborFinset (v : V) [Fintype (G.outNeighborSet v)] : Finset V :=
   (G.outNeighborSet v).toFinset
 
-pp_extended_field_notation Digraph.inNeighborFinset
-pp_extended_field_notation Digraph.outNeighborFinset
+-- pp_extended_field_notation Digraph.inNeighborFinset
+-- pp_extended_field_notation Digraph.outNeighborFinset
 
 @[simp]
-theorem mem_inNeighborFinset [Fintype (G.inNeighborSet v)] :
+theorem mem_inNeighborFinset (v w : V) [Fintype (G.inNeighborSet v)] :
     w ∈ G.inNeighborFinset v ↔ Adj G w v := Set.mem_toFinset
 
 @[simp]
-theorem mem_outNeighborFinset [Fintype (G.outNeighborSet v)] :
+theorem mem_outNeighborFinset (v w : V) [Fintype (G.outNeighborSet v)] :
     w ∈ G.outNeighborFinset v ↔ Adj G v w := Set.mem_toFinset
 
 @[simp] theorem inNeighborFinSet_inv : G.inv.inNeighborFinset = G.outNeighborFinset := rfl
@@ -376,8 +387,8 @@ def inDegree (v : V) [Fintype (G.inNeighborSet v)] : ℕ := (G.inNeighborFinset 
 /-- `G.outDegree v` is the number of vertices `v` is adjacent *to*. -/
 def outDegree (v : V) [Fintype (G.outNeighborSet v)] : ℕ := (G.outNeighborFinset v).card
 
-pp_extended_field_notation Digraph.inDegree
-pp_extended_field_notation Digraph.outDegree
+-- pp_extended_field_notation Digraph.inDegree
+-- pp_extended_field_notation Digraph.outDegree
 
 @[simp]
 theorem card_inNeighborFinset_eq_inDegree (v : V) [Fintype (G.inNeighborSet v)] :
@@ -441,10 +452,10 @@ theorem inDegree_bot (v : V) : (⊥ : Digraph V).inDegree v = 0 := by
 theorem outDegree_bot (v : V) : (⊥ : Digraph V).outDegree v = 0 := inDegree_bot v
 
 theorem inDegree_le_card_verts [DecidableRel (Adj G)] (v : V) : G.inDegree v ≤ Fintype.card V :=
-  Finset.card_le_of_subset (Finset.subset_univ _)
+  Finset.card_le_card (Finset.subset_univ _)
 
 theorem outDegree_le_card_verts [DecidableRel (Adj G)] (v : V) : G.outDegree v ≤ Fintype.card V :=
-  Finset.card_le_of_subset (Finset.subset_univ _)
+  Finset.card_le_card (Finset.subset_univ _)
 
 end Finite
 
