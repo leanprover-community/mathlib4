@@ -27,26 +27,18 @@ theorem upperBounds_lowerBounds_gc : GaloisConnection
     using fun S T ↦ forall₂_swap
 
 theorem upperBounds_iUnion {ι : Sort*} {s : ι → Set α} :
-    upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i)  :=
+    upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i) :=
   upperBounds_lowerBounds_gc.l_iSup
 
 theorem lowerBounds_iUnion {ι : Sort*} {s : ι → Set α} :
     lowerBounds (⋃ i, s i) = ⋂ i, lowerBounds (s i) :=
   upperBounds_lowerBounds_gc.u_iInf
 
-theorem isLUB_congr {s t : Set α} {c : α} (h : upperBounds s = upperBounds t) :
-    IsLUB s c ↔ IsLUB t c := by
-  rw [IsLUB, IsLUB, h]
-
 theorem isLUB_iUnion_iff_of_isLUB {ι : Sort*} {u : ι → α} {s : ι → Set α}
     (hs : ∀ (i : ι), IsLUB (s i) (u i)) (c : α) :
     IsLUB (Set.range u) c ↔ IsLUB (⋃ i, s i) c := by
   refine isLUB_congr ?_
   simp_rw [range_eq_iUnion, upperBounds_iUnion, upperBounds_singleton, IsLUB.upperBounds_eq (hs _)]
-
-theorem isGLB_congr {s t : Set α} {c : α} (h : lowerBounds s = lowerBounds t) :
-    IsGLB s c ↔ IsGLB t c := by
-  rw [IsGLB, IsGLB, h]
 
 theorem isGLB_iUnion_iff_of_isLUB {ι : Sort*} {u : ι → α} {s : ι → Set α}
     (hs : ∀ (i : ι), IsGLB (s i) (u i)) (c : α) :
