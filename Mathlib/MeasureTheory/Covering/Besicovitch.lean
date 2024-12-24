@@ -1061,8 +1061,7 @@ theorem tendsto_filterAt (μ : Measure α) [SFinite μ] (x : α) :
     ∃ (ε : ℝ), ε > 0 ∧
       ∀ a : Set α, a ∈ (Besicovitch.vitaliFamily μ).setsAt x → a ⊆ closedBall x ε → a ∈ s :=
     (VitaliFamily.mem_filterAt_iff _).1 hs
-  have : Ioc (0 : ℝ) ε ∈ 𝓝[>] (0 : ℝ) := Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, εpos⟩
-  filter_upwards [this] with _ hr
+  filter_upwards [Ioc_mem_nhdsGT εpos] with _r hr
   apply hε
   · exact mem_image_of_mem _ hr.1
   · exact closedBall_subset_closedBall hr.2

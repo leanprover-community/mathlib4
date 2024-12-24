@@ -181,9 +181,10 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
     refine mul_le_mul_of_nonneg_right ?_ (by simp only [zero_le])
     -- remains to show norm of binomial coeff is `≤ p⁻¹`
     have : 0 < (p ^ t).choose (i + 1) := Nat.choose_pos (by omega)
-    rw [← zpow_neg_one, ← coe_le_coe, coe_nnnorm, Padic.norm_eq_pow_val (mod_cast this.ne'),
-      coe_zpow, NNReal.coe_natCast, (zpow_right_strictMono₀ (mod_cast hp.out.one_lt)).le_iff_le,
-      neg_le_neg_iff, Padic.valuation_natCast, Nat.one_le_cast]
+    rw [← zpow_neg_one, ← coe_le_coe, coe_nnnorm, Padic.norm_eq_zpow_neg_valuation
+      (mod_cast this.ne'), coe_zpow, NNReal.coe_natCast,
+      zpow_le_zpow_iff_right₀ (mod_cast hp.out.one_lt), neg_le_neg_iff, Padic.valuation_natCast,
+      Nat.one_le_cast]
     exact one_le_padicValNat_of_dvd this <| hp.out.dvd_choose_pow (by omega) (by omega)
   · -- Bounding the sum over `range (n + 1)`: every term is small by the choice of `t`
     refine norm_sum_le_of_forall_le_of_nonempty nonempty_range_succ (fun i _ ↦ ?_)
