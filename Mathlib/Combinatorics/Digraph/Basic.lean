@@ -143,6 +143,9 @@ instance : LE (Digraph V) := ⟨Digraph.IsSubgraph⟩
 @[simp]
 theorem isSubgraph_eq_le : (Digraph.IsSubgraph : Digraph V → Digraph V → Prop) = (· ≤ ·) := rfl
 
+-- 2023
+@[simp] theorem adj_le_iff {G H : Digraph V} : Adj G ≤ Adj H ↔ G ≤ H := Iff.rfl
+
 /-- The supremum of two digraphs `x ⊔ y` has edges where either `x` or `y` have edges. -/
 instance : Max (Digraph V) where
   max x y := { Adj := Adj x ⊔ Adj y }

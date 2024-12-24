@@ -97,64 +97,81 @@ section order
 /-- The relation that one `Digraph` is a subgraph of another. -/
 instance : LE (Digraph V) := ⟨fun G H ↦ ∀ ⦃u v⦄, Adj G u v → Adj H u v⟩
 
+-- moved
 @[simp] theorem adj_le_iff {G H : Digraph V} : Adj G ≤ Adj H ↔ G ≤ H := Iff.rfl
 
+-- already exists
 /-- The supremum of two graphs `G ⊔ H` has an edge where either `G` or `H` has an edge. -/
 instance : Max (Digraph V) where
   max G H := { Adj := Adj G ⊔ Adj H }
 
+-- already exists
 @[simp]
 theorem sup_adj (G H : Digraph V) (v w : V) : Adj (G ⊔ H) v w ↔ Adj G v w ∨ Adj H v w := Iff.rfl
 
+-- already exists
 /-- The infimum of two graphs `G ⊔ H` has an edge where both `G` and `H` have an edge. -/
 instance : Min (Digraph V) where
   min G H := { Adj := Adj G ⊓ Adj H }
 
+-- already exists
 @[simp]
 theorem inf_adj (G H : Digraph V) (v w : V) : Adj (G ⊓ H) v w ↔ Adj G v w ∧ Adj H v w := Iff.rfl
 
 /-- We define `Gᶜ` to be the `Digraph V` such that vertices are adjacent in `Gᶜ`
 if and only if they aren't adjacent in `G`.
 
+-- already exists
 Note that one gets loop edges for every vertex that is not self-adjacent. -/
 instance hasCompl : HasCompl (Digraph V) where
   compl G := { Adj := (Adj G)ᶜ }
 
+-- already exists
 @[simp]
 theorem compl_adj (G : Digraph V) (v w : V) : Adj (Gᶜ) v w ↔ ¬ Adj G v w := Iff.rfl
 
+-- already exists
 /-- The difference of two graphs `G \ H` has the edges of `G` with the edges of `H` removed. -/
 instance sdiff : SDiff (Digraph V) where
   sdiff G H := { Adj := Adj G \ Adj H }
 
+-- already exists
 @[simp]
 theorem sdiff_adj (G H : Digraph V) (v w : V) : Adj (G \ H) v w ↔ Adj G v w ∧ ¬ Adj H v w := Iff.rfl
 
+-- already exists
 instance supSet : SupSet (Digraph V) where
   sSup s := { Adj := fun a b => ∃ G ∈ s, Adj G a b  }
 
+-- already exists
 instance infSet : InfSet (Digraph V) where
   sInf s := { Adj := fun a b => ∀ ⦃G⦄, G ∈ s → Adj G a b }
 
+-- already exists
 @[simp]
 theorem sSup_adj {s : Set (Digraph V)} {a b : V} : Adj (sSup s) a b ↔ ∃ G ∈ s, Adj G a b := Iff.rfl
 
+-- already exists
 @[simp]
 theorem sInf_adj {s : Set (Digraph V)} {a b : V} : Adj (sInf s) a b ↔ ∀ G ∈ s, Adj G a b := Iff.rfl
 
+-- already exists
 @[simp]
 theorem iSup_adj {ι : Type w} {f : ι → Digraph V} {a b : V} : Adj (⨆ i, f i) a b
   ↔ ∃ i, Adj (f i) a b := by simp [iSup]
 
+-- already exists
 @[simp]
 theorem iInf_adj {ι : Type w} {f : ι → Digraph V} {a b : V} : Adj (⨅ i, f i) a b
   ↔ ∀ i, Adj (f i) a b := by simp [iInf]
 
+-- already exists
 instance distribLattice : DistribLattice (Digraph V) :=
   { show DistribLattice (Digraph V) from
       adj_injective.distribLattice _ (fun _ _ => rfl) fun _ _ => rfl with
     le := (· ≤ ·) }
 
+-- already exists (as the even stronger CompleteAtomicBooleanAlgebra)
 instance completeBooleanAlgebra : CompleteBooleanAlgebra (Digraph V) :=
   { Digraph.distribLattice with
     le := (· ≤ ·)
@@ -187,12 +204,15 @@ instance completeBooleanAlgebra : CompleteBooleanAlgebra (Digraph V) :=
       unfold iInf at hab
       simpa [forall_or_left] using hab }
 
+-- already exists
 @[simp]
 theorem top_adj (v w : V) : Adj (⊤ : Digraph V) v w := trivial
 
+-- already exists
 @[simp]
 theorem bot_adj (v w : V) : ¬ Adj (⊥ : Digraph V) v w := not_false
 
+-- already exists
 @[simps]
 instance (V : Type u) : Inhabited (Digraph V) := ⟨⊥⟩
 
@@ -200,21 +220,27 @@ section Decidable
 
 variable (V) (H : Digraph V) [DecidableRel (Adj G)] [DecidableRel (Adj H)]
 
+-- already exists
 instance Bot.adjDecidable : DecidableRel (Adj (⊥ : Digraph V)) :=
   inferInstanceAs <| DecidableRel ⊥
 
+-- already exists
 instance Sup.adjDecidable : DecidableRel (Adj (G ⊔ H)) :=
   inferInstanceAs <| DecidableRel fun v w => Adj G v w ∨ Adj H v w
 
+-- already exists
 instance Inf.adjDecidable : DecidableRel (Adj (G ⊓ H)) :=
   inferInstanceAs <| DecidableRel fun v w => Adj G v w ∧ Adj H v w
 
+-- already exists
 instance Sdiff.adjDecidable : DecidableRel (Adj (G \ H)) :=
   inferInstanceAs <| DecidableRel fun v w => Adj G v w ∧ ¬Adj H v w
 
+-- already exists
 instance Top.adjDecidable : DecidableRel (Adj (⊤ : Digraph V)) :=
   inferInstanceAs <| DecidableRel ⊤
 
+-- already exists
 instance Compl.adjDecidable : DecidableRel (Adj (Gᶜ)) :=
   inferInstanceAs <| DecidableRel fun v w => ¬Adj G v w
 
