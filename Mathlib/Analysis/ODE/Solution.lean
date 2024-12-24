@@ -43,23 +43,31 @@ noncomputable def iterateIntegral (f : ℝ → E → E) (α : ℝ → E) (t₀ :
 lemma iterateIntegral_apply {f : ℝ → E → E} {α : ℝ → E} {t₀ : ℝ} {x₀ : E} {t : ℝ} :
     iterateIntegral f α t₀ x₀ t = x₀ + ∫ τ in t₀..t, f τ (α τ) := rfl
 
--- `fun t ↦ f t (α t)` is continuous if `f` and `α` are continuous
-lemma continuousOn_Ioo {E : Type*} [TopologicalSpace E] {f : ℝ → E → E} {α : ℝ → E} {u : Set E}
+-- `fun t ↦ f t (α t)` is C^n if `f` and `α` are C^n
+lemma contDiffOn_Ioo {f : ℝ → E → E} {α : ℝ → E} {u : Set E}
+    {s : Set ℝ} {n : WithTop ℕ∞}
+    (hf : ContDiffOn ℝ n (uncurry f) (s ×ˢ u))
+    (hα : ContDiffOn ℝ n α s)
+    (hmem : ∀ t ∈ s, α t ∈ u) :
+    ContDiffOn ℝ n (fun t ↦ f t (α t)) s := by
+  have : (fun t ↦ f t (α t)) = (uncurry f) ∘ fun t ↦ (t, α t) := rfl
+  rw [this]
+  apply hf.comp <| contDiffOn_id.prod hα
+  intro _ ht
+  rw [mem_prod]
+  exact ⟨ht, hmem _ ht⟩
+
+lemma continuousOn_Ioo {f : ℝ → E → E} {α : ℝ → E} {u : Set E}
     {s : Set ℝ}
     (hf : ContinuousOn (uncurry f) (s ×ˢ u))
     (hα : ContinuousOn α s)
     (hmem : ∀ t ∈ s, α t ∈ u) :
-    ContinuousOn (fun t ↦ f t (α t)) s := by
-  have : (fun t ↦ f t (α t)) = (uncurry f) ∘ fun t ↦ (t, α t) := rfl
-  rw [this]
-  apply hf.comp <| continuousOn_id.prod hα
-  intro t ht
-  exact ⟨ht, hmem t ht⟩
+    ContinuousOn (fun t ↦ f t (α t)) s :=
+  contDiffOn_zero.mp <| contDiffOn_Ioo (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem
 
 -- the integral equation has derivative `fun t ↦ f t (α t)`
 lemma hasDerivAt_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : ℝ → E) {u : Set E}
     {tmin tmax t₀ : ℝ}
-    -- (hf : ContDiffOn ℝ n (uncurry f) ((Ioo tmin tmax) ×ˢ u)) -- relax to continuity only?
     (hf : ContinuousOn (uncurry f) ((Ioo tmin tmax) ×ˢ u))
     (ht₀ : t₀ ∈ Ioo tmin tmax) (hα : ContinuousOn α (Ioo tmin tmax))
     (hmem : ∀ t ∈ Ioo tmin tmax, α t ∈ u) (x₀ : E)
@@ -78,15 +86,80 @@ lemma hasDerivAt_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : �
   · exact continuousOn_Ioo hf hα hmem |>.stronglyMeasurableAtFilter isOpen_Ioo _ ht
   · exact continuousOn_Ioo hf hα hmem |>.continuousAt <| Ioo_mem_nhds ht.1 ht.2
 
+lemma deriv_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : ℝ → E) {u : Set E}
+    {tmin tmax t₀ : ℝ}
+    (hf : ContinuousOn (uncurry f) ((Ioo tmin tmax) ×ˢ u))
+    (ht₀ : t₀ ∈ Ioo tmin tmax) (hα : ContinuousOn α (Ioo tmin tmax))
+    (hmem : ∀ t ∈ Ioo tmin tmax, α t ∈ u) (x₀ : E)
+    {t : ℝ} (ht : t ∈ Ioo tmin tmax) :
+    deriv (iterateIntegral f α t₀ x₀) t = f t (α t) := by
+  -- use FTC2 `intervalIntegral.deriv_integral_right`
+  unfold iterateIntegral -- add _eq lemma
+  rw [deriv_const_add']
+  -- code duplication below this
+  apply intervalIntegral.deriv_integral_right
+  · apply ContinuousOn.intervalIntegrable
+    apply continuousOn_Ioo hf hα hmem |>.mono
+    by_cases h : t < t₀
+    · rw [uIcc_of_gt h]
+      exact Icc_subset_Ioo ht.1 ht₀.2
+    · rw [uIcc_of_le (not_lt.mp h)]
+      exact Icc_subset_Ioo ht₀.1 ht.2
+  · exact continuousOn_Ioo hf hα hmem |>.stronglyMeasurableAtFilter isOpen_Ioo _ ht
+  · exact continuousOn_Ioo hf hα hmem |>.continuousAt <| Ioo_mem_nhds ht.1 ht.2
+
 -- the integral equation transfers smoothness class from `f` to `α`
-lemma contDiffOn_iterateIntegral (f : ℝ → E → E) (α : ℝ → E) {u : Set E} {tmin tmax t₀ : ℝ} {n : ℕ∞}
+-- TODO: generalise `n` to `∞` and maybe `ω`
+lemma contDiffOn_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : ℝ → E) {u : Set E}
+    {tmin tmax t₀ : ℝ} {n : ℕ}
     (hf : ContDiffOn ℝ n (uncurry f) ((Ioo tmin tmax) ×ˢ u))
     (ht₀ : t₀ ∈ Ioo tmin tmax) (hα : ContinuousOn α (Ioo tmin tmax))
     (hmem : ∀ t ∈ Ioo tmin tmax, α t ∈ u) (x₀ : E) (hu : u ∈ 𝓝 x₀)
     (heqon : ∀ t ∈ Ioo tmin tmax, α t = iterateIntegral f α t₀ x₀ t)
     {t : ℝ} (ht : t ∈ Ioo tmin tmax) :
-    ContDiffOn ℝ n α (Ioo tmin tmax) := by
-  sorry
+    ContDiffOn ℝ n (iterateIntegral f α t₀ x₀) (Ioo tmin tmax) := by
+  induction n with
+  | zero =>
+    simp only [CharP.cast_eq_zero, contDiffOn_zero] at *
+    apply HasDerivAt.continuousOn (f' := fun t ↦ f t (α t))
+    intro _ ht
+    exact hasDerivAt_iterateIntegral f α hf ht₀ hα hmem x₀ ht
+  | succ n hn =>
+    simp only [Nat.cast_add, Nat.cast_one] at *
+    rw [contDiffOn_succ_iff_deriv_of_isOpen isOpen_Ioo] -- check this for generalisation of n
+    refine ⟨?_, by simp, ?_⟩
+    · intro t' ht'
+      apply DifferentiableAt.differentiableWithinAt
+      exact HasDerivAt.differentiableAt <|
+        hasDerivAt_iterateIntegral f α hf.continuousOn ht₀ hα hmem x₀ ht'
+    · have hα' : ContDiffOn ℝ n α (Ioo tmin tmax) := by
+        apply ContDiffOn.congr _ heqon
+        apply hn
+        exact hf.of_succ
+      apply contDiffOn_Ioo hf.of_succ hα' hmem |>.congr
+      intro t' ht'
+      exact deriv_iterateIntegral f α hf.continuousOn ht₀ hα hmem x₀ ht'
+
+  -- induction n with
+  -- | zero =>
+  --   simp only [CharP.cast_eq_zero, contDiffOn_zero] at *
+  --   apply HasDerivAt.continuousOn (f' := fun t ↦ f t (α t))
+  --   intro _ ht
+  --   exact hasDerivAt_iterateIntegral f α hf ht₀ hα hmem x₀ ht
+  -- | succ n hn =>
+  --   simp only [Nat.cast_add, Nat.cast_one] at *
+  --   have := hn hf.of_succ
+  --   rw [contDiffOn_succ_iff_deriv_of_isOpen isOpen_Ioo] -- check this for generalisation of n
+  --   refine ⟨?_, by simp, ?_⟩
+  --   · intro t' ht'
+  --     apply DifferentiableAt.differentiableWithinAt
+  --     exact HasDerivAt.differentiableAt <|
+  --       hasDerivAt_iterateIntegral f α hf.continuousOn ht₀ hα hmem x₀ ht'
+  --   · apply ContDiffOn.congr _
+  --       (fun t' ht' ↦ deriv_iterateIntegral f α hf.continuousOn ht₀ hα hmem x₀ ht')
+  --     -- need to generalise `continuousOn_Ioo` to `ContDiffOn`
+
+  --     sorry
 
 /-
 prop 1.1 existence of local flow
