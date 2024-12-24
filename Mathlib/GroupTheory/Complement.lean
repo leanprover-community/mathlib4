@@ -140,6 +140,41 @@ theorem isComplement_univ_right : IsComplement S univ ↔ ∃ g : G, S = {g} := 
 lemma IsComplement.mul_eq (h : IsComplement S T) : S * T = univ :=
   eq_univ_of_forall fun x ↦ by simpa [mem_mul] using (h.existsUnique x).exists
 
+@[to_additive (attr := simp)]
+lemma not_isComplement_empty_left : ¬ IsComplement ∅ T :=
+  fun h ↦ by simpa [eq_comm (a := ∅)] using h.mul_eq
+
+@[to_additive (attr := simp)]
+lemma not_isComplement_empty_right : ¬ IsComplement S ∅ :=
+  fun h ↦ by simpa [eq_comm (a := ∅)] using h.mul_eq
+
+@[to_additive]
+lemma IsComplement.nonempty_of_left (hst : IsComplement S T) : S.Nonempty := by
+  contrapose! hst; simp [hst]
+
+@[to_additive]
+lemma IsComplement.nonempty_of_right (hst : IsComplement S T) : T.Nonempty := by
+  contrapose! hst; simp [hst]
+
+@[to_additive] lemma IsComplement.pairwiseDisjoint_smul (hst : IsComplement S T) :
+    S.PairwiseDisjoint (· • T) := fun a ha b hb hab ↦ disjoint_iff_forall_ne.2 <| by
+  rintro _ ⟨c, hc, rfl⟩ _ ⟨d, hd, rfl⟩
+  exact hst.1.ne (a₁ := (⟨a, ha⟩, ⟨c, hc⟩)) (a₂:= (⟨b, hb⟩, ⟨d, hd⟩)) (by simp [hab])
+
+@[to_additive]
+lemma not_empty_mem_leftTransversals : ∅ ∉ leftTransversals S := not_isComplement_empty_left
+
+@[to_additive]
+lemma not_empty_mem_rightTransversals : ∅ ∉ rightTransversals S := not_isComplement_empty_right
+
+@[to_additive]
+lemma nonempty_of_mem_leftTransversals (hst : S ∈ leftTransversals T) : S.Nonempty :=
+  hst.nonempty_of_left
+
+@[to_additive]
+lemma nonempty_of_mem_rightTransversals (hst : S ∈ rightTransversals T) : S.Nonempty :=
+  hst.nonempty_of_right
+
 @[to_additive AddSubgroup.IsComplement.card_mul_card]
 lemma IsComplement.card_mul_card (h : IsComplement S T) : Nat.card S * Nat.card T = Nat.card G :=
   (Nat.card_prod _ _).symm.trans <| Nat.card_congr <| Equiv.ofBijective _ h
@@ -235,6 +270,14 @@ theorem card_right_transversal (h : S ∈ rightTransversals (H : Set G)) : Nat.c
   Nat.card_congr <|
     (Equiv.ofBijective _ <| mem_rightTransversals_iff_bijective.mp h).trans <|
       QuotientGroup.quotientRightRelEquivQuotientLeftRel H
+
+@[to_additive]
+lemma finite_of_mem_leftTransversals [H.FiniteIndex] (hs : S ∈ leftTransversals H) : S.Finite :=
+  Nat.finite_of_card_ne_zero <| by rw [card_left_transversal hs]; exact FiniteIndex.finiteIndex
+
+@[to_additive]
+lemma finite_of_mem_rightTransversals [H.FiniteIndex] (hs : S ∈ rightTransversals H) : S.Finite :=
+  Nat.finite_of_card_ne_zero <| by rw [card_right_transversal hs]; exact FiniteIndex.finiteIndex
 
 @[to_additive]
 theorem range_mem_leftTransversals {f : G ⧸ H → G} (hf : ∀ q, ↑(f q) = q) :
