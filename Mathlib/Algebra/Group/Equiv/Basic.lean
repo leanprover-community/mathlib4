@@ -467,23 +467,44 @@ end Mul
 section MulOneClass
 variable [MulOneClass M] [MulOneClass N] [MulOneClass P]
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): `simp` can prove this but it is a valid `dsimp` lemma.
--- However, we would need to redesign the the `dsimp` set to make this `@[simp]`.
+/-- A multiplicative isomorphism of monoids sends `1` to `1` (and is hence a monoid isomorphism). -/
+@[to_additive
+"An additive isomorphism of additive monoids sends `0` to `0`
+(and is hence an additive monoid isomorphism)."]
+protected lemma map_one (h : M ≃* N) : h 1 = 1 := map_one h
+
+/-- Extract the forward direction of a multiplicative equivalence
+as a multiplication-preserving function. -/
+@[to_additive "Extract the forward direction of an additive equivalence
+as an addition-preserving function."]
+def toMonoidHom (h : M ≃* N) : M →* N :=
+  { h with map_one' := h.map_one }
+
+@[to_additive] instance : Coe (M ≃* N) (M →* N) := ⟨MulEquiv.toMonoidHom⟩
+
+@[to_additive (attr := simp)]
+lemma coe_toMonoidHom (e : M ≃* N) : ⇑e.toMonoidHom = e := rfl
+
 @[to_additive]
-theorem coe_monoidHom_refl : (refl M : M →* M) = MonoidHom.id M := rfl
+lemma toMonoidHom_injective : Injective (toMonoidHom : M ≃* N → M →* N) :=
+  .of_comp (f := DFunLike.coe) DFunLike.coe_injective
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): `simp` can prove this but it is a valid `dsimp` lemma.
--- However, we would need to redesign the the `dsimp` set to make this `@[simp]`.
+-- However, we would need to redesign the `dsimp` set to make this `@[simp]`.
+@[to_additive] lemma toMonoidHom_refl : (refl M : M →* M) = MonoidHom.id M := rfl
+
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10618): `simp` can prove this but it is a valid `dsimp` lemma.
+-- However, we would need to redesign the `dsimp` set to make this `@[simp]`.
 @[to_additive]
-lemma coe_monoidHom_trans (e₁ : M ≃* N) (e₂ : N ≃* P) :
+lemma toMonoidHom_trans (e₁ : M ≃* N) (e₂ : N ≃* P) :
     (e₁.trans e₂ : M →* P) = (e₂ : N →* P).comp ↑e₁ := rfl
 
 @[to_additive (attr := simp)]
-lemma coe_monoidHom_comp_coe_monoidHom_symm (e : M ≃* N) :
+lemma toMonoidHom_comp_toMonoidHom_symm (e : M ≃* N) :
     (e : M →* N).comp e.symm = MonoidHom.id _ := by ext; simp
 
 @[to_additive (attr := simp)]
-lemma coe_monoidHom_symm_comp_coe_monoidHom (e : M ≃* N) :
+lemma toMonoidHom_symm_comp_toMonoidHom (e : M ≃* N) :
     (e.symm : N →* M).comp e = MonoidHom.id _ := by ext; simp
 
 @[to_additive]
@@ -493,12 +514,6 @@ lemma comp_left_injective (e : M ≃* N) : Injective fun f : N →* P ↦ f.comp
 @[to_additive]
 lemma comp_right_injective (e : M ≃* N) : Injective fun f : P →* M ↦ (e : M →* N).comp f :=
   LeftInverse.injective (g := (e.symm : N →* M).comp) fun f ↦ by simp [← MonoidHom.comp_assoc]
-
-/-- A multiplicative isomorphism of monoids sends `1` to `1` (and is hence a monoid isomorphism). -/
-@[to_additive
-  "An additive isomorphism of additive monoids sends `0` to `0`
-  (and is hence an additive monoid isomorphism)."]
-protected theorem map_one (h : M ≃* N) : h 1 = 1 := map_one h
 
 @[to_additive]
 protected theorem map_eq_one_iff (h : M ≃* N) {x : M} : h x = 1 ↔ x = 1 :=
@@ -518,25 +533,6 @@ noncomputable def ofBijective {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomCla
 @[to_additive (attr := simp)]
 theorem ofBijective_apply_symm_apply {n : N} (f : M →* N) (hf : Bijective f) :
     f ((ofBijective f hf).symm n) = n := (ofBijective f hf).apply_symm_apply n
-
-/-- Extract the forward direction of a multiplicative equivalence
-as a multiplication-preserving function.
--/
-@[to_additive "Extract the forward direction of an additive equivalence
-  as an addition-preserving function."]
-def toMonoidHom (h : M ≃* N) : M →* N :=
-  { h with map_one' := h.map_one }
-
-@[to_additive (attr := simp)]
-theorem coe_toMonoidHom (e : M ≃* N) : ⇑e.toMonoidHom = e := rfl
-
-@[to_additive (attr := simp)]
-theorem toMonoidHom_eq_coe (f : M ≃* N) : f.toMonoidHom = (f : M →* N) :=
-  rfl
-
-@[to_additive]
-theorem toMonoidHom_injective : Injective (toMonoidHom : M ≃* N → M →* N) :=
-  Injective.of_comp (f := DFunLike.coe) DFunLike.coe_injective
 
 end MulOneClass
 
