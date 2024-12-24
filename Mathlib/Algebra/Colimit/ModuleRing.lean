@@ -219,9 +219,8 @@ lemma congr_apply_of (e : (i : ι) → G i ≃ₗ[R] G' i) (he : ∀ i j h, e j 
   map_apply_of _ he _
 
 open LinearEquiv LinearMap in
-lemma congr_symm_apply_of
-    (e : (i : ι) → G i ≃ₗ[R] G' i) (he : ∀ i j h, e j ∘ₗ f i j h = f' i j h ∘ₗ e i)
-    {i : ι} (g : G' i) :
+lemma congr_symm_apply_of (e : (i : ι) → G i ≃ₗ[R] G' i)
+    (he : ∀ i j h, e j ∘ₗ f i j h = f' i j h ∘ₗ e i) {i : ι} (g : G' i) :
     (congr e he).symm (of _ _ G' f' i g) = of _ _ G f i ((e i).symm g) :=
   map_apply_of _ (fun i j h ↦ by
     rw [toLinearMap_symm_comp_eq, ← comp_assoc, he i, comp_assoc, comp_coe, symm_trans_self,
@@ -382,8 +381,7 @@ def map (g : (i : ι) → G i →+ G' i)
   DFunLike.ext _ _ <| by
     rintro ⟨x⟩; refine x.induction_on (by simp) (fun _ ↦ map_apply_of _ _) (by simp +contextual)
 
-lemma map_comp
-    (g₁ : (i : ι) → G i →+ G' i) (g₂ : (i : ι) → G' i →+ G'' i)
+lemma map_comp (g₁ : (i : ι) → G i →+ G' i) (g₂ : (i : ι) → G' i →+ G'' i)
     (hg₁ : ∀ i j h, (g₁ j).comp (f i j h) = (f' i j h).comp (g₁ i))
     (hg₂ : ∀ i j h, (g₂ j).comp (f' i j h) = (f'' i j h).comp (g₂ i)) :
     ((map g₂ hg₂).comp (map g₁ hg₁) :
@@ -413,15 +411,13 @@ def congr (e : (i : ι) → G i ≃+ G' i)
       simp [← eq1, of_f])
     (by simp [map_comp]) (by simp [map_comp])
 
-lemma congr_apply_of
-    (e : (i : ι) → G i ≃+ G' i)
+lemma congr_apply_of (e : (i : ι) → G i ≃+ G' i)
     (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G i) :
     congr e he (of G f i g) = of G' f' i (e i g) :=
   map_apply_of _ he _
 
-lemma congr_symm_apply_of
-    (e : (i : ι) → G i ≃+ G' i)
+lemma congr_symm_apply_of (e : (i : ι) → G i ≃+ G' i)
     (he : ∀ i j h, (e j).toAddMonoidHom.comp (f i j h) = (f' i j h).comp (e i))
     {i : ι} (g : G' i) :
     (congr e he).symm (of G' f' i g) = of G f i ((e i).symm g) := by
@@ -489,28 +485,12 @@ theorem quotientMk_of (i x) : Ideal.Quotient.mk _ (.of ⟨i, x⟩) = of G f i x 
 /-- Every element of the direct limit corresponds to some element in
 some component of the directed system. -/
 theorem exists_of [Nonempty ι] [IsDirected ι (· ≤ ·)] (z : DirectLimit G f) :
-    ∃ i x, of G f i x = z :=
-  Nonempty.elim (by infer_instance) fun ind : ι ↦
-    Quotient.inductionOn' z fun x ↦
-      FreeAbelianGroup.induction_on x ⟨ind, 0, (of _ _ ind).map_zero⟩
-        (fun s ↦
-          Multiset.induction_on s ⟨ind, 1, (of _ _ ind).map_one⟩ fun a s ih ↦
-            let ⟨i, x⟩ := a
-            let ⟨j, y, hs⟩ := ih
-            let ⟨k, hik, hjk⟩ := exists_ge_ge i j
-            ⟨k, f i k hik x * f j k hjk y, by
-              rw [(of G f k).map_mul, of_f, of_f, hs]
-              /- porting note: In Lean3, from here, this was `by refl`. I have added
-              the lemma `FreeCommRing.of_cons` to fix this proof. -/
-              apply congr_arg Quotient.mk''
-              symm
-              apply FreeCommRing.of_cons⟩)
-        (fun s ⟨i, x, ih⟩ ↦ ⟨i, -x, by
-          rw [(of G _ _).map_neg, ih]
-          rfl⟩)
-        fun p q ⟨i, x, ihx⟩ ⟨j, y, ihy⟩ ↦
-        let ⟨k, hik, hjk⟩ := exists_ge_ge i j
-        ⟨k, f i k hik x + f j k hjk y, by rw [(of _ _ _).map_add, of_f, of_f, ihx, ihy]; rfl⟩
+    ∃ i x, of G f i x = z := by
+  obtain ⟨z, rfl⟩ := Ideal.Quotient.mk_surjective z
+  refine z.induction_on ⟨Classical.arbitrary ι, -1, by simp⟩ (fun ⟨i, x⟩ ↦ ⟨i, x, rfl⟩) ?_ ?_ <;>
+    rintro x' y' ⟨i, x, hx⟩ ⟨j, y, hy⟩ <;> have ⟨k, hik, hjk⟩ := exists_ge_ge i j
+  · exact ⟨k, f i k hik x + f j k hjk y, by rw [map_add, of_f, of_f, hx, hy]; rfl⟩
+  · exact ⟨k, f i k hik x * f j k hjk y, by rw [map_mul, of_f, of_f, hx, hy]; rfl⟩
 
 section
 
@@ -610,7 +590,7 @@ variable {G f'}
 bigger module in the directed system. -/
 theorem of.zero_exact {i x} (hix : of G (f' · · ·) i x = 0) :
     ∃ (j : _) (hij : i ≤ j), f' i j hij x = 0 := by
-  haveI : Nonempty ι := ⟨i⟩
+  haveI := Nonempty.intro i
   apply_fun ringEquiv _ _ at hix
   rwa [map_zero, ringEquiv_of, DirectLimit.exists_eq_zero] at hix
 
