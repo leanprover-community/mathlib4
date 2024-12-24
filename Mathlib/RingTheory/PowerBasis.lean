@@ -5,6 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.LinearAlgebra.SModEq
+import Mathlib.RingTheory.Ideal.BigOperators
 
 /-!
 # Power basis

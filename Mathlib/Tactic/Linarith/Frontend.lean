@@ -277,7 +277,7 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
       if let some t := prefType then
         let (i, vs) ← hyp_set.find t
         proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g vs <|>
-        findLinarithContradiction cfg g ((hyp_set.eraseIdx i).toList.map (·.2))
+        findLinarithContradiction cfg g ((hyp_set.eraseIdxIfInBounds i).toList.map (·.2))
       else findLinarithContradiction cfg g (hyp_set.toList.map (·.2))
   let mut preprocessors := cfg.preprocessors
   if cfg.splitNe then

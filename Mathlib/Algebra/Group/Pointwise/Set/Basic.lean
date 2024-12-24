@@ -1097,6 +1097,10 @@ lemma pow_subset_pow_right (hs : 1 ∈ s) (hmn : m ≤ n) : s ^ m ⊆ s ^ n :=
 lemma pow_subset_pow (hst : s ⊆ t) (ht : 1 ∈ t) (hmn : m ≤ n) : s ^ m ⊆ t ^ n :=
   (pow_subset_pow_left hst).trans (pow_subset_pow_right ht hmn)
 
+@[to_additive]
+lemma subset_pow (hs : 1 ∈ s) (hn : n ≠ 0) : s ⊆ s ^ n := by
+  simpa using pow_subset_pow_right hs <| Nat.one_le_iff_ne_zero.2 hn
+
 @[deprecated (since := "2024-11-19")] alias pow_subset_pow_of_one_mem := pow_subset_pow_right
 
 @[deprecated (since := "2024-11-19")]
@@ -1162,6 +1166,40 @@ protected theorem _root_.IsUnit.set : IsUnit a → IsUnit ({a} : Set α) :=
   IsUnit.map (singletonMonoidHom : α →* Set α)
 
 end Monoid
+
+section IsLeftCancelMul
+variable [Mul α] [IsLeftCancelMul α] {s t : Set α}
+
+@[to_additive]
+lemma Nontrivial.mul_left : t.Nontrivial → s.Nonempty → (s * t).Nontrivial := by
+  rintro ⟨a, ha, b, hb, hab⟩ ⟨c, hc⟩
+  exact ⟨c * a, mul_mem_mul hc ha, c * b, mul_mem_mul hc hb, by simpa⟩
+
+@[to_additive]
+lemma Nontrivial.mul (hs : s.Nontrivial) (ht : t.Nontrivial) : (s * t).Nontrivial :=
+  ht.mul_left hs.nonempty
+
+end IsLeftCancelMul
+
+section IsRightCancelMul
+variable [Mul α] [IsRightCancelMul α] {s t : Set α}
+
+@[to_additive]
+lemma Nontrivial.mul_right : s.Nontrivial → t.Nonempty → (s * t).Nontrivial := by
+  rintro ⟨a, ha, b, hb, hab⟩ ⟨c, hc⟩
+  exact ⟨a * c, mul_mem_mul ha hc, b * c, mul_mem_mul hb hc, by simpa⟩
+
+end IsRightCancelMul
+
+section CancelMonoid
+variable [CancelMonoid α] {s t : Set α} {a : α} {n : ℕ}
+
+@[to_additive]
+lemma Nontrivial.pow (hs : s.Nontrivial) : ∀ {n}, n ≠ 0 → (s ^ n).Nontrivial
+  | 1, _ => by simpa
+  | n + 2, _ => by simpa [pow_succ] using (hs.pow n.succ_ne_zero).mul hs
+
+end CancelMonoid
 
 /-- `Set α` is a `CommMonoid` under pointwise operations if `α` is. -/
 @[to_additive "`Set α` is an `AddCommMonoid` under pointwise operations if `α` is."]
@@ -1425,9 +1463,35 @@ lemma preimage_div (hm : Injective m) {s t : Set β} (hs : s ⊆ range m) (ht : 
 
 end Group
 
+section Pi
+
 variable {ι : Type*} {α : ι → Type*} [∀ i, Inv (α i)]
 
 @[to_additive (attr := simp)]
 lemma inv_pi (s : Set ι) (t : ∀ i, Set (α i)) : (s.pi t)⁻¹ = s.pi fun i ↦ (t i)⁻¹ := by ext x; simp
+
+end Pi
+
+section Pointwise
+
+open scoped Pointwise
+
+@[to_additive]
+lemma MapsTo.mul [Mul β] {A : Set α} {B₁ B₂ : Set β} {f₁ f₂ : α → β}
+    (h₁ : MapsTo f₁ A B₁) (h₂ : MapsTo f₂ A B₂) : MapsTo (f₁ * f₂) A (B₁ * B₂) :=
+  fun _ h => mul_mem_mul (h₁ h) (h₂ h)
+
+@[to_additive]
+lemma MapsTo.inv [DivisionCommMonoid β] {A : Set α} {B : Set β} {f : α → β} (h : MapsTo f A B) :
+    MapsTo (f⁻¹) A (B⁻¹) :=
+  fun _ ha => inv_mem_inv.2 (h ha)
+
+
+@[to_additive]
+lemma MapsTo.div [DivisionCommMonoid β] {A : Set α} {B₁ B₂ : Set β} {f₁ f₂ : α → β}
+    (h₁ : MapsTo f₁ A B₁) (h₂ : MapsTo f₂ A B₂) : MapsTo (f₁ / f₂) A (B₁ / B₂) :=
+  fun _ ha => div_mem_div (h₁ ha) (h₂ ha)
+
+end Pointwise
 
 end Set

@@ -258,10 +258,8 @@ noncomputable def homologyData' (h : (K.sc' i j k).HomologyData) :
 
 end HomologyData
 
-variable {j : ι} {j' : ι'} (hj' : e.f j = j')
-
-include hj' in
-lemma hasHomology [K.HasHomology j] : (K.extend e).HasHomology j' :=
+lemma hasHomology {j : ι} {j' : ι'} (hj' : e.f j = j') [K.HasHomology j] :
+    (K.extend e).HasHomology j' :=
   ShortComplex.HasHomology.mk'
     (homologyData' K e hj' rfl rfl ((K.sc j).homologyData))
 

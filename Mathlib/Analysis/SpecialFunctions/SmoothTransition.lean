@@ -72,7 +72,7 @@ theorem tendsto_polynomial_inv_mul_zero (p : ℝ[X]) :
   refine tendsto_const_nhds.if ?_
   simp only [not_le]
   have : Tendsto (fun x ↦ p.eval x⁻¹ / exp x⁻¹) (𝓝[>] 0) (𝓝 0) :=
-    p.tendsto_div_exp_atTop.comp tendsto_inv_zero_atTop
+    p.tendsto_div_exp_atTop.comp tendsto_inv_nhdsGT_zero
   refine this.congr' <| mem_of_superset self_mem_nhdsWithin fun x hx ↦ ?_
   simp [expNegInvGlue, hx.out.not_le, exp_neg, div_eq_mul_inv]
 
@@ -108,7 +108,8 @@ theorem contDiff_polynomial_eval_inv_mul {n : ℕ∞} (p : ℝ[X]) :
   induction m generalizing p with
   | zero => exact contDiff_zero.2 <| continuous_polynomial_eval_inv_mul _
   | succ m ihm =>
-    refine contDiff_succ_iff_deriv.2 ⟨differentiable_polynomial_eval_inv_mul _, ?_⟩
+    rw [show ((m + 1 : ℕ) : WithTop ℕ∞) = m + 1 from rfl]
+    refine contDiff_succ_iff_deriv.2 ⟨differentiable_polynomial_eval_inv_mul _, by simp, ?_⟩
     convert ihm (X ^ 2 * (p - derivative (R := ℝ) p)) using 2
     exact (hasDerivAt_polynomial_eval_inv_mul p _).deriv
 
