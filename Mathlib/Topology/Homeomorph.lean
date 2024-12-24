@@ -683,19 +683,16 @@ def sumPiEquivProdPi (S T : Type*) (A : S ⊕ T → Type*)
   continuous_toFun := Continuous.prod_mk (by fun_prop) (by fun_prop)
   continuous_invFun := continuous_pi <| by rintro (s | t) <;> simp <;> fun_prop
 
-/-- The product over `PUnit` of a family of topological spaces
-is homeomorphic to the value of the family at `()`.
+/-- The product `Π t : α, f t` of a family of topological spaces is homeomorphic to the
+space `f ⬝` when `α` only contains `⬝`.
 
-This is `Equiv.pUnitPiEquiv` as a `Homeomorph`.
+This is `Equiv.piUnique` as a `Homeomorph`.
 -/
-def pUnitPiEquiv (f : PUnit → Type*) [∀ x, TopologicalSpace (f x)] :
-    (Π t, f t) ≃ₜ f () where
-  toFun a := a ()
-  invFun a _t := a
-  left_inv _ := rfl
-  right_inv _ := rfl
+def piUnique {α : Type*} [Unique α] (f : α → Type*) [∀ x, TopologicalSpace (f x)] :
+    (Π t, f t) ≃ₜ f default where
+  __ := Equiv.piUnique f
   continuous_toFun := by fun_prop
-  continuous_invFun := by fun_prop
+  continuous_invFun := Equiv.continuous_symm_of_isOpenMap (.piUnique f) <| isOpenMap_eval _
 
 end prod
 

@@ -591,16 +591,17 @@ def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*)
   __ := LinearEquiv.sumPiEquivProdPi R S T A
   __ := Homeomorph.sumPiEquivProdPi S T A
 
-/-- The product over `PUnit` of a family of topological modules is isomorphic (both topologically
-and algebraically) to the value of the family at `()`.
+/-- The product `Π t : α, f t` of a family of topological modules is isomorphic
+(both topologically and algebraically) to the space `f ⬝` when `α` only contains `⬝`.
 
-This is `Equiv.pUnitPiEquiv` as a `ContinuousLinearEquiv`.
+This is `Equiv.piUnique` as a `ContinuousLinearEquiv`.
 -/
-def pUnitPiEquiv (R : Type*) [Semiring R] (f : PUnit → Type*)
+def piUnique {α : Type*} [Unique α] (R : Type*) [Semiring R] (f : α → Type*)
     [∀ x, AddCommMonoid (f x)] [∀ x, Module R (f x)] [∀ x, TopologicalSpace (f x)] :
-    (Π t : PUnit, f t) ≃L[R] f () where
-  __ := LinearEquiv.pUnitPiEquiv R f
-  __ := Homeomorph.pUnitPiEquiv f
+    (Π t, f t) ≃L[R] f default where
+  __ := LinearEquiv.piUnique R f
+  __ := Homeomorph.piUnique f
+
 end Pi
 
 section piCongrRight

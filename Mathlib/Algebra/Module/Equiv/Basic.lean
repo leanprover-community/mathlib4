@@ -715,13 +715,14 @@ def sumPiEquivProdPi (R : Type*) [Semiring R] (S T : Type*) (A : S ⊕ T → Typ
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- The product over `PUnit` of a family of modules is isomorphic to the module associated to `()`.
+/-- The product `Π t : α, f t` of a family of modules is linearly isomorphic to the module
+`f ⬝` when `α` only contains `⬝`.
 
-This is `Equiv.pUnitPiEquiv` as a `LinearEquiv`.
+This is `Equiv.piUnique` as a `LinearEquiv`.
 -/
-def pUnitPiEquiv (R : Type*) [Semiring R] (f : PUnit → Type*) [∀ x, AddCommMonoid (f x)]
-    [∀ x, Module R (f x)] : (Π t : PUnit, f t) ≃ₗ[R] f () where
-  __ := Equiv.pUnitPiEquiv _
+def piUnique {α : Type*} [Unique α] (R : Type*) [Semiring R] (f : α → Type*)
+    [∀ x, AddCommMonoid (f x)] [∀ x, Module R (f x)] : (Π t : α, f t) ≃ₗ[R] f default where
+  __ := Equiv.piUnique _
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
