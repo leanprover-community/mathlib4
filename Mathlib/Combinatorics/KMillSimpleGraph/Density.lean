@@ -8,7 +8,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.KMillSimpleGraph.Basic
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring

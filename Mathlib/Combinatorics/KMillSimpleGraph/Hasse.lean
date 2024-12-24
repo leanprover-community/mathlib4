@@ -8,7 +8,7 @@ Authors: Yaël Dillies
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Combinatorics.SimpleGraph.Prod
+import Mathlib.Combinatorics.KMillSimpleGraph.Prod
 import Mathlib.Data.Fin.SuccPred
 import Mathlib.Order.SuccPred.Relation
 

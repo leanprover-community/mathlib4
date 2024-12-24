@@ -8,7 +8,7 @@ Authors: Arthur Paulino, Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Combinatorics.SimpleGraph.Coloring
+import Mathlib.Combinatorics.KMillSimpleGraph.Coloring
 
 /-!
 # Graph partitions

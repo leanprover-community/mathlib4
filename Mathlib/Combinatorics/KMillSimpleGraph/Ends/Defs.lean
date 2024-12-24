@@ -9,7 +9,7 @@ Authors: Anand Rao, Rémi Bottinelli
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.CofilteredSystem
-import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Combinatorics.KMillSimpleGraph.Connectivity
 import Mathlib.Data.SetLike.Basic
 
 /-!

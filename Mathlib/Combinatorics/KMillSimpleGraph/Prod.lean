@@ -8,7 +8,7 @@ Authors: George Peter Banyard, Yaël Dillies, Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Combinatorics.KMillSimpleGraph.Connectivity
 
 /-!
 # Graph products

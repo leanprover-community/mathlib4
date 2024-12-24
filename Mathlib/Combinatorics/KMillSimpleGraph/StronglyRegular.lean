@@ -8,7 +8,7 @@ Authors: Alena Gusakov
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.KMillSimpleGraph.Basic
 import Mathlib.Data.Set.Finite
 
 /-!

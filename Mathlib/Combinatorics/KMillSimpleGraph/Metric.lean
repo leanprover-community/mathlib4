@@ -8,7 +8,7 @@ Authors: Kyle Miller, Vincent Beffara
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Combinatorics.SimpleGraph.Connectivity
+import Mathlib.Combinatorics.KMillSimpleGraph.Connectivity
 import Mathlib.Data.Nat.Lattice
 
 /-!

@@ -9,7 +9,7 @@ Authors: Joanna Choules
 ! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.CofilteredSystem
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
+import Mathlib.Combinatorics.KMillSimpleGraph.Subgraph
 
 /-!
 # Homomorphisms from finite subgraphs

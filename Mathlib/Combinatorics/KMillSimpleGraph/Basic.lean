@@ -8,8 +8,8 @@ Authors: Aaron Anderson, Jalex Stark, Kyle Miller, Alena Gusakov, Hunter Monroe
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Combinatorics.SimpleGraph.Init
-import Mathlib.Combinatorics.Digraph.Basic
+import Mathlib.Combinatorics.KMillSimpleGraph.Init
+import Mathlib.Combinatorics.KMillDigraph.Basic
 import Mathlib.Data.Rel
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Sym.Sym2

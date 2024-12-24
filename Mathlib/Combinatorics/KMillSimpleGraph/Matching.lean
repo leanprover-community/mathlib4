@@ -8,8 +8,8 @@ Authors: Alena Gusakov, Arthur Paulino, Kyle Miller
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Combinatorics.SimpleGraph.DegreeSum
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
+import Mathlib.Combinatorics.KMillSimpleGraph.DegreeSum
+import Mathlib.Combinatorics.KMillSimpleGraph.Subgraph
 
 /-!
 # Matchings

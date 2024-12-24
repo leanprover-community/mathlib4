@@ -10,7 +10,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.Module.Basic
-import Mathlib.Combinatorics.SimpleGraph.Density
+import Mathlib.Combinatorics.KMillSimpleGraph.Density
 
 /-!
 # Energy of a partition

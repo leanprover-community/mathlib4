@@ -8,7 +8,7 @@ Authors: Yaël Dillies, Bhavik Mehta
 ! Please do not edit these lines, except to modify the commit id
 ! if you have ported upstream changes.
 -/
-import Mathlib.Combinatorics.SimpleGraph.Density
+import Mathlib.Combinatorics.KMillSimpleGraph.Density
 import Mathlib.SetTheory.Ordinal.Basic
 
 /-!
