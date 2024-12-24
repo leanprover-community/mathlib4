@@ -9,6 +9,12 @@ import Mathlib.Topology.Algebra.FilterBasis
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 
 /-!
+**WARNING** : The content of this file will be replaced by that of
+`Topology.Algebra.Nonarchimedean.BasesNew` once the rest of the library has been adapted.
+Consider this material as deprecated, unless you depend on other library files using the
+old API. See `https://leanprover.zulipchat.com/#narrow/channel/287929-mathlib4/topic/Refactoring.20algebraic.20filter.20bases/near/479437345`
+for more details.
+
 # Neighborhood bases for non-archimedean rings and modules
 
 This files contains special families of filter bases on rings and modules that give rise to
