@@ -122,8 +122,8 @@ theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
 /-- A term of `R` satisfying `IsSumSq` can be written as `∑ i ∈ I, x i`
 where each `x i` is a square in `R`. -/
 theorem IsSumSq.exists_sum [AddCommMonoid R] [Mul R] {a : R} (ha : IsSumSq a) :
-    (∃ (ι : Type) (I : Finset ι) (x : ι → R), (∀ i ∈ I, IsSquare (x i)) ∧ ∑ i ∈ I, x i = a) :=
-  AddSubmonoid.exists_finset_sum_of_mem_closure (s := {x : R | IsSquare x}) (by simpa)
+    ∃ (ι : Type) (I : Finset ι) (x : ι → R), (∀ i ∈ I, IsSquare (x i)) ∧ ∑ i ∈ I, x i = a :=
+  AddSubmonoid.exists_finsetSum_of_mem_closure (s := {x : R | IsSquare x}) (by simpa)
 
 /-- Universe-polymorphic version of `exists_sum`. -/
 theorem IsSumSq.exists_sum' [AddCommMonoid R] [Mul R] {a : R} (ha : IsSumSq a) :
