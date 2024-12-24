@@ -544,7 +544,6 @@ def truncate {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) (t₀ t�
     γ.continuous_extend.comp ((continuous_subtype_val.max continuous_const).min continuous_const)
   source' := by
     simp only [min_def, max_def']
-    norm_cast
     split_ifs with h₁ h₂ h₃ h₄
     · simp [γ.extend_of_le_zero h₁]
     · congr
@@ -554,7 +553,6 @@ def truncate {X : Type*} [TopologicalSpace X] {a b : X} (γ : Path a b) (t₀ t�
     all_goals rfl
   target' := by
     simp only [min_def, max_def']
-    norm_cast
     split_ifs with h₁ h₂ h₃
     · simp [γ.extend_of_one_le h₂]
     · rfl
@@ -1184,6 +1182,11 @@ protected theorem IsClosed.pathComponent (x : X) : IsClosed (pathComponent x) :=
 /-- In a locally path connected space, each path component is a clopen set. -/
 protected theorem IsClopen.pathComponent (x : X) : IsClopen (pathComponent x) :=
   ⟨.pathComponent x, .pathComponent x⟩
+
+lemma pathComponentIn_mem_nhds (hF : F ∈ 𝓝 x) : pathComponentIn x F ∈ 𝓝 x := by
+  let ⟨u, huF, hu, hxu⟩ := mem_nhds_iff.mp hF
+  exact mem_nhds_iff.mpr ⟨pathComponentIn x u, pathComponentIn_mono huF,
+    hu.pathComponentIn x, mem_pathComponentIn_self hxu⟩
 
 theorem pathConnectedSpace_iff_connectedSpace : PathConnectedSpace X ↔ ConnectedSpace X := by
   refine ⟨fun _ ↦ inferInstance, fun h ↦ ⟨inferInstance, fun x y ↦ ?_⟩⟩
