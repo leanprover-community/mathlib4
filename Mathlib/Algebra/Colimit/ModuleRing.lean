@@ -5,6 +5,7 @@ Authors: Kenny Lau, Chris Hughes, Jujian Zhang
 -/
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Data.Finset.Order
+import Mathlib.RingTheory.Finiteness.Basic
 import Mathlib.RingTheory.FreeCommRing
 import Mathlib.RingTheory.Ideal.Maps
 import Mathlib.RingTheory.Ideal.Quotient.Defs
@@ -263,6 +264,34 @@ theorem of.zero_exact [DirectedSystem G (f · · ·)] [IsDirected ι (· ≤ ·)
   rwa [map_zero, linearEquiv_of, DirectLimit.exists_eq_zero] at H
 
 end DirectLimit
+
+open DirectLimit
+
+variable (R) (M : Type*) [AddCommMonoid M] [Module R M]
+
+/-- The directed system of finitely generated submodules of a module. -/
+def fgSystem (N₁ N₂ : {N : Submodule R M // N.FG}) (le : N₁ ≤ N₂) : N₁ →ₗ[R] N₂ :=
+  Submodule.inclusion le
+
+namespace fgSystem
+
+instance : IsDirected {N : Submodule R M // N.FG} (· ≤ ·) where
+  directed N₁ N₂ :=
+    ⟨⟨_, N₁.2.sup N₂.2⟩, Subtype.coe_le_coe.mp le_sup_left, Subtype.coe_le_coe.mp le_sup_right⟩
+
+instance : DirectedSystem _ (fgSystem R M · · · ·) where
+  map_self _ _ := rfl
+  map_map _ _ _ _ _ _ := rfl
+
+variable [DecidableEq {N : Submodule R M // N.FG}]
+
+open Submodule in
+def linearEquiv : DirectLimit _ (fgSystem R M) ≃ₗ[R] M :=
+  .ofBijective (lift _ _ _ _ (fun _ ↦ Submodule.subtype _) fun _ _ _ _ ↦ rfl)
+    ⟨lift_injective _ _ fun _ ↦ Subtype.val_injective, fun x ↦
+      ⟨of _ _ _ _ ⟨_, fg_span_singleton x⟩ ⟨x, subset_span <| by rfl⟩, lift_of ..⟩⟩
+
+end fgSystem
 
 end Module
 
