@@ -164,20 +164,6 @@ lemma partrec_in_zero_implies_partrec
     rw [← h]
 
 /--
-A partial function `f` is partial recursive if and only if it is
-recursive in the constant zero function.
--/
-lemma partrec_iff_partrec_in_zero
-  (f : ℕ →. ℕ) : Nat.Partrec f ↔ RecursiveIn f (fun _ => Part.some 0) := by
-  constructor
-  · intro pF
-    apply partrec_implies_recursive_in_everything
-    assumption
-  · intro h
-    apply partrec_in_zero_implies_partrec
-    assumption
-
-/--
 A partial function `f` is partial recursive if and only if it is recursive in
 every partial function `g`.
 -/
@@ -187,7 +173,7 @@ theorem partrec_iff_partrec_in_everything
   · exact partrec_implies_recursive_in_everything f
   · intro H
     have lem : RecursiveIn f (fun _ => Part.some 0) := H (fun _ => Part.some 0)
-    rw [← partrec_iff_partrec_in_zero] at lem
+    have lem : Nat.Partrec f := partrec_in_zero_implies_partrec f lem
     exact lem
 
 /--
