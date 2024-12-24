@@ -926,11 +926,10 @@ theorem associated_toQuadraticMap (B : BilinMap R M N) (x y : M) :
     LinearMap.smul_def, _root_.map_sub]
   abel_nf
 
-theorem associated_left_inverse [Invertible (2 : R)] {B₁ : BilinMap R M R} (h : B₁.IsSymm) :
-    associatedHom S B₁.toQuadraticMap = B₁ :=
+theorem associated_left_inverse [Invertible (2 : R)] {B₁ : BilinMap R M N}
+    (h : ∀ x y, (B₁ x y) = B₁ y x) : associatedHom S B₁.toQuadraticMap = B₁ :=
   LinearMap.ext₂ fun x y ↦ by
-    rw [associated_toQuadraticMap, ← h.eq x y, RingHom.id_apply, ← two_mul, ← smul_eq_mul,
-      invOf_smul_eq_iff, two_smul, two_smul]
+    rw [associated_toQuadraticMap, ← h x y, ← two_smul R, invOf_smul_eq_iff, two_smul, two_smul]
 
 /-- A version of `QuadraticMap.associated_left_inverse` for general targets. -/
 lemma associated_left_inverse' {B₁ : BilinMap R M N} (hB₁ : B₁.flip = B₁) :
