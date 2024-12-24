@@ -23,7 +23,7 @@ open Set
 theorem upperBounds_lowerBounds_gc : GaloisConnection
     (OrderDual.toDual ∘ upperBounds : Set α → (Set α)ᵒᵈ)
     (lowerBounds ∘ OrderDual.ofDual : (Set α)ᵒᵈ → Set α) := by
-  simpa [GaloisConnection, subset_def, mem_upperBounds, mem_lowerBounds] 
+  simpa [GaloisConnection, subset_def, mem_upperBounds, mem_lowerBounds]
     using fun S T ↦ forall₂_swap
 
 theorem upperBounds_iUnion {ι : Sort*} {s : ι → Set α} :
