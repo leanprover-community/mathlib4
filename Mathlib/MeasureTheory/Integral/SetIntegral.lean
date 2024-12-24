@@ -1319,6 +1319,12 @@ theorem integral_re {f : X → 𝕜} (hf : Integrable f μ) :
     ∫ x, RCLike.re (f x) ∂μ = RCLike.re (∫ x, f x ∂μ) :=
   (@RCLike.reCLM 𝕜 _).integral_comp_comm hf
 
+theorem Complex.integral_re {f : X → ℂ} (hf : Integrable f μ) :
+    ∫ x, (f x).re ∂μ = (∫x, f x ∂μ).re := _root_.integral_re hf
+
+theorem setIntegral_re {s : Set X} {f : X → ℂ} (hf : IntegrableOn f s μ) :
+    ∫ x in s, (f x).re ∂μ = (∫x in s, f x ∂μ).re := Complex.integral_re hf.integrable
+
 theorem integral_im {f : X → 𝕜} (hf : Integrable f μ) :
     ∫ x, RCLike.im (f x) ∂μ = RCLike.im (∫ x, f x ∂μ) :=
   (@RCLike.imCLM 𝕜 _).integral_comp_comm hf
