@@ -79,6 +79,7 @@ variable (cocone : CokernelCofork (hcone.lift (KernelFork.ofι (K.d i j) (K.d_co
   (hcocone : IsColimit cocone)
 
 include hi hi' hcone in
+/-- Auxiliary lemma for `lift_d_comp_eq_zero_iff`. -/
 lemma lift_d_comp_eq_zero_iff' ⦃W : C⦄ (f' : K.X i ⟶ cone.pt)
     (hf' : f' ≫ cone.ι = K.d i j)
     (f'' : (K.extend e).X i' ⟶ cone.pt)
