@@ -44,18 +44,12 @@ theorem isLUB_iUnion_iff_of_isLUB {ι : Sort*} {u : ι → α} {s : ι → Set �
   refine isLUB_congr ?_
   simp_rw [range_eq_iUnion, upperBounds_iUnion, upperBounds_singleton, IsLUB.upperBounds_eq (hs _)]
 
-theorem IsGLB.iUnion {ι : Sort*} {u : ι → α}  {s : ι → Set α} (hs : ∀ (i : ι), IsGLB (s i) (u i))
-    (c : α) (hc : IsGLB (Set.range u ) c) : IsGLB (⋃ i, s i) c := by
-  constructor
-  · intro e he
-    obtain ⟨i,hi⟩ := mem_iUnion.mp he
-    obtain ⟨hc₁,hc₂⟩ := hc
-    simp only [lowerBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff,
-      mem_setOf_eq] at hc₁
-    obtain ⟨hs₁,_⟩ := hs i
-    exact Preorder.le_trans c (u i) e (hc₁ i) (hs₁ hi)
-  · intro e he
-    rw [lowerBounds_iUnion] at he
-    apply hc.2
-    simp only [lowerBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff, mem_setOf_eq]
-    exact fun i => (hs i).2 (he _ (mem_range_self i))
+theorem isGLB_congr {s t : Set α} {c : α} (h : lowerBounds s = lowerBounds t) :
+    IsGLB s c ↔ IsGLB t c := by
+  rw [IsGLB, IsGLB, h]
+
+theorem isGLB_iUnion_iff_of_isLUB {ι : Sort*} {u : ι → α} {s : ι → Set α}
+    (hs : ∀ (i : ι), IsGLB (s i) (u i)) (c : α) :
+    IsGLB (Set.range u) c ↔ IsGLB (⋃ i, s i) c := by
+  refine isGLB_congr ?_
+  simp_rw [range_eq_iUnion, lowerBounds_iUnion, lowerBounds_singleton, IsGLB.lowerBounds_eq (hs _)]
