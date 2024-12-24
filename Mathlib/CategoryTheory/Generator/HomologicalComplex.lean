@@ -65,7 +65,7 @@ lemma isSeparator_coproduct_separatingFamily {X : C} (hX : IsSeparator X) :
     (Discrete.equivalence (Equiv.punitProd.{0} ι).symm) (coproductIsCoproduct φ)
   exact IsSeparating.isSeparator_of_isColimit_cofan h hc
 
-instance [HasSeparator C] : HasSeparator (HomologicalComplex C c) :=
+instance hasSeparator [HasSeparator C] : HasSeparator (HomologicalComplex C c) :=
   ⟨_, isSeparator_coproduct_separatingFamily c (isSeparator_separator C)⟩
 
 end HomologicalComplex
