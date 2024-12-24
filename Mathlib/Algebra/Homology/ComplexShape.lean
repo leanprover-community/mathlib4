@@ -167,7 +167,7 @@ lemma prev_eq_self (c : ComplexShape ι) (j : ι) (hj : ¬ c.Rel (c.prev j) j) :
 (For example when `a = 1`, a cohomology theory indexed by `ℕ` or `ℤ`)
 -/
 @[simps]
-def up' {α : Type*} [AddRightCancelSemigroup α] (a : α) : ComplexShape α where
+def up' {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) : ComplexShape α where
   Rel i j := i + a = j
   next_eq hi hj := hi.symm.trans hj
   prev_eq hi hj := add_right_cancel (hi.trans hj.symm)
@@ -176,29 +176,85 @@ def up' {α : Type*} [AddRightCancelSemigroup α] (a : α) : ComplexShape α whe
 (For example when `a = 1`, a homology theory indexed by `ℕ` or `ℤ`)
 -/
 @[simps]
-def down' {α : Type*} [AddRightCancelSemigroup α] (a : α) : ComplexShape α where
+def down' {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) : ComplexShape α where
   Rel i j := j + a = i
   next_eq hi hj := add_right_cancel (hi.trans hj.symm)
   prev_eq hi hj := hi.symm.trans hj
 
-theorem down'_mk {α : Type*} [AddRightCancelSemigroup α] (a : α) (i j : α) (h : j + a = i) :
+theorem down'_mk {α : Type*} [Add α] [IsRightCancelAdd α] (a : α) (i j : α) (h : j + a = i) :
     (down' a).Rel i j := h
 
 /-- The `ComplexShape` appropriate for cohomology, so `d : X i ⟶ X j` only when `j = i + 1`.
 -/
 @[simps!]
-def up (α : Type*) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
+def up (α : Type*) [Add α] [IsRightCancelAdd α] [One α] : ComplexShape α :=
   up' 1
 
 /-- The `ComplexShape` appropriate for homology, so `d : X i ⟶ X j` only when `i = j + 1`.
 -/
 @[simps!]
-def down (α : Type*) [AddRightCancelSemigroup α] [One α] : ComplexShape α :=
+def down (α : Type*) [Add α] [IsRightCancelAdd α] [One α] : ComplexShape α :=
   down' 1
 
-theorem down_mk {α : Type*} [AddRightCancelSemigroup α] [One α] (i j : α) (h : j + 1 = i) :
+theorem down_mk {α : Type*} [Add α] [IsRightCancelAdd α] [One α] (i j : α) (h : j + 1 = i) :
     (down α).Rel i j :=
   down'_mk (1 : α) i j h
+
+/-- The condition that `c.Rel i i` does not hold for any `i`. -/
+class HasNoLoop (c : ComplexShape ι) : Prop where
+  not_rel_self (i : ι) : ¬ c.Rel i i
+
+section
+
+variable (c : ComplexShape ι) [c.HasNoLoop] (j : ι)
+
+lemma not_rel_self : ¬ c.Rel j j :=
+  HasNoLoop.not_rel_self j
+
+instance : c.symm.HasNoLoop where
+  not_rel_self j := c.not_rel_self j
+
+lemma exists_distinct_prev_or :
+    (∃ (k : ι), c.Rel j k ∧ j ≠ k) ∨ ∀ (k : ι), ¬ c.Rel j k := by
+  by_cases h : ∃ (k : ι), c.Rel j k
+  · obtain ⟨k, hk⟩ := h
+    refine Or.inl ⟨k, hk, ?_⟩
+    rintro rfl
+    exact c.not_rel_self j hk
+  · exact Or.inr (by simpa using h)
+
+lemma exists_distinct_next_or :
+    (∃ (i : ι), c.Rel i j ∧ i ≠ j) ∨ ∀ (i : ι), ¬ c.Rel i j := by
+  by_cases h : ∃ (i : ι), c.Rel i j
+  · obtain ⟨i, hi⟩ := h
+    refine Or.inl ⟨i, hi, ?_⟩
+    rintro rfl
+    exact c.not_rel_self i hi
+  · exact Or.inr (by simpa using h)
+
+lemma up'_hasNoLoop {α : Type*} [AddZeroClass α] [IsRightCancelAdd α] [IsLeftCancelAdd α]
+    (a : α) (ha : a ≠ 0) :
+    (up' a).HasNoLoop where
+  not_rel_self i (hi : _ = _) :=
+    ha (add_left_cancel (by rw [add_zero, hi]))
+
+lemma down'_hasNoLoop {α : Type*} [AddZeroClass α] [IsRightCancelAdd α] [IsLeftCancelAdd α]
+    (a : α) (ha : a ≠ 0) :
+    (down' a).HasNoLoop := by
+  have := up'_hasNoLoop a ha
+  exact inferInstanceAs (up' a).symm.HasNoLoop
+
+lemma up_hasNoLoop {α : Type*} [AddZeroClass α] [IsRightCancelAdd α] [IsLeftCancelAdd α]
+    [One α] (ha : (1 : α) ≠ 0) :
+    (up α).HasNoLoop :=
+  up'_hasNoLoop _ ha
+
+lemma down_hasNoLoop {α : Type*} [AddZeroClass α] [IsRightCancelAdd α] [IsLeftCancelAdd α]
+    [One α] (ha : (1 : α) ≠ 0) :
+    (down α).HasNoLoop :=
+  down'_hasNoLoop _ ha
+
+end
 
 end ComplexShape
 
