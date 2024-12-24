@@ -27,6 +27,9 @@ namespace CategoryTheory
 
 variable {C : Type*} [Category C]
 
+/-- If `i : X ⟶ Y` and `p : Y ⟶ Z` are composable morphisms,
+and `i ≫ p` has the left lifting property with respect to `p`,
+then `i ≫ p` is a retract of `i`. -/
 noncomputable def RetractArrow.ofLeftLiftingProperty
     {X Y Z : C} (i : X ⟶ Y) (p : Y ⟶ Z)
     [HasLiftingProperty (i ≫ p) p] : RetractArrow (i ≫ p) i :=
@@ -34,6 +37,9 @@ noncomputable def RetractArrow.ofLeftLiftingProperty
   { i := Arrow.homMk (u := 𝟙 X) (v := sq.lift) (by simp)
     r := Arrow.homMk (u := 𝟙 X) (v := p) (by simp) }
 
+/-- If `i : X ⟶ Y` and `p : Y ⟶ Z` are composable morphisms,
+and `i ≫ p` has the right lifting property with respect to `i`,
+then `i ≫ p` is a retract of `p`. -/
 noncomputable def RetractArrow.ofRightLiftingProperty
     {X Y Z : C} (i : X ⟶ Y) (p : Y ⟶ Z)
     [HasLiftingProperty i (i ≫ p)] : RetractArrow (i ≫ p) p :=
