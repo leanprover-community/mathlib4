@@ -688,6 +688,7 @@ space `f ⬝` when `α` only contains `⬝`.
 
 This is `Equiv.piUnique` as a `Homeomorph`.
 -/
+@[simps! (config := .asFn)]
 def piUnique {α : Type*} [Unique α] (f : α → Type*) [∀ x, TopologicalSpace (f x)] :
     (Π t, f t) ≃ₜ f default where
   __ := Equiv.piUnique f

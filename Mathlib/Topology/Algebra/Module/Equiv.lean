@@ -596,6 +596,7 @@ and linearly isomorphic to the space `f ⬝` when `α` only contains `⬝`.
 
 This is `Equiv.piUnique` as a `ContinuousLinearEquiv`.
 -/
+@[simps! (config := .asFn)]
 def piUnique {α : Type*} [Unique α] (R : Type*) [Semiring R] (f : α → Type*)
     [∀ x, AddCommMonoid (f x)] [∀ x, Module R (f x)] [∀ x, TopologicalSpace (f x)] :
     (Π t, f t) ≃L[R] f default where
