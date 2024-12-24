@@ -59,47 +59,36 @@ Computability, Oracle, Turing Degrees, Reducibility, Equivalence Relation
 open Primrec Nat.Partrec
 
 /--
-The type of partial functions recursive in an oracle `g` is the smallest type containing
-the constant zero, the successor, left and right projections, the oracle `g`, and is closed under
-pairing, composition, primitive recursion, and μ-recursion.
+The type of partial functions `f` that are recursive in an oracle `g` is the smallest type
+containing the constant zero, the successor, left and right projections, the oracle `g`,
+and is closed under pairing, composition, primitive recursion, and μ-recursion.
 -/
-inductive RecursiveIn (g : ℕ →. ℕ) : (ℕ →. ℕ) → Prop
-  | zero : RecursiveIn g (fun _ => 0)
-  | succ : RecursiveIn g Nat.succ
-  | left : RecursiveIn g (fun n => (Nat.unpair n).1)
-  | right : RecursiveIn g (fun n => (Nat.unpair n).2)
-  | oracle : RecursiveIn g g
-  | pair {f h : ℕ →. ℕ} (hf : RecursiveIn g f) (hh : RecursiveIn g h) :
-      RecursiveIn g (fun n => (Nat.pair <$> f n <*> h n))
-  | comp {f h : ℕ →. ℕ} (hf : RecursiveIn g f) (hh : RecursiveIn g h) :
-      RecursiveIn g (fun n => h n >>= f)
-  | prec {f h : ℕ →. ℕ} (hf : RecursiveIn g f) (hh : RecursiveIn g h) :
-      RecursiveIn g (fun p =>
+inductive RecursiveIn : (ℕ →. ℕ) → (ℕ →. ℕ) → Prop
+  | zero {g} : RecursiveIn (fun _ => 0) g
+  | succ {g} : RecursiveIn Nat.succ g
+  | left {g} : RecursiveIn (fun n => (Nat.unpair n).1) g
+  | right {g} : RecursiveIn (fun n => (Nat.unpair n).2) g
+  | oracle {g} : RecursiveIn g g
+  | pair {f h g : ℕ →. ℕ} (hf : RecursiveIn f g) (hh : RecursiveIn h g) :
+      RecursiveIn (fun n => (Nat.pair <$> f n <*> h n)) g
+  | comp {f h g : ℕ →. ℕ} (hf : RecursiveIn f g) (hh : RecursiveIn h g) :
+      RecursiveIn (fun n => h n >>= f) g
+  | prec {f h g : ℕ →. ℕ} (hf : RecursiveIn f g) (hh : RecursiveIn h g) :
+      RecursiveIn (fun p =>
         let (a, n) := Nat.unpair p
         n.rec (f a) (fun y ih => do
           let i ← ih
-          h (Nat.pair a (Nat.pair y i))))
-  | rfind {f : ℕ →. ℕ} (hf : RecursiveIn g f) :
-      RecursiveIn g (fun a =>
-        Nat.rfind (fun n => (fun m => m = 0) <$> f (Nat.pair a n)))
+          h (Nat.pair a (Nat.pair y i)))) g
+  | rfind {f g : ℕ →. ℕ} (hf : RecursiveIn f g) :
+      RecursiveIn (fun a =>
+        Nat.rfind (fun n => (fun m => m = 0) <$> f (Nat.pair a n))) g
 
-/--
-`f` is Turing reducible to `g` if `f` is recursive in `g`. This is a more convenient shorthand
-for `RecursiveIn g f`.
--/
-def turing_reducible (f g : ℕ →. ℕ) : Prop :=
-  RecursiveIn g f
-
-/--
-Custom infix notation for `turing_reducible`.
--/
-infix:50 " ≤ᵀ " => turing_reducible
 
 /--
 `f` is Turing equivalent to `g` if `f` is reducible to `g` and `g` is reducible to `f`.
 -/
 def turing_equivalent (f g : ℕ →. ℕ) : Prop :=
-  AntisymmRel turing_reducible f g
+  AntisymmRel RecursiveIn f g
 
 /--
 Custom infix notation for `turing_equivalent`.
@@ -110,7 +99,7 @@ infix:50 " ≡ᵀ " => turing_equivalent
 If a function is partial recursive, then it is recursive in every partial function.
 -/
 lemma partrec_implies_recursive_in_everything
-  (f : ℕ →. ℕ) : Nat.Partrec f → (∀ g, RecursiveIn g f) := by
+  (f : ℕ →. ℕ) : Nat.Partrec f → (∀ g, RecursiveIn f g) := by
     intro pF
     intro g
     induction pF
@@ -136,8 +125,9 @@ If a function is recursive in the constant zero function,
 then it is partial recursive.
 -/
 lemma partrec_in_zero_implies_partrec
-(f : ℕ →. ℕ) : RecursiveIn (fun _ => pure 0) f → Nat.Partrec f := by
+(f : ℕ →. ℕ) : RecursiveIn f (fun _ => pure 0) → Nat.Partrec f := by
   intro fRecInZero
+  generalize h : (fun _ => pure 0) = fp at *
   induction fRecInZero
   case zero =>
     apply Nat.Partrec.zero
@@ -159,7 +149,7 @@ lemma partrec_in_zero_implies_partrec
     apply Nat.Partrec.rfind ih
 
 lemma partrec_iff_partrec_in_zero
-  (f : ℕ →. ℕ) : Nat.Partrec f ↔ RecursiveIn (fun _ => pure 0) f := by
+  (f : ℕ →. ℕ) : Nat.Partrec f ↔ RecursiveIn f (fun _ => pure 0) := by
   constructor
   · intro pF
     apply partrec_implies_recursive_in_everything
@@ -168,35 +158,23 @@ lemma partrec_iff_partrec_in_zero
     apply partrec_in_zero_implies_partrec
     assumption
 
-/-
-Alternative definition of partial recursive using the above lemma.
--/
-def Partrec₀ (f : ℕ →. ℕ) : Prop :=
-  RecursiveIn (fun _ => pure 0) f
-
 /--
 A partial function `f` is partial recursive if and only if it is recursive in
 every partial function `g`.
 -/
 theorem partrec_iff_partrec_in_everything
-  (f : ℕ →. ℕ) : Nat.Partrec f ↔ (∀ g, RecursiveIn g f) := by
+  (f : ℕ →. ℕ) : Nat.Partrec f ↔ (∀ g, RecursiveIn f g) := by
   constructor
   · exact partrec_implies_recursive_in_everything f
   · intro H
-    have lem : RecursiveIn (fun _ => pure 0) f := H (fun _ => pure 0)
+    have lem : RecursiveIn f (fun _ => pure 0) := H (fun _ => pure 0)
     rw [← partrec_iff_partrec_in_zero] at lem
     exact lem
 
 /--
- Alternative definition of partial recursive using the above lemma.
--/
-def Partrec₁ (f : ℕ →. ℕ) : Prop :=
-  ∀ g, RecursiveIn g f
-
-/--
 Proof that `turing_reducible` is reflexive.
 -/
-theorem turing_reducible_refl (f : ℕ →. ℕ) : f ≤ᵀ f :=
+theorem turing_reducible_refl (f : ℕ →. ℕ) : RecursiveIn f f :=
   RecursiveIn.oracle
 
 /--
@@ -218,7 +196,7 @@ Proof that `turing_reducible` is transitive.
 -/
 @[trans]
 theorem turing_reducible_trans {f g h : ℕ →. ℕ} :
-  f ≤ᵀ g → g ≤ᵀ h → f ≤ᵀ h := by
+  RecursiveIn f g → RecursiveIn g h → RecursiveIn f h := by
     intro hg hh
     induction hg
     case zero =>
@@ -234,18 +212,25 @@ theorem turing_reducible_trans {f g h : ℕ →. ℕ} :
     case pair f' h' _ _ hf_ih hh_ih =>
       apply RecursiveIn.pair
       · apply hf_ih
+        apply hh
       · apply hh_ih
+        apply hh
     case comp f' h' _ _ hf_ih hh_ih =>
       apply RecursiveIn.comp
       · apply hf_ih
+        apply hh
       · apply hh_ih
+        apply hh
     case prec f' h' _ _ hf_ih hh_ih =>
       apply RecursiveIn.prec
       · apply hf_ih
+        apply hh
       · apply hh_ih
+        apply hh
     case rfind f' _ hf_ih =>
       apply RecursiveIn.rfind
       · apply hf_ih
+        apply hh
 
 /--
 Proof that `turing_equivalent` is transitive.
@@ -268,7 +253,7 @@ instance : Equivalence turing_equivalent :=
 /--
 Instance declaring that `RecursiveIn` is a preorder.
 -/
-instance : IsPreorder (ℕ →. ℕ) turing_reducible where
+instance : IsPreorder (ℕ →. ℕ) RecursiveIn where
   refl := turing_reducible_refl
   trans := @turing_reducible_trans
 
@@ -276,7 +261,7 @@ instance : IsPreorder (ℕ →. ℕ) turing_reducible where
 The Turing degrees as the set of equivalence classes under Turing equivalence.
 -/
 def TuringDegree :=
-  Antisymmetrization _ turing_reducible
+  Antisymmetrization _ RecursiveIn
 
 /--
 The `join` function combines two partial functions `f` and `g` into a single partial function.
@@ -304,7 +289,7 @@ infix:99 "⊕" => join
 For any partial functions `a`, `b₁`, and `b₂`, if `b₁` is Turing equivalent to `b₂`,
 then `a` is Turing reducible to `b₁` if and only if `a` is Turing reducible to `b₂`.
 -/
-lemma reduce_lifts₁ : ∀ (a b₁ b₂ : ℕ →. ℕ), b₁≡ᵀb₂ → (a≤ᵀb₁) = (a≤ᵀb₂) := by
+lemma reduce_lifts₁ : ∀ (a b₁ b₂ : ℕ →. ℕ), b₁≡ᵀb₂ → (RecursiveIn a b₁) = (RecursiveIn a b₂) := by
   intros a b₁ b₂ bEqb
   apply propext
   constructor
@@ -318,7 +303,7 @@ For any partial functions `f`, `g`, and `h`, if `f` is Turing equivalent to `g`,
 then `f` is Turing reducible to `h` if and only if `g` is Turing reducible to `h`.
 -/
 lemma reduce_lifts₂ : ∀ (f g h : ℕ →. ℕ),
-f ≡ᵀ g → (turing_reducible f h = turing_reducible g h) := by
+f ≡ᵀ g → (RecursiveIn f h = RecursiveIn g h) := by
   intros f g h fEqg
   apply propext
   constructor
@@ -333,7 +318,7 @@ partial functions to their Turing degrees, using the above lemmas.
 -/
 def TuringDegree.turing_red (d₁ d₂ : TuringDegree) : Prop :=
   @Quot.lift₂ _ _ Prop (turing_equivalent)
-  (turing_equivalent) (turing_reducible) (reduce_lifts₁) (reduce_lifts₂) d₁ d₂
+  (turing_equivalent) (RecursiveIn) (reduce_lifts₁) (reduce_lifts₂) d₁ d₂
 
 /--
 Instance declaring that `TuringDegree.turing_red` is a partial order.
@@ -359,8 +344,6 @@ instance : PartialOrder TuringDegree where
     intro b
     intros aRedb bReda
     apply Quot.sound
-    have aRedb' : a ≤ᵀ b := aRedb
-    have bReda' : b ≤ᵀ a := bReda
     constructor
-    · exact aRedb'
-    · exact bReda'
+    · exact aRedb
+    · exact bReda
