@@ -122,6 +122,12 @@ lemma locally_of (hP : RespectsIso P) (f : R →+* S) (hf : P f) : Locally P f :
   simp only [Set.mem_singleton_iff, forall_eq, Ideal.span_singleton_one, exists_const]
   exact hP.left f e hf
 
+lemma locally_of_locally {Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+    (hPQ : ∀ {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}, P f → Q f)
+    {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S} (hf : Locally P f) : Locally Q f := by
+  obtain ⟨s, hsone, hs⟩ := hf
+  exact ⟨s, hsone, fun t ht ↦ hPQ (hs t ht)⟩
+
 /-- If `P` is local on the target, then `Locally P` coincides with `P`. -/
 lemma locally_iff_of_localizationSpanTarget (hPi : RespectsIso P)
     (hPs : OfLocalizationSpanTarget P) {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :

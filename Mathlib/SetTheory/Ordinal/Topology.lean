@@ -50,20 +50,27 @@ theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬IsLimit a := by
       exact isOpen_Ioo
     · exact (ha ha').elim
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to a `SuccOrder`
-theorem nhds_right' (a : Ordinal) : 𝓝[>] a = ⊥ := (covBy_succ a).nhdsWithin_Ioi
+protected theorem nhdsGT (a : Ordinal) : 𝓝[>] a = ⊥ := SuccOrder.nhdsGT
+
+@[deprecated (since := "2024-12-22")] alias nhds_right' := Ordinal.nhdsGT
 
 -- todo: generalize to a `SuccOrder`
-theorem nhds_left'_eq_nhds_ne (a : Ordinal) : 𝓝[<] a = 𝓝[≠] a := by
-  rw [← nhds_left'_sup_nhds_right', nhds_right', sup_bot_eq]
+theorem nhdsLT_eq_nhdsNE (a : Ordinal) : 𝓝[<] a = 𝓝[≠] a := by
+  rw [← nhdsLT_sup_nhdsGT, Ordinal.nhdsGT, sup_bot_eq]
+
+@[deprecated (since := "2024-12-22")] alias nhds_left'_eq_nhds_ne := nhdsLT_eq_nhdsNE
 
 -- todo: generalize to a `SuccOrder`
-theorem nhds_left_eq_nhds (a : Ordinal) : 𝓝[≤] a = 𝓝 a := by
-  rw [← nhds_left_sup_nhds_right', nhds_right', sup_bot_eq]
+theorem nhdsLE_eq_nhds (a : Ordinal) : 𝓝[≤] a = 𝓝 a := by
+  rw [← nhdsLE_sup_nhdsGT, SuccOrder.nhdsGT, sup_bot_eq]
+
+@[deprecated (since := "2024-12-22")] alias nhds_left_eq_nhds := nhdsLE_eq_nhds
 
 -- todo: generalize to a `SuccOrder`
-theorem nhdsBasis_Ioc (h : a ≠ 0) : (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
-  nhds_left_eq_nhds a ▸ nhdsWithin_Iic_basis' ⟨0, h.bot_lt⟩
+theorem hasBasis_nhds_Ioc (h : a ≠ 0) : (𝓝 a).HasBasis (· < a) (Set.Ioc · a) :=
+  nhdsLE_eq_nhds a ▸ nhdsLE_basis_of_exists_lt ⟨0, h.bot_lt⟩
+
+@[deprecated (since := "2024-12-22")] alias nhdsBasis_Ioc := hasBasis_nhds_Ioc
 
 -- todo: generalize to a `SuccOrder`
 theorem nhds_eq_pure : 𝓝 a = pure a ↔ ¬IsLimit a :=
@@ -73,7 +80,7 @@ theorem nhds_eq_pure : 𝓝 a = pure a ↔ ¬IsLimit a :=
 theorem isOpen_iff : IsOpen s ↔ ∀ o ∈ s, IsLimit o → ∃ a < o, Set.Ioo a o ⊆ s := by
   refine isOpen_iff_mem_nhds.trans <| forall₂_congr fun o ho => ?_
   by_cases ho' : IsLimit o
-  · simp only [(nhdsBasis_Ioc ho'.ne_zero).mem_iff, ho', true_implies]
+  · simp only [(hasBasis_nhds_Ioc ho'.ne_zero).mem_iff, ho', true_implies]
     refine exists_congr fun a => and_congr_right fun ha => ?_
     simp only [← Set.Ioo_insert_right ha, Set.insert_subset_iff, ho, true_and]
   · simp [nhds_eq_pure.2 ho', ho, ho']
@@ -88,7 +95,7 @@ theorem mem_closure_tfae (a : Ordinal.{u}) (s : Set Ordinal) :
         (∀ x hx, f x hx ∈ s) ∧ bsup.{u, u} o f = a,
       ∃ (ι : Type u), Nonempty ι ∧ ∃ f : ι → Ordinal, (∀ i, f i ∈ s) ∧ ⨆ i, f i = a] := by
   tfae_have 1 → 2 := by
-    simp only [mem_closure_iff_nhdsWithin_neBot, inter_comm s, nhdsWithin_inter', nhds_left_eq_nhds]
+    simp only [mem_closure_iff_nhdsWithin_neBot, inter_comm s, nhdsWithin_inter', nhdsLE_eq_nhds]
     exact id
   tfae_have 2 → 3
   | h => by
