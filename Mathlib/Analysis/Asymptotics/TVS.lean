@@ -122,6 +122,13 @@ lemma IsLittleOTVS.sup {f : α → E} {g : α → F} {l₁ l₂ : Filter α}
     gcongr
     exact inter_subset_right
 
+lemma isLittleOTVS_insert [TopologicalSpace α] {f : α → E} {g : α → F} {x : α} {s : Set α}
+    (h : f x = 0) :
+    IsLittleOTVS 𝕜 f g (𝓝[insert x s] x) ↔ IsLittleOTVS 𝕜 f g (𝓝[s] x) := by
+  refine forall₂_congr fun U hU => exists_congr fun V => and_congr_right fun hV =>
+    forall₂_congr fun ε hε => ?_
+  simp [h, egauge_zero_right _ (Set.nonempty_of_mem <| mem_of_mem_nhds hU)]
+
 protected lemma IsLittleOTVS.smul_left {f : α → E} {g : α → F} {l : Filter α}
     (h : IsLittleOTVS 𝕜 f g l) (c : α → 𝕜) :
     IsLittleOTVS 𝕜 (fun x ↦ c x • f x) (fun x ↦ c x • g x) l := by
