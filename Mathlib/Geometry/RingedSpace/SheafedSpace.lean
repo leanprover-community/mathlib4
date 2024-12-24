@@ -109,6 +109,11 @@ instance is_presheafedSpace_iso {X Y : SheafedSpace C} (f : X ⟶ Y) [IsIso f] :
     @IsIso (PresheafedSpace C) _ _ _ f :=
   SheafedSpace.forgetToPresheafedSpace.map_isIso f
 
+@[simps]
+def sheafMap {X Y : SheafedSpace C} (f : X ⟶ Y) :
+    Y.sheaf ⟶ (TopCat.Sheaf.pushforward _ f.base).obj X.sheaf where
+  val := f.c
+
 section
 
 attribute [local simp] id comp
