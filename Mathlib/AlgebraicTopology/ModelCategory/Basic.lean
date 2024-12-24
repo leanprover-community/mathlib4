@@ -197,13 +197,13 @@ variable {C J} {X Y : J → C} (f : ∀ i, X i ⟶ Y i)
 
 section
 
-variable [HasCoproduct X] [HasCoproduct Y]
+variable [HasCoproduct X] [HasCoproduct Y] [h : ∀ i, Cofibration (f i)]
 
-instance [h : ∀ i, Cofibration (f i)] : Cofibration (Limits.Sigma.map f) := by
+instance : Cofibration (Limits.Sigma.map f) := by
   simp only [cofibration_iff] at h ⊢
   exact (cofibrations_isStableUnderCoproductsOfShape C J).colimMap _ (fun ⟨i⟩ ↦ h i)
 
-instance [h : ∀ i, Cofibration (f i)] [h : ∀ i, WeakEquivalence (f i)] :
+instance [∀ i, WeakEquivalence (f i)] :
     WeakEquivalence (Limits.Sigma.map f) := by
   rw [weakEquivalence_iff]
   exact ((trivialCofibrations_isStableUnderCoproductsOfShape C J).colimMap _
@@ -213,13 +213,13 @@ end
 
 section
 
-variable [HasProduct X] [HasProduct Y]
+variable [HasProduct X] [HasProduct Y] [h : ∀ i, Fibration (f i)]
 
-instance [h : ∀ i, Fibration (f i)] : Fibration (Limits.Pi.map f) := by
+instance : Fibration (Limits.Pi.map f) := by
   simp only [fibration_iff] at h ⊢
   exact (fibrations_isStableUnderProductsOfShape C J).limMap _ (fun ⟨i⟩ ↦ h i)
 
-instance [h : ∀ i, Fibration (f i)] [h : ∀ i, WeakEquivalence (f i)] :
+instance [∀ i, WeakEquivalence (f i)] :
     WeakEquivalence (Limits.Pi.map f) := by
   rw [weakEquivalence_iff]
   exact ((trivialFibrations_isStableUnderProductsOfShape C J).limMap _
