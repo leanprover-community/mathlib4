@@ -3,7 +3,10 @@ Copyright (c) 2022 Christopher Hoskin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christopher Hoskin
 -/
+import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Bounds.Basic
+import Mathlib.Order.Bounds.Lattice
+import Mathlib.Order.CompleteLattice
 
 /-!
 # Scott continuity
@@ -107,11 +110,113 @@ protected theorem ScottContinuous.monotone (h : ScottContinuous f) : Monotone f 
 
 end ScottContinuous
 
+section CompleteLattice
+
+variable [CompleteLattice α] [CompleteLattice β]
+
+lemma scottContinuous_iff_map_sSup {f : α → β} : ScottContinuous f ↔
+    ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → f (sSup d) = sSup (f '' d) := by
+  constructor
+  · intro h d d₁ d₂
+    symm
+    rw [← isLUB_iff_sSup_eq]
+    apply h d₁ d₂
+    rw [isLUB_iff_sSup_eq]
+  · intro h d d₁ d₂ a hda
+    rw [isLUB_iff_sSup_eq] at hda
+    rw [isLUB_iff_sSup_eq, ← (h d₁ d₂), hda]
+
+alias ⟨ScottContinuous.map_sSup, ScottContinuous.of_map_sSup⟩ :=
+  scottContinuous_iff_map_sSup
+
+end CompleteLattice
+
+section Pi
+
+variable {ι : Type*} {α : ι → Type*} [∀ i, Preorder (α i)] [Preorder β]
+
+/-
+open Set in
+lemma Pi.upperBounds {f : (Π i, α i) → β} (hf : Monotone f)
+    {d : Set (Π i, α i)} (hd : DirectedOn (· ≤ ·) d) :
+    upperBounds (f '' d) = upperBounds (f '' (pi univ (fun i => (fun a => a i) '' d))) := by
+  apply le_antisymm
+  · intro u hu c hc
+    simp at hc
+    obtain ⟨a, ⟨ha, hfac⟩⟩ := hc
+    obtain ⟨z,hz⟩ := hd
+    sorry
+  · exact upperBounds_mono_set (image_mono (by intro a ha₁ i hi; use a))
+-/
+
+
+end Pi
+
+section Products
+
+variable {γ : Type*}
+
+variable [Preorder α] [Preorder β] [Preorder γ]
+
+-- c.f. isLUB_prod
+-- theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
+--    IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
+
+lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
+    {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
+    upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := by
+  apply le_antisymm
+  · intro u hu c hc
+    simp at hc
+    obtain ⟨a₁, ⟨b₁,⟨⟨⟨b₂,hb₂⟩,⟨a₂,ha₂⟩⟩, right⟩⟩⟩ := hc
+    --have e1: hd _ hb₂ _ ha₂
+    obtain ⟨⟨a₃,b₃⟩,hm⟩ := hd _ hb₂ _ ha₂
+    have e1 : (a₁,b₁) ≤ (a₃,b₃) := by simp_all [mk_le_mk]
+    rw [← right]
+    apply le_trans (hf e1) (hu _)
+    use (a₃, b₃)
+    exact And.imp_right (fun _ ↦ rfl) hm
+  · exact upperBounds_mono_set (image_mono fun ⟨p₁, p₂⟩ _ => by aesop)
+
+lemma Prod.IsLub {f : α × β → γ} (hf : Monotone f)
+    {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) (u : γ) :
+    IsLUB (f '' d) u ↔ IsLUB (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) u := by
+  rw [IsLUB, Prod.upperBounds hf hd, ← IsLUB]
+
+/-- TODO: Come up with better name -/
+lemma step1 {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.snd '' d).Nonempty)
+    (hd₂ : DirectedOn (· ≤ ·) (Prod.snd '' d)) {p₁ : α} {p₂ : β} (h : IsLUB d (p₁,p₂))
+    (h₁ : ∀ a, ScottContinuous (fun b => f (a,b))) {a : α} :
+    IsLUB (f '' {a} ×ˢ (Prod.snd '' d)) (f (a,p₂)) := by
+  simp only [singleton_prod]
+  have e1 : IsLUB (Prod.snd '' d) p₂ := ((isLUB_prod (p₁,p₂)).mp h).2
+  have e3 {S : Set β} : f '' ((fun b ↦ (a, b)) '' S) = (fun b ↦ f (a, b)) '' S := by
+    exact image_image f (fun b ↦ (a, b)) S
+  rw [e3]
+  exact h₁ a hd₁ hd₂ e1
+
+lemma ScottContinuous_prod_of_ScottContinuous {f : α × β → γ}
+    (h₁ : ∀ a, ScottContinuous (fun b => f (a,b))) (h₂ : ∀ b, ScottContinuous (fun a => f (a,b))) :
+    ScottContinuous f := by
+  intro d hd₁ hd₂ p hdp
+  rw [Prod.IsLub (Monotone.jointly_of_separately (fun a => (h₁ a).monotone)
+    (fun a => (h₂ a).monotone) ) hd₂]
+  rw [← iUnion_of_singleton_coe (Prod.fst '' d), iUnion_prod_const, image_iUnion]
+  apply IsLUB.iUnion
+    (fun a => step1 (Nonempty.image Prod.snd hd₁) hd₂.snd hdp h₁) _ _
+  have e2 : IsLUB ((fun a ↦ f (a, p.2)) '' (Prod.fst '' d)) (f (p.1,p.2)) :=
+    h₂ p.2 (Nonempty.image Prod.fst hd₁) hd₂.fst ((isLUB_prod (p.1,p.2)).mp hdp).1
+  rw [Set.range]
+  rw [Set.image] at e2
+  aesop
+
+end Products
+
 section SemilatticeSup
 
-variable [SemilatticeSup β]
+variable [Preorder α]
 
-lemma ScottContinuousOn.sup₂ {D : Set (Set (β × β))} :
+lemma ScottContinuousOn.sup₂ [SemilatticeSup β] {D : Set (Set (β × β))} :
     ScottContinuousOn D fun (a, b) => (a ⊔ b : β) := by
   simp only
   intro d _ _ _ ⟨p₁, p₂⟩ hdp
@@ -132,5 +237,65 @@ lemma ScottContinuousOn.sup₂ {D : Set (Set (β × β))} :
     apply e1
     intro b₁ b₂ hb'
     exact sup_le_iff.mp (hb b₁ b₂ hb' rfl)
+
+lemma inf_sSup_eq_sSup_map  [CompleteLinearOrder β] (a : β) (d : Set β) :
+    a ⊓ sSup d = sSup ((fun b ↦ a ⊓ b) '' d) := by
+  apply eq_of_forall_ge_iff fun e ↦ ?_
+  simp only [inf_le_iff, sSup_le_iff, ← forall_or_left, mem_image, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂]
+
+/-
+lemma upperBounds_eq [CompleteLinearOrder β] (a : β) (s : Set β) :
+   (fun b ↦ a ⊓ b) '' (upperBounds s) = upperBounds ((fun b ↦ a ⊓ b) '' s) := sorry
+  --apply eq_of_forall_ge_iff fun e ↦ ?_
+  --simp only [le_eq_subset, image_subset_iff]
+
+-/
+
+/-
+  rw [upperBounds, upperBounds]
+  simp [← forall_or_right, ← forall_or_left]
+  apply le_antisymm
+  · intro u hu
+    simp only [mem_setOf_eq]
+    simp at hu
+    obtain ⟨x,⟨hx1,hx2⟩⟩ := hu
+    intro b hb
+    rw [← hx2]
+
+    aesop?
+-/
+
+
+/-
+lemma inf_IsLUB_iff_IsLUB_map [CompleteLinearOrder β] (a u : β) (d : Set β) :
+    IsLUB d u ↔ IsLUB ((fun b ↦ a ⊓ b) '' d) (a ⊓ u) := by
+  rw [IsLUB, IsLUB, IsLeast, IsLeast]
+  have e1 : u ∈ upperBounds d ↔ a ⊓ u ∈ upperBounds ((fun b ↦ a ⊓ b) '' d) := by
+    rw [← upperBounds_eq]
+    simp only [mem_image]
+
+    exact?
+  rw [upperBounds_eq]
+-/
+
+
+
+lemma sSup_inf_eq_sSup_map [CompleteLinearOrder β] (b : β) (d : Set β) :
+    sSup d ⊓ b = sSup ((fun a ↦ a ⊓ b) '' d) := by
+  apply eq_of_forall_ge_iff fun e ↦ ?_
+  simp [inf_le_iff, sSup_le_iff, ← forall_or_right, mem_image, forall_exists_index, and_imp,
+    forall_apply_eq_imp_iff₂]
+
+lemma left_cont_inf [CompleteLinearOrder β] (a : β) : ScottContinuous fun b ↦ a ⊓ b := by
+  refine ScottContinuous.of_map_sSup (fun d _ _ ↦ by rw [inf_sSup_eq_sSup_map])
+
+lemma right_cont_inf [CompleteLinearOrder β] (b : β) : ScottContinuous fun a ↦ a ⊓ b := by
+  refine ScottContinuous.of_map_sSup (fun d _ _ ↦ by rw [sSup_inf_eq_sSup_map])
+
+lemma ScottContinuousOn.inf₂ [CompleteLinearOrder β] :
+    ScottContinuous fun (a, b) => (a ⊓ b : β) :=
+  ScottContinuous_prod_of_ScottContinuous left_cont_inf right_cont_inf
+
 
 end SemilatticeSup
