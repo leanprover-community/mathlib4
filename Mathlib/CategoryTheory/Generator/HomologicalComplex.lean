@@ -9,7 +9,7 @@ import Mathlib.Algebra.Homology.HomologicalComplexLimits
 import Mathlib.CategoryTheory.Generator.Coproduct
 
 /-!
-# Generators of the category of homological complex
+# Generators of the category of homological complexes
 
 Let `c : ComplexShape ι` be a complex shape with no loop.
 If a category `C` has a separator, then `HomologicalComplex C c`

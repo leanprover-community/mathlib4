@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
+import Mathlib.Algebra.Homology.HasNoLoop
 import Mathlib.Algebra.Homology.Single
 import Mathlib.CategoryTheory.Yoneda
 
