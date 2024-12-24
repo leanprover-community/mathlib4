@@ -88,13 +88,13 @@ inductive RecursiveIn : (ℕ →. ℕ) → (ℕ →. ℕ) → Prop
 /--
 `f` is Turing equivalent to `g` if `f` is reducible to `g` and `g` is reducible to `f`.
 -/
-def turing_equivalent (f g : ℕ →. ℕ) : Prop :=
+def TuringEquivalent (f g : ℕ →. ℕ) : Prop :=
   AntisymmRel RecursiveIn f g
 
 /--
 Custom infix notation for `turing_equivalent`.
 -/
-infix:50 " ≡ᵀ " => turing_equivalent
+infix:50 " ≡ᵀ " => TuringEquivalent
 
 /--
 If a function is partial recursive, then it is recursive in every partial function.
@@ -187,21 +187,21 @@ theorem RecursiveIn.refl (f : ℕ →. ℕ) : RecursiveIn f f :=
 Proof that `turing_equivalent` is reflexive.
 -/
 @[refl]
-theorem turing_equivalent_refl (f : ℕ →. ℕ) : f ≡ᵀ f :=
-  ⟨recursive_in_refl f, recursive_in_refl f⟩
+theorem TuringEquivalent.refl (f : ℕ →. ℕ) : f ≡ᵀ f :=
+  ⟨RecursiveIn.refl f, RecursiveIn.refl f⟩
 
 /--
 Proof that `turing_equivalent` is symmetric.
 -/
 @[symm]
-theorem turing_equivalent_symm {f g : ℕ →. ℕ} (h : f ≡ᵀ g) : g ≡ᵀ f :=
+theorem TuringEquivalent.symm {f g : ℕ →. ℕ} (h : f ≡ᵀ g) : g ≡ᵀ f :=
   ⟨h.2, h.1⟩
 
 /--
 Proof that turing reducibility is transitive.
 -/
 @[trans]
-theorem recursive_in_trans {f g h : ℕ →. ℕ} :
+theorem RecursiveIn.trans {f g h : ℕ →. ℕ} :
   RecursiveIn f g → RecursiveIn g h → RecursiveIn f h := by
     intro hg hh
     induction hg
@@ -241,27 +241,27 @@ theorem recursive_in_trans {f g h : ℕ →. ℕ} :
 /--
 Proof that `turing_equivalent` is transitive.
 -/
-theorem turing_equivalent_trans :
-  Transitive turing_equivalent :=
+theorem TuringEquivalent.trans :
+  Transitive TuringEquivalent :=
   fun _ _ _ ⟨fg₁, fg₂⟩ ⟨gh₁, gh₂⟩ =>
-    ⟨recursive_in_trans fg₁ gh₁, recursive_in_trans gh₂ fg₂⟩
+    ⟨RecursiveIn.trans fg₁ gh₁, RecursiveIn.trans gh₂ fg₂⟩
 
 /--
 Instance declaring that `turing_equivalent` is an equivalence relation.
 -/
-instance : Equivalence turing_equivalent :=
+instance : Equivalence TuringEquivalent :=
   {
-    refl := turing_equivalent_refl,
-    symm := turing_equivalent_symm,
-    trans := @turing_equivalent_trans
+    refl := TuringEquivalent.refl,
+    symm := TuringEquivalent.symm,
+    trans := @TuringEquivalent.trans
   }
 
 /--
 Instance declaring that `RecursiveIn` is a preorder.
 -/
 instance : IsPreorder (ℕ →. ℕ) RecursiveIn where
-  refl := recursive_in_refl
-  trans := @recursive_in_trans
+  refl := RecursiveIn.refl
+  trans := @RecursiveIn.trans
 
 /--
 The Turing degrees as the set of equivalence classes under Turing equivalence.
@@ -300,9 +300,9 @@ lemma reduce_lifts₁ : ∀ (a b₁ b₂ : ℕ →. ℕ), b₁≡ᵀb₂ → (Re
   apply propext
   constructor
   · intro aRedb₁
-    apply recursive_in_trans aRedb₁ bEqb.1
+    apply RecursiveIn.trans aRedb₁ bEqb.1
   · intro aRedb₂
-    apply recursive_in_trans aRedb₂ bEqb.2
+    apply RecursiveIn.trans aRedb₂ bEqb.2
 
 /--
 For any partial functions `f`, `g`, and `h`, if `f` is Turing equivalent to `g`,
@@ -314,17 +314,17 @@ f ≡ᵀ g → (RecursiveIn f h = RecursiveIn g h) := by
   apply propext
   constructor
   · intro fRedh
-    apply recursive_in_trans fEqg.2 fRedh
+    apply RecursiveIn.trans fEqg.2 fRedh
   · intro gRedh
-    apply recursive_in_trans fEqg.1 gRedh
+    apply RecursiveIn.trans fEqg.1 gRedh
 
 /--
 Here we show how to lift the Turing reducibility relation from
 partial functions to their Turing degrees, using the above lemmas.
 -/
 def TuringDegree.turing_red (d₁ d₂ : TuringDegree) : Prop :=
-  @Quot.lift₂ _ _ Prop (turing_equivalent)
-  (turing_equivalent) (RecursiveIn) (reduce_lifts₁) (reduce_lifts₂) d₁ d₂
+  @Quot.lift₂ _ _ Prop (TuringEquivalent)
+  (TuringEquivalent) (RecursiveIn) (reduce_lifts₁) (reduce_lifts₂) d₁ d₂
 
 /--
 Instance declaring that `TuringDegree.turing_red` is a partial order.
@@ -334,7 +334,7 @@ instance : PartialOrder TuringDegree where
   le_refl := by
     apply Quot.ind
     intro a
-    apply recursive_in_refl
+    apply RecursiveIn.refl
   le_trans := by
     apply Quot.ind
     intro a
@@ -342,7 +342,7 @@ instance : PartialOrder TuringDegree where
     intro b
     apply Quot.ind
     intro c
-    exact recursive_in_trans
+    exact RecursiveIn.trans
   le_antisymm := by
     apply Quot.ind
     intro a
