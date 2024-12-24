@@ -100,16 +100,22 @@ instance [HasProjectiveDimensionLT X n] :
 
 end
 
-lemma hasProjectiveDimensionLT_of_iso {X X' : C} (e : X ≅ X') (n : ℕ)
-    [HasProjectiveDimensionLT X n] :
-    HasProjectiveDimensionLT X' n := by
+lemma Retract.hasProjectiveDimensionLT {X Y : C} (h : Retract X Y) (n : ℕ)
+    [HasProjectiveDimensionLT Y n] :
+    HasProjectiveDimensionLT X n := by
   letI := HasExt.standard C
   rw [hasProjectiveDimensionLT_iff]
-  intro i hi Y x
-  rw [← x.mk₀_id_comp, ← e.inv_hom_id, ← Ext.mk₀_comp_mk₀,
+  intro i hi T x
+  have pif := h.retract
+  rw [← x.mk₀_id_comp, ← h.retract, ← Ext.mk₀_comp_mk₀,
     Ext.comp_assoc_of_second_deg_zero,
-    ((Ext.mk₀ e.hom).comp x (zero_add i)).eq_zero_of_hasProjectiveDimensionLT n hi,
+    ((Ext.mk₀ h.r).comp x (zero_add i)).eq_zero_of_hasProjectiveDimensionLT n hi,
     Ext.comp_zero]
+
+lemma hasProjectiveDimensionLT_of_iso {X X' : C} (e : X ≅ X') (n : ℕ)
+    [HasProjectiveDimensionLT X n] :
+    HasProjectiveDimensionLT X' n :=
+  e.symm.retract.hasProjectiveDimensionLT n
 
 namespace ShortComplex
 
@@ -154,10 +160,9 @@ lemma hasProjectiveDimensionLT_X₁ (h₂ : HasProjectiveDimensionLT S.X₂ n)
   rw [x₂.eq_zero_of_hasProjectiveDimensionLT n (by omega), Ext.comp_zero]
 
 -- When we know `HasProjectiveDimensionLT S.X₂ 1` is equivalent to `Projective S.X₂`,
--- we may change the assumption `h₂ : Projective S.X₂`
+-- the assumption `h₂` can be changed to `h₂ : Projective S.X₂`.
 lemma hasProjectiveDimensionLT_X₃_iff (n : ℕ) (h₂ : HasProjectiveDimensionLT S.X₂ 1) :
-    HasProjectiveDimensionLT S.X₃ (n + 2) ↔
-      HasProjectiveDimensionLT S.X₁ (n + 1) :=
+    HasProjectiveDimensionLT S.X₃ (n + 2) ↔ HasProjectiveDimensionLT S.X₁ (n + 1) :=
   ⟨fun _ ↦ hS.hasProjectiveDimensionLT_X₁ (n + 1) inferInstance inferInstance,
     fun _ ↦ hS.hasProjectiveDimensionLT_X₃ (n + 1) inferInstance inferInstance⟩
 
