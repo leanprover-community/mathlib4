@@ -4,26 +4,29 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Order.PartialSups
+import Mathlib.Order.Interval.Finset.Fin
 import Mathlib.Data.Nat.Cast.NeZero
 
 /-!
 # Making a sequence disjoint
 
-This file defines the way to make a sequence of sets, or more generally of elements in a
-(generalized) Boolean algebra, into a sequence of disjoint elements with the same partial sups.
+This file defines the way to make a sequence of sets - or, more generally, a map from a partially
+ordered set `β` into a (generalized) Boolean algebra `α` - into a *pairwise disjoint* sequence with
+the same partial sups.
 
 For a sequence `f : ℕ → α`, this new sequence will be `f 0`, `f 1 \ f 0`, `f 2 \ (f 0 ⊔ f 1) ⋯`.
 It is actually unique, as `disjointed_unique` shows.
 
 ## Main declarations
 
-* `disjointed f`: The sequence `f 0`, `f 1 \ f 0`, `f 2 \ (f 0 ⊔ f 1)`, ....
+* `disjointed f`: The map sending `n` to `f n \ (⨆ m < n, f m)`. We require the domain to be a
+  `LocallyFiniteOrderBot` to ensure that the supremum is well defined.
 * `partialSups_disjointed`: `disjointed f` has the same partial sups as `f`.
 * `disjoint_disjointed`: The elements of `disjointed f` are pairwise disjoint.
 * `disjointed_unique`: `disjointed f` is the only pairwise disjoint sequence having the same partial
   sups as `f`.
-* `iSup_disjointed`: `disjointed f` has the same supremum as `f`. Limiting case of
-  `partialSups_disjointed`.
+* `Fintype.sup_disjointed` (for finite `β`) or `iSup_disjointed` (for complete `α`):
+  `disjointed f` has the same supremum as `f`. Limiting case of `partialSups_disjointed`.
 * `Fintype.exists_disjointed_le`: for any finite family `f : ι → α`, there exists a pairwise
   disjoint family `g : ι → α` which is bounded above by `f` and has the same supremum. This is
   an analogue of `disjointed` for arbitrary finite index types (but without any uniqueness).
@@ -136,6 +139,15 @@ theorem partialSups_disjointed (f : β → α) :
         simp only [mem_Iic, mem_Iio] at hx hr ⊢
         exact hr.trans_lt hx
 
+lemma Fintype.sup_disjointed [Fintype β] (f : β → α) :
+    univ.sup (disjointed f) = univ.sup f := by
+  classical
+  have hun : univ.biUnion Iic = (univ : Finset β) := by
+    ext r; simpa only [mem_biUnion, mem_univ, mem_Iic, true_and, iff_true] using ⟨r, le_rfl⟩
+  rw [← hun, sup_biUnion, sup_biUnion, sup_congr rfl (fun a _ ↦ ?_)]
+  rw [← sup'_eq_sup nonempty_Iic, ← sup'_eq_sup nonempty_Iic,
+    ← partialSups_apply, ← partialSups_apply, partialSups_disjointed]
+
 lemma disjointed_partialSups (f : β → α) :
     disjointed (partialSups f) = disjointed f := by
   classical
@@ -161,6 +173,10 @@ theorem disjointed_unique {f d : β → α} (hdisj : ∀ {i j : β} (_ : i < j),
 end PartialOrder
 
 section LinearOrder
+
+/-!
+### Linear orders
+-/
 
 variable [LinearOrder β] [LocallyFiniteOrderBot β]
 
@@ -197,9 +213,32 @@ lemma Monotone.disjointed_succ_sup {f : β → α} (hf : Monotone f) (n : β) :
 
 end LinearOrder
 
+/-!
+### Functions on an arbitrary fintype
+-/
+
+/-- For any finite family of elements `f : ι → α`, we can find a pairwise-disjoint family `g`
+bounded above by `f` and having the same supremum. This is non-canonical, depending on an arbitrary
+choice of ordering of `ι`. -/
+lemma Fintype.exists_disjointed_le {ι : Type*} [Fintype ι] {f : ι → α} :
+    ∃ g, g ≤ f ∧ univ.sup g = univ.sup f ∧ Pairwise (Disjoint on g) := by
+  rcases isEmpty_or_nonempty ι with hι | hι
+  ·  -- do `ι = ∅` separately since `⊤ : Fin n` isn't defined for `n = 0`
+    exact ⟨f, le_rfl, rfl, Subsingleton.pairwise⟩
+  let R : ι ≃ Fin _ := equivFin ι
+  let f' : Fin _ → α := f ∘ R.symm
+  have hf' : f = f' ∘ R := by ext; simp only [Function.comp_apply, Equiv.symm_apply_apply, f']
+  refine ⟨disjointed f' ∘ R, ?_, ?_, ?_⟩
+  · intro n
+    simpa only [hf'] using disjointed_le f' (R n)
+  · simpa only [← sup_image, image_univ_equiv, hf'] using sup_disjointed f'
+  · exact fun i j hij ↦ disjoint_disjointed f' (R.injective.ne hij)
+
 end GeneralizedBooleanAlgebra
 
 section CompleteBooleanAlgebra
+
+/-! ### Complete Boolean algebras -/
 
 variable [CompleteBooleanAlgebra α]
 
@@ -285,28 +324,6 @@ theorem disjointedRec_zero {f : ℕ → α} {p : α → Sort*}
   rfl
 
 -- TODO: Find a useful statement of `disjointedRec_succ`.
-
-/-- For any finite family of elements `f : ι → α`, we can find a pairwise-disjoint family `g`
-bounded above by `f` and having the same supremum. -/
-lemma Fintype.exists_disjointed_le {ι : Type*} [Fintype ι] {f : ι → α} :
-    ∃ g, g ≤ f ∧ Finset.univ.sup g = Finset.univ.sup f ∧ Pairwise (Disjoint on g) := by
-  rcases isEmpty_or_nonempty ι with hι | hι
-  · exact ⟨f, le_rfl, rfl, Subsingleton.pairwise⟩ -- handle silly case `ι = ∅`
-  let R : ι ≃ Fin _ := Fintype.equivFin ι
-  let S : ι ↪ ℕ := ⟨(↑) ∘ R, Fin.val_injective.comp R.injective⟩
-  let f' : ℕ → α := f ∘ R.symm ∘ (↑)
-  rw [show f = f' ∘ S by ext; simp [S, f']]
-  refine ⟨disjointed f' ∘ S, fun j ↦ disjointed_le f' _, ?_,
-    fun i j h ↦ disjoint_disjointed f' <| S.injective.ne h⟩
-  simp_rw [← Finset.sup_map _ S, Finset.map_eq_image, S, Function.Embedding.coeFn_mk,
-    ← Finset.image_image, Finset.image_univ_equiv]
-  have h := congr_arg (fun g ↦ g (Fintype.card ι - 1)) (partialSups_disjointed f')
-  simp only [partialSups_eq_sup_range, Nat.sub_add_cancel NeZero.one_le] at h
-  suffices Finset.range _ = Finset.univ.image Fin.val from this ▸ h
-  -- surely there's a lemma for this?
-  ext i
-  simp only [Finset.mem_range, Finset.mem_image, Finset.mem_univ, true_and]
-  exact ⟨fun hi ↦ ⟨.mk i hi, rfl⟩, fun ⟨a, ha⟩ ↦ ha ▸ a.is_lt⟩
 
 end GeneralizedBooleanAlgebra
 

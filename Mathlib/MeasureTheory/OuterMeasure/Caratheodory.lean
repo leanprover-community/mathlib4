@@ -101,8 +101,10 @@ lemma isCaratheodory_partialSups {s : ℕ → Set α} (h : ∀ i, m.IsCaratheodo
 lemma isCaratheodory_disjointed {s : ℕ → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ℕ) :
     m.IsCaratheodory (disjointed s i) := by
   induction i with
-  | zero => exact h 0
-  | succ i _ => exact m.isCaratheodory_diff (h (i + 1)) (m.isCaratheodory_partialSups h i)
+  | zero => exact disjointed_zero s ▸ h 0
+  | succ i _ =>
+    rw [disjointed_natSucc]
+    exact m.isCaratheodory_diff (h (i + 1)) (m.isCaratheodory_partialSups h i)
 
 theorem isCaratheodory_sum {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))
     (hd : Pairwise (Disjoint on s)) {t : Set α} :
