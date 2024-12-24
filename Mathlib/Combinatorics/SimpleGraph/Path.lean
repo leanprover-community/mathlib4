@@ -1067,41 +1067,40 @@ lemma iUnion_connectedComponentSupp (G : SimpleGraph V) :
 namespace ConnectedComponent
 
 /--
-  The representant of a component is the rep in the underlying `Quot`.
+  A set of vertices represents a set of components if it contains exactly
+  one vertex from each component.
 -/
-noncomputable def rep (c : G.ConnectedComponent) : V := c.exists_rep.choose
+structure _root_.Set.Represents (s : Set V) (C : Set (G.ConnectedComponent)) where
+  unique_rep {c : G.ConnectedComponent} (h : c ∈ C) : ∃! v, v ∈ s ∩ c.supp
+  exact {c : G.ConnectedComponent} (h : c ∉ C) : s ∩ c.supp = ∅
 
-lemma rep_spec (c : G.ConnectedComponent) :
-    G.connectedComponentMk c.rep = c := c.exists_rep.choose_spec
+lemma Represents_of_image_exists_rep_choose (C : Set (G.ConnectedComponent)) :
+    ((fun c ↦ c.exists_rep.choose) '' C).Represents C where
+  unique_rep {c} h := by
+    use c.exists_rep.choose
+    simp only [Set.mem_inter_iff, mem_supp_iff, and_imp]
+    refine ⟨⟨by aesop, c.exists_rep.choose_spec⟩, ?_⟩
+    intro y hy hyc
+    obtain ⟨c', ⟨_, rfl⟩⟩ := hy
+    rw [← hyc, show G.connectedComponentMk (Quot.exists_rep c').choose = c'
+      from (Quot.exists_rep c').choose_spec]
+  exact {c} {h} := by
+    ext v
+    simp only [Set.mem_inter_iff, Set.mem_image, mem_supp_iff, Set.mem_empty_iff_false, iff_false,
+      not_and, forall_exists_index, and_imp]
+    intro c' hc' hv hvc
+    have : c = c' := by
+      rw [← hvc, ← hv]
+      exact (Quot.exists_rep c').choose_spec
+    exact h (this ▸ hc')
 
-lemma rep_unique {C : Set (G.ConnectedComponent)} (c : G.ConnectedComponent) (h : c ∈ C) :
-    ∃! v, v ∈ rep '' C ∩ c.supp := by
-  use c.rep
-  simp only [Set.mem_inter_iff, mem_supp_iff, and_imp]
-  refine ⟨⟨by aesop, rep_spec c⟩, ?_⟩
-  intro y hy hyc
-  obtain ⟨_, ⟨_, rfl⟩⟩ := hy
-  rw [← hyc, rep_spec]
-
-lemma disjoint_rep_image_supp {C : Set (G.ConnectedComponent)} (c : G.ConnectedComponent)
-    (h : c ∉ C) : Disjoint (rep '' C) c.supp := by
+lemma disjoint_rep_image_supp {C : Set (G.ConnectedComponent)} {s : Set V}
+    (c : G.ConnectedComponent) (hrep : s.Represents C) (h : c ∉ C) : Disjoint s c.supp := by
   rw [Set.disjoint_right]
   intro v hv hvr
-  obtain ⟨c', ⟨hc', rfl⟩⟩ := hvr
-  rw [mem_supp_iff] at hv
-  have : c = c' := by
-    rw [← hv]
-    exact rep_spec c'
-  subst this
-  contradiction
-
-lemma disjoint_rep_image_components_of_deleteVerts {s : Set V}
-    (C : Set ((⊤ : Subgraph G).deleteVerts s).coe.ConnectedComponent) : Disjoint s
-    (Subtype.val '' (rep '' C)) := by
-  rw [Set.disjoint_right]
-  intro v hv
-  obtain ⟨v', ⟨v'', rfl⟩⟩ := hv
-  exact v'.prop.2
+  have := hrep.exact h
+  rw [Set.eq_empty_iff_forall_not_mem] at this
+  simp_all
 
 end ConnectedComponent
 
