@@ -68,19 +68,17 @@ variable {M} in
   rw [toDirectLimit, lift.tmul, lift_of]
   rfl
 
-variable [IsDirected ι (· ≤ ·)]
-
 /--
 `limᵢ (Gᵢ ⊗ M)` and `(limᵢ Gᵢ) ⊗ M` are isomorphic as modules
 -/
 noncomputable def directLimitLeft :
     DirectLimit G f ⊗[R] M ≃ₗ[R] DirectLimit (G · ⊗[R] M) (f ▷ M) := by
-  refine LinearEquiv.ofLinear (toDirectLimit f M) (fromDirectLimit f M) ?_ ?_
-    <;> cases isEmpty_or_nonempty ι
-  · ext; subsingleton
-  · refine DFunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ g.induction_on ?_ ?_ ?_ <;> aesop
-  · ext; subsingleton
-  · exact ext (DFunLike.ext _ _ fun g ↦ DFunLike.ext _ _ fun _ ↦ g.induction_on <| by aesop)
+  refine LinearEquiv.ofLinear (toDirectLimit f M) (fromDirectLimit f M) ?_ (ext ?_)
+  · ext ⟨x⟩
+    exact x.induction_on (by simp) (fun i x ↦ x.induction_on (by simp)
+      (fun _ _ ↦ by rw [quotMk_of]; simp) <| by simp+contextual) (by simp+contextual)
+  · ext ⟨x⟩ m
+    exact x.induction_on (by simp) (fun _ _ ↦ by rw [quotMk_of]; simp) (by simp+contextual)
 
 @[simp] lemma directLimitLeft_tmul_of {i : ι} (g : G i) (m : M) :
     directLimitLeft f M (of _ _ _ _ _ g ⊗ₜ m) = of _ _ _ (f ▷ M) _ (g ⊗ₜ m) :=
