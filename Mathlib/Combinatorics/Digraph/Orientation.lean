@@ -32,6 +32,8 @@ the edge orientations of `Digraph`.
 digraph, simple graph, oriented graphs
 -/
 
+open Graph
+
 variable {V : Type*}
 
 namespace Digraph
@@ -44,14 +46,14 @@ section toSimpleGraph
 Orientation-forgetting map from `Digraph` to `SimpleGraph` that gives an unoriented edge if
 either orientation is present.
 -/
-def toSimpleGraphInclusive (G : Digraph V) : SimpleGraph V := SimpleGraph.fromRel G.Adj
+def toSimpleGraphInclusive (G : Digraph V) : SimpleGraph V := SimpleGraph.fromRel (Adj G)
 
 /--
 Orientation-forgetting map from `Digraph` to `SimpleGraph` that gives an unoriented edge if
 both orientations are present.
 -/
 def toSimpleGraphStrict (G : Digraph V) : SimpleGraph V where
-  Adj v w := v ≠ w ∧ G.Adj v w ∧ G.Adj w v
+  Adj v w := v ≠ w ∧ Adj G v w ∧ Adj G w v
   symm _ _ h := And.intro h.1.symm h.2.symm
   loopless _ h := h.1 rfl
 
