@@ -90,9 +90,12 @@ attribute [local simp] map_zsmul comp_zsmul zsmul_comp
   commShiftIso_zero commShiftIso_add commShiftIso_comp_hom_app
   shiftFunctorAdd'_eq_shiftFunctorAdd
 
+set_option maxHeartbeats 400000 in
 noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
   iso := F.mapTriangleCommShiftIso
+  zero := by ext <;> simp
+  add _ _ := by ext <;> simp
 
 /-- `F.mapTriangle` commutes with the rotation of triangles. -/
 @[simps!]
