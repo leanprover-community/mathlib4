@@ -276,7 +276,7 @@ theorem induction_of_closure_eq_top_right {s : Set M} {p : M → Prop} (hs : clo
   | mul_right x _ y hy ih => exact Hmul x y hy ih
 
 @[to_additive]
-theorem exists_finset_prod_of_mem_closure {M : Type*} [CommMonoid M] {s : Set M} {x : M}
+theorem exists_finsetProd_of_mem_closure {M : Type*} [CommMonoid M] {s : Set M} {x : M}
     (hx : x ∈ closure s) :
     ∃ (ι : Type) (I : Finset ι) (f : ι → M), (∀ i ∈ I, f i ∈ s) ∧ ∏ i ∈ I, f i = x := by
   induction hx using Submonoid.closure_induction_left
