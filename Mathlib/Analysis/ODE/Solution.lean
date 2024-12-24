@@ -110,13 +110,12 @@ lemma deriv_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : ℝ �
 
 -- the integral equation transfers smoothness class from `f` to `α`
 -- TODO: generalise `n` to `∞` and maybe `ω`
-lemma contDiffOn_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : ℝ → E) {u : Set E}
+lemma contDiffOn_nat_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : ℝ → E) {u : Set E}
     {tmin tmax t₀ : ℝ} {n : ℕ}
     (hf : ContDiffOn ℝ n (uncurry f) ((Ioo tmin tmax) ×ˢ u))
     (ht₀ : t₀ ∈ Ioo tmin tmax) (hα : ContinuousOn α (Ioo tmin tmax))
-    (hmem : ∀ t ∈ Ioo tmin tmax, α t ∈ u) (x₀ : E) (hu : u ∈ 𝓝 x₀)
-    (heqon : ∀ t ∈ Ioo tmin tmax, α t = iterateIntegral f α t₀ x₀ t)
-    {t : ℝ} (ht : t ∈ Ioo tmin tmax) :
+    (hmem : ∀ t ∈ Ioo tmin tmax, α t ∈ u) (x₀ : E)
+    (heqon : ∀ t ∈ Ioo tmin tmax, α t = iterateIntegral f α t₀ x₀ t) :
     ContDiffOn ℝ n (iterateIntegral f α t₀ x₀) (Ioo tmin tmax) := by
   induction n with
   | zero =>
@@ -126,40 +125,38 @@ lemma contDiffOn_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : �
     exact hasDerivAt_iterateIntegral f α hf ht₀ hα hmem x₀ ht
   | succ n hn =>
     simp only [Nat.cast_add, Nat.cast_one] at *
-    rw [contDiffOn_succ_iff_deriv_of_isOpen isOpen_Ioo] -- check this for generalisation of n
+    rw [contDiffOn_succ_iff_deriv_of_isOpen isOpen_Ioo] -- check this for generalisation to `ω`
     refine ⟨?_, by simp, ?_⟩
-    · intro t' ht'
+    · intro _ ht
       apply DifferentiableAt.differentiableWithinAt
       exact HasDerivAt.differentiableAt <|
-        hasDerivAt_iterateIntegral f α hf.continuousOn ht₀ hα hmem x₀ ht'
+        hasDerivAt_iterateIntegral f α hf.continuousOn ht₀ hα hmem x₀ ht
     · have hα' : ContDiffOn ℝ n α (Ioo tmin tmax) := by
         apply ContDiffOn.congr _ heqon
         apply hn
         exact hf.of_succ
       apply contDiffOn_Ioo hf.of_succ hα' hmem |>.congr
-      intro t' ht'
-      exact deriv_iterateIntegral f α hf.continuousOn ht₀ hα hmem x₀ ht'
+      intro _ ht
+      exact deriv_iterateIntegral f α hf.continuousOn ht₀ hα hmem x₀ ht
 
-  -- induction n with
-  -- | zero =>
-  --   simp only [CharP.cast_eq_zero, contDiffOn_zero] at *
-  --   apply HasDerivAt.continuousOn (f' := fun t ↦ f t (α t))
-  --   intro _ ht
-  --   exact hasDerivAt_iterateIntegral f α hf ht₀ hα hmem x₀ ht
-  -- | succ n hn =>
-  --   simp only [Nat.cast_add, Nat.cast_one] at *
-  --   have := hn hf.of_succ
-  --   rw [contDiffOn_succ_iff_deriv_of_isOpen isOpen_Ioo] -- check this for generalisation of n
-  --   refine ⟨?_, by simp, ?_⟩
-  --   · intro t' ht'
-  --     apply DifferentiableAt.differentiableWithinAt
-  --     exact HasDerivAt.differentiableAt <|
-  --       hasDerivAt_iterateIntegral f α hf.continuousOn ht₀ hα hmem x₀ ht'
-  --   · apply ContDiffOn.congr _
-  --       (fun t' ht' ↦ deriv_iterateIntegral f α hf.continuousOn ht₀ hα hmem x₀ ht')
-  --     -- need to generalise `continuousOn_Ioo` to `ContDiffOn`
+lemma contDiffOn_enat_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : ℝ → E) {u : Set E}
+    {tmin tmax t₀ : ℝ} {n : ℕ∞}
+    (hf : ContDiffOn ℝ n (uncurry f) ((Ioo tmin tmax) ×ˢ u))
+    (ht₀ : t₀ ∈ Ioo tmin tmax) (hα : ContinuousOn α (Ioo tmin tmax))
+    (hmem : ∀ t ∈ Ioo tmin tmax, α t ∈ u) (x₀ : E)
+    (heqon : ∀ t ∈ Ioo tmin tmax, α t = iterateIntegral f α t₀ x₀ t)
+    {t : ℝ} :
+    ContDiffOn ℝ n (iterateIntegral f α t₀ x₀) (Ioo tmin tmax) := by
+  induction n with
+  | top =>
+    rw [contDiffOn_infty] at *
+    intro k
+    exact contDiffOn_nat_iterateIntegral _ _ (hf k) ht₀ hα hmem x₀ heqon
+  | coe n =>
+    simp only [WithTop.coe_natCast] at *
+    exact contDiffOn_nat_iterateIntegral _ _ hf ht₀ hα hmem _ heqon
 
-  --     sorry
+-- generalise to `ω`?
 
 /-
 prop 1.1 existence of local flow
