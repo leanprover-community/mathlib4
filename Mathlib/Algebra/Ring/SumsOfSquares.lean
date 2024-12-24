@@ -42,14 +42,15 @@ inductive IsSumSq [Mul R] [Add R] [Zero R] : R → Prop
 @[deprecated (since := "2024-08-09")] alias isSumSq := IsSumSq
 
 /-- Alternative induction scheme for `IsSumSq` using `IsSquare`. -/
-theorem IsSumSq.inductionOn' [Mul R] [Add R] [Zero R]
-    {p : (S : R) → (h : IsSumSq S) → Prop} {S : R} (hS : IsSumSq S)
-    (zero : p 0 zero)
-    (sq_add : ∀ {x S}, (hS : IsSumSq S) → (hx : IsSquare x) → p S hS →
-      p (x + S) (by rcases hx with ⟨_, rfl⟩; exact sq_add hS)) : p S hS :=
-  match hS with
+theorem IsSumSq.rec' [Mul R] [Add R] [Zero R]
+    {motive : (S : R) → (h : IsSumSq S) → Prop}
+    (zero : motive 0 zero)
+    (sq_add : ∀ {a S}, (ha : IsSquare a) → (hS : IsSumSq S) → motive S hS →
+      motive (a + S) (by rcases ha with ⟨_, rfl⟩; exact sq_add hS))
+    {S : R} (h : IsSumSq S) : motive S h :=
+  match h with
   | .zero         => zero
-  | .sq_add hS_ih => sq_add hS_ih (.mul_self _) (inductionOn' hS_ih zero sq_add)
+  | .sq_add ih => sq_add (.mul_self _) ih (rec' zero sq_add _)
 
 /-- In an additive monoid with multiplication,
 if `S₁` and `S₂` are sums of squares, then `S₁ + S₂` is a sum of squares. -/
@@ -119,55 +120,20 @@ theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
 
 @[deprecated (since := "2024-08-09")] alias SquaresAddClosure := AddSubmonoid.closure_isSquare
 
-/-- A term of `R` satisfying `IsSumSq` can be written as `∑ i ∈ I, x i`
-where each `x i` is a square in `R`. -/
-theorem IsSumSq.exists_sum [AddCommMonoid R] [Mul R] {a : R} (ha : IsSumSq a) :
-    ∃ (ι : Type) (I : Finset ι) (x : ι → R), (∀ i ∈ I, IsSquare (x i)) ∧ ∑ i ∈ I, x i = a :=
-  AddSubmonoid.exists_finsetSum_of_mem_closure (s := {x : R | IsSquare x}) (by simpa)
-
-/-- Universe-polymorphic version of `exists_sum`. -/
-theorem IsSumSq.exists_sum' [AddCommMonoid R] [Mul R] {a : R} (ha : IsSumSq a) :
-    ∃ (ι : Type u) (I : Finset ι) (x : ι → R), (∀ i ∈ I, IsSquare (x i)) ∧ ∑ i ∈ I, x i = a := by
-  rcases exists_sum ha with ⟨ι, I, x, _⟩
-  exact ⟨ULift.{u} ι, .map (Equiv.ulift.symm.toEmbedding) I, x ∘ (Equiv.ulift.toEmbedding),
-    by simpa⟩
-
-/-- A term of `R` satisfies `IsSumSq` if and only if it can be written as `∑ i ∈ I, x i`
-where each `x i` is a square in `R`. -/
-theorem isSumSq_iff_exists_sum [AddCommMonoid R] [Mul R] (a : R) :
-    IsSumSq a ↔
-    ∃ (ι : Type) (I : Finset ι) (x : ι → R), (∀ i ∈ I, IsSquare (x i)) ∧ ∑ i ∈ I, x i = a :=
-  ⟨IsSumSq.exists_sum, by aesop⟩
-
-/-- A term of `R` satisfying `IsSumSq` can be written as `∑ i ∈ I, x i * x i`. -/
-theorem IsSumSq.exists_sum_mul_self [AddCommMonoid R] [Mul R] {a : R} (ha : IsSumSq a) :
-    ∃ (ι : Type) (I : Finset ι) (x : ι → R), a = ∑ i ∈ I, x i * x i := by
-  rcases exists_sum ha with ⟨_, I, _, y_cl, rfl⟩
-  choose! x hx using y_cl
-  exact ⟨_, I, x, Finset.sum_equiv (by rfl) (by simp) hx⟩
-
-/-- Universe-polymorphic version of `exists_sum_mul_self_of_isSumSq`. -/
-theorem IsSumSq.exists_sum_mul_self' [AddCommMonoid R] [Mul R] {a : R} (ha : IsSumSq a) :
-    ∃ (ι : Type u) (I : Finset ι) (x : ι → R), a = ∑ i ∈ I, x i * x i := by
-  obtain ⟨ι, I, x, _⟩ := exists_sum_mul_self ha
-  exact ⟨ULift.{u} ι, .map (Equiv.ulift.symm.toEmbedding) I, x ∘ (Equiv.ulift.toEmbedding),
-    by simpa⟩
-
-/-- A term of `R` satisfies `IsSumSq` if and only if it can be written as `∑ i ∈ I, x i * x i`. -/
-theorem isSumSq_iff_exists_sum_mul_self [AddCommMonoid R] [Mul R] (a : R) :
-    IsSumSq a ↔
-    ∃ (ι : Type) (I : Finset ι) (x : ι → R), a = ∑ i ∈ I, x i * x i := by
-  refine ⟨IsSumSq.exists_sum_mul_self, by aesop⟩
+private theorem IsSumSq.isSquare_mul [NonUnitalCommSemiring R] {x S : R}
+    (hx : IsSquare x) (hS : IsSumSq S) : IsSumSq (x * S) := by
+  induction hS using rec'
+  case zero   => aesop
+  case sq_add => rw [left_distrib]; aesop (add unsafe apply IsSquare.mul)
 
 /-- In a (not necessarily unital) commutative semiring,
 if `S₁` and `S₂` are sums of squares, then `S₁ * S₂` is a sum of squares. -/
 @[aesop unsafe 50% apply]
 theorem IsSumSq.mul [NonUnitalCommSemiring R] {S₁ S₂ : R}
     (h₁ : IsSumSq S₁) (h₂ : IsSumSq S₂) : IsSumSq (S₁ * S₂) := by
-  rw [isSumSq_iff_exists_sum] at *
-  rcases h₁, h₂ with ⟨⟨ι, I, x, hx, rfl⟩, ⟨β, J, y, hy, rfl⟩⟩
-  rw [Finset.sum_mul_sum, ← Finset.sum_product']
-  exact ⟨_, I ×ˢ J, fun ⟨i,j⟩ => x i * y j, by aesop (add safe IsSquare.mul)⟩
+  induction h₁ using rec'
+  case zero => aesop
+  case sq_add x hx S₁ hS₁ h_sum => rw [right_distrib]; aesop (add unsafe apply isSquare_mul)
 
 namespace Subsemiring
 variable {T : Type*} [CommSemiring T] {a : T}
@@ -203,8 +169,16 @@ sums of squares in `R`.
 theorem Subsemiring.closure_isSquare [CommSemiring R] :
     closure {x : R | IsSquare x} = sumSqIn R := by
   refine closure_eq_of_le (fun x hx => IsSquare.isSumSq hx) (fun x hx ↦ ?_)
-  rcases IsSumSq.exists_sum hx with ⟨_, _, _, _, rfl⟩
-  exact sum_mem (by aesop)
+  induction (show IsSumSq x by simpa) using IsSumSq.rec'
+  case zero => aesop
+  case sq_add a S ha hS h_sum => exact add_mem (subset_closure ha) (h_sum hS) /- TODO : automate properly -/
+
+/- TODO : move to Group.Even and make multiplicative -/
+lemma IsSquare.nonneg {R : Type*} [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
+    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
+    {x : R} (h : IsSquare x) : x ≥ 0 := by
+  rcases h with ⟨y, rfl⟩
+  exact mul_self_nonneg y
 
 /--
 Let `R` be a linearly ordered semiring in which the property `a ≤ b → ∃ c, a + c = b` holds
@@ -213,7 +187,8 @@ Let `R` be a linearly ordered semiring in which the property `a ≤ b → ∃ c,
 -/
 theorem IsSumSq.nonneg {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {S : R}
     (pS : IsSumSq S) : 0 ≤ S := by
-  rcases IsSumSq.exists_sum_mul_self pS with ⟨_, _, x, rfl⟩
-  exact Finset.sum_nonneg (fun _ _ => mul_self_nonneg _)
+  induction pS using IsSumSq.rec'
+  case zero => aesop
+  case sq_add a S ha hS h_sum => exact add_nonneg (IsSquare.nonneg ha) h_sum
 
 @[deprecated (since := "2024-08-09")] alias isSumSq.nonneg := IsSumSq.nonneg
