@@ -56,7 +56,7 @@ numbers to the respective functions.
 Computability, Oracle, Turing Degrees, Reducibility, Equivalence Relation
 -/
 
-open Primrec Nat.Partrec
+open Primrec Nat.Partrec Part
 
 /--
 The type of partial functions `f` that are recursive in an oracle `g` is the smallest type
@@ -125,9 +125,9 @@ If a function is recursive in the constant zero function,
 then it is partial recursive.
 -/
 lemma partrec_in_zero_implies_partrec
-(f : ℕ →. ℕ) : RecursiveIn f (fun _ => pure 0) → Nat.Partrec f := by
+(f : ℕ →. ℕ) : RecursiveIn f (fun _ => Part.some 0) → Nat.Partrec f := by
   intro fRecInZero
-  generalize h : (fun _ => pure 0) = fp at *
+  generalize h : (fun _ => Part.some 0) = fp at *
   induction fRecInZero
   case zero =>
     apply Nat.Partrec.zero
@@ -137,19 +137,38 @@ lemma partrec_in_zero_implies_partrec
     apply Nat.Partrec.left
   case right =>
     apply Nat.Partrec.right
-  case oracle =>
+  case oracle g =>
+    rw [← h]
     apply Nat.Partrec.zero
   case pair _ _ _ _ ih1 ih2 =>
-    apply Nat.Partrec.pair ih1 ih2
+    apply Nat.Partrec.pair
+    · apply ih1
+      rw [← h]
+    · apply ih2
+      rw [← h]
   case comp _ _ _ _ ih1 ih2 =>
-    apply Nat.Partrec.comp ih1 ih2
+    apply Nat.Partrec.comp
+    · apply ih1
+      rw [← h]
+    · apply ih2
+      rw [← h]
   case prec _ _ _ _ ih1 ih2 =>
-    apply Nat.Partrec.prec ih1 ih2
+    apply Nat.Partrec.prec
+    · apply ih1
+      rw [← h]
+    · apply ih2
+      rw [← h]
   case rfind _ _ ih =>
-    apply Nat.Partrec.rfind ih
+    apply Nat.Partrec.rfind
+    apply ih
+    rw [← h]
 
+/--
+A partial function `f` is partial recursive if and only if it is
+recursive in the constant zero function.
+-/
 lemma partrec_iff_partrec_in_zero
-  (f : ℕ →. ℕ) : Nat.Partrec f ↔ RecursiveIn f (fun _ => pure 0) := by
+  (f : ℕ →. ℕ) : Nat.Partrec f ↔ RecursiveIn f (fun _ => Part.some 0) := by
   constructor
   · intro pF
     apply partrec_implies_recursive_in_everything
@@ -167,7 +186,7 @@ theorem partrec_iff_partrec_in_everything
   constructor
   · exact partrec_implies_recursive_in_everything f
   · intro H
-    have lem : RecursiveIn f (fun _ => pure 0) := H (fun _ => pure 0)
+    have lem : RecursiveIn f (fun _ => Part.some 0) := H (fun _ => Part.some 0)
     rw [← partrec_iff_partrec_in_zero] at lem
     exact lem
 
