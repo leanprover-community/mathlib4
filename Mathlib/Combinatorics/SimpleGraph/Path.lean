@@ -5,6 +5,7 @@ Authors: Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Walk
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
+import Mathlib.Data.Set.Card
 
 /-!
 
@@ -1094,13 +1095,38 @@ lemma Represents_of_image_exists_rep_choose (C : Set (G.ConnectedComponent)) :
       exact (Quot.exists_rep c').choose_spec
     exact h (this ▸ hc')
 
-lemma disjoint_rep_image_supp {C : Set (G.ConnectedComponent)} {s : Set V}
-    (c : G.ConnectedComponent) (hrep : s.Represents C) (h : c ∉ C) : Disjoint s c.supp := by
+lemma ncard_represents_inter_supp {C : Set (G.ConnectedComponent)} {s : Set V}
+    {c : G.ConnectedComponent} (hrep : s.Represents C) (h : c ∈ C) : (s ∩ c.supp).ncard = 1 := by
+  rw [Set.ncard_eq_one]
+  obtain ⟨a, ha⟩ := hrep.unique_rep h
+  aesop
+
+lemma disjoint_represents_supp {C : Set (G.ConnectedComponent)} {s : Set V}
+    {c : G.ConnectedComponent} (hrep : s.Represents C) (h : c ∉ C) : Disjoint s c.supp := by
   rw [Set.disjoint_right]
   intro v hv hvr
   have := hrep.exact h
   rw [Set.eq_empty_iff_forall_not_mem] at this
   simp_all
+
+lemma disjoint_supp_of_represents {c : G.ConnectedComponent}
+    {s : Set V} {p : G.ConnectedComponent → Prop}
+    (hrep : s.Represents {c | p c})
+    (h : ¬ p c) : Disjoint s c.supp := by
+  apply disjoint_represents_supp hrep
+  simp_all only [Set.mem_setOf_eq, not_false_eq_true]
+
+lemma ncard_supp_sdiff_represents_of_mem [Fintype V] {c : G.ConnectedComponent}
+    {s : Set V} {C : Set (G.ConnectedComponent)}
+    (hrep : s.Represents C) (h : c ∈ C) : (c.supp \ s).ncard = c.supp.ncard - 1 := by
+  simp [← Set.ncard_inter_add_ncard_diff_eq_ncard c.supp s (Set.toFinite _),
+    Set.inter_comm, ncard_represents_inter_supp hrep h]
+
+lemma ncard_supp_sdiff_represents_of_not_mem [Fintype V] {c : G.ConnectedComponent}
+    {s : Set V} {C : Set (G.ConnectedComponent)}
+    (hrep : s.Represents C) (h : c ∉ C) : (c.supp \ s).ncard = c.supp.ncard := by
+  simp [← Set.ncard_inter_add_ncard_diff_eq_ncard c.supp s (Set.toFinite _),
+    Set.inter_comm, hrep.exact h]
 
 end ConnectedComponent
 
