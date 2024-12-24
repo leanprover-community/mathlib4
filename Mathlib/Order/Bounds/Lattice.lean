@@ -38,7 +38,7 @@ theorem isLUB_congr {s t : Set α} {c : α} (h : upperBounds s = upperBounds t) 
     IsLUB s c ↔ IsLUB t c := by
   rw [IsLUB, IsLUB, h]
 
-theorem isLUB_iUnion_iff_of_isLUB {ι : Sort*} {u : ι → α} {s : ι → Set α} 
+theorem isLUB_iUnion_iff_of_isLUB {ι : Sort*} {u : ι → α} {s : ι → Set α}
     (hs : ∀ (i : ι), IsLUB (s i) (u i)) (c : α) :
     IsLUB (Set.range u) c ↔ IsLUB (⋃ i, s i) c := by
   refine isLUB_congr ?_
