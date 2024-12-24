@@ -180,7 +180,7 @@ theorem partrec_iff_partrec_in_everything
 /--
 Proof that turing reducibility is reflexive.
 -/
-theorem recursive_in_refl (f : ℕ →. ℕ) : RecursiveIn f f :=
+theorem RecursiveIn.refl (f : ℕ →. ℕ) : RecursiveIn f f :=
   RecursiveIn.oracle
 
 /--
