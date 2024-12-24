@@ -171,7 +171,8 @@ theorem Subsemiring.closure_isSquare [CommSemiring R] :
   refine closure_eq_of_le (fun x hx => IsSquare.isSumSq hx) (fun x hx ↦ ?_)
   induction (show IsSumSq x by simpa) using IsSumSq.rec'
   case zero => aesop
-  case sq_add a S ha hS h_sum => exact add_mem (subset_closure ha) (h_sum hS) /- TODO : automate properly -/
+  case sq_add a S ha hS h_sum => exact add_mem (subset_closure ha) (h_sum hS)
+  /- TODO : automate properly -/
 
 /- TODO : move to Group.Even and make multiplicative -/
 lemma IsSquare.nonneg {R : Type*} [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
