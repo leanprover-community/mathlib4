@@ -2343,6 +2343,7 @@ import Mathlib.Computability.Reduce
 import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.TMComputable
 import Mathlib.Computability.TMToPartrec
+import Mathlib.Computability.Timed.InsertionSort
 import Mathlib.Computability.TuringMachine
 import Mathlib.Condensed.AB
 import Mathlib.Condensed.Basic
