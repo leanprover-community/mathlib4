@@ -109,7 +109,6 @@ theorem associated_tmul [Invertible (2 : A)] (Q₁ : QuadraticForm A M₁) (Q₂
       = BilinForm.tmul ((associated (R := A) Q₁)) (associated (R := R) Q₂) := by
   rw [BilinForm.tmul, BilinForm.tensorDistrib, LinearMap.comp_apply, ← BilinMap.tmul,
     ← QuadraticMap.associated_tmul Q₁ Q₂]
-  --simp
   ext x x_1 x_2 x_3 : 6
   simp_all
   rfl
@@ -143,6 +142,8 @@ theorem polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
   rw [QuadraticForm.baseChange, BilinForm.baseChange, polarBilin_tmul, BilinForm.tmul,
     ← LinearMap.map_smul, smul_tmul', ← two_nsmul_associated R, coe_associatedHom, associated_sq,
     smul_comm, ← smul_assoc, two_smul, invOf_two_add_invOf_two, one_smul]
+  simp_all only [LinearEquiv.coe_coe, LinearEquiv.congrRight₂_apply]
+  rfl
 
 end QuadraticForm
 
