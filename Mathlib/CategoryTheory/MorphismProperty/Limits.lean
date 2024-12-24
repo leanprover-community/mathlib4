@@ -514,6 +514,11 @@ lemma isStableUnderProductsOfShape_of_isStableUnderFiniteProducts
     W.IsStableUnderProductsOfShape J :=
   IsStableUnderFiniteProducts.isStableUnderProductsOfShape J
 
+lemma isStableUnderCoproductsOfShape_of_isStableUnderFiniteCoproducts
+    (J : Type) [Finite J] [W.IsStableUnderFiniteCoproducts] :
+    W.IsStableUnderCoproductsOfShape J :=
+  IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape J
+
 end Products
 
 section Diagonal
