@@ -1067,9 +1067,8 @@ lemma iUnion_connectedComponentSupp (G : SimpleGraph V) :
 
 namespace ConnectedComponent
 
-/--
-  A set of vertices represents a set of components if it contains exactly
-  one vertex from each component.
+/-- A set of vertices represents a set of components if it contains exactly
+one vertex from each component.
 -/
 structure _root_.Set.Represents (s : Set V) (C : Set (G.ConnectedComponent)) where
   unique_rep {c : G.ConnectedComponent} (h : c ∈ C) : ∃! v, v ∈ s ∩ c.supp
