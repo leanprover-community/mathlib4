@@ -138,6 +138,11 @@ lemma IsLittleOTVS.insert [TopologicalSpace α] {f : α → E} {g : α → F} {x
 lemma IsLittleOTVS.bot {f : α → E} {g : α → F} : IsLittleOTVS 𝕜 f g ⊥ :=
   fun u hU => ⟨univ, by simp⟩
 
+@[simp]
+lemma IsLittleOTVS.zero (g : α → F) (l : Filter α) : IsLittleOTVS 𝕜 (0 : α → F) g l := by
+  intros U hU
+  simpa [egauge_zero_right _ (Set.nonempty_of_mem <| mem_of_mem_nhds hU)] using ⟨univ, by simp⟩
+
 protected lemma IsLittleOTVS.smul_left {f : α → E} {g : α → F} {l : Filter α}
     (h : IsLittleOTVS 𝕜 f g l) (c : α → 𝕜) :
     IsLittleOTVS 𝕜 (fun x ↦ c x • f x) (fun x ↦ c x • g x) l := by
