@@ -320,12 +320,16 @@ theorem finprod_eq_mulIndicator_apply (s : Set α) (f : α → M) (a : α) :
   classical convert finprod_eq_if (M := M) (p := a ∈ s) (x := f a)
 
 @[to_additive (attr := simp)]
-theorem finprod_mem_mulSupport (f : α → M) (a : α) : ∏ᶠ _ : f a ≠ 1, f a = f a := by
+theorem finprod_apply_ne_one (f : α → M) (a : α) : ∏ᶠ _ : f a ≠ 1, f a = f a := by
   rw [← mem_mulSupport, finprod_eq_mulIndicator_apply, mulIndicator_mulSupport]
 
 @[to_additive]
 theorem finprod_mem_def (s : Set α) (f : α → M) : ∏ᶠ a ∈ s, f a = ∏ᶠ a, mulIndicator s f a :=
   finprod_congr <| finprod_eq_mulIndicator_apply s f
+
+@[to_additive (attr := simp)]
+lemma finprod_mem_mulSupport (f : α → M) : ∏ᶠ a ∈ mulSupport f, f a = ∏ᶠ a, f a := by
+  rw [finprod_mem_def, mulIndicator_mulSupport]
 
 @[to_additive]
 theorem finprod_eq_prod_of_mulSupport_subset (f : α → M) {s : Finset α} (h : mulSupport f ⊆ s) :
@@ -922,10 +926,11 @@ theorem finprod_mem_sUnion {t : Set (Set α)} (h : t.PairwiseDisjoint id) (ht₀
   exact finprod_mem_biUnion h ht₀ ht₁
 
 @[to_additive]
-lemma finprod_option [Finite α] (φ : Option α → M) : ∏ᶠ o, φ o = φ none * ∏ᶠ a, φ (some a) := by
-  rw [← finprod_mem_univ]
-  convert finprod_mem_insert φ (show none ∉ Set.range Option.some by aesop) (Set.finite_range some)
-  · exact (Set.insert_none_range_some α).symm
+lemma finprod_option {f : Option α → M} (hf : (mulSupport f).Finite) :
+    ∏ᶠ o, f o = f none * ∏ᶠ a, f (some a) := by
+  convert finprod_mem_insert' f (show none ∉ Set.range Option.some by aesop)
+    (hf.subset inter_subset_right)
+  · aesop
   · rw [finprod_mem_range]
     exact Option.some_injective _
 
@@ -1017,10 +1022,11 @@ theorem finsum_mul {R : Type*} [Semiring R] (f : α → R) (r : R) (h : (support
   (AddMonoidHom.mulRight r).map_finsum h
 
 @[to_additive (attr := simp)]
-lemma finprod_apply {α ι : Type*} [Finite ι] (f : ι → α → N) (a : α) :
+lemma finprod_apply {α ι : Type*} {f : ι → α → N} (hf : (mulSupport f).Finite) (a : α) :
     (∏ᶠ i, f i) a = ∏ᶠ i, f i a := by
   classical
-  simp only [finprod_def, dif_pos (Set.toFinite _), Finset.prod_apply]
+  have hf' : (mulSupport fun i ↦ f i a).Finite := hf.subset (by aesop)
+  simp only [finprod_def, dif_pos, hf, hf', Finset.prod_apply]
   symm
   apply Finset.prod_subset <;> aesop
 
