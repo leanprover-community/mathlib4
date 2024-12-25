@@ -6,6 +6,7 @@ Authors: Kevin Kappelmann
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Algebra.ContinuedFractions.Basic
 import Mathlib.Tactic.ApplyFun
+import Mathlib.Data.PNat.Basic
 
 /-!
 # Computable Continued Fractions
