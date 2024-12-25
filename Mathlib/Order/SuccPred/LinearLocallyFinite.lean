@@ -140,12 +140,20 @@ theorem le_of_lt_succFn (j i : ι) (hij : j < succFn i) : j ≤ i := by
   rw [mem_lowerBounds] at hk_lb
   exact not_lt.mp fun hi_lt_j ↦ not_le.mpr hk (hk_lb j hi_lt_j)
 
+variable (ι) in
+/-- A locally finite order is a `SuccOrder`.
+This is not an instance, because its `succ` field conflicts with computable `SuccOrder` structures
+on `ℕ` and `ℤ`. -/
 noncomputable def succOrder [LocallyFiniteOrder ι] : SuccOrder ι where
   succ := succFn
   le_succ := le_succFn
   max_of_succ_le h := isMax_of_succFn_le _ h
   succ_le_of_lt h := succFn_le_of_lt _ _ h
 
+variable (ι) in
+/-- A locally finite order is a `PredOrder`.
+This is not an instance, because its `succ` field conflicts with computable `PredOrder` structures
+on `ℕ` and `ℤ`. -/
 noncomputable def predOrder [LocallyFiniteOrder ι] : PredOrder ι :=
   letI := succOrder (ι := ιᵒᵈ)
   inferInstanceAs (PredOrder ιᵒᵈᵒᵈ)
@@ -429,3 +437,9 @@ def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :
     rw [← @toZ_le_iff ι _ _ _ _ ⊥, Int.toNat_of_nonneg (toZ_nonneg bot_le)]
 
 end OrderIso
+
+instance (priority := 100) Countable.of_linearOrder_locallyFiniteOrder [LocallyFiniteOrder ι] :
+    Countable ι :=
+  have := LinearLocallyFiniteOrder.succOrder ι
+  have := LinearLocallyFiniteOrder.predOrder ι
+  countable_of_linear_succ_pred_arch
