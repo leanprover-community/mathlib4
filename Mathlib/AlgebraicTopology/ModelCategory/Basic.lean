@@ -178,7 +178,7 @@ lemma cofibrations_isStableUnderCoproductsOfShape :
   rw [← trivialFibrations_llp]
   apply MorphismProperty.llp_IsStableUnderCoproductsOfShape
 
-instance trivialCofibrations_isStableUnderCoproductsOfShape :
+lemma trivialCofibrations_isStableUnderCoproductsOfShape :
     (trivialCofibrations C).IsStableUnderCoproductsOfShape J := by
   rw [← fibrations_llp]
   apply MorphismProperty.llp_IsStableUnderCoproductsOfShape

@@ -5,6 +5,7 @@ Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Nontrivial.Defs
+import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.GCongr.CoreAttrs
 import Mathlib.Tactic.PushNeg
 import Mathlib.Util.AssertExists
@@ -668,6 +669,16 @@ protected lemma div_pow (h : a ∣ b) : (b / a) ^ c = b ^ c / a ^ c := by
   · simp [Nat.zero_pow hc]
   refine (Nat.div_eq_of_eq_mul_right (pos_pow_of_pos c ha) ?_).symm
   rw [← Nat.mul_pow, Nat.mul_div_cancel_left' h]
+
+protected lemma pow_pos_iff : 0 < a ^ n ↔ 0 < a ∨ n = 0 := by
+  simp [Nat.pos_iff_ne_zero, imp_iff_not_or]
+
+lemma pow_self_pos : 0 < n ^ n := by simp [Nat.pow_pos_iff, n.eq_zero_or_pos.symm]
+
+lemma pow_self_mul_pow_self_le : m ^ m * n ^ n ≤ (m + n) ^ (m + n) := by
+  rw [Nat.pow_add]
+  exact Nat.mul_le_mul (Nat.pow_le_pow_left (le_add_right ..) _)
+    (Nat.pow_le_pow_left (le_add_left ..) _)
 
 /-!
 ### Recursion and induction principles
