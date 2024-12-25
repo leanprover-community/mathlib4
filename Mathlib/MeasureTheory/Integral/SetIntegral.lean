@@ -1074,7 +1074,7 @@ end OpenPos
 
 section Support
 
-theorem MeasureTheory.integral_tsupport [MeasurableSpace X] [TopologicalSpace X] [BorelSpace X]
+theorem MeasureTheory.integral_tsupport [MeasurableSpace X] [TopologicalSpace X]
     {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M] {F : X → M} {ν : MeasureTheory.Measure X} :
     ∫ (x : X), F x ∂ν = ∫ (x : X) in tsupport F, F x ∂ν := by
   rw [← MeasureTheory.setIntegral_univ]

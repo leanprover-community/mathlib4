@@ -109,11 +109,6 @@ theorem RMK [Nonempty X] : ∀ (f : C_c(X, ℝ)), ∫ (x : X), f x ∂(μ Λ hΛ
     -- `a` is a lower bound of `f`, `b` is an upper bound of `f`.
     obtain ⟨a, ha⟩ := BddBelow_bbdAbove_L.1
     obtain ⟨b, hb⟩ := BddBelow_bbdAbove_L.2
-    have hafx : ∀ (x : X), a ≤ f x := by
-      intro x
-      apply ha
-      rw [hLdef]
-      simp only [mem_range, exists_apply_eq_apply]
     have hfxb : ∀ (x : X), f x ≤ b:= by
       intro x
       apply hb
