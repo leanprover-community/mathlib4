@@ -333,6 +333,8 @@ def pi (I : Set ι) (p : (i : ι) → Submodule R (φ i)) : Submodule R ((i : ι
   add_mem' {_ _} hx hy i hi := (p i).add_mem (hx i hi) (hy i hi)
   smul_mem' c _ hx i hi := (p i).smul_mem c (hx i hi)
 
+attribute [norm_cast] coe_pi
+
 variable {I : Set ι} {p q : (i : ι) → Submodule R (φ i)} {x : (i : ι) → φ i}
 
 @[simp]
