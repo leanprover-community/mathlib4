@@ -589,8 +589,7 @@ lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 
         simp [mul_add, add_assoc, add_left_comm]
       _ ≤ (a + 1) ^ b * a + (a + 1) ^ b := by
         gcongr
-        · norm_num
-        · exact hb ha'
+        exact hb ha'
       _ = (a + 1) ^ (b + 1) := by simp [pow_succ, mul_add]
 
 end Real

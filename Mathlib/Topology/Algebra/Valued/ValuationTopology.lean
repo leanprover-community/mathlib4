@@ -45,7 +45,7 @@ theorem subgroups_basis : RingSubgroupsBasis fun γ : Γ₀ˣ => (v.ltAddSubgrou
       simp only [ltAddSubgroup, AddSubgroup.coe_set_mk, mem_setOf_eq] at r_in s_in
       calc
         (v (r * s) : Γ₀) = v r * v s := Valuation.map_mul _ _ _
-        _ < γ₀ * γ₀ := by gcongr <;> exact zero_le'
+        _ < γ₀ * γ₀ := by gcongr
         _ ≤ γ := mod_cast h
     leftMul := by
       rintro x γ
