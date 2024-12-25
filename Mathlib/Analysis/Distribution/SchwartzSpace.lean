@@ -538,7 +538,6 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
     right
     exact ⟨N, hN, rfl.le⟩
   gcongr
-  · simp
   exact Finset.le_sup hN
 
 lemma _root_.Function.HasTemperateGrowth.of_fderiv {f : E → F}

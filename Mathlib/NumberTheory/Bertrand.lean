@@ -118,7 +118,6 @@ theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
   · have n2_pos : 0 < 2 * n := by positivity
     exact mod_cast n2_pos
   · exact_mod_cast Real.nat_sqrt_le_real_sqrt
-  · norm_num1
   · exact cast_div_le.trans (by norm_cast)
 
 /-- A lemma that tells us that, in the case where Bertrand's postulate does not hold, the prime
