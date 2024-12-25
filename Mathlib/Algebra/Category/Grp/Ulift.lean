@@ -22,27 +22,28 @@ open CategoryTheory Limits
 
 namespace Grp
 
+/-- The universe lift functor for groups is fully faithful.
+-/
+@[to_additive
+  "The universe lift functor for groups is fully faithful."]
+def uliftFunctorFullyFaithful : uliftFunctor.{u, v}.FullyFaithful where
+  preimage f := Grp.ofHom (MulEquiv.ulift.toMonoidHom.comp
+    (f.comp MulEquiv.ulift.symm.toMonoidHom))
+  map_preimage _ := rfl
+  preimage_map _ := rfl
+
 /-- The universe lift functor for groups is faithful.
 -/
 @[to_additive
   "The universe lift functor for additive groups is faithful."]
-instance : uliftFunctor.{u, v}.Faithful where
-  map_injective {_ _ f g} heq  := by
-    ext a
-    apply_fun (fun h ↦ h {down := a}) at heq
-    change Equiv.ulift.symm (f a) = Equiv.ulift.symm (g a) at heq
-    exact (EmbeddingLike.apply_eq_iff_eq _).mp heq
+instance : uliftFunctor.{u, v}.Faithful := Functor.FullyFaithful.faithful uliftFunctorFullyFaithful
+
 
 /-- The universe lift functor for groups is full.
 -/
 @[to_additive
   "The universe lift functor for additive groups is full."]
-instance : uliftFunctor.{u, v}.Full where
-  map_surjective f :=
-    ⟨ofHom (MonoidHom.mk (OneHom.mk (fun x => (f (ULift.up x)).down)
-    (by change (f 1).down = ?_; rw [f.map_one]; rfl))
-    (fun _ _ ↦ by simp only [uliftFunctor_obj, coe_of];
-                  change (f (_ * _)).down = _; rw [f.map_mul]; rfl)), rfl⟩
+instance : uliftFunctor.{u, v}.Full := Functor.FullyFaithful.full uliftFunctorFullyFaithful
 
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimit {J : Type w} [Category.{w'} J]
@@ -75,24 +76,25 @@ end Grp
 
 namespace CommGrp
 
+/-- The universe lift functor for commutative groups is fully faithful.
+-/
+@[to_additive
+  "The universe lift functor for commutative additive groups is fully faithful."]
+def uliftFunctorFullyFaithful : uliftFunctor.{u, v}.FullyFaithful where
+  preimage f := Grp.ofHom (MulEquiv.ulift.toMonoidHom.comp
+    (f.comp MulEquiv.ulift.symm.toMonoidHom))
+  map_preimage _ := rfl
+  preimage_map _ := rfl
+
 -- The universe lift functor for commutative groups is faithful. -/
 @[to_additive
   "The universe lift functor for commutative additive groups is faithful."]
-instance : uliftFunctor.{u, v}.Faithful where
-  map_injective {_ _ f g} heq := by
-    ext a
-    apply_fun (fun h ↦ h {down := a}) at heq
-    change Equiv.ulift.symm (f a) = Equiv.ulift.symm (g a) at heq
-    exact (EmbeddingLike.apply_eq_iff_eq _).mp heq
+instance : uliftFunctor.{u, v}.Faithful := Functor.FullyFaithful.faithful uliftFunctorFullyFaithful
 
 -- The universe lift functor for commutative groups is full. -/
 @[to_additive
   "The universe lift functor for commutative additive groups is full."]
-instance : uliftFunctor.{u, v}.Full where map_surjective f :=
-  ⟨ofHom (MonoidHom.mk (OneHom.mk (fun x => (f (ULift.up x)).down)
-  (by change (f 1).down = ?_; rw [f.map_one]; rfl))
-  (fun _ _ ↦ by simp only [uliftFunctor_obj, coe_of];
-                change (f (_ * _)).down = _; rw [f.map_mul]; rfl)), rfl⟩
+instance : uliftFunctor.{u, v}.Full := Functor.FullyFaithful.full uliftFunctorFullyFaithful
 
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimit {J : Type w} [Category.{w'} J]
