@@ -54,39 +54,39 @@ def homAddEquiv [F.Additive] (X : C) (Y : D) :
       simp [homEquiv_apply] }
 
 @[simp]
-def homAddEquiv_zero [F.Additive] (X : C) (Y : D) :
+lemma homAddEquiv_zero [F.Additive] (X : C) (Y : D) :
     adj.homAddEquiv X Y 0 = 0 := by rw [map_zero]
 
 @[simp]
-def homAddEquiv_add [F.Additive] (X : C) (Y : D) (f f' : F.obj X ⟶ Y) :
+lemma homAddEquiv_add [F.Additive] (X : C) (Y : D) (f f' : F.obj X ⟶ Y) :
     adj.homAddEquiv X Y (f + f') = adj.homAddEquiv X Y f + adj.homAddEquiv X Y f' := by
   rw [AddEquivClass.map_add]
 
 @[simp]
-def homAddEquiv_sub [F.Additive] (X : C) (Y : D) (f f' : F.obj X ⟶ Y) :
+lemma homAddEquiv_sub [F.Additive] (X : C) (Y : D) (f f' : F.obj X ⟶ Y) :
     adj.homAddEquiv X Y (f - f') = adj.homAddEquiv X Y f - adj.homAddEquiv X Y f' := by
   rw [AddEquiv.map_sub]
 
 @[simp]
-def homAddEquiv_neg [F.Additive] (X : C) (Y : D) (f : F.obj X ⟶ Y) :
+lemma homAddEquiv_neg [F.Additive] (X : C) (Y : D) (f : F.obj X ⟶ Y) :
     adj.homAddEquiv X Y (- f) = - adj.homAddEquiv X Y f := by rw [AddEquiv.map_neg]
 
 @[simp]
-def homAddEquiv_symm_zero [F.Additive] (X : C) (Y : D) :
+lemma homAddEquiv_symm_zero [F.Additive] (X : C) (Y : D) :
     (adj.homAddEquiv X Y).symm 0 = 0 := by simp
 
 @[simp]
-def homAddEquiv_symm_add [F.Additive] (X : C) (Y : D) (f f' : X ⟶ G.obj Y) :
+lemma homAddEquiv_symm_add [F.Additive] (X : C) (Y : D) (f f' : X ⟶ G.obj Y) :
     (adj.homAddEquiv X Y).symm (f + f') = (adj.homAddEquiv X Y).symm f +
       (adj.homAddEquiv X Y).symm f' := by simp
 
 @[simp]
-def homAddEquiv_symm_sub [F.Additive] (X : C) (Y : D) (f f' : X ⟶ G.obj Y) :
+lemma homAddEquiv_symm_sub [F.Additive] (X : C) (Y : D) (f f' : X ⟶ G.obj Y) :
     (adj.homAddEquiv X Y).symm (f - f') = (adj.homAddEquiv X Y).symm f
       - (adj.homAddEquiv X Y).symm f' := by simp
 
 @[simp]
-def homAddEquiv_symm_neg [F.Additive] (X : C) (Y : D) (f : X ⟶ G.obj Y) :
+lemma homAddEquiv_symm_neg [F.Additive] (X : C) (Y : D) (f : X ⟶ G.obj Y) :
     (adj.homAddEquiv X Y).symm (- f) = - (adj.homAddEquiv X Y).symm f := by simp
 
 open Opposite in
