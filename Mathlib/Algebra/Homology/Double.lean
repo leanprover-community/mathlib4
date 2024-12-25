@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 
-import Mathlib.Algebra.Homology.HasNoLoop
 import Mathlib.Algebra.Homology.Single
 import Mathlib.CategoryTheory.Yoneda
 
@@ -23,8 +22,6 @@ open CategoryTheory Category Limits ZeroObject Opposite
 namespace HomologicalComplex
 
 variable {C : Type*} [Category C] [HasZeroMorphisms C] [HasZeroObject C]
-
-section
 
 variable {X₀ X₁ : C} (f : X₀ ⟶ X₁) {ι : Type*} {c : ComplexShape ι}
   {i₀ i₁ : ι} (hi₀₁ : c.Rel i₀ i₁)
@@ -158,68 +155,5 @@ lemma mkHomFromDouble_f₁ :
   rw [dif_neg h.symm, if_pos rfl, id_comp, comp_id]
 
 end
-
-/-- Let `c : ComplexShape ι`, and `i₀` and `i₁` be distinct indices such
-that `hi₀₁ : c.Rel i₀ i₁`, then for any `X : C`, the functor which sends
-`K : HomologicalComplex C c` to `X ⟶ K.X i` is corepresentable by `double (𝟙 X) hi₀₁`. -/
-@[simps (config := .lemmasOnly)]
-noncomputable def evalCompCoyonedaCorepresentableByDoubleId (h : i₀ ≠ i₁) (X : C) :
-    (eval C c i₀ ⋙ coyoneda.obj (op X)).CorepresentableBy (double (𝟙 X) hi₀₁) where
-  homEquiv {K} :=
-    { toFun g := (doubleXIso₀ _ hi₀₁).inv ≫ g.f i₀
-      invFun φ₀ := mkHomFromDouble _ h φ₀ (φ₀ ≫ K.d i₀ i₁) (by simp) (by simp)
-      left_inv g := by
-        ext
-        · simp
-        · simp [double_d _ _ h]
-      right_inv _ := by simp }
-  homEquiv_comp _ _ := by simp
-
-end
-
-variable {ι : Type*} (c : ComplexShape ι)
-
-/-- If `i` has no successor for the complex shape `c`,
-then for any `X : C`, the functor which sends `K : HomologicalComplex C c`
-to `X ⟶ K.X i` is corepresentable by `(single C c i).obj X`. -/
-@[simps (config := .lemmasOnly)]
-noncomputable def evalCompCoyonedaCorepresentableBySingle (i : ι) [DecidableEq ι]
-    (hi : ∀ (j : ι), ¬ c.Rel i j) (X : C) :
-    (eval C c i ⋙ coyoneda.obj (op X)).CorepresentableBy ((single C c i).obj X) where
-  homEquiv {K} :=
-    { toFun g := (singleObjXSelf c i X).inv ≫ g.f i
-      invFun f := mkHomFromSingle f (fun j hj ↦ (hi j hj).elim)
-      left_inv g := by aesop_cat
-      right_inv f := by simp }
-  homEquiv_comp := by simp
-
-variable [c.HasNoLoop] [DecidableEq ι]
-
-open Classical in
-/-- Given a complex shape `c : ComplexShape ι` (with no loop), `X : C` and `j : ι`,
-this is a quite explicit choice of corepresentative of the functor which sends
-`K : HomologicalComplex C c` to `X ⟶ K.X j`. -/
-noncomputable def evalCompCoyonedaCorepresentative (X : C) (j : ι) :
-    HomologicalComplex C c :=
-  if hj : ∃ (k : ι), c.Rel j k ∧ j ≠ k then
-    double (𝟙 X) (hj.choose_spec.1)
-  else (single C c j).obj X
-
-/-- If a complex shape `c : ComplexShape ι` has no loop,
-then for any `X : C` and `j : ι`, the functor which sends `K : HomologicalComplex C c`
-to `X ⟶ K.X j` is corepresentable. -/
-noncomputable def evalCompCoyonedaCorepresentable (X : C) (j : ι) :
-    (eval C c j ⋙ coyoneda.obj (op X)).CorepresentableBy
-      (evalCompCoyonedaCorepresentative c X j) := by
-  dsimp [evalCompCoyonedaCorepresentative]
-  by_cases h : ∃ (k : ι), c.Rel j k ∧ j ≠ k
-  · rw [dif_pos h]
-    exact evalCompCoyonedaCorepresentableByDoubleId _ h.choose_spec.2 _
-  · rw [dif_neg h]
-    apply evalCompCoyonedaCorepresentableBySingle
-    obtain _ | _ := c.exists_distinct_prev_or j <;> tauto
-
-instance (X : C) (j : ι) : (eval C c j ⋙ coyoneda.obj (op X)).IsCorepresentable where
-  has_corepresentation := ⟨_, ⟨evalCompCoyonedaCorepresentable c X j⟩⟩
 
 end HomologicalComplex
