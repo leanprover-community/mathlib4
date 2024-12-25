@@ -9,7 +9,7 @@ import Mathlib.Logic.Equiv.List
 /-!
 # Denumerability of ℚ
 
-This file proves that ℚ is infinite, denumerable, and deduces that it has cardinality `omega`.
+This file proves that ℚ denumerable using continued fractions.
 -/
 
 assert_not_exists Module
