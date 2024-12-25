@@ -17,9 +17,11 @@ import Mathlib.GroupTheory.GroupAction.Hom
 # Properties of group actions involving quotient groups
 
 This file proves properties of group actions which use the quotient group construction, notably
-* the orbit-stabilizer theorem `card_orbit_mul_card_stabilizer_eq_card_group`
-* the class formula `card_eq_sum_card_group_div_card_stabilizer'`
-* Burnside's lemma `sum_card_fixedBy_eq_card_orbits_mul_card_group`
+* the orbit-stabilizer theorem `MulAction.card_orbit_mul_card_stabilizer_eq_card_group`
+* the class formula `MulAction.card_eq_sum_card_group_div_card_stabilizer'`
+* Burnside's lemma `MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group`,
+
+as well as their analogues for additive groups.
 -/
 
 universe u v w
