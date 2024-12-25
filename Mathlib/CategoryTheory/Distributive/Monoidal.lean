@@ -209,7 +209,7 @@ variable [IsMonoidalRightDistrib C]
 
 /-- The forward direction of the right distributivity isomorphism is equal to the cogap morphism
 `coprod.desc (coprod.inl ▷ _) (coprod.inr ▷ _) : (Y ⊗ X) ⨿ (Z ⊗ X) ⟶ (Y ⨿ Z) ⊗ X`. -/
-@[reassoc (attr := simp)]
+@[simp]
 lemma rightDistrib_hom {X Y Z : C} :
   (∂R X Y Z).hom = coprod.desc (coprod.inl ▷ _) (coprod.inr ▷ _) := by rfl
 
@@ -286,7 +286,7 @@ instance MonoidalClosed.isMonoidalLeftDistrib [MonoidalClosed C] :
   }
 
 /-- The inverse of distributivity isomorphism from the closed monoidal strurcture -/
-@[reassoc (attr := simp)]
+@[simp]
 lemma MonoidalClosed.leftDistrib_inv [MonoidalClosed C] {X Y Z : C} :
     (leftDistrib X Y Z).inv =
     MonoidalClosed.uncurry
