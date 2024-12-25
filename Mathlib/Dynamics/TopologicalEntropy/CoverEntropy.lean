@@ -6,6 +6,7 @@ Authors: Damien Thomine, Pietro Monticone
 import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
 import Mathlib.Data.Real.ENatENNReal
 import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
+import Mathlib.Data.ENat.Lattice
 
 /-!
 # Topological entropy via covers

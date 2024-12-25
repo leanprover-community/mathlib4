@@ -181,23 +181,25 @@ theorem exists_mem_range : ∃ n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p]
   apply max_lt hr
   simpa using hn
 
-theorem exists_unique_mem_range : ∃! n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p] := by
+theorem existsUnique_mem_range : ∃! n : ℕ, n < p ∧ x - n ∈ maximalIdeal ℤ_[p] := by
   obtain ⟨n, hn₁, hn₂⟩ := exists_mem_range x
   use n, ⟨hn₁, hn₂⟩, fun m ⟨hm₁, hm₂⟩ ↦ ?_
   have := (zmod_congr_of_sub_mem_max_ideal x n m hn₂ hm₂).symm
   rwa [ZMod.natCast_eq_natCast_iff, ModEq, mod_eq_of_lt hn₁, mod_eq_of_lt hm₁] at this
 
+@[deprecated (since := "2024-12-17")] alias exists_unique_mem_range := existsUnique_mem_range
+
 /-- `zmod_repr x` is the unique natural number smaller than `p`
 satisfying `‖(x - zmod_repr x : ℤ_[p])‖ < 1`.
 -/
 def zmodRepr : ℕ :=
-  Classical.choose (exists_unique_mem_range x).exists
+  Classical.choose (existsUnique_mem_range x).exists
 
 theorem zmodRepr_spec : zmodRepr x < p ∧ x - zmodRepr x ∈ maximalIdeal ℤ_[p] :=
-  Classical.choose_spec (exists_unique_mem_range x).exists
+  Classical.choose_spec (existsUnique_mem_range x).exists
 
 theorem zmodRepr_unique (y : ℕ) (hy₁ : y < p) (hy₂ : x - y ∈ maximalIdeal ℤ_[p]) : y = zmodRepr x :=
-  have h := (Classical.choose_spec (exists_unique_mem_range x)).right
+  have h := (Classical.choose_spec (existsUnique_mem_range x)).right
   (h y ⟨hy₁, hy₂⟩).trans (h (zmodRepr x) (zmodRepr_spec x)).symm
 
 theorem zmodRepr_lt_p : zmodRepr x < p :=
@@ -301,7 +303,7 @@ noncomputable def appr : ℤ_[p] → ℕ → ℕ
     if hy : y = 0 then appr x n
     else
       let u := (unitCoeff hy : ℤ_[p])
-      appr x n + p ^ n * (toZMod ((u * (p : ℤ_[p]) ^ (y.valuation - n).natAbs) : ℤ_[p])).val
+      appr x n + p ^ n * (toZMod ((u * (p : ℤ_[p]) ^ (y.valuation - n : ℤ).natAbs) : ℤ_[p])).val
 
 theorem appr_lt (x : ℤ_[p]) (n : ℕ) : x.appr n < p ^ n := by
   induction' n with n ih generalizing x
@@ -362,21 +364,18 @@ theorem appr_spec (n : ℕ) : ∀ x : ℤ_[p], x - appr x n ∈ Ideal.span {(p :
     congr
     simp only [hc]
   rw [show (x - (appr x n : ℤ_[p])).valuation = ((p : ℤ_[p]) ^ n * c).valuation by rw [hc]]
-  rw [valuation_p_pow_mul _ _ hc', add_sub_cancel_left, _root_.pow_succ, ← mul_sub]
+  rw [valuation_p_pow_mul _ _ hc', Nat.cast_add, add_sub_cancel_left, _root_.pow_succ, ← mul_sub]
   apply mul_dvd_mul_left
-  obtain hc0 | hc0 := eq_or_ne c.valuation.natAbs 0
-  · simp only [hc0, mul_one, _root_.pow_zero]
+  obtain hc0 | hc0 := eq_or_ne c.valuation 0
+  · simp only [hc0, mul_one, _root_.pow_zero, Nat.cast_zero, Int.natAbs_zero]
     rw [mul_comm, unitCoeff_spec h] at hc
     suffices c = unitCoeff h by
       rw [← this, ← Ideal.mem_span_singleton, ← maximalIdeal_eq_span_p]
       apply toZMod_spec
-    obtain ⟨c, rfl⟩ : IsUnit c := by
-      -- TODO: write a `CanLift` instance for units
-      rw [Int.natAbs_eq_zero] at hc0
-      rw [isUnit_iff, norm_eq_pow_val hc', hc0, neg_zero, zpow_zero]
-    rw [DiscreteValuationRing.unit_mul_pow_congr_unit _ _ _ _ _ hc]
+    lift c to ℤ_[p]ˣ using by simp [isUnit_iff, norm_eq_zpow_neg_valuation hc', hc0]
+    rw [IsDiscreteValuationRing.unit_mul_pow_congr_unit _ _ _ _ _ hc]
     exact irreducible_p
-  · simp only [zero_pow hc0, sub_zero, ZMod.cast_zero, mul_zero]
+  · simp only [Int.natAbs_ofNat, zero_pow hc0, sub_zero, ZMod.cast_zero, mul_zero]
     rw [unitCoeff_spec hc']
     exact (dvd_pow_self (p : ℤ_[p]) hc0).mul_left _
 

@@ -104,15 +104,15 @@ attribute [local simp] eqToHom_map
 instance : Category (Grothendieck F) where
   Hom X Y := Grothendieck.Hom X Y
   id X := Grothendieck.id X
-  comp := @fun _ _ _ f g => Grothendieck.comp f g
-  comp_id := @fun X Y f => by
+  comp f g := Grothendieck.comp f g
+  comp_id {X Y} f := by
     dsimp; ext
     · simp [comp, id]
     · dsimp [comp, id]
       rw [← NatIso.naturality_2 (eqToIso (F.map_id Y.base)) f.fiber]
       simp
-  id_comp := @fun X Y f => by dsimp; ext <;> simp [comp, id]
-  assoc := @fun W X Y Z f g h => by
+  id_comp f := by dsimp; ext <;> simp [comp, id]
+  assoc f g h := by
     dsimp; ext
     · simp [comp, id]
     · dsimp [comp, id]
@@ -160,7 +160,7 @@ variable (F)
 @[simps!]
 def forget : Grothendieck F ⥤ C where
   obj X := X.1
-  map := @fun _ _ f => f.1
+  map f := f.1
 
 end
 
