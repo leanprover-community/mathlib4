@@ -269,20 +269,20 @@ fraction. Refer to said function for more details about the computation process.
 protected def of (v : K) : ContFract :=
   let s := IntFractPair.seq1 v -- get the sequence of integer and fractional parts.
   ⟨s.1.b, -- the head is just the first integer part
-    s.2.map fun p => p.b.toNat.toPNat',
-    by
-      intro h
-      have := IntFractPair.one_not_mem_getLast_seq1 v (Stream'.Seq.terminates_map_iff.1 h)
-      simp only [Stream'.Seq.getLast?_toList, Option.mem_def, Stream'.Seq.length_map,
-        Stream'.Seq.map_get?, Option.map_eq_some', not_exists, not_and] at *
-      rintro ⟨xb, xfr⟩ hx hx1
-      apply this xfr
-      simp only [hx, Option.some.injEq, IntFractPair.mk.injEq, and_true]
-      have h0xb : 0 < xb := IntFractPair.stream_b_pos (Nat.succ_pos _) _ hx
-      apply_fun ((↑) : ℕ+ → ℤ) at hx1
-      simp only [Nat.toPNat'_coe, Int.lt_toNat, Nat.cast_zero, Nat.cast_ite, Int.ofNat_toNat,
-        Nat.cast_one, PNat.val_ofNat, ite_eq_right_iff, max_eq_left (le_of_lt h0xb)] at hx1
-      exact hx1 h0xb⟩ -- the sequence consists of the remaining integer parts as the
-    -- partial denominators
+    s.2.map fun p => p.b.toNat.toPNat'⟩
+
+theorem one_not_mem_getLast?_of (v : K) (ht : (ContFract.of v).s.Terminates) :
+    1 ∉ ((ContFract.of v).s.toList ht).getLast? := by
+  have := IntFractPair.one_not_mem_getLast_seq1 v (Stream'.Seq.terminates_map_iff.1 ht)
+  simp only [Stream'.Seq.getLast?_toList, Option.mem_def, ContFract.of, Stream'.Seq.length_map,
+    Stream'.Seq.map_get?, Option.map_eq_some', not_exists, not_and] at *
+  rintro ⟨xb, xfr⟩ hx hx1
+  apply this xfr
+  simp only [hx, Option.some.injEq, IntFractPair.mk.injEq, and_true]
+  have h0xb : 0 < xb := IntFractPair.stream_b_pos (Nat.succ_pos _) _ hx
+  apply_fun ((↑) : ℕ+ → ℤ) at hx1
+  simp only [Nat.toPNat'_coe, Int.lt_toNat, Nat.cast_zero, Nat.cast_ite, Int.ofNat_toNat,
+    Nat.cast_one, PNat.val_ofNat, ite_eq_right_iff, max_eq_left (le_of_lt h0xb)] at hx1
+  exact hx1 h0xb
 
 end ContFract

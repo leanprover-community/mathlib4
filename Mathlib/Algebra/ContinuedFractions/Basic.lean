@@ -288,14 +288,12 @@ structure ContFract where
   h : ℤ
   /-- Sequence of denominators. -/
   s : Stream'.Seq ℕ+
-  /-- If the Sequence of denominators is finite, it does not end in one. -/
-  one_not_mem_last : ∀ h : s.Terminates, 1 ∉ (s.toList h).getLast?
 
 namespace ContFract
 
 @[coe]
 def toGenContFract [IntCast α] [NatCast α] [One α] : ContFract → (GenContFract α) :=
-  fun ⟨h, s, _⟩ => ⟨h, s.map (fun n : ℕ+ => ⟨1, n⟩)⟩
+  fun ⟨h, s⟩ => ⟨h, s.map (fun n : ℕ+ => ⟨1, n⟩)⟩
 
 instance [IntCast α] [NatCast α] [One α] : Coe ContFract (GenContFract α) :=
   ⟨toGenContFract⟩
@@ -437,8 +435,6 @@ structure FiniteContFract where
   h : ℤ
   /-- List of denominators. -/
   s : List ℕ+
-  /-- The last element in the list of denominators is not one -/
-  last_ne_one : 1 ∉ s.getLast?
 deriving DecidableEq
 
 namespace FiniteContFract
@@ -447,7 +443,7 @@ variable {K : Type*} [DivisionRing K]
 
 @[coe]
 def toContFract (c : FiniteContFract) : ContFract :=
-  ⟨c.h, c.s, fun _ => by simp [c.3]⟩
+  ⟨c.h, c.s⟩
 
 theorem terminatedAt_toContFract (c : FiniteContFract) :
     c.toContFract.s.TerminatedAt c.s.length :=
@@ -455,114 +451,5 @@ theorem terminatedAt_toContFract (c : FiniteContFract) :
 
 instance : Coe FiniteContFract ContFract :=
   ⟨toContFract⟩
-
-def evalTail : List ℕ+ → ℚ
-  | [] => 0
-  | a::l => ((a : ℚ) + evalTail l)⁻¹
-
-theorem evalTail_nonneg : ∀ (l : List ℕ+), 0 ≤ evalTail l
-  | [] => le_rfl
-  | _::_ => inv_nonneg.2 <| add_nonneg (Nat.cast_nonneg _) (evalTail_nonneg _)
-
-private theorem evalTail_pos_and_lt_one : ∀ {l : List ℕ+}, l ≠ [] → 1 ∉ l.getLast? →
-    0 < evalTail l ∧ evalTail l < 1
-  | [a], _, h₂ => by
-    rw [evalTail, evalTail, add_zero, inv_pos, Nat.cast_pos]
-    refine ⟨a.2, ?_⟩
-    apply inv_lt_one_of_one_lt₀
-    rw [← Nat.cast_one, Nat.cast_lt]
-    refine lt_of_le_of_ne a.one_le ?_
-    simp only [List.getLast?_singleton, Option.mem_def, Option.some.injEq] at h₂
-    rwa [Ne, Eq.comm, PNat.coe_eq_one_iff]
-  | a::b::l, _, h₂ => by
-    have ih := @evalTail_pos_and_lt_one (b::l) (by simp) (by simpa using h₂)
-    unfold evalTail
-    rw [inv_pos]
-    refine ⟨add_pos (Nat.cast_pos.2 a.2) ih.1, ?_⟩
-    apply inv_lt_one_of_one_lt₀
-    refine lt_add_of_le_of_pos ?_ ih.1
-    rw [← Nat.cast_one, Nat.cast_le]
-    exact a.one_le
-
-theorem evalTail_pos {l : List ℕ+} (h₁ : l ≠ []) (h₂ : 1 ∉ l.getLast?) : 0 < evalTail l :=
-  (evalTail_pos_and_lt_one h₁ h₂).1
-
-theorem evalTail_lt_one : ∀ {l : List ℕ+}, 1 ∉ l.getLast? → evalTail l < 1
-  | [], _ => by simp [evalTail]
-  | a::l, h => (evalTail_pos_and_lt_one (by simp) h).2
-
-def eval (c : FiniteContFract) : ℚ :=
-  c.h + evalTail c.s
-
-theorem head_eq_floor_evalTail_inv (a : ℕ+) (l : List ℕ+) (hl : 1 ∉ l.getLast?) :
-    (a : ℤ) = ⌊(evalTail (a::l))⁻¹⌋ := by
-  rw [evalTail, inv_inv]
-  refine le_antisymm ?_ ?_
-  · simp only [Int.floor_nat_add, le_add_iff_nonneg_right, Int.floor_nonneg]
-    exact evalTail_nonneg _
-  · simp only [Int.floor_nat_add, add_le_iff_nonpos_right, Int.floor_le_iff, Int.cast_zero,
-      zero_add]
-    exact evalTail_lt_one hl
-
-theorem evalTail_tail_eq_fract_evalTail_inv (a : ℕ+) (l : List ℕ+) (hl : 1 ∉ l.getLast?) :
-    evalTail l = Int.fract ((evalTail (a::l))⁻¹) := by
-  rw [Int.fract, ← head_eq_floor_evalTail_inv a l hl, evalTail, inv_inv]
-  simp
-
-theorem evalTail_injective : ∀ {l₁ l₂ : List ℕ+},
-    1 ∉ l₁.getLast? → 1 ∉ l₂.getLast? → evalTail l₁ = evalTail l₂ → l₁ = l₂
-  | [], [], _, _, _ => rfl
-  | a::l, [], _, _, h₁₂ => by
-    simp only [evalTail, inv_eq_zero] at h₁₂
-    refine False.elim (ne_of_gt ?_ h₁₂)
-    exact add_pos_of_pos_of_nonneg (Nat.cast_pos.2 a.pos) (evalTail_nonneg _)
-  | [], a::l, _, _, h₁₂ => by
-    simp only [evalTail, zero_eq_inv] at h₁₂
-    refine False.elim (ne_of_lt ?_ h₁₂)
-    exact add_pos_of_pos_of_nonneg (Nat.cast_pos.2 a.pos) (evalTail_nonneg _)
-  | a₁::l₁, a₂::l₂, h₁, h₂, h₁₂ => by
-    replace h₁ : 1 ∉ l₁.getLast? := by simp_all [Option.getD_eq_iff, List.getLast?_cons]
-    replace h₂ : 1 ∉ l₂.getLast? := by simp_all [Option.getD_eq_iff, List.getLast?_cons]
-    have hhead₁ := head_eq_floor_evalTail_inv a₁ l₁ h₁
-    have hhead₂ := head_eq_floor_evalTail_inv a₂ l₂ h₂
-    have htail₁ := evalTail_tail_eq_fract_evalTail_inv a₁ l₁ h₁
-    have htail₂ := evalTail_tail_eq_fract_evalTail_inv a₂ l₂ h₂
-    rw [h₁₂, ← hhead₂] at hhead₁
-    norm_cast at hhead₁
-    subst hhead₁
-    rw [h₁₂, ← htail₂] at htail₁
-    rw [evalTail_injective h₁ h₂ htail₁]
-
-theorem h_eq_floor_eval (c : FiniteContFract) : c.h = ⌊c.eval⌋ :=
-  le_antisymm (by
-      rw [Int.le_floor, eval]
-      exact le_add_of_nonneg_right (evalTail_nonneg _))
-    (by
-      rw [Int.floor_le_iff, eval]
-      exact add_lt_add_left (evalTail_lt_one c.3) _)
-
-theorem eval_injective : Function.Injective (eval : FiniteContFract → ℚ) := by
-  intro c₁ c₂ h
-  have : c₁.h = c₂.h := by rw [h_eq_floor_eval, h, h_eq_floor_eval]
-  ext1
-  · exact this
-  · rw [eval, eval, this, add_left_cancel_iff] at h
-    exact evalTail_injective c₁.3 c₂.3 h
-
-theorem coe_eval_eq_convs'_coe_length [CharZero K] : ∀ (c : FiniteContFract),
-    (c.eval : K) = (c : GenContFract K).convs' c.s.length
-  | ⟨h, [], _⟩ => by
-    simp [toContFract, ContFract.toGenContFract, eval, evalTail, convs', convs'Aux,
-      ContFract.toSimpContFract]
-  | ⟨h, a::l, hl⟩ => by
-    simpa [toContFract, ContFract.toGenContFract, eval, convs', convs'Aux, evalTail,
-      ContFract.toSimpContFract] using coe_eval_eq_convs'_coe_length ⟨a, l,
-        fun h => by simp_all [Option.getD_eq_iff, List.getLast?_cons]⟩
-  termination_by l => l.s.length
-
-theorem eval_eq_convs'_coe_length (c : FiniteContFract) :
-    c.eval = (c : GenContFract ℚ).convs' c.s.length := by
-  erw [← coe_eval_eq_convs'_coe_length]
-  simp
 
 end FiniteContFract
