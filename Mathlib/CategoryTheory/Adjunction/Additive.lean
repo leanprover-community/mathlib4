@@ -97,7 +97,7 @@ universe lifting functors.
 Note that `F` is additive if and only if `G` is, by `Adjunction.right_adjoint_additive` and
 `Adjunction.left_adjoint_additive`.
 -/
-@[simps! (config := .lemmasOnly)]
+@[simps!]
 def compPreadditiveYonedaIsoOfLeftAdjoint [F.Additive] :
     G ⋙ preadditiveYoneda ⋙ (whiskeringRight _ _ _).obj AddCommGrp.uliftFunctor.{max v₁ v₂} ≅
       preadditiveYoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙
