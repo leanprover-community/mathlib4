@@ -395,7 +395,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {u : E → F}
   have h2c : μ = c • ((volume : Measure (ι → ℝ)).map e.symm) := isAddLeftInvariant_eq_smul ..
   have h3c : (c : ℝ≥0∞) ≠ 0 := by simp_rw [ne_eq, ENNReal.coe_eq_zero, hc.ne', not_false_eq_true]
   have h0C : C = (c * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p) * (c ^ p)⁻¹ := by
-    simp_rw [C, lintegralPowLePowLIntegralFDerivConst]
+    simp_rw [c, ι, C, e, lintegralPowLePowLIntegralFDerivConst]
   have hC : C * c ^ p = c * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p := by
     rw [h0C, inv_mul_cancel_right₀ (NNReal.rpow_pos hc).ne']
   rw [h2c, ENNReal.smul_def, lintegral_smul_measure, lintegral_smul_measure]
@@ -506,7 +506,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner  {u : E → F'}
       rw [← inv_inj, hp']
       field_simp [n', NNReal.conjExponent]
     · norm_cast
-      simp_rw [eLpNormLESNormFDerivOfEqInnerConst]
+      simp_rw [n', n, eLpNormLESNormFDerivOfEqInnerConst]
       field_simp
   -- the case `p > 1`
   let q := Real.conjExponent p
@@ -570,7 +570,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner  {u : E → F'}
         gcongr
         convert ENNReal.lintegral_mul_le_Lp_mul_Lq μ
           (.symm <| .conjExponent <| show 1 < (p : ℝ) from hp) ?_ ?_ using 5
-        · simp_rw [← ENNReal.rpow_mul, ← h3γ]
+        · simp [γ, n, q, ← ENNReal.rpow_mul, ← h3γ]
         · borelize F'
           fun_prop
         · fun_prop
@@ -646,7 +646,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
     _ ≤ C₁ * C * (C₂ * eLpNorm (fderiv ℝ u) p μ) := by
       gcongr; exact eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul (Eventually.of_forall h4v) p
     _ = SNormLESNormFDerivOfEqConst F μ p * eLpNorm (fderiv ℝ u) p μ := by
-      simp_rw [SNormLESNormFDerivOfEqConst]
+      simp_rw [C₂, C₁, C, e, SNormLESNormFDerivOfEqConst]
       push_cast
       simp_rw [mul_assoc]
 

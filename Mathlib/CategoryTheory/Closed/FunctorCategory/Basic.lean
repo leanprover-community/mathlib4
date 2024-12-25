@@ -53,7 +53,7 @@ noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnric
         ext k
         dsimp
         rw [Category.assoc, Category.assoc, end_.lift_π]
-        erw [precompEnrichedHom_π]
+        erw [end_.lift_π]
         rw [end_.lift_π]
         dsimp
         rw [Functor.map_comp, Category.assoc] }
@@ -62,12 +62,10 @@ noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnric
       naturality := fun j j' φ ↦ by
         dsimp
         rw [← uncurry_natural_right, tensorHom_def'_assoc, ← uncurry_pre_app,
-          ← uncurry_natural_left]
-        congr 1
-        rw [Category.assoc, Category.assoc, NatTrans.naturality_assoc,
-          functorEnrichedHom_map]
-        erw [precompEnrichedHom_π_assoc]
-        congr 1
+          ← uncurry_natural_left, Category.assoc, Category.assoc,
+          NatTrans.naturality_assoc, functorEnrichedHom_map]
+        erw [end_.lift_π_assoc]
+        congr 2
         dsimp
         rw [← enrichedOrdinaryCategorySelf_eHomWhiskerRight,
           ← enrichedOrdinaryCategorySelf_eHomWhiskerLeft]
@@ -85,7 +83,8 @@ noncomputable def homEquiv : (F₁ ⊗ F₂ ⟶ F₃) ≃ (F₂ ⟶ functorEnric
     dsimp
     ext k
     rw [end_.lift_π, curry_uncurry, NatTrans.naturality_assoc]
-    erw [precompEnrichedHom_π]
+    dsimp
+    erw [end_.lift_π]
     congr
     dsimp [Under.map, Comma.mapLeft]
     simp only [Category.comp_id]

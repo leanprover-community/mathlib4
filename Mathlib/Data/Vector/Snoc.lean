@@ -16,7 +16,7 @@ import Mathlib.Data.Vector.Basic
   `snoc xs x` for its inductive case. Effectively doing induction from right-to-left
 -/
 
-namespace Mathlib
+namespace List
 
 namespace Vector
 
@@ -159,4 +159,4 @@ theorem mapAccumr₂_snoc (f : α → β → σ → σ × φ) (x : α) (y : β) 
 end Simp
 end Vector
 
-end Mathlib
+end List
