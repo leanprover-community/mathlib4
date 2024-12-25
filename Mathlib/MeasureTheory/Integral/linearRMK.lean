@@ -140,23 +140,20 @@ theorem RMK [Nonempty X] : ∀ (f : C_c(X, ℝ)), ∫ (x : X), f x ∂(μ Λ hΛ
           apply (div_lt_div_iff₀ _ two_pos).mpr
           · linarith
           · linarith
-        have h2 : ε / (4 * A + 2 + 2 * ε) < ε / 2 := by
-          apply div_lt_div_of_pos_left hε two_pos
+        have h2 : 0 < 4 * A + 2 + 2 * ε := by
           linarith
-        have h3 : 0 < 4 * A + 2 + 2 * ε := by
-          linarith
-        have h4 : ε / (4 * A + 2 + 2 * ε) * (ε / (4 * A + 2 + 2 * ε)) < ε / 2 := by
+        have h3 : ε / (4 * A + 2 + 2 * ε) * (ε / (4 * A + 2 + 2 * ε)) < ε / 2 := by
           rw [_root_.lt_div_iff₀ two_pos, mul_comm, ← mul_div_assoc, ← mul_div_assoc,
-            div_lt_iff₀ h3, ← mul_assoc, mul_comm, ← mul_assoc, ← mul_div_assoc, div_lt_iff₀ h3,
+            div_lt_iff₀ h2, ← mul_assoc, mul_comm, ← mul_assoc, ← mul_div_assoc, div_lt_iff₀ h2,
             mul_assoc, mul_assoc]
           apply mul_lt_mul_of_pos_left _ hε
           have h41 : 2 < 4 * A + 2 + 2 * ε := by
             linarith
           have h42 : ε < 4 * A + 2 + 2 * ε := by
             linarith
-          exact mul_lt_mul h41 (le_of_lt h42) hε (le_of_lt h3)
+          exact mul_lt_mul h41 (le_of_lt h42) hε (le_of_lt h2)
         nth_rw 7 [← add_halves ε]
-        exact add_lt_add h1 h4
+        exact add_lt_add h1 h3
     obtain ⟨ε', hε'⟩ := hltε
     apply le_of_lt (lt_of_le_of_lt _ (add_lt_add_left hε'.2 _))
     set δ := ε' / 2 with hδ
