@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Independence.Kernel
+import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Independence of sets of sets and measure spaces (σ-algebras)
