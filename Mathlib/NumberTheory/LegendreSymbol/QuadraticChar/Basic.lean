@@ -140,7 +140,7 @@ theorem quadraticChar_one_iff_isSquare {a : F} (ha : a ≠ 0) :
 
 /-- The quadratic character takes the value `1` on nonzero squares. -/
 theorem quadraticChar_sq_one' {a : F} (ha : a ≠ 0) : quadraticChar F (a ^ 2) = 1 := by
-  simp only [quadraticChar_apply, quadraticCharFun, sq_eq_zero_iff, ha, IsSquare_sq, if_true,
+  simp only [quadraticChar_apply, quadraticCharFun, sq_eq_zero_iff, ha, IsSquare.sq, if_true,
     if_false]
 
 /-- The square of the quadratic character on nonzero arguments is `1`. -/
