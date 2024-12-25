@@ -412,8 +412,13 @@ theorem iteratedFDerivWithin_zero_eq_comp :
   rfl
 
 @[simp]
+theorem dist_iteratedFDerivWithin_zero (f : E → F) (s : Set E) (x : E)
+    (g : E → F) (t : Set E) (y : E) :
+    dist (iteratedFDerivWithin 𝕜 0 f s x) (iteratedFDerivWithin 𝕜 0 g t y) = dist (f x) (g y) := by
+  simp only [iteratedFDerivWithin_zero_eq_comp, comp_apply, LinearIsometryEquiv.dist_map]
+
+@[simp]
 theorem norm_iteratedFDerivWithin_zero : ‖iteratedFDerivWithin 𝕜 0 f s x‖ = ‖f x‖ := by
-  -- Porting note: added `comp_apply`.
   rw [iteratedFDerivWithin_zero_eq_comp, comp_apply, LinearIsometryEquiv.norm_map]
 
 theorem iteratedFDerivWithin_succ_apply_left {n : ℕ} (m : Fin (n + 1) → E) :
@@ -440,6 +445,23 @@ theorem norm_fderivWithin_iteratedFDerivWithin {n : ℕ} :
       ‖iteratedFDerivWithin 𝕜 (n + 1) f s x‖ := by
   -- Porting note: added `comp_apply`.
   rw [iteratedFDerivWithin_succ_eq_comp_left, comp_apply, LinearIsometryEquiv.norm_map]
+
+@[simp]
+theorem dist_iteratedFDerivWithin_one (f g : E → F) {y}
+    (hsx : UniqueDiffWithinAt 𝕜 s x) (hyt : UniqueDiffWithinAt 𝕜 t y) :
+    dist (iteratedFDerivWithin 𝕜 1 f s x) (iteratedFDerivWithin 𝕜 1 g t y)
+      = dist (fderivWithin 𝕜 f s x) (fderivWithin 𝕜 g t y) := by
+  simp only [iteratedFDerivWithin_succ_eq_comp_left, comp_apply,
+    LinearIsometryEquiv.dist_map, iteratedFDerivWithin_zero_eq_comp,
+    LinearIsometryEquiv.comp_fderivWithin, hsx, hyt]
+  apply (continuousMultilinearCurryFin0 𝕜 E F).symm.toLinearIsometry.postcomp.dist_map
+
+@[simp]
+theorem norm_iteratedFDerivWithin_one (f : E → F) (h : UniqueDiffWithinAt 𝕜 s x) :
+    ‖iteratedFDerivWithin 𝕜 1 f s x‖ = ‖fderivWithin 𝕜 f s x‖ := by
+  simp only [← norm_fderivWithin_iteratedFDerivWithin,
+    iteratedFDerivWithin_zero_eq_comp, LinearIsometryEquiv.comp_fderivWithin _ h]
+  apply (continuousMultilinearCurryFin0 𝕜 E F).symm.toLinearIsometry.norm_toContinuousLinearMap_comp
 
 theorem iteratedFDerivWithin_succ_apply_right {n : ℕ} (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s)
     (m : Fin (n + 1) → E) :
