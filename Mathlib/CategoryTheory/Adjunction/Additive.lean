@@ -80,21 +80,21 @@ lemma homAddEquiv_neg [F.Additive] (X : C) (Y : D) (f : F.obj X ⟶ Y) :
 
 @[simp]
 lemma homAddEquiv_symm_zero [F.Additive] (X : C) (Y : D) :
-    (adj.homAddEquiv X Y).symm 0 = 0 := by simp
+    (adj.homAddEquiv X Y).symm 0 = 0 := by rw [map_zero]
 
 @[simp]
 lemma homAddEquiv_symm_add [F.Additive] (X : C) (Y : D) (f f' : X ⟶ G.obj Y) :
     (adj.homAddEquiv X Y).symm (f + f') = (adj.homAddEquiv X Y).symm f +
-      (adj.homAddEquiv X Y).symm f' := by simp
+      (adj.homAddEquiv X Y).symm f' := by rw [AddEquivClass.map_add]
 
 @[simp]
 lemma homAddEquiv_symm_sub [F.Additive] (X : C) (Y : D) (f f' : X ⟶ G.obj Y) :
     (adj.homAddEquiv X Y).symm (f - f') = (adj.homAddEquiv X Y).symm f
-      - (adj.homAddEquiv X Y).symm f' := by simp
+      - (adj.homAddEquiv X Y).symm f' := by rw [AddEquiv.map_sub]
 
 @[simp]
 lemma homAddEquiv_symm_neg [F.Additive] (X : C) (Y : D) (f : X ⟶ G.obj Y) :
-    (adj.homAddEquiv X Y).symm (- f) = - (adj.homAddEquiv X Y).symm f := by simp
+    (adj.homAddEquiv X Y).symm (- f) = - (adj.homAddEquiv X Y).symm f := by rw [AddEquiv.map_neg]
 
 open Opposite in
 /-- If we have an adjunction `adj : F ⊣ G` of functors between preadditive categories,
@@ -104,7 +104,7 @@ universe lifting functors.
 Note that `F` is additive if and only if `G` is, by `Adjunction.right_adjoint_additive` and
 `Adjunction.left_adjoint_additive`.
 -/
-@[simps!?]
+@[simps!? (config := .lemmasOnly)]
 def compPreadditiveYonedaIsoOfLeftAdjoint [F.Additive] :
     G ⋙ preadditiveYoneda ⋙ (whiskeringRight _ _ _).obj AddCommGrp.uliftFunctor.{max v₁ v₂} ≅
       preadditiveYoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙
