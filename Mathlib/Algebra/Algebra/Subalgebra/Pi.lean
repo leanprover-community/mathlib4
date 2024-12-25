@@ -21,24 +21,24 @@ open Algebra
 
 namespace Subalgebra
 variable {ι R : Type*} {S : ι → Type*} [CommSemiring R] [∀ i, Semiring (S i)] [∀ i, Algebra R (S i)]
-  {t : Set ι} {s s₁ s₂ : ∀ i, Subalgebra R (S i)} {x : ∀ i, S i}
+  {s : Set ι} {t t₁ t₂ : ∀ i, Subalgebra R (S i)} {x : ∀ i, S i}
 
 /-- The product of subalgebras as a subalgebra. -/
 @[simps coe toSubsemiring]
-def pi (t : Set ι) (s : ∀ i, Subalgebra R (S i)) : Subalgebra R (Π i, S i) where
-  __ := Submodule.pi t fun i ↦ (s i).toSubmodule
-  mul_mem' hx hy i hi := (s i).mul_mem (hx i hi) (hy i hi)
-  algebraMap_mem' _ i _ := (s i).algebraMap_mem _
+def pi (s : Set ι) (t : ∀ i, Subalgebra R (S i)) : Subalgebra R (Π i, S i) where
+  __ := Submodule.pi s fun i ↦ (t i).toSubmodule
+  mul_mem' hx hy i hi := (t i).mul_mem (hx i hi) (hy i hi)
+  algebraMap_mem' _ i _ := (t i).algebraMap_mem _
 
-@[simp] lemma mem_pi : x ∈ pi t s ↔ ∀ i ∈ t, x i ∈ s i := .rfl
+@[simp] lemma mem_pi : x ∈ pi s t ↔ ∀ i ∈ s, x i ∈ t i := .rfl
 
 open Subalgebra in
-@[simp] lemma pi_toSubmodule : toSubmodule (pi t s) = .pi t fun i ↦ (s i).toSubmodule := rfl
+@[simp] lemma pi_toSubmodule : toSubmodule (pi s t) = .pi s fun i ↦ (t i).toSubmodule := rfl
 
 @[simp]
-lemma pi_top (t : Set ι) : pi t (fun i ↦ (⊤ : Subalgebra R (S i))) = ⊤ :=
+lemma pi_top (s : Set ι) : pi s (fun i ↦ (⊤ : Subalgebra R (S i))) = ⊤ :=
   SetLike.coe_injective <| Set.pi_univ _
 
-@[gcongr] lemma pi_mono (h : ∀ i ∈ t, s₁ i ≤ s₂ i) : pi t s₁ ≤ pi t s₂ := Set.pi_mono h
+@[gcongr] lemma pi_mono (h : ∀ i ∈ s, t₁ i ≤ t₂ i) : pi s t₁ ≤ pi s t₂ := Set.pi_mono h
 
 end Subalgebra
