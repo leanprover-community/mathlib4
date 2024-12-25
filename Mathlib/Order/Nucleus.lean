@@ -84,32 +84,31 @@ lemma nucleus_preserves_top (n : Nucleus X) : n.toFun ⊤ = ⊤ :=
 
 
 instance : LE (Nucleus X) where
-  le x y := ∀ v : X, y.toFun v ≤ x.toFun v
+  le x y := ∀ v : X, x.toFun v ≤ y.toFun v
 
-@[simp]
-lemma Nucleus.le_iff {n m : Nucleus X} : n ≤ m ↔ ∀ v : X, m.toFun v ≤ n.toFun v := by rfl
+lemma Nucleus.le_iff {n m : Nucleus X} : m ≤ n ↔ ∀ v : X, m.toFun v ≤ n.toFun v := by rfl
 
 instance : Preorder (Nucleus X) where
   le_refl := (by simp only [Nucleus.le_iff, le_refl, implies_true])
   le_trans := (by simp only [Nucleus.le_iff]; exact fun a b c a_1 a_2 v ↦
-      Preorder.le_trans (c.toFun v) (b.toFun v) (a.toFun v) (a_2 v) (a_1 v))
+    Preorder.le_trans (a.toFun v) (b.toFun v) (c.toFun v) (a_1 v) (a_2 v))
 
 /--
 The identity Nucleus is the biggest sublocale.
 -/
-instance Nucleus.top : Top (Nucleus X) where
-  top := ⟨fun x ↦ x, Preorder.le_refl,Preorder.le_refl, fun _ _ ↦ rfl⟩
+instance Nucleus.bot : Bot (Nucleus X) where
+  bot := ⟨fun x ↦ x, Preorder.le_refl,Preorder.le_refl, fun _ _ ↦ rfl⟩
 
-instance : OrderTop (Nucleus X) where
-  le_top := (by simp[Nucleus.top];exact fun a v ↦ a.increasing v)
+instance : OrderBot (Nucleus X) where
+  bot_le := (by simp only [Nucleus.bot];exact fun a v ↦ a.increasing v)
 
 /--
 The nucleus which sends everything to ⊤ is the ⊥ sublocale.
 -/
-instance Nucleus.bot : Bot (Nucleus X) where
-  bot := ⟨fun _ ↦ ⊤,(by simp only [le_refl, implies_true]), OrderTop.le_top,
+instance Nucleus.top : Top (Nucleus X) where
+  top := ⟨fun _ ↦ ⊤,(by simp only [le_refl, implies_true]), OrderTop.le_top,
     fun _ _ ↦ Eq.symm (top_inf_eq _)⟩
 -- Question for the reviewer: Should these small proofs be simp's or written out statements?
 
-instance : OrderBot (Nucleus X) where
-  bot_le := (by simp[Nucleus.bot])
+instance : OrderTop (Nucleus X) where
+  le_top := (by simp only [Nucleus.top, Nucleus.le_iff, le_top, implies_true])
