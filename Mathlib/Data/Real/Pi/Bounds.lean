@@ -43,7 +43,7 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
     calc
       π ≤ 4 := pi_le_four
       _ = 2 ^ (0 + 2) := by norm_num
-      _ ≤ 2 ^ (n + 2) := by gcongr <;> norm_num
+      _ ≤ 2 ^ (n + 2) := by gcongr; norm_num
   refine lt_of_lt_of_le this (le_of_eq ?_); rw [add_mul]; congr 1
   · ring
   simp only [show (4 : ℝ) = 2 ^ 2 by norm_num, ← pow_mul, div_div, ← pow_add]

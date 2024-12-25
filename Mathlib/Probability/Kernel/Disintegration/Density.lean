@@ -584,7 +584,7 @@ lemma setIntegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
       ENNReal.toReal_sub_of_le (measure_mono (by intro x; simp)) (measure_ne_top _ _)]
     rw [eq_tsub_iff_add_eq_of_le, add_comm]
     · exact h
-    · gcongr <;> simp
+    · gcongr; simp
   | iUnion f hf_disj hf h_eq =>
     rw [integral_iUnion hf hf_disj (integrable_density hκν _ hs).integrableOn]
     simp_rw [h_eq]
