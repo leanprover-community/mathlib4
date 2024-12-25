@@ -129,9 +129,9 @@ theorem ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFin
     (hfg_eq : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ)
     (hfm : AEStronglyMeasurable' m f μ) (hgm : AEStronglyMeasurable' m g μ) : f =ᵐ[μ] g := by
   rw [← ae_eq_trim_iff_of_aeStronglyMeasurable' hm hfm hgm]
-  have hf_mk_int_finite :
-    ∀ s, MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ (hfm.mk f) s (μ.trim hm) := by
-    intro s hs hμs
+  have hf_mk_int_finite (s) :
+      MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ _ (hfm.mk f) s (μ.trim hm) := by
+    intro hs hμs
     rw [trim_measurableSet_eq hm hs] at hμs
     -- Porting note: `rw [IntegrableOn]` fails with
     -- synthesized type class instance is not definitionally equal to expression inferred by typing
@@ -140,9 +140,9 @@ theorem ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFin
     rw [restrict_trim hm _ hs]
     refine Integrable.trim hm ?_ hfm.stronglyMeasurable_mk
     exact Integrable.congr (hf_int_finite s hs hμs) (ae_restrict_of_ae hfm.ae_eq_mk)
-  have hg_mk_int_finite :
-    ∀ s, MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ (hgm.mk g) s (μ.trim hm) := by
-    intro s hs hμs
+  have hg_mk_int_finite (s) :
+      MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ _ (hgm.mk g) s (μ.trim hm) := by
+    intro hs hμs
     rw [trim_measurableSet_eq hm hs] at hμs
     -- Porting note: `rw [IntegrableOn]` fails with
     -- synthesized type class instance is not definitionally equal to expression inferred by typing

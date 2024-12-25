@@ -8,35 +8,40 @@ import Mathlib.Data.Set.Lattice
 /-!
 # Unions and intersections of bounds
 
+Some results about upper and lower bounds over collections of sets.
+
 ## Implementation notes
 
-`Mathlib.Data.Set.Lattice` is needed for `subset_iUnion_of_subset`.
+In a separate file as we need to import `Mathlib.Data.Set.Lattice`.
 
 -/
 
-variable {γ : Type*} [Preorder γ]
+variable {α : Type*} [Preorder α]
 
 open Set
 
-@[simp]
-theorem upperBounds_iUnion {ι : Sort*} {s : ι → Set γ} :
-    upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i)  := Subset.antisymm
-  (fun _ hb => mem_iInter.mpr
-    (fun i => upperBounds_mono_set (subset_iUnion_of_subset i (by rfl)) hb))
-  (fun _ _ _ _ => by aesop)
+theorem upperBounds_lowerBounds_gc : GaloisConnection
+    (OrderDual.toDual ∘ upperBounds : Set α → (Set α)ᵒᵈ)
+    (lowerBounds ∘ OrderDual.ofDual : (Set α)ᵒᵈ → Set α) := by
+  simpa [GaloisConnection, subset_def, mem_upperBounds, mem_lowerBounds]
+    using fun S T ↦ forall₂_swap
 
-theorem IsLUB.iUnion {ι : Sort*} {u : ι → γ}  {s : ι → Set γ} (hs : ∀ (i : ι), IsLUB (s i) (u i))
-    (c : γ) (hc : IsLUB (Set.range u ) c) : IsLUB (⋃ i, s i) c := by
-  constructor
-  · intro e he
-    obtain ⟨i,hi⟩ := mem_iUnion.mp he
-    obtain ⟨hc₁,hc₂⟩ := hc
-    simp only [upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff,
-      mem_setOf_eq] at hc₁
-    obtain ⟨hs₁,_⟩ := hs i
-    exact Preorder.le_trans e (u i) c (hs₁ hi) (hc₁ i)
-  · intro e he
-    rw [upperBounds_iUnion] at he
-    apply hc.2
-    simp only [upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff, mem_setOf_eq]
-    exact fun i => (hs i).2 (he _ (mem_range_self i))
+theorem upperBounds_iUnion {ι : Sort*} {s : ι → Set α} :
+    upperBounds (⋃ i, s i) = ⋂ i, upperBounds (s i) :=
+  upperBounds_lowerBounds_gc.l_iSup
+
+theorem lowerBounds_iUnion {ι : Sort*} {s : ι → Set α} :
+    lowerBounds (⋃ i, s i) = ⋂ i, lowerBounds (s i) :=
+  upperBounds_lowerBounds_gc.u_iInf
+
+theorem isLUB_iUnion_iff_of_isLUB {ι : Sort*} {u : ι → α} {s : ι → Set α}
+    (hs : ∀ (i : ι), IsLUB (s i) (u i)) (c : α) :
+    IsLUB (Set.range u) c ↔ IsLUB (⋃ i, s i) c := by
+  refine isLUB_congr ?_
+  simp_rw [range_eq_iUnion, upperBounds_iUnion, upperBounds_singleton, IsLUB.upperBounds_eq (hs _)]
+
+theorem isGLB_iUnion_iff_of_isLUB {ι : Sort*} {u : ι → α} {s : ι → Set α}
+    (hs : ∀ (i : ι), IsGLB (s i) (u i)) (c : α) :
+    IsGLB (Set.range u) c ↔ IsGLB (⋃ i, s i) c := by
+  refine isGLB_congr ?_
+  simp_rw [range_eq_iUnion, lowerBounds_iUnion, lowerBounds_singleton, IsGLB.lowerBounds_eq (hs _)]
