@@ -94,7 +94,7 @@ instance : Preorder (Nucleus X) where
     Preorder.le_trans (a.toFun v) (b.toFun v) (c.toFun v) (a_1 v) (a_2 v))
 
 /--
-The identity Nucleus is the biggest sublocale.
+The smallest Nucleus is the identity Nucleus.
 -/
 instance Nucleus.bot : Bot (Nucleus X) where
   bot := ⟨fun x ↦ x, Preorder.le_refl,Preorder.le_refl, fun _ _ ↦ rfl⟩
@@ -103,7 +103,7 @@ instance : OrderBot (Nucleus X) where
   bot_le := (by simp only [Nucleus.bot];exact fun a v ↦ a.increasing v)
 
 /--
-The nucleus which sends everything to ⊤ is the ⊥ sublocale.
+The biggest Nucleus sends everything to ⊤.
 -/
 instance Nucleus.top : Top (Nucleus X) where
   top := ⟨fun _ ↦ ⊤,(by simp only [le_refl, implies_true]), OrderTop.le_top,
