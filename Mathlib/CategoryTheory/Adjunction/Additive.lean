@@ -44,7 +44,6 @@ and if `F` is additive, then the hom set equivalence upgrades to an `AddEquiv`.
 Note that `F` is additive if and only if `G` is, by `Adjunction.right_adjoint_additive` and
 `Adjunction.left_adjoint_additive`.
 -/
-@[simps!]
 def homAddEquiv [F.Additive] (X : C) (Y : D) :
     AddEquiv (F.obj X ⟶ Y) (X ⟶ G.obj Y) :=
   {
@@ -52,6 +51,14 @@ def homAddEquiv [F.Additive] (X : C) (Y : D) :
     map_add' _ _ := by
       have := adj.right_adjoint_additive
       simp [homEquiv_apply] }
+
+@[simp]
+lemma homAddEquiv_apply [F.Additive] (X : C) (Y : D) (f : F.obj X ⟶ Y) :
+    adj.homAddEquiv X Y f = adj.homEquiv X Y f := rfl
+
+@[simp]
+lemma homAddEquiv_symm_apply [F.Additive] (X : C) (Y : D) (f : X ⟶ G.obj Y) :
+    (adj.homAddEquiv X Y).symm f = (adj.homEquiv X Y).symm f := rfl
 
 @[simp]
 lemma homAddEquiv_zero [F.Additive] (X : C) (Y : D) :
@@ -97,7 +104,7 @@ universe lifting functors.
 Note that `F` is additive if and only if `G` is, by `Adjunction.right_adjoint_additive` and
 `Adjunction.left_adjoint_additive`.
 -/
-@[simps!]
+@[simps!?]
 def compPreadditiveYonedaIsoOfLeftAdjoint [F.Additive] :
     G ⋙ preadditiveYoneda ⋙ (whiskeringRight _ _ _).obj AddCommGrp.uliftFunctor.{max v₁ v₂} ≅
       preadditiveYoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙
