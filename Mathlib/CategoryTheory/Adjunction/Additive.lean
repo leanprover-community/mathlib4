@@ -116,7 +116,6 @@ universe lifting functors.
 Note that `F` is additive if and only if `G` is, by `Adjunction.right_adjoint_additive` and
 `Adjunction.left_adjoint_additive`.
 -/
-@[simps!?]
 def compPreadditiveYonedaIso :
     G ⋙ preadditiveYoneda ⋙ (whiskeringRight _ _ _).obj AddCommGrp.uliftFunctor.{max v₁ v₂} ≅
       preadditiveYoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙
@@ -141,13 +140,16 @@ def compPreadditiveYonedaIso :
     rfl
 
 @[simp]
-lemma compPreadditiveYonedaIso_hom_app_app_apply_down' (X : Cᵒᵖ) (Y : D)
-    (a : (((G ⋙ preadditiveYoneda ⋙ (whiskeringRight Cᵒᵖ AddCommGrp AddCommGrp).obj
-    AddCommGrp.uliftFunctor).obj Y).obj X)) :
-      (((adj.compPreadditiveYonedaIso.hom.app Y).app X) a : ULift.{max v₁ v₂, v₂} (F.obj (Opposite.unop X) ⟶ Y)) =
-        {down := (adj.homEquiv (Opposite.unop X) Y).symm (AddEquiv.ulift a)} := by
-  simp
-  sorry
+lemma compPreadditiveYonedaIso_hom_app_app_apply_down (X : Cᵒᵖ) (Y : D)
+    (a : ULift.{max v₁ v₂, v₁} (Opposite.unop X ⟶ G.obj Y)) :
+      (((adj.compPreadditiveYonedaIso.hom.app Y).app X) a).down =
+        (adj.homEquiv (Opposite.unop X) Y).symm (AddEquiv.ulift a) := rfl
+
+@[simp]
+lemma compPreadditiveYonedaIso_inv_app_app_apply_down (X : Cᵒᵖ) (Y : D)
+    (a : ULift.{max v₁ v₂, v₂} (F.obj (Opposite.unop X) ⟶ Y)) :
+      (((adj.compPreadditiveYonedaIso.inv.app Y).app X) a).down =
+        (adj.homEquiv (Opposite.unop X) Y) (AddEquiv.ulift a) := rfl
 
 end Adjunction
 
