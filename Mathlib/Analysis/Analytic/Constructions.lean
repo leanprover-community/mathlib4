@@ -7,6 +7,7 @@ import Mathlib.Analysis.Analytic.Composition
 import Mathlib.Analysis.Analytic.Linear
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Mul
 import Mathlib.Analysis.Normed.Ring.Units
+import Mathlib.Analysis.Analytic.OfScalars
 
 /-!
 # Various ways to combine analytic functions
@@ -38,7 +39,7 @@ variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A]
 
 theorem hasFPowerSeriesOnBall_const {c : F} {e : E} :
     HasFPowerSeriesOnBall (fun _ => c) (constFormalMultilinearSeries 𝕜 E c) e ⊤ := by
-  refine ⟨by simp, WithTop.zero_lt_top, fun _ => hasSum_single 0 fun n hn => ?_⟩
+  refine ⟨by simp, WithTop.top_pos, fun _ => hasSum_single 0 fun n hn => ?_⟩
   simp [constFormalMultilinearSeries_apply hn]
 
 theorem hasFPowerSeriesAt_const {c : F} {e : E} :
@@ -414,8 +415,7 @@ variable {ι : Type*} [Fintype ι] {e : E} {Fm : ι → Type*}
 lemma FormalMultilinearSeries.radius_pi_le (p : Π i, FormalMultilinearSeries 𝕜 E (Fm i)) (i : ι) :
     (FormalMultilinearSeries.pi p).radius ≤ (p i).radius := by
   apply le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
-  obtain ⟨C, -, hC⟩ :  ∃ C > 0, ∀ (n : ℕ),
-    ‖pi p n‖ * ↑r' ^ n ≤ C := norm_mul_pow_le_of_lt_radius _ hr'
+  obtain ⟨C, -, hC⟩ : ∃ C > 0, ∀ n, ‖pi p n‖ * ↑r' ^ n ≤ C := norm_mul_pow_le_of_lt_radius _ hr'
   apply le_radius_of_bound _ C (fun n ↦ ?_)
   apply le_trans _ (hC n)
   gcongr
@@ -456,13 +456,15 @@ lemma HasFPowerSeriesWithinOnBall.pi
     apply FormalMultilinearSeries.le_radius_pi (fun i ↦ ?_)
     exact (hf i).r_le
   r_pos := hr
-  hasSum {y} m hy := Pi.hasSum.2 (fun i ↦ (hf i).hasSum m hy)
+  hasSum {_} m hy := Pi.hasSum.2 (fun i ↦ (hf i).hasSum m hy)
 
 lemma hasFPowerSeriesWithinOnBall_pi_iff (hr : 0 < r) :
-    HasFPowerSeriesWithinOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e r
-      ↔ ∀ i, HasFPowerSeriesWithinOnBall (f i) (p i) s e r :=
-  ⟨fun h i ↦ ⟨h.r_le.trans (FormalMultilinearSeries.radius_pi_le _ _), hr,
-    fun m hy ↦ Pi.hasSum.1 (h.hasSum m hy) i⟩, fun h ↦ .pi h hr⟩
+    HasFPowerSeriesWithinOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e r ↔
+      ∀ i, HasFPowerSeriesWithinOnBall (f i) (p i) s e r where
+  mp h i :=
+    ⟨h.r_le.trans (FormalMultilinearSeries.radius_pi_le _ _), hr,
+      fun m hy ↦ Pi.hasSum.1 (h.hasSum m hy) i⟩
+  mpr h := .pi h hr
 
 lemma HasFPowerSeriesOnBall.pi
     (hf : ∀ i, HasFPowerSeriesOnBall (f i) (p i) e r) (hr : 0 < r) :
@@ -471,8 +473,8 @@ lemma HasFPowerSeriesOnBall.pi
   exact HasFPowerSeriesWithinOnBall.pi hf hr
 
 lemma hasFPowerSeriesOnBall_pi_iff (hr : 0 < r) :
-    HasFPowerSeriesOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) e r
-      ↔ ∀ i, HasFPowerSeriesOnBall (f i) (p i) e r := by
+    HasFPowerSeriesOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) e r ↔
+      ∀ i, HasFPowerSeriesOnBall (f i) (p i) e r := by
   simp_rw [← hasFPowerSeriesWithinOnBall_univ]
   exact hasFPowerSeriesWithinOnBall_pi_iff hr
 
@@ -485,8 +487,8 @@ lemma HasFPowerSeriesWithinAt.pi
   exact ⟨r, HasFPowerSeriesWithinOnBall.pi hr r_pos⟩
 
 lemma hasFPowerSeriesWithinAt_pi_iff :
-    HasFPowerSeriesWithinAt (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e
-      ↔ ∀ i, HasFPowerSeriesWithinAt (f i) (p i) s e := by
+    HasFPowerSeriesWithinAt (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e ↔
+      ∀ i, HasFPowerSeriesWithinAt (f i) (p i) s e := by
   refine ⟨fun h i ↦ ?_, fun h ↦ .pi h⟩
   obtain ⟨r, hr⟩ := h
   exact ⟨r, (hasFPowerSeriesWithinOnBall_pi_iff hr.r_pos).1 hr i⟩
@@ -498,8 +500,8 @@ lemma HasFPowerSeriesAt.pi
   exact HasFPowerSeriesWithinAt.pi hf
 
 lemma hasFPowerSeriesAt_pi_iff :
-    HasFPowerSeriesAt (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) e
-      ↔ ∀ i, HasFPowerSeriesAt (f i) (p i) e := by
+    HasFPowerSeriesAt (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) e ↔
+      ∀ i, HasFPowerSeriesAt (f i) (p i) e := by
   simp_rw [← hasFPowerSeriesWithinAt_univ]
   exact hasFPowerSeriesWithinAt_pi_iff
 
@@ -649,6 +651,61 @@ lemma AnalyticOnNhd.pow {f : E → A} {s : Set E} (hf : AnalyticOnNhd 𝕜 f s) 
     AnalyticOnNhd 𝕜 (fun x ↦ f x ^ n) s :=
   fun _ m ↦ (hf _ m).pow n
 
+
+/-!
+### Restriction of scalars
+-/
+
+section
+
+variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
+  [NormedSpace 𝕜' E] [IsScalarTower 𝕜 𝕜' E]
+  [NormedSpace 𝕜' F] [IsScalarTower 𝕜 𝕜' F]
+  {f : E → F} {p : FormalMultilinearSeries 𝕜' E F} {x : E} {s : Set E} {r : ℝ≥0∞}
+
+lemma HasFPowerSeriesWithinOnBall.restrictScalars (hf : HasFPowerSeriesWithinOnBall f p s x r) :
+    HasFPowerSeriesWithinOnBall f (p.restrictScalars 𝕜) s x r :=
+  ⟨hf.r_le.trans (FormalMultilinearSeries.radius_le_of_le (fun n ↦ by simp)), hf.r_pos, hf.hasSum⟩
+
+lemma HasFPowerSeriesOnBall.restrictScalars (hf : HasFPowerSeriesOnBall f p x r) :
+    HasFPowerSeriesOnBall f (p.restrictScalars 𝕜) x r :=
+  ⟨hf.r_le.trans (FormalMultilinearSeries.radius_le_of_le (fun n ↦ by simp)), hf.r_pos, hf.hasSum⟩
+
+lemma HasFPowerSeriesWithinAt.restrictScalars (hf : HasFPowerSeriesWithinAt f p s x) :
+    HasFPowerSeriesWithinAt f (p.restrictScalars 𝕜) s x := by
+  rcases hf with ⟨r, hr⟩
+  exact ⟨r, hr.restrictScalars⟩
+
+lemma HasFPowerSeriesAt.restrictScalars (hf : HasFPowerSeriesAt f p x) :
+    HasFPowerSeriesAt f (p.restrictScalars 𝕜) x := by
+  rcases hf with ⟨r, hr⟩
+  exact ⟨r, hr.restrictScalars⟩
+
+lemma AnalyticWithinAt.restrictScalars (hf : AnalyticWithinAt 𝕜' f s x) :
+    AnalyticWithinAt 𝕜 f s x := by
+  rcases hf with ⟨p, hp⟩
+  exact ⟨p.restrictScalars 𝕜, hp.restrictScalars⟩
+
+lemma AnalyticAt.restrictScalars (hf : AnalyticAt 𝕜' f x) :
+    AnalyticAt 𝕜 f x := by
+  rcases hf with ⟨p, hp⟩
+  exact ⟨p.restrictScalars 𝕜, hp.restrictScalars⟩
+
+lemma AnalyticOn.restrictScalars (hf : AnalyticOn 𝕜' f s) :
+    AnalyticOn 𝕜 f s :=
+  fun x hx ↦ (hf x hx).restrictScalars
+
+lemma AnalyticOnNhd.restrictScalars (hf : AnalyticOnNhd 𝕜' f s) :
+    AnalyticOnNhd 𝕜 f s :=
+  fun x hx ↦ (hf x hx).restrictScalars
+
+end
+
+
+/-!
+### Inversion is analytic
+-/
+
 section Geometric
 
 variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
@@ -656,6 +713,13 @@ variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NormedRing A] [NormedA
 /-- The geometric series `1 + x + x ^ 2 + ...` as a `FormalMultilinearSeries`. -/
 def formalMultilinearSeries_geometric : FormalMultilinearSeries 𝕜 A A :=
   fun n ↦ ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n A
+
+/-- The geometric series as an `ofScalars` series. -/
+theorem formalMultilinearSeries_geometric_eq_ofScalars :
+    formalMultilinearSeries_geometric 𝕜 A =
+      FormalMultilinearSeries.ofScalars A fun _ ↦ (1 : 𝕜) := by
+  simp_rw [FormalMultilinearSeries.ext_iff, FormalMultilinearSeries.ofScalars,
+    formalMultilinearSeries_geometric, one_smul, implies_true]
 
 lemma formalMultilinearSeries_geometric_apply_norm_le (n : ℕ) :
     ‖formalMultilinearSeries_geometric 𝕜 A n‖ ≤ max 1 ‖(1 : A)‖ :=
@@ -670,42 +734,15 @@ end Geometric
 lemma one_le_formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     (A : Type*) [NormedRing A] [NormedAlgebra 𝕜 A] :
     1 ≤ (formalMultilinearSeries_geometric 𝕜 A).radius := by
-  refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-  rw [← Nat.cast_one, ENNReal.coe_lt_natCast, Nat.cast_one] at hr
-  apply FormalMultilinearSeries.le_radius_of_isBigO
-  apply isBigO_of_le' (c := max 1 ‖(1 : A)‖) atTop (fun n ↦ ?_)
-  simp only [norm_mul, norm_norm, norm_pow, Real.norm_eq_abs, NNReal.abs_eq, norm_one, mul_one,
-    abs_norm]
-  apply le_trans ?_ (formalMultilinearSeries_geometric_apply_norm_le 𝕜 A n)
-  conv_rhs => rw [← mul_one (‖formalMultilinearSeries_geometric 𝕜 A n‖)]
-  gcongr
-  exact pow_le_one _ (coe_nonneg r) hr.le
+  convert formalMultilinearSeries_geometric_eq_ofScalars 𝕜 A ▸
+    FormalMultilinearSeries.ofScalars_radius_ge_inv_of_tendsto A _ one_ne_zero (by simp) |>.le
+  simp
 
 lemma formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     (A : Type*) [NormedRing A] [NormOneClass A] [NormedAlgebra 𝕜 A] :
-    (formalMultilinearSeries_geometric 𝕜 A).radius = 1 := by
-  apply le_antisymm
-  · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [← ENNReal.coe_one, ENNReal.coe_le_coe]
-    have := FormalMultilinearSeries.isLittleO_one_of_lt_radius _ hr
-    simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul] at this
-    contrapose! this
-    simp_rw [IsLittleO, IsBigOWith, not_forall, norm_one, mul_one,
-      not_eventually]
-    refine ⟨1, one_pos, ?_⟩
-    refine ((eventually_ne_atTop 0).mp (Eventually.of_forall ?_)).frequently
-    intro n hn
-    push_neg
-    rwa [norm_pow, one_lt_pow_iff_of_nonneg (norm_nonneg _) hn,
-      Real.norm_of_nonneg (NNReal.coe_nonneg _), ← NNReal.coe_one,
-      NNReal.coe_lt_coe]
-  · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [← Nat.cast_one, ENNReal.coe_lt_natCast, Nat.cast_one] at hr
-    apply FormalMultilinearSeries.le_radius_of_isBigO
-    simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul]
-    refine isBigO_of_le atTop (fun n ↦ ?_)
-    rw [norm_one, Real.norm_of_nonneg (pow_nonneg (coe_nonneg r) _)]
-    exact pow_le_one _ (coe_nonneg r) hr.le
+    (formalMultilinearSeries_geometric 𝕜 A).radius = 1 :=
+  formalMultilinearSeries_geometric_eq_ofScalars 𝕜 A ▸
+    FormalMultilinearSeries.ofScalars_radius_eq_of_tendsto A _ one_ne_zero (by simp)
 
 lemma hasFPowerSeriesOnBall_inverse_one_sub
     (𝕜 : Type*) [NontriviallyNormedField 𝕜]
@@ -756,6 +793,11 @@ lemma analyticAt_inverse {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     · simp only [Units.inv_eq_val_inv, Units.inv_mul, sub_self, f2, f3]
       exact analyticAt_inverse_one_sub 𝕜 A
     · exact analyticAt_const.sub (analyticAt_const.mul analyticAt_id)
+
+lemma analyticOnNhd_inverse {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+    {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] [HasSummableGeomSeries A] :
+    AnalyticOnNhd 𝕜 Ring.inverse {x : A | IsUnit x} :=
+  fun _ hx ↦ analyticAt_inverse (IsUnit.unit hx)
 
 lemma hasFPowerSeriesOnBall_inv_one_sub
     (𝕜 𝕝 : Type*) [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :
@@ -902,3 +944,45 @@ theorem Finset.analyticOnNhd_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 
     {f : α → E → A} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticOnNhd 𝕜 (f n) s) :
     AnalyticOnNhd 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s :=
   fun z zs ↦ N.analyticAt_prod (fun n m ↦ h n m z zs)
+
+/-!
+### Unshifting
+-/
+
+section
+
+variable {f : E → (E →L[𝕜] F)} {pf : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)} {s : Set E} {x : E}
+  {r : ℝ≥0∞} {z : F}
+
+theorem HasFPowerSeriesWithinOnBall.unshift (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
+    HasFPowerSeriesWithinOnBall (fun y ↦ z + f y (y - x)) (pf.unshift z) s x r where
+  r_le := by
+    rw [FormalMultilinearSeries.radius_unshift]
+    exact hf.r_le
+  r_pos := hf.r_pos
+  hasSum := by
+    intro y hy h'y
+    apply HasSum.zero_add
+    simp only [FormalMultilinearSeries.unshift, Nat.succ_eq_add_one,
+      continuousMultilinearCurryRightEquiv_symm_apply', add_sub_cancel_left]
+    exact (ContinuousLinearMap.apply 𝕜 F y).hasSum (hf.hasSum hy h'y)
+
+theorem HasFPowerSeriesOnBall.unshift (hf : HasFPowerSeriesOnBall f pf x r) :
+    HasFPowerSeriesOnBall (fun y ↦ z + f y (y - x)) (pf.unshift z) x r where
+  r_le := by
+    rw [FormalMultilinearSeries.radius_unshift]
+    exact hf.r_le
+  r_pos := hf.r_pos
+  hasSum := by
+    intro y hy
+    apply HasSum.zero_add
+    simp only [FormalMultilinearSeries.unshift, Nat.succ_eq_add_one,
+      continuousMultilinearCurryRightEquiv_symm_apply', add_sub_cancel_left]
+    exact (ContinuousLinearMap.apply 𝕜 F y).hasSum (hf.hasSum hy)
+
+theorem HasFPowerSeriesWithinAt.unshift (hf : HasFPowerSeriesWithinAt f pf s x) :
+    HasFPowerSeriesWithinAt (fun y ↦ z + f y (y - x)) (pf.unshift z) s x :=
+  let ⟨_, hrf⟩ := hf
+  hrf.unshift.hasFPowerSeriesWithinAt
+
+end

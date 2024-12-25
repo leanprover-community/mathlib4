@@ -76,9 +76,8 @@ Versions of these results are also given on the intervals `(-∞, a]` and `(-∞
 the corresponding versions of integration by parts.
 -/
 
-open MeasureTheory Filter Set TopologicalSpace
-
-open scoped ENNReal NNReal Topology
+open MeasureTheory Filter Set TopologicalSpace Topology
+open scoped ENNReal NNReal
 
 namespace MeasureTheory
 
@@ -344,7 +343,7 @@ theorem AECover.biInter_Ici_aecover [Preorder ι] {φ : ι → Set α}
     (hφ : AECover μ atTop φ) : AECover μ atTop fun n : ι => ⋂ (k) (_h : k ∈ Ici n), φ k where
   ae_eventually_mem := hφ.ae_eventually_mem.mono fun x h ↦ by
     simpa only [mem_iInter, mem_Ici, eventually_forall_ge_atTop]
-  measurableSet i := .biInter (to_countable _) fun n _ => hφ.measurableSet n
+  measurableSet _ := .biInter (to_countable _) fun n _ => hφ.measurableSet n
 
 end AECoverUnionInterCountable
 
@@ -361,7 +360,7 @@ private theorem lintegral_tendsto_of_monotone_of_nat {φ : ℕ → Set α} (hφ 
     indicator_le_indicator_of_subset (hmono hij) (fun x => zero_le <| f x) x
   have key₃ : ∀ᵐ x : α ∂μ, Tendsto (fun n => F n x) atTop (𝓝 (f x)) := hφ.ae_tendsto_indicator f
   (lintegral_tendsto_of_tendsto_of_monotone key₁ key₂ key₃).congr fun n =>
-    lintegral_indicator f (hφ.measurableSet n)
+    lintegral_indicator (hφ.measurableSet n) _
 
 theorem AECover.lintegral_tendsto_of_nat {φ : ℕ → Set α} (hφ : AECover μ atTop φ) {f : α → ℝ≥0∞}
     (hfm : AEMeasurable f μ) : Tendsto (∫⁻ x in φ ·, f x ∂μ) atTop (𝓝 <| ∫⁻ x, f x ∂μ) := by
@@ -389,9 +388,7 @@ theorem AECover.iSup_lintegral_eq_of_countably_generated [Nonempty ι] [l.NeBot]
   have := hφ.lintegral_tendsto_of_countably_generated hfm
   refine ciSup_eq_of_forall_le_of_forall_lt_exists_gt
     (fun i => lintegral_mono' Measure.restrict_le_self le_rfl) fun w hw => ?_
-  rcases exists_between hw with ⟨m, hm₁, hm₂⟩
-  rcases (eventually_ge_of_tendsto_gt hm₂ this).exists with ⟨i, hi⟩
-  exact ⟨i, lt_of_lt_of_le hm₁ hi⟩
+  exact (this.eventually_const_lt hw).exists
 
 end Lintegral
 
@@ -436,10 +433,9 @@ theorem AECover.integrable_of_integral_norm_bounded [l.NeBot] [l.IsCountablyGene
     rw [integral_eq_lintegral_of_nonneg_ae (ae_of_all _ fun x => @norm_nonneg E _ (f x))
         hfm.norm.restrict]
   conv at hbounded in ENNReal.ofReal _ =>
-    rw [← coe_nnnorm]
-    rw [ENNReal.ofReal_coe_nnreal]
+    rw [← coe_nnnorm, ENNReal.ofReal_coe_nnreal]
   refine hbounded.mono fun i hi => ?_
-  rw [← ENNReal.ofReal_toReal (ne_top_of_lt (hfi i).2)]
+  rw [← ENNReal.ofReal_toReal <| ne_top_of_lt <| hasFiniteIntegral_iff_nnnorm.mp (hfi i).2]
   apply ENNReal.ofReal_le_ofReal hi
 
 theorem AECover.integrable_of_integral_norm_tendsto [l.NeBot] [l.IsCountablyGenerated]
@@ -475,7 +471,7 @@ theorem AECover.integral_tendsto_of_countably_generated [l.IsCountablyGenerated]
     convert h using 2; rw [integral_indicator (hφ.measurableSet _)]
   tendsto_integral_filter_of_dominated_convergence (fun x => ‖f x‖)
     (Eventually.of_forall fun i => hfi.aestronglyMeasurable.indicator <| hφ.measurableSet i)
-    (Eventually.of_forall fun i => ae_of_all _ fun x => norm_indicator_le_norm_self _ _) hfi.norm
+    (Eventually.of_forall fun _ => ae_of_all _ fun _ => norm_indicator_le_norm_self _ _) hfi.norm
     (hφ.ae_tendsto_indicator f)
 
 /-- Slight reformulation of
@@ -642,7 +638,7 @@ open scoped Interval
 
 section IoiFTC
 
-variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : E} [NormedAddCommGroup E]
+variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a l : ℝ} {m : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
 /-- If the derivative of a function defined on the real line is integrable close to `+∞`, then
@@ -711,8 +707,8 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi
     rcases mem_atTop_sets.1 hs with ⟨b, hb⟩
     rw [← top_le_iff, ← volume_Ici (a := b)]
     exact measure_mono hb
-  rwa [B, ← Embedding.tendsto_nhds_iff] at A
-  exact (Completion.uniformEmbedding_coe E).embedding
+  rwa [B, ← IsEmbedding.tendsto_nhds_iff] at A
+  exact (Completion.isUniformEmbedding_coe E).isEmbedding
 
 variable [CompleteSpace E]
 
@@ -793,7 +789,7 @@ theorem integrableOn_Ioi_deriv_of_nonneg (hcont : ContinuousWithinAt g (Ici a) a
         (fun y hy => hderiv y hy.1) fun y hy => g'pos y hy.1
     _ = ∫ y in a..id x, ‖g' y‖ := by
       simp_rw [intervalIntegral.integral_of_le h'x]
-      refine setIntegral_congr measurableSet_Ioc fun y hy => ?_
+      refine setIntegral_congr_fun measurableSet_Ioc fun y hy => ?_
       dsimp
       rw [abs_of_nonneg]
       exact g'pos _ hy.1
@@ -864,7 +860,7 @@ end IoiFTC
 
 section IicFTC
 
-variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m : E} [NormedAddCommGroup E]
+variable {E : Type*} {f f' : ℝ → E} {a : ℝ} {m : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
 /-- If the derivative of a function defined on the real line is integrable close to `-∞`, then
@@ -908,8 +904,8 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Iic
     apply le_antisymm (le_top)
     rw [← volume_Iic (a := b)]
     exact measure_mono hb
-  rwa [B, ← Embedding.tendsto_nhds_iff] at A
-  exact (Completion.uniformEmbedding_coe E).embedding
+  rwa [B, ← IsEmbedding.tendsto_nhds_iff] at A
+  exact (Completion.isUniformEmbedding_coe E).isEmbedding
 
 variable [CompleteSpace E]
 
@@ -975,7 +971,7 @@ lemma _root_.HasCompactSupport.ennnorm_le_lintegral_Ici_deriv
     exact ennnorm_integral_le_lintegral_ennnorm _
   convert this with y
   · simp [f', I, Completion.nnnorm_coe]
-  · rw [fderiv.comp_deriv _ I.differentiableAt (hf.differentiable le_rfl _)]
+  · rw [fderiv_comp_deriv _ I.differentiableAt (hf.differentiable le_rfl _)]
     simp only [ContinuousLinearMap.fderiv]
     simp [I]
 
@@ -983,7 +979,7 @@ end IicFTC
 
 section UnivFTC
 
-variable {E : Type*} {f f' : ℝ → E} {g g' : ℝ → ℝ} {a b l : ℝ} {m n : E} [NormedAddCommGroup E]
+variable {E : Type*} {f f' : ℝ → E} {m n : E} [NormedAddCommGroup E]
   [NormedSpace ℝ E]
 
 /-- **Fundamental theorem of calculus-2**, on the whole real line
@@ -996,8 +992,8 @@ see `tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic` and
 theorem integral_of_hasDerivAt_of_tendsto [CompleteSpace E]
     (hderiv : ∀ x, HasDerivAt f (f' x) x) (hf' : Integrable f')
     (hbot : Tendsto f atBot (𝓝 m)) (htop : Tendsto f atTop (𝓝 n)) : ∫ x, f' x = n - m := by
-  rw [← integral_univ, ← Set.Iic_union_Ioi (a := 0),
-    integral_union (Iic_disjoint_Ioi le_rfl) measurableSet_Ioi hf'.integrableOn hf'.integrableOn,
+  rw [← setIntegral_univ, ← Set.Iic_union_Ioi (a := 0),
+    setIntegral_union (Iic_disjoint_Ioi le_rfl) measurableSet_Ioi hf'.integrableOn hf'.integrableOn,
     integral_Iic_of_hasDerivAt_of_tendsto' (fun x _ ↦ hderiv x) hf'.integrableOn hbot,
     integral_Ioi_of_hasDerivAt_of_tendsto' (fun x _ ↦ hderiv x) hf'.integrableOn htop]
   abel
@@ -1025,7 +1021,7 @@ open Real
 
 open scoped Interval
 
-variable {E : Type*} {f : ℝ → E} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 /-- Change-of-variables formula for `Ioi` integrals of vector-valued functions, proved by taking
 limits from the result for finite intervals. -/
@@ -1075,7 +1071,7 @@ theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
     rcases lt_or_gt_of_ne hp with (h | h)
     · apply StrictAntiOn.injOn
       intro x hx y hy hxy
-      rw [← inv_lt_inv (rpow_pos_of_pos hx p) (rpow_pos_of_pos hy p), ← rpow_neg (le_of_lt hx),
+      rw [← inv_lt_inv₀ (rpow_pos_of_pos hx p) (rpow_pos_of_pos hy p), ← rpow_neg (le_of_lt hx),
         ← rpow_neg (le_of_lt hy)]
       exact rpow_lt_rpow (le_of_lt hx) hxy (neg_pos.mpr h)
     exact StrictMonoOn.injOn fun x hx y _ hxy => rpow_lt_rpow (mem_Ioi.mp hx).le hxy h
@@ -1086,7 +1082,7 @@ theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
       rw [← rpow_mul (le_of_lt hx), one_div_mul_cancel hp, rpow_one]
   have := integral_image_eq_integral_abs_deriv_smul measurableSet_Ioi a1 a2 g
   rw [a3] at this; rw [this]
-  refine setIntegral_congr measurableSet_Ioi ?_
+  refine setIntegral_congr_fun measurableSet_Ioi ?_
   intro x hx; dsimp only
   rw [abs_mul, abs_of_nonneg (rpow_nonneg (le_of_lt hx) _)]
 
@@ -1129,7 +1125,7 @@ theorem integrableOn_Ioi_comp_rpow_iff [NormedSpace ℝ E] (f : ℝ → E) {p : 
     rcases lt_or_gt_of_ne hp with (h | h)
     · apply StrictAntiOn.injOn
       intro x hx y hy hxy
-      rw [← inv_lt_inv (rpow_pos_of_pos hx p) (rpow_pos_of_pos hy p), ← rpow_neg (le_of_lt hx), ←
+      rw [← inv_lt_inv₀ (rpow_pos_of_pos hx p) (rpow_pos_of_pos hy p), ← rpow_neg (le_of_lt hx), ←
         rpow_neg (le_of_lt hy)]
       exact rpow_lt_rpow (le_of_lt hx) hxy (neg_pos.mpr h)
     exact StrictMonoOn.injOn fun x hx y _hy hxy => rpow_lt_rpow (mem_Ioi.mp hx).le hxy h
@@ -1224,7 +1220,7 @@ end IntegrationByPartsBilinear
 section IntegrationByPartsAlgebra
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
-  {a b : ℝ} {a' b' : A} {u : ℝ → A} {v : ℝ → A} {u' : ℝ → A} {v' : ℝ → A}
+  {a : ℝ} {a' b' : A} {u : ℝ → A} {v : ℝ → A} {u' : ℝ → A} {v' : ℝ → A}
 
 /-- For finite intervals, see: `intervalIntegral.integral_deriv_mul_eq_sub`. -/
 theorem integral_deriv_mul_eq_sub [CompleteSpace A]

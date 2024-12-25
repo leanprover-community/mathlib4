@@ -50,12 +50,10 @@ theorem boxProd_adj {x y : α × β} :
     (G □ H).Adj x y ↔ G.Adj x.1 y.1 ∧ x.2 = y.2 ∨ H.Adj x.2 y.2 ∧ x.1 = y.1 :=
   Iff.rfl
 
---@[simp] Porting note (#10618): `simp` can prove
 theorem boxProd_adj_left {a₁ : α} {b : β} {a₂ : α} :
     (G □ H).Adj (a₁, b) (a₂, b) ↔ G.Adj a₁ a₂ := by
   simp only [boxProd_adj, and_true, SimpleGraph.irrefl, false_and, or_false]
 
---@[simp] Porting note (#10618): `simp` can prove
 theorem boxProd_adj_right {a : α} {b₁ b₂ : β} : (G □ H).Adj (a, b₁) (a, b₂) ↔ H.Adj b₁ b₂ := by
   simp only [boxProd_adj, SimpleGraph.irrefl, false_and, and_true, false_or]
 

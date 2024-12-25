@@ -27,15 +27,7 @@ namespace Set
 
 section Preorder
 
-variable {α β : Type*} [Preorder α] [Preorder β] {s t : Set α}
-
-/-- We say that a set `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the
-interval `[[x, y]]`. If `α` is a `DenselyOrdered` `ConditionallyCompleteLinearOrder` with
-the `OrderTopology`, then this condition is equivalent to `IsPreconnected s`. If `α` is a
-`LinearOrderedField`, then this condition is also equivalent to `Convex α s`. -/
-class OrdConnected (s : Set α) : Prop where
-  /-- `s : Set α` is `OrdConnected` if for all `x y ∈ s` it includes the interval `[[x, y]]`. -/
-  out' ⦃x⦄ (hx : x ∈ s) ⦃y⦄ (hy : y ∈ s) : Icc x y ⊆ s
+variable {α β : Type*} [Preorder α] [Preorder β] {s : Set α}
 
 theorem OrdConnected.out (h : OrdConnected s) : ∀ ⦃x⦄ (_ : x ∈ s) ⦃y⦄ (_ : y ∈ s), Icc x y ⊆ s :=
   h.1
@@ -101,7 +93,7 @@ namespace Set
 
 section Preorder
 
-variable {α β : Type*} [Preorder α] [Preorder β] {s t : Set α}
+variable {α β : Type*} [Preorder α] [Preorder β]
 
 @[simp]
 lemma image_subtype_val_Icc {s : Set α} [OrdConnected s] (x y : s) :

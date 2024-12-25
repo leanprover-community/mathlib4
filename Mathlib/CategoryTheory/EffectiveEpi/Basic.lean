@@ -255,11 +255,11 @@ def EffectiveEpiFamilyStruct.reindex
     (e : α' ≃ α)
     (P : EffectiveEpiFamilyStruct (fun a => X (e a)) (fun a => π (e a))) :
     EffectiveEpiFamilyStruct X π where
-  desc := fun f h => P.desc (fun a => f _) (fun a₁ a₂ => h _ _)
+  desc := fun f h => P.desc (fun _ => f _) (fun _ _ => h _ _)
   fac _ _ a := by
     obtain ⟨a,rfl⟩ := e.surjective a
     apply P.fac
-  uniq _ _ m hm := P.uniq _ _ _ fun a => hm _
+  uniq _ _ _ hm := P.uniq _ _ _ fun _ => hm _
 
 /--
 Reindex the indexing type of an effective epi family.

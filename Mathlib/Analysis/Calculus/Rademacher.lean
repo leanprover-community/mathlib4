@@ -42,7 +42,7 @@ See `LipschitzWith.hasFderivAt_of_hasLineDerivAt_of_closure`.
 * [Pertti Mattila, Geometry of sets and measures in Euclidean spaces, Theorem 7.3][Federer1996]
 -/
 
-open Filter MeasureTheory Measure FiniteDimensional Metric Set Asymptotics
+open Filter MeasureTheory Measure Module Metric Set Asymptotics
 
 open scoped NNReal ENNReal Topology
 
@@ -134,7 +134,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
     apply AEStronglyMeasurable.sub _ hf.continuous.measurable.aestronglyMeasurable
     apply AEMeasurable.aestronglyMeasurable
     exact hf.continuous.measurable.comp_aemeasurable' (aemeasurable_id'.add_const _)
-  · filter_upwards [Ioc_mem_nhdsWithin_Ioi' zero_lt_one] with t ht
+  · filter_upwards [Ioc_mem_nhdsGT zero_lt_one] with t ht
     have t_pos : 0 < t := ht.1
     filter_upwards with x
     by_cases hx : x ∈ K
@@ -221,9 +221,9 @@ theorem ae_lineDeriv_sum_eq
   suffices S2 : ∫ x, (∑ i ∈ s, a i * fderiv ℝ g x (v i)) * f x ∂μ =
                   ∑ i ∈ s, a i * ∫ x, fderiv ℝ g x (v i) * f x ∂μ by
     obtain ⟨D, g_lip⟩ : ∃ D, LipschitzWith D g :=
-      ContDiff.lipschitzWith_of_hasCompactSupport g_comp g_smooth le_top
+      ContDiff.lipschitzWith_of_hasCompactSupport g_comp g_smooth (mod_cast le_top)
     simp_rw [integral_lineDeriv_mul_eq hf g_lip g_comp]
-    simp_rw [(g_smooth.differentiable le_top).differentiableAt.lineDeriv_eq_fderiv]
+    simp_rw [(g_smooth.differentiable (mod_cast le_top)).differentiableAt.lineDeriv_eq_fderiv]
     simp only [map_neg, _root_.map_sum, _root_.map_smul, smul_eq_mul, neg_mul]
     simp only [integral_neg, mul_neg, Finset.sum_neg_distrib, neg_inj]
     exact S2
@@ -233,7 +233,8 @@ theorem ae_lineDeriv_sum_eq
   let L : (E →L[ℝ] ℝ) → ℝ := fun f ↦ f (v i)
   change Integrable (fun x ↦ a i * ((L ∘ (fderiv ℝ g)) x * f x)) μ
   refine (Continuous.integrable_of_hasCompactSupport ?_ ?_).const_mul _
-  · exact ((g_smooth.continuous_fderiv le_top).clm_apply continuous_const).mul hf.continuous
+  · exact ((g_smooth.continuous_fderiv (mod_cast le_top)).clm_apply continuous_const).mul
+      hf.continuous
   · exact ((g_comp.fderiv ℝ).comp_left rfl).mul_right
 
 /-!
@@ -298,7 +299,7 @@ theorem hasFderivAt_of_hasLineDerivAt_of_closure
     _ = ‖(f (x + ρ • w) - f (x + ρ • y)) + (ρ • L y - ρ • L w)
           + (f (x + ρ • y) - f x - ρ • L y)‖ := by congr; abel
     _ ≤ ‖f (x + ρ • w) - f (x + ρ • y)‖ + ‖ρ • L y - ρ • L w‖
-          + ‖f (x + ρ • y) - f x - ρ • L y‖ := norm_add₃_le _ _ _
+          + ‖f (x + ρ • y) - f x - ρ • L y‖ := norm_add₃_le
     _ ≤ C * ‖(x + ρ • w) - (x + ρ • y)‖ + ρ * (‖L‖ * ‖y - w‖) + δ * ρ := by
       gcongr
       · exact hf.norm_sub_le _ _
@@ -386,3 +387,18 @@ theorem LipschitzWith.ae_differentiableAt {f : E → F} (h : LipschitzWith C f) 
     ∀ᵐ x ∂μ, DifferentiableAt ℝ f x := by
   rw [← lipschitzOnWith_univ] at h
   simpa [differentiableWithinAt_univ] using h.ae_differentiableWithinAt_of_mem
+
+/-- In a real finite-dimensional normed vector space,
+  the norm is almost everywhere differentiable. -/
+theorem ae_differentiableAt_norm :
+    ∀ᵐ x ∂μ, DifferentiableAt ℝ (‖·‖) x := lipschitzWith_one_norm.ae_differentiableAt
+
+omit [MeasurableSpace E] in
+/-- In a real finite-dimensional normed vector space,
+  the set of points where the norm is differentiable at is dense. -/
+theorem dense_differentiableAt_norm :
+    Dense {x : E | DifferentiableAt ℝ (‖·‖) x} :=
+  let _ : MeasurableSpace E := borel E
+  have _ : BorelSpace E := ⟨rfl⟩
+  let w := Basis.ofVectorSpace ℝ E
+  MeasureTheory.Measure.dense_of_ae (ae_differentiableAt_norm (μ := w.addHaar))

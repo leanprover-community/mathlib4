@@ -5,7 +5,8 @@ Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.SetLike.Basic
-import Mathlib.GroupTheory.GroupAction.Basic
+import Mathlib.Data.Setoid.Basic
+import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Hom
 
 /-!
@@ -101,13 +102,13 @@ instance instSMulCommClass [Mul M] [MulMemClass S M] [SMulCommClass R M M]
     (s : S) : SMulCommClass R s s where
   smul_comm r x y := Subtype.ext <| smul_comm r (x : M) (y : M)
 
--- Porting note (#11215): TODO lower priority not actually there
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp, norm_cast)]
 protected theorem val_smul (r : R) (x : s) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 
--- Porting note (#11215): TODO lower priority not actually there
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO lower priority not actually there
 -- lower priority so later simp lemmas are used first; to appease simp_nf
 @[to_additive (attr := simp)]
 theorem mk_smul_mk (r : R) (x : M) (hx : x ∈ s) : r • (⟨x, hx⟩ : s) = ⟨r • x, smul_mem r hx⟩ :=
@@ -440,3 +441,26 @@ lemma inclusion_injective (s : SubMulAction M α) :
   Subtype.val_injective
 
 end SubMulAction
+
+namespace Units
+
+variable (R M : Type*) [Monoid R] [AddCommMonoid M] [DistribMulAction R M]
+
+/-- The non-zero elements of `M` are invariant under the action by the units of `R`. -/
+def nonZeroSubMul : SubMulAction Rˣ M where
+  carrier := { x : M | x ≠ 0 }
+  smul_mem' := by simp [Units.smul_def]
+
+instance : MulAction Rˣ { x : M // x ≠ 0 } :=
+  SubMulAction.mulAction' (nonZeroSubMul R M)
+
+@[simp]
+lemma smul_coe (a : Rˣ) (x : { x : M // x ≠ 0 }) :
+    (a • x).val = a • x.val :=
+  rfl
+
+lemma orbitRel_nonZero_iff (x y : { v : M // v ≠ 0 }) :
+    MulAction.orbitRel Rˣ { v // v ≠ 0 } x y ↔ MulAction.orbitRel Rˣ M x y :=
+  ⟨by rintro ⟨a, rfl⟩; exact ⟨a, by simp⟩, by intro ⟨a, ha⟩; exact ⟨a, by ext; simpa⟩⟩
+
+end Units

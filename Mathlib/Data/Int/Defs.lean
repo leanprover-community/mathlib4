@@ -5,7 +5,6 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Int.Notation
 import Mathlib.Data.Nat.Defs
-import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Lift
@@ -30,7 +29,6 @@ namespace Int
 variable {a b c d m n : ℤ}
 
 section Order
-variable {a b c : ℤ}
 
 protected lemma le_rfl : a ≤ a := a.le_refl
 protected lemma lt_or_lt_of_ne : a ≠ b → a < b ∨ b < a := Int.lt_or_gt_of_ne
@@ -43,6 +41,7 @@ protected lemma le_antisymm_iff : a = b ↔ a ≤ b ∧ b ≤ a :=
   ⟨fun h ↦ ⟨Int.le_of_eq h, Int.ge_of_eq h⟩, fun h ↦ Int.le_antisymm h.1 h.2⟩
 protected lemma le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := by
   rw [Int.le_antisymm_iff, Int.lt_iff_le_not_le, ← and_or_left]; simp [em]
+
 protected lemma le_iff_lt_or_eq : a ≤ b ↔ a < b ∨ a = b := by rw [Int.le_iff_eq_or_lt, or_comm]
 
 end Order
@@ -114,7 +113,8 @@ lemma natCast_ne_zero_iff_pos {n : ℕ} : (n : ℤ) ≠ 0 ↔ 0 < n := by omega
 
 lemma natCast_succ_pos (n : ℕ) : 0 < (n.succ : ℤ) := natCast_pos.2 n.succ_pos
 
-@[simp] lemma natCast_nonpos_iff {n : ℕ} : (n : ℤ) ≤ 0 ↔ n = 0 := by omega
+-- We want to use this lemma earlier than the lemmas simp can prove it with
+@[simp, nolint simpNF] lemma natCast_nonpos_iff {n : ℕ} : (n : ℤ) ≤ 0 ↔ n = 0 := by omega
 
 lemma natCast_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := ofNat_le.2 (Nat.zero_le _)
 
@@ -267,9 +267,9 @@ end inductionOn'
 
 /-- Inductively define a function on `ℤ` by defining it on `ℕ` and extending it from `n` to `-n`. -/
 @[elab_as_elim] protected def negInduction {C : ℤ → Sort*} (nat : ∀ n : ℕ, C n)
-    (neg : ∀ n : ℕ, C n → C (-n)) : ∀ n : ℤ, C n
+    (neg : (∀ n : ℕ, C n) → ∀ n : ℕ, C (-n)) : ∀ n : ℤ, C n
   | .ofNat n => nat n
-  | .negSucc n => neg _ <| nat <| n + 1
+  | .negSucc n => neg nat <| n + 1
 
 /-- See `Int.inductionOn'` for an induction in both directions. -/
 protected lemma le_induction {P : ℤ → Prop} {m : ℤ} (h0 : P m)
@@ -346,6 +346,11 @@ lemma natAbs_sq (x : ℤ) : (x.natAbs : ℤ) ^ 2 = x ^ 2 := by
   simp [Int.pow_succ, Int.pow_zero, Int.natAbs_mul_self']
 
 alias natAbs_pow_two := natAbs_sq
+
+theorem sign_mul_self_eq_natAbs : ∀ a : Int, sign a * a = natAbs a
+  | 0      => rfl
+  | Nat.succ _ => Int.one_mul _
+  | -[_+1] => (Int.neg_eq_neg_one_mul _).symm
 
 /-! ### `/`  -/
 

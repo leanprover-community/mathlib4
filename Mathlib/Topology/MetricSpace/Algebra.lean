@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Topology.Algebra.MulAction
+import Mathlib.Topology.Algebra.SeparationQuotient.Basic
 import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.MetricSpace.Lipschitz
 
@@ -185,21 +186,21 @@ instance Pi.instBoundedSMul {α : Type*} {β : ι → Type*} [PseudoMetricSpace 
     [∀ i, PseudoMetricSpace (β i)] [Zero α] [∀ i, Zero (β i)] [∀ i, SMul α (β i)]
     [∀ i, BoundedSMul α (β i)] : BoundedSMul α (∀ i, β i) where
   dist_smul_pair' x y₁ y₂ :=
-    (dist_pi_le_iff <| by positivity).2 fun i ↦
+    (dist_pi_le_iff <| by positivity).2 fun _ ↦
       (dist_smul_pair _ _ _).trans <| mul_le_mul_of_nonneg_left (dist_le_pi_dist _ _ _) dist_nonneg
   dist_pair_smul' x₁ x₂ y :=
-    (dist_pi_le_iff <| by positivity).2 fun i ↦
+    (dist_pi_le_iff <| by positivity).2 fun _ ↦
       (dist_pair_smul _ _ _).trans <| mul_le_mul_of_nonneg_left (dist_le_pi_dist _ 0 _) dist_nonneg
 
 instance Pi.instBoundedSMul' {α β : ι → Type*} [∀ i, PseudoMetricSpace (α i)]
     [∀ i, PseudoMetricSpace (β i)] [∀ i, Zero (α i)] [∀ i, Zero (β i)] [∀ i, SMul (α i) (β i)]
     [∀ i, BoundedSMul (α i) (β i)] : BoundedSMul (∀ i, α i) (∀ i, β i) where
   dist_smul_pair' x y₁ y₂ :=
-    (dist_pi_le_iff <| by positivity).2 fun i ↦
+    (dist_pi_le_iff <| by positivity).2 fun _ ↦
       (dist_smul_pair _ _ _).trans <|
         mul_le_mul (dist_le_pi_dist _ 0 _) (dist_le_pi_dist _ _ _) dist_nonneg dist_nonneg
   dist_pair_smul' x₁ x₂ y :=
-    (dist_pi_le_iff <| by positivity).2 fun i ↦
+    (dist_pi_le_iff <| by positivity).2 fun _ ↦
       (dist_pair_smul _ _ _).trans <|
         mul_le_mul (dist_le_pi_dist _ _ _) (dist_le_pi_dist _ 0 _) dist_nonneg dist_nonneg
 
@@ -212,6 +213,12 @@ instance Prod.instBoundedSMul {α β γ : Type*} [PseudoMetricSpace α] [PseudoM
   dist_pair_smul' _x₁ _x₂ _y :=
     max_le ((dist_pair_smul _ _ _).trans <| mul_le_mul_of_nonneg_left (le_max_left _ _) dist_nonneg)
       ((dist_pair_smul _ _ _).trans <| mul_le_mul_of_nonneg_left (le_max_right _ _) dist_nonneg)
+
+instance {α β : Type*}
+    [PseudoMetricSpace α] [PseudoMetricSpace β] [Zero α] [Zero β] [SMul α β] [BoundedSMul α β] :
+    BoundedSMul α (SeparationQuotient β) where
+  dist_smul_pair' _ := Quotient.ind₂ <| dist_smul_pair _
+  dist_pair_smul' _ _ := Quotient.ind <| dist_pair_smul _ _
 
 -- We don't have the `SMul α γ → SMul β δ → SMul (α × β) (γ × δ)` instance, but if we did, then
 -- `BoundedSMul α γ → BoundedSMul β δ → BoundedSMul (α × β) (γ × δ)` would hold

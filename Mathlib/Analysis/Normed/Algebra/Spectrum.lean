@@ -45,10 +45,8 @@ This file contains the basic theory for the resolvent and spectrum of a Banach a
 
 -/
 
-
+open NormedSpace Topology -- For `NormedSpace.exp`.
 open scoped ENNReal NNReal
-
-open NormedSpace -- For `NormedSpace.exp`.
 
 /-- The *spectral radius* is the supremum of the `nnnorm` (`‖·‖₊`) of elements in the spectrum,
     coerced into an element of `ℝ≥0∞`. Note that it is possible for `spectrum 𝕜 a = ∅`. In this
@@ -101,7 +99,7 @@ theorem mem_resolventSet_of_norm_lt_mul {a : A} {k : 𝕜} (h : ‖a‖ * ‖(1 
     ne_zero_of_norm_ne_zero ((mul_nonneg (norm_nonneg _) (norm_nonneg _)).trans_lt h).ne'
   letI ku := Units.map ↑ₐ.toMonoidHom (Units.mk0 k hk)
   rw [← inv_inv ‖(1 : A)‖,
-    mul_inv_lt_iff (inv_pos.2 <| norm_pos_iff.2 (one_ne_zero : (1 : A) ≠ 0))] at h
+    mul_inv_lt_iff₀' (inv_pos.2 <| norm_pos_iff.2 (one_ne_zero : (1 : A) ≠ 0))] at h
   have hku : ‖-a‖ < ‖(↑ku⁻¹ : A)‖⁻¹ := by simpa [ku, norm_algebraMap] using h
   simpa [ku, sub_eq_add_neg, Algebra.algebraMap_eq_smul_one] using (ku.add (-a) hku).isUnit
 
@@ -133,7 +131,7 @@ instance instCompactSpaceNNReal {A : Type*} [NormedRing A] [NormedAlgebra ℝ A]
     (a : A) [CompactSpace (spectrum ℝ a)] : CompactSpace (spectrum ℝ≥0 a) := by
   rw [← isCompact_iff_compactSpace] at *
   rw [← preimage_algebraMap ℝ]
-  exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
+  exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
 
 section QuasispectrumCompact
 
@@ -154,9 +152,26 @@ instance _root_.quasispectrum.instCompactSpaceNNReal [NormedSpace ℝ B] [IsScal
     CompactSpace (quasispectrum ℝ≥0 a) := by
   rw [← isCompact_iff_compactSpace] at *
   rw [← quasispectrum.preimage_algebraMap ℝ]
-  exact closedEmbedding_subtype_val isClosed_nonneg |>.isCompact_preimage <| by assumption
+  exact isClosed_nonneg.isClosedEmbedding_subtypeVal.isCompact_preimage <| by assumption
 
 end QuasispectrumCompact
+
+section NNReal
+
+open NNReal
+
+variable {A : Type*} [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A] [NormOneClass A]
+
+theorem le_nnnorm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
+    r ≤ ‖a‖₊ := calc
+  r ≤ ‖(r : ℝ)‖ := Real.le_norm_self _
+  _ ≤ ‖a‖       := norm_le_norm_of_mem hr
+
+theorem coe_le_norm_of_mem {a : A} {r : ℝ≥0} (hr : r ∈ spectrum ℝ≥0 a) :
+    r ≤ ‖a‖ :=
+  coe_mono <| le_nnnorm_of_mem hr
+
+end NNReal
 
 theorem spectralRadius_le_nnnorm [NormOneClass A] (a : A) : spectralRadius 𝕜 a ≤ ‖a‖₊ := by
   refine iSup₂_le fun k hk => ?_
@@ -203,11 +218,9 @@ theorem spectralRadius_le_liminf_pow_nnnorm_pow_one_div (a : A) :
   refine ENNReal.le_of_forall_lt_one_mul_le fun ε hε => ?_
   by_cases h : ε = 0
   · simp only [h, zero_mul, zero_le']
-  have hε' : ε⁻¹ ≠ ∞ := fun h' =>
-    h (by simpa only [inv_inv, inv_top] using congr_arg (fun x : ℝ≥0∞ => x⁻¹) h')
   simp only [ENNReal.mul_le_iff_le_inv h (hε.trans_le le_top).ne, mul_comm ε⁻¹,
     liminf_eq_iSup_iInf_of_nat', ENNReal.iSup_mul]
-  conv_rhs => arg 1; intro i; rw [ENNReal.iInf_mul hε']
+  conv_rhs => arg 1; intro i; rw [ENNReal.iInf_mul (by simp [h])]
   rw [← ENNReal.inv_lt_inv, inv_one] at hε
   obtain ⟨N, hN⟩ := eventually_atTop.mp
     (ENNReal.eventually_pow_one_div_le (ENNReal.coe_ne_top : ↑‖(1 : A)‖₊ ≠ ∞) hε)
@@ -470,7 +483,7 @@ theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [Complet
     refine .of_norm_bounded_eventually _ (Real.summable_pow_div_factorial ‖a - ↑ₐ z‖) ?_
     filter_upwards [Filter.eventually_cofinite_ne 0] with n hn
     rw [norm_smul, mul_comm, norm_inv, RCLike.norm_natCast, ← div_eq_mul_inv]
-    exact div_le_div (pow_nonneg (norm_nonneg _) n) (norm_pow_le' (a - ↑ₐ z) (zero_lt_iff.mpr hn))
+    exact div_le_div₀ (pow_nonneg (norm_nonneg _) n) (norm_pow_le' (a - ↑ₐ z) (zero_lt_iff.mpr hn))
       (mod_cast Nat.factorial_pos n) (mod_cast Nat.factorial_le (lt_add_one n).le)
   have h₀ : (∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ (n + 1)) = (a - ↑ₐ z) * b := by
     simpa only [mul_smul_comm, pow_succ'] using hb.tsum_mul_left (a - ↑ₐ z)
@@ -554,8 +567,8 @@ def equivAlgHom : characterSpace 𝕜 A ≃ (A →ₐ[𝕜] 𝕜) where
   invFun f :=
     { val := f.toContinuousLinearMap
       property := by rw [eq_set_map_one_map_mul]; exact ⟨map_one f, map_mul f⟩ }
-  left_inv f := Subtype.ext <| ContinuousLinearMap.ext fun x => rfl
-  right_inv f := AlgHom.ext fun x => rfl
+  left_inv _ := Subtype.ext <| ContinuousLinearMap.ext fun _ => rfl
+  right_inv _ := AlgHom.ext fun _ => rfl
 
 @[simp]
 theorem equivAlgHom_coe (f : characterSpace 𝕜 A) : ⇑(equivAlgHom f) = f :=

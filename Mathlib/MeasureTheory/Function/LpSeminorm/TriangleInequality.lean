@@ -49,7 +49,7 @@ alias snorm'_add_le_of_le_one := eLpNorm'_add_le_of_le_one
 theorem eLpNormEssSup_add_le {f g : α → E} :
     eLpNormEssSup (f + g) μ ≤ eLpNormEssSup f μ + eLpNormEssSup g μ := by
   refine le_trans (essSup_mono_ae (Eventually.of_forall fun x => ?_)) (ENNReal.essSup_add_le _ _)
-  simp_rw [Pi.add_apply, ← ENNReal.coe_add, ENNReal.coe_le_coe]
+  simp_rw [Pi.add_apply, enorm_eq_nnnorm, ← ENNReal.coe_add, ENNReal.coe_le_coe]
   exact nnnorm_add_le _ _
 
 @[deprecated (since := "2024-07-27")]
@@ -88,9 +88,8 @@ theorem LpAddConst_lt_top (p : ℝ≥0∞) : LpAddConst p < ∞ := by
   rw [LpAddConst]
   split_ifs with h
   · apply ENNReal.rpow_lt_top_of_nonneg _ ENNReal.two_ne_top
-    simp only [one_div, sub_nonneg]
-    apply one_le_inv (ENNReal.toReal_pos h.1.ne' (h.2.trans ENNReal.one_lt_top).ne)
-    simpa using ENNReal.toReal_mono ENNReal.one_ne_top h.2.le
+    rw [one_div, sub_nonneg, ← ENNReal.toReal_inv, ← ENNReal.one_toReal]
+    exact ENNReal.toReal_mono (by simpa using h.1.ne') (ENNReal.one_le_inv.2 h.2.le)
   · exact ENNReal.one_lt_top
 
 theorem eLpNorm_add_le' (hf : AEStronglyMeasurable f μ) (hg : AEStronglyMeasurable g μ)

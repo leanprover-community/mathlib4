@@ -23,6 +23,7 @@ jobs:
         topic: 'Mathlib status updates'
         content: |
           ❌ The latest CI for Mathlib's branch#nightly-testing has [failed](https://github.com/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) ([${{ github.sha }}](https://github.com/${{ github.repository }}/commit/${{ github.sha }})).
+          You can `git fetch; git checkout nightly-testing` and push a fix.
 
   handle_success:
     if: ${{ github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'nightly-testing' }}
@@ -50,7 +51,7 @@ jobs:
               git tag "nightly-testing-${version}"
               git push origin "nightly-testing-${version}"
               hash="$(git rev-parse "nightly-testing-${version}")"
-              curl -X POST "http://speed.lean-fro.org/mathlib4/api/queue/commit/e7b27246-a3e6-496a-b552-ff4b45c7236e/$hash" -u "admin:${{ secrets.SPEED }}"
+              curl -X POST "https://speed.lean-lang.org/mathlib4/api/queue/commit/e7b27246-a3e6-496a-b552-ff4b45c7236e/$hash" -u "admin:${{ secrets.SPEED }}"
           fi
           hash="$(git rev-parse "nightly-testing-${version}")"
           printf 'SHA=%s\n' "${hash}" >> "${GITHUB_ENV}"

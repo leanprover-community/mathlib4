@@ -191,7 +191,7 @@ theorem definable_iff_finitely_definable :
       simp only [Formula.Realize, BoundedFormula.realize_relabel,
         Set.mem_setOf_eq]
       apply Iff.symm
-      convert BoundedFormula.realize_restrictFreeVar _
+      convert BoundedFormula.realize_restrictFreeVar' _
       ext a
       rcases a with ⟨_ | _, _⟩ <;> simp
   · rintro ⟨A0, hA0, hd⟩
@@ -303,10 +303,10 @@ instance instTop : Top (L.DefinableSet A α) :=
 instance instBot : Bot (L.DefinableSet A α) :=
   ⟨⟨⊥, definable_empty⟩⟩
 
-instance instSup : Sup (L.DefinableSet A α) :=
+instance instSup : Max (L.DefinableSet A α) :=
   ⟨fun s t => ⟨s ∪ t, s.2.union t.2⟩⟩
 
-instance instInf : Inf (L.DefinableSet A α) :=
+instance instInf : Min (L.DefinableSet A α) :=
   ⟨fun s t => ⟨s ∩ t, s.2.inter t.2⟩⟩
 
 instance instHasCompl : HasCompl (L.DefinableSet A α) :=

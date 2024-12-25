@@ -92,7 +92,7 @@ theorem attach_ndinsert (a : α) (s : Multiset α) :
   have eq :
     ∀ h : ∀ p : { x // x ∈ s }, p.1 ∈ s,
       (fun p : { x // x ∈ s } => ⟨p.val, h p⟩ : { x // x ∈ s } → { x // x ∈ s }) = id :=
-    fun h => funext fun p => Subtype.eq rfl
+    fun _ => funext fun _ => Subtype.eq rfl
   have : ∀ (t) (eq : s.ndinsert a = t), t.attach = ndinsert ⟨a, eq ▸ mem_ndinsert_self a s⟩
       (s.attach.map fun p => ⟨p.1, eq ▸ mem_ndinsert_of_mem p.2⟩) := by
     intro t ht
@@ -108,12 +108,12 @@ theorem attach_ndinsert (a : α) (s : Multiset α) :
 @[simp]
 theorem disjoint_ndinsert_left {a : α} {s t : Multiset α} :
     Disjoint (ndinsert a s) t ↔ a ∉ t ∧ Disjoint s t :=
-  Iff.trans (by simp [Disjoint]) disjoint_cons_left
+  Iff.trans (by simp [disjoint_left]) disjoint_cons_left
 
 @[simp]
 theorem disjoint_ndinsert_right {a : α} {s t : Multiset α} :
     Disjoint s (ndinsert a t) ↔ a ∉ s ∧ Disjoint s t := by
-  rw [disjoint_comm, disjoint_ndinsert_left]; tauto
+  rw [_root_.disjoint_comm, disjoint_ndinsert_left]; tauto
 
 /-! ### finset union -/
 
@@ -164,7 +164,7 @@ theorem le_ndunion_left {s} (t : Multiset α) (d : Nodup s) : s ≤ ndunion s t 
   (le_iff_subset d).2 <| subset_ndunion_left _ _
 
 theorem ndunion_le_union (s t : Multiset α) : ndunion s t ≤ s ∪ t :=
-  ndunion_le.2 ⟨subset_of_le (le_union_left _ _), le_union_right _ _⟩
+  ndunion_le.2 ⟨subset_of_le le_union_left, le_union_right⟩
 
 theorem Nodup.ndunion (s : Multiset α) {t : Multiset α} : Nodup t → Nodup (ndunion s t) :=
   Quot.induction_on₂ s t fun _ _ => List.Nodup.union _
@@ -179,7 +179,7 @@ theorem dedup_add (s t : Multiset α) : dedup (s + t) = ndunion s (dedup t) :=
 theorem Disjoint.ndunion_eq {s t : Multiset α} (h : Disjoint s t) :
     s.ndunion t = s.dedup + t := by
   induction s, t using Quot.induction_on₂
-  exact congr_arg ((↑) : List α → Multiset α) <| List.Disjoint.union_eq h
+  exact congr_arg ((↑) : List α → Multiset α) <| List.Disjoint.union_eq <| by simpa using h
 
 theorem Subset.ndunion_eq_right {s t : Multiset α} (h : s ⊆ t) : s.ndunion t = t := by
   induction s, t using Quot.induction_on₂
@@ -236,14 +236,14 @@ theorem ndinter_le_right {s} (t : Multiset α) (d : Nodup s) : ndinter s t ≤ t
   (le_iff_subset <| d.ndinter _).2 <| ndinter_subset_right _ _
 
 theorem inter_le_ndinter (s t : Multiset α) : s ∩ t ≤ ndinter s t :=
-  le_ndinter.2 ⟨inter_le_left _ _, subset_of_le <| inter_le_right _ _⟩
+  le_ndinter.2 ⟨inter_le_left, subset_of_le inter_le_right⟩
 
 @[simp]
 theorem ndinter_eq_inter {s t : Multiset α} (d : Nodup s) : ndinter s t = s ∩ t :=
   le_antisymm (le_inter (ndinter_le_left _ _) (ndinter_le_right _ d)) (inter_le_ndinter _ _)
 
 theorem ndinter_eq_zero_iff_disjoint {s t : Multiset α} : ndinter s t = 0 ↔ Disjoint s t := by
-  rw [← subset_zero]; simp [subset_iff, Disjoint]
+  rw [← subset_zero]; simp [subset_iff, disjoint_left]
 
 alias ⟨_, Disjoint.ndinter_eq_zero⟩ := ndinter_eq_zero_iff_disjoint
 

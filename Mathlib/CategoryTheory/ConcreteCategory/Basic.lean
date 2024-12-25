@@ -55,7 +55,7 @@ class ConcreteCategory (C : Type u) [Category.{v} C] where
   /-- That functor is faithful -/
   [forget_faithful : forget.Faithful]
 
-attribute [reducible] ConcreteCategory.forget
+attribute [inline, reducible] ConcreteCategory.forget
 attribute [instance] ConcreteCategory.forget_faithful
 
 /-- The forgetful functor from a concrete category to `Type u`. -/
@@ -76,7 +76,7 @@ instance : HasCoeToSort X := ConcreteCategory.hasCoeToSort X
 -/
 def ConcreteCategory.hasCoeToSort (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C] :
     CoeSort C (Type w) where
-  coe := fun X => (forget C).obj X
+  coe X := (forget C).obj X
 
 section
 

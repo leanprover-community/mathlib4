@@ -5,10 +5,12 @@ Authors: Apurva Nakade
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Order.Group.Basic
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.RingTheory.Localization.Basic
+import Mathlib.Algebra.Ring.Regular
+import Mathlib.GroupTheory.MonoidLocalization.Away
+import Mathlib.RingTheory.Localization.Defs
 import Mathlib.SetTheory.Game.Birthday
 import Mathlib.SetTheory.Surreal.Multiplication
+import Mathlib.Tactic.Linarith
 
 /-!
 # Dyadic numbers
@@ -61,13 +63,13 @@ theorem powHalf_succ_moveRight (n i) : (powHalf (n + 1)).moveRight i = powHalf n
   rfl
 
 instance uniquePowHalfLeftMoves (n) : Unique (powHalf n).LeftMoves := by
-  cases n <;> exact PUnit.unique
+  cases n <;> exact PUnit.instUnique
 
 instance isEmpty_powHalf_zero_rightMoves : IsEmpty (powHalf 0).RightMoves :=
   inferInstanceAs (IsEmpty PEmpty)
 
 instance uniquePowHalfSuccRightMoves (n) : Unique (powHalf (n + 1)).RightMoves :=
-  PUnit.unique
+  PUnit.instUnique
 
 @[simp]
 theorem birthday_half : birthday (powHalf 1) = 2 := by

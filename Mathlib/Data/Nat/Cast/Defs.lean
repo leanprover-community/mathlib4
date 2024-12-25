@@ -68,6 +68,7 @@ Some discussion is [on Zulip here](https://leanprover.zulipchat.com/#narrow/stre
 @[simp, norm_cast] theorem Nat.cast_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
   (Nat.cast (no_index (OfNat.ofNat n)) : R) = OfNat.ofNat n := rfl
 
+@[deprecated Nat.cast_ofNat (since := "2024-12-22")]
 theorem Nat.cast_eq_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
     (Nat.cast n : R) = OfNat.ofNat n :=
   rfl
@@ -166,6 +167,10 @@ theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
 
 theorem cast_two [AddMonoidWithOne R] : ((2 : ℕ) : R) = (2 : R) := rfl
 
+theorem cast_three [AddMonoidWithOne R] : ((3 : ℕ) : R) = (3 : R) := rfl
+
+theorem cast_four [AddMonoidWithOne R] : ((4 : ℕ) : R) = (4 : R) := rfl
+
 attribute [simp, norm_cast] Int.natAbs_ofNat
 
 end Nat
@@ -199,3 +204,15 @@ theorem three_add_one_eq_four [AddMonoidWithOne R] : 3 + 1 = (4 : R) := by
     ← Nat.cast_add, ← Nat.cast_add, ← Nat.cast_add]
   apply congrArg
   decide
+
+theorem two_add_two_eq_four [AddMonoidWithOne R] : 2 + 2 = (4 : R) := by
+  simp [← one_add_one_eq_two, ← Nat.cast_one, ← three_add_one_eq_four,
+    ← two_add_one_eq_three, add_assoc]
+
+section nsmul
+
+@[simp] lemma nsmul_one {A} [AddMonoidWithOne A] : ∀ n : ℕ, n • (1 : A) = n
+  | 0 => by simp [zero_nsmul]
+  | n + 1 => by simp [succ_nsmul, nsmul_one n]
+
+end nsmul

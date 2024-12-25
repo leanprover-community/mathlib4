@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
 import Mathlib.Order.Ideal
-import Mathlib.Data.Finset.Lattice
+import Mathlib.Data.Finset.Max
 
 /-!
 # The back and forth method and countable dense linear orders
@@ -82,16 +82,16 @@ lemma exists_orderEmbedding_insert [DenselyOrdered β] [NoMinOrder β] [NoMaxOrd
     then if hyS : y ∈ S
       then simpa only [hxS, hyS, ↓reduceDIte, OrderEmbedding.lt_iff_lt, Subtype.mk_lt_mk]
       else
-        obtain rfl := Finset.eq_of_not_mem_of_mem_insert hy hyS
+        obtain rfl := Finset.eq_of_mem_insert_of_not_mem hy hyS
         simp only [hxS, hyS, ↓reduceDIte]
         exact hb _ (Finset.mem_image_of_mem _ (Finset.mem_filter.2 ⟨Finset.mem_attach _ _, hxy⟩))
     else
-      obtain rfl := Finset.eq_of_not_mem_of_mem_insert hx hxS
+      obtain rfl := Finset.eq_of_mem_insert_of_not_mem hx hxS
       if hyS : y ∈ S
       then
         simp only [hxS, hyS, ↓reduceDIte]
         exact hb' _ (Finset.mem_image_of_mem _ (Finset.mem_filter.2 ⟨Finset.mem_attach _ _, hxy⟩))
-      else simp only [Finset.eq_of_not_mem_of_mem_insert hy hyS, lt_self_iff_false] at hxy
+      else simp only [Finset.eq_of_mem_insert_of_not_mem hy hyS, lt_self_iff_false] at hxy
   · ext x
     simp only [Finset.coe_sort_coe, OrderEmbedding.coe_ofStrictMono, Finset.insert_val,
       Function.comp_apply, Finset.coe_mem, ↓reduceDIte, Subtype.coe_eta]
@@ -170,7 +170,7 @@ variable (β)
 def definedAtLeft [DenselyOrdered β] [NoMinOrder β] [NoMaxOrder β] [Nonempty β] (a : α) :
     Cofinal (PartialIso α β) where
   carrier := {f | ∃ b : β, (a, b) ∈ f.val}
-  mem_gt f := by
+  isCofinal f := by
     cases' exists_across f a with b a_b
     refine
       ⟨⟨insert (a, b) f.val, fun p hp q hq ↦ ?_⟩, ⟨b, Finset.mem_insert_self _ _⟩,
@@ -190,8 +190,8 @@ variable (α) {β}
 def definedAtRight [DenselyOrdered α] [NoMinOrder α] [NoMaxOrder α] [Nonempty α] (b : β) :
     Cofinal (PartialIso α β) where
   carrier := {f | ∃ a, (a, b) ∈ f.val}
-  mem_gt f := by
-    rcases (definedAtLeft α b).mem_gt f.comm with ⟨f', ⟨a, ha⟩, hl⟩
+  isCofinal f := by
+    rcases (definedAtLeft α b).isCofinal f.comm with ⟨f', ⟨a, ha⟩, hl⟩
     refine ⟨f'.comm, ⟨a, ?_⟩, ?_⟩
     · change (a, b) ∈ f'.val.image _
       rwa [← Finset.mem_coe, Finset.coe_image, Equiv.image_eq_preimage]

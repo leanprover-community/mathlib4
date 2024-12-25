@@ -60,6 +60,9 @@ theorem ext : ∀ {z w : ℂ}, z.re = w.re → z.im = w.im → z = w
 
 attribute [local ext] Complex.ext
 
+lemma «forall» {p : ℂ → Prop} : (∀ x, p x) ↔ ∀ a b, p ⟨a, b⟩ := by aesop
+lemma «exists» {p : ℂ → Prop} : (∃ x, p x) ↔ ∃ a b, p ⟨a, b⟩ := by aesop
+
 theorem re_surjective : Surjective re := fun x => ⟨⟨x, 0⟩, rfl⟩
 
 theorem im_surjective : Surjective im := fun y => ⟨⟨0, y⟩, rfl⟩
@@ -73,13 +76,14 @@ theorem range_im : range im = univ :=
   im_surjective.range_eq
 
 -- Porting note: refactored instance to allow `norm_cast` to work
-/-- The natural inclusion of the real numbers into the complex numbers.
-The name `Complex.ofReal` is reserved for the bundled homomorphism. -/
+/-- The natural inclusion of the real numbers into the complex numbers. -/
 @[coe]
-def ofReal' (r : ℝ) : ℂ :=
+def ofReal (r : ℝ) : ℂ :=
   ⟨r, 0⟩
 instance : Coe ℝ ℂ :=
-  ⟨ofReal'⟩
+  ⟨ofReal⟩
+
+@[deprecated (since := "2024-10-12")] alias ofReal' := ofReal
 
 @[simp, norm_cast]
 theorem ofReal_re (r : ℝ) : Complex.re (r : ℂ) = r :=
@@ -105,11 +109,13 @@ instance canLift : CanLift ℂ ℝ (↑) fun z => z.im = 0 where
 
 /-- The product of a set on the real axis and a set on the imaginary axis of the complex plane,
 denoted by `s ×ℂ t`. -/
-def Set.reProdIm (s t : Set ℝ) : Set ℂ :=
+def reProdIm (s t : Set ℝ) : Set ℂ :=
   re ⁻¹' s ∩ im ⁻¹' t
 
+@[deprecated (since := "2024-12-03")] protected alias Set.reProdIm := reProdIm
+
 @[inherit_doc]
-infixl:72 " ×ℂ " => Set.reProdIm
+infixl:72 " ×ℂ " => reProdIm
 
 theorem mem_reProdIm {z : ℂ} {s t : Set ℝ} : z ∈ s ×ℂ t ↔ z.re ∈ s ∧ z.im ∈ t :=
   Iff.rfl
@@ -177,7 +183,7 @@ theorem add_im (z w : ℂ) : (z + w).im = z.im + w.im :=
 
 @[simp, norm_cast]
 theorem ofReal_add (r s : ℝ) : ((r + s : ℝ) : ℂ) = r + s :=
-  Complex.ext_iff.2 <| by simp [ofReal']
+  Complex.ext_iff.2 <| by simp [ofReal]
 
 -- replaced by `Complex.ofReal_ofNat`
 
@@ -194,7 +200,7 @@ theorem neg_im (z : ℂ) : (-z).im = -z.im :=
 
 @[simp, norm_cast]
 theorem ofReal_neg (r : ℝ) : ((-r : ℝ) : ℂ) = -r :=
-  Complex.ext_iff.2 <| by simp [ofReal']
+  Complex.ext_iff.2 <| by simp [ofReal]
 
 instance : Sub ℂ :=
   ⟨fun z w => ⟨z.re - w.re, z.im - w.im⟩⟩
@@ -212,14 +218,14 @@ theorem mul_im (z w : ℂ) : (z * w).im = z.re * w.im + z.im * w.re :=
 
 @[simp, norm_cast]
 theorem ofReal_mul (r s : ℝ) : ((r * s : ℝ) : ℂ) = r * s :=
-  Complex.ext_iff.2 <| by simp [ofReal']
+  Complex.ext_iff.2 <| by simp [ofReal]
 
-theorem re_ofReal_mul (r : ℝ) (z : ℂ) : (r * z).re = r * z.re := by simp [ofReal']
+theorem re_ofReal_mul (r : ℝ) (z : ℂ) : (r * z).re = r * z.re := by simp [ofReal]
 
-theorem im_ofReal_mul (r : ℝ) (z : ℂ) : (r * z).im = r * z.im := by simp [ofReal']
+theorem im_ofReal_mul (r : ℝ) (z : ℂ) : (r * z).im = r * z.im := by simp [ofReal]
 
-lemma re_mul_ofReal (z : ℂ) (r : ℝ) : (z * r).re = z.re *  r := by simp [ofReal']
-lemma im_mul_ofReal (z : ℂ) (r : ℝ) : (z * r).im = z.im *  r := by simp [ofReal']
+lemma re_mul_ofReal (z : ℂ) (r : ℝ) : (z * r).re = z.re *  r := by simp [ofReal]
+lemma im_mul_ofReal (z : ℂ) (r : ℝ) : (z * r).im = z.im *  r := by simp [ofReal]
 
 theorem ofReal_mul' (r : ℝ) (z : ℂ) : ↑r * z = ⟨r * z.re, r * z.im⟩ :=
   ext (re_ofReal_mul _ _) (im_ofReal_mul _ _)
@@ -249,11 +255,11 @@ theorem I_mul (z : ℂ) : I * z = ⟨-z.im, z.re⟩ :=
 @[simp] lemma I_ne_zero : (I : ℂ) ≠ 0 := mt (congr_arg im) zero_ne_one.symm
 
 theorem mk_eq_add_mul_I (a b : ℝ) : Complex.mk a b = a + b * I :=
-  Complex.ext_iff.2 <| by simp [ofReal']
+  Complex.ext_iff.2 <| by simp [ofReal]
 
 @[simp]
 theorem re_add_im (z : ℂ) : (z.re : ℂ) + z.im * I = z :=
-  Complex.ext_iff.2 <| by simp [ofReal']
+  Complex.ext_iff.2 <| by simp [ofReal]
 
 theorem mul_I_re (z : ℂ) : (z * I).re = -z.im := by simp
 
@@ -265,7 +271,7 @@ theorem I_mul_im (z : ℂ) : (I * z).im = z.re := by simp
 
 @[simp]
 theorem equivRealProd_symm_apply (p : ℝ × ℝ) : equivRealProd.symm p = p.1 + p.2 * I := by
-  ext <;> simp [Complex.equivRealProd, ofReal']
+  ext <;> simp [Complex.equivRealProd, ofReal]
 
 /-- The natural `AddEquiv` from `ℂ` to `ℝ × ℝ`. -/
 @[simps! (config := { simpRhs := true }) apply symm_apply_re symm_apply_im]
@@ -282,7 +288,7 @@ theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
 diamond from the other actions they inherit through the `ℝ`-action on `ℂ` and action transitivity
 defined in `Data.Complex.Module`. -/
 instance : Nontrivial ℂ :=
-  pullback_nonzero re rfl rfl
+  domain_nontrivial re rfl rfl
 
 -- Porting note: moved from `Module/Data/Complex/Basic.lean`
 namespace SMul
@@ -329,8 +335,7 @@ instance addCommGroup : AddCommGroup ℂ :=
       intros; ext <;> simp [AddMonoid.nsmul_succ, add_mul, add_comm,
         smul_re, smul_im]
     zsmul_succ' := by
-      intros; ext <;> simp [SubNegMonoid.zsmul_succ', add_mul, add_comm,
-        smul_re, smul_im]
+      intros; ext <;> simp [add_mul, smul_re, smul_im]
     zsmul_neg' := by
       intros; ext <;> simp [zsmul_neg', add_mul, smul_re, smul_im]
     add_assoc := by intros; ext <;> simp [add_assoc]
@@ -415,16 +420,16 @@ end
 
 /-! ### Cast lemmas -/
 
-noncomputable instance instNNRatCast : NNRatCast ℂ where nnratCast q := ofReal' q
-noncomputable instance instRatCast : RatCast ℂ where ratCast q := ofReal' q
+noncomputable instance instNNRatCast : NNRatCast ℂ where nnratCast q := ofReal q
+noncomputable instance instRatCast : RatCast ℂ where ratCast q := ofReal q
 
 -- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast] lemma ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ofReal' (no_index (OfNat.ofNat n)) = OfNat.ofNat n := rfl
-@[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ofReal' n = n := rfl
-@[simp, norm_cast] lemma ofReal_intCast (n : ℤ) : ofReal' n = n := rfl
-@[simp, norm_cast] lemma ofReal_nnratCast (q : ℚ≥0) : ofReal' q = q := rfl
-@[simp, norm_cast] lemma ofReal_ratCast (q : ℚ) : ofReal' q = q := rfl
+    ofReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n := rfl
+@[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ofReal n = n := rfl
+@[simp, norm_cast] lemma ofReal_intCast (n : ℤ) : ofReal n = n := rfl
+@[simp, norm_cast] lemma ofReal_nnratCast (q : ℚ≥0) : ofReal q = q := rfl
+@[simp, norm_cast] lemma ofReal_ratCast (q : ℚ) : ofReal q = q := rfl
 
 @[deprecated (since := "2024-04-17")]
 alias ofReal_rat_cast := ofReal_ratCast
@@ -441,6 +446,15 @@ lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).re = 
 @[simp, norm_cast] lemma im_nnratCast (q : ℚ≥0) : (q : ℂ).im = 0 := rfl
 @[simp, norm_cast] lemma ratCast_re (q : ℚ) : (q : ℂ).re = q := rfl
 @[simp, norm_cast] lemma ratCast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
+
+lemma re_nsmul (n : ℕ) (z : ℂ) : (n • z).re = n • z.re := smul_re ..
+lemma im_nsmul (n : ℕ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
+lemma re_zsmul (n : ℤ) (z : ℂ) : (n • z).re = n • z.re := smul_re ..
+lemma im_zsmul (n : ℤ) (z : ℂ) : (n • z).im = n • z.im := smul_im ..
+@[simp] lemma re_nnqsmul (q : ℚ≥0) (z : ℂ) : (q • z).re = q • z.re := smul_re ..
+@[simp] lemma im_nnqsmul (q : ℚ≥0) (z : ℂ) : (q • z).im = q • z.im := smul_im ..
+@[simp] lemma re_qsmul (q : ℚ) (z : ℂ) : (q • z).re = q • z.re := smul_re ..
+@[simp] lemma im_qsmul (q : ℚ) (z : ℂ) : (q • z).im = q • z.im := smul_im ..
 
 @[deprecated (since := "2024-04-17")]
 alias rat_cast_im := ratCast_im
@@ -486,7 +500,7 @@ theorem conj_ofNat (n : ℕ) [n.AtLeastTwo] : conj (no_index (OfNat.ofNat n : �
   map_ofNat _ _
 
 -- @[simp]
-/- Porting note (#11119): `simp` attribute removed as the result could be proved
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as the result could be proved
 by `simp only [@map_neg, Complex.conj_i, @neg_neg]`
 -/
 theorem conj_neg_I : conj (-I) = I :=
@@ -497,7 +511,7 @@ theorem conj_eq_iff_real {z : ℂ} : conj z = z ↔ ∃ r : ℝ, z = r :=
     rw [e, conj_ofReal]⟩
 
 theorem conj_eq_iff_re {z : ℂ} : conj z = z ↔ (z.re : ℂ) = z :=
-  conj_eq_iff_real.trans ⟨by rintro ⟨r, rfl⟩; simp [ofReal'], fun h => ⟨_, h.symm⟩⟩
+  conj_eq_iff_real.trans ⟨by rintro ⟨r, rfl⟩; simp [ofReal], fun h => ⟨_, h.symm⟩⟩
 
 theorem conj_eq_iff_im {z : ℂ} : conj z = z ↔ z.im = 0 :=
   ⟨fun h => add_self_eq_zero.mp (neg_eq_iff_add_eq_zero.mp (congr_arg im h)), fun h =>
@@ -528,7 +542,7 @@ theorem normSq_apply (z : ℂ) : normSq z = z.re * z.re + z.im * z.im :=
 
 @[simp]
 theorem normSq_ofReal (r : ℝ) : normSq r = r * r := by
-  simp [normSq, ofReal']
+  simp [normSq, ofReal]
 
 @[simp]
 theorem normSq_natCast (n : ℕ) : normSq n = n * n := normSq_ofReal _
@@ -562,16 +576,16 @@ theorem normSq_add_mul_I (x y : ℝ) : normSq (x + y * I) = x ^ 2 + y ^ 2 := by
   rw [← mk_eq_add_mul_I, normSq_mk, sq, sq]
 
 theorem normSq_eq_conj_mul_self {z : ℂ} : (normSq z : ℂ) = conj z * z := by
-  ext <;> simp [normSq, mul_comm, ofReal']
+  ext <;> simp [normSq, mul_comm, ofReal]
 
 -- @[simp]
-/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_zero]` -/
 theorem normSq_zero : normSq 0 = 0 :=
   normSq.map_zero
 
 -- @[simp]
-/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_one]` -/
 theorem normSq_one : normSq 1 = 1 :=
   normSq.map_one
@@ -611,22 +625,43 @@ theorem im_sq_le_normSq (z : ℂ) : z.im * z.im ≤ normSq z :=
   le_add_of_nonneg_left (mul_self_nonneg _)
 
 theorem mul_conj (z : ℂ) : z * conj z = normSq z :=
-  Complex.ext_iff.2 <| by simp [normSq, mul_comm, sub_eq_neg_add, add_comm, ofReal']
+  Complex.ext_iff.2 <| by simp [normSq, mul_comm, sub_eq_neg_add, add_comm, ofReal]
 
 theorem add_conj (z : ℂ) : z + conj z = (2 * z.re : ℝ) :=
-  Complex.ext_iff.2 <| by simp [two_mul, ofReal']
+  Complex.ext_iff.2 <| by simp [two_mul, ofReal]
 
 /-- The coercion `ℝ → ℂ` as a `RingHom`. -/
-def ofReal : ℝ →+* ℂ where
+def ofRealHom : ℝ →+* ℂ where
   toFun x := (x : ℂ)
   map_one' := ofReal_one
   map_zero' := ofReal_zero
   map_mul' := ofReal_mul
   map_add' := ofReal_add
 
-@[simp]
-theorem ofReal_eq_coe (r : ℝ) : ofReal r = r :=
-  rfl
+@[simp] lemma ofRealHom_eq_coe (r : ℝ) : ofRealHom r = r := rfl
+
+variable {α : Type*}
+
+@[simp] lemma ofReal_comp_add (f g : α → ℝ) : ofReal ∘ (f + g) = ofReal ∘ f + ofReal ∘ g :=
+  map_comp_add ofRealHom ..
+
+@[simp] lemma ofReal_comp_sub (f g : α → ℝ) : ofReal ∘ (f - g) = ofReal ∘ f - ofReal ∘ g :=
+  map_comp_sub ofRealHom ..
+
+@[simp] lemma ofReal_comp_neg (f : α → ℝ) : ofReal ∘ (-f) = -(ofReal ∘ f) :=
+  map_comp_neg ofRealHom _
+
+lemma ofReal_comp_nsmul (n : ℕ) (f : α → ℝ) : ofReal ∘ (n • f) = n • (ofReal ∘ f) :=
+  map_comp_nsmul ofRealHom ..
+
+lemma ofReal_comp_zsmul (n : ℤ) (f : α → ℝ) : ofReal ∘ (n • f) = n • (ofReal ∘ f) :=
+  map_comp_zsmul ofRealHom ..
+
+@[simp] lemma ofReal_comp_mul (f g : α → ℝ) : ofReal ∘ (f * g) = ofReal ∘ f * ofReal ∘ g :=
+  map_comp_mul ofRealHom ..
+
+@[simp] lemma ofReal_comp_pow (f : α → ℝ) (n : ℕ) : ofReal ∘ (f ^ n) = (ofReal ∘ f) ^ n :=
+  map_comp_pow ofRealHom ..
 
 @[simp]
 theorem I_sq : I ^ 2 = -1 := by rw [sq, I_mul_I]
@@ -644,14 +679,14 @@ theorem sub_im (z w : ℂ) : (z - w).im = z.im - w.im :=
 
 @[simp, norm_cast]
 theorem ofReal_sub (r s : ℝ) : ((r - s : ℝ) : ℂ) = r - s :=
-  Complex.ext_iff.2 <| by simp [ofReal']
+  Complex.ext_iff.2 <| by simp [ofReal]
 
 @[simp, norm_cast]
 theorem ofReal_pow (r : ℝ) (n : ℕ) : ((r ^ n : ℝ) : ℂ) = (r : ℂ) ^ n := by
   induction n <;> simp [*, ofReal_mul, pow_succ]
 
 theorem sub_conj (z : ℂ) : z - conj z = (2 * z.im : ℝ) * I :=
-  Complex.ext_iff.2 <| by simp [two_mul, sub_eq_add_neg, ofReal']
+  Complex.ext_iff.2 <| by simp [two_mul, sub_eq_add_neg, ofReal]
 
 theorem normSq_sub (z w : ℂ) : normSq (z - w) = normSq z + normSq w - 2 * (z * conj w).re := by
   rw [sub_eq_add_neg, normSq_add]
@@ -668,14 +703,14 @@ theorem inv_def (z : ℂ) : z⁻¹ = conj z * ((normSq z)⁻¹ : ℝ) :=
   rfl
 
 @[simp]
-theorem inv_re (z : ℂ) : z⁻¹.re = z.re / normSq z := by simp [inv_def, division_def, ofReal']
+theorem inv_re (z : ℂ) : z⁻¹.re = z.re / normSq z := by simp [inv_def, division_def, ofReal]
 
 @[simp]
-theorem inv_im (z : ℂ) : z⁻¹.im = -z.im / normSq z := by simp [inv_def, division_def, ofReal']
+theorem inv_im (z : ℂ) : z⁻¹.im = -z.im / normSq z := by simp [inv_def, division_def, ofReal]
 
 @[simp, norm_cast]
 theorem ofReal_inv (r : ℝ) : ((r⁻¹ : ℝ) : ℂ) = (r : ℂ)⁻¹ :=
-  Complex.ext_iff.2 <| by simp [ofReal']
+  Complex.ext_iff.2 <| by simp [ofReal]
 
 protected theorem inv_zero : (0⁻¹ : ℂ) = 0 := by
   rw [← ofReal_zero, ← ofReal_inv, inv_zero]
@@ -705,21 +740,19 @@ noncomputable instance instField : Field ℂ where
   qsmul_def n z := Complex.ext_iff.2 <| by simp [Rat.smul_def, smul_re, smul_im]
 
 @[simp, norm_cast]
-lemma ofReal_nnqsmul (q : ℚ≥0) (r : ℝ) : ofReal' (q • r) = q • r := by simp [NNRat.smul_def]
+lemma ofReal_nnqsmul (q : ℚ≥0) (r : ℝ) : ofReal (q • r) = q • r := by simp [NNRat.smul_def]
 
 @[simp, norm_cast]
-lemma ofReal_qsmul (q : ℚ) (r : ℝ) : ofReal' (q • r) = q • r := by simp [Rat.smul_def]
+lemma ofReal_qsmul (q : ℚ) (r : ℝ) : ofReal (q • r) = q • r := by simp [Rat.smul_def]
 
 theorem conj_inv (x : ℂ) : conj x⁻¹ = (conj x)⁻¹ :=
-  star_inv' _
+  star_inv₀ _
 
 @[simp, norm_cast]
-theorem ofReal_div (r s : ℝ) : ((r / s : ℝ) : ℂ) = r / s :=
-  map_div₀ ofReal r s
+theorem ofReal_div (r s : ℝ) : ((r / s : ℝ) : ℂ) = r / s := map_div₀ ofRealHom r s
 
 @[simp, norm_cast]
-theorem ofReal_zpow (r : ℝ) (n : ℤ) : ((r ^ n : ℝ) : ℂ) = (r : ℂ) ^ n :=
-  map_zpow₀ ofReal r n
+theorem ofReal_zpow (r : ℝ) (n : ℤ) : ((r ^ n : ℝ) : ℂ) = (r : ℂ) ^ n := map_zpow₀ ofRealHom r n
 
 @[simp]
 theorem div_I (z : ℂ) : z / I = -(z * I) :=
@@ -730,13 +763,13 @@ theorem inv_I : I⁻¹ = -I := by
   rw [inv_eq_one_div, div_I, one_mul]
 
 -- @[simp]
-/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_inv₀]` -/
 theorem normSq_inv (z : ℂ) : normSq z⁻¹ = (normSq z)⁻¹ :=
   map_inv₀ normSq z
 
 -- @[simp]
-/- Porting note (#11119): `simp` attribute removed as linter reports this can be proved
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): `simp` attribute removed as linter reports this can be proved
 by `simp only [@map_div₀]` -/
 theorem normSq_div (z w : ℂ) : normSq (z / w) = normSq z / normSq w :=
   map_div₀ normSq z w
@@ -810,5 +843,72 @@ unsafe instance instRepr : Repr ℂ where
   reprPrec f p :=
     (if p > 65 then (Std.Format.bracket "(" · ")") else (·)) <|
       reprPrec f.re 65 ++ " + " ++ reprPrec f.im 70 ++ "*I"
+
+section reProdIm
+
+/-- The preimage under `equivRealProd` of `s ×ˢ t` is `s ×ℂ t`. -/
+lemma preimage_equivRealProd_prod (s t : Set ℝ) : equivRealProd ⁻¹' (s ×ˢ t) = s ×ℂ t := rfl
+
+/-- The inequality `s × t ⊆ s₁ × t₁` holds in `ℂ` iff it holds in `ℝ × ℝ`. -/
+lemma reProdIm_subset_iff {s s₁ t t₁ : Set ℝ} : s ×ℂ t ⊆ s₁ ×ℂ t₁ ↔ s ×ˢ t ⊆ s₁ ×ˢ t₁ := by
+  rw [← @preimage_equivRealProd_prod s t, ← @preimage_equivRealProd_prod s₁ t₁]
+  exact Equiv.preimage_subset equivRealProd _ _
+
+/-- If `s ⊆ s₁ ⊆ ℝ` and `t ⊆ t₁ ⊆ ℝ`, then `s × t ⊆ s₁ × t₁` in `ℂ`. -/
+lemma reProdIm_subset_iff' {s s₁ t t₁ : Set ℝ} :
+    s ×ℂ t ⊆ s₁ ×ℂ t₁ ↔ s ⊆ s₁ ∧ t ⊆ t₁ ∨ s = ∅ ∨ t = ∅ := by
+  convert prod_subset_prod_iff
+  exact reProdIm_subset_iff
+
+variable {s t : Set ℝ}
+
+@[simp] lemma reProdIm_nonempty : (s ×ℂ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty := by
+  simp [Set.Nonempty, reProdIm, Complex.exists]
+
+@[simp] lemma reProdIm_eq_empty : s ×ℂ t = ∅ ↔ s = ∅ ∨ t = ∅ := by
+  simp [← not_nonempty_iff_eq_empty, reProdIm_nonempty, -not_and, not_and_or]
+
+end reProdIm
+
+open scoped Interval
+
+section Rectangle
+
+/-- A `Rectangle` is an axis-parallel rectangle with corners `z` and `w`. -/
+def Rectangle (z w : ℂ) : Set ℂ := [[z.re, w.re]] ×ℂ [[z.im, w.im]]
+
+end Rectangle
+
+section Segments
+
+/-- A real segment `[a₁, a₂]` translated by `b * I` is the complex line segment. -/
+lemma horizontalSegment_eq (a₁ a₂ b : ℝ) :
+    (fun (x : ℝ) ↦ x + b * I) '' [[a₁, a₂]] = [[a₁, a₂]] ×ℂ {b} := by
+  rw [← preimage_equivRealProd_prod]
+  ext x
+  constructor
+  · intro hx
+    obtain ⟨x₁, hx₁, hx₁'⟩ := hx
+    simp [← hx₁', mem_preimage, mem_prod, hx₁]
+  · intro hx
+    obtain ⟨x₁, hx₁, hx₁', hx₁''⟩ := hx
+    refine ⟨x.re, x₁, by simp⟩
+
+/-- A vertical segment `[b₁, b₂]` translated by `a` is the complex line segment. -/
+lemma verticalSegment_eq (a b₁ b₂ : ℝ) :
+    (fun (y : ℝ) ↦ a + y * I) '' [[b₁, b₂]] = {a} ×ℂ [[b₁, b₂]] := by
+  rw [← preimage_equivRealProd_prod]
+  ext x
+  constructor
+  · intro hx
+    obtain ⟨x₁, hx₁, hx₁'⟩ := hx
+    simp [← hx₁', mem_preimage, mem_prod, hx₁]
+  · intro hx
+    simp only [equivRealProd_apply, singleton_prod, mem_image, Prod.mk.injEq,
+      exists_eq_right_right, mem_preimage] at hx
+    obtain ⟨x₁, hx₁, hx₁', hx₁''⟩ := hx
+    refine ⟨x.im, x₁, by simp⟩
+
+end Segments
 
 end Complex

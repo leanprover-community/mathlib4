@@ -152,7 +152,7 @@ def homEquiv :
     invFun := fun f => lift f.1.1 f.1.2 f.2,
     left_inv := fun _ => hom_ext (by simp [DFunLike.ext_iff])
       (by simp [DFunLike.ext_iff])
-    right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [DFunLike.ext_iff, Function.funext_iff] }
+    right_inv := fun ⟨⟨_, _⟩, _⟩ => by simp [DFunLike.ext_iff, funext_iff] }
 
 /-- The map from the coproduct into the pushout -/
 def ofCoprodI : CoprodI G →* PushoutI φ :=
@@ -320,9 +320,7 @@ noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some
 @[simp]
 theorem prod_cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : (cons g w hmw hgr).prod = of i g * w.prod := by
-  simp only [prod, cons, Word.prod, List.map, ← of_apply_eq_base φ i, equiv_fst_eq_mul_inv,
-    mul_assoc, MonoidHom.apply_ofInjective_symm, List.prod_cons, map_mul, map_inv,
-    ofCoprodI_of, inv_mul_cancel_left]
+  simp [prod, cons, ← of_apply_eq_base φ i, equiv_fst_eq_mul_inv, mul_assoc]
 
 variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 
@@ -425,7 +423,7 @@ noncomputable def equivPair (i) : NormalWord d ≃ Pair d i :=
           exact w.normalized _ _ (Word.mem_of_mem_equivPair_tail _ hg) }
   haveI leftInv : Function.LeftInverse (rcons i) toFun :=
     fun w => ext_smul i <| by
-      simp only [rcons, Word.equivPair_symm,
+      simp only [toFun, rcons, Word.equivPair_symm,
         Word.equivPair_smul_same, Word.equivPair_tail_eq_inv_smul, Word.rcons_eq_smul,
         MonoidHom.apply_ofInjective_symm, equiv_fst_eq_mul_inv, mul_assoc, map_mul, map_inv,
         mul_smul, inv_smul_smul, smul_inv_smul]
@@ -454,7 +452,7 @@ theorem summand_smul_def' {i : ι} (g : G i) (w : NormalWord d) :
 noncomputable instance mulAction : MulAction (PushoutI φ) (NormalWord d) :=
   MulAction.ofEndHom <|
     lift
-      (fun i => MulAction.toEndHom)
+      (fun _ => MulAction.toEndHom)
       MulAction.toEndHom <| by
     intro i
     simp only [MulAction.toEndHom, DFunLike.ext_iff, MonoidHom.coe_comp, MonoidHom.coe_mk,
@@ -596,7 +594,7 @@ theorem of_injective (hφ : ∀ i, Function.Injective (φ i)) (i : ι) :
     (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
-    by simp_all [Function.funext_iff, of_smul_eq_smul])
+    by simp_all [funext_iff, of_smul_eq_smul])
 
 theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
     Function.Injective (base φ) := by
@@ -607,7 +605,7 @@ theorem base_injective (hφ : ∀ i, Function.Injective (φ i)) :
     (f := ((· • ·) : PushoutI φ → NormalWord d → NormalWord d)) ?_
   intros _ _ h
   exact eq_of_smul_eq_smul (fun w : NormalWord d =>
-    by simp_all [Function.funext_iff, base_smul_eq_smul])
+    by simp_all [funext_iff, base_smul_eq_smul])
 
 section Reduced
 
@@ -679,11 +677,12 @@ theorem inf_of_range_eq_base_range
         exact hx (of_apply_eq_base φ j y ▸ MonoidHom.mem_range.2 ⟨y, rfl⟩)
       let w : Word G := ⟨[⟨_, g₁⟩, ⟨_, g₂⁻¹⟩], by simp_all, by simp_all⟩
       have hw : Reduced φ w := by
-        simp only [not_exists, ne_eq, Reduced, List.find?, List.mem_cons, List.mem_singleton,
-          forall_eq_or_imp, not_false_eq_true, forall_const, forall_eq, true_and, hg₁r, hg₂r,
-          List.mem_nil_iff, false_imp_iff, imp_true_iff, and_true, inv_mem_iff]
+        simp only [w, not_exists, ne_eq, Reduced, List.find?, List.mem_cons,
+          List.mem_singleton, forall_eq_or_imp, not_false_eq_true, forall_const, forall_eq,
+          true_and, hg₁r, hg₂r, List.mem_nil_iff, false_imp_iff, imp_true_iff, and_true,
+          inv_mem_iff]
       have := hw.eq_empty_of_mem_range hφ (by
-        simp only [Word.prod, List.map_cons, List.prod_cons, List.prod_nil,
+        simp only [w, Word.prod, List.map_cons, List.prod_cons, List.prod_nil,
           List.map_nil, map_mul, ofCoprodI_of, hg₁, hg₂, map_inv, map_one, mul_one,
           mul_inv_cancel, one_mem])
       simp [w, Word.empty] at this)

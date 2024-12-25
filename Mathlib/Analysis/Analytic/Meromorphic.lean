@@ -59,8 +59,8 @@ lemma smul {f : 𝕜 → 𝕜} {g : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f
   rcases hg with ⟨n, hg⟩
   refine ⟨m + n, ?_⟩
   convert hf.smul hg using 2 with z
-  rw [smul_eq_mul, ← mul_smul, mul_assoc, mul_comm (f z), ← mul_assoc, pow_add,
-    ← smul_eq_mul (a' := f z), smul_assoc, Pi.smul_apply']
+  rw [Pi.smul_apply', smul_eq_mul]
+  module
 
 lemma mul {f g : 𝕜 → 𝕜} {x : 𝕜} (hf : MeromorphicAt f x) (hg : MeromorphicAt g x) :
     MeromorphicAt (f * g) x :=
@@ -170,14 +170,14 @@ lemma order_eq_top_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) :
     hf.order = ⊤ ↔ ∀ᶠ z in 𝓝[≠] x, f z = 0 := by
   unfold order
   by_cases h : hf.choose_spec.order = ⊤
-  · rw [h, WithTop.map_top, ← WithTop.coe_natCast,
+  · rw [h, ENat.map_top, ← WithTop.coe_natCast,
       top_sub, eq_self, true_iff, eventually_nhdsWithin_iff]
     rw [AnalyticAt.order_eq_top_iff] at h
     filter_upwards [h] with z hf hz
     rwa [smul_eq_zero_iff_right <| pow_ne_zero _ (sub_ne_zero.mpr hz)] at hf
-  · obtain ⟨m, hm⟩ := WithTop.ne_top_iff_exists.mp h
-    rw [← hm, WithTop.map_coe, sub_eq_top_iff, eq_false_intro WithTop.coe_ne_top, false_or]
-    simp only [WithTop.natCast_ne_top, false_iff]
+  · obtain ⟨m, hm⟩ := ENat.ne_top_iff_exists.mp h
+    simp only [← hm, ENat.map_coe, WithTop.coe_natCast, sub_eq_top_iff, WithTop.natCast_ne_top,
+      or_self, false_iff]
     contrapose! h
     rw [AnalyticAt.order_eq_top_iff]
     rw [← hf.choose_spec.frequently_eq_iff_eventually_eq analyticAt_const]
@@ -189,7 +189,7 @@ lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n :
     ∃ g : 𝕜 → E, AnalyticAt 𝕜 g x ∧ g x ≠ 0 ∧ ∀ᶠ z in 𝓝[≠] x, f z = (z - x) ^ n • g z := by
   unfold order
   by_cases h : hf.choose_spec.order = ⊤
-  · rw [h, WithTop.map_top, ← WithTop.coe_natCast, top_sub,
+  · rw [h, ENat.map_top, ← WithTop.coe_natCast, top_sub,
       eq_false_intro WithTop.top_ne_coe, false_iff]
     rw [AnalyticAt.order_eq_top_iff] at h
     refine fun ⟨g, hg_an, hg_ne, hg_eq⟩ ↦ hg_ne ?_
@@ -200,8 +200,8 @@ lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n :
     filter_upwards [h, hg_eq] with z hfz hfz_eq hz
     rwa [hfz_eq hz, ← mul_smul, smul_eq_zero_iff_right] at hfz
     exact mul_ne_zero (pow_ne_zero _ (sub_ne_zero.mpr hz)) (zpow_ne_zero _ (sub_ne_zero.mpr hz))
-  · obtain ⟨m, h⟩ := WithTop.ne_top_iff_exists.mp h
-    rw [← h, WithTop.map_coe, ← WithTop.coe_natCast, ← coe_sub, WithTop.coe_inj]
+  · obtain ⟨m, h⟩ := ENat.ne_top_iff_exists.mp h
+    rw [← h, ENat.map_coe, ← WithTop.coe_natCast, ← coe_sub, WithTop.coe_inj]
     obtain ⟨g, hg_an, hg_ne, hg_eq⟩ := (AnalyticAt.order_eq_nat_iff _ _).mp h.symm
     replace hg_eq : ∀ᶠ (z : 𝕜) in 𝓝[≠] x, f z = (z - x) ^ (↑m - ↑hf.choose : ℤ) • g z := by
       rw [eventually_nhdsWithin_iff]
@@ -216,10 +216,10 @@ lemma order_eq_int_iff {f : 𝕜 → E} {x : 𝕜} (hf : MeromorphicAt f x) (n :
 lemma _root_.AnalyticAt.meromorphicAt_order {f : 𝕜 → E} {x : 𝕜} (hf : AnalyticAt 𝕜 f x) :
     hf.meromorphicAt.order = hf.order.map (↑) := by
   rcases eq_or_ne hf.order ⊤ with ho | ho
-  · rw [ho, WithTop.map_top, order_eq_top_iff]
+  · rw [ho, ENat.map_top, order_eq_top_iff]
     exact (hf.order_eq_top_iff.mp ho).filter_mono nhdsWithin_le_nhds
-  · obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.mp ho
-    simp_rw [← hn, WithTop.map_coe, order_eq_int_iff, zpow_natCast]
+  · obtain ⟨n, hn⟩ := ENat.ne_top_iff_exists.mp ho
+    simp_rw [← hn, ENat.map_coe, order_eq_int_iff, zpow_natCast]
     rcases (hf.order_eq_nat_iff _).mp hn.symm with ⟨g, h1, h2, h3⟩
     exact ⟨g, h1, h2, h3.filter_mono nhdsWithin_le_nhds⟩
 
@@ -227,8 +227,8 @@ lemma iff_eventuallyEq_zpow_smul_analyticAt {f : 𝕜 → E} {x : 𝕜} : Meromo
     ∃ (n : ℤ) (g : 𝕜 → E), AnalyticAt 𝕜 g x ∧ ∀ᶠ z in 𝓝[≠] x, f z = (z - x) ^ n • g z := by
   refine ⟨fun ⟨n, hn⟩ ↦ ⟨-n, _, ⟨hn, eventually_nhdsWithin_iff.mpr ?_⟩⟩, ?_⟩
   · filter_upwards with z hz
-    rw [← mul_smul, ← zpow_natCast, ← zpow_add₀ (sub_ne_zero.mpr hz), neg_add_cancel,
-      zpow_zero, one_smul]
+    match_scalars
+    field_simp [sub_ne_zero.mpr hz]
   · refine fun ⟨n, g, hg_an, hg_eq⟩ ↦ MeromorphicAt.congr ?_ (EventuallyEq.symm hg_eq)
     exact (((MeromorphicAt.id x).sub (.const _ x)).zpow _).smul hg_an.meromorphicAt
 

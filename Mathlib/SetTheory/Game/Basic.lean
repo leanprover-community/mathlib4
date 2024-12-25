@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Kim Morrison, Apurva Nakade
 -/
 import Mathlib.Algebra.Order.Group.Defs
-import Mathlib.Algebra.Ring.Int
 import Mathlib.SetTheory.Game.PGame
 import Mathlib.Tactic.Abel
 
@@ -47,7 +46,7 @@ abbrev Game :=
 
 namespace Game
 
--- Porting note (#11445): added this definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): added this definition
 /-- Negation of games. -/
 instance : Neg Game where
   neg := Quot.map Neg.neg <| fun _ _ => (neg_equiv_neg_iff).2
@@ -82,7 +81,7 @@ theorem zero_def : (0 : Game) = ⟦0⟧ :=
   rfl
 
 instance instPartialOrderGame : PartialOrder Game where
-  le := Quotient.lift₂ (· ≤ ·) fun x₁ y₁ x₂ y₂ hx hy => propext (le_congr hx hy)
+  le := Quotient.lift₂ (· ≤ ·) fun _ _ _ _ hx hy => propext (le_congr hx hy)
   le_refl := by
     rintro ⟨x⟩
     exact le_refl x
@@ -93,7 +92,7 @@ instance instPartialOrderGame : PartialOrder Game where
     rintro ⟨x⟩ ⟨y⟩ h₁ h₂
     apply Quot.sound
     exact ⟨h₁, h₂⟩
-  lt := Quotient.lift₂ (· < ·) fun x₁ y₁ x₂ y₂ hx hy => propext (lt_congr hx hy)
+  lt := Quotient.lift₂ (· < ·) fun _ _ _ _ hx hy => propext (lt_congr hx hy)
   lt_iff_le_not_le := by
     rintro ⟨x⟩ ⟨y⟩
     exact @lt_iff_le_not_le _ _ x y
@@ -164,22 +163,22 @@ namespace Game
 local infixl:50 " ⧏ " => LF
 local infixl:50 " ‖ " => Fuzzy
 
-instance covariantClass_add_le : CovariantClass Game Game (· + ·) (· ≤ ·) :=
+instance addLeftMono : AddLeftMono Game :=
   ⟨by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
     exact @add_le_add_left _ _ _ _ b c h a⟩
 
-instance covariantClass_swap_add_le : CovariantClass Game Game (swap (· + ·)) (· ≤ ·) :=
+instance addRightMono : AddRightMono Game :=
   ⟨by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
     exact @add_le_add_right _ _ _ _ b c h a⟩
 
-instance covariantClass_add_lt : CovariantClass Game Game (· + ·) (· < ·) :=
+instance addLeftStrictMono : AddLeftStrictMono Game :=
   ⟨by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
     exact @add_lt_add_left _ _ _ _ b c h a⟩
 
-instance covariantClass_swap_add_lt : CovariantClass Game Game (swap (· + ·)) (· < ·) :=
+instance addRightStrictMono : AddRightStrictMono Game :=
   ⟨by
     rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ h
     exact @add_lt_add_right _ _ _ _ b c h a⟩
@@ -194,7 +193,7 @@ theorem add_lf_add_left : ∀ {b c : Game} (_ : b ⧏ c) (a), (a + b : Game) ⧏
 
 instance orderedAddCommGroup : OrderedAddCommGroup Game :=
   { Game.instAddCommGroupWithOneGame, Game.instPartialOrderGame with
-    add_le_add_left := @add_le_add_left _ _ _ Game.covariantClass_add_le }
+    add_le_add_left := @add_le_add_left _ _ _ Game.addLeftMono }
 
 /-- A small family of games is bounded above. -/
 lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) :
@@ -247,7 +246,7 @@ Hence we define them here. -/
 
 
 /-- The product of `x = {xL | xR}` and `y = {yL | yR}` is
-`{xL*y + x*yL - xL*yL, xR*y + x*yR - xR*yR | xL*y + x*yR - xL*yR, x*yL + xR*y - xR*yL }`. -/
+`{xL*y + x*yL - xL*yL, xR*y + x*yR - xR*yR | xL*y + x*yR - xL*yR, xR*y + x*yL - xR*yL}`. -/
 instance : Mul PGame.{u} :=
   ⟨fun x y => by
     induction x generalizing y with | mk xl xr _ _ IHxl IHxr => _
@@ -791,10 +790,7 @@ def mulOption (x y : PGame) (i : LeftMoves x) (j : LeftMoves y) : PGame :=
   the first kind. -/
 lemma mulOption_neg_neg {x} (y) {i j} :
     mulOption x y i j = mulOption x (-(-y)) i (toLeftMovesNeg <| toRightMovesNeg j) := by
-  dsimp only [mulOption]
-  congr 2
-  · rw [neg_neg]
-  iterate 2 rw [moveLeft_neg, moveRight_neg, neg_neg]
+  simp [mulOption]
 
 /-- The left options of `x * y` agree with that of `y * x` up to equivalence. -/
 lemma mulOption_symm (x y) {i j} : ⟦mulOption x y i j⟧ = (⟦mulOption y x j i⟧ : Game) := by

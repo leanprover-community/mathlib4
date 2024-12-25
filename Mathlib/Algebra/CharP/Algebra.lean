@@ -3,7 +3,7 @@ Copyright (c) 2021 Jon Eugster. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, Eric Wieser
 -/
-import Mathlib.Algebra.CharP.Defs
+import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.FreeAlgebra
 import Mathlib.RingTheory.Localization.FractionRing
 
@@ -66,6 +66,35 @@ characteristic `p`. Similar to `RingHom.charZero_iff`. -/
 theorem RingHom.charP_iff {R A : Type*} [NonAssocSemiring R] [NonAssocSemiring A] (f : R →+* A)
     (H : Function.Injective f) (p : ℕ) : CharP R p ↔ CharP A p :=
   ⟨fun _ ↦ charP_of_injective_ringHom H p, fun _ ↦ f.charP H p⟩
+
+/-- If a ring homomorphism `R →+* A` is injective then `A` has the same exponential characteristic
+as `R`. -/
+lemma expChar_of_injective_ringHom {R A : Type*}
+    [Semiring R] [Semiring A] {f : R →+* A} (h : Function.Injective f)
+    (q : ℕ) [hR : ExpChar R q] : ExpChar A q := by
+  rcases hR with _ | hprime
+  · haveI := charZero_of_injective_ringHom h; exact .zero
+  haveI := charP_of_injective_ringHom h q; exact .prime hprime
+
+/-- If `R →+* A` is injective, and `A` is of exponential characteristic `p`, then `R` is also of
+exponential characteristic `p`. Similar to `RingHom.charZero`. -/
+lemma RingHom.expChar {R A : Type*} [Semiring R] [Semiring A] (f : R →+* A)
+    (H : Function.Injective f) (p : ℕ) [ExpChar A p] : ExpChar R p := by
+  cases ‹ExpChar A p› with
+  | zero => haveI := f.charZero; exact .zero
+  | prime hp => haveI := f.charP H p; exact .prime hp
+
+/-- If `R →+* A` is injective, then `R` is of exponential characteristic `p` if and only if `A` is
+also of exponential characteristic `p`. Similar to `RingHom.charZero_iff`. -/
+lemma RingHom.expChar_iff {R A : Type*} [Semiring R] [Semiring A] (f : R →+* A)
+    (H : Function.Injective f) (p : ℕ) : ExpChar R p ↔ ExpChar A p :=
+  ⟨fun _ ↦ expChar_of_injective_ringHom H p, fun _ ↦ f.expChar H p⟩
+
+/-- If the algebra map `R →+* A` is injective then `A` has the same exponential characteristic
+as `R`. -/
+lemma expChar_of_injective_algebraMap {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+    (h : Function.Injective (algebraMap R A)) (q : ℕ) [ExpChar R q] : ExpChar A q :=
+  expChar_of_injective_ringHom h q
 
 /-!
 As an application, a `ℚ`-algebra has characteristic zero.

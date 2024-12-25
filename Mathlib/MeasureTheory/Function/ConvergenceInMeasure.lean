@@ -203,12 +203,13 @@ theorem TendstoInMeasure.exists_seq_tendsto_ae (hfg : TendstoInMeasure μ f atTo
     refine ⟨max N (k - 1), fun n hn_ge => lt_of_le_of_lt ?_ hk_lt_ε⟩
     specialize hNx n ((le_max_left _ _).trans hn_ge)
     have h_inv_n_le_k : (2 : ℝ)⁻¹ ^ n ≤ 2 * (2 : ℝ)⁻¹ ^ k := by
-      rw [mul_comm, ← inv_mul_le_iff' (zero_lt_two' ℝ)]
+      rw [mul_comm, ← inv_mul_le_iff₀' (zero_lt_two' ℝ)]
       conv_lhs =>
         congr
         rw [← pow_one (2 : ℝ)⁻¹]
       rw [← pow_add, add_comm]
-      exact pow_le_pow_of_le_one (one_div (2 : ℝ) ▸ one_half_pos.le) (inv_le_one one_le_two)
+      exact pow_le_pow_of_le_one (one_div (2 : ℝ) ▸ one_half_pos.le)
+        (inv_le_one_of_one_le₀ one_le_two)
         ((le_tsub_add.trans (add_le_add_right (le_max_right _ _) 1)).trans
           (add_le_add_right hn_ge 1))
     exact le_trans hNx.le h_inv_n_le_k

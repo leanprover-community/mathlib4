@@ -3,7 +3,9 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.Group.Nat.Even
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Data.Int.Sqrt
 
 /-!
@@ -16,7 +18,6 @@ See note [foundational algebra order theory].
 
 assert_not_exists Ring
 assert_not_exists DenselyOrdered
-assert_not_exists Set.range
 
 open Nat
 
@@ -47,14 +48,14 @@ instance instAddCommGroup : AddCommGroup ℤ where
   zsmul := (·*·)
   zsmul_zero' := Int.zero_mul
   zsmul_succ' m n := by
-    simp only [ofNat_eq_coe, ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
+    simp only [ofNat_succ, Int.add_mul, Int.add_comm, Int.one_mul]
   zsmul_neg' m n := by simp only [negSucc_coe, ofNat_succ, Int.neg_mul]
   sub_eq_add_neg _ _ := Int.sub_eq_add_neg
 
 /-!
 ### Extra instances to short-circuit type class resolution
 
-These also prevent non-computable instances like `Int.normedCommRing` being used to construct
+These also prevent non-computable instances like `Int.instNormedCommRing` being used to construct
 these instances non-computably.
 -/
 
@@ -73,9 +74,9 @@ section Multiplicative
 
 open Multiplicative
 
-lemma toAdd_pow (a : Multiplicative ℤ) (b : ℕ) : toAdd (a ^ b) = toAdd a * b := mul_comm _ _
+lemma toAdd_pow (a : Multiplicative ℤ) (b : ℕ) : (a ^ b).toAdd = a.toAdd * b := mul_comm _ _
 
-lemma toAdd_zpow (a : Multiplicative ℤ) (b : ℤ) : toAdd (a ^ b) = toAdd a * b := mul_comm _ _
+lemma toAdd_zpow (a : Multiplicative ℤ) (b : ℤ) : (a ^ b).toAdd = a.toAdd * b := mul_comm _ _
 
 @[simp] lemma ofAdd_mul (a b : ℤ) : ofAdd (a * b) = ofAdd a ^ b := (toAdd_zpow ..).symm
 
@@ -145,13 +146,10 @@ lemma ofNat_isUnit {n : ℕ} : IsUnit (n : ℤ) ↔ IsUnit n := by simp [isUnit_
 lemma isUnit_mul_self (hu : IsUnit u) : u * u = 1 :=
   (isUnit_eq_one_or hu).elim (fun h ↦ h.symm ▸ rfl) fun h ↦ h.symm ▸ rfl
 
--- Porting note: this was proven in mathlib3 with `tidy` which hasn't been ported yet
 lemma isUnit_add_isUnit_eq_isUnit_add_isUnit {a b c d : ℤ} (ha : IsUnit a) (hb : IsUnit b)
     (hc : IsUnit c) (hd : IsUnit d) : a + b = c + d ↔ a = c ∧ b = d ∨ a = d ∧ b = c := by
   rw [isUnit_iff] at ha hb hc hd
-  cases ha <;> cases hb <;> cases hc <;> cases hd <;>
-      subst a <;> subst b <;> subst c <;> subst d <;>
-    simp (config := {decide := true})
+  aesop
 
 lemma eq_one_or_neg_one_of_mul_eq_neg_one (h : u * v = -1) : u = 1 ∨ u = -1 :=
   Or.elim (eq_one_or_neg_one_of_mul_eq_neg_one' h) (fun H => Or.inl H.1) fun H => Or.inr H.1
@@ -222,7 +220,7 @@ lemma ediv_two_mul_two_of_even : Even n → n / 2 * 2 = n :=
 
 -- Here are examples of how `parity_simps` can be used with `Int`.
 example (m n : ℤ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
-  simp (config := {decide := true}) [*, (by decide : ¬2 = 0), parity_simps]
+  simp +decide [*, (by decide : ¬2 = 0), parity_simps]
 
 example : ¬Even (25394535 : ℤ) := by decide
 
