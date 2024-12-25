@@ -148,7 +148,7 @@ theorem card_aux₂ (hP : P.IsEquipartition) (hu : u ∈ P.parts) (hucard : #u �
   rw [Nat.add_sub_of_le this] at hucard
   rw [(hP.card_parts_eq_average hu).resolve_left hucard, mul_add, mul_one, ← add_assoc, ← add_mul,
     Nat.sub_add_cancel a_add_one_le_four_pow_parts_card, ← add_assoc, mul_comm,
-    Nat.add_sub_of_le this, card_univ]
+    Nat.add_sub_of_le this, Finset.card_univ]
 
 theorem pow_mul_m_le_card_part (hP : P.IsEquipartition) (hu : u ∈ P.parts) :
     (4 : ℝ) ^ #P.parts * m ≤ #u := by
