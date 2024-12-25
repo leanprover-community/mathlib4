@@ -72,10 +72,9 @@ theorem log_natCast (b : ℕ) (n : ℕ) : log b (n : R) = Nat.log b n := by
   · rw [log_of_one_le_right, Nat.floor_natCast]
     simp
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem log_ofNat (b : ℕ) (n : ℕ) [n.AtLeastTwo] :
-    log b (no_index (OfNat.ofNat n : R)) = Nat.log b (OfNat.ofNat n) :=
+    log b (ofNat(n) : R) = Nat.log b ofNat(n) :=
   log_natCast b n
 
 theorem log_of_left_le_one {b : ℕ} (hb : b ≤ 1) (r : R) : log b r = 0 := by
@@ -221,10 +220,9 @@ theorem clog_natCast (b : ℕ) (n : ℕ) : clog b (n : R) = Nat.clog b n := by
   · simp [clog_of_right_le_one]
   · rw [clog_of_one_le_right, (Nat.ceil_eq_iff (Nat.succ_ne_zero n)).mpr] <;> simp
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem clog_ofNat (b : ℕ) (n : ℕ) [n.AtLeastTwo] :
-    clog b (no_index (OfNat.ofNat n : R)) = Nat.clog b (OfNat.ofNat n) :=
+    clog b (ofNat(n) : R) = Nat.clog b ofNat(n) :=
   clog_natCast b n
 
 theorem clog_of_left_le_one {b : ℕ} (hb : b ≤ 1) (r : R) : clog b r = 0 := by

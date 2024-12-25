@@ -177,10 +177,9 @@ theorem natDegree_natCast (n : ℕ) : natDegree (n : R[X]) = 0 := by
 @[deprecated (since := "2024-04-17")]
 alias natDegree_nat_cast := natDegree_natCast
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem natDegree_ofNat (n : ℕ) [Nat.AtLeastTwo n] :
-    natDegree (no_index (OfNat.ofNat n : R[X])) = 0 :=
+    natDegree (ofNat(n) : R[X]) = 0 :=
   natDegree_natCast _
 
 theorem degree_natCast_le (n : ℕ) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)

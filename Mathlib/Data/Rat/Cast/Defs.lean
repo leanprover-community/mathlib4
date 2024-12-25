@@ -33,9 +33,8 @@ variable [DivisionSemiring α] {q r : ℚ≥0}
 
 @[simp, norm_cast] lemma cast_natCast (n : ℕ) : ((n : ℚ≥0) : α) = n := by simp [cast_def]
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast] lemma cast_ofNat (n : ℕ) [n.AtLeastTwo] :
-    no_index (OfNat.ofNat n : ℚ≥0) = (OfNat.ofNat n : α) := cast_natCast _
+    (ofNat(n) : ℚ≥0) = (ofNat(n) : α) := cast_natCast _
 
 @[simp, norm_cast] lemma cast_zero : ((0 : ℚ≥0) : α) = 0 := (cast_natCast _).trans Nat.cast_zero
 @[simp, norm_cast] lemma cast_one : ((1 : ℚ≥0) : α) = 1 := (cast_natCast _).trans Nat.cast_one
@@ -118,9 +117,8 @@ theorem cast_natCast (n : ℕ) : ((n : ℚ) : α) = n := by
 @[deprecated (since := "2024-03-21")] alias cast_coe_int := cast_intCast
 @[deprecated (since := "2024-03-21")] alias cast_coe_nat := cast_natCast
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast] lemma cast_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n : ℚ)) : α) = (OfNat.ofNat n : α) := by
+    ((ofNat(n) : ℚ) : α) = (ofNat(n) : α) := by
   simp [cast_def]
 
 @[simp, norm_cast]
