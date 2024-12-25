@@ -18,9 +18,6 @@ namespace Rat
 
 open Denumerable List
 
-instance : Infinite ℚ :=
-  Infinite.of_injective ((↑) : ℕ → ℚ) Nat.cast_injective
-
 instance : Denumerable {c : FiniteContFract // 1 ∉ c.s.getLast? } :=
   Denumerable.ofEquiv (ℤ × List ℕ+)
     { toFun := fun ⟨⟨z, l⟩, _⟩ =>
