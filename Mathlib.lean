@@ -4193,6 +4193,7 @@ import Mathlib.Order.SuccPred.InitialSeg
 import Mathlib.Order.SuccPred.IntervalSucc
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.Order.SuccPred.LinearLocallyFinite
+import Mathlib.Order.SuccPred.Nat
 import Mathlib.Order.SuccPred.Relation
 import Mathlib.Order.SuccPred.Tree
 import Mathlib.Order.SuccPred.WithBot
