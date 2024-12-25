@@ -280,6 +280,9 @@ instance : Coe (RegContFract α) (GenContFract α) :=
 
 end RegContFract
 
+/-- A *continued fraction* ((r)cf) is a simple continued fraction (scf) whose partial
+denominators are all positive integers.
+-/
 @[ext]
 structure ContFract where
   /-- Head term -/
@@ -289,6 +292,7 @@ structure ContFract where
 
 namespace ContFract
 
+/-- The coercion from a continued fraction to a generalized continued fraction -/
 @[coe]
 def toGenContFract [IntCast α] [NatCast α] [One α] : ContFract → (GenContFract α) :=
   fun ⟨h, s⟩ => ⟨h, s.map (fun n : ℕ+ => ⟨1, n⟩)⟩
@@ -300,6 +304,7 @@ theorem isSimpContFract [IntCast α] [NatCast α] [One α]
     (c : ContFract) : IsSimpContFract (c : GenContFract α) := by
   simp [IsSimpContFract, partNums, toGenContFract]
 
+/-- The coercion from a continued fraction to a simple continued fraction -/
 @[coe]
 def toSimpContFract [IntCast α] [NatCast α] [One α] : ContFract → SimpContFract α :=
   fun c => ⟨c, c.isSimpContFract⟩
@@ -312,6 +317,7 @@ theorem isRegContFract [AddGroupWithOne α]
     (c : ContFract) : SimpContFract.IsRegContFract (c : SimpContFract α) := by
   simp [SimpContFract.IsRegContFract, partDens, toSimpContFract, toGenContFract]
 
+/-- The coercion from a continued fraction to a regular continued fraction -/
 @[coe]
 def toRegContFract [AddGroupWithOne α]
     [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α] [NeZero (1 : α)] :
@@ -427,6 +433,7 @@ def convs' (g : GenContFract K) (n : ℕ) : K :=
 
 end GenContFract
 
+/-- A finite continued faction is a continued fraction with finitely many denominators. -/
 @[ext]
 structure FiniteContFract where
   /-- Head term -/
@@ -439,6 +446,7 @@ namespace FiniteContFract
 
 variable {K : Type*} [DivisionRing K]
 
+/-- The coercion from finite continued fractions to continued fractions. -/
 @[coe]
 def toContFract (c : FiniteContFract) : ContFract :=
   ⟨c.h, c.s⟩
