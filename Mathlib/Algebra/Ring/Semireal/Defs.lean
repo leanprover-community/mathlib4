@@ -1,19 +1,17 @@
 /-
 Copyright (c) 2024 Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Florent Schaffhauser
+Authors: Florent Schaffhauser, Artie Khovanov
 -/
 import Mathlib.Algebra.Ring.SumsOfSquares
 
 /-!
 # Semireal rings
 
-A semireal ring is a non-trivial commutative ring (with unit) in which `-1` is *not* a sum of
-squares. Note that `-1` does not make sense in a semiring.
+A semireal ring is a commutative ring (with unit) in which `-1` is *not* a sum of squares.
 
-For instance, linearly ordered fields are semireal, because sums of squares are positive and `-1` is
-not. More generally, linearly ordered semirings in which `a ≤ b → ∃ c, a + c = b` holds, are
-semireal.
+For instance, linearly ordered rings are semireal, because sums of squares are positive and `-1` is
+not.
 
 ## Main declaration
 
@@ -28,19 +26,22 @@ semireal.
 variable (R : Type*)
 
 /--
-A semireal ring is a non-trivial commutative ring (with unit) in which `-1` is *not* a sum of
-squares. Note that `-1` does not make sense in a semiring. Below we define the class `IsSemireal R`
-for all additive monoid `R` equipped with a multiplication, a multiplicative unit and a negation.
+A semireal ring is a commutative ring (with unit) in which `-1` is *not* a sum of
+squares. We define the class `IsSemireal R` for all structures equipped with
+a multiplication, an addition, a multiplicative unit and an additive unit.
 -/
 @[mk_iff]
-class IsSemireal [AddMonoid R] [Mul R] [One R] [Neg R] : Prop where
-  non_trivial         : (0 : R) ≠ 1
-  not_isSumSq_neg_one : ¬IsSumSq (-1 : R)
+class IsSemireal [Add R] [Mul R] [One R] [Zero R] : Prop where
+  add_one_ne_zero_of_isSumSq {a : R} (ssa : IsSumSq a) : 1 + a ≠ 0
 
 @[deprecated (since := "2024-08-09")] alias isSemireal := IsSemireal
 @[deprecated (since := "2024-08-09")] alias isSemireal.neg_one_not_SumSq :=
-  IsSemireal.not_isSumSq_neg_one
+  IsSemireal.add_one_ne_zero_of_isSumSq
 
-instance [LinearOrderedRing R] : IsSemireal R where
-  non_trivial := zero_ne_one
-  not_isSumSq_neg_one := fun h ↦ (not_le (α := R)).2 neg_one_lt_zero h.nonneg
+theorem IsSemireal.not_isSumSq_neg_one {R : Type*} [AddGroup R] [One R] [Mul R] [IsSemireal R]:
+    ¬ IsSumSq (-1 : R) := (by simpa using add_one_ne_zero_of_isSumSq ·)
+
+/-- Linearly ordered semirings in which the property `a ≤ b → ∃ c, a + c = b` holds are semireal. -/
+instance [LinearOrderedSemiring R] [ExistsAddOfLE R] : IsSemireal R where
+  add_one_ne_zero_of_isSumSq ssa amo := zero_ne_one' R (le_antisymm zero_le_one
+                                          (le_of_le_of_eq (le_add_of_nonneg_right ssa.nonneg) amo))
