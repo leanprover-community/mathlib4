@@ -468,6 +468,8 @@ theorem ext_base {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
       fun hB ↦ (h <| hB.subset_ground.trans_eq hE.symm).2 hB⟩
   ext <;> simp [hE, M₁.indep_iff', M₂.indep_iff', h']
 
+@[deprecated (since := "2024-12-25")] alias eq_of_base_iff_base_forall := ext_base
+
 theorem ext_iff_base {M₁ M₂ : Matroid α} :
     M₁ = M₂ ↔ M₁.E = M₂.E ∧ ∀ ⦃B⦄, B ⊆ M₁.E → (M₁.Base B ↔ M₂.Base B) :=
   ⟨fun h ↦ by simp [h], fun ⟨hE, h⟩ ↦ ext_base hE h⟩
@@ -668,7 +670,7 @@ theorem ground_indep_iff_base : M.Indep M.E ↔ M.Base M.E :=
 
 theorem Base.exists_insert_of_ssubset (hB : M.Base B) (hIB : I ⊂ B) (hB' : M.Base B') :
     ∃ e ∈ B' \ I, M.Indep (insert e I) :=
-(hB.indep.subset hIB.subset).exists_insert_of_not_base
+  (hB.indep.subset hIB.subset).exists_insert_of_not_base
     (fun hI ↦ hIB.ne (hI.eq_of_subset_base hB hIB.subset)) hB'
 
 @[ext] theorem ext_indep {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E)
@@ -681,9 +683,13 @@ theorem Base.exists_insert_of_ssubset (hB : M.Base B) (hIB : I ⊂ B) (hB' : M.B
       (fun hi ↦ hI (hi.subset_ground.trans_eq hE.symm))
   ext_base hE (fun B _ ↦ by simp_rw [base_iff_maximal_indep, h'])
 
+@[deprecated (since := "2024-12-25")] alias eq_of_indep_iff_indep_forall := ext_indep
+
 theorem ext_iff_indep {M₁ M₂ : Matroid α} :
     M₁ = M₂ ↔ (M₁.E = M₂.E) ∧ ∀ ⦃I⦄, I ⊆ M₁.E → (M₁.Indep I ↔ M₂.Indep I) :=
 ⟨fun h ↦ by (subst h; simp), fun h ↦ ext_indep h.1 h.2⟩
+
+@[deprecated (since := "2024-12-25")] alias eq_iff_indep_iff_indep_forall := ext_iff_indep
 
 /-- If every base of `M₁` is independent in `M₂` and vice versa, then `M₁ = M₂`. -/
 lemma ext_base_indep {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E) (hM₁ : ∀ ⦃B⦄, M₁.Base B → M₂.Indep B)
