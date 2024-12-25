@@ -109,11 +109,6 @@ theorem RMK [Nonempty X] : ∀ (f : C_c(X, ℝ)), ∫ (x : X), f x ∂(μ Λ hΛ
     -- `a` is a lower bound of `f`, `b` is an upper bound of `f`.
     obtain ⟨a, ha⟩ := BddBelow_bbdAbove_L.1
     obtain ⟨b, hb⟩ := BddBelow_bbdAbove_L.2
-    have hfxb : ∀ (x : X), f x ≤ b:= by
-      intro x
-      apply hb
-      rw [hLdef]
-      simp only [mem_range, exists_apply_eq_apply]
     have hab : a ≤ b := by
       obtain ⟨c, hc⟩ := hLNonempty
       exact le_trans (mem_lowerBounds.mp ha c hc) (mem_upperBounds.mp hb c hc)
@@ -299,19 +294,6 @@ theorem RMK [Nonempty X] : ∀ (f : C_c(X, ℝ)), ∫ (x : X), f x ∂(μ Λ hΛ
       simp only
       rw [hE]
       simp only [inter_subset_right]
-    have hrangefsubioc: range f ⊆ Ioc (y 0) (y (⌈N⌉₊ + 1)) := by
-      intro z hz
-      simp only [mem_Ioc]
-      constructor
-      · apply lt_of_lt_of_le hy0
-        apply ha
-        rw [hLdef]
-        exact hz
-      · rw [hy]
-        simp only [Int.cast_add, Int.cast_natCast, Int.cast_one, sub_self, mul_zero, add_zero]
-        apply hb
-        rw [hLdef]
-        exact hz
     have hrangefsubiunion: range f ⊆ ⋃ n : Fin (⌈N⌉₊ + 1), Ioc (y n) (y (n+1)) := by
       have : y = fun (n : ℤ) => b - δ * ⌈N⌉₊ - δ + n • δ := by
         ext n
@@ -558,8 +540,6 @@ theorem RMK [Nonempty X] : ∀ (f : C_c(X, ℝ)), ∫ (x : X), f x ∂(μ Λ hΛ
       · rw [hn]
         exact hy1a
       · push_neg at hn
-        have hnp : 0 < n := by
-          exact Fin.pos_iff_ne_zero.mpr hn
         rw [← sub_add_cancel (y (n + 1)) (y 1), add_assoc, add_assoc]
         apply add_pos_of_nonneg_of_pos
         · exact sub_nonneg_of_le (hy1leyn n)
