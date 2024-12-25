@@ -172,9 +172,9 @@ namespace Adjunction
 
 variable {C} {D : Type u''} [Category.{v''} D] {F : C ⥤ D} {G : D ⥤ C}
 
-/-- Let `adj : F ⊣ G` be an adjunction, with `G : D ⥤ C` reflective. If `D` has
-finite limits and `F` commutes to them, then if `C` has exact colimits of shape `J`,
-then `D` also has exact colimits of shape `J`. -/
+/-- Let `adj : F ⊣ G` be an adjunction, with `G : D ⥤ C` reflective.
+Assume that `D` has finite limits and `F` commutes to them.
+If `C` has exact colimits of shape `J`, then `D` also has exact colimits of shape `J`. -/
 lemma hasExactColimitsOfShape (adj : F ⊣ G) [G.Full] [G.Faithful]
     (J : Type u') [Category.{v'} J] [HasColimitsOfShape J C] [HasColimitsOfShape J D]
     [HasExactColimitsOfShape J C] [HasFiniteLimits D] [PreservesFiniteLimits F] :
@@ -189,9 +189,9 @@ lemma hasExactColimitsOfShape (adj : F ⊣ G) [G.Full] [G.Faithful]
         isoWhiskerRight wiskeringRightObjIdIso _ ≪≫ colim.leftUnitor
     exact preservesLimit_of_natIso _ e⟩⟩
 
-/-- Let `adj : F ⊣ G` be an adjunction, with `F : C ⥤ D` coreflective. If `C` has
-finite colimits and `G` commutes to them, then if `D` has exact limits of shape `J`,
-then `C` also has exact limits of shape `J`. -/
+/-- Let `adj : F ⊣ G` be an adjunction, with `F : C ⥤ D` coreflective.
+Assume that `C` has finite colimits and `G` commutes to them.
+If `D` has exact limits of shape `J`, then `C` also has exact limits of shape `J`. -/
 lemma hasExactLimitsOfShape (adj : F ⊣ G) [F.Full] [F.Faithful]
     (J : Type u') [Category.{v'} J] [HasLimitsOfShape J C] [HasLimitsOfShape J D]
     [HasExactLimitsOfShape J D] [HasFiniteColimits C] [PreservesFiniteColimits G] :
