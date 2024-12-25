@@ -63,10 +63,6 @@ theorem exists_disjoint_subfamily_covering_enlargement (B : ι → Set α) (t : 
   the already chosen one, pick another element with large `δ`. Go on forever (transfinitely) until
   there is nothing left.
 
-@[deprecated (since := "2024-12-25")]
-alias exists_disjoint_subfamily_covering_enlargment :=
-  exists_disjoint_subfamily_covering_enlargement
-
   Instead, we give a direct Zorn-based argument. Consider a maximal family `u` of disjoint sets
   with the following property: if an element `a` of `t` intersects some element `b` of `u`, then it
   intersects some `b' ∈ u` with `δ b' ≥ δ a / τ`. Such a maximal family exists by Zorn. If this
@@ -154,6 +150,10 @@ alias exists_disjoint_subfamily_covering_enlargment :=
       · rw [← not_disjoint_iff_nonempty_inter] at hcb
         exact (hcb (H _ H')).elim
 
+@[deprecated (since := "2024-12-25")]
+alias exists_disjoint_subfamily_covering_enlargment :=
+  exists_disjoint_subfamily_covering_enlargement
+
 /-- Vitali covering theorem, closed balls version: given a family `t` of closed balls, one can
 extract a disjoint subfamily `u ⊆ t` so that all balls in `t` are covered by the τ-times
 dilations of balls in `u`, for some `τ > 3`. -/
@@ -193,6 +193,10 @@ theorem exists_disjoint_subfamily_covering_enlargement_closedBall
   · rcases ht with ⟨b, rb⟩
     rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, _⟩
     exact ⟨c, cu, by simp only [closedBall_eq_empty.2 h'a, empty_subset]⟩
+
+@[deprecated (since := "2024-12-25")]
+alias exists_disjoint_subfamily_covering_enlargment_closedBall :=
+  exists_disjoint_subfamily_covering_enlargement_closedBall
 
 /-- The measurable Vitali covering theorem. Assume one is given a family `t` of closed sets with
 nonempty interior, such that each `a ∈ t` is included in a ball `B (x, r)` and covers a definite
