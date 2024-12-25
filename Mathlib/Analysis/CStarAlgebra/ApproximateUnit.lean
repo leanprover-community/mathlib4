@@ -189,7 +189,7 @@ lemma hasBasis_approximateUnit :
   isBasis_nonneg_sections A |>.hasBasis.inf_principal (closedBall 0 1)
 
 /-- This is a common reasoning sequence in C⋆-algebra theory. If `0 ≤ x ≤ y ≤ 1`, then the norm
-of `z - y * z` is controled by the norm of `star z * (1 - x) * z`, which is advantageous because the
+of `z - y * z` is controlled by the norm of `star z * (1 - x) * z`, which is advantageous because the
 latter is nonnegative. This is a key step in establishing the existence of an increasing approximate
 unit in general C⋆-algebras. -/
 lemma nnnorm_sub_mul_self_le {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
