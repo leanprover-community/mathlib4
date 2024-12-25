@@ -140,11 +140,12 @@ def compPreadditiveYonedaIso :
     erw [adj.homEquiv_naturality_right_symm]
     rfl
 
+@[simp]
 lemma compPreadditiveYonedaIso_hom_app_app_apply_down' (X : Cᵒᵖ) (Y : D)
-    (a : ↑(((G ⋙ preadditiveYoneda ⋙ (whiskeringRight Cᵒᵖ AddCommGrp AddCommGrp).obj
+    (a : (((G ⋙ preadditiveYoneda ⋙ (whiskeringRight Cᵒᵖ AddCommGrp AddCommGrp).obj
     AddCommGrp.uliftFunctor).obj Y).obj X)) :
-        (((adj.compPreadditiveYonedaIso.hom.app Y).app X) a).down =
-          (adj.homEquiv (Opposite.unop X) Y).symm (AddEquiv.ulift a) := sorry
+        ((adj.compPreadditiveYonedaIso.hom.app Y).app X) a =
+          {down := (adj.homEquiv (Opposite.unop X) Y).symm (AddEquiv.ulift a)} := sorry
 
 end Adjunction
 
