@@ -1269,7 +1269,7 @@ lemma LocalizedModule.subsingleton_iff_ker_eq_top {S : Submonoid R} :
   rw [← top_le_iff]
   refine ⟨fun H m _ ↦ Subsingleton.elim _ _, fun H ↦ (subsingleton_iff_forall_eq 0).mpr fun x ↦ ?_⟩
   obtain ⟨⟨x, s⟩, rfl⟩ := IsLocalizedModule.mk'_surjective S (LocalizedModule.mkLinearMap S M) x
-  simpa using @H x trivial
+  simpa using @H x Submodule.mem_top
 
 lemma LocalizedModule.subsingleton_iff {S : Submonoid R} :
     Subsingleton (LocalizedModule S M) ↔ ∀ m : M, ∃ r ∈ S, r • m = 0 := by
