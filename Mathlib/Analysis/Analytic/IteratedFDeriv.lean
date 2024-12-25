@@ -95,11 +95,9 @@ lemma FormalMultilinearSeries.iteratedFDerivSeries_eq_zero {k n : ℕ}
       ContinuousLinearMap.compFormalMultilinearSeries_apply,
       ContinuousLinearMap.compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe,
       LinearIsometryEquiv.coe_toContinuousLinearEquiv, Function.comp_apply,
-      continuousMultilinearCurryLeftEquiv_symm_apply, ContinuousMultilinearMap.zero_apply]
-    rw [derivSeries_eq_zero]
-    · rfl
-    · apply ih
-      apply p.congr_zero (by abel) h
+      continuousMultilinearCurryLeftEquiv_symm_apply, ContinuousMultilinearMap.zero_apply,
+      ContinuousLinearMap.zero_apply,
+      derivSeries_eq_zero _ (ih (p.congr_zero (Nat.succ_add_eq_add_succ _ _).symm h))]
 
 /-- If the `n`-th term in a power series is zero, then the `n`-th derivative of the corresponding
 function vanishes. -/
@@ -109,8 +107,8 @@ lemma HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_zero
     iteratedFDerivWithin 𝕜 n f s x = 0 := by
   have : iteratedFDerivWithin 𝕜 n f s x = p.iteratedFDerivSeries n 0 (fun _ ↦ 0) :=
     ((h.iteratedFDerivWithin h' n hu hx).coeff_zero _).symm
-  rw [this, p.iteratedFDerivSeries_eq_zero (p.congr_zero (Nat.zero_add n).symm hn)]
-  rfl
+  rw [this, p.iteratedFDerivSeries_eq_zero (p.congr_zero (Nat.zero_add n).symm hn),
+    ContinuousMultilinearMap.zero_apply]
 
 lemma ContinuousMultilinearMap.iteratedFDeriv_comp_diagonal
     {n : ℕ} (f : E [×n]→L[𝕜] F) (x : E) (v : Fin n → E) :
@@ -246,9 +244,8 @@ theorem AnalyticOn.iteratedFDerivWithin_comp_perm
     iteratedFDerivWithin 𝕜 n f s x (v ∘ σ) = iteratedFDerivWithin 𝕜 n f s x v := by
   rcases h x hx with ⟨p, r, hp⟩
   rw [hp.iteratedFDerivWithin_eq_sum h hs hx, hp.iteratedFDerivWithin_eq_sum h hs hx]
-  let e := Equiv.mulLeft σ
-  conv_rhs => rw [← Equiv.sum_comp e]
-  rfl
+  conv_rhs => rw [← Equiv.sum_comp (Equiv.mulLeft σ)]
+  simp only [coe_mulLeft, Perm.coe_mul, Function.comp_apply]
 
 /-- The `n`-th iterated derivative of an analytic function on a set is symmetric. -/
 theorem ContDiffWithinAt.iteratedFDerivWithin_comp_perm
