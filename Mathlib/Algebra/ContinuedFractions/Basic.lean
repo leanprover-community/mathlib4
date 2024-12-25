@@ -5,6 +5,8 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Data.Seq.Seq
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Data.PNat.Defs
+import Mathlib.Data.Nat.Cast.Order.Basic
 
 /-!
 # Basic Definitions/Theorems for Continued Fractions
@@ -230,7 +232,7 @@ end SimpContFract
 A simple continued fraction is a *(regular) continued fraction* ((r)cf) if all partial denominators
 `bᵢ` are positive, i.e. `0 < bᵢ`.
 -/
-def SimpContFract.IsContFract [One α] [Zero α] [LT α]
+def SimpContFract.IsRegContFract [One α] [Zero α] [LT α]
     (s : SimpContFract α) : Prop :=
   ∀ (n : ℕ) (bₙ : α),
     (↑s : GenContFract α).partDens.get? n = some bₙ → 0 < bₙ
@@ -238,28 +240,28 @@ def SimpContFract.IsContFract [One α] [Zero α] [LT α]
 variable (α)
 
 /-- A *(regular) continued fraction* ((r)cf) is a simple continued fraction (scf) whose partial
-denominators are all positive. It is the subtype of scfs that satisfy `SimpContFract.IsContFract`.
- -/
-def ContFract [One α] [Zero α] [LT α] :=
-  { s : SimpContFract α // s.IsContFract }
+denominators are all positive. It is the subtype of scfs that satisfy `SimpContFract.IsRegContFract`
+-/
+def RegContFract [One α] [Zero α] [LT α] :=
+  { s : SimpContFract α // s.IsRegContFract }
 
 variable {α}
 
 /-! Interlude: define some expected coercions. -/
 
-namespace ContFract
+namespace RegContFract
 
 variable [One α] [Zero α] [LT α]
 
 /-- Constructs a continued fraction without fractional part. -/
-def ofInteger (a : α) : ContFract α :=
+def ofInteger (a : α) : RegContFract α :=
   ⟨SimpContFract.ofInteger a, fun n bₙ h ↦ by cases h⟩
 
-instance : Inhabited (ContFract α) :=
+instance : Inhabited (RegContFract α) :=
   ⟨ofInteger 0⟩
 
 /-- Lift a cf to a scf using the inclusion map. -/
-instance : Coe (ContFract α) (SimpContFract α) :=
+instance : Coe (RegContFract α) (SimpContFract α) :=
   -- Porting note: originally `by unfold ContFract; infer_instance`
   ⟨Subtype.val⟩
 
@@ -268,13 +270,78 @@ instance : Coe (ContFract α) (SimpContFract α) :=
 --     (↑c : SimpContFract α) = c.val := rfl
 
 /-- Lift a cf to a scf using the inclusion map. -/
-instance : Coe (ContFract α) (GenContFract α) :=
+instance : Coe (RegContFract α) (GenContFract α) :=
   ⟨fun c ↦ c.val⟩
   -- Porting note: was `fun c ↦ ↑(↑c : SimpContFract α)`
 
 -- Porting note: Syntactic tautology due to change of `Coe` above.
 -- theorem coe_toGenContFract {c : ContFract α} :
 --     (↑c : GenContFract α) = c.val := rfl
+
+end RegContFract
+
+/-- A *continued fraction* ((r)cf) is a simple continued fraction (scf) whose partial
+denominators are all positive integers.
+-/
+@[ext]
+structure ContFract where
+  /-- Head term -/
+  h : ℤ
+  /-- Sequence of denominators. -/
+  s : Stream'.Seq ℕ+
+
+namespace ContFract
+
+/-- The coercion from a continued fraction to a generalized continued fraction -/
+@[coe]
+def toGenContFract [IntCast α] [NatCast α] [One α] : ContFract → (GenContFract α) :=
+  fun ⟨h, s⟩ => ⟨h, s.map (fun n : ℕ+ => ⟨1, n⟩)⟩
+
+instance [IntCast α] [NatCast α] [One α] : Coe ContFract (GenContFract α) :=
+  ⟨toGenContFract⟩
+
+theorem isSimpContFract [IntCast α] [NatCast α] [One α]
+    (c : ContFract) : IsSimpContFract (c : GenContFract α) := by
+  simp [IsSimpContFract, partNums, toGenContFract]
+
+/-- The coercion from a continued fraction to a simple continued fraction -/
+@[coe]
+def toSimpContFract [IntCast α] [NatCast α] [One α] : ContFract → SimpContFract α :=
+  fun c => ⟨c, c.isSimpContFract⟩
+
+instance [IntCast α] [NatCast α] [One α] : Coe ContFract (SimpContFract α) :=
+  ⟨toSimpContFract⟩
+
+theorem isRegContFract [AddGroupWithOne α]
+    [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α] [NeZero (1 : α)]
+    (c : ContFract) : SimpContFract.IsRegContFract (c : SimpContFract α) := by
+  simp [SimpContFract.IsRegContFract, partDens, toSimpContFract, toGenContFract]
+
+/-- The coercion from a continued fraction to a regular continued fraction -/
+@[coe]
+def toRegContFract [AddGroupWithOne α]
+    [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α] [NeZero (1 : α)] :
+    ContFract → RegContFract α :=
+  fun c => ⟨c, c.isRegContFract⟩
+
+instance [AddGroupWithOne α]
+    [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α] [NeZero (1 : α)] :
+    Coe ContFract (RegContFract α) :=
+  ⟨toRegContFract⟩
+
+def Terminates (c : ContFract) : Prop :=
+  c.s.Terminates
+
+def TerminatedAt (c : ContFract) (n : ℕ) : Prop :=
+  c.s.TerminatedAt n
+
+theorem terminates_coe_iff [IntCast α] [NatCast α] [One α] {c : ContFract} :
+    (c : GenContFract α).Terminates ↔ c.Terminates := by
+  simp [GenContFract.Terminates, ContFract.Terminates, toGenContFract]
+
+theorem terminatedAt_coe_iff [IntCast α] [NatCast α] [One α] {c : ContFract} {n : ℕ} :
+    (c : GenContFract α).TerminatedAt n ↔ c.TerminatedAt n := by
+  simp [GenContFract.TerminatedAt, ContFract.TerminatedAt, toGenContFract]
 
 end ContFract
 
@@ -365,3 +432,30 @@ def convs' (g : GenContFract K) (n : ℕ) : K :=
   g.h + convs'Aux g.s n
 
 end GenContFract
+
+/-- A finite continued faction is a continued fraction with finitely many denominators. -/
+@[ext]
+structure FiniteContFract where
+  /-- Head term -/
+  h : ℤ
+  /-- List of denominators. -/
+  s : List ℕ+
+deriving DecidableEq
+
+namespace FiniteContFract
+
+variable {K : Type*} [DivisionRing K]
+
+/-- The coercion from finite continued fractions to continued fractions. -/
+@[coe]
+def toContFract (c : FiniteContFract) : ContFract :=
+  ⟨c.h, c.s⟩
+
+theorem terminatedAt_toContFract (c : FiniteContFract) :
+    c.toContFract.s.TerminatedAt c.s.length :=
+  Stream'.Seq.terminatedAt_ofList _
+
+instance : Coe FiniteContFract ContFract :=
+  ⟨toContFract⟩
+
+end FiniteContFract

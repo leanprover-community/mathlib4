@@ -180,11 +180,11 @@ nonrec def SimpContFract.of : SimpContFract K :=
   ⟨of v, GenContFract.of_isSimpContFract v⟩
 
 theorem SimpContFract.of_isContFract :
-    (SimpContFract.of v).IsContFract := fun _ _ nth_partDen_eq =>
+    (SimpContFract.of v).IsRegContFract := fun _ _ nth_partDen_eq =>
   lt_of_lt_of_le zero_lt_one (of_one_le_get?_partDen nth_partDen_eq)
 
 /-- Creates the continued fraction of a value. -/
-def ContFract.of : ContFract K :=
+def RegContFract.of : RegContFract K :=
   ⟨SimpContFract.of v, SimpContFract.of_isContFract v⟩
 
 variable {v}
