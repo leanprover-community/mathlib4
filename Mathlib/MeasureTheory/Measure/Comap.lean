@@ -137,12 +137,15 @@ lemma comap_id (μ : Measure β) : comap (fun x ↦ x) μ = μ := by
   · exact injective_id
   all_goals simp [*]
 
-lemma comap_comap (hf : Injective f) (hf' : ∀ s, MeasurableSet s → MeasurableSet (f '' s))
-    (hg : Injective g) (hg' : ∀ s, MeasurableSet s → MeasurableSet (g '' s)) (μ : Measure γ) :
+lemma comap_comap (hf' : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (hg : Injective g)
+    (hg' : ∀ s, MeasurableSet s → MeasurableSet (g '' s)) (μ : Measure γ) :
     comap f (comap g μ) = comap (g ∘ f) μ := by
-  ext s hs
-  rw [comap_apply _ hf hf' _ hs, comap_apply _ hg hg' _ (hf' _ hs),
-    comap_apply _ (hg.comp hf) (fun t ht ↦ image_comp g f _ ▸ hg' _ <| hf' _ ht) _ hs, image_comp]
+  by_cases hf : Injective f
+  · ext s hs
+    rw [comap_apply _ hf hf' _ hs, comap_apply _ hg hg' _ (hf' _ hs),
+      comap_apply _ (hg.comp hf) (fun t ht ↦ image_comp g f _ ▸ hg' _ <| hf' _ ht) _ hs, image_comp]
+  · rw [comap, dif_neg <| mt And.left hf, comap, dif_neg fun h ↦ hf h.1.of_comp]
+
 
 end Measure
 
