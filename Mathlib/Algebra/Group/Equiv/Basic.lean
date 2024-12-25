@@ -446,14 +446,14 @@ section unique
 
 /-- The `MulEquiv` between two monoids with a unique element. -/
 @[to_additive "The `AddEquiv` between two `AddMonoid`s with a unique element."]
-def mulEquivOfUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
+def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
   { Equiv.equivOfUnique M N with map_mul' := fun _ _ => Subsingleton.elim _ _ }
 
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
 @[to_additive "There is a unique additive monoid homomorphism between two additive monoids with
   a unique element."]
 instance {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
-  default := mulEquivOfUnique
+  default := ofUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
 
 end unique
