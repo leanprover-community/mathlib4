@@ -212,9 +212,31 @@ instance : (inductiveSystem f J p).IsWellOrderContinuous :=
 instance : (inductiveSystemForget f J p).IsWellOrderContinuous :=
   inferInstanceAs (inductiveSystem f J p ⋙ Over.forget Y).IsWellOrderContinuous
 
+instance {Z : C} (π : Z ⟶ Y) [Small.{w} ι] [LocallySmall.{w} C] :
+    Small.{w} (SmallObject.FunctorObjIndex f π) := by
+  let φ : SmallObject.FunctorObjIndex f π →
+    Σ (i : Shrink.{w} ι),
+      Shrink.{w} ((A ((equivShrink _).symm i) ⟶ Z) ×
+        (B ((equivShrink _).symm i) ⟶ Y)) := fun x ↦ ⟨equivShrink _ x.i, equivShrink _
+          (⟨eqToHom (by simp) ≫ x.t, eqToHom (by simp) ≫ x.b⟩)⟩
+  have hφ : Function.Injective φ := by
+    rintro ⟨i₁, t₁, b₁, _⟩ ⟨i₂, t₂, b₂, _⟩ h
+    obtain rfl : i₁ = i₂ := by simpa using congr_arg Sigma.fst h
+    simpa [cancel_epi, φ] using h
+  exact small_of_injective hφ
+
 open MorphismProperty in
-lemma transfiniteCompositionsOfShape_ιObj :
-    (coproducts.{max v t} (ofHoms f)).pushouts.transfiniteCompositionsOfShape J
+lemma coproducts_pushouts_ιFunctorObj {Z : C} (π : Z ⟶ Y)
+    [Small.{w} ι] [LocallySmall.{w} C] :
+    (coproducts.{w} (ofHoms f)).pushouts (ιFunctorObj f π) := by
+  apply pushouts_mk _ (functorObj_isPushout f π)
+  refine coproducts_of_small _ _ (colimitsOfShape_colimMap _ _ ?_)
+  rintro ⟨j⟩
+  constructor
+
+open MorphismProperty in
+lemma transfiniteCompositionsOfShape_ιObj [Small.{w} ι] [LocallySmall.{w} C] :
+    (coproducts.{w} (ofHoms f)).pushouts.transfiniteCompositionsOfShape J
       (ιObj f J p) := by
   let e : Arrow.mk ((inductiveSystemForgetCocone f J p).ι.app ⊥) ≅
       Arrow.mk (ιObj f J p) :=
@@ -227,9 +249,7 @@ lemma transfiniteCompositionsOfShape_ιObj :
   apply RespectsIso.postcomp
   apply MorphismProperty.pushouts_mk _
     ((functorObj_isPushout f ((inductiveSystem f J p).obj j).hom))
-  rw [coproducts_iff]
-  exact ⟨FunctorObjIndex f ((inductiveSystem f J p).obj j).hom,
-    colimitsOfShape_colimMap _ _ (fun _ ↦ ⟨_⟩)⟩
+  exact coproducts_of_small _ _ (colimitsOfShape_colimMap _ _ (fun _ ↦ ⟨_⟩))
 
 variable [∀ i, PreservesColimit (inductiveSystemForget f J p) (coyoneda.obj (op (A i)))]
   [NoMaxOrder J]

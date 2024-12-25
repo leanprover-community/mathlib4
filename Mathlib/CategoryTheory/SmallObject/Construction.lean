@@ -51,7 +51,7 @@ have the right lifting property with respect to the morphisms `f i`.
 - https://ncatlab.org/nlab/show/small+object+argument
 
 -/
-universe w v u
+universe t w v u
 
 namespace CategoryTheory
 

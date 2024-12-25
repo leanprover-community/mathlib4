@@ -107,6 +107,12 @@ lemma transfiniteIterationMap_le_succ_app (j : J) (hj : ¬ IsMax j) (X : C) :
       ε.app _ ≫ (Φ.transfiniteIterationObjSuccIso ε j hj).inv.app X := by
   simp [transfiniteIterationMap_le_succ _ _ _ hj]
 
+noncomputable def transfiniteIterationMapLeSuccAppArrowIso (j : J) (hj : ¬ IsMax j) (X : C) :
+    Arrow.mk ((Φ.transfiniteIterationMap ε (Order.le_succ j)).app X) ≅
+      Arrow.mk (ε.app ((Φ.transfiniteIterationObj ε j).obj X)) :=
+  Arrow.isoMk (Iso.refl _) ((Φ.transfiniteIterationObjSuccIso ε j hj).app X)
+    (by simp [transfiniteIterationMap_le_succ_app _ _ j hj])
+
 variable (J)
 
 /-- The canonical isomorphism `Φ.transfiniteIterationObj ε (⊥ : J) ≅ 𝟭 C`. -/

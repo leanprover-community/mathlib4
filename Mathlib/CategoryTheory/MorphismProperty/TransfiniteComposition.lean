@@ -207,6 +207,11 @@ inductive transfiniteCompositionsOfShape [WellFoundedLT J] : MorphismProperty C
 
 variable [WellFoundedLT J]
 
+lemma monotone_transfiniteCompositionsOfShape :
+    Monotone (transfiniteCompositionsOfShape (C := C) (J := J)) := by
+  rintro _ _ h _ _ _ ⟨F, hF, c, hc⟩
+  exact ⟨F, fun j hj ↦ h _ (hF j hj), c, hc⟩
+
 instance [W.RespectsIso] : RespectsIso (W.transfiniteCompositionsOfShape J) where
   precomp := by
     rintro X' X Y i (_ : IsIso i) _ ⟨F, hF, c, hc⟩
@@ -233,6 +238,7 @@ instance [W.RespectsIso] : RespectsIso (W.transfiniteCompositionsOfShape J) wher
 of shape `J` if for any well-order-continuous functor `F : J ⥤ C` such that
 `F.obj j ⟶ F.obj (Order.succ j)` is in `W`, then `F.obj ⊥ ⟶ c.pt` is in `W`
 for any colimit cocone `c : Cocone F`. -/
+@[mk_iff]
 class IsStableUnderTransfiniteCompositionOfShape : Prop where
   le : W.transfiniteCompositionsOfShape J ≤ W
 
@@ -269,6 +275,26 @@ namespace IsStableUnderTransfiniteComposition
 attribute [instance] isStableUnderTransfiniteCompositionOfShape
 
 end IsStableUnderTransfiniteComposition
+
+/-- The class of transfinite compositions (for arbitrary well-ordered types `J : Type w`)
+of a class of morphisms `W`. -/
+@[pp_with_univ]
+def transfiniteCompositions : MorphismProperty C :=
+  ⨆ (J : Type w) (_ : LinearOrder J) (_ : SuccOrder J) (_ : OrderBot J)
+    (_ : WellFoundedLT J), W.transfiniteCompositionsOfShape J
+
+lemma transfiniteCompositions_iff {X Y : C} (f : X ⟶ Y) :
+    transfiniteCompositions.{w} W f ↔
+      ∃ (J : Type w) (_ : LinearOrder J) (_ : SuccOrder J) (_ : OrderBot J)
+        (_ : WellFoundedLT J), W.transfiniteCompositionsOfShape J f := by
+  simp only [transfiniteCompositions, iSup_iff]
+
+lemma transfiniteCompositionsOfShape_le_transfiniteCompositions
+    (J : Type w) [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J] :
+    W.transfiniteCompositionsOfShape J ≤ transfiniteCompositions.{w} W := by
+  intro A B f hf
+  rw [transfiniteCompositions_iff]
+  exact ⟨_, _, _, _, _, hf⟩
 
 end MorphismProperty
 
