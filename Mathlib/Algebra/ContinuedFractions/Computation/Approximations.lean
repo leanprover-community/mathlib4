@@ -195,7 +195,6 @@ theorem coe_of (v : K) : ((ContFract.of v) : GenContFract K) = GenContFract.of v
     partNums, ContFract.toGenContFract] at *
   match IntFractPair.seq1 v, hReg with
   | ⟨h, s⟩, hReg =>
-    simp only at *
     ext n s
     · simp
     · simp only [Stream'.Seq.map_get?, Option.map_map, Option.map_eq_some', Function.comp_apply,

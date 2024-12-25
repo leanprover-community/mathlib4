@@ -271,6 +271,7 @@ protected def of (v : K) : ContFract :=
   let s := IntFractPair.seq1 v -- get the sequence of integer and fractional parts.
   ⟨s.1.b, -- the head is just the first integer part
     s.2.map fun p => p.b.toNat.toPNat'⟩
+    /- the sequence consists of the remaining integer parts as the partial denominators -/
 
 theorem one_not_mem_getLast?_of (v : K) (ht : (ContFract.of v).s.Terminates) :
     1 ∉ ((ContFract.of v).s.toList ht).getLast? := by
