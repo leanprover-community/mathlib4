@@ -82,9 +82,7 @@ theorem Float.Zero.valid : ValidFinite emin 0 :=
       rw [← Int.ofNat_le] at this
       rw [← sub_nonneg] at *
       simp only [emin, emax] at *
-      ring_nf
-      rw [mul_comm]
-      assumption
+      omega
     le_trans C.precMax (Nat.le_mul_of_pos_left _ Nat.zero_lt_two),
     by (rw [max_eq_right]; simp [sub_eq_add_neg, Int.ofNat_zero_le])⟩
 

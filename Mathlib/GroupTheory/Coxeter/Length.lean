@@ -303,8 +303,7 @@ theorem isLeftDescent_iff {w : W} {i : B} :
   constructor
   · intro _
     exact (cs.length_simple_mul w i).resolve_left (by omega)
-  · intro _
-    omega
+  · omega
 
 theorem not_isLeftDescent_iff {w : W} {i : B} :
     ¬cs.IsLeftDescent w i ↔ ℓ (s i * w) = ℓ w + 1 := by
@@ -312,8 +311,7 @@ theorem not_isLeftDescent_iff {w : W} {i : B} :
   constructor
   · intro _
     exact (cs.length_simple_mul w i).resolve_right (by omega)
-  · intro _
-    omega
+  · omega
 
 theorem isRightDescent_iff {w : W} {i : B} :
     cs.IsRightDescent w i ↔ ℓ (w * s i) + 1 = ℓ w := by
@@ -321,8 +319,7 @@ theorem isRightDescent_iff {w : W} {i : B} :
   constructor
   · intro _
     exact (cs.length_mul_simple w i).resolve_left (by omega)
-  · intro _
-    omega
+  · omega
 
 theorem not_isRightDescent_iff {w : W} {i : B} :
     ¬cs.IsRightDescent w i ↔ ℓ (w * s i) = ℓ w + 1 := by
@@ -330,8 +327,7 @@ theorem not_isRightDescent_iff {w : W} {i : B} :
   constructor
   · intro _
     exact (cs.length_mul_simple w i).resolve_right (by omega)
-  · intro _
-    omega
+  · omega
 
 theorem isLeftDescent_iff_not_isLeftDescent_mul {w : W} {i : B} :
     cs.IsLeftDescent w i ↔ ¬cs.IsLeftDescent (s i * w) i := by

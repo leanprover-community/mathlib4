@@ -529,9 +529,7 @@ theorem isPrimitiveClassified_of_coprime_of_odd_of_pos (hc : Int.gcd x y = 1) (h
       · apply (mul_lt_mul_right (by norm_num : 0 < (2 : ℤ))).mp
         rw [Int.ediv_mul_cancel h1.1, zero_mul]
         exact hm2n2
-    rw [h2.1, h1.2.2.1] at hyo
-    revert hyo
-    norm_num
+    norm_num [h2.1, h1.2.2.1] at hyo
 
 theorem isPrimitiveClassified_of_coprime_of_pos (hc : Int.gcd x y = 1) (hzpos : 0 < z) :
     h.IsPrimitiveClassified := by

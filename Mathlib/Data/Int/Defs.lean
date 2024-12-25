@@ -532,7 +532,7 @@ lemma sign_add_eq_of_sign_eq : ∀ {m n : ℤ}, m.sign = n.sign → (m + n).sign
   have : (1 : ℤ) ≠ -1 := by decide
   rintro ((_ | m) | m) ((_ | n) | n) <;> simp [this, this.symm, Int.negSucc_add_negSucc]
   rw [Int.sign_eq_one_iff_pos]
-  apply Int.add_pos <;> omega
+  omega
 
 /-! ### toNat -/
 
