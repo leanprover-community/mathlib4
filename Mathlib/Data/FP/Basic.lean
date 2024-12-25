@@ -5,7 +5,10 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Semiquot
 import Mathlib.Data.Nat.Size
-import Mathlib.Tactic.Ring.RingNF
+import Batteries.Data.Rat.Basic
+import Mathlib.Data.PNat.Defs
+import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Order.Group.Unbundled.Basic
 
 /-!
 # Implementation of floating-point numbers (experimental).
