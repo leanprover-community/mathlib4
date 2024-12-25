@@ -1022,6 +1022,7 @@ theorem hasFDerivAt_id (x : E) : HasFDerivAt id (id 𝕜 E) x :=
 theorem differentiableAt_id : DifferentiableAt 𝕜 id x :=
   (hasFDerivAt_id x).differentiableAt
 
+/-- Variant with `fun x => x` rather than `id` -/
 @[simp]
 theorem differentiableAt_id' : DifferentiableAt 𝕜 (fun x => x) x :=
   (hasFDerivAt_id x).differentiableAt
@@ -1030,9 +1031,15 @@ theorem differentiableAt_id' : DifferentiableAt 𝕜 (fun x => x) x :=
 theorem differentiableWithinAt_id : DifferentiableWithinAt 𝕜 id s x :=
   differentiableAt_id.differentiableWithinAt
 
+/-- Variant with `fun x => x` rather than `id` -/
+@[fun_prop]
+theorem differentiableWithinAt_id' : DifferentiableWithinAt 𝕜 (fun x => x) s x :=
+  differentiableWithinAt_id
+
 @[simp, fun_prop]
 theorem differentiable_id : Differentiable 𝕜 (id : E → E) := fun _ => differentiableAt_id
 
+/-- Variant with `fun x => x` rather than `id` -/
 @[simp]
 theorem differentiable_id' : Differentiable 𝕜 fun x : E => x := fun _ => differentiableAt_id
 

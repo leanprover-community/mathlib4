@@ -65,16 +65,12 @@ theorem iteratedDerivWithin_const_sub (hn : 0 < n) (c : F) :
 @[deprecated (since := "2024-12-10")]
 alias iteratedDerivWithin_const_neg := iteratedDerivWithin_const_sub
 
-/-- Note: this is unrelated to `iteratedDeriv_const_smul`, where the scalar multiplication works on
-the domain. -/
 theorem iteratedDerivWithin_const_smul (c : R) (hf : ContDiffOn 𝕜 n f s) :
     iteratedDerivWithin n (c • f) s x = c • iteratedDerivWithin n f s x := by
   simp_rw [iteratedDerivWithin]
   rw [iteratedFDerivWithin_const_smul_apply hf h hx]
   simp only [ContinuousMultilinearMap.smul_apply]
 
-/-- Note: this is unrelated to `iteratedDeriv_const_mul`, where the multiplication works on the
-domain. -/
 theorem iteratedDerivWithin_const_mul (c : 𝕜) {f : 𝕜 → 𝕜} (hf : ContDiffOn 𝕜 n f s) :
     iteratedDerivWithin n (fun z => c * f z) s x = c * iteratedDerivWithin n f s x := by
   simpa using iteratedDerivWithin_const_smul (F := 𝕜) hx h c hf
@@ -95,6 +91,32 @@ theorem iteratedDerivWithin_sub (hf : ContDiffOn 𝕜 n f s) (hg : ContDiffOn �
       iteratedDerivWithin n f s x - iteratedDerivWithin n g s x := by
   rw [sub_eq_add_neg, sub_eq_add_neg, Pi.neg_def, iteratedDerivWithin_add hx h hf hg.neg,
     iteratedDerivWithin_neg' hx h]
+
+theorem iteratedDerivWithin_comp_const_smul (hf : ContDiffOn 𝕜 n f s) (c : 𝕜)
+    (hs : Set.MapsTo (c * ·) s s) :
+    iteratedDerivWithin n (fun x => f (c * x)) s x = c ^ n • iteratedDerivWithin n f s (c * x) := by
+  induction n generalizing x with
+  | zero => simp
+  | succ n ih =>
+    have hcx : c * x ∈ s := hs hx
+    have h₀ : s.EqOn
+        (iteratedDerivWithin n (fun x ↦ f (c * x)) s)
+        (fun x => c ^ n • iteratedDerivWithin n f s (c * x)) :=
+      fun x hx => ih hx hf.of_succ
+    have h₁ : DifferentiableWithinAt 𝕜 (iteratedDerivWithin n f s) s (c * x) :=
+      hf.differentiableOn_iteratedDerivWithin (Nat.cast_lt.mpr n.lt_succ_self) h _ hcx
+    have h₂ : DifferentiableWithinAt 𝕜 (fun x => iteratedDerivWithin n f s (c * x)) s x := by
+      rw [← Function.comp_def]
+      apply DifferentiableWithinAt.comp
+      · exact hf.differentiableOn_iteratedDerivWithin (Nat.cast_lt.mpr n.lt_succ_self) h _ hcx
+      · exact differentiableWithinAt_id'.const_mul _
+      · exact hs
+    rw [iteratedDerivWithin_succ (h _ hx), derivWithin_congr h₀ (ih hx hf.of_succ),
+      derivWithin_const_smul (h _ hx) (c ^ n) h₂, iteratedDerivWithin_succ (h _ hcx),
+      ← Function.comp_def,
+      derivWithin.scomp x h₁ (differentiableWithinAt_id'.const_mul _) hs (h _ hx),
+      derivWithin_const_mul (h _ hx) _ differentiableWithinAt_id', derivWithin_id' _ _ (h _ hx),
+      smul_smul, mul_one, pow_succ]
 
 end
 
@@ -125,30 +147,22 @@ lemma iteratedDeriv_sub (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     iteratedDerivWithin_sub (Set.mem_univ _) uniqueDiffOn_univ
       (contDiffOn_univ.mpr hf) (contDiffOn_univ.mpr hg)
 
-/-- Note: this is unrelated to `iteratedDerivWithin_const_smul`, where the scalar multiplication
-works on the codomain. -/
-theorem iteratedDeriv_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n f) (c : 𝕜) :
+theorem iteratedDeriv_comp_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n f) (c : 𝕜) :
     iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n • iteratedDeriv n f (c * x) := by
-  induction n with
-  | zero => simp
-  | succ n ih =>
-    funext x
-    have h₀ : DifferentiableAt 𝕜 (iteratedDeriv n f) (c * x) :=
-      h.differentiable_iteratedDeriv n (Nat.cast_lt.mpr n.lt_succ_self) |>.differentiableAt
-    have h₁ : DifferentiableAt 𝕜 (fun x => iteratedDeriv n f (c * x)) x := by
-      rw [← Function.comp_def]
-      apply DifferentiableAt.comp
-      · exact h.differentiable_iteratedDeriv n (Nat.cast_lt.mpr n.lt_succ_self) |>.differentiableAt
-      · exact differentiableAt_id'.const_mul _
-    rw [iteratedDeriv_succ, ih h.of_succ, deriv_const_smul _ h₁, iteratedDeriv_succ,
-      ← Function.comp_def, deriv.scomp x h₀ (differentiableAt_id'.const_mul _),
-      deriv_const_mul _ differentiableAt_id', deriv_id'', smul_smul, mul_one, pow_succ]
+  funext x
+  simpa only [iteratedDerivWithin_univ] using
+    iteratedDerivWithin_comp_const_smul (Set.mem_univ x) uniqueDiffOn_univ (contDiffOn_univ.mpr h)
+      c (Set.mapsTo_univ _ _)
 
-/-- Note: this is unrelated to `iteratedDerivWithin_const_mul`, where the multiplication works on
-the codomain. -/
-theorem iteratedDeriv_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiff 𝕜 n f) (c : 𝕜) :
+@[deprecated (since := "2024-12-20")]
+alias iteratedDeriv_const_smul := iteratedDeriv_comp_const_smul
+
+theorem iteratedDeriv_comp_const_mul {n : ℕ} {f : 𝕜 → 𝕜} (h : ContDiff 𝕜 n f) (c : 𝕜) :
     iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n * iteratedDeriv n f (c * x) := by
-  simpa only [smul_eq_mul] using iteratedDeriv_const_smul h c
+  simpa only [smul_eq_mul] using iteratedDeriv_comp_const_smul h c
+
+@[deprecated (since := "2024-12-20")]
+alias iteratedDeriv_const_mul := iteratedDeriv_comp_const_mul
 
 lemma iteratedDeriv_comp_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     iteratedDeriv n (fun x ↦ f (-x)) a = (-1 : 𝕜) ^ n • iteratedDeriv n f (-a) := by
