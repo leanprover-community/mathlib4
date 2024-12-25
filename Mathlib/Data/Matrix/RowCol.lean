@@ -136,7 +136,7 @@ theorem row_mulVec [Fintype n] [NonUnitalNonAssocSemiring α] (M : Matrix m n α
   ext
   rfl
 
-theorem row_mulVec_eq_const [Fintype m] [NonUnitalNonAssocSemiring α]  (v w : m → α) :
+theorem row_mulVec_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :
     Matrix.row ι v *ᵥ w = Function.const _ (v ⬝ᵥ w) := rfl
 
 theorem mulVec_col_eq_const [Fintype m] [NonUnitalNonAssocSemiring α] (v w : m → α) :

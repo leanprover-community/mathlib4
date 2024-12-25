@@ -21,12 +21,16 @@
 
 Q11518:
   title: Pythagorean theorem
+  decl: EuclideanGeometry.dist_sq_eq_dist_sq_add_dist_sq_iff_angle_eq_pi_div_two
+  author: Joseph Myers
 
 Q12524:
   title: Schwenk's theorem
 
 Q26708:
   title: Binomial theorem
+  decl: add_pow
+  author: Chris Hughes
 
 Q32182:
   title: Balinski's theorem
@@ -93,6 +97,8 @@ Q188745:
 
 Q189136:
   title: Mean value theorem
+  decl: exists_deriv_eq_slope
+  author: Yury G. Kudryashov
 
 Q190026:
   title: Ford's theorem
@@ -102,9 +108,12 @@ Q190391X:
 
 Q190391:
   title: Central limit theorem
+  # in 100.yaml also
 
 Q190556:
   title: De Moivre's theorem
+  decl: Complex.cos_add_sin_mul_I_pow
+  author: Abhimanyu Pallavi Sudhir
 
 Q191693:
   title: Lebesgue's decomposition theorem
@@ -132,9 +141,17 @@ Q195133:
 
 Q200787:
   title: Gödel's incompleteness theorem
+  author: Shogo Saito
+  # TODO: how to display this data nicely? want two URLs, right?
+  # results:
+  #   - First: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/First.lean
+  #   - Second: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/Second.lean
+  url: https://formalizedformallogic.github.io/Book/
 
 Q203565:
   title: Solutions of a general cubic equation
+  decl: Theorems100.cubic_eq_zero_iff
+  author: Jeoff Lee
 
 Q204884:
   title: Löb's theorem
@@ -186,6 +203,8 @@ Q242045:
 
 Q245098:
   title: Intermediate value theorem
+  decl: intermediate_value_Icc
+  author: Rob Lewis and Chris Hughes
 
 Q245098X:
   title: Bolzano's theorem
@@ -228,6 +247,8 @@ Q273037:
 
 Q276082:
   title: Wilson's theorem
+  decl: ZMod.wilsons_lemma
+  author: Chris Hughes
 
 Q280116:
   title: Odd number theorem
@@ -333,6 +354,8 @@ Q428134:
 
 Q459547:
   title: Ptolemy's theorem
+  decl: EuclideanGeometry.mul_dist_add_mul_dist_eq_mul_dist_of_cospherical
+  author: Manuel Candales
 
 Q467205:
   title: Fundamental theorems of welfare economics
@@ -345,15 +368,26 @@ Q468391:
 
 Q470877:
   title: Stirling's theorem
+  decl: Stirling.tendsto_stirlingSeq_sqrt_pi
+  author: Moritz Firsching and Fabian Kruse and Nikolas Kuhn and Heather Macbeth
 
 Q472883:
   title: Quadratic reciprocity theorem
+  decls:
+    - legendreSym.quadratic_reciprocity
+    - jacobiSym.quadratic_reciprocity
+  author: Chris Hughes (first) and Michael Stoll (second)
 
 Q474881:
   title: Cantor's theorem
+  # a.k.a. Cantor's diagonal argument
+  decl: Function.cantor_surjective
+  author: Johannes Hölzl and Mario Carneiro
 
 Q476776:
   title: Solutions of a general quartic equation
+  decl: Theorems100.quartic_eq_zero_iff
+  author: Thomas Zhu
 
 Q487132:
   title: Infinite monkey theorem
@@ -408,6 +442,8 @@ Q544369:
 
 Q550402:
   title: Dirichlet's theorem on arithmetic progressions
+  decl: Nat.setOf_prime_and_eq_mod_infinite
+  author: David Loeffler, Michael Stoll
 
 Q552367:
   title: Berge's theorem
@@ -477,6 +513,8 @@ Q632546X:
 
 Q632546:
   title: Bertrand's postulate
+  decl: Nat.bertrand
+  author: Bolton Bailey and Patrick Stevens
 
 Q637418:
   title: Napoleon's theorem
@@ -492,6 +530,7 @@ Q643826:
 
 Q646523:
   title: Pick's theorem
+  # in 100.yaml also
 
 Q649469:
   title: Modularity theorem
@@ -516,6 +555,8 @@ Q656645:
 
 Q656772:
   title: Cayley–Hamilton theorem
+  decl: Matrix.aeval_self_charpoly
+  author: Kim Morrison
 
 Q657469:
   title: Lefschetz fixed-point theorem
@@ -525,6 +566,8 @@ Q657469X:
 
 Q657482:
   title: Abel–Ruffini theorem
+  author: Thomas Browning
+  decl: AbelRuffini.exists_not_solvable_by_rad
 
 Q657903:
   title: Hilbert–Waring theorem
@@ -534,6 +577,14 @@ Q660799:
 
 Q670235:
   title: Fundamental theorem of arithmetic
+  decls:
+    - Nat.primeFactorsList_unique
+    - Int.euclideanDomain
+    - EuclideanDomain.to_principal_ideal_domain
+    - UniqueFactorizationMonoid
+    - UniqueFactorizationMonoid.factors_unique
+  author: Chris Hughes
+  note: "it also has a generalized version, by showing that every Euclidean domain is a unique factorization domain, and showing that the integers form a Euclidean domain."
 
 Q671663:
   title: Coleman–Mandula theorem
@@ -615,6 +666,8 @@ Q755991:
 
 Q756946:
   title: Lagrange's four-square theorem
+  decl: Nat.sum_four_squares
+  author: Chris Hughes
 
 Q764287:
   title: Van der Waerden's theorem
@@ -678,6 +731,7 @@ Q837551:
 
 Q841893:
   title: Desargues's theorem
+  # in 100.yaml also
 
 Q842953:
   title: Lebesgue's density theorem
@@ -714,6 +768,11 @@ Q852973:
 
 Q853067:
   title: Solutions to Pell's equation
+  decls:
+    - Pell.eq_pell
+    - Pell.exists_of_not_isSquare
+  author: Mario Carneiro (first), Michael Stoll (second)
+  note: "In `pell.eq_pell`, `d` is defined to be `a*a - 1` for an arbitrary `a > 1`."
 
 Q856032:
   title: CAP theorem
@@ -759,6 +818,7 @@ Q897769:
 
 Q899002:
   title: Pascal's theorem
+  # in 100.yaml also
 
 Q899853:
   title: H-theorem
@@ -786,12 +846,16 @@ Q913849:
 
 Q914517:
   title: Fermat's theorem on sums of two squares
+  decl: Nat.Prime.sq_add_sq
+  author: Chris Hughes
 
 Q915474:
   title: Robin's theorem
 
 Q918099:
   title: Ramsey's theorem
+  author: Bhavik Mehta
+  url: https://github.com/b-mehta/combinatorics/blob/extras/src/inf_ramsey.lean
 
 Q922012:
   title: Green–Tao theorem
@@ -870,6 +934,8 @@ Q976033:
 
 Q976607:
   title: Erdős–Szekeres theorem
+  decl: Theorems100.erdos_szekeres
+  author: Bhavik Mehta
 
 Q977912:
   title: Stolper&ndash;Samuelson theorem
@@ -897,6 +963,8 @@ Q1032886:
 
 Q1033910:
   title: Cantor–Bernstein–Schroeder theorem
+  decl: Function.Embedding.schroeder_bernstein
+  author: Mario Carneiro
 
 Q1037559:
   title: Pólya enumeration theorem
@@ -945,6 +1013,11 @@ Q1056283:
 
 Q1057919:
   title: Sylow theorems
+  decls:
+   - Sylow.exists_subgroup_card_pow_prime
+   - Sylow.isPretransitive_of_finite
+   - Sylow.card_dvd_index
+   - card_sylow_modEq_one
 
 Q1058662:
   title: Darboux's theorem
@@ -993,12 +1066,16 @@ Q1077741:
 
 Q1082910:
   title: Euler's partition theorem
+  author: Bhavik Mehta and Aaron Anderson
+  decl: Theorems100.partition_theorem
 
 Q1095330:
   title: Apéry's theorem
 
 Q1097021:
   title: Minkowski's theorem
+  decl: MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
+  author: Alex J. Best and Yaël Dillies
 
 Q1103054:
   title: Lions–Lax–Milgram theorem
@@ -1044,6 +1121,10 @@ Q1137014:
 
 Q1137206:
   title: Taylor's theorem
+  decls:
+    - taylor_mean_remainder_lagrange
+    - taylor_mean_remainder_cauchy
+  author: Moritz Doll
 
 Q1139041:
   title: Cauchy's theorem
@@ -1068,6 +1149,9 @@ Q1143540:
 
 Q1144897:
   title: Brouwer fixed-point theorem
+  author: Brendan Seamas Murphy
+  url: https://github.com/Shamrock-Frost/BrouwerFixedPoint/blob/master/src/brouwer_fixed_point.lean
+  note: "in Lean 3"
 
 Q1146791:
   title: Fermat polygonal number theorem
@@ -1155,6 +1239,10 @@ Q1209546:
 
 Q1217677:
   title: Fundamental theorem of calculus
+  decls:
+    - intervalIntegral.integral_hasStrictDerivAt_of_tendsto_ae_right
+    - intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le
+  author: Yury G. Kudryashov (first) and Benjamin Davidson (second)
 
 Q1227061:
   title: Khinchin's theorem
@@ -1305,6 +1393,8 @@ Q1505529:
 
 Q1506253:
   title: Euclid's theorem
+  decl: Nat.exists_infinite_primes
+  author: Jeremy Avigad
 
 Q1529941:
   title: Peter–Weyl theorem
@@ -1317,6 +1407,8 @@ Q1535225:
 
 Q1542114:
   title: Bézout's theorem
+  decl: Nat.gcd_eq_gcd_ab
+  author: mathlib
 
 Q1543149:
   title: Sokhatsky–Weierstrass theorem
@@ -1557,6 +1649,7 @@ Q2120067:
 
 Q2190744:
   title: Feuerbach's theorem
+  # in 100.yaml also
 
 Q2197859:
   title: Nicomachus's theorem
@@ -1635,6 +1728,8 @@ Q2226962:
 
 Q2253746:
   title: Bertrand's ballot theorem
+  author: Bhavik Mehta and Kexing Ying
+  decl: Ballot.ballot_problem
 
 Q2266397:
   title: Intersecting chords theorem
@@ -2631,6 +2726,8 @@ Q5503689:
 
 Q5504427:
   title: Friendship theorem
+  decl: Theorems100.friendship_theorem
+  author: Aaron Anderson and Jalex Stark and Kyle Miller
 
 Q5505098:
   title: Frobenius determinant theorem
@@ -3507,6 +3604,9 @@ Q18206032:
 
 Q18206266:
   title: Euclid–Euler theorem
+  # a.k.a. perfect number theorem
+  decl: Theorems100.Nat.eq_two_pow_mul_prime_mersenne_of_even_perfect
+  author: Aaron Anderson
 
 Q18630480:
   title: Euler's quadrilateral theorem
@@ -3525,6 +3625,8 @@ Q20971632:
 
 Q22952648:
   title: Uncountability of the continuum
+  decl: Cardinal.not_countable_real
+  author: Floris van Doorn
 
 Q25099402:
   title: Kolmogorov–Arnold representation theorem
