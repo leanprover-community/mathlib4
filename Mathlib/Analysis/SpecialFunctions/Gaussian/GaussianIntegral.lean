@@ -361,7 +361,7 @@ lemma Real.Gamma_nat_add_one_add_half (k : ℕ) :
   induction k with
   | zero => simp [-one_div, add_comm (1 : ℝ), Gamma_add_one, Gamma_one_half_eq]; ring
   | succ k ih =>
-    rw [add_right_comm, Gamma_add_one (by positivity), Nat.cast_add, Nat.cast_one, ih]
+    rw [add_right_comm, Gamma_add_one (by positivity), Nat.cast_add, Nat.cast_one, ih, Nat.mul_add]
     field_simp
     ring
 
