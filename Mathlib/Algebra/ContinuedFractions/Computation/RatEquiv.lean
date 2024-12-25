@@ -13,44 +13,33 @@ theorem evalTail_nonneg : ∀ (l : List ℕ+), 0 ≤ evalTail l
   | [] => le_rfl
   | _::_ => inv_nonneg.2 <| add_nonneg (Nat.cast_nonneg _) (evalTail_nonneg _)
 
-theorem evalTail_le_one : ∀ (l : List ℕ+), evalTail l ≤ 1
-  | [] => by simp [evalTail]
-  | a::l => by
-    rw [evalTail, inv_le_one_iff₀]
-    right
-    exact le_add_of_le_of_nonneg (by simpa using Nat.succ_le_of_lt a.pos) (evalTail_nonneg l)
+mutual
 
-private theorem evalTail_pos_and_lt_one : ∀ {l : List ℕ+}, l ≠ [] → l ≠ [1] →
-    0 < evalTail l ∧ evalTail l < 1
-  | [a], _, h₂ => by
+theorem evalTail_pos : ∀ {l : List ℕ+}, l ≠ [] → 0 < evalTail l
+  | [a], h => by
     rw [evalTail, evalTail, add_zero, inv_pos, Nat.cast_pos]
-    refine ⟨a.2, ?_⟩
-    apply inv_lt_one_of_one_lt₀
-    rw [← Nat.cast_one, Nat.cast_lt]
-    refine lt_of_le_of_ne a.one_le ?_
-    simp_all [eq_comm, ← PNat.coe_inj]
-  | a::b::l, h₂, _ => by
-    by_cases hb : b :: l = [1]
-    · rw [hb]
-      simp only [evalTail, PNat.val_ofNat, Nat.cast_one, add_zero, inv_one, inv_pos]
-      exact ⟨add_pos (by simp) zero_lt_one, inv_lt_one_iff₀.2
-        (Or.inr ((lt_add_iff_pos_left _).2 (by simp)))⟩
-    · have ih := @evalTail_pos_and_lt_one (b::l) (by simp) hb
-      simp only [evalTail, inv_pos]
-      refine ⟨add_pos (Nat.cast_pos.2 a.2) ih.1, ?_⟩
-      apply inv_lt_one_of_one_lt₀
-      refine lt_add_of_le_of_pos ?_ ih.1
-      rw [← Nat.cast_one, Nat.cast_le]
-      exact a.one_le
-
-theorem evalTail_pos {l : List ℕ+} (h₁ : l ≠ []) : 0 < evalTail l := by
-  by_cases h : l = [1]
-  · simp [h, evalTail]
-  · exact  (evalTail_pos_and_lt_one h₁ h).1
+    exact a.2
+  | a::b::l, h₂ => by
+    rw [evalTail, inv_pos]
+    refine add_pos_of_pos_of_nonneg (by simp) (evalTail_nonneg _)
 
 theorem evalTail_lt_one : ∀ {l : List ℕ+}, l ≠ [1] → evalTail l < 1
   | [], _ => by simp [evalTail]
-  | a::l, h => (evalTail_pos_and_lt_one (by simp) h).2
+  | [a], h => by
+    simp only [evalTail, add_zero, inv_lt_one_iff₀, Nat.cast_nonpos, PNat.ne_zero, Nat.one_lt_cast,
+      false_or]
+    exact lt_of_le_of_ne a.one_le (by simpa [eq_comm, ← PNat.coe_inj] using h)
+  | a::b::l, h => by
+    rw [evalTail, inv_lt_one_iff₀]
+    right
+    refine lt_add_of_le_of_pos ?_ ?_
+    · rw [Nat.one_le_cast]; exact a.one_le
+    · exact evalTail_pos (by simp)
+
+end
+
+theorem evalTail_le_one (l : List ℕ+) : evalTail l ≤ 1 :=
+  if h : l = [1] then by simp [h, evalTail] else le_of_lt (evalTail_lt_one h)
 
 def eval (c : FiniteContFract) : ℚ :=
   c.h + evalTail c.s
@@ -131,7 +120,7 @@ end FiniteContFract
 
 namespace Rat
 
-open GenContFract FiniteContFract
+open GenContFract FiniteContFract ContFract
 
 def toFiniteContFract (x : ℚ) : FiniteContFract :=
   let c := ContFract.of x
