@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
+import Mathlib.Data.ENat.Lattice
 
 /-!
 # Iterated derivatives of a function
