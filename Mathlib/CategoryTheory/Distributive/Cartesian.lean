@@ -71,7 +71,7 @@ attribute [local instance] symmetricOfHasFiniteProducts
 instance [CartesianDistribuitve C] : MonoidalDistributive C := by infer_instance
 
 /-- The coproduct coprojections are monic in a cartesian distributive category. -/
-instance [MonoidalLeftDistributive C]  : MonoCoprod C :=
+instance [MonoidalLeftDistributive C] : MonoCoprod C :=
   MonoCoprod.mk' fun A B => by
     refine ⟨BinaryCofan.mk (coprod.inl : A ⟶ A ⨿ B) coprod.inr, ?_, ?_⟩
     · exact coprodIsCoprod A B

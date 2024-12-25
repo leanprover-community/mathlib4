@@ -360,6 +360,18 @@ lemma SymmetricCategory.braiding_swap_eq_inv_braiding {C : Type u₁}
     [Category.{v₁} C] [MonoidalCategory C] [SymmetricCategory C] (X Y : C) :
     (β_ Y X).hom = (β_ X Y).inv := Iso.inv_ext' (symmetry X Y)
 
+/-- In a symmetric monoidal category, the functors `tensorLeft X` and
+`tensorRight X` are isomorphic. -/
+def SymmetricCategory.tensorLeftIsoTensorRight {C : Type u} [Category.{v} C]
+    [MonoidalCategory.{v} C] [SymmetricCategory C] (X : C) :
+    tensorLeft X ≅ tensorRight X where
+  hom := {
+    app Y := (β_ X Y).hom
+  }
+  inv := {
+    app Y := (β_ Y X).hom
+  }
+
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C] [BraidedCategory C]
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory D] [BraidedCategory D]
 variable {E : Type u₃} [Category.{v₃} E] [MonoidalCategory E] [BraidedCategory E]
