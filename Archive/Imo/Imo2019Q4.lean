@@ -52,7 +52,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
   · gcongr
     · intro i hi
       simp only [mem_range] at hi
-      have : (2:ℤ) ^ i ≤ (2:ℤ) ^ n := by gcongr; norm_num
+      have : (2:ℤ) ^ i ≤ (2:ℤ) ^ n := by gcongr
       linarith
     · apply sub_le_self
       positivity
@@ -68,7 +68,7 @@ theorem upper_bound {k n : ℕ} (hk : k > 0)
     apply sum_le_sum_of_subset
     simpa using hn'
   calc 2 ^ ((n' + 1) * (n' + 1))
-      ≤ 2 ^ (n' * n' + 4 * n') := by gcongr <;> linarith
+      ≤ 2 ^ (n' * n' + 4 * n') := by gcongr; linarith
     _ = 2 ^ (n' * n') * (2 ^ 4) ^ n' := by rw [← pow_mul, ← pow_add]
     _ < A ! * (2 ^ 4) ^ n' := by gcongr
     _ = A ! * (15 + 1) ^ n' := rfl
