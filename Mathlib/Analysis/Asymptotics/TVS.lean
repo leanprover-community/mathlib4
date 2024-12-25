@@ -102,6 +102,42 @@ theorem isLittleOTVS_map {f : α → E} {g : α → F} {k : β → α} {l : Filt
     IsLittleOTVS 𝕜 f g (map k l) ↔ IsLittleOTVS 𝕜 (f ∘ k) (g ∘ k) l := by
   simp [IsLittleOTVS]
 
+lemma IsLittleOTVS.mono {f : α → E} {g : α → F} {l₁ l₂ : Filter α}
+    (hf : IsLittleOTVS 𝕜 f g l₁) (h : l₂ ≤ l₁) : IsLittleOTVS 𝕜 f g l₂ :=
+  fun U hU => let ⟨V, hV0, hV⟩ := hf U hU; ⟨V, hV0, fun ε hε => (hV ε hε).filter_mono h⟩
+
+lemma IsLittleOTVS.sup {f : α → E} {g : α → F} {l₁ l₂ : Filter α}
+    (hf₁ : IsLittleOTVS 𝕜 f g l₁) (hf₂ : IsLittleOTVS 𝕜 f g l₂) :
+    IsLittleOTVS 𝕜 f g (l₁ ⊔ l₂) := by
+  intro U hU
+  let ⟨V₁, hV0₁, hV₁⟩ := hf₁ U hU
+  let ⟨V₂, hV0₂, hV₂⟩ := hf₂ U hU
+  refine ⟨V₁ ∩ V₂, Filter.inter_mem hV0₁ hV0₂, fun ε hε => ?_⟩
+  rw [eventually_sup]
+  constructor
+  · refine (hV₁ ε hε).mono fun x hx => hx.trans ?_
+    gcongr
+    exact inter_subset_left
+  · refine (hV₂ ε hε).mono fun x hx => hx.trans ?_
+    gcongr
+    exact inter_subset_right
+
+lemma isLittleOTVS_insert [TopologicalSpace α] {f : α → E} {g : α → F} {x : α} {s : Set α}
+    (h : f x = 0) :
+    IsLittleOTVS 𝕜 f g (𝓝[insert x s] x) ↔ IsLittleOTVS 𝕜 f g (𝓝[s] x) := by
+  refine forall₂_congr fun U hU => exists_congr fun V => and_congr_right fun hV =>
+    forall₂_congr fun ε hε => ?_
+  simp [h, egauge_zero_right _ (Set.nonempty_of_mem <| mem_of_mem_nhds hU)]
+
+lemma IsLittleOTVS.insert [TopologicalSpace α] {f : α → E} {g : α → F} {x : α} {s : Set α}
+    (h : IsLittleOTVS 𝕜 f g (𝓝[s] x)) (hf : f x = 0) :
+    IsLittleOTVS 𝕜 f g (𝓝[insert x s] x) :=
+  (isLittleOTVS_insert hf).2 h
+
+@[simp]
+lemma IsLittleOTVS.bot {f : α → E} {g : α → F} : IsLittleOTVS 𝕜 f g ⊥ :=
+  fun u hU => ⟨univ, by simp⟩
+
 protected lemma IsLittleOTVS.smul_left {f : α → E} {g : α → F} {l : Filter α}
     (h : IsLittleOTVS 𝕜 f g l) (c : α → 𝕜) :
     IsLittleOTVS 𝕜 (fun x ↦ c x • f x) (fun x ↦ c x • g x) l := by
