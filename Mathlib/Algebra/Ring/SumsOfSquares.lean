@@ -92,9 +92,8 @@ theorem IsSumSq.sum [AddCommMonoid R] [Mul R] {ι : Type*} {I : Finset ι} {S : 
 theorem IsSumSq.mul_self [AddZeroClass R] [Mul R] (a : R) : IsSumSq (a * a) := by
   rw [← add_zero (a * a)]; exact sq_add zero
 
-/-- In an additive unital magma with multiplication `R`, squares in `R` are sums of squares.
-By definition, a square in `R` is a term `x : R` such that `x = y * y` for some `y : R`
-and in Mathlib this is known as `IsSquare R` (see Mathlib.Algebra.Group.Even). -/
+/-- In an additive unital magma with multiplication `R`, squares in `R` are sums of squares
+(see Mathlib.Algebra.Group.Even.Basic). -/
 @[aesop unsafe 50% apply]
 theorem IsSquare.isSumSq [AddZeroClass R] [Mul R] {x : R} (hx : IsSquare x) :
     IsSumSq x := by rcases hx with ⟨_, rfl⟩; apply IsSumSq.mul_self
