@@ -7,7 +7,6 @@ import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.Algebra.Ring.Prod
-import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Tactic.Monotonicity.Attr
 
 /-!
@@ -139,8 +138,10 @@ lemma cast_eq_one {n : ℕ} (nezero : n ≠ 0) : (n : α) = 1 := by
   | base => exact Nat.cast_one
   | succ x _ hx => rw [Nat.cast_add, hx, Nat.cast_one, add_idem 1]
 
-theorem nsmul_eq_self {n : ℕ} (_ : n ≠ 0) (a : α) : n • a = a := by
-  rwa [nsmul_eq_mul, cast_eq_one, one_mul]
+theorem nsmul_eq_self : ∀ {n : ℕ} (_ : n ≠ 0) (a : α), n • a = a
+  | 0, h => (h rfl).elim
+  | 1, _ => one_nsmul
+  | n + 2, _ => fun a ↦ by rw [succ_nsmul, nsmul_eq_self n.succ_ne_zero, add_idem]
 
 theorem add_eq_left_iff_le : a + b = a ↔ b ≤ a := by simp
 
