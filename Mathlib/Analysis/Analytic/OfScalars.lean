@@ -34,6 +34,11 @@ def ofScalars (c : ℕ → 𝕜) : FormalMultilinearSeries 𝕜 E E :=
   fun n ↦ c n • ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E
 
 @[simp]
+lemma coeff_ofScalars {p : ℕ → ℝ} {n : ℕ} :
+    (FormalMultilinearSeries.ofScalars ℝ p).coeff n = p n := by
+  simp [FormalMultilinearSeries.coeff, FormalMultilinearSeries.ofScalars, List.prod_ofFn]
+
+@[simp]
 theorem ofScalars_eq_zero [Nontrivial E] (n : ℕ) : ofScalars E c n = 0 ↔ c n = 0 := by
   rw [ofScalars, smul_eq_zero (c := c n) (x := ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n E)]
   refine or_iff_left (ContinuousMultilinearMap.ext_iff.1.mt <| not_forall_of_exists_not ?_)
