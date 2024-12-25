@@ -287,4 +287,18 @@ theorem one_not_mem_getLast?_of (v : K) (ht : (ContFract.of v).s.Terminates) :
     Nat.cast_one, PNat.val_ofNat, ite_eq_right_iff, max_eq_left (le_of_lt h0xb)] at hx1
   exact hx1 h0xb
 
+@[simp]
+theorem coe_of (v : K) : ((ContFract.of v) : GenContFract K) = GenContFract.of v := by
+  simp only [toGenContFract, ContFract.of, IntFractPair.seq1, Stream'.Seq.map_tail, GenContFract.of,
+    GenContFract.mk.injEq, true_and] at *
+  ext n s
+  simp only [Stream'.Seq.get?_tail, Stream'.Seq.map_get?, Stream'.Seq.get?_mk, Option.map_map,
+    Option.mem_def, Option.map_eq_some', Function.comp_apply, Nat.toPNat'_coe, Int.lt_toNat,
+    Nat.cast_zero, Nat.cast_ite, Nat.cast_one]
+  refine exists_congr fun p => ?_
+  simp only [and_congr_right_iff]
+  intro h
+  rw [if_pos (IntFractPair.stream_b_pos n.succ_pos _ h), ← Int.cast_natCast,
+     Int.toNat_of_nonneg (le_of_lt (IntFractPair.stream_b_pos n.succ_pos _ h))]
+
 end ContFract

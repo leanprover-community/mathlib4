@@ -187,26 +187,6 @@ theorem SimpContFract.of_isRegContFract :
 def RegContFract.of : RegContFract K :=
   ⟨SimpContFract.of v, SimpContFract.of_isRegContFract v⟩
 
-@[simp]
-theorem coe_of (v : K) : ((ContFract.of v) : GenContFract K) = GenContFract.of v := by
-  have hReg := SimpContFract.of_isRegContFract v
-  simp only [ContFract.of, GenContFract.of, SimpContFract.of,
-    SimpContFract.IsRegContFract, GenContFract.IsSimpContFract, partDens,
-    partNums, ContFract.toGenContFract] at *
-  match IntFractPair.seq1 v, hReg with
-  | ⟨h, s⟩, hReg =>
-    ext n s
-    · simp
-    · simp only [Stream'.Seq.map_get?, Option.map_map, Option.map_eq_some', Function.comp_apply,
-        forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, cast_pos, Option.mem_def,
-        Nat.toPNat'_coe, lt_toNat, Nat.cast_zero, Nat.cast_ite, Nat.cast_one, iff_iff_eq] at *
-      congr
-      ext ⟨a, k⟩
-      simp only [and_congr_right_iff]
-      intro ha
-      have ha0 : 0 < a := hReg _ _ ha
-      rw [if_pos ha0, ← Int.cast_natCast, Int.toNat_of_nonneg (le_of_lt ha0)]
-
 variable {v}
 
 namespace GenContFract
