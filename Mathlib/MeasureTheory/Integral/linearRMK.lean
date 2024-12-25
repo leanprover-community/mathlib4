@@ -7,6 +7,22 @@ Authors: Yoh Tanimoto
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Integral.RieszMarkovKakutani
 
+/-!
+#  Riesz–Markov–Kakutani representation theorem for `Real`
+
+This file will prove the Riesz-Markov-Kakutani representation theorem on a locally compact
+T2 space `X` for `Real`-linear functionals `Λ`.
+
+The measure is first defined through `rieszContent` for `toNNRealLinear`-version of `Λ`.
+The result is first proved for `Real`-linear Λ because in a standard proof one has to prove the
+inequalities by `le_antisymm`, yet for `C_c(X, ℝ≥0)` there is no `Neg`.
+
+## References
+
+* [Walter Rudin, Real and Complex Analysis.][Rud87]
+
+-/
+
 noncomputable section
 
 open scoped BoundedContinuousFunction NNReal ENNReal
