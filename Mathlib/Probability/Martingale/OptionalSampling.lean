@@ -141,9 +141,10 @@ a subset of `ℕ`. `ι` is equipped with the discrete topology, which is also th
 and is a measurable space with the Borel σ-algebra. -/
 
 
-variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [OrderBot ι] [TopologicalSpace ι]
-  [DiscreteTopology ι] [MeasurableSpace ι] [BorelSpace ι] [MeasurableSpace E] [BorelSpace E]
-  [SecondCountableTopology E] {ℱ : Filtration ι m} {τ σ : Ω → ι} {f : ι → Ω → E} {i : ι}
+variable {ι : Type*} [LinearOrder ι] [LocallyFiniteOrder ι] [SuccOrder ι] [PredOrder ι] [OrderBot ι]
+  [TopologicalSpace ι] [DiscreteTopology ι] [MeasurableSpace ι] [BorelSpace ι]
+  [MeasurableSpace E] [BorelSpace E] [SecondCountableTopology E]
+  {ℱ : Filtration ι m} {τ σ : Ω → ι} {f : ι → Ω → E} {i : ι}
 
 theorem condexp_stoppedValue_stopping_time_ae_eq_restrict_le (h : Martingale f ℱ μ)
     (hτ : IsStoppingTime ℱ τ) (hσ : IsStoppingTime ℱ σ) [SigmaFinite (μ.trim hσ.measurableSpace_le)]
