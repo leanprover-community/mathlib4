@@ -66,6 +66,11 @@ theorem mem_edgeFinset : e ∈ G.edgeFinset ↔ e ∈ G.edgeSet :=
 theorem not_isDiag_of_mem_edgeFinset : e ∈ G.edgeFinset → ¬e.IsDiag :=
   not_isDiag_of_mem_edgeSet _ ∘ mem_edgeFinset.1
 
+/-- The size of the finite set corresponding to an edge is `2`. -/
+theorem card_toFinset_mem_edgeFinset [DecidableEq V] (e : G.edgeFinset) :
+    (e : Sym2 V).toFinset.card = 2 :=
+  Sym2.card_toFinset_of_not_isDiag e (G.not_isDiag_of_mem_edgeFinset e.prop)
+
 theorem edgeFinset_inj : G₁.edgeFinset = G₂.edgeFinset ↔ G₁ = G₂ := by simp
 
 theorem edgeFinset_subset_edgeFinset : G₁.edgeFinset ⊆ G₂.edgeFinset ↔ G₁ ≤ G₂ := by simp
@@ -229,7 +234,7 @@ instance incidenceSetFintype [DecidableEq V] : Fintype (G.incidenceSet v) :=
   Fintype.ofEquiv (G.neighborSet v) (G.incidenceSetEquivNeighborSet v).symm
 
 /-- This is the `Finset` version of `incidenceSet`. -/
-def incidenceFinset [DecidableEq V] : Finset (Sym2 V) :=
+abbrev incidenceFinset [DecidableEq V] : Finset (Sym2 V) :=
   (G.incidenceSet v).toFinset
 
 @[simp]
@@ -238,12 +243,10 @@ theorem card_incidenceSet_eq_degree [DecidableEq V] :
   rw [Fintype.card_congr (G.incidenceSetEquivNeighborSet v)]
   simp
 
-@[simp]
 theorem card_incidenceFinset_eq_degree [DecidableEq V] : #(G.incidenceFinset v) = G.degree v := by
   rw [← G.card_incidenceSet_eq_degree]
   apply Set.toFinset_card
 
-@[simp]
 theorem mem_incidenceFinset [DecidableEq V] (e : Sym2 V) :
     e ∈ G.incidenceFinset v ↔ e ∈ G.incidenceSet v :=
   Set.mem_toFinset
