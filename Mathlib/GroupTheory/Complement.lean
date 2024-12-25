@@ -26,7 +26,7 @@ In this file we define the complement of a subgroup.
 - `isComplement'_of_coprime` : Subgroups of coprime order are complements.
 -/
 
-open Set
+open Function Set
 open scoped Pointwise
 
 namespace Subgroup
@@ -45,12 +45,14 @@ abbrev IsComplement' :=
   IsComplement (H : Set G) (K : Set G)
 
 /-- The set of left-complements of `T : Set G` -/
-@[to_additive "The set of left-complements of `T : Set G`"]
+@[to_additive (attr := deprecated IsComplement (since := "2024-12-18"))
+"The set of left-complements of `T : Set G`"]
 def leftTransversals : Set (Set G) :=
   { S : Set G | IsComplement S T }
 
 /-- The set of right-complements of `S : Set G` -/
-@[to_additive "The set of right-complements of `S : Set G`"]
+@[to_additive (attr := deprecated IsComplement (since := "2024-12-18"))
+"The set of right-complements of `S : Set G`"]
 def rightTransversals : Set (Set G) :=
   { T : Set G | IsComplement S T }
 
@@ -169,6 +171,16 @@ theorem isComplement'_top_right : IsComplement' H ⊤ ↔ H = ⊥ :=
   isComplement_univ_right.trans coe_eq_singleton
 
 @[to_additive]
+lemma isComplement_iff_existsUnique_inv_mul_mem :
+    IsComplement S T ↔ ∀ g, ∃! s : S, (s : G)⁻¹ * g ∈ T := by
+  convert isComplement_iff_existsUnique with g
+  constructor <;> rintro ⟨x, hx, hx'⟩
+  · exact ⟨(x, ⟨_, hx⟩), by simp, by aesop⟩
+  · exact ⟨x.1, by simp [← hx], fun y hy ↦ (Prod.ext_iff.1 <| by simpa using hx' (y, ⟨_, hy⟩)).1⟩
+
+set_option linter.deprecated false in
+@[to_additive
+  (attr := deprecated isComplement_iff_existsUnique_inv_mul_mem (since := "2024-12-18"))]
 theorem mem_leftTransversals_iff_existsUnique_inv_mul_mem :
     S ∈ leftTransversals T ↔ ∀ g : G, ∃! s : S, (s : G)⁻¹ * g ∈ T := by
   rw [leftTransversals, Set.mem_setOf_eq, isComplement_iff_existsUnique]
@@ -183,6 +195,16 @@ theorem mem_leftTransversals_iff_existsUnique_inv_mul_mem :
     exact Prod.ext hf (Subtype.ext (eq_inv_mul_of_mul_eq (hf ▸ hy)))
 
 @[to_additive]
+lemma isComplement_iff_existsUnique_mul_inv_mem :
+    IsComplement S T ↔ ∀ g, ∃! t : T, g * (t : G)⁻¹ ∈ S := by
+  convert isComplement_iff_existsUnique with g
+  constructor <;> rintro ⟨x, hx, hx'⟩
+  · exact ⟨(⟨_, hx⟩, x), by simp, by aesop⟩
+  · exact ⟨x.2, by simp [← hx], fun y hy ↦ (Prod.ext_iff.1 <| by simpa using hx' (⟨_, hy⟩, y)).2⟩
+
+set_option linter.deprecated false in
+@[to_additive
+  (attr := deprecated isComplement_iff_existsUnique_mul_inv_mem (since := "2024-12-18"))]
 theorem mem_rightTransversals_iff_existsUnique_mul_inv_mem :
     S ∈ rightTransversals T ↔ ∀ g : G, ∃! s : S, g * (s : G)⁻¹ ∈ T := by
   rw [rightTransversals, Set.mem_setOf_eq, isComplement_iff_existsUnique]
@@ -197,6 +219,15 @@ theorem mem_rightTransversals_iff_existsUnique_mul_inv_mem :
     exact Prod.ext (Subtype.ext (eq_mul_inv_of_mul_eq (hf ▸ hy))) hf
 
 @[to_additive]
+lemma isComplement_subgroup_right_iff_existsUnique_quotientGroupMk :
+    IsComplement S H ↔ ∀ q : G ⧸ H, ∃! s : S, QuotientGroup.mk s.1 = q := by
+  simp_rw [isComplement_iff_existsUnique_inv_mul_mem, SetLike.mem_coe, ← QuotientGroup.eq,
+    QuotientGroup.forall_mk]
+
+set_option linter.deprecated false in
+@[to_additive
+  (attr := deprecated isComplement_subgroup_right_iff_existsUnique_quotientGroupMk
+    (since := "2024-12-18"))]
 theorem mem_leftTransversals_iff_existsUnique_quotient_mk''_eq :
     S ∈ leftTransversals (H : Set G) ↔
       ∀ q : Quotient (QuotientGroup.leftRel H), ∃! s : S, Quotient.mk'' s.1 = q := by
@@ -205,6 +236,15 @@ theorem mem_leftTransversals_iff_existsUnique_quotient_mk''_eq :
   exact ⟨fun h q => Quotient.inductionOn' q h, fun h g => h (Quotient.mk'' g)⟩
 
 @[to_additive]
+lemma isComplement_subgroup_left_iff_existsUnique_quotientGroupMk [H.Normal] :
+    IsComplement H T ↔ ∀ q : G ⧸ H, ∃! t : T, QuotientGroup.mk t.1 = q := by
+  simp_rw [isComplement_iff_existsUnique_mul_inv_mem, SetLike.mem_coe, ← div_eq_mul_inv,
+    ← QuotientGroup.eq_iff_div_mem, QuotientGroup.forall_mk, eq_comm]
+
+set_option linter.deprecated false in
+@[to_additive
+  (attr := deprecated isComplement_subgroup_left_iff_existsUnique_quotientGroupMk
+    (since := "2024-12-18"))]
 theorem mem_rightTransversals_iff_existsUnique_quotient_mk''_eq :
     S ∈ rightTransversals (H : Set G) ↔
       ∀ q : Quotient (QuotientGroup.rightRel H), ∃! s : S, Quotient.mk'' s.1 = q := by
@@ -213,6 +253,14 @@ theorem mem_rightTransversals_iff_existsUnique_quotient_mk''_eq :
   exact ⟨fun h q => Quotient.inductionOn' q h, fun h g => h (Quotient.mk'' g)⟩
 
 @[to_additive]
+lemma isComplement_subgroup_right_iff_bijective :
+    IsComplement S H ↔ Bijective (S.restrict (QuotientGroup.mk : G → G ⧸ H)) :=
+  isComplement_subgroup_right_iff_existsUnique_quotientGroupMk.trans
+    (bijective_iff_existsUnique (S.restrict QuotientGroup.mk)).symm
+
+set_option linter.deprecated false in
+@[to_additive
+  (attr := deprecated isComplement_subgroup_right_iff_bijective (since := "2024-12-18"))]
 theorem mem_leftTransversals_iff_bijective :
     S ∈ leftTransversals (H : Set G) ↔
       Function.Bijective (S.restrict (Quotient.mk'' : G → Quotient (QuotientGroup.leftRel H))) :=
@@ -220,6 +268,14 @@ theorem mem_leftTransversals_iff_bijective :
     (Function.bijective_iff_existsUnique (S.restrict Quotient.mk'')).symm
 
 @[to_additive]
+lemma isComplement_subgroup_left_iff_bijective [H.Normal] :
+    IsComplement H T ↔ Bijective (T.restrict (QuotientGroup.mk : G → G ⧸ H)) :=
+  isComplement_subgroup_left_iff_existsUnique_quotientGroupMk.trans
+    (bijective_iff_existsUnique (T.restrict QuotientGroup.mk)).symm
+
+set_option linter.deprecated false in
+@[to_additive
+  (attr := deprecated isComplement_subgroup_left_iff_bijective (since := "2024-12-18"))]
 theorem mem_rightTransversals_iff_bijective :
     S ∈ rightTransversals (H : Set G) ↔
       Function.Bijective (S.restrict (Quotient.mk'' : G → Quotient (QuotientGroup.rightRel H))) :=
@@ -227,16 +283,35 @@ theorem mem_rightTransversals_iff_bijective :
     (Function.bijective_iff_existsUnique (S.restrict Quotient.mk'')).symm
 
 @[to_additive]
+lemma IsComplement.card_left (h : IsComplement S H) : Nat.card S = H.index :=
+  Nat.card_congr <| .ofBijective _ <| isComplement_subgroup_right_iff_bijective.mp h
+
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated IsComplement.card_left (since := "2024-12-18"))]
 theorem card_left_transversal (h : S ∈ leftTransversals (H : Set G)) : Nat.card S = H.index :=
   Nat.card_congr <| Equiv.ofBijective _ <| mem_leftTransversals_iff_bijective.mp h
 
 @[to_additive]
+lemma IsComplement.card_right [H.Normal] (h : IsComplement H T) : Nat.card T = H.index :=
+  Nat.card_congr <| .ofBijective _ <| isComplement_subgroup_left_iff_bijective.mp h
+
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated IsComplement.card_right (since := "2024-12-18"))]
 theorem card_right_transversal (h : S ∈ rightTransversals (H : Set G)) : Nat.card S = H.index :=
   Nat.card_congr <|
     (Equiv.ofBijective _ <| mem_rightTransversals_iff_bijective.mp h).trans <|
       QuotientGroup.quotientRightRelEquivQuotientLeftRel H
 
 @[to_additive]
+lemma isComplement_range_left {f : G ⧸ H → G} (hf : ∀ q, ↑(f q) = q) :
+    IsComplement (range f) H := by
+  rw [isComplement_subgroup_right_iff_bijective]
+  refine ⟨?_, fun q ↦ ⟨⟨f q, q, rfl⟩, hf q⟩⟩
+  rintro ⟨-, q₁, rfl⟩ ⟨-, q₂, rfl⟩ h
+  exact Subtype.ext <| congr_arg f <| ((hf q₁).symm.trans h).trans (hf q₂)
+
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated isComplement_range_left (since := "2024-12-18"))]
 theorem range_mem_leftTransversals {f : G ⧸ H → G} (hf : ∀ q, ↑(f q) = q) :
     Set.range f ∈ leftTransversals (H : Set G) :=
   mem_leftTransversals_iff_bijective.mpr
@@ -245,6 +320,15 @@ theorem range_mem_leftTransversals {f : G ⧸ H → G} (hf : ∀ q, ↑(f q) = q
       fun q => ⟨⟨f q, q, rfl⟩, hf q⟩⟩
 
 @[to_additive]
+lemma isComplement_range_right [H.Normal] {f : G ⧸ H → G} (hf : ∀ q, ↑(f q) = q) :
+    IsComplement H (range f) := by
+  rw [isComplement_subgroup_left_iff_bijective]
+  refine ⟨?_, fun q ↦ ⟨⟨f q, q, rfl⟩, hf q⟩⟩
+  rintro ⟨-, q₁, rfl⟩ ⟨-, q₂, rfl⟩ h
+  exact Subtype.ext <| congr_arg f <| ((hf q₁).symm.trans h).trans (hf q₂)
+
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated isComplement_range_left (since := "2024-12-18"))]
 theorem range_mem_rightTransversals {f : Quotient (QuotientGroup.rightRel H) → G}
     (hf : ∀ q, Quotient.mk'' (f q) = q) : Set.range f ∈ rightTransversals (H : Set G) :=
   mem_rightTransversals_iff_bijective.mpr
@@ -253,6 +337,17 @@ theorem range_mem_rightTransversals {f : Quotient (QuotientGroup.rightRel H) →
       fun q => ⟨⟨f q, q, rfl⟩, hf q⟩⟩
 
 @[to_additive]
+lemma exists_isComplement_left (H : Subgroup G) (g : G) : ∃ S, IsComplement S H ∧ g ∈ S := by
+  classical
+  refine ⟨Set.range (Function.update Quotient.out _ g), isComplement_range_left fun q ↦ ?_,
+    QuotientGroup.mk g, Function.update_same (Quotient.mk'' g) g Quotient.out⟩
+  by_cases hq : q = Quotient.mk'' g
+  · exact hq.symm ▸ congr_arg _ (Function.update_same (Quotient.mk'' g) g Quotient.out)
+  · refine Function.update_noteq ?_ g Quotient.out ▸ q.out_eq'
+    exact hq
+
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated exists_isComplement_left (since := "2024-12-18"))]
 lemma exists_left_transversal (H : Subgroup G) (g : G) :
     ∃ S ∈ leftTransversals (H : Set G), g ∈ S := by
   classical
@@ -265,6 +360,18 @@ lemma exists_left_transversal (H : Subgroup G) (g : G) :
       exact hq
 
 @[to_additive]
+lemma exists_isComplement_right (H : Subgroup G) [H.Normal] (g : G) :
+    ∃ T, IsComplement H T ∧ g ∈ T := by
+  classical
+  refine ⟨Set.range (Function.update Quotient.out _ g), isComplement_range_right fun q ↦ ?_,
+    QuotientGroup.mk g, Function.update_same (Quotient.mk'' g) g Quotient.out⟩
+  by_cases hq : q = Quotient.mk'' g
+  · exact hq.symm ▸ congr_arg _ (Function.update_same (Quotient.mk'' g) g Quotient.out)
+  · refine Function.update_noteq ?_ g Quotient.out ▸ q.out_eq'
+    exact hq
+
+set_option linter.deprecated false in
+@[to_additive (attr := deprecated exists_isComplement_right (since := "2024-12-18"))]
 lemma exists_right_transversal (H : Subgroup G) (g : G) :
     ∃ S ∈ rightTransversals (H : Set G), g ∈ S := by
   classical
