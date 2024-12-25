@@ -527,7 +527,6 @@ noncomputable def propEquivBool : Prop ≃ Bool where
 
 section
 
-#check Simps.Config
 /-- The sort of maps to `PUnit.{v}` is equivalent to `PUnit.{w}`. -/
 def arrowPUnitEquivPUnit (α : Sort*) : (α → PUnit.{v}) ≃ PUnit.{w} :=
   ⟨fun _ => .unit, fun _ _ => .unit, fun _ => rfl, fun _ => rfl⟩
