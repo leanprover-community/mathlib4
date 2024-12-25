@@ -208,6 +208,15 @@ variable {R : Type*} [NonAssocSemiring R]
 def Subsemiring.toNonUnitalSubsemiring (S : Subsemiring R) : NonUnitalSubsemiring R :=
   { S with }
 
+@[simp]
+theorem Subsemiring.mem_toNonUnitalSubsemiring {R : Type*} [NonAssocSemiring R] {S : Subsemiring R}
+    {x : R} : x ∈ S.toNonUnitalSubsemiring ↔ x ∈ S := Iff.rfl
+
+@[simp]
+theorem Subsemiring.coe_toNonUnitalSubsemiring
+    {R : Type*} [NonAssocSemiring R] (S : Subsemiring R) :
+  (S.toNonUnitalSubsemiring : Set R) = S := rfl
+
 theorem Subsemiring.one_mem_toNonUnitalSubsemiring (S : Subsemiring R) :
     (1 : R) ∈ S.toNonUnitalSubsemiring :=
   S.one_mem

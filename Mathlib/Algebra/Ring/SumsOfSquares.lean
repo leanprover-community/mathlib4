@@ -153,10 +153,6 @@ theorem IsSumSq.mul [NonUnitalCommSemiring R] {s₁ s₂ : R}
     (h₁ : IsSumSq s₁) (h₂ : IsSumSq s₂) : IsSumSq (s₁ * s₂) := by
   simpa using mul_mem (by simpa : _ ∈ NonUnitalSubsemiring.sumSqIn R) (by simpa)
 
-/- TODO : move to Mathlib.Algebra.Algebra.Subalgebra.Unitization -/
-theorem Subsemiring.mem_toNonUnitalSubsemiring {R : Type*} [NonAssocSemiring R] {S : Subsemiring R}
-    {x : R} : x ∈ S.toNonUnitalSubsemiring ↔ x ∈ S := Iff.rfl
-
 namespace Subsemiring
 variable {T : Type*} [CommSemiring T] {a : T}
 
