@@ -7,8 +7,6 @@ import Mathlib.Data.Seq.Seq
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Data.Rat.Cast.CharZero
-import Mathlib.Data.Rat.Floor
 
 /-!
 # Basic Definitions/Theorems for Continued Fractions
