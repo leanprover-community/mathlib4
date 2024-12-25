@@ -15,6 +15,15 @@ If `C` is a `V`-enriched ordinary category, then `J ⥤ C` is also
 both a `V`-enriched ordinary category and a `J ⥤ V`-enriched
 ordinary category, provided `C` has suitable limits.
 
+We first define the `V`-enriched structure on `J ⥤ C` by saying
+that if `F₁` and `F₂` are in `J ⥤ C`, then `enrichedHom V F₁ F₂ : V`
+is a suitable limit involving `F₁.obj j ⟶[V] F₂.obj j` for all `j : C`.
+The `J ⥤ V` object of morphisms `functorEnrichedHom V F₁ F₂ : J ⥤ V`
+is defined by sending `j : J` to the previously defined `enrichedHom`
+for the "restriction" of `F₁` and `F₂` to the category `Under j`.
+The definition `isLimitConeFunctorEnrichedHom` shows that
+`enriched V F₁ F₂` is the limit of the functor `functorEnrichedHom V F₁ F₂`.
+
 -/
 
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
@@ -403,21 +412,7 @@ noncomputable def functorEnrichedCategory
   comp F₁ F₂ F₃ := functorEnrichedComp V F₁ F₂ F₃
   assoc F₁ F₂ F₃ F₄ := functorEnriched_assoc V F₁ F₂ F₃ F₄
 
--- to be moved: better version of `IsLimit.homIso`
-/-- The universal property of a limit cone: a map `W ⟶ X` is the same as
-  a cone on `F` with cone point `W`. -/
-@[simps]
-def _root_.CategoryTheory.Limits.IsLimit.homEquiv {F : J ⥤ C} {c : Cone F} (h : IsLimit c)
-    {W : C} : (W ⟶ c.pt) ≃ ((Functor.const J).obj W ⟶ F) where
-  toFun f := { app := fun j ↦ f ≫ c.π.app j }
-  invFun π := h.lift (Cone.mk _ π)
-  left_inv f := h.hom_ext (by simp)
-  right_inv π := by aesop_cat
-
-section
-
 variable {F₁ F₂} in
-
 /-- Given functors `F₁` and `F₂` in `J ⥤ C`, where `C` is a `V`-enriched ordinary category,
 this is the bijection `(F₁ ⟶ F₂) ≃ (𝟙_ (J ⥤ V) ⟶ functorEnrichedHom V F₁ F₂)`. -/
 noncomputable def functorHomEquiv [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V F₁ F₂] :
@@ -428,7 +423,7 @@ lemma functorHomEquiv_id [HasFunctorEnrichedHom V F₁ F₁] [HasEnrichedHom V F
     (functorHomEquiv V) (𝟙 F₁) = functorEnrichedId V F₁ := by
   ext j
   dsimp [functorHomEquiv]
-  erw [IsLimit.homEquiv_apply_app]
+  erw [IsLimit.homEquiv_apply]
   aesop_cat
 
 variable {F₁ F₂ F₃} in
@@ -441,15 +436,13 @@ lemma functorHomEquiv_comp [HasFunctorEnrichedHom V F₁ F₂] [HasEnrichedHom V
   ext j
   dsimp [functorHomEquiv]
   rw [homEquiv_comp]
-  erw [IsLimit.homEquiv_apply_app, IsLimit.homEquiv_apply_app, IsLimit.homEquiv_apply_app]
+  erw [IsLimit.homEquiv_apply, IsLimit.homEquiv_apply, IsLimit.homEquiv_apply]
   dsimp
   ext k
   rw [assoc, assoc, assoc, assoc, assoc, end_.lift_π, enrichedComp_π, enrichedComp_π,
     ← tensor_comp_assoc, ← tensor_comp_assoc, assoc, assoc,
     end_.lift_π, end_.lift_π]
   dsimp
-
-end
 
 attribute [local instance] functorEnrichedCategory
 
