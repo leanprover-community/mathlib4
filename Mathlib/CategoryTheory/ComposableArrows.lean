@@ -143,18 +143,10 @@ lemma map_id (i : Fin 2) : map f i i (by simp) = 𝟙 _ :=
     | 1 => rfl
 
 lemma map_comp {i j k : Fin 2} (hij : i ≤ j) (hjk : j ≤ k) :
-    map f i k (hij.trans hjk) = map f i j hij ≫ map f j k hjk :=
-  match i with
-    | 0 =>
-        match j with
-          | 0 => by rw [map_id, id_comp]
-          | 1 => by
-              obtain rfl : k = 1 := k.eq_one_of_neq_zero (by rintro rfl; simp at hjk)
-              rw [map_id, comp_id]
-    | 1 => by
-        obtain rfl := j.eq_one_of_neq_zero (by rintro rfl; simp at hij)
-        obtain rfl := k.eq_one_of_neq_zero (by rintro rfl; simp at hjk)
-        rw [map_id, id_comp]
+    map f i k (hij.trans hjk) = map f i j hij ≫ map f j k hjk := by
+  obtain rfl | rfl : i = j ∨ j = k := by omega
+  · rw [map_id, id_comp]
+  · rw [map_id, comp_id]
 
 end Mk₁
 

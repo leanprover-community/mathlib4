@@ -224,14 +224,8 @@ lemma reflection_mul_reflection_zpow_apply (m : ℤ) (z : M)
     have ht' : t = g x * f y - 2 := by rwa [mul_comm (g x)]
     rw [zpow_neg, ← inv_zpow, mul_inv_rev, reflection_inv, reflection_inv, zpow_natCast,
       reflection_mul_reflection_pow_apply hg hf m z t ht', add_right_comm z]
-    have aux {a b : ℤ} (hab : a + b = -3) : a / 2 = -(b / 2) - 2 := by
-      rw [← mul_right_inj' (by norm_num : (2 : ℤ) ≠ 0), mul_sub, mul_neg,
-        eq_sub_of_add_eq (Int.ediv_add_emod _ _), eq_sub_of_add_eq (Int.ediv_add_emod _ _)]
-      omega
-    rw [aux (by omega : (-m - 3) + m = (-3 : ℤ)),
-      aux (by omega : (-m - 2) + (m - 1) = (-3 : ℤ)),
-      aux (by omega : (-m - 1) + (m - 2) = (-3 : ℤ)),
-      aux (by omega : -m + (m - 3) = (-3 : ℤ))]
+    have aux (a b : ℤ) (hab : a + b = -3 := by omega) : a / 2 = -(b / 2) - 2 := by omega
+    rw [aux (-m - 3) m, aux (-m - 2) (m - 1), aux (-m - 1) (m - 2), aux (-m) (m - 3)]
     simp only [S_neg_sub_two, Polynomial.eval_neg]
     ring_nf
 
