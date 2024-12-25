@@ -85,20 +85,13 @@ class IsMonoidalRightDistrib (C : Type u) [Category.{v} C]
 
 /-- A monoidal category with binary coproducts is distributive
 if it is both left and right distributive. -/
-class IsMonoidalDistrib(C : Type u) [Category.{v} C]
-    [MonoidalCategory.{v} C] [HasBinaryCoproducts C] : Prop where
-  preservesBinaryCoproducts_tensorLeft (X : C) :
-    PreservesColimitsOfShape (Discrete WalkingPair) (tensorLeft X)
-  preservesBinaryCoproducts_tensorRight (X : C) :
-    PreservesColimitsOfShape (Discrete WalkingPair) (tensorRight X)
+class IsMonoidalDistrib (C : Type u) [Category.{v} C]
+    [MonoidalCategory.{v} C] [HasBinaryCoproducts C] extends
+  IsMonoidalLeftDistrib C, IsMonoidalRightDistrib C
 
 variable {C} [Category.{v} C] [MonoidalCategory.{v} C] [HasBinaryCoproducts C]
 
-instance (priority := 100) isMonoidalLeftDistrib [IsMonoidalDistrib C] :
-  IsMonoidalLeftDistrib C := ⟨IsMonoidalDistrib.preservesBinaryCoproducts_tensorLeft⟩
-
-instance (priority := 100) isMonoidalRightDistrib [IsMonoidalDistrib C] :
-  IsMonoidalRightDistrib C := ⟨IsMonoidalDistrib.preservesBinaryCoproducts_tensorRight⟩
+example [IsMonoidalDistrib C] : IsMonoidalLeftDistrib C := by infer_instance
 
 section IsMonoidalLeftDistrib
 
@@ -282,6 +275,11 @@ instance SymmetricCategory.isMonoidalRightDistrib_of_isMonoidalLeftDistrib
     [SymmetricCategory C] [IsMonoidalLeftDistrib C] : IsMonoidalRightDistrib C where
   preservesBinaryCoproducts_tensorRight X :=
     preservesColimitsOfShape_of_natIso (SymmetricCategory.tensorLeftIsoTensorRight X)
+
+/-- A left distributive symmetric monoidal category is distributive. -/
+instance SymmetricCategory.isMonoidalDistrib_of_isMonoidalLeftDistrib
+    [SymmetricCategory C] [IsMonoidalLeftDistrib C] : IsMonoidalDistrib C where
+  preservesBinaryCoproducts_tensorRight := by infer_instance
 
 /-- The right distributivity isomorphism of the a left distributive symmetric monoidal category
 is given by `(β_ (Y ⨿ Z) X).hom ≫ (∂L X Y Z).inv ≫ (coprod.map (β_ X Y).hom (β_ X Z).hom)`. -/

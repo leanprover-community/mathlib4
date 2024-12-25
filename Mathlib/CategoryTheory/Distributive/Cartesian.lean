@@ -52,26 +52,26 @@ noncomputable section
 
 namespace CategoryTheory
 
-open Category Limits MonoidalCategory MonoidalDistributive
+open Category Limits MonoidalCategory
 
 variable (C : Type u) [Category.{v} C] [ChosenFiniteProducts C] [HasBinaryCoproducts C]
 
 attribute [local instance] monoidalOfHasFiniteProducts
 
-attribute [local instance] MonoidalLeftDistributive.is_iso_distributorLeft
+attribute [local instance] IsMonoidalLeftDistrib.isIso_leftDistrib_hom
 
 /-- A category `C` with finite products is cartesian distributive if is monoidal distributive
 with respect to the cartesian monoidal structure. -/
 abbrev CartesianDistribuitve :=
-  MonoidalLeftDistributive C
+  IsMonoidalLeftDistrib C
 
 attribute [local instance] symmetricOfHasFiniteProducts
 
 /-- Every cartesian distributive category is both left and right distributive. -/
-instance [CartesianDistribuitve C] : MonoidalDistributive C := by infer_instance
+instance [CartesianDistribuitve C] : IsMonoidalDistrib C := by infer_instance
 
 /-- The coproduct coprojections are monic in a cartesian distributive category. -/
-instance [MonoidalLeftDistributive C] : MonoCoprod C :=
+instance [IsMonoidalLeftDistrib C] : MonoCoprod C :=
   MonoCoprod.mk' fun A B => by
     refine ⟨BinaryCofan.mk (coprod.inl : A ⟶ A ⨿ B) coprod.inr, ?_, ?_⟩
     · exact coprodIsCoprod A B
@@ -79,10 +79,10 @@ instance [MonoidalLeftDistributive C] : MonoCoprod C :=
       intro Z f g he
       simp at he
       have : SplitMono (Z ◁ coprod.inl) := {
-        retraction := (inv (∂L Z A B)) ≫ (coprod.desc (𝟙 _) (prod.fst ≫ prod.lift (𝟙 Z) f))
+        retraction := (∂L Z A B).inv ≫ (coprod.desc (𝟙 _) (prod.fst ≫ prod.lift (𝟙 Z) f))
         id := by
           rw [← assoc]
-          simp only [whisker_inl_comp_inv_distributor, coprod.inl_desc]
+          simp only [whisker_inl_inv_leftDistrib, coprod.inl_desc]
       }
       have : Mono (Z ◁ coprod.inl) := SplitMono.mono this
       have :  Mono (Z ◁ (coprod.inl (X:= A) (Y:= B))) := by infer_instance
