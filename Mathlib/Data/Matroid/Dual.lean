@@ -149,7 +149,7 @@ theorem setOf_dual_base_eq : {B | M✶.Base B} = (fun X ↦ M.E \ X) '' {B | M.B
   rwa [← h, diff_diff_cancel_left hB'.subset_ground]
 
 @[simp] theorem dual_dual (M : Matroid α) : M✶✶ = M :=
-  eq_of_base_iff_base_forall rfl (fun B (h : B ⊆ M.E) ↦
+  ext_base rfl (fun B (h : B ⊆ M.E) ↦
     by rw [dual_base_iff, dual_base_iff, dual_ground, diff_diff_cancel_left h])
 
 theorem dual_involutive : Function.Involutive (dual : Matroid α → Matroid α) := dual_dual
