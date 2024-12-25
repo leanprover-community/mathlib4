@@ -10,6 +10,7 @@ import Mathlib.Tactic.GCongr.CoreAttrs
 
 The core implementation of the `gcongr` ("generalized congruence") tactic is in the file
 `Tactic.GCongr.Core`. In this file we set it up for use across the library by listing
-`positivity` as a first-pass discharger for side goals (`gcongr_discharger`). -/
+`positivity` and `norm_num` as first-pass dischargers for side goals (`gcongr_discharger`). -/
 
 macro_rules | `(tactic| gcongr_discharger) => `(tactic| positivity)
+macro_rules | `(tactic| gcongr_discharger) => `(tactic| norm_num)
