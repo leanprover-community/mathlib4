@@ -15,6 +15,8 @@ This file provides a `Seq α` type representing possibly infinite lists (referre
   `f m = none` for all `m ≥ n`.
 -/
 
+set_option linter.style.longFile 2000
+
 namespace Stream'
 
 universe u v w
@@ -332,7 +334,7 @@ attribute [nolint simpNF] BisimO.eq_3
 def IsBisimulation :=
   ∀ ⦃s₁ s₂⦄, s₁ ~ s₂ → BisimO R (destruct s₁) (destruct s₂)
 
--- If two streams are bisimilar, then they are equal
+/-- If two streams are bisimilar, then they are equal. -/
 theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s₁ = s₂ := by
   apply Subtype.eq
   apply Stream'.eq_of_bisim fun x y => ∃ s s' : Seq α, s.1 = x ∧ s'.1 = y ∧ R s s'
@@ -383,6 +385,54 @@ theorem coinduction2 (s) (f g : Seq α → Seq β)
   refine eq_of_bisim (fun s1 s2 => ∃ s, s1 = f s ∧ s2 = g s) ?_ ⟨s, rfl, rfl⟩
   intro s1 s2 h; rcases h with ⟨s, h1, h2⟩
   rw [h1, h2]; apply H
+
+/-- Version of `eq_of_bisim` that looks more like an induction principle. -/
+theorem eq_of_bisim' {s₁ s₂ : Seq α}
+    (motive : Seq α → Seq α → Prop)
+    (h_base : motive s₁ s₂)
+    (h_step : ∀ s₁ s₂, motive s₁ s₂ →
+      (∃ x s₁' s₂', s₁ = cons x s₁' ∧ s₂ = cons x s₂' ∧ motive s₁' s₂') ∨
+      (s₁ = nil ∧ s₂ = nil)) : s₁ = s₂ := by
+  apply eq_of_bisim motive _ h_base
+  intro s₁ s₂ h
+  specialize h_step s₁ s₂ h
+  rcases h_step with (h_cons | h_nil)
+  · obtain ⟨hd, tl₁, tl₂, h₁, h₂, h_tl⟩ := h_cons
+    simpa [h₁, h₂]
+  · simp [h_nil.left, h_nil.right]
+
+/-- Version of `eq_of_bisim'` that requires only `s₁ = s₂`
+instead of `s₁ = nil ∧ s₂ = nil` in `h_step`. -/
+theorem eq_of_bisim_strong {s₁ s₂ : Seq α}
+    (motive : Seq α → Seq α → Prop)
+    (h_base : motive s₁ s₂)
+    (h_step : ∀ s₁ s₂, motive s₁ s₂ →
+      (s₁ = s₂) ∨
+      (∃ x s₁' s₂', s₁ = cons x s₁' ∧ s₂ = cons x s₂' ∧ (motive s₁' s₂'))): s₁ = s₂ := by
+  let motive' : Seq α → Seq α → Prop := fun s₁ s₂ => s₁ = s₂ ∨ motive s₁ s₂
+  apply eq_of_bisim' motive'
+  · simp [motive']
+    tauto
+  intro s₁ s₂ ih
+  simp only [motive'] at ih ⊢
+  rcases ih with (h_eq | ih)
+  · subst h_eq
+    cases' s₁ with x tl
+    · simp
+    · simp only [cons_ne_nil, and_self, or_false]
+      use x, tl, tl
+      simp
+  rcases h_step s₁ s₂ ih with (h_eq | h_cons)
+  · subst h_eq
+    cases' s₁ with x tl
+    · simp
+    · simp only [cons_ne_nil, and_self, or_false]
+      use x, tl, tl
+      simp
+  · left
+    obtain ⟨hd, s₁', s₂', _⟩ := h_cons
+    use hd, s₁', s₂'
+    tauto
 
 /-!
 ### Termination
@@ -1393,6 +1443,7 @@ theorem All_of_get {p : α → Prop} {s : Seq α} (h : ∀ n x, s.get? n = .some
   intro x i hx
   simpa [← hx] using h i
 
+/-- Coinductive principle for `All`. -/
 theorem All.coind {s : Seq α} {p : α → Prop}
     (motive : Seq α → Prop) (h_base : motive s)
     (h_cons : ∀ hd tl, motive (.cons hd tl) → p hd ∧ motive tl)
@@ -1539,6 +1590,7 @@ theorem Pairwise.cons_cons_of_trans {R : α → α → Prop} [IsTrans _ R] {hd t
   intro x h
   exact trans_of _ h_lt h
 
+/-- Coinductive principle for `Pairwise`. -/
 theorem Pairwise.coind {R : α → α → Prop} {s : Seq α}
     (motive : Seq α → Prop) (h_base : motive s)
     (h_step : ∀ hd tl, motive (.cons hd tl) → tl.All (R hd ·) ∧ motive tl)
@@ -1565,6 +1617,9 @@ theorem Pairwise.coind {R : α → α → Prop} {s : Seq α}
   have := (h_step x (s.drop i).tail (by convert h_all i; rw [head_eq_some hx, tail_cons])).left
   exact All_get this hy
 
+
+/-- Coinductive principle for `Pairwise` that assumes that `R` is transitive. It allows to prove
+`R hd tl.head` instead of `tl.All (R hd ·)` in `h_step`. -/
 theorem Pairwise.coind_trans {R : α → α → Prop} [IsTrans _ R] {s : Seq α}
     (motive : Seq α → Prop) (h_base : motive s)
     (h_step : ∀ hd tl, motive (.cons hd tl) → tl.head.elim True (R hd ·) ∧ motive tl)
@@ -1658,10 +1713,11 @@ theorem AtLeastAsLongAs_map {α : Type v} {γ : Type w} {f : β → γ} {a : Seq
   intro n ha
   simpa [TerminatedAt] using h n ha
 
-theorem atLeastAsLong.coind {a : Seq α} {b : Seq β}
+/-- Coinductive principle for `AtLeastAsLongAs`. -/
+theorem AtLeastAsLongAs.coind {a : Seq α} {b : Seq β}
     (motive : Seq α → Seq β → Prop) (h_base : motive a b)
     (h_step : ∀ a b, motive a b →
-      (∀ b_hd b_tl, (b = cons b_hd b_tl) → ∃ a_hd a_tl, a = cons a_hd a_tl ∧ motive a_tl b_tl))
+      (∀ b_hd b_tl, (b = .cons b_hd b_tl) → ∃ a_hd a_tl, a = .cons a_hd a_tl ∧ motive a_tl b_tl))
     : a.AtLeastAsLongAs b := by
   simp only [AtLeastAsLongAs, TerminatedAt, ← head_dropn]
   intro n
@@ -1675,7 +1731,7 @@ theorem atLeastAsLong.coind {a : Seq α} {b : Seq β}
       cases' tb with tb_hd tb_tl
       · simp at hb
       · simp at ih
-        obtain ⟨a_hd, a_tl, ha, h_tail⟩ := h_step (a.drop m) (cons tb_hd tb_tl) ih _ _ (by rfl)
+        obtain ⟨a_hd, a_tl, ha, h_tail⟩ := h_step (a.drop m) (.cons tb_hd tb_tl) ih _ _ (by rfl)
         rw [ha]
         simpa
   contrapose
