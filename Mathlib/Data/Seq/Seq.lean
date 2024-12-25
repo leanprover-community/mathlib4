@@ -367,25 +367,6 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
         · exact h2
   · exact ⟨s₁, s₂, rfl, rfl, r⟩
 
-end Bisim
-
-theorem coinduction :
-    ∀ {s₁ s₂ : Seq α},
-      head s₁ = head s₂ →
-        (∀ (β : Type u) (fr : Seq α → β), fr s₁ = fr s₂ → fr (tail s₁) = fr (tail s₂)) → s₁ = s₂
-  | _, _, hh, ht =>
-    Subtype.eq (Stream'.coinduction hh fun β fr => ht β fun s => fr s.1)
-
-theorem coinduction2 (s) (f g : Seq α → Seq β)
-    (H :
-      ∀ s,
-        BisimO (fun s1 s2 : Seq β => ∃ s : Seq α, s1 = f s ∧ s2 = g s) (destruct (f s))
-          (destruct (g s))) :
-    f s = g s := by
-  refine eq_of_bisim (fun s1 s2 => ∃ s, s1 = f s ∧ s2 = g s) ?_ ⟨s, rfl, rfl⟩
-  intro s1 s2 h; rcases h with ⟨s, h1, h2⟩
-  rw [h1, h2]; apply H
-
 /-- Version of `eq_of_bisim` that looks more like an induction principle. -/
 theorem eq_of_bisim' {s₁ s₂ : Seq α}
     (motive : Seq α → Seq α → Prop)
@@ -433,6 +414,25 @@ theorem eq_of_bisim_strong {s₁ s₂ : Seq α}
     obtain ⟨hd, s₁', s₂', _⟩ := h_cons
     use hd, s₁', s₂'
     tauto
+
+end Bisim
+
+theorem coinduction :
+    ∀ {s₁ s₂ : Seq α},
+      head s₁ = head s₂ →
+        (∀ (β : Type u) (fr : Seq α → β), fr s₁ = fr s₂ → fr (tail s₁) = fr (tail s₂)) → s₁ = s₂
+  | _, _, hh, ht =>
+    Subtype.eq (Stream'.coinduction hh fun β fr => ht β fun s => fr s.1)
+
+theorem coinduction2 (s) (f g : Seq α → Seq β)
+    (H :
+      ∀ s,
+        BisimO (fun s1 s2 : Seq β => ∃ s : Seq α, s1 = f s ∧ s2 = g s) (destruct (f s))
+          (destruct (g s))) :
+    f s = g s := by
+  refine eq_of_bisim (fun s1 s2 => ∃ s, s1 = f s ∧ s2 = g s) ?_ ⟨s, rfl, rfl⟩
+  intro s1 s2 h; rcases h with ⟨s, h1, h2⟩
+  rw [h1, h2]; apply H
 
 /-!
 ### Termination
