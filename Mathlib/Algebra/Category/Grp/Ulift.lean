@@ -48,9 +48,8 @@ instance : uliftFunctor.{u, v}.Full := Functor.FullyFaithful.full uliftFunctorFu
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimit {J : Type w} [Category.{w'} J]
     (K : J ⥤ Grp.{u}) : PreservesLimit K uliftFunctor.{v, u} where
-  preserves lc := ReflectsLimit.reflects (F := forget Grp.{max u v}) (IsLimit.ofIsoLimit
-    (Classical.choice (PreservesLimit.preserves (F := CategoryTheory.uliftFunctor) (Classical.choice
-    (PreservesLimit.preserves (F := forget Grp) lc)))) (Cones.ext (Iso.refl _) (fun _ ↦ rfl)))
+  preserves lc := ⟨isLimitOfReflects (forget Grp.{max u v})
+    (isLimitOfPreserves CategoryTheory.uliftFunctor (isLimitOfPreserves (forget Grp) lc))⟩
 
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimitsOfShape {J : Type w} [Category.{w'} J] :
