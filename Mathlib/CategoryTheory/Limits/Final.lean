@@ -941,7 +941,8 @@ theorem IsFiltered.of_final (F : C ⥤ D) [Final F] [IsFiltered C] : IsFiltered 
 /-- Initial functors preserve cofilteredness.
 
 This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which states that left
-adjoints preserve cofilteredness), as right adjoints are always initial, see `initial_of_adjunction`.
+adjoints preserve cofilteredness), as right adjoints are always initial,
+see `initial_of_adjunction`.
 -/
 theorem IsCofilteredOrEmpty.of_initial (F : C ⥤ D) [Initial F] [IsCofilteredOrEmpty C] :
     IsCofilteredOrEmpty D :=
@@ -951,7 +952,8 @@ theorem IsCofilteredOrEmpty.of_initial (F : C ⥤ D) [Initial F] [IsCofilteredOr
 /-- Initial functors preserve cofilteredness.
 
 This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which states that left
-adjoints preserve cofilteredness), as right adjoints are always initial, see `initial_of_adjunction`.
+adjoints preserve cofilteredness), as right adjoints are always initial,
+see `initial_of_adjunction`.
 -/
 theorem IsCofiltered.of_initial (F : C ⥤ D) [Initial F] [IsCofiltered C] : IsCofiltered D :=
   have : IsFiltered Dᵒᵖ := IsFiltered.of_final F.op
