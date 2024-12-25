@@ -144,54 +144,54 @@ protected def stream (v : K) : Stream' <| Option (IntFractPair K)
     (IntFractPair.stream v n).bind fun ap_n =>
       if ap_n.fr = 0 then none else some (IntFractPair.of ap_n.fr⁻¹)
 
-theorem stream_fr_nonneg_and_lt_one {v : K} : ∀ {n : ℕ} (p : IntFractPair K),
+private theorem stream_fr_nonneg_and_lt_one {v : K} : ∀ {n : ℕ} (p : IntFractPair K),
     p ∈ IntFractPair.stream v n → 0 ≤ p.fr ∧ p.fr < 1
-  | 0 => by simp [IntFractPair.stream, IntFractPair.of, Int.fract_lt_one]
-  | n + 1 => by
-    intro
-    simp [IntFractPair.stream]
+  | 0, p => by simp +contextual
+    [IntFractPair.stream, IntFractPair.of, Int.fract_lt_one, @eq_comm _ _ p]
+  | n + 1, p => by
+    simp only [IntFractPair.stream]
     cases IntFractPair.stream v n with
     | none => simp
     | some q =>
-      simp only [IntFractPair.of, Option.some_bind, Option.ite_none_left_eq_some, Option.some.injEq,
-        and_imp]
-      rintro _ rfl
-      exact ⟨Int.fract_nonneg _, Int.fract_lt_one _⟩
+      simp +contextual only [IntFractPair.of, Option.some_bind, Option.ite_none_left_eq_some,
+        Option.some.injEq, @eq_comm _ _ p, Int.fract_nonneg, Int.fract_lt_one, and_self,
+        implies_true, Option.mem_def]
+
+theorem stream_fr_nonneg {v : K} {n : ℕ} {p : IntFractPair K}
+    (hp : p ∈ IntFractPair.stream v n) : 0 ≤ p.fr :=
+  (stream_fr_nonneg_and_lt_one p hp).1
+
+theorem stream_fr_lt_one {v : K} {n : ℕ} {p : IntFractPair K}
+    (hp : p ∈ IntFractPair.stream v n) : p.fr < 1 :=
+  (stream_fr_nonneg_and_lt_one p hp).2
 
 theorem stream_b_pos {v : K} : ∀ {n : ℕ}, 0 < n → ∀ (p : IntFractPair K),
     p ∈ IntFractPair.stream v n → 0 < p.b
-  | 0 => by simp
-  | n + 1 => by
-    intro
-    simp [IntFractPair.stream]
+  | 0, h, p => (lt_irrefl _ h).elim
+  | n + 1, _, p => by
+    simp only [IntFractPair.stream]
     cases h : IntFractPair.stream v n with
     | none => simp
     | some q =>
-      simp only [IntFractPair.of, Option.some_bind, Option.ite_none_left_eq_some, Option.some.injEq,
-        and_imp, forall_apply_eq_imp_iff, Int.lt_floor_iff, Int.cast_zero, zero_add]
-      intro h0
+      simp +contextual only [IntFractPair.of, Option.some_bind, Option.mem_def,
+        Option.ite_none_left_eq_some, Option.some.injEq, @eq_comm _ _ p, Int.floor_pos, and_imp]
+      rintro h0 rfl
       exact (one_le_inv₀ (lt_of_le_of_ne (stream_fr_nonneg_and_lt_one _ h).1 (Ne.symm h0))).2
         (le_of_lt (stream_fr_nonneg_and_lt_one _ h).2)
-
 
 theorem last_stream_ne_one (v : K) (n : ℕ) : ∀ (p : IntFractPair K),
     p ∈ IntFractPair.stream v (n + 1) → IntFractPair.stream v (n + 2) = none →
     p.b ≠ 1 := by
-  simp only [IntFractPair.stream, IntFractPair.of, Option.mem_def, Option.bind_eq_none,
-    ite_eq_left_iff, reduceCtorEq, imp_false, Decidable.not_not, ne_eq]
+  simp only [IntFractPair.stream]
   cases hq : IntFractPair.stream v n with
   | none => simp
   | some q =>
-    simp only [Option.some_bind, Option.ite_none_left_eq_some, Option.some.injEq, and_imp,
-      forall_apply_eq_imp_iff]
-    intro h₁ h₂
-    replace h₂ := h₂ h₁
-    rw [Int.fract_eq_iff, sub_zero] at h₂
-    let ⟨z, hz⟩ := h₂.2.2
-    rw [hz, Int.floor_intCast]
-    rintro rfl
-    simp only [Int.cast_one, inv_eq_one] at hz
-    exact ne_of_lt (stream_fr_nonneg_and_lt_one _ hq).2 hz
+    simp +contextual only [IntFractPair.of, Option.some_bind, Option.mem_def,
+      Option.ite_none_left_eq_some, Option.some.injEq, ↓reduceIte, ite_eq_left_iff, reduceCtorEq,
+      imp_false, Decidable.not_not, ne_eq, and_imp, forall_apply_eq_imp_iff, Int.fract_eq_iff,
+      le_refl, zero_lt_one, sub_zero, true_and, forall_exists_index, Int.floor_intCast]
+    rintro h₁ x hx rfl
+    simp [ne_of_lt (stream_fr_lt_one hq)] at hx
 
 /-- Shows that `IntFractPair.stream` has the sequence property, that is once we return `none` at
 position `n`, we also return `none` at `n + 1`.
