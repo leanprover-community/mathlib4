@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Variance
+import Mathlib.MeasureTheory.Function.L1Space
 
 /-!
 # Moments and moment generating function
@@ -31,7 +32,6 @@ import Mathlib.Probability.Variance
   `ProbabilityTheory.measure_ge_le_exp_mul_mgf` and
   `ProbabilityTheory.measure_le_le_exp_mul_mgf` for versions of these results using `mgf` instead
   of `cgf`.
-
 -/
 
 
@@ -335,5 +335,19 @@ theorem measure_le_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
   exact mul_le_mul le_rfl (le_exp_log _) mgf_nonneg (exp_pos _).le
 
 end MomentGeneratingFunction
+
+lemma aemeasurable_exp_mul {X : Ω → ℝ} (t : ℝ) (hX : AEMeasurable X μ) :
+    AEStronglyMeasurable (fun ω ↦ rexp (t * (X ω))) μ :=
+  (measurable_exp.comp_aemeasurable (hX.const_mul t)).aestronglyMeasurable
+
+lemma integrable_exp_mul_of_le [IsFiniteMeasure μ] {X : Ω → ℝ} (t b : ℝ) (ht : 0 ≤ t)
+    (hX : AEMeasurable X μ) (hb : ∀ᵐ ω ∂μ, X ω ≤ b) :
+    Integrable (fun ω ↦ exp (t * X ω)) μ := by
+  have h : ∀ᵐ ω ∂μ, rexp (t * X ω) ∈ Set.Icc 0 (rexp (t * b)) := by
+    filter_upwards [hb] with ω hb
+    constructor
+    · exact exp_nonneg (t * X ω)
+    · exact (exp_le_exp.mpr (mul_le_mul_of_nonneg_left hb ht))
+  exact integrable_of_mem_Icc 0 (rexp (t * b)) (measurable_exp.comp_aemeasurable (hX.const_mul t)) h
 
 end ProbabilityTheory
