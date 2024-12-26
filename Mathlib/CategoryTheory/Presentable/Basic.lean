@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 
 import Mathlib.CategoryTheory.Filtered.Basic
+import Mathlib.CategoryTheory.Limits.Preserves.Basic
 import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.SetTheory.Cardinal.HasCardinalLT

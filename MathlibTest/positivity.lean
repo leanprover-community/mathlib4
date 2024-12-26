@@ -14,7 +14,7 @@ set_option autoImplicit true
 
 open Finset Function Nat NNReal ENNReal
 
-variable {ι α β : Type _}
+variable {ι α β E : Type*}
 
 /- ## Numeric goals -/
 
@@ -307,8 +307,13 @@ example : 0 ≤ Real.log 1 := by positivity
 example : 0 ≤ Real.log 0 := by positivity
 example : 0 ≤ Real.log (-1) := by positivity
 
-example {V : Type _} [NormedCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity
-example {V : Type _} [NormedAddCommGroup V] (x : V) : 0 ≤ ‖x‖ := by positivity
+example [SeminormedGroup E] {a : E} (_ha : a ≠ 1) : 0 ≤ ‖a‖ := by positivity
+example [NormedGroup E] {a : E} : 0 ≤ ‖a‖ := by positivity
+example [NormedGroup E] {a : E} (ha : a ≠ 1) : 0 < ‖a‖ := by positivity
+
+example [SeminormedAddGroup E] {a : E} (_ha : a ≠ 0) : 0 ≤ ‖a‖ := by positivity
+example [NormedAddGroup E] {a : E} : 0 ≤ ‖a‖ := by positivity
+example [NormedAddGroup E] {a : E} (ha : a ≠ 0) : 0 < ‖a‖ := by positivity
 
 example [MetricSpace α] (x y : α) : 0 ≤ dist x y := by positivity
 example [MetricSpace α] {s : Set α} : 0 ≤ Metric.diam s := by positivity
