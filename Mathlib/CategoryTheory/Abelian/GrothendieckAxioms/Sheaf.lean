@@ -34,7 +34,7 @@ section
 
 /- The two instances in this section apply in very rare situations, as they assume
 that the forgetful functor from sheaves to presheaves commutes with certain colimits.
-This does apply for sheaves for the extensive topology --- condensed modules over a 
+This does apply for sheaves for the extensive topology --- condensed modules over a
 ring are examples of such sheaves.  -/
 
 variable [HasWeakSheafify J A]
