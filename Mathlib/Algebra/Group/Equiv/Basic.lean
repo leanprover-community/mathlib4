@@ -447,7 +447,7 @@ section unique
 /-- The `MulEquiv` between two monoids with a unique element. -/
 @[to_additive "The `AddEquiv` between two `AddMonoid`s with a unique element."]
 def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
-  { Equiv.equivOfUnique M N with map_mul' := fun _ _ => Subsingleton.elim _ _ }
+  { Equiv.ofUnique M N with map_mul' := fun _ _ => Subsingleton.elim _ _ }
 
 @[to_additive (attr := deprecated ofUnique (since := "2024-12-25"))]
 alias mulEquivOfUnique := ofUnique

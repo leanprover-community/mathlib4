@@ -344,7 +344,7 @@ end trans
 section unique
 
 /-- The `RingEquiv` between two semirings with a unique element. -/
-def ringEquivOfUnique {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] : M ≃+* N :=
+def ofUnique {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] : M ≃+* N :=
   { AddEquiv.ofUnique, MulEquiv.ofUnique with }
 
 instance {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] :

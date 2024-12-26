@@ -633,8 +633,7 @@ instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :
           ⟨x * y, Ideal.mul_mem_mul x_mem y_mem,
             mt this.isPrime.mem_or_mem (not_or_intro x_not_mem y_not_mem)⟩⟩, Prime.irreducible⟩ }
 
-instance Ideal.normalizationMonoid : NormalizationMonoid (Ideal A) :=
-  normalizationMonoidOfUniqueUnits
+instance Ideal.normalizationMonoid : NormalizationMonoid (Ideal A) := .ofUniqueUnits
 
 @[simp]
 theorem Ideal.dvd_span_singleton {I : Ideal A} {x : A} : I ∣ Ideal.span {x} ↔ x ∈ I :=
