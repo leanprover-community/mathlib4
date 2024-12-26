@@ -202,8 +202,7 @@ lemma ScottContinuous_prod_of_ScottContinuous {f : α × β → γ}
   rw [Prod.IsLub (Monotone.jointly_of_separately (fun a => (h₁ a).monotone)
     (fun a => (h₂ a).monotone) ) hd₂]
   rw [← iUnion_of_singleton_coe (Prod.fst '' d), iUnion_prod_const, image_iUnion]
-  apply IsLUB.iUnion
-    (fun a => step1 (Nonempty.image Prod.snd hd₁) hd₂.snd hdp h₁) _ _
+  rw [← isLUB_iUnion_iff_of_isLUB (fun a => step1 (Nonempty.image Prod.snd hd₁) hd₂.snd hdp h₁) _]
   have e2 : IsLUB ((fun a ↦ f (a, p.2)) '' (Prod.fst '' d)) (f (p.1,p.2)) :=
     h₂ p.2 (Nonempty.image Prod.fst hd₁) hd₂.fst ((isLUB_prod (p.1,p.2)).mp hdp).1
   rw [Set.range]
