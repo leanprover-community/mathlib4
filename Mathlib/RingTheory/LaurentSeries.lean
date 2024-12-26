@@ -51,7 +51,7 @@ series to which the filter `ℱ` converges.
 * The field of rational functions is dense in `LaurentSeries`: this is the declaration
 `LaurentSeries.coe_range_dense` and relies principally upon `LaurentSeries.exists_ratFunc_val_lt`,
 stating that for every Laurent series `f` and every `γ : ℤₘ₀` one can find a rational function `Q`
-such that the `X`-adic valuation `v` satifies `v (f - Q) < γ`.
+such that the `X`-adic valuation `v` satisfies `v (f - Q) < γ`.
 * In `LaurentSeries.valuation_compare` we prove that the extension of the `X`-adic valuation from
 `RatFunc K` up to its abstract completion coincides, modulo the isomorphism with `K⸨X⸩`, with the
 `X`-adic valuation on `K⸨X⸩`.
@@ -918,7 +918,7 @@ theorem exists_Polynomial_intValuation_lt (F : K⟦X⟧) (η : ℤₘ₀ˣ) :
     exact Int.zero_lt_one
 
 /-- For every Laurent series `f` and every `γ : ℤₘ₀` one can find a rational function `Q` such
-that the `X`-adic valuation `v` satifies `v (f - Q) < γ`. -/
+that the `X`-adic valuation `v` satisfies `v (f - Q) < γ`. -/
 theorem exists_ratFunc_val_lt (f : K⸨X⸩) (γ : ℤₘ₀ˣ) :
     ∃ Q : RatFunc K, Valued.v (f - Q) < γ := by
   set F := f.powerSeriesPart with hF

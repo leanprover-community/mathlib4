@@ -802,7 +802,7 @@ theorem quadratic_root_cos_pi_div_five :
     push_neg
     intro n hn
     replace hn : n * 5 = 1 := by field_simp [mul_comm _ π, mul_assoc] at hn; norm_cast at hn
-    rcases Int.mul_eq_one_iff_eq_one_or_neg_one.mp hn with ⟨_, h⟩ | ⟨_, h⟩ <;> norm_num at h
+    omega
   suffices s * (2 * c) = s * (4 * c ^ 2 - 1) from mul_left_cancel₀ hs this
   calc s * (2 * c) = 2 * s * c := by rw [← mul_assoc, mul_comm 2]
                  _ = sin (2 * θ) := by rw [sin_two_mul]

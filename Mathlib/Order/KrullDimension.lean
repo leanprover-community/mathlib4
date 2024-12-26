@@ -474,7 +474,7 @@ lemma coheight_eq_coe_iff {x : α} {n : ℕ} :
       coheight x < ⊤ ∧ (n = 0 ∨ ∃ y > x, coheight y = n - 1) ∧ (∀ y > x, coheight y < n) :=
   height_eq_coe_iff (α := αᵒᵈ)
 
-/-- The elements of finite height `n` are the minimial elements among those of height `≥ n`. -/
+/-- The elements of finite height `n` are the minimal elements among those of height `≥ n`. -/
 lemma height_eq_coe_iff_minimal_le_height {a : α} {n : ℕ} :
     height a = n ↔ Minimal (fun y => n ≤ height y) a := by
   by_cases hfin : height a < ⊤
