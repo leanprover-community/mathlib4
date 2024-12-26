@@ -65,9 +65,8 @@ instance OrderTopology.of_discreteTopology [LinearOrder α] [PredOrder α] [Succ
     [DiscreteTopology α] : OrderTopology α :=
   discreteTopology_iff_orderTopology_of_pred_succ.mp ‹_›
 
-instance {ι : Type*}
-    [LinearOrder ι] [LocallyFiniteOrder ι] [TopologicalSpace ι] [DiscreteTopology ι] :
-    OrderTopology ι :=
-  letI := LinearLocallyFiniteOrder.succOrder ι
-  letI := LinearLocallyFiniteOrder.predOrder ι
+instance OrderTopology.of_linearLocallyFinite
+    [LinearOrder α] [LocallyFiniteOrder α] [DiscreteTopology α] : OrderTopology α :=
+  haveI := LinearLocallyFiniteOrder.succOrder α
+  haveI := LinearLocallyFiniteOrder.predOrder α
   inferInstance
