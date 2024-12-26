@@ -348,6 +348,120 @@ lemma commShift_of_leftAdjoint [F.CommShift A] :
   simpa only [Functor.commShiftIso_id_hom_app, Functor.comp_obj, Functor.id_obj, id_comp,
     Functor.commShiftIso_comp_hom_app] using RightAdjointCommShift.compatibilityUnit_iso adj a X
 
+namespace LeftAdjointCommShift
+
+variable {A} (a b : A) (h : a + b = 0) [G.CommShift A]
+
+/-- Auxiliary definition for `iso`. -/
+noncomputable def iso' : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a :=
+  (conjugateIsoEquiv (Adjunction.comp adj (shiftEquiv' D a b h).toAdjunction)
+    (Adjunction.comp (shiftEquiv' C a b h).toAdjunction adj)).invFun (G.commShiftIso b)
+
+/--
+Given an adjunction `F ⊣ G` and a `CommShift` structure on `F`, these are the candidate
+`CommShift.iso a` isomorphisms for a compatible `CommShift` structure on `G`.
+-/
+noncomputable def iso : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a :=
+  iso' adj _ _ (add_neg_cancel a)
+
+@[reassoc]
+lemma iso_hom_app (X : C) :
+    (iso adj a).hom.app X = F.map ((adj.unit.app X)⟦a⟧') ≫
+      F.map (G.map (((shiftFunctorCompIsoId D a b sorry).inv.app (F.obj X)))⟦a⟧') ≫
+        F.map (((G.commShiftIso b).hom.app ((F.obj X)⟦a⟧))⟦a⟧') ≫
+          F.map ((shiftFunctorCompIsoId C b a sorry).hom.app (G.obj ((F.obj X)⟦a⟧))) ≫
+            adj.counit.app ((F.obj X)⟦a⟧) := by
+  obtain rfl : b = -a := by sorry
+  simp [iso, iso']
+  sorry
+
+
+
+#exit
+      (shiftFunctorCompIsoId D b a sorry).inv.app (F.obj ((shiftFunctor C a).obj X)) ≫
+        (adj.counit.app ((shiftFunctor D b).obj (F.obj ((shiftFunctor C a).obj X))))⟦a⟧' ≫
+          (F.map ((G.commShiftIso b).hom.app (F.obj ((shiftFunctor C a).obj X))))⟦a⟧' ≫
+            (F.map ((shiftFunctor C b).map (adj.unit.app ((shiftFunctor C a).obj X))))⟦a⟧' ≫
+              (F.map ((shiftFunctorCompIsoId C a b
+                (by sorry)).hom.app X))⟦a⟧' := by
+  obtain rfl : b = -a := by rw [← add_left_inj a, h, neg_add_cancel]
+  simp [iso, iso']
+  rfl
+
+@[reassoc]
+lemma iso_inv_app (Y : C) :
+    (iso adj a).inv.app Y =
+      adj.unit.app ((shiftFunctor C a).obj (G.obj Y)) ≫
+          G.map ((shiftFunctorCompIsoId D b a h).inv.app
+              (F.obj ((shiftFunctor C a).obj (G.obj Y)))) ≫
+            G.map ((shiftFunctor D a).map ((shiftFunctor D b).map
+                ((F.commShiftIso a).hom.app (G.obj Y)))) ≫
+              G.map ((shiftFunctor D a).map ((shiftFunctorCompIsoId D a b
+                  (by rw [eq_neg_of_add_eq_zero_left h, add_neg_cancel])).hom.app
+                    (F.obj (G.obj Y)))) ≫
+                G.map ((shiftFunctor D a).map (adj.counit.app Y)) := by
+  obtain rfl : b = -a := by rw [← add_left_inj a, h, neg_add_cancel]
+  simp only [Functor.comp_obj, iso, iso', shiftEquiv', Equiv.toFun_as_coe,
+    conjugateIsoEquiv_apply_inv, conjugateEquiv_apply_app, comp_unit_app, Functor.id_obj,
+    Equivalence.toAdjunction_unit, Equivalence.Equivalence_mk'_unit, Iso.symm_hom, Functor.comp_map,
+    comp_counit_app, Equivalence.toAdjunction_counit, Equivalence.Equivalence_mk'_counit,
+    Functor.map_shiftFunctorCompIsoId_hom_app, assoc, Functor.map_comp]
+  slice_lhs 3 4 => rw [← Functor.map_comp, ← Functor.map_comp, Iso.inv_hom_id_app]
+  simp only [Functor.comp_obj, Functor.map_id, id_comp, assoc]
+
+/--
+The commutation isomorphisms of `Adjunction.RightAdjointCommShift.iso` are compatible with
+the unit of the adjunction.
+-/
+lemma compatibilityUnit_iso (a : A) :
+    CommShift.CompatibilityUnit adj (F.commShiftIso a) (iso adj a) := by
+  intro
+  rw [← cancel_mono ((RightAdjointCommShift.iso adj a).inv.app _), assoc, assoc,
+    Iso.hom_inv_id_app, RightAdjointCommShift.iso_inv_app adj _ _ (neg_add_cancel a)]
+  apply (adj.homEquiv _ _).symm.injective
+  dsimp
+  simp only [comp_id, homEquiv_counit, Functor.map_comp, assoc, counit_naturality,
+    counit_naturality_assoc, left_triangle_components_assoc]
+  erw [← NatTrans.naturality_assoc]
+  dsimp
+  rw [shift_shiftFunctorCompIsoId_hom_app, Iso.inv_hom_id_app_assoc,
+    Functor.commShiftIso_hom_naturality_assoc, ← Functor.map_comp,
+    left_triangle_components, Functor.map_id, comp_id]
+
+end RightAdjointCommShift
+
+variable (A)
+
+open RightAdjointCommShift in
+/--
+Given an adjunction `F ⊣ G` and a `CommShift` structure on `F`, this constructs
+the unique compatible `CommShift` structure on `G`.
+-/
+@[simps]
+noncomputable def rightAdjointCommShift [F.CommShift A] : G.CommShift A where
+  iso a := iso adj a
+  zero := by
+    refine CommShift.compatibilityUnit_unique_right adj (F.commShiftIso 0)  _ _
+      (compatibilityUnit_iso adj 0) ?_
+    rw [F.commShiftIso_zero]
+    exact CommShift.compatibilityUnit_isoZero adj
+  add a b := by
+    refine CommShift.compatibilityUnit_unique_right adj (F.commShiftIso (a + b))  _ _
+      (compatibilityUnit_iso adj (a + b)) ?_
+    rw [F.commShiftIso_add]
+    exact CommShift.compatibilityUnit_isoAdd adj _ _ _ _
+      (compatibilityUnit_iso adj a) (compatibilityUnit_iso adj b)
+
+lemma commShift_of_leftAdjoint [F.CommShift A] :
+    letI := adj.rightAdjointCommShift A
+    adj.CommShift A := by
+  letI := adj.rightAdjointCommShift A
+  refine CommShift.mk' _ _ ⟨fun a ↦ ?_⟩
+  ext X
+  dsimp
+  simpa only [Functor.commShiftIso_id_hom_app, Functor.comp_obj, Functor.id_obj, id_comp,
+    Functor.commShiftIso_comp_hom_app] using RightAdjointCommShift.compatibilityUnit_iso adj a X
+
 end Adjunction
 
 namespace Equivalence
