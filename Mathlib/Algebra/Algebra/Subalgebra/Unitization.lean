@@ -226,7 +226,6 @@ theorem Subsemiring.mem_toNonUnitalSubsemiring {S : Subsemiring R}
 theorem Subsemiring.coe_toNonUnitalSubsemiring (S : Subsemiring R) :
   (S.toNonUnitalSubsemiring : Set R) = S := rfl
 
-@[simp]
 theorem Subsemiring.one_mem_toNonUnitalSubsemiring (S : Subsemiring R) :
     (1 : R) ∈ S.toNonUnitalSubsemiring :=
   S.one_mem
