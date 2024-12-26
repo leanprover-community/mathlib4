@@ -191,9 +191,8 @@ theorem TuringEquivalent.symm {f g : ℕ →. ℕ} (h : f ≡ᵀ g) : g ≡ᵀ f
 Proof that turing reducibility is transitive.
 -/
 @[trans]
-theorem RecursiveIn.trans {f g h : ℕ →. ℕ} :
-  RecursiveIn f g → RecursiveIn g h → RecursiveIn f h := by
-    intro hg hh
+theorem RecursiveIn.trans {f g h : ℕ →. ℕ} (hg : RecursiveIn f g) (hh : RecursiveIn g h) :
+    RecursiveIn f h := by
     induction hg
     case zero =>
       apply RecursiveIn.zero
