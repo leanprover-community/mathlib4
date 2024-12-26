@@ -717,8 +717,8 @@ theorem image.factor_map :
 theorem image.map_ι : image.map sq ≫ image.ι g.hom = image.ι f.hom ≫ sq.right := by simp
 
 theorem image.map_homMk'_ι {X Y P Q : C} {k : X ⟶ Y} [HasImage k] {l : P ⟶ Q} [HasImage l]
-    {m : X ⟶ P} {n : Y ⟶ Q} (w : m ≫ l = k ≫ n) [HasImageMap (Arrow.homMk' w)] :
-    image.map (Arrow.homMk' w) ≫ image.ι l = image.ι k ≫ n :=
+    {m : X ⟶ P} {n : Y ⟶ Q} (w : m ≫ l = k ≫ n) [HasImageMap (Arrow.homMk' _ _ w)] :
+    image.map (Arrow.homMk' _ _ w) ≫ image.ι l = image.ι k ≫ n :=
   image.map_ι _
 
 section
