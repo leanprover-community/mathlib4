@@ -10,7 +10,7 @@ import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 /-!
 # Squares and even elements
 
-This file defines operations involving squares and even elements requiring more advanced objects
+This file defines operations involving squares and even elements requiring more complex objects
 such as substructures and orderings.
 -/
 

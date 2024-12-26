@@ -13,16 +13,14 @@ import Mathlib.Algebra.Algebra.Subalgebra.Unitization
 
 We introduce sums of squares in a type `R` endowed with an `[Add R]`, `[Zero R]` and `[Mul R]`
 instances. Sums of squares in `R` are defined by an inductive predicate `IsSumSq : R → Prop`:
-`0 : R` is a sum of squares and if `S` is a sum of squares, then for all `a : R`, `a * a + S` is a
+`0 : R` is a sum of squares and if `S` is a sum of squares, then for all `a : R`, `a * a + s` is a
 sum of squares in `R`.
 
-## Declarations
+## Main declarations
 
 - The predicate `IsSumSq : R → Prop`, defining the property of being a sum of squares in `R`.
-- The terms `AddMonoid.sumSqIn R` and `Subsemiring.sumSqIn R` :
-in an additive monoid with multiplication `R` and a semiring `R`, we introduce the terms
-`AddMonoid.sumSqIn R` and `Subsemiring.sumSqIn R` as the submonoid and subsemiring, respectively,
-of sums of squares in `R`.
+- The terms `AddMonoid.sumSqIn R` and `Subsemiring.sumSqIn R` : respectively
+the submonoid and subsemiring of sums of squares in the corresponding structure `R`.
 
 -/
 
@@ -30,33 +28,33 @@ universe u
 variable {R : Type*}
 
 /--
-In a type `R` with an addition, a zero element and a multiplication, the property of being a sum of
-squares is defined by an inductive predicate: `0 : R` is a sum of squares and if `S` is a sum of
-squares, then for all `a : R`, `a * a + S` is a sum of squares in `R`.
+The property of being a sum of squares is defined inductively by:
+`0 : R` is a sum of squares and if `s : R` is a sum of squares,
+then for all `a : R`, `a * a + s` is a sum of squares in `R`.
 -/
 @[mk_iff]
 inductive IsSumSq [Mul R] [Add R] [Zero R] : R → Prop
   | zero                              : IsSumSq 0
-  | sq_add {a S : R} (hS : IsSumSq S) : IsSumSq (a * a + S)
+  | sq_add {a s : R} (hs : IsSumSq s) : IsSumSq (a * a + s)
 
 @[deprecated (since := "2024-08-09")] alias isSumSq := IsSumSq
 
-/-- Alternative induction scheme for `IsSumSq` using `IsSquare`. -/
+/-- Alternative induction scheme for `IsSumSq` which uses `IsSquare`. -/
 theorem IsSumSq.rec' [Mul R] [Add R] [Zero R]
-    {motive : (S : R) → (h : IsSumSq S) → Prop}
+    {motive : (s : R) → (h : IsSumSq s) → Prop}
     (zero : motive 0 zero)
-    (sq_add : ∀ {a S}, (ha : IsSquare a) → (hS : IsSumSq S) → motive S hS →
-      motive (a + S) (by rcases ha with ⟨_, rfl⟩; exact sq_add hS))
-    {S : R} (h : IsSumSq S) : motive S h :=
+    (sq_add : ∀ {x s}, (hx : IsSquare x) → (hs : IsSumSq s) → motive s hs →
+      motive (x + s) (by rcases hx with ⟨_, rfl⟩; exact sq_add hs))
+    {s : R} (h : IsSumSq s) : motive s h :=
   match h with
   | .zero         => zero
   | .sq_add ih => sq_add (.mul_self _) ih (rec' zero sq_add _)
 
 /-- In an additive monoid with multiplication,
-if `S₁` and `S₂` are sums of squares, then `S₁ + S₂` is a sum of squares. -/
+if `s₁` and `s₂` are sums of squares, then `s₁ + s₂` is a sum of squares. -/
 @[aesop unsafe 90% apply]
-theorem IsSumSq.add [AddMonoid R] [Mul R] {S₁ S₂ : R}
-    (h₁ : IsSumSq S₁) (h₂ : IsSumSq S₂) : IsSumSq (S₁ + S₂) := by
+theorem IsSumSq.add [AddMonoid R] [Mul R] {s₁ s₂ : R}
+    (h₁ : IsSumSq s₁) (h₂ : IsSumSq s₂) : IsSumSq (s₁ + s₂) := by
   induction h₁ with
   | zero        => simp_all
   | sq_add _ ih => simp_all [add_assoc, sq_add]
@@ -64,7 +62,7 @@ theorem IsSumSq.add [AddMonoid R] [Mul R] {S₁ S₂ : R}
 @[deprecated (since := "2024-08-09")] alias isSumSq.add := IsSumSq.add
 
 namespace AddSubmonoid
-variable {T : Type*} [AddMonoid T] [Mul T] {a : T}
+variable {T : Type*} [AddMonoid T] [Mul T] {s : T}
 
 variable (T) in
 /--
@@ -72,38 +70,24 @@ In an additive monoid with multiplication `R`, `AddSubmonoid.sumSqIn R`
 is the submonoid of sums of squares in `R`.
 -/
 def sumSqIn : AddSubmonoid T where
-  carrier := {S : T | IsSumSq S}
+  carrier := {s : T | IsSumSq s}
   zero_mem' := IsSumSq.zero
   add_mem' := IsSumSq.add
 
-@[simp] theorem mem_sumSqIn : a ∈ sumSqIn T ↔ IsSumSq a := Iff.rfl
-@[simp, norm_cast] theorem coe_sumSqIn : sumSqIn T = {x : T | IsSumSq x} := rfl
+@[simp] theorem mem_sumSqIn : s ∈ sumSqIn T ↔ IsSumSq s := Iff.rfl
+@[simp, norm_cast] theorem coe_sumSqIn : sumSqIn T = {s : T | IsSumSq s} := rfl
 
 end AddSubmonoid
-
-/-- In an additive, commutative monoid with multiplication, a finite sum of sums of squares
-is a sum of squares. -/
-@[aesop unsafe 90% apply]
-theorem IsSumSq.sum [AddCommMonoid R] [Mul R] {ι : Type*} {I : Finset ι} {S : ι → R}
-    (hS : ∀ i ∈ I, IsSumSq <| S i) : IsSumSq (∑ i ∈ I, S i) := by
-  simpa using sum_mem (S := AddSubmonoid.sumSqIn R) hS
 
 /-- In an additive unital magma with multiplication, `x * x` is a sum of squares for all `x`. -/
 theorem IsSumSq.mul_self [AddZeroClass R] [Mul R] (a : R) : IsSumSq (a * a) := by
   rw [← add_zero (a * a)]; exact sq_add zero
 
-/-- In an additive unital magma with multiplication `R`, squares in `R` are sums of squares
+/-- In an additive unital magma with multiplication, squares are sums of squares
 (see Mathlib.Algebra.Group.Even.Basic). -/
 @[aesop unsafe 50% apply]
 theorem IsSquare.isSumSq [AddZeroClass R] [Mul R] {x : R} (hx : IsSquare x) :
     IsSumSq x := by rcases hx with ⟨_, rfl⟩; apply IsSumSq.mul_self
-
-/-- A term of the form `∑ i ∈ I, x i`, where each `x i` is a square, satisfies `IsSumSq`. -/
-@[aesop safe apply]
-theorem IsSumSq.sum_mul_self [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) (x : ι → R) :
-    IsSumSq (∑ i ∈ I, x i * x i) := sum (by aesop)
-
-@[deprecated (since := "2024-12-23")] alias isSumSq_sum_mul_self := IsSumSq.sum_mul_self
 
 /--
 In an additive monoid with multiplication `R`, the submonoid generated by the squares is the set of
@@ -119,13 +103,33 @@ theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
 
 @[deprecated (since := "2024-08-09")] alias SquaresAddClosure := AddSubmonoid.closure_isSquare
 
+/-- In an additive, commutative monoid with multiplication, a finite sum of sums of squares
+is a sum of squares. -/
+@[aesop unsafe 90% apply]
+theorem IsSumSq.sum [AddCommMonoid R] [Mul R] {ι : Type*} {I : Finset ι} {s : ι → R}
+    (hs : ∀ i ∈ I, IsSumSq <| s i) : IsSumSq (∑ i ∈ I, s i) := by
+  simpa using sum_mem (S := AddSubmonoid.sumSqIn R) hs
+
+/-- In an additive, commutative monoid with multiplication,
+a term of the form `∑ i ∈ I, x i`, where each `x i` is a square, is a sum of squares. -/
+theorem IsSumSq.sum_isSquare [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) {x : ι → R}
+    (ha : ∀ i ∈ I, IsSquare <| x i) :
+    IsSumSq (∑ i ∈ I, x i) := by aesop
+
+/-- In an additive, commutative monoid with multiplication,
+a term of the form `∑ i ∈ I, a i * a i` is a sum of squares. -/
+theorem IsSumSq.sum_mul_self [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) (a : ι → R) :
+    IsSumSq (∑ i ∈ I, a i * a i) := by aesop
+
+@[deprecated (since := "2024-12-23")] alias isSumSq_sum_mul_self := IsSumSq.sum_mul_self
+
 namespace NonUnitalSubsemiring
-variable {T : Type*} [NonUnitalCommSemiring T] {a : T}
+variable {T : Type*} [NonUnitalCommSemiring T] {s : T}
 
 variable (T) in
 /--
-In a commutative non-unital semiring `R`, `NonUnitalSubsemiring.sumSqIn R` is
-the non-unital subsemiring of sums of squares in `R`.
+In a commutative (possible non-unital) semiring `R`, `NonUnitalSubsemiring.sumSqIn R` is
+the (possibly non-unital) subsemiring of sums of squares in `R`.
 -/
 def sumSqIn : NonUnitalSubsemiring T := (Subsemigroup.squareIn T).nonUnitalSubsemiringClosure
 
@@ -135,10 +139,10 @@ def sumSqIn : NonUnitalSubsemiring T := (Subsemigroup.squareIn T).nonUnitalSubse
   simp
 
 @[simp]
-theorem mem_sumSqIn : a ∈ sumSqIn T ↔ IsSumSq a := by
+theorem mem_sumSqIn : s ∈ sumSqIn T ↔ IsSumSq s := by
   rw [← NonUnitalSubsemiring.mem_toAddSubmonoid]; simp
 
-@[simp, norm_cast] theorem coe_sumSqIn : sumSqIn T = {x : T | IsSumSq x} := by ext; simp
+@[simp, norm_cast] theorem coe_sumSqIn : sumSqIn T = {s : T | IsSumSq s} := by ext; simp
 
 @[simp] theorem closure_isSquare : closure {x : T | IsSquare x} = sumSqIn T := by
   rw [sumSqIn, Subsemigroup.nonUnitalSubsemiringClosure_eq_closure]
@@ -146,8 +150,8 @@ theorem mem_sumSqIn : a ∈ sumSqIn T ↔ IsSumSq a := by
 
 end NonUnitalSubsemiring
 
-/-- In a commutative semiring,
-if `S₁` and `S₂` are sums of squares, then `S₁ * S₂` is a sum of squares. -/
+/-- In a commutative (possibly non-unital) semiring,
+if `s₁` and `s₂` are sums of squares, then `s₁ * s₂` is a sum of squares. -/
 @[aesop unsafe 50% apply]
 theorem IsSumSq.mul [NonUnitalCommSemiring R] {s₁ s₂ : R}
     (h₁ : IsSumSq s₁) (h₂ : IsSumSq s₂) : IsSumSq (s₁ * s₂) := by
@@ -158,7 +162,7 @@ private theorem Submonoid.squareIn_subsemiringClosure {T : Type*} [CommSemiring 
   rw [Submonoid.subsemiringClosure_eq_closure]; simp
 
 namespace Subsemiring
-variable {T : Type*} [CommSemiring T] {a : T}
+variable {T : Type*} [CommSemiring T] {s : T}
 
 variable (T) in
 /--
@@ -172,10 +176,10 @@ def sumSqIn : Subsemiring T where
     (sumSqIn T).toNonUnitalSubsemiring = .sumSqIn T := rfl
 
 @[simp]
-theorem mem_sumSqIn : a ∈ sumSqIn T ↔ IsSumSq a := by
+theorem mem_sumSqIn : s ∈ sumSqIn T ↔ IsSumSq s := by
   rw [← Subsemiring.mem_toNonUnitalSubsemiring]; simp
 
-@[simp, norm_cast] theorem coe_sumSqIn : sumSqIn T = {x : T | IsSumSq x} := by ext; simp
+@[simp, norm_cast] theorem coe_sumSqIn : sumSqIn T = {s : T | IsSumSq s} := by ext; simp
 
 @[simp] theorem closure_isSquare : closure {x : T | IsSquare x} = sumSqIn T := by
   apply_fun toNonUnitalSubsemiring using toNonUnitalSubsemiring_injective
@@ -183,22 +187,21 @@ theorem mem_sumSqIn : a ∈ sumSqIn T ↔ IsSumSq a := by
 
 end Subsemiring
 
-/-- In a commutative semiring, a finite product of sums of squares
-is a sum of squares. -/
+/-- In a commutative semiring, a finite product of sums of squares is a sum of squares. -/
 @[aesop unsafe 50% apply]
-theorem IsSumSq.prod [CommSemiring R] {ι : Type*} {I : Finset ι} {f : ι → R}
-    (hf : ∀ i ∈ I, IsSumSq <| f i) : IsSumSq (∏ i ∈ I, f i) := by
+theorem IsSumSq.prod [CommSemiring R] {ι : Type*} {I : Finset ι} {x : ι → R}
+    (hx : ∀ i ∈ I, IsSumSq <| x i) : IsSumSq (∏ i ∈ I, x i) := by
   simpa using prod_mem (S := Subsemiring.sumSqIn R) (by simpa)
 
 /--
-Let `R` be a linearly ordered semiring in which the property `a ≤ b → ∃ c, a + c = b` holds
-(e.g. `R = ℕ`). If `S : R` is a sum of squares in `R`, then `0 ≤ S`. This is used in
-`Mathlib.Algebra.Ring.Semireal.Defs` to show that such semirings are semireal.
+In a linearly ordered semiring with the property `a ≤ b → ∃ c, a + c = b` (e.g. `ℕ`),
+sums of squares are non-negative. This is used in `Mathlib.Algebra.Ring.Semireal.Defs`
+to show that such semirings are semireal.
 -/
-theorem IsSumSq.nonneg {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {S : R}
-    (pS : IsSumSq S) : 0 ≤ S := by
-  induction pS using IsSumSq.rec'
+theorem IsSumSq.nonneg {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {s : R}
+    (ps : IsSumSq s) : 0 ≤ s := by
+  induction ps using IsSumSq.rec'
   case zero => aesop
-  case sq_add a S ha hS h_sum => exact add_nonneg (IsSquare.nonneg ha) h_sum
+  case sq_add x s hx hs h_sum => exact add_nonneg (IsSquare.nonneg hx) h_sum
 
 @[deprecated (since := "2024-08-09")] alias isSumSq.nonneg := IsSumSq.nonneg
