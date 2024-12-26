@@ -3,6 +3,7 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
+import Mathlib.Algebra.Algebra.Subalgebra.Tower
 import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Field.Subfield.Basic
 import Mathlib.Algebra.Polynomial.AlgebraMap
@@ -324,7 +325,7 @@ instance smulCommClass_right [SMul X Y] [SMul L Y] [SMulCommClass X L Y]
 
 -- note: giving this instance the default priority may trigger trouble with synthesizing instances
 -- for field extensions with more than one intermediate field. For example, in a field extension
--- `F/E`, and with `K₁ ≤ K₂` of type `IntermediateField F E`, this instance will cause a search
+-- `E/F`, and with `K₁ ≤ K₂` of type `IntermediateField F E`, this instance will cause a search
 -- for `IsScalarTower K₁ K₂ E` to trigger a search for `IsScalarTower E K₂ E` which may
 -- take a long time to fail.
 /-- Note that this provides `IsScalarTower F K K` which is needed by `smul_mul_assoc`. -/
@@ -388,8 +389,6 @@ theorem coe_smul {R} [Semiring R] [SMul R K] [Module R L] [IsScalarTower R K L] 
 @[simp] lemma algebraMap_apply (x : S) : algebraMap S L x = x := rfl
 
 @[simp] lemma coe_algebraMap_apply (x : K) : ↑(algebraMap K S x) = algebraMap K L x := rfl
-
-instance {R : Type*} [Semiring R] [Algebra L R] : SMul S R := S.instSMulSubtypeMem
 
 instance isScalarTower_bot {R : Type*} [Semiring R] [Algebra L R] : IsScalarTower S L R :=
   IsScalarTower.subalgebra _ _ _ S.toSubalgebra

@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Homology.ComplexShape
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Ring.Nat
 
 /-! # Embeddings of complex shapes
 
@@ -23,26 +23,29 @@ relate the categories `CochainComplex C ℕ` and `ChainComplex C ℕ` to `Cochai
 It shall also be used in the construction of the canonical t-structure on the derived
 category of an abelian category (TODO).
 
-## TODO
+## Description of the API
 
-Define the following:
-- the extension functor `e.extendFunctor C : HomologicalComplex C c ⥤ HomologicalComplex C c'`
-(extending by the zero object outside of the image of `e.f`);
+- The extension functor `e.extendFunctor C : HomologicalComplex C c ⥤ HomologicalComplex C c'`
+(extending by the zero object outside of the image of `e.f`) is defined in
+the file `Embedding.Extend`;
 - assuming `e.IsRelIff`, the restriction functor
-`e.restrictionFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c`;
+`e.restrictionFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c`
+is defined in the file `Embedding.Restriction`;
 - the stupid truncation functor
-`e.stupidTruncFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'` which is
-the composition of the two previous functors.
-- assuming `e.IsTruncGE`, truncation functors
+`e.stupidTruncFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`
+which is the composition of the two previous functors is defined in the file
+`Embedding.StupidTrunc`.
+- assuming `e.IsTruncGE`, we have truncation functors
 `e.truncGE'Functor C : HomologicalComplex C c' ⥤ HomologicalComplex C c` and
-`e.truncGEFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`, and a natural
+`e.truncGEFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`
+(see the file `Embedding.TruncGE`), and a natural
 transformation `e.πTruncGENatTrans : 𝟭 _ ⟶ e.truncGEFunctor C` which is a quasi-isomorphism
-in degrees in the image of `e.f`;
-- assuming `e.IsTruncLE`, truncation functors
+in degrees in the image of `e.f` (TODO);
+- assuming `e.IsTruncLE`, we have truncation functors
 `e.truncLE'Functor C : HomologicalComplex C c' ⥤ HomologicalComplex C c` and
 `e.truncLEFunctor C : HomologicalComplex C c' ⥤ HomologicalComplex C c'`, and a natural
 transformation `e.ιTruncLENatTrans : e.truncGEFunctor C ⟶ 𝟭 _` which is a quasi-isomorphism
-in degrees in the image of `e.f`;
+in degrees in the image of `e.f` (TODO);
 
 -/
 
