@@ -29,6 +29,7 @@ morphism of schemes is a constructible set (and this is *not* true at the level 
 -/
 
 open Set TopologicalSpace Topology
+open scoped Set.Notation
 
 variable {ι : Sort*} {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] {f : X → Y}
   {s t U : Set X} {a : X}
@@ -247,6 +248,13 @@ lemma IsConstructible.image_of_isClosedEmbedding (hf : IsClosedEmbedding f)
     rw [← range_diff_image hf.injective]
     exact (hfcomp.isConstructible hf.isClosed_range.isOpen_compl).of_compl.sdiff hs'
 
+lemma isConstructible_preimage_of_isOpenEmbedding {s : Set Y} (hf : IsOpenEmbedding f)
+    (hfcomp : IsRetrocompact (range f)) (hsf : s ⊆ range f) :
+    IsConstructible (f ⁻¹' s) ↔ IsConstructible s where
+  mp hs := by simpa [image_preimage_eq_range_inter, inter_eq_right.2 hsf]
+    using hs.image_of_isOpenEmbedding hf hfcomp
+  mpr := .preimage_of_isOpenEmbedding hf
+
 section CompactSpace
 variable [CompactSpace X] {P : ∀ s : Set X, IsConstructible s → Prop} {B : Set (Set X)}
 
@@ -289,10 +297,12 @@ end CompactSpace
 /-- A set in a topological space is locally constructible, if every point has a neighborhood on
 which the set is constructible. -/
 @[stacks 005G]
-def IsLocallyConstructible (s : Set X) : Prop := ∀ x, ∃ U ∈ 𝓝 x, IsOpen U ∧ IsConstructible (s ∩ U)
+def IsLocallyConstructible (s : Set X) : Prop := ∀ x, ∃ U ∈ 𝓝 x, IsOpen U ∧ IsConstructible (U ↓∩ s)
 
 lemma IsConstructible.isLocallyConstructible (hs : IsConstructible s) : IsLocallyConstructible s :=
-  fun _ ↦ ⟨univ, by simpa⟩
+  fun _ ↦ ⟨univ, by simp, by simp,
+    (isConstructible_preimage_of_isOpenEmbedding isOpen_univ.isOpenEmbedding_subtypeVal (by simp)
+      (by simp)).2 hs⟩
 
 lemma _root_.IsRetrocompact.isLocallyConstructible (hUopen : IsOpen U) (hUcomp : IsRetrocompact U) :
     IsLocallyConstructible U := (hUcomp.isConstructible hUopen).isLocallyConstructible
@@ -308,7 +318,13 @@ lemma IsLocallyConstructible.inter (hs : IsLocallyConstructible s) (ht : IsLocal
   rintro x
   obtain ⟨U, hxU, hU, hsU⟩ := hs x
   obtain ⟨V, hxV, hV, htV⟩ := ht x
-  exact ⟨U ∩ V, Filter.inter_mem hxU hxV, hU.inter hV, inter_inter_inter_comm .. ▸ hsU.inter htV⟩
+  refine ⟨U ∩ V, Filter.inter_mem hxU hxV, hU.inter hV, ?_⟩
+  change IsConstructible
+    (inclusion inter_subset_left ⁻¹' (U ↓∩ s) ∩ inclusion inter_subset_right ⁻¹' (V ↓∩ t))
+  exact .inter (hsU.preimage_of_isOpenEmbedding <| .inclusion _ <|
+      .preimage continuous_subtype_val <| hU.inter hV)
+    (htV.preimage_of_isOpenEmbedding <| .inclusion _ <|
+      .preimage continuous_subtype_val <| hU.inter hV )
 
 lemma IsLocallyConstructible.finsetInf {ι : Type*} {s : Finset ι} {t : ι → Set X}
     (ht : ∀ i ∈ s, IsLocallyConstructible (t i)) : IsLocallyConstructible (s.inf t) := by
