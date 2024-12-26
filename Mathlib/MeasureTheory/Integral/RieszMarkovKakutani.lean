@@ -298,7 +298,7 @@ lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
     rw [← NNReal.coe_mk ε (le_of_lt hε), ← NNReal.coe_add, NNReal.coe_le_coe]
     obtain ⟨f, hfleoneonK, hfle⟩ := exists_lt_rieszContentAux_add_pos Λ K (Real.toNNReal_pos.mpr hε)
     rw [rieszContentAux, εnneq] at hfle
-    apply le_of_lt (lt_of_le_of_lt _ hfle)
+    apply le_trans _ hfle.le
     rw [← NNReal.coe_le_coe]
     apply (le_iff_forall_one_lt_le_mul₀ _).mpr
     · intro α hα
