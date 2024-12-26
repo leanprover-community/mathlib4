@@ -361,6 +361,26 @@ lemma closure_bot_sup_induction {p : ∀ g ∈ closure s, Prop} (mem : ∀ x hx,
       compl_mem' := fun ⟨_, hb⟩ ↦ ⟨_, compl _ _ hb⟩ }
   closure_le (L := L).mpr (fun y hy ↦ ⟨subset_closure hy, mem y hy⟩) hx |>.elim fun _ ↦ id
 
+theorem mem_closure_iff_sup_sdiff (sup : SupClosed s) (inf : InfClosed s)
+    (bot_mem : ⊥ ∈ s) (top_mem : ⊤ ∈ s) (a : α) :
+    a ∈ closure s ↔ ∃ t : Finset (s × s), a = t.sup fun x ↦ x.1.1 \ x.2.1 := by
+  classical
+  refine ⟨closure_bot_sup_induction
+    (fun x h ↦ ⟨{(⟨x, h⟩, ⟨⊥, bot_mem⟩)}, by simp⟩) ⟨∅, by simp⟩ ?_ ?_, ?_⟩
+  · rintro ⟨t, rfl⟩
+    exact t.sup_mem _ (subset_closure bot_mem) (fun _ h _ ↦ sup_mem h) _
+      fun x hx ↦ sdiff_mem (subset_closure x.1.2) (subset_closure x.2.2)
+  · rintro _ - _ - ⟨t₁, rfl⟩ ⟨t₂, rfl⟩
+    exact ⟨t₁ ∪ t₂, by rw [Finset.sup_union]⟩
+  rintro x - ⟨t, rfl⟩
+  refine t.induction ⟨{(⟨⊤, top_mem⟩, ⟨⊥, bot_mem⟩)}, by simp⟩ fun ⟨x, y⟩ t _ ⟨tc, eq⟩ ↦ ?_
+  simp_rw [Finset.sup_insert, compl_sup, eq]
+  refine tc.induction ⟨∅, by simp⟩ fun ⟨z, w⟩ tc _ ⟨t, eq⟩ ↦ ?_
+  simp_rw [Finset.sup_insert, inf_sup_left, eq]
+  refine ⟨{(z, ⟨_, sup x.2 w.2⟩), (⟨_, inf y.2 z.2⟩, w)} ∪ t, ?_⟩
+  simp_rw [Finset.sup_union, Finset.sup_insert, Finset.sup_singleton, sdiff_eq,
+    compl_sup, inf_left_comm z.1, compl_inf, compl_compl, inf_sup_right, inf_assoc]
+
 end BooleanAlgebra
 
 section CompleteBooleanAlgebra
