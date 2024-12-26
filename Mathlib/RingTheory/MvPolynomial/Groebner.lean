@@ -57,6 +57,7 @@ variable (m) in
 noncomputable def subLTerm (f : MvPolynomial σ R) : MvPolynomial σ R :=
   f - monomial (m.degree f) (m.leadingCoeff f)
 
+-- todo rename with subLTerm
 theorem degree_sub_LTerm_le (f : MvPolynomial σ R) :
     m.degree (m.subLTerm f) ≼[m] m.degree f := by
   apply le_trans degree_sub_le
