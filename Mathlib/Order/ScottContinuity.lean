@@ -151,31 +151,6 @@ variable {γ : Type*}
 
 variable [Preorder α] [Preorder β] [Preorder γ]
 
--- c.f. isLUB_prod
--- theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
---    IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
-
-lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
-    {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) :
-    upperBounds (f '' d) = upperBounds (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) := by
-  apply le_antisymm
-  · intro u hu c hc
-    simp at hc
-    obtain ⟨a₁, ⟨b₁,⟨⟨⟨b₂,hb₂⟩,⟨a₂,ha₂⟩⟩, right⟩⟩⟩ := hc
-    --have e1: hd _ hb₂ _ ha₂
-    obtain ⟨⟨a₃,b₃⟩,hm⟩ := hd _ hb₂ _ ha₂
-    have e1 : (a₁,b₁) ≤ (a₃,b₃) := by simp_all [mk_le_mk]
-    rw [← right]
-    apply le_trans (hf e1) (hu _)
-    use (a₃, b₃)
-    exact And.imp_right (fun _ ↦ rfl) hm
-  · exact upperBounds_mono_set (image_mono fun ⟨p₁, p₂⟩ _ => by aesop)
-
-lemma Prod.IsLub {f : α × β → γ} (hf : Monotone f)
-    {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) (u : γ) :
-    IsLUB (f '' d) u ↔ IsLUB (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) u := by
-  rw [IsLUB, Prod.upperBounds hf hd, ← IsLUB]
-
 /-- TODO: Come up with better name -/
 lemma step1 {f : α × β → γ} {d : Set (α × β)} (hd₁ : (Prod.snd '' d).Nonempty)
     (hd₂ : DirectedOn (· ≤ ·) (Prod.snd '' d)) {p₁ : α} {p₂ : β} (h : IsLUB d (p₁,p₂))
