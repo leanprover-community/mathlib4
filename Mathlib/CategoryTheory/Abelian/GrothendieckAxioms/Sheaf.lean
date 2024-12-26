@@ -32,8 +32,10 @@ variable {C : Type u} {A : Type u₁} {K : Type u₂}
 
 section
 
-/- The two instances in this section shall apply in very rare situations, as it assumes
-that the forget functor from sheaves to presheaves commutes with certain colimits. -/
+/- The two instances in this section apply in very rare situations, as they assume
+that the forgetful functor from sheaves to presheaves commutes with certain colimits.
+This does apply for sheaves for the extensive topology --- condensed modules over a 
+ring are examples of such sheaves.  -/
 
 variable [HasWeakSheafify J A]
 
