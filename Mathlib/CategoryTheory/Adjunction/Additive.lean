@@ -47,8 +47,7 @@ Note that `F` is additive if and only if `G` is, by `Adjunction.right_adjoint_ad
 `Adjunction.left_adjoint_additive`.
 -/
 def homAddEquiv (X : C) (Y : D) : AddEquiv (F.obj X ⟶ Y) (X ⟶ G.obj Y) :=
-  {
-    adj.homEquiv _ _ with
+  { adj.homEquiv _ _ with
     map_add' _ _ := by
       have := adj.right_adjoint_additive
       simp [homEquiv_apply] }
