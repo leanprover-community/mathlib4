@@ -357,7 +357,7 @@ theorem range_fromSpec :
   infer_instance
 
 @[simp]
-theorem opensRange_fromSpec :hU.fromSpec.opensRange = U := Opens.ext (range_fromSpec hU)
+theorem opensRange_fromSpec : hU.fromSpec.opensRange = U := Opens.ext (range_fromSpec hU)
 
 @[reassoc (attr := simp)]
 theorem map_fromSpec {V : X.Opens} (hV : IsAffineOpen V) (f : op U ⟶ op V) :
