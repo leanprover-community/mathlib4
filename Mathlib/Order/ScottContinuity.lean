@@ -115,16 +115,9 @@ section CompleteLattice
 variable [CompleteLattice α] [CompleteLattice β]
 
 lemma scottContinuous_iff_map_sSup {f : α → β} : ScottContinuous f ↔
-    ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → f (sSup d) = sSup (f '' d) := by
-  constructor
-  · intro h d d₁ d₂
-    symm
-    rw [← isLUB_iff_sSup_eq]
-    apply h d₁ d₂
-    rw [isLUB_iff_sSup_eq]
-  · intro h d d₁ d₂ a hda
-    rw [isLUB_iff_sSup_eq] at hda
-    rw [isLUB_iff_sSup_eq, ← (h d₁ d₂), hda]
+    ∀ ⦃d : Set α⦄, d.Nonempty → DirectedOn (· ≤ ·) d → f (sSup d) = sSup (f '' d) :=
+  ⟨fun h _ d₁ d₂ => by rw [IsLUB.sSup_eq (h d₁ d₂ (isLUB_iff_sSup_eq.mpr rfl))],
+    fun h _ d₁ d₂ _ hda => by rw [isLUB_iff_sSup_eq, ← (h d₁ d₂), IsLUB.sSup_eq hda]⟩
 
 alias ⟨ScottContinuous.map_sSup, ScottContinuous.of_map_sSup⟩ :=
   scottContinuous_iff_map_sSup
