@@ -95,6 +95,10 @@ noncomputable def bind.bindStruct {S : Presieve X} {R : ∀ ⦃Y⦄ ⦃f : Y ⟶
     obtain ⟨Y, g, f, hf, hg, fac⟩ := H
     exact ⟨{ hf := hf, hg := hg, fac := fac }⟩)
 
+lemma BindStruct.bind {S : Presieve X} {R : ∀ ⦃Y⦄ ⦃f : Y ⟶ X⦄, S f → Presieve Y}
+    {Z : C} {h : Z ⟶ X} (b : BindStruct S R h) : bind S R h :=
+  ⟨b.Y, b.g, b.f, b.hf, b.hg, b.fac⟩
+
 @[simp]
 theorem bind_comp {S : Presieve X} {R : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X⦄, S f → Presieve Y} {g : Z ⟶ Y}
     (h₁ : S f) (h₂ : R h₁ g) : bind S R (g ≫ f) :=
