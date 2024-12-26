@@ -167,8 +167,6 @@ open MeasureTheory.Measure
 
 private def measurableSpace_list_int : MeasurableSpace (List ℤ) := ⊤
 
-@[deprecated (since := "2024-12-25")] alias measureableSpace_list_int := measurableSpace_list_int
-
 attribute [local instance] measurableSpace_list_int
 
 private theorem measurableSingletonClass_list_int : MeasurableSingletonClass (List ℤ) :=
