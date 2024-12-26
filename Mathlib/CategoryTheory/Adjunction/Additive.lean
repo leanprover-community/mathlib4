@@ -61,9 +61,7 @@ lemma homAddEquiv_symm_apply (X : C) (Y : D) (f : X ⟶ G.obj Y) :
     (adj.homAddEquiv X Y).symm f = (adj.homEquiv X Y).symm f := rfl
 
 @[simp]
-lemma homAddEquiv_zero (X : C) (Y : D) : adj.homEquiv X Y 0 = 0 := by
-  change adj.homAddEquiv X Y 0 = 0
-  rw [map_zero]
+lemma homAddEquiv_zero (X : C) (Y : D) : adj.homEquiv X Y 0 = 0 := map_zero (adj.homAddEquiv X Y)
 
 @[simp]
 lemma homAddEquiv_add (X : C) (Y : D) (f f' : F.obj X ⟶ Y) :
@@ -72,39 +70,31 @@ lemma homAddEquiv_add (X : C) (Y : D) (f f' : F.obj X ⟶ Y) :
 
 @[simp]
 lemma homAddEquiv_sub (X : C) (Y : D) (f f' : F.obj X ⟶ Y) :
-    adj.homEquiv X Y (f - f') = adj.homEquiv X Y f - adj.homEquiv X Y f' := by
-  change adj.homAddEquiv X Y (f - f') = _
-  simp [AddEquiv.map_sub]
+    adj.homEquiv X Y (f - f') = adj.homEquiv X Y f - adj.homEquiv X Y f' :=
+  map_sub (adj.homAddEquiv X Y) _ _
 
 @[simp]
 lemma homAddEquiv_neg (X : C) (Y : D) (f : F.obj X ⟶ Y) :
-    adj.homEquiv X Y (- f) = - adj.homEquiv X Y f := by
-  change adj.homAddEquiv X Y (- f) = _
-  simp [AddEquiv.map_neg]
+    adj.homEquiv X Y (- f) = - adj.homEquiv X Y f := map_neg (adj.homAddEquiv X Y) _
 
 @[simp]
 lemma homAddEquiv_symm_zero (X : C) (Y : D) :
-    (adj.homEquiv X Y).symm 0 = 0 := by
-  change (adj.homAddEquiv X Y).symm 0 = 0
-  rw [map_zero]
+    (adj.homEquiv X Y).symm 0 = 0 := map_zero (adj.homAddEquiv X Y).symm
 
 @[simp]
 lemma homAddEquiv_symm_add (X : C) (Y : D) (f f' : X ⟶ G.obj Y) :
-    (adj.homEquiv X Y).symm (f + f') = (adj.homEquiv X Y).symm f + (adj.homEquiv X Y).symm f' := by
-  change (adj.homAddEquiv X Y).symm (f + f') = _
-  simp [AddEquivClass.map_add]
+    (adj.homEquiv X Y).symm (f + f') = (adj.homEquiv X Y).symm f + (adj.homEquiv X Y).symm f' :=
+  map_add (adj.homAddEquiv X Y).symm _ _
 
 @[simp]
 lemma homAddEquiv_symm_sub (X : C) (Y : D) (f f' : X ⟶ G.obj Y) :
-    (adj.homEquiv X Y).symm (f - f') = (adj.homEquiv X Y).symm f - (adj.homEquiv X Y).symm f' := by
-  change (adj.homAddEquiv X Y).symm (f - f') = _
-  simp [AddEquiv.map_sub]
+    (adj.homEquiv X Y).symm (f - f') = (adj.homEquiv X Y).symm f - (adj.homEquiv X Y).symm f' :=
+  map_sub (adj.homAddEquiv X Y).symm _ _
 
 @[simp]
 lemma homAddEquiv_symm_neg (X : C) (Y : D) (f : X ⟶ G.obj Y) :
-    (adj.homEquiv X Y).symm (- f) = - (adj.homEquiv X Y).symm f := by
-  change (adj.homAddEquiv X Y).symm (- f) = _
-  simp [AddEquiv.map_neg]
+    (adj.homEquiv X Y).symm (- f) = - (adj.homEquiv X Y).symm f :=
+  map_neg (adj.homAddEquiv X Y).symm _
 
 open Opposite in
 /-- If we have an adjunction `adj : F ⊣ G` of functors between preadditive categories,
@@ -145,7 +135,7 @@ lemma compPreadditiveYonedaIso_hom_app_app_apply (X : Cᵒᵖ) (Y : D)
 lemma compPreadditiveYonedaIso_inv_app_app_apply (X : Cᵒᵖ) (Y : D)
     (a : ULift.{max v₁ v₂, v₂} (F.obj (Opposite.unop X) ⟶ Y)) :
       ((adj.compPreadditiveYonedaIso.inv.app Y).app X) a =
-        {down := (adj.homEquiv (Opposite.unop X) Y) (AddEquiv.ulift a)} := rfl
+        ULift.up ((adj.homEquiv (Opposite.unop X) Y) (AddEquiv.ulift a)) := rfl
 
 end Adjunction
 
