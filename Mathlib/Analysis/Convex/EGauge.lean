@@ -160,6 +160,73 @@ lemma le_egauge_smul_right (c : 𝕜) (s : Set E) (x : E) :
     refine egauge_le_of_mem_smul ⟨y, hy, ?_⟩
     simp only [mul_smul, hxy, inv_smul_smul₀ hc]
 
+
+theorem exists_lt_of_egauge_lt {a : ℝ≥0∞} (h : egauge 𝕜 s x < a) :
+    ∃ b : 𝕜, ‖b‖₊ < a ∧ x ∈ b • s := by
+  obtain ⟨b, c, hx, hy⟩ := exists_lt_of_ciInf_lt  h
+  classical
+  simp [iInf_eq_if] at hx
+  split at hx
+  · use b
+    simp_rw [hx]
+    refine ⟨?_, ‹_›⟩
+    simp at hy
+    cases a
+    · simp
+    exact mod_cast hy _ rfl
+  · cases hx
+
+
+#check ENNReal.iInf_add_iInf
+
+theorem ENNReal.le_iInf_add_iInf {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι → ℝ≥0∞} {g : ι' → ℝ≥0∞}
+    {a : ℝ≥0∞} (h : ∀ i j, a ≤ f i + g j) : a ≤ (⨅ i, f i) + ⨅ j, g j := by
+  sorry
+
+#check le_of_forall_pos_lt_add
+
+lemma egauge_add_right (x y : E) :
+    egauge 𝕜 s (x + y) ≤ egauge 𝕜 s x + egauge 𝕜 s y := by
+  -- refine le_of_forall_pos_lt_add fun ε hε => ?_
+  sorry
+  -- simp [egauge]
+  -- simp_rw [Set.mem_smul_set]
+  -- simp [← iInf_and]
+  -- rw [ENNReal.iInf_add_iInf]
+  -- swap
+  -- · intro i j
+  --   refine ⟨i + j, ?_⟩
+  --   rw [add_smul_subset]
+
+  -- refine iInf_le_iInf
+  -- refine ENNReal.le_iInf_add_iInf (ι := 𝕜) (ι' := 𝕜) ?_
+  -- intros i j
+  -- classical
+  -- simp_rw [iInf_eq_if]
+  -- refine iInf_le_iff ?_
+  -- refine le_ciInf_add_ciInf ?_
+  -- rw [NNReal.le_iInf_add_iInf]
+  -- constructor <;> intros h hc
+  -- apply egauge_le_of_smul_mem
+
+  -- refine le_antisymm ?_ (le_egauge_smul_right c s x)
+  -- rcases eq_or_ne c 0 with rfl | hc
+  -- · simp [egauge_zero_right _ (h rfl)]
+  -- · rw [mul_comm, ← ENNReal.div_le_iff_le_mul (.inl <| by simpa) (.inl ENNReal.coe_ne_top),
+  --     ENNReal.div_eq_inv_mul, ← ENNReal.coe_inv (by simpa), ← nnnorm_inv]
+  --   refine (le_egauge_smul_right _ _ _).trans_eq ?_
+  --   rw [inv_smul_smul₀ hc]
+
+/- justification;
+one extreme: `egauge 𝕜 (s + t) x = egauge 𝕜 s x`
+other extreme:
+  pick `s = a•S, t = b•S`, so `s + t = (a+b)•s` and we have
+  `(egauge 𝕜 (s + t) x)⁻¹ = (a + b) * (egauge 𝕜 S x)⁻¹`
+  -/
+lemma egauge_add_left (s t : Set E) :
+    (egauge 𝕜 (s + t) x)⁻¹ ≤ (egauge 𝕜 s x)⁻¹ + (egauge 𝕜 t x)⁻¹ := by
+  sorry
+
 lemma egauge_smul_right (h : c = 0 → s.Nonempty) (x : E) :
     egauge 𝕜 s (c • x) = ‖c‖₊ * egauge 𝕜 s x := by
   refine le_antisymm ?_ (le_egauge_smul_right c s x)

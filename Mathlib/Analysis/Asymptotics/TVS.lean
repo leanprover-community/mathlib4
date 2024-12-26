@@ -9,6 +9,7 @@ import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.Seminorm
 import Mathlib.Tactic.Peel
 import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-!
 # Asymptotics in a Topological Vector Space
@@ -143,6 +144,49 @@ lemma IsLittleOTVS.zero (g : α → F) (l : Filter α) : IsLittleOTVS 𝕜 (0 : 
   intros U hU
   simpa [egauge_zero_right _ (Set.nonempty_of_mem <| mem_of_mem_nhds hU)] using ⟨univ, by simp⟩
 
+lemma IsLittleOTVS.add [TopologicalAddGroup F] {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
+    (hf₁ : IsLittleOTVS 𝕜 f₁ g l) (hf₂ : IsLittleOTVS 𝕜 f₂ g l) :
+    IsLittleOTVS 𝕜 (f₁ + f₂) g l := by
+  intro U hU
+  let ⟨V₁, hV0₁, hV₁⟩ := hf₁ U hU
+  let ⟨V₂, hV0₂, hV₂⟩ := hf₂ U hU
+  refine ⟨V₁ ∩ V₂, Filter.inter_mem hV0₁ hV0₂, fun ε hε => ?_⟩
+  -- refine ⟨V₁ + V₂, by simpa using Filter.add_mem_add hV0₁ hV0₂, ?_⟩
+  -- intros ε hε
+  specialize hV₁  ε hε
+  specialize hV₂  ε hε
+  have := hV₁.and hV₂
+  filter_upwards [this] with a ⟨ha, hb⟩
+  simp
+  refine (egauge_add_right _ _).trans <| ?_ -- add_le_add ha hb |>.trans ?_
+  -- rw [← mul_add]
+  -- gcongr
+  have := le_egauge_inter (𝕜 := 𝕜) V₁ V₂ (g a)
+  -- sorry
+  sorry
+
+lemma IsLittleOTVS.add'
+    [TopologicalAddGroup F] [Module ℝ F] [LocallyConvexSpace ℝ F]
+    [TopologicalAddGroup E] [Module ℝ E] [LocallyConvexSpace ℝ E]
+    {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
+    (hf₁ : IsLittleOTVS 𝕜 f₁ g l) (hf₂ : IsLittleOTVS 𝕜 f₂ g l) :
+    IsLittleOTVS 𝕜 (f₁ + f₂) g l := by
+  rw [(LocallyConvexSpace.convex_basis_zero ℝ E).isLittleOTVS_iff
+    (LocallyConvexSpace.convex_basis_zero ℝ F)] at hf₁ hf₂ ⊢
+  intro U hU
+  let ⟨V₁, ⟨hV0₁, hVc₁⟩, hV₁⟩ := hf₁ U hU
+  let ⟨V₂, ⟨hV0₂, hVc₂⟩, hV₂⟩ := hf₂ U hU
+  refine ⟨V₁ + V₂, ⟨by simpa using Filter.add_mem_add hV0₁ hV0₂, hVc₁.add hVc₂⟩, fun ε hε => ?_⟩
+  specialize hV₁  (ε/2) sorry
+  specialize hV₂  (ε/2) sorry
+  have := hV₁.and hV₂
+  filter_upwards [this] with a ⟨ha, hb⟩
+  simp at ha hb ⊢
+  refine (egauge_add_right _ _).trans <| add_le_add ha hb |>.trans <| ?_
+  rw [← mul_add]
+
+
+#exit
 protected lemma IsLittleOTVS.smul_left {f : α → E} {g : α → F} {l : Filter α}
     (h : IsLittleOTVS 𝕜 f g l) (c : α → 𝕜) :
     IsLittleOTVS 𝕜 (fun x ↦ c x • f x) (fun x ↦ c x • g x) l := by
