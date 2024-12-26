@@ -301,6 +301,9 @@ theorem fst_image_prod (s : Set β) {t : Set α} (ht : t.Nonempty) : Prod.fst ''
     let ⟨x, hx⟩ := ht
     ⟨(y, x), ⟨hy, hx⟩, rfl⟩
 
+theorem subset_fst_image_times_snd_image (s : Set (α × β)) :
+    s ⊆ (Prod.fst '' s) ×ˢ (Prod.snd '' s) := fun ⟨p₁, p₂⟩ _ => by aesop
+
 lemma mapsTo_fst_prod {s : Set α} {t : Set β} : MapsTo Prod.fst (s ×ˢ t) s :=
   fun _ hx ↦ (mem_prod.1 hx).1
 
