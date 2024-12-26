@@ -203,8 +203,12 @@ represent the same element of `W`. -/
 def IsReduced (ω : List B) : Prop := ℓ (π ω) = ω.length
 
 @[simp]
-theorem isReduced_reverse (ω : List B) : cs.IsReduced (ω.reverse) ↔ cs.IsReduced ω := by
+theorem isReduced_reverse_iff (ω : List B) : cs.IsReduced (ω.reverse) ↔ cs.IsReduced ω := by
   simp [IsReduced]
+
+theorem IsReduced.reverse {cs : CoxeterSystem M W} {ω : List B}
+    (hω : cs.IsReduced ω) : cs.IsReduced (ω.reverse) :=
+  (cs.isReduced_reverse_iff ω).mpr hω
 
 theorem exists_reduced_word' (w : W) : ∃ ω : List B, cs.IsReduced ω ∧ w = π ω := by
   rcases cs.exists_reduced_word w with ⟨ω, hω, rfl⟩
@@ -224,10 +228,12 @@ private theorem isReduced_take_and_drop {ω : List B} (hω : cs.IsReduced ω) (j
   unfold IsReduced
   omega
 
-theorem isReduced_take {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.take j) :=
+theorem IsReduced.take {cs : CoxeterSystem M W} {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) :
+    cs.IsReduced (ω.take j) :=
   (isReduced_take_and_drop _ hω _).1
 
-theorem isReduced_drop {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.drop j) :=
+theorem IsReduced.drop {cs : CoxeterSystem M W} {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) :
+    cs.IsReduced (ω.drop j) :=
   (isReduced_take_and_drop _ hω _).2
 
 theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (hm : m > M i i') :
@@ -240,10 +246,7 @@ theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (
       omega
     have : M i i' + 1 ≤ M i i' * 2 := by linarith [Nat.one_le_iff_ne_zero.mpr hM]
     rw [cs.prod_alternatingWord_eq_prod_alternatingWord_sub i i' _ this]
-    have : M i i' * 2 - (M i i' + 1) = M i i' - 1 := by
-      apply (Nat.sub_eq_iff_eq_add' this).mpr
-      rw [add_assoc, add_comm 1, Nat.sub_add_cancel (Nat.one_le_iff_ne_zero.mpr hM)]
-      exact mul_two _
+    have : M i i' * 2 - (M i i' + 1) = M i i' - 1 := by omega
     rw [this]
     calc
       ℓ (π (alternatingWord i' i (M i i' - 1)))
@@ -254,7 +257,7 @@ theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (
   · -- Inductive step
     contrapose! ih
     rw [alternatingWord_succ'] at ih
-    apply isReduced_drop (j := 1) at ih
+    apply IsReduced.drop (j := 1) at ih
     simpa using ih
 
 /-! ### Descents -/
@@ -300,8 +303,7 @@ theorem isLeftDescent_iff {w : W} {i : B} :
   constructor
   · intro _
     exact (cs.length_simple_mul w i).resolve_left (by omega)
-  · intro _
-    omega
+  · omega
 
 theorem not_isLeftDescent_iff {w : W} {i : B} :
     ¬cs.IsLeftDescent w i ↔ ℓ (s i * w) = ℓ w + 1 := by
@@ -309,8 +311,7 @@ theorem not_isLeftDescent_iff {w : W} {i : B} :
   constructor
   · intro _
     exact (cs.length_simple_mul w i).resolve_right (by omega)
-  · intro _
-    omega
+  · omega
 
 theorem isRightDescent_iff {w : W} {i : B} :
     cs.IsRightDescent w i ↔ ℓ (w * s i) + 1 = ℓ w := by
@@ -318,8 +319,7 @@ theorem isRightDescent_iff {w : W} {i : B} :
   constructor
   · intro _
     exact (cs.length_mul_simple w i).resolve_left (by omega)
-  · intro _
-    omega
+  · omega
 
 theorem not_isRightDescent_iff {w : W} {i : B} :
     ¬cs.IsRightDescent w i ↔ ℓ (w * s i) = ℓ w + 1 := by
@@ -327,8 +327,7 @@ theorem not_isRightDescent_iff {w : W} {i : B} :
   constructor
   · intro _
     exact (cs.length_mul_simple w i).resolve_right (by omega)
-  · intro _
-    omega
+  · omega
 
 theorem isLeftDescent_iff_not_isLeftDescent_mul {w : W} {i : B} :
     cs.IsLeftDescent w i ↔ ¬cs.IsLeftDescent (s i * w) i := by

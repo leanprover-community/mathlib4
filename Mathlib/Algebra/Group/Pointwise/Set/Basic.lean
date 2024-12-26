@@ -1463,9 +1463,35 @@ lemma preimage_div (hm : Injective m) {s t : Set β} (hs : s ⊆ range m) (ht : 
 
 end Group
 
+section Pi
+
 variable {ι : Type*} {α : ι → Type*} [∀ i, Inv (α i)]
 
 @[to_additive (attr := simp)]
 lemma inv_pi (s : Set ι) (t : ∀ i, Set (α i)) : (s.pi t)⁻¹ = s.pi fun i ↦ (t i)⁻¹ := by ext x; simp
+
+end Pi
+
+section Pointwise
+
+open scoped Pointwise
+
+@[to_additive]
+lemma MapsTo.mul [Mul β] {A : Set α} {B₁ B₂ : Set β} {f₁ f₂ : α → β}
+    (h₁ : MapsTo f₁ A B₁) (h₂ : MapsTo f₂ A B₂) : MapsTo (f₁ * f₂) A (B₁ * B₂) :=
+  fun _ h => mul_mem_mul (h₁ h) (h₂ h)
+
+@[to_additive]
+lemma MapsTo.inv [DivisionCommMonoid β] {A : Set α} {B : Set β} {f : α → β} (h : MapsTo f A B) :
+    MapsTo (f⁻¹) A (B⁻¹) :=
+  fun _ ha => inv_mem_inv.2 (h ha)
+
+
+@[to_additive]
+lemma MapsTo.div [DivisionCommMonoid β] {A : Set α} {B₁ B₂ : Set β} {f₁ f₂ : α → β}
+    (h₁ : MapsTo f₁ A B₁) (h₂ : MapsTo f₂ A B₂) : MapsTo (f₁ / f₂) A (B₁ / B₂) :=
+  fun _ ha => div_mem_div (h₁ ha) (h₂ ha)
+
+end Pointwise
 
 end Set
