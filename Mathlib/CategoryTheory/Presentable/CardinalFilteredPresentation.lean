@@ -36,6 +36,7 @@ variable {X : C} {κ : Cardinal.{w}} [Fact κ.IsRegular]
 variable (p : CardinalFilteredPresentation X κ)
 
 lemma isCardinalPresentable_pt (h : ∀ (j : p.J), IsCardinalPresentable (p.F.obj j) κ)
+    [LocallySmall.{w} C]
     (hJ : HasCardinalLT (Arrow p.J) κ)
     [HasLimitsOfShape p.Jᵒᵖ (Type v)] :
     IsCardinalPresentable X κ :=

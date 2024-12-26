@@ -6,6 +6,8 @@ Authors: Joël Riou
 
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+import Mathlib.CategoryTheory.Limits.Types
+import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Presentable.IsCardinalFiltered
 import Mathlib.SetTheory.Cardinal.Cofinality
 import Mathlib.SetTheory.Cardinal.HasCardinalLT
@@ -28,15 +30,80 @@ Similar as for accessible functors, we define a type class `IsAccessible`.
 
 -/
 
-universe w w' v'' v' v u'' u' u
+universe w w' v'' v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
 open Limits Opposite
 
-variable {C : Type u} [Category.{v} C] {D : Type u'} [Category.{v'} D]
+namespace Limits
+
+namespace Types
+
+variable {J : Type u₁} [Category.{v₁} J]
+
+namespace uliftFunctor
+
+variable {F : J ⥤ Type w'} (c : Cocone F)
+
+variable (F) in
+def quotEquiv : Quot F ≃ Quot (F ⋙ uliftFunctor.{w}) where
+  toFun := Quot.lift (fun ⟨j, x⟩ ↦ Quot.ι _ j (ULift.up x)) (by
+    rintro ⟨j₁, x₁⟩ ⟨j₂, x₂⟩ ⟨f, h⟩
+    dsimp at f h
+    exact Quot.sound ⟨f, by simp [h]⟩)
+  invFun := Quot.lift (fun ⟨j, x⟩ ↦ Quot.ι _ j (ULift.down x)) (by
+    rintro ⟨j₁, ⟨x₁⟩⟩ ⟨j₂, ⟨x₂⟩⟩ ⟨f, h⟩
+    dsimp at f h ⊢
+    refine Quot.sound ⟨f, by simpa using h⟩)
+  left_inv := by rintro ⟨_, _⟩; rfl
+  right_inv := by rintro ⟨_, _⟩; rfl
+
+lemma quotEquiv_comm :
+    Quot.desc (uliftFunctor.{w}.mapCocone c) ∘ quotEquiv F =
+    ULift.up ∘ Quot.desc c := by
+  ext ⟨j, x⟩
+  simp [quotEquiv]
+  rfl
+
+lemma isColimit_cocone_iff :
+    Nonempty (IsColimit c) ↔ Nonempty (IsColimit (uliftFunctor.{w}.mapCocone c)) := by
+  simp only [isColimit_iff_bijective_desc]
+  rw [← Function.Bijective.of_comp_iff _ ((quotEquiv F).bijective), quotEquiv_comm.{w} c,
+    ← Function.Bijective.of_comp_iff' Equiv.ulift.symm.bijective]
+  rfl
+
+noncomputable def isColimitEquiv :
+    IsColimit c ≃ IsColimit (uliftFunctor.{w}.mapCocone c) where
+  toFun hc := ((isColimit_cocone_iff c).1 ⟨hc⟩).some
+  invFun hc := ((isColimit_cocone_iff c).2 ⟨hc⟩).some
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := Subsingleton.elim _ _
+
+instance : PreservesColimit F (uliftFunctor.{w, w'}) where
+  preserves {c} hc := ⟨isColimitEquiv c hc⟩
+
+instance : ReflectsColimit F (uliftFunctor.{w, w'}) where
+  reflects {c} hc := ⟨(isColimitEquiv c).symm hc⟩
+
+instance : PreservesColimitsOfShape J (uliftFunctor.{w, w'}) where
+
+instance : ReflectsColimitsOfShape J (uliftFunctor.{w, w'}) where
+
+end uliftFunctor
+
+instance : PreservesColimitsOfSize.{v₁, u₁} (uliftFunctor.{w, w'}) where
+instance : ReflectsColimitsOfSize.{v₁, u₁} (uliftFunctor.{w, w'}) where
+
+end Types
+
+end Limits
+
+variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
 namespace Functor
+
+section
 
 variable (F G : C ⥤ D) (e : F ≅ G) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
@@ -53,7 +120,7 @@ lemma preservesColimitsOfShape_of_isCardinalAccessible [F.IsCardinalAccessible �
 
 lemma preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall
     [F.IsCardinalAccessible κ]
-    (J : Type u'') [Category.{v''} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] :
+    (J : Type u₃) [Category.{v₃} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] :
     PreservesColimitsOfShape J F := by
   have := IsCardinalFiltered.of_equivalence κ (equivSmallModel.{w} J)
   have := F.preservesColimitsOfShape_of_isCardinalAccessible κ (SmallModel.{w} J)
@@ -74,6 +141,8 @@ lemma isCardinalAccessible_of_iso [F.IsCardinalAccessible κ] : G.IsCardinalAcce
     have := F.preservesColimitsOfShape_of_isCardinalAccessible κ J
     exact preservesColimitsOfShape_of_natIso e
 
+end
+
 end Functor
 
 variable (X : C) (Y : C) (e : X ≅ Y) (κ : Cardinal.{w}) [Fact κ.IsRegular]
@@ -90,7 +159,7 @@ lemma preservesColimitsOfShape_of_isCardinalPresentable [IsCardinalPresentable X
 
 lemma preservesColimitsOfShape_of_isCardinalPresentable_of_essentiallySmall
     [IsCardinalPresentable X κ]
-    (J : Type u'') [Category.{v''} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] :
+    (J : Type u₃) [Category.{v₃} J] [EssentiallySmall.{w} J] [IsCardinalFiltered J κ] :
     PreservesColimitsOfShape J (coyoneda.obj (op X)) :=
   (coyoneda.obj (op X)).preservesColimitsOfShape_of_isCardinalAccessible_of_essentiallySmall κ J
 
@@ -104,6 +173,50 @@ include e in
 variable {X Y} in
 lemma isCardinalPresentable_of_iso [IsCardinalPresentable X κ] : IsCardinalPresentable Y κ :=
   Functor.isCardinalAccessible_of_iso (coyoneda.mapIso e.symm.op) κ
+
+section
+
+lemma isCardinalPresentable_of_equivalence
+    {C' : Type u₃} [Category.{v₃} C'] [IsCardinalPresentable X κ] (e : C ≌ C') :
+    IsCardinalPresentable (e.functor.obj X) κ := by
+  refine ⟨fun J _ _ ↦ ⟨fun {Y} ↦ ?_⟩⟩
+  have := preservesColimitsOfShape_of_isCardinalPresentable X κ J
+  suffices PreservesColimit Y (coyoneda.obj (op (e.functor.obj X)) ⋙ uliftFunctor.{v₁}) from
+    ⟨fun {c} hc ↦ ⟨isColimitOfReflects uliftFunctor.{v₁}
+        (isColimitOfPreserves (coyoneda.obj (op (e.functor.obj X)) ⋙ uliftFunctor.{v₁}) hc)⟩⟩
+  have iso : coyoneda.obj (op (e.functor.obj X)) ⋙ uliftFunctor.{v₁} ≅
+    e.inverse ⋙ coyoneda.obj (op X) ⋙ uliftFunctor.{v₃} :=
+    NatIso.ofComponents (fun Z ↦
+      (Equiv.ulift.trans ((e.toAdjunction.homEquiv X Z).trans Equiv.ulift.symm)).toIso) (by
+        intro _ _ f
+        ext ⟨g⟩
+        apply Equiv.ulift.injective
+        simp [Adjunction.homEquiv_unit])
+  exact preservesColimit_of_natIso Y iso.symm
+
+instance isCardinalPresentable_of_isEquivalence
+    {C' : Type u₃} [Category.{v₃} C'] [IsCardinalPresentable X κ] (F : C ⥤ C')
+    [F.IsEquivalence] :
+    IsCardinalPresentable (F.obj X) κ :=
+  isCardinalPresentable_of_equivalence X κ F.asEquivalence
+
+@[simp]
+lemma isCardinalPresentable_iff_of_isEquivalence
+    {C' : Type u₃} [Category.{v₃} C'] (F : C ⥤ C')
+    [F.IsEquivalence] :
+    IsCardinalPresentable (F.obj X) κ ↔ IsCardinalPresentable X κ := by
+  constructor
+  · intro
+    exact isCardinalPresentable_of_iso
+      (show F.inv.obj (F.obj X) ≅ X from F.asEquivalence.unitIso.symm.app X : ) κ
+  · intro
+    infer_instance
+
+lemma isCardinalPresentable_shrinkHoms_iff [LocallySmall.{w} C] :
+    IsCardinalPresentable ((ShrinkHoms.functor.{w} C).obj X) κ ↔ IsCardinalPresentable X κ :=
+  isCardinalPresentable_iff_of_isEquivalence X κ _
+
+end
 
 section
 

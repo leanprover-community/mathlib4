@@ -152,8 +152,8 @@ end Accessible
 
 lemma isCardinalAccessible_of_isLimit {K : Type u'} [Category.{v'} K] {F : K ⥤ C ⥤ Type w'}
     (c : Cone F) (hc : IsLimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [HasLimitsOfShape K (Type w')]
     (hK : HasCardinalLT (Arrow K) κ)
-    [HasLimitsOfShape K (Type w')] -- is it possible to get rid of this?
     [∀ k, (F.obj k).IsCardinalAccessible κ] :
     c.pt.IsCardinalAccessible κ where
   preservesColimitOfShape {J _ _} := ⟨fun {X} ↦ ⟨fun {cX} hcX ↦ by
@@ -164,11 +164,11 @@ lemma isCardinalAccessible_of_isLimit {K : Type u'} [Category.{v'} K] {F : K ⥤
 
 end Functor
 
-lemma isCardinalPresentable_of_isColimit
-    {K : Type u'} [Category.{v'} K] {Y : K ⥤ C}
-    (c : Cocone Y) (hc : IsColimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+/-- This is `isCardinalPresentable_of_isColimit` in the particular case `w = v`. -/
+lemma isCardinalPresentable_of_isColimit'
+    {K : Type v} [Category.{v} K] {Y : K ⥤ C}
+    (c : Cocone Y) (hc : IsColimit c) (κ : Cardinal.{v}) [Fact κ.IsRegular]
     (hK : HasCardinalLT (Arrow K) κ)
-    [HasLimitsOfShape Kᵒᵖ (Type v)]
     [∀ k, IsCardinalPresentable (Y.obj k) κ] :
     IsCardinalPresentable c.pt κ := by
   have : ∀ (k : Kᵒᵖ), ((Y.op ⋙ coyoneda).obj k).IsCardinalAccessible κ := fun k ↦ by
@@ -176,5 +176,18 @@ lemma isCardinalPresentable_of_isColimit
     infer_instance
   exact Functor.isCardinalAccessible_of_isLimit
     (coyoneda.mapCone c.op) (isLimitOfPreserves _ hc.op) κ (by simpa)
+
+lemma isCardinalPresentable_of_isColimit
+    [LocallySmall.{w} C]
+    {K : Type w} [Category.{w} K] {Y : K ⥤ C}
+    (c : Cocone Y) (hc : IsColimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    (hK : HasCardinalLT (Arrow K) κ)
+    [∀ k, IsCardinalPresentable (Y.obj k) κ] :
+    IsCardinalPresentable c.pt κ := by
+  rw [← isCardinalPresentable_shrinkHoms_iff.{w}]
+  let e := ShrinkHoms.equivalence C
+  have : ∀ (k : K), IsCardinalPresentable ((Y ⋙ e.functor).obj k) κ := by
+    dsimp; infer_instance
+  exact isCardinalPresentable_of_isColimit' _ (isColimitOfPreserves e.functor hc) κ hK
 
 end CategoryTheory
