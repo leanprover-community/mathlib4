@@ -19,8 +19,7 @@ variable {S : Type*} [CommSemigroup S] {a : S}
 
 variable (S) in
 /--
-In a commutative semigroup `S`, the type `Subsemigroup.sqIn S`
-is the subsemigroup of squares in `S`.
+In a commutative semigroup `S`, `Subsemigroup.sqIn S` is the subsemigroup of squares in `S`.
 -/
 @[to_additive evenIn
 "In a commutative additive semigroup `S`, the type `AddSubsemigroup.evenIn S`
@@ -42,7 +41,7 @@ variable {M : Type*} [CommMonoid M] {a : M}
 
 variable (M) in
 /--
-In a commutative monoid `M`, the type `Submonoid.sqIn M` is the submonoid of squares in `M`.
+In a commutative monoid `M`, `Submonoid.sqIn M` is the submonoid of squares in `M`.
 -/
 @[to_additive evenIn
 "In a commutative additive monoid `M`, the type `AddSubmonoid.evenIn M`
@@ -67,7 +66,7 @@ variable {G : Type*} [CommGroup G] {a : G}
 
 variable (G) in
 /--
-In an abelian group `G`, the type `Submonoid.sqIn G` is the subgroup of squares in `G`.
+In an abelian group `G`, `Submonoid.sqIn G` is the subgroup of squares in `G`.
 -/
 @[to_additive evenIn
 "In an abelian additive group `G`, the type `Submonoid.sqIn G` is
@@ -90,5 +89,5 @@ end Subgroup
 theorem IsSquare.nonneg {R : Type*} [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
     [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
     {x : R} (h : IsSquare x) : 0 ≤ x := by
-  rcases h with ⟨y, rfl⟩
+  rcases (isSquare_iff _).mp h with ⟨y, rfl⟩
   exact mul_self_nonneg y
