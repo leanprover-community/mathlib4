@@ -1147,10 +1147,7 @@ theorem Valid'.balance'_aux {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (h
 theorem Valid'.balance'_lemma {α l l' r r'} (H1 : BalancedSz l' r')
     (H2 : Nat.dist (@size α l) l' ≤ 1 ∧ size r = r' ∨ Nat.dist (size r) r' ≤ 1 ∧ size l = l') :
     2 * @size α r ≤ 9 * size l + 5 ∨ size r ≤ 3 := by
-  suffices @size α r ≤ 3 * (size l + 1) by
-    rcases Nat.eq_zero_or_pos (size l) with l0 | l0
-    · apply Or.inr; rwa [l0] at this
-    change 1 ≤ _ at l0; apply Or.inl; omega
+  suffices @size α r ≤ 3 * (size l + 1) by omega
   rcases H2 with (⟨hl, rfl⟩ | ⟨hr, rfl⟩) <;> rcases H1 with (h | ⟨_, h₂⟩)
   · exact le_trans (Nat.le_add_left _ _) (le_trans h (Nat.le_add_left _ _))
   · exact
@@ -1378,7 +1375,7 @@ theorem Valid'.map_aux {β} [Preorder β] {f : α → β} (f_strict_mono : Stric
     simp only [map, size_nil, and_true]; apply valid'_nil
     cases a₁; · trivial
     cases a₂; · trivial
-    simp only [Bounded]
+    simp only [Option.map, Bounded]
     exact f_strict_mono h.ord
   | node _ _ _ _ t_ih_l t_ih_r =>
     have t_ih_l' := t_ih_l h.left

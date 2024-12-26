@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Peter Pfaffelhuber, Yaël Dillies, Kin Yau James Wong
 -/
 import Mathlib.MeasureTheory.PiSystem
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Topology.Constructions
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 

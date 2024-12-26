@@ -82,11 +82,16 @@ theorem zero_lt_iff : 0 < a ↔ a ≠ 0 :=
 theorem ne_zero_of_lt (h : b < a) : a ≠ 0 := fun h1 ↦ not_lt_zero' <| show b < 0 from h1 ▸ h
 
 instance instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual :
-    LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) :=
-  { Additive.orderedAddCommMonoid, Additive.linearOrder with
-    top := (0 : α)
-    top_add' := fun a ↦ zero_mul a.toMul
-    le_top := fun _ ↦ zero_le' }
+    LinearOrderedAddCommMonoidWithTop (Additive αᵒᵈ) where
+  top := (0 : α)
+  top_add' := fun a ↦ zero_mul a.toMul
+  le_top := fun _ ↦ zero_le'
+
+instance instLinearOrderedAddCommMonoidWithTopOrderDualAdditive :
+    LinearOrderedAddCommMonoidWithTop (Additive α)ᵒᵈ where
+  top := OrderDual.toDual (Additive.ofMul 0)
+  top_add' := fun a ↦ zero_mul (Additive.toMul (OrderDual.ofDual a))
+  le_top := fun a ↦ @zero_le' _ _ (Additive.toMul (OrderDual.ofDual a))
 
 variable [NoZeroDivisors α]
 
@@ -191,11 +196,17 @@ theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
   ext
   rfl
 
-instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
-  { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
-    Additive.instNontrivial with
-    neg_top := inv_zero (G₀ := α)
-    add_neg_cancel := fun a ha ↦ mul_inv_cancel₀ (G₀ := α) (id ha : a.toMul ≠ 0) }
+instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) where
+  __ := Additive.subNegMonoid
+  __ := instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual
+  neg_top := inv_zero (G₀ := α)
+  add_neg_cancel := fun a ha ↦ mul_inv_cancel₀ (G₀ := α) (id ha : a.toMul ≠ 0)
+
+instance : LinearOrderedAddCommGroupWithTop (Additive α)ᵒᵈ where
+  __ := instSubNegAddMonoidOrderDual
+  __ := instLinearOrderedAddCommMonoidWithTopOrderDualAdditive
+  neg_top := inv_zero (G₀ := α)
+  add_neg_cancel := fun a ha ↦ mul_inv_cancel₀ (G₀ := α) (id ha : a.toMul ≠ 0)
 
 @[deprecated pow_lt_pow_right₀ (since := "2024-11-18")]
 lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := pow_lt_pow_right₀ ha n.lt_succ_self
@@ -204,14 +215,15 @@ end LinearOrderedCommGroupWithZero
 
 instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
     [LinearOrderedAddCommMonoidWithTop α] :
-    LinearOrderedCommMonoidWithZero (Multiplicative αᵒᵈ) :=
-  { Multiplicative.orderedCommMonoid, Multiplicative.linearOrder with
-    zero := Multiplicative.ofAdd (OrderDual.toDual ⊤)
-    zero_mul := @top_add _ (_)
-    -- Porting note:  Here and elsewhere in the file, just `zero_mul` worked in Lean 3. See
-    -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Type.20synonyms
-    mul_zero := @add_top _ (_)
-    zero_le_one := (le_top : (0 : α) ≤ ⊤) }
+    LinearOrderedCommMonoidWithZero (Multiplicative αᵒᵈ) where
+  __ := Multiplicative.orderedCommMonoid
+  __ := Multiplicative.linearOrder
+  zero := Multiplicative.ofAdd (OrderDual.toDual ⊤)
+  zero_mul := @top_add _ (_)
+  -- Porting note:  Here and elsewhere in the file, just `zero_mul` worked in Lean 3. See
+  -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Type.20synonyms
+  mul_zero := @add_top _ (_)
+  zero_le_one := (le_top : (0 : α) ≤ ⊤)
 
 @[simp]
 theorem ofAdd_toDual_eq_zero_iff [LinearOrderedAddCommMonoidWithTop α]

@@ -483,6 +483,10 @@ theorem image_sdiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Inj
     (s \ t).image f = s.image f \ t.image f :=
   mod_cast Set.image_diff hf s t
 
+lemma image_sdiff_of_injOn [DecidableEq α] {t : Finset α} (hf : Set.InjOn f s) (hts : t ⊆ s) :
+    (s \ t).image f = s.image f \ t.image f :=
+  mod_cast Set.image_diff_of_injOn hf <| coe_subset.2 hts
+
 open scoped symmDiff in
 theorem image_symmDiff [DecidableEq α] {f : α → β} (s t : Finset α) (hf : Injective f) :
     (s ∆ t).image f = s.image f ∆ t.image f :=

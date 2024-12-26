@@ -300,7 +300,7 @@
   "Mathlib.Tactic.CategoryTheory.BicategoryCoherence":
   ["Mathlib.CategoryTheory.Bicategory.Coherence",
    "Mathlib.Tactic.CategoryTheory.BicategoricalComp"],
-  "Mathlib.Tactic.CC.Addition":
+  "Mathlib.Tactic.CC.MkProof":
   ["Mathlib.Logic.Basic", "Mathlib.Tactic.CC.Lemmas"],
   "Mathlib.Tactic.ByContra": ["Batteries.Tactic.Init"],
   "Mathlib.Tactic.Bound.Init": ["Aesop.Frontend.Command"],
@@ -425,8 +425,7 @@
   "Mathlib.Analysis.Normed.Operator.LinearIsometry":
   ["Mathlib.Algebra.Star.Basic"],
   "Mathlib.Analysis.InnerProductSpace.PiL2": ["Mathlib.Util.Superscript"],
-  "Mathlib.Analysis.InnerProductSpace.Basic":
-  ["Mathlib.Algebra.Module.LinearMap.Basic"],
+  "Mathlib.Analysis.InnerProductSpace.Defs": ["Mathlib.Data.Complex.Basic"],
   "Mathlib.Analysis.Distribution.SchwartzSpace": ["Mathlib.Tactic.MoveAdd"],
   "Mathlib.Analysis.Convex.Star": ["Mathlib.Algebra.Order.Module.Synonym"],
   "Mathlib.Analysis.Convex.Basic":
