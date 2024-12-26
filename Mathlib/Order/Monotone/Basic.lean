@@ -1057,15 +1057,18 @@ theorem Antitone.prod_map (hf : Antitone f) (hg : Antitone g) : Antitone (Prod.m
   fun _ _ h ↦ ⟨hf h.1, hg h.2⟩
 
 lemma Monotone.separately_iff_jointly {h : α × β → γ} :
-    (∀ a, Monotone (fun b => h (a,b)))∧(∀ b, Monotone (fun a => h (a,b))) ↔ Monotone h :=
+    (∀ a, Monotone (fun b => h (a,b))) ∧ (∀ b, Monotone (fun a => h (a,b))) ↔ Monotone h :=
   ⟨fun ⟨h₂, h₁⟩ _ _ hab =>
       le_trans (h₁ _ (Prod.mk_le_mk.mp hab).1) (h₂ _ (Prod.mk_le_mk.mp hab).2),
     fun h => ⟨fun _ _ _ hab => h (Prod.mk_le_mk_iff_right.mpr hab),
       fun _ _ _ hab => h (Prod.mk_le_mk_iff_left.mpr hab)⟩ ⟩
 
-lemma Antitone.jointly_of_separately {h : α × β → γ} (h₂ : ∀ a, Antitone (fun b => h (a,b)))
-    (h₁ : ∀ b, Antitone (fun a => h (a,b))) : Antitone h := fun _ _ hab =>
-  le_trans (h₁ _ (Prod.mk_le_mk.mp hab).1) (h₂ _ (Prod.mk_le_mk.mp hab).2)
+lemma Antitone.separately_iff_jointly {h : α × β → γ} :
+    (∀ a, Antitone (fun b => h (a,b))) ∧ (∀ b, Antitone (fun a => h (a,b))) ↔ Antitone h :=
+  ⟨fun ⟨h₂, h₁⟩ _ _ hab =>
+      le_trans (h₁ _ (Prod.mk_le_mk.mp hab).1) (h₂ _ (Prod.mk_le_mk.mp hab).2),
+    fun h => ⟨fun _ _ _ hab => h (Prod.mk_le_mk_iff_right.mpr hab),
+      fun _ _ _ hab => h (Prod.mk_le_mk_iff_left.mpr hab)⟩ ⟩
 
 end Preorder
 
