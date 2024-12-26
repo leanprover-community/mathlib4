@@ -385,11 +385,11 @@ theorem den_neg_eq_den (q : ℚ) : (-q).den = q.den :=
 theorem num_neg_eq_neg_num (q : ℚ) : (-q).num = -q.num :=
   rfl
 
-@[simp]
+-- Not `simp` as `num_ofNat` is stronger.
 theorem num_zero : Rat.num 0 = 0 :=
   rfl
 
-@[simp]
+-- Not `simp` as `den_ofNat` is stronger.
 theorem den_zero : Rat.den 0 = 1 :=
   rfl
 
