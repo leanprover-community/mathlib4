@@ -122,7 +122,6 @@
  ["docBlame", "Dist.dist"],
  ["docBlame", "DivisibleBy.div"],
  ["docBlame", "EDist.edist"],
- ["docBlame", "ENorm.toFun"],
  ["docBlame", "EqualCharZero.pnatCast"],
  ["docBlame", "Equiv.invFun"],
  ["docBlame", "Equiv.toFun"],

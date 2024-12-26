@@ -3,7 +3,7 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.Order.Hom.Normed
+import Mathlib.Analysis.Normed.Order.Hom.Basic
 import Mathlib.Topology.MetricSpace.Ultra.Basic
 
 /-!
@@ -23,7 +23,7 @@ the argument is an autoparam that resolves by definitional equality when using t
 variable {F α : Type*} [FunLike F α ℝ]
 
 /-- Proves that when a `SeminormedAddGroup` structure is constructed from an
-`AddGroupSeminormClass` that satifies `IsNonarchimedean`, the group has an `IsUltrametricDist`. -/
+`AddGroupSeminormClass` that satisfies `IsNonarchimedean`, the group has an `IsUltrametricDist`. -/
 lemma AddGroupSeminormClass.isUltrametricDist [AddGroup α] [AddGroupSeminormClass F α ℝ]
     [inst : Dist α] {f : F} (hna : IsNonarchimedean f)
     (hd : inst = (AddGroupSeminormClass.toSeminormedAddGroup f).toDist := by rfl) :
