@@ -165,7 +165,7 @@ Note this looks for `ε ≤ 1` in the context. -/
 def evalTriangleRemovalBound : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(triangleRemovalBound $ε) =>
-    let some hε₁ ← Qq.findLocalDeclWithType? q($ε ≤ 1) | failure
+    let some hε₁ ← findLocalDeclWithTypeQ? q($ε ≤ 1) | failure
     let .positive hε ← core q(inferInstance) q(inferInstance) ε | failure
     assertInstancesCommute
     pure (.positive q(triangleRemovalBound_pos $hε $hε₁))

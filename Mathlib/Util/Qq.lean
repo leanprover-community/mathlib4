@@ -31,8 +31,8 @@ theorem QuotedDefEq.rfl {u : Level} {α : Q(Sort u)} {a : Q($α)} : @QuotedDefEq
 /-- Return a local declaration whose type is definitionally equal to `sort`.
 
 This is a Qq version of `Lean.Meta.findLocalDeclWithType?` -/
-def findLocalDeclWithType? {u : Level} (sort : Q(Sort u)) : MetaM (Option Q($sort)) := do
-  let some fvarId ← Meta.findLocalDeclWithType? q($sort) | return none
+def findLocalDeclWithTypeQ? {u : Level} (sort : Q(Sort u)) : MetaM (Option Q($sort)) := do
+  let some fvarId ← findLocalDeclWithType? q($sort) | return none
   return some <| .fvar fvarId
 
 end Qq

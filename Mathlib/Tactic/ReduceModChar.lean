@@ -192,9 +192,9 @@ match Expr.getAppFnArgs t with
     let .some instRing ← trySynthInstanceQ q(Ring $t) | return .failure
 
     let n ← mkFreshExprMVarQ q(ℕ)
-    let .some instCharP ← findLocalDeclWithType? q(CharP $t $n) | return .failure
+    let .some instCharP ← findLocalDeclWithTypeQ? q(CharP $t $n) | return .failure
 
-    return .intLike (← instantiateMVarsQ n) instRing (.fvar instCharP)
+    return .intLike (← instantiateMVarsQ n) instRing instCharP
 
 /-- Given an expression `e`, determine whether it is a numeric expression in characteristic `n`,
 and if so, reduce `e` modulo `n`.

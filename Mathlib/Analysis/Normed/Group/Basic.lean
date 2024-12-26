@@ -1426,7 +1426,7 @@ def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
     -- Check whether we are in a normed group and whether the context contains a `a ≠ 1` assumption
     let o : Option (Q(NormedGroup $E) × Q($a ≠ 1)) := ← do
       let .some normedGroup_E ← trySynthInstanceQ q(NormedGroup $E) | return none
-      let some pa ← Qq.findLocalDeclWithType? q($a ≠ 1) | return none
+      let some pa ← findLocalDeclWithTypeQ? q($a ≠ 1) | return none
       return some (normedGroup_E, pa)
     match o with
     -- If so, return a proof of `0 < ‖a‖`
@@ -1448,7 +1448,7 @@ def evalAddNorm : PositivityExt where eval {u α} _ _ e := do
     -- Check whether we are in a normed group and whether the context contains a `a ≠ 0` assumption
     let o : Option (Q(NormedAddGroup $E) × Q($a ≠ 0)) := ← do
       let .some normedAddGroup_E ← trySynthInstanceQ q(NormedAddGroup $E) | return none
-      let some pa ← Qq.findLocalDeclWithType? q($a ≠ 0) | return none
+      let some pa ← findLocalDeclWithTypeQ? q($a ≠ 0) | return none
       return some (normedAddGroup_E, pa)
     match o with
     -- If so, return a proof of `0 < ‖a‖`
@@ -1554,3 +1554,5 @@ instance (priority := 75) normedCommGroup [NormedCommGroup E] {S : Type*} [SetLi
 end SubgroupClass
 
 lemma tendsto_norm_atTop_atTop : Tendsto (norm : ℝ → ℝ) atTop atTop := tendsto_abs_atTop_atTop
+
+set_option linter.style.longFile 1700
