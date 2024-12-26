@@ -347,6 +347,8 @@ section unique
 def ofUnique {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] : M ≃+* N :=
   { AddEquiv.ofUnique, MulEquiv.ofUnique with }
 
+@[deprecated (since := "2024-12-26")] alias ringEquivOfUnique := ofUnique
+
 instance {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] :
     Unique (M ≃+* N) where
   default := ringEquivOfUnique
