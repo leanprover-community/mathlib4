@@ -1072,6 +1072,20 @@ theorem Continuous.integral_pos_of_hasCompactSupport_nonneg_nonzero [IsFiniteMea
 
 end OpenPos
 
+section Support
+
+theorem MeasureTheory.integral_tsupport [MeasurableSpace X] [TopologicalSpace X]
+    {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M] {F : X → M} {ν : MeasureTheory.Measure X} :
+    ∫ x in tsupport F, F x ∂ν = ∫ x, F x ∂ν := by
+  nth_rw 2 [← MeasureTheory.setIntegral_univ]
+  rw [MeasureTheory.setIntegral_eq_of_subset_of_forall_diff_eq_zero MeasurableSet.univ
+    (subset_univ (tsupport F))]
+  intro x hx
+  apply image_eq_zero_of_nmem_tsupport
+  exact not_mem_of_mem_diff hx
+
+end Support
+
 /-! Fundamental theorem of calculus for set integrals -/
 section FTC
 
