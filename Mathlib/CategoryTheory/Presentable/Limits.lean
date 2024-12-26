@@ -137,7 +137,7 @@ lemma injective (j : J) (x₁ x₂ : c.pt.obj (X.obj j))
 
 end isColimitMapCocone
 
-/-- Auxiliary definition of `accessible_of_isLimit`. -/
+/-- Auxiliary definition for `isCardinalAccessible_of_isLimit`. -/
 noncomputable def isColimitMapCocone : IsColimit (c.pt.mapCocone cX) := by
   have := isFiltered_of_isCardinalDirected J κ
   apply Types.FilteredColimit.isColimitOf'
@@ -150,31 +150,31 @@ end Limits
 
 end Accessible
 
-lemma accessible_of_isLimit {K : Type u'} [Category.{v'} K] {F : K ⥤ C ⥤ Type w'}
+lemma isCardinalAccessible_of_isLimit {K : Type u'} [Category.{v'} K] {F : K ⥤ C ⥤ Type w'}
     (c : Cone F) (hc : IsLimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (hK : HasCardinalLT (Arrow K) κ)
     [HasLimitsOfShape K (Type w')] -- is it possible to get rid of this?
-    [∀ k, (F.obj k).IsAccessible κ] :
-    c.pt.IsAccessible κ where
+    [∀ k, (F.obj k).IsCardinalAccessible κ] :
+    c.pt.IsCardinalAccessible κ where
   preservesColimitOfShape {J _ _} := ⟨fun {X} ↦ ⟨fun {cX} hcX ↦ by
-    have := fun k ↦ preservesColimitsOfShape_of_isAccessible (F.obj k) κ J
+    have := fun k ↦ preservesColimitsOfShape_of_isCardinalAccessible (F.obj k) κ J
     exact ⟨Accessible.Limits.isColimitMapCocone c
       (fun Y ↦ isLimitOfPreserves ((evaluation C (Type w')).obj Y) hc) κ hK cX
       (fun k ↦ isColimitOfPreserves (F.obj k) hcX)⟩⟩⟩
 
 end Functor
 
-lemma isPresentable_of_isColimit
+lemma isCardinalPresentable_of_isColimit
     {K : Type u'} [Category.{v'} K] {Y : K ⥤ C}
     (c : Cocone Y) (hc : IsColimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (hK : HasCardinalLT (Arrow K) κ)
     [HasLimitsOfShape Kᵒᵖ (Type v)]
-    [∀ k, IsPresentable (Y.obj k) κ] :
-    IsPresentable c.pt κ := by
-  have : ∀ (k : Kᵒᵖ), ((Y.op ⋙ coyoneda).obj k).IsAccessible κ := fun k ↦ by
+    [∀ k, IsCardinalPresentable (Y.obj k) κ] :
+    IsCardinalPresentable c.pt κ := by
+  have : ∀ (k : Kᵒᵖ), ((Y.op ⋙ coyoneda).obj k).IsCardinalAccessible κ := fun k ↦ by
     dsimp
     infer_instance
-  exact Functor.accessible_of_isLimit
+  exact Functor.isCardinalAccessible_of_isLimit
     (coyoneda.mapCone c.op) (isLimitOfPreserves _ hc.op) κ (by simpa)
 
 end CategoryTheory

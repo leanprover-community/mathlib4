@@ -35,11 +35,11 @@ variable {X : C} {κ : Cardinal.{w}} [Fact κ.IsRegular]
 
 variable (p : CardinalFilteredPresentation X κ)
 
-lemma isPresentable_pt (h : ∀ (j : p.J), IsPresentable (p.F.obj j) κ)
+lemma isCardinalPresentable_pt (h : ∀ (j : p.J), IsCardinalPresentable (p.F.obj j) κ)
     (hJ : HasCardinalLT (Arrow p.J) κ)
     [HasLimitsOfShape p.Jᵒᵖ (Type v)] :
-    IsPresentable X κ :=
-  isPresentable_of_isColimit _ p.isColimit κ hJ
+    IsCardinalPresentable X κ :=
+  isCardinalPresentable_of_isColimit _ p.isColimit κ hJ
 
 end CardinalFilteredPresentation
 
@@ -72,10 +72,10 @@ lemma exists_presentation_obj_iso (j : (h.presentation X).J) :
     ∃ (i : ι), Nonempty ((h.presentation X).F.obj j ≅ G i) :=
   (h.nonempty_cardinalFilteredPresentation X).choose_spec j
 
-instance (j : (h.presentation X).J) [∀ i, IsPresentable (G i) κ] :
-    IsPresentable ((h.presentation X).F.obj j) κ := by
+instance (j : (h.presentation X).J) [∀ i, IsCardinalPresentable (G i) κ] :
+    IsCardinalPresentable ((h.presentation X).F.obj j) κ := by
   obtain ⟨i, ⟨e⟩⟩ := (h.exists_presentation_obj_iso X j)
-  exact isPresentable_of_iso e.symm κ
+  exact isCardinalPresentable_of_iso e.symm κ
 
 end AreCardinalFilteredGenerators
 
