@@ -144,30 +144,10 @@ lemma IsLittleOTVS.zero (g : α → F) (l : Filter α) : IsLittleOTVS 𝕜 (0 : 
   intros U hU
   simpa [egauge_zero_right _ (Set.nonempty_of_mem <| mem_of_mem_nhds hU)] using ⟨univ, by simp⟩
 
-lemma IsLittleOTVS.add [TopologicalAddGroup F] {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
-    (hf₁ : IsLittleOTVS 𝕜 f₁ g l) (hf₂ : IsLittleOTVS 𝕜 f₂ g l) :
-    IsLittleOTVS 𝕜 (f₁ + f₂) g l := by
-  intro U hU
-  let ⟨V₁, hV0₁, hV₁⟩ := hf₁ U hU
-  let ⟨V₂, hV0₂, hV₂⟩ := hf₂ U hU
-  refine ⟨V₁ ∩ V₂, Filter.inter_mem hV0₁ hV0₂, fun ε hε => ?_⟩
-  -- refine ⟨V₁ + V₂, by simpa using Filter.add_mem_add hV0₁ hV0₂, ?_⟩
-  -- intros ε hε
-  specialize hV₁  ε hε
-  specialize hV₂  ε hε
-  have := hV₁.and hV₂
-  filter_upwards [this] with a ⟨ha, hb⟩
-  simp
-  refine (egauge_add_right _ _).trans <| ?_ -- add_le_add ha hb |>.trans ?_
-  -- rw [← mul_add]
-  -- gcongr
-  have := le_egauge_inter (𝕜 := 𝕜) V₁ V₂ (g a)
-  -- sorry
-  sorry
-
-lemma IsLittleOTVS.add'
+lemma IsLittleOTVS.add
     [TopologicalAddGroup F] [Module ℝ F] [LocallyConvexSpace ℝ F]
     [TopologicalAddGroup E] [Module ℝ E] [LocallyConvexSpace ℝ E]
+    [ContinuousSMul 𝕜 E]
     {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
     (hf₁ : IsLittleOTVS 𝕜 f₁ g l) (hf₂ : IsLittleOTVS 𝕜 f₂ g l) :
     IsLittleOTVS 𝕜 (f₁ + f₂) g l := by
@@ -176,17 +156,20 @@ lemma IsLittleOTVS.add'
   intro U hU
   let ⟨V₁, ⟨hV0₁, hVc₁⟩, hV₁⟩ := hf₁ U hU
   let ⟨V₂, ⟨hV0₂, hVc₂⟩, hV₂⟩ := hf₂ U hU
-  refine ⟨V₁ + V₂, ⟨by simpa using Filter.add_mem_add hV0₁ hV0₂, hVc₁.add hVc₂⟩, fun ε hε => ?_⟩
-  specialize hV₁  (ε/2) sorry
-  specialize hV₂  (ε/2) sorry
-  have := hV₁.and hV₂
-  filter_upwards [this] with a ⟨ha, hb⟩
+  refine ⟨V₁ ∩ V₂, ⟨Filter.inter_mem hV0₁ hV0₂, hVc₁.inter hVc₂⟩, fun ε hε => ?_⟩
+  have hε' := (half_pos <| pos_iff_ne_zero.mpr hε).ne'
+  filter_upwards [(hV₁ (ε/2) hε').and (hV₂ (ε/2) hε')] with a ⟨ha, hb⟩
   simp at ha hb ⊢
-  refine (egauge_add_right _ _).trans <| add_le_add ha hb |>.trans <| ?_
+  refine (egauge_add_right hU.2 ?_ _ _).trans <| add_le_add ha hb |>.trans <| ?_
+  · exact absorbent_nhds_zero hU.1
   rw [← mul_add]
+  have h := mul_left_mono (a := (ε / 2 : ℝ≥0∞)) <| add_le_add
+    (egauge_anti 𝕜 (@inter_subset_left _ V₁ V₂) (g a))
+    (egauge_anti 𝕜 (@inter_subset_right _ V₁ V₂) (g a))
+  refine h.trans_eq ?_
+  dsimp
+  rw [← two_mul, ← mul_assoc, ENNReal.div_mul_cancel two_ne_zero ENNReal.ofNat_ne_top]
 
-
-#exit
 protected lemma IsLittleOTVS.smul_left {f : α → E} {g : α → F} {l : Filter α}
     (h : IsLittleOTVS 𝕜 f g l) (c : α → 𝕜) :
     IsLittleOTVS 𝕜 (fun x ↦ c x • f x) (fun x ↦ c x • g x) l := by

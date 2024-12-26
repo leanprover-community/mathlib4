@@ -183,9 +183,7 @@ theorem ENNReal.le_iInf_add_iInf {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {
     {a : ℝ≥0∞} (h : ∀ i j, a ≤ f i + g j) : a ≤ (⨅ i, f i) + ⨅ j, g j := by
   sorry
 
-#check le_of_forall_pos_lt_add
-
-lemma egauge_add_right (x y : E) :
+lemma egauge_add_right [SMul ℝ E] (hs : Convex ℝ s) (hs' : Absorbent 𝕜 s) (x y : E) :
     egauge 𝕜 s (x + y) ≤ egauge 𝕜 s x + egauge 𝕜 s y := by
   -- refine le_of_forall_pos_lt_add fun ε hε => ?_
   sorry
