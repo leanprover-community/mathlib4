@@ -122,9 +122,8 @@ lemma Nat.Partrec.recursiveIn (f : ℕ →. ℕ) (pF : Nat.Partrec f) (g : ℕ �
 If a function is recursive in the constant zero function,
 then it is partial recursive.
 -/
-lemma partrec_in_zero_implies_partrec
-(f : ℕ →. ℕ) : RecursiveIn f (fun _ => Part.some 0) → Nat.Partrec f := by
-  intro fRecInZero
+lemma RecursiveIn.partrec_of_zero (f : ℕ →. ℕ) (fRecInZero : RecursiveIn f fun _ => Part.some 0) :
+    Nat.Partrec f := by
   generalize h : (fun _ => Part.some 0) = fp at *
   induction fRecInZero
   case zero =>
