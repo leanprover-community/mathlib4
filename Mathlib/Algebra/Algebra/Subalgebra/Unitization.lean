@@ -208,6 +208,16 @@ variable {R : Type*} [NonAssocSemiring R]
 def Subsemiring.toNonUnitalSubsemiring (S : Subsemiring R) : NonUnitalSubsemiring R :=
   { S with }
 
+theorem Subsemiring.toNonUnitalSubsemiring_injective :
+    Function.Injective (toNonUnitalSubsemiring : Subsemiring R → _) :=
+  fun S₁ S₂ h => SetLike.ext'_iff.2 (
+    show (S₁.toNonUnitalSubsemiring : Set R) = S₂ from SetLike.ext'_iff.1 h)
+
+@[simp]
+theorem Subsemiring.toNonUnitalSubsemiring_eq {S₁ S₂ : Subsemiring R} :
+    S₁.toNonUnitalSubsemiring = S₂.toNonUnitalSubsemiring ↔ S₁ = S₂ :=
+  toNonUnitalSubsemiring_injective.eq_iff
+
 @[simp]
 theorem Subsemiring.mem_toNonUnitalSubsemiring {R : Type*} [NonAssocSemiring R] {S : Subsemiring R}
     {x : R} : x ∈ S.toNonUnitalSubsemiring ↔ x ∈ S := Iff.rfl

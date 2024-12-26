@@ -153,6 +153,15 @@ theorem IsSumSq.mul [NonUnitalCommSemiring R] {s₁ s₂ : R}
     (h₁ : IsSumSq s₁) (h₂ : IsSumSq s₂) : IsSumSq (s₁ * s₂) := by
   simpa using mul_mem (by simpa : _ ∈ NonUnitalSubsemiring.sumSqIn R) (by simpa)
 
+/- TODO : move to the correct location -/
+theorem Submonoid.subsemiringClosure_toNonUnitalSubsemiring
+    {R : Type*} [Semiring R] {M : Submonoid R} :
+    (M.subsemiringClosure).toNonUnitalSubsemiring = NonUnitalSubsemiring.closure M := by
+  refine Eq.symm (NonUnitalSubsemiring.closure_eq_of_le ?_ ?_)
+  · sorry
+  · sorry
+
+
 namespace Subsemiring
 variable {T : Type*} [CommSemiring T] {a : T}
 
@@ -174,7 +183,14 @@ theorem mem_sumSqIn : a ∈ sumSqIn T ↔ IsSumSq a := by
 @[simp, norm_cast] theorem coe_sumSqIn : sumSqIn T = {x : T | IsSumSq x} := by ext; simp
 
 @[simp] theorem closure_isSquare : closure {x : T | IsSquare x} = sumSqIn T := by
-  sorry /- TODO -/
+  apply_fun toNonUnitalSubsemiring using toNonUnitalSubsemiring_injective
+  rw [sumSqIn_toNonUnitalSubsemiring, NonUnitalSubsemiring.sumSqIn]
+  rw [← Subsemiring.closure_submonoid_closure, ← Submonoid.subsemiringClosure_eq_closure]
+  rw [Submonoid.subsemiringClosure_toNonUnitalSubsemiring]
+  rw [Subsemigroup.nonUnitalSubsemiringClosure_eq_closure]
+  rw [← Submonoid.coe_squareIn]
+  /- TODO: closure is idempotent? then simp -/
+  simp
 
 end Subsemiring
 

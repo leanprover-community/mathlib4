@@ -73,7 +73,7 @@ theorem quadraticCharFun_zero : quadraticCharFun F 0 = 0 := by
 
 @[simp]
 theorem quadraticCharFun_one : quadraticCharFun F 1 = 1 := by
-  simp only [quadraticCharFun, one_ne_zero, isSquare_one, if_true, if_false]
+  simp only [quadraticCharFun, one_ne_zero, IsSquare.one, if_true, if_false]
 
 /-- If `ringChar F = 2`, then `quadraticCharFun F` takes the value `1` on nonzero elements. -/
 theorem quadraticCharFun_eq_one_of_char_two (hF : ringChar F = 2) {a : F} (ha : a ≠ 0) :
