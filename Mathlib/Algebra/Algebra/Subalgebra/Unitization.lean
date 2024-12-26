@@ -219,17 +219,25 @@ theorem Subsemiring.toNonUnitalSubsemiring_eq {S₁ S₂ : Subsemiring R} :
   toNonUnitalSubsemiring_injective.eq_iff
 
 @[simp]
-theorem Subsemiring.mem_toNonUnitalSubsemiring {R : Type*} [NonAssocSemiring R] {S : Subsemiring R}
+theorem Subsemiring.mem_toNonUnitalSubsemiring {S : Subsemiring R}
     {x : R} : x ∈ S.toNonUnitalSubsemiring ↔ x ∈ S := Iff.rfl
 
 @[simp]
-theorem Subsemiring.coe_toNonUnitalSubsemiring
-    {R : Type*} [NonAssocSemiring R] (S : Subsemiring R) :
+theorem Subsemiring.coe_toNonUnitalSubsemiring (S : Subsemiring R) :
   (S.toNonUnitalSubsemiring : Set R) = S := rfl
 
+@[simp]
 theorem Subsemiring.one_mem_toNonUnitalSubsemiring (S : Subsemiring R) :
     (1 : R) ∈ S.toNonUnitalSubsemiring :=
   S.one_mem
+
+@[simp]
+theorem Submonoid.subsemiringClosure_toNonUnitalSubsemiring {M : Submonoid R} :
+    (M.subsemiringClosure).toNonUnitalSubsemiring = NonUnitalSubsemiring.closure M := by
+  refine Eq.symm (NonUnitalSubsemiring.closure_eq_of_le ?_ (fun _ hx => ?_))
+  · simp [Submonoid.subsemiringClosure_coe]
+  · simp [Submonoid.subsemiringClosure_mem] at hx
+    induction hx using AddSubmonoid.closure_induction <;> aesop
 
 /-- Turn a non-unital subsemiring containing `1` into a subsemiring. -/
 def NonUnitalSubsemiring.toSubsemiring (S : NonUnitalSubsemiring R) (h1 : (1 : R) ∈ S) :
