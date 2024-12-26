@@ -398,9 +398,7 @@ theorem exists_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : α} (h : x < y) (hy : 0 
   exact ⟨q, lt_of_le_of_ne (by positivity) fun q0 ↦
     (le_sup_right.trans_lt xqn).ne <| q0 ▸ (zero_pow hn).symm, le_sup_left.trans_lt xqn, qny⟩
 
-theorem exists_rat_pow_btwn_rat {n : ℕ} (hn : n ≠ 0) {x y : ℚ} (h : x < y) (hy : 0 < y) :
-    ∃ q : ℚ, 0 < q ∧ x < q ^ n ∧ q ^ n < y :=
-  exists_pow_btwn hn h hy
+@[deprecated (since := "2024-12-26")] alias exists_rat_pow_btwn_rat := exists_pow_btwn
 
 /-- There is a rational power between any two positive elements of an archimedean ordered field. -/
 theorem exists_rat_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : α} (h : x < y) (hy : 0 < y) :
@@ -409,7 +407,7 @@ theorem exists_rat_pow_btwn {n : ℕ} (hn : n ≠ 0) {x y : α} (h : x < y) (hy 
   obtain ⟨q₁, hx₁, hq₁₂⟩ := exists_rat_btwn hx₂
   have : (0 : α) < q₂ := (le_max_right _ _).trans_lt hx₂
   norm_cast at hq₁₂ this
-  obtain ⟨q, hq, hq₁, hq₂⟩ := exists_rat_pow_btwn_rat hn hq₁₂ this
+  obtain ⟨q, hq, hq₁, hq₂⟩ := exists_pow_btwn hn hq₁₂ this
   refine ⟨q, hq, (le_max_left _ _).trans_lt <| hx₁.trans ?_, hy₂.trans' ?_⟩ <;> assumption_mod_cast
 
 theorem le_of_forall_rat_lt_imp_le (h : ∀ q : ℚ, (q : α) < x → (q : α) ≤ y) : x ≤ y :=
