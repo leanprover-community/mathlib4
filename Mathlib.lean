@@ -5486,7 +5486,6 @@ import Mathlib.Util.Superscript
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
 import Mathlib.Util.Term.Basic
-import Mathlib.Util.Term.Beta
-import Mathlib.Util.TransImports
+import Mathlib.Util.TermReduce
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
