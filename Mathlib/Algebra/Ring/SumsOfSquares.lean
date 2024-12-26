@@ -161,7 +161,6 @@ theorem Submonoid.subsemiringClosure_toNonUnitalSubsemiring
   · sorry
   · sorry
 
-
 namespace Subsemiring
 variable {T : Type*} [CommSemiring T] {a : T}
 
@@ -191,6 +190,7 @@ theorem mem_sumSqIn : a ∈ sumSqIn T ↔ IsSumSq a := by
   rw [← Submonoid.coe_squareIn]
   /- TODO: closure is idempotent? then simp -/
   simp
+  sorry
 
 end Subsemiring
 
