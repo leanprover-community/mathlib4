@@ -142,7 +142,7 @@ def compPreadditiveYonedaIso :
 @[simp]
 lemma compPreadditiveYonedaIso_hom_app_app_apply_down (X : Cᵒᵖ) (Y : D)
     (a : ULift.{max v₁ v₂, v₁} (Opposite.unop X ⟶ G.obj Y)) :
-      (((adj.compPreadditiveYonedaIso.hom.app Y).app X) a).down =
+      ((((adj.compPreadditiveYonedaIso.hom.app Y).app X) a).down : F.obj (Opposite.unop X) ⟶ Y) =
         (adj.homEquiv (Opposite.unop X) Y).symm (AddEquiv.ulift a) := rfl
 
 @[simp]
