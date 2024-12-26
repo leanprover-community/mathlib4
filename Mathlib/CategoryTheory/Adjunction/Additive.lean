@@ -67,9 +67,8 @@ lemma homAddEquiv_zero (X : C) (Y : D) : adj.homEquiv X Y 0 = 0 := by
 
 @[simp]
 lemma homAddEquiv_add (X : C) (Y : D) (f f' : F.obj X ⟶ Y) :
-    adj.homEquiv X Y (f + f') = adj.homEquiv X Y f + adj.homEquiv X Y f' := by
-  change adj.homAddEquiv X Y (f + f') = _
-  simp [AddEquivClass.map_add]
+    adj.homEquiv X Y (f + f') = adj.homEquiv X Y f + adj.homEquiv X Y f' :=
+  map_add (adj.homAddEquiv X Y) _ _
 
 @[simp]
 lemma homAddEquiv_sub (X : C) (Y : D) (f f' : F.obj X ⟶ Y) :
