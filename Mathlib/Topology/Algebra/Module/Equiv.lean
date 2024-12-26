@@ -74,18 +74,18 @@ abbrev ContinuousLinearEquivClass (F : Type*) (R : outParam Type*) [Semiring R]
 
 namespace ContinuousSemilinearEquivClass
 
-variable (F : Type*) {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
-  {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
-  (M : Type*) [TopologicalSpace M] [AddCommMonoid M]
-  (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂]
-  [Module R M] [Module S M₂]
+variable (F : Type*) {R : Type*} {S : Type*} {_ : Semiring R} {_ : Semiring S} (σ : R →+* S)
+  {σ' : S →+* R} {_ : RingHomInvPair σ σ'} {_ : RingHomInvPair σ' σ}
+  (M : Type*) {_ : TopologicalSpace M} {_ : AddCommMonoid M}
+  (M₂ : Type*) {_ : TopologicalSpace M₂} {_ : AddCommMonoid M₂}
+  {_ : Module R M} {_ : Module S M₂}
 
 -- `σ'` becomes a metavariable, but it's OK since it's an outparam
-instance (priority := 100) continuousSemilinearMapClass [EquivLike F M M₂]
+instance (priority := 100) continuousSemilinearMapClass {_ : EquivLike F M M₂}
     [s : ContinuousSemilinearEquivClass F σ M M₂] : ContinuousSemilinearMapClass F σ M M₂ :=
   { s with }
 
-instance (priority := 100) [EquivLike F M M₂]
+instance (priority := 100) {_ : EquivLike F M M₂}
     [s : ContinuousSemilinearEquivClass F σ M M₂] : HomeomorphClass F M M₂ :=
   { s with }
 

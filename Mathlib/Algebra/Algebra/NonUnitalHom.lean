@@ -43,7 +43,6 @@ non-unital, algebra, morphism
 -/
 
 universe u u₁ v w w₁ w₂ w₃
-
 variable {R : Type u} {S : Type u₁}
 
 /-- A morphism respecting addition, multiplication, and scalar multiplication. When these arise from
@@ -52,9 +51,12 @@ structure NonUnitalAlgHom [Monoid R] [Monoid S] (φ : R →* S) (A : Type v) (B 
     [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
     [NonUnitalNonAssocSemiring B] [DistribMulAction S B] extends A →ₑ+[φ] B, A →ₙ* B
 
+#check NonUnitalAlgHom.toDistribMulActionHom
+#check NonUnitalAlgHom.toMulHom
 @[inherit_doc NonUnitalAlgHom]
 infixr:25 " →ₙₐ " => NonUnitalAlgHom _
 
+set_option pp.explicit true
 @[inherit_doc]
 notation:25 A " →ₛₙₐ[" φ "] " B => NonUnitalAlgHom φ A B
 
@@ -85,8 +87,8 @@ namespace NonUnitalAlgHomClass
 -- See note [lower instance priority]
 instance (priority := 100) toNonUnitalRingHomClass
   {F R S A B : Type*} {_ : Monoid R} {_ : Monoid S} {φ : outParam (R →* S)}
-    {_ : NonUnitalNonAssocSemiring A} [DistribMulAction R A]
-    {_ : NonUnitalNonAssocSemiring B} [DistribMulAction S B] [FunLike F A B]
+    {_ : NonUnitalNonAssocSemiring A} {_ : DistribMulAction R A}
+    {_ : NonUnitalNonAssocSemiring B} {_ : DistribMulAction S B} {_ : FunLike F A B}
     [NonUnitalAlgSemiHomClass F φ A B] : NonUnitalRingHomClass F A B :=
   { ‹NonUnitalAlgSemiHomClass F φ A B› with }
 
@@ -95,9 +97,7 @@ variable [Semiring R] [Semiring S] {φ : R →+* S}
   [NonUnitalNonAssocSemiring B] [Module S B]
 
 -- see Note [lower instance priority]
-instance (priority := 100) {F R S A B : Type*}
-    {_ : Semiring R} {_ : Semiring S} {φ : R →+* S}
-    {_ : NonUnitalSemiring A} {_ : NonUnitalSemiring B} [Module R A] [Module S B] [FunLike F A B]
+instance (priority := 100) {F : Type*} [FunLike F A B]
     [NonUnitalAlgSemiHomClass (R := R) (S := S) F φ A B] :
     SemilinearMapClass F φ A B :=
   { ‹NonUnitalAlgSemiHomClass F φ A B› with map_smulₛₗ := map_smulₛₗ }
@@ -146,11 +146,10 @@ end NonUnitalAlgHomClass
 
 namespace NonUnitalAlgHom
 
-variable {T : Type*} [Monoid R] [Monoid S] [Monoid T] (φ : R →* S)
+variable {T : Type*} [Monoid R] [Monoid S] (φ : R →* S)
 variable (A : Type v) (B : Type w) (C : Type w₁)
 variable [NonUnitalNonAssocSemiring A] [DistribMulAction R A]
 variable [NonUnitalNonAssocSemiring B] [DistribMulAction S B]
-variable [NonUnitalNonAssocSemiring C] [DistribMulAction T C]
 
 instance : DFunLike (A →ₛₙₐ[φ] B) A fun _ => B where
   coe f := f.toFun
@@ -282,6 +281,7 @@ theorem one_apply (a : A) : (1 : A →ₙₐ[R] A) a = a :=
 instance : Inhabited (A →ₛₙₐ[φ] B) :=
   ⟨0⟩
 
+variable {_ : Monoid T} {_ : NonUnitalNonAssocSemiring C} [DistribMulAction T C]
 variable {φ' : S →* R} {ψ : S →* T} {χ : R →* T}
 
 set_option linter.unusedVariables false in
@@ -429,11 +429,12 @@ end NonUnitalAlgHom
 namespace AlgHom
 
 variable {F R : Type*} [CommSemiring R]
-variable {A B : Type*} [Semiring A] [Semiring B] [Algebra R A]
-  [Algebra R B]
+variable {A B : Type*} [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
 
 -- see Note [lower instance priority]
-instance (priority := 100) [FunLike F A B] [AlgHomClass F R A B] : NonUnitalAlgHomClass F R A B :=
+instance (priority := 100) {A B R : Type*} {_ : CommSemiring R} {_ : Semiring A} {_ : Semiring B}
+    {_ : Algebra R A} {_ : Algebra R B} {_ : FunLike F A B} [AlgHomClass F R A B] :
+    NonUnitalAlgHomClass F R A B :=
   { ‹AlgHomClass F R A B› with map_smulₛₗ := map_smul }
 
 /-- A unital morphism of algebras is a `NonUnitalAlgHom`. -/
@@ -441,7 +442,8 @@ instance (priority := 100) [FunLike F A B] [AlgHomClass F R A B] : NonUnitalAlgH
 def toNonUnitalAlgHom (f : A →ₐ[R] B) : A →ₙₐ[R] B :=
   { f with map_smul' := map_smul f }
 
-instance NonUnitalAlgHom.hasCoe : CoeOut (A →ₐ[R] B) (A →ₙₐ[R] B) :=
+instance NonUnitalAlgHom.hasCoe {A B R : Type*} {_ : CommSemiring R} {_ : Semiring A}
+    {_ : Semiring B} [Algebra R A] [Algebra R B] : CoeOut (A →ₐ[R] B) (A →ₙₐ[R] B) :=
   ⟨toNonUnitalAlgHom⟩
 
 @[simp]

@@ -95,7 +95,7 @@ end Hom
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.toPseudoEpimorphismClass [Preorder α] [Preorder β]
-    [EquivLike F α β] [OrderIsoClass F α β] : PseudoEpimorphismClass F α β where
+    {_ : EquivLike F α β} [OrderIsoClass F α β] : PseudoEpimorphismClass F α β where
   exists_map_eq_of_map_le f _a b h :=
     ⟨EquivLike.inv f b, (le_map_inv_iff f).2 h, EquivLike.right_inv _ _⟩
 

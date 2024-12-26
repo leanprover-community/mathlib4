@@ -313,7 +313,7 @@ theorem le_map_of_comap_le_of_surjective : comap f K ≤ I → K ≤ map f I := 
 
 end
 
-theorem map_comap_eq_self_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
+theorem map_comap_eq_self_of_equiv {E : Type*} {_ : EquivLike E R S} [RingEquivClass E R S] (e : E)
     (I : Ideal S) : map e (comap e I) = I :=
   I.map_comap_of_surjective e (EquivLike.surjective e)
 
@@ -389,7 +389,7 @@ theorem apply_mem_of_equiv_iff {I : Ideal R} {f : R ≃+* S} {x : R} :
     f x ∈ I.map f ↔ x ∈ I := by
   rw [← comap_symm, Ideal.mem_comap, f.symm_apply_apply]
 
-theorem mem_map_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
+theorem mem_map_of_equiv {E : Type*} {_ : EquivLike E R S} [RingEquivClass E R S] (e : E)
     {I : Ideal R} (y : S) : y ∈ map e I ↔ ∃ x ∈ I, e x = y := by
   constructor
   · intro h
@@ -434,7 +434,7 @@ alias ⟨_, IsMaximal.map_bijective⟩ := isMaximal_map_iff_of_bijective
 alias ⟨_, IsMaximal.comap_bijective⟩ := isMaximal_comap_iff_of_bijective
 
 /-- A ring isomorphism sends a maximal ideal to a maximal ideal. -/
-instance map_isMaximal_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
+instance map_isMaximal_of_equiv {E : Type*} {_ : EquivLike E R S} [RingEquivClass E R S] (e : E)
     {p : Ideal R} [hp : p.IsMaximal] : (map e p).IsMaximal :=
   hp.map_bijective e (EquivLike.bijective e)
 
@@ -510,7 +510,7 @@ theorem comap_isMaximal_of_surjective (hf : Function.Surjective f) {K : Ideal S}
   exact le_trans (comap_mono bot_le) (le_of_lt hJ)
 
 /-- The pullback of a maximal ideal under a ring isomorphism is a maximal ideal. -/
-instance comap_isMaximal_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
+instance comap_isMaximal_of_equiv {E : Type*} {_ : EquivLike E R S} [RingEquivClass E R S] (e : E)
     {p : Ideal S} [p.IsMaximal] : (comap e p).IsMaximal :=
   comap_isMaximal_of_surjective e (EquivLike.surjective e)
 
@@ -651,7 +651,7 @@ theorem ker_coe_equiv (f : R ≃+* S) : ker (f : R →+* S) = ⊥ := by
   simpa only [← injective_iff_ker_eq_bot] using EquivLike.injective f
 
 @[simp]
-theorem ker_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S] (f : F') : ker f = ⊥ := by
+theorem ker_equiv {F' : Type*} {_ : EquivLike F' R S} [RingEquivClass F' R S] (f : F') : ker f = ⊥ := by
   simpa only [← injective_iff_ker_eq_bot] using EquivLike.injective f
 
 end Ring
@@ -815,7 +815,7 @@ theorem ker_le_comap {K : Ideal S} (f : F) : RingHom.ker f ≤ comap f K := fun 
   mem_comap.2 (RingHom.mem_ker.1 hx ▸ K.zero_mem)
 
 /-- A ring isomorphism sends a prime ideal to a prime ideal. -/
-instance map_isPrime_of_equiv {F' : Type*} [EquivLike F' R S] [RingEquivClass F' R S]
+instance map_isPrime_of_equiv {F' : Type*} {_ : EquivLike F' R S} [RingEquivClass F' R S]
     (f : F') {I : Ideal R} [IsPrime I] : IsPrime (map f I) := by
   have h : I.map f = I.map ((f : R ≃+* S) : R →+* S) := rfl
   rw [h, map_comap_of_equiv (f : R ≃+* S)]

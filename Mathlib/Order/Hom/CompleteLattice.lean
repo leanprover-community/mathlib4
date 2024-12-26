@@ -173,7 +173,7 @@ end Hom
 
 section Equiv
 
-variable [EquivLike F α β]
+variable {_ : EquivLike F α β}
 
 -- See note [lower instance priority]
 instance (priority := 100) OrderIsoClass.tosSupHomClass [CompleteLattice α]

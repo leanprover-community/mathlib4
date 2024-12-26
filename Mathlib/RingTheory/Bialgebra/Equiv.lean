@@ -51,14 +51,11 @@ variable {F R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] [CoalgebraStruct R A] [CoalgebraStruct R B]
   [EquivLike F A B] [BialgEquivClass F R A B]
 
-instance (priority := 100) toBialgHomClass : BialgHomClass F R A B where
-  map_add := map_add
-  map_smulₛₗ := map_smul
-  counit_comp := CoalgHomClass.counit_comp
-  map_comp_comul := CoalgHomClass.map_comp_comul
-  map_mul := map_mul
-  map_one := map_one
-
+instance (priority := 100) toBialgHomClass {F : Type*} {R A B : outParam Type*} {_ : CommSemiring R}
+    {_ : Semiring A} {_ : Semiring B} {_ : Algebra R A} {_ : Algebra R B} {_ : CoalgebraStruct R A}
+    {_ : CoalgebraStruct R B} {_ : EquivLike F A B} [h : BialgEquivClass F R A B] :
+    BialgHomClass F R A B :=
+  { h with }
 /-- Reinterpret an element of a type of bialgebra equivalences as a bialgebra equivalence. -/
 @[coe]
 def toBialgEquiv (f : F) : A ≃ₐc[R] B :=
@@ -68,10 +65,11 @@ def toBialgEquiv (f : F) : A ≃ₐc[R] B :=
 instance instCoeToBialgEquiv : CoeHead F (A ≃ₐc[R] B) where
   coe f := toBialgEquiv f
 
-instance (priority := 100) toAlgEquivClass : AlgEquivClass F R A B where
-  map_mul := map_mul
-  map_add := map_add
-  commutes := AlgHomClass.commutes
+instance (priority := 100) toAlgEquivClass {F : Type*} {R A B : outParam Type*} {_ : CommSemiring R}
+    {_ : Semiring A} {_ : Semiring B} {_ : Algebra R A} {_ : Algebra R B} {_ : CoalgebraStruct R A}
+    {_ : CoalgebraStruct R B} {_ : EquivLike F A B} [h : BialgEquivClass F R A B] :
+    AlgEquivClass F R A B :=
+  { h with }
 
 end BialgEquivClass
 

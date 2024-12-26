@@ -213,6 +213,15 @@ arguments, it is faster to use this method than to use type class inference.
 For example, when writing lemmas about `(f : α →+* β)`, it is faster to specify the fact that `α`
 and `β` are `Semiring`s as `{rα : Semiring α} {rβ : Semiring β}` rather than the usual
 `[Semiring α] [Semiring β]`.
+
+Additionally, since v4.13.0, projection instances specify type class arguments with implicit `{}`
+brackets if they are parameters of the type class. For example
+```
+Algebra.toSMul {R : Type u} {A : Type v} {inst1 : CommSemiring R} {inst2 : Semiring A}
+    [self : @Algebra R A inst1 inst2] : SMul R A
+```
+takes `CommSemiring R` and `Semiring A` as implicit arguments, since it is faster to infer them
+from the
 -/
 
 library_note "lower instance priority"/--

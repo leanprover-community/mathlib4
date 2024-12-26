@@ -118,19 +118,16 @@ AddEquivClass.map_ne_zero_iff
 
 namespace MulEquivClass
 
-variable (F)
-variable [EquivLike F M N]
-
 -- See note [lower instance priority]
 @[to_additive]
 instance (priority := 100) instMulHomClass (F : Type*)
-    [Mul M] [Mul N] [EquivLike F M N] [h : MulEquivClass F M N] : MulHomClass F M N :=
+    {_ : Mul M} {_ : Mul N} {_ : EquivLike F M N} [h : MulEquivClass F M N] : MulHomClass F M N :=
   { h with }
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) instMonoidHomClass
-    [MulOneClass M] [MulOneClass N] [MulEquivClass F M N] :
+instance (priority := 100) instMonoidHomClass (F : Type*)
+    [MulOneClass M] [MulOneClass N] {_ : EquivLike F M N} [MulEquivClass F M N] :
     MonoidHomClass F M N :=
   { MulEquivClass.instMulHomClass F with
     map_one := fun e =>
@@ -141,29 +138,30 @@ instance (priority := 100) instMonoidHomClass
         _ = e (EquivLike.inv e (1 : N)) := by rw [← map_mul, one_mul]
         _ = 1 := EquivLike.right_inv e 1 }
 
-end MulEquivClass
 
-variable [EquivLike F α β]
+variable {_ : Mul α} {_ : Mul β} {_ : EquivLike F α β} [h : MulEquivClass F α β]
 
 /-- Turn an element of a type `F` satisfying `MulEquivClass F α β` into an actual
 `MulEquiv`. This is declared as the default coercion from `F` to `α ≃* β`. -/
 @[to_additive (attr := coe)
 "Turn an element of a type `F` satisfying `AddEquivClass F α β` into an actual
 `AddEquiv`. This is declared as the default coercion from `F` to `α ≃+ β`."]
-def MulEquivClass.toMulEquiv [Mul α] [Mul β] [MulEquivClass F α β] (f : F) : α ≃* β :=
+def toMulEquiv (f : F) : α ≃* β :=
   { (f : α ≃ β), (f : α →ₙ* β) with }
 
 /-- Any type satisfying `MulEquivClass` can be cast into `MulEquiv` via
 `MulEquivClass.toMulEquiv`. -/
 @[to_additive "Any type satisfying `AddEquivClass` can be cast into `AddEquiv` via
 `AddEquivClass.toAddEquiv`. "]
-instance [Mul α] [Mul β] [MulEquivClass F α β] : CoeTC F (α ≃* β) :=
+instance : CoeTC F (α ≃* β) :=
   ⟨MulEquivClass.toMulEquiv⟩
 
 @[to_additive]
-theorem MulEquivClass.toMulEquiv_injective [Mul α] [Mul β] [MulEquivClass F α β] :
+theorem toMulEquiv_injective :
     Function.Injective ((↑) : F → α ≃* β) :=
   fun _ _ e ↦ DFunLike.ext _ _ fun a ↦ congr_arg (fun e : α ≃* β ↦ e.toFun a) e
+
+end MulEquivClass
 
 namespace MulEquiv
 section Mul
