@@ -139,17 +139,15 @@ def compPreadditiveYonedaIso :
     erw [adj.homEquiv_naturality_right_symm]
     rfl
 
-@[simp]
-lemma compPreadditiveYonedaIso_hom_app_app_apply_down (X : Cᵒᵖ) (Y : D)
+lemma compPreadditiveYonedaIso_hom_app_app_apply (X : Cᵒᵖ) (Y : D)
     (a : ULift.{max v₁ v₂, v₁} (Opposite.unop X ⟶ G.obj Y)) :
-      ((((adj.compPreadditiveYonedaIso.hom.app Y).app X) a).down : F.obj (Opposite.unop X) ⟶ Y) =
-        (adj.homEquiv (Opposite.unop X) Y).symm (AddEquiv.ulift a) := rfl
+      ((adj.compPreadditiveYonedaIso.hom.app Y).app X) a =
+        {down := (adj.homEquiv (Opposite.unop X) Y).symm (AddEquiv.ulift a)} := rfl
 
-@[simp]
-lemma compPreadditiveYonedaIso_inv_app_app_apply_down (X : Cᵒᵖ) (Y : D)
+lemma compPreadditiveYonedaIso_inv_app_app_apply (X : Cᵒᵖ) (Y : D)
     (a : ULift.{max v₁ v₂, v₂} (F.obj (Opposite.unop X) ⟶ Y)) :
-      (((adj.compPreadditiveYonedaIso.inv.app Y).app X) a).down =
-        (adj.homEquiv (Opposite.unop X) Y) (AddEquiv.ulift a) := rfl
+      ((adj.compPreadditiveYonedaIso.inv.app Y).app X) a =
+        {down := (adj.homEquiv (Opposite.unop X) Y) (AddEquiv.ulift a)} := rfl
 
 end Adjunction
 
