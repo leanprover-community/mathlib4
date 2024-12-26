@@ -99,10 +99,7 @@ infix:50 " ≡ᵀ " => TuringEquivalent
 /--
 If a function is partial recursive, then it is recursive in every partial function.
 -/
-lemma partrec_implies_recursive_in_everything
-  (f : ℕ →. ℕ) : Nat.Partrec f → (∀ g, RecursiveIn f g) := by
-    intro pF
-    intro g
+lemma Nat.Partrec.recursiveIn (f : ℕ →. ℕ) (pF : Nat.Partrec f) (g : ℕ →. ℕ) : RecursiveIn f g := by
     induction pF
     case zero =>
       apply RecursiveIn.zero
