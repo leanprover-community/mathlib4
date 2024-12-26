@@ -270,7 +270,7 @@ noncomputable def rieszContent (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) : 
   sup_disjoint' := fun _ _ disj _ _ ↦ rieszContentAux_union Λ disj
   sup_le' := rieszContentAux_sup_le Λ
 
-lemma rieszContent_neq_top {K : Compacts X} : rieszContent Λ K ≠ ⊤ := by
+lemma rieszContent_ne_top {K : Compacts X} : rieszContent Λ K ≠ ⊤ := by
   simp only [ne_eq, ENNReal.coe_ne_top, not_false_eq_true]
 
 lemma rieszContentRegular : (rieszContent Λ).ContentRegular := by
