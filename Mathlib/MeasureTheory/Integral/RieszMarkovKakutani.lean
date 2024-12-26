@@ -370,7 +370,7 @@ section RieszMeasure
 variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
 
 /-- `rieszContent` is promoted to a measure. -/
-def μ := (MeasureTheory.Content.measure (rieszContent Λ))
+def rieszMeasure := (MeasureTheory.Content.measure (rieszContent Λ))
 
 lemma leRieszMeasure_Compacts {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1) {K : Compacts X}
     (h : tsupport f ⊆ K) : ENNReal.ofReal (Λ f) ≤ (μ Λ) K := by
