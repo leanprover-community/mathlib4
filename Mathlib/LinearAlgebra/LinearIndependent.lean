@@ -109,7 +109,7 @@ in case the family of vectors is over a `Set`.
 
 Type hints look like `LinearIndependent fun (v : ↑s) => ↑v` or `LinearIndependent (ι := ↑s) f`,
 depending on whether the family is a lambda expression or not. -/
-@[delab app.LinearIndependent]
+@[app_delab LinearIndependent]
 def delabLinearIndependent : Delab :=
   whenPPOption getPPNotation <|
   whenNotPPOption getPPAnalysisSkip <|
