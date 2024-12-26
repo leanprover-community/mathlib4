@@ -273,7 +273,7 @@ noncomputable def rieszContent (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) : 
 lemma rieszContent_ne_top {K : Compacts X} : rieszContent Λ K ≠ ⊤ := by
   simp only [ne_eq, ENNReal.coe_ne_top, not_false_eq_true]
 
-lemma rieszContentRegular : (rieszContent Λ).ContentRegular := by
+lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
   intro K
   simp only [rieszContent]
   apply le_antisymm
