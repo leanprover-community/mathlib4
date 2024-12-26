@@ -20,8 +20,6 @@ See https://ncatlab.org/nlab/show/Delta-generated+topological+space.
 Adapted from `Mathlib.Topology.Compactness.CompactlyGeneratedSpace`.
 
 ## TODO
-* All locally convex spaces and convex subsets thereof are delta-generated, in particular the
-  standard simplices and the unit interval.
 * CW-complexes are delta-generated, even when they're not first-countable.
 -/
 
@@ -183,19 +181,6 @@ instance Sigma.deltaGeneratedSpace {ι : Type*} {X : ι → Type*} [∀ i, Topol
     [∀ i, DeltaGeneratedSpace (X i)] : DeltaGeneratedSpace (Σ i, X i) :=
   .iSup fun _ ↦ .coinduced _
 
-/-- In a first-countable locally path-connected space, every point has a neighbourhood basis
-  that is a decreasing sequence of path-connected sets.
-  TODO: move to the right file. -/
-lemma LocPathConnectedSpace.exists_isPathConnected_antitone_basis {X : Type*} [TopologicalSpace X]
-    [LocPathConnectedSpace X] [FirstCountableTopology X] (x : X) :
-    ∃ (b : ℕ → Set X), (𝓝 x).HasAntitoneBasis b ∧ ∀ i, IsPathConnected (b i) := by
-  let ⟨b, hb⟩ := (𝓝 x).exists_antitone_basis
-  refine ⟨pathComponentIn x ∘ b, ⟨?_, ?_⟩, ?_⟩
-  · refine hb.1.to_subset (fun _ _ ↦ pathComponentIn_subset) fun _ _ ↦ ?_
-    exact pathComponentIn_mem_nhds <| hb.1.mem_of_mem trivial
-  · exact fun _ _ h ↦ pathComponentIn_mono <| hb.2 h
-  · exact fun i ↦ isPathConnected_pathComponentIn <| mem_of_mem_nhds <| hb.mem i
-
 /-- The concatenation of countably many paths leading up to some point `x` as a function. The
   corresponding path is defined separately because continuity is annoying to prove. -/
 private noncomputable def Path.sigmaConcatFun {X : Type*} [TopologicalSpace X] {s : ℕ → X}
@@ -264,18 +249,6 @@ private lemma Path.sigmaConcatFun_eqOn {X : Type*} [TopologicalSpace X] {s : ℕ
     rw [ht'', extend_one]; convert (γ (n + 1)).source
     simp [hn, pow_succ]
     linear_combination ht''
-
-open Classical in
-/-- If a function is continuous on two closed sets, it is also continuous on their union.
-  TODO: move to the right file, probably close to `ContinuousOn.union_continuousAt`. -/
-theorem ContinuousOn.union_isClosed {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
-    {s t : Set X} (hs : IsClosed s) (ht : IsClosed t) {f : X → Y} (hfs : ContinuousOn f s)
-    (hft : ContinuousOn f t) : ContinuousOn f (s ∪ t) := by
-  refine fun x hx ↦ ContinuousWithinAt.union ?_ ?_
-  · refine if hx : x ∈ s then hfs x hx else continuousWithinAt_of_not_mem_closure ?_
-    rw [hs.closure_eq]; exact hx
-  · refine if hx : x ∈ t then hft x hx else continuousWithinAt_of_not_mem_closure ?_
-    rw [ht.closure_eq]; exact hx
 
 /-- The concatenation of countably many paths leading up to some point `x`. -/
 private noncomputable def Path.sigmaConcat {X : Type*} [TopologicalSpace X] {s : ℕ → X}
@@ -408,10 +381,7 @@ theorem FirstCountableTopology.deltaGeneratedSpace_iff [FirstCountableTopology X
   exact ((isQuotientMap_projIcc (h := zero_le_one)).comp (Homeomorph.funUnique _ _).isQuotientMap).2
 
 /-- Any locally path-connected first-countable space is delta-generated. This applies in particular
-  to all normed spaces.
-
-  This forms a loop with `DeltaGeneratedSpace.instLocPathConnectedSpace`, but that doesn't seem to
-  lead to any problems (yet). -/
+  to all normed spaces. -/
 instance [LocPathConnectedSpace X] [FirstCountableTopology X] : DeltaGeneratedSpace X :=
   FirstCountableTopology.deltaGeneratedSpace_iff.2 inferInstance
 
