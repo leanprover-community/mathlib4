@@ -183,71 +183,43 @@ theorem ENNReal.le_of_forall_pos_lt_add {a b : ℝ≥0∞} (h : ∀ ε : ℝ≥0
     specialize h (a - b) (by simpa only [tsub_pos_iff_lt] using h₁)
     rwa [add_comm, tsub_add_cancel_of_le h₁.le] at h
 
-theorem ENNReal.le_iInf_add_iInf {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι → ℝ≥0∞} {g : ι' → ℝ≥0∞}
-    {a : ℝ≥0∞} (h : ∀ i j, a ≤ f i + g j) : a ≤ (⨅ i, f i) + ⨅ j, g j := by
-  sorry
-
-lemma egauge_add_right [Module ℝ E] (hs : Convex ℝ s) (hs' : Absorbent 𝕜 s) (x y : E) :
+lemma egauge_add_right (h : ∀ r₁ r₂ : 𝕜, (r₁ + r₂) • s = r₁ • s + r₂ • s) (x y : E) :
     egauge 𝕜 s (x + y) ≤ egauge 𝕜 s x + egauge 𝕜 s y := by
+  obtain hx | hx := eq_or_ne (egauge 𝕜 s x) ⊤
+  · rw [hx]
+    simp
+  obtain hy | hy := eq_or_ne (egauge 𝕜 s y) ⊤
+  · rw [hy]
+    simp
   refine ENNReal.le_of_forall_pos_lt_add fun ε hε => ?_
+  have hε2 : ε / 2 ≠ 0 := by simpa using hε.ne'
   obtain ⟨a, ha, x, ha', hx, rfl⟩ :=
-    exists_lt_of_egauge_lt (show egauge 𝕜 s x < egauge 𝕜 s x + ε/2 from sorry)
+    exists_lt_of_egauge_lt (show egauge 𝕜 s x < egauge 𝕜 s x + ε/2 from ENNReal.lt_add_right hx hε2)
   obtain ⟨b, hb, y, hb', hy, rfl⟩ :=
-    exists_lt_of_egauge_lt (show egauge 𝕜 s y < egauge 𝕜 s y + ε/2 from sorry)
+    exists_lt_of_egauge_lt (show egauge 𝕜 s y < egauge 𝕜 s y + ε/2 from ENNReal.lt_add_right hy hε2)
   dsimp
   calc
-    egauge 𝕜 s (a • x + b • y) ≤ ‖a‖₊ + ‖b‖₊ := by
+    egauge 𝕜 s (a • x + b • y) ≤ ‖a + b‖₊ := by
       have := add_mem_add
-        (smul_mem_smul_set (a := ‖a‖) ha')
-        (smul_mem_smul_set (a := ‖b‖) hb')
-      rw [← hs.add_smul (norm_nonneg a) (norm_nonneg b)] at this
-      refine (egauge_le_of_smul_mem ?_ (c := ?_)).trans ?_
-      · sorry
-      · sorry
-      · sorry
-
-      -- gauge_le_of_mem (by positivity) <| by
-      -- rw [hs.add_smul ha.le hb.le]
-      -- exact add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hy)
+        (smul_mem_smul_set (a := a) ha')
+        (smul_mem_smul_set (a := b) hb')
+      rw [← h] at this
+      exact egauge_le_of_mem_smul (𝕜 := 𝕜) (E := E) this
+    _ ≤ ‖a‖₊ + ‖b‖₊ := by
+      norm_cast
+      exact nnnorm_add_le _ _
     _ < egauge 𝕜 s (a • x) + egauge 𝕜 s (b • y) + ε :=
       (ENNReal.add_lt_add ha hb).trans_eq <| by rw [add_add_add_comm]; congr; simp
-  -- simp [egauge]
-  -- simp_rw [Set.mem_smul_set]
-  -- simp [← iInf_and]
-  -- rw [ENNReal.iInf_add_iInf]
-  -- swap
-  -- · intro i j
-  --   refine ⟨i + j, ?_⟩
-  --   rw [add_smul_subset]
 
-  -- refine iInf_le_iInf
-  -- refine ENNReal.le_iInf_add_iInf (ι := 𝕜) (ι' := 𝕜) ?_
-  -- intros i j
-  -- classical
-  -- simp_rw [iInf_eq_if]
-  -- refine iInf_le_iff ?_
-  -- refine le_ciInf_add_ciInf ?_
-  -- rw [NNReal.le_iInf_add_iInf]
-  -- constructor <;> intros h hc
-  -- apply egauge_le_of_smul_mem
-
-  -- refine le_antisymm ?_ (le_egauge_smul_right c s x)
-  -- rcases eq_or_ne c 0 with rfl | hc
-  -- · simp [egauge_zero_right _ (h rfl)]
-  -- · rw [mul_comm, ← ENNReal.div_le_iff_le_mul (.inl <| by simpa) (.inl ENNReal.coe_ne_top),
-  --     ENNReal.div_eq_inv_mul, ← ENNReal.coe_inv (by simpa), ← nnnorm_inv]
-  --   refine (le_egauge_smul_right _ _ _).trans_eq ?_
-  --   rw [inv_smul_smul₀ hc]
-
-/- justification;
-one extreme: `egauge 𝕜 (s + t) x = egauge 𝕜 s x`
-other extreme:
-  pick `s = a•S, t = b•S`, so `s + t = (a+b)•s` and we have
-  `(egauge 𝕜 (s + t) x)⁻¹ = (a + b) * (egauge 𝕜 S x)⁻¹`
-  -/
-lemma egauge_add_left (s t : Set E) :
-    (egauge 𝕜 (s + t) x)⁻¹ ≤ (egauge 𝕜 s x)⁻¹ + (egauge 𝕜 t x)⁻¹ := by
-  sorry
+-- /- justification;
+-- one extreme: `egauge 𝕜 (s + t) x = egauge 𝕜 s x`
+-- other extreme:
+--   pick `s = a•S, t = b•S`, so `s + t = (a+b)•s` and we have
+--   `(egauge 𝕜 (s + t) x)⁻¹ = (a + b) * (egauge 𝕜 S x)⁻¹`
+--   -/
+-- lemma egauge_add_left (s t : Set E) :
+--     (egauge 𝕜 (s + t) x)⁻¹ ≤ (egauge 𝕜 s x)⁻¹ + (egauge 𝕜 t x)⁻¹ := by
+--   sorry
 
 lemma egauge_smul_right (h : c = 0 → s.Nonempty) (x : E) :
     egauge 𝕜 s (c • x) = ‖c‖₊ * egauge 𝕜 s x := by

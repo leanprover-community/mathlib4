@@ -160,8 +160,11 @@ lemma IsLittleOTVS.add
   have hε' := (half_pos <| pos_iff_ne_zero.mpr hε).ne'
   filter_upwards [(hV₁ (ε/2) hε').and (hV₂ (ε/2) hε')] with a ⟨ha, hb⟩
   simp at ha hb ⊢
-  refine (egauge_add_right hU.2 ?_ _ _).trans <| add_le_add ha hb |>.trans <| ?_
-  · exact absorbent_nhds_zero hU.1
+  refine (egauge_add_right ?_ _ _).trans <| add_le_add ha hb |>.trans <| ?_
+  · intros r₁ r₂
+    -- almost but not quite convexity
+    -- apply hU.2.add_smul r₁ r₂
+    sorry
   rw [← mul_add]
   have h := mul_left_mono (a := (ε / 2 : ℝ≥0∞)) <| add_le_add
     (egauge_anti 𝕜 (@inter_subset_left _ V₁ V₂) (g a))
