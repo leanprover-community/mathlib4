@@ -88,6 +88,10 @@ noncomputable def directLimitLeft :
     (directLimitLeft f M).symm (of _ _ _ _ _ (g ⊗ₜ m)) = of _ _ _ f _ g ⊗ₜ m :=
   fromDirectLimit_of_tmul f g m
 
+lemma directLimitLeft_rTensor_of {i : ι} (x : G i ⊗[R] M) :
+    directLimitLeft f M (LinearMap.rTensor M (of ..) x) = of _ _ _ (f ▷ M) _ x :=
+  x.induction_on (by simp) (by simp+contextual) (by simp+contextual)
+
 /--
 `M ⊗ (limᵢ Gᵢ)` and `limᵢ (M ⊗ Gᵢ)` are isomorphic as modules
 -/
@@ -105,4 +109,32 @@ noncomputable def directLimitRight :
     (directLimitRight f M).symm (of _ _ _ _ _ (m ⊗ₜ g)) = m ⊗ₜ of _ _ _ f _ g := by
   simp [directLimitRight, congr_symm_apply_of]
 
+variable [DirectedSystem G (f · · ·)]
+
+instance : DirectedSystem (G · ⊗[R] M) (f ▷ M) where
+  map_self i x := by
+    convert LinearMap.rTensor_id_apply M (G i) x; ext; apply DirectedSystem.map_self'
+  map_map _ _ _ _ _ x := by
+    convert ← (LinearMap.rTensor_comp_apply M _ _ x).symm; ext; apply DirectedSystem.map_map' f
+
+instance : DirectedSystem (M ⊗[R] G ·) (M ◁ f) where
+  map_self i x := by
+    convert LinearMap.lTensor_id_apply M _ x; ext; apply DirectedSystem.map_self'
+  map_map _ _ _ h₁ h₂ x := by
+    convert ← (LinearMap.lTensor_comp_apply M _ _ x).symm; ext; apply DirectedSystem.map_map' f
+
 end TensorProduct
+
+variable {M} {P : Type*} [AddCommMonoid P] [Module R P]
+
+theorem Submodule.FG.exists_rTensor_fg_inclusion_eq {N : Submodule R P} (hN : N.FG) {x y : N ⊗[R] M}
+    (eq : N.subtype.rTensor M x = N.subtype.rTensor M y) :
+    ∃ N', N'.FG ∧ ∃ h : N ≤ N', (N.inclusion h).rTensor M x = (N.inclusion h).rTensor M y := by
+  classical
+  lift N to {N : Submodule R P // N.FG} using hN
+  apply_fun (Module.fgSystem.equiv R P).symm.toLinearMap.rTensor M at eq
+  apply_fun directLimitLeft _ _ at eq
+  simp_rw [← LinearMap.rTensor_comp_apply, ← (LinearEquiv.eq_toLinearMap_symm_comp _ _).mpr
+    (Module.fgSystem.equiv_comp_of N), directLimitLeft_rTensor_of] at eq
+  have ⟨N', le, eq⟩ := exists_eq_of_of_eq eq
+  exact ⟨_, N'.2, le, eq⟩

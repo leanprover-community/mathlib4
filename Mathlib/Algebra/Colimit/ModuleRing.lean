@@ -252,16 +252,23 @@ theorem linearEquiv_symm_mk {g} : (linearEquiv _ _).symm ⟦g⟧ = of _ _ G f g.
 
 end equiv
 
-variable {G f}
+variable {G f} [DirectedSystem G (f · · ·)] [IsDirected ι (· ≤ ·)]
 
 /-- A component that corresponds to zero in the direct limit is already zero in some
 bigger module in the directed system. -/
-theorem of.zero_exact [DirectedSystem G (f · · ·)] [IsDirected ι (· ≤ ·)]
-    {i x} (H : of R ι G f i x = 0) :
+theorem of.zero_exact {i x} (H : of R ι G f i x = 0) :
     ∃ j hij, f i j hij x = (0 : G j) := by
-  haveI : Nonempty ι := ⟨i⟩
+  haveI := Nonempty.intro i
   apply_fun linearEquiv _ _ at H
   rwa [map_zero, linearEquiv_of, DirectLimit.exists_eq_zero] at H
+
+theorem exists_eq_of_of_eq {i x y} (h : of R ι G f i x = of R ι G f i y) :
+    ∃ j hij, f i j hij x = f i j hij y := by
+  haveI := Nonempty.intro i
+  apply_fun linearEquiv _ _ at h
+  simp_rw [linearEquiv_of] at h
+  have ⟨j, h⟩ := Quotient.exact h
+  exact ⟨j, h.1, h.2.2⟩
 
 end DirectLimit
 
@@ -283,13 +290,20 @@ instance : DirectedSystem _ (fgSystem R M · · · ·) where
   map_self _ _ := rfl
   map_map _ _ _ _ _ _ := rfl
 
-variable [DecidableEq {N : Submodule R M // N.FG}]
+variable [DecidableEq (Submodule R M)]
 
 open Submodule in
-def linearEquiv : DirectLimit _ (fgSystem R M) ≃ₗ[R] M :=
+/-- Every module is the direct limit of its finitely generated submodules. -/
+def equiv : DirectLimit _ (fgSystem R M) ≃ₗ[R] M :=
   .ofBijective (lift _ _ _ _ (fun _ ↦ Submodule.subtype _) fun _ _ _ _ ↦ rfl)
     ⟨lift_injective _ _ fun _ ↦ Subtype.val_injective, fun x ↦
       ⟨of _ _ _ _ ⟨_, fg_span_singleton x⟩ ⟨x, subset_span <| by rfl⟩, lift_of ..⟩⟩
+
+variable {R M}
+
+lemma equiv_comp_of (N : {N : Submodule R M // N.FG}) :
+    (equiv R M).toLinearMap ∘ₗ of _ _ _ _ N = N.1.subtype := by
+  ext; simp [equiv]
 
 end fgSystem
 
@@ -619,7 +633,7 @@ variable {G f'}
 bigger module in the directed system. -/
 theorem of.zero_exact {i x} (hix : of G (f' · · ·) i x = 0) :
     ∃ (j : _) (hij : i ≤ j), f' i j hij x = 0 := by
-  haveI : Nonempty ι := ⟨i⟩
+  haveI := Nonempty.intro i
   apply_fun ringEquiv _ _ at hix
   rwa [map_zero, ringEquiv_of, DirectLimit.exists_eq_zero] at hix
 
