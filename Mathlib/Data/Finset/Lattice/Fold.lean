@@ -646,9 +646,9 @@ theorem sup_mem_of_nonempty (hs : s.Nonempty) : s.sup f ∈ f '' s := by
   | empty => exfalso; simp only [Finset.not_nonempty_empty] at hs
   | @insert a s _ h =>
     rw [Finset.sup_insert (b := a) (s := s) (f := f)]
-    by_cases hs : s = ∅
-    · simp [hs]
-    · rw [← ne_eq, ← Finset.nonempty_iff_ne_empty] at hs
+    cases s.eq_empty_or_nonempty with
+    | inl hs => simp [hs]
+    | inr hs =>
       simp only [Finset.coe_insert]
       rcases le_total (f a) (s.sup f) with (ha | ha)
       · rw [sup_eq_right.mpr ha]

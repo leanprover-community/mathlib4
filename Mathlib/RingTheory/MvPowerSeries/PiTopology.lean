@@ -101,11 +101,11 @@ variable (σ R)
 @[scoped instance]
 theorem instTopologicalSemiring [Semiring R] [TopologicalSemiring R] :
     TopologicalSemiring (MvPowerSeries σ R) where
-    continuous_add := continuous_pi fun d => continuous_add.comp
-      (((continuous_coeff R d).fst').prod_mk (continuous_coeff R d).snd')
-    continuous_mul := continuous_pi fun _ =>
-      continuous_finset_sum _ fun i _ => continuous_mul.comp
-        ((continuous_coeff R i.fst).fst'.prod_mk (continuous_coeff R i.snd).snd')
+  continuous_add := continuous_pi fun d => continuous_add.comp
+    (((continuous_coeff R d).fst').prod_mk (continuous_coeff R d).snd')
+  continuous_mul := continuous_pi fun _ =>
+    continuous_finset_sum _ fun i _ => continuous_mul.comp
+      ((continuous_coeff R i.fst).fst'.prod_mk (continuous_coeff R i.snd).snd')
 
 /-- The ring topology on `MvPowerSeries` of a topological ring -/
 @[scoped instance]
