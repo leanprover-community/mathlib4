@@ -10,29 +10,42 @@ import Mathlib.CategoryTheory.Adjunction.Additive
 /-!
 # The adjoint is triangulated
 
+If a functor `F : C ⥤ D` between pretriangulated categories is triangulated, and if we
+have an adjunction `F ⊣ G`, then `G` is also a triangulated functor.
+
+We deduce that, if `E : C ≌ D` is an equivalence of pretriangulated categories, then
+`E.functor` is triangulated if and only if `E.inverse` is triangulated.
+
+TODO: The case of left adjoints.
 -/
 
 namespace CategoryTheory
 
-open Category Limits Preadditive Pretriangulated
+open Category Limits Preadditive Pretriangulated Adjunction
 
-variable {G : C ⥤ D} {F : D ⥤ C} (adj : G ⊣ F) [F.CommShift ℤ] [G.CommShift ℤ]
-  [adj.CommShift ℤ]
-  [G.IsTriangulated]
+variable {C D : Type*} [Category C] [Category D] [HasZeroObject C] [HasZeroObject D]
+  [Preadditive C] [Preadditive D] [HasShift C ℤ] [HasShift D ℤ]
+  [∀ (n : ℤ), (shiftFunctor C n).Additive] [∀ (n : ℤ), (shiftFunctor D n).Additive]
+  [Pretriangulated C] [Pretriangulated D]
+
+namespace Adjunction
+
+variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [F.CommShift ℤ] [G.CommShift ℤ]
+  [adj.CommShift ℤ] [F.IsTriangulated]
 
 include adj in
-lemma isTriangulated_rightAdjoint : F.IsTriangulated where
+lemma isTriangulated_rightAdjoint : G.IsTriangulated where
   map_distinguished T hT := by
-    have : F.Additive := adj.right_adjoint_additive
+    have : G.Additive := adj.right_adjoint_additive
     dsimp
-    obtain ⟨Z, f, g, mem⟩ := distinguished_cocone_triangle (F.map T.mor₁)
+    obtain ⟨Z, f, g, mem⟩ := distinguished_cocone_triangle (G.map T.mor₁)
     obtain ⟨h, ⟨h₁, h₂⟩⟩ := complete_distinguished_triangle_morphism _ _
-      (G.map_distinguished _ mem) hT (adj.counit.app T.obj₁) (adj.counit.app T.obj₂) (by simp)
+      (F.map_distinguished _ mem) hT (adj.counit.app T.obj₁) (adj.counit.app T.obj₂) (by simp)
     dsimp at h h₁ h₂
-    have h₁' : f ≫ adj.unit.app Z ≫ F.map h = F.map T.mor₂ := by
-      simpa [homEquiv_unit] using congr_arg (adj.homEquiv _ _).toFun h₁
-    have h₂' : g ≫ (F.commShiftIso (1 : ℤ)).inv.app T.obj₁ =
-        (adj.homEquiv _ _ h) ≫ F.map T.mor₃ := by
+    have h₁' : f ≫ adj.unit.app Z ≫ G.map h = G.map T.mor₂ := by
+      simpa [homEquiv_apply] using congr_arg (adj.homEquiv _ _).toFun h₁
+    have h₂' : g ≫ (G.commShiftIso (1 : ℤ)).inv.app T.obj₁ =
+        (adj.homEquiv _ _ h) ≫ G.map T.mor₃ := by
       apply (adj.homEquiv _ _).symm.injective
       simp only [Functor.comp_obj, homEquiv_counit, Functor.id_obj, Functor.map_comp, assoc,
         homEquiv_unit, counit_naturality, counit_naturality_assoc, left_triangle_components_assoc,
@@ -44,7 +57,7 @@ lemma isTriangulated_rightAdjoint : F.IsTriangulated where
       obtain ⟨ψ, rfl⟩ := Triangle.coyoneda_exact₃ _ mem φ (by
         dsimp
         simp [homEquiv_unit] at hφ
-        rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).inv.app T.obj₁), assoc, h₂', zero_comp,
+        rw [← cancel_mono ((G.commShiftIso (1 : ℤ)).inv.app T.obj₁), assoc, h₂', zero_comp,
           homEquiv_unit, assoc, reassoc_of% hφ, zero_comp])
       dsimp at ψ hφ ⊢
       obtain ⟨α, hα⟩ := T.coyoneda_exact₂ hT ((adj.homEquiv _ _).symm ψ)
@@ -61,18 +74,18 @@ lemma isTriangulated_rightAdjoint : F.IsTriangulated where
         rw [← cancel_mono (adj.homEquiv _ _ h)]
         exact hφ
       · intro φ
-        obtain ⟨ψ, hψ⟩ := Triangle.coyoneda_exact₁ _ mem (φ ≫ F.map T.mor₃ ≫
-          (F.commShiftIso (1 : ℤ)).hom.app T.obj₁) (by
+        obtain ⟨ψ, hψ⟩ := Triangle.coyoneda_exact₁ _ mem (φ ≫ G.map T.mor₃ ≫
+          (G.commShiftIso (1 : ℤ)).hom.app T.obj₁) (by
             dsimp
             simp only [assoc]
-            rw [← F.commShiftIso_hom_naturality, ← F.map_comp_assoc,
-              comp_distTriang_mor_zero₃₁ _ hT, F.map_zero, zero_comp, comp_zero])
+            rw [← G.commShiftIso_hom_naturality, ← G.map_comp_assoc,
+              comp_distTriang_mor_zero₃₁ _ hT, G.map_zero, zero_comp, comp_zero])
         dsimp at ψ hψ
         obtain ⟨α, hα⟩ : ∃ α, α = φ - ψ ≫ (adj.homEquiv _ _) h := ⟨_, rfl⟩
-        have hα₀ : α ≫ F.map T.mor₃ = 0 := by
-          rw [hα, sub_comp, ← cancel_mono ((Functor.commShiftIso F (1 : ℤ)).hom.app T.obj₁),
+        have hα₀ : α ≫ G.map T.mor₃ = 0 := by
+          rw [hα, sub_comp, ← cancel_mono ((Functor.commShiftIso G (1 : ℤ)).hom.app T.obj₁),
             assoc, sub_comp, assoc, assoc, hψ, zero_comp, sub_eq_zero,
-            ← cancel_mono ((Functor.commShiftIso F (1 : ℤ)).inv.app T.obj₁), assoc,
+            ← cancel_mono ((Functor.commShiftIso G (1 : ℤ)).inv.app T.obj₁), assoc,
             assoc, assoc, assoc, h₂', Iso.hom_inv_id_app, comp_id]
         suffices ∃ (β : Y ⟶ Z), β ≫ (adj.homEquiv _ _) h = α by
           obtain ⟨β, hβ⟩ := this
@@ -92,7 +105,7 @@ lemma isTriangulated_rightAdjoint : F.IsTriangulated where
       simp only [homEquiv_unit, homEquiv_counit, Functor.map_comp, assoc,
         counit_naturality, left_triangle_components_assoc, h₁, id_comp]
     · dsimp
-      rw [Functor.map_id, comp_id, homEquiv_unit, assoc, ← F.map_comp_assoc, ← h₂,
+      rw [Functor.map_id, comp_id, homEquiv_unit, assoc, ← G.map_comp_assoc, ← h₂,
         Functor.map_comp, Functor.map_comp, assoc, unit_naturality_assoc, assoc,
         Functor.commShiftIso_hom_naturality, ← adj.shift_unit_app_assoc,
         ← Functor.map_comp, right_triangle_components, Functor.map_id, comp_id]
