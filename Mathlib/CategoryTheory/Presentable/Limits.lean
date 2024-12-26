@@ -153,7 +153,7 @@ end Accessible
 lemma accessible_of_isLimit {K : Type u'} [Category.{v'} K] {F : K ⥤ C ⥤ Type w'}
     (c : Cone F) (hc : IsLimit c) (κ : Cardinal.{w}) [Fact κ.IsRegular]
     (hK : HasCardinalLT (Arrow K) κ)
-    [HasLimitsOfShape K (Type w')]
+    [HasLimitsOfShape K (Type w')] -- is it possible to get rid of this?
     [∀ k, (F.obj k).IsAccessible κ] :
     c.pt.IsAccessible κ where
   preservesColimitOfShape {J _ _} := ⟨fun {X} ↦ ⟨fun {cX} hcX ↦ by
