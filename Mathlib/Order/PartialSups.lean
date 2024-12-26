@@ -3,11 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Data.Finset.Lattice.Fold
+import Mathlib.Data.Nat.SuccPred
 import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
-import Mathlib.Order.Hom.Basic
-import Mathlib.Order.SuccPred.Nat
+import Mathlib.Order.Interval.Finset.Nat
 
 /-!
 # The monotone sequence of partial supremums of a sequence
@@ -134,7 +133,8 @@ lemma Pi.partialSups_apply {ι : Type*} {π : ι → Type*} [(i : ι) → Semila
 end Preorder
 
 @[simp]
-theorem partialSups_succ [LinearOrder β] [LocallyFiniteOrderBot β] (f : β → α) (n : β) :
+theorem partialSups_succ [LinearOrder β] [LocallyFiniteOrderBot β] [SuccOrder β]
+    (f : β → α) (n : β) :
     partialSups f (Order.succ n) = partialSups f n ⊔ f (Order.succ n) := by
   suffices Iic (Order.succ n) = Iic n ∪ {Order.succ n} by simp only [partialSups_apply, this,
     sup'_union nonempty_Iic ⟨_, mem_singleton_self _⟩ f, sup'_singleton]
@@ -163,7 +163,7 @@ theorem partialSups_zero (f : ℕ → α) : partialSups f 0 = f 0 :=
 @[simp]
 theorem partialSups_natSucc (f : ℕ → α) (n : ℕ) :
     partialSups f (n + 1) = partialSups f n ⊔ f (n + 1) :=
-  Nat.orderSucc_eq_succ n ▸ partialSups_succ f n
+  partialSups_succ f n
 
 theorem partialSups_eq_sup'_range (f : ℕ → α) (n : ℕ) :
     partialSups f n = (Finset.range (n + 1)).sup' nonempty_range_succ f :=
