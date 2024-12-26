@@ -635,7 +635,7 @@ lemma locally_of_iff (hQl : LocalizationAwayPreserves Q)
 
 /-- If `Q` is a property of ring maps that can be checked on prime ideals, the
 associated property of scheme morphisms can be checked on stalks. -/
-lemma of_stalkMap (hQ : OfLocalizationPrime Q) (H : ∀ x, Q (f.stalkMap x)) : P f := by
+lemma of_stalkMap (hQ : OfLocalizationPrime Q) (H : ∀ x, Q (f.stalkMap x).hom) : P f := by
   have hQi := (HasRingHomProperty.isLocal_ringHomProperty P).respectsIso
   haveI : (toMorphismProperty Q).RespectsIso := by
     rw [← toMorphismProperty_respectsIso_iff]
@@ -651,13 +651,14 @@ lemma of_stalkMap (hQ : OfLocalizationPrime Q) (H : ∀ x, Q (f.stalkMap x)) : P
     intro U
     refine this ?_ U.2
     intro x
-    rw [Scheme.stalkMap_comp, hQi.cancel_right_isIso]
+    rw [Scheme.stalkMap_comp, CommRingCat.hom_comp, hQi.cancel_right_isIso]
     exact H x.val
   wlog hXY : ∃ R S, Y = Spec R ∧ X = Spec S generalizing X Y
   · rw [← P.cancel_right_of_respectsIso (g := Y.isoSpec.hom)]
     rw [← P.cancel_left_of_respectsIso (f := X.isoSpec.inv)]
     refine this inferInstance (fun x ↦ ?_) inferInstance ?_
-    · rw [Scheme.stalkMap_comp, Scheme.stalkMap_comp, hQi.cancel_right_isIso, hQi.cancel_left_isIso]
+    · rw [Scheme.stalkMap_comp, Scheme.stalkMap_comp, CommRingCat.hom_comp,
+        hQi.cancel_right_isIso, CommRingCat.hom_comp, hQi.cancel_left_isIso]
       apply H
     · use Γ(Y, ⊤), Γ(X, ⊤)
   obtain ⟨R, S, rfl, rfl⟩ := hXY

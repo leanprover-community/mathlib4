@@ -32,7 +32,7 @@ variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 @[mk_iff]
 class Flat (f : X ⟶ Y) : Prop where
   flat_of_affine_subset :
-    ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), (f.appLE U V e).Flat
+    ∀ (U : Y.affineOpens) (V : X.affineOpens) (e : V.1 ≤ f ⁻¹ᵁ U.1), (f.appLE U V e).hom.Flat
 
 namespace Flat
 
