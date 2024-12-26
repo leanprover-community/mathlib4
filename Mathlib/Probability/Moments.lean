@@ -337,7 +337,7 @@ theorem measure_le_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
 end MomentGeneratingFunction
 
 lemma aemeasurable_exp_mul {X : Ω → ℝ} (t : ℝ) (hX : AEMeasurable X μ) :
-    AEStronglyMeasurable (fun ω ↦ rexp (t * (X ω))) μ :=
+    AEStronglyMeasurable (fun ω ↦ rexp (t * X ω)) μ :=
   (measurable_exp.comp_aemeasurable (hX.const_mul t)).aestronglyMeasurable
 
 lemma integrable_exp_mul_of_le [IsFiniteMeasure μ] {X : Ω → ℝ} (t b : ℝ) (ht : 0 ≤ t)
