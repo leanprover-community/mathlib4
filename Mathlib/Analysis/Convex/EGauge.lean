@@ -176,17 +176,41 @@ theorem exists_lt_of_egauge_lt {a : ℝ≥0∞} (h : egauge 𝕜 s x < a) :
     exact mod_cast hy _ rfl
   · cases hx
 
-
-#check ENNReal.iInf_add_iInf
+-- TODO: generalize to tsub
+theorem ENNReal.le_of_forall_pos_lt_add {a b : ℝ≥0∞} (h : ∀ ε : ℝ≥0∞, 0 < ε → a < b + ε) :
+    a ≤ b :=
+  le_of_not_lt fun h₁ => lt_irrefl a <| by
+    specialize h (a - b) (by simpa only [tsub_pos_iff_lt] using h₁)
+    rwa [add_comm, tsub_add_cancel_of_le h₁.le] at h
 
 theorem ENNReal.le_iInf_add_iInf {ι ι' : Sort*} [Nonempty ι] [Nonempty ι'] {f : ι → ℝ≥0∞} {g : ι' → ℝ≥0∞}
     {a : ℝ≥0∞} (h : ∀ i j, a ≤ f i + g j) : a ≤ (⨅ i, f i) + ⨅ j, g j := by
   sorry
 
-lemma egauge_add_right [SMul ℝ E] (hs : Convex ℝ s) (hs' : Absorbent 𝕜 s) (x y : E) :
+lemma egauge_add_right [Module ℝ E] (hs : Convex ℝ s) (hs' : Absorbent 𝕜 s) (x y : E) :
     egauge 𝕜 s (x + y) ≤ egauge 𝕜 s x + egauge 𝕜 s y := by
-  -- refine le_of_forall_pos_lt_add fun ε hε => ?_
-  sorry
+  refine ENNReal.le_of_forall_pos_lt_add fun ε hε => ?_
+  obtain ⟨a, ha, x, ha', hx, rfl⟩ :=
+    exists_lt_of_egauge_lt (show egauge 𝕜 s x < egauge 𝕜 s x + ε/2 from sorry)
+  obtain ⟨b, hb, y, hb', hy, rfl⟩ :=
+    exists_lt_of_egauge_lt (show egauge 𝕜 s y < egauge 𝕜 s y + ε/2 from sorry)
+  dsimp
+  calc
+    egauge 𝕜 s (a • x + b • y) ≤ ‖a‖₊ + ‖b‖₊ := by
+      have := add_mem_add
+        (smul_mem_smul_set (a := ‖a‖) ha')
+        (smul_mem_smul_set (a := ‖b‖) hb')
+      rw [← hs.add_smul (norm_nonneg a) (norm_nonneg b)] at this
+      refine (egauge_le_of_smul_mem ?_ (c := ?_)).trans ?_
+      · sorry
+      · sorry
+      · sorry
+
+      -- gauge_le_of_mem (by positivity) <| by
+      -- rw [hs.add_smul ha.le hb.le]
+      -- exact add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hy)
+    _ < egauge 𝕜 s (a • x) + egauge 𝕜 s (b • y) + ε :=
+      (ENNReal.add_lt_add ha hb).trans_eq <| by rw [add_add_add_comm]; congr; simp
   -- simp [egauge]
   -- simp_rw [Set.mem_smul_set]
   -- simp [← iInf_and]
