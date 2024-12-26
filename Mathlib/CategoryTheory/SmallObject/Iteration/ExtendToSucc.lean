@@ -133,7 +133,7 @@ def extendToSuccObjIso (i : Set.Iic j) :
     (extendToSucc hj F τ).obj ⟨i, i.2.trans (Order.le_succ j)⟩ ≅ F.obj i :=
   extendToSucc.objIso F X i
 
-def extendToSucc_obj_succ_eq :
+lemma extendToSucc_obj_succ_eq :
     (extendToSucc hj F τ).obj ⟨Order.succ j, by simp⟩ = X :=
   extendToSucc.obj_succ_eq hj F X
 

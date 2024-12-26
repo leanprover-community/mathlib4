@@ -226,6 +226,8 @@ noncomputable def isColimit (i : J)
     (Cocones.ext (eqToIso (iter.obj_limit i hi hij).symm)
     (fun ⟨k, hk⟩ ↦ (iter.map_eq_ι i hi hij k hk).symm))
 
+/-- The element in `Φ.Iteration i` that is deduced from an element
+in `Φ.Iteration j` when `i ≤ j`. -/
 @[simps F]
 def trunc (iter : Φ.Iteration j) {i : J} (hi : i ≤ j) : Φ.Iteration i where
   F := restrictionLE iter.F hi
