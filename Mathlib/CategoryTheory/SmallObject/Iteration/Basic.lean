@@ -256,6 +256,8 @@ variable {F G : Set.Iic j ⥤ C} (hobj : F.obj = G.obj)
 
 omit [OrderBot J] [SuccOrder J] [WellFoundedLT J]
 
+/-- Given two functors `Set.Iic j ⥤ C` that are equal on objects,
+this is the condition that they coincide on a given map. -/
 def MapEq (i₁ i₂ : J) (h₁₂ : i₁ ≤ i₂) (h₂ : i₂ ≤ j) : Prop :=
   F.map (homOfLE h₁₂ : ⟨i₁, h₁₂.trans h₂⟩ ⟶ ⟨i₂, h₂⟩) =
     eqToHom (by rw [hobj]) ≫
