@@ -299,8 +299,7 @@ lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
     obtain ⟨f, hfleoneonK, hfle⟩ := exists_lt_rieszContentAux_add_pos Λ K (Real.toNNReal_pos.mpr hε)
     rw [rieszContentAux, εnneq] at hfle
     apply le_trans _ hfle.le
-    rw [← NNReal.coe_le_coe]
-    apply (le_iff_forall_one_lt_le_mul₀ _).mpr
+    rw [← NNReal.coe_le_coe, le_iff_forall_one_lt_le_mul₀]
     · intro α hα
       have : (Λ f) * α = Λ (α.toNNReal • f) := by
         simp only [map_smul, smul_eq_mul, NNReal.coe_mul, Real.coe_toNNReal',
