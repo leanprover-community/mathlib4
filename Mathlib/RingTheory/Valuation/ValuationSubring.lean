@@ -32,7 +32,7 @@ variable (K : Type u) [Field K]
 /-- A valuation subring of a field `K` is a subring `A` such that for every `x : K`,
 either `x ∈ A` or `x⁻¹ ∈ A`.
 
-This is equvalent to being maximal in the domination order
+This is equivalent to being maximal in the domination order
 of local subrings (the stacks project definition). See `LocalSubring.isMax_iff`.
 -/
 structure ValuationSubring extends Subring K where
