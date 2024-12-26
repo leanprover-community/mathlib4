@@ -78,7 +78,7 @@ syntax (name := reduceProjStx) "reduceProj% " term : term
 def elabReduceProj : TermElab := fun stx expectedType? =>
   match stx with
   | `(reduceProj% $t) => do
-    let t ← withSynthesize do
+    let t ← withSynthesize (postpone := .partial) do
       elabTerm t expectedType?
     synthesizeSyntheticMVars
     let t ← instantiateMVars t
