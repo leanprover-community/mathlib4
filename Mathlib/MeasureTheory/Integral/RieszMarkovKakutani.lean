@@ -370,12 +370,12 @@ section RieszMeasure
 variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
 
 /-- `rieszContent` is promoted to a measure. -/
-def rieszMeasure := (MeasureTheory.Content.measure (rieszContent Λ))
+def rieszMeasure := (rieszContent Λ).measure
 
 lemma leRieszMeasure_Compacts {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1) {K : Compacts X}
-    (h : tsupport f ⊆ K) : ENNReal.ofReal (Λ f) ≤ (μ Λ) K := by
-  simp only [μ, MeasureTheory.Content.measure_eq_content_of_regular (rieszContent Λ)
-    (rieszContentRegular Λ)]
+    (h : tsupport f ⊆ K) : ENNReal.ofReal (Λ f) ≤ (rieszMeasure Λ) K := by
+  simp only [rieszMeasure, MeasureTheory.Content.measure_eq_content_of_regular (rieszContent Λ)
+    (contentRegular_rieszContent Λ)]
   simp only [rieszContent, ENNReal.ofReal_coe_nnreal, ENNReal.coe_le_coe]
   apply le_iff_forall_pos_le_add.mpr
   intro ε hε
@@ -391,7 +391,7 @@ lemma leRieszMeasure_Compacts {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1
 
 lemma leRieszMeasure_Opens {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1) {V : Opens X}
     (h : tsupport f ⊆ V) :
-    ENNReal.ofReal (Λ f) ≤ (μ Λ) V := by
+    ENNReal.ofReal (Λ f) ≤ (rieszMeasure Λ) V := by
   apply le_trans _ (MeasureTheory.measure_mono h)
   rw [← TopologicalSpace.Compacts.coe_mk (tsupport f) f.2]
   apply leRieszMeasure_Compacts Λ hf
