@@ -57,7 +57,7 @@ namespace MvPolynomial
 variable {R : Type*} [CommRing R] [IsDomain R] [DecidableEq R]
 
 -- A user should be able to provide `hp` as a named argument
--- regardless of whether one has used pattern-maching or induction to prove the lemma.
+-- regardless of whether one has used pattern-matching or induction to prove the lemma.
 set_option linter.unusedVariables false in
 /-- The **Schwartz-Zippel lemma**
 

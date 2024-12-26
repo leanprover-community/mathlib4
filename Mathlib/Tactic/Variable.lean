@@ -72,7 +72,7 @@ structure VectorSpace (k V : Type*) [Field k] [AddCommGroup V] [Module k V]
 then `variable? [VectorSpace k V]` is
 equivalent to `variable {k V : Type*} [Field k] [AddCommGroup V] [Module k V]`, assuming
 that there are no pre-existing instances on `k` and `V`.
-Note that this is not a simple replacement: it only adds instances not inferrable
+Note that this is not a simple replacement: it only adds instances not inferable
 from others in the current scope.
 
 A word of warning: the core algorithm depends on pretty printing, so if terms that appear

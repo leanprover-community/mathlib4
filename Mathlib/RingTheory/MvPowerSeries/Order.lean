@@ -33,7 +33,7 @@ than the weighted order vanish
 
 - `MvPowerSeries.weightedOrder_eq_top_iff`: the weighted order of `f` is `⊤` if and only `f = 0`.
 
-- `MvPowerSerie.nat_le_weightedOrder`: if all coefficients of weight `< n` vanish, then the
+- `MvPowerSeries.nat_le_weightedOrder`: if all coefficients of weight `< n` vanish, then the
 weighted order is at least `n`.
 
 - `MvPowerSeries.weightedOrder_eq_nat_iff`: the weighted order is some integer `n` iff there
