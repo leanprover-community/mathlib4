@@ -149,8 +149,6 @@ theorem condexp_stoppedValue_stopping_time_ae_eq_restrict_le (h : Martingale f �
     (hτ : IsStoppingTime ℱ τ) (hσ : IsStoppingTime ℱ σ) [SigmaFinite (μ.trim hσ.measurableSpace_le)]
     (hτ_le : ∀ x, τ x ≤ i) :
     μ[stoppedValue f τ|hσ.measurableSpace] =ᵐ[μ.restrict {x : Ω | τ x ≤ σ x}] stoppedValue f τ := by
-  have := LinearLocallyFiniteOrder.succOrder ι
-  have := LinearLocallyFiniteOrder.predOrder ι
   rw [ae_eq_restrict_iff_indicator_ae_eq
     (hτ.measurableSpace_le _ (hτ.measurableSet_le_stopping_time hσ))]
   refine (condexp_indicator (integrable_stoppedValue ι hτ h.integrable hτ_le)
@@ -183,8 +181,6 @@ theorem stoppedValue_min_ae_eq_condexp [SigmaFiniteFiltration μ ℱ] (h : Marti
     (hτ : IsStoppingTime ℱ τ) (hσ : IsStoppingTime ℱ σ) {n : ι} (hτ_le : ∀ x, τ x ≤ n)
     [h_sf_min : SigmaFinite (μ.trim (hτ.min hσ).measurableSpace_le)] :
     (stoppedValue f fun x => min (σ x) (τ x)) =ᵐ[μ] μ[stoppedValue f τ|hσ.measurableSpace] := by
-  have := LinearLocallyFiniteOrder.succOrder ι
-  have := LinearLocallyFiniteOrder.predOrder ι
   refine
     (h.stoppedValue_ae_eq_condexp_of_le hτ (hσ.min hτ) (fun x => min_le_right _ _) hτ_le).trans ?_
   refine ae_of_ae_restrict_of_ae_restrict_compl {x | σ x ≤ τ x} ?_ ?_
