@@ -183,20 +183,26 @@ b : ℝ so that eventually we get integral curve α : Ioo (-b) b → E
 
 
 /-- The type of continuous maps  -/
-structure SpaceOfCurves (x₀ : E) (t₀ tmin tmax a : ℝ) where
-  toFun : Icc tmin tmax → closedBall x₀ (2 * a) -- use `MapsTo`?
-  mem_domain : t₀ ∈ Icc tmin tmax
-  initial : toFun ⟨t₀, mem_domain⟩ = x₀
-  continuous : Continuous toFun
+-- change order of arguments
+-- no need to extend `ContinuousMapClass` because this is a one-time use
+@[ext]
+structure SpaceOfCurves (x₀ : E) {t₀ tmin tmax : ℝ} (ht : t₀ ∈ Icc tmin tmax) -- need compact domain
+    {a : ℝ} (ha : 0 ≤ a) extends C(Icc tmin tmax, E) where -- use `ℝ≥0`?
+  -- this makes future proof obligations simpler syntactically
+  mapsTo : ∀ t : Icc tmin tmax, toFun t ∈ closedBall x₀ a -- plug in `a := 2 * a` in proofs
+  initial : toFun ⟨t₀, ht⟩ = x₀
 
 namespace SpaceOfCurves
 
-variable (x₀ : E) (t₀ tmin tmax a : ℝ)
+variable (x₀ : E) {t₀ tmin tmax : ℝ} (ht : t₀ ∈ Icc tmin tmax) {a : ℝ} (ha : 0 ≤ a)
 
-instance : CoeFun (SpaceOfCurves x₀ t₀ tmin tmax a)
-    fun _ => Icc tmin tmax → closedBall x₀ (2 * a) := ⟨toFun⟩
+-- need `toFun_eq_coe`?
 
+instance : Inhabited (SpaceOfCurves x₀ ht ha) :=
+  ⟨⟨fun _ ↦ x₀, continuous_const⟩, fun _ ↦ mem_closedBall_self ha, rfl⟩
 
+noncomputable instance : MetricSpace (SpaceOfCurves x₀ ht ha) :=
+  MetricSpace.induced toContinuousMap (fun _ _ _ ↦ by ext; congr) inferInstance
 
 end SpaceOfCurves
 
