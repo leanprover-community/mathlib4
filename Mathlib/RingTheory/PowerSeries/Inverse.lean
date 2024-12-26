@@ -11,6 +11,7 @@ import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Order
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
+import Mathlib.Data.ENat.Lattice
 
 /-! # Formal power series - Inverses
 

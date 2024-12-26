@@ -82,7 +82,7 @@ mutual
     assumeInstancesCommute
     return .isNat sα c q(CharP.isNat_pow (f := $f) $instCharP (.refl $f) $pa $pb $pn $r)
 
-  /-- If `e` is of the form `a ^ b`, reduce it using fast modular exponentation, otherwise
+  /-- If `e` is of the form `a ^ b`, reduce it using fast modular exponentiation, otherwise
       reduce it using `norm_num`. -/
   partial def normIntNumeral' {α : Q(Type u)} (n n' : Q(ℕ)) (pn : Q(IsNat «$n» «$n'»))
       (e : Q($α)) (_ : Q(Ring $α)) (instCharP : Q(CharP $α $n)) : MetaM (Result e) :=
