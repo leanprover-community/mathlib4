@@ -19,7 +19,7 @@ universe u
 
 namespace CategoryTheory
 
-open Category Limits
+open Category Limits SmallObject
 
 namespace Functor
 
@@ -92,10 +92,18 @@ def ofCocone : Set.Iic j ⥤ C where
   map_id i := ofCocone.map_id _ _ i.2
   map_comp {_ _ i₃} _ _ := ofCocone.map_comp _ _ _ _ _ _ i₃.2
 
+lemma ofCocone_obj_eq (i : J) (hi : i < j) :
+    (ofCocone c).obj ⟨i, hi.le⟩ = F.obj ⟨i, hi⟩ :=
+  dif_pos hi
+
 /-- The isomorphism `(ofCocone c).obj ⟨i, _⟩ ≅ F.obj ⟨i, _⟩` when `i < j`. -/
 def ofCoconeObjIso (i : J) (hi : i < j) :
     (ofCocone c).obj ⟨i, hi.le⟩ ≅ F.obj ⟨i, hi⟩ :=
   ofCocone.objIso c _ _
+
+lemma ofCocone_obj_eq_pt :
+    (ofCocone c).obj ⟨j, by simp⟩ = c.pt :=
+  dif_neg (by simp)
 
 /-- The isomorphism `(ofCocone c).obj ⟨j, _⟩ ≅ c.pt`. -/
 def ofCoconeObjIsoPt :
@@ -127,14 +135,14 @@ lemma ofCoconeObjIso_hom_naturality (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ 
 when `c : Cocone F`. -/
 @[simps!]
 def restrictionLTOfCoconeIso :
-    Iteration.restrictionLT (ofCocone c) (Preorder.le_refl j) ≅ F :=
+    restrictionLT (ofCocone c) (Preorder.le_refl j) ≅ F :=
   NatIso.ofComponents (fun ⟨i, hi⟩ ↦ ofCoconeObjIso c i hi)
     (by intros; apply ofCoconeObjIso_hom_naturality)
 
 variable {c} in
 /-- If `c` is a colimit cocone, then so is `coconeOfLE (ofCocone c) (Preorder.le_refl j)`. -/
 def isColimitCoconeOfLEOfCocone (hc : IsColimit c) :
-    IsColimit (Iteration.coconeOfLE (ofCocone c) (Preorder.le_refl j)) :=
+    IsColimit (coconeOfLE (ofCocone c) (Preorder.le_refl j)) :=
   (IsColimit.precomposeInvEquiv (restrictionLTOfCoconeIso c) _).1
     (IsColimit.ofIsoColimit hc
       (Cocones.ext (ofCoconeObjIsoPt c).symm (fun ⟨i, hi⟩ ↦ by

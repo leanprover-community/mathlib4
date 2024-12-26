@@ -20,7 +20,7 @@ universe u
 
 namespace CategoryTheory
 
-open Category
+open Category SmallObject
 
 namespace Functor
 
@@ -37,14 +37,22 @@ it sends `Order.succ j` to the given object `X`. -/
 def obj (i : Set.Iic (Order.succ j)) : C :=
   if hij : i.1 ≤ j then F.obj ⟨i.1, hij⟩ else X
 
+lemma obj_eq (i : Set.Iic j) :
+    obj F X ⟨i, i.2.trans (Order.le_succ j)⟩ = F.obj i := dif_pos i.2
+
 /-- The isomorphism `obj F X ⟨i, _⟩ ≅ F.obj i` when `i : Set.Iic j`. -/
 def objIso (i : Set.Iic j) :
-    obj F X ⟨i, i.2.trans (Order.le_succ j)⟩ ≅ F.obj i := eqToIso (dif_pos i.2)
+    obj F X ⟨i, i.2.trans (Order.le_succ j)⟩ ≅ F.obj i :=
+  eqToIso (obj_eq _ _ _)
+
+include hj in
+lemma obj_succ_eq : obj F X ⟨Order.succ j, by simp⟩ = X :=
+  dif_neg (by simpa only [Order.succ_le_iff_isMax] using hj)
 
 /-- The isomorphism `obj F X ⟨Order.succ j, _⟩ ≅ X`. -/
 def objSuccIso :
     obj F X ⟨Order.succ j, by simp⟩ ≅ X :=
-  eqToIso (dif_neg (by simpa only [Order.succ_le_iff_isMax] using hj))
+  eqToIso (obj_succ_eq hj _ _)
 
 variable {X}
 
@@ -116,10 +124,18 @@ def extendToSucc : Set.Iic (Order.succ j) ⥤ C where
   map_id _ := extendToSucc.map_id _ F τ _ _
   map_comp {i₁ i₂ i₃} f g := extendToSucc.map_comp hj F τ i₁ i₂ i₃ (leOfHom f) (leOfHom g) i₃.2
 
+lemma extendToSucc_obj_eq (i : Set.Iic j) :
+    (extendToSucc hj F τ).obj ⟨i, i.2.trans (Order.le_succ j)⟩ = F.obj i :=
+  extendToSucc.obj_eq F X i
+
 /-- The isomorphism `(extendToSucc hj F τ).obj ⟨i, _⟩ ≅ F.obj i` when `i : Set.Iic j` -/
 def extendToSuccObjIso (i : Set.Iic j) :
     (extendToSucc hj F τ).obj ⟨i, i.2.trans (Order.le_succ j)⟩ ≅ F.obj i :=
   extendToSucc.objIso F X i
+
+def extendToSucc_obj_succ_eq :
+    (extendToSucc hj F τ).obj ⟨Order.succ j, by simp⟩ = X :=
+  extendToSucc.obj_succ_eq hj F X
 
 /-- The isomorphism `(extendToSucc hj F τ).obj ⟨Order.succ j, _⟩ ≅ X`. -/
 def extendToSuccObjSuccIso :
@@ -138,12 +154,12 @@ lemma extendToSuccObjIso_hom_naturality (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi
 /-- The isomorphism expressing that `extendToSucc hj F τ` extends `F`. -/
 @[simps!]
 def extendToSuccRestrictionLEIso :
-    Iteration.restrictionLE (extendToSucc hj F τ) (Order.le_succ j) ≅ F :=
+    restrictionLE (extendToSucc hj F τ) (Order.le_succ j) ≅ F :=
   NatIso.ofComponents (extendToSuccObjIso hj F τ) (by
     rintro ⟨i₁, h₁⟩ ⟨i₂, h₂⟩ f
     apply extendToSuccObjIso_hom_naturality)
 
-lemma extentToSucc_map (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ ≤ j) :
+lemma extendToSucc_map (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ ≤ j) :
     (extendToSucc hj F τ).map (homOfLE hi :
       ⟨i₁, hi.trans (hi₂.trans (Order.le_succ j))⟩ ⟶ ⟨i₂, hi₂.trans (Order.le_succ j)⟩) =
       (extendToSuccObjIso hj F τ ⟨i₁, hi.trans hi₂⟩).hom ≫ F.map (homOfLE hi) ≫
