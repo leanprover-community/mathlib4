@@ -116,6 +116,10 @@ namespace Equivalence
 
 variable (E : C ≌ D) [E.functor.CommShift ℤ] [E.inverse.CommShift ℤ] [E.CommShift ℤ]
 
+/--
+We say that an equivalence of categories `E` is triangulated if both `E.functor` and
+`E.inverse` are triangulated functors.
+-/
 class IsTriangulated : Prop where
   functor_isTriangulated : E.functor.IsTriangulated := by infer_instance
   inverse_isTriangulated : E.inverse.IsTriangulated := by infer_instance
