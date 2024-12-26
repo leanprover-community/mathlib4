@@ -164,14 +164,8 @@ lemma RecursiveIn.partrec_of_zero (f : ℕ →. ℕ) (fRecInZero : RecursiveIn f
 A partial function `f` is partial recursive if and only if it is recursive in
 every partial function `g`.
 -/
-theorem partrec_iff_partrec_in_everything
-  (f : ℕ →. ℕ) : Nat.Partrec f ↔ (∀ g, RecursiveIn f g) := by
-  constructor
-  · exact partrec_implies_recursive_in_everything f
-  · intro H
-    have lem : RecursiveIn f (fun _ => Part.some 0) := H (fun _ => Part.some 0)
-    have lem : Nat.Partrec f := partrec_in_zero_implies_partrec f lem
-    exact lem
+theorem partrec_iff_partrec_in_everything (f : ℕ →. ℕ) : Nat.Partrec f ↔ ∀ g, RecursiveIn f g :=
+  ⟨(·.recursiveIn), (· _ |>.partrec_of_zero)⟩
 
 /--
 Proof that turing reducibility is reflexive.
