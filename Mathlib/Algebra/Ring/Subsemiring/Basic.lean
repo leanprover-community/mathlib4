@@ -391,6 +391,10 @@ theorem subsemiringClosure_coe :
     (M.subsemiringClosure : Set R) = AddSubmonoid.closure (M : Set R) :=
   rfl
 
+theorem subsemiringClosure_mem {x : R} :
+    x ∈ M.subsemiringClosure ↔ x ∈ AddSubmonoid.closure (M : Set R) :=
+  Iff.rfl
+
 theorem subsemiringClosure_toAddSubmonoid :
     M.subsemiringClosure.toAddSubmonoid = AddSubmonoid.closure (M : Set R) :=
   rfl
