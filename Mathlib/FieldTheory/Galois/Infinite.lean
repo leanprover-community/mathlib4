@@ -180,17 +180,15 @@ lemma fixingSubgroup_fixedField (H : ClosedSubgroup (K ≃ₐ[k] K)) [IsGalois k
 /-- The Galois correspondence from intermediate fields to closed subgroups. -/
 def IntermediateFieldEquivClosedSubgroup [IsGalois k K] :
     IntermediateField k K ≃o (ClosedSubgroup (K ≃ₐ[k] K))ᵒᵈ where
-  toFun := fun L => ⟨L.fixingSubgroup, fixingSubgroup_isClosed L⟩
-  invFun := fun H => IntermediateField.fixedField H.1
-  left_inv := fun L => fixedField_fixingSubgroup L
-  right_inv := by
-    intro H
+  toFun L := ⟨L.fixingSubgroup, fixingSubgroup_isClosed L⟩
+  invFun H := IntermediateField.fixedField H.1
+  left_inv L := fixedField_fixingSubgroup L
+  right_inv H := by
     simp_rw [fixingSubgroup_fixedField H]
     rfl
-  map_rel_iff' := by
-    intro L₁ L₂
-    show L₁.fixingSubgroup ≥ L₂.fixingSubgroup ↔ L₁ ≤ L₂
-    rw [← fixedField_fixingSubgroup L₂, IntermediateField.le_iff_le, fixedField_fixingSubgroup L₂]
+  map_rel_iff' {K L} := by
+    rw [← fixedField_fixingSubgroup L, IntermediateField.le_iff_le, fixedField_fixingSubgroup L]
+    rfl
 
 /-- The Galois correspondence as a `GaloisInsertion` -/
 def GaloisInsertionIntermediateFieldClosedSubgroup [IsGalois k K] :
