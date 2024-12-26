@@ -30,14 +30,6 @@ class HasCardinalFilteredGenerators extends LocallySmall.{w} C : Prop where
 class IsCardinalLocallyPresentable
   extends HasCardinalFilteredGenerators C κ, HasColimitsOfSize.{w, w} C : Prop where
 
-class HasCardinalFilteredColimits : Prop where
-  hasColimitsOfShape (J : Type w) [Category.{w} J] [IsCardinalFiltered J κ] :
-    HasColimitsOfShape J C := by intros; infer_instance
-
-attribute [instance] HasCardinalFilteredColimits.hasColimitsOfShape
-
-instance [HasColimitsOfSize.{w, w} C] : HasCardinalFilteredColimits.{w} C κ where
-
 class IsCardinalAccessibleCategory
   extends HasCardinalFilteredGenerators C κ, HasCardinalFilteredColimits.{w} C κ : Prop where
 
