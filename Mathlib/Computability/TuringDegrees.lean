@@ -102,31 +102,30 @@ If a function is partial recursive, then it is recursive in every partial functi
 -/
 
 lemma Nat.Partrec.recursiveIn (f : ℕ →. ℕ) (pF : Nat.Partrec f) (g : ℕ →. ℕ) : RecursiveIn f g := by
-    induction pF
-    case zero =>
-      apply RecursiveIn.zero
-    case succ =>
-      apply RecursiveIn.succ
-    case left =>
-      apply RecursiveIn.left
-    case right =>
-      apply RecursiveIn.right
-    case pair _ _ _ _ ih1 ih2 =>
-      apply RecursiveIn.pair ih1 ih2
-    case comp _ _ _ _ ih1 ih2 =>
-      apply RecursiveIn.comp ih1 ih2
-    case prec _ _ _ _ ih1 ih2 =>
-      apply RecursiveIn.prec ih1 ih2
-    case rfind _ _ ih =>
-      apply RecursiveIn.rfind ih
+  induction pF
+  case zero =>
+    apply RecursiveIn.zero
+  case succ =>
+    apply RecursiveIn.succ
+  case left =>
+    apply RecursiveIn.left
+  case right =>
+    apply RecursiveIn.right
+  case pair _ _ _ _ ih1 ih2 =>
+    apply RecursiveIn.pair ih1 ih2
+  case comp _ _ _ _ ih1 ih2 =>
+    apply RecursiveIn.comp ih1 ih2
+  case prec _ _ _ _ ih1 ih2 =>
+    apply RecursiveIn.prec ih1 ih2
+  case rfind _ _ ih =>
+    apply RecursiveIn.rfind ih
 
 /--
 If a function is recursive in the constant zero function,
 then it is partial recursive.
 -/
-
 lemma RecursiveIn.partrec_of_zero (f : ℕ →. ℕ) (fRecInZero : RecursiveIn f fun _ => Part.some 0) :
-    Nat.Partrec f := by
+  Nat.Partrec f := by
   generalize h : (fun _ => Part.some 0) = fp at *
   induction fRecInZero
   case zero =>
@@ -200,40 +199,41 @@ theorem TuringEquivalent.symm {f g : ℕ →. ℕ} (h : f ≡ᵀ g) : g ≡ᵀ f
 Proof that turing reducibility is transitive.
 -/
 theorem RecursiveIn.trans {f g h : ℕ →. ℕ} (hg : RecursiveIn f g) (hh : RecursiveIn g h) :
-    RecursiveIn f h := by
-    induction hg
-    case zero =>
-      apply RecursiveIn.zero
-    case succ =>
-      apply RecursiveIn.succ
-    case left =>
-      apply RecursiveIn.left
-    case right =>
-      apply RecursiveIn.right
-    case oracle =>
-      exact hh
-    case pair f' h' _ _ hf_ih hh_ih =>
-      apply RecursiveIn.pair
-      · apply hf_ih
-        apply hh
-      · apply hh_ih
-        apply hh
-    case comp f' h' _ _ hf_ih hh_ih =>
-      apply RecursiveIn.comp
-      · apply hf_ih
-        apply hh
-      · apply hh_ih
-        apply hh
-    case prec f' h' _ _ hf_ih hh_ih =>
-      apply RecursiveIn.prec
-      · apply hf_ih
-        apply hh
-      · apply hh_ih
-        apply hh
-    case rfind f' _ hf_ih =>
-      apply RecursiveIn.rfind
-      · apply hf_ih
-        apply hh
+  RecursiveIn f h := by
+  induction hg
+  case zero =>
+    apply RecursiveIn.zero
+  case succ =>
+    apply RecursiveIn.succ
+  case left =>
+    apply RecursiveIn.left
+  case right =>
+    apply RecursiveIn.right
+  case oracle =>
+    exact hh
+  case pair f' h' _ _ hf_ih hh_ih =>
+    apply RecursiveIn.pair
+    · apply hf_ih
+      apply hh
+    · apply hh_ih
+      apply hh
+  case comp f' h' _ _ hf_ih hh_ih =>
+    apply RecursiveIn.comp
+    · apply hf_ih
+      apply hh
+    · apply hh_ih
+      apply hh
+  case prec f' h' _ _ hf_ih hh_ih =>
+    apply RecursiveIn.prec
+    · apply hf_ih
+      apply hh
+    · apply hh_ih
+      apply hh
+  case rfind f' _ hf_ih =>
+    apply RecursiveIn.rfind
+    · apply hf_ih
+      apply hh
+
 
 /--
 Instance declaring that `RecursiveIn` is transitive.
