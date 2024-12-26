@@ -163,26 +163,10 @@ lemma le_egauge_smul_right (c : 𝕜) (s : Set E) (x : E) :
 
 theorem exists_lt_of_egauge_lt {a : ℝ≥0∞} (h : egauge 𝕜 s x < a) :
     ∃ b : 𝕜, ‖b‖₊ < a ∧ x ∈ b • s := by
-  obtain ⟨b, c, hx, hy⟩ := exists_lt_of_ciInf_lt  h
-  classical
-  simp [iInf_eq_if] at hx
-  split at hx
-  · use b
-    simp_rw [hx]
-    refine ⟨?_, ‹_›⟩
-    simp at hy
-    cases a
-    · simp
-    exact mod_cast hy _ rfl
-  · cases hx
+  simp_rw [egauge, iInf_lt_iff, exists_prop] at h
+  simpa [and_comm]
 
--- TODO: generalize to tsub
-theorem ENNReal.le_of_forall_pos_lt_add {a b : ℝ≥0∞} (h : ∀ ε : ℝ≥0∞, 0 < ε → a < b + ε) :
-    a ≤ b :=
-  le_of_not_lt fun h₁ => lt_irrefl a <| by
-    specialize h (a - b) (by simpa only [tsub_pos_iff_lt] using h₁)
-    rwa [add_comm, tsub_add_cancel_of_le h₁.le] at h
-
+-- note: `h` is too strong, and only works for canonically ordered `𝕜`.
 lemma egauge_add_right (h : ∀ r₁ r₂ : 𝕜, (r₁ + r₂) • s = r₁ • s + r₂ • s) (x y : E) :
     egauge 𝕜 s (x + y) ≤ egauge 𝕜 s x + egauge 𝕜 s y := by
   obtain hx | hx := eq_or_ne (egauge 𝕜 s x) ⊤
@@ -191,13 +175,13 @@ lemma egauge_add_right (h : ∀ r₁ r₂ : 𝕜, (r₁ + r₂) • s = r₁ •
   obtain hy | hy := eq_or_ne (egauge 𝕜 s y) ⊤
   · rw [hy]
     simp
-  refine ENNReal.le_of_forall_pos_lt_add fun ε hε => ?_
+  refine le_of_forall_pos_lt_add' fun ε hε => ?_
   have hε2 : ε / 2 ≠ 0 := by simpa using hε.ne'
   obtain ⟨a, ha, x, ha', hx, rfl⟩ :=
     exists_lt_of_egauge_lt (show egauge 𝕜 s x < egauge 𝕜 s x + ε/2 from ENNReal.lt_add_right hx hε2)
   obtain ⟨b, hb, y, hb', hy, rfl⟩ :=
     exists_lt_of_egauge_lt (show egauge 𝕜 s y < egauge 𝕜 s y + ε/2 from ENNReal.lt_add_right hy hε2)
-  dsimp
+  dsimp at *
   calc
     egauge 𝕜 s (a • x + b • y) ≤ ‖a + b‖₊ := by
       have := add_mem_add
