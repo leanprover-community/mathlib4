@@ -650,7 +650,7 @@ lemma eq_toNNRealLinear_nnrealPart_sub {Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ}
   simp only [ContinuousMap.coe_mk, Function.comp_apply, Real.coe_toNNReal', Pi.neg_apply, coe_sub,
     coe_mk, Pi.sub_apply, max_zero_sub_max_neg_zero_eq_self]
 
-lemma toNNRalLinear_eq_iff {Λ₁ Λ₂ : C_c(α, ℝ) →ₗ[ℝ] ℝ} (hΛ₁ : ∀ f, 0 ≤ f.1 → 0 ≤ Λ₁ f)
+lemma toNNRealLinear_eq_iff {Λ₁ Λ₂ : C_c(α, ℝ) →ₗ[ℝ] ℝ} (hΛ₁ : ∀ f, 0 ≤ f.1 → 0 ≤ Λ₁ f)
     (hΛ₂ : ∀ f, 0 ≤ f.1 → 0 ≤ Λ₂ f) : Λ₁ = Λ₂ ↔ toNNRealLinear hΛ₁ = toNNRealLinear hΛ₂ := by
   constructor
   · intro h
