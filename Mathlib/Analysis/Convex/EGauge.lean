@@ -106,10 +106,8 @@ lemma egauge_add_right (h : ∀ r₁ r₂ : 𝕜, (r₁ + r₂) • s = r₁ •
     simp
   refine le_of_forall_pos_lt_add' fun ε hε => ?_
   have hε2 : ε / 2 ≠ 0 := by simpa using hε.ne'
-  obtain ⟨a, ⟨x, ha', hx, rfl⟩, ha⟩ :=
-    egauge_lt_iff.1 (show egauge 𝕜 s x < egauge 𝕜 s x + ε/2 from ENNReal.lt_add_right hx hε2)
-  obtain ⟨b, ⟨y, hb', hy, rfl⟩, hb⟩ :=
-    egauge_lt_iff.1 (show egauge 𝕜 s y < egauge 𝕜 s y + ε/2 from ENNReal.lt_add_right hy hε2)
+  obtain ⟨a, ⟨x, ha', hx, rfl⟩, ha⟩ := egauge_lt_iff.1 <| ENNReal.lt_add_right hx hε2
+  obtain ⟨b, ⟨y, hb', hy, rfl⟩, hb⟩ := egauge_lt_iff.1 <| ENNReal.lt_add_right hy hε2
   dsimp at *
   calc
     egauge 𝕜 s (a • x + b • y) ≤ ‖a + b‖₊ := by
