@@ -496,11 +496,7 @@ lemma Prod.upperBounds {f : α × β → γ} (hf : Monotone f)
 lemma Prod.IsLub {f : α × β → γ} (hf : Monotone f)
     {d : Set (α × β)} (hd : DirectedOn (· ≤ ·) d) (u : γ) :
     IsLUB (f '' d) u ↔ IsLUB (f '' (Prod.fst '' d) ×ˢ (Prod.snd '' d)) u := by
-  refine
-    ⟨fun H =>
-      ⟨monotone_fst.mem_upperBounds_image H.1, fun a ha => ?_⟩ ×ˢ
-        ⟨monotone_snd.mem_upperBounds_image H.1, fun a ha => ?_⟩,
-      fun H => ⟨?_, ?_⟩⟩
+  rw [IsLUB, Prod.upperBounds hf hd, ← IsLUB]
 
 end Prod
 
