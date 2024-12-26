@@ -105,4 +105,18 @@ variable {X Y} in
 lemma isCardinalPresentable_of_iso [IsCardinalPresentable X κ] : IsCardinalPresentable Y κ :=
   Functor.isCardinalAccessible_of_iso (coyoneda.mapIso e.symm.op) κ
 
+section
+
+variable (C) (κ : Cardinal.{w}) [Fact κ.IsRegular]
+
+class HasCardinalFilteredColimits : Prop where
+  hasColimitsOfShape (J : Type w) [Category.{w} J] [IsCardinalFiltered J κ] :
+    HasColimitsOfShape J C := by intros; infer_instance
+
+attribute [instance] HasCardinalFilteredColimits.hasColimitsOfShape
+
+instance [HasColimitsOfSize.{w, w} C] : HasCardinalFilteredColimits.{w} C κ where
+
+end
+
 end CategoryTheory
