@@ -7,8 +7,14 @@ import Lean.Meta.Tactic.Delta
 import Mathlib.Lean.Expr.Basic
 
 /-!
-# Basic term elaborators
+# Term elaborators for reduction
+-/
 
+namespace Mathlib.Util.TermReduce
+
+open Lean Elab Term Meta
+
+/-!
 The `beta% f x1 ... xn` term elaborator elaborates the expression
 `f x1 ... xn` and then does one level of beta reduction.
 That is, if `f` is a lambda then it will substitute its arguments.
@@ -16,10 +22,6 @@ That is, if `f` is a lambda then it will substitute its arguments.
 The purpose of this is to support substitutions in notations such as
 `∀ i, beta% p i` so that `p i` gets beta reduced when `p` is a lambda.
 -/
-
-namespace Mathlib.Util.TermReduce
-
-open Lean Elab Term Meta
 
 /-- `beta% t` elaborates `t` and then if the result is in the form
 `f x1 ... xn` where `f` is a (nested) lambda expression,
