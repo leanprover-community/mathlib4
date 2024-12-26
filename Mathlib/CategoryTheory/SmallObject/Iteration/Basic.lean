@@ -27,9 +27,9 @@ this will correspond to the case of
 `succ G := G ⋙ F` and `toSucc G : G ⟶ G ⋙ F` is given by `whiskerLeft G ε`.
 
 The construction of the iteration of `Φ : SuccStruct C` is done
-by transfinite induction. However, for a limit element `j : J`,
-the definition of `F.obj j` does not involve only
-the objects `F.obj i` for `i < j`, but it also
+by transfinite induction, under an assumption `HasIterationOfShape C J`.
+However, for a limit element `j : J`, the definition of `F.obj j`
+does not involve only the objects `F.obj i` for `i < j`, but it also
 involves the maps `F.obj i₁ ⟶ F.obj i₂` for `i₁ ≤ i₂ < j`.
 Then, this is a straightforward application of definitions by
 transfinite induction. In order to solve this technical difficulty,
