@@ -194,8 +194,7 @@
  "ignoreAll":
  ["Batteries.Tactic.Basic", "Mathlib.Mathport.Syntax", "Mathlib.Tactic.Linter"],
  "ignore":
- {"Mathlib.Util.Term.Basic": ["Mathlib.Util.Term.Beta"],
-  "Mathlib.Util.Notation3": ["Lean.Elab.BuiltinCommand"],
+ {"Mathlib.Util.Notation3": ["Lean.Elab.BuiltinCommand"],
   "Mathlib.Topology.UniformSpace.Basic": ["Mathlib.Tactic.Monotonicity.Basic"],
   "Mathlib.Topology.Sheaves.Forget": ["Mathlib.Algebra.Category.Ring.Limits"],
   "Mathlib.Topology.Sheaves.CommRingCat":
@@ -249,7 +248,7 @@
   ["Mathlib.Tactic.LinearCombination.Lemmas"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
   "Mathlib.Tactic.IrreducibleDef":
-  ["Mathlib.Data.Subtype", "Mathlib.Util.Term.Basic"],
+  ["Mathlib.Data.Subtype", "Mathlib.Util.TermReduce"],
   "Mathlib.Tactic.ITauto": ["Batteries.Tactic.Init", "Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Group": ["Mathlib.Algebra.Group.Commutator"],
   "Mathlib.Tactic.GCongr.Core":
