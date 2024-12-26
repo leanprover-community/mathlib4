@@ -301,7 +301,7 @@ lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
     apply le_trans _ hfle.le
     rw [← NNReal.coe_le_coe, le_iff_forall_one_lt_le_mul₀]
     · intro α hα
-      have : (Λ f) * α = Λ (α.toNNReal • f) := by
+      have : Λ f * α = Λ (α.toNNReal • f) := by
         simp only [map_smul, smul_eq_mul, NNReal.coe_mul, Real.coe_toNNReal',
           max_eq_left <| le_of_lt (lt_of_le_of_lt zero_le_one hα)]
         exact mul_comm _ _
