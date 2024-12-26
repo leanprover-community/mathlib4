@@ -91,9 +91,7 @@ lemma changeLevel_trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
 
 lemma changeLevel_eq_cast_of_dvd {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
     (changeLevel hm χ) a = χ (ZMod.cast (a : ZMod m)) := by
-  simp only [changeLevel_def, toUnitHom_eq, ofUnitHom_eq, equivToUnitHom_symm_coe,
-    MonoidHom.coe_comp, Function.comp_apply, coe_equivToUnitHom]
-  rfl
+  simp [changeLevel_def]
 
 /-- `χ` of level `n` factors through a Dirichlet character `χ₀` of level `d` if `d ∣ n` and
 `χ₀ = χ ∘ (ZMod n → ZMod d)`. -/
