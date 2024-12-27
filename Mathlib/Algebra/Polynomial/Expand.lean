@@ -302,6 +302,10 @@ theorem of_irreducible_expand_pow {p : ℕ} (hp : p ≠ 0) {f : R[X]} {n : ℕ} 
       rw [pow_succ'] at hf
       rwa [expand_expand]
 
+end IsDomain
+
+section Field
+
 variable (k : Type u) [Field k] [DecidableEq k]
 
 theorem isCoprime_of_expand {a b : k[X]} {n : ℕ} (hn : n ≠ 0) :
@@ -316,6 +320,6 @@ theorem isCoprime_of_expand {a b : k[X]} {n : ℕ} (hn : n ≠ 0) :
   rw [eq_comm, expand_eq_C (zero_lt_iff.mpr hn), eq_comm] at eq_r
   exact ⟨r, hur, eq_r⟩
 
-end IsDomain
+end Field
 
 end Polynomial
