@@ -5,6 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.HasLimits
+import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
 import Mathlib.CategoryTheory.Limits.Over
@@ -56,7 +57,7 @@ the colimit over all `j : J` of the `j`th iteration of `Φ`.
 
 -/
 
-universe w v u
+universe w v v' u u'
 
 namespace CategoryTheory
 
@@ -126,10 +127,40 @@ class HasIterationOfShape : Prop where
 attribute [instance] HasIterationOfShape.hasColimitsOfShape
 
 variable (C) in
-lemma hasColimitOfShape_of_isSuccLimit [HasIterationOfShape C J] (j : J)
+lemma hasColimitsOfShape_of_isSuccLimit [HasIterationOfShape C J] (j : J)
     (hj : Order.IsSuccLimit j) :
     HasColimitsOfShape (Set.Iio j) C :=
   HasIterationOfShape.hasColimitsOfShape_of_isSuccLimit j hj
+
+instance [HasIterationOfShape C J] :
+    HasIterationOfShape (Arrow C) J where
+  hasColimitsOfShape_of_isSuccLimit j hj := by
+    have := hasColimitsOfShape_of_isSuccLimit C j hj
+    infer_instance
+
+instance [HasIterationOfShape C J] {K : Type u'} [Category.{v'} K]:
+    HasIterationOfShape (K ⥤ C) J where
+  hasColimitsOfShape_of_isSuccLimit j hj := by
+    have := hasColimitsOfShape_of_isSuccLimit C j hj
+    infer_instance
+
+instance [HasIterationOfShape C J] (K : Type*) [Category K] (X : K) :
+    PreservesWellOrderContinuousOfShape J ((evaluation K C).obj X) where
+  preservesColimitsOfShape j hj := by
+    have := hasColimitsOfShape_of_isSuccLimit C j hj
+    infer_instance
+
+instance [HasIterationOfShape C J] :
+    PreservesWellOrderContinuousOfShape J (Arrow.leftFunc : _ ⥤ C) where
+  preservesColimitsOfShape j hj := by
+    have := hasColimitsOfShape_of_isSuccLimit C j hj
+    infer_instance
+
+instance [HasIterationOfShape C J] :
+    PreservesWellOrderContinuousOfShape J (Arrow.rightFunc : _ ⥤ C) where
+  preservesColimitsOfShape j hj := by
+    have := hasColimitsOfShape_of_isSuccLimit C j hj
+    infer_instance
 
 end
 
@@ -161,7 +192,25 @@ lemma congr_toSucc (Φ : SuccStruct C) {X Y : C} (h : X = Y) :
   subst h
   simp
 
-variable (Φ : SuccStruct C) [LinearOrder J] [OrderBot J] [SuccOrder J]
+variable (Φ : SuccStruct C)
+
+def toSuccArrow (X : C) : Arrow C := Arrow.mk (Φ.toSucc X)
+
+/-- The class of morphisms that are of the morphism `toSucc X : X ⟶ succ X`. -/
+def prop : MorphismProperty C := .ofHoms (fun (X : C) ↦ Φ.toSucc X)
+
+lemma prop_toSucc (X : C) : Φ.prop (Φ.toSucc X) := ⟨_⟩
+
+lemma prop_iff {X Y : C} (f : X ⟶ Y) :
+    Φ.prop f ↔ Arrow.mk f = Φ.toSuccArrow X := by
+  constructor
+  · rintro ⟨_⟩
+    rfl
+  · intro h
+    rw [← Φ.prop.arrow_mk_mem_toSet_iff, h]
+    apply prop_toSucc
+
+variable [LinearOrder J] [OrderBot J] [SuccOrder J]
     [HasIterationOfShape C J]
 
 /-- The category of `j`th iterations of a succesor structure `Φ : SuccStruct C`.
@@ -185,11 +234,11 @@ structure Iteration [WellFoundedLT J] (j : J) where
   /-- If `i` is a limit element, the `i`th iteration is the colimit
   of `k`th iterations for `k < i`. -/
   obj_limit (i : J) (hi : Order.IsSuccLimit i) (hij : i ≤ j) :
-    letI := hasColimitOfShape_of_isSuccLimit C i hi
+    letI := hasColimitsOfShape_of_isSuccLimit C i hi
     F.obj ⟨i, hij⟩ = colimit (restrictionLT F hij)
   map_eq_ι (i : J) (hi : Order.IsSuccLimit i) (hij : i ≤ j)
       (k : J) (hk : k < i) :
-    letI := hasColimitOfShape_of_isSuccLimit C i hi
+    letI := hasColimitsOfShape_of_isSuccLimit C i hi
     F.map (homOfLE hk.le : ⟨k, hk.le.trans hij⟩ ⟶ ⟨i, hij⟩) =
       colimit.ι (restrictionLT F hij) ⟨k, hk⟩ ≫
         eqToHom (by rw [obj_limit i hi])
@@ -223,12 +272,24 @@ lemma map_succ' (i : J) (hi : i < j) :
       Φ.toSucc _ ≫ (iter.isoSucc i hi).inv :=
   iter.map_succ i hi
 
+lemma arrow_mk_map_succ (i : J) (hi : i < j) :
+    Arrow.mk (iter.F.map (homOfLE (Order.le_succ i) :
+      ⟨i, hi.le⟩ ⟶ ⟨Order.succ i, Order.succ_le_of_lt hi⟩)) =
+        Φ.toSuccArrow (iter.F.obj ⟨i, hi.le⟩) :=
+  Arrow.ext rfl (iter.obj_succ i hi)
+    (by simp [iter.map_succ' i hi, toSuccArrow, isoSucc])
+
+lemma prop_map_succ (i : J) (hi : i < j) :
+    Φ.prop (iter.F.map (homOfLE (Order.le_succ i) :
+      ⟨i, hi.le⟩ ⟶ ⟨Order.succ i, Order.succ_le_of_lt hi⟩)) := by
+  rw [prop_iff, iter.arrow_mk_map_succ _ hi]
+
 /-- When `i : J` is limit, `iter.F.obj ⟨i, _⟩` identifies
 to the colimit of the restriction of `iter.F` to `Set.Iio i`. -/
 noncomputable def isColimit (i : J)
     (hi : Order.IsSuccLimit i) (hij : i ≤ j) :
     IsColimit (coconeOfLE iter.F hij) := by
-  have := hasColimitOfShape_of_isSuccLimit C i hi
+  have := hasColimitsOfShape_of_isSuccLimit C i hi
   exact IsColimit.ofIsoColimit (colimit.isColimit _)
     (Cocones.ext (eqToIso (iter.obj_limit i hi hij).symm)
     (fun ⟨k, hk⟩ ↦ (iter.map_eq_ι i hi hij k hk).symm))
@@ -249,7 +310,7 @@ end
 omit [OrderBot J] [SuccOrder J] [WellFoundedLT J] in
 lemma congr_colimit_ι {F G : Set.Iio j ⥤ C} (h : F = G) (hj : Order.IsSuccLimit j)
     (i : Set.Iio j) :
-    letI := hasColimitOfShape_of_isSuccLimit C j hj
+    letI := hasColimitsOfShape_of_isSuccLimit C j hj
     colimit.ι F i = by
       refine eqToHom (by rw [h]) ≫ colimit.ι G i ≫ eqToHom (by rw [h]) := by
   subst h

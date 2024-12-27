@@ -3,7 +3,8 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.SmallObject.Basic
+import Mathlib.CategoryTheory.SmallObject.Construction
+import Mathlib.CategoryTheory.SmallObject.Iteration.Iteration
 import Mathlib.CategoryTheory.SmallObject.TransfiniteCompositionLifting
 import Mathlib.CategoryTheory.MorphismProperty.IsSmall
 import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
@@ -17,7 +18,7 @@ import Mathlib.SetTheory.Cardinal.Cofinality
 
 -/
 
-universe w v u
+universe w v v' u u'
 
 lemma Cardinal.zero_lt_ord_iff (κ : Cardinal.{w}) : 0 < κ.ord ↔ κ ≠ 0 := by
   constructor
@@ -40,7 +41,7 @@ namespace CategoryTheory
 noncomputable instance (o : Ordinal.{w}) : SuccOrder o.toType :=
   SuccOrder.ofLinearWellFoundedLT o.toType
 
-open Limits
+open Limits SmallObject
 
 variable {C : Type u} [Category.{v} C]
 
@@ -48,12 +49,12 @@ namespace MorphismProperty
 
 variable (I : MorphismProperty C)
 
-class IsCardinalForSmallObjectArgument (κ : Cardinal.{w}) [OrderBot κ.ord.toType] : Prop where
-  isSmall : IsSmall.{w} I
-  isRegular : κ.IsRegular
-  locallySmall : LocallySmall.{w} C
-  hasPushouts : HasPushouts C
-  hasCoproducts : HasCoproducts.{w} C
+class IsCardinalForSmallObjectArgument (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [OrderBot κ.ord.toType] : Prop where
+  isSmall : IsSmall.{w} I := by infer_instance
+  locallySmall : LocallySmall.{w} C := by infer_instance
+  hasPushouts : HasPushouts C := by infer_instance
+  hasCoproducts : HasCoproducts.{w} C := by infer_instance
   hasIterationOfShape : HasIterationOfShape C κ.ord.toType
   preservesColimit :
       ∀ {A B : C} (i : A ⟶ B) (_ : I i)
@@ -63,7 +64,7 @@ class IsCardinalForSmallObjectArgument (κ : Cardinal.{w}) [OrderBot κ.ord.toTy
       PreservesColimit F (coyoneda.obj (Opposite.op A))
 
 class HasSmallObjectArgument : Prop where
-  exists_cardinal : ∃ (κ : Cardinal.{w}) (_ : OrderBot κ.ord.toType),
+  exists_cardinal : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular) (_ : OrderBot κ.ord.toType),
     IsCardinalForSmallObjectArgument I κ
 
 variable [HasSmallObjectArgument.{w} I]
@@ -71,15 +72,15 @@ variable [HasSmallObjectArgument.{w} I]
 noncomputable def smallObjectκ : Cardinal.{w} :=
   (HasSmallObjectArgument.exists_cardinal (I := I)).choose
 
-noncomputable def smallObjectκ_isRegular : I.smallObjectκ.IsRegular :=
-  (HasSmallObjectArgument.exists_cardinal (I := I)).choose_spec.choose_spec.isRegular
+instance smallObjectκ_isRegular : Fact I.smallObjectκ.IsRegular :=
+  (HasSmallObjectArgument.exists_cardinal (I := I)).choose_spec.choose
 
 noncomputable instance : OrderBot I.smallObjectκ.ord.toType :=
-  (HasSmallObjectArgument.exists_cardinal (I := I)).choose_spec.choose
+  (HasSmallObjectArgument.exists_cardinal (I := I)).choose_spec.choose_spec.choose
 
 instance isCardinalForSmallObjectArgument_smallObjectκ :
     IsCardinalForSmallObjectArgument.{w} I I.smallObjectκ :=
-  (HasSmallObjectArgument.exists_cardinal (I := I)).choose_spec.choose_spec
+  (HasSmallObjectArgument.exists_cardinal (I := I)).choose_spec.choose_spec.choose_spec
 
 end MorphismProperty
 
@@ -91,7 +92,8 @@ variable (I : MorphismProperty C)
 
 section
 
-variable (κ : Cardinal.{w}) [OrderBot κ.ord.toType] [I.IsCardinalForSmallObjectArgument κ]
+variable (κ : Cardinal.{w}) [Fact κ.IsRegular] [OrderBot κ.ord.toType]
+  [I.IsCardinalForSmallObjectArgument κ]
 
 include I κ
 
@@ -100,9 +102,6 @@ lemma isSmall : IsSmall.{w} I :=
 
 lemma locallySmall : LocallySmall.{w} C :=
   IsCardinalForSmallObjectArgument.locallySmall I κ
-
-lemma isRegular : κ.IsRegular :=
-  IsCardinalForSmallObjectArgument.isRegular I
 
 lemma hasIterationOfShape : HasIterationOfShape C κ.ord.toType :=
   IsCardinalForSmallObjectArgument.hasIterationOfShape I
@@ -121,22 +120,99 @@ lemma preservesColimit_coyoneda_obj
     PreservesColimit F (coyoneda.obj (Opposite.op A)) :=
   IsCardinalForSmallObjectArgument.preservesColimit i hi F hF
 
-variable {X Y : C} (p : X ⟶ Y)
-
-lemma small_functorObjIndex :
+lemma small_functorObjIndex {X Y : C} (p : X ⟶ Y) :
     Small.{w} (FunctorObjIndex I.homFamily p) := by
   have := locallySmall I κ
   have := isSmall I κ
-  infer_instance
+  let φ : FunctorObjIndex I.homFamily p →
+    Σ (i : Shrink.{w} I.toSet),
+      Shrink.{w} ((((equivShrink _).symm i).1.left ⟶ X) ×
+        (((equivShrink _).symm i).1.right ⟶ Y)) :=
+        fun x ↦ ⟨equivShrink _ x.i, equivShrink _
+          (⟨eqToHom (by simp) ≫ x.t, eqToHom (by simp) ≫ x.b⟩)⟩
+  have hφ : Function.Injective φ := by
+    rintro ⟨i₁, t₁, b₁, _⟩ ⟨i₂, t₂, b₂, _⟩ h
+    obtain rfl : i₁ = i₂ := by simpa using congr_arg Sigma.fst h
+    simpa [cancel_epi, φ] using h
+  exact small_of_injective hφ
 
-variable (X Y) in
-lemma hasColimitsOfShape_discrete :
+lemma hasColimitsOfShape_discrete (X Y : C) (p : X ⟶ Y) :
     HasColimitsOfShape
       (Discrete (FunctorObjIndex I.homFamily p)) C := by
   have := small_functorObjIndex I κ p
   have := hasCoproducts I κ
   exact hasColimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{w} _)).symm
 
+noncomputable def succStruct : SuccStruct (Arrow C ⥤ Arrow C) :=
+  have := hasColimitsOfShape_discrete I κ
+  have := hasPushouts I κ
+  SuccStruct.ofNatTrans (ε I.homFamily)
+
+noncomputable def iterationFunctor : κ.ord.toType ⥤ Arrow C ⥤ Arrow C :=
+  have := hasIterationOfShape I κ
+  (succStruct I κ).iterationFunctor κ.ord.toType
+
+instance : (iterationFunctor I κ).IsWellOrderContinuous := by
+  dsimp [iterationFunctor]
+  infer_instance
+variable (f : Arrow C)
+
+instance (f : Arrow C) :
+    (iterationFunctor I κ ⋙ (evaluation _ _).obj f).IsWellOrderContinuous := by
+  have := hasIterationOfShape I κ
+  infer_instance
+
+instance (f : Arrow C) :
+    (iterationFunctor I κ ⋙ (evaluation _ _).obj f ⋙ Arrow.leftFunc).IsWellOrderContinuous := by
+  have := hasIterationOfShape I κ
+  change ((iterationFunctor I κ ⋙ (evaluation _ _).obj f) ⋙
+    Arrow.leftFunc).IsWellOrderContinuous
+  infer_instance
+
+instance (f : Arrow C) :
+    (iterationFunctor I κ ⋙ (evaluation _ _).obj f ⋙ Arrow.rightFunc).IsWellOrderContinuous := by
+  have := hasIterationOfShape I κ
+  change ((iterationFunctor I κ ⋙ (evaluation _ _).obj f) ⋙
+    Arrow.rightFunc).IsWellOrderContinuous
+  infer_instance
+
+noncomputable def iteration : Arrow C ⥤ Arrow C :=
+  have := hasIterationOfShape I κ
+  (succStruct I κ).iteration κ.ord.toType
+
+noncomputable def ιIteration : 𝟭 _ ⟶ iteration I κ :=
+  have := hasIterationOfShape I κ
+  (succStruct I κ).ιIteration κ.ord.toType
+
+def propArrow : MorphismProperty (Arrow C) := fun _ _ f ↦
+  (coproducts.{w} I).pushouts f.left ∧ (isomorphisms C) f.right
+
+lemma succStruct_prop_le_propArrow :
+    (succStruct I κ).prop ≤ (propArrow.{w} I).functorCategory (Arrow C) := by
+  have := hasColimitsOfShape_discrete I κ
+  have := hasPushouts I κ
+  intro _ _ _ ⟨F⟩ f
+  constructor
+  · have := small_functorObjIndex I κ (F.obj f).hom
+    nth_rw 1 [← I.ofHoms_homFamily]
+    apply pushouts_mk _ (functorObj_isPushout I.homFamily (F.obj f).hom)
+    exact coproducts_of_small _ _
+      (colimitsOfShape_colimMap _ _ (by rintro ⟨j⟩; constructor))
+  · rw [MorphismProperty.isomorphisms.iff]
+    dsimp [succStruct]
+    infer_instance
+
+lemma transfiniteCompositionOfShape_succStruct_prop_ιIteration :
+    (succStruct I κ).prop.transfiniteCompositionsOfShape κ.ord.toType (ιIteration I κ) := by
+  have := hasIterationOfShape I κ
+  apply SuccStruct.transfiniteCompositionOfShape_ιIteration
+
+lemma transfiniteCompositionOfShape_propArrow_ιIteration :
+    ((propArrow.{w} I).functorCategory (Arrow C)).transfiniteCompositionsOfShape
+      κ.ord.toType (ιIteration I κ) := by
+  sorry
+
+/-
 variable (Y) in
 noncomputable def transfiniteIterationFunctor : Over Y ⥤ Over Y :=
   have := hasIterationOfShape I κ
@@ -238,6 +314,8 @@ lemma rlp_llp :
     apply transfiniteCompositionsOfShape_le_transfiniteCompositions
   · rw [le_llp_iff_le_rlp, retracts_rlp, ← le_llp_iff_le_rlp]
     simpa using transfiniteCompositions_le_rlp_llp.{w} (coproducts.{w} I).pushouts
+
+end-/
 
 end
 

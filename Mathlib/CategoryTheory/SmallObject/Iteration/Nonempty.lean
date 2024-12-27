@@ -123,6 +123,12 @@ def mapObj {j₁ j₂ : J} (iter₁ : Φ.Iteration j₁) (iter₂ : Φ.Iteration
   eqToHom (congr_obj iter₁ iter₂ k₁ h₁ (h₁.trans hj)) ≫
     iter₂.F.map (homOfLE h₁₂)
 
+lemma arrow_mk_mapObj {j₁ j₂ : J} (iter₁ : Φ.Iteration j₁) (iter₂ : Φ.Iteration j₂)
+    {k₁ k₂ : J} (h₁₂ : k₁ ≤ k₂) (h₁ : k₁ ≤ j₁) (h₂ : k₂ ≤ j₂) (hj : j₁ ≤ j₂) :
+    Arrow.mk (mapObj iter₁ iter₂ h₁₂ h₁ h₂ hj) =
+      Arrow.mk (iter₂.F.map (homOfLE h₁₂ : ⟨k₁, h₁.trans hj⟩ ⟶ ⟨k₂, h₂⟩)) :=
+  Arrow.ext (congr_obj iter₁ iter₂ k₁ h₁ (h₁.trans hj)) rfl (by simp [mapObj])
+
 @[simp]
 lemma mapObj_refl {j : J} (iter : Φ.Iteration j)
     {k l : J} (h : k ≤ l) (h' : l ≤ j) :
@@ -155,7 +161,7 @@ noncomputable def inductiveSystem : Set.Iio j ⥤ C where
 /-- The extension of `inductiveSystem iter` to a functor `Set.Iic j ⥤ C` which
 sends the top element to the colimit of `inductiveSystem iter`. -/
 noncomputable def functor : Set.Iic j ⥤ C :=
-  letI := hasColimitOfShape_of_isSuccLimit C j hj
+  letI := hasColimitsOfShape_of_isSuccLimit C j hj
   ofCocone (colimit.cocone (inductiveSystem iter))
 
 lemma functor_obj (i : J) (hi : i < j) {k : J} (iter' : Φ.Iteration k) (hk : i ≤ k) :
@@ -165,7 +171,7 @@ lemma functor_obj (i : J) (hi : i < j) {k : J} (iter' : Φ.Iteration k) (hk : i 
   apply congr_obj
 
 lemma functor_obj_eq_colimit :
-    letI := hasColimitOfShape_of_isSuccLimit C j hj
+    letI := hasColimitsOfShape_of_isSuccLimit C j hj
     (functor hj iter).obj ⟨j, by simp⟩ = colimit (inductiveSystem iter) := by
   apply ofCocone_obj_eq_pt
 
@@ -196,7 +202,7 @@ lemma restrictionLT_functor :
     simp [functor_map _ _ _ h₂ (iter l₂ h₂) (by rfl), mapObj]
 
 lemma functor_map_to_top (i : J) (hij : i < j) :
-    letI := hasColimitOfShape_of_isSuccLimit C j hj
+    letI := hasColimitsOfShape_of_isSuccLimit C j hj
     (functor hj iter).map (homOfLE hij.le : ⟨i, hij.le⟩ ⟶ ⟨j, by simp⟩) =
       eqToHom (functor_obj _ _ _ hij _ _) ≫ colimit.ι (inductiveSystem iter) ⟨i, hij⟩ ≫
           eqToHom (functor_obj_eq_colimit hj iter).symm := by

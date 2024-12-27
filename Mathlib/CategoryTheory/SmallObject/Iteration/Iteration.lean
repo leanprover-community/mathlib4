@@ -19,10 +19,10 @@ universe w v u
 
 namespace CategoryTheory.SmallObject.SuccStruct
 
-open Limits
+open Category Limits
 
 variable {C : Type u} [Category.{v} C] (Φ : SuccStruct C)
-  (J : Type u) [LinearOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J]
+  (J : Type w) [LinearOrder J] [OrderBot J] [SuccOrder J] [WellFoundedLT J]
   [HasIterationOfShape C J]
 
 variable {J} in
@@ -32,7 +32,6 @@ noncomputable def iter (j : J) : Φ.Iteration j := Classical.arbitrary _
 
 /-- Given `Φ : SuccStruct C` and a well-ordered type `J`, this
 is the functor `J ⥤ C` which gives the iterations of `Φ` indexed by `J`. -/
-@[simps (config := .lemmasOnly)]
 noncomputable def iterationFunctor : J ⥤ C where
   obj j := (Φ.iter j).F.obj ⟨j, by simp⟩
   map f := Iteration.mapObj _ _ (leOfHom f) _ _ (leOfHom f)
@@ -53,5 +52,59 @@ lemma iterationCocone_pt : (Φ.iterationCocone J).pt = Φ.iteration J := rfl
 /-- `Φ.iteration J` identifies to the colimit of `Φ.iterationFunctor J`. -/
 noncomputable def isColimitIterationCocone : IsColimit (Φ.iterationCocone J) :=
   colimit.isColimit _
+
+variable {J}
+
+lemma iterationFunctor_obj (i : J) {j : J} (iter : Φ.Iteration j) (hi : i ≤ j) :
+    (Φ.iterationFunctor J).obj i = iter.F.obj ⟨i, hi⟩ :=
+  Iteration.congr_obj (Φ.iter i) iter i (by simp) hi
+
+lemma arrow_mk_iterationFunctor_map (i₁ i₂ : J) (h₁₂ : i₁ ≤ i₂)
+    {j : J} (iter : Φ.Iteration j) (hj : i₂ ≤ j) :
+    Arrow.mk ((Φ.iterationFunctor J).map (homOfLE h₁₂)) =
+      Arrow.mk (iter.F.map (homOfLE h₁₂ : ⟨i₁, h₁₂.trans hj⟩ ⟶ ⟨i₂, hj⟩)) := by
+  dsimp [iterationFunctor]
+  rw [Iteration.arrow_mk_mapObj]
+  exact Arrow.ext (Iteration.congr_obj _ _ _ _ _)
+    (Iteration.congr_obj _ _ _ _ _) (Iteration.congr_map _ _ _ _ _)
+
+lemma prop_iterationFunctor_map_succ (i₁ i₂ : J) (h₁ : i₁ < i₂) (h₂ : i₂ = Order.succ i₁) :
+    Φ.prop ((Φ.iterationFunctor J).map (homOfLE h₁.le)) := by
+  subst h₂
+  have := (Φ.iter (Order.succ i₁)).prop_map_succ i₁ h₁
+  rw [prop_iff] at this ⊢
+  simp only [Φ.iterationFunctor_obj i₁ (Φ.iter (Order.succ i₁)) (Order.le_succ i₁),
+    Φ.arrow_mk_iterationFunctor_map _ _ (Order.le_succ i₁) (Φ.iter (Order.succ i₁)) (by simp),
+    this]
+
+variable (J)
+
+noncomputable def iterationFunctorObjBotIso : Φ.X₀ ≅ (Φ.iterationFunctor J).obj ⊥ :=
+  eqToIso (Φ.iter (⊥ : J)).obj_bot.symm
+
+noncomputable def ιIterationFunctor :
+    (Functor.const _).obj Φ.X₀ ⟶ Φ.iterationFunctor J where
+  app j := (Φ.iterationFunctorObjBotIso J).hom ≫
+    (Φ.iterationFunctor J).map (homOfLE bot_le : ⊥ ⟶ j)
+  naturality _ _ f := by
+    dsimp
+    rw [id_comp, assoc, ← Functor.map_comp]
+    rfl
+
+lemma ιIterationFunctor_app_bot :
+    (Φ.ιIterationFunctor J).app ⊥ = (Φ.iterationFunctorObjBotIso J).hom := by
+  simp [ιIterationFunctor]
+
+instance : IsIso ((Φ.ιIterationFunctor J).app ⊥) := by
+  rw [ιIterationFunctor_app_bot]
+  infer_instance
+
+noncomputable def ιIteration : Φ.X₀ ⟶ Φ.iteration J :=
+  (Φ.iterationFunctorObjBotIso J).hom ≫ (Φ.iterationCocone J).ι.app ⊥
+
+instance : (Φ.iterationFunctor J).IsWellOrderContinuous := sorry
+
+lemma transfiniteCompositionOfShape_ιIteration :
+    Φ.prop.transfiniteCompositionsOfShape J (Φ.ιIteration J) := sorry
 
 end CategoryTheory.SmallObject.SuccStruct
