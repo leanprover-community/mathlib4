@@ -319,7 +319,7 @@ variable {𝕜 A F : Type*}
 
 variable [RCLike 𝕜] [NormedAddCommGroup A] [NormedSpace 𝕜 A]
 
-theorem contractive {P : A →L[𝕜] A} (h : IsLprojection A P) : ‖P‖ ≤ 1 := by
+theorem IsLprojection.contractive {P : A →L[𝕜] A} (h : IsLprojection A P) : ‖P‖ ≤ 1 := by
   apply (ContinuousLinearMap.opNorm_le_iff (zero_le_one' ℝ)).mpr
   intro x
   rw [(h.Lnorm x)]
@@ -370,7 +370,7 @@ lemma IsIdempotentElem.range_prod__of_commute
 
 lemma IsLprojection.range_inter (P Q : Pₗ[𝕜](NormedSpace.Dual 𝕜 A)) :
     Set.range P.val ∩ Set.range Q.val = Set.range (P ⊓ Q).val := by
-  rw [← IsIdempotentElem.range_prod__of_commute (IsLprojection.commute P.prop Q.prop)
+  rw [← IsIdempotentElem.range_prod__of_commute (P.prop.commute Q.prop)
     P.prop.1 Q.prop.1]
   rfl
 
@@ -389,7 +389,7 @@ lemma IsLprojection.range_sum (P Q : Pₗ[𝕜](NormedSpace.Dual 𝕜 A)) :
     rw [← Function.comp_apply (f := P.val), ← ContinuousLinearMap.coe_mul, P.prop.proj]
     rw [← Function.comp_apply (f := Q.val) (g := Q.val), ← ContinuousLinearMap.coe_mul, Q.prop.proj]
     rw [← Function.comp_apply (f := Q.val) (g := P.val), ← ContinuousLinearMap.coe_mul]
-    rw [IsLprojection.commute Q.prop P.prop]
+    rw [Q.prop.commute P.prop]
     rw [← Function.comp_apply (f := P.val) (g := (P.val * Q.val)), ← ContinuousLinearMap.coe_mul]
     rw [← mul_assoc]
     rw [P.prop.proj]
@@ -436,7 +436,7 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
     have e3 : x = y + z := calc
       x = E x := (proj_apply _ E.prop.proj x (Set.mem_of_mem_inter_left hx)).symm
       _ = E₁ x + E₂ x - (E₁ * E₂) x := rfl
-      _ = E₁ x + E₂ x - (E₂ * E₁) x := by rw [IsLprojection.commute P₁.prop P₂.prop]
+      _ = E₁ x + E₂ x - (E₂ * E₁) x := by rw [P₁.prop.commute P₂.prop]
       _ = E₁ x + E₂ x - E₂ (E₁ x) := rfl
       _ = E₁ x + (E₂ x - E₂ (E₁ x)) := add_sub_assoc (E₁ x) (E₂ x) (E₂ (E₁ x))
       _ = E₁ x + E₂ (x - E₁ x) := by rw [map_sub]
@@ -448,7 +448,7 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
           rw [add_le_add_iff_left]; exact ContinuousLinearMap.le_opNorm E₂ ((1 - E₁) x)
         _ ≤ ‖E₁ x‖ + 1 * ‖(1 - E₁) x‖ := by
           rw [add_le_add_iff_left]
-          exact mul_le_mul_of_nonneg_right (contractive P₂.prop)
+          exact mul_le_mul_of_nonneg_right P₂.prop.contractive
             (ContinuousLinearMap.opNorm_nonneg ((1 - E₁) x))
         _ ≤ ‖E₁ x‖ + ‖(1 - E₁) x‖ := by rw [one_mul]
         _ ≤ ‖E₁ • x‖ + ‖(1 - E₁) • x‖ := Preorder.le_refl (‖E₁ x‖ + ‖(1 - E₁) x‖)
