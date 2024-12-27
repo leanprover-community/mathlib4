@@ -343,11 +343,8 @@ lemma aemeasurable_exp_mul {X : Ω → ℝ} (t : ℝ) (hX : AEMeasurable X μ) :
 lemma integrable_exp_mul_of_le [IsFiniteMeasure μ] {X : Ω → ℝ} (t b : ℝ) (ht : 0 ≤ t)
     (hX : AEMeasurable X μ) (hb : ∀ᵐ ω ∂μ, X ω ≤ b) :
     Integrable (fun ω ↦ exp (t * X ω)) μ := by
-  have h : ∀ᵐ ω ∂μ, rexp (t * X ω) ∈ Set.Icc 0 (rexp (t * b)) := by
-    filter_upwards [hb] with ω hb
-    constructor
-    · exact exp_nonneg (t * X ω)
-    · exact (exp_le_exp.mpr (mul_le_mul_of_nonneg_left hb ht))
-  exact Integrable.of_mem_Icc 0 (rexp (t * b)) (measurable_exp.comp_aemeasurable (hX.const_mul t)) h
+  refine .of_mem_Icc 0 (rexp (t * b)) (measurable_exp.comp_aemeasurable (hX.const_mul t)) ?_
+  filter_upwards [hb] with ω hb
+  exact ⟨by positivity, by gcongr⟩
 
 end ProbabilityTheory
