@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Bhavik Mehta
+Authors: Bhavik Mehta, Sina Hazratpour
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
@@ -18,11 +18,21 @@ In this file we define subterminal objects and show the equivalence of these thr
 
 We also construct the subcategory of subterminal objects.
 
+Dually, a preinitial object is an object with at most one morphism to each given object.
+In the presence of an initial object, the unique morphism `⊥ ⟶ P` to the preinitial object is an
+epimorphism. Moreover, every preinitial object is an epimorph of the initial object.
+In a category with binary coproducts, `P` is preinitial if and only if the codiagonal morphism
+`P ⨿ P ⟶ P` is an isomorphism.
+
 ## TODO
 
 * Define exponential ideals, and show this subcategory is an exponential ideal.
 * Use the above to show that in a locally cartesian closed category, every subobject lattice
   is cartesian closed (equivalently, a Heyting algebra).
+
+* The category of preinitial objects is equivalent to the category of epimorphisms from the
+initial object (which is in turn equivalent to the quotient of the initial object by the relation
+of being isomorphic).
 
 -/
 
@@ -80,6 +90,17 @@ theorem isSubterminal_of_isTerminal {T : C} (hT : IsTerminal T) : IsSubterminal 
 theorem isSubterminal_of_terminal [HasTerminal C] : IsSubterminal (⊤_ C) := fun _ _ _ => by
   subsingleton
 
+/-- `A` is subterminal iff the first and second projections from `A ⨯ A` to `A` are equal. -/
+@[simp]
+theorem IsSubterminal.prod_proj_eq_iff [HasBinaryProduct A A] :
+    IsSubterminal A ↔ (prod.fst : A ⨯ A ⟶ A) = Limits.prod.snd := by
+  constructor
+  · intro hA
+    apply hA
+  · intro heq Z f g
+    have : prod.lift f g ≫ prod.fst = prod.lift f g ≫ prod.snd := by rw [heq]
+    simpa using this
+
 /-- If `A` is subterminal, its diagonal morphism is an isomorphism.
 The converse of `isSubterminal_of_isIso_diag`.
 -/
@@ -89,19 +110,30 @@ theorem IsSubterminal.isIso_diag (hA : IsSubterminal A) [HasBinaryProduct A A] :
         rw [IsSubterminal.def] at hA
         aesop_cat⟩⟩⟩
 
-/-- If the diagonal morphism of `A` is an isomorphism, then it is subterminal.
-The converse of `isSubterminal.isIso_diag`.
--/
-theorem isSubterminal_of_isIso_diag [HasBinaryProduct A A] [IsIso (diag A)] : IsSubterminal A :=
-  fun Z f g => by
-  have : (Limits.prod.fst : A ⨯ A ⟶ _) = Limits.prod.snd := by simp [← cancel_epi (diag A)]
-  rw [← prod.lift_fst f g, this, prod.lift_snd]
-
 /-- If `A` is subterminal, it is isomorphic to `A ⨯ A`. -/
 @[simps!]
 def IsSubterminal.isoDiag (hA : IsSubterminal A) [HasBinaryProduct A A] : A ⨯ A ≅ A := by
   letI := IsSubterminal.isIso_diag hA
   apply (asIso (diag A)).symm
+
+/-- If the diagonal morphism of `A` is an isomorphism, `A` is subterminal. -/
+theorem isSubterminal_of_isIso_diag [HasBinaryProduct A A] [IsIso (diag A)] : IsSubterminal A :=
+  fun Z f g => by
+  have : (prod.fst : A ⨯ A ⟶ A) = prod.snd := by simp [← cancel_epi (diag A)]
+  apply IsSubterminal.prod_proj_eq_iff.mpr this
+
+/-- `A` is subterminal iff the first projection from `A ⨯ A` to `A` is an isomorphism. -/
+theorem IsSubterminal.isIso_fst_iff {A : C} [HasBinaryProduct A A] :
+    IsSubterminal A ↔ IsIso (prod.fst : A ⨯ A ⟶ A) := by
+  constructor
+  · intro h
+    refine ⟨prod.lift (𝟙 A) (𝟙 A), by aesop, by aesop⟩
+  · intro h Z f g
+    have : IsIso (diag A) := by
+      have := IsIso.inv_eq_of_inv_hom_id (f:= prod.fst) (g:= diag A) (by simp)
+      rw [← this]
+      infer_instance
+    apply isSubterminal_of_isIso_diag
 
 variable (C)
 
@@ -170,5 +202,123 @@ theorem monoOver_terminal_to_subterminals_comp [HasTerminal C] :
     (subterminalsEquivMonoOverTerminal C).inverse ⋙ subterminalInclusion C =
       MonoOver.forget _ ⋙ Over.forget _ :=
   rfl
+
+variable {C}
+
+/-- A preinitial object is an object with at most one morphism to each given object. -/
+def IsPreinitial (P : C) : Prop :=
+  ∀ ⦃Z : C⦄ (f g : P ⟶ Z), f = g
+
+variable {P : C}
+
+theorem IsPreinitial.def : IsPreinitial P ↔ ∀ ⦃Z : C⦄ (f g : P ⟶ Z), f = g :=
+  Iff.rfl
+
+/-- If `P` is preinitial, the unique morphism to it from an initial object is an epimorphism.
+The converse of `isPreinitial_of_epi_initial_to`. -/
+theorem IsPreinitial.epi_initial_to (hP : IsPreinitial P) {I : C} (hI : IsInitial I) :
+    Epi (hI.to P) :=
+  { left_cancellation := fun _ _ _ => hP _ _ }
+
+/-- If `P` is preinitial, the unique morphism to it from the initial object is an epimorphism.
+The converse of `isPreinitial_of_epi_initial_to`. -/
+theorem IsPreinitial.epi_initial_to' [HasInitial C] (hP : IsPreinitial P) :
+    Epi (initial.to P) :=
+  hP.epi_initial_to initialIsInitial
+
+/-- If the unique morphism to `P` from an initial object is an epimorphism, `P` is preinitial.
+The converse of `IsPreinitial.epi_initial_to`. -/
+theorem isPreinitial_of_epi_initial_to {I : C} (hI : IsInitial I) [Epi (hI.to P)] :
+    IsPreinitial P := fun Z f g => by
+  rw [← cancel_epi (hI.to P)]
+  apply hI.hom_ext
+
+/-- If the unique morphism to `P` from the initial object is an epimorphism, `P` is preinitial.
+The converse of `IsPreinitial.epi_initial_to'. -/
+theorem isPreinitial_of_epi_initial_to' [HasInitial C] [Epi (initial.to P)] :
+    IsPreinitial P := fun Z f g => by
+  rw [← cancel_epi (initial.to P)]
+  subsingleton
+
+theorem isPreinitial_of_isInitial {I : C} (hI : IsInitial I) : IsPreinitial I := fun _ _ _ =>
+  hI.hom_ext _ _
+
+theorem isPreinitial_of_initial [HasInitial C] : IsPreinitial (⊥_ C) := fun _ _ _ => by
+  subsingleton
+
+/-- `P` is preinitial if and only if the left and right coprojections from `P` to `P ⨿ P`
+are equal. -/
+@[simp]
+theorem IsPreinitial.inl_eq_inr_iff [HasBinaryCoproduct P P] :
+    IsPreinitial P ↔ (coprod.inl : P ⟶ P ⨿ P) = coprod.inr := by
+  constructor
+  · intro hP
+    apply hP
+  · intro heq Z f g
+    have : coprod.inl ≫ coprod.desc f g = coprod.inr ≫ coprod.desc f g := by rw [heq]
+    simpa using this
+
+/-- If `P` is preinitial, its codiagonal morphism is an isomorphism.
+The converse of `isPreinitial_of_isIso_codiag`. -/
+theorem IsPreinitial.isIso_codiag (hP : IsPreinitial P) [HasBinaryCoproduct P P] :
+    IsIso (codiag P) :=
+  ⟨⟨coprod.inl,
+      ⟨by aesop, by
+        simp only [coprod.inl_desc]⟩⟩⟩
+
+/-- If `P` is preinitial, it is isomorphic to `P ⨿ P`. -/
+@[simps!]
+def IsPreinitial.isoCodiag (hP : IsPreinitial P) [HasBinaryCoproduct P P] : P ⨿ P ≅ P := by
+  letI := IsPreinitial.isIso_codiag hP
+  apply (asIso (codiag P))
+
+/-- If the codiagonal morphism of `P` is an isomorphism, then it is preinitial.
+The converse of `isPreinitial.isIso_codiag`. -/
+theorem isPreinitial_of_isIso_codiag [HasBinaryCoproduct P P] [IsIso (codiag P)] :
+    IsPreinitial P :=
+  fun Z f g => by
+  have : (coprod.inl : P ⟶ P ⨿ P) = coprod.inr := by simp [← cancel_mono (codiag P)]
+  apply IsPreinitial.inl_eq_inr_iff.mpr this
+
+/-- `P` is preinitial if and only if the (left) coproduct coprojection `P ⟶ P ⨿ P`
+is an isomorphism. -/
+theorem IsPreinitial.isIso_inl_iff {P : C}
+    [HasBinaryCoproduct P P] :
+    IsPreinitial P ↔ IsIso (coprod.inl : P ⟶ P ⨿ P) := by
+  constructor
+  · intro h
+    refine ⟨coprod.desc (𝟙 P) (𝟙 P), by simp only [coprod.inl_desc] , by aesop⟩
+  · intro h Z f g
+    have : IsIso (codiag P) := by
+      have := IsIso.inv_eq_of_hom_inv_id (f:= coprod.inl) (g:= codiag P) (coprod.inl_desc _ _)
+      rw [← this]
+      infer_instance
+    apply isPreinitial_of_isIso_codiag
+
+variable (C)
+
+/-- The (full sub)category of preinitial objects. -/
+def Preinitials (C : Type u₁) [Category.{v₁} C] :=
+  FullSubcategory fun P : C => IsPreinitial P
+
+instance (C : Type u₁) [Category.{v₁} C] :
+  Category (Preinitials C) := FullSubcategory.category _
+
+instance [HasInitial C] : Inhabited (Preinitials C) :=
+  ⟨⟨⊥_ C, isPreinitial_of_initial⟩⟩
+
+/-- The inclusion of the preinitial objects into the original category. -/
+@[simps!]
+def preinitialInclusion : Preinitials C ⥤ C :=
+  fullSubcategoryInclusion _
+
+instance (C : Type u₁) [Category.{v₁} C] : (preinitialInclusion C).Full :=
+  FullSubcategory.full _
+
+instance (C : Type u₁) [Category.{v₁} C] : (preinitialInclusion C).Faithful :=
+  FullSubcategory.faithful _
+
+instance preinitials_thin (X Y : Preinitials C) : Subsingleton (X ⟶ Y) :=
+  ⟨fun f g => X.2 f g⟩
 
 end CategoryTheory
