@@ -10,6 +10,8 @@ import Mathlib.Tactic.NoncommRing
 import Mathlib.Analysis.LocallyConvex.Polar
 import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.Convex.Normed
+import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
+import Mathlib.Data.Set.Pointwise.SMul
 
 /-!
 # M-structure
@@ -313,19 +315,50 @@ instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
             sub_zero])).le
     sdiff_eq := fun P Q => Subtype.ext <| by rw [coe_sdiff, ← coe_compl, coe_inf] }
 
+theorem contractive {P : M} (h : IsLprojection X P) (x : X) : ‖P • x‖ ≤ ‖x‖ := by
+  simp only [(h.Lnorm x), le_add_iff_nonneg_right, norm_nonneg]
+
+/-
+instance : FunLike { P : M // IsLprojection X P } X X where
+  coe f := fun x => f.val • x
+  coe_injective' _ _ h := Subtype.eq (by aesop?)--(DFunLike.coe_fn_eq.mp h)
+
+variables (P Q : { P : M // IsLprojection X P })
+
+open Pointwise
+#check P.val • (Set.univ)
+-/
+
+
+open Pointwise
+lemma range_inter [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
+    (P.val • Set.univ) ∩ (Q.val • Set.univ) = ((P ⊓ Q).val • (Set.univ : Set X)) := by
+  have h1 : Commute P.val Q.val := P.prop.commute Q.prop
+  aesop?
+  rw [← (IsIdempotentElem.range_prod_of_commute P.prop.1 Q.prop.1 h1)]
+  rfl
+
+
+
 end IsLprojection
 
 variable {𝕜 A F : Type*}
 
 variable [RCLike 𝕜] [NormedAddCommGroup A] [NormedSpace 𝕜 A]
 
-theorem IsLprojection.contractive {P : A →L[𝕜] A} (h : IsLprojection A P) : ‖P‖ ≤ 1 :=
+theorem IsLprojection.contractive2 {P : A →L[𝕜] A} (h : IsLprojection A P) : ‖P‖ ≤ 1 :=
   (ContinuousLinearMap.opNorm_le_iff (zero_le_one' ℝ)).mpr
     (fun x => by simp only [(h.Lnorm x), ContinuousLinearMap.smul_def, ContinuousLinearMap.coe_sub',
       Pi.sub_apply, ContinuousLinearMap.one_apply, one_mul, le_add_iff_nonneg_right, norm_nonneg])
 
+
+
+
+#check LinearMap.proj_apply
+
 /-- The subtype of L-projections -/
-notation "Pₗ[" 𝕜 "](" A ")" => { P : A →L[𝕜] A // IsLprojection A P }
+--notation "Pₗ[" 𝕜 "](" A ")" => { P : A →L[𝕜] A // IsLprojection A P }
+notation "Pₗ[" 𝕜 "](" A ")" => { P : Module.End 𝕜 A // IsLprojection A P }
 
 variable (P : Pₗ[𝕜](A))
 
@@ -354,10 +387,14 @@ lemma commute {P Q : A →L[𝕜] A} : Commute P Q ↔ Commute (P : (Module.End 
       _ = (Q * (P : (Module.End 𝕜 A))) x := by rw [h]
       _ = Q (P x) := rfl
 
+variable  (P Q : Pₗ[𝕜](NormedSpace.Dual 𝕜 A))
+
+#check IsIdempotentElem.range_prod_of_commute P.prop.1 Q.prop.1
+
 lemma IsLprojection.range_inter (P Q : Pₗ[𝕜](NormedSpace.Dual 𝕜 A)) :
     Set.range P.val ∩ Set.range Q.val = Set.range (P ⊓ Q).val := by
-  rw [← IsIdempotentElem.range_prod__of_commute (P.prop.commute Q.prop)
-    P.prop.1 Q.prop.1]
+  have h1 : Commute P.val Q.val := P.prop.commute Q.prop
+  rw [← (IsIdempotentElem.range_prod_of_commute P.prop.1 Q.prop.1 h1)]
   rfl
 
 lemma IsLprojection.range_sum (P Q : Pₗ[𝕜](NormedSpace.Dual 𝕜 A)) :
@@ -372,13 +409,23 @@ lemma IsLprojection.range_sum (P Q : Pₗ[𝕜](NormedSpace.Dual 𝕜 A)) :
     use z
     rw [← hxy]
     simp only [map_add]
-    rw [← Function.comp_apply (f := P.val), ← ContinuousLinearMap.coe_mul, P.prop.proj]
-    rw [← Function.comp_apply (f := Q.val) (g := Q.val), ← ContinuousLinearMap.coe_mul, Q.prop.proj]
-    rw [← Function.comp_apply (f := Q.val) (g := P.val), ← ContinuousLinearMap.coe_mul]
-    rw [Q.prop.commute P.prop]
-    rw [← Function.comp_apply (f := P.val) (g := (P.val * Q.val)), ← ContinuousLinearMap.coe_mul]
-    rw [← mul_assoc]
+    simp only [LinearMap.sub_apply, LinearMap.add_apply] --, LinearMap.mul_apply]
+    rw [← LinearMap.mul_apply, P.prop.proj]
+    --rw [← Function.comp_apply (f := P.val)] --, P.prop.proj]
+    --simp only [Function.comp_apply, LinearMap.mul_apply]
+    rw [← LinearMap.mul_apply (f := Q.val) (g := Q.val), Q.prop.proj]
+    --rw [← Function.mul_apply (f := Q.val) (g := P.val)]
+    rw [← Q.prop.commute P.prop]
+    --rw [← Function.mul_apply (f := P.val) (g := (P.val * Q.val)), ← ContinuousLinearMap.coe_mul]
+    rw [← LinearMap.mul_apply (f := (Q.val * P.val))]
+    rw [mul_assoc]
     rw [P.prop.proj]
+    rw [← LinearMap.mul_apply]
+    rw [← LinearMap.mul_apply]
+    rw [← LinearMap.mul_apply]
+    rw [Q.prop.commute P.prop]
+    rw [mul_assoc]
+    rw [Q.prop.proj]
     abel
   · intro z hz
     simp only [coe_sup, LinearMap.mem_range, ContinuousLinearMap.coe_sub',
@@ -387,6 +434,7 @@ lemma IsLprojection.range_sum (P Q : Pₗ[𝕜](NormedSpace.Dual 𝕜 A)) :
     obtain ⟨x,hx⟩ := hz
     have e1 : z = P.val (x - Q.val x) + Q.val x := by
       rw [map_sub, ← hx]
+      simp only [LinearMap.sub_apply, LinearMap.add_apply, LinearMap.mul_apply]
       abel
     rw [e1]
     exact Submodule.add_mem_sup (LinearMap.mem_range_self _ _) (LinearMap.mem_range_self _ _ )
@@ -420,7 +468,7 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
     let y := E₁ x
     let z := E₂ ((1 - E₁) x)
     have e3 : x = y + z := calc
-      x = E x := (proj_apply _ E.prop.proj x (Set.mem_of_mem_inter_left hx)).symm
+      x = E x := (LinearMap.proj_apply2 _ E.prop.proj x (Set.mem_of_mem_inter_left hx)).symm
       _ = E₁ x + E₂ x - (E₁ * E₂) x := rfl
       _ = E₁ x + E₂ x - (E₂ * E₁) x := by rw [P₁.prop.commute P₂.prop]
       _ = E₁ x + E₂ x - E₂ (E₁ x) := rfl
@@ -430,7 +478,7 @@ lemma unit_ball_conv (m₁ m₂ : Submodule 𝕜 A) (h₁ : IsMideal m₁) (h₂
     have e4 :  ‖y‖ + ‖z‖ = ‖x‖ := le_antisymm
       (calc
         ‖y‖ + ‖z‖ = ‖E₁ x‖ + ‖E₂ ((1 - E₁) x)‖ := rfl
-        _ ≤ ‖E₁ x‖ + ‖E₂‖ * ‖(1 - E₁) x‖ :=  by
+        _ ≤ ‖E₁ x‖ + ‖(E₂.val)‖ * ‖(1 - E₁) x‖ :=  by
           rw [add_le_add_iff_left]; exact ContinuousLinearMap.le_opNorm E₂ ((1 - E₁) x)
         _ ≤ ‖E₁ x‖ + 1 * ‖(1 - E₁) x‖ := by
           rw [add_le_add_iff_left]

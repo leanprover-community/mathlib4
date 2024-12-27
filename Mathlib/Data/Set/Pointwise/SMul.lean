@@ -593,4 +593,30 @@ protected theorem neg_smul : -s • t = -(s • t) := by
 
 end Ring
 
+section
+
+--#check MulAction
+
+variable [Monoid α] [MulAction α β]
+
+theorem range_comp_subset_range2 (f g : α ) : (g * f) • univ ⊆ g • (univ : Set β) := by
+  intro y hy
+  obtain ⟨x,⟨_,hx⟩⟩ := hy
+  simp at hx
+  rw [← hx]
+  subst hx
+  simp_all only [mem_univ]
+  rw [MulAction.mul_smul]
+  exact smul_mem_smul_set trivial
+
+lemma range_prod_of_commute {f g : α}
+    (h : Commute f g) : (f * g) • (univ : Set β) ⊆ f • univ ∩ g • univ := by
+  simp only [Set.le_eq_subset, Set.subset_inter_iff]
+  constructor
+  · apply Set.range_comp_subset_range2 g f
+  · rw [(commute_iff_eq f g).mp h]
+    exact Set.range_comp_subset_range2 f g
+
+end
+
 end Set
