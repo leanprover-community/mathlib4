@@ -19,7 +19,7 @@ quotient under this relation.
 
 - `RecursiveIn g f`:
   An inductive definition representing that a partial function `f` is recursive in oracle `g`.
-- `turing_equivalent`: A relation defining Turing equivalence between partial functions.
+- `TuringEquivalent`: A relation defining Turing equivalence between partial functions.
 - `TuringDegree`:
   The type of Turing degrees, defined as equivalence classes under `TuringEquivalent`.
 - `join`: Combines two partial functions into one by =
