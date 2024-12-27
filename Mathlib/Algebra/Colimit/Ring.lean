@@ -158,7 +158,7 @@ theorem lift_unique (F : DirectLimit G f →+* P) (x) :
     F x = lift G f P (fun i ↦ F.comp <| of G f i) (fun i j hij x ↦ by simp) x := by
   obtain ⟨x, rfl⟩ := Ideal.Quotient.mk_surjective x
   exact x.induction_on (by simp) (fun _ ↦ .symm <| lift_of ..)
-    (by simp +contextual) (by simp+contextual)
+    (by simp+contextual) (by simp+contextual)
 
 lemma lift_injective [Nonempty ι] [IsDirected ι (· ≤ ·)]
     (injective : ∀ i, Function.Injective <| g i) :
