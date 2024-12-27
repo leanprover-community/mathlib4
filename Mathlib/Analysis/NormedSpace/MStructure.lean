@@ -333,7 +333,7 @@ instance : FunLike Pₗ[𝕜](A) A A where
   coe f := f.val
   coe_injective' _ _ h := Subtype.eq (DFunLike.coe_fn_eq.mp h)
 
-lemma range_prod_of_commute {P Q : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)}
+lemma range_prod_of_commute {P Q :  A →L[𝕜] A}
     (h : Commute P Q) : Set.range (P * Q) ⊆ Set.range P ∩ Set.range Q := by
   simp only [Set.le_eq_subset, Set.subset_inter_iff]
   constructor
