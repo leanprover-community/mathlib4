@@ -177,6 +177,7 @@ theorem expand_aeval {A : Type*} [Semiring A] [Algebra R A] (p : ℕ) (P : R[X])
   refine Polynomial.induction_on P (fun a => by simp) (fun f g hf hg => ?_) fun n a _ => by simp
   rw [map_add, aeval_add, aeval_add, hf, hg]
 
+@[gcongr]
 theorem expand_dvd {a b : R[X]} (p : ℕ) (h : a ∣ b) : expand R p a ∣ expand R p b := by
   rcases h with ⟨t, eqn⟩
   use expand R p t
@@ -304,7 +305,7 @@ end IsDomain
 
 variable (k : Type u) [Field k] [DecidableEq k]
 
-theorem is_coprime_of_expand {a b : k[X]} {n : ℕ} (hn : n ≠ 0) :
+theorem isCoprime_of_expand {a b : k[X]} {n : ℕ} (hn : n ≠ 0) :
     IsCoprime (expand k n a) (expand k n b) → IsCoprime a b := by
   simp_rw [← EuclideanDomain.gcd_isUnit_iff]
   cases' EuclideanDomain.gcd_dvd a b with ha hb
