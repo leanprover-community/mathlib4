@@ -65,6 +65,49 @@ open Category Limits
 
 variable {C : Type u} [Category.{v} C] {J : Type w}
 
+section
+
+variable {D : Type u'} [Category.{v'} D]
+
+namespace Arrow
+
+lemma functor_ext {F G : C ⥤ D} (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y),
+    F.mapArrow.obj (Arrow.mk f) = G.mapArrow.obj (Arrow.mk f)) :
+    F = G :=
+  Functor.ext (fun X ↦ congr_arg Comma.left (h (𝟙 X))) (fun X Y f ↦ by
+    have := (eqToIso (h f)).hom.w
+    dsimp at this
+    rw [Comma.eqToHom_left, Comma.eqToHom_right] at this
+    rw [reassoc_of% this, eqToHom_trans, eqToHom_refl, comp_id])
+
+lemma congr_mk_id {X Y : C} (h : X = Y) :
+    Arrow.mk (𝟙 X) = Arrow.mk (𝟙 Y) := by rw [h]
+
+lemma mk_eq_mk_iff {X Y X' Y' : C} (f : X ⟶ Y) (f' : X' ⟶ Y') :
+    Arrow.mk f = Arrow.mk f' ↔
+      ∃ (hX : X = X') (hY : Y = Y'), f = eqToHom hX ≫ f' ≫ eqToHom hY.symm := by
+  constructor
+  · intro h
+    refine ⟨congr_arg Comma.left h, congr_arg Comma.right h, ?_⟩
+    have := (eqToIso h).hom.w
+    dsimp at this
+    rw [Comma.eqToHom_left, Comma.eqToHom_right] at this
+    rw [reassoc_of% this, eqToHom_trans, eqToHom_refl, comp_id]
+  · rintro ⟨rfl, rfl, h⟩
+    simp only [eqToHom_refl, comp_id, id_comp] at h
+    rw [h]
+
+end Arrow
+
+namespace Functor
+
+--@[simp]
+--lemma mapArrow_obj_mk (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
+--    F.mapArrow.obj (Arrow.mk f) = Arrow.mk (F.map f) := rfl
+
+end Functor
+
+end
 namespace SmallObject
 
 section
@@ -187,13 +230,14 @@ def ofNatTrans {F : C ⥤ C} (ε : 𝟭 C ⟶ F) : SuccStruct (C ⥤ C) where
   toSucc G := whiskerLeft G ε
   X₀ := 𝟭 C
 
-lemma congr_toSucc (Φ : SuccStruct C) {X Y : C} (h : X = Y) :
-    Φ.toSucc X = eqToHom (by rw [h]) ≫ Φ.toSucc Y ≫ eqToHom (by rw [h]) := by
-  subst h
-  simp
+--lemma congr_toSucc (Φ : SuccStruct C) {X Y : C} (h : X = Y) :
+--    Φ.toSucc X = eqToHom (by rw [h]) ≫ Φ.toSucc Y ≫ eqToHom (by rw [h]) := by
+--  subst h
+--  simp
 
 variable (Φ : SuccStruct C)
 
+/-- The map `Φ.toSucc X : X ⟶ Φ.Succ X`, as an element in `Arrow C`. -/
 def toSuccArrow (X : C) : Arrow C := Arrow.mk (Φ.toSucc X)
 
 /-- The class of morphisms that are of the morphism `toSucc X : X ⟶ succ X`. -/
@@ -213,6 +257,41 @@ lemma prop_iff {X Y : C} (f : X ⟶ Y) :
 variable [LinearOrder J] [OrderBot J] [SuccOrder J]
     [HasIterationOfShape C J]
 
+/-- Given a functor `F : Set.Iic ⥤ C`, this is the morphism in `C`, as an element
+in `Arrow C`, that is obtained by applying `F.map` to an inequality, -/
+def arrowMap {j : J} (F : Set.Iic j ⥤ C) (i₁ i₂ : J) (h₁₂ : i₁ ≤ i₂)
+    (h₂ : i₂ ≤ j) : Arrow C :=
+  Arrow.mk (F.map (homOfLE h₁₂ : ⟨i₁, h₁₂.trans h₂⟩ ⟶ ⟨i₂, h₂⟩))
+
+/-- Given a functor `F : Set.Iic j ⥤ C` and `i : J` such that `i < j`,
+this is the arrow `F.obj ⟨i, _⟩ ⟶ F.obj ⟨Order.succ i, _⟩`. -/
+def arrowSucc {j : J} (F : Set.Iic j ⥤ C) (i : J) (hi : i < j) : Arrow C :=
+    arrowMap F i (Order.succ i) (Order.le_succ i) (Order.succ_le_of_lt hi)
+
+omit [OrderBot J] [HasIterationOfShape C J] in
+lemma arrowSucc_def {j : J} (F : Set.Iic j ⥤ C) (i : J) (hi : i < j) :
+    arrowSucc F i hi = arrowMap F i (Order.succ i) (Order.le_succ i) (Order.succ_le_of_lt hi) :=
+  rfl
+
+omit [OrderBot J] [SuccOrder J] [HasIterationOfShape C J] in
+@[simp]
+lemma arrowMap_refl {j : J} (F : Set.Iic j ⥤ C) (i : J) (hi : i ≤ j) :
+    arrowMap F i i (by simp) hi = Arrow.mk (𝟙 (F.obj ⟨i, hi⟩)) := by
+  simp [arrowMap]
+
+omit [OrderBot J] [SuccOrder J] [HasIterationOfShape C J] in
+lemma arrowMap_restrictionLE {j : J} (F : Set.Iic j ⥤ C) {j' : J} (hj' : j' ≤ j)
+    (i₁ i₂ : J) (h₁₂ : i₁ ≤ i₂) (h₂ : i₂ ≤ j') :
+    arrowMap (restrictionLE F hj') i₁ i₂ h₁₂ h₂ =
+      arrowMap F i₁ i₂ h₁₂ (h₂.trans hj') := rfl
+
+/-- Given `F : Set.Iio i ⥤ C`, with `i` a limit element, and `k` such that `hk : k < i`,
+this is the map `colimit.ι F ⟨k, hk⟩`, as an element in `Arrow C`. -/
+noncomputable def arrowι {i : J} (F : Set.Iio i ⥤ C) (hi : Order.IsSuccLimit i)
+    (k : J) (hk : k < i) : Arrow C :=
+  letI := hasColimitsOfShape_of_isSuccLimit C i hi
+  Arrow.mk (colimit.ι F ⟨k, hk⟩)
+
 /-- The category of `j`th iterations of a succesor structure `Φ : SuccStruct C`.
 An object consists of the data of all iterations of `Φ` for `i : J` such
 that `i ≤ j` (this is the field `F`). Such objects are
@@ -225,23 +304,21 @@ structure Iteration [WellFoundedLT J] (j : J) where
   /-- The zeroth iteration is the zeroth object . -/
   obj_bot : F.obj ⟨⊥, bot_le⟩ = Φ.X₀
   /-- The iteration on a successor element identifies to the successor. -/
-  obj_succ (i : J) (hi : i < j) :
-    F.obj ⟨Order.succ i, Order.succ_le_of_lt hi⟩ = Φ.succ (F.obj ⟨i, hi.le⟩)
-  /-- The natural map from an iteration to its successor is induced by `toSucc`. -/
-  map_succ (i : J) (hi : i < j) :
-    F.map (homOfLE (Order.le_succ i) : ⟨i, hi.le⟩ ⟶ ⟨Order.succ i, Order.succ_le_of_lt hi⟩) =
-      Φ.toSucc _ ≫ eqToHom (by rw [obj_succ _ hi])
-  /-- If `i` is a limit element, the `i`th iteration is the colimit
-  of `k`th iterations for `k < i`. -/
-  obj_limit (i : J) (hi : Order.IsSuccLimit i) (hij : i ≤ j) :
-    letI := hasColimitsOfShape_of_isSuccLimit C i hi
-    F.obj ⟨i, hij⟩ = colimit (restrictionLT F hij)
-  map_eq_ι (i : J) (hi : Order.IsSuccLimit i) (hij : i ≤ j)
-      (k : J) (hk : k < i) :
-    letI := hasColimitsOfShape_of_isSuccLimit C i hi
-    F.map (homOfLE hk.le : ⟨k, hk.le.trans hij⟩ ⟶ ⟨i, hij⟩) =
-      colimit.ι (restrictionLT F hij) ⟨k, hk⟩ ≫
-        eqToHom (by rw [obj_limit i hi])
+  arrowSucc_eq (i : J) (hi : i < j) : arrowSucc F i hi = Φ.toSuccArrow (F.obj ⟨i, hi.le⟩)
+  arrowMap_limit (i : J) (hi : Order.IsSuccLimit i) (hij : i ≤ j) (k : J) (hk : k < i) :
+    arrowMap F k i hk.le hij = arrowι (restrictionLT F hij) hi k hk
+  --/-- The natural map from an iteration to its successor is induced by `toSucc`. -/
+  --map_succ (i : J) (hi : i < j) :
+  --  F.map (homOfLE (Order.le_succ i) : ⟨i, hi.le⟩ ⟶ ⟨Order.succ i, Order.succ_le_of_lt hi⟩) =
+  --    Φ.toSucc _ ≫ eqToHom (by rw [obj_succ _ hi])
+  --/-- If `i` is a limit element, the `i`th iteration is the colimit
+  --of `k`th iterations for `k < i`. -/
+  --map_eq_ι (i : J) (hi : Order.IsSuccLimit i) (hij : i ≤ j)
+  --    (k : J) (hk : k < i) :
+  --  letI := hasColimitsOfShape_of_isSuccLimit C i hi
+  --  F.map (homOfLE hk.le : ⟨k, hk.le.trans hij⟩ ⟶ ⟨i, hij⟩) =
+  --    colimit.ι (restrictionLT F hij) ⟨k, hk⟩ ≫
+  --      eqToHom (by rw [obj_limit i hi])
 
 variable [WellFoundedLT J]
 
@@ -249,6 +326,8 @@ namespace Iteration
 
 variable {Φ}
 variable {j : J}
+
+attribute [simp] obj_bot
 
 section
 
@@ -258,6 +337,16 @@ variable (iter : Φ.Iteration j)
 def isoBot : iter.F.obj ⟨⊥, bot_le⟩ ≅ Φ.X₀ :=
   eqToIso (by rw [obj_bot])
 
+lemma obj_succ (i : J) (hi : i < j) :
+    iter.F.obj ⟨Order.succ i, Order.succ_le_of_lt hi⟩ = Φ.succ (iter.F.obj ⟨i, hi.le⟩) :=
+  congr_arg Comma.right (iter.arrowSucc_eq i hi)
+
+lemma obj_limit (i : J) (hi : Order.IsSuccLimit i) (hij : i ≤ j) :
+    letI := hasColimitsOfShape_of_isSuccLimit C i hi
+    iter.F.obj ⟨i, hij⟩ = colimit (restrictionLT iter.F hij) :=
+  congr_arg Comma.right (iter.arrowMap_limit i hi hij ⊥ (Order.IsSuccLimit.bot_lt hi))
+
+/-
 /-- The object `iter.F.obj ⟨Order.succ i, _⟩` identifies to
 the successor of `iter.F.obj ⟨i, _⟩` when `i < j`. -/
 def isoSucc (i : J) (hi : i < j) :
@@ -293,70 +382,92 @@ noncomputable def isColimit (i : J)
   exact IsColimit.ofIsoColimit (colimit.isColimit _)
     (Cocones.ext (eqToIso (iter.obj_limit i hi hij).symm)
     (fun ⟨k, hk⟩ ↦ (iter.map_eq_ι i hi hij k hk).symm))
+    -/
 
 /-- The element in `Φ.Iteration i` that is deduced from an element
 in `Φ.Iteration j` when `i ≤ j`. -/
 @[simps F]
-def trunc (iter : Φ.Iteration j) {i : J} (hi : i ≤ j) : Φ.Iteration i where
-  F := restrictionLE iter.F hi
+def trunc (iter : Φ.Iteration j) {j' : J} (hj' : j' ≤ j) : Φ.Iteration j' where
+  F := restrictionLE iter.F hj'
   obj_bot := iter.obj_bot
-  obj_succ k hk := iter.obj_succ k (lt_of_lt_of_le hk hi)
-  obj_limit k hk hk' := iter.obj_limit k hk (hk'.trans hi)
-  map_succ k hk := iter.map_succ k (lt_of_lt_of_le hk hi)
-  map_eq_ι k hk hki l hl := iter.map_eq_ι k hk (hki.trans hi) l hl
+  arrowSucc_eq i hi := iter.arrowSucc_eq i (lt_of_lt_of_le hi hj')
+  arrowMap_limit i hi hij k hk := iter.arrowMap_limit i hi (hij.trans hj') k hk
 
 end
 
-omit [OrderBot J] [SuccOrder J] [WellFoundedLT J] in
-lemma congr_colimit_ι {F G : Set.Iio j ⥤ C} (h : F = G) (hj : Order.IsSuccLimit j)
-    (i : Set.Iio j) :
-    letI := hasColimitsOfShape_of_isSuccLimit C j hj
-    colimit.ι F i = by
-      refine eqToHom (by rw [h]) ≫ colimit.ι G i ≫ eqToHom (by rw [h]) := by
-  subst h
-  simp
-
-/-! Auxiliary definitions for the proof of `Subsingleton (Φ.Iteration j)`. -/
+--omit [OrderBot J] [SuccOrder J] [WellFoundedLT J] in
+--lemma congr_colimit_ι {F G : Set.Iio j ⥤ C} (h : F = G) (hj : Order.IsSuccLimit j)
+--    (i : Set.Iio j) :
+--    letI := hasColimitsOfShape_of_isSuccLimit C j hj
+--    colimit.ι F i = by
+--      refine eqToHom (by rw [h]) ≫ colimit.ι G i ≫ eqToHom (by rw [h]) := by
+--  subst h
+--  simp
 
 namespace subsingleton
 
-variable {F G : Set.Iic j ⥤ C} (hobj : F.obj = G.obj)
+end subsingleton
 
-omit [OrderBot J] [SuccOrder J] [WellFoundedLT J]
+namespace subsingleton
 
-/-- Given two functors `Set.Iic j ⥤ C` that are equal on objects,
-this is the condition that they coincide on a given map. -/
-def MapEq (i₁ i₂ : J) (h₁₂ : i₁ ≤ i₂) (h₂ : i₂ ≤ j) : Prop :=
-  F.map (homOfLE h₁₂ : ⟨i₁, h₁₂.trans h₂⟩ ⟶ ⟨i₂, h₂⟩) =
-    eqToHom (by rw [hobj]) ≫
-      G.map (homOfLE h₁₂ : ⟨i₁, _⟩ ⟶ ⟨i₂, _⟩) ≫ eqToHom (by rw [hobj])
+omit [OrderBot J] [SuccOrder J] [HasIterationOfShape C J] [WellFoundedLT J]
 
-omit [HasIterationOfShape C J] in
-lemma mapEq_of_eq {k : J} (hkj : k ≤ j) (h : restrictionLE F hkj = restrictionLE G hkj)
-    (i₁ i₂ : J) (h₁₂ : i₁ ≤ i₂) (h₂ : i₂ ≤ k) :
-    MapEq hobj i₁ i₂ h₁₂ (h₂.trans hkj) := by
-  exact Functor.congr_hom h (homOfLE h₁₂ : ⟨i₁, h₁₂.trans h₂⟩ ⟶ ⟨i₂, h₂⟩)
+variable (F G : Set.Iic j ⥤ C)
 
-omit [HasIterationOfShape C J]
+section
 
-lemma mapEq_rfl (i : J) (h : i ≤ j) : MapEq hobj i i (by simp) h := by
-  simp [MapEq]
+variable (k₁ k₂ : J) (h₁₂ : k₁ ≤ k₂) (h₂ : k₂ ≤ j)
 
-variable {hobj} in
+/-- Auxiliary definition for the proof of `Subsingleton (Φ.Iteration j)`. -/
+def MapEq : Prop := arrowMap F k₁ k₂ h₁₂ h₂ = arrowMap G k₁ k₂ h₁₂ h₂
+
+namespace MapEq
+
+variable {k₁ k₂ h₁₂ h₂} (h : MapEq F G k₁ k₂ h₁₂ h₂)
+
+include h
+
+lemma src : F.obj ⟨k₁, h₁₂.trans h₂⟩ = G.obj ⟨k₁, h₁₂.trans h₂⟩ :=
+  congr_arg Comma.left h
+
+lemma tgt : F.obj ⟨k₂, h₂⟩ = G.obj ⟨k₂, h₂⟩ :=
+  congr_arg Comma.right h
+
+lemma w :
+    F.map (homOfLE h₁₂ : ⟨k₁, h₁₂.trans h₂⟩ ⟶ ⟨k₂, h₂⟩) =
+      eqToHom (by rw [h.src]) ≫ G.map (homOfLE h₁₂ : ⟨k₁, h₁₂.trans h₂⟩ ⟶ ⟨k₂, h₂⟩) ≫
+        eqToHom (by rw [h.tgt]) := by
+  have := (eqToIso h).hom.w
+  dsimp [arrowMap] at this
+  rw [Comma.eqToHom_left, Comma.eqToHom_right] at this
+  simp [reassoc_of% this]
+
+end MapEq
+
+end
+
+variable {F G}
+
+
+lemma mapEq_refl (k : J) (hk : k ≤ j) (h : F.obj ⟨k, hk⟩ = G.obj ⟨k, hk⟩) :
+    MapEq F G k k (by simp) hk := by
+  rw [MapEq, arrowMap_refl, arrowMap_refl, h]
+
+-- there is a more general lemma in `Arrow C`
 lemma mapEq_trans {i₁ i₂ i₃ : J} (h₁₂ : i₁ ≤ i₂) (h₂₃ : i₂ ≤ i₃) {h₃ : i₃ ≤ j}
-    (m₁₂ : MapEq hobj i₁ i₂ h₁₂ (h₂₃.trans h₃)) (m₂₃ : MapEq hobj i₂ i₃ h₂₃ h₃) :
-    MapEq hobj i₁ i₃ (h₁₂.trans h₂₃) h₃ := by
-  dsimp [MapEq] at m₁₂ m₂₃ ⊢
-  rw [← homOfLE_comp (X := Set.Iic j) (x := ⟨i₁, _⟩)
-    (y := ⟨i₂, h₂₃.trans h₃⟩) (z := ⟨i₃, _⟩) h₁₂ h₂₃, Functor.map_comp,
-    Functor.map_comp, m₁₂, m₂₃]
-  simp
+    (m₁₂ : MapEq F G i₁ i₂ h₁₂ (h₂₃.trans h₃)) (m₂₃ : MapEq F G i₂ i₃ h₂₃ h₃) :
+    MapEq F G i₁ i₃ (h₁₂.trans h₂₃) h₃ := by
+  simp only [MapEq, arrowMap, Arrow.mk_eq_mk_iff]
+  refine ⟨m₁₂.src, m₂₃.tgt, ?_⟩
+  rw [← homOfLE_comp (y := ⟨i₂, h₂₃.trans h₃⟩) h₁₂ h₂₃]
+  simp [-homOfLE_comp, m₁₂.w, m₂₃.w]
 
-lemma functor_eq (hmap : ∀ (i₁ i₂ : J) (h₁₂ : i₁ ≤ i₂) (h₂ : i₂ ≤ j), MapEq hobj i₁ i₂ h₁₂ h₂) :
-    F = G :=
-  Functor.ext (by simp [hobj]) (by
-    rintro ⟨i₁, h₁⟩ ⟨i₂, h₂⟩ f
-    exact hmap i₁ i₂ (leOfHom f) h₂)
+lemma ext (h : ∀ (k₁ k₂ : J) (h₁₂ : k₁ ≤ k₂) (h₂ : k₂ ≤ j),
+    MapEq F G k₁ k₂ h₁₂ h₂) :
+    F = G := by
+  apply Arrow.functor_ext
+  rintro ⟨k₁, _⟩ ⟨k₂, h₂⟩ f
+  apply h
 
 end subsingleton
 
@@ -367,76 +478,49 @@ instance subsingleton : Subsingleton (Φ.Iteration j) where
     revert iter₁ iter₂
     induction j using SuccOrder.limitRecOn with
     | hm j h =>
-        intro iter₁ iter₂
         obtain rfl := h.eq_bot
-        fapply Functor.ext
-        · rintro ⟨i, hi⟩
-          obtain rfl : i = ⊥ := by simpa using hi
-          simp only [obj_bot]
-        · rintro ⟨i, hi⟩ ⟨i', hi'⟩ f
-          obtain rfl : i = ⊥ := by simpa using hi
-          obtain rfl : i' = ⊥ := by simpa using hi'
-          obtain rfl : f = 𝟙 _ := Subsingleton.elim _ _
-          simp
+        intro iter₁ iter₂
+        refine ext (fun k₁ k₂ h₁₂ h₂ ↦ ?_)
+        obtain rfl : k₂ = ⊥ := by simpa using h₂
+        obtain rfl : k₁ = ⊥ := by simpa using h₁₂
+        apply mapEq_refl _ _ (by simp)
     | hs j hj₁ hj₂ =>
         intro iter₁ iter₂
-        have hobj : iter₁.F.obj = iter₂.F.obj := by
-          ext ⟨i, hi⟩
-          wlog h : i ≤ j generalizing i
-          · obtain hi | rfl := hi.lt_or_eq
-            · exact this _ _ ((Order.lt_succ_iff_of_not_isMax hj₁).mp hi)
-            · simp only [obj_succ _ _ (Order.lt_succ_of_not_isMax hj₁), this _ _ (by rfl)]
-          exact Functor.congr_obj (hj₂ (iter₁.trunc (Order.le_succ _))
-            (iter₂.trunc (Order.le_succ _))) ⟨i, h⟩
-        have hsucc : MapEq hobj _ _ (Order.le_succ j) (by simp) := by
-          simp only [MapEq, map_succ _ _ (Order.lt_succ_of_not_isMax hj₁),
-            Φ.congr_toSucc (congr_fun hobj ⟨j, _⟩), assoc, eqToHom_trans]
-        apply functor_eq hobj
-        intro i₁ i₂
-        wlog hi₂ : i₂ ≤ j generalizing i₂
-        · intro h₁₂ h₂
-          obtain h₂ | rfl := h₂.lt_or_eq
-          · exact (hi₂ ((Order.lt_succ_iff_of_not_isMax hj₁).mp h₂)).elim
-          · by_cases hi₁ : i₁ ≤ j
-            · exact mapEq_trans _ _ (this j (by simp) hi₁ (Order.le_succ j)) hsucc
-            · obtain rfl : i₁ = Order.succ j :=
-                le_antisymm h₁₂ ((Order.succ_le_iff_of_not_isMax hj₁).mpr (by simpa using hi₁))
-              apply mapEq_rfl
-        intro h₁₂ h₂
-        exact mapEq_of_eq hobj (Order.le_succ j)
-          (hj₂ (iter₁.trunc (Order.le_succ j)) (iter₂.trunc (Order.le_succ j))) _ _ _ hi₂
+        refine ext (fun k₁ k₂ h₁₂ h₂ ↦ ?_)
+        have h₀ := Order.le_succ j
+        replace hj₂ := hj₂ (iter₁.trunc h₀) (iter₂.trunc h₀)
+        have hsucc := Functor.congr_obj hj₂ ⟨j, by simp⟩
+        dsimp at hj₂ hsucc
+        wlog h : k₂ ≤ j generalizing k₁ k₂
+        · obtain h₂ | rfl := h₂.lt_or_eq
+          · exact this _ _ _ _ ((Order.lt_succ_iff_of_not_isMax hj₁).1 h₂)
+          · by_cases h' : k₁ ≤ j
+            · apply mapEq_trans _ h₀ (this k₁ j h' h₀ (by simp))
+              simp only [MapEq, ← arrowSucc_def _ _ (Order.lt_succ_of_not_isMax hj₁),
+                arrowSucc_eq, hsucc]
+            · simp only [not_le] at h'
+              obtain rfl : k₁ = Order.succ j := le_antisymm h₁₂
+                ((Order.succ_le_iff_of_not_isMax hj₁).2 h')
+              rw [MapEq, arrowMap_refl, arrowMap_refl,
+                obj_succ _ _ h', obj_succ _ _ h', hsucc]
+        simp only [MapEq, ← arrowMap_restrictionLE _ (Order.le_succ j) _ _ _ h, hj₂]
     | hl j h₁ h₂ =>
         intro iter₁ iter₂
-        have hobj : iter₁.F.obj = iter₂.F.obj := by
-          ext ⟨i, hi⟩
-          wlog h : i < j generalizing i
-          · obtain rfl : j = i := le_antisymm (by simpa using h) hi
-            simp only [obj_limit _ _ h₁]
-            congr 1
-            fapply Functor.ext
-            · rintro ⟨i, hi⟩
-              exact this _ _ hi
-            · rintro ⟨i₁, hi₁⟩ ⟨i₂, hi₂⟩ f
-              exact Functor.congr_hom (h₂ i₂ hi₂ (iter₁.trunc hi₂.le) (iter₂.trunc hi₂.le))
-                (homOfLE (leOfHom f) : ⟨i₁, leOfHom f⟩ ⟶ ⟨i₂, by simp⟩)
-          exact Functor.congr_obj (h₂ i h (iter₁.trunc h.le) (iter₂.trunc h.le)) ⟨i, by simp⟩
-        apply functor_eq hobj
-        intro i₁ i₂ h₁₂ hi₂
-        by_cases h₃ : i₂ < j
-        · exact mapEq_of_eq hobj hi₂
-            (h₂ _ h₃ (iter₁.trunc h₃.le) (iter₂.trunc h₃.le)) _ _ _ (by rfl)
-        · obtain rfl : j = i₂ := le_antisymm (by simpa using h₃) hi₂
-          by_cases h₄ : i₁ < j
+        refine ext (fun k₁ k₂ h₁₂ h₃ ↦ ?_)
+        wlog h₄ : k₂ < j generalizing k₁ k₂; swap
+        · have := h₂ k₂ h₄ (iter₁.trunc h₄.le) (iter₂.trunc h₄.le)
+          simp at this
+          simp only [MapEq, ← arrowMap_restrictionLE _ h₄.le _ _ _ (by rfl), this]
+        · obtain rfl : j = k₂ := le_antisymm (by simpa using h₄) h₃
+          have : restrictionLT iter₁.F le_rfl = restrictionLT iter₂.F le_rfl :=
+            Arrow.functor_ext (fun _ l _ ↦ this _ _ _ _ l.2)
+          by_cases h₅ : k₁ < j
           · dsimp [MapEq]
-            have : restrictionLT iter₁.F hi₂ = restrictionLT iter₂.F hi₂ :=
-              Functor.ext (fun k ↦ congr_fun hobj ⟨k.1, k.2.le⟩) (by
-                rintro ⟨k₁, hk₁⟩ ⟨k₂, hk₂⟩ f
-                exact Functor.congr_hom (h₂ k₂ hk₂ (iter₁.trunc hk₂.le) (iter₂.trunc hk₂.le))
-                  (homOfLE (leOfHom f) : ⟨k₁, leOfHom f⟩ ⟶ ⟨k₂, by simp⟩))
-            simp only [map_eq_ι _ _ h₁ _ _ h₄, assoc, eqToHom_trans,
-              congr_colimit_ι this h₁]
-          · obtain rfl : i₁ = j := le_antisymm h₁₂ (by simpa using h₄)
-            exact mapEq_rfl hobj i₁ hi₂
+            simp_rw [arrowMap_limit _ _ h₁ _ _ h₅, this]
+          · obtain rfl : k₁ = j := le_antisymm h₁₂ (by simpa using h₅)
+            apply mapEq_refl
+            simp only [obj_limit _ _ h₁, this]
+
 
 end Iteration
 
