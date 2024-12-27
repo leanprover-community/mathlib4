@@ -37,6 +37,9 @@ variable {X : C} {κ : Cardinal.{w}} [Fact κ.IsRegular]
 
 variable (p : CardinalFilteredPresentation X κ)
 
+instance isFiltered : IsFiltered p.J := by
+  apply isFiltered_of_isCardinalDirected _ κ
+
 lemma isCardinalPresentable_pt (h : ∀ (j : p.J), IsCardinalPresentable (p.F.obj j) κ)
     [LocallySmall.{w} C]
     (κ' : Cardinal.{w}) [Fact κ'.IsRegular] (h : κ ≤ κ')

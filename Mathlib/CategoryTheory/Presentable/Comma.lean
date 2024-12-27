@@ -6,6 +6,7 @@ Authors: Joël Riou
 
 import Mathlib.CategoryTheory.Presentable.LocallyPresentable
 import Mathlib.CategoryTheory.Limits.Comma
+import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Comma.LocallySmall
 
 /-!
@@ -29,8 +30,11 @@ variable (κ : Cardinal.{w}) [Fact κ.IsRegular]
 variable {F₁ F₂} in
 instance isCardinalPresentable_mk {X₁ : C₁} {X₂ : C₂}
     [IsCardinalPresentable X₁ κ] [IsCardinalPresentable X₂ κ]
+    [IsCardinalPresentable X₁ κ] [IsCardinalPresentable X₂ κ]
     (f : F₁.obj X₁ ⟶ F₂.obj X₂) :
-    IsCardinalPresentable (Comma.mk _ _ f) κ := sorry
+    IsCardinalPresentable (Comma.mk _ _ f) κ := by
+  -- need that `F₁` (and `F₂` ?) preserve κ-presentable objects
+  sorry
 
 section
 
@@ -100,6 +104,18 @@ variable {S₁ S₂ S₃ : Index f p₁ p₂} (φ : S₁ ⟶ S₂) (φ' : S₂ �
 
 end
 
+variable (f p₁ p₂)
+
+@[simps]
+def π₁ : Index f p₁ p₂ ⥤ p₁.J where
+  obj S := S.j₁
+  map φ := φ.m₁
+
+@[simps]
+def π₂ : Index f p₁ p₂ ⥤ p₂.J where
+  obj S := S.j₂
+  map φ := φ.m₂
+
 end Index
 
 @[simps]
@@ -137,13 +153,21 @@ instance [LocallySmall.{w} D] : EssentiallySmall.{w} (Index f p₁ p₂) := by
 
 instance : IsCardinalFiltered (Index f p₁ p₂) κ := sorry
 
+instance : IsFiltered (Index f p₁ p₂) := by
+  apply isFiltered_of_isCardinalDirected _ κ
+
+instance : (Index.π₁ f p₁ p₂).Final := sorry
+
+instance : (Index.π₂ f p₁ p₂).Final := sorry
+
 section
 
 variable [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
   [IsCardinalAccessibleCategory D κ]
   [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
 
-def isColimitCocone : IsColimit (cocone f p₁ p₂) := sorry
+def isColimitCocone : IsColimit (cocone f p₁ p₂) := by
+  sorry
 
 noncomputable def cardinalFilteredPresentation :
     CardinalFilteredPresentation (Comma.mk _ _ f) κ :=
