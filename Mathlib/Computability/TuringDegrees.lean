@@ -27,7 +27,6 @@ quotient under this relation.
 
 ## Notation
 
-- `f ≤ᵀ g` : `f` is Turing reducible to `g`.
 - `f ≡ᵀ g` : `f` is Turing equivalent to `g`.
 - `f ⊕ g` : The join of partial functions `f` and `g`.
 
@@ -66,22 +65,22 @@ Equivalently one can say that `f` is turing reducible to `g` when `f` is recursi
 -/
 
 inductive RecursiveIn : (ℕ →. ℕ) → (ℕ →. ℕ) → Prop
-  | zero {g} : RecursiveIn (fun _ => 0) g
-  | succ {g} : RecursiveIn Nat.succ g
-  | left {g} : RecursiveIn (fun n => (Nat.unpair n).1) g
-  | right {g} : RecursiveIn (fun n => (Nat.unpair n).2) g
-  | oracle {g} : RecursiveIn g g
-  | pair {f h g : ℕ →. ℕ} (hf : RecursiveIn f g) (hh : RecursiveIn h g) :
+  | zero (g) : RecursiveIn (fun _ => 0) g
+  | succ (g) : RecursiveIn Nat.succ g
+  | left (g) : RecursiveIn (fun n => (Nat.unpair n).1) g
+  | right (g) : RecursiveIn (fun n => (Nat.unpair n).2) g
+  | oracle (g) : RecursiveIn g g
+  | pair (f h g : ℕ →. ℕ) (hf : RecursiveIn f g) (hh : RecursiveIn h g) :
       RecursiveIn (fun n => (Nat.pair <$> f n <*> h n)) g
-  | comp {f h g : ℕ →. ℕ} (hf : RecursiveIn f g) (hh : RecursiveIn h g) :
+  | comp (f h g : ℕ →. ℕ) (hf : RecursiveIn f g) (hh : RecursiveIn h g) :
       RecursiveIn (fun n => h n >>= f) g
-  | prec {f h g : ℕ →. ℕ} (hf : RecursiveIn f g) (hh : RecursiveIn h g) :
+  | prec (f h g : ℕ →. ℕ) (hf : RecursiveIn f g) (hh : RecursiveIn h g) :
       RecursiveIn (fun p =>
         let (a, n) := Nat.unpair p
         n.rec (f a) (fun y ih => do
           let i ← ih
           h (Nat.pair a (Nat.pair y i)))) g
-  | rfind {f g : ℕ →. ℕ} (hf : RecursiveIn f g) :
+  | rfind (f g : ℕ →. ℕ) (hf : RecursiveIn f g) :
       RecursiveIn (fun a =>
         Nat.rfind (fun n => (fun m => m = 0) <$> f (Nat.pair a n))) g
 
@@ -93,7 +92,7 @@ abbrev TuringEquivalent (f g : ℕ →. ℕ) : Prop :=
   AntisymmRel RecursiveIn f g
 
 /--
-Custom infix notation for `TuringEquivalent`.
+Custom infix notation for `turing_equivalent`.
 -/
 infix:50 " ≡ᵀ " => TuringEquivalent
 
@@ -125,7 +124,7 @@ If a function is recursive in the constant zero function,
 then it is partial recursive.
 -/
 lemma RecursiveIn.partrec_of_zero (f : ℕ →. ℕ) (fRecInZero : RecursiveIn f fun _ => Part.some 0) :
-    Nat.Partrec f := by
+  Nat.Partrec f := by
   generalize h : (fun _ => Part.some 0) = fp at *
   induction fRecInZero
   case zero =>
@@ -255,7 +254,7 @@ theorem TuringEquivalent.trans :
   fun {_ _ _} h1 h2 => AntisymmRel.trans h1 h2
 
 /--
-Instance declaring that `TuringEquivalent` is an equivalence relation.
+Instance declaring that `turing_equivalent` is an equivalence relation.
 -/
 instance : Equivalence TuringEquivalent :=
   (AntisymmRel.setoid _ _).iseqv
