@@ -660,23 +660,17 @@ theorem dvd_derivative_iff {P : R[X]} : P ∣ derivative P ↔ derivative P = 0 
 
 end NoZeroDivisors
 
-section Field
+section CommSemiringNoZeroDivisors
 
-variable {k : Type u} [Field k]
+variable [CommSemiring R] [NoZeroDivisors R]
 
-theorem derivative_pow_eq_zero_iff {n : ℕ} (chn : (n : k) ≠ 0) {a : k[X]} :
-    derivative (a ^ n) = 0 ↔ derivative a = 0 where
-  mp apd := by
-    rw [derivative_pow, C_eq_natCast, mul_eq_zero, mul_eq_zero] at apd
-    rcases apd with (nz | powz) | goal
-    · rw [← C_eq_natCast, C_eq_zero] at nz
-      tauto
-    · have az : a = 0 := pow_eq_zero powz
-      rw [az, map_zero]
-    · exact goal
-  mpr hd := by rw [derivative_pow, hd, MulZeroClass.mul_zero]
+theorem derivative_pow_eq_zero_iff {n : ℕ} (chn : (n : R) ≠ 0) {a : R[X]} :
+    derivative (a ^ n) = 0 ↔ derivative a = 0 := by
+  nontriviality R
+  rw [← C_ne_zero, C_eq_natCast] at chn
+  simp +contextual [derivative_pow, or_imp, chn]
 
-end Field
+end CommSemiringNoZeroDivisors
 
 end Derivative
 
