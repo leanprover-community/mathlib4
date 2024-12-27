@@ -3,10 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.SmallObject.Construction
-import Mathlib.CategoryTheory.SmallObject.TransfiniteIteration
-import Mathlib.CategoryTheory.MorphismProperty.Limits
-import Mathlib.CategoryTheory.Limits.Over
+import Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument
 
 /-!
 # The small object argument
@@ -36,12 +33,53 @@ and they mention that the result was initially obtained by Baer.
 
 -/
 
-universe t w v u
+universe w v u
 
 namespace CategoryTheory
 
-open Category Limits Opposite
+open Category Limits SmallObject
 
+namespace MorphismProperty
+
+variable {C : Type u} [Category.{v} C] (I : MorphismProperty C)
+
+class HasSmallObjectArgument : Prop where
+  exists_cardinal : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular) (_ : OrderBot κ.ord.toType),
+    IsCardinalForSmallObjectArgument I κ
+
+variable [HasSmallObjectArgument.{w} I]
+
+noncomputable def smallObjectκ : Cardinal.{w} :=
+  (HasSmallObjectArgument.exists_cardinal (I := I)).choose
+
+instance smallObjectκ_isRegular : Fact I.smallObjectκ.IsRegular :=
+  (HasSmallObjectArgument.exists_cardinal (I := I)).choose_spec.choose
+
+noncomputable instance : OrderBot I.smallObjectκ.ord.toType :=
+  (HasSmallObjectArgument.exists_cardinal (I := I)).choose_spec.choose_spec.choose
+
+instance isCardinalForSmallObjectArgument_smallObjectκ :
+    IsCardinalForSmallObjectArgument.{w} I I.smallObjectκ :=
+  (HasSmallObjectArgument.exists_cardinal (I := I)).choose_spec.choose_spec.choose_spec
+
+instance : HasFunctorialFactorization I.rlp.llp I.rlp :=
+  hasFunctorialFactorization I I.smallObjectκ
+
+lemma rlp_llp_of_hasSmallObjectArgument' :
+    I.rlp.llp = (transfiniteCompositionsOfShape (coproducts.{w} I).pushouts
+        I.smallObjectκ.ord.toType).retracts :=
+  rlp_llp_of_isCardinalForSmallObjectArgument' I I.smallObjectκ
+
+lemma rlp_llp_of_hasSmallObjectArgument :
+    I.rlp.llp =
+      (transfiniteCompositions.{w} (coproducts.{w} I).pushouts).retracts :=
+  rlp_llp_of_isCardinalForSmallObjectArgument I I.smallObjectκ
+
+
+end MorphismProperty
+
+
+#exit
 namespace SmallObject
 
 variable {C : Type u} [Category.{v} C]

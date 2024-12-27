@@ -37,6 +37,12 @@ def toSet : Set (Arrow C) := setOf (fun f ↦ W f.hom)
 
 def homFamily (f : W.toSet) : f.1.left ⟶ f.1.right := f.1.hom
 
+lemma homFamily_apply (f : W.toSet) : W.homFamily f = f.1.hom := rfl
+
+@[simp]
+lemma homFamily_arrow_mk {X Y : C} (f : X ⟶ Y) (hf : W f) :
+    W.homFamily ⟨Arrow.mk f, hf⟩ = f := rfl
+
 @[simp]
 lemma arrow_mk_mem_toSet_iff {X Y : C} (f : X ⟶ Y) : Arrow.mk f ∈ W.toSet ↔ W f := Iff.rfl
 

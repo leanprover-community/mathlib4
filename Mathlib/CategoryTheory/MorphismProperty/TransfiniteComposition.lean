@@ -39,7 +39,7 @@ holds for any well ordered type `J` in a certain universe `u`.
 
 -/
 
-universe w v v' u u'
+universe w v v' v'' u u' u''
 
 lemma Set.Iic.not_isMin_coe {α : Type u} [Preorder α] {j : α}
     {k : Set.Iic j} (hk : ¬ IsMin k) :
@@ -175,14 +175,21 @@ lemma preservesColimitsOfShape_of_preservesWellOrderContinuousOfShape (G : C ⥤
     PreservesColimitsOfShape (Set.Iio j) G :=
   PreservesWellOrderContinuousOfShape.preservesColimitsOfShape j hj
 
-variable {J}
-
 instance (F : J ⥤ C) (G : C ⥤ D) [F.IsWellOrderContinuous]
     [PreservesWellOrderContinuousOfShape J G] :
     (F ⋙ G).IsWellOrderContinuous where
   nonempty_isColimit j hj := ⟨by
     have := preservesColimitsOfShape_of_preservesWellOrderContinuousOfShape G j hj
     exact isColimitOfPreserves G (F.isColimitOfIsWellOrderContinuous j hj)⟩
+
+instance {E : Type u''} [Category.{v''} E] (G₁ : C ⥤ D) (G₂ : D ⥤ E)
+    [PreservesWellOrderContinuousOfShape J G₁]
+    [PreservesWellOrderContinuousOfShape J G₂] :
+    PreservesWellOrderContinuousOfShape J (G₁ ⋙ G₂) where
+  preservesColimitsOfShape j hj := by
+    have := preservesColimitsOfShape_of_preservesWellOrderContinuousOfShape G₁ j hj
+    have := preservesColimitsOfShape_of_preservesWellOrderContinuousOfShape G₂ j hj
+    infer_instance
 
 end Limits
 
@@ -233,6 +240,15 @@ instance [W.RespectsIso] : RespectsIso (W.transfiniteCompositionsOfShape J) wher
     rintro _ _ _ i (_ : IsIso i) _ ⟨F, hF, c, hc⟩
     exact ⟨_, hF, { ι := c.ι ≫ (Functor.const _).map i },
       IsColimit.ofIsoColimit hc (Cocones.ext (asIso i))⟩
+
+lemma transfiniteCompositionsOfShape_map_of_preserves (G : C ⥤ D)
+    [PreservesWellOrderContinuousOfShape J G]
+    {X Y : C} (f : X ⟶ Y) {P : MorphismProperty D}
+    [PreservesColimitsOfShape J G]
+    (h : (P.inverseImage G).transfiniteCompositionsOfShape J f) :
+    P.transfiniteCompositionsOfShape J (G.map f) := by
+  obtain ⟨F, hF, c, hc⟩  := h
+  exact ⟨F ⋙ G, hF, _, isColimitOfPreserves G hc⟩
 
 /-- A class of morphisms `W : MorphismProperty C` is stable under transfinite compositions
 of shape `J` if for any well-order-continuous functor `F : J ⥤ C` such that

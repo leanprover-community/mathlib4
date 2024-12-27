@@ -68,13 +68,12 @@ lemma arrow_mk_iterationFunctor_map (i₁ i₂ : J) (h₁₂ : i₁ ≤ i₂)
   exact Arrow.ext (Iteration.congr_obj _ _ _ _ _)
     (Iteration.congr_obj _ _ _ _ _) (Iteration.congr_map _ _ _ _ _)
 
-lemma prop_iterationFunctor_map_succ (i₁ i₂ : J) (h₁ : i₁ < i₂) (h₂ : i₂ = Order.succ i₁) :
-    Φ.prop ((Φ.iterationFunctor J).map (homOfLE h₁.le)) := by
-  subst h₂
-  have := (Φ.iter (Order.succ i₁)).prop_map_succ i₁ h₁
+lemma prop_iterationFunctor_map_succ (j : J) (hj : ¬ IsMax j) :
+    Φ.prop ((Φ.iterationFunctor J).map (homOfLE (Order.le_succ j))) := by
+  have := (Φ.iter (Order.succ j)).prop_map_succ j (Order.lt_succ_of_not_isMax hj)
   rw [prop_iff] at this ⊢
-  simp only [Φ.iterationFunctor_obj i₁ (Φ.iter (Order.succ i₁)) (Order.le_succ i₁),
-    Φ.arrow_mk_iterationFunctor_map _ _ (Order.le_succ i₁) (Φ.iter (Order.succ i₁)) (by simp),
+  simp only [Φ.iterationFunctor_obj j (Φ.iter (Order.succ j)) (Order.le_succ j),
+    Φ.arrow_mk_iterationFunctor_map _ _ (Order.le_succ j) (Φ.iter (Order.succ j)) (by simp),
     this]
 
 variable (J)

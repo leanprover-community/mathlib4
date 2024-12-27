@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.MorphismProperty.LiftingProperty
 import Mathlib.SetTheory.Cardinal.Cofinality
 
 /-!
-# Morphism properties which admits a small object argument
+# Cardinals that are suitable for the small object argument
 
 ## References
 - https://ncatlab.org/nlab/show/small+object+argument
@@ -38,6 +38,8 @@ noncomputable def Cardinal.IsRegular.orderBotOrdToType
 
 namespace CategoryTheory
 
+open Category
+
 noncomputable instance (o : Ordinal.{w}) : SuccOrder o.toType :=
   SuccOrder.ofLinearWellFoundedLT o.toType
 
@@ -48,6 +50,30 @@ variable {C : Type u} [Category.{v} C]
 namespace MorphismProperty
 
 variable (I : MorphismProperty C)
+
+section
+
+variable (J : Type u') [LinearOrder J] [SuccOrder J] [OrderBot J] [WellFoundedLT J]
+
+lemma transfiniteCompositionsOfShape_pushouts_coproducts_le_rlp_llp :
+    (coproducts.{w} I).pushouts.transfiniteCompositionsOfShape J ≤ I.rlp.llp := by
+  simpa using transfiniteCompositionsOfShape_le_rlp_llp (coproducts.{w} I).pushouts J
+
+lemma retracts_transfiniteCompositionsOfShape_pushouts_coproducts_le_rlp_llp :
+    ((coproducts.{w} I).pushouts.transfiniteCompositionsOfShape J).retracts ≤ I.rlp.llp := by
+  rw [le_llp_iff_le_rlp, retracts_rlp, ← le_llp_iff_le_rlp]
+  apply transfiniteCompositionsOfShape_pushouts_coproducts_le_rlp_llp
+
+end
+
+lemma transfiniteCompositions_pushouts_coproducts_le_rlp_llp :
+    (transfiniteCompositions.{w} (coproducts.{w} I).pushouts) ≤ I.rlp.llp := by
+  simpa using transfiniteCompositions_le_rlp_llp (coproducts.{w} I).pushouts
+
+lemma retracts_transfiniteComposition_pushouts_coproducts_le_rlp_llp :
+    (transfiniteCompositions.{w} (coproducts.{w} I).pushouts).retracts ≤ I.rlp.llp := by
+  rw [le_llp_iff_le_rlp, retracts_rlp, ← le_llp_iff_le_rlp]
+  apply transfiniteCompositions_pushouts_coproducts_le_rlp_llp
 
 class IsCardinalForSmallObjectArgument (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [OrderBot κ.ord.toType] : Prop where
@@ -62,25 +88,6 @@ class IsCardinalForSmallObjectArgument (κ : Cardinal.{w}) [Fact κ.IsRegular]
       (_ : ∀ (j : _) (_ : ¬IsMax j),
         (coproducts.{w} I).pushouts (F.map (homOfLE (Order.le_succ j)))),
       PreservesColimit F (coyoneda.obj (Opposite.op A))
-
-class HasSmallObjectArgument : Prop where
-  exists_cardinal : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular) (_ : OrderBot κ.ord.toType),
-    IsCardinalForSmallObjectArgument I κ
-
-variable [HasSmallObjectArgument.{w} I]
-
-noncomputable def smallObjectκ : Cardinal.{w} :=
-  (HasSmallObjectArgument.exists_cardinal (I := I)).choose
-
-instance smallObjectκ_isRegular : Fact I.smallObjectκ.IsRegular :=
-  (HasSmallObjectArgument.exists_cardinal (I := I)).choose_spec.choose
-
-noncomputable instance : OrderBot I.smallObjectκ.ord.toType :=
-  (HasSmallObjectArgument.exists_cardinal (I := I)).choose_spec.choose_spec.choose
-
-instance isCardinalForSmallObjectArgument_smallObjectκ :
-    IsCardinalForSmallObjectArgument.{w} I I.smallObjectκ :=
-  (HasSmallObjectArgument.exists_cardinal (I := I)).choose_spec.choose_spec.choose_spec
 
 end MorphismProperty
 
@@ -155,30 +162,33 @@ noncomputable def iterationFunctor : κ.ord.toType ⥤ Arrow C ⥤ Arrow C :=
 instance : (iterationFunctor I κ).IsWellOrderContinuous := by
   dsimp [iterationFunctor]
   infer_instance
-variable (f : Arrow C)
 
 instance (f : Arrow C) :
     (iterationFunctor I κ ⋙ (evaluation _ _).obj f).IsWellOrderContinuous := by
   have := hasIterationOfShape I κ
   infer_instance
 
-instance (f : Arrow C) :
-    (iterationFunctor I κ ⋙ (evaluation _ _).obj f ⋙ Arrow.leftFunc).IsWellOrderContinuous := by
-  have := hasIterationOfShape I κ
-  change ((iterationFunctor I κ ⋙ (evaluation _ _).obj f) ⋙
-    Arrow.leftFunc).IsWellOrderContinuous
-  infer_instance
-
-instance (f : Arrow C) :
-    (iterationFunctor I κ ⋙ (evaluation _ _).obj f ⋙ Arrow.rightFunc).IsWellOrderContinuous := by
-  have := hasIterationOfShape I κ
-  change ((iterationFunctor I κ ⋙ (evaluation _ _).obj f) ⋙
-    Arrow.rightFunc).IsWellOrderContinuous
-  infer_instance
-
 noncomputable def iteration : Arrow C ⥤ Arrow C :=
   have := hasIterationOfShape I κ
   (succStruct I κ).iteration κ.ord.toType
+
+noncomputable def iterationCocone : Cocone (iterationFunctor I κ) :=
+  have := hasIterationOfShape I κ
+  (succStruct I κ).iterationCocone κ.ord.toType
+
+@[simp]
+lemma iterationCocone_pt : (iterationCocone I κ).pt = iteration I κ := rfl
+
+@[reassoc (attr := simp)]
+lemma iterationCocone_w_app_app_left
+    (f : Arrow C) {j₁ j₂ : κ.ord.toType} (g : j₁ ⟶ j₂) :
+    (((iterationFunctor I κ).map g).app f).left ≫ (((iterationCocone I κ).ι.app j₂).app f).left =
+      (((iterationCocone I κ).ι.app j₁).app f).left := by
+  rw [← Arrow.comp_left, ← NatTrans.comp_app, Cocone.w]
+
+noncomputable def isColimitIterationCocone : IsColimit (iterationCocone I κ) :=
+  have := hasIterationOfShape I κ
+  colimit.isColimit _
 
 noncomputable def ιIteration : 𝟭 _ ⟶ iteration I κ :=
   have := hasIterationOfShape I κ
@@ -209,8 +219,166 @@ lemma transfiniteCompositionOfShape_succStruct_prop_ιIteration :
 
 lemma transfiniteCompositionOfShape_propArrow_ιIteration :
     ((propArrow.{w} I).functorCategory (Arrow C)).transfiniteCompositionsOfShape
-      κ.ord.toType (ιIteration I κ) := by
+      κ.ord.toType (ιIteration I κ) :=
+  monotone_transfiniteCompositionsOfShape _ (succStruct_prop_le_propArrow I κ) _
+    (transfiniteCompositionOfShape_succStruct_prop_ιIteration I κ)
+
+instance : IsStableUnderTransfiniteComposition.{w} (isomorphisms C) := sorry
+
+instance isIso_ιIteration_app_right (f : Arrow C) :
+    IsIso ((ιIteration I κ).app f).right := by
+  have := hasIterationOfShape I κ
+  suffices (isomorphisms _).transfiniteCompositionsOfShape κ.ord.toType
+      (((evaluation _ (Arrow C)).obj f ⋙ Arrow.rightFunc).map (ιIteration I κ)) from
+    (isomorphisms C).transfiniteCompositionsOfShape_le κ.ord.toType _ this
+  apply transfiniteCompositionsOfShape_map_of_preserves
+  apply monotone_transfiniteCompositionsOfShape _ _ _
+    (transfiniteCompositionOfShape_propArrow_ιIteration I κ)
+  intro _ _ _ h
+  exact (h f).2
+
+instance (f : Arrow C) (j : κ.ord.toType) :
+    IsIso (((iterationCocone I κ).ι.app j).app f) :=
   sorry
+
+instance : IsIso (whiskerRight (ιIteration I κ) Arrow.rightFunc) := by
+  rw [NatTrans.isIso_iff_isIso_app]
+  dsimp
+  infer_instance
+
+lemma transfiniteCompositionsOfShape_ιIteration_app_left (f : Arrow C) :
+    (coproducts.{w} I).pushouts.transfiniteCompositionsOfShape κ.ord.toType
+      ((ιIteration I κ).app f).left := by
+  have := hasIterationOfShape I κ
+  change (coproducts.{w} I).pushouts.transfiniteCompositionsOfShape κ.ord.toType
+    (((evaluation _ (Arrow C)).obj f ⋙ Arrow.leftFunc).map (ιIteration I κ))
+  apply transfiniteCompositionsOfShape_map_of_preserves
+  apply monotone_transfiniteCompositionsOfShape _ _ _
+    (transfiniteCompositionOfShape_propArrow_ιIteration I κ)
+  intro _ _ _ h
+  exact (h f).1
+
+def iterationFunctorObjSuccObjLeftIso (f : Arrow C) (j : κ.ord.toType) (hj : ¬ IsMax j) :
+    letI := hasColimitsOfShape_discrete I κ
+    letI := hasPushouts I κ
+    (((iterationFunctor I κ).obj (Order.succ j)).obj f).left ≅
+        functorObj I.homFamily (((iterationFunctor I κ).obj j).obj f).hom := by
+  sorry
+
+@[reassoc (attr := simp)]
+def ιFunctorObj_iterationFunctorObjSuccObjLeftIso_inv
+    (f : Arrow C) (j : κ.ord.toType) (hj : ¬ IsMax j) :
+    letI := hasColimitsOfShape_discrete I κ
+    letI := hasPushouts I κ
+    ιFunctorObj I.homFamily (((iterationFunctor I κ).obj j).obj f).hom ≫
+      (iterationFunctorObjSuccObjLeftIso I κ f j hj).inv =
+        (((iterationFunctor I κ).map (homOfLE (Order.le_succ j))).app f).left := by
+  sorry
+
+lemma hasRightLiftingProperty_iteration_obj_hom (f : Arrow C) {A B : C} (i : A ⟶ B) (hi : I i):
+    HasLiftingProperty i ((iteration I κ).obj f).hom := ⟨by
+  have := Cardinal.noMaxOrder (Fact.elim inferInstance : κ.IsRegular).aleph0_le
+  have := hasIterationOfShape I κ
+  have := hasColimitsOfShape_discrete I κ
+  have := hasPushouts I κ
+  intro g b sq
+  have : PreservesColimit (iterationFunctor I κ ⋙
+    ((evaluation (Arrow C) (Arrow C)).obj f ⋙ Arrow.leftFunc))
+      (coyoneda.obj (Opposite.op A)) :=
+    preservesColimit_coyoneda_obj I κ i hi _
+      (fun j hj ↦ (succStruct_prop_le_propArrow I κ _
+        ((succStruct I κ).prop_iterationFunctor_map_succ j hj) f).1)
+  obtain ⟨j, t, ht⟩ := Types.jointly_surjective _
+    (isColimitOfPreserves (((evaluation _ _).obj f ⋙ Arrow.leftFunc) ⋙
+      coyoneda.obj (Opposite.op A)) (isColimitIterationCocone I κ)) g
+  dsimp at g b t ht
+  let x : FunctorObjIndex I.homFamily (((iterationFunctor I κ).obj j).obj f).hom :=
+    { i := ⟨Arrow.mk i, hi⟩
+      t := t
+      b := b ≫ (inv (((iterationCocone I κ).ι.app j).app f)).right
+      w := by
+        have := (((iterationCocone I κ).ι.app j).app f).w
+        dsimp at this
+        rw [← cancel_mono (((iterationCocone I κ).ι.app j).app f).right, assoc, assoc, assoc,
+          ← Arrow.comp_right, IsIso.inv_hom_id, Arrow.id_right, ← this,
+          reassoc_of% ht]
+        simp [comp_id, homFamily, sq.w] }
+  exact ⟨⟨{
+    l := Sigma.ι (functorObjTgtFamily _ _) x ≫ ρFunctorObj _ _ ≫
+          (iterationFunctorObjSuccObjLeftIso I κ f j (not_isMax j)).inv ≫
+          (((iterationCocone I κ).ι.app (Order.succ j)).app f).left
+    fac_left := by
+      have := x.comm
+      dsimp [homFamily_apply] at this ⊢
+      simp [reassoc_of% this, ← ht]
+    fac_right := by
+      dsimp
+      simp only [assoc]
+      simp only [assoc, Arrow.w_mk_right, Functor.id_obj, Arrow.mk_right]
+      sorry }⟩⟩⟩
+    /-
+    exact ⟨⟨{
+      l := Sigma.ι (functorObjTgtFamily _ _) x ≫ ρFunctorObj _ _ ≫
+        (inductiveSystemForgetObjSuccIso f J p j (not_isMax j)).inv ≫
+        (inductiveSystemForgetCocone f J p).ι.app (Order.succ j)
+      fac_left := by
+        erw [x.comm_assoc]
+        simp [← ht, ιFunctorObj_inductiveSystemForgetObjSuccIso_inv_assoc]
+      fac_right := by simp }⟩⟩-/
+
+noncomputable def functorialFactorizationData :
+    FunctorialFactorizationData I.rlp.llp I.rlp where
+  Z := iteration I κ ⋙ Arrow.leftFunc
+  i := whiskerRight (ιIteration I κ) Arrow.leftFunc
+  p := whiskerLeft (iteration I κ) Arrow.leftToRight ≫
+    inv (whiskerRight (ιIteration I κ) Arrow.rightFunc)
+  hi f := by
+    apply I.transfiniteCompositionsOfShape_pushouts_coproducts_le_rlp_llp κ.ord.toType
+    apply transfiniteCompositionsOfShape_ιIteration_app_left
+  hp f := by
+    apply RespectsIso.postcomp
+    apply hasRightLiftingProperty_iteration_obj_hom
+
+lemma hasFunctorialFactorization :
+    HasFunctorialFactorization I.rlp.llp I.rlp where
+  nonempty_functorialFactorizationData :=
+    ⟨functorialFactorizationData I κ⟩
+
+/-- If `κ` is a suitable cardinal for the small object argument for `I : MorphismProperty C`,
+then the class `I.rlp.llp` is exactly the class of morphisms that are retracts
+of transfinite compositions (of shape `κ.ord.toType`) of pushouts of coproducts
+of maps in `I`.  -/
+lemma rlp_llp_of_isCardinalForSmallObjectArgument' :
+    I.rlp.llp = (transfiniteCompositionsOfShape
+      (coproducts.{w} I).pushouts κ.ord.toType).retracts := by
+  refine le_antisymm ?_
+    (retracts_transfiniteCompositionsOfShape_pushouts_coproducts_le_rlp_llp I κ.ord.toType)
+  -- reintroduce obj, ιObj, πObj...
+  sorry
+  /-apply le_antisymm
+  · intro X Y f hf
+    replace hf := hf _ (rlp_πObject I κ f)
+    have sq : CommSq (ιObject I κ f) f (πObject I κ f) (𝟙 _) := ⟨by simp⟩
+    refine ⟨_, _, _, ?_, transfiniteCompositionsOfShape_ιObject I κ f⟩
+    -- this is a particular case of the retract argument
+    exact
+      { i := Arrow.homMk (u := 𝟙 X) (v := sq.lift) (by simp)
+        r := Arrow.homMk (u := 𝟙 X) (v := πObject I κ f) (by simp) }
+  · rw [le_llp_iff_le_rlp, retracts_rlp, ← le_llp_iff_le_rlp]
+    (coproducts.{w} I).pushouts κ.ord.toType-/
+
+
+/-- If `κ` is a suitable cardinal for the small object argument for `I : MorphismProperty C`,
+then the class `I.rlp.llp` is exactly the class of morphisms that are retracts
+of transfinite compositions of pushouts of coproducts of maps in `I`.  -/
+lemma rlp_llp_of_isCardinalForSmallObjectArgument :
+    I.rlp.llp =
+      (transfiniteCompositions.{w} (coproducts.{w} I).pushouts).retracts := by
+  refine le_antisymm ?_
+    (retracts_transfiniteComposition_pushouts_coproducts_le_rlp_llp I)
+  rw [rlp_llp_of_isCardinalForSmallObjectArgument' I κ]
+  apply monotone_retracts
+  apply transfiniteCompositionsOfShape_le_transfiniteCompositions
 
 /-
 variable (Y) in
