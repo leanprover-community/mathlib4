@@ -89,5 +89,5 @@ end Subgroup
 theorem IsSquare.nonneg {R : Type*} [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
     [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
     {x : R} (h : IsSquare x) : 0 ≤ x := by
-  rcases (isSquare_iff _).mp h with ⟨y, rfl⟩
+  rcases h with ⟨y, rfl⟩
   exact mul_self_nonneg y
