@@ -333,13 +333,7 @@ instance : FunLike Pₗ[𝕜](A) A A where
   coe f := f.val
   coe_injective' _ _ h := Subtype.eq (DFunLike.coe_fn_eq.mp h)
 
-lemma proj_apply (P : A →L[𝕜] A) (hP : IsIdempotentElem P)
-    (a : A) (ha: a ∈ Set.range P) : P a = a := by
-  obtain ⟨c,hc⟩ := ha
-  rw [← hc]
-  have e2 : P (P c) = (P * P) c := rfl
-  rw [e2]
-  rw [hP.eq]
+
 
 lemma commute {P Q : A →L[𝕜] A} : Commute P Q ↔ Commute (P : (Module.End 𝕜 A)) ↑Q := by
   constructor
@@ -359,21 +353,6 @@ lemma commute {P Q : A →L[𝕜] A} : Commute P Q ↔ Commute (P : (Module.End 
       _ = ((P : (Module.End 𝕜 A)) * Q) x := rfl
       _ = (Q * (P : (Module.End 𝕜 A))) x := by rw [h]
       _ = Q (P x) := rfl
-
-lemma IsIdempotentElem.range_prod__of_commute
-    {P Q : A →L[𝕜] A} (hPQ : Commute P Q)
-    (hP : IsIdempotentElem P) (hQ : IsIdempotentElem Q) :
-    Set.range (P * Q) = Set.range P ∩ Set.range Q := by
-  apply le_antisymm
-  · simp only [Set.le_eq_subset]
-    apply Module.End.range_prod_of_commute
-    rw [← commute]
-    apply hPQ
-  · intro a ha
-    simp only [ContinuousLinearMap.coe_mul, Set.mem_range, Function.comp_apply]
-    use a
-    rw [proj_apply Q hQ _ (Set.mem_of_mem_inter_right ha),
-      proj_apply P hP _ (Set.mem_of_mem_inter_left ha)]
 
 lemma IsLprojection.range_inter (P Q : Pₗ[𝕜](NormedSpace.Dual 𝕜 A)) :
     Set.range P.val ∩ Set.range Q.val = Set.range (P ⊓ Q).val := by
