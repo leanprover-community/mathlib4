@@ -232,7 +232,7 @@ theorem Subsemiring.one_mem_toNonUnitalSubsemiring (S : Subsemiring R) :
 
 @[simp]
 theorem Submonoid.subsemiringClosure_toNonUnitalSubsemiring {M : Submonoid R} :
-    (M.subsemiringClosure).toNonUnitalSubsemiring = NonUnitalSubsemiring.closure M := by
+    M.subsemiringClosure.toNonUnitalSubsemiring = NonUnitalSubsemiring.closure M := by
   refine Eq.symm (NonUnitalSubsemiring.closure_eq_of_le ?_ (fun _ hx => ?_))
   · simp [Submonoid.subsemiringClosure_coe]
   · simp [Submonoid.subsemiringClosure_mem] at hx
