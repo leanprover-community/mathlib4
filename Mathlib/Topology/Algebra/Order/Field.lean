@@ -186,7 +186,7 @@ theorem Filter.Tendsto.inv_tendsto_nhdsGT_zero (h : Tendsto f l (𝓝[>] 0)) : T
 @[deprecated (since := "2024-12-22")]
 alias Filter.Tendsto.inv_tendsto_zero := Filter.Tendsto.inv_tendsto_nhdsGT_zero
 
-theorem Filter.Tendsto.inv_tendsto_zero_left (h : Tendsto f l (𝓝[<] 0)) : Tendsto f⁻¹ l atBot :=
+theorem Filter.Tendsto.inv_tendsto_nhdsLT_zero (h : Tendsto f l (𝓝[<] 0)) : Tendsto f⁻¹ l atBot :=
   tendsto_inv_zero_atBot.comp h
 
 /-- If `g` tends to zero and there exists a constant `C : 𝕜` such that eventually `|f x| ≤ C`,
