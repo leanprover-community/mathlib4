@@ -143,7 +143,24 @@ lemma isCardinalAccessible_of_iso [F.IsCardinalAccessible κ] : G.IsCardinalAcce
 
 end
 
+section
+
+variable (F : C ⥤ D)
+
+/-- A functor is accessible relative to a universe `w` if
+it is `κ`-accessible for some regular `κ : Cardinal.{w}`. -/
+class IsAccessible  : Prop where
+  exists_cardinal : ∃ (κ : Cardinal.{w}) (_ : Fact κ.IsRegular), IsCardinalAccessible F κ
+
+lemma isAccessible_of_isCardinalAccessible (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalAccessible F κ] : IsAccessible.{w} F where
+  exists_cardinal := ⟨κ, inferInstance, inferInstance⟩
+
+end
+
 end Functor
+
+section
 
 variable (X : C) (Y : C) (e : X ≅ Y) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
@@ -173,8 +190,6 @@ include e in
 variable {X Y} in
 lemma isCardinalPresentable_of_iso [IsCardinalPresentable X κ] : IsCardinalPresentable Y κ :=
   Functor.isCardinalAccessible_of_iso (coyoneda.mapIso e.symm.op) κ
-
-section
 
 lemma isCardinalPresentable_of_equivalence
     {C' : Type u₃} [Category.{v₃} C'] [IsCardinalPresentable X κ] (e : C ≌ C') :
@@ -215,6 +230,21 @@ lemma isCardinalPresentable_iff_of_isEquivalence
 lemma isCardinalPresentable_shrinkHoms_iff [LocallySmall.{w} C] :
     IsCardinalPresentable ((ShrinkHoms.functor.{w} C).obj X) κ ↔ IsCardinalPresentable X κ :=
   isCardinalPresentable_iff_of_isEquivalence X κ _
+
+end
+
+section
+
+variable (X : C)
+
+/-- An object of a category is presentable relative to a universe `w`
+if it is `κ`-presentable for some regular `κ : Cardinal.{w}`. -/
+abbrev IsPresentable (X : C) : Prop :=
+  Functor.IsAccessible.{w} (coyoneda.obj (op X))
+
+lemma isPresentable_of_isCardinalPresentable (κ : Cardinal.{w}) [Fact κ.IsRegular]
+    [IsCardinalPresentable X κ] : IsPresentable.{w} X where
+  exists_cardinal := ⟨κ, inferInstance, inferInstance⟩
 
 end
 

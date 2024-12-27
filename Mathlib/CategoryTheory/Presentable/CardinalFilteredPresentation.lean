@@ -37,10 +37,12 @@ variable (p : CardinalFilteredPresentation X κ)
 
 lemma isCardinalPresentable_pt (h : ∀ (j : p.J), IsCardinalPresentable (p.F.obj j) κ)
     [LocallySmall.{w} C]
-    (hJ : HasCardinalLT (Arrow p.J) κ)
-    [HasLimitsOfShape p.Jᵒᵖ (Type v)] :
-    IsCardinalPresentable X κ :=
-  isCardinalPresentable_of_isColimit _ p.isColimit κ hJ
+    (κ' : Cardinal.{w}) [Fact κ'.IsRegular] (h : κ ≤ κ')
+    (hJ : HasCardinalLT (Arrow p.J) κ') :
+    IsCardinalPresentable X κ' := by
+  have : ∀ (k : p.J), IsCardinalPresentable (p.F.obj k) κ' :=
+    fun _ ↦ isCardinalPresentable_of_le _ h
+  exact isCardinalPresentable_of_isColimit _ p.isColimit κ' hJ
 
 end CardinalFilteredPresentation
 
