@@ -173,7 +173,6 @@ theorem sInf_singleton {a : α} : sInf {a} = a :=
 
 end
 
-
 /-- A complete lattice is a bounded lattice which has suprema and infima for every subset. -/
 class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α,
   CompleteSemilatticeInf α, Top α, Bot α where
