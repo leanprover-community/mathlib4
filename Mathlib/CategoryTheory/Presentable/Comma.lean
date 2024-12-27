@@ -160,6 +160,8 @@ lemma cardinalFilteredPresentation_exists_f_obj_iso
 
 end hasCardinalFilteredGenerators
 
+section
+
 variable [IsCardinalAccessibleCategory C₁ κ] [IsCardinalAccessibleCategory C₂ κ]
   [IsCardinalAccessibleCategory D κ]
   [F₁.IsCardinalAccessible κ] [F₂.IsCardinalAccessible κ]
@@ -203,6 +205,18 @@ instance hasCardinalFilteredGenerators :
 
 instance isCardinalAccessibleCategory :
     IsCardinalAccessibleCategory (Comma F₁ F₂) κ where
+
+end
+
+section
+
+variable [IsCardinalLocallyPresentable C₁ κ] [IsCardinalLocallyPresentable C₂ κ]
+  [IsCardinalLocallyPresentable D κ] [PreservesColimitsOfSize.{w, w} F₁]
+
+instance isCardinalLocallyPresentable :
+    IsCardinalLocallyPresentable (Comma F₁ F₂) κ where
+
+end
 
 end Comma
 
