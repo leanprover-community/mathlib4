@@ -68,4 +68,24 @@ lemma holdsForLocalizationAway : HoldsForLocalizationAway Flat := by
     rw [RingHom.Flat]; convert this; ext; simp_rw [Algebra.smul_def]; rfl
   exact IsLocalization.flat _ (Submonoid.powers r)
 
+lemma ofLocalizationSpanTarget : OfLocalizationSpanTarget Flat := by
+  introv R hsp h
+  algebraize_only [f]
+  refine Module.flat_of_isLocalized_span _ _ s hsp _
+    (fun r ↦ Algebra.linearMap S <| Localization.Away r.1) ?_
+  dsimp only [RingHom.Flat] at h
+  convert h; ext
+  apply Algebra.smul_def
+
+/-- Flat is a local property of ring homomorphisms. -/
+lemma propertyIsLocal : PropertyIsLocal Flat where
+  localizationAwayPreserves := isStableUnderBaseChange.localizationPreserves.away
+  ofLocalizationSpanTarget := ofLocalizationSpanTarget
+  ofLocalizationSpan := ofLocalizationSpanTarget.ofLocalizationSpan
+    (stableUnderComposition.stableUnderCompositionWithLocalizationAway
+      holdsForLocalizationAway).left
+  StableUnderCompositionWithLocalizationAwayTarget :=
+    (stableUnderComposition.stableUnderCompositionWithLocalizationAway
+      holdsForLocalizationAway).right
+
 end RingHom.Flat
