@@ -200,8 +200,6 @@ theorem free_of_maximalIdeal_rTensor_injective [Module.FinitePresentation R M]
     (g₁ := (LinearMap.ker i).subtype) (g₂ := i) (LinearMap.exact_subtype_mkQ 𝔪)
     (Submodule.mkQ_surjective _) (LinearMap.exact_subtype_ker_map i) hi H ?_ ?_
   · apply Module.Flat.lTensor_preserves_injective_linearMap
-      (N := LinearMap.ker i) (N' := I →₀ R)
-      (L := (LinearMap.ker i).subtype)
     exact Subtype.val_injective
   · apply hi'.injective
     rw [LinearMap.baseChange_eq_ltensor]

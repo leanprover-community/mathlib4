@@ -30,7 +30,7 @@ variable {R S T : Type*} [CommRing R] [CommRing S] [CommRing T]
 variable (R) in
 /-- The identity of a ring is flat. -/
 lemma id : RingHom.Flat (RingHom.id R) :=
-  Module.Flat.self R
+  Module.Flat.self
 
 /-- Composition of flat ring homomorphisms is flat. -/
 lemma comp {f : R →+* S} {g : S →+* T} (hf : f.Flat) (hg : g.Flat) : Flat (g.comp f) := by
@@ -40,7 +40,7 @@ lemma comp {f : R →+* S} {g : S →+* T} (hf : f.Flat) (hg : g.Flat) : Flat (g
 /-- Bijective ring maps are flat. -/
 lemma of_bijective {f : R →+* S} (hf : Function.Bijective f) : Flat f := by
   algebraize [f]
-  exact Module.Flat.of_linearEquiv R R S (LinearEquiv.ofBijective (Algebra.linearMap R S) hf).symm
+  exact Module.Flat.of_linearEquiv (LinearEquiv.ofBijective (Algebra.linearMap R S) hf).symm
 
 lemma containsIdentities : ContainsIdentities Flat := id
 

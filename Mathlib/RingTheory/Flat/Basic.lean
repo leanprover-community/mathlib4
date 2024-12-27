@@ -123,9 +123,8 @@ theorem lTensor_preserves_injective_linearMap [Flat R M] (f : N →ₗ[R] P)
     (hf : Function.Injective f) : Function.Injective (f.lTensor M) :=
   (f.lTensor_inj_iff_rTensor_inj M).2 (rTensor_preserves_injective_linearMap f hf)
 
-/-- `M` is flat if and only if `f ⊗ 𝟙 M` is injective whenever `f` is an injective linear map.
-  See `Module.Flat.iff_rTensor_preserves_injective_linearMap` to specialize the universe of
-  `N, N', N''` to `Type (max u v)`. -/
+/-- `M` is flat if and only if `f ⊗ 𝟙 M` is injective whenever `f` is an injective linear map
+in a universe that `R` fits in. -/
 lemma iff_rTensor_preserves_injective_linearMapₛ [Small.{v'} R] : Flat R M ↔
     ∀ ⦃N N' : Type v'⦄ [AddCommMonoid N] [AddCommMonoid N'] [Module R N] [Module R N']
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.rTensor M) :=
@@ -134,9 +133,8 @@ lemma iff_rTensor_preserves_injective_linearMapₛ [Small.{v'} R] : Flat R M ↔
     rw [rTensor_injective_iff_subtype Subtype.val_injective (Shrink.linearEquiv.{_, v'} P R).symm]
     exact h _ Subtype.val_injective⟩⟩
 
-/-- `M` is flat if and only if `𝟙 M ⊗ f` is injective whenever `f` is an injective linear map.
-  See `Module.Flat.iff_lTensor_preserves_injective_linearMap` to specialize the universe of
-  `N, N', N''` to `Type (max u v)`. -/
+/-- `M` is flat if and only if `𝟙 M ⊗ f` is injective whenever `f` is an injective linear map
+in a universe that `R` fits in. -/
 lemma iff_lTensor_preserves_injective_linearMapₛ [Small.{v'} R] : Flat R M ↔
     ∀ ⦃N N' : Type v'⦄ [AddCommMonoid N] [AddCommMonoid N'] [Module R N] [Module R N']
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.lTensor M) := by
@@ -354,6 +352,7 @@ lemma iff_lift_lsmul_comp_subtype_injective : Flat R M ↔ ∀ ⦃I : Ideal R⦄
     Function.Injective (TensorProduct.lift ((lsmul R M).comp I.subtype)) := by
   simp [iff_rTensor_injective, ← lid_comp_rTensor]
 
+variable (M) in
 /-- If `M` is flat then `M ⊗ -` is an exact functor. -/
 lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
     [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N''] [Module R N] [Module R N'] [Module R N'']
@@ -370,6 +369,7 @@ lemma lTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
       simpa [ι, - Subtype.val_injective] using Subtype.val_injective) (map_zero _)
   exact _root_.lTensor_exact _ (fun x ↦ by simp [π]) Quotient.mk''_surjective
 
+variable (M) in
 /-- If `M` is flat then `- ⊗ M` is an exact functor. -/
 lemma rTensor_exact [Flat R M] ⦃N N' N'' : Type*⦄
     [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N''] [Module R N] [Module R N'] [Module R N'']
