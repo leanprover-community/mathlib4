@@ -15,25 +15,25 @@ see e.g. `RingHom.FiniteType` for a concrete example of this. -/
 def RingHom.testProperty1 {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B) : Prop :=
   @Algebra.testProperty1 A B _ _ f.toAlgebra
 
-/-- Test property for when the `RingHom` porperty corresponds to a `Module` property (that is
+/-- Test property for when the `RingHom` property corresponds to a `Module` property (that is
 definitionally the same). See e.g. `Module.Finite` for a concrete example of this. -/
 class Module.testProperty2 (A M : Type*) [Semiring A] [AddCommMonoid M] [Module A M] : Prop where
   out : ∀ x : A, ∀ M : M, x • M = 0
 
-/-- Test property for when the `RingHom` porperty corresponds to a `Module` property (that is
+/-- Test property for when the `RingHom` property corresponds to a `Module` property (that is
 definitionally the same). See e.g. `Module.Finite` for a concrete example of this. -/
 @[algebraize Module.testProperty2]
 def RingHom.testProperty2 {A B : Type*} [CommRing A] [CommRing B] (f : A →+* B) : Prop :=
   letI : Algebra A B := f.toAlgebra
   Module.testProperty2 A B
 
-/-- Test property for when the `RingHom` porperty corresponds to a `Algebra` property that is not
+/-- Test property for when the `RingHom` property corresponds to a `Algebra` property that is not
 definitionally the same, and needs to be created through a lemma. See e.g. `Algebra.IsIntegral` for
 an example. -/
 class Algebra.testProperty3 (A B : Type*) [CommRing A] [CommRing B] [Algebra A B] : Prop where
   out : Algebra.testProperty1 A B
 
-/- Test property for when the `RingHom` porperty corresponds to a `Algebra` property that is not
+/- Test property for when the `RingHom` property corresponds to a `Algebra` property that is not
 definitionally the same, and needs to be created through a lemma. See e.g. `Algebra.IsIntegral` for
 an example. -/
 @[algebraize Algebra.testProperty3.mk]
