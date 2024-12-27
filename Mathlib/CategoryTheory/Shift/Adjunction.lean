@@ -11,11 +11,15 @@ import Mathlib.CategoryTheory.Adjunction.Mates
 
 Given categories `C` and `D` that have shifts by an additive group `A`, functors `F : C ⥤ D`
 and `G : C ⥤ D`, an adjunction `F ⊣ G` and a `CommShift` structure on `F`, this file constructs
-a `CommShift` structure on `G`. As an easy application, if `E : C ≌ D` is an equivalence and
-`E.functor` has a `CommShift` structure, we get a `CommShift` structure on `E.inverse`.
+a `CommShift` structure on `G`. We also do the construction in the other direction: given a
+`CommShift` structure on `G`, we construct a `CommShift` structure on `G`; we could do this
+using opposite categories, but the construction is simple enough that it is not really worth it.
+As an easy application, if `E : C ≌ D` is an equivalence and `E.functor` has a `CommShift`
+structure, we get a `CommShift` structure on `E.inverse`.
 
-The `CommShift` structure on `G` must be compatible with the one on `F` in the following sense
-(cf. `Adjunction.CommShift`):
+We now explain the construction of a `CommShift` structure on `G` given a `CommShift` structure
+on `F`; the other direction is similar. The `CommShift` structure on `G` must be compatible with
+the one on `F` in the following sense (cf. `Adjunction.CommShift`):
 for every `a` in `A`, the natural transformation `adj.unit : 𝟭 C ⟶ G ⋙ F` commutes with
 the isomorphism `shiftFunctor C A ⋙ G ⋙ F ≅ G ⋙ F ⋙ shiftFunctor C A` induces by
 `F.commShiftIso a` and `G.commShiftIso a`. We actually require a similar condition for
@@ -36,9 +40,6 @@ constructed in `Adjunction.RightAdjointCommShift.iso`, satisfy the compatibility
 Once we have established all this, the compatibility of the commutation isomorphism for
 `F` expressed in `CommShift.zero` and `CommShift.add` immediately implies the similar
 statements for the commutation isomorphisms for `G`.
-
-TODO: Construct a `CommShift` structure on `F` from a `CommShift` structure on `G`, using
-opposite categories.
 
 -/
 
