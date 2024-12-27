@@ -145,10 +145,15 @@ theorem partialSups_succ [LinearOrder β] [LocallyFiniteOrderBot β] [SuccOrder 
   · exact fun h ↦ h.elim (le_trans · <| Order.le_succ _) le_of_eq
 
 @[simp]
+lemma partialSups_add_one [Add β] [One β] [LinearOrder β] [LocallyFiniteOrderBot β] [SuccAddOrder β]
+    (f : β → α) (n : β) : partialSups f (n + 1) = partialSups f n ⊔ f (n + 1) :=
+  Order.succ_eq_add_one n ▸ partialSups_succ f n
+
+@[simp]
 theorem partialSups_bot [PartialOrder β] [LocallyFiniteOrder β] [OrderBot β]
     (f : β → α) : partialSups f ⊥ = f ⊥ := by
   simp only [partialSups_apply]
-  -- we need `Iic_bot` here?
+  -- should we add a lemma `Finset.Iic_bot`?
   suffices Iic (⊥ : β) = {⊥} by simp only [this, sup'_singleton]
   simp only [← coe_eq_singleton, coe_Iic, Set.Iic_bot]
 
@@ -159,11 +164,6 @@ theorem partialSups_bot [PartialOrder β] [LocallyFiniteOrder β] [OrderBot β]
 @[simp]
 theorem partialSups_zero (f : ℕ → α) : partialSups f 0 = f 0 :=
   partialSups_bot f
-
-@[simp]
-theorem partialSups_natSucc (f : ℕ → α) (n : ℕ) :
-    partialSups f (n + 1) = partialSups f n ⊔ f (n + 1) :=
-  partialSups_succ f n
 
 theorem partialSups_eq_sup'_range (f : ℕ → α) (n : ℕ) :
     partialSups f n = (Finset.range (n + 1)).sup' nonempty_range_succ f :=

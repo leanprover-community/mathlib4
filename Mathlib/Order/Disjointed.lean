@@ -83,7 +83,7 @@ def disjointedRec {f : ℕ → α} {p : α → Sort*} (hdiff : ∀ ⦃t i⦄, p 
     rintro k
     induction' k with k ih
     · exact hdiff h
-    rw [partialSups_natSucc, ← sdiff_sdiff_left]
+    rw [partialSups_add_one, ← sdiff_sdiff_left]
     exact hdiff ih
 
 @[simp]
@@ -104,7 +104,7 @@ theorem partialSups_disjointed (f : ℕ → α) : partialSups (disjointed f) = p
   ext n
   induction' n with k ih
   · rw [partialSups_zero, partialSups_zero, disjointed_zero]
-  · rw [partialSups_natSucc, partialSups_natSucc, disjointed_succ, ih, sup_sdiff_self_right]
+  · rw [partialSups_add_one, partialSups_add_one, disjointed_succ, ih, sup_sdiff_self_right]
 
 /-- `disjointed f` is the unique sequence that is pairwise disjoint and has the same partial sups
 as `f`. -/
@@ -113,14 +113,14 @@ theorem disjointed_unique {f d : ℕ → α} (hdisj : Pairwise (Disjoint on d))
   ext n
   cases' n with n
   · rw [← partialSups_zero d, hsups, partialSups_zero, disjointed_zero]
-  suffices h : d n.succ = partialSups d n.succ \ partialSups d n by
-    rw [h, hsups, partialSups_natSucc, disjointed_succ, sup_sdiff, sdiff_self, bot_sup_eq]
-  rw [partialSups_natSucc, sup_sdiff, sdiff_self, bot_sup_eq, eq_comm, sdiff_eq_self_iff_disjoint]
+  suffices h : d (n + 1) = partialSups d (n + 1) \ partialSups d n by
+    rw [h, hsups, partialSups_add_one, disjointed_succ, sup_sdiff, sdiff_self, bot_sup_eq]
+  rw [partialSups_add_one, sup_sdiff, sdiff_self, bot_sup_eq, eq_comm, sdiff_eq_self_iff_disjoint]
   suffices h : ∀ m ≤ n, Disjoint (partialSups d m) (d n.succ) from h n le_rfl
   rintro m hm
   induction' m with m ih
   · exact hdisj (Nat.succ_ne_zero _).symm
-  rw [partialSups_natSucc, disjoint_iff, inf_sup_right, sup_eq_bot_iff,
+  rw [partialSups_add_one, disjoint_iff, inf_sup_right, sup_eq_bot_iff,
     ← disjoint_iff, ← disjoint_iff]
   exact ⟨ih (Nat.le_of_succ_le hm), hdisj (Nat.lt_succ_of_le hm).ne⟩
 
