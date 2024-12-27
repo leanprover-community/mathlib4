@@ -348,6 +348,6 @@ lemma integrable_exp_mul_of_le [IsFiniteMeasure μ] {X : Ω → ℝ} (t b : ℝ)
     constructor
     · exact exp_nonneg (t * X ω)
     · exact (exp_le_exp.mpr (mul_le_mul_of_nonneg_left hb ht))
-  exact Integrable_of_mem_Icc 0 (rexp (t * b)) (measurable_exp.comp_aemeasurable (hX.const_mul t)) h
+  exact Integrable.of_mem_Icc 0 (rexp (t * b)) (measurable_exp.comp_aemeasurable (hX.const_mul t)) h
 
 end ProbabilityTheory
