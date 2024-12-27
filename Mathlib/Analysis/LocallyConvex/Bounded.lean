@@ -11,7 +11,6 @@ import Mathlib.LinearAlgebra.Basis.VectorSpace
 import Mathlib.Topology.Bornology.Basic
 import Mathlib.Topology.Algebra.UniformGroup.Basic
 import Mathlib.Topology.UniformSpace.Cauchy
-import Mathlib.Topology.Algebra.Module.Basic
 
 /-!
 # Von Neumann Boundedness

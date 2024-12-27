@@ -246,7 +246,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       ext1
       -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
       -- added (Set.mem_toFinset), Set.mem_setOf
-      simp only [(Set.mem_toFinset), Set.mem_setOf, not_mem_empty, iff_false]
+      simp only [s, (Set.mem_toFinset), Set.mem_setOf, not_mem_empty, iff_false]
       rw [isSquare_iff_exists_sq] at h
       exact fun h' ↦ h ⟨_, h'.symm⟩
 
@@ -290,8 +290,6 @@ theorem FiniteField.isSquare_neg_one_iff : IsSquare (-1 : F) ↔ Fintype.card F 
   · have h₁ := FiniteField.odd_card_of_char_ne_two hF
     rw [← quadraticChar_one_iff_isSquare (neg_ne_zero.mpr (one_ne_zero' F)),
       quadraticChar_neg_one hF, χ₄_nat_eq_if_mod_four, h₁]
-    simp only [Nat.one_ne_zero, if_false, ite_eq_left_iff, (by omega : (-1 : ℤ) ≠ 1), imp_false,
-      not_not, Ne, reduceCtorEq]
-    exact ⟨fun h ↦ ne_of_eq_of_ne h (by omega), (Nat.odd_mod_four_iff.mp h₁).resolve_right⟩
+    omega
 
 end SpecialValues

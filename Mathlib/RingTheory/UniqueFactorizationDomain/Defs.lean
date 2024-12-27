@@ -120,7 +120,7 @@ Each element (except zero) is non-uniquely represented as a multiset
 of prime factors.
 
 To define a UFD using the definition in terms of multisets
-of irreducible factors, use the definition `of_exists_unique_irreducible_factors`
+of irreducible factors, use the definition `of_existsUnique_irreducible_factors`
 
 To define a UFD using the definition in terms of multisets
 of prime factors, use the definition `of_exists_prime_factors`

@@ -76,6 +76,10 @@ theorem fst_apply (x : M × M₂) : fst R M M₂ x = x.1 :=
 theorem snd_apply (x : M × M₂) : snd R M M₂ x = x.2 :=
   rfl
 
+@[simp, norm_cast] lemma coe_fst : ⇑(fst R M M₂) = Prod.fst := rfl
+
+@[simp, norm_cast] lemma coe_snd : ⇑(snd R M M₂) = Prod.snd := rfl
+
 theorem fst_surjective : Function.Surjective (fst R M M₂) := fun x => ⟨(x, 0), rfl⟩
 
 theorem snd_surjective : Function.Surjective (snd R M M₂) := fun x => ⟨(0, x), rfl⟩
@@ -437,8 +441,8 @@ theorem range_prod_le (f : M →ₗ[R] M₂) (g : M →ₗ[R] M₃) :
   rintro _ x rfl
   exact ⟨⟨x, rfl⟩, ⟨x, rfl⟩⟩
 
-theorem ker_prod_ker_le_ker_coprod {M₂ : Type*} [AddCommGroup M₂] [Module R M₂] {M₃ : Type*}
-    [AddCommGroup M₃] [Module R M₃] (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) :
+theorem ker_prod_ker_le_ker_coprod {M₂ : Type*} [AddCommMonoid M₂] [Module R M₂] {M₃ : Type*}
+    [AddCommMonoid M₃] [Module R M₃] (f : M →ₗ[R] M₃) (g : M₂ →ₗ[R] M₃) :
     (ker f).prod (ker g) ≤ ker (f.coprod g) := by
   rintro ⟨y, z⟩
   simp +contextual
