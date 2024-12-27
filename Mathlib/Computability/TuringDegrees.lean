@@ -255,7 +255,7 @@ theorem TuringEquivalent.trans :
   fun {_ _ _} h1 h2 => AntisymmRel.trans h1 h2
 
 /--
-Instance declaring that `turing_equivalent` is an equivalence relation.
+Instance declaring that `TuringEquivalent` is an equivalence relation.
 -/
 instance : Equivalence TuringEquivalent :=
   (AntisymmRel.setoid _ _).iseqv
