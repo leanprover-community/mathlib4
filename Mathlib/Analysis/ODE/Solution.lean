@@ -241,35 +241,34 @@ end
 -- abstract components of this?
 --   `α ∘ projIcc`
 --   `fun t ↦ `
--- distill `3 * a`?
 -- generalise to `Icc`
 -- generalise to `u` containing ball?
 noncomputable def iterate [CompleteSpace E]
-    {t₀ tmin tmax tmin' tmax' : ℝ} (ht₀ : t₀ ∈ Ioo tmin tmax) -- probably never need `ht₀`
-    (ht₀' : t₀ ∈ Icc tmin' tmax')
+    {t₀ tmin tmax : ℝ}
+    (ht₀ : t₀ ∈ Icc tmin tmax)
     {x₀ : E}
     {a : ℝ≥0}
     (f : ℝ → E → E)
     -- {K : ℝ≥0} (hlip : ∀ t ∈ Ioo tmin tmax, LipschitzOnWith K (f t) (closedBall x₀ (3 * a)))
-    {K : ℝ≥0} (hlip : ∀ t ∈ Icc tmin' tmax', LipschitzOnWith K (f t) (closedBall x₀ (3 * a)))
+    {K : ℝ≥0} (hlip : ∀ t ∈ Icc tmin tmax, LipschitzOnWith K (f t) (closedBall x₀ (2 * a)))
     -- (hcont : ∀ x' ∈ closedBall x₀ (3 * a), ContinuousOn (f · x') (Ioo tmin tmax))
-    (hcont : ∀ x' ∈ closedBall x₀ (3 * a), ContinuousOn (f · x') (Icc tmin' tmax'))
+    (hcont : ∀ x' ∈ closedBall x₀ (2 * a), ContinuousOn (f · x') (Icc tmin tmax))
     -- {L : ℝ} (hnorm : ∀ t ∈ Ioo tmin tmax, ∀ x' ∈ closedBall x₀ (3 * a), ‖f t x'‖ ≤ L)
-    {L : ℝ≥0} (hnorm : ∀ t ∈ Icc tmin' tmax', ∀ x' ∈ closedBall x₀ (3 * a), ‖f t x'‖ ≤ L)
-    (h : L * max (tmax' - t₀) (t₀ - tmin') ≤ a) -- min a L ?
+    {L : ℝ≥0} (hnorm : ∀ t ∈ Icc tmin tmax, ∀ x' ∈ closedBall x₀ (2 * a), ‖f t x'‖ ≤ L)
+    (h : L * max (tmax - t₀) (t₀ - tmin) ≤ a) -- min a L ?
     {x : E} (hx : x ∈ closedBall x₀ a) -- or open ball as in Lang?
-    (α : SpaceOfCurves (closedBall x₀ (2 * a)) x ht₀' a) :
-    SpaceOfCurves (closedBall x₀ (2 * a)) x ht₀' a :=
-  { toFun := iterateIntegral f t₀ x (α ∘ (projIcc _ _ (le_trans ht₀'.1 ht₀'.2))) ∘ Subtype.val
+    (α : SpaceOfCurves (closedBall x₀ (2 * a)) x ht₀ a) :
+    SpaceOfCurves (closedBall x₀ (2 * a)) x ht₀ a :=
+  { toFun := iterateIntegral f t₀ x (α ∘ (projIcc _ _ (le_trans ht₀.1 ht₀.2))) ∘ Subtype.val
     continuous_toFun := by
       apply ContinuousOn.comp_continuous _ continuous_subtype_val Subtype.coe_prop
       intro t ht
-      have : ContinuousOn (uncurry f) (Icc tmin' tmax' ×ˢ (closedBall x₀ (3 * a))) :=
-        have : ContinuousOn (uncurry (flip f)) (closedBall x₀ (3 * a) ×ˢ Icc tmin' tmax') :=
+      have : ContinuousOn (uncurry f) (Icc tmin tmax ×ˢ (closedBall x₀ (2 * a))) :=
+        have : ContinuousOn (uncurry (flip f)) (closedBall x₀ (2 * a) ×ˢ Icc tmin tmax) :=
           continuousOn_prod_of_continuousOn_lipschitzOnWith _ K hcont hlip
         this.comp continuous_swap.continuousOn (preimage_swap_prod _ _).symm.subset
       apply hasDerivWithinAt_iterateIntegral_Icc
-        f (α ∘ (projIcc _ _ (le_trans ht₀'.1 ht₀'.2))) this ht₀' _ _ _ ht |>.continuousWithinAt
+        f (α ∘ (projIcc _ _ (le_trans ht₀.1 ht₀.2))) this ht₀ _ _ _ ht |>.continuousWithinAt
       · exact α.continuous_toFun.comp_continuousOn continuous_projIcc.continuousOn
       · intro t' ht' -- why need to be `3 * a`?
         rw [comp_apply]
@@ -283,7 +282,7 @@ noncomputable def iterate [CompleteSpace E]
       calc
         ‖_ + (x - x₀)‖ ≤ ‖_‖ + ‖x - x₀‖ := norm_add_le _ _
         _ ≤ ‖_‖ + a := add_le_add_left (mem_closedBall_iff_norm.mp hx) _
-        _ = ‖∫ τ in Ι t₀ t, f τ ((α ∘ projIcc _ _ (le_trans ht₀'.1 ht₀'.2)) τ)‖ + a := by
+        _ = ‖∫ τ in Ι t₀ t, f τ ((α ∘ projIcc _ _ (le_trans ht₀.1 ht₀.2)) τ)‖ + a := by
           rw [intervalIntegral.norm_intervalIntegral_eq]
         _ ≤ L * ((volume.restrict (Ι t₀ ↑t)) univ).toReal + a := by
           apply add_le_add_right
@@ -298,11 +297,11 @@ noncomputable def iterate [CompleteSpace E]
               and_not_self_iff, false_or, and_or_left, ← not_lt (b := t'), and_not_self_iff,
               or_false, not_lt, not_lt] at ht'
             cases ht' with
-            | inl ht' => exact ⟨le_of_lt <| lt_of_le_of_lt ht₀'.1 ht'.1, le_trans ht'.2 t.2.2⟩
-            | inr ht' => exact ⟨le_of_lt <| lt_of_le_of_lt t.2.1 ht'.1, le_trans ht'.2 ht₀'.2⟩
+            | inl ht' => exact ⟨le_of_lt <| lt_of_le_of_lt ht₀.1 ht'.1, le_trans ht'.2 t.2.2⟩
+            | inr ht' => exact ⟨le_of_lt <| lt_of_le_of_lt t.2.1 ht'.1, le_trans ht'.2 ht₀.2⟩
           · rw [comp_apply]
             apply mem_of_mem_of_subset (α.mapsTo _) (closedBall_subset_closedBall _)
-            apply mul_le_mul_of_nonneg_right (by norm_num) a.2 -- `3 * a` is superfluous here
+            rfl
         _ = L * |t - t₀| + a := by
           congr
           rw [Measure.restrict_apply MeasurableSet.univ, univ_inter]
@@ -313,12 +312,12 @@ noncomputable def iterate [CompleteSpace E]
           · rw [uIoc_of_ge <| not_lt.mp ht, Real.volume_Ioc,
               ENNReal.toReal_ofReal <| sub_nonneg_of_le <| not_lt.mp ht,
               abs_eq_neg_self.mpr <| sub_nonpos_of_le <| not_lt.mp ht, neg_sub]
-        _ ≤ L * max (tmax' - t₀) (t₀ - tmin') + a := by
+        _ ≤ L * max (tmax - t₀) (t₀ - tmin) + a := by
           apply add_le_add_right
           apply mul_le_mul_of_nonneg le_rfl _ L.2
           · rw [le_max_iff]
             apply Or.inl
-            exact sub_nonneg_of_le ht₀'.2
+            exact sub_nonneg_of_le ht₀.2
           · rw [le_max_iff]
             by_cases ht : t₀ < t
             · rw [abs_eq_self.mpr <| le_of_lt <| sub_pos_of_lt ht]
