@@ -36,15 +36,16 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 equivalent integral equation
 remark p.67
 -/
-noncomputable def iterateIntegral (f : ℝ → E → E) (α : ℝ → E) (t₀ : ℝ) (x₀ : E) : ℝ → E :=
+noncomputable def iterateIntegral (f : ℝ → E → E) (t₀ : ℝ) (x₀ : E) (α : ℝ → E) : ℝ → E :=
   fun t ↦ x₀ + ∫ τ in t₀..t, f τ (α τ)
 
 @[simp]
 lemma iterateIntegral_apply {f : ℝ → E → E} {α : ℝ → E} {t₀ : ℝ} {x₀ : E} {t : ℝ} :
-    iterateIntegral f α t₀ x₀ t = x₀ + ∫ τ in t₀..t, f τ (α τ) := rfl
+    iterateIntegral f t₀ x₀ α t = x₀ + ∫ τ in t₀..t, f τ (α τ) := rfl
 
 -- `fun t ↦ f t (α t)` is C^n if `f` and `α` are C^n
-lemma contDiffOn_Ioo {f : ℝ → E → E} {α : ℝ → E} {u : Set E}
+-- rename! this is more general than `Ioo`
+lemma contDiffOn_curve_comp {f : ℝ → E → E} {α : ℝ → E} {u : Set E}
     {s : Set ℝ} {n : WithTop ℕ∞}
     (hf : ContDiffOn ℝ n (uncurry f) (s ×ˢ u))
     (hα : ContDiffOn ℝ n α s)
@@ -57,13 +58,14 @@ lemma contDiffOn_Ioo {f : ℝ → E → E} {α : ℝ → E} {u : Set E}
   rw [mem_prod]
   exact ⟨ht, hmem _ ht⟩
 
-lemma continuousOn_Ioo {f : ℝ → E → E} {α : ℝ → E} {u : Set E}
+-- rename!
+lemma continuousOn_curve_comp {f : ℝ → E → E} {α : ℝ → E} {u : Set E}
     {s : Set ℝ}
     (hf : ContinuousOn (uncurry f) (s ×ˢ u))
     (hα : ContinuousOn α s)
     (hmem : ∀ t ∈ s, α t ∈ u) :
     ContinuousOn (fun t ↦ f t (α t)) s :=
-  contDiffOn_zero.mp <| contDiffOn_Ioo (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem
+  contDiffOn_zero.mp <| contDiffOn_curve_comp (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem
 
 -- the integral equation has derivative `fun t ↦ f t (α t)`
 lemma hasDerivAt_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : ℝ → E) {u : Set E}
@@ -72,19 +74,19 @@ lemma hasDerivAt_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : �
     (ht₀ : t₀ ∈ Ioo tmin tmax) (hα : ContinuousOn α (Ioo tmin tmax))
     (hmem : ∀ t ∈ Ioo tmin tmax, α t ∈ u) (x₀ : E)
     {t : ℝ} (ht : t ∈ Ioo tmin tmax) :
-    HasDerivAt (iterateIntegral f α t₀ x₀) (f t (α t)) t := by
+    HasDerivAt (iterateIntegral f t₀ x₀ α) (f t (α t)) t := by
   unfold iterateIntegral
   apply HasDerivAt.const_add
   apply intervalIntegral.integral_hasDerivAt_right -- need `CompleteSpace E`
   · apply ContinuousOn.intervalIntegrable
-    apply continuousOn_Ioo hf hα hmem |>.mono
+    apply continuousOn_curve_comp hf hα hmem |>.mono
     by_cases h : t < t₀
     · rw [uIcc_of_gt h]
       exact Icc_subset_Ioo ht.1 ht₀.2
     · rw [uIcc_of_le (not_lt.mp h)]
       exact Icc_subset_Ioo ht₀.1 ht.2
-  · exact continuousOn_Ioo hf hα hmem |>.stronglyMeasurableAtFilter isOpen_Ioo _ ht
-  · exact continuousOn_Ioo hf hα hmem |>.continuousAt <| Ioo_mem_nhds ht.1 ht.2
+  · exact continuousOn_curve_comp hf hα hmem |>.stronglyMeasurableAtFilter isOpen_Ioo _ ht
+  · exact continuousOn_curve_comp hf hα hmem |>.continuousAt <| Ioo_mem_nhds ht.1 ht.2
 
 lemma deriv_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : ℝ → E) {u : Set E}
     {tmin tmax t₀ : ℝ}
@@ -92,31 +94,32 @@ lemma deriv_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : ℝ �
     (ht₀ : t₀ ∈ Ioo tmin tmax) (hα : ContinuousOn α (Ioo tmin tmax))
     (hmem : ∀ t ∈ Ioo tmin tmax, α t ∈ u) (x₀ : E)
     {t : ℝ} (ht : t ∈ Ioo tmin tmax) :
-    deriv (iterateIntegral f α t₀ x₀) t = f t (α t) := by
+    deriv (iterateIntegral f t₀ x₀ α) t = f t (α t) := by
   -- use FTC2 `intervalIntegral.deriv_integral_right`
   unfold iterateIntegral -- add _eq lemma
   rw [deriv_const_add']
   -- code duplication below this
   apply intervalIntegral.deriv_integral_right
   · apply ContinuousOn.intervalIntegrable
-    apply continuousOn_Ioo hf hα hmem |>.mono
+    apply continuousOn_curve_comp hf hα hmem |>.mono
     by_cases h : t < t₀
     · rw [uIcc_of_gt h]
       exact Icc_subset_Ioo ht.1 ht₀.2
     · rw [uIcc_of_le (not_lt.mp h)]
       exact Icc_subset_Ioo ht₀.1 ht.2
-  · exact continuousOn_Ioo hf hα hmem |>.stronglyMeasurableAtFilter isOpen_Ioo _ ht
-  · exact continuousOn_Ioo hf hα hmem |>.continuousAt <| Ioo_mem_nhds ht.1 ht.2
+  · exact continuousOn_curve_comp hf hα hmem |>.stronglyMeasurableAtFilter isOpen_Ioo _ ht
+  · exact continuousOn_curve_comp hf hα hmem |>.continuousAt <| Ioo_mem_nhds ht.1 ht.2
 
 -- the integral equation transfers smoothness class from `f` to `α`
+-- TODO: generalise to any connected `s`
 -- TODO: generalise `n` to `∞` and maybe `ω`
-lemma contDiffOn_nat_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : ℝ → E) {u : Set E}
+lemma contDiffOn_nat_iterateIntegral_Ioo [CompleteSpace E] (f : ℝ → E → E) (α : ℝ → E) {u : Set E}
     {tmin tmax t₀ : ℝ} {n : ℕ}
     (hf : ContDiffOn ℝ n (uncurry f) ((Ioo tmin tmax) ×ˢ u))
     (ht₀ : t₀ ∈ Ioo tmin tmax) (hα : ContinuousOn α (Ioo tmin tmax))
     (hmem : ∀ t ∈ Ioo tmin tmax, α t ∈ u) (x₀ : E)
-    (heqon : ∀ t ∈ Ioo tmin tmax, α t = iterateIntegral f α t₀ x₀ t) :
-    ContDiffOn ℝ n (iterateIntegral f α t₀ x₀) (Ioo tmin tmax) := by
+    (heqon : ∀ t ∈ Ioo tmin tmax, α t = iterateIntegral f t₀ x₀ α t) :
+    ContDiffOn ℝ n (iterateIntegral f t₀ x₀ α) (Ioo tmin tmax) := by
   induction n with
   | zero =>
     simp only [CharP.cast_eq_zero, contDiffOn_zero] at *
@@ -135,26 +138,25 @@ lemma contDiffOn_nat_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α
         apply ContDiffOn.congr _ heqon
         apply hn
         exact hf.of_succ
-      apply contDiffOn_Ioo hf.of_succ hα' hmem |>.congr
+      apply contDiffOn_curve_comp hf.of_succ hα' hmem |>.congr
       intro _ ht
       exact deriv_iterateIntegral f α hf.continuousOn ht₀ hα hmem x₀ ht
 
-lemma contDiffOn_enat_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : ℝ → E) {u : Set E}
+lemma contDiffOn_enat_iterateIntegral_Ioo [CompleteSpace E] (f : ℝ → E → E) (α : ℝ → E) {u : Set E}
     {tmin tmax t₀ : ℝ} {n : ℕ∞}
     (hf : ContDiffOn ℝ n (uncurry f) ((Ioo tmin tmax) ×ˢ u))
     (ht₀ : t₀ ∈ Ioo tmin tmax) (hα : ContinuousOn α (Ioo tmin tmax))
     (hmem : ∀ t ∈ Ioo tmin tmax, α t ∈ u) (x₀ : E)
-    (heqon : ∀ t ∈ Ioo tmin tmax, α t = iterateIntegral f α t₀ x₀ t)
-    {t : ℝ} :
-    ContDiffOn ℝ n (iterateIntegral f α t₀ x₀) (Ioo tmin tmax) := by
+    (heqon : ∀ t ∈ Ioo tmin tmax, α t = iterateIntegral f t₀ x₀ α t) :
+    ContDiffOn ℝ n (iterateIntegral f t₀ x₀ α) (Ioo tmin tmax) := by
   induction n with
   | top =>
     rw [contDiffOn_infty] at *
     intro k
-    exact contDiffOn_nat_iterateIntegral _ _ (hf k) ht₀ hα hmem x₀ heqon
+    exact contDiffOn_nat_iterateIntegral_Ioo _ _ (hf k) ht₀ hα hmem x₀ heqon
   | coe n =>
     simp only [WithTop.coe_natCast] at *
-    exact contDiffOn_nat_iterateIntegral _ _ hf ht₀ hα hmem _ heqon
+    exact contDiffOn_nat_iterateIntegral_Ioo _ _ hf ht₀ hα hmem _ heqon
 
 -- generalise to `ω`?
 
@@ -198,14 +200,31 @@ variable (x₀ : E) {t₀ tmin tmax : ℝ} (ht : t₀ ∈ Icc tmin tmax) {a : �
 
 -- need `toFun_eq_coe`?
 
+instance : CoeFun (SpaceOfCurves x₀ ht ha) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
+
 instance : Inhabited (SpaceOfCurves x₀ ht ha) :=
   ⟨⟨fun _ ↦ x₀, continuous_const⟩, fun _ ↦ mem_closedBall_self ha, rfl⟩
 
 noncomputable instance : MetricSpace (SpaceOfCurves x₀ ht ha) :=
   MetricSpace.induced toContinuousMap (fun _ _ _ ↦ by ext; congr) inferInstance
 
-end SpaceOfCurves
+/-- `iterateIntegral` maps `SpaceOfCurves` to `SpaceOfCurves` -/
+-- move `α` to target type to simplify proof syntax?
+-- abstract components of this?
+noncomputable def iterate (f : ℝ → E → E) (α : SpaceOfCurves x₀ ht ha) : SpaceOfCurves x₀ ht ha :=
+  { toFun := iterateIntegral f t₀ x₀ (α ∘ (projIcc _ _ (le_trans ht.1 ht.2))) ∘ Subtype.val
+    continuous_toFun := by
+      apply ContinuousOn.comp_continuous _ continuous_subtype_val (s := Icc tmin tmax)
+      -- apply Continuous.comp _ continuous_subtype_val
+      -- rw [continuous_iff_continuousOn_univ]
+      -- apply ContDiffOn.continuousOn (𝕜 := ℝ) (n := (0 : ℕ))
+      -- -- rw [← contDiffOn_zero (𝕜 := ℝ)]
+      -- apply contDiffOn_nat_iterateIntegral
 
+    mapsTo := sorry
+    initial := sorry }
+
+end SpaceOfCurves
 
 
 
