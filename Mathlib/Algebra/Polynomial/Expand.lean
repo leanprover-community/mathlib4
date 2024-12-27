@@ -7,6 +7,7 @@ import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.Algebra.Polynomial.RingDivision
+-- import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
@@ -301,8 +302,6 @@ theorem of_irreducible_expand_pow {p : ℕ} (hp : p ≠ 0) {f : R[X]} {n : ℕ} 
       rw [pow_succ'] at hf
       rwa [expand_expand]
 
-end IsDomain
-
 variable (k : Type u) [Field k] [DecidableEq k]
 
 theorem isCoprime_of_expand {a b : k[X]} {n : ℕ} (hn : n ≠ 0) :
@@ -316,5 +315,7 @@ theorem isCoprime_of_expand {a b : k[X]} {n : ℕ} (hn : n ≠ 0) :
   rcases heu with ⟨r, hur, eq_r⟩
   rw [eq_comm, expand_eq_C (zero_lt_iff.mpr hn), eq_comm] at eq_r
   exact ⟨r, hur, eq_r⟩
+
+end IsDomain
 
 end Polynomial
