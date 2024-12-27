@@ -200,7 +200,7 @@ variable {ι : Type v} {M : ι → Type w} [Π i, AddCommMonoid (M i)] [Π i, Mo
 theorem directSum_iff : Flat R (⨁ i, M i) ↔ ∀ i, Flat R (M i) := by
   classical
   simp_rw [iff_rTensor_injectiveₛ, ← EquivLike.comp_injective _ (directSumRight R _ _),
-    ← LinearEquiv.coe_coe, ← coe_comp, directSumRight_rTensor, coe_comp, LinearEquiv.coe_coe,
+    ← LinearEquiv.coe_coe, ← coe_comp, directSumRight_comp_rTensor, coe_comp, LinearEquiv.coe_coe,
     EquivLike.injective_comp, lmap_injective]
   constructor <;> (intro h; intros; apply h)
 
@@ -232,7 +232,7 @@ instance {S} [CommSemiring S] [Algebra R S] [Module S M] [IsScalarTower R S M]
     change Submodule S (RestrictScalars R S P) at I
     change Function.Injective (rTensor _ I.subtype)
     simpa [AlgebraTensorModule.rTensor_tensor] using
-      rTensor_preserves_injective_linearMap (M := N) (.restrictScalars R <| I.subtype.rTensor M)
+      rTensor_preserves_injective_linearMap (.restrictScalars R <| I.subtype.rTensor M)
       (rTensor_preserves_injective_linearMap _ I.injective_subtype)
 
 example [Flat R M] [Flat R N] : Flat R (M ⊗[R] N) := inferInstance

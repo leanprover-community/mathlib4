@@ -61,7 +61,7 @@ theorem flat_iff_of_isLocalization : Flat S M ↔ Flat R M :=
   ⟨fun _ ↦ .trans R S M, fun _ ↦ .of_isLocalizedModule S p .id⟩
 
 variable (Mₚ : ∀ (P : Ideal S) [P.IsMaximal], Type*)
-  [∀ (P : Ideal S) [P.IsMaximal], AddCommGroup (Mₚ P)]
+  [∀ (P : Ideal S) [P.IsMaximal], AddCommMonoid (Mₚ P)]
   [∀ (P : Ideal S) [P.IsMaximal], Module R (Mₚ P)]
   [∀ (P : Ideal S) [P.IsMaximal], Module S (Mₚ P)]
   [∀ (P : Ideal S) [P.IsMaximal], IsScalarTower R S (Mₚ P)]
@@ -84,7 +84,7 @@ theorem flat_of_localized_maximal
 
 variable (s : Set S) (spn : Ideal.span s = ⊤)
   (Mₛ : ∀ _ : s, Type*)
-  [∀ r : s, AddCommGroup (Mₛ r)]
+  [∀ r : s, AddCommMonoid (Mₛ r)]
   [∀ r : s, Module R (Mₛ r)]
   [∀ r : s, Module S (Mₛ r)]
   [∀ r : s, IsScalarTower R S (Mₛ r)]
