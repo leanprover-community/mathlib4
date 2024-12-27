@@ -66,8 +66,9 @@ lemma isTriangulated_rightAdjoint : G.IsTriangulated where
       simp only [homEquiv_counit, Functor.id_obj, Equiv.toFun_as_coe, homEquiv_unit,
         Functor.comp_obj, Functor.map_comp, unit_naturality_assoc, right_triangle_components,
         comp_id] at eq
-      rw [eq, assoc, assoc]
-      erw [comp_distTriang_mor_zero₁₂ _ mem, comp_zero, comp_zero]
+      rw [eq, ← assoc, assoc _ _ f]
+      change _ ≫ (Triangle.mk (G.map T.mor₁) f g).mor₁ ≫ (Triangle.mk (G.map T.mor₁) f g).mor₂ = 0
+      rw [comp_distTriang_mor_zero₁₂ _ mem, comp_zero]
     have := isIso_of_yoneda_map_bijective (adj.homEquiv _ _ h) (fun Y => by
       constructor
       · intro φ₁ φ₂ hφ
