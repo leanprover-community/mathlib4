@@ -22,21 +22,16 @@ quotient under this relation.
 - `TuringEquivalent`: A relation defining Turing equivalence between partial functions.
 - `TuringDegree`:
   The type of Turing degrees, defined as equivalence classes under `TuringEquivalent`.
-- `join`: Combines two partial functions into one by =
-  mapping even and odd numbers to respective functions.
 
 ## Notation
 
 - `f ≡ᵀ g` : `f` is Turing equivalent to `g`.
-- `f ⊕ g` : The join of partial functions `f` and `g`.
 
 ## Implementation Notes
 
 The type of partial functions recursive in an oracle `g` is the smallest type containing
 the constant zero, the successor, projections, the oracle `g`, and is closed under
-pairing, composition, primitive recursion, and μ-recursion. The `join` operation
-combines two partial functions into a single partial function by mapping even and odd
-numbers to the respective functions.
+pairing, composition, primitive recursion, and μ-recursion.
 
 ## References
 
@@ -92,7 +87,7 @@ abbrev TuringEquivalent (f g : ℕ →. ℕ) : Prop :=
   AntisymmRel RecursiveIn f g
 
 /--
-Custom infix notation for `turing_equivalent`.
+Custom infix notation for `TuringEquivalent`.
 -/
 infix:50 " ≡ᵀ " => TuringEquivalent
 
@@ -110,14 +105,14 @@ lemma Nat.Partrec.recursiveIn (f : ℕ →. ℕ) (pF : Nat.Partrec f) (g : ℕ �
     apply RecursiveIn.left
   case right =>
     apply RecursiveIn.right
-  case pair _ _ _ _ ih1 ih2 =>
-    apply RecursiveIn.pair ih1 ih2
-  case comp _ _ _ _ ih1 ih2 =>
-    apply RecursiveIn.comp ih1 ih2
-  case prec _ _ _ _ ih1 ih2 =>
-    apply RecursiveIn.prec ih1 ih2
-  case rfind _ _ ih =>
-    apply RecursiveIn.rfind ih
+  case pair f' g' _ _ ih1 ih2 =>
+      apply RecursiveIn.pair f' g' g ih1 ih2
+  case comp f' g' _ _ ih1 ih2 =>
+    apply RecursiveIn.comp f' g' g ih1 ih2
+  case prec f' g' _ _ ih1 ih2 =>
+    apply RecursiveIn.prec f' g' g ih1 ih2
+  case rfind f' _ ih =>
+    apply RecursiveIn.rfind f' g ih
 
 /--
 If a function is recursive in the constant zero function,
@@ -172,27 +167,13 @@ theorem partrec_iff_partrec_in_everything (f : ℕ →. ℕ) : Nat.Partrec f ↔
 Proof that turing reducibility is reflexive.
 -/
 theorem RecursiveIn.refl (f : ℕ →. ℕ) : RecursiveIn f f :=
-  RecursiveIn.oracle
+  RecursiveIn.oracle f
 
 /--
 Instance declaring that `RecursiveIn` is reflexive.
 -/
 instance : IsRefl (ℕ →. ℕ) RecursiveIn :=
   ⟨fun f => RecursiveIn.refl f⟩
-
-/--
-Proof that `turing_equivalent` is reflexive.
--/
-@[refl]
-theorem TuringEquivalent.refl (f : ℕ →. ℕ) : f ≡ᵀ f :=
-  antisymmRel_refl RecursiveIn f
-
-/--
-Proof that `turing_equivalent` is symmetric.
--/
-@[symm]
-theorem TuringEquivalent.symm {f g : ℕ →. ℕ} (h : f ≡ᵀ g) : g ≡ᵀ f :=
-  AntisymmRel.symm h
 
 /--
 Proof that turing reducibility is transitive.
@@ -233,7 +214,6 @@ theorem RecursiveIn.trans {f g h : ℕ →. ℕ} (hg : RecursiveIn f g) (hh : Re
     · apply hf_ih
       apply hh
 
-
 /--
 Instance declaring that `RecursiveIn` is transitive.
 -/
@@ -246,18 +226,33 @@ Instance declaring that `RecursiveIn` is a preorder.
 instance : IsPreorder (ℕ →. ℕ) RecursiveIn where
   refl := RecursiveIn.refl
 
-/--
-Proof that `turing_equivalent` is transitive.
--/
-theorem TuringEquivalent.trans :
-  Transitive TuringEquivalent :=
-  fun {_ _ _} h1 h2 => AntisymmRel.trans h1 h2
 
 /--
-Instance declaring that `turing_equivalent` is an equivalence relation.
+Instance declaring that `TuringEquivalent` is an equivalence relation.
 -/
-instance : Equivalence TuringEquivalent :=
+instance TuringEquivalent.equivalence : Equivalence TuringEquivalent :=
   (AntisymmRel.setoid _ _).iseqv
+
+/--
+Proof that `TuringEquivalent` is reflexive.
+-/
+@[refl]
+theorem TuringEquivalent.refl (f : ℕ →. ℕ) : f ≡ᵀ f :=
+  Equivalence.refl equivalence f
+
+/--
+Proof that `TuringEquivalent` is symmetric.
+-/
+@[symm]
+theorem TuringEquivalent.symm {f g : ℕ →. ℕ} (h : f ≡ᵀ g) : g ≡ᵀ f :=
+  Equivalence.symm equivalence h
+
+/--
+Proof that `TuringEquivalent` is transitive.
+-/
+@[trans]
+theorem TuringEquivalent.trans (f g h : ℕ →. ℕ) (h1 : f ≡ᵀ g) (h2 : g ≡ᵀ h) : f ≡ᵀ h :=
+  Equivalence.trans equivalence h1 h2
 
 /--
 Instance declaring that `RecursiveIn` is a preorder.
@@ -273,30 +268,8 @@ abbrev TuringDegree :=
   Antisymmetrization _ RecursiveIn
 
 /--
-Instance declaring that `TuringDegree.turing_red` is a partial order.
+Instance declaring that `TuringDegree` is a partially ordered type.
 -/
-instance : PartialOrder TuringDegree :=
+instance TuringDegree.isPartialOrder : PartialOrder TuringDegree :=
   @instPartialOrderAntisymmetrization (ℕ →. ℕ)
     {le := RecursiveIn, le_refl := .refl, le_trans _ _ _ := RecursiveIn.trans}
-
-/--
-The `join` function combines two partial functions `f` and `g` into a single partial function.
-For a given input `n`:
-
-- **If `n` is even**:
-  - It checks if `f` is defined at `n / 2`.
-  - If so, `join f g` is defined at `n` with the value `2 * f(n / 2)`.
-
-- **If `n` is odd**:
-  - It checks if `g` is defined at `n / 2`.
-  - If so, `join f g` is defined at `n` with the value `2 * g(n / 2) + 1`.
--/
-def join (f g : ℕ →. ℕ) : ℕ →. ℕ :=
-  fun n =>
-    if n % 2 = 0 then
-      (f (n / 2)).map (fun x => 2 * x)
-    else
-      (g (n / 2)).map (fun y => 2 * y + 1)
-
-/-- Join notation `f ⊕ g` is the "join" of partial functions `f` and `g`. -/
-infix:99 "⊕" => join
