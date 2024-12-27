@@ -93,7 +93,7 @@ abbrev TuringEquivalent (f g : ℕ →. ℕ) : Prop :=
   AntisymmRel RecursiveIn f g
 
 /--
-Custom infix notation for `turing_equivalent`.
+Custom infix notation for `TuringEquivalent`.
 -/
 infix:50 " ≡ᵀ " => TuringEquivalent
 
