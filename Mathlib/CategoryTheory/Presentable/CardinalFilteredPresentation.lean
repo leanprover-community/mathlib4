@@ -80,6 +80,11 @@ instance (j : (h.presentation X).J) [∀ i, IsCardinalPresentable (G i) κ] :
   obtain ⟨i, ⟨e⟩⟩ := (h.exists_presentation_obj_iso X j)
   exact isCardinalPresentable_of_iso e.symm κ
 
+include h in
+lemma presentable [LocallySmall.{w} C] (X : C) : IsPresentable.{w} X := by
+  have := h
+  sorry
+
 end AreCardinalFilteredGenerators
 
 end CategoryTheory
