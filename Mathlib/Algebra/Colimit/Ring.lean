@@ -193,7 +193,7 @@ variable {G f'}
 bigger module in the directed system. -/
 theorem of.zero_exact {i x} (hix : of G (f' · · ·) i x = 0) :
     ∃ (j : _) (hij : i ≤ j), f' i j hij x = 0 := by
-  haveI := Nonempty.intro i
+  have := Nonempty.intro i
   apply_fun ringEquiv _ _ at hix
   rwa [map_zero, ringEquiv_of, DirectLimit.exists_eq_zero] at hix
 
@@ -206,7 +206,7 @@ from the components to the direct limits are injective. -/
 theorem of_injective [IsDirected ι (· ≤ ·)] [DirectedSystem G fun i j h ↦ f' i j h]
     (hf : ∀ i j hij, Function.Injective (f' i j hij)) (i) :
     Function.Injective (of G (fun i j h ↦ f' i j h) i) :=
-  haveI := Nonempty.intro i
+  have := Nonempty.intro i
   ((ringEquiv _ _).comp_injective _).mp
     fun _ _ eq ↦  DirectLimit.mk_injective f' hf _ (by simpa only [← ringEquiv_of])
 
