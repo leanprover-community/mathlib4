@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Shift.Adjunction
 import Mathlib.CategoryTheory.Adjunction.Additive
 
 /-!
-# The adjoint is triangulated
+# The adjoint functor is triangulated
 
 If a functor `F : C ⥤ D` between pretriangulated categories is triangulated, and if we
 have an adjunction `F ⊣ G`, then `G` is also a triangulated functor.
