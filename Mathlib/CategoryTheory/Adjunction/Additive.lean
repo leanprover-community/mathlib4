@@ -107,25 +107,17 @@ Note that `F` is additive if and only if `G` is, by `Adjunction.right_adjoint_ad
 def compPreadditiveYonedaIso :
     G ⋙ preadditiveYoneda ⋙ (whiskeringRight _ _ _).obj AddCommGrp.uliftFunctor.{max v₁ v₂} ≅
       preadditiveYoneda ⋙ (whiskeringLeft _ _ _).obj F.op ⋙
-        (whiskeringRight _ _ _).obj AddCommGrp.uliftFunctor.{max v₁ v₂} := by
-  refine NatIso.ofComponents (fun Y ↦ ?_) (fun _ ↦ ?_)
-  · refine NatIso.ofComponents
-      (fun X ↦ ((AddEquiv.ulift.trans (adj.homAddEquiv (unop X) Y)).trans
-               AddEquiv.ulift.symm).toAddCommGrpIso.symm) (fun _ ↦ ?_)
-    ext
-    simp [homAddEquiv, adj.homEquiv_naturality_left_symm]
-    rfl
-  · ext
-    simp only [comp_obj, preadditiveYoneda_obj, whiskeringLeft_obj_obj, whiskeringRight_obj_obj,
-      op_obj, ModuleCat.forget₂_obj, preadditiveYonedaObj_obj_carrier,
-      preadditiveYonedaObj_obj_isAddCommGroup, AddCommGrp.uliftFunctor_obj, AddCommGrp.coe_of,
-      Functor.comp_map, whiskeringRight_obj_map, NatTrans.comp_app, whiskerRight_app,
-      AddCommGrp.uliftFunctor_map, AddEquiv.toAddMonoidHom_eq_coe, NatIso.ofComponents_hom_app,
-      Iso.symm_hom, AddEquiv.toAddCommGrpIso_inv, AddCommGrp.coe_comp', AddMonoidHom.coe_coe,
-      Function.comp_apply, AddCommGrp.ofHom_apply, AddMonoidHom.coe_comp, AddEquiv.symm_trans_apply,
-      AddEquiv.symm_symm, AddEquiv.apply_symm_apply, whiskeringLeft_obj_map, whiskerLeft_app]
-    erw [adj.homEquiv_naturality_right_symm]
-    rfl
+        (whiskeringRight _ _ _).obj AddCommGrp.uliftFunctor.{max v₁ v₂} :=
+  NatIso.ofComponents
+    (fun Y ↦ NatIso.ofComponents
+      (fun X ↦ (AddEquiv.ulift.trans ((adj.homAddEquiv (unop X) Y).symm.trans
+        AddEquiv.ulift.symm)).toAddCommGrpIso)
+      (fun g ↦ by
+        ext ⟨y⟩
+        exact AddEquiv.ulift.injective (adj.homEquiv_naturality_left_symm g.unop y)))
+    (fun f ↦ by
+      ext _ ⟨x⟩
+      exact AddEquiv.ulift.injective ((adj.homEquiv_naturality_right_symm x f)))
 
 lemma compPreadditiveYonedaIso_hom_app_app_apply (X : Cᵒᵖ) (Y : D)
     (a : ULift.{max v₁ v₂, v₁} (Opposite.unop X ⟶ G.obj Y)) :
