@@ -333,29 +333,42 @@ instance : FunLike Pₗ[𝕜](A) A A where
   coe f := f.val
   coe_injective' _ _ h := Subtype.eq (DFunLike.coe_fn_eq.mp h)
 
-lemma range_prod_of_commute {P Q :  A →L[𝕜] A}
-    (h : Commute P Q) : Set.range (P * Q) ⊆ Set.range P ∩ Set.range Q := by
-  simp only [Set.le_eq_subset, Set.subset_inter_iff]
-  constructor
-  · exact Set.range_comp_subset_range ⇑Q ⇑P
-  · rw [(commute_iff_eq P Q).mp h]
-    exact Set.range_comp_subset_range ⇑P ⇑Q
-
-lemma proj_apply (P : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)) (hP : IsIdempotentElem P)
-    (a : (NormedSpace.Dual 𝕜 A)) (ha: a ∈ Set.range P) : P a = a := by
+lemma proj_apply (P : A →L[𝕜] A) (hP : IsIdempotentElem P)
+    (a : A) (ha: a ∈ Set.range P) : P a = a := by
   obtain ⟨c,hc⟩ := ha
   rw [← hc]
   have e2 : P (P c) = (P * P) c := rfl
   rw [e2]
   rw [hP.eq]
 
+lemma commute {P Q : A →L[𝕜] A} : Commute P Q ↔ Commute (P : (Module.End 𝕜 A)) ↑Q := by
+  constructor
+  · intro h
+    ext x
+    simp only [LinearMap.mul_apply, ContinuousLinearMap.coe_coe]
+    calc
+      P (Q x) = (P * Q) x := rfl
+      _ = (Q * P) x := congrFun (congrArg DFunLike.coe h) x
+      _ = Q (P x) := rfl
+  · intro h
+    ext x
+    --rw [Commute, SemiconjBy] at h
+    simp_all only [ContinuousLinearMap.coe_mul, Function.comp_apply]
+    calc
+      P (Q x) = (P : (Module.End 𝕜 A)) (Q x) := rfl
+      _ = ((P : (Module.End 𝕜 A)) * Q) x := rfl
+      _ = (Q * (P : (Module.End 𝕜 A))) x := by rw [h]
+      _ = Q (P x) := rfl
+
 lemma IsIdempotentElem.range_prod__of_commute
-    {P Q : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)} (hPQ : Commute P Q)
+    {P Q : A →L[𝕜] A} (hPQ : Commute P Q)
     (hP : IsIdempotentElem P) (hQ : IsIdempotentElem Q) :
     Set.range (P * Q) = Set.range P ∩ Set.range Q := by
   apply le_antisymm
   · simp only [Set.le_eq_subset]
-    exact range_prod_of_commute hPQ
+    apply Module.End.range_prod_of_commute
+    rw [← commute]
+    apply hPQ
   · intro a ha
     simp only [ContinuousLinearMap.coe_mul, Set.mem_range, Function.comp_apply]
     use a

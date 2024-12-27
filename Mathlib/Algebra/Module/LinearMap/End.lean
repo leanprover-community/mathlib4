@@ -91,6 +91,14 @@ theorem _root_.Module.End.natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R
 theorem _root_.Module.End.ofNat_apply (n : ℕ) [n.AtLeastTwo] (m : M) :
     (no_index (OfNat.ofNat n) : Module.End R M) m = OfNat.ofNat n • m := rfl
 
+lemma _root_.Module.End.range_prod_of_commute {f g : Module.End R M}
+    (h : Commute f g) : Set.range (f * g) ⊆ Set.range f ∩ Set.range g := by
+  simp only [Set.le_eq_subset, Set.subset_inter_iff]
+  constructor
+  · exact Set.range_comp_subset_range g f
+  · rw [(commute_iff_eq f g).mp h]
+    exact Set.range_comp_subset_range f g
+
 instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
   { Module.End.semiring, LinearMap.addCommGroup with
     intCast := fun z ↦ z • (1 : N₁ →ₗ[R] N₁)
