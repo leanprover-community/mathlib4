@@ -158,8 +158,8 @@ theorem IsSumSq.mul [NonUnitalCommSemiring R] {s₁ s₂ : R}
   simpa using mul_mem (by simpa : _ ∈ NonUnitalSubsemiring.sumSqIn R) (by simpa)
 
 private theorem Submonoid.squareIn_subsemiringClosure {T : Type*} [CommSemiring T] :
-    (Submonoid.squareIn T).subsemiringClosure = Subsemiring.closure {x : T | IsSquare x} := by
-  rw [Submonoid.subsemiringClosure_eq_closure]; simp
+    (Submonoid.squareIn T).subsemiringClosure = .closure {x : T | IsSquare x} := by
+  simp [Submonoid.subsemiringClosure_eq_closure]
 
 namespace Subsemiring
 variable {T : Type*} [CommSemiring T] {s : T}

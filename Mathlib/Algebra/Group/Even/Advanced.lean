@@ -51,7 +51,7 @@ def squareIn : Submonoid M where
   one_mem' := IsSquare.one
 
 @[to_additive (attr := simp)]
-theorem squareIn_toSubsemigroup : (squareIn M).toSubsemigroup = Subsemigroup.squareIn M := rfl
+theorem squareIn_toSubsemigroup : (squareIn M).toSubsemigroup = .squareIn M := rfl
 
 @[to_additive (attr := simp)]
 theorem mem_squareIn : a ∈ squareIn M ↔ IsSquare a := Iff.rfl

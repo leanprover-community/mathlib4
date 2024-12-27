@@ -232,7 +232,7 @@ theorem Subsemiring.one_mem_toNonUnitalSubsemiring (S : Subsemiring R) :
 
 @[simp]
 theorem Submonoid.subsemiringClosure_toNonUnitalSubsemiring {M : Submonoid R} :
-    M.subsemiringClosure.toNonUnitalSubsemiring = NonUnitalSubsemiring.closure M := by
+    M.subsemiringClosure.toNonUnitalSubsemiring = .closure M := by
   refine Eq.symm (NonUnitalSubsemiring.closure_eq_of_le ?_ (fun _ hx => ?_))
   · simp [Submonoid.subsemiringClosure_coe]
   · simp [Submonoid.subsemiringClosure_mem] at hx
@@ -267,7 +267,7 @@ theorem unitization_apply (x : Unitization ℕ s) : unitization s x = x.fst + x.
   rfl
 
 theorem unitization_range :
-    (unitization s).range = subalgebraOfSubsemiring (Subsemiring.closure s) := by
+    (unitization s).range = subalgebraOfSubsemiring (.closure s) := by
   have := AddSubmonoidClass.nsmulMemClass (S := S)
   rw [unitization, NonUnitalSubalgebra.unitization_range (hSRA := this), Algebra.adjoin_nat]
 
@@ -314,7 +314,7 @@ theorem unitization_apply (x : Unitization ℤ s) : unitization s x = x.fst + x.
   rfl
 
 theorem unitization_range :
-    (unitization s).range = subalgebraOfSubring (Subring.closure s) := by
+    (unitization s).range = subalgebraOfSubring (.closure s) := by
   have := AddSubgroupClass.zsmulMemClass (S := S)
   rw [unitization, NonUnitalSubalgebra.unitization_range (hSRA := this), Algebra.adjoin_int]
 
