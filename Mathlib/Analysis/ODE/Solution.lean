@@ -68,7 +68,8 @@ lemma continuousOn_curve_comp {f : ℝ → E → E} {α : ℝ → E} {u : Set E}
   contDiffOn_zero.mp <| contDiffOn_curve_comp (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem
 
 -- the integral equation has derivative `fun t ↦ f t (α t)`
-lemma hasDerivAt_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : ℝ → E) {u : Set E}
+-- TODO: generalise to any convex `s`
+lemma hasDerivAt_iterateIntegral_Ioo [CompleteSpace E] (f : ℝ → E → E) (α : ℝ → E) {u : Set E}
     {tmin tmax t₀ : ℝ}
     (hf : ContinuousOn (uncurry f) ((Ioo tmin tmax) ×ˢ u))
     (ht₀ : t₀ ∈ Ioo tmin tmax) (hα : ContinuousOn α (Ioo tmin tmax))
@@ -87,6 +88,29 @@ lemma hasDerivAt_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : �
       exact Icc_subset_Ioo ht₀.1 ht.2
   · exact continuousOn_curve_comp hf hα hmem |>.stronglyMeasurableAtFilter isOpen_Ioo _ ht
   · exact continuousOn_curve_comp hf hα hmem |>.continuousAt <| Ioo_mem_nhds ht.1 ht.2
+
+-- code duplication with `Ioo` case above
+lemma hasDerivWithinAt_iterateIntegral_Icc [CompleteSpace E] (f : ℝ → E → E) (α : ℝ → E) {u : Set E}
+    {tmin tmax t₀ : ℝ}
+    (hf : ContinuousOn (uncurry f) ((Icc tmin tmax) ×ˢ u))
+    (ht₀ : t₀ ∈ Icc tmin tmax) (hα : ContinuousOn α (Icc tmin tmax))
+    (hmem : ∀ t ∈ Icc tmin tmax, α t ∈ u) (x₀ : E)
+    {t : ℝ} (ht : t ∈ Icc tmin tmax) :
+    HasDerivWithinAt (iterateIntegral f t₀ x₀ α) (f t (α t)) (Icc tmin tmax) t := by
+  unfold iterateIntegral
+  apply HasDerivWithinAt.const_add
+  have : Fact (t ∈ Icc tmin tmax) := ⟨ht⟩ -- needed to synthesise FTCFilter for Icc
+  apply intervalIntegral.integral_hasDerivWithinAt_right -- need `CompleteSpace E`
+  · apply ContinuousOn.intervalIntegrable
+    apply continuousOn_curve_comp hf hα hmem |>.mono
+    by_cases h : t < t₀
+    · rw [uIcc_of_gt h]
+      exact Icc_subset_Icc ht.1 ht₀.2
+    · rw [uIcc_of_le (not_lt.mp h)]
+      exact Icc_subset_Icc ht₀.1 ht.2
+  · exact continuousOn_curve_comp hf hα hmem
+      |>.stronglyMeasurableAtFilter_nhdsWithin measurableSet_Icc t
+  · exact continuousOn_curve_comp hf hα hmem _ ht
 
 lemma deriv_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : ℝ → E) {u : Set E}
     {tmin tmax t₀ : ℝ}
@@ -111,7 +135,6 @@ lemma deriv_iterateIntegral [CompleteSpace E] (f : ℝ → E → E) (α : ℝ �
   · exact continuousOn_curve_comp hf hα hmem |>.continuousAt <| Ioo_mem_nhds ht.1 ht.2
 
 -- the integral equation transfers smoothness class from `f` to `α`
--- TODO: generalise to any connected `s`
 -- TODO: generalise `n` to `∞` and maybe `ω`
 lemma contDiffOn_nat_iterateIntegral_Ioo [CompleteSpace E] (f : ℝ → E → E) (α : ℝ → E) {u : Set E}
     {tmin tmax t₀ : ℝ} {n : ℕ}
@@ -125,7 +148,7 @@ lemma contDiffOn_nat_iterateIntegral_Ioo [CompleteSpace E] (f : ℝ → E → E)
     simp only [CharP.cast_eq_zero, contDiffOn_zero] at *
     apply HasDerivAt.continuousOn (f' := fun t ↦ f t (α t))
     intro _ ht
-    exact hasDerivAt_iterateIntegral f α hf ht₀ hα hmem x₀ ht
+    exact hasDerivAt_iterateIntegral_Ioo f α hf ht₀ hα hmem x₀ ht
   | succ n hn =>
     simp only [Nat.cast_add, Nat.cast_one] at *
     rw [contDiffOn_succ_iff_deriv_of_isOpen isOpen_Ioo] -- check this for generalisation to `ω`
@@ -133,7 +156,7 @@ lemma contDiffOn_nat_iterateIntegral_Ioo [CompleteSpace E] (f : ℝ → E → E)
     · intro _ ht
       apply DifferentiableAt.differentiableWithinAt
       exact HasDerivAt.differentiableAt <|
-        hasDerivAt_iterateIntegral f α hf.continuousOn ht₀ hα hmem x₀ ht
+        hasDerivAt_iterateIntegral_Ioo f α hf.continuousOn ht₀ hα hmem x₀ ht
     · have hα' : ContDiffOn ℝ n α (Ioo tmin tmax) := by
         apply ContDiffOn.congr _ heqon
         apply hn
