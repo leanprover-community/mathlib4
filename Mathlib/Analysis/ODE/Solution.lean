@@ -212,40 +212,59 @@ b : ℝ so that eventually we get integral curve α : Ioo (-b) b → E
 -- no need to extend `ContinuousMapClass` because this is a one-time use
 @[ext]
 structure SpaceOfCurves (x₀ : E) {t₀ tmin tmax : ℝ} (ht : t₀ ∈ Icc tmin tmax) -- need compact domain
-    {a : ℝ} (ha : 0 ≤ a) extends C(Icc tmin tmax, E) where -- use `ℝ≥0`?
+    (a : ℝ≥0) extends C(Icc tmin tmax, E) where
   -- this makes future proof obligations simpler syntactically
   mapsTo : ∀ t : Icc tmin tmax, toFun t ∈ closedBall x₀ a -- plug in `a := 2 * a` in proofs
   initial : toFun ⟨t₀, ht⟩ = x₀
 
 namespace SpaceOfCurves
 
-variable (x₀ : E) {t₀ tmin tmax : ℝ} (ht : t₀ ∈ Icc tmin tmax) {a : ℝ} (ha : 0 ≤ a)
+variable (x₀ : E) {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax) (a : ℝ≥0)
 
 -- need `toFun_eq_coe`?
 
-instance : CoeFun (SpaceOfCurves x₀ ht ha) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
+instance : CoeFun (SpaceOfCurves x₀ ht₀ a) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
 
-instance : Inhabited (SpaceOfCurves x₀ ht ha) :=
-  ⟨⟨fun _ ↦ x₀, continuous_const⟩, fun _ ↦ mem_closedBall_self ha, rfl⟩
+instance : Inhabited (SpaceOfCurves x₀ ht₀ a) :=
+  ⟨⟨fun _ ↦ x₀, continuous_const⟩, fun _ ↦ mem_closedBall_self a.2, rfl⟩
 
-noncomputable instance : MetricSpace (SpaceOfCurves x₀ ht ha) :=
+noncomputable instance : MetricSpace (SpaceOfCurves x₀ ht₀ a) :=
   MetricSpace.induced toContinuousMap (fun _ _ _ ↦ by ext; congr) inferInstance
 
 /-- `iterateIntegral` maps `SpaceOfCurves` to `SpaceOfCurves` -/
 -- move `α` to target type to simplify proof syntax?
 -- abstract components of this?
-noncomputable def iterate (f : ℝ → E → E) (α : SpaceOfCurves x₀ ht ha) : SpaceOfCurves x₀ ht ha :=
-  { toFun := iterateIntegral f t₀ x₀ (α ∘ (projIcc _ _ (le_trans ht.1 ht.2))) ∘ Subtype.val
-    continuous_toFun := by
-      apply ContinuousOn.comp_continuous _ continuous_subtype_val (s := Icc tmin tmax)
-      -- apply Continuous.comp _ continuous_subtype_val
-      -- rw [continuous_iff_continuousOn_univ]
-      -- apply ContDiffOn.continuousOn (𝕜 := ℝ) (n := (0 : ℕ))
-      -- -- rw [← contDiffOn_zero (𝕜 := ℝ)]
-      -- apply contDiffOn_nat_iterateIntegral
+-- distill `3 * a` and `2 * a`?
+noncomputable def iterate [CompleteSpace E] (f : ℝ → E → E)
+    (hf : ContinuousOn (uncurry f) ((Icc tmin tmax) ×ˢ closedBall x₀ (3 * a)))
+    -- generalise to `u` containing ball?
 
-    mapsTo := sorry
-    initial := sorry }
+
+    -- copy here assumptions on `f` from below
+
+
+    (α : SpaceOfCurves x₀ ht₀ (2 * a)) : SpaceOfCurves x₀ ht₀ (2 * a) :=
+  { toFun := iterateIntegral f t₀ x₀ (α ∘ (projIcc _ _ (le_trans ht₀.1 ht₀.2))) ∘ Subtype.val
+    continuous_toFun := by
+      apply ContinuousOn.comp_continuous _ continuous_subtype_val Subtype.coe_prop
+      intro t ht
+      apply hasDerivWithinAt_iterateIntegral_Icc
+        f (α ∘ (projIcc _ _ (le_trans ht₀.1 ht₀.2))) hf ht₀ _ _ _ ht |>.continuousWithinAt
+      · exact α.continuous_toFun.comp_continuousOn continuous_projIcc.continuousOn
+      · intro t' ht' -- why need to be `3 * a`?
+        rw [comp_apply]
+        apply mem_of_mem_of_subset (α.mapsTo _) (closedBall_subset_closedBall _)
+        rw [NNReal.coe_mul, NNReal.coe_ofNat]
+        exact mul_le_mul_of_nonneg_right (by norm_num) a.2
+    mapsTo := by
+      intro t
+      simp only [NNReal.coe_mul, NNReal.coe_ofNat, ContinuousMap.toFun_eq_coe, comp_apply,
+        iterateIntegral_apply, mem_closedBall, dist_self_add_left]
+      -- inequality of norm of integral
+
+      sorry
+    initial := by simp only [ContinuousMap.toFun_eq_coe, comp_apply, iterateIntegral_apply,
+        intervalIntegral.integral_same, add_zero] }
 
 end SpaceOfCurves
 
