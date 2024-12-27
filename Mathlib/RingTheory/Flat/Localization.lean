@@ -22,33 +22,20 @@ In this file we show that localizations are flat, and flatness is a local proper
   over `Localization.Away s`, then `M` is flat over `R`.
 -/
 
-variable {R S M N : Type*}
+open IsLocalizedModule LocalizedModule LinearMap TensorProduct
 
-variable (S) [CommSemiring R] [CommSemiring S] [Algebra R S] (p : Submonoid R) [IsLocalization p S]
-variable [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
-variable (f : M →ₗ[R] N) (hf : Function.Injective f)
+variable {R : Type*} (S : Type*) [CommSemiring R] [CommSemiring S] [Algebra R S]
+variable (p : Submonoid R) [IsLocalization p S]
+variable (M : Type*) [AddCommMonoid M] [Module R M] [Module S M] [IsScalarTower R S M]
 
-namespace IsLocalization
-
-include p hf
-
-theorem lTensor_preserves_injective_linearMap : Function.Injective (f.lTensor S) := by
-  have h := ((LinearMap.range f).isLocalizedModule S p (TensorProduct.mk R S N 1)).isBaseChange _ S
-  let e := (LinearEquiv.ofInjective f hf).lTensor S ≪≫ₗ h.equiv.restrictScalars R
-  have : f.lTensor S = Submodule.subtype _ ∘ₗ e.toLinearMap := by
+include p in
+theorem IsLocalization.flat : Module.Flat R S := by
+  refine Module.Flat.iff_lTensor_injectiveₛ.mpr fun P _ _ N ↦ ?_
+  have h := ((range N.subtype).isLocalizedModule S p (TensorProduct.mk R S P 1)).isBaseChange _ S
+  let e := (LinearEquiv.ofInjective _ Subtype.val_injective).lTensor S ≪≫ₗ h.equiv.restrictScalars R
+  have : N.subtype.lTensor S = Submodule.subtype _ ∘ₗ e.toLinearMap := by
     ext; show _ = (h.equiv _).1; simp [h.equiv_tmul, TensorProduct.smul_tmul']
   simpa [this] using e.injective
-
-theorem rTensor_preserves_injective_linearMap : Function.Injective (f.rTensor S) :=
-  (LinearMap.lTensor_inj_iff_rTensor_inj _ _).mp (lTensor_preserves_injective_linearMap S p f hf)
-
-omit hf
-
-theorem flat : Module.Flat R S :=
-  (Module.Flat.iff_lTensor_injective' _ _).mpr
-    fun _ ↦ lTensor_preserves_injective_linearMap S p _ Subtype.val_injective
-
-end IsLocalization
 
 instance Localization.flat : Module.Flat R (Localization p) := IsLocalization.flat _ p
 
@@ -71,11 +58,12 @@ variable (Mₚ : ∀ (P : Ideal S) [P.IsMaximal], Type*)
 include f in
 theorem flat_of_isLocalized_maximal (H : ∀ (P : Ideal S) [P.IsMaximal], Flat R (Mₚ P)) :
     Module.Flat R M := by
-  simp_rw [Flat.iff_lTensor_injective'] at H ⊢
+  simp_rw [Flat.iff_lTensor_injectiveₛ] at H ⊢
   simp_rw [← AlgebraTensorModule.coe_lTensor (A := S)]
-  refine fun I ↦ injective_of_isLocalized_maximal _ (fun P ↦ AlgebraTensorModule.rTensor R _ (f P))
-    _ (fun P ↦ AlgebraTensorModule.rTensor R _ (f P)) _ fun P hP ↦ ?_
-  simpa [IsLocalizedModule.map_lTensor] using H P I
+  refine fun _ _ _ N ↦ injective_of_isLocalized_maximal _
+    (fun P ↦ AlgebraTensorModule.rTensor R _ (f P)) _
+    (fun P ↦ AlgebraTensorModule.rTensor R _ (f P)) _ fun P hP ↦ ?_
+  simpa [IsLocalizedModule.map_lTensor] using H P N
 
 theorem flat_of_localized_maximal
     (h : ∀ (P : Ideal R) [P.IsMaximal], Flat R (LocalizedModule P.primeCompl M)) :
@@ -95,11 +83,12 @@ include spn
 include g in
 theorem flat_of_isLocalized_span (H : ∀ r : s, Module.Flat R (Mₛ r)) :
     Module.Flat R M := by
-  simp_rw [Flat.iff_lTensor_injective'] at H ⊢
+  simp_rw [Flat.iff_lTensor_injectiveₛ] at H ⊢
   simp_rw [← AlgebraTensorModule.coe_lTensor (A := S)]
-  refine fun I ↦ injective_of_isLocalized_span s spn _ (fun r ↦ AlgebraTensorModule.rTensor
-    R _ (g r)) _ (fun r ↦ AlgebraTensorModule.rTensor R _ (g r)) _ fun r ↦ ?_
-  simpa [IsLocalizedModule.map_lTensor] using H r I
+  refine fun _ _ _ N ↦ injective_of_isLocalized_span s spn _
+    (fun r ↦ AlgebraTensorModule.rTensor R _ (g r)) _
+    (fun r ↦ AlgebraTensorModule.rTensor R _ (g r)) _ fun r ↦ ?_
+  simpa [IsLocalizedModule.map_lTensor] using H r N
 
 theorem flat_of_localized_span
     (h : ∀ r : s, Flat S (LocalizedModule (.powers r.1) M)) :
