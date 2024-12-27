@@ -351,7 +351,7 @@ def ofUnique {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] : M ≃
 
 instance {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] :
     Unique (M ≃+* N) where
-  default := ringEquivOfUnique
+  default := .ofUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
 
 end unique
