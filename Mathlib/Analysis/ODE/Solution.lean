@@ -211,11 +211,11 @@ b : ℝ so that eventually we get integral curve α : Ioo (-b) b → E
 -- change order of arguments
 -- no need to extend `ContinuousMapClass` because this is a one-time use
 @[ext]
-structure SpaceOfCurves (u : Set E) (x : E) {t₀ tmin tmax : ℝ} (ht : t₀ ∈ Icc tmin tmax)
-    (a : ℝ≥0) extends C(Icc tmin tmax, E) where -- `Icc` because we need compact domain
+structure SpaceOfCurves (u : Set E) (x : E) {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax)
+    extends C(Icc tmin tmax, E) where -- `Icc` because we need compact domain
   -- this makes future proof obligations simpler syntactically
   mapsTo : ∀ t : Icc tmin tmax, toFun t ∈ u -- plug in `u := closedBall x₀ (2 * a)` in proofs
-  initial : toFun ⟨t₀, ht⟩ = x
+  initial : toFun ⟨t₀, ht₀⟩ = x
 
 namespace SpaceOfCurves
 
@@ -226,13 +226,42 @@ variable (u : Set E) {x : E} (hx : x ∈ u) {t₀ tmin tmax : ℝ} (ht₀ : t₀
 
 -- need `toFun_eq_coe`?
 
-instance : CoeFun (SpaceOfCurves u x ht₀ a) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
+instance : CoeFun (SpaceOfCurves u x ht₀) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
 
-instance : Inhabited (SpaceOfCurves u x ht₀ a) :=
+instance : Inhabited (SpaceOfCurves u x ht₀) :=
   ⟨⟨fun _ ↦ x, continuous_const⟩, fun _ ↦ hx, rfl⟩
 
-noncomputable instance : MetricSpace (SpaceOfCurves u x ht₀ a) :=
+noncomputable instance : MetricSpace (SpaceOfCurves u x ht₀) :=
   MetricSpace.induced toContinuousMap (fun _ _ _ ↦ by ext; congr) inferInstance
+
+omit [NormedSpace ℝ E] in
+lemma isUniformInducing : IsUniformInducing fun α : SpaceOfCurves u x ht₀ ↦ α.toContinuousMap :=
+  ⟨rfl⟩
+
+-- this is where we need `u` closed, e.g. closedBall
+-- generalise to all closed `u`?
+instance [CompleteSpace E] {x₀ : E} {a : ℝ≥0} :
+    CompleteSpace (SpaceOfCurves (closedBall x₀ a) x ht₀) := by
+  rw [completeSpace_iff_isComplete_range <| isUniformInducing _ ht₀]
+  apply IsClosed.isComplete
+  -- abstract this
+  have : range (fun α : SpaceOfCurves (closedBall x₀ a) x ht₀ ↦ α.toContinuousMap) =
+      { α : C(Icc tmin tmax, E) |
+        α ⟨t₀, ht₀⟩ = x ∧ ∀ t : Icc tmin tmax, α t ∈ closedBall x₀ a } := by
+    ext α; constructor
+    · rintro ⟨⟨α, hα1, hα2⟩, rfl⟩
+      exact ⟨hα2, hα1⟩
+    · rintro ⟨hα1, hα2⟩
+      refine ⟨⟨α, hα2, hα1⟩, rfl⟩
+  rw [this, setOf_and]
+  refine (isClosed_eq (continuous_eval_const _) continuous_const).inter ?_
+  have : { α : C(↑(Icc tmin tmax), E) | ∀ (t : ↑(Icc tmin tmax)), α t ∈ closedBall x₀ a } =
+      { α : C(↑(Icc tmin tmax), E) | MapsTo α univ (closedBall x₀ a) } := by
+    simp only [Subtype.forall, mem_Icc, mapsTo_univ_iff]
+  rw [this]
+  apply isClosed_ball.setOf_mapsTo
+  intro t ht
+  exact continuous_eval_const _
 
 end
 
@@ -257,8 +286,8 @@ noncomputable def iterate [CompleteSpace E]
     {L : ℝ≥0} (hnorm : ∀ t ∈ Icc tmin tmax, ∀ x' ∈ closedBall x₀ (2 * a), ‖f t x'‖ ≤ L)
     (h : L * max (tmax - t₀) (t₀ - tmin) ≤ a) -- min a L ?
     {x : E} (hx : x ∈ closedBall x₀ a) -- or open ball as in Lang?
-    (α : SpaceOfCurves (closedBall x₀ (2 * a)) x ht₀ a) :
-    SpaceOfCurves (closedBall x₀ (2 * a)) x ht₀ a :=
+    (α : SpaceOfCurves (closedBall x₀ (2 * a)) x ht₀) :
+    SpaceOfCurves (closedBall x₀ (2 * a)) x ht₀ :=
   { toFun := iterateIntegral f t₀ x (α ∘ (projIcc _ _ (le_trans ht₀.1 ht₀.2))) ∘ Subtype.val
     continuous_toFun := by
       apply ContinuousOn.comp_continuous _ continuous_subtype_val Subtype.coe_prop
@@ -330,7 +359,6 @@ noncomputable def iterate [CompleteSpace E]
               exact t.2.1
         _ ≤ a + a := add_le_add_right h _
         _ = 2 * a := (two_mul _).symm
-      -- inequality of norm of integral
     initial := by simp only [ContinuousMap.toFun_eq_coe, comp_apply, iterateIntegral_apply,
         intervalIntegral.integral_same, add_zero] }
 
