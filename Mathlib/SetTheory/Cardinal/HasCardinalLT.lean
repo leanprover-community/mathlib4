@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.SetTheory.Cardinal.Arithmetic
+import Mathlib.SetTheory.Cardinal.Cofinality
 
 /-!
 # The property of being of cardinality less than a cardinal
@@ -86,3 +87,20 @@ lemma hasCardinalLT_option_iff (X : Type u) (κ' : Cardinal.{w})
     simp only [Cardinal.mk_option, Cardinal.lift_add, Cardinal.lift_one]
     exact Cardinal.add_lt_of_lt (by simpa using hκ') h
       (lt_of_lt_of_le Cardinal.one_lt_aleph0 (by simpa using hκ'))
+
+/-- For any `w`-small type `X`, there exists a regular cardinal `κ : Cardinal.{w}`
+such that `HasCardinalLT X κ`. -/
+lemma exists_regular_cardinal (X : Type u) [Small.{w} X] :
+    ∃ (κ : Cardinal.{w}), κ.IsRegular ∧ HasCardinalLT X κ :=
+  ⟨Order.succ (max (Cardinal.mk (Shrink.{w} X)) .aleph0),
+    Cardinal.isRegular_succ (le_max_right _ _), by
+      simp [hasCardinalLT_iff_of_equiv (equivShrink.{w} X),
+        hasCardinalLT_iff_cardinal_mk_lt]⟩
+
+/-- For any `w`-small family `X : ι → Type u` of `w`-small types, there exists
+a regular cardinal`κ : Cardinal.{w}` such that `HasCardinalLT (X i) κ` for all `i : ι`. -/
+lemma exists_regular_cardinal' {ι : Type v} (X : ι → Type u) [Small.{w} ι]
+    [∀ i, Small.{w} (X i)] :
+    ∃ (κ : Cardinal.{w}), κ.IsRegular ∧ ∀ (i : ι), HasCardinalLT (X i) κ := by
+  obtain ⟨κ, hκ, h⟩ := exists_regular_cardinal.{w} (Sigma X)
+  exact ⟨κ, hκ, fun i ↦ h.of_injective _ sigma_mk_injective⟩

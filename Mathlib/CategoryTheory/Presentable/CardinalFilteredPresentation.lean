@@ -60,7 +60,8 @@ def CardinalFilteredPresentation.ofIsColimit {J : Type w} [Category.{w} J]
 variable {ι : Type w} (G : ι → C) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
 structure AreCardinalFilteredGenerators : Prop where
-  nonempty_cardinalFilteredPresentation (X : C) :
+  isCardinalPresentable (i : ι) : IsCardinalPresentable (G i) κ
+  exists_cardinalFilteredPresentation (X : C) :
       ∃ (p : CardinalFilteredPresentation X κ),
         ∀ (j : p.J), ∃ (i : ι), Nonempty (p.F.obj j ≅ G i)
 
@@ -69,21 +70,37 @@ namespace AreCardinalFilteredGenerators
 variable {G κ} (h : AreCardinalFilteredGenerators G κ) (X : C)
 
 noncomputable def presentation : CardinalFilteredPresentation X κ :=
-  (h.nonempty_cardinalFilteredPresentation X).choose
+  (h.exists_cardinalFilteredPresentation X).choose
 
 lemma exists_presentation_obj_iso (j : (h.presentation X).J) :
     ∃ (i : ι), Nonempty ((h.presentation X).F.obj j ≅ G i) :=
-  (h.nonempty_cardinalFilteredPresentation X).choose_spec j
+  (h.exists_cardinalFilteredPresentation X).choose_spec j
 
-instance (j : (h.presentation X).J) [∀ i, IsCardinalPresentable (G i) κ] :
-    IsCardinalPresentable ((h.presentation X).F.obj j) κ := by
-  obtain ⟨i, ⟨e⟩⟩ := (h.exists_presentation_obj_iso X j)
+instance (j : (h.presentation X).J) :
+    IsCardinalPresentable.{w} ((h.presentation X).F.obj j) κ := by
+  obtain ⟨i, ⟨e⟩⟩ := h.exists_presentation_obj_iso X j
+  have := h.isCardinalPresentable
   exact isCardinalPresentable_of_iso e.symm κ
 
 include h in
+lemma isPresentable (i : ι) : IsPresentable.{w} (G i) := by
+  have := h.isCardinalPresentable
+  exact isPresentable_of_isCardinalPresentable _ κ
+
+instance (j : (h.presentation X).J) : IsPresentable.{w} ((h.presentation X).F.obj j) :=
+  isPresentable_of_isCardinalPresentable _ κ
+
+include h in
 lemma presentable [LocallySmall.{w} C] (X : C) : IsPresentable.{w} X := by
-  have := h
-  sorry
+  obtain ⟨κ', _, le, hκ'⟩ : ∃ (κ' : Cardinal.{w}) (_ : Fact κ'.IsRegular) (_ : κ ≤ κ'),
+      HasCardinalLT (Arrow (h.presentation X).J) κ' := by
+    obtain ⟨κ', h₁, h₂⟩ := exists_regular_cardinal'.{w}
+      (Sum.elim (fun (_ : Unit) ↦ Arrow (h.presentation X).J) (fun (_ : Unit) ↦ κ.ord.toType))
+    exact ⟨κ', ⟨h₁⟩,
+      le_of_lt (by simpa [hasCardinalLT_iff_cardinal_mk_lt] using h₂ (Sum.inr ⟨⟩)),
+      h₂ (Sum.inl ⟨⟩)⟩
+  have := (h.presentation X).isCardinalPresentable_pt (by infer_instance) κ' le hκ'
+  exact isPresentable_of_isCardinalPresentable _ κ'
 
 end AreCardinalFilteredGenerators
 
