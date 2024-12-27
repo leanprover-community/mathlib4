@@ -319,12 +319,10 @@ variable {𝕜 A F : Type*}
 
 variable [RCLike 𝕜] [NormedAddCommGroup A] [NormedSpace 𝕜 A]
 
-theorem IsLprojection.contractive {P : A →L[𝕜] A} (h : IsLprojection A P) : ‖P‖ ≤ 1 := by
-  apply (ContinuousLinearMap.opNorm_le_iff (zero_le_one' ℝ)).mpr
-  intro x
-  rw [(h.Lnorm x)]
-  simp only [ContinuousLinearMap.smul_def, ContinuousLinearMap.coe_sub', Pi.sub_apply,
-    ContinuousLinearMap.one_apply, one_mul, le_add_iff_nonneg_right, norm_nonneg]
+theorem IsLprojection.contractive {P : A →L[𝕜] A} (h : IsLprojection A P) : ‖P‖ ≤ 1 :=
+  (ContinuousLinearMap.opNorm_le_iff (zero_le_one' ℝ)).mpr
+    (fun x => by simp only [(h.Lnorm x), ContinuousLinearMap.smul_def, ContinuousLinearMap.coe_sub',
+      Pi.sub_apply, ContinuousLinearMap.one_apply, one_mul, le_add_iff_nonneg_right, norm_nonneg])
 
 /-- The subtype of L-projections -/
 notation "Pₗ[" 𝕜 "](" A ")" => { P : A →L[𝕜] A // IsLprojection A P }
