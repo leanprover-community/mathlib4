@@ -76,7 +76,7 @@ def squareIn : Subgroup G where
   inv_mem' := IsSquare.inv
 
 @[to_additive (attr := simp)]
-theorem squareIn_toSubmonoid : (squareIn G).toSubmonoid = Submonoid.squareIn G := rfl
+theorem squareIn_toSubmonoid : (squareIn G).toSubmonoid = .squareIn G := rfl
 
 @[to_additive (attr := simp)]
 theorem mem_squareIn : a ∈ squareIn G ↔ IsSquare a := Iff.rfl
