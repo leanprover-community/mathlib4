@@ -100,7 +100,7 @@ lemma _root_.Module.End.range_prod_of_commute {f g : Module.End R M}
   · rw [(commute_iff_eq f g).mp h]
     exact Set.range_comp_subset_range f g
 
-lemma proj_apply (f : Module.End R M) (hP : IsIdempotentElem f)
+lemma proj_apply2 (f : Module.End R M) (hP : IsIdempotentElem f)
     (a : M) (ha: a ∈ Set.range f) : f a = a := by
   obtain ⟨c,hc⟩ := ha
   rw [← hc]
@@ -117,8 +117,8 @@ lemma _root_.IsIdempotentElem.range_prod_of_commute {P Q : Module.End R M}
   · intro a ha
     simp only [Set.mem_range, mul_apply]
     use a
-    rw [proj_apply Q hQ _ (Set.mem_of_mem_inter_right ha),
-      proj_apply P hP _ (Set.mem_of_mem_inter_left ha)]
+    rw [proj_apply2 Q hQ _ (Set.mem_of_mem_inter_right ha),
+      proj_apply2 P hP _ (Set.mem_of_mem_inter_left ha)]
 
 instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
   { Module.End.semiring, LinearMap.addCommGroup with
