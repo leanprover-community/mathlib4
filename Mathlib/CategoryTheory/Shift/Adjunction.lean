@@ -142,22 +142,13 @@ lemma compatibilityUnit_unique_right (h : CompatibilityUnit adj e₁ e₂)
 /-- Given an adjunction `adj : F ⊣ G`, `a` in `A` and commutation isomorphisms
 `e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a` and
 `e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a`, if `e₁` and `e₂` are compatible with the
-counit of the adjunction `adj`, then `e₂` uniquely determines `e₁`.
--/
-lemma compatibilityCounit_unique_left (h : CompatibilityCounit adj e₁ e₂)
-    (h' : CompatibilityCounit adj e₁' e₂) : e₁ = e₁' := by
-  ext
-  rw [compatibilityCounit_left adj e₁ e₂ h, compatibilityCounit_left adj e₁' e₂ h']
-
-/-- Given an adjunction `adj : F ⊣ G`, `a` in `A` and commutation isomorphisms
-`e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a` and
-`e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a`, if `e₁` and `e₂` are compatible with the
 unit of the adjunction `adj`, then `e₂` uniquely determines `e₁`.
 -/
 lemma compatibilityUnit_unique_left (h : CompatibilityUnit adj e₁ e₂)
-    (h' : CompatibilityUnit adj e₁' e₂) : e₁ = e₁' :=
-  compatibilityCounit_unique_left adj _ _ _ (compatibilityCounit_of_compatibilityUnit adj _ _ h)
-    (compatibilityCounit_of_compatibilityUnit adj _ _ h')
+    (h' : CompatibilityUnit adj e₁' e₂) : e₁ = e₁' := by
+  ext
+  rw [compatibilityCounit_left adj e₁ e₂ (compatibilityCounit_of_compatibilityUnit adj _ _ h),
+    compatibilityCounit_left adj e₁' e₂ (compatibilityCounit_of_compatibilityUnit adj _ _ h')]
 
 /--
 The isomorphisms `Functor.CommShift.isoZero F` and `Functor.CommShift.isoZero G` are
