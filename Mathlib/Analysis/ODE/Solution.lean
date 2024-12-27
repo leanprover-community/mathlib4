@@ -211,51 +211,63 @@ b : ℝ so that eventually we get integral curve α : Ioo (-b) b → E
 -- change order of arguments
 -- no need to extend `ContinuousMapClass` because this is a one-time use
 @[ext]
-structure SpaceOfCurves (x₀ : E) {t₀ tmin tmax : ℝ} (ht : t₀ ∈ Icc tmin tmax) -- need compact domain
-    (a : ℝ≥0) extends C(Icc tmin tmax, E) where
+structure SpaceOfCurves (u : Set E) (x : E) {t₀ tmin tmax : ℝ} (ht : t₀ ∈ Icc tmin tmax)
+    (a : ℝ≥0) extends C(Icc tmin tmax, E) where -- `Icc` because we need compact domain
   -- this makes future proof obligations simpler syntactically
-  mapsTo : ∀ t : Icc tmin tmax, toFun t ∈ closedBall x₀ a -- plug in `a := 2 * a` in proofs
-  initial : toFun ⟨t₀, ht⟩ = x₀
+  mapsTo : ∀ t : Icc tmin tmax, toFun t ∈ u -- plug in `u := closedBall x₀ (2 * a)` in proofs
+  initial : toFun ⟨t₀, ht⟩ = x
 
 namespace SpaceOfCurves
 
-variable (x₀ : E) {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax) (a : ℝ≥0)
+section
+
+variable (u : Set E) {x : E} (hx : x ∈ u) {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax)
+  (a : ℝ≥0)
 
 -- need `toFun_eq_coe`?
 
-instance : CoeFun (SpaceOfCurves x₀ ht₀ a) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
+instance : CoeFun (SpaceOfCurves u x ht₀ a) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
 
-instance : Inhabited (SpaceOfCurves x₀ ht₀ a) :=
-  ⟨⟨fun _ ↦ x₀, continuous_const⟩, fun _ ↦ mem_closedBall_self a.2, rfl⟩
+instance : Inhabited (SpaceOfCurves u x ht₀ a) :=
+  ⟨⟨fun _ ↦ x, continuous_const⟩, fun _ ↦ hx, rfl⟩
 
-noncomputable instance : MetricSpace (SpaceOfCurves x₀ ht₀ a) :=
+noncomputable instance : MetricSpace (SpaceOfCurves u x ht₀ a) :=
   MetricSpace.induced toContinuousMap (fun _ _ _ ↦ by ext; congr) inferInstance
+
+end section
 
 /-- `iterateIntegral` maps `SpaceOfCurves` to `SpaceOfCurves` -/
 -- move `α` to target type to simplify proof syntax?
 -- abstract components of this?
--- distill `3 * a` and `2 * a`?
-noncomputable def iterate [CompleteSpace E] (f : ℝ → E → E)
-    (hf : ContinuousOn (uncurry f) ((Icc tmin tmax) ×ˢ closedBall x₀ (3 * a)))
-    -- generalise to `u` containing ball?
-
-
-    -- copy here assumptions on `f` from below
-
-
-    (α : SpaceOfCurves x₀ ht₀ (2 * a)) : SpaceOfCurves x₀ ht₀ (2 * a) :=
-  { toFun := iterateIntegral f t₀ x₀ (α ∘ (projIcc _ _ (le_trans ht₀.1 ht₀.2))) ∘ Subtype.val
+-- distill `3 * a`?
+-- generalise to `Icc`
+-- generalise to `u` containing ball?
+noncomputable def iterate [CompleteSpace E]
+    {t₀ tmin tmax tmin' tmax' : ℝ} (ht₀ : t₀ ∈ Ioo tmin tmax) -- probably never need `ht₀`
+    (ht₀' : t₀ ∈ Icc tmin' tmax')
+    {x₀ : E}
+    {a : ℝ≥0}
+    (f : ℝ → E → E)
+    -- {K : ℝ≥0} (hlip : ∀ t ∈ Ioo tmin tmax, LipschitzOnWith K (f t) (closedBall x₀ (3 * a)))
+    {K : ℝ≥0} (hlip : ∀ t ∈ Icc tmin' tmax', LipschitzOnWith K (f t) (closedBall x₀ (3 * a)))
+    -- (hcont : ∀ x' ∈ closedBall x₀ (3 * a), ContinuousOn (f · x') (Ioo tmin tmax))
+    (hcont : ∀ x' ∈ closedBall x₀ (3 * a), ContinuousOn (f · x') (Icc tmin' tmax'))
+    {L : ℝ} (hnorm : ∀ t ∈ Ioo tmin tmax, ∀ x' ∈ closedBall x₀ (3 * a), ‖f t x'‖ ≤ L)
+    {x : E} (hx : x ∈ closedBall x₀ a) -- or open ball as in Lang?
+    (α : SpaceOfCurves (closedBall x₀ a) x ht₀' (2 * a)) :
+    SpaceOfCurves (closedBall x₀ a) x ht₀' (2 * a) :=
+  { toFun := iterateIntegral f t₀ x (α ∘ (projIcc _ _ (le_trans ht₀'.1 ht₀'.2))) ∘ Subtype.val
     continuous_toFun := by
       apply ContinuousOn.comp_continuous _ continuous_subtype_val Subtype.coe_prop
       intro t ht
+      have : ContinuousOn (uncurry f) (Icc tmin' tmax' ×ˢ (closedBall x₀ (3 * a))) := sorry
       apply hasDerivWithinAt_iterateIntegral_Icc
-        f (α ∘ (projIcc _ _ (le_trans ht₀.1 ht₀.2))) hf ht₀ _ _ _ ht |>.continuousWithinAt
+        f (α ∘ (projIcc _ _ (le_trans ht₀'.1 ht₀'.2))) this ht₀' _ _ _ ht |>.continuousWithinAt
       · exact α.continuous_toFun.comp_continuousOn continuous_projIcc.continuousOn
       · intro t' ht' -- why need to be `3 * a`?
         rw [comp_apply]
         apply mem_of_mem_of_subset (α.mapsTo _) (closedBall_subset_closedBall _)
-        rw [NNReal.coe_mul, NNReal.coe_ofNat]
-        exact mul_le_mul_of_nonneg_right (by norm_num) a.2
+        exact le_mul_of_one_le_left a.2 (by norm_num)
     mapsTo := by
       intro t
       simp only [NNReal.coe_mul, NNReal.coe_ofNat, ContinuousMap.toFun_eq_coe, comp_apply,
