@@ -11,7 +11,7 @@ import Mathlib.CategoryTheory.Presentable.Limits
 
 -/
 
-universe w v u
+universe w v u v' u'
 
 namespace CategoryTheory
 
@@ -31,6 +31,8 @@ namespace CardinalFilteredPresentation
 
 attribute [instance] category isCardinalFiltered
 
+section
+
 variable {X : C} {κ : Cardinal.{w}} [Fact κ.IsRegular]
 
 variable (p : CardinalFilteredPresentation X κ)
@@ -44,10 +46,10 @@ lemma isCardinalPresentable_pt (h : ∀ (j : p.J), IsCardinalPresentable (p.F.ob
     fun _ ↦ isCardinalPresentable_of_le _ h
   exact isCardinalPresentable_of_isColimit _ p.isColimit κ' hJ
 
-end CardinalFilteredPresentation
+end
 
 @[simps J F ι isColimit]
-def CardinalFilteredPresentation.ofIsColimit {J : Type w} [Category.{w} J]
+def ofIsColimit {J : Type w} [Category.{w} J]
     {F : J ⥤ C} (c : Cocone F) (hc : IsColimit c)
     (κ : Cardinal.{w}) [Fact κ.IsRegular]
     [IsCardinalFiltered J κ] :
@@ -56,6 +58,29 @@ def CardinalFilteredPresentation.ofIsColimit {J : Type w} [Category.{w} J]
   F := F
   ι := c.ι
   isColimit := hc
+
+variable {J : Type u'} [Category.{v'} J] [EssentiallySmall.{w} J]
+  {F : J ⥤ C} (c : Cocone F) (hc : IsColimit c)
+  (κ : Cardinal.{w}) [Fact κ.IsRegular]
+  [IsCardinalFiltered J κ]
+
+noncomputable def ofIsColimitOfEssentiallySmall :
+    CardinalFilteredPresentation c.pt κ where
+  isCardinalFiltered := IsCardinalFiltered.of_equivalence κ (equivSmallModel J)
+  J := SmallModel J
+  F := (equivSmallModel J).inverse ⋙ F
+  ι := whiskerLeft (equivSmallModel J).inverse c.ι
+  isColimit :=
+    (IsColimit.whiskerEquivalenceEquiv (equivSmallModel J).symm).1 hc
+
+lemma ofIsColimitOfEssentiallySmall_exists_f_obj_iso
+    (j : (ofIsColimitOfEssentiallySmall c hc κ).J) :
+    ∃ (j₀ : J), Nonempty ((ofIsColimitOfEssentiallySmall c hc κ).F.obj j ≅
+      F.obj j₀) :=
+  ⟨_, ⟨Iso.refl _⟩⟩
+
+end CardinalFilteredPresentation
+
 
 variable {ι : Type w} (G : ι → C) (κ : Cardinal.{w}) [Fact κ.IsRegular]
 
