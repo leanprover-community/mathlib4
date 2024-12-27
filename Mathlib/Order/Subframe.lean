@@ -4,9 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Krause
 -/
 import Mathlib.Order.CompleteSublattice
-import Mathlib.Order.CompleteLattice
-import Mathlib.Tactic
-
 
 variable (α : Type*) [Order.Frame α]
 
