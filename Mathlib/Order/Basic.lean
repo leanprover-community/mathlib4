@@ -1281,6 +1281,13 @@ theorem eq_of_le_of_forall_ge_of_dense [LinearOrder α] [DenselyOrdered α] {a�
     (h₂ : ∀ a₃ < a₁, a₃ ≤ a₂) : a₁ = a₂ :=
   (le_of_forall_ge_of_dense h₂).antisymm h₁
 
+theorem forall_lt_le_iff [LinearOrder α] [DenselyOrdered α] {a b : α} : (∀ c < a, c ≤ b) ↔ a ≤ b :=
+  ⟨le_of_forall_ge_of_dense, fun hab _c hca ↦ hca.le.trans hab⟩
+
+theorem forall_gt_ge_iff [LinearOrder α] [DenselyOrdered α] {a b : α} :
+    (∀ c, a < c → b ≤ c) ↔ b ≤ a :=
+  forall_lt_le_iff (α := αᵒᵈ)
+
 theorem dense_or_discrete [LinearOrder α] (a₁ a₂ : α) :
     (∃ a, a₁ < a ∧ a < a₂) ∨ (∀ a, a₁ < a → a₂ ≤ a) ∧ ∀ a < a₂, a ≤ a₁ :=
   or_iff_not_imp_left.2 fun h ↦
