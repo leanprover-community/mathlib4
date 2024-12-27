@@ -335,12 +335,11 @@ instance : FunLike Pₗ[𝕜](A) A A where
 
 lemma range_prod_of_commute {P Q : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)}
     (h : Commute P Q) : Set.range (P * Q) ⊆ Set.range P ∩ Set.range Q := by
-  · simp only [Set.le_eq_subset, Set.subset_inter_iff]
-    constructor
-    · exact Set.range_comp_subset_range ⇑Q ⇑P
-    · rw [commute_iff_eq] at h
-      rw [h]
-      exact Set.range_comp_subset_range ⇑P ⇑Q
+  simp only [Set.le_eq_subset, Set.subset_inter_iff]
+  constructor
+  · exact Set.range_comp_subset_range ⇑Q ⇑P
+  · rw [(commute_iff_eq P Q).mp h]
+    exact Set.range_comp_subset_range ⇑P ⇑Q
 
 lemma proj_apply (P : (NormedSpace.Dual 𝕜 A) →L[𝕜] (NormedSpace.Dual 𝕜 A)) (hP : IsIdempotentElem P)
     (a : (NormedSpace.Dual 𝕜 A)) (ha: a ∈ Set.range P) : P a = a := by
