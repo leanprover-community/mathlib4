@@ -225,6 +225,7 @@ Instance declaring that `RecursiveIn` is a preorder.
 -/
 instance : IsPreorder (ℕ →. ℕ) RecursiveIn where
   refl := RecursiveIn.refl
+  trans := @RecursiveIn.trans
 
 /--
 Instance declaring that `TuringEquivalent` is an equivalence relation.
