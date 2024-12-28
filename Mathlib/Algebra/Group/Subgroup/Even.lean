@@ -9,8 +9,7 @@ import Mathlib.Algebra.Group.Subgroup.Defs
 /-!
 # Squares and even elements
 
-This file defines operations involving squares and even elements requiring more complex objects
-such as substructures and orderings.
+This file defines the subgroup of squares / even elements in an abelian group.
 -/
 
 namespace Subsemigroup
