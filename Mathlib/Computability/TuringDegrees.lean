@@ -35,14 +35,10 @@ pairing, composition, primitive recursion, and μ-recursion.
 
 ## References
 
-* [Carneiro2018] Carneiro, Mario.
+* [carneiro2019] Carneiro, Mario.
   *Formalizing Computability Theory via Partial Recursive Functions*.
   arXiv preprint arXiv:1810.08380, 2018.
-* [Odifreddi1989] Odifreddi, Piergiorgio.
-  *Classical Recursion Theory: The Theory of Functions and Sets of Natural Numbers,
-  Vol. I*. Springer-Verlag, 1989.
-* [Soare1987] Soare, Robert I. *Recursively Enumerable Sets and Degrees*. Springer-Verlag, 1987.
-* [Gu2015] Gu, Yi-Zhi. *Turing Degrees*. Institute for Advanced Study, 2015.
+* [soare1987] Soare, Robert I. *Recursively Enumerable Sets and Degrees*. Springer-Verlag, 1987.
 
 ## Tags
 
@@ -69,12 +65,14 @@ inductive RecursiveIn : (ℕ →. ℕ) → (ℕ →. ℕ) → Prop
       RecursiveIn (fun n => (Nat.pair <$> f n <*> h n)) g
   | comp (f h g : ℕ →. ℕ) (hf : RecursiveIn f g) (hh : RecursiveIn h g) :
       RecursiveIn (fun n => h n >>= f) g
+  /-- primitive recursion -/
   | prec (f h g : ℕ →. ℕ) (hf : RecursiveIn f g) (hh : RecursiveIn h g) :
       RecursiveIn (fun p =>
         let (a, n) := Nat.unpair p
         n.rec (f a) (fun y ih => do
           let i ← ih
           h (Nat.pair a (Nat.pair y i)))) g
+  /-- μ-recursion -/
   | rfind (f g : ℕ →. ℕ) (hf : RecursiveIn f g) :
       RecursiveIn (fun a =>
         Nat.rfind (fun n => (fun m => m = 0) <$> f (Nat.pair a n))) g
@@ -94,64 +92,70 @@ infix:50 " ≡ᵀ " => TuringEquivalent
 /--
 If a function is partial recursive, then it is recursive in every partial function.
 -/
-
-lemma Nat.Partrec.recursiveIn (f : ℕ →. ℕ) (pF : Nat.Partrec f) (g : ℕ →. ℕ) : RecursiveIn f g := by
-  induction pF
-  case zero =>
+lemma Nat.Partrec.recursiveIn (f : ℕ →. ℕ) (pF : Nat.Partrec f) (g : ℕ →. ℕ) :
+    RecursiveIn f g := by
+  induction pF with
+  | zero =>
     apply RecursiveIn.zero
-  case succ =>
+  | succ =>
     apply RecursiveIn.succ
-  case left =>
+  | left =>
     apply RecursiveIn.left
-  case right =>
+  | right =>
     apply RecursiveIn.right
-  case pair f' g' _ _ ih1 ih2 =>
-      apply RecursiveIn.pair f' g' g ih1 ih2
-  case comp f' g' _ _ ih1 ih2 =>
-    apply RecursiveIn.comp f' g' g ih1 ih2
-  case prec f' g' _ _ ih1 ih2 =>
-    apply RecursiveIn.prec f' g' g ih1 ih2
-  case rfind f' _ ih =>
-    apply RecursiveIn.rfind f' g ih
+  | pair _ _ ih1 ih2 =>
+    apply RecursiveIn.pair
+    · apply ih1
+    · apply ih2
+  | comp _ _ ih1 ih2 =>
+    apply RecursiveIn.comp
+    · apply ih1
+    · apply ih2
+  | prec _ _ ih1 ih2 =>
+    apply RecursiveIn.prec
+    · apply ih1
+    · apply ih2
+  | rfind _ ih =>
+    apply RecursiveIn.rfind; apply ih
 
 /--
 If a function is recursive in the constant zero function,
 then it is partial recursive.
 -/
 lemma RecursiveIn.partrec_of_zero (f : ℕ →. ℕ) (fRecInZero : RecursiveIn f fun _ => Part.some 0) :
-  Nat.Partrec f := by
+    Nat.Partrec f := by
   generalize h : (fun _ => Part.some 0) = fp at *
-  induction fRecInZero
-  case zero =>
+  induction fRecInZero with
+  | zero =>
     apply Nat.Partrec.zero
-  case succ =>
+  | succ =>
     apply Nat.Partrec.succ
-  case left =>
+  | left =>
     apply Nat.Partrec.left
-  case right =>
+  | right =>
     apply Nat.Partrec.right
-  case oracle g =>
+  | oracle g =>
     rw [← h]
     apply Nat.Partrec.zero
-  case pair _ _ _ _ ih1 ih2 =>
+  | pair _ _ _ _ _ ih1 ih2 =>
     apply Nat.Partrec.pair
     · apply ih1
       rw [← h]
     · apply ih2
       rw [← h]
-  case comp _ _ _ _ ih1 ih2 =>
+  | comp _ _ _ _ _ ih1 ih2 =>
     apply Nat.Partrec.comp
     · apply ih1
       rw [← h]
     · apply ih2
       rw [← h]
-  case prec _ _ _ _ ih1 ih2 =>
+  | prec _ _ _ _ _ ih1 ih2 =>
     apply Nat.Partrec.prec
     · apply ih1
       rw [← h]
     · apply ih2
       rw [← h]
-  case rfind _ _ ih =>
+  | rfind _ _ _ ih =>
     apply Nat.Partrec.rfind
     apply ih
     rw [← h]
@@ -180,82 +184,65 @@ instance : IsRefl (ℕ →. ℕ) RecursiveIn :=
 Proof that turing reducibility is transitive.
 -/
 theorem RecursiveIn.trans {f g h : ℕ →. ℕ} (hg : RecursiveIn f g) (hh : RecursiveIn g h) :
-  RecursiveIn f h := by
-  induction hg
-  case zero =>
+    RecursiveIn f h := by
+  induction hg with
+  | zero =>
     apply RecursiveIn.zero
-  case succ =>
+  | succ =>
     apply RecursiveIn.succ
-  case left =>
+  | left =>
     apply RecursiveIn.left
-  case right =>
+  | right =>
     apply RecursiveIn.right
-  case oracle =>
+  | oracle =>
     exact hh
-  case pair f' h' _ _ hf_ih hh_ih =>
+  | pair f' h' _ _ _ hf_ih hh_ih =>
     apply RecursiveIn.pair
     · apply hf_ih
       apply hh
     · apply hh_ih
       apply hh
-  case comp f' h' _ _ hf_ih hh_ih =>
+  | comp f' h' _ _ _ hf_ih hh_ih =>
     apply RecursiveIn.comp
     · apply hf_ih
       apply hh
     · apply hh_ih
       apply hh
-  case prec f' h' _ _ hf_ih hh_ih =>
+  | prec f' h' _ _ _ hf_ih hh_ih =>
     apply RecursiveIn.prec
     · apply hf_ih
       apply hh
     · apply hh_ih
       apply hh
-  case rfind f' _ hf_ih =>
+  | rfind f' _ _ hf_ih =>
     apply RecursiveIn.rfind
     · apply hf_ih
       apply hh
 
-/--
-Instance declaring that `RecursiveIn` is transitive.
--/
 instance : IsTrans (ℕ →. ℕ) RecursiveIn :=
   ⟨@RecursiveIn.trans⟩
 
-/--
-Instance declaring that `RecursiveIn` is a preorder.
--/
 instance : IsPreorder (ℕ →. ℕ) RecursiveIn where
   refl := RecursiveIn.refl
   trans := @RecursiveIn.trans
 
-/--
-Proof that `TuringEquivalent` is an equivalence relation.
--/
 theorem TuringEquivalent.equivalence : Equivalence TuringEquivalent :=
   (AntisymmRel.setoid _ _).iseqv
 
-/--
-Proof that `TuringEquivalent` is reflexive.
--/
 @[refl]
 theorem TuringEquivalent.refl (f : ℕ →. ℕ) : f ≡ᵀ f :=
   Equivalence.refl equivalence f
 
-/--
-Proof that `TuringEquivalent` is symmetric.
--/
 @[symm]
 theorem TuringEquivalent.symm {f g : ℕ →. ℕ} (h : f ≡ᵀ g) : g ≡ᵀ f :=
   Equivalence.symm equivalence h
 
-/--
-Proof that `TuringEquivalent` is transitive.
--/
 @[trans]
 theorem TuringEquivalent.trans {f g h : ℕ →. ℕ} (h1 : f ≡ᵀ g) (h2 : g ≡ᵀ h) : f ≡ᵀ h :=
   Equivalence.trans equivalence h1 h2
 
-/-- The type of Turing degrees, implemented as the quotient of partial functions (`PFun`) under Turing equivalence. -/
+/-- The type of Turing degrees, implemented as the
+quotient of partial functions (`PFun`) under Turing equivalence. -/
 abbrev TuringDegree : Type _ :=
   Antisymmetrization _ RecursiveIn
 
