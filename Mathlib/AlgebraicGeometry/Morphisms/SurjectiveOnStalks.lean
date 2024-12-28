@@ -10,7 +10,7 @@ import Mathlib.Topology.LocalAtTarget
 /-!
 # Morphisms surjective on stalks
 
-We define the classe of morphisms between schemes that are surjective on stalks.
+We define the class of morphisms between schemes that are surjective on stalks.
 We show that this class is stable under composition and base change.
 
 We also show that (`AlgebraicGeometry.SurjectiveOnStalks.isEmbedding_pullback`)
