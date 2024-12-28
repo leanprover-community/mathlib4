@@ -194,6 +194,7 @@ lemma iterationCocone_w_app_app_right
       (((iterationCocone I κ).ι.app j₁).app f).right := by
   rw [← Arrow.comp_right, ← NatTrans.comp_app, Cocone.w]
 
+@[nolint unusedHavesSuffices]
 noncomputable def isColimitIterationCocone : IsColimit (iterationCocone I κ) :=
   have := hasIterationOfShape I κ
   colimit.isColimit _
@@ -220,6 +221,7 @@ lemma succStruct_prop_le_propArrow :
     dsimp [succStruct]
     infer_instance
 
+@[nolint unusedHavesSuffices]
 lemma transfiniteCompositionOfShape_succStruct_prop_ιIteration :
     (succStruct I κ).prop.transfiniteCompositionsOfShape κ.ord.toType (ιIteration I κ) := by
   have := hasIterationOfShape I κ
@@ -252,8 +254,8 @@ noncomputable def iterationFunctorObjSuccObjLeftIso
   have := hasIterationOfShape I κ
   Arrow.leftFunc.mapIso (((succStruct I κ).iterationFunctorObjSuccIso j hj).app f)
 
-@[reassoc (attr := simp)]
-def ιFunctorObj_iterationFunctorObjSuccObjLeftIso_inv
+@[reassoc]
+lemma ιFunctorObj_iterationFunctorObjSuccObjLeftIso_inv
     (f : Arrow C) (j : κ.ord.toType) (hj : ¬ IsMax j) :
     letI := hasColimitsOfShape_discrete I κ
     letI := hasPushouts I κ
@@ -373,7 +375,7 @@ lemma objMap_id (f : Arrow C) : objMap I κ (𝟙 f) = 𝟙 _ := by
   simp only [objMap, Functor.map_id]
   rfl
 
-@[reassoc (attr := simp)]
+@[reassoc, simp]
 lemma objMap_comp {f g h : Arrow C} (φ : f ⟶ g) (ψ : g ⟶ h) :
     objMap I κ (φ ≫ ψ) = objMap I κ φ ≫ objMap I κ ψ := by
   simp only [objMap, Functor.map_comp]
