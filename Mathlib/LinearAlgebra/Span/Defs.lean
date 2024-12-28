@@ -358,12 +358,6 @@ theorem sup_toAddSubmonoid : (p ⊔ p').toAddSubmonoid = p.toAddSubmonoid ⊔ p'
   rw [mem_toAddSubmonoid, mem_sup, AddSubmonoid.mem_sup]
   rfl
 
-theorem sup_toAddSubgroup {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
-    (p p' : Submodule R M) : (p ⊔ p').toAddSubgroup = p.toAddSubgroup ⊔ p'.toAddSubgroup := by
-  ext x
-  rw [mem_toAddSubgroup, mem_sup, AddSubgroup.mem_sup]
-  rfl
-
 end
 
 theorem mem_span_singleton_self (x : M) : x ∈ R ∙ x :=
@@ -432,6 +426,7 @@ theorem span_insert (x) (s : Set M) : span R (insert x s) = (R ∙ x) ⊔ span R
 
 theorem span_insert_eq_span (h : x ∈ span R s) : span R (insert x s) = span R s :=
   span_eq_of_le _ (Set.insert_subset_iff.mpr ⟨h, subset_span⟩) (span_mono <| subset_insert _ _)
+
 
 theorem span_span : span R (span R s : Set M) = span R s :=
   span_eq _
@@ -521,7 +516,13 @@ end AddCommMonoid
 
 section AddCommGroup
 
-variable [Ring R] [AddCommGroup M] [Module R M]
+variable [Ring R] [AddCommGroup M] [Module R M] {ι : Type*} [DecidableEq ι] {i j : ι}
+
+lemma sup_toAddSubgroup (p p' : Submodule R M) :
+    (p ⊔ p').toAddSubgroup = p.toAddSubgroup ⊔ p'.toAddSubgroup := by
+  ext x
+  rw [mem_toAddSubgroup, mem_sup, AddSubgroup.mem_sup]
+  rfl
 
 theorem mem_span_insert' {x y} {s : Set M} :
     x ∈ span R (insert y s) ↔ ∃ a : R, x + a • y ∈ span R s := by
@@ -530,6 +531,22 @@ theorem mem_span_insert' {x y} {s : Set M} :
     exact ⟨-a, by simp [hz, add_assoc]⟩
   · rintro ⟨a, h⟩
     exact ⟨-a, _, h, by simp [add_comm, add_left_comm]⟩
+
+lemma span_range_update_add_smul (hij : i ≠ j) (v : ι → M) (r : R) :
+    span R (Set.range (Function.update v j (v j + r • v i))) = span R (Set.range v) := by
+  refine le_antisymm ?_ ?_ <;> simp only [span_le, Set.range_subset_iff, SetLike.mem_coe] <;>
+    intro k <;> obtain rfl | hjk := eq_or_ne j k
+  · rw [update_same]
+    exact add_mem (subset_span ⟨j, rfl⟩) <| smul_mem _ _ <| subset_span ⟨i, rfl⟩
+  · exact subset_span ⟨k, (update_noteq hjk.symm ..).symm⟩
+  · nth_rw 2 [← add_sub_cancel_right (v j) (r • v i)]
+    exact sub_mem (subset_span ⟨j, update_same ..⟩)
+      (smul_mem _ _ (subset_span ⟨i, update_noteq hij ..⟩))
+  · exact subset_span ⟨k, update_noteq hjk.symm ..⟩
+
+lemma span_range_update_sub_smul (hij : i ≠ j) (v : ι → M) (r : R) :
+    span R (Set.range (Function.update v j (v j - r • v i))) = span R (Set.range v) := by
+  rw [sub_eq_add_neg, ← neg_smul, span_range_update_add_smul hij]
 
 end AddCommGroup
 

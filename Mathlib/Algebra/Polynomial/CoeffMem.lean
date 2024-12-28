@@ -17,8 +17,6 @@ Precisely, we show that each summand needs at most one coefficient of `p` and `d
 of `q`.
 -/
 
-open Function
-
 namespace Polynomial
 variable {ι R S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
@@ -104,20 +102,12 @@ lemma coeff_divByMonic_mem_pow_natDegree_mul (p q : S[X])
     gcongr <;> exact sup_le (by simpa) (by simpa [Submodule.span_le, Set.range_subset_iff])
   · simp
 
-open Ideal in
-lemma idealSpan_range_update_divByMonic [DecidableEq ι] (v : ι → R[X]) {i j : ι} (hij : i ≠ j)
-    (hi : (v i).Monic) :
-    span (Set.range (Function.update v j (v j %ₘ v i))) = span (Set.range v) := by
-  refine le_antisymm ?_ ?_ <;> simp only [span_le, Set.range_subset_iff, SetLike.mem_coe] <;>
-    intro k <;> obtain rfl | hjk := eq_or_ne j k
-  · rw [update_same, modByMonic_eq_sub_mul_div (v j) hi]
-    exact sub_mem (subset_span ⟨j, rfl⟩) <| mul_mem_right _ _ <| subset_span ⟨i, rfl⟩
-  · exact subset_span ⟨k, (update_noteq (.symm hjk) ..).symm⟩
-  · nth_rw 2 [← modByMonic_add_div (v j) hi]
-    apply add_mem (subset_span ?_) (mul_mem_right _ _ (subset_span ?_))
-    · exact ⟨j, update_same ..⟩
-    · exact ⟨i, update_noteq hij ..⟩
-  · exact subset_span ⟨k, update_noteq (.symm hjk) ..⟩
+variable [DecidableEq ι] {i j : ι}
 
+open Function Ideal in
+lemma idealSpan_range_update_divByMonic (hij : i ≠ j) (v : ι → R[X]) (hi : (v i).Monic) :
+    span (Set.range (Function.update v j (v j %ₘ v i))) = span (Set.range v) := by
+  rw [modByMonic_eq_sub_mul_div _ hi, mul_comm, ← smul_eq_mul, Ideal.span, Ideal.span,
+    Submodule.span_range_update_sub_smul hij]
 
 end Polynomial
