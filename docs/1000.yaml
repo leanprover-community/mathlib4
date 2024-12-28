@@ -1132,7 +1132,7 @@ Q1068085:
 
 Q1068283:
   title: Löwenheim–Skolem theorem
-  decl: exists_elementaryEmbedding_card_eq
+  decl: FirstOrder.Language.exists_elementaryEmbedding_card_eq
 
 Q1068385:
   title: Clairaut's theorem
@@ -1321,7 +1321,7 @@ Q1191319:
 
 Q1191709:
   title: Egorov's theorem
-  decl: MeasureTheory.Egorov
+  decl: MeasureTheory.tendstoUniformlyOn_of_ae_tendsto
   author: Kexing Ying
 
 Q1191862:
@@ -1329,7 +1329,7 @@ Q1191862:
 
 Q1194053:
   title: Metrization theorems
-  decl: metrizableSpace_of_t3_secondCountable
+  decl: TopologicalSpace.metrizableSpace_of_t3_secondCountable
   comment: "Urysohn's metrization theorem (only)"
 
 Q1196538:
@@ -1413,7 +1413,7 @@ Q1340623:
 
 Q1346677:
   title: Tietze extension theorem
-  decl: exists_extension_norm_eq_of_isClosedEmbedding'
+  decl: BoundedContinuousFunction.exists_extension_norm_eq_of_isClosedEmbedding
 
 Q1347094:
   title: Alternate Interior Angles Theorem
@@ -1540,7 +1540,7 @@ Q1564541:
 
 Q1566341:
   title: Hindman's theorem
-  decl: FP_partition_regular
+  decl: Hindman.FP_partition_regular
   author: David Wärn
 
 Q1566372:
