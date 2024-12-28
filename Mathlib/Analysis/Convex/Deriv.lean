@@ -407,10 +407,9 @@ This is fractionally weaker than `ConvexOn.le_slope_of_hasDerivWithinAt_Ioi` but
 under a `DifferentiableOn S` hypothesis. -/
 lemma le_slope_of_hasDerivWithinAt (hfc : ConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
     (hf' : HasDerivWithinAt f f' S x) :
-    f' ≤ slope f x y := by
-  refine hfc.le_slope_of_hasDerivWithinAt_Ioi hx hy hxy (hf'.mono_of_mem_nhdsWithin ?_)
-  rw [mem_nhdsWithin_Ioi_iff_exists_Ioc_subset]
-  exact ⟨y, hxy, Ioc_subset_Icc_self.trans (hfc.1.ordConnected.out hx hy)⟩
+    f' ≤ slope f x y :=
+  hfc.le_slope_of_hasDerivWithinAt_Ioi hx hy hxy <|
+    hf'.mono_of_mem_nhdsWithin <| hfc.1.ordConnected.mem_nhdsGT hx hy hxy
 
 /-- Reformulation of `ConvexOn.le_slope_of_hasDerivWithinAt` using `derivWithin`. -/
 lemma derivWithin_le_slope (hfc : ConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
@@ -462,10 +461,9 @@ This is fractionally weaker than `ConvexOn.slope_le_of_hasDerivWithinAt_Iio` but
 under a `DifferentiableOn S` hypothesis. -/
 lemma slope_le_of_hasDerivWithinAt (hfc : ConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
     (hf' : HasDerivWithinAt f f' S y) :
-    slope f x y ≤ f' := by
-  refine hfc.slope_le_of_hasDerivWithinAt_Iio hx hy hxy (hf'.mono_of_mem_nhdsWithin ?_)
-  rw [mem_nhdsWithin_Iio_iff_exists_Ico_subset]
-  exact ⟨x, hxy, Ico_subset_Icc_self.trans (hfc.1.ordConnected.out hx hy)⟩
+    slope f x y ≤ f' :=
+  hfc.slope_le_of_hasDerivWithinAt_Iio hx hy hxy <|
+    hf'.mono_of_mem_nhdsWithin <| hfc.1.ordConnected.mem_nhdsLT hx hy hxy
 
 /-- Reformulation of `ConvexOn.slope_le_of_hasDerivWithinAt` using `derivWithin`. -/
 lemma slope_le_derivWithin (hfc : ConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
@@ -546,10 +544,9 @@ This is fractionally weaker than `StrictConvexOn.lt_slope_of_hasDerivWithinAt_Io
 apply under a `DifferentiableOn S` hypothesis. -/
 lemma lt_slope_of_hasDerivWithinAt (hfc : StrictConvexOn ℝ S f)
     (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' S x) :
-    f' < slope f x y := by
-  refine hfc.lt_slope_of_hasDerivWithinAt_Ioi hx hy hxy (hf'.mono_of_mem_nhdsWithin ?_)
-  rw [mem_nhdsWithin_Ioi_iff_exists_Ioc_subset]
-  exact ⟨y, hxy, Ioc_subset_Icc_self.trans (hfc.1.ordConnected.out hx hy)⟩
+    f' < slope f x y :=
+  hfc.lt_slope_of_hasDerivWithinAt_Ioi hx hy hxy <|
+    hf'.mono_of_mem_nhdsWithin <| hfc.1.ordConnected.mem_nhdsGT hx hy hxy
 
 lemma derivWithin_lt_slope (hfc : StrictConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
     (hfd : DifferentiableWithinAt ℝ f S x) :
@@ -599,10 +596,9 @@ This is fractionally weaker than `StrictConvexOn.slope_lt_of_hasDerivWithinAt_Ii
 apply under a `DifferentiableOn S` hypothesis.-/
 lemma slope_lt_of_hasDerivWithinAt (hfc : StrictConvexOn ℝ S f)
     (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) (hf' : HasDerivWithinAt f f' S y) :
-    slope f x y < f' := by
-  refine hfc.slope_lt_of_hasDerivWithinAt_Iio hx hy hxy (hf'.mono_of_mem_nhdsWithin ?_)
-  rw [mem_nhdsWithin_Iio_iff_exists_Ico_subset]
-  exact ⟨x, hxy, Ico_subset_Icc_self.trans (hfc.1.ordConnected.out hx hy)⟩
+    slope f x y < f' :=
+  hfc.slope_lt_of_hasDerivWithinAt_Iio hx hy hxy <|
+    hf'.mono_of_mem_nhdsWithin <| hfc.1.ordConnected.mem_nhdsLT hx hy hxy
 
 lemma slope_lt_derivWithin (hfc : StrictConvexOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
     (hfd : DifferentiableWithinAt ℝ f S y) :
@@ -668,10 +664,9 @@ lemma slope_le_right_deriv (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ 
 
 lemma slope_le_of_hasDerivWithinAt (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
     (hfd : HasDerivWithinAt f f' S x) :
-    slope f x y ≤ f' := by
-  refine hfc.slope_le_of_hasDerivWithinAt_Ioi hx hy hxy (hfd.mono_of_mem_nhdsWithin ?_)
-  rw [mem_nhdsWithin_Ioi_iff_exists_Ioc_subset]
-  exact ⟨y, hxy, Ioc_subset_Icc_self.trans (hfc.1.ordConnected.out hx hy)⟩
+    slope f x y ≤ f' :=
+  hfc.slope_le_of_hasDerivWithinAt_Ioi hx hy hxy <|
+    hfd.mono_of_mem_nhdsWithin <| hfc.1.ordConnected.mem_nhdsGT hx hy hxy
 
 lemma slope_le_derivWithin (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
     (hfd : DifferentiableWithinAt ℝ f S x) :
@@ -708,10 +703,9 @@ lemma left_deriv_le_slope (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S
 
 lemma le_slope_of_hasDerivWithinAt (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
     (hf' : HasDerivWithinAt f f' S y) :
-    f' ≤ slope f x y := by
-  refine hfc.le_slope_of_hasDerivWithinAt_Iio hx hy hxy (hf'.mono_of_mem_nhdsWithin ?_)
-  rw [mem_nhdsWithin_Iio_iff_exists_Ico_subset]
-  exact ⟨x, hxy, Ico_subset_Icc_self.trans (hfc.1.ordConnected.out hx hy)⟩
+    f' ≤ slope f x y :=
+  hfc.le_slope_of_hasDerivWithinAt_Iio hx hy hxy <|
+    hf'.mono_of_mem_nhdsWithin <| hfc.1.ordConnected.mem_nhdsLT hx hy hxy
 
 lemma derivWithin_le_slope (hfc : ConcaveOn ℝ S f) (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y)
     (hfd : DifferentiableWithinAt ℝ f S y) :

@@ -50,7 +50,7 @@ set_option quotPrecheck false in
 /-- `X _[n]` denotes the `n`th-term of the simplicial object X -/
 scoped[Simplicial]
   notation3:1000 X " _[" n "]" =>
-    (X : CategoryTheory.SimplicialObject _).obj (Opposite.op (SimplexCategory.mk n))
+      (X : CategoryTheory.SimplicialObject _).obj (Opposite.op (SimplexCategory.mk n))
 
 open Simplicial
 
