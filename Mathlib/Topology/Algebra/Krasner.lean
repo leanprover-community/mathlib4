@@ -19,6 +19,8 @@ import Mathlib.FieldTheory.IntermediateField.Algebraic
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.Analysis.Normed.Field.Ultra
 import Mathlib.Analysis.Normed.Ring.Ultra
+
+import Mathlib.RingTheory.Valuation.ValExtension
 /-!
 # Krasner's Lemma
 
@@ -76,50 +78,59 @@ section test
 --   eq_zero_of_map_eq_zero' _ := norm_eq_zero.mp
 --   smul' := norm_smul
 
-theorem IsUltrametricDist.isNonarchimedean {R} [NormedRing R] [IsUltrametricDist R] :
-    IsNonarchimedean (‖·‖ : R → ℝ) := by
-  intro x y
-  convert dist_triangle_max 0 x (x+y) using 1
-  · simp
-  · congr <;> simp
+-- theorem IsUltrametricDist.isNonarchimedean {R} [NormedRing R] [IsUltrametricDist R] :
+--     IsNonarchimedean (‖·‖ : R → ℝ) := by
+--   intro x y
+--   convert dist_triangle_max 0 x (x+y) using 1
+--   · simp
+--   · congr <;> simp
 
-theorem isUltrametricDist_iff_isNonarchimedean {R} [NormedRing R] :
-    IsUltrametricDist R ↔ IsNonarchimedean (‖·‖ : R → ℝ) :=
-  ⟨fun h => h.isNonarchimedean, IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm⟩
+-- theorem isUltrametricDist_iff_isNonarchimedean {R} [NormedRing R] :
+--     IsUltrametricDist R ↔ IsNonarchimedean (‖·‖ : R → ℝ) :=
+--   ⟨fun h => h.isNonarchimedean, IsUltrametricDist.isUltrametricDist_of_isNonarchimedean_norm⟩
 
-theorem IsUltrametricDist.isUltrametricDist_iff_forall_norm_natCast_le_one {R : Type*}
-    [NormedDivisionRing R] : IsUltrametricDist R ↔ ∀ n : ℕ, ‖(n : R)‖ ≤ 1 :=
-  ⟨fun _ => IsUltrametricDist.norm_natCast_le_one R,
-      isUltrametricDist_of_forall_norm_natCast_le_one⟩
+-- theorem IsUltrametricDist.isUltrametricDist_iff_forall_norm_natCast_le_one {R : Type*}
+--     [NormedDivisionRing R] : IsUltrametricDist R ↔ ∀ n : ℕ, ‖(n : R)‖ ≤ 1 :=
+--   ⟨fun _ => IsUltrametricDist.norm_natCast_le_one R,
+--       isUltrametricDist_of_forall_norm_natCast_le_one⟩
 
-theorem IsUltrametricDist.of_normedAlgebra (K : Type*) {L : Type*} [NormedField K]
-    [NormedDivisionRing L] [NormedAlgebra K L] [h : IsUltrametricDist K] : IsUltrametricDist L := by
-  rw [IsUltrametricDist.isUltrametricDist_iff_forall_norm_natCast_le_one] at h ⊢
-  intro n
-  specialize h n
-  exact (algebraMap.coe_natCast (R := K) (A := L) n) ▸ norm_algebraMap' L (n : K) ▸ h
+-- theorem IsUltrametricDist.of_normedAlgebra (K : Type*) {L : Type*} [NormedField K]
+--     [NormedDivisionRing L] [NormedAlgebra K L] [h : IsUltrametricDist K] :
+-- IsUltrametricDist L := by
+--   rw [IsUltrametricDist.isUltrametricDist_iff_forall_norm_natCast_le_one] at h ⊢
+--   intro n
+--   specialize h n
+--   exact (algebraMap.coe_natCast (R := K) (A := L) n) ▸ norm_algebraMap' L (n : K) ▸ h
 
-/-- K : field L : division ring-/
-theorem IsNonarchimedean.norm_extension (is_na : IsNonarchimedean (‖·‖ : K → ℝ))
-    (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖) : IsNonarchimedean (‖·‖ : L → ℝ) := by
-  refine @IsUltrametricDist.isNonarchimedean L _ ?_
-  rw [IsUltrametricDist.isUltrametricDist_iff_forall_norm_natCast_le_one]
+-- /-- K : field L : division ring-/
+-- theorem IsNonarchimedean.norm_extension (is_na : IsNonarchimedean (‖·‖ : K → ℝ))
+--     (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖) : IsNonarchimedean (‖·‖ : L → ℝ) := by
+--   refine @IsUltrametricDist.isNonarchimedean L _ ?_
+--   rw [IsUltrametricDist.isUltrametricDist_iff_forall_norm_natCast_le_one]
 
-  apply IsNonarchimedean.of_algebraMap_nat
-  intro x y
-  simp only [IsScalarTower.algebraMap_apply ℕ K L, ← extd]
-  exact map_add ((algebraMap ℕ K)) _ _ ▸ is_na _ _
+--   apply IsNonarchimedean.of_algebraMap_nat
+--   intro x y
+--   simp only [IsScalarTower.algebraMap_apply ℕ K L, ← extd]
+--   exact map_add ((algebraMap ℕ K)) _ _ ▸ is_na _ _
 
 -- this is another PR, showing that fron any divisionring, nonarch is equiv to nonarch
 -- pullback to natural numbers
 
 open IntermediateField
+
+theorem IsConjRoot.mem_normalClosure {K L} [Field K] [Field L] [Algebra K L]
+    {x y : L} (hx : IsAlgebraic K x) (h : IsConjRoot K x y) :
+    y ∈ normalClosure K K⟮x⟯ L := by
+
+
+-- wrong , should be K(all conj of x)
 theorem IsConjRoot.exists_algEquiv_of_minpoly_split {K L} [Field K] [Field L] [Algebra K L]
-    [Algebra.IsAlgebraic K L] {x y: L}
+    [Algebra.IsAlgebraic K L] {x y : L}
     (h : IsConjRoot K x y) (sp : (minpoly K x).Splits (algebraMap K L)) :
     ∃ σ : L ≃ₐ[K] L, σ y = x := by
   obtain ⟨σ, hσ⟩ :=
-    exists_algHom_of_splits_of_aeval (fun s => ⟨sorry, sorry⟩)
+    exists_algHom_of_splits_of_aeval
+      (fun s => ⟨(Algebra.IsAlgebraic.isAlgebraic s).isIntegral, sorry⟩)
     --minpoly_add_algebraMap_splits
       (h ▸ minpoly.aeval K x)
   exact ⟨AlgEquiv.ofBijective σ sorry, hσ⟩ -- fin dim vector space inj => bij
@@ -127,9 +138,15 @@ theorem IsConjRoot.exists_algEquiv_of_minpoly_split {K L} [Field K] [Field L] [A
 
 end test
 
-def uniqueNormExtension (K L : Type*) [NormedCommRing K] [Field L] [Algebra K L]
-    [Algebra.IsAlgebraic K L] :=
-  ∃! (_ : NormedField L), ∀ (x : K), ‖x‖ = ‖algebraMap K L x‖
+def uniqueMulAlgebraNorm (K L : Type*) [NormedField K] [Ring L] [Algebra K L]
+    [Algebra.IsAlgebraic K L] : Prop :=
+  Subsingleton (MulAlgebraNorm K L) ∧ Nonempty (MulAlgebraNorm K L)
+
+instance fooBar (K L) [NontriviallyNormedField K] [IsUltrametricDist K] [CompleteSpace K] [Field L]
+    [Algebra K L] [Algebra.IsAlgebraic K L] : Unique (MulAlgebraNorm K L) := ⟨sorry, sorry⟩
+-- def uniqueNormExtension (K L : Type*) [NormedCommRing K] [Field L] [Algebra K L]
+--     [Algebra.IsAlgebraic K L] :=
+--   ∃! (_ : NormedField L), ∀ (x : K), ‖x‖ = ‖algebraMap K L x‖
 
 -- def uniqueNormExtension' (K L : Type*) [NormedCommRing K] [Field L] [Algebra K L]
 --     [Algebra.IsAlgebraic K L] :=
@@ -140,10 +157,10 @@ def uniqueNormExtension (K L : Type*) [NormedCommRing K] [Field L] [Algebra K L]
 -- #check RingHomClass.toNonUnitalRingHomClass
 -- #synth RingEquivClass (L ≃ₐ[K] L) L L
 -- #synth NonUnitalRingHomClass (L ≃ₐ[K] L) L L
-theorem IsConjRoot.norm_eq_of_uniqueNormExtension (K L) [NormedField K] [Nm_L : NormedField L]
-    [Algebra K L]
-    [Algebra.IsAlgebraic K L] (x y: L) (uniq : uniqueNormExtension K L)
-    (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖) (sp : (minpoly K x).Splits (algebraMap K L))
+theorem IsConjRoot.norm_eq_of_uniqueMulAlgebraNorm (K L) [NormedField K] [Nm_L : NormedField L]
+    [NormedAlgebra K L]
+    [Algebra.IsAlgebraic K L] (x y: L) (uniq : uniqueMulAlgebraNorm K L)
+    (sp : (minpoly K x).Splits (algebraMap K L))
     (h : IsConjRoot K x y) : ‖x‖ = ‖y‖ := by
   obtain ⟨σ, hσ⟩ := IsConjRoot.exists_algEquiv_of_minpoly_split h sp
   symm
@@ -209,7 +226,10 @@ theorem IsKrasnerNorm.krasner_norm [IsKrasnerNorm K L] {x y : L} (hx : (minpoly 
     (h : (∀ x' : L, IsConjRoot K x x' → x ≠ x' → ‖x - y‖ < ‖x - x'‖)) : x ∈ K⟮y⟯ :=
   IsKrasnerNorm.krasner_norm' hx sp hy h
 
-theorem of_completeSpace {K L : Type*} [Nm_K : NontriviallyNormedField K] [CompleteSpace K] [Nm_L : NormedField L] [Algebra K L] (is_na : IsNonarchimedean (‖·‖ : K → ℝ)) [Algebra.IsAlgebraic K L] (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖) (uniq : ∀ M : IntermediateField K L, uniqueNormExtension K M) : IsKrasnerNorm K L := by
+-- (is_na : IsNonarchimedean (‖·‖ : K → ℝ))
+#check AlgebraNorm
+-- MulNormedAlgebra = NormedAlgebra + ‖r • x ‖ = ‖r ‖ * ‖ x ‖
+theorem of_completeSpace {K L : Type*} [Nm_K : NontriviallyNormedField K] [CompleteSpace K] [IsUltrametricDist K] [Nm_L : NormedField L] [NormedAlgebra K L] [Algebra.IsAlgebraic K L] (uniq : ∀ M : IntermediateField K L, uniqueMulAlgebraNorm M L) : IsKrasnerNorm K L := by
   constructor
   intro x y xsep sp yint kr
   let z := x - y
@@ -218,8 +238,8 @@ theorem of_completeSpace {K L : Type*} [Nm_K : NontriviallyNormedField K] [Compl
   let i_K : NormedAddGroupHom K (⊥ : IntermediateField K L) :=
     (AddMonoidHomClass.toAddMonoidHom (botEquiv K L).symm).mkNormedAddGroupHom 1 (by simp [extd])
   have _ : ContinuousSMul K M := by
-    apply IsInducing.continuousSMul (N := K) (M := (⊥ : IntermediateField K L)) (X := M) (Y := M)
-      (f := (IntermediateField.botEquiv K L).symm) IsInducing.id i_K.continuous
+    apply Topology.IsInducing.continuousSMul (N := K) (M := (⊥ : IntermediateField K L)) (X := M) (Y := M)
+      (f := (IntermediateField.botEquiv K L).symm) Topology.IsInducing.id i_K.continuous
     intros c x
     rw [Algebra.smul_def, @Algebra.smul_def (⊥ : IntermediateField K L) M _ _ _]
     rfl -- note to reviewers: This is an ugly `rfl`. I'm not sure how to make it better.
@@ -269,7 +289,7 @@ theorem of_completeSpace {K L : Type*} [Nm_K : NontriviallyNormedField K] [Compl
   -- need rank one -- exist_algEquiv
   have extdM : ∀ x : M, ‖x‖ = ‖algebraMap M L x‖ := by
     sorry
-  have uniqM : uniqueNormExtension M L := by
+  have uniqM : uniqueMulAlgebraNorm M L := by
     sorry
   have : ‖z - z'‖ < ‖z - z'‖ := by
     calc
@@ -403,3 +423,17 @@ theorem IsKrasner.krasner [IsKrasner K L] {x y : L} (hx : IsSeparable K x)
   IsKrasner.krasner' hx sp hy h
 
 end Valued
+
+def uniqueValExtension {K L ΓK} [LinearOrderedCommGroupWithZero ΓK] [Field K]
+[Field L] [Algebra K L] [vK : Valued K ΓK] : Prop :=
+  ∀ {Γ Γ' : Type*} [LinearOrderedCommGroupWithZero Γ]
+  [LinearOrderedCommGroupWithZero Γ'], ∀ v : Valuation L Γ, ∀ v' : Valuation L Γ',
+  IsValExtension vK.v v → IsValExtension vK.v v' → v.IsEquiv v' ∧
+    ∃ (Γ : Type*), ∃ (_ : LinearOrderedCommGroupWithZero Γ),
+    ∃ (v : Valuation L Γ), IsValExtension vK.v v
+
+theorem IsKrasner.of_completeSpace {K L ΓK ΓL: Type*} [Field K] [LinearOrderedCommGroupWithZero ΓK]
+[LinearOrderedCommGroupWithZero ΓL] [vK : Valued K ΓK]
+[CompleteSpace K] [Field L] [vL : Valued L NNReal] [Algebra K L]
+[IsValExtension vK.v vL.v] [Algebra.IsAlgebraic K L] [vK.v.RankOne] [vL.v.RankOne]
+(uniq : ∀ M : IntermediateField K L, sorry) : IsKrasnerNorm K L := by sorry
