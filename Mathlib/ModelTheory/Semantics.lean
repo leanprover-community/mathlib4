@@ -383,16 +383,8 @@ theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M
     simp only [mapTermRel, Realize, realize_castLE_of_eq h, ih3 (hmn.trans k.succ.le_succ)]
     refine forall_congr' fun x => iff_eq_eq.mpr (congr rfl (funext (Fin.lastCases ?_ fun i => ?_)))
     · simp only [Function.comp_apply, val_last, snoc_last]
-      by_cases h : k < m
-      · rw [if_pos h]
-        refine (congr rfl (Fin.ext ?_)).trans (snoc_last _ _)
-        simp only [coe_cast, coe_castAdd, val_last, self_eq_add_right]
-        refine le_antisymm
-          (le_of_add_le_add_left ((hmn.trans (Nat.succ_le_of_lt h)).trans ?_)) n'.zero_le
-        rw [add_zero]
-      · rw [if_neg h]
-        refine (congr rfl (Fin.ext ?_)).trans (snoc_last _ _)
-        simp
+      refine (congr rfl (Fin.ext ?_)).trans (snoc_last _ _)
+      split_ifs <;> dsimp; omega
     · simp only [Function.comp_apply, Fin.snoc_castSucc]
       refine (congr rfl (Fin.ext ?_)).trans (snoc_castSucc _ _ _)
       simp only [coe_castSucc, coe_cast]

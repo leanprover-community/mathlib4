@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.Algebra.Colimit.ModuleRing
+import Mathlib.Algebra.Colimit.Module
 
 /-!
 # The category of R-modules has all limits
@@ -204,10 +204,10 @@ section DirectLimit
 open Module
 
 variable {ι : Type v}
-variable [dec_ι : DecidableEq ι] [Preorder ι]
+variable [DecidableEq ι] [Preorder ι]
 variable (G : ι → Type v)
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
-variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) [DirectedSystem G fun i j h => f i j h]
+variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j) [DirectedSystem G fun i j h ↦ f i j h]
 
 /-- The diagram (in the sense of `CategoryTheory`)
  of an unbundled `directLimit` of modules. -/
@@ -241,7 +241,7 @@ def directLimitCocone : Cocone (directLimitDiagram G f) where
 /-- The unbundled `directLimit` of modules is a colimit
 in the sense of `CategoryTheory`. -/
 @[simps]
-def directLimitIsColimit [IsDirected ι (· ≤ ·)] : IsColimit (directLimitCocone G f) where
+def directLimitIsColimit : IsColimit (directLimitCocone G f) where
   desc s := ofHom <|
     Module.DirectLimit.lift R ι G f (fun i => (s.ι.app i).hom) fun i j h x => by
       simp only [Functor.const_obj_obj]
