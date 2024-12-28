@@ -1672,7 +1672,7 @@ theorem smul_finset_subset_smul_finset_iff : a • s ⊆ a • t ↔ s ⊆ t :=
 theorem smul_finset_subset_iff : a • s ⊆ t ↔ s ⊆ a⁻¹ • t := by
   simp_rw [← coe_subset]
   push_cast
-  exact Set.smul_set_subset_iff
+  exact Set.smul_set_subset_iff_subset_inv_smul_set
 
 @[to_additive]
 theorem subset_smul_finset_iff : s ⊆ a • t ↔ a⁻¹ • s ⊆ t := by
