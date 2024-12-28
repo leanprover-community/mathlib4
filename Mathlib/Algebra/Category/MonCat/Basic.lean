@@ -122,14 +122,14 @@ add_decl_doc AddMonCat.ofHom
 lemma ofHom_apply {X Y : Type u} [Monoid X] [Monoid Y] (f : X →* Y) (x : X) :
     (ofHom f) x = f x := rfl
 
----- Porting note: added to ease the port of `RepresentationTheory.Action.Basic`
+---- Porting note: added to ease the port of `CategoryTheory.Action.Basic`
 @[to_additive]
 instance (X Y : MonCat.{u}) : One (X ⟶ Y) := ⟨ofHom 1⟩
 
 @[to_additive (attr := simp)]
 lemma oneHom_apply (X Y : MonCat.{u}) (x : X) : (1 : X ⟶ Y) x = 1 := rfl
 
----- Porting note: added to ease the port of `RepresentationTheory.Action.Basic`
+---- Porting note: added to ease the port of `CategoryTheory.Action.Basic`
 @[to_additive (attr := simp)]
 lemma one_of {A : Type*} [Monoid A] : (1 : MonCat.of A) = (1 : A) := rfl
 

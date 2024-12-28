@@ -128,7 +128,7 @@ theorem _root_.ZFSet.isOrdinal_iff_isTrans :
   mp h := ⟨h.isTransitive, h.isTrans⟩
   mpr := by
     rintro ⟨h₁, ⟨h₂⟩⟩
-    refine ⟨h₁, @fun y z w hyz hzw hwx ↦ ?_⟩
+    refine ⟨h₁, fun {y z w} hyz hzw hwx ↦ ?_⟩
     have hzx := h₁.mem_trans hzw hwx
     exact h₂ ⟨y, h₁.mem_trans hyz hzx⟩ ⟨z, hzx⟩ ⟨w, hwx⟩ hyz hzw
 

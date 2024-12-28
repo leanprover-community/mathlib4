@@ -31,8 +31,8 @@ Weyl group.
  * `rootForm_self_non_neg`: `RootForm` is positive semidefinite.
 
 ## References:
- * [N. Bourbaki, *Lie groups and {L}ie algebras. {C}hapters 4--6*][bourbaki1968]
- * [M. Demazure, *SGA III, Expos\'{e} XXI, Don\'{e}es Radicielles*][demazure1970]
+ * [N. Bourbaki, *Lie groups and Lie algebras. Chapters 4--6*][bourbaki1968]
+ * [M. Demazure, *SGA III, Exposé XXI, Données Radicielles*][demazure1970]
 
 ## TODO (possibly in other files)
  * Weyl-invariance
@@ -189,7 +189,7 @@ lemma corootForm_self_smul_root (i : ι) :
 
 lemma rootForm_self_sum_of_squares (x : M) :
     IsSumSq (P.RootForm x x) :=
-  P.rootForm_apply_apply x x ▸ isSumSq_sum_mul_self Finset.univ _
+  P.rootForm_apply_apply x x ▸ IsSumSq.sum_mul_self Finset.univ _
 
 lemma rootForm_root_self (j : ι) :
     P.RootForm (P.root j) (P.root j) = ∑ (i : ι), (P.pairing j i) * (P.pairing j i) := by
