@@ -274,8 +274,8 @@ lemma rieszContent_ne_top {K : Compacts X} : rieszContent Λ K ≠ ⊤ := by
 
 lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
   intro K
-  simp only [rieszContent]
-  apply le_antisymm
+  simp only [rieszContent, le_antisymm_iff, le_iInf_iff, ENNReal.coe_le_coe]
+  constructor
   · apply le_iInf
     simp only [le_iInf_iff, ENNReal.coe_le_coe]
     intro K' hK'
