@@ -90,7 +90,7 @@ lemma test : (L ⊔ K).carrier = L.carrier + K.carrier := by
 
 
 structure Lsummand (G : Type*) [NormedAddCommGroup G] extends AddSubgroup G where
-  compl := ∃ (K : AddSubgroup G), carrier ⊔ K = ⊤ ∧ ∀ x ∈ carrier, ∀ y ∈ K, ‖x‖ + ‖y‖ = ‖x + y‖
+  compl : ∃ (K : AddSubgroup G), carrier ⊔ K = ⊤ ∧ ∀ x ∈ carrier, ∀ y ∈ K, ‖x‖ + ‖y‖ = ‖x + y‖
 
 variable {M : Type*} [Ring M] [Module M X]
 
@@ -345,6 +345,33 @@ instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
 theorem contractive {P : M} (h : IsLprojection X P) (x : X) : ‖P • x‖ ≤ ‖x‖ := by
   simp only [(h.Lnorm x), le_add_iff_nonneg_right, norm_nonneg]
 
+instance {T : M} : (AddSubgroup X) (T • (Set.univ : Set X)) := sorry
+
+
+def range (P : { P : M // IsLprojection X P }) : Lsummand X := {
+  carrier := P.val • Set.univ
+  add_mem' ha hb := by
+    obtain ⟨c,⟨hc₁,hc₂⟩⟩ := ha
+    obtain ⟨d,⟨_,hd⟩⟩ := hb
+    simp at hc₂
+    simp at hd
+    rw [← hc₂, ← hd, ← smul_add]
+    exact Set.smul_mem_smul_set hc₁
+  zero_mem' := Set.zero_mem_smul_set trivial
+  neg_mem' ha := by
+    --simp only at ha
+    --simp only
+    obtain ⟨c,⟨hc₁,hc₂⟩⟩ := ha
+    --simp at hc₂
+    rw [← hc₂]
+    rw [← smul_neg]
+    exact Set.smul_mem_smul_set hc₁
+  compl := by
+    use (Pᶜ.val • (Set.univ : Set X)
+
+}
+
+
 /-
 instance : FunLike { P : M // IsLprojection X P } X X where
   coe f := fun x => f.val • x
@@ -363,6 +390,8 @@ lemma range_inter [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
   have h1 : Commute P.val Q.val := P.prop.commute Q.prop
   rw [← (IsIdempotentElem.range_prod_of_commute P.prop.1 Q.prop.1 h1)]
   rfl
+
+#check Subgroup.smul_sup
 
 lemma range_sum [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
     P.val • Set.univ + Q.val • Set.univ = (P ⊔ Q).val • (Set.univ : Set X) := by
