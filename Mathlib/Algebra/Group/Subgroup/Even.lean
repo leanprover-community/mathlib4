@@ -3,9 +3,8 @@ Copyright (c) 2024 Artie Khovanov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Artie Khovanov
 -/
-import Mathlib.Algebra.Group.Even.Basic
+import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.Subgroup.Defs
-import Mathlib.Algebra.Order.Ring.Unbundled.Basic
 
 /-!
 # Squares and even elements
@@ -85,9 +84,3 @@ theorem mem_squareIn : a ∈ squareIn G ↔ IsSquare a := Iff.rfl
 theorem coe_squareIn : squareIn G = {s : G | IsSquare s} := rfl
 
 end Subgroup
-
-theorem IsSquare.nonneg {R : Type*} [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
-    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
-    {x : R} (h : IsSquare x) : 0 ≤ x := by
-  rcases h with ⟨y, rfl⟩
-  exact mul_self_nonneg y

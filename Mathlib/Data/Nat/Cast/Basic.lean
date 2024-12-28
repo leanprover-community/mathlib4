@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Divisibility.Hom
-import Mathlib.Algebra.Group.Even.Basic
+import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.TypeTags.Hom
 import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.Algebra.Ring.Nat
