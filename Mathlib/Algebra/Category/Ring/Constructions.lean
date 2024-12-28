@@ -7,7 +7,6 @@ import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.CategoryTheory.Limits.Shapes.StrictInitial
-import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.IsTensorProduct
 
@@ -117,33 +116,35 @@ lemma isPushout_tensorProduct (R A B : Type u) [CommRing R] [CommRing A] [CommRi
     simp
   isColimit' := ⟨pushoutCoconeIsColimit R A B⟩
 
-lemma isPushout_of_isPushout (R S A B : Type*) [CommRing R] [CommRing S]
+lemma isPushout_of_isPushout (R S A B : Type u) [CommRing R] [CommRing S]
     [CommRing A] [CommRing B] [Algebra R S] [Algebra S B] [Algebra R A] [Algebra A B] [Algebra R B]
     [IsScalarTower R A B] [IsScalarTower R S B] [Algebra.IsPushout R S A B] :
     IsPushout (ofHom (algebraMap R S)) (ofHom (algebraMap R A))
       (ofHom (algebraMap S B)) (ofHom (algebraMap A B)) := by
   refine ⟨⟨?_⟩, ⟨Limits.PushoutCocone.IsColimit.mk _ ?_ ?_ ?_ ?_⟩⟩
-  · exact (IsScalarTower.algebraMap_eq R S B).symm.trans (IsScalarTower.algebraMap_eq R A B)
+  · ext1; exact (IsScalarTower.algebraMap_eq R S B).symm.trans (IsScalarTower.algebraMap_eq R A B)
   · intro s
-    letI := (s.inl.comp (algebraMap R S)).toAlgebra
-    refine (Algebra.pushoutDesc (R := R) (S := S) (R' := A) B ⟨s.inl, ?_⟩ ⟨s.inr, ?_⟩ ?_).toRingHom
+    letI := (s.inl.1.comp (algebraMap R S)).toAlgebra
+    refine ofHom <| (Algebra.pushoutDesc (R := R) (S := S) (R' := A) B
+      ⟨s.inl.1, ?_⟩ ⟨s.inr.1, ?_⟩ ?_).toRingHom
     · simp [RingHom.algebraMap_toAlgebra]
-    · simpa [RingHom.algebraMap_toAlgebra] using DFunLike.congr_fun s.condition.symm
+    · simpa [RingHom.algebraMap_toAlgebra] using fun x ↦ congr(($s.condition.symm).hom x)
     · exact fun _ _ ↦ Commute.all _ _
   · intro s
-    letI := (s.inl.comp (algebraMap R S)).toAlgebra
+    letI := (s.inl.1.comp (algebraMap R S)).toAlgebra
     ext x
-    refine Algebra.pushoutDesc_left (H := ?_) ..
-    exact fun _ _ ↦ Commute.all _ _
+    dsimp
+    refine Algebra.pushoutDesc_left ..
   · intro s
-    letI := (s.inl.comp (algebraMap R S)).toAlgebra
+    letI := (s.inl.1.comp (algebraMap R S)).toAlgebra
     ext x
-    refine Algebra.pushoutDesc_right (H := ?_) ..
-    exact fun _ _ ↦ Commute.all _ _
+    dsimp
+    exact Algebra.pushoutDesc_right (H := ?_) ..
   · intro s m e₁ e₂
-    letI := (s.inl.comp (algebraMap R S)).toAlgebra
-    let m' : B →ₐ[R] s.pt := ⟨m, fun r ↦
+    letI := (s.inl.1.comp (algebraMap R S)).toAlgebra
+    let m' : B →ₐ[R] s.pt := ⟨m.1, fun r ↦
       by simpa [ofHom, ← IsScalarTower.algebraMap_apply] using congr($e₁ (algebraMap R S r))⟩
+    ext1
     show m'.toRingHom = _
     congr 1
     apply Algebra.IsPushout.algHom_ext (S := S) (R' := A)
