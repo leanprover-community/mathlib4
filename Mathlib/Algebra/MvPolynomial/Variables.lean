@@ -110,7 +110,7 @@ section Mul
 
 theorem vars_mul [DecidableEq σ] (φ ψ : MvPolynomial σ R) : (φ * ψ).vars ⊆ φ.vars ∪ ψ.vars := by
   simp_rw [vars_def, ← Multiset.toFinset_add, Multiset.toFinset_subset]
-  exact Multiset.subset_of_le (degrees_mul φ ψ)
+  exact Multiset.subset_of_le degrees_mul_le
 
 @[simp]
 theorem vars_one : (1 : MvPolynomial σ R).vars = ∅ :=

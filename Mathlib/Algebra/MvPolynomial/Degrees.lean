@@ -110,25 +110,31 @@ theorem degrees_zero : degrees (0 : MvPolynomial σ R) = 0 := by
 theorem degrees_one : degrees (1 : MvPolynomial σ R) = 0 :=
   degrees_C 1
 
-theorem degrees_add [DecidableEq σ] (p q : MvPolynomial σ R) :
+theorem degrees_add_le [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).degrees ≤ p.degrees ⊔ q.degrees := by
   simp_rw [degrees_def]; exact supDegree_add_le
 
-theorem degrees_sum {ι : Type*} [DecidableEq σ] (s : Finset ι) (f : ι → MvPolynomial σ R) :
+theorem degrees_sum_le {ι : Type*} [DecidableEq σ] (s : Finset ι) (f : ι → MvPolynomial σ R) :
     (∑ i ∈ s, f i).degrees ≤ s.sup fun i => (f i).degrees := by
   simp_rw [degrees_def]; exact supDegree_sum_le
 
-theorem degrees_mul (p q : MvPolynomial σ R) : (p * q).degrees ≤ p.degrees + q.degrees := by
+theorem degrees_mul_le {p q : MvPolynomial σ R} : (p * q).degrees ≤ p.degrees + q.degrees := by
   classical
   simp_rw [degrees_def]
   exact supDegree_mul_le (map_add _)
 
-theorem degrees_prod {ι : Type*} (s : Finset ι) (f : ι → MvPolynomial σ R) :
+theorem degrees_prod_le {ι : Type*} {s : Finset ι} {f : ι → MvPolynomial σ R} :
     (∏ i ∈ s, f i).degrees ≤ ∑ i ∈ s, (f i).degrees := by
   classical exact supDegree_prod_le (map_zero _) (map_add _)
 
-theorem degrees_pow (p : MvPolynomial σ R) (n : ℕ) : (p ^ n).degrees ≤ n • p.degrees := by
-  simpa using degrees_prod (Finset.range n) fun _ ↦ p
+theorem degrees_pow_le {p : MvPolynomial σ R} {n : ℕ} : (p ^ n).degrees ≤ n • p.degrees := by
+  simpa using degrees_prod_le (s := .range n) (f := fun _ ↦ p)
+
+@[deprecated (since := "2024-12-28")] alias degrees_add := degrees_add_le
+@[deprecated (since := "2024-12-28")] alias degrees_sum := degrees_sum_le
+@[deprecated (since := "2024-12-28")] alias degrees_mul := degrees_mul_le
+@[deprecated (since := "2024-12-28")] alias degrees_prod := degrees_prod_le
+@[deprecated (since := "2024-12-28")] alias degrees_pow := degrees_pow_le
 
 theorem mem_degrees {p : MvPolynomial σ R} {i : σ} :
     i ∈ p.degrees ↔ ∃ d, p.coeff d ≠ 0 ∧ i ∈ d.support := by
@@ -156,7 +162,7 @@ theorem le_degrees_add {p q : MvPolynomial σ R} (h : Disjoint p.degrees q.degre
 theorem degrees_add_of_disjoint [DecidableEq σ] {p q : MvPolynomial σ R}
     (h : Disjoint p.degrees q.degrees) : (p + q).degrees = p.degrees ∪ q.degrees := by
   apply le_antisymm
-  · apply degrees_add
+  · apply degrees_add_le
   · apply Multiset.union_le
     · apply le_degrees_add h
     · rw [add_comm]
@@ -262,7 +268,7 @@ theorem degreeOf_mul_le (i : σ) (f g : MvPolynomial σ R) :
     degreeOf i (f * g) ≤ degreeOf i f + degreeOf i g := by
   classical
   simp only [degreeOf]
-  convert Multiset.count_le_of_le i (degrees_mul f g)
+  convert Multiset.count_le_of_le i degrees_mul_le
   rw [Multiset.count_add]
 
 theorem degreeOf_sum_le {ι : Type*} (i : σ) (s : Finset ι) (f : ι → MvPolynomial σ R) :
@@ -297,7 +303,7 @@ theorem degreeOf_mul_X_self (j : σ) (f : MvPolynomial σ R) :
     degreeOf j (f * X j) ≤ degreeOf j f + 1 := by
   classical
   simp only [degreeOf]
-  apply (Multiset.count_le_of_le j (degrees_mul f (X j))).trans
+  apply (Multiset.count_le_of_le j degrees_mul_le).trans
   simp only [Multiset.count_add, add_le_add_iff_left]
   convert Multiset.count_le_of_le j <| degrees_X' j
   rw [Multiset.count_singleton_self]
@@ -320,13 +326,13 @@ theorem degreeOf_mul_X_eq_degreeOf_add_one_iff (j : σ) (f : MvPolynomial σ R) 
 theorem degreeOf_C_mul_le (p : MvPolynomial σ R) (i : σ) (c : R) :
     (C c * p).degreeOf i ≤ p.degreeOf i := by
   unfold degreeOf
-  convert Multiset.count_le_of_le i <| degrees_mul (C c) p
+  convert Multiset.count_le_of_le i degrees_mul_le
   simp only [degrees_C, zero_add]
 
 theorem degreeOf_mul_C_le (p : MvPolynomial σ R) (i : σ) (c : R) :
     (p * C c).degreeOf i ≤ p.degreeOf i := by
   unfold degreeOf
-  convert Multiset.count_le_of_le i <| degrees_mul p (C c)
+  convert Multiset.count_le_of_le i degrees_mul_le
   simp only [degrees_C, add_zero]
 
 theorem degreeOf_rename_of_injective {p : MvPolynomial σ R} {f : σ → τ} (h : Function.Injective f)
