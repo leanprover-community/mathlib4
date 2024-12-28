@@ -32,10 +32,13 @@ variable {C D : Type*} [Category C] [Category D] [HasZeroObject C] [HasZeroObjec
 namespace Adjunction
 
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [F.CommShift ℤ] [G.CommShift ℤ]
-  [adj.CommShift ℤ] [F.IsTriangulated]
+  [adj.CommShift ℤ]
 
 include adj in
-lemma isTriangulated_rightAdjoint : G.IsTriangulated where
+/--
+The right adjoint of a triangulated functor is triangulated.
+-/
+lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
   map_distinguished T hT := by
     have : G.Additive := adj.right_adjoint_additive
     dsimp
@@ -112,20 +115,22 @@ lemma isTriangulated_rightAdjoint : G.IsTriangulated where
         Functor.commShiftIso_hom_naturality, ← adj.shift_unit_app_assoc,
         ← Functor.map_comp, right_triangle_components, Functor.map_id, comp_id]
 
-/- Needs to be fixed.
+include adj in
 open CategoryTheory.Pretriangulated.Opposite Functor in
-def isTriangulated_of_right_adjoint_triangulated (adj : F ⊣ G) [adj.compatCommShift ℤ]
-    [G.IsTriangulated] : F.IsTriangulated := by
-  have : Adjunction.compatCommShift ℤ adj.opAdjointOpOfAdjoint :=
-      @Adjunction.compat_pullbackCommShift (OppositeShift D ℤ) (OppositeShift C ℤ) _ _
-      G.op F.op ℤ _ inferInstance inferInstance ℤ _ (AddMonoidHom.mk' (fun (n : ℤ) => -n)
-      (by intros; dsimp; omega)) adj.opAdjointOpOfAdjoint (commShiftOp G) (commShiftOp F)
-      adj.compatCommShift_op
-  suffices h : F.op.IsTriangulated by
-    have := h
-    exact isTriangulated_of_op_triangulated F
-  exact isTriangulated_of_left_adjoint_triangulated adj.opAdjointOpOfAdjoint
+/--
+The left adjoint of a triangulated functor is triangulated.
 -/
+lemma isTriangulated_leftAdjoint [G.IsTriangulated] : F.IsTriangulated := by
+  have : Adjunction.CommShift adj.opAdjointOpOfAdjoint ℤ :=
+      @Adjunction.commShiftPullback_of_commShift (OppositeShift D ℤ) (OppositeShift C ℤ) _ _
+      G.op F.op adj.opAdjointOpOfAdjoint ℤ _ inferInstance inferInstance
+      (G.commShiftOp ℤ) (F.commShiftOp ℤ) ℤ _ (AddMonoidHom.mk' (fun (n : ℤ) => -n)
+      (by intros; dsimp; omega))
+      (adj.commShiftOp_of_commShift ℤ)
+  suffices h : F.op.IsTriangulated by
+    exact F.isTriangulated_of_isTriangulatedOp
+  have := G.isTriangulatedOp_of_isTriangulated
+  exact isTriangulated_rightAdjoint adj.opAdjointOpOfAdjoint
 
 end Adjunction
 
