@@ -226,7 +226,6 @@ Instance declaring that `RecursiveIn` is a preorder.
 instance : IsPreorder (ℕ →. ℕ) RecursiveIn where
   refl := RecursiveIn.refl
 
-
 /--
 Instance declaring that `TuringEquivalent` is an equivalence relation.
 -/
@@ -253,13 +252,6 @@ Proof that `TuringEquivalent` is transitive.
 @[trans]
 theorem TuringEquivalent.trans (f g h : ℕ →. ℕ) (h1 : f ≡ᵀ g) (h2 : g ≡ᵀ h) : f ≡ᵀ h :=
   Equivalence.trans equivalence h1 h2
-
-/--
-Instance declaring that `RecursiveIn` is a preorder.
--/
-instance : IsPreorder (ℕ →. ℕ) RecursiveIn where
-  refl := RecursiveIn.refl
-  trans := @RecursiveIn.trans
 
 /--
 The Turing degrees as the set of equivalence classes under Turing equivalence.
