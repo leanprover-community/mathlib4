@@ -406,7 +406,6 @@ open Filter
 variable {α β : Type*}
 variable [TopologicalSpace M] [MulZeroClass M] [ContinuousMul M]
 
-open Set Pointwise Filter Topology in
 theorem exists_mem_nhds_zero_mul_subset
     {K U : Set M} (hK : IsCompact K) (hU : U ∈ 𝓝 0) : ∃ V ∈ 𝓝 0, K * V ⊆ U := by
   refine hK.induction_on ?_ ?_ ?_ ?_
