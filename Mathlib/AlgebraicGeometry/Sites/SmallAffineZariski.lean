@@ -85,7 +85,7 @@ instance : (toOpensFunctor X).IsLocallyFull (Opens.grothendieckTopology X) where
     intro U V h x hx
     obtain ⟨f, hfU, hxf⟩ := V.2.exists_basicOpen_le ⟨x, hx⟩ (h.le hx)
     exact ⟨X.basicOpen f, homOfLE hfU, ⟨V.basicOpen f,
-      ⟨f |_ₕ h, (X.basicOpen_res _ _).trans (inf_eq_right.mpr hfU)⟩, 𝟙 _,
+      ⟨_, (X.basicOpen_res f h.op).trans (inf_eq_right.mpr hfU)⟩, 𝟙 _,
       ⟨⟨f, rfl⟩, rfl⟩, rfl⟩, hxf⟩
 
 instance : (toOpensFunctor X).IsCoverDense (Opens.grothendieckTopology X) where
@@ -155,7 +155,7 @@ lemma generate_presieveOfSections
     rw [X.basicOpen_mul, hf₃, inf_eq_right]
     exact X.basicOpen_le _
   · rintro ⟨f₁, hf₁s, f₂, rfl⟩
-    refine ⟨U.basicOpen f₁, ⟨f₂ |_ _, ?_⟩, ⟨f₁, rfl⟩, ⟨f₁, hf₁s, rfl⟩, rfl⟩
+    refine ⟨U.basicOpen f₁, ⟨f₂ |_ᵣ _, ?_⟩, ⟨f₁, rfl⟩, ⟨f₁, hf₁s, rfl⟩, rfl⟩
     exact (X.basicOpen_res _ _).trans (X.basicOpen_mul _ _).symm
 
 lemma generate_presieveOfSections_mem_grothendieckTopology
