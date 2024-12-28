@@ -385,11 +385,11 @@ theorem den_neg_eq_den (q : ℚ) : (-q).den = q.den :=
 theorem num_neg_eq_neg_num (q : ℚ) : (-q).num = -q.num :=
   rfl
 
--- Not `simp` as `num_ofNat` is stronger.
+-- Not `@[simp]` as `num_ofNat` is stronger.
 theorem num_zero : Rat.num 0 = 0 :=
   rfl
 
--- Not `simp` as `den_ofNat` is stronger.
+-- Not `@[simp]` as `den_ofNat` is stronger.
 theorem den_zero : Rat.den 0 = 1 :=
   rfl
 
@@ -398,7 +398,7 @@ lemma zero_of_num_zero {q : ℚ} (hq : q.num = 0) : q = 0 := by simpa [hq] using
 theorem zero_iff_num_zero {q : ℚ} : q = 0 ↔ q.num = 0 :=
   ⟨fun _ => by simp [*], zero_of_num_zero⟩
 
-@[simp]
+-- `Not `@[simp]` as `num_ofNat` is stronger.
 theorem num_one : (1 : ℚ).num = 1 :=
   rfl
 
