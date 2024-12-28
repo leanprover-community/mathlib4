@@ -194,15 +194,15 @@ instance (priority := 100) toSubtractionMonoid : SubtractionMonoid α where
     intro v
     simp [v] at h
 
-lemma injective_add_ne_top (b : α) (h : b ≠ ⊤) : Function.Injective (fun x ↦ x + b) := by
+lemma injective_add_left_of_ne_top (b : α) (h : b ≠ ⊤) : Function.Injective (fun x ↦ x + b) := by
   intro x y h2
   replace h2 : x + (b + -b) = y + (b + -b) := by simp [← add_assoc, h2]
   simpa only [LinearOrderedAddCommGroupWithTop.add_neg_cancel _ h, add_zero] using h2
 
-lemma strictMono_add_ne_top (b : α) (h : b ≠ ⊤) : StrictMono (fun x ↦ x + b) := by
+lemma strictMono_add_left_of_ne_top (b : α) (h : b ≠ ⊤) : StrictMono (fun x ↦ x + b) := by
   apply Monotone.strictMono_of_injective
   · apply Monotone.add_const monotone_id
-  · apply injective_add_ne_top _ h
+  · apply injective_add_left_of_ne_top _ h
 
 lemma sub_pos (a b : α) : 0 < a - b ↔ b < a ∨ b = ⊤ where
   mp h := by
@@ -214,7 +214,7 @@ lemma sub_pos (a b : α) : 0 < a - b ↔ b < a ∨ b = ⊤ where
     exact h
   mpr h := by
     rcases h with h | h
-    · convert strictMono_add_ne_top (-b) (by simp [h.ne_top]) h using 1
+    · convert strictMono_add_left_of_ne_top (-b) (by simp [h.ne_top]) h using 1
       · simp [add_neg_cancel_of_ne_top h.ne_top]
       · simp [sub_eq_add_neg]
     · rw [h]
