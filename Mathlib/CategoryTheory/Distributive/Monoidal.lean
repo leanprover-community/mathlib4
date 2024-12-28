@@ -148,7 +148,7 @@ by
 `(∂L X Y Z).inv :  X ⊗ (Y ⨿ Z) ⟶ (X ⊗ Y) ⨿ (X ⊗ Z)`
 is equal to the left coprojection `coprod.inl : X ⊗ Y ⟶ (X ⊗ Y) ⨿ (X ⊗ Z)`. -/
 @[reassoc (attr := simp)]
-lemma whisker_inl_inv_leftDistrib {X Y Z : C} :
+lemma whiskerLeft_coprod_inl_leftDistrib_inv {X Y Z : C} :
     (X ◁ coprod.inl) ≫ (∂L X Y Z).inv = coprod.inl := by
   apply (cancel_iso_hom_right _ _ (∂L X Y Z)).mp
   rw [assoc, Iso.inv_hom_id, comp_id, coprod_inl_leftDistrib]
