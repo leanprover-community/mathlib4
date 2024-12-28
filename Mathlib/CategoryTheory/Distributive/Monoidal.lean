@@ -79,17 +79,17 @@ class IsMonoidalLeftDistrib (C : Type u) [Category.{v} C]
 /-- A monoidal category with binary coproducts is right distributive
 if the right tensor product functor preserves binary coproducts. -/
 class IsMonoidalRightDistrib (C : Type u) [Category.{v} C]
-    [MonoidalCategory.{v} C] [HasBinaryCoproducts C] : Prop where
+    [MonoidalCategory C] [HasBinaryCoproducts C] : Prop where
   preservesBinaryCoproducts_tensorRight (X : C) :
     PreservesColimitsOfShape (Discrete WalkingPair) (tensorRight X)
 
 /-- A monoidal category with binary coproducts is distributive
 if it is both left and right distributive. -/
 class IsMonoidalDistrib (C : Type u) [Category.{v} C]
-    [MonoidalCategory.{v} C] [HasBinaryCoproducts C] extends
+    [MonoidalCategory C] [HasBinaryCoproducts C] extends
   IsMonoidalLeftDistrib C, IsMonoidalRightDistrib C
 
-variable {C} [Category.{v} C] [MonoidalCategory.{v} C] [HasBinaryCoproducts C]
+variable {C} [Category.{v} C] [MonoidalCategory C] [HasBinaryCoproducts C]
 
 example [IsMonoidalDistrib C] : IsMonoidalLeftDistrib C := by infer_instance
 
