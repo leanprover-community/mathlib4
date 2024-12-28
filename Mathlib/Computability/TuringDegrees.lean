@@ -174,7 +174,7 @@ theorem RecursiveIn.refl (f : ℕ →. ℕ) : RecursiveIn f f :=
 Instance declaring that `RecursiveIn` is reflexive.
 -/
 instance : IsRefl (ℕ →. ℕ) RecursiveIn :=
-  ⟨fun f => RecursiveIn.refl f⟩
+  ⟨RecursiveIn.refl⟩
 
 /--
 Proof that turing reducibility is transitive.
