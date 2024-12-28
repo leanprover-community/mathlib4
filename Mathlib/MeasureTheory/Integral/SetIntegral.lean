@@ -1077,9 +1077,9 @@ section Support
 theorem MeasureTheory.setIntegral_support [MeasurableSpace X] [TopologicalSpace X]
     {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M] {F : X → M} {ν : Measure X} :
     ∫ x in support F, F x ∂ν = ∫ x, F x ∂ν := by
-  nth_rw 2 [← MeasureTheory.setIntegral_univ]
+  nth_rw 2 [← setIntegral_univ]
   rw [setIntegral_eq_of_subset_of_forall_diff_eq_zero MeasurableSet.univ (subset_univ (support F))]
-  exact fun _ hx => Function.nmem_support.mp <| not_mem_of_mem_diff hx
+  exact fun _ hx => nmem_support.mp <| not_mem_of_mem_diff hx
 
 theorem MeasureTheory.setIntegral_tsupport [MeasurableSpace X] [TopologicalSpace X]
     {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M] {F : X → M} {ν : Measure X} :
