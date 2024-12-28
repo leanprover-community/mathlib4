@@ -572,6 +572,7 @@ def symm (cme : M ≃ₜ* N) : N ≃ₜ* M :=
   { cme.toMulEquiv.symm with
   continuous_toFun := cme.continuous_invFun
   continuous_invFun := cme.continuous_toFun }
+initialize_simps_projections ContinuousMulEquiv (toFun → apply, invFun → symm_apply)
 
 @[to_additive]
 theorem invFun_eq_symm {f : M ≃ₜ* N} : f.invFun = f.symm := rfl
@@ -672,7 +673,7 @@ section unique
 
 /-- The `MulEquiv` between two monoids with a unique element. -/
 @[to_additive "The `AddEquiv` between two `AddMonoid`s with a unique element."]
-def continuousMulEquivOfUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N]
+def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N]
     [TopologicalSpace M] [TopologicalSpace N] : M ≃ₜ* N :=
   { MulEquiv.mulEquivOfUnique with
   continuous_toFun := by continuity
@@ -683,7 +684,7 @@ def continuousMulEquivOfUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N]
   a unique element."]
 instance {M N} [Unique M] [Unique N] [Mul M] [Mul N]
     [TopologicalSpace M] [TopologicalSpace N] : Unique (M ≃ₜ* N) where
-  default := continuousMulEquivOfUnique
+  default := ofUnique
   uniq _ := ext fun _ ↦ Subsingleton.elim _ _
 
 end unique
