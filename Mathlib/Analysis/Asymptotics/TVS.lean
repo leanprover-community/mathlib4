@@ -82,17 +82,17 @@ def IsLittleOTVS (𝕜 : Type*) {α E F : Type*}
 @[inherit_doc]
 notation:100 f " =o[" 𝕜 ";" l "] " g:100 => IsLittleOTVS 𝕜 f g l
 
-variable {α β 𝕜 E F : Type*}
+variable {α β 𝕜 E F G : Type*}
 
 section TopologicalSpace
 
 variable [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
   [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
+  [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G]
 
 section congr
 variable {f f₁ f₂ : α → E} {g g₁ g₂ : α → F} {l : Filter α}
-
 
 theorem isLittleOTVS_congr (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) :
     f₁ =o[𝕜;l] g₁ ↔ f₂ =o[𝕜;l] g₂ := by
@@ -119,6 +119,22 @@ theorem IsLittleOTVS.congr_right (h : f =o[𝕜;l] g₁) (hg : ∀ x, g₁ x = g
   h.congr (fun _ => rfl) hg
 
 end congr
+
+@[trans]
+theorem IsLittleOTVS.trans {l : Filter α} {f : α → E} {g : α → F} {k : α → G}
+    (hfg : f =o[𝕜;l] g) (hgk : g =o[𝕜;l] k) : f =o[𝕜;l] k := by
+  intros U hU
+  obtain ⟨V, hV0, hV⟩ := hfg U hU
+  obtain ⟨W, hW0, hW⟩ := hgk V hV0
+  refine ⟨W, hW0, fun ε hε => ?_⟩
+  filter_upwards [hV ε hε, hW 1 one_ne_zero] with a hfga hgka
+  refine hfga.trans ?_
+  gcongr
+  simpa using hgka
+
+instance transIsLittleOTVSIsLittleOTVS {l : Filter α} :
+    @Trans (α → E) (α → F) (α → G) (· =o[𝕜;l] ·) (· =o[𝕜;l] ·) (· =o[𝕜;l] ·) where
+  trans := IsLittleOTVS.trans
 
 theorem _root_.Filter.HasBasis.isLittleOTVS_iff {ιE ιF : Sort*} {pE : ιE → Prop} {pF : ιF → Prop}
     {sE : ιE → Set E} {sF : ιF → Set F} (hE : HasBasis (𝓝 (0 : E)) pE sE)

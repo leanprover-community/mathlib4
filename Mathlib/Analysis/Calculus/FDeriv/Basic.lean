@@ -422,8 +422,8 @@ lemma hasFDerivWithinAt_of_isOpen (h : IsOpen s) (hx : x ∈ s) :
 theorem hasFDerivWithinAt_insert {y : E} :
     HasFDerivWithinAt f f' (insert y s) x ↔ HasFDerivWithinAt f f' s x := by
   rcases eq_or_ne x y with (rfl | h)
-  · simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleO]
-    apply Asymptotics.isLittleO_insert
+  · simp_rw [HasFDerivWithinAt, hasFDerivAtFilter_iff_isLittleOTVS]
+    apply isLittleOTVS_insert
     simp only [sub_self, map_zero]
   refine ⟨fun h => h.mono <| subset_insert y s, fun hf => hf.mono_of_mem_nhdsWithin ?_⟩
   simp_rw [nhdsWithin_insert_of_ne h, self_mem_nhdsWithin]
@@ -449,8 +449,14 @@ theorem HasFDerivAtFilter.isBigO_sub (h : HasFDerivAtFilter f f' x L) :
 @[fun_prop]
 protected theorem HasStrictFDerivAt.hasFDerivAt (hf : HasStrictFDerivAt f f' x) :
     HasFDerivAt f f' x := by
-  rw [HasFDerivAt, hasFDerivAtFilter_iff_isLittleO, isLittleO_iff]
-  exact fun c hc => tendsto_id.prod_mk_nhds tendsto_const_nhds (isLittleO_iff.1 hf.isLittleO hc)
+  refine .of_isLittleOTVS fun U hU => ?_
+  obtain ⟨V, hV0, hV⟩ := hf.isLittleOTVS _ hU
+  refine ⟨V, hV0, fun ε hε => ?_⟩
+  specialize hV ε hε
+  simp_rw [nhds_prod_eq, eventually_prod_self_iff'] at hV
+  obtain ⟨W, hWx, hW⟩ := hV
+  filter_upwards [hWx] with y hy
+  exact hW y hy x (mem_of_mem_nhds hWx)
 
 protected theorem HasStrictFDerivAt.differentiableAt (hf : HasStrictFDerivAt f f' x) :
     DifferentiableAt 𝕜 f x :=
@@ -513,8 +519,9 @@ theorem DifferentiableWithinAt.differentiableAt (h : DifferentiableWithinAt 𝕜
 as this statement is empty. -/
 theorem HasFDerivWithinAt.of_nhdsWithin_eq_bot (h : 𝓝[s\{x}] x = ⊥) :
     HasFDerivWithinAt f f' s x := by
-  rw [← hasFDerivWithinAt_diff_singleton x, HasFDerivWithinAt, h, hasFDerivAtFilter_iff_isLittleO]
-  apply isLittleO_bot
+  rw [← hasFDerivWithinAt_diff_singleton x, HasFDerivWithinAt, h,
+    hasFDerivAtFilter_iff_isLittleOTVS]
+  exact .bot
 
 /-- If `x` is not in the closure of `s`, then `f` has any derivative at `x` within `s`,
 as this statement is empty. -/
@@ -842,8 +849,8 @@ theorem fderivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
 
 theorem Filter.EventuallyEq.hasStrictFDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) (h' : ∀ y, f₀' y = f₁' y) :
     HasStrictFDerivAt f₀ f₀' x ↔ HasStrictFDerivAt f₁ f₁' x := by
-  rw [hasStrictFDerivAt_iff_isLittleO, hasStrictFDerivAt_iff_isLittleO]
-  refine isLittleO_congr ((h.prod_mk_nhds h).mono ?_) .rfl
+  rw [hasStrictFDerivAt_iff_isLittleOTVS, hasStrictFDerivAt_iff_isLittleOTVS]
+  refine isLittleOTVS_congr ((h.prod_mk_nhds h).mono ?_) .rfl
   rintro p ⟨hp₁, hp₂⟩
   simp only [*]
 
@@ -864,8 +871,8 @@ theorem HasStrictFDerivAt.congr_of_eventuallyEq (h : HasStrictFDerivAt f f' x)
 
 theorem Filter.EventuallyEq.hasFDerivAtFilter_iff (h₀ : f₀ =ᶠ[L] f₁) (hx : f₀ x = f₁ x)
     (h₁ : ∀ x, f₀' x = f₁' x) : HasFDerivAtFilter f₀ f₀' x L ↔ HasFDerivAtFilter f₁ f₁' x L := by
-  simp only [hasFDerivAtFilter_iff_isLittleO]
-  exact isLittleO_congr (h₀.mono fun y hy => by simp only [hy, h₁, hx]) .rfl
+  simp only [hasFDerivAtFilter_iff_isLittleOTVS]
+  exact isLittleOTVS_congr (h₀.mono fun y hy => by simp only [hy, h₁, hx]) .rfl
 
 theorem HasFDerivAtFilter.congr_of_eventuallyEq (h : HasFDerivAtFilter f f' x L) (hL : f₁ =ᶠ[L] f)
     (hx : f₁ x = f x) : HasFDerivAtFilter f₁ f' x L :=
