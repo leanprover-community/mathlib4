@@ -310,13 +310,13 @@ protected theorem t2Space [T2Space X] (h : X ≃ₜ Y) : T2Space Y := h.symm.isE
 protected theorem t25Space [T25Space X] (h : X ≃ₜ Y) : T25Space Y := h.symm.isEmbedding.t25Space
 protected theorem t3Space [T3Space X] (h : X ≃ₜ Y) : T3Space Y := h.symm.isEmbedding.t3Space
 
+theorem isDenseEmbedding (h : X ≃ₜ Y) : IsDenseEmbedding h :=
+  { h.isEmbedding with dense := h.surjective.denseRange }
+
 protected lemma totallyDisconnectedSpace (h : X ≃ₜ Y) [tdc : TotallyDisconnectedSpace X] :
     TotallyDisconnectedSpace Y :=
   (totallyDisconnectedSpace_iff Y).mpr
     (h.range_coe ▸ ((IsEmbedding.isTotallyDisconnected_range h.isEmbedding).mpr tdc))
-
-theorem isDenseEmbedding (h : X ≃ₜ Y) : IsDenseEmbedding h :=
-  { h.isEmbedding with dense := h.surjective.denseRange }
 
 @[deprecated (since := "2024-09-30")]
 alias denseEmbedding := isDenseEmbedding
