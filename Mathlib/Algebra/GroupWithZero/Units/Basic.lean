@@ -5,12 +5,10 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Spread
 import Mathlib.Util.AssertExists
-import Mathlib.Data.Subtype
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
@@ -20,8 +18,11 @@ We also define `Ring.inverse`, a globally defined function on any ring
 -/
 
 -- Guard against import creep
-assert_not_exists Multiplicative
 assert_not_exists DenselyOrdered
+assert_not_exists Equiv
+assert_not_exists Multiplicative
+assert_not_exists Subtype.restrict
+
 
 variable {α M₀ G₀ : Type*}
 variable [MonoidWithZero M₀]
@@ -391,14 +392,6 @@ theorem Ring.inverse_eq_inv (a : G₀) : Ring.inverse a = a⁻¹ := by
 @[simp]
 theorem Ring.inverse_eq_inv' : (Ring.inverse : G₀ → G₀) = Inv.inv :=
   funext Ring.inverse_eq_inv
-
-/-- In a `GroupWithZero` `α`, the unit group `αˣ` is equivalent to the subtype of nonzero
-elements. -/
-@[simps] def unitsEquivNeZero [GroupWithZero α] : αˣ ≃ {a : α // a ≠ 0} where
-  toFun a := ⟨a, a.ne_zero⟩
-  invFun a := Units.mk0 _ a.prop
-  left_inv _ := Units.ext rfl
-  right_inv _ := rfl
 
 end GroupWithZero
 

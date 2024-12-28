@@ -321,7 +321,7 @@ instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
 /-! ### The Lambda function -/
 
 section Lambda
-variable (𝕜) [Zero 𝕜] [One 𝕜] [Preorder α] [@DecidableRel α (· ⩿ ·)]
+variable (𝕜) [Zero 𝕜] [One 𝕜] [Preorder α] [DecidableRel (α := α) (· ⩿ ·)]
 
 /-- The lambda function of the incidence algebra is the function that assigns `1` to every nonempty
 interval of cardinality one or two. -/
@@ -334,7 +334,7 @@ end Lambda
 /-! ### The Zeta and Möbius functions -/
 
 section Zeta
-variable (𝕜) [Zero 𝕜] [One 𝕜] [LE α] [@DecidableRel α (· ≤ ·)] {a b : α}
+variable (𝕜) [Zero 𝕜] [One 𝕜] [LE α] [DecidableRel (α := α) (· ≤ ·)] {a b : α}
 
 /-- The zeta function of the incidence algebra is the function that assigns 1 to every nonempty
 interval, convolution with this function sums functions over intervals. -/
@@ -348,15 +348,16 @@ lemma zeta_of_le (h : a ≤ b) : zeta 𝕜 a b = 1 := if_pos h
 
 end Zeta
 
-lemma zeta_mul_zeta [Semiring 𝕜] [Preorder α] [LocallyFiniteOrder α] [@DecidableRel α (· ≤ ·)]
+lemma zeta_mul_zeta [Semiring 𝕜] [Preorder α] [LocallyFiniteOrder α] [DecidableRel (α := α) (· ≤ ·)]
     (a b : α) : (zeta 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) a b = (Icc a b).card := by
   rw [mul_apply, card_eq_sum_ones, Nat.cast_sum, Nat.cast_one]
   refine sum_congr rfl fun x hx ↦ ?_
   rw [mem_Icc] at hx
   rw [zeta_of_le hx.1, zeta_of_le hx.2, one_mul]
 
-lemma zeta_mul_kappa [Semiring 𝕜] [Preorder α] [LocallyFiniteOrder α] [@DecidableRel α (· ≤ ·)]
-    (a b : α) : (zeta 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) a b = (Icc a b).card := by
+lemma zeta_mul_kappa [Semiring 𝕜] [Preorder α] [LocallyFiniteOrder α]
+    [DecidableRel (α := α) (· ≤ ·)] (a b : α) :
+    (zeta 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) a b = (Icc a b).card := by
   rw [mul_apply, card_eq_sum_ones, Nat.cast_sum, Nat.cast_one]
   refine sum_congr rfl fun x hx ↦ ?_
   rw [mem_Icc] at hx
@@ -474,7 +475,7 @@ end Mu'Spec
 
 section MuZeta
 variable (𝕜 α) [AddCommGroup 𝕜] [MulOneClass 𝕜] [PartialOrder α] [LocallyFiniteOrder α]
-  [DecidableEq α] [@DecidableRel α (· ≤ ·)]
+  [DecidableEq α] [DecidableRel (α := α) (· ≤ ·)]
 
 lemma mu_mul_zeta : (mu 𝕜 * zeta 𝕜 : IncidenceAlgebra 𝕜 α) = 1 := by
   ext a b
@@ -500,7 +501,7 @@ private lemma mu_eq_mu' : (mu 𝕜 : IncidenceAlgebra 𝕜 α) = mu' 𝕜 := by
 lemma mu_eq_neg_sum_Ioc_of_ne (hab : a ≠ b) : mu 𝕜 a b = -∑ x ∈ Ioc a b, mu 𝕜 x b := by
   rw [mu_eq_mu', mu'_eq_sum_Ioc_of_ne hab]
 
-lemma zeta_mul_mu [@DecidableRel α (· ≤ ·)] : (zeta 𝕜 * mu 𝕜 : IncidenceAlgebra 𝕜 α) = 1 := by
+lemma zeta_mul_mu [DecidableRel (α := α) (· ≤ ·)] : (zeta 𝕜 * mu 𝕜 : IncidenceAlgebra 𝕜 α) = 1 := by
   rw [mu_eq_mu', zeta_mul_mu']
 
 lemma sum_Icc_mu_left (a b : α) : ∑ x ∈ Icc a b, mu 𝕜 x b = if a = b then 1 else 0 := by
@@ -513,7 +514,7 @@ variable (𝕜) [Ring 𝕜] [PartialOrder α] [LocallyFiniteOrder α] [Decidable
 
 @[simp]
 lemma mu_toDual (a b : α) : mu 𝕜 (toDual a) (toDual b) = mu 𝕜 b a := by
-  letI : @DecidableRel α (· ≤ ·) := Classical.decRel _
+  letI : DecidableRel (α := α) (· ≤ ·) := Classical.decRel _
   let mud : IncidenceAlgebra 𝕜 αᵒᵈ :=
     { toFun := fun a b ↦ mu 𝕜 (ofDual b) (ofDual a)
       eq_zero_of_not_le' := fun a b hab ↦ apply_eq_zero_of_not_le (by exact hab) _ }
@@ -544,7 +545,7 @@ variable [Ring 𝕜] [PartialOrder α] [OrderTop α] [LocallyFiniteOrder α] [De
 O'Donnell. -/
 lemma moebius_inversion_top (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Ici x, f y) (x : α) :
     f x = ∑ y ∈ Ici x, mu 𝕜 x y * g y := by
-  letI : @DecidableRel α (· ≤ ·) := Classical.decRel _
+  letI : DecidableRel (α := α) (· ≤ ·) := Classical.decRel _
   symm
   calc
     ∑ y ∈ Ici x, mu 𝕜 x y * g y = ∑ y ∈ Ici x, mu 𝕜 x y * ∑ z ∈ Ici y, f z := by simp_rw [h]
@@ -554,8 +555,8 @@ lemma moebius_inversion_top (f g : α → 𝕜) (h : ∀ x, g x = ∑ y ∈ Ici 
       rw [zeta_apply, if_pos (mem_Ici.mp ‹_›), one_mul]
     _ = ∑ y ∈ Ici x, ∑ z ∈ Ici y, mu 𝕜 x y * zeta 𝕜 y z * f z := by simp [mul_sum]
     _ = ∑ z ∈ Ici x, ∑ y ∈ Icc x z, mu 𝕜 x y * zeta 𝕜 y z * f z := by
-      erw [sum_sigma' (Ici x) fun y ↦ Ici y]
-      erw [sum_sigma' (Ici x) fun z ↦ Icc x z]
+      rw [sum_sigma' (Ici x) fun y ↦ Ici y]
+      rw [sum_sigma' (Ici x) fun z ↦ Icc x z]
       simp only [mul_boole, MulZeroClass.zero_mul, ite_mul, zeta_apply]
       apply sum_nbij' (fun ⟨a, b⟩ ↦ ⟨b, a⟩) (fun ⟨a, b⟩ ↦ ⟨b, a⟩) <;>
         aesop (add simp mul_assoc) (add unsafe le_trans)
@@ -612,7 +613,8 @@ lemma prod_mk (a₁ a₂ : α) (b₁ b₂ : β) : f.prod g (a₁, b₁) (a₂, b
 @[simp] lemma prod_apply (x y : α × β) : f.prod g x y = f x.1 y.1 * g x.2 y.2 := rfl
 
 /-- This is a version of `IncidenceAlgebra.prod_mul_prod` that works over non-commutative rings. -/
-lemma prod_mul_prod' [LocallyFiniteOrder α] [LocallyFiniteOrder β] [@DecidableRel (α × β) (· ≤ ·)]
+lemma prod_mul_prod' [LocallyFiniteOrder α] [LocallyFiniteOrder β]
+    [DecidableRel (α := α × β) (· ≤ ·)]
     (h : ∀ a₁ a₂ a₃ b₁ b₂ b₃,
         f₁ a₁ a₂ * g₁ b₁ b₂ * (f₂ a₂ a₃ * g₂ b₂ b₃) = f₁ a₁ a₂ * f₂ a₂ a₃ * (g₁ b₁ b₂ * g₂ b₂ b₃)) :
     f₁.prod g₁ * f₂.prod g₂ = (f₁ * f₂).prod (g₁ * g₂) := by
@@ -624,7 +626,7 @@ lemma one_prod_one [DecidableEq α] [DecidableEq β] :
   ext x y; simp [Prod.ext_iff, ← ite_and, and_comm]
 
 @[simp]
-lemma zeta_prod_zeta [@DecidableRel α (· ≤ ·)] [@DecidableRel β (· ≤ ·)] :
+lemma zeta_prod_zeta [DecidableRel (α := α) (· ≤ ·)] [DecidableRel (α := β) (· ≤ ·)] :
     (zeta 𝕜).prod (zeta 𝕜) = (zeta 𝕜 : IncidenceAlgebra 𝕜 (α × β)) := by
   ext x y hxy; simp [hxy, hxy.1, hxy.2]
 
@@ -632,7 +634,7 @@ end Ring
 
 section CommRing
 variable [CommRing 𝕜] [Preorder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-  [@DecidableRel (α × β) (· ≤ ·)] (f₁ f₂ : IncidenceAlgebra 𝕜 α) (g₁ g₂ : IncidenceAlgebra 𝕜 β)
+  [DecidableRel (α := α × β) (· ≤ ·)] (f₁ f₂ : IncidenceAlgebra 𝕜 α) (g₁ g₂ : IncidenceAlgebra 𝕜 β)
 
 @[simp]
 lemma prod_mul_prod : f₁.prod g₁ * f₂.prod g₂ = (f₁ * f₂).prod (g₁ * g₂) :=

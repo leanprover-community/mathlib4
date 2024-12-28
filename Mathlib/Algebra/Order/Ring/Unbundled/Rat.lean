@@ -105,13 +105,11 @@ protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
           · apply Int.mul_nonneg h.2 (Int.natCast_nonneg _)
         · simp only [Int.natCast_pos, Nat.pos_iff_ne_zero]
           exact Nat.gcd_ne_zero_right (Nat.mul_ne_zero hb ha)
-      · simp only [divInt_ofNat, ← zero_iff_num_zero, mkRat_eq_zero hb] at h'
-        simp [h']
+      · simp [h']
       · simp only [Rat.sub_def, normalize_eq]
         refine ⟨fun H => ?_, fun H _ => ?_⟩
         · refine Int.ediv_nonneg ?_ (Int.natCast_nonneg _)
           rw [Int.sub_nonneg]
-          push_neg at h
           obtain hb|hb := Ne.lt_or_lt h'
           · apply H
             intro H'

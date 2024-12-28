@@ -35,11 +35,11 @@ variable (Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop
 /-- This is the affine target morphism property where the source is affine and
 the induced map of rings on global sections satisfies `P`. -/
 def affineAnd : AffineTargetMorphismProperty :=
-  fun X _ f ↦ IsAffine X ∧ Q (f.appTop)
+  fun X _ f ↦ IsAffine X ∧ Q (f.appTop).hom
 
 @[simp]
 lemma affineAnd_apply {X Y : Scheme.{u}} (f : X ⟶ Y) [IsAffine Y] :
-    affineAnd Q f ↔ IsAffine X ∧ Q (f.appTop) :=
+    affineAnd Q f ↔ IsAffine X ∧ Q (f.appTop).hom :=
   Iff.rfl
 
 attribute [local simp] AffineTargetMorphismProperty.toProperty_apply
@@ -65,9 +65,12 @@ lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.Localizatio
     · simp only [Scheme.preimage_basicOpen, Opens.map_top]
       exact (isAffineOpen_top X).basicOpen _
     · dsimp only
-      rw [morphismRestrict_appTop, hPi.cancel_right_isIso, Scheme.Opens.ι_image_top]
+      rw [morphismRestrict_appTop, CommRingCat.hom_comp, hPi.cancel_right_isIso]
+      -- Not sure why the `show` fixes the following `rw` complaining about "motive is incorrect"
+      show Q (Scheme.Hom.app f ((Y.basicOpen r).ι ''ᵁ ⊤)).hom
+      rw [Scheme.Opens.ι_image_top]
       rw [(isAffineOpen_top Y).app_basicOpen_eq_away_map f (isAffineOpen_top X),
-        hPi.cancel_right_isIso, ← Scheme.Hom.appTop]
+        CommRingCat.hom_comp, hPi.cancel_right_isIso, ← Scheme.Hom.appTop]
       dsimp only [Opens.map_top]
       haveI := (isAffineOpen_top X).isLocalization_basicOpen (f.appTop r)
       apply hQl
@@ -76,19 +79,22 @@ lemma affineAnd_isLocal (hPi : RingHom.RespectsIso Q) (hQl : RingHom.Localizatio
     dsimp [affineAnd] at hf
     haveI : IsAffine X := by
       apply isAffine_of_isAffineOpen_basicOpen (f.appTop '' s)
-      · apply_fun Ideal.map (f.appTop) at hs
+      · apply_fun Ideal.map (f.appTop).hom at hs
         rwa [Ideal.map_span, Ideal.map_top] at hs
       · rintro - ⟨r, hr, rfl⟩
         simp_rw [Scheme.preimage_basicOpen] at hf
         exact (hf ⟨r, hr⟩).left
-    refine ⟨inferInstance, hQs.ofIsLocalization' hPi (f.appTop) s hs fun a ↦ ?_⟩
+    refine ⟨inferInstance, hQs.ofIsLocalization' hPi (f.appTop).hom s hs fun a ↦ ?_⟩
     refine ⟨Γ(Y, Y.basicOpen a.val), Γ(X, X.basicOpen (f.appTop a.val)), inferInstance,
       inferInstance, inferInstance, inferInstance, inferInstance, ?_, ?_⟩
     · exact (isAffineOpen_top X).isLocalization_basicOpen (f.appTop a.val)
     · obtain ⟨_, hf⟩ := hf a
-      rw [morphismRestrict_appTop, hPi.cancel_right_isIso, Scheme.Opens.ι_image_top] at hf
+      rw [morphismRestrict_appTop, CommRingCat.hom_comp, hPi.cancel_right_isIso] at hf
+      -- Not sure why the `show` fixes the following `rw` complaining about "motive is incorrect"
+      have hf : Q (Scheme.Hom.app f ((Y.basicOpen a.1).ι ''ᵁ ⊤)).hom := hf
+      rw [Scheme.Opens.ι_image_top] at hf
       rw [(isAffineOpen_top Y).app_basicOpen_eq_away_map _ (isAffineOpen_top X)] at hf
-      rwa [hPi.cancel_right_isIso] at hf
+      rwa [CommRingCat.hom_comp, hPi.cancel_right_isIso] at hf
 
 /-- If `P` is stable under base change, so is `affineAnd P`. -/
 lemma affineAnd_isStableUnderBaseChange (hQi : RingHom.RespectsIso Q)
@@ -102,12 +108,16 @@ lemma affineAnd_isStableUnderBaseChange (hQi : RingHom.RespectsIso Q)
 lemma targetAffineLocally_affineAnd_iff (hQi : RingHom.RespectsIso Q)
     {X Y : Scheme.{u}} (f : X ⟶ Y) :
     targetAffineLocally (affineAnd Q) f ↔ ∀ U : Y.Opens, IsAffineOpen U →
-      IsAffineOpen (f ⁻¹ᵁ U) ∧ Q (f.app U) := by
-  simp only [targetAffineLocally, affineAnd_apply, morphismRestrict_app, hQi.cancel_right_isIso]
+      IsAffineOpen (f ⁻¹ᵁ U) ∧ Q (f.app U).hom := by
+  simp only [targetAffineLocally, affineAnd_apply, morphismRestrict_app, CommRingCat.hom_comp,
+    hQi.cancel_right_isIso]
   refine ⟨fun hf U hU ↦ ?_, fun h U ↦ ?_⟩
   · obtain ⟨hfU, hf⟩ := hf ⟨U, hU⟩
-    exact ⟨hfU, by rwa [Scheme.Opens.ι_image_top] at hf⟩
+    use hfU
+    have hf : Q (Scheme.Hom.app f (((⟨U, hU⟩ : Y.affineOpens) : Y.Opens).ι ''ᵁ ⊤)).hom := hf
+    rwa [Scheme.Opens.ι_image_top] at hf
   · refine ⟨(h U U.2).1, ?_⟩
+    show Q (Scheme.Hom.app f ((U : Y.Opens).ι ''ᵁ ⊤)).hom
     rw [Scheme.Opens.ι_image_top]
     exact (h U U.2).2
 
@@ -115,7 +125,7 @@ lemma targetAffineLocally_affineAnd_iff (hQi : RingHom.RespectsIso Q)
 lemma targetAffineLocally_affineAnd_iff' (hQi : RingHom.RespectsIso Q)
     {X Y : Scheme.{u}} (f : X ⟶ Y) :
     targetAffineLocally (affineAnd Q) f ↔
-      IsAffineHom f ∧ ∀ U : Y.Opens, IsAffineOpen U → Q (f.app U) := by
+      IsAffineHom f ∧ ∀ U : Y.Opens, IsAffineOpen U → Q (f.app U).hom := by
   rw [targetAffineLocally_affineAnd_iff hQi, isAffineHom_iff]
   aesop
 
@@ -134,7 +144,7 @@ lemma targetAffineLocally_affineAnd_iff_affineLocally (hQ : RingHom.PropertyIsLo
       intro U
       have : IsAffine (f ⁻¹ᵁ U) := hf.isAffine_preimage U U.2
       rw [HasRingHomProperty.iff_of_isAffine (P := affineLocally Q),
-        morphismRestrict_appTop, hQ.respectsIso.cancel_right_isIso]
+        morphismRestrict_appTop, CommRingCat.hom_comp, hQ.respectsIso.cancel_right_isIso]
       apply h
       rw [Scheme.Opens.ι_image_top]
       exact U.2
@@ -213,7 +223,7 @@ lemma HasAffineProperty.affineAnd_iff (P : MorphismProperty Scheme.{u})
     (hQs : RingHom.OfLocalizationSpan Q) :
     HasAffineProperty P (affineAnd Q) ↔
       ∀ {X Y : Scheme.{u}} (f : X ⟶ Y), P f ↔
-        (IsAffineHom f ∧ ∀ U : Y.Opens, IsAffineOpen U → Q (f.app U)) := by
+        (IsAffineHom f ∧ ∀ U : Y.Opens, IsAffineOpen U → Q (f.app U).hom) := by
   simp_rw [isAffineHom_iff]
   refine ⟨fun h X Y f ↦ ?_, fun h ↦ ⟨affineAnd_isLocal hQi hQl hQs, ?_⟩⟩
   · rw [eq_targetAffineLocally P, targetAffineLocally_affineAnd_iff hQi]
