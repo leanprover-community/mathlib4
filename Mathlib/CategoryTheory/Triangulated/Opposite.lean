@@ -640,7 +640,7 @@ noncomputable scoped instance : CommShift F.op ℤ := commShiftOpInt F
 /-- If `F` is triangulated, so is `F.op`.
 We are using the commutation with shifts on `F.op` given by `Functor.commShiftOpInt`.
 -/
-lemma isTrianulatedOp_of_isTriangulated [F.IsTriangulated] : F.op.IsTriangulated where
+lemma isTriangulatedOp_of_isTriangulated [F.IsTriangulated] : F.op.IsTriangulated where
   map_distinguished T dT := by
     rw [mem_distTriang_op_iff, ← Functor.comp_obj, ← distinguished_iff_of_iso
       ((triangleOpEquivalence_inverse_naturality F).app T).unop]
