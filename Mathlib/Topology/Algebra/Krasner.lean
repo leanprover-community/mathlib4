@@ -309,7 +309,7 @@ theorem of_completeSpace {K L : Type*} [Nm_K : NontriviallyNormedField K] [Compl
   simp only [lt_self_iff_false] at this
 
 
-theorem of_completeSpace {K L : Type*} [Nm_K : NontriviallyNormedField K] [NormedField L]
+theorem of_completeSpace' {K L : Type*} [Nm_K : NontriviallyNormedField K] [NormedField L]
     [Algebra K L] (is_na : IsNonarchimedean (‖·‖ : K → ℝ)) [Algebra.IsAlgebraic K L]
     [CompleteSpace K] (extd : ∀ x : K, ‖x‖  = ‖algebraMap K L x‖) : IsKrasnerNorm K L := by
   constructor
@@ -387,7 +387,7 @@ theorem of_completeSpace {K L : Type*} [Nm_K : NontriviallyNormedField K] [Norme
 
 -- add a requirement that the uniquess is need and
 -- TODO: we know this is true and after it is in mathlib we can remove this condition.
-theorem of_completeSpace [CompleteSpace K] : IsKrasnerNorm K L := by
+theorem of_completeSpace'' [CompleteSpace K] : IsKrasnerNorm K L := by
   constructor
   intro x y xsep sp yint kr
   let L' := algebraicClosure K L
