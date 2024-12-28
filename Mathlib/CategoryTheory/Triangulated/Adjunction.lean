@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Shift.Adjunction
 import Mathlib.CategoryTheory.Adjunction.Additive
+import Mathlib.CategoryTheory.Triangulated.Opposite
 
 /-!
 # The adjoint functor is triangulated
@@ -111,6 +112,21 @@ lemma isTriangulated_rightAdjoint : G.IsTriangulated where
         Functor.commShiftIso_hom_naturality, ← adj.shift_unit_app_assoc,
         ← Functor.map_comp, right_triangle_components, Functor.map_id, comp_id]
 
+/- Needs to be fixed.
+open CategoryTheory.Pretriangulated.Opposite Functor in
+def isTriangulated_of_right_adjoint_triangulated (adj : F ⊣ G) [adj.compatCommShift ℤ]
+    [G.IsTriangulated] : F.IsTriangulated := by
+  have : Adjunction.compatCommShift ℤ adj.opAdjointOpOfAdjoint :=
+      @Adjunction.compat_pullbackCommShift (OppositeShift D ℤ) (OppositeShift C ℤ) _ _
+      G.op F.op ℤ _ inferInstance inferInstance ℤ _ (AddMonoidHom.mk' (fun (n : ℤ) => -n)
+      (by intros; dsimp; omega)) adj.opAdjointOpOfAdjoint (commShiftOp G) (commShiftOp F)
+      adj.compatCommShift_op
+  suffices h : F.op.IsTriangulated by
+    have := h
+    exact isTriangulated_of_op_triangulated F
+  exact isTriangulated_of_left_adjoint_triangulated adj.opAdjointOpOfAdjoint
+-/
+
 end Adjunction
 
 namespace Equivalence
@@ -142,3 +158,5 @@ end IsTriangulated
 end Equivalence
 
 end CategoryTheory
+
+#min_imports
