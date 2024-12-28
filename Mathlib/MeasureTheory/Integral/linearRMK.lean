@@ -648,7 +648,7 @@ theorem integral_rieszMeasure_eq [Nonempty X] : ∀ (f : C_c(X, ℝ)),
     apply le_trans (tsub_le_tsub_right (Finset.sum_le_sum (fun n => (fun _ =>
       mul_le_mul_of_nonneg_left (le_trans (hΛgnlerieszMeasureVn' n)
         (hrieszMeasureVnlerieszMeasureEnaddε' n)) (le_of_lt (hyna n))))) _)
-    simp_rw [mul_add _ ((rieszMeasure Λ hΛ) _).toReal _]
+    simp_rw [mul_add _ (rieszMeasure Λ hΛ _).toReal _]
     rw [Finset.sum_add_distrib, ← Finset.sum_mul]
     nth_rw 1 [← sub_add_cancel ε' ε']
     simp_rw [add_assoc _ _ |a|, ← add_assoc _ _ (ε' + |a|), Eq.symm (add_comm_sub _ ε' ε'),
