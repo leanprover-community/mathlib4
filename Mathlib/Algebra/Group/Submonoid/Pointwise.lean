@@ -278,7 +278,7 @@ theorem pointwise_smul_le_pointwise_smul_iff {a : α} {S T : Submonoid M} : a �
   smul_set_subset_smul_set_iff
 
 theorem pointwise_smul_subset_iff {a : α} {S T : Submonoid M} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  smul_set_subset_iff
+  smul_set_subset_iff_subset_inv_smul_set
 
 theorem subset_pointwise_smul_iff {a : α} {S T : Submonoid M} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
   subset_smul_set_iff
