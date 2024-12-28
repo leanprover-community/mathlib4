@@ -88,9 +88,8 @@ lemma test : (L ⊔ K).carrier = L.carrier + K.carrier := by
     rw [AddSubgroup.mem_sup]
     exact h
 
-
-structure Lsummand (G : Type*) [NormedAddCommGroup G] extends AddSubgroup G where
-  compl : ∃ (K : AddSubgroup G), carrier ⊔ K = ⊤ ∧ ∀ x ∈ carrier, ∀ y ∈ K, ‖x‖ + ‖y‖ = ‖x + y‖
+structure IsLsummand (G : Type*) [NormedAddCommGroup G] (L : AddSubgroup G) : Prop where
+  compl : ∃ (K : AddSubgroup G), L ⊔ K = ⊤ ∧ ∀ x ∈ L, ∀ y ∈ K, ‖x‖ + ‖y‖ = ‖x + y‖
 
 variable {M : Type*} [Ring M] [Module M X]
 
@@ -345,31 +344,72 @@ instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
 theorem contractive {P : M} (h : IsLprojection X P) (x : X) : ‖P • x‖ ≤ ‖x‖ := by
   simp only [(h.Lnorm x), le_add_iff_nonneg_right, norm_nonneg]
 
-instance {T : M} : (AddSubgroup X) (T • (Set.univ : Set X)) := sorry
 
 
-def range (P : { P : M // IsLprojection X P }) : Lsummand X := {
-  carrier := P.val • Set.univ
-  add_mem' ha hb := by
-    obtain ⟨c,⟨hc₁,hc₂⟩⟩ := ha
-    obtain ⟨d,⟨_,hd⟩⟩ := hb
-    simp at hc₂
-    simp at hd
-    rw [← hc₂, ← hd, ← smul_add]
-    exact Set.smul_mem_smul_set hc₁
-  zero_mem' := Set.zero_mem_smul_set trivial
-  neg_mem' ha := by
-    --simp only at ha
-    --simp only
-    obtain ⟨c,⟨hc₁,hc₂⟩⟩ := ha
-    --simp at hc₂
-    rw [← hc₂]
-    rw [← smul_neg]
-    exact Set.smul_mem_smul_set hc₁
+lemma mem_range_iff_self_smul {P : M} (h: IsIdempotentElem P) (x : X) :
+    (x ∈ (P • (⊤ : AddSubgroup X) )) ↔ (P • x = x) := by
+  constructor
+  · intro h
+    obtain ⟨y,⟨_,hy⟩⟩ := h
+    simp at hy
+    rw [← hy]
+    rw [← smul_assoc, smul_eq_mul]
+    rw [h.eq]
+  · intro h
+    rw [← h]
+    apply AddSubgroup.smul_mem_pointwise_smul
+    trivial
+
+
+def range (P : { P : M // IsLprojection X P }) : IsLsummand X (P.val • ⊤) where
   compl := by
-    use (Pᶜ.val • (Set.univ : Set X)
+    use (Pᶜ.val • ⊤)
+    constructor
+    · ext x
+      constructor
+      · intro h
+        trivial
+      · intro h
+        rw [AddSubgroup.mem_sup]
+        use P.val • x
+        constructor
+        · apply AddSubgroup.smul_mem_pointwise_smul
+          exact h
+        · use Pᶜ.val • x
+          constructor
+          · apply AddSubgroup.smul_mem_pointwise_smul
+            exact h
+          · simp only [coe_compl, smul_add_one_sub_smul]
+    · intro x hx y hy
+      rw [mem_range_iff_self_smul] at hx
+      rw [mem_range_iff_self_smul] at hy
+      /-obtain ⟨u,⟨_,hu⟩ ⟩ := hx
+      obtain ⟨v,⟨_,hv⟩ ⟩ := hy
+      simp at hu
+      simp at hv
+      rw [← hu]
+      rw [← hv]-/
+      rw [P.prop.Lnorm (x+y)]
+      apply congr_arg₂
+      rw [smul_add, hx]
+      apply congr_arg
+      rw [self_eq_add_right]
+      rw [← hy]
+      rw [← smul_assoc]
+      rw [smul_eq_mul]
+      simp
 
-}
+
+
+      simp
+
+
+
+
+
+
+
+
 
 
 /-
