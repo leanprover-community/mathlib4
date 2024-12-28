@@ -244,7 +244,7 @@ theorem min_weightedOrder_le_add :
 private theorem weightedOrder_add_of_weightedOrder_lt.aux
     (H : f.weightedOrder w < g.weightedOrder w) :
     (f + g).weightedOrder w = f.weightedOrder w := by
-  obtain ⟨n, hn : (n : ℕ∞) = _⟩ := ne_top_iff_exists.mp (ne_top_of_lt H)
+  obtain ⟨n, hn : (n : ℕ∞) = _⟩ := ENat.ne_top_iff_exists.mp (ne_top_of_lt H)
   rw [← hn, weightedOrder_eq_nat]
   obtain ⟨d, hd', hd⟩ := ((weightedOrder_eq_nat w).mp hn.symm).1
   constructor
