@@ -110,6 +110,12 @@ of maps `Φ.toSucc`. -/
 noncomputable def ιIteration : Φ.X₀ ⟶ Φ.iteration J :=
   (Φ.iterationFunctorObjBotIso J).hom ≫ (Φ.iterationCocone J).ι.app ⊥
 
+@[reassoc]
+lemma iterationCoconeι_app :
+    (Φ.iterationCocone J).ι.app ⊥ =
+      (Φ.iterationFunctorObjBotIso J).inv ≫ Φ.ιIteration J := by
+  simp [ιIteration]
+
 lemma arrow_mk_ιIteration :
     Arrow.mk (Φ.ιIteration J) = (Φ.iterationCocone J).ι.app ⊥ := by
   simp [ιIteration, iterationFunctorObjBotIso]
@@ -129,5 +135,18 @@ lemma transfiniteCompositionOfShape_ιIteration :
   simp only [← MorphismProperty.arrow_mk_mem_toSet_iff]
   rw [arrow_mk_ιIteration, MorphismProperty.arrow_mk_mem_toSet_iff]
   exact ⟨_, Φ.prop_iterationFunctor_map_succ, _, Φ.isColimitIterationCocone J⟩
+
+variable {J}
+
+noncomputable def iterationFunctorObjSuccIso (j : J) (hj : ¬ IsMax j) :
+    (Φ.iterationFunctor J).obj (Order.succ j) ≅
+      Φ.succ ((Φ.iterationFunctor J).obj j) :=
+  sorry
+
+@[reassoc]
+lemma iterationFunctor_map_succ (j : J) (hj : ¬ IsMax j) :
+    (Φ.iterationFunctor J).map (homOfLE (Order.le_succ j)) =
+      Φ.toSucc _ ≫ (Φ.iterationFunctorObjSuccIso j hj).inv := by
+  sorry
 
 end CategoryTheory.SmallObject.SuccStruct
