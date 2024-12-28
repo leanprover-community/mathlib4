@@ -1075,7 +1075,7 @@ end OpenPos
 section Support
 
 theorem MeasureTheory.integral_tsupport [MeasurableSpace X] [TopologicalSpace X]
-    {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M] {F : X → M} {ν : MeasureTheory.Measure X} :
+    {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M] {F : X → M} {ν : Measure X} :
     ∫ x in tsupport F, F x ∂ν = ∫ x, F x ∂ν := by
   nth_rw 2 [← MeasureTheory.setIntegral_univ]
   rw [MeasureTheory.setIntegral_eq_of_subset_of_forall_diff_eq_zero MeasurableSet.univ
