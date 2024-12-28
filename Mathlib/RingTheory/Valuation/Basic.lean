@@ -889,3 +889,43 @@ end Supp
 
 -- end of section
 end AddValuation
+
+namespace Valuation
+
+
+variable {Γ₀ : Type*} [Ring R] [LinearOrderedCommMonoidWithZero Γ₀]
+
+/-- The `AddValuation` associated to a `Valuation`. -/
+def toAddValuation : Valuation R Γ₀ ≃ AddValuation R (Additive Γ₀)ᵒᵈ :=
+  AddValuation.ofValuation (R := R) (Γ₀ := (Additive Γ₀)ᵒᵈ)
+
+/-- The `Valuation` associated to a `AddValuation`.
+-/
+def ofAddValuation : AddValuation R (Additive Γ₀)ᵒᵈ ≃ Valuation R Γ₀ :=
+  AddValuation.toValuation
+
+@[simp]
+lemma ofAddValuation_symm_eq : ofAddValuation.symm = toAddValuation (R := R) (Γ₀ := Γ₀) := rfl
+
+@[simp]
+lemma toAddValuation_symm_eq : toAddValuation.symm = ofAddValuation (R := R) (Γ₀ := Γ₀) := rfl
+
+@[simp]
+lemma ofAddValuation_toAddValuation (v : Valuation R Γ₀) :
+  ofAddValuation (toAddValuation v) = v := rfl
+
+@[simp]
+lemma toValuation_ofValuation (v : AddValuation R (Additive Γ₀)ᵒᵈ) :
+    toAddValuation (ofAddValuation v) = v := rfl
+
+@[simp]
+theorem toAddValuation_apply (v : Valuation R Γ₀) (r : R) :
+    toAddValuation v r = OrderDual.toDual (Additive.ofMul (v r)) :=
+  rfl
+
+@[simp]
+theorem ofAddValuation_apply (v : AddValuation R (Additive Γ₀)ᵒᵈ) (r : R) :
+    ofAddValuation v r = Additive.toMul (OrderDual.ofDual (v r)) :=
+  rfl
+
+end Valuation

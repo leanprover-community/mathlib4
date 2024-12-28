@@ -105,10 +105,9 @@ def nonZeroSMulDivisors (R : Type*) [MonoidWithZero R] (M : Type _) [Zero M] [Mu
 /-- The notation for the submonoid of non-zero smul-divisors. -/
 scoped[nonZeroSMulDivisors] notation:9000 R "⁰[" M "]" => nonZeroSMulDivisors R M
 
-section nonZeroDivisors
-
 open nonZeroDivisors
 
+section MonoidWithZero
 variable {M M' M₁ R R' F : Type*} [MonoidWithZero M] [MonoidWithZero M'] [CommMonoidWithZero M₁]
   [Ring R] [CommRing R']
 
@@ -180,11 +179,6 @@ theorem mul_mem_nonZeroDivisors {a b : M₁} : a * b ∈ M₁⁰ ↔ a ∈ M₁�
     apply hb
     rw [mul_assoc, hx]
 
-theorem isUnit_of_mem_nonZeroDivisors {G₀ : Type*} [GroupWithZero G₀] {x : G₀}
-    (hx : x ∈ nonZeroDivisors G₀) : IsUnit x :=
-  ⟨⟨x, x⁻¹, mul_inv_cancel₀ (nonZeroDivisors.ne_zero hx),
-    inv_mul_cancel₀ (nonZeroDivisors.ne_zero hx)⟩, rfl⟩
-
 lemma IsUnit.mem_nonZeroDivisors {a : M} (ha : IsUnit a) : a ∈ M⁰ :=
   fun _ h ↦ ha.mul_left_eq_zero.mp h
 
@@ -199,7 +193,7 @@ theorem eq_zero_of_ne_zero_of_mul_left_eq_zero [NoZeroDivisors M] {x y : M} (hnx
 theorem mem_nonZeroDivisors_of_ne_zero [NoZeroDivisors M] {x : M} (hx : x ≠ 0) : x ∈ M⁰ := fun _ ↦
   eq_zero_of_ne_zero_of_mul_right_eq_zero hx
 
-theorem mem_nonZeroDivisors_iff_ne_zero [NoZeroDivisors M] [Nontrivial M] {x : M} :
+@[simp] lemma mem_nonZeroDivisors_iff_ne_zero [NoZeroDivisors M] [Nontrivial M] {x : M} :
     x ∈ M⁰ ↔ x ≠ 0 := ⟨nonZeroDivisors.ne_zero, mem_nonZeroDivisors_of_ne_zero⟩
 
 variable [FunLike F M M']
@@ -252,7 +246,24 @@ lemma isUnit_iff_mem_nonZeroDivisors_of_finite [Finite R] {a : R} :
   rw [← sub_eq_zero, ← sub_mul] at hbc
   exact sub_eq_zero.mp (ha _ hbc)
 
-end nonZeroDivisors
+end MonoidWithZero
+
+section GroupWithZero
+variable {G₀ : Type*} [GroupWithZero G₀] {x : G₀}
+
+/-- Canonical isomorphism between the non-zero-divisors and units of a group with zero. -/
+@[simps]
+noncomputable def nonZeroDivisorsEquivUnits : G₀⁰ ≃* G₀ˣ where
+  toFun u := .mk0 _ <| mem_nonZeroDivisors_iff_ne_zero.1 u.2
+  invFun u := ⟨u, u.isUnit.mem_nonZeroDivisors⟩
+  left_inv u := rfl
+  right_inv u := by simp
+  map_mul' u v := by simp
+
+lemma isUnit_of_mem_nonZeroDivisors (hx : x ∈ nonZeroDivisors G₀) : IsUnit x :=
+  (nonZeroDivisorsEquivUnits ⟨x, hx⟩).isUnit
+
+end GroupWithZero
 
 section nonZeroSMulDivisors
 

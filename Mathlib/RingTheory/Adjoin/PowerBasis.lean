@@ -94,7 +94,7 @@ theorem repr_gen_pow_isIntegral (hB : IsIntegral R B.gen) [IsDomain S]
   let Q := X ^ n %ₘ minpoly R B.gen
   have : B.gen ^ n = aeval B.gen Q := by
     rw [← @aeval_X_pow R _ _ _ _ B.gen, ← modByMonic_add_div (X ^ n) (minpoly.monic hB)]
-    simp
+    simp [Q]
   by_cases hQ : Q = 0
   · simp [this, hQ, isIntegral_zero]
   have hlt : Q.natDegree < B.dim := by

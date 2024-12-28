@@ -82,7 +82,18 @@ instance (V W : FDRep k G) : FiniteDimensional k (V ⟶ W) :=
 
 /-- The monoid homomorphism corresponding to the action of `G` onto `V : FDRep k G`. -/
 def ρ (V : FDRep k G) : G →* V →ₗ[k] V :=
-  Action.ρ V
+  (ModuleCat.endMulEquiv _).toMonoidHom.comp (Action.ρ V)
+
+@[simp]
+lemma endMulEquiv_symm_comp_ρ (V : FDRep k G) :
+    (MonoidHomClass.toMonoidHom (ModuleCat.endMulEquiv V.V.obj).symm).comp (ρ V) = Action.ρ V := rfl
+
+@[simp]
+lemma endMulEquiv_comp_ρ (V : FDRep k G) :
+    (MonoidHomClass.toMonoidHom (ModuleCat.endMulEquiv V.V.obj)).comp (Action.ρ V) = ρ V := rfl
+
+@[simp]
+lemma hom_action_ρ (V : FDRep k G) (g : G) : (Action.ρ V g).hom = ρ V g := rfl
 
 /-- The underlying `LinearEquiv` of an isomorphism of representations. -/
 def isoToLinearEquiv {V W : FDRep k G} (i : V ≅ W) : V ≃ₗ[k] W :=
@@ -91,15 +102,16 @@ def isoToLinearEquiv {V W : FDRep k G} (i : V ≅ W) : V ≃ₗ[k] W :=
 theorem Iso.conj_ρ {V W : FDRep k G} (i : V ≅ W) (g : G) :
     W.ρ g = (FDRep.isoToLinearEquiv i).conj (V.ρ g) := by
   -- Porting note: Changed `rw` to `erw`
-  erw [FDRep.isoToLinearEquiv, ← FGModuleCat.Iso.conj_eq_conj, Iso.conj_apply]
-  rw [Iso.eq_inv_comp ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i)]
+  erw [FDRep.isoToLinearEquiv, ← hom_action_ρ V, ← FGModuleCat.Iso.conj_hom_eq_conj, Iso.conj_apply]
+  rw [← ModuleCat.hom_ofHom (W.ρ g), ← ModuleCat.hom_ext_iff,
+      Iso.eq_inv_comp ((Action.forget (FGModuleCat k) (MonCat.of G)).mapIso i)]
   exact (i.hom.comm g).symm
 
 /-- Lift an unbundled representation to `FDRep`. -/
 @[simps ρ]
 def of {V : Type u} [AddCommGroup V] [Module k V] [FiniteDimensional k V]
     (ρ : Representation k G V) : FDRep k G :=
-  ⟨FGModuleCat.of k V, ρ⟩
+  ⟨FGModuleCat.of k V, ρ ≫ MonCat.ofHom (ModuleCat.endMulEquiv _).symm.toMonoidHom⟩
 
 instance : HasForget₂ (FDRep k G) (Rep k G) where
   forget₂ := (forget₂ (FGModuleCat k) (ModuleCat k)).mapAction (MonCat.of G)
@@ -179,11 +191,13 @@ noncomputable def dualTensorIsoLinHomAux :
 /-- When `V` and `W` are finite dimensional representations of a group `G`, the isomorphism
 `dualTensorHomEquiv k V W` of vector spaces induces an isomorphism of representations. -/
 noncomputable def dualTensorIsoLinHom : FDRep.of ρV.dual ⊗ W ≅ FDRep.of (linHom ρV W.ρ) := by
-  refine Action.mkIso (dualTensorIsoLinHomAux ρV W) ?_
-  convert dualTensorHom_comm ρV W.ρ
+  refine Action.mkIso (dualTensorIsoLinHomAux ρV W) (fun g => ?_)
+  ext : 1
+  exact dualTensorHom_comm ρV W.ρ g
 
 @[simp]
-theorem dualTensorIsoLinHom_hom_hom : (dualTensorIsoLinHom ρV W).hom.hom = dualTensorHom k V W :=
+theorem dualTensorIsoLinHom_hom_hom :
+    (dualTensorIsoLinHom ρV W).hom.hom = ModuleCat.ofHom (dualTensorHom k V W) :=
   rfl
 
 end FDRep

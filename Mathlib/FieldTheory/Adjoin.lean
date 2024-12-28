@@ -12,6 +12,7 @@ import Mathlib.RingTheory.Adjoin.Dimension
 import Mathlib.RingTheory.Finiteness.TensorProduct
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.SetTheory.Cardinal.Subfield
+import Mathlib.LinearAlgebra.Dual
 
 /-!
 # Adjoining Elements to Fields
@@ -998,11 +999,13 @@ theorem finrank_eq_one_iff : finrank F K = 1 ↔ K = ⊥ := by
   rw [← toSubalgebra_eq_iff, ← finrank_eq_finrank_subalgebra, Subalgebra.finrank_eq_one_iff,
     bot_toSubalgebra]
 
-@[simp] protected
-theorem rank_bot : Module.rank F (⊥ : IntermediateField F E) = 1 := by rw [rank_eq_one_iff]
+@[simp]
+protected theorem rank_bot : Module.rank F (⊥ : IntermediateField F E) = 1 := by
+  rw [rank_eq_one_iff]
 
-@[simp] protected
-theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := by rw [finrank_eq_one_iff]
+@[simp]
+protected theorem finrank_bot : finrank F (⊥ : IntermediateField F E) = 1 := by
+  rw [finrank_eq_one_iff]
 
 @[simp] theorem rank_bot' : Module.rank (⊥ : IntermediateField F E) E = Module.rank F E := by
   rw [← rank_mul_rank F (⊥ : IntermediateField F E) E, IntermediateField.rank_bot, one_mul]

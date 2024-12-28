@@ -259,7 +259,7 @@ theorem smul_eq_iff_mem_normalizer {g : G} {P : Sylow p G} :
           fun hh => ⟨(MulAut.conj g)⁻¹ h, hh, MulAut.apply_inv_self G (MulAut.conj g) h⟩⟩
 
 theorem smul_eq_of_normal {g : G} {P : Sylow p G} [h : P.Normal] :
-    g • P = P := by simp only [smul_eq_iff_mem_normalizer, normalizer_eq_top.mpr h, mem_top]
+    g • P = P := by simp only [smul_eq_iff_mem_normalizer, P.normalizer_eq_top, mem_top]
 
 end Sylow
 
@@ -748,13 +748,13 @@ end Pointwise
 
 theorem normal_of_normalizer_normal {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G)
     (hn : P.normalizer.Normal) : P.Normal := by
-  rw [← normalizer_eq_top, ← normalizer_sup_eq_top' P le_normalizer, sup_idem]
+  rw [← normalizer_eq_top_iff, ← normalizer_sup_eq_top' P le_normalizer, sup_idem]
 
 @[simp]
 theorem normalizer_normalizer {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P : Sylow p G) :
     P.normalizer.normalizer = P.normalizer := by
   have := normal_of_normalizer_normal (P.subtype (le_normalizer.trans le_normalizer))
-  simp_rw [← normalizer_eq_top, coe_subtype, ← subgroupOf_normalizer_eq le_normalizer, ←
+  simp_rw [← normalizer_eq_top_iff, coe_subtype, ← subgroupOf_normalizer_eq le_normalizer, ←
     subgroupOf_normalizer_eq le_rfl, subgroupOf_self] at this
   rw [← range_subtype P.normalizer.normalizer, MonoidHom.range_eq_map,
     ← this trivial]
@@ -763,7 +763,7 @@ theorem normalizer_normalizer {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)] (P :
 theorem normal_of_all_max_subgroups_normal [Finite G]
     (hnc : ∀ H : Subgroup G, IsCoatom H → H.Normal) {p : ℕ} [Fact p.Prime] [Finite (Sylow p G)]
     (P : Sylow p G) : P.Normal :=
-  normalizer_eq_top.mp
+  normalizer_eq_top_iff.mp
     (by
       rcases eq_top_or_exists_le_coatom P.normalizer with (heq | ⟨K, hK, hNK⟩)
       · exact heq
@@ -774,7 +774,7 @@ theorem normal_of_all_max_subgroups_normal [Finite G]
 
 theorem normal_of_normalizerCondition (hnc : NormalizerCondition G) {p : ℕ} [Fact p.Prime]
     [Finite (Sylow p G)] (P : Sylow p G) : P.Normal :=
-  normalizer_eq_top.mp <|
+  normalizer_eq_top_iff.mp <|
     normalizerCondition_iff_only_full_group_self_normalizing.mp hnc _ <| normalizer_normalizer _
 
 /-- If all its Sylow subgroups are normal, then a finite group is isomorphic to the direct product

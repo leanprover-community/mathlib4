@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
+import Mathlib.Data.ENat.Defs
 import Mathlib.Data.Nat.Cast.Order.Basic
 import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Data.Nat.SuccPred
@@ -117,6 +118,8 @@ lemma toWithTop_ofWithTop (v : WithTop ℕ) : toWithTop (ofWithTop v) = v := rfl
 `ℕ → ℕ∞` is `Nat.cast`. -/
 @[simp] theorem some_eq_coe : (WithTop.some : ℕ → ℕ∞) = Nat.cast := rfl
 
+theorem coe_inj {a b : ℕ} : (a : ℕ∞) = b ↔ a = b := WithTop.coe_inj
+
 instance : SuccAddOrder ℕ∞ where
   succ_eq_add_one x := by cases x <;> simp [SuccOrder.succ]
 
@@ -145,6 +148,29 @@ theorem coe_sub (m n : ℕ) : ↑(m - n) = (m - n : ℕ∞) :=
 @[simp] theorem top_mul (hm : m ≠ 0) : ⊤ * m = ⊤ := WithTop.top_mul hm
 
 theorem top_pow {n : ℕ} (n_pos : 0 < n) : (⊤ : ℕ∞) ^ n = ⊤ := WithTop.top_pow n_pos
+
+/-- Convert a `ℕ∞` to a `ℕ` using a proof that it is not infinite. -/
+def lift (x : ℕ∞) (h : x < ⊤) : ℕ := WithTop.untop x (WithTop.lt_top_iff_ne_top.mp h)
+
+@[simp] theorem coe_lift (x : ℕ∞) (h : x < ⊤) : (lift x h : ℕ∞) = x :=
+  WithTop.coe_untop x (WithTop.lt_top_iff_ne_top.mp h)
+@[simp] theorem lift_coe (n : ℕ) : lift (n : ℕ∞) (WithTop.coe_lt_top n) = n := rfl
+@[simp] theorem lift_lt_iff {x : ℕ∞} {h} {n : ℕ} : lift x h < n ↔ x < n := WithTop.untop_lt_iff _
+@[simp] theorem lift_le_iff {x : ℕ∞} {h} {n : ℕ} : lift x h ≤ n ↔ x ≤ n := WithTop.untop_le_iff _
+@[simp] theorem lt_lift_iff {x : ℕ} {n : ℕ∞} {h} : x < lift n h ↔ x < n := WithTop.lt_untop_iff _
+@[simp] theorem le_lift_iff {x : ℕ} {n : ℕ∞} {h} : x ≤ lift n h ↔ x ≤ n := WithTop.le_untop_iff _
+
+@[simp] theorem lift_zero : lift 0 (WithTop.coe_lt_top 0) = 0 := rfl
+@[simp] theorem lift_one : lift 1 (WithTop.coe_lt_top 1) = 1 := rfl
+@[simp] theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
+    lift (no_index (OfNat.ofNat n)) (WithTop.coe_lt_top n) = OfNat.ofNat n := rfl
+
+@[simp] theorem add_lt_top {a b : ℕ∞} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := WithTop.add_lt_top
+
+@[simp] theorem lift_add (a b : ℕ∞) (h : a + b < ⊤) :
+    lift (a + b) h = lift a (add_lt_top.1 h).1 + lift b (add_lt_top.1 h).2 := by
+  apply coe_inj.1
+  simp
 
 instance canLift : CanLift ℕ∞ ℕ (↑) (· ≠ ⊤) := WithTop.canLift
 
@@ -320,6 +346,10 @@ lemma not_lt_zero (n : ℕ∞) : ¬ n < 0 := by
 lemma coe_lt_top (n : ℕ) : (n : ℕ∞) < ⊤ :=
   WithTop.coe_lt_top n
 
+lemma coe_lt_coe {n m : ℕ} : (n : ℕ∞) < (m : ℕ∞) ↔ n < m := by simp
+
+lemma coe_le_coe {n m : ℕ} : (n : ℕ∞) ≤ (m : ℕ∞) ↔ n ≤ m := by simp
+
 @[elab_as_elim]
 theorem nat_induction {P : ℕ∞ → Prop} (a : ℕ∞) (h0 : P 0) (hsuc : ∀ n : ℕ, P n → P n.succ)
     (htop : (∀ n : ℕ, P n) → P ⊤) : P a := by
@@ -368,7 +398,9 @@ lemma add_one_natCast_le_withTop_of_lt {m : ℕ} {n : WithTop ℕ∞} (h : m < n
   match n with
   | ⊤ => exact Iff.rfl
   | (⊤ : ℕ∞) => simp
-  | (n : ℕ) => norm_cast; simp only [coe_ne_top, iff_false, ne_eq]
+  | (n : ℕ) =>
+    norm_cast
+    simp only [coe_ne_top, iff_false, ne_eq]
 
 @[simp] lemma natCast_ne_coe_top (n : ℕ) : (n : WithTop ℕ∞) ≠ (⊤ : ℕ∞) := nofun
 
