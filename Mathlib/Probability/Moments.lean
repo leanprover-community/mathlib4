@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Variance
-import Mathlib.MeasureTheory.Function.L1Space
 
 /-!
 # Moments and moment generating function
