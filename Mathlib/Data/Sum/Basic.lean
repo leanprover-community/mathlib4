@@ -276,8 +276,8 @@ namespace PSum
 
 variable {α β : Sort*}
 
-theorem inl_injective : Function.Injective (PSum.inl : α → α ⊕' β) := fun _ _ ↦ PSum.inl.inj
+theorem inl_injective : Function.Injective (PSum.inl : α → α ⊕' β) := fun _ _ ↦ inl.inj
 
-theorem inr_injective : Function.Injective (PSum.inr : β → α ⊕' β) := fun _ _ ↦ PSum.inr.inj
+theorem inr_injective : Function.Injective (PSum.inr : β → α ⊕' β) := fun _ _ ↦ inr.inj
 
 end PSum
