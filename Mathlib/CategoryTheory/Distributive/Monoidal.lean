@@ -100,22 +100,19 @@ instance IsMonoidalLeftDistrib.preserves_binary_coproducts_tensorLeft
     PreservesColimitsOfShape (Discrete WalkingPair) (tensorLeft X) :=
   IsMonoidalLeftDistrib.preservesBinaryCoproducts_tensorLeft X
 
-instance IsMonoidalLeftDistrib.preservesColimit_pair_tensorLeft
-    [IsMonoidalLeftDistrib C] {X Y Z : C} :
-    PreservesColimit (pair Y Z) (tensorLeft X) :=
-  (IsMonoidalLeftDistrib.preservesBinaryCoproducts_tensorLeft X).preservesColimit
-
 /-- The canonical left distributivity isomorphism -/
 def leftDistrib [IsMonoidalLeftDistrib C] (X Y Z : C) :
     (X ⊗ Y) ⨿ (X ⊗ Z) ≅ X ⊗ (Y ⨿ Z) :=
   PreservesColimitPair.iso (tensorLeft X) Y Z
 
+namespace Distributive
+
 /-- Notation for the forward direction morphism of the canonical left distributivity isomorphism -/
 scoped notation "∂L" => leftDistrib
 
-instance IsMonoidalLeftDistrib.isIso_leftDistrib_hom [IsMonoidalLeftDistrib C] {X Y Z : C} :
-    IsIso (∂L X Y Z).hom :=
-  isIso_hom <| leftDistrib X Y Z
+end Distributive
+
+open Distributive
 
 instance IsMonoidalLeftDistrib.of_isIso_coprodComparisonTensorLeft
     [i : ∀ {X Y Z : C}, IsIso (coprodComparison (tensorLeft X) Y Z)] : IsMonoidalLeftDistrib C where
@@ -183,9 +180,14 @@ instance IsMonoidalRightDistrib.preservesColimit_pair_tensorRight
 def rightDistrib [IsMonoidalRightDistrib C] (X Y Z : C) : (Y ⊗ X) ⨿ (Z ⊗ X) ≅ (Y ⨿ Z) ⊗ X :=
   PreservesColimitPair.iso (tensorRight X) Y Z
 
-set_option quotPrecheck false in
+namespace Distributive
+
 /-- Notation for the forward direction morphism of the canonical right distributivity isomorphism -/
 notation "∂R" => rightDistrib
+
+end Distributive
+
+open Distributive
 
 instance IsMonoidalRightDistrib.isIso_rightDistrib_hom [IsMonoidalRightDistrib C] {X Y Z : C} :
     IsIso (∂R X Y Z).hom :=
@@ -240,6 +242,8 @@ lemma whisker_inr_inv_rightDistrib {X Y Z : C} :
   rw [assoc, Iso.inv_hom_id, comp_id, coprod_inr_rightDistrib_hom]
 
 end IsMonoidalRightDistrib
+
+open Distributive
 
 /-- In a symmetric monoidal category, the left distributivity is equal to
 the right distributivity up to braiding isomorphisms. -/
