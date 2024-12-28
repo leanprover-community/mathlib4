@@ -98,6 +98,11 @@ lemma Cotangent.surjective_map_ofComp :
   obtain ⟨x, hx', rfl⟩ := this
   exact ⟨.mk ⟨x, hx'⟩, Extension.Cotangent.map_mk _ _⟩
 
+/-!
+Given representations `R[X] → S` and `S[Y] → T`, the sequence
+`T ⊗[S] (⨁ₓ S dx) → (⨁ₓ T dx) ⊕ (⨁ᵧ T dy) →  ⨁ᵧ T dy`
+is exact.
+-/
 open Extension.Cotangent in
 lemma Cotangent.exact :
     Function.Exact
@@ -222,28 +227,30 @@ lemma CotangentSpace.exact :
   rw [LinearEquiv.conj_exact_iff_exact]
   exact Function.Exact.inr_fst
 
+namespace H1Cotangent
+
 variable (R) in
 /--
 Given `0 → I → S[Y] → T → 0`, this is an auxiliary map from `S[Y]` to `T ⊗[S] Ω[S⁄R]` whose
 restriction to `ker(I/I² → ⊕ S dyᵢ)` is the connecting homomorphism in the Jacobi-Zariski sequence.
 -/
 noncomputable
-def H1Cotangent.δAux :
+def δAux :
     Q.Ring →ₗ[R] T ⊗[S] Ω[S⁄R] :=
   Finsupp.lsum R (R := R) fun f ↦
     (TensorProduct.mk S T _ (f.prod (Q.val · ^ ·))).restrictScalars R ∘ₗ (D R S).toLinearMap
 
-lemma H1Cotangent.δAux_monomial (n r) :
+lemma δAux_monomial (n r) :
     δAux R Q (monomial n r) = (n.prod (Q.val · ^ ·)) ⊗ₜ D R S r :=
   Finsupp.lsum_single _ _ _ _
 
 @[simp]
-lemma H1Cotangent.δAux_X (i) :
+lemma δAux_X (i) :
     δAux R Q (X i) = 0 := by
   rw [X, δAux_monomial]
   simp only [Derivation.map_one_eq_zero, tmul_zero]
 
-lemma H1Cotangent.δAux_mul (x y) :
+lemma δAux_mul (x y) :
     δAux R Q (x * y) = x • (δAux R Q y) + y • (δAux R Q x) := by
   induction' x using MvPolynomial.induction_on' with n r x₁ x₂ hx₁ hx₂
   · induction' y using MvPolynomial.induction_on' with m s y₁ y₂ hy₁ hy₂
@@ -254,7 +261,7 @@ lemma H1Cotangent.δAux_mul (x y) :
     · simp only [map_add, smul_add, hy₁, hy₂, mul_add, add_smul]; abel
   · simp only [add_mul, map_add, hx₁, hx₂, add_smul, smul_add]; abel
 
-lemma H1Cotangent.δAux_C (r) :
+lemma δAux_C (r) :
     δAux R Q (C r) = 1 ⊗ₜ D R S r := by
   rw [← monomial_zero', δAux_monomial, Finsupp.prod_zero_index]
 
@@ -264,7 +271,7 @@ section instanceProblem
 attribute [local instance 999999] Zero.toOfNat0 SemilinearMapClass.distribMulActionSemiHomClass
   SemilinearEquivClass.instSemilinearMapClass TensorProduct.addZeroClass AddZeroClass.toZero
 
-lemma H1Cotangent.δAux_toAlgHom {Q : Generators.{u₁} S T}
+lemma δAux_toAlgHom {Q : Generators.{u₁} S T}
     {Q' : Generators.{u₃} S T} (f : Hom Q Q') (x) :
     δAux R Q' (f.toAlgHom x) = δAux R Q x + Finsupp.linearCombination _ (δAux R Q' ∘ f.val)
       (Q.cotangentSpaceBasis.repr ((1 : T) ⊗ₜ[Q.Ring] D S Q.Ring x : _)) := by
@@ -284,7 +291,7 @@ lemma H1Cotangent.δAux_toAlgHom {Q : Generators.{u₁} S T}
     rw [add_left_comm]
     rfl
 
-lemma H1Cotangent.δAux_ofComp (x : (Q.comp P).Ring) :
+lemma δAux_ofComp (x : (Q.comp P).Ring) :
     δAux R Q ((Q.ofComp P).toAlgHom x) =
       P.toExtension.toKaehler.baseChange T (CotangentSpace.compEquiv Q P
         (1 ⊗ₜ[(Q.comp P).Ring] (D R (Q.comp P).Ring) x : _)).2 := by
@@ -331,7 +338,7 @@ and this map is obtained by applying snake lemma to the following diagram
 This is independent from the presentations chosen. See `H1Cotangent.δ_comp_equiv`.
 -/
 noncomputable
-def H1Cotangent.δ :
+def δ :
     Q.toExtension.H1Cotangent →ₗ[T] T ⊗[S] Ω[S⁄R] :=
   SnakeLemma.δ'
     (P.toExtension.cotangentComplex.baseChange T)
@@ -353,8 +360,8 @@ def H1Cotangent.δ :
     (Cotangent.surjective_map_ofComp Q P)
     (CotangentSpace.map_toComp_injective Q P)
 
-lemma H1Cotangent.exact_δ_map :
-    Function.Exact (H1Cotangent.δ Q P) (mapBaseChange R S T) := by
+lemma exact_δ_map :
+    Function.Exact (δ Q P) (mapBaseChange R S T) := by
   apply SnakeLemma.exact_δ_left (π₂ := (Q.comp P).toExtension.toKaehler)
     (hπ₂ := (Q.comp P).toExtension.exact_cotangentComplex_toKaehler)
   · apply (P.cotangentSpaceBasis.baseChange T).ext
@@ -368,16 +375,16 @@ lemma H1Cotangent.exact_δ_map :
     simp [Extension.Hom.toAlgHom]
   · exact LinearMap.lTensor_surjective T P.toExtension.toKaehler_surjective
 
-lemma H1Cotangent.δ_eq (x : Q.toExtension.H1Cotangent) (y)
+lemma δ_eq (x : Q.toExtension.H1Cotangent) (y)
     (hy : Extension.Cotangent.map (ofComp Q P).toExtensionHom y = x.1) (z)
     (hz : (Extension.CotangentSpace.map (toComp Q P).toExtensionHom).liftBaseChange T z =
       (Q.comp P).toExtension.cotangentComplex y) :
-    H1Cotangent.δ Q P x = P.toExtension.toKaehler.baseChange T z := by
+    δ Q P x = P.toExtension.toKaehler.baseChange T z := by
   apply SnakeLemma.δ_eq
   exacts [hy, hz]
 
-lemma H1Cotangent.δ_eq_δAux (x : Q.ker) (hx) :
-    H1Cotangent.δ Q P ⟨.mk x, hx⟩ = H1Cotangent.δAux R Q x.1 := by
+lemma δ_eq_δAux (x : Q.ker) (hx) :
+    δ Q P ⟨.mk x, hx⟩ = δAux R Q x.1 := by
   let y := Extension.Cotangent.mk (P := (Q.comp P).toExtension) (Q.kerCompPreimage P x)
   have hy : (Extension.Cotangent.map (Q.ofComp P).toExtensionHom) y = Extension.Cotangent.mk x := by
     simp only [y, Extension.Cotangent.map_mk]
@@ -398,25 +405,25 @@ lemma H1Cotangent.δ_eq_δAux (x : Q.ker) (hx) :
       (CotangentSpace.compEquiv Q P).toLinearMap) ((Q.comp P).toExtension.cotangentComplex y)
     rw [CotangentSpace.fst_compEquiv, Extension.CotangentSpace.map_cotangentComplex, hy, hx]
 
-lemma H1Cotangent.δ_eq_δ (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S)
+lemma δ_eq_δ (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S)
     (P' : Generators.{u₃} R S) :
-    H1Cotangent.δ Q P = H1Cotangent.δ Q P' := by
+    δ Q P = δ Q P' := by
   ext ⟨x, hx⟩
   obtain ⟨x, rfl⟩ := Extension.Cotangent.mk_surjective x
   rw [δ_eq_δAux, δ_eq_δAux]
 
-lemma H1Cotangent.exact_map_δ :
-    Function.Exact (Extension.H1Cotangent.map (Q.ofComp P).toExtensionHom) (H1Cotangent.δ Q P) := by
+lemma exact_map_δ :
+    Function.Exact (Extension.H1Cotangent.map (Q.ofComp P).toExtensionHom) (δ Q P) := by
   apply SnakeLemma.exact_δ_right
     (ι₂ := (Q.comp P).toExtension.h1Cotangentι)
     (hι₂ := LinearMap.exact_subtype_ker_map _)
   · ext x; rfl
   · exact Subtype.val_injective
 
-lemma H1Cotangent.δ_map
+lemma δ_map
     (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S)
     (Q' : Generators.{u₃} S T) (P' : Generators.{u₄} R S) (f : Hom Q' Q) (x) :
-    H1Cotangent.δ Q P (Extension.H1Cotangent.map f.toExtensionHom x) = H1Cotangent.δ Q' P' x := by
+    δ Q P (Extension.H1Cotangent.map f.toExtensionHom x) = δ Q' P' x := by
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   obtain ⟨x, hx⟩ := x
   obtain ⟨⟨y, hy⟩, rfl⟩ := Extension.Cotangent.mk_surjective x
@@ -429,24 +436,24 @@ lemma H1Cotangent.δ_map
 
 end instanceProblem
 
-lemma H1Cotangent.δ_comp_equiv
+lemma δ_comp_equiv
     (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S)
     (Q' : Generators.{u₃} S T) (P' : Generators.{u₄} R S) :
-    H1Cotangent.δ Q P ∘ₗ (H1Cotangent.equiv _ _).toLinearMap = H1Cotangent.δ Q' P' := by
+    δ Q P ∘ₗ (H1Cotangent.equiv _ _).toLinearMap = δ Q' P' := by
   ext x
   exact δ_map Q P Q' P' _ _
 
 /-- A variant of `exact_map_δ` that takes in an arbitrary map between generators. -/
-lemma H1Cotangent.exact_map_δ'
+lemma exact_map_δ'
     (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S) (P' : Generators.{u₃} R T) (f : Hom P' Q) :
-    Function.Exact (Extension.H1Cotangent.map f.toExtensionHom) (H1Cotangent.δ Q P) := by
+    Function.Exact (Extension.H1Cotangent.map f.toExtensionHom) (δ Q P) := by
   refine (H1Cotangent.equiv (Q.comp P) P').surjective.comp_exact_iff_exact.mp ?_
   show Function.Exact ((Extension.H1Cotangent.map f.toExtensionHom).restrictScalars T ∘ₗ
     (Extension.H1Cotangent.map _)) (δ Q P)
   rw [← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq _ (Q.ofComp P).toExtensionHom]
   exact exact_map_δ Q P
 
-end Generators
+end Generators.H1Cotangent
 
 variable {T : Type w} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
@@ -457,10 +464,12 @@ noncomputable
 def H1Cotangent.δ : H1Cotangent S T →ₗ[T] T ⊗[S] Ω[S⁄R] :=
   Generators.H1Cotangent.δ (Generators.self S T) (Generators.self R S)
 
+/-- Given algebras `R → S → T`, `H¹(L_{T/R}) → H¹(L_{T/S}) → T ⊗[S] Ω[S/R]` is exact. -/
 lemma H1Cotangent.exact_map_δ : Function.Exact (map R S T T) (δ R S T) :=
   Generators.H1Cotangent.exact_map_δ' (Generators.self S T)
     (Generators.self R S) (Generators.self R T) (Generators.defaultHom _ _)
 
+/-- Given algebras `R → S → T`, `H¹(L_{T/S}) → T ⊗[S] Ω[S/R] → Ω[T/R]` is exact. -/
 lemma H1Cotangent.exact_δ_mapBaseChange : Function.Exact (δ R S T) (mapBaseChange R S T) :=
   Generators.H1Cotangent.exact_δ_map (Generators.self S T) (Generators.self R S)
 
