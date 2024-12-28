@@ -9,6 +9,7 @@ import Mathlib.RingTheory.Ideal.Over
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.Localization.Algebra
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.MaximalSpectrum
 import Mathlib.Tactic.StacksAttribute
@@ -256,6 +257,10 @@ def comap (f : R →+* S) : C(PrimeSpectrum S, PrimeSpectrum R) where
     simp only [continuous_iff_isClosed, isClosed_iff_zeroLocus]
     rintro _ ⟨s, rfl⟩
     exact ⟨_, preimage_specComap_zeroLocus_aux f s⟩
+
+lemma coe_comap (f : R →+* S) : comap f = f.specComap := rfl
+
+lemma comap_apply (f : R →+* S) (x) : comap f x = f.specComap x := rfl
 
 variable (f : R →+* S)
 
@@ -843,6 +848,34 @@ lemma exists_idempotent_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R)}
 
 @[deprecated (since := "2024-11-11")]
 alias exists_idempotent_basicOpen_eq_of_is_clopen := exists_idempotent_basicOpen_eq_of_isClopen
+
+section localization_quotient
+variable [CommSemiring R] [CommSemiring S]
+
+open Localization Polynomial in
+lemma comap_C_eq_comap_localization_union_comap_quotient
+    {R : Type*} [CommRing R] (s : Set (PrimeSpectrum R[X])) (c : R) :
+    comap C '' s =
+      comap (algebraMap R (Away c)) '' (comap C ''
+        (comap (mapRingHom (algebraMap R (Away c))) ⁻¹' s)) ∪
+      comap (Ideal.Quotient.mk (.span {c})) '' (comap C ''
+        (comap (mapRingHom (Ideal.Quotient.mk _)) ⁻¹' s)) := by
+  rw [Set.union_comm]
+  simp_rw [← Set.image_comp, ← ContinuousMap.coe_comp, ← comap_comp, ← mapRingHom_comp_C,
+    comap_comp, ContinuousMap.coe_comp, Set.image_comp, Set.image_preimage_eq_inter_range,
+    ← Set.image_union, ← Set.inter_union_distrib_left]
+  letI := (mapRingHom (algebraMap R (Away c))).toAlgebra
+  suffices Set.range (comap (mapRingHom (Ideal.Quotient.mk (.span {c})))) =
+      (Set.range (comap (algebraMap R[X] (Away c)[X])))ᶜ by
+    rw [this, RingHom.algebraMap_toAlgebra, Set.compl_union_self, Set.inter_univ]
+  have := Polynomial.isLocalization (.powers c) (Away c)
+  rw [Submonoid.map_powers] at this
+  have surj : Function.Surjective (mapRingHom (Ideal.Quotient.mk (.span {c}))) :=
+    Polynomial.map_surjective _ Ideal.Quotient.mk_surjective
+  rw [range_comap_of_surjective _ _ surj, localization_away_comap_range _ (C c)]
+  simp [Polynomial.ker_mapRingHom, Ideal.map_span]
+
+end localization_quotient
 
 section IsIntegral
 
