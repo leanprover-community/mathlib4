@@ -167,13 +167,10 @@ theorem degrees_add_of_disjoint [DecidableEq σ] (h : Disjoint p.degrees q.degre
     (p + q).degrees = p.degrees ∪ q.degrees :=
   degrees_add_le.antisymm <| Multiset.union_le (le_degrees_add_left h) (le_degrees_add_right h)
 
-theorem degrees_map [CommSemiring S] (p : MvPolynomial σ R) (f : R →+* S) :
-    (map f p).degrees ⊆ p.degrees := by
-  classical
-  dsimp only [degrees]
-  apply Multiset.subset_of_le
-  apply Finset.sup_mono
-  apply MvPolynomial.support_map_subset
+lemma degrees_map_le [CommSemiring S] {f : R →+* S} : (map f p).degrees ≤ p.degrees := by
+  classical exact Finset.sup_mono <| support_map_subset ..
+
+@[deprecated (since := "2024-12-28")] alias degrees_map := degrees_map_le
 
 theorem degrees_rename (f : σ → τ) (φ : MvPolynomial σ R) :
     (rename f φ).degrees ⊆ φ.degrees.map f := by
