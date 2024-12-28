@@ -272,7 +272,7 @@ noncomputable def rieszContent (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0) : 
 lemma rieszContent_neq_top {K : Compacts X} : rieszContent Λ K ≠ ⊤ := by
   simp only [ne_eq, ENNReal.coe_ne_top, not_false_eq_true]
 
-lemma rieszContentRegular : (rieszContent Λ).ContentRegular := by
+lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
   intro K
   simp only [rieszContent]
   apply le_antisymm
@@ -370,12 +370,12 @@ section RieszMeasure
 variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
 
 /-- `rieszContent` is promoted to a measure. -/
-def μ := (MeasureTheory.Content.measure (rieszContent Λ))
+def rieszMeasure := (rieszContent Λ).measure
 
 lemma leRieszMeasure_Compacts {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1) {K : Compacts X}
-    (h : tsupport f ⊆ K) : ENNReal.ofReal (Λ f) ≤ (μ Λ) K := by
-  simp only [μ, MeasureTheory.Content.measure_eq_content_of_regular (rieszContent Λ)
-    (rieszContentRegular Λ)]
+    (h : tsupport f ⊆ K) : ENNReal.ofNNReal (Λ f) ≤ (rieszMeasure Λ) K := by
+  simp only [rieszMeasure, Content.measure_eq_content_of_regular (rieszContent Λ)
+    (contentRegular_rieszContent Λ)]
   simp only [rieszContent, ENNReal.ofReal_coe_nnreal, ENNReal.coe_le_coe]
   apply le_iff_forall_pos_le_add.mpr
   intro ε hε
@@ -390,8 +390,7 @@ lemma leRieszMeasure_Compacts {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1
     exact zero_le (g x)
 
 lemma leRieszMeasure_Opens {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1) {V : Opens X}
-    (h : tsupport f ⊆ V) :
-    ENNReal.ofReal (Λ f) ≤ (μ Λ) V := by
+    (h : tsupport f ⊆ V) : ENNReal.ofNNReal (Λ f) ≤ (rieszMeasure Λ) V := by
   apply le_trans _ (MeasureTheory.measure_mono h)
   rw [← TopologicalSpace.Compacts.coe_mk (tsupport f) f.2]
   apply leRieszMeasure_Compacts Λ hf
