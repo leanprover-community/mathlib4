@@ -37,12 +37,13 @@ def Scheme.Hom.fiberι (f : X.Hom Y) (y : Y) : f.fiber y ⟶ X := pullback.fst _
 instance (f : X.Hom Y) (y : Y) : (f.fiber y).CanonicallyOver X where hom := f.fiberι y
 
 /-- The canonical map from the scheme theoretic fiber to the residue field. -/
-def Scheme.Hom.fiberToField (f : X.Hom Y) (y : Y) : f.fiber y ⟶ Spec (Y.residueField y) :=
+def Scheme.Hom.fiberToSpecResidueField (f : X.Hom Y) (y : Y) :
+    f.fiber y ⟶ Spec (Y.residueField y) :=
   pullback.snd _ _
 
 @[simp]
-lemma Scheme.Hom.fiberToField_apply (f : X.Hom Y) (y : Y) (x) :
-    (f.fiberToField y).base x = IsLocalRing.closedPoint (Y.residueField y) :=
+lemma Scheme.Hom.fiberToSpecResidueField_apply (f : X.Hom Y) (y : Y) (x) :
+    (f.fiberToSpecResidueField y).base x = IsLocalRing.closedPoint (Y.residueField y) :=
   Subsingleton.elim (α := PrimeSpectrum _) _ _
 
 lemma Scheme.Hom.range_fiberι (f : X.Hom Y) (y : Y) :
@@ -69,23 +70,27 @@ lemma Scheme.Hom.fiberι_asFiber (f : X.Hom Y) (x : X) : (f.fiberι _).base (f.a
   congr($((f.fiberHomeo _).apply_symm_apply ⟨x, rfl⟩).1)
 
 instance (f : X ⟶ Y) [QuasiCompact f] (y : Y) : CompactSpace (f.fiber y) :=
-  haveI : QuasiCompact (f.fiberToField y) := MorphismProperty.pullback_snd _ _ inferInstance
-  HasAffineProperty.iff_of_isAffine (P := @QuasiCompact) (f := f.fiberToField y).mp inferInstance
+  haveI : QuasiCompact (f.fiberToSpecResidueField y) :=
+      MorphismProperty.pullback_snd _ _ inferInstance
+  HasAffineProperty.iff_of_isAffine (P := @QuasiCompact)
+    (f := f.fiberToSpecResidueField y).mp inferInstance
 
 lemma QuasiCompact.isCompact_preimage_singleton (f : X ⟶ Y) [QuasiCompact f] (y : Y) :
     IsCompact (f.base ⁻¹' {y}) :=
   f.range_fiberι y ▸ isCompact_range (f.fiberι y).continuous
 
 instance (f : X ⟶ Y) [IsAffineHom f] (y : Y) : IsAffine (f.fiber y) :=
-  haveI : IsAffineHom (f.fiberToField y) := MorphismProperty.pullback_snd _ _ inferInstance
-  isAffine_of_isAffineHom (f.fiberToField y)
+  haveI : IsAffineHom (f.fiberToSpecResidueField y) :=
+    MorphismProperty.pullback_snd _ _ inferInstance
+  isAffine_of_isAffineHom (f.fiberToSpecResidueField y)
 
 instance (f : X ⟶ Y) (y : Y) [LocallyOfFiniteType f] : JacobsonSpace (f.fiber y) :=
-  have : LocallyOfFiniteType (f.fiberToField y) := MorphismProperty.pullback_snd _ _ inferInstance
-  LocallyOfFiniteType.jacobsonSpace (f.fiberToField y)
+  have : LocallyOfFiniteType (f.fiberToSpecResidueField y) :=
+    MorphismProperty.pullback_snd _ _ inferInstance
+  LocallyOfFiniteType.jacobsonSpace (f.fiberToSpecResidueField y)
 
 instance (f : X ⟶ Y) (y : Y) [IsFinite f] : Finite (f.fiber y) := by
-  have H : IsFinite (f.fiberToField y) := MorphismProperty.pullback_snd _ _ inferInstance
+  have H : IsFinite (f.fiberToSpecResidueField y) := MorphismProperty.pullback_snd _ _ inferInstance
   have : IsArtinianRing Γ(f.fiber y, ⊤) :=
     @IsArtinianRing.of_finite (Y.residueField y) Γ(f.fiber y, ⊤) _ _ (show _ from _) _
       ((HasAffineProperty.iff_of_isAffine.mp H).2.comp (.of_surjective _ (Scheme.ΓSpecIso
