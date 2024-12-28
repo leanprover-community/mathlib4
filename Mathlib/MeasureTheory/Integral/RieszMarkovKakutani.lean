@@ -37,13 +37,14 @@ variable (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 
 /-! ### Construction of the content: -/
 
-section Λ_mono
+section Monotone
 
-lemma Λ_mono (f₁ f₂ : C_c(X, ℝ≥0)) (h : f₁.1 ≤ f₂.1) : Λ f₁ ≤ Λ f₂ := by
+lemma CompactlySupportedContinuousMap.monotone_of_nnreal (f₁ f₂ : C_c(X, ℝ≥0)) (h : f₁.1 ≤ f₂.1) :
+    Λ f₁ ≤ Λ f₂ := by
   obtain ⟨g, hg⟩ := exist_add_eq f₁ f₂ h
   simp only [← hg, map_add, le_add_iff_nonneg_right, zero_le]
 
-end Λ_mono
+end Monotone
 
 /-- Given a positive linear functional `Λ` on continuous compactly supported functions on `X`
 with values in `ℝ≥0`, for `K ⊆ X` compact define `λ(K) = inf {Λf | 1≤f on K}`.
@@ -276,9 +277,7 @@ lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
   intro K
   simp only [rieszContent, le_antisymm_iff, le_iInf_iff, ENNReal.coe_le_coe]
   constructor
-  · apply le_iInf
-    simp only [le_iInf_iff, ENNReal.coe_le_coe]
-    intro K' hK'
+  · intro K' hK'
     exact rieszContentAux_mono Λ (Set.Subset.trans hK' interior_subset)
   · rw [iInf_le_iff]
     intro b hb
@@ -372,16 +371,17 @@ variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
 /-- `rieszContent` is promoted to a measure. -/
 def rieszMeasure := (rieszContent Λ).measure
 
-lemma leRieszMeasure_Compacts {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1) {K : Compacts X}
-    (h : tsupport f ⊆ K) : .ofNNReal (Λ f) ≤ rieszMeasure Λ K := by
+lemma leRieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1)
+    {K : Set X} (hK : IsCompact K) (h : tsupport f ⊆ K) : .ofNNReal (Λ f) ≤ rieszMeasure Λ K := by
+  rw [← TopologicalSpace.Compacts.coe_mk K hK]
   simp only [rieszMeasure, Content.measure_eq_content_of_regular (rieszContent Λ)
     (contentRegular_rieszContent Λ)]
   simp only [rieszContent, ENNReal.ofReal_coe_nnreal, ENNReal.coe_le_coe]
   apply le_iff_forall_pos_le_add.mpr
   intro ε hε
-  obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos Λ K hε
+  obtain ⟨g, hg⟩ := exists_lt_rieszContentAux_add_pos Λ ⟨K, hK⟩ hε
   apply le_of_lt (lt_of_le_of_lt _ hg.2)
-  apply Λ_mono Λ
+  apply monotone_of_nnreal Λ
   intro x
   simp only [ContinuousMap.toFun_eq_coe, CompactlySupportedContinuousMap.coe_toContinuousMap]
   by_cases hx : x ∈ tsupport f
@@ -389,12 +389,10 @@ lemma leRieszMeasure_Compacts {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1
   · rw [image_eq_zero_of_nmem_tsupport hx]
     exact zero_le (g x)
 
-lemma leRieszMeasure_Opens {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1) {V : Opens X}
+lemma leRieszMeasure_of_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1) {V : Set X}
     (h : tsupport f ⊆ V) : ENNReal.ofNNReal (Λ f) ≤ (rieszMeasure Λ) V := by
   apply le_trans _ (MeasureTheory.measure_mono h)
-  rw [← TopologicalSpace.Compacts.coe_mk (tsupport f) f.2]
-  apply leRieszMeasure_Compacts Λ hf
-  simp only [Compacts.coe_mk]
+  apply leRieszMeasure_of_isCompact_tsupport_subset Λ hf f.hasCompactSupport
   exact subset_rfl
 
 end RieszMeasure
