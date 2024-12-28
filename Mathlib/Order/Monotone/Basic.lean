@@ -952,6 +952,11 @@ function `ℕ → α`. -/
 theorem exists_strictAnti [Nonempty α] [NoMinOrder α] : ∃ f : ℕ → α, StrictAnti f :=
   exists_strictMono αᵒᵈ
 
+lemma pow_self_mono : Monotone fun n : ℕ ↦ n ^ n := by
+  refine monotone_nat_of_le_succ fun n ↦ ?_
+  rw [Nat.pow_succ]
+  exact (Nat.pow_le_pow_left n.le_succ _).trans (Nat.le_mul_of_pos_right _ n.succ_pos)
+
 end Nat
 
 theorem Int.rel_of_forall_rel_succ_of_lt (r : β → β → Prop) [IsTrans β r] {f : ℤ → β}
