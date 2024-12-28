@@ -466,6 +466,14 @@ lemma IsStableUnderColimitsOfShape.colimMap
     W (colimMap f) :=
   hW.colimitsOfShape_le _ (colimitsOfShape_colimMap _ _ hf)
 
+variable (C J) in
+lemma isomorphisms_isStableUnderColimitsOfShape :
+    (isomorphisms C).IsStableUnderColimitsOfShape J := by
+  intro F₁ F₂ c₁ c₂ h₁ h₂ f (_ : ∀ j, IsIso (f.app j))
+  have := NatIso.isIso_of_isIso_app f
+  exact ⟨h₂.desc (Cocone.mk _ (inv f ≫ c₁.ι)),
+    h₁.hom_ext (by simp), h₂.hom_ext (by simp)⟩
+
 end ColimitsOfShape
 
 section Coproducts

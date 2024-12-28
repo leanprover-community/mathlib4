@@ -6,8 +6,9 @@ Authors: Joël Riou
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.CategoryTheory.Category.Preorder
+import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Composition
+import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 /-!
 # Classes of morphisms that are stable under transfinite composition
@@ -289,6 +290,29 @@ class IsStableUnderTransfiniteComposition extends W.IsMultiplicative : Prop wher
 namespace IsStableUnderTransfiniteComposition
 
 attribute [instance] isStableUnderTransfiniteCompositionOfShape
+
+protected instance isomorphisms :
+    (isomorphisms C).IsStableUnderTransfiniteComposition where
+  isStableUnderTransfiniteCompositionOfShape J _ _ _ _ := ⟨by
+    rintro _ _ _ ⟨F, hF, c, hc⟩
+    suffices ∀ (j : J), IsIso (F.map ((homOfLE bot_le) : ⊥ ⟶ j)) from
+      Functor.IsEventuallyConstantFrom.isIso_ι_of_isColimit (fun j f ↦ this j) hc
+    intro j
+    induction j using SuccOrder.limitRecOn with
+    | hm _ h =>
+        obtain rfl := h.eq_bot
+        dsimp
+        infer_instance
+    | hs j hj h =>
+        have : IsIso _ := hF j hj
+        rw [← homOfLE_comp bot_le (Order.le_succ j), F.map_comp]
+        infer_instance
+    | hl j hj h =>
+        letI : OrderBot (Set.Iio j) :=
+          { bot := ⟨⊥, Order.IsSuccLimit.bot_lt hj ⟩
+            bot_le j := bot_le }
+        simpa using Functor.IsEventuallyConstantFrom.isIso_ι_of_isColimit (i₀ := ⊥)
+          (fun i _ ↦ h i.1 i.2) (F.isColimitOfIsWellOrderContinuous j hj) ⟩
 
 end IsStableUnderTransfiniteComposition
 
