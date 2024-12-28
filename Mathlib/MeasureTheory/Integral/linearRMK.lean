@@ -695,8 +695,8 @@ theorem integral_rieszMeasure_eq [Nonempty X] : ∀ (f : C_c(X, ℝ)),
   intro f
   apply le_antisymm
   -- prove the inequality for `- f`
-  · calc ∫ (x : X), f x ∂(rieszMeasure Λ hΛ) = ∫ (x : X), -(-f) x ∂(rieszMeasure Λ hΛ)
-      := by simp only [CompactlySupportedContinuousMap.coe_neg, Pi.neg_apply, neg_neg]
+  · calc ∫ (x : X), f x ∂(rieszMeasure Λ hΛ) = ∫ (x : X), -(-f) x ∂(rieszMeasure Λ hΛ) := by
+      simp only [CompactlySupportedContinuousMap.coe_neg, Pi.neg_apply, neg_neg]
     _ = - ∫ (x : X), (-f) x ∂(rieszMeasure Λ hΛ) := by exact MeasureTheory.integral_neg' (-f)
     _ ≤ - Λ (-f) := by exact neg_le_neg (RMK_le (-f))
     _ = Λ (- -f) := by exact Eq.symm (LinearMap.map_neg Λ (- f))
