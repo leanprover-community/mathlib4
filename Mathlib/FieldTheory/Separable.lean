@@ -10,6 +10,7 @@ import Mathlib.FieldTheory.IntermediateField.Basic
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.PowerBasis
+import Mathlib.Data.ENat.Lattice
 
 /-!
 
