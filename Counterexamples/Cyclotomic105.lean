@@ -94,7 +94,11 @@ theorem cyclotomic_105 :
   repeat' norm_num
 
 theorem coeff_cyclotomic_105 : coeff (cyclotomic 105 ℤ) 7 = -2 := by
-  simp [cyclotomic_105, coeff_one, coeff_X_of_ne_one]
+  rw [cyclotomic_105]
+  -- TODO: commenting out this line causes the `simp` below to turn the goal into `False`; but
+  -- `simp` is supposed to be reversible!
+  simp [coeff_X_of_ne_one]
+  simp [coeff_X_of_ne_one, coeff_one]
 
 theorem not_forall_coeff_cyclotomic_neg_one_zero_one :
     ¬∀ n i, coeff (cyclotomic n ℤ) i ∈ ({-1, 0, 1} : Set ℤ) := by
