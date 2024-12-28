@@ -529,8 +529,10 @@ theorem smul_set_subset_iff₀ (ha : a ≠ 0) {A B : Set β} : a • A ⊆ B ↔
 
 @[deprecated (since := "2024-12-28")] alias set_smul_subset_iff₀ := smul_set_subset_iff₀
 
-theorem subset_set_smul_iff₀ (ha : a ≠ 0) {A B : Set β} : A ⊆ a • B ↔ a⁻¹ • A ⊆ B :=
+theorem subset_smul_set_iff₀ (ha : a ≠ 0) {A B : Set β} : A ⊆ a • B ↔ a⁻¹ • A ⊆ B :=
   show _ ⊆ Units.mk0 a ha • _ ↔ _ from subset_smul_set_iff
+
+@[deprecated (since := "2024-12-28")] alias subset_set_smul_iff₀ := subset_smul_set_iff₀
 
 theorem smul_set_inter₀ (ha : a ≠ 0) : a • (s ∩ t) = a • s ∩ a • t :=
   show Units.mk0 a ha • _ = _ from smul_set_inter
