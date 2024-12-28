@@ -37,12 +37,8 @@ variable (J) in
 def mkOfBot : Φ.Iteration (⊥ : J) where
   F := (Functor.const _).obj Φ.X₀
   obj_bot := rfl
-  obj_succ _ h := by simp at h
-  map_succ  _ h := by simp at h
-  obj_limit x hx h := (hx.not_isMin (by simpa using h)).elim
-  map_eq_ι _ _ h₁ _ h₂ := by
-    obtain rfl := le_bot_iff.1 h₁
-    simp at h₂
+  arrowSucc_eq _ h := by simp at h
+  arrowMap_limit  _ h₁ h₂ := (h₁.not_isMin (by simpa using h₂)).elim
 
 variable {Φ}
 
@@ -52,48 +48,23 @@ of any `iter : Φ.Iteration j`. -/
 noncomputable def mkOfSucc {j : J} (hj : ¬IsMax j) (iter : Φ.Iteration j) :
     Φ.Iteration (Order.succ j) where
   F := extendToSucc hj iter.F (Φ.toSucc _)
-  obj_bot := by rw [extendToSucc_obj_eq _ _ _ ⟨⊥, bot_le⟩, obj_bot]
-  obj_succ i hi₁ := by
-    have hi₂ := (Order.lt_succ_iff_of_not_isMax hj).1 hi₁
-    rw [extendToSucc_obj_eq _ _ _ ⟨i, hi₂⟩]
-    by_cases hi₃ : i < j
-    · rw [extendToSucc_obj_eq _ _ _ ⟨Order.succ i, Order.succ_le_of_lt hi₃⟩, obj_succ _ _ hi₃]
-    · obtain rfl : i = j := le_antisymm hi₂ (by simpa using hi₃)
-      rw [extendToSucc_obj_succ_eq]
-  map_succ i hi₁ := by
+  obj_bot := by rw [extendToSucc_obj_eq _ _ _ _ bot_le, obj_bot]
+  arrowSucc_eq i hi₁ := by
     rw [Order.lt_succ_iff_of_not_isMax hj] at hi₁
-    by_cases hi₂ : i < j
-    · simp [extendToSucc_map _ _ _ _ _ _ (Order.succ_le_of_lt hi₂), map_succ _ _ hi₂,
-        extendToSuccObjIso, extendToSucc.objIso,
-        Φ.congr_toSucc (extendToSucc_obj_eq hj iter.F (Φ.toSucc _) ⟨i, hi₂.le⟩)]
-    · obtain rfl : j = i := le_antisymm (by simpa using hi₂) hi₁
-      simp [extendToSucc_map_le_succ,
-        Φ.congr_toSucc (extendToSucc_obj_eq hj iter.F (Φ.toSucc _) ⟨j, by simp⟩),
-        extendToSuccObjIso, extendToSucc.objIso,
-        extendToSuccObjSuccIso, extendToSucc.objSuccIso]
-  obj_limit i hi hij := by
-    rw [Order.IsSuccLimit.le_succ_iff hi] at hij
-    rw [extendToSucc_obj_eq hj iter.F (Φ.toSucc _) ⟨i, hij⟩, obj_limit _ _ hi]
-    congr 1
-    fapply Functor.ext
-    · rintro ⟨k, hk⟩
-      exact (extendToSucc_obj_eq hj iter.F (Φ.toSucc _) ⟨k, _⟩).symm
-    · rintro ⟨k₁, hk₁⟩ ⟨k₂, hk₂⟩ f
-      simp [extendToSucc_map _ _ _ k₁ k₂ (leOfHom f) (hk₂.le.trans hij),
-        extendToSuccObjIso, extendToSucc.objIso,
-        extendToSuccObjSuccIso, extendToSucc.objSuccIso]
-  map_eq_ι i hi hij k hk := by
+    obtain hi₁ | rfl := hi₁.lt_or_eq
+    · rw [arrowSucc_def, arrowMap_extendToSucc _ _ _ _ _ _ (Order.succ_le_of_lt hi₁),
+        ← arrowSucc_def _ _ hi₁, iter.arrowSucc_eq i hi₁,
+        extendToSucc_obj_eq hj iter.F (Φ.toSucc _) i hi₁.le]
+    · rw [arrowSucc_extendToSucc, toSuccArrow,
+        extendToSucc_obj_eq hj iter.F (Φ.toSucc _) i]
+  arrowMap_limit i hi hij k hk := by
     have hij' := (Order.IsSuccLimit.le_succ_iff hi).1 hij
-    have : restrictionLT iter.F hij' =
-        restrictionLT (extendToSucc hj iter.F (Φ.toSucc _)) hij := by
-      fapply Functor.ext
-      · rintro ⟨l, hl⟩
-        exact (extendToSucc_obj_eq hj iter.F (Φ.toSucc _) ⟨l, _⟩).symm
-      · rintro ⟨l₁, hl₁⟩ ⟨l₂, hl₂⟩ f
-        simp [extendToSucc_map _ _ _ l₁ l₂ (leOfHom f) (hl₂.le.trans hij'),
-          extendToSuccObjIso, extendToSucc.objIso]
-    simp [extendToSucc_map _ _ _ _ _ _ hij', map_eq_ι _ i hi _ _ hk,
-      congr_colimit_ι this hi, extendToSuccObjIso, extendToSucc.objIso]
+    rw [arrowMap_extendToSucc _ _ _ _ _ _ hij', arrowMap_limit _ _ hi _ _ hk]
+    congr 1
+    apply Arrow.functor_ext
+    rintro ⟨k₁, h₁⟩ ⟨k₂, h₂⟩ f
+    dsimp
+    rw [← arrowMap, ← arrowMap, arrowMap_extendToSucc]
 
 lemma congr_obj {j₁ j₂ : J} (iter₁ : Φ.Iteration j₁) (iter₂ : Φ.Iteration j₂)
     (k : J) (h₁ : k ≤ j₁) (h₂ : k ≤ j₂) :
@@ -103,16 +74,22 @@ lemma congr_obj {j₁ j₂ : J} (iter₁ : Φ.Iteration j₁) (iter₂ : Φ.Iter
   rw [Subsingleton.elim iter₁ (iter₂.trunc h)]
   dsimp
 
+lemma congr_arrowMap {j₁ j₂ : J} (iter₁ : Φ.Iteration j₁) (iter₂ : Φ.Iteration j₂)
+    {k₁ k₂ : J} (h : k₁ ≤ k₂) (h₁ : k₂ ≤ j₁) (h₂ : k₂ ≤ j₂) :
+    arrowMap iter₁.F k₁ k₂ h h₁ = arrowMap iter₂.F k₁ k₂ h h₂ := by
+  wlog hj : j₁ ≤ j₂ generalizing j₁ j₂
+  · simp [this iter₂ iter₁ h₂ h₁ ((not_le.1 hj).le)]
+  rw [Subsingleton.elim iter₁ (iter₂.trunc hj)]
+  rfl
+
 lemma congr_map {j₁ j₂ : J} (iter₁ : Φ.Iteration j₁) (iter₂ : Φ.Iteration j₂)
     {k₁ k₂ : J} (h : k₁ ≤ k₂) (h₁ : k₂ ≤ j₁) (h₂ : k₂ ≤ j₂) :
     iter₁.F.map (homOfLE h : ⟨k₁, h.trans h₁⟩ ⟶ ⟨k₂, h₁⟩) =
       eqToHom (congr_obj iter₁ iter₂ k₁ (h.trans h₁) (h.trans h₂)) ≫
         iter₂.F.map (homOfLE h) ≫
         eqToHom (congr_obj iter₁ iter₂ k₂ h₁ h₂).symm := by
-  wlog hj : j₁ ≤ j₂ generalizing j₁ j₂
-  · simp [this iter₂ iter₁ h₂ h₁ ((not_le.1 hj).le)]
-  exact Functor.congr_hom (congr_arg F (Subsingleton.elim iter₁ (iter₂.trunc hj)))
-    (homOfLE h : ⟨k₁, _⟩ ⟶ ⟨k₂, _⟩)
+  have := (Arrow.mk_eq_mk_iff _ _).1 (congr_arrowMap iter₁ iter₂ h h₁ h₂)
+  tauto
 
 /-- Given `iter₁ : Φ.Iteration j₁` and `iter₂ : Φ.Iteration j₂`, with `j₁ ≤ j₂`,
 if `k₁ ≤ k₂` are elements such that `k₁ ≤ j₁` and `k₂ ≤ k₂`, then this
@@ -126,8 +103,9 @@ def mapObj {j₁ j₂ : J} (iter₁ : Φ.Iteration j₁) (iter₂ : Φ.Iteration
 lemma arrow_mk_mapObj {j₁ j₂ : J} (iter₁ : Φ.Iteration j₁) (iter₂ : Φ.Iteration j₂)
     {k₁ k₂ : J} (h₁₂ : k₁ ≤ k₂) (h₁ : k₁ ≤ j₁) (h₂ : k₂ ≤ j₂) (hj : j₁ ≤ j₂) :
     Arrow.mk (mapObj iter₁ iter₂ h₁₂ h₁ h₂ hj) =
-      Arrow.mk (iter₂.F.map (homOfLE h₁₂ : ⟨k₁, h₁.trans hj⟩ ⟶ ⟨k₂, h₂⟩)) :=
-  Arrow.ext (congr_obj iter₁ iter₂ k₁ h₁ (h₁.trans hj)) rfl (by simp [mapObj])
+      arrowMap iter₂.F k₁ k₂ h₁₂ h₂ :=
+  Arrow.ext (congr_obj iter₁ iter₂ k₁ h₁ (h₁.trans hj)) rfl
+    (by simp [mapObj, arrowMap])
 
 @[simp]
 lemma mapObj_refl {j : J} (iter : Φ.Iteration j)
@@ -219,7 +197,9 @@ noncomputable def mkOfLimit {j : J} (hj : Order.IsSuccLimit j)
     Φ.Iteration j where
   F := functor hj iter
   obj_bot := functor_obj hj iter ⊥ (Order.IsSuccLimit.bot_lt hj) (mkOfBot Φ J) (by rfl)
-  obj_succ i hi₁ := by
+  arrowSucc_eq := sorry
+  arrowMap_limit := sorry
+  /-obj_succ i hi₁ := by
     have hi₂ := (Order.IsSuccLimit.succ_lt_iff hj).2 hi₁
     rw [functor_obj hj iter (Order.succ i) hi₂ (iter (Order.succ i) hi₂) (by rfl),
       functor_obj hj iter i hi₁ (iter (Order.succ i) hi₂) (Order.le_succ i),
@@ -242,7 +222,7 @@ noncomputable def mkOfLimit {j : J} (hj : Order.IsSuccLimit j)
         congr_colimit_ι (restrictionLT_functor_of_lt hj iter hij (iter i hij) (by rfl)) hi]
     · intro k hk
       simp [functor_map_to_top _ _ _ hk,
-        congr_colimit_ι (restrictionLT_functor hj iter) hi ⟨k, hk⟩]
+        congr_colimit_ι (restrictionLT_functor hj iter) hi ⟨k, hk⟩]-/
 
 variable (Φ)
 

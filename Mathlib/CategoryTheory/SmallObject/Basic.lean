@@ -8,28 +8,56 @@ import Mathlib.CategoryTheory.SmallObject.IsCardinalForSmallObjectArgument
 /-!
 # The small object argument
 
-Let `f i : A i ⟶ B i` be a family of morphisms indexed by `ι` in a category `C`.
-Let `J` be a well-ordered type without a maximal element. Under suitable assumptions
-(which include the existence of pushouts, certain coproducts and suitable colimits),
-given a morphism `p : X ⟶ Y` we construct a factorization (in the `SmallObject` namespace)
-of `p` as `ιObj f J p ≫ πObj f J p = p`. The intermediate object `obj f J p` which
-appears in this filtration is obtained by transfinite iteration of the functor
-`functor f Y : Over Y ⥤ Over Y` (see file `SmallObject.Construction`).
+Let `C` be a category. A class of morphisms `I : MorphismProperty C`
+permits the small object argument (typeclass `HasSmallObjectArgument.{w} I`
+where `w` is an auxiliary universe) if there exists a regular
+cardinal `κ : Cardinal.{w}` such that `IsCardinalForSmallObjectArgument I κ`
+holds. This technical condition is defined in the file
+`SmallObject.IsCardinalForSmallObjectArgument`. It involves certain
+smallness conditions relative to `w`, the existence of certain colimits,
+and for each object `A` which is the source of a morphism in `I`,
+the `Hom(A, _)` functor (`coyoneda.obj (op A)`) should commute
+to transfinite compositions of pushouts of coproducts of morphisms in `I`
+(this condition is automatically satisfied when `A` is a `κ`-presentable
+object of `C`).
 
-When `J` is chosen carefully so that for all `i`, the functor `coyoneda.obj (op A i)`
-commutes with the colimit of the system which gives `obj f J p`, then
-the morphism `πObj f J p : obj f J p ⟶ Y` has the right lifting property
-with respect to the morphisms `f i : A i ⟶ B i`, and by construction,
-the morphism `ιObj f J p : X ⟶ obj f J p` is a transfinite composition of pushouts
-of coproducts of morphisms in the family `f`.
+## Main reulsts
 
-In the context of model categories, this result is known as Quillen's small object
-argument (originally for `J := ℕ`). Actually, the more general construction by
-transfinite induction already appeared in the proof of the existence of enough
-injectives in abelian categories with AB5 and a generator by Grothendieck, who then
-wrote that the "proof was essentially known". Indeed, the argument appears
-in *Homological algebra* by Cartan and Eilenberg (p. 9-10) in the case of modules,
-and they mention that the result was initially obtained by Baer.
+Assuming `I` permits the small object argument, the two main results
+obtained in this file are:
+* the class `I.rlp.llp` of morphisms that have the left lifting property with
+respect to the maps that have the right lifting property with respect
+to `I` are exactly the retracts of transfinite compositions
+of pushouts of coproducts of morphisms in `I`;
+* morphisms in `C` have a functorial factorization as a morphism in
+`I.rlp.llp` followed by a morphism in `I.rlp`.
+
+## Structure of the proof
+
+The main part in the proof is the construction of the functorial factorization.
+This involves a construction by transfinite induction. A general
+procedure for constructions by transfinite
+induction in categories (including the iteration of a functor)
+is done in the file `SmallObject.Iteration.Iteration`.
+The factorization of the small object argument is obtained by doing
+a transfinite of a specific functor `Arrow C ⥤ Arrow C` which
+is defined in the file `SmallObject.Construction` (this definition
+involves coproducts and pushout). These ingredients are combined
+in the file `SmallObject.IsCardinalForSmallObjectArgument`
+where the main results are obtaned under a `IsCardinalForSmallObjectArgument I κ`
+assumption.
+
+
+## References
+- https://ncatlab.org/nlab/show/small+object+argument
+
+--In the context of model categories, this result is known as Quillen's small object
+--argument (originally for `J := ℕ`). Actually, the more general construction by
+--transfinite induction already appeared in the proof of the existence of enough
+--injectives in abelian categories with AB5 and a generator by Grothendieck, who then
+--wrote that the "proof was essentially known". Indeed, the argument appears
+--in *Homological algebra* by Cartan and Eilenberg (p. 9-10) in the case of modules,
+--and they mention that the result was initially obtained by Baer.
 
 -/
 
@@ -65,16 +93,25 @@ instance isCardinalForSmallObjectArgument_smallObjectκ :
 instance : HasFunctorialFactorization I.rlp.llp I.rlp :=
   hasFunctorialFactorization I I.smallObjectκ
 
+/-- If `I : MorphismProperty C` permits the small object argument,
+then the class of morphism that have the left lifting property with respect to
+the maps that have the right lifting property with respect to `I` are
+exactly the retracts of transfinite compositions (indexed by `I.smallObjectκ.ord.toType`)
+of pushouts of coproducts of morphisms in `C`. -/
 lemma rlp_llp_of_hasSmallObjectArgument' :
     I.rlp.llp = (transfiniteCompositionsOfShape (coproducts.{w} I).pushouts
         I.smallObjectκ.ord.toType).retracts :=
   rlp_llp_of_isCardinalForSmallObjectArgument' I I.smallObjectκ
 
+/-- If `I : MorphismProperty C` permits the small object argument,
+then the class of morphism that have the left lifting property with respect to
+the maps that have the right lifting property with respect to `I` are
+exactly the retracts of transfinite compositions
+of pushouts of coproducts of morphisms in `C`. -/
 lemma rlp_llp_of_hasSmallObjectArgument :
     I.rlp.llp =
       (transfiniteCompositions.{w} (coproducts.{w} I).pushouts).retracts :=
   rlp_llp_of_isCardinalForSmallObjectArgument I I.smallObjectκ
-
 
 end MorphismProperty
 

@@ -69,16 +69,15 @@ section
 
 variable {D : Type u'} [Category.{v'} D]
 
-namespace Arrow
+namespace Functor
 
-lemma functor_ext {F G : C ⥤ D} (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y),
-    F.mapArrow.obj (Arrow.mk f) = G.mapArrow.obj (Arrow.mk f)) :
-    F = G :=
-  Functor.ext (fun X ↦ congr_arg Comma.left (h (𝟙 X))) (fun X Y f ↦ by
-    have := (eqToIso (h f)).hom.w
-    dsimp at this
-    rw [Comma.eqToHom_left, Comma.eqToHom_right] at this
-    rw [reassoc_of% this, eqToHom_trans, eqToHom_refl, comp_id])
+@[simp]
+lemma mapArrow_obj_mk (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
+    F.mapArrow.obj (Arrow.mk f) = Arrow.mk (F.map f) := rfl
+
+end Functor
+
+namespace Arrow
 
 lemma congr_mk_id {X Y : C} (h : X = Y) :
     Arrow.mk (𝟙 X) = Arrow.mk (𝟙 Y) := by rw [h]
@@ -97,15 +96,16 @@ lemma mk_eq_mk_iff {X Y X' Y' : C} (f : X ⟶ Y) (f' : X' ⟶ Y') :
     simp only [eqToHom_refl, comp_id, id_comp] at h
     rw [h]
 
+lemma functor_ext {F G : C ⥤ D} (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y),
+    F.mapArrow.obj (Arrow.mk f) = G.mapArrow.obj (Arrow.mk f)) :
+    F = G :=
+  Functor.ext (fun X ↦ congr_arg Comma.left (h (𝟙 X))) (fun X Y f ↦ by
+    have := h f
+    simp only [Functor.mapArrow_obj_mk, mk_eq_mk_iff] at this
+    tauto)
+
 end Arrow
 
-namespace Functor
-
---@[simp]
---lemma mapArrow_obj_mk (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) :
---    F.mapArrow.obj (Arrow.mk f) = Arrow.mk (F.map f) := rfl
-
-end Functor
 
 end
 namespace SmallObject
@@ -359,20 +359,19 @@ lemma map_succ' (i : J) (hi : i < j) :
     iter.F.map (homOfLE (Order.le_succ i) :
         ⟨i, hi.le⟩ ⟶ ⟨Order.succ i, Order.succ_le_of_lt hi⟩) =
       Φ.toSucc _ ≫ (iter.isoSucc i hi).inv :=
-  iter.map_succ i hi
+  iter.map_succ i hi-/
 
 lemma arrow_mk_map_succ (i : J) (hi : i < j) :
-    Arrow.mk (iter.F.map (homOfLE (Order.le_succ i) :
-      ⟨i, hi.le⟩ ⟶ ⟨Order.succ i, Order.succ_le_of_lt hi⟩)) =
-        Φ.toSuccArrow (iter.F.obj ⟨i, hi.le⟩) :=
-  Arrow.ext rfl (iter.obj_succ i hi)
-    (by simp [iter.map_succ' i hi, toSuccArrow, isoSucc])
+    arrowSucc iter.F i hi =
+        Φ.toSuccArrow (iter.F.obj ⟨i, hi.le⟩) := by
+  exact iter.arrowSucc_eq i hi
 
 lemma prop_map_succ (i : J) (hi : i < j) :
     Φ.prop (iter.F.map (homOfLE (Order.le_succ i) :
       ⟨i, hi.le⟩ ⟶ ⟨Order.succ i, Order.succ_le_of_lt hi⟩)) := by
-  rw [prop_iff, iter.arrow_mk_map_succ _ hi]
+  rw [prop_iff, ← arrowMap, ← arrowSucc_def _ _ hi, iter.arrowSucc_eq]
 
+/-
 /-- When `i : J` is limit, `iter.F.obj ⟨i, _⟩` identifies
 to the colimit of the restriction of `iter.F` to `Set.Iio i`. -/
 noncomputable def isColimit (i : J)
@@ -437,10 +436,8 @@ lemma w :
     F.map (homOfLE h₁₂ : ⟨k₁, h₁₂.trans h₂⟩ ⟶ ⟨k₂, h₂⟩) =
       eqToHom (by rw [h.src]) ≫ G.map (homOfLE h₁₂ : ⟨k₁, h₁₂.trans h₂⟩ ⟶ ⟨k₂, h₂⟩) ≫
         eqToHom (by rw [h.tgt]) := by
-  have := (eqToIso h).hom.w
-  dsimp [arrowMap] at this
-  rw [Comma.eqToHom_left, Comma.eqToHom_right] at this
-  simp [reassoc_of% this]
+  have := (Arrow.mk_eq_mk_iff _ _).1 h
+  tauto
 
 end MapEq
 
