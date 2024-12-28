@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
 import Mathlib.Analysis.Calculus.Deriv.Inv
+import Mathlib.Analysis.Complex.Circle
 import Mathlib.Analysis.NormedSpace.BallAction
 import Mathlib.Analysis.SpecialFunctions.ExpDeriv
 import Mathlib.Analysis.InnerProductSpace.Calculus
 import Mathlib.Analysis.InnerProductSpace.PiL2
+import Mathlib.Data.Complex.FiniteDimensional
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 import Mathlib.Geometry.Manifold.Instances.Real
 import Mathlib.Geometry.Manifold.MFDeriv.Basic
@@ -201,7 +203,7 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
     stereoInvFun hv (stereoToFun v x) = x := by
   ext
   simp only [stereoToFun_apply, stereoInvFun_apply, smul_add]
-  -- name two frequently-occuring quantities and write down their basic properties
+  -- name two frequently-occurring quantities and write down their basic properties
   set a : ℝ := innerSL _ v x
   set y := orthogonalProjection (ℝ ∙ v)ᗮ x
   have split : ↑x = a • v + ↑y := by

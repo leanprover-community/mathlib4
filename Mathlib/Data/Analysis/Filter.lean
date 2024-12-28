@@ -286,7 +286,7 @@ protected def iSup {f : α → Filter β} (F : ∀ i, (f i).Realizer) : (⨆ i, 
       ⟨fun ⟨_, f⟩ i ↦ f i ⟨⟩, fun f ↦ ⟨(), fun i _ ↦ f i⟩, fun _ ↦ rfl, fun _ ↦ rfl⟩
 
 /-- Construct a realizer for the product of filters -/
-protected def prod {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f.prod g).Realizer :=
+protected def prod {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ×ˢ g).Realizer :=
   (F.comap _).inf (G.comap _)
 
 theorem le_iff {f g : Filter α} (F : f.Realizer) (G : g.Realizer) :
