@@ -60,6 +60,9 @@ theorem ext : ∀ {z w : ℂ}, z.re = w.re → z.im = w.im → z = w
 
 attribute [local ext] Complex.ext
 
+lemma «forall» {p : ℂ → Prop} : (∀ x, p x) ↔ ∀ a b, p ⟨a, b⟩ := by aesop
+lemma «exists» {p : ℂ → Prop} : (∃ x, p x) ↔ ∃ a b, p ⟨a, b⟩ := by aesop
+
 theorem re_surjective : Surjective re := fun x => ⟨⟨x, 0⟩, rfl⟩
 
 theorem im_surjective : Surjective im := fun y => ⟨⟨0, y⟩, rfl⟩
@@ -106,11 +109,13 @@ instance canLift : CanLift ℂ ℝ (↑) fun z => z.im = 0 where
 
 /-- The product of a set on the real axis and a set on the imaginary axis of the complex plane,
 denoted by `s ×ℂ t`. -/
-def Set.reProdIm (s t : Set ℝ) : Set ℂ :=
+def reProdIm (s t : Set ℝ) : Set ℂ :=
   re ⁻¹' s ∩ im ⁻¹' t
 
+@[deprecated (since := "2024-12-03")] protected alias Set.reProdIm := reProdIm
+
 @[inherit_doc]
-infixl:72 " ×ℂ " => Set.reProdIm
+infixl:72 " ×ℂ " => reProdIm
 
 theorem mem_reProdIm {z : ℂ} {s t : Set ℝ} : z ∈ s ×ℂ t ↔ z.re ∈ s ∧ z.im ∈ t :=
   Iff.rfl
@@ -854,6 +859,14 @@ lemma reProdIm_subset_iff' {s s₁ t t₁ : Set ℝ} :
     s ×ℂ t ⊆ s₁ ×ℂ t₁ ↔ s ⊆ s₁ ∧ t ⊆ t₁ ∨ s = ∅ ∨ t = ∅ := by
   convert prod_subset_prod_iff
   exact reProdIm_subset_iff
+
+variable {s t : Set ℝ}
+
+@[simp] lemma reProdIm_nonempty : (s ×ℂ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty := by
+  simp [Set.Nonempty, reProdIm, Complex.exists]
+
+@[simp] lemma reProdIm_eq_empty : s ×ℂ t = ∅ ↔ s = ∅ ∨ t = ∅ := by
+  simp [← not_nonempty_iff_eq_empty, reProdIm_nonempty, -not_and, not_and_or]
 
 end reProdIm
 

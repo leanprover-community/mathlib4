@@ -460,7 +460,17 @@ theorem map_le_map_iff_of_injective {f : G →* N} (hf : Function.Injective f) {
 @[to_additive (attr := simp)]
 theorem map_subtype_le_map_subtype {G' : Subgroup G} {H K : Subgroup G'} :
     H.map G'.subtype ≤ K.map G'.subtype ↔ H ≤ K :=
-  map_le_map_iff_of_injective <| by apply Subtype.coe_injective
+  map_le_map_iff_of_injective G'.subtype_injective
+
+@[to_additive]
+theorem map_lt_map_iff_of_injective {f : G →* N} (hf : Function.Injective f) {H K : Subgroup G} :
+    H.map f < K.map f ↔ H < K :=
+  lt_iff_lt_of_le_iff_le' (map_le_map_iff_of_injective hf) (map_le_map_iff_of_injective hf)
+
+@[to_additive (attr := simp)]
+theorem map_subtype_lt_map_subtype {G' : Subgroup G} {H K : Subgroup G'} :
+    H.map G'.subtype < K.map G'.subtype ↔ H < K :=
+  map_lt_map_iff_of_injective G'.subtype_injective
 
 @[to_additive]
 theorem map_injective {f : G →* N} (h : Function.Injective f) : Function.Injective (map f) :=
@@ -472,6 +482,10 @@ theorem map_injective_of_ker_le {H K : Subgroup G} (hH : f.ker ≤ H) (hK : f.ke
     (hf : map f H = map f K) : H = K := by
   apply_fun comap f at hf
   rwa [comap_map_eq, comap_map_eq, sup_of_le_left hH, sup_of_le_left hK] at hf
+
+@[to_additive]
+theorem ker_subgroupMap : (f.subgroupMap H).ker = f.ker.subgroupOf H :=
+  ext fun _ ↦ Subtype.ext_iff
 
 @[to_additive]
 theorem closure_preimage_eq_top (s : Set G) : closure ((closure s).subtype ⁻¹' s) = ⊤ := by
