@@ -7,6 +7,7 @@ import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Group.Graph
 import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.Order.PartialSups
+import Mathlib.Data.Nat.SuccPred
 
 /-! ### Products of modules
 
