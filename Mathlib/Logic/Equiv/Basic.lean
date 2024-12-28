@@ -1796,7 +1796,7 @@ def uniqueUniqueEquiv : Unique (Unique α) ≃ Unique α :=
 
 /-- If `Unique β`, then `Unique α` is equivalent to `α ≃ β`. -/
 def uniqueEquivEquivUnique (α : Sort u) (β : Sort v) [Unique β] : Unique α ≃ (α ≃ β) :=
-  equivOfSubsingletonOfSubsingleton (fun _ => Equiv.equivOfUnique _ _) Equiv.unique
+  equivOfSubsingletonOfSubsingleton (fun _ => Equiv.ofUnique _ _) Equiv.unique
 
 namespace Function
 

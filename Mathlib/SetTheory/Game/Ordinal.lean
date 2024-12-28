@@ -102,7 +102,7 @@ theorem one_toPGame_moveLeft (x) : (toPGame 1).moveLeft x = toPGame 0 := by simp
 
 /-- `1.toPGame` has the same moves as `1`. -/
 noncomputable def oneToPGameRelabelling : toPGame 1 ≡r 1 :=
-  ⟨Equiv.equivOfUnique _ _, Equiv.equivOfIsEmpty _ _, fun i => by
+  ⟨Equiv.ofUnique _ _, Equiv.equivOfIsEmpty _ _, fun i => by
     simpa using zeroToPGameRelabelling, isEmptyElim⟩
 
 theorem toPGame_one : toPGame 1 ≈ 1 :=
