@@ -366,7 +366,7 @@ theorem HasFDerivAt.le_of_lipschitz {f : E → F} {f' : E →L[𝕜] F} {x₀ : 
 
 nonrec theorem HasFDerivAtFilter.mono (h : HasFDerivAtFilter f f' x L₂) (hst : L₁ ≤ L₂) :
     HasFDerivAtFilter f f' x L₁ :=
-  .of_isLittleO <| h.isLittleO.mono hst
+  .of_isLittleOTVS <| h.isLittleOTVS.mono hst
 
 theorem HasFDerivWithinAt.mono_of_mem_nhdsWithin
     (h : HasFDerivWithinAt f f' t x) (hst : t ∈ 𝓝[s] x) :
@@ -499,7 +499,7 @@ theorem hasFDerivWithinAt_inter (h : t ∈ 𝓝 x) :
 theorem HasFDerivWithinAt.union (hs : HasFDerivWithinAt f f' s x)
     (ht : HasFDerivWithinAt f f' t x) : HasFDerivWithinAt f f' (s ∪ t) x := by
   simp only [HasFDerivWithinAt, nhdsWithin_union]
-  exact .of_isLittleO <| hs.isLittleO.sup ht.isLittleO
+  exact .of_isLittleOTVS <| hs.isLittleOTVS.sup ht.isLittleOTVS
 
 theorem HasFDerivWithinAt.hasFDerivAt (h : HasFDerivWithinAt f f' s x) (hs : s ∈ 𝓝 x) :
     HasFDerivAt f f' x := by
@@ -1005,10 +1005,10 @@ section id
 
 @[fun_prop]
 theorem hasStrictFDerivAt_id (x : E) : HasStrictFDerivAt id (id 𝕜 E) x :=
-  .of_isLittleO <| (isLittleO_zero _ _).congr_left <| by simp
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left <| by simp
 
 theorem hasFDerivAtFilter_id (x : E) (L : Filter E) : HasFDerivAtFilter id (id 𝕜 E) x L :=
-  .of_isLittleO <| (isLittleO_zero _ _).congr_left <| by simp
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left <| by simp
 
 @[fun_prop]
 theorem hasFDerivWithinAt_id (x : E) (s : Set E) : HasFDerivWithinAt id (id 𝕜 E) s x :=
@@ -1065,11 +1065,13 @@ section Const
 @[fun_prop]
 theorem hasStrictFDerivAt_const (c : F) (x : E) :
     HasStrictFDerivAt (fun _ => c) (0 : E →L[𝕜] F) x :=
-  .of_isLittleO <| (isLittleO_zero _ _).congr_left fun _ => by simp only [zero_apply, sub_self]
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by
+    simp only [zero_apply, sub_self, Pi.zero_apply]
 
 theorem hasFDerivAtFilter_const (c : F) (x : E) (L : Filter E) :
     HasFDerivAtFilter (fun _ => c) (0 : E →L[𝕜] F) x L :=
-  .of_isLittleO <| (isLittleO_zero _ _).congr_left fun _ => by simp only [zero_apply, sub_self]
+  .of_isLittleOTVS <| (IsLittleOTVS.zero _ _).congr_left fun _ => by
+    simp only [zero_apply, sub_self, Pi.zero_apply]
 
 @[fun_prop]
 theorem hasFDerivWithinAt_const (c : F) (x : E) (s : Set E) :
