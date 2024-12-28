@@ -29,7 +29,7 @@ variable {R S : Type*} [CommRing R] [CommRing S]
 @[nontriviality]
 lemma ringKrullDim_eq_bot_of_subsingleton [Subsingleton R] :
     ringKrullDim R = ⊥ :=
-  krullDim_eq_bot_of_isEmpty
+  krullDim_eq_bot
 
 lemma ringKrullDim_nonneg_of_nontrivial [Nontrivial R] :
     0 ≤ ringKrullDim R :=
