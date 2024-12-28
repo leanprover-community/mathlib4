@@ -273,7 +273,6 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Embedding
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Equiv.TypeTags
-import Mathlib.Algebra.Group.Subgroup.Even
 import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.EvenFunction
 import Mathlib.Algebra.Group.Ext
@@ -317,6 +316,7 @@ import Mathlib.Algebra.Group.Semiconj.Units
 import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Group.Subgroup.Defs
+import Mathlib.Algebra.Group.Subgroup.Even
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Group.Subgroup.Finsupp
 import Mathlib.Algebra.Group.Subgroup.Ker
