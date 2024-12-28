@@ -87,7 +87,7 @@ namespace WellOrder
 instance inhabited : Inhabited WellOrder :=
   ⟨⟨PEmpty, _, inferInstanceAs (IsWellOrder PEmpty EmptyRelation)⟩⟩
 
-@[deprecated (since := "2024-10-24")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-24")]
 theorem eta (o : WellOrder) : mk o.α o.r o.wo = o := rfl
 
 end WellOrder
@@ -128,6 +128,9 @@ namespace Ordinal
 def type (r : α → α → Prop) [wo : IsWellOrder α r] : Ordinal :=
   ⟦⟨α, r, wo⟩⟧
 
+/-- `typeLT α` is an abbreviation for the order type of the `<` relation of `α`. -/
+scoped notation "typeLT " α:70 => @Ordinal.type α (· < ·) inferInstance
+
 instance zero : Zero Ordinal :=
   ⟨type <| @EmptyRelation PEmpty⟩
 
@@ -137,20 +140,21 @@ instance inhabited : Inhabited Ordinal :=
 instance one : One Ordinal :=
   ⟨type <| @EmptyRelation PUnit⟩
 
-/-- Avoid using `Quotient.mk` to construct an `Ordinal` directly -/
-@[deprecated (since := "2024-10-24")]
+@[deprecated "Avoid using `Quotient.mk` to construct an `Ordinal` directly."
+  (since := "2024-10-24")]
 theorem type_def' (w : WellOrder) : ⟦w⟧ = type w.r := rfl
 
-/-- Avoid using `Quotient.mk` to construct an `Ordinal` directly -/
-@[deprecated (since := "2024-10-24")]
+
+@[deprecated "Avoid using `Quotient.mk` to construct an `Ordinal` directly."
+  (since := "2024-10-24")]
 theorem type_def (r) [wo : IsWellOrder α r] : (⟦⟨α, r, wo⟩⟧ : Ordinal) = type r := rfl
 
 @[simp]
-theorem type_toType (o : Ordinal) : type (α := o.toType) (· < ·) = o :=
+theorem type_toType (o : Ordinal) : typeLT o.toType = o :=
   o.out_eq
 
 @[deprecated type_toType (since := "2024-10-22")]
-theorem type_lt (o : Ordinal) : type (α := o.toType) (· < ·) = o :=
+theorem type_lt (o : Ordinal) : typeLT o.toType = o :=
   o.out_eq
 
 @[deprecated type_toType (since := "2024-08-26")]
@@ -188,7 +192,7 @@ theorem type_empty : type (@EmptyRelation Empty) = 0 :=
 
 theorem type_eq_one_of_unique (r) [IsWellOrder α r] [Nonempty α] [Subsingleton α] : type r = 1 := by
   cases nonempty_unique α
-  exact (RelIso.relIsoOfUniqueOfIrrefl r _).ordinal_type_eq
+  exact (RelIso.ofUniqueOfIrrefl r _).ordinal_type_eq
 
 @[simp]
 theorem type_eq_one_iff_unique [IsWellOrder α r] : type r = 1 ↔ Nonempty (Unique α) :=
@@ -232,22 +236,62 @@ protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 :=
 instance nontrivial : Nontrivial Ordinal.{u} :=
   ⟨⟨1, 0, Ordinal.one_ne_zero⟩⟩
 
+/-- `Quotient.inductionOn` specialized to ordinals.
+
+Not to be confused with well-founded recursion `Ordinal.induction`. -/
 @[elab_as_elim]
 theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r], C (type r)) : C o :=
   Quot.inductionOn o fun ⟨α, r, wo⟩ => @H α r wo
 
+/-- `Quotient.inductionOn₂` specialized to ordinals.
+
+Not to be confused with well-founded recursion `Ordinal.induction`. -/
 @[elab_as_elim]
 theorem inductionOn₂ {C : Ordinal → Ordinal → Prop} (o₁ o₂ : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s], C (type r) (type s)) : C o₁ o₂ :=
   Quotient.inductionOn₂ o₁ o₂ fun ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ => @H α r wo₁ β s wo₂
 
+/-- `Quotient.inductionOn₃` specialized to ordinals.
+
+Not to be confused with well-founded recursion `Ordinal.induction`. -/
 @[elab_as_elim]
 theorem inductionOn₃ {C : Ordinal → Ordinal → Ordinal → Prop} (o₁ o₂ o₃ : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s] (γ t) [IsWellOrder γ t],
       C (type r) (type s) (type t)) : C o₁ o₂ o₃ :=
   Quotient.inductionOn₃ o₁ o₂ o₃ fun ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ ⟨γ, t, wo₃⟩ =>
     @H α r wo₁ β s wo₂ γ t wo₃
+
+open Classical in
+/-- To prove a result on ordinals, it suffices to prove it for order types of well-orders. -/
+@[elab_as_elim]
+theorem inductionOnWellOrder {C : Ordinal → Prop} (o : Ordinal)
+    (H : ∀ (α) [LinearOrder α] [WellFoundedLT α], C (typeLT α)) : C o :=
+  inductionOn o fun α r wo ↦ @H α (linearOrderOfSTO r) wo.toIsWellFounded
+
+open Classical in
+/-- To define a function on ordinals, it suffices to define them on order types of well-orders.
+
+Since `LinearOrder` is data-carrying, `liftOnWellOrder_type` is not a definitional equality, unlike
+`Quotient.liftOn_mk` which is always def-eq. -/
+def liftOnWellOrder {δ : Sort v} (o : Ordinal) (f : ∀ (α) [LinearOrder α] [WellFoundedLT α], δ)
+    (c : ∀ (α) [LinearOrder α] [WellFoundedLT α] (β) [LinearOrder β] [WellFoundedLT β],
+      typeLT α = typeLT β → f α = f β) : δ :=
+  Quotient.liftOn o (fun w ↦ @f w.α (linearOrderOfSTO w.r) w.wo.toIsWellFounded)
+    fun w₁ w₂ h ↦ @c
+      w₁.α (linearOrderOfSTO w₁.r) w₁.wo.toIsWellFounded
+      w₂.α (linearOrderOfSTO w₂.r) w₂.wo.toIsWellFounded
+      (Quotient.sound h)
+
+@[simp]
+theorem liftOnWellOrder_type {δ : Sort v} (f : ∀ (α) [LinearOrder α] [WellFoundedLT α], δ)
+    (c : ∀ (α) [LinearOrder α] [WellFoundedLT α] (β) [LinearOrder β] [WellFoundedLT β],
+      typeLT α = typeLT β → f α = f β) {γ} [LinearOrder γ] [WellFoundedLT γ] :
+    liftOnWellOrder (typeLT γ) f c = f γ := by
+  change Quotient.liftOn' ⟦_⟧ _ _ = _
+  rw [Quotient.liftOn'_mk]
+  congr
+  exact LinearOrder.ext_lt fun _ _ ↦ Iff.rfl
 
 /-! ### The order on ordinals -/
 
@@ -758,14 +802,14 @@ theorem lt_lift_iff {a : Ordinal.{u}} {b : Ordinal.{max u v}} :
 
 /-- `ω` is the first infinite ordinal, defined as the order type of `ℕ`. -/
 def omega0 : Ordinal.{u} :=
-  lift <| @type ℕ (· < ·) _
+  lift (typeLT ℕ)
 
 @[inherit_doc]
 scoped notation "ω" => Ordinal.omega0
 
 /-- Note that the presence of this lemma makes `simp [omega0]` form a loop. -/
 @[simp]
-theorem type_nat_lt : @type ℕ (· < ·) _ = ω :=
+theorem type_nat_lt : typeLT ℕ = ω :=
   (lift_id _).symm
 
 @[simp]
@@ -972,9 +1016,9 @@ theorem le_enum_succ {o : Ordinal} (a : (succ o).toType) :
   of `Ordinal.{v}` (when `u < v`). It is an inaccessible cardinal. -/
 @[pp_with_univ, nolint checkUnivs]
 def univ : Ordinal.{max (u + 1) v} :=
-  lift.{v, u + 1} (@type Ordinal (· < ·) _)
+  lift.{v, u + 1} (typeLT Ordinal)
 
-theorem univ_id : univ.{u, u + 1} = @type Ordinal (· < ·) _ :=
+theorem univ_id : univ.{u, u + 1} = typeLT Ordinal :=
   lift_id _
 
 @[simp]
@@ -1038,12 +1082,12 @@ set_option linter.deprecated false in
 theorem lift.principalSeg_top : (lift.principalSeg.{u, v}).top = univ.{u, v} :=
   rfl
 
-theorem liftPrincipalSeg_top' : liftPrincipalSeg.{u, u + 1}.top = @type Ordinal (· < ·) _ := by
+theorem liftPrincipalSeg_top' : liftPrincipalSeg.{u, u + 1}.top = typeLT Ordinal := by
   simp only [liftPrincipalSeg_top, univ_id]
 
 set_option linter.deprecated false in
 @[deprecated liftPrincipalSeg_top (since := "2024-09-21")]
-theorem lift.principalSeg_top' : lift.principalSeg.{u, u + 1}.top = @type Ordinal (· < ·) _ := by
+theorem lift.principalSeg_top' : lift.principalSeg.{u, u + 1}.top = typeLT Ordinal := by
   simp only [lift.principalSeg_top, univ_id]
 
 end Ordinal
@@ -1425,7 +1469,7 @@ theorem card_eq_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
 theorem type_fintype (r : α → α → Prop) [IsWellOrder α r] [Fintype α] :
     type r = Fintype.card α := by rw [← card_eq_nat, card_type, mk_fintype]
 
-theorem type_fin (n : ℕ) : @type (Fin n) (· < ·) _ = n := by simp
+theorem type_fin (n : ℕ) : typeLT (Fin n) = n := by simp
 
 end Ordinal
 

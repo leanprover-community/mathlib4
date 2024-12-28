@@ -253,9 +253,9 @@ theorem monomial_le_degreeOf (i : σ) {f : MvPolynomial σ R} {m : σ →₀ ℕ
   rw [degreeOf_eq_sup i]
   apply Finset.le_sup h_m
 
-lemma degreeOf_monomial_eq [DecidableEq σ] (s : σ →₀ ℕ) (i : σ) {a : R} (ha : a ≠ 0) :
+lemma degreeOf_monomial_eq (s : σ →₀ ℕ) (i : σ) {a : R} (ha : a ≠ 0) :
     (monomial s a).degreeOf i = s i := by
-  rw [degreeOf_def, degrees_monomial_eq _ _ ha, Finsupp.count_toMultiset]
+  classical rw [degreeOf_def, degrees_monomial_eq _ _ ha, Finsupp.count_toMultiset]
 
 -- TODO we can prove equality with `NoZeroDivisors R`
 theorem degreeOf_mul_le (i : σ) (f g : MvPolynomial σ R) :
@@ -282,28 +282,32 @@ theorem degreeOf_pow_le (i : σ) (p : MvPolynomial σ R) (n : ℕ) :
     degreeOf i (p ^ n) ≤ n * degreeOf i p := by
   simpa using degreeOf_prod_le i (Finset.range n) (fun _ => p)
 
-theorem degreeOf_mul_X_ne {i j : σ} (f : MvPolynomial σ R) (h : i ≠ j) :
+theorem degreeOf_mul_X_of_ne {i j : σ} (f : MvPolynomial σ R) (h : i ≠ j) :
     degreeOf i (f * X j) = degreeOf i f := by
   classical
   simp only [degreeOf_eq_sup i, support_mul_X, Finset.sup_map]
   congr
   ext
-  simp only [Finsupp.single, Nat.one_ne_zero, add_right_eq_self, addRightEmbedding_apply, coe_mk,
+  simp only [Finsupp.single, add_right_eq_self, addRightEmbedding_apply, coe_mk,
     Pi.add_apply, comp_apply, ite_eq_right_iff, Finsupp.coe_add, Pi.single_eq_of_ne h]
 
-theorem degreeOf_mul_X_eq (j : σ) (f : MvPolynomial σ R) :
+@[deprecated (since := "2024-12-01")] alias degreeOf_mul_X_ne := degreeOf_mul_X_of_ne
+
+theorem degreeOf_mul_X_self (j : σ) (f : MvPolynomial σ R) :
     degreeOf j (f * X j) ≤ degreeOf j f + 1 := by
   classical
   simp only [degreeOf]
   apply (Multiset.count_le_of_le j (degrees_mul f (X j))).trans
   simp only [Multiset.count_add, add_le_add_iff_left]
-  convert Multiset.count_le_of_le j (degrees_X' (R := R) j)
+  convert Multiset.count_le_of_le j <| degrees_X' j
   rw [Multiset.count_singleton_self]
+
+@[deprecated (since := "2024-12-01")] alias degreeOf_mul_X_eq := degreeOf_mul_X_self
 
 theorem degreeOf_mul_X_eq_degreeOf_add_one_iff (j : σ) (f : MvPolynomial σ R) :
     degreeOf j (f * X j) = degreeOf j f + 1 ↔ f ≠ 0 := by
   refine ⟨fun h => by by_contra ha; simp [ha] at h, fun h => ?_⟩
-  apply Nat.le_antisymm (degreeOf_mul_X_eq j f)
+  apply Nat.le_antisymm (degreeOf_mul_X_self j f)
   have : (f.support.sup fun m ↦ m j) + 1 = (f.support.sup fun m ↦ (m j + 1)) :=
     Finset.comp_sup_eq_sup_comp_of_nonempty @Nat.succ_le_succ (support_nonempty.mpr h)
   simp only [degreeOf_eq_sup, support_mul_X, this]
@@ -495,6 +499,15 @@ theorem coeff_eq_zero_of_totalDegree_lt {f : MvPolynomial σ R} {d : σ →₀ �
       refine not_not.mp (mt h ?_)
       exact lt_irrefl _
     · exact lt_of_le_of_lt (Nat.zero_le _) h
+
+theorem totalDegree_eq_zero_iff_eq_C {p : MvPolynomial σ R} :
+    p.totalDegree = 0 ↔ p = C (p.coeff 0) := by
+  constructor <;> intro h
+  · ext m; classical rw [coeff_C]; split_ifs with hm; · rw [← hm]
+    apply coeff_eq_zero_of_totalDegree_lt; rw [h]
+    exact Finset.sum_pos (fun i hi ↦ Nat.pos_of_ne_zero <| Finsupp.mem_support_iff.mp hi)
+      (Finsupp.support_nonempty_iff.mpr <| Ne.symm hm)
+  · rw [h, totalDegree_C]
 
 theorem totalDegree_rename_le (f : σ → τ) (p : MvPolynomial σ R) :
     (rename f p).totalDegree ≤ p.totalDegree :=
