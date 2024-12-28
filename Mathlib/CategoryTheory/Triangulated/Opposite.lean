@@ -33,6 +33,14 @@ shall be a distinguished triangle in `Cᵒᵖ`. This is equivalent to the defini
 in [Verdiers's thesis, p. 96][verdier1996] which would require that the triangle
 `(op X)⟦-1⟧ ⟶ op Z ⟶ op Y ⟶ op X` (without signs) is *antidistinguished*.
 
+Finally, if `F : C ⥤ D` is a functor between pretriangulated categories, we prove that
+`F` is a triangulated functor if and only if `F.op` is a triangulated functor.
+In order to do this, we first show that a `CommShift` structure on `F` naturally
+gives one on `F.op` (for the shifts chosen here on `Cᵒᵖ` and `Dᵒᵖ`), and we then prove
+that `F.mapTriangle.op` and `F.op.mapTriangle` correspond to each other via the
+equivalences `(Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` and `(Triangle D)ᵒᵖ ≌ Triangle Dᵒᵖ`
+given by `Pretriangulated.triangleOpEquivalence`.
+
 ## References
 * [Jean-Louis Verdier, *Des catégories dérivées des catégories abéliennes*][verdier1996]
 
@@ -624,12 +632,15 @@ noncomputable def triangleOpEquivalence_inverse_naturality :
   (triangleOpEquivalence C).inverse (isoWhiskerLeft _ (triangleOpEquivalence D).unitIso.symm) ≪≫
   isoWhiskerLeft _ (Functor.rightUnitor _)
 
-noncomputable local instance : CommShift F.op ℤ := commShiftOpInt F
+/--
+If `F` commutes with shifts, so does `F.op`. This is a scoped instance.
+-/
+noncomputable scoped instance : CommShift F.op ℤ := commShiftOpInt F
 
 /-- If `F` is triangulated, so is `F.op`.
 We are using the commutation with shifts on `F.op` given by `Functor.commShiftOpInt`.
 -/
-noncomputable def isTrianulatedOp_of_isTriangulated [F.IsTriangulated] : F.op.IsTriangulated where
+lemma isTrianulatedOp_of_isTriangulated [F.IsTriangulated] : F.op.IsTriangulated where
   map_distinguished T dT := by
     rw [mem_distTriang_op_iff, ← Functor.comp_obj, ← distinguished_iff_of_iso
       ((triangleOpEquivalence_inverse_naturality F).app T).unop]
@@ -638,7 +649,7 @@ noncomputable def isTrianulatedOp_of_isTriangulated [F.IsTriangulated] : F.op.Is
 /-- If `F.op` is triangulated, so is `F`.
 We are using the commutation with shifts on `F.op` given by `Functor.commShiftOpInt`.
 -/
-noncomputable def isTriangulated_of_isTriangulatedOp [F.op.IsTriangulated] : F.IsTriangulated where
+lemma isTriangulated_of_isTriangulatedOp [F.op.IsTriangulated] : F.IsTriangulated where
   map_distinguished T dT := by
     have := distinguished_iff_of_iso ((triangleOpEquivalence D).unitIso.app
       (Opposite.op (F.mapTriangle.obj T))).unop
