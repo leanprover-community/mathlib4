@@ -317,6 +317,7 @@ import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Group.Subgroup.Defs
 import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Algebra.Group.Subgroup.Finsupp
 import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Algebra.Group.Subgroup.Lattice
 import Mathlib.Algebra.Group.Subgroup.Map
