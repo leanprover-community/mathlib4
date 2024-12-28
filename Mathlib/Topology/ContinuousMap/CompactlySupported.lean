@@ -585,8 +585,8 @@ noncomputable def toReal : C_c(α, ℝ≥0) →ₗ[ℝ≥0] C_c(α, ℝ) where
 lemma toReal_apply (f : C_c(α, ℝ≥0)) (x : α) :
     toReal f x = f x := rfl
 
-lemma nnreal_coe_eq_toReal (f : C_c(α, ℝ≥0)) :
-    (f : C_c(α, ℝ)) = toReal f := by
+lemma coe_toReal (f : C_c(α, ℝ≥0)) :
+    toReal f = (f : C_c(α, ℝ)) := rfl
   ext x
   simp only [ContinuousMap.toFun_eq_coe, coe_toContinuousMap, coe_mk, ContinuousMap.coe_mk,
     toReal_apply]
