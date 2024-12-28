@@ -34,6 +34,9 @@ variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [F.CommShift ℤ] [G.CommSh
   [adj.CommShift ℤ] [F.IsTriangulated]
 
 include adj in
+/--
+The right adjoint of a triangulated functor is triangulated.
+-/
 lemma isTriangulated_rightAdjoint : G.IsTriangulated where
   map_distinguished T hT := by
     have : G.Additive := adj.right_adjoint_additive
