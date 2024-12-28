@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
 
-import Mathlib.RingTheory.Algebraic
+import Mathlib.RingTheory.Algebraic.Basic
 import Mathlib.Data.Fintype.Card
 import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 import Mathlib.ModelTheory.Algebra.Ring.Definability
@@ -93,7 +93,7 @@ open MvPolynomial FreeCommRing Language Field Ring BoundedFormula
 variable {ι α : Type*} [Finite α] {K : Type*} [Field K] [CompatibleRing K]
 
 /-- The collection of first order formulas corresponding to the Ax-Grothendieck theorem. -/
-noncomputable def genericPolyMapSurjOnOfInjOn [Fintype ι]
+noncomputable def genericPolyMapSurjOnOfInjOn [Finite ι]
     (φ : ring.Formula (α ⊕ ι))
     (mons : ι → Finset (ι →₀ ℕ)) : Language.ring.Sentence :=
   let l1 : ι → Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
@@ -104,12 +104,12 @@ noncomputable def genericPolyMapSurjOnOfInjOn [Fintype ι]
         (Sum.inl ∘ Sum.map id (fun i => (1, i)))
   -- p(x) = p(y) as a formula
   let f1 : Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
-    iInf Finset.univ l1
+    iInf l1
   let l2 : ι → Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
     fun i => .var (Sum.inl (Sum.inr (0, i))) =' .var (Sum.inl (Sum.inr (1, i)))
   -- x = y as a formula
   let f2 : Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
-    iInf Finset.univ l2
+    iInf l2
   let injOn : Language.ring.Formula (α ⊕ Σ i : ι, mons i) :=
     Formula.iAlls (γ := Fin 2 × ι) id
       (φ.relabel (Sum.map Sum.inl (fun i => (0, i))) ⟹
@@ -120,7 +120,7 @@ noncomputable def genericPolyMapSurjOnOfInjOn [Fintype ι]
         (Sum.inl ∘ Sum.map id (fun i => (0, i))) ='
       .var (Sum.inl (Sum.inr (1, i)))
   let f3 : Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
-    iInf Finset.univ l3
+    iInf l3
   let surjOn : Language.ring.Formula (α ⊕ Σ i : ι, mons i) :=
     Formula.iAlls (γ := ι) id
       (Formula.imp (φ.relabel (Sum.map Sum.inl id)) <|
@@ -160,7 +160,11 @@ theorem realize_genericPolyMapSurjOnOfInjOn
     Set.MapsTo, Set.mem_def, injOnAlt, funext_iff, Set.SurjOn, Set.image, setOf,
     Set.subset_def, Equiv.forall_congr_left (mvPolynomialSupportLEEquiv mons)]
   simp +singlePass only [← Sum.elim_comp_inl_inr]
-  simp [Set.mem_def, Function.comp_def]
+  -- was `simp` and very slow (https://github.com/leanprover-community/mathlib4/issues/19751)
+  simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr, Fin.castAdd_zero, Fin.cast_eq_self,
+    Nat.add_zero, Term.realize_var, Term.realize_relabel, realize_termOfFreeCommRing,
+    lift_genericPolyMap, Nat.reduceAdd, Fin.isValue, Function.uncurry_apply_pair, Fin.cons_zero,
+    Fin.cons_one, ↓reduceIte, one_ne_zero]
 
 theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Fintype ι]
     {p : ℕ} (hp : p.Prime) (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :

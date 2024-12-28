@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Thomas Browning, Patrick Lutz
+Authors: Thomas Browning, Patrick Lutz, Yongle Hu, Jingting Wang
 -/
 import Mathlib.FieldTheory.Fixed
 import Mathlib.FieldTheory.NormalClosure
@@ -184,6 +184,11 @@ namespace IntermediateField
 def fixedField : IntermediateField F E :=
   FixedPoints.intermediateField H
 
+theorem mem_fixedField_iff (x) :
+    x ∈ fixedField H ↔ ∀ f ∈ H, f x = x := by
+  show x ∈ MulAction.fixedPoints H E ↔ _
+  simp only [MulAction.mem_fixedPoints, Subtype.forall, Subgroup.mk_smul, AlgEquiv.smul_def]
+
 theorem finrank_fixedField_eq_card [FiniteDimensional F E] [DecidablePred (· ∈ H)] :
     finrank (fixedField H) E = Fintype.card H :=
   FixedPoints.finrank_eq_card H E
@@ -288,6 +293,72 @@ def galoisCoinsertionIntermediateFieldSubgroup [FiniteDimensional F E] [IsGalois
   choice_eq _ _ := rfl
 
 end IsGalois
+
+section
+
+/-In this section we prove that the normal subgroups correspond to the Galois subextensions
+in the Galois correspondence and its related results.-/
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
+
+open IntermediateField
+
+open scoped Pointwise
+
+lemma IntermediateField.restrictNormalHom_ker (E : IntermediateField K L) [Normal K E] :
+    (restrictNormalHom E).ker = E.fixingSubgroup := by
+  simp [fixingSubgroup, Subgroup.ext_iff, AlgEquiv.ext_iff, Subtype.ext_iff,
+    restrictNormalHom_apply, mem_fixingSubgroup_iff]
+
+namespace IsGalois
+
+variable (E : IntermediateField K L)
+
+/-- If `H` is a normal Subgroup of `Gal(L / K)`, then `fixedField H` is Galois over `K`. -/
+instance of_fixedField_normal_subgroup [IsGalois K L]
+    (H : Subgroup (L ≃ₐ[K] L)) [hn : Subgroup.Normal H] : IsGalois K (fixedField H) where
+  to_isSeparable := Algebra.isSeparable_tower_bot_of_isSeparable K (fixedField H) L
+  to_normal := by
+    apply normal_iff_forall_map_le'.mpr
+    rintro σ x ⟨a, ha, rfl⟩ τ
+    exact (symm_apply_eq σ).mp (ha ⟨σ⁻¹ * τ * σ, Subgroup.Normal.conj_mem' hn τ.1 τ.2 σ⟩)
+
+/-- If `H` is a normal Subgroup of `Gal(L / K)`, then `Gal(fixedField H / K)` is isomorphic to
+`Gal(L / K) ⧸ H`. -/
+noncomputable def normalAutEquivQuotient [FiniteDimensional K L] [IsGalois K L]
+    (H : Subgroup (L ≃ₐ[K] L)) [Subgroup.Normal H] :
+    (L ≃ₐ[K] L) ⧸ H ≃* ((fixedField H) ≃ₐ[K] (fixedField H)) :=
+  (QuotientGroup.quotientMulEquivOfEq ((fixingSubgroup_fixedField H).symm.trans
+  (fixedField H).restrictNormalHom_ker.symm)).trans <|
+  QuotientGroup.quotientKerEquivOfSurjective (restrictNormalHom (fixedField H)) <|
+  restrictNormalHom_surjective L
+
+lemma normalAutEquivQuotient_apply [FiniteDimensional K L] [IsGalois K L]
+    (H : Subgroup (L ≃ₐ[K] L)) [Subgroup.Normal H] (σ : (L ≃ₐ[K] L)) :
+    normalAutEquivQuotient H σ = (restrictNormalHom (fixedField H)) σ := rfl
+
+open scoped Pointwise
+
+@[simp]
+theorem map_fixingSubgroup (σ : L ≃ₐ[K] L) :
+    (E.map σ).fixingSubgroup = (MulAut.conj σ) • E.fixingSubgroup := by
+  ext τ
+  simp only [coe_map, AlgHom.coe_coe, Set.mem_image, SetLike.mem_coe, AlgEquiv.smul_def,
+    forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, Subtype.forall,
+    Subgroup.mem_pointwise_smul_iff_inv_smul_mem, ← symm_apply_eq,
+    IntermediateField.fixingSubgroup, mem_fixingSubgroup_iff]
+  rfl
+
+/-- Let `E` be an intermediateField of a Galois extension `L / K`. If `E / K` is
+Galois extension, then `E.fixingSubgroup` is a normal subgroup of `Gal(L / K)`. -/
+instance fixingSubgroup_normal_of_isGalois [IsGalois K L] [IsGalois K E] :
+    E.fixingSubgroup.Normal := by
+  apply Subgroup.Normal.of_conjugate_fixed (fun σ ↦ ?_)
+  rw [← map_fixingSubgroup, normal_iff_forall_map_eq'.mp inferInstance σ]
+
+end IsGalois
+
+end
 
 end GaloisCorrespondence
 

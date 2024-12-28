@@ -838,7 +838,7 @@ theorem comap_incl_eq_bot : N₂.comap N.incl = ⊥ ↔ N ⊓ N₂ = ⊥ := by
     inf_coe_toSubmodule]
   rw [← Submodule.disjoint_iff_comap_eq_bot, disjoint_iff]
 
-@[mono]
+@[gcongr, mono]
 theorem map_mono (h : N ≤ N₂) : N.map f ≤ N₂.map f :=
   Set.image_subset _ h
 
@@ -1209,15 +1209,9 @@ lemma incl_injective (I : LieIdeal R L) : Function.Injective I.incl :=
 
 @[simp]
 theorem comap_incl_self : comap I.incl I = ⊤ := by ext; simp
-  --  porting note: `ext; simp` works also in mathlib3, though the proof used to be
-  --  rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.top_coeSubmodule,
-  --    LieIdeal.comap_coeSubmodule, LieIdeal.incl_coe, Submodule.comap_subtype_self]
 
 @[simp]
 theorem ker_incl : I.incl.ker = ⊥ := by ext; simp
-  --  porting note: `ext; simp` works also in mathlib3, though the proof used to be
-  --  rw [← LieSubmodule.coe_toSubmodule_eq_iff, I.incl.ker_coeSubmodule,
-  --    LieSubmodule.bot_coeSubmodule, incl_coe, Submodule.ker_subtype]
 
 @[simp]
 theorem incl_idealRange : I.incl.idealRange = I := by
