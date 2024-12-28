@@ -150,6 +150,7 @@ lemma hasColimitsOfShape_discrete (X Y : C) (p : X ⟶ Y) :
   have := hasCoproducts I κ
   exact hasColimitsOfShape_of_equivalence (Discrete.equivalence (equivShrink.{w} _)).symm
 
+@[simps! (config := .lemmasOnly)]
 noncomputable def succStruct : SuccStruct (Arrow C ⥤ Arrow C) :=
   have := hasColimitsOfShape_discrete I κ
   have := hasPushouts I κ
@@ -266,6 +267,20 @@ lemma ιFunctorObj_iterationFunctorObjSuccObjLeftIso_inv
   exact ((evaluation _ _).obj f ⋙ Arrow.leftFunc).congr_map
     ((succStruct I κ).iterationFunctor_map_succ j hj).symm
 
+lemma isEventuallyConstantFrom_bot_iterationFunctor_right :
+    (iterationFunctor I κ ⋙ (whiskeringRight _ _ _).obj
+      Arrow.rightFunc).IsEventuallyConstantFrom ⊥ := by
+  sorry
+
+lemma isEventuallyConstantFrom_bot_iterationFunctor_evaluation_right (f : Arrow C) :
+    (iterationFunctor I κ ⋙ (evaluation _ _).obj f ⋙
+      Arrow.rightFunc).IsEventuallyConstantFrom ⊥ := by
+  intro i g
+  let τ := whiskerRight ((iterationFunctor I κ).map g) Arrow.rightFunc
+  have : IsIso τ := isEventuallyConstantFrom_bot_iterationFunctor_right I κ g
+  change IsIso (τ.app f)
+  infer_instance
+
 lemma πFunctorObj_iterationCocone_ι_app_app_right
     (f : Arrow C) (j : κ.ord.toType) (hj : ¬ IsMax j) :
     letI := hasColimitsOfShape_discrete I κ
@@ -274,7 +289,21 @@ lemma πFunctorObj_iterationCocone_ι_app_app_right
         (((iterationCocone I κ).ι.app j).app f).right =
       (iterationFunctorObjSuccObjLeftIso I κ f j hj).inv ≫
         (((iterationFunctor I κ).obj (Order.succ j)).obj f).hom ≫
-        ((((iterationCocone I κ).ι.app (Order.succ j)).app f)).right := sorry
+        ((((iterationCocone I κ).ι.app (Order.succ j)).app f)).right := by
+  have := hasIterationOfShape I κ
+  --have := hasColimitsOfShape_discrete I κ
+  --have := hasPushouts I κ
+  have h₁ := (((iterationFunctor I κ).map (homOfLE (Order.le_succ j))).app f).w
+  have h₂ := (isEventuallyConstantFrom_bot_iterationFunctor_evaluation_right I κ f).isIso_map
+    (homOfLE (Order.le_succ j)) (homOfLE bot_le)
+  dsimp at h₂
+  have h₃ := ((evaluation _ _).obj f ⋙ Arrow.rightFunc).congr_map
+    ((iterationCocone I κ).w (homOfLE (Order.le_succ j)))
+  have h₄ := ((evaluation _ _).obj f ⋙ Arrow.rightFunc).congr_map
+    ((succStruct I κ).iterationFunctor_map_succ j hj)
+  dsimp [iterationFunctorObjSuccObjLeftIso, iterationFunctor, iterationCocone] at h₁ h₂ h₃ h₄ ⊢
+  rw [succStruct_toSucc_app_right, id_comp] at h₄
+  sorry
 
 instance (f : Arrow C) (j : κ.ord.toType) :
     IsIso (((iterationCocone I κ).ι.app j).app f).right := by

@@ -141,12 +141,17 @@ variable {J}
 noncomputable def iterationFunctorObjSuccIso (j : J) (hj : ¬ IsMax j) :
     (Φ.iterationFunctor J).obj (Order.succ j) ≅
       Φ.succ ((Φ.iterationFunctor J).obj j) :=
-  sorry
+  eqToIso (by
+    rw [iterationFunctor, Iteration.obj_succ _ _ (Order.lt_succ_of_not_isMax hj),
+      Iteration.congr_obj])
 
 @[reassoc]
 lemma iterationFunctor_map_succ (j : J) (hj : ¬ IsMax j) :
     (Φ.iterationFunctor J).map (homOfLE (Order.le_succ j)) =
       Φ.toSucc _ ≫ (Φ.iterationFunctorObjSuccIso j hj).inv := by
-  sorry
+  have := Φ.prop_iterationFunctor_map_succ j hj
+  rw [prop_iff, toSuccArrow, Arrow.mk_eq_mk_iff] at this
+  obtain ⟨h₁, h₂, h⟩ := this
+  simp [h, iterationFunctorObjSuccIso]
 
 end CategoryTheory.SmallObject.SuccStruct
