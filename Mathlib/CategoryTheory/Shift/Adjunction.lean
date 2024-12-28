@@ -226,7 +226,7 @@ section Opposite
 If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F` and `G`, then
 the opposite adjunction `G.op ⊣ F.op` is compatible with the opposite `CommShift` structures.
 -/
-def commShiftOp_of_commShift [adj.CommShift A] :
+lemma commShiftOp_of_commShift [adj.CommShift A] :
     letI := F.commShiftOp A
     letI := G.commShiftOp A
     (adj.opAdjointOpOfAdjoint _ _).CommShift A
@@ -260,7 +260,7 @@ If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F` and 
 it is also compatible with the pulled back `CommShift` structures by an additive map
 `φ : B →+ A`.
 -/
-def commShiftPullback_of_commShift [adj.CommShift A] :
+lemma commShiftPullback_of_commShift [adj.CommShift A] :
     letI := F.commShiftPullback φ
     letI := G.commShiftPullback φ
     adj.CommShift B (C := PullbackShift C φ) (D := PullbackShift D φ) := by
