@@ -675,7 +675,7 @@ section unique
 @[to_additive "The `AddEquiv` between two `AddMonoid`s with a unique element."]
 def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N]
     [TopologicalSpace M] [TopologicalSpace N] : M ≃ₜ* N :=
-  { MulEquiv.mulEquivOfUnique with
+  { MulEquiv.ofUnique with
   continuous_toFun := by continuity
   continuous_invFun := by continuity }
 
