@@ -167,14 +167,6 @@ def ofClosedSubgroup {G : ProfiniteGrp} (H : ClosedSubgroup G)  : ProfiniteGrp :
   letI : CompactSpace H := inferInstance
   of H.1
 
-/-- A topological group that has a `ContinuousMulEquiv` to a profinite group is profinite. -/
-def ofContinuousMulEquiv {G : ProfiniteGrp.{u}} {H : Type v} [TopologicalSpace H]
-    [Group H] [TopologicalGroup H] (e : G ≃ₜ* H) : ProfiniteGrp.{v} :=
-  letI : CompactSpace H := Homeomorph.compactSpace e.toHomeomorph
-  letI : TotallyDisconnectedSpace G := Profinite.instTotallyDisconnectedSpaceαTopologicalSpaceToTop
-  letI : TotallyDisconnectedSpace H := Homeomorph.totallyDisconnectedSpace e.toHomeomorph
-  .of H
-
 /-- The functor mapping a profinite group to its underlying profinite space. -/
 def profiniteGrpToProfinite : ProfiniteGrp ⥤ Profinite where
   obj G := G.toProfinite
