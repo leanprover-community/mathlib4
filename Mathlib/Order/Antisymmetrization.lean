@@ -38,8 +38,6 @@ variable (r : α → α → Prop)
 def AntisymmRel (a b : α) : Prop :=
   r a b ∧ r b a
 
-theorem antisymmRel_iff {r} : AntisymmRel r a b ↔ r a b ∧ r b a := Iff.rfl
-
 theorem AntisymmRel.le [LE α] (h : AntisymmRel (· ≤ ·) a b) : a ≤ b := h.1
 theorem AntisymmRel.ge [LE α] (h : AntisymmRel (· ≤ ·) a b) : b ≤ a := h.2
 
