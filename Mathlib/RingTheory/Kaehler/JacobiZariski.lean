@@ -99,9 +99,9 @@ lemma Cotangent.surjective_map_ofComp :
   exact ⟨.mk ⟨x, hx'⟩, Extension.Cotangent.map_mk _ _⟩
 
 /-!
-Given representations `R[X] → S` and `S[Y] → T`, the sequence
-`T ⊗[S] (⨁ₓ S dx) → (⨁ₓ T dx) ⊕ (⨁ᵧ T dy) →  ⨁ᵧ T dy`
-is exact.
+Given representations `0 → I → R[X] → S → 0` and `0 → K → S[Y] → T → 0`,
+we may consider the induced representation `0 → J → R[X, Y] → T → 0`, and the sequence
+`T ⊗[S] (I/I²) → J/J² → K/K²` is exact.
 -/
 open Extension.Cotangent in
 lemma Cotangent.exact :
@@ -133,7 +133,8 @@ lemma Cotangent.exact :
     rw [LinearMap.range_liftBaseChange]
     let z : (Q.comp P).ker := ⟨x - y, Ideal.sub_mem _ hx' (Ideal.mul_le_left hy)⟩
     have hz : z.1 ∈ P.ker.map (Q.toComp P).toAlgHom.toRingHom := e
-    have : Extension.Cotangent.mk ⟨x, hx'⟩ = Extension.Cotangent.mk z := by
+    have : Extension.Cotangent.mk (P := (Q.comp P).toExtension) ⟨x, hx'⟩ =
+      Extension.Cotangent.mk z := by
       ext; simpa only [comp_vars, val_mk, Ideal.toCotangent_eq, sub_sub_cancel, pow_two]
     rw [this, ← Submodule.restrictScalars_mem (Q.comp P).Ring, ← Submodule.mem_comap,
       ← Submodule.span_singleton_le_iff_mem, ← Submodule.map_le_map_iff_of_injective
@@ -160,6 +161,12 @@ def CotangentSpace.compEquiv (Q : Generators.{w} S T) (P : Generators.{w'} R S) 
       Q.toExtension.CotangentSpace × (T ⊗[S] P.toExtension.CotangentSpace) :=
   (Q.comp P).cotangentSpaceBasis.repr.trans
     (Q.cotangentSpaceBasis.prod (P.cotangentSpaceBasis.baseChange T)).repr.symm
+
+section instanceProblem
+
+-- Note: these instances are needed to prevent instance search timeouts.
+attribute [local instance 999999] Zero.toOfNat0 SemilinearMapClass.distribMulActionSemiHomClass
+  SemilinearEquivClass.instSemilinearMapClass TensorProduct.addZeroClass AddZeroClass.toZero
 
 lemma CotangentSpace.compEquiv_symm_inr :
     (compEquiv Q P).symm.toLinearMap ∘ₗ
@@ -219,6 +226,11 @@ lemma CotangentSpace.map_ofComp_surjective :
   rw [← fst_compEquiv]
   exact (Prod.fst_surjective).comp (compEquiv Q P).surjective
 
+/-!
+Given representations `R[X] → S` and `S[Y] → T`, the sequence
+`T ⊗[S] (⨁ₓ S dx) → (⨁ₓ T dx) ⊕ (⨁ᵧ T dy) → ⨁ᵧ T dy`
+is exact.
+-/
 lemma CotangentSpace.exact :
     Function.Exact ((Extension.CotangentSpace.map (Q.toComp P).toExtensionHom).liftBaseChange T)
       (Extension.CotangentSpace.map (Q.ofComp P).toExtensionHom) := by
@@ -264,12 +276,6 @@ lemma δAux_mul (x y) :
 lemma δAux_C (r) :
     δAux R Q (C r) = 1 ⊗ₜ D R S r := by
   rw [← monomial_zero', δAux_monomial, Finsupp.prod_zero_index]
-
-section instanceProblem
-
--- Note: these instances are needed to prevent instance search timeouts.
-attribute [local instance 999999] Zero.toOfNat0 SemilinearMapClass.distribMulActionSemiHomClass
-  SemilinearEquivClass.instSemilinearMapClass TensorProduct.addZeroClass AddZeroClass.toZero
 
 lemma δAux_toAlgHom {Q : Generators.{u₁} S T}
     {Q' : Generators.{u₃} S T} (f : Hom Q Q') (x) :
@@ -319,6 +325,13 @@ lemma δAux_ofComp (x : (Q.comp P).Ring) :
         toKaehler_cotangentSpaceBasis, add_left_inj, LinearMap.coe_inl]
       rfl
 
+lemma map_comp_cotangentComplex_baseChange :
+    (Extension.CotangentSpace.map (Q.toComp P).toExtensionHom).liftBaseChange T ∘ₗ
+      P.toExtension.cotangentComplex.baseChange T =
+    (Q.comp P).toExtension.cotangentComplex ∘ₗ
+      (Extension.Cotangent.map (Q.toComp P).toExtensionHom).liftBaseChange T := by
+  ext x; simp [Extension.CotangentSpace.map_cotangentComplex]
+
 open Generators in
 /--
 The connecting homomorphism in the Jacobi-Zariski sequence for given presentations.
@@ -350,10 +363,11 @@ def δ :
     ((Extension.CotangentSpace.map (toComp Q P).toExtensionHom).liftBaseChange T)
     (Extension.CotangentSpace.map (ofComp Q P).toExtensionHom)
     (CotangentSpace.exact Q P)
-    (by ext x; simp [Extension.CotangentSpace.map_cotangentComplex])
+    (map_comp_cotangentComplex_baseChange Q P)
     (by ext; exact Extension.CotangentSpace.map_cotangentComplex (ofComp Q P).toExtensionHom _)
     Q.toExtension.h1Cotangentι
     (LinearMap.exact_subtype_ker_map _)
+    (N₁ := T ⊗[S] P.toExtension.CotangentSpace)
     (P.toExtension.toKaehler.baseChange T)
     (lTensor_exact T P.toExtension.exact_cotangentComplex_toKaehler
       P.toExtension.toKaehler_surjective)
@@ -434,8 +448,6 @@ lemma δ_map
   refine (δAux_toAlgHom f _).trans ?_
   rw [hx, map_zero, map_zero, add_zero]
 
-end instanceProblem
-
 lemma δ_comp_equiv
     (Q : Generators.{u₁} S T) (P : Generators.{u₂} R S)
     (Q' : Generators.{u₃} S T) (P' : Generators.{u₄} R S) :
@@ -453,7 +465,11 @@ lemma exact_map_δ'
   rw [← Extension.H1Cotangent.map_comp, Extension.H1Cotangent.map_eq _ (Q.ofComp P).toExtensionHom]
   exact exact_map_δ Q P
 
-end Generators.H1Cotangent
+end H1Cotangent
+
+end instanceProblem
+
+end Generators
 
 variable {T : Type w} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 
