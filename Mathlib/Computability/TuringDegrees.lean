@@ -5,7 +5,6 @@ Authors: Tanner Duve, Elan Roth
 -/
 import Mathlib.Computability.Primrec
 import Mathlib.Computability.Partrec
-import Mathlib.Computability.Reduce
 import Mathlib.Data.Part
 import Mathlib.Order.Antisymmetrization
 /-!
@@ -228,9 +227,9 @@ instance : IsPreorder (ℕ →. ℕ) RecursiveIn where
   trans := @RecursiveIn.trans
 
 /--
-Instance declaring that `TuringEquivalent` is an equivalence relation.
+Proof that `TuringEquivalent` is an equivalence relation.
 -/
-instance TuringEquivalent.equivalence : Equivalence TuringEquivalent :=
+theorem TuringEquivalent.equivalence : Equivalence TuringEquivalent :=
   (AntisymmRel.setoid _ _).iseqv
 
 /--
