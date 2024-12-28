@@ -373,7 +373,7 @@ variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
 def rieszMeasure := (rieszContent Λ).measure
 
 lemma leRieszMeasure_Compacts {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1) {K : Compacts X}
-    (h : tsupport f ⊆ K) : ENNReal.ofNNReal (Λ f) ≤ (rieszMeasure Λ) K := by
+    (h : tsupport f ⊆ K) : .ofNNReal (Λ f) ≤ rieszMeasure Λ K := by
   simp only [rieszMeasure, Content.measure_eq_content_of_regular (rieszContent Λ)
     (contentRegular_rieszContent Λ)]
   simp only [rieszContent, ENNReal.ofReal_coe_nnreal, ENNReal.coe_le_coe]
