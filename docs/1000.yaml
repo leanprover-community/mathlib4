@@ -562,6 +562,7 @@ Q637418:
 Q642620:
   title: Krein–Milman theorem
   decl: closure_convexHull_extremePoints
+  author: Yaël Dillies
 
 Q643513:
   title: Riesz–Fischer theorem
@@ -653,6 +654,7 @@ Q693083:
 Q716171:
   title: Erdős–Ginzburg–Ziv theorem
   decl: ZMod.erdos_ginzburg_ziv
+  author: Yaël Dillies
 
 Q718875:
   title: Erdős–Ko–Rado theorem
@@ -722,6 +724,7 @@ Q756946:
 Q764287:
   title: Van der Waerden's theorem
   decl: Combinatorics.exists_mono_homothetic_copy
+  author: David Wärn
   # TODO: this is only some version; should this entry be modified accordingly?
 
 Q765987:
@@ -1024,6 +1027,7 @@ Q1008566:
 Q1032886:
   title: Hales–Jewett theorem
   decl: Combinatorics.Line.exists_mono_in_high_dimension
+  author: David Wärn
 
 Q1033910:
   title: Cantor–Bernstein–Schroeder theorem
@@ -1318,6 +1322,7 @@ Q1191319:
 Q1191709:
   title: Egorov's theorem
   decl: MeasureTheory.Egorov
+  author: Kexing Ying
 
 Q1191862:
   title: Rouché's theorem
@@ -1536,6 +1541,7 @@ Q1564541:
 Q1566341:
   title: Hindman's theorem
   decl: FP_partition_regular
+  author: David Wärn
 
 Q1566372:
   title: Haag's theorem
