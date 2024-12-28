@@ -32,6 +32,8 @@ variable {α β : Type*}
 
 namespace Ordinal
 
+-- The generated theorems are tagged by `simpNF`.
+set_option genSizeOfSpec false in
 /-- The type of sequences with length 0, 1, or `ω`. These are the possible different lengths for a
 fundamental sequence on a countable well-order. -/
 inductive Sequence (α : Type u) : Type u
@@ -43,6 +45,8 @@ inductive Sequence (α : Type u) : Type u
   monotonic sequences, its supremum. -/
   | ofFun (f : ℕ → α) : Sequence α
 
+attribute [nolint simpNF] Sequence.singleton.injEq
+
 namespace Sequence
 
 instance : EmptyCollection (Sequence α) := ⟨empty⟩
@@ -51,6 +55,8 @@ instance : Inhabited (Sequence α) := ⟨∅⟩
 
 instance : Singleton α (Sequence α) := ⟨singleton⟩
 @[simp] theorem singleton_def (x : α) : singleton x = {x} := rfl
+@[simp] theorem singleton_inj {x y : α} : ({x} : Sequence α) = {y} ↔ x = y :=
+  (Sequence.singleton.injEq x y).to_iff
 
 @[simp] theorem singleton_ne_empty (x : α) : ({x} : Sequence α) ≠ ∅ := fun h ↦ by injection h
 @[simp] theorem empty_ne_singleton (x : α) : ∅ ≠ ({x} : Sequence α) := fun h ↦ by injection h
@@ -164,3 +170,4 @@ def toList (s : Sequence α) (n : ℕ) : List α :=
 end Sequence
 
 end Ordinal
+#lint
