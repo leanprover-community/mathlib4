@@ -72,7 +72,7 @@ open Category MonoidalCategory Limits Iso
 /-- A monoidal category with binary coproducts is left distributive
 if the left tensor product functor preserves binary coproducts. -/
 class IsMonoidalLeftDistrib (C : Type u) [Category.{v} C]
-    [MonoidalCategory.{v} C] [HasBinaryCoproducts C] : Prop where
+    [MonoidalCategory C] [HasBinaryCoproducts C] : Prop where
   preservesBinaryCoproducts_tensorLeft (X : C) :
     PreservesColimitsOfShape (Discrete WalkingPair) (tensorLeft X)
 
