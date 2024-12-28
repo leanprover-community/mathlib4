@@ -98,7 +98,7 @@ theorem vars_add_subset [DecidableEq σ] (p q : MvPolynomial σ R) :
     (p + q).vars ⊆ p.vars ∪ q.vars := by
   intro x hx
   simp only [vars_def, Finset.mem_union, Multiset.mem_toFinset] at hx ⊢
-  simpa using Multiset.mem_of_le (degrees_add _ _) hx
+  simpa using Multiset.mem_of_le degrees_add_le hx
 
 theorem vars_add_of_disjoint [DecidableEq σ] (h : Disjoint p.vars q.vars) :
     (p + q).vars = p.vars ∪ q.vars := by

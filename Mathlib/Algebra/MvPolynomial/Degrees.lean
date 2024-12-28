@@ -110,7 +110,7 @@ theorem degrees_zero : degrees (0 : MvPolynomial σ R) = 0 := by
 theorem degrees_one : degrees (1 : MvPolynomial σ R) = 0 :=
   degrees_C 1
 
-theorem degrees_add_le [DecidableEq σ] (p q : MvPolynomial σ R) :
+theorem degrees_add_le [DecidableEq σ] {p q : MvPolynomial σ R} :
     (p + q).degrees ≤ p.degrees ⊔ q.degrees := by
   simp_rw [degrees_def]; exact supDegree_add_le
 
@@ -141,8 +141,7 @@ theorem mem_degrees {p : MvPolynomial σ R} {i : σ} :
   classical
   simp only [degrees_def, Multiset.mem_sup, ← mem_support_iff, Finsupp.mem_toMultiset, exists_prop]
 
-theorem le_degrees_add {p q : MvPolynomial σ R} (h : Disjoint p.degrees q.degrees) :
-    p.degrees ≤ (p + q).degrees := by
+theorem le_degrees_add_left (h : Disjoint p.degrees q.degrees) : p.degrees ≤ (p + q).degrees := by
   classical
   apply Finset.sup_le
   intro d hd
@@ -159,14 +158,14 @@ theorem le_degrees_add {p q : MvPolynomial σ R} (h : Disjoint p.degrees q.degre
     refine ⟨j, ?_, j, ?_, rfl⟩
     all_goals rw [mem_degrees]; refine ⟨d, ?_, hj⟩; assumption
 
-theorem degrees_add_of_disjoint [DecidableEq σ] {p q : MvPolynomial σ R}
-    (h : Disjoint p.degrees q.degrees) : (p + q).degrees = p.degrees ∪ q.degrees := by
-  apply le_antisymm
-  · apply degrees_add_le
-  · apply Multiset.union_le
-    · apply le_degrees_add h
-    · rw [add_comm]
-      apply le_degrees_add h.symm
+@[deprecated (since := "2024-12-28")] alias le_degrees_add := le_degrees_add_left
+
+lemma le_degrees_add_right (h : Disjoint p.degrees q.degrees) : q.degrees ≤ (p + q).degrees := by
+  simpa [add_comm] using le_degrees_add_left h.symm
+
+theorem degrees_add_of_disjoint [DecidableEq σ] (h : Disjoint p.degrees q.degrees) :
+    (p + q).degrees = p.degrees ∪ q.degrees :=
+  degrees_add_le.antisymm <| Multiset.union_le (le_degrees_add_left h) (le_degrees_add_right h)
 
 theorem degrees_map [CommSemiring S] (p : MvPolynomial σ R) (f : R →+* S) :
     (map f p).degrees ⊆ p.degrees := by
