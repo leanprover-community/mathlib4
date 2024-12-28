@@ -492,9 +492,13 @@ def update (f : ∀ a, β a) (a' : α) (v : β a') (a : α) : β a :=
 theorem update_self (a : α) (v : β a) (f : ∀ a, β a) : update f a v a = v :=
   dif_pos rfl
 
+@[deprecated (since := "2024-12-28")] alias update_same := update_self
+
 @[simp]
 theorem update_of_ne {a a' : α} (h : a ≠ a') (v : β a') (f : ∀ a, β a) : update f a' v a = f a :=
   dif_neg h
+
+@[deprecated (since := "2024-12-28")] alias update_noteq := update_of_ne
 
 /-- On non-dependent functions, `Function.update` can be expressed as an `ite` -/
 theorem update_apply {β : Sort*} (f : α → β) (a' : α) (b : β) (a : α) :
