@@ -172,7 +172,7 @@ noncomputable def sqrt : Matrix n n 𝕜 :=
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Custom elaborator to produce output like `(_ : PosSemidef A).sqrt` in the goal view. -/
-@[delab app.Matrix.PosSemidef.sqrt]
+@[app_delab Matrix.PosSemidef.sqrt]
 def delabSqrt : Delab :=
   whenPPOption getPPNotation <|
   whenNotPPOption getPPAnalysisSkip <|

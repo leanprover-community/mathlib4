@@ -409,7 +409,7 @@ the `npow` field when defining multiplicative objects.
 
 /-- Exponentiation by repeated squaring. -/
 @[to_additive "Scalar multiplication by repeated self-addition,
-the additive version of exponentation by repeated squaring."]
+the additive version of exponentiation by repeated squaring."]
 def npowBinRec {M : Type*} [One M] [Mul M] (k : ℕ) : M → M :=
   npowBinRec.go k 1
 where
