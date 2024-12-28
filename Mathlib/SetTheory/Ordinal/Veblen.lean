@@ -133,11 +133,11 @@ theorem veblenWith_zero_strictMono (hp : 0 < f 0) : StrictMono (veblenWith f · 
   rw [← veblenWith_veblenWith_of_lt hf h, veblenWith_lt_veblenWith_iff_right hf]
   exact veblenWith_pos hf hp b 0
 
-theorem veblenWith_zero_lt_veblenWith_zero_iff_left (hp : 0 < f 0) :
+theorem veblenWith_zero_lt_veblenWith_zero (hp : 0 < f 0) :
     veblenWith f a 0 < veblenWith f b 0 ↔ a < b :=
   (veblenWith_zero_strictMono hf hp).lt_iff_lt
 
-theorem veblenWith_zero_le_veblenWith_zero_iff_left (hp : 0 < f 0) :
+theorem veblenWith_zero_le_veblenWith_zero (hp : 0 < f 0) :
     veblenWith f a 0 ≤ veblenWith f b 0 ↔ a ≤ b :=
   (veblenWith_zero_strictMono hf hp).le_iff_le
 
@@ -171,8 +171,9 @@ theorem IsNormal.veblenWith_zero (hp : 0 < f 0) : IsNormal (veblenWith f · 0) :
 * `a = c` and `b < d`
 * `a < c` and `b < veblenWith f c d`
 * `a > c` and `veblenWith f a b < d` -/
-theorem veblenWith_lt_veblenWith_iff : veblenWith f a b < veblenWith f c d ↔
-    a = c ∧ b < d ∨ a < c ∧ b < veblenWith f c d ∨ c < a ∧ veblenWith f a b < d := by
+theorem veblenWith_lt_veblenWith_iff :
+    veblenWith f a b < veblenWith f c d ↔
+      a = c ∧ b < d ∨ a < c ∧ b < veblenWith f c d ∨ c < a ∧ veblenWith f a b < d := by
   obtain h | rfl | h := lt_trichotomy a c
   · simp_rw [h, h.ne, h.not_lt, false_and, false_or, or_false, true_and]
     conv_lhs => rw [← veblenWith_veblenWith_of_lt hf h, veblenWith_lt_veblenWith_iff_right hf]
@@ -184,8 +185,9 @@ theorem veblenWith_lt_veblenWith_iff : veblenWith f a b < veblenWith f c d ↔
 * `a = c` and `b ≤ d`
 * `a < c` and `b ≤ veblenWith f c d`
 * `a > c` and `veblenWith f a b ≤ d` -/
-theorem veblenWith_le_veblenWith_iff : veblenWith f a b ≤ veblenWith f c d ↔
-    a = c ∧ b ≤ d ∨ a < c ∧ b ≤ veblenWith f c d ∨ c < a ∧ veblenWith f a b ≤ d := by
+theorem veblenWith_le_veblenWith_iff :
+    veblenWith f a b ≤ veblenWith f c d ↔
+      a = c ∧ b ≤ d ∨ a < c ∧ b ≤ veblenWith f c d ∨ c < a ∧ veblenWith f a b ≤ d := by
   obtain h | rfl | h := lt_trichotomy a c
   · simp_rw [h, h.ne, h.not_lt, false_and, false_or, or_false, true_and]
     conv_lhs => rw [← veblenWith_veblenWith_of_lt hf h, veblenWith_le_veblenWith_iff_right hf]
@@ -197,8 +199,9 @@ theorem veblenWith_le_veblenWith_iff : veblenWith f a b ≤ veblenWith f c d ↔
 * `a = c` and `b = d`
 * `a < c` and `b = veblenWith f c d`
 * `a > c` and `veblenWith f a b = d` -/
-theorem veblenWith_eq_veblenWith_iff : veblenWith f a b = veblenWith f c d ↔
-    a = c ∧ b = d ∨ a < c ∧ b = veblenWith f c d ∨ c < a ∧ veblenWith f a b = d := by
+theorem veblenWith_eq_veblenWith_iff :
+    veblenWith f a b = veblenWith f c d ↔
+      a = c ∧ b = d ∨ a < c ∧ b = veblenWith f c d ∨ c < a ∧ veblenWith f a b = d := by
   obtain h | rfl | h := lt_trichotomy a c
   · simp_rw [h, h.ne, h.not_lt, false_and, false_or, or_false, true_and]
     conv_lhs => rw [← veblenWith_veblenWith_of_lt hf h, veblenWith_inj hf]
@@ -272,11 +275,11 @@ theorem veblen_zero_strictMono : StrictMono (veblen · 0) :=
   veblenWith_zero_strictMono (isNormal_opow one_lt_omega0) (by simp)
 
 @[simp]
-theorem veblen_zero_lt_veblen_zero_iff : veblen a 0 < veblen b 0 ↔ a < b :=
+theorem veblen_zero_lt_veblen_zero : veblen a 0 < veblen b 0 ↔ a < b :=
   veblen_zero_strictMono.lt_iff_lt
 
 @[simp]
-theorem veblen_zero_le_veblen_zero_iff : veblen a 0 ≤ veblen b 0 ↔ a ≤ b :=
+theorem veblen_zero_le_veblen_zero : veblen a 0 ≤ veblen b 0 ↔ a ≤ b :=
   veblen_zero_strictMono.le_iff_le
 
 @[simp]
