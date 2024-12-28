@@ -5,6 +5,7 @@ Authors: Peter Nelson
 -/
 import Mathlib.Data.Matroid.Restrict
 import Mathlib.Order.Closure
+import Mathlib.Order.CompleteLatticeIntervals
 
 /-!
 # Matroid Closure
@@ -176,6 +177,7 @@ lemma Flat.closure (hF : M.Flat F) : M.closure F = F :=
 @[simp] lemma closure_univ (M : Matroid α) : M.closure univ = M.E := by
   rw [← closure_inter_ground, univ_inter, closure_ground]
 
+@[gcongr]
 lemma closure_subset_closure (M : Matroid α) (h : X ⊆ Y) : M.closure X ⊆ M.closure Y :=
   subset_sInter (fun _ h' ↦ sInter_subset_of_mem
     ⟨h'.1, subset_trans (inter_subset_inter_left _ h) h'.2⟩)
@@ -635,7 +637,7 @@ lemma mem_closure_diff_singleton_iff_closure (he : e ∈ X) (heE : e ∈ M.E := 
 end insert
 
 lemma ext_closure {M₁ M₂ : Matroid α} (h : ∀ X, M₁.closure X = M₂.closure X) : M₁ = M₂ :=
-  eq_of_indep_iff_indep_forall (by simpa using h univ)
+  ext_indep (by simpa using h univ)
     (fun _ _ ↦ by simp_rw [indep_iff_forall_closure_diff_ne, h])
 
 
@@ -743,7 +745,7 @@ lemma ext_spanning {M M' : Matroid α} (h : M.E = M'.E)
     refine (em (S ⊆ M.E)).elim (fun hSE ↦ by rw [hsp _ hSE] )
       (fun hSE ↦ iff_of_false (fun h ↦ hSE h.subset_ground)
       (fun h' ↦ hSE (h'.subset_ground.trans h.symm.subset)))
-  rw [← dual_inj, eq_iff_indep_iff_indep_forall, dual_ground, dual_ground, and_iff_right h]
+  rw [← dual_inj, ext_iff_indep, dual_ground, dual_ground, and_iff_right h]
   intro I hIE
   rw [← coindep_def, ← coindep_def, coindep_iff_compl_spanning, coindep_iff_compl_spanning, hsp', h]
 

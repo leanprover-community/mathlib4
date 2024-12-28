@@ -149,12 +149,12 @@ theorem isLimit_iff_isSheafFor :
   · intro hu E x hx
     specialize hu hx.cone
     rw [(homEquivAmalgamation hx).uniqueCongr.nonempty_congr] at hu
-    exact (unique_subtype_iff_exists_unique _).1 hu
+    exact (unique_subtype_iff_existsUnique _).1 hu
   · rintro h ⟨E, π⟩
     let eqv := conesEquivSieveCompatibleFamily P S (op E)
     rw [← eqv.left_inv π]
     erw [(homEquivAmalgamation (eqv π).2).uniqueCongr.nonempty_congr]
-    rw [unique_subtype_iff_exists_unique]
+    rw [unique_subtype_iff_existsUnique]
     exact h _ _ (eqv π).2
 
 /-- Given sieve `S` and presheaf `P : Cᵒᵖ ⥤ A`, their natural associated cone admits at most one
@@ -267,21 +267,24 @@ variable {P : Cᵒᵖ ⥤ A} (hP : Presheaf.IsSheaf J P) {I : Type*} {S : C} {X 
     a ≫ f i = b ≫ f j → x i ≫ P.map a.op = x j ≫ P.map b.op)
 include hP hf hx
 
-lemma IsSheaf.exists_unique_amalgamation_ofArrows :
+lemma IsSheaf.existsUnique_amalgamation_ofArrows :
     ∃! (g : E ⟶ P.obj (op S)), ∀ (i : I), g ≫ P.map (f i).op = x i :=
   (Presieve.isSheafFor_arrows_iff _ _).1
     ((Presieve.isSheafFor_iff_generate _).2 (hP E _ hf)) x (fun _ _ _ _ _ w => hx _ _ w)
+
+@[deprecated (since := "2024-12-17")]
+alias IsSheaf.exists_unique_amalgamation_ofArrows := IsSheaf.existsUnique_amalgamation_ofArrows
 
 /-- If `P : Cᵒᵖ ⥤ A` is a sheaf and `f i : X i ⟶ S` is a covering family, then
 a morphism `E ⟶ P.obj (op S)` can be constructed from a compatible family of
 morphisms `x : E ⟶ P.obj (op (X i))`. -/
 def IsSheaf.amalgamateOfArrows : E ⟶ P.obj (op S) :=
-  (hP.exists_unique_amalgamation_ofArrows f hf x hx).choose
+  (hP.existsUnique_amalgamation_ofArrows f hf x hx).choose
 
 @[reassoc (attr := simp)]
 lemma IsSheaf.amalgamateOfArrows_map (i : I) :
     hP.amalgamateOfArrows f hf x hx ≫ P.map (f i).op = x i :=
-  (hP.exists_unique_amalgamation_ofArrows f hf x hx).choose_spec.1 i
+  (hP.existsUnique_amalgamation_ofArrows f hf x hx).choose_spec.1 i
 
 end
 
@@ -376,12 +379,6 @@ theorem Sheaf.Hom.mono_of_presheaf_mono {F G : Sheaf J A} (f : F ⟶ G) [h : Mon
 instance Sheaf.Hom.epi_of_presheaf_epi {F G : Sheaf J A} (f : F ⟶ G) [h : Epi f.1] : Epi f :=
   (sheafToPresheaf J A).epi_of_epi_map h
 
-/-- The sheaf of sections guaranteed by the sheaf condition. -/
-@[simps]
-def sheafOver {A : Type u₂} [Category.{v₂} A] {J : GrothendieckTopology C} (ℱ : Sheaf J A) (E : A) :
-    SheafOfTypes J :=
-  ⟨ℱ.val ⋙ coyoneda.obj (op E), ℱ.cond E⟩
-
 theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
     Presheaf.IsSheaf J P ↔ Presieve.IsSheaf J P := by
   constructor
@@ -402,27 +399,39 @@ theorem isSheaf_iff_isSheaf_of_type (P : Cᵒᵖ ⥤ Type w) :
       rw [Presieve.IsSheafFor.valid_glue _ _ _ hf, ← hy _ hf]
       rfl
 
+/-- The sheaf of sections guaranteed by the sheaf condition. -/
+@[simps]
+def sheafOver {A : Type u₂} [Category.{v₂} A] {J : GrothendieckTopology C} (ℱ : Sheaf J A) (E : A) :
+    Sheaf J (Type _) where
+  val := ℱ.val ⋙ coyoneda.obj (op E)
+  cond := by
+    rw [isSheaf_iff_isSheaf_of_type]
+    exact ℱ.cond E
+
 variable {J} in
 lemma Presheaf.IsSheaf.isSheafFor {P : Cᵒᵖ ⥤ Type w} (hP : Presheaf.IsSheaf J P)
     {X : C} (S : Sieve X) (hS : S ∈ J X) : Presieve.IsSheafFor P S.arrows := by
   rw [isSheaf_iff_isSheaf_of_type] at hP
   exact hP S hS
 
-/-- The category of sheaves taking values in Type is the same as the category of set-valued sheaves.
+variable {A} in
+lemma Presheaf.isSheaf_bot (P : Cᵒᵖ ⥤ A) : IsSheaf ⊥ P := fun _ ↦ Presieve.isSheaf_bot
+
+/--
+The category of sheaves on the bottom (trivial) Grothendieck topology is
+equivalent to the category of presheaves.
 -/
 @[simps]
-def sheafEquivSheafOfTypes : Sheaf J (Type w) ≌ SheafOfTypes J where
-  functor :=
-    { obj := fun S => ⟨S.val, (isSheaf_iff_isSheaf_of_type _ _).1 S.2⟩
-      map := fun f => ⟨f.val⟩ }
+def sheafBotEquivalence : Sheaf (⊥ : GrothendieckTopology C) A ≌ Cᵒᵖ ⥤ A where
+  functor := sheafToPresheaf _ _
   inverse :=
-    { obj := fun S => ⟨S.val, (isSheaf_iff_isSheaf_of_type _ _).2 S.2⟩
-      map := fun f => ⟨f.val⟩ }
-  unitIso := NatIso.ofComponents fun _ => Iso.refl _
-  counitIso := NatIso.ofComponents fun _ => Iso.refl _
+    { obj := fun P => ⟨P, Presheaf.isSheaf_bot P⟩
+      map := fun f => ⟨f⟩ }
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 instance : Inhabited (Sheaf (⊥ : GrothendieckTopology C) (Type w)) :=
-  ⟨(sheafEquivSheafOfTypes _).inverse.obj default⟩
+  ⟨(sheafBotEquivalence _).inverse.obj ((Functor.const _).obj default)⟩
 
 variable {J} {A}
 
