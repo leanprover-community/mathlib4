@@ -254,9 +254,7 @@ Proof that `TuringEquivalent` is transitive.
 theorem TuringEquivalent.trans (f g h : ℕ →. ℕ) (h1 : f ≡ᵀ g) (h2 : g ≡ᵀ h) : f ≡ᵀ h :=
   Equivalence.trans equivalence h1 h2
 
-/--
-The Turing degrees as the set of equivalence classes under Turing equivalence.
--/
+/-- The type of Turing degrees, implemented as the quotient of partial functions (`PFun`) under Turing equivalence. -/
 abbrev TuringDegree :=
   Antisymmetrization _ RecursiveIn
 
