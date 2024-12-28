@@ -416,8 +416,7 @@ lemma smul_eq_iff_of_mem
         rw [mul_smul, ← eq1, Submonoid.mk_smul, smul_comm r t]
       · rintro ⟨a, ha, eq1⟩
         refine ⟨a, ha, ?_⟩
-        rw [← eq1, mul_comm, mul_smul, Submonoid.mk_smul]
-        rfl
+        rw [← eq1, mul_comm, mul_smul, Submonoid.mk_smul, Submonoid.smul_def, Submonoid.mk_smul]
 
 lemma eq_zero_of_smul_eq_zero
     (r : R) (hr : r ∈ S) (x : LocalizedModule S M) (hx : r • x = 0) : x = 0 := by
@@ -914,10 +913,18 @@ theorem is_universal :
       ∃! l : M' →ₗ[R] M'', l.comp f = g :=
   fun g h => ⟨lift S f g h, lift_comp S f g h, fun l hl => (lift_unique S f g h l hl).symm⟩
 
-theorem ringHom_ext (map_unit : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x))
+theorem linearMap_ext {N N'} [AddCommMonoid N] [Module R N] [AddCommMonoid N'] [Module R N']
+    (f' : N →ₗ[R] N') [IsLocalizedModule S f'] ⦃g g' : M' →ₗ[R] N'⦄
+    (h : g ∘ₗ f = g' ∘ₗ f) : g = g' :=
+  (is_universal S f _ <| map_units f').unique h rfl
+
+theorem ext (map_unit : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x))
     ⦃j k : M' →ₗ[R] M''⦄ (h : j.comp f = k.comp f) : j = k := by
   rw [← lift_unique S f (k.comp f) map_unit j h, lift_unique]
   rfl
+
+@[deprecated (since := "2024-12-07")]
+alias ringHom_ext := ext
 
 /-- If `(M', f)` and `(M'', g)` both satisfy universal property of localized module, then `M', M''`
 are isomorphic as `R`-module
@@ -1110,10 +1117,10 @@ noncomputable
 def map : (M →ₗ[R] N) →ₗ[R] (M' →ₗ[R] N') where
   toFun h := lift S f (g ∘ₗ h) (IsLocalizedModule.map_units g)
   map_add' h₁ h₂ := by
-    apply IsLocalizedModule.ringHom_ext S f (IsLocalizedModule.map_units g)
+    apply IsLocalizedModule.ext S f (IsLocalizedModule.map_units g)
     simp only [lift_comp, LinearMap.add_comp, LinearMap.comp_add]
   map_smul' r h := by
-    apply IsLocalizedModule.ringHom_ext S f (IsLocalizedModule.map_units g)
+    apply IsLocalizedModule.ext S f (IsLocalizedModule.map_units g)
     simp only [lift_comp, LinearMap.add_comp, LinearMap.comp_add, LinearMap.smul_comp,
       LinearMap.comp_smul, RingHom.id_apply]
 

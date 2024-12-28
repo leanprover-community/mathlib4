@@ -281,7 +281,7 @@ protected theorem eq {a b : M} : (a : c.Quotient) = (b : c.Quotient) ↔ c a b :
 @[to_additive "The addition induced on the quotient by an additive congruence relation on a type
 with an addition."]
 instance hasMul : Mul c.Quotient :=
-  ⟨Quotient.map₂' (· * ·) fun _ _ h1 _ _ h2 => c.mul h1 h2⟩
+  ⟨Quotient.map₂ (· * ·) fun _ _ h1 _ _ h2 => c.mul h1 h2⟩
 
 /-- The kernel of the quotient map induced by a congruence relation `c` equals `c`. -/
 @[to_additive (attr := simp) "The kernel of the quotient map induced by an additive congruence
@@ -739,7 +739,7 @@ instance hasInv : Inv c.Quotient :=
 @[to_additive "The subtraction induced on the quotient by an additive congruence relation on a type
 with a subtraction."]
 instance hasDiv : Div c.Quotient :=
-  ⟨(Quotient.map₂' (· / ·)) fun _ _ h₁ _ _ h₂ => c.div h₁ h₂⟩
+  ⟨(Quotient.map₂ (· / ·)) fun _ _ h₁ _ _ h₂ => c.div h₁ h₂⟩
 
 /-- The integer scaling induced on the quotient by a congruence relation on a type with a
     subtraction. -/
@@ -763,6 +763,17 @@ instance group : Group c.Quotient :=
     toMonoid := Con.monoid _
     toInv := Con.hasInv _
     toDiv := Con.hasDiv _ }
+
+/-- The quotient of a `CommGroup` by a congruence relation is a `CommGroup`. -/
+@[to_additive "The quotient of an `AddCommGroup` by an additive congruence
+relation is an `AddCommGroup`."]
+instance commGroup {M : Type*} [CommGroup M] (c : Con M) : CommGroup c.Quotient :=
+  { (Function.Surjective.commGroup _ Quotient.mk''_surjective rfl (fun _ _ => rfl) (fun _ => rfl)
+      (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) : CommGroup c.Quotient) with
+    /- The `toGroup` field is given explicitly for performance reasons.
+    This avoids any need to unfold `Function.Surjective.commGroup` when the type checker is
+    checking that instance diagrams commute -/
+    toGroup := Con.group _ }
 
 end Groups
 
