@@ -497,7 +497,7 @@ theorem ext {f g : M ≃ₜ* N} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
 @[to_additive (attr := simp)]
-theorem coe_mk (f : M ≃* N) (hf1 hf2) : (mk f hf1 hf2 : M → N) = f := rfl
+theorem coe_mk (f : M ≃* N) (hf1 hf2) : ⇑(mk f hf1 hf2) = f := rfl
 
 @[to_additive]
 theorem toEquiv_eq_coe (f : M ≃ₜ* N) : f.toEquiv = f :=
@@ -518,7 +518,7 @@ a homeomorphism which preserves addition."]
 def mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃ₜ* N :=
   ⟨⟨f.toEquiv,h⟩, f.continuous_toFun, f.continuous_invFun⟩
 
-/--The coersion for `ContinuousMulEquiv.mk'`, so the name end with `'`-/
+set_option linter.docprime false in -- This is about `ContinuousMulEquiv.mk'`
 @[simp]
 lemma coe_mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y)  : ⇑(mk' f h) = f := rfl
 
@@ -556,7 +556,7 @@ def refl : M ≃ₜ* M :=
 @[to_additive]
 instance : Inhabited (M ≃ₜ* M) := ⟨ContinuousMulEquiv.refl M⟩
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem coe_refl : ↑(refl M) = id := rfl
 
 @[to_additive (attr := simp)]
