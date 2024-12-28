@@ -497,7 +497,7 @@ theorem ext {f g : M ≃ₜ* N} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 
 @[to_additive (attr := simp)]
-theorem coe_mk (f : M ≃* N) (hf1 hf2) : (mk f hf1 hf2 : M → N) = f := rfl
+theorem coe_mk (f : M ≃* N) (hf1 hf2) : ⇑(mk f hf1 hf2) = f := rfl
 
 @[to_additive]
 theorem toEquiv_eq_coe (f : M ≃ₜ* N) : f.toEquiv = f :=
