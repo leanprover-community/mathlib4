@@ -27,7 +27,7 @@ charts, differentiable, bijective
 
 noncomputable section
 
-open scoped Manifold
+open scoped Manifold ContDiff
 open Bundle Set Topology
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -99,7 +99,7 @@ theorem mdifferentiableAt_atlas (h : e ∈ atlas H M) {x : M} (hx : x ∈ e.sour
     ContDiffOn 𝕜 ∞ (I ∘ (chartAt H x).symm.trans e ∘ I.symm)
       (I.symm ⁻¹' ((chartAt H x).symm.trans e).source ∩ range I) :=
     this.1
-  have B := A.differentiableOn le_top (I ((chartAt H x : M → H) x)) mem
+  have B := A.differentiableOn (mod_cast le_top) (I ((chartAt H x : M → H) x)) mem
   simp only [mfld_simps] at B
   rw [inter_comm, differentiableWithinAt_inter] at B
   · simpa only [mfld_simps]
@@ -120,7 +120,7 @@ theorem mdifferentiableAt_atlas_symm (h : e ∈ atlas H M) {x : H} (hx : x ∈ e
     ContDiffOn 𝕜 ∞ (I ∘ e.symm.trans (chartAt H (e.symm x)) ∘ I.symm)
       (I.symm ⁻¹' (e.symm.trans (chartAt H (e.symm x))).source ∩ range I) :=
     this.1
-  have B := A.differentiableOn le_top (I x) mem
+  have B := A.differentiableOn (mod_cast le_top) (I x) mem
   simp only [mfld_simps] at B
   rw [inter_comm, differentiableWithinAt_inter] at B
   · simpa only [mfld_simps]

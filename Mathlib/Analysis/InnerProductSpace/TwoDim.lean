@@ -211,7 +211,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
           have : Finset.card {x} = 1 := Finset.card_singleton x
           have : finrank ℝ K + finrank ℝ Kᗮ = finrank ℝ E := K.finrank_add_finrank_orthogonal
           have : finrank ℝ E = 2 := Fact.out
-          linarith
+          omega
         obtain ⟨w, hw₀⟩ : ∃ w : Kᗮ, w ≠ 0 := exists_ne 0
         have hw' : ⟪x, (w : E)⟫ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
         have hw : (w : E) ≠ 0 := fun h => hw₀ (Submodule.coe_eq_zero.mp h)
@@ -354,14 +354,16 @@ theorem inner_mul_inner_add_areaForm_mul_areaForm' (a x : E) :
   apply (o.basisRightAngleRotation a ha).ext
   intro i
   fin_cases i
-  · simp only [Fin.mk_zero, coe_basisRightAngleRotation, Matrix.cons_val_zero, LinearMap.add_apply,
-      LinearMap.smul_apply, innerₛₗ_apply, real_inner_self_eq_norm_sq, smul_eq_mul,
-      areaForm_apply_self, mul_zero, add_zero, Real.rpow_two, real_inner_comm]
+  · simp only [Fin.zero_eta, Fin.isValue, id_eq, coe_basisRightAngleRotation, Nat.succ_eq_add_one,
+      Nat.reduceAdd, Matrix.cons_val_zero, LinearMap.add_apply, LinearMap.smul_apply, innerₛₗ_apply,
+      real_inner_self_eq_norm_sq, smul_eq_mul, areaForm_apply_self, mul_zero, add_zero,
+      real_inner_comm]
     ring
-  · simp only [Fin.mk_one, coe_basisRightAngleRotation, Matrix.cons_val_one, Matrix.head_cons,
-      LinearMap.add_apply, LinearMap.smul_apply, innerₛₗ_apply, inner_rightAngleRotation_right,
-      areaForm_apply_self, neg_zero, smul_eq_mul, mul_zero, areaForm_rightAngleRotation_right,
-      real_inner_self_eq_norm_sq, zero_add, Real.rpow_two, mul_neg]
+  · simp only [Fin.mk_one, Fin.isValue, id_eq, coe_basisRightAngleRotation, Nat.succ_eq_add_one,
+      Nat.reduceAdd, Matrix.cons_val_one, Matrix.head_cons, LinearMap.add_apply,
+      LinearMap.smul_apply, innerₛₗ_apply, inner_rightAngleRotation_right, areaForm_apply_self,
+      neg_zero, smul_eq_mul, mul_zero, areaForm_rightAngleRotation_right,
+      real_inner_self_eq_norm_sq, zero_add, mul_neg]
     rw [o.areaForm_swap]
     ring
 
@@ -381,15 +383,16 @@ theorem inner_mul_areaForm_sub' (a x : E) : ⟪a, x⟫ • ω a - ω a x • inn
   apply (o.basisRightAngleRotation a ha).ext
   intro i
   fin_cases i
-  · simp only [o.areaForm_swap a x, neg_smul, sub_neg_eq_add, Fin.mk_zero,
-      coe_basisRightAngleRotation, Matrix.cons_val_zero, LinearMap.add_apply, LinearMap.smul_apply,
-      areaForm_apply_self, smul_eq_mul, mul_zero, innerₛₗ_apply, real_inner_self_eq_norm_sq,
-      zero_add, Real.rpow_two]
+  · simp only [o.areaForm_swap a x, neg_smul, sub_neg_eq_add, Fin.zero_eta, Fin.isValue, id_eq,
+      coe_basisRightAngleRotation, Nat.succ_eq_add_one, Nat.reduceAdd, Matrix.cons_val_zero,
+      LinearMap.add_apply, LinearMap.smul_apply, areaForm_apply_self, smul_eq_mul, mul_zero,
+      innerₛₗ_apply, real_inner_self_eq_norm_sq, zero_add]
     ring
-  · simp only [Fin.mk_one, coe_basisRightAngleRotation, Matrix.cons_val_one, Matrix.head_cons,
-      LinearMap.sub_apply, LinearMap.smul_apply, areaForm_rightAngleRotation_right,
-      real_inner_self_eq_norm_sq, smul_eq_mul, innerₛₗ_apply, inner_rightAngleRotation_right,
-      areaForm_apply_self, neg_zero, mul_zero, sub_zero, Real.rpow_two, real_inner_comm]
+  · simp only [Fin.mk_one, Fin.isValue, id_eq, coe_basisRightAngleRotation, Nat.succ_eq_add_one,
+      Nat.reduceAdd, Matrix.cons_val_one, Matrix.head_cons, LinearMap.sub_apply,
+      LinearMap.smul_apply, areaForm_rightAngleRotation_right, real_inner_self_eq_norm_sq,
+      smul_eq_mul, innerₛₗ_apply, inner_rightAngleRotation_right, areaForm_apply_self, neg_zero,
+      mul_zero, sub_zero, real_inner_comm]
     ring
 
 /-- For vectors `a x y : E`, the identity `⟪a, x⟫ * ω a y - ω a x * ⟪a, y⟫ = ‖a‖ ^ 2 * ω x y`. -/
@@ -537,10 +540,10 @@ attribute [local instance] Complex.finrank_real_complex_fact
 @[simp]
 protected theorem areaForm (w z : ℂ) : Complex.orientation.areaForm w z = (conj w * z).im := by
   let o := Complex.orientation
-  simp only [o.areaForm_to_volumeForm, o.volumeForm_robust Complex.orthonormalBasisOneI rfl,
-    Basis.det_apply, Matrix.det_fin_two, Basis.toMatrix_apply, toBasis_orthonormalBasisOneI,
-    Matrix.cons_val_zero, coe_basisOneI_repr, Matrix.cons_val_one, Matrix.head_cons, mul_im,
-    conj_re, conj_im]
+  simp only [o, o.areaForm_to_volumeForm,
+    o.volumeForm_robust Complex.orthonormalBasisOneI rfl, Basis.det_apply, Matrix.det_fin_two,
+    Basis.toMatrix_apply, toBasis_orthonormalBasisOneI, Matrix.cons_val_zero, coe_basisOneI_repr,
+    Matrix.cons_val_one, Matrix.head_cons, mul_im, conj_re, conj_im]
   ring
 
 @[simp]

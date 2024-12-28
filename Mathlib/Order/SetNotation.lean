@@ -88,7 +88,7 @@ section delaborators
 open Lean Lean.PrettyPrinter.Delaborator
 
 /-- Delaborator for indexed supremum. -/
-@[delab app.iSup]
+@[app_delab iSup]
 def iSup_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
   let #[_, ι, _, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
@@ -116,7 +116,7 @@ def iSup_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
   return stx
 
 /-- Delaborator for indexed infimum. -/
-@[delab app.iInf]
+@[app_delab iInf]
 def iInf_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
   let #[_, ι, _, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
@@ -193,7 +193,7 @@ section delaborators
 open Lean Lean.PrettyPrinter.Delaborator
 
 /-- Delaborator for indexed unions. -/
-@[delab app.Set.iUnion]
+@[app_delab Set.iUnion]
 def iUnion_delab : Delab := whenPPOption Lean.getPPNotation do
   let #[_, ι, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
@@ -221,7 +221,7 @@ def iUnion_delab : Delab := whenPPOption Lean.getPPNotation do
   return stx
 
 /-- Delaborator for indexed intersections. -/
-@[delab app.Set.iInter]
+@[app_delab Set.iInter]
 def sInter_delab : Delab := whenPPOption Lean.getPPNotation do
   let #[_, ι, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure

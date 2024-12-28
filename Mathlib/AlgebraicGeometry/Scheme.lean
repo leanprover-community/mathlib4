@@ -108,6 +108,11 @@ this is the induced map `Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U)`. -/
 abbrev app (U : Y.Opens) : Γ(Y, U) ⟶ Γ(X, f ⁻¹ᵁ U) :=
   f.c.app (op U)
 
+/-- Given a morphism of schemes `f : X ⟶ Y`,
+this is the induced map `Γ(Y, ⊤) ⟶ Γ(X, ⊤)`. -/
+abbrev appTop : Γ(Y, ⊤) ⟶ Γ(X, ⊤) :=
+  f.app ⊤
+
 @[reassoc]
 lemma naturality (i : op U' ⟶ op U) :
     Y.presheaf.map i ≫ f.app U = f.app U' ≫ X.presheaf.map ((Opens.map f.base).map i.unop).op :=
@@ -150,7 +155,7 @@ lemma appLE_eq_app {U : Y.Opens} :
   (app_eq_appLE f).symm
 
 lemma appLE_congr (e : V ≤ f ⁻¹ᵁ U) (e₁ : U = U') (e₂ : V = V')
-    (P : ∀ {R S : Type u} [CommRing R] [CommRing S] (_ : R →+* S), Prop) :
+    (P : ∀ {R S : CommRingCat.{u}} (_ : R ⟶ S), Prop) :
     P (f.appLE U V e) ↔ P (f.appLE U' V' (e₁ ▸ e₂ ▸ e)) := by
   subst e₁; subst e₂; rfl
 
@@ -250,6 +255,11 @@ theorem id.base (X : Scheme) : (𝟙 X : _).base = 𝟙 _ :=
 theorem id_app {X : Scheme} (U : X.Opens) :
     (𝟙 X : _).app U = 𝟙 _ := rfl
 
+@[simp]
+theorem id_appTop {X : Scheme} :
+    (𝟙 X : _).appTop = 𝟙 _ :=
+  rfl
+
 @[reassoc]
 theorem comp_toLRSHom {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).toLRSHom = f.toLRSHom ≫ g.toLRSHom :=
@@ -273,6 +283,11 @@ theorem comp_base_apply {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) :
 @[simp, reassoc] -- reassoc lemma does not need `simp`
 theorem comp_app {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
     (f ≫ g).app U = g.app U ≫ f.app _ :=
+  rfl
+
+@[simp, reassoc] -- reassoc lemma does not need `simp`
+theorem comp_appTop {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    (f ≫ g).appTop = g.appTop ≫ f.appTop :=
   rfl
 
 @[deprecated (since := "2024-06-23")] alias comp_val_c_app := comp_app
@@ -335,8 +350,10 @@ theorem inv_app {X Y : Scheme} (f : X ⟶ Y) [IsIso f] (U : X.Opens) :
   rw [IsIso.eq_comp_inv, ← Scheme.comp_app, Scheme.congr_app (IsIso.hom_inv_id f),
     Scheme.id_app, Category.id_comp]
 
-theorem inv_app_top {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
-    (inv f).app ⊤ = inv (f.app ⊤) := by simp
+theorem inv_appTop {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
+    (inv f).appTop = inv (f.appTop) := by simp
+
+@[deprecated (since := "2024-11-23")] alias inv_app_top := inv_appTop
 
 end Scheme
 
@@ -393,14 +410,15 @@ variable {R S : CommRingCat.{u}} (f : R ⟶ S)
 lemma Spec_carrier (R : CommRingCat.{u}) : (Spec R).carrier = PrimeSpectrum R := rfl
 lemma Spec_sheaf (R : CommRingCat.{u}) : (Spec R).sheaf = Spec.structureSheaf R := rfl
 lemma Spec_presheaf (R : CommRingCat.{u}) : (Spec R).presheaf = (Spec.structureSheaf R).1 := rfl
-lemma Spec.map_base : (Spec.map f).base = PrimeSpectrum.comap f := rfl
-lemma Spec.map_base_apply (x : Spec S) : (Spec.map f).base x = PrimeSpectrum.comap f x := rfl
+lemma Spec.map_base : (Spec.map f).base = PrimeSpectrum.comap f.hom := rfl
+lemma Spec.map_base_apply (x : Spec S) : (Spec.map f).base x = PrimeSpectrum.comap f.hom x := rfl
 
 lemma Spec.map_app (U) :
-    (Spec.map f).app U = StructureSheaf.comap f U (Spec.map f ⁻¹ᵁ U) le_rfl := rfl
+    (Spec.map f).app U =
+      CommRingCat.ofHom (StructureSheaf.comap f.hom U (Spec.map f ⁻¹ᵁ U) le_rfl) := rfl
 
 lemma Spec.map_appLE {U V} (e : U ≤ Spec.map f ⁻¹ᵁ V) :
-    (Spec.map f).appLE V U e = StructureSheaf.comap f V U e := rfl
+    (Spec.map f).appLE V U e = CommRingCat.ofHom (StructureSheaf.comap f.hom V U e) := rfl
 
 instance {A : CommRingCat} [Nontrivial A] : Nonempty (Spec A) :=
   inferInstanceAs <| Nonempty (PrimeSpectrum A)
@@ -440,10 +458,10 @@ theorem Γ_obj_op (X : Scheme) : Γ.obj (op X) = Γ(X, ⊤) :=
   rfl
 
 @[simp]
-theorem Γ_map {X Y : Schemeᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.app ⊤ :=
+theorem Γ_map {X Y : Schemeᵒᵖ} (f : X ⟶ Y) : Γ.map f = f.unop.appTop :=
   rfl
 
-theorem Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.app ⊤ :=
+theorem Γ_map_op {X Y : Scheme} (f : X ⟶ Y) : Γ.map f.op = f.appTop :=
   rfl
 
 /--
@@ -466,13 +484,13 @@ def ΓSpecIso : Γ(Spec R, ⊤) ≅ R := SpecΓIdentity.app R
 
 @[reassoc (attr := simp)]
 lemma ΓSpecIso_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    (Spec.map f).app ⊤ ≫ (ΓSpecIso S).hom = (ΓSpecIso R).hom ≫ f := SpecΓIdentity.hom.naturality f
+    (Spec.map f).appTop ≫ (ΓSpecIso S).hom = (ΓSpecIso R).hom ≫ f := SpecΓIdentity.hom.naturality f
 
 -- The RHS is not necessarily simpler than the LHS, but this direction coincides with the simp
 -- direction of `NatTrans.naturality`.
 @[reassoc (attr := simp)]
 lemma ΓSpecIso_inv_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
-    f ≫ (ΓSpecIso S).inv = (ΓSpecIso R).inv ≫ (Spec.map f).app ⊤ := SpecΓIdentity.inv.naturality f
+    f ≫ (ΓSpecIso S).inv = (ΓSpecIso R).inv ≫ (Spec.map f).appTop := SpecΓIdentity.inv.naturality f
 
 -- This is not marked simp to respect the abstraction
 lemma ΓSpecIso_inv : (ΓSpecIso R).inv = StructureSheaf.toOpen R ⊤ := rfl
@@ -530,7 +548,8 @@ theorem basicOpen_le : X.basicOpen f ≤ U :=
 
 @[sheaf_restrict]
 lemma basicOpen_restrict (i : V ⟶ U) (f : Γ(X, U)) :
-    X.basicOpen (f |_ₕ i) ≤ X.basicOpen f :=
+    -- Help `restrict` to infer which forgetful functor we're taking
+    X.basicOpen (TopCat.Presheaf.restrict (C := CommRingCat) f i) ≤ X.basicOpen f :=
   (Scheme.basicOpen_res _ _ _).trans_le inf_le_right
 
 @[simp]
@@ -538,9 +557,13 @@ theorem preimage_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) {U : Y.Opens} (r : �
     f ⁻¹ᵁ (Y.basicOpen r) = X.basicOpen (f.app U r) :=
   LocallyRingedSpace.preimage_basicOpen f.toLRSHom r
 
+theorem preimage_basicOpen_top {X Y : Scheme.{u}} (f : X ⟶ Y) (r : Γ(Y, ⊤)) :
+    f ⁻¹ᵁ (Y.basicOpen r) = X.basicOpen (f.appTop r) :=
+  preimage_basicOpen ..
+
 lemma basicOpen_appLE {X Y : Scheme.{u}} (f : X ⟶ Y) (U : X.Opens) (V : Y.Opens) (e : U ≤ f ⁻¹ᵁ V)
     (s : Γ(Y, V)) : X.basicOpen (f.appLE V U e s) = U ⊓ f ⁻¹ᵁ (Y.basicOpen s) := by
-  simp only [preimage_basicOpen, Hom.appLE, CommRingCat.coe_comp_of, RingHom.coe_comp,
+  simp only [preimage_basicOpen, Hom.appLE, CommRingCat.comp_apply, RingHom.coe_comp,
     Function.comp_apply]
   rw [basicOpen_res]
 
@@ -560,7 +583,7 @@ theorem basicOpen_of_isUnit {f : Γ(X, U)} (hf : IsUnit f) : X.basicOpen f = U :
 
 instance algebra_section_section_basicOpen {X : Scheme} {U : X.Opens} (f : Γ(X, U)) :
     Algebra Γ(X, U) Γ(X, X.basicOpen f) :=
-  (X.presheaf.map (homOfLE <| X.basicOpen_le f : _ ⟶ U).op).toAlgebra
+  (X.presheaf.map (homOfLE <| X.basicOpen_le f : _ ⟶ U).op).hom.toAlgebra
 
 end BasicOpen
 
@@ -605,7 +628,7 @@ theorem basicOpen_eq_of_affine {R : CommRingCat} (f : R) :
   ext x
   simp only [SetLike.mem_coe, Scheme.mem_basicOpen_top, Opens.coe_top]
   suffices IsUnit (StructureSheaf.toStalk R x f) ↔ f ∉ PrimeSpectrum.asIdeal x by exact this
-  rw [← isUnit_map_iff (StructureSheaf.stalkToFiberRingHom R x),
+  rw [← isUnit_map_iff (StructureSheaf.stalkToFiberRingHom R x).hom,
     StructureSheaf.stalkToFiberRingHom_toStalk]
   exact
     (IsLocalization.AtPrime.isUnit_to_map_iff (Localization.AtPrime (PrimeSpectrum.asIdeal x))
@@ -662,7 +685,7 @@ namespace Scheme
 
 variable {X Y : Scheme.{u}} (f : X ⟶ Y)
 
-instance (x) : IsLocalHom (f.stalkMap x) :=
+instance (x) : IsLocalHom (f.stalkMap x).hom :=
   f.prop x
 
 @[simp]
@@ -683,7 +706,7 @@ lemma stalkSpecializes_stalkMap (x x' : X)
 lemma stalkSpecializes_stalkMap_apply (x x' : X) (h : x ⤳ x') (y) :
     f.stalkMap x (Y.presheaf.stalkSpecializes (f.base.map_specializes h) y) =
       (X.presheaf.stalkSpecializes h (f.stalkMap x' y)) :=
-  DFunLike.congr_fun (stalkSpecializes_stalkMap f x x' h) y
+  DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkSpecializes_stalkMap f x x' h)) y
 
 @[reassoc]
 lemma stalkMap_congr (f g : X ⟶ Y) (hfg : f = g) (x x' : X)
@@ -712,7 +735,7 @@ lemma stalkMap_hom_inv (e : X ≅ Y) (y : Y) :
 lemma stalkMap_hom_inv_apply (e : X ≅ Y) (y : Y) (z) :
     e.inv.stalkMap y (e.hom.stalkMap (e.inv.base y) z) =
       (Y.presheaf.stalkCongr (.of_eq (by simp))).hom z :=
-  DFunLike.congr_fun (stalkMap_hom_inv e y) z
+  DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkMap_hom_inv e y)) z
 
 @[reassoc (attr := simp)]
 lemma stalkMap_inv_hom (e : X ≅ Y) (x : X) :
@@ -724,7 +747,7 @@ lemma stalkMap_inv_hom (e : X ≅ Y) (x : X) :
 lemma stalkMap_inv_hom_apply (e : X ≅ Y) (x : X) (y) :
     e.hom.stalkMap x (e.inv.stalkMap (e.hom.base x) y) =
       (X.presheaf.stalkCongr (.of_eq (by simp))).hom y :=
-  DFunLike.congr_fun (stalkMap_inv_hom e x) y
+  DFunLike.congr_fun (CommRingCat.hom_ext_iff.mp (stalkMap_inv_hom e x)) y
 
 @[reassoc (attr := simp)]
 lemma stalkMap_germ (U : Y.Opens) (x : X) (hx : f.base x ∈ U) :
@@ -748,8 +771,8 @@ open IsLocalRing
 
 @[simp]
 lemma Spec_closedPoint {R S : CommRingCat} [IsLocalRing R] [IsLocalRing S]
-    {f : R ⟶ S} [IsLocalHom f] : (Spec.map f).base (closedPoint S) = closedPoint R :=
-  IsLocalRing.comap_closedPoint f
+    {f : R ⟶ S} [IsLocalHom f.hom] : (Spec.map f).base (closedPoint S) = closedPoint R :=
+  IsLocalRing.comap_closedPoint f.hom
 
 end IsLocalRing
 

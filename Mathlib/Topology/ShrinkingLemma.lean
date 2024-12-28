@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Reid Barton
 -/
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Regular
 
 /-!
 # The shrinking lemma
@@ -206,7 +206,7 @@ section NormalSpace
 
 open ShrinkingLemma
 
-variable {u : ι → Set X} {s : Set X} {p : Set X → Prop} [NormalSpace X]
+variable {u : ι → Set X} {s : Set X} [NormalSpace X]
 
 /-- **Shrinking lemma**. A point-finite open cover of a closed subset of a normal space can be
 "shrunk" to a new open cover so that the closure of each new open set is contained in the

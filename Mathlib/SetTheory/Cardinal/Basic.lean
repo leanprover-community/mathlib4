@@ -3,7 +3,6 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Cast.Order.Basic
@@ -15,6 +14,8 @@ import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.SetTheory.Cardinal.SchroederBernstein
+import Mathlib.Algebra.Order.GroupWithZero.Canonical
+import Mathlib.Algebra.Order.Ring.Canonical
 
 /-!
 # Cardinal Numbers
@@ -83,7 +84,7 @@ Cantor's theorem, König's theorem, Konig's theorem
 
 assert_not_exists Field
 
-open Mathlib (Vector)
+open List (Vector)
 open Function Order Set
 
 noncomputable section
@@ -145,7 +146,7 @@ protected theorem eq : #α = #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'
 
 /-- Avoid using `Quotient.mk` to construct a `Cardinal` directly -/
-@[deprecated (since := "2024-10-24")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-24")]
 theorem mk'_def (α : Type u) : @Eq Cardinal ⟦α⟧ #α :=
   rfl
 
@@ -175,54 +176,6 @@ theorem map_mk (f : Type u → Type v) (hf : ∀ α β, α ≃ β → f α ≃ f
 def map₂ (f : Type u → Type v → Type w) (hf : ∀ α β γ δ, α ≃ β → γ ≃ δ → f α γ ≃ f β δ) :
     Cardinal.{u} → Cardinal.{v} → Cardinal.{w} :=
   Quotient.map₂ f fun α β ⟨e₁⟩ γ δ ⟨e₂⟩ => ⟨hf α β γ δ e₁ e₂⟩
-
-/-- We define the order on cardinal numbers by `#α ≤ #β` if and only if
-  there exists an embedding (injective function) from α to β. -/
-instance : LE Cardinal.{u} :=
-  ⟨fun q₁ q₂ =>
-    Quotient.liftOn₂ q₁ q₂ (fun α β => Nonempty <| α ↪ β) fun _ _ _ _ ⟨e₁⟩ ⟨e₂⟩ =>
-      propext ⟨fun ⟨e⟩ => ⟨e.congr e₁ e₂⟩, fun ⟨e⟩ => ⟨e.congr e₁.symm e₂.symm⟩⟩⟩
-
-instance partialOrder : PartialOrder Cardinal.{u} where
-  le := (· ≤ ·)
-  le_refl := by
-    rintro ⟨α⟩
-    exact ⟨Embedding.refl _⟩
-  le_trans := by
-    rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨e₁⟩ ⟨e₂⟩
-    exact ⟨e₁.trans e₂⟩
-  le_antisymm := by
-    rintro ⟨α⟩ ⟨β⟩ ⟨e₁⟩ ⟨e₂⟩
-    exact Quotient.sound (e₁.antisymm e₂)
-
-instance linearOrder : LinearOrder Cardinal.{u} :=
-  { Cardinal.partialOrder with
-    le_total := by
-      rintro ⟨α⟩ ⟨β⟩
-      apply Embedding.total
-    decidableLE := Classical.decRel _ }
-
-theorem le_def (α β : Type u) : #α ≤ #β ↔ Nonempty (α ↪ β) :=
-  Iff.rfl
-
-theorem mk_le_of_injective {α β : Type u} {f : α → β} (hf : Injective f) : #α ≤ #β :=
-  ⟨⟨f, hf⟩⟩
-
-theorem _root_.Function.Embedding.cardinal_le {α β : Type u} (f : α ↪ β) : #α ≤ #β :=
-  ⟨f⟩
-
-theorem mk_le_of_surjective {α β : Type u} {f : α → β} (hf : Surjective f) : #β ≤ #α :=
-  ⟨Embedding.ofSurjective f hf⟩
-
-theorem le_mk_iff_exists_set {c : Cardinal} {α : Type u} : c ≤ #α ↔ ∃ p : Set α, #p = c :=
-  ⟨inductionOn c fun _ ⟨⟨f, hf⟩⟩ => ⟨Set.range f, (Equiv.ofInjective f hf).cardinal_eq.symm⟩,
-    fun ⟨_, e⟩ => e ▸ ⟨⟨Subtype.val, fun _ _ => Subtype.eq⟩⟩⟩
-
-theorem mk_subtype_le {α : Type u} (p : α → Prop) : #(Subtype p) ≤ #α :=
-  ⟨Embedding.subtype p⟩
-
-theorem mk_set_le (s : Set α) : #s ≤ #α :=
-  mk_subtype_le s
 
 /-! ### Lifting cardinals to a higher universe -/
 
@@ -280,21 +233,6 @@ lemma mk_preimage_down {s : Set α} : #(ULift.down.{v} ⁻¹' s) = lift.{v} (#s)
     ULift.up_bijective.comp (restrictPreimage_bijective _ (ULift.down_bijective))
   exact Equiv.ofBijective f this
 
-theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.out) := by
-  conv_lhs => rw [← Cardinal.mk_out c, ← Cardinal.mk_out c', le_def]
-
-theorem lift_mk_le {α : Type v} {β : Type w} :
-    lift.{max u w} #α ≤ lift.{max u v} #β ↔ Nonempty (α ↪ β) :=
-  ⟨fun ⟨f⟩ => ⟨Embedding.congr Equiv.ulift Equiv.ulift f⟩, fun ⟨f⟩ =>
-    ⟨Embedding.congr Equiv.ulift.symm Equiv.ulift.symm f⟩⟩
-
-/-- A variant of `Cardinal.lift_mk_le` with specialized universes.
-Because Lean often can not realize it should use this specialization itself,
-we provide this statement separately so you don't have to solve the specialization problem either.
--/
-theorem lift_mk_le' {α : Type u} {β : Type v} : lift.{v} #α ≤ lift.{u} #β ↔ Nonempty (α ↪ β) :=
-  lift_mk_le.{0}
-
 theorem lift_mk_eq {α : Type u} {β : Type v} :
     lift.{max v w} #α = lift.{max u w} #β ↔ Nonempty (α ≃ β) :=
   Quotient.eq'.trans
@@ -323,6 +261,73 @@ theorem lift_mk_shrink' (α : Type u) [Small.{v} α] :
 theorem lift_mk_shrink'' (α : Type max u v) [Small.{v} α] :
     Cardinal.lift.{u} #(Shrink.{v} α) = #α := by
   rw [← lift_umax, lift_mk_shrink.{max u v, v, 0} α, ← lift_umax, lift_id]
+
+/-! ### Order on cardinals -/
+
+/-- We define the order on cardinal numbers by `#α ≤ #β` if and only if
+  there exists an embedding (injective function) from α to β. -/
+instance : LE Cardinal.{u} :=
+  ⟨fun q₁ q₂ =>
+    Quotient.liftOn₂ q₁ q₂ (fun α β => Nonempty <| α ↪ β) fun _ _ _ _ ⟨e₁⟩ ⟨e₂⟩ =>
+      propext ⟨fun ⟨e⟩ => ⟨e.congr e₁ e₂⟩, fun ⟨e⟩ => ⟨e.congr e₁.symm e₂.symm⟩⟩⟩
+
+instance partialOrder : PartialOrder Cardinal.{u} where
+  le := (· ≤ ·)
+  le_refl := by
+    rintro ⟨α⟩
+    exact ⟨Embedding.refl _⟩
+  le_trans := by
+    rintro ⟨α⟩ ⟨β⟩ ⟨γ⟩ ⟨e₁⟩ ⟨e₂⟩
+    exact ⟨e₁.trans e₂⟩
+  le_antisymm := by
+    rintro ⟨α⟩ ⟨β⟩ ⟨e₁⟩ ⟨e₂⟩
+    exact Quotient.sound (e₁.antisymm e₂)
+
+instance linearOrder : LinearOrder Cardinal.{u} :=
+  { Cardinal.partialOrder with
+    le_total := by
+      rintro ⟨α⟩ ⟨β⟩
+      apply Embedding.total
+    decidableLE := Classical.decRel _ }
+
+theorem le_def (α β : Type u) : #α ≤ #β ↔ Nonempty (α ↪ β) :=
+  Iff.rfl
+
+theorem mk_le_of_injective {α β : Type u} {f : α → β} (hf : Injective f) : #α ≤ #β :=
+  ⟨⟨f, hf⟩⟩
+
+theorem _root_.Function.Embedding.cardinal_le {α β : Type u} (f : α ↪ β) : #α ≤ #β :=
+  ⟨f⟩
+
+theorem mk_le_of_surjective {α β : Type u} {f : α → β} (hf : Surjective f) : #β ≤ #α :=
+  ⟨Embedding.ofSurjective f hf⟩
+
+theorem le_mk_iff_exists_set {c : Cardinal} {α : Type u} : c ≤ #α ↔ ∃ p : Set α, #p = c :=
+  ⟨inductionOn c fun _ ⟨⟨f, hf⟩⟩ => ⟨Set.range f, (Equiv.ofInjective f hf).cardinal_eq.symm⟩,
+    fun ⟨_, e⟩ => e ▸ ⟨⟨Subtype.val, fun _ _ => Subtype.eq⟩⟩⟩
+
+theorem mk_subtype_le {α : Type u} (p : α → Prop) : #(Subtype p) ≤ #α :=
+  ⟨Embedding.subtype p⟩
+
+theorem mk_set_le (s : Set α) : #s ≤ #α :=
+  mk_subtype_le s
+
+theorem out_embedding {c c' : Cardinal} : c ≤ c' ↔ Nonempty (c.out ↪ c'.out) := by
+  conv_lhs => rw [← Cardinal.mk_out c, ← Cardinal.mk_out c', le_def]
+
+theorem lift_mk_le {α : Type v} {β : Type w} :
+    lift.{max u w} #α ≤ lift.{max u v} #β ↔ Nonempty (α ↪ β) :=
+  ⟨fun ⟨f⟩ => ⟨Embedding.congr Equiv.ulift Equiv.ulift f⟩, fun ⟨f⟩ =>
+    ⟨Embedding.congr Equiv.ulift.symm Equiv.ulift.symm f⟩⟩
+
+/-- A variant of `Cardinal.lift_mk_le` with specialized universes.
+Because Lean often can not realize it should use this specialization itself,
+we provide this statement separately so you don't have to solve the specialization problem either.
+-/
+theorem lift_mk_le' {α : Type u} {β : Type v} : lift.{v} #α ≤ lift.{u} #β ↔ Nonempty (α ↪ β) :=
+  lift_mk_le.{0}
+
+/-! ### `lift` sends `Cardinal.{u}` to an initial segment of `Cardinal.{max u v}`. -/
 
 /-- `Cardinal.lift` as an `InitialSeg`. -/
 @[simps!]
@@ -435,7 +440,7 @@ instance : Nontrivial Cardinal.{u} :=
   ⟨⟨1, 0, mk_ne_zero _⟩⟩
 
 theorem mk_eq_one (α : Type u) [Subsingleton α] [Nonempty α] : #α = 1 :=
-  let ⟨_⟩ := nonempty_unique α; (Equiv.equivOfUnique α (ULift (Fin 1))).cardinal_eq
+  let ⟨_⟩ := nonempty_unique α; (Equiv.ofUnique α (ULift (Fin 1))).cardinal_eq
 
 theorem le_one_iff_subsingleton {α : Type u} : #α ≤ 1 ↔ Subsingleton α :=
   ⟨fun ⟨f⟩ => ⟨fun _ _ => f.injective (Subsingleton.elim _ _)⟩, fun ⟨h⟩ =>
@@ -814,19 +819,21 @@ protected theorem isSuccLimit_iff {c : Cardinal} : IsSuccLimit c ↔ c ≠ 0 ∧
 
 section deprecated
 
-set_option linter.deprecated false
-
+set_option linter.deprecated false in
 @[deprecated IsSuccLimit.isSuccPrelimit (since := "2024-09-17")]
 protected theorem IsLimit.isSuccPrelimit {c} (h : IsLimit c) : IsSuccPrelimit c :=
   h.2
 
+set_option linter.deprecated false in
 @[deprecated ne_zero_of_isSuccLimit (since := "2024-09-17")]
 protected theorem IsLimit.ne_zero {c} (h : IsLimit c) : c ≠ 0 :=
   h.1
 
+set_option linter.deprecated false in
 @[deprecated IsLimit.isSuccPrelimit (since := "2024-09-05")]
 alias IsLimit.isSuccLimit := IsLimit.isSuccPrelimit
 
+set_option linter.deprecated false in
 @[deprecated IsSuccLimit.succ_lt (since := "2024-09-17")]
 theorem IsLimit.succ_lt {x c} (h : IsLimit c) : x < c → succ x < c :=
   h.isSuccPrelimit.succ_lt
@@ -1518,17 +1525,18 @@ theorem aleph0_le_of_isSuccLimit {c : Cardinal} (h : IsSuccLimit c) : ℵ₀ ≤
 
 section deprecated
 
-set_option linter.deprecated false
-
+set_option linter.deprecated false in
 @[deprecated isSuccLimit_aleph0 (since := "2024-09-17")]
 theorem isLimit_aleph0 : IsLimit ℵ₀ :=
   ⟨aleph0_ne_zero, isSuccPrelimit_aleph0⟩
 
+set_option linter.deprecated false in
 @[deprecated not_isSuccLimit_natCast (since := "2024-09-17")]
 lemma not_isLimit_natCast : (n : ℕ) → ¬ IsLimit (n : Cardinal.{u})
   | 0, e => e.1 rfl
   | Nat.succ n, e => Order.not_isSuccPrelimit_succ _ (nat_succ n ▸ e.2)
 
+set_option linter.deprecated false in
 @[deprecated aleph0_le_of_isSuccLimit (since := "2024-09-17")]
 theorem IsLimit.aleph0_le {c : Cardinal} (h : IsLimit c) : ℵ₀ ≤ c := by
   by_contra! h'
@@ -1778,12 +1786,12 @@ theorem mk_plift_false : #(PLift False) = 0 :=
   mk_eq_zero _
 
 @[simp]
-theorem mk_vector (α : Type u) (n : ℕ) : #(Vector α n) = #α ^ n :=
+theorem mk_vector (α : Type u) (n : ℕ) : #(List.Vector α n) = #α ^ n :=
   (mk_congr (Equiv.vectorEquivFin α n)).trans <| by simp
 
 theorem mk_list_eq_sum_pow (α : Type u) : #(List α) = sum fun n : ℕ => #α ^ n :=
   calc
-    #(List α) = #(Σn, Vector α n) := mk_congr (Equiv.sigmaFiberEquiv List.length).symm
+    #(List α) = #(Σn, List.Vector α n) := mk_congr (Equiv.sigmaFiberEquiv List.length).symm
     _ = sum fun n : ℕ => #α ^ n := by simp
 
 theorem mk_quot_le {α : Type u} {r : α → α → Prop} : #(Quot r) ≤ #α :=

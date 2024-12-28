@@ -3,7 +3,7 @@ Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Yury Kudryashov
 -/
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Regular
 import Mathlib.Topology.UniformSpace.Basic
 
 /-!
@@ -26,7 +26,7 @@ uniform space, uniform continuity, compact space
 
 open Uniformity Topology Filter UniformSpace Set
 
-variable {α β γ : Type*} [UniformSpace α] [UniformSpace β]
+variable {γ : Type*}
 
 /-!
 ### Uniformity on compact spaces

@@ -40,7 +40,7 @@ to learn about it as well!
 - `lint-bib.sh`
   normalize the BibTeX file `docs/references.bib` using `bibtool`.
 - `yaml_check.py`, `check-yaml.lean`
-  Sanity checks for `undergrad.yaml`, `overview.yaml`, and `100.yaml`.
+  Sanity checks for `undergrad.yaml`, `overview.yaml`, `100.yaml` and `1000.yaml`.
 - `lean-pr-testing-comments.sh`
   Generate comments and labels on a Lean or Batteries PR after CI has finished on a
   `*-pr-testing-NNNN` branch.
@@ -67,6 +67,10 @@ to learn about it as well!
   - finally, merge the new branch back into `nightly-testing`, if conflict resolution was required.
 
   If there are merge conflicts, it pauses and asks for help from the human driver.
+- `merge-lean-testing-pr.sh` takes a PR number `NNNN` as argument,
+  and attempts to merge the branch `lean-pr-testing-NNNN` into `master`.
+  It will resolve conflicts in `lean-toolchain`, `lakefile.lean`, and `lake-manifest.json`.
+  If there are more conflicts, it will bail.
 
 **Managing and tracking technical debt**
 - `technical-debt-metrics.sh`
@@ -93,9 +97,12 @@ please do not add new entries to these files. PRs removing (the need for) entrie
   to the appropriate topic on zulip.
 - `count-trans-deps.py`, `import-graph-report.py` and `import_trans_difference.sh` produce various
   summaries of changes in transitive imports that the `PR_summary` message incorporates.
-- `zulip_emoji_merge_delegate.py` is called every hour by a Github action cronjob.
-  It looks through the latest 200 zulip posts: if a message mentions a PR that is delegated, or sent to bors, or merged,
-  then this script will post an emoji reaction `:peace_sign:`, or `:bors:`, or `:merge:` respectively to the message.
+- `zulip_emoji_merge_delegate.py` is called
+  * every time a `bors d`, `bors merge` or `bors r+` comment is added to a PR and
+  * on every push to `master`.
+  It looks through all zulip posts containing a reference to the relevant PR
+  (delegated, or sent to bors, or merged) and it will post an emoji reaction
+  `:peace_sign:`, or `:bors:`, or `:merge:` respectively to the message.
 - `late_importers.sh` is the main script used by the `latest_import.yml` action: it formats
   the `linter.minImports` output, summarizing the data in a table.  See the module docs of
   `late_importers.sh` for further details.

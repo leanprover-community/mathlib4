@@ -60,7 +60,7 @@ Given these parameters, there are a few common structures for the model that ari
 
 assert_not_exists MonoidWithZero
 
-open Mathlib (Vector)
+open List (Vector)
 open Relation
 
 open Nat (iterate)
@@ -1443,7 +1443,7 @@ open TM1
 variable {Γ : Type*}
 
 theorem exists_enc_dec [Inhabited Γ] [Finite Γ] :
-    ∃ (n : ℕ) (enc : Γ → Vector Bool n) (dec : Vector Bool n → Γ),
+    ∃ (n : ℕ) (enc : Γ → List.Vector Bool n) (dec : List.Vector Bool n → Γ),
       enc default = Vector.replicate n false ∧ ∀ a, dec (enc a) = a := by
   rcases Finite.exists_equiv_fin Γ with ⟨n, ⟨e⟩⟩
   letI : DecidableEq Γ := e.decidableEq
@@ -1475,13 +1475,13 @@ local notation "Stmt'₁" => Stmt Bool Λ'₁ σ
 local notation "Cfg'₁" => Cfg Bool Λ'₁ σ
 
 /-- Read a vector of length `n` from the tape. -/
-def readAux : ∀ n, (Vector Bool n → Stmt'₁) → Stmt'₁
+def readAux : ∀ n, (List.Vector Bool n → Stmt'₁) → Stmt'₁
   | 0, f => f Vector.nil
   | i + 1, f =>
     Stmt.branch (fun a _ ↦ a) (Stmt.move Dir.right <| readAux i fun v ↦ f (true ::ᵥ v))
       (Stmt.move Dir.right <| readAux i fun v ↦ f (false ::ᵥ v))
 
-variable {n : ℕ} (enc : Γ → Vector Bool n) (dec : Vector Bool n → Γ)
+variable {n : ℕ} (enc : Γ → List.Vector Bool n) (dec : List.Vector Bool n → Γ)
 
 /-- A move left or right corresponds to `n` moves across the super-cell. -/
 def move (d : Dir) (q : Stmt'₁) : Stmt'₁ :=
@@ -1530,7 +1530,8 @@ theorem supportsStmt_write {S : Finset Λ'₁} {l : List Bool} {q : Stmt'₁} :
 theorem supportsStmt_read {S : Finset Λ'₁} :
     ∀ {f : Γ → Stmt'₁}, (∀ a, SupportsStmt S (f a)) → SupportsStmt S (read dec f) :=
   suffices
-    ∀ (i) (f : Vector Bool i → Stmt'₁), (∀ v, SupportsStmt S (f v)) → SupportsStmt S (readAux i f)
+    ∀ (i) (f : List.Vector Bool i → Stmt'₁),
+      (∀ v, SupportsStmt S (f v)) → SupportsStmt S (readAux i f)
     from fun hf ↦ this n _ (by intro; simp only [supportsStmt_move, hf])
   fun i f hf ↦ by
   induction' i with i IH; · exact hf _
@@ -1615,8 +1616,7 @@ theorem stepAux_write (q : Stmt'₁) (v : σ) (a b : Γ) (L R : ListBlank Γ) :
   cases' l₂' with b l₂' <;>
     simp only [List.length_nil, List.length_cons, Nat.succ_inj', reduceCtorEq] at e
   rw [List.reverseAux, ← IH (a :: l₁) l₂' e]
-  simp only [stepAux, ListBlank.append, Tape.write_mk', Tape.move_right_mk', ListBlank.head_cons,
-    ListBlank.tail_cons]
+  simp [stepAux, ListBlank.append, write]
 
 variable (encdec : ∀ a, dec (enc a) = a)
 include encdec
@@ -2437,7 +2437,7 @@ theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
   obtain ⟨T', hT', hrun⟩ := tr_respects_aux₂ (Λ := Λ) hT o
   have := hgo.tail' rfl
   rw [tr, TM1.stepAux, Tape.move_right_n_head, Tape.mk'_nth_nat, addBottom_nth_snd,
-    stk_nth_val _ (hT k), List.getElem?_len_le (le_of_eq (List.length_reverse _)),
+    stk_nth_val _ (hT k), List.getElem?_eq_none (le_of_eq (List.length_reverse _)),
     Option.isNone, cond, hrun, TM1.stepAux] at this
   obtain ⟨c, gc, rc⟩ := IH hT'
   refine ⟨c, gc, (this.to₀.trans (tr_respects_aux₃ M _) c (TransGen.head' rfl ?_)).to_reflTransGen⟩
