@@ -615,12 +615,17 @@ theorem deriv_id : deriv id x = 1 :=
 theorem deriv_id' : deriv (@id 𝕜) = fun _ => 1 :=
   funext deriv_id
 
+/-- Variant with `fun x => x` rather than `id` -/
 @[simp]
 theorem deriv_id'' : (deriv fun x : 𝕜 => x) = fun _ => 1 :=
   deriv_id'
 
 theorem derivWithin_id (hxs : UniqueDiffWithinAt 𝕜 s x) : derivWithin id s x = 1 :=
   (hasDerivWithinAt_id x s).derivWithin hxs
+
+/-- Variant with `fun x => x` rather than `id` -/
+theorem derivWithin_id' (hxs : UniqueDiffWithinAt 𝕜 s x) : derivWithin (fun x => x) s x = 1 :=
+  derivWithin_id x s hxs
 
 end id
 

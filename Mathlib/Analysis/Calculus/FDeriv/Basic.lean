@@ -140,7 +140,7 @@ the notion of Fréchet derivative along the set `s`. -/
 @[mk_iff hasFDerivAtFilter_iff_isLittleOTVS]
 structure HasFDerivAtFilter (f : E → F) (f' : E →L[𝕜] F) (x : E) (L : Filter E) : Prop where
   of_isLittleOTVS ::
-    isLittleOTVS : IsLittleOTVS 𝕜 (fun x' => f x' - f x - f' (x' - x)) (fun x' => x' - x) L
+    isLittleOTVS : (fun x' => f x' - f x - f' (x' - x)) =o[𝕜;L] (fun x' => x' - x)
 
 /-- A function `f` has the continuous linear map `f'` as derivative at `x` within a set `s` if
 `f x' = f x + f' (x' - x) + o (x' - x)` when `x'` tends to `x` inside `s`. -/
@@ -161,8 +161,9 @@ differentiable but this definition works, e.g., for vector spaces over `p`-adic 
 @[fun_prop, mk_iff hasStrictFDerivAt_iff_isLittleOTVS]
 structure HasStrictFDerivAt (f : E → F) (f' : E →L[𝕜] F) (x : E) where
   of_isLittleOTVS ::
-    isLittleOTVS : IsLittleOTVS 𝕜
-        (fun p : E × E => f p.1 - f p.2 - f' (p.1 - p.2)) (fun p : E × E => p.1 - p.2) (𝓝 (x, x))
+    isLittleOTVS :
+      (fun p : E × E => f p.1 - f p.2 - f' (p.1 - p.2))
+        =o[𝕜;𝓝 (x, x)] (fun p : E × E => p.1 - p.2)
 
 variable (𝕜)
 
@@ -1029,6 +1030,7 @@ theorem hasFDerivAt_id (x : E) : HasFDerivAt id (id 𝕜 E) x :=
 theorem differentiableAt_id : DifferentiableAt 𝕜 id x :=
   (hasFDerivAt_id x).differentiableAt
 
+/-- Variant with `fun x => x` rather than `id` -/
 @[simp]
 theorem differentiableAt_id' : DifferentiableAt 𝕜 (fun x => x) x :=
   (hasFDerivAt_id x).differentiableAt
@@ -1037,9 +1039,15 @@ theorem differentiableAt_id' : DifferentiableAt 𝕜 (fun x => x) x :=
 theorem differentiableWithinAt_id : DifferentiableWithinAt 𝕜 id s x :=
   differentiableAt_id.differentiableWithinAt
 
+/-- Variant with `fun x => x` rather than `id` -/
+@[fun_prop]
+theorem differentiableWithinAt_id' : DifferentiableWithinAt 𝕜 (fun x => x) s x :=
+  differentiableWithinAt_id
+
 @[simp, fun_prop]
 theorem differentiable_id : Differentiable 𝕜 (id : E → E) := fun _ => differentiableAt_id
 
+/-- Variant with `fun x => x` rather than `id` -/
 @[simp]
 theorem differentiable_id' : Differentiable 𝕜 fun x : E => x := fun _ => differentiableAt_id
 
