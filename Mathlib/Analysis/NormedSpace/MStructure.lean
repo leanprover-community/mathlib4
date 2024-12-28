@@ -12,6 +12,7 @@ import Mathlib.Analysis.Normed.Module.Dual
 import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 
 /-!
 # M-structure
@@ -77,7 +78,7 @@ Note that we write `P • x` instead of `P x` for reasons described in the modul
 -/
 structure IsLprojection (P : M) : Prop where
   proj : IsIdempotentElem P
-  Lnorm : ∀ x : X, ‖x‖ = ‖P • x‖ + ‖(1 - P) • x‖
+  Lnorm : ∀ x : X, ‖P • x‖ + ‖(1 - P) • x‖ = ‖x‖
 
 variable (M) in
 /-- A shorthand for the type of L-projections. -/
@@ -123,8 +124,8 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
         calc
           ‖R • x‖ = ‖R • P • R • x‖ + ‖(1 - R) • P • R • x‖ +
               (‖(R * R) • x - R • P • R • x‖ + ‖(1 - R) • (1 - P) • R • x‖) := by
-            rw [h₁.Lnorm, h₃.Lnorm, h₃.Lnorm ((1 - P) • R • x), sub_smul 1 P, one_smul, smul_sub,
-              mul_smul]
+            rw [← h₁.Lnorm, h₃.Lnorm, ← h₃.Lnorm ((1 - P) • R • x), sub_smul 1 P, one_smul,
+              smul_sub, mul_smul]
           _ = ‖R • P • R • x‖ + ‖(1 - R) • P • R • x‖ +
               (‖R • x - R • P • R • x‖ + ‖((1 - R) * R) • x - (1 - R) • P • R • x‖) := by
             rw [h₃.proj.eq, sub_smul 1 P, one_smul, smul_sub, mul_smul]
@@ -160,16 +161,16 @@ theorem mul [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLp
   intro x
   refine le_antisymm ?_ ?_
   · calc
-      ‖x‖ = ‖(P * Q) • x + (x - (P * Q) • x)‖ := by rw [add_sub_cancel ((P * Q) • x) x]
-      _ ≤ ‖(P * Q) • x‖ + ‖x - (P * Q) • x‖ := by apply norm_add_le
-      _ = ‖(P * Q) • x‖ + ‖(1 - P * Q) • x‖ := by rw [sub_smul, one_smul]
-  · calc
       ‖x‖ = ‖P • Q • x‖ + (‖Q • x - P • Q • x‖ + ‖x - Q • x‖) := by
-        rw [h₂.Lnorm x, h₁.Lnorm (Q • x), sub_smul, one_smul, sub_smul, one_smul, add_assoc]
+        rw [← h₂.Lnorm x, ← h₁.Lnorm (Q • x), sub_smul, one_smul, sub_smul, one_smul, add_assoc]
       _ ≥ ‖P • Q • x‖ + ‖Q • x - P • Q • x + (x - Q • x)‖ :=
         ((add_le_add_iff_left ‖P • Q • x‖).mpr (norm_add_le (Q • x - P • Q • x) (x - Q • x)))
       _ = ‖(P * Q) • x‖ + ‖(1 - P * Q) • x‖ := by
         rw [sub_add_sub_cancel', sub_smul, one_smul, mul_smul]
+  · calc
+      ‖x‖ = ‖(P * Q) • x + (x - (P * Q) • x)‖ := by rw [add_sub_cancel ((P * Q) • x) x]
+      _ ≤ ‖(P * Q) • x‖ + ‖x - (P * Q) • x‖ := by apply norm_add_le
+      _ = ‖(P * Q) • x‖ + ‖(1 - P * Q) • x‖ := by rw [sub_smul, one_smul]
 
 theorem join [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : IsLprojection X Q) :
     IsLprojection X (P + Q - P * Q) := by
@@ -262,6 +263,9 @@ theorem compl_mul {P : ℙᴸ[M](X)} {Q : M} : ↑Pᶜ * Q = Q - ↑P * Q := by
 theorem mul_compl_self {P : ℙᴸ[M](X)} : (↑P : M) * ↑Pᶜ = 0 := by
   rw [coe_compl, mul_sub, mul_one, P.prop.proj.eq, sub_self]
 
+theorem compl_mul_self {P : ℙᴸ[M](X)} : ↑Pᶜ * (↑P : M) = 0 := by
+  rw [coe_compl, sub_mul, one_mul, P.prop.proj.eq, sub_self]
+
 theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : ℙᴸ[M](X)} :
     ((↑P : M) + ↑Pᶜ * R) * (↑P + ↑Q * ↑R * ↑Pᶜ) = ↑P + ↑Q * ↑R * ↑Pᶜ := by
   rw [add_mul, mul_add, mul_add, (mul_assoc _ (R : M) (↑Q * ↑R * ↑Pᶜ)),
@@ -328,11 +332,23 @@ instance Subtype.BooleanAlgebra [FaithfulSMul M X] : BooleanAlgebra ℙᴸ[M](X)
     sdiff_eq := fun P Q => Subtype.ext <| by rw [coe_sdiff, ← coe_compl, coe_inf] }
 
 theorem contractive {P : M} (h : IsLprojection X P) (x : X) : ‖P • x‖ ≤ ‖x‖ := by
-  simp only [(h.Lnorm x), le_add_iff_nonneg_right, norm_nonneg]
+  simp only [← (h.Lnorm x), le_add_iff_nonneg_right, norm_nonneg]
+
+/-
+instance : FunLike ℙᴸ[M](X) X X where
+  coe f := fun x => f.val • x
+  coe_injective' P Q h := Subtype.eq (by
+    simp at h
+    apply DFunLike.coe_fn_eq.mp
+  ) --(DFunLike.coe_fn_eq.mp h)
+-/
+
+theorem _root_.Lprojections.Lnorm (P : ℙᴸ[M](X)) (x : X) : ‖P.val • x‖  + ‖Pᶜ.val • x‖ = ‖x‖ := by
+  rw [coe_compl, P.prop.Lnorm]
 
 
-
-lemma mem_range_iff_self_smul {P : M} (h: IsIdempotentElem P) (x : X) :
+open Pointwise
+lemma _root_.IsIdempotentElem.mem_range_iff_self_smul {P : M} (h : IsIdempotentElem P) (x : X) :
     (x ∈ (P • (⊤ : AddSubgroup X) )) ↔ (P • x = x) := by
   constructor
   · intro h
@@ -347,7 +363,7 @@ lemma mem_range_iff_self_smul {P : M} (h: IsIdempotentElem P) (x : X) :
     trivial
 
 
-def range (P : { P : M // IsLprojection X P }) : IsLsummand X (P.val • ⊤) where
+def range (P : ℙᴸ[M](X)) : IsLsummand X (P.val • ⊤) where
   compl := by
     use (Pᶜ.val • ⊤)
     constructor
@@ -367,14 +383,18 @@ def range (P : { P : M // IsLprojection X P }) : IsLsummand X (P.val • ⊤) wh
             exact h
           · simp only [coe_compl, smul_add_one_sub_smul]
     · intro x hx y hy
-      rw [mem_range_iff_self_smul] at hx
-      rw [mem_range_iff_self_smul] at hy
-      rw [P.prop.Lnorm (x+y)]
+      rw [P.prop.proj.mem_range_iff_self_smul] at hx
+      rw [Pᶜ.prop.proj.mem_range_iff_self_smul] at hy
+      rw [← P.Lnorm (x+y)]
       apply congr_arg₂
       · rw [smul_add, hx]
         apply congr_arg
         rw [self_eq_add_right, ← hy, ← smul_assoc, smul_eq_mul, mul_compl_self, zero_smul]
       · rw [smul_add, hy]
+        apply congr_arg
+        rw [self_eq_add_left, ← hx, ← smul_assoc, smul_eq_mul, compl_mul_self, zero_smul]
+
+
 
 
 
