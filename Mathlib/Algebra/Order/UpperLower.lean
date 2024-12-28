@@ -24,11 +24,11 @@ variable {α : Type*} [OrderedCommMonoid α] {s : Set α} {x : α}
 
 @[to_additive]
 theorem IsUpperSet.smul_subset (hs : IsUpperSet s) (hx : 1 ≤ x) : x • s ⊆ s :=
-  smul_set_subset_iff.2 fun _ ↦ hs <| le_mul_of_one_le_left' hx
+  smul_set_subset_iff_subset_inv_smul_set.2 fun _ ↦ hs <| le_mul_of_one_le_left' hx
 
 @[to_additive]
 theorem IsLowerSet.smul_subset (hs : IsLowerSet s) (hx : x ≤ 1) : x • s ⊆ s :=
-  smul_set_subset_iff.2 fun _ ↦ hs <| mul_le_of_le_one_left' hx
+  smul_set_subset_iff_subset_inv_smul_set.2 fun _ ↦ hs <| mul_le_of_le_one_left' hx
 
 end OrderedCommMonoid
 

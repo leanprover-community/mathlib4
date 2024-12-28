@@ -111,7 +111,7 @@ theorem pointwise_smul_le_pointwise_smul_iff {a : M} {S T : Subring R} : a • S
   smul_set_subset_smul_set_iff
 
 theorem pointwise_smul_subset_iff {a : M} {S T : Subring R} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  smul_set_subset_iff
+  smul_set_subset_iff_subset_inv_smul_set
 
 theorem subset_pointwise_smul_iff {a : M} {S T : Subring R} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
   subset_smul_set_iff

@@ -406,7 +406,7 @@ theorem pointwise_smul_le_pointwise_smul_iff {a : α} {S T : Subgroup G} : a •
   smul_set_subset_smul_set_iff
 
 theorem pointwise_smul_subset_iff {a : α} {S T : Subgroup G} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  smul_set_subset_iff
+  smul_set_subset_iff_subset_inv_smul_set
 
 theorem subset_pointwise_smul_iff {a : α} {S T : Subgroup G} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
   subset_smul_set_iff
@@ -554,7 +554,7 @@ theorem pointwise_smul_le_pointwise_smul_iff {a : α} {S T : AddSubgroup A} :
   smul_set_subset_smul_set_iff
 
 theorem pointwise_smul_le_iff {a : α} {S T : AddSubgroup A} : a • S ≤ T ↔ S ≤ a⁻¹ • T :=
-  smul_set_subset_iff
+  smul_set_subset_iff_subset_inv_smul_set
 
 theorem le_pointwise_smul_iff {a : α} {S T : AddSubgroup A} : S ≤ a • T ↔ a⁻¹ • S ≤ T :=
   subset_smul_set_iff
