@@ -427,10 +427,6 @@ theorem aleph_toNat (o : Ordinal) : toNat (ℵ_ o) = 0 :=
 theorem aleph_toENat (o : Ordinal) : toENat (ℵ_ o) = ⊤ :=
   (toENat_eq_top.2 (aleph0_le_aleph o))
 
-instance nonempty_toType_aleph (o : Ordinal) : Nonempty (ℵ_ o).ord.toType := by
-  rw [toType_nonempty_iff_ne_zero, ← ord_zero]
-  exact fun h => (ord_injective h).not_gt (aleph_pos o)
-
 theorem isLimit_omega (o : Ordinal) : Ordinal.IsLimit (ω_ o) := by
   rw [← ord_aleph]
   exact isLimit_ord (aleph0_le_aleph _)
@@ -501,6 +497,9 @@ theorem aleph1_eq_lift {c : Cardinal.{u}} : ℵ₁ = lift.{v} c ↔ ℵ₁ = c :
 @[simp]
 theorem lift_eq_aleph1 {c : Cardinal.{u}} : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
   simpa using lift_inj (b := ℵ₁)
+
+theorem lt_omega_iff_card_lt {x o : Ordinal} : x < ω_ o ↔ x.card < ℵ_ o := by
+  rw [← (isInitial_omega o).card_lt_card, card_omega]
 
 section deprecated
 
