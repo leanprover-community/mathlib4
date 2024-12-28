@@ -140,12 +140,12 @@ theorem one_compl : (1 : { p : R // IsIdempotentElem p })ᶜ = 0 :=
   Subtype.ext <| sub_self _
 
 @[simp]
-theorem mul_compl (p : { p : R // IsIdempotentElem p }) : ↑p * ↑pᶜ = (0 : R) := by
-  rw [coe_compl, mul_sub, mul_one, p.prop.eq, sub_self]
+theorem mul_compl (p : { p : R // IsIdempotentElem p }) : ↑p * (1 - ↑p) = (0 : R) := by
+  rw [mul_sub, mul_one, p.prop.eq, sub_self]
 
 @[simp]
-theorem compl_mul (p : { p : R // IsIdempotentElem p }) : ↑pᶜ * ↑p = (0 : R) := by
-  rw [coe_compl, sub_mul, one_mul, p.prop.eq, sub_self]
+theorem compl_mul (p : { p : R // IsIdempotentElem p }) : (1 - ↑p) * ↑p = (0 : R) := by
+  rw [sub_mul, one_mul, p.prop.eq, sub_self]
 
 end Instances
 

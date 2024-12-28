@@ -117,7 +117,7 @@ open Lean PrettyPrinter.Delaborator SubExpr
 /-- For terms that match the `CoeSort` instance's body, pretty print as `↥S`
 rather than as `{ x // x ∈ S }`. The discriminating feature is that membership
 uses the `SetLike.instMembership` instance. -/
-@[delab app.Subtype]
+@[app_delab Subtype]
 def delabSubtypeSetLike : Delab := whenPPOption getPPNotation do
   let #[_, .lam n _ body _] := (← getExpr).getAppArgs | failure
   guard <| body.isAppOf ``Membership.mem

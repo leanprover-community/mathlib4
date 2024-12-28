@@ -164,9 +164,8 @@ private theorem tendsto_succ_norm_div_norm {r r' : ℝ≥0} (hr' : r' ≠ 0)
     (hc : Tendsto (fun n ↦ ‖c n.succ‖ / ‖c n‖) atTop (𝓝 r)) :
       Tendsto (fun n ↦ ‖‖c (n + 1)‖ * r' ^ (n + 1)‖ /
         ‖‖c n‖ * r' ^ n‖) atTop (𝓝 ↑(r' * r)) := by
-  simp_rw [norm_mul, norm_norm, mul_div_mul_comm, ← norm_div, pow_succ,
-    mul_div_right_comm, div_self (pow_ne_zero _ (NNReal.coe_ne_zero.mpr hr')
-    ), one_mul, norm_div, NNReal.norm_eq]
+  simp_rw [norm_mul, norm_norm, mul_div_mul_comm, ← norm_div, pow_succ, mul_div_right_comm,
+    div_self (pow_ne_zero _ (NNReal.coe_ne_zero.mpr hr')), one_mul, norm_div, NNReal.norm_eq]
   exact mul_comm r' r ▸ hc.mul tendsto_const_nhds
 
 theorem ofScalars_radius_ge_inv_of_tendsto {r : ℝ≥0} (hr : r ≠ 0)
