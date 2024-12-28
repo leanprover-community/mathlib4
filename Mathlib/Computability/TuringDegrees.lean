@@ -255,7 +255,7 @@ theorem TuringEquivalent.trans (f g h : ℕ →. ℕ) (h1 : f ≡ᵀ g) (h2 : g 
   Equivalence.trans equivalence h1 h2
 
 /-- The type of Turing degrees, implemented as the quotient of partial functions (`PFun`) under Turing equivalence. -/
-abbrev TuringDegree :=
+abbrev TuringDegree : Type _ :=
   Antisymmetrization _ RecursiveIn
 
 /--
