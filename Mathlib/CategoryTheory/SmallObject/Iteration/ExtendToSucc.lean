@@ -176,20 +176,15 @@ lemma extendToSucc_map_le_succ :
 
 lemma arrowMap_extendToSucc (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ ≤ j) :
     arrowMap (extendToSucc hj F τ) i₁ i₂ hi (hi₂.trans (Order.le_succ j)) =
-      arrowMap F i₁ i₂ hi hi₂ :=
-  Arrow.ext (extendToSucc_obj_eq hj F τ i₁ (hi.trans hi₂))
-    (extendToSucc_obj_eq hj F τ i₂ _) (by
-      simp [arrowMap, extendToSucc_map hj F τ i₁ i₂ hi hi₂,
-        extendToSuccObjIso, extendToSucc.objIso])
+      arrowMap F i₁ i₂ hi hi₂ := by
+  simp [arrowMap, extendToSucc_map hj F τ i₁ i₂ hi hi₂,
+    extendToSuccObjIso, extendToSucc.objIso]
 
 lemma arrowSucc_extendToSucc :
     arrowSucc (extendToSucc hj F τ) j (Order.lt_succ_of_not_isMax hj) =
-      Arrow.mk τ :=
-  Arrow.ext (extendToSucc_obj_eq hj F τ j _)
-    (extendToSucc_obj_succ_eq hj F τ) (by
-      simp [arrowSucc, arrowMap, extendToSucc_map_le_succ,
-        extendToSuccObjIso, extendToSucc.objIso,
-        extendToSuccObjSuccIso, extendToSucc.objSuccIso])
+      Arrow.mk τ := by
+  simp [arrowSucc, arrowMap, extendToSucc_map_le_succ, extendToSuccObjIso,
+    extendToSucc.objIso, extendToSuccObjSuccIso, extendToSucc.objSuccIso]
 
 end SuccStruct
 

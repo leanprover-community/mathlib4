@@ -115,18 +115,55 @@ lemma monotone_map (F : C ⥤ D) :
   intro P Q h X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
   exact ⟨X', Y', f', h _ hf', ⟨e⟩⟩
 
-lemma of_eq (P : MorphismProperty C) {X Y : C} {f : X ⟶ Y} (hf : P f)
+section
+
+variable (P : MorphismProperty C)
+
+def toSet : Set (Arrow C) := setOf (fun f ↦ P f.hom)
+
+def homFamily (f : P.toSet) : f.1.left ⟶ f.1.right := f.1.hom
+
+lemma homFamily_apply (f : P.toSet) : P.homFamily f = f.1.hom := rfl
+
+@[simp]
+lemma homFamily_arrow_mk {X Y : C} (f : X ⟶ Y) (hf : P f) :
+    P.homFamily ⟨Arrow.mk f, hf⟩ = f := rfl
+
+@[simp]
+lemma arrow_mk_mem_toSet_iff {X Y : C} (f : X ⟶ Y) : Arrow.mk f ∈ P.toSet ↔ P f := Iff.rfl
+
+lemma of_eq {X Y : C} {f : X ⟶ Y} (hf : P f)
     {X' Y' : C} {f' : X' ⟶ Y'}
     (hX : X = X') (hY : Y = Y') (h : f' = eqToHom hX.symm ≫ f ≫ eqToHom hY) :
     P f' := by
-  obtain rfl := hX
-  obtain rfl := hY
-  obtain rfl : f' = f := by simpa using h
-  exact hf
+  rw [← P.arrow_mk_mem_toSet_iff] at hf ⊢
+  rwa [(Arrow.mk_eq_mk_iff f' f).2 ⟨hX.symm, hY.symm, h⟩]
+
+end
 
 /-- The class of morphisms given by a family of morphisms `f i : X i ⟶ Y i`. -/
 inductive ofHoms {ι : Type*} {X Y : ι → C} (f : ∀ i, X i ⟶ Y i) : MorphismProperty C
   | mk (i : ι) : ofHoms f (f i)
+
+lemma ofHoms_iff {ι : Type*} {X Y : ι → C} (f : ∀ i, X i ⟶ Y i) {A B : C} (g : A ⟶ B) :
+    ofHoms f g ↔ ∃ i, Arrow.mk g = Arrow.mk (f i) := by
+  constructor
+  · rintro ⟨i⟩
+    exact ⟨i, rfl⟩
+  · rintro ⟨i, h⟩
+    rw [← (ofHoms f).arrow_mk_mem_toSet_iff, h, arrow_mk_mem_toSet_iff]
+    constructor
+
+@[simp]
+lemma ofHoms_homFamily (P : MorphismProperty C) : ofHoms P.homFamily = P := by
+  ext _ _ f
+  constructor
+  · intro hf
+    rw [ofHoms_iff] at hf
+    obtain ⟨⟨f, hf⟩, ⟨_, _⟩⟩ := hf
+    exact hf
+  · intro hf
+    exact ⟨(⟨f, hf⟩ : P.toSet)⟩
 
 /-- A morphism property `P` satisfies `P.RespectsRight Q` if it is stable under post-composition
 with morphisms satisfying `Q`, i.e. whenever `P` holds for `f` and `Q` holds for `i` then `P`

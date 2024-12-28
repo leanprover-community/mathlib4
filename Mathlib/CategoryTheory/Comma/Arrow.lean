@@ -91,6 +91,35 @@ theorem mk_inj (A B : T) {f g : A ⟶ B} : Arrow.mk f = Arrow.mk g ↔ f = g :=
 instance {X Y : T} : CoeOut (X ⟶ Y) (Arrow T) where
   coe := mk
 
+lemma mk_eq_mk_iff {X Y X' Y' : T} (f : X ⟶ Y) (f' : X' ⟶ Y') :
+    Arrow.mk f = Arrow.mk f' ↔
+      ∃ (hX : X = X') (hY : Y = Y'), f = eqToHom hX ≫ f' ≫ eqToHom hY.symm := by
+  constructor
+  · intro h
+    refine ⟨congr_arg Comma.left h, congr_arg Comma.right h, ?_⟩
+    have := (eqToIso h).hom.w
+    dsimp at this
+    rw [Comma.eqToHom_left, Comma.eqToHom_right] at this
+    rw [reassoc_of% this, eqToHom_trans, eqToHom_refl, Category.comp_id]
+  · rintro ⟨rfl, rfl, h⟩
+    simp only [eqToHom_refl, Category.comp_id, Category.id_comp] at h
+    rw [h]
+
+lemma ext {f g : Arrow T}
+    (h₁ : f.left = g.left) (h₂ : f.right = g.right)
+    (h₃ : f.hom = eqToHom h₁ ≫ g.hom ≫ eqToHom h₂.symm) : f = g :=
+  (mk_eq_mk_iff _ _).2 (by aesop)
+
+@[simp]
+lemma arrow_mk_comp_eqToHom {X Y Y' : T} (f : X ⟶ Y) (h : Y = Y') :
+    Arrow.mk (f ≫ eqToHom h) = Arrow.mk f :=
+  ext rfl h.symm (by simp)
+
+@[simp]
+lemma arrow_mk_eqToHom_comp {X' X Y : T} (f : X ⟶ Y) (h : X' = X) :
+    Arrow.mk (eqToHom h ≫ f) = Arrow.mk f :=
+  ext h rfl (by simp)
+
 /-- A morphism in the arrow category is a commutative square connecting two objects of the arrow
     category. -/
 @[simps]
@@ -288,10 +317,7 @@ variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 /-- A functor `C ⥤ D` induces a functor between the corresponding arrow categories. -/
 @[simps]
 def mapArrow (F : C ⥤ D) : Arrow C ⥤ Arrow D where
-  obj a :=
-    { left := F.obj a.left
-      right := F.obj a.right
-      hom := F.map a.hom }
+  obj a := Arrow.mk (F.map a.hom)
   map f :=
     { left := F.map f.left
       right := F.map f.right
@@ -328,10 +354,22 @@ instance isEquivalence_mapArrow (F : C ⥤ D) [IsEquivalence F] :
 
 end Functor
 
+variable {C D : Type*} [Category C] [Category D]
+
 /-- The images of `f : Arrow C` by two isomorphic functors `F : C ⥤ D` are
 isomorphic arrows in `D`. -/
-def Arrow.isoOfNatIso {C D : Type*} [Category C] [Category D] {F G : C ⥤ D} (e : F ≅ G)
+def Arrow.isoOfNatIso {F G : C ⥤ D} (e : F ≅ G)
     (f : Arrow C) : F.mapArrow.obj f ≅ G.mapArrow.obj f :=
   Arrow.isoMk (e.app f.left) (e.app f.right)
+
+/-- Extensionality lemma for functors `C ⥤ D` which uses as an assumption
+that the induced maps `Arrow C → Arrow D` coincide. -/
+lemma Arrow.functor_ext {F G : C ⥤ D} (h : ∀ ⦃X Y : C⦄ (f : X ⟶ Y),
+    F.mapArrow.obj (Arrow.mk f) = G.mapArrow.obj (Arrow.mk f)) :
+    F = G :=
+  Functor.ext (fun X ↦ congr_arg Comma.left (h (𝟙 X))) (fun X Y f ↦ by
+    have := h f
+    simp only [Functor.mapArrow_obj, mk_eq_mk_iff] at this
+    tauto)
 
 end CategoryTheory

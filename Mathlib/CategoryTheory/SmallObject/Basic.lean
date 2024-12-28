@@ -38,7 +38,7 @@ The main part in the proof is the construction of the functorial factorization.
 This involves a construction by transfinite induction. A general
 procedure for constructions by transfinite
 induction in categories (including the iteration of a functor)
-is done in the file `SmallObject.Iteration.Iteration`.
+is done in the file `SmallObject.TransfiniteIteration`.
 The factorization of the small object argument is obtained by doing
 a transfinite of a specific functor `Arrow C ⥤ Arrow C` which
 is defined in the file `SmallObject.Construction` (this definition
