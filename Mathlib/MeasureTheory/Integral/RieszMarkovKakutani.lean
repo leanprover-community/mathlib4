@@ -306,7 +306,7 @@ lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
           max_eq_left <| le_of_lt (lt_of_le_of_lt zero_le_one hα)]
         exact mul_comm _ _
       rw [this]
-      set K' := f ⁻¹' (Ici α⁻¹.toNNReal) with hK'
+      set K' := f ⁻¹' Ici α⁻¹.toNNReal with hK'
       have hKK' : K.carrier ⊆ interior K' := by
         rw [subset_interior_iff]
         use f ⁻¹' (Ioi α⁻¹.toNNReal)
