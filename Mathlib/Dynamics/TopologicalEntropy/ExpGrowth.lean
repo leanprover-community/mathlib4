@@ -15,39 +15,6 @@ open ENNReal EReal Filter Function
 
 /-! ### General lemmas -/
 
-lemma right_distrib_mul_by_nonneg {a b c : EReal} (h : 0 ≤ c) (h' : c ≠ ⊤) :
-    (a + b) * c = a * c + b * c := by
-  let d := c.toReal
-  have : d = c := coe_toReal h' (bot_lt_zero.trans_le h).ne.symm
-  rw [← this] at h h' ⊢
-  rcases eq_or_lt_of_le h with d_zero | d_pos
-  · rw [← d_zero, mul_zero, mul_zero, mul_zero, add_zero]
-  apply EReal.induction₂_symm (P := fun a b ↦ (a + b) * d = a * d + b * d)
-  · intro x y x_y
-    rw [add_comm y x, add_comm (y * d) (x * d)]
-    exact x_y
-  · rw [top_add_top, top_mul_of_pos d_pos, top_add_top]
-  · intro _ _
-    rw [top_add_coe, top_mul_of_pos d_pos, ← EReal.coe_mul, top_add_coe]
-  · rw [zero_mul, add_zero, add_zero]
-  · intro _ _
-    rw [top_add_coe, top_mul_of_pos d_pos, ← EReal.coe_mul, top_add_coe]
-  · rw [add_bot, bot_mul_of_pos d_pos, add_bot]
-  · intro _ _
-    rw [add_bot, bot_mul_of_pos d_pos, add_bot]
-  · intro x y
-    norm_cast
-    exact right_distrib x y d
-  · rw [add_bot, bot_mul_of_pos d_pos, add_bot]
-  · intro _ _
-    rw [add_bot, bot_mul_of_pos d_pos, add_bot]
-  · rw [add_bot, bot_mul_of_pos d_pos, add_bot]
-
-lemma left_distrib_mul_by_nonneg {a b c : EReal} (h : 0 ≤ c) (h' : c ≠ ⊤) :
-    c * (a + b) = c * a + c * b := by
-  rw [mul_comm c, mul_comm c, mul_comm c]
-  exact right_distrib_mul_by_nonneg h h'
-
 lemma EReal.div_eq_iff {a b c : EReal} (h : 0 < b) (h' : b ≠ ⊤) :
     c / b = a ↔ c = a * b := by
   nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h)]
@@ -80,7 +47,7 @@ lemma inv_lt_top (x : EReal) : x⁻¹ < ⊤ := by
 
 lemma div_right_distrib_by_nonneg {a b c : EReal} (h : 0 ≤ c) :
     (a + b) / c = a / c + b / c := by
-  apply right_distrib_mul_by_nonneg (inv_nonneg_of_nonneg h) (inv_lt_top c).ne
+  apply right_distrib_of_nonneg_of_ne_top (inv_nonneg_of_nonneg h) (inv_lt_top c).ne
 
 /-! ### ExpGrowth -/
 
@@ -199,14 +166,14 @@ lemma expGrowthSup_pow {a : ℝ≥0∞} : expGrowthSup (fun n ↦ a ^ n) = log a
 -- TODO : Finitary version
 lemma le_expGrowthInf_mul {u v : ℕ → ℝ≥0∞} :
     (expGrowthInf u) + expGrowthInf v ≤ expGrowthInf (u * v) := by
-  refine add_liminf_le_liminf_add.trans_eq (liminf_congr (Eventually.of_forall fun n ↦ ?_))
+  refine le_liminf_add.trans_eq (liminf_congr (Eventually.of_forall fun n ↦ ?_))
   rw [Pi.add_apply, Pi.mul_apply, ← div_right_distrib_by_nonneg (Nat.cast_nonneg' n), log_mul_add]
 
 /-- See `expGrowthInf_mul_le'` for a version with swapped argument `u` and `v`.-/
 lemma expGrowthInf_mul_le {u v : ℕ → ℝ≥0∞} (h : expGrowthSup u ≠ ⊥ ∨ expGrowthInf v ≠ ⊤)
     (h' : expGrowthSup u ≠ ⊤ ∨ expGrowthInf v ≠ ⊥) :
     expGrowthInf (u * v) ≤ (expGrowthSup u) + expGrowthInf v := by
-  refine (liminf_add_le_limsup_add_liminf h h').trans_eq'
+  refine (liminf_add_le h h').trans_eq'
     (liminf_congr (Eventually.of_forall fun n ↦ ?_))
   rw [Pi.add_apply, Pi.mul_apply, ← div_right_distrib_by_nonneg (Nat.cast_nonneg' n), log_mul_add]
 
@@ -220,7 +187,7 @@ lemma expGrowthInf_mul_le' {u v : ℕ → ℝ≥0∞} (h : expGrowthInf u ≠ �
 /-- See `le_expGrowthSup_mul'` for a version with swapped argument `u` and `v`.-/
 lemma le_expGrowthSup_mul {u v : ℕ → ℝ≥0∞} :
     (expGrowthSup u) + expGrowthInf v ≤ expGrowthSup (u * v) := by
-  refine limsup_add_liminf_le_limsup_add.trans_eq (limsup_congr (Eventually.of_forall fun n ↦ ?_))
+  refine le_limsup_add.trans_eq (limsup_congr (Eventually.of_forall fun n ↦ ?_))
   rw [Pi.add_apply, Pi.mul_apply, ← div_right_distrib_by_nonneg (Nat.cast_nonneg' n), log_mul_add]
 
 /-- See `le_expGrowthSup_mul` for a version with swapped argument `u` and `v`.-/
@@ -233,7 +200,7 @@ lemma le_expGrowthSup_mul' {u v : ℕ → ℝ≥0∞} :
 lemma expGrowthSup_mul_le {u v : ℕ → ℝ≥0∞} (h : expGrowthSup u ≠ ⊥ ∨ expGrowthSup v ≠ ⊤)
     (h' : expGrowthSup u ≠ ⊤ ∨ expGrowthSup v ≠ ⊥) :
     expGrowthSup (u * v) ≤ (expGrowthSup u) + expGrowthSup v := by
-  refine (limsup_add_le_add_limsup h h').trans_eq' (limsup_congr (Eventually.of_forall fun n ↦ ?_))
+  refine (limsup_add_le h h').trans_eq' (limsup_congr (Eventually.of_forall fun n ↦ ?_))
   rw [Pi.add_apply, Pi.mul_apply, ← div_right_distrib_by_nonneg (Nat.cast_nonneg' n), log_mul_add]
 
 lemma expGrowthInf_inv {u : ℕ → ℝ≥0∞} :
