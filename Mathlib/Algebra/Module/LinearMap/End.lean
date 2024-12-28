@@ -8,7 +8,6 @@ import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Algebra.Module.Equiv.Opposite
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
-import Mathlib.Algebra.Ring.Idempotents
 
 /-!
 # Endomorphisms of a module
@@ -91,34 +90,6 @@ theorem _root_.Module.End.natCast_apply (n : ℕ) (m : M) : (↑n : Module.End R
 @[simp]
 theorem _root_.Module.End.ofNat_apply (n : ℕ) [n.AtLeastTwo] (m : M) :
     (no_index (OfNat.ofNat n) : Module.End R M) m = OfNat.ofNat n • m := rfl
-
-lemma _root_.Module.End.range_prod_of_commute {f g : Module.End R M}
-    (h : Commute f g) : Set.range (f * g) ⊆ Set.range f ∩ Set.range g := by
-  simp only [Set.le_eq_subset, Set.subset_inter_iff]
-  constructor
-  · exact Set.range_comp_subset_range g f
-  · rw [(commute_iff_eq f g).mp h]
-    exact Set.range_comp_subset_range f g
-
-lemma proj_apply2 (f : Module.End R M) (hP : IsIdempotentElem f)
-    (a : M) (ha: a ∈ Set.range f) : f a = a := by
-  obtain ⟨c,hc⟩ := ha
-  rw [← hc]
-  have e2 : f (f c) = (f * f) c := rfl
-  rw [e2]
-  rw [hP.eq]
-
-lemma _root_.IsIdempotentElem.range_prod_of_commute {P Q : Module.End R M}
-    (hP : IsIdempotentElem P) (hQ : IsIdempotentElem Q) (hPQ : Commute P Q) :
-    Set.range (P * Q) = Set.range P ∩ Set.range Q := by
-  apply le_antisymm
-  · simp only [Set.le_eq_subset]
-    exact Module.End.range_prod_of_commute hPQ
-  · intro a ha
-    simp only [Set.mem_range, mul_apply]
-    use a
-    rw [proj_apply2 Q hQ _ (Set.mem_of_mem_inter_right ha),
-      proj_apply2 P hP _ (Set.mem_of_mem_inter_left ha)]
 
 instance _root_.Module.End.ring : Ring (Module.End R N₁) :=
   { Module.End.semiring, LinearMap.addCommGroup with
