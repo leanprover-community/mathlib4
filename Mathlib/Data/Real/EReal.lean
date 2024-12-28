@@ -1726,6 +1726,18 @@ lemma sign_mul_inv_abs' (a : EReal) : (sign a) * ((a.abs⁻¹ : ℝ≥0∞) : ER
 
 /-! #### Inversion and Positivity -/
 
+lemma bot_lt_inv (x : EReal) : ⊥ < x⁻¹ := by
+  induction x with
+  | h_bot => exact inv_bot ▸ bot_lt_zero
+  | h_top => exact EReal.inv_top ▸ bot_lt_zero
+  | h_real x => exact (coe_inv x).symm ▸ bot_lt_coe (x⁻¹)
+
+lemma inv_lt_top (x : EReal) : x⁻¹ < ⊤ := by
+  induction x with
+  | h_bot => exact inv_bot ▸ zero_lt_top
+  | h_top => exact EReal.inv_top ▸ zero_lt_top
+  | h_real x => exact (coe_inv x).symm ▸ coe_lt_top (x⁻¹)
+
 lemma inv_nonneg_of_nonneg {a : EReal} (h : 0 ≤ a) : 0 ≤ a⁻¹ := by
   induction a with
   | h_bot | h_top => simp
@@ -1819,12 +1831,6 @@ lemma mul_div_mul_cancel {a b c : EReal} (h₁ : c ≠ ⊥) (h₂ : c ≠ ⊤) (
   congr
   exact mul_div_cancel h₁ h₂ h₃
 
-/-! #### Division Distributivity -/
-
-lemma div_right_distrib_of_nonneg {a b c : EReal} (h : 0 ≤ a) (h' : 0 ≤ b) :
-    (a + b) / c = (a / c) + (b / c) :=
-  EReal.right_distrib_of_nonneg h h'
-
 /-! #### Division and Order -/
 
 lemma monotone_div_right_of_nonneg {b : EReal} (h : 0 ≤ b) : Monotone fun a ↦ a / b :=
@@ -1873,6 +1879,12 @@ lemma div_lt_div_right_of_neg {a a' b : EReal} (h₁ : b < 0) (h₂ : b ≠ ⊥)
     (h₃ : a < a') : a' / b < a / b :=
   strictAnti_div_right_of_neg h₁ h₂ h₃
 
+lemma div_eq_iff {a b c : EReal} (h : 0 < b) (h' : b ≠ ⊤) :
+    c / b = a ↔ c = a * b := by
+  nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h)]
+  rw [mul_div b a b, mul_comm a b]
+  exact ⟨fun h₀ ↦ (strictMono_div_right_of_pos h h').injective h₀, fun h₀ ↦ h₀ ▸ rfl⟩
+
 lemma le_div_iff_mul_le {a b c : EReal} (h : b > 0) (h' : b ≠ ⊤) :
     a ≤ c / b ↔ a * b ≤ c := by
   nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h)]
@@ -1885,6 +1897,18 @@ lemma div_le_iff_le_mul {a b c : EReal} (h : 0 < b) (h' : b ≠ ⊤) :
   rw [mul_div b c b, mul_comm b]
   exact StrictMono.le_iff_le (strictMono_div_right_of_pos h h')
 
+lemma lt_div_iff {a b c : EReal} (h : 0 < b) (h' : b ≠ ⊤) :
+    a < c / b ↔ a * b < c := by
+  nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h)]
+  rw [EReal.mul_div b a b, mul_comm a b]
+  exact (strictMono_div_right_of_pos h h').lt_iff_lt
+
+lemma div_lt_iff {a b c : EReal} (h : 0 < b) (h' : b ≠ ⊤) :
+    c / b < a ↔ c < a * b := by
+  nth_rw 1 [← @mul_div_cancel a b (ne_bot_of_gt h) h' (ne_of_gt h)]
+  rw [EReal.mul_div b a b, mul_comm a b]
+  exact (strictMono_div_right_of_pos h h').lt_iff_lt
+
 lemma div_nonneg {a b : EReal} (h : 0 ≤ a) (h' : 0 ≤ b) : 0 ≤ a / b :=
   mul_nonneg h (inv_nonneg_of_nonneg h')
 
@@ -1896,6 +1920,16 @@ lemma div_nonpos_of_nonneg_of_nonpos {a b : EReal} (h : 0 ≤ a) (h' : b ≤ 0) 
 
 lemma div_nonneg_of_nonpos_of_nonpos {a b : EReal} (h : a ≤ 0) (h' : b ≤ 0) : 0 ≤ a / b :=
   le_of_eq_of_le (Eq.symm zero_div) (div_le_div_right_of_nonpos h' h)
+
+/-! #### Division Distributivity -/
+
+lemma div_right_distrib_of_nonneg {a b c : EReal} (h : 0 ≤ a) (h' : 0 ≤ b) :
+    (a + b) / c = (a / c) + (b / c) :=
+  EReal.right_distrib_of_nonneg h h'
+
+lemma div_right_distrib_by_nonneg {a b c : EReal} (h : 0 ≤ c) :
+    (a + b) / c = a / c + b / c := by
+  apply right_distrib_of_nonneg_of_ne_top (inv_nonneg_of_nonneg h) (inv_lt_top c).ne
 
 end EReal
 
