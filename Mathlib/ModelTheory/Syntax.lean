@@ -601,12 +601,14 @@ def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (α ⊕ (Fin 
         (Sum.elim (Sum.inl ∘ Sum.inl) (Sum.map Sum.inr id ∘ finSumFinEquiv.symm))).all
 
 /-- take the disjunction of a finite set of formulas -/
-noncomputable def iSup (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
-  (s.toList.map f).foldr (· ⊔ ·) ⊥
+noncomputable def iSup [Finite β] (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
+  let _ := Fintype.ofFinite β
+  ((Finset.univ : Finset β).toList.map f).foldr (· ⊔ ·) ⊥
 
 /-- take the conjunction of a finite set of formulas -/
-noncomputable def iInf (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
-  (s.toList.map f).foldr (· ⊓ ·) ⊤
+noncomputable def iInf [Finite β] (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
+  let _ := Fintype.ofFinite β
+  ((Finset.univ : Finset β).toList.map f).foldr (· ⊓ ·) ⊤
 
 end BoundedFormula
 
@@ -751,7 +753,7 @@ noncomputable def iAlls [Finite γ] (f : α → β ⊕ γ)
   (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).alls
 
 /-- Given a map `f : α → β ⊕ γ`, `iExs f φ` transforms a `L.Formula α`
-into a `L.Formula β` by renaming variables with the map `f` and then universally
+into a `L.Formula β` by renaming variables with the map `f` and then existentially
 quantifying over all variables `Sum.inr _`. -/
 noncomputable def iExs [Finite γ] (f : α → β ⊕ γ)
     (φ : L.Formula α) : L.Formula β :=

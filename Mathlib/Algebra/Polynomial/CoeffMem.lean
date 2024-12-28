@@ -76,7 +76,7 @@ lemma coeff_divModByMonicAux_mem_span_pow_mul_span : ∀ (p q : S[X]) (hq : q.Mo
 coefficients of `p` and `q`.
 
 Precisely, each summand needs at most one coefficient of `p` and `deg p` coefficients of `q`. -/
-lemma coeff_modByMonic_mem_span_pow_mul_span (p q : S[X])
+lemma coeff_modByMonic_mem_pow_natDegree_mul (p q : S[X])
     (Mp : Submodule R S) (hp : ∀ i, p.coeff i ∈ Mp) (hp' : 1 ∈ Mp)
     (Mq : Submodule R S) (hq : ∀ i, q.coeff i ∈ Mq) (hq' : 1 ∈ Mq) (i : ℕ) :
     (p %ₘ q).coeff i ∈ Mq ^ p.natDegree * Mp := by
@@ -91,7 +91,7 @@ lemma coeff_modByMonic_mem_span_pow_mul_span (p q : S[X])
 coefficients of `p` and `q`.
 
 Precisely, each summand needs at most one coefficient of `p` and `deg p` coefficients of `q`. -/
-lemma coeff_divByMonic_mem_span_pow_mul_span (p q : S[X])
+lemma coeff_divByMonic_mem_pow_natDegree_mul (p q : S[X])
     (Mp : Submodule R S) (hp : ∀ i, p.coeff i ∈ Mp) (hp' : 1 ∈ Mp)
     (Mq : Submodule R S) (hq : ∀ i, q.coeff i ∈ Mq) (hq' : 1 ∈ Mq) (i : ℕ) :
     (p /ₘ q).coeff i ∈ Mq ^ p.natDegree * Mp := by
