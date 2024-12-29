@@ -430,15 +430,19 @@ variable {α β : Type*}
 /-- free monoids over isomorphic types are isomorphic -/
 @[to_additive "if two types are isomorphic, the additive free monoids over those types are
 isomorphic"]
-def congrEquiv (e : α ≃ β) : FreeMonoid α ≃* FreeMonoid β :=
-  MulEquiv.mk' ⟨FreeMonoid.map ⇑e, FreeMonoid.map ⇑e.symm, fun _ => map_symm_apply_map_eq e,
-    fun _ => map_apply_map_symm_eq e⟩ (by simp [map_mul])
+def freeMonoidCongr (e : α ≃ β) : FreeMonoid α ≃* FreeMonoid β where
+  toFun := FreeMonoid.map ⇑e
+  invFun := FreeMonoid.map ⇑e.symm
+  left_inv := fun _ => map_symm_apply_map_eq e
+  right_inv := fun _ => map_apply_map_symm_eq e
+  map_mul' := (by simp [map_mul])
 
 @[to_additive (attr := simp)]
-theorem congrEquiv_of (e : α ≃ β) (a : α) : congrEquiv e (of a) = of (e a) := rfl
+theorem freeMonoidCongr_of (e : α ≃ β) (a : α) : freeMonoidCongr e (of a) = of (e a) := rfl
 
 @[to_additive (attr := simp)]
-theorem congrEquiv_symm_of (e : α ≃ β) (b : β) : congrEquiv e.symm (of b) = of (e.symm b) := rfl
+theorem freeMonoidCongr_symm_of (e : α ≃ β) (b : β) :
+    freeMonoidCongr e.symm (of b) = of (e.symm b) := rfl
 
 /-- given a function from β to α, convert a relation predicate on FreeMonoid α to
 have an underlying type of β -/
