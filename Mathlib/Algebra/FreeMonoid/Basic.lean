@@ -431,7 +431,7 @@ variable {α β : Type*}
 @[to_additive "if two types are isomorphic, the additive free monoids over those types are
 isomorphic"]
 def congrEquiv (e : α ≃ β) : FreeMonoid α ≃* FreeMonoid β :=
-  MulEquiv.mk' ⟨FreeMonoid.map e.toFun, FreeMonoid.map e.invFun, fun _ => map_symm_apply_map_eq e,
+  MulEquiv.mk' ⟨FreeMonoid.map ⇑e, FreeMonoid.map ⇑e.symm, fun _ => map_symm_apply_map_eq e,
     fun _ => map_apply_map_symm_eq e⟩ (by simp [map_mul])
 
 @[to_additive (attr := simp)]
