@@ -137,7 +137,7 @@ theorem card_divisors_le_self (n : ℕ) : #n.divisors ≤ n := calc
   _ ≤ #(Ico 1 (n + 1)) := by
     apply card_le_card
     simp only [divisors, filter_subset]
-  _ = n := by simp
+  _ = n := by rw [card_Ico, add_tsub_cancel_right]
 
 theorem divisors_subset_properDivisors {m : ℕ} (hzero : n ≠ 0) (h : m ∣ n) (hdiff : m ≠ n) :
     divisors m ⊆ properDivisors n := by
