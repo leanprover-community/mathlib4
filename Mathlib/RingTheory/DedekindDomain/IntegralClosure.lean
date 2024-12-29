@@ -112,25 +112,11 @@ variable (A K)
 /-- Send a set of `x`s in a finite extension `L` of the fraction field of `R`
 to `(y : R) • x ∈ integralClosure R L`. -/
 theorem exists_integral_multiples (s : Finset L) :
-    ∃ y ≠ (0 : A), ∀ x ∈ s, IsIntegral A (y • x) := by
-  haveI := Classical.decEq L
-  refine s.induction ?_ ?_
-  · use 1, one_ne_zero
-    rintro x ⟨⟩
-  · rintro x s hx ⟨y, hy, hs⟩
-    have := exists_integral_multiple
-      ((IsFractionRing.isAlgebraic_iff A K L).mpr (.of_finite _ x))
-      ((injective_iff_map_eq_zero (algebraMap A L)).mp ?_)
-    · rcases this with ⟨x', y', hy', hx'⟩
-      refine ⟨y * y', mul_ne_zero hy hy', fun x'' hx'' => ?_⟩
-      rcases Finset.mem_insert.mp hx'' with (rfl | hx'')
-      · rw [mul_smul, Algebra.smul_def, Algebra.smul_def, hx']
-        exact isIntegral_algebraMap.mul x'.2
-      · rw [mul_comm, mul_smul, Algebra.smul_def]
-        exact isIntegral_algebraMap.mul (hs _ hx'')
-    · rw [IsScalarTower.algebraMap_eq A K L]
-      apply (algebraMap K L).injective.comp
-      exact IsFractionRing.injective _ _
+    ∃ y ≠ (0 : A), ∀ x ∈ s, IsIntegral A (y • x) :=
+  have := IsLocalization.isAlgebraic K (nonZeroDivisors A)
+  have := Algebra.IsAlgebraic.trans' A (algebraMap K L).injective
+  Algebra.IsAlgebraic.exists_integral_multiples (IsScalarTower.algebraMap_eq A K L ▸
+    (algebraMap K L).injective.comp (IsFractionRing.injective _ _)) _
 
 variable (L)
 

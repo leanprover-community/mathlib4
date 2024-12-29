@@ -5,7 +5,7 @@ Authors: Michael Geißer, Michael Stoll
 -/
 import Mathlib.Tactic.Qify
 import Mathlib.Data.ZMod.Basic
-import Mathlib.NumberTheory.DiophantineApproximation
+import Mathlib.NumberTheory.DiophantineApproximation.Basic
 import Mathlib.NumberTheory.Zsqrtd.Basic
 
 /-!
@@ -213,7 +213,7 @@ theorem d_nonsquare_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : ¬IsSquare 
   have hp := a.prop
   rintro ⟨b, rfl⟩
   simp_rw [← sq, ← mul_pow, sq_sub_sq, Int.mul_eq_one_iff_eq_one_or_neg_one] at hp
-  rcases hp with (⟨hp₁, hp₂⟩ | ⟨hp₁, hp₂⟩) <;> omega
+  omega
 
 /-- A solution with `x = 1` is trivial. -/
 theorem eq_one_of_x_eq_one (h₀ : d ≠ 0) {a : Solution₁ d} (ha : a.x = 1) : a = 1 := by

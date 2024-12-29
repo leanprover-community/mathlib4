@@ -56,11 +56,13 @@ See <https://stacks.math.columbia.edu/tag/00HD>.
 
 universe v' u v w
 
+open TensorProduct
+
 namespace Module
 
 open Function (Surjective)
 
-open LinearMap Submodule TensorProduct DirectSum
+open LinearMap Submodule DirectSum
 
 variable (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M]
 
@@ -203,8 +205,8 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
   have h₂ := F i
   rw [iff_rTensor_injective] at h₂
   have h₃ := h₂ hI
-  simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, EmbeddingLike.map_eq_zero_iff,
-    h₃, LinearMap.map_eq_zero_iff] at f
+  simp only [φ, τ, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    EmbeddingLike.map_eq_zero_iff, h₃, LinearMap.map_eq_zero_iff] at f
   simp [f]
 
 open scoped Classical in
@@ -264,7 +266,7 @@ instance {S} [CommRing S] [Algebra R S] [Module S M] [IsScalarTower R S M] [Flat
     Flat S (M ⊗[R] N) :=
   (iff_rTensor_injective' _ _).mpr fun I ↦ by
     simpa [AlgebraTensorModule.rTensor_tensor] using
-      rTensor_preserves_injective_linearMap (.restrictScalars R <| rTensor M I.subtype)
+      rTensor_preserves_injective_linearMap (.restrictScalars R <| I.subtype.rTensor M)
       (rTensor_preserves_injective_linearMap _ I.injective_subtype)
 
 example [Flat R M] [Flat R N] : Flat R (M ⊗[R] N) := inferInstance
@@ -423,3 +425,70 @@ theorem tensorProduct_mapIncl_injective_of_left
 end Flat
 
 end Module
+
+section Injective
+
+variable {R S A B : Type*} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+  [CommSemiring S] [Algebra S A] [SMulCommClass R S A]
+
+namespace Algebra.TensorProduct
+
+theorem includeLeft_injective [Module.Flat R A] (hb : Function.Injective (algebraMap R B)) :
+    Function.Injective (includeLeft : A →ₐ[S] A ⊗[R] B) := by
+  convert Module.Flat.lTensor_preserves_injective_linearMap (M := A) (Algebra.linearMap R B) hb
+    |>.comp (_root_.TensorProduct.rid R A).symm.injective
+  ext; simp
+
+theorem includeRight_injective [Module.Flat R B] (ha : Function.Injective (algebraMap R A)) :
+    Function.Injective (includeRight : B →ₐ[R] A ⊗[R] B) := by
+  convert Module.Flat.rTensor_preserves_injective_linearMap (M := B) (Algebra.linearMap R A) ha
+    |>.comp (_root_.TensorProduct.lid R B).symm.injective
+  ext; simp
+
+end Algebra.TensorProduct
+
+end Injective
+
+section Nontrivial
+
+variable (R : Type*) [CommRing R]
+
+namespace TensorProduct
+
+variable (M N : Type*) [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N]
+
+/-- If `M`, `N` are `R`-modules, there exists an injective `R`-linear map from `R` to `N`,
+and `M` is a nontrivial flat `R`-module, then `M ⊗[R] N` is nontrivial. -/
+theorem nontrivial_of_linearMap_injective_of_flat_left (f : R →ₗ[R] N) (h : Function.Injective f)
+    [Module.Flat R M] [Nontrivial M] : Nontrivial (M ⊗[R] N) :=
+  Module.Flat.lTensor_preserves_injective_linearMap (M := M) f h |>.comp
+    (TensorProduct.rid R M).symm.injective |>.nontrivial
+
+/-- If `M`, `N` are `R`-modules, there exists an injective `R`-linear map from `R` to `M`,
+and `N` is a nontrivial flat `R`-module, then `M ⊗[R] N` is nontrivial. -/
+theorem nontrivial_of_linearMap_injective_of_flat_right (f : R →ₗ[R] M) (h : Function.Injective f)
+    [Module.Flat R N] [Nontrivial N] : Nontrivial (M ⊗[R] N) :=
+  Module.Flat.rTensor_preserves_injective_linearMap (M := N) f h |>.comp
+    (TensorProduct.lid R N).symm.injective |>.nontrivial
+
+end TensorProduct
+
+namespace Algebra.TensorProduct
+
+variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+
+/-- If `A`, `B` are `R`-algebras, `R` injects into `B`,
+and `A` is a nontrivial flat `R`-algebra, then `A ⊗[R] B` is nontrivial. -/
+theorem nontrivial_of_algebraMap_injective_of_flat_left (h : Function.Injective (algebraMap R B))
+    [Module.Flat R A] [Nontrivial A] : Nontrivial (A ⊗[R] B) :=
+  TensorProduct.nontrivial_of_linearMap_injective_of_flat_left R A B (Algebra.linearMap R B) h
+
+/-- If `A`, `B` are `R`-algebras, `R` injects into `A`,
+and `B` is a nontrivial flat `R`-algebra, then `A ⊗[R] B` is nontrivial. -/
+theorem nontrivial_of_algebraMap_injective_of_flat_right (h : Function.Injective (algebraMap R A))
+    [Module.Flat R B] [Nontrivial B] : Nontrivial (A ⊗[R] B) :=
+  TensorProduct.nontrivial_of_linearMap_injective_of_flat_right R A B (Algebra.linearMap R A) h
+
+end Algebra.TensorProduct
+
+end Nontrivial
