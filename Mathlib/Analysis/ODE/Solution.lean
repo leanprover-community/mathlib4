@@ -16,6 +16,17 @@ Attempt to unify `Gronwall` and `PicardLindelof` and prepare for `LocalFlow`
 open Function MeasureTheory Metric Set
 open scoped NNReal Topology
 
+-- move to `MeasureTheory/Measure/Lebesgue/Basic`
+instance Real.isFiniteMeasure_restrict_uIoc (x y : ℝ) :
+    IsFiniteMeasure (volume.restrict (Ι x y)) := by
+  rw [uIoc_eq_union]
+  exact isFiniteMeasure_of_le _ <| Measure.restrict_union_le _ _
+
+-- move to `MeasureTheory/Measure/Lebesgue/Basic`
+@[simp]
+lemma Real.volume_uIoc (a b : ℝ) : volume (Ι a b) = ENNReal.ofReal |b - a| := by
+  rw [uIoc, volume_Ioc, max_sub_min_eq_abs]
+
 namespace ODE
 
 /-! ## Integral equation
@@ -43,8 +54,9 @@ lemma iterate_apply {f : ℝ → E → E} {α : ℝ → E} {t₀ : ℝ} {x₀ : 
 -- use `MapsTo`?
 /-- Given a $C^n$ time-dependent vector field `f` and a $C^n$ curve `α`, the composition `f t (α t)`
 is $C^n$ in `t`. -/
-lemma contDiffOn_comp {f : ℝ → E → E} {α : ℝ → E} {s : Set ℝ} {u : Set E} {n : WithTop ℕ∞}
-    (hf : ContDiffOn ℝ n (uncurry f) (s ×ˢ u)) (hα : ContDiffOn ℝ n α s) (hmem : ∀ t ∈ s, α t ∈ u) :
+lemma contDiffOn_comp {n : WithTop ℕ∞} {f : ℝ → E → E} {s : Set ℝ} {u : Set E}
+    (hf : ContDiffOn ℝ n (uncurry f) (s ×ˢ u))
+    {α : ℝ → E} (hα : ContDiffOn ℝ n α s) (hmem : ∀ t ∈ s, α t ∈ u) :
     ContDiffOn ℝ n (fun t ↦ f t (α t)) s := by
   have : (fun t ↦ f t (α t)) = (uncurry f) ∘ fun t ↦ (t, α t) := rfl -- abstract?
   rw [this]
@@ -60,10 +72,13 @@ lemma continuousOn_comp {f : ℝ → E → E} {α : ℝ → E} {s : Set ℝ} {u 
     ContinuousOn (fun t ↦ f t (α t)) s :=
   contDiffOn_zero.mp <| contDiffOn_comp (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem
 
+variable [CompleteSpace E]
+
 /-- If the time-dependent vector field `f` and the curve `α` are continuous, then `f t (α t)` is the
 derivative of `iterate f t₀ x₀ α`. -/
-lemma hasDerivAt_iterate_isOpen [CompleteSpace E] {f : ℝ → E → E} {s : Set ℝ} (hs : IsOpen s)
-    {u : Set E} (hf : ContinuousOn (uncurry f) (s ×ˢ u))
+lemma hasDerivAt_iterate_of_isOpen
+    {f : ℝ → E → E} {s : Set ℝ} (hs : IsOpen s) {u : Set E}
+    (hf : ContinuousOn (uncurry f) (s ×ˢ u))
     {α : ℝ → E} (hα : ContinuousOn α s)
     (hmem : ∀ t ∈ s, α t ∈ u) (x₀ : E)
     {t₀ : ℝ} {t : ℝ} (ht : uIcc t₀ t ⊆ s) :
@@ -84,9 +99,9 @@ lemma hasDerivAt_iterate_isOpen [CompleteSpace E] {f : ℝ → E → E} {s : Set
 -- another theorem for `(iterate f t₀ x₀ α) t₀ = x₀`?
 /-- If the time-dependent vector field `f` and the curve `α` are continuous, then `f t (α t)` is the
 derivative of `iterate f t₀ x₀ α`. -/
-lemma hasDerivWithinAt_iterate_Icc [CompleteSpace E] {f : ℝ → E → E}
+lemma hasDerivWithinAt_iterate_Icc
     {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax)
-    {u : Set E} (hf : ContinuousOn (uncurry f) ((Icc tmin tmax) ×ˢ u))
+    {f : ℝ → E → E} {u : Set E} (hf : ContinuousOn (uncurry f) ((Icc tmin tmax) ×ˢ u))
     {α : ℝ → E} (hα : ContinuousOn α (Icc tmin tmax))
     (hmem : ∀ t ∈ Icc tmin tmax, α t ∈ u) (x₀ : E)
     {t : ℝ} (ht : t ∈ Icc tmin tmax) :
@@ -108,9 +123,9 @@ lemma hasDerivWithinAt_iterate_Icc [CompleteSpace E] {f : ℝ → E → E}
 -- also works for `Ioi` and `Iio` but not intervals with a closed end due to non-unique diff there
 /-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
 `interate f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ`. -/
-lemma contDiffOn_nat_iterate_Ioo [CompleteSpace E] {f : ℝ → E → E} {u : Set E}
+lemma contDiffOn_nat_iterate_Ioo
     {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Ioo tmin tmax) {n : ℕ}
-    (hf : ContDiffOn ℝ n (uncurry f) ((Ioo tmin tmax) ×ˢ u))
+    {f : ℝ → E → E} {u : Set E} (hf : ContDiffOn ℝ n (uncurry f) ((Ioo tmin tmax) ×ˢ u))
     {α : ℝ → E} (hα : ContinuousOn α (Ioo tmin tmax))
     (hmem : ∀ t ∈ Ioo tmin tmax, α t ∈ u) (x₀ : E)
     (heqon : ∀ t ∈ Ioo tmin tmax, α t = iterate f t₀ x₀ α t) :
@@ -119,7 +134,7 @@ lemma contDiffOn_nat_iterate_Ioo [CompleteSpace E] {f : ℝ → E → E} {u : Se
     rw [uIcc_eq_union]
     exact union_subset (Icc_subset_Ioo ht₀.1 ht.2) (Icc_subset_Ioo ht.1 ht₀.2)
   have {t} (ht : t ∈ Ioo tmin tmax) :=
-    hasDerivAt_iterate_isOpen isOpen_Ioo hf.continuousOn hα hmem x₀ (ht' ht)
+    hasDerivAt_iterate_of_isOpen isOpen_Ioo hf.continuousOn hα hmem x₀ (ht' ht)
   induction n with
   | zero =>
     simp only [CharP.cast_eq_zero, contDiffOn_zero] at *
@@ -133,9 +148,9 @@ lemma contDiffOn_nat_iterate_Ioo [CompleteSpace E] {f : ℝ → E → E} {u : Se
 
 /-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
 `interate f t₀ x₀ α` is also $C^n$.This version works for `n : ℕ∞`. -/
-lemma contDiffOn_enat_iterateIntegral_Ioo [CompleteSpace E] {f : ℝ → E → E} {u : Set E}
+lemma contDiffOn_enat_iterateIntegral_Ioo
     {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Ioo tmin tmax) {n : ℕ∞}
-    (hf : ContDiffOn ℝ n (uncurry f) ((Ioo tmin tmax) ×ˢ u))
+    {f : ℝ → E → E} {u : Set E} (hf : ContDiffOn ℝ n (uncurry f) ((Ioo tmin tmax) ×ˢ u))
     {α : ℝ → E} (hα : ContinuousOn α (Ioo tmin tmax))
     (hmem : ∀ t ∈ Ioo tmin tmax, α t ∈ u) (x₀ : E)
     (heqon : ∀ t ∈ Ioo tmin tmax, α t = iterate f t₀ x₀ α t) :
@@ -151,6 +166,17 @@ lemma contDiffOn_enat_iterateIntegral_Ioo [CompleteSpace E] {f : ℝ → E → E
 
 end
 
+-- extract variables
+lemma continuousOn_iterate_of_lipschitzOnWith_continuousOn
+    {E : Type*} [NormedAddCommGroup E]
+    {f : ℝ → E → E} {s : Set ℝ} {u : Set E}
+    {K : ℝ≥0} (hlip : ∀ t ∈ s, LipschitzOnWith K (f t) u)
+    (hcont : ∀ x ∈ u, ContinuousOn (f · x) s) :
+    ContinuousOn (uncurry f) (s ×ˢ u) :=
+  have : ContinuousOn (uncurry (flip f)) (u ×ˢ s) :=
+    continuousOn_prod_of_continuousOn_lipschitzOnWith _ K hcont hlip
+  this.comp continuous_swap.continuousOn (preimage_swap_prod _ _).symm.subset
+
 /-! ## Space of curves -/
 
 /-- The space of continuous functions `α : Icc tmin tmax → E` whose image is contained in `u` and
@@ -159,9 +185,10 @@ which satisfy the initial condition `α t₀ = x`.
 This will be shown to be a complete metric space on
 which `iterate` is a contracting map, leading to a fixed point `α` that will serve as the solution
 to the ODE. -/
+-- comment about `x ∈ u`
 @[ext]
-structure FunSpace {E : Type*} [NormedAddCommGroup E] (u : Set E) (x : E) {t₀ tmin tmax : ℝ}
-    (ht₀ : t₀ ∈ Icc tmin tmax) extends C(Icc tmin tmax, E) where
+structure FunSpace {E : Type*} [NormedAddCommGroup E] {t₀ tmin tmax : ℝ}
+    (ht₀ : t₀ ∈ Icc tmin tmax) (u : Set E) (x : E) extends C(Icc tmin tmax, E) where
   -- this makes future proof obligations simpler syntactically
   mapsTo : MapsTo toFun univ u -- plug in `u := closedBall x₀ (2 * a)` in proofs
   initial : toFun ⟨t₀, ht₀⟩ = x
@@ -172,26 +199,26 @@ variable {E : Type*} [NormedAddCommGroup E]
 
 section
 
-variable {u : Set E} {x : E} {t₀ tmin tmax : ℝ} {ht₀ : t₀ ∈ Icc tmin tmax}
+variable {t₀ tmin tmax : ℝ} {ht₀ : t₀ ∈ Icc tmin tmax} {u : Set E} {x : E}
 
 -- need `toFun_eq_coe`?
 
-instance : CoeFun (FunSpace u x ht₀) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
+instance : CoeFun (FunSpace ht₀ u x) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
 
 /-- The constant map -/
-instance (hx : x ∈ u) : Inhabited (FunSpace u x ht₀) :=
+instance (hx : x ∈ u) : Inhabited (FunSpace ht₀ u x) :=
   ⟨⟨fun _ ↦ x, continuous_const⟩, fun _ _ ↦ hx, rfl⟩
 
 /-- The metric between two curves `α` and `β` is the supremum of the metric between `α t` and `β t`
 over all `t` in the domain. This is well defined when the domain is compact, such as a closed
 interval in our case. -/
-noncomputable instance : MetricSpace (FunSpace u x ht₀) :=
+noncomputable instance : MetricSpace (FunSpace ht₀ u x) :=
   MetricSpace.induced toContinuousMap (fun _ _ _ ↦ by ext; congr) inferInstance
 
 lemma isUniformInducing_toContinuousMap :
-    IsUniformInducing fun α : FunSpace u x ht₀ ↦ α.toContinuousMap := ⟨rfl⟩
+    IsUniformInducing fun α : FunSpace ht₀ u x ↦ α.toContinuousMap := ⟨rfl⟩
 
-lemma range_toContinuousMap : range (fun α : FunSpace u x ht₀ ↦ α.toContinuousMap) =
+lemma range_toContinuousMap : range (fun α : FunSpace ht₀ u x ↦ α.toContinuousMap) =
     { α : C(Icc tmin tmax, E) | α ⟨t₀, ht₀⟩ = x ∧ MapsTo α univ u } := by
   ext α; constructor
   · rintro ⟨⟨α, hα1, hα2⟩, rfl⟩
@@ -203,7 +230,7 @@ lemma range_toContinuousMap : range (fun α : FunSpace u x ht₀ ↦ α.toContin
 -- generalise to all closed `u`?
 /-- The space of bounded curves is complete. -/
 instance [CompleteSpace E] {x₀ : E} {a : ℝ≥0} :
-    CompleteSpace (FunSpace (closedBall x₀ a) x ht₀) := by
+    CompleteSpace (FunSpace ht₀ (closedBall x₀ a) x) := by
   rw [completeSpace_iff_isComplete_range <| isUniformInducing_toContinuousMap]
   apply IsClosed.isComplete
   rw [range_toContinuousMap, setOf_and]
@@ -217,9 +244,73 @@ end
 
 section
 
+variable [NormedSpace ℝ E]
 
+lemma norm_intervalIntegral_le_mul_abs {f : ℝ → E → E}
+    {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax)
+    {u : Set E}
+    {L : ℝ≥0} (hnorm : ∀ t ∈ Icc tmin tmax, ∀ x ∈ u, ‖f t x‖ ≤ L)
+    {x : E} (α : FunSpace ht₀ u x) (t : Icc tmin tmax) :
+    ‖∫ (τ : ℝ) in t₀..t, f τ ((α.toFun ∘ projIcc tmin tmax (le_trans ht₀.1 ht₀.2)) τ)‖ ≤
+      L * |t - t₀| := by
+  calc
+    _ ≤ L * ((volume.restrict (Ι t₀ t)) univ).toReal := by
+      rw [intervalIntegral.norm_intervalIntegral_eq]
+      apply norm_integral_le_of_norm_le_const
+      apply ae_restrict_mem measurableSet_Ioc |>.mono
+      intro t' ht'
+      apply hnorm _ _ _ <| α.mapsTo (mem_univ _)
+      rw [← uIoc, uIoc_eq_union] at ht'
+      -- why can't these be directly solved with a tactic?
+      have ⟨_, _⟩ := ht₀
+      have ⟨_, _⟩ := t.2
+      refine or_imp.mpr ⟨fun h ↦ ?_, fun h ↦ ?_⟩ ht' <;>
+      · have ⟨_, _⟩ := h
+        exact ⟨by linarith, by linarith⟩
+    _ = L * |t - t₀| := by simp
 
-
+/-- The contracting map on `FunSpace` defined by `ODE.iterate` -/
+protected noncomputable def iterate [CompleteSpace E]
+    {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax)
+    {x₀ : E}
+    {a : ℝ≥0}
+    {f : ℝ → E → E}
+    {K : ℝ≥0} (hlip : ∀ t ∈ Icc tmin tmax, LipschitzOnWith K (f t) (closedBall x₀ (2 * a)))
+    (hcont : ∀ x' ∈ closedBall x₀ (2 * a), ContinuousOn (f · x') (Icc tmin tmax))
+    {L : ℝ≥0} (hnorm : ∀ t ∈ Icc tmin tmax, ∀ x' ∈ closedBall x₀ (2 * a), ‖f t x'‖ ≤ L)
+    (h : L * max (tmax - t₀) (t₀ - tmin) ≤ a) -- weaker condition than in Lang
+    {x : E} (hx : x ∈ closedBall x₀ a) -- or open ball as in Lang?
+    (α : FunSpace ht₀ (closedBall x₀ (2 * a)) x) : FunSpace ht₀ (closedBall x₀ (2 * a)) x where
+  toFun := iterate f t₀ x (α ∘ (projIcc _ _ (le_trans ht₀.1 ht₀.2))) ∘ Subtype.val
+  continuous_toFun := by
+    apply ContinuousOn.comp_continuous _ continuous_subtype_val Subtype.coe_prop
+    have hf := continuousOn_iterate_of_lipschitzOnWith_continuousOn hlip hcont
+    have hα : ContinuousOn (α ∘ (projIcc _ _ (le_trans ht₀.1 ht₀.2))) (Icc tmin tmax) :=
+      α.continuous_toFun.comp_continuousOn continuous_projIcc.continuousOn
+    intro t ht
+    apply hasDerivWithinAt_iterate_Icc ht₀ hf hα _ x ht |>.continuousWithinAt
+    exact fun _ _ ↦ mem_of_mem_of_subset (α.mapsTo (mem_univ _))
+      (closedBall_subset_closedBall le_rfl)
+  mapsTo := by
+    intro t _ -- this form of FunSpace.mapsTo causes useless assumptions `t ∈ univ`
+    dsimp only
+    rw [comp_apply, iterate_apply, mem_closedBall, dist_eq_norm, add_comm, add_sub_assoc]
+    calc
+      ‖_ + (x - x₀)‖ ≤ ‖_‖ + ‖x - x₀‖ := norm_add_le _ _
+      _ ≤ ‖_‖ + a := add_le_add_left (mem_closedBall_iff_norm.mp hx) _
+      _ ≤ L * |t - t₀| + a := add_le_add_right (norm_intervalIntegral_le_mul_abs _ hnorm ..) _
+      _ ≤ L * max (tmax - t₀) (t₀ - tmin) + a := by
+        apply add_le_add_right
+        apply mul_le_mul_of_nonneg_left _ L.2
+        by_cases ht : t₀ < t
+        · rw [abs_of_pos <| sub_pos_of_lt ht]
+          exact le_max_of_le_left <| sub_le_sub_right t.2.2 _
+        · rw [abs_of_nonpos <| sub_nonpos_of_le <| not_lt.mp ht, neg_sub]
+          exact le_max_of_le_right <| sub_le_sub_left t.2.1 _
+      _ ≤ a + a := add_le_add_right h _
+      _ = 2 * a := (two_mul _).symm
+  initial := by simp only [ContinuousMap.toFun_eq_coe, comp_apply, iterate_apply,
+      intervalIntegral.integral_same, add_zero]
 
 
 end
