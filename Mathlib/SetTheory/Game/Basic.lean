@@ -984,8 +984,8 @@ theorem inv'_zero_equiv : inv' 0 ≈ 1 :=
 lemma inv'_one : inv' 1 ≡ 1 := by
   rw [Identical.ext_iff]
   constructor
-  · simp [memₗ_def, inv']
-  · simp [memᵣ_def, inv']
+  · simp [memₗ_def, inv', isEmpty_subtype]
+  · simp [memᵣ_def, inv', isEmpty_subtype]
 
 /-- `inv' 1` has exactly the same moves as `1`. -/
 def inv'One : inv' 1 ≡r (1 : PGame.{u}) := by
