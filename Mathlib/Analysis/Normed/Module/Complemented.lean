@@ -204,7 +204,6 @@ lemma ker_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : S
 lemma range_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
     LinearMap.range ((1 : E →L[𝕜] E) - (idempotentOfClosedCompl p q h hp hq)) = q := by
-  rw [idempotentOfClosedCompl]
   ext x
   constructor
   · intro hx
@@ -215,10 +214,14 @@ lemma range_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p :
       rw [h.sup_eq_top]
       exact AddSubgroup.mem_top y
     obtain ⟨x₁,⟨hx₁,⟨y₁,⟨hy₁,hx₁y₁y⟩⟩⟩⟩ := Submodule.mem_sup.mp hy1
-
-
-    sorry
-  · intro hx
+    rw [← hx₁y₁y]
+    rw [map_add]
+    rw [((yinv h hp hq).mp hy₁)]
+    rw [((xinv h hp hq).mp hx₁)]
+    simp
+    exact hy₁
+  · rw [idempotentOfClosedCompl]
+    intro hx
     simp
     use x
     simp
