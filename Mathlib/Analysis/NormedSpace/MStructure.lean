@@ -75,19 +75,14 @@ structure IsLsummand  (L : AddSubgroup G) : Prop where
   compl' : ∃ (K : AddSubgroup G), L ⊔ K = ⊤ ∧ ∀ x ∈ L, ∀ y ∈ K, ‖x‖ + ‖y‖ = ‖x + y‖
 
 def IsLsummand.compl {L : AddSubgroup G} (h : IsLsummand G L) : AddSubgroup G where
-  carrier := {y : G | ∀ x ∈ L, ‖x + y‖ = ‖x‖ + ‖y‖ ∧  ‖x - y‖ = ‖x‖ + ‖y‖}
+  carrier := {y : G | ∀ x ∈ L, ‖x + y‖ = ‖x‖ + ‖y‖}
   add_mem' := by
     obtain ⟨K, ⟨hK₁, hK₂⟩⟩ := h.compl'
-    have e1 : K = {y | ∀ x ∈ L, ‖x + y‖ = ‖x‖ + ‖y‖ ∧ ‖x - y‖ = ‖x‖ + ‖y‖} := by
+    have e1 : K = {y | ∀ x ∈ L, ‖x + y‖ = ‖x‖ + ‖y‖} := by
       ext y
       constructor
       · intro hy x hx
-        constructor
-        · rw [(hK₂ x hx y hy)]
-        · have e3 : -y ∈ K := AddSubgroup.neg_mem K hy
-          rw [← norm_neg y]
-          rw [(hK₂ _ hx _ e3)]
-          rw [sub_eq_add_neg]
+        rw [(hK₂ x hx y hy)]
       · simp
         intro h
         have hy1 : y ∈ L ⊔ K := by
@@ -95,9 +90,10 @@ def IsLsummand.compl {L : AddSubgroup G} (h : IsLsummand G L) : AddSubgroup G wh
           exact AddSubgroup.mem_top y
         obtain ⟨x₁,⟨hx₁,⟨y₁,⟨hy₁,hx₁y₁y⟩⟩⟩⟩ := AddSubgroup.mem_sup.mp hy1
         have e2 : ‖y₁‖ = ‖x₁‖ + ‖y‖ := by
-          rw [← (h _ hx₁).2]
+          rw [← norm_neg x₁]
+          rw [← (h _ (AddSubgroup.neg_mem L hx₁))]
           rw [← hx₁y₁y]
-          simp only [sub_add_cancel_left, norm_neg]
+          rw [neg_add_cancel_left]
         rw [← hx₁y₁y] at e2
         rw [← (hK₂ _ hx₁ _ hy₁)] at e2
         rw [← add_assoc] at e2
