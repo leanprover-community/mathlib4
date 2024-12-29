@@ -123,8 +123,8 @@ theorem nhds_mkOfNhds_single [DecidableEq α] {a₀ : α} {l : Filter α} (h : p
   · filter_upwards [hs] with b hb
     rcases eq_or_ne b a with (rfl | hb)
     · exact hs
-    · rwa [update_noteq hb]
-  · simpa only [update_noteq ha, mem_pure, eventually_pure] using hs
+    · rwa [update_of_ne hb]
+  · simpa only [update_of_ne ha, mem_pure, eventually_pure] using hs
 
 theorem nhds_mkOfNhds_filterBasis (B : α → FilterBasis α) (a : α) (h₀ : ∀ x, ∀ n ∈ B x, x ∈ n)
     (h₁ : ∀ x, ∀ n ∈ B x, ∃ n₁ ∈ B x, ∀ x' ∈ n₁, ∃ n₂ ∈ B x', n₂ ⊆ n) :

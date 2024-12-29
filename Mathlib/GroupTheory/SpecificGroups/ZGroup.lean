@@ -163,17 +163,13 @@ theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) :=
         Subgroup.centralizer (commutator H) by
       simpa [SetLike.le_def, Subgroup.mem_center_iff, Subgroup.mem_centralizer_iff] using h
     rw [Subgroup.map_subtype_commutator, Subgroup.le_centralizer_iff]
-    let _ : CommGroup (MulAut (⁅commutator H, commutator H⁆ : Subgroup H)) :=
-      ⟨fun g h ↦ by
-        let f := hH.mulAutMulEquiv
-        rw [← f.apply_eq_iff_eq, map_mul, mul_comm, ← map_mul]⟩
-    have key := Abelianization.commutator_subset_ker
-      (Subgroup.normalizerMonoidHom ⁅commutator H, commutator H⁆)
-    rwa [Subgroup.normalizerMonoidHom_ker, ⁅commutator H, commutator H⁆.normalizer_eq_top,
+    let _ := (hH.mulAutMulEquiv _).toMonoidHom.commGroupOfInjective (hH.mulAutMulEquiv _).injective
+    have h := Abelianization.commutator_subset_ker ⁅commutator H, commutator H⁆.normalizerMonoidHom
+    rwa [Subgroup.normalizerMonoidHom_ker, Subgroup.normalizer_eq_top,
       ← Subgroup.map_subtype_le_map_subtype, Subgroup.map_subtype_commutator,
-        Subgroup.subgroupOf, Subgroup.map_comap_eq_self] at key
-    rw [Subgroup.range_subtype]
-    exact le_top
+        Subgroup.map_subgroupOf_eq_of_le le_top] at h
+
+end Commutator
 
 end Commutator
 
