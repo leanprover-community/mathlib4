@@ -16,7 +16,7 @@ Attempt to unify `Gronwall` and `PicardLindelof` and prepare for `LocalFlow`
 open Function MeasureTheory Metric Set
 open scoped NNReal Topology
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+namespace ODE
 
 /-! ## Integral equation
 
@@ -25,7 +25,9 @@ is equivalent to the initial value problem defined by `f`. The smoothness class 
 transferred to solutions of the integral equation.
 -/
 
-namespace ODE
+section
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
 -- equivalent integral equation, remark p.67
 /-- The main integral expression on which the Picard-Lindelöf theorem is built. It will be shown
@@ -102,7 +104,6 @@ lemma hasDerivWithinAt_iterate_Icc [CompleteSpace E] {f : ℝ → E → E}
   · rw [uIcc_of_le (not_lt.mp h)]
     exact Icc_subset_Icc ht₀.1 ht.2
 
-
 -- `n = ω`?
 -- also works for `Ioi` and `Iio` but not intervals with a closed end due to non-unique diff there
 /-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
@@ -147,5 +148,82 @@ lemma contDiffOn_enat_iterateIntegral_Ioo [CompleteSpace E] {f : ℝ → E → E
   | coe n =>
     simp only [WithTop.coe_natCast] at *
     exact contDiffOn_nat_iterate_Ioo ht₀ hf hα hmem x₀ heqon
+
+end
+
+/-! ## Space of curves -/
+
+/-- The space of continuous functions `α : Icc tmin tmax → E` whose image is contained in `u` and
+which satisfy the initial condition `α t₀ = x`.
+
+This will be shown to be a complete metric space on
+which `iterate` is a contracting map, leading to a fixed point `α` that will serve as the solution
+to the ODE. -/
+@[ext]
+structure FunSpace {E : Type*} [NormedAddCommGroup E] (u : Set E) (x : E) {t₀ tmin tmax : ℝ}
+    (ht₀ : t₀ ∈ Icc tmin tmax) extends C(Icc tmin tmax, E) where
+  -- this makes future proof obligations simpler syntactically
+  mapsTo : MapsTo toFun univ u -- plug in `u := closedBall x₀ (2 * a)` in proofs
+  initial : toFun ⟨t₀, ht₀⟩ = x
+
+namespace FunSpace
+
+variable {E : Type*} [NormedAddCommGroup E]
+
+section
+
+variable {u : Set E} {x : E} {t₀ tmin tmax : ℝ} {ht₀ : t₀ ∈ Icc tmin tmax}
+
+-- need `toFun_eq_coe`?
+
+instance : CoeFun (FunSpace u x ht₀) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
+
+/-- The constant map -/
+instance (hx : x ∈ u) : Inhabited (FunSpace u x ht₀) :=
+  ⟨⟨fun _ ↦ x, continuous_const⟩, fun _ _ ↦ hx, rfl⟩
+
+/-- The metric between two curves `α` and `β` is the supremum of the metric between `α t` and `β t`
+over all `t` in the domain. This is well defined when the domain is compact, such as a closed
+interval in our case. -/
+noncomputable instance : MetricSpace (FunSpace u x ht₀) :=
+  MetricSpace.induced toContinuousMap (fun _ _ _ ↦ by ext; congr) inferInstance
+
+lemma isUniformInducing_toContinuousMap :
+    IsUniformInducing fun α : FunSpace u x ht₀ ↦ α.toContinuousMap := ⟨rfl⟩
+
+lemma range_toContinuousMap : range (fun α : FunSpace u x ht₀ ↦ α.toContinuousMap) =
+    { α : C(Icc tmin tmax, E) | α ⟨t₀, ht₀⟩ = x ∧ MapsTo α univ u } := by
+  ext α; constructor
+  · rintro ⟨⟨α, hα1, hα2⟩, rfl⟩
+    exact ⟨hα2, hα1⟩
+  · rintro ⟨hα1, hα2⟩
+    refine ⟨⟨α, hα2, hα1⟩, rfl⟩
+
+-- this is where we need `u` closed, e.g. closedBall
+-- generalise to all closed `u`?
+/-- The space of bounded curves is complete. -/
+instance [CompleteSpace E] {x₀ : E} {a : ℝ≥0} :
+    CompleteSpace (FunSpace (closedBall x₀ a) x ht₀) := by
+  rw [completeSpace_iff_isComplete_range <| isUniformInducing_toContinuousMap]
+  apply IsClosed.isComplete
+  rw [range_toContinuousMap, setOf_and]
+  apply isClosed_eq (continuous_eval_const _) continuous_const |>.inter
+  apply isClosed_ball.setOf_mapsTo
+  exact fun _ _ ↦ continuous_eval_const _
+
+end
+
+/-! ### Contracting map on the space of curves -/
+
+section
+
+
+
+
+
+
+end
+
+end FunSpace
 
 end ODE
