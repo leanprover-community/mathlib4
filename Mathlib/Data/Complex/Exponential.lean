@@ -1494,7 +1494,7 @@ theorem abs_exp (z : ℂ) : abs (exp z) = Real.exp z.re := by
 theorem abs_exp_eq_iff_re_eq {x y : ℂ} : abs (exp x) = abs (exp y) ↔ x.re = y.re := by
   rw [abs_exp, abs_exp, Real.exp_eq_exp]
 
-theorem abs_exp_i (x : ℂ) : abs (Complex.exp (I * x)) = Real.exp (-x.im) := by
+theorem abs_exp_I (x : ℂ) : abs (Complex.exp (I * x)) = Real.exp (-x.im) := by
   have h₁ : I * (↑x.im * I) = -x.im := by rw [mul_comm, mul_assoc, Complex.I_mul_I, mul_neg_one]
   rw [← x.re_add_im, mul_add, h₁, Complex.abs_exp]
   simp
