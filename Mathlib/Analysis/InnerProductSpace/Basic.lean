@@ -906,7 +906,7 @@ protected theorem Complex.inner (w z : ℂ) : ⟪w, z⟫_ℝ = (conj w * z).re :
 end RCLikeToReal
 
 /-- An `RCLike` field is a real inner product space. This is not registered as an instance since it
-creates problems with the case `𝕜 = ℝ`, but in can be used in a proof to obtain a real inner product
+creates problems with the case `𝕜 = ℝ`, but it can be used in a proof to obtain a real inner product
 space structure on an `RCLike` field.
 
 This is different from the inner product space structure obtained from
