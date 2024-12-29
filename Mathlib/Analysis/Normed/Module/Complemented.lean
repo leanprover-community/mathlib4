@@ -203,7 +203,8 @@ lemma ker_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : S
 
 lemma range_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
-    LinearMap.range ((1 : E →L[𝕜] E) - (idempotentOfClosedCompl p q h hp hq)) = q := by
+    let P := idempotentOfClosedCompl p q h hp hq
+    LinearMap.range (1  - P) = q := by
   ext x
   constructor
   · intro hx
@@ -230,10 +231,25 @@ lemma range_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p :
 
 
 lemma is_idempotent_ofClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
-    (hq : IsClosed (q : Set E)) : IsIdempotentElem (idempotentOfClosedCompl p q h hp hq) := by
-  rw [IsIdempotentElem]
-  ext x
-
-  rw [idempotentOfClosedCompl]
+    (hq : IsClosed (q : Set E)) :
+    let P := idempotentOfClosedCompl p q h hp hq
+    IsIdempotentElem P := by
+  ext z
+  have hy1 : z ∈ p ⊔ q := by
+    rw [h.sup_eq_top]
+    exact AddSubgroup.mem_top z
+  obtain ⟨x₁,⟨hx₁,⟨y₁,⟨hy₁,hx₁y₁y⟩⟩⟩⟩ := Submodule.mem_sup.mp hy1
+  rw [← hx₁y₁y]
+  rw [map_add]
+  rw [map_add]
+  rw [((yinv h hp hq).mp hy₁)]
+  rw [((xinv h hp hq).mp hx₁)]
+  rw [add_zero]
+  rw [ContinuousLinearMap.coe_mul, Function.comp_apply]
+  rw [Function.comp_apply]
+  rw [((yinv h hp hq).mp hy₁)]
+  rw [((xinv h hp hq).mp hx₁)]
+  simp only [map_zero, add_zero]
+  exact (xinv h hp hq).mp hx₁
 
 end Submodule
