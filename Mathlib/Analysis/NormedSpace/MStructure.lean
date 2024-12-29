@@ -84,10 +84,32 @@ def IsLsummand.compl {L : AddSubgroup G} (h : IsLsummand G L) : AddSubgroup G wh
       · intro hy x hx
         constructor
         · rw [(hK₂ x hx y hy)]
-        · have e3 : (-y) ∈ K := sorry
+        · have e3 : -y ∈ K := AddSubgroup.neg_mem K hy
+          rw [← norm_neg y]
+          rw [(hK₂ _ hx _ e3)]
+          rw [sub_eq_add_neg]
+      · simp
+        intro h
+        have hy1 : y ∈ L ⊔ K := by
+          rw [hK₁]
+          exact AddSubgroup.mem_top y
+        obtain ⟨x₁,⟨hx₁,⟨y₁,⟨hy₁,hx₁y₁y⟩⟩⟩⟩ := AddSubgroup.mem_sup.mp hy1
+        have e2 : ‖y₁‖ = ‖x₁‖ + ‖y‖ := by
+          rw [← (h _ hx₁).2]
+          rw [← hx₁y₁y]
+          simp only [sub_add_cancel_left, norm_neg]
+        rw [← hx₁y₁y] at e2
+        rw [← (hK₂ _ hx₁ _ hy₁)] at e2
+        rw [← add_assoc] at e2
+        rw [← two_smul ℕ] at e2
+        simp at e2
+        rw [e2, zero_add] at hx₁y₁y
+        rw [← hx₁y₁y]
+        exact hy₁
 
-          rw [ (hK₂ x hx (-y) e3)]
-      · sorry
+
+
+
     rw [← e1]
     intro a b ha hb
     exact add_mem ha hb
