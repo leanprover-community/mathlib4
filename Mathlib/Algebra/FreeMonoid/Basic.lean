@@ -444,20 +444,6 @@ theorem freeMonoidCongr_of (e : α ≃ β) (a : α) : freeMonoidCongr e (of a) =
 theorem freeMonoidCongr_symm_of (e : α ≃ β) (b : β) :
     freeMonoidCongr e.symm (of b) = of (e.symm b) := rfl
 
-/-- given a function from β to α, convert a relation predicate on FreeMonoid α to
-have an underlying type of β -/
-@[to_additive "given a function from β to α, convert a relation predicate to
-have an underlying type of β"]
-def mapRel (f : β → α) (rel : FreeMonoid α → FreeMonoid α → Prop) : FreeMonoid β → FreeMonoid β  →
-    Prop := fun a b ↦ rel (.map f a) (.map f b)
-
-/-- given a function from α to β, convert a relation predicate with underlying type β to
-one with underlying type α -/
-@[to_additive "given a function from α to β, convert a relation predicate with underlying
-type β to one with underlying type α "]
-def comapRel (f : α → β) (rel : FreeMonoid β → FreeMonoid β → Prop) : FreeMonoid α → FreeMonoid α →
-    Prop := fun a b ↦ rel (.map f a) (.map f b)
-
 end IsomorphicTypes
 
 end FreeMonoid
