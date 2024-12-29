@@ -74,7 +74,7 @@ open Polynomial Function AddMonoidAlgebra Finsupp
 
 noncomputable section
 
-variable {R : Type*}
+variable {R S : Type*}
 
 /-- The semiring of Laurent polynomials with coefficients in the semiring `R`.
 We denote it by `R[T;T⁻¹]`.
@@ -124,7 +124,6 @@ theorem single_zero_one_eq_one : (Finsupp.single 0 1 : R[T;T⁻¹]) = (1 : R[T;T
   rfl
 
 /-!  ### The functions `C` and `T`. -/
-
 
 /-- The ring homomorphism `C`, including `R` into the ring of Laurent polynomials over `R` as
 the constant Laurent polynomials. -/
@@ -285,6 +284,14 @@ theorem commute_T (n : ℤ) (f : R[T;T⁻¹]) : Commute (T n) f :=
 theorem T_mul (n : ℤ) (f : R[T;T⁻¹]) : T n * f = f * T n :=
   (commute_T n f).eq
 
+theorem smul_eq_C_mul (r : R) (f : R[T;T⁻¹]) : r • f = C r * f := by
+  induction f using LaurentPolynomial.induction_on' with
+  | h_add _ _ hp hq =>
+    rw [smul_add, mul_add, hp, hq]
+  | h_C_mul_T n s =>
+    rw [← mul_assoc, ← smul_mul_assoc, mul_left_inj_of_invertible, ← map_mul, ← single_eq_C,
+      Finsupp.smul_single', single_eq_C]
+
 /-- `trunc : R[T;T⁻¹] →+ R[X]` maps a Laurent polynomial `f` to the polynomial whose terms of
 nonnegative degree coincide with the ones of `f`.  The terms of negative degree of `f` "vanish".
 `trunc` is a left-inverse to `Polynomial.toLaurent`. -/
@@ -332,8 +339,12 @@ theorem _root_.Polynomial.toLaurent_injective :
 theorem _root_.Polynomial.toLaurent_inj (f g : R[X]) : toLaurent f = toLaurent g ↔ f = g :=
   ⟨fun h => Polynomial.toLaurent_injective h, congr_arg _⟩
 
-theorem _root_.Polynomial.toLaurent_ne_zero {f : R[X]} : f ≠ 0 ↔ toLaurent f ≠ 0 :=
-  (map_ne_zero_iff _ Polynomial.toLaurent_injective).symm
+theorem _root_.Polynomial.toLaurent_ne_zero {f : R[X]} : toLaurent f ≠ 0 ↔ f ≠ 0 :=
+  map_ne_zero_iff _ Polynomial.toLaurent_injective
+
+@[simp]
+theorem _root_.Polynomial.toLaurent_eq_zero {f : R[X]} : toLaurent f = 0 ↔ f = 0 :=
+  map_eq_zero_iff _ Polynomial.toLaurent_injective
 
 theorem exists_T_pow (f : R[T;T⁻¹]) : ∃ (n : ℕ) (f' : R[X]), toLaurent f' = f * T n := by
   refine f.induction_on' ?_ fun n a => ?_ <;> clear f
@@ -387,9 +398,9 @@ theorem toLaurent_support (f : R[X]) : f.toLaurent.support = f.support.map Nat.c
   generalize hd : f.support = s
   revert f
   refine Finset.induction_on s ?_ ?_ <;> clear s
-  · simp +contextual only [Polynomial.support_eq_empty, map_zero,
-      Finsupp.support_zero, eq_self_iff_true, imp_true_iff, Finset.map_empty,
-      Finsupp.support_eq_empty]
+  · intro f hf
+    rw [Finset.map_empty, Finsupp.support_eq_empty, toLaurent_eq_zero]
+    exact Polynomial.support_eq_empty.mp hf
   · intro a s as hf f fs
     have : (erase a f).toLaurent.support = s.map Nat.castEmbedding := by
       refine hf (f.erase a) ?_
@@ -421,21 +432,14 @@ theorem degree_eq_bot_iff {f : R[T;T⁻¹]} : f.degree = ⊥ ↔ f = 0 := by
   refine ⟨fun h => ?_, fun h => by rw [h, degree_zero]⟩
   rw [degree, Finset.max_eq_sup_withBot] at h
   ext n
-  refine not_not.mp fun f0 => ?_
   simp_rw [Finset.sup_eq_bot_iff, Finsupp.mem_support_iff, Ne, WithBot.coe_ne_bot] at h
-  exact h n f0
+  exact not_not.mp (h n)
 
 section ExactDegrees
 
 @[simp]
 theorem degree_C_mul_T (n : ℤ) (a : R) (a0 : a ≠ 0) : degree (C a * T n) = n := by
-  rw [degree]
-  -- Porting note: was `convert Finset.max_singleton`
-  have : Finsupp.support (C a * T n) = {n} := by
-    refine support_eq_singleton.mpr ?_
-    rw [← single_eq_C_mul_T]
-    simp only [single_eq_same, a0, Ne, not_false_iff, eq_self_iff_true, and_self_iff]
-  rw [this]
+  rw [degree, support_C_mul_T_of_ne_zero a0 n]
   exact Finset.max_singleton
 
 theorem degree_C_mul_T_ite [DecidableEq R] (n : ℤ) (a : R) :
@@ -499,17 +503,17 @@ theorem algebraMap_X_pow (n : ℕ) : algebraMap R[X] R[T;T⁻¹] (X ^ n) = T n :
 theorem algebraMap_eq_toLaurent (f : R[X]) : algebraMap R[X] R[T;T⁻¹] f = toLaurent f :=
   rfl
 
-theorem isLocalization : IsLocalization (Submonoid.closure ({X} : Set R[X])) R[T;T⁻¹] :=
-  { map_units' := fun t => by
-      cases' t with t ht
-      rcases Submonoid.mem_closure_singleton.mp ht with ⟨n, rfl⟩
-      simp only [isUnit_T n, algebraMap_eq_toLaurent, Polynomial.toLaurent_X_pow]
+theorem isLocalization : IsLocalization (Submonoid.powers (X : R[X])) R[T;T⁻¹] :=
+  { map_units' := fun ⟨t, ht⟩ => by
+      obtain ⟨n, rfl⟩ := ht
+      rw [algebraMap_eq_toLaurent, toLaurent_X_pow]
+      exact isUnit_T ↑n
     surj' := fun f => by
       induction' f using LaurentPolynomial.induction_on_mul_T with f n
-      have := (Submonoid.closure ({X} : Set R[X])).pow_mem Submonoid.mem_closure_singleton_self n
+      have : X ^ n ∈ Submonoid.powers (X : R[X]) := ⟨n, rfl⟩
       refine ⟨(f, ⟨_, this⟩), ?_⟩
-      simp only [algebraMap_eq_toLaurent, Polynomial.toLaurent_X_pow, mul_T_assoc,
-        neg_add_cancel, T_zero, mul_one]
+      simp only [algebraMap_eq_toLaurent, toLaurent_X_pow, mul_T_assoc, neg_add_cancel, T_zero,
+        mul_one]
     exists_of_eq := fun {f g} => by
       rw [algebraMap_eq_toLaurent, algebraMap_eq_toLaurent, Polynomial.toLaurent_inj]
       rintro rfl
@@ -546,5 +550,80 @@ lemma toLaurent_reverse (p : R[X]) :
   | MX _ hp => simpa [natDegree_mul_X hp]
 
 end Inversion
+
+section Smeval
+
+section SMulWithZero
+
+variable [Semiring R] [AddCommMonoid S] [SMulWithZero R S] [Monoid S] (f g : R[T;T⁻¹]) (x y : Sˣ)
+
+/-- Evaluate a Laurent polynomial at a unit, using scalar multiplication. -/
+def smeval : S := Finsupp.sum f fun n r => r • (x ^ n).val
+
+theorem smeval_eq_sum : f.smeval x = Finsupp.sum f fun n r => r • (x ^ n).val := rfl
+
+theorem smeval_congr : f = g → x = y → f.smeval x = g.smeval y := by rintro rfl rfl; rfl
+
+@[simp]
+theorem smeval_zero : (0 : R[T;T⁻¹]).smeval x = (0 : S) := by
+  simp only [smeval_eq_sum, Finsupp.sum_zero_index]
+
+theorem smeval_single (n : ℤ) (r : R) : smeval (Finsupp.single n r) x = r • (x ^ n).val := by
+  simp only [smeval_eq_sum]
+  rw [Finsupp.sum_single_index (zero_smul R (x ^ n).val)]
+
+@[simp]
+theorem smeval_C_mul_T_n (n : ℤ) (r : R) : (C r * T n).smeval x = r • (x ^ n).val := by
+  rw [← single_eq_C_mul_T, smeval_single]
+
+@[simp]
+theorem smeval_C (r : R) : (C r).smeval x = r • 1 := by
+  rw [← single_eq_C, smeval_single x (0 : ℤ) r, zpow_zero, Units.val_one]
+
+end SMulWithZero
+
+section MulActionWithZero
+
+variable [Semiring R] [AddCommMonoid S] [MulActionWithZero R S] [Monoid S] (f g : R[T;T⁻¹])
+  (x y : Sˣ)
+
+@[simp]
+theorem smeval_T_pow (n : ℤ) (x : Sˣ) : (T n : R[T;T⁻¹]).smeval x = (x ^ n).val := by
+  rw [T, smeval_single, one_smul]
+
+@[simp]
+theorem smeval_one : (1 : R[T;T⁻¹]).smeval x = 1 := by
+  rw [← T_zero, smeval_T_pow 0 x, zpow_zero, Units.val_eq_one]
+
+end MulActionWithZero
+
+section Module
+
+variable [Semiring R] [AddCommMonoid S] [Module R S] [Monoid S] (f g : R[T;T⁻¹]) (x y : Sˣ)
+
+@[simp]
+theorem smeval_add : (f + g).smeval x = f.smeval x + g.smeval x := by
+  simp only [smeval_eq_sum]
+  rw [Finsupp.sum_add_index (fun n _ => zero_smul R (x ^ n).val) (fun n _ r r' => add_smul r r' _)]
+
+@[simp]
+theorem smeval_C_mul (r : R) : (C r * f).smeval x = r • (f.smeval x) := by
+  induction f using LaurentPolynomial.induction_on' with
+  | h_add p q hp hq=>
+    rw [mul_add, smeval_add, smeval_add, smul_add, hp, hq]
+  | h_C_mul_T n s =>
+    rw [← mul_assoc, ← map_mul, smeval_C_mul_T_n, smeval_C_mul_T_n, mul_smul]
+
+variable (R) in
+/-- Evaluation as an `R`-linear map. -/
+@[simps]
+def leval : R[T;T⁻¹] →ₗ[R] S where
+  toFun f := f.smeval x
+  map_add' f g := smeval_add f g x
+  map_smul' r f := by simp [smul_eq_C_mul]
+
+end Module
+
+end Smeval
 
 end LaurentPolynomial

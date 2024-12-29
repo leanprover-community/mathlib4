@@ -19,9 +19,16 @@ commuting actions, and `ρ₁₂ : R →+* R₂` and `σ₁₂ : S →+* S₂`.
 * `LinearMap.mk₂`: a constructor for bilinear maps,
   taking an unbundled function together with proof witnesses of bilinearity
 * `LinearMap.flip`: turns a bilinear map `M × N → P` into `N × M → P`
-* `LinearMap.lcomp` and `LinearMap.llcomp`: composition of linear maps as a bilinear map
-* `LinearMap.compl₂`: composition of a bilinear map `M × N → P` with a linear map `Q → M`
-* `LinearMap.compr₂`: composition of a bilinear map `M × N → P` with a linear map `Q → N`
+* `LinearMap.lflip`: given a linear map from `M` to `N →ₗ[R] P`, i.e., a bilinear map `M → N → P`,
+  change the order of variables and get a linear map from `N` to `M →ₗ[R] P`.
+* `LinearMap.lcomp`: composition of a given linear map `M → N` with a linear map `N → P` as
+  a linear map from `Nₗ →ₗ[R] Pₗ` to `M →ₗ[R] Pₗ`
+* `LinearMap.llcomp`: composition of linear maps as a bilinear map from `(M →ₗ[R] N) × (N →ₗ[R] P)`
+  to `M →ₗ[R] P`
+* `LinearMap.compl₂`: composition of a linear map `Q → N` and a bilinear map `M → N → P` to
+  form a bilinear map `M → Q → P`.
+* `LinearMap.compr₂`: composition of a linear map `P → Q` and a bilinear map `M → N → P` to form a
+  bilinear map `M → N → Q`.
 * `LinearMap.lsmul`: scalar multiplication as a bilinear map `R × M → M`
 
 ## Tags
@@ -245,7 +252,8 @@ theorem lflip_apply (m : M) (n : N) : lflip f n m = f m n := rfl
 
 variable (R Pₗ)
 
-/-- Composing a linear map `M → N` and a linear map `N → P` to form a linear map `M → P`. -/
+/-- Composing a given linear map `M → N` with a linear map `N → P` as a linear map from
+`Nₗ →ₗ[R] Pₗ` to `M →ₗ[R] Pₗ`. -/
 def lcomp (f : M →ₗ[R] Nₗ) : (Nₗ →ₗ[R] Pₗ) →ₗ[R] M →ₗ[R] Pₗ :=
   flip <| LinearMap.comp (flip id) f
 
@@ -271,7 +279,7 @@ theorem lcompₛₗ_apply (f : M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂�
 
 variable (R M Nₗ Pₗ)
 
-/-- Composing a linear map `M → N` and a linear map `N → P` to form a linear map `M → P`. -/
+/-- Composing linear maps as a bilinear map from `(M →ₗ[R] N) × (N →ₗ[R] P)` to `M →ₗ[R] P` -/
 def llcomp : (Nₗ →ₗ[R] Pₗ) →ₗ[R] (M →ₗ[R] Nₗ) →ₗ[R] M →ₗ[R] Pₗ :=
   flip
     { toFun := lcomp R Pₗ

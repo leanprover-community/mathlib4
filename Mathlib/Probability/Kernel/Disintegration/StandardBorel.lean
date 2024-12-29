@@ -3,7 +3,7 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.MeasureCompProd
+import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 import Mathlib.Probability.Kernel.Disintegration.Basic
 import Mathlib.Probability.Kernel.Disintegration.CondCDF
 import Mathlib.Probability.Kernel.Disintegration.Density
@@ -242,13 +242,13 @@ lemma compProd_fst_borelMarkovFromReal_eq_comapRight_compProd
       = map κ (Prod.map (id : β → β) (embeddingReal Ω))) :
     fst κ ⊗ₖ borelMarkovFromReal Ω η
       = comapRight (fst (map κ (Prod.map (id : β → β) (embeddingReal Ω))) ⊗ₖ η)
-        (MeasurableEmbedding.id.prod_mk (measurableEmbedding_embeddingReal Ω)) := by
+        (MeasurableEmbedding.id.prodMap (measurableEmbedding_embeddingReal Ω)) := by
   let e := embeddingReal Ω
   let he := measurableEmbedding_embeddingReal Ω
   let κ' := map κ (Prod.map (id : β → β) e)
   have hη' : fst κ' ⊗ₖ η = κ' := hη
   have h_prod_embed : MeasurableEmbedding (Prod.map (id : β → β) e) :=
-    MeasurableEmbedding.id.prod_mk he
+    MeasurableEmbedding.id.prodMap he
   change fst κ ⊗ₖ borelMarkovFromReal Ω η = comapRight (fst κ' ⊗ₖ η) h_prod_embed
   rw [comapRight_compProd_id_prod _ _ he]
   have h_fst : fst κ' = fst κ := by
@@ -295,7 +295,7 @@ lemma compProd_fst_borelMarkovFromReal (κ : Kernel α (β × Ω)) [IsSFiniteKer
   let κ' := map κ (Prod.map (id : β → β) e)
   have hη' : fst κ' ⊗ₖ η = κ' := hη
   have h_prod_embed : MeasurableEmbedding (Prod.map (id : β → β) e) :=
-    MeasurableEmbedding.id.prod_mk he
+    MeasurableEmbedding.id.prodMap he
   have : κ = comapRight κ' h_prod_embed := by
     ext c t : 2
     unfold κ'
