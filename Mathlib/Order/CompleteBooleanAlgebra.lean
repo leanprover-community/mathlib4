@@ -415,6 +415,17 @@ theorem iSup_inf_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (swap (·
     (hf : Antitone f) (hg : Antitone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i :=
   @iSup_inf_of_monotone α _ ιᵒᵈ _ _ f g hf.dual_left hg.dual_left
 
+theorem himp_eq_sSup : a ⇨ b = sSup {w | w ⊓ a ≤ b} := by
+  apply le_antisymm
+  · rw [le_sSup_iff]
+    simp only [upperBounds, mem_setOf_eq]
+    intro a1 b1
+    simp_all only [himp_inf_self, inf_le_left]
+  · rw [sSup_le_iff]
+    exact fun b_1 a_1 ↦ (fun {α} [Frame α] (a b c : α) ↦ (Frame.le_himp_iff a b c).mpr) b_1 a b a_1
+
+
+
 -- see Note [lower instance priority]
 instance (priority := 100) Frame.toDistribLattice : DistribLattice α :=
   DistribLattice.ofInfSupLe fun a b c => by
