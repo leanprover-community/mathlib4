@@ -6,15 +6,15 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 import Mathlib.Geometry.Manifold.ContMDiff.Defs
 
 /-!
-## Basic properties of smooth functions between manifolds
+## Basic properties of `C^n` functions between manifolds
 
-In this file, we show that standard operations on `C^n` maps between manifolds are smooth:
+In this file, we show that standard operations on `C^n` maps between manifolds are `C^n` :
 * `ContMDiffOn.comp` gives the invariance of the `Cⁿ` property under composition
 * `contMDiff_id` gives the smoothness of the identity
 * `contMDiff_const` gives the smoothness of constant functions
-* `contMDiff_inclusion` shows that the inclusion between open sets of a topological space is smooth
+* `contMDiff_inclusion` shows that the inclusion between open sets of a topological space is `C^n`
 * `contMDiff_isOpenEmbedding` shows that if `M` has a `ChartedSpace` structure induced by an open
-embedding `e : M → H`, then `e` is smooth.
+embedding `e : M → H`, then `e` is `C^n`.
 
 ## Tags
 chain rule, manifolds, higher derivative
@@ -43,7 +43,7 @@ variable [ChartedSpace H M] [ChartedSpace H' M'] [ChartedSpace H'' M'']
   -- declare functions, sets, points and smoothness indices
   {f : M → M'} {s : Set M} {x : M} {n : WithTop ℕ∞}
 
-/-! ### Smoothness of the composition of smooth functions between manifolds -/
+/-! ### Regularity of the composition of `C^n` functions between manifolds -/
 
 section Composition
 
@@ -151,7 +151,7 @@ theorem ContMDiffOn.comp_contMDiff {t : Set M'} {g : M' → M''} (hg : ContMDiff
 
 end Composition
 
-/-! ### The identity is smooth -/
+/-! ### The identity is `C^n` -/
 
 section id
 
@@ -178,7 +178,7 @@ theorem contMDiffWithinAt_id : ContMDiffWithinAt I I n (id : M → M) s x :=
 
 end id
 
-/-! ### Constants are smooth -/
+/-! ### Constants are `C^n` -/
 
 section id
 variable {c : M'}
@@ -263,7 +263,7 @@ theorem contMDiffAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}
   contMDiffWithinAt_of_not_mem_mulTSupport hx n univ
 
 
-/-! ### The inclusion map from one open set to another is smooth -/
+/-! ### The inclusion map from one open set to another is `C^n` -/
 
 section Inclusion
 
@@ -313,14 +313,14 @@ end Inclusion
 
 end ChartedSpace
 
-/-! ### Open embeddings and their inverses are smooth -/
+/-! ### Open embeddings and their inverses are `C^n` -/
 
 section
 
 variable {e : M → H} (h : IsOpenEmbedding e) {n : WithTop ℕ∞}
 
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
-then `e` is smooth. -/
+then `e` is `C^n`. -/
 lemma contMDiff_isOpenEmbedding [Nonempty M] :
     haveI := h.singletonChartedSpace; ContMDiff I I n e := by
   haveI := h.isManifold_singleton (I := I) (n := ω)
@@ -348,7 +348,7 @@ lemma contMDiff_isOpenEmbedding [Nonempty M] :
 alias contMDiff_openEmbedding := contMDiff_isOpenEmbedding
 
 /-- If the `ChartedSpace` structure on a manifold `M` is given by an open embedding `e : M → H`,
-then the inverse of `e` is smooth. -/
+then the inverse of `e` is `C^n`. -/
 lemma contMDiffOn_isOpenEmbedding_symm [Nonempty M] :
     haveI := h.singletonChartedSpace; ContMDiffOn I I
       n (IsOpenEmbedding.toPartialHomeomorph e h).symm (range e) := by
@@ -377,7 +377,7 @@ variable [ChartedSpace H M]
 variable [Nonempty M'] {e' : M' → H'} (h' : IsOpenEmbedding e')
 
 /-- Let `M'` be a manifold whose chart structure is given by an open embedding `e'` into its model
-space `H'`. Then the smoothness of `e' ∘ f : M → H'` implies the smoothness of `f`.
+space `H'`. If `e' ∘ f : M → H'` is `C^n`, then `f` is `C^n`.
 
 This is useful, for example, when `e' ∘ f = g ∘ e` for smooth maps `e : M → X` and `g : X → H'`. -/
 lemma ContMDiff.of_comp_isOpenEmbedding {f : M → M'} (hf : ContMDiff I I' n (e' ∘ f)) :

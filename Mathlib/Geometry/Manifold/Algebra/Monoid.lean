@@ -41,9 +41,9 @@ we formulate the definitions and lemmas for any model.
 semigroup. A `C^n` additive monoid over `G`, for example, is obtained by requiring both the
 instances `AddMonoid G` and `ContMDiffAdd I n G`. -/
 class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
-    (n : WithTop ℕ∞) (G : Type*)
-    [Add G] [TopologicalSpace G] [ChartedSpace H G] extends IsManifold I n G :
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
+    (G : Type*) [Add G] [TopologicalSpace G] [ChartedSpace H G] extends IsManifold I n G :
     Prop where
   contMDiff_add : ContMDiff (I.prod I) I n fun p : G × G => p.1 + p.2
 
@@ -55,9 +55,9 @@ A `C^n` monoid over `G`, for example, is obtained by requiring both the instance
 and `ContMDiffMul I n G`. -/
 @[to_additive]
 class ContMDiffMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H]
-    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] (I : ModelWithCorners 𝕜 E H)
-    (n : WithTop ℕ∞) (G : Type*)
-    [Mul G] [TopologicalSpace G] [ChartedSpace H G] extends IsManifold I n G :
+    {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
+    (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
+    (G : Type*) [Mul G] [TopologicalSpace G] [ChartedSpace H G] extends IsManifold I n G :
     Prop where
   contMDiff_mul : ContMDiff (I.prod I) I n fun p : G × G => p.1 * p.2
 
@@ -67,8 +67,7 @@ section ContMDiffMul
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalSpace H] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞}
-  {G : Type*} [Mul G]
-  [TopologicalSpace G] [ChartedSpace H G] {E' : Type*} [NormedAddCommGroup E']
+  {G : Type*} [Mul G] [TopologicalSpace G] [ChartedSpace H G] {E' : Type*} [NormedAddCommGroup E']
   [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'}
   {M : Type*} [TopologicalSpace M] [ChartedSpace H' M]
 
@@ -203,12 +202,14 @@ variable (I) (g h : G)
 variable [ContMDiffMul I ∞ G]
 
 /-- Left multiplication by `g`. It is meant to mimic the usual notation in Lie groups.
+Used mostly through the notation `𝑳`.
 Lemmas involving `smoothLeftMul` with the notation `𝑳` usually use `L` instead of `𝑳` in the
 names. -/
 def smoothLeftMul : C^∞⟮I, G; I, G⟯ :=
   ⟨leftMul g, contMDiff_mul_left⟩
 
 /-- Right multiplication by `g`. It is meant to mimic the usual notation in Lie groups.
+Used mostly through the notation `𝑹`.
 Lemmas involving `smoothRightMul` with the notation `𝑹` usually use `R` instead of `𝑹` in the
 names. -/
 def smoothRightMul : C^∞⟮I, G; I, G⟯ :=

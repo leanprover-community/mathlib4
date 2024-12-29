@@ -6,9 +6,9 @@ Authors: Nicolò Cavalleri
 import Mathlib.Geometry.Manifold.Algebra.Structures
 
 /-!
-# Algebraic structures over smooth functions
+# Algebraic structures over `C^n` functions
 
-In this file, we define instances of algebraic structures over smooth functions.
+In this file, we define instances of algebraic structures over `C^n` functions.
 -/
 
 
@@ -114,7 +114,8 @@ def compLeftMonoidHom {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpa
 
 variable (I') {N}
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to any smooth map instead of `Set.inclusion`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215):
+-- TODO: generalize to any `C^n` map instead of `Set.inclusion`
 /-- For a Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction' group homomorphism from
 `C^n⟮I, V; I', G⟯` to `C^n⟮I, U; I', G⟯`. -/
 @[to_additive "For an additive Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction' group
@@ -199,7 +200,7 @@ def compLeftRingHom {R' : Type*} [Ring R'] [TopologicalSpace R'] [ChartedSpace H
 
 variable (I') {N}
 
-/-- For a "smooth ring" `R` and open sets `U ⊆ V` in `N`, the "restriction" ring homomorphism from
+/-- For a "`C^n` ring" `R` and open sets `U ⊆ V` in `N`, the "restriction" ring homomorphism from
 `C^n⟮I, V; I', R⟯` to `C^n⟮I, U; I', R⟯`. -/
 def restrictRingHom (R : Type*) [Ring R] [TopologicalSpace R] [ChartedSpace H' R]
     [ContMDiffRing I' n R] {U V : Opens N} (h : U ≤ V) :
@@ -216,7 +217,7 @@ def coeFnRingHom {R : Type*} [CommRing R] [TopologicalSpace R] [ChartedSpace H' 
   { (coeFnMonoidHom : C^n⟮I, N; I', R⟯ →* _), (coeFnAddMonoidHom : C^n⟮I, N; I', R⟯ →+ _) with
     toFun := (↑) }
 
-/-- `Function.eval` as a `RingHom` on the ring of smooth functions. -/
+/-- `Function.eval` as a `RingHom` on the ring of `C^n` functions. -/
 def evalRingHom {R : Type*} [CommRing R] [TopologicalSpace R] [ChartedSpace H' R]
     [ContMDiffRing I' n R] (m : N) : C^n⟮I, N; I', R⟯ →+* R :=
   (Pi.evalRingHom _ m : (N → R) →+* R).comp ContMDiffMap.coeFnRingHom
@@ -273,7 +274,7 @@ inherit an algebra structure.
 
 variable {A : Type*} [NormedRing A] [NormedAlgebra 𝕜 A] [ContMDiffRing 𝓘(𝕜, A) n A]
 
-/-- Smooth constant functions as a `RingHom`. -/
+/-- `C^n` constant functions as a `RingHom`. -/
 def C : 𝕜 →+* C^n⟮I, N; 𝓘(𝕜, A), A⟯ where
   toFun := fun c : 𝕜 => ⟨fun _ => (algebraMap 𝕜 A) c, contMDiff_const⟩
   map_one' := by ext; exact (algebraMap 𝕜 A).map_one
@@ -282,7 +283,7 @@ def C : 𝕜 →+* C^n⟮I, N; 𝓘(𝕜, A), A⟯ where
   map_add' c₁ c₂ := by ext; exact (algebraMap 𝕜 A).map_add _ _
 
 instance algebra : Algebra 𝕜 C^n⟮I, N; 𝓘(𝕜, A), A⟯ :=
-  { --SmoothMap.semiring with -- Porting note: Commented this out.
+  { --ContMDiffMap.semiring with -- Porting note: Commented this out.
     smul := fun r f => ⟨r • f, contMDiff_const.smul f.contMDiff⟩
     toRingHom := ContMDiffMap.C
     commutes' := fun c f => by ext x; exact Algebra.commutes' _ _
@@ -309,7 +310,7 @@ section ModuleOverContinuousFunctions
 If `V` is a module over `𝕜`, then we show that the space of `C^n` functions from `N` to `V`
 is naturally a vector space over the ring of `C^n` functions from `N` to `𝕜`. -/
 
-/-- Smooth scalar-valued functions act by left-multiplication on `C^n` functions. -/
+/-- `C^n` scalar-valued functions act by left-multiplication on `C^n` functions. -/
 instance instSMul' {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V] :
     SMul C^n⟮I, N; 𝕜⟯ C^n⟮I, N; 𝓘(𝕜, V), V⟯ :=
   ⟨fun f g => ⟨fun x => f x • g x, ContMDiff.smul f.2 g.2⟩⟩

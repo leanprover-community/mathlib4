@@ -6,7 +6,7 @@ Authors: Nicolò Cavalleri
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 
 /-!
-# Smooth structures
+# `C^n` structures
 
 In this file we define `C^n` structures that build on Lie groups. We prefer using the
 term `ContMDiffRing` instead of Lie mainly because Lie ring has currently another use

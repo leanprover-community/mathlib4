@@ -48,8 +48,9 @@ but add these assumptions later as needed. (Quite a few results still do not req
 
 As specific examples of models with corners, we define (in `Geometry.Manifold.Instances.Real`)
 * `modelWithCornersEuclideanHalfSpace n :
-  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
-  `n`-dimensional real manifolds without boundary (with notation `𝓡 n` in the locale `Manifold`)
+  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space used to
+  define `n`-dimensional real manifolds without boundary
+  (with notation `𝓡 n` in the locale `Manifold`)
 * `modelWithCornersEuclideanHalfSpace n :
   ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
   used to define `n`-dimensional real manifolds with boundary (with notation `𝓡∂ n` in the locale
@@ -522,7 +523,7 @@ end Boundaryless
 
 section contDiffGroupoid
 
-/-! ### Smooth functions on models with corners -/
+/-! ### `C^n` functions on models with corners -/
 
 
 variable {m n : WithTop ℕ∞} {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}

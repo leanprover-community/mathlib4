@@ -14,7 +14,7 @@ basic properties of these notions. Here, `n` can be finite, or `∞`, or `ω`.
 
 ## Main definitions and statements
 
-Let `M` and `M'` be two manifolds, with respect to model with corners `I` and `I'`. Let
+Let `M` and `M'` be two manifolds, with respect to models with corners `I` and `I'`. Let
 `f : M → M'`.
 
 * `ContMDiffWithinAt I I' n f s x` states that the function `f` is `Cⁿ` within the set `s`
@@ -23,9 +23,9 @@ Let `M` and `M'` be two manifolds, with respect to model with corners `I` and `I
 * `ContMDiffOn I I' n f s` states that the function `f` is `Cⁿ` on the set `s`
 * `ContMDiff I I' n f` states that the function `f` is `Cⁿ`.
 
-We also give some basic properties of smooth functions between manifolds, following the API of
-smooth functions between vector spaces.
-See `Basic.lean` for further basic properties of smooth functions between manifolds,
+We also give some basic properties of `Cⁿ` functions between manifolds, following the API of
+`C^n` functions between vector spaces.
+See `Basic.lean` for further basic properties of `Cⁿ` functions between manifolds,
 `NormedSpace.lean` for the equivalence of manifold-smoothness to usual smoothness,
 `Product.lean` for smoothness results related to the product of manifolds and
 `Atlas.lean` for smoothness of atlas members and local structomorphisms.
@@ -33,7 +33,7 @@ See `Basic.lean` for further basic properties of smooth functions between manifo
 ## Implementation details
 
 Many properties follow for free from the corresponding properties of functions in vector spaces,
-as being `Cⁿ` is a local property invariant under the smooth groupoid. We take advantage of the
+as being `Cⁿ` is a local property invariant under the `Cⁿ` groupoid. We take advantage of the
 general machinery developed in `LocalInvariantProperties.lean` to get these properties
 automatically. For instance, the fact that being `Cⁿ` does not depend on the chart one considers
 is given by `liftPropWithinAt_indep_chart`.
@@ -48,7 +48,7 @@ open Set Function Filter ChartedSpace IsManifold
 
 open scoped Topology Manifold ContDiff
 
-/-! ### Definition of smooth functions between manifolds -/
+/-! ### Definition of `Cⁿ` functions between manifolds -/
 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -89,8 +89,8 @@ theorem contDiffWithinAtProp_self_target {f : H → E'} {s : Set H} {x : H} :
       ContDiffWithinAt 𝕜 n (f ∘ I.symm) (I.symm ⁻¹' s ∩ range I) (I x) :=
   Iff.rfl
 
-/-- Being `Cⁿ` in the model space is a local property, invariant under smooth maps. Therefore,
-it will lift nicely to manifolds. -/
+/-- Being `Cⁿ` in the model space is a local property, invariant under `Cⁿ` maps. Therefore,
+it lifts nicely to manifolds. -/
 theorem contDiffWithinAt_localInvariantProp_of_le (n m : WithTop ℕ∞) (hmn : m ≤ n) :
     (contDiffGroupoid n I).LocalInvariantProp (contDiffGroupoid n I')
       (ContDiffWithinAtProp I I' m) where
@@ -132,8 +132,8 @@ theorem contDiffWithinAt_localInvariantProp_of_le (n m : WithTop ℕ∞) (hmn : 
     · ext y; simp only [mfld_simps]
     · intro y hy; simp only [mfld_simps] at hy; simpa only [hy, mfld_simps] using hs hy.1
 
-/-- Being `Cⁿ` in the model space is a local property, invariant under smooth maps. Therefore,
-it will lift nicely to manifolds. -/
+/-- Being `Cⁿ` in the model space is a local property, invariant under `C^n` maps. Therefore,
+it lifts nicely to manifolds. -/
 theorem contDiffWithinAt_localInvariantProp (n : WithTop ℕ∞) :
     (contDiffGroupoid n I).LocalInvariantProp (contDiffGroupoid n I')
       (ContDiffWithinAtProp I I' n) :=
@@ -260,8 +260,8 @@ theorem contMDiffWithinAt_iff :
           ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
   simp_rw [ContMDiffWithinAt, liftPropWithinAt_iff']; rfl
 
-/-- One can reformulate being `C^n` within a set at a point as continuity within this set at this
-point, and being `C^n` in the corresponding extended chart. This form states smoothness of `f`
+/-- One can reformulate being `Cⁿ` within a set at a point as continuity within this set at this
+point, and being `Cⁿ` in the corresponding extended chart. This form states regularity of `f`
 written in such a way that the set is restricted to lie within the domain/codomain of the
 corresponding charts.
 Even though this expression is more complicated than the one in `contMDiffWithinAt_iff`, it is
@@ -279,8 +279,8 @@ theorem contMDiffWithinAt_iff' :
   exact and_congr_right fun hc => contDiffWithinAt_congr_set <|
     hc.extChartAt_symm_preimage_inter_range_eventuallyEq
 
-/-- One can reformulate being `C^n` within a set at a point as continuity within this set at this
-point, and being `C^n` in the corresponding extended chart in the target. -/
+/-- One can reformulate being `Cⁿ` within a set at a point as continuity within this set at this
+point, and being `Cⁿ` in the corresponding extended chart in the target. -/
 theorem contMDiffWithinAt_iff_target :
     ContMDiffWithinAt I I' n f s x ↔
       ContinuousWithinAt f s x ∧ ContMDiffWithinAt I 𝓘(𝕜, E') n (extChartAt I' (f x) ∘ f) s x := by
@@ -555,8 +555,8 @@ theorem contMDiff_zero_iff :
 
 end IsManifold
 
-/-! ### Deducing smoothness from smoothness one step beyond -/
 
+/-! ### `C^(n+1)` functions are `C^n` -/
 
 theorem ContMDiffWithinAt.of_succ (h : ContMDiffWithinAt I I' (n + 1) f s x) :
     ContMDiffWithinAt I I' n f s x :=
@@ -571,8 +571,8 @@ theorem ContMDiffOn.of_succ (h : ContMDiffOn I I' (n + 1) f s) : ContMDiffOn I I
 theorem ContMDiff.of_succ (h : ContMDiff I I' (n + 1) f) : ContMDiff I I' n f := fun x =>
   (h x).of_succ
 
-/-! ### Deducing continuity from smoothness -/
 
+/-! ### `C^n` functions are continuous -/
 
 theorem ContMDiffWithinAt.continuousWithinAt (hf : ContMDiffWithinAt I I' n f s x) :
     ContinuousWithinAt f s x :=
@@ -587,7 +587,7 @@ theorem ContMDiffOn.continuousOn (hf : ContMDiffOn I I' n f s) : ContinuousOn f 
 theorem ContMDiff.continuous (hf : ContMDiff I I' n f) : Continuous f :=
   continuous_iff_continuousAt.2 fun x => (hf x).continuousAt
 
-/-! ### `C^∞` smoothness -/
+/-! ### `C^∞` functions -/
 
 theorem contMDiffWithinAt_infty :
     ContMDiffWithinAt I I' ∞ f s x ↔ ∀ n : ℕ, ContMDiffWithinAt I I' n f s x :=
@@ -726,7 +726,7 @@ theorem contMDiffWithinAt_iff_contMDiffOn_nhds
   refine ⟨fun h ↦ ?_, fun ⟨u, hmem, hu⟩ ↦
     (hu _ (mem_of_mem_nhdsWithin hxs hmem)).mono_of_mem_nhdsWithin hmem⟩
   -- The property is true in charts. Let `v` be a good neighborhood in the chart where the function
-  -- is smooth.
+  -- is `Cⁿ`.
   rcases (contMDiffWithinAt_iff'.1 h).2.contDiffOn le_rfl (by simp [hn]) with ⟨v, hmem, hsub, hv⟩
   have hxs' : extChartAt I x x ∈ (extChartAt I x).target ∩
       (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source) :=
@@ -756,7 +756,7 @@ theorem ContMDiffWithinAt.contMDiffOn'
   have : IsManifold I m M := .of_le hm
   have : IsManifold I' m M' := .of_le hm
   match m with
-  | ω =>
+  | (m : ℕ) | ω =>
     rcases (contMDiffWithinAt_iff_contMDiffOn_nhds (by simp)).1 (h.of_le hm) with ⟨t, ht, h't⟩
     rcases mem_nhdsWithin.1 ht with ⟨u, u_open, xu, hu⟩
     rw [inter_comm] at hu
@@ -766,11 +766,6 @@ theorem ContMDiffWithinAt.contMDiffOn'
     rcases mem_nhdsWithin.1 ht with ⟨u, u_open, xu, hu⟩
     rw [inter_comm] at hu
     exact ⟨u, u_open, xu, (h't.mono hu).of_le hm⟩
-  | (m : ℕ) =>
-    rcases (contMDiffWithinAt_iff_contMDiffOn_nhds (by simp)).1 (h.of_le hm) with ⟨t, ht, h't⟩
-    rcases mem_nhdsWithin.1 ht with ⟨u, u_open, xu, hu⟩
-    rw [inter_comm] at hu
-    exact ⟨u, u_open, xu, h't.mono hu⟩
 
 /-- If a function is `C^m` within a set at a point, for some finite `m`, then it is `C^m` within
 this set on a neighborhood of the basepoint. -/

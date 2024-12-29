@@ -163,7 +163,7 @@ instance AnalyticManifold.prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 
       (n.toHasGroupoid.compatible hf2 hg2)
 
 /-- Analytic manifolds are smooth manifolds. -/
-instance AnalyticManifold.smoothManifoldWithCorners [ChartedSpace H M]
+instance AnalyticManifold.isManifold [ChartedSpace H M]
     [cm : AnalyticManifold I M] :
     IsManifold I ∞ M where
   compatible hf hg := ⟨(cm.compatible hf hg).1.contDiffOn I.uniqueDiffOn_preimage_source,

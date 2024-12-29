@@ -40,7 +40,7 @@ scoped[Manifold]
 
 open scoped Manifold ContDiff
 
-namespace ContMDiffMap -- TODO: does this need deprecations also?
+namespace ContMDiffMap
 
 variable {M} {M'} {n}
 

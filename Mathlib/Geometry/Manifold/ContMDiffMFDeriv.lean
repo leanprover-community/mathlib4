@@ -25,7 +25,7 @@ open Set Function Filter ChartedSpace IsManifold Bundle
 
 open scoped Topology Manifold Bundle
 
-/-! ### Definition of smooth functions between manifolds -/
+/-! ### Definition of `C^n` functions between manifolds -/
 
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {m n : WithTop ℕ∞}
@@ -49,10 +49,10 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {m n : WithTop ℕ∞}
   -- declare functions, sets
   {f : M → M'} {s : Set M}
 
--- Porting note: section about deducing differentiability from smoothness moved to
+-- Porting note: section about deducing differentiability for `C^n` functions moved to
 -- `Geometry.Manifold.MFDeriv.Basic`
 
-/-! ### The derivative of a smooth function is smooth -/
+/-! ### The derivative of a `C^(n+1)` function is `C^n` -/
 
 section mfderiv
 variable [Is : IsManifold I n M] [I's : IsManifold I' n M']
@@ -106,7 +106,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
   have h2g : g ⁻¹' (extChartAt I (g x₀)).source ∈ 𝓝[t] x₀ :=
     hg.continuousWithinAt.preimage_mem_nhdsWithin (extChartAt_source_mem_nhds (g x₀))
   -- key point: the derivative of `f` composed with extended charts, at the point `g x` read in the
-  -- chart, is smooth in the vector space sense. This follows from `ContDiffWithinAt.fderivWithin`,
+  -- chart, is `C^n` in the vector space sense. This follows from `ContDiffWithinAt.fderivWithin`,
   -- which is the vector space analogue of the result we are proving.
   have : ContDiffWithinAt 𝕜 m (fun x ↦ fderivWithin 𝕜
         (extChartAt I' (f x₀ (g x₀)) ∘ f ((extChartAt J x₀).symm x) ∘ (extChartAt I (g x₀)).symm)
@@ -138,7 +138,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
       · simp
     · exact hg'.2
     · exact UniqueMDiffOn.uniqueDiffOn_target_inter h'u (g x₀)
-  -- reformulate the previous point as smoothness in the manifold sense (but still for a map between
+  -- reformulate the previous point as `C^n` in the manifold sense (but still for a map between
   -- vector spaces)
   have :
     ContMDiffWithinAt J 𝓘(𝕜, E →L[𝕜] E') m
@@ -150,7 +150,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
       contMDiffWithinAt_iff_contDiffWithinAt, Function.comp_def] at this ⊢
     exact this
   -- finally, argue that the map we control in the previous point coincides locally with the map we
-  -- want to prove the smoothness of, so smoothness of the latter follows from smoothness of the
+  -- want to prove the regularity of, so regularity of the latter follows from regularity of the
   -- former.
   apply this.congr_of_eventuallyEq_of_mem _ (by simp [t', hx₀])
   apply nhdsWithin_mono _ ht't
@@ -236,7 +236,7 @@ theorem ContMDiffWithinAt.mfderivWithin_apply {x₀ : N'}
 where the derivative is taken as a continuous linear map.
 We have to assume that `f` is `C^n` at `(x₀, g(x₀))` for `n ≥ m + 1` and `g` is `C^m` at `x₀`.
 We have to insert a coordinate change from `x₀` to `x` to make the derivative sensible.
-This result is used to show that maps into the 1-jet bundle and cotangent bundle are smooth.
+This result is used to show that maps into the 1-jet bundle and cotangent bundle are `C^n`.
 `ContMDiffAt.mfderiv_const` is a special case of this.
 -/
 protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N → M)
@@ -289,7 +289,7 @@ theorem ContMDiffAt.mfderiv_apply {x₀ : N'} (f : N → M → M') (g : N → M)
 
 end mfderiv
 
-/-! ### The tangent map of a smooth function is smooth -/
+/-! ### The tangent map of a `C^(n+1)` function is `C^n` -/
 
 section tangentMap
 
