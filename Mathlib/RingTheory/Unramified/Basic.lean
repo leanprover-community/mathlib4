@@ -367,12 +367,6 @@ lemma RingHom.respectsIso_formallyUnramified :
   letI := e.toRingHom.toAlgebra
   exact Algebra.FormallyUnramified.of_surjective (Algebra.ofId R S) e.surjective
 
-lemma RingHom.holdsForLocalization_formallyUnramified :
-    RingHom.HoldsForLocalizationAway RingHom.FormallyUnramified := by
-  intros R S _ _ _ r _
-  rw [RingHom.formallyUnramified_algebraMap]
-  exact .of_isLocalization (.powers r)
-
 lemma RingHom.isStableUnderBaseChange_formallyUnramified :
     RingHom.IsStableUnderBaseChange RingHom.FormallyUnramified := by
   refine .mk _ RingHom.respectsIso_formallyUnramified ?_
@@ -380,5 +374,11 @@ lemma RingHom.isStableUnderBaseChange_formallyUnramified :
   show (algebraMap _ _).FormallyUnramified
   rw [RingHom.formallyUnramified_algebraMap] at h ⊢
   infer_instance
+
+lemma RingHom.holdsForLocalizationAway_formallyUnramified :
+    RingHom.HoldsForLocalizationAway RingHom.FormallyUnramified := by
+  intros R S _ _ _ r _
+  rw [RingHom.formallyUnramified_algebraMap]
+  exact .of_isLocalization (.powers r)
 
 end RingHom
