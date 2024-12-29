@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Category.Preorder
-import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.Limit
@@ -58,17 +58,9 @@ namespace CategoryTheory
 
 open Category Limits
 
-variable {C : Type u} [Category.{v} C] {J : Type w}
-
-namespace Limits
-
-instance {J : Type*} [Preorder J] [OrderTop J] : HasTerminal J := hasTerminal_of_unique ⊤
-instance {J : Type*} [Preorder J] [OrderTop J] :
-    HasColimitsOfShape J C := ⟨fun _ ↦ by infer_instance⟩
-
-end Limits
-
 namespace SmallObject
+
+variable {C : Type u} [Category.{v} C] {J : Type w}
 
 section
 
