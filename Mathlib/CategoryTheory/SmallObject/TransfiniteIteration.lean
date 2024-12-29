@@ -138,6 +138,12 @@ lemma transfiniteCompositionOfShape_ιIteration :
 
 variable {J}
 
+lemma transfiniteCompositionOfShape_iterationFunctor_map_from_bot (j : J) :
+    Φ.prop.transfiniteCompositionsOfShape (Set.Iic j)
+      ((Φ.iterationFunctor J).map (homOfLE bot_le : ⊥ ⟶ j)) :=
+  Φ.prop.transfiniteCompositionsOfShape_map_bot_le (Φ.iterationFunctor J) _
+    (fun _ hi ↦ Φ.prop_iterationFunctor_map_succ _ hi.not_isMax)
+
 noncomputable def iterationFunctorObjSuccIso (j : J) (hj : ¬ IsMax j) :
     (Φ.iterationFunctor J).obj (Order.succ j) ≅
       Φ.succ ((Φ.iterationFunctor J).obj j) :=

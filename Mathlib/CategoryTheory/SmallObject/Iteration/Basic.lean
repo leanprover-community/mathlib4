@@ -62,6 +62,14 @@ open Category Limits
 
 variable {C : Type u} [Category.{v} C] {J : Type w}
 
+namespace Limits
+
+instance {J : Type*} [Preorder J] [OrderTop J] : HasTerminal J := hasTerminal_of_unique ⊤
+instance {J : Type*} [Preorder J] [OrderTop J] :
+    HasColimitsOfShape J C := ⟨fun _ ↦ by infer_instance⟩
+
+end Limits
+
 namespace SmallObject
 
 section
@@ -128,6 +136,13 @@ lemma hasColimitsOfShape_of_isSuccLimit [HasIterationOfShape C J] (j : J)
     (hj : Order.IsSuccLimit j) :
     HasColimitsOfShape (Set.Iio j) C :=
   HasIterationOfShape.hasColimitsOfShape_of_isSuccLimit j hj
+
+instance [HasIterationOfShape C J] (j : J):
+    HasIterationOfShape C (Set.Iic j) where
+  hasColimitsOfShape_of_isSuccLimit := by
+    rintro i hi
+    have := hasColimitsOfShape_of_isSuccLimit C i.1 (Set.Iic.isSuccLimit_coe hi)
+    exact hasColimitsOfShape_of_equivalence (Set.Iic.iioOrderIso i).equivalence.symm
 
 instance [HasIterationOfShape C J] :
     HasIterationOfShape (Arrow C) J where

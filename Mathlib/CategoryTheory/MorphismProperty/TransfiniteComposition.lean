@@ -42,10 +42,34 @@ holds for any well ordered type `J` in a certain universe `u`.
 
 universe w v v' v'' u u' u''
 
+instance {α : Type u} [Preorder α] {j : α} :
+    OrderTop (Set.Iic j) where
+  top := ⟨j, by simp⟩
+  le_top i := i.2
+
 lemma Set.Iic.not_isMin_coe {α : Type u} [Preorder α] {j : α}
     {k : Set.Iic j} (hk : ¬ IsMin k) :
     ¬ IsMin k.1 :=
    fun h ↦ hk (fun _ ha' ↦ h ha')
+
+lemma Set.Iic.not_isMax_coe {α : Type u} [Preorder α] {j : α}
+    {k : Set.Iic j} (hk : ¬ IsMax k) :
+    ¬ IsMax k.1 :=
+   fun h ↦ hk (fun _ ha' ↦ h ha')
+
+variable {α : Type u} [LinearOrder α] [SuccOrder α] (j : α)
+
+lemma Set.Iic.succ_coe {α : Type u} [LinearOrder α] [SuccOrder α] {j : α}
+    (k : Set.Iic j) (hk : ¬ IsMax k) :
+    Order.succ k = Order.succ k.1 :=
+  coe_succ_of_mem (by
+    rw [mem_Iic, Order.succ_le_iff_of_not_isMax (not_isMax_coe hk)]
+    by_contra!
+    obtain ⟨k, hk⟩ := k
+    simp only [not_isMax_iff, Subtype.exists, Subtype.mk_lt_mk, mem_Iic, exists_prop] at hk
+    obtain ⟨i, hi⟩ := hk
+    have := lt_of_le_of_lt (hi.1.trans this) hi.2
+    simp at this)
 
 lemma Set.Iic.isSuccPrelimit_coe {α : Type u} [Preorder α] {j : α}
     {k : Set.Iic j} (hk : Order.IsSuccPrelimit k) :
@@ -117,7 +141,7 @@ def coconeLE (F : J ⥤ C) (j : J) :
         simp only [homOfLE_leOfHom, ← Functor.map_comp, comp_id]
         rfl }
 
-/-- The colimit of `F.cocone j` is `F.obj j`. -/
+/-- The colimit of `F.coconeLE j` is `F.obj j`. -/
 def isColimitCoconeLE (F : J ⥤ C) (j : J) :
     IsColimit (F.coconeLE j) where
   desc s := s.ι.app ⟨j, by simp⟩
@@ -242,6 +266,27 @@ instance [W.RespectsIso] : RespectsIso (W.transfiniteCompositionsOfShape J) wher
     exact ⟨_, hF, { ι := c.ι ≫ (Functor.const _).map i },
       IsColimit.ofIsoColimit hc (Cocones.ext (asIso i))⟩
 
+-- to be moved
+instance (ι : Type*) [Preorder ι] [OrderBot ι] (j : ι) :
+    OrderBot (Set.Iic j) where
+  bot := ⟨⊥, bot_le⟩
+  bot_le _ := bot_le
+
+variable {J} in
+lemma transfiniteCompositionsOfShape_map_bot_le
+    (F : J ⥤ C) [F.IsWellOrderContinuous] (j : J)
+    (hF : ∀ (i : J) (_ : i < j), W (F.map (homOfLE (Order.le_succ i)))) :
+    W.transfiniteCompositionsOfShape (Set.Iic j) (F.map (homOfLE bot_le : ⊥ ⟶ j)) := by
+  refine ⟨_, fun ⟨i, hi⟩ hi' ↦ ?_, _, F.isColimitCoconeLE j⟩
+  dsimp [Monotone.functor]
+  have := Set.Iic.succ_coe _ hi'
+  dsimp at this
+  have := hF i (by
+    simp only [not_isMax_iff, Subtype.exists, Subtype.mk_lt_mk, Set.mem_Iic, exists_prop] at hi'
+    obtain ⟨k, hk⟩ := hi'
+    exact lt_of_lt_of_le hk.2 hk.1)
+  convert this
+
 lemma transfiniteCompositionsOfShape_map_of_preserves (G : C ⥤ D)
     [PreservesWellOrderContinuousOfShape J G]
     {X Y : C} (f : X ⟶ Y) {P : MorphismProperty D}
@@ -259,14 +304,14 @@ for any colimit cocone `c : Cocone F`. -/
 class IsStableUnderTransfiniteCompositionOfShape : Prop where
   le : W.transfiniteCompositionsOfShape J ≤ W
 
-variable [W.IsStableUnderTransfiniteCompositionOfShape J]
 
-lemma transfiniteCompositionsOfShape_le  :
+lemma transfiniteCompositionsOfShape_le [W.IsStableUnderTransfiniteCompositionOfShape J] :
     W.transfiniteCompositionsOfShape J ≤ W :=
   IsStableUnderTransfiniteCompositionOfShape.le
 
 variable {J} in
-lemma mem_of_transfinite_composition {F : J ⥤ C} [F.IsWellOrderContinuous]
+lemma mem_of_transfinite_composition [W.IsStableUnderTransfiniteCompositionOfShape J]
+    {F : J ⥤ C} [F.IsWellOrderContinuous]
     (hF : ∀ (j : J) (_ : ¬IsMax j), W (F.map (homOfLE (Order.le_succ j))))
     {c : Cocone F} (hc : IsColimit c) : W (c.ι.app ⊥) :=
   W.transfiniteCompositionsOfShape_le J _ (by constructor <;> assumption)

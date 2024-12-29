@@ -228,11 +228,46 @@ lemma transfiniteCompositionOfShape_succStruct_prop_ιIteration :
   have := hasIterationOfShape I κ
   apply SuccStruct.transfiniteCompositionOfShape_ιIteration
 
+@[nolint unusedHavesSuffices]
+lemma transfiniteCompositionOfShape_succStruct_iterationFunctor_map_from_bot (j : κ.ord.toType) :
+    (succStruct I κ).prop.transfiniteCompositionsOfShape (Set.Iic j)
+      ((iterationFunctor I κ).map (homOfLE bot_le : ⊥ ⟶ j)) := by
+  have := hasIterationOfShape I κ
+  apply SuccStruct.transfiniteCompositionOfShape_iterationFunctor_map_from_bot
+
 lemma transfiniteCompositionOfShape_propArrow_ιIteration :
     ((propArrow.{w} I).functorCategory (Arrow C)).transfiniteCompositionsOfShape
       κ.ord.toType (ιIteration I κ) :=
   monotone_transfiniteCompositionsOfShape _ (succStruct_prop_le_propArrow I κ) _
     (transfiniteCompositionOfShape_succStruct_prop_ιIteration I κ)
+
+lemma transfiniteCompositionOfShape_propArrow_iterationFunctor_map_from_bot (j : κ.ord.toType) :
+    ((propArrow.{w} I).functorCategory (Arrow C)).transfiniteCompositionsOfShape
+      (Set.Iic j) (((iterationFunctor I κ).map (homOfLE bot_le : ⊥ ⟶ j))) :=
+  monotone_transfiniteCompositionsOfShape _ (succStruct_prop_le_propArrow I κ) _
+    (transfiniteCompositionOfShape_succStruct_iterationFunctor_map_from_bot I κ j)
+
+omit κ in
+lemma propArrow_functorCategory_arrow_le (f : Arrow C) :
+    (propArrow I).functorCategory (Arrow C) ≤
+      (isomorphisms C).inverseImage
+        ((evaluation (Arrow C) (Arrow C)).obj f ⋙ Arrow.rightFunc) := by
+  intro _ _ _ h
+  exact (h f).2
+
+lemma isEventuallyConstantFrom_bot_iterationFunctor_evaluation_right (f : Arrow C) :
+    (iterationFunctor I κ ⋙
+      (evaluation _ (Arrow C)).obj f ⋙ Arrow.rightFunc).IsEventuallyConstantFrom ⊥ := by
+  intro j φ
+  have := hasIterationOfShape I κ
+  suffices (isomorphisms _).transfiniteCompositionsOfShape (Set.Iic j)
+      (((evaluation _ (Arrow C)).obj f ⋙ Arrow.rightFunc).map
+      ((iterationFunctor I κ).map φ)) from
+    (isomorphisms C).transfiniteCompositionsOfShape_le _ _ this
+  apply transfiniteCompositionsOfShape_map_of_preserves
+  exact monotone_transfiniteCompositionsOfShape _
+    (propArrow_functorCategory_arrow_le I f) _
+    (transfiniteCompositionOfShape_propArrow_iterationFunctor_map_from_bot _ _ _)
 
 instance isIso_ιIteration_app_right (f : Arrow C) :
     IsIso ((ιIteration I κ).app f).right := by
@@ -241,10 +276,18 @@ instance isIso_ιIteration_app_right (f : Arrow C) :
       (((evaluation _ (Arrow C)).obj f ⋙ Arrow.rightFunc).map (ιIteration I κ)) from
     (isomorphisms C).transfiniteCompositionsOfShape_le κ.ord.toType _ this
   apply transfiniteCompositionsOfShape_map_of_preserves
-  apply monotone_transfiniteCompositionsOfShape _ _ _
+  exact monotone_transfiniteCompositionsOfShape _
+    (propArrow_functorCategory_arrow_le I f) _
     (transfiniteCompositionOfShape_propArrow_ιIteration I κ)
-  intro _ _ _ h
-  exact (h f).2
+
+
+instance (f : Arrow C) (j : κ.ord.toType) :
+    IsIso (((iterationCocone I κ).ι.app j).app f).right :=
+  have := hasIterationOfShape I κ
+  (isEventuallyConstantFrom_bot_iterationFunctor_evaluation_right
+    I κ f).isIso_ι_of_isColimit'
+      (isColimitOfPreserves ((evaluation _ _).obj f ⋙ Arrow.rightFunc)
+        (isColimitIterationCocone I κ)) j (homOfLE bot_le)
 
 noncomputable def iterationFunctorObjSuccObjLeftIso
     (f : Arrow C) (j : κ.ord.toType) (hj : ¬ IsMax j) :
@@ -266,20 +309,6 @@ lemma ιFunctorObj_iterationFunctorObjSuccObjLeftIso_inv
   have := hasIterationOfShape I κ
   exact ((evaluation _ _).obj f ⋙ Arrow.leftFunc).congr_map
     ((succStruct I κ).iterationFunctor_map_succ j hj).symm
-
-lemma isEventuallyConstantFrom_bot_iterationFunctor_right :
-    (iterationFunctor I κ ⋙ (whiskeringRight _ _ _).obj
-      Arrow.rightFunc).IsEventuallyConstantFrom ⊥ := by
-  sorry
-
-lemma isEventuallyConstantFrom_bot_iterationFunctor_evaluation_right (f : Arrow C) :
-    (iterationFunctor I κ ⋙ (evaluation _ _).obj f ⋙
-      Arrow.rightFunc).IsEventuallyConstantFrom ⊥ := by
-  intro i g
-  let τ := whiskerRight ((iterationFunctor I κ).map g) Arrow.rightFunc
-  have : IsIso τ := isEventuallyConstantFrom_bot_iterationFunctor_right I κ g
-  change IsIso (τ.app f)
-  infer_instance
 
 lemma πFunctorObj_iterationCocone_ι_app_app_right
     (f : Arrow C) (j : κ.ord.toType) (hj : ¬ IsMax j) :
@@ -303,11 +332,6 @@ lemma πFunctorObj_iterationCocone_ι_app_app_right
     ((succStruct I κ).iterationFunctor_map_succ j hj)
   dsimp [iterationFunctorObjSuccObjLeftIso, iterationFunctor, iterationCocone] at h₁ h₂ h₃ h₄ ⊢
   rw [succStruct_toSucc_app_right, id_comp] at h₄
-  sorry
-
-instance (f : Arrow C) (j : κ.ord.toType) :
-    IsIso (((iterationCocone I κ).ι.app j).app f).right := by
-  have := isIso_ιIteration_app_right I κ f
   sorry
 
 lemma hasRightLiftingProperty_iteration_obj_hom (f : Arrow C) {A B : C} (i : A ⟶ B) (hi : I i):
