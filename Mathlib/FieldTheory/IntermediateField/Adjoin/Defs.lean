@@ -586,7 +586,7 @@ theorem adjoin_simple_adjoin_simple (β : E) : F⟮α⟯⟮β⟯.restrictScalars
 theorem adjoin_simple_comm (β : E) : F⟮α⟯⟮β⟯.restrictScalars F = F⟮β⟯⟮α⟯.restrictScalars F :=
   adjoin_adjoin_comm _ _ _
 
-variable {F}
+variable {F} {α}
 
 /- Porting note: this was tagged `simp`, but the LHS can be simplified now that the notation
 has been improved. -/
