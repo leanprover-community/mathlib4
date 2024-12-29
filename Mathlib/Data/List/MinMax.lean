@@ -294,11 +294,17 @@ theorem minimum_eq_none {l : List α} : l.minimum = none ↔ l = [] := minimum_e
 theorem not_maximum_lt_of_mem : a ∈ l → (maximum l : WithBot α) = m → ¬m < a :=
   not_lt_of_mem_argmax
 
+@[deprecated (since := "2024-12-29")] alias not_lt_maximum_of_mem := not_maximum_lt_of_mem
+
 theorem not_lt_minimum_of_mem : a ∈ l → (minimum l : WithTop α) = m → ¬a < m :=
   not_lt_of_mem_argmin
 
+@[deprecated (since := "2024-12-29")] alias minimum_not_lt_of_mem := not_lt_minimum_of_mem
+
 theorem not_maximum_lt_of_mem' (ha : a ∈ l) : ¬maximum l < (a : WithBot α) := by
   cases h : l.maximum <;> simp_all [not_maximum_lt_of_mem ha]
+
+@[deprecated (since := "2024-12-29")] alias not_lt_maximum_of_mem' := not_maximum_lt_of_mem'
 
 theorem not_lt_minimum_of_mem' (ha : a ∈ l) : ¬(a : WithTop α) < minimum l := by
   cases h : l.minimum <;> simp_all [not_lt_minimum_of_mem ha]
