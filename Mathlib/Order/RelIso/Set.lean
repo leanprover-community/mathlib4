@@ -37,15 +37,12 @@ theorem map_sup [SemilatticeSup α] [LinearOrder β] [FunLike F β α]
   map_inf (α := αᵒᵈ) (β := βᵒᵈ) _ _ _
 
 theorem directed [FunLike F α β] [RelHomClass F r s] {ι : Sort*} {a : ι → α} {f : F}
-    (ha : Directed r a) : Directed s (f ∘ a) := fun i j ↦ by
-  obtain ⟨k, hk1, hk2⟩ := ha i j
-  exact ⟨k, map_rel f hk1, map_rel f hk2⟩
+    (ha : Directed r a) : Directed s (f ∘ a) :=
+  ha.mono_comp _ fun _ _ h ↦ map_rel f h
 
 theorem directedOn [FunLike F α β] [RelHomClass F r s] {f : F}
-    {t : Set α} (hs : DirectedOn r t) : DirectedOn s (f '' t) := by
-  rintro - ⟨a, ha, rfl⟩ - ⟨a', ha', rfl⟩
-  obtain ⟨x, x_in, hx1, hx2⟩ := hs a ha a' ha'
-  exact ⟨f x, ⟨x, x_in, rfl⟩, map_rel f hx1, map_rel f hx2⟩
+    {t : Set α} (hs : DirectedOn r t) : DirectedOn s (f '' t) :=
+  hs.mono_comp fun _ _ h ↦ map_rel f h
 
 end RelHomClass
 
