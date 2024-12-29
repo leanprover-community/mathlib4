@@ -1915,7 +1915,7 @@ theorem insertRight_insertLeft {x x' x'' : PGame} :
 /-- The PGame constructed by removing `'x` as a left option from `x`. -/
 def removeLeft (x : PGame.{u}) (i : x.LeftMoves) : PGame :=
   match x with
-  | mk _ xr xL xR => mk ({ x // x ≠ i }) xr (fun k ↦ xL (k.val)) xR
+  | mk _ xr xL xR => mk { x // x ≠ i } xr (xL ·.val) xR
 
 /-- One less left option will not empower Left. -/
 theorem removeLeft_le (x : PGame) (i : x.LeftMoves) : x.removeLeft i ≤ x := by
@@ -1937,7 +1937,7 @@ theorem removeLeft_le (x : PGame) (i : x.LeftMoves) : x.removeLeft i ≤ x := by
 /-- The PGame constructed by removing `'x` as a right option from `x`. -/
 def removeRight (x : PGame.{u}) (i : x.RightMoves) : PGame :=
   match x with
-  | mk xl _ xL xR => mk xl { x // x ≠ i } xL (fun i ↦ xR (i.val))
+  | mk xl _ xL xR => mk xl { x // x ≠ i } xL (xR ·.val)
 
 theorem neg_removeRight_neg (x : PGame.{u}) (i : x.RightMoves) :
     (-x).removeLeft (asLeftMovesNeg i) = -x.removeRight i := by
