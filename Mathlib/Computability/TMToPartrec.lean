@@ -1282,7 +1282,7 @@ theorem move₂_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k
       Function.update_of_ne h₁.1.symm, List.reverseAux_eq, h₂, Function.update_self,
       List.append_nil, List.reverse_reverse]
   · convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
-    simp only [h₂, Function.update_comm h₁.1, List.reverseAux_eq, Function.update_same,
+    simp only [h₂, Function.update_comm h₁.1, List.reverseAux_eq, Function.update_self,
       List.append_nil, Function.update_idem]
     rw [show update S rev [] = S by rw [← h₂, Function.update_eq_self]]
     simp only [Function.update_of_ne h₁.1.symm, Function.update_of_ne h₁.2.2.symm,
@@ -1323,7 +1323,7 @@ theorem copy_ok (q s a b c d) :
   refine TransGen.head rfl ?_
   rw [tr]
   simp only [TM2.step, Option.mem_def, TM2.stepAux, elim_rev, List.head?_cons, Option.isSome_some,
-    List.tail_cons, elim_update_rev, ne_eq, Function.update_noteq, elim_main, elim_update_main,
+    List.tail_cons, elim_update_rev, ne_eq, Function.update_of_ne, elim_main, elim_update_main,
     elim_stack, elim_update_stack, cond_true, List.reverseAux_cons, pop', push']
   exact IH _ _ _
 
@@ -1431,8 +1431,8 @@ theorem succ_ok {q s n} {c d : List Γ'} :
     rfl
   · refine ⟨l₁, _, some Γ'.bit0, rfl, TransGen.single ?_⟩
     simp only [TM2.step]; rw [tr]
-    simp only [TM2.stepAux, pop', elim_main, elim_update_main, ne_eq, Function.update_noteq,
-      elim_rev, elim_update_rev, Function.update_same, Option.mem_def, Option.some.injEq]
+    simp only [TM2.stepAux, pop', elim_main, elim_update_main, ne_eq, Function.update_of_ne,
+      elim_rev, elim_update_rev, Function.update_self, Option.mem_def, Option.some.injEq]
     rfl
 
 theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
