@@ -9,7 +9,6 @@ import Mathlib.RingTheory.GradedAlgebra.FiniteType
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.Algebra.Group.Submonoid.Finsupp
-import Mathlib.RingTheory.FiniteType
 
 /-!
 # Homogeneous Localization
