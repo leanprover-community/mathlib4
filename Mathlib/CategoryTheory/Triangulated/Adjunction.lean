@@ -56,10 +56,10 @@ lemma isTriangulated_rightAdjoint : G.IsTriangulated where
     rw [assoc] at h₂
     have : Mono (adj.homEquiv _ _ h) := by
       rw [mono_iff_cancel_zero]
-      intro Y φ hφ
+      intro _ φ hφ
       obtain ⟨ψ, rfl⟩ := Triangle.coyoneda_exact₃ _ mem φ (by
         dsimp
-        simp [homEquiv_unit] at hφ
+        simp only [homEquiv_unit, Functor.comp_obj] at hφ
         rw [← cancel_mono ((G.commShiftIso (1 : ℤ)).inv.app T.obj₁), assoc, h₂', zero_comp,
           homEquiv_unit, assoc, reassoc_of% hφ, zero_comp])
       dsimp at ψ hφ ⊢
