@@ -298,7 +298,8 @@ lemma geom_sum_of_lt_one {x : α} [LinearOrderedSemifield α] [CanonicallyOrdere
     ∑ i ∈ Finset.range n, x ^ i = (1 - x ^ n) / (1 - x) :=
   eq_div_of_mul_eq (tsub_pos_of_lt h).ne' (geom_sum_mul_of_le_one h.le n)
 
-theorem geom_sum_lt {x : α} [CanonicallyLinearOrderedSemifield α] [Sub α] [OrderedSub α]
+theorem geom_sum_lt {x : α} [LinearOrderedSemifield α] [CanonicallyOrderedAdd α]
+    [Sub α] [OrderedSub α]
     (h0 : x ≠ 0) (h1 : x < 1) (n : ℕ) : ∑ i ∈ range n, x ^ i < (1 - x)⁻¹ := by
   rw [← zero_lt_iff] at h0
   rw [geom_sum_of_lt_one h1, div_lt_iff₀, inv_mul_cancel₀, tsub_lt_self_iff]

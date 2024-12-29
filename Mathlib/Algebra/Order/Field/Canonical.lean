@@ -14,10 +14,8 @@ import Mathlib.Algebra.Order.Ring.Canonical
 
 variable {α : Type*} [LinearOrderedSemifield α] [CanonicallyOrderedAdd α]
 
--- See note [reducible non-instances]
-/-- Construct a `LinearOrderedCommGroupWithZero` from a canonically ordered
-`LinearOrderedSemifield`. -/
-abbrev CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero :
+-- See note [lower instance priority]
+instance (priority := 100) LinearOrderedSemifield.toLinearOrderedCommGroupWithZero :
     LinearOrderedCommGroupWithZero α :=
   { ‹LinearOrderedSemifield α› with
     mul_le_mul_left := fun _ _ h _ ↦ mul_le_mul_of_nonneg_left h <| zero_le _ }
