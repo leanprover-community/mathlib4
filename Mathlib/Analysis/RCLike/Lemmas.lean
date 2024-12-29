@@ -44,7 +44,7 @@ This instance generates a type-class problem with a metavariable `?m` that shoul
 `RCLike ?m`. Since this can only be satisfied by `ℝ` or `ℂ`, this does not cause problems. -/
 
 /-- An `RCLike` field is finite-dimensional over `ℝ`, since it is spanned by `{1, I}`. -/
-instance rclike_to_real : FiniteDimensional ℝ K := ⟨{1, I}, span_one_I K⟩
+instance rclike_to_real : FiniteDimensional ℝ K := ⟨{1, I}, by simp [span_one_I]⟩
 
 variable (K E)
 variable [NormedAddCommGroup E] [NormedSpace K E]
