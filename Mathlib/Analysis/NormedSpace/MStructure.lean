@@ -132,6 +132,8 @@ instance Subtype.hasCompl : HasCompl (Lsummands G) :=
 
 instance : PartialOrder (Lsummands G) := Subtype.partialOrder fun f ↦ IsLsummand G f
 
+-- This is almost what we want...
+--#check Submodule.linearProjOfClosedCompl
 
 end Lsummands
 
