@@ -196,7 +196,7 @@ theorem AntisymmRel.lt_congr_right (h : AntisymmRel (· ≤ ·) b c) : a < b ↔
 
 theorem AntisymmRel.antisymmRel_congr
     (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :
-      AntisymmRel (· ≤ ·) a c ↔ AntisymmRel (· ≤ ·) b d := by
+    AntisymmRel (· ≤ ·) a c ↔ AntisymmRel (· ≤ ·) b d := by
   rw [antisymmRel_iff, antisymmRel_iff, h₁.le_congr h₂, h₂.le_congr h₁]
 
 theorem AntisymmRel.antisymmRel_congr_left (h : AntisymmRel (· ≤ ·) a b) :
