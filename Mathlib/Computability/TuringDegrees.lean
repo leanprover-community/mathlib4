@@ -239,7 +239,7 @@ theorem TuringEquivalent.symm {f g : ℕ →. ℕ} (h : f ≡ᵀ g) : g ≡ᵀ f
 
 @[trans]
 theorem TuringEquivalent.trans {f g h : ℕ →. ℕ} (h1 : f ≡ᵀ g) (h2 : g ≡ᵀ h) : f ≡ᵀ h :=
-  Equivalence.trans equivalence h1 h2
+  equivalence.trans h1 h2
 
 /-- The type of Turing degrees, implemented as the
 quotient of partial functions (`PFun`) under Turing equivalence. -/
