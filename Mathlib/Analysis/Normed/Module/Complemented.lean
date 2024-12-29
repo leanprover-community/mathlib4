@@ -93,13 +93,6 @@ def idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
   ↑(prodEquivOfClosedCompl p q h hp hq) ∘L (ContinuousLinearMap.inl 𝕜 p q ∘L
     (linearProjOfClosedCompl p q h hp hq))
 
-
-
-
-/-
-
--/
-
 variable {p q}
 
 @[simp]
@@ -218,6 +211,12 @@ lemma range_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p :
     simp at hx
     obtain ⟨y, hy⟩ := hx
     rw [← hy]
+    have hy1 : y ∈ p ⊔ q := by
+      rw [h.sup_eq_top]
+      exact AddSubgroup.mem_top y
+    obtain ⟨x₁,⟨hx₁,⟨y₁,⟨hy₁,hx₁y₁y⟩⟩⟩⟩ := Submodule.mem_sup.mp hy1
+
+
     sorry
   · intro hx
     simp
