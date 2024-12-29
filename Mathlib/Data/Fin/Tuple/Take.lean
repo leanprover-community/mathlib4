@@ -132,7 +132,7 @@ theorem take_addCases_right {n' : ℕ} {motive : Fin (n + n') → Sort*} (m : �
   by_cases h' : i < n
   · simp only [h', ↓reduceDIte]
     congr
-  · simp only [h', ↓reduceDIte, subNat, castLE, cast, eqRec_eq_cast]
+  · simp only [h', ↓reduceDIte, subNat, castLE, Fin.cast, eqRec_eq_cast]
 
 /-- Version of `take_addCases_right` that specializes `addCases` to `append`. -/
 theorem take_append_right {n' : ℕ} {α : Sort*} (m : ℕ) (h : m ≤ n') (u : (i : Fin n) → α)
