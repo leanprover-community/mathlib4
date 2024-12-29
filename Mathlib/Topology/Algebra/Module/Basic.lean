@@ -271,3 +271,5 @@ instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] 
   QuotientAddGroup.instT3Space S.toAddSubgroup
 
 end Submodule
+
+end Quotient
