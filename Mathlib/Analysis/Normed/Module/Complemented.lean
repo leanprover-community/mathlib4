@@ -138,7 +138,7 @@ def idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
 
 variable {p q}
 
-lemma xinv (h : IsCompl p q) (hp : IsClosed (p : Set E))
+lemma mem_iff_invariant_ofClosedCompl  (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) {x : E} :
     let P := idempotentOfClosedCompl p q h hp hq
     x ∈ p ↔ P x = x := by
@@ -155,7 +155,8 @@ lemma xinv (h : IsCompl p q) (hp : IsClosed (p : Set E))
     rw [← hx]
     exact coe_mem ((linearProjOfIsCompl p q h) x)
 
-lemma yinv (h : IsCompl p q) (hp : IsClosed (p : Set E)) (hq : IsClosed (q : Set E)) {y : E} :
+lemma mem_iff_zero_ofClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
+    (hq : IsClosed (q : Set E)) {y : E} :
     let P := idempotentOfClosedCompl p q h hp hq
     y ∈ q ↔ P y = 0 := by
   constructor
@@ -180,9 +181,12 @@ lemma is_idempotent_ofClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     rw [h.sup_eq_top]
     exact AddSubgroup.mem_top z
   obtain ⟨x₁,⟨hx₁,⟨y₁,⟨hy₁,hx₁y₁y⟩⟩⟩⟩ := Submodule.mem_sup.mp hy1
-  rw [← hx₁y₁y, map_add, map_add, ((yinv h hp hq).mp hy₁), ((xinv h hp hq).mp hx₁), add_zero,
-    ContinuousLinearMap.coe_mul, Function.comp_apply, Function.comp_apply, ((yinv h hp hq).mp hy₁),
-    ((xinv h hp hq).mp hx₁), map_zero, add_zero, (xinv h hp hq).mp hx₁]
+  rw [← hx₁y₁y, map_add, map_add, ((mem_iff_zero_ofClosedCompl h hp hq).mp hy₁),
+    ((mem_iff_invariant_ofClosedCompl h hp hq).mp hx₁), add_zero,
+    ContinuousLinearMap.coe_mul, Function.comp_apply, Function.comp_apply,
+    ((mem_iff_zero_ofClosedCompl h hp hq).mp hy₁),
+    ((mem_iff_invariant_ofClosedCompl h hp hq).mp hx₁),
+    map_zero, add_zero, (mem_iff_invariant_ofClosedCompl h hp hq).mp hx₁]
 
 lemma ker_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
@@ -208,7 +212,7 @@ lemma range_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E)
     rw [← hy]
     exact coe_mem ((linearProjOfIsCompl p q h) y)
   · intro hx
-    exact LinearMap.mem_range.mp ⟨x,(xinv h hp hq).mp hx⟩
+    exact LinearMap.mem_range.mp ⟨x,(mem_iff_invariant_ofClosedCompl h hp hq).mp hx⟩
 
 lemma ker_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
@@ -224,7 +228,7 @@ lemma ker_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : S
     rw [hx]
     exact coe_mem ((linearProjOfIsCompl p q h) x)
   · intro hx
-    exact sub_eq_zero.mpr ((xinv h hp hq).mp hx).symm
+    exact sub_eq_zero.mpr ((mem_iff_invariant_ofClosedCompl h hp hq).mp hx).symm
 
 lemma range_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
@@ -240,7 +244,8 @@ lemma range_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p :
       rw [h.sup_eq_top]
       exact AddSubgroup.mem_top y
     obtain ⟨x₁,⟨hx₁,⟨y₁,⟨hy₁,hx₁y₁y⟩⟩⟩⟩ := Submodule.mem_sup.mp hy1
-    rw [← hx₁y₁y, map_add, ((yinv h hp hq).mp hy₁), ((xinv h hp hq).mp hx₁)]
+    rw [← hx₁y₁y, map_add, ((mem_iff_zero_ofClosedCompl h hp hq).mp hy₁),
+      ((mem_iff_invariant_ofClosedCompl h hp hq).mp hx₁)]
     simp
     exact hy₁
   · rw [idempotentOfClosedCompl]
@@ -249,7 +254,5 @@ lemma range_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p :
     use x
     simp
     exact hx
-
-
 
 end Submodule
