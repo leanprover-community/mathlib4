@@ -83,55 +83,28 @@ def IsLsummand.compl {L : AddSubgroup G} (h : IsLsummand G L) : AddSubgroup G wh
       constructor
       · intro hy x hx
         rw [(hK₂ x hx y hy)]
-      · simp
-        intro h
+      · intro h
         have hy1 : y ∈ L ⊔ K := by
           rw [hK₁]
           exact AddSubgroup.mem_top y
         obtain ⟨x₁,⟨hx₁,⟨y₁,⟨hy₁,hx₁y₁y⟩⟩⟩⟩ := AddSubgroup.mem_sup.mp hy1
         have e2 : ‖y₁‖ = ‖x₁‖ + ‖y‖ := by
-          rw [← norm_neg x₁]
-          rw [← (h _ (AddSubgroup.neg_mem L hx₁))]
-          rw [← hx₁y₁y]
-          rw [neg_add_cancel_left]
-        rw [← hx₁y₁y] at e2
-        rw [← (hK₂ _ hx₁ _ hy₁)] at e2
-        rw [← add_assoc] at e2
-        rw [← two_smul ℕ] at e2
-        simp at e2
+          rw [← norm_neg x₁, ← (h _ (AddSubgroup.neg_mem L hx₁)), ← hx₁y₁y, neg_add_cancel_left]
+        rw [← hx₁y₁y, ← (hK₂ _ hx₁ _ hy₁), ← add_assoc, ← two_smul ℕ] at e2
+        simp only [nsmul_eq_mul, Nat.cast_ofNat, self_eq_add_left, mul_eq_zero, OfNat.ofNat_ne_zero,
+          norm_eq_zero, false_or] at e2
         rw [e2, zero_add] at hx₁y₁y
         rw [← hx₁y₁y]
         exact hy₁
-
-
-
-
     rw [← e1]
     intro a b ha hb
     exact add_mem ha hb
   zero_mem' := by
-    simp only [Set.mem_setOf_eq, add_zero, norm_zero, sub_zero, and_self, implies_true]
+    simp only [Set.mem_setOf_eq, add_zero, norm_zero, implies_true]
   neg_mem' := by
     simp only [Set.mem_setOf_eq, norm_neg, sub_neg_eq_add]
-    intro x hx y hy
-    constructor
-    · rw [← sub_eq_add_neg]
-      rw [(hx y hy).2]
-    · rw [(hx y hy).1]
-
-
-lemma IsLsummand.compl_uniq (L : AddSubgroup G) (h : IsLsummand G L) :
-  ∃! (K : AddSubgroup G), L ⊔ K = ⊤ ∧ ∀ x ∈ L, ∀ y ∈ K, ‖x‖ + ‖y‖ = ‖x + y‖ := by
-  obtain ⟨K,hK⟩ := h.compl
-  use K
-  constructor
-  · apply hK
-  · intro J ⟨hJ₁,hJ₂⟩
-    ext y
-    constructor
-    · intro h
-      sorry
-    · sorry
+    intro z hz y hy
+    rw [← norm_neg, neg_add, neg_neg, (hz _ (AddSubgroup.neg_mem L hy)), norm_neg]
 
 /-- A shorthand for the type of L-projections. -/
 abbrev Lsummands : Type _ := { f : AddSubgroup G // IsLsummand G f }
@@ -144,10 +117,6 @@ instance Subtype.hasCompl : HasCompl (Lsummands G) :=
     property := sorry
   }
   ⟩
-
---instance : LE (Lsummands G) := Subtype.le
-
--- instance : Preorder (Lsummands G) := Subtype.preorder _ --fun f ↦ IsLsummand G f
 
 instance : PartialOrder (Lsummands G) := Subtype.partialOrder fun f ↦ IsLsummand G f
 
