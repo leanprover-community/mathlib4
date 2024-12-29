@@ -191,13 +191,13 @@ theorem extremePoints_pi (s : ∀ i, Set (π i)) :
   simp only [mem_extremePoints, mem_pi, mem_univ, true_imp_iff, @forall_and ι]
   refine and_congr_right fun hx ↦ ⟨fun h i ↦ ?_, fun h ↦ ?_⟩
   · rintro x₁ hx₁ x₂ hx₂ hi
-    refine (h (update x i x₁) ?_ (update x i x₂) ?_ ?_).imp (fun h₁ ↦ by rw [← h₁, update_same])
-        fun h₂ ↦ by rw [← h₂, update_same]
+    refine (h (update x i x₁) ?_ (update x i x₂) ?_ ?_).imp (fun h₁ ↦ by rw [← h₁, update_self])
+        fun h₂ ↦ by rw [← h₂, update_self]
     iterate 2
       rintro j
       obtain rfl | hji := eq_or_ne j i
-      · rwa [update_same]
-      · rw [update_noteq hji]
+      · rwa [update_self]
+      · rw [update_of_ne hji]
         exact hx _
     rw [← Pi.image_update_openSegment]
     exact ⟨_, hi, update_eq_self _ _⟩

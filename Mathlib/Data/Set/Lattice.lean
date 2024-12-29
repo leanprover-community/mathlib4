@@ -85,8 +85,8 @@ theorem mem_iInter₂_of_mem {s : ∀ i, κ i → Set α} {a : α} (h : ∀ i j,
     a ∈ ⋂ (i) (j), s i j :=
   mem_iInter₂.2 h
 
-instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Set α) :=
-  { instBooleanAlgebraSet with
+instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Set α) :=
+  { instBooleanAlgebra with
     le_sSup := fun _ t t_in _ a_in => ⟨t, t_in, a_in⟩
     sSup_le := fun _ _ h _ ⟨t', ⟨t'_in, a_in⟩⟩ => h t' t'_in a_in
     le_sInf := fun _ _ h _ a_in t' t'_in => h t' t'_in a_in
@@ -512,7 +512,7 @@ theorem image_projection_prod {ι : Type*} {α : ι → Type*} {v : ∀ i : ι, 
     · intro y y_in
       simp only [mem_image, mem_iInter, mem_preimage]
       rcases hv with ⟨z, hz⟩
-      refine ⟨Function.update z i y, ?_, update_same i y z⟩
+      refine ⟨Function.update z i y, ?_, update_self i y z⟩
       rw [@forall_update_iff ι α _ z i y fun i t => t ∈ v i]
       exact ⟨y_in, fun j _ => by simpa using hz j⟩
 
@@ -687,6 +687,22 @@ theorem iInter_iInter_eq_or_left {b : β} {p : β → Prop} {s : ∀ x : β, x =
 lemma iUnion_sum {s : α ⊕ β → Set γ} : ⋃ x, s x = (⋃ x, s (.inl x)) ∪ ⋃ x, s (.inr x) := iSup_sum
 
 lemma iInter_sum {s : α ⊕ β → Set γ} : ⋂ x, s x = (⋂ x, s (.inl x)) ∩ ⋂ x, s (.inr x) := iInf_sum
+
+theorem iUnion_psigma {γ : α → Type*} (s : PSigma γ → Set β) : ⋃ ia, s ia = ⋃ i, ⋃ a, s ⟨i, a⟩ :=
+  iSup_psigma _
+
+/-- A reversed version of `iUnion_psigma` with a curried map. -/
+theorem iUnion_psigma' {γ : α → Type*} (s : ∀ i, γ i → Set β) :
+    ⋃ i, ⋃ a, s i a = ⋃ ia : PSigma γ, s ia.1 ia.2 :=
+  iSup_psigma' _
+
+theorem iInter_psigma {γ : α → Type*} (s : PSigma γ → Set β) : ⋂ ia, s ia = ⋂ i, ⋂ a, s ⟨i, a⟩ :=
+  iInf_psigma _
+
+/-- A reversed version of `iInter_psigma` with a curried map. -/
+theorem iInter_psigma' {γ : α → Type*} (s : ∀ i, γ i → Set β) :
+    ⋂ i, ⋂ a, s i a = ⋂ ia : PSigma γ, s ia.1 ia.2 :=
+  iInf_psigma' _
 
 /-! ### Bounded unions and intersections -/
 

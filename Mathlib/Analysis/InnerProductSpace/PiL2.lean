@@ -119,7 +119,7 @@ macro_rules | `(!$p:subscript[$e:term,*]) => do
 
 set_option trace.debug true in
 /-- Unexpander for the `!₂[x, y, ...]` notation. -/
-@[delab app.DFunLike.coe]
+@[app_delab DFunLike.coe]
 def EuclideanSpace.delabVecNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 6 do
     -- check that the `(WithLp.equiv _ _).symm` is present

@@ -377,24 +377,24 @@ instance Icc_smoothManifoldWithCorners (x y : ℝ) [Fact (x < y)] :
   · -- `e = left chart`, `e' = right chart`
     apply M.contDiffOn.congr
     rintro _ ⟨⟨hz₁, hz₂⟩, ⟨⟨z, hz₀⟩, rfl⟩⟩
-    simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, update_same,
+    simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, update_self,
       max_eq_left, hz₀, lt_sub_iff_add_lt, mfld_simps] at hz₁ hz₂
     rw [min_eq_left hz₁.le, lt_add_iff_pos_left] at hz₂
     ext i
     rw [Subsingleton.elim i 0]
     simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, *, PiLp.add_apply,
-      PiLp.neg_apply, max_eq_left, min_eq_left hz₁.le, update_same, mfld_simps]
+      PiLp.neg_apply, max_eq_left, min_eq_left hz₁.le, update_self, mfld_simps]
     abel
   · -- `e = right chart`, `e' = left chart`
     apply M.contDiffOn.congr
     rintro _ ⟨⟨hz₁, hz₂⟩, ⟨z, hz₀⟩, rfl⟩
     simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, max_lt_iff,
-      update_same, max_eq_left hz₀, mfld_simps] at hz₁ hz₂
+      update_self, max_eq_left hz₀, mfld_simps] at hz₁ hz₂
     rw [lt_sub_comm] at hz₁
     ext i
     rw [Subsingleton.elim i 0]
     simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, PiLp.add_apply,
-      PiLp.neg_apply, update_same, max_eq_left, hz₀, hz₁.le, mfld_simps]
+      PiLp.neg_apply, update_self, max_eq_left, hz₀, hz₁.le, mfld_simps]
     abel
   ·-- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
