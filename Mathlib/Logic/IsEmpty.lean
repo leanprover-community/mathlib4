@@ -214,7 +214,7 @@ theorem leftTotal_empty [IsEmpty α] : LeftTotal R := by
   simp only [LeftTotal, IsEmpty.forall_iff]
 
 theorem leftTotal_empty_iff_right_empty [IsEmpty β] : LeftTotal R ↔ IsEmpty α := by
-  simp [LeftTotal, IsEmpty.exists_iff, isEmpty_iff, imp_self]
+  simp only [LeftTotal, IsEmpty.exists_iff, isEmpty_iff]
 
 @[simp]
 theorem rightTotal_empty [IsEmpty β] : RightTotal R := by
@@ -228,7 +228,7 @@ theorem biTotal_empty [IsEmpty α] [IsEmpty β] : BiTotal R :=
   ⟨leftTotal_empty R, rightTotal_empty R⟩
 
 theorem biTotal_empty_iff_left_empty [IsEmpty α] : BiTotal R ↔ IsEmpty β := by
-  simp [BiTotal, rightTotal_empty_iff_left_empty]
+  simp only [BiTotal, leftTotal_empty, rightTotal_empty_iff_left_empty, true_and]
 
 theorem biTotal_empty_iff_right_empty [IsEmpty β] : BiTotal R ↔ IsEmpty α := by
-  simp [BiTotal, leftTotal_empty_iff_right_empty]
+  simp only [BiTotal, leftTotal_empty_iff_right_empty, rightTotal_empty, and_true]
