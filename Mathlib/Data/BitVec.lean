@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Harun Khan, Alex Keizer
 -/
 import Mathlib.Algebra.Ring.InjSurj
+import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Data.ZMod.Defs
 
 /-!
@@ -88,5 +89,15 @@ instance : CommRing (BitVec w) :=
   toFin_injective.commRing _
     toFin_zero toFin_one toFin_add toFin_mul toFin_neg toFin_sub
     toFin_nsmul toFin_zsmul toFin_pow toFin_natCast toFin_intCast
+
+/-- The ring `Fin (2 ^ m)`  is isomorphic to `BitVec m`. -/
+@[simps]
+def finEquiv {m : ℕ} : Fin (2 ^ m) ≃+* BitVec m where
+  toFun a := ofFin a
+  invFun a := a.toFin
+  left_inv _ := rfl
+  right_inv _ := rfl
+  map_mul' _ _ := rfl
+  map_add' _ _ := rfl
 
 end BitVec
