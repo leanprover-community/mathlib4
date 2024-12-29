@@ -60,7 +60,7 @@ open scoped Topology Pointwise ENNReal NNReal
 
 namespace Asymptotics
 
-/-- `IsLittleOTVS 𝕜 f g l` is a generalization of `f =o[l] g` (`IsLittleO f g l`)
+/-- `f =o[𝕜;l] g` (`IsLittleOTVS 𝕜 l f g`) is a generalization of `f =o[l] g` (`IsLittleO l f g`)
 that works in topological `𝕜`-vector spaces.
 
 Given two functions `f` and `g` taking values in topological vector spaces
@@ -74,22 +74,71 @@ We use an `ENNReal`-valued function `egauge` for the gauge,
 so we unfold the definition of little o instead of reusing it. -/
 def IsLittleOTVS (𝕜 : Type*) {α E F : Type*}
     [NNNorm 𝕜] [TopologicalSpace E] [TopologicalSpace F] [Zero E] [Zero F] [SMul 𝕜 E] [SMul 𝕜 F]
-    (f : α → E) (g : α → F) (l : Filter α) : Prop :=
+    (l : Filter α) (f : α → E) (g : α → F) : Prop :=
   ∀ U ∈ 𝓝 (0 : E), ∃ V ∈ 𝓝 (0 : F), ∀ ε ≠ (0 : ℝ≥0),
     ∀ᶠ x in l, egauge 𝕜 U (f x) ≤ ε * egauge 𝕜 V (g x)
 
-variable {α β 𝕜 E F : Type*}
+@[inherit_doc]
+notation:100 f " =o[" 𝕜 ";" l "] " g:100 => IsLittleOTVS 𝕜 l f g
+
+variable {α β 𝕜 E F G : Type*}
 
 section TopologicalSpace
 
 variable [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
   [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
+  [AddCommGroup G] [TopologicalSpace G] [Module 𝕜 G]
+
+section congr
+variable {f f₁ f₂ : α → E} {g g₁ g₂ : α → F} {l : Filter α}
+
+theorem isLittleOTVS_congr (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) :
+    f₁ =o[𝕜;l] g₁ ↔ f₂ =o[𝕜;l] g₂ := by
+  simp only [IsLittleOTVS]
+  refine forall₂_congr fun U hU => exists_congr fun V => and_congr_right fun hV =>
+    forall₂_congr fun ε hε => Filter.eventually_congr ?_
+  filter_upwards [hf, hg] with _ e₁ e₂
+  rw [e₁, e₂]
+
+/-- A stronger version of `IsLittleOTVS.congr` that requires the functions only agree along the
+filter. -/
+theorem IsLittleOTVS.congr' (h : f₁ =o[𝕜;l] g₁) (hf : f₁ =ᶠ[l] f₂) (hg : g₁ =ᶠ[l] g₂) :
+    f₂ =o[𝕜;l] g₂ :=
+  (isLittleOTVS_congr hf hg).mp h
+
+theorem IsLittleOTVS.congr (h : f₁ =o[𝕜;l] g₁) (hf : ∀ x, f₁ x = f₂ x) (hg : ∀ x, g₁ x = g₂ x) :
+    f₂ =o[𝕜;l] g₂ :=
+  h.congr' (univ_mem' hf) (univ_mem' hg)
+
+theorem IsLittleOTVS.congr_left (h : f₁ =o[𝕜;l] g) (hf : ∀ x, f₁ x = f₂ x) : f₂ =o[𝕜;l] g :=
+  h.congr hf fun _ => rfl
+
+theorem IsLittleOTVS.congr_right (h : f =o[𝕜;l] g₁) (hg : ∀ x, g₁ x = g₂ x) : f =o[𝕜;l] g₂ :=
+  h.congr (fun _ => rfl) hg
+
+end congr
+
+@[trans]
+theorem IsLittleOTVS.trans {l : Filter α} {f : α → E} {g : α → F} {k : α → G}
+    (hfg : f =o[𝕜;l] g) (hgk : g =o[𝕜;l] k) : f =o[𝕜;l] k := by
+  intros U hU
+  obtain ⟨V, hV0, hV⟩ := hfg U hU
+  obtain ⟨W, hW0, hW⟩ := hgk V hV0
+  refine ⟨W, hW0, fun ε hε => ?_⟩
+  filter_upwards [hV ε hε, hW 1 one_ne_zero] with a hfga hgka
+  refine hfga.trans ?_
+  gcongr
+  simpa using hgka
+
+instance transIsLittleOTVSIsLittleOTVS {l : Filter α} :
+    @Trans (α → E) (α → F) (α → G) (· =o[𝕜;l] ·) (· =o[𝕜;l] ·) (· =o[𝕜;l] ·) where
+  trans := IsLittleOTVS.trans
 
 theorem _root_.Filter.HasBasis.isLittleOTVS_iff {ιE ιF : Sort*} {pE : ιE → Prop} {pF : ιF → Prop}
     {sE : ιE → Set E} {sF : ιF → Set F} (hE : HasBasis (𝓝 (0 : E)) pE sE)
     (hF : HasBasis (𝓝 (0 : F)) pF sF) {f : α → E} {g : α → F} {l : Filter α} :
-    IsLittleOTVS 𝕜 f g l ↔ ∀ i, pE i → ∃ j, pF j ∧ ∀ ε ≠ (0 : ℝ≥0),
+    f =o[𝕜;l] g ↔ ∀ i, pE i → ∃ j, pF j ∧ ∀ ε ≠ (0 : ℝ≥0),
       ∀ᶠ x in l, egauge 𝕜 (sE i) (f x) ≤ ε * egauge 𝕜 (sF j) (g x) := by
   refine (hE.forall_iff ?_).trans <| forall₂_congr fun _ _ ↦ hF.exists_iff ?_
   · rintro s t hsub ⟨V, hV₀, hV⟩
@@ -99,12 +148,53 @@ theorem _root_.Filter.HasBasis.isLittleOTVS_iff {ιE ιF : Sort*} {pE : ιE → 
 
 @[simp]
 theorem isLittleOTVS_map {f : α → E} {g : α → F} {k : β → α} {l : Filter β} :
-    IsLittleOTVS 𝕜 f g (map k l) ↔ IsLittleOTVS 𝕜 (f ∘ k) (g ∘ k) l := by
+    f =o[𝕜; map k l] g ↔ (f ∘ k) =o[𝕜;l] (g ∘ k) := by
   simp [IsLittleOTVS]
 
+lemma IsLittleOTVS.mono {f : α → E} {g : α → F} {l₁ l₂ : Filter α}
+    (hf : f =o[𝕜;l₁] g) (h : l₂ ≤ l₁) : f =o[𝕜;l₂] g :=
+  fun U hU => let ⟨V, hV0, hV⟩ := hf U hU; ⟨V, hV0, fun ε hε => (hV ε hε).filter_mono h⟩
+
+lemma IsLittleOTVS.sup {f : α → E} {g : α → F} {l₁ l₂ : Filter α}
+    (hf₁ : f =o[𝕜;l₁] g) (hf₂ : f =o[𝕜;l₂] g) :
+    f =o[𝕜;(l₁ ⊔ l₂)] g := by
+  intro U hU
+  let ⟨V₁, hV0₁, hV₁⟩ := hf₁ U hU
+  let ⟨V₂, hV0₂, hV₂⟩ := hf₂ U hU
+  refine ⟨V₁ ∩ V₂, Filter.inter_mem hV0₁ hV0₂, fun ε hε => ?_⟩
+  rw [eventually_sup]
+  constructor
+  · refine (hV₁ ε hε).mono fun x hx => hx.trans ?_
+    gcongr
+    exact inter_subset_left
+  · refine (hV₂ ε hε).mono fun x hx => hx.trans ?_
+    gcongr
+    exact inter_subset_right
+
+lemma isLittleOTVS_insert [TopologicalSpace α] {f : α → E} {g : α → F} {x : α} {s : Set α}
+    (h : f x = 0) :
+    f =o[𝕜;(𝓝[insert x s] x)] g ↔ f =o[𝕜;(𝓝[s] x)] g := by
+  refine forall₂_congr fun U hU => exists_congr fun V => and_congr_right fun hV =>
+    forall₂_congr fun ε hε => ?_
+  simp [h, egauge_zero_right _ (Set.nonempty_of_mem <| mem_of_mem_nhds hU)]
+
+lemma IsLittleOTVS.insert [TopologicalSpace α] {f : α → E} {g : α → F} {x : α} {s : Set α}
+    (h : f =o[𝕜;(𝓝[s] x)] g) (hf : f x = 0) :
+    f =o[𝕜;(𝓝[insert x s] x)] g :=
+  (isLittleOTVS_insert hf).2 h
+
+@[simp]
+lemma IsLittleOTVS.bot {f : α → E} {g : α → F} : f =o[𝕜;⊥] g :=
+  fun u hU => ⟨univ, by simp⟩
+
+@[simp]
+lemma IsLittleOTVS.zero (g : α → F) (l : Filter α) : (0 : α → E) =o[𝕜;l] g := by
+  intros U hU
+  simpa [egauge_zero_right _ (Set.nonempty_of_mem <| mem_of_mem_nhds hU)] using ⟨univ, by simp⟩
+
 protected lemma IsLittleOTVS.smul_left {f : α → E} {g : α → F} {l : Filter α}
-    (h : IsLittleOTVS 𝕜 f g l) (c : α → 𝕜) :
-    IsLittleOTVS 𝕜 (fun x ↦ c x • f x) (fun x ↦ c x • g x) l := by
+    (h : f =o[𝕜;l] g) (c : α → 𝕜) :
+    (fun x ↦ c x • f x) =o[𝕜;l] (fun x ↦ c x • g x) := by
   unfold IsLittleOTVS at *
   peel h with U hU V hV ε hε x hx
   rw [egauge_smul_right, egauge_smul_right, mul_left_comm]
@@ -112,7 +202,7 @@ protected lemma IsLittleOTVS.smul_left {f : α → E} {g : α → F} {l : Filter
   all_goals exact fun _ ↦ Filter.nonempty_of_mem ‹_›
 
 lemma isLittleOTVS_one [ContinuousSMul 𝕜 E] {f : α → E} {l : Filter α} :
-    IsLittleOTVS 𝕜 f (1 : α → 𝕜) l ↔ Tendsto f l (𝓝 0) := by
+    f =o[𝕜;l] (1 : α → 𝕜) ↔ Tendsto f l (𝓝 0) := by
   constructor
   · intro hf
     rw [(basis_sets _).isLittleOTVS_iff nhds_basis_ball] at hf
@@ -147,7 +237,7 @@ lemma isLittleOTVS_one [ContinuousSMul 𝕜 E] {f : α → E} {l : Filter α} :
         simpa using le_egauge_ball_one 𝕜 (1 : 𝕜)
 
 lemma IsLittleOTVS.tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g : α → E} {l : Filter α}
-    (h : IsLittleOTVS 𝕜 g f l) : Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
+    (h : g =o[𝕜;l] f) : Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
   rw [(basis_sets _).isLittleOTVS_iff nhds_basis_ball] at h
   rw [(nhds_basis_balanced 𝕜 E).tendsto_right_iff]
   rintro U ⟨hU, hUB⟩
@@ -173,7 +263,7 @@ lemma IsLittleOTVS.tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g
 
 lemma isLittleOTVS_iff_tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g : α → E} {l : Filter α}
     (h₀ : ∀ᶠ x in l, f x = 0 → g x = 0) :
-    IsLittleOTVS 𝕜 g f l ↔ Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
+    g =o[𝕜;l] f ↔ Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
   refine ⟨IsLittleOTVS.tendsto_inv_smul, fun h U hU ↦ ?_⟩
   refine ⟨ball 0 1, ball_mem_nhds _ one_pos, fun ε hε ↦ ?_⟩
   rcases NormedField.exists_norm_lt 𝕜 hε.bot_lt with ⟨c, hc₀, hcε : ‖c‖₊ < ε⟩
@@ -196,7 +286,7 @@ variable [NontriviallyNormedField 𝕜]
 variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [NormedSpace 𝕜 E] [NormedSpace 𝕜 F]
 
 lemma isLittleOTVS_iff_isLittleO {f : α → E} {g : α → F} {l : Filter α} :
-    IsLittleOTVS 𝕜 f g l ↔ f =o[l] g := by
+    f =o[𝕜;l] g ↔ f =o[l] g := by
   rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc : 1 < ‖c‖₊⟩
   have hc₀ : 0 < ‖c‖₊ := one_pos.trans hc
   simp only [isLittleO_iff, nhds_basis_ball.isLittleOTVS_iff nhds_basis_ball]
