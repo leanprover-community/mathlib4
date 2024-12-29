@@ -33,12 +33,20 @@ variable {α : Type u}
 iff there exists `c` with `b = a + c`. This is satisfied by the natural numbers, for example, but
 not the integers or other ordered groups. -/
 class CanonicallyOrderedCommSemiring (α : Type*) extends CanonicallyOrderedAddCommMonoid α,
-    CommSemiring α where
+    OrderedCommSemiring α where
   /-- No zero divisors. -/
   protected eq_zero_or_eq_zero_of_mul_eq_zero : ∀ {a b : α}, a * b = 0 → a = 0 ∨ b = 0
+  zero_le_one := zero_le _
+  mul_le_mul_of_nonneg_left := fun a b c h _ => by
+    rcases exists_add_of_le h with ⟨c, rfl⟩
+    rw [left_distrib]
+    apply self_le_add_right
+  mul_le_mul_of_nonneg_right := fun a b c h _ => by
+    rcases exists_add_of_le h with ⟨c, rfl⟩
+    rw [right_distrib]
+    apply self_le_add_right
 
--- use `CanonicallyOrderedCommSemiring.toOrderedCommSemiring`
-attribute [instance 0] CanonicallyOrderedCommSemiring.toCommSemiring
+attribute [instance 100] CanonicallyOrderedCommSemiring.toOrderedCommSemiring
 
 section CanonicallyOrderedCommSemiring
 variable [CanonicallyOrderedCommSemiring α] {a b c d : α}
@@ -63,13 +71,6 @@ instance (priority := 100) toMulLeftMono : MulLeftMono α := by
 -- see Note [lower instance priority]
 instance (priority := 100) toOrderedCommMonoid : OrderedCommMonoid α where
   mul_le_mul_left := fun _ _ => mul_le_mul_left'
-
--- see Note [lower instance priority]
-instance (priority := 100) toOrderedCommSemiring : OrderedCommSemiring α :=
-  { ‹CanonicallyOrderedCommSemiring α› with
-    zero_le_one := zero_le _,
-    mul_le_mul_of_nonneg_left := fun _ _ _ h _ => mul_le_mul_left' h _,
-    mul_le_mul_of_nonneg_right := fun _ _ _ h _ => mul_le_mul_right' h _ }
 
 @[simp]
 protected theorem mul_pos : 0 < a * b ↔ 0 < a ∧ 0 < b := by
