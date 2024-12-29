@@ -71,6 +71,26 @@ variable (G : Type*) [NormedAddCommGroup G]
 
 #check CompleteBooleanAlgebra
 
+lemma unique_Lcomplement (L K : AddSubgroup G) (h₁ : L ⊔ K = ⊤)
+    (h₂ : ∀ x ∈ L, ∀ y ∈ K, ‖x‖ + ‖y‖ = ‖x + y‖) : K = {y | ∀ x ∈ L, ‖x + y‖ = ‖x‖ + ‖y‖} := by
+  ext y
+  constructor
+  · intro hy x hx
+    rw [(h₂ x hx y hy)]
+  · intro h
+    have hy1 : y ∈ L ⊔ K := by
+      rw [h₁]
+      exact AddSubgroup.mem_top y
+    obtain ⟨x₁,⟨hx₁,⟨y₁,⟨hy₁,hx₁y₁y⟩⟩⟩⟩ := AddSubgroup.mem_sup.mp hy1
+    have e2 : ‖y₁‖ = ‖x₁‖ + ‖y‖ := by
+      rw [← norm_neg x₁, ← (h _ (AddSubgroup.neg_mem L hx₁)), ← hx₁y₁y, neg_add_cancel_left]
+    rw [← hx₁y₁y, ← (h₂ _ hx₁ _ hy₁), ← add_assoc, ← two_smul ℕ] at e2
+    simp only [nsmul_eq_mul, Nat.cast_ofNat, self_eq_add_left, mul_eq_zero, OfNat.ofNat_ne_zero,
+      norm_eq_zero, false_or] at e2
+    rw [e2, zero_add] at hx₁y₁y
+    rw [← hx₁y₁y]
+    exact hy₁
+
 structure IsLsummand  (L : AddSubgroup G) : Prop where
   compl' : ∃ (K : AddSubgroup G), L ⊔ K = ⊤ ∧ ∀ x ∈ L, ∀ y ∈ K, ‖x‖ + ‖y‖ = ‖x + y‖
 
@@ -78,25 +98,7 @@ def IsLsummand.compl {L : AddSubgroup G} (h : IsLsummand G L) : AddSubgroup G wh
   carrier := {y : G | ∀ x ∈ L, ‖x + y‖ = ‖x‖ + ‖y‖}
   add_mem' := by
     obtain ⟨K, ⟨hK₁, hK₂⟩⟩ := h.compl'
-    have e1 : K = {y | ∀ x ∈ L, ‖x + y‖ = ‖x‖ + ‖y‖} := by
-      ext y
-      constructor
-      · intro hy x hx
-        rw [(hK₂ x hx y hy)]
-      · intro h
-        have hy1 : y ∈ L ⊔ K := by
-          rw [hK₁]
-          exact AddSubgroup.mem_top y
-        obtain ⟨x₁,⟨hx₁,⟨y₁,⟨hy₁,hx₁y₁y⟩⟩⟩⟩ := AddSubgroup.mem_sup.mp hy1
-        have e2 : ‖y₁‖ = ‖x₁‖ + ‖y‖ := by
-          rw [← norm_neg x₁, ← (h _ (AddSubgroup.neg_mem L hx₁)), ← hx₁y₁y, neg_add_cancel_left]
-        rw [← hx₁y₁y, ← (hK₂ _ hx₁ _ hy₁), ← add_assoc, ← two_smul ℕ] at e2
-        simp only [nsmul_eq_mul, Nat.cast_ofNat, self_eq_add_left, mul_eq_zero, OfNat.ofNat_ne_zero,
-          norm_eq_zero, false_or] at e2
-        rw [e2, zero_add] at hx₁y₁y
-        rw [← hx₁y₁y]
-        exact hy₁
-    rw [← e1]
+    rw [← unique_Lcomplement G L K hK₁ hK₂]
     intro a b ha hb
     exact add_mem ha hb
   zero_mem' := by
@@ -111,16 +113,24 @@ abbrev Lsummands : Type _ := { f : AddSubgroup G // IsLsummand G f }
 
 instance Subtype.hasCompl : HasCompl (Lsummands G) :=
   ⟨fun L => {
-    val := by
-      obtain ⟨K,hK⟩ := L.prop.compl
-      sorry
-    property := sorry
-  }
-  ⟩
+    val := L.prop.compl
+    property := by
+      use L
+      obtain ⟨K, ⟨hK₁, hK₂⟩⟩ := L.prop.compl'
+      have e1 : K = {y | ∀ x ∈ L.val, ‖x + y‖ = ‖x‖ + ‖y‖} := by
+        rw [unique_Lcomplement G L K hK₁ hK₂]
+      have e2 : L.prop.compl = K := by
+        apply SetLike.coe_injective'
+        rw [unique_Lcomplement G L K hK₁ hK₂]
+        rfl
+      constructor
+      · rw [sup_comm, e2, hK₁]
+      · intro x hx
+        rw [e2] at hx
+        intro y hy
+        rw [add_comm, (hK₂ _ hy _ hx), add_comm]}⟩
 
 instance : PartialOrder (Lsummands G) := Subtype.partialOrder fun f ↦ IsLsummand G f
-
-
 
 
 end Lsummands
