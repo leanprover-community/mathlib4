@@ -290,3 +290,7 @@ theorem wf {α : Type*} (r : α → α → Prop) {h : WellFounded r} : WellFound
   exact WellFounded.intro fun a => this a.length _ rfl
 
 end WellFounded
+
+end Shortlex
+
+end List
