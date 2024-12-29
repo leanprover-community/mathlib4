@@ -32,7 +32,7 @@ This file defines the determinant of a matrix, `Matrix.det`, and its essential p
 ## Implementation notes
 
 It is possible to configure `simp` to compute determinants. See the file
-`test/matrix.lean` for some examples.
+`MathlibTest/matrix.lean` for some examples.
 
 -/
 

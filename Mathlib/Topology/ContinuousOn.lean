@@ -1296,10 +1296,10 @@ theorem continuousWithinAt_update_same [DecidableEq α] {y : β} :
     ContinuousWithinAt (update f x y) s x ↔ Tendsto f (𝓝[s \ {x}] x) (𝓝 y) :=
   calc
     ContinuousWithinAt (update f x y) s x ↔ Tendsto (update f x y) (𝓝[s \ {x}] x) (𝓝 y) := by
-    { rw [← continuousWithinAt_diff_self, ContinuousWithinAt, update_same] }
+    { rw [← continuousWithinAt_diff_self, ContinuousWithinAt, update_self] }
     _ ↔ Tendsto f (𝓝[s \ {x}] x) (𝓝 y) :=
       tendsto_congr' <| eventually_nhdsWithin_iff.2 <| Eventually.of_forall
-        fun _ hz => update_noteq hz.2 _ _
+        fun _ hz => update_of_ne hz.2 ..
 
 @[simp]
 theorem continuousAt_update_same [DecidableEq α] {y : β} :
