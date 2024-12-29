@@ -7,6 +7,7 @@ import Mathlib.RingTheory.FiniteStability
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 import Mathlib.RingTheory.Kaehler.Basic
 import Mathlib.RingTheory.Localization.Away.AdjoinRoot
+import Mathlib.RingTheory.LocalProperties.Basic
 
 /-!
 
@@ -39,8 +40,7 @@ namespace Algebra
 
 section
 
-variable (R : Type v) [CommRing R]
-variable (A : Type u) [CommRing A] [Algebra R A]
+variable (R : Type v) (A : Type u) [CommRing R] [CommRing A] [Algebra R A]
 
 /--
 An `R`-algebra `A` is formally unramified if `Ω[A⁄R]` is trivial.
@@ -335,3 +335,50 @@ end Comp
 end Unramified
 
 end Algebra
+section RingHom
+
+variable {R S : Type*} [CommRing R] [CommRing S]
+
+/--
+A ring homomorphism `R →+* A` is formally unramified if `Ω[A⁄R]` is trivial.
+See `Algebra.FormallyUnramified`.
+-/
+@[algebraize Algebra.FormallyUnramified]
+def RingHom.FormallyUnramified (f : R →+* S) : Prop :=
+  letI := f.toAlgebra
+  Algebra.FormallyUnramified R S
+
+lemma RingHom.formallyUnramified_algebraMap [Algebra R S] :
+    (algebraMap R S).FormallyUnramified ↔ Algebra.FormallyUnramified R S := by
+  delta FormallyUnramified
+  congr!
+  exact Algebra.algebra_ext _ _ fun _ ↦ rfl
+
+lemma RingHom.stableUnderComposition_formallyUnramified :
+    RingHom.StableUnderComposition RingHom.FormallyUnramified := by
+  intros R S T _ _ _ f g _ _
+  algebraize [f, g, g.comp f]
+  exact .comp R S T
+
+lemma RingHom.respectsIso_formallyUnramified :
+    RingHom.RespectsIso RingHom.FormallyUnramified := by
+  refine RingHom.stableUnderComposition_formallyUnramified.respectsIso ?_
+  intros R S _ _ e
+  letI := e.toRingHom.toAlgebra
+  exact Algebra.FormallyUnramified.of_surjective (Algebra.ofId R S) e.surjective
+
+lemma RingHom.holdsForLocalization_formallyUnramified :
+    RingHom.HoldsForLocalizationAway RingHom.FormallyUnramified := by
+  intros R S _ _ _ r _
+  rw [RingHom.formallyUnramified_algebraMap]
+  exact .of_isLocalization (.powers r)
+
+lemma RingHom.isStableUnderBaseChange_formallyUnramified :
+    RingHom.IsStableUnderBaseChange RingHom.FormallyUnramified := by
+  refine .mk _ RingHom.respectsIso_formallyUnramified ?_
+  intros R S T _ _ _ _ _ h
+  show (algebraMap _ _).FormallyUnramified
+  rw [RingHom.formallyUnramified_algebraMap] at h ⊢
+  infer_instance
+
+end RingHom
