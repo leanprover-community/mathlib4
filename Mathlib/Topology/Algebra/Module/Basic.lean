@@ -10,7 +10,6 @@ import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 import Mathlib.LinearAlgebra.Pi
-import Mathlib.RingTheory.Finiteness.Defs
 import Mathlib.LinearAlgebra.Quotient.Defs
 
 /-!
@@ -272,31 +271,3 @@ instance t3_quotient_of_isClosed [TopologicalAddGroup M] [IsClosed (S : Set M)] 
   QuotientAddGroup.instT3Space S.toAddSubgroup
 
 end Submodule
-
-end Quotient
-
-section IsCompact
-
-variable {R M : Type*} [CommSemiring R] [TopologicalSpace R] [AddCommMonoid M] [Module R M]
-variable [TopologicalSpace M] [ContinuousAdd M] [ContinuousSMul R M]
-
-lemma Submodule.isCompact_of_fg [CompactSpace R] {N : Submodule R M} (hN : N.FG) :
-    IsCompact (X := M) N := by
-  obtain ⟨s, hs⟩ := hN
-  have : LinearMap.range (Fintype.linearCombination R R (α := s) Subtype.val) = N := by
-    simp [Finsupp.range_linearCombination, hs]
-  rw [← this]
-  refine isCompact_range ?_
-  simp only [Fintype.linearCombination, Finset.univ_eq_attach, smul_eq_mul, LinearMap.coe_mk,
-    AddHom.coe_mk]
-  continuity
-
-lemma Ideal.isCompact_of_fg [TopologicalSemiring R] [CompactSpace R]
-    {I : Ideal R} (hI : I.FG) : IsCompact (X := R) I :=
-  Submodule.isCompact_of_fg hI
-
-variable (R M) in
-lemma Module.Finite.compactSpace [CompactSpace R] [Module.Finite R M] : CompactSpace M :=
-  ⟨Submodule.isCompact_of_fg (Module.Finite.out (R := R))⟩
-
-end IsCompact
