@@ -587,9 +587,9 @@ import Mathlib.Algebra.Module.Submodule.Range
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.Algebra.Module.ULift
-import Mathlib.Algebra.Module.ZLattice.Basic
-import Mathlib.Algebra.Module.ZLattice.Covolume
 import Mathlib.Algebra.Module.ZMod
+import Mathlib.Algebra.Module.Zlattice.Basic
+import Mathlib.Algebra.Module.Zlattice.Covolume
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.Algebra.MonoidAlgebra.Degree
@@ -2659,6 +2659,7 @@ import Mathlib.Data.List.Range
 import Mathlib.Data.List.ReduceOption
 import Mathlib.Data.List.Rotate
 import Mathlib.Data.List.Sections
+import Mathlib.Data.List.Shortlex
 import Mathlib.Data.List.Sigma
 import Mathlib.Data.List.Sort
 import Mathlib.Data.List.SplitBy
