@@ -8,6 +8,95 @@ from typing import Dict, Any
 import urllib.error
 import urllib.parse
 import urllib.request
+from subprocess import run
+import re
+
+
+# SINGULAR OPTIONS
+
+# If Singular is installed in the system (in a way that this python process can run,
+# that is, in a reachable path), we can try to use it instead of the online sage server
+# If Singular is not installed, we can also try to use the version of singular installed inside sage (if sage itself
+# is locally installed)
+
+def create_singular_query(type: str, n_vars: int, eq_list, goal_type):
+    var_list = ''.join(f"var{i}," for i in range(n_vars)) + 'aux'
+    query = f"""
+LIB "elim.lib";
+ring r = 0,({var_list}),dp;
+poly p = {goal_type};
+ideal I = {str(eq_list)[1:-1]},1-p*aux;
+ideal result = lift(I,1);
+int i,j,k;
+poly h;
+int powr=0;
+for (i=1; i<= size(result); i++)
+{{
+    h = 0+1*result[i];
+    for (j=1;j<=size(result[i]);j++)
+    {{
+        powr = max(powr, leadexp(h)[nvars(basering)]);
+        h = h - lead(h);
+    }}
+}}
+
+print(powr);
+print(";");
+
+list coefs;
+for (i=1;i<size(result);i++){{
+    coefs=insert(coefs,reduce(result[i]*p^powr,1-aux*p),size(coefs));
+}}
+
+proc imprime(poly f)
+{{
+    poly g = f;
+    for (int i=1;i<=size(f); i++)
+    {{
+        print("[[");
+        for (k=1;k<nvars(basering);k++)
+            {{
+            if (leadexp(g)[k] != 0) {{
+                print("[");
+                print(k-1);
+                print(",");
+                print(leadexp(g)[k]);
+                print("],");
+                }}
+            }}
+        print("],");
+        print("[");
+        print(numerator(leadcoef(g)));
+        print(",");
+        print(denominator(leadcoef(g)));
+        print("]],");
+        g = g - lead(g);
+    }}
+}}
+
+print("[");
+for (int a=1;a<=size(coefs);a++)
+{{
+    print("[");
+    imprime(coefs[a]);
+    print("],");
+}}
+print("]");
+quit;
+    """
+    return query
+
+def evaluate_in_singular(query: str) -> dict:
+    try:
+        pro = run(["Singular", "-q"], input=query, capture_output=True, text=True)
+    except:
+        pro = run(["sage", "-ingular", "-q"], input=query, capture_output=True, text=True)
+    resul = pro.stdout
+    if re.match("[a-zA-Z]", resul) or resul.count(";") != 1:
+        raise ValueError("Singular couldn't find a linear combination")
+    resul = resul.replace("\n","").replace(",]","]").replace(",",", ")
+    return parse_response(resul)
+
 
 # These functions are used to format the output of Sage for parsing in Lean.
 # They are stored here as a string since they are passed to Sage via the web API.
@@ -100,15 +189,19 @@ def main():
       value: Optional[str] }
     ```
     '''
-    command = create_query(sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5])
-    final_query = polynomial_formatting_functions + "\n" + command
-    if sys.argv[1] == 'true': # trace dry run enabled
-        output = dict(success=True, trace=command)
-    else:
-        try:
-            output = dict(success=True, data=evaluate_in_sage(final_query))
-        except EvaluationError as e:
-            output = dict(success=False, name=e.ename, value=e.evalue)
+    try:
+        command = create_singular_query(sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5])
+        output = dict(success=True, data=evaluate_in_singular(command))
+    except:
+        command = create_query(sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5])
+        final_query = polynomial_formatting_functions + "\n" + command
+        if sys.argv[1] == 'true': # trace dry run enabled
+            output = dict(success=True, trace=command)
+        else:
+            try:
+                output = dict(success=True, data=evaluate_in_sage(final_query))
+            except EvaluationError as e:
+                output = dict(success=False, name=e.ename, value=e.evalue)
     print(json.dumps(output))
 
 if __name__ == "__main__":
