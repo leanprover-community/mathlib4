@@ -4361,6 +4361,7 @@ import Mathlib.RingTheory.EisensteinCriterion
 import Mathlib.RingTheory.EssentialFiniteness
 import Mathlib.RingTheory.Etale.Basic
 import Mathlib.RingTheory.Etale.Field
+import Mathlib.RingTheory.Etale.Pi
 import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.Extension
 import Mathlib.RingTheory.Filtration
