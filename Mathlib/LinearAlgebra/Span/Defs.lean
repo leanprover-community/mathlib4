@@ -427,7 +427,6 @@ theorem span_insert (x) (s : Set M) : span R (insert x s) = (R ∙ x) ⊔ span R
 theorem span_insert_eq_span (h : x ∈ span R s) : span R (insert x s) = span R s :=
   span_eq_of_le _ (Set.insert_subset_iff.mpr ⟨h, subset_span⟩) (span_mono <| subset_insert _ _)
 
-
 theorem span_span : span R (span R s : Set M) = span R s :=
   span_eq _
 
@@ -536,13 +535,13 @@ lemma span_range_update_add_smul (hij : i ≠ j) (v : ι → M) (r : R) :
     span R (Set.range (Function.update v j (v j + r • v i))) = span R (Set.range v) := by
   refine le_antisymm ?_ ?_ <;> simp only [span_le, Set.range_subset_iff, SetLike.mem_coe] <;>
     intro k <;> obtain rfl | hjk := eq_or_ne j k
-  · rw [update_same]
+  · rw [update_self]
     exact add_mem (subset_span ⟨j, rfl⟩) <| smul_mem _ _ <| subset_span ⟨i, rfl⟩
-  · exact subset_span ⟨k, (update_noteq hjk.symm ..).symm⟩
+  · exact subset_span ⟨k, (update_of_ne hjk.symm ..).symm⟩
   · nth_rw 2 [← add_sub_cancel_right (v j) (r • v i)]
-    exact sub_mem (subset_span ⟨j, update_same ..⟩)
-      (smul_mem _ _ (subset_span ⟨i, update_noteq hij ..⟩))
-  · exact subset_span ⟨k, update_noteq hjk.symm ..⟩
+    exact sub_mem (subset_span ⟨j, update_self ..⟩)
+      (smul_mem _ _ (subset_span ⟨i, update_of_ne hij ..⟩))
+  · exact subset_span ⟨k, update_of_ne hjk.symm ..⟩
 
 lemma span_range_update_sub_smul (hij : i ≠ j) (v : ι → M) (r : R) :
     span R (Set.range (Function.update v j (v j - r • v i))) = span R (Set.range v) := by
