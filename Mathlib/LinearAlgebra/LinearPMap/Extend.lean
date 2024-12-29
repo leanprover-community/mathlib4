@@ -21,13 +21,10 @@ variable {𝕜 E F : Type*} [Ring 𝕜] [AddCommGroup E] [AddCommGroup F] [Modul
 namespace LinearPMap
 
 noncomputable def extend : E →L[𝕜] F :=
-  letI g := hdf.extend f
-  haveI cg : Continuous g := hdf.uniformContinuous_extend hf |>.continuous
   { toFun := hdf.extend f
     map_add' := fun x y ↦ by
-      let e : f.domain → E := Subtype.val
       refine @tendsto_nhds_unique _ (f.domain × f.domain) _ _ (fun x ↦ f x.1 + f x.2)
-        (comap (Prod.map e e) (𝓝 (x, y))) _ _ ?_ ?_ ?_
+        (comap (Prod.map (↑) (↑)) (𝓝 (x, y))) _ _ ?_ ?_ ?_
       · rw [nhds_prod_eq, comap_prodMap_prod, prod_neBot]
         constructor <;> rw [← mem_closure_iff_comap_neBot] <;> apply hdf
       · simp_rw [← map_add]
@@ -39,31 +36,20 @@ noncomputable def extend : E →L[𝕜] F :=
           (hdf.extend_spec hf y |>.comp <|
             tendsto_comap_iff.2 <| (continuous_snd.tendsto (x, y)).comp tendsto_comap)
     map_smul' := fun m x ↦ by
-      let e : f.domain → E := Subtype.val
-      simp only [RingHom.id_apply]
-      have h1 : Tendsto (fun x ↦ m • f x) (comap e (𝓝 x)) (𝓝 (g (m • x))) := by
-        simp_rw [← LinearPMap.map_smul]
-        change Tendsto (f ∘ _) _ _
-        apply hdf.extend_tendsto hf
-        have : e ∘ (fun x ↦ m • x) = (fun x ↦ m • x) ∘ e := by
-          ext x; simp [e]
-        change Tendsto (e ∘ _) _ _
-        rw [this, ← tendsto_map'_iff]
-        exact ((continuous_const_smul m).tendsto x).mono_left map_comap_le
-      have h2 : Tendsto (fun x ↦ m • (f x)) (comap e (𝓝 x)) (𝓝 (m • (g x))) :=
-        (hdf.extend_spec hf x).const_smul m
-      have : (comap e (𝓝 x)).NeBot := mem_closure_iff_comap_neBot.1 (hdf x)
-      exact tendsto_nhds_unique h1 h2
-    cont := cg }
+      refine @tendsto_nhds_unique _ _ _ _ _ _ _ _
+        (mem_closure_iff_comap_neBot.1 (hdf x)) ?_ ((hdf.extend_spec hf x).const_smul m)
+      simp_rw [← LinearPMap.map_smul]
+      exact hdf.extend_spec hf (m • x) |>.comp <| tendsto_comap_iff.2 <| tendsto_comap.const_smul m
+    cont := hdf.uniformContinuous_extend hf |>.continuous }
 
-theorem dense_extend_eq (x : f.domain) : f.extend hdf hf x = f x :=
+theorem extend_eq (x : f.domain) : f.extend hdf hf x = f x :=
   hdf.isDenseInducing_val.extend_eq hf.continuous x
 
 variable {𝕜 E F : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedAddCommGroup F]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [CompleteSpace F]
   {f : E →ₗ.[𝕜] F} (hdf : Dense (f.domain : Set E)) (hf : UniformContinuous f)
 
-theorem norm_dense_extend {C : ℝ} (hC : 0 ≤ C) (hfC : ∀ x, ‖f x‖ ≤ C * ‖x‖) :
+theorem norm_extend : ‖f.extend hdf hf‖ = ‖f‖ :
     ‖dense_extend hdf hf‖ ≤ C := by
   rw [ContinuousLinearMap.opNorm_le_iff hC]
   intro x
