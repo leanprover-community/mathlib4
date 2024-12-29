@@ -148,9 +148,8 @@ instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortl
     intro a b
     have : a.length < b.length ∨ a.length = b.length ∨ a.length > b.length :=
       trichotomous a.length b.length
-    rcases this with h1 | h23
+    rcases this with h1 | h2 | h3
     · left; exact shorter_than h1
-    rcases h23 with h2 | h3
     · induction a with
     | nil =>
       cases b with
@@ -162,13 +161,12 @@ instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortl
       | nil => simp at h2
       | cons head1 tail1 =>
         simp only [length_cons, add_left_inj] at h2
-        rcases @trichotomous _ (List.Lex r) _ (head :: tail) (head1 :: tail1) with h4 | h56
+        rcases @trichotomous _ (List.Lex r) _ (head :: tail) (head1 :: tail1) with h4 | h5 | h6
         · left
           apply len_equal
           · simp only [List.length_cons, Nat.succ_eq_add_one, add_left_inj]
             exact h2
           exact h4
-        rcases h56 with h5 | h6
         · right; left; exact h5
         right; right
         apply len_equal
