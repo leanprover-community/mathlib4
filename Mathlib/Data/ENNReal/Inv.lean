@@ -956,7 +956,7 @@ lemma sub_iSup [Nonempty ι] (ha : a ≠ ∞) : a - ⨆ i, f i = ⨅ i, a - f i 
 -- TODO: Prove the two one-side versions
 lemma exists_lt_add_of_lt_add {x y z : ℝ≥0∞} (h : x < y + z) (hy : y ≠ 0) (hz : z ≠ 0) :
     ∃ y' < y, ∃ z' < z, x < y' + z' := by
-  contrapose! h;
+  contrapose! h
   simpa using biSup_add_biSup_le' (by exact ⟨0, hy.bot_lt⟩) (by exact ⟨0, hz.bot_lt⟩) h
 
 end Inv

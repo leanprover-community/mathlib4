@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - nightly-testing
+    paths:
+      - lean-toolchain
 
 jobs:
   discover-lean-pr-testing:
@@ -100,12 +102,11 @@ jobs:
 
             # Check if the diff contains files other than the specified ones
             if echo "$DIFF_FILES" | grep -v -e 'lake-manifest.json' -e 'lakefile.lean' -e 'lean-toolchain'; then
-                # Extract the PR number and actual branch name
-                PR_NUMBER=$(echo "$BRANCH" | grep -oP '\d+$')
+                # Extract the actual branch name
                 ACTUAL_BRANCH=${BRANCH#origin/}
 
                 # Append the branch details to RELEVANT_BRANCHES
-                RELEVANT_BRANCHES="$RELEVANT_BRANCHES"$'\n- '"$ACTUAL_BRANCH (lean4#$PR_NUMBER)"
+                RELEVANT_BRANCHES="$RELEVANT_BRANCHES""$ACTUAL_BRANCH"$' '
             fi
         done
 
@@ -126,14 +127,14 @@ jobs:
       run: |
         BRANCHES="${{ steps.find-branches.outputs.branches }}"
         {
-          printf $'msg<<EOF\nWe will need to merge the following branches into \`nightly-testing\`:\n'
+          printf $'msg<<EOF\nWe will need to merge the following branches into `nightly-testing`:\n'
           printf $'```bash\n'
           for BRANCH in $BRANCHES; do
             PR_NUMBER=$(echo "$BRANCH" | grep -oP '\d+$')
             GITHUB_DIFF="https://github.com/leanprover-community/mathlib4/compare/nightly-testing...lean-pr-testing-$PR_NUMBER"
-            printf $'# Diff: %s' "$GITHUB_DIFF"
+            printf $'# Diff: %s\n' "$GITHUB_DIFF"
             printf $'scripts/merge-lean-testing-pr.sh %s   # %s\n' "$PR_NUMBER" "$BRANCH"
-            printf '# # # # #'
+            printf '\n'
           done
           printf $'```\n'
           printf "EOF"

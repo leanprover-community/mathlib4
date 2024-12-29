@@ -9,6 +9,7 @@ import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Ideal.Quotient.Defs
 import Mathlib.RingTheory.Noetherian.Defs
 
 /-!

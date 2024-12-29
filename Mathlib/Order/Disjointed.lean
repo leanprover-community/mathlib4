@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Yaël Dillies
 import Mathlib.Order.PartialSups
 import Mathlib.Order.Interval.Finset.Fin
 import Mathlib.Data.Nat.Cast.NeZero
+import Mathlib.Data.Nat.SuccPred
 
 /-!
 # Making a sequence disjoint
@@ -189,18 +190,19 @@ theorem disjointed_unique' {f d : β → α} (hdisj : Pairwise (Disjoint on d))
     (hsups : partialSups d = partialSups f) : d = disjointed f :=
   disjointed_unique (fun hij ↦ hdisj hij.ne) hsups
 
-lemma disjointed_succ (f : β → α) {n : β} (hn : ¬IsMax n) :
+lemma disjointed_succ [SuccOrder β] (f : β → α) {n : β} (hn : ¬IsMax n) :
     disjointed f (Order.succ n) = f (Order.succ n) \ partialSups f n := by
   rw [disjointed_apply, partialSups_apply, sup'_eq_sup]
   congr 2 with m
   simpa only [mem_Iio, mem_Iic] using Order.lt_succ_iff_of_not_isMax hn
 
-protected lemma Monotone.disjointed_succ {f : β → α} (hf : Monotone f) {n : β} (hn : ¬IsMax n) :
+protected lemma Monotone.disjointed_succ [SuccOrder β] {f : β → α} (hf : Monotone f)
+    {n : β} (hn : ¬IsMax n) :
     disjointed f (Order.succ n) = f (Order.succ n) \ f n := by
   rwa [disjointed_succ, hf.partialSups_eq]
 
 /-- Note this lemma does not require `¬IsMax n`, unlike `disjointed_succ`. -/
-lemma Monotone.disjointed_succ_sup {f : β → α} (hf : Monotone f) (n : β) :
+lemma Monotone.disjointed_succ_sup [SuccOrder β] {f : β → α} (hf : Monotone f) (n : β) :
     disjointed f (Order.succ n) ⊔ f n = f (Order.succ n) := by
   by_cases h : IsMax n
   · simpa only [Order.succ_eq_iff_isMax.mpr h, sup_eq_right] using disjointed_le f n
@@ -289,11 +291,11 @@ theorem disjointed_zero (f : ℕ → α) : disjointed f 0 = f 0 :=
 
 theorem disjointed_natSucc (f : ℕ → α) (n : ℕ) :
     disjointed f (n + 1) = f (n + 1) \ partialSups f n := by
-  simpa only [Nat.orderSucc_eq_succ n] using disjointed_succ f (not_isMax n)
+  simpa only [Order.succ_eq_add_one] using disjointed_succ f (not_isMax n)
 
 protected lemma Monotone.disjointed_natSucc {f : ℕ → α} (hf : Monotone f) (n : ℕ) :
     disjointed f (n + 1) = f (n + 1) \ f n := by
-  rw [← Nat.orderSucc_eq_succ, hf.disjointed_succ]
+  rw [← Order.succ_eq_add_one, hf.disjointed_succ]
   exact not_isMax n
 
 protected lemma Monotone.disjointed_natSucc_sup {f : ℕ → α} (hf : Monotone f) (n : ℕ) :
@@ -315,7 +317,7 @@ def Nat.disjointedRec {f : ℕ → α} {p : α → Sort*} (hdiff : ∀ ⦃t i⦄
     intro k
     induction k with
     | zero => exact hdiff h
-    | succ k ih => simpa only [partialSups_natSucc, ← sdiff_sdiff_left] using hdiff ih
+    | succ k ih => simpa only [partialSups_add_one, ← sdiff_sdiff_left] using hdiff ih
 
 @[simp]
 theorem disjointedRec_zero {f : ℕ → α} {p : α → Sort*}

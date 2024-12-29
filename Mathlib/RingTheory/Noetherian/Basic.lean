@@ -283,8 +283,8 @@ theorem IsNoetherian.disjoint_partialSups_eventually_bot
     · apply w
       exact Nat.succ_le_succ_iff.mp p
   obtain ⟨n, w⟩ := monotone_stabilizes_iff_noetherian.mpr inferInstance (partialSups f)
-  refine ⟨n, fun m p ↦ (h m).eq_bot_of_ge <| sup_eq_left.1 <| ?_⟩
-  exact partialSups_natSucc f m ▸ (w (m + 1) <| le_add_right p).symm.trans <| w m p
+  refine ⟨n, fun m p ↦ (h m).eq_bot_of_ge <| sup_eq_left.mp ?_⟩
+  simpa only [partialSups_add_one] using (w (m + 1) <| le_add_right p).symm.trans <| w m p
 
 end
 

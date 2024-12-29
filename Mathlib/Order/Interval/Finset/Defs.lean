@@ -118,8 +118,7 @@ class LocallyFiniteOrder (α : Type*) [Preorder α] where
   finset_mem_Ioo : ∀ a b x : α, x ∈ finsetIoo a b ↔ a < x ∧ x < b
 
 /-- This mixin class describes an order where all intervals bounded below are finite. This is
-weaker than `LocallyFiniteOrder` + `OrderTop`, as it allows empty types, or partial orders with
-many maximal elements. -/
+slightly weaker than `LocallyFiniteOrder` + `OrderTop` as it allows empty types. -/
 class LocallyFiniteOrderTop (α : Type*) [Preorder α] where
   /-- Left-open right-infinite interval -/
   finsetIoi : α → Finset α
@@ -131,8 +130,7 @@ class LocallyFiniteOrderTop (α : Type*) [Preorder α] where
   finset_mem_Ioi : ∀ a x : α, x ∈ finsetIoi a ↔ a < x
 
 /-- This mixin class describes an order where all intervals bounded above are finite. This is
-weaker than `LocallyFiniteOrder` + `OrderBot`, as it allows empty types, or partial orders with
-many minimal elements. -/
+slightly weaker than `LocallyFiniteOrder` + `OrderBot` as it allows empty types. -/
 class LocallyFiniteOrderBot (α : Type*) [Preorder α] where
   /-- Left-infinite right-open interval -/
   finsetIio : α → Finset α
@@ -1326,31 +1324,3 @@ abbrev LocallyFiniteOrder.ofOrderIsoClass {F M N : Type*} [Preorder M] [Preorder
     simp [finset_mem_Ioc, EquivLike.inv_apply_eq_iff_eq_apply, map_lt_map_iff]
   finset_mem_Ioo := by
     simp [finset_mem_Ioo, EquivLike.inv_apply_eq_iff_eq_apply, map_lt_map_iff]
-
-/-- A `LocallyFiniteOrderBot` is a `LocallyFiniteOrder`. Note that this assumes some decidability
-conditions, which are required by default for `LinearOrders`, but not for arbitrary preorders. -/
-instance [Preorder α] [LocallyFiniteOrderBot α]
-    [DecidableRel ((· ≤ ·) : α → α → Prop)] [DecidableRel ((· < ·) : α → α → Prop)] :
-    LocallyFiniteOrder α where
-  finsetIcc a b := (Finset.Iic b).filter (a ≤ ·)
-  finsetIoc a b := (Finset.Iic b).filter (a < ·)
-  finsetIco a b := (Finset.Iio b).filter (a ≤ ·)
-  finsetIoo a b := (Finset.Iio b).filter (a < ·)
-  finset_mem_Icc a b x := by simp only [mem_filter, mem_Iic, And.comm]
-  finset_mem_Ioc a b x := by simp only [mem_filter, mem_Iic, And.comm]
-  finset_mem_Ico a b x := by simp only [mem_filter, mem_Iio, And.comm]
-  finset_mem_Ioo a b x := by simp only [mem_filter, mem_Iio, And.comm]
-
-/-- A `LocallyFiniteOrderTop` is a `LocallyFiniteOrder`. Note that this assumes some decidability
-conditions, which are required by default for `LinearOrders`, but not for arbitrary preorders. -/
-instance [Preorder α] [LocallyFiniteOrderTop α]
-    [DecidableRel ((· ≤ ·) : α → α → Prop)] [DecidableRel ((· < ·) : α → α → Prop)] :
-    LocallyFiniteOrder α where
-  finsetIcc a b := (Finset.Ici a).filter (· ≤ b)
-  finsetIoc a b := (Finset.Ioi a).filter (· ≤ b)
-  finsetIco a b := (Finset.Ici a).filter (· < b)
-  finsetIoo a b := (Finset.Ioi a).filter (· < b)
-  finset_mem_Icc a b x := by simp only [mem_filter, mem_Ici]
-  finset_mem_Ioc a b x := by simp only [mem_filter, mem_Ioi]
-  finset_mem_Ico a b x := by simp only [mem_filter, mem_Ici]
-  finset_mem_Ioo a b x := by simp only [mem_filter, mem_Ioi]
