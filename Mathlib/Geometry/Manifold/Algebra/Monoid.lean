@@ -31,7 +31,7 @@ mathematically interesting monoid on a topological manifold such that (a) the sp
 we formulate the definitions and lemmas for any model.
 
 3. While smoothness of an operation implies its continuity, lemmas like
-`continuousMul_of_contMDiffMul` can't be instances becausen otherwise Lean would have to search for
+`continuousMul_of_contMDiffMul` can't be instances because otherwise Lean would have to search for
 `ContMDiffMul I n G` with unknown `𝕜`, `E`, `H`, and `I : ModelWithCorners 𝕜 E H`. If users needs
 `[ContinuousMul G]` in a proof about a `C^n` monoid, then they need to either add
 `[ContinuousMul G]` as an assumption (worse) or use `haveI` in the proof (better). -/
