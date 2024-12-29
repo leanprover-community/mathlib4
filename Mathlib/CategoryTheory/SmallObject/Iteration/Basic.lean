@@ -5,12 +5,12 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.FunctorCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.Preorder
+import Mathlib.CategoryTheory.Limits.Shapes.Preorder.HasIterationOfShape
 import Mathlib.CategoryTheory.Limits.Comma
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.SuccPred.Limit
 
-/-! # Transfinite iterations of a construction
+/-! # Transfinite iterations of a successor structure
 
 In this file, we introduce the structure `SuccStruct` on a category `C`.
 It consists of the data of an object `X₀ : C`, a successor map `succ : C → C`
@@ -41,8 +41,8 @@ all the indices that are `≤ j`. In this file, we show that
 `Φ.Iteration j` is a subsingleton. The existence shall be
 obtained in the file `SmallObject.Iteration.Nonempty`, and
 the construction of the functor `Φ.iterationFunctor J : J ⥤ C`
-and of its colimit `Φ.iteration J : C` are done in the
-file `SmallObject.Iteration.Iteration`.
+and of its colimit `Φ.iteration J : C` will done in the
+file `SmallObject.TransfiniteIteration`.
 
 The map `Φ.toSucc X : X ⟶ Φ.succ X` does not have to be natural
 (and it is not in certain applications). Then, two isomorphic
@@ -181,7 +181,7 @@ end
 
 section
 
-variable [HasIterationOfShape C J]
+variable [HasIterationOfShape J C]
   {i : J} (F : Set.Iio i ⥤ C) (hi : Order.IsSuccLimit i) (k : J) (hk : k < i)
 
 /-- Given `F : Set.Iio i ⥤ C`, with `i` a limit element, and `k` such that `hk : k < i`,
@@ -196,7 +196,7 @@ lemma arrowι_def :
 
 end
 
-variable [SuccOrder J] [OrderBot J] [HasIterationOfShape C J]
+variable [SuccOrder J] [OrderBot J] [HasIterationOfShape J C]
 
 /-- The category of `j`th iterations of a succesor structure `Φ : SuccStruct C`.
 An object consists of the data of all iterations of `Φ` for `i : J` such
