@@ -449,7 +449,7 @@ def mapRel (f : β → α) (rel : FreeMonoid α → FreeMonoid α → Prop) : Fr
 
 /-- given a function from α to β, convert a relation predicate with underlying type β to
 one with underlying type α -/
-@[to_additive "given afunction from α to β, convert a relation predicate with underlying
+@[to_additive "given a function from α to β, convert a relation predicate with underlying
 type β to one with underlying type α "]
 def comapRel (f : α → β) (rel : FreeMonoid β → FreeMonoid β → Prop) : FreeMonoid α → FreeMonoid α →
     Prop := fun a b ↦ rel (.map f a) (.map f b)
