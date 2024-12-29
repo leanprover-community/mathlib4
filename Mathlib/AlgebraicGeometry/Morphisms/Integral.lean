@@ -60,7 +60,7 @@ instance : ContainsIdentities @IsIntegralHom :=
   ⟨fun X ↦ ⟨fun _ _ ↦ by simpa using RingHom.isIntegral_of_surjective _ (Equiv.refl _).surjective⟩⟩
 
 lemma iff_of_Spec {R S : CommRingCat} {φ : R ⟶ S} :
-    IsIntegralHom (Spec.map φ) ↔ φ.IsIntegral := by
+    IsIntegralHom (Spec.map φ) ↔ φ.hom.IsIntegral := by
   have := RingHom.toMorphismProperty_respectsIso_iff.mp RingHom.isIntegral_respectsIso
   rw [HasAffineProperty.iff_of_isAffine (P := @IsIntegralHom), and_iff_right]
   exacts [MorphismProperty.arrow_mk_iso_iff (RingHom.toMorphismProperty RingHom.IsIntegral)
@@ -108,8 +108,8 @@ lemma iff_universallyClosed_and_isAffineHom {X Y : Scheme.{u}} {f : X ⟶ Y} :
   obtain ⟨φ, rfl⟩ : ∃ φ, Spec.map φ = f := ⟨_, Spec.map_preimage _⟩
   rw [iff_of_Spec]
   apply PrimeSpectrum.isIntegral_of_isClosedMap_comap_mapRingHom
-  letI := φ.toAlgebra
-  letI := (Polynomial.mapRingHom φ).toAlgebra
+  letI := φ.1.toAlgebra
+  letI := (Polynomial.mapRingHom φ.1).toAlgebra
   haveI : IsScalarTower R (Polynomial R) (Polynomial S) :=
     .of_algebraMap_eq' (Polynomial.mapRingHom_comp_C _).symm
   refine H₁.out (Spec.map (CommRingCat.ofHom Polynomial.C))
