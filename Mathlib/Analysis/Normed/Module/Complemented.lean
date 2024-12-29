@@ -181,9 +181,9 @@ lemma range_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E)
   ext x
   constructor
   · rw [idempotentOfClosedCompl]
-    intro h
-    simp at h
-    obtain ⟨y, hy⟩ := h
+    intro hx
+    simp at hx
+    obtain ⟨y, hy⟩ := hx
     rw [← hy]
     exact coe_mem ((linearProjOfIsCompl p q h) y)
   · intro hx
