@@ -122,7 +122,7 @@ theorem mul_adjp_apply_ne (h : i ≠ j) : (A * adjp 1 A) i j = (A * adjp (-1) A)
     have key : ({j}ᶜ : Finset n) = disjUnion ({i} : Finset n) ({i, j} : Finset n)ᶜ (by simp) := by
       rw [singleton_disjUnion, cons_eq_insert, compl_insert, insert_erase]
       rwa [mem_compl, mem_singleton]
-    simp_rw [key, prod_disjUnion, prod_singleton, Perm.mul_apply, swap_apply_left, ← mul_assoc]
+    simp_rw [key, prod_disjUnion, prod_singleton, f, Perm.mul_apply, swap_apply_left, ← mul_assoc]
     rw [mul_comm (A i x) (A i (σ i)), hp.2.2]
     refine congr_arg _ (prod_congr rfl fun x hx ↦ ?_)
     rw [mem_compl, mem_insert, mem_singleton, not_or] at hx
