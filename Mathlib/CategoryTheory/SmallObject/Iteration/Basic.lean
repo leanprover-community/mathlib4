@@ -104,43 +104,6 @@ lemma restrictionLE_map {k₁ k₂ : Set.Iic i} (φ : k₁ ⟶ k₂) :
 
 end
 
-section
-
-variable [Preorder J]
-
-variable (C J) in
-/-- A category `C` has iterations of shape `J` when certain shapes
-of colimits exists. When `J` is well ordered, this assumption is used in
-order to show that if `Φ : SuccStruct C`, then the category
-`Φ.Iteration j` is nonempty for any `j : J`, see the file
-`CategoryTheory.SmallObject.Iteration.Nonempty`. -/
-class HasIterationOfShape : Prop where
-  hasColimitsOfShape_of_isSuccLimit (j : J) (hj : Order.IsSuccLimit j) :
-    HasColimitsOfShape (Set.Iio j) C := by infer_instance
-  hasColimitsOfShape : HasColimitsOfShape J C := by infer_instance
-
-attribute [instance] HasIterationOfShape.hasColimitsOfShape
-
-variable (C) in
-lemma hasColimitsOfShape_of_isSuccLimit [HasIterationOfShape C J] (j : J)
-    (hj : Order.IsSuccLimit j) :
-    HasColimitsOfShape (Set.Iio j) C :=
-  HasIterationOfShape.hasColimitsOfShape_of_isSuccLimit j hj
-
-instance [HasIterationOfShape C J] :
-    HasIterationOfShape (Arrow C) J where
-  hasColimitsOfShape_of_isSuccLimit j hj := by
-    have := hasColimitsOfShape_of_isSuccLimit C j hj
-    infer_instance
-
-instance [HasIterationOfShape C J] {K : Type u'} [Category.{v'} K]:
-    HasIterationOfShape (K ⥤ C) J where
-  hasColimitsOfShape_of_isSuccLimit j hj := by
-    have := hasColimitsOfShape_of_isSuccLimit C j hj
-    infer_instance
-
-end
-
 variable (C) in
 /-- A successor structure on a category consists of the
 data of an object `succ X` for any `X : C`, a map `toSucc X : X ⟶ toSucc X`
@@ -220,6 +183,7 @@ section
 
 variable [HasIterationOfShape C J]
   {i : J} (F : Set.Iio i ⥤ C) (hi : Order.IsSuccLimit i) (k : J) (hk : k < i)
+
 /-- Given `F : Set.Iio i ⥤ C`, with `i` a limit element, and `k` such that `hk : k < i`,
 this is the map `colimit.ι F ⟨k, hk⟩`, as an element in `Arrow C`. -/
 noncomputable def arrowι : Arrow C :=
