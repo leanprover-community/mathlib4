@@ -157,7 +157,7 @@ lemma whiskerLeft_coprod_inl_leftDistrib_inv {X Y Z : C} :
 `(∂L X Y Z).inv :  X ⊗ (Y ⨿ Z) ⟶ (X ⊗ Y) ⨿ (X ⊗ Z)`
 is equal to the right coprojection `coprod.inr : X ⊗ Z ⟶ (X ⊗ Y) ⨿ (X ⊗ Z)`. -/
 @[reassoc (attr := simp)]
-lemma whisker_inr_inv_leftDistrib {X Y Z : C} :
+lemma whiskerLeft_coprod_inr_leftDistrib_inv {X Y Z : C} :
     (X ◁ coprod.inr) ≫ (∂L X Y Z).inv = coprod.inr := by
   apply (cancel_iso_hom_right _ _ (∂L X Y Z)).mp
   rw [assoc, Iso.inv_hom_id, comp_id, coprod_inr_leftDistrib]
@@ -227,7 +227,7 @@ lemma coprod_inr_rightDistrib_hom {X Y Z : C} :
 `(∂R X Y Z).inv :  (Y ⨿ Z) ⊗ X ⟶ (Y ⊗ X) ⨿ (Z ⊗ X)` is equal to the left coprojection
 `coprod.inl : Y ⊗ X ⟶ (Y ⊗ X) ⨿ (Z ⊗ X)`. -/
 @[reassoc (attr := simp)]
-lemma whisker_inl_inv_rightDistrib {X Y Z : C} :
+lemma whiskerRight_coprod_inl_rightDistrib_inv {X Y Z : C} :
     (coprod.inl ▷ X) ≫ (∂R X Y Z).inv = coprod.inl := by
   apply (cancel_iso_hom_right _ _ (∂R X Y Z)).mp
   rw [assoc, Iso.inv_hom_id, comp_id, coprod_inl_rightDistrib_hom]
@@ -236,7 +236,7 @@ lemma whisker_inl_inv_rightDistrib {X Y Z : C} :
 `(∂R X Y Z).inv :  (Y ⨿ Z) ⊗ X ⟶ (Y ⊗ X) ⨿ (Z ⊗ X)` is equal to the right coprojection
 `coprod.inr : Z ⊗ X ⟶ (Y ⊗ X) ⨿ (Z ⊗ X)`. -/
 @[reassoc (attr := simp)]
-lemma whisker_inr_inv_rightDistrib {X Y Z : C} :
+lemma whiskerRight_coprod_inr_rightDistrib_inv {X Y Z : C} :
     (coprod.inr ▷ X) ≫ (∂R X Y Z).inv = coprod.inr := by
   apply (cancel_iso_hom_right _ _ (∂R X Y Z)).mp
   rw [assoc, Iso.inv_hom_id, comp_id, coprod_inr_rightDistrib_hom]
@@ -300,8 +300,8 @@ lemma MonoidalClosed.leftDistrib_inv [MonoidalClosed C] {X Y Z : C} :
       (coprod.inl ≫ curry (∂L X Y Z).inv) (coprod.inr ≫ curry (∂L X Y Z).inv) := by
     aesop
   convert this
-  · rw [← MonoidalClosed.curry_natural_left, whisker_inl_inv_leftDistrib]
-  · rw [← MonoidalClosed.curry_natural_left, whisker_inr_inv_leftDistrib]
+  · rw [← MonoidalClosed.curry_natural_left, whiskerLeft_coprod_inl_leftDistrib_inv]
+  · rw [← MonoidalClosed.curry_natural_left, whiskerLeft_coprod_inr_leftDistrib_inv]
 
 attribute [local instance] endofunctorMonoidalCategory
 

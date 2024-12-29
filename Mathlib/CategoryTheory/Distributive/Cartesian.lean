@@ -52,13 +52,11 @@ noncomputable section
 
 namespace CategoryTheory
 
-open Category Limits MonoidalCategory
+open Category Limits MonoidalCategory Distributive
 
 variable (C : Type u) [Category.{v} C] [ChosenFiniteProducts C] [HasBinaryCoproducts C]
 
 attribute [local instance] monoidalOfHasFiniteProducts
-
-attribute [local instance] IsMonoidalLeftDistrib.isIso_leftDistrib_hom
 
 /-- A category `C` with finite products is cartesian distributive if is monoidal distributive
 with respect to the cartesian monoidal structure. -/
@@ -82,7 +80,7 @@ instance [IsMonoidalLeftDistrib C] : MonoCoprod C :=
         retraction := (∂L Z A B).inv ≫ (coprod.desc (𝟙 _) (prod.fst ≫ prod.lift (𝟙 Z) f))
         id := by
           rw [← assoc]
-          simp only [whisker_inl_inv_leftDistrib, coprod.inl_desc]
+          simp only [whiskerLeft_coprod_inl_leftDistrib_inv, coprod.inl_desc]
       }
       have : Mono (Z ◁ coprod.inl) := SplitMono.mono this
       have :  Mono (Z ◁ (coprod.inl (X:= A) (Y:= B))) := by infer_instance
