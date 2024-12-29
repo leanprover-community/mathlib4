@@ -9,7 +9,7 @@ import Batteries.Tactic.Congr
 import Mathlib.Order.TypeTags
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Set.SymmDiff
---import Mathlib.Data.Set.Lattice
+import Mathlib.Data.Set.Lattice
 
 /-!
 # Images and preimages of sets
