@@ -512,9 +512,7 @@ lemma LTSeries.length_le_krullDim (p : LTSeries α) : p.length ≤ krullDim α :
 lemma krullDim_eq_bot_iff : krullDim α = ⊥ ↔ IsEmpty α := by
   rw [eq_bot_iff, krullDim, iSup_le_iff]
   simp only [le_bot_iff, WithBot.natCast_ne_bot, isEmpty_iff]
-  constructor
-  · exact fun H x ↦ H ⟨0, fun _ ↦ x, by simp⟩
-  · exact fun H x ↦ H (x 1)
+  exact ⟨fun H x ↦ H ⟨0, fun _ ↦ x, by simp⟩, (· <| · 1)⟩
 
 lemma krullDim_nonneg_iff : 0 ≤ krullDim α ↔ Nonempty α := by
   rw [← not_iff_not, not_le, not_nonempty_iff, ← krullDim_eq_bot_iff, ← WithBot.lt_coe_bot,
@@ -530,11 +528,9 @@ lemma krullDim_nonneg [Nonempty α] : 0 ≤ krullDim α := krullDim_nonneg_iff.m
 
 lemma krullDim_nonpos_iff_forall_isMax : krullDim α ≤ 0 ↔ ∀ x : α, IsMax x := by
   simp only [krullDim, iSup_le_iff, isMax_iff_forall_not_lt]
-  constructor
-  · intro H x y h
-    exact (H ⟨1, ![x, y], fun i ↦ by obtain rfl := Subsingleton.elim i 0; simpa⟩).not_lt (by simp)
-  · rintro H ⟨n, l, h⟩
-    cases' n with n
+  refine ⟨fun H x y h ↦ (H ⟨1, ![x, y],
+    fun i ↦ by obtain rfl := Subsingleton.elim i 0; simpa⟩).not_lt (by simp), ?_⟩
+  · rintro H ⟨_ | n, l, h⟩
     · simp
     · cases H (l 0) (l 1) (h 0)
 
@@ -547,9 +543,8 @@ lemma krullDim_le_one_iff : krullDim α ≤ 1 ↔ ∀ x : α, IsMin x ∨ IsMax 
   simp_rw [isMax_iff_forall_not_lt, isMin_iff_forall_not_lt, krullDim, iSup_le_iff]
   push_neg
   constructor
-  · rintro ⟨⟨n, l, hl⟩, hl'⟩
-    cases' n with n; · cases hl'.not_le (by simp)
-    cases' n with n; · cases hl'.not_le (by simp)
+  · rintro ⟨⟨_ | _ | n, l, hl⟩, hl'⟩
+    iterate 2 · cases hl'.not_le (by simp)
     exact ⟨l 1, ⟨l 0, hl 0⟩, l 2, hl 1⟩
   · rintro ⟨x, ⟨y, hxy⟩, z, hzx⟩
     exact ⟨⟨2, ![y, x, z], fun i ↦ by fin_cases i <;> simpa⟩, by simp⟩
@@ -633,7 +628,7 @@ lemma krullDim_lt_coe_iff {n : ℕ} : krullDim α < n ↔ ∀ l : LTSeries α, l
   · simp [WithBot.lt_add_one_iff, WithBot.coe_natCast, Nat.lt_succ]
 
 lemma krullDim_le_of_strictMono (f : α → β) (hf : StrictMono f) : krullDim α ≤ krullDim β :=
-  iSup_le <| fun p ↦ le_sSup ⟨p.map f hf, rfl⟩
+  iSup_le fun p ↦ le_sSup ⟨p.map f hf, rfl⟩
 
 lemma krullDim_le_of_strictComono_and_surj
     (f : α → β) (hf : ∀ ⦃a b⦄, f a < f b → a < b) (hf' : Function.Surjective f) :
