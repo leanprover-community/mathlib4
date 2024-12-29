@@ -280,7 +280,6 @@ instance isIso_ιIteration_app_right (f : Arrow C) :
     (propArrow_functorCategory_arrow_le I f) _
     (transfiniteCompositionOfShape_propArrow_ιIteration I κ)
 
-
 instance (f : Arrow C) (j : κ.ord.toType) :
     IsIso (((iterationCocone I κ).ι.app j).app f).right :=
   have := hasIterationOfShape I κ
@@ -320,19 +319,9 @@ lemma πFunctorObj_iterationCocone_ι_app_app_right
         (((iterationFunctor I κ).obj (Order.succ j)).obj f).hom ≫
         ((((iterationCocone I κ).ι.app (Order.succ j)).app f)).right := by
   have := hasIterationOfShape I κ
-  --have := hasColimitsOfShape_discrete I κ
-  --have := hasPushouts I κ
-  have h₁ := (((iterationFunctor I κ).map (homOfLE (Order.le_succ j))).app f).w
-  have h₂ := (isEventuallyConstantFrom_bot_iterationFunctor_evaluation_right I κ f).isIso_map
-    (homOfLE (Order.le_succ j)) (homOfLE bot_le)
-  dsimp at h₂
-  have h₃ := ((evaluation _ _).obj f ⋙ Arrow.rightFunc).congr_map
-    ((iterationCocone I κ).w (homOfLE (Order.le_succ j)))
-  have h₄ := ((evaluation _ _).obj f ⋙ Arrow.rightFunc).congr_map
-    ((succStruct I κ).iterationFunctor_map_succ j hj)
-  dsimp [iterationFunctorObjSuccObjLeftIso, iterationFunctor, iterationCocone] at h₁ h₂ h₃ h₄ ⊢
-  rw [succStruct_toSucc_app_right, id_comp] at h₄
-  sorry
+  simp [iterationFunctorObjSuccObjLeftIso, iterationFunctor,
+    succStruct_succ_obj_hom I κ, ← (iterationCocone I κ).w (homOfLE (Order.le_succ j)),
+    (succStruct I κ).iterationFunctor_map_succ j hj, succStruct_toSucc_app_right]
 
 lemma hasRightLiftingProperty_iteration_obj_hom (f : Arrow C) {A B : C} (i : A ⟶ B) (hi : I i):
     HasLiftingProperty i ((iteration I κ).obj f).hom := ⟨by
