@@ -170,4 +170,3 @@ def toList (s : Sequence α) (n : ℕ) : List α :=
 end Sequence
 
 end Ordinal
-#lint
