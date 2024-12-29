@@ -231,7 +231,7 @@ theorem TuringEquivalent.equivalence : Equivalence TuringEquivalent :=
 
 @[refl]
 theorem TuringEquivalent.refl (f : ℕ →. ℕ) : f ≡ᵀ f :=
-  Equivalence.refl equivalence f
+  equivalence.refl f
 
 @[symm]
 theorem TuringEquivalent.symm {f g : ℕ →. ℕ} (h : f ≡ᵀ g) : g ≡ᵀ f :=
