@@ -19,9 +19,11 @@ universe u
 
 namespace CategoryTheory
 
-open Category Limits SmallObject
+open Category Limits
 
-namespace Functor
+namespace SmallObject
+
+namespace SuccStruct
 
 variable {C : Type*} [Category C]
   {J : Type u} [LinearOrder J]
@@ -29,23 +31,23 @@ variable {C : Type*} [Category C]
 
 namespace ofCocone
 
-/-- Auxiliary definition for `Functor.ofCocone`. -/
+/-- Auxiliary definition for `ofCocone`. -/
 def obj (i : J) : C :=
   if hi : i < j then
     F.obj ⟨i, hi⟩
   else c.pt
 
-/-- Auxiliary definition for `Functor.ofCocone`. -/
+/-- Auxiliary definition for `ofCocone`. -/
 def objIso (i : J) (hi : i < j) :
     obj c i ≅ F.obj ⟨i, hi⟩ :=
   eqToIso (dif_pos hi)
 
-/-- Auxiliary definition for `Functor.ofCocone`. -/
+/-- Auxiliary definition for `ofCocone`. -/
 def objIsoPt :
     obj c j  ≅ c.pt :=
   eqToIso (dif_neg (by simp))
 
-/-- Auxiliary definition for `Functor.ofCocone`. -/
+/-- Auxiliary definition for `ofCocone`. -/
 def map (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ : i₂ ≤ j) :
     obj c i₁ ⟶ obj c i₂ :=
   if h₂ : i₂ < j then
@@ -135,7 +137,7 @@ lemma ofCoconeObjIso_hom_naturality (i₁ i₂ : J) (hi : i₁ ≤ i₂) (hi₂ 
 when `c : Cocone F`. -/
 @[simps!]
 def restrictionLTOfCoconeIso :
-    restrictionLT (ofCocone c) (Preorder.le_refl j) ≅ F :=
+    SmallObject.restrictionLT (ofCocone c) (Preorder.le_refl j) ≅ F :=
   NatIso.ofComponents (fun ⟨i, hi⟩ ↦ ofCoconeObjIso c i hi)
     (by intros; apply ofCoconeObjIso_hom_naturality)
 
@@ -149,6 +151,18 @@ def isColimitCoconeOfLEOfCocone (hc : IsColimit c) :
         dsimp
         rw [ofCocone_map_to_top _ _ hi, Iso.inv_hom_id_assoc])))
 
-end Functor
+lemma arrowMap_ofCocone (i₁ i₂ : J) (h₁₂ : i₁ ≤ i₂) (h₂ : i₂ < j) :
+    arrowMap (ofCocone c) i₁ i₂ h₁₂ h₂.le =
+      Arrow.mk (F.map (homOfLE h₁₂ : ⟨i₁, lt_of_le_of_lt h₁₂ h₂⟩ ⟶ ⟨i₂, h₂⟩)) :=
+  Arrow.ext (ofCocone_obj_eq _ _ _) (ofCocone_obj_eq _ _ _) (ofCocone_map _ _ _ _ _)
+
+lemma arrowMap_ofCocone_to_top (i : J) (hi : i < j) :
+    arrowMap (ofCocone c) i j hi.le (by simp) = Arrow.mk (c.ι.app ⟨i, hi⟩) := by
+  rw [arrowMap, ofCocone_map_to_top _ _ hi]
+  exact Arrow.ext (ofCocone_obj_eq _ _ _) (ofCocone_obj_eq_pt _) rfl
+
+end SuccStruct
+
+end SmallObject
 
 end CategoryTheory
