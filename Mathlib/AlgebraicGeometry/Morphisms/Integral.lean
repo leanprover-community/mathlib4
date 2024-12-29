@@ -19,10 +19,6 @@ of an arbitrary affine open subset of `Y` is affine and the induced ring map is 
 It is equivalent to ask only that `Y` is covered by affine opens whose preimage is affine
 and the induced ring map is integral.
 
-## TODO
-
-- Show integral = universally closed + affine
-
 -/
 
 universe v u
