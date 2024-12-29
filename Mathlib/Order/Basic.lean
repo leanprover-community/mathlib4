@@ -1289,10 +1289,10 @@ lemma forall_ge_iff_le_of_dense : (∀ a < a₁, a ≤ a₂) ↔ a₁ ≤ a₂ w
 theorem eq_of_le_of_forall_ge_of_dense (h₁ : a₂ ≤ a₁) (h₂ : ∀ a₃ < a₁, a₃ ≤ a₂) : a₁ = a₂ :=
   (le_of_forall_ge_of_dense h₂).antisymm h₁
 
-theorem forall_lt_le_iff : (∀ c < a, c ≤ b) ↔ a ≤ b :=
+lemma forall_lt_le_iff : (∀ a < a₁, a ≤ a₂) ↔ a₁ ≤ a₂ :=
   ⟨le_of_forall_ge_of_dense, fun hab _c hca ↦ hca.le.trans hab⟩
 
-theorem forall_gt_ge_iff : (∀ c, a < c → b ≤ c) ↔ b ≤ a := forall_lt_le_iff (α := αᵒᵈ)
+lemma forall_gt_ge_iff : (∀ a, a₁ < a → a₂ ≤ a) ↔ a₂ ≤ a₁ := forall_lt_le_iff (α := αᵒᵈ)
 
 end LinearOrder
 
