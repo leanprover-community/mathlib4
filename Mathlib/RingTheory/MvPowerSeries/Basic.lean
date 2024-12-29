@@ -641,12 +641,12 @@ theorem coeff_prod [DecidableEq σ]
       rintro u v rfl
       rw [ih, Finset.mul_sum, ← Finset.sum_attach]
       apply Finset.sum_congr rfl
-      simp only [mem_attach, Finset.prod_insert ha, Function.update_same, forall_true_left,
+      simp only [mem_attach, Finset.prod_insert ha, Function.update_self, forall_true_left,
         Subtype.forall]
       rintro x -
       rw [Finset.prod_congr rfl]
       intro i hi
-      rw [Function.update_noteq]
+      rw [Function.update_of_ne]
       exact ne_of_mem_of_not_mem hi ha
     · simp only [Set.PairwiseDisjoint, Set.Pairwise, mem_coe, mem_antidiagonal, ne_eq,
         disjoint_left, mem_map, mem_attach, Function.Embedding.coeFn_mk, true_and, Subtype.exists,
@@ -654,7 +654,7 @@ theorem coeff_prod [DecidableEq σ]
         Prod.forall, Prod.mk.injEq]
       rintro u v rfl u' v' huv h k - l - hkl
       obtain rfl : u' = u := by
-        simpa only [Finsupp.coe_update, Function.update_same] using DFunLike.congr_fun hkl a
+        simpa only [Finsupp.coe_update, Function.update_self] using DFunLike.congr_fun hkl a
       simp only [add_right_inj] at huv
       exact h rfl huv.symm
 

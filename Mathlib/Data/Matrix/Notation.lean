@@ -34,7 +34,7 @@ This file provide notation `!![a, b; c, d]` for matrices, which corresponds to
 
 ## Examples
 
-Examples of usage can be found in the `test/matrix.lean` file.
+Examples of usage can be found in the `MathlibTest/matrix.lean` file.
 -/
 
 namespace Matrix
@@ -111,7 +111,7 @@ macro_rules
   | `(!![$[,%$commas]*]) => `(@Matrix.of (Fin 0) (Fin $(quote commas.size)) _ ![])
 
 /-- Delaborator for the `!![]` notation. -/
-@[delab app.DFunLike.coe]
+@[app_delab DFunLike.coe]
 def delabMatrixNotation : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <|
   withOverApp 6 do
     let mkApp3 (.const ``Matrix.of _) (.app (.const ``Fin _) em) (.app (.const ``Fin _) en) _ :=
