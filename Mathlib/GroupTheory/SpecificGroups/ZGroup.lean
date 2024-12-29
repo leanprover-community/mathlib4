@@ -133,11 +133,6 @@ end Nilpotent
 
 section Commutator
 
--- check if this can be used to golf some proofs after #20107 is merged?
-theorem _root_.Subgroup.map_subtype_commutator {G : Type*} [Group G] (H : Subgroup G) :
-    (commutator H).map H.subtype = ⁅H, H⁆ := by
-  rw [commutator_def, Subgroup.map_commutator, ← MonoidHom.range_eq_map, H.range_subtype]
-
 variable (G) in
 /-- A finite Z-group has cyclic commutator subgroup. -/
 theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) := by
@@ -168,8 +163,6 @@ theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) :=
     rwa [Subgroup.normalizerMonoidHom_ker, Subgroup.normalizer_eq_top,
       ← Subgroup.map_subtype_le_map_subtype, Subgroup.map_subtype_commutator,
         Subgroup.map_subgroupOf_eq_of_le le_top] at h
-
-end Commutator
 
 end Commutator
 
