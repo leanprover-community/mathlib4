@@ -142,7 +142,7 @@ lemma mk'' (h : E.inverse.IsTriangulated) : E.IsTriangulated where
 
 /-- If the equivalence `E` is triangulated, so is the equivalence `E.symm`.
 -/
-def symm [E.IsTriangulated] : E.symm.IsTriangulated where
+instance symm [E.IsTriangulated] : E.symm.IsTriangulated where
   functor_isTriangulated := inverse_isTriangulated
   inverse_isTriangulated := functor_isTriangulated
 
