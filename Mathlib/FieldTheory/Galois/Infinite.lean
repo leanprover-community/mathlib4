@@ -261,8 +261,7 @@ theorem normal_iff_isGalois (L : IntermediateField k K) [IsGalois k K] :
 
 theorem isOpen_and_normal_iff_finite_and_isGalois (L : IntermediateField k K) [IsGalois k K] :
     IsOpen L.fixingSubgroup.carrier ∧ L.fixingSubgroup.Normal ↔
-    FiniteDimensional k L ∧ IsGalois k L :=
-  ⟨fun h ↦ ⟨(isOpen_iff_finite L).mp h.1, (normal_iff_isGalois L).mp h.2⟩,
-   fun h ↦ ⟨(isOpen_iff_finite L).mpr h.1, (normal_iff_isGalois L).mpr h.2⟩⟩
+    FiniteDimensional k L ∧ IsGalois k L := by
+  rw [isOpen_iff_finite, normal_iff_isGalois]
 
 end InfiniteGalois
