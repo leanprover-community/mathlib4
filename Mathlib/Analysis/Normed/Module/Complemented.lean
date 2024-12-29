@@ -88,32 +88,12 @@ def linearProjOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : E →L[𝕜] p :=
   ContinuousLinearMap.fst 𝕜 p q ∘L ↑(prodEquivOfClosedCompl p q h hp hq).symm
 
-variable (h : IsCompl p q) (hp : IsClosed (p : Set E))
-    (hq : IsClosed (q : Set E))
-
-#check  ContinuousLinearMap.inl 𝕜 p q ∘L (linearProjOfClosedCompl p q h hp hq)
-
---#check  ContinuousLinearMap.inl 𝕜 p q ∘L ContinuousLinearMap.fst 𝕜 p q
-
-#check (prodEquivOfClosedCompl p q h hp hq).toLinearMap
-
---#check (ContinuousLinearMap.inl 𝕜 p q ∘L (linearProjOfClosedCompl p q h hp hq)) e
-
-variable (e : E)
-
-#check (ContinuousLinearMap.inl 𝕜 p q ∘L (linearProjOfClosedCompl p q h hp hq)) e
-
-#check ((prodEquivOfClosedCompl p q h hp hq).toLinearMap
-  ((ContinuousLinearMap.inl 𝕜 p q ∘L (linearProjOfClosedCompl p q h hp hq)) e) :E)
-
-
-
 def idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : E →L[𝕜] E :=
   ↑(prodEquivOfClosedCompl p q h hp hq) ∘L (ContinuousLinearMap.inl 𝕜 p q ∘L
     (linearProjOfClosedCompl p q h hp hq))
 
-#check LinearMap.range
+
 
 
 /-
@@ -172,6 +152,32 @@ lemma ker_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     ContinuousLinearMap.inl_apply, coe_prodEquivOfIsCompl', ZeroMemClass.coe_zero, add_zero,
     ZeroMemClass.coe_eq_zero, linearProjOfIsCompl_apply_eq_zero_iff]
 
+#check LinearMap.coprod_zero_right
+
+variables (h : IsCompl p q) (hp : IsClosed (p : Set E))
+    (hq : IsClosed (q : Set E))
+
+--#check (prodEquivOfIsCompl p q h).symm x
+
+lemma test (x : p) : (prodEquivOfIsCompl p q h).symm x = ((x : p),(0 : q)) :=
+  prodEquivOfIsCompl_symm_apply_left p q h x
+
+lemma test2 (x : p) :
+  ↑((LinearMap.fst 𝕜 ↥p ↥q ∘ₗ ↑(prodEquivOfIsCompl p q h).symm) (x : E)) = x := by
+  rw [LinearMap.comp_apply]
+  rw [LinearEquiv.coe_coe, prodEquivOfIsCompl_symm_apply_left, LinearMap.fst_apply]
+
+/-
+#check Submodule.mem_carrier
+
+lemma test3 (x : E) (hx : x ∈ p) :
+  ↑((LinearMap.fst 𝕜 ↥p ↥q ∘ₗ ↑(prodEquivOfIsCompl p q h).symm) x) = x := by
+  rw [LinearMap.comp_apply]
+  rw [LinearEquiv.coe_coe]
+  rw [(prodEquivOfIsCompl_symm_apply_left h (⟨x,hx⟩ : p))]
+  --, prodEquivOfIsCompl_symm_apply_left, LinearMap.fst_apply]
+-/
+
 lemma range_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : LinearMap.range (idempotentOfClosedCompl p q h hp hq) = p := by
   rw [idempotentOfClosedCompl]
@@ -182,10 +188,10 @@ lemma range_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E)
     obtain ⟨y, hy⟩ := h
     rw [← hy]
     exact coe_mem ((linearProjOfIsCompl p q h) y)
-  · intro h
+  · intro hx
     simp
     use x
-    rw [linearProjOfIsCompl, prodEquivOfIsCompl]
-    simp
+    rw [linearProjOfIsCompl]
+    rw [(test2 h (⟨x,hx⟩))]
 
 end Submodule
