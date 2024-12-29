@@ -15,8 +15,9 @@ field by using multivariable polynomial hypotheses/proof terms over the same fie
 Used as is, the tactic makes use of those hypotheses in the local context that are
 over the same field as the target. However, the user can also specify which hypotheses
 from the local context to use, along with proof terms that might not already be in the
-local context. Note: since this tactic uses SageMath via an API call done in Python,
-it can only be used with a working internet connection, and with a local installation of Python.
+local context. Note: this tactic uses either Singular or SageMath via an API call done
+in Python, so it can only be used with either a local Singular/SageMath install or
+a working internet connection, and with a local installation of Python.
 
 ## Implementation Notes
 
@@ -28,11 +29,12 @@ to the user to find a collection of good coefficients. The `polyrith` tactic aut
 process using the theory of Groebner bases.
 
 Polyrith does this by first parsing the relevant hypotheses into a form that Python can understand.
-It then calls a Python file that uses the SageMath API to compute the coefficients. These
-coefficients are then sent back to Lean, which parses them into pexprs. The information is then
-given to the `linear_combination` tactic, which completes the process by checking the certificate.
+It then calls a Python file that tries to use a local Singular or SageMath install, or the SageMath
+API to compute the coefficients. These coefficients are then sent back to Lean, which parses them
+into pexprs. The information is then given to the `linear_combination` tactic, which completes
+the process by checking the certificate.
 
-In fact, `polyrith` uses Sage to test for membership in the *radical* of the ideal.
+In fact, `polyrith` uses Singular/Sage to test for membership in the *radical* of the ideal.
 This means it searches for a linear combination of hypotheses that add up to a *power* of the goal.
 When this power is not 1, it uses the `(exp := n)` feature of `linear_combination` to report the
 certificate.
@@ -47,7 +49,7 @@ remember to force recompilation of any files that call `polyrith`.
 * Give Sage more information about the specific ring being used for the coefficients. For now,
   we always use ℚ (or `QQ` in Sage).
 * Handle `•` terms.
-* Support local Sage installations.
+
 
 ## References
 
