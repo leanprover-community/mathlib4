@@ -13,7 +13,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Limits
 
 -/
 
--- Explicit universe annotations were used in this file to improve performance #12737
+-- Explicit universe annotations were used in this file to improve performance https://github.com/leanprover-community/mathlib4/issues/12737
 
 
 noncomputable section
@@ -57,7 +57,7 @@ protected def scheme (X : LocallyRingedSpace.{u})
     refine SheafedSpace.forgetToPresheafedSpace.preimageIso ?_
     apply PresheafedSpace.IsOpenImmersion.isoOfRangeEq (PresheafedSpace.ofRestrict _ _) f.1
     · exact Subtype.range_coe_subtype
-    · exact Opens.isOpenEmbedding _ -- Porting note (#11187): was `infer_instance`
+    · exact Opens.isOpenEmbedding _ -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11187): was `infer_instance`
 
 end LocallyRingedSpace.IsOpenImmersion
 
@@ -103,6 +103,18 @@ lemma opensFunctor_map_homOfLE {U V : X.Opens} (e : U ≤ V) :
 lemma image_top_eq_opensRange : f ''ᵁ ⊤ = f.opensRange := by
   apply Opens.ext
   simp
+
+lemma opensRange_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [IsOpenImmersion f] [IsOpenImmersion g] : (f ≫ g).opensRange = g ''ᵁ f.opensRange :=
+  TopologicalSpace.Opens.ext (Set.range_comp g.base f.base)
+
+lemma opensRange_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] :
+    f.opensRange = ⊤ :=
+  TopologicalSpace.Opens.ext (Set.range_eq_univ.mpr f.homeomorph.surjective)
+
+lemma opensRange_comp_of_isIso {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z)
+    [IsIso f] [IsOpenImmersion g] : (f ≫ g).opensRange = g.opensRange := by
+  rw [opensRange_comp, opensRange_of_isIso, image_top_eq_opensRange]
 
 @[simp]
 lemma preimage_image_eq (U : X.Opens) : f ⁻¹ᵁ f ''ᵁ U = U := by
@@ -165,12 +177,19 @@ theorem app_invApp' (U) (hU : U ≤ f.opensRange) :
       Y.presheaf.map (eqToHom (Opens.ext <| by simpa [Set.image_preimage_eq_inter_range])).op :=
   PresheafedSpace.IsOpenImmersion.app_invApp _ _
 
-@[reassoc (attr := simp), elementwise (attr := simp)]
+@[reassoc (attr := simp), elementwise nosimp]
 theorem appIso_inv_app (U) :
     (f.appIso U).inv ≫ f.app (f ''ᵁ U) = X.presheaf.map (eqToHom (preimage_image_eq f U)).op :=
   (PresheafedSpace.IsOpenImmersion.invApp_app _ _).trans (by rw [eqToHom_op])
 
-@[reassoc (attr := simp), elementwise]
+/--
+`elementwise` generates the `ConcreteCategory.instFunLike` lemma, we want `CommRingCat.Hom.hom`.
+-/
+theorem appIso_inv_app_apply' (U) (x) :
+    f.app (f ''ᵁ U) ((f.appIso U).inv x) = X.presheaf.map (eqToHom (preimage_image_eq f U)).op x :=
+  appIso_inv_app_apply f U x
+
+@[reassoc (attr := simp), elementwise nosimp]
 lemma appLE_appIso_inv {X Y : Scheme.{u}} (f : X ⟶ Y) [IsOpenImmersion f] {U : Y.Opens}
     {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U) :
     f.appLE U V e ≫ (f.appIso V).inv =
@@ -219,8 +238,7 @@ lemma _root_.AlgebraicGeometry.IsOpenImmersion.of_isLocalization {R S} [CommRing
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R S))) := by
   have e := (IsLocalization.algEquiv (.powers f) S
     (Localization.Away f)).symm.toAlgHom.comp_algebraMap
-  rw [← e, CommRingCat.ringHom_comp_eq_comp]
-  erw [Spec.map_comp]
+  rw [← e, CommRingCat.ofHom_comp, Spec.map_comp]
   have H : IsIso (CommRingCat.ofHom (IsLocalization.algEquiv
     (Submonoid.powers f) S (Localization.Away f)).symm.toAlgHom.toRingHom) := by
     exact inferInstanceAs (IsIso <| (IsLocalization.algEquiv
@@ -442,11 +460,11 @@ instance forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget :=
     (PresheafedSpace.IsOpenImmersion.toScheme Y (pullback.fst g.toLRSHom f.toLRSHom).1)
     (eqToIso (by simp) ≪≫ HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
 
-instance forgetPreservesOfLeft : PreservesLimit (cospan f g) forget :=
-  CategoryTheory.preservesLimitOfCreatesLimitAndHasLimit _ _
+instance forget_preservesOfLeft : PreservesLimit (cospan f g) forget :=
+  CategoryTheory.preservesLimit_of_createsLimit_and_hasLimit _ _
 
-instance forgetPreservesOfRight : PreservesLimit (cospan g f) forget :=
-  preservesPullbackSymmetry _ _ _
+instance forget_preservesOfRight : PreservesLimit (cospan g f) forget :=
+  preservesPullback_symmetry _ _ _
 
 instance hasPullback_of_left : HasPullback f g :=
   hasLimit_of_created (cospan f g) forget
@@ -475,24 +493,24 @@ instance pullback_to_base [IsOpenImmersion g] :
   -- provided but still class inference fail to find this
   exact LocallyRingedSpace.IsOpenImmersion.comp (H := inferInstance) _ _
 
-instance forgetToTopPreservesOfLeft : PreservesLimit (cospan f g) Scheme.forgetToTop := by
+instance forgetToTop_preserves_of_left : PreservesLimit (cospan f g) Scheme.forgetToTop := by
   delta Scheme.forgetToTop
-  refine @Limits.compPreservesLimit _ _ _ _ _ _ (K := cospan f g) _ _ (F := forget)
+  refine @Limits.comp_preservesLimit _ _ _ _ _ _ (K := cospan f g) _ _ (F := forget)
     (G := LocallyRingedSpace.forgetToTop) ?_ ?_
   · infer_instance
-  refine @preservesLimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoCospan.{u} _).symm ?_
+  refine @preservesLimit_of_iso_diagram _ _ _ _ _ _ _ _ _ (diagramIsoCospan.{u} _).symm ?_
   dsimp [LocallyRingedSpace.forgetToTop]
   infer_instance
 
-instance forgetToTopPreservesOfRight : PreservesLimit (cospan g f) Scheme.forgetToTop :=
-  preservesPullbackSymmetry _ _ _
+instance forgetToTop_preserves_of_right : PreservesLimit (cospan g f) Scheme.forgetToTop :=
+  preservesPullback_symmetry _ _ _
 
 theorem range_pullback_snd_of_left :
     Set.range (pullback.snd f g).base = (g ⁻¹ᵁ f.opensRange).1 := by
   rw [← show _ = (pullback.snd f g).base from
     PreservesPullback.iso_hom_snd Scheme.forgetToTop f g, TopCat.coe_comp, Set.range_comp,
     Set.range_eq_univ.mpr, ← @Set.preimage_univ _ _ (pullback.fst f.base g.base)]
-  -- Porting note (#11224): was `rw`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
   · erw [TopCat.pullback_snd_image_fst_preimage]
     rw [Set.image_univ]
     rfl
@@ -509,7 +527,7 @@ theorem range_pullback_fst_of_right :
   rw [← show _ = (pullback.fst g f).base from
     PreservesPullback.iso_hom_fst Scheme.forgetToTop g f, TopCat.coe_comp, Set.range_comp,
     Set.range_eq_univ.mpr, ← @Set.preimage_univ _ _ (pullback.snd g.base f.base)]
-  -- Porting note (#11224): was `rw`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
   · erw [TopCat.pullback_fst_image_snd_preimage]
     rw [Set.image_univ]
     rfl
@@ -666,7 +684,7 @@ theorem image_basicOpen {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpenImmersion f]
     (r : Γ(X, U)) :
     f ''ᵁ X.basicOpen r = Y.basicOpen ((f.appIso U).inv r) := by
   have e := Scheme.preimage_basicOpen f ((f.appIso U).inv r)
-  rw [Scheme.Hom.appIso_inv_app_apply, Scheme.basicOpen_res, inf_eq_right.mpr _] at e
+  rw [Scheme.Hom.appIso_inv_app_apply', Scheme.basicOpen_res, inf_eq_right.mpr _] at e
   · rw [← e, f.image_preimage_eq_opensRange_inter, inf_eq_right]
     refine Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
   · exact (X.basicOpen_le r).trans (f.preimage_image_eq _).ge

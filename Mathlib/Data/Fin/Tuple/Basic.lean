@@ -135,7 +135,7 @@ theorem cons_update : cons x (update p i y) = update (cons x p) i.succ y := by
     · rw [h']
       simp
     · have : j'.succ ≠ i.succ := by rwa [Ne, succ_inj]
-      rw [update_noteq h', update_noteq this, cons_succ]
+      rw [update_of_ne h', update_of_ne this, cons_succ]
 
 /-- As a binary function, `Fin.cons` is injective. -/
 theorem cons_injective2 : Function.Injective2 (@cons n α) := fun x₀ y₀ x y h ↦
@@ -159,7 +159,7 @@ theorem update_cons_zero : update (cons x p) 0 z = cons z p := by
   by_cases h : j = 0
   · rw [h]
     simp
-  · simp only [h, update_noteq, Ne, not_false_iff]
+  · simp only [h, update_of_ne, Ne, not_false_iff]
     let j' := pred j h
     have : j'.succ = j := succ_pred j h
     rw [← this, cons_succ, cons_succ]
@@ -176,6 +176,18 @@ theorem cons_self_tail : cons (q 0) (tail q) = q := by
     rw [← this]
     unfold tail
     rw [cons_succ]
+
+/-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
+given by separating out the first element of the tuple.
+
+This is `Fin.cons` as an `Equiv`. -/
+@[simps]
+def consEquiv (α : Fin (n + 1) → Type*) : α 0 × (∀ i, α (succ i)) ≃ ∀ i, α i where
+  toFun f := cons f.1 f.2
+  invFun f := (f 0, tail f)
+  left_inv f := by simp
+  right_inv f := by simp
+
 
 -- Porting note: Mathport removes `_root_`?
 /-- Recurse on an `n+1`-tuple by splitting it into a single element and an `n`-tuple. -/
@@ -410,7 +422,7 @@ variable {α : Sort*}
 def «repeat» (m : ℕ) (a : Fin n → α) : Fin (m * n) → α
   | i => a i.modNat
 
--- Porting note: added (leanprover/lean4#2042)
+-- Porting note: added (https://github.com/leanprover/lean4/issues/2042)
 @[simp]
 theorem repeat_apply (a : Fin n → α) (i : Fin (m * n)) :
     Fin.repeat m a i = a i.modNat :=
@@ -570,7 +582,7 @@ theorem update_snoc_last : update (snoc p x) (last n) z = snoc p z := by
   ext j
   by_cases h : j.val < n
   · have : j ≠ last n := Fin.ne_of_lt h
-    simp [h, update_noteq, this, snoc]
+    simp [h, update_of_ne, this, snoc]
   · rw [eq_last_of_not_lt h]
     simp
 
@@ -692,6 +704,17 @@ theorem comp_init {α : Sort*} {β : Sort*} (g : α → β) (q : Fin n.succ → 
     g ∘ init q = init (g ∘ q) := by
   ext j
   simp [init]
+
+/-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
+given by separating out the last element of the tuple.
+
+This is `Fin.snoc` as an `Equiv`. -/
+@[simps]
+def snocEquiv (α : Fin (n + 1) → Type*) : α (last n) × (∀ i, α (castSucc i)) ≃ ∀ i, α i where
+  toFun f _ := Fin.snoc f.2 f.1 _
+  invFun f := ⟨f _, Fin.init f⟩
+  left_inv f := by simp
+  right_inv f := by simp
 
 /-- Recurse on an `n+1`-tuple by splitting it its initial `n`-tuple and its last element. -/
 @[elab_as_elim, inline]
@@ -926,6 +949,32 @@ open Set
 lemma insertNth_self_removeNth (p : Fin (n + 1)) (f : ∀ j, α j) :
     insertNth p (f p) (removeNth p f) = f := by simp
 
+@[simp]
+theorem update_insertNth (p : Fin (n + 1)) (x y : α p) (f : ∀ i, α (p.succAbove i)) :
+    update (p.insertNth x f) p y = p.insertNth y f := by
+  ext i
+  cases i using p.succAboveCases <;> simp [succAbove_ne]
+
+/-- Equivalence between tuples of length `n + 1` and pairs of an element and a tuple of length `n`
+given by separating out the `p`-th element of the tuple.
+
+This is `Fin.insertNth` as an `Equiv`. -/
+@[simps]
+def insertNthEquiv (α : Fin (n + 1) → Type u) (p : Fin (n + 1)) :
+    α p × (∀ i, α (p.succAbove i)) ≃ ∀ i, α i where
+  toFun f := insertNth p f.1 f.2
+  invFun f := (f p, removeNth p f)
+  left_inv f := by ext <;> simp
+  right_inv f := by simp
+
+@[simp] lemma insertNthEquiv_zero (α : Fin (n + 1) → Type*) : insertNthEquiv α 0 = consEquiv α :=
+  Equiv.symm_bijective.injective <| by ext <;> rfl
+
+/-- Note this lemma can only be written about non-dependent tuples as `insertNth (last n) = snoc` is
+not a definitional equality. -/
+@[simp] lemma insertNthEquiv_last (n : ℕ) (α : Type*) :
+    insertNthEquiv (fun _ ↦ α) (last n) = snocEquiv (fun _ ↦ α) := by ext; simp
+
 /-- Separates an `n+1`-tuple, returning a selected index and then the rest of the tuple.
 Functional form of `Equiv.piFinSuccAbove`. -/
 @[deprecated removeNth (since := "2024-06-19")]
@@ -1090,3 +1139,12 @@ theorem sigma_eq_iff_eq_comp_cast {α : Type*} {a b : Σii, Fin ii → α} :
     sigma_eq_of_eq_comp_cast _ h'⟩
 
 end Fin
+
+/-- `Π i : Fin 2, α i` is equivalent to `α 0 × α 1`. See also `finTwoArrowEquiv` for a
+non-dependent version and `prodEquivPiFinTwo` for a version with inputs `α β : Type u`. -/
+@[simps (config := .asFn)]
+def piFinTwoEquiv (α : Fin 2 → Type u) : (∀ i, α i) ≃ α 0 × α 1 where
+  toFun f := (f 0, f 1)
+  invFun p := Fin.cons p.1 <| Fin.cons p.2 finZeroElim
+  left_inv _ := funext <| Fin.forall_fin_two.2 ⟨rfl, rfl⟩
+  right_inv := fun _ => rfl

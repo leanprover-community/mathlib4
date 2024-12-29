@@ -10,6 +10,7 @@ import Mathlib.FieldTheory.IntermediateField.Basic
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.Polynomial.Content
 import Mathlib.RingTheory.PowerBasis
+import Mathlib.Data.ENat.Lattice
 
 /-!
 
@@ -184,7 +185,7 @@ See `PerfectField.separable_iff_squarefree` for the converse when the coefficien
 field. -/
 theorem Separable.squarefree {p : R[X]} (hsep : Separable p) : Squarefree p := by
   classical
-  rw [multiplicity.squarefree_iff_emultiplicity_le_one p]
+  rw [squarefree_iff_emultiplicity_le_one p]
   exact fun f => or_iff_not_imp_right.mpr fun hunit => emultiplicity_le_one_of_separable hunit hsep
 
 end CommSemiring
@@ -282,7 +283,7 @@ theorem rootMultiplicity_le_one_of_separable [Nontrivial R] {p : R[X]} (hsep : S
   by_cases hp : p = 0
   · simp [hp]
   rw [rootMultiplicity_eq_multiplicity, if_neg hp, ← Nat.cast_le (α := ℕ∞),
-    Nat.cast_one, ← (multiplicity_X_sub_C_finite x hp).emultiplicity_eq_multiplicity]
+    Nat.cast_one, ← (finiteMultiplicity_X_sub_C x hp).emultiplicity_eq_multiplicity]
   apply emultiplicity_le_one_of_separable (not_isUnit_X_sub_C _) hsep
 
 end CommRing

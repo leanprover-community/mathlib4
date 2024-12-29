@@ -46,6 +46,7 @@ def digits (b : ℕ) (q : ℚ) (n : ℕ) : ℕ :=
 * `Int.neg_log_inv_eq_clog`, `Int.neg_clog_inv_eq_log`: the link between the two definitions.
 -/
 
+assert_not_exists Finset
 
 variable {R : Type*} [LinearOrderedSemifield R] [FloorSemiring R]
 

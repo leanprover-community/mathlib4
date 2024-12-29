@@ -6,7 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Data.Finsupp.Indicator
 
@@ -86,22 +86,17 @@ theorem prod_ite_eq [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M �
   dsimp [Finsupp.prod]
   rw [f.support.prod_ite_eq]
 
-/- Porting note: simpnf linter, added aux lemma below
-Left-hand side simplifies from
-  Finsupp.sum f fun x v => if a = x then v else 0
-to
-  if ↑f a = 0 then 0 else ↑f a
--/
--- @[simp]
 theorem sum_ite_self_eq [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (f.sum fun x v => ite (a = x) v 0) = f a := by
   classical
     convert f.sum_ite_eq a fun _ => id
     simp [ite_eq_right_iff.2 Eq.symm]
 
--- Porting note: Added this thm to replace the simp in the previous one. Need to add [DecidableEq N]
+/--
+The left hand side of `sum_ite_self_eq` simplifies; this is the variant that is useful for `simp`.
+-/
 @[simp]
-theorem sum_ite_self_eq_aux [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
+theorem if_mem_support [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (if a ∈ f.support then f a else 0) = f a := by
   simp only [mem_support_iff, ne_eq, ite_eq_left_iff, not_not]
   exact fun h ↦ h.symm
@@ -113,16 +108,22 @@ theorem prod_ite_eq' [DecidableEq α] (f : α →₀ M) (a : α) (b : α → M �
   dsimp [Finsupp.prod]
   rw [f.support.prod_ite_eq']
 
+/-- A restatement of `sum_ite_self_eq` with the equality test reversed. -/
 theorem sum_ite_self_eq' [DecidableEq α] {N : Type*} [AddCommMonoid N] (f : α →₀ N) (a : α) :
     (f.sum fun x v => ite (x = a) v 0) = f a := by
   classical
     convert f.sum_ite_eq' a fun _ => id
     simp [ite_eq_right_iff.2 Eq.symm]
 
-@[simp]
+@[to_additive (attr := simp)]
 theorem prod_pow [Fintype α] (f : α →₀ ℕ) (g : α → N) :
     (f.prod fun a b => g a ^ b) = ∏ a, g a ^ f a :=
   f.prod_fintype _ fun _ ↦ pow_zero _
+
+@[to_additive (attr := simp)]
+theorem prod_zpow {N} [CommGroup N] [Fintype α] (f : α →₀ ℤ) (g : α → N) :
+    (f.prod fun a b => g a ^ b) = ∏ a, g a ^ f a :=
+  f.prod_fintype _ fun _ ↦ zpow_zero _
 
 /-- If `g` maps a second argument of 0 to 1, then multiplying it over the
 result of `onFinset` is the same as multiplying it over the original `Finset`. -/
@@ -246,12 +247,10 @@ theorem sum_apply [Zero M] [AddCommMonoid N] {f : α →₀ M} {g : α → M →
     (f.sum g) a₂ = f.sum fun a₁ b => g a₁ b a₂ :=
   finset_sum_apply _ _ _
 
--- Porting note: inserted ⇑ on the rhs
 @[simp, norm_cast] theorem coe_finset_sum [AddCommMonoid N] (S : Finset ι) (f : ι → α →₀ N) :
     ⇑(∑ i ∈ S, f i) = ∑ i ∈ S, ⇑(f i) :=
   map_sum (coeFnAddHom : (α →₀ N) →+ _) _ _
 
--- Porting note: inserted ⇑ on the rhs
 @[simp, norm_cast] theorem coe_sum [Zero M] [AddCommMonoid N] (f : α →₀ M) (g : α → M → β →₀ N) :
     ⇑(f.sum g) = f.sum fun a₁ b => ⇑(g a₁ b) :=
   coe_finset_sum _ _
@@ -385,14 +384,12 @@ theorem univ_sum_single [Fintype α] [AddCommMonoid M] (f : α →₀ M) :
 @[simp]
 theorem univ_sum_single_apply [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
     ∑ j : α, single i m j = m := by
-  -- Porting note: rewrite due to leaky classical in lean3
   classical rw [single, coe_mk, Finset.sum_pi_single']
   simp
 
 @[simp]
 theorem univ_sum_single_apply' [AddCommMonoid M] [Fintype α] (i : α) (m : M) :
     ∑ j : α, single j m i = m := by
-  -- Porting note: rewrite due to leaky classical in lean3
   simp_rw [single, coe_mk]
   classical rw [Finset.sum_pi_single]
   simp
@@ -458,7 +455,6 @@ theorem support_sum_eq_biUnion {α : Type*} {ι : Type*} {M : Type*} [DecidableE
     (h : ∀ i₁ i₂, i₁ ≠ i₂ → Disjoint (g i₁).support (g i₂).support) :
     (∑ i ∈ s, g i).support = s.biUnion fun i => (g i).support := by
   classical
-  -- Porting note: apply Finset.induction_on s was not working; refine does.
   refine Finset.induction_on s ?_ ?_
   · simp
   · intro i s hi
@@ -577,9 +573,11 @@ theorem Finsupp.mul_sum (b : S) (s : α →₀ R) {f : α → R → S} :
 
 end
 
+@[simp] lemma Multiset.card_finsuppSum [Zero M] (f : ι →₀ M) (g : ι → M → Multiset α) :
+    card (f.sum g) = f.sum fun i m ↦ card (g i m) := map_finsupp_sum cardHom ..
+
 namespace Nat
 
--- Porting note: Needed to replace pow with (· ^ ·)
 /-- If `0 : ℕ` is not in the support of `f : ℕ →₀ ℕ` then `0 < ∏ x ∈ f.support, x ^ (f x)`. -/
 theorem prod_pow_pos_of_zero_not_mem_support {f : ℕ →₀ ℕ} (nhf : 0 ∉ f.support) :
     0 < f.prod (· ^ ·) :=

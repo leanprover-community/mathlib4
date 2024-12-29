@@ -220,6 +220,11 @@ theorem eq_intCast' [AddGroupWithOne α] [FunLike F ℤ α] [AddMonoidHomClass F
     ∀ n : ℤ, f n = n :=
   DFunLike.ext_iff.1 <| (f : ℤ →+ α).eq_intCastAddHom h₁
 
+/-- This version is primed so that the `RingHomClass` versions aren't. -/
+theorem map_intCast' [AddGroupWithOne α] [AddGroupWithOne β] [FunLike F α β]
+    [AddMonoidHomClass F α β] (f : F) (h₁ : f 1 = 1) : ∀ n : ℤ, f n = n :=
+  eq_intCast' ((f : α →+ β).comp <| Int.castAddHom _) (by simpa)
+
 @[simp]
 theorem Int.castAddHom_int : Int.castAddHom ℤ = AddMonoidHom.id ℤ :=
   ((AddMonoidHom.id ℤ).eq_intCastAddHom rfl).symm
@@ -295,14 +300,14 @@ lemma zmultiplesHom_apply (x : β) (n : ℤ) : zmultiplesHom β x n = n • x :=
 lemma zmultiplesHom_symm_apply (f : ℤ →+ β) : (zmultiplesHom β).symm f = f 1 := rfl
 
 @[to_additive existing (attr := simp)]
-lemma zpowersHom_apply (x : α) (n : Multiplicative ℤ) : zpowersHom α x n = x ^ toAdd n := rfl
+lemma zpowersHom_apply (x : α) (n : Multiplicative ℤ) : zpowersHom α x n = x ^ n.toAdd := rfl
 
 @[to_additive existing (attr := simp)]
 lemma zpowersHom_symm_apply (f : Multiplicative ℤ →* α) :
     (zpowersHom α).symm f = f (ofAdd 1) := rfl
 
 lemma MonoidHom.apply_mint (f : Multiplicative ℤ →* α) (n : Multiplicative ℤ) :
-    f n = f (ofAdd 1) ^ (toAdd n) := by
+    f n = f (ofAdd 1) ^ n.toAdd := by
   rw [← zpowersHom_symm_apply, ← zpowersHom_apply, Equiv.apply_symm_apply]
 
 lemma AddMonoidHom.apply_int (f : ℤ →+ β) (n : ℤ) : f n = n • f 1 := by
@@ -324,7 +329,7 @@ def zpowersMulHom : α ≃* (Multiplicative ℤ →* α) :=
 variable {α}
 
 @[simp]
-lemma zpowersMulHom_apply (x : α) (n : Multiplicative ℤ) : zpowersMulHom α x n = x ^ toAdd n := rfl
+lemma zpowersMulHom_apply (x : α) (n : Multiplicative ℤ) : zpowersMulHom α x n = x ^ n.toAdd := rfl
 
 @[simp]
 lemma zpowersMulHom_symm_apply (f : Multiplicative ℤ →* α) :
@@ -366,25 +371,3 @@ end NonAssocRing
 @[simp]
 theorem Int.castRingHom_int : Int.castRingHom ℤ = RingHom.id ℤ :=
   (RingHom.id ℤ).eq_intCast'.symm
-
-namespace Pi
-
-variable {π : ι → Type*} [∀ i, IntCast (π i)]
-
-instance instIntCast : IntCast (∀ i, π i) where intCast n _ := n
-
-theorem intCast_apply (n : ℤ) (i : ι) : (n : ∀ i, π i) i = n :=
-  rfl
-
-@[simp]
-theorem intCast_def (n : ℤ) : (n : ∀ i, π i) = fun _ => ↑n :=
-  rfl
-
-@[deprecated (since := "2024-04-05")] alias int_apply := intCast_apply
-@[deprecated (since := "2024-04-05")] alias coe_int := intCast_def
-
-end Pi
-
-theorem Sum.elim_intCast_intCast {α β γ : Type*} [IntCast γ] (n : ℤ) :
-    Sum.elim (n : α → γ) (n : β → γ) = n :=
-  Sum.elim_lam_const_lam_const (γ := γ) n

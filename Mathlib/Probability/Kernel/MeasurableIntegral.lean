@@ -40,16 +40,13 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
     (hκs : ∀ a, IsFiniteMeasure (κ a)) : Measurable fun a => κ a (Prod.mk a ⁻¹' t) := by
   -- `t` is a measurable set in the product `α × β`: we use that the product σ-algebra is generated
   -- by boxes to prove the result by induction.
-  -- Porting note: added motive
-  refine MeasurableSpace.induction_on_inter
-    (C := fun t => Measurable fun a => κ a (Prod.mk a ⁻¹' t))
-    generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ ht
-  ·-- case `t = ∅`
+  induction t, ht
+    using MeasurableSpace.induction_on_inter generateFrom_prod.symm isPiSystem_prod with
+  | empty =>
     simp only [preimage_empty, measure_empty, measurable_const]
-  · -- case of a box: `t = t₁ ×ˢ t₂` for measurable sets `t₁` and `t₂`
-    intro t' ht'
-    simp only [Set.mem_image2, Set.mem_setOf_eq, exists_and_left] at ht'
-    obtain ⟨t₁, ht₁, t₂, ht₂, rfl⟩ := ht'
+  | basic t ht =>
+    simp only [Set.mem_image2, Set.mem_setOf_eq] at ht
+    obtain ⟨t₁, ht₁, t₂, ht₂, rfl⟩ := ht
     classical
     simp_rw [mk_preimage_prod_right_eq_if]
     have h_eq_ite : (fun a => κ a (ite (a ∈ t₁) t₂ ∅)) = fun a => ite (a ∈ t₁) (κ a t₂) 0 := by
@@ -58,42 +55,27 @@ theorem measurable_kernel_prod_mk_left_of_finite {t : Set (α × β)} (ht : Meas
       exacts [rfl, measure_empty]
     rw [h_eq_ite]
     exact Measurable.ite ht₁ (Kernel.measurable_coe κ ht₂) measurable_const
-  · -- we assume that the result is true for `t` and we prove it for `tᶜ`
-    intro t' ht' h_meas
-    have h_eq_sdiff : ∀ a, Prod.mk a ⁻¹' t'ᶜ = Set.univ \ Prod.mk a ⁻¹' t' := by
+  | compl t htm iht =>
+    have h_eq_sdiff : ∀ a, Prod.mk a ⁻¹' tᶜ = Set.univ \ Prod.mk a ⁻¹' t := by
       intro a
       ext1 b
       simp only [mem_compl_iff, mem_preimage, mem_diff, mem_univ, true_and]
     simp_rw [h_eq_sdiff]
     have :
-      (fun a => κ a (Set.univ \ Prod.mk a ⁻¹' t')) = fun a =>
-        κ a Set.univ - κ a (Prod.mk a ⁻¹' t') := by
+      (fun a => κ a (Set.univ \ Prod.mk a ⁻¹' t)) = fun a =>
+        κ a Set.univ - κ a (Prod.mk a ⁻¹' t) := by
       ext1 a
       rw [← Set.diff_inter_self_eq_diff, Set.inter_univ, measure_diff (Set.subset_univ _)]
-      · exact (measurable_prod_mk_left ht').nullMeasurableSet
+      · exact (measurable_prod_mk_left htm).nullMeasurableSet
       · exact measure_ne_top _ _
     rw [this]
-    exact Measurable.sub (Kernel.measurable_coe κ MeasurableSet.univ) h_meas
-  · -- we assume that the result is true for a family of disjoint sets and prove it for their union
-    intro f h_disj hf_meas hf
-    have h_Union :
-      (fun a => κ a (Prod.mk a ⁻¹' ⋃ i, f i)) = fun a => κ a (⋃ i, Prod.mk a ⁻¹' f i) := by
-      ext1 a
-      congr with b
-      simp only [mem_iUnion, mem_preimage]
-    rw [h_Union]
-    have h_tsum :
-      (fun a => κ a (⋃ i, Prod.mk a ⁻¹' f i)) = fun a => ∑' i, κ a (Prod.mk a ⁻¹' f i) := by
-      ext1 a
-      rw [measure_iUnion]
-      · intro i j hij s hsi hsj b hbs
-        have habi : {(a, b)} ⊆ f i := by rw [Set.singleton_subset_iff]; exact hsi hbs
-        have habj : {(a, b)} ⊆ f j := by rw [Set.singleton_subset_iff]; exact hsj hbs
-        simpa only [Set.bot_eq_empty, Set.le_eq_subset, Set.singleton_subset_iff,
-          Set.mem_empty_iff_false] using h_disj hij habi habj
-      · exact fun i => (@measurable_prod_mk_left α β _ _ a) (hf_meas i)
-    rw [h_tsum]
-    exact Measurable.ennreal_tsum hf
+    exact Measurable.sub (Kernel.measurable_coe κ MeasurableSet.univ) iht
+  | iUnion f h_disj hf_meas hf =>
+    have (a : α) : κ a (Prod.mk a ⁻¹' ⋃ i, f i) = ∑' i, κ a (Prod.mk a ⁻¹' f i) := by
+      rw [preimage_iUnion, measure_iUnion]
+      · exact h_disj.mono fun _ _ ↦ .preimage _
+      · exact fun i ↦ measurable_prod_mk_left (hf_meas i)
+    simpa only [this] using Measurable.ennreal_tsum hf
 
 theorem measurable_kernel_prod_mk_left [IsSFiniteKernel κ] {t : Set (α × β)}
     (ht : MeasurableSet t) : Measurable fun a => κ a (Prod.mk a ⁻¹' t) := by
@@ -166,7 +148,7 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
         (fun a => ∫⁻ b, g₁ (a, b) ∂κ a) + fun a => ∫⁻ b, g₂ (a, b) ∂κ a := by
       ext1 a
       rw [Pi.add_apply]
-      -- Porting note (#11224): was `rw` (`Function.comp` reducibility)
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw` (`Function.comp` reducibility)
       erw [lintegral_add_left (g₁.measurable.comp measurable_prod_mk_left)]
       simp_rw [Function.comp_apply]
     rw [h_add]

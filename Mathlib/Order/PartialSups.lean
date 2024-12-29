@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Order.Hom.Basic
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.Hom.Basic
 
 /-!
 # The monotone sequence of partial supremums of a sequence

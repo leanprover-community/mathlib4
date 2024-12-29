@@ -39,7 +39,7 @@ object `X` to the `End Y`-module of morphisms `X ⟶ Y`.
 @[simps]
 def preadditiveYonedaObj (Y : C) : Cᵒᵖ ⥤ ModuleCat.{v} (End Y) where
   obj X := ModuleCat.of _ (X.unop ⟶ Y)
-  map f := ModuleCat.asHom
+  map f := ModuleCat.ofHom
     { toFun := fun g => f.unop ≫ g
       map_add' := fun _ _ => comp_add _ _ _ _ _ _
       map_smul' := fun _ _ => Eq.symm <| Category.assoc _ _ _ }
@@ -66,7 +66,7 @@ object `Y` to the `End X`-module of morphisms `X ⟶ Y`.
 @[simps]
 def preadditiveCoyonedaObj (X : Cᵒᵖ) : C ⥤ ModuleCat.{v} (End X) where
   obj Y := ModuleCat.of _ (unop X ⟶ Y)
-  map f := ModuleCat.asHom
+  map f := ModuleCat.ofHom
     { toFun := fun g => g ≫ f
       map_add' := fun _ _ => add_comp _ _ _ _ _ _
       map_smul' := fun _ _ => Category.assoc _ _ _ }
@@ -88,7 +88,7 @@ def preadditiveCoyoneda : Cᵒᵖ ⥤ C ⥤ AddCommGrp.{v} where
   map_id _ := by ext; dsimp; simp
   map_comp f g := by ext; dsimp; simp
 
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+-- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 attribute [nolint simpNF] CategoryTheory.preadditiveYoneda_map_app_apply
   CategoryTheory.preadditiveCoyoneda_map_app_apply
 

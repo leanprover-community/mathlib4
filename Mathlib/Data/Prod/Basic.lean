@@ -5,12 +5,13 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Function.Defs
 import Mathlib.Logic.Function.Iterate
+import Aesop
 import Mathlib.Tactic.Inhabit
 
 /-!
 # Extra facts about `Prod`
 
-This file defines `Prod.swap : α × β → β × α` and proves various simple lemmas about `Prod`.
+This file proves various simple lemmas about `Prod`.
 It also defines better delaborators for product projections.
 -/
 
@@ -19,6 +20,8 @@ variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 @[deprecated (since := "2024-05-08")] alias Prod_map := Prod.map_apply
 
 namespace Prod
+
+lemma swap_eq_iff_eq_swap {x : α × β} {y : β × α} : x.swap = y ↔ x = y.swap := by aesop
 
 def mk.injArrow {x₁ : α} {y₁ : β} {x₂ : α} {y₂ : β} :
     (x₁, y₁) = (x₂, y₂) → ∀ ⦃P : Sort*⦄, (x₁ = x₂ → y₁ = y₂ → P) → P :=
@@ -301,13 +304,13 @@ section delaborators
 open Lean PrettyPrinter Delaborator
 
 /-- Delaborator for `Prod.fst x` as `x.1`. -/
-@[delab app.Prod.fst]
+@[app_delab Prod.fst]
 def delabProdFst : Delab := withOverApp 3 do
   let x ← SubExpr.withAppArg delab
   `($(x).1)
 
 /-- Delaborator for `Prod.snd x` as `x.2`. -/
-@[delab app.Prod.snd]
+@[app_delab Prod.snd]
 def delabProdSnd : Delab := withOverApp 3 do
   let x ← SubExpr.withAppArg delab
   `($(x).2)

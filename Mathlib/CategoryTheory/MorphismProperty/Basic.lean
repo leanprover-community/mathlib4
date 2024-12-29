@@ -95,6 +95,15 @@ lemma monotone_map (F : C ⥤ D) :
   intro P Q h X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
   exact ⟨X', Y', f', h _ hf', ⟨e⟩⟩
 
+lemma of_eq (P : MorphismProperty C) {X Y : C} {f : X ⟶ Y} (hf : P f)
+    {X' Y' : C} {f' : X' ⟶ Y'}
+    (hX : X = X') (hY : Y = Y') (h : f' = eqToHom hX.symm ≫ f ≫ eqToHom hY) :
+    P f' := by
+  obtain rfl := hX
+  obtain rfl := hY
+  obtain rfl : f' = f := by simpa using h
+  exact hf
+
 /-- A morphism property `P` satisfies `P.RespectsRight Q` if it is stable under post-composition
 with morphisms satisfying `Q`, i.e. whenever `P` holds for `f` and `Q` holds for `i` then `P`
 holds for `f ≫ i`. -/
@@ -156,6 +165,10 @@ lemma RespectsIso.mk (P : MorphismProperty C)
 lemma RespectsIso.precomp (P : MorphismProperty C) [P.RespectsIso] {X Y Z : C} (e : X ⟶ Y)
     [IsIso e] (f : Y ⟶ Z) (hf : P f) : P (e ≫ f) :=
   RespectsLeft.precomp (Q := isomorphisms C) e ‹IsIso e› f hf
+
+instance : RespectsIso (⊤ : MorphismProperty C) where
+  precomp _ _ _ _ := trivial
+  postcomp _ _ _ _ := trivial
 
 lemma RespectsIso.postcomp (P : MorphismProperty C) [P.RespectsIso] {X Y Z : C} (e : Y ⟶ Z)
     [IsIso e] (f : X ⟶ Y) (hf : P f) : P (f ≫ e) :=

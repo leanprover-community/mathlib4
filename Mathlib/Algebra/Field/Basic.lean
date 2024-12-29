@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Invertible
 import Mathlib.Order.Synonym
@@ -208,17 +207,6 @@ instance (priority := 100) Field.isDomain : IsDomain K :=
   { DivisionRing.isDomain with }
 
 end Field
-
-namespace RingHom
-
-/-- Any ring homomorphism `f : F → R` from a `DivisionRing F` to nonzero ring `R` is injective.
--/
-@[stacks 09FU]
-protected theorem injective [DivisionRing K] [Semiring L] [Nontrivial L] (f : K →+* L) :
-    Injective f :=
-  (injective_iff_map_eq_zero f).2 fun _ ↦ (map_eq_zero f).1
-
-end RingHom
 
 section NoncomputableDefs
 

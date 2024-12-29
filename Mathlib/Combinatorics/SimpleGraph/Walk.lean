@@ -557,6 +557,20 @@ theorem subset_support_append_right {V : Type u} {G : SimpleGraph V} {u v w : V}
   intro h
   simp +contextual only [mem_support_append_iff, or_true, imp_true_iff]
 
+lemma getVert_eq_support_get? {u v n} (p : G.Walk u v) (h2 : n ≤ p.length) :
+    p.getVert n = p.support[n]? := by
+  match p with
+  | .nil => simp_all
+  | .cons h q =>
+    simp only [Walk.support_cons]
+    by_cases hn : n = 0
+    · simp only [hn, getVert_zero, List.length_cons, Nat.zero_lt_succ, List.getElem?_eq_getElem,
+      List.getElem_cons_zero]
+    · push_neg at hn
+      nth_rewrite 2 [← Nat.sub_one_add_one hn]
+      rw [Walk.getVert_cons q h hn, List.getElem?_cons_succ]
+      exact getVert_eq_support_get? q (Nat.sub_le_of_le_add (Walk.length_cons _ _ ▸ h2))
+
 theorem coe_support {u v : V} (p : G.Walk u v) :
     (p.support : Multiset V) = {u} + p.support.tail := by cases p <;> rfl
 
@@ -738,6 +752,14 @@ theorem edges_nodup_of_support_nodup {u v : V} {p : G.Walk u v} (h : p.support.N
   | cons _ p' ih =>
     simp only [edges_cons, support_cons, List.nodup_cons] at h ⊢
     exact ⟨fun h' => h.1 (fst_mem_support_of_mem_edges p' h'), ih h.2⟩
+
+theorem nodup_tail_support_reverse {u : V} {p : G.Walk u u} :
+    p.reverse.support.tail.Nodup ↔ p.support.tail.Nodup := by
+  rw [Walk.support_reverse]
+  refine List.nodup_tail_reverse p.support ?h
+  rw [← getVert_eq_support_get? _ (by omega), List.getLast?_eq_getElem?,
+    ← getVert_eq_support_get? _ (by rw [Walk.length_support]; omega)]
+  aesop
 
 theorem edges_injective {u v : V} : Function.Injective (Walk.edges : G.Walk u v → List (Sym2 V))
   | .nil, .nil, _ => rfl
@@ -1093,9 +1115,8 @@ theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
       exact hn.1.symm
     · right
       have hnp : ¬ p.Nil := by
-        rw [@nil_iff_length_eq]
-        have : 1 ≤ p.length := by omega
-        exact Nat.not_eq_zero_of_lt this
+        rw [nil_iff_length_eq]
+        omega
       rw [← support_tail_of_not_nil _ hnp]
       rw [mem_support_iff_exists_getVert]
       use n - 1

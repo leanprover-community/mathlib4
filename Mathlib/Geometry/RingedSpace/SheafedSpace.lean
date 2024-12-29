@@ -206,8 +206,8 @@ noncomputable instance [HasLimits C] :
 instance [HasLimits C] : HasColimits.{v} (SheafedSpace C) :=
   hasColimits_of_hasColimits_createsColimits forgetToPresheafedSpace
 
-noncomputable instance [HasLimits C] : PreservesColimits (forget C) :=
-  Limits.compPreservesColimits forgetToPresheafedSpace (PresheafedSpace.forget C)
+noncomputable instance [HasLimits C] : PreservesColimits (forget.{_, _, v} C) :=
+  Limits.comp_preservesColimits forgetToPresheafedSpace (PresheafedSpace.forget C)
 
 section ConcreteCategory
 
