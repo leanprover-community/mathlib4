@@ -120,8 +120,7 @@ theorem card_nsmul_lt_card_nsmul_of_lt_of_le [∀ a b, Decidable (r a b)] (hs : 
     _ = ∑ _a ∈ s, m := by rw [sum_const]
     _ < ∑ a ∈ s, (#(t.bipartiteAbove r a) : R) := sum_lt_sum_of_nonempty hs hm
     _ = ∑ b in t, (#(s.bipartiteBelow r b) : R) := by
-      norm_cast
-      rw [sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow]
+      norm_cast; rw [sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow]
     _ ≤ _ := t.sum_le_card_nsmul _ _ hn
 
 /-- **Double counting** argument.
@@ -134,8 +133,7 @@ theorem card_nsmul_lt_card_nsmul_of_le_of_lt [∀ a b, Decidable (r a b)] (ht : 
   calc
     _ ≤ ∑ a in s, (#(t.bipartiteAbove r a) : R) := s.card_nsmul_le_sum _ _ hm
     _ = ∑ b in t, (#(s.bipartiteBelow r b) : R) := by
-      norm_cast
-      rw [sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow]
+      norm_cast; rw [sum_card_bipartiteAbove_eq_sum_card_bipartiteBelow]
     _ < ∑ _b ∈ t, n := sum_lt_sum_of_nonempty ht hn
     _ = _ := sum_const _
 
