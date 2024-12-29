@@ -65,8 +65,78 @@ M-summand, M-projection, L-summand, L-projection, M-ideal, M-structure
 
 -/
 
-structure IsLsummand (G : Type*) [NormedAddCommGroup G] (L : AddSubgroup G) : Prop where
-  compl : ∃ (K : AddSubgroup G), L ⊔ K = ⊤ ∧ ∀ x ∈ L, ∀ y ∈ K, ‖x‖ + ‖y‖ = ‖x + y‖
+section Lsummands
+
+variable (G : Type*) [NormedAddCommGroup G]
+
+#check CompleteBooleanAlgebra
+
+structure IsLsummand  (L : AddSubgroup G) : Prop where
+  compl' : ∃ (K : AddSubgroup G), L ⊔ K = ⊤ ∧ ∀ x ∈ L, ∀ y ∈ K, ‖x‖ + ‖y‖ = ‖x + y‖
+
+def IsLsummand.compl {L : AddSubgroup G} (h : IsLsummand G L) : AddSubgroup G where
+  carrier := {y : G | ∀ x ∈ L, ‖x + y‖ = ‖x‖ + ‖y‖ ∧  ‖x - y‖ = ‖x‖ + ‖y‖}
+  add_mem' := by
+    obtain ⟨K, ⟨hK₁, hK₂⟩⟩ := h.compl'
+    have e1 : K = {y | ∀ x ∈ L, ‖x + y‖ = ‖x‖ + ‖y‖ ∧ ‖x - y‖ = ‖x‖ + ‖y‖} := by
+      ext y
+      constructor
+      · intro hy x hx
+        constructor
+        · rw [(hK₂ x hx y hy)]
+        · have e3 : (-y) ∈ K := sorry
+
+          rw [ (hK₂ x hx (-y) e3)]
+      · sorry
+    rw [← e1]
+    intro a b ha hb
+    exact add_mem ha hb
+  zero_mem' := by
+    simp only [Set.mem_setOf_eq, add_zero, norm_zero, sub_zero, and_self, implies_true]
+  neg_mem' := by
+    simp only [Set.mem_setOf_eq, norm_neg, sub_neg_eq_add]
+    intro x hx y hy
+    constructor
+    · rw [← sub_eq_add_neg]
+      rw [(hx y hy).2]
+    · rw [(hx y hy).1]
+
+
+lemma IsLsummand.compl_uniq (L : AddSubgroup G) (h : IsLsummand G L) :
+  ∃! (K : AddSubgroup G), L ⊔ K = ⊤ ∧ ∀ x ∈ L, ∀ y ∈ K, ‖x‖ + ‖y‖ = ‖x + y‖ := by
+  obtain ⟨K,hK⟩ := h.compl
+  use K
+  constructor
+  · apply hK
+  · intro J ⟨hJ₁,hJ₂⟩
+    ext y
+    constructor
+    · intro h
+      sorry
+    · sorry
+
+/-- A shorthand for the type of L-projections. -/
+abbrev Lsummands : Type _ := { f : AddSubgroup G // IsLsummand G f }
+
+instance Subtype.hasCompl : HasCompl (Lsummands G) :=
+  ⟨fun L => {
+    val := by
+      obtain ⟨K,hK⟩ := L.prop.compl
+      sorry
+    property := sorry
+  }
+  ⟩
+
+--instance : LE (Lsummands G) := Subtype.le
+
+-- instance : Preorder (Lsummands G) := Subtype.preorder _ --fun f ↦ IsLsummand G f
+
+instance : PartialOrder (Lsummands G) := Subtype.partialOrder fun f ↦ IsLsummand G f
+
+
+
+
+end Lsummands
 
 variable {M : Type*} [Ring M]
 variable (X : Type*) [NormedAddCommGroup X] [Module M X]
@@ -363,7 +433,7 @@ lemma _root_.IsIdempotentElem.mem_range_iff_self_smul {P : M} (h : IsIdempotentE
     trivial
 
 
-def range (P : ℙᴸ[M](X)) : IsLsummand X (P.val • ⊤) where
+def _root_.Lprojections.range (P : ℙᴸ[M](X)) : IsLsummand X (P.val • ⊤) where
   compl := by
     use (Pᶜ.val • ⊤)
     constructor
@@ -422,16 +492,21 @@ open Pointwise
 
 
 open Pointwise
-lemma range_inter [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
-    (P.val • Set.univ) ∩ (Q.val • Set.univ) = ((P ⊓ Q).val • (Set.univ : Set X)) := by
+lemma range_inter [FaithfulSMul M X] (P Q : ℙᴸ[M](X)) :
+    (P.val • ⊤) ⊓ (Q.val • ⊤) = ((P ⊓ Q).val • (⊤ : AddSubgroup X)) := by
   have h1 : Commute P.val Q.val := P.prop.commute Q.prop
   rw [← (IsIdempotentElem.range_prod_of_commute P.prop.1 Q.prop.1 h1)]
   rfl
 
 #check Subgroup.smul_sup
 
-lemma range_sum [FaithfulSMul M X] (P Q : { P : M // IsLprojection X P }) :
-    P.val • Set.univ + Q.val • Set.univ = (P ⊔ Q).val • (Set.univ : Set X) := by
+/-
+instance _root_.Lsummands.Subtype.sup [FaithfulSMul M X] : Max (Lsummands X) :=
+  ⟨fun P Q => ⟨P + Q - P * Q, P.prop.join Q.prop⟩⟩
+-/
+
+lemma range_sum [FaithfulSMul M X] (P Q : ℙᴸ[M](X)) :
+    (↑P.range : AddSubgroup X) ⊔ Q.range = (P ⊔ Q).range := by
   apply le_antisymm
   · intro z hz
     rw [Submodule.add_eq_sup, Submodule.mem_sup] at hz
