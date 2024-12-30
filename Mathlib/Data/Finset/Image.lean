@@ -771,7 +771,7 @@ theorem finsetCongr_toEmbedding (e : α ≃ β) :
   `Finset {a : α // p a}` and `{s : Finset α // ∀ a ∈ s, p a}`. -/
 
 @[simps]
-protected def finsetSubtypeCongr (p : α → Prop) :
+protected def finsetSubtypeComm (p : α → Prop) :
     Finset {a : α // p a} ≃ {s : Finset α // ∀ a ∈ s, p a} where
   toFun s := ⟨s.map ⟨fun a ↦ a.val, Subtype.val_injective⟩, fun _ h ↦
     have ⟨v, _, h⟩ := Embedding.coeFn_mk _ _ ▸ mem_map.mp h; h ▸ v.property⟩
