@@ -135,6 +135,14 @@ theorem braiding_inv_naturality {X X' Y Y' : C} (f : X ⟶ Y) (g : X' ⟶ Y') :
     (f ⊗ g) ≫ (β_ Y' Y).inv = (β_ X' X).inv ≫ (g ⊗ f) :=
   CommSq.w <| .vert_inv <| .mk <| braiding_naturality g f
 
+/-- In a braided monoidal category, the functors `tensorLeft X` and
+`tensorRight X` are isomorphic. -/
+@[simps]
+def tensorLeftIsoTensorRight (X : C) :
+    tensorLeft X ≅ tensorRight X where
+  hom := { app Y := (β_ X Y).hom }
+  inv := { app Y := (β_ X Y).inv }
+
 @[reassoc]
 theorem yang_baxter (X Y Z : C) :
     (α_ X Y Z).inv ≫ (β_ X Y).hom ▷ Z ≫ (α_ Y X Z).hom ≫
@@ -359,18 +367,6 @@ attribute [reassoc (attr := simp)] SymmetricCategory.symmetry
 lemma SymmetricCategory.braiding_swap_eq_inv_braiding {C : Type u₁}
     [Category.{v₁} C] [MonoidalCategory C] [SymmetricCategory C] (X Y : C) :
     (β_ Y X).hom = (β_ X Y).inv := Iso.inv_ext' (symmetry X Y)
-
-/-- In a symmetric monoidal category, the functors `tensorLeft X` and
-`tensorRight X` are isomorphic. -/
-def SymmetricCategory.tensorLeftIsoTensorRight {C : Type u} [Category.{v} C]
-    [MonoidalCategory.{v} C] [SymmetricCategory C] (X : C) :
-    tensorLeft X ≅ tensorRight X where
-  hom := {
-    app Y := (β_ X Y).hom
-  }
-  inv := {
-    app Y := (β_ Y X).hom
-  }
 
 variable {C : Type u₁} [Category.{v₁} C] [MonoidalCategory C] [BraidedCategory C]
 variable {D : Type u₂} [Category.{v₂} D] [MonoidalCategory D] [BraidedCategory D]
