@@ -1416,6 +1416,41 @@ theorem continuous_mulSingle [∀ i, One (π i)] [DecidableEq ι] (i : ι) :
     Continuous fun x => (Pi.mulSingle i x : ∀ i, π i) :=
   continuous_const.update _ continuous_id
 
+theorem Filter.Tendsto.fin_cons {n} {π : Fin (n + 1) → Type*} [∀ i, TopologicalSpace (π i)]
+    {f : Y → π 0} {l : Filter Y} {x : π 0} (hf : Tendsto f l (𝓝 x))
+    {g : Y → ∀ j : Fin n, π j.succ} {y : ∀ j, π (Fin.succ j)} (hg : Tendsto g l (𝓝 y)) :
+    Tendsto (fun a => Fin.cons (f a) (g a)) l (𝓝 <| Fin.cons x y) :=
+  tendsto_pi_nhds.2 fun j => Fin.cases (by simpa) (by simpa using tendsto_pi_nhds.1 hg) j
+
+theorem ContinuousAt.fin_cons {n} {π : Fin (n + 1) → Type*} [∀ i, TopologicalSpace (π i)]
+    {f : X → π 0} {x : X} (hf : ContinuousAt f x)
+    {g : X → ∀ j : Fin n, π (Fin.succ j)} (hg : ContinuousAt g x) :
+    ContinuousAt (fun a => Fin.cons (f a) (g a)) x :=
+  hf.tendsto.fin_cons hg
+
+theorem Continuous.fin_cons {n} {π : Fin (n + 1) → Type*} [∀ i, TopologicalSpace (π i)]
+    {f : X → π 0} (hf : Continuous f) {g : X → ∀ j : Fin n, π (Fin.succ j)}
+    (hg : Continuous g) : Continuous fun a => Fin.cons (f a) (g a) :=
+  continuous_iff_continuousAt.2 fun _ => hf.continuousAt.fin_cons hg.continuousAt
+
+theorem Filter.Tendsto.fin_snoc {n} {π : Fin (n + 1) → Type*} [∀ i, TopologicalSpace (π i)]
+    {f : Y → ∀ j : Fin n, π j.castSucc} {l : Filter Y} {x : ∀ j, π (Fin.castSucc j)}
+    (hf : Tendsto f l (𝓝 x))
+    {g : Y → π (Fin.last _)} {y : π (Fin.last _)} (hg : Tendsto g l (𝓝 y)) :
+    Tendsto (fun a => Fin.snoc (f a) (g a)) l (𝓝 <| Fin.snoc x y) :=
+  tendsto_pi_nhds.2 fun j => Fin.lastCases (by simpa) (by simpa using tendsto_pi_nhds.1 hf) j
+
+theorem ContinuousAt.fin_snoc {n} {π : Fin (n + 1) → Type*} [∀ i, TopologicalSpace (π i)]
+    {f : X → ∀ j : Fin n, π j.castSucc} {x : X} (hf : ContinuousAt f x)
+    {g : X → π (Fin.last _)} (hg : ContinuousAt g x) :
+    ContinuousAt (fun a => Fin.snoc (f a) (g a)) x :=
+  hf.tendsto.fin_snoc hg
+
+theorem Continuous.fin_snoc {n} {π : Fin (n + 1) → Type*} [∀ i, TopologicalSpace (π i)]
+    {f : X → ∀ j : Fin n, π j.castSucc} (hf : Continuous f) {g : X → π (Fin.last _)}
+    (hg : Continuous g) : Continuous fun a => Fin.snoc (f a) (g a) :=
+  continuous_iff_continuousAt.2 fun _ => hf.continuousAt.fin_snoc hg.continuousAt
+
 theorem Filter.Tendsto.fin_insertNth {n} {π : Fin (n + 1) → Type*} [∀ i, TopologicalSpace (π i)]
     (i : Fin (n + 1)) {f : Y → π i} {l : Filter Y} {x : π i} (hf : Tendsto f l (𝓝 x))
     {g : Y → ∀ j : Fin n, π (i.succAbove j)} {y : ∀ j, π (i.succAbove j)} (hg : Tendsto g l (𝓝 y)) :
