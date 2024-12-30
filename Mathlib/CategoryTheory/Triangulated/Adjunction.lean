@@ -158,9 +158,6 @@ abbrev IsTriangulated : Prop := E.toAdjunction.IsTriangulated
 
 namespace IsTriangulated
 
-instance [E.IsTriangulated] : E.CommShift ℤ :=
-  inferInstanceAs (E.toAdjunction.CommShift ℤ)
-
 instance [E.IsTriangulated] : E.functor.IsTriangulated := inferInstance
 instance [E.IsTriangulated] : E.inverse.IsTriangulated := inferInstance
 
