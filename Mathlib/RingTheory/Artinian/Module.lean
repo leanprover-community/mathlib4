@@ -418,8 +418,7 @@ namespace IsArtinianRing
 variable {R : Type*} [CommRing R] [IsArtinianRing R]
 
 variable (R) in
-lemma isField_of_isDomain [IsDomain R] :
-    IsField R := by
+lemma isField_of_isDomain [IsDomain R] : IsField R := by
   refine ⟨Nontrivial.exists_pair_ne, mul_comm, fun {x} hx ↦ ?_⟩
   obtain ⟨n, y, hy⟩ := IsArtinian.exists_pow_succ_smul_dvd x (1 : R)
   replace hy : x ^ n * (x * y - 1) = 0 := by
