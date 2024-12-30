@@ -211,6 +211,11 @@ lemma isTriangulated_of_op [F.op.IsTriangulated] : F.IsTriangulated where
     rw [← this, Functor.comp_obj, ← mem_distTriang_op_iff] at dT
     exact dT
 
+/-- `F` is triangulated if and only if `F.op` is triangulated.
+-/
+lemma isTriangulated_iff_op : F.IsTriangulated ↔ F.op.IsTriangulated :=
+  ⟨fun _ ↦ F.isTriangulated_op, fun _ ↦ F.isTriangulated_of_op⟩
+
 end Functor
 
 end CategoryTheory
