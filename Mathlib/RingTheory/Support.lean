@@ -230,38 +230,20 @@ theorem Module.support_quotient (I : Ideal R) :
     rw [Module.mem_support_iff] at hp₁ ⊢
     let Rₚ := Localization.AtPrime p.asIdeal
     let Mₚ := LocalizedModule p.asIdeal.primeCompl M
-    let Mₚ' := LocalizedModule p.asIdeal.primeCompl (M ⧸ (I • ⊤ : Submodule R M))
-    let f : Mₚ →ₗ[R] Mₚ' := (LocalizedModule.map _ (Submodule.mkQ _)).restrictScalars R
-    have hf : LinearMap.ker f = I • ⊤ := by
-      refine (LinearMap.ker_localizedMap_eq_localized'_ker Rₚ ..).trans ?_
-      show Submodule.localized₀ _ _ _ = _
-      simp only [Submodule.ker_mkQ, Submodule.localized₀_smul, Submodule.localized₀_top]
-    let f' : (Mₚ ⧸ (I • ⊤ : Submodule R Mₚ)) ≃ₗ[R] Mₚ' :=
-      LinearEquiv.ofBijective (Submodule.liftQ _ f hf.ge) <| by
-        constructor
-        · rw [← LinearMap.ker_eq_bot, Submodule.ker_liftQ, hf,
-            ← le_bot_iff, Submodule.map_le_iff_le_comap, Submodule.comap_bot, Submodule.ker_mkQ]
-        · rw [← LinearMap.range_eq_top, Submodule.range_liftQ, LinearMap.range_eq_top]
-          exact (LocalizedModule.map_surjective _ _ (Submodule.mkQ_surjective _))
+    set Mₚ' := LocalizedModule p.asIdeal.primeCompl (M ⧸ (I • ⊤ : Submodule R M))
+    let Mₚ'' := Mₚ ⧸ I.map (algebraMap R Rₚ) • (⊤ : Submodule Rₚ Mₚ)
+    let e : Mₚ' ≃ₗ[Rₚ] Mₚ'' := (localizedQuotientEquiv _ _).symm ≪≫ₗ
+      Submodule.quotEquivOfEq _ _ (by rw [Submodule.localized,
+        Submodule.localized'_smul, Ideal.localized'_eq_map, Submodule.localized'_top])
     have : Module.Finite Rₚ Mₚ :=
-      Module.Finite.of_isLocalizedModule p.asIdeal.primeCompl
-        (LocalizedModule.mkLinearMap _ _)
-    have : Nontrivial (Mₚ ⧸ (I • ⊤ : Submodule R Mₚ)) := by
+      Module.Finite.of_isLocalizedModule p.asIdeal.primeCompl (LocalizedModule.mkLinearMap _ _)
+    have : Nontrivial Mₚ'' := by
       apply Submodule.Quotient.nontrivial_of_lt_top
-      rw [lt_top_iff_ne_top]
-      intro H
-      have : I.map (algebraMap R Rₚ) • (⊤ : Submodule Rₚ Mₚ) = ⊤ := by
-        rw [← top_le_iff]
-        show ⊤ ≤ (I.map (algebraMap R Rₚ) • (⊤ : Submodule Rₚ Mₚ)).restrictScalars R
-        rw [← H, Submodule.smul_le]
-        intro r hr n hn
-        rw [← algebraMap_smul Rₚ, Submodule.restrictScalars_mem]
-        exact Submodule.smul_mem_smul (Ideal.mem_map_of_mem _ hr) hn
-      have := Submodule.eq_bot_of_le_smul_of_le_jacobson_bot _ ⊤ Module.Finite.out this.ge
-        ((Ideal.map_mono hp₂).trans (by
-          rw [Localization.AtPrime.map_eq_maximalIdeal]
-          exact IsLocalRing.maximalIdeal_le_jacobson _))
-      exact top_ne_bot this
-    exact f'.symm.nontrivial
+      rw [lt_top_iff_ne_top, ne_comm]
+      apply Submodule.top_ne_ideal_smul_of_le_jacobson_annihilator
+      refine trans ?_ (IsLocalRing.maximalIdeal_le_jacobson _)
+      rw [← Localization.AtPrime.map_eq_maximalIdeal]
+      exact Ideal.map_mono hp₂
+    exact e.nontrivial
 
 end Finite
