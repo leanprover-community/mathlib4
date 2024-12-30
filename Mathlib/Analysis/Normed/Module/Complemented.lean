@@ -240,36 +240,20 @@ lemma ker_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : S
     (hq : IsClosed (q : Set E)) :
     let P := idempotentOfClosedCompl p q h hp hq
     ker (1 - P) = p := by
-  ext x
-  simp only [LinearMap.mem_ker, ContinuousLinearMap.coe_sub', Pi.sub_apply,
-    ContinuousLinearMap.one_apply]
-  exact ⟨fun hx => (mem_iff_invariant_ofClosedCompl h hp hq).mpr (sub_eq_zero.mp hx).symm,
-    fun hx => sub_eq_zero.mpr ((mem_iff_invariant_ofClosedCompl h hp hq).mp hx).symm⟩
+  let P := idempotentOfClosedCompl p q h hp hq
+  have e1 : IsIdempotentElem P := by
+    apply is_idempotent_ofClosedCompl
+  simp_rw [ker_id_sub_eq_range e1]
+  exact range_idempotentOfClosedCompl h hp hq
 
 lemma range_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
     let P := idempotentOfClosedCompl p q h hp hq
     range (1  - P) = q := by
-  ext x
-  constructor
-  · intro hx
-    simp only [LinearMap.mem_range, ContinuousLinearMap.coe_sub', Pi.sub_apply,
-      ContinuousLinearMap.one_apply] at hx
-    obtain ⟨y, hy⟩ := hx
-    rw [← hy]
-    have hy1 : y ∈ p ⊔ q := by
-      rw [h.sup_eq_top]
-      exact AddSubgroup.mem_top y
-    obtain ⟨x₁,⟨hx₁,⟨y₁,⟨hy₁,hx₁y₁y⟩⟩⟩⟩ := Submodule.mem_sup.mp hy1
-    rw [← hx₁y₁y, map_add, ((mem_iff_zero_ofClosedCompl h hp hq).mp hy₁),
-      ((mem_iff_invariant_ofClosedCompl h hp hq).mp hx₁), add_zero, add_sub_cancel_left]
-    exact hy₁
-  · intro hx
-    simp only [LinearMap.mem_range, ContinuousLinearMap.coe_sub', Pi.sub_apply,
-      ContinuousLinearMap.one_apply]
-    exact ⟨x, by rw [((mem_iff_zero_ofClosedCompl h hp hq).mp hx), sub_zero]⟩
-
-
-
+  let P := idempotentOfClosedCompl p q h hp hq
+  have e1 : IsIdempotentElem P := by
+    apply is_idempotent_ofClosedCompl
+  simp_rw [range_id_sub_eq_ker e1]
+  exact ker_idempotentOfClosedCompl h hp hq
 
 end Submodule
