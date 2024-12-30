@@ -860,13 +860,13 @@ variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 /-- A general inner product implies a real inner product. This is not registered as an instance
-since it creates problems with the case `𝕜 = ℝ`. -/
+since `𝕜` does not appear in the return type `Inner ℝ E`. -/
 def Inner.rclikeToReal : Inner ℝ E where inner x y := re ⟪x, y⟫
 
 /-- A general inner product space structure implies a real inner product structure. This is not
-registered as an instance since it creates problems with the case `𝕜 = ℝ`, but in can be used in a
-proof to obtain a real inner product space structure from a given `𝕜`-inner product space
-structure. -/
+registered as an instance since `𝕜` does not appear in the return type `InnerProductSpace ℝ E`, but
+it can be used in a proof to obtain a real inner product space structure from a given `𝕜`-inner
+product space structure. -/
 def InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
   { Inner.rclikeToReal 𝕜 E,
     NormedSpace.restrictScalars ℝ 𝕜
@@ -909,9 +909,12 @@ end RCLikeToReal
 creates problems with the case `𝕜 = ℝ`, but it can be used in a proof to obtain a real inner product
 space structure on an `RCLike` field.
 
-This is different from the inner product space structure obtained from
-`InnerProductSpace.rclikeToReal 𝕜 𝕜` because of a diamond in the `ℝ`-normed space instances:
-`NormedSpace.restrictScalars ℝ 𝕜 𝕜` ≠ `NormedAlgebra.toNormedSpace' (𝕜 := ℝ) (𝕜' := 𝕜)`. -/
+This is definitionally different from the inner product space structure obtained from
+`InnerProductSpace.rclikeToReal 𝕜 𝕜` because of a non-defeq diamond in the `ℝ`-normed space
+instances:
+`NormedSpace.restrictScalars ℝ 𝕜 𝕜` isn't defeq to
+`NormedAlgebra.toNormedSpace' (𝕜 := ℝ) (𝕜' := 𝕜)` because the former sets
+`(r : ℝ) • (k : 𝕜) := algebraMap ℝ 𝕜 r * k ` while the latter inherits `r • k` from `RCLike 𝕜`. -/
 noncomputable def RCLike.innerProductSpaceReal : InnerProductSpace ℝ 𝕜 where
   __ := Inner.rclikeToReal 𝕜 𝕜
   __ := NormedAlgebra.toNormedSpace' (𝕜 := ℝ) (𝕜' := 𝕜)
