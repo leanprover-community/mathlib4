@@ -40,6 +40,7 @@ namespace Functor
 
 open Category Limits Pretriangulated Opposite
 
+@[reassoc]
 lemma op_commShiftIso_hom_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0):
     (F.op.commShiftIso n).hom.app X =
       (F.map ((shiftFunctorOpIso C n m h).hom.app X).unop).op ≫
