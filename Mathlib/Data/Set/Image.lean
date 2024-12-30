@@ -9,7 +9,6 @@ import Batteries.Tactic.Congr
 import Mathlib.Order.TypeTags
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Set.SymmDiff
-import Mathlib.Data.Set.Lattice
 
 /-!
 # Images and preimages of sets
@@ -423,8 +422,8 @@ theorem subset_preimage_image (f : α → β) (s : Set α) : s ⊆ f ⁻¹' (f '
   mem_image_of_mem f
 
 @[simp]
-theorem preimage_image_univ (f : α → β) : f ⁻¹' (f '' univ) = univ :=
-  Set.image_preimage.l_u_top
+theorem preimage_image_univ {f : α → β} : f ⁻¹' (f '' univ) = univ :=
+  subset_antisymm (fun _ _ => trivial) (subset_preimage_image f univ)
 
 @[simp]
 theorem preimage_image_eq {f : α → β} (s : Set α) (h : Injective f) : f ⁻¹' (f '' s) = s :=
