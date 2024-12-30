@@ -48,7 +48,7 @@ lemma uliftFunctorObjHomeo_symm_naturality_apply {X Y : TopCat.{u}} (f : X ⟶ Y
 /-- The `ULift` functor on categories of topological spaces is compatible
 with the one defined on categories of types. -/
 @[simps!]
-def uliftFunctorCompForget : uliftFunctor.{v, u} ⋙ forget TopCat.{max u v} ≅
+def uliftFunctorCompForgetIso : uliftFunctor.{v, u} ⋙ forget TopCat.{max u v} ≅
   forget TopCat.{u} ⋙ CategoryTheory.uliftFunctor.{v, u} := Iso.refl _
 
 end TopCat
