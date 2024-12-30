@@ -31,7 +31,7 @@ choice that `0 * x = x * 0 = 0` for any `x` (while the other cases are defined n
 This does not distribute with addition, as `⊥ = ⊥ + ⊤ = 1*⊥ + (-1)*⊥ ≠ (1 - 1) * ⊥ = 0 * ⊥ = 0`.
 Distributivity `x * (y + z) = x * y + x * z` is recovered in the case where either `0 ≤ x < ⊤`,
 see `Ereal.left_distrib_of_nonneg_of_ne_top`, or `0 ≤ y, z`, see `Ereal.left_distrib_of_nonneg`
-(similarily for right distributivity).
+(similarly for right distributivity).
 
 `EReal` is a `CompleteLinearOrder`; this is deduced by type class inference from
 the fact that `WithBot (WithTop L)` is a complete linear order if `L` is
@@ -1471,9 +1471,9 @@ lemma left_distrib_of_nonneg {a b c : EReal} (ha : 0 ≤ a) (hb : 0 ≤ b) :
 lemma left_distrib_of_nonneg_of_ne_top {x : EReal} (hx_nonneg : 0 ≤ x)
     (hx_ne_top : x ≠ ⊤) (y z : EReal) :
     x * (y + z) = x * y + x * z := by
-  by_cases hx0 : x = 0
-  · simp [hx0]
-  replace hx0 : 0 < x := hx_nonneg.lt_of_ne' hx0
+  cases hx_nonneg.eq_or_gt with
+  | inl hx0 => simp [hx0]
+  | inr hx0 =>
   lift x to ℝ using ⟨hx_ne_top, hx0.ne_bot⟩
   cases y <;> cases z <;>
     simp [mul_bot_of_pos hx0, mul_top_of_pos hx0, ← coe_mul];

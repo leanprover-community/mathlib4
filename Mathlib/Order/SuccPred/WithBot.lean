@@ -44,7 +44,7 @@ end WithBot
 namespace WithTop
 variable {α : Type*} [Preorder α] [OrderTop α] [PredOrder α] {x y : WithTop α}
 
-/-- The predessor of `a : WithTop α` as an element of `α`. -/
+/-- The predecessor of `a : WithTop α` as an element of `α`. -/
 def pred (a : WithTop α) : α := a.recTopCoe ⊤ Order.pred
 
 /-- Not to be confused with `WithTop.orderPred_top`, which is about `Order.pred`. -/

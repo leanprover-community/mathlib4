@@ -32,8 +32,8 @@ theorem mvPolynomial_zeroLocus_definable {ι K : Type*} [Field K]
   letI := Classical.decEq ι
   letI := Classical.decEq K
   rw [MvPolynomial.zeroLocus_span]
-  refine ⟨BoundedFormula.iInf S.attach
-      (fun i => Term.equal
+  refine ⟨BoundedFormula.iInf
+      (fun i : S => Term.equal
         ((termOfFreeCommRing (p' i)).relabel
           (Sum.map (fun p => ⟨p.1.1.coeff p.2.1, by
             simp only [Set.mem_iUnion]

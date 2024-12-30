@@ -328,11 +328,11 @@ theorem IsMaximal.comap_piEvalRingHom {ι : Type*} {R : ι → Type*} [∀ i, Se
   have ⟨r, y, hy, eq⟩ := h.exists_inv hxI
   classical
   convert J.add_mem (J.mul_mem_left (update 0 i r) hxJ)
-    (b := update 1 i y) (le <| by apply update_same i y 1 ▸ hy)
+    (b := update 1 i y) (le <| by apply update_self i y 1 ▸ hy)
   ext j
   obtain rfl | ne := eq_or_ne j i
   · simpa [eq_comm] using eq
-  · simp [update_noteq ne]
+  · simp [update_of_ne ne]
 
 end Surjective
 
