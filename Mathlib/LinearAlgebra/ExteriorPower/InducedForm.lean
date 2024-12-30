@@ -73,10 +73,10 @@ theorem bilin_apply_ιMulti (v w : Fin k → M) :
   simp only [LinearMap.coe_comp, comp_apply, liftAlternating_apply_ιMulti]
   rfl
 
-theorem bilin_apply_ιMulti_family {I : Type*} [LinearOrder I] (b : I → M)
-  (s t : {s : Finset I // Finset.card s = k}) :
-  ⟪ιMulti_family R k b s, ιMulti_family R k b t⟫ = (Matrix.of fun i j ↦
-  B (b (Finset.orderIsoOfFin s.1 s.2 i)) (b (Finset.orderIsoOfFin t.1 t.2 j))).det := by
+theorem bilin_apply_ιMulti_family {I : Type*} [LinearOrder I] (b c : I → M)
+  (s t : Finset I) (hs : s.card = k) (ht : t.card = k) :
+  ⟪ιMulti_family R k b ⟨s, hs⟩, ιMulti_family R k c ⟨t, ht⟩⟫ = (Matrix.of fun i j ↦
+  B (b (Finset.orderIsoOfFin s hs i)) (c (Finset.orderIsoOfFin t ht j))).det := by
   unfold exteriorPower.BilinForm
   unfold ιMulti_family
   simp only [LinearMap.coe_comp, comp_apply, liftAlternating_apply_ιMulti]
@@ -95,14 +95,56 @@ theorem bilin_symm_ιMulti (h : B.IsSymm) : ∀ v w : Fin k → M, ⟪(ιMulti R
 
 section overField
 
-variable {K M : Type*} [Field K] [AddCommGroup M] [Module K M] (k : ℕ)
+variable {K M : Type*} [Field K] [AddCommGroup M] [Module K M]
 variable (B : LinearMap.BilinForm K M) (hN : B.Nondegenerate)
 variable {I : Type*} [LinearOrder I] [Finite I] (b : Basis I K M)
 variable {k : ℕ}
 
 local notation "⟪" v ", " w "⟫" => exteriorPower.BilinForm k B v w
-noncomputable abbrev basis := Basis.exteriorPower K k b
 
+#check Basis.exteriorPower K k (B.dualBasis hN b)
+
+omit [Finite I] in
+theorem diff_elt_of_neq_subset (s t : Finset I) (hs : s.card = k) (ht : t.card = k)
+  (neq : s ≠ t) : ∃ i : I, i ∈ s ∧ i ∉ t := by
+  by_contra h
+  push_neg at h
+  apply neq
+  have : s ⊆ t := h
+  rw [Finset.eq_of_subset_of_card_le this]
+  simp [hs, ht]
+
+omit [Finite I] in
+theorem diff_index_of_neq_subset (s t : Finset I) (hs : s.card = k) (ht : t.card = k)
+  (neq : s ≠ t) : ∃ (i : Fin k), ∀ (j : Fin k),
+  (((t.orderIsoOfFin ht) j) : I) ≠ ((s.orderIsoOfFin hs) i) := by
+  obtain ⟨e, he⟩ := diff_elt_of_neq_subset s t hs ht neq
+  use (s.orderIsoOfFin hs).symm ⟨e, he.1⟩
+  simp only [OrderIso.apply_symm_apply]
+  intro j
+  by_contra h
+  apply he.2
+  rw[← h]
+  simp only [Finset.coe_orderIsoOfFin_apply, Finset.orderEmbOfFin_mem]
+
+theorem exteriorPower_dualBasis (s t : Finset I) (hs : s.card = k) (ht : t.card = k) :
+  ⟪Basis.exteriorPower K k (B.dualBasis hN b) ⟨s, hs⟩, Basis.exteriorPower K k b ⟨t, ht⟩⟫ =
+  if s = t then 1 else 0 := by
+  simp only [basis_apply]
+  simp only [bilin_apply_ιMulti_family]
+  simp only [LinearMap.BilinForm.apply_dualBasis_left]
+  rcases eq_or_ne s t with h | h
+  · rw [if_pos h]
+    simp [h]
+    nth_rw 2 [← @Matrix.det_one (Fin k)]
+    congr
+    exact Matrix.transpose_eq_one.mp rfl
+  · rw [if_neg h]
+    obtain ⟨i, hi⟩ := (diff_index_of_neq_subset s t hs ht) h
+    apply Matrix.det_eq_zero_of_row_eq_zero i
+    intro j
+    rw [Matrix.of_apply]
+    rw [if_neg (hi j)]
 
 end overField
 
