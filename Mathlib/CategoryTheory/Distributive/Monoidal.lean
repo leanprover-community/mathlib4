@@ -283,9 +283,9 @@ lemma SymmetricCategory.rightDistrib_of_leftDistrib
 /-- A closed monoidal category is left distributive. -/
 instance MonoidalClosed.isMonoidalLeftDistrib [MonoidalClosed C] :
     IsMonoidalLeftDistrib C where
-  preservesBinaryCoproducts_tensorLeft X := {
-    preservesColimit := ((ihom.adjunction X).leftAdjoint_preservesColimits).1.1
-  }
+  preservesBinaryCoproducts_tensorLeft X := by
+    have := (ihom.adjunction X).isLeftAdjoint
+    infer_instance
 
 /-- The inverse of distributivity isomorphism from the closed monoidal strurcture -/
 @[simp]
