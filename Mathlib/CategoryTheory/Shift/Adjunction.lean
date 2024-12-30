@@ -195,10 +195,10 @@ The property for `CommShift` structures on `F` and `G` to be compatible with an
 adjunction `F ⊣ G`.
 -/
 class CommShift : Prop where
-  commShift_unit' : NatTrans.CommShift adj.unit A := by infer_instance
-  commShift_counit' : NatTrans.CommShift adj.counit A := by infer_instance
+  commShift_unit : NatTrans.CommShift adj.unit A := by infer_instance
+  commShift_counit : NatTrans.CommShift adj.counit A := by infer_instance
 
-lemma commShift_unit [adj.CommShift A] : NatTrans.CommShift adj.unit A := CommShift.commShift_unit'
+lemma commShift_unit [adj.CommShift A] : NatTrans.CommShift adj.unit A := CommShift.commShift_unit
 
 lemma commShift_unit_app [adj.CommShift A] (a : A) (X : C) :
     (adj.unit.app X)⟦a⟧' = adj.unit.app (X⟦a⟧) ≫ ((F ⋙ G).commShiftIso a).hom.app X := by
@@ -206,7 +206,7 @@ lemma commShift_unit_app [adj.CommShift A] (a : A) (X : C) :
   simp
 
 lemma commShift_counit [adj.CommShift A] : NatTrans.CommShift adj.counit A :=
-  CommShift.commShift_counit'
+  CommShift.commShift_counit
 
 lemma commShift_counit_app [adj.CommShift A] (a : A) (Y : D) :
     ((G ⋙ F).commShiftIso a).hom.app Y ≫ (adj.counit.app Y)⟦a⟧' = adj.counit.app (Y⟦a⟧) := by
@@ -220,7 +220,7 @@ attribute [instance] commShift_unit commShift_counit
 /-- Constructor for `Adjunction.CommShift`. -/
 lemma mk' (h : NatTrans.CommShift adj.unit A) :
     adj.CommShift A where
-  commShift_counit' := ⟨fun a ↦ by
+  commShift_counit := ⟨fun a ↦ by
     ext
     simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app,
       Functor.commShiftIso_comp_hom_app, whiskerRight_app, assoc, whiskerLeft_app,
@@ -423,8 +423,8 @@ instance [h : E.inverse.CommShift A] : E.symm.functor.CommShift A := h
 /-- Constructor for `Equivalence.CommShift`. -/
 lemma mk' (h : NatTrans.CommShift E.unitIso.hom A) :
     E.CommShift A where
-  commShift_unit' := h
-  commShift_counit' := (Adjunction.CommShift.mk' E.toAdjunction A h).commShift_counit'
+  commShift_unit := h
+  commShift_counit := (Adjunction.CommShift.mk' E.toAdjunction A h).commShift_counit
 
 /--
 The forward functor of the identity equivalence is compatible with shifts.
@@ -504,7 +504,7 @@ lemma commShift_of_functor [E.functor.CommShift A] :
     letI := E.commShiftInverse A
     E.CommShift A := by
   letI := E.commShiftInverse A
-  exact CommShift.mk' _ _ (E.toAdjunction.commShift_of_leftAdjoint A).commShift_unit'
+  exact CommShift.mk' _ _ (E.toAdjunction.commShift_of_leftAdjoint A).commShift_unit
 
 /--
 If `E : C ≌ D` is an equivalence and we have a `CommShift` structure on `E.inverse`,
