@@ -111,6 +111,30 @@ lemma isTriangulated_rightAdjoint : G.IsTriangulated where
         Functor.commShiftIso_hom_naturality, ← adj.shift_unit_app_assoc,
         ← Functor.map_comp, right_triangle_components, Functor.map_id, comp_id]
 
+/--
+We say that an adjunction `F ⊣ G` is triangulated if it is compatible with the `CommShift`
+structures on `F` and `G` (in the sense of `Adjunction.CommShift`) and if both `F` and `G`
+are triangulated functors.
+-/
+class IsTriangulated : Prop where
+  commShift : adj.CommShift ℤ := by infer_instance
+  leftAdjoint_isTriangulated : F.IsTriangulated := by infer_instance
+  rightAdjoint_isTriangulated : G.IsTriangulated := by infer_instance
+
+namespace IsTriangulated
+
+/-- Constructor for `Adjunction.IsTriangulated`.
+-/
+lemma mk' : adj.IsTriangulated where
+  rightAdjoint_isTriangulated := adj.isTriangulated_rightAdjoint
+
+/-- The identity adjunction is triangulated.
+-/
+instance instId : (Adjunction.id (C := C)).IsTriangulated where
+  commShift := sorry
+
+end IsTriangulated
+
 end Adjunction
 
 namespace Equivalence
