@@ -8,7 +8,7 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.Algebra.DirectSum.Decomposition
-import Mathlib.Tactic.StacksAttribute
+-- import Mathlib.Tactic.StacksAttribute
 
 /-!
 
@@ -112,15 +112,6 @@ variable {I : Type*} (e : I → R)
 structure OrthogonalIdempotents : Prop where
   idem : ∀ i, IsIdempotentElem (e i)
   ortho : Pairwise (e · * e · = 0)
-
-/-- A primitive idempotent is primitive if it's not zero and `e ≠ e₁ + e₂` for any
-  `e₁` and `e₂` idempotents and pairwisely orthogonal. -/
-structure IsPrimitiveIdempotents (e : R) : Prop where
-  idem : IsIdempotentElem e
-  [ne_zero : e ≠ 0]
-  ne_sum_ortho' :
-    ∀ (f g : R) (_ : OrthogonalIdempotents ![f, g])
-      [NeZero f] [NeZero g], e ≠ f + g
 
 variable {e}
 
@@ -350,8 +341,8 @@ open DirectSum in
 omit [Fintype I] in
 lemma decomp_ring_ortho_idem_is_idem [DecidableEq I] (V : I → Submodule R R)
     [Decomposition V] (e : ⨁ (i : I), (V i)) [(i : I) → (x : ↥(V i)) → Decidable (x ≠ 0)]
-    (he : (1 : R) = ∑ j ∈ e.support, e j):
-    ∀ (i : { x // x ∈ DFinsupp.support e }), IsIdempotentElem ((e i.1) : R) := fun i => by
+    (he : e = decompose V 1):
+    ∀ i ∈ DFinsupp.support e, IsIdempotentElem ((e i) : R) := fun i => by
   let x : (⨁ i, V i) := DFinsupp.single i (e i)
   let y : (⨁ i, V i) := DFinsupp.mapRange (x := e) (fun j (z : V j) => ⟨e i * (z : R), by
     rw [← smul_eq_mul]; obtain ⟨z, hz⟩ := z
@@ -360,23 +351,20 @@ lemma decomp_ring_ortho_idem_is_idem [DecidableEq I] (V : I → Submodule R R)
   have hx2 (j) (h : j ≠ i) : (x j : R) = 0 := by
     simp [x, Finsupp.single_apply]
     intro hij; exfalso
-    exact h.symm <| Subtype.coe_inj.1 hij
+    exact h.symm hij
   have hy (j) : (y j : R) = e i * e j := by
     simp only [DFinsupp.mapRange_apply, y]
   have hx3 : ∑ i ∈ DFinsupp.support x, (x i : R) = x i := by
     apply Finset.sum_eq_single
     · intro j hj hj'
-      specialize hx2 ⟨j, by
-        simp_all [↓reduceDIte, x, y]
-        obtain ⟨val, property⟩ := i
-        obtain ⟨w, h⟩ := hj
-        subst w
-        simp_all only [Subtype.mk.injEq, not_true_eq_false]⟩ <| Subtype.coe_ne_coe.1 hj'
+      specialize hx2 j hj'
       exact hx2
     · simp
   have hy3 : ∑ i ∈ DFinsupp.support y, (y i : R) = e i * 1 := by
-    rw [he, Finset.mul_sum]
     simp_rw [hy]
+    have : (1 : R) = ∑ j ∈ e.support, e j := by
+      rw [he] ; exact sum_support_decompose V 1|>.symm
+    rw [this, Finset.mul_sum]
     apply Finset.sum_subset
     · intro j hj
       simp only [DFinsupp.mem_support_toFun, ne_eq, DFinsupp.mapRange_apply,
@@ -395,18 +383,19 @@ lemma decomp_ring_ortho_idem_is_idem [DecidableEq I] (V : I → Submodule R R)
   simp only [DFinsupp.mapRange_apply, Subtype.ext_iff, y] at this
   unfold IsIdempotentElem
   rw [this.symm]
-  simp only [DFinsupp.single_apply, ↓reduceDIte, x]
+  simp only [DFinsupp.mem_support_toFun, ne_eq, DFinsupp.single_apply,
+    reduceDIte, implies_true, x]
 
 open DirectSum in
 omit [Fintype I] in
-/-- If a ring can be decomposed into direct sum of finitely many left ideals `Vᵢ`
+/-- If a ring can be decomposed into direct sum of left ideals `Vᵢ`
   where `1 = e₁ + ... + eₙ` and `eᵢ ∈ Vᵢ`, then `eᵢ` is a family of orthogonal
   idempotents.-/
 theorem OrthogonalIdempotent.decomp_ring_ortho_idem [DecidableEq I] (V : I → Submodule R R)
     [Decomposition V] (e : ⨁ (i : I), (V i)) [(i : I) → (x : ↥(V i)) → Decidable (x ≠ 0)]
-    (he : (1 : R) = ∑ j ∈ e.support, e j):
+    (he : e = decompose V 1) :
     OrthogonalIdempotents (R := R) (I := DFinsupp.support e) fun i ↦ e i where
-  idem := decomp_ring_ortho_idem_is_idem V e he
+  idem := fun ⟨i, hi⟩ ↦ decomp_ring_ortho_idem_is_idem V e he i hi
   ortho := fun i j hij ↦ by
     simp only
     let x : (⨁ i, V i) := DFinsupp.single i (e i) -- 0,0,0,...,eᵢ,0,0,0,...
@@ -432,7 +421,9 @@ theorem OrthogonalIdempotent.decomp_ring_ortho_idem [DecidableEq I] (V : I → S
         exact hx2
       · simp
     have hy3 : ∑ i ∈ DFinsupp.support y, (y i : R) = e i * 1 := by
-      rw [he, Finset.mul_sum]
+      have : (1 : R) = ∑ j ∈ e.support, e j := by
+        rw [he] ; exact sum_support_decompose V 1|>.symm
+      rw [this, Finset.mul_sum]
       simp_rw [hy]
       apply Finset.sum_subset
       · intro j hj
