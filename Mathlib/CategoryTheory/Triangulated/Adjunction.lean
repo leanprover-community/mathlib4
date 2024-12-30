@@ -132,7 +132,7 @@ lemma mk' : adj.IsTriangulated where
 
 /-- The identity adjunction is triangulated.
 -/
-instance instId : (Adjunction.id (C := C)).IsTriangulated where
+instance id : (Adjunction.id (C := C)).IsTriangulated where
 
 variable {E : Type*} [Category E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G') [HasZeroObject E]
   [Preadditive E] [HasShift E ℤ] [∀ (n : ℤ), (shiftFunctor E n).Additive] [Pretriangulated E]
@@ -140,7 +140,7 @@ variable {E : Type*} [Category E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G
 
 /-- A composition of triangulated adjunctions is triangulated.
 -/
-instance instComp [adj.IsTriangulated] [adj'.IsTriangulated] : (adj.comp adj').IsTriangulated where
+instance comp [adj.IsTriangulated] [adj'.IsTriangulated] : (adj.comp adj').IsTriangulated where
 
 end IsTriangulated
 
@@ -179,7 +179,7 @@ lemma mk'' (h : E.inverse.IsTriangulated) : E.IsTriangulated where
 /--
 The identity equivalence is triangulated.
 -/
-instance : (Equivalence.refl (C := C)).IsTriangulated := by
+instance refl : (Equivalence.refl (C := C)).IsTriangulated := by
   dsimp [Equivalence.IsTriangulated]
   rw [refl_toAdjunction]
   infer_instance
@@ -195,7 +195,7 @@ variable {D' : Type*} [Category D'] [HasZeroObject D'] [Preadditive D'] [HasShif
 /--
 If equivalences `E : C ≌ D` and `E' : D ≌ F` are triangulated, so is `E.trans E'`.
 -/
-instance [E.IsTriangulated] [E'.IsTriangulated] : (E.trans E').IsTriangulated := by
+instance trans [E.IsTriangulated] [E'.IsTriangulated] : (E.trans E').IsTriangulated := by
   dsimp [Equivalence.IsTriangulated]
   rw [trans_toAdjunction]
   infer_instance
