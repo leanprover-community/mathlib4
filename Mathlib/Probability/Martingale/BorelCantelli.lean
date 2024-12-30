@@ -377,8 +377,8 @@ lemma _root_.Set.infinite_iff_tendsto_sum_indicator_atTop (R : Type*) [StrictOrd
 
 lemma _root_.Set.limsup_eq_tendsto_sum_indicator_atTop (R : Type*) [StrictOrderedSemiring R]
     [Archimedean R] (s : ℕ → Set α) : limsup s atTop = { ω | Tendsto
-      (fun n ↦ ∑ k ∈ Finset.range n, (s (k + 1)).indicator (1 : α → R) ω) atTop atTop } := by
-  nth_rw 1 [← limsup_nat_add s 1, ← Nat.cofinite_eq_atTop, cofinite.limsup_set_eq]
+      (fun n ↦ ∑ k ∈ Finset.range n, (s k).indicator (1 : α → R) ω) atTop atTop } := by
+  nth_rw 1 [← Nat.cofinite_eq_atTop, cofinite.limsup_set_eq]
   ext ω
   rw [mem_setOf_eq, mem_setOf_eq, infinite_iff_tendsto_sum_indicator_atTop R, iff_eq_eq]
   congr
@@ -408,7 +408,8 @@ everywhere equal to the set for which `∑ k, ℙ(s (k + 1) | ℱ k) = ∞`. -/
 theorem ae_mem_limsup_atTop_iff (μ : Measure Ω) [IsFiniteMeasure μ] {s : ℕ → Set Ω}
     (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : ∀ᵐ ω ∂μ, ω ∈ limsup s atTop ↔
     Tendsto (fun n => ∑ k ∈ Finset.range n,
-      (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k]) ω) atTop atTop :=
-  (Set.limsup_eq_tendsto_sum_indicator_atTop ℝ s).symm ▸ tendsto_sum_indicator_atTop_iff' hs
+      (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k]) ω) atTop atTop := by
+  rw [← limsup_nat_add s 1, Set.limsup_eq_tendsto_sum_indicator_atTop ℝ (fun n ↦ s (n + 1))]
+  exact tendsto_sum_indicator_atTop_iff' hs
 
 end MeasureTheory
