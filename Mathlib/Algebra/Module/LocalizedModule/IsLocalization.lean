@@ -35,6 +35,8 @@ instance [IsLocalization (Algebra.algebraMapSubmonoid A S) Aₛ] :
 
 variable (A)
 
+/-- `A` is a localization of a commutative semiring `R` with respect to `S` iff
+the associated linear map `R →ₗ[R] A` is a localization of modules with respect to `S`. -/
 lemma isLocalizedModule_iff_isLocalization' :
     IsLocalizedModule S (Algebra.linearMap R A) ↔ IsLocalization S A := by
   convert isLocalizedModule_iff_isLocalization (S := S) (A := R) (Aₛ := A)

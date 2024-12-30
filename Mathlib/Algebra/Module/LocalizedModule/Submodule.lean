@@ -6,6 +6,7 @@ Authors: Andrew Yang
 import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.RingTheory.Localization.Module
+import Mathlib.Algebra.Algebra.Operations
 
 /-!
 # Localization of Submodules
