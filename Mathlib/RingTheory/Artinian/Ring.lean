@@ -5,7 +5,7 @@ Authors: Chris Hughes, Junyan Xu, Jujian Zhang
 -/
 import Mathlib.Algebra.Divisibility.Prod
 import Mathlib.Algebra.Polynomial.FieldDivision
-import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.RingTheory.Nakayama
 
@@ -29,7 +29,7 @@ itself, or simply Artinian if it is both left and right Artinian.
 
 ## Implementation Details
 
-The predicate `IsArtinianRing` is defined in `Mathlib.RingTheory.Artinian` instead, so that we
+The predicate `IsArtinianRing` is defined in `Mathlib.RingTheory.Artinian.Ring` instead, so that we
 can apply basic API on artinian modules to division rings without a heavy import.
 
 ## References

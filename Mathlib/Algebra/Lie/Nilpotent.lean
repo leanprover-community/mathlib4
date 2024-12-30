@@ -9,7 +9,7 @@ import Mathlib.Algebra.Lie.Quotient
 import Mathlib.Algebra.Lie.Normalizer
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.Order.Filter.AtTopBot
-import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
