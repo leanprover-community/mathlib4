@@ -54,8 +54,7 @@ lemma op_commShiftIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0):
     (F.op.commShiftIso n).inv.app X =
       (shiftFunctorOpIso D n m h).hom.app (op (F.obj X.unop)) ≫
         ((F.commShiftIso m).hom.app X.unop).op ≫
-          (F.map ((shiftFunctorOpIso C n m h).inv.app X).unop).op
-         := by
+          (F.map ((shiftFunctorOpIso C n m h).inv.app X).unop).op := by
   rw [← cancel_epi ((F.op.commShiftIso n).hom.app X), Iso.hom_inv_id_app,
     op_commShiftIso_hom_app _ X n m h, assoc, assoc]
   simp [← op_comp, ← F.map_comp]
