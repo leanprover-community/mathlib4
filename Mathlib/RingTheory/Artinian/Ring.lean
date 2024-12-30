@@ -8,6 +8,7 @@ import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.LocalRing.Basic
 import Mathlib.RingTheory.Nakayama
+import Mathlib.RingTheory.SimpleModule
 
 /-!
 # Artinian rings
@@ -48,6 +49,10 @@ open Set Submodule IsArtinian
 namespace IsArtinianRing
 
 variable {R : Type*} [CommRing R] [IsArtinianRing R]
+
+attribute [local instance] subtype_isMaximal_finite fieldOfSubtypeIsMaximal in
+theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
+  (equivPi R).symm.isSemisimpleRing
 
 @[stacks 00J8]
 theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) := by

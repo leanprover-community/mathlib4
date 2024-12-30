@@ -7,7 +7,7 @@ import Mathlib.Data.SetLike.Fintype
 import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Nilpotent.Lemmas
-import Mathlib.RingTheory.SimpleModule
+import Mathlib.RingTheory.Noetherian.Defs
 
 /-!
 # Artinian rings and modules
@@ -473,8 +473,5 @@ namely the quotients by the maximal ideals. -/
 noncomputable def equivPi [IsReduced R] : R ≃+* ∀ I : {I : Ideal R | I.IsMaximal}, R ⧸ I.1 :=
   .trans (.symm <| .quotientBot R) <| .trans
     (Ideal.quotEquivOfEq (nilradical_eq_zero R).symm) (quotNilradicalEquivPi R)
-
-theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
-  (equivPi R).symm.isSemisimpleRing
 
 end IsArtinianRing
