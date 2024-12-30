@@ -262,6 +262,7 @@ theorem iIndepFun.integrable_exp_mul_sum [IsFiniteMeasure μ] {X : ι → Ω →
     refine IndepFun.integrable_exp_mul_add ?_ (h_int i (mem_insert_self _ _)) h_rec
     exact (h_indep.indepFun_finset_sum_of_not_mem h_meas hi_notin_s).symm
 
+-- TODO(vilin97): weaken `h_meas` to `AEMeasurable (X i)` or `AEStronglyMeasurable (X i)` throughout
 theorem iIndepFun.mgf_sum {X : ι → Ω → ℝ}
     (h_indep : iIndepFun (fun _ => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
     (s : Finset ι) : mgf (∑ i ∈ s, X i) μ t = ∏ i ∈ s, mgf (X i) μ t := by
@@ -298,7 +299,7 @@ theorem mgf_sum_of_identDistrib
     (h_indep : iIndepFun (fun _ => inferInstance) X μ)
     (hident : ∀ i ∈ s, ∀ j ∈ s, IdentDistrib (X i) (X j) μ μ)
     (hj : j ∈ s) (t : ℝ) : mgf (∑ i ∈ s, X i) μ t = mgf (X j) μ t ^ #s := by
-  rw [iIndepFun.mgf_sum h_indep h_meas]
+  rw [h_indep.mgf_sum h_meas]
   exact Finset.prod_eq_pow_card fun i hi =>
     mgf_congr_of_identDistrib (X i) (X j) (hident i hi j hj) t
 
