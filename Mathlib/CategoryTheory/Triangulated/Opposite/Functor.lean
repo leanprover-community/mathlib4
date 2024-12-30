@@ -59,6 +59,7 @@ lemma op_commShiftIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0):
     op_commShiftIso_hom_app _ X n m h, assoc, assoc]
   simp [← op_comp, ← F.map_comp]
 
+@[reassoc]
 lemma shift_map_op {X Y : C} (f : X ⟶ Y) (n : ℤ) :
     (F.map f).op⟦n⟧' = (F.op.commShiftIso n).inv.app _ ≫
       (F.map (f.op⟦n⟧').unop).op ≫ (F.op.commShiftIso n).hom.app _ :=
