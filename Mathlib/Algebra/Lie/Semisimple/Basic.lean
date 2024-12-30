@@ -140,7 +140,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
           Submodule.mem_toAddSubmonoid]
         apply add_mem
         -- Now `⁅a, y⁆ ∈ J` since `a ∈ I`, `y ∈ J`, and `J` is an ideal of `I`.
-        · simp only [Submodule.mem_map, LieSubmodule.mem_coeSubmodule, Subtype.exists]
+        · simp only [Submodule.mem_map, LieSubmodule.mem_toSubmodule, Subtype.exists]
           erw [Submodule.coe_subtype]
           simp only [exists_and_right, exists_eq_right, ha, lie_mem_left, exists_true_left]
           exact lie_mem_right R I J ⟨a, ha⟩ y hy
@@ -159,8 +159,8 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
       intro x hx
       suffices x ∈ J → x = 0 from this hx
       have := @this x.1
-      simp only [LieIdeal.incl_coe, LieIdeal.coe_to_lieSubalgebra_to_submodule,
-        LieSubmodule.mem_mk_iff', Submodule.mem_map, LieSubmodule.mem_coeSubmodule, Subtype.exists,
+      simp only [LieIdeal.incl_coe, LieIdeal.coe_toLieSubalgebra_toSubmodule,
+        LieSubmodule.mem_mk_iff', Submodule.mem_map, LieSubmodule.mem_toSubmodule, Subtype.exists,
         LieSubmodule.mem_bot, ZeroMemClass.coe_eq_zero, forall_exists_index, and_imp, J'] at this
       exact fun _ ↦ this (↑x) x.property hx rfl
     -- We need to show that `J = ⊥`.
