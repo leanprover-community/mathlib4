@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Sites.DenseSubsite.InducedTopology
 
 # The small affine Zariski site
 
-`X.AffineZariskiSite` is the small affine zariski site of `X`, whose elements are affine open
+`X.AffineZariskiSite` is the small affine Zariski site of `X`, whose elements are affine open
 sets of `X`, and whose arrows are basic open sets `D(f) ⟶ U` for any `f : Γ(X, U)`.
 
 Every presieve on `U` is then given by a `Set Γ(X, U)` (`presieveOfSections_surjective`), and
@@ -22,7 +22,7 @@ inclusion functor `toOpensFunctor X`,
 which gives an equivalence of categories of sheaves (`sheafEquiv`).
 
 Note that this differs from the definition on stacks project where the arrows in the small affine
-zariski site are arbitrary inclusions.
+Zariski site are arbitrary inclusions.
 
 -/
 
@@ -37,11 +37,11 @@ namespace AlgebraicGeometry
 variable {X : Scheme.{u}}
 
 /--
-`X.AffineZariskiSite` is the small affine zariski site of `X`, whose elements are affine open
+`X.AffineZariskiSite` is the small affine Zariski site of `X`, whose elements are affine open
 sets of `X`, and whose arrows are basic open sets `D(f) ⟶ U` for any `f : Γ(X, U)`.
 
 Note that this differs from the definition on stacks project where the arrows in the small affine
-zariski site are arbitrary inclusions.
+Zariski site are arbitrary inclusions.
 -/
 def Scheme.AffineZariskiSite (X : Scheme.{u}) : Type u := { U : X.Opens // IsAffineOpen U }
 
