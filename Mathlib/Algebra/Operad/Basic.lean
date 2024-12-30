@@ -5,7 +5,10 @@ Authors: Alex Meiburg
 -/
 import Mathlib.Algebra.Group.Action.Defs
 
-/-! This file defines the typeclasses and notations used for workign with `Operad`, `SymmOperad`,
+/-!
+# Operads: basic typeclasses and notations
+
+This file defines the typeclasses and notations used for working with `Operad`, `SymmOperad`,
   and `Clone`. These all, in some form another, work with graded - or Sigma - types. Below,
   `A : ℕ → Type*` is always the carrier.
 
@@ -27,6 +30,12 @@ import Mathlib.Algebra.Group.Action.Defs
   - `x ∘[p] y` for the `composeAt` Sigma variant.
   - `x ∘⚟ y` for `Superposable.superpose x y`. The typography is meant to suggest
     "many arguments into one".
+
+  References:
+  - [Wikipedia, "Operad"](https://en.wikipedia.org/wiki/Operad#Definition)
+  - Clifford Bergman, "Bergman, Clifford (2011). Universal Algebra: Fundamentals and Selected
+  Topics." [Google Books](https://books.google.ca/books?id=QXi3BZWoMRwC&pg=PA79)
+  - "Operad", nCatlab. [Link](https://ncatlab.org/nlab/show/operad)
 -/
 
 /-- A MultiComposable is a structure that allows composition from an m-arity object
@@ -46,7 +55,7 @@ class Superposable (A : ℕ → Type*) where
 /-- Families that have a "one" at grading 1. -/
 class OneGradedOne (A : ℕ → Type*) extends One (A 1) where
 
-variable {A} {m : ℕ}
+variable {A} {m n k : ℕ}
 
 /-- Upgrade `MultiComposable.compose` to an operation on Sigma types. -/
 def composeAt [MultiComposable A] (x : Sigma A) (y : Sigma A) (p : Fin x.fst) : Sigma A :=
@@ -56,28 +65,43 @@ def composeAt [MultiComposable A] (x : Sigma A) (y : Sigma A) (p : Fin x.fst) : 
 def superpose [Superposable A] (x : Sigma A) (y : Fin x.fst → A m) : Sigma A :=
   ⟨m, Superposable.superpose x.snd y⟩
 
+namespace MultiComposable
+
+/-- Alternative to `MultiComposable.compose`, with proof that the output arity `k` is correct. -/
+def composeEq [MultiComposable A] (x : A n) (p : Fin n) (y : A m) (hk : n + m = k + 1) : A k :=
+  (show k = n + m - 1 by omega) ▸ compose x p y
+
+theorem compose_eq_composeEq [MultiComposable A] (x : A n) (p : Fin n) (y : A m)
+    : compose x p y = composeEq x p y (Nat.sub_add_cancel (p.addNat m).pos).symm := by
+  rfl
+
 /-- Notation for `MultiComposable.compose`, for working with `A n` graded types. -/
-notation:70 x:71 " ∘⟨" p:70 "⟩ " y:70  => MultiComposable.compose x p y
+scoped notation:70 x:71 " ∘⟨" p:70 "⟩ " y:70  => MultiComposable.compose x p y
 /-- Notation for `composeAt`, for working with Sigma types. -/
-notation:70 x:71 " ∘[" p:70 "] " y:70  => composeAt x y p
+scoped notation:70 x:71 " ∘[" p:70 "] " y:70  => composeAt x y p
+
+end MultiComposable
+
+namespace Superposable
 
 /-- Notation for `Superposable.superpose`, for working with `A n` graded types. -/
-infixr:70 " ∘⚟ " => Superposable.superpose
+scoped infixr:70 " ∘⚟ " => Superposable.superpose
 
---Commented out since it's currently not used anywhere. Could easily be useful though.
--- /-- Notation for `superpose`, for working with Sigma types. -/
--- infixr:70 " ∘∈ " => superpose
+/-- Notation for `superpose`, for working with Sigma types. -/
+scoped infixr:70 " ∘∈ " => superpose
+
+end Superposable
 
 /-- `OneGradedOne` yields a `One (Sigma A)` -/
-instance ComposableOne_toOne [OneGradedOne A] : One (Sigma A) :=
+instance OneGradedOne_toOne [OneGradedOne A] : One (Sigma A) :=
   ⟨⟨1, 1⟩⟩
 
 @[simp]
-theorem eq_id_sigma_id [OneGradedOne A] : (1 : Sigma A).snd = 1 :=
+theorem OneGradedOne.id_fst_eq_id [OneGradedOne A] : (1 : Sigma A).fst = 1 :=
   rfl
 
 @[simp]
-theorem eq_id_sigma_one [OneGradedOne A] : (1 : Sigma A).fst = 1 :=
+theorem OneGradedOne.id_snd_eq_id [OneGradedOne A] : (1 : Sigma A).snd = 1 :=
   rfl
 
 section SigmaMul
