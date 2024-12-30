@@ -570,7 +570,7 @@ theorem dense_compl_singleton_iff_not_open :
     obtain rfl : U = {x} := eq_singleton_iff_nonempty_unique_mem.2 ⟨hne, hUx⟩
     exact ho hU
 
-/-- If a closed property holds for a dense subset, it holds for the whole space -/
+/-- If a closed property holds for a dense subset, it holds for the whole space. -/
 @[elab_as_elim]
 lemma Dense.induction (hs : Dense s) {P : X → Prop}
     (H : ∀ x ∈ s, P x) (isClosed : IsClosed { x | P x }) (x) : P x := by
