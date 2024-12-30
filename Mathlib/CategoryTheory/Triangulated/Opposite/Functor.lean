@@ -65,6 +65,7 @@ lemma shift_map_op {X Y : C} (f : X ⟶ Y) (n : ℤ) :
       (F.map (f.op⟦n⟧').unop).op ≫ (F.op.commShiftIso n).hom.app _ :=
   (NatIso.naturality_1 (F.op.commShiftIso n) f.op).symm
 
+@[reassoc]
 lemma map_shift_unop {X Y : Cᵒᵖ} (f : X ⟶ Y) (n : ℤ) :
     F.map ((f⟦n⟧').unop) = ((F.op.commShiftIso n).inv.app Y).unop ≫
       ((F.map f.unop).op⟦n⟧').unop ≫ ((F.op.commShiftIso n).hom.app X).unop := by
