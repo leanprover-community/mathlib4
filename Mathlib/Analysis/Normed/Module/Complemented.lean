@@ -240,20 +240,14 @@ lemma ker_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : S
     (hq : IsClosed (q : Set E)) :
     let P := idempotentOfClosedCompl p q h hp hq
     ker (1 - P) = p := by
-  let P := idempotentOfClosedCompl p q h hp hq
-  have e1 : IsIdempotentElem P := by
-    apply is_idempotent_ofClosedCompl
-  simp_rw [ker_id_sub_eq_range e1]
-  exact range_idempotentOfClosedCompl h hp hq
+  simp_rw [ker_id_sub_eq_range (is_idempotent_ofClosedCompl h hp hq),
+    range_idempotentOfClosedCompl h hp hq]
 
 lemma range_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
     let P := idempotentOfClosedCompl p q h hp hq
     range (1  - P) = q := by
-  let P := idempotentOfClosedCompl p q h hp hq
-  have e1 : IsIdempotentElem P := by
-    apply is_idempotent_ofClosedCompl
-  simp_rw [range_id_sub_eq_ker e1]
-  exact ker_idempotentOfClosedCompl h hp hq
+  simp_rw [range_id_sub_eq_ker (is_idempotent_ofClosedCompl h hp hq),
+    ker_idempotentOfClosedCompl h hp hq]
 
 end Submodule
