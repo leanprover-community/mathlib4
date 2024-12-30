@@ -5,7 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Algebra.Order.Interval.Set.Group
 import Mathlib.Data.Real.Basic
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.Order.Interval.Set.Disjoint
 
 /-!
@@ -38,7 +38,7 @@ theorem Ico_lemma {α} [LinearOrder α] {x₁ x₂ y₁ y₂ z₁ z₂ w : α} (
   simp only [not_and, not_lt, mem_Ico] at hw
   refine ⟨max x₁ (min w y₂), ?_, ?_, ?_⟩
   · simp [le_refl, lt_trans h₁ (lt_trans hy h₂), h₂]
-  · simp (config := { contextual := true }) [hw, lt_irrefl, not_le_of_lt h₁]
+  · simp +contextual [hw, lt_irrefl, not_le_of_lt h₁]
   · simp [hw.2.1, hw.2.2, hz₁, lt_of_lt_of_le h₁ hz₂]
 
 /-- A (hyper)-cube (in standard orientation) is a vector `b` consisting of the bottom-left point

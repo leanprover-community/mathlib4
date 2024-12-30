@@ -7,6 +7,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Finset.Slice
 import Mathlib.Data.Nat.BitIndices
 import Mathlib.Order.SupClosed
+import Mathlib.Order.UpperLower.Basic
 
 /-!
 # Colexigraphic order
@@ -219,18 +220,19 @@ variable [DecidableEq α]
 instance instDecidableEq : DecidableEq (Colex α) := fun s t ↦
   decidable_of_iff' (s.ofColex = t.ofColex) Colex.ext_iff
 
-instance instDecidableLE [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· ≤ ·) := fun s t ↦
-  decidable_of_iff'
+instance instDecidableLE [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := Colex α) (· ≤ ·) :=
+  fun s t ↦ decidable_of_iff'
     (∀ ⦃a⦄, a ∈ ofColex s → a ∉ ofColex t → ∃ b, b ∈ ofColex t ∧ b ∉ ofColex s ∧ a ≤ b) Iff.rfl
 
-instance instDecidableLT [@DecidableRel α (· ≤ ·)] : @DecidableRel (Colex α) (· < ·) :=
+instance instDecidableLT [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := Colex α) (· < ·) :=
   decidableLTOfDecidableLE
 
 /-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_le_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
     toColex (s \ u) ≤ toColex (t \ u) ↔ toColex s ≤ toColex t := by
   simp_rw [toColex_le_toColex, ← and_imp, ← and_assoc, ← mem_sdiff,
-    sdiff_sdiff_sdiff_cancel_right hus, sdiff_sdiff_sdiff_cancel_right hut]
+    sdiff_sdiff_sdiff_cancel_right (show u ≤ s from hus),
+    sdiff_sdiff_sdiff_cancel_right (show u ≤ t from hut)]
 
 /-- The colexigraphic order is insensitive to removing the same elements from both sets. -/
 lemma toColex_sdiff_lt_toColex_sdiff (hus : u ⊆ s) (hut : u ⊆ t) :
@@ -532,7 +534,7 @@ theorem geomSum_injective {n : ℕ} (hn : 2 ≤ n) :
     geomSum_le_geomSum_iff_toColex_le_toColex hn, ← le_antisymm_iff, Colex.toColex.injEq] at h
 
 theorem lt_geomSum_of_mem {a : ℕ} (hn : 2 ≤ n) (hi : a ∈ s) : a < ∑ i in s, n ^ i :=
-  (Nat.lt_pow_self hn a).trans_le <| single_le_sum (by simp) hi
+  (a.lt_pow_self hn).trans_le <| single_le_sum (by simp) hi
 
 @[simp] theorem toFinset_bitIndices_twoPowSum (s : Finset ℕ) :
     (∑ i in s, 2 ^ i).bitIndices.toFinset = s := by

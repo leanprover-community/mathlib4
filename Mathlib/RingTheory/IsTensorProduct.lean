@@ -3,8 +3,9 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Algebra.Module.ULift
+import Mathlib.RingTheory.TensorProduct.Basic
+import Mathlib.Tactic.Ring
 
 /-!
 # The characteristic predicate of tensor product
@@ -212,7 +213,7 @@ noncomputable nonrec def IsBaseChange.equiv : S ⊗[R] M ≃ₗ[S] N :=
       refine TensorProduct.induction_on x ?_ ?_ ?_
       · rw [smul_zero, map_zero, smul_zero]
       · intro x y
-        -- porting note (#10745): was simp [smul_tmul', Algebra.ofId_apply]
+        -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10745): was simp [smul_tmul', Algebra.ofId_apply]
         simp only [Algebra.linearMap_apply, lift.tmul, smul_eq_mul, LinearMap.mul_apply,
           LinearMap.smul_apply, IsTensorProduct.equiv_apply, Module.algebraMap_end_apply, map_mul,
           smul_tmul', eq_self_iff_true, LinearMap.coe_restrictScalars, LinearMap.flip_apply]
@@ -333,7 +334,7 @@ lemma IsBaseChange.of_comp {f : M →ₗ[R] N} (hf : IsBaseChange S f) {h : N �
   let q : O →ₗ[T] Q := hc.lift r'
   refine ⟨q, ?_, ?_⟩
   · apply hf.algHom_ext'
-    simp [LinearMap.comp_assoc, hc.lift_comp]
+    simp [r', q, LinearMap.comp_assoc, hc.lift_comp]
   · intro q' hq'
     apply hc.algHom_ext'
     apply_fun LinearMap.restrictScalars R at hq'
@@ -389,7 +390,7 @@ theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPus
     (toAlgHom R S S').toLinearMap =
       (e.toLinearMap.restrictScalars R).comp (TensorProduct.mk R R' S 1) := by
     ext
-    simp [h.1.equiv_tmul, Algebra.smul_def]
+    simp [e, h.1.equiv_tmul, Algebra.smul_def]
   constructor
   rw [this]
   exact (TensorProduct.isBaseChange R S R').comp (IsBaseChange.ofEquiv e)

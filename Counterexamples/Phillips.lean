@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.NormedSpace.HahnBanach.Extension
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
-import Mathlib.Topology.ContinuousMap.Bounded
+import Mathlib.Topology.ContinuousMap.Bounded.Star
 
 /-!
 # A counterexample on Pettis integrability
@@ -385,7 +385,7 @@ section
 
 
 theorem norm_indicator_le_one (s : Set α) (x : α) : ‖(indicator s (1 : α → ℝ)) x‖ ≤ 1 := by
-  simp only [indicator, Pi.one_apply]; split_ifs <;> norm_num
+  simp only [Set.indicator, Pi.one_apply]; split_ifs <;> norm_num
 
 /-- A functional in the dual space of bounded functions gives rise to a bounded additive measure,
 by applying the functional to the indicator functions. -/

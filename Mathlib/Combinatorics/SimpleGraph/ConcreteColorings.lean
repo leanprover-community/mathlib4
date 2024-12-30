@@ -5,7 +5,6 @@ Authors: Iván Renison
 -/
 import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Hasse
-import Mathlib.Logic.Equiv.Fin
 
 /-!
 # Concrete colorings of common graphs
