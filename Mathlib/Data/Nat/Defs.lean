@@ -984,9 +984,6 @@ protected lemma lt_div_iff_mul_lt' (hdn : d ∣ n) (a : ℕ) : a < n / d ↔ d *
   · simp [Nat.zero_dvd.1 hdn]
   · rw [← Nat.mul_lt_mul_left hd, ← Nat.eq_mul_of_div_eq_right hdn rfl]
 
-@[deprecated Nat.lt_div_iff_mul_lt' (since := "2024-12-29")]
-protected alias lt_div_iff_mul_lt := Nat.lt_div_iff_mul_lt'
-
 lemma mul_div_eq_iff_dvd {n d : ℕ} : d * (n / d) = n ↔ d ∣ n :=
   calc
     d * (n / d) = n ↔ d * (n / d) = d * (n / d) + (n % d) := by rw [div_add_mod]
