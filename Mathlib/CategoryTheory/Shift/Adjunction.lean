@@ -504,7 +504,7 @@ lemma commShift_of_functor [E.functor.CommShift A] :
     letI := E.commShiftInverse A
     E.CommShift A := by
   letI := E.commShiftInverse A
-  exact CommShift.mk' _ _ (E.toAdjunction.commShift_of_leftAdjoint A).commShift_unit
+  exact CommShift.mk' _ _ (E.toAdjunction.commShift_of_leftAdjoint A).commShift_unit'
 
 /--
 If `E : C ≌ D` is an equivalence and we have a `CommShift` structure on `E.inverse`,
