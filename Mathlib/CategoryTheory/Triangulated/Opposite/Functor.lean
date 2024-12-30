@@ -49,6 +49,7 @@ lemma op_commShiftIso_hom_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0):
   obtain rfl : m = -n := by omega
   rfl
 
+@[reassoc]
 lemma op_commShiftIso_inv_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0):
     (F.op.commShiftIso n).inv.app X =
       (shiftFunctorOpIso D n m h).hom.app (op (F.obj X.unop)) ≫
