@@ -145,7 +145,11 @@ noncomputable def mapTriangleOpCompTriangleOpEquivalenceFunctorApp (T : Triangle
         map_opShiftFunctorEquivalence_counitIso_inv_app_unop,
         opShiftFunctorEquivalence_inverse, opShiftFunctorEquivalence_functor,
         Quiver.Hom.op_unop, assoc, id_comp])
-        
+
+/--
+If `F : C ⥤ D` commutes with shifts, this expresses the compatibility of `F.mapTriangle`
+with the equivalences `Pretriangulated.triangleOpEquivalence` on `C` and `D`.
+-/
 noncomputable def mapTriangleOpCompTriangleOpEquivalenceFunctor :
     F.mapTriangle.op ⋙ (triangleOpEquivalence D).functor ≅
       (triangleOpEquivalence C).functor ⋙ F.op.mapTriangle :=
@@ -154,14 +158,18 @@ noncomputable def mapTriangleOpCompTriangleOpEquivalenceFunctor :
     (by intros; ext <;> dsimp <;> simp only [comp_id, id_comp])
 
 /--
-If `F : C ⥤ D` commutes with shifts, this expresses the compatibility of `F.mapTriangle`
-with the equivalences `Pretriangulated.triangleOpEquivalence` on `C` and `D`.
+If `F : C ⥤ D` commutes with shifts, this is the 2-commutative square of categories
+`CategoryTheory.Functor.mapTriangleOpCompTriangleOpEquivalenceFunctor`.
 -/
 noncomputable instance :
     CatCommSq (F.mapTriangle.op) (triangleOpEquivalence C).functor
       (triangleOpEquivalence D).functor F.op.mapTriangle :=
   ⟨F.mapTriangleOpCompTriangleOpEquivalenceFunctor⟩
 
+/--
+Vertical inverse of the 2-commutative square of
+`CategoryTheory.Functor.mapTriangleOpCompTriangleOpEquivalenceFunctor`.
+-/
 noncomputable instance :
     CatCommSq (F.op.mapTriangle) (triangleOpEquivalence C).inverse
       (triangleOpEquivalence D).inverse F.mapTriangle.op :=
