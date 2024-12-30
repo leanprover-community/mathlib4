@@ -204,8 +204,8 @@ variable {t₀ tmin tmax : ℝ} {ht₀ : t₀ ∈ Icc tmin tmax} {u : Set E} {x 
 
 instance : CoeFun (FunSpace ht₀ u x) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
 
-/-- The constant map -/
-instance (hx : x ∈ u) : Inhabited (FunSpace ht₀ u x) :=
+/-- The constant map. This is not an instance because of the need for the assumption `x ∈ u`. -/
+def inhabited (hx : x ∈ u) : Inhabited (FunSpace ht₀ u x) :=
   ⟨⟨fun _ ↦ x, continuous_const⟩, fun _ _ ↦ hx, rfl⟩
 
 /-- The metric between two curves `α` and `β` is the supremum of the metric between `α t` and `β t`
@@ -228,7 +228,7 @@ lemma range_toContinuousMap : range (fun α : FunSpace ht₀ u x ↦ α.toContin
 -- this is where we need `u` closed, e.g. closedBall
 -- generalise to all closed `u`?
 /-- The space of bounded curves is complete. -/
-instance instCompleteSpace [CompleteSpace E] {x₀ : E} {a : ℝ≥0} :
+instance instCompleteSpace [CompleteSpace E] {x₀ : E} {a : ℝ} :
     CompleteSpace (FunSpace ht₀ (closedBall x₀ a) x) := by
   rw [completeSpace_iff_isComplete_range <| isUniformInducing_toContinuousMap]
   apply IsClosed.isComplete
@@ -463,9 +463,9 @@ lemma exists_funSpace_integrate_eq
     ∃ α : FunSpace ht₀ (closedBall x₀ ((2 * a) : ℝ≥0)) x,
       ODE.FunSpace.integrate ht₀ hlip hcont hnorm hle hx α = α :=
   let ⟨_, _, h⟩ := exists_contractingWith_iterate_integral ht₀ hlip hcont hnorm hle hx
-  have : Inhabited <| FunSpace ht₀ (closedBall x₀ (2 * a)) x := sorry
-  have : CompleteSpace (FunSpace ht₀ (closedBall x₀ (2 * a)) x) :=
-    ODE.FunSpace.instCompleteSpace (a := 2 * a) -- why need this?
+  have : Inhabited <| FunSpace ht₀ (closedBall x₀ (2 * a)) x := inhabited <|
+    mem_of_mem_of_subset hx <| Metric.closedBall_subset_closedBall <|
+    le_mul_of_one_le_left a.2 one_le_two
   ⟨_, h.isFixedPt_fixedPoint_iterate⟩
 
 end FunSpace
