@@ -219,6 +219,9 @@ theorem l_eq_bot {l : α → β} {u : β → α} (gc : GaloisConnection l u) {x}
 theorem l_bot [OrderBot α] {l : α → β} {u : β → α} (gc : GaloisConnection l u) : l ⊥ = ⊥ :=
   gc.dual.u_top
 
+theorem u_l_bot {l : α → β} {u : β → α} (gc : GaloisConnection l u) : l (u ⊥) = ⊥ :=
+  gc.l_eq_bot.mpr le_rfl
+
 end OrderBot
 
 section SemilatticeSup
