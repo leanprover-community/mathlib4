@@ -141,13 +141,13 @@ theorem r_one_zpow (k : ℤ) : (r 1 : DihedralGroup n) ^ k = r k := by
   rcases (le_or_lt 0 k) with pos | neg
   · lift k to ℕ using pos
     simp only [zpow_natCast, r_one_pow, Int.cast_natCast]
-  · have : ∃ l : ℤ, l = -k ∧ k = -l ∧ l ≥ 0 := by
+  · have : ∃ l : ℤ, k = -l ∧ l ≥ 0 := by
       use -k
       simp only [neg_neg, ge_iff_le, Left.nonneg_neg_iff, true_and]
       linarith
     cases' this with l conds
-    rw [conds.2.1]
-    lift l to ℕ using conds.2.2
+    rw [conds.1]
+    lift l to ℕ using conds.2
     simp [r_inv]
 
 -- @[simp] -- Porting note: simp changes the goal to `r 0 = 1`. `r_one_pow_n` is no longer useful.
