@@ -28,8 +28,6 @@ it. We generally put such theorems into the `SetTheory.Cardinal.Finite` module.
 
 noncomputable section
 
-open scoped Classical
-
 variable {α β γ : Type*}
 
 /-- There is (noncomputably) an equivalence between a finite type `α` and `Fin (Nat.card α)`. -/
@@ -42,6 +40,7 @@ def Finite.equivFinOfCardEq [Finite α] {n : ℕ} (h : Nat.card α = n) : α ≃
   subst h
   apply Finite.equivFin
 
+open scoped Classical in
 theorem Nat.card_eq (α : Type*) :
     Nat.card α = if _ : Finite α then @Fintype.card α (Fintype.ofFinite α) else 0 := by
   cases finite_or_infinite α
@@ -93,6 +92,7 @@ theorem card_le_of_embedding [Finite β] (f : α ↪ β) : Nat.card α ≤ Nat.c
 
 theorem card_le_of_surjective [Finite α] (f : α → β) (hf : Function.Surjective f) :
     Nat.card β ≤ Nat.card α := by
+  classical
   haveI := Fintype.ofFinite α
   haveI := Fintype.ofSurjective f hf
   simpa only [Nat.card_eq_fintype_card] using Fintype.card_le_of_surjective f hf
@@ -152,11 +152,13 @@ theorem card_range_le [Finite α] (f : α → β) : Nat.card (Set.range f) ≤ N
   card_le_of_surjective _ Set.surjective_onto_range
 
 theorem card_subtype_le [Finite α] (p : α → Prop) : Nat.card { x // p x } ≤ Nat.card α := by
+  classical
   haveI := Fintype.ofFinite α
   simpa only [Nat.card_eq_fintype_card] using Fintype.card_subtype_le p
 
 theorem card_subtype_lt [Finite α] {p : α → Prop} {x : α} (hx : ¬p x) :
     Nat.card { x // p x } < Nat.card α := by
+  classical
   haveI := Fintype.ofFinite α
   simpa only [Nat.card_eq_fintype_card, gt_iff_lt] using Fintype.card_subtype_lt hx
 

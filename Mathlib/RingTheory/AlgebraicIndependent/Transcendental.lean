@@ -25,8 +25,6 @@ noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
 
-open scoped Classical
-
 variable {ι R A : Type*} {x : ι → A}
 variable [CommRing R] [CommRing A] [Algebra R A]
 
