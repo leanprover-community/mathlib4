@@ -192,7 +192,7 @@ lemma isTriangulated_op [F.IsTriangulated] : F.op.IsTriangulated where
   map_distinguished T dT := by
     rw [mem_distTriang_op_iff]
     exact Pretriangulated.isomorphic_distinguished _
-      ((F.map_distinguished _ (unop_distinguished _ dT))) _ 
+      ((F.map_distinguished _ (unop_distinguished _ dT))) _
       (((opMapTriangleCompTriangleOpEquivalenceInverse F).symm.app T).unop)
 
 /-- If `F.op` is triangulated, so is `F`.
@@ -203,7 +203,8 @@ lemma isTriangulated_of_op [F.op.IsTriangulated] : F.IsTriangulated where
       (Opposite.op (F.mapTriangle.obj T))).unop
     rw [Functor.id_obj, Opposite.unop_op (F.mapTriangle.obj T)] at this
     rw [← this, Functor.comp_obj, ← mem_distTriang_op_iff, ← Functor.op_obj, ← Functor.comp_obj,
-      distinguished_iff_of_iso ((triangleOpEquivalence_functor_naturality F).app (Opposite.op T))]
+      distinguished_iff_of_iso ((mapTriangleOpCompTriangleOpEquivalenceFunctor F).app
+      (Opposite.op T))]
     apply F.op.map_distinguished
     have := distinguished_iff_of_iso ((triangleOpEquivalence C).unitIso.app (Opposite.op T)).unop
     rw [Functor.id_obj, Opposite.unop_op T] at this
