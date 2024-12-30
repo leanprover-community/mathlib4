@@ -157,16 +157,26 @@ noncomputable def mapTriangleOpCompTriangleOpEquivalenceFunctor :
 If `F : C ⥤ D` commutes with shifts, this expresses the compatibility of `F.mapTriangle`
 with the equivalences `Pretriangulated.triangleOpEquivalence` on `C` and `D`.
 -/
-noncomputable def triangleOpEquivalence_inverse_naturality :
+noncomputable instance :
+    CatCommSq (F.mapTriangle.op) (triangleOpEquivalence C).functor
+      (triangleOpEquivalence D).functor F.op.mapTriangle :=
+  ⟨F.mapTriangleOpCompTriangleOpEquivalenceFunctor⟩
+
+noncomputable instance :
+    CatCommSq (F.op.mapTriangle) (triangleOpEquivalence C).inverse
+      (triangleOpEquivalence D).inverse F.mapTriangle.op :=
+  CatCommSq.vInv (F.mapTriangle.op) (triangleOpEquivalence C)
+      (triangleOpEquivalence D) F.op.mapTriangle inferInstance
+
+/--
+If `F : C ⥤ D` commutes with shifts, this expresses the compatibility of `F.mapTriangle`
+with the equivalences `Pretriangulated.triangleOpEquivalence` on `C` and `D`.
+-/
+noncomputable def opMapTriangleCompTriangleOpEquivalenceInverse :
     F.op.mapTriangle ⋙ (triangleOpEquivalence D).inverse ≅
       (triangleOpEquivalence C).inverse ⋙ F.mapTriangle.op :=
-  (Functor.leftUnitor _).symm ≪≫ isoWhiskerRight (triangleOpEquivalence C).counitIso.symm _
-  ≪≫ Functor.associator _ _ _ ≪≫ isoWhiskerLeft (triangleOpEquivalence C).inverse
-  (Functor.associator _ _ _).symm ≪≫ isoWhiskerLeft _ (isoWhiskerRight
-  (triangleOpEquivalence_functor_naturality F).symm _) ≪≫ isoWhiskerLeft
-  (triangleOpEquivalence C).inverse (Functor.associator _ _ _) ≪≫ isoWhiskerLeft
-  (triangleOpEquivalence C).inverse (isoWhiskerLeft _ (triangleOpEquivalence D).unitIso.symm) ≪≫
-  isoWhiskerLeft _ (Functor.rightUnitor _)
+  CatCommSq.iso (F.op.mapTriangle) (triangleOpEquivalence C).inverse
+      (triangleOpEquivalence D).inverse F.mapTriangle.op
 
 /-- If `F` is triangulated, so is `F.op`.
 -/
