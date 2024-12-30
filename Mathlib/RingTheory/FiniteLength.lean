@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Junyan Xu
 -/
 import Mathlib.RingTheory.Artinian.Module
+import Mathlib.RingTheory.SimpleModule
 
 /-!
 # Modules of finite length

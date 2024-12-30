@@ -8,6 +8,7 @@ import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.Nakayama
 import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
+import Mathlib.RingTheory.Noetherian.Basic
 
 /-!
 # Regular sequences and weakly regular sequences
