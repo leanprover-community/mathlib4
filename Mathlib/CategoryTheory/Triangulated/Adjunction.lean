@@ -45,7 +45,7 @@ lemma isTriangulated_rightAdjoint : G.IsTriangulated where
       (F.map_distinguished _ mem) hT (adj.counit.app T.obj₁) (adj.counit.app T.obj₂) (by simp)
     dsimp at h h₁ h₂ ⊢
     have h₁' : f ≫ adj.unit.app Z ≫ G.map h = G.map T.mor₂ := by
-      simpa [homEquiv_apply] using congr_arg (adj.homEquiv _ _).toFun h₁
+      simpa [homEquiv_apply] using DFunLike.congr_arg (adj.homEquiv _ _) h₁
     have h₂' : g ≫ (G.commShiftIso (1 : ℤ)).inv.app T.obj₁ =
         (adj.homEquiv _ _ h) ≫ G.map T.mor₃ := by
       apply (adj.homEquiv _ _).symm.injective
