@@ -2207,6 +2207,7 @@ import Mathlib.CategoryTheory.Triangulated.Basic
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Triangulated.HomologicalFunctor
 import Mathlib.CategoryTheory.Triangulated.Opposite.Basic
+import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
 import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
 import Mathlib.CategoryTheory.Triangulated.Opposite.Triangle
 import Mathlib.CategoryTheory.Triangulated.Pretriangulated
