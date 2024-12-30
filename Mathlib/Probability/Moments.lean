@@ -3,8 +3,8 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Variance
 import Mathlib.Probability.IdentDistrib
+import Mathlib.Probability.Variance
 
 /-!
 # Moments and moment generating function
@@ -286,20 +286,21 @@ theorem iIndepFun.cgf_sum {X : ι → Ω → ℝ}
   · rw [h_indep.mgf_sum h_meas]
   · exact (mgf_pos (h_int j hj)).ne'
 
-theorem mgf_congr_identDistrib
+theorem mgf_congr_of_identDistrib
     (X : Ω → ℝ) {Ω' : Type*} {m' : MeasurableSpace Ω'} {μ' : Measure Ω'} (X' : Ω' → ℝ)
     (hident : IdentDistrib X X' μ μ') (t : ℝ) :
     mgf X μ t = mgf X' μ' t := hident.comp (measurable_const_mul t).exp |>.integral_eq
 
 theorem mgf_sum_of_identDistrib
     {X : ι → Ω → ℝ}
-    (h_meas : ∀ (i : ι), Measurable (X i))
-    (h_indep : ProbabilityTheory.iIndepFun (fun _ => inferInstance) X μ)
-    (s : Finset ι) (j : s)
-    (hident : ∀ (i j : s), ProbabilityTheory.IdentDistrib (X i) (X j) μ μ)
-    (t : ℝ) : mgf (∑ i ∈ s, X i) μ t = (mgf (X j) μ (t)) ^ s.card := by
+    {s : Finset ι} {j : ι}
+    (h_meas : ∀ i, Measurable (X i))
+    (h_indep : iIndepFun (fun _ => inferInstance) X μ)
+    (hident : ∀ i ∈ s, ∀ j ∈ s, IdentDistrib (X i) (X j) μ μ)
+    (hj : j ∈ s) (t : ℝ) : mgf (∑ i ∈ s, X i) μ t = mgf (X j) μ t ^ #s := by
   rw [iIndepFun.mgf_sum h_indep h_meas]
-  exact Finset.prod_eq_pow_card fun i si => mgf_congr_identDistrib (X i) (X j) (hident ⟨i,si⟩ j) t
+  exact Finset.prod_eq_pow_card fun i hi =>
+    mgf_congr_of_identDistrib (X i) (X j) (hident i hi j hj) t
 
 /-- **Chernoff bound** on the upper tail of a real random variable. -/
 theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
