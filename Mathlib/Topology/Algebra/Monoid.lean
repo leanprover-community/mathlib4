@@ -531,7 +531,7 @@ section GroupWithZero
 lemma GroupWithZero.isOpen_singleton_zero [GroupWithZero M] [TopologicalSpace M]
     [ContinuousMul M] [CompactSpace M] [T1Space M] :
     IsOpen {(0 : M)} := by
-  obtain ⟨U, hU, h0U, h1U⟩ := t1Space_iff_exists_open.mp (inferInstanceAs (T1Space M)) zero_ne_one
+  obtain ⟨U, hU, h0U, h1U⟩ := t1Space_iff_exists_open.mp ‹_› zero_ne_one
   obtain ⟨W, hW, hW'⟩ := exists_mem_nhds_zero_mul_subset isCompact_univ (hU.mem_nhds h0U)
   by_cases H : ∃ x ≠ 0, x ∈ W
   · obtain ⟨x, hx, hxW⟩ := H
