@@ -133,7 +133,7 @@ variable (p q)
 /-- Idempotent corresponding to a complemented subspace. -/
 def idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : E →L[𝕜] E :=
-  Submodule.subtypeL p ∘L (linearProjOfClosedCompl p q h hp hq)
+  p.subtypeL ∘L p.linearProjOfClosedCompl q h hp hq
 
 variable {p q}
 
