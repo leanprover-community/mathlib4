@@ -319,8 +319,9 @@ instance isIso_coprodComparison_tensorLeft_of_endofunctors {X Y Z : C ⥤ C} :
       aesop
 
 /-- The monoidal structure on the category of endofunctors is left distributive. -/
-instance isMonoidalLeftDistrib_of_endofunctors : IsMonoidalLeftDistrib (C ⥤ C) :=
-  IsMonoidalLeftDistrib.of_isIso_coprodComparisonTensorLeft
+instance isMonoidalLeftDistrib_of_endofunctors : IsMonoidalLeftDistrib (C ⥤ C) where
+  preservesBinaryCoproducts_tensorLeft F :=
+    inferInstanceAs (PreservesColimitsOfShape _ ((whiskeringLeft C C C).obj F))
 
 end Endofunctors
 
