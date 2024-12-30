@@ -212,6 +212,30 @@ lemma range_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E)
   · intro hx
     exact LinearMap.mem_range.mp ⟨x,(mem_iff_invariant_ofClosedCompl h hp hq).mp hx⟩
 
+omit [CompleteSpace E] in
+lemma range_ker {P : E →L[𝕜] E} (h : IsIdempotentElem P) : range P = ker (1 - P) := by
+  ext x
+  constructor
+  · intro h
+    obtain ⟨y,hy⟩ := h
+    rw [← hy]
+    rw [ker]
+    simp
+    rw [sub_eq_zero]
+    rw [IsIdempotentElem] at h
+    conv_lhs => rw [← h]
+    simp only [ContinuousLinearMap.coe_mul, Function.comp_apply]
+  · intro h
+    simp
+    use x
+    simp at h
+    rw [sub_eq_zero] at h
+    rw [← h]
+
+omit [CompleteSpace E] in
+lemma ker_range {P : E →L[𝕜] E} (h : IsIdempotentElem P) : ker P = range (1 - P) := by
+  rw [(range_ker (IsIdempotentElem.one_sub h)), sub_sub_cancel]
+
 lemma ker_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
     let P := idempotentOfClosedCompl p q h hp hq
@@ -244,5 +268,8 @@ lemma range_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p :
     simp only [LinearMap.mem_range, ContinuousLinearMap.coe_sub', Pi.sub_apply,
       ContinuousLinearMap.one_apply]
     exact ⟨x, by rw [((mem_iff_zero_ofClosedCompl h hp hq).mp hx), sub_zero]⟩
+
+
+
 
 end Submodule
