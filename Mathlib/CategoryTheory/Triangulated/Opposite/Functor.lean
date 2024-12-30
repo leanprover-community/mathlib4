@@ -87,20 +87,16 @@ lemma map_opShiftFunctorEquivalence_unitIso_hom_app_unop (X : Cᵒᵖ) (n : ℤ)
   dsimp
   rw [map_id, id_comp]
 
-lemma map_opShiftFunctorEquivalence_unit_inv_app (F : C ⥤ D) [F.CommShift ℤ] (X : Cᵒᵖ) (n : ℤ) :
-    F.op.map ((opShiftFunctorEquivalence C n).unitIso.inv.app X) = ((F.commShiftIso n).inv.app _).op
-      ≫ (shiftFunctor D n).op.map (((F.op).commShiftIso n).hom.app X) ≫
-        (opShiftFunctorEquivalence D n).unitIso.inv.app (F.op.obj X) := by
-  simp only [opShiftFunctorEquivalence, comp_obj, op_obj, id_obj, Iso.trans_inv,
-    isoWhiskerRight_inv, Iso.symm_inv, NatIso.op_inv, NatTrans.comp_app, whiskerRight_app, op_map,
-    NatTrans.op_app, unop_comp, Quiver.Hom.unop_op, map_comp, map_shiftFunctorCompIsoId_inv_app,
-    assoc, op_comp, F.op_commShiftIso_hom_app _ _ _ (add_neg_cancel n)]
-  slice_rhs 4 5 => rw [← op_comp, ← Functor.map_comp, ← unop_comp, Iso.inv_hom_id_app]
-  simp only [op_obj, unop_id, map_id, op_id, id_comp]
-  slice_rhs 1 2 => rw [← op_comp]
-                   change ((F ⋙ shiftFunctor D n).map ((shiftFunctorOpIso C _ _
-                     (add_neg_cancel n)).hom.app X).unop ≫ (F.commShiftIso n).inv.app _).op
-                   rw [(F.commShiftIso n).inv.naturality]
+@[reassoc]
+lemma map_opShiftFunctorEquivalence_unitIso_inv_app_unop (X : Cᵒᵖ) (n : ℤ) :
+    F.map ((opShiftFunctorEquivalence C n).unitIso.inv.app X).unop =
+      ((opShiftFunctorEquivalence D n).unitIso.inv.app (op (F.obj X.unop))).unop ≫
+        (((F.op).commShiftIso n).hom.app X).unop⟦n⟧' ≫
+        ((F.commShiftIso n).inv.app _) := by
+  rw [← cancel_mono (F.map ((opShiftFunctorEquivalence C n).unitIso.hom.app X).unop),
+    ← F.map_comp, ← unop_comp, Iso.hom_inv_id_app,
+    map_opShiftFunctorEquivalence_unitIso_hom_app_unop, assoc, assoc,
+    Iso.inv_hom_id_app_assoc, ← Functor.map_comp_assoc, ← unop_comp]
   simp
 
 @[reassoc]
