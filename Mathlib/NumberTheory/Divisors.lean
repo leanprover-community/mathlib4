@@ -203,7 +203,7 @@ lemma one_lt_of_mem_properDivisors {m n : ℕ} (h : m ∈ n.properDivisors) : 1 
 lemma one_lt_div_of_mem_properDivisors {m n : ℕ} (h : m ∈ n.properDivisors) :
     1 < n / m := by
   obtain ⟨h_dvd, h_lt⟩ := mem_properDivisors.mp h
-  rwa [Nat.lt_div_iff_mul_lt h_dvd, mul_one]
+  rwa [Nat.lt_div_iff_mul_lt' h_dvd, mul_one]
 
 /-- See also `Nat.mem_properDivisors`. -/
 lemma mem_properDivisors_iff_exists {m n : ℕ} (hn : n ≠ 0) :
