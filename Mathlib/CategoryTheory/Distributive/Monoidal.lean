@@ -210,7 +210,6 @@ variable [IsMonoidalRightDistrib C]
 
 /-- The forward direction of the right distributivity isomorphism is equal to the cogap morphism
 `coprod.desc (coprod.inl ▷ _) (coprod.inr ▷ _) : (Y ⊗ X) ⨿ (Z ⊗ X) ⟶ (Y ⨿ Z) ⊗ X`. -/
-@[simp]
 lemma rightDistrib_hom {X Y Z : C} :
   (∂R X Y Z).hom = coprod.desc (coprod.inl ▷ _) (coprod.inr ▷ _) := by rfl
 
@@ -265,7 +264,7 @@ lemma SymmetricCategory.rightDistrib_braiding [SymmetricCategory C] {X Y Z : C} 
 instance SymmetricCategory.isMonoidalRightDistrib_of_isMonoidalLeftDistrib
     [SymmetricCategory C] [IsMonoidalLeftDistrib C] : IsMonoidalRightDistrib C where
   preservesBinaryCoproducts_tensorRight X :=
-    preservesColimitsOfShape_of_natIso (SymmetricCategory.tensorLeftIsoTensorRight X)
+    preservesColimitsOfShape_of_natIso (BraidedCategory.tensorLeftIsoTensorRight X)
 
 /-- A left distributive symmetric monoidal category is distributive. -/
 instance SymmetricCategory.isMonoidalDistrib_of_isMonoidalLeftDistrib
@@ -278,8 +277,8 @@ lemma SymmetricCategory.rightDistrib_of_leftDistrib
     [SymmetricCategory C] [IsMonoidalLeftDistrib C] {X Y Z : C} :
     ∂R X Y Z = (coprod.mapIso (β_ Y X) (β_ Z X)) ≪≫ (∂L X Y Z) ≪≫ (β_ X (Y ⨿ Z)) := by
   ext
-  · simp
-  · simp
+  · simp [leftDistrib_hom, rightDistrib_hom]
+  · simp [leftDistrib_hom, rightDistrib_hom]
 
 /-- A closed monoidal category is left distributive. -/
 instance MonoidalClosed.isMonoidalLeftDistrib [MonoidalClosed C] :
@@ -302,6 +301,8 @@ lemma MonoidalClosed.leftDistrib_inv [MonoidalClosed C] {X Y Z : C} :
   · rw [← MonoidalClosed.curry_natural_left, whiskerLeft_coprod_inl_leftDistrib_inv]
   · rw [← MonoidalClosed.curry_natural_left, whiskerLeft_coprod_inr_leftDistrib_inv]
 
+section Endofunctors
+
 attribute [local instance] endofunctorMonoidalCategory
 
 instance isIso_coprodComparison_tensorLeft_of_endofunctors {X Y Z : C ⥤ C} :
@@ -320,5 +321,7 @@ instance isIso_coprodComparison_tensorLeft_of_endofunctors {X Y Z : C ⥤ C} :
 /-- The monoidal structure on the category of endofunctors is left distributive. -/
 instance isMonoidalLeftDistrib_of_endofunctors : IsMonoidalLeftDistrib (C ⥤ C) :=
   IsMonoidalLeftDistrib.of_isIso_coprodComparisonTensorLeft
+
+end Endofunctors
 
 end CategoryTheory
