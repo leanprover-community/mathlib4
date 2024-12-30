@@ -352,24 +352,24 @@ open Measurable Real
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {p : Measure Ω} {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
 
-lemma mgf_dirac (hX : Measure.map X p = Measure.dirac μ) (t : ℝ) : mgf X p t = exp (μ * t) := by
+lemma mgf_dirac (hX : p.map X = .dirac μ) (t : ℝ) : mgf X p t = exp (μ * t) := by
   rw [← mgf_id_map, mgf, hX, integral_dirac, mul_comm]
   · rfl
-  · apply Measure.aemeasurable_of_map_ne_zero
+  · apply AEMeasurable.of_map_ne_zero
     rw [hX]
-    exact IsProbabilityMeasure.ne_zero (Measure.dirac μ)
+    exact IsProbabilityMeasure.ne_zero (.dirac μ)
 
-theorem mgf_gaussianReal (hX : Measure.map X p = gaussianReal μ v) (t : ℝ) :
+theorem mgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
     mgf X p t = exp (μ * t + v * t ^ 2 / 2) := by
   by_cases hv : v = 0
   · simp only [gaussianReal, hv, ↓reduceIte] at hX
     rw [mgf_dirac hX, hv]
     simp only [NNReal.coe_zero, zero_mul, zero_div, add_zero]
   · calc
-    mgf X p t = (Measure.map X p)[fun x => exp (t * x)] := by
+    mgf X p t = (p.map X)[fun x => exp (t * x)] := by
       rw [← mgf_id_map, mgf]
       · rfl
-      · apply Measure.aemeasurable_of_map_ne_zero
+      · apply AEMeasurable.of_map_ne_zero
         rw [hX]
         exact IsProbabilityMeasure.ne_zero (gaussianReal μ v)
     _ = ∫ x, exp (t * x) * gaussianPDFReal μ v x := by
@@ -390,7 +390,7 @@ theorem mgf_gaussianReal (hX : Measure.map X p = gaussianReal μ v) (t : ℝ) :
     _ = exp (μ * t + v * t ^ 2 / 2) := by
       rw [integral_gaussianPDFReal_eq_one (μ + v * t) hv, mul_one]
 
-theorem cgf_gaussianReal (hX : Measure.map X p = gaussianReal μ v) (t : ℝ) :
+theorem cgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
     cgf X p t = μ * t + v * t ^ 2 / 2 := by
   rw [cgf, mgf_gaussianReal hX t, log_exp]
 
