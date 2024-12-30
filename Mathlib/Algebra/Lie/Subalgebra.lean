@@ -194,9 +194,11 @@ theorem to_submodule_injective : Function.Injective ((↑) : LieSubalgebra R L �
   exact h
 
 @[simp]
-theorem coe_to_submodule_eq_iff (L₁' L₂' : LieSubalgebra R L) :
+theorem coe_to_submodule_inj (L₁' L₂' : LieSubalgebra R L) :
     (L₁' : Submodule R L) = (L₂' : Submodule R L) ↔ L₁' = L₂' :=
   to_submodule_injective.eq_iff
+
+@[deprecated (since := "2024-12-29")] alias coe_to_submodule_eq_iff := coe_to_submodule_inj
 
 theorem coe_to_submodule : ((L' : Submodule R L) : Set L) = L' :=
   rfl
@@ -327,7 +329,7 @@ variable (K K' : LieSubalgebra R L) (K₂ : LieSubalgebra R L₂)
 
 @[simp]
 theorem incl_range : K.incl.range = K := by
-  rw [← coe_to_submodule_eq_iff]
+  rw [← coe_to_submodule_inj]
   exact (K : Submodule R L).range_subtype
 
 /-- The image of a Lie subalgebra under a Lie algebra morphism is a Lie subalgebra of the
@@ -623,7 +625,7 @@ theorem coe_lieSpan_submodule_eq_iff {p : Submodule R L} :
   · intro x m hm
     rw [← h, mem_coe_submodule]
     exact lie_mem _ (subset_lieSpan hm)
-  · rw [← coe_to_submodule_mk p @h, coe_to_submodule, coe_to_submodule_eq_iff, lieSpan_eq]
+  · rw [← coe_to_submodule_mk p @h, coe_to_submodule, coe_to_submodule_inj, lieSpan_eq]
 
 variable (R L)
 
