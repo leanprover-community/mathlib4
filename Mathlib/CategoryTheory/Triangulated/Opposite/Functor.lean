@@ -213,8 +213,8 @@ lemma isTriangulated_of_op [F.op.IsTriangulated] : F.IsTriangulated where
 
 /-- `F` is triangulated if and only if `F.op` is triangulated.
 -/
-lemma isTriangulated_iff_op : F.IsTriangulated ↔ F.op.IsTriangulated :=
-  ⟨fun _ ↦ F.isTriangulated_op, fun _ ↦ F.isTriangulated_of_op⟩
+lemma op_isTriangulated_iff : F.op.IsTriangulated ↔ F.IsTriangulated :=
+  ⟨fun _ ↦ F.isTriangulated_of_op, fun _ ↦ F.isTriangulated_op⟩
 
 end Functor
 
