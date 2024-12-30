@@ -108,6 +108,16 @@ def IsLsummand.compl {L : AddSubgroup G} (h : IsLsummand G L) : AddSubgroup G wh
     intro z hz y hy
     rw [← norm_neg, neg_add, neg_neg, (hz _ (AddSubgroup.neg_mem L hy)), norm_neg]
 
+lemma IsLsummand.Lnorm {L : AddSubgroup G} (h : IsLsummand G L)
+    {x y : G} (hx : x ∈ L) (hy : y ∈ h.compl) : ‖x‖ + ‖y‖ = ‖x + y‖ := by
+  rw [hy x hx]
+
+lemma IsLsummand.sup_top {L : AddSubgroup G} (h : IsLsummand G L) : L ⊔ h.compl = ⊤ := by
+  obtain ⟨K, ⟨hK₁, hK₂⟩⟩ := h.compl'
+  rw [compl]
+  simp_rw [← unique_Lcomplement G L K hK₁ hK₂]
+  exact hK₁
+
 /-- A shorthand for the type of L-projections. -/
 abbrev Lsummands : Type _ := { f : AddSubgroup G // IsLsummand G f }
 
@@ -137,6 +147,30 @@ instance : Bot (Lsummands G) where
 
 instance : Top (Lsummands G) where
   top := ⟨⊤,⟨⟨⊥,by simp_all⟩⟩⟩
+
+lemma Lsummand.IsCompl {L : AddSubgroup G} (h : IsLsummand G L) : IsCompl L h.compl where
+  disjoint := by
+    rw [Disjoint]
+    intro K hKL hK
+    intro x hx
+    simp
+    have e1 : ‖x + (-x)‖ = ‖x‖ + ‖-x‖ := by
+      rw [h.Lnorm]
+      exact hKL hx
+      exact AddSubgroup.neg_mem (IsLsummand.compl G h) (hK hx)
+    have e2 : ‖x‖ + ‖-x‖ = 0 := by
+      rw [← e1, add_neg_cancel, norm_zero]
+    have e3 : 2•‖x‖ = 0 := calc
+      2•‖x‖ = ‖x‖ + ‖-x‖ := by rw [two_smul, ← norm_neg]
+      _ = 0 := by rw [← e1, add_neg_cancel, norm_zero]
+    simp at e3
+    exact e3
+  codisjoint := by
+    rw [Codisjoint]
+    intro K hKL hK
+    rw [← h.sup_top]
+    simp_all only [sup_le_iff, and_self]
+
 
 -- This is almost what we want...
 --#check Submodule.linearProjOfClosedCompl
