@@ -173,7 +173,7 @@ instance topCat_hasColimits : HasColimits TopCat.{u} :=
   TopCat.topCat_hasColimitsOfSize.{u, u}
 
 instance forget_preservesColimitsOfSize :
-    PreservesColimitsOfSize.{v, v} (forget : TopCat.{max u v} ⥤ _) where
+    PreservesColimitsOfSize.{w, v} (forget : TopCat.{max u v} ⥤ _) where
   preservesColimitsOfShape :=
     { preservesColimit := fun {F} =>
         preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F)
