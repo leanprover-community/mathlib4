@@ -736,6 +736,7 @@ lemma Module.annihilator_eq_bot {R M} [Ring R] [AddCommGroup M] [Module R M] :
     exact H (Module.mem_annihilator (r := r - s).mpr
       (by simp only [sub_smul, H', sub_self, implies_true]))
   · exact @H a 0 (by simp [Module.mem_annihilator.mp ha])
+
 namespace Submodule
 
 /-- `N.annihilator` is the ideal of all elements `r : R` such that `r • N = 0`. -/
