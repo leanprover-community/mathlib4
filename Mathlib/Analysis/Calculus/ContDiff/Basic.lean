@@ -40,7 +40,7 @@ open scoped NNReal Nat ContDiff
 universe u uE uF uG
 
 attribute [local instance 1001]
-  NormedAddCommGroup.toAddCommGroup NormedSpace.toModule' AddCommGroup.toAddCommMonoid
+  NormedAddCommGroup.toAddCommGroup AddCommGroup.toAddCommMonoid
 
 open Set Fin Filter Function
 
