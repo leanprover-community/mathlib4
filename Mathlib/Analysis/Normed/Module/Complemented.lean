@@ -202,15 +202,8 @@ lemma range_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E)
     let P := idempotentOfClosedCompl p q h hp hq
     range P = p := by
   ext x
-  constructor
-  · rw [idempotentOfClosedCompl]
-    intro hx
-    simp at hx
-    obtain ⟨y, hy⟩ := hx
-    rw [← hy]
-    exact coe_mem ((linearProjOfIsCompl p q h) y)
-  · intro hx
-    exact LinearMap.mem_range.mp ⟨x,(mem_iff_invariant_ofClosedCompl h hp hq).mp hx⟩
+  exact ⟨fun ⟨y, hy⟩ => by simp [idempotentOfClosedCompl, ← hy],
+    fun hx => LinearMap.mem_range.mp ⟨x,(mem_iff_invariant_ofClosedCompl h hp hq).mp hx⟩⟩
 
 omit [CompleteSpace E] in
 lemma ker_id_sub_eq_range {P : E →L[𝕜] E} (h : IsIdempotentElem P) : ker (1 - P) = range P := by
