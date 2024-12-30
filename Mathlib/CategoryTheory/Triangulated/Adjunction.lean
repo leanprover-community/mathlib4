@@ -40,11 +40,10 @@ The right adjoint of a triangulated functor is triangulated.
 lemma isTriangulated_rightAdjoint : G.IsTriangulated where
   map_distinguished T hT := by
     have : G.Additive := adj.right_adjoint_additive
-    dsimp
     obtain ⟨Z, f, g, mem⟩ := distinguished_cocone_triangle (G.map T.mor₁)
     obtain ⟨h, ⟨h₁, h₂⟩⟩ := complete_distinguished_triangle_morphism _ _
       (F.map_distinguished _ mem) hT (adj.counit.app T.obj₁) (adj.counit.app T.obj₂) (by simp)
-    dsimp at h h₁ h₂
+    dsimp at h h₁ h₂ ⊢
     have h₁' : f ≫ adj.unit.app Z ≫ G.map h = G.map T.mor₂ := by
       simpa [homEquiv_apply] using congr_arg (adj.homEquiv _ _).toFun h₁
     have h₂' : g ≫ (G.commShiftIso (1 : ℤ)).inv.app T.obj₁ =
