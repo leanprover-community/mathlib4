@@ -8,7 +8,7 @@ import Mathlib.Order.SuccPred.Limit
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.Limits.Constructions.EventuallyConstant
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.CategoryTheory.MorphismProperty.Limits
+import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
 # Classes of morphisms that are stable under transfinite composition
