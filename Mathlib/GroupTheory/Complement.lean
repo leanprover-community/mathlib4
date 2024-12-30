@@ -258,10 +258,10 @@ lemma exists_left_transversal (H : Subgroup G) (g : G) :
   classical
     refine
       ⟨Set.range (Function.update Quotient.out _ g), range_mem_leftTransversals fun q => ?_,
-        Quotient.mk'' g, Function.update_same (Quotient.mk'' g) g Quotient.out⟩
+        Quotient.mk'' g, Function.update_self (Quotient.mk'' g) g Quotient.out⟩
     by_cases hq : q = Quotient.mk'' g
-    · exact hq.symm ▸ congr_arg _ (Function.update_same (Quotient.mk'' g) g Quotient.out)
-    · refine (Function.update_noteq ?_ g Quotient.out) ▸ q.out_eq'
+    · exact hq.symm ▸ congr_arg _ (Function.update_self (Quotient.mk'' g) g Quotient.out)
+    · refine (Function.update_of_ne ?_ g Quotient.out) ▸ q.out_eq'
       exact hq
 
 @[to_additive]
@@ -270,10 +270,10 @@ lemma exists_right_transversal (H : Subgroup G) (g : G) :
   classical
     refine
       ⟨Set.range (Function.update Quotient.out _ g), range_mem_rightTransversals fun q => ?_,
-        Quotient.mk'' g, Function.update_same (Quotient.mk'' g) g Quotient.out⟩
+        Quotient.mk'' g, Function.update_self (Quotient.mk'' g) g Quotient.out⟩
     by_cases hq : q = Quotient.mk'' g
-    · exact hq.symm ▸ congr_arg _ (Function.update_same (Quotient.mk'' g) g Quotient.out)
-    · exact Eq.trans (congr_arg _ (Function.update_noteq hq g Quotient.out)) q.out_eq'
+    · exact hq.symm ▸ congr_arg _ (Function.update_self (Quotient.mk'' g) g Quotient.out)
+    · exact Eq.trans (congr_arg _ (Function.update_of_ne hq g Quotient.out)) q.out_eq'
 
 /-- Given two subgroups `H' ⊆ H`, there exists a left transversal to `H'` inside `H`. -/
 @[to_additive "Given two subgroups `H' ⊆ H`, there exists a transversal to `H'` inside `H`"]
@@ -612,6 +612,14 @@ theorem IsComplement'.disjoint (h : IsComplement' H K) : Disjoint H K :=
 
 theorem IsComplement'.index_eq_card (h : IsComplement' H K) : K.index = Nat.card H :=
   (card_left_transversal h).symm
+
+/-- If `H` and `K` are complementary with `K` normal, then `G ⧸ K` is isomorphic to `H`. -/
+@[simps!]
+noncomputable def IsComplement'.QuotientMulEquiv [K.Normal] (h : H.IsComplement' K) :
+    G ⧸ K ≃* H :=
+  MulEquiv.symm
+  { (MemLeftTransversals.toEquiv h).symm with
+    map_mul' := fun _ _ ↦ rfl }
 
 theorem IsComplement.card_mul (h : IsComplement S T) :
     Nat.card S * Nat.card T = Nat.card G :=

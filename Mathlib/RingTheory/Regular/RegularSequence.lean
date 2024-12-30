@@ -6,7 +6,7 @@ Authors: Brendan Murphy
 import Mathlib.RingTheory.Regular.IsSMulRegular
 import Mathlib.RingTheory.Artinian
 import Mathlib.RingTheory.Nakayama
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 
 /-!
