@@ -134,6 +134,22 @@ theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
     norm_cast
     rw [Nat.one_add]
 
+theorem r_inv (i : ZMod n) : (r i)⁻¹ = r (-i) := by
+  rfl
+
+theorem r_one_zpow (k : ℤ) : (r 1 : DihedralGroup n) ^ k = r k := by
+  rcases (le_or_lt 0 k) with pos | neg
+  · lift k to ℕ using pos
+    simp only [zpow_natCast, r_one_pow, Int.cast_natCast]
+  · have : ∃ l : ℤ, l = -k ∧ k = -l ∧ l ≥ 0 := by
+      use -k
+      simp only [neg_neg, ge_iff_le, Left.nonneg_neg_iff, true_and]
+      linarith
+    cases' this with l conds
+    rw [conds.2.1]
+    lift l to ℕ using conds.2.2
+    simp [r_inv]
+
 -- @[simp] -- Porting note: simp changes the goal to `r 0 = 1`. `r_one_pow_n` is no longer useful.
 theorem r_one_pow_n : r (1 : ZMod n) ^ n = 1 := by
   rw [r_one_pow, one_def]
