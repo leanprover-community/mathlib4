@@ -79,8 +79,7 @@ lemma isTriangulated_rightAdjoint : G.IsTriangulated where
         obtain ⟨ψ, hψ⟩ := Triangle.coyoneda_exact₁ _ mem (φ ≫ G.map T.mor₃ ≫
           (G.commShiftIso (1 : ℤ)).hom.app T.obj₁) (by
             dsimp
-            simp only [assoc]
-            rw [← G.commShiftIso_hom_naturality, ← G.map_comp_assoc,
+            rw [assoc, assoc, ← G.commShiftIso_hom_naturality, ← G.map_comp_assoc,
               comp_distTriang_mor_zero₃₁ _ hT, G.map_zero, zero_comp, comp_zero])
         dsimp at ψ hψ
         obtain ⟨α, hα⟩ : ∃ α, α = φ - ψ ≫ (adj.homEquiv _ _) h := ⟨_, rfl⟩
