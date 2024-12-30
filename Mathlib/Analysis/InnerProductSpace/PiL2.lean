@@ -119,7 +119,7 @@ macro_rules | `(!$p:subscript[$e:term,*]) => do
 
 set_option trace.debug true in
 /-- Unexpander for the `!₂[x, y, ...]` notation. -/
-@[delab app.DFunLike.coe]
+@[app_delab DFunLike.coe]
 def EuclideanSpace.delabVecNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 6 do
     -- check that the `(WithLp.equiv _ _).symm` is present
@@ -185,11 +185,11 @@ theorem finrank_euclideanSpace_fin {n : ℕ} :
     Module.finrank 𝕜 (EuclideanSpace 𝕜 (Fin n)) = n := by simp
 
 theorem EuclideanSpace.inner_eq_star_dotProduct (x y : EuclideanSpace 𝕜 ι) :
-    ⟪x, y⟫ = Matrix.dotProduct (star <| WithLp.equiv _ _ x) (WithLp.equiv _ _ y) :=
+    ⟪x, y⟫ = dotProduct (star <| WithLp.equiv _ _ x) (WithLp.equiv _ _ y) :=
   rfl
 
 theorem EuclideanSpace.inner_piLp_equiv_symm (x y : ι → 𝕜) :
-    ⟪(WithLp.equiv 2 _).symm x, (WithLp.equiv 2 _).symm y⟫ = Matrix.dotProduct (star x) y :=
+    ⟪(WithLp.equiv 2 _).symm x, (WithLp.equiv 2 _).symm y⟫ = dotProduct (star x) y :=
   rfl
 
 /-- A finite, mutually orthogonal family of subspaces of `E`, which span `E`, induce an isometry
@@ -953,7 +953,7 @@ noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[
       have Lp1x : L (p1 x) ∈ LinearMap.range L.toLinearMap :=
         LinearMap.mem_range_self L.toLinearMap (p1 x)
       have Lp2x : L3 (p2 x) ∈ (LinearMap.range L.toLinearMap)ᗮ := by
-        simp only [LinearIsometry.coe_comp, Function.comp_apply, Submodule.coe_subtypeₗᵢ,
+        simp only [LS, LinearIsometry.coe_comp, Function.comp_apply, Submodule.coe_subtypeₗᵢ,
           ← Submodule.range_subtype LSᗮ]
         apply LinearMap.mem_range_self
       apply Submodule.inner_right_of_mem_orthogonal Lp1x Lp2x
@@ -1041,7 +1041,7 @@ local notation "⟪" x ", " y "⟫ₑ" =>
 /-- The inner product of a row of `A` and a row of `B` is an entry of `B * Aᴴ`. -/
 theorem inner_matrix_row_row [Fintype n] (A B : Matrix m n 𝕜) (i j : m) :
     ⟪A i, B j⟫ₑ = (B * Aᴴ) j i := by
-  simp_rw [EuclideanSpace.inner_piLp_equiv_symm, Matrix.mul_apply', Matrix.dotProduct_comm,
+  simp_rw [EuclideanSpace.inner_piLp_equiv_symm, Matrix.mul_apply', dotProduct_comm,
     Matrix.conjTranspose_apply, Pi.star_def]
 
 /-- The inner product of a column of `A` and a column of `B` is an entry of `Aᴴ * B`. -/

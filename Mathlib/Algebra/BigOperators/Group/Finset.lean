@@ -218,7 +218,7 @@ open scoped Batteries.ExtendedBinder
 
 /-- Delaborator for `Finset.prod`. The `pp.piBinderTypes` option controls whether
 to show the domain type when the product is over `Finset.univ`. -/
-@[delab app.Finset.prod] def delabFinsetProd : Delab :=
+@[app_delab Finset.prod] def delabFinsetProd : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 <| do
   let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda
@@ -239,7 +239,7 @@ to show the domain type when the product is over `Finset.univ`. -/
 
 /-- Delaborator for `Finset.sum`. The `pp.piBinderTypes` option controls whether
 to show the domain type when the sum is over `Finset.univ`. -/
-@[delab app.Finset.sum] def delabFinsetSum : Delab :=
+@[app_delab Finset.sum] def delabFinsetSum : Delab :=
   whenPPOption getPPNotation <| withOverApp 5 <| do
   let #[_, _, _, s, f] := (← getExpr).getAppArgs | failure
   guard <| f.isLambda
@@ -427,11 +427,11 @@ lemma prod_filter_not_mul_prod_filter (s : Finset α) (p : α → Prop) [Decidab
   rw [mul_comm, prod_filter_mul_prod_filter_not]
 
 @[to_additive]
-theorem prod_filter_xor (p q : α → Prop) [DecidableEq α] [DecidablePred p] [DecidablePred q] :
+theorem prod_filter_xor (p q : α → Prop) [DecidablePred p] [DecidablePred q] :
     (∏ x ∈ s with (Xor' (p x) (q x)), f x) =
       (∏ x ∈ s with (p x ∧ ¬ q x), f x) * (∏ x ∈ s with (q x ∧ ¬ p x), f x) := by
-  rw [← prod_union (disjoint_filter_and_not_filter _ _), ← filter_or]
-  rfl
+  classical rw [← prod_union (disjoint_filter_and_not_filter _ _), ← filter_or]
+  simp only [Xor']
 
 section ToList
 
@@ -1164,6 +1164,17 @@ The difference with `Finset.sum_ite_eq` is that the arguments to `Eq` are swappe
 theorem prod_ite_eq' [DecidableEq α] (s : Finset α) (a : α) (b : α → β) :
     (∏ x ∈ s, ite (x = a) (b x) 1) = ite (a ∈ s) (b a) 1 :=
   prod_dite_eq' s a fun x _ => b x
+
+@[to_additive]
+theorem prod_ite_eq_of_mem [DecidableEq α] (s : Finset α) (a : α) (b : α → β) (h : a ∈ s) :
+    (∏ x ∈ s, if a = x then b x else 1) = b a := by
+  simp only [prod_ite_eq, if_pos h]
+
+/-- The difference with `Finset.prod_ite_eq_of_mem` is that the arguments to `Eq` are swapped. -/
+@[to_additive]
+theorem prod_ite_eq_of_mem' [DecidableEq α] (s : Finset α) (a : α) (b : α → β) (h : a ∈ s) :
+    (∏ x ∈ s, if x = a then b x else 1) = b a := by
+  simp only [prod_ite_eq', if_pos h]
 
 @[to_additive]
 theorem prod_ite_index (p : Prop) [Decidable p] (s t : Finset α) (f : α → β) :
@@ -1994,6 +2005,9 @@ theorem prod_subsingleton {α β : Type*} [CommMonoid β] [Subsingleton α] [Fin
     (a : α) : ∏ x : α, f x = f a := by
   have : Unique α := uniqueOfSubsingleton a
   rw [prod_unique f, Subsingleton.elim default a]
+
+@[to_additive] theorem prod_Prop {β} [CommMonoid β] (f : Prop → β) :
+    ∏ p, f p = f True * f False := by simp
 
 @[to_additive]
 theorem prod_subtype_mul_prod_subtype {α β : Type*} [Fintype α] [CommMonoid β] (p : α → Prop)

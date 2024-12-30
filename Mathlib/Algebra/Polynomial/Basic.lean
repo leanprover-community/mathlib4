@@ -7,7 +7,6 @@ import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.MonoidAlgebra.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Data.Finset.Sort
-import Mathlib.Order.OmegaCompletePartialOrder
 
 /-!
 # Theory of univariate polynomials
@@ -346,6 +345,13 @@ def toFinsuppIso : R[X] ≃+* R[ℕ] where
 instance [DecidableEq R] : DecidableEq R[X] :=
   @Equiv.decidableEq R[X] _ (toFinsuppIso R).toEquiv (Finsupp.instDecidableEq)
 
+/-- Linear isomorphism between `R[X]` and `R[ℕ]`. This is just an
+implementation detail, but it can be useful to transfer results from `Finsupp` to polynomials. -/
+@[simps!]
+def toFinsuppIsoLinear : R[X] ≃ₗ[R] R[ℕ] where
+  __ := toFinsuppIso R
+  map_smul' _ _ := rfl
+
 end AddMonoidAlgebra
 
 theorem ofFinsupp_sum {ι : Type*} (s : Finset ι) (f : ι → R[ℕ]) :
@@ -671,8 +677,8 @@ theorem coeff_ofNat_zero (a : ℕ) [a.AtLeastTwo] :
 @[simp]
 theorem coeff_ofNat_succ (a n : ℕ) [h : a.AtLeastTwo] :
     coeff (no_index (OfNat.ofNat a : R[X])) (n + 1) = 0 := by
-  rw [← Nat.cast_eq_ofNat]
-  simp
+  rw [← Nat.cast_ofNat]
+  simp [-Nat.cast_ofNat]
 
 theorem C_mul_X_pow_eq_monomial : ∀ {n : ℕ}, C a * X ^ n = monomial n a
   | 0 => mul_one _

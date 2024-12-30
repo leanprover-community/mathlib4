@@ -414,7 +414,7 @@ def posFittingCompOf (x : L) : LieSubmodule R L M :=
       obtain ⟨q, hq⟩ := h₁.add_pow_dvd_pow_of_pow_eq_zero_right (N + k).le_succ hN
       use toModuleHom R L M (q (y ⊗ₜ m))
       change (φ ^ k).comp ((toModuleHom R L M : L ⊗[R] M →ₗ[R] M)) _ = _
-      simp [φ,  f₁, f₂, LinearMap.commute_pow_left_of_commute h₂,
+      simp [φ, f₁, f₂, LinearMap.commute_pow_left_of_commute h₂,
         LinearMap.comp_apply (g := (f₁ + f₂) ^ k), ← LinearMap.comp_apply (g := q),
         ← LinearMap.mul_eq_comp, ← hq] }
 
@@ -589,7 +589,7 @@ variable [IsNoetherian R M] [IsArtinian R M]
 
 lemma isCompl_genWeightSpaceOf_zero_posFittingCompOf (x : L) :
     IsCompl (genWeightSpaceOf M 0 x) (posFittingCompOf R M x) := by
-  simpa only [isCompl_iff, codisjoint_iff, disjoint_iff, ← LieSubmodule.coe_toSubmodule_eq_iff,
+  simpa only [isCompl_iff, codisjoint_iff, disjoint_iff, ← LieSubmodule.coe_toSubmodule_inj,
     LieSubmodule.sup_coe_toSubmodule, LieSubmodule.inf_coe_toSubmodule,
     LieSubmodule.top_coeSubmodule, LieSubmodule.bot_coeSubmodule, coe_genWeightSpaceOf_zero] using
     (toEnd R L M x).isCompl_iSup_ker_pow_iInf_range_pow
@@ -728,7 +728,7 @@ instance [IsTriangularizable R L M] : IsTriangularizable R (LieModule.toEnd R L 
 @[simp]
 lemma iSup_genWeightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
     ⨆ (φ : R), genWeightSpaceOf M φ x = ⊤ := by
-  rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.iSup_coe_toSubmodule,
+  rw [← LieSubmodule.coe_toSubmodule_inj, LieSubmodule.iSup_coe_toSubmodule,
     LieSubmodule.top_coeSubmodule]
   dsimp [genWeightSpaceOf]
   exact IsTriangularizable.maxGenEigenspace_eq_top x
@@ -766,7 +766,7 @@ instance (N : LieSubmodule K L M) [IsTriangularizable K L M] : IsTriangularizabl
 See also `LieModule.iSup_genWeightSpace_eq_top'`. -/
 lemma iSup_genWeightSpace_eq_top [IsTriangularizable K L M] :
     ⨆ χ : L → K, genWeightSpace M χ = ⊤ := by
-  simp only [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.iSup_coe_toSubmodule,
+  simp only [← LieSubmodule.coe_toSubmodule_inj, LieSubmodule.iSup_coe_toSubmodule,
     LieSubmodule.iInf_coe_toSubmodule, LieSubmodule.top_coeSubmodule, genWeightSpace]
   refine Module.End.iSup_iInf_maxGenEigenspace_eq_top_of_forall_mapsTo (toEnd K L M)
     (fun x y φ z ↦ (genWeightSpaceOf M φ y).lie_mem) ?_
