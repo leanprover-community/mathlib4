@@ -198,9 +198,24 @@ class CommShift : Prop where
   commShift_unit' : NatTrans.CommShift adj.unit A := by infer_instance
   commShift_counit' : NatTrans.CommShift adj.counit A := by infer_instance
 
+lemma commShift_unit [adj.CommShift A] : NatTrans.CommShift adj.unit A := CommShift.commShift_unit'
+
+lemma commShift_unit_app [adj.CommShift A] (a : A) (X : C) :
+    (adj.unit.app X)⟦a⟧' = adj.unit.app (X⟦a⟧) ≫ ((F ⋙ G).commShiftIso a).hom.app X := by
+  convert (commShift_unit adj A).comm_app _ a X
+  simp
+
+lemma commShift_counit [adj.CommShift A] : NatTrans.CommShift adj.counit A :=
+  CommShift.commShift_counit'
+
+lemma commShift_counit_app [adj.CommShift A] (a : A) (Y : D) :
+    ((G ⋙ F).commShiftIso a).hom.app Y ≫ (adj.counit.app Y)⟦a⟧' = adj.counit.app (Y⟦a⟧) := by
+  convert (commShift_counit adj A).comm_app _ a Y
+  simp
+
 namespace CommShift
 
-attribute [instance] commShift_unit' commShift_counit'
+attribute [instance] commShift_unit commShift_counit
 
 /-- Constructor for `Adjunction.CommShift`. -/
 lemma mk' (h : NatTrans.CommShift adj.unit A) :
@@ -216,20 +231,6 @@ lemma mk' (h : NatTrans.CommShift adj.unit A) :
       Functor.commShiftIso_comp_hom_app] using congr_app (h.comm' a) X⟩
 
 variable [adj.CommShift A]
-
-lemma commShift_unit : NatTrans.CommShift adj.unit A := commShift_unit'
-
-lemma commShift_unit_app (a : A) (X : C) :
-    (adj.unit.app X)⟦a⟧' = adj.unit.app (X⟦a⟧) ≫ ((F ⋙ G).commShiftIso a).hom.app X := by
-  convert (commShift_unit adj A).comm_app _ a X
-  simp
-
-lemma commShift_counit : NatTrans.CommShift adj.counit A := commShift_counit'
-
-lemma commShift_counit_app (a : A) (Y : D) :
-    ((G ⋙ F).commShiftIso a).hom.app Y ≫ (adj.counit.app Y)⟦a⟧' = adj.counit.app (Y⟦a⟧) := by
-  convert (commShift_counit adj A).comm_app _ a Y
-  simp
 
 /-- The identity adjunction is compatible with the trivial `CommShift` structure on the
 identity functor.
