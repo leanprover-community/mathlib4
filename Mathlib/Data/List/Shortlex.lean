@@ -46,12 +46,24 @@ theorem of_length_lt {s t : List α} (h : s.length < t.length) : Shortlex r s t 
   Prod.Lex.left _ _ h
 
 /-- If two lists `s` and `t` have the same length, `s` is smaller than `t` under the shortlex order
-over a relation `r` exactly when `s` is smaller than `t` under the lexicographic order over `r`-/
+over a relation `r`  when `s` is smaller than `t` under the lexicographic order over `r`-/
 theorem of_lex {s t : List α} (h : s.length = t.length) (h2 : List.Lex r s t) :
     Shortlex r s t := by
   unfold Shortlex
   rw [h]
   exact Prod.Lex.right _ h2
+
+/-- If two lists `s` and `t` have the same length, `s` is smaller than `t` under the shortlex order
+over a relation `r` exactly when `s` is smaller than `t` under the lexicographic order over `r`-/
+theorem of_lex_iff {s t : List α} (h : s.length = t.length) : Shortlex r s t ↔
+    List.Lex r s t := by
+  constructor
+  · intro h2
+    unfold Shortlex at h2
+    rw [h, Prod.lex_def, lt_self_iff_false, false_or] at h2
+    simp only [true_and] at h2
+    exact h2
+  exact fun h1 => of_lex h h1
 
 theorem shortlex_def {s t : List α} : Shortlex r s t ↔
     s.length < t.length ∨ s.length = t.length ∧ List.Lex r s t := by
