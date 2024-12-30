@@ -132,6 +132,12 @@ instance Subtype.hasCompl : HasCompl (Lsummands G) :=
 
 instance : PartialOrder (Lsummands G) := Subtype.partialOrder fun f ↦ IsLsummand G f
 
+instance : Bot (Lsummands G) where
+  bot := ⟨⊥,⟨⟨⊤,by simp_all⟩⟩⟩
+
+instance : Top (Lsummands G) where
+  top := ⟨⊤,⟨⟨⊥,by simp_all⟩⟩⟩
+
 -- This is almost what we want...
 --#check Submodule.linearProjOfClosedCompl
 
@@ -433,7 +439,7 @@ lemma _root_.IsIdempotentElem.mem_range_iff_self_smul {P : M} (h : IsIdempotentE
 
 
 def _root_.Lprojections.range (P : ℙᴸ[M](X)) : IsLsummand X (P.val • ⊤) where
-  compl := by
+  compl' := by
     use (Pᶜ.val • ⊤)
     constructor
     · ext x
