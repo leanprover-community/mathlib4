@@ -176,22 +176,22 @@ variable (J : Type w)
 lemma cofibrations_isStableUnderCoproductsOfShape :
     (cofibrations C).IsStableUnderCoproductsOfShape J := by
   rw [← trivialFibrations_llp]
-  apply MorphismProperty.llp_IsStableUnderCoproductsOfShape
+  apply MorphismProperty.llp_isStableUnderCoproductsOfShape
 
 lemma trivialCofibrations_isStableUnderCoproductsOfShape :
     (trivialCofibrations C).IsStableUnderCoproductsOfShape J := by
   rw [← fibrations_llp]
-  apply MorphismProperty.llp_IsStableUnderCoproductsOfShape
+  apply MorphismProperty.llp_isStableUnderCoproductsOfShape
 
 lemma fibrations_isStableUnderProductsOfShape :
     (fibrations C).IsStableUnderProductsOfShape J := by
   rw [← trivialCofibrations_rlp]
-  apply MorphismProperty.rlp_IsStableUnderProductsOfShape
+  apply MorphismProperty.rlp_isStableUnderProductsOfShape
 
 lemma trivialFibrations_isStableUnderProductsOfShape :
     (trivialFibrations C).IsStableUnderProductsOfShape J := by
   rw [← cofibrations_rlp]
-  apply MorphismProperty.rlp_IsStableUnderProductsOfShape
+  apply MorphismProperty.rlp_isStableUnderProductsOfShape
 
 variable {C J} {X Y : J → C} (f : ∀ i, X i ⟶ Y i)
 
