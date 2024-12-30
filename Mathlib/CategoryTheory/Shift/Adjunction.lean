@@ -243,7 +243,7 @@ instance instId : (Adjunction.id (C := C)).CommShift A := by
 variable {E : Type*} [Category E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G')
   [HasShift E A] [F'.CommShift A] [G'.CommShift A] [adj.CommShift A] [adj'.CommShift A]
 
-/-- Compatibility of `Adjunction.Commshift` with the composiition of adjunctions.
+/-- Compatibility of `Adjunction.Commshift` with the composition of adjunctions.
 -/
 instance instComp : (adj.comp adj').CommShift A := by
   refine mk' _ _ {comm' := fun a ↦ ?_}
