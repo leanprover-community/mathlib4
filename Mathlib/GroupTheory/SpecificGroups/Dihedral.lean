@@ -98,10 +98,6 @@ theorem inv_r (i : ZMod n) : (r i)⁻¹ = r (-i) := by
 theorem inv_sr (i : ZMod n) : (sr i)⁻¹ = sr (i) := by
   rfl
 
-@[simp]
-theorem r_zero (i : ZMod n) : (r i) ^ 0 = r 0 := by
-  rfl
-
 theorem one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
 
@@ -146,6 +142,7 @@ theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
     norm_cast
     rw [Nat.one_add]
 
+@[simp]
 theorem r_one_zpow (k : ℤ) : (r 1 : DihedralGroup n) ^ k = r k := by
   cases k <;> simp
 
