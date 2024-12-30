@@ -668,6 +668,8 @@ lemma isLeftAdjoint_inverse : e.inverse.IsLeftAdjoint :=
 lemma isRightAdjoint_functor : e.functor.IsRightAdjoint :=
   e.symm.isRightAdjoint_inverse
 
+lemma refl_toAdjunction : (refl (C := C)).toAdjunction = Adjunction.id := rfl
+
 lemma trans_toAdjunction {E : Type*} [Category E] (e' : D ≌ E) :
     (e.trans e').toAdjunction = e.toAdjunction.comp e'.toAdjunction := by
   ext
