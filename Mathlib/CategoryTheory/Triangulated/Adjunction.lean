@@ -64,13 +64,12 @@ lemma isTriangulated_rightAdjoint : G.IsTriangulated where
       dsimp at ψ hφ ⊢
       obtain ⟨α, hα⟩ := T.coyoneda_exact₂ hT ((adj.homEquiv _ _).symm ψ)
         ((adj.homEquiv _ _).injective (by simpa [homEquiv_counit, homEquiv_unit, ← h₁'] using hφ))
-      have eq := congr_arg (adj.homEquiv _ _ ).toFun hα
-      simp only [homEquiv_counit, Functor.id_obj, Equiv.toFun_as_coe, homEquiv_unit,
-        Functor.comp_obj, Functor.map_comp, unit_naturality_assoc, right_triangle_components,
-        comp_id] at eq
-      rw [eq, ← assoc, assoc _ _ f]
-      change _ ≫ (Triangle.mk (G.map T.mor₁) f g).mor₁ ≫ (Triangle.mk (G.map T.mor₁) f g).mor₂ = 0
-      rw [comp_distTriang_mor_zero₁₂ _ mem, comp_zero]
+      have eq := DFunLike.congr_arg (adj.homEquiv _ _ ) hα
+      simp only [homEquiv_counit, Functor.id_obj, homEquiv_unit, comp_id,
+        Functor.map_comp, unit_naturality_assoc, right_triangle_components] at eq
+      have eq' := comp_distTriang_mor_zero₁₂ _ mem
+      dsimp at eq eq'
+      rw [eq, assoc, assoc, eq', comp_zero, comp_zero]
     have := isIso_of_yoneda_map_bijective (adj.homEquiv _ _ h) (fun Y => by
       constructor
       · intro φ₁ φ₂ hφ
