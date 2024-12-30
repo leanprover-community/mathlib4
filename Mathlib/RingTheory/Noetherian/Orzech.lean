@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
 import Mathlib.Algebra.Module.Submodule.IterateMapComap
-import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Order.PartialSups
 import Mathlib.RingTheory.Noetherian.Basic
 import Mathlib.RingTheory.OrzechProperty
