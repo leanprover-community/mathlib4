@@ -7,11 +7,8 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Nilpotent.Defs
-<<<<<<< HEAD
 import Mathlib.Algebra.DirectSum.Decomposition
-=======
 import Mathlib.Tactic.StacksAttribute
->>>>>>> origin/master
 
 /-!
 
