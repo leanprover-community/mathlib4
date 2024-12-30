@@ -70,9 +70,9 @@ theorem HasProd.update (hf : HasProd f a₁) (b : β) [DecidableEq β] (a : α) 
     HasProd (update f b a) (a / f b * a₁) := by
   convert (hasProd_ite_eq b (a / f b)).mul hf with b'
   by_cases h : b' = b
-  · rw [h, update_same]
+  · rw [h, update_self]
     simp [eq_self_iff_true, if_true, sub_add_cancel]
-  · simp only [h, update_noteq, if_false, Ne, one_mul, not_false_iff]
+  · simp only [h, update_of_ne, if_false, Ne, one_mul, not_false_iff]
 
 @[to_additive]
 theorem Multipliable.update (hf : Multipliable f) (b : β) [DecidableEq β] (a : α) :
