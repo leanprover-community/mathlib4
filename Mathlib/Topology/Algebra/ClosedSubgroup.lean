@@ -69,7 +69,7 @@ instance : Coe (ClosedSubgroup G) (Subgroup G) where
   coe := toSubgroup
 
 @[to_additive]
-instance instInfClosedSubgroup : Inf (ClosedSubgroup G) :=
+instance instInfClosedSubgroup : Min (ClosedSubgroup G) :=
   ⟨fun U V ↦ ⟨U ⊓ V, U.isClosed'.inter V.isClosed'⟩⟩
 
 @[to_additive]
@@ -102,7 +102,7 @@ lemma isOpen_of_isClosed_of_finiteIndex (H : Subgroup G) [H.FiniteIndex]
     (h : IsClosed (H : Set G)) : IsOpen (H : Set G) := by
   apply isClosed_compl_iff.mp
   convert isClosed_iUnion_of_finite <| fun (x : {x : (G ⧸ H) // x ≠ QuotientGroup.mk 1})
-    ↦ IsClosed.smul h (Quotient.out' x.1)
+    ↦ IsClosed.smul h (Quotient.out x.1)
   ext x
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · have : QuotientGroup.mk 1 ≠ QuotientGroup.mk (s := H) x := by
@@ -110,7 +110,7 @@ lemma isOpen_of_isClosed_of_finiteIndex (H : Subgroup G) [H.FiniteIndex]
       simpa only [inv_one, one_mul, ne_eq]
     simp only [ne_eq, Set.mem_iUnion]
     use ⟨QuotientGroup.mk (s := H) x, this.symm⟩,
-      (Quotient.out' (QuotientGroup.mk (s := H) x))⁻¹ * x
+      (Quotient.out (QuotientGroup.mk (s := H) x))⁻¹ * x
     simp only [SetLike.mem_coe, smul_eq_mul, mul_inv_cancel_left, and_true]
     exact QuotientGroup.eq.mp <| QuotientGroup.out_eq' (QuotientGroup.mk (s := H) x)
   · rcases h with ⟨S,⟨y,hS⟩,mem⟩

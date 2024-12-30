@@ -53,10 +53,10 @@ def asHom (f : End X) : X ⟶ X := f
 
 -- dsimp loops when applying this lemma to its LHS,
 -- probably https://github.com/leanprover/lean4/pull/2867
-@[simp, nolint simpNF] -- Porting note (#11215): TODO: use `of`/`asHom`?
+@[simp, nolint simpNF] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `of`/`asHom`?
 theorem one_def : (1 : End X) = 𝟙 X := rfl
 
-@[simp] -- Porting note (#11215): TODO: use `of`/`asHom`?
+@[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `of`/`asHom`?
 theorem mul_def (xs ys : End X) : xs * ys = ys ≫ xs := rfl
 
 end Struct

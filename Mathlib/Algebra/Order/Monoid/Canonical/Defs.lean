@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.Order.Monoid.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 import Mathlib.Algebra.NeZero
-import Mathlib.Order.BoundedOrder
+import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # Canonically ordered monoids
@@ -202,8 +202,6 @@ class CanonicallyLinearOrderedAddCommMonoid (α : Type*)
 @[to_additive]
 class CanonicallyLinearOrderedCommMonoid (α : Type*)
   extends CanonicallyOrderedCommMonoid α, LinearOrderedCommMonoid α
-
-attribute [to_additive existing] CanonicallyLinearOrderedCommMonoid.toLinearOrderedCommMonoid
 
 section CanonicallyLinearOrderedCommMonoid
 
