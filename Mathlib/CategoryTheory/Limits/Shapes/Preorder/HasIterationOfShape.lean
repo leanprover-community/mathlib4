@@ -25,7 +25,7 @@ variable (J : Type w) [Preorder J] (C : Type u) [Category.{v} C]
   (K : Type u') [Category.{v'} K]
 
 /-- A category `C` has iterations of shape a preordered type `J`
-when certain specific hapes of colimits exists: colimits indexed by `J`,
+when certain specific shapes of colimits exists: colimits indexed by `J`,
 and by `Set.Iio j` for `j : J`.  -/
 class HasIterationOfShape : Prop where
   hasColimitsOfShape_of_isSuccLimit (j : J) (hj : Order.IsSuccLimit j) :
