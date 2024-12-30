@@ -165,7 +165,7 @@ noncomputable def triangleOpEquivalence_inverse_naturality :
 
 /-- If `F` is triangulated, so is `F.op`.
 -/
-lemma isTriangulatedOp_of_isTriangulated [F.IsTriangulated] : F.op.IsTriangulated where
+lemma isTriangulated_op [F.IsTriangulated] : F.op.IsTriangulated where
   map_distinguished T dT := by
     rw [mem_distTriang_op_iff, ← Functor.comp_obj, ← distinguished_iff_of_iso
       ((triangleOpEquivalence_inverse_naturality F).app T).unop]
@@ -173,7 +173,7 @@ lemma isTriangulatedOp_of_isTriangulated [F.IsTriangulated] : F.op.IsTriangulate
 
 /-- If `F.op` is triangulated, so is `F`.
 -/
-lemma isTriangulated_of_isTriangulatedOp [F.op.IsTriangulated] : F.IsTriangulated where
+lemma isTriangulated_of_op [F.op.IsTriangulated] : F.IsTriangulated where
   map_distinguished T dT := by
     have := distinguished_iff_of_iso ((triangleOpEquivalence D).unitIso.app
       (Opposite.op (F.mapTriangle.obj T))).unop
