@@ -442,7 +442,10 @@ instance : (Equivalence.refl (C := C)).inverse.CommShift A := by
 /--
 The identity equivalence is compatible with shifts.
 -/
-instance : (Equivalence.refl (C := C)).CommShift A := sorry
+instance : (Equivalence.refl (C := C)).CommShift A := by
+  dsimp [Equivalence.CommShift]
+  rw [refl_toAdjunction]
+  infer_instance
 
 /--
 If an equivalence `E : C ≌ D` is compatible with shifts, so is `E.symm`.
@@ -455,6 +458,33 @@ lemma mk'' (h : NatTrans.CommShift E.counitIso.hom A) :
     E.CommShift A :=
   have := mk' E.symm A (inferInstanceAs (NatTrans.CommShift E.counitIso.inv A))
   inferInstanceAs (E.symm.symm.CommShift A)
+
+variable {F : Type*} [Category F] [HasShift F A] {E' : D ≌ F} [E.CommShift A]
+    [E'.functor.CommShift A] [E'.inverse.CommShift A] [E'.CommShift A]
+
+/--
+If `E : C ≌ D` and `E' : D ≌ F` are equivalence whose forward functors are compatible with shifts,
+so is `(E.trans E').functor`.
+-/
+instance : (E.trans E').functor.CommShift A := by
+  simp
+  infer_instance
+
+/--
+If `E : C ≌ D` and `E' : D ≌ F` are equivalence whose inverse functors are compatible with shifts,
+so is `(E.trans E').inverse`.
+-/
+instance : (E.trans E').inverse.CommShift A := by
+  simp
+  infer_instance
+
+/--
+If equivalences `E : C ≌ D` and `E' : D ≌ F` are compatible with shifts, so is `E.trans E'`.
+-/
+instance : (E.trans E').CommShift A := by
+  dsimp [Equivalence.CommShift]
+  rw [trans_toAdjunction]
+  infer_instance
 
 end CommShift
 
