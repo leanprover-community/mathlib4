@@ -111,6 +111,7 @@ lemma map_opShiftFunctorEquivalence_counitIso_hom_app_unop (X : Cᵒᵖ) (n : �
     map_shiftFunctorCompIsoId_inv_app_assoc, op_comp, op_comp_assoc, op_comp_assoc,
     NatTrans.naturality_assoc, op_map, Iso.inv_hom_id_app_assoc, Quiver.Hom.unop_op]
 
+@[reassoc]
 lemma map_opShiftFunctorEquivalence_counitIso_inv_app_unop (X : Cᵒᵖ) (n : ℤ) :
     F.map ((opShiftFunctorEquivalence C n).counitIso.inv.app X).unop =
       ((F.op.commShiftIso n).inv.app (op (X.unop⟦n⟧))).unop ≫
