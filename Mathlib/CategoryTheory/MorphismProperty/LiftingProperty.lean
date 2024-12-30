@@ -36,6 +36,14 @@ right lifting property (rlp) with respect to `T`. -/
 def rlp : MorphismProperty C := fun _ _ f ↦
   ∀ ⦃X Y : C⦄ (g : X ⟶ Y) (_ : T g), HasLiftingProperty g f
 
+lemma llp_of_isIso {A B : C} (i : A ⟶ B) [IsIso i] :
+    T.llp i :=
+  fun _ _ _ _ ↦ inferInstance
+
+lemma rlp_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
+    T.rlp f :=
+  fun _ _ _ _ ↦ inferInstance
+
 instance llp_isStableUnderRetracts : T.llp.IsStableUnderRetracts where
   of_retract h hg _ _ f hf :=
     letI := hg _ hf
@@ -143,7 +151,6 @@ lemma coproducts_rlp : (coproducts.{w} T).rlp = T.rlp := by
   · exact antitone_rlp T.le_coproducts
   · rw [← le_llp_iff_le_rlp]
     exact T.coproducts_le_rlp_llp
-
 
 lemma retracts_le_rlp_llp : T.retracts ≤ T.rlp.llp :=
   le_trans (monotone_retracts T.le_rlp_llp) T.rlp.llp.retracts_le
