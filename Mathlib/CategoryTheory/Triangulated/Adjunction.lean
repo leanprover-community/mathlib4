@@ -88,7 +88,7 @@ lemma isTriangulated_rightAdjoint : G.IsTriangulated where
             assoc, sub_comp, assoc, assoc, hψ, zero_comp, sub_eq_zero,
             ← cancel_mono ((Functor.commShiftIso G (1 : ℤ)).inv.app T.obj₁), assoc,
             assoc, assoc, assoc, h₂', Iso.hom_inv_id_app, comp_id]
-        suffices ∃ (β : Y ⟶ Z), β ≫ (adj.homEquiv _ _) h = α by
+        suffices ∃ (β : Y ⟶ Z), β ≫ adj.homEquiv _ _ h = α by
           obtain ⟨β, hβ⟩ := this
           refine ⟨ψ + β, ?_⟩
           dsimp
