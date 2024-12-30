@@ -7,7 +7,7 @@ Authors: Sina Hazratpour
 
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.BinaryProducts
-import Mathlib.CategoryTheory.Limits.FunctorCategory.Shapes.BinaryProducts
+import Mathlib.CategoryTheory.Limits.Preserves.FunctorCategory
 import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Monoidal.End
 
@@ -304,19 +304,6 @@ lemma MonoidalClosed.leftDistrib_inv [MonoidalClosed C] {X Y Z : C} :
 section Endofunctors
 
 attribute [local instance] endofunctorMonoidalCategory
-
-instance isIso_coprodComparison_tensorLeft_of_endofunctors {X Y Z : C ⥤ C} :
-    IsIso (coprodComparison (tensorLeft X) Y Z) :=
-  by
-    refine ⟨?_, ?_, ?_⟩
-    · exact {
-    app (c : C) :=
-    coprodObjIso Y Z (X.obj c) ≪≫ (coprodObjIso (X ⊗ Y) (X ⊗ Z) c).symm |>.hom
-    }
-    · ext c <;> simp [coprodComparison, coprodComparison, coprodObjIso]
-    · ext c
-      simp only [coprodComparison, coprodComparison, coprodObjIso, leftDistrib]
-      aesop
 
 /-- The monoidal structure on the category of endofunctors is left distributive. -/
 instance isMonoidalLeftDistrib_of_endofunctors : IsMonoidalLeftDistrib (C ⥤ C) where
