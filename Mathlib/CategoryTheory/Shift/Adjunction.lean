@@ -424,7 +424,7 @@ instance [h : E.inverse.CommShift A] : E.symm.functor.CommShift A := h
 lemma mk' (h : NatTrans.CommShift E.unitIso.hom A) :
     E.CommShift A where
   commShift_unit' := h
-  commShift_counit' := (Adjunction.CommShift.mk' E.toAdjunction A h).commShift_counit
+  commShift_counit' := (Adjunction.CommShift.mk' E.toAdjunction A h).commShift_counit'
 
 /--
 The forward functor of the identity equivalence is compatible with shifts.
