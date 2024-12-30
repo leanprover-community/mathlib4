@@ -7,6 +7,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Nilpotent.Defs
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 
@@ -346,6 +347,7 @@ theorem eq_of_isNilpotent_sub_of_isIdempotentElem {e₁ e₂ : R}
     e₁ = e₂ :=
   eq_of_isNilpotent_sub_of_isIdempotentElem_of_commute he₁ he₂ H (.all _ _)
 
+@[stacks 00J9]
 theorem existsUnique_isIdempotentElem_eq_of_ker_isNilpotent (h : ∀ x ∈ RingHom.ker f, IsNilpotent x)
     (e : S) (he : e ∈ f.range) (he' : IsIdempotentElem e) :
     ∃! e' : R, IsIdempotentElem e' ∧ f e' = e := by

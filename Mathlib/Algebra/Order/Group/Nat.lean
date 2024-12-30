@@ -3,7 +3,7 @@ Copyright (c) 2014 Floris van Doorn (c) 2016 Microsoft Corporation. All rights r
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn, Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.Group.Nat.Basic
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Sub.Defs
 import Mathlib.Data.Nat.Defs
@@ -47,7 +47,7 @@ instance instOrderedSub : OrderedSub ℕ := by
 
 variable {α : Type*} {n : ℕ} {f : α → ℕ}
 
-/-- See also `pow_left_strictMonoOn`. -/
+/-- See also `pow_left_strictMonoOn₀`. -/
 protected lemma pow_left_strictMono (hn : n ≠ 0) : StrictMono (· ^ n : ℕ → ℕ) :=
   fun _ _ h ↦ Nat.pow_lt_pow_left h hn
 

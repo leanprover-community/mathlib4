@@ -52,14 +52,25 @@ noncomputable def triangle : Triangle (CochainComplex C ℤ) :=
 lemma inl_v_triangle_mor₃_f (p q : ℤ) (hpq : p + (-1) = q) :
     (inl φ).v p q hpq ≫ (triangle φ).mor₃.f q =
       -(K.shiftFunctorObjXIso 1 q p (by rw [← hpq, neg_add_cancel_right])).inv := by
-  simp [triangle, Cochain.rightShift_v _ 1 0 (zero_add 1) q q (add_zero q) p (by omega)]
+  dsimp [triangle]
+  -- the following list of lemmas was obtained by doing
+  -- simp? [Cochain.rightShift_v _ 1 0 (zero_add 1) q q (add_zero q) p (by omega)]
+  simp only [Int.reduceNeg, Cochain.rightShift_neg, Cochain.neg_v, shiftFunctor_obj_X',
+    Cochain.rightShift_v _ 1 0 (zero_add 1) q q (add_zero q) p (by omega), shiftFunctor_obj_X,
+    shiftFunctorObjXIso, Preadditive.comp_neg, inl_v_fst_v_assoc]
 
 @[reassoc (attr := simp)]
 lemma inr_f_triangle_mor₃_f (p : ℤ) : (inr φ).f p ≫ (triangle φ).mor₃.f p = 0 := by
-  simp [triangle, Cochain.rightShift_v _ 1 0 _ p p (add_zero p) (p+1) rfl]
+  dsimp [triangle]
+  -- the following list of lemmas was obtained by doing
+  -- simp? [Cochain.rightShift_v _ 1 0 _ p p (add_zero p) (p+1) rfl]
+  simp only [Cochain.rightShift_neg, Cochain.neg_v, shiftFunctor_obj_X',
+    Cochain.rightShift_v _ 1 0 _ p p (add_zero p) (p + 1) rfl, shiftFunctor_obj_X,
+    shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, comp_id,
+    Preadditive.comp_neg, inr_f_fst_v, neg_zero]
 
 @[reassoc (attr := simp)]
-lemma inr_triangleδ : inr φ ≫ (triangle φ).mor₃ = 0 := by aesop_cat
+lemma inr_triangleδ : inr φ ≫ (triangle φ).mor₃ = 0 := by ext; dsimp; simp
 
 /-- The (distinguished) triangle in the homotopy category that is associated to
 a morphism `φ : K ⟶ L` in the category `CochainComplex C ℤ`. -/
@@ -96,8 +107,16 @@ lemma triangleMapOfHomotopy_comm₂ :
 lemma triangleMapOfHomotopy_comm₃ :
     mapOfHomotopy H ≫ (triangle φ₂).mor₃ = (triangle φ₁).mor₃ ≫ a⟦1⟧' := by
   ext p
-  simp [ext_from_iff _ _ _ rfl, triangle, mapOfHomotopy,
-    Cochain.rightShift_v _ 1 0 _ p p _ (p + 1) rfl]
+  dsimp [mapOfHomotopy, triangle]
+  -- the following list of lemmas as been obtained by doing
+  -- simp? [ext_from_iff _ _ _ rfl, Cochain.rightShift_v _ 1 0 _ p p _ (p + 1) rfl]
+  simp only [Int.reduceNeg, Cochain.rightShift_neg, Cochain.neg_v, shiftFunctor_obj_X',
+    Cochain.rightShift_v _ 1 0 _ p p _ (p + 1) rfl, shiftFunctor_obj_X, shiftFunctorObjXIso,
+    HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, comp_id, Preadditive.comp_neg,
+    Preadditive.neg_comp, ext_from_iff _ _ _ rfl, inl_v_desc_f_assoc, Cochain.add_v,
+    Cochain.zero_cochain_comp_v, Cochain.ofHom_v, Cochain.comp_zero_cochain_v, Preadditive.add_comp,
+    assoc, inl_v_fst_v, inr_f_fst_v, comp_zero, add_zero, inl_v_fst_v_assoc, inr_f_desc_f_assoc,
+    HomologicalComplex.comp_f, neg_zero, inr_f_fst_v_assoc, zero_comp, and_self]
 
 /-- The morphism `triangleh φ₁ ⟶ triangleh φ₂` that is induced by a square that
 is commutative up to homotopy. -/
@@ -167,76 +186,66 @@ noncomputable def triangleMap :
 
 end map
 
-/-
-
-As the number of simp lemmas that are required in the proofs below is huge,
-we use the `simp? ... says` syntax: it is meant to ease the maintenance
-of this code as it gives a minimal list of lemmas with which `simp`
-is able to finish the proof.
-
-The `set_option maxHeartbeats` are necessary only when this code is compiled
-with `set_option says.verify true` (e.g. during CI).
-
--/
-
 section Rotate
 
-set_option maxHeartbeats 400000 in
 /-- Given `φ : K ⟶ L`, `K⟦(1 : ℤ)⟧` is homotopy equivalent to
 the mapping cone of `inr φ : L ⟶ mappingCone φ`. -/
 noncomputable def rotateHomotopyEquiv :
     HomotopyEquiv (K⟦(1 : ℤ)⟧) (mappingCone (inr φ)) where
   hom := lift (inr φ) (-(Cocycle.ofHom φ).leftShift 1 1 (zero_add 1))
     (-(inl φ).leftShift 1 0 (neg_add_cancel 1)) (by
-      simp? [Cochain.δ_leftShift _ 1 0 1 (neg_add_cancel 1) 0 (zero_add 1)] says
-        simp only [Int.reduceNeg, δ_neg,
-          Cochain.δ_leftShift _ 1 0 1 (neg_add_cancel 1) 0 (zero_add 1),
-          Int.negOnePow_one, δ_inl, Cochain.ofHom_comp, Cochain.leftShift_comp_zero_cochain,
-          Units.neg_smul, one_smul, neg_neg, Cocycle.coe_neg, Cocycle.leftShift_coe,
-          Cocycle.ofHom_coe, Cochain.neg_comp, add_neg_cancel])
+      -- the following list of lemmas has been obtained by doing
+      -- simp? [Cochain.δ_leftShift _ 1 0 1 (neg_add_cancel 1) 0 (zero_add 1)]
+      simp only [Int.reduceNeg, δ_neg,
+        Cochain.δ_leftShift _ 1 0 1 (neg_add_cancel 1) 0 (zero_add 1),
+        Int.negOnePow_one, δ_inl, Cochain.ofHom_comp, Cochain.leftShift_comp_zero_cochain,
+        Units.neg_smul, one_smul, neg_neg, Cocycle.coe_neg, Cocycle.leftShift_coe,
+        Cocycle.ofHom_coe, Cochain.neg_comp, add_neg_cancel])
   inv := desc (inr φ) 0 (triangle φ).mor₃
     (by simp only [δ_zero, inr_triangleδ, Cochain.ofHom_zero])
   homotopyHomInvId := Homotopy.ofEq (by
     ext n
-    simp? [lift_desc_f _ _ _ _ _ _ _ _ _ rfl,
-      (inl φ).leftShift_v 1 0 _ _ n _ (n + 1) (by simp only [add_neg_cancel_right])] says
-      simp only [shiftFunctor_obj_X', Int.reduceNeg, HomologicalComplex.comp_f,
-        lift_desc_f _ _ _ _ _ _ _ _ _ rfl, Cocycle.coe_neg, Cocycle.leftShift_coe,
-        Cocycle.ofHom_coe, Cochain.neg_v, Cochain.zero_v,
-        comp_zero, (inl φ).leftShift_v 1 0 _ _ n _ (n + 1) (by simp only [add_neg_cancel_right]),
-        shiftFunctor_obj_X, mul_zero, sub_self, Int.zero_ediv, add_zero, Int.negOnePow_zero,
-        shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, id_comp, one_smul,
-        Preadditive.neg_comp, inl_v_triangle_mor₃_f, Iso.refl_inv, neg_neg, zero_add,
-        HomologicalComplex.id_f])
+    -- the following list of lemmas has been obtained by doing
+    -- simp? [lift_desc_f _ _ _ _ _ _ _ _ _ rfl,
+    --   (inl φ).leftShift_v 1 0 _ _ n _ (n + 1) (by simp only [add_neg_cancel_right])]
+    simp only [shiftFunctor_obj_X', Int.reduceNeg, HomologicalComplex.comp_f,
+      lift_desc_f _ _ _ _ _ _ _ _ _ rfl, Cocycle.coe_neg, Cocycle.leftShift_coe,
+      Cocycle.ofHom_coe, Cochain.neg_v, Cochain.zero_v,
+      comp_zero, (inl φ).leftShift_v 1 0 _ _ n _ (n + 1) (by simp only [add_neg_cancel_right]),
+      shiftFunctor_obj_X, mul_zero, sub_self, Int.zero_ediv, add_zero, Int.negOnePow_zero,
+      shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, id_comp, one_smul,
+      Preadditive.neg_comp, inl_v_triangle_mor₃_f, Iso.refl_inv, neg_neg, zero_add,
+      HomologicalComplex.id_f])
   homotopyInvHomId := (Cochain.equivHomotopy _ _).symm
     ⟨-(snd (inr φ)).comp ((snd φ).comp (inl (inr φ)) (zero_add (-1))) (zero_add (-1)), by
       ext n
-      simp? [ext_to_iff _ _ (n + 1) rfl, ext_from_iff _ (n + 1) _ rfl,
-        δ_zero_cochain_comp _ _ _ (neg_add_cancel 1),
-        (inl φ).leftShift_v 1 0 (neg_add_cancel 1) n n (add_zero n) (n + 1) (by omega),
+      -- the following list of lemmas has been obtained by doing
+      -- simp? [ext_to_iff _ _ (n + 1) rfl, ext_from_iff _ (n + 1) _ rfl,
+      --   δ_zero_cochain_comp _ _ _ (neg_add_cancel 1),
+      --   (inl φ).leftShift_v 1 0 (neg_add_cancel 1) n n (add_zero n) (n + 1) (by omega),
+      --   (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by omega),
+      --   Cochain.comp_v _ _ (add_neg_cancel 1) n (n + 1) n rfl (by omega)]
+      simp only [Int.reduceNeg, Cochain.ofHom_comp, ofHom_desc, ofHom_lift, Cocycle.coe_neg,
+        Cocycle.leftShift_coe, Cocycle.ofHom_coe, Cochain.comp_zero_cochain_v,
+        shiftFunctor_obj_X', δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_cancel 1), δ_inl,
+        Int.negOnePow_neg, Int.negOnePow_one, δ_snd, Cochain.neg_comp,
+        Cochain.comp_assoc_of_second_is_zero_cochain, smul_neg, Units.neg_smul, one_smul,
+        neg_neg, Cochain.comp_add, inr_snd_assoc, neg_add_rev, Cochain.add_v, Cochain.neg_v,
+        Cochain.comp_v _ _ (add_neg_cancel 1) n (n + 1) n rfl (by omega),
+        Cochain.zero_cochain_comp_v, Cochain.ofHom_v, HomologicalComplex.id_f,
+        ext_to_iff _ _ (n + 1) rfl, assoc, liftCochain_v_fst_v,
         (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by omega),
-        Cochain.comp_v _ _ (add_neg_cancel 1) n (n + 1) n rfl (by omega)] says
-        simp only [Int.reduceNeg, Cochain.ofHom_comp, ofHom_desc, ofHom_lift, Cocycle.coe_neg,
-          Cocycle.leftShift_coe, Cocycle.ofHom_coe, Cochain.comp_zero_cochain_v,
-          shiftFunctor_obj_X', δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_cancel 1), δ_inl,
-          Int.negOnePow_neg, Int.negOnePow_one, δ_snd, Cochain.neg_comp,
-          Cochain.comp_assoc_of_second_is_zero_cochain, smul_neg, Units.neg_smul, one_smul,
-          neg_neg, Cochain.comp_add, inr_snd_assoc, neg_add_rev, Cochain.add_v, Cochain.neg_v,
-          Cochain.comp_v _ _ (add_neg_cancel 1) n (n + 1) n rfl (by omega),
-          Cochain.zero_cochain_comp_v, Cochain.ofHom_v, HomologicalComplex.id_f,
-          ext_to_iff _ _ (n + 1) rfl, assoc, liftCochain_v_fst_v,
-          (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by omega),
-          shiftFunctor_obj_X, mul_one, sub_self, mul_zero, Int.zero_ediv, add_zero,
-          shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, id_comp,
-          Preadditive.add_comp, Preadditive.neg_comp, inl_v_fst_v, comp_id, inr_f_fst_v, comp_zero,
-          neg_zero, neg_add_cancel_comm, ext_from_iff _ (n + 1) _ rfl, inl_v_descCochain_v_assoc,
-          Cochain.zero_v, zero_comp, Preadditive.comp_neg, inl_v_snd_v_assoc,
-          inr_f_descCochain_v_assoc, inr_f_snd_v_assoc, inl_v_triangle_mor₃_f_assoc, triangle_obj₁,
-          Iso.refl_inv, inl_v_fst_v_assoc, inr_f_triangle_mor₃_f_assoc, inr_f_fst_v_assoc, and_self,
-          liftCochain_v_snd_v,
-          (inl φ).leftShift_v 1 0 (neg_add_cancel 1) n n (add_zero n) (n + 1) (by omega),
-          Int.negOnePow_zero, inl_v_snd_v, inr_f_snd_v, zero_add, inl_v_descCochain_v,
-          inr_f_descCochain_v, inl_v_triangle_mor₃_f, inr_f_triangle_mor₃_f, neg_add_cancel]⟩
+        shiftFunctor_obj_X, mul_one, sub_self, mul_zero, Int.zero_ediv, add_zero,
+        shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, id_comp,
+        Preadditive.add_comp, Preadditive.neg_comp, inl_v_fst_v, comp_id, inr_f_fst_v, comp_zero,
+        neg_zero, neg_add_cancel_comm, ext_from_iff _ (n + 1) _ rfl, inl_v_descCochain_v_assoc,
+        Cochain.zero_v, zero_comp, Preadditive.comp_neg, inl_v_snd_v_assoc,
+        inr_f_descCochain_v_assoc, inr_f_snd_v_assoc, inl_v_triangle_mor₃_f_assoc, triangle_obj₁,
+        Iso.refl_inv, inl_v_fst_v_assoc, inr_f_triangle_mor₃_f_assoc, inr_f_fst_v_assoc, and_self,
+        liftCochain_v_snd_v,
+        (inl φ).leftShift_v 1 0 (neg_add_cancel 1) n n (add_zero n) (n + 1) (by omega),
+        Int.negOnePow_zero, inl_v_snd_v, inr_f_snd_v, zero_add, inl_v_descCochain_v,
+        inr_f_descCochain_v, inl_v_triangle_mor₃_f, inr_f_triangle_mor₃_f, neg_add_cancel]⟩
 
 /-- Auxiliary definition for `rotateTrianglehIso`. -/
 noncomputable def rotateHomotopyEquivComm₂Homotopy :
@@ -245,11 +254,30 @@ noncomputable def rotateHomotopyEquivComm₂Homotopy :
       ⟨-(snd φ).comp (inl (inr φ)) (zero_add (-1)), by
         ext p
         dsimp [rotateHomotopyEquiv]
-        simp [ext_from_iff _ _ _ rfl, ext_to_iff _ _ _ rfl,
-          (inl φ).leftShift_v 1 0 (neg_add_cancel 1) p p (add_zero p) (p + 1) (by omega),
-          δ_zero_cochain_comp _ _ _ (neg_add_cancel 1),
+        -- the following list of lemmas has been obtained by doing
+        -- simp? [ext_from_iff _ _ _ rfl, ext_to_iff _ _ _ rfl,
+        --  (inl φ).leftShift_v 1 0 (neg_add_cancel 1) p p (add_zero p) (p + 1) (by omega),
+        --  δ_zero_cochain_comp _ _ _ (neg_add_cancel 1),
+        --  Cochain.comp_v _ _ (add_neg_cancel 1) p (p + 1) p rfl (by omega),
+        --  (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by omega)]⟩
+        simp only [Int.reduceNeg, Cochain.ofHom_comp, ofHom_lift, Cocycle.coe_neg,
+          Cocycle.leftShift_coe, Cocycle.ofHom_coe, Cochain.comp_zero_cochain_v,
+          shiftFunctor_obj_X', Cochain.ofHom_v, δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_cancel 1),
+          δ_inl, Int.negOnePow_neg, Int.negOnePow_one, δ_snd, Cochain.neg_comp,
+          Cochain.comp_assoc_of_second_is_zero_cochain, smul_neg, Units.neg_smul, one_smul, neg_neg,
+          neg_add_rev, Cochain.add_v, Cochain.neg_v,
           Cochain.comp_v _ _ (add_neg_cancel 1) p (p + 1) p rfl (by omega),
-          (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by omega)]⟩
+          Cochain.zero_cochain_comp_v, ext_from_iff _ _ _ rfl, inl_v_triangle_mor₃_f_assoc,
+          triangle_obj₁, shiftFunctor_obj_X, shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl,
+          Iso.refl_inv, Preadditive.neg_comp, id_comp, Preadditive.comp_add, Preadditive.comp_neg,
+          inl_v_fst_v_assoc, inl_v_snd_v_assoc, zero_comp, neg_zero, add_zero, ext_to_iff _ _ _ rfl,
+          liftCochain_v_fst_v,
+          (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by omega), mul_one,
+          sub_self, mul_zero, Int.zero_ediv, Iso.refl_hom, Preadditive.add_comp, assoc, inl_v_fst_v,
+          comp_id, inr_f_fst_v, comp_zero, liftCochain_v_snd_v,
+          (inl φ).leftShift_v 1 0 (neg_add_cancel 1) p p (add_zero p) (p + 1) (by omega),
+          Int.negOnePow_zero, inl_v_snd_v, inr_f_snd_v, zero_add, and_self,
+          inr_f_triangle_mor₃_f_assoc, inr_f_fst_v_assoc, inr_f_snd_v_assoc, neg_add_cancel]⟩
 
 @[reassoc (attr := simp)]
 lemma rotateHomotopyEquiv_comm₂ :
@@ -264,15 +292,25 @@ lemma rotateHomotopyEquiv_comm₃ :
     (rotateHomotopyEquiv φ).hom ≫ (triangle (inr φ)).mor₃ = -φ⟦1⟧' := by
   ext p
   dsimp [rotateHomotopyEquiv]
-  simp [lift_f _ _ _ _ _ (p + 1) rfl,
-    (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by omega)]
+  -- the following list of lemmas has been obtained by doing
+  -- simp? [lift_f _ _ _ _ _ (p + 1) rfl,
+  --   (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by omega)]
+  simp only [Int.reduceNeg, lift_f _ _ _ _ _ (p + 1) rfl, shiftFunctor_obj_X', Cocycle.coe_neg,
+    Cocycle.leftShift_coe, Cocycle.ofHom_coe, Cochain.neg_v,
+    (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) p (p + 1) rfl (p + 1) (by omega),
+    shiftFunctor_obj_X, mul_one, sub_self, mul_zero, Int.zero_ediv, add_zero, Int.negOnePow_one,
+    shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, Cochain.ofHom_v, id_comp,
+    Units.neg_smul, one_smul, neg_neg, Preadditive.neg_comp, Preadditive.add_comp, assoc,
+    inl_v_triangle_mor₃_f, Iso.refl_inv, Preadditive.comp_neg, comp_id, inr_f_triangle_mor₃_f,
+    comp_zero, neg_zero]
 
 /-- The canonical isomorphism of triangles `(triangleh φ).rotate ≅ (triangleh (inr φ))`. -/
 noncomputable def rotateTrianglehIso :
     (triangleh φ).rotate ≅ (triangleh (inr φ)) :=
   Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
     (((HomotopyCategory.quotient C (ComplexShape.up ℤ)).commShiftIso (1 : ℤ)).symm.app K ≪≫
-      HomotopyCategory.isoOfHomotopyEquiv (rotateHomotopyEquiv φ)) (by aesop_cat) (by aesop_cat) (by
+      HomotopyCategory.isoOfHomotopyEquiv (rotateHomotopyEquiv φ))
+        (by dsimp; simp) (by dsimp; simp) (by
         dsimp
         rw [CategoryTheory.Functor.map_id, comp_id, assoc, ← Functor.map_comp_assoc,
           rotateHomotopyEquiv_comm₃, Functor.map_neg, Preadditive.neg_comp,
@@ -318,10 +356,9 @@ noncomputable def shiftIso (n : ℤ) : (mappingCone φ)⟦n⟧ ≅ mappingCone (
 noncomputable def shiftTriangleIso (n : ℤ) :
     (Triangle.shiftFunctor _ n).obj (triangle φ) ≅ triangle (φ⟦n⟧') := by
   refine Triangle.isoMk _ _ (Iso.refl _) (n.negOnePow • Iso.refl _) (shiftIso φ n) ?_ ?_ ?_
-  · simp only [Triangle.shiftFunctor_obj, triangle_obj₁, triangle_obj₂, triangle_obj₃,
-      triangle_mor₁, Units.smul_def, triangle_mor₂, Functor.comp_obj, Triangle.mk_obj₁,
-      Triangle.mk_obj₂, Triangle.mk_mor₁, Preadditive.smul_iso_hom, Iso.refl_hom,
-      Linear.comp_smul, comp_id, smul_smul, Int.units_coe_mul_self, one_smul, id_comp]
+  · dsimp
+    simp only [Linear.comp_units_smul, comp_id, id_comp, smul_smul,
+      Int.units_mul_self, one_smul]
   · ext p
     dsimp
     simp only [Units.smul_def, shiftIso, Int.reduceNeg, Linear.smul_comp, id_comp,
@@ -348,7 +385,6 @@ noncomputable def shiftTrianglehIso (n : ℤ) :
 
 end Shift
 
-
 section
 
 open Preadditive
@@ -368,7 +404,8 @@ lemma map_δ :
     comp_neg, comp_id, inr_f_triangle_mor₃_f, comp_zero, add_zero]
   dsimp [triangle]
   rw [Cochain.rightShift_v _ 1 0 (by omega) n n (by omega) (n + 1) (by omega)]
-  simp
+  simp only [shiftFunctor_obj_X, Cochain.neg_v, shiftFunctorObjXIso,
+    HomologicalComplex.XIsoOfEq_rfl, Iso.refl_inv, comp_id, Functor.map_neg]
 
 /-- If `φ : K ⟶ L` is a morphism of cochain complexes in `C` and `G : C ⥤ D` is an
 additive functor, then the image by `G` of the triangle `triangle φ` identifies to
@@ -376,8 +413,9 @@ the triangle associated to the image of `φ` by `G`. -/
 noncomputable def mapTriangleIso :
     (G.mapHomologicalComplex (ComplexShape.up ℤ)).mapTriangle.obj (triangle φ) ≅
       triangle ((G.mapHomologicalComplex (ComplexShape.up ℤ)).map φ) := by
-  refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (mapHomologicalComplexIso φ G)
-    (by aesop_cat) ?_ ?_
+  refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (mapHomologicalComplexIso φ G) ?_ ?_ ?_
+  · dsimp
+    simp only [comp_id, id_comp]
   · dsimp
     rw [map_inr, id_comp]
   · dsimp
@@ -465,6 +503,7 @@ lemma rotate_distinguished_triangle (T : Triangle (HomotopyCategory C (ComplexSh
     exact isomorphic_distinguished _ (invRotate_distinguished_triangle' T.rotate hT) _
       ((triangleRotation _).unitIso.app T)
 
+open CochainComplex.mappingCone in
 lemma complete_distinguished_triangle_morphism
     (T₁ T₂ : Triangle (HomotopyCategory C (ComplexShape.up ℤ)))
     (hT₁ : T₁ ∈ distinguishedTriangles C) (hT₂ : T₂ ∈ distinguishedTriangles C)
@@ -485,12 +524,23 @@ lemma complete_distinguished_triangle_morphism
     dsimp at comm₁₁ comm₁₂
     simp only [Functor.map_comp, ha', hb', reassoc_of% comm₁₁,
       reassoc_of% fac, comm₁₂, assoc])
-  let γ := e₁.hom ≫ CochainComplex.mappingCone.trianglehMapOfHomotopy H ≫ e₂.inv
+  let γ := e₁.hom ≫ trianglehMapOfHomotopy H ≫ e₂.inv
   have comm₂ := γ.comm₂
   have comm₃ := γ.comm₃
   dsimp [γ] at comm₂ comm₃
   simp only [ha', hb'] at comm₂ comm₃
-  exact ⟨γ.hom₃, by simpa [γ] using comm₂, by simpa [γ] using comm₃⟩
+  refine ⟨γ.hom₃, ?_, ?_⟩
+  -- the following list of lemmas was obtained by doing simpa? [γ] using comm₂
+  · simpa only [triangleCategory_comp, Functor.mapTriangle_obj, triangle_obj₁, triangle_obj₂,
+      triangle_obj₃, triangle_mor₁, triangle_mor₂, TriangleMorphism.comp_hom₃, Triangle.mk_obj₃,
+      trianglehMapOfHomotopy_hom₃, TriangleMorphism.comm₂_assoc, Triangle.mk_obj₂,
+      Triangle.mk_mor₂, assoc, Iso.hom_inv_id_triangle_hom₂, comp_id,
+      Iso.hom_inv_id_triangle_hom₂_assoc, γ] using comm₂
+  -- the following list of lemmas was obtained by doing simpa? [γ] using comm₃
+  · simpa only [triangleCategory_comp, Functor.mapTriangle_obj, triangle_obj₁, triangle_obj₂,
+      triangle_obj₃, triangle_mor₁, triangle_mor₂, TriangleMorphism.comp_hom₃, Triangle.mk_obj₃,
+      trianglehMapOfHomotopy_hom₃, assoc, Triangle.mk_obj₁, Iso.hom_inv_id_triangle_hom₁, comp_id,
+      Iso.hom_inv_id_triangle_hom₁_assoc, γ] using comm₃
 
 end Pretriangulated
 

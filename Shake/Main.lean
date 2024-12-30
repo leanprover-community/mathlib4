@@ -490,7 +490,7 @@ def main (args : List String) : IO UInt32 := do
     if args.downstream || noIgnore i then
       some <| Task.spawn fun _ =>
         -- remove the module from its own `needs`
-        (calcNeeds s.constToIdx mod ||| (1 <<< i.1)) ^^^ (1 <<< i.1)
+        (calcNeeds s.constToIdx mod ||| (1 <<< i)) ^^^ (1 <<< i)
     else
       none
   if args.downstream then

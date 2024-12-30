@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Topology.GDelta.Basic
-import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Order.Filter.CountableInter
+import Mathlib.Topology.UniformSpace.Basic
 
 /-!
 # `Gδ` sets and uniform spaces
@@ -22,7 +22,7 @@ noncomputable section
 open Topology TopologicalSpace Filter Encodable Set
 open scoped Uniformity
 
-variable {X Y ι : Type*} {ι' : Sort*}
+variable {X Y : Type*}
 
 section IsGδ
 
