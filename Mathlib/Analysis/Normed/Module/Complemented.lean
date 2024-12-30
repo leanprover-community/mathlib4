@@ -133,8 +133,7 @@ variable (p q)
 /-- Idempotent corresponding to a complemented subspace. -/
 def idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) : E →L[𝕜] E :=
-  ↑(prodEquivOfClosedCompl p q h hp hq) ∘L (ContinuousLinearMap.inl 𝕜 p q ∘L
-    (linearProjOfClosedCompl p q h hp hq))
+  Submodule.subtypeL p ∘L (linearProjOfClosedCompl p q h hp hq)
 
 variable {p q}
 
@@ -144,11 +143,9 @@ lemma mem_iff_invariant_ofClosedCompl  (h : IsCompl p q) (hp : IsClosed (p : Set
     x ∈ p ↔ P x = x := by
   constructor
   · intro hx
-    simp only [idempotentOfClosedCompl, ContinuousLinearMap.coe_comp',
-      ContinuousLinearEquiv.coe_coe, coe_prodEquivOfClosedCompl,
+    simp only [idempotentOfClosedCompl, ContinuousLinearMap.coe_comp', coe_subtypeL', coe_subtype,
       coe_continuous_linearProjOfClosedCompl', Function.comp_apply,
-      (linearProjOfIsCompl_apply_left h ⟨x,hx⟩), ContinuousLinearMap.inl_apply,
-      coe_prodEquivOfIsCompl', ZeroMemClass.coe_zero, add_zero]
+      (linearProjOfIsCompl_apply_left h ⟨x, hx⟩)]
   · intro hx
     simp [idempotentOfClosedCompl] at hx
     rw [← hx]
@@ -160,11 +157,9 @@ lemma mem_iff_zero_ofClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     y ∈ q ↔ P y = 0 := by
   constructor
   · intro hy
-    simp only [idempotentOfClosedCompl, ContinuousLinearMap.coe_comp',
-      ContinuousLinearEquiv.coe_coe, coe_prodEquivOfClosedCompl,
-      coe_continuous_linearProjOfClosedCompl', Function.comp_apply, ContinuousLinearMap.inl_apply,
-      coe_prodEquivOfIsCompl', ZeroMemClass.coe_zero, add_zero, ZeroMemClass.coe_eq_zero,
-      ((linearProjOfIsCompl_apply_eq_zero_iff h).mpr hy)]
+    simp only [idempotentOfClosedCompl, ContinuousLinearMap.coe_comp', coe_subtypeL', coe_subtype,
+      coe_continuous_linearProjOfClosedCompl', Function.comp_apply,
+      ((linearProjOfIsCompl_apply_eq_zero_iff h).mpr hy), ZeroMemClass.coe_zero]
   · intro h
     rw [idempotentOfClosedCompl] at h
     simp at h
@@ -192,10 +187,8 @@ lemma ker_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     ker P = q := by
   ext x
   simp only [idempotentOfClosedCompl, LinearMap.mem_ker, ContinuousLinearMap.coe_comp',
-    ContinuousLinearEquiv.coe_coe, coe_prodEquivOfClosedCompl,
-    coe_continuous_linearProjOfClosedCompl', Function.comp_apply, ContinuousLinearMap.inl_apply,
-    coe_prodEquivOfIsCompl', ZeroMemClass.coe_zero, add_zero, ZeroMemClass.coe_eq_zero,
-    linearProjOfIsCompl_apply_eq_zero_iff]
+    coe_subtypeL', coe_subtype, coe_continuous_linearProjOfClosedCompl', Function.comp_apply,
+    ZeroMemClass.coe_eq_zero, linearProjOfIsCompl_apply_eq_zero_iff]
 
 lemma range_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
