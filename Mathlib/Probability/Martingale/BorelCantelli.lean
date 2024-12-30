@@ -6,6 +6,7 @@ Authors: Kexing Ying
 import Mathlib.Probability.Martingale.Centering
 import Mathlib.Probability.Martingale.Convergence
 import Mathlib.Probability.Martingale.OptionalStopping
+import Mathlib.Topology.Algebra.IndicatorCard
 
 /-!
 
@@ -338,53 +339,6 @@ theorem tendsto_sum_indicator_atTop_iff [IsFiniteMeasure μ]
     exact hω₂ ((tendsto_atBot_add_left_of_ge _ b fun n =>
       hbdd ⟨n, rfl⟩) <| tendsto_neg_atBot_iff.2 ht)
 
-section Indicator
-
-variable {α : Type*}
-
-open Finset Set
-
-lemma _root_.Set.infinite_iff_tendsto_sum_indicator_atTop (R : Type*) [StrictOrderedSemiring R]
-    [Archimedean R] {s : Set ℕ} : s.Infinite
-      ↔ Tendsto (fun n ↦ ∑ k ∈ range n, s.indicator (1 : ℕ → R) k) atTop atTop := by
-  have h_mono : Monotone fun n ↦ ∑ k ∈ range n, s.indicator (1 : ℕ → R) k := by
-    refine (sum_mono_set_of_nonneg ?_).comp range_mono
-    exact (fun _ ↦ indicator_nonneg (fun _ _ ↦ zero_le_one) _)
-  rw [h_mono.tendsto_atTop_atTop_iff]
-  refine ⟨fun hs n ↦ ?_, ?_⟩
-  · obtain ⟨n', hn'⟩ := exists_lt_nsmul zero_lt_one n
-    obtain ⟨t, t_s, t_card⟩ := hs.exists_subset_card_eq n'
-    obtain ⟨M, hM⟩ := t.bddAbove
-    refine ⟨M + 1, hn'.le.trans ?_⟩
-    apply (sum_le_sum fun i _ ↦ (indicator_le_indicator_of_subset t_s zero_le_one) i).trans_eq'
-    have h : t ⊆ range (M + 1) := by
-      intro i i_t
-      rw [Finset.mem_range]
-      exact (hM i_t).trans_lt (lt_add_one M)
-    rw [sum_indicator_subset (1 : ℕ → R) h, sum_eq_card_nsmul (fun i _ ↦ Pi.one_apply i), t_card]
-  · contrapose!
-    intro hs
-    obtain ⟨M, hM⟩ := (not_infinite.1 hs).bddAbove
-    have : ∑ k ∈ range (M + 1), s.indicator (1 : ℕ → R) k < (M + 2) • 1 := by
-      apply (sum_le_card_nsmul _ _ 1 _).trans_lt
-      · simp
-      · exact fun i _ ↦ Pi.le_def.1 (indicator_le_self' (fun _ _ ↦ zero_le_one)) i
-    refine ⟨(M + 2) • 1, fun n ↦ not_le_of_lt (lt_of_le_of_lt ?_ this)⟩
-    rcases lt_or_le n (M + 1) with n_M | n_M
-    · exact h_mono n_M.le
-    · refine (eventually_constant_sum (fun k k_N ↦ indicator_of_not_mem ?_ _) n_M).le
-      exact fun h ↦ not_lt_of_le (hM h) (Nat.lt_iff_add_one_le.2 k_N)
-
-lemma _root_.Set.limsup_eq_tendsto_sum_indicator_atTop (R : Type*) [StrictOrderedSemiring R]
-    [Archimedean R] (s : ℕ → Set α) : limsup s atTop = { ω | Tendsto
-      (fun n ↦ ∑ k ∈ Finset.range n, (s k).indicator (1 : α → R) ω) atTop atTop } := by
-  nth_rw 1 [← Nat.cofinite_eq_atTop, cofinite.limsup_set_eq]
-  ext ω
-  rw [mem_setOf_eq, mem_setOf_eq, infinite_iff_tendsto_sum_indicator_atTop R, iff_eq_eq]
-  congr
-
-end Indicator
-
 open BorelCantelli
 
 theorem tendsto_sum_indicator_atTop_iff' [IsFiniteMeasure μ] {s : ℕ → Set Ω}
@@ -409,7 +363,8 @@ theorem ae_mem_limsup_atTop_iff (μ : Measure Ω) [IsFiniteMeasure μ] {s : ℕ 
     (hs : ∀ n, MeasurableSet[ℱ n] (s n)) : ∀ᵐ ω ∂μ, ω ∈ limsup s atTop ↔
     Tendsto (fun n => ∑ k ∈ Finset.range n,
       (μ[(s (k + 1)).indicator (1 : Ω → ℝ)|ℱ k]) ω) atTop atTop := by
-  rw [← limsup_nat_add s 1, Set.limsup_eq_tendsto_sum_indicator_atTop ℝ (fun n ↦ s (n + 1))]
+  rw [← limsup_nat_add s 1,
+    Set.limsup_eq_tendsto_sum_indicator_atTop (zero_lt_one (α := ℝ)) (fun n ↦ s (n + 1))]
   exact tendsto_sum_indicator_atTop_iff' hs
 
 end MeasureTheory
