@@ -12,6 +12,11 @@ import Mathlib.Topology.MetricSpace.Contracting
 /-!
 Attempt to unify `Gronwall` and `PicardLindelof` and prepare for `LocalFlow`
 
+Implementation notes:
+* Using Lipschitz in `FunSpace` instead of the mapping into a closed ball condition of Lang so that
+`CompleteSpace E` can be avoided in most proofs, even though Lipschitz is a stronger condition than
+the mapping condition. We also avoid having to carrying around `closedBall x₀ (2 * a)` in the type.
+* `ℝ≥0` is used as the type of many constants here to minise proofs for statements like `0 ≤ 2 * a`.
 -/
 
 open Function MeasureTheory Metric Set
@@ -166,7 +171,6 @@ lemma contDiffOn_enat_integrateIntegral_Ioo
 
 end
 
--- extract variables E, etc
 lemma continuousOn_uncurry_of_lipschitzOnWith_continuousOn
     {E : Type*} [NormedAddCommGroup E]
     {f : ℝ → E → E} {s : Set ℝ} {u : Set E}
@@ -179,18 +183,16 @@ lemma continuousOn_uncurry_of_lipschitzOnWith_continuousOn
 
 /-! ## Space of curves -/
 
-/-- The space of continuous functions `α : Icc tmin tmax → E` whose image is contained in `u` and
-which satisfy the initial condition `α t₀ = x`.
+/-- The space of `C`-Lipschitz functions `α : Icc tmin tmax → E` satisfying the initial condition
+`α t₀ = x`.
 
 This will be shown to be a complete metric space on which `integrate` is a contracting map, leading
-to a fixed point `α` that will serve as the solution to the ODE. -/
--- comment about `x ∈ u`
-@[ext]
-structure FunSpace {E : Type*} [NormedAddCommGroup E] {t₀ tmin tmax : ℝ}
-    (ht₀ : t₀ ∈ Icc tmin tmax) (u : Set E) (x : E) extends C(Icc tmin tmax, E) where
-  -- this makes future proof obligations simpler syntactically
-  mapsTo : MapsTo toFun univ u -- plug in `u := closedBall x₀ (2 * a)` in proofs
-  initial : toFun ⟨t₀, ht₀⟩ = x
+to a fixed point that will serve as the solution to the ODE. -/
+structure FunSpace {E : Type*} [NormedAddCommGroup E]
+    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x : E) (C : ℝ≥0) where
+  toFun : Icc tmin tmax → E
+  initial : toFun t₀ = x
+  lipschitz : LipschitzWith C toFun
 
 namespace FunSpace
 
@@ -198,44 +200,57 @@ variable {E : Type*} [NormedAddCommGroup E]
 
 section
 
-variable {t₀ tmin tmax : ℝ} {ht₀ : t₀ ∈ Icc tmin tmax} {u : Set E} {x : E}
+variable {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x : E} {C : ℝ≥0}
 
 -- need `toFun_eq_coe`?
 
-instance : CoeFun (FunSpace ht₀ u x) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
+instance : CoeFun (FunSpace t₀ x C) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
 
-/-- The constant map. This is not an instance because of the need for the assumption `x ∈ u`. -/
-def inhabited (hx : x ∈ u) : Inhabited (FunSpace ht₀ u x) :=
-  ⟨⟨fun _ ↦ x, continuous_const⟩, fun _ _ ↦ hx, rfl⟩
+/-- The constant map -/
+instance : Inhabited (FunSpace t₀ x C) :=
+  ⟨fun _ ↦ x, rfl, (LipschitzWith.const _).weaken (zero_le _)⟩
+
+protected lemma continuous (α : FunSpace t₀ x C) : Continuous α := α.lipschitz.continuous
+
+/-- The embedding of `FunSpace` into the space of continuous maps. -/
+def toContinuousMap : FunSpace t₀ x C ↪ C(Icc tmin tmax, E) :=
+  ⟨fun α ↦ ⟨α, α.continuous⟩, fun α β h ↦ by cases α; cases β; simpa using h⟩
 
 /-- The metric between two curves `α` and `β` is the supremum of the metric between `α t` and `β t`
-over all `t` in the domain. This is well defined when the domain is compact, such as a closed
+over all `t` in the domain. This is finite when the domain is compact, such as a closed
 interval in our case. -/
-noncomputable instance : MetricSpace (FunSpace ht₀ u x) :=
-  MetricSpace.induced toContinuousMap (fun _ _ _ ↦ by ext; congr) inferInstance
+noncomputable instance : MetricSpace (FunSpace t₀ x C) :=
+  MetricSpace.induced toContinuousMap toContinuousMap.injective inferInstance
 
 lemma isUniformInducing_toContinuousMap :
-    IsUniformInducing fun α : FunSpace ht₀ u x ↦ α.toContinuousMap := ⟨rfl⟩
+    IsUniformInducing fun α : FunSpace t₀ x C ↦ α.toContinuousMap := ⟨rfl⟩
 
-lemma range_toContinuousMap : range (fun α : FunSpace ht₀ u x ↦ α.toContinuousMap) =
-    { α : C(Icc tmin tmax, E) | α ⟨t₀, ht₀⟩ = x ∧ MapsTo α univ u } := by
-  ext α; constructor
+lemma range_toContinuousMap : range (fun α : FunSpace t₀ x C ↦ α.toContinuousMap) =
+    { α : C(Icc tmin tmax, E) | α t₀ = x ∧ LipschitzWith C α } := by
+  ext α
+  constructor
   · rintro ⟨⟨α, hα1, hα2⟩, rfl⟩
-    exact ⟨hα2, hα1⟩
+    exact ⟨hα1, hα2⟩
   · rintro ⟨hα1, hα2⟩
-    refine ⟨⟨α, hα2, hα1⟩, rfl⟩
+    exact ⟨⟨α, hα1, hα2⟩, rfl⟩
 
--- this is where we need `u` closed, e.g. closedBall
--- generalise to all closed `u`?
-/-- The space of bounded curves is complete. -/
-instance instCompleteSpace [CompleteSpace E] {x₀ : E} {a : ℝ} :
-    CompleteSpace (FunSpace ht₀ (closedBall x₀ a) x) := by
+/-- We show that `FunSpace` is complete in order to apply the contraction mapping theorem. -/
+instance [CompleteSpace E] : CompleteSpace (FunSpace t₀ x C) := by
   rw [completeSpace_iff_isComplete_range <| isUniformInducing_toContinuousMap]
   apply IsClosed.isComplete
   rw [range_toContinuousMap, setOf_and]
   apply isClosed_eq (continuous_eval_const _) continuous_const |>.inter
-  apply isClosed_ball.setOf_mapsTo
-  exact fun _ _ ↦ continuous_eval_const _
+  exact isClosed_setOf_lipschitzWith C |>.preimage continuous_coeFun
+
+protected theorem mem_closedBall (α : FunSpace t₀ x C) {a : ℝ≥0}
+  (hle : C * max (tmax - t₀) (t₀ - tmin) ≤ a) (t : Icc tmin tmax) : α t ∈ closedBall x C := by
+  rw [mem_closedBall]
+  calc
+    dist (α t) x = dist (α t) (α t₀) := by rw [α.initial]
+    _ ≤ C * dist t t₀ := α.lipschitz.dist_le_mul _ _
+    _ ≤ C * max (tmax - t₀) (t₀ - tmin) :=
+      mul_le_mul_of_nonneg_left (abs_sub_le_max_sub t.2.1 t.2.2 _) C.2
+    _ ≤ a := hle
 
 end
 
@@ -245,14 +260,14 @@ variable [NormedSpace ℝ E]
 
 lemma norm_intervalIntegral_le_mul_abs {f : ℝ → E → E}
     {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax)
-    {u : Set E}
-    {L : ℝ≥0} (hnorm : ∀ t ∈ Icc tmin tmax, ∀ x ∈ u, ‖f t x‖ ≤ L)
-    {x : E} (α : FunSpace ht₀ u x) (t : Icc tmin tmax) :
+    {x₀ : E} {a L : ℝ≥0} (hnorm : ∀ t ∈ Icc tmin tmax, ∀ x ∈ closedBall x₀ a, ‖f t x‖ ≤ L)
+    {x : E} {C : ℝ≥0} (α : FunSpace ht₀ x C) (t : Icc tmin tmax) :
     ‖∫ (τ : ℝ) in t₀..t, f τ ((α.toFun ∘ projIcc tmin tmax (le_trans ht₀.1 ht₀.2)) τ)‖ ≤
       L * |t - t₀| := by
   apply intervalIntegral.norm_integral_le_of_norm_le_const
   intro t' ht'
-  apply hnorm _ _ _ <| α.mapsTo <| mem_univ _
+  apply hnorm _ _ _
+
   rw [uIoc_eq_union] at ht'
   -- why can't these be directly solved with a tactic?
   have ⟨_, _⟩ := ht₀
