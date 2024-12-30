@@ -136,6 +136,8 @@ theorem toLinearMap_map (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) :
     (map f g : M ⊗[R] N →ₗ[R] P ⊗[R] Q) = TensorProduct.map (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :=
   rfl
 
+@[deprecated (since := "2024-12-30")] alias coe_linearMap_map := toLinearMap_map
+
 @[simp]
 nonrec theorem map_tmul (f : M →ₗ⁅R,L⁆ P) (g : N →ₗ⁅R,L⁆ Q) (m : M) (n : N) :
     map f g (m ⊗ₜ n) = f m ⊗ₜ g n :=

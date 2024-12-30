@@ -213,10 +213,18 @@ theorem toLinearMap_maxTrivLinearMapEquivLieModuleHom (f : maxTrivSubmodule R L 
     (maxTrivLinearMapEquivLieModuleHom (M := M) (N := N) f : M →ₗ[R] N) = (f : M →ₗ[R] N) := by
   ext; rfl
 
+@[deprecated (since := "2024-12-30")]
+alias coe_linearMap_maxTrivLinearMapEquivLieModuleHom :=
+  toLinearMap_maxTrivLinearMapEquivLieModuleHom
+
 @[simp]
 theorem toLinearMap_maxTrivLinearMapEquivLieModuleHom_symm (f : M →ₗ⁅R,L⁆ N) :
     (maxTrivLinearMapEquivLieModuleHom (M := M) (N := N) |>.symm f : M →ₗ[R] N) = (f : M →ₗ[R] N) :=
   rfl
+
+@[deprecated (since := "2024-12-30")]
+alias coe_linearMap_maxTrivLinearMapEquivLieModuleHom_symm :=
+  toLinearMap_maxTrivLinearMapEquivLieModuleHom_symm
 
 end LieModule
 
