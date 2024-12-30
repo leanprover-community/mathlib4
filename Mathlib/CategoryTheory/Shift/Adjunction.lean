@@ -486,15 +486,6 @@ instance : (E.trans E').CommShift A := by
   rw [trans_toAdjunction]
   infer_instance
 
-/--
-If equivalences `E : C ≌ D` and `E' : D ≌ F` are compatible with shifts, so is `E.trans E'`.
--/
-instance {F : Type*} [Category F] [HasShift F A] {E' : D ≌ F} [E.CommShift A]
-    [E'.functor.CommShift A] [E'.inverse.CommShift A] [E'.CommShift A] :
-    (E.trans E').CommShift A := by
-  rw [trans_toAdjunction]
-  infer_instance
-
 end CommShift
 
 end
