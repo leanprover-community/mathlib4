@@ -131,7 +131,6 @@ variable [IsMonoidalLeftDistrib C]
 
 /-- The forward direction of the left distributivity isomorphism is the cogap morphism
 `coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr) : (X ⊗ Y) ⨿ (X ⊗ Z) ⟶ X ⊗ (Y ⨿ Z)`. -/
-@[simp]
 lemma leftDistrib_hom {X Y Z : C} :
   (∂L X Y Z).hom = coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr) := by rfl
 
@@ -248,7 +247,7 @@ open Distributive
 /-- In a symmetric monoidal category, the left distributivity is equal to
 the right distributivity up to braiding isomorphisms. -/
 @[simp]
-lemma SymmetricCategory.leftDistrib_braiding [SymmetricCategory C] {X Y Z : C} :
+lemma SymmetricCategory.leftDistrib_braiding [BraidedCategory C] {X Y Z : C} :
     (coprodComparison (tensorLeft X) Y Z) ≫ (β_ X (Y ⨿ Z)).hom =
     (coprod.map (β_ X Y).hom (β_ X Z).hom) ≫ (coprodComparison (tensorRight X) Y Z) := by
   simp [coprodComparison]
