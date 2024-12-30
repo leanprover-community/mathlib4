@@ -17,16 +17,14 @@ Attempt to unify `Gronwall` and `PicardLindelof` and prepare for `LocalFlow`
 open Function MeasureTheory Metric Set
 open scoped Nat NNReal Topology
 
--- move to `MeasureTheory/Measure/Lebesgue/Basic`
-instance Real.isFiniteMeasure_restrict_uIoc (x y : ℝ) :
-    IsFiniteMeasure (volume.restrict (Ι x y)) := by
-  rw [uIoc_eq_union]
-  exact isFiniteMeasure_of_le _ <| Measure.restrict_union_le _ _
-
--- move to `MeasureTheory/Measure/Lebesgue/Basic`
-@[simp]
-lemma Real.volume_uIoc (a b : ℝ) : volume (Ι a b) = ENNReal.ofReal |b - a| := by
-  rw [uIoc, volume_Ioc, max_sub_min_eq_abs]
+-- generalise
+lemma abs_sub_le_max_sub {a b c : ℝ} (hac : a ≤ b) (hcd : b ≤ c) (d : ℝ) :
+    |b - d| ≤ (c - d) ⊔ (d - a) := by
+  rcases le_total d b with h | h
+  · rw [abs_of_nonneg <| sub_nonneg_of_le h]
+    exact le_max_of_le_left <| sub_le_sub_right hcd _
+  · rw [abs_of_nonpos <| sub_nonpos_of_le h, neg_sub]
+    exact le_max_of_le_right <| sub_le_sub_left hac _
 
 namespace ODE
 
@@ -96,6 +94,7 @@ lemma hasDerivAt_integrate_of_isOpen
     (continuousOn_comp hf hα hmem |>.stronglyMeasurableAtFilter hs _ ht')
     (continuousOn_comp hf hα hmem _ ht' |>.continuousAt <| hs.mem_nhds ht')
 
+-- need a `ContinuousOn` version not requiring `CompleteSpace E`
 -- also works for open sets and `Ici` and `Iic`; generalise?
 -- another theorem for `(integrate f t₀ x₀ α) t₀ = x₀`?
 /-- If the time-dependent vector field `f` and the curve `α` are continuous, then `f t (α t)` is the
@@ -183,9 +182,8 @@ lemma continuousOn_uncurry_of_lipschitzOnWith_continuousOn
 /-- The space of continuous functions `α : Icc tmin tmax → E` whose image is contained in `u` and
 which satisfy the initial condition `α t₀ = x`.
 
-This will be shown to be a complete metric space on
-which `integrate` is a contracting map, leading to a fixed point `α` that will serve as the solution
-to the ODE. -/
+This will be shown to be a complete metric space on which `integrate` is a contracting map, leading
+to a fixed point `α` that will serve as the solution to the ODE. -/
 -- comment about `x ∈ u`
 @[ext]
 structure FunSpace {E : Type*} [NormedAddCommGroup E] {t₀ tmin tmax : ℝ}
@@ -230,7 +228,7 @@ lemma range_toContinuousMap : range (fun α : FunSpace ht₀ u x ↦ α.toContin
 -- this is where we need `u` closed, e.g. closedBall
 -- generalise to all closed `u`?
 /-- The space of bounded curves is complete. -/
-instance [CompleteSpace E] {x₀ : E} {a : ℝ≥0} :
+instance instCompleteSpace [CompleteSpace E] {x₀ : E} {a : ℝ≥0} :
     CompleteSpace (FunSpace ht₀ (closedBall x₀ a) x) := by
   rw [completeSpace_iff_isComplete_range <| isUniformInducing_toContinuousMap]
   apply IsClosed.isComplete
@@ -242,8 +240,6 @@ instance [CompleteSpace E] {x₀ : E} {a : ℝ≥0} :
 end
 
 /-! ### Contracting map on the space of curves -/
-
-section
 
 variable [NormedSpace ℝ E]
 
@@ -265,8 +261,10 @@ lemma norm_intervalIntegral_le_mul_abs {f : ℝ → E → E}
   · have ⟨_, _⟩ := h
     exact ⟨by linarith, by linarith⟩
 
+variable [CompleteSpace E]
+
 /-- The contracting map on `FunSpace` defined by `ODE.integrate` -/
-protected noncomputable def integrate [CompleteSpace E]
+protected noncomputable def integrate
     {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax)
     {x₀ : E}
     {a : ℝ≥0}
@@ -291,26 +289,18 @@ protected noncomputable def integrate [CompleteSpace E]
     intro t _ -- this form of FunSpace.mapsTo causes useless assumptions `t ∈ univ`
     dsimp only
     rw [comp_apply, integrate_apply, mem_closedBall, dist_eq_norm, add_comm, add_sub_assoc]
+    nth_rw 2 [two_mul]
+    apply norm_add_le_of_le _ <| mem_closedBall_iff_norm.mp hx
     calc
-      ‖_ + (x - x₀)‖ ≤ ‖_‖ + ‖x - x₀‖ := norm_add_le _ _
-      _ ≤ ‖_‖ + a := add_le_add_left (mem_closedBall_iff_norm.mp hx) _
-      _ ≤ L * |t - t₀| + a := add_le_add_right (norm_intervalIntegral_le_mul_abs _ hnorm ..) _
-      _ ≤ L * max (tmax - t₀) (t₀ - tmin) + a := by
-        apply add_le_add_right
-        apply mul_le_mul_of_nonneg_left _ L.2
-        -- this is repeated later
-        by_cases ht : t₀ < t
-        · rw [abs_of_pos <| sub_pos_of_lt ht]
-          exact le_max_of_le_left <| sub_le_sub_right t.2.2 _
-        · rw [abs_of_nonpos <| sub_nonpos_of_le <| not_lt.mp ht, neg_sub]
-          exact le_max_of_le_right <| sub_le_sub_left t.2.1 _
-      _ ≤ a + a := add_le_add_right hle _
-      _ = 2 * a := (two_mul _).symm
+      ‖_‖ ≤ L * |t - t₀| := norm_intervalIntegral_le_mul_abs ht₀ hnorm α t
+      _ ≤ L * max (tmax - t₀) (t₀ - tmin) :=
+        mul_le_mul_of_nonneg_left (abs_sub_le_max_sub t.2.1 t.2.2 _) L.2
+      _ ≤ a := hle
   initial := by simp only [ContinuousMap.toFun_eq_coe, comp_apply, integrate_apply,
       intervalIntegral.integral_same, add_zero]
 
 @[simp]
-lemma integrate_apply [CompleteSpace E]
+lemma integrate_apply
     {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax)
     {x₀ : E}
     {a : ℝ≥0}
@@ -324,7 +314,8 @@ lemma integrate_apply [CompleteSpace E]
     α.integrate ht₀ hlip hcont hnorm hle hx t =
       integrate f t₀ x (α ∘ (projIcc _ _ (le_trans ht₀.1 ht₀.2))) t := rfl
 
-lemma dist_comp_iterate_integral_le [CompleteSpace E]
+/-- A key step in the inductive case of `dist_iterate_integrate_apply_le` -/
+lemma dist_comp_iterate_integral_le
     {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax)
     {x₀ : E}
     {a : ℝ≥0}
@@ -349,7 +340,9 @@ lemma dist_comp_iterate_integral_le [CompleteSpace E]
       apply mul_le_mul_of_nonneg_left _ K.2
       rwa [← mul_pow]
 
-lemma dist_iterate_integrate_apply_le [CompleteSpace E]
+/-- A time-dependent bound on the distance between the `n`-th iterates of `integrate` on two
+curves -/
+lemma dist_iterate_integrate_apply_le
     {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax)
     {x₀ : E}
     {a : ℝ≥0}
@@ -404,7 +397,9 @@ lemma dist_iterate_integrate_apply_le [CompleteSpace E]
           (fun _ _ ↦ FunSpace.mapsTo _ (mem_univ _))
         |>.mono (uIcc_subset_Icc ht₀ t.2) |>.intervalIntegrable
 
-lemma dist_iterate_integrate_le [CompleteSpace E]
+/-- The `n`-th iterate of `integrate` has Lipschitz with constant
+$(K \max(t_{\mathrm{max}}, t_{\mathrm{min}})^n / n!$. -/
+lemma dist_iterate_integrate_le
     {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax)
     {x₀ : E}
     {a : ℝ≥0}
@@ -426,21 +421,16 @@ lemma dist_iterate_integrate_le [CompleteSpace E]
     apply mul_le_mul_of_nonneg_right _ dist_nonneg
     apply div_le_div_of_nonneg_right _ (Nat.cast_nonneg _)
     apply pow_le_pow_left₀ <| mul_nonneg K.2 (abs_nonneg _)
-    apply mul_le_mul_of_nonneg_left _ K.2
-    -- duplicate
-    by_cases ht : t₀ < t
-    · rw [abs_of_pos <| sub_pos_of_lt ht]
-      exact le_max_of_le_left <| sub_le_sub_right t.2.2 _
-    · rw [abs_of_nonpos <| sub_nonpos_of_le <| not_lt.mp ht, neg_sub]
-      exact le_max_of_le_right <| sub_le_sub_left t.2.1 _
+    exact mul_le_mul_of_nonneg_left (abs_sub_le_max_sub t.2.1 t.2.2 _) K.2
   · apply mul_nonneg _ dist_nonneg
     apply div_nonneg _ (Nat.cast_nonneg _)
     apply pow_nonneg
     apply mul_nonneg K.2
     apply le_max_of_le_left
-    apply sub_nonneg_of_le ht₀.2
+    exact sub_nonneg_of_le ht₀.2
 
-lemma exists_contractingWith_iterate_integral [CompleteSpace E]
+/-- Some `n`-th iterate of `integrate` is a contracting map. -/
+lemma exists_contractingWith_iterate_integral
     {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax)
     {x₀ : E}
     {a : ℝ≥0}
@@ -460,7 +450,23 @@ lemma exists_contractingWith_iterate_integral [CompleteSpace E]
   exact ⟨n, ⟨_, this⟩, hn, LipschitzWith.of_dist_le_mul fun α β ↦
     dist_iterate_integrate_le ht₀ hlip hcont hnorm hle hx α β n⟩
 
-end
+lemma exists_funSpace_integrate_eq
+    {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax)
+    {x₀ : E}
+    {a : ℝ≥0}
+    {f : ℝ → E → E}
+    {K : ℝ≥0} (hlip : ∀ t ∈ Icc tmin tmax, LipschitzOnWith K (f t) (closedBall x₀ (2 * a)))
+    (hcont : ∀ x' ∈ closedBall x₀ (2 * a), ContinuousOn (f · x') (Icc tmin tmax))
+    {L : ℝ≥0} (hnorm : ∀ t ∈ Icc tmin tmax, ∀ x' ∈ closedBall x₀ (2 * a), ‖f t x'‖ ≤ L)
+    (hle : L * max (tmax - t₀) (t₀ - tmin) ≤ a)
+    {x : E} (hx : x ∈ closedBall x₀ a) :
+    ∃ α : FunSpace ht₀ (closedBall x₀ ((2 * a) : ℝ≥0)) x,
+      ODE.FunSpace.integrate ht₀ hlip hcont hnorm hle hx α = α :=
+  let ⟨_, _, h⟩ := exists_contractingWith_iterate_integral ht₀ hlip hcont hnorm hle hx
+  have : Inhabited <| FunSpace ht₀ (closedBall x₀ (2 * a)) x := sorry
+  have : CompleteSpace (FunSpace ht₀ (closedBall x₀ (2 * a)) x) :=
+    ODE.FunSpace.instCompleteSpace (a := 2 * a) -- why need this?
+  ⟨_, h.isFixedPt_fixedPoint_iterate⟩
 
 end FunSpace
 
