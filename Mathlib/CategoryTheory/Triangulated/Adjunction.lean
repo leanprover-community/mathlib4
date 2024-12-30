@@ -123,6 +123,8 @@ class IsTriangulated : Prop where
 
 namespace IsTriangulated
 
+attribute [instance] commShift leftAdjoint_isTriangulated rightAdjoint_isTriangulated
+
 /-- Constructor for `Adjunction.IsTriangulated`.
 -/
 lemma mk' : adj.IsTriangulated where
@@ -131,7 +133,14 @@ lemma mk' : adj.IsTriangulated where
 /-- The identity adjunction is triangulated.
 -/
 instance instId : (Adjunction.id (C := C)).IsTriangulated where
-  commShift := sorry
+
+variable {E : Type*} [Category E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G') [HasZeroObject E]
+  [Preadditive E] [HasShift E ℤ] [∀ (n : ℤ), (shiftFunctor E n).Additive] [Pretriangulated E]
+  [F'.CommShift ℤ] [G'.CommShift ℤ] [adj'.CommShift ℤ]
+
+/-- A composition of triangulated adjunctions is triangulated.
+-/
+instance instComp [adj.IsTriangulated] [adj'.IsTriangulated] : (adj.comp adj').IsTriangulated where
 
 end IsTriangulated
 
@@ -145,27 +154,51 @@ variable (E : C ≌ D) [E.functor.CommShift ℤ] [E.inverse.CommShift ℤ] [E.Co
 We say that an equivalence of categories `E` is triangulated if both `E.functor` and
 `E.inverse` are triangulated functors.
 -/
-class IsTriangulated : Prop where
-  functor_isTriangulated : E.functor.IsTriangulated := by infer_instance
-  inverse_isTriangulated : E.inverse.IsTriangulated := by infer_instance
+abbrev IsTriangulated : Prop := E.toAdjunction.IsTriangulated
 
 namespace IsTriangulated
 
-attribute [instance] functor_isTriangulated inverse_isTriangulated
+instance [E.IsTriangulated] : E.CommShift ℤ :=
+  inferInstanceAs (E.toAdjunction.CommShift ℤ)
+
+instance [E.IsTriangulated] : E.functor.IsTriangulated := inferInstance
+instance [E.IsTriangulated] : E.inverse.IsTriangulated := inferInstance
+
+instance [h : E.functor.IsTriangulated] : E.symm.inverse.IsTriangulated := h
+instance [h : E.inverse.IsTriangulated] : E.symm.functor.IsTriangulated := h
+
 
 /-- Constructor for `Equivalence.IsTriangulated`. -/
 lemma mk' (h : E.functor.IsTriangulated) : E.IsTriangulated where
-  inverse_isTriangulated := E.toAdjunction.isTriangulated_rightAdjoint
+  rightAdjoint_isTriangulated := E.toAdjunction.isTriangulated_rightAdjoint
 
 /-- Constructor for `Equivalence.IsTriangulated`. -/
 lemma mk'' (h : E.inverse.IsTriangulated) : E.IsTriangulated where
-  functor_isTriangulated := (mk' E.symm h).inverse_isTriangulated
+  leftAdjoint_isTriangulated := (mk' E.symm h).rightAdjoint_isTriangulated
+
+/--
+The identity equivalence is triangulated.
+-/
+instance : (Equivalence.refl (C := C)).IsTriangulated := by
+  dsimp [Equivalence.IsTriangulated]
+  rw [refl_toAdjunction]
+  infer_instance
 
 /-- If the equivalence `E` is triangulated, so is the equivalence `E.symm`.
 -/
 instance symm [E.IsTriangulated] : E.symm.IsTriangulated where
-  functor_isTriangulated := inverse_isTriangulated
-  inverse_isTriangulated := functor_isTriangulated
+
+variable {D' : Type*} [Category D'] [HasZeroObject D'] [Preadditive D'] [HasShift D' ℤ]
+  [∀ (n : ℤ), (shiftFunctor D' n).Additive] [Pretriangulated D'] {E' : D ≌ D'}
+  [E'.functor.CommShift ℤ] [E'.inverse.CommShift ℤ] [E'.CommShift ℤ]
+
+/--
+If equivalences `E : C ≌ D` and `E' : D ≌ F` are triangulated, so is `E.trans E'`.
+-/
+instance [E.IsTriangulated] [E'.IsTriangulated] : (E.trans E').IsTriangulated := by
+  dsimp [Equivalence.IsTriangulated]
+  rw [trans_toAdjunction]
+  infer_instance
 
 end IsTriangulated
 
