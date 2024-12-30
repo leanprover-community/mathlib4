@@ -23,7 +23,7 @@ noncomputable section
 
 namespace TopCat
 
-variable {J : Type u} [Category.{v} J]
+variable {J : Type v} [SmallCategory J]
 
 local notation "forget" => forget TopCat
 
@@ -53,13 +53,13 @@ Generally you should just use `limit.cone F`, unless you need the actual definit
 -/
 def limitConeInfi (F : J ⥤ TopCat.{max v u}) : Cone F where
   pt :=
-    ⟨(Types.limitCone.{u,v} (F ⋙ forget)).pt,
-      ⨅ j, (F.obj j).str.induced ((Types.limitCone.{u,v} (F ⋙ forget)).π.app j)⟩
+    ⟨(Types.limitCone.{v,u} (F ⋙ forget)).pt,
+      ⨅ j, (F.obj j).str.induced ((Types.limitCone.{v,u} (F ⋙ forget)).π.app j)⟩
   π :=
     { app := fun j =>
-        ⟨(Types.limitCone.{u,v} (F ⋙ forget)).π.app j, continuous_iff_le_induced.mpr (iInf_le _ _)⟩
+        ⟨(Types.limitCone.{v,u} (F ⋙ forget)).π.app j, continuous_iff_le_induced.mpr (iInf_le _ _)⟩
       naturality := fun _ _ f =>
-        ContinuousMap.coe_injective ((Types.limitCone.{u,v} (F ⋙ forget)).π.naturality f) }
+        ContinuousMap.coe_injective ((Types.limitCone.{v,u} (F ⋙ forget)).π.naturality f) }
 
 /-- The chosen cone `TopCat.limitCone F` for a functor `F : J ⥤ TopCat` is a limit cone.
 Generally you should just use `limit.isLimit F`, unless you need the actual definition
@@ -88,7 +88,7 @@ Generally you should just use `limit.isLimit F`, unless you need the actual defi
 (which is in terms of `Types.limitConeIsLimit`).
 -/
 def limitConeInfiIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitConeInfi.{v,u} F) := by
-  refine IsLimit.ofFaithful forget (Types.limitConeIsLimit.{u,v} (F ⋙ forget))
+  refine IsLimit.ofFaithful forget (Types.limitConeIsLimit.{v,u} (F ⋙ forget))
     -- Porting note: previously could infer all ?_ except continuity
     (fun s => ⟨fun v => ⟨fun j => (Functor.mapCone forget s).π.app j v, ?_⟩, ?_⟩) fun s => ?_
   · dsimp [Functor.sections]
@@ -103,7 +103,7 @@ def limitConeInfiIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitConeInfi.{
           (continuous_iff_coinduced_le.mp (s.π.app j).continuous : _))
   · rfl
 
-instance topCat_hasLimitsOfSize : HasLimitsOfSize.{v, u} TopCat.{max v u} where
+instance topCat_hasLimitsOfSize : HasLimitsOfSize.{v, v} TopCat.{max v u} where
   has_limits_of_shape _ :=
     { has_limit := fun F =>
         HasLimit.mk
@@ -114,11 +114,11 @@ instance topCat_hasLimits : HasLimits TopCat.{u} :=
   TopCat.topCat_hasLimitsOfSize.{u, u}
 
 instance forget_preservesLimitsOfSize :
-    PreservesLimitsOfSize.{v, u} (forget : TopCat.{max v u} ⥤ _) where
+    PreservesLimitsOfSize.{v, v} (forget : TopCat.{max v u} ⥤ _) where
   preservesLimitsOfShape {_} :=
     { preservesLimit := fun {F} =>
       preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v,u} F)
-          (Types.limitConeIsLimit.{u,v} (F ⋙ forget)) }
+          (Types.limitConeIsLimit.{v,u} (F ⋙ forget)) }
 
 instance forget_preservesLimits : PreservesLimits (forget : TopCat.{u} ⥤ _) :=
   TopCat.forget_preservesLimitsOfSize.{u, u}
@@ -129,7 +129,7 @@ Generally you should just use `colimit.cocone F`, unless you need the actual def
 -/
 def colimitCocone (F : J ⥤ TopCat.{max v u}) : Cocone F where
   pt :=
-    ⟨(Types.TypeMax.colimitCocone.{u,v} (F ⋙ forget)).pt,
+    ⟨(Types.TypeMax.colimitCocone.{v,u} (F ⋙ forget)).pt,
       ⨆ j, (F.obj j).str.coinduced ((Types.TypeMax.colimitCocone (F ⋙ forget)).ι.app j)⟩
   ι :=
     { app := fun j =>
@@ -146,7 +146,7 @@ Generally you should just use `colimit.isColimit F`, unless you need the actual 
 -/
 def colimitCoconeIsColimit (F : J ⥤ TopCat.{max v u}) : IsColimit (colimitCocone F) := by
   refine
-    IsColimit.ofFaithful forget (Types.TypeMax.colimitCoconeIsColimit.{u, v} _) (fun s =>
+    IsColimit.ofFaithful forget (Types.TypeMax.colimitCoconeIsColimit.{v, u} _) (fun s =>
     -- Porting note: it appears notation for forget breaks dot notation (also above)
     -- Porting note: previously function was inferred
       ⟨Quot.lift (fun p => (Functor.mapCocone forget s).ι.app p.fst p.snd) ?_, ?_⟩) fun s => ?_
@@ -162,7 +162,7 @@ def colimitCoconeIsColimit (F : J ⥤ TopCat.{max v u}) : IsColimit (colimitCoco
           (continuous_iff_coinduced_le.mp (s.ι.app j).continuous : _))
   · rfl
 
-instance topCat_hasColimitsOfSize : HasColimitsOfSize.{v,u} TopCat.{max v u} where
+instance topCat_hasColimitsOfSize : HasColimitsOfSize.{v,v} TopCat.{max v u} where
   has_colimits_of_shape _ :=
     { has_colimit := fun F =>
         HasColimit.mk
@@ -173,7 +173,7 @@ instance topCat_hasColimits : HasColimits TopCat.{u} :=
   TopCat.topCat_hasColimitsOfSize.{u, u}
 
 instance forget_preservesColimitsOfSize :
-    PreservesColimitsOfSize.{v, u} (forget : TopCat.{max u v} ⥤ _) where
+    PreservesColimitsOfSize.{v, v} (forget : TopCat.{max u v} ⥤ _) where
   preservesColimitsOfShape :=
     { preservesColimit := fun {F} =>
         preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F)
