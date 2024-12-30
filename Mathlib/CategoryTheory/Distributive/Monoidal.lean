@@ -131,7 +131,6 @@ variable [IsMonoidalLeftDistrib C]
 
 /-- The forward direction of the left distributivity isomorphism is the cogap morphism
 `coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr) : (X ⊗ Y) ⨿ (X ⊗ Z) ⟶ X ⊗ (Y ⨿ Z)`. -/
-@[simp]
 lemma leftDistrib_hom {X Y Z : C} :
   (∂L X Y Z).hom = coprod.desc (_ ◁ coprod.inl) (_ ◁ coprod.inr) := by rfl
 
