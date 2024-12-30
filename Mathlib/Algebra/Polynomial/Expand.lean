@@ -5,9 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.Algebra.Polynomial.Derivative
-import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.Algebra.Polynomial.RingDivision
--- import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.Polynomial.Basic
 
 /-!
@@ -210,6 +208,34 @@ theorem contract_expand {f : R[X]} (hp : p ≠ 0) : contract p (expand R p f) = 
 theorem contract_one {f : R[X]} : contract 1 f = f :=
   ext fun n ↦ by rw [coeff_contract one_ne_zero, mul_one]
 
+theorem contract_C {r : R} : contract p (C r) = C r := by simp [contract]
+
+theorem contract_add {f g : R[X]} {p : ℕ} (hp : p ≠ 0) :
+    contract p (f + g) = contract p f + contract p g := by
+  ext; simp_rw [coeff_add, coeff_contract hp, coeff_add]
+
+theorem contract_mul_expand {f g : R[X]} {p : ℕ} (hp : p ≠ 0) :
+    contract p (f * expand R p g) = contract p f * g := by
+  ext n
+  rw [coeff_contract hp, coeff_mul, coeff_mul, ← sum_subset
+    (s₁ := (antidiagonal n).image fun x ↦ (x.1 * p, x.2 * p)), sum_image]
+  · simp_rw [coeff_expand_mul hp.bot_lt, coeff_contract hp]
+  · intro x hx y hy eq; simpa only [Prod.ext_iff, Nat.mul_right_cancel_iff hp.bot_lt] using eq
+  · simp_rw [subset_iff, mem_image, mem_antidiagonal]; rintro _ ⟨x, rfl, rfl⟩; simp_rw [add_mul]
+  simp_rw [mem_image, mem_antidiagonal]
+  intro ⟨x, y⟩ eq nex
+  by_cases h : p ∣ y
+  · obtain ⟨x, rfl⟩ : p ∣ x := (Nat.dvd_add_iff_left h).mpr (eq ▸ dvd_mul_left p n)
+    obtain ⟨y, rfl⟩ := h
+    refine (nex ⟨⟨x, y⟩, (Nat.mul_right_cancel_iff hp.bot_lt).mp ?_, by simp_rw [mul_comm]⟩).elim
+    rw [← eq, mul_comm, mul_add]
+  · rw [coeff_expand hp.bot_lt, if_neg h, mul_zero]
+
+theorem isCoprime_of_expand {f g : R[X]} {p : ℕ} (hp : p ≠ 0) :
+    IsCoprime (expand R p f) (expand R p g) → IsCoprime f g :=
+  fun ⟨a, b, eq⟩ ↦ ⟨contract p a, contract p b, by
+    simp_rw [← contract_mul_expand hp, ← contract_add hp, eq, ← C_1, contract_C]⟩
+
 section ExpChar
 
 theorem expand_contract [CharP R p] [NoZeroDivisors R] {f : R[X]} (hf : Polynomial.derivative f = 0)
@@ -303,23 +329,5 @@ theorem of_irreducible_expand_pow {p : ℕ} (hp : p ≠ 0) {f : R[X]} {n : ℕ} 
       rwa [expand_expand]
 
 end IsDomain
-
-section Field
-
-variable (k : Type u) [Field k] [DecidableEq k]
-
-theorem isCoprime_of_expand {a b : k[X]} {n : ℕ} (hn : n ≠ 0) :
-    IsCoprime (expand k n a) (expand k n b) → IsCoprime a b := by
-  simp_rw [← EuclideanDomain.gcd_isUnit_iff]
-  cases' EuclideanDomain.gcd_dvd a b with ha hb
-  have he := EuclideanDomain.dvd_gcd (expand_dvd n ha) (expand_dvd n hb)
-  intro hu
-  have heu := isUnit_of_dvd_unit he hu
-  rw [Polynomial.isUnit_iff] at heu ⊢
-  rcases heu with ⟨r, hur, eq_r⟩
-  rw [eq_comm, expand_eq_C (zero_lt_iff.mpr hn), eq_comm] at eq_r
-  exact ⟨r, hur, eq_r⟩
-
-end Field
 
 end Polynomial
