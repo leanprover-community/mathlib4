@@ -42,12 +42,12 @@ variable {α : Type*} {r : α → α → Prop}
 
 /-- If a list `s` is shorter than a list `t`, then `s` is smaller than `t` under any shortlex
 order -/
-theorem shorter_than {s t : List α} (h : s.length < t.length) : Shortlex r s t :=
+theorem of_length_lt {s t : List α} (h : s.length < t.length) : Shortlex r s t :=
   Prod.Lex.left _ _ h
 
 /-- If two lists `s` and `t` have the same length, `s` is smaller than `t` under the shortlex order
 over a relation `r` exactly when `s` is smaller than `t` under the lexicographic order over `r`-/
-theorem len_equal {s t : List α} (h : s.length = t.length) (h2 : List.Lex r s t) :
+theorem of_lex {s t : List α} (h : s.length = t.length) (h2 : List.Lex r s t) :
     Shortlex r s t := by
   unfold Shortlex
   rw [h]
@@ -72,29 +72,12 @@ theorem shortlex_def {s t : List α} : Shortlex r s t ↔
       exact ⟨hp.1, h⟩
   intro hpq
   rcases hpq with h1 | h2
-  · exact shorter_than h1
-  exact len_equal h2.1 h2.2
+  · exact of_length_lt h1
+  exact of_lex h2.1 h2.2
 
 theorem cons_iff [IsIrrefl α r] {a : α} {s t : List α} : Shortlex r (a :: s) (a :: t) ↔
     Shortlex r s t := by
-  constructor
-  · intro h
-    rcases shortlex_def.mp h with h1 | h2
-    · simp only [List.length_cons, Nat.succ_eq_add_one, add_lt_add_iff_right] at h1
-      exact shorter_than h1
-    simp only [List.length_cons, Nat.succ_eq_add_one, add_left_inj] at h2
-    rw [List.Lex.cons_iff] at h2
-    exact len_equal h2.1 h2.2
-  intro h
-  rcases shortlex_def.mp h with h1 | h2
-  · apply shorter_than
-    simp only [List.length_cons, Nat.succ_eq_add_one, add_lt_add_iff_right]
-    exact h1
-  apply len_equal
-  · simp only [List.length_cons, Nat.succ_eq_add_one, add_left_inj]
-    exact h2.1
-  rw [List.Lex.cons_iff]
-  exact h2.2
+  simp only [shortlex_def, length_cons, add_lt_add_iff_right, add_left_inj, List.Lex.cons_iff]
 
 @[simp]
 theorem not_nil_right {s : List α} : ¬ Shortlex r s [] := by
@@ -108,18 +91,14 @@ theorem nil_left_or_eq_nil (s : List α) : Shortlex r [] s ∨ s = [] := by
   | nil => right; rfl
   | cons head tail =>
     left
-    apply shorter_than
+    apply of_length_lt
     simp only [List.length_nil, List.length_cons, Nat.succ_eq_add_one, lt_add_iff_pos_left,
       add_pos_iff, zero_lt_one, or_true]
 
 @[simp]
 theorem singleton_iff (a b : α) : Shortlex r [a] [b] ↔ r a b := by
-  constructor
-  · intro h
-    rcases shortlex_def.mp h with h1 | h2
-    · simp only [List.length_singleton, lt_self_iff_false] at h1
-    exact (List.Lex.singleton_iff _ _).mp h2.2
-  exact fun h =>  len_equal rfl ((List.Lex.singleton_iff _ _).mpr h)
+  simp only [shortlex_def, length_singleton, lt_self_iff_false, Lex.singleton_iff, true_and,
+    false_or]
 
 instance isOrderConnected [IsOrderConnected α r] [IsTrichotomous α r] :
     IsOrderConnected (List α) (Shortlex r) where
@@ -127,21 +106,21 @@ instance isOrderConnected [IsOrderConnected α r] [IsTrichotomous α r] :
     intro a b c ac
     rcases shortlex_def.mp ac with h1 | h2
     · rcases Nat.lt_or_ge a.length b.length with h3 | h4
-      · left; exact shorter_than h3
+      · left; exact of_length_lt h3
       rcases Nat.lt_or_ge b.length c.length with h3 | h4
-      · right; exact shorter_than h3
+      · right; exact of_length_lt h3
       omega
     rcases Nat.lt_or_ge a.length b.length with h3 | h4
-    · left; exact shorter_than h3
+    · left; exact of_length_lt h3
     rcases Nat.lt_or_ge b.length c.length with h3 | h4
-    · right; exact shorter_than h3
+    · right; exact of_length_lt h3
     have hab : a.length = b.length := by omega
     have hbc : b.length = c.length := by omega
     rcases List.Lex.isOrderConnected.aux r a b c h2.2 with h5 | h6
     · left
-      exact len_equal hab h5
+      exact of_lex hab h5
     right
-    exact len_equal hbc h6
+    exact of_lex hbc h6
 
 instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortlex r) where
   trichotomous := by
@@ -149,7 +128,7 @@ instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortl
     have : a.length < b.length ∨ a.length = b.length ∨ a.length > b.length :=
       trichotomous a.length b.length
     rcases this with h1 | h2 | h3
-    · left; exact shorter_than h1
+    · left; exact of_length_lt h1
     · induction a with
     | nil =>
       cases b with
@@ -163,18 +142,18 @@ instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortl
         simp only [length_cons, add_left_inj] at h2
         rcases @trichotomous _ (List.Lex r) _ (head :: tail) (head1 :: tail1) with h4 | h5 | h6
         · left
-          apply len_equal
+          apply of_lex
           · simp only [List.length_cons, Nat.succ_eq_add_one, add_left_inj]
             exact h2
           exact h4
         · right; left; exact h5
         right; right
-        apply len_equal
+        apply of_lex
         · simp only [List.length_cons, Nat.succ_eq_add_one, add_left_inj]
           exact h2.symm
         exact h6
     right; right
-    exact shorter_than h3
+    exact of_length_lt h3
 
 instance isAsymm [IsAsymm α r] : IsAsymm (List α) (Shortlex r) where
   asymm := by
@@ -191,7 +170,7 @@ theorem append_right {s₁ s₂ : List α} (t : List α) : Shortlex r s₁ s₂ 
     Shortlex r s₁ (s₂ ++ t) := by
   intro h
   rcases shortlex_def.mp h with h1 | h2
-  · apply shorter_than
+  · apply of_length_lt
     rw [List.length_append]
     omega
   cases t with
@@ -199,14 +178,14 @@ theorem append_right {s₁ s₂ : List α} (t : List α) : Shortlex r s₁ s₂ 
     rw [List.append_nil]
     exact h
   | cons head tail =>
-    apply shorter_than
+    apply of_length_lt
     rw [List.length_append, List.length_cons]
     omega
 
 theorem append_left {t₁ t₂ : List α} (h : Shortlex r t₁ t₂) (s : List α) :
     Shortlex r (s ++ t₁) (s ++ t₂) := by
   rcases shortlex_def.mp h with h1 | h2
-  · apply shorter_than
+  · apply of_length_lt
     rw [List.length_append, List.length_append]
     omega
   cases s with
@@ -214,7 +193,7 @@ theorem append_left {t₁ t₂ : List α} (h : Shortlex r t₁ t₂) (s : List �
     rw [List.nil_append, List.nil_append]
     exact h
   | cons head tail =>
-    apply len_equal
+    apply of_lex
     · simp only [List.cons_append, List.length_cons, List.length_append, Nat.succ_eq_add_one,
       add_left_inj, add_right_inj]
       exact h2.1
@@ -247,7 +226,7 @@ theorem shortlexAccessible {a : α} (n : ℕ) (aca : Acc r a)
             simp only [List.length_cons, Nat.succ_eq_add_one, List.singleton_append,
               add_left_inj] at h2
             rw [← h2.1] at hb
-            apply ihb _ (len_equal (h2.1) h) hb
+            apply ihb _ (of_lex (h2.1) h) hb
             intro l hl
             apply ih
             rw [List.length_cons, ← h2.1]
