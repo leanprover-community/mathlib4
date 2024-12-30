@@ -91,8 +91,6 @@ class IsMonoidalDistrib (C : Type u) [Category.{v} C]
 
 variable {C} [Category.{v} C] [MonoidalCategory C] [HasBinaryCoproducts C]
 
-example [IsMonoidalDistrib C] : IsMonoidalLeftDistrib C := by infer_instance
-
 section IsMonoidalLeftDistrib
 
 instance IsMonoidalLeftDistrib.preserves_binary_coproducts_tensorLeft
