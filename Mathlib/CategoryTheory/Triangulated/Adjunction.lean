@@ -82,7 +82,7 @@ lemma isTriangulated_rightAdjoint : G.IsTriangulated where
             rw [assoc, assoc, ← G.commShiftIso_hom_naturality, ← G.map_comp_assoc,
               comp_distTriang_mor_zero₃₁ _ hT, G.map_zero, zero_comp, comp_zero])
         dsimp at ψ hψ
-        obtain ⟨α, hα⟩ : ∃ α, α = φ - ψ ≫ (adj.homEquiv _ _) h := ⟨_, rfl⟩
+        obtain ⟨α, hα⟩ : ∃ α, α = φ - ψ ≫ adj.homEquiv _ _ h := ⟨_, rfl⟩
         have hα₀ : α ≫ G.map T.mor₃ = 0 := by
           rw [hα, sub_comp, ← cancel_mono ((Functor.commShiftIso G (1 : ℤ)).hom.app T.obj₁),
             assoc, sub_comp, assoc, assoc, hψ, zero_comp, sub_eq_zero,
