@@ -242,77 +242,91 @@ instance [CompleteSpace E] : CompleteSpace (FunSpace t₀ x C) := by
   apply isClosed_eq (continuous_eval_const _) continuous_const |>.inter
   exact isClosed_setOf_lipschitzWith C |>.preimage continuous_coeFun
 
-protected theorem mem_closedBall (α : FunSpace t₀ x C) {a : ℝ≥0}
-  (hle : C * max (tmax - t₀) (t₀ - tmin) ≤ a) (t : Icc tmin tmax) : α t ∈ closedBall x C := by
-  rw [mem_closedBall]
-  calc
-    dist (α t) x = dist (α t) (α t₀) := by rw [α.initial]
-    _ ≤ C * dist t t₀ := α.lipschitz.dist_le_mul _ _
-    _ ≤ C * max (tmax - t₀) (t₀ - tmin) :=
-      mul_le_mul_of_nonneg_left (abs_sub_le_max_sub t.2.1 t.2.2 _) C.2
-    _ ≤ a := hle
-
 end
 
 /-! ### Contracting map on the space of curves -/
 
 variable [NormedSpace ℝ E]
 
+-- docstring?
 lemma norm_intervalIntegral_le_mul_abs {f : ℝ → E → E}
-    {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax)
-    {x₀ : E} {a L : ℝ≥0} (hnorm : ∀ t ∈ Icc tmin tmax, ∀ x ∈ closedBall x₀ a, ‖f t x‖ ≤ L)
-    {x : E} {C : ℝ≥0} (α : FunSpace ht₀ x C) (t : Icc tmin tmax) :
-    ‖∫ (τ : ℝ) in t₀..t, f τ ((α.toFun ∘ projIcc tmin tmax (le_trans ht₀.1 ht₀.2)) τ)‖ ≤
-      L * |t - t₀| := by
+    {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+    {x₀ : E} {a L : ℝ≥0} (hnorm : ∀ t ∈ Icc tmin tmax, ∀ x ∈ closedBall x₀ (2 * a), ‖f t x‖ ≤ L)
+    {C : ℝ≥0} (hle : C * max (tmax - t₀) (t₀ - tmin) ≤ a)
+    {x : E} (hx : x ∈ closedBall x₀ a) (α : FunSpace t₀ x C) (t : Icc tmin tmax) :
+    ‖∫ (τ : ℝ) in t₀..t, f τ ((α.toFun ∘ projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2)) τ)‖ ≤
+      L * |t.1 - t₀.1| := by
   apply intervalIntegral.norm_integral_le_of_norm_le_const
   intro t' ht'
-  apply hnorm _ _ _
-
-  rw [uIoc_eq_union] at ht'
-  -- why can't these be directly solved with a tactic?
-  have ⟨_, _⟩ := ht₀
-  have ⟨_, _⟩ := t.2
-  refine or_imp.mpr ⟨fun h ↦ ?_, fun h ↦ ?_⟩ ht' <;>
-  · have ⟨_, _⟩ := h
-    exact ⟨by linarith, by linarith⟩
+  have ht' : t' ∈ Icc tmin tmax := by
+    rw [uIoc_eq_union] at ht'
+    -- why can't these be directly solved with a tactic?
+    have ⟨_, _⟩ := t₀.2
+    have ⟨_, _⟩ := t.2
+    refine or_imp.mpr ⟨fun h ↦ ?_, fun h ↦ ?_⟩ ht' <;>
+    · have ⟨_, _⟩ := h
+      exact ⟨by linarith, by linarith⟩
+  apply hnorm _ ht'
+  rw [comp_apply, mem_closedBall, dist_eq_norm, projIcc_of_mem (le_trans t₀.2.1 t₀.2.2) ht']
+  calc -- abstract this part out
+    ‖_‖ ≤ ‖_ - x‖ + ‖x - x₀‖ := norm_sub_le_norm_sub_add_norm_sub ..
+    _ = ‖_ - α t₀‖ + ‖x - x₀‖ := by rw [α.initial]
+    _ ≤ C * |t' - t₀| + a := by
+      apply add_le_add _ (mem_closedBall_iff_norm.mp hx)
+      rw [← dist_eq_norm]
+      exact α.lipschitz.dist_le_mul ⟨t', ht'⟩ t₀
+    _ ≤ C * max (tmax - t₀) (t₀ - tmin) + a := by
+      apply add_le_add_right
+      apply mul_le_mul_of_nonneg_left _ C.2
+      exact abs_sub_le_max_sub ht'.1 ht'.2 _
+    _ ≤ 2 * a := by
+      rw [two_mul]
+      apply add_le_add_right
+      exact hle
 
 variable [CompleteSpace E]
 
 /-- The contracting map on `FunSpace` defined by `ODE.integrate` -/
-protected noncomputable def integrate
-    {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax)
-    {x₀ : E}
-    {a : ℝ≥0}
-    {f : ℝ → E → E}
+protected noncomputable def integrate {f : ℝ → E → E}
+    {tmin tmax : ℝ} (t₀ : Icc tmin tmax)
+    {x₀ : E} {a L : ℝ≥0} (hnorm : ∀ t ∈ Icc tmin tmax, ∀ x' ∈ closedBall x₀ (2 * a), ‖f t x'‖ ≤ L)
     {K : ℝ≥0} (hlip : ∀ t ∈ Icc tmin tmax, LipschitzOnWith K (f t) (closedBall x₀ (2 * a)))
     (hcont : ∀ x' ∈ closedBall x₀ (2 * a), ContinuousOn (f · x') (Icc tmin tmax))
-    {L : ℝ≥0} (hnorm : ∀ t ∈ Icc tmin tmax, ∀ x' ∈ closedBall x₀ (2 * a), ‖f t x'‖ ≤ L)
-    (hle : L * max (tmax - t₀) (t₀ - tmin) ≤ a) -- weaker condition than in Lang
+    (hle : L * max (tmax - t₀) (t₀ - tmin) ≤ a)
     {x : E} (hx : x ∈ closedBall x₀ a)
-    (α : FunSpace ht₀ (closedBall x₀ (2 * a)) x) : FunSpace ht₀ (closedBall x₀ (2 * a)) x where
-  toFun := integrate f t₀ x (α ∘ (projIcc _ _ (le_trans ht₀.1 ht₀.2))) ∘ Subtype.val
-  continuous_toFun := by
-    apply ContinuousOn.comp_continuous _ continuous_subtype_val Subtype.coe_prop
-    have hf := continuousOn_uncurry_of_lipschitzOnWith_continuousOn hlip hcont
-    have hα : ContinuousOn (α ∘ (projIcc _ _ (le_trans ht₀.1 ht₀.2))) (Icc tmin tmax) :=
-      α.continuous_toFun.comp_continuousOn continuous_projIcc.continuousOn
-    intro t ht
-    apply hasDerivWithinAt_integrate_Icc ht₀ hf hα _ x ht |>.continuousWithinAt
-    exact fun _ _ ↦ mem_of_mem_of_subset (α.mapsTo (mem_univ _))
-      (closedBall_subset_closedBall le_rfl)
-  mapsTo := by
-    intro t _ -- this form of FunSpace.mapsTo causes useless assumptions `t ∈ univ`
-    dsimp only
-    rw [comp_apply, integrate_apply, mem_closedBall, dist_eq_norm, add_comm, add_sub_assoc]
-    nth_rw 2 [two_mul]
-    apply norm_add_le_of_le _ <| mem_closedBall_iff_norm.mp hx
-    calc
-      ‖_‖ ≤ L * |t - t₀| := norm_intervalIntegral_le_mul_abs ht₀ hnorm α t
-      _ ≤ L * max (tmax - t₀) (t₀ - tmin) :=
-        mul_le_mul_of_nonneg_left (abs_sub_le_max_sub t.2.1 t.2.2 _) L.2
-      _ ≤ a := hle
+    (α : FunSpace t₀ x L) : FunSpace t₀ x L where
+  toFun := integrate f t₀ x (α ∘ (projIcc _ _ (le_trans t₀.2.1 t₀.2.2))) ∘ Subtype.val
   initial := by simp only [ContinuousMap.toFun_eq_coe, comp_apply, integrate_apply,
       intervalIntegral.integral_same, add_zero]
+  lipschitz := LipschitzWith.of_dist_le_mul fun t₁ t₂ ↦ by
+    -- rw [dist_add_left, dist_eq_norm,
+    --   integral_interval_sub_left (f.intervalIntegrable_vComp _ _) (f.intervalIntegrable_vComp _ _)]
+    -- exact norm_integral_le_of_norm_le_const fun t _ => f.norm_vComp_le _
+
+
+
+
+  -- continuous_toFun := by
+  --   apply ContinuousOn.comp_continuous _ continuous_subtype_val Subtype.coe_prop
+  --   have hf := continuousOn_uncurry_of_lipschitzOnWith_continuousOn hlip hcont
+  --   have hα : ContinuousOn (α ∘ (projIcc _ _ (le_trans ht₀.1 ht₀.2))) (Icc tmin tmax) :=
+  --     α.continuous_toFun.comp_continuousOn continuous_projIcc.continuousOn
+  --   intro t ht
+  --   apply hasDerivWithinAt_integrate_Icc ht₀ hf hα _ x ht |>.continuousWithinAt
+  --   exact fun _ _ ↦ mem_of_mem_of_subset (α.mapsTo (mem_univ _))
+  --     (closedBall_subset_closedBall le_rfl)
+  -- mapsTo := by
+  --   intro t _ -- this form of FunSpace.mapsTo causes useless assumptions `t ∈ univ`
+  --   dsimp only
+  --   rw [comp_apply, integrate_apply, mem_closedBall, dist_eq_norm, add_comm, add_sub_assoc]
+  --   nth_rw 2 [two_mul]
+  --   apply norm_add_le_of_le _ <| mem_closedBall_iff_norm.mp hx
+  --   calc
+  --     ‖_‖ ≤ L * |t - t₀| := norm_intervalIntegral_le_mul_abs ht₀ hnorm α t
+  --     _ ≤ L * max (tmax - t₀) (t₀ - tmin) :=
+  --       mul_le_mul_of_nonneg_left (abs_sub_le_max_sub t.2.1 t.2.2 _) L.2
+  --     _ ≤ a := hle
+
 
 @[simp]
 lemma integrate_apply
