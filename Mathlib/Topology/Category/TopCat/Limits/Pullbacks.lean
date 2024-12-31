@@ -440,25 +440,28 @@ theorem pullback_fst_image_snd_preimage (f : X ⟶ Z) (g : Y ⟶ Z) (U : Set Y) 
 
 end Pullback
 
---TODO: Add analogous constructions for `pushout`.
-theorem coinduced_of_isColimit {F : J ⥤ TopCat.{max v u}} (c : Cocone F) (hc : IsColimit c) :
-    c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
-  let homeo := homeoOfIso (hc.coconePointUniqueUpToIso (colimitCoconeIsColimit F))
-  ext
-  refine homeo.symm.isOpen_preimage.symm.trans (Iff.trans ?_ isOpen_iSup_iff.symm)
-  exact isOpen_iSup_iff
+section
 
-theorem colimit_topology (F : J ⥤ TopCat.{max v u}) :
-    (colimit F).str = ⨆ j, (F.obj j).str.coinduced (colimit.ι F j) :=
-  coinduced_of_isColimit _ (colimit.isColimit F)
+variable {X Y : TopCat.{u}} {f g : X ⟶ Y}
 
-theorem colimit_isOpen_iff (F : J ⥤ TopCat.{max v u}) (U : Set ((colimit F : _) : Type max v u)) :
-    IsOpen U ↔ ∀ j, IsOpen (colimit.ι F j ⁻¹' U) := by
-  dsimp [topologicalSpace_coe]
-  conv_lhs => rw [colimit_topology F]
-  exact isOpen_iSup_iff
+def isOpen_iff_of_isColimit_cofork (c : Cofork f g) (hc : IsColimit c) (U : Set c.pt) :
+    IsOpen U ↔ IsOpen (c.π ⁻¹' U) := by
+  rw [isOpen_iff_of_isColimit _ hc]
+  constructor
+  · intro h
+    exact h .one
+  · rintro h (_ | _)
+    · rw [← c.w .left]
+      exact Continuous.isOpen_preimage f.continuous (c.π ⁻¹' U) h
+    · exact h
 
-theorem coequalizer_isOpen_iff (F : WalkingParallelPair ⥤ TopCat.{u})
+theorem coequalizer_isOpen_iff (U : Set ((coequalizer f g :) : Type u)) :
+    IsOpen U ↔ IsOpen (coequalizer.π f g ⁻¹' U) :=
+  isOpen_iff_of_isColimit_cofork _ (coequalizerIsCoequalizer f g) _
+
+end
+
+/-theorem coequalizer_isOpen_iff (F : WalkingParallelPair ⥤ TopCat.{u})
     (U : Set ((colimit F : _) : Type u)) :
     IsOpen U ↔ IsOpen (colimit.ι F WalkingParallelPair.one ⁻¹' U) := by
   rw [colimit_isOpen_iff]
@@ -469,6 +472,6 @@ theorem coequalizer_isOpen_iff (F : WalkingParallelPair ⥤ TopCat.{u})
     cases j
     · rw [← colimit.w F WalkingParallelPairHom.left]
       exact (F.map WalkingParallelPairHom.left).continuous_toFun.isOpen_preimage _ H
-    · exact H
+    · exact H-/
 
 end TopCat
