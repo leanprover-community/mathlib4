@@ -444,7 +444,7 @@ section
 
 variable {X Y : TopCat.{u}} {f g : X ⟶ Y}
 
-def isOpen_iff_of_isColimit_cofork (c : Cofork f g) (hc : IsColimit c) (U : Set c.pt) :
+lemma isOpen_iff_of_isColimit_cofork (c : Cofork f g) (hc : IsColimit c) (U : Set c.pt) :
     IsOpen U ↔ IsOpen (c.π ⁻¹' U) := by
   rw [isOpen_iff_of_isColimit _ hc]
   constructor
