@@ -138,7 +138,7 @@ private lemma tendsto_root_atTop_nhds_one {C : ℝ} (hC : 0 < C) :
     0 1 (rpow_zero C)).comp <| tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop
 
 --extends the lemma `tendsto_rpow_div` when the function has natural input
-private lemma tendsto_nat_rpow_div :
+private lemma tendsto_nat_rpow_inv :
     Tendsto (fun k : ℕ ↦ (k : ℝ) ^ (k : ℝ)⁻¹) atTop (𝓝 1) := by
   simp_rw [← one_div]
   exact Tendsto.comp tendsto_rpow_div tendsto_natCast_atTop_atTop
@@ -442,7 +442,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
   refine le_of_tendsto_of_tendsto tendsto_const_nhds ?_ (eventually_atTop.mpr ⟨1, h_ineq2⟩)
   nth_rw 2 [← mul_one 1]
   have : 0 < logb n₀ n := logb_pos (mod_cast hn₀) (by norm_cast; omega)
-  exact Tendsto.mul (tendsto_root_atTop_nhds_one (by positivity)) tendsto_nat_rpow_div
+  exact Tendsto.mul (tendsto_root_atTop_nhds_one (by positivity)) tendsto_nat_rpow_inv
 
 -- ## Step 2: given m,n ≥ 2 and |m|=m^s, |n|=n^t for s,t > 0, we have t ≤ s
 
