@@ -43,6 +43,7 @@ transferred to solutions of the integral equation.
 section
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+  {f : ℝ → E → E} {α : ℝ → E} {s : Set ℝ} {u : Set E} {t₀ tmin tmax : ℝ}
 
 /-- The main integral expression on which the Picard-Lindelöf theorem is built. It will be shown
 that if `α : ℝ → E` and `integral f t₀ x₀ α` agree on an interval containing `t₀`, then `α` is a
@@ -51,15 +52,15 @@ noncomputable def integrate (f : ℝ → E → E) (t₀ : ℝ) (x₀ : E) (α : 
   fun t ↦ x₀ + ∫ τ in t₀..t, f τ (α τ)
 
 @[simp]
-lemma integrate_apply {f : ℝ → E → E} {α : ℝ → E} {t₀ : ℝ} {x₀ : E} {t : ℝ} :
+lemma integrate_apply {x₀ : E} {t : ℝ} :
     integrate f t₀ x₀ α t = x₀ + ∫ τ in t₀..t, f τ (α τ) := rfl
 
 -- use `MapsTo`?
 /-- Given a $C^n$ time-dependent vector field `f` and a $C^n$ curve `α`, the composition `f t (α t)`
 is $C^n$ in `t`. -/
-lemma contDiffOn_comp {n : WithTop ℕ∞} {f : ℝ → E → E} {s : Set ℝ} {u : Set E}
+lemma contDiffOn_comp {n : WithTop ℕ∞}
     (hf : ContDiffOn ℝ n (uncurry f) (s ×ˢ u))
-    {α : ℝ → E} (hα : ContDiffOn ℝ n α s) (hmem : ∀ t ∈ s, α t ∈ u) :
+    (hα : ContDiffOn ℝ n α s) (hmem : ∀ t ∈ s, α t ∈ u) :
     ContDiffOn ℝ n (fun t ↦ f t (α t)) s := by
   have : (fun t ↦ f t (α t)) = (uncurry f) ∘ fun t ↦ (t, α t) := rfl -- abstract?
   rw [this]
@@ -69,7 +70,7 @@ lemma contDiffOn_comp {n : WithTop ℕ∞} {f : ℝ → E → E} {s : Set ℝ} {
   exact ⟨ht, hmem _ ht⟩
 
 /-- Special case of `contDiffOn_comp` when `n = 0`. -/
-lemma continuousOn_comp {f : ℝ → E → E} {α : ℝ → E} {s : Set ℝ} {u : Set E}
+lemma continuousOn_comp
     (hf : ContinuousOn (uncurry f) (s ×ˢ u)) (hα : ContinuousOn α s) (hmem : ∀ t ∈ s, α t ∈ u) :
     ContinuousOn (fun t ↦ f t (α t)) s :=
   contDiffOn_zero.mp <| contDiffOn_comp (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem
@@ -79,11 +80,11 @@ variable [CompleteSpace E]
 /-- If the time-dependent vector field `f` and the curve `α` are continuous, then `f t (α t)` is the
 derivative of `integrate f t₀ x₀ α`. -/
 lemma hasDerivAt_integrate_of_isOpen
-    {f : ℝ → E → E} {s : Set ℝ} (hs : IsOpen s) {u : Set E}
+    (hs : IsOpen s)
     (hf : ContinuousOn (uncurry f) (s ×ˢ u))
-    {α : ℝ → E} (hα : ContinuousOn α s)
+    (hα : ContinuousOn α s)
     (hmem : ∀ t ∈ s, α t ∈ u) (x₀ : E)
-    {t₀ : ℝ} {t : ℝ} (ht : uIcc t₀ t ⊆ s) :
+    {t : ℝ} (ht : uIcc t₀ t ⊆ s) :
     HasDerivAt (integrate f t₀ x₀ α) (f t (α t)) t := by
   apply HasDerivAt.const_add
   have ht' : t ∈ s := by -- missing lemmas `mem_Icc_right` etc?
@@ -101,9 +102,9 @@ lemma hasDerivAt_integrate_of_isOpen
 /-- If the time-dependent vector field `f` and the curve `α` are continuous, then `f t (α t)` is the
 derivative of `integrate f t₀ x₀ α`. -/
 lemma hasDerivWithinAt_integrate_Icc
-    {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax)
-    {f : ℝ → E → E} {u : Set E} (hf : ContinuousOn (uncurry f) ((Icc tmin tmax) ×ˢ u))
-    {α : ℝ → E} (hα : ContinuousOn α (Icc tmin tmax))
+    (ht₀ : t₀ ∈ Icc tmin tmax)
+    (hf : ContinuousOn (uncurry f) ((Icc tmin tmax) ×ˢ u))
+    (hα : ContinuousOn α (Icc tmin tmax))
     (hmem : ∀ t ∈ Icc tmin tmax, α t ∈ u) (x₀ : E)
     {t : ℝ} (ht : t ∈ Icc tmin tmax) :
     HasDerivWithinAt (integrate f t₀ x₀ α) (f t (α t)) (Icc tmin tmax) t := by
@@ -124,9 +125,9 @@ lemma hasDerivWithinAt_integrate_Icc
 /-- Converse of `hasDerivWithinAt_integrate_Icc`: if `f` is the derivative along `α`, then `α`
 satisfies the integral equation. -/
 lemma integrate_eq_of_hasDerivAt
-    {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Icc tmin tmax)
-    {f : ℝ → E → E} {u : Set E} (hf : ContinuousOn (uncurry f) ((Icc tmin tmax) ×ˢ u))
-    {α : ℝ → E} (hα : ContinuousOn α (Icc tmin tmax))
+    (ht₀ : t₀ ∈ Icc tmin tmax)
+    (hf : ContinuousOn (uncurry f) ((Icc tmin tmax) ×ˢ u))
+    (hα : ContinuousOn α (Icc tmin tmax))
     (hmem : ∀ t ∈ Icc tmin tmax, α t ∈ u)
     (hderiv : ∀ t ∈ Ioo tmin tmax, HasDerivAt α (f t (α t)) t)
     {x₀ : E} (hinit : α t₀ = x₀) -- have this assumption or use `α t₀` in statement?
@@ -148,9 +149,9 @@ lemma integrate_eq_of_hasDerivAt
 /-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
 `interate f t₀ x₀ α` is also $C^n$. This version works for `n : ℕ`. -/
 lemma contDiffOn_nat_integrate_Ioo
-    {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Ioo tmin tmax) {n : ℕ}
-    {f : ℝ → E → E} {u : Set E} (hf : ContDiffOn ℝ n (uncurry f) ((Ioo tmin tmax) ×ˢ u))
-    {α : ℝ → E} (hα : ContinuousOn α (Ioo tmin tmax))
+    (ht₀ : t₀ ∈ Ioo tmin tmax) {n : ℕ}
+    (hf : ContDiffOn ℝ n (uncurry f) ((Ioo tmin tmax) ×ˢ u))
+    (hα : ContinuousOn α (Ioo tmin tmax))
     (hmem : ∀ t ∈ Ioo tmin tmax, α t ∈ u) (x₀ : E)
     (heqon : ∀ t ∈ Ioo tmin tmax, α t = integrate f t₀ x₀ α t) :
     ContDiffOn ℝ n (integrate f t₀ x₀ α) (Ioo tmin tmax) := by
@@ -173,9 +174,9 @@ lemma contDiffOn_nat_integrate_Ioo
 /-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
 `interate f t₀ x₀ α` is also $C^n$.This version works for `n : ℕ∞`. -/
 lemma contDiffOn_enat_integrateIntegral_Ioo
-    {t₀ tmin tmax : ℝ} (ht₀ : t₀ ∈ Ioo tmin tmax) {n : ℕ∞}
-    {f : ℝ → E → E} {u : Set E} (hf : ContDiffOn ℝ n (uncurry f) ((Ioo tmin tmax) ×ˢ u))
-    {α : ℝ → E} (hα : ContinuousOn α (Ioo tmin tmax))
+    (ht₀ : t₀ ∈ Ioo tmin tmax) {n : ℕ∞}
+    (hf : ContDiffOn ℝ n (uncurry f) ((Ioo tmin tmax) ×ˢ u))
+    (hα : ContinuousOn α (Ioo tmin tmax))
     (hmem : ∀ t ∈ Ioo tmin tmax, α t ∈ u) (x₀ : E)
     (heqon : ∀ t ∈ Ioo tmin tmax, α t = integrate f t₀ x₀ α t) :
     ContDiffOn ℝ n (integrate f t₀ x₀ α) (Ioo tmin tmax) := by
@@ -489,7 +490,7 @@ section
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
   {f : ℝ → E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ x : E} {a L K : ℝ≥0}
 
--- probably restate the following with `hasDerivWithinAt_integrate_Icc`
+-- should i provide integral versions of these as well, or leave the user to use previous lemmas?
 
 -- make one where `x = x₀`
 /-- Picard-Lindelöf (Cauchy-Lipschitz) theorem. This version shows the existence of a local solution
@@ -526,6 +527,7 @@ theorem exists_eq_integrate_of_isPicardLindelof (hf : IsPicardLindelof f t₀ x�
 
 /-
 * Translate the existence lemma from `FunSpace` to `ℝ → E`
+* `C^1` implies `IsPicardLindelof
 * Another version of `IsPicardLindelof` that doesn't have `2 * a`, for when `x = x₀` (no flow)
 * Corollary 1.2
 -/
