@@ -66,11 +66,8 @@ lemma equiv_refl (f : AbsoluteValue R ℝ) : equiv f f :=
 /-- Equivalence of absolute values is symmetric. -/
 lemma equiv_symm {f g : AbsoluteValue R ℝ} (hfg : equiv f g) : equiv g f := by
   rcases hfg with ⟨c, hcpos, h⟩
-  use 1 / c
-  constructor
-  · simp only [one_div, inv_pos, hcpos]
-  ext x
-  simpa [← congr_fun h x] using Real.rpow_rpow_inv (apply_nonneg f x) (ne_of_lt hcpos).symm
+  refine ⟨1 / c, one_div_pos.mpr hcpos, ?_⟩
+  simp [← h, Real.rpow_rpow_inv (apply_nonneg f _) (ne_of_lt hcpos).symm]
 
 /-- Equivalence of absolute values is transitive. -/
 lemma equiv_trans {f g k : AbsoluteValue R ℝ} (hfg : equiv f g) (hgk : equiv g k) :
