@@ -905,19 +905,9 @@ protected theorem Complex.inner (w z : ℂ) : ⟪w, z⟫_ℝ = (conj w * z).re :
 
 end RCLikeToReal
 
-/-- An `RCLike` field is a real inner product space. This is not registered as an instance since it
-creates problems with the case `𝕜 = ℝ`, but it can be used in a proof to obtain a real inner product
-space structure on an `RCLike` field.
-
-This is definitionally different from the inner product space structure obtained from
-`InnerProductSpace.rclikeToReal 𝕜 𝕜` because of a non-defeq diamond in the `ℝ`-normed space
-instances:
-`NormedSpace.restrictScalars ℝ 𝕜 𝕜` isn't defeq to
-`NormedAlgebra.toNormedSpace' (𝕜 := ℝ) (𝕜' := 𝕜)` because the former sets
-`(r : ℝ) • (k : 𝕜) := algebraMap ℝ 𝕜 r * k ` while the latter inherits `r • k` from `RCLike 𝕜`. -/
-noncomputable def RCLike.innerProductSpaceReal : InnerProductSpace ℝ 𝕜 where
+/-- An `RCLike` field is a real inner product space. -/
+noncomputable instance RCLike.toInnerProductSpaceReal : InnerProductSpace ℝ 𝕜 where
   __ := Inner.rclikeToReal 𝕜 𝕜
-  __ := NormedAlgebra.toNormedSpace' (𝕜 := ℝ) (𝕜' := 𝕜)
   norm_sq_eq_inner := norm_sq_eq_inner
   conj_symm x y := inner_re_symm ..
   add_left x y z :=
