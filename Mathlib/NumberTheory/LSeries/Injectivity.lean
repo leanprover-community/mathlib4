@@ -32,6 +32,9 @@ lemma LSeries.abscissaOfAbsConv_binop_le {F : (ℕ → ℂ) → (ℕ → ℂ) �
   · exact LSeriesSummable_of_abscissaOfAbsConv_lt_re <|
       (ofReal_re x).symm ▸ (le_max_right ..).trans_lt hx
 
+-- The following two lemmas need both `LSeries.Linearity` and `LSeries.Convergence`,
+-- so cannot live in either of these files.
+
 /-- The abscissa of absolute convergence of `f + g` is at most the maximum of those
 of `f` and `g`. -/
 lemma LSeries.abscissaOfAbsConv_add_le (f g : ℕ → ℂ) :
