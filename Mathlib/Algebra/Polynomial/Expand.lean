@@ -210,11 +210,11 @@ theorem contract_one {f : R[X]} : contract 1 f = f :=
 
 @[simp] theorem contract_C (r : R) : contract p (C r) = C r := by simp [contract]
 
-theorem contract_add {f g : R[X]} {p : ℕ} (hp : p ≠ 0) :
+theorem contract_add {p : ℕ} (hp : p ≠ 0) (f g : R[X]) :
     contract p (f + g) = contract p f + contract p g := by
   ext; simp_rw [coeff_add, coeff_contract hp, coeff_add]
 
-theorem contract_mul_expand {f g : R[X]} {p : ℕ} (hp : p ≠ 0) :
+theorem contract_mul_expand {p : ℕ} (hp : p ≠ 0) (f g : R[X]) :
     contract p (f * expand R p g) = contract p f * g := by
   ext n
   rw [coeff_contract hp, coeff_mul, coeff_mul, ← sum_subset
