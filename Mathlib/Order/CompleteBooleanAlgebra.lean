@@ -426,9 +426,6 @@ theorem isLeast_sdiff {α} [GeneralizedCoheytingAlgebra α] (a b : α) :
 theorem himp_eq_sSup : a ⇨ b = sSup {w | w ⊓ a ≤ b} :=
   Eq.symm (isGreatest_himp a b).isLUB.sSup_eq
 
-theorem sdiff_eq_sInf {α} [Coframe α]  (a b : α) :
-    a \ b = sInf {w | a ≤ b ⊔ w}  :=
-  Eq.symm (isLeast_sdiff a b).isGLB.sInf_eq
 
 -- see Note [lower instance priority]
 instance (priority := 100) Frame.toDistribLattice : DistribLattice α :=
@@ -494,6 +491,9 @@ theorem iInf_sup_of_monotone {ι : Type*} [Preorder ι] [IsDirected ι (swap (·
 theorem iInf_sup_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ ·)] {f g : ι → α}
     (hf : Antitone f) (hg : Antitone g) : ⨅ i, f i ⊔ g i = (⨅ i, f i) ⊔ ⨅ i, g i :=
   @iSup_inf_of_monotone αᵒᵈ _ _ _ _ _ _ hf.dual_right hg.dual_right
+
+theorem sdiff_eq_sInf : a \ b = sInf {w | a ≤ b ⊔ w} :=
+  Eq.symm (isLeast_sdiff a b).isGLB.sInf_eq
 
 -- see Note [lower instance priority]
 instance (priority := 100) Coframe.toDistribLattice : DistribLattice α where
