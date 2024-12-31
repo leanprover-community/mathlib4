@@ -74,9 +74,8 @@ lemma equiv_trans {f g k : AbsoluteValue R ℝ} (hfg : equiv f g) (hgk : equiv g
     equiv f k := by
   rcases hfg with ⟨c, hcPos, hfg⟩
   rcases hgk with ⟨d, hdPos, hgk⟩
-  refine ⟨c*d, (mul_pos_iff_of_pos_left hcPos).mpr hdPos, ?_⟩
-  ext x
-  rw [Real.rpow_mul (apply_nonneg f x), congr_fun hfg x, congr_fun hgk x]
+  refine ⟨c * d, mul_pos hcPos hdPos, ?_⟩
+  simp [← hgk, ← hfg, Real.rpow_mul (apply_nonneg f _)]
 
 /-- The *trivial* absolute value takes the value `1` on all nonzero elements. -/
 protected
