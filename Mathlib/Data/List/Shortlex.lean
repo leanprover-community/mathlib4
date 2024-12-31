@@ -55,8 +55,8 @@ theorem of_lex {s t : List α} (h : s.length = t.length) (h2 : List.Lex r s t) :
 
 /-- If two lists `s` and `t` have the same length, `s` is smaller than `t` under the shortlex order
 over a relation `r` exactly when `s` is smaller than `t` under the lexicographic order over `r`-/
-theorem of_lex_iff {s t : List α} (h : s.length = t.length) : Shortlex r s t ↔
-    List.Lex r s t := by
+theorem _root_.List.shortlex_iff_lex {s t : List α} (h : s.length = t.length) :
+    Shortlex r s t ↔ List.Lex r s t := by
   constructor
   · intro h2
     unfold Shortlex at h2
