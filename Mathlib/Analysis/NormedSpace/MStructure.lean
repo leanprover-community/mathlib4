@@ -13,6 +13,7 @@ import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Normed.Operator.BoundedLinearMaps
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.Algebra.Group.Subgroup.Pointwise
+import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-!
 # M-structure
@@ -170,6 +171,14 @@ lemma Lsummand.IsCompl {L : AddSubgroup G} (h : IsLsummand G L) : IsCompl L h.co
     intro K hKL hK
     rw [← h.sup_top]
     simp_all only [sup_le_iff, and_self]
+
+variable {L : AddSubgroup G} (h : IsLsummand G L)
+
+#check WithLp 1 (L × h.compl)
+
+-- See Mathlib/Analysis/Normed/Algebra/Unitization.lean
+
+lemma Lsummand.IsClosed {L : AddSubgroup G} (h : IsLsummand G L) : IsClosed L := by
 
 
 -- This is almost what we want...
