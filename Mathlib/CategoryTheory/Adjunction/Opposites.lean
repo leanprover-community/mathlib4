@@ -61,6 +61,16 @@ def unopAdjointOfOpAdjoint (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : D ⥤ C) (h : G.op ⊣
 def unopAdjointUnopOfAdjoint (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Cᵒᵖ) (h : G ⊣ F) : F.unop ⊣ G.unop :=
   adjointUnopOfAdjointOp F.unop G (h.ofNatIsoRight F.opUnopIso.symm)
 
+variable {F} {G : D ⥤ C} (adj : F ⊣ G)
+
+@[simps]
+def op : G.op ⊣ F.op where
+  unit := NatTrans.op adj.counit
+  counit := NatTrans.op adj.unit
+  left_triangle_components _ := Quiver.Hom.unop_inj (by simp)
+  right_triangle_components _ := Quiver.Hom.unop_inj (by simp)
+
+
 /-- If `G` is adjoint to `F` then `F.op` is adjoint to `G.op`. -/
 @[simps! unit_app counit_app]
 def opAdjointOpOfAdjoint (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.op :=

@@ -180,31 +180,42 @@ noncomputable def commShiftUnop
 
 end Functor
 
+namespace NatTrans
+
+attribute [local instance] Functor.commShiftOp
+
+variable {F} {G : C ⥤ D} [F.CommShift A] [G.CommShift A]
+
+open Opposite in
+lemma commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
+    NatTrans.CommShift (C := OppositeShift C A) (D := OppositeShift D A) (NatTrans.op τ) A where
+      comm' _ := by
+        ext
+        rw [← cancel_mono ((F.op.commShiftIso _ (C := OppositeShift C A)
+          (D := OppositeShift D A)).inv.app _), ← cancel_epi ((G.op.commShiftIso _
+          (C := OppositeShift C A) (D := OppositeShift D A)).inv.app _)]
+        dsimp
+        simp only [assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj,
+          Functor.op_obj, comp_id]
+        exact (op_inj_iff _ _).mpr (NatTrans.CommShift.comm_app τ _ (unop _))
+
+end NatTrans
+
 namespace Adjunction
 
-variable {F} {G : D ⥤ C} (adj : F ⊣ G) [F.CommShift A] [G.CommShift A]
+attribute [local instance] Functor.commShiftOp NatTrans.commShift_op
+
+variable {F} {G : D ⥤ C} (adj : F ⊣ G)
 
 /--
 If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F` and `G`, then
 the opposite adjunction `G.op ⊣ F.op` is compatible with the opposite `CommShift` structures.
 -/
-lemma commShiftOp_of_commShift [adj.CommShift A] :
-    letI := F.commShiftOp A
-    letI := G.commShiftOp A
-    (adj.opAdjointOpOfAdjoint _ _).CommShift A
-      (C := OppositeShift D A) (D := OppositeShift C A) := by
-  letI := F.commShiftOp A
-  letI := G.commShiftOp A
-  refine Adjunction.CommShift.mk' _ _ (NatTrans.CommShift.mk (fun a ↦ ?_))
-  ext
-  simp only [Functor.comp_obj, Functor.id_obj, Functor.op_obj, NatTrans.comp_app,
-    Functor.commShiftIso_id_hom_app, whiskerRight_app, opAdjointOpOfAdjoint_unit_app, id_comp,
-    whiskerLeft_app]
-  rw [opEquiv_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply,
-    ← cancel_mono ((Functor.commShiftIso (Functor.comp G.op F.op (C := OppositeShift D A)
-    (D := OppositeShift C A) (E := OppositeShift D A)) a).inv.app _)]
-  convert (Opposite.op_inj_iff _ _).mpr ((CommShift.commShift_counit (adj := adj)
-    (A := A)).comm_app _ a (Opposite.unop _)) <;> simp <;> rfl
+lemma commShift_op [F.CommShift A] [G.CommShift A]  [adj.CommShift A] :
+    Adjunction.CommShift (C := OppositeShift D A) (D := OppositeShift C A)
+      adj.op A where
+  commShift_unit := by dsimp; infer_instance
+  commShift_counit := by dsimp; infer_instance
 
 end Adjunction
 

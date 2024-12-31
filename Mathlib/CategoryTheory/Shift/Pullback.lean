@@ -123,9 +123,9 @@ lemma pullbackShiftFunctorAdd'_hom_app :
     ← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
   rfl
 
-namespace Functor
-
 variable {D : Type*} [Category D] [HasShift D B] (F : C ⥤ D) [F.CommShift B]
+
+namespace Functor
 
 /-- If `F : C ⥤ D` commutes with the shifts on `C` and `D`, then it also commutes with
 their pullbacks by an additive map.
@@ -173,10 +173,27 @@ lemma commShiftPullback_iso_eq (a : A) (b : B) (h : b = φ a) :
 
 end Functor
 
+namespace NatTrans
+
+attribute [local instance] Functor.commShiftPullback
+
+variable {F} {G : C ⥤ D} [G.CommShift B]
+
+open Functor in
+lemma commShiftPullback (τ : F ⟶ G) [NatTrans.CommShift τ B] :
+    NatTrans.CommShift (C := PullbackShift C φ) (D := PullbackShift D φ) τ A where
+      comm' a := by
+        ext
+        simp [commShiftPullback_iso_eq φ _ _ _ rfl, ← τ.naturality_assoc,
+          ← NatTrans.CommShift.comm_app_assoc τ (φ a) _]
+
+end NatTrans
+
 namespace Adjunction
 
-variable {D : Type*} [Category D] [HasShift D B] {F : C ⥤ D} [F.CommShift B] {G : D ⥤ C}
-  [G.CommShift B] (adj : F ⊣ G)
+attribute [local instance] Functor.commShiftPullback NatTrans.commShiftPullback
+
+variable {F} {G : D ⥤ C} (adj : F ⊣ G) [F.CommShift B] [G.CommShift B]
 
 /--
 If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F` and `G`, then
@@ -184,25 +201,12 @@ it is also compatible with the pulled back `CommShift` structures by an additive
 `φ : B →+ A`.
 -/
 lemma commShiftPullback [adj.CommShift B] :
-    letI := F.commShiftPullback φ
-    letI := G.commShiftPullback φ
-    adj.CommShift A (C := PullbackShift C φ) (D := PullbackShift D φ) := by
-  letI := F.commShiftPullback φ
-  letI := G.commShiftPullback φ
-  refine Adjunction.CommShift.mk' _ _ (NatTrans.CommShift.mk (fun a ↦ ?_))
-  ext
-  simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, Functor.commShiftIso_id_hom_app,
-    whiskerRight_app, id_comp, whiskerLeft_app]
-  rw [Functor.commShiftIso_comp_hom_app, Functor.commShiftPullback_iso_eq _ _ _ _ rfl,
-    Functor.commShiftPullback_iso_eq _ _ _ _ rfl, ← cancel_mono ((pullbackShiftIso C φ a _
-    rfl).hom.app _), (pullbackShiftIso C φ a _ rfl).hom.naturality]
-  dsimp
-  simp only [Functor.map_comp, assoc, unit_naturality_assoc, Iso.inv_hom_id_app, comp_id,
-    NatIso.cancel_natIso_hom_left]
-  simp only [← assoc, ← G.map_comp, Iso.inv_hom_id_app, Functor.map_id, id_comp,
-    ← Functor.commShiftIso_comp_hom_app]
-  convert (CommShift.commShift_unit (adj := adj) (A := B)).comm_app _ (φ a) _
-  simp
+    Adjunction.CommShift (C := PullbackShift C φ) (D := PullbackShift D φ) adj A where
+  commShift_unit := by
+    convert NatTrans.commShiftPullback φ adj.unit
+    · sorry
+    · sorry
+  commShift_counit := by sorry
 
 end Adjunction
 
