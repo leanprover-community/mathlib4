@@ -100,7 +100,7 @@ def trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R] {S : Type*} [
     rcases eq_or_ne (x + y) 0 with hxy | hxy <;> simp [hxy, one_le_two]
 
 /-- An absolute value satisfies `f n ≤ n` for every `n : ℕ`. -/
-lemma nat_le_nat {S : Type*} [OrderedRing S] [IsDomain S] (n : ℕ) (f : AbsoluteValue R S) :
+lemma apply_nat_le_self {S : Type*} [OrderedRing S] [IsDomain S] (n : ℕ) (f : AbsoluteValue R S) :
     f n ≤ n := by
   cases subsingleton_or_nontrivial R
   · simp [Subsingleton.eq_zero (n : R)]
@@ -109,7 +109,7 @@ lemma nat_le_nat {S : Type*} [OrderedRing S] [IsDomain S] (n : ℕ) (f : Absolut
   | succ n hn =>
     simp only [Nat.cast_succ]
     calc
-      f (n + 1) ≤ f n + f 1 := f.add_le' ↑n 1
+      f (n + 1) ≤ f n + f 1 := f.add_le' ..
       _ = f n + 1 := congrArg (f n + ·) f.map_one
       _ ≤ n + 1 := add_le_add_right hn 1
 
@@ -373,7 +373,7 @@ lemma apply_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m) :
   set L' : List ℚ := List.map Nat.cast (L.mapIdx fun i a ↦ (a * m ^ i)) with hL'
   -- If `c` is a digit in the expansion of `n` in base `m`, then `f c` is less than `m`.
   have hcoef {c : ℕ} (hc : c ∈ Nat.digits m n) : f c < m :=
-    lt_of_le_of_lt (AbsoluteValue.nat_le_nat c f) (mod_cast Nat.digits_lt_base hm hc)
+    lt_of_le_of_lt (f.apply_nat_le_self c) (mod_cast Nat.digits_lt_base hm hc)
   calc
   f n = f ((Nat.ofDigits m L : ℕ) : ℚ) := by rw [Nat.ofDigits_digits m n]
     _ = f (L'.sum) := by rw [Nat.ofDigits_eq_sum_mapIdx]; norm_cast
