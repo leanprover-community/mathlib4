@@ -185,7 +185,7 @@ theorem prod_Ioi_succ (i : Fin n) : ∏ j ∈ Ioi i.succ, v j = ∏ j ∈ Ioi i,
 
 @[to_additive (attr := simp)]
 theorem prod_Ici_zero : ∏ i ∈ Ici 0, v i = ∏ j : Fin (n + 1), v j := by
-  rw [Ici_eq_Icc, ← bot_eq_zero, Icc_bot_top]
+  rw [← bot_eq_zero, Ici_bot]
 
 @[to_additive]
 theorem prod_Ici_succ (i : Fin n) :
@@ -193,7 +193,8 @@ theorem prod_Ici_succ (i : Fin n) :
   rw [Ici_succ, Finset.prod_map, val_succEmb]
 
 @[to_additive (attr := simp)]
-theorem prod_Iio_zero : ∏ i ∈ Iio 0, v i = 1 := rfl
+theorem prod_Iio_zero : ∏ i ∈ Iio 0, v i = 1 := by
+  rw [← bot_eq_zero, Iio_bot, prod_empty]
 
 @[to_additive]
 theorem prod_Iio_succ (i : Fin n) :
@@ -215,7 +216,7 @@ theorem prod_Iio_eq_univ (i : Fin (n + 1)) :
 
 @[to_additive (attr := simp)]
 theorem prod_Iic_zero : ∏ j ∈ Iic 0, v j = v 0 := by
-  rw [Iic_eq_Icc, bot_eq_zero, Icc_self, prod_singleton]
+  rw [← bot_eq_zero, Iic_bot, prod_singleton]
 
 @[to_additive]
 theorem prod_Iic_succ (i : Fin n) :
