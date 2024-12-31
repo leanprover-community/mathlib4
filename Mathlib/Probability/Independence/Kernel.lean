@@ -961,7 +961,7 @@ lemma iIndepFun.of_subsingleton [IsMarkovKernel κ] [Subsingleton ι] : iIndepFu
 two disjoint finite index sets, then the tuple formed by `f i` for `i ∈ S` is independent of the
 tuple `(f i)_i` for `i ∈ T`. -/
 theorem iIndepFun.indepFun_finset (S T : Finset ι) (hST : Disjoint S T)
-    (hf_Indep : iIndepFun m f κ μ) (hf_meas : ∀ i, Measurable (f i)) :
+    (hf_Indep : iIndepFun m f κ μ) (hf_meas : ∀ i, ∀ᵐ a ∂μ, AEMeasurable (f i) (κ a)) :
     IndepFun (fun a (i : S) => f i a) (fun a (i : T) => f i a) κ μ := by
   rcases eq_or_ne μ 0 with rfl | hμ
   · simp
@@ -1154,7 +1154,7 @@ variable {β : Type*} {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂
 
 @[to_additive]
 theorem iIndepFun.indepFun_finset_prod_of_not_mem (hf_Indep : iIndepFun (fun _ ↦ m) f κ μ)
-    (hf_meas : ∀ i, Measurable (f i)) {s : Finset ι} {i : ι} (hi : i ∉ s) :
+    (hf_meas : ∀ i, ∀ᵐ a ∂μ, AEMeasurable (f i) (κ a)) {s : Finset ι} {i : ι} (hi : i ∉ s) :
     IndepFun (∏ j ∈ s, f j) (f i) κ μ := by
   classical
   have h_right : f i =

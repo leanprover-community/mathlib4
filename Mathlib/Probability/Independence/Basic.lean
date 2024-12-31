@@ -703,7 +703,7 @@ variable {β : Type*} {m : MeasurableSpace β} [CommMonoid β] [MeasurableMul₂
 
 @[to_additive]
 lemma iIndepFun.indepFun_finset_prod_of_not_mem (hf_Indep : iIndepFun (fun _ ↦ m) f μ)
-    (hf_meas : ∀ i, Measurable (f i)) {s : Finset ι} {i : ι} (hi : i ∉ s) :
+    (hf_meas : ∀ i, AEMeasurable (f i) μ) {s : Finset ι} {i : ι} (hi : i ∉ s) :
     IndepFun (∏ j ∈ s, f j) (f i) μ :=
   Kernel.iIndepFun.indepFun_finset_prod_of_not_mem hf_Indep hf_meas hi
 
