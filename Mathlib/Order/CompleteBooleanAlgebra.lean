@@ -417,29 +417,18 @@ theorem iSup_inf_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (swap (·
 
 theorem isGreatest_himp {α} [GeneralizedHeytingAlgebra α] (a b : α) :
     IsGreatest {w | w ⊓ a ≤ b} (a ⇨ b) := by
-  simp only [IsGreatest, mem_setOf_eq, himp_inf_self, inf_le_left, mem_upperBounds, le_himp_iff,
-    imp_self, implies_true, and_self]
+  simp [IsGreatest, mem_upperBounds]
 
 theorem isLeast_sdiff {α} [GeneralizedCoheytingAlgebra α] (a b : α) :
     IsLeast {w | a ≤ b ⊔ w} (a \ b) := by
-  simp only [IsLeast, mem_setOf_eq, sup_sdiff_self, le_sup_right, mem_lowerBounds, sdiff_le_iff,
-    imp_self, implies_true, and_self]
-
-lemma isGreatest_sSup {α} [CompleteSemilatticeSup α] (a : α) (s : Set α) :
-  IsGreatest s a → sSup s = a :=
-    fun h ↦ IsLUB.sSup_eq (IsGreatest.isLUB h)
-
-lemma isLeast_sInf {α} [CompleteSemilatticeInf α] (a : α) (s : Set α) :
-  IsLeast s a → sInf s = a :=
-    fun h ↦ IsGLB.sInf_eq (IsLeast.isGLB h)
+  simp [IsLeast, mem_lowerBounds]
 
 theorem himp_eq_sSup : sSup {w | w ⊓ a ≤ b} = a ⇨ b :=
-  (isGreatest_sSup _ _ (isGreatest_himp a b))
+  (isGreatest_himp a b).isLUB.sSup_eq
 
 theorem sdiff_eq_sInf {α} [Coframe α]  (a b : α) :
-    sInf {w | a ≤ b ⊔ w} = a \ b := by
-  exact (isLeast_sInf _ _ (isLeast_sdiff a b))
-
+    sInf {w | a ≤ b ⊔ w} = a \ b :=
+  (isLeast_sdiff a b).isGLB.sInf_eq
 
 -- see Note [lower instance priority]
 instance (priority := 100) Frame.toDistribLattice : DistribLattice α :=
