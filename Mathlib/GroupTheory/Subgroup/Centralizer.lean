@@ -61,6 +61,12 @@ theorem centralizer_eq_top_iff_subset {s : Set G} : centralizer s = ⊤ ↔ s �
   SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
 
 @[to_additive]
+theorem map_centralizer_le_centralizer_image (s : Set G) (f : G →* G') :
+    (Subgroup.centralizer s).map f ≤ Subgroup.centralizer (f '' s) := by
+  rintro - ⟨g, hg, rfl⟩ - ⟨h, hh, rfl⟩
+  rw [← map_mul, ← map_mul, hg h hh]
+
+@[to_additive]
 instance Centralizer.characteristic [hH : H.Characteristic] :
     (centralizer (H : Set G)).Characteristic := by
   refine Subgroup.characteristic_iff_comap_le.mpr fun ϕ g hg h hh => ϕ.injective ?_
@@ -77,12 +83,6 @@ variable (H)
 @[to_additive]
 theorem le_centralizer [h : H.IsCommutative] : H ≤ centralizer H :=
   le_centralizer_iff_isCommutative.mpr h
-
-@[to_additive]
-theorem map_centralizer_le_centralizer_map (f : G →* G') :
-    H.centralizer.map f ≤ Subgroup.centralizer (H.map f) := by
-  rintro - ⟨g, hg, rfl⟩ - ⟨h, hh, rfl⟩
-  rw [← map_mul, ← map_mul, hg h hh]
 
 variable {H} in
 @[to_additive]
