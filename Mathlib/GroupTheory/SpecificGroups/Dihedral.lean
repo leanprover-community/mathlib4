@@ -91,11 +91,11 @@ theorem sr_mul_sr (i j : ZMod n) : sr i * sr j = r (j - i) :=
   rfl
 
 @[simp]
-theorem inv_r (i : ZMod n) : (r i)⁻¹ = r (-i) := by
+theorem inv_r (i : ZMod n) : (r i)⁻¹ = r (-i) :=
   rfl
 
 @[simp]
-theorem inv_sr (i : ZMod n) : (sr i)⁻¹ = sr (i) := by
+theorem inv_sr (i : ZMod n) : (sr i)⁻¹ = sr i :=
   rfl
 
 theorem one_def : (1 : DihedralGroup n) = r 0 :=
