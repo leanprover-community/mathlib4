@@ -850,8 +850,8 @@ theorem tendsto_norm_div_self (x : E) : Tendsto (fun a => ‖a / x‖) (𝓝 x) 
     tendsto_id.dist (tendsto_const_nhds : Tendsto (fun _a => (x : E)) (𝓝 x) _)
 
 @[to_additive]
-theorem tendsto_norm_div_self_nhdsGE (a : E) : Tendsto (‖· / a‖) (𝓝 a) (𝓝[≥] 0) :=
-  tendsto_nhdsWithin_iff.mpr ⟨tendsto_norm_div_self a, by simp⟩
+theorem tendsto_norm_div_self_nhdsGE (x : E) : Tendsto (fun a ↦ ‖a / x‖) (𝓝 x) (𝓝[≥] 0) :=
+  tendsto_nhdsWithin_iff.mpr ⟨tendsto_norm_div_self x, by simp⟩
 
 @[to_additive tendsto_norm]
 theorem tendsto_norm' {x : E} : Tendsto (fun a => ‖a‖) (𝓝 x) (𝓝 ‖x‖) := by
