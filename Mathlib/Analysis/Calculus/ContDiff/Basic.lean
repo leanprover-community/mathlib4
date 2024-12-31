@@ -210,19 +210,22 @@ theorem ContDiff.continuousLinearMap_comp {f : E → F} (g : F →L[𝕜] G) (hf
 /-- The iterated derivative within a set of the composition with a linear map on the left is
 obtained by applying the linear map to the iterated derivative. -/
 theorem ContinuousLinearMap.iteratedFDerivWithin_comp_left {f : E → F} (g : F →L[𝕜] G)
-    (hf : ContDiffOn 𝕜 n f s) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {i : ℕ} (hi : i ≤ n) :
+    (hf : ContDiffWithinAt 𝕜 n f s x) (hs : UniqueDiffOn 𝕜 s) (hx : x ∈ s) {i : ℕ} (hi : i ≤ n) :
     iteratedFDerivWithin 𝕜 i (g ∘ f) s x =
-      g.compContinuousMultilinearMap (iteratedFDerivWithin 𝕜 i f s x) :=
-  ((((hf.of_le hi).ftaylorSeriesWithin hs).continuousLinearMap_comp
-    g).eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl hs hx).symm
+      g.compContinuousMultilinearMap (iteratedFDerivWithin 𝕜 i f s x) := by
+  rcases hf.contDiffOn' hi (by simp) with ⟨U, hU, hxU, hfU⟩
+  rw [← iteratedFDerivWithin_inter_open hU hxU, ← iteratedFDerivWithin_inter_open (f := f) hU hxU]
+  rw [insert_eq_of_mem hx] at hfU
+  exact .symm <| (hfU.ftaylorSeriesWithin (hs.inter hU)).continuousLinearMap_comp g
+    |>.eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl (hs.inter hU) ⟨hx, hxU⟩
 
 /-- The iterated derivative of the composition with a linear map on the left is
 obtained by applying the linear map to the iterated derivative. -/
 theorem ContinuousLinearMap.iteratedFDeriv_comp_left {f : E → F} (g : F →L[𝕜] G)
-    (hf : ContDiff 𝕜 n f) (x : E) {i : ℕ} (hi : i ≤ n) :
+    (hf : ContDiffAt 𝕜 n f x) {i : ℕ} (hi : i ≤ n) :
     iteratedFDeriv 𝕜 i (g ∘ f) x = g.compContinuousMultilinearMap (iteratedFDeriv 𝕜 i f x) := by
   simp only [← iteratedFDerivWithin_univ]
-  exact g.iteratedFDerivWithin_comp_left hf.contDiffOn uniqueDiffOn_univ (mem_univ x) hi
+  exact g.iteratedFDerivWithin_comp_left hf.contDiffWithinAt uniqueDiffOn_univ (mem_univ x) hi
 
 /-- The iterated derivative within a set of the composition with a linear equiv on the left is
 obtained by applying the linear equiv to the iterated derivative. This is true without
