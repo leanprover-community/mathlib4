@@ -142,28 +142,28 @@ instance isTrichotomous [IsTrichotomous α r] : IsTrichotomous (List α) (Shortl
     rcases this with h1 | h2 | h3
     · left; exact of_length_lt h1
     · induction a with
-    | nil =>
-      cases b with
-      | nil => right; left; rfl
-      | cons head tail => simp only [List.length_nil, List.length_cons, Nat.succ_eq_add_one,
-        self_eq_add_left, add_eq_zero, List.length_eq_zero, one_ne_zero, and_false] at h2
-    | cons head tail ih =>
-      cases b with
-      | nil => simp at h2
-      | cons head1 tail1 =>
-        simp only [length_cons, add_left_inj] at h2
-        rcases @trichotomous _ (List.Lex r) _ (head :: tail) (head1 :: tail1) with h4 | h5 | h6
-        · left
+      | nil =>
+        cases b with
+        | nil => right; left; rfl
+        | cons head tail => simp only [List.length_nil, List.length_cons, Nat.succ_eq_add_one,
+          self_eq_add_left, add_eq_zero, List.length_eq_zero, one_ne_zero, and_false] at h2
+      | cons head tail ih =>
+        cases b with
+        | nil => simp at h2
+        | cons head1 tail1 =>
+          simp only [length_cons, add_left_inj] at h2
+          rcases @trichotomous _ (List.Lex r) _ (head :: tail) (head1 :: tail1) with h4 | h5 | h6
+          · left
+            apply of_lex
+            · simp only [List.length_cons, Nat.succ_eq_add_one, add_left_inj]
+              exact h2
+            exact h4
+          · right; left; exact h5
+          right; right
           apply of_lex
           · simp only [List.length_cons, Nat.succ_eq_add_one, add_left_inj]
-            exact h2
-          exact h4
-        · right; left; exact h5
-        right; right
-        apply of_lex
-        · simp only [List.length_cons, Nat.succ_eq_add_one, add_left_inj]
-          exact h2.symm
-        exact h6
+            exact h2.symm
+          exact h6
     right; right
     exact of_length_lt h3
 
