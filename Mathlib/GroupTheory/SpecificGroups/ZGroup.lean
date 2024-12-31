@@ -36,6 +36,9 @@ variable {G G' G'' f f'}
 
 namespace IsZGroup
 
+instance [IsCyclic G] : IsZGroup G :=
+  ⟨inferInstance⟩
+
 instance [IsZGroup G] {p : ℕ} [Fact p.Prime] (P : Sylow p G) : IsCyclic P :=
   isZGroup p Fact.out P
 
