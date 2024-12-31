@@ -106,12 +106,12 @@ lemma nat_le_nat {S : Type*} [OrderedRing S] [IsDomain S] (n : ℕ) (f : Absolut
   cases subsingleton_or_nontrivial R
   · simp [Subsingleton.eq_zero (n : R)]
   induction n with
-  | zero => simp only [Nat.cast_zero, map_zero, le_refl]
+  | zero => simp
   | succ n hn =>
     simp only [Nat.cast_succ]
     calc
-      f (n + 1) ≤ f (n) + f 1 := f.add_le' ↑n 1
-      _ = f (n) + 1 := by rw [f.map_one]
+      f (n + 1) ≤ f n + f 1 := f.add_le' ↑n 1
+      _ = f n + 1 := congrArg (f n + ·) f.map_one
       _ ≤ n + 1 := add_le_add_right hn 1
 
 open Int in
