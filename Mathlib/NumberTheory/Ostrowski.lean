@@ -211,7 +211,7 @@ section Non_archimedean
 /-!
 ### The non-archimedean case
 
-Every bounded absolute value is equivalent to a `p`-adic absolute value
+Every bounded absolute value on `ℚ` is equivalent to a `p`-adic absolute value.
 -/
 
 /-- The real-valued `AbsoluteValue` corresponding to the p-adic norm on `ℚ`. -/
@@ -368,12 +368,14 @@ end Non_archimedean
 
 section Archimedean
 
-/-! ## Archimedean case
+/-!
+### Archimedean case
 
-Every unbounded absolute value is equivalent to the standard absolute value
+Every unbounded absolute value on `ℚ`is equivalent to the standard absolute value.
 -/
 
-/-- The usual absolute value on `ℚ`. -/
+/-- The standard absolute value on `ℚ`. We name it `real` because it corresponds to the
+unique real place of `ℚ`. -/
 def real : AbsoluteValue ℚ ℝ where
   toFun x := |x|
   map_mul' x y := by simpa using abs_mul (x : ℝ) (y : ℝ)
@@ -386,7 +388,7 @@ def real : AbsoluteValue ℚ ℝ where
 
 -- ## Preliminary result
 
-/-- Given an two integers `n`, `m` with `m > 1`, the absolute value of `n` is bounded by
+/-- Given any two integers `n`, `m` with `m > 1`, the absolute value of `n` is bounded by
 `m + m * f m + m * (f m) ^ 2 + ... + m * (f m) ^ d` where `d` is the number of digits of the
 expansion of `n` in base `m`. -/
 lemma apply_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m) :
@@ -568,6 +570,10 @@ theorem equiv_real_of_unbounded : f.equiv real := by
     rwa [← hs, symmetric_roles oneltm h notbdd hfm hfn]
 
 end Archimedean
+
+/-!
+### The main result
+-/
 
 /-- **Ostrowski's Theorem**: every absolute value (with values in `ℝ`) on `ℚ` is equivalent
 to either the standard absolute value or a `p`-adic absolute value for a prime `p`. -/
