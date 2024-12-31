@@ -342,6 +342,33 @@ lemma IsCyclic.exists_ofOrder_eq_natCard [h : IsCyclic α] : ∃ g : α, orderOf
   rw [← card_zpowers g, (eq_top_iff' (zpowers g)).mpr hg]
   exact Nat.card_congr (Equiv.Set.univ α)
 
+/-- A `MulDistribMulAction` action on a cyclic group of order `n` factors through `ZMod n`. -/
+noncomputable def IsCyclic.toMonoidHom (M G : Type*) [Monoid M] [Group G] [IsCyclic G]
+    [MulDistribMulAction M G] {n : ℕ} (hn : Nat.card G = n) : M →* ZMod n where
+  toFun := fun m ↦ (MonoidHom.map_cyclic (MulDistribMulAction.toMonoidHom G m)).choose
+  map_one' := by
+    obtain ⟨g, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := G)
+    rw [← Int.cast_one, ZMod.intCast_eq_intCast_iff, ← hn, ← hg, ← zpow_eq_zpow_iff_modEq, zpow_one,
+      ← (MonoidHom.map_cyclic (MulDistribMulAction.toMonoidHom G 1)).choose_spec,
+      MulDistribMulAction.toMonoidHom_apply, one_smul]
+  map_mul' := fun m n ↦ by
+    obtain ⟨g, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := G)
+    rw [← Int.cast_mul, ZMod.intCast_eq_intCast_iff, ← hn, ← hg, ← zpow_eq_zpow_iff_modEq,
+      zpow_mul', ← (MonoidHom.map_cyclic (MulDistribMulAction.toMonoidHom G m)).choose_spec,
+      ← (MonoidHom.map_cyclic (MulDistribMulAction.toMonoidHom G n)).choose_spec,
+      ← (MonoidHom.map_cyclic (MulDistribMulAction.toMonoidHom G (m * n))).choose_spec,
+      MulDistribMulAction.toMonoidHom_apply, MulDistribMulAction.toMonoidHom_apply,
+      MulDistribMulAction.toMonoidHom_apply, mul_smul]
+
+theorem IsCyclic.toMonoidHom_apply {M G : Type*} [Monoid M] [Group G] [IsCyclic G]
+    [MulDistribMulAction M G] {n : ℕ} (hn : Nat.card G = n) (m : M) (g : G) (k : ℤ)
+    (h : toMonoidHom M G hn m = k) : m • g = g ^ k := by
+  rw [← MulDistribMulAction.toMonoidHom_apply,
+    (MonoidHom.map_cyclic (MulDistribMulAction.toMonoidHom G m)).choose_spec g,
+    zpow_eq_zpow_iff_modEq]
+  apply Int.ModEq.of_dvd (Int.natCast_dvd_natCast.mpr (orderOf_dvd_natCard g))
+  rwa [hn, ← ZMod.intCast_eq_intCast_iff]
+
 section
 
 variable [Fintype α]
