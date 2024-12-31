@@ -477,11 +477,11 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
     _ ≤ ↑m * f ↑m / (f ↑m - 1) * f ↑m ^ logb ↑m ↑n := by
       gcongr
       · exact (expr_pos hm notbdd).le
-      · rw [← Real.rpow_natCast, Real.rpow_le_rpow_left_iff (one_lt_of_not_bounded notbdd hm)]
+      · rw [← rpow_natCast, rpow_le_rpow_left_iff (one_lt_of_not_bounded notbdd hm)]
         exact natLog_le_logb n m
   apply le_of_pow_le_pow_left₀ hk <| mul_nonneg (rpow_nonneg (expr_pos hm notbdd).le _)
     (rpow_nonneg (apply_nonneg f ↑m) _)
-  nth_rewrite 2 [← Real.rpow_natCast]
+  nth_rewrite 2 [← rpow_natCast]
   rw [mul_rpow (rpow_nonneg (expr_pos hm notbdd).le _) (rpow_nonneg (apply_nonneg f ↑m) _),
     ← rpow_mul (expr_pos hm notbdd).le, ← rpow_mul (apply_nonneg f ↑m),
     inv_mul_cancel₀ (mod_cast hk), rpow_one, mul_comm (logb ..)]
@@ -489,32 +489,29 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
     (f n) ^ k = f ↑(n ^ k) := by simp
     _ ≤ (m * f m / (f m - 1)) * f m ^ logb m ↑(n ^ k) := h_ineq1 hm (Nat.one_lt_pow hk hn)
     _ = (m * f m / (f m - 1)) * f m ^ (k * logb m n) := by
-      rw [Nat.cast_pow, Real.logb_pow]
+      rw [Nat.cast_pow, logb_pow]
 
 include hm hn notbdd in
 /-- Given two natural numbers `n, m` greater than 1 we have `f n ≤ f m ^ logb m n`. -/
 lemma le_pow_log : f n ≤ f m ^ logb m n := by
-  have : Tendsto (fun k : ℕ ↦ (m * f m / (f m - 1)) ^ (k : ℝ)⁻¹ * (f m) ^ (logb m n))
-      atTop (𝓝 ((f m) ^ (logb m n))) := by
+  have : Tendsto (fun k : ℕ ↦ (m * f m / (f m - 1)) ^ (k : ℝ)⁻¹ * f m ^ logb m n)
+      atTop (𝓝 (f m ^ logb m n)) := by
     nth_rw 2 [← one_mul (f ↑m ^ logb ↑m ↑n)]
-    exact Tendsto.mul_const _ (tendsto_root_atTop_nhds_one (expr_pos hm notbdd))
-  exact le_of_tendsto_of_tendsto (tendsto_const_nhds (x:= f ↑n)) this ((eventually_atTop.2 ⟨2,
-    fun b hb ↦ param_upperbound hm hn notbdd (not_eq_zero_of_lt hb)⟩))
+    exact (tendsto_root_atTop_nhds_one (expr_pos hm notbdd)).mul_const _
+  exact le_of_tendsto_of_tendsto (tendsto_const_nhds (x:= f ↑n)) this <|
+    eventually_atTop.mpr ⟨2, fun b hb ↦ param_upperbound hm hn notbdd (not_eq_zero_of_lt hb)⟩
 
 include hm hn notbdd in
-/-- Given `m,n ≥ 2` and `f m = m ^ s`, `f n = n ^ t` for `s, t > 0`, we have `t ≤ s`. -/
-lemma le_of_absoluteValue_eq {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t)  : t ≤ s := by
-    have hmn : f n ≤ f m ^ Real.logb m n := le_pow_log hm hn notbdd
-    rw [← Real.rpow_le_rpow_left_iff (x:=n) (mod_cast hn), ← hfn]
-    apply le_trans hmn
-    rw [hfm, ← Real.rpow_mul (Nat.cast_nonneg m), mul_comm, Real.rpow_mul (Nat.cast_nonneg m),
-      Real.rpow_logb (mod_cast zero_lt_of_lt hm) (mod_cast Nat.ne_of_lt' hm)
-      (mod_cast zero_lt_of_lt hn)]
+/-- Given `m, n ≥ 2` and `f m = m ^ s`, `f n = n ^ t` for `s, t > 0`, we have `t ≤ s`. -/
+lemma le_of_eq_pow {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t)  : t ≤ s := by
+  rw [← rpow_le_rpow_left_iff (x := n) (mod_cast hn), ← hfn]
+  apply le_trans <| le_pow_log hm hn notbdd
+  rw [hfm, ← rpow_mul (Nat.cast_nonneg m), mul_comm, rpow_mul (Nat.cast_nonneg m),
+    rpow_logb (mod_cast zero_lt_of_lt hm) (mod_cast hm.ne') (mod_cast zero_lt_of_lt hn)]
 
 include hm hn notbdd in
 private lemma symmetric_roles {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t) : s = t :=
-    le_antisymm (le_of_absoluteValue_eq hn hm notbdd hfn hfm)
-    (le_of_absoluteValue_eq hm hn notbdd hfm hfn)
+  le_antisymm (le_of_eq_pow hn hm notbdd hfn hfm) (le_of_eq_pow hm hn notbdd hfm hfn)
 
 -- ## Archimedean case: end goal
 
@@ -530,9 +527,9 @@ theorem equiv_real_of_unbounded : AbsoluteValue.equiv f real := by
     rcases this with (rfl | rfl)
     all_goals simp only [CharP.cast_eq_zero, map_zero, zero_le_one, Nat.cast_one, map_one, le_refl]
   rw [← equiv_on_nat_iff_equiv]
-  set s := Real.logb m (f m) with hs
+  set s := logb m (f m) with hs
   use s⁻¹
-  refine ⟨inv_pos.2 (Real.logb_pos (Nat.one_lt_cast.2 oneltm)
+  refine ⟨inv_pos.2 (logb_pos (Nat.one_lt_cast.2 oneltm)
     (one_lt_of_not_bounded notbdd oneltm)), ?_⟩
   intro n
   by_cases h1 : n ≤ 1
@@ -541,21 +538,21 @@ theorem equiv_real_of_unbounded : AbsoluteValue.equiv f real := by
     · have : n = 0 := by omega
       rw [this, hs]
       simp only [CharP.cast_eq_zero, map_zero]
-      rw [Real.rpow_eq_zero le_rfl]
+      rw [rpow_eq_zero le_rfl]
       simp only [ne_eq, inv_eq_zero, logb_eq_zero, Nat.cast_eq_zero, Nat.cast_eq_one, map_eq_zero,
         not_or]
       push_neg
       exact ⟨not_eq_zero_of_lt oneltm, Nat.ne_of_lt' oneltm, mod_cast (fun a ↦ a),
         not_eq_zero_of_lt oneltm, ne_of_not_le hm, by linarith only [apply_nonneg f ↑m]⟩
   · simp only [real_eq_abs, abs_cast, Rat.cast_natCast]
-    rw [Real.rpow_inv_eq (apply_nonneg f ↑n) (Nat.cast_nonneg n)
-      (Real.logb_ne_zero_of_pos_of_ne_one (one_lt_cast.mpr oneltm) (by linarith only [hm])
+    rw [rpow_inv_eq (apply_nonneg f ↑n) (Nat.cast_nonneg n)
+      (logb_ne_zero_of_pos_of_ne_one (one_lt_cast.mpr oneltm) (by linarith only [hm])
       (by linarith only [hm]))]
     simp only [not_le] at h1
-    have hfm : f m = m ^ s := by rw [Real.rpow_logb (mod_cast zero_lt_of_lt oneltm)
+    have hfm : f m = m ^ s := by rw [rpow_logb (mod_cast zero_lt_of_lt oneltm)
       (mod_cast Nat.ne_of_lt' oneltm) (by linarith only [hm])]
-    have hfn : f n = n ^ (Real.logb n (f n)) := by
-      rw [Real.rpow_logb (mod_cast zero_lt_of_lt h1) (mod_cast Nat.ne_of_lt' h1)
+    have hfn : f n = n ^ (logb n (f n)) := by
+      rw [rpow_logb (mod_cast zero_lt_of_lt h1) (mod_cast Nat.ne_of_lt' h1)
       (by apply map_pos_of_ne_zero; exact_mod_cast not_eq_zero_of_lt h1)]
     rwa [← hs, symmetric_roles oneltm h1 notbdd hfm hfn]
 
