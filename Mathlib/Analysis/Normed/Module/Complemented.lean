@@ -28,7 +28,7 @@ open LinearMap (ker range)
 
 namespace IsIdempotentElem
 
-lemma ker_id_sub_eq_range {P : E →L[𝕜] E} (h : IsIdempotentElem P) : ker (1 - P) = range P := by
+lemma ker_id_sub_eq_range {P : E →ₗ[𝕜] E} (h : IsIdempotentElem P) : ker (1 - P) = range P := by
   ext x
   constructor
   · intro h
@@ -45,12 +45,30 @@ lemma ker_id_sub_eq_range {P : E →L[𝕜] E} (h : IsIdempotentElem P) : ker (1
     rw [sub_eq_zero]
     rw [IsIdempotentElem] at h
     conv_lhs => rw [← h]
-    simp only [ContinuousLinearMap.coe_mul, Function.comp_apply]
+    simp only [LinearMap.mul_apply]
 
-lemma range_id_sub_eq_ker {P : E →L[𝕜] E} (h : IsIdempotentElem P) : range (1 - P) = ker P := by
+lemma range_id_sub_eq_ker {P : E →ₗ[𝕜] E} (h : IsIdempotentElem P) : range (1 - P) = ker P := by
   rw [← (ker_id_sub_eq_range (IsIdempotentElem.one_sub h)), sub_sub_cancel]
 
 end IsIdempotentElem
+
+lemma continuous_isIdempotent_iff_linear_isIdempotent {P : E →L[𝕜] E} :
+    IsIdempotentElem P ↔ IsIdempotentElem (P : E →ₗ[𝕜] E) := by
+  constructor
+  · intro h
+    rw [IsIdempotentElem]
+    conv_rhs => rw [← h]
+    rfl
+  · intro h
+    apply (P*P).coe_injective
+    rw [← h]
+    rfl
+
+@[simp]
+lemma continuous_ker_eq_linear_ker {P : E →L[𝕜] E} : ker (P : E →ₗ[𝕜] E) = ker P := rfl
+
+@[simp]
+lemma continuous_range_eq_linear_range {P : E →L[𝕜] E} : range (P : E →ₗ[𝕜] E) = range P  := rfl
 
 noncomputable section
 
@@ -190,6 +208,8 @@ lemma mem_iff_zero_ofClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     rw [idempotentOfClosedCompl] at h
     simp at h
     exact h
+
+
 
 -- P is an idempotent where P := idempotentOfClosedCompl p q h hp hq
 lemma is_idempotent_ofClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
