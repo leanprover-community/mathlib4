@@ -308,6 +308,19 @@ section LocallyFiniteOrderTop
 
 variable [LocallyFiniteOrderTop α]
 
+@[simp]
+theorem Ioi_eq_empty_iff : Ioi a = ∅ ↔ IsMax a := by
+  rw [← coe_eq_empty, coe_Ioi, Set.Ioi_eq_empty_iff]
+
+alias ⟨_, Ioi_eq_empty⟩ := Ioi_eq_empty_iff
+
+@[simp]
+theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ∅ := Ioi_eq_empty isMax_top
+
+@[simp]
+theorem Ici_bot [OrderBot α] [Fintype α] : Ici (⊥ : α) = univ := by
+  ext a; simp only [mem_Ici, bot_le, mem_univ]
+
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
 @[simp]
@@ -347,6 +360,14 @@ end LocallyFiniteOrderTop
 section LocallyFiniteOrderBot
 
 variable [LocallyFiniteOrderBot α]
+
+@[simp]
+theorem Iio_eq_empty_iff : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty_iff (α := αᵒᵈ)
+
+alias ⟨_, Iio_eq_empty⟩ := Iio_eq_empty_iff
+
+@[simp]
+theorem Iio_bot [OrderBot α] : Iio (⊥ : α) = ∅ := Iio_eq_empty isMin_bot
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
@@ -445,6 +466,19 @@ theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
 
 theorem Ico_disjoint_Ico_consecutive (a b c : α) : Disjoint (Ico a b) (Ico b c) :=
   disjoint_left.2 fun _ hab hbc => (mem_Ico.mp hab).2.not_le (mem_Ico.mp hbc).1
+
+@[simp]
+theorem Ici_top [OrderTop α] : Ici (⊤ : α) = {⊤} :=
+  Icc_eq_singleton_iff.2 ⟨rfl, rfl⟩
+
+@[simp]
+theorem Iic_bot [OrderBot α] : Iic (⊥ : α) = {⊥} :=
+  Icc_eq_singleton_iff.2 ⟨rfl, rfl⟩
+
+@[simp]
+theorem Icc_bot_top [BoundedOrder α] [Fintype α] : Icc (⊥ : α) ⊤ = univ := by
+  ext a
+  simp only [mem_Icc, bot_le, le_top, and_self, mem_univ]
 
 section DecidableEq
 
