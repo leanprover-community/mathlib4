@@ -415,15 +415,30 @@ theorem iSup_inf_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (swap (·
     (hf : Antitone f) (hg : Antitone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i :=
   @iSup_inf_of_monotone α _ ιᵒᵈ _ _ f g hf.dual_left hg.dual_left
 
-theorem himp_eq_sSup : a ⇨ b = sSup {w | w ⊓ a ≤ b} := by
-  apply le_antisymm
-  · rw [le_sSup_iff]
-    simp only [upperBounds, mem_setOf_eq]
-    intro a1 b1
-    simp_all only [himp_inf_self, inf_le_left]
-  · rw [sSup_le_iff]
-    exact fun b_1 a_1 ↦ (fun {α} [Frame α] (a b c : α) ↦ (Frame.le_himp_iff a b c).mpr) b_1 a b a_1
+theorem isGreatest_himp {α} [GeneralizedHeytingAlgebra α] (a b : α) :
+    IsGreatest {w | w ⊓ a ≤ b} (a ⇨ b) := by
+  simp only [IsGreatest, mem_setOf_eq, himp_inf_self, inf_le_left, mem_upperBounds, le_himp_iff,
+    imp_self, implies_true, and_self]
 
+theorem isLeast_sdiff {α} [GeneralizedCoheytingAlgebra α] (a b : α) :
+    IsLeast {w | a ≤ b ⊔ w} (a \ b) := by
+  simp only [IsLeast, mem_setOf_eq, sup_sdiff_self, le_sup_right, mem_lowerBounds, sdiff_le_iff,
+    imp_self, implies_true, and_self]
+
+lemma isGreatest_sSup {α} [CompleteSemilatticeSup α] (a : α) (s : Set α) :
+  IsGreatest s a → sSup s = a :=
+    fun h ↦ IsLUB.sSup_eq (IsGreatest.isLUB h)
+
+lemma isLeast_sInf {α} [CompleteSemilatticeInf α] (a : α) (s : Set α) :
+  IsLeast s a → sInf s = a :=
+    fun h ↦ IsGLB.sInf_eq (IsLeast.isGLB h)
+
+theorem himp_eq_sSup : sSup {w | w ⊓ a ≤ b} = a ⇨ b :=
+  (isGreatest_sSup _ _ (isGreatest_himp a b))
+
+theorem sdiff_eq_sInf {α} [Coframe α]  (a b : α) :
+    sInf {w | a ≤ b ⊔ w} = a \ b := by
+  exact (isLeast_sInf _ _ (isLeast_sdiff a b))
 
 
 -- see Note [lower instance priority]
