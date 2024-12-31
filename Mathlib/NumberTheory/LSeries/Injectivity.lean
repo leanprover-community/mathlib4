@@ -18,9 +18,6 @@ and `LSeries_injOn`.
 
 open LSeries Complex
 
-lemma Complex.cpow_natCast_add_one_ne_zero (n : ℕ) (z : ℂ) : (n + 1 : ℂ) ^ z ≠ 0 :=
-  mt (cpow_eq_zero_iff ..).mp fun H ↦ by norm_cast at H; exact H.1
-
 -- TODO: change argument order in `LSeries_congr` to have `s` last.
 
 /-- If `F` is a binary operation on `ℕ → ℂ` with the property that the `LSeries` of `F f g`
