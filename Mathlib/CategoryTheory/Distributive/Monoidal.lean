@@ -284,7 +284,6 @@ lemma SymmetricCategory.rightDistrib_of_leftDistrib
 instance MonoidalClosed.isMonoidalLeftDistrib [MonoidalClosed C] :
     IsMonoidalLeftDistrib C where
   preservesBinaryCoproducts_tensorLeft X := by
-    have := (ihom.adjunction X).isLeftAdjoint
     infer_instance
 
 /-- The inverse of distributivity isomorphism from the closed monoidal strurcture -/
