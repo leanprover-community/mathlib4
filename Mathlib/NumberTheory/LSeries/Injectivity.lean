@@ -177,7 +177,7 @@ lemma LSeries_eq_zero_iff {f : ℕ → ℂ} (hf : f 0 = 0) :
   · refine ⟨fun H ↦ ?_, fun H ↦ H ▸ LSeries_zero⟩
     convert (LSeries_eventually_eq_zero_iff'.mp ?_).resolve_right h
     · refine ⟨fun H' _ _ ↦ by rw [H', Pi.zero_apply], fun H' ↦ ?_⟩
-      ext ⟨- | m⟩ -- the introduced variable in the second case is still `n✝` ?
+      ext (- | m)
       · simp [hf]
       · simp [H']
     · simpa only [H] using Filter.EventuallyEq.rfl
