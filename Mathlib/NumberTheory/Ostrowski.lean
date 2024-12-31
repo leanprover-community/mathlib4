@@ -99,6 +99,23 @@ def trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R] {S : Type*} [
     simp only [hx, ↓reduceIte, hy, show (1 : S) + 1 = 2 by norm_num]
     rcases eq_or_ne (x + y) 0 with hxy | hxy <;> simp [hxy, one_le_two]
 
+@[simp]
+lemma trivial_apply [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R] {S : Type*}
+    [OrderedSemiring S] [Nontrivial S] {x : R} (hx : x ≠ 0) :
+    AbsoluteValue.trivial (S := S) x = 1 :=
+  if_neg hx
+
+/-- An absolute value that is equivalent to the trivial one is already trivial. -/
+lemma eq_trivial_of_equiv_trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R] {S : Type*}
+    [OrderedSemiring S] [Nontrivial S] (f : AbsoluteValue R ℝ) :
+    f.equiv .trivial ↔ f = .trivial := by
+  refine ⟨fun ⟨c, hc₀, hc⟩ ↦ ext fun x ↦ ?_, fun H ↦ H ▸ equiv_refl f⟩
+  apply_fun (· x) at hc
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
+  · simp only [ne_eq, hx, not_false_eq_true, trivial_apply] at hc ⊢
+    exact (Real.rpow_left_inj (f.nonneg x) zero_le_one hc₀.ne').mp <| (Real.one_rpow c).symm ▸ hc
+
 /-- An absolute value satisfies `f n ≤ n` for every `n : ℕ`. -/
 lemma apply_nat_le_self {S : Type*} [OrderedRing S] [IsDomain S] (n : ℕ) (f : AbsoluteValue R S) :
     f n ≤ n := by
