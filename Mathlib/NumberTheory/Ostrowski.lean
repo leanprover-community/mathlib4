@@ -147,22 +147,18 @@ private lemma tendsto_nat_rpow_div :
 
 -- Multiplication by a constant moves in a List.sum
 private lemma list_mul_sum {R : Type*} [CommSemiring R] {T : Type*} (l : List T) (y : R) (x : R) :
-    List.sum (List.mapIdx (fun i _ => x * y ^ i) (l)) =
-    x * List.sum (List.mapIdx (fun i _ => y ^ i) (l)) := by
+    (l.mapIdx fun i _ => x * y ^ i).sum = x * (l.mapIdx fun i _ => y ^ i).sum := by
   simp_rw [← smul_eq_mul, List.smul_sum, List.mapIdx_eq_enum_map]
   congr 1
   simp
 
 -- Geometric sum for lists
 private lemma list_geom {T : Type*} {F : Type*} [Field F] (l : List T) {y : F} (hy : y ≠ 1) :
-    List.sum (List.mapIdx (fun i _ => y ^ i) l) = (y ^ l.length - 1) / (y - 1) := by
-  induction l with
-  | nil => simp only [List.mapIdx_nil, List.sum_nil, List.length_nil, pow_zero, sub_self, zero_div]
-  | cons head tail ih =>
-    simp only [List.mapIdx_cons, pow_zero, List.sum_cons, List.length_cons]
-    have (a : ℕ ) : y ^ (a + 1) = y * y ^ a := by ring
-    simp_rw [this, list_mul_sum, ih]
-    simp only [mul_div, ← same_add_div (sub_ne_zero.2 hy), mul_sub, mul_one, sub_add_sub_cancel']
+    (l.mapIdx fun i _ => y ^ i).sum = (y ^ l.length - 1) / (y - 1) := by
+  rw [← geom_sum_eq hy l.length, List.mapIdx_eq_enum_map, Finset.sum_range, ← Fin.sum_univ_get']
+  simp only [List.getElem_enum, Function.uncurry_apply_pair]
+  let e : Fin l.enum.length ≃ Fin l.length := finCongr List.enum_length
+  exact Fintype.sum_bijective e e.bijective _ _ fun _ ↦ rfl
 
 namespace Rat.AbsoluteValue
 
