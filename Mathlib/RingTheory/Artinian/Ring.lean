@@ -48,13 +48,7 @@ open Set Submodule IsArtinian
 
 namespace IsArtinianRing
 
-variable (R : Type*) [CommRing R] [IsArtinianRing R]
-
-attribute [local instance] subtype_isMaximal_finite fieldOfSubtypeIsMaximal in
-theorem isSemisimpleRing_of_isReduced [IsReduced R] : IsSemisimpleRing R :=
-  (equivPi R).symm.isSemisimpleRing
-
-variable {R}
+variable {R : Type*} [CommRing R] [IsArtinianRing R]
 
 @[stacks 00J8]
 theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) := by
