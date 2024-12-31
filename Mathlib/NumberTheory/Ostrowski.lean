@@ -153,7 +153,6 @@ end API
 
 /-! ### Preliminary lemmas on limits and lists -/
 
-
 open Filter Nat Real Topology
 
 -- For any `C > 0`, the limit of `C ^ (1/k)` is 1 as `k → ∞`
