@@ -6,7 +6,6 @@ Authors: Chris Hughes, Junyan Xu, Jujian Zhang
 import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.Localization.Defs
 import Mathlib.RingTheory.Nakayama
-import Mathlib.RingTheory.SimpleModule
 
 /-!
 # Artinian rings
