@@ -176,6 +176,26 @@ variable {L : AddSubgroup G} (h : IsLsummand G L)
 
 #check WithLp 1 (L × h.compl)
 
+
+-- c.f WithLp.unitization_norm_def
+open ENNReal in
+lemma L1_norm_def (x : WithLp 1 (L × h.compl)) :
+    ‖x‖ = ‖(WithLp.equiv 1 _ x).fst‖ + ‖(WithLp.equiv 1 _ x).snd‖ := calc
+  ‖x‖ = (‖(WithLp.equiv 1 _ x).fst‖ ^ (1 : ℝ≥0∞).toReal +
+      ‖(WithLp.equiv 1 _ x).snd‖ ^ (1 : ℝ≥0∞).toReal) ^ (1 / (1 : ℝ≥0∞).toReal) :=
+    WithLp.prod_norm_eq_add (by simp : 0 < (1 : ℝ≥0∞).toReal) _
+  _   = ‖(WithLp.equiv 1 _ x).fst‖ + ‖(WithLp.equiv 1 _ x).snd‖ := by simp
+
+-- c.f WithLp.prod_norm_eq_sup
+theorem prod_norm_eq_sup (f : WithLp 1 (L × h.compl)) : ‖f‖ = ‖f.fst‖ + ‖f.snd‖ := by
+  rw [L1_norm_def]
+  rfl
+
+lemma L1_norm_inr (x : G) : ‖(WithLp.equiv 1 (L × h.compl)).symm x‖ = ‖x‖ := by
+  simp [unitization_norm_def]
+
+--#check WithLp.instUnitizationNormedAddCommGroup
+
 -- See Mathlib/Analysis/Normed/Algebra/Unitization.lean
 
 lemma Lsummand.IsClosed {L : AddSubgroup G} (h : IsLsummand G L) : IsClosed L := by
