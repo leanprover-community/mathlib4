@@ -2172,7 +2172,7 @@ namespace Equiv
 
 /-- Given a predicate `p : α → Prop`, produces an equivalence between
   `Set {a : α // p a}` and `{s : Set α // ∀ a ∈ s, p a}`. -/
-protected def setSubtypeComm {α : Type*} (p : α → Prop) :
+protected def setSubtypeComm (p : α → Prop) :
     Set {a : α // p a} ≃ {s : Set α // ∀ a ∈ s, p a} where
   toFun s := ⟨{a | ∃ h : p a, s ⟨a, h⟩}, fun _ h ↦ h.1⟩
   invFun s := {a | a.val ∈ s.val}
