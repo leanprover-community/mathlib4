@@ -96,9 +96,8 @@ def trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R] {S : Type*} [
     · simp
     rcases eq_or_ne y 0 with rfl | hy
     · simp
-    rcases eq_or_ne (x + y) 0 with hxy | hxy
-    · simp [hx, hy, hxy, show (1 : S) + 1 = 2 by norm_num]
-    simpa [hx, hy, hxy, show (1 : S) + 1 = 2 by norm_num] using one_le_two
+    simp only [hx, ↓reduceIte, hy, show (1 : S) + 1 = 2 by norm_num]
+    rcases eq_or_ne (x + y) 0 with hxy | hxy <;> simp [hxy, one_le_two]
 
 /-- An absolute value satisfies `f n ≤ n` for every `n : ℕ`. -/
 lemma nat_le_nat {S : Type*} [OrderedRing S] [IsDomain S] (n : ℕ) (f : AbsoluteValue R S) :
