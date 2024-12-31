@@ -102,10 +102,13 @@ construct the corresponding continuous multilinear map on `n+1` variables obtain
 the variables, given by `m ↦ f (m 0) (tail m)`-/
 def ContinuousLinearMap.uncurryLeft
     (f : Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G) :
-    ContinuousMultilinearMap 𝕜 Ei G :=
-  (@LinearMap.uncurryLeft 𝕜 n Ei G _ _ _ _ _
-      (ContinuousMultilinearMap.toMultilinearMapLinear.comp f.toLinearMap)).mkContinuous
-    ‖f‖ fun m => by exact ContinuousLinearMap.norm_map_tail_le f m
+    ContinuousMultilinearMap 𝕜 Ei G where
+  toMultilinearMap :=
+    (@LinearMap.uncurryLeft 𝕜 n Ei G _ _ _ _ _
+        (ContinuousMultilinearMap.toMultilinearMapLinear.comp f.toLinearMap))
+  cont := by
+    dsimp [LinearMap.uncurryLeft]
+    continuity
 
 @[simp]
 theorem ContinuousLinearMap.uncurryLeft_apply
@@ -117,22 +120,27 @@ theorem ContinuousLinearMap.uncurryLeft_apply
 a continuous linear map into continuous multilinear maps in `n` variables, given by
 `x ↦ (m ↦ f (cons x m))`. -/
 def ContinuousMultilinearMap.curryLeft (f : ContinuousMultilinearMap 𝕜 Ei G) :
-    Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G :=
-  LinearMap.mkContinuous
-    { -- define a linear map into `n` continuous multilinear maps
-      -- from an `n+1` continuous multilinear map
-      toFun := fun x =>
-        (f.toMultilinearMap.curryLeft x).mkContinuous (‖f‖ * ‖x‖) (f.norm_map_cons_le x)
-      map_add' := fun x y => by
-        ext m
-        exact f.cons_add m x y
-      map_smul' := fun c x => by
-        ext m
-        exact
-          f.cons_smul m c x }-- then register its continuity thanks to its boundedness properties.
-    ‖f‖ fun x => by
-      rw [LinearMap.coe_mk, AddHom.coe_mk]
-      exact MultilinearMap.mkContinuous_norm_le _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) _
+    Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G where
+  toFun x :=
+    { toMultilinearMap := (f.toMultilinearMap.curryLeft x)
+      cont :=
+        (ContinuousMapClass.map_continuous f).comp (continuous_const.fin_cons continuous_id) }
+  map_add' := fun x y => by
+    ext m
+    exact f.cons_add m x y
+  map_smul' := fun c x => by
+    ext m
+    exact
+      f.cons_smul m c x
+  cont := by
+    refine (IsUniformInducing.isInducing ?_).continuous
+    dsimp
+    rw [← isUniformInducing_toUniformOnFun.of_comp_iff]
+    refine .comp ?_ isUniformInducing_toUniformOnFun
+    simp [Function.comp_def]
+    -- rw [continuous_induced_rng, UniformOnFun.tendsto_iff_tendstoUniformlyOn ]
+    dsimp [Function.comp_def, toUniformOnFun]
+    simp_rw [ContinuousLinearMap.coe_mk]
 
 @[simp]
 theorem ContinuousMultilinearMap.curryLeft_apply (f : ContinuousMultilinearMap 𝕜 Ei G) (x : Ei 0)
