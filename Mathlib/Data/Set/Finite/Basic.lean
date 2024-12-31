@@ -324,8 +324,8 @@ instance (priority := 100) fintypeInsert' (a : α) (s : Set α) [Decidable <| a 
 instance fintypeImage [DecidableEq β] (s : Set α) (f : α → β) [Fintype s] : Fintype (f '' s) :=
   Fintype.ofFinset (s.toFinset.image f) <| by simp
 
-/-- If a function `f` has a partial inverse and sends a set `s` to a set with `[Fintype]` instance,
-then `s` has a `Fintype` structure as well. -/
+/-- If a function `f` has a partial inverse `g` and the image of `s` under `f` is a set with
+a `Fintype` instance, then `s` has a `Fintype` structure as well. -/
 def fintypeOfFintypeImage (s : Set α) {f : α → β} {g} (I : IsPartialInv f g) [Fintype (f '' s)] :
     Fintype s :=
   Fintype.ofFinset ⟨_, (f '' s).toFinset.2.filterMap g <| injective_of_isPartialInv_right I⟩
@@ -405,8 +405,6 @@ Some set instances do not appear here since they are consequences of others, for
 
 namespace Finite.Set
 
-open scoped Classical
-
 example {s : Set α} [Finite α] : Finite s :=
   inferInstance
 
@@ -419,10 +417,12 @@ example (a : α) : Finite ({a} : Set α) :=
 instance finite_union (s t : Set α) [Finite s] [Finite t] : Finite (s ∪ t : Set α) := by
   cases nonempty_fintype s
   cases nonempty_fintype t
+  classical
   infer_instance
 
 instance finite_sep (s : Set α) (p : α → Prop) [Finite s] : Finite ({ a ∈ s | p a } : Set α) := by
   cases nonempty_fintype s
+  classical
   infer_instance
 
 protected theorem subset (s : Set α) {t : Set α} [Finite s] (h : t ⊆ s) : Finite t := by
@@ -443,6 +443,7 @@ instance finite_insert (a : α) (s : Set α) [Finite s] : Finite (insert a s : S
 
 instance finite_image (s : Set α) (f : α → β) [Finite s] : Finite (f '' s) := by
   cases nonempty_fintype s
+  classical
   infer_instance
 
 end Finite.Set

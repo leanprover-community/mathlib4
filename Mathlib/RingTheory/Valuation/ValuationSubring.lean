@@ -23,8 +23,6 @@ The order structure on `ValuationSubring K`.
 
 universe u
 
-open scoped Classical
-
 noncomputable section
 
 variable (K : Type u) [Field K]
@@ -32,7 +30,7 @@ variable (K : Type u) [Field K]
 /-- A valuation subring of a field `K` is a subring `A` such that for every `x : K`,
 either `x ∈ A` or `x⁻¹ ∈ A`.
 
-This is equvalent to being maximal in the domination order
+This is equivalent to being maximal in the domination order
 of local subrings (the stacks project definition). See `LocalSubring.isMax_iff`.
 -/
 structure ValuationSubring extends Subring K where
@@ -349,10 +347,12 @@ def primeSpectrumOrderEquiv : (PrimeSpectrum A)ᵒᵈ ≃o {S // A ≤ S} :=
         all_goals exact le_ofPrime A (PrimeSpectrum.asIdeal _),
       fun h => by apply ofPrime_le_of_le; exact h⟩ }
 
-instance le_total_ideal : IsTotal {S // A ≤ S} LE.le :=
+instance le_total_ideal : IsTotal {S // A ≤ S} LE.le := by
+  classical
   let _ : IsTotal (PrimeSpectrum A) (· ≤ ·) := ⟨fun ⟨x, _⟩ ⟨y, _⟩ => LE.isTotal.total x y⟩
-  ⟨(primeSpectrumOrderEquiv A).symm.toRelEmbedding.isTotal.total⟩
+  exact ⟨(primeSpectrumOrderEquiv A).symm.toRelEmbedding.isTotal.total⟩
 
+open scoped Classical in
 instance linearOrderOverring : LinearOrder {S // A ≤ S} where
   le_total := (le_total_ideal A).1
   max_def a b := congr_fun₂ sup_eq_maxDefault a b

@@ -13,7 +13,7 @@ def reorderLastArguments : Expr → Expr :=
   Expr.replaceRec fun r e ↦
     let n := e.getAppNumArgs
     if n ≥ 2 then
-      mkAppN e.getAppFn <| e.getAppArgs.map r |>.swap! (n - 1) (n - 2)
+      mkAppN e.getAppFn <| e.getAppArgs.map r |>.swapIfInBounds (n - 1) (n - 2)
     else
       none
 

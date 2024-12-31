@@ -33,7 +33,7 @@ protected abbrev Over (X S : Scheme.{u}) := OverClass X S
 
 /--
 `X.CanonicallyOver S` is the typeclass containing the data of a structure morphism `X ↘ S : X ⟶ S`,
-and that `S` is (uniquely) inferrable from the structure of `X`.
+and that `S` is (uniquely) inferable from the structure of `X`.
 -/
 abbrev CanonicallyOver := CanonicallyOverClass X S
 

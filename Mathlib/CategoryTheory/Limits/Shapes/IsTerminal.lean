@@ -14,7 +14,7 @@ import Mathlib.CategoryTheory.Category.Preorder
 In this file we define the predicates `IsTerminal` and `IsInitial` as well as the class
 `InitialMonoClass`.
 
-The classes `HasTerminal` and `HasInitial` and the associated notations for terminal and inital
+The classes `HasTerminal` and `HasInitial` and the associated notations for terminal and initial
 objects are defined in `Terminal.lean`.
 
 ## References

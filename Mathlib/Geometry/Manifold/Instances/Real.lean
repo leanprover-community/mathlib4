@@ -14,16 +14,18 @@ or with boundary or with corners. As a concrete example, we construct explicitly
 boundary structure on the real interval `[x, y]`.
 
 More specifically, we introduce
-* `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
+* `modelWithCornersEuclideanHalfSpace n :
+  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
   used to define `n`-dimensional real manifolds with boundary
-* `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
+* `modelWithCornersEuclideanQuadrant n :
+  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
   to define `n`-dimensional real manifolds with corners
 
 ## Notations
 
 In the locale `Manifold`, we introduce the notations
 * `𝓡 n` for the identity model with corners on `EuclideanSpace ℝ (Fin n)`
-* `𝓡∂ n` for `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)`.
+* `𝓡∂ n` for `modelWithCornersEuclideanHalfSpace n`.
 
 For instance, if a manifold `M` is boundaryless, smooth and modelled on `EuclideanSpace ℝ (Fin m)`,
 and `N` is smooth with boundary modelled on `EuclideanHalfSpace n`, and `f : M → N` is a smooth
@@ -85,6 +87,27 @@ theorem EuclideanHalfSpace.ext [NeZero n] (x y : EuclideanHalfSpace n)
     (h : x.1 = y.1) : x = y :=
   Subtype.eq h
 
+theorem EuclideanHalfSpace.convex [NeZero n] :
+    Convex ℝ { x : EuclideanSpace ℝ (Fin n) | 0 ≤ x 0 } :=
+  fun _ hx _ hy _ _ _ _ _ ↦ by dsimp at hx hy ⊢; positivity
+
+theorem EuclideanQuadrant.convex :
+    Convex ℝ { x : EuclideanSpace ℝ (Fin n) | ∀ i, 0 ≤ x i } :=
+  fun _ hx _ hy _ _ _ _ _ i ↦ by dsimp at hx hy ⊢; specialize hx i; specialize hy i; positivity
+
+instance EuclideanHalfSpace.pathConnectedSpace [NeZero n] :
+    PathConnectedSpace (EuclideanHalfSpace n) :=
+  isPathConnected_iff_pathConnectedSpace.mp <| convex.isPathConnected ⟨0, by simp⟩
+
+instance EuclideanQuadrant.pathConnectedSpace : PathConnectedSpace (EuclideanQuadrant n) :=
+  isPathConnected_iff_pathConnectedSpace.mp <| convex.isPathConnected ⟨0, by simp⟩
+
+instance [NeZero n] : LocPathConnectedSpace (EuclideanHalfSpace n) :=
+  EuclideanHalfSpace.convex.locPathConnectedSpace
+
+instance : LocPathConnectedSpace (EuclideanQuadrant n) :=
+  EuclideanQuadrant.convex.locPathConnectedSpace
+
 theorem range_euclideanHalfSpace (n : ℕ) [NeZero n] :
     (range fun x : EuclideanHalfSpace n => x.val) = { y | 0 ≤ y 0 } :=
   Subtype.range_val
@@ -98,6 +121,7 @@ theorem interior_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
   change interior (f ⁻¹' Ici a) = f ⁻¹' Ioi a
   rw [f.interior_preimage, interior_Ici]
   apply Function.surjective_eval
+
 @[deprecated (since := "2024-11-12")] alias interior_halfspace := interior_halfSpace
 
 open ENNReal in
@@ -108,6 +132,7 @@ theorem closure_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) :
   change closure (f ⁻¹' Ici a) = f ⁻¹' Ici a
   rw [f.closure_preimage, closure_Ici]
   apply Function.surjective_eval
+
 @[deprecated (since := "2024-11-12")] alias closure_halfspace := closure_halfSpace
 
 open ENNReal in
@@ -118,6 +143,7 @@ theorem closure_open_halfSpace {n : ℕ} (p : ℝ≥0∞) (a : ℝ) (i : Fin n) 
   change closure (f ⁻¹' Ioi a) = f ⁻¹' Ici a
   rw [f.closure_preimage, closure_Ioi]
   apply Function.surjective_eval
+
 @[deprecated (since := "2024-11-12")] alias closure_open_halfspace := closure_open_halfSpace
 
 open ENNReal in
@@ -193,13 +219,13 @@ def modelWithCornersEuclideanQuadrant (n : ℕ) :
 
 /-- The model space used to define `n`-dimensional real manifolds without boundary. -/
 scoped[Manifold]
-  notation "𝓡 " n =>
+  notation3 "𝓡 " n =>
     (modelWithCornersSelf ℝ (EuclideanSpace ℝ (Fin n)) :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanSpace ℝ (Fin n)))
 
 /-- The model space used to define `n`-dimensional real manifolds with boundary. -/
 scoped[Manifold]
-  notation "𝓡∂ " n =>
+  notation3 "𝓡∂ " n =>
     (modelWithCornersEuclideanHalfSpace n :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n))
 
@@ -351,24 +377,24 @@ instance Icc_smoothManifoldWithCorners (x y : ℝ) [Fact (x < y)] :
   · -- `e = left chart`, `e' = right chart`
     apply M.contDiffOn.congr
     rintro _ ⟨⟨hz₁, hz₂⟩, ⟨⟨z, hz₀⟩, rfl⟩⟩
-    simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, update_same,
+    simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, update_self,
       max_eq_left, hz₀, lt_sub_iff_add_lt, mfld_simps] at hz₁ hz₂
     rw [min_eq_left hz₁.le, lt_add_iff_pos_left] at hz₂
     ext i
     rw [Subsingleton.elim i 0]
     simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, *, PiLp.add_apply,
-      PiLp.neg_apply, max_eq_left, min_eq_left hz₁.le, update_same, mfld_simps]
+      PiLp.neg_apply, max_eq_left, min_eq_left hz₁.le, update_self, mfld_simps]
     abel
   · -- `e = right chart`, `e' = left chart`
     apply M.contDiffOn.congr
     rintro _ ⟨⟨hz₁, hz₂⟩, ⟨z, hz₀⟩, rfl⟩
     simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, max_lt_iff,
-      update_same, max_eq_left hz₀, mfld_simps] at hz₁ hz₂
+      update_self, max_eq_left hz₀, mfld_simps] at hz₁ hz₂
     rw [lt_sub_comm] at hz₁
     ext i
     rw [Subsingleton.elim i 0]
     simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, PiLp.add_apply,
-      PiLp.neg_apply, update_same, max_eq_left, hz₀, hz₁.le, mfld_simps]
+      PiLp.neg_apply, update_self, max_eq_left, hz₀, hz₁.le, mfld_simps]
     abel
   ·-- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1

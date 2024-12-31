@@ -633,7 +633,7 @@ theorem tendsto_measure_biInter_gt {ι : Type*} [LinearOrder ι] [TopologicalSpa
     {a : ι} (hs : ∀ r > a, NullMeasurableSet (s r) μ) (hm : ∀ i j, a < i → i ≤ j → s i ⊆ s j)
     (hf : ∃ r > a, μ (s r) ≠ ∞) : Tendsto (μ ∘ s) (𝓝[Ioi a] a) (𝓝 (μ (⋂ r > a, s r))) := by
   have : (atBot : Filter (Ioi a)).IsCountablyGenerated := by
-    rw [← comap_coe_Ioi_nhdsWithin_Ioi]
+    rw [← comap_coe_Ioi_nhdsGT]
     infer_instance
   simp_rw [← map_coe_Ioi_atBot, tendsto_map'_iff, ← mem_Ioi, biInter_eq_iInter]
   apply tendsto_measure_iInter_atBot
@@ -1014,6 +1014,70 @@ instance instCompleteLattice {_ : MeasurableSpace α} : CompleteLattice (Measure
     bot_le := fun _a _s => bot_le }
 
 end sInf
+
+lemma inf_apply {s : Set α} (hs : MeasurableSet s) :
+    (μ ⊓ ν) s = sInf {m | ∃ t, m = μ (t ∩ s) + ν (tᶜ ∩ s)} := by
+  -- `(μ ⊓ ν) s` is defined as `⊓ (t : ℕ → Set α) (ht : s ⊆ ⋃ n, t n), ∑' n, μ (t n) ⊓ ν (t n)`
+  rw [← sInf_pair, Measure.sInf_apply hs, OuterMeasure.sInf_apply
+    (image_nonempty.2 <| insert_nonempty μ {ν})]
+  refine le_antisymm (le_sInf fun m ⟨t, ht₁⟩ ↦ ?_) (le_iInf₂ fun t' ht' ↦ ?_)
+  · subst ht₁
+    -- We first show `(μ ⊓ ν) s ≤ μ (t ∩ s) + ν (tᶜ ∩ s)` for any `t : Set α`
+    -- For this, define the sequence `t' : ℕ → Set α` where `t' 0 = t ∩ s`, `t' 1 = tᶜ ∩ s` and
+    -- `∅` otherwise. Then, we have by construction
+    -- `(μ ⊓ ν) s ≤ ∑' n, μ (t' n) ⊓ ν (t' n) ≤ μ (t' 0) + ν (t' 1) = μ (t ∩ s) + ν (tᶜ ∩ s)`.
+    set t' : ℕ → Set α := fun n ↦ if n = 0 then t ∩ s else if n = 1 then tᶜ ∩ s else ∅ with ht'
+    refine (iInf₂_le t' fun x hx ↦ ?_).trans ?_
+    · by_cases hxt : x ∈ t
+      · refine mem_iUnion.2 ⟨0, ?_⟩
+        simp [hx, hxt]
+      · refine mem_iUnion.2 ⟨1, ?_⟩
+        simp [hx, hxt]
+    · simp only [iInf_image, coe_toOuterMeasure, iInf_pair]
+      rw [tsum_eq_add_tsum_ite 0, tsum_eq_add_tsum_ite 1, if_neg zero_ne_one.symm,
+        (tsum_eq_zero_iff ENNReal.summable).2 _, add_zero]
+      · exact add_le_add (inf_le_left.trans <| by simp [ht']) (inf_le_right.trans <| by simp [ht'])
+      · simp only [ite_eq_left_iff]
+        intro n hn₁ hn₀
+        simp only [ht', if_neg hn₀, if_neg hn₁, measure_empty, iInf_pair, le_refl, inf_of_le_left]
+  · simp only [iInf_image, coe_toOuterMeasure, iInf_pair]
+    -- Conversely, fixing `t' : ℕ → Set α` such that `s ⊆ ⋃ n, t' n`, we construct `t : Set α`
+    -- for which `μ (t ∩ s) + ν (tᶜ ∩ s) ≤ ∑' n, μ (t' n) ⊓ ν (t' n)`.
+    -- Denoting `I := {n | μ (t' n) ≤ ν (t' n)}`, we set `t = ⋃ n ∈ I, t' n`.
+    -- Clearly `μ (t ∩ s) ≤ ∑' n ∈ I, μ (t' n)` and `ν (tᶜ ∩ s) ≤ ∑' n ∉ I, ν (t' n)`, so
+    -- `μ (t ∩ s) + ν (tᶜ ∩ s) ≤ ∑' n ∈ I, μ (t' n) + ∑' n ∉ I, ν (t' n)`
+    -- where the RHS equals `∑' n, μ (t' n) ⊓ ν (t' n)` by the choice of `I`.
+    set t := ⋃ n ∈ {k : ℕ | μ (t' k) ≤ ν (t' k)}, t' n with ht
+    suffices hadd : μ (t ∩ s) + ν (tᶜ ∩ s) ≤ ∑' n, μ (t' n) ⊓ ν (t' n) by
+      exact le_trans (sInf_le ⟨t, rfl⟩) hadd
+    have hle₁ : μ (t ∩ s) ≤ ∑' (n : {k | μ (t' k) ≤ ν (t' k)}), μ (t' n) :=
+      (measure_mono inter_subset_left).trans <| measure_biUnion_le _ (to_countable _) _
+    have hcap : tᶜ ∩ s ⊆ ⋃ n ∈ {k | ν (t' k) < μ (t' k)}, t' n := by
+      simp_rw [ht, compl_iUnion]
+      refine fun x ⟨hx₁, hx₂⟩ ↦ mem_iUnion₂.2 ?_
+      obtain ⟨i, hi⟩ := mem_iUnion.1 <| ht' hx₂
+      refine ⟨i, ?_, hi⟩
+      by_contra h
+      simp only [mem_setOf_eq, not_lt] at h
+      exact mem_iInter₂.1 hx₁ i h hi
+    have hle₂ : ν (tᶜ ∩ s) ≤ ∑' (n : {k | ν (t' k) < μ (t' k)}), ν (t' n) :=
+      (measure_mono hcap).trans (measure_biUnion_le ν (to_countable {k | ν (t' k) < μ (t' k)}) _)
+    refine (add_le_add hle₁ hle₂).trans ?_
+    have heq : {k | μ (t' k) ≤ ν (t' k)} ∪ {k | ν (t' k) < μ (t' k)} = univ := by
+      ext k; simp [le_or_lt]
+    conv in ∑' (n : ℕ), μ (t' n) ⊓ ν (t' n) => rw [← tsum_univ, ← heq]
+    rw [tsum_union_disjoint (f := fun n ↦ μ (t' n) ⊓ ν (t' n)) ?_ ENNReal.summable ENNReal.summable]
+    · refine add_le_add (tsum_congr ?_).le (tsum_congr ?_).le
+      · rw [Subtype.forall]
+        intro n hn; simpa
+      · rw [Subtype.forall]
+        intro n hn
+        rw [mem_setOf_eq] at hn
+        simp [le_of_lt hn]
+    · rw [Set.disjoint_iff]
+      rintro k ⟨hk₁, hk₂⟩
+      rw [mem_setOf_eq] at hk₁ hk₂
+      exact False.elim <| hk₂.not_le hk₁
 
 @[simp]
 theorem _root_.MeasureTheory.OuterMeasure.toMeasure_top :

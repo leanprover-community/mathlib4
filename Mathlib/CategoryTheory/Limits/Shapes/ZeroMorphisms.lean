@@ -36,8 +36,6 @@ open CategoryTheory
 
 open CategoryTheory.Category
 
-open scoped Classical
-
 namespace CategoryTheory.Limits
 
 variable (C : Type u) [Category.{v} C]
@@ -555,13 +553,13 @@ end Image
 
 /-- In the presence of zero morphisms, coprojections into a coproduct are (split) monomorphisms. -/
 instance isSplitMono_sigma_ι {β : Type u'} [HasZeroMorphisms C] (f : β → C)
-    [HasColimit (Discrete.functor f)] (b : β) : IsSplitMono (Sigma.ι f b) :=
-  IsSplitMono.mk' { retraction := Sigma.desc <| Pi.single b (𝟙 _) }
+    [HasColimit (Discrete.functor f)] (b : β) : IsSplitMono (Sigma.ι f b) := by
+  classical exact IsSplitMono.mk' { retraction := Sigma.desc <| Pi.single b (𝟙 _) }
 
 /-- In the presence of zero morphisms, projections into a product are (split) epimorphisms. -/
 instance isSplitEpi_pi_π {β : Type u'} [HasZeroMorphisms C] (f : β → C)
-    [HasLimit (Discrete.functor f)] (b : β) : IsSplitEpi (Pi.π f b) :=
-  IsSplitEpi.mk' { section_ := Pi.lift <| Pi.single b (𝟙 _) }
+    [HasLimit (Discrete.functor f)] (b : β) : IsSplitEpi (Pi.π f b) := by
+  classical exact IsSplitEpi.mk' { section_ := Pi.lift <| Pi.single b (𝟙 _) }
 
 /-- In the presence of zero morphisms, coprojections into a coproduct are (split) monomorphisms. -/
 instance isSplitMono_coprod_inl [HasZeroMorphisms C] {X Y : C} [HasColimit (pair X Y)] :
