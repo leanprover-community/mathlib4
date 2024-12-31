@@ -52,11 +52,7 @@ lemma listSum_le {S : Type*} [OrderedSemiring S] (l : List R) (f : AbsoluteValue
     f l.sum ≤ (l.map f).sum := by
   induction l with
   | nil => simp
-  | cons head tail ih =>
-    simp only [List.sum_cons, List.map_cons]
-    calc
-    f (head + List.sum tail) ≤ f head + f (List.sum tail) := by apply f.add_le'
-    _ ≤ f head + List.sum (List.map f tail) := by gcongr
+  | cons head tail ih => exact (f.add_le' ..).trans <| add_le_add_left ih (f head)
 
 /-- Two absolute values `f, g` on `R` with values in `ℝ` are *equivalent* if there exists
 a positive constant `c` such that for all `x ∈ R`, `(f x)^c = g x`. -/
