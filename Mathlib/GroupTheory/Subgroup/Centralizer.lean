@@ -11,7 +11,7 @@ import Mathlib.GroupTheory.Submonoid.Centralizer
 # Centralizers of subgroups
 -/
 
-variable {G : Type*} [Group G]
+variable {G G' : Type*} [Group G] [Group G']
 
 namespace Subgroup
 
@@ -77,6 +77,12 @@ variable (H)
 @[to_additive]
 theorem le_centralizer [h : H.IsCommutative] : H ≤ centralizer H :=
   le_centralizer_iff_isCommutative.mpr h
+
+@[to_additive]
+theorem map_centralizer_le_centralizer_map (f : G →* G') :
+    H.centralizer.map f ≤ Subgroup.centralizer (H.map f) := by
+  rintro - ⟨g, hg, rfl⟩ - ⟨h, hh, rfl⟩
+  rw [← map_mul, ← map_mul, hg h hh]
 
 variable {H} in
 @[to_additive]
