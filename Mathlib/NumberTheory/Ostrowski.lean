@@ -227,6 +227,10 @@ def padic (p : ℕ) [Fact p.Prime] : AbsoluteValue ℚ ℝ where
 @[simp] lemma padic_eq_padicNorm (p : ℕ) [Fact p.Prime] (r : ℚ) :
     padic p r = padicNorm p r := rfl
 
+lemma padic_le_one (p : ℕ) [Fact p.Prime] (n : ℤ) : padic p n ≤ 1 := by
+  simp only [padic_eq_padicNorm]
+  exact_mod_cast padicNorm.of_int n
+
 -- ## Step 1: define `p = minimal n s. t. 0 < f n < 1`
 
 variable (hf_nontriv : f ≠ .trivial) (bdd : ∀ n : ℕ, f n ≤ 1)
@@ -588,11 +592,7 @@ lemma not_real_equiv_padic (p : ℕ) [Fact p.Prime] : ¬ real.equiv (padic p) :=
   have hp : p.Prime := Fact.out
   rintro ⟨c, hc₀, hc⟩
   apply_fun (· 2) at hc
-  simp only [real_eq_abs, abs_ofNat, cast_ofNat, padic_eq_padicNorm, ne_eq, OfNat.ofNat_ne_zero,
-    not_false_eq_true, padicNorm.eq_zpow_of_nonzero, zpow_neg, cast_inv, cast_zpow,
-    cast_natCast] at hc
-  -- hc : 2 ^ c = (↑p ^ padicValRat p 2)⁻¹
-  exact (((inv_le_one₀ <| zpow_pos (mod_cast hp.pos) _).mpr <| mod_cast NeZero.one_le).trans_lt <|
-    one_lt_rpow one_lt_two hc₀).ne' hc
+  simp only [real_eq_abs, abs_ofNat, cast_ofNat] at hc
+  exact ((padic_le_one p 2).trans_lt <| one_lt_rpow one_lt_two hc₀).ne' hc
 
 end Rat.AbsoluteValue
