@@ -49,12 +49,16 @@ noncomputable abbrev f : ℤ[X] := X ^ 5 + X
 example : f.fixedDivisor univ = Ideal.span {2} := by
   refine eq_of_le_of_le ?_ ?_
   · intro x hx
-    #check MonoidAlgebra.mem_ideal_span_of_image
-    have foo : ∃ (k a : ℤ), x = a * f.eval k := by sorry
-    obtain ⟨k, a, hka⟩ := foo
     have two_div (x) : 2 ∣ f.eval x := even_iff_two_dvd.mp <| by simp [parity_simps]
-    have := two_div k |>.mul_left a
-    sorry
+    apply Ideal.mem_span_singleton.mpr
+    simp [fixedDivisor] at hx
+    simp at two_div
+    apply Finsupp.mem_ideal_span_range_iff_exists_finsupp.mp at hx
+    obtain ⟨c, hc⟩ := hx
+    rw [← hc]
+    apply Finset.dvd_sum
+    intro i hi
+    exact Dvd.dvd.mul_left (two_div i) (c i)
   · have : 2 ∈ f.fixedDivisor univ := Ideal.mem_span 2 |>.mpr fun _ h ↦ h ⟨1, by norm_num⟩
     exact Ideal.span_singleton_le_iff_mem (Ideal.span <| f.eval '' univ) |>.mpr this
 
@@ -113,9 +117,24 @@ lemma factorial_coe_dvd_prod (k : ℕ) (n : ℤ) : (k ! : ℤ) ∣ ∏ i ∈ Fin
           exact ⟨negn, by simp_rw [Finset.mem_range]; omega⟩
         exact Int.modEq_zero_iff_dvd.mp congr($this % ↑k !)
     · rw [not_lt] at hnk
-      have := factorial_coe_dvd_ofPos k (-n) (by linarith)
       rw [← dvd_abs, Finset.abs_prod]
-      sorry
+      have prod_eq: ∏ x ∈ Finset.range k, |n + ↑x| =  ∏ x ∈ Finset.range k, -(n + ↑x) := by
+        apply Finset.prod_congr (rfl)
+        intro x hx
+        rw [abs_of_neg]
+        simp at hx
+        linarith
+      rw [prod_eq]
+      simp [add_comm]
+      rw [← Finset.prod_range_reflect]
+      have new_dvd := factorial_coe_dvd_ofPos k (-n + -↑(k - 1)) (by omega)
+      have prod_cast:  ∏ j ∈ Finset.range k, (-n + -↑(k - 1 - j)) =  ∏ j ∈ Finset.range k, (-n + -↑(k - 1) + j) := by
+        apply Finset.prod_congr (rfl)
+        intro x hx
+        simp at hx
+        omega
+      rw [prod_cast]
+      exact new_dvd
 
 
 /-- ℕ is a p-ordering of ℤ for any prime `p`. -/
@@ -127,7 +146,29 @@ def natPOrdering : (univ : Set ℤ).pOrdering p where
     have hdivk := k.factorial_dvd_descFactorial k
     rw [k.descFactorial_eq_prod_range k] at hdivk
 
-    sorry
+    conv =>
+      rhs
+      rw [← Finset.prod_range_reflect]
+    have prod_cast: (∏ j ∈ Finset.range k, (s - ↑(k - 1 - j))) = (∏ j ∈ Finset.range k, (s - ↑(k - 1) + j)) := by
+      apply Finset.prod_congr (rfl)
+      intro x hx
+      simp at hx
+      omega
+    rw [prod_cast]
+    have fac_dvd := factorial_coe_dvd_prod k (s - ↑(k - 1))
+    obtain ⟨a, ha⟩ := fac_dvd
+    rw [ha]
+    have fac_range := k.descFactorial_eq_prod_range k
+    zify at fac_range
+    have sub_cast: ∏ i ∈ Finset.range k, ↑(k - i) = ∏ i ∈ Finset.range k, ((k : ℤ) - (i : ℤ)) := by
+      apply Finset.prod_congr (rfl)
+      intro x hx
+      simp at hx
+      omega
+    rw [sub_cast] at fac_range
+    rw [← fac_range]
+    rw [Nat.descFactorial_self]
+    refine emultiplicity_le_emultiplicity_of_dvd_right (by simp)
 
 
 namespace Polynomial
