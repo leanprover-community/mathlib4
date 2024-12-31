@@ -204,7 +204,7 @@ lemma equiv_on_nat_iff_equiv : (∃ c : ℝ, 0 < c ∧ ∀ n : ℕ , f n ^ c = g
   refine ⟨fun ⟨c, hc, h⟩ ↦ ⟨c, hc, ?_⟩, fun ⟨c, hc, h⟩ ↦ ⟨c, hc, (congrFun h ·)⟩⟩
   ext1 x
   rw [← Rat.num_div_den x, map_div₀, map_div₀, div_rpow (by positivity) (by positivity), h x.den,
-    ← AbsoluteValue.apply_natAbs_eq,← AbsoluteValue.apply_natAbs_eq, h (natAbs x.num)]
+    ← apply_natAbs_eq,← apply_natAbs_eq, h (natAbs x.num)]
 
 section Non_archimedean
 
@@ -229,7 +229,7 @@ def padic (p : ℕ) [Fact p.Prime] : AbsoluteValue ℚ ℝ where
 
 -- ## Step 1: define `p = minimal n s. t. 0 < f n < 1`
 
-variable (hf_nontriv : f ≠ AbsoluteValue.trivial) (bdd : ∀ n : ℕ, f n ≤ 1)
+variable (hf_nontriv : f ≠ .trivial) (bdd : ∀ n : ℕ, f n ≤ 1)
 
 include hf_nontriv bdd in
 /-- There exists a minimal positive integer with absolute value smaller than 1. -/
@@ -313,7 +313,7 @@ lemma eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
   _ ≤ 1 * (f p) ^ k + 1 * (f m) ^ k := by
     simp only [map_mul, map_pow]
     gcongr
-    all_goals rw [← AbsoluteValue.apply_natAbs_eq]; apply bdd
+    all_goals rw [← apply_natAbs_eq]; apply bdd
   _ = (f p) ^ k + (f m) ^ k := by simp only [one_mul]
   _ < 1 := by
     have hm₀ : 0 < f m := f.pos <| Nat.cast_ne_zero.mpr fun H ↦ hpm <| H ▸ dvd_zero p
@@ -401,7 +401,7 @@ lemma apply_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m) :
   calc
   f n = f ((Nat.ofDigits m L : ℕ) : ℚ) := by rw [Nat.ofDigits_digits m n]
     _ = f (L'.sum) := by rw [Nat.ofDigits_eq_sum_mapIdx]; norm_cast
-    _ ≤ (L'.map f).sum := AbsoluteValue.listSum_le L' f
+    _ ≤ (L'.map f).sum := listSum_le L' f
     _ ≤ (L.mapIdx fun i _ ↦ m * (f m) ^ i).sum := ?_
   simp only [hL', List.mapIdx_eq_enum_map, List.map_map]
   apply List.sum_le_sum
