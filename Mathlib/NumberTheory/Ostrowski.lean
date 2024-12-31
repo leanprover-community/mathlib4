@@ -453,42 +453,42 @@ variable {m n : ℕ} (hm : 1 < m) (hn : 1 < n) (notbdd : ¬ ∀ (n : ℕ), f n �
 include hm notbdd in
 private lemma expr_pos : 0 < m * f m / (f m - 1) := by
   apply div_pos (mul_pos (mod_cast zero_lt_of_lt hm)
-      (map_pos_of_ne_zero f (mod_cast ne_zero_of_lt hm)))
+    (map_pos_of_ne_zero f (mod_cast ne_zero_of_lt hm)))
   linarith only [one_lt_of_not_bounded notbdd hm]
 
 include hn hm notbdd in
 private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
-    f n ≤ (m * f m / (f m - 1)) ^ (k : ℝ)⁻¹ * (f m) ^ (logb m n) := by
+    f n ≤ (m * f m / (f m - 1)) ^ (k : ℝ)⁻¹ * f m ^ logb m n := by
   have h_ineq1 {m n : ℕ} (hm : 1 < m) (hn : 1 < n) :
-      f n ≤ (m * f m / (f m - 1)) * (f m) ^ (logb m n) := by
+      f n ≤ (m * f m / (f m - 1)) * f m ^ logb m n := by
     let d := Nat.log m n
     calc
     f n ≤ ((Nat.digits m n).mapIdx fun i _ ↦ m * f m ^ i).sum :=
       apply_le_sum_digits n hm
-    _ = m * ((Nat.digits m n).mapIdx fun i _ ↦ (f m) ^ i).sum := list_mul_sum (m.digits n) (f m) m
+    _ = m * ((Nat.digits m n).mapIdx fun i _ ↦ f m ^ i).sum := list_mul_sum (m.digits n) (f m) m
     _ = m * ((f m ^ (d + 1) - 1) / (f m - 1)) := by
       rw [list_geom _ (ne_of_gt (one_lt_of_not_bounded notbdd hm)),
-      (Nat.digits_len m n hm (not_eq_zero_of_lt hn)).symm]
-    _ ≤ m * ((f m ^ (d + 1))/(f m - 1)) := by
+        (Nat.digits_len m n hm (not_eq_zero_of_lt hn)).symm]
+    _ ≤ m * ((f m ^ (d + 1)) / (f m - 1)) := by
       gcongr
       · linarith only [one_lt_of_not_bounded notbdd hm]
       · simp only [tsub_le_iff_right, le_add_iff_nonneg_right, zero_le_one]
     _ = ↑m * f ↑m / (f ↑m - 1) * f ↑m ^ d := by ring
     _ ≤ ↑m * f ↑m / (f ↑m - 1) * f ↑m ^ logb ↑m ↑n := by
       gcongr
-      · exact le_of_lt (expr_pos hm notbdd)
+      · exact (expr_pos hm notbdd).le
       · rw [← Real.rpow_natCast, Real.rpow_le_rpow_left_iff (one_lt_of_not_bounded notbdd hm)]
         exact natLog_le_logb n m
-  apply le_of_pow_le_pow_left₀ hk (mul_nonneg (rpow_nonneg
-    (le_of_lt (expr_pos hm notbdd)) (k : ℝ)⁻¹) (rpow_nonneg (apply_nonneg f ↑m) (logb m n)))
-  nth_rw 2 [← Real.rpow_natCast]
-  rw [mul_rpow (rpow_nonneg (le_of_lt (expr_pos hm notbdd)) (k : ℝ)⁻¹)
-    (rpow_nonneg (apply_nonneg f ↑m) (logb ↑m ↑n)), ← rpow_mul (le_of_lt (expr_pos hm notbdd)),
-    ← rpow_mul (apply_nonneg f ↑m), inv_mul_cancel₀ (mod_cast hk), rpow_one, mul_comm (logb ↑m ↑n)]
+  apply le_of_pow_le_pow_left₀ hk <| mul_nonneg (rpow_nonneg (expr_pos hm notbdd).le _)
+    (rpow_nonneg (apply_nonneg f ↑m) _)
+  nth_rewrite 2 [← Real.rpow_natCast]
+  rw [mul_rpow (rpow_nonneg (expr_pos hm notbdd).le _) (rpow_nonneg (apply_nonneg f ↑m) _),
+    ← rpow_mul (expr_pos hm notbdd).le, ← rpow_mul (apply_nonneg f ↑m),
+    inv_mul_cancel₀ (mod_cast hk), rpow_one, mul_comm (logb ..)]
   calc
-    (f n) ^ k = f ↑(n ^ k) := by simp only [Nat.cast_pow, map_pow]
-    _ ≤ (m * f m / (f m - 1)) * (f m) ^ (logb m ↑(n ^ k)) := h_ineq1 hm (Nat.one_lt_pow hk hn)
-    _ = (m * f m / (f m - 1)) * (f m) ^ (k * logb m n) := by
+    (f n) ^ k = f ↑(n ^ k) := by simp
+    _ ≤ (m * f m / (f m - 1)) * f m ^ logb m ↑(n ^ k) := h_ineq1 hm (Nat.one_lt_pow hk hn)
+    _ = (m * f m / (f m - 1)) * f m ^ (k * logb m n) := by
       rw [Nat.cast_pow, Real.logb_pow]
 
 include hm hn notbdd in
