@@ -936,7 +936,8 @@ instance [Ring K] (v : Valuation K Γ₀) : CommMonoidWithZero (MonoidHom.mrange
     intro a
     exact Subtype.ext (mul_zero a.val)
 
-instance [DivisionRing K] (v : Valuation K Γ₀) : CommGroupWithZero (MonoidHom.mrange v) where
+instance {Γ₀} [LinearOrderedCommGroupWithZero Γ₀] [DivisionRing K] (v : Valuation K Γ₀) :
+    CommGroupWithZero (MonoidHom.mrange v) where
   inv := fun x ↦ ⟨x⁻¹, by
     obtain ⟨y, hy⟩ := x.prop
     simp_rw [← hy, ← v.map_inv]
