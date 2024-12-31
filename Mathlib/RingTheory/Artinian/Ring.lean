@@ -3,10 +3,8 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Junyan Xu, Jujian Zhang
 -/
-import Mathlib.Algebra.Divisibility.Prod
-import Mathlib.Algebra.Polynomial.FieldDivision
 import Mathlib.RingTheory.Artinian.Module
-import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.RingTheory.Localization.Defs
 import Mathlib.RingTheory.Nakayama
 import Mathlib.RingTheory.SimpleModule
 
@@ -115,12 +113,5 @@ instance : IsArtinianRing (Localization S) :=
   localization_artinian S _
 
 end Localization
-
-attribute [local instance] fieldOfSubtypeIsMaximal in
-instance [IsReduced R] : DecompositionMonoid R := MulEquiv.decompositionMonoid (equivPi R)
-
-attribute [local instance] fieldOfSubtypeIsMaximal subtype_isMaximal_finite in
-instance [IsReduced R] : DecompositionMonoid (Polynomial R) :=
-  MulEquiv.decompositionMonoid <| (Polynomial.mapEquiv <| equivPi R).trans (Polynomial.piEquiv _)
 
 end IsArtinianRing
