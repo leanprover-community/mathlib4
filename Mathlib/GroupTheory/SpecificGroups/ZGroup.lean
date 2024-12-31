@@ -19,6 +19,7 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
 ## Main results
 
 * `IsZGroup.isCyclic_abelianization`: a finite Z-group has cyclic abelianization.
+* `IsZGroup.isCyclic_commutator`: a finite Z-group has cyclic commutator subgroup.
 
 TODO: Show that if `G` is a Z-group with commutator subgroup `G'`, then `G = G' ⋊ G/G'` where `G'`
 and `G/G'` are cyclic of coprime orders.
@@ -125,6 +126,41 @@ instance isCyclic_abelianization [Finite G] [IsZGroup G] : IsCyclic (Abelianizat
   inferInstance
 
 end Nilpotent
+
+section Commutator
+
+variable (G) in
+/-- A finite Z-group has cyclic commutator subgroup. -/
+theorem isCyclic_commutator [Finite G] [IsZGroup G] : IsCyclic (commutator G) := by
+  refine WellFoundedLT.induction (C := fun H ↦ IsCyclic (⁅H, H⁆ : Subgroup G)) (⊤ : Subgroup G) ?_
+  intro H hH
+  rcases eq_or_ne H ⊥ with rfl | h
+  · rw [Subgroup.commutator_bot_left]
+    infer_instance
+  · specialize hH ⁅H, H⁆ (IsSolvable.commutator_lt_of_ne_bot h)
+    replace hH : IsCyclic (⁅commutator H, commutator H⁆ : Subgroup H) := by
+      let f := Subgroup.equivMapOfInjective ⁅commutator H, commutator H⁆ _ H.subtype_injective
+      rw [Subgroup.map_commutator, Subgroup.map_subtype_commutator] at f
+      exact isCyclic_of_surjective f.symm f.symm.surjective
+    suffices IsCyclic (commutator H) by
+      let f := Subgroup.equivMapOfInjective (commutator H) _ H.subtype_injective
+      rw [Subgroup.map_subtype_commutator] at f
+      exact isCyclic_of_surjective f f.surjective
+    suffices h : commutator (commutator H) ≤ Subgroup.center (commutator H) by
+      rw [← Abelianization.ker_of (commutator H)] at h
+      let _ := commGroupOfCyclicCenterQuotient Abelianization.of h
+      infer_instance
+    suffices h : (commutator (commutator H)).map (commutator H).subtype ≤
+        Subgroup.centralizer (commutator H) by
+      simpa [SetLike.le_def, Subgroup.mem_center_iff, Subgroup.mem_centralizer_iff] using h
+    rw [Subgroup.map_subtype_commutator, Subgroup.le_centralizer_iff]
+    let _ := (hH.mulAutMulEquiv _).toMonoidHom.commGroupOfInjective (hH.mulAutMulEquiv _).injective
+    have h := Abelianization.commutator_subset_ker ⁅commutator H, commutator H⁆.normalizerMonoidHom
+    rwa [Subgroup.normalizerMonoidHom_ker, Subgroup.normalizer_eq_top,
+      ← Subgroup.map_subtype_le_map_subtype, Subgroup.map_subtype_commutator,
+        Subgroup.map_subgroupOf_eq_of_le le_top] at h
+
+end Commutator
 
 section Classification
 

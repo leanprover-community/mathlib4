@@ -21,7 +21,7 @@ We show that the following are analytic:
 
 noncomputable section
 
-open scoped Classical Topology
+open scoped Topology
 open Filter Asymptotics ENNReal NNReal
 
 variable {α : Type*}
@@ -883,6 +883,7 @@ theorem AnalyticOnNhd.div {f g : E → 𝕝} {s : Set E}
 theorem Finset.analyticWithinAt_sum {f : α → E → F} {c : E} {s : Set E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s c := by
+  classical
   induction' N using Finset.induction with a B aB hB
   · simp only [Finset.sum_empty]
     exact analyticWithinAt_const
@@ -916,6 +917,7 @@ theorem Finset.analyticOnNhd_sum {f : α → E → F} {s : Set E}
 theorem Finset.analyticWithinAt_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s c := by
+  classical
   induction' N using Finset.induction with a B aB hB
   · simp only [Finset.prod_empty]
     exact analyticWithinAt_const

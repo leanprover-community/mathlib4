@@ -102,7 +102,7 @@ theorem one_toPGame_moveLeft (x) : (toPGame 1).moveLeft x = toPGame 0 := by simp
 
 /-- `1.toPGame` has the same moves as `1`. -/
 noncomputable def oneToPGameRelabelling : toPGame 1 ≡r 1 :=
-  ⟨Equiv.equivOfUnique _ _, Equiv.equivOfIsEmpty _ _, fun i => by
+  ⟨Equiv.ofUnique _ _, Equiv.equivOfIsEmpty _ _, fun i => by
     simpa using zeroToPGameRelabelling, isEmptyElim⟩
 
 theorem toPGame_one : toPGame 1 ≈ 1 :=
@@ -144,8 +144,10 @@ theorem toPGame_injective : Function.Injective Ordinal.toPGame := fun _ _ h =>
   toPGame_equiv_iff.1 <| equiv_of_eq h
 
 @[simp]
-theorem toPGame_eq_iff {a b : Ordinal} : a.toPGame = b.toPGame ↔ a = b :=
+theorem toPGame_inj {a b : Ordinal} : a.toPGame = b.toPGame ↔ a = b :=
   toPGame_injective.eq_iff
+
+@[deprecated (since := "2024-12-29")] alias toPGame_eq_iff := toPGame_inj
 
 /-- The order embedding version of `toPGame`. -/
 @[simps]
@@ -187,8 +189,10 @@ theorem toGame_le_iff {a b : Ordinal} : toGame a ≤ toGame b ↔ a ≤ b :=
 theorem toGame_lt_iff {a b : Ordinal} : toGame a < toGame b ↔ a < b :=
   toPGame_lt_iff
 
-theorem toGame_eq_iff {a b : Ordinal} : toGame a = toGame b ↔ a = b :=
+theorem toGame_inj {a b : Ordinal} : toGame a = toGame b ↔ a = b :=
   toGameEmbedding.inj
+
+@[deprecated (since := "2024-12-29")] alias toGame_eq_iff := toGame_inj
 
 /-- The natural addition of ordinals corresponds to their sum as games. -/
 theorem toPGame_nadd (a b : Ordinal) : (a ♯ b).toPGame ≈ a.toPGame + b.toPGame := by

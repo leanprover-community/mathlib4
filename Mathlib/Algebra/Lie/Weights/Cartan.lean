@@ -240,7 +240,7 @@ theorem zeroRootSubalgebra_eq_iff_is_cartan [IsNoetherian R L] :
 @[simp]
 theorem rootSpace_zero_eq (H : LieSubalgebra R L) [H.IsCartanSubalgebra] [IsNoetherian R L] :
     rootSpace H 0 = H.toLieSubmodule := by
-  rw [← LieSubmodule.coe_toSubmodule_eq_iff, ← coe_zeroRootSubalgebra,
+  rw [← LieSubmodule.coe_toSubmodule_inj, ← coe_zeroRootSubalgebra,
     zeroRootSubalgebra_eq_of_is_cartan R L H, LieSubalgebra.coe_toLieSubmodule]
 
 variable {R L H}
