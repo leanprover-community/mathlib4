@@ -3,8 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
+import Mathlib.CategoryTheory.Shift.Adjunction
 import Mathlib.CategoryTheory.Preadditive.Opposite
+import Mathlib.CategoryTheory.Adjunction.Opposites
 
 /-!
 # The (naive) shift on the opposite category
@@ -20,11 +21,17 @@ define the shift on `Cᵒᵖ` so that `shiftFunctor Cᵒᵖ n` for `n : ℤ` ide
 of the shift on `Cᵒᵖ` shall combine the shift on `OppositeShift C A` and another
 construction of the "pullback" of a shift by a monoid morphism like `n ↦ -n`.
 
+Given a `CommShift` structure on a functor `F`, we define a `CommShift` structure on `F.op`
+(and vice versa).
+We also prove that, if an adjunction `F ⊣ G` is compatible with `CommShift` structures on
+`F` and `G`, then the opposite adjunction `G.op ⊣ F.op` is compatible with the opposite
+`CommShift` structures.
+
 -/
 
 namespace CategoryTheory
 
-open Limits
+open Limits Category
 
 section
 
@@ -172,5 +179,38 @@ noncomputable def commShiftUnop
     rfl
 
 end Functor
+
+namespace Adjunction
+
+variable {F} {G : D ⥤ C} (adj : F ⊣ G) [F.CommShift A] [G.CommShift A]
+
+/--
+If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F` and `G`, then
+the opposite adjunction `G.op ⊣ F.op` is compatible with the opposite `CommShift` structures.
+-/
+lemma commShiftOp_of_commShift [adj.CommShift A] :
+    letI := F.commShiftOp A
+    letI := G.commShiftOp A
+    (adj.opAdjointOpOfAdjoint _ _).CommShift A
+      (C := OppositeShift D A) (D := OppositeShift C A) := by
+  letI := F.commShiftOp A
+  letI := G.commShiftOp A
+  refine Adjunction.CommShift.mk' _ _ (NatTrans.CommShift.mk (fun a ↦ ?_))
+  ext X
+  simp only [Functor.comp_obj, Functor.id_obj, Functor.op_obj, NatTrans.comp_app,
+    Functor.commShiftIso_id_hom_app, whiskerRight_app, opAdjointOpOfAdjoint_unit_app, id_comp,
+    whiskerLeft_app]
+  rw [opEquiv_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply,
+    ← cancel_mono ((Functor.commShiftIso (Functor.comp G.op F.op (C := OppositeShift D A)
+    (D := OppositeShift C A) (E := OppositeShift D A)) a).inv.app X)]
+  simp only [Functor.comp_obj, Functor.op_obj, unop_id, Functor.map_id, id_comp, assoc,
+    Iso.hom_inv_id_app, comp_id]
+  have := (CommShift.commShift_counit (adj := adj) (A := A)).comm' a
+  apply_fun (fun h ↦ (h.app (Opposite.unop X)).op) at this
+  simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, whiskerRight_app, op_comp,
+    whiskerLeft_app, Functor.commShiftIso_id_hom_app, comp_id] at this
+  exact this
+
+end Adjunction
 
 end CategoryTheory
