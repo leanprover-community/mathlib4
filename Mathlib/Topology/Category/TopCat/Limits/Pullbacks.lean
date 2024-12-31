@@ -455,23 +455,17 @@ def isOpen_iff_of_isColimit_cofork (c : Cofork f g) (hc : IsColimit c) (U : Set 
       exact Continuous.isOpen_preimage f.continuous (c.π ⁻¹' U) h
     · exact h
 
+lemma isQuotientMap_of_isColimit_cofork (c : Cofork f g) (hc : IsColimit c) :
+    IsQuotientMap c.π := by
+  rw [isQuotientMap_iff]
+  constructor
+  · simpa only [← epi_iff_surjective] using epi_of_isColimit_cofork hc
+  · exact isOpen_iff_of_isColimit_cofork c hc
+
 theorem coequalizer_isOpen_iff (U : Set ((coequalizer f g :) : Type u)) :
     IsOpen U ↔ IsOpen (coequalizer.π f g ⁻¹' U) :=
   isOpen_iff_of_isColimit_cofork _ (coequalizerIsCoequalizer f g) _
 
 end
-
-/-theorem coequalizer_isOpen_iff (F : WalkingParallelPair ⥤ TopCat.{u})
-    (U : Set ((colimit F : _) : Type u)) :
-    IsOpen U ↔ IsOpen (colimit.ι F WalkingParallelPair.one ⁻¹' U) := by
-  rw [colimit_isOpen_iff]
-  constructor
-  · intro H
-    exact H _
-  · intro H j
-    cases j
-    · rw [← colimit.w F WalkingParallelPairHom.left]
-      exact (F.map WalkingParallelPairHom.left).continuous_toFun.isOpen_preimage _ H
-    · exact H-/
 
 end TopCat
