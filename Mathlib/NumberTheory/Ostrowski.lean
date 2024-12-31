@@ -567,8 +567,7 @@ lemma not_real_equiv_padic (p : ℕ) [Fact p.Prime] : ¬ real.equiv (padic p) :=
     not_false_eq_true, padicNorm.eq_zpow_of_nonzero, zpow_neg, cast_inv, cast_zpow,
     cast_natCast] at hc
   -- hc : 2 ^ c = (↑p ^ padicValRat p 2)⁻¹
-  refine (LE.le.trans_lt ?_ <| one_lt_rpow one_lt_two hc₀).ne' hc
-  rw [inv_le_one₀ <| zpow_pos (mod_cast hp.pos) (padicValRat p 2)]
-  exact_mod_cast NeZero.one_le
+  exact (((inv_le_one₀ <| zpow_pos (mod_cast hp.pos) _).mpr <| mod_cast NeZero.one_le).trans_lt <|
+    one_lt_rpow one_lt_two hc₀).ne' hc
 
 end Rat.AbsoluteValue
