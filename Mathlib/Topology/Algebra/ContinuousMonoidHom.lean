@@ -485,10 +485,6 @@ instance : HomeomorphClass (M ≃ₜ* N) M N where
   map_continuous f := f.continuous_toFun
   inv_continuous f := f.continuous_invFun
 
-@[to_additive] -- shortcut instance that doesn't generate any subgoals
-instance : CoeFun (M ≃ₜ* N) fun _ ↦ M → N where
-  coe f := f
-
 /-- Two continuous multiplicative isomorphisms agree if they are defined by the
 same underlying function. -/
 @[to_additive (attr := ext)
