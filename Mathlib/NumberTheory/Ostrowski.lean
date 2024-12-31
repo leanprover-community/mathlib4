@@ -214,7 +214,7 @@ variable (hf_nontriv : f ≠ AbsoluteValue.trivial) (bdd : ∀ n : ℕ, f n ≤ 
 
 include hf_nontriv bdd in
 /-- There exists a minimal positive integer with absolute value smaller than 1. -/
-lemma exists_minimal_nat_zero_lt_absoluteValue_lt_one :
+lemma exists_minimal_nat_zero_lt_and_lt_one :
     ∃ p : ℕ, (0 < f p ∧ f p < 1) ∧ ∀ m : ℕ, 0 < f m ∧ f m < 1 → p ≤ m := by
   -- There is a positive integer with absolute value different from one.
   obtain ⟨n, hn1, hn2⟩ : ∃ n : ℕ, n ≠ 0 ∧ f n ≠ 1 := by
@@ -235,7 +235,7 @@ variable {p : ℕ} (hp0 : 0 < f p) (hp1 : f p < 1) (hmin : ∀ m : ℕ, 0 < f m 
 
 include hp0 hp1 hmin in
 /-- The minimal positive integer with absolute value smaller than 1 is a prime number.-/
-lemma is_prime_of_minimal_nat_zero_lt_absoluteValue_lt_one : p.Prime := by
+lemma is_prime_of_minimal_nat_zero_lt_and_lt_one : p.Prime := by
   rw [← Nat.irreducible_iff_nat_prime]
   constructor -- Two goals: p is not a unit and any product giving p must contain a unit.
   · rw [Nat.isUnit_iff]
@@ -269,7 +269,7 @@ lemma eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
   set M := f p ⊔ f m with hM
   set k := Nat.ceil (M.logb (1 / 2)) + 1 with hk
   obtain ⟨a, b, bezout⟩ : IsCoprime (p ^ k : ℤ) (m ^ k) :=
-    is_prime_of_minimal_nat_zero_lt_absoluteValue_lt_one hp0 hp1 hmin
+    is_prime_of_minimal_nat_zero_lt_and_lt_one hp0 hp1 hmin
       |>.coprime_iff_not_dvd |>.mpr hpm |>.isCoprime |>.pow
   have le_half {x} (hx0 : 0 < x) (hx1 : x < 1) (hxM : x ≤ M) : x ^ k < 1 / 2 := by
     calc
@@ -305,7 +305,7 @@ lemma eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
 include hp0 hp1 hmin in
 /-- The absolute value of `p` is `p ^ (-t)` for some positive real number `t`. -/
 lemma exists_pos_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
-  have pprime := is_prime_of_minimal_nat_zero_lt_absoluteValue_lt_one hp0 hp1 hmin
+  have pprime := is_prime_of_minimal_nat_zero_lt_and_lt_one hp0 hp1 hmin
   refine ⟨- logb p (f p), Left.neg_pos_iff.mpr <| logb_neg (mod_cast pprime.one_lt) hp0 hp1, ?_⟩
   rw [neg_neg]
   exact (rpow_logb (mod_cast pprime.pos) (mod_cast pprime.ne_one) hp0).symm
@@ -315,41 +315,35 @@ lemma exists_pos_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
 include hf_nontriv bdd in
 /-- If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value. -/
 theorem equiv_padic_of_bounded :
-    ∃! p, ∃ (_ : Fact (p.Prime)), AbsoluteValue.equiv f (padic p) := by
-  obtain ⟨p, hfp, hmin⟩ := exists_minimal_nat_zero_lt_absoluteValue_lt_one hf_nontriv bdd
-  have hprime := is_prime_of_minimal_nat_zero_lt_absoluteValue_lt_one hfp.1 hfp.2 hmin
-  have hprime_fact : Fact (p.Prime) := ⟨hprime⟩
+    ∃! p, ∃ (_ : Fact p.Prime), f.equiv (padic p) := by
+  obtain ⟨p, hfp, hmin⟩ := exists_minimal_nat_zero_lt_and_lt_one hf_nontriv bdd
+  have hprime := is_prime_of_minimal_nat_zero_lt_and_lt_one hfp.1 hfp.2 hmin
+  have hprime_fact : Fact p.Prime := ⟨hprime⟩
   obtain ⟨t, h⟩ := exists_pos_eq_pow_neg hfp.1 hfp.2 hmin
   simp_rw [← equiv_on_nat_iff_equiv]
-  use p
-  constructor -- 2 goals: AbsoluteValue.equiv f (absoluteValue_padic p) and p is unique.
-  · use hprime_fact
-    refine ⟨t⁻¹, by simp only [inv_pos, h.1], fun n ↦ ?_⟩
-    have ht : t⁻¹ ≠ 0 := inv_ne_zero h.1.ne'
-    rcases eq_or_ne n 0 with rfl | hn -- Separate cases n=0 and n ≠ 0
-    · simp only [Nat.cast_zero, map_zero, ne_eq, ht, not_false_eq_true, zero_rpow]
+  refine ⟨p, ⟨hprime_fact, t⁻¹, inv_pos_of_pos h.1, fun n ↦ ?_⟩, fun q ⟨hq_prime, h_equiv⟩ ↦ ?_⟩
+  · have ht : t⁻¹ ≠ 0 := inv_ne_zero h.1.ne'
+    rcases eq_or_ne n 0 with rfl | hn -- Separate cases n = 0 and n ≠ 0
+    · simp [ht]
     · /- Any natural number can be written as a power of p times a natural number not divisible
       by p  -/
       rcases Nat.exists_eq_pow_mul_and_not_dvd hn p hprime.ne_one with ⟨e, m, hpm, rfl⟩
-      simp only [Nat.cast_mul, Nat.cast_pow, map_mul, map_pow, padic_eq_padicNorm,
-        padicNorm.padicNorm_p_of_prime, Rat.cast_inv, Rat.cast_natCast, inv_pow,
-        eq_one_of_not_dvd bdd hfp.1 hfp.2 hmin hpm, h.2]
+      simp only [Nat.cast_mul, Nat.cast_pow, map_mul, map_pow, h.2,
+        eq_one_of_not_dvd bdd hfp.1 hfp.2 hmin hpm, padic_eq_padicNorm,
+        padicNorm.padicNorm_p_of_prime, cast_inv, cast_natCast, inv_pow]
       rw [← padicNorm.nat_eq_one_iff] at hpm
-      simp only [← rpow_natCast, p.cast_nonneg, ← rpow_mul, mul_one, ← rpow_neg, hpm, cast_one]
+      simp only [← rpow_natCast, p.cast_nonneg, ← rpow_mul, neg_mul, mul_one, ← rpow_neg, hpm,
+        cast_one]
       congr
       field_simp [h.1.ne']
-      ring
-  · intro q ⟨hq_prime, h_equiv⟩
-    by_contra! hne
-    apply Prime.ne_one (Nat.Prime.prime (Fact.elim hq_prime))
-    rw [ne_comm, ← Nat.coprime_primes hprime (Fact.elim hq_prime),
-      Nat.Prime.coprime_iff_not_dvd hprime] at hne
+  · by_contra! hne
+    apply hq_prime.elim.prime.ne_one
+    rw [ne_comm, ← Nat.coprime_primes hprime hq_prime.elim, hprime.coprime_iff_not_dvd] at hne
     rcases h_equiv with ⟨c, _, h_eq⟩
     have h_eq' := h_eq q
-    simp only [eq_one_of_not_dvd bdd hfp.1 hfp.2 hmin hne, one_rpow,
-      padic_eq_padicNorm, padicNorm.padicNorm_p_of_prime, cast_inv, cast_natCast,
-      eq_comm, inv_eq_one] at h_eq'
-    norm_cast at h_eq'
+    simp only [eq_one_of_not_dvd bdd hfp.1 hfp.2 hmin hne, one_rpow, padic_eq_padicNorm,
+      padicNorm.padicNorm_p_of_prime, cast_inv, cast_natCast, eq_comm, inv_eq_one] at h_eq'
+    exact_mod_cast h_eq'
 
 end Non_archimedean
 
@@ -573,7 +567,7 @@ end Archimedean
 /-- **Ostrowski's Theorem** -/
 theorem equiv_real_or_padic (f : AbsoluteValue ℚ ℝ) (hf_nontriv : f ≠ .trivial) :
     (AbsoluteValue.equiv f real) ∨
-    ∃! p, ∃ (_ : Fact (p.Prime)), AbsoluteValue.equiv f (padic p) := by
+    ∃! p, ∃ (_ : Fact p.Prime), AbsoluteValue.equiv f (padic p) := by
   by_cases bdd : ∀ n : ℕ, f n ≤ 1
   · exact .inr <| equiv_padic_of_bounded hf_nontriv bdd
   · exact .inl <| equiv_real_of_unbounded bdd
