@@ -518,50 +518,42 @@ private lemma symmetric_roles {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t
 include notbdd in
 /-- If `f` is not bounded and not trivial, then it is equivalent to the standard absolute value on
 `ℚ`. -/
-theorem equiv_real_of_unbounded : AbsoluteValue.equiv f real := by
+theorem equiv_real_of_unbounded : f.equiv real := by
   obtain ⟨m, hm⟩ := Classical.exists_not_of_not_forall notbdd
   have oneltm : 1 < m := by
-    by_contra!
-    apply hm
-    replace this : m = 0 ∨ m = 1 := by omega
-    rcases this with (rfl | rfl)
-    all_goals simp only [CharP.cast_eq_zero, map_zero, zero_le_one, Nat.cast_one, map_one, le_refl]
+    contrapose! hm
+    rcases le_one_iff_eq_zero_or_eq_one.mp hm with rfl | rfl <;> simp
   rw [← equiv_on_nat_iff_equiv]
   set s := logb m (f m) with hs
-  use s⁻¹
-  refine ⟨inv_pos.2 (logb_pos (Nat.one_lt_cast.2 oneltm)
-    (one_lt_of_not_bounded notbdd oneltm)), ?_⟩
-  intro n
-  by_cases h1 : n ≤ 1
-  · by_cases h2 : n = 1
-    · simp only [h2, Nat.cast_one, map_one, one_rpow, abs_one, cast_one]
-    · have : n = 0 := by omega
-      rw [this, hs]
-      simp only [CharP.cast_eq_zero, map_zero]
-      rw [rpow_eq_zero le_rfl]
+  refine ⟨s⁻¹,
+    inv_pos.mpr (logb_pos (Nat.one_lt_cast.mpr oneltm) (one_lt_of_not_bounded notbdd oneltm)),
+    fun n ↦ ?_⟩
+  rcases lt_trichotomy n 1 with h | rfl | h
+  · obtain rfl : n = 0 := by omega
+    have : (logb (↑m) (f ↑m))⁻¹ ≠ 0 := by
       simp only [ne_eq, inv_eq_zero, logb_eq_zero, Nat.cast_eq_zero, Nat.cast_eq_one, map_eq_zero,
         not_or]
-      push_neg
-      exact ⟨not_eq_zero_of_lt oneltm, Nat.ne_of_lt' oneltm, mod_cast (fun a ↦ a),
+      exact ⟨not_eq_zero_of_lt oneltm, oneltm.ne', by norm_cast,
         not_eq_zero_of_lt oneltm, ne_of_not_le hm, by linarith only [apply_nonneg f ↑m]⟩
+    simp [hs, this]
+  · simp
   · simp only [real_eq_abs, abs_cast, Rat.cast_natCast]
     rw [rpow_inv_eq (apply_nonneg f ↑n) (Nat.cast_nonneg n)
       (logb_ne_zero_of_pos_of_ne_one (one_lt_cast.mpr oneltm) (by linarith only [hm])
       (by linarith only [hm]))]
-    simp only [not_le] at h1
-    have hfm : f m = m ^ s := by rw [rpow_logb (mod_cast zero_lt_of_lt oneltm)
-      (mod_cast Nat.ne_of_lt' oneltm) (by linarith only [hm])]
-    have hfn : f n = n ^ (logb n (f n)) := by
-      rw [rpow_logb (mod_cast zero_lt_of_lt h1) (mod_cast Nat.ne_of_lt' h1)
-      (by apply map_pos_of_ne_zero; exact_mod_cast not_eq_zero_of_lt h1)]
-    rwa [← hs, symmetric_roles oneltm h1 notbdd hfm hfn]
+    have hfm : f m = m ^ s := by
+      rw [rpow_logb (mod_cast zero_lt_of_lt oneltm) (mod_cast oneltm.ne') (by linarith only [hm])]
+    have hfn : f n = n ^ logb n (f n) := by
+      rw [rpow_logb (mod_cast zero_lt_of_lt h) (mod_cast h.ne')
+      (by apply map_pos_of_ne_zero; exact_mod_cast not_eq_zero_of_lt h)]
+    rwa [← hs, symmetric_roles oneltm h notbdd hfm hfn]
 
 end Archimedean
 
-/-- **Ostrowski's Theorem** -/
+/-- **Ostrowski's Theorem**: every absolute value (with values in `ℝ`) on `ℚ` is equivalent
+to either the standard absolute value or a `p`-adic absolute value for a prime `p`. -/
 theorem equiv_real_or_padic (f : AbsoluteValue ℚ ℝ) (hf_nontriv : f ≠ .trivial) :
-    (AbsoluteValue.equiv f real) ∨
-    ∃! p, ∃ (_ : Fact p.Prime), AbsoluteValue.equiv f (padic p) := by
+    f.equiv real ∨ ∃! p, ∃ (_ : Fact p.Prime), f.equiv (padic p) := by
   by_cases bdd : ∀ n : ℕ, f n ≤ 1
   · exact .inr <| equiv_padic_of_bounded hf_nontriv bdd
   · exact .inl <| equiv_real_of_unbounded bdd
