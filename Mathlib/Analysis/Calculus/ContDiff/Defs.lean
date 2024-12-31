@@ -96,7 +96,6 @@ derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor ser
 
 noncomputable section
 
-open scoped Classical
 open NNReal Topology Filter
 
 /-

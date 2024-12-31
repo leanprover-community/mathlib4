@@ -54,7 +54,7 @@ lemma ker_restrict_eq_bot_of_isCartanSubalgebra
   have h : Codisjoint (rootSpace H 0) (LieModule.posFittingComp R H L) :=
     (LieModule.isCompl_genWeightSpace_zero_posFittingComp R H L).codisjoint
   replace h : Codisjoint (H : Submodule R L) (LieModule.posFittingComp R H L : Submodule R L) := by
-    rwa [codisjoint_iff, ← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.sup_coe_toSubmodule,
+    rwa [codisjoint_iff, ← LieSubmodule.coe_toSubmodule_inj, LieSubmodule.sup_coe_toSubmodule,
       LieSubmodule.top_coeSubmodule, rootSpace_zero_eq R L H, LieSubalgebra.coe_toLieSubmodule,
       ← codisjoint_iff] at h
   suffices this : ∀ m₀ ∈ H, ∀ m₁ ∈ LieModule.posFittingComp R H L, killingForm R L m₀ m₁ = 0 by
@@ -424,7 +424,7 @@ lemma isCompl_ker_weight_span_coroot (α : Weight K H L) :
     apply Module.Dual.isCompl_ker_of_disjoint_of_ne_bot (by aesop)
       (disjoint_ker_weight_corootSpace α)
     replace hα : corootSpace α ≠ ⊥ := by simpa using hα
-    rwa [ne_eq, ← LieSubmodule.coe_toSubmodule_eq_iff] at hα
+    rwa [ne_eq, ← LieSubmodule.coe_toSubmodule_inj] at hα
 
 lemma traceForm_eq_zero_of_mem_ker_of_mem_span_coroot {α : Weight K H L} {x y : H}
     (hx : x ∈ α.ker) (hy : y ∈ K ∙ coroot α) :

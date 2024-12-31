@@ -3,7 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
+import Mathlib.CategoryTheory.Shift.Adjunction
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
@@ -12,6 +12,11 @@ import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 Given a shift by a monoid `B` on a category `C` and a monoid morphism  `φ : A →+ B`,
 we define a shift by `A` on a category `PullbackShift C φ` which is a type synonym for `C`.
 
+If `F : C ⥤ D` is a functor between categories equipped with shifts by `B`, and if `F`
+has a `CommShift` structure by `B`, we define a pulled back `CommShift` structure by `A`
+on `F`.
+We also prove that, if an adjunction `F ⊣ G` is compatible with `CommShift` structures
+on `F` and `G`, then it is also compatible with the pulled back `CommShift` structures.
 -/
 
 namespace CategoryTheory
@@ -167,5 +172,38 @@ lemma commShiftPullback_iso_eq (a : A) (b : B) (h : b = φ a) :
   rfl
 
 end Functor
+
+namespace Adjunction
+
+variable {D : Type*} [Category D] [HasShift D B] {F : C ⥤ D} [F.CommShift B] {G : D ⥤ C}
+  [G.CommShift B] (adj : F ⊣ G)
+
+/--
+If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F` and `G`, then
+it is also compatible with the pulled back `CommShift` structures by an additive map
+`φ : B →+ A`.
+-/
+lemma commShiftPullback [adj.CommShift B] :
+    letI := F.commShiftPullback φ
+    letI := G.commShiftPullback φ
+    adj.CommShift A (C := PullbackShift C φ) (D := PullbackShift D φ) := by
+  letI := F.commShiftPullback φ
+  letI := G.commShiftPullback φ
+  refine Adjunction.CommShift.mk' _ _ (NatTrans.CommShift.mk (fun a ↦ ?_))
+  ext
+  simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, Functor.commShiftIso_id_hom_app,
+    whiskerRight_app, id_comp, whiskerLeft_app]
+  rw [Functor.commShiftIso_comp_hom_app, Functor.commShiftPullback_iso_eq _ _ _ _ rfl,
+    Functor.commShiftPullback_iso_eq _ _ _ _ rfl, ← cancel_mono ((pullbackShiftIso C φ a _
+    rfl).hom.app _), (pullbackShiftIso C φ a _ rfl).hom.naturality]
+  dsimp
+  simp only [Functor.map_comp, assoc, unit_naturality_assoc, Iso.inv_hom_id_app, comp_id,
+    NatIso.cancel_natIso_hom_left]
+  simp only [← assoc, ← G.map_comp, Iso.inv_hom_id_app, Functor.map_id, id_comp,
+    ← Functor.commShiftIso_comp_hom_app]
+  convert (CommShift.commShift_unit (adj := adj) (A := B)).comm_app _ (φ a) _
+  simp
+
+end Adjunction
 
 end CategoryTheory

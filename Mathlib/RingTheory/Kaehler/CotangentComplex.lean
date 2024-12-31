@@ -377,7 +377,7 @@ lemma cotangentSpaceBasis_repr_one_tmul (x i) :
   simp
 
 lemma cotangentSpaceBasis_apply (i) :
-    P.cotangentSpaceBasis i = 1 ⊗ₜ .D _ _ (.X i) := by
+    P.cotangentSpaceBasis i = ((1 : S) ⊗ₜ[P.Ring] D R P.Ring (.X i) : _) := by
   simp [cotangentSpaceBasis, toExtension]
 
 universe w' u' v'
@@ -410,6 +410,12 @@ lemma repr_CotangentSpaceMap (f : Hom P P') (i j) :
   simp only [toExtension]
   rw [CotangentSpace.map_tmul, map_one]
   erw [cotangentSpaceBasis_repr_one_tmul, Hom.toAlgHom_X]
+
+@[simp]
+lemma toKaehler_cotangentSpaceBasis (i) :
+    P.toExtension.toKaehler (P.cotangentSpaceBasis i) = D R S (P.val i) := by
+  rw [cotangentSpaceBasis_apply]
+  exact (KaehlerDifferential.mapBaseChange_tmul ..).trans (by simp)
 
 end Generators
 
