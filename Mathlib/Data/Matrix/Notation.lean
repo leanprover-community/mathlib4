@@ -34,7 +34,7 @@ This file provide notation `!![a, b; c, d]` for matrices, which corresponds to
 
 ## Examples
 
-Examples of usage can be found in the `test/matrix.lean` file.
+Examples of usage can be found in the `MathlibTest/matrix.lean` file.
 -/
 
 namespace Matrix
@@ -111,7 +111,7 @@ macro_rules
   | `(!![$[,%$commas]*]) => `(@Matrix.of (Fin 0) (Fin $(quote commas.size)) _ ![])
 
 /-- Delaborator for the `!![]` notation. -/
-@[delab app.DFunLike.coe]
+@[app_delab DFunLike.coe]
 def delabMatrixNotation : Delab := whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <|
   withOverApp 6 do
     let mkApp3 (.const ``Matrix.of _) (.app (.const ``Fin _) em) (.app (.const ``Fin _) en) _ :=
@@ -381,9 +381,12 @@ theorem submatrix_updateRow_succAbove (A : Matrix (Fin m.succ) n' α) (v : n' �
 
 /-- Updating a column then removing it is the same as removing it. -/
 @[simp]
-theorem submatrix_updateColumn_succAbove (A : Matrix m' (Fin n.succ) α) (v : m' → α) (f : o' → m')
-    (i : Fin n.succ) : (A.updateColumn i v).submatrix f i.succAbove = A.submatrix f i.succAbove :=
-  ext fun _r s => updateColumn_ne (Fin.succAbove_ne i s)
+theorem submatrix_updateCol_succAbove (A : Matrix m' (Fin n.succ) α) (v : m' → α) (f : o' → m')
+    (i : Fin n.succ) : (A.updateCol i v).submatrix f i.succAbove = A.submatrix f i.succAbove :=
+  ext fun _r s => updateCol_ne (Fin.succAbove_ne i s)
+
+@[deprecated (since := "2024-12-11")]
+alias submatrix_updateColumn_succAbove := submatrix_updateCol_succAbove
 
 end Submatrix
 

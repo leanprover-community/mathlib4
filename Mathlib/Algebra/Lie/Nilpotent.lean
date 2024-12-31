@@ -442,7 +442,7 @@ theorem coe_lcs_range_toEnd_eq (k : ℕ) :
 theorem isNilpotent_range_toEnd_iff :
     IsNilpotent R (toEnd R L M).range M ↔ IsNilpotent R L M := by
   constructor <;> rintro ⟨k, hk⟩ <;> use k <;>
-      rw [← LieSubmodule.coe_toSubmodule_eq_iff] at hk ⊢ <;>
+      rw [← LieSubmodule.coe_toSubmodule_inj] at hk ⊢ <;>
     simpa using hk
 
 end LieModule
@@ -570,7 +570,7 @@ include hf hg hfg in
 theorem Function.Surjective.lieModuleIsNilpotent [IsNilpotent R L M] : IsNilpotent R L₂ M₂ := by
   obtain ⟨k, hk⟩ := id (by infer_instance : IsNilpotent R L M)
   use k
-  rw [← LieSubmodule.coe_toSubmodule_eq_iff] at hk ⊢
+  rw [← LieSubmodule.coe_toSubmodule_inj] at hk ⊢
   simp [← hf.lieModule_lcs_map_eq hg hfg k, hk]
 
 theorem Equiv.lieModule_isNilpotent_iff (f : L ≃ₗ⁅R⁆ L₂) (g : M ≃ₗ[R] M₂)
@@ -671,7 +671,7 @@ theorem LieAlgebra.nilpotent_of_nilpotent_quotient {I : LieIdeal R L} (h₁ : I 
     exact LieModule.nilpotentOfNilpotentQuotient R L L h₁ this
   obtain ⟨k, hk⟩ := h₂
   use k
-  simp [← LieSubmodule.coe_toSubmodule_eq_iff, coe_lowerCentralSeries_ideal_quot_eq, hk]
+  simp [← LieSubmodule.coe_toSubmodule_inj, coe_lowerCentralSeries_ideal_quot_eq, hk]
 
 theorem LieAlgebra.non_trivial_center_of_isNilpotent [Nontrivial L] [IsNilpotent R L] :
     Nontrivial <| center R L :=

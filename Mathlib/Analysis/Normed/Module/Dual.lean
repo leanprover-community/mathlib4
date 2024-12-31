@@ -41,7 +41,6 @@ dual, polar
 
 noncomputable section
 
-open scoped Classical
 open Topology Bornology
 
 universe u v

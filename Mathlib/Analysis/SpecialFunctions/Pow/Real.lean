@@ -15,10 +15,7 @@ We construct the power functions `x ^ y`, where `x` and `y` are real numbers.
 
 noncomputable section
 
-open scoped Classical
-open Real ComplexConjugate
-
-open Finset Set
+open Real ComplexConjugate Finset Set
 
 /-
 ## Definitions
@@ -698,13 +695,49 @@ theorem one_lt_rpow_iff (hx : 0 ≤ x) : 1 < x ^ y ↔ 1 < x ∧ 0 < y ∨ 0 < x
   · rcases _root_.em (y = 0) with (rfl | hy) <;> simp [*, lt_irrefl, (zero_lt_one' ℝ).not_lt]
   · simp [one_lt_rpow_iff_of_pos hx, hx]
 
-theorem rpow_le_rpow_of_exponent_ge' (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hz : 0 ≤ z) (hyz : z ≤ y) :
+/-- This is a more general but less convenient version of `rpow_le_rpow_of_exponent_ge`.
+This version allows `x = 0`, so it explicitly forbids `x = y = 0`, `z ≠ 0`. -/
+theorem rpow_le_rpow_of_exponent_ge_of_imp (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hyz : z ≤ y)
+    (h : x = 0 → y = 0 → z = 0) :
     x ^ y ≤ x ^ z := by
   rcases eq_or_lt_of_le hx0 with (rfl | hx0')
-  · rcases eq_or_lt_of_le hz with (rfl | hz')
-    · exact (rpow_zero 0).symm ▸ rpow_le_one hx0 hx1 hyz
-    rw [zero_rpow, zero_rpow] <;> linarith
+  · rcases eq_or_ne y 0 with rfl | hy0
+    · rw [h rfl rfl]
+    · rw [zero_rpow hy0]
+      apply zero_rpow_nonneg
   · exact rpow_le_rpow_of_exponent_ge hx0' hx1 hyz
+
+/-- This version of `rpow_le_rpow_of_exponent_ge` allows `x = 0` but requires `0 ≤ z`.
+See also `rpow_le_rpow_of_exponent_ge_of_imp` for the most general version. -/
+theorem rpow_le_rpow_of_exponent_ge' (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hz : 0 ≤ z) (hyz : z ≤ y) :
+    x ^ y ≤ x ^ z :=
+  rpow_le_rpow_of_exponent_ge_of_imp hx0 hx1 hyz fun _ hy ↦ le_antisymm (hyz.trans_eq hy) hz
+
+theorem self_le_rpow_of_le_one (h₁ : 0 ≤ x) (h₂ : x ≤ 1) (h₃ : y ≤ 1) : x ≤ x ^ y := by
+  simpa only [rpow_one]
+    using rpow_le_rpow_of_exponent_ge_of_imp h₁ h₂ h₃ fun _ ↦ (absurd · one_ne_zero)
+
+theorem self_le_rpow_of_one_le (h₁ : 1 ≤ x) (h₂ : 1 ≤ y) : x ≤ x ^ y := by
+  simpa only [rpow_one] using rpow_le_rpow_of_exponent_le h₁ h₂
+
+theorem rpow_le_self_of_le_one (h₁ : 0 ≤ x) (h₂ : x ≤ 1) (h₃ : 1 ≤ y) : x ^ y ≤ x := by
+  simpa only [rpow_one]
+    using rpow_le_rpow_of_exponent_ge_of_imp h₁ h₂ h₃ fun _ ↦ (absurd · (one_pos.trans_le h₃).ne')
+
+theorem rpow_le_self_of_one_le (h₁ : 1 ≤ x) (h₂ : y ≤ 1) : x ^ y ≤ x := by
+  simpa only [rpow_one] using rpow_le_rpow_of_exponent_le h₁ h₂
+
+theorem self_lt_rpow_of_lt_one (h₁ : 0 < x) (h₂ : x < 1) (h₃ : y < 1) : x < x ^ y := by
+  simpa only [rpow_one] using rpow_lt_rpow_of_exponent_gt h₁ h₂ h₃
+
+theorem self_lt_rpow_of_one_lt (h₁ : 1 < x) (h₂ : 1 < y) : x < x ^ y := by
+  simpa only [rpow_one] using rpow_lt_rpow_of_exponent_lt h₁ h₂
+
+theorem rpow_lt_self_of_lt_one (h₁ : 0 < x) (h₂ : x < 1) (h₃ : 1 < y) : x ^ y < x := by
+  simpa only [rpow_one] using rpow_lt_rpow_of_exponent_gt h₁ h₂ h₃
+
+theorem rpow_lt_self_of_one_lt (h₁ : 1 < x) (h₂ : y < 1) : x ^ y < x := by
+  simpa only [rpow_one] using rpow_lt_rpow_of_exponent_lt h₁ h₂
 
 theorem rpow_left_injOn {x : ℝ} (hx : x ≠ 0) : InjOn (fun y : ℝ => y ^ x) { y : ℝ | 0 ≤ y } := by
   rintro y hy z hz (hyz : y ^ x = z ^ x)
