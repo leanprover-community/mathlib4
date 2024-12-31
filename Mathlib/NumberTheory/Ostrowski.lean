@@ -195,7 +195,7 @@ lemma eq_on_nat_iff_eq_on_Int : (∀ n : ℕ , f n = g n) ↔ (∀ n : ℤ , f n
   obtain ⟨n , rfl | rfl⟩ := eq_nat_or_neg z <;>
   simp only [Int.cast_neg, Int.cast_natCast, map_neg_eq_map, h n]
 
-/-- Values of an absolutev value on the rationals are determined by the values on the natural
+/-- Values of an absolute value on the rationals are determined by the values on the natural
 numbers. -/
 lemma eq_on_nat_iff_eq : (∀ n : ℕ , f n = g n) ↔ f = g := by
   refine ⟨fun h ↦ ?_, fun h n ↦ congrFun (congrArg DFunLike.coe h) ↑n⟩
