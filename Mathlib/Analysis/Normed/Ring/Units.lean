@@ -88,8 +88,6 @@ end nonunits
 
 namespace NormedRing
 
-open scoped Classical
-
 open Asymptotics Filter Metric Finset Ring
 
 theorem inverse_one_sub (t : R) (h : ‖t‖ < 1) : inverse (1 - t) = ↑(Units.oneSub t h)⁻¹ := by

@@ -44,12 +44,11 @@ namespace WittVector
 
 open MvPolynomial
 
-open scoped Classical
-
 noncomputable section
 
 section
 
+open scoped Classical in
 /-- `WittVector.select P x`, for a predicate `P : ℕ → Prop` is the Witt vector
 whose `n`-th coefficient is `x.coeff n` if `P n` is true, and `0` otherwise.
 -/
@@ -60,6 +59,7 @@ section Select
 
 variable (P : ℕ → Prop)
 
+open scoped Classical in
 /-- The polynomial that witnesses that `WittVector.select` is a polynomial function.
 `selectPoly n` is `X n` if `P n` holds, and `0` otherwise. -/
 def selectPoly (n : ℕ) : MvPolynomial ℕ ℤ :=

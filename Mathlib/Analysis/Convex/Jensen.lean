@@ -31,10 +31,7 @@ As corollaries, we get:
 -/
 
 
-open Finset LinearMap Set
-
-open scoped Classical
-open Convex Pointwise
+open Finset LinearMap Set Convex Pointwise
 
 variable {𝕜 E F β ι : Type*}
 
