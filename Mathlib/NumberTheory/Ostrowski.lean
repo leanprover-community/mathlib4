@@ -51,8 +51,8 @@ namespace AbsoluteValue
 variable {R : Type*} [Semiring R]
 
 /-- Triangle inequality for `AbsoluteValue` applied to a list. -/
-lemma listSum_le {S : Type*} [OrderedSemiring S] (l : List R)
-    (f : AbsoluteValue R S) : f l.sum ≤ (l.map f).sum := by
+lemma listSum_le {S : Type*} [OrderedSemiring S] (l : List R) (f : AbsoluteValue R S) :
+    f l.sum ≤ (l.map f).sum := by
   induction l with
   | nil => simp
   | cons head tail ih =>
