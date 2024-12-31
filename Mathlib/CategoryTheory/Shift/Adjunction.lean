@@ -3,8 +3,8 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel, Joël Riou
 -/
-import Mathlib.CategoryTheory.Adjunction.Mates
 import Mathlib.CategoryTheory.Shift.CommShift
+import Mathlib.CategoryTheory.Adjunction.Mates
 
 /-!
 # Adjoints commute with shifts
@@ -25,7 +25,7 @@ In order to simplify the construction of the `CommShift` structure on `G`, we fi
 the compatibility condition on `adj.unit` for a fixed `a` in `A` and for isomorphisms
 `e₁ : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a` and
 `e₂ : shiftFunctor D a ⋙ G ≅ G ⋙ shiftFunctor C a`. We then prove that:
-- If `e₁` and `e₂` satisfy this condition, then `e₁` uniquely determines `e₂` and vice versa.
+- If `e₁` and `e₂` satusfy this condition, then `e₁` uniquely determines `e₂` and vice versa.
 - If `a = 0`, the isomorphisms `Functor.CommShift.isoZero F` and `Functor.CommShift.isoZero G`
 satisfy the condition.
 - The condition is stable by addition on `A`, if we use `Functor.CommShift.isoAdd` to deduce
@@ -36,6 +36,10 @@ constructed in `Adjunction.RightAdjointCommShift.iso`, satisfy the compatibility
 Once we have established all this, the compatibility of the commutation isomorphism for
 `F` expressed in `CommShift.zero` and `CommShift.add` immediately implies the similar
 statements for the commutation isomorphisms for `G`.
+
+TODO: Construct a `CommShift` structure on `F` from a `CommShift` structure on `G`, using
+opposite categories.
+
 -/
 
 namespace CategoryTheory
