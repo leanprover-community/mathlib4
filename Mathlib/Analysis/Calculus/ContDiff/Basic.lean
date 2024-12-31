@@ -2046,10 +2046,10 @@ theorem HasFTaylorSeriesUpToOn.restrictScalars {n : WithTop ℕ∞}
     (h : HasFTaylorSeriesUpToOn n f p' s) :
     HasFTaylorSeriesUpToOn n f (fun x => (p' x).restrictScalars 𝕜) s where
   zero_eq x hx := h.zero_eq x hx
-  fderivWithin m hm x hx := by
-    simpa only using -- Porting note: added `by simpa only using`
-      (ContinuousMultilinearMap.restrictScalarsLinear 𝕜).hasFDerivAt.comp_hasFDerivWithinAt x <|
-        (h.fderivWithin m hm x hx).restrictScalars 𝕜
+  fderivWithin m hm x hx :=
+    set_option maxSynthPendingDepth 2 in
+    ((ContinuousMultilinearMap.restrictScalarsLinear 𝕜).hasFDerivAt.comp_hasFDerivWithinAt x <|
+        (h.fderivWithin m hm x hx).restrictScalars 𝕜 :)
   cont m hm := ContinuousMultilinearMap.continuous_restrictScalars.comp_continuousOn (h.cont m hm)
 
 theorem ContDiffWithinAt.restrict_scalars (h : ContDiffWithinAt 𝕜' n f s x) :
