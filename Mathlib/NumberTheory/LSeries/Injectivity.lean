@@ -58,10 +58,6 @@ lemma cpow_mul_div_cpow_eq_div_div_cpow (m n : ℕ) (z : ℂ) (x : ℝ) :
   rw [← cpow_neg, show (-x : ℂ) = (-1 : ℝ) * x by simp, cpow_mul_ofReal_nonneg Hn,
     Real.rpow_neg_one, inv_inv]
 
-lemma LSeries.pow_mul_term_eq (f : ℕ → ℂ) (s : ℂ) (n : ℕ) :
-    (n + 1) ^ s * term f s (n + 1) = f (n + 1) := by
-  simp [term, cpow_natCast_add_one_ne_zero n _, mul_comm (f _), mul_div_assoc']
-
 open Filter Real in
 /-- If the coefficients `f m` of an L-series are zero for `m ≤ n` and the L-series converges
 at some point, then `f (n+1)` is the limit of `(n+1)^x * LSeries f x` as `x → ∞`. -/
