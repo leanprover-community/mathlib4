@@ -423,12 +423,12 @@ theorem isLeast_sdiff {α} [GeneralizedCoheytingAlgebra α] (a b : α) :
     IsLeast {w | a ≤ b ⊔ w} (a \ b) := by
   simp [IsLeast, mem_lowerBounds]
 
-theorem himp_eq_sSup : sSup {w | w ⊓ a ≤ b} = a ⇨ b :=
-  (isGreatest_himp a b).isLUB.sSup_eq
+theorem himp_eq_sSup : a ⇨ b = sSup {w | w ⊓ a ≤ b} :=
+  Eq.symm (isGreatest_himp a b).isLUB.sSup_eq
 
 theorem sdiff_eq_sInf {α} [Coframe α]  (a b : α) :
-    sInf {w | a ≤ b ⊔ w} = a \ b :=
-  (isLeast_sdiff a b).isGLB.sInf_eq
+    a \ b = sInf {w | a ≤ b ⊔ w}  :=
+  Eq.symm (isLeast_sdiff a b).isGLB.sInf_eq
 
 -- see Note [lower instance priority]
 instance (priority := 100) Frame.toDistribLattice : DistribLattice α :=
