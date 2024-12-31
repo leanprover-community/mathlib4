@@ -60,8 +60,8 @@ def equiv (f g : AbsoluteValue R ℝ) :=
   ∃ c : ℝ, 0 < c ∧ (f · ^ c) = g
 
 /-- Equivalence of absolute values is reflexive. -/
-lemma equiv_refl (f : AbsoluteValue R ℝ) : equiv f f := by
-    exact ⟨1, Real.zero_lt_one, by simp only [Real.rpow_one]⟩
+lemma equiv_refl (f : AbsoluteValue R ℝ) : equiv f f :=
+  ⟨1, Real.zero_lt_one, funext fun x ↦ Real.rpow_one (f x)⟩
 
 /-- Equivalence of absolute values is symmetric. -/
 lemma equiv_symm {f g : AbsoluteValue R ℝ} (hfg : equiv f g) : equiv g f := by
