@@ -573,10 +573,8 @@ theorem dense_compl_singleton_iff_not_open :
 /-- If a closed property holds for a dense subset, it holds for the whole space. -/
 @[elab_as_elim]
 lemma Dense.induction (hs : Dense s) {P : X → Prop}
-    (H : ∀ x ∈ s, P x) (isClosed : IsClosed { x | P x }) (x : X) : P x := by
-  have : { x | P x } = Set.univ := Set.univ_subset_iff.mp
-    (hs.closure_eq.symm.subset.trans (isClosed.closure_subset_iff.mpr H))
-  exact this.symm.subset trivial
+    (mem : ∀ x ∈ s, P x) (isClosed : IsClosed { x | P x }) (x : X) : P x :=
+  (hs.closure_eq.symm.subset.trans (isClosed.closure_subset_iff.mpr mem)) trivial
 
 theorem IsOpen.subset_interior_closure {s : Set X} (s_open : IsOpen s) :
     s ⊆ interior (closure s) := s_open.subset_interior_iff.mpr subset_closure
