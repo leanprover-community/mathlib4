@@ -12,6 +12,7 @@ import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Lemmas
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Monoid.TypeTags
+import Mathlib.Algebra.Order.Monoid.Units
 
 /-!
 # Linearly ordered commutative groups and monoids with a zero element adjoined
@@ -400,16 +401,6 @@ instance instLinearOrderedCommGroupWithZero [LinearOrderedCommGroup α] :
   __ := commGroupWithZero
 
 end WithZero
-
-instance Units.linearOrderedCommGroup [LinearOrderedCommGroup α] :
-    LinearOrderedCommGroup αˣ where
-  __ := Units.instLinearOrder
-  mul_le_mul_left _ _ := mul_le_mul_left'
-
-instance Units.linearOrderedCommGroup_of_linearOrderedCommGroupWithZero
-    [LinearOrderedCommGroupWithZero α] : LinearOrderedCommGroup αˣ where
-  __ := Units.instLinearOrder
-  mul_le_mul_left _ _ := mul_le_mul_left'
 
 section MultiplicativeNotation
 
