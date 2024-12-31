@@ -558,4 +558,18 @@ theorem equiv_real_or_padic (f : AbsoluteValue ℚ ℝ) (hf_nontriv : f ≠ .tri
   · exact .inr <| equiv_padic_of_bounded hf_nontriv bdd
   · exact .inl <| equiv_real_of_unbounded bdd
 
+/-- The standard absolute value on `ℚ` is not equivalent to any `p`-adic absolute value. -/
+lemma not_real_equiv_padic (p : ℕ) [Fact p.Prime] : ¬ real.equiv (padic p) := by
+  have hp : p.Prime := Fact.out
+  rintro ⟨c, hc₀, hc⟩
+  apply_fun (· 2) at hc
+  simp only [real_eq_abs, abs_ofNat, cast_ofNat, padic_eq_padicNorm, ne_eq, OfNat.ofNat_ne_zero,
+    not_false_eq_true, padicNorm.eq_zpow_of_nonzero, zpow_neg, cast_inv, cast_zpow,
+    cast_natCast] at hc
+  have H₁ : 1 < (2 : ℝ) ^ c := one_lt_rpow one_lt_two hc₀
+  have H₂ : ((p : ℝ) ^ padicValRat p 2)⁻¹ ≤ 1 := by
+    rw [inv_le_one₀ <| zpow_pos (mod_cast hp.pos) (padicValRat p 2)]
+    exact_mod_cast NeZero.one_le
+  exact (H₂.trans_lt H₁).ne' hc
+
 end Rat.AbsoluteValue
