@@ -3,10 +3,8 @@ Copyright (c) 2024 Sophie Morel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel, Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.Opposite
-import Mathlib.CategoryTheory.Shift.Pullback
+import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Adjunction.Mates
-import Mathlib.CategoryTheory.Adjunction.Opposites
 
 /-!
 # Adjoints commute with shifts
@@ -218,72 +216,6 @@ lemma mk' (h : NatTrans.CommShift adj.unit A) :
       Functor.commShiftIso_comp_hom_app] using congr_app (h.comm' a) X⟩
 
 end CommShift
-
-section Opposite
-
-/--
-If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F` and `G`, then
-the opposite adjunction `G.op ⊣ F.op` is compatible with the opposite `CommShift` structures.
--/
-lemma commShiftOp_of_commShift [adj.CommShift A] :
-    letI := F.commShiftOp A
-    letI := G.commShiftOp A
-    (adj.opAdjointOpOfAdjoint _ _).CommShift A
-      (C := OppositeShift D A) (D := OppositeShift C A) := by
-  letI := F.commShiftOp A
-  letI := G.commShiftOp A
-  refine Adjunction.CommShift.mk' _ _ (NatTrans.CommShift.mk (fun a ↦ ?_))
-  ext X
-  simp only [Functor.comp_obj, Functor.id_obj, Functor.op_obj, NatTrans.comp_app,
-    Functor.commShiftIso_id_hom_app, whiskerRight_app, opAdjointOpOfAdjoint_unit_app, id_comp,
-    whiskerLeft_app]
-  rw [opEquiv_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply,
-    ← cancel_mono ((Functor.commShiftIso (Functor.comp G.op F.op (C := OppositeShift D A)
-    (D := OppositeShift C A) (E := OppositeShift D A)) a).inv.app X)]
-  simp only [Functor.comp_obj, Functor.op_obj, unop_id, Functor.map_id, id_comp, assoc,
-    Iso.hom_inv_id_app, comp_id]
-  have := (CommShift.commShift_counit (adj := adj) (A := A)).comm' a
-  apply_fun (fun h ↦ (h.app (Opposite.unop X)).op) at this
-  simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, whiskerRight_app, op_comp,
-    whiskerLeft_app, Functor.commShiftIso_id_hom_app, comp_id] at this
-  exact this
-
-end Opposite
-
-section Pullback
-
-variable {B : Type*} [AddMonoid B] (φ : B →+ A)
-
-/--
-If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F` and `G`, then
-it is also compatible with the pulled back `CommShift` structures by an additive map
-`φ : B →+ A`.
--/
-lemma commShiftPullback_of_commShift [adj.CommShift A] :
-    letI := F.commShiftPullback φ
-    letI := G.commShiftPullback φ
-    adj.CommShift B (C := PullbackShift C φ) (D := PullbackShift D φ) := by
-  letI := F.commShiftPullback φ
-  letI := G.commShiftPullback φ
-  refine Adjunction.CommShift.mk' _ _ (NatTrans.CommShift.mk (fun b ↦ ?_))
-  ext X
-  simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, Functor.commShiftIso_id_hom_app,
-    whiskerRight_app, id_comp, whiskerLeft_app]
-  rw [Functor.commShiftIso_comp_hom_app, Functor.commShiftPullback_iso_eq _ _ _ _ rfl,
-    Functor.commShiftPullback_iso_eq _ _ _ _ rfl, ← cancel_mono ((pullbackShiftIso C φ b _
-    rfl).hom.app _), (pullbackShiftIso C φ b _ rfl).hom.naturality]
-  simp only [Functor.comp_obj, Iso.trans_hom, isoWhiskerRight_hom, isoWhiskerLeft_hom, Iso.symm_hom,
-    NatTrans.comp_app, whiskerRight_app, whiskerLeft_app, Functor.map_comp, assoc,
-    unit_naturality_assoc, Iso.inv_hom_id_app, comp_id, NatIso.cancel_natIso_hom_left]
-  slice_rhs 3 4 => rw [← G.map_comp, Iso.inv_hom_id_app, G.map_id]
-  rw [id_comp]
-  have := (CommShift.commShift_unit (adj := adj) (A := A)).comm' (φ b)
-  apply_fun (fun h ↦ (h.app X)) at this
-  simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, Functor.commShiftIso_id_hom_app,
-    whiskerRight_app, id_comp, whiskerLeft_app, Functor.commShiftIso_comp_hom_app] at this
-  exact this
-
-end Pullback
 
 variable {A}
 
