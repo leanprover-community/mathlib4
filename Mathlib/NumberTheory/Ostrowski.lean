@@ -189,21 +189,21 @@ lemma equiv_on_nat_iff_equiv : (∃ c : ℝ, 0 < c ∧ ∀ n : ℕ , f n ^ c = g
 
 section Non_archimedean
 
-/-! ## Non-archimedean case
+/-!
+### The non-archimedean case
 
 Every bounded absolute value is equivalent to a `p`-adic absolute value
 -/
 
-/-- The real-valued `Absolute Value` corresponding to the p-adic norm on `ℚ`. -/
-def padic (p : ℕ) [Fact p.Prime] : AbsoluteValue ℚ ℝ :=
-{ toFun x := (padicNorm p x : ℝ),
+/-- The real-valued `AbsoluteValue` corresponding to the p-adic norm on `ℚ`. -/
+def padic (p : ℕ) [Fact p.Prime] : AbsoluteValue ℚ ℝ where
+  toFun x := (padicNorm p x : ℝ)
   map_mul' := by simp only [padicNorm.mul, Rat.cast_mul, forall_const]
   nonneg' x := cast_nonneg.mpr <| padicNorm.nonneg x
   eq_zero' x :=
     ⟨fun H ↦ padicNorm.zero_of_padicNorm_eq_zero <| cast_eq_zero.mp H,
       fun H ↦ cast_eq_zero.mpr <| H ▸ padicNorm.zero (p := p)⟩
   add_le' x y := by simp only; exact_mod_cast padicNorm.triangle_ineq x y
-}
 
 @[simp] lemma padic_eq_padicNorm (p : ℕ) [Fact p.Prime] (r : ℚ) :
     padic p r = padicNorm p r := rfl
@@ -246,14 +246,14 @@ lemma is_prime_of_minimal_nat_zero_lt_absoluteValue_lt_one : p.Prime := by
     by_contra! con
     obtain ⟨ha₁, hb₁⟩ := con
     obtain ⟨ha₀, hb₀⟩ : a ≠ 0 ∧ b ≠ 0 := by
-      refine mul_ne_zero_iff.1 fun h ↦ ?_
+      refine mul_ne_zero_iff.mp fun h ↦ ?_
       rwa [h, Nat.cast_zero, map_zero, lt_self_iff_false] at hp0
     have hap : a < a * b := lt_mul_of_one_lt_right (by omega) (by omega)
     have hbp : b < a * b := lt_mul_of_one_lt_left (by omega) (by omega)
     have ha :=
-      le_of_not_lt <| not_and.1 ((hmin a).mt hap.not_le) (map_pos_of_ne_zero f (mod_cast ha₀))
+      le_of_not_lt <| not_and.mp ((hmin a).mt hap.not_le) (map_pos_of_ne_zero f (mod_cast ha₀))
     have hb :=
-      le_of_not_lt <| not_and.1 ((hmin b).mt hbp.not_le) (map_pos_of_ne_zero f (mod_cast hb₀))
+      le_of_not_lt <| not_and.mp ((hmin b).mt hbp.not_le) (map_pos_of_ne_zero f (mod_cast hb₀))
     rw [Nat.cast_mul, map_mul] at hp1
     exact ((one_le_mul_of_one_le_of_one_le ha hb).trans_lt hp1).false
 
@@ -268,10 +268,9 @@ lemma eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
   by_contra! hm
   set M := f p ⊔ f m with hM
   set k := Nat.ceil (M.logb (1 / 2)) + 1 with hk
-  obtain ⟨a, b, bezout⟩ : IsCoprime (p ^ k : ℤ) (m ^ k) := by
-    apply IsCoprime.pow (Nat.Coprime.isCoprime _)
-    exact (Nat.Prime.coprime_iff_not_dvd
-      (is_prime_of_minimal_nat_zero_lt_absoluteValue_lt_one hp0 hp1 hmin)).2 hpm
+  obtain ⟨a, b, bezout⟩ : IsCoprime (p ^ k : ℤ) (m ^ k) :=
+    is_prime_of_minimal_nat_zero_lt_absoluteValue_lt_one hp0 hp1 hmin
+      |>.coprime_iff_not_dvd |>.mpr hpm |>.isCoprime |>.pow
   have le_half {x} (hx0 : 0 < x) (hx1 : x < 1) (hxM : x ≤ M) : x ^ k < 1 / 2 := by
     calc
     x ^ k = x ^ (k : ℝ) := (rpow_natCast x k).symm
@@ -279,27 +278,26 @@ lemma eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
       apply rpow_lt_rpow_of_exponent_gt hx0 hx1
       rw [hk]
       push_cast
-      exact lt_add_of_le_of_pos (Nat.le_ceil (M.logb (1 / 2))) zero_lt_one
+      exact lt_add_of_le_of_pos (Nat.le_ceil _) zero_lt_one
     _ ≤ x ^ x.logb (1 / 2) := by
-      apply rpow_le_rpow_of_exponent_ge hx0 (le_of_lt hx1)
+      apply rpow_le_rpow_of_exponent_ge hx0 hx1.le
       simp only [one_div, ← log_div_log, log_inv, neg_div, ← div_neg, hM]
       gcongr
       simp only [Left.neg_pos_iff]
-      exact log_neg (lt_sup_iff.2 <| Or.inl hp0) (sup_lt_iff.2 ⟨hp1, hm⟩)
-    _ = 1 / 2 := rpow_logb hx0 (ne_of_lt hx1) one_half_pos
+      exact log_neg (lt_sup_iff.mpr <| .inl hp0) (sup_lt_iff.mpr ⟨hp1, hm⟩)
+    _ = 1 / 2 := rpow_logb hx0 hx1.ne one_half_pos
   apply lt_irrefl (1 : ℝ)
   calc
   1 = f 1 := (map_one f).symm
   _ = f (a * p ^ k + b * m ^ k) := by rw_mod_cast [bezout]; norm_cast
-  _ ≤ f (a * p ^ k) + f (b * m ^ k) := f.add_le' (a * p ^ k) (b * m ^ k)
+  _ ≤ f (a * p ^ k) + f (b * m ^ k) := f.add_le' ..
   _ ≤ 1 * (f p) ^ k + 1 * (f m) ^ k := by
-    simp only [map_mul, map_pow, le_refl]
+    simp only [map_mul, map_pow]
     gcongr
     all_goals rw [← AbsoluteValue.apply_natAbs_eq]; apply bdd
   _ = (f p) ^ k + (f m) ^ k := by simp only [one_mul]
   _ < 1 := by
-    have hm₀ : 0 < f m :=
-      map_pos_of_ne_zero _ <| Nat.cast_ne_zero.2 fun H ↦ hpm <| H ▸ dvd_zero p
+    have hm₀ : 0 < f m := f.pos <| Nat.cast_ne_zero.mpr fun H ↦ hpm <| H ▸ dvd_zero p
     linarith only [le_half hp0 hp1 le_sup_left, le_half hm₀ hm le_sup_right]
 
 -- ## Step 4: f p = p ^ (- t) for some positive real t
