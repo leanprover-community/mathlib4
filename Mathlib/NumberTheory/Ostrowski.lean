@@ -140,22 +140,18 @@ private lemma tendsto_root_atTop_nhds_one {C : ℝ} (hC : 0 < C) :
 --extends the lemma `tendsto_rpow_div` when the function has natural input
 private lemma tendsto_nat_rpow_div :
     Tendsto (fun k : ℕ ↦ (k : ℝ) ^ (k : ℝ)⁻¹) atTop (𝓝 1) := by
-  convert_to Tendsto ((fun k : ℝ ↦ k ^ k⁻¹) ∘ Nat.cast) atTop (𝓝 1)
-  apply Tendsto.comp _ tendsto_natCast_atTop_atTop
+  change Tendsto ((fun k : ℝ ↦ k ^ k⁻¹) ∘ Nat.cast) atTop (𝓝 1)
+  refine Tendsto.comp ?_ tendsto_natCast_atTop_atTop
   simp_rw [← one_div]
   exact tendsto_rpow_div
 
 -- Multiplication by a constant moves in a List.sum
-private lemma list_mul_sum {R : Type*} [CommSemiring R] {T : Type*} (l : List T) (y : R) : ∀ x : R,
+private lemma list_mul_sum {R : Type*} [CommSemiring R] {T : Type*} (l : List T) (y : R) (x : R) :
     List.sum (List.mapIdx (fun i _ => x * y ^ i) (l)) =
     x * List.sum (List.mapIdx (fun i _ => y ^ i) (l)) := by
-  induction l with
-  | nil => simp only [List.mapIdx_nil, List.sum_nil, mul_zero, forall_const]
-  | cons head tail ih =>
-    intro x
-    simp_rw [List.mapIdx_cons, pow_zero, mul_one, List.sum_cons, mul_add, mul_one]
-    have (a : ℕ) : y ^ (a + 1) = y * y ^ a := by ring
-    simp_rw [this, ← mul_assoc, ih, ← mul_assoc]
+  simp_rw [← smul_eq_mul, List.smul_sum, List.mapIdx_eq_enum_map]
+  congr 1
+  simp
 
 -- Geometric sum for lists
 private lemma list_geom {T : Type*} {F : Type*} [Field F] (l : List T) {y : F} (hy : y ≠ 1) :
