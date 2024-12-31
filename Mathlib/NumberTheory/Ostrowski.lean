@@ -106,8 +106,8 @@ lemma trivial_apply [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R] {S : 
   if_neg hx
 
 /-- An absolute value that is equivalent to the trivial one is already trivial. -/
-lemma eq_trivial_of_equiv_trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R] {S : Type*}
-    [OrderedSemiring S] [Nontrivial S] (f : AbsoluteValue R ℝ) :
+lemma eq_trivial_of_equiv_trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R]
+    (f : AbsoluteValue R ℝ) :
     f.equiv .trivial ↔ f = .trivial := by
   refine ⟨fun ⟨c, hc₀, hc⟩ ↦ ext fun x ↦ ?_, fun H ↦ H ▸ equiv_refl f⟩
   apply_fun (· x) at hc
