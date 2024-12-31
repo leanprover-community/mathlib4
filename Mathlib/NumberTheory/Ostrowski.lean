@@ -140,10 +140,8 @@ private lemma tendsto_root_atTop_nhds_one {C : ℝ} (hC : 0 < C) :
 --extends the lemma `tendsto_rpow_div` when the function has natural input
 private lemma tendsto_nat_rpow_div :
     Tendsto (fun k : ℕ ↦ (k : ℝ) ^ (k : ℝ)⁻¹) atTop (𝓝 1) := by
-  change Tendsto ((fun k : ℝ ↦ k ^ k⁻¹) ∘ Nat.cast) atTop (𝓝 1)
-  refine Tendsto.comp ?_ tendsto_natCast_atTop_atTop
   simp_rw [← one_div]
-  exact tendsto_rpow_div
+  exact Tendsto.comp tendsto_rpow_div tendsto_natCast_atTop_atTop
 
 -- Multiplication by a constant moves in a List.sum
 private lemma list_mul_sum {R : Type*} [CommSemiring R] {T : Type*} (l : List T) (y : R) (x : R) :
