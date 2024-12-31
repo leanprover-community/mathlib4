@@ -35,9 +35,6 @@ with a normalization function, and then deduplicated.  The basics of this have b
 
 -/
 
--- Workaround for lean4#2038
-attribute [-instance] instBEqNat
-
 open Nat Finset List Finsupp
 
 namespace Nat

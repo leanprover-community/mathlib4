@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Order.SupIndep
+import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Setoid.Basic
 import Mathlib.Order.Atoms
+import Mathlib.Order.SupIndep
 
 /-!
 # Finite partitions
@@ -261,7 +263,7 @@ instance [DecidableEq α] {s : Finset α} : Fintype (Finpartition s) where
   complete P := by
     refine mem_image.mpr ⟨P.parts, ?_, ?_⟩
     · rw [mem_powerset]; intro p hp; rw [mem_powerset]; exact P.le hp
-    · simp only [P.supIndep, P.sup_parts, P.not_bot_mem]; rfl
+    · simp [P.supIndep, P.sup_parts, P.not_bot_mem, -bot_eq_empty]
 
 end Order
 
@@ -275,7 +277,7 @@ section Inf
 
 variable [DecidableEq α] {a b c : α}
 
-instance : Inf (Finpartition a) :=
+instance : Min (Finpartition a) :=
   ⟨fun P Q ↦
     ofErase ((P.parts ×ˢ Q.parts).image fun bc ↦ bc.1 ⊓ bc.2)
       (by
@@ -301,8 +303,7 @@ theorem parts_inf (P Q : Finpartition a) :
   rfl
 
 instance : SemilatticeInf (Finpartition a) :=
-  { (inferInstance : PartialOrder (Finpartition a)),
-    (inferInstance : Inf (Finpartition a)) with
+  { inf := Min.min
     inf_le_left := fun P Q b hb ↦ by
       obtain ⟨c, hc, rfl⟩ := mem_image.1 (mem_of_mem_erase hb)
       rw [mem_product] at hc

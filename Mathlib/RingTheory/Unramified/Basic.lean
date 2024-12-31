@@ -174,7 +174,7 @@ theorem comp [FormallyUnramified R A] [FormallyUnramified A B] :
   have e' :=
     FormallyUnramified.lift_unique I ⟨2, hI⟩ (f₁.comp <| IsScalarTower.toAlgHom R A B)
       (f₂.comp <| IsScalarTower.toAlgHom R A B) (by rw [← AlgHom.comp_assoc, e, AlgHom.comp_assoc])
-  letI := (f₁.comp (IsScalarTower.toAlgHom R A B)).toRingHom.toAlgebra
+  letI := (f₁.restrictDomain A).toAlgebra
   let F₁ : B →ₐ[A] C := { f₁ with commutes' := fun r => rfl }
   let F₂ : B →ₐ[A] C := { f₂ with commutes' := AlgHom.congr_fun e'.symm }
   ext1 x
@@ -248,9 +248,6 @@ variable [Algebra R S] [Algebra R Sₘ] [Algebra S Sₘ] [Algebra R Rₘ] [Algeb
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 variable [IsLocalization (M.map (algebraMap R S)) Sₘ]
 include M
-
--- Porting note: no longer supported
--- attribute [local elab_as_elim] Ideal.IsNilpotent.induction_on
 
 /-- This holds in general for epimorphisms. -/
 theorem of_isLocalization [IsLocalization M Rₘ] : FormallyUnramified R Rₘ := by

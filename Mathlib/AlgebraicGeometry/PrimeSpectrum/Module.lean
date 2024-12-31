@@ -42,9 +42,9 @@ lemma Module.stableUnderSpecialization_support :
   exact ⟨m, hm.trans ((PrimeSpectrum.le_iff_specializes _ _).mpr e)⟩
 
 lemma Module.isClosed_support [Module.Finite R M] :
-    IsClosed (Module.support R M) :=
-  support_eq_zeroLocus (R := R) (M := M) ▸
-    PrimeSpectrum.isClosed_zeroLocus (Module.annihilator R M)
+    IsClosed (Module.support R M) := by
+  rw [support_eq_zeroLocus]
+  apply PrimeSpectrum.isClosed_zeroLocus
 
 lemma Module.support_subset_preimage_comap [IsScalarTower R A M] :
     Module.support A M ⊆ PrimeSpectrum.comap (algebraMap R A) ⁻¹' Module.support R M := by

@@ -124,7 +124,7 @@ theorem Subset.dedup_add_left {s t : Multiset α} (h : t ⊆ s) :
 theorem Disjoint.dedup_add {s t : Multiset α} (h : Disjoint s t) :
     dedup (s + t) = dedup s + dedup t := by
   induction s, t using Quot.induction_on₂
-  exact congr_arg ((↑) : List α → Multiset α) <| List.Disjoint.dedup_append h
+  exact congr_arg ((↑) : List α → Multiset α) <| List.Disjoint.dedup_append (by simpa using h)
 
 /-- Note that the stronger `List.Subset.dedup_append_right` is proved earlier. -/
 theorem _root_.List.Subset.dedup_append_left {s t : List α} (h : t ⊆ s) :

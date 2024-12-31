@@ -357,7 +357,7 @@ protected theorem measurable_comp_iff {f : β → γ} (e : α ≃ᵐ β) :
 /-- Any two types with unique elements are measurably equivalent. -/
 def ofUniqueOfUnique (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] [Unique α] [Unique β] :
     α ≃ᵐ β where
-  toEquiv := equivOfUnique α β
+  toEquiv := ofUnique α β
   measurable_toFun := Subsingleton.measurable
   measurable_invFun := Subsingleton.measurable
 
@@ -499,6 +499,38 @@ lemma piCongrLeft_apply_apply {ι ι' : Type*} (e : ι ≃ ι') {β : ι' → Ty
     [∀ i', MeasurableSpace (β i')] (x : (i : ι) → β (e i)) (i : ι) :
     piCongrLeft (fun i' ↦ β i') e x (e i) = x i := by
   rw [piCongrLeft, coe_mk, Equiv.piCongrLeft_apply_apply]
+
+/-- The isomorphism `(γ → α × β) ≃ (γ → α) × (γ → β)` as a measurable equivalence. -/
+def arrowProdEquivProdArrow (α β γ : Type*) [MeasurableSpace α] [MeasurableSpace β] :
+    (γ → α × β) ≃ᵐ (γ → α) × (γ → β) where
+  __ := Equiv.arrowProdEquivProdArrow α β γ
+  measurable_toFun _ h := by
+    simp_rw [Equiv.arrowProdEquivProdArrow, coe_fn_mk]
+    #adaptation_note
+    /--
+    After https://github.com/leanprover/lean4/pull/6024
+    we need provide the type hints `(a : γ → α × β)`, to avoid unification issues.
+    -/
+    exact MeasurableSet.preimage h (Measurable.prod_mk
+        (measurable_pi_lambda (fun (a : γ → α × β) c ↦ (a c).1)
+          fun a ↦ (measurable_pi_apply a).fst)
+        (measurable_pi_lambda (fun (a : γ → α × β) c ↦ (a c).2)
+          fun a ↦ (measurable_pi_apply a).snd))
+  measurable_invFun _ h := by
+    simp_rw [Equiv.arrowProdEquivProdArrow, coe_fn_symm_mk]
+    exact MeasurableSet.preimage h (by measurability)
+
+/-- The measurable equivalence `(α₁ → β₁) ≃ᵐ (α₂ → β₂)` induced by `α₁ ≃ α₂` and `β₁ ≃ᵐ β₂`. -/
+def arrowCongr' {α₁ β₁ α₂ β₂ : Type*} [MeasurableSpace β₁] [MeasurableSpace β₂]
+    (hα : α₁ ≃ α₂) (hβ : β₁ ≃ᵐ β₂) :
+    (α₁ → β₁) ≃ᵐ (α₂ → β₂) where
+  __ := Equiv.arrowCongr' hα hβ
+  measurable_toFun _ h := by
+    exact MeasurableSet.preimage h <|
+      measurable_pi_iff.mpr fun _ ↦ hβ.measurable.comp' (measurable_pi_apply _)
+  measurable_invFun _ h := by
+    exact MeasurableSet.preimage h <|
+      measurable_pi_iff.mpr fun _ ↦ hβ.symm.measurable.comp' (measurable_pi_apply _)
 
 /-- Pi-types are measurably equivalent to iterated products. -/
 @[simps! (config := .asFn)]
@@ -690,7 +722,7 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
     have : Aᶜ = g '' Bᶜ := by
       apply compl_injective
       rw [← Afp]
-      simp
+      simp [F, B]
     rw [this]
     exact (hg.equivImage _).symm
   have Fmono : ∀ {A B}, A ⊆ B → F A ⊆ F B := fun h =>

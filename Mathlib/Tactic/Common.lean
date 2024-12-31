@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 
--- First import Aesop and Qq
+-- First import Aesop, Qq, and Plausible
 import Aesop
 import Qq
+import Plausible
 
 -- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
 import ImportGraph.Imports
@@ -14,6 +15,7 @@ import ImportGraph.Imports
 -- Import common Batteries tactics and commands
 import Batteries.Tactic.Where
 import Batteries.Tactic.Basic
+import Batteries.Tactic.HelpCmd
 
 -- Import syntax for leansearch
 import LeanSearchClient
@@ -44,7 +46,7 @@ import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.DefEqTransformations
-import Mathlib.Tactic.DeprecateMe
+import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.ExistsI
@@ -110,6 +112,7 @@ import Mathlib.Tactic.Widget.Conv
 import Mathlib.Tactic.WLOG
 import Mathlib.Util.AssertExists
 import Mathlib.Util.CountHeartbeats
+import Mathlib.Util.TransImports
 import Mathlib.Util.WhatsNew
 
 /-!

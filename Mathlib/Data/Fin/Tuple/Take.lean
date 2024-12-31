@@ -3,7 +3,6 @@ Copyright (c) 2024 Quang Dao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Quang Dao
 -/
-import Batteries.Data.List.OfFn
 import Mathlib.Data.Fin.Tuple.Basic
 
 /-!
@@ -93,9 +92,9 @@ theorem take_update_of_lt (m : ℕ) (h : m ≤ n) (v : (i : Fin n) → α i) (i 
   ext j
   by_cases h' : j = i
   · rw [h']
-    simp only [take, update_same]
+    simp only [take, update_self]
   · have : castLE h j ≠ castLE h i := by simp [h']
-    simp only [take, update_noteq h', update_noteq this]
+    simp only [take, update_of_ne h', update_of_ne this]
 
 /-- `take` is the same after `update` for indices outside the range of `take`. -/
 @[simp]
@@ -106,7 +105,7 @@ theorem take_update_of_ge (m : ℕ) (h : m ≤ n) (v : (i : Fin n) → α i) (i 
     refine ne_of_val_ne ?_
     simp only [coe_castLE]
     exact Nat.ne_of_lt (lt_of_lt_of_le j.isLt hi)
-  simp only [take, update_noteq this]
+  simp only [take, update_of_ne this]
 
 /-- Taking the first `m ≤ n` elements of an `addCases u v`, where `u` is a `n`-tuple, is the same as
 taking the first `m` elements of `u`. -/

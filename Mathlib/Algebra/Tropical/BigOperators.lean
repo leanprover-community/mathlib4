@@ -23,7 +23,7 @@ collection of linear functions.
 
 ## Implementation notes
 
-No concrete (semi)ring is used here, only ones with inferrable order/lattice structure, to support
+No concrete (semi)ring is used here, only ones with inferable order/lattice structure, to support
 `Real`, `Rat`, `EReal`, and others (`ERat` is not yet defined).
 
 Minima over `List α` are defined as producing a value in `WithTop α` so proofs about lists do not
@@ -99,7 +99,7 @@ theorem Multiset.untrop_sum [LinearOrder R] [OrderTop R] (s : Multiset (Tropical
     untrop s.sum = Multiset.inf (s.map untrop) := by
   induction' s using Multiset.induction with s x IH
   · simp
-  · simp only [sum_cons, untrop_add, untrop_le_iff, map_cons, inf_cons, ← IH, inf_eq_min]
+  · simp only [sum_cons, untrop_add, untrop_le_iff, map_cons, inf_cons, ← IH]
 
 theorem Finset.untrop_sum' [LinearOrder R] [OrderTop R] (s : Finset S) (f : S → Tropical R) :
     untrop (∑ i ∈ s, f i) = s.inf (untrop ∘ f) := by

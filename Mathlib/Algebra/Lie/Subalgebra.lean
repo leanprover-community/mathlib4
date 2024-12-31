@@ -194,9 +194,11 @@ theorem to_submodule_injective : Function.Injective ((↑) : LieSubalgebra R L �
   exact h
 
 @[simp]
-theorem coe_to_submodule_eq_iff (L₁' L₂' : LieSubalgebra R L) :
+theorem coe_to_submodule_inj (L₁' L₂' : LieSubalgebra R L) :
     (L₁' : Submodule R L) = (L₂' : Submodule R L) ↔ L₁' = L₂' :=
   to_submodule_injective.eq_iff
+
+@[deprecated (since := "2024-12-29")] alias coe_to_submodule_eq_iff := coe_to_submodule_inj
 
 theorem coe_to_submodule : ((L' : Submodule R L) : Set L) = L' :=
   rfl
@@ -327,7 +329,7 @@ variable (K K' : LieSubalgebra R L) (K₂ : LieSubalgebra R L₂)
 
 @[simp]
 theorem incl_range : K.incl.range = K := by
-  rw [← coe_to_submodule_eq_iff]
+  rw [← coe_to_submodule_inj]
   exact (K : Submodule R L).range_subtype
 
 /-- The image of a Lie subalgebra under a Lie algebra morphism is a Lie subalgebra of the
@@ -410,7 +412,7 @@ theorem _root_.LieHom.range_eq_map : f.range = map f ⊤ := by
   ext
   simp
 
-instance : Inf (LieSubalgebra R L) :=
+instance : Min (LieSubalgebra R L) :=
   ⟨fun K K' ↦
     { (K ⊓ K' : Submodule R L) with
       lie_mem' := fun hx hy ↦ mem_inter (K.lie_mem hx.1 hy.1) (K'.lie_mem hx.2 hy.2) }⟩
@@ -465,7 +467,7 @@ instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
     inf_le_left := fun _ _ _ ↦ And.left
     inf_le_right := fun _ _ _ ↦ And.right }
 
-instance : Add (LieSubalgebra R L) where add := Sup.sup
+instance : Add (LieSubalgebra R L) where add := max
 
 instance : Zero (LieSubalgebra R L) where zero := ⊥
 
@@ -623,7 +625,7 @@ theorem coe_lieSpan_submodule_eq_iff {p : Submodule R L} :
   · intro x m hm
     rw [← h, mem_coe_submodule]
     exact lie_mem _ (subset_lieSpan hm)
-  · rw [← coe_to_submodule_mk p @h, coe_to_submodule, coe_to_submodule_eq_iff, lieSpan_eq]
+  · rw [← coe_to_submodule_mk p @h, coe_to_submodule, coe_to_submodule_inj, lieSpan_eq]
 
 variable (R L)
 

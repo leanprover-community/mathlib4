@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Logic.Small.Basic
 import Mathlib.RingTheory.Ideal.Defs
 
@@ -96,8 +96,8 @@ theorem ExtensionOf.ext_iff {a b : ExtensionOf i f} :
 
 end Ext
 
-instance : Inf (ExtensionOf i f) where
-  inf X1 X2 :=
+instance : Min (ExtensionOf i f) where
+  min X1 X2 :=
     { X1.toLinearPMap ⊓
         X2.toLinearPMap with
       le := fun x hx =>
