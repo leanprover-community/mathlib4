@@ -253,7 +253,7 @@ theorem shortlexAccessible {a : α} (n : ℕ) (aca : Acc r a)
             rw [List.length_cons, ← h2.1]
             exact hl
 
-theorem wf {α : Type*} (r : α → α → Prop) {h : WellFounded r} : WellFounded (Shortlex r) := by
+theorem wf (h : WellFounded r) : WellFounded (Shortlex r) := by
   have : ∀ n, ∀ (a : List α), a.length = n → Acc (Shortlex r) a := by
     intro n
     induction n using Nat.strongRecOn
