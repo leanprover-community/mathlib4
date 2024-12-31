@@ -203,15 +203,18 @@ lemma continuousOn_uncurry_of_lipschitzOnWith_continuousOn
   this.comp continuous_swap.continuousOn (preimage_swap_prod _ _).symm.subset
 
 -- docstring
--- or `t₀ : ℝ` and move `ht₀` to field like before?
-/-- Prop structure holding the assumptions of the Picard-Lindelöf theorem -/
+/-- Prop structure holding the assumptions of the Picard-Lindelöf theorem.
+`IsPicardLindelof f t₀ x₀ a L K` means that the time-dependent vector field `f` satisfies the
+conditions to admit a flow defined on `(Icc tmin tmax) ×ˢ (closedBall x₀ a)`,. That is, for any
+`x ∈ closedBall x₀ a`, there exists an integral curve `α : ℝ → E` to `f` defined on
+`Icc tmin tmax` with initial condition `α t₀ = x₀`. -/
 structure IsPicardLindelof {E : Type*} [NormedAddCommGroup E]
     (f : ℝ → E → E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) (a L K : ℝ≥0) : Prop where
-  /-- Bounded by `L` within a closed ball. -/
+  /-- The vector field at any time is bounded by `L` within a closed ball. -/
   bounded : ∀ t ∈ Icc tmin tmax, ∀ x' ∈ closedBall x₀ (2 * a), ‖f t x'‖ ≤ L
-  /-- Lipschitz with constant `K` within a closed ball. -/
+  /-- The vector field at any time is Lipschitz in with constant `K` within a closed ball. -/
   lipschitz : ∀ t ∈ Icc tmin tmax, LipschitzOnWith K (f t) (closedBall x₀ (2 * a))
-  /-- Continuous within a closed ball. -/
+  /-- The vector field is continuous in time within a closed ball. -/
   continuousOn : ∀ x' ∈ closedBall x₀ (2 * a), ContinuousOn (f · x') (Icc tmin tmax)
   /-- The time interval of validity is controlled by the size of the closed ball. -/
   mul_max_le : L * max (tmax - t₀) (t₀ - tmin) ≤ a
@@ -529,6 +532,7 @@ theorem exists_eq_integrate_of_isPicardLindelof (hf : IsPicardLindelof f t₀ x�
 * Translate the existence lemma from `FunSpace` to `ℝ → E`
 * `C^1` implies `IsPicardLindelof
 * Another version of `IsPicardLindelof` that doesn't have `2 * a`, for when `x = x₀` (no flow)
+  * Problem: assumptions need `(2 * x)`, too strong!
 * Corollary 1.2
 -/
 
