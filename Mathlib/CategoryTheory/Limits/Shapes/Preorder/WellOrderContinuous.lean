@@ -3,12 +3,13 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.SuccPred.Limit
 import Mathlib.CategoryTheory.Limits.IsLimit
 import Mathlib.CategoryTheory.Category.Preorder
 
-/-
+/-!
 # Continuity of functors from well ordered types
 
 Let `F : J ⥤ C` be functor from a well ordered type `J`.
