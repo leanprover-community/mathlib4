@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.SmallObject.WellOrderInductionData
 import Mathlib.CategoryTheory.Limits.Shapes.Preorder.WellOrderContinuous
-import Mathlib.CategoryTheory.MorphismProperty.Basic
 
 /-!
 # The left lifting property is stable under transfinite composition
@@ -56,8 +55,7 @@ variable {C : Type u} [Category.{v} C]
 
 namespace HasLiftingProperty
 
-variable {W : MorphismProperty C}
-  {J : Type w} [LinearOrder J] [OrderBot J]
+variable {J : Type w} [LinearOrder J] [OrderBot J]
 
 namespace transfiniteComposition
 
