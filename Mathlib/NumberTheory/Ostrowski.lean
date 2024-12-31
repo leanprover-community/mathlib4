@@ -34,7 +34,7 @@ Extend to arbitrary number fields.
 
 ## Tags
 
-ring norm, ostrowski
+absolute value, Ostrowski's theorem
 -/
 
 /-!
@@ -138,6 +138,15 @@ lemma apply_natAbs_eq {R S : Type*} [Ring R] [OrderedCommRing S] [NoZeroDivisors
     f (natAbs x) = f x := by
   obtain ⟨_, rfl | rfl⟩ := eq_nat_or_neg x <;> simp
 
+open Int in
+/-- Values of an absolute value on the rationals coincide on `ℕ` if and only if they coincide
+on `ℤ`. -/
+lemma eq_on_nat_iff_eq_on_int {R S : Type*} [Ring R] [OrderedCommRing S] [NoZeroDivisors S]
+    {f g : AbsoluteValue R S} :
+    (∀ n : ℕ , f n = g n) ↔ ∀ n : ℤ , f n = g n := by
+  refine ⟨fun h z ↦ ?_, fun a n ↦ mod_cast a n⟩
+  obtain ⟨n , rfl | rfl⟩ := eq_nat_or_neg z <;> simp [h n]
+
 end AbsoluteValue
 
 end API
@@ -174,24 +183,20 @@ private lemma list_geom {T : Type*} {F : Type*} [Field F] (l : List T) {y : F} (
   let e : Fin l.enum.length ≃ Fin l.length := finCongr List.enum_length
   exact Fintype.sum_bijective e e.bijective _ _ fun _ ↦ rfl
 
+open AbsoluteValue
+
 namespace Rat.AbsoluteValue
 
-open Int AbsoluteValue
+open Int
 
 variable {f g : AbsoluteValue ℚ ℝ}
-
-/-- Values of an absolute value on the rationals coincide on `ℕ` if and only if they coincide
-on `ℤ`. -/
-lemma eq_on_nat_iff_eq_on_Int : (∀ n : ℕ , f n = g n) ↔ ∀ n : ℤ , f n = g n := by
-  refine ⟨fun h z ↦ ?_, fun a n ↦ a n⟩
-  obtain ⟨n , rfl | rfl⟩ := eq_nat_or_neg z <;> simp [h n]
 
 /-- Values of an absolute value on the rationals are determined by the values on the natural
 numbers. -/
 lemma eq_on_nat_iff_eq : (∀ n : ℕ , f n = g n) ↔ f = g := by
   refine ⟨fun h ↦ ?_, fun h n ↦ congrFun (congrArg DFunLike.coe h) ↑n⟩
   ext1 z
-  rw [← Rat.num_div_den z, map_div₀, map_div₀, h, eq_on_nat_iff_eq_on_Int.mp h]
+  rw [← Rat.num_div_den z, map_div₀, map_div₀, h, eq_on_nat_iff_eq_on_int.mp h]
 
 /-- The equivalence class of an absolute value on the rationals is determined by its values on
 the natural numbers. -/
