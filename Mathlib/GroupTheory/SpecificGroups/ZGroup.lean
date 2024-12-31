@@ -3,7 +3,6 @@ Copyright (c) 2024 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Algebra.Module.ZMod
 import Mathlib.Algebra.Squarefree.Basic
 import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.GroupTheory.Nilpotent
