@@ -415,13 +415,6 @@ theorem iSup_inf_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (swap (·
     (hf : Antitone f) (hg : Antitone g) : ⨆ i, f i ⊓ g i = (⨆ i, f i) ⊓ ⨆ i, g i :=
   @iSup_inf_of_monotone α _ ιᵒᵈ _ _ f g hf.dual_left hg.dual_left
 
-theorem isGreatest_himp {α} [GeneralizedHeytingAlgebra α] (a b : α) :
-    IsGreatest {w | w ⊓ a ≤ b} (a ⇨ b) := by
-  simp [IsGreatest, mem_upperBounds]
-
-theorem isLeast_sdiff {α} [GeneralizedCoheytingAlgebra α] (a b : α) :
-    IsLeast {w | a ≤ b ⊔ w} (a \ b) := by
-  simp [IsLeast, mem_lowerBounds]
 
 theorem himp_eq_sSup : a ⇨ b = sSup {w | w ⊓ a ≤ b} :=
   (isGreatest_himp a b).isLUB.sSup_eq.symm
