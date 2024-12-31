@@ -196,20 +196,15 @@ lemma commShiftOp_of_commShift [adj.CommShift A] :
   letI := F.commShiftOp A
   letI := G.commShiftOp A
   refine Adjunction.CommShift.mk' _ _ (NatTrans.CommShift.mk (fun a ↦ ?_))
-  ext X
+  ext
   simp only [Functor.comp_obj, Functor.id_obj, Functor.op_obj, NatTrans.comp_app,
     Functor.commShiftIso_id_hom_app, whiskerRight_app, opAdjointOpOfAdjoint_unit_app, id_comp,
     whiskerLeft_app]
   rw [opEquiv_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply,
     ← cancel_mono ((Functor.commShiftIso (Functor.comp G.op F.op (C := OppositeShift D A)
-    (D := OppositeShift C A) (E := OppositeShift D A)) a).inv.app X)]
-  simp only [Functor.comp_obj, Functor.op_obj, unop_id, Functor.map_id, id_comp, assoc,
-    Iso.hom_inv_id_app, comp_id]
-  have := (CommShift.commShift_counit (adj := adj) (A := A)).comm' a
-  apply_fun (fun h ↦ (h.app (Opposite.unop X)).op) at this
-  simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, whiskerRight_app, op_comp,
-    whiskerLeft_app, Functor.commShiftIso_id_hom_app, comp_id] at this
-  exact this
+    (D := OppositeShift C A) (E := OppositeShift D A)) a).inv.app _)]
+  convert (Opposite.op_inj_iff _ _).mpr ((CommShift.commShift_counit (adj := adj)
+    (A := A)).comm_app _ a (Opposite.unop _)) <;> simp <;> rfl
 
 end Adjunction
 

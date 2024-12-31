@@ -183,29 +183,26 @@ If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F` and 
 it is also compatible with the pulled back `CommShift` structures by an additive map
 `φ : B →+ A`.
 -/
-lemma commShiftPullback_of_commShift [adj.CommShift B] :
+lemma commShiftPullback [adj.CommShift B] :
     letI := F.commShiftPullback φ
     letI := G.commShiftPullback φ
     adj.CommShift A (C := PullbackShift C φ) (D := PullbackShift D φ) := by
   letI := F.commShiftPullback φ
   letI := G.commShiftPullback φ
   refine Adjunction.CommShift.mk' _ _ (NatTrans.CommShift.mk (fun a ↦ ?_))
-  ext X
+  ext
   simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, Functor.commShiftIso_id_hom_app,
     whiskerRight_app, id_comp, whiskerLeft_app]
   rw [Functor.commShiftIso_comp_hom_app, Functor.commShiftPullback_iso_eq _ _ _ _ rfl,
     Functor.commShiftPullback_iso_eq _ _ _ _ rfl, ← cancel_mono ((pullbackShiftIso C φ a _
     rfl).hom.app _), (pullbackShiftIso C φ a _ rfl).hom.naturality]
-  simp only [Functor.comp_obj, Iso.trans_hom, isoWhiskerRight_hom, isoWhiskerLeft_hom, Iso.symm_hom,
-    NatTrans.comp_app, whiskerRight_app, whiskerLeft_app, Functor.map_comp, assoc,
-    unit_naturality_assoc, Iso.inv_hom_id_app, comp_id, NatIso.cancel_natIso_hom_left]
-  slice_rhs 3 4 => rw [← G.map_comp, Iso.inv_hom_id_app, G.map_id]
-  rw [id_comp]
-  have := (CommShift.commShift_unit (adj := adj) (A := B)).comm' (φ a)
-  apply_fun (fun h ↦ (h.app X)) at this
-  simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, Functor.commShiftIso_id_hom_app,
-    whiskerRight_app, id_comp, whiskerLeft_app, Functor.commShiftIso_comp_hom_app] at this
-  exact this
+  dsimp
+  simp only [Functor.map_comp, assoc, unit_naturality_assoc, Iso.inv_hom_id_app, comp_id,
+    NatIso.cancel_natIso_hom_left]
+  simp only [← assoc, ← G.map_comp, Iso.inv_hom_id_app, Functor.map_id, id_comp,
+    ← Functor.commShiftIso_comp_hom_app]
+  convert (CommShift.commShift_unit (adj := adj) (A := B)).comm_app _ (φ a) _
+  simp
 
 end Adjunction
 
