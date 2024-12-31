@@ -387,8 +387,8 @@ def real : AbsoluteValue ℚ ℝ where
   eq_zero' x := by simp
   add_le' x y := by simpa using abs_add_le (x : ℝ) (y : ℝ)
 
-@[simp] lemma real_eq_abs (r : ℚ) : real r = |r| := by
-  simp [real]
+@[simp] lemma real_eq_abs (r : ℚ) : real r = |r| :=
+  (cast_abs r).symm
 
 -- ## Preliminary result
 
@@ -404,17 +404,16 @@ lemma apply_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m) :
     lt_of_le_of_lt (f.apply_nat_le_self c) (mod_cast Nat.digits_lt_base hm hc)
   calc
   f n = f ((Nat.ofDigits m L : ℕ) : ℚ) := by rw [Nat.ofDigits_digits m n]
-    _ = f (L'.sum) := by rw [Nat.ofDigits_eq_sum_mapIdx]; norm_cast
+    _ = f L'.sum := by rw [Nat.ofDigits_eq_sum_mapIdx]; norm_cast
     _ ≤ (L'.map f).sum := listSum_le L' f
     _ ≤ (L.mapIdx fun i _ ↦ m * (f m) ^ i).sum := ?_
   simp only [hL', List.mapIdx_eq_enum_map, List.map_map]
-  apply List.sum_le_sum
-  rintro ⟨i, a⟩ hia
-  dsimp [Function.uncurry]
+  refine List.sum_le_sum fun ⟨i, a⟩ hia ↦ ?_
+  dsimp only [Function.comp_apply, Function.uncurry_apply_pair]
   replace hia := List.mem_enumFrom hia
   push_cast
   rw [map_mul, map_pow]
-  gcongr
+  refine mul_le_mul_of_nonneg_right ?_ <| pow_nonneg (f.nonneg _) i
   simp only [zero_le, zero_add, tsub_zero, true_and] at hia
   exact (hcoef (List.mem_iff_get.mpr ⟨⟨i, hia.1⟩, hia.2.symm⟩)).le
 
@@ -431,8 +430,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
     f m ≤ (L.mapIdx fun i _ ↦ n₀ * f n₀ ^ i).sum := apply_le_sum_digits m hn₀
     _ ≤ (L.mapIdx fun _ _ ↦ (n₀ : ℝ)).sum := by
       simp only [List.mapIdx_eq_enum_map, List.map_map]
-      apply List.sum_le_sum
-      rintro ⟨i, a⟩ _
+      refine List.sum_le_sum fun ⟨i, a⟩ _ ↦ ?_
       simp only [Function.comp_apply, Function.uncurry_apply_pair]
       exact mul_le_of_le_of_le_one' (mod_cast le_refl n₀) (pow_le_one₀ (by positivity) h)
         (by positivity) (by positivity)
@@ -471,9 +469,9 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
   have : 0 < logb n₀ n := logb_pos (mod_cast hn₀) (by norm_cast; omega)
   exact Tendsto.mul (tendsto_const_rpow_inv (by positivity)) tendsto_nat_rpow_inv
 
--- ## Step 2: given m,n ≥ 2 and |m|=m^s, |n|=n^t for s,t > 0, we have t ≤ s
+-- ## Step 2: given m, n ≥ 2 and |m| = m^s, |n| = n^t for s, t > 0, we have t ≤ s
 
-variable {m n : ℕ} (hm : 1 < m) (hn : 1 < n) (notbdd : ¬ ∀ (n : ℕ), f n ≤ 1)
+variable {m n : ℕ} (hm : 1 < m) (hn : 1 < n) (notbdd : ¬ ∀ n : ℕ, f n ≤ 1)
 
 include hm notbdd in
 private lemma expr_pos : 0 < m * f m / (f m - 1) := by
