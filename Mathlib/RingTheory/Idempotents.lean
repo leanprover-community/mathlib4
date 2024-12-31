@@ -339,7 +339,7 @@ theorem CompleteOrthogonalIdempotents.of_ker_isNilpotent_of_isMulCentral
 
 open DirectSum in
 omit [Fintype I] in
-lemma decomp_ring_ortho_idem_is_idem [DecidableEq I] (V : I → Submodule R R)
+lemma decomp_ring_ortho_idem_is_idem [DecidableEq I] (V : I → Ideal R)
     [Decomposition V] (e : ⨁ (i : I), (V i)) [(i : I) → (x : ↥(V i)) → Decidable (x ≠ 0)]
     (he : e = decompose V 1):
     ∀ i ∈ DFinsupp.support e, IsIdempotentElem ((e i) : R) := fun i => by
@@ -391,7 +391,7 @@ omit [Fintype I] in
 /-- If a ring can be decomposed into direct sum of left ideals `Vᵢ`
   where `1 = e₁ + ... + eₙ` and `eᵢ ∈ Vᵢ`, then `eᵢ` is a family of orthogonal
   idempotents.-/
-theorem OrthogonalIdempotent.decomp_ring_ortho_idem [DecidableEq I] (V : I → Submodule R R)
+theorem OrthogonalIdempotent.decomp_ring_ortho_idem [DecidableEq I] (V : I → Ideal R)
     [Decomposition V] (e : ⨁ (i : I), (V i)) [(i : I) → (x : ↥(V i)) → Decidable (x ≠ 0)]
     (he : e = decompose V 1) :
     OrthogonalIdempotents (R := R) (I := DFinsupp.support e) fun i ↦ e i where
