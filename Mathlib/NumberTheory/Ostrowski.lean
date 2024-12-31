@@ -79,11 +79,12 @@ lemma equiv_trans {f g k : AbsoluteValue R ℝ} (hfg : equiv f g) (hgk : equiv g
 
 /-- The *trivial* absolute value takes the value `1` on all nonzero elements. -/
 protected
-def trivial [DecidableEq R] [NoZeroDivisors R] {S : Type*} [OrderedSemiring S] [Nontrivial S] :
+def trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R] {S : Type*} [OrderedSemiring S]
+    [Nontrivial S] :
     AbsoluteValue R S where
   toFun x := if x = 0 then 0 else 1
   map_mul' x y := by
-    rcases eq_or_ne x 0 with rfl |hx
+    rcases eq_or_ne x 0 with rfl | hx
     · simp
     rcases eq_or_ne y 0 with rfl | hy
     · simp
@@ -91,13 +92,12 @@ def trivial [DecidableEq R] [NoZeroDivisors R] {S : Type*} [OrderedSemiring S] [
   nonneg' x := by rcases eq_or_ne x 0 with hx | hx <;> simp [hx]
   eq_zero' x := by rcases eq_or_ne x 0 with hx | hx <;> simp [hx]
   add_le' x y := by
-    rcases eq_or_ne x 0 with rfl |hx
+    rcases eq_or_ne x 0 with rfl | hx
     · simp
     rcases eq_or_ne y 0 with rfl | hy
     · simp
     rcases eq_or_ne (x + y) 0 with hxy | hxy
-    · have : AddLeftMono S := inferInstance
-      simp [hx, hy, hxy, show (1 : S) + 1 = 2 by norm_num]
+    · simp [hx, hy, hxy, show (1 : S) + 1 = 2 by norm_num]
     simpa [hx, hy, hxy, show (1 : S) + 1 = 2 by norm_num] using one_le_two
 
 /-- An absolute value satisfies `f n ≤ n` for every `n : ℕ`. -/
