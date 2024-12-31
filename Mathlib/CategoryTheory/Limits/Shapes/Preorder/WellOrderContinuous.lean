@@ -34,8 +34,7 @@ namespace CategoryTheory.Functor
 
 open Category Limits
 
-variable {C : Type u} [Category.{v} C]
-variable {J : Type w} [Preorder J]
+variable {C : Type u} [Category.{v} C] {J : Type w} [Preorder J]
 
 /-- Given a functor `F : J ⥤ C` and `m : J`, this is the induced
 functor `Set.Iio j ⥤ C`. -/
