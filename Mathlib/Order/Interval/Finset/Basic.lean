@@ -369,6 +369,10 @@ alias ⟨_, Iio_eq_empty⟩ := Iio_eq_empty_iff
 @[simp]
 theorem Iio_bot [OrderBot α] : Iio (⊥ : α) = ∅ := Iio_eq_empty isMin_bot
 
+@[simp]
+theorem Iic_top [OrderTop α] [Fintype α] : Iic (⊤ : α) = univ := by
+  ext a; simp only [mem_Iic, le_top, mem_univ]
+
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
 @[simp]
