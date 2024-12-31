@@ -70,6 +70,16 @@ lemma continuous_ker_eq_linear_ker {P : E →L[𝕜] E} : ker (P : E →ₗ[𝕜
 @[simp]
 lemma continuous_range_eq_linear_range {P : E →L[𝕜] E} : range (P : E →ₗ[𝕜] E) = range P  := rfl
 
+lemma IsIdempotentElem.ker_id_sub_eq_range_cont {P : E →L[𝕜] E} (h : IsIdempotentElem P) :
+    ker (1 - P) = range P := by
+  rw [← continuous_ker_eq_linear_ker, ← continuous_range_eq_linear_range,
+    ← (continuous_isIdempotent_iff_linear_isIdempotent.mp h).ker_id_sub_eq_range]
+  rfl
+
+lemma IsIdempotentElem.range_id_sub_eq_ker_cont {P : E →L[𝕜] E} (h : IsIdempotentElem P) :
+    range (1 - P) = ker P := by
+  rw [← (ker_id_sub_eq_range_cont (IsIdempotentElem.one_sub h)), sub_sub_cancel]
+
 noncomputable section
 
 namespace ContinuousLinearMap
@@ -248,14 +258,14 @@ lemma range_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E)
 lemma ker_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
     ker (1 - (p.idempotentOfClosedCompl q h hp hq)) = p := by
-  simp_rw [(is_idempotent_ofClosedCompl h hp hq).ker_id_sub_eq_range,
+  simp_rw [(is_idempotent_ofClosedCompl h hp hq).ker_id_sub_eq_range_cont,
     range_idempotentOfClosedCompl h hp hq]
 
 -- range (1  - P) = q where P := idempotentOfClosedCompl p q h hp hq
 lemma range_id_sub_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
     range (1  - (p.idempotentOfClosedCompl q h hp hq)) = q := by
-  simp_rw [(is_idempotent_ofClosedCompl h hp hq).range_id_sub_eq_ker,
+  simp_rw [(is_idempotent_ofClosedCompl h hp hq).range_id_sub_eq_ker_cont,
     ker_idempotentOfClosedCompl h hp hq]
 
 end Submodule
