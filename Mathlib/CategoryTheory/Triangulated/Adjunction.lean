@@ -4,9 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Adjunction.Additive
-import Mathlib.CategoryTheory.Shift.Adjunction
-import Mathlib.CategoryTheory.Triangulated.Opposite
-
+import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
 /-!
 # The adjoint functor is triangulated
 
@@ -120,16 +118,12 @@ open CategoryTheory.Pretriangulated.Opposite Functor in
 The left adjoint of a triangulated functor is triangulated.
 -/
 lemma isTriangulated_leftAdjoint [G.IsTriangulated] : F.IsTriangulated := by
-  have : Adjunction.CommShift adj.opAdjointOpOfAdjoint ℤ :=
-      @Adjunction.commShiftPullback_of_commShift (OppositeShift D ℤ) (OppositeShift C ℤ) _ _
-      G.op F.op adj.opAdjointOpOfAdjoint ℤ _ inferInstance inferInstance
-      (G.commShiftOp ℤ) (F.commShiftOp ℤ) ℤ _ (AddMonoidHom.mk' (fun (n : ℤ) => -n)
-      (by intros; dsimp; omega))
-      (adj.commShiftOp_of_commShift ℤ)
-  suffices h : F.op.IsTriangulated by
-    exact F.isTriangulated_of_isTriangulatedOp
-  have := G.isTriangulatedOp_of_isTriangulated
-  exact isTriangulated_rightAdjoint adj.opAdjointOpOfAdjoint
+  have := @Adjunction.commShiftPullback (OppositeShift D ℤ) _ ℤ ℤ _ _ (AddMonoidHom.mk'
+    (fun (n : ℤ) => -n) (by intros; dsimp; omega)) _ (OppositeShift C ℤ) _ _ G.op (G.commShiftOp ℤ)
+    F.op (F.commShiftOp ℤ) adj.opAdjointOpOfAdjoint (adj.commShiftOp_of_commShift ℤ)
+  have := G.isTriangulated_op
+  have := isTriangulated_rightAdjoint adj.opAdjointOpOfAdjoint
+  exact F.isTriangulated_of_op
 
 end Adjunction
 
