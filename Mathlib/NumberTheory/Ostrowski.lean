@@ -133,12 +133,9 @@ open Filter Nat Real Topology
 
 -- For any `C > 0`, the limit of `C ^ (1/k)` is 1 as `k → ∞`
 private lemma tendsto_root_atTop_nhds_one {C : ℝ} (hC : 0 < C) :
-    Tendsto (fun k : ℕ ↦ C ^ (k : ℝ)⁻¹) atTop (𝓝 1) := by
-  convert_to Tendsto ((fun k ↦ C ^ k) ∘ (fun k : ℝ ↦ k⁻¹) ∘ (Nat.cast))
-    atTop (𝓝 1)
-  exact Tendsto.comp (Continuous.tendsto' (continuous_iff_continuousAt.2
-    (fun a ↦ continuousAt_const_rpow hC.ne')) 0 1 (rpow_zero C))
-    <| Tendsto.comp tendsto_inv_atTop_zero tendsto_natCast_atTop_atTop
+    Tendsto (fun k : ℕ ↦ C ^ (k : ℝ)⁻¹) atTop (𝓝 1) :=
+  ((continuous_iff_continuousAt.mpr fun _ ↦ continuousAt_const_rpow hC.ne').tendsto'
+    0 1 (rpow_zero C)).comp <| tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop
 
 --extends the lemma `tendsto_rpow_div` when the function has natural input
 private lemma tendsto_nat_rpow_div :
