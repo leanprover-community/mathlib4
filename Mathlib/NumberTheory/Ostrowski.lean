@@ -21,9 +21,9 @@ Ostrowski's Theorem for the field `ℚ`: every absolute value on `ℚ` is equiva
 
 ## Main results
 
-- `mulRingNorm_equiv_standard_or_padic`: given an absolute value on `ℚ`, it is equivalent to the
-standard Archimedean (Euclidean) absolute value or to a `p`-adic absolute value for some prime
-number `p`.
+- `Rat.AbsoluteValue.equiv_real_or_padic`: given an absolute value on `ℚ`, it is equivalent
+to the standard Archimedean (Euclidean) absolute value `Rat.AbsoluteValue.real` or to a `p`-adic
+absolute value `Rat.AbsoluteValue.padic p` for some prime number `p`.
 
 ## TODO
 
@@ -40,7 +40,104 @@ Extend to arbitrary number fields.
 ring norm, ostrowski
 -/
 
-/- ## Preliminary lemmas on limits and lists -/
+/-!
+### API for AbsoluteValue (from MulRingNorm)
+-/
+
+section API
+
+namespace AbsoluteValue
+
+variable {R : Type*} [Semiring R]
+
+/-- Triangle inequality for `AbsoluteValue` applied to a list. -/
+lemma listSum_le {S : Type*} [OrderedSemiring S] (l : List R)
+    (f : AbsoluteValue R S) : f l.sum ≤ (l.map f).sum := by
+  induction l with
+  | nil => simp
+  | cons head tail ih =>
+    simp only [List.sum_cons, List.map_cons]
+    calc
+    f (head + List.sum tail) ≤ f head + f (List.sum tail) := by apply f.add_le'
+    _ ≤ f head + List.sum (List.map f tail) := by gcongr
+
+/-- Two absolute values `f, g` on `R` with values in `ℝ` are *equivalent* if there exists
+a positive constant `c` such that for all `x ∈ R`, `(f x)^c = g x`. -/
+def equiv (f g : AbsoluteValue R ℝ) :=
+  ∃ c : ℝ, 0 < c ∧ (f · ^ c) = g
+
+/-- Equivalence of absolute values is reflexive. -/
+lemma equiv_refl (f : AbsoluteValue R ℝ) : equiv f f := by
+    exact ⟨1, Real.zero_lt_one, by simp only [Real.rpow_one]⟩
+
+/-- Equivalence of absolute values is symmetric. -/
+lemma equiv_symm {f g : AbsoluteValue R ℝ} (hfg : equiv f g) : equiv g f := by
+  rcases hfg with ⟨c, hcpos, h⟩
+  use 1 / c
+  constructor
+  · simp only [one_div, inv_pos, hcpos]
+  ext x
+  simpa [← congr_fun h x] using Real.rpow_rpow_inv (apply_nonneg f x) (ne_of_lt hcpos).symm
+
+/-- Equivalence of absolute values is transitive. -/
+lemma equiv_trans {f g k : AbsoluteValue R ℝ} (hfg : equiv f g) (hgk : equiv g k) :
+    equiv f k := by
+  rcases hfg with ⟨c, hcPos, hfg⟩
+  rcases hgk with ⟨d, hdPos, hgk⟩
+  refine ⟨c*d, (mul_pos_iff_of_pos_left hcPos).mpr hdPos, ?_⟩
+  ext x
+  rw [Real.rpow_mul (apply_nonneg f x), congr_fun hfg x, congr_fun hgk x]
+
+/-- The *trivial* absolute value takes the value `1` on all nonzero elements. -/
+protected
+def trivial [DecidableEq R] [NoZeroDivisors R] {S : Type*} [OrderedSemiring S] [Nontrivial S] :
+    AbsoluteValue R S where
+  toFun x := if x = 0 then 0 else 1
+  map_mul' x y := by
+    rcases eq_or_ne x 0 with rfl |hx
+    · simp
+    rcases eq_or_ne y 0 with rfl | hy
+    · simp
+    simp [hx, hy]
+  nonneg' x := by rcases eq_or_ne x 0 with hx | hx <;> simp [hx]
+  eq_zero' x := by rcases eq_or_ne x 0 with hx | hx <;> simp [hx]
+  add_le' x y := by
+    rcases eq_or_ne x 0 with rfl |hx
+    · simp
+    rcases eq_or_ne y 0 with rfl | hy
+    · simp
+    rcases eq_or_ne (x + y) 0 with hxy | hxy
+    · have : AddLeftMono S := inferInstance
+      simp [hx, hy, hxy, show (1 : S) + 1 = 2 by norm_num]
+    simpa [hx, hy, hxy, show (1 : S) + 1 = 2 by norm_num] using one_le_two
+
+/-- An absolute value satisfies `f n ≤ n` for every `n : ℕ`. -/
+lemma nat_le_nat {S : Type*} [OrderedRing S] [IsDomain S] (n : ℕ) (f : AbsoluteValue R S) :
+    f n ≤ n := by
+  cases subsingleton_or_nontrivial R
+  · simp [Subsingleton.eq_zero (n : R)]
+  induction n with
+  | zero => simp only [Nat.cast_zero, map_zero, le_refl]
+  | succ n hn =>
+    simp only [Nat.cast_succ]
+    calc
+      f (n + 1) ≤ f (n) + f 1 := f.add_le' ↑n 1
+      _ = f (n) + 1 := by rw [f.map_one]
+      _ ≤ n + 1 := add_le_add_right hn 1
+
+open Int in
+/-- An absolute value composed with the absolute value on integers equals
+the absolute value itself. -/
+lemma apply_natAbs_eq {R S : Type*} [Ring R] [OrderedCommRing S] [NoZeroDivisors S] (x : ℤ)
+    (f : AbsoluteValue R S) :
+    f (natAbs x) = f x := by
+  obtain ⟨_, rfl | rfl⟩ := eq_nat_or_neg x <;> simp
+
+end AbsoluteValue
+
+end API
+
+/-! ### Preliminary lemmas on limits and lists -/
 
 
 open Filter Nat Real Topology
@@ -85,35 +182,34 @@ private lemma list_geom {T : Type*} {F : Type*} [Field F] (l : List T) {y : F} (
     simp_rw [this, list_mul_sum, ih]
     simp only [mul_div, ← same_add_div (sub_ne_zero.2 hy), mul_sub, mul_one, sub_add_sub_cancel']
 
-namespace Rat.MulRingNorm
-open Int
+namespace Rat.AbsoluteValue
 
-variable {f g : MulRingNorm ℚ}
+open Int AbsoluteValue
 
-/-- Values of a multiplicative norm of the rationals coincide on ℕ if and only if they coincide
+variable {f g : AbsoluteValue ℚ ℝ}
+
+/-- Values of an absolute value on the rationals coincide on ℕ if and only if they coincide
 on `ℤ`. -/
 lemma eq_on_nat_iff_eq_on_Int : (∀ n : ℕ , f n = g n) ↔ (∀ n : ℤ , f n = g n) := by
   refine ⟨fun h z ↦ ?_, fun a n ↦ a n⟩
   obtain ⟨n , rfl | rfl⟩ := eq_nat_or_neg z <;>
   simp only [Int.cast_neg, Int.cast_natCast, map_neg_eq_map, h n]
 
-/-- Values of a multiplicative norm of the rationals are determined by the values on the natural
+/-- Values of an absolutev value on the rationals are determined by the values on the natural
 numbers. -/
 lemma eq_on_nat_iff_eq : (∀ n : ℕ , f n = g n) ↔ f = g := by
   refine ⟨fun h ↦ ?_, fun h n ↦ congrFun (congrArg DFunLike.coe h) ↑n⟩
   ext z
   rw [← Rat.num_div_den z, map_div₀, map_div₀, h, eq_on_nat_iff_eq_on_Int.mp h]
 
-/-- The equivalence class of a multiplicative norm on the rationals is determined by its values on
+/-- The equivalence class of an absolute value on the rationals is determined by its values on
 the natural numbers. -/
 lemma equiv_on_nat_iff_equiv : (∃ c : ℝ, 0 < c ∧ (∀ n : ℕ , (f n) ^ c = g n)) ↔
     f.equiv g := by
     refine ⟨fun ⟨c, hc, h⟩ ↦ ⟨c, ⟨hc, ?_⟩⟩, fun ⟨c, hc, h⟩ ↦ ⟨c, ⟨hc, fun n ↦ by rw [← h]⟩⟩⟩
     ext x
     rw [← Rat.num_div_den x, map_div₀, map_div₀, div_rpow (by positivity) (by positivity), h x.den,
-      ← MulRingNorm.apply_natAbs_eq,← MulRingNorm.apply_natAbs_eq, h (natAbs x.num)]
-
-open Rat.MulRingNorm
+      ← AbsoluteValue.apply_natAbs_eq,← AbsoluteValue.apply_natAbs_eq, h (natAbs x.num)]
 
 section Non_archimedean
 
@@ -122,39 +218,36 @@ section Non_archimedean
 Every bounded absolute value is equivalent to a `p`-adic absolute value
 -/
 
-/-- The mulRingNorm corresponding to the p-adic norm on `ℚ`. -/
-def mulRingNorm_padic (p : ℕ) [Fact p.Prime] : MulRingNorm ℚ :=
-{ toFun     := fun x : ℚ ↦ (padicNorm p x : ℝ),
-  map_zero' := by simp only [padicNorm.zero, Rat.cast_zero]
-  add_le'   := by simp only; norm_cast; exact fun r s ↦ padicNorm.triangle_ineq r s
-  neg'      := by simp only [forall_const, padicNorm.neg]
-  eq_zero_of_map_eq_zero' := by
-    simp only [Rat.cast_eq_zero]
-    apply padicNorm.zero_of_padicNorm_eq_zero
-  map_one' := by simp only [ne_eq, one_ne_zero, not_false_eq_true, padicNorm.eq_zpow_of_nonzero,
-    padicValRat.one, neg_zero, zpow_zero, Rat.cast_one]
+/-- The real-valued `Absolute Value` corresponding to the p-adic norm on `ℚ`. -/
+def padic (p : ℕ) [Fact p.Prime] : AbsoluteValue ℚ ℝ :=
+{ toFun x := (padicNorm p x : ℝ),
   map_mul' := by simp only [padicNorm.mul, Rat.cast_mul, forall_const]
+  nonneg' x := cast_nonneg.mpr <| padicNorm.nonneg x
+  eq_zero' x :=
+    ⟨fun H ↦ padicNorm.zero_of_padicNorm_eq_zero <| cast_eq_zero.mp H,
+      fun H ↦ cast_eq_zero.mpr <| H ▸ padicNorm.zero (p := p)⟩
+  add_le' x y := by simp only; exact_mod_cast padicNorm.triangle_ineq x y
 }
 
-@[simp] lemma mulRingNorm_eq_padic_norm (p : ℕ) [Fact p.Prime] (r : ℚ) :
-  mulRingNorm_padic p r = padicNorm p r := rfl
+@[simp] lemma padic_eq_padicNorm (p : ℕ) [Fact p.Prime] (r : ℚ) :
+    padic p r = padicNorm p r := rfl
 
 -- ## Step 1: define `p = minimal n s. t. 0 < f n < 1`
 
-variable (hf_nontriv : f ≠ 1) (bdd : ∀ n : ℕ, f n ≤ 1)
+variable (hf_nontriv : f ≠ AbsoluteValue.trivial) (bdd : ∀ n : ℕ, f n ≤ 1)
 
 include hf_nontriv bdd in
 /-- There exists a minimal positive integer with absolute value smaller than 1. -/
-lemma exists_minimal_nat_zero_lt_mulRingNorm_lt_one : ∃ p : ℕ, (0 < f p ∧ f p < 1) ∧
-    ∀ m : ℕ, 0 < f m ∧ f m < 1 → p ≤ m := by
+lemma exists_minimal_nat_zero_lt_absoluteValue_lt_one :
+    ∃ p : ℕ, (0 < f p ∧ f p < 1) ∧ ∀ m : ℕ, 0 < f m ∧ f m < 1 → p ≤ m := by
   -- There is a positive integer with absolute value different from one.
   obtain ⟨n, hn1, hn2⟩ : ∃ n : ℕ, n ≠ 0 ∧ f n ≠ 1 := by
     contrapose! hf_nontriv
-    rw [← eq_on_nat_iff_eq]
+    rw [AbsoluteValue.trivial, ← eq_on_nat_iff_eq]
     intro n
     rcases eq_or_ne n 0 with rfl | hn0
-    · simp only [Nat.cast_zero, map_zero]
-    · simp only [MulRingNorm.apply_one, Nat.cast_eq_zero, hn0, ↓reduceIte, hf_nontriv n hn0]
+    · simp
+    · simp [hn0, hf_nontriv n hn0]
   set P := {m : ℕ | 0 < f ↑m ∧ f ↑m < 1} -- p is going to be the minimum of this set.
   have hP : P.Nonempty :=
     ⟨n, map_pos_of_ne_zero f (Nat.cast_ne_zero.mpr hn1), lt_of_le_of_ne (bdd n) hn2⟩
@@ -166,7 +259,7 @@ variable {p : ℕ} (hp0 : 0 < f p) (hp1 : f p < 1) (hmin : ∀ m : ℕ, 0 < f m 
 
 include hp0 hp1 hmin in
 /-- The minimal positive integer with absolute value smaller than 1 is a prime number.-/
-lemma is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one : p.Prime := by
+lemma is_prime_of_minimal_nat_zero_lt_absoluteValue_lt_one : p.Prime := by
   rw [← Nat.irreducible_iff_nat_prime]
   constructor -- Two goals: p is not a unit and any product giving p must contain a unit.
   · rw [Nat.isUnit_iff]
@@ -194,7 +287,7 @@ open Real
 
 include hp0 hp1 hmin bdd in
 /-- A natural number not divible by `p` has absolute value 1. -/
-lemma mulRingNorm_eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
+lemma eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
   apply le_antisymm (bdd m)
   by_contra! hm
   set M := f p ⊔ f m with hM
@@ -202,7 +295,7 @@ lemma mulRingNorm_eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
   obtain ⟨a, b, bezout⟩ : IsCoprime (p ^ k : ℤ) (m ^ k) := by
     apply IsCoprime.pow (Nat.Coprime.isCoprime _)
     exact (Nat.Prime.coprime_iff_not_dvd
-      (is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one hp0 hp1 hmin)).2 hpm
+      (is_prime_of_minimal_nat_zero_lt_absoluteValue_lt_one hp0 hp1 hmin)).2 hpm
   have le_half {x} (hx0 : 0 < x) (hx1 : x < 1) (hxM : x ≤ M) : x ^ k < 1 / 2 := by
     calc
     x ^ k = x ^ (k : ℝ) := (rpow_natCast x k).symm
@@ -226,7 +319,7 @@ lemma mulRingNorm_eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
   _ ≤ 1 * (f p) ^ k + 1 * (f m) ^ k := by
     simp only [map_mul, map_pow, le_refl]
     gcongr
-    all_goals rw [← MulRingNorm.apply_natAbs_eq]; apply bdd
+    all_goals rw [← AbsoluteValue.apply_natAbs_eq]; apply bdd
   _ = (f p) ^ k + (f m) ^ k := by simp only [one_mul]
   _ < 1 := by
     have hm₀ : 0 < f m :=
@@ -237,8 +330,8 @@ lemma mulRingNorm_eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
 
 include hp0 hp1 hmin in
 /-- The absolute value of `p` is `p ^ (-t)` for some positive real number `t`. -/
-lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
-  have pprime := is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one hp0 hp1 hmin
+lemma exists_pos_absoluteValue_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
+  have pprime := is_prime_of_minimal_nat_zero_lt_absoluteValue_lt_one hp0 hp1 hmin
   refine ⟨- logb p (f p), Left.neg_pos_iff.2 <| logb_neg (mod_cast pprime.one_lt) hp0 hp1, ?_⟩
   rw [neg_neg]
   refine (rpow_logb (mod_cast pprime.pos) ?_ hp0).symm
@@ -248,15 +341,15 @@ lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) 
 
 include hf_nontriv bdd in
 /-- If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value. -/
-theorem mulRingNorm_equiv_padic_of_bounded :
-    ∃! p, ∃ (_ : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
-  obtain ⟨p, hfp, hmin⟩ := exists_minimal_nat_zero_lt_mulRingNorm_lt_one hf_nontriv bdd
-  have hprime := is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one hfp.1 hfp.2 hmin
+theorem equiv_padic_of_bounded :
+    ∃! p, ∃ (_ : Fact (p.Prime)), AbsoluteValue.equiv f (padic p) := by
+  obtain ⟨p, hfp, hmin⟩ := exists_minimal_nat_zero_lt_absoluteValue_lt_one hf_nontriv bdd
+  have hprime := is_prime_of_minimal_nat_zero_lt_absoluteValue_lt_one hfp.1 hfp.2 hmin
   have hprime_fact : Fact (p.Prime) := ⟨hprime⟩
-  obtain ⟨t, h⟩ := exists_pos_mulRingNorm_eq_pow_neg hfp.1 hfp.2 hmin
+  obtain ⟨t, h⟩ := exists_pos_absoluteValue_eq_pow_neg hfp.1 hfp.2 hmin
   simp_rw [← equiv_on_nat_iff_equiv]
   use p
-  constructor -- 2 goals: MulRingNorm.equiv f (mulRingNorm_padic p) and p is unique.
+  constructor -- 2 goals: AbsoluteValue.equiv f (absoluteValue_padic p) and p is unique.
   · use hprime_fact
     refine ⟨t⁻¹, by simp only [inv_pos, h.1], fun n ↦ ?_⟩
     have ht : t⁻¹ ≠ 0 := inv_ne_zero h.1.ne'
@@ -265,9 +358,9 @@ theorem mulRingNorm_equiv_padic_of_bounded :
     · /- Any natural number can be written as a power of p times a natural number not divisible
       by p  -/
       rcases Nat.exists_eq_pow_mul_and_not_dvd hn p hprime.ne_one with ⟨e, m, hpm, rfl⟩
-      simp only [Nat.cast_mul, Nat.cast_pow, map_mul, map_pow, mulRingNorm_eq_padic_norm,
+      simp only [Nat.cast_mul, Nat.cast_pow, map_mul, map_pow, padic_eq_padicNorm,
         padicNorm.padicNorm_p_of_prime, Rat.cast_inv, Rat.cast_natCast, inv_pow,
-        mulRingNorm_eq_one_of_not_dvd bdd hfp.1 hfp.2 hmin hpm, h.2]
+        eq_one_of_not_dvd bdd hfp.1 hfp.2 hmin hpm, h.2]
       rw [← padicNorm.nat_eq_one_iff] at hpm
       simp only [← rpow_natCast, p.cast_nonneg, ← rpow_mul, mul_one, ← rpow_neg, hpm, cast_one]
       congr
@@ -280,9 +373,9 @@ theorem mulRingNorm_equiv_padic_of_bounded :
       Nat.Prime.coprime_iff_not_dvd hprime] at hne
     rcases h_equiv with ⟨c, _, h_eq⟩
     have h_eq' := h_eq q
-    simp only [mulRingNorm_eq_one_of_not_dvd bdd hfp.1 hfp.2 hmin hne, one_rpow,
-      mulRingNorm_eq_padic_norm, padicNorm.padicNorm_p_of_prime, cast_inv, cast_natCast, eq_comm,
-      inv_eq_one] at h_eq'
+    simp only [eq_one_of_not_dvd bdd hfp.1 hfp.2 hmin hne, one_rpow,
+      padic_eq_padicNorm, padicNorm.padicNorm_p_of_prime, cast_inv, cast_natCast,
+      eq_comm, inv_eq_one] at h_eq'
     norm_cast at h_eq'
 
 end Non_archimedean
@@ -295,19 +388,14 @@ Every unbounded absolute value is equivalent to the standard absolute value
 -/
 
 /-- The usual absolute value on ℚ. -/
-def mulRingNorm_real : MulRingNorm ℚ :=
-{ toFun    := fun x : ℚ ↦ |x|
-  map_zero' := by simp only [Rat.cast_zero, abs_zero]
-  add_le'   := norm_add_le
-  neg'      := norm_neg
-  eq_zero_of_map_eq_zero' := by simp only [abs_eq_zero, Rat.cast_eq_zero, imp_self, forall_const]
-  map_one' := by simp only [Rat.cast_one, abs_one]
-  map_mul' := by
-    simp only [Rat.cast_mul]
-    exact_mod_cast abs_mul
-}
+def real : AbsoluteValue ℚ ℝ where
+  toFun x := |x|
+  map_mul' x y := by simpa using abs_mul (x : ℝ) (y : ℝ)
+  nonneg' x := by simp
+  eq_zero' x := by simp
+  add_le' x y := by simpa using abs_add_le (x : ℝ) (y : ℝ)
 
-@[simp] lemma mul_ring_norm_eq_abs (r : ℚ) : mulRingNorm_real r = |r| := by
+@[simp] lemma real_eq_abs (r : ℚ) : real r = |r| := by
   simp only [Rat.cast_abs]
   rfl
 
@@ -316,17 +404,17 @@ def mulRingNorm_real : MulRingNorm ℚ :=
 /-- Given an two integers `n, m` with `m > 1` the mulRingNorm of `n` is bounded by
 `m + m * f m + m * (f m) ^ 2 + ... + m * (f m) ^ d` where `d` is the number of digits of the
 expansion of `n` in base `m`. -/
-lemma mulRingNorm_apply_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m) :
+lemma apply_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m) :
     f n ≤ ((Nat.digits m n).mapIdx fun i _ ↦ m * (f m) ^ i).sum := by
   set L := Nat.digits m n
   set L' : List ℚ := List.map Nat.cast (L.mapIdx fun i a ↦ (a * m ^ i)) with hL'
   -- If `c` is a digit in the expansion of `n` in base `m`, then `f c` is less than `m`.
   have hcoef {c : ℕ} (hc : c ∈ Nat.digits m n) : f c < m :=
-    lt_of_le_of_lt (MulRingNorm_nat_le_nat c f) (mod_cast Nat.digits_lt_base hm hc)
+    lt_of_le_of_lt (AbsoluteValue.nat_le_nat c f) (mod_cast Nat.digits_lt_base hm hc)
   calc
   f n = f ((Nat.ofDigits m L : ℕ) : ℚ) := by rw [Nat.ofDigits_digits m n]
     _ = f (L'.sum) := by rw [Nat.ofDigits_eq_sum_mapIdx]; norm_cast
-    _ ≤ (L'.map f).sum := mulRingNorm_sum_le_sum_mulRingNorm L' f
+    _ ≤ (L'.map f).sum := AbsoluteValue.listSum_le L' f
     _ ≤ (L.mapIdx fun i _ ↦ m * (f m) ^ i).sum := ?_
   simp only [hL', List.mapIdx_eq_enum_map, List.map_map]
   apply List.sum_le_sum
@@ -339,7 +427,7 @@ lemma mulRingNorm_apply_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m) :
   simp only [zero_le, zero_add, tsub_zero, true_and] at hia
   exact (hcoef (List.mem_iff_get.mpr ⟨⟨i, hia.1⟩, hia.2.symm⟩)).le
 
--- ## Step 1: if f is a MulRingNorm and f n > 1 for some natural n, then f n > 1 for all n ≥ 2
+-- ## Step 1: if f is an AbsoluteValue and f n > 1 for some natural n, then f n > 1 for all n ≥ 2
 
 /-- If `f n > 1` for some `n` then `f n > 1` for all `n ≥ 2` -/
 lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (hn₀ : 1 < n₀) : 1 < f n₀ := by
@@ -349,7 +437,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
     /- L is the string of digits of `n` in the base `n₀`-/
     set L := Nat.digits n₀ m
     calc
-    f m ≤ (L.mapIdx fun i _ ↦ n₀ * f n₀ ^ i).sum := mulRingNorm_apply_le_sum_digits m hn₀
+    f m ≤ (L.mapIdx fun i _ ↦ n₀ * f n₀ ^ i).sum := apply_le_sum_digits m hn₀
     _ ≤ (L.mapIdx fun _ _ ↦ (n₀ : ℝ)).sum := by
       simp only [List.mapIdx_eq_enum_map, List.map_map]
       apply List.sum_le_sum
@@ -412,7 +500,7 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
     let d := Nat.log m n
     calc
     f n ≤ ((Nat.digits m n).mapIdx fun i _ ↦ m * f m ^ i).sum :=
-      mulRingNorm_apply_le_sum_digits n hm
+      apply_le_sum_digits n hm
     _ = m * ((Nat.digits m n).mapIdx fun i _ ↦ (f m) ^ i).sum := list_mul_sum (m.digits n) (f m) m
     _ = m * ((f m ^ (d + 1) - 1) / (f m - 1)) := by
       rw [list_geom _ (ne_of_gt (one_lt_of_not_bounded notbdd hm)),
@@ -441,7 +529,7 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
 
 include hm hn notbdd in
 /-- Given two natural numbers `n, m` greater than 1 we have `f n ≤ f m ^ logb m n`. -/
-lemma mulRingNorm_le_mulRingNorm_pow_log : f n ≤ f m ^ logb m n := by
+lemma le_pow_log : f n ≤ f m ^ logb m n := by
   have : Tendsto (fun k : ℕ ↦ (m * f m / (f m - 1)) ^ (k : ℝ)⁻¹ * (f m) ^ (logb m n))
       atTop (𝓝 ((f m) ^ (logb m n))) := by
     nth_rw 2 [← one_mul (f ↑m ^ logb ↑m ↑n)]
@@ -451,8 +539,8 @@ lemma mulRingNorm_le_mulRingNorm_pow_log : f n ≤ f m ^ logb m n := by
 
 include hm hn notbdd in
 /-- Given `m,n ≥ 2` and `f m = m ^ s`, `f n = n ^ t` for `s, t > 0`, we have `t ≤ s`. -/
-lemma le_of_mulRingNorm_eq {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t)  : t ≤ s := by
-    have hmn : f n ≤ f m ^ Real.logb m n := mulRingNorm_le_mulRingNorm_pow_log hm hn notbdd
+lemma le_of_absoluteValue_eq {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t)  : t ≤ s := by
+    have hmn : f n ≤ f m ^ Real.logb m n := le_pow_log hm hn notbdd
     rw [← Real.rpow_le_rpow_left_iff (x:=n) (mod_cast hn), ← hfn]
     apply le_trans hmn
     rw [hfm, ← Real.rpow_mul (Nat.cast_nonneg m), mul_comm, Real.rpow_mul (Nat.cast_nonneg m),
@@ -461,15 +549,15 @@ lemma le_of_mulRingNorm_eq {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t)  
 
 include hm hn notbdd in
 private lemma symmetric_roles {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t) : s = t :=
-    le_antisymm (le_of_mulRingNorm_eq hn hm notbdd hfn hfm)
-    (le_of_mulRingNorm_eq hm hn notbdd hfm hfn)
+    le_antisymm (le_of_absoluteValue_eq hn hm notbdd hfn hfm)
+    (le_of_absoluteValue_eq hm hn notbdd hfm hfn)
 
 -- ## Archimedean case: end goal
 
 include notbdd in
 /-- If `f` is not bounded and not trivial, then it is equivalent to the standard absolute value on
 `ℚ`. -/
-theorem mulRingNorm_equiv_standard_of_unbounded : MulRingNorm.equiv f mulRingNorm_real := by
+theorem equiv_real_of_unbounded : AbsoluteValue.equiv f real := by
   obtain ⟨m, hm⟩ := Classical.exists_not_of_not_forall notbdd
   have oneltm : 1 < m := by
     by_contra!
@@ -495,7 +583,7 @@ theorem mulRingNorm_equiv_standard_of_unbounded : MulRingNorm.equiv f mulRingNor
       push_neg
       exact ⟨not_eq_zero_of_lt oneltm, Nat.ne_of_lt' oneltm, mod_cast (fun a ↦ a),
         not_eq_zero_of_lt oneltm, ne_of_not_le hm, by linarith only [apply_nonneg f ↑m]⟩
-  · simp only [mul_ring_norm_eq_abs, abs_cast, Rat.cast_natCast]
+  · simp only [real_eq_abs, abs_cast, Rat.cast_natCast]
     rw [Real.rpow_inv_eq (apply_nonneg f ↑n) (Nat.cast_nonneg n)
       (Real.logb_ne_zero_of_pos_of_ne_one (one_lt_cast.mpr oneltm) (by linarith only [hm])
       (by linarith only [hm]))]
@@ -510,13 +598,11 @@ theorem mulRingNorm_equiv_standard_of_unbounded : MulRingNorm.equiv f mulRingNor
 end Archimedean
 
 /-- **Ostrowski's Theorem** -/
-theorem mulRingNorm_equiv_standard_or_padic (f : MulRingNorm ℚ) (hf_nontriv : f ≠ 1) :
-    (MulRingNorm.equiv f mulRingNorm_real) ∨
-    ∃! p, ∃ (_ : Fact (p.Prime)), MulRingNorm.equiv f (mulRingNorm_padic p) := by
+theorem equiv_real_or_padic (f : AbsoluteValue ℚ ℝ) (hf_nontriv : f ≠ .trivial) :
+    (AbsoluteValue.equiv f real) ∨
+    ∃! p, ∃ (_ : Fact (p.Prime)), AbsoluteValue.equiv f (padic p) := by
   by_cases bdd : ∀ n : ℕ, f n ≤ 1
-  · right
-    exact mulRingNorm_equiv_padic_of_bounded hf_nontriv bdd
-  · left
-    exact mulRingNorm_equiv_standard_of_unbounded bdd
+  · exact .inr <| equiv_padic_of_bounded hf_nontriv bdd
+  · exact .inl <| equiv_real_of_unbounded bdd
 
-end Rat.MulRingNorm
+end Rat.AbsoluteValue
