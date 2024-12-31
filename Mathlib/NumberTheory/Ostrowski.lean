@@ -132,7 +132,7 @@ end API
 open Filter Nat Real Topology
 
 -- For any `C > 0`, the limit of `C ^ (1/k)` is 1 as `k → ∞`
-private lemma tendsto_root_atTop_nhds_one {C : ℝ} (hC : 0 < C) :
+private lemma tendsto_const_rpow_inv {C : ℝ} (hC : 0 < C) :
     Tendsto (fun k : ℕ ↦ C ^ (k : ℝ)⁻¹) atTop (𝓝 1) :=
   ((continuous_iff_continuousAt.mpr fun _ ↦ continuousAt_const_rpow hC.ne').tendsto'
     0 1 (rpow_zero C)).comp <| tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop
@@ -442,7 +442,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
   refine le_of_tendsto_of_tendsto tendsto_const_nhds ?_ (eventually_atTop.mpr ⟨1, h_ineq2⟩)
   nth_rw 2 [← mul_one 1]
   have : 0 < logb n₀ n := logb_pos (mod_cast hn₀) (by norm_cast; omega)
-  exact Tendsto.mul (tendsto_root_atTop_nhds_one (by positivity)) tendsto_nat_rpow_inv
+  exact Tendsto.mul (tendsto_const_rpow_inv (by positivity)) tendsto_nat_rpow_inv
 
 -- ## Step 2: given m,n ≥ 2 and |m|=m^s, |n|=n^t for s,t > 0, we have t ≤ s
 
@@ -495,7 +495,7 @@ lemma le_pow_log : f n ≤ f m ^ logb m n := by
   have : Tendsto (fun k : ℕ ↦ (m * f m / (f m - 1)) ^ (k : ℝ)⁻¹ * f m ^ logb m n)
       atTop (𝓝 (f m ^ logb m n)) := by
     nth_rw 2 [← one_mul (f ↑m ^ logb ↑m ↑n)]
-    exact (tendsto_root_atTop_nhds_one (expr_pos hm notbdd)).mul_const _
+    exact (tendsto_const_rpow_inv (expr_pos hm notbdd)).mul_const _
   exact le_of_tendsto_of_tendsto (tendsto_const_nhds (x:= f ↑n)) this <|
     eventually_atTop.mpr ⟨2, fun b hb ↦ param_upperbound hm hn notbdd (not_eq_zero_of_lt hb)⟩
 
