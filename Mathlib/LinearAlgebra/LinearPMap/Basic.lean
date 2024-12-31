@@ -211,6 +211,12 @@ def eqLocus (f g : E →ₗ.[R] F) : Submodule R E where
       ⟨smul_mem _ c hfx, smul_mem _ c hgx,
         by erw [f.map_smul c ⟨x, hfx⟩, g.map_smul c ⟨x, hgx⟩, hx]⟩
 
+lemma eqLocus_le_domain_left (f g : E →ₗ.[R] F) : f.eqLocus g ≤ f.domain :=
+  fun _ ⟨h, _, _⟩ ↦ h
+
+lemma eqLocus_le_domain_right (f g : E →ₗ.[R] F) : f.eqLocus g ≤ g.domain :=
+  fun _ ⟨_, h, _⟩ ↦ h
+
 instance bot : Bot (E →ₗ.[R] F) :=
   ⟨⟨⊥, 0⟩⟩
 
