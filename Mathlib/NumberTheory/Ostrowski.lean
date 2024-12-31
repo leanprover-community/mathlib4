@@ -300,16 +300,15 @@ lemma eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
     have hm₀ : 0 < f m := f.pos <| Nat.cast_ne_zero.mpr fun H ↦ hpm <| H ▸ dvd_zero p
     linarith only [le_half hp0 hp1 le_sup_left, le_half hm₀ hm le_sup_right]
 
--- ## Step 4: f p = p ^ (- t) for some positive real t
+-- ## Step 4: f p = p ^ (-t) for some positive real t
 
 include hp0 hp1 hmin in
 /-- The absolute value of `p` is `p ^ (-t)` for some positive real number `t`. -/
-lemma exists_pos_absoluteValue_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
+lemma exists_pos_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
   have pprime := is_prime_of_minimal_nat_zero_lt_absoluteValue_lt_one hp0 hp1 hmin
-  refine ⟨- logb p (f p), Left.neg_pos_iff.2 <| logb_neg (mod_cast pprime.one_lt) hp0 hp1, ?_⟩
+  refine ⟨- logb p (f p), Left.neg_pos_iff.mpr <| logb_neg (mod_cast pprime.one_lt) hp0 hp1, ?_⟩
   rw [neg_neg]
-  refine (rpow_logb (mod_cast pprime.pos) ?_ hp0).symm
-  simp only [ne_eq, Nat.cast_eq_one,Nat.Prime.ne_one pprime, not_false_eq_true]
+  exact (rpow_logb (mod_cast pprime.pos) (mod_cast pprime.ne_one) hp0).symm
 
 -- ## Non-archimedean case: end goal
 
@@ -320,7 +319,7 @@ theorem equiv_padic_of_bounded :
   obtain ⟨p, hfp, hmin⟩ := exists_minimal_nat_zero_lt_absoluteValue_lt_one hf_nontriv bdd
   have hprime := is_prime_of_minimal_nat_zero_lt_absoluteValue_lt_one hfp.1 hfp.2 hmin
   have hprime_fact : Fact (p.Prime) := ⟨hprime⟩
-  obtain ⟨t, h⟩ := exists_pos_absoluteValue_eq_pow_neg hfp.1 hfp.2 hmin
+  obtain ⟨t, h⟩ := exists_pos_eq_pow_neg hfp.1 hfp.2 hmin
   simp_rw [← equiv_on_nat_iff_equiv]
   use p
   constructor -- 2 goals: AbsoluteValue.equiv f (absoluteValue_padic p) and p is unique.
