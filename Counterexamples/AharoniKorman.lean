@@ -10,6 +10,7 @@ import Mathlib.Order.Chain
 import Mathlib.Order.WellFoundedSet
 import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Data.Setoid.Partition
+import Mathlib.Topology.Filter
 
 /-!
 # Disproof of the Aharoni–Korman conjecture
@@ -106,6 +107,14 @@ lemma le_of_toHollom_le_toHollom {a b c d e f : ℕ} :
   | .next_add _ => by omega
   | .next_min _ => by omega
 
+lemma toHollom_le_toHollom {a b c d e f : ℕ} (h : (a, b) ≤ (d, e)) (hcf : f ≤ c) :
+    toHollom (a, b, c) ≤ toHollom (d, e, f) := by
+  simp only [Prod.mk_le_mk] at h
+  obtain rfl | rfl | hc : f = c ∨ f + 1 = c ∨ f + 2 ≤ c := by omega
+  · simpa using h
+  · exact .next_add (by omega)
+  · exact .twice hc
+
 -- written L_n in the paper
 def level (n : ℕ) : Set Hollom := {toHollom (x, y, n) | (x : ℕ) (y : ℕ)}
 
@@ -117,6 +126,16 @@ def embed (n : ℕ) : ℕ × ℕ → Hollom := fun x ↦ toHollom (x.1, x.2, n)
 lemma embed_monotone {n : ℕ} : Monotone (embed n) := by
   rintro ⟨a, b⟩ ⟨c, d⟩ h
   simpa [embed] using h
+
+lemma embed_strictMono {n : ℕ} : StrictMono (embed n) :=
+  embed_monotone.strictMono_of_injective <| by rintro ⟨_, _⟩ _ ⟨⟩; rfl
+
+lemma embed_le_embed_iff {n : ℕ} {x y} : embed n x ≤ embed n y ↔ x ≤ y := by
+  rw [embed, embed, toHollom_le_toHollom_iff_fixed_right]
+  rfl
+
+lemma embed_lt_embed_iff {n : ℕ} {x y} : embed n x < embed n y ↔ x < y :=
+  lt_iff_lt_of_le_iff_le' embed_le_embed_iff embed_le_embed_iff
 
 lemma level_eq_range (n : ℕ) : level n = Set.range (embed n) := by
   simp [level, Set.range, embed]
@@ -325,9 +344,6 @@ include hfC hfCid hf in
 lemma incomp_apply {x : Hollom} (hx : f x ≠ x) : ¬ (f x ≤ x ∨ x ≤ f x) :=
   incomp_of_eq hf (hfCid _ (hfC _)) hx
 
--- lemma incomp_apply {x : Hollom} : ¬ f x ≤ x := by
---   sorry
-
 def R (n : ℕ) (C : Set Hollom) : Set Hollom := {x ∈ level n | ∀ y ∈ C ∩ level n, x ≤ y ∨ y ≤ x}
 
 lemma R_subset_level : R n C ⊆ level n := Set.sep_subset (level n) _
@@ -335,58 +351,151 @@ lemma R_subset_level : R n C ⊆ level n := Set.sep_subset (level n) _
 lemma mem_R {n : ℕ} {C : Set Hollom} {x} :
   x ∈ R n C ↔ x ∈ level n ∧ ∀ y ∈ C ∩ level n, x ≤ y ∨ y ≤ x := Iff.rfl
 
-lemma square_subset_R (h : (C ∩ level n).Finite) :
-    ∃ a, (fun t ↦ toHollom (t.1, t.2, n)) '' Set.Ici (a, a) ⊆ R n C := by
+lemma square_subset_above (h : (C ∩ level n).Finite) :
+    ∃ a, embed n '' Set.Ici (a, a) ⊆ {x | ∀ y ∈ C ∩ level n, y ≤ x} := by
   obtain h | hne := (C ∩ level n).eq_empty_or_nonempty
   · refine ⟨0, ?_⟩
     intro x
     induction x
-    rw [R, h]
+    rw [h]
     aesop
 
-  obtain ⟨a, ha⟩ : ∃ a : ℕ, ∀ x ∈ C ∩ level n, (ofHollom x).1 ≤ a := by
-    obtain ⟨a, ha⟩ := (h.image (fun t ↦ (ofHollom t).1)).bddAbove
-    use a
-    rw [Set.inter_comm]
-    simpa [mem_upperBounds] using ha
-  obtain ⟨b, hb⟩ : ∃ b : ℕ, ∀ x ∈ C ∩ level n, (ofHollom x).2.1 ≤ b := by
-    obtain ⟨b, hb⟩ := (h.image (fun t ↦ (ofHollom t).2.1)).bddAbove
-    use b
-    rw [Set.inter_comm]
-    simp only [mem_upperBounds, Set.mem_image, Set.mem_inter_iff, «exists», toHollom_mem_level_iff,
-      ofHollom_toHollom, Prod.exists, exists_and_right, exists_eq_right, forall_exists_index] at hb
-    simp
-    aesop
+  obtain ⟨a, b, hab⟩ : ∃ a b, ∀ c d, toHollom (c, d, n) ∈ C → c ≤ a ∧ d ≤ b := by
+    obtain ⟨⟨a, b⟩, hab⟩ := (h.image (fun t ↦ ((ofHollom t).1, (ofHollom t).2.1))).bddAbove
+    use a, b
+    intro c d hcd
+    simpa using hab ⟨toHollom (_, _, _), ⟨hcd, by simp⟩, rfl⟩
 
   refine ⟨max a b, ?_⟩
   rw [Set.subset_def]
   simp +contextual only [Set.mem_image, Set.mem_Ici, Prod.exists, Prod.mk_le_mk, sup_le_iff, R,
     Set.mem_inter_iff, and_imp, «forall», toHollom_mem_level_iff, Prod.forall, Set.mem_setOf_eq,
     forall_exists_index, EmbeddingLike.apply_eq_iff_eq, Prod.mk.injEq,
-    toHollom_le_toHollom_iff_fixed_right, true_and]
+    toHollom_le_toHollom_iff_fixed_right, true_and, embed]
 
   rintro _ _ _ c d haf hbf hag hbg rfl rfl rfl e f n hef rfl
-  specialize ha _ ⟨hef, by simp⟩
-  specialize hb _ ⟨hef, by simp⟩
-  simp only [ofHollom_toHollom] at ha hb
+  specialize hab e f hef
   omega
+
+lemma square_subset_R (h : (C ∩ level n).Finite) :
+    ∃ a, embed n '' Set.Ici (a, a) ⊆ R n C := by
+  obtain ⟨a, ha⟩ := square_subset_above h
+  refine ⟨a, ?_⟩
+  rintro _ ⟨⟨x, y⟩, hxy, rfl⟩
+  exact ⟨by simp [embed], fun b hb ↦ .inr (ha ⟨_, hxy, rfl⟩ _ hb)⟩
 
 lemma R_infinite (h : (C ∩ level n).Finite) : (R n C).Infinite := by
   obtain ⟨a, ha⟩ := square_subset_R h
   refine ((Set.Ici_infinite _).image ?_).mono ha
-  aesop (add norm unfold Set.InjOn)
+  aesop (add norm unfold [Set.InjOn, embed])
 
 lemma R_diff_infinite (h : (C ∩ level n).Finite) : (R n C \ (C ∩ level n)).Infinite :=
   (R_infinite h).diff h
 
-include hfC hfCid hf
-
 -- we could state this as Disjoint (f '' (R n C)) (C ∩ level n), but this is more
 -- annoying than helpful
+include hfC hfCid hf in
 lemma R_maps {x : Hollom} (hx : x ∈ R n C) (hx' : x ∉ C ∩ level n) : f x ∉ C ∩ level n := by
   intro hfx
   apply incomp_apply hfC hfCid hf _ (hx.2 _ hfx).symm
   exact ne_of_mem_of_not_mem hfx hx'
+
+open Classical in
+noncomputable def x0y0 (n : ℕ) (C : Set Hollom) : ℕ × ℕ :=
+  if h : (C ∩ level (n + 1)).Nonempty
+    then WellFounded.min wellFounded_lt {x | embed (n + 1) x ∈ C} <| by
+      rw [level_eq_range] at h
+      obtain ⟨_, h, y, rfl⟩ := h
+      exact ⟨y, h⟩
+    else 0
+
+lemma x0y0_mem (h : (C ∩ level (n + 1)).Nonempty) :
+    embed (n + 1) (x0y0 n C) ∈ C := by
+  rw [x0y0, dif_pos h]
+  exact WellFounded.min_mem _ {x | embed (n + 1) x ∈ C} _
+
+lemma _root_.IsChain.le_of_not_lt {α : Type*} [Preorder α] {s : Set α} (hs : IsChain (· ≤ ·) s)
+    {x y : α} (hx : x ∈ s) (hy : y ∈ s) (h : ¬ x < y) : y ≤ x := by
+  cases hs.total hx hy with
+  | inr h' => exact h'
+  | inl h' => rw [lt_iff_le_not_le, not_and, not_not] at h; exact h h'
+
+lemma x0y0_min (z : ℕ × ℕ) (hC : IsChain (· ≤ ·) C) (h : embed (n + 1) z ∈ C) :
+    embed (n + 1) (x0y0 n C) ≤ embed (n + 1) z := by
+  have : (C ∩ level (n + 1)).Nonempty := ⟨_, h, by simp [level_eq_range]⟩
+  refine hC.le_of_not_lt h (x0y0_mem this) ?_
+  rw [x0y0, dif_pos this, embed_lt_embed_iff]
+  exact WellFounded.not_lt_min wellFounded_lt {x | embed (n + 1) x ∈ C} ?_ h
+
+noncomputable def x0 (n : ℕ) (C : Set Hollom) : ℕ := (x0y0 n C).1
+noncomputable def y0 (n : ℕ) (C : Set Hollom) : ℕ := (x0y0 n C).2
+
+lemma x0_y0_mem (h : (C ∩ level (n + 1)).Nonempty) : toHollom (x0 n C, y0 n C, n + 1) ∈ C :=
+  x0y0_mem h
+
+lemma x0_y0_min (hC : IsChain (· ≤ ·) C) {a b : ℕ} (h : (a, b, n + 1) ∈ C) :
+    toHollom (x0 n C, y0 n C, n + 1) ≤ toHollom (a, b, n + 1) :=
+  x0y0_min (a, b) hC h
+
+open Classical in
+noncomputable def S (n : ℕ) (C : Set Hollom) : Set Hollom :=
+  if (C ∩ level (n + 1)).Finite
+    then {x ∈ R n C | ∀ y ∈ C ∩ level (n + 1), x ≤ y ∨ y ≤ x}
+    else {x ∈ R n C | max (x0 n C) (y0 n C) + 1 ≤ min (ofHollom x).1 (ofHollom x).2.1}
+
+lemma S_subset_R : S n C ⊆ R n C := by
+  rw [S]
+  split <;>
+  exact Set.sep_subset _ _
+
+lemma S_subset_level : S n C ⊆ level n := S_subset_R.trans R_subset_level
+
+lemma square_subset_S_case_1 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n + 1)).Finite) :
+    ∃ a, embed n '' Set.Ici (a, a) ⊆ S n C := by
+  rw [S, if_pos h']
+  obtain ⟨a, ha⟩ := square_subset_R h
+
+  obtain ⟨b, c, hab⟩ : ∃ b c, ∀ d e, toHollom (d, e, n + 1) ∈ C → (d, e) ≤ (b, c) := by
+    obtain ⟨⟨b, c⟩, hbc⟩ := (h'.image (fun t ↦ ((ofHollom t).1, (ofHollom t).2.1))).bddAbove
+    use b, c
+    intro d e hde
+    simpa using hbc ⟨toHollom (_, _, _), ⟨hde, by simp⟩, rfl⟩
+
+  refine ⟨max a (max b c), ?_⟩
+  rintro x hx
+  have : x ∈ embed n '' Set.Ici (a, a) := by
+    obtain ⟨z, hz, rfl⟩ := hx
+    refine ⟨z, ?_, rfl⟩
+    simp only [Set.mem_Ici] at hz ⊢
+    exact hz.trans' (by simp)
+  refine ⟨ha this, ?_⟩
+  simp only [Set.mem_inter_iff, and_imp, «forall», toHollom_mem_level_iff, Prod.forall]
+  rintro d e _ hde rfl
+  simp only [Set.mem_image, Set.mem_Ici, Prod.exists, Prod.mk_le_mk, sup_le_iff] at hx
+  obtain ⟨f, g, hfg, rfl⟩ := hx
+  right
+  apply toHollom_le_toHollom
+  · have : d ≤ b ∧ e ≤ c := hab _ _ hde
+    simp
+    omega
+  · simp
+
+lemma square_subset_S_case_2 (h : (C ∩ level n).Finite) (h' : (C ∩ level (n + 1)).Infinite) :
+    ∃ a, embed n '' Set.Ici (a, a) ⊆ S n C := by
+  rw [S, if_neg h']
+  obtain ⟨a, ha⟩ := square_subset_R h
+  use max (max (x0 n C) (y0 n C) + 1) a
+  sorry
+
+
+
+
+
+-- lemma S_infinite : (S n C).Infinite := by
+--   rw [S]
+--   split
+--   · sorry
+--   · sorry
 
 end Hollom
 
