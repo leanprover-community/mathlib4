@@ -65,7 +65,7 @@ theorem of_lex_iff {s t : List α} (h : s.length = t.length) : Shortlex r s t �
     exact h2
   exact fun h1 => of_lex h h1
 
-theorem shortlex_def {s t : List α} : Shortlex r s t ↔
+theorem _root_.List.shortlex_def {s t : List α} : Shortlex r s t ↔
     s.length < t.length ∨ s.length = t.length ∧ List.Lex r s t := by
   constructor
   · intro hs
