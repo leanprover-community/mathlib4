@@ -23,7 +23,7 @@ Turing machine for evaluating these functions. This amounts to a constructive pr
 * `PartrecToTM2.tr`: A TM2 turing machine which can evaluate `code` programs
 -/
 
-open Mathlib (Vector)
+open List (Vector)
 
 open Function (update)
 
@@ -239,14 +239,14 @@ def prec (f g : Code) : Code :=
 
 attribute [-simp] Part.bind_eq_bind Part.map_eq_map Part.pure_eq_some
 
-theorem exists_code.comp {m n} {f : Mathlib.Vector ℕ n →. ℕ} {g : Fin n → Mathlib.Vector ℕ m →. ℕ}
-    (hf : ∃ c : Code, ∀ v : Mathlib.Vector ℕ n, c.eval v.1 = pure <$> f v)
-    (hg : ∀ i, ∃ c : Code, ∀ v : Mathlib.Vector ℕ m, c.eval v.1 = pure <$> g i v) :
-    ∃ c : Code, ∀ v : Mathlib.Vector ℕ m,
-      c.eval v.1 = pure <$> ((Mathlib.Vector.mOfFn fun i => g i v) >>= f) := by
+theorem exists_code.comp {m n} {f : List.Vector ℕ n →. ℕ} {g : Fin n → List.Vector ℕ m →. ℕ}
+    (hf : ∃ c : Code, ∀ v : List.Vector ℕ n, c.eval v.1 = pure <$> f v)
+    (hg : ∀ i, ∃ c : Code, ∀ v : List.Vector ℕ m, c.eval v.1 = pure <$> g i v) :
+    ∃ c : Code, ∀ v : List.Vector ℕ m,
+      c.eval v.1 = pure <$> ((List.Vector.mOfFn fun i => g i v) >>= f) := by
   rsuffices ⟨cg, hg⟩ :
-    ∃ c : Code, ∀ v : Mathlib.Vector ℕ m,
-      c.eval v.1 = Subtype.val <$> Mathlib.Vector.mOfFn fun i => g i v
+    ∃ c : Code, ∀ v : List.Vector ℕ m,
+      c.eval v.1 = Subtype.val <$> List.Vector.mOfFn fun i => g i v
   · obtain ⟨cf, hf⟩ := hf
     exact
       ⟨cf.comp cg, fun v => by
@@ -261,8 +261,8 @@ theorem exists_code.comp {m n} {f : Mathlib.Vector ℕ n →. ℕ} {g : Fin n �
         simp [Vector.mOfFn, hg₁, map_bind, seq_bind_eq, bind_assoc, (· ∘ ·), hl]
         rfl⟩
 
-theorem exists_code {n} {f : Mathlib.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
-    ∃ c : Code, ∀ v : Mathlib.Vector ℕ n, c.eval v.1 = pure <$> f v := by
+theorem exists_code {n} {f : List.Vector ℕ n →. ℕ} (hf : Nat.Partrec' f) :
+    ∃ c : Code, ∀ v : List.Vector ℕ n, c.eval v.1 = pure <$> f v := by
   induction hf with
   | prim hf =>
     induction hf with
@@ -515,11 +515,11 @@ def Cont.then : Cont → Cont → Cont
 theorem Cont.then_eval {k k' : Cont} {v} : (k.then k').eval v = k.eval v >>= k'.eval := by
   induction k generalizing v with
   | halt => simp only [Cont.eval, Cont.then, pure_bind]
-  | cons₁ => simp only [Cont.eval, bind_assoc, *]
-  | cons₂ => simp only [Cont.eval, *]
-  | comp _ _ k_ih => simp only [Cont.eval, bind_assoc, ← k_ih]
+  | cons₁ => simp only [Cont.eval, Cont.then, bind_assoc, *]
+  | cons₂ => simp only [Cont.eval, Cont.then, *]
+  | comp _ _ k_ih => simp only [Cont.eval, Cont.then, bind_assoc, ← k_ih]
   | fix _ _ k_ih =>
-    simp only [Cont.eval, *]
+    simp only [Cont.eval, Cont.then, *]
     split_ifs <;> [rfl; simp only [← k_ih, bind_assoc]]
 
 /-- The `then k` function is a "configuration homomorphism". Its operation on states is to append
@@ -1238,7 +1238,7 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
     swap
     · rw [Function.update_noteq h₁.symm, List.reverseAux_nil]
     refine TransGen.head' rfl ?_
-    simp only [TM2.step, Option.mem_def, TM2.stepAux, Option.elim, ne_eq]
+    rw [tr]; simp only [pop', TM2.stepAux]
     revert e; cases' S k₁ with a Sk <;> intro e
     · cases e
       rfl
@@ -1248,7 +1248,7 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
     simp only [e]
     rfl
   · refine TransGen.head rfl ?_
-    simp only [TM2.step, Option.mem_def, TM2.stepAux, Option.elim, ne_eq, List.reverseAux_cons]
+    rw [tr]; simp only [pop', Option.elim, TM2.stepAux, push']
     cases' e₁ : S k₁ with a' Sk <;> rw [e₁, splitAtPred] at e
     · cases e
     cases e₂ : p a' <;> simp only [e₂, cond] at e
@@ -1273,16 +1273,15 @@ theorem move₂_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k
       ⟨some q, none, update (update S k₁ (o.elim id List.cons L₂)) k₂ (L₁ ++ S k₂)⟩ := by
   refine (move_ok h₁.1 e).trans (TransGen.head rfl ?_)
   simp only [TM2.step, Option.mem_def, TM2.stepAux, id_eq, ne_eq, Option.elim]
-  cases o <;> simp only [Option.elim, id]
-  · simp only [TM2.stepAux, Option.isSome, cond_false]
-    convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
+  cases o <;> simp only [Option.elim] <;> rw [tr]
+    <;> simp only [id, TM2.stepAux, Option.isSome, cond_true, cond_false]
+  · convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
     simp only [Function.update_comm h₁.1, Function.update_idem]
     rw [show update S rev [] = S by rw [← h₂, Function.update_eq_self]]
     simp only [Function.update_noteq h₁.2.2.symm, Function.update_noteq h₁.2.1,
       Function.update_noteq h₁.1.symm, List.reverseAux_eq, h₂, Function.update_same,
       List.append_nil, List.reverse_reverse]
-  · simp only [TM2.stepAux, Option.isSome, cond_true]
-    convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
+  · convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
     simp only [h₂, Function.update_comm h₁.1, List.reverseAux_eq, Function.update_same,
       List.append_nil, Function.update_idem]
     rw [show update S rev [] = S by rw [← h₂, Function.update_eq_self]]
@@ -1293,7 +1292,7 @@ theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p 
     Reaches₁ (TM2.step tr) ⟨some (Λ'.clear p k q), s, S⟩ ⟨some q, o, update S k L₂⟩ := by
   induction' L₁ with a L₁ IH generalizing S s
   · refine TransGen.head' rfl ?_
-    simp only [TM2.step, Option.mem_def, TM2.stepAux, Option.elim]
+    rw [tr]; simp only [pop', TM2.step, Option.mem_def, TM2.stepAux, Option.elim]
     revert e; cases' S k with a Sk <;> intro e
     · cases e
       rfl
@@ -1303,7 +1302,7 @@ theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p 
     rcases e with ⟨e₁, e₂⟩
     rw [e₁, e₂]
   · refine TransGen.head rfl ?_
-    simp only [TM2.step, Option.mem_def, TM2.stepAux, Option.elim]
+    rw [tr]; simp only [pop', TM2.step, Option.mem_def, TM2.stepAux, Option.elim]
     cases' e₁ : S k with a' Sk <;> rw [e₁, splitAtPred] at e
     · cases e
     cases e₂ : p a' <;> simp only [e₂, cond] at e
@@ -1322,9 +1321,10 @@ theorem copy_ok (q s a b c d) :
   · refine TransGen.single ?_
     simp
   refine TransGen.head rfl ?_
+  rw [tr]
   simp only [TM2.step, Option.mem_def, TM2.stepAux, elim_rev, List.head?_cons, Option.isSome_some,
     List.tail_cons, elim_update_rev, ne_eq, Function.update_noteq, elim_main, elim_update_main,
-    elim_stack, elim_update_stack, cond_true, List.reverseAux_cons]
+    elim_stack, elim_update_stack, cond_true, List.reverseAux_cons, pop', push']
   exact IH _ _ _
 
 theorem trPosNum_natEnd : ∀ (n), ∀ x ∈ trPosNum n, natEnd x = false
@@ -1358,6 +1358,7 @@ theorem head_main_ok {q s L} {c d : List Γ'} :
           (splitAtPred_eq _ _ (trNat L.headI) o (trList L.tail) (trNat_natEnd _) ?_)).trans
       (TransGen.head rfl (TransGen.head rfl ?_))
   · cases L <;> simp [o]
+  rw [tr]
   simp only [TM2.step, Option.mem_def, TM2.stepAux, elim_update_main, elim_rev, elim_update_rev,
     Function.update_same, trList]
   rw [if_neg (show o ≠ some Γ'.consₗ by cases L <;> simp [o])]
@@ -1375,6 +1376,7 @@ theorem head_stack_ok {q s L₁ L₂ L₃} :
         (move_ok (by decide)
           (splitAtPred_eq _ _ [] (some Γ'.consₗ) L₃ (by rintro _ ⟨⟩) ⟨rfl, rfl⟩))
         (TransGen.head rfl (TransGen.head rfl ?_))
+    rw [tr]
     simp only [TM2.step, Option.mem_def, TM2.stepAux, ite_true, id_eq, trList, List.nil_append,
       elim_update_stack, elim_rev, List.reverseAux_nil, elim_update_rev, Function.update_same,
       List.headI_nil, trNat_default]
@@ -1428,7 +1430,8 @@ theorem succ_ok {q s n} {c d : List Γ'} :
     simp [PosNum.succ, trPosNum]
     rfl
   · refine ⟨l₁, _, some Γ'.bit0, rfl, TransGen.single ?_⟩
-    simp only [TM2.step, TM2.stepAux, elim_main, elim_update_main, ne_eq, Function.update_noteq,
+    simp only [TM2.step]; rw [tr]
+    simp only [TM2.stepAux, pop', elim_main, elim_update_main, ne_eq, Function.update_noteq,
       elim_rev, elim_update_rev, Function.update_same, Option.mem_def, Option.some.injEq]
     rfl
 
@@ -1445,11 +1448,9 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
   simp only [TM2.step, trList, trNat.eq_1, trNum, Nat.cast_succ, Num.add_one, Num.succ,
     List.tail_cons, List.headI_cons]
   cases' (n : Num) with a
-  · simp only [trPosNum, List.singleton_append, List.nil_append]
+  · simp only [trPosNum, Num.succ', List.singleton_append, List.nil_append]
     refine TransGen.head rfl ?_
-    simp only [Option.mem_def, TM2.stepAux, elim_main, List.head?_cons, Option.some.injEq,
-      decide_false, List.tail_cons, elim_update_main, ne_eq, Function.update_noteq, elim_rev,
-      elim_update_rev, natEnd, Function.update_same,  cond_true, cond_false]
+    rw [tr]; simp only [pop', TM2.stepAux, cond_false]
     convert unrev_ok using 2
     simp
   simp only [Num.succ']
@@ -1555,13 +1556,11 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
     by_cases h : v.headI = 0 <;> simp only [h, ite_true, ite_false] at this ⊢
     · obtain ⟨c, h₁, h₂⟩ := IH v.tail (trList v).head?
       refine ⟨c, h₁, TransGen.head rfl ?_⟩
-      simp only [Option.mem_def, TM2.stepAux, trContStack, contStack, elim_main, this, cond_true,
-        elim_update_main]
+      rw [trCont, tr]; simp only [pop', TM2.stepAux, elim_main, this, elim_update_main]
       exact h₂
     · obtain ⟨s', h₁, h₂⟩ := trNormal_respects f (Cont.fix f k) v.tail (some Γ'.cons)
       refine ⟨_, h₁, TransGen.head rfl <| TransGen.trans ?_ h₂⟩
-      simp only [Option.mem_def, TM2.stepAux, elim_main, this.1, cond_false, elim_update_main,
-        trCont]
+      rw [trCont, tr]; simp only [pop', TM2.stepAux, elim_main, this.1]
       convert clear_ok (splitAtPred_eq _ _ (trNat v.headI).tail (some Γ'.cons) _ _ _) using 2
       · simp
         convert rfl

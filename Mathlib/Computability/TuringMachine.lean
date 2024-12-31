@@ -60,7 +60,7 @@ Given these parameters, there are a few common structures for the model that ari
 
 assert_not_exists MonoidWithZero
 
-open Mathlib (Vector)
+open List (Vector)
 open Relation
 
 open Nat (iterate)
@@ -1443,7 +1443,7 @@ open TM1
 variable {Γ : Type*}
 
 theorem exists_enc_dec [Inhabited Γ] [Finite Γ] :
-    ∃ (n : ℕ) (enc : Γ → Mathlib.Vector Bool n) (dec : Mathlib.Vector Bool n → Γ),
+    ∃ (n : ℕ) (enc : Γ → List.Vector Bool n) (dec : List.Vector Bool n → Γ),
       enc default = Vector.replicate n false ∧ ∀ a, dec (enc a) = a := by
   rcases Finite.exists_equiv_fin Γ with ⟨n, ⟨e⟩⟩
   letI : DecidableEq Γ := e.decidableEq
@@ -1475,13 +1475,13 @@ local notation "Stmt'₁" => Stmt Bool Λ'₁ σ
 local notation "Cfg'₁" => Cfg Bool Λ'₁ σ
 
 /-- Read a vector of length `n` from the tape. -/
-def readAux : ∀ n, (Mathlib.Vector Bool n → Stmt'₁) → Stmt'₁
+def readAux : ∀ n, (List.Vector Bool n → Stmt'₁) → Stmt'₁
   | 0, f => f Vector.nil
   | i + 1, f =>
     Stmt.branch (fun a _ ↦ a) (Stmt.move Dir.right <| readAux i fun v ↦ f (true ::ᵥ v))
       (Stmt.move Dir.right <| readAux i fun v ↦ f (false ::ᵥ v))
 
-variable {n : ℕ} (enc : Γ → Mathlib.Vector Bool n) (dec : Mathlib.Vector Bool n → Γ)
+variable {n : ℕ} (enc : Γ → List.Vector Bool n) (dec : List.Vector Bool n → Γ)
 
 /-- A move left or right corresponds to `n` moves across the super-cell. -/
 def move (d : Dir) (q : Stmt'₁) : Stmt'₁ :=
@@ -1530,7 +1530,7 @@ theorem supportsStmt_write {S : Finset Λ'₁} {l : List Bool} {q : Stmt'₁} :
 theorem supportsStmt_read {S : Finset Λ'₁} :
     ∀ {f : Γ → Stmt'₁}, (∀ a, SupportsStmt S (f a)) → SupportsStmt S (read dec f) :=
   suffices
-    ∀ (i) (f : Mathlib.Vector Bool i → Stmt'₁),
+    ∀ (i) (f : List.Vector Bool i → Stmt'₁),
       (∀ v, SupportsStmt S (f v)) → SupportsStmt S (readAux i f)
     from fun hf ↦ this n _ (by intro; simp only [supportsStmt_move, hf])
   fun i f hf ↦ by
@@ -1616,8 +1616,7 @@ theorem stepAux_write (q : Stmt'₁) (v : σ) (a b : Γ) (L R : ListBlank Γ) :
   cases' l₂' with b l₂' <;>
     simp only [List.length_nil, List.length_cons, Nat.succ_inj', reduceCtorEq] at e
   rw [List.reverseAux, ← IH (a :: l₁) l₂' e]
-  simp only [stepAux, ListBlank.append, Tape.write_mk', Tape.move_right_mk', ListBlank.head_cons,
-    ListBlank.tail_cons]
+  simp [stepAux, ListBlank.append, write]
 
 variable (encdec : ∀ a, dec (enc a) = a)
 include encdec
@@ -1829,12 +1828,12 @@ theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b ↦ trCfg 
       cases' s with d a <;> rfl
     intro e
     refine TransGen.head ?_ (TransGen.head' this ?_)
-    · simp only [TM1.step, TM1.stepAux]
+    · simp only [TM1.step, TM1.stepAux, tr]
       rw [e]
       rfl
     cases e' : M q' _
     · apply ReflTransGen.single
-      simp only [TM1.step, TM1.stepAux]
+      simp only [TM1.step, TM1.stepAux, tr]
       rw [e']
       rfl
     · rfl
@@ -1927,7 +1926,6 @@ section
 variable [DecidableEq K]
 
 /-- The step function for the TM2 model. -/
-@[simp]
 def stepAux : Stmt₂ → σ → (∀ k, List (Γ k)) → Cfg₂
   | push k f q, v, S => stepAux q v (update S k (f v :: S k))
   | peek k f q, v, S => stepAux q (f v (S k).head?) S
@@ -1938,10 +1936,12 @@ def stepAux : Stmt₂ → σ → (∀ k, List (Γ k)) → Cfg₂
   | halt, v, S => ⟨none, v, S⟩
 
 /-- The step function for the TM2 model. -/
-@[simp]
 def step (M : Λ → Stmt₂) : Cfg₂ → Option Cfg₂
   | ⟨none, _, _⟩ => none
   | ⟨some l, v, S⟩ => some (stepAux (M l) v S)
+
+attribute [simp] stepAux.eq_1 stepAux.eq_2 stepAux.eq_3
+  stepAux.eq_4 stepAux.eq_5 stepAux.eq_6 stepAux.eq_7 step.eq_1 step.eq_2
 
 /-- The (reflexive) reachability relation for the TM2 model. -/
 def Reaches (M : Λ → Stmt₂) : Cfg₂ → Cfg₂ → Prop :=
@@ -2293,7 +2293,7 @@ noncomputable def trStmts₁ : Stmt₂ → Finset Λ'₂₁
 
 theorem trStmts₁_run {k : K} {s : StAct₂ k} {q : Stmt₂} :
     trStmts₁ (stRun s q) = {go k s q, ret q} ∪ trStmts₁ q := by
-  cases s <;> simp only [trStmts₁]
+  cases s <;> simp only [trStmts₁, stRun]
 
 theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (Γ k)}
     {L : ListBlank (∀ k, Option (Γ k))}

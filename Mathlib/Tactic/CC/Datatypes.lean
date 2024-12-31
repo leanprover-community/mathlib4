@@ -583,10 +583,10 @@ def getVarWithLeastOccs (ccs : CCState) (e : ACApps) (inLHS : Bool) : Option Exp
     let mut r := args[0]?
     let mut numOccs := r.casesOn 0 fun r' => ccs.getNumROccs r' inLHS
     for hi : i in [1:args.size] do
-      if (args[i]'hi.2) != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2)) then
-        let currOccs := ccs.getNumROccs (args[i]'hi.2) inLHS
+      if args[i] != (args[i - 1]'(Nat.lt_of_le_of_lt (i.sub_le 1) hi.2.1)) then
+        let currOccs := ccs.getNumROccs args[i] inLHS
         if currOccs < numOccs then
-          r := (args[i]'hi.2)
+          r := args[i]
           numOccs := currOccs
     return r
   | .ofExpr e => e
@@ -691,5 +691,12 @@ structure CCStructure extends CCState where
   phandler : Option CCPropagationHandler := none
   cache : CCCongrTheoremCache := ∅
   deriving Inhabited
+
+initialize
+  registerTraceClass `Meta.Tactic.cc.merge
+  registerTraceClass `Meta.Tactic.cc.failure
+  registerTraceClass `Debug.Meta.Tactic.cc
+  registerTraceClass `Debug.Meta.Tactic.cc.ac
+  registerTraceClass `Debug.Meta.Tactic.cc.parentOccs
 
 end Mathlib.Tactic.CC
