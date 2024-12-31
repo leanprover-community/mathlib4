@@ -227,7 +227,7 @@ lemma fromBlocks_isTotallyUnimodular
     (hA₁ : A₁.IsTotallyUnimodular) (hA₂ : A₂.IsTotallyUnimodular) :
     (fromBlocks A₁ 0 0 A₂).IsTotallyUnimodular := by
   intro k f g hf hg
-  rw [isTotallyUnimodular_iff] at hA₁ hA₂
+  rw [isTotallyUnimodular_iff_fintype] at hA₁ hA₂
   rw [fromBlocks_submatrix]
   -- look at sizes of submatrices in blocks
   if hxy : Fintype.card { x₁ : Fin k × m // f x₁.fst = Sum.inl x₁.snd }
@@ -235,25 +235,10 @@ lemma fromBlocks_isTotallyUnimodular
          ∧ Fintype.card { x₂ : Fin k × m' // f x₂.fst = Sum.inr x₂.snd }
          = Fintype.card { y₂ : Fin k × n' // g y₂.fst = Sum.inr y₂.snd }
   then -- square case
-    obtain ⟨cardi₁, cardi₂⟩ := hxy
     -- equivalences between canonical indexing types of given cardinality and current indexing types
     -- (domains of parts of indexing functions)
-    let em :
-        Fin (Fintype.card { x₁ : Fin k × m // f x₁.fst = Sum.inl x₁.snd }) ≃
-        { x₁ : Fin k × m // f x₁.fst = Sum.inl x₁.snd } :=
-      (Fintype.equivFin { x₁ : Fin k × m // f x₁.fst = Sum.inl x₁.snd }).symm
-    let em' :
-        Fin (Fintype.card { x₂ : Fin k × m' // f x₂.fst = Sum.inr x₂.snd }) ≃
-        { x₂ : Fin k × m' // f x₂.fst = Sum.inr x₂.snd } :=
-      (Fintype.equivFin { x₂ : Fin k × m' // f x₂.fst = Sum.inr x₂.snd }).symm
-    let en :
-        Fin (Fintype.card { x₁ : Fin k × m // f x₁.fst = Sum.inl x₁.snd }) ≃
-        { y₁ : Fin k × n // g y₁.fst = Sum.inl y₁.snd } :=
-      (cardi₁ ▸ Fintype.equivFin { y₁ : Fin k × n // g y₁.fst = Sum.inl y₁.snd }).symm
-    let en' :
-        Fin (Fintype.card { x₂ : Fin k × m' // f x₂.fst = Sum.inr x₂.snd }) ≃
-        { y₂ : Fin k × n' // g y₂.fst = Sum.inr y₂.snd } :=
-      (cardi₂ ▸ Fintype.equivFin { y₂ : Fin k × n' // g y₂.fst = Sum.inr y₂.snd }).symm
+    let e₁ := Fintype.equivOfCardEq hxy.1
+    let e₂ := Fintype.equivOfCardEq hxy.2
     -- relating submatrices in blocks to submatrices of `A₁` and `A₂`
     have hAfg' :
       (Matrix.fromBlocks
@@ -269,16 +254,14 @@ lemma fromBlocks_isTotallyUnimodular
           g.decomposeSum
       =
       (Matrix.fromBlocks
-        (A₁.submatrix
-          (((·.val.snd) : { x₁ : Fin k × m // f x₁.fst = Sum.inl x₁.snd } → m) ∘ em)
-          (((·.val.snd) : { y₁ : Fin k × n // g y₁.fst = Sum.inl y₁.snd } → n) ∘ en)
+        (A₁.submatrix (·.val.snd)
+          (((·.val.snd) : { y₁ : Fin k × n // g y₁.fst = Sum.inl y₁.snd } → n) ∘ e₁)
         ) 0 0
-        (A₂.submatrix
-          (((·.val.snd) : { x₂ : Fin k × m' // f x₂.fst = Sum.inr x₂.snd } → m') ∘ em')
-          (((·.val.snd) : { y₂ : Fin k × n' // g y₂.fst = Sum.inr y₂.snd } → n') ∘ en')
+        (A₂.submatrix (·.val.snd)
+          (((·.val.snd) : { y₂ : Fin k × n' // g y₂.fst = Sum.inr y₂.snd } → n') ∘ e₂)
         )).submatrix
-          (f.decomposeSum.trans (Equiv.sumCongr em.symm em'.symm))
-          (g.decomposeSum.trans (Equiv.sumCongr en.symm en'.symm)) := by
+          f.decomposeSum
+          (g.decomposeSum.trans (Equiv.sumCongr e₁.symm e₂.symm)) := by
       ext
       simp only [Function.decomposeSum, Equiv.coe_fn_mk, Equiv.coe_trans, Equiv.sumCongr_apply,
         Function.comp_apply, Matrix.submatrix, Matrix.fromBlocks, Matrix.of_apply]
