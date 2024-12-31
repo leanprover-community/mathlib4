@@ -166,28 +166,26 @@ open Int AbsoluteValue
 
 variable {f g : AbsoluteValue ℚ ℝ}
 
-/-- Values of an absolute value on the rationals coincide on ℕ if and only if they coincide
+/-- Values of an absolute value on the rationals coincide on `ℕ` if and only if they coincide
 on `ℤ`. -/
-lemma eq_on_nat_iff_eq_on_Int : (∀ n : ℕ , f n = g n) ↔ (∀ n : ℤ , f n = g n) := by
+lemma eq_on_nat_iff_eq_on_Int : (∀ n : ℕ , f n = g n) ↔ ∀ n : ℤ , f n = g n := by
   refine ⟨fun h z ↦ ?_, fun a n ↦ a n⟩
-  obtain ⟨n , rfl | rfl⟩ := eq_nat_or_neg z <;>
-  simp only [Int.cast_neg, Int.cast_natCast, map_neg_eq_map, h n]
+  obtain ⟨n , rfl | rfl⟩ := eq_nat_or_neg z <;> simp [h n]
 
 /-- Values of an absolute value on the rationals are determined by the values on the natural
 numbers. -/
 lemma eq_on_nat_iff_eq : (∀ n : ℕ , f n = g n) ↔ f = g := by
   refine ⟨fun h ↦ ?_, fun h n ↦ congrFun (congrArg DFunLike.coe h) ↑n⟩
-  ext z
+  ext1 z
   rw [← Rat.num_div_den z, map_div₀, map_div₀, h, eq_on_nat_iff_eq_on_Int.mp h]
 
 /-- The equivalence class of an absolute value on the rationals is determined by its values on
 the natural numbers. -/
-lemma equiv_on_nat_iff_equiv : (∃ c : ℝ, 0 < c ∧ (∀ n : ℕ , (f n) ^ c = g n)) ↔
-    f.equiv g := by
-    refine ⟨fun ⟨c, hc, h⟩ ↦ ⟨c, ⟨hc, ?_⟩⟩, fun ⟨c, hc, h⟩ ↦ ⟨c, ⟨hc, fun n ↦ by rw [← h]⟩⟩⟩
-    ext x
-    rw [← Rat.num_div_den x, map_div₀, map_div₀, div_rpow (by positivity) (by positivity), h x.den,
-      ← AbsoluteValue.apply_natAbs_eq,← AbsoluteValue.apply_natAbs_eq, h (natAbs x.num)]
+lemma equiv_on_nat_iff_equiv : (∃ c : ℝ, 0 < c ∧ ∀ n : ℕ , f n ^ c = g n) ↔ f.equiv g := by
+  refine ⟨fun ⟨c, hc, h⟩ ↦ ⟨c, hc, ?_⟩, fun ⟨c, hc, h⟩ ↦ ⟨c, hc, (congrFun h ·)⟩⟩
+  ext1 x
+  rw [← Rat.num_div_den x, map_div₀, map_div₀, div_rpow (by positivity) (by positivity), h x.den,
+    ← AbsoluteValue.apply_natAbs_eq,← AbsoluteValue.apply_natAbs_eq, h (natAbs x.num)]
 
 section Non_archimedean
 
