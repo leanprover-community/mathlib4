@@ -93,15 +93,16 @@ section CommRing
 variable [CommRing R] [AddCommGroup M] [Module R M]
 variable {N N₁ N₂ P P₁ P₂ : Submodule R M}
 
-lemma colon_eq_annihilator_map_mkQ : N.colon P = annihilator (P.map N.mkQ) := by
+@[simp]
+lemma annihilator_map_mkQ_eq_colon : annihilator (P.map N.mkQ) = N.colon P := by
   ext
   rw [mem_annihilator, mem_colon]
-  exact ⟨fun H _ ⟨p, hp, hpm⟩ ↦ hpm ▸ ((Quotient.mk_eq_zero N).2 <| H p hp),
-    fun H p hp ↦ (Quotient.mk_eq_zero N).1 (H (Quotient.mk p) (mem_map_of_mem hp))⟩
+  exact ⟨fun H p hp ↦ (Quotient.mk_eq_zero N).1 (H (Quotient.mk p) (mem_map_of_mem hp)),
+    fun H _ ⟨p, hp, hpm⟩ ↦ hpm ▸ ((Quotient.mk_eq_zero N).2 <| H p hp)⟩
 
 theorem annihilator_quotient {N : Submodule R M} :
     Module.annihilator R (M ⧸ N) = N.colon ⊤ := by
-  simp_rw [SetLike.ext_iff, Module.mem_annihilator, colon_eq_annihilator_map_mkQ, mem_annihilator,
+  simp_rw [SetLike.ext_iff, Module.mem_annihilator, ←annihilator_map_mkQ_eq_colon, mem_annihilator,
       map_top, LinearMap.range_eq_top.mpr (mkQ_surjective N), mem_top, forall_true_left,
       forall_const]
 
