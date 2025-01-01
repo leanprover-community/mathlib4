@@ -23,8 +23,6 @@ This file contains the usual formulas (and existence assertions) for the derivat
 
 open Filter Asymptotics ContinuousLinearMap
 
-open scoped Classical
-
 noncomputable section
 
 section
@@ -229,10 +227,11 @@ theorem differentiable_add_const_iff (c : F) :
   ⟨fun h => by simpa using h.add_const (-c), fun h => h.add_const c⟩
 
 theorem fderivWithin_add_const (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
-    fderivWithin 𝕜 (fun y => f y + c) s x = fderivWithin 𝕜 f s x :=
-  if hf : DifferentiableWithinAt 𝕜 f s x then (hf.hasFDerivWithinAt.add_const c).fderivWithin hxs
-  else by
-    rw [fderivWithin_zero_of_not_differentiableWithinAt hf,
+    fderivWithin 𝕜 (fun y => f y + c) s x = fderivWithin 𝕜 f s x := by
+  classical
+  by_cases hf : DifferentiableWithinAt 𝕜 f s x
+  · exact (hf.hasFDerivWithinAt.add_const c).fderivWithin hxs
+  · rw [fderivWithin_zero_of_not_differentiableWithinAt hf,
       fderivWithin_zero_of_not_differentiableWithinAt]
     simpa
 
@@ -424,10 +423,11 @@ theorem differentiable_neg_iff : (Differentiable 𝕜 fun y => -f y) ↔ Differe
   ⟨fun h => by simpa only [neg_neg] using h.neg, fun h => h.neg⟩
 
 theorem fderivWithin_neg (hxs : UniqueDiffWithinAt 𝕜 s x) :
-    fderivWithin 𝕜 (fun y => -f y) s x = -fderivWithin 𝕜 f s x :=
-  if h : DifferentiableWithinAt 𝕜 f s x then h.hasFDerivWithinAt.neg.fderivWithin hxs
-  else by
-    rw [fderivWithin_zero_of_not_differentiableWithinAt h,
+    fderivWithin 𝕜 (fun y => -f y) s x = -fderivWithin 𝕜 f s x := by
+  classical
+  by_cases h : DifferentiableWithinAt 𝕜 f s x
+  · exact h.hasFDerivWithinAt.neg.fderivWithin hxs
+  · rw [fderivWithin_zero_of_not_differentiableWithinAt h,
       fderivWithin_zero_of_not_differentiableWithinAt, neg_zero]
     simpa
 
@@ -739,31 +739,8 @@ theorem differentiableWithinAt_comp_add_right (a : E) :
 
 theorem fderivWithin_comp_add_right (a : E) :
     fderivWithin 𝕜 (fun x ↦ f (x + a)) s x = fderivWithin 𝕜 f (a +ᵥ s) (x + a) := by
-  simp only [fderivWithin, hasFDerivWithinAt_comp_add_right]
-  by_cases h : 𝓝[s \ {x}] x = ⊥
-  · have h' : 𝓝[(a +ᵥ s) \ {x + a}] (x + a) = ⊥ := by
-      let e := Homeomorph.addRight a
-      have : 𝓝[(a +ᵥ s) \ {x + a}] (x + a) = map e (𝓝[s \ {x}] x) := by
-        rw [e.isEmbedding.map_nhdsWithin_eq]
-        congr
-        ext y
-        rw [← e.preimage_symm]
-        simp [e, Homeomorph.addRight, Set.mem_vadd_set_iff_neg_vadd_mem, add_comm]
-      rw [this, h, Filter.map_bot]
-    simp [h, h']
-  · have h' : 𝓝[(a +ᵥ s) \ {x + a}] (x + a) ≠ ⊥ := by
-      intro h''
-      let e := Homeomorph.addRight (-a)
-      have : 𝓝[s \ {x}] x = map e (𝓝[(a +ᵥ s) \ {x + a}] (x + a)) := by
-        rw [e.isEmbedding.map_nhdsWithin_eq]
-        congr
-        · simp [e]
-        ext y
-        rw [← e.preimage_symm]
-        simp [e, Homeomorph.addRight, Set.mem_vadd_set_iff_neg_vadd_mem, add_comm]
-      apply h
-      rw [this, h'', Filter.map_bot]
-    simp [h, h']
+  classical
+  simp only [fderivWithin, hasFDerivWithinAt_comp_add_right, DifferentiableWithinAt]
 
 theorem hasFDerivWithinAt_comp_add_left (a : E) :
     HasFDerivWithinAt (fun x ↦ f (a + x)) f' s x ↔ HasFDerivWithinAt f f' (a +ᵥ s) (a + x) := by

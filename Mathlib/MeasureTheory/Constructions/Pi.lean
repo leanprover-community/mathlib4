@@ -118,8 +118,8 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
     intro n; apply measurableSet_generateFrom
     apply mem_image_of_mem; intro j _; dsimp only
     by_cases h : j = i
-    · subst h; rwa [update_same]
-    · rw [update_noteq h]; apply h1t
+    · subst h; rwa [update_self]
+    · rw [update_of_ne h]; apply h1t
   · apply generateFrom_le; rintro _ ⟨s, hs, rfl⟩
     rw [univ_pi_eq_iInter]; apply MeasurableSet.iInter; intro i
     apply @measurable_pi_apply _ _ (fun i => generateFrom (C i))
@@ -500,7 +500,7 @@ lemma pi_map_piOptionEquivProd {β : Option ι → Type*} [∀ i, MeasurableSpac
     simp only [mem_preimage, Set.mem_pi, mem_univ, forall_true_left, mem_prod]
     refine ⟨by tauto, fun _ i ↦ ?_⟩
     rcases i <;> tauto
-  simp only [me.map_apply, univ_option, le_eq_subset, Finset.prod_insertNone, this,
+  simp only [e_meas, me.map_apply, univ_option, le_eq_subset, Finset.prod_insertNone, this,
     prod_prod, pi_pi, mul_comm]
 
 section Intervals

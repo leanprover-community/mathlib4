@@ -188,7 +188,7 @@ lemma isIntegral_discr_mul_of_mem_traceDual
   rw [cramer_apply]
   apply IsIntegral.det
   intros j k
-  rw [updateColumn_apply]
+  rw [updateCol_apply]
   split
   · rw [mul_assoc]
     rw [mem_traceDual_iff_isIntegral] at hx
@@ -200,12 +200,11 @@ lemma isIntegral_discr_mul_of_mem_traceDual
 
 variable (A K)
 
-open scoped Classical
-
 variable [IsDomain A] [IsFractionRing B L] [Nontrivial B] [NoZeroDivisors B]
 
 namespace FractionalIdeal
 
+open scoped Classical in
 /-- The dual of a non-zero fractional ideal is the dual of the submodule under the traceform. -/
 noncomputable
 def dual (I : FractionalIdeal B⁰ L) :
@@ -237,8 +236,6 @@ namespace FractionalIdeal
 variable [IsFractionRing B L] [IsIntegrallyClosed A]
 
 open Submodule
-
-open scoped Classical
 
 local notation:max I:max "ᵛ" => Submodule.traceDual A K I
 
@@ -322,8 +319,9 @@ lemma le_dual_iff (hJ : J ≠ 0) :
 variable (I)
 
 lemma inv_le_dual :
-    I⁻¹ ≤ dual A K I :=
-  if hI : I = 0 then by simp [hI] else le_dual_inv_aux A K hI (le_of_eq (mul_inv_cancel₀ hI))
+    I⁻¹ ≤ dual A K I := by
+  classical
+  exact if hI : I = 0 then by simp [hI] else le_dual_inv_aux A K hI (le_of_eq (mul_inv_cancel₀ hI))
 
 lemma dual_inv_le :
     (dual A K I)⁻¹ ≤ I := by

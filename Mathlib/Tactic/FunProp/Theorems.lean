@@ -252,7 +252,7 @@ initialize morTheoremsExt : GeneralTheoremsExt ←
 /-- Get morphism theorems applicable to `e`.
 
 For example calling on `e` equal to `Continuous f` for `f : X→L[ℝ] Y` would return theorem
-infering continuity from the bundled morphism. -/
+inferring continuity from the bundled morphism. -/
 def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let thms := (← get).morTheorems.theorems
   let (candidates, thms) ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|
