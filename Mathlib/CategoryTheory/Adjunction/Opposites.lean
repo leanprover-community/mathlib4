@@ -29,55 +29,31 @@ namespace CategoryTheory.Adjunction
 
 attribute [local simp] homEquiv_unit homEquiv_counit
 
-/-- If `G.op` is adjoint to `F.op` then `F` is adjoint to `G`. -/
+/-- If `G` is adjoint to `F` then `F.unop` is adjoint to `G.unop`. -/
 @[simps]
-def unop (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣ G where
+def unop {F : Cᵒᵖ ⥤ Dᵒᵖ} {G : Dᵒᵖ ⥤ Cᵒᵖ} (h : G ⊣ F) : F.unop ⊣ G.unop where
   unit := NatTrans.unop h.counit
   counit := NatTrans.unop h.unit
   left_triangle_components _ := Quiver.Hom.op_inj (h.right_triangle_components _)
   right_triangle_components _ := Quiver.Hom.op_inj (h.left_triangle_components _)
 
 @[deprecated (since := "2025-01-01")] alias adjointOfOpAdjointOp := unop
-
-/-- If `G` is adjoint to `F.op` then `F` is adjoint to `G.unop`. -/
-@[deprecated "Use Adjunction.unop instead." (since := "2025-01-01")]
-def adjointUnopOfAdjointOp (F : C ⥤ D) (G : Dᵒᵖ ⥤ Cᵒᵖ) (h : G ⊣ F.op) : F ⊣ G.unop :=
-  unop F G.unop (h.ofNatIsoLeft G.opUnopIso.symm)
-
-/-- If `G.op` is adjoint to `F` then `F.unop` is adjoint to `G`. -/
-@[deprecated "Use Adjunction.unop instead." (since := "2025-01-01")]
-def unopAdjointOfOpAdjoint (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : D ⥤ C) (h : G.op ⊣ F) : F.unop ⊣ G :=
-  unop _ _ (h.ofNatIsoRight F.opUnopIso.symm)
-
-/-- If `G` is adjoint to `F` then `F.unop` is adjoint to `G.unop`. -/
-@[deprecated "Use Adjunction.unop instead." (since := "2025-01-01")]
-def unopAdjointUnopOfAdjoint (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Cᵒᵖ) (h : G ⊣ F) : F.unop ⊣ G.unop :=
-  unop F.unop G.unop (h.ofNatIsoRight F.opUnopIso.symm)
+@[deprecated (since := "2025-01-01")] alias adjointUnopOfAdjointOp := unop
+@[deprecated (since := "2025-01-01")] alias unopAdjointOfOpAdjoint := unop
+@[deprecated (since := "2025-01-01")] alias unopAdjointUnopOfAdjoint := unop
 
 /-- If `G` is adjoint to `F` then `F.op` is adjoint to `G.op`. -/
 @[simps]
-def op (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.op where
+def op {F : C ⥤ D} {G : D ⥤ C} (h : G ⊣ F) : F.op ⊣ G.op where
   unit := NatTrans.op h.counit
   counit := NatTrans.op h.unit
   left_triangle_components _ := Quiver.Hom.unop_inj (by simp)
   right_triangle_components _ := Quiver.Hom.unop_inj (by simp)
 
 @[deprecated (since := "2025-01-01")] alias opAdjointOpOfAdjoint := op
-
-/-- If `G` is adjoint to `F.unop` then `F` is adjoint to `G.op`. -/
-@[deprecated "Use Adjunction.op instead." (since := "2025-01-01")]
-def adjointOpOfAdjointUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : D ⥤ C) (h : G ⊣ F.unop) : F ⊣ G.op :=
-  (op F.unop _ h).ofNatIsoLeft F.opUnopIso
-
-/-- If `G.unop` is adjoint to `F` then `F.op` is adjoint to `G`. -/
-@[deprecated "Use Adjunction.op instead." (since := "2025-01-01")]
-def opAdjointOfUnopAdjoint (F : C ⥤ D) (G : Dᵒᵖ ⥤ Cᵒᵖ) (h : G.unop ⊣ F) : F.op ⊣ G :=
-  (op _ G.unop h).ofNatIsoRight G.opUnopIso
-
-/-- If `G.unop` is adjoint to `F.unop` then `F` is adjoint to `G`. -/
-@[deprecated "Use Adjunction.op instead." (since := "2025-01-01")]
-def adjointOfUnopAdjointUnop (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Cᵒᵖ) (h : G.unop ⊣ F.unop) : F ⊣ G :=
-  (op _ _ h).ofNatIsoRight G.opUnopIso
+@[deprecated (since := "2025-01-01")] alias adjointOpOfAdjointUnop := op
+@[deprecated (since := "2025-01-01")] alias opAdjointOfUnopAdjoint := op
+@[deprecated (since := "2025-01-01")] alias adjointOfUnopAdjointUnop := op
 
 /-- If `F` and `F'` are both adjoint to `G`, there is a natural isomorphism
 `F.op ⋙ coyoneda ≅ F'.op ⋙ coyoneda`.
@@ -108,7 +84,6 @@ Note: it is generally better to use `Adjunction.natIsoEquiv`, see the file `Adju
 -/
 def natIsoOfLeftAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (l : F ≅ F') : G ≅ G' :=
-  NatIso.removeOp (natIsoOfRightAdjointNatIso (op _ F' adj2)
-    (op _ _ adj1) (NatIso.op l))
+  NatIso.removeOp (natIsoOfRightAdjointNatIso (op adj2) (op adj1) (NatIso.op l))
 
 end CategoryTheory.Adjunction
