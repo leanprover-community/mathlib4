@@ -210,7 +210,7 @@ namespace Adjunction
 attribute [local instance] Functor.commShiftPullback NatTrans.commShiftPullback
   NatTrans.commShiftId
 
-variable {F} {G : D ⥤ C} (adj : F ⊣ G) [F.CommShift B] [G.CommShift B]
+variable {F} {G : D ⥤ C} (adj : F ⊣ G) [G.CommShift B]
 
 /--
 If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F` and `G`, then
@@ -218,19 +218,19 @@ it is also compatible with the pulled back `CommShift` structures by an additive
 `φ : B →+ A`.
 -/
 lemma commShiftPullback [adj.CommShift B] :
-    Adjunction.CommShift (C := PullbackShift C φ) (D := PullbackShift D φ) adj A where
-  commShift_unit := by
-    have heq : (adj.unit : 𝟭 (PullbackShift C φ) ⟶ F ⋙ G) =
+    Adjunction.CommShift (C := PullbackShift C φ) (D := PullbackShift D φ) adj A := by
+  refine Adjunction.CommShift.mk' adj A ?_ (C := PullbackShift C φ) (D := PullbackShift D φ)
+  have heq : (adj.unit : 𝟭 (PullbackShift C φ) ⟶ F ⋙ G) =
         (NatTrans.mk (fun _ ↦ 𝟙 _) (fun  _ ↦ by simp) : 𝟭 (PullbackShift C φ) ⟶ 𝟭 C) ≫ adj.unit
         ≫ (NatTrans.mk (fun _ ↦ 𝟙 _) (fun _ ↦ by simp)) := by aesop
-    rw [heq]
-    refine @NatTrans.CommShift.comp (PullbackShift C φ) (PullbackShift C φ) _ _
+  rw [heq]
+  refine @NatTrans.CommShift.comp (PullbackShift C φ) (PullbackShift C φ) _ _
       _ _ _
       _ _
       A _ _ _
       (Functor.CommShift.id _) (Functor.commShiftPullback _ _ (C := C) (D := C)) _
       _ ?_
-    refine @NatTrans.CommShift.comp (PullbackShift C φ) (PullbackShift C φ) _ _
+  refine @NatTrans.CommShift.comp (PullbackShift C φ) (PullbackShift C φ) _ _
         _ _ _
         _ _
         A _ _ _ _
@@ -238,15 +238,14 @@ lemma commShiftPullback [adj.CommShift B] :
         (@Functor.CommShift.comp (PullbackShift C φ) (PullbackShift D φ) (PullbackShift C φ)
         _ _ _ F G A _ _ _ _ (Functor.commShiftPullback φ F) (Functor.commShiftPullback φ G))
         _ ?_
-    refine NatTrans.CommShift.mk (fun _ ↦ ?_)
-    ext
-    simp only [Functor.commShiftPullback_iso_eq φ _ _ _ rfl, Iso.trans_hom, isoWhiskerRight_hom,
+  refine NatTrans.CommShift.mk (fun _ ↦ ?_)
+  ext
+  simp only [Functor.commShiftPullback_iso_eq φ _ _ _ rfl, Iso.trans_hom, isoWhiskerRight_hom,
           isoWhiskerLeft_hom, Iso.symm_hom, NatTrans.comp_app, Functor.comp_obj, whiskerRight_app,
           Functor.comp_map, Functor.commShiftIso_comp_hom_app, whiskerLeft_app, assoc,
           Functor.map_id, comp_id, Functor.map_comp, id_comp]
-    slice_rhs 3 4 => rw [← G.map_comp, Iso.inv_hom_id_app]
-    simp
-  commShift_counit := sorry
+  slice_rhs 3 4 => rw [← G.map_comp, Iso.inv_hom_id_app]
+  simp
 
 end Adjunction
 
