@@ -17,7 +17,6 @@ located here.
 
 noncomputable section
 
-open scoped Classical
 open Real Topology NNReal ENNReal Filter ComplexConjugate Finset Set
 
 /-!

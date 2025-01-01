@@ -133,6 +133,12 @@ theorem divisor_le {m : ℕ} : n ∈ divisors m → n ≤ m := by
 theorem divisors_subset_of_dvd {m : ℕ} (hzero : n ≠ 0) (h : m ∣ n) : divisors m ⊆ divisors n :=
   Finset.subset_iff.2 fun _x hx => Nat.mem_divisors.mpr ⟨(Nat.mem_divisors.mp hx).1.trans h, hzero⟩
 
+theorem card_divisors_le_self (n : ℕ) : #n.divisors ≤ n := calc
+  _ ≤ #(Ico 1 (n + 1)) := by
+    apply card_le_card
+    simp only [divisors, filter_subset]
+  _ = n := by rw [card_Ico, add_tsub_cancel_right]
+
 theorem divisors_subset_properDivisors {m : ℕ} (hzero : n ≠ 0) (h : m ∣ n) (hdiff : m ≠ n) :
     divisors m ⊆ properDivisors n := by
   apply Finset.subset_iff.2
