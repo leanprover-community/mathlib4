@@ -89,6 +89,11 @@ instance instFunLike : FunLike (PerfectPairing R M N) M (N →ₗ[R] R) where
 lemma toLin_apply (p : PerfectPairing R M N) {x : M} : p.toLin x = p x := by
   rfl
 
+@[simp]
+lemma mk_apply_apply {f : M →ₗ[R] N →ₗ[R] R} {hl} {hr} {x : M} :
+    (⟨f, hl, hr⟩ : PerfectPairing R M N) x = f x :=
+  rfl
+
 variable (p : PerfectPairing R M N)
 
 /-- Given a perfect pairing between `M` and `N`, we may interchange the roles of `M` and `N`. -/
@@ -187,12 +192,17 @@ theorem finrank_eq [Module.Finite R M] [Module.Free R M] :
     finrank R M = finrank R N :=
   ((Module.Free.chooseBasis R M).toDualEquiv.trans p.toDualRight.symm).finrank_eq
 
-private lemma restrict_aux
-    {M' N' : Type*} [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Module R N']
-    (i : M' →ₗ[R] M) (j : N' →ₗ[R] N)
-    (hM : IsCompl (LinearMap.range i) ((LinearMap.range j).dualAnnihilator.map p.toDualLeft.symm))
-    (hN : IsCompl (LinearMap.range j) ((LinearMap.range i).dualAnnihilator.map p.toDualRight.symm))
-    (hi : Injective i) (hj : Injective j) :
+section Restrict
+
+variable {M' N' : Type*} [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Module R N']
+  (i : M' →ₗ[R] M) (j : N' →ₗ[R] N)
+  (hM : IsCompl (LinearMap.range i) ((LinearMap.range j).dualAnnihilator.map p.toDualLeft.symm))
+  (hN : IsCompl (LinearMap.range j) ((LinearMap.range i).dualAnnihilator.map p.toDualRight.symm))
+  (hi : Injective i) (hj : Injective j)
+
+include hM hN hi hj
+
+private lemma restrict_aux :
     Bijective (p.toLin.compl₁₂ i j) := by
   refine ⟨LinearMap.ker_eq_bot.mp <| eq_bot_iff.mpr fun m hm ↦ ?_, fun f ↦ ?_⟩
   · replace hm : i m ∈ (LinearMap.range j).dualAnnihilator.map p.toDualLeft.symm := by
@@ -218,15 +228,18 @@ private lemma restrict_aux
 /-- The restriction of a perfect pairing to submodules (expressed as injections to provide
 definitional control). -/
 @[simps]
-def restrict {M' N' : Type*} [AddCommGroup M'] [Module R M'] [AddCommGroup N'] [Module R N']
-    (i : M' →ₗ[R] M) (j : N' →ₗ[R] N)
-    (hM : IsCompl (LinearMap.range i) ((LinearMap.range j).dualAnnihilator.map p.toDualLeft.symm))
-    (hN : IsCompl (LinearMap.range j) ((LinearMap.range i).dualAnnihilator.map p.toDualRight.symm))
-    (hi : Injective i) (hj : Injective j) :
+def restrict :
     PerfectPairing R M' N' where
   toLin := p.toLin.compl₁₂ i j
   bijectiveLeft := p.restrict_aux i j hM hN hi hj
   bijectiveRight := p.flip.restrict_aux j i hN hM hj hi
+
+@[simp]
+lemma restrict_apply_apply (x : M') (y : N') :
+    p.restrict i j hM hN hi hj x y = p (i x) (j y) :=
+  rfl
+
+end Restrict
 
 section RestrictScalars
 
@@ -370,6 +383,21 @@ def restrictScalarsField {K L : Type*} [Field K] [Field L] [Algebra K L]
     exact hp m n
   have : FiniteDimensional K (LinearMap.range i) := FiniteDimensional.of_fintype_basis b'
   exact Finite.equiv (LinearEquiv.ofInjective i hi).symm
+
+@[simp]
+lemma restrictScalarsField_apply_apply {K L : Type*} [Field K] [Field L] [Algebra K L]
+    [Module L M] [Module L N] [Module K M] [Module K N] [IsScalarTower K L M] [IsScalarTower K L N]
+    [Module K M'] [Module K N']
+    (i : M' →ₗ[K] M) (j : N' →ₗ[K] N)
+    (hi : Injective i) (hj : Injective j)
+    (hM : span L (LinearMap.range i : Set M) = ⊤)
+    (hN : span L (LinearMap.range j : Set N) = ⊤)
+    (p : PerfectPairing L M N)
+    (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap K L).range)
+    (x : M') (y : N') :
+    algebraMap K L ((p.restrictScalarsField i j hi hj hM hN hp) x y) = p (i x) (j y) :=
+  LinearMap.restrictScalarsRange_apply i j (Algebra.linearMap K L)
+    (NoZeroSMulDivisors.algebraMap_injective K L) p.toLin hp x y
 
 end RestrictScalars
 

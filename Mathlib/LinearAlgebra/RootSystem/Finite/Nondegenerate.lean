@@ -143,6 +143,7 @@ section Field
 
 variable [Field R] [Module R M] [Module R N] (P : RootPairing ι R M N) [P.IsAnisotropic]
 
+/-- See also `RootPairing.isCompl_rootSpan_dualAnnihilator`. -/
 lemma isCompl_rootSpan_ker_rootForm :
     IsCompl P.rootSpan (LinearMap.ker P.RootForm) := by
   have _iM : IsReflexive R M := PerfectPairing.reflexive_left P.toPerfectPairing
@@ -155,9 +156,35 @@ lemma isCompl_rootSpan_ker_rootForm :
   convert Submodule.finrank_mono P.corootSpan_dualAnnihilator_le_ker_rootForm
   exact (LinearEquiv.finrank_map_eq _ _).symm
 
+/-- See also `RootPairing.isCompl_corootSpan_dualAnnihilator`. -/
 lemma isCompl_corootSpan_ker_corootForm :
     IsCompl P.corootSpan (LinearMap.ker P.CorootForm) :=
   P.flip.isCompl_rootSpan_ker_rootForm
+
+lemma ker_rootForm_eq_dualAnnihilator :
+    LinearMap.ker P.RootForm = P.corootSpan.dualAnnihilator.map P.toDualLeft.symm := by
+  have _iM : IsReflexive R M := PerfectPairing.reflexive_left P.toPerfectPairing
+  have _iN : IsReflexive R N := PerfectPairing.reflexive_right P.toPerfectPairing
+  suffices finrank R (LinearMap.ker P.RootForm) = finrank R P.corootSpan.dualAnnihilator by
+    refine (Submodule.eq_of_le_of_finrank_eq P.corootSpan_dualAnnihilator_le_ker_rootForm ?_).symm
+    rw [this]
+    apply LinearEquiv.finrank_map_eq
+  have aux0 := Subspace.finrank_add_finrank_dualAnnihilator_eq P.corootSpan
+  have aux1 := Submodule.finrank_add_eq_of_isCompl P.isCompl_rootSpan_ker_rootForm
+  rw [← P.finrank_corootSpan_eq, P.toPerfectPairing.finrank_eq] at aux1
+  omega
+
+lemma ker_corootForm_eq_dualAnnihilator :
+    LinearMap.ker P.CorootForm = P.rootSpan.dualAnnihilator.map P.toDualRight.symm :=
+  P.flip.ker_rootForm_eq_dualAnnihilator
+
+lemma isCompl_rootSpan_dualAnnihilator :
+    IsCompl P.rootSpan (P.corootSpan.dualAnnihilator.map P.toDualLeft.symm) := by
+  simpa only [ker_rootForm_eq_dualAnnihilator] using P.isCompl_rootSpan_ker_rootForm
+
+lemma isCompl_corootSpan_dualAnnihilator :
+    IsCompl P.corootSpan (P.rootSpan.dualAnnihilator.map P.toDualRight.symm) :=
+  P.flip.isCompl_rootSpan_dualAnnihilator
 
 /-- See also `RootPairing.rootForm_restrict_nondegenerate_of_ordered`.
 
@@ -183,6 +210,64 @@ lemma orthogonal_rootSpan_eq :
 lemma orthogonal_corootSpan_eq :
     P.CorootForm.orthogonal P.corootSpan = LinearMap.ker P.CorootForm :=
   P.flip.orthogonal_rootSpan_eq
+
+lemma rootSpan_eq_top_iff :
+    P.rootSpan = ⊤ ↔ P.corootSpan = ⊤ := by
+  have := P.toPerfectPairing.reflexive_left
+  have := P.toPerfectPairing.reflexive_right
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ <;> apply Submodule.eq_top_of_finrank_eq
+  · rw [P.finrank_corootSpan_eq, h, finrank_top, P.toPerfectPairing.finrank_eq]
+  · rw [← P.finrank_corootSpan_eq, h, finrank_top, P.toPerfectPairing.finrank_eq]
+
+open Submodule (injective_subtype range_subtype span subset_span span_le_restrictScalars)
+
+set_option maxHeartbeats 300000 in
+/-- Restriction of scalars for a root pairing (with coefficients in a field).
+
+TODO refactor to obviate need for `maxHeartbeats` + write some API for result. -/
+def restrictScalars (K : Type*) [Field K] [Algebra K R] [NoZeroSMulDivisors K R]
+    [Module K M] [Module K N] [IsScalarTower K R M] [IsScalarTower K R N]
+    (P : RootPairing ι R M N) [P.IsAnisotropic]
+    (hP : ∀ i j, P.pairing i j ∈ (algebraMap K R).range) :
+    RootSystem ι K (span K (range P.root)) (span K (range P.coroot)) :=
+  { toPerfectPairing :=
+      (P.toPerfectPairing.restrict P.rootSpan.subtype P.corootSpan.subtype
+        (by simpa only [range_subtype] using P.isCompl_rootSpan_dualAnnihilator)
+        (by simpa only [range_subtype] using P.isCompl_corootSpan_dualAnnihilator)
+        (injective_subtype _) (injective_subtype _)).restrictScalarsField
+      (Submodule.inclusion (span_le_restrictScalars K R (range P.root)))
+      (Submodule.inclusion (span_le_restrictScalars K R (range P.coroot)))
+      (Submodule.inclusion_injective _) (Submodule.inclusion_injective _)
+      (Submodule.span_range_inclusion_restrictScalars_eq_top _ _ _)
+      (Submodule.span_range_inclusion_restrictScalars_eq_top _ _ _)
+      (by
+        rintro ⟨x, hx⟩ ⟨y, hy⟩
+        exact LinearMap.BilinMap.apply_apply_mem_of_mem_span
+          (LinearMap.range (Algebra.linearMap K R)) (range P.root) (range P.coroot)
+          ((LinearMap.restrictScalarsₗ K R _ _ _).comp (P.toPerfectPairing.toLin.restrictScalars K))
+          (by rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩; exact hP i j) _ _ hx hy)
+    root := ⟨fun i ↦ ⟨_, subset_span (mem_range_self i)⟩, fun i j h ↦ by simpa using h⟩
+    coroot := ⟨fun i ↦ ⟨_, subset_span (mem_range_self i)⟩, fun i j h ↦ by simpa using h⟩
+    root_coroot_two i := by
+      have : algebraMap K R 2 = 2 := by
+        rw [← Int.cast_two (R := K), ← Int.cast_two (R := R), map_intCast]
+      apply NoZeroSMulDivisors.algebraMap_injective K R
+      simp only [this, Embedding.coeFn_mk, PerfectPairing.toLin_apply,
+        PerfectPairing.restrictScalarsField_apply_apply, PerfectPairing.restrict_apply_apply]
+      erw [Submodule.subtype_apply, Submodule.subtype_apply]
+      simp
+    reflection_perm := P.reflection_perm
+    reflection_perm_root i j := by
+      ext
+      simpa [algebra_compatible_smul R] using P.reflection_perm_root i j
+    reflection_perm_coroot i j := by
+      ext
+      simpa [algebra_compatible_smul R] using P.reflection_perm_coroot i j
+    span_eq_top := by
+      rw [← Submodule.span_setOf_mem_eq_top]
+      congr
+      ext ⟨x, hx⟩
+      simp }
 
 end Field
 

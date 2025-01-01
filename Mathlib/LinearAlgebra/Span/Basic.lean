@@ -162,26 +162,50 @@ theorem disjoint_span_singleton' {K E : Type*} [DivisionRing K] [AddCommGroup E]
     {p : Submodule K E} {x : E} (x0 : x ≠ 0) : Disjoint p (K ∙ x) ↔ x ∉ p :=
   disjoint_span_singleton.trans ⟨fun h₁ h₂ => x0 (h₁ h₂), fun h₁ h₂ => (h₁ h₂).elim⟩
 
+section IsScalarTower
+
 variable (R S s)
 
+variable [Semiring S] [SMul R S] [Module S M] [IsScalarTower R S M]
+
 /-- If `R` is "smaller" ring than `S` then the span by `R` is smaller than the span by `S`. -/
-theorem span_le_restrictScalars [Semiring S] [SMul R S] [Module S M] [IsScalarTower R S M] :
+theorem span_le_restrictScalars :
     span R s ≤ (span S s).restrictScalars R :=
   Submodule.span_le.2 Submodule.subset_span
 
 /-- A version of `Submodule.span_le_restrictScalars` with coercions. -/
 @[simp]
-theorem span_subset_span [Semiring S] [SMul R S] [Module S M] [IsScalarTower R S M] :
+theorem span_subset_span :
     ↑(span R s) ⊆ (span S s : Set M) :=
   span_le_restrictScalars R S s
 
 /-- Taking the span by a large ring of the span by the small ring is the same as taking the span
 by just the large ring. -/
-theorem span_span_of_tower [Semiring S] [SMul R S] [Module S M] [IsScalarTower R S M] :
+@[simp]
+theorem span_span_of_tower :
     span S (span R s : Set M) = span S s :=
   le_antisymm (span_le.2 <| span_subset_span R S s) (span_mono subset_span)
 
-variable {R S s}
+variable {R S} in
+lemma span_range_inclusion_eq_top (p : Submodule R M) (q : Submodule S M)
+    (h₁ : p ≤ q.restrictScalars R) (h₂ : q ≤ span S p) :
+    span S (range (inclusion h₁)) = ⊤ := by
+  suffices (span S (range (inclusion h₁))).map q.subtype = q by
+    apply map_injective_of_injective q.injective_subtype
+    rw [this, q.map_subtype_top]
+  rw [map_span]
+  suffices q.subtype '' ((LinearMap.range (inclusion h₁)) : Set <| q.restrictScalars R) = p by
+    refine this ▸ le_antisymm ?_ h₂
+    simpa using span_mono (R := S) h₁
+  ext x
+  simpa [range_inclusion] using fun hx ↦ h₁ hx
+
+@[simp]
+theorem span_range_inclusion_restrictScalars_eq_top :
+    span S (range (inclusion <| span_le_restrictScalars R S s)) = ⊤ :=
+  span_range_inclusion_eq_top _ _ _ <| by simp
+
+end IsScalarTower
 
 theorem span_singleton_eq_span_singleton {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
     [NoZeroSMulDivisors R M] {x y : M} : ((R ∙ x) = R ∙ y) ↔ ∃ z : Rˣ, z • x = y := by
@@ -343,6 +367,29 @@ theorem prod_sup_prod : prod p q₁ ⊔ prod p' q₁' = prod (p ⊔ p') (q₁ �
   rcases mem_sup.1 hxx with ⟨x, hx, x', hx', rfl⟩
   rcases mem_sup.1 hyy with ⟨y, hy, y', hy', rfl⟩
   exact mem_sup.2 ⟨(x, y), ⟨hx, hy⟩, (x', y'), ⟨hx', hy'⟩, rfl⟩
+
+/-- If a bilinear map takes values in a submodule along two sets, then the same is true along
+the span of these sets. -/
+lemma _root_.LinearMap.BilinMap.apply_apply_mem_of_mem_span {R M N P : Type*} [CommSemiring R]
+    [AddCommGroup M] [AddCommMonoid N] [AddCommMonoid P] [Module R M] [Module R N] [Module R P]
+    (P' : Submodule R P) (s : Set M) (t : Set N)
+    (B : M →ₗ[R] N →ₗ[R] P) (hB : ∀ x ∈ s, ∀ y ∈ t, B x y ∈ P')
+    (x : M) (y : N) (hx : x ∈ span R s) (hy : y ∈ span R t) :
+    B x y ∈ P' := by
+  refine span_induction (span_induction ?_ (by simp) ?_ ?_ hy) (by simp) ?_ ?_ hx
+  · rintro u v - - hu hv
+    simp only [map_add, LinearMap.add_apply]
+    exact add_mem hu hv
+  · intro t z hz hyz
+    simp only [map_smul, LinearMap.smul_apply]
+    exact Submodule.smul_mem _ _ hyz
+  · exact fun u hu v hv ↦ hB v hv u hu
+  · intro _ _ _ _ h₁ h₂ _ h₃
+    simp only [map_add]
+    exact add_mem (h₁ _ h₃) (h₂ _ h₃)
+  · intro _ _ _ h₁ _ h₂
+    simp only [map_smul]
+    exact Submodule.smul_mem _ _ (h₁ _ h₂)
 
 end AddCommMonoid
 
