@@ -328,11 +328,11 @@ theorem IsMaximal.comap_piEvalRingHom {ι : Type*} {R : ι → Type*} [∀ i, Se
   have ⟨r, y, hy, eq⟩ := h.exists_inv hxI
   classical
   convert J.add_mem (J.mul_mem_left (update 0 i r) hxJ)
-    (b := update 1 i y) (le <| by apply update_same i y 1 ▸ hy)
+    (b := update 1 i y) (le <| by apply update_self i y 1 ▸ hy)
   ext j
   obtain rfl | ne := eq_or_ne j i
   · simpa [eq_comm] using eq
-  · simp [update_noteq ne]
+  · simp [update_of_ne ne]
 
 end Surjective
 
@@ -722,6 +722,21 @@ theorem LinearEquiv.annihilator_eq (e : M ≃ₗ[R] M') :
     Module.annihilator R M = Module.annihilator R M' :=
   (e.annihilator_le_of_surjective e.surjective).antisymm (e.annihilator_le_of_injective e.injective)
 
+theorem Module.comap_annihilator {R₀} [CommSemiring R₀] [Module R₀ M]
+    [Algebra R₀ R] [IsScalarTower R₀ R M] :
+    (Module.annihilator R M).comap (algebraMap R₀ R) = Module.annihilator R₀ M := by
+  ext x
+  simp [mem_annihilator]
+
+lemma Module.annihilator_eq_bot {R M} [Ring R] [AddCommGroup M] [Module R M] :
+    Module.annihilator R M = ⊥ ↔ FaithfulSMul R M := by
+  rw [← le_bot_iff]
+  refine ⟨fun H ↦ ⟨fun {r s} H' ↦ ?_⟩, fun ⟨H⟩ {a} ha ↦ ?_⟩
+  · rw [← sub_eq_zero]
+    exact H (Module.mem_annihilator (r := r - s).mpr
+      (by simp only [sub_smul, H', sub_self, implies_true]))
+  · exact @H a 0 (by simp [Module.mem_annihilator.mp ha])
+
 namespace Submodule
 
 /-- `N.annihilator` is the ideal of all elements `r : R` such that `r • N = 0`. -/
@@ -876,6 +891,10 @@ end Ring
 section CommRing
 
 variable [CommRing R] [CommRing S]
+
+theorem map_ne_bot_of_ne_bot {S : Type*} [Ring S] [Nontrivial S] [Algebra R S]
+    [NoZeroSMulDivisors R S] {I : Ideal R} (h : I ≠ ⊥) : map (algebraMap R S) I ≠ ⊥ :=
+  (map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S)).mp.mt h
 
 theorem map_eq_iff_sup_ker_eq_of_surjective {I J : Ideal R} (f : R →+* S)
     (hf : Function.Surjective f) : map f I = map f J ↔ I ⊔ RingHom.ker f = J ⊔ RingHom.ker f := by

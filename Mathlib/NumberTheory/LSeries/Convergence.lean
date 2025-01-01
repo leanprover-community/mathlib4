@@ -130,8 +130,8 @@ lemma LSeries.summable_real_of_abscissaOfAbsConv_lt {f : ℕ → ℝ} {x : ℝ}
   rw [LSeriesSummable, show term _ _ = fun n ↦ _ from rfl] at this
   conv at this =>
     enter [1, n]
-    rw [term_def, show (n : ℂ) = (n : ℝ) from rfl, ← ofReal_cpow n.cast_nonneg, ← ofReal_div,
-      show (0 : ℂ) = (0 : ℝ) from rfl, ← apply_ite]
+    rw [term_def, ← ofReal_natCast, ← ofReal_cpow n.cast_nonneg, ← ofReal_div, ← ofReal_zero,
+      ← apply_ite]
   rw [summable_ofReal] at this
   refine this.congr_cofinite ?_
   filter_upwards [Set.Finite.compl_mem_cofinite <| Set.finite_singleton 0] with n hn

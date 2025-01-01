@@ -7,6 +7,7 @@ import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.RingTheory.EuclideanDomain
+import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
 /-!
 # Theory of univariate polynomials
@@ -254,13 +255,13 @@ theorem degree_pos_of_ne_zero_of_nonunit (hp0 : p ≠ 0) (hp : ¬IsUnit p) : 0 <
     exact hp (IsUnit.map C (IsUnit.mk0 (coeff p 0) (mt C_inj.2 (by simpa using hp0))))
 
 @[simp]
-theorem map_eq_zero [Semiring S] [Nontrivial S] (f : R →+* S) : p.map f = 0 ↔ p = 0 := by
+protected theorem map_eq_zero [Semiring S] [Nontrivial S] (f : R →+* S) : p.map f = 0 ↔ p = 0 := by
   simp only [Polynomial.ext_iff]
   congr!
   simp [map_eq_zero, coeff_map, coeff_zero]
 
 theorem map_ne_zero [Semiring S] [Nontrivial S] {f : R →+* S} (hp : p ≠ 0) : p.map f ≠ 0 :=
-  mt (map_eq_zero f).1 hp
+  mt (Polynomial.map_eq_zero f).1 hp
 
 @[simp]
 theorem degree_map [Semiring S] [Nontrivial S] (p : R[X]) (f : R →+* S) :
@@ -493,7 +494,7 @@ theorem rootSet_prod [CommRing S] [IsDomain S] [Algebra R S] {ι : Type*} (f : �
   classical
   simp only [rootSet, aroots, ← Finset.mem_coe]
   rw [Polynomial.map_prod, roots_prod, Finset.bind_toFinset, s.val_toFinset, Finset.coe_biUnion]
-  rwa [← Polynomial.map_prod, Ne, map_eq_zero]
+  rwa [← Polynomial.map_prod, Ne, Polynomial.map_eq_zero]
 
 theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
   ⟨-(p.coeff 0 / p.coeff 1), by
@@ -554,10 +555,10 @@ theorem coe_normUnit_of_ne_zero [DecidableEq R] (hp : p ≠ 0) :
 
 theorem map_dvd_map' [Field k] (f : R →+* k) {x y : R[X]} : x.map f ∣ y.map f ↔ x ∣ y := by
   by_cases H : x = 0
-  · rw [H, Polynomial.map_zero, zero_dvd_iff, zero_dvd_iff, map_eq_zero]
+  · rw [H, Polynomial.map_zero, zero_dvd_iff, zero_dvd_iff, Polynomial.map_eq_zero]
   · classical
     rw [← normalize_dvd_iff, ← @normalize_dvd_iff R[X], normalize_apply, normalize_apply,
-      coe_normUnit_of_ne_zero H, coe_normUnit_of_ne_zero (mt (map_eq_zero f).1 H),
+      coe_normUnit_of_ne_zero H, coe_normUnit_of_ne_zero (mt (Polynomial.map_eq_zero f).1 H),
       leadingCoeff_map, ← map_inv₀ f, ← map_C, ← Polynomial.map_mul,
       map_dvd_map _ f.injective (monic_mul_leadingCoeff_inv H)]
 
@@ -656,6 +657,19 @@ theorem irreducible_iff_lt_natDegree_lt {p : R[X]} (hp0 : p ≠ 0) (hpu : ¬ IsU
       natDegree_mul_leadingCoeff_inv _ hp0]
   simp only [IsUnit.dvd_mul_right
     (isUnit_C.mpr (IsUnit.mk0 (leadingCoeff p)⁻¹ (inv_ne_zero (leadingCoeff_ne_zero.mpr hp0))))]
+
+open UniqueFactorizationMonoid in
+/--
+The normalized factors of a polynomial over a field times its leading coefficient give
+the polynomial.
+-/
+theorem leadingCoeff_mul_prod_normalizedFactors [DecidableEq R] (a : R[X]) :
+    C a.leadingCoeff * (normalizedFactors a).prod = a := by
+  by_cases ha : a = 0
+  · simp [ha]
+  rw [prod_normalizedFactors_eq, normalize_apply, coe_normUnit, CommGroupWithZero.coe_normUnit,
+    mul_comm, mul_assoc, ← map_mul, inv_mul_cancel₀] <;>
+  simp_all
 
 end Field
 

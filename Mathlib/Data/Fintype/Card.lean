@@ -378,14 +378,7 @@ instance (priority := 900) Finite.of_fintype (α : Type*) [Fintype α] : Finite 
   Fintype.finite ‹_›
 
 theorem finite_iff_nonempty_fintype (α : Type*) : Finite α ↔ Nonempty (Fintype α) :=
-  ⟨fun h =>
-    let ⟨_k, ⟨e⟩⟩ := @Finite.exists_equiv_fin α h
-    ⟨Fintype.ofEquiv _ e.symm⟩,
-    fun ⟨_⟩ => inferInstance⟩
-
-/-- See also `nonempty_encodable`, `nonempty_denumerable`. -/
-theorem nonempty_fintype (α : Type*) [Finite α] : Nonempty (Fintype α) :=
-  (finite_iff_nonempty_fintype α).mp ‹_›
+  ⟨fun _ => nonempty_fintype α, fun ⟨_⟩ => inferInstance⟩
 
 /-- Noncomputably get a `Fintype` instance from a `Finite` instance. This is not an
 instance because we want `Fintype` instances to be useful for computations. -/
@@ -540,12 +533,14 @@ theorem exists_pair_of_one_lt_card (h : 1 < card α) : ∃ a b : α, a ≠ b :=
 theorem card_eq_one_of_forall_eq {i : α} (h : ∀ j, j = i) : card α = 1 :=
   Fintype.card_eq_one_iff.2 ⟨i, h⟩
 
-theorem exists_unique_iff_card_one {α} [Fintype α] (p : α → Prop) [DecidablePred p] :
+theorem existsUnique_iff_card_one {α} [Fintype α] (p : α → Prop) [DecidablePred p] :
     (∃! a : α, p a) ↔ #{x | p x} = 1 := by
   rw [Finset.card_eq_one]
   refine exists_congr fun x => ?_
   simp only [forall_true_left, Subset.antisymm_iff, subset_singleton_iff', singleton_subset_iff,
       true_and, and_comm, mem_univ, mem_filter]
+
+@[deprecated (since := "2024-12-17")] alias exists_unique_iff_card_one := existsUnique_iff_card_one
 
 theorem one_lt_card [h : Nontrivial α] : 1 < Fintype.card α :=
   Fintype.one_lt_card_iff_nontrivial.mpr h
@@ -876,8 +871,7 @@ noncomputable def fintypeOfNotInfinite {α : Type*} (h : ¬Infinite α) : Fintyp
 
 section
 
-open scoped Classical
-
+open scoped Classical in
 /-- Any type is (classically) either a `Fintype`, or `Infinite`.
 
 One can obtain the relevant typeclasses via `cases fintypeOrInfinite α`.

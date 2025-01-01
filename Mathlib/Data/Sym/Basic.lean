@@ -28,7 +28,7 @@ symmetric powers
 -/
 
 assert_not_exists MonoidWithZero
-open Mathlib (Vector)
+open List (Vector)
 open Function
 
 /-- The nth symmetric power is n-tuples up to permutation.  We define it
@@ -55,7 +55,7 @@ instance {α : Type*} {n : ℕ} [DecidableEq α] : DecidableEq (Sym α n) :=
 
 See note [reducible non-instances].
 -/
-abbrev Mathlib.Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :=
+abbrev List.Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :=
   (List.isSetoid α).comap Subtype.val
 
 attribute [local instance] Vector.Perm.isSetoid
@@ -119,20 +119,20 @@ theorem coe_cons (s : Sym α n) (a : α) : (a ::ₛ s : Multiset α) = a ::ₘ s
 /-- This is the quotient map that takes a list of n elements as an n-tuple and produces an nth
 symmetric power.
 -/
-def ofVector : Mathlib.Vector α n → Sym α n :=
+def ofVector : List.Vector α n → Sym α n :=
   fun x => ⟨↑x.val, (Multiset.coe_card _).trans x.2⟩
 
 /-- This is the quotient map that takes a list of n elements as an n-tuple and produces an nth
 symmetric power.
 -/
-instance : Coe (Mathlib.Vector α n) (Sym α n) where coe x := ofVector x
+instance : Coe (List.Vector α n) (Sym α n) where coe x := ofVector x
 
 @[simp]
-theorem ofVector_nil : ↑(Vector.nil : Mathlib.Vector α 0) = (Sym.nil : Sym α 0) :=
+theorem ofVector_nil : ↑(Vector.nil : List.Vector α 0) = (Sym.nil : Sym α 0) :=
   rfl
 
 @[simp]
-theorem ofVector_cons (a : α) (v : Mathlib.Vector α n) :
+theorem ofVector_cons (a : α) (v : List.Vector α n) :
     ↑(Vector.cons a v) = a ::ₛ (↑v : Sym α n) := by
   cases v
   rfl
@@ -180,13 +180,13 @@ theorem mem_cons_of_mem (h : a ∈ s) : a ∈ b ::ₛ s :=
 theorem mem_cons_self (a : α) (s : Sym α n) : a ∈ a ::ₛ s :=
   Multiset.mem_cons_self a s.1
 
-theorem cons_of_coe_eq (a : α) (v : Mathlib.Vector α n) : a ::ₛ (↑v : Sym α n) = ↑(a ::ᵥ v) :=
+theorem cons_of_coe_eq (a : α) (v : List.Vector α n) : a ::ₛ (↑v : Sym α n) = ↑(a ::ᵥ v) :=
   Subtype.ext <| by
     cases v
     rfl
 
 open scoped List in
-theorem sound {a b : Mathlib.Vector α n} (h : a.val ~ b.val) : (↑a : Sym α n) = ↑b :=
+theorem sound {a b : List.Vector α n} (h : a.val ~ b.val) : (↑a : Sym α n) = ↑b :=
   Subtype.ext <| Quotient.sound h
 
 /-- `erase s a h` is the sym that subtracts 1 from the
