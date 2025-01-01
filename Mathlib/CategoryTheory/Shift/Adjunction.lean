@@ -429,7 +429,7 @@ lemma mk' (h : NatTrans.CommShift E.unitIso.hom A) :
 The forward functor of the identity equivalence is compatible with shifts.
 -/
 instance : (Equivalence.refl (C := C)).functor.CommShift A := by
-  simp
+  dsimp
   infer_instance
 
 /--
