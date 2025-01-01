@@ -186,20 +186,6 @@ lemma L1_norm_def (x : WithLp 1 (L × h.compl)) :
     WithLp.prod_norm_eq_add (by simp : 0 < (1 : ℝ≥0∞).toReal) _
   _   = ‖(WithLp.equiv 1 _ x).fst‖ + ‖(WithLp.equiv 1 _ x).snd‖ := by simp
 
--- c.f WithLp.prod_norm_eq_sup
-theorem prod_norm_eq_add (f : WithLp 1 (L × h.compl)) : ‖f‖ = ‖f.fst‖ + ‖f.snd‖ := by
-  rw [L1_norm_def]
-  rfl
-
-theorem another_sum (f : WithLp 1 (L × h.compl)) : ‖f‖ = ‖f.fst.val‖ + ‖f.snd.val‖ := by
-  rw [L1_norm_def]
-  rfl
-
-theorem prod_nnnorm_eq_add (f : WithLp 1 (L × h.compl)) :
-    ‖f‖₊ = (‖f.fst‖₊ + ‖f.snd‖₊ ) := by
-  ext
-  simp [prod_norm_eq_add]
-
 def l1map : WithLp 1 (L × h.compl) →+ G where
   toFun := fun a => a.1 +a.2
   map_add' x y := by
@@ -208,7 +194,7 @@ def l1map : WithLp 1 (L × h.compl) →+ G where
   map_zero' := by
     simp? [Prod.fst_zero, ZeroMemClass.coe_zero, Prod.snd_zero, add_zero]
 
-lemma sur : Function.Surjective (l1map G h) := by
+lemma surjective : Function.Surjective (l1map G h) := by
   intro y
   have hy1 : y ∈ L ⊔ h.compl := by
     rw [h.sup_top]
@@ -216,20 +202,8 @@ lemma sur : Function.Surjective (l1map G h) := by
   obtain ⟨x₁,⟨hx₁,⟨y₁,⟨hy₁,hx₁y₁y⟩⟩⟩⟩ := AddSubgroup.mem_sup.mp hy1
   exact ⟨(⟨x₁,hx₁⟩,⟨y₁,hy₁⟩), hx₁y₁y⟩
 
-variable (x : WithLp 1 (L × h.compl))
-
-#check h.Lnorm G x.1.prop x.2.prop
 
 -- There is `LinearIsometry` - but that is for module homomorphisms
-
-
-lemma isometry2 (x : WithLp 1 (L × h.compl)) : ‖(l1map G h) x‖ = ‖x‖  := by
-  rw [another_sum]
-  rw [(h.Lnorm G x.1.prop x.2.prop)]
-  rw [l1map]
-  rw [AddMonoidHom.coe_mk, ZeroHom.coe_mk]
-  --simp only [ZeroHom.coe_mk]
-
 
 --lemma li (x : WithLp 1 (L × h.compl)) : l1map G h →ₗᵢ[R] where
 
@@ -238,9 +212,12 @@ lemma isometry2 (x : WithLp 1 (L × h.compl)) : ‖(l1map G h) x‖ = ‖x‖  :
 lemma l1map_isometry : Isometry (l1map G h) := by
   rw [AddMonoidHomClass.isometry_iff_norm]
   intro x
-  rw [isometry2]
+  have e1 : ‖x‖ = ‖x.fst.val‖ + ‖x.snd.val‖ := by
+    rw [L1_norm_def]
+    rfl
+  rw [e1, (h.Lnorm G x.1.prop x.2.prop), l1map, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
 
-lemma bijection : Function.Bijective (l1map G h) := ⟨(l1map_isometry G h).injective, (sur G h)⟩
+lemma bijection : Function.Bijective (l1map G h) := ⟨(l1map_isometry G h).injective, surjective G h⟩
 
 def prodEquivₗᵢ : WithLp 1 (L × h.compl) ≃+ G where
   toFun a := a.1 +a.2
