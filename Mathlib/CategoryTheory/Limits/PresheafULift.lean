@@ -62,6 +62,12 @@ for an auxiliary universe `w`. -/
 def uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁) :=
   yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{w}
 
+def fullyFaithfulULiftYoneda : (uliftYoneda.{w} (C := C)).FullyFaithful := sorry
+
+instance : (uliftYoneda.{w} (C := C)).Full := fullyFaithfulULiftYoneda.full
+
+instance : (uliftYoneda.{w} (C := C)).Faithful := fullyFaithfulULiftYoneda.faithful
+
 /-- Yoneda's lemma as a bijection `(uliftYoneda.{w}.obj X ⟶ F) ≃ F.obj (op X)`
 for any presheaf of type `F : Cᵒᵖ ⥤ Type (max w v₁)` for some
 auxiliary universe `w`. -/
@@ -98,8 +104,8 @@ Defined as in [MM92], Chapter I, Section 5, Theorem 2.
 def restrictedULiftYoneda : ℰ ⥤ Cᵒᵖ ⥤ Type (max w v₂) :=
     uliftYoneda.{w} ⋙ (whiskeringLeft _ _ _).obj A.op
 
-/-- Auxiliary definition for `restrictedYonedaHomEquiv`. -/
-def restrictedYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E : ℰ) :
+/-- Auxiliary definition for `restrictedULiftYonedaHomEquiv`. -/
+def restrictedULiftYonedaHomEquiv' (P : Cᵒᵖ ⥤ Type (max w v₁ v₂)) (E : ℰ) :
     (CostructuredArrow.proj uliftYoneda.{max w v₂} P ⋙ A ⟶
       (Functor.const (CostructuredArrow uliftYoneda.{max w v₂} P)).obj E) ≃
       (P ⟶ (restrictedULiftYoneda.{max w v₁} A).obj E) where
@@ -123,48 +129,51 @@ example [HasColimitsOfSize.{v₁, max u₁ v₁ v₂ w} ℰ] :
 variable [(uliftYoneda.{max w v₂}).HasPointwiseLeftKanExtension A]
 
 variable {A}
-variable (L : (Cᵒᵖ ⥤ Type v₁) ⥤ ℰ) (α : A ⟶ yoneda ⋙ L) [L.IsLeftKanExtension α]
+variable (L : (Cᵒᵖ ⥤ Type max w v₁ v₂) ⥤ ℰ)
+  (α : A ⟶ uliftYoneda.{max w v₂} ⋙ L) [L.IsLeftKanExtension α]
 
-/-- Auxiliary definition for `yonedaAdjunction`. -/
-noncomputable def restrictedYonedaHomEquiv (P : Cᵒᵖ ⥤ Type v₁) (E : ℰ) :
-    (L.obj P ⟶ E) ≃ (P ⟶ (restrictedYoneda A).obj E) :=
+/-- Auxiliary definition for `uliftYonedaAdjunction`. -/
+noncomputable def restrictedULiftYonedaHomEquiv (P : Cᵒᵖ ⥤ Type max w v₁ v₂) (E : ℰ) :
+    (L.obj P ⟶ E) ≃ (P ⟶ (restrictedULiftYoneda.{max w v₁} A).obj E) :=
   ((Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension _ α P).homEquiv E).trans
-    (restrictedYonedaHomEquiv' A P E)
+    (restrictedULiftYonedaHomEquiv' A P E)
 
 /-- If `L : (Cᵒᵖ ⥤ Type v₁) ⥤ ℰ` is a pointwise left Kan extension
 of a functor `A : C ⥤ ℰ` along the Yoneda embedding,
 then `L` is a left adjoint of `restrictedYoneda A : ℰ ⥤ Cᵒᵖ ⥤ Type v₁` -/
-noncomputable def yonedaAdjunction : L ⊣ restrictedYoneda A :=
+noncomputable def uliftYonedaAdjunction : L ⊣ restrictedULiftYoneda.{max w v₁} A :=
   Adjunction.mkOfHomEquiv
-    { homEquiv := restrictedYonedaHomEquiv L α
+    { homEquiv := restrictedULiftYonedaHomEquiv L α
       homEquiv_naturality_left_symm := fun {P Q X} f g => by
-        obtain ⟨g, rfl⟩ := (restrictedYonedaHomEquiv L α Q X).surjective g
-        apply (restrictedYonedaHomEquiv L α P X).injective
-        simp only [Equiv.apply_symm_apply, Equiv.symm_apply_apply]
-        ext Y y
-        dsimp [restrictedYonedaHomEquiv, restrictedYonedaHomEquiv', IsColimit.homEquiv]
-        rw [assoc, assoc, ← L.map_comp_assoc]
-        congr 3
-        apply yonedaEquiv.injective
-        simp [yonedaEquiv]
+        obtain ⟨g, rfl⟩ := (restrictedULiftYonedaHomEquiv L α Q X).surjective g
+        sorry
+        --apply (restrictedYonedaHomEquiv L α P X).injective
+        --simp only [Equiv.apply_symm_apply, Equiv.symm_apply_apply]
+        --ext Y y
+        --dsimp [restrictedYonedaHomEquiv, restrictedYonedaHomEquiv', IsColimit.homEquiv]
+        --rw [assoc, assoc, ← L.map_comp_assoc]
+        --congr 3
+        --apply yonedaEquiv.injective
+        --simp [yonedaEquiv]
       homEquiv_naturality_right := fun {P X Y} f g => by
-        apply (restrictedYonedaHomEquiv L α P Y).symm.injective
-        simp only [Equiv.symm_apply_apply]
-        dsimp [restrictedYonedaHomEquiv, restrictedYonedaHomEquiv', IsColimit.homEquiv]
-        apply (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension L α P).hom_ext
-        intro p
-        rw [IsColimit.fac]
-        dsimp [restrictedYoneda, yonedaEquiv]
-        simp only [assoc]
-        congr 3
-        apply yonedaEquiv.injective
-        simp [yonedaEquiv] }
+        apply (restrictedULiftYonedaHomEquiv L α P Y).symm.injective
+        sorry }
+        --simp only [Equiv.symm_apply_apply]
+        --dsimp [restrictedYonedaHomEquiv, restrictedYonedaHomEquiv', IsColimit.homEquiv]
+        --apply (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension L α P).hom_ext
+        --intro p
+        --rw [IsColimit.fac]
+        --dsimp [restrictedYoneda, yonedaEquiv]
+        --simp only [assoc]
+        --congr 3
+        --apply yonedaEquiv.injective
+        --simp [yonedaEquiv] }
 
 include α in
 /-- Any left Kan extension along the Yoneda embedding preserves colimits. -/
 lemma preservesColimitsOfSize_of_isLeftKanExtension :
     PreservesColimitsOfSize.{v₃, u₃} L :=
-  (yonedaAdjunction L α).leftAdjoint_preservesColimits
+  (uliftYonedaAdjunction L α).leftAdjoint_preservesColimits
 
 lemma isIso_of_isLeftKanExtension : IsIso α :=
   (Functor.isPointwiseLeftKanExtensionOfIsLeftKanExtension _ α).isIso_hom
@@ -173,16 +182,16 @@ variable (A)
 
 /-- See Property 2 of https://ncatlab.org/nlab/show/Yoneda+extension#properties. -/
 noncomputable instance preservesColimitsOfSize_leftKanExtension :
-    PreservesColimitsOfSize.{v₃, u₃} (yoneda.leftKanExtension A) :=
-  (yonedaAdjunction _ (yoneda.leftKanExtensionUnit A)).leftAdjoint_preservesColimits
+    PreservesColimitsOfSize.{v₃, u₃} (uliftYoneda.{max w v₂}.leftKanExtension A) :=
+  (uliftYonedaAdjunction _ (uliftYoneda.leftKanExtensionUnit A)).leftAdjoint_preservesColimits
 
-instance : IsIso (yoneda.leftKanExtensionUnit A) :=
-  isIso_of_isLeftKanExtension _ (yoneda.leftKanExtensionUnit A)
+instance : IsIso (uliftYoneda.{max w v₂}.leftKanExtensionUnit A) :=
+  isIso_of_isLeftKanExtension _ (uliftYoneda.leftKanExtensionUnit A)
 
 /-- A pointwise left Kan extension along the Yoneda embedding is an extension. -/
-noncomputable def isExtensionAlongYoneda :
-    yoneda ⋙ yoneda.leftKanExtension A ≅ A :=
-  (asIso (yoneda.leftKanExtensionUnit A)).symm
+noncomputable def isExtensionAlongULiftYoneda :
+    uliftYoneda.{max w v₂} ⋙ uliftYoneda.leftKanExtension A ≅ A :=
+  (asIso (uliftYoneda.leftKanExtensionUnit A)).symm
 
 end
 
@@ -191,8 +200,9 @@ by the fact that it factors through the yoneda embedding).
 `coconeOfRepresentable` gives a cocone for this functor which is a colimit and has point `P`.
 -/
 @[reducible]
-def functorToRepresentables (P : Cᵒᵖ ⥤ Type v₁) : P.Elementsᵒᵖ ⥤ Cᵒᵖ ⥤ Type v₁ :=
-  (CategoryOfElements.π P).leftOp ⋙ yoneda
+def functorToRepresentables (P : Cᵒᵖ ⥤ Type (max w v₁)) :
+    P.Elementsᵒᵖ ⥤ Cᵒᵖ ⥤ Type (max w v₁) :=
+  (CategoryOfElements.π P).leftOp ⋙ uliftYoneda
 
 /-- This is a cocone with point `P` for the functor `functorToRepresentables P`. It is shown in
 `colimitOfRepresentable P` that this cocone is a colimit: that is, we have exhibited an arbitrary
