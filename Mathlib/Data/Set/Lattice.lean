@@ -85,8 +85,8 @@ theorem mem_iInter₂_of_mem {s : ∀ i, κ i → Set α} {a : α} (h : ∀ i j,
     a ∈ ⋂ (i) (j), s i j :=
   mem_iInter₂.2 h
 
-instance completeAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Set α) :=
-  { instBooleanAlgebraSet with
+instance instCompleteAtomicBooleanAlgebra : CompleteAtomicBooleanAlgebra (Set α) :=
+  { instBooleanAlgebra with
     le_sSup := fun _ t t_in _ a_in => ⟨t, t_in, a_in⟩
     sSup_le := fun _ _ h _ ⟨t', ⟨t'_in, a_in⟩⟩ => h t' t'_in a_in
     le_sInf := fun _ _ h _ a_in t' t'_in => h t' t'_in a_in
@@ -512,7 +512,7 @@ theorem image_projection_prod {ι : Type*} {α : ι → Type*} {v : ∀ i : ι, 
     · intro y y_in
       simp only [mem_image, mem_iInter, mem_preimage]
       rcases hv with ⟨z, hz⟩
-      refine ⟨Function.update z i y, ?_, update_same i y z⟩
+      refine ⟨Function.update z i y, ?_, update_self i y z⟩
       rw [@forall_update_iff ι α _ z i y fun i t => t ∈ v i]
       exact ⟨y_in, fun j _ => by simpa using hz j⟩
 

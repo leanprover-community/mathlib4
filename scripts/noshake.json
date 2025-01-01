@@ -253,7 +253,6 @@
   "Mathlib.Tactic.GCongr.Core":
   ["Mathlib.Order.Defs", "Mathlib.Order.Defs.PartialOrder"],
   "Mathlib.Tactic.GCongr": ["Mathlib.Tactic.Positivity.Core"],
-  "Mathlib.Tactic.FunProp.RefinedDiscrTree": ["Mathlib.Algebra.Group.Pi.Basic"],
   "Mathlib.Tactic.FunProp.Mor": ["Mathlib.Data.FunLike.Basic"],
   "Mathlib.Tactic.FunProp.Differentiable":
   ["Mathlib.Analysis.Calculus.Deriv.Inv",
@@ -359,6 +358,7 @@
   "Mathlib.LinearAlgebra.AffineSpace.FiniteDimensional": ["Mathlib.Init.Core"],
   "Mathlib.LinearAlgebra.AffineSpace.Basic": ["Mathlib.Algebra.AddTorsor"],
   "Mathlib.Lean.Meta": ["Batteries.Logic"],
+  "Mathlib.Lean.Meta.RefinedDiscrTree": ["Mathlib.Algebra.Group.Pi.Basic"],
   "Mathlib.Lean.Expr.ExtraRecognizers": ["Mathlib.Data.Set.Operations"],
   "Mathlib.Lean.Expr.Basic": ["Batteries.Logic"],
   "Mathlib.GroupTheory.MonoidLocalization.Basic": ["Mathlib.Init.Data.Prod"],
