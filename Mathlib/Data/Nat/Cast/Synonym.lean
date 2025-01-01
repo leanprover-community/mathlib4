@@ -42,20 +42,18 @@ instance [h : AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵒᵈ :=
 theorem toDual_natCast [NatCast α] (n : ℕ) : toDual (n : α) = n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem toDual_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    (toDual (no_index (OfNat.ofNat n : α))) = OfNat.ofNat n :=
+    (toDual (ofNat(n) : α)) = ofNat(n) :=
   rfl
 
 @[simp]
 theorem ofDual_natCast [NatCast α] (n : ℕ) : (ofDual n : α) = n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofDual_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
-    (ofDual (no_index (OfNat.ofNat n : αᵒᵈ))) = OfNat.ofNat n :=
+    (ofDual (ofNat(n) : αᵒᵈ)) = ofNat(n) :=
   rfl
 
 /-! ### Lexicographic order -/
