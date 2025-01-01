@@ -336,19 +336,9 @@ lemma test (a b : α) (c d : β) :
     ((a,c) : WithLp p (α × β)) + ((b,d) : WithLp p (α × β)) = ((a+b,c+d) : WithLp p (α × β)) := by
   rfl
 
-lemma P1_compl : (1 : AddMonoid.End (WithLp p (α × β))) - P1 = P2 := by
-  apply AddMonoidHom.ext
-  intro x
-  have e1 : (1 - P1) x = (1 : AddMonoid.End (WithLp p (α × β))) x - P1 x := rfl
-  rw [e1]
-  rw [P1_apply, P2_apply, AddMonoid.End.coe_one, id_eq]
-  have e2 : (x.1, 0) + (0, x.2) = x := by
-    rw [test]
-    rw [zero_add, add_zero]
-    rfl
-  rw [sub_eq_iff_eq_add]
-  rw [add_comm]
-  rw [e2]
+lemma P1_compl : (1 : AddMonoid.End (WithLp p (α × β))) - P1 = P2 := AddMonoidHom.ext
+  fun x => by rw [AddMonoidHom.sub_apply, P1_apply, P2_apply, AddMonoid.End.coe_one, id_eq,
+    sub_eq_iff_eq_add, add_comm, test, zero_add, add_zero]; rfl
 
 theorem prod_norm_eq_sup (x : WithLp ∞ (α × β)) : ‖x‖ = ‖P1 x‖ ⊔ ‖(1 - P1) x‖ := by
   rw [WithLp.prod_norm_eq_sup x, P1_apply, P1_compl, P2_apply]
