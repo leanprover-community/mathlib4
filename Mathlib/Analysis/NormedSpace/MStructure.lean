@@ -322,8 +322,10 @@ variable (p : ℝ≥0∞) (𝕜 α β : Type*)
 variable {p 𝕜 α β}
 variable [NormedAddCommGroup α] [NormedAddCommGroup β]
 
+/-- Projection on `WithLp p (α × β)` with range `α` and kernel `β` -/
 def P1 : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inl α β).comp (AddMonoidHom.fst α β)
 
+/-- Projection on `WithLp p (α × β)` with range `β` and kernel `α` -/
 def P2 : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inr α β).comp (AddMonoidHom.snd α β)
 
 
@@ -350,10 +352,6 @@ lemma P1_compl : (1 : AddMonoid.End (WithLp p (α × β))) - P1 = P2 := by
   rw [sub_eq_iff_eq_add]
   rw [add_comm]
   rw [e2]
-
-variable (x : WithLp p (α × β))
-
-#check P1 x
 
 lemma P1_idempotent : IsIdempotentElem (M := (AddMonoid.End (WithLp p (α × β)))) P1 := by
   rw [IsIdempotentElem, P1]
