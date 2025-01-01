@@ -3,8 +3,6 @@ Copyright (c) 2023 J. W. Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: J. W. Gerbscheid
 -/
-import Mathlib.Tactic.FunProp.StateList
-import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Lean.Meta.RefinedDiscrTree.Pi
 import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 import Mathlib.Lean.Meta.RefinedDiscrTree.Encode
@@ -107,8 +105,6 @@ TODO:
 -/
 
 open Lean Meta
-
-open Mathlib.Meta.FunProp (StateListT StateListM)
 
 namespace Lean.Meta.RefinedDiscrTree
 variable {α}
