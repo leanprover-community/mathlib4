@@ -72,7 +72,7 @@ private lemma list_mul_sum {R : Type*} [CommSemiring R] {T : Type*} (l : List T)
     intro x
     simp_rw [List.mapIdx_cons, pow_zero, mul_one, List.sum_cons, mul_add, mul_one]
     have (a : ℕ) : y ^ (a + 1) = y * y ^ a := by ring
-    simp [this, ih]
+    simp_rw [this, ← mul_assoc, ih, ← mul_assoc]
 
 -- Geometric sum for lists
 private lemma list_geom {T : Type*} {F : Type*} [Field F] (l : List T) {y : F} (hy : y ≠ 1) :
