@@ -278,10 +278,10 @@ def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E where
   -- lemmas.
   functor_unitIso_comp X := by
     dsimp
-    sorry
-    /-rw [← f.functor.map_comp_assoc, e.functor.map_comp, ← counitInv_app_functor, fun_inv_map,
-      Iso.inv_hom_id_app_assoc, assoc, Iso.inv_hom_id_app, counit_app_functor, ← Functor.map_comp]
-    erw [comp_id, Iso.hom_inv_id_app, Functor.map_id]-/
+    simp only [comp_id, id_comp, map_comp, fun_inv_map, comp_obj, id_obj, counitInv,
+      functor_unit_comp_assoc, assoc]
+    slice_lhs 2 3 => rw [← Functor.map_comp, Iso.inv_hom_id_app]
+    simp
 
 /-- Composing a functor with both functors of an equivalence yields a naturally isomorphic
 functor. -/
