@@ -1099,7 +1099,7 @@ theorem IsIdealMorphism.eq (hf : f.IsIdealMorphism) : f.idealRange = f.range := 
 
 theorem isIdealMorphism_iff : f.IsIdealMorphism ↔ ∀ (x : L') (y : L), ∃ z : L, ⁅x, f y⁆ = f z := by
   simp only [isIdealMorphism_def, idealRange_eq_lieSpan_range, ←
-    LieSubalgebra.toSubmodule_inj, ← f.range.toSubmodule,
+    LieSubalgebra.toSubmodule_inj, ← f.range.coe_toSubmodule,
     LieIdeal.coe_toLieSubalgebra_toSubmodule, LieSubmodule.coe_lieSpan_submodule_eq_iff,
     LieSubalgebra.mem_toSubmodule, mem_range, exists_imp,
     Submodule.exists_lieSubmodule_coe_eq_iff]
@@ -1161,7 +1161,7 @@ theorem range_eq_top : f.range = ⊤ ↔ Function.Surjective f := by
 @[simp]
 theorem idealRange_eq_top_of_surjective (h : Function.Surjective f) : f.idealRange = ⊤ := by
   rw [← f.range_eq_top] at h
-  rw [idealRange_eq_lieSpan_range, h, ← LieSubalgebra.toSubmodule, ←
+  rw [idealRange_eq_lieSpan_range, h, ← LieSubalgebra.coe_toSubmodule, ←
     LieSubmodule.toSubmodule_inj, LieSubmodule.top_toSubmodule,
     LieSubalgebra.top_toSubmodule, LieSubmodule.coe_lieSpan_submodule_eq_iff]
   use ⊤
@@ -1288,7 +1288,7 @@ theorem ker_incl : I.incl.ker = ⊥ := by ext; simp
 
 @[simp]
 theorem incl_idealRange : I.incl.idealRange = I := by
-  rw [LieHom.idealRange_eq_lieSpan_range, ← LieSubalgebra.toSubmodule, ←
+  rw [LieHom.idealRange_eq_lieSpan_range, ← LieSubalgebra.coe_toSubmodule, ←
     LieSubmodule.toSubmodule_inj, incl_range, coe_toLieSubalgebra_toSubmodule,
     LieSubmodule.coe_lieSpan_submodule_eq_iff]
   use I

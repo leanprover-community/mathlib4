@@ -456,7 +456,7 @@ theorem sInf_toSubmodule (S : Set (LieSubalgebra R L)) :
 
 @[simp]
 theorem sInf_coe (S : Set (LieSubalgebra R L)) : (↑(sInf S) : Set L) = ⋂ s ∈ S, (s : Set L) := by
-  rw [← toSubmodule, sInf_toSubmodule, Submodule.sInf_coe]
+  rw [← coe_toSubmodule, sInf_toSubmodule, Submodule.sInf_coe]
   ext x
   simp
 
@@ -646,7 +646,7 @@ theorem coe_lieSpan_submodule_eq_iff {p : Submodule R L} :
   · intro x m hm
     rw [← h, mem_toSubmodule]
     exact lie_mem _ (subset_lieSpan hm)
-  · rw [← toSubmodule_mk p @h, toSubmodule, toSubmodule_inj, lieSpan_eq]
+  · rw [← toSubmodule_mk p @h, coe_toSubmodule, toSubmodule_inj, lieSpan_eq]
 
 variable (R L)
 
