@@ -53,6 +53,9 @@ variable {p 𝕜 α β}
 variable [Semiring 𝕜] [AddCommGroup α] [AddCommGroup β]
 variable (x y : WithLp p (α × β)) (c : 𝕜)
 
+protected def fst : α := (WithLp.equiv p (α × β) x).fst
+protected def snd : β := (WithLp.equiv p (α × β) x).snd
+
 @[simp]
 theorem zero_fst : (0 : WithLp p (α × β)).fst = 0 :=
   rfl
@@ -616,7 +619,7 @@ theorem prod_nnnorm_eq_sup (f : WithLp ∞ (α × β)) : ‖f‖₊ = ‖f.fst�
   norm_cast
 
 @[simp] theorem prod_nnnorm_equiv (f : WithLp ∞ (α × β)) : ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖₊ := by
-  rw [prod_nnnorm_eq_sup, Prod.nnnorm_def', equiv_fst, equiv_snd]
+  rw [Prod.nnnorm_def', equiv_fst, equiv_snd, prod_nnnorm_eq_sup]
 
 @[simp] theorem prod_nnnorm_equiv_symm (f : α × β) : ‖(WithLp.equiv ⊤ _).symm f‖₊ = ‖f‖₊ :=
   (prod_nnnorm_equiv _).symm
