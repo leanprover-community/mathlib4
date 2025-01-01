@@ -177,14 +177,11 @@ variable {L : AddSubgroup G} (h : IsLsummand G L)
 #check WithLp 1 (L × h.compl)
 
 
--- c.f WithLp.unitization_norm_def
-open ENNReal in
-lemma L1_norm_def (x : WithLp 1 (L × h.compl)) :
-    ‖x‖ = ‖(WithLp.equiv 1 _ x).fst‖ + ‖(WithLp.equiv 1 _ x).snd‖ := calc
-  ‖x‖ = (‖(WithLp.equiv 1 _ x).fst‖ ^ (1 : ℝ≥0∞).toReal +
-      ‖(WithLp.equiv 1 _ x).snd‖ ^ (1 : ℝ≥0∞).toReal) ^ (1 / (1 : ℝ≥0∞).toReal) :=
-    WithLp.prod_norm_eq_add (by simp : 0 < (1 : ℝ≥0∞).toReal) _
-  _   = ‖(WithLp.equiv 1 _ x).fst‖ + ‖(WithLp.equiv 1 _ x).snd‖ := by simp
+lemma WithLp.prod_norm_eq_of_1 (x : WithLp 1 (L × h.compl)) :
+    ‖x‖ = ‖(WithLp.equiv 1 _ x).fst‖ + ‖(WithLp.equiv 1 _ x).snd‖ := by
+  rw [WithLp.prod_norm_eq_of_nat 1 Nat.cast_one.symm]
+  simp only [AddSubgroupClass.coe_norm, pow_one, Nat.cast_one, ne_eq, one_ne_zero,
+    not_false_eq_true, div_self, Real.rpow_one, WithLp.equiv_fst, WithLp.equiv_snd]
 
 def l1map : WithLp 1 (L × h.compl) →+ G where
   toFun := fun a => a.1 +a.2
@@ -213,7 +210,7 @@ lemma l1map_isometry : Isometry (l1map G h) := by
   rw [AddMonoidHomClass.isometry_iff_norm]
   intro x
   have e1 : ‖x‖ = ‖x.fst.val‖ + ‖x.snd.val‖ := by
-    rw [L1_norm_def]
+    rw [WithLp.prod_norm_eq_of_1]
     rfl
   rw [e1, (h.Lnorm G x.1.prop x.2.prop), l1map, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
 
