@@ -425,11 +425,11 @@ theorem sInf_toSubmodule (S : Set (LieSubmodule R L M)) :
 
 @[deprecated (since := "2024-12-30")] alias sInf_coe_toSubmodule := sInf_toSubmodule
 
-theorem sInf_toSubmodule' (S : Set (LieSubmodule R L M)) :
+theorem sInf_toSubmodule_eq_iInf (S : Set (LieSubmodule R L M)) :
     (↑(sInf S) : Submodule R M) = ⨅ N ∈ S, (N : Submodule R M) := by
   rw [sInf_toSubmodule, ← Set.image, sInf_image]
 
-@[deprecated (since := "2024-12-30")] alias sInf_coe_toSubmodule' := sInf_toSubmodule'
+@[deprecated (since := "2024-12-30")] alias sInf_coe_toSubmodule' := sInf_toSubmodule_eq_iInf
 
 @[simp]
 theorem iInf_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
@@ -500,11 +500,11 @@ theorem sSup_toSubmodule (S : Set (LieSubmodule R L M)) :
 
 @[deprecated (since := "2024-12-30")] alias sSup_coe_toSubmodule := sSup_toSubmodule
 
-theorem sSup_toSubmodule' (S : Set (LieSubmodule R L M)) :
+theorem sSup_toSubmodule_eq_iSup (S : Set (LieSubmodule R L M)) :
     (↑(sSup S) : Submodule R M) = ⨆ N ∈ S, (N : Submodule R M) := by
   rw [sSup_toSubmodule, ← Set.image, sSup_image]
 
-@[deprecated (since := "2024-12-30")] alias sSup_coe_toSubmodule' := sSup_toSubmodule'
+@[deprecated (since := "2024-12-30")] alias sSup_coe_toSubmodule' := sSup_toSubmodule_eq_iSup
 
 @[simp]
 theorem iSup_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
@@ -516,7 +516,7 @@ theorem iSup_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
 /-- The set of Lie submodules of a Lie module form a complete lattice. -/
 instance : CompleteLattice (LieSubmodule R L M) :=
   { toSubmodule_injective.completeLattice toSubmodule sup_toSubmodule inf_toSubmodule
-      sSup_toSubmodule' sInf_toSubmodule' rfl rfl with
+      sSup_toSubmodule_eq_iSup sInf_toSubmodule_eq_iInf rfl rfl with
     toPartialOrder := SetLike.instPartialOrder }
 
 theorem mem_iSup_of_mem {ι} {b : M} {N : ι → LieSubmodule R L M} (i : ι) (h : b ∈ N i) :
