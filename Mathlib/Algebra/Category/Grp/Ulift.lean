@@ -111,7 +111,7 @@ The universe lift for commutative groups preserves limits of arbitrary size.
 @[to_additive
   "The universe lift functor for commutative additive groups preserves limits of arbitrary size."]
 noncomputable instance uliftFunctor_preservesLimitsOfSize :
-    PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where preservesLimitsOfShape := inferInstance
+    PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where
 
 /--
 The universe lift functor on `CommGrp.{u}` creates `u`-small limits.
