@@ -30,7 +30,7 @@ namespace CategoryTheory.Adjunction
 attribute [local simp] homEquiv_unit homEquiv_counit
 
 /-- If `G.op` is adjoint to `F.op` then `F` is adjoint to `G`. -/
-@[simps! unit_app counit_app]
+@[simps]
 def unop (F : C ⥤ D) (G : D ⥤ C) (h : G.op ⊣ F.op) : F ⊣ G where
   unit := NatTrans.unop h.counit
   counit := NatTrans.unop h.unit
@@ -55,7 +55,7 @@ def unopAdjointUnopOfAdjoint (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Cᵒᵖ)
   unop F.unop G.unop (h.ofNatIsoRight F.opUnopIso.symm)
 
 /-- If `G` is adjoint to `F` then `F.op` is adjoint to `G.op`. -/
-@[simps! unit_app counit_app]
+@[simps]
 def op (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.op where
   unit := NatTrans.op h.counit
   counit := NatTrans.op h.unit
