@@ -5,7 +5,6 @@ Authors: Jovan Gerbscheid
 -/
 import Mathlib.Lean.Meta.RefinedDiscrTree.Basic
 import Mathlib.Lean.Meta.RefinedDiscrTree.Pi
-import Lean.Meta.DiscrTree
 import Mathlib.Tactic.FunProp.StateList
 
 /-!
