@@ -407,7 +407,7 @@ lemma contMDiff_snd_tangentBundle_modelSpace {n : ℕ∞} :
     rfl
   · exact contMDiff_tangentBundleModelSpaceHomeomorph
 
-/-- A vector field on a vector space is smooth in the manifold sense iff it is smoooth in the vector
+/-- A vector field on a vector space is smooth in the manifold sense iff it is smooth in the vector
 space sense-/
 lemma contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt
     {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} {s : Set E} {x : E} :
@@ -421,7 +421,7 @@ lemma contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt
     convert h.contMDiffWithinAt with y
     simp
 
-/-- A vector field on a vector space is smooth in the manifold sense iff it is smoooth in the vector
+/-- A vector field on a vector space is smooth in the manifold sense iff it is smooth in the vector
 space sense-/
 lemma contMDiffAt_vectorSpace_iff_contDiffAt
     {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} {x : E} :
@@ -430,7 +430,7 @@ lemma contMDiffAt_vectorSpace_iff_contDiffAt
   simp only [← contMDiffWithinAt_univ, ← contDiffWithinAt_univ,
     contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt]
 
-/-- A vector field on a vector space is smooth in the manifold sense iff it is smoooth in the vector
+/-- A vector field on a vector space is smooth in the manifold sense iff it is smooth in the vector
 space sense-/
 lemma contMDiffOn_vectorSpace_iff_contDiffOn
     {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} {s : Set E} :
@@ -438,7 +438,7 @@ lemma contMDiffOn_vectorSpace_iff_contDiffOn
       ContDiffOn 𝕜 n V s := by
   simp only [ContMDiffOn, ContDiffOn, contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt ]
 
-/-- A vector field on a vector space is smooth in the manifold sense iff it is smoooth in the vector
+/-- A vector field on a vector space is smooth in the manifold sense iff it is smooth in the vector
 space sense-/
 lemma contMDiff_vectorSpace_iff_contDiff
     {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} :
