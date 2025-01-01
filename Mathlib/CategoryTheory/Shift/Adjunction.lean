@@ -436,7 +436,7 @@ instance : (Equivalence.refl (C := C)).functor.CommShift A := by
 The inverse functor of the identity equivalence is compatible with shifts.
 -/
 instance : (Equivalence.refl (C := C)).inverse.CommShift A := by
-  simp
+  dsimp
   infer_instance
 
 /--
