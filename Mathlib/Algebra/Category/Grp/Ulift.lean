@@ -127,10 +127,7 @@ namespace AddCommGroup
 
 /-- The universe lift for commutative additive groups preserves zero morphisms.
 -/
-instance uliftFunctor_preservesZeroMorphisms :
-    AddCommGrp.uliftFunctor.{u,v}.PreservesZeroMorphisms where map_zero _ _ := rfl
-
 instance uliftFunctor_additive :
-    AddCommGrp.uliftFunctor.{u,v}.Additive where map_add := rfl
+    AddCommGrp.uliftFunctor.{u,v}.Additive where
 
 end AddCommGroup
