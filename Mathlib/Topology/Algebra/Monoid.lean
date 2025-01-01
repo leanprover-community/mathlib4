@@ -439,7 +439,7 @@ theorem tendsto_mul_coprod_nhds_zero_inf_of_disjoint_cocompact {l : Filter (M ×
     _ ≤ (𝓝 0).coprod (𝓝 0) ⊓ map Prod.fst l ×ˢ map Prod.snd l :=
       inf_le_inf_left _ le_prod_map_fst_snd
     _ ≤ 𝓝 0 ×ˢ map Prod.snd l ⊔ map Prod.fst l ×ˢ 𝓝 0 :=
-      Filter.coprod_inf_prod_le _ _ _ _
+      coprod_inf_prod_le _ _ _ _
   apply (Tendsto.sup _ _).mono_left this
   · apply tendsto_mul_nhds_zero_prod_of_disjoint_cocompact
     exact disjoint_map_cocompact continuous_snd hl
@@ -471,6 +471,39 @@ theorem Tendsto.tendsto_mul_zero_of_disjoint_cocompact_left {f g : α → M} {l 
     (hf : Disjoint (map f l) (cocompact M)) (hg : Tendsto g l (𝓝 0)):
     Tendsto (fun x ↦ f x * g x) l (𝓝 0) :=
   tendsto_mul_prod_nhds_zero_of_disjoint_cocompact hf |>.comp (tendsto_map.prod_mk hg)
+
+/-- If `f : α → M` and `g : β → M` are continuous and both tend to zero on the cocompact filter,
+then `fun (i : α × β) ↦ (f i.1) * (g i.2)` also tends to zero on the cocompact filter. -/
+theorem tendsto_mul_cocompact_nhds_zero [TopologicalSpace α] [TopologicalSpace β]
+    {f : α → M} {g : β → M} (f_cont : Continuous f) (g_cont : Continuous g)
+    (hf : Tendsto f (cocompact α) (𝓝 0)) (hg : Tendsto g (cocompact β) (𝓝 0)) :
+    Tendsto (fun (i : α × β) ↦ (f i.1) * (g i.2)) (cocompact (α × β)) (𝓝 0) := by
+  set l : Filter (M × M) := map (Prod.map f g) (cocompact (α × β)) with l_def
+  set K : Set (M × M) := (insert 0 (range f)) ×ˢ (insert 0 (range g))
+  have K_compact : IsCompact K := .prod (hf.isCompact_insert_range_of_cocompact f_cont)
+    (hg.isCompact_insert_range_of_cocompact g_cont)
+  have K_mem_l : K ∈ l := eventually_map.mpr <| .of_forall fun ⟨x, y⟩ ↦
+    ⟨mem_insert_of_mem _ (mem_range_self _), mem_insert_of_mem _ (mem_range_self _)⟩
+  have l_compact : Disjoint l (cocompact (M × M)) := by
+    rw [disjoint_cocompact_right]
+    exact ⟨K, K_mem_l, K_compact⟩
+  have l_le_coprod : l ≤ (𝓝 0).coprod (𝓝 0) := by
+    rw [l_def, ← coprod_cocompact]
+    exact hf.prod_map_coprod hg
+  exact tendsto_mul_nhds_zero_of_disjoint_cocompact l_compact l_le_coprod |>.comp tendsto_map
+
+/-- If `f : α → M` and `g : β → M` both tend to zero on the cofinite filter, then so does
+`fun (i : α × β) ↦ (f i.1) * (g i.2)`. -/
+theorem tendsto_mul_cofinite_nhds_zero {f : α → M} {g : β → M}
+    (hf : Tendsto f cofinite (𝓝 0)) (hg : Tendsto g cofinite (𝓝 0)) :
+    Tendsto (fun (i : α × β) ↦ (f i.1) * (g i.2)) cofinite (𝓝 0) := by
+  letI : TopologicalSpace α := ⊥
+  haveI : DiscreteTopology α := discreteTopology_bot α
+  letI : TopologicalSpace β := ⊥
+  haveI : DiscreteTopology β := discreteTopology_bot β
+  rw [← cocompact_eq_cofinite] at *
+  exact tendsto_mul_cocompact_nhds_zero
+    continuous_of_discreteTopology continuous_of_discreteTopology hf hg
 
 end MulZeroClass
 

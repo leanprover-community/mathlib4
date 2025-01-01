@@ -21,7 +21,7 @@ We show that the following are analytic:
 
 noncomputable section
 
-open scoped Classical Topology
+open scoped Topology
 open Filter Asymptotics ENNReal NNReal
 
 variable {α : Type*}
@@ -716,8 +716,9 @@ def formalMultilinearSeries_geometric : FormalMultilinearSeries 𝕜 A A :=
 
 /-- The geometric series as an `ofScalars` series. -/
 theorem formalMultilinearSeries_geometric_eq_ofScalars :
-    formalMultilinearSeries_geometric 𝕜 A = FormalMultilinearSeries.ofScalars A fun _ ↦ (1 : 𝕜) :=
-  by simp_rw [FormalMultilinearSeries.ext_iff, FormalMultilinearSeries.ofScalars,
+    formalMultilinearSeries_geometric 𝕜 A =
+      FormalMultilinearSeries.ofScalars A fun _ ↦ (1 : 𝕜) := by
+  simp_rw [FormalMultilinearSeries.ext_iff, FormalMultilinearSeries.ofScalars,
     formalMultilinearSeries_geometric, one_smul, implies_true]
 
 lemma formalMultilinearSeries_geometric_apply_norm_le (n : ℕ) :
@@ -739,9 +740,9 @@ lemma one_le_formalMultilinearSeries_geometric_radius (𝕜 : Type*) [Nontrivial
 
 lemma formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     (A : Type*) [NormedRing A] [NormOneClass A] [NormedAlgebra 𝕜 A] :
-    (formalMultilinearSeries_geometric 𝕜 A).radius = 1 := by
-  exact (formalMultilinearSeries_geometric_eq_ofScalars 𝕜 A ▸
-    FormalMultilinearSeries.ofScalars_radius_eq_of_tendsto A _ one_ne_zero (by simp))
+    (formalMultilinearSeries_geometric 𝕜 A).radius = 1 :=
+  formalMultilinearSeries_geometric_eq_ofScalars 𝕜 A ▸
+    FormalMultilinearSeries.ofScalars_radius_eq_of_tendsto A _ one_ne_zero (by simp)
 
 lemma hasFPowerSeriesOnBall_inverse_one_sub
     (𝕜 : Type*) [NontriviallyNormedField 𝕜]
@@ -882,6 +883,7 @@ theorem AnalyticOnNhd.div {f g : E → 𝕝} {s : Set E}
 theorem Finset.analyticWithinAt_sum {f : α → E → F} {c : E} {s : Set E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s c := by
+  classical
   induction' N using Finset.induction with a B aB hB
   · simp only [Finset.sum_empty]
     exact analyticWithinAt_const
@@ -915,6 +917,7 @@ theorem Finset.analyticOnNhd_sum {f : α → E → F} {s : Set E}
 theorem Finset.analyticWithinAt_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s c := by
+  classical
   induction' N using Finset.induction with a B aB hB
   · simp only [Finset.prod_empty]
     exact analyticWithinAt_const

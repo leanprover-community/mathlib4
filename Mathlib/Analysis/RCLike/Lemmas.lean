@@ -20,8 +20,6 @@ end Polynomial
 
 namespace FiniteDimensional
 
-open scoped Classical
-
 open RCLike
 
 library_note "RCLike instance"/--

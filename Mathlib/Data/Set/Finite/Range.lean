@@ -58,9 +58,8 @@ Some set instances do not appear here since they are consequences of others, for
 
 namespace Finite.Set
 
-open scoped Classical
-
 instance finite_range (f : ι → α) [Finite ι] : Finite (range f) := by
+  classical
   haveI := Fintype.ofFinite (PLift ι)
   infer_instance
 
