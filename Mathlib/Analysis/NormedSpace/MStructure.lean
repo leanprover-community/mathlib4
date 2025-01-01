@@ -235,15 +235,12 @@ lemma isometry2 (x : WithLp 1 (L × h.compl)) : ‖(l1map G h) x‖ = ‖x‖  :
 
 #check AddMonoidHomClass.isometry_iff_norm (l1map G h)
 
-lemma isometry : Isometry (l1map G h) := by
+lemma l1map_isometry : Isometry (l1map G h) := by
   rw [AddMonoidHomClass.isometry_iff_norm]
   intro x
   rw [isometry2]
 
-lemma bijection : Function.Bijective (l1map G h) := ⟨by
-    intro x y
-  , (sur G h)⟩
-
+lemma bijection : Function.Bijective (l1map G h) := ⟨(l1map_isometry G h).injective, (sur G h)⟩
 
 def prodEquivₗᵢ : WithLp 1 (L × h.compl) ≃+ G where
   toFun a := a.1 +a.2
