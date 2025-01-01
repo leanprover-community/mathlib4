@@ -9,9 +9,9 @@ import Mathlib.Geometry.Manifold.ContMDiff.Basic
 ## Smoothness of standard maps associated to the product of manifolds
 
 This file contains results about smoothness of standard maps associated to products of manifolds
-- if `f` and `g` are smooth, so is their point-wise product.
+- if `f` and `g` are `C^n`, so is their point-wise product.
 - the component projections from a product of manifolds are smooth.
-- functions into a product (*pi type*) are smooth iff their components are
+- functions into a product (*pi type*) are `C^n` iff their components are
 
 -/
 
@@ -309,7 +309,7 @@ end prodMap
 section PiSpace
 
 /-!
-### Smoothness of functions with codomain `Π i, F i`
+### Regularity of functions with codomain `Π i, F i`
 
 We have no `ModelWithCorners.pi` yet, so we prove lemmas about functions `f : M → Π i, F i` and
 use `𝓘(𝕜, Π i, F i)` as the model space.

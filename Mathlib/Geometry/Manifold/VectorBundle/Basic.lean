@@ -156,7 +156,7 @@ theorem FiberBundle.writtenInExtChartAt_trivializationAt_symm {x : TotalSpace F 
       (trivializationAt F E x.proj).toPartialHomeomorph.symm y = y :=
   writtenInExtChartAt_chartAt_symm_comp _ hy
 
-/-! ### Smoothness of maps in/out fiber bundles
+/-! ### Regularity of maps in/out fiber bundles
 
 Note: For these results we don't need that the bundle is a `C^n` vector bundle, or even a vector
 bundle at all, just that it is a fiber bundle over a charted base space.
@@ -298,7 +298,7 @@ instance : ContMDiffVectorBundle 0 F E IB := by
 
 variable [ContMDiffVectorBundle n F E IB]
 
-section SmoothCoordChange
+section ContMDiffCoordChange
 
 variable {F E}
 variable (e e' : Trivialization F (π F E)) [MemTrivializationAtlas e] [MemTrivializationAtlas e']
@@ -440,7 +440,7 @@ theorem Trivialization.contMDiffWithinAt_snd_comp_iff₂ {f : M → TotalSpace F
       ContMDiffWithinAt IM 𝓘(𝕜, F) n (fun y ↦ (e' (f y)).2) s x :=
   ⟨(hp.change_section_trivialization · he he'), (hp.change_section_trivialization · he' he)⟩
 
-end SmoothCoordChange
+end ContMDiffCoordChange
 
 variable [IsManifold IB n B] in
 /-- For a `C^n` vector bundle `E` over `B` with fiber modelled on `F`, the change-of-co-ordinates
@@ -645,7 +645,7 @@ class IsContMDiff (a : VectorPrebundle 𝕜 F E) (n : WithTop ℕ∞) : Prop whe
 variable (a : VectorPrebundle 𝕜 F E) [ha : a.IsContMDiff IB n] {e e' : Pretrivialization F (π F E)}
 
 variable (IB n) in
-/-- A randomly chosen coordinate change on a `SmoothVectorPrebundle`, given by
+/-- A randomly chosen coordinate change on a `VectorPrebundle` satisfying `IsContMDiff`, given by
   the field `exists_coordChange`. Note that `a.contMDiffCoordChange` need not be the same as
   `a.coordChange`. -/
 noncomputable def contMDiffCoordChange (he : e ∈ a.pretrivializationAtlas)

@@ -9,7 +9,7 @@ import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-!
-# Smooth sections
+# `C^n` sections
 
 In this file we define the type `ContMDiffSection` of `n` times continuously differentiable
 sections of a vector bundle over a manifold `M` and prove that it's a module.
@@ -173,7 +173,7 @@ theorem coe_smul (r : 𝕜) (s : Cₛ^n⟮I; F, V⟯) : ⇑(r • s : Cₛ^n⟮I
   rfl
 
 variable (I F V n) in
-/-- The additive morphism from smooth sections to dependent maps. -/
+/-- The additive morphism from `C^n` sections to dependent maps. -/
 def coeAddHom : Cₛ^n⟮I; F, V⟯ →+ ∀ x, V x where
   toFun := (↑)
   map_zero' := coe_zero
