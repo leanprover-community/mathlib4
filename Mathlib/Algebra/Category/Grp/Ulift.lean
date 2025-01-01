@@ -12,7 +12,7 @@ This file shows that the functors `Grp.uliftFunctor` and `CommGrp.uliftFunctor`
 (as well as the additive versions) are fully faithful, preserves all limits and
 create small limits.
 
-It also shows that `AddCommGrp.uliftFunctor` preserves zero morphisms and is an additive functor.
+It also shows that `AddCommGrp.uliftFunctor` is an additive functor.
 
 -/
 
