@@ -206,13 +206,10 @@ lemma unit_app_commShiftIso_hom_app [adj.CommShift A] (a : A) (X : C) :
     adj.unit.app (X⟦a⟧) ≫ ((F ⋙ G).commShiftIso a).hom.app X = (adj.unit.app X)⟦a⟧' := by
   simpa using (NatTrans.CommShift.comm_app adj.unit a X).symm
 
-lemma commShift_counit [adj.CommShift A] : NatTrans.CommShift adj.counit A :=
-  CommShift.commShift_counit
-
+@[reassoc (attr := simp)]
 lemma commShift_counit_app [adj.CommShift A] (a : A) (Y : D) :
     ((G ⋙ F).commShiftIso a).hom.app Y ≫ (adj.counit.app Y)⟦a⟧' = adj.counit.app (Y⟦a⟧) := by
-  convert (commShift_counit adj A).comm_app _ a Y
-  simp
+  simpa using (NatTrans.CommShift.comm_app adj.counit a Y)
 
 namespace CommShift
 
