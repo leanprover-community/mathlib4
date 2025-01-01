@@ -184,7 +184,7 @@ lemma mgf_id_map (hX : AEMeasurable X μ) : mgf id (μ.map X) = mgf X μ := by
   ext t
   rw [mgf, integral_map hX]
   · rfl
-  · exact (measurable_exp.comp (measurable_const_mul _)).aestronglyMeasurable
+  · exact (measurable_const_mul _).exp.aestronglyMeasurable
 
 theorem mgf_neg : mgf (-X) μ t = mgf X μ (-t) := by simp_rw [mgf, Pi.neg_apply, mul_neg, neg_mul]
 

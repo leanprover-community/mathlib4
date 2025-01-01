@@ -365,7 +365,7 @@ theorem mgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
   calc
   mgf X p t = (p.map X)[fun x => exp (t * x)] := by
     rw [← mgf_id_map, mgf]
-    all_goals {simp [AEMeasurable.of_map_ne_zero, hX, IsProbabilityMeasure.ne_zero]}
+    all_goals simp [AEMeasurable.of_map_ne_zero, hX, IsProbabilityMeasure.ne_zero]
   _ = ∫ x, exp (t * x) * gaussianPDFReal μ v x := by
     simp [hX, gaussianReal_of_var_ne_zero μ hv, gaussianPDF_def, ENNReal.ofReal,
       integral_withDensity_eq_integral_smul (measurable_gaussianPDFReal μ v).real_toNNReal,
