@@ -84,7 +84,6 @@ Note: it is generally better to use `Adjunction.natIsoEquiv`, see the file `Adju
 -/
 def natIsoOfLeftAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (l : F ≅ F') : G ≅ G' :=
-  NatIso.removeOp (natIsoOfRightAdjointNatIso (op _ F' adj2)
-    (op _ _ adj1) (NatIso.op l))
+  NatIso.removeOp (natIsoOfRightAdjointNatIso (op adj2) (op adj1) (NatIso.op l))
 
 end CategoryTheory.Adjunction
