@@ -53,7 +53,10 @@ variable {p 𝕜 α β}
 variable [Semiring 𝕜] [AddCommGroup α] [AddCommGroup β]
 variable (x y : WithLp p (α × β)) (c : 𝕜)
 
+/-- `Prod.fst` lifted to `WithLp` -/
 protected def fst : α := (WithLp.equiv p (α × β) x).fst
+
+/-- `Prod.snd` lifted to `WithLp` -/
 protected def snd : β := (WithLp.equiv p (α × β) x).snd
 
 @[simp]
