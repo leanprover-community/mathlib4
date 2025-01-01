@@ -53,7 +53,7 @@ noncomputable instance uliftFunctor_preservesLimit {J : Type w} [Category.{w'} J
 
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimitsOfShape {J : Type w} [Category.{w'} J] :
-    PreservesLimitsOfShape J uliftFunctor.{v, u} where preservesLimit := inferInstance
+    PreservesLimitsOfShape J uliftFunctor.{v, u} where
 
 /--
 The universe lift for groups preserves limits of arbitrary size.
