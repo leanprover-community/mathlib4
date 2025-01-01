@@ -85,6 +85,10 @@ theorem neg_fst : (-x).fst = -x.fst :=
 theorem neg_snd : (-x).snd = -x.snd :=
   rfl
 
+@[simp]
+theorem mk_add_mk (a₁ a₂ : α) (b₁ b₂ : β) :
+    (a₁, b₁) + (a₂, b₂) = ((a₁ + a₂, b₁ + b₂) : WithLp p (α × β)) := rfl
+
 variable [Module 𝕜 α] [Module 𝕜 β]
 
 @[simp]
