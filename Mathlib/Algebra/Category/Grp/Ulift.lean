@@ -125,7 +125,7 @@ end CommGrp
 
 namespace AddCommGroup
 
-/-- The universe lift for commutative additive groups preserves zero morphisms.
+/-- The universe lift for commutative additive groups is additive.
 -/
 instance uliftFunctor_additive :
     AddCommGrp.uliftFunctor.{u,v}.Additive where
