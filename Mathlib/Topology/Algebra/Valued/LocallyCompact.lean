@@ -3,8 +3,11 @@ Copyright (c) 2024 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
+import Mathlib.Analysis.Normed.Field.Lemmas
+import Mathlib.Analysis.Normed.Field.ProperSpace
 import Mathlib.RingTheory.DiscreteValuationRing.Basic
 import Mathlib.RingTheory.Ideal.IsPrincipalPowQuotient
+import Mathlib.RingTheory.Valuation.Archimedean
 import Mathlib.Topology.Algebra.Valued.NormedValued
 import Mathlib.Topology.Algebra.Valued.ValuedField
 
@@ -166,11 +169,11 @@ variable (K) in
 lemma exists_nnnorm_lt : ∃ x : 𝒪[K], 0 < ‖x‖₊ ∧ ‖x‖₊ < 1 := by
   exact exists_norm_coe_lt K
 
-lemma discreteValuationRing_of_compactSpace [h : CompactSpace 𝒪[K]] :
-    DiscreteValuationRing 𝒪[K] := by
-  have hl : LocalRing 𝒪[K] := inferInstance
+lemma isDiscreteValuationRing_of_compactSpace [h : CompactSpace 𝒪[K]] :
+    IsDiscreteValuationRing 𝒪[K] := by
+  have hl : IsLocalRing 𝒪[K] := inferInstance
   obtain ⟨x, hx, hx'⟩ := exists_nnnorm_lt K
-  rw [← nnnorm_one (K := K)] at hx'
+  rw [← nnnorm_one (α := K)] at hx'
   have hi : Valuation.Integers (R := K) Valued.v 𝒪[K] := Valuation.integer.integers v
   have key : IsPrincipalIdealRing 𝒪[K]:= by
     rw [hi.isPrincipalIdealRing_iff_not_denselyOrdered]
@@ -181,10 +184,10 @@ lemma discreteValuationRing_of_compactSpace [h : CompactSpace 𝒪[K]] :
       replace h : (⟨_, a, rfl⟩ : Set.range (v : K → ℝ≥0)) < ⟨_, b, rfl⟩ := h
       obtain ⟨⟨_, c, rfl⟩, hc⟩ := exists_between h
       refine ⟨⟨_, ⟨c, ?_⟩, rfl⟩, hc⟩
-      · rw [mem_integer_iff']
-        simp only [v_eq_valuation, NormedField.valuation_apply, Subtype.mk_lt_mk, ← coe_lt_coe,
+      · rw [mem_iff]
+        simp only [ NormedField.valuation_apply, Subtype.mk_lt_mk, ← coe_lt_coe,
           coe_nnnorm] at hc
-        simpa using hc.right.le.trans (mem_integer_iff'.mp b.prop)
+        simpa using hc.right.le.trans (mem_iff.mp b.prop)
     let U : 𝒪[K] → Set 𝒪[K] := fun y ↦ if ‖y‖₊ < ‖x‖₊
       then Metric.closedBall 0 ‖x‖
       else Metric.sphere 0 ‖y‖
@@ -216,9 +219,7 @@ lemma discreteValuationRing_of_compactSpace [h : CompactSpace 𝒪[K]] :
     let u := t.filter (fun a ↦ ‖a‖₊ < 1)
     have hwu : w ∈ u := by simp [u, hwt, hw1]
     obtain ⟨l, hl, hl'⟩ := u.sup'_mem (((‖·‖₊) : 𝒪[K] → ℝ≥0) '' u)
-      (fun x hx y hy ↦ (max_cases x y).elim
-        (fun h ↦ (sup_eq_max (a := x) (b := y) ▸ h).left.symm ▸ hx)
-        (fun h ↦ (sup_eq_max (a := x) (b := y) ▸ h).left.symm ▸ hy))
+      (fun x hx y hy ↦ (max_cases x y).elim (fun h ↦ h.left.symm ▸ hx) (fun h ↦ h.left.symm ▸ hy))
       ⟨w, hwu⟩ (‖·‖₊) (fun _ ↦ Set.mem_image_of_mem _)
     simp only at hl'
     have hm : (⟨‖l‖₊, l, rfl⟩ : Set.range ((‖·‖₊) : 𝒪[K] → ℝ≥0)) < (⟨1, y, hy'⟩) := by
@@ -239,8 +240,8 @@ lemma discreteValuationRing_of_compactSpace [h : CompactSpace 𝒪[K]] :
     __ := hl
     __ := key
     not_a_field' := by
-      simp only [ne_eq, Ideal.ext_iff, LocalRing.mem_maximalIdeal, mem_nonunits_iff, Ideal.mem_bot,
-        not_forall, isUnit_iff_norm_eq_one]
+      simp only [ne_eq, Ideal.ext_iff, IsLocalRing.mem_maximalIdeal, mem_nonunits_iff,
+        Ideal.mem_bot, not_forall, isUnit_iff_norm_eq_one]
       refine ⟨x, ?_⟩
       simp only [← coe_lt_coe, coe_zero, coe_nnnorm, norm_pos_iff, ne_eq,
         ZeroMemClass.coe_eq_zero, nnnorm_one, coe_one] at hx hx'
@@ -249,10 +250,10 @@ lemma discreteValuationRing_of_compactSpace [h : CompactSpace 𝒪[K]] :
 
 end CompactDVR
 
-lemma compactSpace_iff_completeSpace_and_discreteValuationRing_and_finite_residueField :
-    CompactSpace 𝒪[K] ↔ CompleteSpace 𝒪[K] ∧ DiscreteValuationRing 𝒪[K] ∧ Finite 𝓀[K] := by
+lemma compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField :
+    CompactSpace 𝒪[K] ↔ CompleteSpace 𝒪[K] ∧ IsDiscreteValuationRing 𝒪[K] ∧ Finite 𝓀[K] := by
   refine ⟨fun h ↦ ?_, fun ⟨_, _, h⟩ ↦ ⟨?_⟩⟩
-  · have : DiscreteValuationRing 𝒪[K] := discreteValuationRing_of_compactSpace
+  · have : IsDiscreteValuationRing 𝒪[K] := isDiscreteValuationRing_of_compactSpace
     refine ⟨complete_of_compact, by assumption, ?_⟩
     rw [← isCompact_univ_iff, isCompact_iff_totallyBounded_isComplete,
         totallyBounded_iff_finite_residueField] at h
@@ -264,19 +265,19 @@ lemma compactSpace_iff_completeSpace_and_discreteValuationRing_and_finite_residu
 lemma properSpace_iff_compactSpace_integer :
     ProperSpace K ↔ CompactSpace 𝒪[K] := by
   simp only [← isCompact_univ_iff, Subtype.isCompact_iff, Set.image_univ, Subtype.range_coe_subtype,
-             mem_integer_iff', ← mem_closedBall_zero_iff, Set.setOf_mem_eq]
+             mem_iff, ← mem_closedBall_zero_iff, Set.setOf_mem_eq]
   constructor <;> intro h
   · exact isCompact_closedBall 0 1
   · suffices LocallyCompactSpace K from .of_nontriviallyNormedField_of_weaklyLocallyCompactSpace K
     exact IsCompact.locallyCompactSpace_of_mem_nhds_of_addGroup h <|
       Metric.closedBall_mem_nhds 0 zero_lt_one
 
-lemma properSpace_iff_completeSpace_and_discreteValuationRing_integer_and_finite_residueField :
-    ProperSpace K ↔ CompleteSpace K ∧ DiscreteValuationRing 𝒪[K] ∧ Finite 𝓀[K] := by
+lemma properSpace_iff_completeSpace_and_isDiscreteValuationRing_integer_and_finite_residueField :
+    ProperSpace K ↔ CompleteSpace K ∧ IsDiscreteValuationRing 𝒪[K] ∧ Finite 𝓀[K] := by
   simp only [properSpace_iff_compactSpace_integer,
-      compactSpace_iff_completeSpace_and_discreteValuationRing_and_finite_residueField,
+      compactSpace_iff_completeSpace_and_isDiscreteValuationRing_and_finite_residueField,
       completeSpace_iff_isComplete_univ (α := 𝒪[K]), Subtype.isComplete_iff,
       NormedField.completeSpace_iff_isComplete_closedBall, Set.image_univ,
-      Subtype.range_coe_subtype, mem_integer_iff', ← mem_closedBall_zero_iff, Set.setOf_mem_eq]
+      Subtype.range_coe_subtype, mem_iff, ← mem_closedBall_zero_iff, Set.setOf_mem_eq]
 
 end Valued.integer
