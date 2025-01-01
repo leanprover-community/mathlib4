@@ -23,7 +23,7 @@ theory of modular forms). For example, if $1 \leq n$ is even then
 
 $$\zeta(2n)=\sum_{t\geq1}t^{-2n}=(-1)^{n+1}\frac{(2\pi)^{2n}B_{2n}}{2(2n)!}.$$
 
-Note however that this result is not yet formalised in Lean.
+This result is formalised in Lean: `riemannZeta_two_mul_nat`
 
 The Bernoulli numbers can be formally defined using the power series
 
