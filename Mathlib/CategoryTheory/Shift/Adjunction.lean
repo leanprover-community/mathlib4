@@ -246,19 +246,13 @@ variable {E : Type*} [Category E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G
 
 /-- Compatibility of `Adjunction.Commshift` with the composition of adjunctions.
 -/
-instance instComp : (adj.comp adj').CommShift A := by
-  refine mk' _ _ {comm' := fun a ↦ ?_}
-  ext
-  dsimp
-  simp
-  rw [← Functor.comp_assoc]
-  rw [Functor.commShiftIso_comp_hom_app]
-
-  simp [Functor.commShiftIso_comp_inv_app, Functor.commShiftIso_comp_hom_app]
-  simp [← cancel_mono ((G.commShiftIso a).inv.app _)]
-  conv_rhs => rw [← G.map_comp, ← G.map_comp, ← G.map_comp, ← Functor.comp_map,
-    ← adj'.unit.naturality_assoc, Functor.id_map]
-  simp
+instance instComp : (adj.comp adj').CommShift A where
+  commShift_counit := by
+    rw [comp_counit]
+    infer_instance
+  commShift_unit := by
+    rw [comp_unit]
+    infer_instance
 
 end CommShift
 

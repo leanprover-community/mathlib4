@@ -520,9 +520,10 @@ See <https://stacks.math.columbia.edu/tag/0DV0>.
 def comp : F ⋙ H ⊣ I ⋙ G :=
   mk' {
     homEquiv := fun _ _ ↦ Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _)
-    unit := adj₁.unit ≫ (whiskerLeft F <| whiskerRight adj₂.unit G) ≫ (Functor.associator _ _ _).inv
-    counit :=
-      (Functor.associator _ _ _).hom ≫ (whiskerLeft I <| whiskerRight adj₁.counit H) ≫ adj₂.counit }
+    unit := adj₁.unit ≫ whiskerRight (F.rightUnitor.inv ≫ whiskerLeft F adj₂.unit ≫
+      (Functor.associator _ _ _ ).inv) G ≫ (Functor.associator _ _ _).hom
+    counit := (Functor.associator _ _ _ ).inv ≫ whiskerRight ((Functor.associator _ _ _ ).hom ≫
+      whiskerLeft _ adj₁.counit ≫ I.rightUnitor.hom) _ ≫ adj₂.counit }
 
 @[simp, reassoc]
 lemma comp_unit_app (X : C) :
