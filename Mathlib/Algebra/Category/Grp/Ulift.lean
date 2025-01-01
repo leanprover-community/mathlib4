@@ -25,7 +25,7 @@ namespace Grp
 /-- The universe lift functor for groups is fully faithful.
 -/
 @[to_additive
-  "The universe lift functor for groups is fully faithful."]
+  "The universe lift functor for additive groups is fully faithful."]
 def uliftFunctorFullyFaithful : uliftFunctor.{u, v}.FullyFaithful where
   preimage f := Grp.ofHom (MulEquiv.ulift.toMonoidHom.comp
     (f.comp MulEquiv.ulift.symm.toMonoidHom))
