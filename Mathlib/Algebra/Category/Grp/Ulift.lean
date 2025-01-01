@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
-# Properties of he universe lift functor for groups
+# Properties of the universe lift functor for groups
 
 This file shows that the functors `Grp.uliftFunctor` and `CommGrp.uliftFunctor`
 (as well as the additive versions) are fully faithful, preserves all limits and
