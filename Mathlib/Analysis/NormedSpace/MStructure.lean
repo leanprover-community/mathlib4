@@ -179,9 +179,8 @@ variable {L : AddSubgroup G} (h : IsLsummand G L)
 
 lemma WithLp.prod_norm_eq_of_1 (x : WithLp 1 (L × h.compl)) :
     ‖x‖ = ‖(WithLp.equiv 1 _ x).fst‖ + ‖(WithLp.equiv 1 _ x).snd‖ := by
-  rw [WithLp.prod_norm_eq_of_nat 1 Nat.cast_one.symm]
-  simp only [AddSubgroupClass.coe_norm, pow_one, Nat.cast_one, ne_eq, one_ne_zero,
-    not_false_eq_true, div_self, Real.rpow_one, WithLp.equiv_fst, WithLp.equiv_snd]
+  rw [WithLp.prod_norm_eq_of_nat 1 Nat.cast_one.symm, pow_one, pow_one, WithLp.equiv_fst,
+    WithLp.equiv_snd, Nat.cast_one, (div_self one_ne_zero), Real.rpow_one]
 
 def l1map : WithLp 1 (L × h.compl) →+ G where
   toFun := fun a => a.1 +a.2
@@ -204,15 +203,12 @@ lemma surjective : Function.Surjective (l1map G h) := by
 
 --lemma li (x : WithLp 1 (L × h.compl)) : l1map G h →ₗᵢ[R] where
 
-#check AddMonoidHomClass.isometry_iff_norm (l1map G h)
-
 lemma l1map_isometry : Isometry (l1map G h) := by
   rw [AddMonoidHomClass.isometry_iff_norm]
   intro x
-  have e1 : ‖x‖ = ‖x.fst.val‖ + ‖x.snd.val‖ := by
-    rw [WithLp.prod_norm_eq_of_1]
-    rfl
-  rw [e1, (h.Lnorm G x.1.prop x.2.prop), l1map, AddMonoidHom.coe_mk, ZeroHom.coe_mk]
+  rw [AddMonoidHom.coe_mk, ZeroHom.coe_mk, l1map, ← (h.Lnorm G x.1.prop x.2.prop),
+    WithLp.prod_norm_eq_of_1]
+  rfl
 
 lemma bijection : Function.Bijective (l1map G h) := ⟨(l1map_isometry G h).injective, surjective G h⟩
 
