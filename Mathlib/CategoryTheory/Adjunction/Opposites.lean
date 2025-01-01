@@ -55,7 +55,7 @@ def unopAdjointUnopOfAdjoint (F : Cᵒᵖ ⥤ Dᵒᵖ) (G : Dᵒᵖ ⥤ Cᵒᵖ)
   unop F.unop G.unop (h.ofNatIsoRight F.opUnopIso.symm)
 
 /-- If `G` is adjoint to `F` then `F.op` is adjoint to `G.op`. -/
-@[simps! unit_app counit_app]
+@[simps]
 def op (F : C ⥤ D) (G : D ⥤ C) (h : G ⊣ F) : F.op ⊣ G.op where
   unit := NatTrans.op h.counit
   counit := NatTrans.op h.unit
