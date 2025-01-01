@@ -208,10 +208,10 @@ theorem toSubmodule_inj (L₁' L₂' : LieSubalgebra R L) :
 
 @[deprecated (since := "2024-12-29")] alias toSubmodule_eq_iff := toSubmodule_inj
 
-theorem toSubmodule : ((L' : Submodule R L) : Set L) = L' :=
+theorem coe_toSubmodule : ((L' : Submodule R L) : Set L) = L' :=
   rfl
 
-@[deprecated (since := "2024-12-30")] alias coe_to_submodule := toSubmodule
+@[deprecated (since := "2024-12-30")] alias coe_to_submodule := coe_toSubmodule
 
 section LieModule
 
