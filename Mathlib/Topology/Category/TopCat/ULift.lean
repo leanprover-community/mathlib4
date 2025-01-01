@@ -20,9 +20,6 @@ open CategoryTheory
 
 namespace TopCat
 
-variable {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
-  (f : X → Y)
-
 -- Note: no `@[simps!]` attribute here in order to get good simplifications lemmas
 -- like `uliftFunctorObjHomeo_naturality_apply` below. We should access
 -- `uliftFunctor.obj X` via the homeomorphism `X.uliftFunctorObjHomeo`.
