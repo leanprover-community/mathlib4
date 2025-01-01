@@ -332,21 +332,16 @@ lemma P1_apply (x : WithLp p (α × β)) : P1 x = (x.1, 0) := rfl
 
 lemma P2_apply (x : WithLp p (α × β)) : P2 x = (0, x.2) := rfl
 
-lemma test (a b : α) (c d : β) :
-    ((a,c) : WithLp p (α × β)) + ((b,d) : WithLp p (α × β)) = ((a+b,c+d) : WithLp p (α × β)) := by
-  rfl
-
 lemma P1_compl : (1 : AddMonoid.End (WithLp p (α × β))) - P1 = P2 := AddMonoidHom.ext
-  fun x => by rw [AddMonoidHom.sub_apply, P1_apply, P2_apply, AddMonoid.End.coe_one, id_eq,
-    sub_eq_iff_eq_add, add_comm, test, zero_add, add_zero]; rfl
+  fun x => by
+    rw [AddMonoidHom.sub_apply, P1_apply, P2_apply, AddMonoid.End.coe_one, id_eq,
+      sub_eq_iff_eq_add, add_comm, WithLp.mk_add_mk, zero_add, add_zero]; rfl
 
 theorem prod_norm_eq_sup (x : WithLp ∞ (α × β)) : ‖x‖ = ‖P1 x‖ ⊔ ‖(1 - P1) x‖ := by
   rw [WithLp.prod_norm_eq_sup x, P1_apply, P1_compl, P2_apply]
   apply congr_arg₂
-  · rw [WithLp.prod_norm_eq_sup]
-    simp only [norm_zero, norm_nonneg, sup_of_le_left]
-  · rw [WithLp.prod_norm_eq_sup]
-    simp only [norm_zero, norm_nonneg, sup_of_le_right]
+  · simp only [WithLp.prod_norm_eq_sup, norm_zero, norm_nonneg, sup_of_le_left]
+  · simp only [WithLp.prod_norm_eq_sup, norm_zero, norm_nonneg, sup_of_le_right]
 
 lemma prod_norm_eq_add_P1 (hp : 0 < p.toReal) (x : WithLp p (α × β)) :
     ‖x‖ = (‖P1 x‖ ^ p.toReal + ‖(1 - P1) x‖ ^ p.toReal) ^ (1 / p.toReal) := by
