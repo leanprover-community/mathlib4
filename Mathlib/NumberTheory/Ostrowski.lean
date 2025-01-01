@@ -67,23 +67,23 @@ private lemma list_mul_sum {R : Type*} [CommSemiring R] {T : Type*} (l : List T)
     List.sum (List.mapIdx (fun i _ => x * y ^ i) (l)) =
     x * List.sum (List.mapIdx (fun i _ => y ^ i) (l)) := by
   induction l with
-  | nil => simp only [List.mapIdx_nil, List.sum_nil, mul_zero, forall_const]
+  | nil => simp
   | cons head tail ih =>
     intro x
     simp_rw [List.mapIdx_cons, pow_zero, mul_one, List.sum_cons, mul_add, mul_one]
     have (a : ℕ) : y ^ (a + 1) = y * y ^ a := by ring
-    simp_rw [this, ← mul_assoc, ih, ← mul_assoc]
+    simp [this, ih]
 
 -- Geometric sum for lists
 private lemma list_geom {T : Type*} {F : Type*} [Field F] (l : List T) {y : F} (hy : y ≠ 1) :
     List.sum (List.mapIdx (fun i _ => y ^ i) l) = (y ^ l.length - 1) / (y - 1) := by
   induction l with
-  | nil => simp only [List.mapIdx_nil, List.sum_nil, List.length_nil, pow_zero, sub_self, zero_div]
+  | nil => simp --
   | cons head tail ih =>
     simp only [List.mapIdx_cons, pow_zero, List.sum_cons, List.length_cons]
     have (a : ℕ ) : y ^ (a + 1) = y * y ^ a := by ring
     simp_rw [this, list_mul_sum, ih]
-    simp only [mul_div, ← same_add_div (sub_ne_zero.2 hy), mul_sub, mul_one, sub_add_sub_cancel']
+    simp  [mul_div, ← same_add_div (sub_ne_zero.2 hy), mul_sub]
 
 namespace Rat.MulRingNorm
 open Int
@@ -95,7 +95,7 @@ on `ℤ`. -/
 lemma eq_on_nat_iff_eq_on_Int : (∀ n : ℕ , f n = g n) ↔ (∀ n : ℤ , f n = g n) := by
   refine ⟨fun h z ↦ ?_, fun a n ↦ a n⟩
   obtain ⟨n , rfl | rfl⟩ := eq_nat_or_neg z <;>
-  simp only [Int.cast_neg, Int.cast_natCast, map_neg_eq_map, h n]
+  simp [h n]
 
 /-- Values of a multiplicative norm of the rationals are determined by the values on the natural
 numbers. -/
@@ -125,15 +125,14 @@ Every bounded absolute value is equivalent to a `p`-adic absolute value
 /-- The mulRingNorm corresponding to the p-adic norm on `ℚ`. -/
 def mulRingNorm_padic (p : ℕ) [Fact p.Prime] : MulRingNorm ℚ :=
 { toFun     := fun x : ℚ ↦ (padicNorm p x : ℝ),
-  map_zero' := by simp only [padicNorm.zero, Rat.cast_zero]
+  map_zero' := by simp
   add_le'   := by simp only; norm_cast; exact fun r s ↦ padicNorm.triangle_ineq r s
-  neg'      := by simp only [forall_const, padicNorm.neg]
+  neg'      := by simp
   eq_zero_of_map_eq_zero' := by
     simp only [Rat.cast_eq_zero]
     apply padicNorm.zero_of_padicNorm_eq_zero
-  map_one' := by simp only [ne_eq, one_ne_zero, not_false_eq_true, padicNorm.eq_zpow_of_nonzero,
-    padicValRat.one, neg_zero, zpow_zero, Rat.cast_one]
-  map_mul' := by simp only [padicNorm.mul, Rat.cast_mul, forall_const]
+  map_one' := by simp
+  map_mul' := by simp
 }
 
 @[simp] lemma mulRingNorm_eq_padic_norm (p : ℕ) [Fact p.Prime] (r : ℚ) :
@@ -153,8 +152,8 @@ lemma exists_minimal_nat_zero_lt_mulRingNorm_lt_one : ∃ p : ℕ, (0 < f p ∧ 
     rw [← eq_on_nat_iff_eq]
     intro n
     rcases eq_or_ne n 0 with rfl | hn0
-    · simp only [Nat.cast_zero, map_zero]
-    · simp only [MulRingNorm.apply_one, Nat.cast_eq_zero, hn0, ↓reduceIte, hf_nontriv n hn0]
+    · simp
+    · simp [hn0, hf_nontriv n hn0]
   set P := {m : ℕ | 0 < f ↑m ∧ f ↑m < 1} -- p is going to be the minimum of this set.
   have hP : P.Nonempty :=
     ⟨n, map_pos_of_ne_zero f (Nat.cast_ne_zero.mpr hn1), lt_of_le_of_ne (bdd n) hn2⟩
@@ -171,7 +170,7 @@ lemma is_prime_of_minimal_nat_zero_lt_mulRingNorm_lt_one : p.Prime := by
   constructor -- Two goals: p is not a unit and any product giving p must contain a unit.
   · rw [Nat.isUnit_iff]
     rintro rfl
-    simp only [Nat.cast_one, map_one, lt_self_iff_false] at hp1
+    simp at hp1
   · rintro a b rfl
     rw [Nat.isUnit_iff, Nat.isUnit_iff]
     by_contra! con
@@ -227,7 +226,7 @@ lemma mulRingNorm_eq_one_of_not_dvd {m : ℕ} (hpm : ¬ p ∣ m) : f m = 1 := by
     simp only [map_mul, map_pow, le_refl]
     gcongr
     all_goals rw [← MulRingNorm.apply_natAbs_eq]; apply bdd
-  _ = (f p) ^ k + (f m) ^ k := by simp only [one_mul]
+  _ = (f p) ^ k + (f m) ^ k := by simp
   _ < 1 := by
     have hm₀ : 0 < f m :=
       map_pos_of_ne_zero _ <| Nat.cast_ne_zero.2 fun H ↦ hpm <| H ▸ dvd_zero p
@@ -242,7 +241,7 @@ lemma exists_pos_mulRingNorm_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) 
   refine ⟨- logb p (f p), Left.neg_pos_iff.2 <| logb_neg (mod_cast pprime.one_lt) hp0 hp1, ?_⟩
   rw [neg_neg]
   refine (rpow_logb (mod_cast pprime.pos) ?_ hp0).symm
-  simp only [ne_eq, Nat.cast_eq_one,Nat.Prime.ne_one pprime, not_false_eq_true]
+  simp [Nat.Prime.ne_one pprime]
 
 -- ## Non-archimedean case: end goal
 
@@ -258,10 +257,10 @@ theorem mulRingNorm_equiv_padic_of_bounded :
   use p
   constructor -- 2 goals: MulRingNorm.equiv f (mulRingNorm_padic p) and p is unique.
   · use hprime_fact
-    refine ⟨t⁻¹, by simp only [inv_pos, h.1], fun n ↦ ?_⟩
+    refine ⟨t⁻¹, by simp [h.1], fun n ↦ ?_⟩
     have ht : t⁻¹ ≠ 0 := inv_ne_zero h.1.ne'
     rcases eq_or_ne n 0 with rfl | hn -- Separate cases n=0 and n ≠ 0
-    · simp only [Nat.cast_zero, map_zero, ne_eq, ht, not_false_eq_true, zero_rpow]
+    · simp [ht]
     · /- Any natural number can be written as a power of p times a natural number not divisible
       by p  -/
       rcases Nat.exists_eq_pow_mul_and_not_dvd hn p hprime.ne_one with ⟨e, m, hpm, rfl⟩
@@ -297,11 +296,11 @@ Every unbounded absolute value is equivalent to the standard absolute value
 /-- The usual absolute value on ℚ. -/
 def mulRingNorm_real : MulRingNorm ℚ :=
 { toFun    := fun x : ℚ ↦ |x|
-  map_zero' := by simp only [Rat.cast_zero, abs_zero]
+  map_zero' := by simp
   add_le'   := norm_add_le
   neg'      := norm_neg
-  eq_zero_of_map_eq_zero' := by simp only [abs_eq_zero, Rat.cast_eq_zero, imp_self, forall_const]
-  map_one' := by simp only [Rat.cast_one, abs_one]
+  eq_zero_of_map_eq_zero' := by simp
+  map_one' := by simp
   map_mul' := by
     simp only [Rat.cast_mul]
     exact_mod_cast abs_mul
@@ -366,7 +365,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
     _ ≤ n₀ * (logb n₀ m + 1) := by gcongr; exact natLog_le_logb ..
   -- For h_ineq2 we need to exclude the case n = 0.
   rcases eq_or_ne n 0 with rfl | h₀
-  · simp only [CharP.cast_eq_zero, map_zero, zero_le_one]
+  · simp
   have h_ineq2 (k : ℕ) (hk : 0 < k) :
       f n ≤ (n₀ * (logb n₀ n + 1)) ^ (k : ℝ)⁻¹ * k ^ (k : ℝ)⁻¹ := by
     have : 0 ≤ logb n₀ n := logb_nonneg (one_lt_cast.2 hn₀) (mod_cast Nat.one_le_of_lt h₀.bot_lt)
@@ -386,7 +385,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
       mul_comm _ (k : ℝ)]
 -- For 0 < logb n₀ n below we also need to exclude n = 1.
   rcases eq_or_ne n 1 with rfl | h₁
-  · simp only [Nat.cast_one, map_one, le_refl]
+  · simp
   refine le_of_tendsto_of_tendsto tendsto_const_nhds ?_ (eventually_atTop.2 ⟨1, h_ineq2⟩)
   nth_rw 2 [← mul_one 1]
   have : 0 < logb n₀ n := logb_pos (mod_cast hn₀) (by norm_cast; omega)
@@ -420,7 +419,7 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
     _ ≤ m * ((f m ^ (d + 1))/(f m - 1)) := by
       gcongr
       · linarith only [one_lt_of_not_bounded notbdd hm]
-      · simp only [tsub_le_iff_right, le_add_iff_nonneg_right, zero_le_one]
+      · simp
     _ = ↑m * f ↑m / (f ↑m - 1) * f ↑m ^ d := by ring
     _ ≤ ↑m * f ↑m / (f ↑m - 1) * f ↑m ^ logb ↑m ↑n := by
       gcongr
@@ -434,7 +433,7 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
     (rpow_nonneg (apply_nonneg f ↑m) (logb ↑m ↑n)), ← rpow_mul (le_of_lt (expr_pos hm notbdd)),
     ← rpow_mul (apply_nonneg f ↑m), inv_mul_cancel₀ (mod_cast hk), rpow_one, mul_comm (logb ↑m ↑n)]
   calc
-    (f n) ^ k = f ↑(n ^ k) := by simp only [Nat.cast_pow, map_pow]
+    (f n) ^ k = f ↑(n ^ k) := by simp
     _ ≤ (m * f m / (f m - 1)) * (f m) ^ (logb m ↑(n ^ k)) := h_ineq1 hm (Nat.one_lt_pow hk hn)
     _ = (m * f m / (f m - 1)) * (f m) ^ (k * logb m n) := by
       rw [Nat.cast_pow, Real.logb_pow]
@@ -476,7 +475,7 @@ theorem mulRingNorm_equiv_standard_of_unbounded : MulRingNorm.equiv f mulRingNor
     apply hm
     replace this : m = 0 ∨ m = 1 := by omega
     rcases this with (rfl | rfl)
-    all_goals simp only [CharP.cast_eq_zero, map_zero, zero_le_one, Nat.cast_one, map_one, le_refl]
+    all_goals simp
   rw [← equiv_on_nat_iff_equiv]
   set s := Real.logb m (f m) with hs
   use s⁻¹
@@ -485,7 +484,7 @@ theorem mulRingNorm_equiv_standard_of_unbounded : MulRingNorm.equiv f mulRingNor
   intro n
   by_cases h1 : n ≤ 1
   · by_cases h2 : n = 1
-    · simp only [h2, Nat.cast_one, map_one, one_rpow, abs_one, cast_one]
+    · simp [h2]
     · have : n = 0 := by omega
       rw [this, hs]
       simp only [CharP.cast_eq_zero, map_zero]
@@ -495,7 +494,7 @@ theorem mulRingNorm_equiv_standard_of_unbounded : MulRingNorm.equiv f mulRingNor
       push_neg
       exact ⟨not_eq_zero_of_lt oneltm, Nat.ne_of_lt' oneltm, mod_cast (fun a ↦ a),
         not_eq_zero_of_lt oneltm, ne_of_not_le hm, by linarith only [apply_nonneg f ↑m]⟩
-  · simp only [mul_ring_norm_eq_abs, abs_cast, Rat.cast_natCast]
+  · simp
     rw [Real.rpow_inv_eq (apply_nonneg f ↑n) (Nat.cast_nonneg n)
       (Real.logb_ne_zero_of_pos_of_ne_one (one_lt_cast.mpr oneltm) (by linarith only [hm])
       (by linarith only [hm]))]
