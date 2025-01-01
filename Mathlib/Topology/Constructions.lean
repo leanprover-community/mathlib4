@@ -37,7 +37,7 @@ noncomputable section
 
 open Topology TopologicalSpace Set Filter Function
 
-universe u v
+universe u v u' v'
 
 variable {X : Type u} {Y : Type v} {Z W ε ζ : Type*}
 
@@ -1746,6 +1746,13 @@ theorem continuous_uLift_down [TopologicalSpace X] : Continuous (ULift.down : UL
 @[continuity]
 theorem continuous_uLift_up [TopologicalSpace X] : Continuous (ULift.up : X → ULift.{v, u} X) :=
   continuous_induced_rng.2 continuous_id
+
+@[continuity]
+theorem continuous_uLift_map [TopologicalSpace X] [TopologicalSpace Y]
+    (f : X → Y) (hf : Continuous f) :
+    Continuous (ULift.map f : ULift.{u'} X → ULift.{v'} Y) := by
+  change Continuous (ULift.up ∘ f ∘ ULift.down)
+  continuity
 
 lemma Topology.IsEmbedding.uliftDown [TopologicalSpace X] :
     IsEmbedding (ULift.down : ULift.{v, u} X → X) := ⟨⟨rfl⟩, ULift.down_injective⟩

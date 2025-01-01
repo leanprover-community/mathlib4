@@ -20,6 +20,9 @@ open CategoryTheory
 
 namespace TopCat
 
+variable {X Y : Type u} [TopologicalSpace X] [TopologicalSpace Y]
+  (f : X → Y)
+
 -- Note: no `@[simps!]` attribute here in order to get good simplifications lemmas
 -- like `uliftFunctorObjHomeo_naturality_apply` below. We should access
 -- `uliftFunctor.obj X` via the homeomorphism `X.uliftFunctorObjHomeo`.
@@ -27,7 +30,7 @@ namespace TopCat
 space in `Type (max u v)`. -/
 def uliftFunctor : TopCat.{u} ⥤ TopCat.{max u v} where
   obj X := TopCat.of (ULift.{v} X)
-  map {X Y} f := ⟨ULift.up ∘ f ∘ ULift.down, by continuity⟩
+  map {X Y} f := ⟨ULift.map f, by continuity⟩
 
 /-- Given `X : TopCat.{u}`, this is the homeomorphism `X ≃ₜ uliftFunctor.{v}.obj X`. -/
 def uliftFunctorObjHomeo (X : TopCat.{u}) : X ≃ₜ uliftFunctor.{v}.obj X :=
@@ -50,5 +53,15 @@ with the one defined on categories of types. -/
 @[simps!]
 def uliftFunctorCompForgetIso : uliftFunctor.{v, u} ⋙ forget TopCat.{max u v} ≅
   forget TopCat.{u} ⋙ CategoryTheory.uliftFunctor.{v, u} := Iso.refl _
+
+/-- The `ULift` functor on categories of topological spaces is fully faithful. -/
+def uliftFunctorFullyFaithful : uliftFunctor.{v, u}.FullyFaithful where
+  preimage f := ⟨ULift.down ∘ f ∘ ULift.up, by continuity⟩
+
+instance : uliftFunctor.{v, u}.Full :=
+  uliftFunctorFullyFaithful.full
+
+instance : uliftFunctor.{v, u}.Faithful :=
+  uliftFunctorFullyFaithful.faithful
 
 end TopCat
