@@ -516,6 +516,7 @@ variable {E : Type u₃} [ℰ : Category.{v₃} E] {H : D ⥤ E} {I : E ⥤ D}
 
 See <https://stacks.math.columbia.edu/tag/0DV0>.
 -/
+@[simps! (config := .lemmasOnly) unit counit]
 def comp : F ⋙ H ⊣ I ⋙ G :=
   mk' {
     homEquiv := fun _ _ ↦ Equiv.trans (adj₂.homEquiv _ _) (adj₁.homEquiv _ _)

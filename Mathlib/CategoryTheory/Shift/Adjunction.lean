@@ -207,7 +207,7 @@ lemma unit_app_commShiftIso_hom_app [adj.CommShift A] (a : A) (X : C) :
   simpa using (NatTrans.CommShift.comm_app adj.unit a X).symm
 
 @[reassoc (attr := simp)]
-lemma commShift_counit_app [adj.CommShift A] (a : A) (Y : D) :
+lemma commShiftIso_hom_app_counit_app [adj.CommShift A] (a : A) (Y : D) :
     ((G ⋙ F).commShiftIso a).hom.app Y ≫ (adj.counit.app Y)⟦a⟧' = adj.counit.app (Y⟦a⟧) := by
   simpa using (NatTrans.CommShift.comm_app adj.counit a Y)
 
@@ -247,13 +247,15 @@ variable {E : Type*} [Category E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G
 instance instComp : (adj.comp adj').CommShift A := by
   refine mk' _ _ {comm' := fun a ↦ ?_}
   ext
-  simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, Functor.commShiftIso_id_hom_app,
-    whiskerRight_app, comp_unit_app, Functor.map_comp, commShift_unit_app,
-    Functor.commShiftIso_comp_hom_app, assoc, id_comp, whiskerLeft_app, Functor.comp_map, ←
-    cancel_mono ((G.commShiftIso a).inv.app _), Functor.commShiftIso_inv_naturality,
-    Iso.hom_inv_id_app_assoc, Iso.hom_inv_id_app, comp_id]
+  dsimp
+  simp
+  rw [← Functor.comp_assoc]
+  rw [Functor.commShiftIso_comp_hom_app]
+
+  simp [Functor.commShiftIso_comp_inv_app, Functor.commShiftIso_comp_hom_app]
+  simp [← cancel_mono ((G.commShiftIso a).inv.app _)]
   conv_rhs => rw [← G.map_comp, ← G.map_comp, ← G.map_comp, ← Functor.comp_map,
-    ← adj'.unit.naturality_assoc]
+    ← adj'.unit.naturality_assoc, Functor.id_map]
   simp
 
 end CommShift
@@ -328,8 +330,8 @@ lemma iso_inv_app (Y : D) :
                     (F.obj (G.obj Y)))) ≫
                 G.map ((shiftFunctor D a).map (adj.counit.app Y)) := by
   obtain rfl : b = -a := by rw [← add_left_inj a, h, neg_add_cancel]
-  simp only [Functor.comp_obj, iso, iso', shiftEquiv', Equiv.toFun_as_coe,
-    conjugateIsoEquiv_apply_inv, conjugateEquiv_apply_app, comp_unit_app, Functor.id_obj,
+  simp only [iso, iso', shiftEquiv', Equiv.toFun_as_coe, conjugateIsoEquiv_apply_inv,
+    conjugateEquiv_apply_app, Functor.comp_obj, comp_unit_app, Functor.id_obj,
     Equivalence.toAdjunction_unit, Equivalence.Equivalence_mk'_unit, Iso.symm_hom, Functor.comp_map,
     comp_counit_app, Equivalence.toAdjunction_counit, Equivalence.Equivalence_mk'_counit,
     Functor.map_shiftFunctorCompIsoId_hom_app, assoc, Functor.map_comp]
