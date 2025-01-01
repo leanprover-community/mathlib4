@@ -203,13 +203,14 @@ theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
     uliftFunctor.map f x = ULift.up (f x.down) :=
   rfl
 
-instance uliftFunctor_full : Functor.Full.{u} uliftFunctor where
-  map_surjective f := ⟨fun x => (f (ULift.up x)).down, rfl⟩
+def fullyFaithfulULiftFunctor : (uliftFunctor.{v, u}).FullyFaithful where
+  preimage f := fun x ↦ (f (ULift.up x)).down
 
-instance uliftFunctor_faithful : uliftFunctor.Faithful where
-  map_injective {_X} {_Y} f g p :=
-    funext fun x =>
-      congr_arg ULift.down (congr_fun p (ULift.up x) : ULift.up (f x) = ULift.up (g x))
+instance uliftFunctor_full : (uliftFunctor.{v, u}).Full :=
+  fullyFaithfulULiftFunctor.full
+
+instance uliftFunctor_faithful : uliftFunctor.{v, u}.Faithful :=
+  fullyFaithfulULiftFunctor.faithful
 
 /-- The functor embedding `Type u` into `Type u` via `ULift` is isomorphic to the identity functor.
  -/

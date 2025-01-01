@@ -62,29 +62,14 @@ for an auxiliary universe `w`. -/
 def uliftYoneda : C ⥤ Cᵒᵖ ⥤ Type (max w v₁) :=
   yoneda ⋙ (whiskeringRight _ _ _).obj uliftFunctor.{w}
 
-def fullyFaithfulULiftYoneda : (uliftYoneda.{w} (C := C)).FullyFaithful := sorry
+def fullyFaithfulULiftYoneda : (uliftYoneda.{w} (C := C)).FullyFaithful := by
+  apply?
+  sorry
 
 instance : (uliftYoneda.{w} (C := C)).Full := fullyFaithfulULiftYoneda.full
 
 instance : (uliftYoneda.{w} (C := C)).Faithful := fullyFaithfulULiftYoneda.faithful
 
-/-- Yoneda's lemma as a bijection `(uliftYoneda.{w}.obj X ⟶ F) ≃ F.obj (op X)`
-for any presheaf of type `F : Cᵒᵖ ⥤ Type (max w v₁)` for some
-auxiliary universe `w`. -/
-def uliftYonedaEquiv {X : C} {F : Cᵒᵖ ⥤ Type (max w v₁)} :
-    (uliftYoneda.{w}.obj X ⟶ F) ≃ F.obj (op X) where
-  toFun τ := τ.app (op X) (ULift.up (𝟙 _))
-  invFun x :=
-    { app Y y := F.map y.down.op x
-      naturality Y₁ Y₂ f := by ext; simp [uliftYoneda] }
-  left_inv τ := by
-    ext ⟨Y⟩ y
-    dsimp [uliftYoneda]
-    rw [← FunctorToTypes.naturality]
-    dsimp
-    rw [comp_id]
-    rfl
-  right_inv x := by simp
 
 section
 
