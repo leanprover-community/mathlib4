@@ -46,7 +46,7 @@ described as follows.
 * The simple reflection $s_i$ acts by a reflection (`Module.reflection`):
   $s_i v = v - \alpha^\vee_i (v)\alpha_i$.
 
-However, we do not actually need the matrix $k$ to satisfy all 10 of the above properties in order
+However, we do not actually need the matrix $k$ to satisfy all nine of the above properties in order
 to get a reflection representation of $W$ as above. Namely:
 
 * Only properties 1, 2, and 3 are necessary for the matrix $k$ to actually yield a reflection
