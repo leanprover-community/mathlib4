@@ -187,9 +187,77 @@ lemma L1_norm_def (x : WithLp 1 (L × h.compl)) :
   _   = ‖(WithLp.equiv 1 _ x).fst‖ + ‖(WithLp.equiv 1 _ x).snd‖ := by simp
 
 -- c.f WithLp.prod_norm_eq_sup
-theorem prod_norm_eq_sup (f : WithLp 1 (L × h.compl)) : ‖f‖ = ‖f.fst‖ + ‖f.snd‖ := by
+theorem prod_norm_eq_add (f : WithLp 1 (L × h.compl)) : ‖f‖ = ‖f.fst‖ + ‖f.snd‖ := by
   rw [L1_norm_def]
   rfl
+
+theorem another_sum (f : WithLp 1 (L × h.compl)) : ‖f‖ = ‖f.fst.val‖ + ‖f.snd.val‖ := by
+  rw [L1_norm_def]
+  rfl
+
+theorem prod_nnnorm_eq_add (f : WithLp 1 (L × h.compl)) :
+    ‖f‖₊ = (‖f.fst‖₊ + ‖f.snd‖₊ ) := by
+  ext
+  simp [prod_norm_eq_add]
+
+def l1map : WithLp 1 (L × h.compl) →+ G where
+  toFun := fun a => a.1 +a.2
+  map_add' x y := by
+    simp only [WithLp.add_fst, AddSubgroup.coe_add, WithLp.add_snd]
+    abel
+  map_zero' := by
+    simp only [Prod.fst_zero, ZeroMemClass.coe_zero, Prod.snd_zero, add_zero]
+
+lemma sur : Function.Surjective (l1map G h) := by
+  intro y
+  have hy1 : y ∈ L ⊔ h.compl := by
+    rw [h.sup_top]
+    trivial
+  obtain ⟨x₁,⟨hx₁,⟨y₁,⟨hy₁,hx₁y₁y⟩⟩⟩⟩ := AddSubgroup.mem_sup.mp hy1
+  exact ⟨(⟨x₁,hx₁⟩,⟨y₁,hy₁⟩), hx₁y₁y⟩
+
+variable (x : WithLp 1 (L × h.compl))
+
+#check h.Lnorm G x.1.prop x.2.prop
+
+-- There is `LinearIsometry` - but that is for module homomorphisms
+
+
+lemma isometry2 (x : WithLp 1 (L × h.compl)) : ‖(l1map G h) x‖ = ‖x‖  := by
+  rw [another_sum]
+  rw [(h.Lnorm G x.1.prop x.2.prop)]
+  rw [l1map]
+  rw [AddMonoidHom.coe_mk]
+
+
+--lemma li (x : WithLp 1 (L × h.compl)) : l1map G h →ₗᵢ[R] where
+
+lemma isometry : Isometry (l1map G h) := by
+  rw [AddMonoidHomClass.isometry_iff_norm]
+  intro x
+  rw [isometry2]
+
+lemma bijection : Function.Bijective (l1map G h) := ⟨by
+    intro x y
+  , (sur G h)⟩
+
+
+def prodEquivₗᵢ : WithLp 1 (L × h.compl) ≃+ G where
+  toFun a := a.1 +a.2
+  invFun y := by
+      have hy1 : y ∈ L ⊔ h.compl := by
+        rw [h.sup_top]
+        trivial
+      obtain ⟨x₁,⟨hx₁,⟨y₁,⟨hy₁,hx₁y₁y⟩⟩⟩⟩ := AddSubgroup.mem_sup.mp hy1
+
+  map_add' _f _g := rfl
+  --norm_map' := prod_norm_equiv
+
+@[simp] theorem prod_nnnorm_equiv (f : WithLp 1 (L × h.compl)) : ‖WithLp.equiv ⊤ _ f‖₊ = ‖f‖₊ := by
+  rw [prod_nnnorm_eq_add, Prod.nnnorm_def', WithLp.equiv_fst, WithLp.equiv_snd]
+
+
+
 
 lemma L1_norm_inr (x : G) : ‖(WithLp.equiv 1 (L × h.compl)).symm x‖ = ‖x‖ := by
   simp [unitization_norm_def]
