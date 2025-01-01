@@ -206,7 +206,7 @@ def l1map : WithLp 1 (L × h.compl) →+ G where
     simp only [WithLp.add_fst, AddSubgroup.coe_add, WithLp.add_snd]
     abel
   map_zero' := by
-    simp only [Prod.fst_zero, ZeroMemClass.coe_zero, Prod.snd_zero, add_zero]
+    simp? [Prod.fst_zero, ZeroMemClass.coe_zero, Prod.snd_zero, add_zero]
 
 lemma sur : Function.Surjective (l1map G h) := by
   intro y
@@ -227,10 +227,13 @@ lemma isometry2 (x : WithLp 1 (L × h.compl)) : ‖(l1map G h) x‖ = ‖x‖  :
   rw [another_sum]
   rw [(h.Lnorm G x.1.prop x.2.prop)]
   rw [l1map]
-  rw [AddMonoidHom.coe_mk]
+  rw [AddMonoidHom.coe_mk, ZeroHom.coe_mk]
+  --simp only [ZeroHom.coe_mk]
 
 
 --lemma li (x : WithLp 1 (L × h.compl)) : l1map G h →ₗᵢ[R] where
+
+#check AddMonoidHomClass.isometry_iff_norm (l1map G h)
 
 lemma isometry : Isometry (l1map G h) := by
   rw [AddMonoidHomClass.isometry_iff_norm]
