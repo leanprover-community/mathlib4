@@ -74,9 +74,11 @@ partial def DTExpr.size : DTExpr → Nat
 | .forall d b => 1 + d.size + b.size
 | _ => 1
 
+/-- Determine if two `DTExpr`s are equivalent. -/
 def DTExpr.eqv (a b : DTExpr) : Bool :=
   (go a b).run' {}
 where
+  @[nolint docBlame]
   go (a b : DTExpr) : StateM (Std.HashMap MVarId MVarId) Bool :=
     match a, b with
     | .opaque           , .opaque            => pure true
@@ -95,6 +97,7 @@ where
       | none => (true, map.insert id₁ id₂)
     | _ , _ => return false
 
+  @[nolint docBlame]
   goArray (as bs : Array DTExpr) : StateM (Std.HashMap MVarId MVarId) Bool := do
     if h : as.size = bs.size then
       for g : i in [:as.size] do
