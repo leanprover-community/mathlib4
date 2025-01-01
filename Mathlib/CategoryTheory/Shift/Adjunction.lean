@@ -236,10 +236,11 @@ variable [adj.CommShift A]
 /-- The identity adjunction is compatible with the trivial `CommShift` structure on the
 identity functor.
 -/
-instance instId : (Adjunction.id (C := C)).CommShift A := by
-  refine mk' _ _ {comm' := fun a ↦ ?_ }
-  ext
-  simp [Functor.commShiftIso_comp_hom_app, Adjunction.id]
+instance instId : (Adjunction.id (C := C)).CommShift A where
+  commShift_counit :=
+    inferInstanceAs (NatTrans.CommShift (𝟭 C).leftUnitor.hom A)
+  commShift_unit :=
+    inferInstanceAs (NatTrans.CommShift (𝟭 C).leftUnitor.inv A)
 
 variable {E : Type*} [Category E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G')
   [HasShift E A] [F'.CommShift A] [G'.CommShift A] [adj.CommShift A] [adj'.CommShift A]
