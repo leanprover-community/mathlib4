@@ -138,7 +138,7 @@ theorem prod_le_iff {H : Subgroup G} {K : Subgroup N} {J : Subgroup (G × N)} :
 
 @[to_additive (attr := simp) prod_eq_bot_iff]
 theorem prod_eq_bot_iff {H : Subgroup G} {K : Subgroup N} : H.prod K = ⊥ ↔ H = ⊥ ∧ K = ⊥ := by
-  simpa only [← Subgroup.toSubmonoid_eq] using Submonoid.prod_eq_bot_iff
+  simpa only [← Subgroup.toSubmonoid_inj] using Submonoid.prod_eq_bot_iff
 
 @[to_additive closure_prod]
 theorem closure_prod {s : Set G} {t : Set N} (hs : 1 ∈ s) (ht : 1 ∈ t) :

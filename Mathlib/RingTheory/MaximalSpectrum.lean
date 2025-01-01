@@ -160,10 +160,10 @@ theorem toPiLocalization_not_surjective_of_infinite [Infinite ι] :
     dsimp only [toPiLocalization_apply_apply, Subtype.coe_mk] at hr
     simp_rw [toPiLocalization_apply_apply,
       ← Localization.AtPrime.mapPiEvalRingHom_algebraMap_apply, hr]
-    rw [Function.update_noteq]; · simp_rw [Pi.zero_apply, map_zero]
+    rw [Function.update_of_ne]; · simp_rw [Pi.zero_apply, map_zero]
     exact fun h ↦ nmem ⟨⟨i, I.1, I.2.isPrime⟩, PrimeSpectrum.ext congr($h.1)⟩
   replace hr := congr_fun hr ⟨J, max⟩
-  rw [this, map_zero, Function.update_same] at hr
+  rw [this, map_zero, Function.update_self] at hr
   exact zero_ne_one hr
 
 variable {R}
@@ -234,10 +234,10 @@ theorem isMaximal_of_toPiLocalization_surjective (surj : Function.Surjective (to
   have ⟨J, max, le⟩ := I.1.exists_le_maximal I.2.ne_top
   obtain ⟨r, hr⟩ := surj (Function.update 0 ⟨J, max.isPrime⟩ 1)
   by_contra h
-  have hJ : algebraMap _ _ r = _ := (congr_fun hr _).trans (Function.update_same _ _ _)
+  have hJ : algebraMap _ _ r = _ := (congr_fun hr _).trans (Function.update_self ..)
   have hI : algebraMap _ _ r = _ := congr_fun hr I
   rw [← IsLocalization.lift_eq (M := J.primeCompl) (S := Localization J.primeCompl), hJ, map_one,
-    Function.update_noteq] at hI
+    Function.update_of_ne] at hI
   · exact one_ne_zero hI
   · intro eq; have : I.1 = J := congr_arg (·.1) eq; exact h (this ▸ max)
   · exact fun ⟨s, hs⟩ ↦ IsLocalization.map_units (M := I.1.primeCompl) _ ⟨s, fun h ↦ hs (le h)⟩

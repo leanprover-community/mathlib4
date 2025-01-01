@@ -74,7 +74,7 @@ theorem fermatNumber_succ (n : ℕ) : fermatNumber (n + 1) = (fermatNumber n - 1
 theorem two_mul_fermatNumber_sub_one_sq_le_fermatNumber_sq (n : ℕ) :
     2 * (fermatNumber n - 1) ^ 2 ≤ (fermatNumber (n + 1)) ^ 2 := by
   simp only [fermatNumber, add_tsub_cancel_right]
-  have : 0 ≤ 1 + 2 ^ (2 ^ n * 4) := le_add_left 0 (Nat.add 1 _)
+  have : 0 ≤ 1 + 2 ^ (2 ^ n * 4) := le_add_left _ _
   ring_nf
   omega
 

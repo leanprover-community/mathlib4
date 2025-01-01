@@ -38,7 +38,7 @@ variable {C : Type u} [Category.{v} C] {I : C} (F : Cᵒᵖ ⥤ Type w)
 
 open Limits Opposite
 
-variable (hF : (ofArrows (X := I) Empty.elim instIsEmptyEmpty.elim).IsSheafFor F)
+variable (hF : (ofArrows (X := I) Empty.elim Empty.instIsEmpty.elim).IsSheafFor F)
 
 section Terminal
 

@@ -84,7 +84,7 @@ the maximum of of the cardinality of `R`, the cardinality of a transcendence bas
 `ℵ₀`
 
 For a simpler, but less universe-polymorphic statement, see
-`IsAlgCLosed.cardinal_le_max_transcendence_basis'`  -/
+`IsAlgClosed.cardinal_le_max_transcendence_basis'`  -/
 theorem cardinal_le_max_transcendence_basis (hv : IsTranscendenceBasis R v) :
     Cardinal.lift.{max u w} #K ≤ max (max (Cardinal.lift.{max v w} #R)
       (Cardinal.lift.{max u v} #ι)) ℵ₀ :=
@@ -105,7 +105,7 @@ the maximum of of the cardinality of `R`, the cardinality of a transcendence bas
 `ℵ₀`
 
 A less-universe polymorphic, but simpler statement of
-`IsAlgCLosed.cardinal_le_max_transcendence_basis`  -/
+`IsAlgClosed.cardinal_le_max_transcendence_basis`  -/
 theorem cardinal_le_max_transcendence_basis' (hv : IsTranscendenceBasis R v') :
     #K' ≤ max (max #R #ι') ℵ₀ := by
   simpa using cardinal_le_max_transcendence_basis v' hv
@@ -114,7 +114,7 @@ theorem cardinal_le_max_transcendence_basis' (hv : IsTranscendenceBasis R v') :
 cardinality is the same as that of a transcendence basis.
 
 For a simpler, but less universe-polymorphic statement, see
-`IsAlgCLosed.cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt'` -/
+`IsAlgClosed.cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt'` -/
 theorem cardinal_eq_cardinal_transcendence_basis_of_aleph0_lt [Nontrivial R]
     (hv : IsTranscendenceBasis R v) (hR : #R ≤ ℵ₀) (hK : ℵ₀ < #K) :
     Cardinal.lift.{w} #K = Cardinal.lift.{v} #ι :=

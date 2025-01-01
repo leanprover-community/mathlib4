@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Category.Pairwise
 import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!
