@@ -52,7 +52,7 @@ open Lean Meta Mathlib Tactic
 def alwaysFails : MetaM Unit := do throwError "I failed!"
 
 def doesntFail : MetaM Unit := do
-  try successIfFailWithMessage "I failed!" alwaysFails
+  try successIfFailWithMessage "I failed!" alwaysFails (← `("I failed"))
   catch _ => throwError "I *really* failed."
 
 #guard_msgs in
