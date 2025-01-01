@@ -89,6 +89,15 @@ def subgraphOfAdj (G : SimpleGraph V) {v w : V} (hvw : G.Adj v w) : G.Subgraph w
     simp only [Sym2.mem_iff, true_or, eq_iff_iff, iff_true] at h
     exact h
 
+/-- The set subgraph. -/
+@[simps]
+def subgraphOfVerts (G : SimpleGraph V) (v : Set V) : G.Subgraph where
+  verts := v
+  Adj a b := a ∈ v ∧ b ∈ v ∧ G.Adj a b
+  adj_sub h := by simp_all only
+  edge_vert {a b} h := by simp_all only
+  symm a b g := ⟨g.2.1, ⟨g.1, g.2.2.symm⟩⟩
+
 namespace Subgraph
 
 variable {G : SimpleGraph V} {G₁ G₂ : G.Subgraph} {a b : V}
@@ -758,7 +767,7 @@ end Subgraph
 
 section MkProperties
 
-/-! ### Properties of `singletonSubgraph` and `subgraphOfAdj` -/
+/-! ### Properties of `singletonSubgraph`, `subgraphOfAdj`, and `subgraphOfVerts` -/
 
 
 variable {G : SimpleGraph V} {G' : SimpleGraph W}
@@ -895,6 +904,18 @@ lemma support_subgraphOfAdj {u v : V} (h : G.Adj u v) :
   refine ⟨?_, fun h ↦ h.elim (fun hl ↦ ⟨v, .inl ⟨hl.symm, rfl⟩⟩) fun hr ↦ ⟨u, .inr ⟨rfl, hr.symm⟩⟩⟩
   rintro ⟨_, hw⟩
   exact hw.elim (fun h1 ↦ .inl h1.1.symm) fun hr ↦ .inr hr.2.symm
+
+theorem eq_subgraphOfVerts_iff (G : SimpleGraph V) (x y : Set V)
+    : G.subgraphOfVerts x = G.subgraphOfVerts y ↔ x = y := by
+  simp_all [Subgraph.ext_iff]
+
+theorem subgraphOfVerts_le_iff (G : SimpleGraph V) (x y : Set V) :
+    G.subgraphOfVerts x ≤ G.subgraphOfVerts y ↔ x ⊆ y := by
+  refine ⟨(·.1), fun h ↦ ⟨?_, ?_⟩⟩
+  · simp_all only [subgraphOfVerts_verts]
+  · simp_all only [subgraphOfVerts_adj, and_true, and_imp]
+    intro _ _ a b _
+    exact ⟨Set.mem_of_mem_of_subset a h, Set.mem_of_mem_of_subset b h⟩
 
 end MkProperties
 
