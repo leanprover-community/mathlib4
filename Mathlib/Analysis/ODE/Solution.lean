@@ -239,6 +239,8 @@ lemma mk_of_time_independent
   continuousOn := fun _ _ ↦ continuousOn_const
   mul_max_le := hm
 
+/-- A time-independent, continuously differentiable ODE satisfies the hypotheses of the
+Picard-Lindelöf theorem. -/
 lemma mk_of_contDiffOn_one [NormedSpace ℝ E]
     {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
     ∃ (ε : ℝ) (hε : 0 < ε) (a L K : ℝ≥0), IsPicardLindelof (fun _ ↦ f)
@@ -252,19 +254,20 @@ lemma mk_of_contDiffOn_one [NormedSpace ℝ E]
   have hε0 : 0 < ε := hε ▸ div_pos (half_pos <| lt_min hR₁ hR₂)
     (add_pos_of_pos_of_nonneg zero_lt_one (norm_nonneg _))
   refine ⟨ε, hε0, ⟨min R₁ R₂ / 2, by positivity⟩, ⟨1 + ‖f x₀‖, by positivity⟩, L, ?_⟩
-  exact
-    { le := le_rfl
-      bounded := fun _ _ x hx ↦ hbdd' x <| mem_of_mem_of_subset hx <|
-          (closedBall_subset_ball <| half_lt_self <| lt_min hR₁ hR₂).trans <|
-          (Metric.ball_subset_ball <| min_le_right _ _).trans (subset_refl _)
-      lipschitz := fun _ _ => hlip.mono <|
-        (closedBall_subset_ball <| half_lt_self <| lt_min hR₁ hR₂).trans <|
-        (Metric.ball_subset_ball <| min_le_left _ _).trans hball
-      continuousOn := fun _ _ => continuousOn_const
-      mul_max_le := by
-        rw [add_sub_cancel_left, sub_sub_cancel, max_self, hε, mul_div_left_comm,
-          NNReal.coe_mk _ (by positivity), NNReal.coe_mk _ (by positivity), div_self, mul_one]
-        exact ne_of_gt <| add_pos_of_pos_of_nonneg zero_lt_one <| norm_nonneg _ }
+  apply mk_of_time_independent le_rfl
+  · intro x hx
+    apply hbdd' x
+    apply mem_of_mem_of_subset hx
+    apply (closedBall_subset_ball <| half_lt_self <| lt_min hR₁ hR₂).trans
+    apply (Metric.ball_subset_ball <| min_le_right _ _).trans
+    exact subset_refl _
+  · apply hlip.mono
+    apply (closedBall_subset_ball <| half_lt_self <| lt_min hR₁ hR₂).trans
+    apply (Metric.ball_subset_ball <| min_le_left _ _).trans
+    exact hball
+  · rw [add_sub_cancel_left, sub_sub_cancel, max_self, hε, mul_div_left_comm,
+      NNReal.coe_mk _ (by positivity), NNReal.coe_mk _ (by positivity), div_self, mul_one]
+    exact ne_of_gt <| add_pos_of_pos_of_nonneg zero_lt_one <| norm_nonneg _
 
 
 -- show that `IsPicardLindelof` implies the assumptions in `hasDerivWithinAt_integrate_Icc`,
@@ -588,7 +591,6 @@ theorem exists_eq_integrate_of_isPicardLindelof (hf : IsPicardLindelof f t₀ x�
 
 /-
 * Translate the existence lemma from `FunSpace` to `ℝ → E`
-* `C^1` implies `IsPicardLindelof`
 * Another version of `IsPicardLindelof` that is just `b = 0`, for when `x = x₀` (no flow)
 * Another version of `isPicardLindelof` for flows
 * Corollary 1.2
