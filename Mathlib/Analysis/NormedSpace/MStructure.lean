@@ -317,9 +317,9 @@ section WithL1
 
 open ENNReal
 
-variable (p : ℝ≥0∞) (𝕜 α β : Type*)
+variable (p : ℝ≥0∞) (α β : Type*)
 
-variable {p 𝕜 α β}
+variable {p α β}
 variable [NormedAddCommGroup α] [NormedAddCommGroup β]
 
 /-- Projection on `WithLp p (α × β)` with range `α` and kernel `β` -/
@@ -328,7 +328,6 @@ def P1 : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inl α β).comp (A
 /-- Projection on `WithLp p (α × β)` with range `β` and kernel `α` -/
 def P2 : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inr α β).comp (AddMonoidHom.snd α β)
 
-
 lemma P1_apply (x : WithLp p (α × β)) : P1 x = (x.1, 0) := rfl
 
 lemma P2_apply (x : WithLp p (α × β)) : P2 x = (0, x.2) := rfl
@@ -336,8 +335,6 @@ lemma P2_apply (x : WithLp p (α × β)) : P2 x = (0, x.2) := rfl
 lemma test (a b : α) (c d : β) :
     ((a,c) : WithLp p (α × β)) + ((b,d) : WithLp p (α × β)) = ((a+b,c+d) : WithLp p (α × β)) := by
   rfl
-
-lemma test2 (a b c : α) : a-b=c ↔ a=c+b := by exact sub_eq_iff_eq_add
 
 lemma P1_compl : (1 : AddMonoid.End (WithLp p (α × β))) - P1 = P2 := by
   apply AddMonoidHom.ext
@@ -352,6 +349,36 @@ lemma P1_compl : (1 : AddMonoid.End (WithLp p (α × β))) - P1 = P2 := by
   rw [sub_eq_iff_eq_add]
   rw [add_comm]
   rw [e2]
+
+lemma normp (hp : 0 < p.toReal) (x : WithLp p (α × β)) :
+    ‖x‖ = (‖P1 x‖ ^ p.toReal + ‖(1 - P1) x‖ ^ p.toReal) ^ (1 / p.toReal) := by
+  rw [WithLp.prod_norm_eq_add hp x]
+  rw [P1_apply, P1_compl, P2_apply]
+  apply congr_arg₂
+  · have ez : p.toReal ≠ 0 := (ne_of_lt hp).symm
+    have e1 : (0 : ℝ) ^ p.toReal = (0 : NNReal) := by
+      rw [← (NNReal.zero_rpow ez)]
+      rfl
+    apply congr_arg₂
+    · apply congr_arg₂
+      · rw [WithLp.prod_norm_eq_add hp (x.1, 0)]
+        simp only [norm_zero]
+        rw [e1]
+        simp only [NNReal.coe_zero, add_zero, norm_nonneg]
+        convert (NNReal.rpow_inv_rpow_self ez ⟨‖x.1‖,norm_nonneg x.1⟩)
+        simp_all only [ne_eq, not_false_eq_true, Real.zero_rpow, NNReal.coe_zero, one_div,
+          norm_nonneg, Real.rpow_rpow_inv, NNReal.rpow_rpow_inv]
+      · rfl
+    · apply congr_arg₂
+      · rw [WithLp.prod_norm_eq_add hp (0,x.2)]
+        simp only [norm_zero]
+        rw [e1]
+        simp only [NNReal.coe_zero, add_zero, norm_nonneg]
+        convert (NNReal.rpow_inv_rpow_self ez ⟨‖x.2‖,norm_nonneg x.2⟩)
+        simp_all only [ne_eq, not_false_eq_true, Real.zero_rpow, NNReal.coe_zero, zero_add, one_div,
+          norm_nonneg, Real.rpow_rpow_inv, NNReal.rpow_rpow_inv]
+      · rfl
+  · rfl
 
 variable [hp : Fact (1 ≤ p)]
 
