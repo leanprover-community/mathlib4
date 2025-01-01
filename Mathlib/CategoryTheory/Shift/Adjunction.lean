@@ -198,12 +198,13 @@ class CommShift : Prop where
   commShift_unit : NatTrans.CommShift adj.unit A := by infer_instance
   commShift_counit : NatTrans.CommShift adj.counit A := by infer_instance
 
-lemma commShift_unit [adj.CommShift A] : NatTrans.CommShift adj.unit A := CommShift.commShift_unit
+open CommShift in
+attribute [instance] commShift_unit commShift_counit
 
-lemma commShift_unit_app [adj.CommShift A] (a : A) (X : C) :
-    (adj.unit.app X)⟦a⟧' = adj.unit.app (X⟦a⟧) ≫ ((F ⋙ G).commShiftIso a).hom.app X := by
-  convert (commShift_unit adj A).comm_app _ a X
-  simp
+@[reassoc (attr := simp)]
+lemma unit_app_commShiftIso_hom_app [adj.CommShift A] (a : A) (X : C) :
+    adj.unit.app (X⟦a⟧) ≫ ((F ⋙ G).commShiftIso a).hom.app X = (adj.unit.app X)⟦a⟧' := by
+  simpa using (NatTrans.CommShift.comm_app adj.unit a X).symm
 
 lemma commShift_counit [adj.CommShift A] : NatTrans.CommShift adj.counit A :=
   CommShift.commShift_counit
