@@ -466,7 +466,7 @@ If `E : C ≌ D` and `E' : D ≌ F` are equivalence whose forward functors are c
 so is `(E.trans E').functor`.
 -/
 instance : (E.trans E').functor.CommShift A := by
-  simp
+  dsimp
   infer_instance
 
 /--
