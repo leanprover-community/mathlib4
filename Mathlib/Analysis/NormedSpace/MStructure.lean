@@ -313,9 +313,9 @@ instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
 
 end IsLprojection
 
-noncomputable section WithL1
+section WithL1
 
-open Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal
+open ENNReal
 
 variable (p : ℝ≥0∞) (𝕜 α β : Type*)
 
@@ -353,16 +353,7 @@ lemma P1_compl : (1 : AddMonoid.End (WithLp p (α × β))) - P1 = P2 := by
   rw [add_comm]
   rw [e2]
 
-lemma P1_idempotent : IsIdempotentElem (M := (AddMonoid.End (WithLp p (α × β)))) P1 := by
-  rw [IsIdempotentElem, P1]
-  rfl
-
 variable [hp : Fact (1 ≤ p)]
-
-noncomputable instance instProdNormedAddCommGroup :
-    NormedAddCommGroup (WithLp p (α × β)) := {
-       WithLp.instProdNormedAddCommGroup p α β with
-  }
 
 lemma WithLp.prod_norm_eq_of_1 (x : WithLp 1 (α × β)) :
     ‖x‖ = ‖(WithLp.equiv 1 _ x).fst‖ + ‖(WithLp.equiv 1 _ x).snd‖ := by
