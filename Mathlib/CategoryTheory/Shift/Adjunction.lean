@@ -474,7 +474,7 @@ If `E : C ≌ D` and `E' : D ≌ F` are equivalence whose inverse functors are c
 so is `(E.trans E').inverse`.
 -/
 instance : (E.trans E').inverse.CommShift A := by
-  simp
+  dsimp
   infer_instance
 
 /--
