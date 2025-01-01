@@ -43,7 +43,7 @@ instance : uliftFunctor.{u, v}.Faithful := uliftFunctorFullyFaithful.faithful
 -/
 @[to_additive
   "The universe lift functor for additive groups is full."]
-instance : uliftFunctor.{u, v}.Full := Functor.FullyFaithful.full uliftFunctorFullyFaithful
+instance : uliftFunctor.{u, v}.Full := uliftFunctorFullyFaithful.full
 
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimit {J : Type w} [Category.{w'} J]
@@ -88,12 +88,12 @@ def uliftFunctorFullyFaithful : uliftFunctor.{u, v}.FullyFaithful where
 -- The universe lift functor for commutative groups is faithful. -/
 @[to_additive
   "The universe lift functor for commutative additive groups is faithful."]
-instance : uliftFunctor.{u, v}.Faithful := Functor.FullyFaithful.faithful uliftFunctorFullyFaithful
+instance : uliftFunctor.{u, v}.Faithful := uliftFunctorFullyFaithful.faithful
 
 -- The universe lift functor for commutative groups is full. -/
 @[to_additive
   "The universe lift functor for commutative additive groups is full."]
-instance : uliftFunctor.{u, v}.Full := Functor.FullyFaithful.full uliftFunctorFullyFaithful
+instance : uliftFunctor.{u, v}.Full := uliftFunctorFullyFaithful.full
 
 @[to_additive]
 noncomputable instance uliftFunctor_preservesLimit {J : Type w} [Category.{w'} J]
