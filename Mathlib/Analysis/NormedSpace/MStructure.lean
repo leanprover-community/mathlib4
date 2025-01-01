@@ -377,8 +377,6 @@ lemma prod_norm_eq_add_P1 (hp : 0 < p.toReal) (x : WithLp p (α × β)) :
       · rfl
   · rfl
 
-variable [hp : Fact (1 ≤ p)]
-
 lemma WithLp.prod_norm_eq_of_1 (x : WithLp 1 (α × β)) :
     ‖x‖ = ‖(WithLp.equiv 1 _ x).fst‖ + ‖(WithLp.equiv 1 _ x).snd‖ := by
   rw [WithLp.prod_norm_eq_of_nat 1 Nat.cast_one.symm, pow_one, pow_one, WithLp.equiv_fst,
@@ -387,14 +385,10 @@ lemma WithLp.prod_norm_eq_of_1 (x : WithLp 1 (α × β)) :
 lemma P1_Lprojection :
   IsLprojection (WithLp 1 (α × β)) (M := (AddMonoid.End (WithLp 1 (α × β)))) (P1 (p := 1)) where
   proj := rfl
-  Lnorm := by
-    intro x
-    rw [WithLp.prod_norm_eq_of_1]
-    simp
-    rw [P1_compl]
-    rw [P1_apply, P2_apply]
-    rw [WithLp.prod_norm_eq_of_1]
-    rw [WithLp.prod_norm_eq_of_1]
-    simp only [WithLp.equiv_fst, WithLp.equiv_snd, norm_zero, add_zero, zero_add]
+  Lnorm x := by
+    rw [WithLp.prod_norm_eq_of_1, WithLp.equiv_fst, WithLp.equiv_snd, AddMonoid.End.smul_def,
+      P1_compl, P1_apply,  AddMonoid.End.smul_def, P2_apply, WithLp.prod_norm_eq_of_1,
+      WithLp.prod_norm_eq_of_1, WithLp.equiv_fst, WithLp.equiv_snd, norm_zero, add_zero,
+      WithLp.equiv_fst, norm_zero, WithLp.equiv_snd, zero_add]
 
 end WithL1
