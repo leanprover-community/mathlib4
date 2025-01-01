@@ -293,7 +293,7 @@ variable {S : Type*}
   {M' N' : Type*} [AddCommGroup M'] [Module S M'] [AddCommGroup N'] [Module S N']
   (i : M' →ₗ[S] M) (j : N' →ₗ[S] N)
 
-/-- An auxiliary definition used to constuct `PerfectPairing.restrictScalars`. -/
+/-- An auxiliary definition used to construct `PerfectPairing.restrictScalars`. -/
 private def restrictScalarsAux
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap S R).range) :
     M' →ₗ[S] N' →ₗ[S] S :=
