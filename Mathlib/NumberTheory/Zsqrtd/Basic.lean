@@ -31,7 +31,7 @@ structure Zsqrtd (d : ℤ) where
   im : ℤ
   deriving DecidableEq
 
-prefix:100 "ℤ√" => Zsqrtd
+@[inherit_doc] prefix:100 "ℤ√" => Zsqrtd
 
 namespace Zsqrtd
 

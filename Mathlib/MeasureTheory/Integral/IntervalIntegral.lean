@@ -420,8 +420,12 @@ as `∫ x in Ioc a b, f x ∂μ - ∫ x in Ioc b a, f x ∂μ`. If `a ≤ b`, th
 def intervalIntegral (f : ℝ → E) (a b : ℝ) (μ : Measure ℝ) : E :=
   (∫ x in Ioc a b, f x ∂μ) - ∫ x in Ioc b a, f x ∂μ
 
+@[inherit_doc intervalIntegral]
 notation3"∫ "(...)" in "a".."b", "r:60:(scoped f => f)" ∂"μ:70 => intervalIntegral r a b μ
 
+/-- The interval integral `∫ x in a..b, f x` is defined
+as `∫ x in Ioc a b, f x - ∫ x in Ioc b a, f x`. If `a ≤ b`, then it equals
+`∫ x in Ioc a b, f x`, otherwise it equals `-∫ x in Ioc b a, f x`. -/
 notation3"∫ "(...)" in "a".."b", "r:60:(scoped f => intervalIntegral f a b volume) => r
 
 namespace intervalIntegral
