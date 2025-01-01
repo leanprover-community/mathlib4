@@ -225,7 +225,7 @@ lemma traceForm_eq_sum_genWeightSpaceOf
     fun χ m hm ↦ LieSubmodule.lie_mem _ <| LieSubmodule.lie_mem _ hm
   have hfin : {χ : R | (genWeightSpaceOf M χ z : Submodule R M) ≠ ⊥}.Finite := by
     convert finite_genWeightSpaceOf_ne_bot R L M z
-    exact LieSubmodule.toSubmodule_eq_bot_iff (genWeightSpaceOf M _ _)
+    exact LieSubmodule.toSubmodule_eq_bot (genWeightSpaceOf M _ _)
   classical
   have h := LieSubmodule.iSupIndep_iff_toSubmodule.mp <| iSupIndep_genWeightSpaceOf R L M z
   have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top h <| by
@@ -287,7 +287,7 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Modu
 lemma isLieAbelian_of_ker_traceForm_eq_bot [Module.Free R M] [Module.Finite R M]
     (h : LinearMap.ker (traceForm R L M) = ⊥) : IsLieAbelian L := by
   simpa only [← disjoint_lowerCentralSeries_maxTrivSubmodule_iff R L L, disjoint_iff_inf_le,
-    LieIdeal.coe_toLieSubalgebra_toSubmodule, LieSubmodule.toSubmodule_eq_bot_iff, h]
+    LieIdeal.coe_toLieSubalgebra_toSubmodule, LieSubmodule.toSubmodule_eq_bot, h]
     using lowerCentralSeries_one_inf_center_le_ker_traceForm R L M
 
 end LieModule

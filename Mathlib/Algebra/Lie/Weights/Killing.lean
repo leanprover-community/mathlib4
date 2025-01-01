@@ -412,7 +412,7 @@ lemma coe_corootSpace_eq_span_singleton (α : Weight K H L) :
 @[simp]
 lemma corootSpace_eq_bot_iff {α : Weight K H L} :
     corootSpace α = ⊥ ↔ α.IsZero := by
-  simp [← LieSubmodule.toSubmodule_eq_bot_iff, coe_corootSpace_eq_span_singleton α]
+  simp [← LieSubmodule.toSubmodule_eq_bot, coe_corootSpace_eq_span_singleton α]
 
 lemma isCompl_ker_weight_span_coroot (α : Weight K H L) :
     IsCompl α.ker (K ∙ coroot α) := by
