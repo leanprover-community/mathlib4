@@ -187,11 +187,25 @@ lemma commShiftPullback (τ : F ⟶ G) [NatTrans.CommShift τ B] :
         simp [commShiftPullback_iso_eq φ _ _ _ rfl, ← τ.naturality_assoc,
           ← NatTrans.CommShift.comm_app_assoc τ (φ a) _]
 
+variable (C)
+
+def commShiftId : Functor.CommShift (𝟭 C) A (C := PullbackShift C φ) (D := PullbackShift C φ) :=
+  sorry
+
+lemma commShiftId' :
+    letI := commShiftId φ (C := C)
+    NatTrans.CommShift (F₁ := 𝟭 (PullbackShift C φ)) (F₂ := 𝟭 C)
+    (C := PullbackShift C φ) (D := PullbackShift C φ)
+    (NatTrans.mk (fun _ ↦ 𝟙 _) (fun  _ ↦ by simp)) A := sorry
+
+variable {C}
+
 end NatTrans
 
 namespace Adjunction
 
 attribute [local instance] Functor.commShiftPullback NatTrans.commShiftPullback
+  NatTrans.commShiftId'
 
 variable {F} {G : D ⥤ C} (adj : F ⊣ G) [F.CommShift B] [G.CommShift B]
 
@@ -203,9 +217,17 @@ it is also compatible with the pulled back `CommShift` structures by an additive
 lemma commShiftPullback [adj.CommShift B] :
     Adjunction.CommShift (C := PullbackShift C φ) (D := PullbackShift D φ) adj A where
   commShift_unit := by
-    convert NatTrans.commShiftPullback φ adj.unit
-    · sorry
-    · sorry
+    set e : 𝟭 (PullbackShift C φ) ⟶ 𝟭 C := NatTrans.mk (fun _ ↦ 𝟙 _) (fun  _ ↦ by simp)
+    have heq : (adj.unit : 𝟭 (PullbackShift C φ) ⟶ F ⋙ G) =
+      (NatTrans.mk (fun _ ↦ 𝟙 _) (fun  _ ↦ by simp) : 𝟭 (PullbackShift C φ) ⟶ 𝟭 C) ≫ adj.unit :=
+      sorry
+    rw [heq]
+    letI := NatTrans.commShiftId φ (C := C)
+    letI := NatTrans.commShiftId' C φ
+    exact @NatTrans.CommShift.comp (PullbackShift C φ) (PullbackShift C φ) _ _
+      (𝟭 (PullbackShift C φ)) (𝟭 C) (F ⋙ G) _ _ A _ _ _
+      (NatTrans.commShiftId C φ) _ _
+      (NatTrans.commShiftId' C φ) (NatTrans.commShiftPullback φ _)
   commShift_counit := by sorry
 
 end Adjunction
