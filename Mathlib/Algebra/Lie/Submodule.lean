@@ -542,6 +542,7 @@ theorem iSup_induction' {ι} (N : ι → LieSubmodule R L M) {C : (x : M) → (x
   · rintro ⟨_, Cx⟩ ⟨_, Cy⟩
     exact ⟨_, hadd _ _ _ _ Cx Cy⟩
 
+-- TODO(Yaël): turn around
 theorem disjoint_iff_toSubmodule :
     Disjoint N N' ↔ Disjoint (N : Submodule R M) (N' : Submodule R M) := by
   rw [disjoint_iff, disjoint_iff, ← toSubmodule_inj, inf_toSubmodule, bot_toSubmodule,
