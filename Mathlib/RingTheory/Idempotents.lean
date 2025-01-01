@@ -7,8 +7,6 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Nilpotent.Defs
-import Mathlib.Algebra.DirectSum.Decomposition
--- import Mathlib.Tactic.StacksAttribute
 
 /-!
 
@@ -336,112 +334,6 @@ theorem CompleteOrthogonalIdempotents.of_ker_isNilpotent_of_isMulCentral
       (he _) (h₁.idem _) (h _ ?_) ((he' i).comm _)
     simpa [RingHom.mem_ker, sub_eq_zero] using congr_fun h₂.symm i
   exact h₁
-
-open DirectSum in
-omit [Fintype I] in
-lemma decomp_ring_ortho_idem_is_idem [DecidableEq I] (V : I → Ideal R)
-    [Decomposition V] (e : ⨁ (i : I), (V i)) [(i : I) → (x : ↥(V i)) → Decidable (x ≠ 0)]
-    (he : e = decompose V 1):
-    ∀ i ∈ DFinsupp.support e, IsIdempotentElem ((e i) : R) := fun i => by
-  let x : (⨁ i, V i) := DFinsupp.single i (e i)
-  let y : (⨁ i, V i) := DFinsupp.mapRange (x := e) (fun j (z : V j) => ⟨e i * (z : R), by
-    rw [← smul_eq_mul]; obtain ⟨z, hz⟩ := z
-    exact Submodule.smul_mem (V j) ((e i)) hz⟩)
-    fun i' ↦ by simp only [ZeroMemClass.coe_zero, mul_zero, Submodule.mk_eq_zero]
-  have hx2 (j) (h : j ≠ i) : (x j : R) = 0 := by
-    simp [x, Finsupp.single_apply]
-    intro hij; exfalso
-    exact h.symm hij
-  have hy (j) : (y j : R) = e i * e j := by
-    simp only [DFinsupp.mapRange_apply, y]
-  have hx3 : ∑ i ∈ DFinsupp.support x, (x i : R) = x i := by
-    apply Finset.sum_eq_single
-    · intro j hj hj'
-      specialize hx2 j hj'
-      exact hx2
-    · simp
-  have hy3 : ∑ i ∈ DFinsupp.support y, (y i : R) = e i * 1 := by
-    simp_rw [hy]
-    have : (1 : R) = ∑ j ∈ e.support, e j := by
-      rw [he] ; exact sum_support_decompose V 1|>.symm
-    rw [this, Finset.mul_sum]
-    apply Finset.sum_subset
-    · intro j hj
-      simp only [DFinsupp.mem_support_toFun, ne_eq, DFinsupp.mapRange_apply,
-        AddSubmonoid.mk_eq_zero, y] at hj ⊢
-      contrapose! hj
-      simp [hj, mul_zero]
-    · intro x hx hy
-      simp only [DFinsupp.mem_support_toFun, ne_eq, DFinsupp.mapRange_apply,
-        AddSubmonoid.mk_eq_zero, not_not, y] at hx hy ⊢
-      exact (AddSubmonoid.mk_eq_zero (V x).toAddSubmonoid).mp hy
-  have : x = y := by
-    apply DirectSum.decompose_unique
-    rw [hx3, hy3, mul_one]
-    simp only [DFinsupp.single_apply, ↓reduceDIte, x]
-  have := congr($this i)
-  simp only [DFinsupp.mapRange_apply, Subtype.ext_iff, y] at this
-  unfold IsIdempotentElem
-  rw [this.symm]
-  simp only [DFinsupp.mem_support_toFun, ne_eq, DFinsupp.single_apply,
-    reduceDIte, implies_true, x]
-
-open DirectSum in
-omit [Fintype I] in
-/-- If a ring can be decomposed into direct sum of left ideals `Vᵢ`
-  where `1 = e₁ + ... + eₙ` and `eᵢ ∈ Vᵢ`, then `eᵢ` is a family of orthogonal
-  idempotents.-/
-theorem OrthogonalIdempotent.decomp_ring_ortho_idem [DecidableEq I] (V : I → Ideal R)
-    [Decomposition V] (e : ⨁ (i : I), (V i)) [(i : I) → (x : ↥(V i)) → Decidable (x ≠ 0)]
-    (he : e = decompose V 1) :
-    OrthogonalIdempotents (R := R) (I := DFinsupp.support e) fun i ↦ e i where
-  idem := fun ⟨i, hi⟩ ↦ decomp_ring_ortho_idem_is_idem V e he i hi
-  ortho := fun i j hij ↦ by
-    simp only
-    let x : (⨁ i, V i) := DFinsupp.single i (e i) -- 0,0,0,...,eᵢ,0,0,0,...
-    let y : (⨁ i, V i) := DFinsupp.mapRange (x := e) (fun j (z : V j) => ⟨e i * (z : R), by
-      rw [← smul_eq_mul]; obtain ⟨z, hz⟩ := z
-      exact Submodule.smul_mem (V j) (↑(e ↑i)) hz ⟩)
-      fun i' ↦ by simp only [ZeroMemClass.coe_zero, mul_zero, Submodule.mk_eq_zero]
-    have hx2 (j) (h : j ≠ i) : (x j : R) = 0 := by
-      simp [x, Finsupp.single_apply]
-      intro hij; exfalso
-      exact h.symm <| Subtype.coe_inj.1 hij
-    have hy (j) : (y j : R) = e i * e j := by
-      simp only [DFinsupp.mapRange_apply, y]
-    have hx3 : ∑ i ∈ DFinsupp.support x, (x i : R) = x i := by
-      apply Finset.sum_eq_single
-      · intro j hj hj'
-        specialize hx2 ⟨j, by
-          simp_all [↓reduceDIte, x, y]
-          obtain ⟨val, property⟩ := i
-          obtain ⟨w, h⟩ := hj
-          subst w
-          simp_all only [Subtype.mk.injEq, not_true_eq_false]⟩ <| Subtype.coe_ne_coe.1 hj'
-        exact hx2
-      · simp
-    have hy3 : ∑ i ∈ DFinsupp.support y, (y i : R) = e i * 1 := by
-      have : (1 : R) = ∑ j ∈ e.support, e j := by
-        rw [he] ; exact sum_support_decompose V 1|>.symm
-      rw [this, Finset.mul_sum]
-      simp_rw [hy]
-      apply Finset.sum_subset
-      · intro j hj
-        simp only [DFinsupp.mem_support_toFun, ne_eq, DFinsupp.mapRange_apply,
-          AddSubmonoid.mk_eq_zero, y] at hj ⊢
-        contrapose! hj
-        simp [hj, mul_zero]
-      · intro x hx hy
-        simp only [DFinsupp.mem_support_toFun, ne_eq, DFinsupp.mapRange_apply,
-          AddSubmonoid.mk_eq_zero, not_not, y] at hx hy ⊢
-        exact (AddSubmonoid.mk_eq_zero (V x).toAddSubmonoid).mp hy
-    have : x = y := by
-      apply decompose_unique
-      rw [hx3, hy3, mul_one]
-      simp only [DFinsupp.single_apply, ↓reduceDIte, x]
-    have := congr($this j)
-    simp only [DFinsupp.mapRange_apply, Subtype.ext_iff, (hx2 j hij.symm), y] at this
-    exact this.symm
 
 end Ring
 
