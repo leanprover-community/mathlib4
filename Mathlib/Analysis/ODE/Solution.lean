@@ -239,36 +239,32 @@ lemma mk_of_time_independent
   continuousOn := fun _ _ ↦ continuousOn_const
   mul_max_le := hm
 
--- lemma mk_of_contDiffOn_one [NormedSpace ℝ E]
---     {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
---     (∃ ε > (0 : ℝ), ∃ a L K, IsPicardLindelof (fun _ ↦ f) ⟨t₀, _⟩ x₀ x a b L K) := by
---     -- ∃ ε > (0 : ℝ), ∃ L R C, IsPicardLindelof (fun _ => v) (t₀ - ε) t₀ (t₀ + ε) x₀ L R C := by
-
---   have (x') (hx') := hf x' hx' |>.exists_lipschitzOnWith
-
-
-  -- obtain ⟨L, s, hs, hlip⟩ := hv.exists_lipschitzOnWith
-  -- obtain ⟨R₁, hR₁ : 0 < R₁, hball⟩ := Metric.mem_nhds_iff.mp hs
-  -- obtain ⟨R₂, hR₂ : 0 < R₂, hbdd⟩ := Metric.continuousAt_iff.mp hv.continuousAt.norm 1 zero_lt_one
-  -- have hbdd' : ∀ x ∈ Metric.ball x₀ R₂, ‖v x‖ ≤ 1 + ‖v x₀‖ := fun _ hx =>
-  --   sub_le_iff_le_add.mp <| le_of_lt <| lt_of_abs_lt <| Real.dist_eq _ _ ▸ hbdd hx
-  -- set ε := min R₁ R₂ / 2 / (1 + ‖v x₀‖) with hε
-  -- have hε0 : 0 < ε := hε ▸ div_pos (half_pos <| lt_min hR₁ hR₂)
-  --   (add_pos_of_pos_of_nonneg zero_lt_one (norm_nonneg _))
-  -- refine ⟨ε, hε0, L, min R₁ R₂ / 2, 1 + ‖v x₀‖, ?_⟩
-  -- exact
-  --   { ht₀ := Real.closedBall_eq_Icc ▸ mem_closedBall_self hε0.le
-  --     hR := by positivity
-  --     lipschitz := fun _ _ => hlip.mono <|
-  --       (closedBall_subset_ball <| half_lt_self <| lt_min hR₁ hR₂).trans <|
-  --       (Metric.ball_subset_ball <| min_le_left _ _).trans hball
-  --     cont := fun _ _ => continuousOn_const
-  --     norm_le := fun _ _ x hx => hbdd' x <| mem_of_mem_of_subset hx <|
-  --       (closedBall_subset_ball <| half_lt_self <| lt_min hR₁ hR₂).trans <|
-  --       (Metric.ball_subset_ball <| min_le_right _ _).trans (subset_refl _)
-  --     C_mul_le_R := by
-  --       rw [add_sub_cancel_left, sub_sub_cancel, max_self, hε, mul_div_left_comm, div_self, mul_one]
-  --       exact ne_of_gt <| add_pos_of_pos_of_nonneg zero_lt_one <| norm_nonneg _ }
+lemma mk_of_contDiffOn_one [NormedSpace ℝ E]
+    {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
+    ∃ (ε : ℝ) (hε : 0 < ε) (a L K : ℝ≥0), IsPicardLindelof (fun _ ↦ f)
+      (tmin := t₀ - ε) (tmax := t₀ + ε) ⟨t₀, (by simp [le_of_lt hε])⟩ x₀ a a L K := by
+  obtain ⟨L, s, hs, hlip⟩ := hf.exists_lipschitzOnWith
+  obtain ⟨R₁, hR₁ : 0 < R₁, hball⟩ := Metric.mem_nhds_iff.mp hs
+  obtain ⟨R₂, hR₂ : 0 < R₂, hbdd⟩ := Metric.continuousAt_iff.mp hf.continuousAt.norm 1 zero_lt_one
+  have hbdd' : ∀ x ∈ Metric.ball x₀ R₂, ‖f x‖ ≤ 1 + ‖f x₀‖ := fun _ hx ↦
+    sub_le_iff_le_add.mp <| le_of_lt <| lt_of_abs_lt <| Real.dist_eq _ _ ▸ hbdd hx
+  set ε := min R₁ R₂ / 2 / (1 + ‖f x₀‖) with hε
+  have hε0 : 0 < ε := hε ▸ div_pos (half_pos <| lt_min hR₁ hR₂)
+    (add_pos_of_pos_of_nonneg zero_lt_one (norm_nonneg _))
+  refine ⟨ε, hε0, ⟨min R₁ R₂ / 2, by positivity⟩, ⟨1 + ‖f x₀‖, by positivity⟩, L, ?_⟩
+  exact
+    { le := le_rfl
+      bounded := fun _ _ x hx ↦ hbdd' x <| mem_of_mem_of_subset hx <|
+          (closedBall_subset_ball <| half_lt_self <| lt_min hR₁ hR₂).trans <|
+          (Metric.ball_subset_ball <| min_le_right _ _).trans (subset_refl _)
+      lipschitz := fun _ _ => hlip.mono <|
+        (closedBall_subset_ball <| half_lt_self <| lt_min hR₁ hR₂).trans <|
+        (Metric.ball_subset_ball <| min_le_left _ _).trans hball
+      continuousOn := fun _ _ => continuousOn_const
+      mul_max_le := by
+        rw [add_sub_cancel_left, sub_sub_cancel, max_self, hε, mul_div_left_comm,
+          NNReal.coe_mk _ (by positivity), NNReal.coe_mk _ (by positivity), div_self, mul_one]
+        exact ne_of_gt <| add_pos_of_pos_of_nonneg zero_lt_one <| norm_nonneg _ }
 
 
 -- show that `IsPicardLindelof` implies the assumptions in `hasDerivWithinAt_integrate_Icc`,
@@ -283,7 +279,6 @@ lemma continuousOn_uncurry (hf : IsPicardLindelof f t₀ x₀ a b L K) :
 
 -- anything else here?
 -- special cases of `IsPicardLindelof` for `x = x₀` and `b = 0`?
--- `C^1` satisfies `IsPicardLindelof`?
 
 
 
