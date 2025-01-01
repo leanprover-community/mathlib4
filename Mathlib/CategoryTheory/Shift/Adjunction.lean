@@ -561,10 +561,8 @@ instance : (E.trans E').inverse.CommShift A := by
 /--
 If equivalences `E : C ≌ D` and `E' : D ≌ F` are compatible with shifts, so is `E.trans E'`.
 -/
-instance : (E.trans E').CommShift A := by
-  dsimp [Equivalence.CommShift]
-  rw [trans_toAdjunction]
-  infer_instance
+instance : (E.trans E').CommShift A :=
+  inferInstanceAs ((E.toAdjunction.comp E'.toAdjunction).CommShift A)
 
 end CommShift
 
