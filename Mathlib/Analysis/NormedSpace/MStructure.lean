@@ -7,6 +7,7 @@ import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.Order.Basic
 import Mathlib.Tactic.NoncommRing
+import Mathlib.Analysis.Normed.Lp.ProdLp
 
 /-!
 # M-structure
@@ -311,3 +312,76 @@ instance Subtype.BooleanAlgebra [FaithfulSMul M X] :
     sdiff_eq := fun P Q => Subtype.ext <| by rw [coe_sdiff, ← coe_compl, coe_inf] }
 
 end IsLprojection
+
+noncomputable section WithL1
+
+open Real Set Filter RCLike Bornology Uniformity Topology NNReal ENNReal
+
+variable (p : ℝ≥0∞) (𝕜 α β : Type*)
+
+variable {p 𝕜 α β}
+variable [NormedAddCommGroup α] [NormedAddCommGroup β]
+
+def P1 : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inl α β).comp (AddMonoidHom.fst α β)
+
+def P2 : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inr α β).comp (AddMonoidHom.snd α β)
+
+
+lemma P1_apply (x : WithLp p (α × β)) : P1 x = (x.1, 0) := rfl
+
+lemma P2_apply (x : WithLp p (α × β)) : P2 x = (0, x.2) := rfl
+
+lemma test (a b : α) (c d : β) :
+    ((a,c) : WithLp p (α × β)) + ((b,d) : WithLp p (α × β)) = ((a+b,c+d) : WithLp p (α × β)) := by
+  rfl
+
+lemma test2 (a b c : α) : a-b=c ↔ a=c+b := by exact sub_eq_iff_eq_add
+
+lemma P1_compl : (1 : AddMonoid.End (WithLp p (α × β))) - P1 = P2 := by
+  apply AddMonoidHom.ext
+  intro x
+  have e1 : (1 - P1) x = (1 : AddMonoid.End (WithLp p (α × β))) x - P1 x := rfl
+  rw [e1]
+  rw [P1_apply, P2_apply, AddMonoid.End.coe_one, id_eq]
+  have e2 : (x.1, 0) + (0, x.2) = x := by
+    rw [test]
+    rw [zero_add, add_zero]
+    rfl
+  rw [sub_eq_iff_eq_add]
+  rw [add_comm]
+  rw [e2]
+
+variable (x : WithLp p (α × β))
+
+#check P1 x
+
+lemma P1_idempotent : IsIdempotentElem (M := (AddMonoid.End (WithLp p (α × β)))) P1 := by
+  rw [IsIdempotentElem, P1]
+  rfl
+
+variable [hp : Fact (1 ≤ p)]
+
+noncomputable instance instProdNormedAddCommGroup :
+    NormedAddCommGroup (WithLp p (α × β)) := {
+       WithLp.instProdNormedAddCommGroup p α β with
+  }
+
+lemma WithLp.prod_norm_eq_of_1 (x : WithLp 1 (α × β)) :
+    ‖x‖ = ‖(WithLp.equiv 1 _ x).fst‖ + ‖(WithLp.equiv 1 _ x).snd‖ := by
+  rw [WithLp.prod_norm_eq_of_nat 1 Nat.cast_one.symm, pow_one, pow_one, WithLp.equiv_fst,
+    WithLp.equiv_snd, Nat.cast_one, (div_self one_ne_zero), Real.rpow_one]
+
+lemma P1_Lprojection :
+  IsLprojection (WithLp 1 (α × β)) (M := (AddMonoid.End (WithLp 1 (α × β)))) (P1 (p := 1)) where
+  proj := rfl
+  Lnorm := by
+    intro x
+    rw [WithLp.prod_norm_eq_of_1]
+    simp
+    rw [P1_compl]
+    rw [P1_apply, P2_apply]
+    rw [WithLp.prod_norm_eq_of_1]
+    rw [WithLp.prod_norm_eq_of_1]
+    simp only [WithLp.equiv_fst, WithLp.equiv_snd, norm_zero, add_zero, zero_add]
+
+end WithL1
