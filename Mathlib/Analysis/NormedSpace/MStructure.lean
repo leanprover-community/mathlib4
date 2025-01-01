@@ -350,10 +350,17 @@ lemma P1_compl : (1 : AddMonoid.End (WithLp p (α × β))) - P1 = P2 := by
   rw [add_comm]
   rw [e2]
 
-lemma normp (hp : 0 < p.toReal) (x : WithLp p (α × β)) :
+theorem prod_norm_eq_sup (x : WithLp ∞ (α × β)) : ‖x‖ = ‖P1 x‖ ⊔ ‖(1 - P1) x‖ := by
+  rw [WithLp.prod_norm_eq_sup x, P1_apply, P1_compl, P2_apply]
+  apply congr_arg₂
+  · rw [WithLp.prod_norm_eq_sup]
+    simp only [norm_zero, norm_nonneg, sup_of_le_left]
+  · rw [WithLp.prod_norm_eq_sup]
+    simp only [norm_zero, norm_nonneg, sup_of_le_right]
+
+lemma prod_norm_eq_add_P1 (hp : 0 < p.toReal) (x : WithLp p (α × β)) :
     ‖x‖ = (‖P1 x‖ ^ p.toReal + ‖(1 - P1) x‖ ^ p.toReal) ^ (1 / p.toReal) := by
-  rw [WithLp.prod_norm_eq_add hp x]
-  rw [P1_apply, P1_compl, P2_apply]
+  rw [WithLp.prod_norm_eq_add hp x, P1_apply, P1_compl, P2_apply]
   apply congr_arg₂
   · have ez : p.toReal ≠ 0 := (ne_of_lt hp).symm
     have e1 : (0 : ℝ) ^ p.toReal = (0 : NNReal) := by
