@@ -121,7 +121,7 @@ instance : IsTrivial L (maxTrivSubmodule R L M) where trivial x m := Subtype.ext
 @[simp]
 theorem ideal_oper_maxTrivSubmodule_eq_bot (I : LieIdeal R L) :
     ⁅I, maxTrivSubmodule R L M⁆ = ⊥ := by
-  rw [← LieSubmodule.coe_toSubmodule_eq_iff, LieSubmodule.lieIdeal_oper_eq_linear_span,
+  rw [← LieSubmodule.coe_toSubmodule_inj, LieSubmodule.lieIdeal_oper_eq_linear_span,
     LieSubmodule.bot_coeSubmodule, Submodule.span_eq_bot]
   rintro m ⟨⟨x, hx⟩, ⟨⟨m, hm⟩, rfl⟩⟩
   exact hm x

@@ -320,9 +320,7 @@ noncomputable def cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some
 @[simp]
 theorem prod_cons {i} (g : G i) (w : NormalWord d) (hmw : w.fstIdx ≠ some i)
     (hgr : g ∉ (φ i).range) : (cons g w hmw hgr).prod = of i g * w.prod := by
-  simp only [prod, cons, Word.prod, List.map, ← of_apply_eq_base φ i, equiv_fst_eq_mul_inv,
-    mul_assoc, MonoidHom.apply_ofInjective_symm, List.prod_cons, map_mul, map_inv,
-    ofCoprodI_of, inv_mul_cancel_left]
+  simp [prod, cons, ← of_apply_eq_base φ i, equiv_fst_eq_mul_inv, mul_assoc]
 
 variable [DecidableEq ι] [∀ i, DecidableEq (G i)]
 

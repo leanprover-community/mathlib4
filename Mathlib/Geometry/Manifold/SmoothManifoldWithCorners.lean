@@ -1554,7 +1554,7 @@ lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 
   finite-dimensional space. This is the converse to
   `Manifold.locallyCompact_of_finiteDimensional`. -/
 theorem FiniteDimensional.of_locallyCompact_manifold
-    [CompleteSpace 𝕜] (I : ModelWithCorners 𝕜 E H) [Inhabited M] [LocallyCompactSpace M] :
+    [CompleteSpace 𝕜] (I : ModelWithCorners 𝕜 E H) [Nonempty M] [LocallyCompactSpace M] :
     FiniteDimensional 𝕜 E := by
   have := LocallyCompactSpace.of_locallyCompact_manifold M I
   exact FiniteDimensional.of_locallyCompactSpace 𝕜

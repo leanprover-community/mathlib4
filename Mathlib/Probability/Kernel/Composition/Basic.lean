@@ -571,21 +571,15 @@ lemma compProd_add_right (μ : Kernel α β) (κ η : Kernel (α × β) γ)
 lemma comapRight_compProd_id_prod {δ : Type*} {mδ : MeasurableSpace δ}
     (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ) [IsSFiniteKernel η]
     {f : δ → γ} (hf : MeasurableEmbedding f) :
-    comapRight (κ ⊗ₖ η) (MeasurableEmbedding.id.prod_mk hf) = κ ⊗ₖ (comapRight η hf) := by
+    comapRight (κ ⊗ₖ η) (MeasurableEmbedding.id.prodMap hf) = κ ⊗ₖ (comapRight η hf) := by
   ext a t ht
   rw [comapRight_apply' _ _ _ ht, compProd_apply, compProd_apply ht]
-  swap; · exact (MeasurableEmbedding.id.prod_mk hf).measurableSet_image.mpr ht
-  refine lintegral_congr (fun b ↦ ?_)
-  simp only [id_eq, Set.mem_image, Prod.mk.injEq, Prod.exists]
-  rw [comapRight_apply']
-  swap; · exact measurable_prod_mk_left ht
-  congr with x
-  simp only [Set.mem_setOf_eq, Set.mem_image]
-  constructor
-  · rintro ⟨b', c, h, rfl, rfl⟩
-    exact ⟨c, h, rfl⟩
-  · rintro ⟨c, h, rfl⟩
-    exact ⟨b, c, h, rfl, rfl⟩
+  · refine lintegral_congr fun b ↦ ?_
+    rw [comapRight_apply']
+    · congr with x
+      aesop
+    · exact measurable_prod_mk_left ht
+  · exact (MeasurableEmbedding.id.prodMap hf).measurableSet_image.mpr ht
 
 end CompositionProduct
 

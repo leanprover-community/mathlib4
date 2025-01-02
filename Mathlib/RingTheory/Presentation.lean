@@ -143,8 +143,8 @@ instance ofBijectiveAlgebraMap_isFinite (h : Function.Bijective (algebraMap R S)
 
 lemma ofBijectiveAlgebraMap_dimension (h : Function.Bijective (algebraMap R S)) :
     (ofBijectiveAlgebraMap h).dimension = 0 := by
-  show Nat.card PEmpty - Nat.card PEmpty = 0
-  simp only [Nat.card_eq_fintype_card, Fintype.card_ofIsEmpty, le_refl, tsub_eq_zero_of_le]
+  simp_rw [dimension, ofBijectiveAlgebraMap, Generators.ofSurjectiveAlgebraMap,
+    Generators.ofSurjective, Nat.card_eq_fintype_card, Fintype.card_ofIsEmpty]
 
 variable (R) in
 /-- The canonical `R`-presentation of `R` with no generators and no relations. -/

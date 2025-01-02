@@ -241,7 +241,7 @@ private theorem step6 : IsPGroup (Nat.card N).minFac N := by
   refine Sylow.nonempty.elim fun P => P.2.of_surjective P.1.subtype ?_
   rw [← MonoidHom.range_eq_top, range_subtype]
   haveI : (P.1.map N.subtype).Normal :=
-    normalizer_eq_top.mp (step1 h1 h2 h3 (P.1.map N.subtype).normalizer P.normalizer_sup_eq_top)
+    normalizer_eq_top_iff.mp (step1 h1 h2 h3 (P.map N.subtype).normalizer P.normalizer_sup_eq_top)
   exact (step3 h1 h2 h3 P.1).resolve_left (step5 h1 h3)
 
 include h2 in

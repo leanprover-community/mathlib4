@@ -67,7 +67,13 @@ lemma finite_basis [Nontrivial R] {ι} [Module.Finite R M]
     _root_.Finite ι :=
   let ⟨s, hs⟩ := ‹Module.Finite R M›
   basis_finite_of_finite_spans (↑s) s.finite_toSet hs b
+
 end Finite
+
+variable {R M}
+lemma not_finite_of_infinite_basis [Nontrivial R] {ι} [Infinite ι] (b : Basis ι R M) :
+    ¬ Module.Finite R M :=
+  fun _ ↦ (Finite.finite_basis b).not_infinite ‹_›
 
 end Module
 

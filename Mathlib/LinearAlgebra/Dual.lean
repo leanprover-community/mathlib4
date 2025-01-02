@@ -628,8 +628,8 @@ lemma dualMap_dualMap_eq_iff_of_injective
     (h : Injective (Dual.eval R M')) :
     f.dualMap.dualMap = g.dualMap.dualMap ↔ f = g := by
   simp only [← Dual.eval_comp_comp_evalEquiv_eq]
-  refine ⟨ fun hfg => ?_, fun a ↦ congrArg (Dual.eval R M').comp
-    (congrFun (congrArg LinearMap.comp a) (evalEquiv R M).symm.toLinearMap) ⟩
+  refine ⟨fun hfg => ?_, fun a ↦ congrArg (Dual.eval R M').comp
+    (congrFun (congrArg LinearMap.comp a) (evalEquiv R M).symm.toLinearMap)⟩
   rw [propext (cancel_left h), LinearEquiv.eq_comp_toLinearMap_iff] at hfg
   exact hfg
 

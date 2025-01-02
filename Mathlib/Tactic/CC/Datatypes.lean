@@ -692,4 +692,11 @@ structure CCStructure extends CCState where
   cache : CCCongrTheoremCache := ∅
   deriving Inhabited
 
+initialize
+  registerTraceClass `Meta.Tactic.cc.merge
+  registerTraceClass `Meta.Tactic.cc.failure
+  registerTraceClass `Debug.Meta.Tactic.cc
+  registerTraceClass `Debug.Meta.Tactic.cc.ac
+  registerTraceClass `Debug.Meta.Tactic.cc.parentOccs
+
 end Mathlib.Tactic.CC

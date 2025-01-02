@@ -633,7 +633,7 @@ theorem tendsto_measure_biInter_gt {ι : Type*} [LinearOrder ι] [TopologicalSpa
     {a : ι} (hs : ∀ r > a, NullMeasurableSet (s r) μ) (hm : ∀ i j, a < i → i ≤ j → s i ⊆ s j)
     (hf : ∃ r > a, μ (s r) ≠ ∞) : Tendsto (μ ∘ s) (𝓝[Ioi a] a) (𝓝 (μ (⋂ r > a, s r))) := by
   have : (atBot : Filter (Ioi a)).IsCountablyGenerated := by
-    rw [← comap_coe_Ioi_nhdsWithin_Ioi]
+    rw [← comap_coe_Ioi_nhdsGT]
     infer_instance
   simp_rw [← map_coe_Ioi_atBot, tendsto_map'_iff, ← mem_Ioi, biInter_eq_iInter]
   apply tendsto_measure_iInter_atBot

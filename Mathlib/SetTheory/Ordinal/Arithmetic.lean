@@ -1466,17 +1466,28 @@ theorem iSup_ord {ι} {f : ι → Cardinal} (hf : BddAbove (range f)) :
   conv_lhs => change range (ord ∘ f)
   rw [range_comp]
 
+theorem lift_card_sInf_compl_le (s : Set Ordinal.{u}) :
+    Cardinal.lift.{u + 1} (sInf sᶜ).card ≤ #s := by
+  rw [← mk_Iio_ordinal]
+  refine mk_le_mk_of_subset fun x (hx : x < _) ↦ ?_
+  rw [← not_not_mem]
+  exact not_mem_of_lt_csInf' hx
+
+theorem card_sInf_range_compl_le_lift {ι : Type u} (f : ι → Ordinal.{max u v}) :
+    (sInf (range f)ᶜ).card ≤ Cardinal.lift.{v} #ι := by
+  rw [← Cardinal.lift_le.{max u v + 1}, Cardinal.lift_lift]
+  apply (lift_card_sInf_compl_le _).trans
+  rw [← Cardinal.lift_id'.{u, max u v + 1} #(range _)]
+  exact mk_range_le_lift
+
+theorem card_sInf_range_compl_le {ι : Type u} (f : ι → Ordinal.{u}) :
+    (sInf (range f)ᶜ).card ≤ #ι :=
+  Cardinal.lift_id #ι ▸ card_sInf_range_compl_le_lift f
+
 theorem sInf_compl_lt_lift_ord_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
     sInf (range f)ᶜ < lift.{v} (succ #ι).ord := by
-  by_contra! h
-  have : Iio (lift.{v} (succ #ι).ord) ⊆ range f := by
-    intro o ho
-    have := not_mem_of_lt_csInf' (ho.trans_le h)
-    rwa [not_mem_compl_iff] at this
-  have := mk_le_mk_of_subset this
-  rw [mk_Iio_ordinal, ← lift_card, Cardinal.lift_lift, card_ord, Cardinal.lift_succ,
-    succ_le_iff, ← Cardinal.lift_id'.{u, max (u + 1) (v + 1)} #_] at this
-  exact this.not_le mk_range_le_lift
+  rw [lift_ord, Cardinal.lift_succ, ← card_le_iff]
+  exact card_sInf_range_compl_le_lift f
 
 theorem sInf_compl_lt_ord_succ {ι : Type u} (f : ι → Ordinal.{u}) :
     sInf (range f)ᶜ < (succ #ι).ord :=
@@ -2350,6 +2361,11 @@ theorem nat_lt_omega0 (n : ℕ) : ↑n < ω :=
 
 @[deprecated "No deprecation message was provided."  (since := "2024-09-30")]
 alias nat_lt_omega := nat_lt_omega0
+
+theorem eq_nat_or_omega0_le (o : Ordinal) : (∃ n : ℕ, o = n) ∨ ω ≤ o := by
+  obtain ho | ho := lt_or_le o ω
+  · exact Or.inl <| lt_omega0.1 ho
+  · exact Or.inr ho
 
 theorem omega0_pos : 0 < ω :=
   nat_lt_omega0 0

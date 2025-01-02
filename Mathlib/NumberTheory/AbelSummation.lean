@@ -162,8 +162,8 @@ theorem sum_mul_eq_sub_integral_mul' (hc : c 0 = 0) (b : ℝ)
       f b * (∑ k ∈ Icc 0 ⌊b⌋₊, c k) - ∫ t in Set.Ioc 1 b, deriv f t * (∑ k ∈ Icc 0 ⌊t⌋₊, c k) := by
   obtain hb | hb := le_or_gt 1 b
   · have : 1 ≤ ⌊b⌋₊ := (Nat.one_le_floor_iff _).mpr hb
-    nth_rewrite 1 [Finset.Icc_eq_cons_Ioc (by linarith), sum_cons, ← Nat.Icc_succ_left,
-      Finset.Icc_eq_cons_Ioc (by linarith), sum_cons]
+    nth_rewrite 1 [Finset.Icc_eq_cons_Ioc (by omega), sum_cons, ← Nat.Icc_succ_left,
+      Finset.Icc_eq_cons_Ioc (by omega), sum_cons]
     rw [Nat.succ_eq_add_one, zero_add, ← Nat.floor_one (α := ℝ),
       sum_mul_eq_sub_sub_integral_mul c zero_le_one hb hf_diff hf_int, Nat.floor_one, Nat.cast_one,
       Finset.Icc_eq_cons_Ioc zero_le_one, sum_cons, show 1 = 0 + 1 by rfl, Nat.Ioc_succ_singleton,
