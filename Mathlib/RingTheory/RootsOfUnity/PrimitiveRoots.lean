@@ -40,8 +40,6 @@ of the `Units`), but lemmas like `IsPrimitiveRoot.isUnit` and
 `IsPrimitiveRoot.coe_units_iff` should provide the necessary glue.
 -/
 
-open scoped Classical
-
 noncomputable section
 
 open Polynomial Finset
@@ -66,6 +64,7 @@ section primitiveRoots
 
 variable {k : ℕ}
 
+open scoped Classical in
 /-- `primitiveRoots k R` is the finset of primitive `k`-th roots of unity
 in the integral domain `R`. -/
 def primitiveRoots (k : ℕ) (R : Type*) [CommRing R] [IsDomain R] : Finset R :=
@@ -76,11 +75,13 @@ variable [CommRing R] [IsDomain R]
 -- TODO?: replace `(h0 : 0 < k)` by `[NeZero k]`
 @[simp]
 theorem mem_primitiveRoots {ζ : R} (h0 : 0 < k) : ζ ∈ primitiveRoots k R ↔ IsPrimitiveRoot ζ k := by
+  classical
   rw [primitiveRoots, mem_filter, Multiset.mem_toFinset, mem_nthRoots h0, and_iff_right_iff_imp]
   exact IsPrimitiveRoot.pow_eq_one
 
 @[simp]
 theorem primitiveRoots_zero : primitiveRoots 0 R = ∅ := by
+  classical
   rw [primitiveRoots, nthRoots_zero, Multiset.toFinset_zero, Finset.filter_empty]
 
 theorem isPrimitiveRoot_of_mem_primitiveRoots {ζ : R} (h : ζ ∈ primitiveRoots k R) :
@@ -363,7 +364,7 @@ theorem primitiveRoots_one : primitiveRoots 1 R = {(1 : R)} := by
 
 theorem neZero' {n : ℕ} [NeZero n] (hζ : IsPrimitiveRoot ζ n) : NeZero ((n : ℕ) : R) := by
   let p := ringChar R
-  have hfin := Nat.multiplicity_finite_iff.2 ⟨CharP.char_ne_one R p, NeZero.pos n⟩
+  have hfin := Nat.finiteMultiplicity_iff.2 ⟨CharP.char_ne_one R p, NeZero.pos n⟩
   obtain ⟨m, hm⟩ := hfin.exists_eq_pow_mul_and_not_dvd
   by_cases hp : p ∣ n
   · obtain ⟨k, hk⟩ := Nat.exists_eq_succ_of_ne_zero (multiplicity_pos_of_dvd hp).ne'
@@ -566,6 +567,7 @@ theorem nthRoots_eq {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) {α a : R} (
       pow_mul, hζ.pow_eq_one, one_pow, one_mul]
   · simpa only [Multiset.card_map, Multiset.card_range] using card_nthRoots n a
 
+open scoped Classical in
 theorem card_nthRoots {n : ℕ} {ζ : R} (hζ : IsPrimitiveRoot ζ n) (a : R) :
     Multiset.card (nthRoots n a) = if ∃ α, α ^ n = a then n else 0 := by
   split_ifs with h
@@ -620,6 +622,7 @@ theorem nthRoots_one_nodup {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
 @[simp]
 theorem card_nthRootsFinset {ζ : R} {n : ℕ} (h : IsPrimitiveRoot ζ n) :
     #(nthRootsFinset n R) = n := by
+  classical
   rw [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_one_nodup h), card_mk, h.card_nthRoots_one]
 
 open scoped Nat
@@ -651,6 +654,7 @@ theorem disjoint {k l : ℕ} (h : k ≠ l) : Disjoint (primitiveRoots k R) (prim
     h <|
       (isPrimitiveRoot_of_mem_primitiveRoots hk).unique <| isPrimitiveRoot_of_mem_primitiveRoots hl
 
+open scoped Classical in
 /-- `nthRoots n` as a `Finset` is equal to the union of `primitiveRoots i R` for `i ∣ n`
 if there is a primitive `n`th root of unity in `R`. -/
 private -- marking as `private` since `nthRoots_one_eq_biUnion_primitiveRoots` can be used instead
@@ -678,6 +682,7 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots' {ζ : R} {n : ℕ} [NeZero n]
     · intro i _ j _ hdiff
       exact disjoint hdiff
 
+open scoped Classical in
 /-- `nthRoots n` as a `Finset` is equal to the union of `primitiveRoots i R` for `i ∣ n`
 if there is a primitive `n`th root of unity in `R`. -/
 theorem nthRoots_one_eq_biUnion_primitiveRoots {ζ : R} {n : ℕ}
@@ -750,3 +755,44 @@ theorem autToPow_spec [NeZero n] (f : S ≃ₐ[R] S) : μ ^ (hμ.autToPow R f : 
 end Automorphisms
 
 end IsPrimitiveRoot
+
+section cyclic
+
+/-- If `G` is cyclic of order `n` and `G'` contains a primitive `n`th root of unity,
+then for each `a : G` with `a ≠ 1` there is a homomorphism `φ : G →* G'` such that `φ a ≠ 1`. -/
+lemma IsCyclic.exists_apply_ne_one {G G' : Type*} [CommGroup G] [IsCyclic G] [Finite G]
+    [CommGroup G'] (hG' : ∃ ζ : G', IsPrimitiveRoot ζ (Nat.card G)) ⦃a : G⦄ (ha : a ≠ 1) :
+    ∃ φ : G →* G', φ a ≠ 1 := by
+  let inst : Fintype G := Fintype.ofFinite _
+  obtain ⟨ζ, hζ⟩ := hG'
+  -- pick a generator `g` of `G`
+  obtain ⟨g, hg⟩ := IsCyclic.exists_generator (α := G)
+  have hζg : orderOf ζ ∣ orderOf g := by
+    rw [← hζ.eq_orderOf, orderOf_eq_card_of_forall_mem_zpowers hg, Nat.card_eq_fintype_card]
+  -- use the homomorphism `φ` given by `g ↦ ζ`
+  let φ := monoidHomOfForallMemZpowers hg hζg
+  have hφg : IsPrimitiveRoot (φ g) (Nat.card G) := by
+    rwa [monoidHomOfForallMemZpowers_apply_gen hg hζg]
+  use φ
+  contrapose! ha
+  specialize hg a
+  rw [← mem_powers_iff_mem_zpowers, Submonoid.mem_powers_iff] at hg
+  obtain ⟨k, hk⟩ := hg
+  rw [← hk, map_pow] at ha
+  obtain ⟨l, rfl⟩ := (hφg.pow_eq_one_iff_dvd k).mp ha
+  rw [← hk, pow_mul, Nat.card_eq_fintype_card, pow_card_eq_one, one_pow]
+
+/-- If `M` is a commutative group that contains a primitive `n`th root of unity
+and `a : ZMod n` is nonzero, then there exists a group homomorphism `φ` from the
+additive group `ZMod n` to the multiplicative group `Mˣ` such that `φ a ≠ 1`. -/
+lemma ZMod.exists_monoidHom_apply_ne_one {M : Type*} [CommMonoid M] {n : ℕ} [NeZero n]
+    (hG : ∃ ζ : M, IsPrimitiveRoot ζ n) {a : ZMod n} (ha : a ≠ 0) :
+    ∃ φ : Multiplicative (ZMod n) →* Mˣ, φ (Multiplicative.ofAdd a) ≠ 1 := by
+  obtain ⟨ζ, hζ⟩ := hG
+  have hc : n = Nat.card (Multiplicative (ZMod n)) := by
+    simp only [Nat.card_eq_fintype_card, Fintype.card_multiplicative, card]
+  exact IsCyclic.exists_apply_ne_one
+    (hc ▸ ⟨hζ.toRootsOfUnity.val, IsPrimitiveRoot.coe_units_iff.mp hζ⟩) <|
+    by simp only [ne_eq, ofAdd_eq_one, ha, not_false_eq_true]
+
+end cyclic

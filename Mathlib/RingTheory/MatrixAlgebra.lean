@@ -14,13 +14,7 @@ suppress_compilation
 
 universe u v w
 
-open TensorProduct
-
-open TensorProduct
-
-open Algebra.TensorProduct
-
-open Matrix
+open TensorProduct Algebra.TensorProduct Matrix
 
 variable {R : Type u} [CommSemiring R]
 variable {A : Type v} [Semiring A] [Algebra R A]

@@ -277,7 +277,7 @@ def colimitDesc (t : Cocone F) : colimit.{v, u} F ⟶ t.pt where
     rw [colimit_mul_mk_eq F ⟨i, x⟩ ⟨j, y⟩ (max' i j) (IsFiltered.leftToMax i j)
       (IsFiltered.rightToMax i j)]
     dsimp [Types.TypeMax.colimitCoconeIsColimit]
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
     erw [MonoidHom.map_mul]
     -- Porting note: `rw` can't see through coercion is actually forgetful functor,
     -- so can't rewrite `t.w_apply`
@@ -296,10 +296,10 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
         fun j => funext fun x => DFunLike.congr_fun (i := MonCat.instFunLike _ _) (h j) x) y
 
 @[to_additive]
-noncomputable instance forgetPreservesFilteredColimits :
+instance forget_preservesFilteredColimits :
     PreservesFilteredColimits (forget MonCat.{u}) :=
   ⟨fun J hJ1 _ => letI hJ1' : Category J := hJ1
-    ⟨fun {F} => preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
+    ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
       (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget MonCat.{u}))⟩⟩
 end
 
@@ -369,16 +369,16 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
           DFunLike.congr_fun (i := CommMonCat.instFunLike _ _) (h j) x
 
 @[to_additive forget₂AddMonPreservesFilteredColimits]
-noncomputable instance forget₂MonPreservesFilteredColimits :
+noncomputable instance forget₂Mon_preservesFilteredColimits :
   PreservesFilteredColimits (forget₂ CommMonCat MonCat.{u}) :=
 ⟨fun J hJ1 _ => letI hJ3 : Category J := hJ1
-  ⟨fun {F} => preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
+  ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
     (MonCat.FilteredColimits.colimitCoconeIsColimit (F ⋙ forget₂ CommMonCat MonCat.{u}))⟩⟩
 
 @[to_additive]
-noncomputable instance forgetPreservesFilteredColimits :
+noncomputable instance forget_preservesFilteredColimits :
     PreservesFilteredColimits (forget CommMonCat.{u}) :=
-  Limits.compPreservesFilteredColimits (forget₂ CommMonCat MonCat) (forget MonCat)
+  Limits.comp_preservesFilteredColimits (forget₂ CommMonCat MonCat) (forget MonCat)
 
 end
 

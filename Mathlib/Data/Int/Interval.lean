@@ -113,7 +113,7 @@ theorem card_Ioo : #(Ioo a b) = (b - a - 1).toNat := (card_map _).trans <| card_
 theorem card_uIcc : #(uIcc a b) = (b - a).natAbs + 1 :=
   (card_map _).trans <|
     (Nat.cast_inj (R := ℤ)).mp <| by
-      rw [card_range, sup_eq_max, inf_eq_min,
+      rw [card_range,
         Int.toNat_of_nonneg (sub_nonneg_of_le <| le_add_one min_le_max), Int.ofNat_add,
         Int.natCast_natAbs, add_comm, add_sub_assoc, max_sub_min_eq_abs, add_comm, Int.ofNat_one]
 
@@ -129,19 +129,24 @@ theorem card_Ioc_of_le (h : a ≤ b) : (#(Ioc a b) : ℤ) = b - a := by
 theorem card_Ioo_of_lt (h : a < b) : (#(Ioo a b) : ℤ) = b - a - 1 := by
   rw [card_Ioo, sub_sub, toNat_sub_of_le h]
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
+theorem Icc_eq_pair : Finset.Icc a (a + 1) = {a, a + 1} := by
+  ext
+  simp
+  omega
+
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Icc : Fintype.card (Set.Icc a b) = (b + 1 - a).toNat := by
   rw [← card_Icc, Fintype.card_ofFinset]
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Ico : Fintype.card (Set.Ico a b) = (b - a).toNat := by
   rw [← card_Ico, Fintype.card_ofFinset]
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Ioc : Fintype.card (Set.Ioc a b) = (b - a).toNat := by
   rw [← card_Ioc, Fintype.card_ofFinset]
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Ioo : Fintype.card (Set.Ioo a b) = (b - a - 1).toNat := by
   rw [← card_Ioo, Fintype.card_ofFinset]
 

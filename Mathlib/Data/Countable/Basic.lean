@@ -3,9 +3,10 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Logic.Equiv.Nat
-import Mathlib.Logic.Equiv.Fin
 import Mathlib.Data.Countable.Defs
+import Mathlib.Data.Fin.Tuple.Basic
+import Mathlib.Data.ENat.Defs
+import Mathlib.Logic.Equiv.Nat
 
 /-!
 # Countable types
@@ -90,6 +91,19 @@ instance [Uncountable α] [Nonempty β] : Uncountable (α × β) := by
 instance [Nonempty α] [Uncountable β] : Uncountable (α × β) := by
   inhabit α
   exact (Prod.mk.inj_left default).uncountable
+
+lemma countable_left_of_prod_of_nonempty [Nonempty β] (h : Countable (α × β)) : Countable α := by
+  contrapose h
+  rw [not_countable_iff] at *
+  infer_instance
+
+lemma countable_right_of_prod_of_nonempty [Nonempty α] (h : Countable (α × β)) : Countable β := by
+  contrapose h
+  rw [not_countable_iff] at *
+  infer_instance
+
+lemma countable_prod_swap [Countable (α × β)] : Countable (β × α) :=
+  Countable.of_equiv _ (Equiv.prodComm α β)
 
 instance [Countable α] [∀ a, Countable (π a)] : Countable (Sigma π) := by
   rcases exists_injective_nat α with ⟨f, hf⟩

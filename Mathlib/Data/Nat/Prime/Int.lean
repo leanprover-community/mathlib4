@@ -9,7 +9,7 @@ import Mathlib.Data.Nat.Prime.Basic
 /-!
 # Prime numbers in the naturals and the integers
 
-TODO: This file can probably be merged with `Data/Nat/Int/NatPrime.lean`.
+TODO: This file can probably be merged with `Mathlib/Data/Int/NatPrime.lean`.
 -/
 
 

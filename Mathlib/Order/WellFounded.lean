@@ -88,21 +88,26 @@ protected theorem lt_sup {r : α → α → Prop} (wf : WellFounded r) {s : Set 
     (hx : x ∈ s) : r x (wf.sup s h) :=
   min_mem wf { x | ∀ a ∈ s, r a x } h x hx
 
-section
+section deprecated
 
 open Classical in
+set_option linter.deprecated false in
 /-- A successor of an element `x` in a well-founded order is a minimal element `y` such that
 `x < y` if one exists. Otherwise it is `x` itself. -/
+@[deprecated "If you have a linear order, consider defining a `SuccOrder` instance through
+`ConditionallyCompleteLinearOrder.toSuccOrder`." (since := "2024-10-25")]
 protected noncomputable def succ {r : α → α → Prop} (wf : WellFounded r) (x : α) : α :=
   if h : ∃ y, r x y then wf.min { y | r x y } h else x
 
+set_option linter.deprecated false in
+@[deprecated "No deprecation message was provided." (since := "2024-10-25")]
 protected theorem lt_succ {r : α → α → Prop} (wf : WellFounded r) {x : α} (h : ∃ y, r x y) :
     r x (wf.succ x) := by
   rw [WellFounded.succ, dif_pos h]
   apply min_mem
 
-end
-
+set_option linter.deprecated false in
+@[deprecated "No deprecation message was provided." (since := "2024-10-25")]
 protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {x : α} (h : ∃ y, r x y)
     (y : α) : r y (wo.wf.succ x) ↔ r y x ∨ y = x := by
   constructor
@@ -119,6 +124,8 @@ protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {
     left
     exact hy
   rintro (hy | rfl); (· exact _root_.trans hy (wo.wf.lt_succ h)); exact wo.wf.lt_succ h
+
+end deprecated
 
 end WellFounded
 
@@ -227,7 +234,7 @@ noncomputable def argminOn (s : Set α) (hs : s.Nonempty) : α :=
 theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f h s hs ∈ s :=
   WellFounded.min_mem _ _ _
 
--- Porting note (#11119): @[simp] removed as it will never apply
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as it will never apply
 theorem not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s)
     (hs : s.Nonempty := Set.nonempty_of_mem ha) : ¬f a < f (argminOn f h s hs) :=
   WellFounded.not_lt_min (InvImage.wf f h) s hs ha
@@ -238,11 +245,11 @@ section LinearOrder
 
 variable [LinearOrder β] (h : WellFounded ((· < ·) : β → β → Prop))
 
--- Porting note (#11119): @[simp] removed as it will never apply
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as it will never apply
 theorem argmin_le (a : α) [Nonempty α] : f (argmin f h) ≤ f a :=
   not_lt.mp <| not_lt_argmin f h a
 
--- Porting note (#11119): @[simp] removed as it will never apply
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): @[simp] removed as it will never apply
 theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
     f (argminOn f h s hs) ≤ f a :=
   not_lt.mp <| not_lt_argminOn f h s ha hs

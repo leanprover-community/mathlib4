@@ -401,8 +401,6 @@ theorem Nonempty.of_image {f : α → β} {s : Set α} : (f '' s).Nonempty → s
 theorem image_nonempty {f : α → β} {s : Set α} : (f '' s).Nonempty ↔ s.Nonempty :=
   ⟨Nonempty.of_image, fun h => h.image f⟩
 
-@[deprecated (since := "2024-01-06")] alias nonempty_image_iff := image_nonempty
-
 theorem Nonempty.preimage {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : Surjective f) :
     (f ⁻¹' s).Nonempty :=
   let ⟨y, hy⟩ := hs
@@ -410,7 +408,7 @@ theorem Nonempty.preimage {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : S
   ⟨x, mem_preimage.2 <| hx.symm ▸ hy⟩
 
 instance (f : α → β) (s : Set α) [Nonempty s] : Nonempty (f '' s) :=
-  (Set.Nonempty.image f nonempty_of_nonempty_subtype).to_subtype
+  (Set.Nonempty.image f .of_subtype).to_subtype
 
 /-- image and preimage are a Galois connection -/
 @[simp]
@@ -422,6 +420,9 @@ theorem image_preimage_subset (f : α → β) (s : Set β) : f '' (f ⁻¹' s) �
 
 theorem subset_preimage_image (f : α → β) (s : Set α) : s ⊆ f ⁻¹' (f '' s) := fun _ =>
   mem_image_of_mem f
+
+theorem preimage_image_univ {f : α → β} : f ⁻¹' (f '' univ) = univ :=
+  Subset.antisymm (fun _ _ => trivial) (subset_preimage_image f univ)
 
 @[simp]
 theorem preimage_image_eq {f : α → β} (s : Set α) (h : Injective f) : f ⁻¹' (f '' s) = s :=
@@ -593,10 +594,12 @@ theorem exists_subtype_range_iff {p : range f → Prop} :
     exact ⟨i, ha⟩,
    fun ⟨_, hi⟩ => ⟨_, hi⟩⟩
 
-theorem range_iff_surjective : range f = univ ↔ Surjective f :=
+theorem range_eq_univ : range f = univ ↔ Surjective f :=
   eq_univ_iff_forall
 
-alias ⟨_, _root_.Function.Surjective.range_eq⟩ := range_iff_surjective
+@[deprecated (since := "2024-11-11")] alias range_iff_surjective := range_eq_univ
+
+alias ⟨_, _root_.Function.Surjective.range_eq⟩ := range_eq_univ
 
 @[simp]
 theorem subset_range_of_surjective {f : α → β} (h : Surjective f) (s : Set β) :
@@ -739,7 +742,7 @@ theorem preimage_image_preimage {f : α → β} {s : Set β} : f ⁻¹' (f '' (f
 
 @[simp, mfld_simps]
 theorem range_id : range (@id α) = univ :=
-  range_iff_surjective.2 surjective_id
+  range_eq_univ.2 surjective_id
 
 @[simp, mfld_simps]
 theorem range_id' : (range fun x : α => x) = univ :=

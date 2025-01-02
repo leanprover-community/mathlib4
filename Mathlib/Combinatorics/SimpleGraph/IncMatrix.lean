@@ -5,7 +5,7 @@ Authors: Gabriel Moise, Yaël Dillies, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Mul
 
 /-!
 # Incidence matrix of a simple graph

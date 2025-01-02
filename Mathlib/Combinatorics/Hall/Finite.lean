@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alena Gusakov, Bhavik Mehta, Kyle Miller
 -/
 import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Fintype.Powerset
+import Mathlib.Data.Set.Finite.Basic
 
 /-!
 # Hall's Marriage Theorem for finite index types
@@ -108,7 +109,8 @@ theorem hall_hard_inductive_step_A {n : ℕ} (hn : Fintype.card ι = n + 1)
     have key : ∀ {x}, y ≠ f' x := by
       intro x h
       simpa [t', ← h] using hfr x
-    by_cases h₁ : z₁ = x <;> by_cases h₂ : z₂ = x <;> simp [h₁, h₂, hfinj.eq_iff, key, key.symm]
+    by_cases h₁ : z₁ = x <;> by_cases h₂ : z₂ = x <;>
+      simp [h₁, h₂, hfinj.eq_iff, key, key.symm]
   · intro z
     simp only [ne_eq, Set.mem_setOf_eq]
     split_ifs with hz

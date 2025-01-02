@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Nailin Guan
 -/
 import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.Topology.Algebra.Group.Quotient
 import Mathlib.Topology.Algebra.Ring.Basic
@@ -172,7 +171,7 @@ theorem toSubgroup_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
 end
 
 @[to_additive]
-instance instInfOpenSubgroup : Inf (OpenSubgroup G) :=
+instance instInfOpenSubgroup : Min (OpenSubgroup G) :=
   ⟨fun U V ↦ ⟨U ⊓ V, U.isOpen.inter V.isOpen⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -198,7 +197,6 @@ instance instPartialOrderOpenSubgroup : PartialOrder (OpenSubgroup G) := inferIn
 @[to_additive]
 instance instSemilatticeInfOpenSubgroup : SemilatticeInf (OpenSubgroup G) :=
   { SetLike.coe_injective.semilatticeInf ((↑) : OpenSubgroup G → Set G) fun _ _ ↦ rfl with
-    toInf := instInfOpenSubgroup
     toPartialOrder := instPartialOrderOpenSubgroup }
 
 @[to_additive]
@@ -329,7 +327,7 @@ namespace OpenSubgroup
 variable {G : Type*} [Group G] [TopologicalSpace G] [ContinuousMul G]
 
 @[to_additive]
-instance : Sup (OpenSubgroup G) :=
+instance : Max (OpenSubgroup G) :=
   ⟨fun U V ↦ ⟨U ⊔ V, Subgroup.isOpen_mono (le_sup_left : U.1 ≤ U.1 ⊔ V.1) U.isOpen⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -428,7 +426,7 @@ instance : Coe (OpenNormalSubgroup G) (Subgroup G) where
 instance instPartialOrderOpenNormalSubgroup : PartialOrder (OpenNormalSubgroup G) := inferInstance
 
 @[to_additive]
-instance instInfOpenNormalSubgroup : Inf (OpenNormalSubgroup G) :=
+instance instInfOpenNormalSubgroup : Min (OpenNormalSubgroup G) :=
   ⟨fun U V ↦ ⟨U.toOpenSubgroup ⊓ V.toOpenSubgroup,
     Subgroup.normal_inf_normal U.toSubgroup V.toSubgroup⟩⟩
 
@@ -437,15 +435,14 @@ instance instSemilatticeInfOpenNormalSubgroup : SemilatticeInf (OpenNormalSubgro
   SetLike.coe_injective.semilatticeInf ((↑) : OpenNormalSubgroup G → Set G) fun _ _ ↦ rfl
 
 @[to_additive]
-instance [ContinuousMul G] : Sup (OpenNormalSubgroup G) :=
+instance [ContinuousMul G] : Max (OpenNormalSubgroup G) :=
   ⟨fun U V ↦ ⟨U.toOpenSubgroup ⊔ V.toOpenSubgroup,
     Subgroup.sup_normal U.toOpenSubgroup.1 V.toOpenSubgroup.1⟩⟩
 
 @[to_additive]
 instance instSemilatticeSupOpenNormalSubgroup [ContinuousMul G] :
     SemilatticeSup (OpenNormalSubgroup G) :=
-  toSubgroup_injective.semilatticeSup
-    (fun (H : OpenNormalSubgroup G) ↦ ↑H.toOpenSubgroup) (fun _ _ ↦ rfl)
+  toSubgroup_injective.semilatticeSup _ (fun _ _ ↦ rfl)
 
 @[to_additive]
 instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) :=

@@ -243,7 +243,7 @@ theorem imo1988_q6 {a b : ℕ} (h : a * b + 1 ∣ a ^ 2 + b ^ 2) :
     · contrapose! hV₀ with x_lt_z
       apply ne_of_gt
       calc
-        z * y > x * x := by apply mul_lt_mul' <;> linarith
+        z * y > x * x := by apply mul_lt_mul' <;> omega
         _ ≥ x * x - k := sub_le_self _ (Int.ofNat_zero_le k)
   · -- There is no base case in this application of Vieta jumping.
     simp
@@ -280,17 +280,16 @@ example {a b : ℕ} (h : a * b ∣ a ^ 2 + b ^ 2 + 1) : 3 * a * b = a ^ 2 + b ^ 
     constructor
     · have zy_pos : z * y ≥ 0 := by rw [hV₀]; exact mod_cast Nat.zero_le _
       apply nonneg_of_mul_nonneg_left zy_pos
-      linarith
+      omega
     · contrapose! hV₀ with x_lt_z
       apply ne_of_gt
       push_neg at h_base
       calc
-        z * y > x * y := by apply mul_lt_mul_of_pos_right <;> linarith
-        _ ≥ x * (x + 1) := by apply mul_le_mul <;> linarith
+        z * y > x * y := by apply mul_lt_mul_of_pos_right <;> omega
+        _ ≥ x * (x + 1) := by apply mul_le_mul <;> omega
         _ > x * x + 1 := by
-          rw [mul_add, mul_one]
-          apply add_lt_add_left
-          assumption_mod_cast
+          rw [mul_add]
+          omega
   · -- Show the base case.
     intro x y h h_base
     obtain rfl | rfl : x = 0 ∨ x = 1 := by rwa [Nat.le_add_one_iff, Nat.le_zero] at h_base

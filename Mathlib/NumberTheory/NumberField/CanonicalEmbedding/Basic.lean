@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
 import Mathlib.Algebra.Module.ZLattice.Basic
+import Mathlib.Analysis.InnerProductSpace.ProdL2
 import Mathlib.MeasureTheory.Measure.Haar.Unique
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
 import Mathlib.NumberTheory.NumberField.Units.Basic
@@ -366,8 +367,8 @@ theorem forall_normAtPlace_eq_zero_iff {x : mixedSpace K} :
     (∀ w, normAtPlace w x = 0) ↔ x = 0 := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · ext w
-    · exact norm_eq_zero'.mp (normAtPlace_apply_isReal w.prop _ ▸ h w.1)
-    · exact norm_eq_zero'.mp (normAtPlace_apply_isComplex w.prop _ ▸ h w.1)
+    · exact norm_eq_zero.mp (normAtPlace_apply_isReal w.prop _ ▸ h w.1)
+    · exact norm_eq_zero.mp (normAtPlace_apply_isComplex w.prop _ ▸ h w.1)
   · simp_rw [h, map_zero, implies_true]
 
 @[deprecated (since := "2024-09-13")] alias normAtPlace_eq_zero := forall_normAtPlace_eq_zero_iff
@@ -386,7 +387,7 @@ theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
       (univ.image (fun w : {w : InfinitePlace K // IsReal w} ↦ w.1)) ∪
       (univ.image (fun w : {w : InfinitePlace K // IsComplex w} ↦ w.1)) := by
     ext; simp [isReal_or_isComplex]
-  rw [this, sup_union, univ.sup_image, univ.sup_image, sup_eq_max,
+  rw [this, sup_union, univ.sup_image, univ.sup_image,
     Prod.nnnorm_def', Pi.nnnorm_def, Pi.nnnorm_def]
   congr
   · ext w
@@ -584,17 +585,17 @@ theorem stdBasis_repr_eq_matrixToStdBasis_mul (x : (K →+* ℂ) → ℂ)
   | inr c =>
     rcases c with ⟨w, j⟩
     fin_cases j
-    · simp_rw [Fin.mk_zero, stdBasis_apply_ofIsComplex_fst, fromBlocks_apply₂₁,
-        fromBlocks_apply₂₂, Matrix.zero_apply, submatrix_apply,
-        blockDiagonal_apply, Prod.swap_prod_mk, ite_mul, zero_mul, sum_const_zero, zero_add,
-        sum_add_distrib, sum_ite_eq, mem_univ, ite_true, of_apply, cons_val', cons_val_zero,
-        cons_val_one, head_cons, ← hx (embedding w), re_eq_add_conj]
+    · simp only [Fin.zero_eta, Fin.isValue, id_eq, stdBasis_apply_ofIsComplex_fst, re_eq_add_conj,
+        mul_neg, fromBlocks_apply₂₁, zero_apply, zero_mul, sum_const_zero, fromBlocks_apply₂₂,
+        submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
+        empty_val', cons_val_fin_one, ite_mul, cons_val_one, head_cons, sum_add_distrib, sum_ite_eq,
+        mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
       field_simp
-    · simp_rw [Fin.mk_one, stdBasis_apply_ofIsComplex_snd, fromBlocks_apply₂₁,
-        fromBlocks_apply₂₂, Matrix.zero_apply, submatrix_apply, blockDiagonal_apply,
-        Prod.swap_prod_mk, ite_mul, zero_mul, sum_const_zero, zero_add, sum_add_distrib, sum_ite_eq,
-        mem_univ, ite_true, of_apply, cons_val', cons_val_zero, cons_val_one, head_cons,
-        ← hx (embedding w), im_eq_sub_conj]
+    · simp only [Fin.mk_one, Fin.isValue, id_eq, stdBasis_apply_ofIsComplex_snd, im_eq_sub_conj,
+        mul_neg, fromBlocks_apply₂₁, zero_apply, zero_mul, sum_const_zero, fromBlocks_apply₂₂,
+        submatrix_apply, Prod.swap_prod_mk, blockDiagonal_apply, of_apply, cons_val', cons_val_zero,
+        empty_val', cons_val_fin_one, cons_val_one, head_fin_const, ite_mul, neg_mul, head_cons,
+        sum_add_distrib, sum_ite_eq, mem_univ, ↓reduceIte, ← hx (embedding w), zero_add]
       ring_nf; field_simp
 
 end stdBasis
@@ -779,6 +780,86 @@ theorem fundamentalDomain_idealLattice :
   exact ZSpan.isAddFundamentalDomain (fractionalIdealLatticeBasis K I) _
 
 end integerLattice
+
+noncomputable section
+
+namespace euclidean
+
+open MeasureTheory NumberField Submodule
+
+/-- The mixed space `ℝ^r₁ × ℂ^r₂`, with `(r₁, r₂)` the signature of `K`, as an Euclidean space. -/
+protected abbrev mixedSpace :=
+    (WithLp 2 ((EuclideanSpace ℝ {w : InfinitePlace K // IsReal w}) ×
+      (EuclideanSpace ℂ {w : InfinitePlace K // IsComplex w})))
+
+instance : Ring (euclidean.mixedSpace K) :=
+  have : Ring (EuclideanSpace ℝ {w : InfinitePlace K // IsReal w}) := Pi.ring
+  have : Ring (EuclideanSpace ℂ {w : InfinitePlace K // IsComplex w}) := Pi.ring
+  inferInstanceAs (Ring (_ × _))
+
+instance : MeasurableSpace (euclidean.mixedSpace K) := borel _
+
+instance : BorelSpace (euclidean.mixedSpace K) := ⟨rfl⟩
+
+variable [NumberField K]
+
+open Classical in
+/-- The continuous linear equivalence between the euclidean mixed space and the mixed space. -/
+def toMixed : (euclidean.mixedSpace K) ≃L[ℝ] (mixedSpace K) :=
+  (WithLp.linearEquiv _ _ _).toContinuousLinearEquiv
+
+instance : Nontrivial (euclidean.mixedSpace K) := (toMixed K).toEquiv.nontrivial
+
+protected theorem finrank :
+    finrank ℝ (euclidean.mixedSpace K) = finrank ℚ K := by
+  rw [LinearEquiv.finrank_eq (toMixed K).toLinearEquiv, mixedEmbedding.finrank]
+
+open Classical in
+/-- An orthonormal basis of the euclidean mixed space. -/
+def stdOrthonormalBasis : OrthonormalBasis (index K) ℝ (euclidean.mixedSpace K) :=
+  OrthonormalBasis.prod (EuclideanSpace.basisFun _ ℝ)
+    ((Pi.orthonormalBasis fun _ ↦ Complex.orthonormalBasisOneI).reindex (Equiv.sigmaEquivProd _ _))
+
+open Classical in
+theorem stdOrthonormalBasis_map_eq :
+    (euclidean.stdOrthonormalBasis K).toBasis.map (toMixed K).toLinearEquiv =
+      mixedEmbedding.stdBasis K := by
+  ext <;> rfl
+
+open Classical in
+theorem volumePreserving_toMixed :
+    MeasurePreserving (toMixed K) where
+  measurable := (toMixed K).continuous.measurable
+  map_eq := by
+    rw [← (OrthonormalBasis.addHaar_eq_volume (euclidean.stdOrthonormalBasis K)), Basis.map_addHaar,
+      stdOrthonormalBasis_map_eq, Basis.addHaar_eq_iff, Basis.coe_parallelepiped,
+      ← measure_congr (ZSpan.fundamentalDomain_ae_parallelepiped (stdBasis K) volume),
+      volume_fundamentalDomain_stdBasis K]
+
+open Classical in
+theorem volumePreserving_toMixed_symm :
+    MeasurePreserving (toMixed K).symm := by
+  have : MeasurePreserving (toMixed K).toHomeomorph.toMeasurableEquiv := volumePreserving_toMixed K
+  exact this.symm
+
+open Classical in
+/-- The image of ring of integers `𝓞 K` in the euclidean mixed space. -/
+protected def integerLattice : Submodule ℤ (euclidean.mixedSpace K) :=
+  ZLattice.comap ℝ (mixedEmbedding.integerLattice K) (toMixed K).toLinearMap
+
+instance : DiscreteTopology (euclidean.integerLattice K) := by
+  classical
+  rw [euclidean.integerLattice]
+  infer_instance
+
+open Classical in
+instance : IsZLattice ℝ (euclidean.integerLattice K) := by
+  simp_rw [euclidean.integerLattice]
+  infer_instance
+
+end euclidean
+
+end
 
 noncomputable section plusPart
 

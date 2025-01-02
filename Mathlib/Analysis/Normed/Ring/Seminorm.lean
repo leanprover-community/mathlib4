@@ -135,11 +135,7 @@ variable [Ring R] (p : RingSeminorm R)
 
 theorem seminorm_one_eq_one_iff_ne_zero (hp : p 1 ≤ 1) : p 1 = 1 ↔ p ≠ 0 := by
   refine
-    ⟨fun h =>
-      ne_zero_iff.mpr
-        ⟨1, by
-          rw [h]
-          exact one_ne_zero⟩,
+    ⟨fun h => ne_zero_iff.mpr ⟨1, by rw [h]; exact one_ne_zero⟩,
       fun h => ?_⟩
   obtain hp0 | hp0 := (apply_nonneg p (1 : R)).eq_or_gt
   · exfalso
@@ -170,19 +166,19 @@ theorem map_pow_le_pow {F α : Type*} [Ring α] [FunLike F α ℝ] [RingSeminorm
   | 0, h => absurd rfl h
   | 1, _ => by simp only [pow_one, le_refl]
   | n + 2, _ => by
-    simp only [pow_succ _ (n + 1)];
-      exact
-        le_trans (map_mul_le_mul f _ a)
-          (mul_le_mul_of_nonneg_right (map_pow_le_pow _ _ n.succ_ne_zero) (apply_nonneg f a))
+    simp only [pow_succ _ (n + 1)]
+    exact
+      le_trans (map_mul_le_mul f _ a)
+        (mul_le_mul_of_nonneg_right (map_pow_le_pow _ _ n.succ_ne_zero) (apply_nonneg f a))
 
 /-- If `f` is a ring seminorm on `a` with `f 1 ≤ 1`, then `∀ (n : ℕ), f (a ^ n) ≤ f a ^ n`. -/
 theorem map_pow_le_pow' {F α : Type*} [Ring α] [FunLike F α ℝ] [RingSeminormClass F α ℝ] {f : F}
     (hf1 : f 1 ≤ 1) (a : α) : ∀ n : ℕ, f (a ^ n) ≤ f a ^ n
   | 0 => by simp only [pow_zero, hf1]
   | n + 1 => by
-    simp only [pow_succ _ n];
-      exact le_trans (map_mul_le_mul f _ a)
-        (mul_le_mul_of_nonneg_right (map_pow_le_pow' hf1 _ n) (apply_nonneg f a))
+    simp only [pow_succ _ n]
+    exact le_trans (map_mul_le_mul f _ a)
+      (mul_le_mul_of_nonneg_right (map_pow_le_pow' hf1 _ n) (apply_nonneg f a))
 
 /-- The norm of a `NonUnitalSeminormedRing` as a `RingSeminorm`. -/
 def normRingSeminorm (R : Type*) [NonUnitalSeminormedRing R] : RingSeminorm R :=

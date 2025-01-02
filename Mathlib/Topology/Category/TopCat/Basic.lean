@@ -16,9 +16,7 @@ resp. right adjoint to the forgetful functor, see `Mathlib.Topology.Category.Top
 -/
 
 
-open CategoryTheory
-
-open TopologicalSpace
+open CategoryTheory TopologicalSpace Topology
 
 universe u
 
@@ -184,7 +182,6 @@ theorem isOpenEmbedding_iff_comp_isIso' {X Y Z : TopCat} (f : X ⟶ Y) (g : Y �
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_iff_comp_isIso' := isOpenEmbedding_iff_comp_isIso'
 
--- Porting note: simpNF requested partially simped version below
 theorem isOpenEmbedding_iff_isIso_comp {X Y Z : TopCat} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] :
     IsOpenEmbedding (f ≫ g) ↔ IsOpenEmbedding g := by
   constructor

@@ -73,7 +73,7 @@ end Ring
 
 section Field
 
-variable {K : Type*} [Field K] [NeZero (2 : K)] {a b c x : K}
+variable {K : Type*} [Field K] [NeZero (2 : K)] {a b c : K}
 
 /-- Roots of a quadratic equation. -/
 theorem quadratic_eq_zero_iff (ha : a ≠ 0) {s : K} (h : discrim a b c = s * s) (x : K) :

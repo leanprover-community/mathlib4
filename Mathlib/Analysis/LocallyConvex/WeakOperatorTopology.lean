@@ -47,7 +47,7 @@ In most of the literature, the WOT is defined on maps between Banach spaces. Her
 that the domain and codomains are topological vector spaces over a normed field.
 -/
 
-open scoped Topology
+open Topology
 
 /-- The type copy of `E →L[𝕜] F` endowed with the weak operator topology, denoted as
 `E →WOT[𝕜] F`. -/

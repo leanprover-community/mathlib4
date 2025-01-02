@@ -231,7 +231,7 @@ theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit
     simp only [bit_negSucc]
     cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_bit_succ]
 
--- Porting note (#11215): TODO
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO
 -- private unsafe def bitwise_tac : tactic Unit :=
 --   sorry
 

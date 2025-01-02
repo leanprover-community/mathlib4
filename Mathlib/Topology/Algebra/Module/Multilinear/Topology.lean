@@ -17,8 +17,8 @@ where `E i` is a family of vector spaces over `𝕜` with topologies
 and `F` is a topological vector space.
 -/
 
-open Bornology Function Set
-open scoped Topology UniformConvergence Filter
+open Bornology Function Set Topology
+open scoped UniformConvergence Filter
 
 namespace ContinuousMultilinearMap
 

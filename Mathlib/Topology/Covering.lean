@@ -21,8 +21,7 @@ This file defines covering maps.
   assumed to be surjective, so the fibers are even allowed to be empty.
 -/
 
-
-open Bundle
+open Bundle Topology
 
 variable {E X : Type*} [TopologicalSpace E] [TopologicalSpace X] (f : E → X) (s : Set X)
 

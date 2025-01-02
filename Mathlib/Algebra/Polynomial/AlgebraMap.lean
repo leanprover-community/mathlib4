@@ -4,9 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
 import Mathlib.Algebra.Algebra.Pi
-import Mathlib.Algebra.Polynomial.Eval
-import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Algebra.Tower
 import Mathlib.Algebra.MonoidAlgebra.Basic
+import Mathlib.Algebra.Polynomial.Eval.Algebra
+import Mathlib.Algebra.Polynomial.Eval.Degree
+import Mathlib.Algebra.Polynomial.Monomial
 
 /-!
 # Theory of univariate polynomials
@@ -15,6 +18,7 @@ We show that `A[X]` is an R-algebra when `A` is an R-algebra.
 We promote `eval₂` to an algebra hom in `aeval`.
 -/
 
+assert_not_exists Ideal
 
 noncomputable section
 
@@ -228,13 +232,6 @@ This is a stronger variant of the linear map `Polynomial.leval`. -/
 def aeval : R[X] →ₐ[R] A :=
   eval₂AlgHom' (Algebra.ofId _ _) x (Algebra.commutes · _)
 
-@[simp]
-theorem adjoin_X : Algebra.adjoin R ({X} : Set R[X]) = ⊤ := by
-  refine top_unique fun p _hp => ?_
-  set S := Algebra.adjoin R ({X} : Set R[X])
-  rw [← sum_monomial_eq p]; simp only [← smul_X_eq_monomial, Sum]
-  exact S.sum_mem fun n _hn => S.smul_mem (S.pow_mem (Algebra.subset_adjoin rfl) _) _
-
 @[ext 1200]
 theorem algHom_ext {f g : R[X] →ₐ[R] B} (hX : f X = g X) :
     f = g :=
@@ -304,21 +301,45 @@ theorem algEquivOfCompEqX_eq_iff (p q p' q' : R[X])
 theorem algEquivOfCompEqX_symm (p q : R[X]) (hpq : p.comp q = X) (hqp : q.comp p = X) :
     (algEquivOfCompEqX p q hpq hqp).symm = algEquivOfCompEqX q p hqp hpq := rfl
 
+/-- The automorphism of the polynomial algebra given by `p(X) ↦ p(a * X + b)`,
+  with inverse `p(X) ↦ p(a⁻¹ * (X - b))`. -/
+@[simps!]
+def algEquivCMulXAddC {R : Type*} [CommRing R] (a b : R) [Invertible a] : R[X] ≃ₐ[R] R[X] :=
+  algEquivOfCompEqX (C a * X + C b) (C ⅟ a * (X - C b))
+    (by simp [← C_mul, ← mul_assoc]) (by simp [← C_mul, ← mul_assoc])
+
+theorem algEquivCMulXAddC_symm_eq {R : Type*} [CommRing R] (a b : R) [Invertible a] :
+    (algEquivCMulXAddC a b).symm =  algEquivCMulXAddC (⅟ a) (- ⅟ a * b) := by
+  ext p : 1
+  simp only [algEquivCMulXAddC_symm_apply, neg_mul, algEquivCMulXAddC_apply, map_neg, map_mul]
+  congr
+  simp [mul_add, sub_eq_add_neg]
+
 /-- The automorphism of the polynomial algebra given by `p(X) ↦ p(X+t)`,
   with inverse `p(X) ↦ p(X-t)`. -/
 @[simps!]
-def algEquivAevalXAddC {R} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
+def algEquivAevalXAddC {R : Type*} [CommRing R] (t : R) : R[X] ≃ₐ[R] R[X] :=
   algEquivOfCompEqX (X + C t) (X - C t) (by simp) (by simp)
 
 @[simp]
-theorem algEquivAevalXAddC_eq_iff {R} [CommRing R] (t t' : R) :
+theorem algEquivAevalXAddC_eq_iff {R : Type*} [CommRing R] (t t' : R) :
     algEquivAevalXAddC t = algEquivAevalXAddC t' ↔ t = t' := by
   simp [algEquivAevalXAddC]
 
 @[simp]
-theorem algEquivAevalXAddC_symm {R} [CommRing R] (t : R) :
+theorem algEquivAevalXAddC_symm {R : Type*} [CommRing R] (t : R) :
     (algEquivAevalXAddC t).symm = algEquivAevalXAddC (-t) := by
   simp [algEquivAevalXAddC, sub_eq_add_neg]
+
+/-- The involutive automorphism of the polynomial algebra given by `p(X) ↦ p(-X)`. -/
+@[simps!]
+def algEquivAevalNegX {R : Type*} [CommRing R] : R[X] ≃ₐ[R] R[X] :=
+  algEquivOfCompEqX (-X) (-X) (by simp) (by simp)
+
+theorem comp_neg_X_comp_neg_X {R : Type*} [CommRing R] (p : R[X]) :
+    (p.comp (-X)).comp (-X) = p := by
+  rw [comp_assoc]
+  simp only [neg_comp, X_comp, neg_neg, comp_X]
 
 theorem aeval_algHom (f : A →ₐ[R] B) (x : A) : aeval (f x) = f.comp (aeval x) :=
   algHom_ext <| by simp only [aeval_X, AlgHom.comp_apply]
@@ -388,31 +409,6 @@ theorem aeval_eq_zero_of_dvd_aeval_eq_zero [CommSemiring S] [CommSemiring T] [Al
     {p q : S[X]} (h₁ : p ∣ q) {a : T} (h₂ : aeval a p = 0) : aeval a q = 0 := by
   rw [aeval_def, ← eval_map] at h₂ ⊢
   exact eval_eq_zero_of_dvd_of_eval_eq_zero (Polynomial.map_dvd (algebraMap S T) h₁) h₂
-
-variable (R)
-
-theorem _root_.Algebra.adjoin_singleton_eq_range_aeval (x : A) :
-    Algebra.adjoin R {x} = (Polynomial.aeval x).range := by
-  rw [← Algebra.map_top, ← adjoin_X, AlgHom.map_adjoin, Set.image_singleton, aeval_X]
-
-@[simp]
-theorem aeval_mem_adjoin_singleton :
-    aeval x p ∈ Algebra.adjoin R {x} := by
-  simpa only [Algebra.adjoin_singleton_eq_range_aeval] using Set.mem_range_self p
-
-instance instCommSemiringAdjoinSingleton :
-    CommSemiring <| Algebra.adjoin R {x} :=
-  { mul_comm := fun ⟨p, hp⟩ ⟨q, hq⟩ ↦ by
-      obtain ⟨p', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hp
-      obtain ⟨q', rfl⟩ := Algebra.adjoin_singleton_eq_range_aeval R x ▸ hq
-      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, MulMemClass.mk_mul_mk, ← map_mul,
-        mul_comm p' q'] }
-
-instance instCommRingAdjoinSingleton {R A : Type*} [CommRing R] [Ring A] [Algebra R A] (x : A) :
-    CommRing <| Algebra.adjoin R {x} :=
-  { mul_comm := mul_comm }
-
-variable {R}
 
 section Semiring
 
@@ -564,19 +560,28 @@ lemma X_sub_C_pow_dvd_iff {n : ℕ} : (X - C t) ^ n ∣ p ↔ X ^ n ∣ p.comp (
   simp [C_eq_algebraMap]
 
 lemma comp_X_add_C_eq_zero_iff : p.comp (X + C t) = 0 ↔ p = 0 :=
-  AddEquivClass.map_eq_zero_iff (algEquivAevalXAddC t)
+  EmbeddingLike.map_eq_zero_iff (f := algEquivAevalXAddC t)
 
 lemma comp_X_add_C_ne_zero_iff : p.comp (X + C t) ≠ 0 ↔ p ≠ 0 := comp_X_add_C_eq_zero_iff.not
 
+lemma dvd_comp_C_mul_X_add_C_iff (p q : R[X]) (a b : R) [Invertible a] :
+    p ∣ q.comp (C a * X + C b) ↔ p.comp (C ⅟ a * (X - C b)) ∣ q := by
+  convert map_dvd_iff <| algEquivCMulXAddC a b using 2
+  simp [← comp_eq_aeval, comp_assoc, ← mul_assoc, ← C_mul]
+
 lemma dvd_comp_X_sub_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X - C a) ↔ p.comp (X + C a) ∣ q := by
-  convert (map_dvd_iff <| algEquivAevalXAddC a).symm using 2
-  rw [C_eq_algebraMap, algEquivAevalXAddC_apply, ← comp_eq_aeval]
-  simp [comp_assoc]
+  let _ := invertibleOne (α := R)
+  simpa using dvd_comp_C_mul_X_add_C_iff p q 1 (-a)
 
 lemma dvd_comp_X_add_C_iff (p q : R[X]) (a : R) :
     p ∣ q.comp (X + C a) ↔ p.comp (X - C a) ∣ q := by
   simpa using dvd_comp_X_sub_C_iff p q (-a)
+
+lemma dvd_comp_neg_X_iff (p q : R[X]) : p ∣ q.comp (-X) ↔ p.comp (-X) ∣ q := by
+  let _ := invertibleOne (α := R)
+  let _ := invertibleNeg (α := R) 1
+  simpa using dvd_comp_C_mul_X_add_C_iff p q (-1) 0
 
 variable [IsDomain R]
 

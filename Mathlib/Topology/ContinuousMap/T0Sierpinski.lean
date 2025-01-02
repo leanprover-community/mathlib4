@@ -18,6 +18,7 @@ The map `productOfMemOpens` is always inducing. Whenever `X` is T0, `productOfMe
 also injective and therefore an embedding.
 -/
 
+open Topology
 
 noncomputable section
 

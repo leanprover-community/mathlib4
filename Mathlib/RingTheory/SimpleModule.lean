@@ -3,12 +3,13 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.Order.Atoms.Finite
-import Mathlib.Order.JordanHolder
 import Mathlib.Order.CompactlyGenerated.Intervals
-import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.Order.JordanHolder
+import Mathlib.RingTheory.Ideal.Colon
 
 /-!
 # Simple Modules
@@ -197,12 +198,14 @@ theorem exists_simple_submodule [Nontrivial M] : ∃ m : Submodule R M, IsSimple
 theorem sSup_simples_eq_top : sSup { m : Submodule R M | IsSimpleModule R m } = ⊤ := by
   simpa only [isSimpleModule_iff_isAtom] using sSup_atoms_eq_top
 
-theorem exists_setIndependent_sSup_simples_eq_top :
-    ∃ s : Set (Submodule R M), CompleteLattice.SetIndependent s ∧
-      sSup s = ⊤ ∧ ∀ m ∈ s, IsSimpleModule R m := by
+theorem exists_sSupIndep_sSup_simples_eq_top :
+    ∃ s : Set (Submodule R M), sSupIndep s ∧ sSup s = ⊤ ∧ ∀ m ∈ s, IsSimpleModule R m := by
   have := sSup_simples_eq_top R M
   simp_rw [isSimpleModule_iff_isAtom] at this ⊢
-  exact exists_setIndependent_of_sSup_atoms_eq_top this
+  exact exists_sSupIndep_of_sSup_atoms_eq_top this
+
+@[deprecated (since := "2024-11-24")]
+alias exists_setIndependent_sSup_simples_eq_top := exists_sSupIndep_sSup_simples_eq_top
 
 /-- The annihilator of a semisimple module over a commutative ring is a radical ideal. -/
 theorem annihilator_isRadical (R) [CommRing R] [Module R M] [IsSemisimpleModule R M] :
