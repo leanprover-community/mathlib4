@@ -1074,6 +1074,9 @@ end OpenPos
 
 section Support
 
+variable {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M]
+  {mX : MeasurableSpace X} {ν : Measure X} {F : X → M}
+
 theorem MeasureTheory.setIntegral_support [MeasurableSpace X] {M : Type*} [NormedAddCommGroup M]
     [NormedSpace ℝ M] {F : X → M} {ν : Measure X} : ∫ x in support F, F x ∂ν = ∫ x, F x ∂ν := by
   nth_rw 2 [← setIntegral_univ]
