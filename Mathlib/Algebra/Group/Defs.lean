@@ -9,6 +9,7 @@ import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Algebra.Group.Operations
 import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.OfNat
 import Batteries.Logic
 
 /-!
@@ -409,7 +410,7 @@ the `npow` field when defining multiplicative objects.
 
 /-- Exponentiation by repeated squaring. -/
 @[to_additive "Scalar multiplication by repeated self-addition,
-the additive version of exponentation by repeated squaring."]
+the additive version of exponentiation by repeated squaring."]
 def npowBinRec {M : Type*} [One M] [Mul M] (k : ℕ) : M → M :=
   npowBinRec.go k 1
 where
@@ -888,9 +889,8 @@ theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
 @[deprecated (since := "2024-03-20")] alias zpow_coe_nat := zpow_natCast
 @[deprecated (since := "2024-03-20")] alias coe_nat_zsmul := natCast_zsmul
 
--- See note [no_index around OfNat.ofNat]
 @[to_additive ofNat_zsmul]
-lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (no_index (OfNat.ofNat n) : ℤ) = a ^ OfNat.ofNat n :=
+lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (ofNat(n) : ℤ) = a ^ OfNat.ofNat n :=
   zpow_natCast ..
 
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by

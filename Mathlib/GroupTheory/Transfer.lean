@@ -306,7 +306,7 @@ namespace IsCyclic
 
 open Subgroup
 
--- we could supress the variable `p`, but that might introduce `motive not type correct` issues.
+-- we could suppress the variable `p`, but that might introduce `motive not type correct` issues.
 variable {G : Type*} [Group G] [Finite G] {p : ℕ} (hp : (Nat.card G).minFac = p) {P : Sylow p G}
 
 include hp in

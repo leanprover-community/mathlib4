@@ -158,8 +158,8 @@ theorem iInf_finset_image {f : γ → α} {g : α → β} {s : Finset γ} :
 
 theorem iSup_insert_update {x : α} {t : Finset α} (f : α → β) {s : β} (hx : x ∉ t) :
     ⨆ i ∈ insert x t, Function.update f x s i = s ⊔ ⨆ i ∈ t, f i := by
-  simp only [Finset.iSup_insert, update_same]
-  rcongr (i hi); apply update_noteq; rintro rfl; exact hx hi
+  simp only [Finset.iSup_insert, update_self]
+  rcongr (i hi); apply update_of_ne; rintro rfl; exact hx hi
 
 theorem iInf_insert_update {x : α} {t : Finset α} (f : α → β) {s : β} (hx : x ∉ t) :
     ⨅ i ∈ insert x t, update f x s i = s ⊓ ⨅ i ∈ t, f i :=

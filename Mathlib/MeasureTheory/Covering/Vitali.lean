@@ -15,9 +15,9 @@ Consider a family of balls `(B (x_i, r_i))_{i ∈ I}` in a metric space, with un
 radii. Then one can extract a disjoint subfamily indexed by `J ⊆ I`, such that any `B (x_i, r_i)`
 is included in a ball `B (x_j, 5 r_j)`.
 
-We prove this theorem in `Vitali.exists_disjoint_subfamily_covering_enlargment_closedBall`.
+We prove this theorem in `Vitali.exists_disjoint_subfamily_covering_enlargement_closedBall`.
 It is deduced from a more general version, called
-`Vitali.exists_disjoint_subfamily_covering_enlargment`, which applies to any family of sets
+`Vitali.exists_disjoint_subfamily_covering_enlargement`, which applies to any family of sets
 together with a size function `δ` (think "radius" or "diameter").
 
 We deduce the measurable Vitali covering theorem. Assume one is given a family `t` of closed sets
@@ -42,10 +42,10 @@ open scoped NNReal ENNReal Topology
 namespace Vitali
 
 /-- **Vitali covering theorem**: given a set `t` of subsets of a type, one may extract a disjoint
-subfamily `u` such that the `τ`-enlargment of this family covers all elements of `t`, where `τ > 1`
+subfamily `u` such that the `τ`-enlargement of this family covers all elements of `t`, where `τ > 1`
 is any fixed number.
 
-When `t` is a family of balls, the `τ`-enlargment of `ball x r` is `ball x ((1+2τ) r)`. In general,
+When `t` is a family of balls, the `τ`-enlargement of `ball x r` is `ball x ((1+2τ) r)`. In general,
 it is expressed in terms of a function `δ` (think "radius" or "diameter"), positive and bounded on
 all elements of `t`. The condition is that every element `a` of `t` should intersect an
 element `b` of `u` of size larger than that of `a` up to `τ`, i.e., `δ b ≥ δ a / τ`.
@@ -53,7 +53,7 @@ element `b` of `u` of size larger than that of `a` up to `τ`, i.e., `δ b ≥ �
 We state the lemma slightly more generally, with an indexed family of sets `B a` for `a ∈ t`, for
 wider applicability.
 -/
-theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : Set ι) (δ : ι → ℝ)
+theorem exists_disjoint_subfamily_covering_enlargement (B : ι → Set α) (t : Set ι) (δ : ι → ℝ)
     (τ : ℝ) (hτ : 1 < τ) (δnonneg : ∀ a ∈ t, 0 ≤ δ a) (R : ℝ) (δle : ∀ a ∈ t, δ a ≤ R)
     (hne : ∀ a ∈ t, (B a).Nonempty) :
     ∃ u ⊆ t,
@@ -150,10 +150,14 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
       · rw [← not_disjoint_iff_nonempty_inter] at hcb
         exact (hcb (H _ H')).elim
 
+@[deprecated (since := "2024-12-25")]
+alias exists_disjoint_subfamily_covering_enlargment :=
+  exists_disjoint_subfamily_covering_enlargement
+
 /-- Vitali covering theorem, closed balls version: given a family `t` of closed balls, one can
 extract a disjoint subfamily `u ⊆ t` so that all balls in `t` are covered by the τ-times
 dilations of balls in `u`, for some `τ > 3`. -/
-theorem exists_disjoint_subfamily_covering_enlargment_closedBall
+theorem exists_disjoint_subfamily_covering_enlargement_closedBall
     [PseudoMetricSpace α] (t : Set ι)
     (x : ι → α) (r : ι → ℝ) (R : ℝ) (hr : ∀ a ∈ t, r a ≤ R) (τ : ℝ) (hτ : 3 < τ) :
     ∃ u ⊆ t,
@@ -172,7 +176,7 @@ theorem exists_disjoint_subfamily_covering_enlargment_closedBall
       fun a ha => ⟨a, ha, by simp only [closedBall_eq_empty.2 (ht a ha), empty_subset]⟩⟩
   push_neg at ht
   let t' := { a ∈ t | 0 ≤ r a }
-  rcases exists_disjoint_subfamily_covering_enlargment (fun a => closedBall (x a) (r a)) t' r
+  rcases exists_disjoint_subfamily_covering_enlargement (fun a => closedBall (x a) (r a)) t' r
       ((τ - 1) / 2) (by linarith) (fun a ha => ha.2) R (fun a ha => hr a ha.1) fun a ha =>
       ⟨x a, mem_closedBall_self ha.2⟩ with
     ⟨u, ut', u_disj, hu⟩
@@ -189,6 +193,10 @@ theorem exists_disjoint_subfamily_covering_enlargment_closedBall
   · rcases ht with ⟨b, rb⟩
     rcases A b ⟨rb.1, rb.2⟩ with ⟨c, cu, _⟩
     exact ⟨c, cu, by simp only [closedBall_eq_empty.2 h'a, empty_subset]⟩
+
+@[deprecated (since := "2024-12-25")]
+alias exists_disjoint_subfamily_covering_enlargment_closedBall :=
+  exists_disjoint_subfamily_covering_enlargement_closedBall
 
 /-- The measurable Vitali covering theorem. Assume one is given a family `t` of closed sets with
 nonempty interior, such that each `a ∈ t` is included in a ball `B (x, r)` and covers a definite
@@ -243,7 +251,8 @@ theorem exists_disjoint_covering_ae
       apply ha.2.trans (hR1 (c a))
     have A' : ∀ a ∈ t', (B a).Nonempty :=
       fun a hat' => Set.Nonempty.mono interior_subset (ht a hat'.1)
-    refine exists_disjoint_subfamily_covering_enlargment B t' r 2 one_lt_two (fun a ha => ?_) 1 A A'
+    refine exists_disjoint_subfamily_covering_enlargement
+      B t' r 2 one_lt_two (fun a ha => ?_) 1 A A'
     exact nonempty_closedBall.1 ((A' a ha).mono (hB a ha.1))
   have ut : u ⊆ t := fun a hau => (ut' hau).1
   -- As the space is second countable, the family is countable since all its sets have nonempty

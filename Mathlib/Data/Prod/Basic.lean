@@ -304,13 +304,13 @@ section delaborators
 open Lean PrettyPrinter Delaborator
 
 /-- Delaborator for `Prod.fst x` as `x.1`. -/
-@[delab app.Prod.fst]
+@[app_delab Prod.fst]
 def delabProdFst : Delab := withOverApp 3 do
   let x ← SubExpr.withAppArg delab
   `($(x).1)
 
 /-- Delaborator for `Prod.snd x` as `x.2`. -/
-@[delab app.Prod.snd]
+@[app_delab Prod.snd]
 def delabProdSnd : Delab := withOverApp 3 do
   let x ← SubExpr.withAppArg delab
   `($(x).2)
