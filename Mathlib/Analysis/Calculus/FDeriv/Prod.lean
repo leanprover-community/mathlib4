@@ -485,7 +485,6 @@ theorem fderiv_pi (h : ∀ i, DifferentiableAt 𝕜 (φ i) x) :
     fderiv 𝕜 (fun x i => φ i x) x = pi fun i => fderiv 𝕜 (φ i) x :=
   (hasFDerivAt_pi.2 fun i => (h i).hasFDerivAt).fderiv
 
-
 end Pi
 
 /-!
