@@ -500,9 +500,11 @@ variable {n : Nat} {F' : Fin n.succ → Type*}
 variable [∀ i, NormedAddCommGroup (F' i)] [∀ i, NormedSpace 𝕜 (F' i)]
 variable {φ : E → F' 0} {φs : E → ∀ i, F' (Fin.succ i)}
 
--- TODO: generalize to TVS, find a home
 variable (𝕜 F') in
-/-- `Fin.consEquiv` as a continuous linear equivalence -/
+/-- `Fin.consEquiv` as a continuous linear equivalence.
+
+TODO: generalize to TVS, find a home. -/
+@[simps]
 def Fin.consEquivL : (F' 0 × Π i, F' (Fin.succ i)) ≃L[𝕜] (Π i, F' i) where
   __ := Fin.consEquiv F'
   map_add' x y := funext <| Fin.cases rfl (by simp)
