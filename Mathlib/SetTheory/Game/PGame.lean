@@ -155,10 +155,11 @@ lemma ext {x y : PGame} (hl : x.LeftMoves = y.LeftMoves) (hr : x.RightMoves = y.
     (hL : ∀ i j, HEq i j → x.moveLeft i = y.moveLeft j)
     (hR : ∀ i j, HEq i j → x.moveRight i = y.moveRight j) :
     x = y := by
-  suffices HEq x.moveLeft y.moveLeft → HEq x.moveRight y.moveRight → x = y from
-    this (hfunext hl (heq_of_eq <| hL · · ·)) (hfunext hr (heq_of_eq <| hR · · ·))
-  cases x; cases y; cases hl; cases hr
-  rintro ⟨rfl⟩ ⟨rfl⟩; rfl
+  cases x
+  cases y
+  subst hl hr
+  simp only [leftMoves_mk, rightMoves_mk, heq_eq_eq, forall_eq', mk.injEq, true_and] at *
+  exact ⟨funext hL, funext hR⟩
 
 -- TODO define this at the level of games, as well, and perhaps also for finsets of games.
 /-- Construct a pre-game from list of pre-games describing the available moves for Left and Right.
@@ -1421,11 +1422,11 @@ theorem neg_lt_neg_iff {x y : PGame} : -y < -x ↔ x < y := by
   rw [lt_iff_le_and_lf, lt_iff_le_and_lf, neg_le_neg_iff, neg_lf_neg_iff]
 
 @[simp]
-theorem neg_identical_neg_iff {x y : PGame} : (-x ≡ -y) ↔ (x ≡ y) :=
+theorem neg_identical_neg_iff {x y : PGame} : -x ≡ -y ↔ x ≡ y :=
   ⟨Identical.of_neg, Identical.neg⟩
 
 @[simp]
-theorem neg_equiv_neg_iff {x y : PGame} : (-x ≈ -y) ↔ (x ≈ y) := by
+theorem neg_equiv_neg_iff {x y : PGame} : -x ≈ -y ↔ x ≈ y := by
   show Equiv (-x) (-y) ↔ Equiv x y
   rw [Equiv, Equiv, neg_le_neg_iff, neg_le_neg_iff, and_comm]
 
@@ -1495,13 +1496,11 @@ instance : Add PGame.{u} :=
     · exact fun i => IHxr i y
     · exact IHyr⟩
 
-@[simp]
 theorem mk_add_moveLeft {xl xr yl yr} {xL xR yL yR} {i} :
     (mk xl xr xL xR + mk yl yr yL yR).moveLeft i =
       i.rec (xL · + mk yl yr yL yR) (mk xl xr xL xR + yL ·) :=
   rfl
 
-@[simp]
 theorem mk_add_moveRight {xl xr yl yr} {xL xR yL yR} {i} :
     (mk xl xr xL xR + mk yl yr yL yR).moveRight i =
       i.rec (xR · + mk yl yr yL yR) (mk xl xr xL xR + yR ·) :=
@@ -1692,7 +1691,7 @@ protected lemma neg_add (x y : PGame) : -(x + y) = -x + -y :=
     refine ext rfl rfl ?_ ?_ <;>
     · rintro (i | i) _ ⟨rfl⟩
       · exact PGame.neg_add _ _
-      · simpa [Equiv.refl] using PGame.neg_add _ _
+      · simpa [Equiv.refl, mk_add_moveLeft, mk_add_moveRight] using PGame.neg_add _ _
   termination_by (x, y)
 
 /-- `-(x + y)` has exactly the same moves as `-y + -x`. -/

@@ -478,30 +478,13 @@ def negMulRelabelling (x y : PGame.{u}) : -x * y ≡r -(x * y) :=
 lemma mul_neg (x y : PGame) : x * -y = -(x * y) :=
   match x, y with
   | mk xl xr xL xR, mk yl yr yL yR => by
-    refine ext rfl rfl ?_ ?_
-    · rintro (⟨i, j⟩ | ⟨i, j⟩) _ ⟨rfl⟩
-      · refine (@mul_moveLeft_inl (mk xl xr xL xR) (-mk yl yr yL yR) i j).trans ?_
-        dsimp
-        rw [PGame.neg_sub', PGame.neg_add]
-        congr
-        exacts [mul_neg _ (mk _ _ _ _), mul_neg _ _, mul_neg _ _]
-      · refine (@mul_moveLeft_inr (mk xl xr xL xR) (-mk yl yr yL yR) i j).trans ?_
-        dsimp
-        rw [PGame.neg_sub', PGame.neg_add]
-        congr
-        exacts [mul_neg _ (mk _ _ _ _), mul_neg _ _, mul_neg _ _]
-    · rintro (⟨i, j⟩ | ⟨i, j⟩) _ ⟨rfl⟩
-      · refine (@mul_moveRight_inl (mk xl xr xL xR) (-mk yl yr yL yR) i j).trans ?_
-        dsimp
-        rw [PGame.neg_sub', PGame.neg_add]
-        congr
-        exacts [mul_neg _ (mk _ _ _ _), mul_neg _ _, mul_neg _ _]
-      · refine (@mul_moveRight_inr (mk xl xr xL xR) (-mk yl yr yL yR) i j).trans ?_
-        dsimp
-        rw [PGame.neg_sub', PGame.neg_add]
-        congr
-        exacts [mul_neg _ (mk _ _ _ _), mul_neg _ _, mul_neg _ _]
-  termination_by (x, y)
+    refine ext rfl rfl ?_ ?_ <;> rintro (⟨i, j⟩ | ⟨i, j⟩) _ ⟨rfl⟩
+    all_goals
+      dsimp
+      rw [PGame.neg_sub', PGame.neg_add]
+      congr
+      exacts [mul_neg _ (mk ..), mul_neg .., mul_neg ..]
+termination_by (x, y)
 
 /-- `-x * y` and `-(x * y)` have the same moves. -/
 lemma neg_mul (x y : PGame) : -x * y ≡ -(x * y) :=
