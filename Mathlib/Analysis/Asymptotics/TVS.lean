@@ -9,6 +9,7 @@ import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.Seminorm
 import Mathlib.Tactic.Peel
 import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Algebra.Module.LocallyConvex
 
 /-!
 # Asymptotics in a Topological Vector Space
@@ -191,6 +192,35 @@ lemma IsLittleOTVS.bot {f : α → E} {g : α → F} : f =o[𝕜;⊥] g :=
 lemma IsLittleOTVS.zero (g : α → F) (l : Filter α) : (0 : α → E) =o[𝕜;l] g := by
   intros U hU
   simpa [egauge_zero_right _ (Set.nonempty_of_mem <| mem_of_mem_nhds hU)] using ⟨univ, by simp⟩
+
+lemma IsLittleOTVS.add
+    [TopologicalAddGroup F] [Module ℝ F] [LocallyConvexSpace ℝ F]
+    [TopologicalAddGroup E] [Module ℝ E] [LocallyConvexSpace ℝ E]
+    [ContinuousSMul 𝕜 E]
+    {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
+    (hf₁ : IsLittleOTVS 𝕜 f₁ g l) (hf₂ : IsLittleOTVS 𝕜 f₂ g l) :
+    IsLittleOTVS 𝕜 (f₁ + f₂) g l := by
+  rw [(LocallyConvexSpace.convex_basis_zero ℝ E).isLittleOTVS_iff
+    (LocallyConvexSpace.convex_basis_zero ℝ F)] at hf₁ hf₂ ⊢
+  intro U hU
+  let ⟨V₁, ⟨hV0₁, hVc₁⟩, hV₁⟩ := hf₁ U hU
+  let ⟨V₂, ⟨hV0₂, hVc₂⟩, hV₂⟩ := hf₂ U hU
+  refine ⟨V₁ ∩ V₂, ⟨Filter.inter_mem hV0₁ hV0₂, hVc₁.inter hVc₂⟩, fun ε hε => ?_⟩
+  have hε' := (half_pos <| pos_iff_ne_zero.mpr hε).ne'
+  filter_upwards [(hV₁ (ε/2) hε').and (hV₂ (ε/2) hε')] with a ⟨ha, hb⟩
+  simp at ha hb ⊢
+  refine (egauge_add_right ?_ _ _).trans <| add_le_add ha hb |>.trans <| ?_
+  · intros r₁ r₂
+    -- almost but not quite convexity
+    -- apply hU.2.add_smul r₁ r₂
+    sorry
+  rw [← mul_add]
+  have h := mul_left_mono (a := (ε / 2 : ℝ≥0∞)) <| add_le_add
+    (egauge_anti 𝕜 (@inter_subset_left _ V₁ V₂) (g a))
+    (egauge_anti 𝕜 (@inter_subset_right _ V₁ V₂) (g a))
+  refine h.trans_eq ?_
+  dsimp
+  rw [← two_mul, ← mul_assoc, ENNReal.div_mul_cancel two_ne_zero ENNReal.ofNat_ne_top]
 
 protected lemma IsLittleOTVS.smul_left {f : α → E} {g : α → F} {l : Filter α}
     (h : f =o[𝕜;l] g) (c : α → 𝕜) :

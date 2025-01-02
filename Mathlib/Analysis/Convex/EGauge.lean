@@ -88,6 +88,43 @@ end SMulZero
 
 section Module
 
+section Ring
+
+variable {𝕜 : Type*} [NormedRing 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E]
+    {c : 𝕜} {s : Set E} {x : E}
+
+
+-- note: `h` is too strong, and only works for canonically ordered `𝕜`, which in the presence
+-- of `Neg`, `𝕜` can never be!
+lemma egauge_add_right (h : ∀ r₁ r₂ : 𝕜, (r₁ + r₂) • s = r₁ • s + r₂ • s) (x y : E) :
+    egauge 𝕜 s (x + y) ≤ egauge 𝕜 s x + egauge 𝕜 s y := by
+  obtain hx | hx := eq_or_ne (egauge 𝕜 s x) ⊤
+  · rw [hx]
+    simp
+  obtain hy | hy := eq_or_ne (egauge 𝕜 s y) ⊤
+  · rw [hy]
+    simp
+  refine le_of_forall_pos_lt_add' fun ε hε => ?_
+  have hε2 : ε / 2 ≠ 0 := by simpa using hε.ne'
+  obtain ⟨a, ⟨x, ha', hx, rfl⟩, ha⟩ := egauge_lt_iff.1 <| ENNReal.lt_add_right hx hε2
+  obtain ⟨b, ⟨y, hb', hy, rfl⟩, hb⟩ := egauge_lt_iff.1 <| ENNReal.lt_add_right hy hε2
+  dsimp at *
+  calc
+    egauge 𝕜 s (a • x + b • y) ≤ ‖a + b‖₊ := by
+      have := add_mem_add
+        (smul_mem_smul_set (a := a) ha')
+        (smul_mem_smul_set (a := b) hb')
+      rw [← h] at this
+      exact egauge_le_of_mem_smul (𝕜 := 𝕜) (E := E) this
+    _ ≤ ‖a‖₊ + ‖b‖₊ := by
+      norm_cast
+      exact nnnorm_add_le _ _
+    _ < egauge 𝕜 s (a • x) + egauge 𝕜 s (b • y) + ε :=
+      (ENNReal.add_lt_add ha hb).trans_eq <| by rw [add_add_add_comm]; congr; simp
+
+
+end Ring
+
 variable {𝕜 : Type*} [NormedDivisionRing 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E]
     {c : 𝕜} {s : Set E} {x : E}
 
@@ -159,6 +196,17 @@ lemma le_egauge_smul_right (c : 𝕜) (s : Set E) (x : E) :
     rw [div_eq_inv_mul, ← nnnorm_inv, ← nnnorm_mul]
     refine egauge_le_of_mem_smul ⟨y, hy, ?_⟩
     simp only [mul_smul, hxy, inv_smul_smul₀ hc]
+
+
+-- /- justification;
+-- one extreme: `egauge 𝕜 (s + t) x = egauge 𝕜 s x`
+-- other extreme:
+--   pick `s = a•S, t = b•S`, so `s + t = (a+b)•s` and we have
+--   `(egauge 𝕜 (s + t) x)⁻¹ = (a + b) * (egauge 𝕜 S x)⁻¹`
+--   -/
+-- lemma egauge_add_left (s t : Set E) :
+--     (egauge 𝕜 (s + t) x)⁻¹ ≤ (egauge 𝕜 s x)⁻¹ + (egauge 𝕜 t x)⁻¹ := by
+--   sorry
 
 lemma egauge_smul_right (h : c = 0 → s.Nonempty) (x : E) :
     egauge 𝕜 s (c • x) = ‖c‖₊ * egauge 𝕜 s x := by
