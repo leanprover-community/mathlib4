@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lucas Whitfield
 -/
 import Mathlib.Algebra.Lie.Weights.Basic
-import Mathlib.Algebra.Lie.Prereqs
 import Mathlib.RingTheory.Noetherian.Nilpotent
 import Mathlib.RingTheory.Finiteness.Nilpotent
 import Batteries.Tactic.ShowUnused
@@ -76,7 +75,7 @@ lemma T_apply_succ (n : ℕ) :
     · exact iteratedRange_mono v _ (Nat.le_succ n) (hn w m hm)
     have H : ∀ w, ⁅w, (π z ^ n) v⁆ = (T χ w) ((π z ^ n) v) + χ w • ((π z ^ n) v) := by simp
     rw [T, LinearMap.sub_apply, pow_succ', LinearMap.mul_apply, LieModule.toEnd_apply_apply,
-      LieModule.toEnd_apply_apply, LinearMap.smul_apply, LinearMap.one_apply, leibniz_lie',
+      LieModule.toEnd_apply_apply, LinearMap.smul_apply, LinearMap.one_apply, leibniz_lie,
       lie_swap_lie w z, H, H, lie_add, lie_smul, add_sub_assoc, add_sub_assoc, sub_self, add_zero]
     refine add_mem (neg_mem <| add_mem ?_ ?_) ?_
     · exact iteratedRange_mono v _ n.le_succ (hn _ n n.lt_succ_self)
@@ -124,10 +123,10 @@ theorem trace_πza_zero (a : A) :
     ext ⟨x, hx⟩
     simp only [LieModule.toEnd_apply_apply, LieSubmodule.coe_bracket, LieHom.lie_apply,
       Module.End.lie_apply, AddSubgroupClass.coe_sub, LinearMap.restrict_coe_apply,
-      leibniz_lie' z a, add_sub_cancel_right]
+      leibniz_lie z a, add_sub_cancel_right]
     -- why do we need this `erw` now?
     erw [LinearMap.restrict_coe_apply, LinearMap.restrict_coe_apply]
-    simp only [LieSubmodule.coe_bracket, LieModule.toEnd_apply_apply, leibniz_lie' z a,
+    simp only [LieSubmodule.coe_bracket, LieModule.toEnd_apply_apply, leibniz_lie z a,
       add_sub_cancel_right]
   rw [hres, LieRing.of_associative_ring_bracket, map_sub, LinearMap.trace_mul_comm, sub_self]
 
@@ -176,7 +175,7 @@ lemma lie_stable (x : L) (v : V) (hv : v ∈ weightSpace V χ) : ⁅x, v⁆ ∈ 
   rcases eq_or_ne v 0 with (rfl | hv')
   · simp only [lie_zero, smul_zero]
   suffices χ ⁅x, a⁆ = 0 by
-    rw [leibniz_lie', hv a, lie_smul, lie_swap_lie, hv, this, zero_smul, neg_zero, zero_add]
+    rw [leibniz_lie, hv a, lie_smul, lie_swap_lie, hv, this, zero_smul, neg_zero, zero_add]
   have h := trace_πza χ x hv a
   rw [trace_πza_zero χ x hv a] at h
   suffices h' : finrank R ↥(iSupIR χ x hv) ≠ 0 by aesop
