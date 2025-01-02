@@ -1,16 +1,12 @@
 # This file is part of the `polyrith` tactic in `src/tactic/polyrith.lean`.
 # It interfaces between Lean and the Sage web interface.
 
+import requests
 import json
-from os.path import join, dirname
 import sys
-from typing import Dict, Any
-import urllib.error
-import urllib.parse
-import urllib.request
+from os.path import join, dirname
 from subprocess import run
 import re
-
 
 # SINGULAR OPTIONS
 
@@ -18,6 +14,44 @@ import re
 # that is, in a reachable path), we can try to use it instead of the online sage server
 # If Singular is not installed, we can also try to use the version of singular installed inside sage (if sage itself
 # is locally installed)
+
+def create_macaulay2_query (type: str, n_vars: int, eq_list, goal_type):
+    var_list = ''.join(f"var{i}," for i in range(n_vars)) + 'aux'
+    query = f"""
+R = QQ[{var_list}];
+f = {goal_type};
+j,I = ideal({str(eq_list)[1:-1]},1-f*aux);
+Gbas = gb(I,ChangeMatrix=>true);
+k,Mbas = getChangeMatrix(Gbas);
+exponent = max(for i from 0 to (numgens(I)-2) list degree(aux,Mbas_(i,0)));
+coeffs = for i from 0 to (numgens(I)-2) list ((Mbas_(i,0)*f^(exponent)) % (I_(numgens(I)-1)));
+
+result = for i from 0 to (length(coeffs)-1) list (
+    for j from 0 to (length( terms(coeffs_i) )-1) list (
+        {{
+            for k from 0 to (numgens(R)-2) list (
+                {{k, degree(R_k, (terms(coeffs_i))_j)}}
+            ),
+            {{numerator coefficient((monomials(coeffs_i))_(0,j),(terms(coeffs_i))_j),
+          denominator coefficient((monomials(coeffs_i))_(0,j),(terms(coeffs_i))_j),
+            }}
+        }}
+    )
+    );
+print(exponent,result);
+"""
+    return query
+
+
+def evaluate_in_macaulay2(query: str) -> dict:
+    pro = run(["M2", "--silent", "--no-prompts", "-E", "clearEcho stdio"], input=query, capture_output=True, text=True)
+    resul = pro.stdout
+    if re.match("[a-zA-Z]", resul) or resul.count("(") != 1 or resul.count(")") != 1:
+        with open("error","w") as fd:
+            fd.write(resul.count("("))
+        raise ValueError("Macaulay2 couldn't find a linear combination")
+    resul = re.sub("\(([0-9]*),", r"\1;", resul).replace(")","").replace("{","[").replace("}","]").replace(", ]","]")
+    return parse_response(resul)
 
 def create_singular_query(type: str, n_vars: int, eq_list, goal_type):
     var_list = ''.join(f"var{i}," for i in range(n_vars)) + 'aux'
@@ -107,7 +141,7 @@ with open(join(dirname(__file__), "polyrith_sage_helper.py"), encoding='utf8') a
 def type_str(type):
     return "QQ"
 
-def create_query(type: str, n_vars: int, eq_list, target):
+def create_query(type: str, n_vars: int, eq_list, goal_type):
     """ Create a query to invoke Sage's `MPolynomial_libsingular.lift`. See
     https://github.com/sagemath/sage/blob/f8df80820dc7321dc9b18c9644c3b8315999670b/src/sage/rings/polynomial/multi_polynomial_libsingular.pyx#L4472-L4518
     for a description of this method. """
@@ -116,20 +150,13 @@ def create_query(type: str, n_vars: int, eq_list, target):
 if {n_vars!r} != 0:
     P = PolynomialRing({type_str(type)}, {var_list})
     [{", ".join(var_list)}] = P.gens()
-    p = P({target})
-    if p==0:
-        # The "radicalization trick" implemented below does not work if the target polynomial p is 0
-        # since it requires substituting 1/p.
-        print('1;'+serialize_polynomials(len({eq_list})*[P(0)]))
-    else:
-        # Implements the trick described in 2.2 of arxiv.org/pdf/1007.3615.pdf
-        # for testing membership in the radical.
-        gens = {eq_list} + [1 - p*aux]
-        I = P.ideal(gens)
-        coeffs = P(1).lift(I)
-        power = max(cf.degree(aux) for cf in coeffs)
-        coeffs = [P(cf.subs(aux = 1/p)*p^power) for cf in coeffs[:int(-1)]]
-        print(str(power)+';'+serialize_polynomials(coeffs))
+    p = P({goal_type})
+    gens = {eq_list} + [1 - p*aux]
+    I = P.ideal(gens)
+    coeffs = P(1).lift(I)
+    power = max(cf.degree(aux) for cf in coeffs)
+    coeffs = [P(cf.subs(aux = 1/p)*p^power) for cf in coeffs[:int(-1)]]
+    print(str(power)+';'+serialize_polynomials(coeffs))
 else:
     # workaround for a Sage shortcoming with `n_vars = 0`,
     # `TypeError: no conversion of this ring to a Singular ring defined`
@@ -137,7 +164,7 @@ else:
     # we just check for membership in the ideal, and return exponent 1
     # if coefficients are found.
     P = PolynomialRing({type_str(type)}, 'var', 1)
-    p = P({target})
+    p = P({goal_type})
     I = P.ideal({eq_list})
     coeffs = p.lift(I)
     print('1;'+serialize_polynomials(coeffs))
@@ -151,19 +178,15 @@ class EvaluationError(Exception):
         self.message = message
         super().__init__(self.message)
 
-def parse_response(resp: str) -> Dict[str, Any]:
+def parse_response(resp: str) -> str:
     exp, data = resp.split(';', 1)
     return dict(power=int(exp), coeffs=json.loads(data))
 
 
-def evaluate_in_sage(query: str) -> Dict[str, Any]:
-    data = urllib.parse.urlencode({'code': query}).encode('utf-8')
-    headers = {'Content-Type': 'application/x-www-form-urlencoded',
-               'User-Agent': 'LeanProver (https://leanprover-community.github.io/)'}
-    req = urllib.request.Request('https://sagecell.sagemath.org/service', data=data, headers=headers)
-    with urllib.request.urlopen(req) as response:
-        response_data = response.read().decode()
-    response = json.loads(response_data)
+def evaluate_in_sage(query: str) -> str:
+    data = {'code': query}
+    headers = {'content-type': 'application/x-www-form-urlencoded'}
+    response = requests.post('https://sagecell.sagemath.org/service', data, headers=headers).json()
     if response['success']:
         return parse_response(response.get('stdout'))
     elif 'execute_reply' in response and 'ename' in response['execute_reply'] and 'evalue' in response['execute_reply']:
@@ -193,15 +216,19 @@ def main():
         command = create_singular_query(sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5])
         output = dict(success=True, data=evaluate_in_singular(command))
     except:
-        command = create_query(sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5])
-        final_query = polynomial_formatting_functions + "\n" + command
-        if sys.argv[1] == 'true': # trace dry run enabled
-            output = dict(success=True, trace=command)
-        else:
-            try:
-                output = dict(success=True, data=evaluate_in_sage(final_query))
-            except EvaluationError as e:
-                output = dict(success=False, name=e.ename, value=e.evalue)
+        try:
+            command = create_macaulay2_query(sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5])
+            output = dict(success=True, data=evaluate_in_macaulay2(command))
+        except:
+            command = create_query(sys.argv[2], int(sys.argv[3]), sys.argv[4], sys.argv[5])
+            final_query = polynomial_formatting_functions + "\n" + command
+            if sys.argv[1] == 'true': # trace dry run enabled
+                output = dict(success=True, trace=command)
+            else:
+                try:
+                    output = dict(success=True, data=evaluate_in_sage(final_query))
+                except EvaluationError as e:
+                    output = dict(success=False, name=e.ename, value=e.evalue)
     print(json.dumps(output))
 
 if __name__ == "__main__":
