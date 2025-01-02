@@ -254,6 +254,20 @@ instance : NatTrans.CommShift (PullbackShift.natIsoComp φ F G).hom A where
 
 end NatTrans
 
+
+def PullbackShift.adjunction {F} {G : D ⥤ C} (adj : F ⊣ G) :
+    PullbackShift.functor φ F ⊣ PullbackShift.functor φ G where
+  unit := (NatTrans.PullbackShift.natIsoId C φ).hom ≫ (PullbackShift.natTrans φ
+      adj.unit) ≫ (NatTrans.PullbackShift.natIsoComp φ F G).hom
+  counit := (NatTrans.PullbackShift.natIsoComp φ G F).inv ≫ (PullbackShift.natTrans φ
+      adj.counit) ≫ (NatTrans.PullbackShift.natIsoId D φ).inv
+  left_triangle_components _ := by
+    simp [PullbackShift.natTrans, NatTrans.PullbackShift.natIsoComp,
+      NatTrans.PullbackShift.natIsoId, PullbackShift.functor]
+  right_triangle_components _ := by
+    simp [PullbackShift.natTrans, NatTrans.PullbackShift.natIsoComp,
+      NatTrans.PullbackShift.natIsoId, PullbackShift.functor]
+
 namespace Adjunction
 
 variable {F} {G : D ⥤ C} (adj : F ⊣ G) [G.CommShift B]
@@ -263,17 +277,13 @@ If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F` and 
 it is also compatible with the pulled back `CommShift` structures by an additive map
 `φ : B →+ A`.
 -/
-lemma commShiftPullback [adj.CommShift B] : Adjunction.CommShift (F := PullbackShift.functor φ F)
-    (G := PullbackShift.functor φ G) adj A := by
-  refine Adjunction.CommShift.mk' adj A ?_ (F := PullbackShift.functor φ F)
-    (G := PullbackShift.functor φ G)
-  have heq : adj.unit = (NatTrans.PullbackShift.natIsoId C φ).hom ≫ (PullbackShift.natTrans φ
-      adj.unit) ≫ (NatTrans.PullbackShift.natIsoComp φ F G).hom := by
-    ext
-    simp [NatTrans.PullbackShift.natIsoId, NatTrans.PullbackShift.natIsoComp,
-      PullbackShift.natTrans]
-  rw [heq]
-  infer_instance
+instance commShiftPullback [adj.CommShift B] : (PullbackShift.adjunction φ adj).CommShift A where
+  commShift_unit := by
+    dsimp [PullbackShift.adjunction]
+    infer_instance
+  commShift_counit := by
+    dsimp [PullbackShift.adjunction]
+    infer_instance
 
 end Adjunction
 
