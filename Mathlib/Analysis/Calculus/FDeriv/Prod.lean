@@ -614,10 +614,9 @@ theorem HasFDerivWithinAt.finCons
     HasFDerivWithinAt (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') s x :=
   hasFDerivWithinAt_finCons'.mpr ⟨h, hs⟩
 
-theorem differentiableWithinAt_finCons:
+theorem differentiableWithinAt_finCons :
     DifferentiableWithinAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) s x ↔
-      DifferentiableWithinAt 𝕜 φ s x ∧
-      DifferentiableWithinAt 𝕜 φs s x := by
+      DifferentiableWithinAt 𝕜 φ s x ∧ DifferentiableWithinAt 𝕜 φs s x := by
   rw [differentiableWithinAt_pi, Fin.forall_fin_succ, differentiableWithinAt_pi]
   simp only [Fin.cons_zero, Fin.cons_succ]
 
@@ -634,10 +633,9 @@ theorem DifferentiableWithinAt.finCons
     DifferentiableWithinAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) s x :=
   differentiableWithinAt_finCons'.mpr ⟨h, hs⟩
 
-theorem differentiableAt_finCons:
+theorem differentiableAt_finCons :
     DifferentiableAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) x ↔
-      DifferentiableAt 𝕜 φ x ∧
-      DifferentiableAt 𝕜 φs x := by
+      DifferentiableAt 𝕜 φ x ∧ DifferentiableAt 𝕜 φs x := by
   rw [differentiableAt_pi, Fin.forall_fin_succ, differentiableAt_pi]
   simp only [Fin.cons_zero, Fin.cons_succ]
 
@@ -654,10 +652,9 @@ theorem DifferentiableAt.finCons
     DifferentiableAt 𝕜 (fun x => Fin.cons (φ x) (φs x)) x :=
   differentiableAt_finCons'.mpr ⟨h, hs⟩
 
-theorem differentiableOn_finCons:
+theorem differentiableOn_finCons :
     DifferentiableOn 𝕜 (fun x => Fin.cons (φ x) (φs x)) s ↔
-      DifferentiableOn 𝕜 φ s ∧
-      DifferentiableOn 𝕜 φs s := by
+      DifferentiableOn 𝕜 φ s ∧ DifferentiableOn 𝕜 φs s := by
   rw [differentiableOn_pi, Fin.forall_fin_succ, differentiableOn_pi]
   simp only [Fin.cons_zero, Fin.cons_succ]
 
@@ -676,8 +673,7 @@ theorem DifferentiableOn.finCons
 
 theorem differentiable_finCons :
     Differentiable 𝕜 (fun x => Fin.cons (φ x) (φs x)) ↔
-      Differentiable 𝕜 φ ∧
-      Differentiable 𝕜 φs := by
+      Differentiable 𝕜 φ ∧ Differentiable 𝕜 φs := by
   rw [differentiable_pi, Fin.forall_fin_succ, differentiable_pi]
   simp only [Fin.cons_zero, Fin.cons_succ]
 

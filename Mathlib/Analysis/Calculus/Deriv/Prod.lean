@@ -109,74 +109,63 @@ theorem hasStrictDerivAt_finCons {φ' : Π i, F' i} :
 
 /-- A variant of `hasStrictDerivAt_finCons` where the derivative variables are free on the RHS
 instead. -/
-theorem hasStrictDerivAt_finCons'
-    {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)} :
+theorem hasStrictDerivAt_finCons' {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)} :
     HasStrictDerivAt (fun x => Fin.cons (φ x) (φs x)) (Fin.cons φ' φs') x ↔
       HasStrictDerivAt φ φ' x ∧ HasStrictDerivAt φs φs' x :=
   hasStrictDerivAt_finCons
 
-theorem HasStrictDerivAt.finCons
-    {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)}
+theorem HasStrictDerivAt.finCons {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)}
     (h : HasStrictDerivAt φ φ' x) (hs : HasStrictDerivAt φs φs' x) :
     HasStrictDerivAt (fun x => Fin.cons (φ x) (φs x)) (Fin.cons φ' φs') x :=
   hasStrictDerivAt_finCons'.mpr ⟨h, hs⟩
 
-theorem hasDerivAtFilter_finCons
-    {φ' : Π i, F' i} {l : Filter 𝕜} :
+theorem hasDerivAtFilter_finCons {φ' : Π i, F' i} {l : Filter 𝕜} :
     HasDerivAtFilter (fun x => Fin.cons (φ x) (φs x)) φ' x l ↔
       HasDerivAtFilter φ (φ' 0) x l ∧ HasDerivAtFilter φs (fun i => φ' i.succ) x l :=
   hasFDerivAtFilter_finCons
 
 /-- A variant of `hasDerivAtFilter_finCons` where the derivative variables are free on the RHS
 instead. -/
-theorem hasDerivAtFilter_finCons'
-    {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)} {l : Filter 𝕜} :
+theorem hasDerivAtFilter_finCons' {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)} {l : Filter 𝕜} :
     HasDerivAtFilter (fun x => Fin.cons (φ x) (φs x)) (Fin.cons φ' φs') x l ↔
       HasDerivAtFilter φ φ' x l ∧ HasDerivAtFilter φs φs' x l :=
   hasDerivAtFilter_finCons
 
-theorem hasDerivAtFilter.finCons
-    {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)} {l : Filter 𝕜}
+theorem HasDerivAtFilter.finCons {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)} {l : Filter 𝕜}
     (h : HasDerivAtFilter φ φ' x l) (hs : HasDerivAtFilter φs φs' x l) :
     HasDerivAtFilter (fun x => Fin.cons (φ x) (φs x)) (Fin.cons φ' φs') x l :=
   hasDerivAtFilter_finCons'.mpr ⟨h, hs⟩
 
-theorem HasDerivAt_finCons
-    {φ' : Π i, F' i} :
+theorem hasDerivAt_finCons {φ' : Π i, F' i} :
     HasDerivAt (fun x => Fin.cons (φ x) (φs x)) φ' x ↔
       HasDerivAt φ (φ' 0) x ∧ HasDerivAt φs (fun i => φ' i.succ) x :=
   hasDerivAtFilter_finCons
 
 /-- A variant of `hasDerivAt_finCons` where the derivative variables are free on the RHS
 instead. -/
-theorem hasDerivAt_finCons'
-    {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)} :
+theorem hasDerivAt_finCons' {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)} :
     HasDerivAt (fun x => Fin.cons (φ x) (φs x)) (Fin.cons φ' φs') x ↔
       HasDerivAt φ φ' x ∧ HasDerivAt φs φs' x :=
-  HasDerivAt_finCons
+  hasDerivAt_finCons
 
-theorem HasDerivAt.finCons
-    {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)}
+theorem HasDerivAt.finCons {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)}
     (h : HasDerivAt φ φ' x) (hs : HasDerivAt φs φs' x) :
     HasDerivAt (fun x => Fin.cons (φ x) (φs x)) (Fin.cons φ' φs') x :=
   hasDerivAt_finCons'.mpr ⟨h, hs⟩
 
-theorem hasDerivWithinAt_finCons
-    {φ' : Π i, F' i} :
+theorem hasDerivWithinAt_finCons {φ' : Π i, F' i} :
     HasDerivWithinAt (fun x => Fin.cons (φ x) (φs x)) φ' s x ↔
       HasDerivWithinAt φ (φ' 0) s x ∧ HasDerivWithinAt φs (fun i => φ' i.succ) s x :=
   hasDerivAtFilter_finCons
 
 /-- A variant of `hasDerivWithinAt_finCons` where the derivative variables are free on the RHS
 instead. -/
-theorem hasDerivWithinAt_finCons'
-    {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)} :
+theorem hasDerivWithinAt_finCons' {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)} :
     HasDerivWithinAt (fun x => Fin.cons (φ x) (φs x)) (Fin.cons φ' φs') s x ↔
       HasDerivWithinAt φ φ' s x ∧ HasDerivWithinAt φs φs' s x :=
   hasDerivAtFilter_finCons
 
-theorem HasDerivWithinAt.finCons
-    {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)}
+theorem HasDerivWithinAt.finCons {φ' : F' 0} {φs' : Π i, F' (Fin.succ i)}
     (h : HasDerivWithinAt φ φ' s x) (hs : HasDerivWithinAt φs φs' s x) :
     HasDerivWithinAt (fun x => Fin.cons (φ x) (φs x)) (Fin.cons φ' φs') s x :=
   hasDerivWithinAt_finCons'.mpr ⟨h, hs⟩
