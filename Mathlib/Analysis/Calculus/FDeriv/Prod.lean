@@ -565,13 +565,13 @@ theorem hasFDerivAtFilter_finCons'
       HasFDerivAtFilter φ φ' x l ∧ HasFDerivAtFilter φs φs' x l :=
   hasFDerivAtFilter_finCons
 
-theorem hasFDerivAtFilter.finCons
+theorem HasFDerivAtFilter.finCons
     {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)} {l : Filter E}
     (h : HasFDerivAtFilter φ φ' x l) (hs : HasFDerivAtFilter φs φs' x l) :
     HasFDerivAtFilter (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') x l :=
   hasFDerivAtFilter_finCons'.mpr ⟨h, hs⟩
 
-theorem HasFDerivAt_finCons
+theorem hasFDerivAt_finCons
     {φ' : E →L[𝕜] Π i, F' i} :
     HasFDerivAt (fun x => Fin.cons (φ x) (φs x)) φ' x ↔
       HasFDerivAt φ (.proj 0 ∘L φ') x ∧ HasFDerivAt φs (Pi.compRightL 𝕜 F' Fin.succ ∘L φ') x :=
@@ -583,7 +583,7 @@ theorem hasFDerivAt_finCons'
     {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)} :
     HasFDerivAt (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') x ↔
       HasFDerivAt φ φ' x ∧ HasFDerivAt φs φs' x :=
-  HasFDerivAt_finCons
+  hasFDerivAt_finCons
 
 @[fun_prop]
 theorem HasFDerivAt.finCons
