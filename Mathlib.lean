@@ -185,6 +185,7 @@ import Mathlib.Algebra.Colimit.DirectLimit
 import Mathlib.Algebra.Colimit.Finiteness
 import Mathlib.Algebra.Colimit.Module
 import Mathlib.Algebra.Colimit.Ring
+import Mathlib.Algebra.Colimit.TensorProduct
 import Mathlib.Algebra.ContinuedFractions.Basic
 import Mathlib.Algebra.ContinuedFractions.Computation.ApproximationCorollaries
 import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
