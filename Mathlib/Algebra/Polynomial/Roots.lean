@@ -9,7 +9,6 @@ import Mathlib.Data.Set.Finite.Lemmas
 import Mathlib.RingTheory.Coprime.Lemmas
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.SetTheory.Cardinal.Basic
-import Mathlib
 
 /-!
 # Theory of univariate polynomials
@@ -199,17 +198,16 @@ theorem roots_smul_nonzero (p : R[X]) (ha : a ≠ 0) : (a • p).roots = p.roots
 lemma roots_neg (p : R[X]) : (-p).roots = p.roots := by
   rw [← neg_one_smul R p, roots_smul_nonzero p (neg_ne_zero.mpr one_ne_zero)]
 
-/- theorem roots_C_X_sub_C_of_div (a b : R) (h_div : a ∣ b) : (C (a : R) * X - C b).roots = {b / a} := by
-  have := exists_eq_mul_left_of_dvd h_div
-
-  have : 1/2 = 8 := by sorry
-  sorry -/
-
 @[simp]
 theorem roots_C_X_sub_C (b : R) (a : Rˣ) : (C (a : R) * X - C b).roots = {a⁻¹ * b} := by
   rw [← roots_C_mul _ (Units.ne_zero a⁻¹), mul_sub, ← mul_assoc, ← C_mul, ← C_mul,
     Units.inv_mul, C_1, one_mul]
-  exact roots_X_sub_C (↑a⁻¹ * b)
+  exact roots_X_sub_C (a⁻¹ * b)
+
+@[simp]
+theorem roots_C_X_add_C (b : R) (a : Rˣ) : (C (a : R) * X + C b).roots = {-(a⁻¹ * b)} := by
+  rw [← sub_neg_eq_add, ← C_neg]
+  simp [-map_neg, -sub_neg_eq_add]
 
 theorem roots_list_prod (L : List R[X]) :
     (0 : R[X]) ∉ L → L.prod.roots = (L : Multiset R[X]).bind roots :=
