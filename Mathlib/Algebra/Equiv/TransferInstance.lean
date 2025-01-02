@@ -689,8 +689,8 @@ end Finite
 
 section
 
-variable {R : Type*} [CommSemiring R]
-variable (A : Type*) [Semiring A] [Algebra R A]
+variable {R : Type*} [Semiring R]
+variable (A : Type*) [Semiring A]
 variable [AddCommMonoid α] [AddCommMonoid β] [Module A β]
 
 /-- Transport a module instance via an isomorphism of the underlying abelian groups.
@@ -708,7 +708,7 @@ abbrev AddEquiv.module (e : α ≃+ β) :
 
 /-- The module instance from `AddEquiv.module` is compatible with the `R`-module structures,
 if the `AddEquiv` is induced by an `R`-module isomorphism. -/
-lemma LinearEquiv.isScalarTower [Module R α] [Module R β] [IsScalarTower R A β]
+lemma LinearEquiv.isScalarTower [SMul R A] [Module R α] [Module R β] [IsScalarTower R A β]
     (e : α ≃ₗ[R] β) :
     letI := e.toAddEquiv.module A
     IsScalarTower R A α := by

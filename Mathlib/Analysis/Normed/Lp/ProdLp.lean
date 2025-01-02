@@ -53,6 +53,12 @@ variable {p 𝕜 α β}
 variable [Semiring 𝕜] [AddCommGroup α] [AddCommGroup β]
 variable (x y : WithLp p (α × β)) (c : 𝕜)
 
+/-- `Prod.fst` lifted to `WithLp p` -/
+def fst : α := (WithLp.equiv p (α × β) x).fst
+
+/-- `Prod.snd` lifted to `WithLp p` -/
+def snd : β := (WithLp.equiv p (α × β) x).snd
+
 @[simp]
 theorem zero_fst : (0 : WithLp p (α × β)).fst = 0 :=
   rfl
@@ -422,22 +428,21 @@ theorem prod_antilipschitzWith_equiv_aux [PseudoEMetricSpace α] [PseudoEMetricS
           ENNReal.rpow_one, ENNReal.coe_rpow_of_nonneg _ nonneg, coe_ofNat]
 
 theorem prod_aux_uniformity_eq [PseudoEMetricSpace α] [PseudoEMetricSpace β] :
-    𝓤 (WithLp p (α × β)) = 𝓤[instUniformSpaceProd] := by
+    𝓤 (WithLp p (α × β)) = (𝓤[instUniformSpaceProd]).comap
+    (Equiv.prodCongr (WithLp.equiv p (α × β)) (WithLp.equiv p (α × β))) := by
   have A : IsUniformInducing (WithLp.equiv p (α × β)) :=
     (prod_antilipschitzWith_equiv_aux p α β).isUniformInducing
       (prod_lipschitzWith_equiv_aux p α β).uniformContinuous
   have : (fun x : WithLp p (α × β) × WithLp p (α × β) =>
-    ((WithLp.equiv p (α × β)) x.fst, (WithLp.equiv p (α × β)) x.snd)) = id := by
+    ((WithLp.equiv p (α × β)) x.fst, (WithLp.equiv p (α × β)) x.snd)) =
+      ⇑(Equiv.prodCongr (WithLp.equiv p (α × β)) (WithLp.equiv p (α × β))) := by
     ext i <;> rfl
-  rw [← A.comap_uniformity, this, comap_id]
+  rw [← A.comap_uniformity, this]
 
 theorem prod_aux_cobounded_eq [PseudoMetricSpace α] [PseudoMetricSpace β] :
-    cobounded (WithLp p (α × β)) = @cobounded _ Prod.instBornology :=
-  calc
-    cobounded (WithLp p (α × β)) = comap (WithLp.equiv p (α × β)) (cobounded _) :=
-      le_antisymm (prod_antilipschitzWith_equiv_aux p α β).tendsto_cobounded.le_comap
-        (prod_lipschitzWith_equiv_aux p α β).comap_cobounded_le
-    _ = _ := comap_id
+    (cobounded (WithLp p (α × β))) = (cobounded (α × β)).comap (WithLp.equiv p _):=
+  le_antisymm (prod_antilipschitzWith_equiv_aux p α β).tendsto_cobounded.le_comap
+    (prod_lipschitzWith_equiv_aux p α β).comap_cobounded_le
 
 end Aux
 
@@ -448,20 +453,33 @@ section TopologicalSpace
 variable [TopologicalSpace α] [TopologicalSpace β]
 
 instance instProdTopologicalSpace : TopologicalSpace (WithLp p (α × β)) :=
-  instTopologicalSpaceProd
+  instTopologicalSpaceProd.induced (WithLp.equiv p (α × β))
+
+lemma prod_isEmbedding_equiv : Topology.IsEmbedding (WithLp.equiv p (α × β)) := by
+  rw [isEmbedding_iff]
+  use .induced _
+  exact Equiv.injective (WithLp.equiv p (α × β))
 
 @[continuity]
 theorem prod_continuous_equiv : Continuous (WithLp.equiv p (α × β)) :=
-  continuous_id
+  (prod_isEmbedding_equiv p α β).continuous
+
+lemma prod_isEmbedding_equiv_symm : Topology.IsEmbedding (WithLp.equiv p (α × β)).symm := by
+  rw [← Topology.IsEmbedding.of_comp_iff (prod_isEmbedding_equiv p α β)]
+  simp only [Equiv.self_comp_symm]
+  exact IsEmbedding.id
 
 @[continuity]
 theorem prod_continuous_equiv_symm : Continuous (WithLp.equiv p (α × β)).symm :=
-  continuous_id
+  (prod_isEmbedding_equiv_symm p α β).continuous
+
+protected def prod_homeomorph : WithLp p (α × β) ≃ₜ (α × β) where
+  __ := WithLp.equiv p (α × β)
 
 variable [T0Space α] [T0Space β]
 
 instance instProdT0Space : T0Space (WithLp p (α × β)) :=
-  Prod.instT0Space
+  (WithLp.prod_homeomorph p α β).symm.t0Space
 
 end TopologicalSpace
 
@@ -470,23 +488,34 @@ section UniformSpace
 variable [UniformSpace α] [UniformSpace β]
 
 instance instProdUniformSpace : UniformSpace (WithLp p (α × β)) :=
-  instUniformSpaceProd
+  instUniformSpaceProd.comap (WithLp.equiv p (α × β))
+
+lemma prod_isUniformEmbedding_equiv : IsUniformEmbedding (WithLp.equiv p (α × β)) :=
+  isUniformEmbedding_comap (WithLp.equiv p (α × β)).injective
 
 theorem prod_uniformContinuous_equiv : UniformContinuous (WithLp.equiv p (α × β)) :=
-  uniformContinuous_id
+  (prod_isUniformEmbedding_equiv p α β).uniformContinuous
+
+lemma prod_isUniformEmbedding_equiv_symm : IsUniformEmbedding (WithLp.equiv p (α × β)).symm := by
+  rw [← IsUniformEmbedding.of_comp_iff (prod_isUniformEmbedding_equiv p α β)]
+  simp only [Equiv.self_comp_symm]
+  rw [isUniformEmbedding_iff]
+  use IsUniformInducing.id
+  exact fun ⦃a₁ a₂⦄ h ↦ h
 
 theorem prod_uniformContinuous_equiv_symm : UniformContinuous (WithLp.equiv p (α × β)).symm :=
-  uniformContinuous_id
+  (prod_isUniformEmbedding_equiv_symm p α β).uniformContinuous
 
 variable [CompleteSpace α] [CompleteSpace β]
 
-instance instProdCompleteSpace : CompleteSpace (WithLp p (α × β)) :=
-  CompleteSpace.prod
+instance instProdCompleteSpace : CompleteSpace (WithLp p (α × β)) := by
+  rw [completeSpace_congr (prod_isUniformEmbedding_equiv p α β)]
+  exact CompleteSpace.prod
 
 end UniformSpace
 
 instance instProdBornology [Bornology α] [Bornology β] : Bornology (WithLp p (α × β)) :=
-  Prod.instBornology
+  Prod.instBornology.induced (WithLp.equiv p (α × β))
 
 section ContinuousLinearEquiv
 

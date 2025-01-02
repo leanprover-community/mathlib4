@@ -56,8 +56,8 @@ theorem Memℓp.all (f : ∀ i, E i) : Memℓp f p := by
 
 /-- The canonical `Equiv` between `lp E p ≃ PiLp p E` when `E : α → Type u` with `[Finite α]`. -/
 def Equiv.lpPiLp : lp E p ≃ PiLp p E where
-  toFun f := ⇑f
-  invFun f := ⟨f, Memℓp.all f⟩
+  toFun f := (WithLp.equiv p (∀ i, E i)).symm ⇑f
+  invFun f := ⟨⇑f, Memℓp.all f⟩
   left_inv _f := rfl
   right_inv _f := rfl
 

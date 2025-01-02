@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Data.ENNReal.Basic
-import Mathlib.RingTheory.Finiteness.Defs
+import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.Algebra.Equiv.TransferInstance
 
 /-! # The `WithLp` type synonym
 
@@ -44,7 +45,8 @@ universe uK uK' uV
 forgets the norm structure on `V`; it is up to downstream users to implement the L`p` norm (for
 instance, on `Prod` and finite `Pi` types). -/
 @[nolint unusedArguments]
-def WithLp (_p : ℝ≥0∞) (V : Type uV) : Type uV := V
+structure WithLp (_p : ℝ≥0∞) (V : Type uV) : Type uV where
+  val: V
 
 variable (p : ℝ≥0∞) (K : Type uK) (K' : Type uK') (V : Type uV)
 
@@ -52,38 +54,66 @@ namespace WithLp
 
 /-- The canonical equivalence between `WithLp p V` and `V`. This should always be used to convert
 back and forth between the representations. -/
-protected def equiv : WithLp p V ≃ V := Equiv.refl _
+protected def equiv : WithLp p V ≃ V := ⟨(·.val),(⟨·⟩),fun _ => rfl,fun _ => rfl⟩
 
-instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := ‹Nontrivial V›
-instance instUnique [Unique V] : Unique (WithLp p V) := ‹Unique V›
+@[ext]
+lemma ext (x y : WithLp p V) (h: WithLp.equiv p V x = WithLp.equiv p V y) : x = y := by
+  cases x; cases y; simpa
+
+instance instNontrivial [Nontrivial V] : Nontrivial (WithLp p V) := (WithLp.equiv p V).nontrivial
+instance instUnique [Unique V] : Unique (WithLp p V) := (WithLp.equiv p V).unique
+instance instInhabited [Inhabited V] : Inhabited (WithLp p V) := (WithLp.equiv p V).inhabited
 
 variable [Semiring K] [Semiring K'] [AddCommGroup V]
 
 /-! `WithLp p V` inherits various module-adjacent structures from `V`. -/
 
-instance instAddCommGroup : AddCommGroup (WithLp p V) := ‹AddCommGroup V›
-instance instModule [Module K V] : Module K (WithLp p V) := ‹Module K V›
+instance instAddCommGroup : AddCommGroup (WithLp p V) := (WithLp.equiv p V).addCommGroup
+
+/-- `WithLp.equiv` as an additive isomorphism. -/
+protected def addEquiv : WithLp p V ≃+ V := {WithLp.equiv p V with map_add' _ _ := rfl}
+
+@[simp]
+lemma addEquiv_apply : ⇑(WithLp.addEquiv p V) = ⇑(WithLp.equiv p V) := rfl
+
+@[simp]
+lemma addEquiv_symm : ⇑(WithLp.addEquiv p V).symm = ⇑(WithLp.equiv p V).symm := rfl
+
+instance instModule [Module K V] : Module K (WithLp p V) :=
+  (WithLp.addEquiv p V).module K
+
+/-- `WithLp.equiv` as a linear equivalence. -/
+protected def linearEquiv [Module K V] : (WithLp p V) ≃ₗ[K] V :=
+  {WithLp.addEquiv p V with map_smul' _ _ := rfl}
+
+@[simp]
+lemma linearEquiv_apply [Module K V] : ⇑(WithLp.linearEquiv p K V) = ⇑(WithLp.equiv p V) := rfl
+
+@[simp]
+lemma linearEquiv_symm_apply [Module K V] : ⇑(WithLp.linearEquiv p K V).symm =
+    ⇑(WithLp.equiv p V).symm :=
+  rfl
 
 instance instIsScalarTower [SMul K K'] [Module K V] [Module K' V] [IsScalarTower K K' V] :
     IsScalarTower K K' (WithLp p V) :=
-  ‹IsScalarTower K K' V›
+  LinearEquiv.isScalarTower K' (WithLp.linearEquiv p K V)
 
 instance instSMulCommClass [Module K V] [Module K' V] [SMulCommClass K K' V] :
-    SMulCommClass K K' (WithLp p V) :=
-  ‹SMulCommClass K K' V›
+    SMulCommClass K K' (WithLp p V) where
+  smul_comm a b c := by simp [Equiv.smul_def]; exact smul_comm _ _ _
 
 instance instModuleFinite [Module K V] [Module.Finite K V] : Module.Finite K (WithLp p V) :=
-  ‹Module.Finite K V›
+  Module.Finite.equiv (WithLp.linearEquiv p K V).symm
 
 variable {K V}
 variable [Module K V]
 variable (c : K) (x y : WithLp p V) (x' y' : V)
 
-/-! `WithLp.equiv` preserves the module structure. -/
-
 @[simp]
 theorem equiv_zero : WithLp.equiv p V 0 = 0 :=
   rfl
+/-! `WithLp.equiv` preserves the module structure. -/
+
 
 @[simp]
 theorem equiv_symm_zero : (WithLp.equiv p V).symm 0 = 0 :=
@@ -125,11 +155,5 @@ theorem equiv_symm_smul : (WithLp.equiv p V).symm (c • x') = c • (WithLp.equ
 
 variable (K V)
 
-/-- `WithLp.equiv` as a linear equivalence. -/
-@[simps (config := .asFn)]
-protected def linearEquiv : WithLp p V ≃ₗ[K] V :=
-  { LinearEquiv.refl _ _ with
-    toFun := WithLp.equiv _ _
-    invFun := (WithLp.equiv _ _).symm }
 
 end WithLp
