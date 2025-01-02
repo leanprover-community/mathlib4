@@ -11,7 +11,6 @@ import Mathlib.Analysis.SpecificLimits.Basic
 -/
 
 
-open scoped Classical
 open Filter Germ Topology
 
 /-- Hyperreal numbers on the ultrafilter extending the cofinite filter -/
@@ -181,6 +180,7 @@ theorem epsilon_lt_pos (x : ℝ) : 0 < x → ε < x :=
 def IsSt (x : ℝ*) (r : ℝ) :=
   ∀ δ : ℝ, 0 < δ → (r - δ : ℝ*) < x ∧ x < r + δ
 
+open scoped Classical in
 /-- Standard part function: like a "round" to ℝ instead of ℤ -/
 noncomputable def st : ℝ* → ℝ := fun x => if h : ∃ r, IsSt x r then Classical.choose h else 0
 
@@ -525,10 +525,11 @@ theorem not_infinite_mul {x y : ℝ*} (hx : ¬Infinite x) (hy : ¬Infinite y) : 
 theorem st_add {x y : ℝ*} (hx : ¬Infinite x) (hy : ¬Infinite y) : st (x + y) = st x + st y :=
   (isSt_st' (not_infinite_add hx hy)).unique ((isSt_st' hx).add (isSt_st' hy))
 
-theorem st_neg (x : ℝ*) : st (-x) = -st x :=
-  if h : Infinite x then by
-    rw [h.st_eq, (infinite_neg.2 h).st_eq, neg_zero]
-  else (isSt_st' (not_infinite_neg h)).unique (isSt_st' h).neg
+theorem st_neg (x : ℝ*) : st (-x) = -st x := by
+  classical
+  by_cases h : Infinite x
+  · rw [h.st_eq, (infinite_neg.2 h).st_eq, neg_zero]
+  · exact (isSt_st' (not_infinite_neg h)).unique (isSt_st' h).neg
 
 theorem st_mul {x y : ℝ*} (hx : ¬Infinite x) (hy : ¬Infinite y) : st (x * y) = st x * st y :=
   have hx' := isSt_st' hx

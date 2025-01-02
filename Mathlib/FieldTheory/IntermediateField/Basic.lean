@@ -565,10 +565,20 @@ theorem toSubfield_injective : Function.Injective (toSubfield : IntermediateFiel
   ext
   simp_rw [← mem_toSubfield, h]
 
+variable {F E : IntermediateField K L}
+
+@[simp]
+theorem toSubalgebra_inj : F.toSubalgebra = E.toSubalgebra ↔ F = E := toSubalgebra_injective.eq_iff
+
+@[deprecated (since := "2024-12-29")] alias toSubalgebra_eq_iff := toSubalgebra_inj
+
+@[simp]
+theorem toSubfield_inj : F.toSubfield = E.toSubfield ↔ F = E := toSubfield_injective.eq_iff
+
 theorem map_injective (f : L →ₐ[K] L') : Function.Injective (map f) := by
   intro _ _ h
   rwa [← toSubalgebra_injective.eq_iff, toSubalgebra_map, toSubalgebra_map,
-    (Subalgebra.map_injective f.injective).eq_iff, toSubalgebra_injective.eq_iff] at h
+    (Subalgebra.map_injective f.injective).eq_iff, toSubalgebra_inj] at h
 
 variable (S)
 

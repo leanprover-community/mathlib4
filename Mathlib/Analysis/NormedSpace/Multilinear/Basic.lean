@@ -262,7 +262,7 @@ theorem norm_image_sub_le_of_bound (f : MultilinearMap 𝕜 E G)
         · intro j _
           by_cases h : j = i
           · rw [h]
-            simp only [ite_true, Function.update_same]
+            simp only [ite_true, Function.update_self]
             exact norm_le_pi_norm (m₁ - m₂) i
           · simp [h, - le_sup_iff, - sup_le_iff, sup_le_sup, norm_le_pi_norm]
       _ = ‖m₁ - m₂‖ * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) := by
