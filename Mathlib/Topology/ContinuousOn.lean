@@ -1209,6 +1209,7 @@ theorem ContinuousWithinAt.finCons
     (hf : ContinuousWithinAt f s a) (hg : ContinuousWithinAt g s a) :
     ContinuousWithinAt (fun a => Fin.cons (f a) (g a)) s a :=
   hf.tendsto.finCons hg
+
 theorem ContinuousOn.finCons {f : α → π 0} {s : Set α} {g : α → ∀ j : Fin n, π (Fin.succ j)}
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun a => Fin.cons (f a) (g a)) s := fun a ha =>
