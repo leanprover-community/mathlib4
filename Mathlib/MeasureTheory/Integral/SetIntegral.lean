@@ -1074,17 +1074,15 @@ end OpenPos
 
 section Support
 
-variable {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M]
-  {mX : MeasurableSpace X} {ν : Measure X} {F : X → M}
+variable {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M] {mX : MeasurableSpace X}
+  {ν : Measure X} {F : X → M}
 
-theorem MeasureTheory.setIntegral_support [MeasurableSpace X] {M : Type*} [NormedAddCommGroup M]
-    [NormedSpace ℝ M] {F : X → M} {ν : Measure X} : ∫ x in support F, F x ∂ν = ∫ x, F x ∂ν := by
+theorem MeasureTheory.setIntegral_support : ∫ x in support F, F x ∂ν = ∫ x, F x ∂ν := by
   nth_rw 2 [← setIntegral_univ]
   rw [setIntegral_eq_of_subset_of_forall_diff_eq_zero MeasurableSet.univ (subset_univ (support F))]
   exact fun _ hx => nmem_support.mp <| not_mem_of_mem_diff hx
 
-theorem MeasureTheory.setIntegral_tsupport [MeasurableSpace X] [TopologicalSpace X]
-    {M : Type*} [NormedAddCommGroup M] [NormedSpace ℝ M] {F : X → M} {ν : Measure X} :
+theorem MeasureTheory.setIntegral_tsupport [TopologicalSpace X] :
     ∫ x in tsupport F, F x ∂ν = ∫ x, F x ∂ν := by
   nth_rw 2 [← setIntegral_univ]
   rw [setIntegral_eq_of_subset_of_forall_diff_eq_zero MeasurableSet.univ (subset_univ (tsupport F))]
