@@ -18,22 +18,22 @@ variable {R : Type*} [Semiring R]
 
 /-- Two absolute values `f, g` on `R` with values in `ℝ` are *equivalent* if there exists
 a positive real constant `c` such that for all `x : R`, `(f x)^c = g x`. -/
-def equiv (f g : AbsoluteValue R ℝ) : Prop :=
+def Equiv (f g : AbsoluteValue R ℝ) : Prop :=
   ∃ c : ℝ, 0 < c ∧ (f · ^ c) = g
 
 /-- Equivalence of absolute values is reflexive. -/
-lemma equiv_refl (f : AbsoluteValue R ℝ) : equiv f f :=
+lemma equiv_refl (f : AbsoluteValue R ℝ) : Equiv f f :=
   ⟨1, Real.zero_lt_one, funext fun x ↦ Real.rpow_one (f x)⟩
 
 /-- Equivalence of absolute values is symmetric. -/
-lemma equiv_symm {f g : AbsoluteValue R ℝ} (hfg : equiv f g) : equiv g f := by
+lemma equiv_symm {f g : AbsoluteValue R ℝ} (hfg : Equiv f g) : Equiv g f := by
   rcases hfg with ⟨c, hcpos, h⟩
   refine ⟨1 / c, one_div_pos.mpr hcpos, ?_⟩
   simp [← h, Real.rpow_rpow_inv (apply_nonneg f _) (ne_of_lt hcpos).symm]
 
 /-- Equivalence of absolute values is transitive. -/
-lemma equiv_trans {f g k : AbsoluteValue R ℝ} (hfg : equiv f g) (hgk : equiv g k) :
-    equiv f k := by
+lemma equiv_trans {f g k : AbsoluteValue R ℝ} (hfg : Equiv f g) (hgk : Equiv g k) :
+    Equiv f k := by
   rcases hfg with ⟨c, hcPos, hfg⟩
   rcases hgk with ⟨d, hdPos, hgk⟩
   refine ⟨c * d, mul_pos hcPos hdPos, ?_⟩
@@ -42,7 +42,7 @@ lemma equiv_trans {f g k : AbsoluteValue R ℝ} (hfg : equiv f g) (hgk : equiv g
 /-- An absolute value is equivalent to the trivial iff it is trivial itself. -/
 lemma eq_trivial_of_equiv_trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R]
     (f : AbsoluteValue R ℝ) :
-    f.equiv .trivial ↔ f = .trivial := by
+    f.Equiv .trivial ↔ f = .trivial := by
   refine ⟨fun ⟨c, hc₀, hc⟩ ↦ ext fun x ↦ ?_, fun H ↦ H ▸ equiv_refl f⟩
   apply_fun (· x) at hc
   rcases eq_or_ne x 0 with rfl | hx
