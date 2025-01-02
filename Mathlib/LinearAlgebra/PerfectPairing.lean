@@ -35,7 +35,7 @@ to connect 1 and 2.
 
 -/
 
-open Function Module
+open Function Module Set
 
 noncomputable section
 
@@ -245,61 +245,6 @@ section RestrictScalars
 
 open Submodule (span)
 
-/-- If a perfect pairing over a field `L` takes values in a subfield `K` along two `K`-subspaces
-whose `L` span is full, then these subspaces induce a `K`-structure in the sense of
-[*Algebra I*, Bourbaki : Chapter II, §8.1 Definition 1][bourbaki1989]. -/
-lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap
-    {K L : Type*} [Field K] [Field L] [Algebra K L]
-    [Module L M] [Module L N] [Module K M] [Module K N] [IsScalarTower K L M]
-    (p : PerfectPairing L M N)
-    (M' : Submodule K M) (N' : Submodule K N)
-    (hM : span L (M' : Set M) = ⊤)
-    (hN : span L (N' : Set N) = ⊤)
-    (hp : ∀ᵉ (x ∈ M') (y ∈ N'), p x y ∈ (algebraMap K L).range) :
-    ∃ (n : ℕ) (b : Basis (Fin n) L M) (b' : Basis (Fin n) K M'), ∀ i, b i = b' i := by
-  classical
-  have : IsReflexive L M := p.reflexive_left
-  have : IsReflexive L N := p.reflexive_right
-  obtain ⟨v, hv₁, hv₂, hv₃⟩ := exists_linearIndependent L (M' : Set M)
-  rw [hM] at hv₂
-  let b : Basis _ L M := Basis.mk hv₃ <| by rw [← hv₂, Subtype.range_coe_subtype, Set.setOf_mem_eq]
-  have : Fintype v := Set.Finite.fintype <| Module.Finite.finite_basis b
-  set v' : v → M' := fun i ↦ ⟨i, hv₁ (Subtype.coe_prop i)⟩
-  have hv' : LinearIndependent K v' := by
-    replace hv₃ := hv₃.restrict_scalars (R := K) <| by
-      simp_rw [← Algebra.algebraMap_eq_smul_one]
-      exact NoZeroSMulDivisors.algebraMap_injective K L
-    rw [show ((↑) : v → M) = M'.subtype ∘ v' from rfl] at hv₃
-    exact hv₃.of_comp
-  suffices span K (Set.range v') = ⊤ by
-    let e := (Module.Finite.finite_basis b).equivFin
-    let b' : Basis _ K M' := Basis.mk hv' (by rw [this])
-    exact ⟨_, b.reindex e, b'.reindex e, fun i ↦ by simp [b, b', v']⟩
-  suffices span K v = M' by
-    apply Submodule.map_injective_of_injective M'.injective_subtype
-    rw [Submodule.map_span, ← Set.image_univ, Set.image_image]
-    simpa [v']
-  refine le_antisymm (Submodule.span_le.mpr hv₁) fun m hm ↦ ?_
-  obtain ⟨w, hw₁, hw₂, hw₃⟩ := exists_linearIndependent L (N' : Set N)
-  rw [hN] at hw₂
-  let bN : Basis _ L N := Basis.mk hw₃ <| by rw [← hw₂, Subtype.range_coe_subtype, Set.setOf_mem_eq]
-  have : Fintype w := Set.Finite.fintype <| Module.Finite.finite_basis bN
-  have e : v ≃ w := Fintype.equivOfCardEq <| by rw [← Module.finrank_eq_card_basis b,
-    ← Module.finrank_eq_card_basis bN, p.finrank_eq]
-  let bM := bN.dualBasis.map p.toDualLeft.symm
-  have hbM (j : w) (x : M) (hx : x ∈ M') : bM.repr x j = p x (j : N) := by simp [bM, bN]
-  have hj (j : w) : bM.repr m j ∈ (algebraMap K L).range := (hbM _ _ hm) ▸ hp m hm j (hw₁ j.2)
-  replace hp (i : w) (j : v) :
-      (bN.dualBasis.map p.toDualLeft.symm).toMatrix b i j ∈ (algebraMap K L).fieldRange := by
-    simp only [Basis.toMatrix, Basis.map_repr, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
-      toDualLeft_apply, Basis.dualBasis_repr]
-    exact hp (b j) (by simpa [b] using hv₁ j.2) (bN i) (by simpa [bN] using hw₁ i.2)
-  have hA (i j) : b.toMatrix bM i j ∈ (algebraMap K L).range :=
-    Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_left e _ (by simp [bM]) hp i j
-  have h_span : span K v = span K (Set.range b) := by simp [b]
-  rw [h_span, Basis.mem_span_iff_repr_mem, ← Basis.toMatrix_mulVec_repr bM b m]
-  exact fun i ↦ Subring.sum_mem _ fun j _ ↦ Subring.mul_mem _ (hA i j) (hj j)
-
 variable {S : Type*}
   [CommRing S] [Algebra S R] [Module S M] [Module S N] [IsScalarTower S R M] [IsScalarTower S R N]
   [NoZeroSMulDivisors S R] [Nontrivial R]
@@ -365,15 +310,70 @@ def restrictScalars
     bijectiveRight := ⟨p.flip.restrictScalarsAux_injective j i hj hM (fun m n ↦ hp n m),
       p.flip.restrictScalarsAux_surjective j i h₂ (fun m n ↦ hp n m)⟩}
 
+section Field
+
+variable {K L : Type*} [Field K] [Field L] [Algebra K L]
+  [Module L M] [Module L N] [Module K M] [Module K N] [IsScalarTower K L M]
+
+/-- If a perfect pairing over a field `L` takes values in a subfield `K` along two `K`-subspaces
+whose `L` span is full, then these subspaces induce a `K`-structure in the sense of
+[*Algebra I*, Bourbaki : Chapter II, §8.1 Definition 1][bourbaki1989]. -/
+lemma exists_basis_basis_of_span_eq_top_of_mem_algebraMap (p : PerfectPairing L M N)
+    (M' : Submodule K M) (N' : Submodule K N)
+    (hM : span L (M' : Set M) = ⊤)
+    (hN : span L (N' : Set N) = ⊤)
+    (hp : ∀ᵉ (x ∈ M') (y ∈ N'), p x y ∈ (algebraMap K L).range) :
+    ∃ (n : ℕ) (b : Basis (Fin n) L M) (b' : Basis (Fin n) K M'), ∀ i, b i = b' i := by
+  classical
+  have : IsReflexive L M := p.reflexive_left
+  have : IsReflexive L N := p.reflexive_right
+  obtain ⟨v, hv₁, hv₂, hv₃⟩ := exists_linearIndependent L (M' : Set M)
+  rw [hM] at hv₂
+  let b : Basis _ L M := Basis.mk hv₃ <| by rw [← hv₂, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+  have : Fintype v := Set.Finite.fintype <| Module.Finite.finite_basis b
+  set v' : v → M' := fun i ↦ ⟨i, hv₁ (Subtype.coe_prop i)⟩
+  have hv' : LinearIndependent K v' := by
+    replace hv₃ := hv₃.restrict_scalars (R := K) <| by
+      simp_rw [← Algebra.algebraMap_eq_smul_one]
+      exact NoZeroSMulDivisors.algebraMap_injective K L
+    rw [show ((↑) : v → M) = M'.subtype ∘ v' from rfl] at hv₃
+    exact hv₃.of_comp
+  suffices span K (Set.range v') = ⊤ by
+    let e := (Module.Finite.finite_basis b).equivFin
+    let b' : Basis _ K M' := Basis.mk hv' (by rw [this])
+    exact ⟨_, b.reindex e, b'.reindex e, fun i ↦ by simp [b, b', v']⟩
+  suffices span K v = M' by
+    apply Submodule.map_injective_of_injective M'.injective_subtype
+    rw [Submodule.map_span, ← Set.image_univ, Set.image_image]
+    simpa [v']
+  refine le_antisymm (Submodule.span_le.mpr hv₁) fun m hm ↦ ?_
+  obtain ⟨w, hw₁, hw₂, hw₃⟩ := exists_linearIndependent L (N' : Set N)
+  rw [hN] at hw₂
+  let bN : Basis _ L N := Basis.mk hw₃ <| by rw [← hw₂, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+  have : Fintype w := Set.Finite.fintype <| Module.Finite.finite_basis bN
+  have e : v ≃ w := Fintype.equivOfCardEq <| by rw [← Module.finrank_eq_card_basis b,
+    ← Module.finrank_eq_card_basis bN, p.finrank_eq]
+  let bM := bN.dualBasis.map p.toDualLeft.symm
+  have hbM (j : w) (x : M) (hx : x ∈ M') : bM.repr x j = p x (j : N) := by simp [bM, bN]
+  have hj (j : w) : bM.repr m j ∈ (algebraMap K L).range := (hbM _ _ hm) ▸ hp m hm j (hw₁ j.2)
+  replace hp (i : w) (j : v) :
+      (bN.dualBasis.map p.toDualLeft.symm).toMatrix b i j ∈ (algebraMap K L).fieldRange := by
+    simp only [Basis.toMatrix, Basis.map_repr, LinearEquiv.symm_symm, LinearEquiv.trans_apply,
+      toDualLeft_apply, Basis.dualBasis_repr]
+    exact hp (b j) (by simpa [b] using hv₁ j.2) (bN i) (by simpa [bN] using hw₁ i.2)
+  have hA (i j) : b.toMatrix bM i j ∈ (algebraMap K L).range :=
+    Matrix.mem_subfield_of_mul_eq_one_of_mem_subfield_left e _ (by simp [bM]) hp i j
+  have h_span : span K v = span K (Set.range b) := by simp [b]
+  rw [h_span, Basis.mem_span_iff_repr_mem, ← Basis.toMatrix_mulVec_repr bM b m]
+  exact fun i ↦ Subring.sum_mem _ fun j _ ↦ Subring.mul_mem _ (hA i j) (hj j)
+
+variable [IsScalarTower K L N] [Module K M'] [Module K N']
+  (i : M' →ₗ[K] M) (j : N' →ₗ[K] N) (hi : Injective i) (hj : Injective j)
+
 /-- Restriction of scalars for a perfect pairing taking values in a subfield. -/
-def restrictScalarsField {K L : Type*} [Field K] [Field L] [Algebra K L]
-    [Module L M] [Module L N] [Module K M] [Module K N] [IsScalarTower K L M] [IsScalarTower K L N]
-    [Module K M'] [Module K N']
-    (i : M' →ₗ[K] M) (j : N' →ₗ[K] N)
-    (hi : Injective i) (hj : Injective j)
+def restrictScalarsField (p : PerfectPairing L M N)
     (hM : span L (LinearMap.range i : Set M) = ⊤)
     (hN : span L (LinearMap.range j : Set N) = ⊤)
-    (p : PerfectPairing L M N)
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap K L).range) :
     PerfectPairing K M' N' := by
   suffices FiniteDimensional K M' from mkOfInjective _ (p.restrictScalarsAux_injective i j hi hN hp)
@@ -385,19 +385,56 @@ def restrictScalarsField {K L : Type*} [Field K] [Field L] [Algebra K L]
   exact Finite.equiv (LinearEquiv.ofInjective i hi).symm
 
 @[simp]
-lemma restrictScalarsField_apply_apply {K L : Type*} [Field K] [Field L] [Algebra K L]
-    [Module L M] [Module L N] [Module K M] [Module K N] [IsScalarTower K L M] [IsScalarTower K L N]
-    [Module K M'] [Module K N']
-    (i : M' →ₗ[K] M) (j : N' →ₗ[K] N)
-    (hi : Injective i) (hj : Injective j)
+lemma restrictScalarsField_apply_apply (p : PerfectPairing L M N)
     (hM : span L (LinearMap.range i : Set M) = ⊤)
     (hN : span L (LinearMap.range j : Set N) = ⊤)
-    (p : PerfectPairing L M N)
     (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap K L).range)
     (x : M') (y : N') :
-    algebraMap K L ((p.restrictScalarsField i j hi hj hM hN hp) x y) = p (i x) (j y) :=
+    algebraMap K L (p.restrictScalarsField i j hi hj hM hN hp x y) = p (i x) (j y) :=
   LinearMap.restrictScalarsRange_apply i j (Algebra.linearMap K L)
     (NoZeroSMulDivisors.algebraMap_injective K L) p.toLin hp x y
+
+open Submodule (subset_span) in
+/-- Simultaneously restrict both the domains and scalars of a perfect pairing. -/
+def restrictScalarsFieldSpan (p : PerfectPairing L M N)
+    (hM : IsCompl
+      (span L <| LinearMap.range i)
+      ((span L <| LinearMap.range j).dualAnnihilator.map p.toDualLeft.symm))
+    (hN : IsCompl
+      (span L <| LinearMap.range j)
+      ((span L <| LinearMap.range i).dualAnnihilator.map p.toDualRight.symm))
+    (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap K L).range) :
+    PerfectPairing K M' N' := by
+  letI P : PerfectPairing L (span L <| LinearMap.range i) (span L <| LinearMap.range j) :=
+    p.restrict (Submodule.subtype _) (Submodule.subtype _) (by simpa) (by simpa) (by simp) (by simp)
+  exact P.restrictScalarsField
+    ((LinearMap.range i).inclusionSpan L ∘ₗ i.rangeRestrict)
+    ((LinearMap.range j).inclusionSpan L ∘ₗ j.rangeRestrict)
+    (((LinearMap.range i).injective_inclusionSpan L).comp (by simpa))
+    (((LinearMap.range j).injective_inclusionSpan L).comp (by simpa))
+    (by rw [LinearMap.range_comp_of_range_eq_top _ (LinearMap.range_rangeRestrict _)]
+        exact (LinearMap.range i).span_range_inclusionSpan L)
+    (by rw [LinearMap.range_comp_of_range_eq_top _ (LinearMap.range_rangeRestrict _)]
+        exact (LinearMap.range j).span_range_inclusionSpan L)
+    (fun x y ↦ LinearMap.BilinMap.apply_apply_mem_of_mem_span
+      (LinearMap.range <| Algebra.linearMap K L) (range i) (range j)
+      ((LinearMap.restrictScalarsₗ K L _ _ _).comp (p.toLin.restrictScalars K))
+      (by simpa) (i x) (j y) (subset_span (mem_range_self x)) (subset_span (mem_range_self y)))
+
+@[simp] lemma restrictScalarsFieldSpan_apply_apply (p : PerfectPairing L M N)
+    (hM : IsCompl
+      (span L <| LinearMap.range i)
+      ((span L <| LinearMap.range j).dualAnnihilator.map p.toDualLeft.symm))
+    (hN : IsCompl
+      (span L <| LinearMap.range j)
+      ((span L <| LinearMap.range i).dualAnnihilator.map p.toDualRight.symm))
+    (hp : ∀ m n, p (i m) (j n) ∈ (algebraMap K L).range)
+    (x : M') (y : N') :
+    algebraMap K L (p.restrictScalarsFieldSpan i j hi hj hM hN hp x y) = p (i x) (j y) :=
+  LinearMap.restrictScalarsRange_apply i j (Algebra.linearMap K L)
+    (NoZeroSMulDivisors.algebraMap_injective K L) p.toLin hp x y
+
+end Field
 
 end RestrictScalars
 

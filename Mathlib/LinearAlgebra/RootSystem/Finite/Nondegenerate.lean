@@ -219,55 +219,58 @@ lemma rootSpan_eq_top_iff :
   · rw [P.finrank_corootSpan_eq, h, finrank_top, P.toPerfectPairing.finrank_eq]
   · rw [← P.finrank_corootSpan_eq, h, finrank_top, P.toPerfectPairing.finrank_eq]
 
-open Submodule (injective_subtype range_subtype span subset_span span_le_restrictScalars)
+section restrictScalars
 
-set_option maxHeartbeats 300000 in
-/-- Restriction of scalars for a root pairing (with coefficients in a field).
+variable (K : Type*) [Field K] [Algebra K R] [NoZeroSMulDivisors K R]
+  [Module K M] [Module K N] [IsScalarTower K R M] [IsScalarTower K R N]
+  (hP : ∀ i j, P.pairing i j ∈ (algebraMap K R).range)
 
-TODO refactor to obviate need for `maxHeartbeats` + write some API for result. -/
-def restrictScalars (K : Type*) [Field K] [Algebra K R] [NoZeroSMulDivisors K R]
-    [Module K M] [Module K N] [IsScalarTower K R M] [IsScalarTower K R N]
-    (P : RootPairing ι R M N) [P.IsAnisotropic]
-    (hP : ∀ i j, P.pairing i j ∈ (algebraMap K R).range) :
+open Submodule (injective_subtype span subset_span span_setOf_mem_eq_top)
+
+/-- Restriction of scalars for a root pairing with coefficients in a field.
+
+Note that we obtain a root system (not just a root pairing). -/
+def restrictScalars :
     RootSystem ι K (span K (range P.root)) (span K (range P.coroot)) :=
-  { toPerfectPairing :=
-      (P.toPerfectPairing.restrict P.rootSpan.subtype P.corootSpan.subtype
-        (by simpa only [range_subtype] using P.isCompl_rootSpan_dualAnnihilator)
-        (by simpa only [range_subtype] using P.isCompl_corootSpan_dualAnnihilator)
-        (injective_subtype _) (injective_subtype _)).restrictScalarsField
-      (Submodule.inclusion (span_le_restrictScalars K R (range P.root)))
-      (Submodule.inclusion (span_le_restrictScalars K R (range P.coroot)))
-      (Submodule.inclusion_injective _) (Submodule.inclusion_injective _)
-      (Submodule.span_range_inclusion_restrictScalars_eq_top _ _ _)
-      (Submodule.span_range_inclusion_restrictScalars_eq_top _ _ _)
-      (by
-        rintro ⟨x, hx⟩ ⟨y, hy⟩
-        exact LinearMap.BilinMap.apply_apply_mem_of_mem_span
-          (LinearMap.range (Algebra.linearMap K R)) (range P.root) (range P.coroot)
-          ((LinearMap.restrictScalarsₗ K R _ _ _).comp (P.toPerfectPairing.toLin.restrictScalars K))
-          (by rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩; exact hP i j) _ _ hx hy)
+  { toPerfectPairing := (P.toPerfectPairing.restrictScalarsFieldSpan _ _
+      (injective_subtype _) (injective_subtype _)
+      (by simpa using P.isCompl_rootSpan_dualAnnihilator)
+      (by simpa using P.isCompl_corootSpan_dualAnnihilator)
+      (fun x y ↦ LinearMap.BilinMap.apply_apply_mem_of_mem_span
+        (LinearMap.range (Algebra.linearMap K R)) (range P.root) (range P.coroot)
+        ((LinearMap.restrictScalarsₗ K R _ _ _) ∘ₗ (P.toPerfectPairing.toLin.restrictScalars K))
+        (by rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩; exact hP i j) _ _ x.property y.property))
     root := ⟨fun i ↦ ⟨_, subset_span (mem_range_self i)⟩, fun i j h ↦ by simpa using h⟩
     coroot := ⟨fun i ↦ ⟨_, subset_span (mem_range_self i)⟩, fun i j h ↦ by simpa using h⟩
     root_coroot_two i := by
       have : algebraMap K R 2 = 2 := by
         rw [← Int.cast_two (R := K), ← Int.cast_two (R := R), map_intCast]
-      apply NoZeroSMulDivisors.algebraMap_injective K R
-      simp only [this, Embedding.coeFn_mk, PerfectPairing.toLin_apply,
-        PerfectPairing.restrictScalarsField_apply_apply, PerfectPairing.restrict_apply_apply]
-      erw [Submodule.subtype_apply, Submodule.subtype_apply]
-      simp
+      exact NoZeroSMulDivisors.algebraMap_injective K R <| by simp [this]
     reflection_perm := P.reflection_perm
     reflection_perm_root i j := by
-      ext
-      simpa [algebra_compatible_smul R] using P.reflection_perm_root i j
+      ext; simpa [algebra_compatible_smul R] using P.reflection_perm_root i j
     reflection_perm_coroot i j := by
-      ext
-      simpa [algebra_compatible_smul R] using P.reflection_perm_coroot i j
+      ext; simpa [algebra_compatible_smul R] using P.reflection_perm_coroot i j
     span_eq_top := by
-      rw [← Submodule.span_setOf_mem_eq_top]
+      rw [← span_setOf_mem_eq_top]
       congr
       ext ⟨x, hx⟩
       simp }
+
+@[simp] lemma restrictScalars_toPerfectPairing_apply_apply
+    (x : span K (range P.root)) (y : span K (range P.coroot)) :
+    algebraMap K R ((P.restrictScalars K hP).toPerfectPairing x y) = P.toPerfectPairing x y := by
+  simp [restrictScalars]
+
+@[simp] lemma restrictScalars_coe_root (i : ι) :
+    (P.restrictScalars K hP).root i = P.root i :=
+  rfl
+
+@[simp] lemma restrictScalars_coe_coroot (i : ι) :
+    (P.restrictScalars K hP).coroot i = P.coroot i :=
+  rfl
+
+end restrictScalars
 
 end Field
 

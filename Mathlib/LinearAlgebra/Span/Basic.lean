@@ -164,9 +164,31 @@ theorem disjoint_span_singleton' {K E : Type*} [DivisionRing K] [AddCommGroup E]
 
 section IsScalarTower
 
-variable (R S s)
+variable (S)
 
-variable [Semiring S] [SMul R S] [Module S M] [IsScalarTower R S M]
+variable [Semiring S] [SMul R S] [Module S M] [IsScalarTower R S M] (p : Submodule R M)
+
+/-- The inclusion of an `R`-submodule into its `S`-span, as an `R`-linear map. -/
+@[simps] def inclusionSpan :
+    p →ₗ[R] span S (p : Set M) where
+  toFun x := ⟨x, subset_span x.property⟩
+  map_add' x y := by simp
+  map_smul' t x := by simp
+
+lemma injective_inclusionSpan :
+    Injective (p.inclusionSpan S) := by
+  intro x y hxy
+  rw [Subtype.ext_iff] at hxy
+  simpa using hxy
+
+lemma span_range_inclusionSpan :
+    span S (range <| p.inclusionSpan S) = ⊤ := by
+  have : (span S (p : Set M)).subtype '' range (inclusionSpan S p) = p := by
+    ext; simpa [Subtype.ext_iff] using fun h ↦ subset_span h
+  apply map_injective_of_injective (span S (p : Set M)).injective_subtype
+  rw [map_subtype_top, map_span, this]
+
+variable (R s)
 
 /-- If `R` is "smaller" ring than `S` then the span by `R` is smaller than the span by `S`. -/
 theorem span_le_restrictScalars :
@@ -376,20 +398,14 @@ lemma _root_.LinearMap.BilinMap.apply_apply_mem_of_mem_span {R M N P : Type*} [C
     (B : M →ₗ[R] N →ₗ[R] P) (hB : ∀ x ∈ s, ∀ y ∈ t, B x y ∈ P')
     (x : M) (y : N) (hx : x ∈ span R s) (hy : y ∈ span R t) :
     B x y ∈ P' := by
-  refine span_induction (span_induction ?_ (by simp) ?_ ?_ hy) (by simp) ?_ ?_ hx
-  · rintro u v - - hu hv
-    simp only [map_add, LinearMap.add_apply]
-    exact add_mem hu hv
-  · intro t z hz hyz
-    simp only [map_smul, LinearMap.smul_apply]
-    exact Submodule.smul_mem _ _ hyz
-  · exact fun u hu v hv ↦ hB v hv u hu
-  · intro _ _ _ _ h₁ h₂ _ h₃
-    simp only [map_add]
-    exact add_mem (h₁ _ h₃) (h₂ _ h₃)
-  · intro _ _ _ h₁ _ h₂
-    simp only [map_smul]
-    exact Submodule.smul_mem _ _ (h₁ _ h₂)
+  induction hx, hy using span_induction₂ with
+  | mem_mem u v hu hv => exact hB u hu v hv
+  | zero_left v hv => simp
+  | zero_right u hu => simp
+  | add_left u₁ u₂ v hu₁ hu₂ hv huv₁ huv₂ => simpa using add_mem huv₁ huv₂
+  | add_right u v₁ v₂ hu hv₁ hv₂ huv₁ huv₂ => simpa using add_mem huv₁ huv₂
+  | smul_left t u v hu hv huv => simpa using Submodule.smul_mem _ _ huv
+  | smul_right t u v hu hv huv => simpa using Submodule.smul_mem _ _ huv
 
 end AddCommMonoid
 
