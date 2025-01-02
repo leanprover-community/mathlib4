@@ -245,7 +245,7 @@ termination_by (a, b)
 theorem toGame_nmul (a b : Ordinal) : (a ⨳ b).toGame = ⟦a.toPGame * b.toPGame⟧ :=
   game_eq (toPGame_nmul a b)
 
-@[simp] -- Used to be a norm_cast lemma.
+@[simp] -- used to be a norm_cast lemma
 theorem toGame_natCast : ∀ n : ℕ, toGame n = n
   | 0 => Quot.sound (zeroToPGameRelabelling).equiv
   | n + 1 => by
