@@ -187,7 +187,7 @@ noncomputable def lapMatrix_ker_basis :=
 
 end
 
-/-- The number of connected components in `G` is the dimension of the nullspace its Laplacian. -/
+/-- The number of connected components in `G` is the dimension of the nullspace of its Laplacian. -/
 theorem card_ConnectedComponent_eq_rank_ker_lapMatrix : Fintype.card G.ConnectedComponent =
     Module.finrank ℝ (LinearMap.ker (Matrix.toLin' (G.lapMatrix ℝ))) := by
   classical
