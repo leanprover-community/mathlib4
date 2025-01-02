@@ -22,10 +22,10 @@ variable {α β γ : Sort*}
 class IsEmpty (α : Sort*) : Prop where
   protected false : α → False
 
-instance instIsEmptyEmpty : IsEmpty Empty :=
+instance Empty.instIsEmpty : IsEmpty Empty :=
   ⟨Empty.elim⟩
 
-instance instIsEmptyPEmpty : IsEmpty PEmpty :=
+instance PEmpty.instIsEmpty : IsEmpty PEmpty :=
   ⟨PEmpty.elim⟩
 
 instance : IsEmpty False :=

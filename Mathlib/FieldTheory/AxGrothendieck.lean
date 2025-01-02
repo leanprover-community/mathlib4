@@ -9,7 +9,6 @@ import Mathlib.Data.Fintype.Card
 import Mathlib.ModelTheory.Algebra.Field.IsAlgClosed
 import Mathlib.ModelTheory.Algebra.Ring.Definability
 import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.ModelTheory.FunctionalFormula
 
 /-!
 # Ax-Grothendieck
@@ -89,43 +88,83 @@ end
 
 namespace FirstOrder
 
-open MvPolynomial FreeCommRing Language Field Ring BoundedFormula Theory.FunctionalFormula
+open MvPolynomial FreeCommRing Language Field Ring BoundedFormula
 
 variable {ι α : Type*} [Finite α] {K : Type*} [Field K] [CompatibleRing K]
 
 /-- The collection of first order formulas corresponding to the Ax-Grothendieck theorem. -/
-noncomputable def genericPolyMapSurjOnOfInjOn [Fintype ι]
+noncomputable def genericPolyMapSurjOnOfInjOn [Finite ι]
     (φ : ring.Formula (α ⊕ ι))
     (mons : ι → Finset (ι →₀ ℕ)) : Language.ring.Sentence :=
-  let T : Language.ring.Theory := ∅
-  let f :  T.FunctionalFormula ((Σ i : ι, mons i) ⊕ ι) ι :=
-    (toSigma (fun i : ι => ofTerm
-      (termOfFreeCommRing (genericPolyMap mons i)))).relabelRight (fun i => ⟨i, ()⟩)
-  let f' : T.FunctionalFormula ((α ⊕ (i : ι) × { x // x ∈ mons i }) ⊕ ι) ι :=
-    f.relabelLeft (Sum.elim (Sum.inl ∘ Sum.inr) Sum.inr)
-  let φ' : ring.Formula ((α ⊕ (i : ι) × { x // x ∈ mons i }) ⊕ ι) :=
-    φ.relabel (Sum.elim (Sum.inl ∘ Sum.inl) Sum.inr)
-  Formula.iAlls (α ⊕ Σ i : ι, mons i) <|
-    Formula.relabel Sum.inr ((mapsTo f' φ' φ').imp <| (injOn f' φ').imp <| surjOn f' φ' φ')
+  let l1 : ι → Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
+    fun i =>
+      (termOfFreeCommRing (genericPolyMap mons i)).relabel
+        (Sum.inl ∘ Sum.map id (fun i => (0, i)))
+    =' (termOfFreeCommRing (genericPolyMap mons i)).relabel
+        (Sum.inl ∘ Sum.map id (fun i => (1, i)))
+  -- p(x) = p(y) as a formula
+  let f1 : Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
+    iInf l1
+  let l2 : ι → Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
+    fun i => .var (Sum.inl (Sum.inr (0, i))) =' .var (Sum.inl (Sum.inr (1, i)))
+  -- x = y as a formula
+  let f2 : Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
+    iInf l2
+  let injOn : Language.ring.Formula (α ⊕ Σ i : ι, mons i) :=
+    Formula.iAlls (Fin 2 × ι)
+      (φ.relabel (Sum.map Sum.inl (fun i => (0, i))) ⟹
+       φ.relabel (Sum.map Sum.inl (fun i => (1, i))) ⟹
+        (f1.imp f2).relabel (fun x => (Equiv.sumAssoc _ _ _).symm (Sum.inr x)))
+  let l3 : ι → Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
+    fun i => (termOfFreeCommRing (genericPolyMap mons i)).relabel
+        (Sum.inl ∘ Sum.map id (fun i => (0, i))) ='
+      .var (Sum.inl (Sum.inr (1, i)))
+  let f3 : Language.ring.Formula ((Σ i : ι, mons i) ⊕ (Fin 2 × ι)) :=
+    iInf l3
+  let surjOn : Language.ring.Formula (α ⊕ Σ i : ι, mons i) :=
+    Formula.iAlls ι
+      (Formula.imp (φ.relabel (Sum.map Sum.inl id)) <|
+        Formula.iExs ι <|
+          ((φ.relabel (Sum.map Sum.inl (fun i => (0, i)))) ⊓
+            (f3.relabel (fun x => (Equiv.sumAssoc _ _ _).symm (Sum.inr x)))).relabel
+        (fun (i : (α ⊕ (Σ i : ι, mons i)) ⊕ (Fin 2 × ι)) =>
+          show ((α ⊕ (Σ i : ι, mons i)) ⊕ ι) ⊕ ι
+          from Sum.elim (Sum.inl ∘ Sum.inl)
+            (fun i => if i.1 = 0 then Sum.inr i.2 else (Sum.inl (Sum.inr i.2))) i))
+  let mapsTo : Language.ring.Formula (α ⊕ Σ i : ι, mons i) :=
+    Formula.iAlls ι
+      (Formula.imp (φ.relabel (Sum.map Sum.inl id))
+        (φ.subst <| Sum.elim
+          (fun a => .var (Sum.inl (Sum.inl a)))
+          (fun i => (termOfFreeCommRing (genericPolyMap mons i)).relabel
+            (fun i => (Equiv.sumAssoc _ _ _).symm (Sum.inr i)))))
+  Formula.iAlls (α ⊕ Σ i : ι, mons i) ((mapsTo.imp <| injOn.imp <| surjOn).relabel Sum.inr)
 
 theorem realize_genericPolyMapSurjOnOfInjOn
     [Fintype ι] (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
     (K ⊨ genericPolyMapSurjOnOfInjOn φ mons) ↔
       ∀ (v : α → K) (p : { p : ι → MvPolynomial ι K // (∀ i, (p i).support ⊆ mons i) }),
         let f : (ι → K) → (ι → K) := fun v i => eval v (p.1 i)
-        let S : Set (ι → K) := { x | φ.Realize (Sum.elim v x) }
+        let S : Set (ι → K) := fun x => φ.Realize (Sum.elim v x)
         S.MapsTo f S → S.InjOn f → S.SurjOn f S := by
   classical
-  /- This line is seperated from the `simp` block below it because it is very important that it
-  comes before `Subtype.forall` is applied. -/
-  simp only [Equiv.forall_congr_left (mvPolynomialSupportLEEquiv mons)]
-  simp only [Sentence.Realize, genericPolyMapSurjOnOfInjOn, Function.comp_def,
-    Formula.realize_iAlls, Formula.realize_relabel, Sum.elim_inr, Formula.realize_imp,
-    realize_mapsTo, realize_relabelLeft, realize_relabelRight, realize_toSigma, realize_ofTerm,
-    realize_termOfFreeCommRing, lift_genericPolyMap, Sum.elim_inl, realize_injOn, realize_surjOn,
-    Sum.forall_sum]
+  have injOnAlt : ∀ {S : Set (ι → K)} (f : (ι → K) → (ι → K)),
+      S.InjOn f ↔ ∀ x y, x ∈ S → y ∈ S → f x = f y → x = y := by
+    simp [Set.InjOn]; tauto
+  simp only [Sentence.Realize, Formula.Realize, genericPolyMapSurjOnOfInjOn, Formula.relabel,
+    Function.comp_def, Sum.map, id_eq, Equiv.sumAssoc, Equiv.coe_fn_symm_mk, Sum.elim_inr,
+    realize_iAlls, realize_imp, realize_relabel, Fin.natAdd_zero, realize_subst, realize_iInf,
+    Finset.mem_univ, realize_bdEqual, Term.realize_relabel, true_imp_iff,
+    Equiv.forall_congr_left (Equiv.curry (Fin 2) ι K), Equiv.curry_symm_apply, Function.uncurry,
+    Fin.forall_fin_succ_pi, Fin.forall_fin_zero_pi, realize_iExs, realize_inf, Sum.forall_sum,
+    Set.MapsTo, Set.mem_def, injOnAlt, funext_iff, Set.SurjOn, Set.image, setOf,
+    Set.subset_def, Equiv.forall_congr_left (mvPolynomialSupportLEEquiv mons)]
   simp +singlePass only [← Sum.elim_comp_inl_inr]
-  simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr]
+  -- was `simp` and very slow (https://github.com/leanprover-community/mathlib4/issues/19751)
+  simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr, Fin.castAdd_zero, Fin.cast_eq_self,
+    Nat.add_zero, Term.realize_var, Term.realize_relabel, realize_termOfFreeCommRing,
+    lift_genericPolyMap, Nat.reduceAdd, Fin.isValue, Function.uncurry_apply_pair, Fin.cons_zero,
+    Fin.cons_one, ↓reduceIte, one_ne_zero]
 
 theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Fintype ι]
     {p : ℕ} (hp : p.Prime) (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :

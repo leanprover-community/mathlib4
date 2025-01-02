@@ -41,7 +41,7 @@ Currently, the string diagram widget provided in this file deals with equalities
 in monoidal categories. It displays string diagrams corresponding to the morphisms for the
 left-hand and right-hand sides of the equality.
 
-Some examples can be found in `test/StringDiagram.lean`.
+Some examples can be found in `MathlibTest/StringDiagram.lean`.
 
 When drawing string diagrams, it is common to ignore associators and unitors. We follow this
 convention. To do this, we need to extract non-structural morphisms that are not associators
