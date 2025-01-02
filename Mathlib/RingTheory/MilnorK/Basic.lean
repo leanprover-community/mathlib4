@@ -97,4 +97,15 @@ lemma mul_self (x : Fˣ) : {x, x}ₘ = {x, -1}ₘ := by
   rw [ι_mul]
   simp only [mul_add, mul_neg_self, zero_add]
 
+lemma mul_symm_eq_neg_mul (x y : Fˣ) : {x,y}ₘ = -{y,x}ₘ := by
+  rw [← add_eq_zero_iff_eq_neg]
+  calc
+    _ = {x, -x}ₘ + {x, y}ₘ + {y, x}ₘ + {y, -y}ₘ := by simp
+    _ = {x * y, -(x * y)}ₘ := by
+      rw [ι_mul x y, add_mul]
+      nth_rewrite 1 [show -(x * y) = (-x) * y by simp]
+      nth_rewrite 1 [show -(x * y) = x * (-y) by simp]
+      simp only [ι_mul, mul_neg_self, zero_add, add_zero, mul_add]
+    _ = 0 := mul_neg_self _
+
 end MilnorK
