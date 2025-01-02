@@ -19,7 +19,7 @@ variable (S) in
 /--
 In a commutative semigroup `S`, `Subsemigroup.squareIn S` is the subsemigroup of squares in `S`.
 -/
-@[to_additive evenIn
+@[to_additive
 "In a commutative additive semigroup `S`, the type `AddSubsemigroup.evenIn S`
 is the subsemigroup of even elements of `S`."]
 def squareIn : Subsemigroup S where
@@ -41,7 +41,7 @@ variable (M) in
 /--
 In a commutative monoid `M`, `Submonoid.squareIn M` is the submonoid of squares in `M`.
 -/
-@[to_additive evenIn
+@[to_additive
 "In a commutative additive monoid `M`, the type `AddSubmonoid.evenIn M`
 is the submonoid of even elements of `M`."]
 def squareIn : Submonoid M where
@@ -66,7 +66,7 @@ variable (G) in
 /--
 In an abelian group `G`, `Submonoid.squareIn G` is the subgroup of squares in `G`.
 -/
-@[to_additive evenIn
+@[to_additive
 "In an abelian additive group `G`, the type `Submonoid.squareIn G` is
 the subgroup of even elements in `G`."]
 def squareIn : Subgroup G where

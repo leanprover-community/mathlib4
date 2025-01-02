@@ -18,13 +18,13 @@ assert_not_exists Set.Subsingleton
 
 open Function Int
 
-theorem IsSquare.nonneg {R : Type*} [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
+variable {α M R : Type*}
+
+theorem IsSquare.nonneg [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
     [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
     {x : R} (h : IsSquare x) : 0 ≤ x := by
   rcases h with ⟨y, rfl⟩
   exact mul_self_nonneg y
-
-variable {α M R : Type*}
 
 namespace MonoidHom
 
