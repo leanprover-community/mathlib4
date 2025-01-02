@@ -206,6 +206,7 @@ theorem add_col_mul_row_mul_invOf_eq_one'
   rw [← h2, ← h3]
   apply add_mul_mul_invOf_mul_eq_one
 
+variable (ι) in
 /-- If matrix `A` and the scalar `(1 + row ι v * ⅟A * col ι u)` are invertible,
   then so is (A + col ι u * row ι v) -/
 def invertibleAddColMulRow [Invertible (1 + row ι v * ⅟A * col ι u)] :
@@ -221,7 +222,7 @@ theorem invOf_add_col_mul_row_mul [Invertible (1 + row ι v * ⅟A * col ι u)]
     ⅟(A + col ι u * row ι v) =
     (⅟A - (⅟A * (col ι u) * ⅟(1 + row ι v * ⅟A * col ι u) *
       (row ι v) * ⅟A) ) := by
-  letI := invertibleAddColMulRow A u v
+  letI := invertibleAddColMulRow A ι u v
   convert (rfl : ⅟(A + col ι u * row ι v) = _)
 
 end Woodbury
