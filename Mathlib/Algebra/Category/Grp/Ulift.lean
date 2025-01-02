@@ -299,7 +299,7 @@ lemma descCharFamily_comp (g : ((i : ι) → B i) →+ A) :
   refine (hc.uniq (coconeOfChar (g.comp (Pi.addMonoidHom f)))
     (AddEquiv.ulift.symm.toAddMonoidHom.comp (g.comp (descCharFamily hc B f)))
     (fun j ↦ ?_)).symm
-  ext a
+  ext
   dsimp [coconeOfChar]
   simp only [EmbeddingLike.apply_eq_iff_eq]
   congr 1
@@ -356,7 +356,10 @@ lemma descHom_fac (j : J) (a : K.obj j) :
   rw [χ.map_add]
   change (χ.comp ((descHom hc lc).comp (c.ι.app j))) a + _ = 0
   rw [← AddMonoidHom.comp_assoc, descHom_property]
-  erw [descChar_fac]
+  change descChar hc χ _ + _ = _
+  have := descChar_fac hc χ
+  simp only [Functor.const_obj_obj, Functor.comp_obj, uliftFunctor_obj, coe_of] at this
+  rw [this]
   simp
 
 /-- Let `K : J ⥤ AddCommGrp.{u}`, `c` be a colimit cocone of `K` and `lc` be a cocone of
@@ -369,10 +372,10 @@ lemma descHom_uniq (m : c.pt →+ lc.pt) (hm : ∀ (j : J) (a : K.obj j),
   refine CharacterModule.hom_eq_zero_of_character_apply (fun χ ↦ ?_)
   rw [AddMonoidHom.comp_add, AddMonoidHom.comp_neg, descHom_property, add_neg_eq_zero]
   refine descChar_uniq _ _ _ (fun j a ↦ ?_)
+  have := hm j a
   simp only [Functor.const_obj_obj, AddMonoidHom.coe_comp, Function.comp_apply, Functor.comp_obj,
-    AddCommGrp.uliftFunctor_obj, AddCommGrp.coe_of]
-  erw [hm j a]
-  rfl
+    uliftFunctor_obj, coe_of] at this ⊢
+  rw [this]
 
 /--
 The functor `AddCommGr.uliftFunctor.{v,u} : AddCommGrp.{u} ⥤ AddCommGrp.{max v u}`
