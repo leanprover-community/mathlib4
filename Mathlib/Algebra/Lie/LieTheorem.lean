@@ -30,7 +30,7 @@ theorem extend_weight [LieModule.IsTriangularizable k L V]
   obtain ⟨z, -, hz⟩ := SetLike.exists_of_lt (hA.lt_top)
   let e : (k ∙ z) ≃ₗ[k] k := (LinearEquiv.toSpanNonzeroSingleton k L z <| by aesop).symm
   have he : ∀ x, e x • z = x := by simp [e]
-  have hA : IsCompl A.toSubmodule (k ∙ z) := isCompl_span_of_iscoatom_of_not_mem _ _ hA hz
+  have hA : IsCompl A.toSubmodule (k ∙ z) := isCompl_span_singleton_of_iscoatom_of_not_mem hA hz
   let π₁ : L →ₗ[k] A       := A.toSubmodule.linearProjOfIsCompl (k ∙ z) hA
   let π₂ : L →ₗ[k] (k ∙ z) := (k ∙ z).linearProjOfIsCompl ↑A hA.symm
 
@@ -77,7 +77,7 @@ private lemma LieModule.exists_forall_lie_eq_smul_of_isSolvable_of_finite
   · obtain _|_ := subsingleton_or_nontrivial L
     · use 0
       sorry --simpa using exists_ne _
-    · rw [LieSubmodule.coeSubmodule_eq_top_iff] at H
+    · rw [LieSubmodule.toSubmodule_eq_top] at H
       exact ((derivedSeries_lt_top_of_solvable k L).ne H).elim
   lift A to LieIdeal k L
   · intros
