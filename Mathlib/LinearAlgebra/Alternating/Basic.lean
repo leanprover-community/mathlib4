@@ -613,12 +613,12 @@ Various properties of reordered and repeated inputs which follow from
 
 theorem map_update_self [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
     f (Function.update v i (v j)) = 0 :=
-  f.map_eq_zero_of_eq _ (by rw [Function.update_same, Function.update_noteq hij.symm]) hij
+  f.map_eq_zero_of_eq _ (by rw [Function.update_self, Function.update_of_ne hij.symm]) hij
 
 theorem map_update_update [DecidableEq ι] {i j : ι} (hij : i ≠ j) (m : M) :
     f (Function.update (Function.update v i m) j m) = 0 :=
   f.map_eq_zero_of_eq _
-    (by rw [Function.update_same, Function.update_noteq hij, Function.update_same]) hij
+    (by rw [Function.update_self, Function.update_of_ne hij, Function.update_self]) hij
 
 theorem map_swap_add [DecidableEq ι] {i j : ι} (hij : i ≠ j) :
     f (v ∘ Equiv.swap i j) + f v = 0 := by
