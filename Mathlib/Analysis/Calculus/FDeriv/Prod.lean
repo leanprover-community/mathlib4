@@ -501,13 +501,19 @@ variable [∀ i, NormedAddCommGroup (F' i)] [∀ i, NormedSpace 𝕜 (F' i)]
 variable {φ : E → F' 0} {φs : E → ∀ i, F' (Fin.succ i)}
 
 -- TODO: generalize to TVS, find a home
+variable (𝕜 F') in
+/-- `Fin.consEquiv` as a continuous linear equivalence -/
+def Fin.consEquivL : (F' 0 × Π i, F' (Fin.succ i)) ≃L[𝕜] (Π i, F' i) where
+  __ := Fin.consEquiv F'
+  map_add' x y := funext <| Fin.cases rfl (by simp)
+  map_smul' c x := funext <| Fin.cases rfl (by simp)
+  continuous_toFun := continuous_id.fst.finCons continuous_id.snd
+  continuous_invFun := .prod_mk (continuous_apply 0) (by continuity)
+
 /-- `Fin.cons` in the codomain of continuous linear maps. -/
-def ContinuousLinearMap.finCons (φ' : E →L[𝕜] F' 0) (φs' : E →L[𝕜] Π i, F' (Fin.succ i)) :
-    E →L[𝕜] Π i, F' i where
-  toFun x := Fin.cons (φ' x) (φs' x)
-  map_add' x y := funext <| Fin.cases (map_add φ' x y) (by simp)
-  map_smul' c x := funext <| Fin.cases (map_smul φ' c x) (by simp)
-  cont := φ'.continuous.finCons φs'.continuous
+abbrev ContinuousLinearMap.finCons (φ' : E →L[𝕜] F' 0) (φs' : E →L[𝕜] Π i, F' (Fin.succ i)) :
+    E →L[𝕜] Π i, F' i :=
+  Fin.consEquivL 𝕜 F' ∘L φ'.prod φs'
 
 theorem hasStrictFDerivAt_finCons {φ' : E →L[𝕜] Π i, F' i} :
     HasStrictFDerivAt (fun x => Fin.cons (φ x) (φs x)) φ' x ↔
