@@ -150,7 +150,7 @@ lemma restrict_nondegenerate (I : LieIdeal K L) (hI : IsAtom I) :
 lemma restrict_orthogonal_nondegenerate (I : LieIdeal K L) (hI : IsAtom I) :
     (Φ.restrict (orthogonal Φ hΦ_inv I)).Nondegenerate := by
   rw [LinearMap.BilinForm.restrict_nondegenerate_iff_isCompl_orthogonal hΦ_refl]
-  simp only [LieIdeal.coe_toLieSubalgebra_toSubmodule, orthogonal_toSubmodule,
+  simp only [LieIdeal.toLieSubalgebra_toSubmodule, orthogonal_toSubmodule,
     LinearMap.BilinForm.orthogonal_orthogonal hΦ_nondeg hΦ_refl]
   exact (orthogonal_isCompl_toSubmodule Φ hΦ_nondeg hΦ_inv hΦ_refl hL I hI).symm
 
