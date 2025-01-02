@@ -623,9 +623,9 @@ def toSpanNonzeroSingleton : R ≃ₗ[R] R ∙ x :=
   rfl
 
 @[simp]
-lemma toSpanNonzeroSingleton_symm_apply_smul (y) :
-    (toSpanNonzeroSingleton R M x h).symm y • x = y :=
-  congrArg Subtype.val <| apply_symm_apply (toSpanNonzeroSingleton R M x h) y
+lemma toSpanNonzeroSingleton_symm_apply_smul (m : R ∙ x) :
+    (toSpanNonzeroSingleton R M x h).symm m • x = m :=
+  congrArg Subtype.val <| apply_symm_apply (toSpanNonzeroSingleton R M x h) m
 
 theorem toSpanNonzeroSingleton_one :
     LinearEquiv.toSpanNonzeroSingleton R M x h 1 =
