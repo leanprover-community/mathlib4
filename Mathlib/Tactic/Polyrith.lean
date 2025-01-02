@@ -29,12 +29,12 @@ to the user to find a collection of good coefficients. The `polyrith` tactic aut
 process using the theory of Groebner bases.
 
 Polyrith does this by first parsing the relevant hypotheses into a form that Python can understand.
-It then calls a Python file that tries to use a local Singular or SageMath install, or the SageMath
-API to compute the coefficients. These coefficients are then sent back to Lean, which parses them
-into pexprs. The information is then given to the `linear_combination` tactic, which completes
-the process by checking the certificate.
+It then calls a Python file that tries to use a local Singular, SageMath or Macaulay2 install, or 
+the SageMath API to compute the coefficients. These coefficients are then sent back to Lean, which
+parses them into pexprs. The information is then given to the `linear_combination` tactic, which
+completes the process by checking the certificate.
 
-In fact, `polyrith` uses Singular/Sage to test for membership in the *radical* of the ideal.
+In fact, `polyrith` uses the cotrresponding CAS to test for membership in the *radical* of the ideal.
 This means it searches for a linear combination of hypotheses that add up to a *power* of the goal.
 When this power is not 1, it uses the `(exp := n)` feature of `linear_combination` to report the
 certificate.
@@ -49,6 +49,7 @@ remember to force recompilation of any files that call `polyrith`.
 * Give Sage more information about the specific ring being used for the coefficients. For now,
   we always use ℚ (or `QQ` in Sage).
 * Handle `•` terms.
+* Add more local CAS
 
 
 ## References
