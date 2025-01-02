@@ -8,7 +8,7 @@ import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.CategoryTheory.Elementwise
-import Mathlib.RepresentationTheory.Action.Monoidal
+import Mathlib.CategoryTheory.Action.Monoidal
 import Mathlib.RepresentationTheory.Basic
 
 /-!

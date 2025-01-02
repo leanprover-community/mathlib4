@@ -152,18 +152,13 @@ instance : OrderBot YoungDiagram where
 theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
   rfl
 
--- Porting note: removed `↑`, added `.cells` and changed proof
-@[norm_cast]
-theorem coe_bot : (⊥ : YoungDiagram).cells = (∅ : Set (ℕ × ℕ)) := by
-  refine Set.eq_of_subset_of_subset ?_ ?_
-  · intros x h
-    simp? [mem_mk, Finset.coe_empty, Set.mem_empty_iff_false] at h says
-      simp only [cells_bot, Finset.coe_empty, Set.mem_empty_iff_false] at h
-  · simp only [cells_bot, Finset.coe_empty, Set.empty_subset]
-
 @[simp]
 theorem not_mem_bot (x : ℕ × ℕ) : x ∉ (⊥ : YoungDiagram) :=
   Finset.not_mem_empty x
+
+@[norm_cast]
+theorem coe_bot : (⊥ : YoungDiagram) = (∅ : Set (ℕ × ℕ)) := by
+  ext; simp
 
 instance : Inhabited YoungDiagram :=
   ⟨⊥⟩
