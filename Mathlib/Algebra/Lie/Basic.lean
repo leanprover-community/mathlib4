@@ -92,6 +92,34 @@ class LieModule (R : Type u) (L : Type v) (M : Type w) [CommRing R] [LieRing L] 
   /-- A Lie module bracket is compatible with scalar multiplication in its second argument. -/
   protected lie_smul : ∀ (t : R) (x : L) (m : M), ⁅x, t • m⁆ = t • ⁅x, m⁆
 
+/-- A tower of Lie bracket actions encapsulates the Leibniz rule for Lie bracket actions.
+
+More precisely, it does so in a relative setting:
+Let `L₁` and `L₂` be two types with Lie bracket actions on a type `M` endowed with an addition,
+and additionally assume a Lie bracket action of `L₁` on `L₂`.
+Then the Leibniz rule asserts for all `x : L₁`, `y : L₂`, and `m : M` that
+`⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆` holds.
+
+Common examples include the case where `L₁` is a Lie subalgebra of `L₂`
+and the case where `L₂` is a Lie ideal of `L₁`. -/
+class LieTower (L₁ L₂ M : Type*) [Bracket L₁ L₂] [Bracket L₁ M] [Bracket L₂ M] [Add M] where
+    protected leibniz_lie : ∀ (x : L₁) (y : L₂) (m : M), ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆
+
+section LieTower
+
+variable {L₁ L₂ M : Type*} [Bracket L₁ L₂] [Bracket L₁ M] [Bracket L₂ M]
+
+lemma leibniz_lie [Add M] [LieTower L₁ L₂ M] (x : L₁) (y : L₂) (m : M) :
+    ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆ := LieTower.leibniz_lie x y m
+
+lemma lie_swap_lie [Bracket L₂ L₁] [AddCommGroup M] [LieTower L₁ L₂ M] [LieTower L₂ L₁ M]
+    (x : L₁) (y : L₂) (m : M) : ⁅⁅x, y⁆, m⁆ = -⁅⁅y, x⁆, m⁆ := by
+  have h1 := leibniz_lie x y m
+  have h2 := leibniz_lie y x m
+  convert congr($h1.symm - $h2) using 1 <;> simp only [add_sub_cancel_right, sub_add_cancel_right]
+
+end LieTower
+
 section BasicProperties
 
 variable {R : Type u} {L : Type v} {M : Type w} {N : Type w₁}
@@ -116,8 +144,8 @@ theorem smul_lie : ⁅t • x, m⁆ = t • ⁅x, m⁆ :=
 theorem lie_smul : ⁅x, t • m⁆ = t • ⁅x, m⁆ :=
   LieModule.lie_smul t x m
 
-theorem leibniz_lie : ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆ :=
-  LieRingModule.leibniz_lie x y m
+instance : LieTower L L M where
+  leibniz_lie x y m := LieRingModule.leibniz_lie x y m
 
 @[simp]
 theorem lie_zero : ⁅x, 0⁆ = (0 : M) :=

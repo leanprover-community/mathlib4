@@ -269,6 +269,12 @@ theorem LieIdeal.coe_bracket_of_module {R L : Type*} [CommRing R] [LieRing L] [L
 instance LieIdeal.lieModule (I : LieIdeal R L) : LieModule R I M :=
   LieSubalgebra.lieModule (I : LieSubalgebra R L)
 
+instance (I : LieIdeal R L) : LieTower I L M where
+  leibniz_lie x y m := leibniz_lie x.val y m
+
+instance (I : LieIdeal R L) : LieTower L I M where
+  leibniz_lie x y m := leibniz_lie x y.val m
+
 end LieIdeal
 
 variable {R M}
