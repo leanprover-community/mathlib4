@@ -7,7 +7,9 @@ import Mathlib.Algebra.BigOperators.Ring.Nat
 import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Subgraph
 import Mathlib.SetTheory.Cardinal.Finite
+import Mathlib.Data.Finite.Card
 import Mathlib.Data.Set.Finite.Lattice
+import Mathlib.Data.Set.Card
 
 /-!
 # Counting walks of a given length
@@ -258,6 +260,40 @@ lemma odd_card_iff_odd_components [Finite V] : Odd (Nat.card V) ↔
   simp_rw [Set.toFinset_card, ← Nat.card_eq_fintype_card]
   rw [Nat.card_eq_fintype_card, Fintype.card_ofFinset]
   exact (Finset.odd_sum_iff_odd_card_odd (fun x : G.ConnectedComponent ↦ Nat.card x.supp))
+
+lemma odd_components_card_mono [Fintype V] [DecidableEq V] {G' : SimpleGraph V}
+    [DecidableRel G.Adj] [DecidableRel G'.Adj] (h : G ≤ G') :
+    Nat.card ({c : ConnectedComponent G' | Odd (Nat.card c.supp)}) ≤
+    Nat.card ({c : ConnectedComponent G | Odd (Nat.card c.supp)}) := by
+  have aux (c : G'.ConnectedComponent) (hc : Odd (Nat.card c.supp)) :=
+    Set.nonempty_of_ncard_ne_zero (by
+      intro h'
+      have := (c.odd_card_supp_iff_odd_subcomponents _ h).mp hc
+      rw [h'] at this
+      contradiction
+      : Nat.card {c' : G.ConnectedComponent | c'.supp ⊆ c.supp ∧ Odd (Nat.card c'.supp)} ≠ 0)
+  let f : {c : ConnectedComponent G' | Odd (Nat.card c.supp)} →
+      {c : ConnectedComponent G | Odd (Nat.card c.supp)} :=
+    fun ⟨c, hc⟩ ↦ ⟨(aux c hc).choose, (aux c hc).choose_spec.2⟩
+  exact Finite.card_le_of_injective f (by
+    intro c c' fcc'
+    simp only [Subtype.mk.injEq, f] at fcc'
+    exact Subtype.val_injective (ConnectedComponent.eq_of_common_vertex
+      ((fcc' ▸ (aux c.1 c.2).choose_spec.1) (ConnectedComponent.supp_nonempty _).some_mem)
+      ((aux c'.1 c'.2).choose_spec.1 (ConnectedComponent.supp_nonempty _).some_mem)))
+
+lemma odd_components_ncard_deleteVerts_mono [Fintype V] [DecidableEq V] (G G' : SimpleGraph V)
+    [DecidableRel G.Adj] [DecidableRel G'.Adj] (h : G ≤ G') (u : Set V) :
+    ({c : ConnectedComponent ((⊤ : Subgraph G').deleteVerts u).coe | Odd (Nat.card c.supp)}).ncard ≤
+    ({c : ConnectedComponent ((⊤ : Subgraph G).deleteVerts u).coe | Odd (Nat.card c.supp)}).ncard
+    := by
+  have : Fintype ((⊤ : Subgraph G').deleteVerts u).verts := by
+    have : Fintype u := Fintype.ofFinite _
+    simp only [Subgraph.induce_verts, Subgraph.verts_top]
+    infer_instance
+  apply odd_components_card_mono
+  intro v w hvw
+  aesop
 
 end WalkCounting
 
