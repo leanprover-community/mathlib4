@@ -90,7 +90,7 @@ instance : CommRing (BitVec w) :=
     toFin_zero toFin_one toFin_add toFin_mul toFin_neg toFin_sub
     toFin_nsmul toFin_zsmul toFin_pow toFin_natCast toFin_intCast
 
-/-- The ring `Fin (2 ^ m)` is isomorphic to `BitVec m`. -/
+/-- The ring `BitVec m` is isomorphic to `Fin (2 ^ m)`. -/
 @[simps]
 def equivFin {m : ℕ} : BitVec m ≃+* Fin (2 ^ m) where
   toFun a := a.toFin
