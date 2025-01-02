@@ -45,7 +45,7 @@ namespace ProbabilityTheory
 theorem hasFiniteIntegral_prod_mk_left (a : α) {s : Set (β × γ)} (h2s : (κ ⊗ₖ η) a s ≠ ∞) :
     HasFiniteIntegral (fun b => (η (a, b) (Prod.mk b ⁻¹' s)).toReal) (κ a) := by
   let t := toMeasurable ((κ ⊗ₖ η) a) s
-  simp_rw [HasFiniteIntegral, ennnorm_eq_ofReal toReal_nonneg]
+  simp_rw [hasFiniteIntegral_iff_nnnorm, ennnorm_eq_ofReal toReal_nonneg]
   calc
     ∫⁻ b, ENNReal.ofReal (η (a, b) (Prod.mk b ⁻¹' s)).toReal ∂κ a
     _ ≤ ∫⁻ b, η (a, b) (Prod.mk b ⁻¹' t) ∂κ a := by
@@ -82,7 +82,7 @@ theorem hasFiniteIntegral_compProd_iff ⦃f : β × γ → E⦄ (h1f : StronglyM
     HasFiniteIntegral f ((κ ⊗ₖ η) a) ↔
       (∀ᵐ x ∂κ a, HasFiniteIntegral (fun y => f (x, y)) (η (a, x))) ∧
         HasFiniteIntegral (fun x => ∫ y, ‖f (x, y)‖ ∂η (a, x)) (κ a) := by
-  simp only [HasFiniteIntegral]
+  simp only [hasFiniteIntegral_iff_nnnorm]
   rw [Kernel.lintegral_compProd _ _ _ h1f.ennnorm]
   have : ∀ x, ∀ᵐ y ∂η (a, x), 0 ≤ ‖f (x, y)‖ := fun x => Eventually.of_forall fun y => norm_nonneg _
   simp_rw [integral_eq_lintegral_of_nonneg_ae (this _)

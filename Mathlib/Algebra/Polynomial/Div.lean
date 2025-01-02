@@ -8,6 +8,7 @@ import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Algebra.Ring.Regular
 import Mathlib.RingTheory.Multiplicity
+import Mathlib.Data.Nat.Lattice
 
 /-!
 # Division of univariate polynomials

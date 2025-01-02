@@ -112,7 +112,7 @@ theorem lmarginal_update_of_mem {i : δ} (hi : i ∈ s)
   apply lmarginal_congr
   intro j hj
   have : j ≠ i := by rintro rfl; exact hj hi
-  apply update_noteq this
+  apply update_of_ne this
 
 variable {μ} in
 theorem lmarginal_singleton (f : (∀ i, π i) → ℝ≥0∞) (i : δ) :

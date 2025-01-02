@@ -127,7 +127,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
     have : ∫⁻ a, ∑' n, ‖f n a‖₊ ∂μ < ⊤ := by rwa [lintegral_tsum hf'', lt_top_iff_ne_top]
     convert this using 1
     apply lintegral_congr_ae
-    simp_rw [← coe_nnnorm, ← NNReal.coe_tsum, NNReal.nnnorm_eq]
+    simp_rw [← coe_nnnorm, ← NNReal.coe_tsum, enorm_eq_nnnorm, NNReal.nnnorm_eq]
     filter_upwards [hhh] with a ha
     exact ENNReal.coe_tsum (NNReal.summable_coe.mp ha)
   · filter_upwards [hhh] with x hx

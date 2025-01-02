@@ -135,7 +135,7 @@ theorem cons_update : cons x (update p i y) = update (cons x p) i.succ y := by
     · rw [h']
       simp
     · have : j'.succ ≠ i.succ := by rwa [Ne, succ_inj]
-      rw [update_noteq h', update_noteq this, cons_succ]
+      rw [update_of_ne h', update_of_ne this, cons_succ]
 
 /-- As a binary function, `Fin.cons` is injective. -/
 theorem cons_injective2 : Function.Injective2 (@cons n α) := fun x₀ y₀ x y h ↦
@@ -159,7 +159,7 @@ theorem update_cons_zero : update (cons x p) 0 z = cons z p := by
   by_cases h : j = 0
   · rw [h]
     simp
-  · simp only [h, update_noteq, Ne, not_false_iff]
+  · simp only [h, update_of_ne, Ne, not_false_iff]
     let j' := pred j h
     have : j'.succ = j := succ_pred j h
     rw [← this, cons_succ, cons_succ]
@@ -582,7 +582,7 @@ theorem update_snoc_last : update (snoc p x) (last n) z = snoc p z := by
   ext j
   by_cases h : j.val < n
   · have : j ≠ last n := Fin.ne_of_lt h
-    simp [h, update_noteq, this, snoc]
+    simp [h, update_of_ne, this, snoc]
   · rw [eq_last_of_not_lt h]
     simp
 

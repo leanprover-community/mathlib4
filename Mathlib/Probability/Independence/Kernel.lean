@@ -18,7 +18,7 @@ for any sets `f i_1 ∈ π i_1, ..., f i_n ∈ π i_n`, then for `μ`-almost eve
 
 This notion of independence is a generalization of both independence and conditional independence.
 For conditional independence, `κ` is the conditional kernel `ProbabilityTheory.condexpKernel` and
-`μ` is the ambiant measure. For (non-conditional) independence, `κ = Kernel.const Unit μ` and the
+`μ` is the ambient measure. For (non-conditional) independence, `κ = Kernel.const Unit μ` and the
 measure is the Dirac measure on `Unit`.
 
 The main purpose of this file is to prove only once the properties that hold for both conditional

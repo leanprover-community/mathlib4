@@ -71,6 +71,7 @@ import Mathlib.Tactic.MkIffOfInductiveProp
 -- import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Observe
+import Mathlib.Tactic.OfNat
 -- `positivity` imports `Data.Nat.Factorial.Basic`, but hopefully this can be rearranged.
 -- import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.ProjectionNotation

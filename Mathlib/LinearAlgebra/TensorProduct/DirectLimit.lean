@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 
-import Mathlib.Algebra.Colimit.ModuleRing
+import Mathlib.Algebra.Colimit.Module
+import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 /-!
 # Tensor product and direct limits commute with each other.
@@ -22,13 +23,13 @@ as `R`-modules.
 
 open TensorProduct Module Module.DirectLimit
 
-variable {R : Type*} [CommRing R]
+variable {R : Type*} [CommSemiring R]
 variable {ι : Type*}
 variable [DecidableEq ι] [Preorder ι]
 variable {G : ι → Type*}
-variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
+variable [∀ i, AddCommMonoid (G i)] [∀ i, Module R (G i)]
 variable (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
-variable (M : Type*) [AddCommGroup M] [Module R M]
+variable (M : Type*) [AddCommMonoid M] [Module R M]
 
 -- alluding to the notation in `CategoryTheory.Monoidal`
 local notation M " ◁ " f => fun i j h ↦ LinearMap.lTensor M (f _ _ h)
@@ -68,19 +69,17 @@ variable {M} in
   rw [toDirectLimit, lift.tmul, lift_of]
   rfl
 
-variable [IsDirected ι (· ≤ ·)]
-
 /--
 `limᵢ (Gᵢ ⊗ M)` and `(limᵢ Gᵢ) ⊗ M` are isomorphic as modules
 -/
 noncomputable def directLimitLeft :
     DirectLimit G f ⊗[R] M ≃ₗ[R] DirectLimit (G · ⊗[R] M) (f ▷ M) := by
-  refine LinearEquiv.ofLinear (toDirectLimit f M) (fromDirectLimit f M) ?_ ?_
-    <;> cases isEmpty_or_nonempty ι
-  · ext; subsingleton
-  · refine DFunLike.ext _ _ fun x ↦ x.induction_on fun i g ↦ g.induction_on ?_ ?_ ?_ <;> aesop
-  · ext; subsingleton
-  · exact ext (DFunLike.ext _ _ fun g ↦ DFunLike.ext _ _ fun _ ↦ g.induction_on <| by aesop)
+  refine LinearEquiv.ofLinear (toDirectLimit f M) (fromDirectLimit f M) ?_ (ext ?_)
+  · ext ⟨x⟩
+    exact x.induction_on (by simp) (fun i x ↦ x.induction_on (by simp)
+      (fun _ _ ↦ by rw [quotMk_of]; simp) <| by simp+contextual) (by simp+contextual)
+  · ext ⟨x⟩ m
+    exact x.induction_on (by simp) (fun _ _ ↦ by rw [quotMk_of]; simp) (by simp+contextual)
 
 @[simp] lemma directLimitLeft_tmul_of {i : ι} (g : G i) (m : M) :
     directLimitLeft f M (of _ _ _ _ _ g ⊗ₜ m) = of _ _ _ (f ▷ M) _ (g ⊗ₜ m) :=
