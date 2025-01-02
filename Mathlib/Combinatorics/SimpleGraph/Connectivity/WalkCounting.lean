@@ -282,7 +282,7 @@ lemma odd_components_card_mono [Fintype V] [DecidableEq V] {G' : SimpleGraph V}
       ((aux c'.1 c'.2).choose_spec.1 (ConnectedComponent.nonempty_supp _).some_mem)))
 
 lemma odd_components_card_deleteVerts_mono [Fintype V] [DecidableEq V] (G G' : SimpleGraph V)
-    [DecidableRel G.Adj] [DecidableRel G'.Adj] (h : G ≤ G') (u : Set V) : Nat.card
+    [DecidableRel G.Adj] (h : G ≤ G') (u : Set V) : Nat.card
     ({c : ConnectedComponent ((⊤ : Subgraph G').deleteVerts u).coe | Odd (Nat.card c.supp)}) ≤
     Nat.card ({c : ConnectedComponent ((⊤ : Subgraph G).deleteVerts u).coe | Odd (Nat.card c.supp)})
     := by
