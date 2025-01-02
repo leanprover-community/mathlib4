@@ -105,7 +105,7 @@ theorem Summable.mul_of_nonarchimedean {f : α → R} {g : β → R} (hf : Summa
   (hf.hasSum.mul_of_nonarchimedean hg.hasSum).summable
 
 theorem tsum_mul_tsum_of_nonarchimedean [T0Space R] {f : α → R} {g : β → R} (hf : Summable f)
-    (hg : Summable g) : ∑' i : α × β, f i.1 * g i.2 = (∑' i, f i) * (∑' i, g i) :=
-  (hf.hasSum.mul_of_nonarchimedean hg.hasSum).tsum_eq
+    (hg : Summable g) : (∑' i, f i) * (∑' i, g i) = ∑' i : α × β, f i.1 * g i.2 :=
+  (hf.hasSum.mul_of_nonarchimedean hg.hasSum).tsum_eq.symm
 
 end NonarchimedeanRing
