@@ -144,6 +144,15 @@ noncomputable
 def LSeries (f : ℕ → ℂ) (s : ℂ) : ℂ :=
   ∑' n, term f s n
 
+/-- For `s ≠ 0`, the convention on `0 ^ s` makes it so that the L-series of `f` at `s` is equal
+to the `tsum` of terms `f n / n ^ s`. -/
+lemma LSeries_eq_tsum (f : ℕ → ℂ) {s : ℂ} (hs : s ≠ 0) :
+    LSeries f s = ∑' n, (f n) / (n : ℂ) ^ s := by
+  refine tsum_congr fun n ↦ ?_
+  cases n with
+  | zero => simp [hs]
+  | succ n => simp
+
 lemma LSeries_congr {f g : ℕ → ℂ} (s : ℂ) (h : ∀ {n}, n ≠ 0 → f n = g n) :
     LSeries f s = LSeries g s :=
   tsum_congr <| term_congr h s
