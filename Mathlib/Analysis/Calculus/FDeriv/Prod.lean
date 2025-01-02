@@ -491,7 +491,7 @@ end Pi
 ### Derivatives of tuples `f : E → Π i : Fin n.succ, F' i`
 
 These can be used to prove results about functions of the form `fun x ↦ ![f x, g x, h x]`,
-as `Matrix.vecCons` is defeq to `Fincons`.
+as `Matrix.vecCons` is defeq to `Fin.cons`.
 -/
 section PiFin
 
@@ -542,7 +542,7 @@ theorem hasStrictFDerivAt_finCons'
   hasStrictFDerivAt_finCons
 
 @[fun_prop]
-theorem hasStrictFDerivAt.finCons
+theorem HasStrictFDerivAt.finCons
     {φ' : E →L[𝕜] F' 0} {φs' : E →L[𝕜] Π i, F' (Fin.succ i)}
     (h : HasStrictFDerivAt φ φ' x) (hs : HasStrictFDerivAt φs φs' x) :
     HasStrictFDerivAt (fun x => Fin.cons (φ x) (φs x)) (φ'.finCons φs') x :=
