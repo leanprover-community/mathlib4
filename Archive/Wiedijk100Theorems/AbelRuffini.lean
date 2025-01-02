@@ -32,7 +32,7 @@ attribute [local instance] splits_ℚ_ℂ
 noncomputable def quintic : ℚ[X] := X ^ 5 - X - 1
 
 theorem degree_quintic : quintic.degree = 5 := by
-  rw [quintic]; compute_degree; norm_num; rfl
+  rw [quintic]; compute_degree <;> norm_num; rfl
 
 theorem irreducible_quintic : Irreducible quintic :=
   X_pow_sub_X_sub_one_irreducible_rat (by norm_num)
