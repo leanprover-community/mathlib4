@@ -263,8 +263,8 @@ lemma odd_card_iff_odd_components [Finite V] : Odd (Nat.card V) ↔
 
 lemma odd_components_card_mono [Fintype V] [DecidableEq V] {G' : SimpleGraph V}
     [DecidableRel G.Adj] [DecidableRel G'.Adj] (h : G ≤ G') :
-    Nat.card ({c : ConnectedComponent G' | Odd (Nat.card c.supp)}) ≤
-    Nat.card ({c : ConnectedComponent G | Odd (Nat.card c.supp)}) := by
+    ({c : ConnectedComponent G' | Odd (Nat.card c.supp)}).ncard ≤
+    ({c : ConnectedComponent G | Odd (Nat.card c.supp)}).ncard := by
   have aux (c : G'.ConnectedComponent) (hc : Odd (Nat.card c.supp)) :=
     Set.nonempty_of_ncard_ne_zero (by
       intro h'
@@ -282,10 +282,10 @@ lemma odd_components_card_mono [Fintype V] [DecidableEq V] {G' : SimpleGraph V}
       ((fcc' ▸ (aux c.1 c.2).choose_spec.1) (ConnectedComponent.supp_nonempty _).some_mem)
       ((aux c'.1 c'.2).choose_spec.1 (ConnectedComponent.supp_nonempty _).some_mem)))
 
-lemma odd_components_ncard_deleteVerts_mono [Fintype V] [DecidableEq V] (G G' : SimpleGraph V)
-    [DecidableRel G.Adj] [DecidableRel G'.Adj] (h : G ≤ G') (u : Set V) :
-    ({c : ConnectedComponent ((⊤ : Subgraph G').deleteVerts u).coe | Odd (Nat.card c.supp)}).ncard ≤
-    ({c : ConnectedComponent ((⊤ : Subgraph G).deleteVerts u).coe | Odd (Nat.card c.supp)}).ncard
+lemma odd_components_card_deleteVerts_mono [Fintype V] [DecidableEq V] (G G' : SimpleGraph V)
+    [DecidableRel G.Adj] [DecidableRel G'.Adj] (h : G ≤ G') (u : Set V) : Nat.card
+    ({c : ConnectedComponent ((⊤ : Subgraph G').deleteVerts u).coe | Odd (Nat.card c.supp)}) ≤
+    Nat.card ({c : ConnectedComponent ((⊤ : Subgraph G).deleteVerts u).coe | Odd (Nat.card c.supp)})
     := by
   have : Fintype ((⊤ : Subgraph G').deleteVerts u).verts := by
     have : Fintype u := Fintype.ofFinite _
