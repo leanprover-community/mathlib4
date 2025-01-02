@@ -5,6 +5,7 @@ Authors: Eric Wieser, Ahmad Alkhalawi
 -/
 import Mathlib.Data.Matrix.ConjTranspose
 import Mathlib.Tactic.Abel
+import Mathlib.Data.Matrix.RowCol
 
 /-! # Extra lemmas about invertible matrices
 
@@ -170,6 +171,20 @@ theorem invOf_add_mul_mul [Invertible (A + U*C*V)] :
     ⅟(A + U*C*V) = ⅟A - ⅟A*U*⅟(⅟C + V*⅟A*U)*V*⅟A := by
   letI := invertibleAddMulMul A U C V
   convert (rfl : ⅟(A + U*C*V) = _)
+
+theorem sherman_morrison_rankOneUpdate1 {ι : Type*} [Unique ι] (u v : n → α)
+    [Invertible (1 + row ι v * ⅟A * col ι u)]
+    [Inv α] [Invertible (A + col ι u * row ι v)] :
+    (⅟A - (⅟A * (col ι u) * ⅟ (1 + row ι v * ⅟A * col ι u) * (row ι v) * ⅟A) ) *
+    (A + col ι u * row ι v) = 1 := by
+  haveI : Invertible (1 : Matrix ι ι α) := by
+    exact invertibleOne
+  haveI : Invertible (⅟ 1 + row ι v * ⅟A * col ι u) := by simpa [invOf_one']
+  have h1 : ⅟ (1 : Matrix ι ι α) = 1 := by exact invOf_one
+  have h2 : ⅟ (⅟1 + row ι v * ⅟A * col ι u) = ⅟ (1 + row ι v * ⅟A * col ι u) := by congr!
+  have h3 :  col ι u * (1: Matrix ι ι α) * row ι v = col ι u * row ι v := by rw [Matrix.mul_one]
+  rw [← h2, ← h3]
+  apply add_mul_mul_invOf_mul_eq_one'
 
 end Woodbury
 
