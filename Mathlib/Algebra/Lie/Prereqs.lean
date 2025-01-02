@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lucas Whitfield
 -/
 import Mathlib.Algebra.Lie.Weights.Basic
-import Mathlib.RingTheory.Noetherian
+import Mathlib.RingTheory.Noetherian.Basic
 import Batteries.Tactic.ShowUnused
 
 -- move this
