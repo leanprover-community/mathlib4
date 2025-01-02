@@ -181,7 +181,7 @@ protected theorem map_pow (a : R) (n : ℕ) : abv (a ^ n) = abv a ^ n :=
   abv.toMonoidHom.map_pow a n
 
 omit [Nontrivial R] in
-/-- An absolute value satisfies `f n ≤ n` for every `n : ℕ`. -/
+/-- An absolute value satisfies `f (n : R) ≤ n` for every `n : ℕ`. -/
 lemma apply_nat_le_self (n : ℕ) : abv n ≤ n := by
   cases subsingleton_or_nontrivial R
   · simp [Subsingleton.eq_zero (n : R)]
@@ -288,8 +288,7 @@ variable  {S : Type*} [OrderedSemiring S] [Nontrivial S]
 
 /-- The *trivial* absolute value takes the value `1` on all nonzero elements. -/
 protected
-def trivial:
-    AbsoluteValue R S where
+def trivial: AbsoluteValue R S where
   toFun x := if x = 0 then 0 else 1
   map_mul' x y := by
     rcases eq_or_ne x 0 with rfl | hx

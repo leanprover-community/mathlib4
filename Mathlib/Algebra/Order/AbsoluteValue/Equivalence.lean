@@ -17,7 +17,7 @@ namespace AbsoluteValue
 variable {R : Type*} [Semiring R]
 
 /-- Two absolute values `f, g` on `R` with values in `ℝ` are *equivalent* if there exists
-a positive constant `c` such that for all `x : R`, `(f x)^c = g x`. -/
+a positive real constant `c` such that for all `x : R`, `(f x)^c = g x`. -/
 def equiv (f g : AbsoluteValue R ℝ) :=
   ∃ c : ℝ, 0 < c ∧ (f · ^ c) = g
 
