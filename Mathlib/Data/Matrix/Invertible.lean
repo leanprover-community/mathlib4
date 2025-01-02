@@ -172,57 +172,57 @@ theorem invOf_add_mul_mul [Invertible (A + U*C*V)] :
   letI := invertibleAddMulMul A U C V
   convert (rfl : ⅟(A + U*C*V) = _)
 
--- variable {Unit : Type} [DecidableEq Unit][Unique Unit]
+variable {ι : Type*} [Unique ι]
 variable (u v : n → α)
 
 theorem add_col_mul_row_mul_invOf_eq_one
-    [Invertible (1 + row Unit v * ⅟A * col Unit u)] :
-    (⅟A - (⅟A * (col Unit u) * ⅟(1 + row Unit v * ⅟A * col Unit u) *
-      (row Unit v) * ⅟A) ) * (A + col Unit u * row Unit v) = 1 := by
-  haveI : Invertible (1 : Matrix Unit Unit α) := invertibleOne
-  haveI : Invertible (⅟ 1 + row Unit v * ⅟A * col Unit u) := by simpa [invOf_one']
-  have h1 : ⅟ (1 : Matrix Unit Unit α) = 1 := by exact invOf_one
-  have h2 : ⅟ (⅟1 + row Unit v * ⅟A * col Unit u) =
-    ⅟ (1 + row Unit v * ⅟A * col Unit u):= by congr!
-  have h3 :  col Unit u * (1: Matrix Unit Unit α) * row Unit v =
-    col Unit u * row Unit v := by rw [Matrix.mul_one]
+    [Invertible (1 + row ι v * ⅟A * col ι u)] :
+    (⅟A - (⅟A * (col ι u) * ⅟(1 + row ι v * ⅟A * col ι u) *
+      (row ι v) * ⅟A) ) * (A + col ι u * row ι v) = 1 := by
+  haveI : Invertible (1 : Matrix ι ι α) := invertibleOne
+  haveI : Invertible (⅟ 1 + row ι v * ⅟A * col ι u) := by simpa [invOf_one']
+  have h1 : ⅟ (1 : Matrix ι ι α) = 1 := by exact invOf_one
+  have h2 : ⅟ (⅟1 + row ι v * ⅟A * col ι u) =
+    ⅟ (1 + row ι v * ⅟A * col ι u):= by congr!
+  have h3 :  col ι u * (1: Matrix ι ι α) * row ι v =
+    col ι u * row ι v := by rw [Matrix.mul_one]
   rw [← h2, ← h3]
   apply add_mul_mul_invOf_mul_eq_one'
 
 /-- Like `add_col_mul_row_mul_invOf_eq_one`, but with multiplication reversed. -/
 theorem add_col_mul_row_mul_invOf_eq_one'
-    [Invertible (1 + row Unit v * ⅟A * col Unit u)] :
-    (A + col Unit u * row Unit v) *
-    (⅟A - (⅟A * (col Unit u) * ⅟(1 + row Unit v * ⅟A * col Unit u) *
-      (row Unit v) * ⅟A) ) = 1 := by
-  haveI : Invertible (1 : Matrix Unit Unit α) := by
+    [Invertible (1 + row ι v * ⅟A * col ι u)] :
+    (A + col ι u * row ι v) *
+    (⅟A - (⅟A * (col ι u) * ⅟(1 + row ι v * ⅟A * col ι u) *
+      (row ι v) * ⅟A) ) = 1 := by
+  haveI : Invertible (1 : Matrix ι ι α) := by
     exact invertibleOne
-  haveI : Invertible (⅟ 1 + row Unit v * ⅟A * col Unit u) := by simpa [invOf_one']
-  have h1 : ⅟ (1 : Matrix Unit Unit α) = 1 := by exact invOf_one
-  have h2 : ⅟ (⅟1 + row Unit v * ⅟A * col Unit u) =
-    ⅟(1 + row Unit v * ⅟A * col Unit u) := by congr!
-  have h3 :  col Unit u * (1: Matrix Unit Unit α) * row Unit v =
-    col Unit u * row Unit v := by rw [Matrix.mul_one]
+  haveI : Invertible (⅟ 1 + row ι v * ⅟A * col ι u) := by simpa [invOf_one']
+  have h1 : ⅟ (1 : Matrix ι ι α) = 1 := by exact invOf_one
+  have h2 : ⅟ (⅟1 + row ι v * ⅟A * col ι u) =
+    ⅟(1 + row ι v * ⅟A * col ι u) := by congr!
+  have h3 :  col ι u * (1: Matrix ι ι α) * row ι v =
+    col ι u * row ι v := by rw [Matrix.mul_one]
   rw [← h2, ← h3]
   apply add_mul_mul_invOf_mul_eq_one
 
-/-- If matrix `A` and the scalar `(1 + row Unit v * ⅟A * col Unit u)` are invertible,
-  then so is (A + col Unit u * row Unit v) -/
-def invertibleAddColMulRow [Invertible (1 + row Unit v * ⅟A * col Unit u)] :
-    Invertible (A + col Unit u * row Unit v) where
-  invOf := (⅟A - (⅟A * (col Unit u) * ⅟(1 + row Unit v * ⅟A *
-    col Unit u) * (row Unit v) * ⅟A))
+/-- If matrix `A` and the scalar `(1 + row ι v * ⅟A * col ι u)` are invertible,
+  then so is (A + col ι u * row ι v) -/
+def invertibleAddColMulRow [Invertible (1 + row ι v * ⅟A * col ι u)] :
+    Invertible (A + col ι u * row ι v) where
+  invOf := (⅟A - (⅟A * (col ι u) * ⅟(1 + row ι v * ⅟A *
+    col ι u) * (row ι v) * ⅟A))
   invOf_mul_self := add_col_mul_row_mul_invOf_eq_one _ _ _
   mul_invOf_self := add_col_mul_row_mul_invOf_eq_one' _ _ _
 
 -- /-- The **Sherman Morrison Rank-1 Update** (`⅟` version). -/
-theorem invOf_add_col_mul_row_mul [Invertible (1 + row Unit v * ⅟A * col Unit u)]
-  [Invertible (A + col Unit u * row Unit v)] :
-    ⅟(A + col Unit u * row Unit v) =
-    (⅟A - (⅟A * (col Unit u) * ⅟(1 + row Unit v * ⅟A * col Unit u) *
-      (row Unit v) * ⅟A) ) := by
+theorem invOf_add_col_mul_row_mul [Invertible (1 + row ι v * ⅟A * col ι u)]
+  [Invertible (A + col ι u * row ι v)] :
+    ⅟(A + col ι u * row ι v) =
+    (⅟A - (⅟A * (col ι u) * ⅟(1 + row ι v * ⅟A * col ι u) *
+      (row ι v) * ⅟A) ) := by
   letI := invertibleAddColMulRow A u v
-  convert (rfl : ⅟(A + col Unit u * row Unit v) = _)
+  convert (rfl : ⅟(A + col ι u * row ι v) = _)
 
 end Woodbury
 
