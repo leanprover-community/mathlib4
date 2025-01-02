@@ -350,13 +350,6 @@ open Measurable Real
 
 variable {Ω : Type*} {mΩ : MeasurableSpace Ω} {p : Measure Ω} {μ : ℝ} {v : ℝ≥0} {X : Ω → ℝ}
 
-lemma mgf_dirac (hX : p.map X = .dirac μ) (t : ℝ) : mgf X p t = exp (μ * t) := by
-  rw [← mgf_id_map, mgf, hX, integral_dirac, mul_comm]
-  · rfl
-  · apply AEMeasurable.of_map_ne_zero
-    rw [hX]
-    exact IsProbabilityMeasure.ne_zero (.dirac μ)
-
 theorem mgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
     mgf X p t = exp (μ * t + v * t ^ 2 / 2) := by
   by_cases hv : v = 0
