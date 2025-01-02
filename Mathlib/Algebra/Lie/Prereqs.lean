@@ -84,6 +84,8 @@ lemma Submodule.disjoint_span_of_not_mem
   apply A.smul_mem c⁻¹ at hyA
   rcases eq_or_ne c 0 with (rfl | hc) <;> simp_all
 
+#find_home! Submodule.disjoint_span_of_not_mem
+
 -- move this
 lemma Submodule.isCompl_span_of_iscoatom_of_not_mem
     {k V : Type*} [Field k] [AddCommGroup V] [Module k V]
