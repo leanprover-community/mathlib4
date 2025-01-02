@@ -1209,7 +1209,7 @@ theorem ContinuousWithinAt.finCons
     (hf : ContinuousWithinAt f s a) (hg : ContinuousWithinAt g s a) :
     ContinuousWithinAt (fun a => Fin.cons (f a) (g a)) s a :=
   hf.tendsto.finCons hg
-nonrec theorem ContinuousOn.finCons {f : α → π 0} {s : Set α} {g : α → ∀ j : Fin n, π (Fin.succ j)}
+theorem ContinuousOn.finCons {f : α → π 0} {s : Set α} {g : α → ∀ j : Fin n, π (Fin.succ j)}
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun a => Fin.cons (f a) (g a)) s := fun a ha =>
   (hf a ha).finCons (hg a ha)
@@ -1219,7 +1219,7 @@ theorem ContinuousWithinAt.matrixVecCons {f : α → β} {g : α → Fin n → �
     ContinuousWithinAt (fun a => Matrix.vecCons (f a) (g a)) s a :=
   hf.tendsto.matrixVecCons hg
 
-nonrec theorem ContinuousOn.matrixVecCons {f : α → β} {g : α → Fin n → β} {s : Set α}
+theorem ContinuousOn.matrixVecCons {f : α → β} {g : α → Fin n → β} {s : Set α}
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun a => Matrix.vecCons (f a) (g a)) s := fun a ha =>
   (hf a ha).matrixVecCons (hg a ha)
@@ -1230,7 +1230,7 @@ theorem ContinuousWithinAt.finSnoc
     ContinuousWithinAt (fun a => Fin.snoc (f a) (g a)) s a :=
   hf.tendsto.finSnoc hg
 
-nonrec theorem ContinuousOn.finSnoc
+theorem ContinuousOn.finSnoc
     {f : α → ∀ j : Fin n, π (Fin.castSucc j)} {g : α → π (Fin.last _)} {s : Set α}
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun a => Fin.snoc (f a) (g a)) s := fun a ha =>
@@ -1245,7 +1245,7 @@ theorem ContinuousWithinAt.finInsertNth
 @[deprecated (since := "2025-01-02")]
 alias ContinuousWithinAt.fin_insertNth := ContinuousWithinAt.finInsertNth
 
-nonrec theorem ContinuousOn.finInsertNth
+theorem ContinuousOn.finInsertNth
     (i : Fin (n + 1)) {f : α → π i} {g : α → ∀ j : Fin n, π (i.succAbove j)} {s : Set α}
     (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun a => i.insertNth (f a) (g a)) s := fun a ha =>
