@@ -64,10 +64,10 @@ variable {G : Type*} [CommGroup G] {a : G}
 
 variable (G) in
 /--
-In an abelian group `G`, `Submonoid.squareIn G` is the subgroup of squares in `G`.
+In an abelian group `G`, `Subgroup.squareIn G` is the subgroup of squares in `G`.
 -/
 @[to_additive
-"In an abelian additive group `G`, the type `Submonoid.squareIn G` is
+"In an abelian additive group `G`, the type `AddSubgroup.evenIn G` is
 the subgroup of even elements in `G`."]
 def squareIn : Subgroup G where
   __ := Submonoid.squareIn G
