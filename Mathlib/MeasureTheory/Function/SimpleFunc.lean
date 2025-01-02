@@ -780,10 +780,10 @@ theorem eapprox_comp [MeasurableSpace γ] {f : γ → ℝ≥0∞} {g : α → γ
   funext fun a => approx_comp a hf hg
 
 lemma tendsto_eapprox {f : α → ℝ≥0∞} (hf_meas : Measurable f) (a : α) :
-    Tendsto (fun n ↦ SimpleFunc.eapprox f n a) atTop (𝓝 (f a)) := by
-  nth_rw 2 [← SimpleFunc.iSup_coe_eapprox hf_meas]
+    Tendsto (fun n ↦ eapprox f n a) atTop (𝓝 (f a)) := by
+  nth_rw 2 [← iSup_coe_eapprox hf_meas]
   rw [iSup_apply]
-  exact tendsto_atTop_iSup fun _ _ hnm ↦ SimpleFunc.monotone_eapprox f hnm a
+  exact tendsto_atTop_iSup fun _ _ hnm ↦ monotone_eapprox f hnm a
 
 /-- Approximate a function `α → ℝ≥0∞` by a series of simple functions taking their values
 in `ℝ≥0`. -/
