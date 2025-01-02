@@ -627,9 +627,14 @@ def toSpanNonzeroSingleton : R ≃ₗ[R] R ∙ x :=
     (LinearEquiv.ofEq (range <| toSpanSingleton R M x) (R ∙ x) (span_singleton_eq_range R M x).symm)
 
 @[simp] theorem toSpanNonzeroSingleton_apply (t : R) :
-    LinearEquiv.toSpanNonzeroSingleton R M x h t =
+    toSpanNonzeroSingleton R M x h t =
       (⟨t • x, Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self x)⟩ : R ∙ x) := by
   rfl
+
+@[simp]
+lemma toSpanNonzeroSingleton_symm_apply_smul (y) :
+    (toSpanNonzeroSingleton R M x h).symm y • x = y :=
+  congrArg Subtype.val <| apply_symm_apply (toSpanNonzeroSingleton R M x h) y
 
 theorem toSpanNonzeroSingleton_one :
     LinearEquiv.toSpanNonzeroSingleton R M x h 1 =
