@@ -3,17 +3,10 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
-import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Util.WhatsNew
 
-/-! # `ToExpr` instances for Mathlib
-
-This module should be imported by any module that intends to define `ToExpr` instances.
-It provides necessary dependencies (the `Lean.ToLevel` class) and it also overrides the instances
-that come from core Lean 4 that do not handle universe polymorphism.
-(See the module `Lean.ToExpr` for the instances that are overridden.)
-
-In addition, we provide some additional `ToExpr` instances for core definitions.
+/-!
+# `ToExpr` instances for Mathlib
 -/
 
 namespace Mathlib

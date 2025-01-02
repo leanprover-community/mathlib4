@@ -660,7 +660,9 @@ lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
   rw [← mem_range, ← ranges_flatten, mem_flatten]
 
 @[deprecated (since := "2024-10-16")] alias length_bind := length_flatMap
+
 @[deprecated (since := "2024-10-16")] alias countP_bind := countP_flatMap
+
 @[deprecated (since := "2024-10-16")] alias count_bind := count_flatMap
 
 /-- In a flatten, taking the first elements up to an index which is the sum of the lengths of the

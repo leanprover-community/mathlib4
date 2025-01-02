@@ -171,10 +171,9 @@ theorem head!_le_of_lt [Preorder α] [Inhabited α] (l l' : List α) (h : l' < l
   · rw [← List.cons_head!_tail hl', ← List.cons_head!_tail hl] at h
     exact head_le_of_lt h
 
-#adaptation_note /-- `_root_` will not be needed after `nightly-2024-12-21`. -/
 theorem cons_le_cons [LinearOrder α] (a : α) {l l' : List α} (h : l' ≤ l) :
     a :: l' ≤ a :: l := by
-  rw [_root_.le_iff_lt_or_eq] at h ⊢
+  rw [le_iff_lt_or_eq] at h ⊢
   exact h.imp .cons (congr_arg _)
 
 end List
