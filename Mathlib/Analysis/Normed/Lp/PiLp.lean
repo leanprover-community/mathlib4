@@ -254,12 +254,12 @@ Registering this separately allows for a future norm-like structure on `PiLp p �
 satisfying a relaxed triangle inequality. These are called *quasi-norms*. -/
 instance instNorm : Norm (PiLp p β) where
   norm f :=
-    if p = 0 then {i | ‖f i‖ ≠ 0}.toFinite.toFinset.card
+    if p = 0 then {i | ‖f i‖ ≠ 0}.toFinset.card
     else if p = ∞ then ⨆ i, ‖f i‖ else (∑ i, ‖f i‖ ^ p.toReal) ^ (1 / p.toReal)
 
 variable {p β}
 
-theorem norm_eq_card (f : PiLp 0 β) : ‖f‖ = {i | ‖f i‖ ≠ 0}.toFinite.toFinset.card :=
+theorem norm_eq_card (f : PiLp 0 β) : ‖f‖ = {i | ‖f i‖ ≠ 0}.toFinset.card :=
   if_pos rfl
 
 theorem norm_eq_ciSup (f : PiLp ∞ β) : ‖f‖ = ⨆ i, ‖f i‖ := rfl
@@ -496,6 +496,7 @@ instance bornology [∀ i, Bornology (β i)] : Bornology (PiLp p β) :=
   Pi.instBornology
 
 instance : Fact (∞ ∉ Set.Ioo 0 1) := ⟨by simp⟩
+instance : Fact ((0 : ℝ≥0∞) ∉ Set.Ioo 0 1) := ⟨by simp⟩
 
 -- throughout the rest of the file, we assume `1 ≤ p`
 variable [Fact (p ∉ Set.Ioo 0 1)]
@@ -579,6 +580,11 @@ instance normedAddCommGroup [∀ i, NormedAddCommGroup (α i)] : NormedAddCommGr
   { PiLp.seminormedAddCommGroup p α with
     eq_of_dist_eq_zero := eq_of_dist_eq_zero }
 
+
+theorem nnnorm_eq_card [∀ i, SeminormedAddCommGroup (β i)] (f : PiLp 0 β) :
+    ‖f‖₊ = {i | ‖f i‖₊ ≠ 0}.toFinset.card :=
+  sorry
+
 theorem nnnorm_eq_sum {p : ℝ≥0∞} [Fact (p ∉ Set.Ioo 0 1)] {β : ι → Type*} (hp : p ≠ ∞)
     [∀ i, SeminormedAddCommGroup (β i)] (f : PiLp p β) :
     ‖f‖₊ = (∑ i, ‖f i‖₊ ^ p.toReal) ^ (1 / p.toReal) := by
@@ -652,7 +658,8 @@ instance instBoundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (�
     [∀ i, Module 𝕜 (β i)] [∀ i, BoundedSMul 𝕜 (β i)] :
     BoundedSMul 𝕜 (PiLp p β) :=
   .of_nnnorm_smul_le fun c f => by
-    rcases p.dichotomy with (rfl | hp)
+    rcases p.trichotomy with (rfl | rfl | hp)
+    · sorry
     · rw [← nnnorm_equiv, ← nnnorm_equiv, WithLp.equiv_smul]
       exact nnnorm_smul_le c (WithLp.equiv ∞ (∀ i, β i) f)
     · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
