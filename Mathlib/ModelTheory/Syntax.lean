@@ -768,7 +768,6 @@ noncomputable def iExsUnique [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formul
     (BoundedFormula.iInf
       (fun g => Term.equal (var (Sum.inr g)) (var (Sum.inl (Sum.inr g)))))))
 
-variable {β}
 /-- The biimplication between formulas, as a formula. -/
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
   φ.iff ψ
