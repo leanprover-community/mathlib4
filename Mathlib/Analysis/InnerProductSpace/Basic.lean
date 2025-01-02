@@ -868,10 +868,10 @@ def Inner.rclikeToReal : Inner ℝ E where inner x y := re ⟪x, y⟫
 This is not registered as an instance since
 * `𝕜` does not appear in the return type `InnerProductSpace ℝ E`,
 * It is likely to create instance diamonds, as it builds upon the diamond-prone
-  `NormedSpace.restrictScalars`?
+  `NormedSpace.restrictScalars`.
 
-But it can be used in a proof to obtain a real inner product space structure from a given `𝕜`-inner
-product space structure. -/
+However, it can be used in a proof to obtain a real inner product space structure from a given
+`𝕜`-inner product space structure. -/
 -- See note [reducible non instances]
 abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
   { Inner.rclikeToReal 𝕜 E,
