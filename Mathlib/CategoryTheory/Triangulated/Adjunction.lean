@@ -118,11 +118,19 @@ open CategoryTheory.Pretriangulated.Opposite Functor in
 The left adjoint of a triangulated functor is triangulated.
 -/
 lemma isTriangulated_leftAdjoint [G.IsTriangulated] : F.IsTriangulated := by
-  have := @Adjunction.commShiftPullback (OppositeShift D ℤ) _ ℤ ℤ _ _ (AddMonoidHom.mk'
-    (fun (n : ℤ) => -n) (by intros; dsimp; omega)) _ (OppositeShift C ℤ) _ _ G.op (G.commShiftOp ℤ)
-    F.op (F.commShiftOp ℤ) adj.opAdjointOpOfAdjoint (adj.commShiftOp_of_commShift ℤ)
+  have : Adjunction.CommShift adj.op ℤ := by
+    have heq : adj.op = PullbackShift.adjunction (AddMonoidHom.mk'
+        (fun (n : ℤ) => -n) (by intros; dsimp; omega)) adj.op := by
+      ext
+      simp [PullbackShift.adjunction, NatTrans.PullbackShift.natIsoId,
+        NatTrans.PullbackShift.natIsoComp, PullbackShift.functor, PullbackShift.natTrans]
+    rw [heq]
+    exact @Adjunction.commShiftPullback (OppositeShift D ℤ) _
+      ℤ ℤ _ _ (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega)) _
+      (OppositeShift C ℤ) _ _ G.op (G.commShiftOp ℤ) F.op adj.op (F.commShiftOp ℤ)
+      (adj.commShift_op ℤ)
   have := G.isTriangulated_op
-  have := isTriangulated_rightAdjoint adj.opAdjointOpOfAdjoint
+  have := isTriangulated_rightAdjoint adj.op
   exact F.isTriangulated_of_op
 
 end Adjunction
