@@ -227,6 +227,8 @@ theorem lie_mem_left (I : LieIdeal R L) (x y : L) (h : x ∈ I) : ⁅x, y⁆ ∈
 def LieIdeal.toLieSubalgebra (I : LieIdeal R L) : LieSubalgebra R L :=
   { I.toSubmodule with lie_mem' := by intro x y _ hy; apply lie_mem_right; exact hy }
 
+@[deprecated (since := "2025-01-02")] alias lieIdealSubalgebra := LieIdeal.toLieSubalgebra
+
 instance : Coe (LieIdeal R L) (LieSubalgebra R L) :=
   ⟨LieIdeal.toLieSubalgebra R L⟩
 
@@ -241,6 +243,9 @@ alias LieIdeal.coe_toSubalgebra := LieIdeal.coe_toLieSubalgebra
 theorem LieIdeal.toLieSubalgebra_toSubmodule (I : LieIdeal R L) :
     ((I : LieSubalgebra R L) : Submodule R L) = LieSubmodule.toSubmodule I :=
   rfl
+
+@[deprecated (since := "2025-01-02")]
+alias LieIdeal.coe_toLieSubalgebra_toSubmodule := LieIdeal.toLieSubalgebra_toSubmodule
 
 @[deprecated (since := "2024-12-30")]
 alias LieIdeal.coe_to_lieSubalgebra_to_submodule := LieIdeal.toLieSubalgebra_toSubmodule
