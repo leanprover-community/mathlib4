@@ -6,7 +6,7 @@ Authors: Tomáš Skřivan
 import Mathlib.Tactic.FunProp.Decl
 import Mathlib.Tactic.FunProp.Types
 import Mathlib.Tactic.FunProp.FunctionData
-import Mathlib.Tactic.FunProp.RefinedDiscrTree
+import Mathlib.Lean.Meta.RefinedDiscrTree
 import Batteries.Data.RBMap.Alter
 
 /-!
@@ -268,7 +268,7 @@ initialize morTheoremsExt : GeneralTheoremsExt ←
 /-- Get morphism theorems applicable to `e`.
 
 For example calling on `e` equal to `Continuous f` for `f : X→L[ℝ] Y` would return theorem
-infering continuity from the bundled morphism. -/
+inferring continuity from the bundled morphism. -/
 def getMorphismTheorems (e : Expr) : FunPropM (Array GeneralTheorem) := do
   let ext := morTheoremsExt.getState (← getEnv)
   let candidates ← withConfig (fun cfg => { cfg with iota := false, zeta := false }) <|

@@ -11,7 +11,6 @@ import Mathlib.Analysis.SpecialFunctions.Complex.Log
 We construct the power functions `x ^ y`, where `x` and `y` are complex numbers.
 -/
 
-open scoped Classical
 open Real Topology Filter ComplexConjugate Finset Set
 
 namespace Complex

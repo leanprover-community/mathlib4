@@ -14,7 +14,6 @@ In this file we define a coercion from `ℕ∞` to `ℝ≥0∞` and prove some b
 
 assert_not_exists Finset
 
-open scoped Classical
 open NNReal ENNReal
 
 noncomputable section
@@ -57,8 +56,10 @@ theorem toENNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
   rfl
 
 @[simp, norm_cast]
-theorem toENNReal_coe_eq_iff : (m : ℝ≥0∞) = (n : ℝ≥0∞) ↔ m = n :=
+theorem toENNReal_inj : (m : ℝ≥0∞) = (n : ℝ≥0∞) ↔ m = n :=
   toENNRealOrderEmbedding.eq_iff_eq
+
+@[deprecated (since := "2024-12-29")] alias toENNReal_coe_eq_iff := toENNReal_inj
 
 @[simp, norm_cast]
 theorem toENNReal_le : (m : ℝ≥0∞) ≤ n ↔ m ≤ n :=

@@ -1492,7 +1492,7 @@ theorem measure_le_lintegral_thickenedIndicator (μ : Measure X) {E : Set X}
 
 end thickenedIndicator
 
--- We declare a new `{X : Type*}` to discard the instance `[MeasureableSpace X]`
+-- We declare a new `{X : Type*}` to discard the instance `[MeasurableSpace X]`
 -- which has been in scope for the entire file up to this point.
 variable {X : Type*}
 
