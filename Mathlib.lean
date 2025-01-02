@@ -654,6 +654,7 @@ import Mathlib.Algebra.Order.CauSeq.BigOperators
 import Mathlib.Algebra.Order.CauSeq.Completion
 import Mathlib.Algebra.Order.Chebyshev
 import Mathlib.Algebra.Order.CompleteField
+import Mathlib.Algebra.Order.EFloor
 import Mathlib.Algebra.Order.EuclideanAbsoluteValue
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Canonical.Basic
@@ -2455,6 +2456,7 @@ import Mathlib.Data.DFinsupp.Submonoid
 import Mathlib.Data.DFinsupp.WellFounded
 import Mathlib.Data.DList.Instances
 import Mathlib.Data.ENNReal.Basic
+import Mathlib.Data.ENNReal.Floor
 import Mathlib.Data.ENNReal.Inv
 import Mathlib.Data.ENNReal.Lemmas
 import Mathlib.Data.ENNReal.Operations
