@@ -3,7 +3,7 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition
+import Mathlib.Probability.Kernel.Composition.Basic
 import Mathlib.Probability.Martingale.Convergence
 import Mathlib.Probability.Process.PartitionFiltration
 
@@ -309,18 +309,11 @@ lemma densityProcess_mono_set (hκν : fst κ ≤ ν) (n : ℕ) (a : α) (x : γ
     {s s' : Set β} (h : s ⊆ s') :
     densityProcess κ ν n a x s ≤ densityProcess κ ν n a x s' := by
   unfold densityProcess
-  by_cases h0 : ν a (countablePartitionSet n x) = 0
-  · rw [h0, ENNReal.toReal_div, ENNReal.toReal_div]
-    simp
-  have h_ne_top : ∀ s,
-      κ a (countablePartitionSet n x ×ˢ s) / ν a (countablePartitionSet n x) ≠ ⊤ := by
-    intro s
-    rw [ne_eq, ENNReal.div_eq_top]
-    simp only [ne_eq, h0, and_false, false_or, not_and, not_not]
-    refine fun h_top ↦ eq_top_mono ?_ h_top
-    exact meas_countablePartitionSet_le_of_fst_le hκν n a x s
-  rw [ENNReal.toReal_le_toReal (h_ne_top s) (h_ne_top s')]
-  gcongr
+  obtain h₀ | h₀ := eq_or_ne (ν a (countablePartitionSet n x)) 0
+  · simp [h₀]
+  · gcongr
+    simp only [ne_eq, ENNReal.div_eq_top, h₀, and_false, false_or, not_and, not_not]
+    exact eq_top_mono (meas_countablePartitionSet_le_of_fst_le hκν n a x s')
 
 lemma densityProcess_mono_kernel_left {κ' : Kernel α (γ × β)} (hκκ' : κ ≤ κ')
     (hκ'ν : fst κ' ≤ ν) (n : ℕ) (a : α) (x : γ) (s : Set β) :
@@ -331,16 +324,10 @@ lemma densityProcess_mono_kernel_left {κ' : Kernel α (γ × β)} (hκκ' : κ 
     simp
   have h_le : κ' a (countablePartitionSet n x ×ˢ s) ≤ ν a (countablePartitionSet n x) :=
     meas_countablePartitionSet_le_of_fst_le hκ'ν n a x s
-  rw [ENNReal.toReal_le_toReal]
-  · gcongr
-    exact hκκ' _ _
-  · rw [ne_eq, ENNReal.div_eq_top]
-    simp only [ne_eq, h0, and_false, false_or, not_and, not_not]
-    refine fun h_top ↦ eq_top_mono ?_ h_top
-    exact (hκκ' _ _).trans h_le
-  · rw [ne_eq, ENNReal.div_eq_top]
-    simp only [ne_eq, h0, and_false, false_or, not_and, not_not]
+  gcongr
+  · simp only [ne_eq, ENNReal.div_eq_top, h0, and_false, false_or, not_and, not_not]
     exact fun h_top ↦ eq_top_mono h_le h_top
+  · apply hκκ'
 
 lemma densityProcess_antitone_kernel_right {ν' : Kernel α γ}
     (hνν' : ν ≤ ν') (hκν : fst κ ≤ ν) (n : ℕ) (a : α) (x : γ) (s : Set β) :
@@ -350,16 +337,10 @@ lemma densityProcess_antitone_kernel_right {ν' : Kernel α γ}
     meas_countablePartitionSet_le_of_fst_le hκν n a x s
   by_cases h0 : ν a (countablePartitionSet n x) = 0
   · simp [le_antisymm (h_le.trans h0.le) zero_le', h0]
-  have h0' : ν' a (countablePartitionSet n x) ≠ 0 :=
-    fun h ↦ h0 (le_antisymm ((hνν' _ _).trans h.le) zero_le')
-  rw [ENNReal.toReal_le_toReal]
-  · gcongr
-    exact hνν' _ _
-  · simp only [ne_eq, ENNReal.div_eq_top, h0', and_false, false_or, not_and, not_not]
-    refine fun h_top ↦ eq_top_mono ?_ h_top
-    exact h_le.trans (hνν' _ _)
+  gcongr
   · simp only [ne_eq, ENNReal.div_eq_top, h0, and_false, false_or, not_and, not_not]
     exact fun h_top ↦ eq_top_mono h_le h_top
+  · apply hνν'
 
 @[simp]
 lemma densityProcess_empty (κ : Kernel α (γ × β)) (ν : Kernel α γ) (n : ℕ) (a : α) (x : γ) :
@@ -384,10 +365,7 @@ lemma tendsto_densityProcess_atTop_empty_of_antitone (κ : Kernel α (γ × β))
   have : Tendsto (fun m ↦ κ a (countablePartitionSet n x ×ˢ seq m)) atTop
       (𝓝 ((κ a) (⋂ n_1, countablePartitionSet n x ×ˢ seq n_1))) := by
     apply tendsto_measure_iInter_atTop
-    · intro
-      -- TODO: why doesn't `measurability` work without this hint?
-      apply MeasurableSet.nullMeasurableSet
-      measurability
+    · measurability
     · exact fun _ _ h ↦ prod_mono_right <| hseq h
     · exact ⟨0, measure_ne_top _ _⟩
   simpa only [← prod_iInter, hseq_iInter] using this
@@ -582,18 +560,21 @@ lemma setIntegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
     (a : α) {s : Set β} (hs : MeasurableSet s) {A : Set γ} (hA : MeasurableSet A) :
     ∫ x in A, density κ ν a x s ∂(ν a) = (κ a (A ×ˢ s)).toReal := by
   have : IsFiniteKernel κ := isFiniteKernel_of_isFiniteKernel_fst (h := isFiniteKernel_of_le hκν)
-  have hA' : MeasurableSet[⨆ n, countableFiltration γ n] A := by rwa [iSup_countableFiltration]
-  refine induction_on_inter (m := ⨆ n, countableFiltration γ n)
-    (C := fun A ↦ ∫ x in A, density κ ν a x s ∂(ν a) = (κ a (A ×ˢ s)).toReal)
-    (measurableSpace_iSup_eq (countableFiltration γ)) ?_ ?_ ?_ ?_ ?_ hA'
-  · rintro s ⟨n, hs⟩ t ⟨m, ht⟩ _
-    exact ⟨max n m, ((countableFiltration γ).mono (le_max_left n m) _ hs).inter
-      ((countableFiltration γ).mono (le_max_right n m) _ ht)⟩
-  · simp
-  · intro A ⟨n, hA⟩
-    exact setIntegral_density_of_measurableSet hκν n a hs hA
-  · intro A hA hA_eq
-    rw [iSup_countableFiltration] at hA
+  have hgen : ‹MeasurableSpace γ› =
+      .generateFrom {s | ∃ n, MeasurableSet[countableFiltration γ n] s} := by
+    rw [setOf_exists, generateFrom_iUnion_measurableSet (countableFiltration γ),
+      iSup_countableFiltration]
+  have hpi : IsPiSystem {s | ∃ n, MeasurableSet[countableFiltration γ n] s} := by
+    rw [setOf_exists]
+    exact isPiSystem_iUnion_of_monotone _
+      (fun n ↦ @isPiSystem_measurableSet _ (countableFiltration γ n))
+      fun _ _ ↦ (countableFiltration γ).mono
+  induction A, hA using induction_on_inter hgen hpi with
+  | empty => simp
+  | basic s hs =>
+    rcases hs with ⟨n, hn⟩
+    exact setIntegral_density_of_measurableSet hκν n a hs hn
+  | compl A hA hA_eq =>
     have h := integral_add_compl hA (integrable_density hκν a hs)
     rw [hA_eq, integral_density hκν a hs] at h
     have : Aᶜ ×ˢ s = univ ×ˢ s \ A ×ˢ s := by
@@ -603,20 +584,15 @@ lemma setIntegral_density (hκν : fst κ ≤ ν) [IsFiniteKernel ν]
       ENNReal.toReal_sub_of_le (measure_mono (by intro x; simp)) (measure_ne_top _ _)]
     rw [eq_tsub_iff_add_eq_of_le, add_comm]
     · exact h
-    · rw [ENNReal.toReal_le_toReal (measure_ne_top _ _) (measure_ne_top _ _)]
-      exact measure_mono (by intro x; simp)
-  · intro f hf_disj hf h_eq
-    rw [integral_iUnion _ hf_disj (integrable_density hκν _ hs).integrableOn]
-    · simp_rw [h_eq]
-      rw [← ENNReal.tsum_toReal_eq (fun _ ↦ measure_ne_top _ _)]
-      congr
-      rw [iUnion_prod_const, measure_iUnion]
-      · intro i j hij
-        rw [Function.onFun, Set.disjoint_prod]
-        exact Or.inl (hf_disj hij)
-      · rw [iSup_countableFiltration] at hf
-        exact fun i ↦ (hf i).prod hs
-    · rwa [iSup_countableFiltration] at hf
+    · gcongr <;> simp
+  | iUnion f hf_disj hf h_eq =>
+    rw [integral_iUnion hf hf_disj (integrable_density hκν _ hs).integrableOn]
+    simp_rw [h_eq]
+    rw [← ENNReal.tsum_toReal_eq (fun _ ↦ measure_ne_top _ _)]
+    congr
+    rw [iUnion_prod_const, measure_iUnion]
+    · exact hf_disj.mono fun _ _ h ↦ h.set_prod_left _ _
+    · exact fun i ↦ (hf i).prod hs
 
 @[deprecated (since := "2024-04-17")]
 alias set_integral_density := setIntegral_density

@@ -344,7 +344,7 @@ theorem div_mul_le_div_mul_of_div_le_div (h : a / b ≤ c / d) (he : 0 ≤ e) :
 theorem exists_pos_mul_lt {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ b * c < a := by
   have : 0 < a / max (b + 1) 1 := div_pos h (lt_max_iff.2 (Or.inr zero_lt_one))
   refine ⟨a / max (b + 1) 1, this, ?_⟩
-  rw [← lt_div_iff₀ this, div_div_cancel' h.ne']
+  rw [← lt_div_iff₀ this, div_div_cancel₀ h.ne']
   exact lt_max_iff.2 (Or.inl <| lt_add_one _)
 
 theorem exists_pos_lt_mul {a : α} (h : 0 < a) (b : α) : ∃ c : α, 0 < c ∧ b < c * a :=
@@ -743,13 +743,9 @@ theorem le_of_forall_sub_le (h : ∀ ε > 0, b - ε ≤ a) : b ≤ a := by
 
 private lemma exists_lt_mul_left_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c < a * b) :
     ∃ a' ∈ Set.Ico 0 a, c < a' * b := by
-  rcases eq_or_lt_of_le ha with rfl | ha
-  · rw [zero_mul] at h; exact (not_le_of_lt h hc).rec
-  rcases lt_trichotomy b 0 with hb | rfl | hb
-  · exact (not_le_of_lt (h.trans (mul_neg_of_pos_of_neg ha hb)) hc).rec
-  · rw [mul_zero] at h; exact (not_le_of_lt h hc).rec
-  · obtain ⟨a', ha', a_a'⟩ := exists_between ((div_lt_iff₀ hb).2 h)
-    exact ⟨a', ⟨(div_nonneg hc hb.le).trans ha'.le, a_a'⟩, (div_lt_iff₀ hb).1 ha'⟩
+  have hb : 0 < b := pos_of_mul_pos_right (hc.trans_lt h) ha
+  obtain ⟨a', ha', a_a'⟩ := exists_between ((div_lt_iff₀ hb).2 h)
+  exact ⟨a', ⟨(div_nonneg hc hb.le).trans ha'.le, a_a'⟩, (div_lt_iff₀ hb).1 ha'⟩
 
 private lemma exists_lt_mul_right_of_nonneg {a b c : α} (ha : 0 ≤ a) (hc : 0 ≤ c) (h : c < a * b) :
     ∃ b' ∈ Set.Ico 0 b, c < a * b' := by

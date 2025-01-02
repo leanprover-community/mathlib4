@@ -92,7 +92,7 @@ that the `U i`'s are open subspaces of the glued space.
 -/
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
-structure GlueData extends GlueData (PresheafedSpace.{u, v, v} C) where
+structure GlueData extends CategoryTheory.GlueData (PresheafedSpace.{u, v, v} C) where
   f_open : ∀ i j, IsOpenImmersion (f i j)
 
 attribute [instance] GlueData.f_open

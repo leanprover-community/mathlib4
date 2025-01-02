@@ -63,9 +63,8 @@ instances for:
 * `A : ι → Submodule S`:
   `DirectSum.GSemiring.ofSubmodules`, `DirectSum.GCommSemiring.ofSubmodules`.
 
-If `CompleteLattice.independent (Set.range A)`, these provide a gradation of `⨆ i, A i`, and the
-mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
-`DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
+If `sSupIndep A`, these provide a gradation of `⨆ i, A i`, and the mapping `⨁ i, A i →+ ⨆ i, A i`
+can be obtained as `DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
 
 ## Tags
 
@@ -425,9 +424,8 @@ instance : NatCast (A 0) :=
 theorem of_natCast (n : ℕ) : of A 0 n = n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem of_zero_ofNat (n : ℕ) [n.AtLeastTwo] : of A 0 (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+theorem of_zero_ofNat (n : ℕ) [n.AtLeastTwo] : of A 0 ofNat(n) = ofNat(n) :=
   of_natCast A n
 
 /-- The `Semiring` structure derived from `GSemiring A`. -/

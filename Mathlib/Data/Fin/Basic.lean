@@ -1115,7 +1115,7 @@ lemma succAbove_ne_last {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last _) 
 
 lemma succAbove_last_apply (i : Fin n) : succAbove (last n) i = castSucc i := by rw [succAbove_last]
 
-@[deprecated (since := "2024-05-30")]
+@[deprecated "No deprecation message was provided." (since := "2024-05-30")]
 lemma succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) :
     castSucc i < p ∨ p ≤ castSucc i := Nat.lt_or_ge (castSucc i) p
 
@@ -1513,9 +1513,8 @@ theorem coe_natCast_eq_mod (m n : ℕ) [NeZero m] :
     ((n : Fin m) : ℕ) = n % m :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
-    ((no_index (OfNat.ofNat n) : Fin m) : ℕ) = OfNat.ofNat n % m :=
+    ((ofNat(n) : Fin m) : ℕ) = ofNat(n) % m :=
   rfl
 
 section Mul

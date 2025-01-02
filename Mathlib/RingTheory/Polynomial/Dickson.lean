@@ -135,25 +135,45 @@ private theorem two_mul_C_half_eq_one [Invertible (2 : R)] : 2 * C (⅟ 2 : R) =
 private theorem C_half_mul_two_eq_one [Invertible (2 : R)] : C (⅟ 2 : R) * 2 = 1 := by
   rw [mul_comm, two_mul_C_half_eq_one]
 
-theorem dickson_one_one_eq_chebyshev_T [Invertible (2 : R)] :
-    ∀ n, dickson 1 (1 : R) n = 2 * (Chebyshev.T R n).comp (C (⅟ 2) * X)
+theorem dickson_one_one_eq_chebyshev_C : ∀ n, dickson 1 (1 : R) n = Chebyshev.C R n
   | 0 => by
-    simp only [Chebyshev.T_zero, mul_one, one_comp, dickson_zero]
+    simp only [Chebyshev.C_zero, mul_one, one_comp, dickson_zero]
     norm_num
   | 1 => by
-    rw [dickson_one, Nat.cast_one, Chebyshev.T_one, X_comp, ← mul_assoc, two_mul_C_half_eq_one,
-      one_mul]
+    rw [dickson_one, Nat.cast_one, Chebyshev.C_one]
   | n + 2 => by
-    rw [dickson_add_two, C_1, Nat.cast_add, Nat.cast_two, Chebyshev.T_add_two,
-      dickson_one_one_eq_chebyshev_T (n + 1), dickson_one_one_eq_chebyshev_T n, sub_comp, mul_comp,
-      mul_comp, X_comp, ofNat_comp]
-    simp_rw [← mul_assoc, Nat.cast_ofNat, two_mul_C_half_eq_one, Nat.cast_add, Nat.cast_one]
+    rw [dickson_add_two, C_1, Nat.cast_add, Nat.cast_two, Chebyshev.C_add_two,
+      dickson_one_one_eq_chebyshev_C (n + 1), dickson_one_one_eq_chebyshev_C n]
+    push_cast
     ring
 
+theorem dickson_one_one_eq_chebyshev_T [Invertible (2 : R)] (n : ℕ) :
+    dickson 1 (1 : R) n = 2 * (Chebyshev.T R n).comp (C (⅟ 2) * X) :=
+  (dickson_one_one_eq_chebyshev_C R n).trans (Chebyshev.C_eq_two_mul_T_comp_half_mul_X R n)
+
 theorem chebyshev_T_eq_dickson_one_one [Invertible (2 : R)] (n : ℕ) :
-    Chebyshev.T R n = C (⅟ 2) * (dickson 1 1 n).comp (2 * X) := by
-  rw [dickson_one_one_eq_chebyshev_T, mul_comp, ofNat_comp, comp_assoc, mul_comp, C_comp, X_comp]
-  simp_rw [← mul_assoc, Nat.cast_ofNat, C_half_mul_two_eq_one, one_mul, comp_X]
+    Chebyshev.T R n = C (⅟ 2) * (dickson 1 1 n).comp (2 * X) :=
+  dickson_one_one_eq_chebyshev_C R n ▸ Chebyshev.T_eq_half_mul_C_comp_two_mul_X R n
+
+theorem dickson_two_one_eq_chebyshev_S : ∀ n, dickson 2 (1 : R) n = Chebyshev.S R n
+  | 0 => by
+    simp only [Chebyshev.S_zero, mul_one, one_comp, dickson_zero]
+    norm_num
+  | 1 => by
+    rw [dickson_one, Nat.cast_one, Chebyshev.S_one]
+  | n + 2 => by
+    rw [dickson_add_two, C_1, Nat.cast_add, Nat.cast_two, Chebyshev.S_add_two,
+      dickson_two_one_eq_chebyshev_S (n + 1), dickson_two_one_eq_chebyshev_S n]
+    push_cast
+    ring
+
+theorem dickson_two_one_eq_chebyshev_U [Invertible (2 : R)] (n : ℕ) :
+    dickson 2 (1 : R) n = (Chebyshev.U R n).comp (C (⅟ 2) * X) :=
+  (dickson_two_one_eq_chebyshev_S R n).trans (Chebyshev.S_eq_U_comp_half_mul_X R n)
+
+theorem chebyshev_U_eq_dickson_two_one (n : ℕ) :
+    Chebyshev.U R n = (dickson 2 (1 : R) n).comp (2 * X) :=
+  dickson_two_one_eq_chebyshev_S R n ▸ (Chebyshev.S_comp_two_mul_X R n).symm
 
 /-- The `(m * n)`-th Dickson polynomial of the first kind is the composition of the `m`-th and
 `n`-th. -/

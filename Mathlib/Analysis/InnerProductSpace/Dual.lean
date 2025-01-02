@@ -36,7 +36,6 @@ dual, Fréchet-Riesz
 
 noncomputable section
 
-open scoped Classical
 open ComplexConjugate
 
 universe u v

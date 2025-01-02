@@ -66,7 +66,7 @@ namespace CFC
 
 section NonUnital
 
-variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A]
+variable {A : Type*} [PartialOrder A] [NonUnitalRing A] [TopologicalSpace A] [StarRing A]
   [Module ℝ≥0 A] [SMulCommClass ℝ≥0 A A] [IsScalarTower ℝ≥0 A A]
   [NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
 
@@ -210,8 +210,8 @@ end NonUnital
 
 section Unital
 
-variable {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A]
-  [NormedAlgebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
+variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
+  [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
 
 /- ## `rpow` -/
 

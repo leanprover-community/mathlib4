@@ -118,6 +118,9 @@ theorem map_range (g : N →* P) (f : G →* N) : f.range.map g = (g.comp f).ran
   rw [range_eq_map, range_eq_map]; exact (⊤ : Subgroup G).map_map g f
 
 @[to_additive]
+lemma range_comp (g : N →* P) (f : G →* N) : (g.comp f).range = f.range.map g := (map_range ..).symm
+
+@[to_additive]
 theorem range_eq_top {N} [Group N] {f : G →* N} :
     f.range = (⊤ : Subgroup N) ↔ Function.Surjective f :=
   SetLike.ext'_iff.trans <| Iff.trans (by rw [coe_range, coe_top]) Set.range_eq_univ
@@ -138,10 +141,17 @@ theorem range_one : (1 : G →* N).range = ⊥ :=
   SetLike.ext fun x => by simpa using @comm _ (· = ·) _ 1 x
 
 @[to_additive (attr := simp)]
-theorem _root_.Subgroup.subtype_range (H : Subgroup G) : H.subtype.range = H := by
-  rw [range_eq_map, ← SetLike.coe_set_eq, coe_map, Subgroup.coeSubtype]
-  ext
-  simp
+theorem _root_.Subgroup.range_subtype (H : Subgroup G) : H.subtype.range = H :=
+  SetLike.coe_injective <| (coe_range _).trans <| Subtype.range_coe
+
+@[to_additive]
+alias _root_.Subgroup.subtype_range := Subgroup.range_subtype
+
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+attribute [deprecated Subgroup.range_subtype (since := "2024-11-26")] _root_.Subgroup.subtype_range
+attribute [deprecated AddSubgroup.range_subtype (since := "2024-11-26")]
+_root_.AddSubgroup.subtype_range
 
 @[to_additive (attr := simp)]
 theorem _root_.Subgroup.inclusion_range {H K : Subgroup G} (h_le : H ≤ K) :
@@ -368,7 +378,7 @@ theorem map_le_range (H : Subgroup G) : map f H ≤ f.range :=
 
 @[to_additive]
 theorem map_subtype_le {H : Subgroup G} (K : Subgroup H) : K.map H.subtype ≤ H :=
-  (K.map_le_range H.subtype).trans (le_of_eq H.subtype_range)
+  (K.map_le_range H.subtype).trans_eq H.range_subtype
 
 @[to_additive]
 theorem ker_le_comap (H : Subgroup N) : f.ker ≤ comap f H :=
@@ -450,7 +460,17 @@ theorem map_le_map_iff_of_injective {f : G →* N} (hf : Function.Injective f) {
 @[to_additive (attr := simp)]
 theorem map_subtype_le_map_subtype {G' : Subgroup G} {H K : Subgroup G'} :
     H.map G'.subtype ≤ K.map G'.subtype ↔ H ≤ K :=
-  map_le_map_iff_of_injective <| by apply Subtype.coe_injective
+  map_le_map_iff_of_injective G'.subtype_injective
+
+@[to_additive]
+theorem map_lt_map_iff_of_injective {f : G →* N} (hf : Function.Injective f) {H K : Subgroup G} :
+    H.map f < K.map f ↔ H < K :=
+  lt_iff_lt_of_le_iff_le' (map_le_map_iff_of_injective hf) (map_le_map_iff_of_injective hf)
+
+@[to_additive (attr := simp)]
+theorem map_subtype_lt_map_subtype {G' : Subgroup G} {H K : Subgroup G'} :
+    H.map G'.subtype < K.map G'.subtype ↔ H < K :=
+  map_lt_map_iff_of_injective G'.subtype_injective
 
 @[to_additive]
 theorem map_injective {f : G →* N} (h : Function.Injective f) : Function.Injective (map f) :=
@@ -464,9 +484,13 @@ theorem map_injective_of_ker_le {H K : Subgroup G} (hH : f.ker ≤ H) (hK : f.ke
   rwa [comap_map_eq, comap_map_eq, sup_of_le_left hH, sup_of_le_left hK] at hf
 
 @[to_additive]
+theorem ker_subgroupMap : (f.subgroupMap H).ker = f.ker.subgroupOf H :=
+  ext fun _ ↦ Subtype.ext_iff
+
+@[to_additive]
 theorem closure_preimage_eq_top (s : Set G) : closure ((closure s).subtype ⁻¹' s) = ⊤ := by
   apply map_injective (closure s).subtype_injective
-  rw [MonoidHom.map_closure, ← MonoidHom.range_eq_map, subtype_range,
+  rw [MonoidHom.map_closure, ← MonoidHom.range_eq_map, range_subtype,
     Set.image_preimage_eq_of_subset]
   rw [coeSubtype, Subtype.range_coe_subtype]
   exact subset_closure
@@ -487,7 +511,8 @@ theorem comap_sup_eq (H K : Subgroup N) (hf : Function.Surjective f) :
 @[to_additive]
 theorem sup_subgroupOf_eq {H K L : Subgroup G} (hH : H ≤ L) (hK : K ≤ L) :
     H.subgroupOf L ⊔ K.subgroupOf L = (H ⊔ K).subgroupOf L :=
-  comap_sup_eq_of_le_range L.subtype (hH.trans L.subtype_range.ge) (hK.trans L.subtype_range.ge)
+  comap_sup_eq_of_le_range L.subtype (hH.trans_eq L.range_subtype.symm)
+     (hK.trans_eq L.range_subtype.symm)
 
 @[to_additive]
 theorem codisjoint_subgroupOf_sup (H K : Subgroup G) :
@@ -501,7 +526,7 @@ theorem subgroupOf_sup (A A' B : Subgroup G) (hA : A ≤ B) (hA' : A' ≤ B) :
   refine
     map_injective_of_ker_le B.subtype (ker_le_comap _ _)
       (le_trans (ker_le_comap B.subtype _) le_sup_left) ?_
-  simp only [subgroupOf, map_comap_eq, map_sup, subtype_range]
+  simp only [subgroupOf, map_comap_eq, map_sup, range_subtype]
   rw [inf_of_le_right (sup_le hA hA'), inf_of_le_right hA', inf_of_le_right hA]
 
 end Subgroup

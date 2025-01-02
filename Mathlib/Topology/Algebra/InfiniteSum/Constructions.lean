@@ -20,7 +20,7 @@ open Filter Finset Function
 
 open scoped Topology
 
-variable {α β γ δ : Type*}
+variable {α β γ : Type*}
 
 
 /-! ## Product, Sigma and Pi types -/

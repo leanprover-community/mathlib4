@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
-import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Data.Finite.Card
+import Mathlib.Data.Set.Finite.Range
 
 /-!
 # Subgroups
@@ -191,7 +192,7 @@ theorem pi_mem_of_mulSingle_mem_aux [DecidableEq η] (I : Finset η) {H : Subgro
         have : j ≠ i := by
           rintro rfl
           contradiction
-        simp only [ne_eq, this, not_false_eq_true, Function.update_noteq]
+        simp only [ne_eq, this, not_false_eq_true, Function.update_of_ne]
         exact h2 _ (Finset.mem_insert_of_mem hj)
     · apply h2
       simp

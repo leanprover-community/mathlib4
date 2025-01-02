@@ -19,7 +19,7 @@ The complete lattice instance for equivalence relations could have been defined 
 the Galois insertion of equivalence relations on α into binary relations on α, and then using
 `CompleteLattice.copy` to define a complete lattice instance with more appropriate
 definitional equalities (a similar example is `Filter.CompleteLattice` in
-`Order/Filter/Basic.lean`). This does not save space, however, and is less clear.
+`Mathlib/Order/Filter/Basic.lean`). This does not save space, however, and is less clear.
 
 Partitions are not defined as a separate structure here; users are encouraged to
 reason about them using the existing `Setoid` and its infrastructure.
@@ -36,12 +36,12 @@ attribute [trans] Setoid.trans
 variable {α : Type*} {β : Type*}
 
 /-- A version of `Setoid.r` that takes the equivalence relation as an explicit argument. -/
-@[deprecated (since := "2024-08-29")]
+@[deprecated "No deprecation message was provided."  (since := "2024-08-29")]
 def Setoid.Rel (r : Setoid α) : α → α → Prop :=
   @Setoid.r _ r
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-09")]
+@[deprecated "No deprecation message was provided."  (since := "2024-10-09")]
 instance Setoid.decidableRel (r : Setoid α) [h : DecidableRel r.r] : DecidableRel r.Rel :=
   h
 
@@ -133,7 +133,7 @@ equivalence relations. -/
 @[simps]
 def prodQuotientEquiv (r : Setoid α) (s : Setoid β) :
     Quotient r × Quotient s ≃ Quotient (r.prod s) where
-  toFun := fun (x, y) ↦ Quotient.map₂' Prod.mk (fun _ _ hx _ _ hy ↦ ⟨hx, hy⟩) x y
+  toFun := fun (x, y) ↦ Quotient.map₂ Prod.mk (fun _ _ hx _ _ hy ↦ ⟨hx, hy⟩) x y
   invFun := fun q ↦ Quotient.liftOn' q (fun xy ↦ (Quotient.mk'' xy.1, Quotient.mk'' xy.2))
     fun x y hxy ↦ Prod.ext (by simpa using hxy.1) (by simpa using hxy.2)
   left_inv := fun q ↦ by

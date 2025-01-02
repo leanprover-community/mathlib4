@@ -105,7 +105,8 @@ theorem ContinuousLinearMap.contMDiffWithinAt (L : E →L[𝕜] F) {s x} :
 theorem ContinuousLinearMap.contMDiffOn (L : E →L[𝕜] F) {s} : ContMDiffOn 𝓘(𝕜, E) 𝓘(𝕜, F) n L s :=
   L.contMDiff.contMDiffOn
 
-theorem ContinuousLinearMap.smooth (L : E →L[𝕜] F) : Smooth 𝓘(𝕜, E) 𝓘(𝕜, F) L := L.contMDiff
+@[deprecated (since := "2024-11-20")]
+alias ContinuousLinearMap.smooth := ContinuousLinearMap.contMDiff
 
 theorem ContMDiffWithinAt.clm_precomp {f : M → F₁ →L[𝕜] F₂} {s : Set M} {x : M}
     (hf : ContMDiffWithinAt I 𝓘(𝕜, F₁ →L[𝕜] F₂) n f s x) :
@@ -261,13 +262,15 @@ theorem ContMDiff.clm_prodMap {g : M → F₁ →L[𝕜] F₃} {f : M → F₂ �
 variable {V : Type*} [NormedAddCommGroup V] [NormedSpace 𝕜 V]
 
 /-- On any vector space, multiplication by a scalar is a smooth operation. -/
-theorem smooth_smul : Smooth (𝓘(𝕜).prod 𝓘(𝕜, V)) 𝓘(𝕜, V) fun p : 𝕜 × V => p.1 • p.2 :=
-  smooth_iff.2 ⟨continuous_smul, fun _ _ => contDiff_smul.contDiffOn⟩
+theorem contMDiff_smul : ContMDiff (𝓘(𝕜).prod 𝓘(𝕜, V)) 𝓘(𝕜, V) ⊤ fun p : 𝕜 × V => p.1 • p.2 :=
+  contMDiff_iff.2 ⟨continuous_smul, fun _ _ => contDiff_smul.contDiffOn⟩
+
+@[deprecated (since := "2024-11-20")] alias smooth_smul := contMDiff_smul
 
 theorem ContMDiffWithinAt.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffWithinAt I 𝓘(𝕜) n f s x)
     (hg : ContMDiffWithinAt I 𝓘(𝕜, V) n g s x) :
     ContMDiffWithinAt I 𝓘(𝕜, V) n (fun p => f p • g p) s x :=
-  (smooth_smul.of_le le_top).contMDiffAt.comp_contMDiffWithinAt x (hf.prod_mk hg)
+  (contMDiff_smul.of_le le_top).contMDiffAt.comp_contMDiffWithinAt x (hf.prod_mk hg)
 
 nonrec theorem ContMDiffAt.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiffAt I 𝓘(𝕜) n f x)
     (hg : ContMDiffAt I 𝓘(𝕜, V) n g x) : ContMDiffAt I 𝓘(𝕜, V) n (fun p => f p • g p) x :=
@@ -281,18 +284,10 @@ theorem ContMDiff.smul {f : M → 𝕜} {g : M → V} (hf : ContMDiff I 𝓘(�
     (hg : ContMDiff I 𝓘(𝕜, V) n g) : ContMDiff I 𝓘(𝕜, V) n fun p => f p • g p := fun x =>
   (hf x).smul (hg x)
 
-nonrec theorem SmoothWithinAt.smul {f : M → 𝕜} {g : M → V} (hf : SmoothWithinAt I 𝓘(𝕜) f s x)
-    (hg : SmoothWithinAt I 𝓘(𝕜, V) g s x) : SmoothWithinAt I 𝓘(𝕜, V) (fun p => f p • g p) s x :=
-  hf.smul hg
+@[deprecated (since := "2024-11-20")] alias SmoothWithinAt.smul := ContMDiffWithinAt.smul
 
-nonrec theorem SmoothAt.smul {f : M → 𝕜} {g : M → V} (hf : SmoothAt I 𝓘(𝕜) f x)
-    (hg : SmoothAt I 𝓘(𝕜, V) g x) : SmoothAt I 𝓘(𝕜, V) (fun p => f p • g p) x :=
-  hf.smul hg
+@[deprecated (since := "2024-11-20")] alias SmoothAt.smul := ContMDiffAt.smul
 
-nonrec theorem SmoothOn.smul {f : M → 𝕜} {g : M → V} (hf : SmoothOn I 𝓘(𝕜) f s)
-    (hg : SmoothOn I 𝓘(𝕜, V) g s) : SmoothOn I 𝓘(𝕜, V) (fun p => f p • g p) s :=
-  hf.smul hg
+@[deprecated (since := "2024-11-20")] alias SmoothOn.smul := ContMDiffOn.smul
 
-nonrec theorem Smooth.smul {f : M → 𝕜} {g : M → V} (hf : Smooth I 𝓘(𝕜) f)
-    (hg : Smooth I 𝓘(𝕜, V) g) : Smooth I 𝓘(𝕜, V) fun p => f p • g p :=
-  hf.smul hg
+@[deprecated (since := "2024-11-20")] alias Smooth.smul := ContMDiff.smul

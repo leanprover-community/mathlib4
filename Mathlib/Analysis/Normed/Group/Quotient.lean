@@ -150,7 +150,7 @@ theorem quotient_norm_mk_le' (S : AddSubgroup M) (m : M) : ‖(m : M ⧸ S)‖ �
 /-- The norm of the image under the natural morphism to the quotient. -/
 theorem quotient_norm_mk_eq (S : AddSubgroup M) (m : M) :
     ‖mk' S m‖ = sInf ((‖m + ·‖) '' S) := by
-  rw [mk'_apply, norm_mk, sInf_image', ← infDist_image isometry_neg, image_neg,
+  rw [mk'_apply, norm_mk, sInf_image', ← infDist_image isometry_neg, image_neg_eq_neg,
     neg_coe_set (H := S), infDist_eq_iInf]
   simp only [dist_eq_norm', sub_neg_eq_add, add_comm]
 

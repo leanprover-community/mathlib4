@@ -96,13 +96,13 @@ theorem torsionOf_eq_bot_iff_of_noZeroSMulDivisors [Nontrivial R] [NoZeroSMulDiv
   · rw [mem_torsionOf_iff, smul_eq_zero] at hr
     tauto
 
-/-- See also `CompleteLattice.Independent.linearIndependent` which provides the same conclusion
+/-- See also `iSupIndep.linearIndependent` which provides the same conclusion
 but requires the stronger hypothesis `NoZeroSMulDivisors R M`. -/
-theorem CompleteLattice.Independent.linear_independent' {ι R M : Type*} {v : ι → M} [Ring R]
-    [AddCommGroup M] [Module R M] (hv : CompleteLattice.Independent fun i => R ∙ v i)
+theorem iSupIndep.linearIndependent' {ι R M : Type*} {v : ι → M} [Ring R]
+    [AddCommGroup M] [Module R M] (hv : iSupIndep fun i => R ∙ v i)
     (h_ne_zero : ∀ i, Ideal.torsionOf R M (v i) = ⊥) : LinearIndependent R v := by
   refine linearIndependent_iff_not_smul_mem_span.mpr fun i r hi => ?_
-  replace hv := CompleteLattice.independent_def.mp hv i
+  replace hv := iSupIndep_def.mp hv i
   simp only [iSup_subtype', ← Submodule.span_range_eq_iSup (ι := Subtype _), disjoint_iff] at hv
   have : r • v i ∈ (⊥ : Submodule R M) := by
     rw [← hv, Submodule.mem_inf]
@@ -112,6 +112,9 @@ theorem CompleteLattice.Independent.linear_independent' {ι R M : Type*} {v : ι
     simp
   rw [← Submodule.mem_bot R, ← h_ne_zero i]
   simpa using this
+
+@[deprecated (since := "2024-11-24")]
+alias CompleteLattice.Independent.linear_independent' := iSupIndep.linearIndependent'
 
 end TorsionOf
 
@@ -443,8 +446,8 @@ theorem torsionBySet_isInternal {p : ι → Ideal R}
     (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤)
     (hM : Module.IsTorsionBySet R M (⨅ i ∈ S, p i : Ideal R)) :
     DirectSum.IsInternal fun i : S => torsionBySet R M <| p i :=
-  DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
-    (CompleteLattice.independent_iff_supIndep.mpr <| supIndep_torsionBySet_ideal hp)
+  DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
+    (iSupIndep_iff_supIndep.mpr <| supIndep_torsionBySet_ideal hp)
     (by
       apply (iSup_subtype'' ↑S fun i => torsionBySet R M <| p i).trans
       -- Porting note: times out if we change apply below to <|

@@ -138,7 +138,7 @@ theorem prod_le_iff {H : Subgroup G} {K : Subgroup N} {J : Subgroup (G × N)} :
 
 @[to_additive (attr := simp) prod_eq_bot_iff]
 theorem prod_eq_bot_iff {H : Subgroup G} {K : Subgroup N} : H.prod K = ⊥ ↔ H = ⊥ ∧ K = ⊥ := by
-  simpa only [← Subgroup.toSubmonoid_eq] using Submonoid.prod_eq_bot_iff
+  simpa only [← Subgroup.toSubmonoid_inj] using Submonoid.prod_eq_bot_iff
 
 @[to_additive closure_prod]
 theorem closure_prod {s : Set G} {t : Set N} (hs : 1 ∈ s) (ht : 1 ∈ t) :
@@ -341,10 +341,15 @@ instance (priority := 100) normal_in_normalizer : (H.subgroupOf H.normalizer).No
   ⟨fun x xH g => by simpa only [mem_subgroupOf] using (g.2 x.1).1 xH⟩
 
 @[to_additive]
-theorem normalizer_eq_top : H.normalizer = ⊤ ↔ H.Normal :=
+theorem normalizer_eq_top_iff : H.normalizer = ⊤ ↔ H.Normal :=
   eq_top_iff.trans
     ⟨fun h => ⟨fun a ha b => (h (mem_top b) a).mp ha⟩, fun h a _ha b =>
       ⟨fun hb => h.conj_mem b hb a, fun hb => by rwa [h.mem_comm_iff, inv_mul_cancel_left] at hb⟩⟩
+
+variable (H) in
+@[to_additive]
+theorem normalizer_eq_top [h : H.Normal] : H.normalizer = ⊤ :=
+  normalizer_eq_top_iff.mpr h
 
 @[to_additive]
 theorem le_normalizer_of_normal [hK : (H.subgroupOf K).Normal] (HK : H ≤ K) : K ≤ H.normalizer :=
@@ -479,6 +484,7 @@ theorem normalClosure_le_normal {N : Subgroup G} [N.Normal] (h : s ⊆ N) : norm
 theorem normalClosure_subset_iff {N : Subgroup G} [N.Normal] : s ⊆ N ↔ normalClosure s ≤ N :=
   ⟨normalClosure_le_normal, Set.Subset.trans subset_normalClosure⟩
 
+@[gcongr]
 theorem normalClosure_mono {s t : Set G} (h : s ⊆ t) : normalClosure s ≤ normalClosure t :=
   normalClosure_le_normal (Set.Subset.trans h subset_normalClosure)
 
@@ -580,8 +586,8 @@ variable {N : Type*} [Group N] (H : Subgroup G)
 @[to_additive]
 theorem Normal.map {H : Subgroup G} (h : H.Normal) (f : G →* N) (hf : Function.Surjective f) :
     (H.map f).Normal := by
-  rw [← normalizer_eq_top, ← top_le_iff, ← f.range_eq_top_of_surjective hf, f.range_eq_map, ←
-    normalizer_eq_top.2 h]
+  rw [← normalizer_eq_top_iff, ← top_le_iff, ← f.range_eq_top_of_surjective hf, f.range_eq_map,
+    ← H.normalizer_eq_top]
   exact le_normalizer_map _
 
 end Subgroup

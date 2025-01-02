@@ -3,7 +3,7 @@ Copyright (c) 2024 Antoine Chambert-Loir, Richard Copley. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir, Richard Copley
 -/
-
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.GroupTheory.Complement
 import Mathlib.LinearAlgebra.Basis.VectorSpace
 

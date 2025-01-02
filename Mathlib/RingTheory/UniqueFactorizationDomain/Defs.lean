@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.BigOperators.Group.Multiset
 import Mathlib.Algebra.Group.Submonoid.Membership
+import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Order.WellFounded
 
 /-!
@@ -119,7 +120,7 @@ Each element (except zero) is non-uniquely represented as a multiset
 of prime factors.
 
 To define a UFD using the definition in terms of multisets
-of irreducible factors, use the definition `of_exists_unique_irreducible_factors`
+of irreducible factors, use the definition `of_existsUnique_irreducible_factors`
 
 To define a UFD using the definition in terms of multisets
 of prime factors, use the definition `of_exists_prime_factors`

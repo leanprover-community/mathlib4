@@ -406,19 +406,11 @@ variable {G}
 @[to_additive]
 -- Porting note: renamed theorem to conform to naming convention
 theorem comm_topologicalGroup_is_uniform : UniformGroup G := by
-  have :
-    Tendsto
-      ((fun p : G × G => p.1 / p.2) ∘ fun p : (G × G) × G × G => (p.1.2 / p.1.1, p.2.2 / p.2.1))
-      (comap (fun p : (G × G) × G × G => (p.1.2 / p.1.1, p.2.2 / p.2.1)) ((𝓝 1).prod (𝓝 1)))
-      (𝓝 (1 / 1)) :=
-    (tendsto_fst.div' tendsto_snd).comp tendsto_comap
   constructor
-  rw [UniformContinuous, uniformity_prod_eq_prod, tendsto_map'_iff, uniformity_eq_comap_nhds_one' G,
-    tendsto_comap_iff, prod_comap_comap_eq]
-  simp only [Function.comp_def, div_eq_mul_inv, mul_inv_rev, inv_inv, mul_comm, mul_left_comm] at *
-  simp only [inv_one, mul_one, ← mul_assoc] at this
-  simp_rw [← mul_assoc, mul_comm]
-  assumption
+  simp only [UniformContinuous, uniformity_prod_eq_prod, uniformity_eq_comap_nhds_one',
+    tendsto_comap_iff, tendsto_map'_iff, prod_comap_comap_eq, Function.comp_def,
+    div_div_div_comm _ (Prod.snd (Prod.snd _)), ← nhds_prod_eq, Prod.mk_one_one]
+  exact (continuous_div'.tendsto' 1 1 (div_one 1)).comp tendsto_comap
 
 open Set
 

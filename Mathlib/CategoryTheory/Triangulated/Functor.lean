@@ -194,7 +194,7 @@ noncomputable instance [F.IsTriangulated] :
       comm₃ := by simp }
   exact isIso₂_of_isIso₁₃ φ (F.map_distinguished _ (binaryProductTriangle_distinguished X₁ X₃))
     (binaryProductTriangle_distinguished _ _)
-    (by dsimp; infer_instance) (by dsimp; infer_instance)
+    (by dsimp [φ]; infer_instance) (by dsimp [φ]; infer_instance)
 
 instance (priority := 100) [F.IsTriangulated] : F.Additive :=
   F.additive_of_preserves_binary_products

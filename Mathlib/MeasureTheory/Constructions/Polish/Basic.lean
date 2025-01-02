@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Felix Weilacher
 -/
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
-import Mathlib.Topology.CountableSeparatingOn
 import Mathlib.Topology.MetricSpace.Perfect
+import Mathlib.Topology.Separation.CountableSeparatingOn
 
 /-!
 # The Borel sigma-algebra on Polish spaces
@@ -262,7 +262,7 @@ theorem AnalyticSet.iInter [hι : Nonempty ι] [Countable ι] [T2Space α] {s : 
       choose x hx using A
       have xt : x ∈ t := by
         refine mem_iInter.2 fun n => ?_
-        simp [hx]
+        simp [γ, t, F, hx]
       refine ⟨⟨x, xt⟩, ?_⟩
       exact hx i₀
   rw [← F_range]
@@ -280,7 +280,7 @@ theorem AnalyticSet.iUnion [Countable ι] {s : ι → Set α} (hs : ∀ n, Analy
   let F : γ → α := fun ⟨n, x⟩ ↦ f n x
   have F_cont : Continuous F := continuous_sigma f_cont
   have F_range : range F = ⋃ n, s n := by
-    simp only [γ, range_sigma_eq_iUnion_range, f_range]
+    simp only [γ, F, range_sigma_eq_iUnion_range, f_range]
   rw [← F_range]
   exact analyticSet_range_of_polishSpace F_cont
 

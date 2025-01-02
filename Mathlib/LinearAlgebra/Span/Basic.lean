@@ -80,6 +80,57 @@ theorem span_preimage_le (f : F) (s : Set M₂) :
 
 alias _root_.LinearMap.span_preimage_le := Submodule.span_preimage_le
 
+section
+
+variable {N : Type*} [AddCommMonoid N] [Module R N]
+
+lemma linearMap_eq_iff_of_eq_span {V : Submodule R M} (f g : V →ₗ[R] N)
+    {S : Set M} (hV : V = span R S) :
+    f = g ↔ ∀ (s : S), f ⟨s, by simpa only [hV] using subset_span (by simp)⟩ =
+      g ⟨s, by simpa only [hV] using subset_span (by simp)⟩ := by
+  constructor
+  · rintro rfl _
+    rfl
+  · intro h
+    subst hV
+    suffices ∀ (x : M) (hx : x ∈ span R S), f ⟨x, hx⟩ = g ⟨x, hx⟩ by
+      ext ⟨x, hx⟩
+      exact this x hx
+    intro x hx
+    induction hx using span_induction with
+    | mem x hx => exact h ⟨x, hx⟩
+    | zero => erw [map_zero, map_zero]
+    | add x y hx hy hx' hy' =>
+        erw [f.map_add ⟨x, hx⟩ ⟨y, hy⟩, g.map_add ⟨x, hx⟩ ⟨y, hy⟩]
+        rw [hx', hy']
+    | smul a x hx hx' =>
+        erw [f.map_smul a ⟨x, hx⟩, g.map_smul a ⟨x, hx⟩]
+        rw [hx']
+
+lemma linearMap_eq_iff_of_span_eq_top (f g : M →ₗ[R] N)
+    {S : Set M} (hM : span R S = ⊤) :
+    f = g ↔ ∀ (s : S), f s = g s := by
+  convert linearMap_eq_iff_of_eq_span (f.comp (Submodule.subtype _))
+    (g.comp (Submodule.subtype _)) hM.symm
+  constructor
+  · rintro rfl
+    rfl
+  · intro h
+    ext x
+    exact DFunLike.congr_fun h ⟨x, by simp⟩
+
+lemma linearMap_eq_zero_iff_of_span_eq_top (f : M →ₗ[R] N)
+    {S : Set M} (hM : span R S = ⊤) :
+    f = 0 ↔ ∀ (s : S), f s = 0 :=
+  linearMap_eq_iff_of_span_eq_top f 0 hM
+
+lemma linearMap_eq_zero_iff_of_eq_span {V : Submodule R M} (f : V →ₗ[R] N)
+    {S : Set M} (hV : V = span R S) :
+    f = 0 ↔ ∀ (s : S), f ⟨s, by simpa only [hV] using subset_span (by simp)⟩ = 0 :=
+  linearMap_eq_iff_of_eq_span f 0 hV
+
+end
+
 /-- See `Submodule.span_smul_eq` (in `RingTheory.Ideal.Operations`) for
 `span R (r • s) = r • span R s` that holds for arbitrary `r` in a `CommSemiring`. -/
 theorem span_smul_eq_of_isUnit (s : Set M) (r : R) (hr : IsUnit r) : span R (r • s) = span R s := by
@@ -567,9 +618,14 @@ def toSpanNonzeroSingleton : R ≃ₗ[R] R ∙ x :=
     (LinearEquiv.ofEq (range <| toSpanSingleton R M x) (R ∙ x) (span_singleton_eq_range R M x).symm)
 
 @[simp] theorem toSpanNonzeroSingleton_apply (t : R) :
-    LinearEquiv.toSpanNonzeroSingleton R M x h t =
+    toSpanNonzeroSingleton R M x h t =
       (⟨t • x, Submodule.smul_mem _ _ (Submodule.mem_span_singleton_self x)⟩ : R ∙ x) := by
   rfl
+
+@[simp]
+lemma toSpanNonzeroSingleton_symm_apply_smul (m : R ∙ x) :
+    (toSpanNonzeroSingleton R M x h).symm m • x = m :=
+  congrArg Subtype.val <| apply_symm_apply (toSpanNonzeroSingleton R M x h) m
 
 theorem toSpanNonzeroSingleton_one :
     LinearEquiv.toSpanNonzeroSingleton R M x h 1 =
