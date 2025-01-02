@@ -496,22 +496,21 @@ theorem rootSet_prod [CommRing S] [IsDomain S] [Algebra R S] {ι : Type*} (f : �
   rw [Polynomial.map_prod, roots_prod, Finset.bind_toFinset, s.val_toFinset, Finset.coe_biUnion]
   rwa [← Polynomial.map_prod, Ne, Polynomial.map_eq_zero]
 
-theorem roots_C_X_sub_C' (b : R) (ha : a ≠ 0) : (C a * X - C b).roots = {a⁻¹ * b} := by
-  simp [roots_C_X_sub_C b ⟨a, a⁻¹, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha⟩]
+theorem roots_C_mul_X_sub_C (b : R) (ha : a ≠ 0) : (C a * X - C b).roots = {a⁻¹ * b} := by
+  simp [roots_C_mul_X_sub_C_of_IsUnit b ⟨a, a⁻¹, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha⟩]
 
-theorem roots_C_X_add_C' (b : R) (ha : a ≠ 0) : (C a * X + C b).roots = {-(a⁻¹ * b)} := by
-  simp [roots_C_X_add_C b ⟨a, a⁻¹, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha⟩]
+theorem roots_C_mul_X_add_C (b : R) (ha : a ≠ 0) : (C a * X + C b).roots = {-(a⁻¹ * b)} := by
+  simp [roots_C_mul_X_add_C_of_IsUnit b ⟨a, a⁻¹, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha⟩]
 
 theorem roots_degree_eq_one (h : degree p = 1) : p.roots = {-((p.coeff 1)⁻¹ * p.coeff 0)} := by
   rw [eq_X_add_C_of_degree_le_one (show degree p ≤ 1 by rw [h])]
   have : p.coeff 1 ≠ 0 := coeff_ne_zero_of_eq_degree h
-  simp [roots_C_X_add_C' _ this]
+  simp [roots_C_mul_X_add_C _ this]
 
 theorem exists_root_of_degree_eq_one (h : degree p = 1) : ∃ x, IsRoot p x :=
   ⟨-((p.coeff 1)⁻¹ * p.coeff 0), by
-    have h_root := roots_degree_eq_one h
     rw [← mem_roots (by simp [← zero_le_degree_iff, h])]
-    simp [h_root]⟩
+    simp [roots_degree_eq_one h]⟩
 
 theorem coeff_inv_units (u : R[X]ˣ) (n : ℕ) : ((↑u : R[X]).coeff n)⁻¹ = (↑u⁻¹ : R[X]).coeff n := by
   rw [eq_C_of_degree_eq_zero (degree_coe_units u), eq_C_of_degree_eq_zero (degree_coe_units u⁻¹),

@@ -199,15 +199,16 @@ lemma roots_neg (p : R[X]) : (-p).roots = p.roots := by
   rw [← neg_one_smul R p, roots_smul_nonzero p (neg_ne_zero.mpr one_ne_zero)]
 
 @[simp]
-theorem roots_C_X_sub_C (b : R) (a : Rˣ) : (C (a : R) * X - C b).roots = {a⁻¹ * b} := by
+theorem roots_C_mul_X_sub_C_of_IsUnit (b : R) (a : Rˣ) : (C (a : R) * X - C b).roots =
+    {a⁻¹ * b} := by
   rw [← roots_C_mul _ (Units.ne_zero a⁻¹), mul_sub, ← mul_assoc, ← C_mul, ← C_mul,
     Units.inv_mul, C_1, one_mul]
   exact roots_X_sub_C (a⁻¹ * b)
 
 @[simp]
-theorem roots_C_X_add_C (b : R) (a : Rˣ) : (C (a : R) * X + C b).roots = {-(a⁻¹ * b)} := by
-  rw [← sub_neg_eq_add, ← C_neg]
-  simp [-map_neg, -sub_neg_eq_add]
+theorem roots_C_mul_X_add_C_of_IsUnit (b : R) (a : Rˣ) : (C (a : R) * X + C b).roots =
+    {-(a⁻¹ * b)} := by
+  rw [← sub_neg_eq_add, ← C_neg, roots_C_mul_X_sub_C_of_IsUnit, mul_neg]
 
 theorem roots_list_prod (L : List R[X]) :
     (0 : R[X]) ∉ L → L.prod.roots = (L : Multiset R[X]).bind roots :=
