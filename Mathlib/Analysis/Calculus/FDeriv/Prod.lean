@@ -506,9 +506,7 @@ variable (𝕜 α) in
 /-- `Fin.consEquiv` as a continuous linear equivalence.  -/
 @[simps]
 def Fin.consEquivL : (α 0 × Π i, α (Fin.succ i)) ≃L[𝕜] (Π i, α i) where
-  __ := Fin.consEquiv α
-  map_add' x y := funext <| Fin.cases rfl (by simp)
-  map_smul' c x := funext <| Fin.cases rfl (by simp)
+  __ := Fin.consLinearEquiv 𝕜 α
   continuous_toFun := continuous_id.fst.finCons continuous_id.snd
   continuous_invFun := .prod_mk (continuous_apply 0) (by continuity)
 
