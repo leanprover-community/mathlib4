@@ -360,6 +360,12 @@ lemma idemFst_Lprojection [Fact (1 ≤ p)] :
     simp only [one_toReal, Real.rpow_one, ne_eq, one_ne_zero, not_false_eq_true, div_self,
       AddMonoid.End.smul_def]
 
+lemma idemSnd_Lprojection [Fact (1 ≤ p)] :
+  IsLprojection (WithLp 1 (α × β)) (M := (AddMonoid.End (WithLp 1 (α × β))))
+    (idemSnd (p := 1)) := by
+  rw [← idemFst_compl]
+  exact IsLprojection.Lcomplement (idemFst_Lprojection (p := 1))
+
 end WithLp
 
 end WithL1
