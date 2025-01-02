@@ -475,7 +475,6 @@ theorem equiv_real_or_padic (f : AbsoluteValue ℚ ℝ) (hf_nontriv : f ≠ .tri
 
 /-- The standard absolute value on `ℚ` is not equivalent to any `p`-adic absolute value. -/
 lemma not_real_equiv_padic (p : ℕ) [Fact p.Prime] : ¬ real.equiv (padic p) := by
-  have hp : p.Prime := Fact.out
   rintro ⟨c, hc₀, hc⟩
   apply_fun (· 2) at hc
   simp only [real_eq_abs, abs_ofNat, cast_ofNat] at hc
