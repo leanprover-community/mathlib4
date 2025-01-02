@@ -3,7 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Jujian Zhang, Yongle Hu
 -/
-import Mathlib.Algebra.Colimit.Finiteness
+import Mathlib.Algebra.Colimit.TensorProduct
 import Mathlib.Algebra.DirectSum.Finsupp
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.Exact
