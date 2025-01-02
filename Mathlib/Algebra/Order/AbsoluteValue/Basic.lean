@@ -284,7 +284,7 @@ end LinearOrderedCommRing
 section trivial
 
 variable {R : Type*} [Semiring R] [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R]
-variable  {S : Type*} [OrderedSemiring S] [Nontrivial S]
+variable {S : Type*} [OrderedSemiring S] [Nontrivial S]
 
 /-- The *trivial* absolute value takes the value `1` on all nonzero elements. -/
 protected

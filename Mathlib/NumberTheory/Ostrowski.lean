@@ -21,7 +21,7 @@ Ostrowski's Theorem for the field `ℚ`: every absolute value on `ℚ` is equiva
 
 - `Rat.AbsoluteValue.equiv_real_or_padic`: given an absolute value on `ℚ`, it is equivalent
 to the standard Archimedean (Euclidean) absolute value `Rat.AbsoluteValue.real` or to a `p`-adic
-absolute value `Rat.AbsoluteValue.padic p` for some prime number `p`.
+absolute value `Rat.AbsoluteValue.padic p` for a unique prime number `p`.
 
 ## TODO
 
@@ -263,7 +263,7 @@ section Archimedean
 /-!
 ### Archimedean case
 
-Every unbounded absolute value on `ℚ`is equivalent to the standard absolute value.
+Every unbounded absolute value on `ℚ` is equivalent to the standard absolute value.
 -/
 
 /-- The standard absolute value on `ℚ`. We name it `real` because it corresponds to the
@@ -355,7 +355,7 @@ lemma one_lt_of_not_bounded (notbdd : ¬ ∀ n : ℕ, f n ≤ 1) {n₀ : ℕ} (h
   refine le_of_tendsto_of_tendsto tendsto_const_nhds ?_ (eventually_atTop.mpr ⟨1, h_ineq2⟩)
   nth_rw 2 [← mul_one 1]
   have : 0 < logb n₀ n := logb_pos (mod_cast hn₀) (by norm_cast; omega)
-  exact Tendsto.mul (tendsto_const_rpow_inv (by positivity)) tendsto_nat_rpow_inv
+  exact (tendsto_const_rpow_inv (by positivity)).mul tendsto_nat_rpow_inv
 
 -- ## Step 2: given m, n ≥ 2 and |m| = m^s, |n| = n^t for s, t > 0, we have t ≤ s
 
@@ -374,16 +374,15 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
       f n ≤ (m * f m / (f m - 1)) * f m ^ logb m n := by
     let d := Nat.log m n
     calc
-    f n ≤ ((Nat.digits m n).mapIdx fun i _ ↦ m * f m ^ i).sum :=
-      apply_le_sum_digits n hm
+    f n ≤ ((Nat.digits m n).mapIdx fun i _ ↦ m * f m ^ i).sum := apply_le_sum_digits n hm
     _ = m * ((Nat.digits m n).mapIdx fun i _ ↦ f m ^ i).sum := list_mul_sum (m.digits n) (f m) m
     _ = m * ((f m ^ (d + 1) - 1) / (f m - 1)) := by
       rw [list_geom _ (ne_of_gt (one_lt_of_not_bounded notbdd hm)),
-        (Nat.digits_len m n hm (not_eq_zero_of_lt hn)).symm]
+        ← Nat.digits_len m n hm (not_eq_zero_of_lt hn)]
     _ ≤ m * ((f m ^ (d + 1)) / (f m - 1)) := by
       gcongr
       · linarith only [one_lt_of_not_bounded notbdd hm]
-      · simp only [tsub_le_iff_right, le_add_iff_nonneg_right, zero_le_one]
+      · simp
     _ = ↑m * f ↑m / (f ↑m - 1) * f ↑m ^ d := by ring
     _ ≤ ↑m * f ↑m / (f ↑m - 1) * f ↑m ^ logb ↑m ↑n := by
       gcongr
@@ -399,8 +398,7 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
   calc
     (f n) ^ k = f ↑(n ^ k) := by simp
     _ ≤ (m * f m / (f m - 1)) * f m ^ logb m ↑(n ^ k) := h_ineq1 hm (Nat.one_lt_pow hk hn)
-    _ = (m * f m / (f m - 1)) * f m ^ (k * logb m n) := by
-      rw [Nat.cast_pow, logb_pow]
+    _ = (m * f m / (f m - 1)) * f m ^ (k * logb m n) := by rw [Nat.cast_pow, logb_pow]
 
 include hm hn notbdd in
 /-- Given two natural numbers `n, m` greater than 1 we have `f n ≤ f m ^ logb m n`. -/
@@ -414,14 +412,14 @@ lemma le_pow_log : f n ≤ f m ^ logb m n := by
 
 include hm hn notbdd in
 /-- Given `m, n ≥ 2` and `f m = m ^ s`, `f n = n ^ t` for `s, t > 0`, we have `t ≤ s`. -/
-lemma le_of_eq_pow {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t)  : t ≤ s := by
+private lemma le_of_eq_pow {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t)  : t ≤ s := by
   rw [← rpow_le_rpow_left_iff (x := n) (mod_cast hn), ← hfn]
   apply le_trans <| le_pow_log hm hn notbdd
   rw [hfm, ← rpow_mul (Nat.cast_nonneg m), mul_comm, rpow_mul (Nat.cast_nonneg m),
     rpow_logb (mod_cast zero_lt_of_lt hm) (mod_cast hm.ne') (mod_cast zero_lt_of_lt hn)]
 
 include hm hn notbdd in
-private lemma symmetric_roles {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t) : s = t :=
+private lemma eq_of_eq_pow {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t) : s = t :=
   le_antisymm (le_of_eq_pow hn hm notbdd hfn hfm) (le_of_eq_pow hm hn notbdd hfm hfn)
 
 -- ## Archimedean case: end goal
@@ -456,8 +454,8 @@ theorem equiv_real_of_unbounded : f.equiv real := by
       rw [rpow_logb (mod_cast zero_lt_of_lt oneltm) (mod_cast oneltm.ne') (by linarith only [hm])]
     have hfn : f n = n ^ logb n (f n) := by
       rw [rpow_logb (mod_cast zero_lt_of_lt h) (mod_cast h.ne')
-      (by apply map_pos_of_ne_zero; exact_mod_cast not_eq_zero_of_lt h)]
-    rwa [← hs, symmetric_roles oneltm h notbdd hfm hfn]
+        (by apply map_pos_of_ne_zero; exact_mod_cast not_eq_zero_of_lt h)]
+    rwa [← hs, eq_of_eq_pow oneltm h notbdd hfm hfn]
 
 end Archimedean
 
