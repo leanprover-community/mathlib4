@@ -338,52 +338,22 @@ lemma P1_compl : (1 : AddMonoid.End (WithLp p (α × β))) - P1 = P2 := AddMonoi
       sub_eq_iff_eq_add, add_comm, WithLp.mk_add_mk, zero_add, add_zero]; rfl
 
 theorem prod_norm_eq_sup (x : WithLp ∞ (α × β)) : ‖x‖ = ‖P1 x‖ ⊔ ‖(1 - P1) x‖ := by
-  rw [WithLp.prod_norm_eq_sup x, P1_apply, P1_compl, P2_apply]
-  apply congr_arg₂
-  · simp only [WithLp.prod_norm_eq_sup, norm_zero, norm_nonneg, sup_of_le_left]
-  · simp only [WithLp.prod_norm_eq_sup, norm_zero, norm_nonneg, sup_of_le_right]
+  rw [WithLp.prod_norm_eq_sup, ← WithLp.norm_equiv_symm_fst ∞ α β x.1,
+    ← WithLp.norm_equiv_symm_snd ∞ α β x.2, P1_compl]
+  rfl
 
-lemma prod_norm_eq_add_P1 (hp : 0 < p.toReal) (x : WithLp p (α × β)) :
+lemma prod_norm_eq_add_P1 [Fact (1 ≤ p)] (hp : 0 < p.toReal) (x : WithLp p (α × β)) :
     ‖x‖ = (‖P1 x‖ ^ p.toReal + ‖(1 - P1) x‖ ^ p.toReal) ^ (1 / p.toReal) := by
-  rw [WithLp.prod_norm_eq_add hp x, P1_apply, P1_compl, P2_apply]
-  apply congr_arg₂
-  · have ez : p.toReal ≠ 0 := (ne_of_lt hp).symm
-    have e1 : (0 : ℝ) ^ p.toReal = (0 : NNReal) := by
-      rw [← (NNReal.zero_rpow ez)]
-      rfl
-    apply congr_arg₂
-    · apply congr_arg₂
-      · rw [WithLp.prod_norm_eq_add hp (x.1, 0)]
-        simp only [norm_zero]
-        rw [e1]
-        simp only [NNReal.coe_zero, add_zero, norm_nonneg]
-        convert (NNReal.rpow_inv_rpow_self ez ⟨‖x.1‖,norm_nonneg x.1⟩)
-        simp_all only [ne_eq, not_false_eq_true, Real.zero_rpow, NNReal.coe_zero, one_div,
-          norm_nonneg, Real.rpow_rpow_inv, NNReal.rpow_rpow_inv]
-      · rfl
-    · apply congr_arg₂
-      · rw [WithLp.prod_norm_eq_add hp (0,x.2)]
-        simp only [norm_zero]
-        rw [e1]
-        simp only [NNReal.coe_zero, add_zero, norm_nonneg]
-        convert (NNReal.rpow_inv_rpow_self ez ⟨‖x.2‖,norm_nonneg x.2⟩)
-        simp_all only [ne_eq, not_false_eq_true, Real.zero_rpow, NNReal.coe_zero, zero_add, one_div,
-          norm_nonneg, Real.rpow_rpow_inv, NNReal.rpow_rpow_inv]
-      · rfl
-  · rfl
+  rw [WithLp.prod_norm_eq_add hp, ← WithLp.norm_equiv_symm_fst p α β x.1,
+    ← WithLp.norm_equiv_symm_snd p α β x.2, P1_compl]
+  rfl
 
-lemma WithLp.prod_norm_eq_of_1 (x : WithLp 1 (α × β)) :
-    ‖x‖ = ‖(WithLp.equiv 1 _ x).fst‖ + ‖(WithLp.equiv 1 _ x).snd‖ := by
-  rw [WithLp.prod_norm_eq_of_nat 1 Nat.cast_one.symm, pow_one, pow_one, WithLp.equiv_fst,
-    WithLp.equiv_snd, Nat.cast_one, (div_self one_ne_zero), Real.rpow_one]
-
-lemma P1_Lprojection :
+lemma P1_Lprojection [Fact (1 ≤ p)] :
   IsLprojection (WithLp 1 (α × β)) (M := (AddMonoid.End (WithLp 1 (α × β)))) (P1 (p := 1)) where
   proj := rfl
   Lnorm x := by
-    rw [WithLp.prod_norm_eq_of_1, WithLp.equiv_fst, WithLp.equiv_snd, AddMonoid.End.smul_def,
-      P1_compl, P1_apply,  AddMonoid.End.smul_def, P2_apply, WithLp.prod_norm_eq_of_1,
-      WithLp.prod_norm_eq_of_1, WithLp.equiv_fst, WithLp.equiv_snd, norm_zero, add_zero,
-      WithLp.equiv_fst, norm_zero, WithLp.equiv_snd, zero_add]
+    rw [prod_norm_eq_add_P1 (by simp only [one_toReal, zero_lt_one])]
+    simp only [one_toReal, Real.rpow_one, ne_eq, one_ne_zero, not_false_eq_true, div_self,
+      AddMonoid.End.smul_def]
 
 end WithL1
