@@ -29,7 +29,7 @@ to the user to find a collection of good coefficients. The `polyrith` tactic aut
 process using the theory of Groebner bases.
 
 Polyrith does this by first parsing the relevant hypotheses into a form that Python can understand.
-It then calls a Python file that tries to use a local Singular, SageMath or Macaulay2 install, or 
+It then calls a Python file that tries to use a local Singular, SageMath or Macaulay2 install, or
 the SageMath API to compute the coefficients. These coefficients are then sent back to Lean, which
 parses them into pexprs. The information is then given to the `linear_combination` tactic, which
 completes the process by checking the certificate.
