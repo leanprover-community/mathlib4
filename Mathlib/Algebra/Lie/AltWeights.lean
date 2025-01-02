@@ -122,8 +122,7 @@ theorem trace_πza_zero (a : A) :
   have hres : LieModule.toEnd R A U ⁅z, a⁆ = ⁅(π z).restrict hzU, LieModule.toEnd R A U a⁆ := by
     ext ⟨x, hx⟩
     simp only [LieModule.toEnd_apply_apply, LieSubmodule.coe_bracket, LieHom.lie_apply,
-      Module.End.lie_apply, AddSubgroupClass.coe_sub, LinearMap.restrict_coe_apply,
-      leibniz_lie z a, add_sub_cancel_right]
+      Module.End.lie_apply, AddSubgroupClass.coe_sub]
     -- why do we need this `erw` now?
     erw [LinearMap.restrict_coe_apply, LinearMap.restrict_coe_apply]
     simp only [LieSubmodule.coe_bracket, LieModule.toEnd_apply_apply, leibniz_lie z a,
