@@ -76,10 +76,9 @@ nonrec theorem abs_of_nonneg {r : ℝ} (h : 0 ≤ r) : Complex.abs r = r :=
 @[simp]
 theorem abs_natCast (n : ℕ) : Complex.abs n = n := Complex.abs_of_nonneg (Nat.cast_nonneg n)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] :
-    Complex.abs (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
+    Complex.abs ofNat(n) = ofNat(n) :=
   abs_natCast n
 
 theorem mul_self_abs (z : ℂ) : Complex.abs z * Complex.abs z = normSq z :=
