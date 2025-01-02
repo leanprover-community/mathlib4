@@ -172,19 +172,57 @@ theorem invOf_add_mul_mul [Invertible (A + U*C*V)] :
   letI := invertibleAddMulMul A U C V
   convert (rfl : ⅟(A + U*C*V) = _)
 
-theorem sherman_morrison_rankOneUpdate1 {ι : Type*} [Unique ι] (u v : n → α)
-    [Invertible (1 + row ι v * ⅟A * col ι u)]
-    [Inv α] [Invertible (A + col ι u * row ι v)] :
-    (⅟A - (⅟A * (col ι u) * ⅟ (1 + row ι v * ⅟A * col ι u) * (row ι v) * ⅟A) ) *
-    (A + col ι u * row ι v) = 1 := by
-  haveI : Invertible (1 : Matrix ι ι α) := by
-    exact invertibleOne
-  haveI : Invertible (⅟ 1 + row ι v * ⅟A * col ι u) := by simpa [invOf_one']
-  have h1 : ⅟ (1 : Matrix ι ι α) = 1 := by exact invOf_one
-  have h2 : ⅟ (⅟1 + row ι v * ⅟A * col ι u) = ⅟ (1 + row ι v * ⅟A * col ι u) := by congr!
-  have h3 :  col ι u * (1: Matrix ι ι α) * row ι v = col ι u * row ι v := by rw [Matrix.mul_one]
+-- variable {(Fin 1) : Type} [DecidableEq (Fin 1)][Unique (Fin 1)]
+variable (u v : n → α)
+
+theorem add_col_mul_row_mul_invOf_eq_one
+    [Invertible (1 + row (Fin 1) v * ⅟A * col (Fin 1) u)] :
+    (⅟A - (⅟A * (col (Fin 1) u) * ⅟(1 + row (Fin 1) v * ⅟A * col (Fin 1) u) *
+      (row (Fin 1) v) * ⅟A) ) * (A + col (Fin 1) u * row (Fin 1) v) = 1 := by
+  haveI : Invertible (1 : Matrix (Fin 1) (Fin 1) α) := invertibleOne
+  haveI : Invertible (⅟ 1 + row (Fin 1) v * ⅟A * col (Fin 1) u) := by simpa [invOf_one']
+  have h1 : ⅟ (1 : Matrix (Fin 1) (Fin 1) α) = 1 := by exact invOf_one
+  have h2 : ⅟ (⅟1 + row (Fin 1) v * ⅟A * col (Fin 1) u) =
+    ⅟ (1 + row (Fin 1) v * ⅟A * col (Fin 1) u):= by congr!
+  have h3 :  col (Fin 1) u * (1: Matrix (Fin 1) (Fin 1) α) * row (Fin 1) v =
+    col (Fin 1) u * row (Fin 1) v := by rw [Matrix.mul_one]
   rw [← h2, ← h3]
   apply add_mul_mul_invOf_mul_eq_one'
+
+/-- Like `add_col_mul_row_mul_invOf_eq_one`, but with multiplication reversed. -/
+theorem add_col_mul_row_mul_invOf_eq_one'
+    [Invertible (1 + row (Fin 1) v * ⅟A * col (Fin 1) u)] :
+    (A + col (Fin 1) u * row (Fin 1) v) *
+    (⅟A - (⅟A * (col (Fin 1) u) * ⅟(1 + row (Fin 1) v * ⅟A * col (Fin 1) u) *
+      (row (Fin 1) v) * ⅟A) ) = 1 := by
+  haveI : Invertible (1 : Matrix (Fin 1) (Fin 1) α) := by
+    exact invertibleOne
+  haveI : Invertible (⅟ 1 + row (Fin 1) v * ⅟A * col (Fin 1) u) := by simpa [invOf_one']
+  have h1 : ⅟ (1 : Matrix (Fin 1) (Fin 1) α) = 1 := by exact invOf_one
+  have h2 : ⅟ (⅟1 + row (Fin 1) v * ⅟A * col (Fin 1) u) =
+    ⅟(1 + row (Fin 1) v * ⅟A * col (Fin 1) u) := by congr!
+  have h3 :  col (Fin 1) u * (1: Matrix (Fin 1) (Fin 1) α) * row (Fin 1) v =
+    col (Fin 1) u * row (Fin 1) v := by rw [Matrix.mul_one]
+  rw [← h2, ← h3]
+  apply add_mul_mul_invOf_mul_eq_one
+
+/-- If matrix `A` and the scalar `(1 + row (Fin 1) v * ⅟A * col (Fin 1) u)` are invertible,
+  then so is (A + col (Fin 1) u * row (Fin 1) v) -/
+def invertibleAddColMulRow [Invertible (1 + row (Fin 1) v * ⅟A * col (Fin 1) u)] :
+    Invertible (A + col (Fin 1) u * row (Fin 1) v) where
+  invOf := (⅟A - (⅟A * (col (Fin 1) u) * ⅟(1 + row (Fin 1) v * ⅟A *
+    col (Fin 1) u) * (row (Fin 1) v) * ⅟A))
+  invOf_mul_self := add_col_mul_row_mul_invOf_eq_one _ _ _
+  mul_invOf_self := add_col_mul_row_mul_invOf_eq_one' _ _ _
+
+-- /-- The **Sherman Morrison Rank-1 Update** (`⅟` version). -/
+theorem invOf_add_col_mul_row_mul [Invertible (1 + row (Fin 1) v * ⅟A * col (Fin 1) u)]
+  [Invertible (A + col (Fin 1) u * row (Fin 1) v)] :
+    ⅟(A + col (Fin 1) u * row (Fin 1) v) =
+    (⅟A - (⅟A * (col (Fin 1) u) * ⅟(1 + row (Fin 1) v * ⅟A * col (Fin 1) u) *
+      (row (Fin 1) v) * ⅟A) ) := by
+  letI := invertibleAddColMulRow A u v
+  convert (rfl : ⅟(A + col (Fin 1) u * row (Fin 1) v) = _)
 
 end Woodbury
 
