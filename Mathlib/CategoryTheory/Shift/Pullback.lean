@@ -189,12 +189,16 @@ lemma commShiftPullback (τ : F ⟶ G) [NatTrans.CommShift τ B] :
 
 variable (C)
 
+/-- Compatibility between the obvious `CommShift` by `A` structure on `𝟭 (PullbackShift C)`
+and the `CommShift` structure on `𝟭 C` coming by pullback by `φ` from the obvious `CommShift`
+structure by `B`.
+-/
 lemma commShiftId :
     letI := Functor.CommShift.id (PullbackShift C φ) (A := A)
     letI := (Functor.commShiftPullback φ (𝟭 C))
     NatTrans.CommShift (F₁ := 𝟭 (PullbackShift C φ)) (F₂ := 𝟭 C)
-    (C := PullbackShift C φ) (D := PullbackShift C φ)
-    (NatTrans.mk (fun _ ↦ 𝟙 _) (fun  _ ↦ by simp)) A := by
+      (C := PullbackShift C φ) (D := PullbackShift C φ)
+        (NatTrans.mk (fun _ ↦ 𝟙 _) (fun  _ ↦ by simp)) A := by
   letI := Functor.CommShift.id (PullbackShift C φ) (A := A)
   letI := (Functor.commShiftPullback φ (𝟭 C))
   refine NatTrans.CommShift.mk (fun _ ↦ ?_)
@@ -203,21 +207,26 @@ lemma commShiftId :
 
 variable {C} {G : D ⥤ C} [G.CommShift B]
 
+/--
+Suppose that `F` and `G` have `CommShift` structure by `B`. This expresses the
+compatibility between two `CommShift` structure by `A` on `F ⋙ G`: the one coming from
+the composition of the pullback structure on `F` and `G`, and the pullback of the
+composition of `CommShift` structures (by `B`) on `F` and `G`.
+-/
 lemma commShiftComp :
     @NatTrans.CommShift (PullbackShift C φ) (PullbackShift C φ) _ _ (F ⋙ G) (F ⋙ G)
       (NatTrans.mk (fun _ ↦ 𝟙 _) (fun _ ↦ by simp)) A _ _ _ (Functor.commShiftPullback φ (F ⋙ G))
-      (@Functor.CommShift.comp (PullbackShift C φ) (PullbackShift D φ) (PullbackShift C φ)
-        _ _ _ F G A _ _ _ _ (Functor.commShiftPullback φ F) (Functor.commShiftPullback φ G))
-      := by
+        (@Functor.CommShift.comp (PullbackShift C φ) (PullbackShift D φ) (PullbackShift C φ) _ _ _
+          F G A _ _ _ _ (Functor.commShiftPullback φ F) (Functor.commShiftPullback φ G)) := by
   refine @NatTrans.CommShift.mk (PullbackShift C φ) (PullbackShift C φ) _ _ (F ⋙ G) (F ⋙ G)
     (NatTrans.mk (fun _ ↦ 𝟙 _) (fun _ ↦ by simp)) A _ _ _ (Functor.commShiftPullback φ (F ⋙ G))
     (@Functor.CommShift.comp (PullbackShift C φ) (PullbackShift D φ) (PullbackShift C φ) _ _ _ F G
     A _ _ _ _ (Functor.commShiftPullback φ F) (Functor.commShiftPullback φ G)) (fun _ ↦ ?_)
   ext
-  simp only [Functor.commShiftPullback_iso_eq φ _ _ _ rfl, Iso.trans_hom, isoWhiskerRight_hom,
-          isoWhiskerLeft_hom, Iso.symm_hom, NatTrans.comp_app, Functor.comp_obj, whiskerRight_app,
-          Functor.comp_map, Functor.commShiftIso_comp_hom_app, whiskerLeft_app, assoc,
-          Functor.map_id, comp_id, Functor.map_comp, id_comp]
+  simp only [Functor.comp_obj, Functor.commShiftPullback_iso_eq φ _ _ _ rfl, Iso.trans_hom,
+    isoWhiskerRight_hom, isoWhiskerLeft_hom, Iso.symm_hom, assoc, comp_app, whiskerRight_app,
+    Functor.comp_map, Functor.commShiftIso_comp_hom_app, whiskerLeft_app, Functor.map_id, comp_id,
+    Functor.map_comp, id_comp]
   slice_rhs 3 4 => rw [← G.map_comp, Iso.inv_hom_id_app]
   simp
 
@@ -239,23 +248,15 @@ lemma commShiftPullback [adj.CommShift B] :
     Adjunction.CommShift (C := PullbackShift C φ) (D := PullbackShift D φ) adj A := by
   refine Adjunction.CommShift.mk' adj A ?_ (C := PullbackShift C φ) (D := PullbackShift D φ)
   have heq : (adj.unit : 𝟭 (PullbackShift C φ) ⟶ F ⋙ G) =
-        (NatTrans.mk (fun _ ↦ 𝟙 _) (fun  _ ↦ by simp) : 𝟭 (PullbackShift C φ) ⟶ 𝟭 C) ≫ adj.unit
-        ≫ (NatTrans.mk (fun _ ↦ 𝟙 _) (fun _ ↦ by simp)) := by aesop
+    (NatTrans.mk (fun _ ↦ 𝟙 _) (fun  _ ↦ by simp) : 𝟭 (PullbackShift C φ) ⟶ 𝟭 C) ≫ adj.unit ≫
+    (NatTrans.mk (fun _ ↦ 𝟙 _) (fun _ ↦ by simp)) := by aesop
   rw [heq]
-  refine @NatTrans.CommShift.comp (PullbackShift C φ) (PullbackShift C φ) _ _
-      _ _ _
-      _ _
-      A _ _ _
-      (Functor.CommShift.id _) (Functor.commShiftPullback _ _ (C := C) (D := C)) _
-      _ ?_
-  exact @NatTrans.CommShift.comp (PullbackShift C φ) (PullbackShift C φ) _ _
-        _ _ _
-        _ _
-        A _ _ _ _
-        (Functor.commShiftPullback φ (F ⋙ G))
-        (@Functor.CommShift.comp (PullbackShift C φ) (PullbackShift D φ) (PullbackShift C φ)
-        _ _ _ F G A _ _ _ _ (Functor.commShiftPullback φ F) (Functor.commShiftPullback φ G))
-        _ (NatTrans.commShiftComp φ)
+  exact @NatTrans.CommShift.comp (PullbackShift C φ) (PullbackShift C φ) _ _ _ _ _ _ _ A _ _ _
+    (Functor.CommShift.id _) (Functor.commShiftPullback _ _ (C := C) (D := C)) _ _
+    (@NatTrans.CommShift.comp (PullbackShift C φ) (PullbackShift C φ) _ _ _ _ _ _ _ A _ _ _ _
+    (Functor.commShiftPullback φ (F ⋙ G)) (@Functor.CommShift.comp (PullbackShift C φ)
+    (PullbackShift D φ) (PullbackShift C φ) _ _ _ F G A _ _ _ _ (Functor.commShiftPullback φ F)
+    (Functor.commShiftPullback φ G)) _ (NatTrans.commShiftComp φ))
 
 end Adjunction
 
