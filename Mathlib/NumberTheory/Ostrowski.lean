@@ -6,6 +6,7 @@ María Inés de Frutos-Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Tu
 Francesco Veneziano
 -/
 
+import Mathlib.Algebra.Order.AbsoluteValue.Equivalence
 import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 import Mathlib.NumberTheory.Padics.PadicNorm
@@ -37,56 +38,6 @@ Extend to arbitrary number fields.
 absolute value, Ostrowski's theorem
 -/
 
-/-!
-### API for AbsoluteValue (from MulRingNorm)
--/
-
-section API
-
-namespace AbsoluteValue
-
-variable {R : Type*} [Semiring R]
-
-/-- Two absolute values `f, g` on `R` with values in `ℝ` are *equivalent* if there exists
-a positive constant `c` such that for all `x ∈ R`, `(f x)^c = g x`. -/
-def equiv (f g : AbsoluteValue R ℝ) :=
-  ∃ c : ℝ, 0 < c ∧ (f · ^ c) = g
-
-/-- Equivalence of absolute values is reflexive. -/
-lemma equiv_refl (f : AbsoluteValue R ℝ) : equiv f f :=
-  ⟨1, Real.zero_lt_one, funext fun x ↦ Real.rpow_one (f x)⟩
-
-/-- Equivalence of absolute values is symmetric. -/
-lemma equiv_symm {f g : AbsoluteValue R ℝ} (hfg : equiv f g) : equiv g f := by
-  rcases hfg with ⟨c, hcpos, h⟩
-  refine ⟨1 / c, one_div_pos.mpr hcpos, ?_⟩
-  simp [← h, Real.rpow_rpow_inv (apply_nonneg f _) (ne_of_lt hcpos).symm]
-
-/-- Equivalence of absolute values is transitive. -/
-lemma equiv_trans {f g k : AbsoluteValue R ℝ} (hfg : equiv f g) (hgk : equiv g k) :
-    equiv f k := by
-  rcases hfg with ⟨c, hcPos, hfg⟩
-  rcases hgk with ⟨d, hdPos, hgk⟩
-  refine ⟨c * d, mul_pos hcPos hdPos, ?_⟩
-  simp [← hgk, ← hfg, Real.rpow_mul (apply_nonneg f _)]
-
-/-- An absolute value that is equivalent to the trivial one is already trivial. -/
-lemma eq_trivial_of_equiv_trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R]
-    (f : AbsoluteValue R ℝ) :
-    f.equiv .trivial ↔ f = .trivial := by
-  refine ⟨fun ⟨c, hc₀, hc⟩ ↦ ext fun x ↦ ?_, fun H ↦ H ▸ equiv_refl f⟩
-  apply_fun (· x) at hc
-  rcases eq_or_ne x 0 with rfl | hx
-  · simp
-  · simp only [ne_eq, hx, not_false_eq_true, trivial_apply] at hc ⊢
-    exact (Real.rpow_left_inj (f.nonneg x) zero_le_one hc₀.ne').mp <| (Real.one_rpow c).symm ▸ hc
-
-end AbsoluteValue
-
-end API
-
-/-! ### Preliminary lemmas on limits and lists -/
-
 open Filter Nat Real Topology
 
 -- For any `C > 0`, the limit of `C ^ (1/k)` is 1 as `k → ∞`
@@ -116,9 +67,13 @@ private lemma list_geom {T : Type*} {F : Type*} [Field F] (l : List T) {y : F} (
   let e : Fin l.enum.length ≃ Fin l.length := finCongr List.enum_length
   exact Fintype.sum_bijective e e.bijective _ _ fun _ ↦ rfl
 
-open AbsoluteValue
+open AbsoluteValue -- does not work as intended after `namespace Rat.AbsoluteValue`
 
 namespace Rat.AbsoluteValue
+
+/-!
+### Preliminary lemmas
+-/
 
 open Int
 
