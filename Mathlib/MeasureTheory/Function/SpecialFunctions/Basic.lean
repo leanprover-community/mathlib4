@@ -136,32 +136,27 @@ variable {α : Type*} {m : MeasurableSpace α} {f : α → ℝ} (hf : Measurable
 include hf
 
 @[measurability]
-theorem Measurable.exp : Measurable fun x => Real.exp (f x) :=
+protected theorem Measurable.exp : Measurable fun x => Real.exp (f x) :=
   Real.measurable_exp.comp hf
 
 @[measurability]
-theorem Measurable.log : Measurable fun x => log (f x) :=
+protected theorem Measurable.log : Measurable fun x => log (f x) :=
   measurable_log.comp hf
 
 @[measurability]
-theorem Measurable.cos : Measurable fun x => Real.cos (f x) :=
-  Real.measurable_cos.comp hf
+protected theorem Measurable.cos : Measurable fun x ↦ cos (f x) := measurable_cos.comp hf
 
 @[measurability]
-theorem Measurable.sin : Measurable fun x => Real.sin (f x) :=
-  Real.measurable_sin.comp hf
+protected theorem Measurable.sin : Measurable fun x ↦ sin (f x) := measurable_sin.comp hf
 
 @[measurability]
-theorem Measurable.cosh : Measurable fun x => Real.cosh (f x) :=
-  Real.measurable_cosh.comp hf
+protected theorem Measurable.cosh : Measurable fun x ↦ cosh (f x) := measurable_cosh.comp hf
 
 @[measurability]
-theorem Measurable.sinh : Measurable fun x => Real.sinh (f x) :=
-  Real.measurable_sinh.comp hf
+protected theorem Measurable.sinh : Measurable fun x ↦ sinh (f x) := measurable_sinh.comp hf
 
 @[measurability]
-theorem Measurable.sqrt : Measurable fun x => √(f x) :=
-  continuous_sqrt.measurable.comp hf
+protected theorem Measurable.sqrt : Measurable fun x => √(f x) := continuous_sqrt.measurable.comp hf
 
 end RealComposition
 

@@ -370,16 +370,13 @@ theorem mgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
     simp [hX, gaussianReal_of_var_ne_zero μ hv, gaussianPDF_def, ENNReal.ofReal,
       integral_withDensity_eq_integral_smul (measurable_gaussianPDFReal μ v).real_toNNReal,
       NNReal.smul_def, gaussianPDFReal_nonneg, mul_comm]
-  _ = exp (μ * t + v * t ^ 2 / 2)
-      * ∫ x, (√(2 * π * v))⁻¹ * exp (-(x - (μ + v * t)) ^ 2 / (2 * v)) := by
-    rw [gaussianPDFReal_def, ← integral_mul_left]
+  _ = ∫ x, exp (μ * t + v * t ^ 2 / 2) * gaussianPDFReal (μ + v * t) v x := by
+    simp only [gaussianPDFReal_def, mul_left_comm (exp _), mul_assoc, ← exp_add]
     congr with x
     field_simp only [mul_left_comm, ← exp_sub, ← exp_add]
     ring_nf
-  _ = exp (μ * t + v * t ^ 2 / 2) * ∫ x, gaussianPDFReal (μ + v * t) v x := by
-    field_simp [gaussianPDFReal_def]
   _ = exp (μ * t + v * t ^ 2 / 2) := by
-    rw [integral_gaussianPDFReal_eq_one (μ + v * t) hv, mul_one]
+    rw [integral_mul_left, integral_gaussianPDFReal_eq_one (μ + v * t) hv, mul_one]
 
 theorem cgf_gaussianReal (hX : p.map X = gaussianReal μ v) (t : ℝ) :
     cgf X p t = μ * t + v * t ^ 2 / 2 := by
