@@ -101,6 +101,14 @@ end Ideal
 
 end CommSemiring
 
+section Ring
+
+theorem IsDomain.of_bot_isPrime (A : Type*) [Ring A] [hbp : (⊥ : Ideal A).IsPrime] : IsDomain A :=
+  @NoZeroDivisors.to_isDomain A _
+    ⟨1, 0, fun h => hbp.ne_top ((Ideal.eq_top_iff_one ⊥).mpr h)⟩ ⟨fun h => hbp.2 h⟩
+
+end Ring
+
 section DivisionSemiring
 
 variable {K : Type u} [DivisionSemiring K] (I : Ideal K)

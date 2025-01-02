@@ -58,7 +58,7 @@ initialize_simps_projections OverClass (hom → over)
 /--
 `X.CanonicallyOverClass S` is the typeclass containing the data of a
 structure morphism `X ↘ S : X ⟶ S`,
-and that `S` is (uniquely) inferrable from the structure of `X`.
+and that `S` is (uniquely) inferable from the structure of `X`.
 -/
 class CanonicallyOverClass (X : C) (S : semiOutParam C) extends OverClass X S where
 

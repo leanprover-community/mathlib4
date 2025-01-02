@@ -415,21 +415,17 @@ theorem continuousPart_evalCLM_eq_zero [TopologicalSpace α] [DiscreteTopology �
   calc
     f.continuousPart s = f.continuousPart (s \ {x}) :=
       (continuousPart_apply_diff _ _ _ (countable_singleton x)).symm
-    _ = f (univ \ f.discreteSupport ∩ (s \ {x})) := rfl
+    _ = f (univ \ f.discreteSupport ∩ (s \ {x})) := by simp [continuousPart]
     _ = indicator (univ \ f.discreteSupport ∩ (s \ {x})) 1 x := rfl
     _ = 0 := by simp
 
 theorem toFunctions_toMeasure [MeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] (s : Set α)
     (hs : MeasurableSet s) :
     μ.extensionToBoundedFunctions.toBoundedAdditiveMeasure s = (μ s).toReal := by
-  change
-    μ.extensionToBoundedFunctions
-        (ofNormedAddCommGroupDiscrete (indicator s 1) 1 (norm_indicator_le_one s)) =
-      (μ s).toReal
+  simp only [ContinuousLinearMap.toBoundedAdditiveMeasure]
   rw [extensionToBoundedFunctions_apply]
-  · change ∫ x, s.indicator (fun _ => (1 : ℝ)) x ∂μ = _
-    simp [integral_indicator hs]
-  · change Integrable (indicator s 1) μ
+  · simp [integral_indicator hs]
+  · simp only [coe_ofNormedAddCommGroupDiscrete]
     have : Integrable (fun _ => (1 : ℝ)) μ := integrable_const (1 : ℝ)
     apply
       this.mono' (Measurable.indicator (@measurable_const _ _ _ _ (1 : ℝ)) hs).aestronglyMeasurable
