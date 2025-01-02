@@ -96,7 +96,7 @@ lemma isCaratheodory_partialSups {s : ℕ → Set α} (h : ∀ i, m.IsCaratheodo
     m.IsCaratheodory (partialSups s i) := by
   induction i with
   | zero => exact h 0
-  | succ i hi => exact m.isCaratheodory_union hi (h (i + 1))
+  | succ i hi => exact partialSups_add_one s i ▸ m.isCaratheodory_union hi (h (i + 1))
 
 lemma isCaratheodory_disjointed {s : ℕ → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ℕ) :
     m.IsCaratheodory (disjointed s i) := by
