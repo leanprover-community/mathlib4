@@ -973,4 +973,6 @@ def mapArraysM (d : RefinedDiscrTree α) (f : Array α → m (Array β)) : m (Re
 def mapArrays (d : RefinedDiscrTree α) (f : Array α → Array β) : RefinedDiscrTree β :=
   d.mapArraysM (m := Id) f
 
-end Lean.Meta.RefinedDiscrTree
+end FunProp.RefinedDiscrTree
+
+end Mathlib.Meta
