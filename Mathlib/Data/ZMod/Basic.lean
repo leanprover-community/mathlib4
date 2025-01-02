@@ -40,7 +40,7 @@ open Function ZMod
 namespace ZMod
 
 /-- For non-zero `n : ℕ`, the ring `ZMod n` is equivalent to `Fin n`. -/
-def finEquiv : ∀ (n : ℕ) [NeZero n], ZMod n ≃+* Fin n
+def finEquiv : ∀ (n : ℕ) [NeZero n], Fin n ≃+* ZMod n
   | 0, h => (h.ne _ rfl).elim
   | _ + 1, _ => .refl _
 
