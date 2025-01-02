@@ -20,7 +20,7 @@ theorem ofReal_eval (p : ℝ[X]) (x : ℝ) : (↑(p.eval x) : K) = aeval (↑x) 
 end Polynomial
 
 variable (K) in
-lemma RCLike.span_one_I : Submodule.span ℝ (M := K) ({1, I} : Set K) = ⊤ := by
+lemma RCLike.span_one_I : Submodule.span ℝ (M := K) {1, I} = ⊤ := by
   suffices ∀ x : K, ∃ a b : ℝ, a • 1 + b • I = x by
     simpa [Submodule.eq_top_iff', Submodule.mem_span_pair]
   exact fun x ↦ ⟨re x, im x, by simp [real_smul_eq_coe_mul]⟩

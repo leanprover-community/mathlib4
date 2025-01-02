@@ -863,11 +863,17 @@ local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 since `𝕜` does not appear in the return type `Inner ℝ E`. -/
 def Inner.rclikeToReal : Inner ℝ E where inner x y := re ⟪x, y⟫
 
-/-- A general inner product space structure implies a real inner product structure. This is not
-registered as an instance since `𝕜` does not appear in the return type `InnerProductSpace ℝ E`, but
-it can be used in a proof to obtain a real inner product space structure from a given `𝕜`-inner
+/-- A general inner product space structure implies a real inner product structure.
+
+This is not registered as an instance since
+* `𝕜` does not appear in the return type `InnerProductSpace ℝ E`,
+* It is likely to create instance diamonds, as it builds upon the diamond-prone
+  `NormedSpace.restrictScalars`?
+
+But it can be used in a proof to obtain a real inner product space structure from a given `𝕜`-inner
 product space structure. -/
-def InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
+-- See note [reducible non instances]
+abbrev InnerProductSpace.rclikeToReal : InnerProductSpace ℝ E :=
   { Inner.rclikeToReal 𝕜 E,
     NormedSpace.restrictScalars ℝ 𝕜
       E with
@@ -915,6 +921,10 @@ noncomputable instance RCLike.toInnerProductSpaceReal : InnerProductSpace ℝ �
   smul_left x y r :=
     show re (_ * _) = _ * re (_ * _) by
       simp only [mul_re, conj_re, conj_im, conj_trivial, smul_re, smul_im]; ring
+
+example : (innerProductSpace : InnerProductSpace ℝ ℝ) = RCLike.toInnerProductSpaceReal := rfl
+example :
+  (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal := rfl
 
 section Continuous
 
