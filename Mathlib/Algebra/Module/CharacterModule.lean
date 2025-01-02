@@ -204,7 +204,7 @@ variable (A)
 /-- For an abelian group `A`, this is the morphism from `A` into the product of copies of
 `ℚ / ℤ` indexed by `CharacterModule A` sending `a : A` to the family `c ↦ a`.
 -/
-def hom_to_pi : A →+ (_ : CharacterModule A) → AddCircle (1 : ℚ) where
+def homToPi : A →+ (_ : CharacterModule A) → AddCircle (1 : ℚ) where
   toFun a c := c a
   map_zero' := by ext _; simp
   map_add' _ _ := by ext _; simp
@@ -212,7 +212,7 @@ def hom_to_pi : A →+ (_ : CharacterModule A) → AddCircle (1 : ℚ) where
 /-- For an abelian group `A`, the morphism from `A` into the product of copies of `ℚ / ℤ`
 indexed by `CharacterModule A` sending `a : A` to the family `c ↦ a` is injective.
 -/
-lemma hom_to_pi_injective : Function.Injective (hom_to_pi A) := by
+lemma homToPi_injective : Function.Injective (homToPi A) := by
   refine (injective_iff_map_eq_zero _).mpr (fun a ha ↦ CharacterModule.eq_zero_of_character_apply
     (fun c ↦ ?_))
   apply_fun (fun f ↦ f c) at ha

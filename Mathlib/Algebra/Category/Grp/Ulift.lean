@@ -204,19 +204,20 @@ def coconeOfChar (f : lc.pt →+ A) : Cocone K where
       apply_fun (fun f ↦ f {down := a}) at this
       change lc.ι.app j' {down := K.map u a} = _ at this
       change ({down := f (lc.ι.app j' {down := K.map u a})} : ULift A) = _
-      rw [this]; rfl
+      rw [this]
+      rfl
   }
 
 /-- Let `K : J ⥤ AddCommGrp.{u}`, `c` be a colimit cocone of `K`, `lc` be a cocone of
 `K ⋙ uliftFunctor` and `f` be a morphism from `lc.pt` to a small abelian group `A`.
-We get a morphism `c.pt →+ A` by applying the universal property of the colimit to
+We get a morphism `descChar : c.pt →+ A` by applying the universal property of the colimit to
 the cocone `coconeOfChar lc f` of `K`, whose point if `ULift A`.
 -/
 def descChar (f : lc.pt →+ A) : c.pt →+ A :=
   AddEquiv.ulift.toAddMonoidHom.comp (hc.desc (coconeOfChar f))
 
 /--
-The morphism `descChar hc f : c.pt →+ A` underlies a morphism of cocones `c → coconeOfChar f`.
+The morphism `descChar : c.pt →+ A` underlies a morphism of cocones `c → coconeOfChar f`.
 -/
 lemma descChar_fac (f : lc.pt →+ A) (j : J) (a : K.obj j) :
     (descChar hc f) (c.ι.app j a) = f ((lc.ι.app j {down := a})) := by
@@ -226,7 +227,8 @@ lemma descChar_fac (f : lc.pt →+ A) (j : J) (a : K.obj j) :
   simp only [descChar, AddEquiv.toAddMonoidHom_eq_coe, Functor.const_obj_obj, AddMonoidHom.coe_comp,
     AddMonoidHom.coe_coe, Function.comp_apply, Functor.comp_obj, AddCommGrp.uliftFunctor_obj,
     AddCommGrp.coe_of]
-  conv_lhs => erw [this]
+  simp only [Functor.const_obj_obj] at this
+  conv_lhs => rw [this]
   rfl
 
 /--
@@ -240,9 +242,9 @@ lemma descChar_uniq (f : lc.pt →+ A) (m : c.pt →+ A) (hm : ∀ (j : J) (a : 
   rw [← AddEquiv.symm_comp_eq]
   suffices AddEquiv.ulift.symm.toAddMonoidHom.comp m = hc.desc (coconeOfChar f) by rw [← this]; rfl
   refine hc.uniq (coconeOfChar f) ((@AddEquiv.ulift A _).symm.toAddMonoidHom.comp m) (fun j ↦ ?_)
-  ext a
-  change ({down := m (c.ι.app j a)} : ULift A) = _
-  rw [hm j a]
+  ext
+  change ({down := m (c.ι.app j _)} : ULift A) = _
+  rw [hm j]
   rfl
 
 /-- Let `K : J ⥤ AddCommGrp.{u}`, `c` be a colimit cocone of `K` and `lc` be a cocone of
@@ -255,9 +257,12 @@ lemma descChar_comp (f : lc.pt →+ A) (g : A →+ A') :
   apply (AddMonoidHom.postcompEquiv (@AddEquiv.ulift A' _).symm _).injective
   refine (hc.uniq (coconeOfChar (g.comp f)) (AddEquiv.ulift.symm.toAddMonoidHom.comp
     (g.comp (descChar hc f))) (fun j ↦ ?_)).symm
-  ext a
-  simp [coconeOfChar]
-  conv_lhs => erw [descChar_fac hc f j a]
+  ext
+  dsimp [coconeOfChar]
+  simp only [EmbeddingLike.apply_eq_iff_eq]
+  have := descChar_fac hc f j
+  simp only [Functor.const_obj_obj, Functor.comp_obj, uliftFunctor_obj, coe_of] at this
+  conv_lhs => rw [this]
   rfl
 
 /--
@@ -295,11 +300,14 @@ lemma descCharFamily_comp (g : ((i : ι) → B i) →+ A) :
     (AddEquiv.ulift.symm.toAddMonoidHom.comp (g.comp (descCharFamily hc B f)))
     (fun j ↦ ?_)).symm
   ext a
-  simp [coconeOfChar]
+  dsimp [coconeOfChar]
+  simp only [EmbeddingLike.apply_eq_iff_eq]
   congr 1
   ext i
-  simp [descCharFamily]
-  erw [descChar_fac hc (f i) j a]
+  dsimp [descCharFamily]
+  have := descChar_fac hc (f i) j
+  simp only [Functor.const_obj_obj, Functor.comp_obj, uliftFunctor_obj, coe_of] at this
+  rw [this]
   rfl
 
 variable (lc)
@@ -308,32 +316,32 @@ open CharacterModule in
 /-- Let `K : J ⥤ AddCommGrp.{u}`, `c` be a colimit cocone of `K` and `lc` be a cocone of
 `K ⋙ uliftFunctor`. We construct a morphism `descHom: c.pt →+ lc.pt` such that, for every
 morphism `χ : lc.pt →+ ℚ / ℤ`, the morphism `descHom.comp χ : c.pt →+ ℚ / ℤ` is equal to
-`descChar hc χ` (this is `descHom_property`).
+`descChar hc χ` (this last statenant is proved in `descHom_property`).
 -/
 noncomputable def descHom : c.pt →+ lc.pt := by
   set u := descCharFamily hc (fun (_ : CharacterModule lc.pt) ↦ AddCircle (1 : ℚ)) (fun c ↦ c)
-  have h : (QuotientAddGroup.mk' (AddMonoidHom.range (hom_to_pi lc.pt))).comp u = 0 := by
+  have h : (QuotientAddGroup.mk' (AddMonoidHom.range (homToPi lc.pt))).comp u = 0 := by
     refine hom_eq_zero_of_character_apply (fun c ↦ ?_)
     rw [← AddMonoidHom.comp_assoc, ← descCharFamily_comp hc
       (fun (_ : CharacterModule lc.pt) ↦ AddCircle (1 : ℚ)) (fun c ↦ c)]
     convert descChar_zero_eq_zero hc
-    ext _
-    change (c.comp ((QuotientAddGroup.mk' (AddMonoidHom.range (hom_to_pi lc.pt))).comp
-      (hom_to_pi lc.pt))) _ = 0
+    ext
+    change (c.comp ((QuotientAddGroup.mk' (AddMonoidHom.range (homToPi lc.pt))).comp
+      (homToPi lc.pt))) _ = 0
     rw [(AddMonoidHom.range_le_ker_iff _ _).mp (le_of_eq (QuotientAddGroup.ker_mk' _).symm),
       c.comp_zero, AddMonoidHom.zero_apply]
   rw [← AddMonoidHom.range_le_ker_iff, ← (QuotientAddGroup.ker_mk' _).symm] at h
-  exact (AddMonoidHom.ofInjective (hom_to_pi_injective lc.pt)).symm.toAddMonoidHom.comp
+  exact (AddMonoidHom.ofInjective (homToPi_injective lc.pt)).symm.toAddMonoidHom.comp
     ((AddSubgroup.inclusion h).comp (AddMonoidHom.rangeRestrict u))
 
 open CharacterModule in
 lemma descHom_property (χ : lc.pt →+ AddCircle (1 : ℚ)) : χ.comp (descHom hc lc) =
     descChar hc χ := by
   change ((Pi.evalAddMonoidHom (fun (_ : CharacterModule lc.pt) ↦ AddCircle (1 : ℚ)) χ).comp
-    (hom_to_pi lc.pt)).comp (descHom hc lc) = _
+    (homToPi lc.pt)).comp (descHom hc lc) = _
   refine AddMonoidHom.ext (fun a ↦ ?_)
   rw [AddMonoidHom.comp_assoc, AddMonoidHom.comp_apply]
-  erw [AddMonoidHom.apply_ofInjective_symm (hom_to_pi_injective lc.pt),
+  erw [AddMonoidHom.apply_ofInjective_symm (homToPi_injective lc.pt),
     AddMonoidHom.coe_rangeRestrict, ← AddMonoidHom.comp_apply (Pi.evalAddMonoidHom
     (fun x ↦ AddCircle 1) χ) (descCharFamily hc (fun x ↦ AddCircle 1) fun c ↦ c)]
 
