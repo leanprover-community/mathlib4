@@ -47,13 +47,6 @@ namespace AbsoluteValue
 
 variable {R : Type*} [Semiring R]
 
-/-- Triangle inequality for `AbsoluteValue` applied to a list. -/
-lemma listSum_le {S : Type*} [OrderedSemiring S] (l : List R) (f : AbsoluteValue R S) :
-    f l.sum ≤ (l.map f).sum := by
-  induction l with
-  | nil => simp
-  | cons head tail ih => exact (f.add_le' ..).trans <| add_le_add_left ih (f head)
-
 /-- Two absolute values `f, g` on `R` with values in `ℝ` are *equivalent* if there exists
 a positive constant `c` such that for all `x ∈ R`, `(f x)^c = g x`. -/
 def equiv (f g : AbsoluteValue R ℝ) :=
@@ -77,34 +70,6 @@ lemma equiv_trans {f g k : AbsoluteValue R ℝ} (hfg : equiv f g) (hgk : equiv g
   refine ⟨c * d, mul_pos hcPos hdPos, ?_⟩
   simp [← hgk, ← hfg, Real.rpow_mul (apply_nonneg f _)]
 
-/-- The *trivial* absolute value takes the value `1` on all nonzero elements. -/
-protected
-def trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R] {S : Type*} [OrderedSemiring S]
-    [Nontrivial S] :
-    AbsoluteValue R S where
-  toFun x := if x = 0 then 0 else 1
-  map_mul' x y := by
-    rcases eq_or_ne x 0 with rfl | hx
-    · simp
-    rcases eq_or_ne y 0 with rfl | hy
-    · simp
-    simp [hx, hy]
-  nonneg' x := by rcases eq_or_ne x 0 with hx | hx <;> simp [hx]
-  eq_zero' x := by rcases eq_or_ne x 0 with hx | hx <;> simp [hx]
-  add_le' x y := by
-    rcases eq_or_ne x 0 with rfl | hx
-    · simp
-    rcases eq_or_ne y 0 with rfl | hy
-    · simp
-    simp only [hx, ↓reduceIte, hy, show (1 : S) + 1 = 2 by norm_num]
-    rcases eq_or_ne (x + y) 0 with hxy | hxy <;> simp [hxy, one_le_two]
-
-@[simp]
-lemma trivial_apply [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R] {S : Type*}
-    [OrderedSemiring S] [Nontrivial S] {x : R} (hx : x ≠ 0) :
-    AbsoluteValue.trivial (S := S) x = 1 :=
-  if_neg hx
-
 /-- An absolute value that is equivalent to the trivial one is already trivial. -/
 lemma eq_trivial_of_equiv_trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R]
     (f : AbsoluteValue R ℝ) :
@@ -115,37 +80,6 @@ lemma eq_trivial_of_equiv_trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDiv
   · simp
   · simp only [ne_eq, hx, not_false_eq_true, trivial_apply] at hc ⊢
     exact (Real.rpow_left_inj (f.nonneg x) zero_le_one hc₀.ne').mp <| (Real.one_rpow c).symm ▸ hc
-
-/-- An absolute value satisfies `f n ≤ n` for every `n : ℕ`. -/
-lemma apply_nat_le_self {S : Type*} [OrderedRing S] [IsDomain S] (n : ℕ) (f : AbsoluteValue R S) :
-    f n ≤ n := by
-  cases subsingleton_or_nontrivial R
-  · simp [Subsingleton.eq_zero (n : R)]
-  induction n with
-  | zero => simp
-  | succ n hn =>
-    simp only [Nat.cast_succ]
-    calc
-      f (n + 1) ≤ f n + f 1 := f.add_le' ..
-      _ = f n + 1 := congrArg (f n + ·) f.map_one
-      _ ≤ n + 1 := add_le_add_right hn 1
-
-open Int in
-/-- An absolute value composed with the absolute value on integers equals
-the absolute value itself. -/
-lemma apply_natAbs_eq {R S : Type*} [Ring R] [OrderedCommRing S] [NoZeroDivisors S] (x : ℤ)
-    (f : AbsoluteValue R S) :
-    f (natAbs x) = f x := by
-  obtain ⟨_, rfl | rfl⟩ := eq_nat_or_neg x <;> simp
-
-open Int in
-/-- Values of an absolute value on the rationals coincide on `ℕ` if and only if they coincide
-on `ℤ`. -/
-lemma eq_on_nat_iff_eq_on_int {R S : Type*} [Ring R] [OrderedCommRing S] [NoZeroDivisors S]
-    {f g : AbsoluteValue R S} :
-    (∀ n : ℕ , f n = g n) ↔ ∀ n : ℤ , f n = g n := by
-  refine ⟨fun h z ↦ ?_, fun a n ↦ mod_cast a n⟩
-  obtain ⟨n , rfl | rfl⟩ := eq_nat_or_neg z <;> simp [h n]
 
 end AbsoluteValue
 
@@ -404,7 +338,7 @@ lemma apply_le_sum_digits (n : ℕ) {m : ℕ} (hm : 1 < m) :
   calc
   f n = f ((Nat.ofDigits m L : ℕ) : ℚ) := by rw [Nat.ofDigits_digits m n]
     _ = f L'.sum := by rw [Nat.ofDigits_eq_sum_mapIdx]; norm_cast
-    _ ≤ (L'.map f).sum := listSum_le L' f
+    _ ≤ (L'.map f).sum := listSum_le f L'
     _ ≤ (L.mapIdx fun i _ ↦ m * (f m) ^ i).sum := ?_
   simp only [hL', List.mapIdx_eq_enum_map, List.map_map]
   refine List.sum_le_sum fun ⟨i, a⟩ hia ↦ ?_
