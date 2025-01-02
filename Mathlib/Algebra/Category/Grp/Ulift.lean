@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
 import Mathlib.Algebra.Category.Grp.Limits
+import Mathlib.Algebra.Category.Grp.Colimits
 import Mathlib.CategoryTheory.Limits.Preserves.Ulift
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.Algebra.Module.CharacterModule
 
 /-!
 # Properties of the universe lift functor for groups
@@ -173,7 +175,7 @@ noncomputable instance : CreatesLimitsOfSize.{w, u} uliftFunctor.{v, u} where
 
 end CommGrp
 
-namespace AddCommGroup
+namespace AddCommGrp
 
 /-- The universe lift for commutative additive groups is additive.
 -/
@@ -222,7 +224,8 @@ lemma descChar_fac (f : lc.pt →+ A) (j : J) (a : K.obj j) :
   apply_fun (fun f ↦ f a) at this
   change hc.desc (coconeOfChar f) ((c.ι.app j) a) = _ at this
   simp only [descChar, AddEquiv.toAddMonoidHom_eq_coe, Functor.const_obj_obj, AddMonoidHom.coe_comp,
-    AddMonoidHom.coe_coe, Function.comp_apply, Functor.comp_obj, uliftFunctor_obj, coe_of]
+    AddMonoidHom.coe_coe, Function.comp_apply, Functor.comp_obj, AddCommGrp.uliftFunctor_obj,
+    AddCommGrp.coe_of]
   conv_lhs => erw [this]
   rfl
 
@@ -359,7 +362,7 @@ lemma descHom_uniq (m : c.pt →+ lc.pt) (hm : ∀ (j : J) (a : K.obj j),
   rw [AddMonoidHom.comp_add, AddMonoidHom.comp_neg, descHom_property, add_neg_eq_zero]
   refine descChar_uniq _ _ _ (fun j a ↦ ?_)
   simp only [Functor.const_obj_obj, AddMonoidHom.coe_comp, Function.comp_apply, Functor.comp_obj,
-    uliftFunctor_obj, coe_of]
+    AddCommGrp.uliftFunctor_obj, AddCommGrp.coe_of]
   erw [hm j a]
   rfl
 
@@ -376,9 +379,9 @@ noncomputable instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} whe
         uniq := fun lc f hf ↦ by
           apply (AddMonoidHom.precompEquiv AddEquiv.ulift.symm _).injective
           refine descHom_uniq hc lc (f.comp AddEquiv.ulift.symm.toAddMonoidHom) (fun j a ↦ ?_)
-          simp only [Functor.mapCocone_pt, uliftFunctor_obj, coe_of, AddEquiv.toAddMonoidHom_eq_coe,
-            Functor.const_obj_obj, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe, Function.comp_apply,
-            Functor.comp_obj]
+          simp only [Functor.mapCocone_pt, AddCommGrp.uliftFunctor_obj, AddCommGrp.coe_of,
+            AddEquiv.toAddMonoidHom_eq_coe, Functor.const_obj_obj, AddMonoidHom.coe_comp,
+            AddMonoidHom.coe_coe, Function.comp_apply, Functor.comp_obj]
           rw [← hf j]
           rfl }⟩ } }
 
@@ -389,4 +392,4 @@ creates `u`-small colimits.
 noncomputable instance : CreatesColimitsOfSize.{u, u} uliftFunctor.{v, u} where
   CreatesColimitsOfShape := { CreatesColimit := fun {_} ↦ createsColimitOfFullyFaithfulOfPreserves }
 
-end AddCommGroup
+end AddCommGrp
