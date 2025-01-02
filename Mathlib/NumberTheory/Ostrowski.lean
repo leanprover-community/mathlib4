@@ -88,7 +88,7 @@ lemma eq_on_nat_iff_eq : (∀ n : ℕ , f n = g n) ↔ f = g := by
 
 /-- The equivalence class of an absolute value on the rationals is determined by its values on
 the natural numbers. -/
-lemma equiv_on_nat_iff_equiv : (∃ c : ℝ, 0 < c ∧ ∀ n : ℕ , f n ^ c = g n) ↔ f.Equiv g := by
+lemma equiv_on_nat_iff_equiv : (∃ c : ℝ, 0 < c ∧ ∀ n : ℕ , f n ^ c = g n) ↔ f ≈ g := by
   refine ⟨fun ⟨c, hc, h⟩ ↦ ⟨c, hc, ?_⟩, fun ⟨c, hc, h⟩ ↦ ⟨c, hc, (congrFun h ·)⟩⟩
   ext1 x
   rw [← Rat.num_div_den x, map_div₀, map_div₀, div_rpow (by positivity) (by positivity), h x.den,
@@ -226,7 +226,7 @@ lemma exists_pos_eq_pow_neg : ∃ t : ℝ, 0 < t ∧ f p = p ^ (-t) := by
 include hf_nontriv bdd in
 /-- If `f` is bounded and not trivial, then it is equivalent to a p-adic absolute value. -/
 theorem equiv_padic_of_bounded :
-    ∃! p, ∃ (_ : Fact p.Prime), f.Equiv (padic p) := by
+    ∃! p, ∃ (_ : Fact p.Prime), f ≈ (padic p) := by
   obtain ⟨p, hfp, hmin⟩ := exists_minimal_nat_zero_lt_and_lt_one hf_nontriv bdd
   have hprime := is_prime_of_minimal_nat_zero_lt_and_lt_one hfp.1 hfp.2 hmin
   have hprime_fact : Fact p.Prime := ⟨hprime⟩
@@ -427,7 +427,7 @@ private lemma eq_of_eq_pow {s t : ℝ} (hfm : f m = m ^ s) (hfn : f n = n ^ t) :
 include notbdd in
 /-- If `f` is not bounded and not trivial, then it is equivalent to the standard absolute value on
 `ℚ`. -/
-theorem equiv_real_of_unbounded : f.Equiv real := by
+theorem equiv_real_of_unbounded : f ≈ real := by
   obtain ⟨m, hm⟩ := Classical.exists_not_of_not_forall notbdd
   have oneltm : 1 < m := by
     contrapose! hm
@@ -466,13 +466,13 @@ end Archimedean
 /-- **Ostrowski's Theorem**: every absolute value (with values in `ℝ`) on `ℚ` is equivalent
 to either the standard absolute value or a `p`-adic absolute value for a prime `p`. -/
 theorem equiv_real_or_padic (f : AbsoluteValue ℚ ℝ) (hf_nontriv : f ≠ .trivial) :
-    f.Equiv real ∨ ∃! p, ∃ (_ : Fact p.Prime), f.Equiv (padic p) := by
+    f ≈ real ∨ ∃! p, ∃ (_ : Fact p.Prime), f ≈ (padic p) := by
   by_cases bdd : ∀ n : ℕ, f n ≤ 1
   · exact .inr <| equiv_padic_of_bounded hf_nontriv bdd
   · exact .inl <| equiv_real_of_unbounded bdd
 
 /-- The standard absolute value on `ℚ` is not equivalent to any `p`-adic absolute value. -/
-lemma not_real_equiv_padic (p : ℕ) [Fact p.Prime] : ¬ real.Equiv (padic p) := by
+lemma not_real_equiv_padic (p : ℕ) [Fact p.Prime] : ¬ real ≈(padic p) := by
   rintro ⟨c, hc₀, hc⟩
   apply_fun (· 2) at hc
   simp only [real_eq_abs, abs_ofNat, cast_ofNat] at hc

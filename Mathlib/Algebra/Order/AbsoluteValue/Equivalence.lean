@@ -40,6 +40,7 @@ lemma equiv_trans {f g k : AbsoluteValue R ℝ} (hfg : Equiv f g) (hgk : Equiv g
   simp [← hgk, ← hfg, Real.rpow_mul (apply_nonneg f _)]
 
 /-- An absolute value is equivalent to the trivial iff it is trivial itself. -/
+@[simp]
 lemma eq_trivial_of_equiv_trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R]
     (f : AbsoluteValue R ℝ) :
     f.Equiv .trivial ↔ f = .trivial := by
@@ -49,5 +50,13 @@ lemma eq_trivial_of_equiv_trivial [DecidablePred fun x : R ↦ x = 0] [NoZeroDiv
   · simp
   · simp only [ne_eq, hx, not_false_eq_true, trivial_apply] at hc ⊢
     exact (Real.rpow_left_inj (f.nonneg x) zero_le_one hc₀.ne').mp <| (Real.one_rpow c).symm ▸ hc
+
+instance : Setoid (AbsoluteValue R ℝ) where
+  r := Equiv
+  iseqv := {
+    refl := equiv_refl
+    symm := equiv_symm
+    trans := equiv_trans
+  }
 
 end AbsoluteValue
