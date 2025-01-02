@@ -922,6 +922,7 @@ noncomputable instance RCLike.toInnerProductSpaceReal : InnerProductSpace ℝ �
     show re (_ * _) = _ * re (_ * _) by
       simp only [mul_re, conj_re, conj_im, conj_trivial, smul_re, smul_im]; ring
 
+-- The instance above does not create diamonds for concrete `𝕜`:
 example : (innerProductSpace : InnerProductSpace ℝ ℝ) = RCLike.toInnerProductSpaceReal := rfl
 example :
   (instInnerProductSpaceRealComplex : InnerProductSpace ℝ ℂ) = RCLike.toInnerProductSpaceReal := rfl
