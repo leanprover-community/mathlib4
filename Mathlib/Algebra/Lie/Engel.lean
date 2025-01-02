@@ -128,7 +128,7 @@ theorem isNilpotentOfIsNilpotentSpanSupEqTop (hnp : IsNilpotent <| toEnd R L M x
   obtain ⟨n, hn⟩ := hnp
   obtain ⟨k, hk⟩ := hIM
   have hk' : I.lcs M k = ⊥ := by
-    simp only [← coe_toSubmodule_eq_iff, I.coe_lcs_eq, hk, bot_coeSubmodule]
+    simp only [← coe_toSubmodule_inj, I.coe_lcs_eq, hk, bot_coeSubmodule]
   suffices ∀ l, lowerCentralSeries R L M (l * n) ≤ I.lcs M l by
     use k * n
     simpa [hk'] using this k
@@ -238,9 +238,9 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
       LieSubmodule.nontrivial_iff_ne_bot R K]
     have : Nontrivial (L' ⧸ K.toLieSubmodule) := by
       replace hK₂ : K.toLieSubmodule ≠ ⊤ := by
-        rwa [Ne, ← LieSubmodule.coe_toSubmodule_eq_iff, K.coe_toLieSubmodule,
+        rwa [Ne, ← LieSubmodule.coe_toSubmodule_inj, K.coe_toLieSubmodule,
           LieSubmodule.top_coeSubmodule, ← LieSubalgebra.top_coe_submodule,
-          K.coe_to_submodule_eq_iff]
+          K.coe_to_submodule_inj]
       exact Submodule.Quotient.nontrivial_of_lt_top _ hK₂.lt_top
     have : LieModule.IsNilpotent R K (L' ⧸ K.toLieSubmodule) := by
       -- Porting note: was refine' hK₁ _ fun x => _

@@ -28,9 +28,11 @@ open nonZeroDivisors
 variable (A K L B : Type*) [CommRing A] [CommRing B] [Algebra A B] [Field K] [Field L]
     [Algebra A K] [IsFractionRing A K] [Algebra B L]
     [Algebra K L] [Algebra A L] [IsScalarTower A B L] [IsScalarTower A K L]
-    [IsIntegralClosure B A L] [FiniteDimensional K L]
+    [IsIntegralClosure B A L]
 
 section galois
+
+variable [Algebra.IsAlgebraic K L]
 
 /-- The lift `End(B/A) → End(L/K)` in an ALKB setup.
 This is inverse to the restriction. See `galRestrictHom`. -/
@@ -114,7 +116,9 @@ lemma algebraMap_galRestrict_apply (σ : L ≃ₐ[K] L) (x : B) :
     algebraMap B L (galRestrict A K L B σ x) = σ (algebraMap B L x) :=
   algebraMap_galRestrictHom_apply A K L B σ.toAlgHom x
 
-variable (K L B)
+end galois
+
+variable [FiniteDimensional K L]
 
 lemma prod_galRestrict_eq_norm [IsGalois K L] [IsIntegrallyClosed A] (x : B) :
     (∏ σ : L ≃ₐ[K] L, galRestrict A K L B σ x) =
@@ -124,8 +128,6 @@ lemma prod_galRestrict_eq_norm [IsGalois K L] [IsIntegrallyClosed A] (x : B) :
   rw [← IsScalarTower.algebraMap_apply, IsScalarTower.algebraMap_eq A K L]
   simp only [map_prod, algebraMap_galRestrict_apply, IsIntegralClosure.algebraMap_mk',
     Algebra.norm_eq_prod_automorphisms, AlgHom.coe_coe, RingHom.coe_comp, Function.comp_apply]
-
-end galois
 
 attribute [local instance] FractionRing.liftAlgebra FractionRing.isScalarTower_liftAlgebra
 

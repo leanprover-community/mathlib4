@@ -167,7 +167,7 @@ theorem map_coord_zero {m : ∀ i, M₁ i} (i : ι) (h : m i = 0) : f m = 0 := b
 
 @[simp]
 theorem map_update_zero [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) : f (update m i 0) = 0 :=
-  f.map_coord_zero i (update_same i 0 m)
+  f.map_coord_zero i (update_self i 0 m)
 
 @[simp]
 theorem map_zero [Nonempty ι] : f 0 = 0 := by
@@ -500,14 +500,14 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     intro i
     by_cases hi : i = i₀
     · rw [hi]
-      simp only [B, sdiff_subset, update_same]
-    · simp only [B, hi, update_noteq, Ne, not_false_iff, Finset.Subset.refl]
+      simp only [B, sdiff_subset, update_self]
+    · simp only [B, hi, update_of_ne, Ne, not_false_iff, Finset.Subset.refl]
   have C_subset_A : ∀ i, C i ⊆ A i := by
     intro i
     by_cases hi : i = i₀
     · rw [hi]
-      simp only [C, hj₂, Finset.singleton_subset_iff, update_same]
-    · simp only [C, hi, update_noteq, Ne, not_false_iff, Finset.Subset.refl]
+      simp only [C, hj₂, Finset.singleton_subset_iff, update_self]
+    · simp only [C, hi, update_of_ne, Ne, not_false_iff, Finset.Subset.refl]
   -- split the sum at `i₀` as the sum over `B i₀` plus the sum over `C i₀`, to use additivity.
   have A_eq_BC :
     (fun i => ∑ j ∈ A i, g i j) =
@@ -515,9 +515,9 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
         ((∑ j ∈ B i₀, g i₀ j) + ∑ j ∈ C i₀, g i₀ j) := by
     ext i
     by_cases hi : i = i₀
-    · rw [hi, update_same]
+    · rw [hi, update_self]
       have : A i₀ = B i₀ ∪ C i₀ := by
-        simp only [B, C, Function.update_same, Finset.sdiff_union_self_eq_union]
+        simp only [B, C, Function.update_self, Finset.sdiff_union_self_eq_union]
         symm
         simp only [hj₂, Finset.singleton_subset_iff, Finset.union_eq_left]
       rw [this]
@@ -526,7 +526,7 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
         simpa [C] using hj
       rw [this]
       simp only [B, mem_sdiff, eq_self_iff_true, not_true, not_false_iff, Finset.mem_singleton,
-        update_same, and_false]
+        update_self, and_false]
     · simp [hi]
   have Beq :
     Function.update (fun i => ∑ j ∈ A i, g i j) i₀ (∑ j ∈ B i₀, g i₀ j) = fun i =>
@@ -534,22 +534,22 @@ theorem map_sum_finset_aux [DecidableEq ι] [Fintype ι] {n : ℕ} (h : (∑ i, 
     ext i
     by_cases hi : i = i₀
     · rw [hi]
-      simp only [update_same]
-    · simp only [B, hi, update_noteq, Ne, not_false_iff]
+      simp only [update_self]
+    · simp only [B, hi, update_of_ne, Ne, not_false_iff]
   have Ceq :
     Function.update (fun i => ∑ j ∈ A i, g i j) i₀ (∑ j ∈ C i₀, g i₀ j) = fun i =>
       ∑ j ∈ C i, g i j := by
     ext i
     by_cases hi : i = i₀
     · rw [hi]
-      simp only [update_same]
-    · simp only [C, hi, update_noteq, Ne, not_false_iff]
+      simp only [update_self]
+    · simp only [C, hi, update_of_ne, Ne, not_false_iff]
   -- Express the inductive assumption for `B`
   have Brec : (f fun i => ∑ j ∈ B i, g i j) = ∑ r ∈ piFinset B, f fun i => g i (r i) := by
     have : ∑ i, #(B i) < ∑ i, #(A i) := by
       refine sum_lt_sum (fun i _ => card_le_card (B_subset_A i)) ⟨i₀, mem_univ _, ?_⟩
       have : {j₂} ⊆ A i₀ := by simp [hj₂]
-      simp only [B, Finset.card_sdiff this, Function.update_same, Finset.card_singleton]
+      simp only [B, Finset.card_sdiff this, Function.update_self, Finset.card_singleton]
       exact Nat.pred_lt (ne_of_gt (lt_trans Nat.zero_lt_one hi₀))
     rw [h] at this
     exact IH _ this B rfl
@@ -708,14 +708,14 @@ lemma domDomRestrict_aux {ι} [DecidableEq ι] (P : ι → Prop) [DecidablePred 
     Function.update (fun j => if h : P j then x ⟨j, h⟩ else z ⟨j, h⟩) i c := by
   ext j
   by_cases h : j = i
-  · rw [h, Function.update_same]
-    simp only [i.2, update_same, dite_true]
-  · rw [Function.update_noteq h]
+  · rw [h, Function.update_self]
+    simp only [i.2, update_self, dite_true]
+  · rw [Function.update_of_ne h]
     by_cases h' : P j
     · simp only [h', ne_eq, Subtype.mk.injEq, dite_true]
       have h'' : ¬ ⟨j, h'⟩ = i :=
         fun he => by apply_fun (fun x => x.1) at he; exact h he
-      rw [Function.update_noteq h'']
+      rw [Function.update_of_ne h'']
     · simp only [h', ne_eq, Subtype.mk.injEq, dite_false]
 
 lemma domDomRestrict_aux_right {ι} [DecidableEq ι] (P : ι → Prop) [DecidablePred P] {M₁ : ι → Type*}
@@ -1002,8 +1002,8 @@ lemma iteratedFDeriv_aux {ι} {M₁ : ι → Type*} {α : Type*} [DecidableEq α
       (fun i ↦ update (fun j ↦ m (e.symm j) j) (e a) (z (e a)) i) := by
   ext i
   rcases eq_or_ne a (e.symm i) with rfl | hne
-  · rw [Equiv.apply_symm_apply e i, update_same, update_same]
-  · rw [update_noteq hne.symm, update_noteq fun h ↦ (Equiv.symm_apply_apply .. ▸ h ▸ hne) rfl]
+  · rw [Equiv.apply_symm_apply e i, update_self, update_self]
+  · rw [update_of_ne hne.symm, update_of_ne fun h ↦ (Equiv.symm_apply_apply .. ▸ h ▸ hne) rfl]
 
 /-- One of the components of the iterated derivative of a multilinear map. Given a bijection `e`
 between a type `α` (typically `Fin k`) and a subset `s` of `ι`, this component is a multilinear map
@@ -1277,7 +1277,7 @@ variable [Semiring R] [∀ i, AddCommGroup (M₁ i)] [AddCommGroup M₂] [∀ i,
 theorem map_update_neg [DecidableEq ι] (m : ∀ i, M₁ i) (i : ι) (x : M₁ i) :
     f (update m i (-x)) = -f (update m i x) :=
   eq_neg_of_add_eq_zero_left <| by
-    rw [← MultilinearMap.map_update_add, neg_add_cancel, f.map_coord_zero i (update_same i 0 m)]
+    rw [← MultilinearMap.map_update_add, neg_add_cancel, f.map_coord_zero i (update_self i 0 m)]
 
 
 @[deprecated (since := "2024-11-03")] protected alias map_neg := MultilinearMap.map_update_neg
@@ -1304,13 +1304,13 @@ lemma map_sub_map_piecewise [LinearOrder ι] (a b : (i : ι) → M₁ i) (s : Fi
   simp_rw [s.mem_insert]
   congr 1
   · congr; ext i; split_ifs with h₁ h₂
-    · rw [update_noteq, Finset.piecewise_eq_of_not_mem]
+    · rw [update_of_ne, Finset.piecewise_eq_of_not_mem]
       · exact fun h ↦ (hk i h).not_lt (h₁ <| .inr h)
       · exact fun h ↦ (h₁ <| .inl h).ne h
     · cases h₂
-      rw [update_same, s.piecewise_eq_of_not_mem _ _ (lt_irrefl _ <| hk k ·)]
+      rw [update_self, s.piecewise_eq_of_not_mem _ _ (lt_irrefl _ <| hk k ·)]
     · push_neg at h₁
-      rw [update_noteq (Ne.symm h₂), s.piecewise_eq_of_mem _ _ (h₁.1.resolve_left <| Ne.symm h₂)]
+      rw [update_of_ne (Ne.symm h₂), s.piecewise_eq_of_mem _ _ (h₁.1.resolve_left <| Ne.symm h₂)]
   · apply sum_congr rfl; intro i hi; congr; ext j; congr 1; apply propext
     simp_rw [imp_iff_not_or, not_or]; apply or_congr_left'
     intro h; rw [and_iff_right]; rintro rfl; exact h (hk i hi)
@@ -1414,8 +1414,8 @@ def LinearMap.uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => 
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     by_cases h : i = 0
     · subst i
-      simp only [update_same, map_add, tail_update_zero, MultilinearMap.add_apply]
-    · simp_rw [update_noteq (Ne.symm h)]
+      simp only [update_self, map_add, tail_update_zero, MultilinearMap.add_apply]
+    · simp_rw [update_of_ne (Ne.symm h)]
       revert x y
       rw [← succ_pred i h]
       intro x y
@@ -1425,8 +1425,8 @@ def LinearMap.uncurryLeft (f : M 0 →ₗ[R] MultilinearMap R (fun i : Fin n => 
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     by_cases h : i = 0
     · subst i
-      simp only [update_same, map_smul, tail_update_zero, MultilinearMap.smul_apply]
-    · simp_rw [update_noteq (Ne.symm h)]
+      simp only [update_self, map_smul, tail_update_zero, MultilinearMap.smul_apply]
+    · simp_rw [update_of_ne (Ne.symm h)]
       revert x
       rw [← succ_pred i h]
       intro x
@@ -1511,7 +1511,7 @@ def MultilinearMap.uncurryRight
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     by_cases h : i.val < n
     · have : last n ≠ i := Ne.symm (ne_of_lt h)
-      simp_rw [update_noteq this]
+      simp_rw [update_of_ne this]
       revert x y
       rw [(castSucc_castLT i h).symm]
       intro x y
@@ -1520,13 +1520,13 @@ def MultilinearMap.uncurryRight
     · revert x y
       rw [eq_last_of_not_lt h]
       intro x y
-      simp_rw [init_update_last, update_same, LinearMap.map_add]
+      simp_rw [init_update_last, update_self, LinearMap.map_add]
   map_update_smul' {dec} m i c x := by
     -- Porting note: `clear` not necessary in Lean 3 due to not being in the instance cache
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     by_cases h : i.val < n
     · have : last n ≠ i := Ne.symm (ne_of_lt h)
-      simp_rw [update_noteq this]
+      simp_rw [update_of_ne this]
       revert x
       rw [(castSucc_castLT i h).symm]
       intro x
@@ -1535,7 +1535,7 @@ def MultilinearMap.uncurryRight
     · revert x
       rw [eq_last_of_not_lt h]
       intro x
-      simp_rw [update_same, init_update_last, map_smul]
+      simp_rw [update_self, init_update_last, map_smul]
 
 @[simp]
 theorem MultilinearMap.uncurryRight_apply
@@ -1768,9 +1768,9 @@ def map [Nonempty ι] (f : MultilinearMap R M₁ M₂) (p : ∀ i, Submodule R (
     let ⟨i⟩ := ‹Nonempty ι›
     letI := Classical.decEq ι
     refine ⟨update x i (c • x i), fun j => if hij : j = i then ?_ else ?_, hf ▸ ?_⟩
-    · rw [hij, update_same]
+    · rw [hij, update_self]
       exact (p i).smul_mem _ (hx i)
-    · rw [update_noteq hij]
+    · rw [update_of_ne hij]
       exact hx j
     · rw [f.map_update_smul, update_eq_self]
 
