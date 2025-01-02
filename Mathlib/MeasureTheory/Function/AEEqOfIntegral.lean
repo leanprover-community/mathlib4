@@ -17,6 +17,8 @@ on all sets, then they are equal almost everywhere".
 The different lemmas use various hypotheses on the class of functions, on the target space or on the
 possible finiteness of the measure.
 
+This file is about Bochner integrals. See the file `AEEqOfLIntegral` for Lebesgue integrals.
+
 ## Main statements
 
 All results listed below apply to two functions `f, g`, together with two main hypotheses,
@@ -31,9 +33,6 @@ The conclusion is then `f =ᵐ[μ] g`. The main lemmas are:
 
 For each of these results, we also provide a lemma about the equality of one function and 0. For
 example, `Lp.ae_eq_zero_of_forall_setIntegral_eq_zero`.
-
-We also register the corresponding lemma for integrals of `ℝ≥0∞`-valued functions, in
-`ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite`.
 
 Generally useful lemmas which are not related to integrals:
 * `ae_eq_zero_of_forall_inner`: if for all constants `c`, `fun x => inner c (f x) =ᵐ[μ] 0` then

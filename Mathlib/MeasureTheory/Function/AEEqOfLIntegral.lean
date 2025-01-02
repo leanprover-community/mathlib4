@@ -13,29 +13,16 @@ on all sets, then they are equal almost everywhere".
 The different lemmas use various hypotheses on the class of functions, on the target space or on the
 possible finiteness of the measure.
 
+This file is about Lebesgue integrals. See the file `AEEqOfIntegral` for Bochner integrals.
+
 ## Main statements
 
-All results listed below apply to two functions `f, g`, together with two main hypotheses,
-* `f` and `g` are integrable on all measurable sets with finite measure,
-* for all measurable sets `s` with finite measure, `∫ x in s, f x ∂μ = ∫ x in s, g x ∂μ`.
+The results listed below apply to two functions `f, g`, under the hypothesis that
+for all measurable sets `s` with finite measure, `∫⁻ x in s, f x ∂μ = ∫⁻ x in s, g x ∂μ`.
 The conclusion is then `f =ᵐ[μ] g`. The main lemmas are:
-* `ae_eq_of_forall_setIntegral_eq_of_sigmaFinite`: case of a sigma-finite measure.
-* `AEFinStronglyMeasurable.ae_eq_of_forall_setIntegral_eq`: for functions which are
-  `AEFinStronglyMeasurable`.
-* `Lp.ae_eq_of_forall_setIntegral_eq`: for elements of `Lp`, for `0 < p < ∞`.
-* `Integrable.ae_eq_of_forall_setIntegral_eq`: for integrable functions.
-
-For each of these results, we also provide a lemma about the equality of one function and 0. For
-example, `Lp.ae_eq_zero_of_forall_setIntegral_eq_zero`.
-
-We also register the corresponding lemma for integrals of `ℝ≥0∞`-valued functions, in
-`ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite`.
-
-Generally useful lemmas which are not related to integrals:
-* `ae_eq_zero_of_forall_inner`: if for all constants `c`, `fun x => inner c (f x) =ᵐ[μ] 0` then
-  `f =ᵐ[μ] 0`.
-* `ae_eq_zero_of_forall_dual`: if for all constants `c` in the dual space,
-  `fun x => c (f x) =ᵐ[μ] 0` then `f =ᵐ[μ] 0`.
+* `ae_eq_of_forall_setLIntegral_eq_of_sigmaFinite`: case of a sigma-finite measure.
+* `AEMeasurable.ae_eq_of_forall_setLIntegral_eq`: for functions which are `AEMeasurable` and
+  have finite integral.
 
 -/
 
