@@ -105,7 +105,7 @@ open ENat NNReal Topology Filter Set Fin Filter Function
 /-
 Porting note: These lines are not required in Mathlib4.
 attribute [local instance 1001]
-  NormedAddCommGroup.toAddCommGroup NormedSpace.toModule' AddCommGroup.toAddCommMonoid
+  NormedAddCommGroup.toAddCommGroup AddCommGroup.toAddCommMonoid
 -/
 
 /-- Smoothness exponent for analytic functions. -/
