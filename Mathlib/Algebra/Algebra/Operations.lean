@@ -89,6 +89,7 @@ theorem toSubMulAction_one : (1 : Submodule R A).toSubMulAction = 1 :=
 theorem one_eq_span_one_set : (1 : Submodule R A) = span R 1 :=
   one_eq_span
 
+@[simp]
 theorem one_le {P : Submodule R A} : (1 : Submodule R A) ≤ P ↔ (1 : A) ∈ P := by
   -- Porting note: simpa no longer closes refl goals, so added `SetLike.mem_coe`
   simp only [one_eq_span, span_le, Set.singleton_subset_iff, SetLike.mem_coe]
@@ -811,11 +812,14 @@ theorem le_div_iff {I J K : Submodule R A} : I ≤ J / K ↔ ∀ x ∈ I, ∀ z 
 theorem le_div_iff_mul_le {I J K : Submodule R A} : I ≤ J / K ↔ I * K ≤ J := by
   rw [le_div_iff, mul_le]
 
-@[simp]
 theorem one_le_one_div {I : Submodule R A} : 1 ≤ 1 / I ↔ I ≤ 1 := by
   constructor; all_goals intro hI
   · rwa [le_div_iff_mul_le, one_mul] at hI
   · rwa [le_div_iff_mul_le, one_mul]
+
+@[simp]
+theorem one_mem_div {I J : Submodule R A} : 1 ∈ I / J ↔ J ≤ I := by
+  rw [← one_le, le_div_iff_mul_le, one_mul]
 
 theorem le_self_mul_one_div {I : Submodule R A} (hI : I ≤ 1) : I ≤ I * (1 / I) := by
   refine (mul_one I).symm.trans_le ?_  -- Porting note: drop `rw {occs := _}` in favor of `refine`

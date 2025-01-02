@@ -134,7 +134,7 @@ theorem integral_inv_smul_sub_mul_tendsto_integral_lineDeriv_mul'
     apply AEStronglyMeasurable.sub _ hf.continuous.measurable.aestronglyMeasurable
     apply AEMeasurable.aestronglyMeasurable
     exact hf.continuous.measurable.comp_aemeasurable' (aemeasurable_id'.add_const _)
-  · filter_upwards [Ioc_mem_nhdsWithin_Ioi' zero_lt_one] with t ht
+  · filter_upwards [Ioc_mem_nhdsGT zero_lt_one] with t ht
     have t_pos : 0 < t := ht.1
     filter_upwards with x
     by_cases hx : x ∈ K

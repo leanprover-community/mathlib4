@@ -12,10 +12,10 @@ In this file we prove the Schur-Zassenhaus theorem.
 
 ## Main results
 
-- `exists_right_complement'_of_coprime`: The **Schur-Zassenhaus** theorem:
+- `Subgroup.exists_right_complement'_of_coprime`: The **Schur-Zassenhaus** theorem:
   If `H : Subgroup G` is normal and has order coprime to its index,
   then there exists a subgroup `K` which is a (right) complement of `H`.
-- `exists_left_complement'_of_coprime`: The **Schur-Zassenhaus** theorem:
+- `Subgroup.exists_left_complement'_of_coprime`: The **Schur-Zassenhaus** theorem:
   If `H : Subgroup G` is normal and has order coprime to its index,
   then there exists a subgroup `K` which is a (left) complement of `H`.
 -/
@@ -241,7 +241,7 @@ private theorem step6 : IsPGroup (Nat.card N).minFac N := by
   refine Sylow.nonempty.elim fun P => P.2.of_surjective P.1.subtype ?_
   rw [← MonoidHom.range_eq_top, range_subtype]
   haveI : (P.1.map N.subtype).Normal :=
-    normalizer_eq_top.mp (step1 h1 h2 h3 (P.1.map N.subtype).normalizer P.normalizer_sup_eq_top)
+    normalizer_eq_top_iff.mp (step1 h1 h2 h3 (P.map N.subtype).normalizer P.normalizer_sup_eq_top)
   exact (step3 h1 h2 h3 P.1).resolve_left (step5 h1 h3)
 
 include h2 in

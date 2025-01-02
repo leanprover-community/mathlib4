@@ -85,23 +85,22 @@ noncomputable instance Forget₂.createsLimit :
   letI : (forget₂ Grp.{u} MonCat.{u}).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   createsLimitOfReflectsIso (K := F) (F := (forget₂ Grp.{u} MonCat.{u}))
-    fun c' t => by
+    fun c' t =>
       have : Small.{u} (Functor.sections ((F ⋙ forget₂ Grp MonCat) ⋙ forget MonCat)) := by
-        have : HasLimit (F ⋙ forget₂ Grp MonCat) := HasLimit.mk {cone := c', isLimit := t}
+        have : HasLimit (F ⋙ forget₂ Grp MonCat) := ⟨_, t⟩
         apply Concrete.small_sections_of_hasLimit (F ⋙ forget₂ Grp MonCat)
       have : Small.{u} (Functor.sections (F ⋙ forget Grp)) := inferInstanceAs <| Small.{u}
         (Functor.sections ((F ⋙ forget₂ Grp MonCat) ⋙ forget MonCat))
-      exact
-    { liftedCone :=
-        { pt := Grp.of (Types.Small.limitCone (F ⋙ forget Grp)).pt
-          π :=
-            { app := MonCat.limitπMonoidHom (F ⋙ forget₂ Grp MonCat)
-              naturality :=
-                (MonCat.HasLimits.limitCone
-                      (F ⋙ forget₂ Grp MonCat.{u})).π.naturality } }
-      validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit.{v, u} _) t
-      makesLimit :=
-        IsLimit.ofFaithful (forget₂ Grp MonCat.{u}) (MonCat.HasLimits.limitConeIsLimit _)
+      { liftedCone :=
+          { pt := Grp.of (Types.Small.limitCone (F ⋙ forget Grp)).pt
+            π :=
+              { app := MonCat.limitπMonoidHom (F ⋙ forget₂ Grp MonCat)
+                naturality :=
+                  (MonCat.HasLimits.limitCone
+                        (F ⋙ forget₂ Grp MonCat.{u})).π.naturality } }
+        validLift := by apply IsLimit.uniqueUpToIso (MonCat.HasLimits.limitConeIsLimit.{v, u} _) t
+        makesLimit :=
+         IsLimit.ofFaithful (forget₂ Grp MonCat.{u}) (MonCat.HasLimits.limitConeIsLimit _)
           (fun _ => _) fun _ => rfl }
 
 /-- A choice of limit cone for a functor into `Grp`.
@@ -201,16 +200,13 @@ instance forget_preservesLimits : PreservesLimits (forget Grp.{u}) :=
 @[to_additive]
 noncomputable instance forget_createsLimit :
     CreatesLimit F (forget Grp.{u}) := by
-  have : CreatesLimit F (forget₂ Grp.{u} MonCat.{u} ⋙ forget MonCat.{u}) := by
-    exact compCreatesLimit (forget₂ Grp.{u} MonCat.{u}) (forget MonCat.{u})
-  set e : forget₂ Grp.{u} MonCat.{u} ⋙ forget MonCat.{u} ≅ forget Grp.{u} :=
-    NatIso.ofComponents (fun _ ↦ Iso.refl _) (fun _ ↦ rfl)
+  set e : forget₂ Grp.{u} MonCat.{u} ⋙ forget MonCat.{u} ≅ forget Grp.{u} := Iso.refl _
   exact createsLimitOfNatIso e
 
 @[to_additive]
 noncomputable instance forget_createsLimitsOfShape :
     CreatesLimitsOfShape J (forget Grp.{u}) where
-      CreatesLimit := inferInstance
+  CreatesLimit := inferInstance
 
 /-- The forgetful functor from groups to types creates all limits.
 -/
@@ -218,13 +214,8 @@ noncomputable instance forget_createsLimitsOfShape :
   "The forgetful functor from additive groups to types creates all limits.",
   to_additive_relevant_arg 2]
 noncomputable instance forget_createsLimitsOfSize :
-    CreatesLimitsOfSize.{w,v} (forget Grp.{u}) where
-      CreatesLimitsOfShape := inferInstance
-
-@[to_additive]
-noncomputable instance forget_createsLimits :
-    CreatesLimits (forget Grp.{u}) := Grp.forget_createsLimitsOfSize.{u,u}
-
+    CreatesLimitsOfSize.{w, v} (forget Grp.{u}) where
+  CreatesLimitsOfShape := inferInstance
 end Grp
 
 namespace CommGrp
@@ -433,14 +424,13 @@ noncomputable instance forget_preservesLimits : PreservesLimits (forget CommGrp.
 @[to_additive]
 noncomputable instance forget_createsLimit :
     CreatesLimit F (forget CommGrp.{u}) := by
-  set e : forget₂ CommGrp.{u} Grp.{u} ⋙ forget Grp.{u} ≅ forget CommGrp.{u} :=
-    NatIso.ofComponents (fun _ ↦ Iso.refl _) (fun _ ↦ rfl)
+  set e : forget₂ CommGrp.{u} Grp.{u} ⋙ forget Grp.{u} ≅ forget CommGrp.{u} := Iso.refl _
   exact createsLimitOfNatIso e
 
 @[to_additive]
-noncomputable instance forget_cratesLimitsOfShape (J : Type v) [Category.{w} J] :
+noncomputable instance forget_createsLimitsOfShape (J : Type v) [Category.{w} J] :
     CreatesLimitsOfShape J (forget CommGrp.{u}) where
-      CreatesLimit := inferInstance
+  CreatesLimit := inferInstance
 
 /-- The forgetful functor from commutative groups to types creates all limits.
 -/
@@ -449,12 +439,7 @@ noncomputable instance forget_cratesLimitsOfShape (J : Type v) [Category.{w} J] 
   to_additive_relevant_arg 2]
 noncomputable instance forget_createsLimitsOfSize :
     CreatesLimitsOfSize.{w, v} (forget CommGrp.{u}) where
-      CreatesLimitsOfShape := inferInstance
-
-@[to_additive]
-noncomputable instance forget_createsLimits : CreatesLimits (forget Grp.{u}) :=
-  Grp.forget_createsLimitsOfSize.{u, u}
-
+  CreatesLimitsOfShape := inferInstance
 -- Verify we can form limits indexed over smaller categories.
 example (f : ℕ → AddCommGrp) : HasProduct f := by infer_instance
 

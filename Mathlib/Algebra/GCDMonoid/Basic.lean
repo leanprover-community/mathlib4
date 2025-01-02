@@ -815,14 +815,14 @@ section UniqueUnit
 variable [CancelCommMonoidWithZero α] [Subsingleton αˣ]
 
 -- see Note [lower instance priority]
-instance (priority := 100) normalizationMonoidOfUniqueUnits : NormalizationMonoid α where
+instance (priority := 100) NormalizationMonoid.ofUniqueUnits : NormalizationMonoid α where
   normUnit _ := 1
   normUnit_zero := rfl
   normUnit_mul _ _ := (mul_one 1).symm
   normUnit_coe_units _ := Subsingleton.elim _ _
 
 instance uniqueNormalizationMonoidOfUniqueUnits : Unique (NormalizationMonoid α) where
-  default := normalizationMonoidOfUniqueUnits
+  default := .ofUniqueUnits
   uniq := fun ⟨u, _, _, _⟩ => by congr; simp [eq_iff_true_of_subsingleton]
 
 instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=

@@ -357,7 +357,7 @@ protected theorem measurable_comp_iff {f : β → γ} (e : α ≃ᵐ β) :
 /-- Any two types with unique elements are measurably equivalent. -/
 def ofUniqueOfUnique (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] [Unique α] [Unique β] :
     α ≃ᵐ β where
-  toEquiv := equivOfUnique α β
+  toEquiv := ofUnique α β
   measurable_toFun := Subsingleton.measurable
   measurable_invFun := Subsingleton.measurable
 
