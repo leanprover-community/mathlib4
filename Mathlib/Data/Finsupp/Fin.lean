@@ -50,18 +50,10 @@ theorem tail_cons : tail (cons y s) = s :=
   ext fun k => by simp only [tail_apply, cons_succ]
 
 @[simp]
-theorem tail_update_zero : tail (update t 0 y) = tail t := by
-  simp only [tail, update, coe_mk, EmbeddingLike.apply_eq_iff_eq]
-  convert Fin.tail_update_zero (⇑t) y
+theorem tail_update_zero : tail (update t 0 y) = tail t := by simp [tail]
 
 @[simp]
-theorem tail_update_succ : tail (update t i.succ y) = update (tail t) i y := by
-  ext a
-  have : ⇑(equivFunOnFinite.symm (Fin.tail ⇑t)) = Fin.tail ⇑t := rfl
-  simp only [tail, update, this, coe_mk, equivFunOnFinite_symm_apply_toFun]
-  have : Fin.tail (Function.update (⇑t) i.succ y) a = Function.update (Fin.tail ⇑t) i y a := by
-    simp only [Fin.tail_update_succ]
-  convert this
+theorem tail_update_succ : tail (update t i.succ y) = update (tail t) i y := by ext; simp [tail]
 
 @[simp]
 theorem cons_tail : cons (t 0) (tail t) = t := by
