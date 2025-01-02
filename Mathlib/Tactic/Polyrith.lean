@@ -34,10 +34,10 @@ the SageMath API to compute the coefficients. These coefficients are then sent b
 parses them into pexprs. The information is then given to the `linear_combination` tactic, which
 completes the process by checking the certificate.
 
-In fact, `polyrith` uses the cotrresponding CAS to test for membership in the *radical* of the ideal.
-This means it searches for a linear combination of hypotheses that add up to a *power* of the goal.
-When this power is not 1, it uses the `(exp := n)` feature of `linear_combination` to report the
-certificate.
+In fact, `polyrith` uses the cotrresponding CAS to test for membership in the *radical* of the
+ideal. This means it searches for a linear combination of hypotheses that add up to a *power* of
+the goal. When this power is not 1, it uses the `(exp := n)` feature of `linear_combination` to
+report the certificate.
 
 `polyrith` calls an external python script `scripts/polyrith_sage.py`. Because this is not a Lean
 file, changes to this script may not be noticed during Lean compilation if you have already
