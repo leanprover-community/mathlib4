@@ -279,8 +279,8 @@ lemma odd_components_card_mono [Fintype V] [DecidableEq V] {G' : SimpleGraph V}
     intro c c' fcc'
     simp only [Subtype.mk.injEq, f] at fcc'
     exact Subtype.val_injective (ConnectedComponent.eq_of_common_vertex
-      ((fcc' ▸ (aux c.1 c.2).choose_spec.1) (ConnectedComponent.supp_nonempty _).some_mem)
-      ((aux c'.1 c'.2).choose_spec.1 (ConnectedComponent.supp_nonempty _).some_mem)))
+      ((fcc' ▸ (aux c.1 c.2).choose_spec.1) (ConnectedComponent.nonempty_supp _).some_mem)
+      ((aux c'.1 c'.2).choose_spec.1 (ConnectedComponent.nonempty_supp _).some_mem)))
 
 lemma odd_components_card_deleteVerts_mono [Fintype V] [DecidableEq V] (G G' : SimpleGraph V)
     [DecidableRel G.Adj] [DecidableRel G'.Adj] (h : G ≤ G') (u : Set V) : Nat.card

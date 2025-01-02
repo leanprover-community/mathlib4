@@ -1177,7 +1177,7 @@ theorem deleteVerts_inter_verts_set_right_eq :
     G'.deleteVerts (s ∩ G'.verts) = G'.deleteVerts s := by
   ext <;> simp +contextual [imp_false]
 
-instance DecidableRel_deleteVerts (u : Set V) [r : DecidableRel G.Adj] :
+instance instDecidableRel_deleteVerts_adj (u : Set V) [r : DecidableRel G.Adj] :
     DecidableRel (((⊤ : G.Subgraph).deleteVerts u).coe).Adj := by
   intro x y
   cases' (r x y) with hl hr

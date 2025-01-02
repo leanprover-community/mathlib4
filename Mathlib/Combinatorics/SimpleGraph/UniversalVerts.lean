@@ -5,7 +5,6 @@ Authors: Pim Otte
 -/
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Combinatorics.SimpleGraph.Matching
-import Mathlib.Combinatorics.SimpleGraph.Connectivity.WalkCounting
 
 /-!
 # Universal Vertices
