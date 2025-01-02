@@ -81,7 +81,7 @@ def IsLittleOTVS (𝕜 : Type*) {α E F : Type*}
 @[inherit_doc]
 notation:100 f " =o[" 𝕜 ";" l "] " g:100 => IsLittleOTVS 𝕜 l f g
 
-variable {α β 𝕜 E F : Type*}
+variable {α β 𝕜 E F G : Type*}
 
 section TopologicalSpace
 
