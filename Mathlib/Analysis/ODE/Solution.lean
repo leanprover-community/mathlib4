@@ -210,7 +210,6 @@ initial condition `α t₀ = x`, where `‖x - x₀‖ ≤ b - a`. Note that the
 to differ from the point `x₀` about which the conditions on `f` are stated. -/
 structure IsPicardLindelof {E : Type*} [NormedAddCommGroup E]
     (f : ℝ → E → E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) (a b L K : ℝ≥0) : Prop where
-  le : a ≤ b
   /-- The vector field at any time is bounded by `L` within a closed ball. -/
   bounded : ∀ t ∈ Icc tmin tmax, ∀ x' ∈ closedBall x₀ b, ‖f t x'‖ ≤ L
   /-- The vector field at any time is Lipschitz in with constant `K` within a closed ball. -/
@@ -228,12 +227,10 @@ variable {E : Type*} [NormedAddCommGroup E]
 /-- The special case where the vector field is independent of time. -/
 lemma mk_of_time_independent
     {f : E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {a b L K : ℝ≥0}
-    (hle : a ≤ b)
     (hb : ∀ x ∈ closedBall x₀ b, ‖f x‖ ≤ L)
     (hl : LipschitzOnWith K f (closedBall x₀ b))
     (hm : L * max (tmax - t₀) (t₀ - tmin) ≤ a) :
     (IsPicardLindelof (fun _ ↦ f) t₀ x₀ a b L K) where
-  le := hle
   bounded := fun _ _ ↦ hb
   lipschitz := fun _ _ ↦ hl
   continuousOn := fun _ _ ↦ continuousOn_const
@@ -254,7 +251,7 @@ lemma mk_of_contDiffOn_one [NormedSpace ℝ E]
   have hε0 : 0 < ε := hε ▸ div_pos (half_pos <| lt_min hR₁ hR₂)
     (add_pos_of_pos_of_nonneg zero_lt_one (norm_nonneg _))
   refine ⟨ε, hε0, ⟨min R₁ R₂ / 2, by positivity⟩, ⟨1 + ‖f x₀‖, by positivity⟩, L, ?_⟩
-  apply mk_of_time_independent le_rfl
+  apply mk_of_time_independent
   · intro x hx
     apply hbdd' x
     apply mem_of_mem_of_subset hx
