@@ -434,11 +434,7 @@ def uniq : D₁ ≌ D₂ :=
 
 lemma uniq_symm : (uniq L₁ L₂ W').symm = uniq L₂ L₁ W' := by
   dsimp [uniq, Equivalence.trans]
-  ext
-  · rfl
-  · rfl
-  · aesop
-  · aesop
+  ext <;> aesop
 
 /-- The functor of equivalence of localized categories given by `Localization.uniq` is
 compatible with the localization functors. -/
