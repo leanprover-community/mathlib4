@@ -19,7 +19,7 @@ def toZModModule (M : Type*) [AddCommMonoid M] (n : ℕ) (_ : ∀ x : M, n • x
 variable {M : Type*} [AddCommMonoid M] {n : ℕ} {h : ∀ x : M, n • x = 0}
 
 variable (h) in
-/-- Convert an element of `m` to an element of `toZModModule M n h`. -/
+/-- Convert an element of `M` to an element of `toZModModule M n h`. -/
 def toZModModule.of (m : M) : toZModModule M n h := m
 
 /-- Convert an element of `toZModModule M n h` to an element of `M`. -/
