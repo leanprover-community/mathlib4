@@ -128,3 +128,7 @@ instance : HasTerminal (Factorisation f) := Limits.hasTerminal_of_unique Factori
 def forget : Factorisation f ⥤ C where
   obj := Factorisation.mid
   map f := f.h
+
+end Factorisation
+
+end CategoryTheory

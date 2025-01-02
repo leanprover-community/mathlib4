@@ -26,7 +26,7 @@ when `re s < x`. -/
 noncomputable def LSeries.abscissaOfAbsConv (f : ℕ → ℂ) : EReal :=
   sInf <| Real.toEReal '' {x : ℝ | LSeriesSummable f x}
 
-lemma LSeries.abscissaOfAbsConv_congr {f g : ℕ → ℂ} (h : ∀ n ≠ 0, f n = g n) :
+lemma LSeries.abscissaOfAbsConv_congr {f g : ℕ → ℂ} (h : ∀ {n}, n ≠ 0 → f n = g n) :
     abscissaOfAbsConv f = abscissaOfAbsConv g :=
   congr_arg sInf <| congr_arg _ <| Set.ext fun x ↦ LSeriesSummable_congr x h
 
@@ -65,7 +65,7 @@ lemma LSeries.abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable {f : ℕ → ℂ
   simp only [mem_lowerBounds, Set.mem_image, Set.mem_setOf_eq, forall_exists_index, and_imp,
     forall_apply_eq_imp_iff₂] at hy
   have H (a : EReal) : x < a → y ≤ a := by
-    induction' a using EReal.rec with a₀
+    induction' a with a₀
     · simp only [not_lt_bot, le_bot_iff, IsEmpty.forall_iff]
     · exact_mod_cast fun ha ↦ hy a₀ (h a₀ ha)
     · simp only [EReal.coe_lt_top, le_top, forall_true_left]
@@ -74,9 +74,9 @@ lemma LSeries.abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable {f : ℕ → ℂ
 lemma LSeries.abscissaOfAbsConv_le_of_forall_lt_LSeriesSummable' {f : ℕ → ℂ} {x : EReal}
     (h : ∀ y : ℝ, x < y → LSeriesSummable f y) :
     abscissaOfAbsConv f ≤ x := by
-  induction' x using EReal.rec with y
+  induction' x with y
   · refine le_of_eq <| sInf_eq_bot.mpr fun y hy ↦ ?_
-    induction' y using EReal.rec with z
+    induction' y with z
     · simp only [gt_iff_lt, lt_self_iff_false] at hy
     · exact ⟨z - 1,  ⟨z-1, h (z - 1) <| EReal.bot_lt_coe _, rfl⟩, by norm_cast; exact sub_one_lt z⟩
     · exact ⟨0, ⟨0, h 0 <| EReal.bot_lt_coe 0, rfl⟩, EReal.zero_lt_top⟩
@@ -119,3 +119,21 @@ lemma LSeries.abscissaOfAbsConv_le_one_of_isBigO_one {f : ℕ → ℂ} (h : f =O
   convert abscissaOfAbsConv_le_of_isBigO_rpow (x := 0) ?_
   · simp only [EReal.coe_zero, zero_add]
   · simpa only [Real.rpow_zero] using h
+
+/-- If `f` is real-valued and `x` is strictly greater than the abscissa of absolute convergence
+of `f`, then the real series `∑' n, f n / n ^ x` converges. -/
+lemma LSeries.summable_real_of_abscissaOfAbsConv_lt {f : ℕ → ℝ} {x : ℝ}
+    (h : abscissaOfAbsConv (f ·) < x) :
+    Summable fun n : ℕ ↦ f n / (n : ℝ) ^ x := by
+  have h' : abscissaOfAbsConv (f ·) < (x : ℂ).re := by simpa only [ofReal_re] using h
+  have := LSeriesSummable_of_abscissaOfAbsConv_lt_re h'
+  rw [LSeriesSummable, show term _ _ = fun n ↦ _ from rfl] at this
+  conv at this =>
+    enter [1, n]
+    rw [term_def, ← ofReal_natCast, ← ofReal_cpow n.cast_nonneg, ← ofReal_div, ← ofReal_zero,
+      ← apply_ite]
+  rw [summable_ofReal] at this
+  refine this.congr_cofinite ?_
+  filter_upwards [Set.Finite.compl_mem_cofinite <| Set.finite_singleton 0] with n hn
+  simp only [Set.mem_compl_iff, Set.mem_singleton_iff] at hn
+  exact if_neg hn

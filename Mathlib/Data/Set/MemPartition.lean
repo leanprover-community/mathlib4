@@ -3,7 +3,7 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Partitions based on membership of a sequence of sets
@@ -54,7 +54,7 @@ lemma disjoint_memPartition (f : ℕ → Set α) (n : ℕ) {u v : Set α}
   induction n with
   | zero =>
     intro u v hu hv huv
-    simp only [Nat.zero_eq, memPartition_zero, mem_insert_iff, mem_singleton_iff] at hu hv
+    simp only [memPartition_zero, mem_insert_iff, mem_singleton_iff] at hu hv
     rw [hu, hv] at huv
     exact absurd rfl huv
   | succ n ih =>
@@ -63,11 +63,11 @@ lemma disjoint_memPartition (f : ℕ → Set α) (n : ℕ) {u v : Set α}
     obtain ⟨u', hu', hu'_eq⟩ := hu
     obtain ⟨v', hv', hv'_eq⟩ := hv
     rcases hu'_eq with rfl | rfl <;> rcases hv'_eq with rfl | rfl
-    · refine Disjoint.mono (inter_subset_left _ _) (inter_subset_left _ _) (ih hu' hv' ?_)
+    · refine Disjoint.mono inter_subset_left inter_subset_left (ih hu' hv' ?_)
       exact fun huv' ↦ huv (huv' ▸ rfl)
-    · exact Disjoint.mono_left (inter_subset_right _ _) Set.disjoint_sdiff_right
-    · exact Disjoint.mono_right (inter_subset_right _ _) Set.disjoint_sdiff_left
-    · refine Disjoint.mono (diff_subset _ _) (diff_subset _ _) (ih hu' hv' ?_)
+    · exact Disjoint.mono_left inter_subset_right Set.disjoint_sdiff_right
+    · exact Disjoint.mono_right inter_subset_right Set.disjoint_sdiff_left
+    · refine Disjoint.mono diff_subset diff_subset (ih hu' hv' ?_)
       exact fun huv' ↦ huv (huv' ▸ rfl)
 
 @[simp]

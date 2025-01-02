@@ -1,13 +1,12 @@
 /-
-Copyright (c) 2023 Scott Morrison. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Lean.Meta.Tactic.TryThis
-import Std.Linter.UnreachableTactic
-import Std.Control.Nondet.Basic
+import Batteries.Linter.UnreachableTactic
+import Batteries.Control.Nondet.Basic
 import Mathlib.Tactic.FailIfNoProgress
-import Mathlib.Mathport.Rename
 
 /-!
 # The `hint` tactic.
@@ -50,7 +49,7 @@ elab (name := registerHintStx) "register_hint" tac:tactic : command => liftTermE
   addHint tac
 
 initialize
-  Std.Linter.UnreachableTactic.ignoreTacticKindsRef.modify fun s => s.insert ``registerHintStx
+  Batteries.Linter.UnreachableTactic.ignoreTacticKindsRef.modify fun s => s.insert ``registerHintStx
 
 /--
 Construct a suggestion for a tactic.

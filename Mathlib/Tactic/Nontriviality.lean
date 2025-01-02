@@ -6,4 +6,3 @@ Authors: Sébastien Gouëzel, Mario Carneiro
 import Mathlib.Tactic.Nontriviality.Core
 
 /-! # The `nontriviality` tactic. -/
-

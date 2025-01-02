@@ -6,6 +6,7 @@ Authors: Markus Himmel
 import Mathlib.CategoryTheory.Limits.FinallySmall
 import Mathlib.CategoryTheory.Limits.Presheaf
 import Mathlib.CategoryTheory.Filtered.Small
+import Mathlib.CategoryTheory.ClosedUnderIsomorphisms
 
 /-!
 # Ind-objects
@@ -37,7 +38,7 @@ The recommended alternative is to consider ind-objects over `ULiftHom.{w} C` ins
 * [M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006], Chapter 6
 -/
 
-universe v u
+universe v v' u u'
 
 namespace CategoryTheory.Limits
 
@@ -56,10 +57,20 @@ structure IndObjectPresentation (A : Cᵒᵖ ⥤ Type v) where
   F : I ⥤ C
   /-- Use `IndObjectPresentation.cocone` instead. -/
   ι : F ⋙ yoneda ⟶ (Functor.const I).obj A
-  /-- Use `IndObjectPresenation.coconeIsColimit` instead. -/
+  /-- Use `IndObjectPresentation.coconeIsColimit` instead. -/
   isColimit : IsColimit (Cocone.mk A ι)
 
 namespace IndObjectPresentation
+
+/-- Alternative constructor for `IndObjectPresentation` taking a cocone instead of its defining
+    natural transformation. -/
+@[simps]
+def ofCocone {I : Type v} [SmallCategory I] [IsFiltered I] {F : I ⥤ C}
+    (c : Cocone (F ⋙ yoneda)) (hc : IsColimit c) : IndObjectPresentation c.pt where
+  I := I
+  F := F
+  ι := c.ι
+  isColimit := hc
 
 variable {A : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A)
 
@@ -76,6 +87,13 @@ def cocone : Cocone (P.F ⋙ yoneda) where
 def coconeIsColimit : IsColimit P.cocone :=
   P.isColimit
 
+/-- If `A` and `B` are isomorphic, then an ind-object presentation of `A` can be extended to an
+    ind-object presentation of `B`. -/
+@[simps!]
+noncomputable def extend {A B : Cᵒᵖ ⥤ Type v} (P : IndObjectPresentation A) (η : A ⟶ B) [IsIso η] :
+    IndObjectPresentation B :=
+  .ofCocone (P.cocone.extend η) (P.coconeIsColimit.extendIso (by exact η))
+
 /-- The canonical comparison functor between the indexing category of the presentation and the
     comma category `CostructuredArrow yoneda A`. This functor is always final. -/
 @[simps! obj_left obj_right_as obj_hom map_left]
@@ -83,17 +101,17 @@ def toCostructuredArrow : P.I ⥤ CostructuredArrow yoneda A :=
   P.cocone.toCostructuredArrow ⋙ CostructuredArrow.pre _ _ _
 
 instance : P.toCostructuredArrow.Final :=
-  final_toCostructuredArrow_comp_pre _ P.coconeIsColimit
+  Presheaf.final_toCostructuredArrow_comp_pre _ P.coconeIsColimit
 
 /-- Representable presheaves are (trivially) ind-objects. -/
 @[simps]
 def yoneda (X : C) : IndObjectPresentation (yoneda.obj X) where
   I := Discrete PUnit.{v + 1}
   F := Functor.fromPUnit X
-  ι := { app := fun s => 𝟙 _ }
+  ι := { app := fun _ => 𝟙 _ }
   isColimit :=
     { desc := fun s => s.ι.app ⟨PUnit.unit⟩
-      uniq := fun s m h => h ⟨PUnit.unit⟩ }
+      uniq := fun _ _ h => h ⟨PUnit.unit⟩ }
 
 end IndObjectPresentation
 
@@ -112,6 +130,15 @@ theorem isIndObject_yoneda (X : C) : IsIndObject (yoneda.obj X) :=
 namespace IsIndObject
 
 variable {A : Cᵒᵖ ⥤ Type v}
+
+theorem map {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A → IsIndObject B
+  | ⟨⟨P⟩⟩ => ⟨⟨P.extend η⟩⟩
+
+theorem iff_of_iso {A B : Cᵒᵖ ⥤ Type v} (η : A ⟶ B) [IsIso η] : IsIndObject A ↔ IsIndObject B :=
+  ⟨.map η, .map (inv η)⟩
+
+instance : ClosedUnderIsomorphisms (IsIndObject (C := C)) where
+  of_iso i h := h.map i.hom
 
 /-- Pick a presentation for an ind-object using choice. -/
 noncomputable def presentation : IsIndObject A → IndObjectPresentation A
@@ -135,9 +162,10 @@ theorem isIndObject_of_isFiltered_of_finallySmall (A : Cᵒᵖ ⥤ Type v)
     (factoringCompInclusion (fromFinalModel <| CostructuredArrow yoneda A)).symm
   have h₂ : Functor.Final (inclusion (fromFinalModel (CostructuredArrow yoneda A))) :=
     Functor.final_of_comp_full_faithful' (factoring _) (inclusion _)
-  let c := (tautologicalCocone A).whisker (inclusion (fromFinalModel (CostructuredArrow yoneda A)))
+  let c := (Presheaf.tautologicalCocone A).whisker
+    (inclusion (fromFinalModel (CostructuredArrow yoneda A)))
   let hc : IsColimit c := (Functor.Final.isColimitWhiskerEquiv _ _).symm
-    (isColimitTautologicalCocone A)
+    (Presheaf.isColimitTautologicalCocone A)
   have hq : Nonempty (FinalModel (CostructuredArrow yoneda A)) := Nonempty.map
     (Functor.Final.lift (fromFinalModel (CostructuredArrow yoneda A))) IsFiltered.nonempty
   exact ⟨_, inclusion (fromFinalModel _) ⋙ CostructuredArrow.proj yoneda A, c.ι, hc⟩
@@ -150,5 +178,11 @@ theorem isIndObject_iff (A : Cᵒᵖ ⥤ Type v) : IsIndObject A ↔
     (IsFiltered (CostructuredArrow yoneda A) ∧ FinallySmall.{v} (CostructuredArrow yoneda A)) :=
   ⟨fun h => ⟨h.isFiltered, h.finallySmall⟩,
    fun ⟨_, _⟩ => isIndObject_of_isFiltered_of_finallySmall A⟩
+
+/-- If a limit already exists in `C`, then the limit of the image of the diagram under the Yoneda
+embedding is an ind-object. -/
+theorem isIndObject_limit_comp_yoneda {J : Type u'} [Category.{v'} J] (F : J ⥤ C) [HasLimit F] :
+    IsIndObject (limit (F ⋙ yoneda)) :=
+  IsIndObject.map (preservesLimitIso yoneda F).hom (isIndObject_yoneda (limit F))
 
 end CategoryTheory.Limits

@@ -1,10 +1,13 @@
 # This file is part of the `polyrith` tactic in `src/tactic/polyrith.lean`.
 # It interfaces between Lean and the Sage web interface.
 
-import requests
 import json
-import sys
 from os.path import join, dirname
+import sys
+from typing import Dict, Any
+import urllib.error
+import urllib.parse
+import urllib.request
 
 # These functions are used to format the output of Sage for parsing in Lean.
 # They are stored here as a string since they are passed to Sage via the web API.
@@ -15,7 +18,7 @@ with open(join(dirname(__file__), "polyrith_sage_helper.py"), encoding='utf8') a
 def type_str(type):
     return "QQ"
 
-def create_query(type: str, n_vars: int, eq_list, goal_type):
+def create_query(type: str, n_vars: int, eq_list, target):
     """ Create a query to invoke Sage's `MPolynomial_libsingular.lift`. See
     https://github.com/sagemath/sage/blob/f8df80820dc7321dc9b18c9644c3b8315999670b/src/sage/rings/polynomial/multi_polynomial_libsingular.pyx#L4472-L4518
     for a description of this method. """
@@ -24,21 +27,28 @@ def create_query(type: str, n_vars: int, eq_list, goal_type):
 if {n_vars!r} != 0:
     P = PolynomialRing({type_str(type)}, {var_list})
     [{", ".join(var_list)}] = P.gens()
-    p = P({goal_type})
-    gens = {eq_list} + [1 - p*aux]
-    I = P.ideal(gens)
-    coeffs = P(1).lift(I)
-    power = max(cf.degree(aux) for cf in coeffs)
-    coeffs = [P(cf.subs(aux = 1/p)*p^power) for cf in coeffs[:int(-1)]]
-    print(str(power)+';'+serialize_polynomials(coeffs))
+    p = P({target})
+    if p==0:
+        # The "radicalization trick" implemented below does not work if the target polynomial p is 0
+        # since it requires substituting 1/p.
+        print('1;'+serialize_polynomials(len({eq_list})*[P(0)]))
+    else:
+        # Implements the trick described in 2.2 of arxiv.org/pdf/1007.3615.pdf
+        # for testing membership in the radical.
+        gens = {eq_list} + [1 - p*aux]
+        I = P.ideal(gens)
+        coeffs = P(1).lift(I)
+        power = max(cf.degree(aux) for cf in coeffs)
+        coeffs = [P(cf.subs(aux = 1/p)*p^power) for cf in coeffs[:int(-1)]]
+        print(str(power)+';'+serialize_polynomials(coeffs))
 else:
     # workaround for a Sage shortcoming with `n_vars = 0`,
     # `TypeError: no conversion of this ring to a Singular ring defined`
     # In this case, there is no need to look for membership in the *radical*;
-    # we just check for membership in the ideal, and return exponent 1 
+    # we just check for membership in the ideal, and return exponent 1
     # if coefficients are found.
     P = PolynomialRing({type_str(type)}, 'var', 1)
-    p = P({goal_type})
+    p = P({target})
     I = P.ideal({eq_list})
     coeffs = p.lift(I)
     print('1;'+serialize_polynomials(coeffs))
@@ -52,15 +62,19 @@ class EvaluationError(Exception):
         self.message = message
         super().__init__(self.message)
 
-def parse_response(resp: str) -> str:
+def parse_response(resp: str) -> Dict[str, Any]:
     exp, data = resp.split(';', 1)
     return dict(power=int(exp), coeffs=json.loads(data))
 
 
-def evaluate_in_sage(query: str) -> str:
-    data = {'code': query}
-    headers = {'content-type': 'application/x-www-form-urlencoded'}
-    response = requests.post('https://sagecell.sagemath.org/service', data, headers=headers).json()
+def evaluate_in_sage(query: str) -> Dict[str, Any]:
+    data = urllib.parse.urlencode({'code': query}).encode('utf-8')
+    headers = {'Content-Type': 'application/x-www-form-urlencoded',
+               'User-Agent': 'LeanProver (https://leanprover-community.github.io/)'}
+    req = urllib.request.Request('https://sagecell.sagemath.org/service', data=data, headers=headers)
+    with urllib.request.urlopen(req) as response:
+        response_data = response.read().decode()
+    response = json.loads(response_data)
     if response['success']:
         return parse_response(response.get('stdout'))
     elif 'execute_reply' in response and 'ename' in response['execute_reply'] and 'evalue' in response['execute_reply']:

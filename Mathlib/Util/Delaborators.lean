@@ -3,6 +3,7 @@ Copyright (c) 2023 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Init
 import Lean.PrettyPrinter.Delaborator.Builtins
 
 /-! # Pi type notation
@@ -29,7 +30,7 @@ def piNotation := leading_parser:leadPrec
 
 /-- Dependent function type (a "pi type"). The notation `Π x ∈ s, β x` is
 short for `Π x, x ∈ s → β x`. -/
--- A copy of forall notation from `Std.Util.ExtendedBinder` for pi notation
+-- A copy of forall notation from `Batteries.Util.ExtendedBinder` for pi notation
 syntax "Π " binderIdent binderPred ", " term : term
 
 macro_rules
@@ -96,7 +97,7 @@ open Lean Parser Term PrettyPrinter Delaborator
 
 /-- Delaborator for existential quantifier, including extended binders. -/
 -- TODO: reduce the duplication in this code
-@[delab app.Exists]
+@[app_delab Exists]
 def exists_delab : Delab := whenPPOption Lean.getPPNotation do
   let #[ι, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
@@ -158,9 +159,9 @@ end existential
 open Lean Lean.PrettyPrinter.Delaborator
 
 /-- Delaborator for `∉`. -/
-@[delab app.Not] def delab_not_in := whenPPOption Lean.getPPNotation do
+@[app_delab Not] def delab_not_in := whenPPOption Lean.getPPNotation do
   let #[f] := (← SubExpr.getExpr).getAppArgs | failure
   guard <| f.isAppOfArity ``Membership.mem 5
   let stx₁ ← SubExpr.withAppArg <| SubExpr.withNaryArg 3 delab
   let stx₂ ← SubExpr.withAppArg <| SubExpr.withNaryArg 4 delab
-  return ← `($stx₁ ∉ $stx₂)
+  return ← `($stx₂ ∉ $stx₁)

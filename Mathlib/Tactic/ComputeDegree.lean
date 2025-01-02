@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Mathlib.Data.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Degree.Lemmas
 
 /-!
 
@@ -91,9 +91,12 @@ variable [Semiring R]
 
 theorem natDegree_C_le (a : R) : natDegree (C a) ≤ 0 := (natDegree_C a).le
 
-theorem natDegree_nat_cast_le (n : ℕ) : natDegree (n : R[X]) ≤ 0 := (natDegree_nat_cast _).le
+theorem natDegree_natCast_le (n : ℕ) : natDegree (n : R[X]) ≤ 0 := (natDegree_natCast _).le
 theorem natDegree_zero_le : natDegree (0 : R[X]) ≤ 0 := natDegree_zero.le
 theorem natDegree_one_le : natDegree (1 : R[X]) ≤ 0 := natDegree_one.le
+
+@[deprecated (since := "2024-04-17")]
+alias natDegree_nat_cast_le := natDegree_natCast_le
 
 theorem coeff_add_of_eq {n : ℕ} {a b : R} {f g : R[X]}
     (h_add_left : f.coeff n = a) (h_add_right : g.coeff n = b) :
@@ -161,10 +164,13 @@ theorem degree_eq_of_le_of_coeff_ne_zero' {deg m o : WithBot ℕ} {c : R} {p : R
   · obtain ⟨m, rfl⟩ := WithBot.ne_bot_iff_exists.mp hh
     exact degree_eq_of_le_of_coeff_ne_zero ‹_› ‹_›
 
-variable {m n : ℕ} {f : R[X]} {r : R} (h : coeff f m = r) (natDeg_eq_coeff : m = n)
+variable {m n : ℕ} {f : R[X]} {r : R}
 
-theorem coeff_congr_lhs : coeff f n = r := natDeg_eq_coeff ▸ h
-theorem coeff_congr {s : R} (rs : r = s) : coeff f n = s := natDeg_eq_coeff ▸ rs ▸ h
+theorem coeff_congr_lhs (h : coeff f m = r) (natDeg_eq_coeff : m = n) : coeff f n = r :=
+  natDeg_eq_coeff ▸ h
+theorem coeff_congr (h : coeff f m = r) (natDeg_eq_coeff : m = n) {s : R} (rs : r = s) :
+    coeff f n = s :=
+  natDeg_eq_coeff ▸ rs ▸ h
 
 end congr_lemmas
 
@@ -173,13 +179,19 @@ end semiring
 section ring
 variable [Ring R]
 
-theorem natDegree_int_cast_le (n : ℤ) : natDegree (n : R[X]) ≤ 0 := (natDegree_int_cast _).le
+theorem natDegree_intCast_le (n : ℤ) : natDegree (n : R[X]) ≤ 0 := (natDegree_intCast _).le
+
+@[deprecated (since := "2024-04-17")]
+alias natDegree_int_cast_le := natDegree_intCast_le
 
 theorem coeff_sub_of_eq {n : ℕ} {a b : R} {f g : R[X]} (hf : f.coeff n = a) (hg : g.coeff n = b) :
     (f - g).coeff n = a - b := by subst hf hg; apply coeff_sub
 
-theorem coeff_int_cast_ite {n : ℕ} {a : ℤ} : (Int.cast a : R[X]).coeff n = ite (n = 0) a 0 := by
-  simp only [← C_eq_int_cast, coeff_C, Int.cast_ite, Int.cast_zero]
+theorem coeff_intCast_ite {n : ℕ} {a : ℤ} : (Int.cast a : R[X]).coeff n = ite (n = 0) a 0 := by
+  simp only [← C_eq_intCast, coeff_C, Int.cast_ite, Int.cast_zero]
+
+@[deprecated (since := "2024-04-17")]
+alias coeff_int_cast_ite := coeff_intCast_ite
 
 end ring
 
@@ -198,7 +210,7 @@ It returns
 * the name of the relation (`Eq` or `LE.le`), or else `.anonymous` if it's none of these.
 * either
   * `.inl zero`, `.inl one`, or `.inl many` if the polynomial in a numeral
-  * or `.inr` of the the head symbol of `f`
+  * or `.inr` of the head symbol of `f`
   * or `.inl .anonymous` if inapplicable
 * if it exists, whether the `rhs` is a metavariable
 * if the LHS is `coeff f d`, whether `d` is a metavariable
@@ -211,7 +223,7 @@ Sample outputs:
 * `degree (f * g) = d => (degree, Eq, HMul.hMul, d.isMVar, none)` (similarly for `≤`);
 * `coeff (1 : ℕ[X]) c = x => (coeff, Eq, one, x.isMVar, c.isMVar)` (no `≤` option!).
 -/
-def twoHeadsArgs (e : Expr) : Name × Name × Sum Name Name × List Bool := Id.run do
+def twoHeadsArgs (e : Expr) : Name × Name × (Name ⊕ Name) × List Bool := Id.run do
   let (eq_or_le, lhs, rhs) ← match e.getAppFnArgs with
     | (na@``Eq, #[_, lhs, rhs])       => pure (na, lhs, rhs)
     | (na@``LE.le, #[_, _, lhs, rhs]) => pure (na, lhs, rhs)
@@ -271,7 +283,8 @@ def getCongrLemma (twoH : Name × Name × List Bool) (debug : Bool := false) : N
       | true, true   => ``id
     | _ => ``id
   if debug then
-    let natr := if nam.getString == "trans" then nam.toString else nam.getString
+    let last := nam.lastComponentAsString
+    let natr := if last == "trans" then nam.toString else last
     dbg_trace f!"congr lemma: '{natr}'"
     nam
   else
@@ -287,7 +300,7 @@ Using the information contained in `twoH`, it decides which lemma is the most ap
 --  Internally, `dispatchLemma` produces 3 names: these are the lemmas that are appropriate
 --  for goals of the form `natDegree f ≤ d`, `degree f ≤ d`, `coeff f d = a`, in this order.
 def dispatchLemma
-    (twoH : Name × Name × Sum Name Name × List Bool) (debug : Bool := false) : Name :=
+    (twoH : Name × Name × (Name ⊕ Name) × List Bool) (debug : Bool := false) : Name :=
   match twoH with
     | (.anonymous, _, _) => ``id -- `twoH` gave default value, so we do nothing
     | (_, .anonymous, _) => ``id -- `twoH` gave default value, so we do nothing
@@ -305,12 +318,12 @@ def dispatchLemma
           | _, ``LE.le => ``le_rfl
           | _, _ => ``rfl
         if debug then
-          dbg_trace f!"{lem.getString}\n{msg}"
+          dbg_trace f!"{lem.lastComponentAsString}\n{msg}"
         lem
       match head with
         | .inl `zero => π ``natDegree_zero_le ``degree_zero_le ``coeff_zero
         | .inl `one  => π ``natDegree_one_le ``degree_one_le ``coeff_one
-        | .inl `many => π ``natDegree_nat_cast_le ``degree_nat_cast_le ``coeff_nat_cast_ite
+        | .inl `many => π ``natDegree_natCast_le ``degree_natCast_le ``coeff_natCast_ite
         | .inl .anonymous => π ``le_rfl ``le_rfl ``rfl
         | .inr ``HAdd.hAdd =>
           π ``natDegree_add_le_of_le ``degree_add_le_of_le ``coeff_add_of_eq
@@ -325,13 +338,13 @@ def dispatchLemma
         | .inr ``Polynomial.X =>
           π ``natDegree_X_le ``degree_X_le ``coeff_X
         | .inr ``Nat.cast =>
-          π ``natDegree_nat_cast_le ``degree_nat_cast_le ``coeff_nat_cast_ite
+          π ``natDegree_natCast_le ``degree_natCast_le ``coeff_natCast_ite
         | .inr ``NatCast.natCast =>
-          π ``natDegree_nat_cast_le ``degree_nat_cast_le ``coeff_nat_cast_ite
+          π ``natDegree_natCast_le ``degree_natCast_le ``coeff_natCast_ite
         | .inr ``Int.cast =>
-          π ``natDegree_int_cast_le ``degree_int_cast_le ``coeff_int_cast_ite
+          π ``natDegree_intCast_le ``degree_intCast_le ``coeff_intCast_ite
         | .inr ``IntCast.intCast =>
-          π ``natDegree_int_cast_le ``degree_int_cast_le ``coeff_int_cast_ite
+          π ``natDegree_intCast_le ``degree_intCast_le ``coeff_intCast_ite
         | .inr ``Polynomial.monomial =>
           π ``natDegree_monomial_le ``degree_monomial_le ``coeff_monomial
         | .inr ``Polynomial.C =>
@@ -366,7 +379,7 @@ def try_rfl (mvs : List MVarId) : MetaM (List MVarId) := do
         else pure [g]
       | none =>
         return [g]
-  return (assignable.join ++ tried_rfl.join)
+  return (assignable.flatten ++ tried_rfl.flatten)
 
 /--
 `splitApply mvs static` takes two lists of `MVarId`s.  The first list, `mvs`,
@@ -384,7 +397,7 @@ def splitApply (mvs static : List MVarId) : MetaM ((List MVarId) × (List MVarId
   let progress := ← can_progress.mapM fun mv => do
     let lem := dispatchLemma <| twoHeadsArgs (← mv.getType'')
     mv.applyConst <| lem
-  return (progress.join, static ++ curr_static)
+  return (progress.flatten, static ++ curr_static)
 
 /-- `miscomputedDegree? deg false_goals` takes as input
 *  an `Expr`ession `deg`, representing the degree of a polynomial
@@ -431,7 +444,7 @@ The tactic may leave goals of the form `d' = d` `d' ≤ d`, or `r ≠ 0`, where 
 `WithBot ℕ` is the tactic's guess of the degree, and `r` is the coefficient's guess of the
 leading coefficient of `f`.
 
-`compute_degree` applies `norm_num` to the left-hand side of all side goals, trying to clos them.
+`compute_degree` applies `norm_num` to the left-hand side of all side goals, trying to close them.
 
 The variant `compute_degree!` first applies `compute_degree`.
 Then it uses `norm_num` on all the whole remaining goals and tries `assumption`.
@@ -457,7 +470,8 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
         The LHS must be an application of 'natDegree', 'degree', or 'coeff'."
     | _ =>
       let lem := dispatchLemma twoH
-      trace[Tactic.compute_degree] f!"'compute_degree' first applies lemma '{lem.getString}'"
+      trace[Tactic.compute_degree]
+        f!"'compute_degree' first applies lemma '{lem.lastComponentAsString}'"
       let mut (gls, static) := (← goal.applyConst lem, [])
       while gls != [] do (gls, static) ← splitApply gls static
       let rfled ← try_rfl static
@@ -466,7 +480,7 @@ elab_rules : tactic | `(tactic| compute_degree $[!%$bang]?) => focus <| withMain
       --  expressions such as `max (0 * 1) (max (1 + 0 + 3 * 4) (7 * 0))`
       evalTactic
         (← `(tactic| try any_goals conv_lhs =>
-                       (simp (config := {decide := true}) only [Nat.cast_withBot]; norm_num)))
+                       (simp +decide only [Nat.cast_withBot]; norm_num)))
       if bang.isSome then
         let mut false_goals : Array MVarId := #[]
         let mut new_goals : Array MVarId := #[]
