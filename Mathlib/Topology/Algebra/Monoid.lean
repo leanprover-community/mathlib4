@@ -406,6 +406,25 @@ open Filter
 variable {α β : Type*}
 variable [TopologicalSpace M] [MulZeroClass M] [ContinuousMul M]
 
+theorem exists_mem_nhds_zero_mul_subset
+    {K U : Set M} (hK : IsCompact K) (hU : U ∈ 𝓝 0) : ∃ V ∈ 𝓝 0, K * V ⊆ U := by
+  refine hK.induction_on ?_ ?_ ?_ ?_
+  · exact ⟨univ, by simp⟩
+  · rintro s t hst ⟨V, hV, hV'⟩
+    exact ⟨V, hV, (mul_subset_mul_right hst).trans hV'⟩
+  · rintro s t ⟨V, V_in, hV'⟩ ⟨W, W_in, hW'⟩
+    use V ∩ W, inter_mem V_in W_in
+    rw [union_mul]
+    exact
+      union_subset ((mul_subset_mul_left V.inter_subset_left).trans hV')
+        ((mul_subset_mul_left V.inter_subset_right).trans hW')
+  · intro x hx
+    have := tendsto_mul (show U ∈ 𝓝 (x * 0) by simpa using hU)
+    rw [nhds_prod_eq, mem_map, mem_prod_iff] at this
+    rcases this with ⟨t, ht, s, hs, h⟩
+    rw [← image_subset_iff, image_mul_prod] at h
+    exact ⟨t, mem_nhdsWithin_of_mem_nhds ht, s, hs, h⟩
+
 /-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
 Let `l` be a filter on `M` which is disjoint from the cocompact filter. Then, the multiplication map
 `M × M → M` tends to zero on the filter product `𝓝 0 ×ˢ l`. -/
@@ -506,6 +525,22 @@ theorem tendsto_mul_cofinite_nhds_zero {f : α → M} {g : β → M}
     continuous_of_discreteTopology continuous_of_discreteTopology hf hg
 
 end MulZeroClass
+
+section GroupWithZero
+
+lemma GroupWithZero.isOpen_singleton_zero [GroupWithZero M] [TopologicalSpace M]
+    [ContinuousMul M] [CompactSpace M] [T1Space M] :
+    IsOpen {(0 : M)} := by
+  obtain ⟨U, hU, h0U, h1U⟩ := t1Space_iff_exists_open.mp ‹_› zero_ne_one
+  obtain ⟨W, hW, hW'⟩ := exists_mem_nhds_zero_mul_subset isCompact_univ (hU.mem_nhds h0U)
+  by_cases H : ∃ x ≠ 0, x ∈ W
+  · obtain ⟨x, hx, hxW⟩ := H
+    cases h1U (hW' (by simpa [hx] using Set.mul_mem_mul (Set.mem_univ x⁻¹) hxW))
+  · obtain rfl : W = {0} := subset_antisymm
+      (by simpa [not_imp_not] using H) (by simpa using mem_of_mem_nhds hW)
+    simpa [isOpen_iff_mem_nhds]
+
+end GroupWithZero
 
 section MulOneClass
 
