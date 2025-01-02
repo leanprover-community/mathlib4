@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Lean.Exception
+import Mathlib.Tactic.ReduceModChar.Ext
 import Qq.MetaM
 open Qq Lean Meta Elab Command ToAdditive
 
@@ -108,9 +109,6 @@ lemma foo15 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = 
 
 @[to_additive (reorder := 1 2, 4 5) bar16]
 lemma foo16 {α β : Type u} [my_has_pow α β] (x : α) (y : β) : foo14 x y = (x ^ y) ^ y := foo15 x y
-
-initialize testExt : SimpExtension ←
-  registerSimpAttr `simp_test "test"
 
 @[to_additive bar17]
 def foo17 [Group α] (x : α) : α := x * 1
@@ -424,3 +422,14 @@ run_cmd do
   unless findTranslation? (← getEnv) `localize.r == some `add_localize.r do throwError "1"
   unless findTranslation? (← getEnv) `localize   == some `add_localize   do throwError "2"
   unless findTranslation? (← getEnv) `localize.s == some `add_localize.s do throwError "3"
+
+/--
+warning: The source declaration one_eq_one was given the simp-attribute(s) reduce_mod_char, simp before calling @[to_additive]. The preferred method is to use something like `@[to_additive (attr := reduce_mod_char, simp)]` to apply the attribute to both one_eq_one and the target declaration zero_eq_zero.
+note: this linter can be disabled with `set_option linter.existingAttributeWarning false`
+-/
+#guard_msgs in
+@[simp, reduce_mod_char, to_additive]
+lemma one_eq_one {α : Type*} [One α] : (1 : α) = 1 := rfl
+
+@[to_additive (attr := reduce_mod_char, simp)]
+lemma one_eq_one' {α : Type*} [One α] : (1 : α) = 1 := rfl
