@@ -263,6 +263,7 @@ theorem iIndepFun.integrable_exp_mul_sum [IsFiniteMeasure μ] {X : ι → Ω →
     exact (h_indep.indepFun_finset_sum_of_not_mem h_meas hi_notin_s).symm
 
 -- TODO(vilin97): weaken `h_meas` to `AEMeasurable (X i)` or `AEStronglyMeasurable (X i)` throughout
+-- https://github.com/leanprover-community/mathlib4/issues/20367
 theorem iIndepFun.mgf_sum {X : ι → Ω → ℝ}
     (h_indep : iIndepFun (fun _ => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
     (s : Finset ι) : mgf (∑ i ∈ s, X i) μ t = ∏ i ∈ s, mgf (X i) μ t := by
