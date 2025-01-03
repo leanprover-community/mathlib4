@@ -398,7 +398,7 @@ theorem integrableOn_Iio_iff_integrableAtFilter_atBot_nhdsWithin
   · intro h
     exact ⟨⟨Iio a, Iio_mem_atBot a, h⟩, ⟨Iio a, self_mem_nhdsWithin, h⟩, h.locallyIntegrableOn⟩
   · intro ⟨hbot, ⟨s, hsl, hs⟩, hlocal⟩
-    obtain ⟨s', ⟨hs'_mono, hs'⟩⟩ := mem_nhdsWithin_Iio_iff_exists_Ioo_subset.mp hsl
+    obtain ⟨s', ⟨hs'_mono, hs'⟩⟩ := mem_nhdsLT_iff_exists_Ioo_subset.mp hsl
     refine (integrableOn_union.mpr ⟨?_, hs.mono hs' le_rfl⟩).mono Iio_subset_Iic_union_Ioo le_rfl
     exact integrableOn_Iic_iff_integrableAtFilter_atBot.mpr
       ⟨hbot, hlocal.mono_set (Iic_subset_Iio.mpr hs'_mono)⟩
@@ -485,40 +485,66 @@ open scoped ENNReal
 section Monotone
 
 variable [BorelSpace X] [ConditionallyCompleteLinearOrder X] [ConditionallyCompleteLinearOrder E]
-  [OrderTopology X] [OrderTopology E] [SecondCountableTopology E]
+  [OrderTopology X] [OrderTopology E] [SecondCountableTopology E] {p : ℝ≥0∞}
 
-theorem MonotoneOn.integrableOn_of_measure_ne_top (hmono : MonotoneOn f s) {a b : X}
-    (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :
-    IntegrableOn f s μ := by
+theorem MonotoneOn.memℒp_top (hmono : MonotoneOn f s) {a b : X}
+    (ha : IsLeast s a) (hb : IsGreatest s b) (h's : MeasurableSet s) :
+    Memℒp f ∞ (μ.restrict s) := by
   borelize E
-  obtain rfl | _ := s.eq_empty_or_nonempty
-  · exact integrableOn_empty
   have hbelow : BddBelow (f '' s) := ⟨f a, fun x ⟨y, hy, hyx⟩ => hyx ▸ hmono ha.1 hy (ha.2 hy)⟩
   have habove : BddAbove (f '' s) := ⟨f b, fun x ⟨y, hy, hyx⟩ => hyx ▸ hmono hy hb.1 (hb.2 hy)⟩
   have : IsBounded (f '' s) := Metric.isBounded_of_bddAbove_of_bddBelow habove hbelow
   rcases isBounded_iff_forall_norm_le.mp this with ⟨C, hC⟩
-  have A : IntegrableOn (fun _ => C) s μ := by
-    simp only [hs.lt_top, integrableOn_const, or_true]
-  exact
-    Integrable.mono' A (aemeasurable_restrict_of_monotoneOn h's hmono).aestronglyMeasurable
-      ((ae_restrict_iff' h's).mpr <| ae_of_all _ fun y hy => hC (f y) (mem_image_of_mem f hy))
+  have A : Memℒp (fun _ => C) ⊤ (μ.restrict s) := memℒp_top_const _
+  apply Memℒp.mono A (aemeasurable_restrict_of_monotoneOn h's hmono).aestronglyMeasurable
+  apply (ae_restrict_iff' h's).mpr
+  apply ae_of_all _ fun y hy ↦ ?_
+  exact (hC _ (mem_image_of_mem f hy)).trans (le_abs_self _)
+
+theorem MonotoneOn.memℒp_of_measure_ne_top (hmono : MonotoneOn f s) {a b : X}
+    (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :
+    Memℒp f p (μ.restrict s) :=
+  (hmono.memℒp_top ha hb h's).memℒp_of_exponent_le_of_measure_support_ne_top (s := univ)
+    (by simp) (by simpa using hs) le_top
+
+theorem MonotoneOn.memℒp_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompact s)
+    (hmono : MonotoneOn f s) : Memℒp f p (μ.restrict s) := by
+  obtain rfl | h := s.eq_empty_or_nonempty
+  · simp
+  · exact hmono.memℒp_of_measure_ne_top (hs.isLeast_sInf h) (hs.isGreatest_sSup h)
+      hs.measure_lt_top.ne hs.measurableSet
+
+theorem AntitoneOn.memℒp_top (hanti : AntitoneOn f s) {a b : X}
+    (ha : IsLeast s a) (hb : IsGreatest s b) (h's : MeasurableSet s) :
+    Memℒp f ∞ (μ.restrict s) :=
+  MonotoneOn.memℒp_top (E := Eᵒᵈ) hanti ha hb h's
+
+theorem AntitoneOn.memℒp_of_measure_ne_top (hanti : AntitoneOn f s) {a b : X}
+    (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :
+    Memℒp f p (μ.restrict s) :=
+  MonotoneOn.memℒp_of_measure_ne_top (E := Eᵒᵈ) hanti ha hb hs h's
+
+theorem AntitoneOn.memℒp_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompact s)
+    (hanti : AntitoneOn f s) : Memℒp f p (μ.restrict s) :=
+  MonotoneOn.memℒp_isCompact (E := Eᵒᵈ) hs hanti
+
+theorem MonotoneOn.integrableOn_of_measure_ne_top (hmono : MonotoneOn f s) {a b : X}
+    (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :
+    IntegrableOn f s μ :=
+  memℒp_one_iff_integrable.1 (hmono.memℒp_of_measure_ne_top ha hb hs h's)
 
 theorem MonotoneOn.integrableOn_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompact s)
-    (hmono : MonotoneOn f s) : IntegrableOn f s μ := by
-  obtain rfl | h := s.eq_empty_or_nonempty
-  · exact integrableOn_empty
-  · exact
-      hmono.integrableOn_of_measure_ne_top (hs.isLeast_sInf h) (hs.isGreatest_sSup h)
-        hs.measure_lt_top.ne hs.measurableSet
+    (hmono : MonotoneOn f s) : IntegrableOn f s μ :=
+  memℒp_one_iff_integrable.1 (hmono.memℒp_isCompact hs)
 
 theorem AntitoneOn.integrableOn_of_measure_ne_top (hanti : AntitoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (hs : μ s ≠ ∞) (h's : MeasurableSet s) :
     IntegrableOn f s μ :=
-  hanti.dual_right.integrableOn_of_measure_ne_top ha hb hs h's
+  memℒp_one_iff_integrable.1 (hanti.memℒp_of_measure_ne_top ha hb hs h's)
 
 theorem AntioneOn.integrableOn_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompact s)
     (hanti : AntitoneOn f s) : IntegrableOn f s μ :=
-  hanti.dual_right.integrableOn_isCompact (E := Eᵒᵈ) hs
+  memℒp_one_iff_integrable.1 (hanti.memℒp_isCompact hs)
 
 theorem Monotone.locallyIntegrable [IsLocallyFiniteMeasure μ] (hmono : Monotone f) :
     LocallyIntegrable f μ := by

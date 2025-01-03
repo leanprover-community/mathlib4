@@ -195,8 +195,8 @@ instance [Nontrivial H] : Nontrivial (genWeightSpace L (0 : H → R)) := by
     ⟨y, toLieSubmodule_le_rootSpace_zero R L H hy⟩, by simpa using e⟩
 
 theorem le_zeroRootSubalgebra : H ≤ zeroRootSubalgebra R L H := by
-  rw [← LieSubalgebra.coe_submodule_le_coe_submodule, ← H.coe_toLieSubmodule,
-    coe_zeroRootSubalgebra, LieSubmodule.coeSubmodule_le_coeSubmodule]
+  rw [← LieSubalgebra.toSubmodule_le_toSubmodule, ← H.coe_toLieSubmodule,
+    coe_zeroRootSubalgebra, LieSubmodule.toSubmodule_le_toSubmodule]
   exact toLieSubmodule_le_rootSpace_zero R L H
 
 @[simp]
@@ -240,7 +240,7 @@ theorem zeroRootSubalgebra_eq_iff_is_cartan [IsNoetherian R L] :
 @[simp]
 theorem rootSpace_zero_eq (H : LieSubalgebra R L) [H.IsCartanSubalgebra] [IsNoetherian R L] :
     rootSpace H 0 = H.toLieSubmodule := by
-  rw [← LieSubmodule.coe_toSubmodule_eq_iff, ← coe_zeroRootSubalgebra,
+  rw [← LieSubmodule.toSubmodule_inj, ← coe_zeroRootSubalgebra,
     zeroRootSubalgebra_eq_of_is_cartan R L H, LieSubalgebra.coe_toLieSubmodule]
 
 variable {R L H}
@@ -271,8 +271,8 @@ lemma mem_corootSpace {x : H} :
     simp only [rootSpaceProduct_def, LieModuleHom.mem_range, LieSubmodule.mem_map,
       LieSubmodule.incl_apply, SetLike.coe_eq_coe, exists_eq_right]
     rfl
-  simp_rw [this, corootSpace, ← LieModuleHom.map_top, ← LieSubmodule.mem_coeSubmodule,
-    LieSubmodule.coeSubmodule_map, LieSubmodule.top_coeSubmodule, ← TensorProduct.span_tmul_eq_top,
+  simp_rw [this, corootSpace, ← LieModuleHom.map_top, ← LieSubmodule.mem_toSubmodule,
+    LieSubmodule.toSubmodule_map, LieSubmodule.top_toSubmodule, ← TensorProduct.span_tmul_eq_top,
     LinearMap.map_span, Set.image, Set.mem_setOf_eq, exists_exists_exists_and_eq]
   change (x : L) ∈ Submodule.span R
     {x | ∃ (a : rootSpace H α) (b : rootSpace H (-α)), ⁅(a : L), (b : L)⁆ = x} ↔ _
@@ -289,7 +289,7 @@ lemma mem_corootSpace' {x : H} :
     simp_rw [SetLike.mem_coe]
     rw [← Submodule.mem_map, Submodule.coe_subtype, Submodule.map_span, mem_corootSpace, ← this]
   ext u
-  simp only [Submodule.coe_subtype, mem_image, Subtype.exists, LieSubalgebra.mem_coe_submodule,
+  simp only [Submodule.coe_subtype, mem_image, Subtype.exists, LieSubalgebra.mem_toSubmodule,
     exists_and_right, exists_eq_right, mem_setOf_eq, s]
   refine ⟨fun ⟨_, y, hy, z, hz, hyz⟩ ↦ ⟨y, hy, z, hz, hyz⟩,
     fun ⟨y, hy, z, hz, hyz⟩ ↦ ⟨?_, y, hy, z, hz, hyz⟩⟩
