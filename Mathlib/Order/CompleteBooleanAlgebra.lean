@@ -416,10 +416,10 @@ theorem iSup_inf_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (swap (·
   @iSup_inf_of_monotone α _ ιᵒᵈ _ _ f g hf.dual_left hg.dual_left
 
 theorem himp_eq_sSup : a ⇨ b = sSup {w | w ⊓ a ≤ b} :=
-  (isGreatest_himp a b).isLUB.sSup_eq.symm
+  isGreatest_himp.isLUB.sSup_eq.symm
 
-theorem compl_eq_sSup_disjoint : aᶜ = sSup {w | Disjoint a w} := by
-  simp_rw [← himp_bot,himp_eq_sSup,disjoint_iff_inf_le,inf_comm]
+theorem compl_eq_sSup_disjoint : aᶜ = sSup {w | Disjoint w a} :=
+  isGreatest_compl.isLUB.sSup_eq.symm
 
 -- see Note [lower instance priority]
 instance (priority := 100) Frame.toDistribLattice : DistribLattice α :=
@@ -487,10 +487,10 @@ theorem iInf_sup_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (· ≤ �
   @iSup_inf_of_monotone αᵒᵈ _ _ _ _ _ _ hf.dual_right hg.dual_right
 
 theorem sdiff_eq_sInf : a \ b = sInf {w | a ≤ b ⊔ w} :=
-  (isLeast_sdiff a b).isGLB.sInf_eq.symm
+  isLeast_sdiff.isGLB.sInf_eq.symm
 
-theorem hnot_eq_sInf_codisjoint : ￢a = sInf {w | Codisjoint a w} := by
-  simp [← Coframe.top_sdiff,sdiff_eq_sInf,codisjoint_iff,sup_comm]
+theorem hnot_eq_sInf_codisjoint : ￢a = sInf {w | Codisjoint a w} :=
+  isLeast_hnot.isGLB.sInf_eq.symm
 
 -- see Note [lower instance priority]
 instance (priority := 100) Coframe.toDistribLattice : DistribLattice α where
