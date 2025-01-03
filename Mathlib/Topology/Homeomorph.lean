@@ -427,11 +427,7 @@ theorem locallyCompactSpace_iff (h : X ≃ₜ Y) :
 @[simps toEquiv]
 def homeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) : X ≃ₜ Y where
   continuous_toFun := h₁
-  continuous_invFun := by
-    rw [continuous_def]
-    intro s hs
-    convert ← h₂ s hs using 1
-    apply e.image_eq_preimage
+  continuous_invFun := (e.continuous_symm_iff).2 h₂
   toEquiv := e
 
 /-- If a bijective map `e : X ≃ Y` is continuous and closed, then it is a homeomorphism. -/
