@@ -173,7 +173,7 @@ theorem coeFn_mk (f : α → β) (hf) : (mk f hf : α →ₘ[μ] β) =ᵐ[μ] f 
 
 @[elab_as_elim]
 theorem induction_on (f : α →ₘ[μ] β) {p : (α →ₘ[μ] β) → Prop} (H : ∀ f hf, p (mk f hf)) : p f :=
-  Quotient.inductionOn' f <| Subtype.forall.2 H
+  Quotient.inductionOn f <| Subtype.forall.2 H
 
 @[elab_as_elim]
 theorem induction_on₂ {α' β' : Type*} [MeasurableSpace α'] [TopologicalSpace β'] {μ' : Measure α'}

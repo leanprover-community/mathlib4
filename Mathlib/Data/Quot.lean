@@ -611,61 +611,18 @@ protected theorem liftOn₂'_mk'' (f : α → β → γ) (h) (a : α) (b : β) :
     Quotient.liftOn₂' (@Quotient.mk'' _ s₁ a) (@Quotient.mk'' _ s₂ b) f h = f a b :=
   rfl
 
-/-- A version of `Quotient.ind` taking `{s : Setoid α}` as an implicit argument instead of an
-instance argument. -/
-@[elab_as_elim]
-protected theorem ind' {p : Quotient s₁ → Prop} (h : ∀ a, p (Quotient.mk'' a)) (q : Quotient s₁) :
-    p q :=
-  Quotient.ind h q
-
-/-- A version of `Quotient.ind₂` taking `{s₁ : Setoid α} {s₂ : Setoid β}` as implicit arguments
-instead of instance arguments. -/
-@[elab_as_elim]
-protected theorem ind₂' {p : Quotient s₁ → Quotient s₂ → Prop}
-    (h : ∀ a₁ a₂, p (Quotient.mk'' a₁) (Quotient.mk'' a₂))
-    (q₁ : Quotient s₁) (q₂ : Quotient s₂) : p q₁ q₂ :=
-  Quotient.ind₂ h q₁ q₂
-
-/-- A version of `Quotient.inductionOn` taking `{s : Setoid α}` as an implicit argument instead
-of an instance argument. -/
-@[elab_as_elim]
-protected theorem inductionOn' {p : Quotient s₁ → Prop} (q : Quotient s₁)
-    (h : ∀ a, p (Quotient.mk'' a)) : p q :=
-  Quotient.inductionOn q h
-
-/-- A version of `Quotient.inductionOn₂` taking `{s₁ : Setoid α} {s₂ : Setoid β}` as implicit
-arguments instead of instance arguments. -/
-@[elab_as_elim]
-protected theorem inductionOn₂' {p : Quotient s₁ → Quotient s₂ → Prop} (q₁ : Quotient s₁)
-    (q₂ : Quotient s₂)
-    (h : ∀ a₁ a₂, p (Quotient.mk'' a₁) (Quotient.mk'' a₂)) : p q₁ q₂ :=
-  Quotient.inductionOn₂ q₁ q₂ h
-
-/-- A version of `Quotient.inductionOn₃` taking `{s₁ : Setoid α} {s₂ : Setoid β} {s₃ : Setoid γ}`
-as implicit arguments instead of instance arguments. -/
-@[elab_as_elim]
-protected theorem inductionOn₃' {p : Quotient s₁ → Quotient s₂ → Quotient s₃ → Prop}
-    (q₁ : Quotient s₁) (q₂ : Quotient s₂) (q₃ : Quotient s₃)
-    (h : ∀ a₁ a₂ a₃, p (Quotient.mk'' a₁) (Quotient.mk'' a₂) (Quotient.mk'' a₃)) :
-    p q₁ q₂ q₃ :=
-  Quotient.inductionOn₃ q₁ q₂ q₃ h
-
-/-- A version of `Quotient.recOnSubsingleton` taking `{s₁ : Setoid α}` as an implicit argument
-instead of an instance argument. -/
-@[elab_as_elim]
-protected def recOnSubsingleton' {φ : Quotient s₁ → Sort*} [∀ a, Subsingleton (φ ⟦a⟧)]
-    (q : Quotient s₁)
-    (f : ∀ a, φ (Quotient.mk'' a)) : φ q :=
-  Quotient.recOnSubsingleton q f
-
-/-- A version of `Quotient.recOnSubsingleton₂` taking `{s₁ : Setoid α} {s₂ : Setoid α}`
-as implicit arguments instead of instance arguments. -/
-@[elab_as_elim]
-protected def recOnSubsingleton₂' {φ : Quotient s₁ → Quotient s₂ → Sort*}
-    [∀ a b, Subsingleton (φ ⟦a⟧ ⟦b⟧)]
-    (q₁ : Quotient s₁) (q₂ : Quotient s₂) (f : ∀ a₁ a₂, φ (Quotient.mk'' a₁) (Quotient.mk'' a₂)) :
-    φ q₁ q₂ :=
-  Quotient.recOnSubsingleton₂ q₁ q₂ f
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias ind' := Quotient.ind
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias ind₂' := Quotient.ind₂
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias inductionOn' :=
+  Quotient.inductionOn
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias inductionOn₂' :=
+  Quotient.inductionOn₂
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias inductionOn₃' :=
+  Quotient.inductionOn₃
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias recOnSubsingleton' :=
+  Quotient.recOnSubsingleton
+@[deprecated (since := "2024-08-09"), elab_as_elim] protected alias recOnSubsingleton₂' :=
+  Quotient.recOnSubsingleton₂
 
 /-- Recursion on a `Quotient` argument `a`, result type depends on `⟦a⟧`. -/
 protected def hrecOn' {φ : Quotient s₁ → Sort*} (qa : Quotient s₁) (f : ∀ a, φ (Quotient.mk'' a))

@@ -301,13 +301,13 @@ theorem coe_smul {α M : Type*} [MulOneClass M] [SMul α M] [IsScalarTower α M 
 @[to_additive]
 instance mulAction {α M : Type*} [Monoid α] [MulOneClass M] [MulAction α M] [IsScalarTower α M M]
     (c : Con M) : MulAction α c.Quotient where
-  one_smul := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| one_smul _ _
-  mul_smul _ _ := Quotient.ind' fun _ => congr_arg Quotient.mk'' <| mul_smul _ _ _
+  one_smul := Quotient.ind fun _ => congr_arg Quotient.mk'' <| one_smul _ _
+  mul_smul _ _ := Quotient.ind fun _ => congr_arg Quotient.mk'' <| mul_smul _ _ _
 
 instance mulDistribMulAction {α M : Type*} [Monoid α] [Monoid M] [MulDistribMulAction α M]
     [IsScalarTower α M M] (c : Con M) : MulDistribMulAction α c.Quotient :=
   { smul_one := fun _ => congr_arg Quotient.mk'' <| smul_one _
-    smul_mul := fun _ => Quotient.ind₂' fun _ _ => congr_arg Quotient.mk'' <| smul_mul' _ _ _ }
+    smul_mul := fun _ => Quotient.ind₂ fun _ _ => congr_arg Quotient.mk'' <| smul_mul' _ _ _ }
 
 end Actions
 

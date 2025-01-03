@@ -66,7 +66,7 @@ theorem coe_coeHom : (coeHom : ℝ → Angle) = ((↑) : ℝ → Angle) :=
 `induction θ using Real.Angle.induction_on`. -/
 @[elab_as_elim]
 protected theorem induction_on {p : Angle → Prop} (θ : Angle) (h : ∀ x : ℝ, p x) : p θ :=
-  Quotient.inductionOn' θ h
+  Quotient.inductionOn θ h
 
 @[simp]
 theorem coe_zero : ↑(0 : ℝ) = (0 : Angle) :=
