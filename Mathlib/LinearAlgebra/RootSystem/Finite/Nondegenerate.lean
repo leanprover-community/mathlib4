@@ -144,7 +144,6 @@ section Field
 
 variable [Field R] [Module R M] [Module R N] (P : RootPairing ι R M N) [P.IsAnisotropic]
 
-/-- See also `RootPairing.isCompl_rootSpan_dualAnnihilator`. -/
 lemma isCompl_rootSpan_ker_rootForm :
     IsCompl P.rootSpan (LinearMap.ker P.RootForm) := by
   have _iM : IsReflexive R M := PerfectPairing.reflexive_left P.toPerfectPairing
@@ -157,7 +156,6 @@ lemma isCompl_rootSpan_ker_rootForm :
   convert Submodule.finrank_mono P.corootSpan_dualAnnihilator_le_ker_rootForm
   exact (LinearEquiv.finrank_map_eq _ _).symm
 
-/-- See also `RootPairing.isCompl_corootSpan_dualAnnihilator`. -/
 lemma isCompl_corootSpan_ker_corootForm :
     IsCompl P.corootSpan (LinearMap.ker P.CorootForm) :=
   P.flip.isCompl_rootSpan_ker_rootForm
@@ -178,9 +176,6 @@ lemma ker_rootForm_eq_dualAnnihilator :
 lemma ker_corootForm_eq_dualAnnihilator :
     LinearMap.ker P.CorootForm = P.rootSpan.dualAnnihilator.map P.toDualRight.symm :=
   P.flip.ker_rootForm_eq_dualAnnihilator
-
-variable (K : Type*) [Field K] [Algebra K R] [Module K M] [Module K N]
-  [IsScalarTower K R M] [IsScalarTower K R N]
 
 instance : P.IsBalanced where
     isPerfectCompl :=
