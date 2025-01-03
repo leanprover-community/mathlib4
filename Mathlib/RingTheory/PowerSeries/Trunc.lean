@@ -136,11 +136,11 @@ lemma trunc_one_left (p : R⟦X⟧) : trunc (R := R) 1 p = .C (coeff R 0 p) := b
 lemma trunc_one_X : trunc (R := R) 1 X = 0 := by simp
 
 @[simp]
-lemma trunc_C_mul (n) (r : R) (f : R⟦X⟧) : trunc n (C R r * f) = .C r * trunc n f := by
+lemma trunc_C_mul (n : ℕ) (r : R) (f : R⟦X⟧) : trunc n (C R r * f) = .C r * trunc n f := by
   ext i; simp [coeff_trunc]
 
 @[simp]
-lemma trunc_mul_C (n) (f : R⟦X⟧) (r : R) : trunc n (f * C R r) = trunc n f * .C r := by
+lemma trunc_mul_C (n : ℕ) (f : R⟦X⟧) (r : R) : trunc n (f * C R r) = trunc n f * .C r := by
   ext i; simp [coeff_trunc]
 
 end Trunc
@@ -228,7 +228,7 @@ end Trunc
 section Map
 variable {S : Type*} [Semiring R] [Semiring S] (f : R →+* S)
 
-lemma trunc_map (p : R⟦X⟧) (n) : (p.map f).trunc n = (p.trunc n).map f := by
+lemma trunc_map (p : R⟦X⟧) (n : ℕ) : (p.map f).trunc n = (p.trunc n).map f := by
   ext m; simp [coeff_trunc, apply_ite f]
 
 end Map
