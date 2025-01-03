@@ -149,11 +149,11 @@ lemma not_isComplement_empty_right : ¬ IsComplement S ∅ :=
   fun h ↦ by simpa [eq_comm (a := ∅)] using h.mul_eq
 
 @[to_additive]
-lemma IsComplement.nonempty_of_left (hst : IsComplement S T) : S.Nonempty := by
+lemma IsComplement.nonempty_left (hst : IsComplement S T) : S.Nonempty := by
   contrapose! hst; simp [hst]
 
 @[to_additive]
-lemma IsComplement.nonempty_of_right (hst : IsComplement S T) : T.Nonempty := by
+lemma IsComplement.nonempty_right (hst : IsComplement S T) : T.Nonempty := by
   contrapose! hst; simp [hst]
 
 @[to_additive] lemma IsComplement.pairwiseDisjoint_smul (hst : IsComplement S T) :
