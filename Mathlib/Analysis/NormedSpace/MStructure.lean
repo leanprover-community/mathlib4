@@ -330,9 +330,9 @@ def idemFst : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inl α β).co
 /-- Projection on `WithLp p (α × β)` with range `β` and kernel `α` -/
 def idemSnd : AddMonoid.End (WithLp p (α × β)) := (AddMonoidHom.inr α β).comp (AddMonoidHom.snd α β)
 
-lemma idemFst_apply (x : WithLp p (α × β)) : idemFst x = (x.1, 0) := rfl
+lemma idemFst_apply (x : WithLp p (α × β)) : idemFst x = (WithLp.equiv _ _).symm (x.1, 0) := rfl
 
-lemma idemSnd_apply (x : WithLp p (α × β)) : idemSnd x = (0, x.2) := rfl
+lemma idemSnd_apply (x : WithLp p (α × β)) : idemSnd x = (WithLp.equiv _ _).symm (0, x.2) := rfl
 
 lemma idemFst_compl : (1 : AddMonoid.End (WithLp p (α × β))) - idemFst = idemSnd := AddMonoidHom.ext
   fun x => by
