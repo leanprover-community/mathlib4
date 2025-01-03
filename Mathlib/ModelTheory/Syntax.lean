@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Jesse Michael Han, Floris van Doorn
 import Mathlib.Data.Set.Prod
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.ModelTheory.LanguageMap
+import Mathlib.Algebra.Order.Ring.Nat
 
 /-!
 # Basics on First-Order Syntax
@@ -365,10 +366,10 @@ protected def ex (φ : L.BoundedFormula α (n + 1)) : L.BoundedFormula α n :=
 instance : Top (L.BoundedFormula α n) :=
   ⟨BoundedFormula.not ⊥⟩
 
-instance : Inf (L.BoundedFormula α n) :=
+instance : Min (L.BoundedFormula α n) :=
   ⟨fun f g => (f.imp g.not).not⟩
 
-instance : Sup (L.BoundedFormula α n) :=
+instance : Max (L.BoundedFormula α n) :=
   ⟨fun f g => f.not.imp g⟩
 
 /-- The biimplication between two bounded formulas. -/
@@ -600,12 +601,14 @@ def toFormula : ∀ {n : ℕ}, L.BoundedFormula α n → L.Formula (α ⊕ (Fin 
         (Sum.elim (Sum.inl ∘ Sum.inl) (Sum.map Sum.inr id ∘ finSumFinEquiv.symm))).all
 
 /-- take the disjunction of a finite set of formulas -/
-noncomputable def iSup (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
-  (s.toList.map f).foldr (· ⊔ ·) ⊥
+noncomputable def iSup [Finite β] (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
+  let _ := Fintype.ofFinite β
+  ((Finset.univ : Finset β).toList.map f).foldr (· ⊔ ·) ⊥
 
 /-- take the conjunction of a finite set of formulas -/
-noncomputable def iInf (s : Finset β) (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
-  (s.toList.map f).foldr (· ⊓ ·) ⊤
+noncomputable def iInf [Finite β] (f : β → L.BoundedFormula α n) : L.BoundedFormula α n :=
+  let _ := Fintype.ofFinite β
+  ((Finset.univ : Finset β).toList.map f).foldr (· ⊓ ·) ⊤
 
 end BoundedFormula
 
@@ -641,7 +644,7 @@ theorem comp_onBoundedFormula {L'' : Language} (φ : L' →ᴸ L'') (ψ : L →�
   ext f
   induction f with
   | falsum => rfl
-  | equal => simp only [onBoundedFormula, comp_onTerm, Function.comp_apply]
+  | equal => simp [Term.bdEqual]
   | rel => simp only [onBoundedFormula, comp_onRelation, comp_onTerm, Function.comp_apply]; rfl
   | imp _ _ ih1 ih2 =>
     simp only [onBoundedFormula, Function.comp_apply, ih1, ih2, eq_self_iff_true, and_self_iff]
@@ -741,21 +744,20 @@ protected nonrec abbrev not (φ : L.Formula α) : L.Formula α :=
 protected abbrev imp : L.Formula α → L.Formula α → L.Formula α :=
   BoundedFormula.imp
 
-/-- Given a map `f : α → β ⊕ γ`, `iAlls f φ` transforms a `L.Formula α`
-into a `L.Formula β` by renaming variables with the map `f` and then universally
-quantifying over all variables `Sum.inr _`. -/
-noncomputable def iAlls [Finite γ] (f : α → β ⊕ γ)
-    (φ : L.Formula α) : L.Formula β :=
-  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
-  (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).alls
 
-/-- Given a map `f : α → β ⊕ γ`, `iExs f φ` transforms a `L.Formula α`
-into a `L.Formula β` by renaming variables with the map `f` and then universally
+variable (β) in
+/-- `iAlls f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by universally
 quantifying over all variables `Sum.inr _`. -/
-noncomputable def iExs [Finite γ] (f : α → β ⊕ γ)
-    (φ : L.Formula α) : L.Formula β :=
-  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
-  (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).exs
+noncomputable def iAlls [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin β))
+  (BoundedFormula.relabel (fun a => Sum.map id e a) φ).alls
+
+variable (β) in
+/-- `iExs f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by existentially
+quantifying over all variables `Sum.inr _`. -/
+noncomputable def iExs [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin β))
+  (BoundedFormula.relabel (fun a => Sum.map id e a) φ).exs
 
 /-- The biimplication between formulas, as a formula. -/
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=

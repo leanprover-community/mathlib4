@@ -40,6 +40,13 @@ abbrev AddCommGroup.zmodModule {G : Type*} [AddCommGroup G] (h : ∀ (x : G), n 
   | 0 => AddCommGroup.toIntModule G
   | _ + 1 => AddCommMonoid.zmodModule h
 
+/-- The quotient of an abelian group by a subgroup containing all multiples of `n` is a
+`n`-torsion group. -/
+-- See note [reducible non-instances]
+abbrev QuotientAddGroup.zmodModule {G : Type*} [AddCommGroup G] {H : AddSubgroup G}
+    (hH : ∀ x, n • x ∈ H) : Module (ZMod n) (G ⧸ H) :=
+  AddCommGroup.zmodModule <| by simpa [QuotientAddGroup.forall_mk, ← QuotientAddGroup.mk_nsmul]
+
 variable {F S : Type*} [AddCommGroup M] [AddCommGroup M₁] [FunLike F M M₁]
   [AddMonoidHomClass F M M₁] [Module (ZMod n) M] [Module (ZMod n) M₁] [SetLike S M]
   [AddSubgroupClass S M] {x : M} {K : S}

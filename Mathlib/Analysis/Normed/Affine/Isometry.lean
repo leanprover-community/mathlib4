@@ -541,7 +541,6 @@ protected theorem injective : Injective e :=
 protected theorem surjective : Surjective e :=
   e.1.surjective
 
--- @[simp] Porting note (#10618): simp can prove this
 theorem map_eq_iff {x y : P} : e x = e y ↔ x = y :=
   e.injective.eq_iff
 
@@ -651,7 +650,7 @@ def pointReflection (x : P) : P ≃ᵃⁱ[𝕜] P :=
 
 variable {𝕜}
 
-theorem pointReflection_apply (x y : P) : (pointReflection 𝕜 x) y = x -ᵥ y +ᵥ x :=
+theorem pointReflection_apply (x y : P) : (pointReflection 𝕜 x) y = (x -ᵥ y) +ᵥ x :=
   rfl
 
 @[simp]

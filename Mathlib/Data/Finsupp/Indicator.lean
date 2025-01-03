@@ -33,7 +33,7 @@ def indicator (s : Finset ι) (f : ∀ i ∈ s, α) : ι →₀ α where
     if H : i ∈ s then f i H else 0
   support :=
     haveI := Classical.decEq α
-    (s.attach.filter fun i : s => f i.1 i.2 ≠ 0).map (Embedding.subtype _)
+    ({i | f i.1 i.2 ≠ 0} : Finset s).map (Embedding.subtype _)
   mem_support_toFun i := by
     classical simp
 

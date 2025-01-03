@@ -18,7 +18,7 @@ in particular `MonCat`, `SemiRingCat`, `RingCat`, and `AlgebraCat R`.)
 -/
 
 
-open CategoryTheory Limits Monoidal
+open CategoryTheory Limits Monoidal MonoidalCategory
 
 universe v u w
 
@@ -36,7 +36,7 @@ and hence sends monoid objects to monoid objects.
 -/
 @[simps!]
 def limit (F : J ⥤ Mon_ C) : Mon_ C :=
-  limLax.mapMon.obj ((monFunctorCategoryEquivalence J C).inverse.obj F)
+  lim.mapMon.obj ((monFunctorCategoryEquivalence J C).inverse.obj F)
 
 /-- Implementation of `Mon_.hasLimits`: a limiting cone over a functor `F : J ⥤ Mon_ C`.
 -/
@@ -54,21 +54,19 @@ def forgetMapConeLimitConeIso (F : J ⥤ Mon_ C) :
     (forget C).mapCone (limitCone F) ≅ limit.cone (F ⋙ forget C) :=
   Cones.ext (Iso.refl _) (by aesop_cat)
 
-/-- Implementation of `Mon_.hasLimits`:
+/-- Implementation of `Mon_.hasLimitsOfShape`:
 the proposed cone over a functor `F : J ⥤ Mon_ C` is a limit cone.
 -/
 @[simps]
 def limitConeIsLimit (F : J ⥤ Mon_ C) : IsLimit (limitCone F) where
   lift s :=
     { hom := limit.lift (F ⋙ Mon_.forget C) ((Mon_.forget C).mapCone s)
-      mul_hom := by
+      mul_hom := limit.hom_ext (fun j ↦ by
         dsimp
-        ext
-        simp only [Functor.comp_obj, forget_obj, Category.assoc, limit.lift_π, Functor.mapCone_pt,
-          Functor.mapCone_π_app, forget_map, Hom.mul_hom, limit_mul, Cones.postcompose_obj_pt,
-          Cones.postcompose_obj_π, NatTrans.comp_app, Functor.const_obj_obj, tensorObj_obj]
-        slice_rhs 1 2 => rw [← MonoidalCategory.tensor_comp, limit.lift_π]
-        rfl }
+        simp only [Category.assoc, limit.lift_π, Functor.mapCone_pt, forget_obj,
+          Functor.mapCone_π_app, forget_map, Hom.mul_hom, limMap_π, tensorObj_obj, Functor.comp_obj,
+          MonFunctorCategoryEquivalence.inverseObj_mul_app, lim_μ_π_assoc, lim_obj,
+          ← MonoidalCategory.tensor_comp_assoc]) }
   fac s h := by ext; simp
   uniq s m w := by
     ext1
@@ -81,9 +79,9 @@ instance hasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfShape J (Mon_ C) w
     { cone := limitCone F
       isLimit := limitConeIsLimit F }
 
-instance forgetPreservesLimitsOfShape : PreservesLimitsOfShape J (Mon_.forget C) where
+instance forget_freservesLimitsOfShape : PreservesLimitsOfShape J (Mon_.forget C) where
   preservesLimit := fun {F} =>
-    preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
+    preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
       (IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Mon_.forget C)) (forgetMapConeLimitConeIso F).symm)
 
 end Mon_

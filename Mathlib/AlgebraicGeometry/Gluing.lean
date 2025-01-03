@@ -51,7 +51,7 @@ noncomputable section
 
 universe u
 
-open TopologicalSpace CategoryTheory Opposite
+open TopologicalSpace CategoryTheory Opposite Topology
 
 open CategoryTheory.Limits AlgebraicGeometry.PresheafedSpace
 
@@ -79,7 +79,7 @@ such that
 We can then glue the schemes `U i` together by identifying `V i j` with `V j i`, such
 that the `U i`'s are open subschemes of the glued space.
 -/
--- Porting note(#5171): @[nolint has_nonempty_instance]; linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): @[nolint has_nonempty_instance]; linter not ported yet
 structure GlueData extends CategoryTheory.GlueData Scheme where
   f_open : ∀ i j, IsOpenImmersion (f i j)
 
@@ -126,7 +126,7 @@ def gluedScheme : Scheme := by
   refine ⟨_, ((D.U i).affineCover.map y).toLRSHom ≫
     D.toLocallyRingedSpaceGlueData.toGlueData.ι i, ?_⟩
   constructor
-  · erw [TopCat.coe_comp, Set.range_comp] -- now `erw` after #13170
+  · erw [TopCat.coe_comp, Set.range_comp] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
     refine Set.mem_image_of_mem _ ?_
     exact (D.U i).affineCover.covers y
   · infer_instance
@@ -230,7 +230,7 @@ theorem ι_eq_iff (i j : D.J) (x : (D.U i).carrier) (y : (D.U j).carrier) :
       i j x y)
   rw [← ((TopCat.mono_iff_injective D.isoCarrier.inv).mp _).eq_iff, ← comp_apply]
   · simp_rw [← D.ι_isoCarrier_inv]
-    rfl -- `rfl` was not needed before #13170
+    rfl -- `rfl` was not needed before https://github.com/leanprover-community/mathlib4/pull/13170
   · infer_instance
 
 theorem isOpen_iff (U : Set D.glued.carrier) : IsOpen U ↔ ∀ i, IsOpen ((D.ι i).base ⁻¹' U) := by
@@ -251,7 +251,7 @@ def openCover (D : Scheme.GlueData) : OpenCover D.glued where
 
 end GlueData
 
-namespace OpenCover
+namespace Cover
 
 variable {X : Scheme.{u}} (𝒰 : OpenCover.{u} X)
 
@@ -380,8 +380,7 @@ theorem fromGlued_open_map : IsOpenMap 𝒰.fromGlued.base := by
   · exact ⟨hx, 𝒰.covers x⟩
 
 theorem fromGlued_isOpenEmbedding : IsOpenEmbedding 𝒰.fromGlued.base :=
-  isOpenEmbedding_of_continuous_injective_open
-    (by fun_prop) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
+  .of_continuous_injective_isOpenMap (by fun_prop) 𝒰.fromGlued_injective 𝒰.fromGlued_open_map
 
 @[deprecated (since := "2024-10-18")]
 alias fromGlued_openEmbedding := fromGlued_isOpenEmbedding
@@ -439,7 +438,7 @@ theorem hom_ext {Y : Scheme} (f₁ f₂ : X ⟶ Y) (h : ∀ x, 𝒰.map x ≫ f�
   erw [Multicoequalizer.π_desc_assoc]
   exact h x
 
-end OpenCover
+end Cover
 
 end Scheme
 

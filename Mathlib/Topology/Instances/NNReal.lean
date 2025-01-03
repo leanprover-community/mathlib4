@@ -7,8 +7,8 @@ import Mathlib.Data.NNReal.Star
 import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.ContinuousMap.Basic
-import Mathlib.Topology.Instances.Real
 import Mathlib.Topology.MetricSpace.Isometry
+import Mathlib.Topology.Instances.Real
 
 /-!
 # Topology on `ℝ≥0`
@@ -51,8 +51,7 @@ a few of which rely on the fact that subtraction is continuous.
 
 noncomputable section
 
-open Set TopologicalSpace Metric Filter
-open scoped Topology
+open Filter Metric Set TopologicalSpace Topology
 
 namespace NNReal
 
@@ -74,6 +73,18 @@ instance : CompleteSpace ℝ≥0 :=
 
 instance : ContinuousStar ℝ≥0 where
   continuous_star := continuous_id
+
+-- TODO: generalize this to a broader class of subtypes
+instance : IsOrderBornology ℝ≥0 where
+  isBounded_iff_bddBelow_bddAbove s := by
+    refine ⟨fun bdd ↦ ?_, fun h ↦ isBounded_of_bddAbove_of_bddBelow h.2 h.1⟩
+    obtain ⟨r, hr⟩ : ∃ r : ℝ≥0, s ⊆ Icc 0 r := by
+      obtain ⟨rreal, hrreal⟩ := bdd.subset_closedBall 0
+      use rreal.toNNReal
+      simp only [← NNReal.closedBall_zero_eq_Icc', Real.coe_toNNReal']
+      exact subset_trans hrreal (Metric.closedBall_subset_closedBall (le_max_left rreal 0))
+    exact ⟨bddBelow_Icc.mono hr, bddAbove_Icc.mono hr⟩
+
 section coe
 
 lemma isOpen_Ico_zero {x : NNReal} : IsOpen (Set.Ico 0 x) :=
@@ -254,7 +265,7 @@ nonrec theorem tendsto_tsum_compl_atTop_zero {α : Type*} (f : α → ℝ≥0) :
 /-- `x ↦ x ^ n` as an order isomorphism of `ℝ≥0`. -/
 def powOrderIso (n : ℕ) (hn : n ≠ 0) : ℝ≥0 ≃o ℝ≥0 :=
   StrictMono.orderIsoOfSurjective (fun x ↦ x ^ n) (fun x y h =>
-      pow_left_strictMonoOn hn (zero_le x) (zero_le y) h) <|
+      pow_left_strictMonoOn₀ hn (zero_le x) (zero_le y) h) <|
     (continuous_id.pow _).surjective (tendsto_pow_atTop hn) <| by
       simpa [OrderBot.atBot_eq, pos_iff_ne_zero]
 

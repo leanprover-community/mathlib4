@@ -5,14 +5,15 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
-import Mathlib.CategoryTheory.Preadditive.Basic
-import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.Data.Matrix.DMatrix
-import Mathlib.Data.Matrix.Basic
-import Mathlib.CategoryTheory.FintypeCat
-import Mathlib.CategoryTheory.Preadditive.SingleObj
 import Mathlib.Algebra.Opposites
+import Mathlib.Algebra.Ring.Opposite
+import Mathlib.CategoryTheory.FintypeCat
+import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
+import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
+import Mathlib.CategoryTheory.Preadditive.Basic
+import Mathlib.CategoryTheory.Preadditive.SingleObj
+import Mathlib.Data.Matrix.DMatrix
+import Mathlib.Data.Matrix.Mul
 
 /-!
 # Matrices over a category.
@@ -73,7 +74,7 @@ namespace Mat_
 
 variable {C}
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- A morphism in `Mat_ C` is a dependently typed matrix of morphisms. -/
 def Hom (M N : Mat_ C) : Type v₁ :=
   DMatrix M.ι N.ι fun i j => M.X i ⟶ N.X j
@@ -583,7 +584,7 @@ instance (X Y : Mat R) : AddCommGroup (X ⟶ Y) := by
 
 variable {R}
 
--- Porting note (#10688): added to ease automation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[simp]
 theorem add_apply {M N : Mat R} (f g : M ⟶ N) (i j) : (f + g) i j = f i j + g i j :=
   rfl

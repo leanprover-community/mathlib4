@@ -48,7 +48,6 @@ theorem support_pure : (pure a).support = {a} :=
 
 theorem mem_support_pure_iff : a' ∈ (pure a).support ↔ a' = a := by simp
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem pure_apply_self : pure a a = 1 :=
   if_pos rfl
 

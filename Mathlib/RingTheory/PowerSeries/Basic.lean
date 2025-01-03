@@ -155,6 +155,10 @@ theorem ext {φ ψ : R⟦X⟧} (h : ∀ n, coeff R n φ = coeff R n ψ) : φ = �
     · apply h
     rfl
 
+@[simp]
+theorem forall_coeff_eq_zero (φ : R⟦X⟧) : (∀ n, coeff R n φ = 0) ↔ φ = 0 :=
+  ⟨fun h => ext h, fun h => by simp [h]⟩
+
 /-- Two formal power series are equal if all their coefficients are equal. -/
 add_decl_doc PowerSeries.ext_iff
 
@@ -214,7 +218,7 @@ theorem coeff_zero_eq_constantCoeff_apply (φ : R⟦X⟧) : coeff R 0 φ = const
 
 @[simp]
 theorem monomial_zero_eq_C : ⇑(monomial R 0) = C R := by
-  -- This used to be `rw`, but we need `rw; rfl` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `rw; rfl` after https://github.com/leanprover/lean4/pull/2644
   rw [monomial, Finsupp.single_zero, MvPowerSeries.monomial_zero_eq_C]
   rfl
 
@@ -327,13 +331,11 @@ theorem constantCoeff_C (a : R) : constantCoeff R (C R a) = a :=
 theorem constantCoeff_comp_C : (constantCoeff R).comp (C R) = RingHom.id R :=
   rfl
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem constantCoeff_zero : constantCoeff R 0 = 0 :=
   rfl
 
--- Porting note (#10618): simp can prove this.
--- @[simp]
+@[simp]
 theorem constantCoeff_one : constantCoeff R 1 = 1 :=
   rfl
 
@@ -588,7 +590,7 @@ lemma coeff_one_pow (n : ℕ) (φ : R⟦X⟧) :
   rcases Nat.eq_zero_or_pos n with (rfl | hn)
   · simp
   induction n with
-  | zero => by_contra; linarith
+  | zero => omega
   | succ n' ih =>
       have h₁ (m : ℕ) : φ ^ (m + 1) = φ ^ m * φ := by exact rfl
       have h₂ : Finset.antidiagonal 1 = {(0, 1), (1, 0)} := by exact rfl
@@ -760,17 +762,20 @@ namespace Polynomial
 
 open Finsupp Polynomial
 
-variable {σ : Type*} {R : Type*} [CommSemiring R] (φ ψ : R[X])
+section CommSemiring
+variable {R : Type*} [CommSemiring R] (φ ψ : R[X])
 
 -- Porting note: added so we can add the `@[coe]` attribute
 /-- The natural inclusion from polynomials into formal power series. -/
 @[coe]
-def ToPowerSeries : R[X] → (PowerSeries R) := fun φ =>
+def toPowerSeries : R[X] → (PowerSeries R) := fun φ =>
   PowerSeries.mk fun n => coeff φ n
+
+@[deprecated (since := "2024-10-27")] alias ToPowerSeries := toPowerSeries
 
 /-- The natural inclusion from polynomials into formal power series. -/
 instance coeToPowerSeries : Coe R[X] (PowerSeries R) :=
-  ⟨ToPowerSeries⟩
+  ⟨toPowerSeries⟩
 
 theorem coe_def : (φ : PowerSeries R) = PowerSeries.mk (coeff φ) :=
   rfl
@@ -876,6 +881,21 @@ def coeToPowerSeries.algHom : R[X] →ₐ[R] PowerSeries A :=
 theorem coeToPowerSeries.algHom_apply :
     coeToPowerSeries.algHom A φ = PowerSeries.map (algebraMap R A) ↑φ :=
   rfl
+
+end CommSemiring
+
+section CommRing
+variable {R : Type*} [CommRing R]
+
+@[simp, norm_cast]
+lemma coe_neg (p : R[X]) : ((- p : R[X]) : PowerSeries R) = - p :=
+  coeToPowerSeries.ringHom.map_neg p
+
+@[simp, norm_cast]
+lemma coe_sub (p q : R[X]) : ((p - q : R[X]) : PowerSeries R) = p - q :=
+  coeToPowerSeries.ringHom.map_sub p q
+
+end CommRing
 
 end Polynomial
 

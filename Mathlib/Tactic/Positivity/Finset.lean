@@ -20,7 +20,7 @@ namespace Mathlib.Meta.Positivity
 
 open Qq Lean Meta Finset
 
-/-- Extension for `Finset.card`. `s.card` is positive if `s` is nonempty.
+/-- Extension for `Finset.card`. `#s` is positive if `s` is nonempty.
 
 It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset is nonempty. -/
 @[positivity Finset.card _]
@@ -42,7 +42,7 @@ def evalFintypeCard : PositivityExt where eval {u α} _ _ e := do
     return .positive q(@Fintype.card_pos $β $instβ $instβno)
   | _ => throwError "not Fintype.card"
 
-/-- Extension for `Finset.dens`. `s.card` is positive if `s` is nonempty.
+/-- Extension for `Finset.dens`. `s.dens` is positive if `s` is nonempty.
 
 It calls `Mathlib.Meta.proveFinsetNonempty` to attempt proving that the finset is nonempty. -/
 @[positivity Finset.dens _]
@@ -54,6 +54,7 @@ def evalFinsetDens : PositivityExt where eval {u 𝕜} _ _ e := do
     return .positive q(@Nonempty.dens_pos $α $instα $s $ps)
   | _, _, _ => throwError "not Finset.dens"
 
+attribute [local instance] monadLiftOptionMetaM in
 /-- The `positivity` extension which proves that `∑ i ∈ s, f i` is nonnegative if `f` is, and
 positive if each `f i` is and `s` is nonempty.
 
@@ -91,8 +92,8 @@ def evalFinsetSum : PositivityExt where eval {u α} zα pα e := do
 
 variable {α : Type*} {s : Finset α}
 
-example : 0 ≤ s.card := by positivity
-example (hs : s.Nonempty) : 0 < s.card := by positivity
+example : 0 ≤ #s := by positivity
+example (hs : s.Nonempty) : 0 < #s := by positivity
 
 variable [Fintype α]
 
@@ -100,13 +101,13 @@ example : 0 ≤ Fintype.card α := by positivity
 example : 0 ≤ dens s := by positivity
 example (hs : s.Nonempty) : 0 < dens s := by positivity
 example (hs : s.Nonempty) : dens s ≠ 0 := by positivity
-example [Nonempty α] : 0 < (univ : Finset α).card := by positivity
+example [Nonempty α] : 0 < #(univ : Finset α) := by positivity
 example [Nonempty α] : 0 < Fintype.card α := by positivity
 example [Nonempty α] : 0 < dens (univ : Finset α) := by positivity
 example [Nonempty α] : dens (univ : Finset α) ≠ 0 := by positivity
 
 example {G : Type*} {A : Finset G} :
-  let f := fun _ : G ↦ 1; (∀ s, f s ^ 2 = 1) → 0 ≤ A.card := by
+  let f := fun _ : G ↦ 1; (∀ s, f s ^ 2 = 1) → 0 ≤ #A := by
   intros
   positivity -- Should succeed despite failing to prove `A` is nonempty.
 

@@ -8,6 +8,8 @@ import Mathlib.LinearAlgebra.Matrix.Spectrum
 import Mathlib.LinearAlgebra.Eigenspace.Matrix
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Unique
 import Mathlib.Topology.ContinuousMap.Units
+import Mathlib.Analysis.Matrix
+import Mathlib.Topology.UniformSpace.Matrix
 
 /-!
 # Continuous Functional Calculus for Hermitian Matrices
@@ -30,6 +32,8 @@ This file defines an instance of the continuous functional calculus for Hermitia
 
 spectral theorem, diagonalization theorem, continuous functional calculus
 -/
+
+open Topology
 
 namespace Matrix
 

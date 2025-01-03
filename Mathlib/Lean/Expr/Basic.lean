@@ -6,7 +6,6 @@ Floris van Doorn, Edward Ayers, Arthur Paulino
 -/
 import Mathlib.Init
 import Lean.Meta.Tactic.Rewrite
-import Batteries.Lean.Expr
 import Batteries.Tactic.Alias
 import Lean.Elab.Binders
 
@@ -263,6 +262,7 @@ section recognizers
 partial def numeral? (e : Expr) : Option Nat :=
   if let some n := e.rawNatLit? then n
   else
+    let e := e.consumeMData -- `OfNat` numerals may have `no_index` around them from `ofNat()`
     let f := e.getAppFn
     if !f.isConst then none
     else

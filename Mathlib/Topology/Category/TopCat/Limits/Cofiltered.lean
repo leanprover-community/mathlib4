@@ -15,7 +15,7 @@ of sets in the limit is, in fact, a topological basis.
 -/
 
 
-open TopologicalSpace
+open TopologicalSpace Topology
 
 open CategoryTheory
 
@@ -29,7 +29,7 @@ namespace TopCat
 
 section CofilteredLimit
 
-variable {J : Type v} [SmallCategory J] [IsCofiltered J] (F : J ⥤ TopCat.{max v u}) (C : Cone F)
+variable {J : Type v} [Category.{w} J] [IsCofiltered J] (F : J ⥤ TopCat.{max v u}) (C : Cone F)
 
 /-- Given a *compatible* collection of topological bases for the factors in a cofiltered limit
 which contain `Set.univ` and are closed under intersections, the induced *naive* collection
@@ -46,12 +46,12 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
   let D := limitConeInfi F
   -- The isomorphism between the cone point of `C` and the cone point of `D`.
   let E : C.pt ≅ D.pt := hC.conePointUniqueUpToIso (limitConeInfiIsLimit _)
-  have hE : Inducing E.hom := (TopCat.homeoOfIso E).inducing
+  have hE : IsInducing E.hom := (TopCat.homeoOfIso E).isInducing
   -- Reduce to the assertion of the theorem with `D` instead of `C`.
   suffices
     IsTopologicalBasis
       {U : Set D.pt | ∃ (j : _) (V : Set (F.obj j)), V ∈ T j ∧ U = D.π.app j ⁻¹' V} by
-    convert this.inducing hE
+    convert this.isInducing hE
     ext U0
     constructor
     · rintro ⟨j, V, hV, rfl⟩

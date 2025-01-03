@@ -19,12 +19,12 @@ This file provides lemmas about the interaction between infinite sums and multip
 
 open Filter Finset Function
 
-variable {ι κ R α : Type*}
+variable {ι κ α : Type*}
 
 section NonUnitalNonAssocSemiring
 
-variable [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [TopologicalSemiring α] {f g : ι → α}
-  {a a₁ a₂ : α}
+variable [NonUnitalNonAssocSemiring α] [TopologicalSpace α] [TopologicalSemiring α] {f : ι → α}
+  {a₁ : α}
 
 theorem HasSum.mul_left (a₂) (h : HasSum f a₁) : HasSum (fun i ↦ a₂ * f i) (a₂ * a₁) := by
   simpa only using h.map (AddMonoidHom.mulLeft a₂) (continuous_const.mul continuous_id)
@@ -63,8 +63,7 @@ end NonUnitalNonAssocSemiring
 
 section DivisionSemiring
 
-variable [DivisionSemiring α] [TopologicalSpace α] [TopologicalSemiring α] {f g : ι → α}
-  {a a₁ a₂ : α}
+variable [DivisionSemiring α] [TopologicalSpace α] [TopologicalSemiring α] {f : ι → α} {a a₁ a₂ : α}
 
 theorem HasSum.div_const (h : HasSum f a) (b : α) : HasSum (fun i ↦ f i / b) (a / b) := by
   simp only [div_eq_mul_inv, h.mul_right b⁻¹]
@@ -106,6 +105,22 @@ theorem tsum_mul_right [T2Space α] : ∑' x, f x * a = (∑' x, f x) * a := by
 
 theorem tsum_div_const [T2Space α] : ∑' x, f x / a = (∑' x, f x) / a := by
   simpa only [div_eq_mul_inv] using tsum_mul_right
+
+theorem HasSum.const_div (h :  HasSum (fun x ↦ 1 / f x) a) (b : α) :
+    HasSum (fun i ↦ b / f i) (b * a) := by
+  have := h.mul_left b
+  simpa only [div_eq_mul_inv, one_mul] using this
+
+theorem Summable.const_div (h : Summable (fun x ↦ 1 / f x)) (b : α) :
+    Summable fun i ↦ b / f i :=
+  (h.hasSum.const_div b).summable
+
+theorem hasSum_const_div_iff (h : a₂ ≠ 0) :
+    HasSum (fun i ↦ a₂ / f i) (a₂ * a₁) ↔ HasSum (1/ f) a₁ := by
+  simpa only [div_eq_mul_inv, one_mul] using hasSum_mul_left_iff h
+
+theorem summable_const_div_iff (h : a ≠ 0) : (Summable fun i ↦ a / f i) ↔ Summable (1 / f) := by
+  simpa only [div_eq_mul_inv, one_mul] using summable_mul_left_iff h
 
 end DivisionSemiring
 

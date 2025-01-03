@@ -214,7 +214,7 @@ theorem coeff_multiset_prod_of_natDegree_le (n : ℕ) (hl : ∀ p ∈ t, natDegr
   simpa using coeff_list_prod_of_natDegree_le _ _ hl
 
 theorem coeff_prod_of_natDegree_le (f : ι → R[X]) (n : ℕ) (h : ∀ p ∈ s, natDegree (f p) ≤ n) :
-    coeff (∏ i ∈ s, f i) (s.card * n) = ∏ i ∈ s, coeff (f i) n := by
+    coeff (∏ i ∈ s, f i) (#s * n) = ∏ i ∈ s, coeff (f i) n := by
   cases' s with l hl
   convert coeff_multiset_prod_of_natDegree_le (l.map f) n ?_
   · simp
@@ -266,9 +266,19 @@ theorem multiset_prod_X_sub_C_coeff_card_pred (t : Multiset R) (ht : 0 < Multise
     exact fun h => one_ne_zero <| h 1 ⟨_, ⟨x, hx, rfl⟩, natDegree_X_sub_C _⟩
   congr; rw [natDegree_multiset_prod_of_monic] <;> · simp [natDegree_X_sub_C, monic_X_sub_C]
 
-theorem prod_X_sub_C_coeff_card_pred (s : Finset ι) (f : ι → R) (hs : 0 < s.card) :
-    (∏ i ∈ s, (X - C (f i))).coeff (s.card - 1) = -∑ i ∈ s, f i := by
+theorem prod_X_sub_C_coeff_card_pred (s : Finset ι) (f : ι → R) (hs : 0 < #s) :
+    (∏ i ∈ s, (X - C (f i))).coeff (#s - 1) = -∑ i ∈ s, f i := by
   simpa using multiset_prod_X_sub_C_coeff_card_pred (s.1.map f) (by simpa using hs)
+
+variable [IsDomain R]
+
+@[simp]
+lemma natDegree_multiset_prod_X_sub_C_eq_card (s : Multiset R) :
+    (s.map (X - C ·)).prod.natDegree = Multiset.card s := by
+  rw [natDegree_multiset_prod_of_monic, Multiset.map_map]
+  · simp only [(· ∘ ·), natDegree_X_sub_C, Multiset.map_const', Multiset.sum_replicate, smul_eq_mul,
+      mul_one]
+  · exact Multiset.forall_mem_map_iff.2 fun a _ => monic_X_sub_C a
 
 end CommRing
 
@@ -333,7 +343,7 @@ where additionally, the product of the leading coefficients must be nonzero.
 theorem leadingCoeff_multiset_prod :
     t.prod.leadingCoeff = (t.map fun f => leadingCoeff f).prod := by
   rw [← leadingCoeffHom_apply, MonoidHom.map_multiset_prod]
-  rfl
+  simp only [leadingCoeffHom_apply]
 
 /-- The leading coefficient of a product of polynomials is equal to
 the product of the leading coefficients.

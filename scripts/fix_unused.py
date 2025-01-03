@@ -2,6 +2,9 @@
 
 # https://chatgpt.com/share/66f4e420-66bc-8001-8349-ce3cfb4f23c3
 # Usage: lake build | scripts/fix_unused.py
+
+# Bulk processing of unused variable warnings, replacing them with `_`.
+
 import re
 import sys
 

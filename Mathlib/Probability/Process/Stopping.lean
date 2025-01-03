@@ -245,8 +245,8 @@ protected theorem min_const [LinearOrder ι] {f : Filtration ι m} {τ : Ω → 
     (hτ : IsStoppingTime f τ) (i : ι) : IsStoppingTime f fun ω => min (τ ω) i :=
   hτ.min (isStoppingTime_const f i)
 
-theorem add_const [AddGroup ι] [Preorder ι] [CovariantClass ι ι (Function.swap (· + ·)) (· ≤ ·)]
-    [CovariantClass ι ι (· + ·) (· ≤ ·)] {f : Filtration ι m} {τ : Ω → ι} (hτ : IsStoppingTime f τ)
+theorem add_const [AddGroup ι] [Preorder ι] [AddRightMono ι]
+    [AddLeftMono ι] {f : Filtration ι m} {τ : Ω → ι} (hτ : IsStoppingTime f τ)
     {i : ι} (hi : 0 ≤ i) : IsStoppingTime f fun ω => τ ω + i := by
   intro j
   simp_rw [← le_sub_iff_add_le]
@@ -323,31 +323,25 @@ theorem measurableSpace_le_of_countable [Countable ι] (hτ : IsStoppingTime f �
     · rintro ⟨_, hx, _⟩
       exact hx
 
-theorem measurableSpace_le' [IsCountablyGenerated (atTop : Filter ι)] [(atTop : Filter ι).NeBot]
+theorem measurableSpace_le [IsCountablyGenerated (atTop : Filter ι)] [IsDirected ι (· ≤ ·)]
     (hτ : IsStoppingTime f τ) : hτ.measurableSpace ≤ m := by
   intro s hs
-  change ∀ i, MeasurableSet[f i] (s ∩ {ω | τ ω ≤ i}) at hs
-  obtain ⟨seq : ℕ → ι, h_seq_tendsto⟩ := (atTop : Filter ι).exists_seq_tendsto
-  rw [(_ : s = ⋃ n, s ∩ {ω | τ ω ≤ seq n})]
-  · exact MeasurableSet.iUnion fun i => f.le (seq i) _ (hs (seq i))
-  · ext ω; constructor <;> rw [Set.mem_iUnion]
-    · intro hx
-      suffices ∃ i, τ ω ≤ seq i from ⟨this.choose, hx, this.choose_spec⟩
-      rw [tendsto_atTop] at h_seq_tendsto
-      exact (h_seq_tendsto (τ ω)).exists
-    · rintro ⟨_, hx, _⟩
-      exact hx
-
-theorem measurableSpace_le {ι} [SemilatticeSup ι] {f : Filtration ι m} {τ : Ω → ι}
-    [IsCountablyGenerated (atTop : Filter ι)] (hτ : IsStoppingTime f τ) :
-    hτ.measurableSpace ≤ m := by
   cases isEmpty_or_nonempty ι
   · haveI : IsEmpty Ω := ⟨fun ω => IsEmpty.false (τ ω)⟩
-    intro s _
-    suffices hs : s = ∅ by rw [hs]; exact MeasurableSet.empty
-    haveI : Unique (Set Ω) := Set.uniqueEmpty
-    rw [Unique.eq_default s, Unique.eq_default ∅]
-  exact measurableSpace_le' hτ
+    apply Subsingleton.measurableSet
+  · change ∀ i, MeasurableSet[f i] (s ∩ {ω | τ ω ≤ i}) at hs
+    obtain ⟨seq : ℕ → ι, h_seq_tendsto⟩ := (atTop : Filter ι).exists_seq_tendsto
+    rw [(_ : s = ⋃ n, s ∩ {ω | τ ω ≤ seq n})]
+    · exact MeasurableSet.iUnion fun i => f.le (seq i) _ (hs (seq i))
+    · ext ω; constructor <;> rw [Set.mem_iUnion]
+      · intro hx
+        suffices ∃ i, τ ω ≤ seq i from ⟨this.choose, hx, this.choose_spec⟩
+        rw [tendsto_atTop] at h_seq_tendsto
+        exact (h_seq_tendsto (τ ω)).exists
+      · rintro ⟨_, hx, _⟩
+        exact hx
+
+@[deprecated (since := "2024-12-25")] alias measurableSpace_le' := measurableSpace_le
 
 example {f : Filtration ℕ m} {τ : Ω → ℕ} (hτ : IsStoppingTime f τ) : hτ.measurableSpace ≤ m :=
   hτ.measurableSpace_le
@@ -387,8 +381,7 @@ theorem measurableSet_inter_eq_iff (hτ : IsStoppingTime f τ) (s : Set Ω) (i :
     by_cases hij : i ≤ j
     · simp only [hij, Set.setOf_true, Set.inter_univ]
       exact f.mono hij _ h
-    · set_option tactic.skipAssignedInstances false in simp [hij]
-      convert @MeasurableSet.empty _ (Filtration.seq f j)
+    · simp [hij]
 
 theorem measurableSpace_le_of_le_const (hτ : IsStoppingTime f τ) {i : ι} (hτ_le : ∀ ω, τ ω ≤ i) :
     hτ.measurableSpace ≤ f i :=
@@ -753,7 +746,7 @@ theorem progMeasurable_min_stopping_time [MetrizableSpace ι] (hτ : IsStoppingT
     suffices h_min_eq_left :
       (fun x : sc => min (↑(x : Set.Iic i × Ω).fst) (τ (x : Set.Iic i × Ω).snd)) = fun x : sc =>
         ↑(x : Set.Iic i × Ω).fst by
-      simp (config := { unfoldPartialApp := true }) only [Set.restrict, h_min_eq_left]
+      simp +unfoldPartialApp only [sc, Set.restrict, h_min_eq_left]
       exact h_meas_fst _
     ext1 ω
     rw [min_eq_left]

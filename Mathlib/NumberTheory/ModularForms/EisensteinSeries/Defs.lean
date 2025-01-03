@@ -109,17 +109,17 @@ def _root_.eisensteinSeries (k : ℤ) (z : ℍ) : ℂ := ∑' x : gammaSet N a, 
 lemma eisensteinSeries_slash_apply (k : ℤ) (γ : SL(2, ℤ)) :
     eisensteinSeries a k ∣[k] γ = eisensteinSeries (a ᵥ* γ) k := by
   ext1 z
-  simp_rw [SL_slash, slash_def, slash, ModularGroup.det_coe', ofReal_one, one_zpow, mul_one,
+  simp_rw [SL_slash, slash_def, slash, ModularGroup.det_coe, ofReal_one, one_zpow, mul_one,
     zpow_neg, mul_inv_eq_iff_eq_mul₀ (zpow_ne_zero _ <| z.denom_ne_zero _), mul_comm,
     eisensteinSeries, ← ModularGroup.sl_moeb, eisSummand_SL2_apply, tsum_mul_left]
-  erw [(gammaSetEquiv a γ).tsum_eq (eisSummand k · z)]
+  exact congr_arg (_ * ·) <| (gammaSetEquiv a γ).tsum_eq (eisSummand k · z)
 
 /-- The SlashInvariantForm defined by an Eisenstein series of weight `k : ℤ`, level `Γ(N)`,
   and congruence condition given by `a : Fin 2 → ZMod N`. -/
 def eisensteinSeries_SIF (k : ℤ) : SlashInvariantForm (Gamma N) k where
   toFun := eisensteinSeries a k
-  slash_action_eq' A := by rw [subgroup_slash, ← SL_slash, eisensteinSeries_slash_apply,
-      (Gamma_mem' N A).mp A.2, SpecialLinearGroup.coe_one, vecMul_one]
+  slash_action_eq' A hA := by simp only [eisensteinSeries_slash_apply, Gamma_mem'.mp hA,
+    SpecialLinearGroup.coe_one, vecMul_one]
 
 lemma eisensteinSeries_SIF_apply (k : ℤ) (z : ℍ) :
     eisensteinSeries_SIF a k z = eisensteinSeries a k z := rfl

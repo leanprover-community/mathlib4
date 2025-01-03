@@ -3,7 +3,7 @@ Copyright (c) 2024 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.LinearMap
 
 /-!
 # Algebraic operations on `SeparationQuotient`
@@ -36,7 +36,7 @@ theorem mk_smul (c : M) (x : X) : mk (c • x) = c • mk x := rfl
 
 @[to_additive]
 instance instContinuousConstSMul : ContinuousConstSMul M (SeparationQuotient X) where
-  continuous_const_smul c := quotientMap_mk.continuous_iff.2 <|
+  continuous_const_smul c := isQuotientMap_mk.continuous_iff.2 <|
     continuous_mk.comp <| continuous_const_smul c
 
 @[to_additive]
@@ -67,7 +67,7 @@ end SMul
 instance instContinuousSMul {M X : Type*} [SMul M X] [TopologicalSpace M] [TopologicalSpace X]
     [ContinuousSMul M X] : ContinuousSMul M (SeparationQuotient X) where
   continuous_smul := by
-    rw [(IsOpenQuotientMap.id.prodMap isOpenQuotientMap_mk).quotientMap.continuous_iff]
+    rw [(IsOpenQuotientMap.id.prodMap isOpenQuotientMap_mk).isQuotientMap.continuous_iff]
     exact continuous_mk.comp continuous_smul
 
 instance instSMulZeroClass {M X : Type*} [Zero X] [SMulZeroClass M X] [TopologicalSpace X]
@@ -85,7 +85,7 @@ variable {M : Type*} [TopologicalSpace M]
 
 @[to_additive]
 instance instMul [Mul M] [ContinuousMul M] : Mul (SeparationQuotient M) where
-  mul := Quotient.map₂' (· * ·) fun _ _ h₁ _ _ h₂ ↦ Inseparable.mul h₁ h₂
+  mul := Quotient.map₂ (· * ·) fun _ _ h₁ _ _ h₂ ↦ Inseparable.mul h₁ h₂
 
 @[to_additive (attr := simp)]
 theorem mk_mul [Mul M] [ContinuousMul M] (a b : M) : mk (a * b) = mk a * mk b := rfl
@@ -93,7 +93,7 @@ theorem mk_mul [Mul M] [ContinuousMul M] (a b : M) : mk (a * b) = mk a * mk b :=
 
 @[to_additive]
 instance instContinuousMul [Mul M] [ContinuousMul M] : ContinuousMul (SeparationQuotient M) where
-  continuous_mul := quotientMap_prodMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_mul
+  continuous_mul := isQuotientMap_prodMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_mul
 
 @[to_additive]
 instance instCommMagma [CommMagma M] [ContinuousMul M] : CommMagma (SeparationQuotient M) :=
@@ -154,7 +154,7 @@ theorem mk_inv [Inv G] [ContinuousInv G] (x : G) : mk x⁻¹ = (mk x)⁻¹ := rf
 
 @[to_additive]
 instance instContinuousInv [Inv G] [ContinuousInv G] : ContinuousInv (SeparationQuotient G) where
-  continuous_inv := quotientMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_inv
+  continuous_inv := isQuotientMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_inv
 
 @[to_additive]
 instance instInvolutiveInv [InvolutiveInv G] [ContinuousInv G] :
@@ -168,14 +168,14 @@ instance instInvOneClass [InvOneClass G] [ContinuousInv G] :
 
 @[to_additive]
 instance instDiv [Div G] [ContinuousDiv G] : Div (SeparationQuotient G) where
-  div := Quotient.map₂' (· / ·) fun _ _ h₁ _ _ h₂ ↦ (Inseparable.prod h₁ h₂).map continuous_div'
+  div := Quotient.map₂ (· / ·) fun _ _ h₁ _ _ h₂ ↦ (Inseparable.prod h₁ h₂).map continuous_div'
 
 @[to_additive (attr := simp)]
 theorem mk_div [Div G] [ContinuousDiv G] (x y : G) : mk (x / y) = mk x / mk y := rfl
 
 @[to_additive]
 instance instContinuousDiv [Div G] [ContinuousDiv G] : ContinuousDiv (SeparationQuotient G) where
-  continuous_div' := quotientMap_prodMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_div'
+  continuous_div' := isQuotientMap_prodMap_mk.continuous_iff.2 <| continuous_mk.comp continuous_div'
 
 instance instZSMul [AddGroup G] [TopologicalAddGroup G] : SMul ℤ (SeparationQuotient G) :=
   inferInstance

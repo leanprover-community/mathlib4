@@ -57,10 +57,10 @@ protected theorem ext {s t : ClopenUpperSet α} (h : (s : Set α) = t) : s = t :
 theorem coe_mk (s : Clopens α) (h) : (mk s h : Set α) = s :=
   rfl
 
-instance : Sup (ClopenUpperSet α) :=
+instance : Max (ClopenUpperSet α) :=
   ⟨fun s t => ⟨s.toClopens ⊔ t.toClopens, s.upper.union t.upper⟩⟩
 
-instance : Inf (ClopenUpperSet α) :=
+instance : Min (ClopenUpperSet α) :=
   ⟨fun s t => ⟨s.toClopens ⊓ t.toClopens, s.upper.inter t.upper⟩⟩
 
 instance : Top (ClopenUpperSet α) :=

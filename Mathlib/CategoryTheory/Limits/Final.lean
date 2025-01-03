@@ -3,13 +3,14 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.PUnit
+import Mathlib.CategoryTheory.Grothendieck
 
 /-!
 # Final and initial functors
@@ -64,7 +65,7 @@ Dualise condition 3 above and the implications 2 ⇒ 3 and 3 ⇒ 1 to initial fu
 
 noncomputable section
 
-universe v v₁ v₂ v₃ u₁ u₂ u₃
+universe v v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 namespace CategoryTheory
 
@@ -304,6 +305,27 @@ def colimitCoconeComp (t : ColimitCocone G) : ColimitCocone (F ⋙ G) where
 instance (priority := 100) comp_hasColimit [HasColimit G] : HasColimit (F ⋙ G) :=
   HasColimit.mk (colimitCoconeComp F (getColimitCocone G))
 
+instance (priority := 100) comp_preservesColimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
+    [PreservesColimit G H] : PreservesColimit (F ⋙ G) H where
+  preserves {c} hc := by
+    refine ⟨isColimitExtendCoconeEquiv (G := G ⋙ H) F (H.mapCocone c) ?_⟩
+    let hc' := isColimitOfPreserves H ((isColimitExtendCoconeEquiv F c).symm hc)
+    exact IsColimit.ofIsoColimit hc' (Cocones.ext (Iso.refl _) (by simp))
+
+instance (priority := 100) comp_reflectsColimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
+    [ReflectsColimit G H] : ReflectsColimit (F ⋙ G) H where
+  reflects {c} hc := by
+    refine ⟨isColimitExtendCoconeEquiv F _ (isColimitOfReflects H ?_)⟩
+    let hc' := (isColimitExtendCoconeEquiv (G := G ⋙ H) F _).symm hc
+    exact IsColimit.ofIsoColimit hc' (Cocones.ext (Iso.refl _) (by simp))
+
+instance (priority := 100) compCreatesColimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
+    [CreatesColimit G H] : CreatesColimit (F ⋙ G) H where
+  lifts {c} hc := by
+    refine ⟨(liftColimit ((isColimitExtendCoconeEquiv F (G := G ⋙ H) _).symm hc)).whisker F, ?_⟩
+    let i := liftedColimitMapsToOriginal ((isColimitExtendCoconeEquiv F (G := G ⋙ H) _).symm hc)
+    exact (Cocones.whiskering F).mapIso i ≪≫ ((coconesEquiv F (G ⋙ H)).unitIso.app _).symm
+
 instance colimit_pre_isIso [HasColimit G] : IsIso (colimit.pre G F) := by
   rw [colimit.pre_eq (colimitCoconeComp F (getColimitCocone G)) (getColimitCocone G)]
   erw [IsColimit.desc_self]
@@ -319,8 +341,30 @@ variable (G)
 
 https://stacks.math.columbia.edu/tag/04E7
 -/
+@[simps! (config := .lemmasOnly)]
 def colimitIso [HasColimit G] : colimit (F ⋙ G) ≅ colimit G :=
   asIso (colimit.pre G F)
+
+@[reassoc (attr := simp)]
+theorem ι_colimitIso_hom [HasColimit G] (X : C) :
+    colimit.ι (F ⋙ G) X ≫ (colimitIso F G).hom = colimit.ι G (F.obj X) := by
+  simp [colimitIso]
+
+@[reassoc (attr := simp)]
+theorem ι_colimitIso_inv [HasColimit G] (X : C) :
+    colimit.ι G (F.obj X) ≫ (colimitIso F G).inv = colimit.ι (F ⋙ G) X := by
+  simp [colimitIso]
+
+/-- A pointfree version of `colimitIso`, stating that whiskering by `F` followed by taking the
+colimit is isomorpic to taking the colimit on the codomain of `F`. -/
+def colimIso [HasColimitsOfShape D E] [HasColimitsOfShape C E] :
+    (whiskeringLeft _ _ _).obj F ⋙ colim ≅ colim (J := D) (C := E) :=
+  NatIso.ofComponents (fun G => colimitIso F G) fun f => by
+    simp only [comp_obj, whiskeringLeft_obj_obj, colim_obj, comp_map, whiskeringLeft_obj_map,
+      colim_map, colimitIso_hom]
+    ext
+    simp only [comp_obj, ι_colimMap_assoc, whiskerLeft_app, colimit.ι_pre, colimit.ι_pre_assoc,
+      ι_colimMap]
 
 end
 
@@ -338,27 +382,50 @@ We can't make this an instance, because `F` is not determined by the goal.
 theorem hasColimit_of_comp [HasColimit (F ⋙ G)] : HasColimit G :=
   HasColimit.mk (colimitCoconeOfComp F (getColimitCocone (F ⋙ G)))
 
+theorem preservesColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
+    [PreservesColimit (F ⋙ G) H] : PreservesColimit G H where
+  preserves {c} hc := by
+    refine ⟨isColimitWhiskerEquiv F _ ?_⟩
+    let hc' := isColimitOfPreserves H ((isColimitWhiskerEquiv F _).symm hc)
+    exact IsColimit.ofIsoColimit hc' (Cocones.ext (Iso.refl _) (by simp))
+
+theorem reflectsColimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
+    [ReflectsColimit (F ⋙ G) H] : ReflectsColimit G H where
+  reflects {c} hc := by
+    refine ⟨isColimitWhiskerEquiv F _ (isColimitOfReflects H ?_)⟩
+    let hc' := (isColimitWhiskerEquiv F _).symm hc
+    exact IsColimit.ofIsoColimit hc' (Cocones.ext (Iso.refl _) (by simp))
+
+/-- If `F` is final and `F ⋙ G` creates colimits of `H`, then so does `G`. -/
+def createsColimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
+    [CreatesColimit (F ⋙ G) H] : CreatesColimit G H where
+  reflects := (reflectsColimit_of_comp F).reflects
+  lifts {c} hc := by
+    refine ⟨(extendCocone (F := F)).obj (liftColimit ((isColimitWhiskerEquiv F _).symm hc)), ?_⟩
+    let i := liftedColimitMapsToOriginal (K := (F ⋙ G)) ((isColimitWhiskerEquiv F _).symm hc)
+    refine ?_ ≪≫ ((extendCocone (F := F)).mapIso i) ≪≫ ((coconesEquiv F (G ⋙ H)).counitIso.app _)
+    exact Cocones.ext (Iso.refl _)
+
 include F in
 theorem hasColimitsOfShape_of_final [HasColimitsOfShape C E] : HasColimitsOfShape D E where
   has_colimit := fun _ => hasColimit_of_comp F
 
-section
+include F in
+theorem preservesColimitsOfShape_of_final {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
+    [PreservesColimitsOfShape C H] : PreservesColimitsOfShape D H where
+  preservesColimit := preservesColimit_of_comp F
 
--- Porting note: this instance does not seem to be found automatically
---attribute [local instance] hasColimit_of_comp
+include F in
+theorem reflectsColimitsOfShape_of_final {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
+    [ReflectsColimitsOfShape C H] : ReflectsColimitsOfShape D H where
+  reflectsColimit := reflectsColimit_of_comp F
 
-/-- When `F` is final, and `F ⋙ G` has a colimit, then `G` has a colimit also and
-`colimit (F ⋙ G) ≅ colimit G`
-
-https://stacks.math.columbia.edu/tag/04E7
--/
-def colimitIso' [HasColimit (F ⋙ G)] :
-    haveI : HasColimit G := hasColimit_of_comp F
-    colimit (F ⋙ G) ≅ colimit G :=
-  haveI : HasColimit G := hasColimit_of_comp F
-  asIso (colimit.pre G F)
-
-end
+include F in
+/-- If `H` creates colimits of shape `C` and `F : C ⥤ D` is final, then `H` creates colimits of
+shape `D`. -/
+def createsColimitsOfShapeOfFinal {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
+    [CreatesColimitsOfShape C H] : CreatesColimitsOfShape D H where
+  CreatesColimit := createsColimitOfComp F
 
 end Final
 
@@ -587,6 +654,27 @@ def limitConeComp (t : LimitCone G) : LimitCone (F ⋙ G) where
 instance (priority := 100) comp_hasLimit [HasLimit G] : HasLimit (F ⋙ G) :=
   HasLimit.mk (limitConeComp F (getLimitCone G))
 
+instance (priority := 100) comp_preservesLimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
+    [PreservesLimit G H] : PreservesLimit (F ⋙ G) H where
+  preserves {c} hc := by
+    refine ⟨isLimitExtendConeEquiv (G := G ⋙ H) F (H.mapCone c) ?_⟩
+    let hc' := isLimitOfPreserves H ((isLimitExtendConeEquiv F c).symm hc)
+    exact IsLimit.ofIsoLimit hc' (Cones.ext (Iso.refl _) (by simp))
+
+instance (priority := 100) comp_reflectsLimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
+    [ReflectsLimit G H] : ReflectsLimit (F ⋙ G) H where
+  reflects {c} hc := by
+    refine ⟨isLimitExtendConeEquiv F _ (isLimitOfReflects H ?_)⟩
+    let hc' := (isLimitExtendConeEquiv (G := G ⋙ H) F _).symm hc
+    exact IsLimit.ofIsoLimit hc' (Cones.ext (Iso.refl _) (by simp))
+
+instance (priority := 100) compCreatesLimit {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
+    [CreatesLimit G H] : CreatesLimit (F ⋙ G) H where
+  lifts {c} hc := by
+    refine ⟨(liftLimit ((isLimitExtendConeEquiv F (G := G ⋙ H) _).symm hc)).whisker F, ?_⟩
+    let i := liftedLimitMapsToOriginal ((isLimitExtendConeEquiv F (G := G ⋙ H) _).symm hc)
+    exact (Cones.whiskering F).mapIso i ≪≫ ((conesEquiv F (G ⋙ H)).unitIso.app _).symm
+
 instance limit_pre_isIso [HasLimit G] : IsIso (limit.pre G F) := by
   rw [limit.pre_eq (limitConeComp F (getLimitCone G)) (getLimitCone G)]
   erw [IsLimit.lift_self]
@@ -602,8 +690,19 @@ variable (G)
 
 https://stacks.math.columbia.edu/tag/04E7
 -/
+@[simps! (config := .lemmasOnly)]
 def limitIso [HasLimit G] : limit (F ⋙ G) ≅ limit G :=
   (asIso (limit.pre G F)).symm
+
+/-- A pointfree version of `limitIso`, stating that whiskering by `F` followed by taking the
+limit is isomorpic to taking the limit on the codomain of `F`. -/
+def limIso [HasLimitsOfShape D E] [HasLimitsOfShape C E] :
+    (whiskeringLeft _ _ _).obj F ⋙ lim ≅ lim (J := D) (C := E) :=
+  Iso.symm <| NatIso.ofComponents (fun G => (limitIso F G).symm) fun f => by
+    simp only [comp_obj, whiskeringLeft_obj_obj, lim_obj, comp_map, whiskeringLeft_obj_map, lim_map,
+      Iso.symm_hom, limitIso_inv]
+    ext
+    simp
 
 end
 
@@ -621,27 +720,50 @@ We can't make this an instance, because `F` is not determined by the goal.
 theorem hasLimit_of_comp [HasLimit (F ⋙ G)] : HasLimit G :=
   HasLimit.mk (limitConeOfComp F (getLimitCone (F ⋙ G)))
 
+theorem preservesLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
+    [PreservesLimit (F ⋙ G) H] : PreservesLimit G H where
+  preserves {c} hc := by
+    refine ⟨isLimitWhiskerEquiv F _ ?_⟩
+    let hc' := isLimitOfPreserves H ((isLimitWhiskerEquiv F _).symm hc)
+    exact IsLimit.ofIsoLimit hc' (Cones.ext (Iso.refl _) (by simp))
+
+theorem reflectsLimit_of_comp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
+    [ReflectsLimit (F ⋙ G) H] : ReflectsLimit G H where
+  reflects {c} hc := by
+    refine ⟨isLimitWhiskerEquiv F _ (isLimitOfReflects H ?_)⟩
+    let hc' := (isLimitWhiskerEquiv F _).symm hc
+    exact IsLimit.ofIsoLimit hc' (Cones.ext (Iso.refl _) (by simp))
+
+/-- If `F` is initial and `F ⋙ G` creates limits of `H`, then so does `G`. -/
+def createsLimitOfComp {B : Type u₄} [Category.{v₄} B] {H : E ⥤ B}
+    [CreatesLimit (F ⋙ G) H] : CreatesLimit G H where
+  reflects := (reflectsLimit_of_comp F).reflects
+  lifts {c} hc := by
+    refine ⟨(extendCone (F := F)).obj (liftLimit ((isLimitWhiskerEquiv F _).symm hc)), ?_⟩
+    let i := liftedLimitMapsToOriginal (K := (F ⋙ G)) ((isLimitWhiskerEquiv F _).symm hc)
+    refine ?_ ≪≫ ((extendCone (F := F)).mapIso i) ≪≫ ((conesEquiv F (G ⋙ H)).counitIso.app _)
+    exact Cones.ext (Iso.refl _)
+
 include F in
 theorem hasLimitsOfShape_of_initial [HasLimitsOfShape C E] : HasLimitsOfShape D E where
   has_limit := fun _ => hasLimit_of_comp F
 
-section
+include F in
+theorem preservesLimitsOfShape_of_initial {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
+    [PreservesLimitsOfShape C H] : PreservesLimitsOfShape D H where
+  preservesLimit := preservesLimit_of_comp F
 
--- Porting note: this instance does not seem to be found automatically
--- attribute [local instance] hasLimit_of_comp
+include F in
+theorem reflectsLimitsOfShape_of_initial {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
+    [ReflectsLimitsOfShape C H] : ReflectsLimitsOfShape D H where
+  reflectsLimit := reflectsLimit_of_comp F
 
-/-- When `F` is initial, and `F ⋙ G` has a limit, then `G` has a limit also and
-`limit (F ⋙ G) ≅ limit G`
-
-https://stacks.math.columbia.edu/tag/04E7
--/
-def limitIso' [HasLimit (F ⋙ G)] :
-    haveI : HasLimit G := hasLimit_of_comp F
-    limit (F ⋙ G) ≅ limit G :=
-  haveI : HasLimit G := hasLimit_of_comp F
-  (asIso (limit.pre G F)).symm
-
-end
+include F in
+/-- If `H` creates limits of shape `C` and `F : C ⥤ D` is initial, then `H` creates limits of shape
+`D`. -/
+def createsLimitsOfShapeOfInitial {B : Type u₄} [Category.{v₄} B] (H : E ⥤ B)
+    [CreatesLimitsOfShape C H] : CreatesLimitsOfShape D H where
+  CreatesLimit := createsLimitOfComp F
 
 end Initial
 
@@ -674,7 +796,7 @@ theorem initial_comp_equivalence [Initial F] [IsEquivalence G] : Initial (F ⋙ 
 theorem final_equivalence_comp [IsEquivalence F] [Final G] : Final (F ⋙ G) where
   out d := isConnected_of_equivalent (StructuredArrow.pre d F G).asEquivalence.symm
 
-/-- See also the strictly more general `inital_comp` below. -/
+/-- See also the strictly more general `initial_comp` below. -/
 theorem initial_equivalence_comp [IsEquivalence F] [Initial G] : Initial (F ⋙ G) where
   out d := isConnected_of_equivalent (CostructuredArrow.pre F G d).asEquivalence.symm
 
@@ -819,7 +941,8 @@ theorem IsFiltered.of_final (F : C ⥤ D) [Final F] [IsFiltered C] : IsFiltered 
 /-- Initial functors preserve cofilteredness.
 
 This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which states that left
-adjoints preserve cofilteredness), as right adjoints are always initial, see `intial_of_adjunction`.
+adjoints preserve cofilteredness), as right adjoints are always initial,
+see `initial_of_adjunction`.
 -/
 theorem IsCofilteredOrEmpty.of_initial (F : C ⥤ D) [Initial F] [IsCofilteredOrEmpty C] :
     IsCofilteredOrEmpty D :=
@@ -829,7 +952,8 @@ theorem IsCofilteredOrEmpty.of_initial (F : C ⥤ D) [Initial F] [IsCofilteredOr
 /-- Initial functors preserve cofilteredness.
 
 This can be seen as a generalization of `IsCofiltered.of_left_adjoint` (which states that left
-adjoints preserve cofilteredness), as right adjoints are always initial, see `intial_of_adjunction`.
+adjoints preserve cofilteredness), as right adjoints are always initial,
+see `initial_of_adjunction`.
 -/
 theorem IsCofiltered.of_initial (F : C ⥤ D) [Initial F] [IsCofiltered C] : IsCofiltered D :=
   have : IsFiltered Dᵒᵖ := IsFiltered.of_final F.op
@@ -860,5 +984,47 @@ instance CostructuredArrow.initial_pre (T : C ⥤ D) [Initial T] (S : D ⥤ E) (
   exact Initial.out f.left
 
 end
+
+section Grothendieck
+
+variable {C : Type u₁} [Category.{v₁} C]
+variable {D : Type u₂} [Category.{v₂} D]
+variable (F : D ⥤ Cat) (G : C ⥤ D)
+
+open Functor
+
+/-- A prefunctor mapping structured arrows on `G` to structured arrows on `pre F G` with their
+action on fibers being the identity. -/
+def Grothendieck.structuredArrowToStructuredArrowPre (d : D) (f : F.obj d) :
+    StructuredArrow d G ⥤q StructuredArrow ⟨d, f⟩ (pre F G) where
+  obj := fun X => StructuredArrow.mk (Y := ⟨X.right, (F.map X.hom).obj f⟩)
+    (Grothendieck.Hom.mk (by exact X.hom) (by dsimp; exact 𝟙 _))
+  map := fun g => StructuredArrow.homMk
+    (Grothendieck.Hom.mk (by exact g.right)
+      (eqToHom (by dsimp; rw [← StructuredArrow.w g, map_comp, Cat.comp_obj])))
+    (by simp only [StructuredArrow.mk_right]
+        apply Grothendieck.ext <;> simp)
+
+instance Grothendieck.final_pre [hG : Final G] : (Grothendieck.pre F G).Final := by
+  constructor
+  rintro ⟨d, f⟩
+  let ⟨u, c, g⟩ : Nonempty (StructuredArrow d G) := inferInstance
+  letI :  Nonempty (StructuredArrow ⟨d, f⟩ (pre F G)) :=
+    ⟨u, ⟨c, (F.map g).obj f⟩, ⟨(by exact g), (by exact 𝟙 _)⟩⟩
+  apply zigzag_isConnected
+  rintro ⟨⟨⟨⟩⟩, ⟨bi, fi⟩, ⟨gbi, gfi⟩⟩ ⟨⟨⟨⟩⟩, ⟨bj, fj⟩, ⟨gbj, gfj⟩⟩
+  dsimp at fj fi gfi gbi gbj gfj
+  apply Zigzag.trans (j₂ := StructuredArrow.mk (Y := ⟨bi, ((F.map gbi).obj f)⟩)
+      (Grothendieck.Hom.mk gbi (𝟙 _)))
+    (.of_zag (.inr ⟨StructuredArrow.homMk (Grothendieck.Hom.mk (by dsimp; exact 𝟙 _)
+      (eqToHom (by simp) ≫ gfi)) (by apply Grothendieck.ext <;> simp)⟩))
+  refine Zigzag.trans (j₂ := StructuredArrow.mk (Y := ⟨bj, ((F.map gbj).obj f)⟩)
+      (Grothendieck.Hom.mk gbj (𝟙 _))) ?_
+    (.of_zag (.inl ⟨StructuredArrow.homMk (Grothendieck.Hom.mk (by dsimp; exact 𝟙 _)
+      (eqToHom (by simp) ≫ gfj)) (by apply Grothendieck.ext <;> simp)⟩))
+  exact zigzag_prefunctor_obj_of_zigzag (Grothendieck.structuredArrowToStructuredArrowPre F G d f)
+    (isPreconnected_zigzag (.mk gbi) (.mk gbj))
+
+end Grothendieck
 
 end CategoryTheory

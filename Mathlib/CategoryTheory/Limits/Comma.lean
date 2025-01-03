@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.Comma.StructuredArrow
+import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Unit
@@ -48,7 +48,7 @@ limit cone for `F ⋙ snd L R : J ⥤ R` we can build a cone for `F` which will 
 cone.
 -/
 @[simps]
-def coneOfPreserves [PreservesLimit (F ⋙ snd L R) R] (c₁ : Cone (F ⋙ fst L R))
+noncomputable def coneOfPreserves [PreservesLimit (F ⋙ snd L R) R] (c₁ : Cone (F ⋙ fst L R))
     {c₂ : Cone (F ⋙ snd L R)} (t₂ : IsLimit c₂) : Cone F where
   pt :=
     { left := c₁.pt
@@ -66,7 +66,7 @@ def coneOfPreserves [PreservesLimit (F ⋙ snd L R) R] (c₁ : Cone (F ⋙ fst L
 
 /-- Provided that `R` preserves the appropriate limit, then the cone in `coneOfPreserves` is a
 limit. -/
-def coneOfPreservesIsLimit [PreservesLimit (F ⋙ snd L R) R] {c₁ : Cone (F ⋙ fst L R)}
+noncomputable def coneOfPreservesIsLimit [PreservesLimit (F ⋙ snd L R) R] {c₁ : Cone (F ⋙ fst L R)}
     (t₁ : IsLimit c₁) {c₂ : Cone (F ⋙ snd L R)} (t₂ : IsLimit c₂) :
     IsLimit (coneOfPreserves F c₁ t₂) where
   lift s :=
@@ -95,7 +95,7 @@ a cocone for `F ⋙ snd L R : J ⥤ R` we can build a cocone for `F` which will 
 colimit cocone.
 -/
 @[simps]
-def coconeOfPreserves [PreservesColimit (F ⋙ fst L R) L] {c₁ : Cocone (F ⋙ fst L R)}
+noncomputable def coconeOfPreserves [PreservesColimit (F ⋙ fst L R) L] {c₁ : Cocone (F ⋙ fst L R)}
     (t₁ : IsColimit c₁) (c₂ : Cocone (F ⋙ snd L R)) : Cocone F where
   pt :=
     { left := c₁.pt
@@ -113,7 +113,8 @@ def coconeOfPreserves [PreservesColimit (F ⋙ fst L R) L] {c₁ : Cocone (F ⋙
 
 /-- Provided that `L` preserves the appropriate colimit, then the cocone in `coconeOfPreserves` is
 a colimit. -/
-def coconeOfPreservesIsColimit [PreservesColimit (F ⋙ fst L R) L] {c₁ : Cocone (F ⋙ fst L R)}
+noncomputable def coconeOfPreservesIsColimit [PreservesColimit (F ⋙ fst L R) L]
+    {c₁ : Cocone (F ⋙ fst L R)}
     (t₁ : IsColimit c₁) {c₂ : Cocone (F ⋙ snd L R)} (t₂ : IsColimit c₂) :
     IsColimit (coconeOfPreserves F t₁ c₂) where
   desc s :=
@@ -225,6 +226,10 @@ namespace CostructuredArrow
 
 variable {G : A ⥤ T} {X : T} (F : J ⥤ CostructuredArrow G X)
 
+instance hasTerminal [G.Faithful] [G.Full] {Y : A} :
+    HasTerminal (CostructuredArrow G (G.obj Y)) :=
+  CostructuredArrow.mkIdTerminal.hasTerminal
+
 instance hasColimit [i₁ : HasColimit (F ⋙ proj G X)] [i₂ : PreservesColimit (F ⋙ proj G X) G] :
     HasColimit F := by
   haveI : HasColimit (F ⋙ Comma.fst G (Functor.fromPUnit X)) := i₁
@@ -261,5 +266,11 @@ theorem epi_iff_epi_left [HasPushouts A] [PreservesColimitsOfShape WalkingSpan G
   ⟨fun _ => inferInstance, fun _ => epi_of_epi_left f⟩
 
 end CostructuredArrow
+
+namespace Over
+
+instance {X : T} : HasTerminal (Over X) := CostructuredArrow.hasTerminal
+
+end Over
 
 end CategoryTheory

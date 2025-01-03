@@ -304,4 +304,24 @@ def piEquivalenceFunctorDiscrete (J : Type u₂) (C : Type u₁) [Category.{v₁
       obtain rfl : f = 𝟙 _ := rfl
       simp))) (by aesop_cat)
 
+/-- A category is discrete when there is at most one morphism between two objects,
+in which case they are equal. -/
+class IsDiscrete (C : Type*) [Category C] : Prop where
+  subsingleton (X Y : C) : Subsingleton (X ⟶ Y) := by infer_instance
+  eq_of_hom {X Y : C} (f : X ⟶ Y) : X = Y
+
+attribute [instance] IsDiscrete.subsingleton
+
+lemma obj_ext_of_isDiscrete {C : Type*} [Category C] [IsDiscrete C]
+    {X Y : C} (f : X ⟶ Y) : X = Y := IsDiscrete.eq_of_hom f
+
+instance Discrete.isDiscrete (C : Type*) : IsDiscrete (Discrete C) where
+  eq_of_hom := by rintro ⟨_⟩ ⟨_⟩ ⟨⟨rfl⟩⟩; rfl
+
+instance (C : Type*) [Category C] [IsDiscrete C] : IsDiscrete Cᵒᵖ where
+  eq_of_hom := by
+    rintro ⟨_⟩ ⟨_⟩ ⟨f⟩
+    obtain rfl := obj_ext_of_isDiscrete f
+    rfl
+
 end CategoryTheory

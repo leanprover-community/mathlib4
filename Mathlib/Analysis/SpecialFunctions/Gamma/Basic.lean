@@ -89,7 +89,7 @@ theorem GammaIntegral_convergent {s : ℂ} (hs : 0 < s.re) :
   constructor
   · refine ContinuousOn.aestronglyMeasurable ?_ measurableSet_Ioi
     apply (continuous_ofReal.comp continuous_neg.rexp).continuousOn.mul
-    apply ContinuousAt.continuousOn
+    apply continuousOn_of_forall_continuousAt
     intro x hx
     have : ContinuousAt (fun x : ℂ => x ^ (s - 1)) ↑x :=
       continuousAt_cpow_const <| ofReal_mem_slitPlane.2 hx
@@ -170,7 +170,7 @@ private theorem Gamma_integrand_deriv_integrable_B {s : ℂ} (hs : 0 < s.re) {Y 
   constructor
   · refine (continuousOn_const.mul ?_).aestronglyMeasurable measurableSet_Ioc
     apply (continuous_ofReal.comp continuous_neg.rexp).continuousOn.mul
-    apply ContinuousAt.continuousOn
+    apply continuousOn_of_forall_continuousAt
     intro x hx
     refine (?_ : ContinuousAt (fun x : ℂ => x ^ (s - 1)) _).comp continuous_ofReal.continuousAt
     exact continuousAt_cpow_const <| ofReal_mem_slitPlane.2 hx.1

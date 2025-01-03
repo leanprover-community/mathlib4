@@ -3,9 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.SetLike
+import Mathlib.Data.Set.Basic
 
 /-!
 # Typeclass for types with a set-like extensionality property
@@ -117,7 +117,7 @@ open Lean PrettyPrinter.Delaborator SubExpr
 /-- For terms that match the `CoeSort` instance's body, pretty print as `↥S`
 rather than as `{ x // x ∈ S }`. The discriminating feature is that membership
 uses the `SetLike.instMembership` instance. -/
-@[delab app.Subtype]
+@[app_delab Subtype]
 def delabSubtypeSetLike : Delab := whenPPOption getPPNotation do
   let #[_, .lam n _ body _] := (← getExpr).getAppArgs | failure
   guard <| body.isAppOf ``Membership.mem
@@ -183,6 +183,8 @@ lemma mem_of_subset {s : Set B} (hp : s ⊆ p) {x : B} (hx : x ∈ s) : x ∈ p 
 
 -- Porting note: removed `@[simp]` because `simpNF` linter complained
 protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rfl
+
+@[simp] lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
 
 instance (priority := 100) instPartialOrder : PartialOrder A :=
   { PartialOrder.lift (SetLike.coe : A → Set B) coe_injective with

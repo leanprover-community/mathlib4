@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Frédéric Dupuis,
   Heather Macbeth
 -/
-
+import Mathlib.Algebra.Group.Subgroup.Map
+import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.Algebra.Module.Submodule.LinearMap
 
@@ -147,7 +148,7 @@ noncomputable def equivMapOfInjective (f : F) (i : Injective f) (p : Submodule R
       rfl
     map_smul' := by
       intros
-      -- Note: #8386 changed `map_smulₛₗ` into `map_smulₛₗ _`
+      -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` into `map_smulₛₗ _`
       simp only [coe_smul_of_tower, map_smulₛₗ _, Equiv.toFun_as_coe, Equiv.Set.image_apply]
       rfl }
 
@@ -166,7 +167,7 @@ theorem map_equivMapOfInjective_symm_apply (f : F) (i : Injective f) (p : Submod
 def comap [SemilinearMapClass F σ₁₂ M M₂] (f : F) (p : Submodule R₂ M₂) : Submodule R M :=
   { p.toAddSubmonoid.comap f with
     carrier := f ⁻¹' p
-    -- Note: #8386 added `map_smulₛₗ _`
+    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 added `map_smulₛₗ _`
     smul_mem' := fun a x h => by simp [p.smul_mem (σ₁₂ a) h, map_smulₛₗ _] }
 
 @[simp]
@@ -364,9 +365,15 @@ def orderIsoMapComapOfBijective [FunLike F M M₂] [SemilinearMapClass F σ₁�
   map_rel_iff' := map_le_map_iff_of_injective hf.injective _ _
 
 /-- A linear isomorphism induces an order isomorphism of submodules. -/
-@[simps! symm_apply apply]
+@[simps! apply]
 def orderIsoMapComap [EquivLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂] (f : F) :
     Submodule R M ≃o Submodule R₂ M₂ := orderIsoMapComapOfBijective f (EquivLike.bijective f)
+
+@[simp]
+lemma orderIsoMapComap_symm_apply [EquivLike F M M₂] [SemilinearMapClass F σ₁₂ M M₂]
+    (f : F) (p : Submodule R₂ M₂) :
+    (orderIsoMapComap f).symm p = comap f p :=
+  rfl
 
 end OrderIso
 

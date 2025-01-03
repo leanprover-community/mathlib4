@@ -52,7 +52,7 @@ namespace MeasureTheory
 
 namespace Measure
 
-variable {α β : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
+variable {α : Type*} {m : MeasurableSpace α} {μ ν : Measure α}
 
 /-- A pair of measures `μ` and `ν` is said to `HaveLebesgueDecomposition` if there exists a
 measure `ξ` and a measurable function `f`, such that `ξ` is mutually singular with respect to
@@ -228,6 +228,18 @@ lemma absolutelyContinuous_withDensity_rnDeriv [HaveLebesgueDecomposition ν μ]
     · exact measure_mono_null Set.inter_subset_right ht1
     · exact measure_mono_null Set.inter_subset_left hνs
   · exact measure_mono_null Set.inter_subset_right ht2
+
+lemma AbsolutelyContinuous.withDensity_rnDeriv {ξ : Measure α} [μ.HaveLebesgueDecomposition ν]
+    (hξμ : ξ ≪ μ) (hξν : ξ ≪ ν) :
+    ξ ≪ ν.withDensity (μ.rnDeriv ν) := by
+  conv_rhs at hξμ => rw [μ.haveLebesgueDecomposition_add ν, add_comm]
+  refine absolutelyContinuous_of_add_of_mutuallySingular hξμ ?_
+  exact MutuallySingular.mono_ac (mutuallySingular_singularPart μ ν).symm hξν .rfl
+
+lemma absolutelyContinuous_withDensity_rnDeriv_swap [ν.HaveLebesgueDecomposition μ] :
+    ν.withDensity (μ.rnDeriv ν) ≪ μ.withDensity (ν.rnDeriv μ) :=
+  (withDensity_absolutelyContinuous ν (μ.rnDeriv ν)).withDensity_rnDeriv
+    (absolutelyContinuous_of_le (withDensity_rnDeriv_le _ _))
 
 lemma singularPart_eq_zero_of_ac (h : μ ≪ ν) : μ.singularPart ν = 0 := by
   rw [← MutuallySingular.self_iff]
@@ -745,7 +757,6 @@ theorem zero_mem_measurableLE : (0 : α → ℝ≥0∞) ∈ measurableLE μ ν :
 
 theorem sup_mem_measurableLE {f g : α → ℝ≥0∞} (hf : f ∈ measurableLE μ ν)
     (hg : g ∈ measurableLE μ ν) : (fun a ↦ f a ⊔ g a) ∈ measurableLE μ ν := by
-  simp_rw [ENNReal.sup_eq_max]
   refine ⟨Measurable.max hf.1 hg.1, fun A hA ↦ ?_⟩
   have h₁ := hA.inter (measurableSet_le hf.1 hg.1)
   have h₂ := hA.inter (measurableSet_lt hg.1 hf.1)
@@ -777,7 +788,7 @@ theorem iSup_mem_measurableLE (f : ℕ → α → ℝ≥0∞) (hf : ∀ n, f n �
       (fun a : α ↦ ⨆ (k : ℕ) (_ : k ≤ m + 1), f k a) = fun a ↦
         f m.succ a ⊔ ⨆ (k : ℕ) (_ : k ≤ m), f k a :=
       funext fun _ ↦ iSup_succ_eq_sup _ _ _
-    refine ⟨measurable_iSup fun n ↦ Measurable.iSup_Prop _ (hf n).1, fun A hA ↦ ?_⟩
+    refine ⟨.iSup fun n ↦ Measurable.iSup_Prop _ (hf n).1, fun A hA ↦ ?_⟩
     rw [this]; exact (sup_mem_measurableLE (hf m.succ) hm).2 A hA
 
 theorem iSup_mem_measurableLE' (f : ℕ → α → ℝ≥0∞) (hf : ∀ n, f n ∈ measurableLE μ ν) (n : ℕ) :
@@ -846,7 +857,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
       · refine Filter.Eventually.of_forall fun a ↦ ?_
         simp [tendsto_atTop_iSup (iSup_monotone' f a)]
     have hξm : Measurable ξ := by
-      convert measurable_iSup fun n ↦ (iSup_mem_measurableLE _ hf₁ n).1
+      convert Measurable.iSup fun n ↦ (iSup_mem_measurableLE _ hf₁ n).1
       simp [hξ]
     -- `ξ` is the `f` in the theorem statement and we set `μ₁` to be `μ - ν.withDensity ξ`
     -- since we need `μ₁ + ν.withDensity ξ = μ`

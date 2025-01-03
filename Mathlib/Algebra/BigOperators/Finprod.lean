@@ -8,6 +8,7 @@ import Mathlib.Algebra.Group.FiniteSupport
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Data.Set.Subsingleton
 
 /-!
@@ -452,7 +453,7 @@ theorem finprod_mem_eq_one_of_infinite {f : α → M} {s : Set α} (hs : (s ∩ 
 
 @[to_additive]
 theorem finprod_mem_eq_one_of_forall_eq_one {f : α → M} {s : Set α} (h : ∀ x ∈ s, f x = 1) :
-    ∏ᶠ i ∈ s, f i = 1 := by simp (config := { contextual := true }) [h]
+    ∏ᶠ i ∈ s, f i = 1 := by simp +contextual [h]
 
 @[to_additive]
 theorem finprod_mem_inter_mulSupport (f : α → M) (s : Set α) :
@@ -484,7 +485,7 @@ theorem finprod_mem_congr (h₀ : s = t) (h₁ : ∀ x ∈ t, f x = g x) :
 
 @[to_additive]
 theorem finprod_eq_one_of_forall_eq_one {f : α → M} (h : ∀ x, f x = 1) : ∏ᶠ i, f i = 1 := by
-  simp (config := { contextual := true }) [h]
+  simp +contextual [h]
 
 @[to_additive finsum_pos']
 theorem one_lt_finprod' {M : Type*} [OrderedCancelCommMonoid M] {f : ι → M}

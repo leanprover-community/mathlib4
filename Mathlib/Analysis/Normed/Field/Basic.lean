@@ -5,9 +5,11 @@ Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.Algebra.Field.Subfield.Defs
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.Analysis.Normed.Group.Constructions
 import Mathlib.Analysis.Normed.Group.Submodule
-import Mathlib.Data.Set.Pointwise.Interval
+import Mathlib.Algebra.Ring.Regular
 
 /-!
 # Normed fields
@@ -17,6 +19,11 @@ definitions.
 
 Some useful results that relate the topology of the normed field to the discrete topology include:
 * `norm_eq_one_iff_ne_zero_of_discrete`
+
+Methods for constructing a normed ring/field instance from a given real absolute value on a
+ring/field are given in:
+* AbsoluteValue.toNormedRing
+* AbsoluteValue.toNormedField
 -/
 
 -- Guard against import creep.
@@ -454,6 +461,23 @@ lemma nnnorm_sub_mul_le (ha : ‖a‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖c - 
 chord length is a metric on the unit complex numbers. -/
 lemma nnnorm_sub_mul_le' (hb : ‖b‖₊ ≤ 1) : ‖c - a * b‖₊ ≤ ‖1 - a‖₊ + ‖c - b‖₊ := norm_sub_mul_le' hb
 
+lemma norm_commutator_units_sub_one_le (a b : αˣ) :
+    ‖(a * b * a⁻¹ * b⁻¹).val - 1‖ ≤ 2 * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ * ‖a.val - 1‖ * ‖b.val - 1‖ :=
+  calc
+    ‖(a * b * a⁻¹ * b⁻¹).val - 1‖ = ‖(a * b - b * a) * a⁻¹.val * b⁻¹.val‖ := by simp [sub_mul, *]
+    _ ≤ ‖(a * b - b * a : α)‖ * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ := norm_mul₃_le
+    _ = ‖(a - 1 : α) * (b - 1) - (b - 1) * (a - 1)‖ * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ := by
+      simp_rw [sub_one_mul, mul_sub_one]; abel_nf
+    _ ≤ (‖(a - 1 : α) * (b - 1)‖ + ‖(b - 1 : α) * (a - 1)‖) * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ := by
+      gcongr; exact norm_sub_le ..
+    _ ≤ (‖a.val - 1‖ * ‖b.val - 1‖ + ‖b.val - 1‖ * ‖a.val - 1‖) * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ := by
+      gcongr <;> exact norm_mul_le ..
+    _ = 2 * ‖a⁻¹.val‖ * ‖b⁻¹.val‖ * ‖a.val - 1‖ * ‖b.val - 1‖ := by ring
+
+lemma nnnorm_commutator_units_sub_one_le (a b : αˣ) :
+    ‖(a * b * a⁻¹ * b⁻¹).val - 1‖₊ ≤ 2 * ‖a⁻¹.val‖₊ * ‖b⁻¹.val‖₊ * ‖a.val - 1‖₊ * ‖b.val - 1‖₊ := by
+  simpa using norm_commutator_units_sub_one_le a b
+
 /-- A homomorphism `f` between semi_normed_rings is bounded if there exists a positive
   constant `C` such that for all `x` in `α`, `norm (f x) ≤ C * norm x`. -/
 def RingHom.IsBounded {α : Type*} [SeminormedRing α] {β : Type*} [SeminormedRing β]
@@ -613,7 +637,7 @@ end NormedCommRing
 
 section NormedDivisionRing
 
-variable [NormedDivisionRing α] {a : α}
+variable [NormedDivisionRing α] {a b : α}
 
 @[simp]
 theorem norm_mul (a b : α) : ‖a * b‖ = ‖a‖ * ‖b‖ :=
@@ -695,6 +719,14 @@ theorem nndist_inv_inv₀ {z w : α} (hz : z ≠ 0) (hw : w ≠ 0) :
     nndist z⁻¹ w⁻¹ = nndist z w / (‖z‖₊ * ‖w‖₊) :=
   NNReal.eq <| dist_inv_inv₀ hz hw
 
+lemma norm_commutator_sub_one_le (ha : a ≠ 0) (hb : b ≠ 0) :
+    ‖a * b * a⁻¹ * b⁻¹ - 1‖ ≤ 2 * ‖a‖⁻¹ * ‖b‖⁻¹ * ‖a - 1‖ * ‖b - 1‖ := by
+  simpa using norm_commutator_units_sub_one_le (.mk0 a ha) (.mk0 b hb)
+
+lemma nnnorm_commutator_sub_one_le (ha : a ≠ 0) (hb : b ≠ 0) :
+    ‖a * b * a⁻¹ * b⁻¹ - 1‖₊ ≤ 2 * ‖a‖₊⁻¹ * ‖b‖₊⁻¹ * ‖a - 1‖₊ * ‖b - 1‖₊ := by
+  simpa using nnnorm_commutator_units_sub_one_le (.mk0 a ha) (.mk0 b hb)
+
 namespace NormedDivisionRing
 
 section Discrete
@@ -727,9 +759,12 @@ lemma norm_le_one_of_discrete
   · simp
   · simp [norm_eq_one_iff_ne_zero_of_discrete.mpr hx]
 
-lemma discreteTopology_unit_closedBall_eq_univ : (Metric.closedBall 0 1 : Set 𝕜) = Set.univ := by
+lemma unitClosedBall_eq_univ_of_discrete : (Metric.closedBall 0 1 : Set 𝕜) = Set.univ := by
   ext
   simp
+
+@[deprecated (since := "2024-12-01")]
+alias discreteTopology_unit_closedBall_eq_univ := unitClosedBall_eq_univ_of_discrete
 
 end Discrete
 
@@ -892,7 +927,6 @@ namespace NNReal
 
 open NNReal
 
--- porting note (#10618): removed `@[simp]` because `simp` can prove this
 theorem norm_eq (x : ℝ≥0) : ‖(x : ℝ)‖ = x := by rw [Real.norm_eq_abs, x.abs_eq]
 
 @[simp]
@@ -925,7 +959,7 @@ theorem NormedAddCommGroup.tendsto_atTop' [Nonempty α] [Preorder α] [IsDirecte
 
 section RingHomIsometric
 
-variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
+variable {R₁ R₂ : Type*}
 
 /-- This class states that a ring homomorphism is isometric. This is a sufficient assumption
 for a continuous semilinear map to be bounded and this is the main use for this typeclass. -/
@@ -935,7 +969,7 @@ class RingHomIsometric [Semiring R₁] [Semiring R₂] [Norm R₁] [Norm R₂] (
 
 attribute [simp] RingHomIsometric.is_iso
 
-variable [SeminormedRing R₁] [SeminormedRing R₂] [SeminormedRing R₃]
+variable [SeminormedRing R₁]
 
 instance RingHomIsometric.ids : RingHomIsometric (RingHom.id R₁) :=
   ⟨rfl⟩
@@ -1064,4 +1098,43 @@ instance toSeminormedCommRing [SeminormedCommRing R] [_h : SubringClass S R] (s 
 instance toNormedCommRing [NormedCommRing R] [SubringClass S R] (s : S) : NormedCommRing s :=
   { SubringClass.toNormedRing s with mul_comm := mul_comm }
 
+instance toNormOneClass [SeminormedRing R] [NormOneClass R] [SubringClass S R] (s : S) :
+    NormOneClass s :=
+  .induced s R <| SubringClass.subtype _
+
 end SubringClass
+
+namespace SubfieldClass
+
+variable {S F : Type*} [SetLike S F]
+
+/--
+If `s` is a subfield of a normed field `F`, then `s` is equipped with an induced normed
+field structure.
+-/
+instance toNormedField [NormedField F] [SubfieldClass S F] (s : S) : NormedField s :=
+  NormedField.induced s F (SubringClass.subtype s) Subtype.val_injective
+
+end SubfieldClass
+
+namespace AbsoluteValue
+
+/-- A real absolute value on a ring determines a `NormedRing` structure. -/
+noncomputable def toNormedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : NormedRing R where
+  norm := v
+  dist_eq _ _ := rfl
+  dist_self x := by simp only [sub_self, MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom, map_zero]
+  dist_comm := v.map_sub
+  dist_triangle := v.sub_le
+  edist_dist x y := rfl
+  norm_mul x y := (v.map_mul x y).le
+  eq_of_dist_eq_zero := by simp only [MulHom.toFun_eq_coe, AbsoluteValue.coe_toMulHom,
+    AbsoluteValue.map_sub_eq_zero_iff, imp_self, implies_true]
+
+/-- A real absolute value on a field determines a `NormedField` structure. -/
+noncomputable def toNormedField {K : Type*} [Field K] (v : AbsoluteValue K ℝ) : NormedField K where
+  toField := inferInstanceAs (Field K)
+  __ := v.toNormedRing
+  norm_mul' := v.map_mul
+
+end AbsoluteValue

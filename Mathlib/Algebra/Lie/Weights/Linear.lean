@@ -97,18 +97,16 @@ instance instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [NoZeroSMulDivisors R 
     have h : ∀ x y, Commute (toEnd R L M x) (toEnd R L M y) := fun x y ↦ by
       rw [commute_iff_lie_eq, ← LieHom.map_lie, trivial_lie_zero, LieHom.map_zero]
     intro χ hχ x y
-    simp_rw [Ne, ← LieSubmodule.coe_toSubmodule_eq_iff, genWeightSpace, genWeightSpaceOf,
-      LieSubmodule.iInf_coe_toSubmodule, LieSubmodule.bot_coeSubmodule,
-      Module.End.maxGenEigenspace_def] at hχ
+    simp_rw [Ne, ← LieSubmodule.toSubmodule_inj, genWeightSpace, genWeightSpaceOf,
+      LieSubmodule.iInf_toSubmodule, LieSubmodule.bot_toSubmodule] at hχ
     exact Module.End.map_add_of_iInf_genEigenspace_ne_bot_of_commute
-      (toEnd R L M).toLinearMap χ hχ h x y
+      (toEnd R L M).toLinearMap χ _ hχ h x y
   { map_add := aux
     map_smul := fun χ hχ t x ↦ by
-      simp_rw [Ne, ← LieSubmodule.coe_toSubmodule_eq_iff, genWeightSpace, genWeightSpaceOf,
-        LieSubmodule.iInf_coe_toSubmodule, LieSubmodule.bot_coeSubmodule,
-        Module.End.maxGenEigenspace_def] at hχ
+      simp_rw [Ne, ← LieSubmodule.toSubmodule_inj, genWeightSpace, genWeightSpaceOf,
+        LieSubmodule.iInf_toSubmodule, LieSubmodule.bot_toSubmodule] at hχ
       exact Module.End.map_smul_of_iInf_genEigenspace_ne_bot
-        (toEnd R L M).toLinearMap χ hχ t x
+        (toEnd R L M).toLinearMap χ _ hχ t x
     map_lie := fun χ hχ t x ↦ by
       rw [trivial_lie_zero, ← add_left_inj (χ 0), ← aux χ hχ, zero_add, zero_add] }
 

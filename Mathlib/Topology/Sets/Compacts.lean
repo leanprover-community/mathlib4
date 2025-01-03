@@ -67,10 +67,10 @@ theorem coe_mk (s : Set α) (h) : (mk s h : Set α) = s :=
 theorem carrier_eq_coe (s : Compacts α) : s.carrier = s :=
   rfl
 
-instance : Sup (Compacts α) :=
+instance : Max (Compacts α) :=
   ⟨fun s t => ⟨s ∪ t, s.isCompact.union t.isCompact⟩⟩
 
-instance [T2Space α] : Inf (Compacts α) :=
+instance [T2Space α] : Min (Compacts α) :=
   ⟨fun s t => ⟨s ∩ t, s.isCompact.inter t.isCompact⟩⟩
 
 instance [CompactSpace α] : Top (Compacts α) :=
@@ -224,7 +224,7 @@ theorem carrier_eq_coe (s : NonemptyCompacts α) : s.carrier = s :=
 @[simp]
 theorem coe_toCompacts (s : NonemptyCompacts α) : (s.toCompacts : Set α) = s := rfl
 
-instance : Sup (NonemptyCompacts α) :=
+instance : Max (NonemptyCompacts α) :=
   ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.nonempty.mono subset_union_left⟩⟩
 
 instance [CompactSpace α] [Nonempty α] : Top (NonemptyCompacts α) :=
@@ -319,7 +319,7 @@ theorem carrier_eq_coe (s : PositiveCompacts α) : s.carrier = s :=
 theorem coe_toCompacts (s : PositiveCompacts α) : (s.toCompacts : Set α) = s :=
   rfl
 
-instance : Sup (PositiveCompacts α) :=
+instance : Max (PositiveCompacts α) :=
   ⟨fun s t =>
     ⟨s.toCompacts ⊔ t.toCompacts,
       s.interior_nonempty.mono <| interior_mono subset_union_left⟩⟩
@@ -442,7 +442,7 @@ protected theorem ext {s t : CompactOpens α} (h : (s : Set α) = t) : s = t :=
 theorem coe_mk (s : Compacts α) (h) : (mk s h : Set α) = s :=
   rfl
 
-instance : Sup (CompactOpens α) :=
+instance : Max (CompactOpens α) :=
   ⟨fun s t => ⟨s.toCompacts ⊔ t.toCompacts, s.isOpen.union t.isOpen⟩⟩
 
 instance : Bot (CompactOpens α) where bot := ⟨⊥, isOpen_empty⟩
@@ -459,8 +459,8 @@ instance : Inhabited (CompactOpens α) :=
 section Inf
 variable [QuasiSeparatedSpace α]
 
-instance instInf : Inf (CompactOpens α) where
-  inf U V :=
+instance instInf : Min (CompactOpens α) where
+  min U V :=
     ⟨⟨U ∩ V, QuasiSeparatedSpace.inter_isCompact U.1.1 V.1.1 U.2 U.1.2 V.2 V.1.2⟩, U.2.inter V.2⟩
 
 @[simp, norm_cast] lemma coe_inf (s t : CompactOpens α) : ↑(s ⊓ t) = (s ∩ t : Set α) := rfl
