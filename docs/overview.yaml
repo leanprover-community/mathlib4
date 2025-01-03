@@ -19,7 +19,7 @@ General algebra:
     natural number: 'Nat'
     integer: 'Int'
     rational number: 'Rat'
-    continued fraction: 'ContinuedFraction'
+    continued fraction: 'ContFract'
     real number: 'Real'
     extended real number: 'EReal'
     complex number: 'Complex'
@@ -47,6 +47,9 @@ General algebra:
     nilpotent group: 'Group.IsNilpotent'
     permutation group of a type: 'Equiv.Perm'
     structure of finitely generated abelian groups: 'AddCommGroup.equiv_free_prod_directSum_zmod'
+    first Sylow theorem: Sylow.exists_subgroup_card_pow_prime
+    second Sylow theorem: Sylow.isPretransitive_of_finite
+    third Sylow theorem: card_sylow_modEq_one
 
   Rings:
     ring: 'Ring'
@@ -54,7 +57,7 @@ General algebra:
     the category of rings: 'RingCat'
     subring: 'Subring'
     localization: 'Localization'
-    local ring: 'LocalRing'
+    local ring: 'IsLocalRing'
     noetherian ring: 'IsNoetherianRing'
     ordered ring: 'OrderedRing'
 
@@ -145,9 +148,9 @@ General algebra:
 
   Representation theory:
     representation : 'Representation'
-    category of finite dimensional representations : 'FdRep'
-    character : 'FdRep.character'
-    orthogonality of characters : 'FdRep.char_orthonormal'
+    category of finite dimensional representations : 'FDRep'
+    character : 'FDRep.character'
+    orthogonality of characters : 'FDRep.char_orthonormal'
 
 Linear algebra:
   Fundamentals:
@@ -190,7 +193,7 @@ Linear algebra:
     symmetric bilinear form: 'LinearMap.BilinForm.IsSymm'
     matrix representation: 'BilinForm.toMatrix'
     quadratic form: 'QuadraticForm'
-    polar form of a quadratic: 'QuadraticForm.polar'
+    polar form of a quadratic: 'QuadraticMap.polar'
   Finite-dimensional inner product spaces (see also Hilbert spaces, below):
     existence of orthonormal basis: 'OrthonormalBasis'
     diagonalization of self-adjoint endomorphisms: 'LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply'
@@ -209,7 +212,7 @@ Topology:
     cluster point: 'ClusterPt'
     Hausdorff space: 'T2Space'
     sequential space: 'SequentialSpace'
-    extension by continuity: 'DenseInducing.extend'
+    extension by continuity: 'IsDenseInducing.extend'
     compactness in terms of filters: 'IsCompact'
     compactness in terms of open covers (Borel-Lebesgue): 'isCompact_iff_finite_subcover'
     connectedness: 'ConnectedSpace'
@@ -231,7 +234,7 @@ Topology:
   Topological algebra:
     order topology: 'OrderTopology'
     intermediate value theorem: 'intermediate_value_Icc'
-    extreme value theorem: 'IsCompact.exists_forall_le'
+    extreme value theorem: 'IsCompact.exists_isMinOn'
     limit infimum and supremum: 'order/liminf_limsup.html'
     topological group: 'TopologicalGroup'
     completion of an abelian topological group: 'UniformSpace.Completion.instAddCommGroup'
@@ -352,7 +355,7 @@ Analysis:
     Liouville theorem: 'Differentiable.apply_eq_apply_of_bounded'
     maximum modulus principle: 'Complex.eventually_eq_of_isLocalMax_norm'
     principle of isolated zeros: 'AnalyticAt.eventually_eq_zero_or_eventually_ne_zero'
-    principle of analytic continuation: 'AnalyticOn.eqOn_of_preconnected_of_frequently_eq'
+    principle of analytic continuation: 'AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq'
     analyticity of holomorphic functions: 'DifferentiableOn.analyticAt'
     Schwarz lemma: 'Complex.abs_le_abs_of_mapsTo_ball_self'
     removable singularity: 'Complex.differentiableOn_update_limUnder_insert_of_isLittleO'
@@ -468,7 +471,7 @@ Data structures:
   Maps:
     key-value map: 'AList'
     red-black map: 'Batteries.RBMap'
-    hash map: 'Batteries.HashMap'
+    hash map: 'Std.HashMap'
     finitely supported function: 'Finsupp'
     finite map: 'Finmap'
 

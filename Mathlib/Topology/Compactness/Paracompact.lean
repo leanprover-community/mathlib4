@@ -6,8 +6,6 @@ Authors: Reid Barton, Yury Kudryashov
 import Mathlib.Topology.Homeomorph
 import Mathlib.Data.Option.Basic
 
-#align_import topology.paracompact from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
-
 /-!
 # Paracompact topological spaces
 
@@ -64,7 +62,6 @@ class ParacompactSpace (X : Type v) [TopologicalSpace X] : Prop where
     ∀ (α : Type v) (s : α → Set X), (∀ a, IsOpen (s a)) → (⋃ a, s a = univ) →
       ∃ (β : Type v) (t : β → Set X),
         (∀ b, IsOpen (t b)) ∧ (⋃ b, t b = univ) ∧ LocallyFinite t ∧ ∀ b, ∃ a, t b ⊆ s a
-#align paracompact_space ParacompactSpace
 
 variable {ι : Type u} {X : Type v} {Y : Type w} [TopologicalSpace X] [TopologicalSpace Y]
 
@@ -92,14 +89,13 @@ theorem precise_refinement [ParacompactSpace X] (u : ι → Set X) (uo : ∀ a, 
   · simp only [subset_def, mem_iUnion]
     rintro i x ⟨a, rfl, hxa⟩
     exact hind _ hxa
-#align precise_refinement precise_refinement
 
 /-- In a paracompact space, every open covering of a closed set admits a locally finite refinement
 indexed by the same type. -/
 theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s) (u : ι → Set X)
     (uo : ∀ i, IsOpen (u i)) (us : s ⊆ ⋃ i, u i) :
     ∃ v : ι → Set X, (∀ i, IsOpen (v i)) ∧ (s ⊆ ⋃ i, v i) ∧ LocallyFinite v ∧ ∀ i, v i ⊆ u i := by
-  -- Porting note (#10888): added proof of uc
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10888): added proof of uc
   have uc : (iUnion fun i => Option.elim' sᶜ u i) = univ := by
     apply Subset.antisymm (subset_univ _)
     · simp_rw [← compl_union_self s, Option.elim', iUnion_option]
@@ -110,10 +106,9 @@ theorem precise_refinement_set [ParacompactSpace X] {s : Set X} (hs : IsClosed s
   refine ⟨v ∘ some, fun i ↦ vo _, ?_, vf.comp_injective (Option.some_injective _), fun i ↦ vu _⟩
   · simp only [iUnion_option, ← compl_subset_iff_union] at vc
     exact Subset.trans (subset_compl_comm.1 <| vu Option.none) vc
-#align precise_refinement_set precise_refinement_set
 
-theorem ClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y} (he : ClosedEmbedding e) :
-    ParacompactSpace X where
+theorem Topology.IsClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y}
+    (he : IsClosedEmbedding e) : ParacompactSpace X where
   locallyFinite_refinement α s ho hu := by
     choose U hUo hU using fun a ↦ he.isOpen_iff.1 (ho a)
     simp only [← hU] at hu ⊢
@@ -124,8 +119,11 @@ theorem ClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y} (he 
       hVf.preimage_continuous he.continuous, fun a ↦ ⟨a, preimage_mono (hVU a)⟩⟩
     simpa only [range_subset_iff, mem_iUnion, iUnion_eq_univ_iff] using heV
 
+@[deprecated (since := "2024-10-20")]
+alias ClosedEmbedding.paracompactSpace := IsClosedEmbedding.paracompactSpace
+
 theorem Homeomorph.paracompactSpace_iff (e : X ≃ₜ Y) : ParacompactSpace X ↔ ParacompactSpace Y :=
-  ⟨fun _ ↦ e.symm.closedEmbedding.paracompactSpace, fun _ ↦ e.closedEmbedding.paracompactSpace⟩
+  ⟨fun _ ↦ e.symm.isClosedEmbedding.paracompactSpace, fun _ ↦ e.isClosedEmbedding.paracompactSpace⟩
 
 /-- The product of a compact space and a paracompact space is a paracompact space. The formalization
 is based on https://dantopology.wordpress.com/2009/10/24/compact-x-paracompact-is-paracompact/
@@ -171,7 +169,6 @@ instance (priority := 100) paracompact_of_compact [CompactSpace X] : Paracompact
   refine ⟨(T : Set ι), fun t ↦ s t, fun t ↦ ho _, ?_, locallyFinite_of_finite _,
     fun t ↦ ⟨t, Subset.rfl⟩⟩
   simpa only [iUnion_coe_set, ← univ_subset_iff]
-#align paracompact_of_compact paracompact_of_compact
 
 /-- Let `X` be a locally compact sigma compact Hausdorff topological space, let `s` be a closed set
 in `X`. Suppose that for each `x ∈ s` the sets `B x : ι x → Set X` with the predicate
@@ -242,7 +239,6 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [WeaklyLocal
       have := (mem_compl_iff _ _).1 (hr k c hxB)
       contrapose! this with hnk
       exact K.subset hnk (interior_subset hxK)
-#align refinement_of_locally_compact_sigma_compact_of_nhds_basis_set refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set
 
 /-- Let `X` be a locally compact sigma compact Hausdorff topological space. Suppose that for each
 `x` the sets `B x : ι x → Set X` with the predicate `p x : ι x → Prop` form a basis of the filter
@@ -271,7 +267,6 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis [WeaklyLocallyCo
   let ⟨α, c, r, hp, hU, hfin⟩ :=
     refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set isClosed_univ fun x _ ↦ hB x
   ⟨α, c, r, fun a ↦ (hp a).2, univ_subset_iff.1 hU, hfin⟩
-#align refinement_of_locally_compact_sigma_compact_of_nhds_basis refinement_of_locallyCompact_sigmaCompact_of_nhds_basis
 
 -- See note [lower instance priority]
 /-- A locally compact sigma compact Hausdorff space is paracompact. See also
@@ -285,7 +280,6 @@ instance (priority := 100) paracompact_of_locallyCompact_sigmaCompact [WeaklyLoc
   rcases refinement_of_locallyCompact_sigmaCompact_of_nhds_basis this with
     ⟨β, c, t, hto, htc, htf⟩
   exact ⟨β, t, fun x ↦ (hto x).1.2, htc, htf, fun b ↦ ⟨i <| c b, (hto b).2⟩⟩
-#align paracompact_of_locally_compact_sigma_compact paracompact_of_locallyCompact_sigmaCompact
 
 /-- **Dieudonné's theorem**: a paracompact Hausdorff space is normal.
 Formalization is based on the proof
@@ -315,4 +309,3 @@ instance (priority := 100) T4Space.of_paracompactSpace_t2Space [T2Space X] [Para
     exact t2_separation (hst.symm.ne_of_mem hy hx))
     with ⟨v, u, hv, hu, htv, hxu, huv⟩
   exact ⟨u, v, hu, hv, singleton_subset_iff.1 hxu, htv, huv.symm⟩
-#align normal_of_paracompact_t2 T4Space.of_paracompactSpace_t2Space

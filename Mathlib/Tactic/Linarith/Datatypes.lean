@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 import Mathlib.Tactic.Linarith.Lemmas
-import Mathlib.Tactic.Ring.Basic
+import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Util.SynthesizeUsing
 
 /-!
@@ -16,7 +16,7 @@ We split them into their own file.
 This file also contains a few convenient auxiliary functions.
 -/
 
-open Lean Elab Tactic Meta Qq
+open Lean Elab Tactic Meta Qq Mathlib
 
 initialize registerTraceClass `linarith
 initialize registerTraceClass `linarith.detail
@@ -108,54 +108,6 @@ def cmp : Linexp → Linexp → Ordering
     else cmp t1 t2
 
 end Linexp
-
-/-! ### Inequalities -/
-
-/-- The three-element type `Ineq` is used to represent the strength of a comparison between
-terms. -/
-inductive Ineq : Type
-  | eq | le | lt
-deriving DecidableEq, Inhabited, Repr
-
-namespace Ineq
-
-/--
-`max R1 R2` computes the strength of the sum of two inequalities. If `t1 R1 0` and `t2 R2 0`,
-then `t1 + t2 (max R1 R2) 0`.
--/
-def max : Ineq → Ineq → Ineq
-  | lt, _ => lt
-  | _, lt => lt
-  | le, _ => le
-  | _, le => le
-  | eq, eq => eq
-
-/-- `Ineq` is ordered `eq < le < lt`. -/
-def cmp : Ineq → Ineq → Ordering
-  | eq, eq => Ordering.eq
-  | eq, _ => Ordering.lt
-  | le, le => Ordering.eq
-  | le, lt => Ordering.lt
-  | lt, lt => Ordering.eq
-  | _, _ => Ordering.gt
-
-/-- Prints an `Ineq` as the corresponding infix symbol. -/
-def toString : Ineq → String
-  | eq => "="
-  | le => "≤"
-  | lt => "<"
-
-/-- Finds the name of a multiplicative lemma corresponding to an inequality strength. -/
-def toConstMulName : Ineq → Name
-  | lt => ``mul_neg
-  | le => ``mul_nonpos
-  | eq => ``mul_eq
-
-instance : ToString Ineq := ⟨toString⟩
-
-instance : ToFormat Ineq := ⟨fun i => Ineq.toString i⟩
-
-end Ineq
 
 /-! ### Comparisons with 0 -/
 
@@ -302,52 +254,16 @@ A `CertificateOracle` provides a function
 `produceCertificate : List Comp → Nat → MetaM (HashMap Nat Nat)`.
 
 The default `CertificateOracle` used by `linarith` is
-`Linarith.CertificateOracle.simplexAlgorithm`.
-`Linarith.CertificateOracle.fourierMotzkin` is also available (though has some bugs).
+`Linarith.CertificateOracle.simplexAlgorithmSparse`.
+`Linarith.CertificateOracle.simplexAlgorithmDense` and `Linarith.CertificateOracle.fourierMotzkin`
+are also available (though the Fourier-Motzkin oracle has some bugs).
 -/
 structure CertificateOracle : Type where
   /-- `produceCertificate hyps max_var` tries to derive a contradiction from the comparisons in
   `hyps` by eliminating all variables ≤ `max_var`.
   If successful, it returns a map `coeff : Nat → Nat` as a certificate.
   This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`. -/
-  produceCertificate (hyps : List Comp) (max_var : Nat) : MetaM (Batteries.HashMap Nat Nat)
-
-open Meta
-
-/-- A configuration object for `linarith`. -/
-structure LinarithConfig : Type where
-  /-- Discharger to prove that a candidate linear combination of hypothesis is zero. -/
-  -- TODO There should be a def for this, rather than calling `evalTactic`?
-  discharger : TacticM Unit := do evalTactic (← `(tactic| ring1))
-  -- We can't actually store a `Type` here,
-  -- as we want `LinarithConfig : Type` rather than ` : Type 1`,
-  -- so that we can define `elabLinarithConfig : Lean.Syntax → Lean.Elab.TermElabM LinarithConfig`.
-  -- For now, we simply don't support restricting the type.
-  -- (restrict_type : Option Type := none)
-  /-- Prove goals which are not linear comparisons by first calling `exfalso`. -/
-  exfalso : Bool := true
-  /-- Transparency mode for identifying atomic expressions in comparisons. -/
-  transparency : TransparencyMode := .reducible
-  /-- Split conjunctions in hypotheses. -/
-  splitHypotheses : Bool := true
-  /-- Split `≠` in hypotheses, by branching in cases `<` and `>`. -/
-  splitNe : Bool := false
-  /-- Override the list of preprocessors. -/
-  preprocessors : Option (List GlobalBranchingPreprocessor) := none
-  /-- Specify an oracle for identifying candidate contradictions.
-  `.simplexAlgorithm` and `.fourierMotzkin` are both available. -/
-  oracle : Option CertificateOracle := none
-
-/--
-`cfg.updateReducibility reduce_default` will change the transparency setting of `cfg` to
-`default` if `reduce_default` is true. In this case, it also sets the discharger to `ring!`,
-since this is typically needed when using stronger unification.
--/
-def LinarithConfig.updateReducibility (cfg : LinarithConfig) (reduce_default : Bool) :
-    LinarithConfig :=
-  if reduce_default then
-    { cfg with transparency := .default, discharger := do evalTactic (← `(tactic| ring1!)) }
-  else cfg
+  produceCertificate (hyps : List Comp) (max_var : Nat) : MetaM (Std.HashMap Nat Nat)
 
 /-!
 ### Auxiliary functions
@@ -356,34 +272,12 @@ These functions are used by multiple modules, so we put them here for accessibil
 -/
 
 /--
-`getRelSides e` returns the left and right hand sides of `e` if `e` is a comparison,
-and fails otherwise.
-This function is more naturally in the `Option` monad, but it is convenient to put in `MetaM`
-for compositionality.
- -/
-def getRelSides (e : Expr) : MetaM (Expr × Expr) := do
-  let e ← instantiateMVars e
-  match e.getAppFnArgs with
-  | (``LT.lt, #[_, _, a, b]) => return (a, b)
-  | (``LE.le, #[_, _, a, b]) => return (a, b)
-  | (``Eq, #[_, a, b]) => return (a, b)
-  | (``GE.ge, #[_, _, a, b]) => return (a, b)
-  | (``GT.gt, #[_, _, a, b]) => return (a, b)
-  | _ => throwError "Not a comparison (getRelSides) : {e}"
-
-/--
 `parseCompAndExpr e` checks if `e` is of the form `t < 0`, `t ≤ 0`, or `t = 0`.
 If it is, it returns the comparison along with `t`.
 -/
 def parseCompAndExpr (e : Expr) : MetaM (Ineq × Expr) := do
-  let e ← instantiateMVars e
-  match e.getAppFnArgs with
-  | (``LT.lt, #[_, _, e, z]) => if z.zero? then return (Ineq.lt, e) else throwNotZero z
-  | (``LE.le, #[_, _, e, z]) => if z.zero? then return (Ineq.le, e) else throwNotZero z
-  | (``Eq, #[_, e, z]) => if z.zero? then return (Ineq.eq, e) else throwNotZero z
-  | _ => throwError "invalid comparison: {e}"
-  where /-- helper function for error message -/
-  throwNotZero (z : Expr) := throwError "invalid comparison, rhs not zero: {z}"
+  let (rel, _, e, z) ← e.ineq?
+  if z.zero? then return (rel, e) else throwError "invalid comparison, rhs not zero: {z}"
 
 /--
 `mkSingleCompZeroOf c h` assumes that `h` is a proof of `t R 0`.
@@ -399,8 +293,10 @@ def mkSingleCompZeroOf (c : Nat) (h : Expr) : MetaM (Ineq × Expr) := do
     return (Ineq.eq, e')
   else if c = 1 then return (iq, h)
   else do
-    let tp ← inferType (← getRelSides (← inferType h)).2
+    let (_, tp, _) ← tp.ineq?
     let cpos : Q(Prop) ← mkAppM ``GT.gt #[(← tp.ofNat c), (← tp.ofNat 0)]
     let ex ← synthesizeUsingTactic' cpos (← `(tactic| norm_num))
     let e' ← mkAppM iq.toConstMulName #[h, ex]
     return (iq, e')
+
+end Linarith

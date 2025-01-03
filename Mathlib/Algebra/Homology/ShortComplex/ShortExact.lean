@@ -45,7 +45,7 @@ lemma shortExact_of_iso (e : S₁ ≅ S₂) (h : S₁.ShortExact) : S₂.ShortEx
       exact mono_of_mono _ e.inv.τ₂
     have := h.mono_f
     rw [← e.inv.comm₁₂]
-    infer_instance
+    apply mono_comp
   epi_g := by
     suffices Epi (e.hom.τ₂ ≫ S₂.g) by
       exact epi_of_epi e.hom.τ₂ _

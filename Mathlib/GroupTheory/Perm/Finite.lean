@@ -8,14 +8,13 @@ import Mathlib.Data.Int.Order.Units
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Logic.Equiv.Fintype
-
-#align_import group_theory.perm.sign from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
+import Mathlib.Data.Finite.Sum
 
 /-!
 # Permutations on `Fintype`s
 
 This file contains miscellaneous lemmas about `Equiv.Perm` and `Equiv.swap`, building on top
-of those in `Data/Equiv/Basic` and other files in `GroupTheory/Perm/*`.
+of those in `Mathlib/Logic/Equiv/Basic.lean` and other files in `Mathlib/GroupTheory/Perm/*`.
 -/
 
 universe u v
@@ -48,7 +47,6 @@ theorem isConj_of_support_equiv
     · exact hf x (Finset.mem_coe.2 hx)
   · rwa [Classical.not_not.1 ((not_congr mem_support).1 (Equiv.extendSubtype_not_mem f _ _)),
       Classical.not_not.1 ((not_congr mem_support).mp hx)]
-#align equiv.perm.is_conj_of_support_equiv Equiv.Perm.isConj_of_support_equiv
 
 end Conjugation
 
@@ -63,7 +61,6 @@ theorem perm_inv_on_of_perm_on_finset {s : Finset α} {f : Perm α} (h : ∀ x �
   convert hy2
   rw [heq]
   simp only [inv_apply_self]
-#align equiv.perm.perm_inv_on_of_perm_on_finset Equiv.Perm.perm_inv_on_of_perm_on_finset
 
 theorem perm_inv_mapsTo_of_mapsTo (f : Perm α) {s : Set α} [Finite s] (h : Set.MapsTo f s s) :
     Set.MapsTo (f⁻¹ : _) s s := by
@@ -73,13 +70,11 @@ theorem perm_inv_mapsTo_of_mapsTo (f : Perm α) {s : Set α} [Finite s] (h : Set
       perm_inv_on_of_perm_on_finset
         (fun a ha => Set.mem_toFinset.mpr (h (Set.mem_toFinset.mp ha)))
         (Set.mem_toFinset.mpr hx)
-#align equiv.perm.perm_inv_maps_to_of_maps_to Equiv.Perm.perm_inv_mapsTo_of_mapsTo
 
 @[simp]
 theorem perm_inv_mapsTo_iff_mapsTo {f : Perm α} {s : Set α} [Finite s] :
     Set.MapsTo (f⁻¹ : _) s s ↔ Set.MapsTo f s s :=
   ⟨perm_inv_mapsTo_of_mapsTo f⁻¹, perm_inv_mapsTo_of_mapsTo f⟩
-#align equiv.perm.perm_inv_maps_to_iff_maps_to Equiv.Perm.perm_inv_mapsTo_iff_mapsTo
 
 theorem perm_inv_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite { x // p x }]
     (h : ∀ x, p x → p (f x)) {x : α} (hx : p x) : p (f⁻¹ x) :=
@@ -87,7 +82,6 @@ theorem perm_inv_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite { 
   -- underlying predicate.
   have : Finite { x | p x } := ‹_›
   perm_inv_mapsTo_of_mapsTo (s := {x | p x}) f h hx
-#align equiv.perm.perm_inv_on_of_perm_on_finite Equiv.Perm.perm_inv_on_of_perm_on_finite
 
 /-- If the permutation `f` maps `{x // p x}` into itself, then this returns the permutation
   on `{x // p x}` induced by `f`. Note that the `h` hypothesis is weaker than for
@@ -95,20 +89,17 @@ theorem perm_inv_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite { 
 abbrev subtypePermOfFintype (f : Perm α) {p : α → Prop} [Finite { x // p x }]
     (h : ∀ x, p x → p (f x)) : Perm { x // p x } :=
   f.subtypePerm fun x => ⟨h x, fun h₂ => f.inv_apply_self x ▸ perm_inv_on_of_perm_on_finite h h₂⟩
-#align equiv.perm.subtype_perm_of_fintype Equiv.Perm.subtypePermOfFintype
 
 @[simp]
 theorem subtypePermOfFintype_apply (f : Perm α) {p : α → Prop} [Finite { x // p x }]
     (h : ∀ x, p x → p (f x)) (x : { x // p x }) : subtypePermOfFintype f h x = ⟨f x, h x x.2⟩ :=
   rfl
-#align equiv.perm.subtype_perm_of_fintype_apply Equiv.Perm.subtypePermOfFintype_apply
 
 theorem subtypePermOfFintype_one (p : α → Prop) [Finite { x // p x }]
     (h : ∀ x, p x → p ((1 : Perm α) x)) : @subtypePermOfFintype α 1 p _ h = 1 :=
   rfl
-#align equiv.perm.subtype_perm_of_fintype_one Equiv.Perm.subtypePermOfFintype_one
 
-theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ : Perm (Sum m n)) :
+theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ : Perm (m ⊕ n)) :
     Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl) ↔
       Set.MapsTo σ (Set.range Sum.inr) (Set.range Sum.inr) := by
   constructor <;>
@@ -127,18 +118,17 @@ theorem perm_mapsTo_inl_iff_mapsTo_inr {m n : Type*} [Finite m] [Finite n] (σ :
     obtain ⟨y, hy⟩ := h ⟨r, rfl⟩
     rw [← hx, σ.inv_apply_self] at hy
     exact absurd hy Sum.inr_ne_inl
-#align equiv.perm.perm_maps_to_inl_iff_maps_to_inr Equiv.Perm.perm_mapsTo_inl_iff_mapsTo_inr
 
 theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finite n]
-    {σ : Perm (Sum m n)} (h : Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl)) :
+    {σ : Perm (m ⊕ n)} (h : Set.MapsTo σ (Set.range Sum.inl) (Set.range Sum.inl)) :
     σ ∈ (sumCongrHom m n).range := by
   classical
-    have h1 : ∀ x : Sum m n, (∃ a : m, Sum.inl a = x) → ∃ a : m, Sum.inl a = σ x := by
+    have h1 : ∀ x : m ⊕ n, (∃ a : m, Sum.inl a = x) → ∃ a : m, Sum.inl a = σ x := by
       rintro x ⟨a, ha⟩
       apply h
       rw [← ha]
       exact ⟨a, rfl⟩
-    have h3 : ∀ x : Sum m n, (∃ b : n, Sum.inr b = x) → ∃ b : n, Sum.inr b = σ x := by
+    have h3 : ∀ x : m ⊕ n, (∃ b : n, Sum.inr b = x) → ∃ b : n, Sum.inr b = σ x := by
       rintro x ⟨b, hb⟩
       apply (perm_mapsTo_inl_iff_mapsTo_inr σ).mp h
       rw [← hb]
@@ -155,13 +145,12 @@ theorem mem_sumCongrHom_range_of_perm_mapsTo_inl {m n : Type*} [Finite m] [Finit
     · rw [Equiv.sumCongr_apply, Sum.map_inl, permCongr_apply, Equiv.symm_symm,
         apply_ofInjective_symm Sum.inl_injective]
       rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
-      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
       erw [subtypePerm_apply]
     · rw [Equiv.sumCongr_apply, Sum.map_inr, permCongr_apply, Equiv.symm_symm,
         apply_ofInjective_symm Sum.inr_injective]
       erw [subtypePerm_apply]
       rw [ofInjective_apply, Subtype.coe_mk, Subtype.coe_mk]
-#align equiv.perm.mem_sum_congr_hom_range_of_perm_maps_to_inl Equiv.Perm.mem_sumCongrHom_range_of_perm_mapsTo_inl
 
 nonrec theorem Disjoint.orderOf {σ τ : Perm α} (hστ : Disjoint σ τ) :
     orderOf (σ * τ) = Nat.lcm (orderOf σ) (orderOf τ) :=
@@ -171,7 +160,6 @@ nonrec theorem Disjoint.orderOf {σ τ : Perm α} (hστ : Disjoint σ τ) :
     (Nat.lcm_dvd
       (orderOf_dvd_of_pow_eq_one ((h (orderOf (σ * τ))).mp (pow_orderOf_eq_one (σ * τ))).1)
       (orderOf_dvd_of_pow_eq_one ((h (orderOf (σ * τ))).mp (pow_orderOf_eq_one (σ * τ))).2))
-#align equiv.perm.disjoint.order_of Equiv.Perm.Disjoint.orderOf
 
 theorem Disjoint.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ Subtype p)
     {σ τ : Perm α} (h : Disjoint σ τ) : Disjoint (σ.extendDomain f) (τ.extendDomain f) := by
@@ -182,7 +170,6 @@ theorem Disjoint.extendDomain {p : β → Prop} [DecidablePred p] (f : α ≃ Su
         rw [extendDomain_apply_subtype _ _ pb, h, apply_symm_apply, Subtype.coe_mk]
   · left
     rw [extendDomain_apply_not_subtype _ _ pb]
-#align equiv.perm.disjoint.extend_domain Equiv.Perm.Disjoint.extendDomain
 
 theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ π)
     (hc2 : IsConj τ ρ) (hd1 : Disjoint σ τ) (hd2 : Disjoint π ρ) : IsConj (σ * τ) (π * ρ) := by
@@ -197,9 +184,9 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
     have hd2'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd2)
     refine isConj_of_support_equiv ?_ ?_
     · refine
-          ((Equiv.Set.ofEq hd1').trans (Equiv.Set.union hd1''.le_bot)).trans
+          ((Equiv.Set.ofEq hd1').trans (Equiv.Set.union hd1'')).trans
             ((Equiv.sumCongr (subtypeEquiv f fun a => ?_) (subtypeEquiv g fun a => ?_)).trans
-              ((Equiv.Set.ofEq hd2').trans (Equiv.Set.union hd2''.le_bot)).symm) <;>
+              ((Equiv.Set.ofEq hd2').trans (Equiv.Set.union hd2'')).symm) <;>
       · simp only [Set.mem_image, toEmbedding_apply, exists_eq_right, support_conj, coe_map,
           apply_eq_iff_eq]
     · intro x hx
@@ -208,7 +195,7 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
       rw [hd1', Set.mem_union] at hx
       cases' hx with hxσ hxτ
       · rw [mem_coe, mem_support] at hxσ
-        rw [Set.union_apply_left hd1''.le_bot _, Set.union_apply_left hd1''.le_bot _]
+        rw [Set.union_apply_left, Set.union_apply_left]
         · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inl, comp_apply,
             Set.union_symm_apply_left, Subtype.coe_mk, apply_eq_iff_eq]
           have h := (hd2 (f x)).resolve_left ?_
@@ -219,7 +206,7 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
         · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 x).resolve_left hxσ, mem_coe,
             apply_mem_support, mem_support]
       · rw [mem_coe, ← apply_mem_support, mem_support] at hxτ
-        rw [Set.union_apply_right hd1''.le_bot _, Set.union_apply_right hd1''.le_bot _]
+        rw [Set.union_apply_right, Set.union_apply_right]
         · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inr, comp_apply,
             Set.union_symm_apply_right, Subtype.coe_mk, apply_eq_iff_eq]
           have h := (hd2 (g (τ x))).resolve_right ?_
@@ -229,10 +216,26 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
         · rwa [Subtype.coe_mk, mem_coe, ← apply_mem_support, mem_support]
         · rwa [Subtype.coe_mk, Perm.mul_apply, (hd1 (τ x)).resolve_right hxτ,
             mem_coe, mem_support]
-#align equiv.perm.disjoint.is_conj_mul Equiv.Perm.Disjoint.isConj_mul
+
+theorem mem_fixedPoints_iff_apply_mem_of_mem_centralizer {g p : Perm α}
+    (hp : p ∈ Subgroup.centralizer {g}) {x : α} :
+    x ∈ Function.fixedPoints g ↔ p x ∈ Function.fixedPoints g :=  by
+  simp only [Subgroup.mem_centralizer_singleton_iff] at hp
+  simp only [Function.mem_fixedPoints_iff]
+  rw [← mul_apply, ← hp, mul_apply, EmbeddingLike.apply_eq_iff_eq]
+
 
 
 variable [DecidableEq α]
+
+lemma disjoint_ofSubtype_of_memFixedPoints_self {g : Perm α}
+    (u : Perm (Function.fixedPoints g)) :
+    Disjoint (ofSubtype u) g := by
+  rw [disjoint_iff_eq_or_eq]
+  intro x
+  by_cases hx : x ∈ Function.fixedPoints g
+  · right; exact hx
+  · left; rw [ofSubtype_apply_of_not_mem u hx]
 
 section Fintype
 
@@ -244,7 +247,6 @@ theorem support_pow_coprime {σ : Perm α} {n : ℕ} (h : Nat.Coprime n (orderOf
   exact
     le_antisymm (support_pow_le σ n)
       (le_trans (ge_of_eq (congr_arg support hm)) (support_pow_le (σ ^ n) m))
-#align equiv.perm.support_pow_coprime Equiv.Perm.support_pow_coprime
 
 end Fintype
 

@@ -109,6 +109,11 @@ lemma W_iff_isLocallyBijective :
     J.W f ↔ Presheaf.IsLocallyInjective J f ∧ Presheaf.IsLocallySurjective J f := by
   apply WEqualsLocallyBijective.iff
 
+lemma W_of_isLocallyBijective [Presheaf.IsLocallyInjective J f]
+    [Presheaf.IsLocallySurjective J f] : J.W f := by
+  rw [W_iff_isLocallyBijective]
+  constructor <;> infer_instance
+
 variable {J f}
 
 lemma W.isLocallyInjective (hf : J.W f) : Presheaf.IsLocallyInjective J f :=

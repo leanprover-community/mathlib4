@@ -99,11 +99,11 @@ lemma sieve₁_eq_pullback_sieve₁' {W : C} (p₁ : W ⟶ E.X i₁) (p₂ : W �
   · rintro ⟨j, h, fac₁, fac₂⟩
     exact ⟨_, h, _, ⟨j⟩, by aesop_cat⟩
   · rintro ⟨_, h, w, ⟨j⟩, fac⟩
-    exact ⟨j, h, by simpa using fac.symm =≫ pullback.fst,
-      by simpa using fac.symm =≫ pullback.snd⟩
+    exact ⟨j, h, by simpa using fac.symm =≫ pullback.fst _ _,
+      by simpa using fac.symm =≫ pullback.snd _ _⟩
 
 variable (i₁ i₂) in
-lemma sieve₁'_eq_sieve₁ : E.sieve₁' i₁ i₂ = E.sieve₁ pullback.fst pullback.snd := by
+lemma sieve₁'_eq_sieve₁ : E.sieve₁' i₁ i₂ = E.sieve₁ (pullback.fst _ _) (pullback.snd _ _) := by
   rw [← Sieve.pullback_id (S := E.sieve₁' i₁ i₂),
     sieve₁_eq_pullback_sieve₁' _ _ _ pullback.condition]
   congr
@@ -144,7 +144,7 @@ variable (J : GrothendieckTopology C)
 /-- The type of `1`-hypercovers of an object `S : C` in a category equipped with a
 Grothendieck topology `J`. This can be constructed from a covering of `S` and
 a covering of the fibre products of the objects in this covering (see `OneHypercover.mk'`). -/
-structure OneHypercover (S : C) extends PreOneHypercover S where
+structure OneHypercover (S : C) extends PreOneHypercover.{w} S where
   mem₀ : toPreOneHypercover.sieve₀ ∈ J S
   mem₁ (i₁ i₂ : I₀) ⦃W : C⦄ (p₁ : W ⟶ X i₁) (p₂ : W ⟶ X i₂) (w : p₁ ≫ f i₁ = p₂ ≫ f i₂) :
     toPreOneHypercover.sieve₁ p₁ p₂ ∈ J W
@@ -164,7 +164,7 @@ check that the data provides a covering of `S` and of the fibre products. -/
 @[simps toPreOneHypercover]
 def mk' {S : C} (E : PreOneHypercover S) [E.HasPullbacks]
     (mem₀ : E.sieve₀ ∈ J S) (mem₁' : ∀ (i₁ i₂ : E.I₀), E.sieve₁' i₁ i₂ ∈ J _) :
-        J.OneHypercover S where
+    J.OneHypercover S where
   toPreOneHypercover := E
   mem₀ := mem₀
   mem₁ i₁ i₂ W p₁ p₂ w := by
@@ -211,6 +211,51 @@ noncomputable def isLimitMultifork : IsLimit (E.multifork F.1) :=
 end
 
 end OneHypercover
+
+namespace Cover
+
+variable {X : C} (S : J.Cover X)
+
+/-- The tautological 1-pre-hypercover induced by `S : J.Cover X`. Its index type `I₀`
+is given by `S.Arrow` (i.e. all the morphisms in the sieve `S`), while `I₁` is given
+by all possible pullback cones. -/
+@[simps]
+def preOneHypercover : PreOneHypercover.{max u v} X where
+  I₀ := S.Arrow
+  X f := f.Y
+  f f := f.f
+  I₁ f₁ f₂ := f₁.Relation f₂
+  Y _ _ r := r.Z
+  p₁ _ _ r := r.g₁
+  p₂ _ _ r := r.g₂
+  w _ _ r := r.w
+
+@[simp]
+lemma preOneHypercover_sieve₀ : S.preOneHypercover.sieve₀ = S.1 := by
+  ext Y f
+  constructor
+  · rintro ⟨_, _, _, ⟨g⟩, rfl⟩
+    exact S.1.downward_closed g.hf _
+  · intro hf
+    exact Sieve.ofArrows_mk _ _ ({ hf := hf } : S.Arrow)
+
+lemma preOneHypercover_sieve₁ (f₁ f₂ : S.Arrow) {W : C} (p₁ : W ⟶ f₁.Y) (p₂ : W ⟶ f₂.Y)
+    (w : p₁ ≫ f₁.f = p₂ ≫ f₂.f) :
+    S.preOneHypercover.sieve₁ p₁ p₂ = ⊤ := by
+  ext Y f
+  simp only [Sieve.top_apply, iff_true]
+  exact ⟨{ w := w}, f, rfl, rfl⟩
+
+/-- The tautological 1-hypercover induced by `S : J.Cover X`. Its index type `I₀`
+is given by `S.Arrow` (i.e. all the morphisms in the sieve `S`), while `I₁` is given
+by all possible pullback cones. -/
+@[simps toPreOneHypercover]
+def oneHypercover : J.OneHypercover X where
+  toPreOneHypercover := S.preOneHypercover
+  mem₀ := by simp
+  mem₁ f₁ f₂ _ p₁ p₂ w := by simp [S.preOneHypercover_sieve₁ f₁ f₂ p₁ p₂ w]
+
+end Cover
 
 end GrothendieckTopology
 

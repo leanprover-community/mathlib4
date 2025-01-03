@@ -105,7 +105,7 @@ theorem lift_range_le {f : A →ₙₐ[R] C} {S : Subalgebra R C} :
   · rintro - ⟨x, rfl⟩
     exact @h (f x) ⟨x, by simp⟩
   · rintro - ⟨x, rfl⟩
-    induction x using ind with
+    induction x with
     | _ r a => simpa using add_mem (algebraMap_mem S r) (h ⟨a, rfl⟩)
 
 theorem lift_range (f : A →ₙₐ[R] C) :
@@ -148,13 +148,15 @@ theorem _root_.AlgHomClass.unitization_injective' {F R S A : Type*} [CommRing R]
     [FunLike F (Unitization R s) A] [AlgHomClass F R (Unitization R s) A]
     (f : F) (hf : ∀ x : s, f x = x) : Function.Injective f := by
   refine (injective_iff_map_eq_zero f).mpr fun x hx => ?_
-  induction' x using Unitization.ind with r a
-  simp_rw [map_add, hf, ← Unitization.algebraMap_eq_inl, AlgHomClass.commutes] at hx
-  rw [add_eq_zero_iff_eq_neg] at hx ⊢
-  by_cases hr : r = 0
-  · ext <;> simp [hr] at hx ⊢
-    exact hx
-  · exact (h r hr <| hx ▸ (neg_mem a.property)).elim
+  induction x with
+  | inl_add_inr r a =>
+    simp_rw [map_add, hf, ← Unitization.algebraMap_eq_inl, AlgHomClass.commutes] at hx
+    rw [add_eq_zero_iff_eq_neg] at hx ⊢
+    by_cases hr : r = 0
+    · ext
+      · simp [hr]
+      · simpa [hr] using hx
+    · exact (h r hr <| hx ▸ (neg_mem a.property)).elim
 
 /-- This is a generic version which allows us to prove both
 `NonUnitalSubalgebra.unitization_injective` and `NonUnitalStarSubalgebra.unitization_injective`. -/
@@ -206,9 +208,35 @@ variable {R : Type*} [NonAssocSemiring R]
 def Subsemiring.toNonUnitalSubsemiring (S : Subsemiring R) : NonUnitalSubsemiring R :=
   { S with }
 
+theorem Subsemiring.toNonUnitalSubsemiring_injective :
+    Function.Injective (toNonUnitalSubsemiring : Subsemiring R → _) :=
+  fun S₁ S₂ h => SetLike.ext'_iff.2 (
+    show (S₁.toNonUnitalSubsemiring : Set R) = S₂ from SetLike.ext'_iff.1 h)
+
+@[simp]
+theorem Subsemiring.toNonUnitalSubsemiring_inj {S₁ S₂ : Subsemiring R} :
+    S₁.toNonUnitalSubsemiring = S₂.toNonUnitalSubsemiring ↔ S₁ = S₂ :=
+  toNonUnitalSubsemiring_injective.eq_iff
+
+@[simp]
+theorem Subsemiring.mem_toNonUnitalSubsemiring {S : Subsemiring R}
+    {x : R} : x ∈ S.toNonUnitalSubsemiring ↔ x ∈ S := Iff.rfl
+
+@[simp]
+theorem Subsemiring.coe_toNonUnitalSubsemiring (S : Subsemiring R) :
+  (S.toNonUnitalSubsemiring : Set R) = S := rfl
+
 theorem Subsemiring.one_mem_toNonUnitalSubsemiring (S : Subsemiring R) :
     (1 : R) ∈ S.toNonUnitalSubsemiring :=
   S.one_mem
+
+@[simp]
+theorem Submonoid.subsemiringClosure_toNonUnitalSubsemiring {M : Submonoid R} :
+    M.subsemiringClosure.toNonUnitalSubsemiring = .closure M := by
+  refine Eq.symm (NonUnitalSubsemiring.closure_eq_of_le ?_ (fun _ hx => ?_))
+  · simp [Submonoid.subsemiringClosure_coe]
+  · simp [Submonoid.subsemiringClosure_mem] at hx
+    induction hx using AddSubmonoid.closure_induction <;> aesop
 
 /-- Turn a non-unital subsemiring containing `1` into a subsemiring. -/
 def NonUnitalSubsemiring.toSubsemiring (S : NonUnitalSubsemiring R) (h1 : (1 : R) ∈ S) :
@@ -239,7 +267,7 @@ theorem unitization_apply (x : Unitization ℕ s) : unitization s x = x.fst + x.
   rfl
 
 theorem unitization_range :
-    (unitization s).range = subalgebraOfSubsemiring (Subsemiring.closure s) := by
+    (unitization s).range = subalgebraOfSubsemiring (.closure s) := by
   have := AddSubmonoidClass.nsmulMemClass (S := S)
   rw [unitization, NonUnitalSubalgebra.unitization_range (hSRA := this), Algebra.adjoin_nat]
 
@@ -286,7 +314,7 @@ theorem unitization_apply (x : Unitization ℤ s) : unitization s x = x.fst + x.
   rfl
 
 theorem unitization_range :
-    (unitization s).range = subalgebraOfSubring (Subring.closure s) := by
+    (unitization s).range = subalgebraOfSubring (.closure s) := by
   have := AddSubgroupClass.zsmulMemClass (S := S)
   rw [unitization, NonUnitalSubalgebra.unitization_range (hSRA := this), Algebra.adjoin_int]
 
@@ -360,7 +388,7 @@ theorem starLift_range_le
   · rintro - ⟨x, rfl⟩
     exact @h (f x) ⟨x, by simp⟩
   · rintro - ⟨x, rfl⟩
-    induction x using ind with
+    induction x with
     | _ r a => simpa using add_mem (algebraMap_mem S r) (h ⟨a, rfl⟩)
 
 theorem starLift_range (f : A →⋆ₙₐ[R] C) :

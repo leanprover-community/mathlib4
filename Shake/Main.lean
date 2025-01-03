@@ -35,6 +35,9 @@ Arguments:
     provided module(s) will be checked.
 
 Options:
+  --force
+    Skips the `lake build --no-build` sanity check
+
   --fix
     Apply the suggested fixes directly. Make sure you have a clean checkout
     before running this, so you can review the changes.
@@ -81,7 +84,7 @@ abbrev Bitset := Nat
 /-- The main state of the checker, containing information on all loaded modules. -/
 structure State where
   /-- Maps a module name to its index in the module list. -/
-  toIdx : HashMap Name USize := {}
+  toIdx : Std.HashMap Name USize := {}
   /-- Maps a module index to the module name. -/
   modNames : Array Name := #[]
   /-- Maps a module index to the module data. -/
@@ -93,8 +96,10 @@ structure State where
   /-- `j ∈ needs[i]` if module `i` uses a constant declared in module `j`.
   Note: this is left empty if `args.downstream` is false, we calculate `needs` on demand -/
   needs : Array Bitset := #[]
-  /-- Maps a constant name to the module index containing it. -/
-  constToIdx : HashMap Name USize := {}
+  /-- Maps a constant name to the module index containing it.
+  A value of `none` means the constant was found in multiple modules,
+  in which case we do not track it. -/
+  constToIdx : Std.HashMap Name (Option USize) := {}
 
 /-- Returns `true` if this is a constant whose body should not be considered for dependency
 tracking purposes. -/
@@ -108,7 +113,7 @@ def isBlacklisted (name : Name) : Bool :=
 
 /-- Calculates the value of the `needs[i]` bitset for a given module `mod`.
 Bit `j` is set in the result if some constant from module `j` is used in this module. -/
-def calcNeeds (constToIdx : HashMap Name USize) (mod : ModuleData) : Bitset :=
+def calcNeeds (constToIdx : Std.HashMap Name (Option USize)) (mod : ModuleData) : Bitset :=
   mod.constants.foldl (init := 0) fun deps ci =>
     if isBlacklisted ci.name then deps else
     let deps := visitExpr ci.type deps
@@ -118,13 +123,13 @@ def calcNeeds (constToIdx : HashMap Name USize) (mod : ModuleData) : Bitset :=
 where
   /-- Accumulate the results from expression `e` into `deps`. -/
   visitExpr e deps :=
-    Lean.Expr.foldConsts e deps fun c deps => match constToIdx.find? c with
-      | some i => deps ||| (1 <<< i.toNat)
-      | none => deps
+    Lean.Expr.foldConsts e deps fun c deps => match constToIdx[c]? with
+      | some (some i) => deps ||| (1 <<< i.toNat)
+      | _ => deps
 
 /-- Calculates the same as `calcNeeds` but tracing each module to a specific constant. -/
-def getExplanations (constToIdx : HashMap Name USize) (mod : ModuleData) :
-    HashMap USize (Name × Name) :=
+def getExplanations (constToIdx : Std.HashMap Name (Option USize)) (mod : ModuleData) :
+    Std.HashMap USize (Name × Name) :=
   mod.constants.foldl (init := {}) fun deps ci =>
     if isBlacklisted ci.name then deps else
     let deps := visitExpr ci.name ci.type deps
@@ -134,17 +139,17 @@ def getExplanations (constToIdx : HashMap Name USize) (mod : ModuleData) :
 where
   /-- Accumulate the results from expression `e` into `deps`. -/
   visitExpr name e deps :=
-    Lean.Expr.foldConsts e deps fun c deps => match constToIdx.find? c with
-      | some i =>
+    Lean.Expr.foldConsts e deps fun c deps => match constToIdx[c]? with
+      | some (some i) =>
         if
-          if let some (name', _) := deps.find? i then
+          if let some (name', _) := deps[i]? then
             decide (name.toString.length < name'.toString.length)
           else true
         then
           deps.insert i (name, c)
         else
           deps
-      | none => deps
+      | _ => deps
 
 /-- Load all the modules in `imports` into the `State`, as well as their transitive dependencies.
 Returns a pair `(imps, transImps)` where:
@@ -157,7 +162,7 @@ partial def loadModules (imports : Array Import) : StateT State IO (Array USize 
   let mut transImps := 0
   for imp in imports do
     let s ← get
-    if let some i := s.toIdx.find? imp.module then
+    if let some i := s.toIdx[imp.module]? then
       imps := imps.push i
       transImps := transImps ||| s.transDeps[i]!
     else
@@ -178,7 +183,15 @@ partial def loadModules (imports : Array Import) : StateT State IO (Array USize 
         deps := s.deps.push deps
         transDeps := s.transDeps.push transDeps
         needs := s.needs
-        constToIdx := mod.constNames.foldl (·.insert · n) s.constToIdx
+        constToIdx := mod.constNames.foldl (init := s.constToIdx) fun m a =>
+          match m.getThenInsertIfNew? a n with
+          | (some (some _), m) =>
+            -- Note: If a constant is found in multiple modules, we assume it is an auto-generated
+            -- definition which is created on demand, and therefore it is safe to ignore any
+            -- dependencies via this definition because it will just be re-created in the current
+            -- module if we don't import it.
+            m.insert a none
+          | (_, m) => m
       }
   return (imps, transImps)
 
@@ -188,17 +201,17 @@ partial def loadModules (imports : Array Import) : StateT State IO (Array USize 
 * If `j ∈ added` then we want to add module index `j` to the imports of `i`.
   We keep this as a bitset because we will do transitive reduction before applying it
 -/
-def Edits := HashMap Name (NameSet × Bitset)
+def Edits := Std.HashMap Name (NameSet × Bitset)
 
 /-- Register that we want to remove `tgt` from the imports of `src`. -/
 def Edits.remove (ed : Edits) (src tgt : Name) : Edits :=
-  match ed.find? src with
+  match ed.get? src with
   | none => ed.insert src (RBTree.insert ∅ tgt, 0)
   | some (a, b) => ed.insert src (a.insert tgt, b)
 
 /-- Register that we want to add `tgt` to the imports of `src`. -/
 def Edits.add (ed : Edits) (src : Name) (tgt : Nat) : Edits :=
-  match ed.find? src with
+  match ed.get? src with
   | none => ed.insert src (∅, 1 <<< tgt)
   | some (a, b) => ed.insert src (a, b ||| (1 <<< tgt))
 
@@ -215,7 +228,7 @@ def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
   let text ← IO.FS.readFile path
   let inputCtx := Parser.mkInputContext text path.toString
   let (header, parserState, msgs) ← Parser.parseHeader inputCtx
-  if !msgs.isEmpty then -- skip this file if there are parse errors
+  if !msgs.toList.isEmpty then -- skip this file if there are parse errors
     msgs.forM fun msg => msg.toString >>= IO.println
     throw <| .userError "parse errors in file"
   -- the insertion point for `add` is the first newline after the imports
@@ -252,7 +265,7 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
   let mut toRemove := #[]
   let mut newDeps := 0
   for imp in s.mods[i]!.imports do
-    let j := s.toIdx.find! imp.module
+    let j := s.toIdx[imp.module]!
     if transDeps &&& (1 <<< j.toNat) == 0 then
       toRemove := toRemove.push j
     else
@@ -350,11 +363,11 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
   if explain then
     let explanation := getExplanations s.constToIdx s.mods[i]!
     let sanitize n := if n.hasMacroScopes then (sanitizeName n).run' { options := {} } else n
-    let run j := do
-      if let some (n, c) := explanation.find? j then
+    let run (j : USize) := do
+      if let some (n, c) := explanation[j]? then
         println! "  note: {s.modNames[i]!} requires {s.modNames[j]!}\
           \n    because {sanitize n} refers to {sanitize c}"
-    for imp in s.mods[i]!.imports do run <| s.toIdx.find! imp.module
+    for imp in s.mods[i]!.imports do run <| s.toIdx[imp.module]!
     for i in toAdd do run i.toUSize
 
   return edits
@@ -362,7 +375,7 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
 /-- Convert a list of module names to a bitset of module indexes -/
 def toBitset (s : State) (ns : List Name) : Bitset :=
   ns.foldl (init := 0) fun c name =>
-    match s.toIdx.find? name with
+    match s.toIdx[name]? with
     | some i => c ||| (1 <<< i.toNat)
     | none => c
 
@@ -370,6 +383,8 @@ def toBitset (s : State) (ns : List Name) : Bitset :=
 structure Args where
   /-- `--help`: shows the help -/
   help : Bool := false
+  /-- `--force`: skips the `lake build --no-build` sanity check -/
+  force : Bool := false
   /-- `--no-downstream`: disables downstream mode -/
   downstream : Bool := true
   /-- `--gh-style`: output messages that can be parsed by `gh-problem-matcher-wrap` -/
@@ -412,6 +427,7 @@ def main (args : List String) : IO UInt32 := do
   let rec parseArgs (args : Args) : List String → Args
     | [] => args
     | "--help" :: rest => parseArgs { args with help := true } rest
+    | "--force" :: rest => parseArgs { args with force := true } rest
     | "--no-downstream" :: rest => parseArgs { args with downstream := false } rest
     | "--fix" :: rest => parseArgs { args with fix := true } rest
     | "--explain" :: rest => parseArgs { args with explain := true } rest
@@ -428,9 +444,10 @@ def main (args : List String) : IO UInt32 := do
     IO.println help
     IO.Process.exit 0
 
-  if (← IO.Process.output { cmd := "lake", args := #["build", "--no-build"] }).exitCode != 0 then
-    IO.println "There are out of date oleans. Run `lake build` or `lake exe cache get` first"
-    IO.Process.exit 1
+  if !args.force then
+    if (← IO.Process.output { cmd := "lake", args := #["build", "--no-build"] }).exitCode != 0 then
+      IO.println "There are out of date oleans. Run `lake build` or `lake exe cache get` first"
+      IO.Process.exit 1
 
   -- Parse the `--cfg` argument
   let srcSearchPath ← initSrcSearchPath
@@ -460,7 +477,7 @@ def main (args : List String) : IO UInt32 := do
   -- Parse the config file
   let ignoreMods := toBitset s (cfg.ignoreAll?.getD [])
   let ignoreImps := toBitset s (cfg.ignoreImport?.getD [])
-  let ignore := (cfg.ignore?.getD {}).fold (init := mkHashMap) fun m a v =>
+  let ignore := (cfg.ignore?.getD {}).fold (init := Std.HashMap.empty) fun m a v =>
     m.insert a (toBitset s v.toList)
 
   let noIgnore (i : Nat) :=
@@ -473,7 +490,7 @@ def main (args : List String) : IO UInt32 := do
     if args.downstream || noIgnore i then
       some <| Task.spawn fun _ =>
         -- remove the module from its own `needs`
-        (calcNeeds s.constToIdx mod ||| (1 <<< i.1)) ^^^ (1 <<< i.1)
+        (calcNeeds s.constToIdx mod ||| (1 <<< i)) ^^^ (1 <<< i)
     else
       none
   if args.downstream then
@@ -483,11 +500,11 @@ def main (args : List String) : IO UInt32 := do
     println! "The following changes will be made automatically:"
 
   -- Check all selected modules
-  let mut edits : Edits := mkHashMap
+  let mut edits : Edits := Std.HashMap.empty
   for i in [0:s.mods.size], t in needs do
     if let some t := t then
       if noIgnore i then
-        let ignoreImps := ignoreImps ||| ignore.findD s.modNames[i]! 0
+        let ignoreImps := ignoreImps ||| ignore.getD s.modNames[i]! 0
         edits ← visitModule s srcSearchPath ignoreImps i t.get edits
           args.downstream args.githubStyle args.explain
 

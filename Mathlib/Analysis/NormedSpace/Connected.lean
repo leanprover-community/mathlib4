@@ -52,18 +52,16 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
   let c := (2 : ℝ)⁻¹ • (a + b)
   let x := (2 : ℝ)⁻¹ • (b - a)
   have Ia : c - x = a := by
-    simp only [c, x, smul_add, smul_sub]
-    abel_nf
-    simp [zsmul_eq_smul_cast ℝ 2]
+    simp only [c, x]
+    module
   have Ib : c + x = b := by
-    simp only [c, x, smul_add, smul_sub]
-    abel_nf
-    simp [zsmul_eq_smul_cast ℝ 2]
+    simp only [c, x]
+    module
   have x_ne_zero : x ≠ 0 := by simpa [x] using sub_ne_zero.2 hab.symm
   obtain ⟨y, hy⟩ : ∃ y, LinearIndependent ℝ ![x, y] :=
     exists_linearIndependent_pair_of_one_lt_rank h x_ne_zero
   have A : Set.Countable {t : ℝ | ([c + x -[ℝ] c + t • y] ∩ s).Nonempty} := by
-    apply countable_setOf_nonempty_of_disjoint _ (fun t ↦ inter_subset_right _ _) hs
+    apply countable_setOf_nonempty_of_disjoint _ (fun t ↦ inter_subset_right) hs
     intro t t' htt'
     apply disjoint_iff_inter_eq_empty.2
     have N : {c + x} ∩ s = ∅ := by
@@ -73,7 +71,7 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
     apply Eq.subset
     apply segment_inter_eq_endpoint_of_linearIndependent_of_ne hy htt'.symm
   have B : Set.Countable {t : ℝ | ([c - x -[ℝ] c + t • y] ∩ s).Nonempty} := by
-    apply countable_setOf_nonempty_of_disjoint _ (fun t ↦ inter_subset_right _ _) hs
+    apply countable_setOf_nonempty_of_disjoint _ (fun t ↦ inter_subset_right) hs
     intro t t' htt'
     apply disjoint_iff_inter_eq_empty.2
     have N : {c - x} ∩ s = ∅ := by
@@ -145,14 +143,14 @@ theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr
     apply Subset.antisymm
     · rintro - ⟨y, hy, rfl⟩
       have : ‖y‖ ≠ 0 := by simpa using hy
-      simp [f, norm_smul, abs_of_nonneg hr, mul_assoc, inv_mul_cancel this]
+      simp [f, norm_smul, abs_of_nonneg hr, mul_assoc, inv_mul_cancel₀ this]
     · intro y hy
       refine ⟨y - x, ?_, ?_⟩
       · intro H
         simp only [mem_singleton_iff, sub_eq_zero] at H
         simp only [H, mem_sphere_iff_norm, sub_self, norm_zero] at hy
         exact rpos.ne hy
-      · simp [f, mem_sphere_iff_norm.1 hy, mul_inv_cancel rpos.ne']
+      · simp [f, mem_sphere_iff_norm.1 hy, mul_inv_cancel₀ rpos.ne']
   rwa [this] at C
 
 /-- In a real vector space of dimension `> 1`, any sphere of nonnegative radius is connected. -/

@@ -6,8 +6,6 @@ Authors: Yury Kudryashov, Yaël Dillies
 import Mathlib.Algebra.Order.Group.Synonym
 import Mathlib.Algebra.Ring.Defs
 
-#align_import algebra.ring.order_synonym from "leanprover-community/mathlib"@"d6aae1bcbd04b8de2022b9b83a5b5b10e10c777d"
-
 /-!
 # Ring structure on the order type synonyms
 

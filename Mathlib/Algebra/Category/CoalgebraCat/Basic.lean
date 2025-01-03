@@ -7,7 +7,10 @@ import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.RingTheory.Coalgebra.Equiv
 
 /-!
-# The category of coalgebras
+# The category of coalgebras over a commutative ring
+
+We introduce the bundled category `CoalgebraCat` of coalgebras over a fixed commutative ring `R`
+along with the forgetful functor to `ModuleCat`.
 
 This file mimics `Mathlib.LinearAlgebra.QuadraticForm.QuadraticModuleCat`.
 
@@ -21,9 +24,9 @@ variable (R : Type u) [CommRing R]
 
 /-- The category of `R`-coalgebras. -/
 structure CoalgebraCat extends ModuleCat.{v} R where
-  isCoalgebra : Coalgebra R carrier
+  instCoalgebra : Coalgebra R carrier
 
-attribute [instance] CoalgebraCat.isCoalgebra
+attribute [instance] CoalgebraCat.instCoalgebra
 
 variable {R}
 
@@ -43,8 +46,9 @@ variable (R)
 /-- The object in the category of `R`-coalgebras associated to an `R`-coalgebra. -/
 @[simps]
 def of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] :
-    CoalgebraCat R where
-  isCoalgebra := (inferInstance : Coalgebra R X)
+    CoalgebraCat R :=
+  { ModuleCat.of R X with
+    instCoalgebra := (inferInstance : Coalgebra R X) }
 
 variable {R}
 
@@ -59,7 +63,7 @@ lemma of_counit {X : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X] :
 /-- A type alias for `CoalgHom` to avoid confusion between the categorical and
 algebraic spellings of composition. -/
 @[ext]
-structure Hom (V W : CoalgebraCat.{v} R) :=
+structure Hom (V W : CoalgebraCat.{v} R) where
   /-- The underlying `CoalgHom` -/
   toCoalgHom : V →ₗc[R] W
 
@@ -71,15 +75,12 @@ instance category : Category (CoalgebraCat.{v} R) where
   Hom M N := Hom M N
   id M := ⟨CoalgHom.id R M⟩
   comp f g := ⟨CoalgHom.comp g.toCoalgHom f.toCoalgHom⟩
-  id_comp g := Hom.ext _ _ <| CoalgHom.id_comp g.toCoalgHom
-  comp_id f := Hom.ext _ _ <| CoalgHom.comp_id f.toCoalgHom
-  assoc f g h := Hom.ext _ _ <| CoalgHom.comp_assoc h.toCoalgHom g.toCoalgHom f.toCoalgHom
 
 -- TODO: if `Quiver.Hom` and the instance above were `reducible`, this wouldn't be needed.
 @[ext]
 lemma hom_ext {M N : CoalgebraCat.{v} R} (f g : M ⟶ N) (h : f.toCoalgHom = g.toCoalgHom) :
     f = g :=
-  Hom.ext _ _ h
+  Hom.ext h
 
 /-- Typecheck a `CoalgHom` as a morphism in `CoalgebraCat R`. -/
 abbrev ofHom {X Y : Type v} [AddCommGroup X] [Module R X] [AddCommGroup Y] [Module R Y]
@@ -100,12 +101,12 @@ instance concreteCategory : ConcreteCategory.{v} (CoalgebraCat.{v} R) where
     { obj := fun M => M
       map := fun f => f.toCoalgHom }
   forget_faithful :=
-    { map_injective := fun {M N} => DFunLike.coe_injective.comp <| Hom.toCoalgHom_injective _ _ }
+    { map_injective := fun {_ _} => DFunLike.coe_injective.comp <| Hom.toCoalgHom_injective _ _ }
 
 instance hasForgetToModule : HasForget₂ (CoalgebraCat R) (ModuleCat R) where
   forget₂ :=
     { obj := fun M => ModuleCat.of R M
-      map := fun f => f.toCoalgHom.toLinearMap }
+      map := fun f => ModuleCat.ofHom f.toCoalgHom.toLinearMap }
 
 @[simp]
 theorem forget₂_obj (X : CoalgebraCat R) :
@@ -114,7 +115,7 @@ theorem forget₂_obj (X : CoalgebraCat R) :
 
 @[simp]
 theorem forget₂_map (X Y : CoalgebraCat R) (f : X ⟶ Y) :
-    (forget₂ (CoalgebraCat R) (ModuleCat R)).map f = (f.toCoalgHom : X →ₗ[R] Y) :=
+    (forget₂ (CoalgebraCat R) (ModuleCat R)).map f = ModuleCat.ofHom (f.toCoalgHom : X →ₗ[R] Y) :=
   rfl
 
 end CoalgebraCat
@@ -130,20 +131,22 @@ variable [Coalgebra R X] [Coalgebra R Y] [Coalgebra R Z]
 /-- Build an isomorphism in the category `CoalgebraCat R` from a
 `CoalgEquiv`. -/
 @[simps]
-def toIso (e : X ≃ₗc[R] Y) : CoalgebraCat.of R X ≅ CoalgebraCat.of R Y where
+def toCoalgebraCatIso (e : X ≃ₗc[R] Y) : CoalgebraCat.of R X ≅ CoalgebraCat.of R Y where
   hom := CoalgebraCat.ofHom e
   inv := CoalgebraCat.ofHom e.symm
-  hom_inv_id := Hom.ext _ _ <| DFunLike.ext _ _ e.left_inv
-  inv_hom_id := Hom.ext _ _ <| DFunLike.ext _ _ e.right_inv
+  hom_inv_id := Hom.ext <| DFunLike.ext _ _ e.left_inv
+  inv_hom_id := Hom.ext <| DFunLike.ext _ _ e.right_inv
 
-@[simp] theorem toIso_refl : toIso (CoalgEquiv.refl R X) = .refl _ :=
+@[simp] theorem toCoalgebraCatIso_refl :
+    toCoalgebraCatIso (CoalgEquiv.refl R X) = .refl _ :=
   rfl
 
-@[simp] theorem toIso_symm (e : X ≃ₗc[R] Y) : toIso e.symm = (toIso e).symm :=
+@[simp] theorem toCoalgebraCatIso_symm (e : X ≃ₗc[R] Y) :
+    toCoalgebraCatIso e.symm = (toCoalgebraCatIso e).symm :=
   rfl
 
-@[simp] theorem toIso_trans (e : X ≃ₗc[R] Y) (f : Y ≃ₗc[R] Z) :
-    toIso (e.trans f) = toIso e ≪≫ toIso f :=
+@[simp] theorem toCoalgebraCatIso_trans (e : X ≃ₗc[R] Y) (f : Y ≃ₗc[R] Z) :
+    toCoalgebraCatIso (e.trans f) = toCoalgebraCatIso e ≪≫ toCoalgebraCatIso f :=
   rfl
 
 end CoalgEquiv
@@ -177,3 +180,10 @@ def toCoalgEquiv (i : X ≅ Y) : X ≃ₗc[R] Y :=
   rfl
 
 end CategoryTheory.Iso
+
+instance CoalgebraCat.forget_reflects_isos :
+    (forget (CoalgebraCat.{v} R)).ReflectsIsomorphisms where
+  reflects {X Y} f _ := by
+    let i := asIso ((forget (CoalgebraCat.{v} R)).map f)
+    let e : X ≃ₗc[R] Y := { f.toCoalgHom, i.toEquiv with }
+    exact ⟨e.toCoalgebraCatIso.isIso_hom.1⟩

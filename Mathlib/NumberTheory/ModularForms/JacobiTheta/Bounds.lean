@@ -7,7 +7,7 @@ Authors: David Loeffler
 import Mathlib.NumberTheory.ModularForms.JacobiTheta.TwoVariable
 
 /-!
-# Asymptotic bounds for Jacobi theta functions
+# Asymptotic bounds for Jacobi theta functions
 
 The goal of this file is to establish some technical lemmas about the asymptotics of the sums
 
@@ -99,8 +99,8 @@ lemma summable_f_nat (k : ℕ) (a : ℝ) {t : ℝ} (ht : 0 < t) : Summable (f_na
   simp_rw [← mul_assoc, f_nat, norm_mul, norm_eq_abs, abs_exp,
     mul_le_mul_iff_of_pos_right (exp_pos _), ← mul_pow, abs_pow, two_mul]
   filter_upwards [eventually_ge_atTop (Nat.ceil |a|)] with n hn
-  apply pow_le_pow_left (abs_nonneg _) ((abs_add_le _ _).trans
-    (add_le_add (le_of_eq (Nat.abs_cast _)) (Nat.ceil_le.mp hn)))
+  gcongr
+  exact (abs_add_le ..).trans (add_le_add (Nat.abs_cast _).le (Nat.ceil_le.mp hn))
 
 section k_eq_zero
 
@@ -159,7 +159,8 @@ lemma F_nat_one_le {a : ℝ} (ha : 0 ≤ a) {t : ℝ} (ht : 0 < t) :
     ‖F_nat 1 a t‖ ≤ rexp (-π * (a ^ 2 + 1) * t) / (1 - rexp (-π * t)) ^ 2
       + a * rexp (-π * a ^ 2 * t) / (1 - rexp (-π * t)) := by
   refine tsum_of_norm_bounded ?_ (f_le_g_nat 1 ha ht)
-  simp_rw [g_nat, pow_one, add_mul]
+  unfold g_nat
+  simp_rw [pow_one, add_mul]
   apply HasSum.add
   · have h0' : ‖rexp (-π * t)‖ < 1 := by
       simpa only [norm_eq_abs, abs_exp] using exp_lt_aux ht
@@ -248,11 +249,7 @@ lemma isBigO_atTop_F_int_zero_sub (a : UnitAddCircle) : ∃ p, 0 < p ∧
   obtain ⟨a, ha, rfl⟩ := a.eq_coe_Ico
   obtain ⟨p, hp, hp'⟩ := isBigO_atTop_F_nat_zero_sub ha.1
   obtain ⟨q, hq, hq'⟩ := isBigO_atTop_F_nat_zero_sub (sub_nonneg.mpr ha.2.le)
-  have ha' : (a : UnitAddCircle) = 0 ↔ a = 0 := by
-    rw [← AddCircle.coe_eq_coe_iff_of_mem_Ico (hp := ⟨zero_lt_one' ℝ⟩), QuotientAddGroup.mk_zero]
-    · rw [zero_add]; exact ha
-    · simp
-  simp_rw [ha']
+  simp_rw [AddCircle.coe_eq_zero_iff_of_mem_Ico ha]
   simp_rw [eq_false_intro (by linarith [ha.2] : 1 - a ≠ 0), if_false, sub_zero] at hq'
   refine ⟨_, lt_min hp hq, ?_⟩
   have : (fun t ↦ F_int 0 a t - (if a = 0 then 1 else 0)) =ᶠ[atTop]

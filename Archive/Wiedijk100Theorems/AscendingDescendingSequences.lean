@@ -3,9 +3,8 @@ Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Powerset
-
-#align_import wiedijk_100_theorems.ascending_descending_sequences from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"
 
 /-!
 # Erdős–Szekeres theorem
@@ -23,12 +22,9 @@ https://en.wikipedia.org/wiki/Erdos-Szekeres_theorem#Pigeonhole_principle.
 sequences, increasing, decreasing, Ramsey, Erdos-Szekeres, Erdős–Szekeres, Erdős-Szekeres
 -/
 
-
 variable {α : Type*} [LinearOrder α] {β : Type*}
 
 open Function Finset
-
-open scoped Classical
 
 namespace Theorems100
 
@@ -43,8 +39,8 @@ We then show the pair of labels must be unique. Now if there is no increasing se
 which is a contradiction if there are more than `r * s` elements.
 -/
 theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : Injective f) :
-    (∃ t : Finset (Fin n), r < t.card ∧ StrictMonoOn f ↑t) ∨
-      ∃ t : Finset (Fin n), s < t.card ∧ StrictAntiOn f ↑t := by
+    (∃ t : Finset (Fin n), r < #t ∧ StrictMonoOn f ↑t) ∨
+      ∃ t : Finset (Fin n), s < #t ∧ StrictAntiOn f ↑t := by
   -- Given an index `i`, produce the set of increasing (resp., decreasing) subsequences which ends
   -- at `i`.
   let inc_sequences_ending_in : Fin n → Finset (Finset (Fin n)) := fun i =>
@@ -74,8 +70,12 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   -- set, and if the second is more than `s` somewhere, then we have a decreasing subsequence.
   rsuffices ⟨i, hi⟩ : ∃ i, r < (ab i).1 ∨ s < (ab i).2
   · refine Or.imp ?_ ?_ hi
-    on_goal 1 => have : (ab i).1 ∈ _ := by simp only [← hab]; exact max'_mem _ _
-    on_goal 2 => have : (ab i).2 ∈ _ := by simp only [← hab]; exact max'_mem _ _
+    on_goal 1 =>
+      have : (ab i).1 ∈ image card (inc_sequences_ending_in i) := by
+        simp only [ab', ← hab]; exact max'_mem _ _
+    on_goal 2 =>
+      have : (ab i).2 ∈ image card (dec_sequences_ending_in i) := by
+        simp only [ab', ← hab]; exact max'_mem _ _
     all_goals
       intro hi
       rw [mem_image] at this
@@ -92,8 +92,14 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
     -- We have two cases: `f i < f j` or `f j < f i`.
     -- In the former we'll show `a_i < a_j`, and in the latter we'll show `b_i < b_j`.
     cases lt_or_gt_of_ne fun _ => ne_of_lt ‹i < j› (hf ‹f i = f j›)
-    on_goal 1 => apply ne_of_lt _ q₁; have : (ab' i).1 ∈ _ := by dsimp only; exact max'_mem _ _
-    on_goal 2 => apply ne_of_lt _ q₂; have : (ab' i).2 ∈ _ := by dsimp only; exact max'_mem _ _
+    on_goal 1 =>
+      apply ne_of_lt _ q₁
+      have : (ab' i).1 ∈ image card (inc_sequences_ending_in i) := by
+        dsimp only [ab']; exact max'_mem _ _
+    on_goal 2 =>
+      apply ne_of_lt _ q₂
+      have : (ab' i).2 ∈ image card (dec_sequences_ending_in i) := by
+        dsimp only [ab']; exact max'_mem _ _
     all_goals
       -- Reduce to showing there is a subsequence of length `a_i + 1` which ends at `j`.
       rw [Nat.lt_iff_add_one_le]
@@ -144,7 +150,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   have : image ab univ ⊆ ran := by
     -- First some logical shuffling
     rintro ⟨x₁, x₂⟩
-    simp only [ran, mem_image, exists_prop, mem_range, mem_univ, mem_product, true_and_iff,
+    simp only [ran, mem_image, exists_prop, mem_range, mem_univ, mem_product, true_and,
       Prod.ext_iff]
     rintro ⟨i, rfl, rfl⟩
     specialize q i
@@ -162,6 +168,5 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
   apply not_le_of_lt hn
   -- Which follows from considering the cardinalities of the subset above, since `ab` is injective.
   simpa [ran, Nat.succ_injective, card_image_of_injective, ‹Injective ab›] using card_le_card this
-#align theorems_100.erdos_szekeres Theorems100.erdos_szekeres
 
 end Theorems100

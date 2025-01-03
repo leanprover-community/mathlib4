@@ -1,9 +1,9 @@
 /-
-Copyright (c) 2023 Kim Liesinger. All rights reserved.
+Copyright (c) 2023 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Liesinger
+Authors: Kim Morrison
 -/
-import Batteries.Data.String.Basic
+import Mathlib.Init
 import Lean.Meta.Tactic.TryThis
 import Batteries.Linter.UnreachableTactic
 import Qq.Match
@@ -39,7 +39,7 @@ register_option says.verify : Bool :=
 register_option says.no_verify_in_CI : Bool :=
   { defValue := false
     group := "says"
-    descr := "Disable reverification, even if `the `CI` environment variable is set." }
+    descr := "Disable reverification, even if the `CI` environment variable is set." }
 
 open Parser Tactic
 
@@ -66,7 +66,7 @@ def evalTacticCapturingMessages (tac : TSyntax `tactic) (only : Message → Bool
   let mut msgs ← modifyGetThe Core.State fun st => (st.messages, { st with messages := {} })
   try
     evalTactic tac
-    let (capture, leave) := (← getThe Core.State).messages.msgs.toList.partition only
+    let (capture, leave) := (← getThe Core.State).messages.toList.partition only
     msgs := leave.foldl (·.add) msgs
     return capture
   catch e =>
@@ -132,4 +132,8 @@ elab_rules : tactic
   | some result, false =>
     evalTactic result
 
-initialize Std.Linter.UnreachableTactic.addIgnoreTacticKind `Mathlib.Tactic.Says.says
+initialize Batteries.Linter.UnreachableTactic.addIgnoreTacticKind `Mathlib.Tactic.Says.says
+
+end Says
+
+end Mathlib.Tactic
