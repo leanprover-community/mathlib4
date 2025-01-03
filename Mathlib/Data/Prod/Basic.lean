@@ -312,6 +312,8 @@ register_option pp.numericProj.prod : Bool := {
   descr := "enable pretty printing `Prod.fst x` as `x.1` and `Prod.snd x` as `x.2`."
 }
 
+/-- Tell whether pretty-printing should use numeric projection notations `.1`
+and `.2` for `Prod.fst` and `Prod.snd`. -/
 def getPPNumericProjProd (o : Options) : Bool :=
   o.get pp.numericProj.prod.name pp.numericProj.prod.defValue
 
