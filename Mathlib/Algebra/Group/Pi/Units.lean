@@ -10,7 +10,7 @@ import Mathlib.Util.Delaborators
 
 /-! # Units in pi types -/
 
-variable {ι} {M : ι → Type*} [∀ i, Monoid (M i)] {x : Π i, M i}
+variable {ι : Type*} {M : ι → Type*} [∀ i, Monoid (M i)] {x : Π i, M i}
 
 open Units in
 /-- The monoid equivalence between units of a product,
