@@ -32,7 +32,7 @@ theorem mem_square {a : S} : a ∈ square S ↔ IsSquare a := Iff.rfl
 end Subsemigroup
 
 namespace Submonoid
-variable {M : Type*} [CommMonoid M] {a : M}
+variable {M : Type*} [CommMonoid M]
 
 variable (M) in
 /--
@@ -49,12 +49,12 @@ def square : Submonoid M where
 theorem square_toSubsemigroup : (square M).toSubsemigroup = .square M := rfl
 
 @[to_additive (attr := simp)]
-theorem mem_square : a ∈ square M ↔ IsSquare a := Iff.rfl
+theorem mem_square {a : M} : a ∈ square M ↔ IsSquare a := Iff.rfl
 
 end Submonoid
 
 namespace Subgroup
-variable {G : Type*} [CommGroup G] {a : G}
+variable {G : Type*} [CommGroup G]
 
 variable (G) in
 /--
@@ -71,6 +71,6 @@ def square : Subgroup G where
 theorem square_toSubmonoid : (square G).toSubmonoid = .square G := rfl
 
 @[to_additive (attr := simp)]
-theorem mem_square : a ∈ square G ↔ IsSquare a := Iff.rfl
+theorem mem_square {a : G} : a ∈ square G ↔ IsSquare a := Iff.rfl
 
 end Subgroup
