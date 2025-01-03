@@ -287,10 +287,12 @@ theorem sumCompl_symm_apply_of_not_mem {α : Type u} {s : Set α} [DecidablePred
     (hx : x ∉ s) : (Equiv.Set.sumCompl s).symm x = Sum.inr ⟨x, hx⟩ :=
   sumCompl_symm_apply_of_neg hx
 
+@[simp]
 theorem sumCompl_symm_apply {α : Type*} {s : Set α} [DecidablePred (· ∈ s)] (x : s) :
     (Equiv.Set.sumCompl s).symm x = Sum.inl x :=
   sumCompl_symm_apply_pos x
 
+@[simp]
 theorem sumCompl_symm_apply_compl {α : Type*} {s : Set α} [DecidablePred (· ∈ s)]
     (x : (sᶜ : Set α)) : (Equiv.Set.sumCompl s).symm x = Sum.inr x :=
    sumCompl_symm_apply_neg x
