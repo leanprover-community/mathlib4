@@ -123,35 +123,33 @@ end
 lemma iteratedDeriv_add (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     iteratedDeriv n (f + g) x = iteratedDeriv n f x + iteratedDeriv n g x := by
   simpa only [iteratedDerivWithin_univ] using
-    iteratedDerivWithin_add (Set.mem_univ _) uniqueDiffOn_univ
-      (contDiffOn_univ.mpr hf) (contDiffOn_univ.mpr hg)
+    iteratedDerivWithin_add (Set.mem_univ _) .univ hf.contDiffOn hg.contDiffOn
 
 theorem iteratedDeriv_const_add (hn : 0 < n) (c : F) :
     iteratedDeriv n (fun z => c + f z) x = iteratedDeriv n f x := by
   simpa only [iteratedDerivWithin_univ] using
-    iteratedDerivWithin_const_add (Set.mem_univ _) uniqueDiffOn_univ hn c
+    iteratedDerivWithin_const_add (Set.mem_univ _) .univ hn c
 
 theorem iteratedDeriv_const_sub (hn : 0 < n) (c : F) :
     iteratedDeriv n (fun z => c - f z) x = iteratedDeriv n (-f) x := by
   simpa only [iteratedDerivWithin_univ] using
-    iteratedDerivWithin_const_sub (Set.mem_univ _) uniqueDiffOn_univ hn c
+    iteratedDerivWithin_const_sub (Set.mem_univ _) .univ hn c
 
 lemma iteratedDeriv_neg (n : ℕ) (f : 𝕜 → F) (a : 𝕜) :
     iteratedDeriv n (fun x ↦ -(f x)) a = -(iteratedDeriv n f a) := by
   simpa only [iteratedDerivWithin_univ] using
-    iteratedDerivWithin_neg (Set.mem_univ a) uniqueDiffOn_univ f
+    iteratedDerivWithin_neg (Set.mem_univ a) .univ f
 
 lemma iteratedDeriv_sub (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     iteratedDeriv n (f - g) x = iteratedDeriv n f x - iteratedDeriv n g x := by
   simpa only [iteratedDerivWithin_univ] using
-    iteratedDerivWithin_sub (Set.mem_univ _) uniqueDiffOn_univ
-      (contDiffOn_univ.mpr hf) (contDiffOn_univ.mpr hg)
+    iteratedDerivWithin_sub (Set.mem_univ _) .univ hf.contDiffOn hg.contDiffOn
 
 theorem iteratedDeriv_comp_const_smul {n : ℕ} {f : 𝕜 → F} (h : ContDiff 𝕜 n f) (c : 𝕜) :
     iteratedDeriv n (fun x => f (c * x)) = fun x => c ^ n • iteratedDeriv n f (c * x) := by
   funext x
   simpa only [iteratedDerivWithin_univ] using
-    iteratedDerivWithin_comp_const_smul (Set.mem_univ x) uniqueDiffOn_univ (contDiffOn_univ.mpr h)
+    iteratedDerivWithin_comp_const_smul (Set.mem_univ x) .univ (contDiffOn_univ.mpr h)
       c (Set.mapsTo_univ _ _)
 
 @[deprecated (since := "2024-12-20")]
