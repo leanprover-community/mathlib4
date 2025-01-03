@@ -18,10 +18,10 @@ We prove the integrability of other functions for `t` in the interior of that in
 
 ## Main results
 
-* `ProbabilityTheory.integrable_exp_mul_of_le`: if `exp (u * X)` is integrable for `0 ≤ u`, then
-  it is integrable on `[0, u]`.
-* `ProbabilityTheory.integrable_exp_mul_of_ge`: if `exp (u * X)` is integrable for `u ≤ 0`, then
-  it is integrable on `[u, 0]`.
+* `ProbabilityTheory.integrable_exp_mul_of_nonneg_of_le`: if `exp (u * X)` is integrable for `0 ≤ u`
+  then it is integrable on `[0, u]`.
+* `ProbabilityTheory.integrable_exp_mul_of_nonpos_of_ge`: if `exp (u * X)` is integrable for `u ≤ 0`
+  then it is integrable on `[u, 0]`.
 * `ProbabilityTheory.integrable_pow_abs_mul_exp_of_mem_interior`: for `v` in the interior of the
   interval in which `exp (t * X)` is integrable, for all `n : ℕ`, `|X| ^ n * exp (v * X)` is
   integrable.
@@ -37,7 +37,7 @@ namespace ProbabilityTheory
 
 variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ : Measure Ω} {t u v : ℝ}
 
-/-- Auxiliary lemma for `integrable_exp_mul_of_le`. -/
+/-- Auxiliary lemma for `integrable_exp_mul_of_nonneg_of_le`. -/
 lemma integrable_exp_mul_of_le_of_measurable [IsFiniteMeasure μ] (hX : Measurable X)
     (hu : Integrable (fun ω ↦ exp (u * X ω)) μ) (h_nonneg : 0 ≤ t) (htu : t ≤ u) :
     Integrable (fun ω ↦ exp (t * X ω)) μ := by
@@ -62,7 +62,7 @@ lemma integrable_exp_mul_of_le_of_measurable [IsFiniteMeasure μ] (hX : Measurab
       exact mul_nonpos_of_nonneg_of_nonpos h_pos.le h_neg.le
 
 /-- If `ω ↦ exp (u * X ω)` is integrable at `u ≥ 0`, then it is integrable on `[0, u]`. -/
-lemma integrable_exp_mul_of_le [IsFiniteMeasure μ]
+lemma integrable_exp_mul_of_nonneg_of_le [IsFiniteMeasure μ]
     (hu : Integrable (fun ω ↦ exp (u * X ω)) μ) (h_nonneg : 0 ≤ t) (htu : t ≤ u) :
     Integrable (fun ω ↦ exp (t * X ω)) μ := by
   by_cases ht : t = 0
@@ -77,11 +77,11 @@ lemma integrable_exp_mul_of_le [IsFiniteMeasure μ]
   exact integrable_exp_mul_of_le_of_measurable hX.measurable_mk hu h_nonneg htu
 
 /-- If `ω ↦ exp (u * X ω)` is integrable at `u ≤ 0`, then it is integrable on `[u, 0]`. -/
-lemma integrable_exp_mul_of_ge [IsFiniteMeasure μ]
+lemma integrable_exp_mul_of_nonpos_of_ge [IsFiniteMeasure μ]
     (hu : Integrable (fun ω ↦ exp (u * X ω)) μ) (h_nonpos : t ≤ 0) (htu : u ≤ t) :
     Integrable (fun ω ↦ exp (t * X ω)) μ := by
   suffices Integrable (fun ω ↦ exp (- t * (-X) ω)) μ by simpa using this
-  exact integrable_exp_mul_of_le (u := -u) (t := -t)
+  exact integrable_exp_mul_of_nonneg_of_le (u := -u) (t := -t)
     (by simpa using hu) (by simp [h_nonpos]) (by simp [htu])
 
 /-- If `ω ↦ exp (u * X ω)` is integrable at `u` and `-u`, then it is integrable on `[-u, u]`. -/
@@ -92,12 +92,12 @@ lemma integrable_exp_mul_of_abs_le [IsFiniteMeasure μ]
     Integrable (fun ω ↦ exp (t * X ω)) μ := by
   rcases le_total 0 t with ht | ht
   · rw [abs_of_nonneg ht] at htu
-    refine integrable_exp_mul_of_le ?_ ht htu
+    refine integrable_exp_mul_of_nonneg_of_le ?_ ht htu
     rcases le_total 0 u with hu | hu
     · rwa [abs_of_nonneg hu]
     · rwa [abs_of_nonpos hu]
   · rw [abs_of_nonpos ht, neg_le] at htu
-    refine integrable_exp_mul_of_ge ?_ ht htu
+    refine integrable_exp_mul_of_nonpos_of_ge ?_ ht htu
     rcases le_total 0 u with hu | hu
     · rwa [abs_of_nonneg hu]
     · rwa [abs_of_nonpos hu, neg_neg]
@@ -108,8 +108,8 @@ lemma integrable_exp_mul_of_le_of_le [IsFiniteMeasure μ] {a b : ℝ}
     (hat : a ≤ t) (htb : t ≤ b) :
     Integrable (fun ω ↦ exp (t * X ω)) μ := by
   rcases le_total 0 t with ht | ht
-  · exact integrable_exp_mul_of_le hb ht htb
-  · exact integrable_exp_mul_of_ge ha ht hat
+  · exact integrable_exp_mul_of_nonneg_of_le hb ht htb
+  · exact integrable_exp_mul_of_nonpos_of_ge ha ht hat
 
 lemma exp_mul_abs_add_le_add : exp (t * |u| + v * u) ≤ rexp ((v + t) * u) + rexp ((v - t) * u) := by
   rcases le_total 0 u with h_nonneg | h_nonpos
