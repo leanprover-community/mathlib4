@@ -457,7 +457,7 @@ end prod
 
 section Pi
 
-variable {R : Type*} [τR : TopologicalSpace R] [Semiring R] [TopologicalSemiring R]
+variable {R : Type*} [τR : TopologicalSpace R] [Semiring R]
 
 variable {ι : Type*} [Finite ι] {A : ι → Type*} [∀ i, AddCommMonoid (A i)]
   [∀ i, Module R (A i)] [∀ i, TopologicalSpace (A i)]
