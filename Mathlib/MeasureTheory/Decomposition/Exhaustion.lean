@@ -162,7 +162,7 @@ lemma measurableSet_sigmaFiniteSetWRT' [IsFiniteMeasure ν] :
 lemma sigmaFinite_restrict_sigmaFiniteSetWRT' (μ ν : Measure α) [IsFiniteMeasure ν] :
     SigmaFinite (μ.restrict (μ.sigmaFiniteSetWRT' ν)) := by
   have := sigmaFinite_restrict_sigmaFiniteSetGE μ ν
-  exact sigmaFinite_iUnion _ measurableSet_sigmaFiniteSetWRT'
+  exact sigmaFinite_iUnion_of_measurableSet _ measurableSet_sigmaFiniteSetWRT'
 
 /-- `μ.sigmaFiniteSetWRT' ν` has maximal `ν`-measure among all measurable sets `s` with sigma-finite
 `μ.restrict s`. -/
