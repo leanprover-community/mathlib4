@@ -179,6 +179,7 @@ def unusedTacticLinter : Linter where run := withSetOptionIn fun stx => do
     return
   if (← get).messages.hasErrors then
     return
+  if stx.isOfKind ``Mathlib.Linter.UnusedTactic.«command#show_kind_» then return
   let env ← getEnv
   let cats := (Parser.parserExtension.getState env).categories
   -- These lookups may fail when the linter is run in a fresh, empty environment

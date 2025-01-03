@@ -43,18 +43,6 @@ def addAllowedUnusedTactic {m : Type → Type} [Monad m] [MonadEnv m]
     m Unit :=
   stxNodes.foldM (init := ()) fun _ d => modifyEnv (allowedUnusedTacticExt.addEntry · d)
 
-/--
-`#allow_unused_tactic! ids` makes the unused tactic linter ignore the tactics mentioned in `ids`.
-
-This change is *persistent*: the linter continues to ignore these tactics also in files importing
-a file where this command is issued.
-
-For a file-local change, use `#allow_unused_tactic ids` instead.
--/
-elab "#allow_unused_tactic! " colGt ids:ident* : command => do
-  let ids := ← liftCoreM do ids.mapM realizeGlobalConstNoOverload
-  addAllowedUnusedTactic (.ofArray ids)
-
 /-- `Parser`s allowed to not change the tactic state.
 This can be increased dynamically, using `#allow_unused_tactic`.
 -/
@@ -78,19 +66,50 @@ initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
     `Mathlib.Tactic.«tacticRename_bvar_→__»
   ]
 
-/-- `#allow_unused_tactic` takes an input a space-separated list of identifiers.
+/--
+`#allow_unused_tactic` takes as input a space-separated list of identifiers.
 These identifiers are then allowed by the unused tactic linter:
 even if these tactics do not modify goals, there will be no warning emitted.
+
 Note: for this to work, these identifiers should be the `SyntaxNodeKind` of each tactic.
 
 For instance, you can allow the `done` and `skip` tactics using
 ```lean
 #allow_unused_tactic Lean.Parser.Tactic.done Lean.Parser.Tactic.skip
 ```
-Notice that you should use the `SyntaxNodeKind` of the tactic.
+
+This change is file-local.  If you want a *persistent* change, then use the `!`-flag:
+the command `#allow_unused_tactic! ids` makes the change the linter continues to ignore these
+tactics also in files importing a file where this command is issued.
+
+The command `#show_kind tac` may help to find the `SyntaxNodeKind`.
 -/
-elab "#allow_unused_tactic " ids:ident* : command => do
-  let ids := ← Command.liftCoreM do ids.mapM realizeGlobalConstNoOverload
-  allowedRef.modify (·.insertMany ids)
+elab "#allow_unused_tactic" pers:("!")? ppSpace colGt ids:ident* : command => do
+  try
+    let ids ← liftCoreM do ids.mapM realizeGlobalConstNoOverload
+    if pers.isSome then
+      addAllowedUnusedTactic (.ofArray ids)
+    else
+      allowedRef.modify (·.insertMany ids)
+  catch e => match e with
+    | .error ref md =>
+      logErrorAt ref (md ++ m!"\n\
+        The command `#show_kind {ref}` may help to find the correct `SyntaxNodeKind`.")
+    | _ => logError e.toMessageData
+
+/--
+`#show_kind tac` takes as input the syntax of a tactic and returns the `SyntaxNodeKind`
+at the head of the tactic syntax tree.
+
+The input syntax needs to parse, though it can be *extremely* elided.
+For instance, to see the `SyntaxNodeKind` of the `refine` tactic, you could use
+```lean
+#show_kind refine _
+```
+The trailing underscore `_` makes the syntax valid, since `refine` expects something else.
+-/
+elab "#show_kind " t:tactic : command => do
+  let stx ← `(tactic| $t)
+  Lean.logInfoAt t m!"The `SyntaxNodeKind` is '{stx.raw.getKind}'."
 
 end Mathlib.Linter.UnusedTactic
