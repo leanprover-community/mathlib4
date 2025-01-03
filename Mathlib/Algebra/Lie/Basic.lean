@@ -103,7 +103,7 @@ Then the Leibniz rule asserts for all `x : L₁`, `y : L₂`, and `m : M` that
 Common examples include the case where `L₁` is a Lie subalgebra of `L₂`
 and the case where `L₂` is a Lie ideal of `L₁`. -/
 class LieTower (L₁ L₂ M : Type*) [Bracket L₁ L₂] [Bracket L₁ M] [Bracket L₂ M] [Add M] where
-    protected leibniz_lie : ∀ (x : L₁) (y : L₂) (m : M), ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆
+  protected leibniz_lie (x : L₁) (y : L₂) (m : M) : ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆
 
 section LieTower
 
