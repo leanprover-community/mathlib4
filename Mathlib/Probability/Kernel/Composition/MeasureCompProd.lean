@@ -78,7 +78,7 @@ lemma _root_.ProbabilityTheory.Kernel.compProd_apply_eq_compProd_sectR {γ : Typ
     [IsSFiniteKernel κ] [IsSFiniteKernel η] (a : α) :
     (κ ⊗ₖ η) a = (κ a) ⊗ₘ (Kernel.sectR η a) := by
   ext s hs
-  simp_rw [Kernel.compProd_apply _ _ _ hs, compProd_apply hs, Kernel.sectR_apply]
+  simp_rw [Kernel.compProd_apply hs, compProd_apply hs, Kernel.sectR_apply]
   rfl
 
 lemma compProd_congr [IsSFiniteKernel κ] [IsSFiniteKernel η]
