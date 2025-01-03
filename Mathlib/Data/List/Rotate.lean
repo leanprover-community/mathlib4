@@ -485,7 +485,7 @@ The proof that every cyclic permutant of `l` is in the list is `List.mem_cyclicP
         [2, 4, 1, 2, 3], [4, 1, 2, 3, 2]] -/
 def cyclicPermutations : List α → List (List α)
   | [] => [[]]
-  | l@(_ :: _) => dropLast (zipWith (· ++ ·) (tails l) (inits l))
+  | l@(_ ::) => dropLast (zipWith (· ++ ·) (tails l) (inits l))
 
 @[simp]
 theorem cyclicPermutations_nil : cyclicPermutations ([] : List α) = [[]] :=

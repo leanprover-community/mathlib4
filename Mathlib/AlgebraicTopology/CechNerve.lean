@@ -248,7 +248,7 @@ def augmentedCechConerve : Arrow C ⥤ CosimplicialObject.Augmented C where
 def equivalenceLeftToRight (F : Arrow C) (X : CosimplicialObject.Augmented C)
     (G : F.augmentedCechConerve ⟶ X) : F ⟶ Augmented.toArrow.obj X where
   left := G.left
-  right := (WidePushout.ι _ 0 ≫ G.right.app (SimplexCategory.mk 0) : _)
+  right := (WidePushout.ι _ 0 ≫ G.right.app (SimplexCategory.mk 0) :)
   w := by
     dsimp
     rw [@WidePushout.arrow_ι_assoc _ _ _ _ _ (fun (_ : Fin 1) => F.hom)

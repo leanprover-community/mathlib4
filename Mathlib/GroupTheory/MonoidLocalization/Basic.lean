@@ -534,7 +534,7 @@ theorem mk'_sec (z : N) : f.mk' (f.sec z).1 (f.sec z).2 = z :=
   show _ * _ = _ by rw [← sec_spec, mul_inv_left, mul_comm]
 
 @[to_additive]
-theorem mk'_surjective (z : N) : ∃ (x : _) (y : S), f.mk' x y = z :=
+theorem mk'_surjective (z : N) : ∃ (x :) (y : S), f.mk' x y = z :=
   ⟨(f.sec z).1, (f.sec z).2, f.mk'_sec z⟩
 
 @[to_additive]

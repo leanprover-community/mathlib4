@@ -38,7 +38,7 @@ def getI [Inhabited α] (l : List α) (n : Nat) : α :=
 /-- The head of a list, or the default element of the type is the list is `nil`. -/
 def headI [Inhabited α] : List α → α
   | []       => default
-  | (a :: _) => a
+  | (a ::) => a
 
 @[simp] theorem headI_nil [Inhabited α] : ([] : List α).headI = default := rfl
 @[simp] theorem headI_cons [Inhabited α] {h : α} {t : List α} : (h :: t).headI = h := rfl

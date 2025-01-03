@@ -242,7 +242,7 @@ alias Filter.EventuallyEq.contDiffWithinAt_iff := Filter.EventuallyEq.congr_cont
 theorem ContDiffWithinAt.congr_of_eventuallyEq_insert (h : ContDiffWithinAt 𝕜 n f s x)
     (h₁ : f₁ =ᶠ[𝓝[insert x s] x] f) : ContDiffWithinAt 𝕜 n f₁ s x :=
   h.congr_of_eventuallyEq (nhdsWithin_mono x (subset_insert x s) h₁)
-    (mem_of_mem_nhdsWithin (mem_insert x s) h₁ : _)
+    (mem_of_mem_nhdsWithin (mem_insert x s) h₁ :)
 
 theorem Filter.EventuallyEq.congr_contDiffWithinAt_of_insert (h₁ : f₁ =ᶠ[𝓝[insert x s] x] f) :
     ContDiffWithinAt 𝕜 n f₁ s x ↔ ContDiffWithinAt 𝕜 n f s x :=

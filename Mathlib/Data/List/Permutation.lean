@@ -278,14 +278,14 @@ theorem length_permutations (l : List α) : length (permutations l) = (length l)
   length_permutationsAux l []
 
 theorem mem_permutations_of_perm_lemma {is l : List α}
-    (H : l ~ [] ++ is → (∃ (ts' : _) (_ : ts' ~ []), l = ts' ++ is) ∨ l ∈ permutationsAux is []) :
+    (H : l ~ [] ++ is → (∃ (ts' :) (_ : ts' ~ []), l = ts' ++ is) ∨ l ∈ permutationsAux is []) :
     l ~ is → l ∈ permutations is := by simpa [permutations, perm_nil] using H
 
 theorem mem_permutationsAux_of_perm :
     ∀ {ts is l : List α},
-      l ~ is ++ ts → (∃ (is' : _) (_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is := by
+      l ~ is ++ ts → (∃ (is' :) (_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is := by
   show ∀ (ts is l : List α),
-      l ~ is ++ ts → (∃ (is' : _) (_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is
+      l ~ is ++ ts → (∃ (is' :) (_ : is' ~ is), l = is' ++ ts) ∨ l ∈ permutationsAux ts is
   refine permutationsAux.rec (by simp) ?_
   intro t ts is IH1 IH2 l p
   rw [permutationsAux_cons, mem_foldr_permutationsAux2]

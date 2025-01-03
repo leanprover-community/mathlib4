@@ -213,7 +213,7 @@ private theorem primeFactorsPiBij_inj (d n : ℕ)
     exact hfg rfl
 
 private theorem primeFactorsPiBij_surj (d n : ℕ) (hn : Squarefree n)
-    (t : Fin d → ℕ) (ht : t ∈ finMulAntidiag d n) : ∃ (g : _)
+    (t : Fin d → ℕ) (ht : t ∈ finMulAntidiag d n) : ∃ (g :)
     (hg : g ∈ pi n.primeFactors fun _ => univ), Nat.primeFactorsPiBij d n g hg = t := by
   have existsUnique := fun (p : ℕ) (hp : p ∈ n.primeFactors) =>
     (finMulAntidiag_existsUnique_prime_dvd hn

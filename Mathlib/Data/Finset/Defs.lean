@@ -380,12 +380,12 @@ instance instDecidableLT [DecidableEq α] : DecidableRel (α := Finset α) (· <
   instDecidableRelSSubset
 
 instance decidableDExistsFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :
-    Decidable (∃ (a : _) (h : a ∈ s), p a h) :=
+    Decidable (∃ (a :) (h : a ∈ s), p a h) :=
   Multiset.decidableDexistsMultiset
 
 instance decidableExistsAndFinset {p : α → Prop} [_hp : ∀ (a), Decidable (p a)] :
     Decidable (∃ a ∈ s, p a) :=
-  decidable_of_iff (∃ (a : _) (_ : a ∈ s), p a) (by simp)
+  decidable_of_iff (∃ (a :) (_ : a ∈ s), p a) (by simp)
 
 instance decidableExistsAndFinsetCoe {p : α → Prop} [DecidablePred p] :
     Decidable (∃ a ∈ (s : Set α), p a) := decidableExistsAndFinset

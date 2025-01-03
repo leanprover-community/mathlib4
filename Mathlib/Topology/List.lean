@@ -198,7 +198,7 @@ theorem tendsto_insertIdx {n : ℕ} {i : Fin (n + 1)} {a : α} :
   | ⟨l, hl⟩ => by
     rw [Vector.insertIdx, tendsto_subtype_rng]
     simp only [Vector.insertIdx_val]
-    exact List.tendsto_insertIdx tendsto_fst (Tendsto.comp continuousAt_subtype_val tendsto_snd : _)
+    exact List.tendsto_insertIdx tendsto_fst (Tendsto.comp continuousAt_subtype_val tendsto_snd :)
 
 @[deprecated (since := "2024-10-21")] alias tendsto_insertNth := tendsto_insertIdx'
 
@@ -212,7 +212,7 @@ theorem continuous_insertIdx' {n : ℕ} {i : Fin (n + 1)} :
 
 theorem continuous_insertIdx {n : ℕ} {i : Fin (n + 1)} {f : β → α} {g : β → List.Vector α n}
     (hf : Continuous f) (hg : Continuous g) : Continuous fun b => Vector.insertIdx (f b) i (g b) :=
-  continuous_insertIdx'.comp (hf.prod_mk hg : _)
+  continuous_insertIdx'.comp (hf.prod_mk hg :)
 
 @[deprecated (since := "2024-10-21")] alias continuous_insertNth := continuous_insertIdx
 

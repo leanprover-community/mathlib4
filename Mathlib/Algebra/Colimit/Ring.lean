@@ -192,7 +192,7 @@ variable {G f'}
 /-- A component that corresponds to zero in the direct limit is already zero in some
 bigger module in the directed system. -/
 theorem of.zero_exact {i x} (hix : of G (f' · · ·) i x = 0) :
-    ∃ (j : _) (hij : i ≤ j), f' i j hij x = 0 := by
+    ∃ (j :) (hij : i ≤ j), f' i j hij x = 0 := by
   have := Nonempty.intro i
   apply_fun ringEquiv _ _ at hix
   rwa [map_zero, ringEquiv_of, DirectLimit.exists_eq_zero] at hix

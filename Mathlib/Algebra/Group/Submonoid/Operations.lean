@@ -896,7 +896,7 @@ theorem eq_bot_of_subsingleton [Subsingleton S] : S = ⊥ := by
 theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x ∈ S, x ≠ (1 : M) :=
   calc
     Nontrivial S ↔ ∃ x : S, x ≠ 1 := nontrivial_iff_exists_ne 1
-    _ ↔ ∃ (x : _) (hx : x ∈ S), (⟨x, hx⟩ : S) ≠ ⟨1, S.one_mem⟩ := Subtype.exists
+    _ ↔ ∃ (x :) (hx : x ∈ S), (⟨x, hx⟩ : S) ≠ ⟨1, S.one_mem⟩ := Subtype.exists
     _ ↔ ∃ x ∈ S, x ≠ (1 : M) := by simp [Ne]
 
 /-- A submonoid is either the trivial submonoid or nontrivial. -/
@@ -1000,18 +1000,18 @@ instance smul [SMul M' α] (S : Submonoid M') : SMul S α :=
 @[to_additive]
 instance smulCommClass_left [SMul M' β] [SMul α β] [SMulCommClass M' α β]
     (S : Submonoid M') : SMulCommClass S α β :=
-  ⟨fun a _ _ => (smul_comm (a : M') _ _ : _)⟩
+  ⟨fun a _ _ => (smul_comm (a : M') _ _ :)⟩
 
 @[to_additive]
 instance smulCommClass_right [SMul α β] [SMul M' β] [SMulCommClass α M' β]
     (S : Submonoid M') : SMulCommClass α S β :=
-  ⟨fun a s => (smul_comm a (s : M') : _)⟩
+  ⟨fun a s => (smul_comm a (s : M') :)⟩
 
 /-- Note that this provides `IsScalarTower S M' M'` which is needed by `SMulMulAssoc`. -/
 instance isScalarTower [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β]
       (S : Submonoid M') :
     IsScalarTower S α β :=
-  ⟨fun a => (smul_assoc (a : M') : _)⟩
+  ⟨fun a => (smul_assoc (a : M') :)⟩
 
 section SMul
 variable [SMul M' α] {S : Submonoid M'}

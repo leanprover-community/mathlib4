@@ -1002,7 +1002,7 @@ partial def headStructureEtaReduce (e : Expr) : MetaM Expr := do
   unless fn0 == struct ++ fieldName0 do
     trace[simps.debug] "{fn0} ≠ {struct ++ fieldName0}"
     return e
-  let (params', reduct :: _) := fieldArgs0.toList.splitAt numParams | unreachable!
+  let (params', reduct ::) := fieldArgs0.toList.splitAt numParams | unreachable!
   unless params' == params do
     trace[simps.debug] "{params'} ≠ {params}"
     return e

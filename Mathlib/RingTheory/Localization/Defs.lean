@@ -285,7 +285,7 @@ theorem mk'_pow (x : R) (y : M) (n : ℕ) : mk' S (x ^ n) (y ^ n) = mk' S x y ^ 
 
 variable (M)
 
-theorem mk'_surjective (z : S) : ∃ (x : _) (y : M), mk' S x y = z :=
+theorem mk'_surjective (z : S) : ∃ (x :) (y : M), mk' S x y = z :=
   let ⟨r, hr⟩ := IsLocalization.surj _ z
   ⟨r.1, r.2, (eq_mk'_iff_mul_eq.2 hr).symm⟩
 

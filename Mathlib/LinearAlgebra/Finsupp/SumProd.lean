@@ -77,7 +77,7 @@ variable (R)
 
 This is the `LinearEquiv` version of `Finsupp.sigmaFinsuppAddEquivPiFinsupp`. -/
 noncomputable def sigmaFinsuppLEquivPiFinsupp {M : Type*} {ιs : η → Type*} [AddCommMonoid M]
-    [Module R M] : ((Σ j, ιs j) →₀ M) ≃ₗ[R] (j : _) → (ιs j →₀ M) :=
+    [Module R M] : ((Σ j, ιs j) →₀ M) ≃ₗ[R] (j :) → (ιs j →₀ M) :=
   -- Porting note: `ιs` should be specified.
   { sigmaFinsuppAddEquivPiFinsupp (ιs := ιs) with
     map_smul' := fun c f => by
@@ -91,7 +91,7 @@ theorem sigmaFinsuppLEquivPiFinsupp_apply {M : Type*} {ιs : η → Type*} [AddC
 
 @[simp]
 theorem sigmaFinsuppLEquivPiFinsupp_symm_apply {M : Type*} {ιs : η → Type*} [AddCommMonoid M]
-    [Module R M] (f : (j : _) → (ιs j →₀ M)) (ji) :
+    [Module R M] (f : (j :) → (ιs j →₀ M)) (ji) :
     (Finsupp.sigmaFinsuppLEquivPiFinsupp R).symm f ji = f ji.1 ji.2 :=
   rfl
 

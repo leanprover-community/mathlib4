@@ -381,7 +381,7 @@ theorem top_apply (f : Y ⟶ X) : (⊤ : Sieve X) f :=
 /-- Generate the smallest sieve containing the given set of arrows. -/
 @[simps]
 def generate (R : Presieve X) : Sieve X where
-  arrows Z f := ∃ (Y : _) (h : Z ⟶ Y) (g : Y ⟶ X), R g ∧ h ≫ g = f
+  arrows Z f := ∃ (Y :) (h : Z ⟶ Y) (g : Y ⟶ X), R g ∧ h ≫ g = f
   downward_closed := by
     rintro Y Z _ ⟨W, g, f, hf, rfl⟩ h
     exact ⟨_, h ≫ g, _, hf, by simp⟩

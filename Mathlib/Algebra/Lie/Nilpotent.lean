@@ -549,8 +549,8 @@ theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
   | zero => simpa [LinearMap.range_eq_top]
   | succ k ih =>
     suffices
-      g '' {m | ∃ (x : L) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, n⁆ = m} =
-        {m | ∃ (x : L₂) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, g n⁆ = m} by
+      g '' {m | ∃ (x : L) (n :), n ∈ lowerCentralSeries R L M k ∧ ⁅x, n⁆ = m} =
+        {m | ∃ (x : L₂) (n :), n ∈ lowerCentralSeries R L M k ∧ ⁅x, g n⁆ = m} by
       simp only [← LieSubmodule.mem_toSubmodule] at this
       -- Porting note: was
       -- simp [← LieSubmodule.mem_toSubmodule, ← ih, LieSubmodule.lieIdeal_oper_eq_linear_span',

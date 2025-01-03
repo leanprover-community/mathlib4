@@ -693,8 +693,8 @@ def toWord {i j} (w : NeWord M i j) : Word M where
       assumption
 
 /-- Every nonempty `Word M` can be constructed as a `NeWord M i j` -/
-theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i j), w'.toWord = w := by
-  suffices ∃ (i j : _) (w' : NeWord M i j), w'.toWord.toList = w.toList by
+theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j :) (w' : NeWord M i j), w'.toWord = w := by
+  suffices ∃ (i j :) (w' : NeWord M i j), w'.toWord.toList = w.toList by
     rcases this with ⟨i, j, w, h⟩
     refine ⟨i, j, w, ?_⟩
     ext

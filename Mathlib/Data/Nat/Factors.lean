@@ -102,7 +102,7 @@ theorem primeFactorsList_chain_2 (n) : List.Chain (· ≤ ·) 2 (primeFactorsLis
   primeFactorsList_chain fun _ pp _ => pp.two_le
 
 theorem primeFactorsList_chain' (n) : List.Chain' (· ≤ ·) (primeFactorsList n) :=
-  @List.Chain'.tail _ _ (_ :: _) (primeFactorsList_chain_2 _)
+  @List.Chain'.tail _ _ (_ ::) (primeFactorsList_chain_2 _)
 
 theorem primeFactorsList_sorted (n : ℕ) : List.Sorted (· ≤ ·) (primeFactorsList n) :=
   List.chain'_iff_pairwise.1 (primeFactorsList_chain' _)

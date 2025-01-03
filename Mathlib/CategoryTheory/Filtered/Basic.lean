@@ -67,10 +67,10 @@ variable (C : Type u) [Category.{v} C]
 -/
 class IsFilteredOrEmpty : Prop where
   /-- for every pair of objects there exists another object "to the right" -/
-  cocone_objs : ∀ X Y : C, ∃ (Z : _) (_ : X ⟶ Z) (_ : Y ⟶ Z), True
+  cocone_objs : ∀ X Y : C, ∃ (Z :) (_ : X ⟶ Z) (_ : Y ⟶ Z), True
   /-- for every pair of parallel morphisms there exists a morphism to the right
     so the compositions are equal -/
-  cocone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (Z : _) (h : Y ⟶ Z), f ≫ h = g ≫ h
+  cocone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (Z :) (h : Y ⟶ Z), f ≫ h = g ≫ h
 
 /-- A category `IsFiltered` if
 1. for every pair of objects there exists another object "to the right",
@@ -121,10 +121,10 @@ variable [IsFilteredOrEmpty C]
 -- Porting note: the following definitions were removed because the names are invalid,
 -- direct references to `IsFilteredOrEmpty` have been added instead
 --
--- theorem cocone_objs : ∀ X Y : C, ∃ (Z : _) (f : X ⟶ Z) (g : Y ⟶ Z), True :=
+-- theorem cocone_objs : ∀ X Y : C, ∃ (Z :) (f : X ⟶ Z) (g : Y ⟶ Z), True :=
 --  IsFilteredOrEmpty.cocone_objs
 --
---theorem cocone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (Z : _) (h : Y ⟶ Z), f ≫ h = g ≫ h :=
+--theorem cocone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (Z :) (h : Y ⟶ Z), f ≫ h = g ≫ h :=
 --  IsFilteredOrEmpty.cocone_maps
 
 /-- `max j j'` is an arbitrary choice of object to the right of both `j` and `j'`,
@@ -495,10 +495,10 @@ end IsFiltered
 -/
 class IsCofilteredOrEmpty : Prop where
   /-- for every pair of objects there exists another object "to the left" -/
-  cone_objs : ∀ X Y : C, ∃ (W : _) (_ : W ⟶ X) (_ : W ⟶ Y), True
+  cone_objs : ∀ X Y : C, ∃ (W :) (_ : W ⟶ X) (_ : W ⟶ Y), True
   /-- for every pair of parallel morphisms there exists a morphism to the left
     so the compositions are equal -/
-  cone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (W : _) (h : W ⟶ X), h ≫ f = h ≫ g
+  cone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (W :) (h : W ⟶ X), h ≫ f = h ≫ g
 
 /-- A category `IsCofiltered` if
 1. for every pair of objects there exists another object "to the left",
@@ -555,10 +555,10 @@ variable [IsCofilteredOrEmpty C]
 -- Porting note: the following definitions were removed because the names are invalid,
 -- direct references to `IsCofilteredOrEmpty` have been added instead
 --
---theorem cone_objs : ∀ X Y : C, ∃ (W : _) (f : W ⟶ X) (g : W ⟶ Y), True :=
+--theorem cone_objs : ∀ X Y : C, ∃ (W :) (f : W ⟶ X) (g : W ⟶ Y), True :=
 --  IsCofilteredOrEmpty.cone_objs
 --
---theorem cone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (W : _) (h : W ⟶ X), h ≫ f = h ≫ g :=
+--theorem cone_maps : ∀ ⦃X Y : C⦄ (f g : X ⟶ Y), ∃ (W :) (h : W ⟶ X), h ≫ f = h ≫ g :=
 --  IsCofilteredOrEmpty.cone_maps
 
 /-- `min j j'` is an arbitrary choice of object to the left of both `j` and `j'`,

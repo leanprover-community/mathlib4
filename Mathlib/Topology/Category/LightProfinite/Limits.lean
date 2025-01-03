@@ -28,8 +28,8 @@ instance : HasExplicitPullbacks
 instance : HasExplicitFiniteCoproducts.{w, u}
     (fun Y ↦ TotallyDisconnectedSpace Y ∧ SecondCountableTopology Y) where
   hasProp _ := { hasProp :=
-    ⟨show TotallyDisconnectedSpace (Σ (_a : _), _) from inferInstance,
-      show SecondCountableTopology (Σ (_a : _), _) from inferInstance⟩ }
+    ⟨show TotallyDisconnectedSpace (Σ (_a :), _) from inferInstance,
+      show SecondCountableTopology (Σ (_a :), _) from inferInstance⟩ }
 
 /-- A one-element space is terminal in `Profinite` -/
 abbrev isTerminalPUnit : IsTerminal (LightProfinite.of PUnit.{u + 1}) :=

@@ -102,7 +102,7 @@ protected theorem nonempty (C : G.ComponentCompl K) : (C : Set V).Nonempty :=
   C.ind fun v vnK => ⟨v, vnK, rfl⟩
 
 protected theorem exists_eq_mk (C : G.ComponentCompl K) :
-    ∃ (v : _) (h : v ∉ K), G.componentComplMk h = C :=
+    ∃ (v :) (h : v ∉ K), G.componentComplMk h = C :=
   C.nonempty
 
 protected theorem disjoint_right (C : G.ComponentCompl K) : Disjoint K C := by
