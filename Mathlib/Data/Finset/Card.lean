@@ -581,13 +581,12 @@ lemma exists_subset_card_eq (hns : n ≤ #s) : ∃ t ⊆ s, #t = n := by
 
 lemma of_cardinality_between_of_disjoint [DecidableEq α] (hs : #s < n) (hn : n ≤ #s + #t)
     (hst : Disjoint s t) :
-    ∃ (x : Finset α) (h : Disjoint x s), #(s.disjUnion x h) = n ∧ Nonempty x := by
+    ∃ (x : Finset α) (hxs : Disjoint x s), #(x.disjUnion s hxs) = n ∧ Nonempty x := by
   have hnst : n - #s ≤ #t := by omega
   obtain ⟨x, hxt, hxn⟩ := Finset.exists_subset_card_eq hnst
   have hxs : Disjoint x s := disjoint_of_subset_left hxt hst.symm
   refine ⟨x, hxs, ?_, ?_⟩
-  · rw [disjoint_iff_inter_eq_empty] at hxs
-    rw [card_union, inter_comm, hxs, card_empty]
+  · rw [card_disjUnion]
     omega
   · by_contra ifempty
     have : #x = 0 := by
