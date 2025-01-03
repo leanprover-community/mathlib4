@@ -6,7 +6,7 @@ Authors: Markus Himmel
 import Mathlib.CategoryTheory.Abelian.Subobject
 import Mathlib.CategoryTheory.Limits.EssentiallySmall
 import Mathlib.CategoryTheory.Preadditive.Injective
-import Mathlib.CategoryTheory.Preadditive.Generator
+import Mathlib.CategoryTheory.Generator.Preadditive
 import Mathlib.CategoryTheory.Abelian.Opposite
 
 /-!
@@ -32,7 +32,7 @@ variable {C : Type u} [Category.{v} C] [Abelian C]
 
 theorem has_injective_coseparator [HasLimits C] [EnoughInjectives C] (G : C) (hG : IsSeparator G) :
     ∃ G : C, Injective G ∧ IsCoseparator G := by
-  haveI : WellPowered C := wellPowered_of_isDetector G hG.isDetector
+  haveI : WellPowered.{v} C := wellPowered_of_isDetector G hG.isDetector
   haveI : HasProductsOfShape (Subobject (op G)) C := hasProductsOfShape_of_small _ _
   let T : C := Injective.under (piObj fun P : Subobject (op G) => unop P)
   refine ⟨T, inferInstance, (Preadditive.isCoseparator_iff _).2 fun X Y f hf => ?_⟩

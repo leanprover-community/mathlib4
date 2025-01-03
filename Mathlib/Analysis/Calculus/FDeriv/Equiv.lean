@@ -20,10 +20,7 @@ We also prove the usual formula for the derivative of the inverse function, assu
 The inverse function theorem is in `Mathlib/Analysis/Calculus/InverseFunctionTheorem/FDeriv.lean`.
 -/
 
-open Filter Asymptotics ContinuousLinearMap Set Metric
-
-open scoped Classical
-open Topology NNReal Filter Asymptotics ENNReal
+open Filter Asymptotics ContinuousLinearMap Set Metric Topology NNReal ENNReal
 
 noncomputable section
 

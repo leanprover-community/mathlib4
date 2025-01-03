@@ -126,7 +126,7 @@ def Simps.apply (h : M₁ →SL[σ₁₂] M₂) : M₁ → M₂ :=
 def Simps.coe (h : M₁ →SL[σ₁₂] M₂) : M₁ →ₛₗ[σ₁₂] M₂ :=
   h
 
-initialize_simps_projections ContinuousLinearMap (toFun → apply, toLinearMap → coe)
+initialize_simps_projections ContinuousLinearMap (toFun → apply, toLinearMap → coe, as_prefix coe)
 
 @[ext]
 theorem ext {f g : M₁ →SL[σ₁₂] M₂} (h : ∀ x, f x = g x) : f = g :=
@@ -832,7 +832,7 @@ end
 
 end Ring
 
-section DivisionMonoid
+section DivisionRing
 
 variable {R M : Type*}
 
@@ -845,7 +845,7 @@ protected theorem isOpenMap_of_ne_zero [TopologicalSpace R] [DivisionRing R] [Co
     ⟨fun a => y + (a - f y) • (f x)⁻¹ • x, Continuous.continuousAt <| by continuity, by simp,
       fun a => by simp [hx]⟩
 
-end DivisionMonoid
+end DivisionRing
 
 section SMulMonoid
 

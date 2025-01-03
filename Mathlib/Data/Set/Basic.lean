@@ -72,7 +72,7 @@ namespace Set
 
 variable {α : Type u} {s t : Set α}
 
-instance instBooleanAlgebraSet : BooleanAlgebra (Set α) :=
+instance instBooleanAlgebra : BooleanAlgebra (Set α) :=
   { (inferInstance : BooleanAlgebra (α → Prop)) with
     sup := (· ∪ ·),
     le := (· ≤ ·),
@@ -1586,16 +1586,12 @@ theorem insert_diff_of_not_mem (s) (h : a ∉ t) : insert a s \ t = insert a (s 
   classical
     ext x
     by_cases h' : x ∈ t
-    · have : x ≠ a := by
-        intro H
-        rw [H] at h'
-        exact h h'
-      simp [h, h', this]
+    · simp [h, h', ne_of_mem_of_not_mem h' h]
     · simp [h, h']
 
 theorem insert_diff_self_of_not_mem {a : α} {s : Set α} (h : a ∉ s) : insert a s \ {a} = s := by
   ext x
-  simp [and_iff_left_of_imp fun hx : x ∈ s => show x ≠ a from fun hxa => h <| hxa ▸ hx]
+  simp [and_iff_left_of_imp (ne_of_mem_of_not_mem · h)]
 
 @[simp]
 theorem insert_diff_eq_singleton {a : α} {s : Set α} (h : a ∉ s) : insert a s \ s = {a} := by
