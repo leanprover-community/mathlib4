@@ -223,21 +223,21 @@ lemma commShift_unit : NatTrans.CommShift adj.unit A := commShift_unit'
 
 lemma commShift_unit_app (a : A) (X : C) :
     (adj.unit.app X)⟦a⟧' = adj.unit.app (X⟦a⟧) ≫ ((F ⋙ G).commShiftIso a).hom.app X := by
-  convert (commShift_unit adj A).comm_app _ a X
+  convert NatTrans.shift_app_comm adj.unit a X
   simp
 
 lemma commShift_counit : NatTrans.CommShift adj.counit A := commShift_counit'
 
 lemma commShift_counit_app (a : A) (Y : D) :
     ((G ⋙ F).commShiftIso a).hom.app Y ≫ (adj.counit.app Y)⟦a⟧' = adj.counit.app (Y⟦a⟧) := by
-  convert (commShift_counit adj A).comm_app _ a Y
+  convert NatTrans.shift_app_comm adj.counit a Y
   simp
 
 /-- The identity adjunction is compatible with the trivial `CommShift` structure on the
 identity functor.
 -/
 instance instId : (Adjunction.id (C := C)).CommShift A := by
-  refine mk' _ _ {comm' := fun a ↦ ?_ }
+  refine mk' _ _ {shift_comm := fun _ ↦ ?_ }
   ext
   simp [Functor.commShiftIso_comp_hom_app, Adjunction.id]
 
@@ -247,7 +247,7 @@ variable {E : Type*} [Category E] {F' : D ⥤ E} {G' : E ⥤ D} (adj' : F' ⊣ G
 /-- Compatibility of `Adjunction.Commshift` with the composition of adjunctions.
 -/
 instance instComp : (adj.comp adj').CommShift A := by
-  refine mk' _ _ {comm' := fun a ↦ ?_}
+  refine mk' _ _ {shift_comm := fun a ↦ ?_}
   ext
   simp only [Functor.comp_obj, Functor.id_obj, NatTrans.comp_app, Functor.commShiftIso_id_hom_app,
     whiskerRight_app, comp_unit_app, Functor.map_comp, commShift_unit_app,
