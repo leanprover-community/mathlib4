@@ -30,7 +30,7 @@ For an explanation of `Finset` design decisions, please see `Mathlib/Data/Finset
 
 ### Equivalences between finsets
 
-* The `Mathlib/Logic/Equiv/Defs.lean` files describe a general type of equivalence, so look in there
+* The `Mathlib/Logic/Equiv/Defs.lean` file describes a general type of equivalence, so look in there
   for any lemmas. There is some API for rewriting sums and products from `s` to `t` given that
   `s ≃ t`.
   TODO: examples
@@ -437,8 +437,6 @@ theorem subset_union_elim {s : Finset α} {t₁ t₂ : Set α} (h : ↑s ⊆ t�
       exact ⟨Or.resolve_left (h hx) hx₂, hx₂⟩
 
 section Classical
-
-open scoped Classical
 
 -- Porting note: The notation `{ x ∈ s | p x }` in Lean 4 is hardcoded to be about `Set`.
 -- So at the moment the whole `Sep`-class is useless, as it doesn't have notation.

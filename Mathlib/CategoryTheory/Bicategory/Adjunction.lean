@@ -92,8 +92,6 @@ namespace Adjunction
 
 attribute [simp] left_triangle right_triangle
 
--- attribute [local simp] leftZigzag rightZigzag
-
 /-- Adjunction between identities. -/
 def id (a : B) : 𝟙 a ⊣ 𝟙 a where
   unit := (ρ_ _).inv
