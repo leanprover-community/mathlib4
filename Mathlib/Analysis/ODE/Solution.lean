@@ -10,6 +10,29 @@ import Mathlib.Topology.MetricSpace.Contracting
 -- remember to fix copyright
 
 /-!
+# Picard-Lindelöf (Cauchy-Lipschitz) Theorem
+
+In this file we prove that an ordinary differential equation $\dot x=f(t, x)$, whenever $f$ is
+Lipschitz continuous in $x$ and continuous in $t$, has a local solution. Moreover, we show
+that if $f$ is $C^n$ in $x$ and continuous in $t$, then the solution is also $C^n$.
+
+## Implementation notes
+
+In order to split the proof into small lemmas, we introduce a structure `PicardLindelof` that holds
+all assumptions of the main theorem. This structure and lemmas in the `PicardLindelof` namespace
+should be treated as private implementation details. This is not to be confused with the `Prop`-
+valued structure `IsPicardLindelof`, which holds the long hypotheses of the Picard-Lindelöf
+theorem for actual use as part of the public API.
+
+We only prove existence of a solution in this file. For uniqueness see `ODE_solution_unique` and
+related theorems in `Mathlib/Analysis/ODE/Gronwall.lean`.
+
+## Tags
+
+differential equation, dynamical system, initial value problem
+
+
+
 Attempt to unify `Gronwall` and `PicardLindelof` and prepare for `LocalFlow`
 
 Implementation notes:
@@ -120,28 +143,26 @@ lemma hasDerivWithinAt_integrate_Icc
   · rw [uIcc_of_le (not_lt.mp h)]
     exact Icc_subset_Icc ht₀.1 ht.2
 
--- relax `Icc` to `Ioo` or other sets?
 /-- Converse of `hasDerivWithinAt_integrate_Icc`: if `f` is the derivative along `α`, then `α`
 satisfies the integral equation. -/
-lemma integrate_eq_of_hasDerivAt
-    (ht₀ : t₀ ∈ Icc tmin tmax)
-    (hf : ContinuousOn (uncurry f) ((Icc tmin tmax) ×ˢ u))
-    (hα : ContinuousOn α (Icc tmin tmax))
-    (hmem : ∀ t ∈ Icc tmin tmax, α t ∈ u)
-    (hderiv : ∀ t ∈ Ioo tmin tmax, HasDerivAt α (f t (α t)) t)
-    {x₀ : E} (hinit : α t₀ = x₀) -- have this assumption or use `α t₀` in statement?
-    {t : ℝ} (ht : t ∈ Icc tmin tmax) :
-    integrate f t₀ x₀ α t = α t :=
+lemma integrate_eq_of_hasDerivAt {t : ℝ}
+    (hf : ContinuousOn (uncurry f) ((uIcc t₀ t) ×ˢ u))
+    (hα : ∀ t' ∈ uIcc t₀ t, HasDerivWithinAt α (f t' (α t')) (uIcc t₀ t) t')
+    (hmap : MapsTo α (uIcc t₀ t) u) : -- need `Icc` for `uIcc_subset_Icc`
+    integrate f t₀ (α t₀) α t = α t :=
   calc
-    _ = x₀ + (α t - α t₀) := by
-      rw [integrate_apply, integral_eq_sub_of_hasDeriv_right (hα.mono <| uIcc_subset_Icc ht₀ ht)]
+    _ = α t₀ + (α t - α t₀) := by
+      rw [integrate_apply, integral_eq_sub_of_hasDeriv_right]
       · intro t' ht'
-        have ht' : t' ∈ Ioo tmin tmax := Ioo_subset_Ioo (le_min ht₀.1 ht.1) (max_le ht₀.2 ht.2) ht'
-        exact hderiv _ ht' |>.hasDerivWithinAt
+        exact hα t' ht' |>.continuousWithinAt
+      · intro t' ht'
+        apply HasDerivAt.hasDerivWithinAt
+        exact hα t' (Ioo_subset_Icc_self ht') |>.hasDerivAt <| Icc_mem_nhds ht'.1 ht'.2
       · apply ContinuousOn.intervalIntegrable -- kind of repeated later
-        apply ContinuousOn.mono _ <| uIcc_subset_Icc ht₀ ht
-        exact continuousOn_comp hf hα hmem
-    _ = α t := by simp [hinit]
+        apply continuousOn_comp hf _ hmap
+        intro t' ht' -- repeat
+        exact hα t' ht' |>.continuousWithinAt
+    _ = α t := add_sub_cancel _ _
 
 -- `n = ω`?
 -- also works for `Ioi` and `Iio` but not intervals with a closed end due to non-unique diff there
@@ -172,7 +193,7 @@ lemma contDiffOn_nat_integrate_Ioo
 
 /-- If the time-dependent vector field `f` is $C^n$ and the curve `α` is continuous, then
 `interate f t₀ x₀ α` is also $C^n$.This version works for `n : ℕ∞`. -/
-lemma contDiffOn_enat_integrateIntegral_Ioo
+lemma contDiffOn_enat_integrate_Ioo
     (ht₀ : t₀ ∈ Ioo tmin tmax) {n : ℕ∞}
     (hf : ContDiffOn ℝ n (uncurry f) ((Ioo tmin tmax) ×ˢ u))
     (hα : ContinuousOn α (Ioo tmin tmax))
@@ -188,6 +209,28 @@ lemma contDiffOn_enat_integrateIntegral_Ioo
     simp only [WithTop.coe_natCast] at *
     exact contDiffOn_nat_integrate_Ioo ht₀ hf hα hmem x₀ heqon
 
+/-- Solutions to ODEs defined by $C^n$ vector fields are also $C^n$. -/
+theorem contDiffOn_enat_Ioo_of_hasDerivAt
+    (ht₀ : t₀ ∈ Ioo tmin tmax) {n : ℕ∞}
+    (hf : ContDiffOn ℝ n (uncurry f) ((Ioo tmin tmax) ×ˢ u))
+    (hα : ∀ t ∈ Ioo tmin tmax, HasDerivAt α (f t (α t)) t)
+    (hmem : MapsTo α (Ioo tmin tmax) u) :
+    ContDiffOn ℝ n α (Ioo tmin tmax) := by
+  have : ∀ t ∈ Ioo tmin tmax, α t = integrate f t₀ (α t₀) α t := by
+    intro t ht
+    have : uIcc t₀ t ⊆ Ioo tmin tmax := by
+      rw [uIcc_eq_union]
+      exact union_subset (Icc_subset_Ioo ht₀.1 ht.2) (Icc_subset_Ioo ht.1 ht₀.2)
+    rw [integrate_eq_of_hasDerivAt (hf.continuousOn.mono _)]
+    · intro t' ht'
+      apply hα t' (this ht') |>.hasDerivWithinAt
+    · apply hmem.mono_left this
+    · -- missing `left/right` lemmas for `prod_subset_prod_iff`
+      rw [prod_subset_prod_iff]
+      apply Or.inl ⟨this, subset_rfl⟩
+  exact contDiffOn_enat_integrate_Ioo ht₀ hf
+    (fun t ht ↦ hα t ht |>.continuousAt.continuousWithinAt) hmem (α t₀) this |>.congr this
+
 end
 
 -- move?
@@ -201,7 +244,6 @@ lemma continuousOn_uncurry_of_lipschitzOnWith_continuousOn
     continuousOn_prod_of_continuousOn_lipschitzOnWith _ K hcont hlip
   this.comp continuous_swap.continuousOn (preimage_swap_prod _ _).symm.subset
 
--- docstring
 /-- Prop structure holding the assumptions of the Picard-Lindelöf theorem.
 `IsPicardLindelof f t₀ x₀ a b L K` means that the time-dependent vector field `f` satisfies the
 conditions to admit an integral curve `α : ℝ → E` to `f` defined on `Icc tmin tmax` with the
@@ -634,6 +676,8 @@ theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt (hf : IsPicardLindelof 
 end IsPicardLindelof
 
 /-! ### $C^1$ vector field -/
+
+-- collect variables
 
 /-- If a vector field `f : E → E` is continuously differentiable at `x₀ : E`, then it admits an
 integral curve `α : ℝ → E` defined on a closed interval, with initial condition `α t₀ = x`, where
