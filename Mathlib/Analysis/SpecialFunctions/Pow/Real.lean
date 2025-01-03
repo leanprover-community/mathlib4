@@ -15,10 +15,7 @@ We construct the power functions `x ^ y`, where `x` and `y` are real numbers.
 
 noncomputable section
 
-open scoped Classical
-open Real ComplexConjugate
-
-open Finset Set
+open Real ComplexConjugate Finset Set
 
 /-
 ## Definitions
