@@ -12,39 +12,66 @@ import Mathlib.Topology.MetricSpace.Contracting
 /-!
 # Picard-Lindelöf (Cauchy-Lipschitz) Theorem
 
-In this file we prove that an ordinary differential equation $\dot x=f(t, x)$, whenever $f$ is
-Lipschitz continuous in $x$ and continuous in $t$, has a local solution. Moreover, we show
-that if $f$ is $C^n$ in $x$ and continuous in $t$, then the solution is also $C^n$.
+We prove the (local) existence of integral curves and flows to time-dependent vector fields. We also
+show that if the vector field is $C^n$, then the integral curve is also $C^n$.
+
+Let `f : ℝ → E → E` be a time-dependent (local) vector field on a Banach space, and let `t₀ : ℝ`
+and `x₀ : E`. If `f` is Lipschitz continuous in `x` within a closed ball around `x₀` of radius
+`a ≥ 0` at every `t` and continuous in `t` at every `x`, then there exists a (local) solution
+`α : ℝ → E` to the initial value problem `α t₀ = x₀` and `deriv α t = f t (α t)` for all
+`t ∈ Icc tmin tmax`, where `t₀ - a / L ≤ tmin ≤ t₀ ≤ tmax ≤ t₀ + a / L`.
+
+We actually prove a more general version of this theorem for the existence of local flows. If there
+is some `b` such that `L * max (tmax - t₀) (t₀ - tmin) ≤ b < a`, then for every
+`x ∈ closedBall x₀ (a - b)`, there exists a (local) solution `α x` with the initial condition
+`α t₀ = x`. In other words, there exists a local flow `α : E → ℝ → E` defined on
+`closedBall x₀ (a - b)` and `Icc tmin tmax`.
+
+The proof relies on demonstrating the existence of a solution `α` to the following integral
+equation:
+$$\alpha(t) = x_0 + \int_{t_0}^t f(\tau, \alpha(\tau))\,\mathrm{d}\tau.$$
+This is done via the contraction mapping theorem, applied to the space of Lipschitz continuous
+functions from a closed interval to a Banach space. The needed contraction map is constructed by
+repeated applications of the right hand side of the the above equation.
+
+## Main definitions and results
+
+* `integrate f t₀ x₀ α t`: the right hand side of the integral equation, applied to the curve `α`.
+* `contDiffOn_enat_Ioo_of_hasDerivAt`: if `f` is $C^n$ and `α` is continuous, then `α` is also
+  $C^n`.
+* `IsPicardLindelof`: the structure holding the assumptions of the Picard-Lindelöf theorem.
+* `IsPicardLindelof.exists_eq_hasDerivWithinAt`: the existence theorem for local solutions to
+  time-dependent ODEs.
+* `IsPicardLindelof.exists_forall_mem_closedBall_eq_hasDerivWithinAt_Icc`: the existence theorem for
+  local flows to time-dependent vector fields.
 
 ## Implementation notes
 
-In order to split the proof into small lemmas, we introduce a structure `PicardLindelof` that holds
-all assumptions of the main theorem. This structure and lemmas in the `PicardLindelof` namespace
-should be treated as private implementation details. This is not to be confused with the `Prop`-
-valued structure `IsPicardLindelof`, which holds the long hypotheses of the Picard-Lindelöf
-theorem for actual use as part of the public API.
-
-We only prove existence of a solution in this file. For uniqueness see `ODE_solution_unique` and
-related theorems in `Mathlib/Analysis/ODE/Gronwall.lean`.
+* The structure `FunSpace` and theorems within this namespace are implementation details of the
+  proof of the Picard-Lindelöf theorem and are not intended to be used outside of this file.
+* Some sources, such as Lang, define `FunSpace` as the space of continuous functions from a closed
+  interval to a closed ball. The Lipschitz condition used in `FunSpace` here is sufficient for
+  proving the theorem, it has better properties when formalised, and it allows us to postpone the
+  usage of the completeness condition on the space `E` until the application of the contraction
+  mapping theorem.
+* We have chosen to formalise many of the real constants as `ℝ≥0`, so that the non-negativity of
+  certain quantities constructed from them can be shown more easily. However, this leads to a
+  potential confusion in the meaning of `a - b`. The (vacuous) validity of the existence theorem
+  `IsPicardLindelof.exists_eq_hasDerivWithinAt` when `a < b` crucially relies on `(a - b) : ℝ`
+  meaning `(a : ℝ) - (b : ℝ)`, which is negative. With this understanding, the condition `a < b`
+  does not need to be stated as part of `IsPicardLindelof`.
+* We only prove the existence of a solution in this file. For uniqueness, see `ODE_solution_unique`
+  and related theorems in `Mathlib/Analysis/ODE/Gronwall.lean`.
 
 ## Tags
 
 differential equation, dynamical system, initial value problem
 
-
-
-Attempt to unify `Gronwall` and `PicardLindelof` and prepare for `LocalFlow`
-
-Implementation notes:
-* Using Lipschitz in `FunSpace` instead of the mapping into a closed ball condition of Lang so that
-`CompleteSpace E` can be avoided in most proofs, even though Lipschitz is a stronger condition than
-the mapping condition. We also avoid having to carrying around `closedBall x₀ (2 * a)` in the type.
-* `ℝ≥0` is used as the type of many constants here to minise proofs for statements like `0 ≤ 2 * a`.
 -/
 
 open Function intervalIntegral MeasureTheory Metric Set
 open scoped Nat NNReal Topology
-
+#synth Sub ℝ≥0
 -- generalise
 lemma abs_sub_le_max_sub {a b c : ℝ} (hac : a ≤ b) (hcd : b ≤ c) (d : ℝ) :
     |b - d| ≤ (c - d) ⊔ (d - a) := by
@@ -252,12 +279,12 @@ to differ from the point `x₀` about which the conditions on `f` are stated. Th
 meaningful when `b ≤ a` but is true vacuously otherwise. -/
 structure IsPicardLindelof {E : Type*} [NormedAddCommGroup E]
     (f : ℝ → E → E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) (a b L K : ℝ≥0) : Prop where
-  /-- The vector field at any time is bounded by `L` within a closed ball. -/
-  bounded : ∀ t ∈ Icc tmin tmax, ∀ x ∈ closedBall x₀ a, ‖f t x‖ ≤ L
   /-- The vector field at any time is Lipschitz in with constant `K` within a closed ball. -/
   lipschitz : ∀ t ∈ Icc tmin tmax, LipschitzOnWith K (f t) (closedBall x₀ a)
   /-- The vector field is continuous in time within a closed ball. -/
   continuousOn : ∀ x ∈ closedBall x₀ a, ContinuousOn (f · x) (Icc tmin tmax)
+  /-- `L` is an upper bound of the norm of the vector field. -/
+  norm_le : ∀ t ∈ Icc tmin tmax, ∀ x ∈ closedBall x₀ a, ‖f t x‖ ≤ L
   /-- The time interval of validity. -/
   mul_max_le : L * max (tmax - t₀) (t₀ - tmin) ≤ b
 
@@ -273,9 +300,9 @@ lemma mk_of_time_independent
     (hl : LipschitzOnWith K f (closedBall x₀ a))
     (hm : L * max (tmax - t₀) (t₀ - tmin) ≤ b) :
     (IsPicardLindelof (fun _ ↦ f) t₀ x₀ a b L K) where
-  bounded := fun _ _ ↦ hb
   lipschitz := fun _ _ ↦ hl
   continuousOn := fun _ _ ↦ continuousOn_const
+  norm_le := fun _ _ ↦ hb
   mul_max_le := hm
 
 -- statement seems a little funky
@@ -491,7 +518,7 @@ noncomputable def next (hf : IsPicardLindelof f t₀ x₀ a b L K)
       apply intervalIntegral.norm_integral_le_of_norm_le_const
       intro t ht
       have ht : t ∈ Icc tmin tmax := subset_trans uIoc_subset_uIcc (uIcc_subset_Icc t₂.2 t₁.2) ht
-      exact hf.bounded _ ht _ <| comp_projIcc_mem_closedBall hf hx _ ht
+      exact hf.norm_le _ ht _ <| comp_projIcc_mem_closedBall hf hx _ ht
     · apply ContinuousOn.intervalIntegrable
       apply ContinuousOn.mono _ <| uIcc_subset_Icc t₀.2 t₁.2
       exact continuousOn_comp_projIcc hf hx _
