@@ -78,9 +78,11 @@ namespace WithLower
 /-- `ofLower` is the identity function from the `WithLower` of a type. -/
 @[match_pattern] def ofLower : WithLower α ≃ α := Equiv.refl _
 
-@[simp] lemma to_WithLower_symm_eq : (@toLower α).symm = ofLower := rfl
+@[simp] lemma toLower_symm : (@toLower α).symm = ofLower := rfl
+@[deprecated (since := "2024-12-16")] alias to_WithLower_symm_eq := toLower_symm
 
-@[simp] lemma of_WithLower_symm_eq : (@ofLower α).symm = toLower := rfl
+@[simp] lemma ofLower_symm : (@ofLower α).symm = toLower := rfl
+@[deprecated (since := "2024-12-16")] alias of_WithLower_symm_eq := ofLower_symm
 
 @[simp] lemma toLower_ofLower (a : WithLower α) : toLower (ofLower a) = a := rfl
 
@@ -122,8 +124,10 @@ namespace WithUpper
 /-- `ofUpper` is the identity function from the `WithUpper` of a type. -/
 @[match_pattern] def ofUpper : WithUpper α ≃ α := Equiv.refl _
 
-@[simp] lemma to_WithUpper_symm_eq {α} : (@toUpper α).symm = ofUpper := rfl
-@[simp] lemma of_WithUpper_symm_eq : (@ofUpper α).symm = toUpper := rfl
+@[simp] lemma toUpper_symm {α} : (@toUpper α).symm = ofUpper := rfl
+@[deprecated (since := "2024-12-16")] alias to_WithUpper_symm_eq := toUpper_symm
+@[simp] lemma ofUpper_symm : (@ofUpper α).symm = toUpper := rfl
+@[deprecated (since := "2024-12-16")] alias of_WithUpper_symm_eq := ofUpper_symm
 @[simp] lemma toUpper_ofUpper (a : WithUpper α) : toUpper (ofUpper a) = a := rfl
 @[simp] lemma ofUpper_toUpper (a : α) : ofUpper (toUpper a) = a := rfl
 lemma toUpper_inj {a b : α} : toUpper a = toUpper b ↔ a = b := Iff.rfl
@@ -198,7 +202,7 @@ variable {α}
 /-- If `α` is equipped with the lower topology, then it is homeomorphic to `WithLower α`.
 -/
 def withLowerHomeomorph : WithLower α ≃ₜ α :=
-  WithLower.ofLower.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+  WithLower.ofLower.toHomeomorphOfIsInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 theorem isOpen_iff_generate_Ici_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Ici a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
@@ -262,10 +266,6 @@ lemma continuous_iff_Ici [TopologicalSpace β] {f : β → α} :
     Continuous f ↔ ∀ a, IsClosed (f ⁻¹' (Ici a)) := by
   obtain rfl := IsLower.topology_eq α
   simp [continuous_generateFrom_iff]
-
-/-- A function `f : β → α` with lower topology in the codomain is continuous provided that the
-preimage of every interval `Set.Ici a` is a closed set. -/
-@[deprecated (since := "2023-12-24")] alias ⟨_, continuous_of_Ici⟩ := continuous_iff_Ici
 
 end Preorder
 
@@ -358,7 +358,7 @@ variable {α}
 /-- If `α` is equipped with the upper topology, then it is homeomorphic to `WithUpper α`.
 -/
 def withUpperHomeomorph : WithUpper α ≃ₜ α :=
-  WithUpper.ofUpper.toHomeomorphOfInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
+  WithUpper.ofUpper.toHomeomorphOfIsInducing ⟨by erw [topology_eq α, induced_id]; rfl⟩
 
 theorem isOpen_iff_generate_Iic_compl : IsOpen s ↔ GenerateOpen { t | ∃ a, (Iic a)ᶜ = t } s := by
   rw [topology_eq α]; rfl
@@ -398,13 +398,6 @@ if and only if the preimage of every interval `Set.Iic a` is a closed set. -/
 lemma continuous_iff_Iic [TopologicalSpace β] {f : β → α} :
     Continuous f ↔ ∀ a, IsClosed (f ⁻¹' (Iic a)) :=
   IsLower.continuous_iff_Ici (α := αᵒᵈ)
-
-/-- A function `f : β → α` with upper topology in the codomain is continuous
-provided that the preimage of every interval `Set.Iic a` is a closed set. -/
-@[deprecated (since := "2023-12-24")]
-lemma continuous_of_Iic [TopologicalSpace β] {f : β → α} (h : ∀ a, IsClosed (f ⁻¹' (Iic a))) :
-    Continuous f :=
-  continuous_iff_Iic.2 h
 
 end Preorder
 
@@ -509,3 +502,17 @@ lemma isLower_orderDual [Preorder α] [TopologicalSpace α] : IsLower αᵒᵈ �
   isUpper_orderDual.symm
 
 end Topology
+
+/-- The Sierpiński topology on `Prop` is the upper topology -/
+instance : IsUpper Prop where
+  topology_eq_upperTopology := by
+    rw [Topology.upper, sierpinskiSpace, ← generateFrom_insert_empty]
+    congr
+    exact le_antisymm
+      (fun h hs => by
+        simp only [compl_Iic, mem_setOf_eq]
+        rw [← Ioi_True, ← Ioi_False] at hs
+        rcases hs with (rfl | rfl)
+        · use True
+        · use False)
+      (by rintro _ ⟨a, rfl⟩; by_cases a <;> aesop (add simp [Ioi, lt_iff_le_not_le]))

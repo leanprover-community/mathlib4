@@ -38,9 +38,9 @@ variable {α : Type u} [EMetricSpace α] {s : Set α}
 on the type of closed subsets -/
 instance Closeds.emetricSpace : EMetricSpace (Closeds α) where
   edist s t := hausdorffEdist (s : Set α) t
-  edist_self s := hausdorffEdist_self
-  edist_comm s t := hausdorffEdist_comm
-  edist_triangle s t u := hausdorffEdist_triangle
+  edist_self _ := hausdorffEdist_self
+  edist_comm _ _ := hausdorffEdist_comm
+  edist_triangle _ _ _ := hausdorffEdist_triangle
   eq_of_edist_eq_zero {s t} h :=
     Closeds.ext <| (hausdorffEdist_zero_iff_eq_of_closed s.closed t.closed).1 h
 
@@ -224,17 +224,20 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
 where the edistance is the Hausdorff edistance -/
 instance NonemptyCompacts.emetricSpace : EMetricSpace (NonemptyCompacts α) where
   edist s t := hausdorffEdist (s : Set α) t
-  edist_self s := hausdorffEdist_self
-  edist_comm s t := hausdorffEdist_comm
-  edist_triangle s t u := hausdorffEdist_triangle
+  edist_self _ := hausdorffEdist_self
+  edist_comm _ _ := hausdorffEdist_comm
+  edist_triangle _ _ _ := hausdorffEdist_triangle
   eq_of_edist_eq_zero {s t} h := NonemptyCompacts.ext <| by
     have : closure (s : Set α) = closure t := hausdorffEdist_zero_iff_closure_eq_closure.1 h
     rwa [s.isCompact.isClosed.closure_eq, t.isCompact.isClosed.closure_eq] at this
 
 /-- `NonemptyCompacts.toCloseds` is a uniform embedding (as it is an isometry) -/
-theorem NonemptyCompacts.ToCloseds.uniformEmbedding :
-    UniformEmbedding (@NonemptyCompacts.toCloseds α _ _) :=
-  Isometry.uniformEmbedding fun _ _ => rfl
+theorem NonemptyCompacts.ToCloseds.isUniformEmbedding :
+    IsUniformEmbedding (@NonemptyCompacts.toCloseds α _ _) :=
+  Isometry.isUniformEmbedding fun _ _ => rfl
+
+@[deprecated (since := "2024-10-01")]
+alias NonemptyCompacts.ToCloseds.uniformEmbedding := NonemptyCompacts.ToCloseds.isUniformEmbedding
 
 /-- The range of `NonemptyCompacts.toCloseds` is closed in a complete space -/
 theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
@@ -278,14 +281,14 @@ theorem NonemptyCompacts.isClosed_in_closeds [CompleteSpace α] :
 from the same statement for closed subsets -/
 instance NonemptyCompacts.completeSpace [CompleteSpace α] : CompleteSpace (NonemptyCompacts α) :=
   (completeSpace_iff_isComplete_range
-        NonemptyCompacts.ToCloseds.uniformEmbedding.toUniformInducing).2 <|
+        NonemptyCompacts.ToCloseds.isUniformEmbedding.isUniformInducing).2 <|
     NonemptyCompacts.isClosed_in_closeds.isComplete
 
 /-- In a compact space, the type of nonempty compact subsets is compact. This follows from
 the same statement for closed subsets -/
 instance NonemptyCompacts.compactSpace [CompactSpace α] : CompactSpace (NonemptyCompacts α) :=
   ⟨by
-    rw [NonemptyCompacts.ToCloseds.uniformEmbedding.embedding.isCompact_iff, image_univ]
+    rw [NonemptyCompacts.ToCloseds.isUniformEmbedding.isEmbedding.isCompact_iff, image_univ]
     exact NonemptyCompacts.isClosed_in_closeds.isCompact⟩
 
 /-- In a second countable space, the type of nonempty compact subsets is second countable -/

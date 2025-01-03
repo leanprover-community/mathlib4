@@ -14,7 +14,7 @@ This file defines some additional constructive equivalences using `Encodable` an
 function on `ℕ`.
 -/
 
-open Mathlib (Vector)
+open List (Vector)
 open Nat List
 
 namespace Encodable
@@ -127,11 +127,11 @@ noncomputable def _root_.Fintype.toEncodable (α : Type*) [Fintype α] : Encodab
   classical exact (Fintype.truncEncodable α).out
 
 /-- If `α` is encodable, then so is `Vector α n`. -/
-instance _root_.Vector.encodable [Encodable α] {n} : Encodable (Vector α n) :=
+instance List.Vector.encodable [Encodable α] {n} : Encodable (List.Vector α n) :=
   Subtype.encodable
 
 /-- If `α` is countable, then so is `Vector α n`. -/
-instance _root_.Vector.countable [Countable α] {n} : Countable (Vector α n) :=
+instance List.Vector.countable [Countable α] {n} : Countable (List.Vector α n) :=
   Subtype.countable
 
 /-- If `α` is encodable, then so is `Fin n → α`. -/
@@ -259,11 +259,11 @@ def raise : List ℕ → ℕ → List ℕ
   | m :: l, n => (m + n) :: raise l (m + n)
 
 theorem lower_raise : ∀ l n, lower (raise l n) n = l
-  | [], n => rfl
+  | [], _ => rfl
   | m :: l, n => by rw [raise, lower, Nat.add_sub_cancel_right, lower_raise l]
 
 theorem raise_lower : ∀ {l n}, List.Sorted (· ≤ ·) (n :: l) → raise (lower l n) n = l
-  | [], n, _ => rfl
+  | [], _, _ => rfl
   | m :: l, n, h => by
     have : n ≤ m := List.rel_of_sorted_cons h _ (l.mem_cons_self _)
     simp [raise, lower, Nat.sub_add_cancel this, raise_lower h.of_cons]
@@ -289,7 +289,7 @@ instance multiset : Denumerable (Multiset α) :=
         raise_lower (List.sorted_cons.2 ⟨fun n _ => Nat.zero_le n, (s.map encode).sort_sorted _⟩)
       simp [-Multiset.map_coe, this],
      fun n => by
-      simp [-Multiset.map_coe, List.mergeSort'_eq_self _ (raise_sorted _ _), lower_raise]⟩
+      simp [-Multiset.map_coe, List.mergeSort_eq_self (raise_sorted _ _), lower_raise]⟩
 
 end Multiset
 
@@ -309,11 +309,11 @@ def raise' : List ℕ → ℕ → List ℕ
   | m :: l, n => (m + n) :: raise' l (m + n + 1)
 
 theorem lower_raise' : ∀ l n, lower' (raise' l n) n = l
-  | [], n => rfl
+  | [], _ => rfl
   | m :: l, n => by simp [raise', lower', add_tsub_cancel_right, lower_raise']
 
 theorem raise_lower' : ∀ {l n}, (∀ m ∈ l, n ≤ m) → List.Sorted (· < ·) l → raise' (lower' l n) n = l
-  | [], n, _, _ => rfl
+  | [], _, _, _ => rfl
   | m :: l, n, h₁, h₂ => by
     have : n ≤ m := h₁ _ (l.mem_cons_self _)
     simp [raise', lower', Nat.sub_add_cancel this,
@@ -344,7 +344,7 @@ instance finset : Denumerable (Finset α) :=
           raise_lower' (fun n _ => Nat.zero_le n) (Finset.sort_sorted_lt _)],
       fun n => by
       simp [-Multiset.map_coe, Finset.map, raise'Finset, Finset.sort,
-        List.mergeSort'_eq_self (· ≤ ·) ((raise'_sorted _ _).imp (@le_of_lt _ _)), lower_raise']⟩
+        List.mergeSort_eq_self ((raise'_sorted _ _).imp (@le_of_lt _ _)), lower_raise']⟩
 
 end Finset
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Archimedean.Hom
-import Mathlib.Algebra.Order.Pointwise
+import Mathlib.Algebra.Order.Group.Pointwise.CompleteLattice
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 /-!
@@ -142,7 +142,7 @@ theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b :=
     rw [coe_mem_cutMap_iff]
     exact mod_cast sub_lt_comm.mp hq₁q
   · rintro _ ⟨_, ⟨qa, ha, rfl⟩, _, ⟨qb, hb, rfl⟩, rfl⟩
-    -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
+    -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
     refine ⟨qa + qb, ?_, by beta_reduce; norm_cast⟩
     rw [mem_setOf_eq, cast_add]
     exact add_lt_add ha hb
@@ -202,7 +202,7 @@ theorem coe_lt_inducedMap_iff : (q : β) < inducedMap α β a ↔ (q : α) < a :
     exact mod_cast hq
 
 theorem lt_inducedMap_iff : b < inducedMap α β a ↔ ∃ q : ℚ, b < q ∧ (q : α) < a :=
-  ⟨fun h => (exists_rat_btwn h).imp fun q => And.imp_right coe_lt_inducedMap_iff.1,
+  ⟨fun h => (exists_rat_btwn h).imp fun _ => And.imp_right coe_lt_inducedMap_iff.1,
     fun ⟨q, hbq, hqa⟩ => hbq.trans <| by rwa [coe_lt_inducedMap_iff]⟩
 
 @[simp]
@@ -216,7 +216,6 @@ theorem inducedMap_inducedMap (a : α) : inducedMap β γ (inducedMap α β a) =
   eq_of_forall_rat_lt_iff_lt fun q => by
     rw [coe_lt_inducedMap_iff, coe_lt_inducedMap_iff, Iff.comm, coe_lt_inducedMap_iff]
 
---@[simp] -- Porting note (#10618): simp can prove it
 theorem inducedMap_inv_self (b : β) : inducedMap γ β (inducedMap β γ b) = b := by
   rw [inducedMap_inducedMap, inducedMap_self]
 
@@ -238,7 +237,7 @@ theorem le_inducedMap_mul_self_of_mem_cutMap (ha : 0 < a) (b : β) (hb : b ∈ c
   · rw [pow_two] at hqa ⊢
     exact mul_self_le_mul_self (mod_cast hq'.le)
       (le_csSup (cutMap_bddAbove β a) <|
-        coe_mem_cutMap_iff.2 <| lt_of_mul_self_lt_mul_self ha.le hqa)
+        coe_mem_cutMap_iff.2 <| lt_of_mul_self_lt_mul_self₀ ha.le hqa)
 
 /-- Preparatory lemma for `inducedOrderRingHom`. -/
 theorem exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self (ha : 0 < a) (b : β)
@@ -252,7 +251,7 @@ theorem exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self (ha : 0 < a) (b : �
   refine ⟨(q ^ 2 : ℚ), coe_mem_cutMap_iff.2 ?_, hbq⟩
   rw [pow_two] at hqa ⊢
   push_cast
-  obtain ⟨q', hq', hqa'⟩ := lt_inducedMap_iff.1 (lt_of_mul_self_lt_mul_self
+  obtain ⟨q', hq', hqa'⟩ := lt_inducedMap_iff.1 (lt_of_mul_self_lt_mul_self₀
     (inducedMap_nonneg ha.le) hqa)
   exact mul_self_lt_mul_self (mod_cast hq.le) (hqa'.trans' <| by assumption_mod_cast)
 

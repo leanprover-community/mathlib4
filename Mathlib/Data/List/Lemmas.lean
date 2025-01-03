@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky, Yury Kudryashov
 -/
 import Mathlib.Data.Set.Image
-import Mathlib.Data.List.InsertNth
+import Mathlib.Data.List.InsertIdx
 
 /-! # Some lemmas about lists involving sets
 
@@ -17,33 +17,26 @@ variable {α β γ : Type*}
 
 namespace List
 
+@[simp]
+theorem length_flatMap (l : List α) (f : α → List β) :
+    length (List.flatMap l f) = sum (map (length ∘ f) l) := by
+  rw [List.flatMap, length_flatten, map_map]
+
+lemma countP_flatMap (p : β → Bool) (l : List α) (f : α → List β) :
+    countP p (l.flatMap f) = sum (map (countP p ∘ f) l) := by
+  rw [List.flatMap, countP_flatten, map_map]
+
+lemma count_flatMap [BEq β] (l : List α) (f : α → List β) (x : β) :
+    count x (l.flatMap f) = sum (map (count x ∘ f) l) := countP_flatMap _ _ _
+
 @[deprecated (since := "2024-08-20")] alias getElem_reverse' := getElem_reverse
 
-theorem tail_reverse_eq_reverse_dropLast (l : List α) :
-    l.reverse.tail = l.dropLast.reverse := by
-  ext i v; by_cases hi : i < l.length - 1
-  · simp only [← drop_one]
-    rw [getElem?_eq_getElem (by simpa), getElem?_eq_getElem (by simpa),
-      ← getElem_drop' _, getElem_reverse, getElem_reverse, getElem_dropLast]
-    simp [show l.length - 1 - (1 + i) = l.length - 1 - 1 - i by omega]
-    all_goals ((try simp); omega)
-  · rw [getElem?_eq_none, getElem?_eq_none]
-    all_goals (simp; omega)
+@[deprecated (since := "2024-12-10")] alias tail_reverse_eq_reverse_dropLast := tail_reverse
 
-theorem getLast_tail (l : List α) (hl : l.tail ≠ []) :
-    l.tail.getLast hl = l.getLast (by intro h; rw [h] at hl; simp at hl) := by
-  simp only [← drop_one, ne_eq, drop_eq_nil_iff_le,
-    not_le, getLast_eq_getElem, length_drop] at hl |-
-  rw [← getElem_drop']
-  simp [show 1 + (l.length - 1 - 1) = l.length - 1 by omega]
-  omega
+@[deprecated (since := "2024-08-19")] alias nthLe_tail := getElem_tail
 
-lemma getElem_tail {i} (L : List α) (hi : i < L.tail.length) :
-    L.tail[i] = L[i + 1]'(by simp at *; omega) := by
-  induction L <;> simp at hi |-
-
-theorem injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
-    Set.InjOn (fun k => insertNth k x l) { n | n ≤ l.length } := by
+theorem injOn_insertIdx_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
+    Set.InjOn (fun k => insertIdx k x l) { n | n ≤ l.length } := by
   induction' l with hd tl IH
   · intro n hn m hm _
     simp_all [Set.mem_singleton_iff, Set.setOf_eq_eq_singleton, length]
@@ -54,11 +47,14 @@ theorem injOn_insertNth_index_of_not_mem (l : List α) (x : α) (hx : x ∉ l) :
     · rfl
     · simp [hx.left] at h
     · simp [Ne.symm hx.left] at h
-    · simp only [true_and_iff, eq_self_iff_true, insertNth_succ_cons] at h
+    · simp only [true_and, eq_self_iff_true, insertIdx_succ_cons] at h
       rw [Nat.succ_inj']
       refine IH hx.right ?_ ?_ (by injection h)
       · simpa [Nat.succ_le_succ_iff] using hn
       · simpa [Nat.succ_le_succ_iff] using hm
+
+@[deprecated (since := "2024-10-21")]
+alias injOn_insertNth_index_of_not_mem := injOn_insertIdx_index_of_not_mem
 
 theorem foldr_range_subset_of_range_subset {f : β → α → α} {g : γ → α → α}
     (hfg : Set.range f ⊆ Set.range g) (a : α) : Set.range (foldr f a) ⊆ Set.range (foldr g a) := by
@@ -107,7 +103,7 @@ theorem mapAccumr_eq_foldr {σ : Type*} (f : α → σ → σ × β) : ∀ (as :
                                     let r := f a s.1
                                     (r.1, r.2 :: s.2)
                                   ) (s, []) as
-  | [], s => rfl
+  | [], _ => rfl
   | a :: as, s => by
     simp only [mapAccumr, foldr, mapAccumr_eq_foldr f as]
 
@@ -117,9 +113,9 @@ theorem mapAccumr₂_eq_foldr {σ φ : Type*} (f : α → β → σ → σ × φ
                               let r := f ab.1 ab.2 s.1
                               (r.1, r.2 :: s.2)
                             ) (s, []) (as.zip bs)
-  | [], [], s => rfl
-  | a :: as, [], s => rfl
-  | [], b :: bs, s => rfl
+  | [], [], _ => rfl
+  | _ :: _, [], _ => rfl
+  | [], _ :: _, _ => rfl
   | a :: as, b :: bs, s => by
     simp only [mapAccumr₂, foldr, mapAccumr₂_eq_foldr f as]
     rfl

@@ -19,7 +19,7 @@ This file implements the reconstruction.
 The public facing declaration in this file is `proveFalseByLinarith`.
 -/
 
-open Lean Elab Tactic Meta
+open Lean Elab Tactic Meta Mathlib
 
 namespace Qq
 
@@ -90,11 +90,11 @@ def addIneq : Ineq → Ineq → (Name × Ineq)
   | eq, le => (``Linarith.le_of_eq_of_le, le)
   | eq, lt => (``Linarith.lt_of_eq_of_lt, lt)
   | le, eq => (``Linarith.le_of_le_of_eq, le)
-  | le, le => (``add_nonpos, le)
-  | le, lt => (``add_lt_of_le_of_neg, lt)
+  | le, le => (``Linarith.add_nonpos, le)
+  | le, lt => (``Linarith.add_lt_of_le_of_neg, lt)
   | lt, eq => (``Linarith.lt_of_lt_of_eq, lt)
-  | lt, le => (``add_lt_of_neg_of_le, lt)
-  | lt, lt => (``Left.add_neg, lt)
+  | lt, le => (``Linarith.add_lt_of_neg_of_le, lt)
+  | lt, lt => (``Linarith.add_neg, lt)
 
 /--
 `mkLTZeroProof coeffs pfs` takes a list of proofs of the form `tᵢ Rᵢ 0`,
@@ -123,19 +123,20 @@ def mkLTZeroProof : List (Expr × ℕ) → MetaM Expr
 
 /-- If `prf` is a proof of `t R s`, `leftOfIneqProof prf` returns `t`. -/
 def leftOfIneqProof (prf : Expr) : MetaM Expr := do
-  let (t, _) ← getRelSides (← inferType prf)
+  let (_, _, t, _) ← (← inferType prf).ineq?
   return t
 
 /-- If `prf` is a proof of `t R s`, `typeOfIneqProof prf` returns the type of `t`. -/
 def typeOfIneqProof (prf : Expr) : MetaM Expr := do
-  inferType (← leftOfIneqProof prf)
+  let (_, ty, _) ← (← inferType prf).ineq?
+  return ty
 
 /--
 `mkNegOneLtZeroProof tp` returns a proof of `-1 < 0`,
 where the numerals are natively of type `tp`.
 -/
 def mkNegOneLtZeroProof (tp : Expr) : MetaM Expr := do
-  let zero_lt_one ← mkAppOptM ``zero_lt_one #[tp, none, none, none, none, none]
+  let zero_lt_one ← mkAppOptM ``Linarith.zero_lt_one #[tp, none]
   mkAppM `neg_neg_of_pos #[zero_lt_one]
 
 /--
@@ -191,6 +192,7 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
   | _, [] => throwError "no args to linarith"
   | g, l@(h::_) => do
       trace[linarith.detail] "Beginning work in `proveFalseByLinarith`."
+      Lean.Core.checkSystem decl_name%.toString
       -- for the elimination to work properly, we must add a proof of `-1 < 0` to the list,
       -- along with negated equality proofs.
       let l' ← addNegEqProofs l
@@ -202,7 +204,7 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
       trace[linarith.detail] "... finished `linearFormsAndMaxVar`."
       trace[linarith.detail] "{comps}"
       -- perform the elimination and fail if no contradiction is found.
-      let certificate : Batteries.HashMap Nat Nat ← try
+      let certificate : Std.HashMap Nat Nat ← try
         oracle.produceCertificate comps max_var
       catch e =>
         trace[linarith] e.toMessageData
@@ -210,7 +212,7 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
       trace[linarith] "linarith has found a contradiction: {certificate.toList}"
       let enum_inputs := inputs.enum
       -- construct a list pairing nonzero coeffs with the proof of their corresponding comparison
-      let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate.find? n).map (e, ·)
+      let zip := enum_inputs.filterMap fun ⟨n, e⟩ => (certificate[n]?).map (e, ·)
       let mls ← zip.mapM fun ⟨e, n⟩ => do mulExpr n (← leftOfIneqProof e)
       -- `sm` is the sum of input terms, scaled to cancel out all variables.
       let sm ← addExprs mls

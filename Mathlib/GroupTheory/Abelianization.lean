@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Michael Howes
 -/
 import Mathlib.Data.Finite.Card
-import Mathlib.GroupTheory.Finiteness
+import Mathlib.Data.Finite.Prod
 import Mathlib.GroupTheory.Commutator.Basic
+import Mathlib.GroupTheory.Coset.Basic
+import Mathlib.GroupTheory.Finiteness
 
 /-!
 # The abelianization of a group
@@ -47,6 +49,11 @@ theorem commutator_eq_closure : commutator G = Subgroup.closure (commutatorSet G
 
 theorem commutator_eq_normalClosure : commutator G = Subgroup.normalClosure (commutatorSet G) := by
   simp [commutator, Subgroup.commutator_def', commutatorSet]
+
+variable {G} in
+theorem Subgroup.map_subtype_commutator (H : Subgroup G) :
+    (_root_.commutator H).map H.subtype = ⁅H, H⁆ := by
+  rw [_root_.commutator_def, map_commutator, ← MonoidHom.range_eq_map, H.range_subtype]
 
 instance commutator_characteristic : (commutator G).Characteristic :=
   Subgroup.commutator_characteristic ⊤ ⊤
@@ -110,6 +117,11 @@ def of : G →* Abelianization G where
 theorem mk_eq_of (a : G) : Quot.mk _ a = of a :=
   rfl
 
+variable (G) in
+@[simp]
+theorem ker_of : of.ker = commutator G :=
+  QuotientGroup.ker_mk' (commutator G)
+
 section lift
 
 -- So far we have built Gᵃᵇ and proved it's an abelian group.
@@ -125,7 +137,7 @@ theorem commutator_subset_ker : commutator G ≤ f.ker := by
 /-- If `f : G → A` is a group homomorphism to an abelian group, then `lift f` is the unique map
   from the abelianization of a `G` to `A` that factors through `f`. -/
 def lift : (G →* A) ≃ (Abelianization G →* A) where
-  toFun f := QuotientGroup.lift _ f fun _ h => f.mem_ker.2 <| commutator_subset_ker _ h
+  toFun f := QuotientGroup.lift _ f fun _ h => MonoidHom.mem_ker.2 <| commutator_subset_ker _ h
   invFun F := F.comp of
   left_inv _ := MonoidHom.ext fun _ => rfl
   right_inv _ := MonoidHom.ext fun x => QuotientGroup.induction_on x fun _ => rfl
@@ -231,7 +243,7 @@ def Abelianization.equivOfComm {H : Type*} [CommGroup H] : H ≃* Abelianization
   { Abelianization.of with
     toFun := Abelianization.of
     invFun := Abelianization.lift (MonoidHom.id H)
-    left_inv := fun a => rfl
+    left_inv := fun _ => rfl
     right_inv := by
       rintro ⟨a⟩
       rfl }

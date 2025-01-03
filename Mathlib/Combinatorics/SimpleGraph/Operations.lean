@@ -34,7 +34,7 @@ variable {G} {W : Type*} {G' : SimpleGraph W} (f : G ≃g G')
 
 include f in
 theorem card_edgeFinset_eq [Fintype G.edgeSet] [Fintype G'.edgeSet] :
-    G.edgeFinset.card = G'.edgeFinset.card := by
+    #G.edgeFinset = #G'.edgeFinset := by
   apply Finset.card_eq_of_equiv
   simp only [Set.mem_toFinset]
   exact f.mapEdgeSet
@@ -116,7 +116,7 @@ lemma disjoint_sdiff_neighborFinset_image :
   aesop
 
 theorem card_edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) :
-    (G.replaceVertex s t).edgeFinset.card = G.edgeFinset.card + G.degree s - G.degree t := by
+    #(G.replaceVertex s t).edgeFinset = #G.edgeFinset + G.degree s - G.degree t := by
   have inc : G.incidenceFinset t ⊆ G.edgeFinset := by simp [incidenceFinset, incidenceSet_subset]
   rw [G.edgeFinset_replaceVertex_of_not_adj hn,
     card_union_of_disjoint G.disjoint_sdiff_neighborFinset_image, card_sdiff inc,
@@ -127,7 +127,7 @@ theorem card_edgeFinset_replaceVertex_of_not_adj (hn : ¬G.Adj s t) :
   aesop
 
 theorem card_edgeFinset_replaceVertex_of_adj (ha : G.Adj s t) :
-    (G.replaceVertex s t).edgeFinset.card = G.edgeFinset.card + G.degree s - G.degree t - 1 := by
+    #(G.replaceVertex s t).edgeFinset = #G.edgeFinset + G.degree s - G.degree t - 1 := by
   have inc : G.incidenceFinset t ⊆ G.edgeFinset := by simp [incidenceFinset, incidenceSet_subset]
   rw [G.edgeFinset_replaceVertex_of_adj ha, card_sdiff (by simp [ha]),
     card_union_of_disjoint G.disjoint_sdiff_neighborFinset_image, card_sdiff inc,
@@ -180,7 +180,7 @@ theorem edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.Adj s
   simp_rw [edgeFinset, edge_edgeSet_of_ne h]; rfl
 
 theorem card_edgeFinset_sup_edge [Fintype (edgeSet (G ⊔ edge s t))] (hn : ¬G.Adj s t) (h : s ≠ t) :
-    (G ⊔ edge s t).edgeFinset.card = G.edgeFinset.card + 1 := by
+    #(G ⊔ edge s t).edgeFinset = #G.edgeFinset + 1 := by
   rw [G.edgeFinset_sup_edge hn h, card_cons]
 
 end AddEdge

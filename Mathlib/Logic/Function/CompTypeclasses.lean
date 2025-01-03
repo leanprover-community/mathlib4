@@ -24,7 +24,7 @@ TODO :
 section CompTriple
 
 /-- Class of composing triples -/
-class CompTriple  {M N P : Type*} (φ : M → N) (ψ : N → P) (χ : outParam (M → P)) : Prop where
+class CompTriple {M N P : Type*} (φ : M → N) (ψ : N → P) (χ : outParam (M → P)) : Prop where
   /-- The maps form a commuting triangle -/
   comp_eq : ψ.comp φ = χ
 

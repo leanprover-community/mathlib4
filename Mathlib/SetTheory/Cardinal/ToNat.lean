@@ -64,9 +64,11 @@ theorem toNat_injOn : InjOn toNat (Iio ℵ₀) := toNat_strictMonoOn.injOn
 
 /-- Two finite cardinals are equal
 iff they are equal their `Cardinal.toNat` projections are equal. -/
-theorem toNat_eq_iff_eq_of_lt_aleph0 (hc : c < ℵ₀) (hd : d < ℵ₀) :
+theorem toNat_inj_of_lt_aleph0 (hc : c < ℵ₀) (hd : d < ℵ₀) :
     toNat c = toNat d ↔ c = d :=
   toNat_injOn.eq_iff hc hd
+
+@[deprecated (since := "2024-12-29")] alias toNat_eq_iff_eq_of_lt_aleph0 := toNat_inj_of_lt_aleph0
 
 theorem toNat_le_iff_le_of_lt_aleph0 (hc : c < ℵ₀) (hd : d < ℵ₀) :
     toNat c ≤ toNat d ↔ c ≤ d :=
@@ -116,8 +118,7 @@ theorem aleph0_toNat : toNat ℵ₀ = 0 :=
 
 theorem mk_toNat_eq_card [Fintype α] : toNat #α = Fintype.card α := by simp
 
--- porting note (#10618): simp can prove this
--- @[simp]
+@[simp]
 theorem zero_toNat : toNat 0 = 0 := map_zero _
 
 theorem one_toNat : toNat 1 = 1 := map_one _

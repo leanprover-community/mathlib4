@@ -28,7 +28,7 @@ symmetric powers
 -/
 
 assert_not_exists MonoidWithZero
-open Mathlib (Vector)
+open List (Vector)
 open Function
 
 /-- The nth symmetric power is n-tuples up to permutation.  We define it
@@ -39,7 +39,7 @@ show these are equivalent in `Sym.symEquivSym'`.
 def Sym (α : Type*) (n : ℕ) :=
   { s : Multiset α // Multiset.card s = n }
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- The canonical map to `Multiset α` that forgets that `s` has length `n` -/
 @[coe] def Sym.toMultiset {α : Type*} {n : ℕ} (s : Sym α n) : Multiset α :=
   s.1
@@ -55,7 +55,7 @@ instance {α : Type*} {n : ℕ} [DecidableEq α] : DecidableEq (Sym α n) :=
 
 See note [reducible non-instances].
 -/
-abbrev Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :=
+abbrev List.Vector.Perm.isSetoid (α : Type*) (n : ℕ) : Setoid (Vector α n) :=
   (List.isSetoid α).comap Subtype.val
 
 attribute [local instance] Vector.Perm.isSetoid
@@ -119,20 +119,21 @@ theorem coe_cons (s : Sym α n) (a : α) : (a ::ₛ s : Multiset α) = a ::ₘ s
 /-- This is the quotient map that takes a list of n elements as an n-tuple and produces an nth
 symmetric power.
 -/
-def ofVector : Vector α n → Sym α n :=
+def ofVector : List.Vector α n → Sym α n :=
   fun x => ⟨↑x.val, (Multiset.coe_card _).trans x.2⟩
 
 /-- This is the quotient map that takes a list of n elements as an n-tuple and produces an nth
 symmetric power.
 -/
-instance : Coe (Vector α n) (Sym α n) where coe x := ofVector x
+instance : Coe (List.Vector α n) (Sym α n) where coe x := ofVector x
 
 @[simp]
-theorem ofVector_nil : ↑(Vector.nil : Vector α 0) = (Sym.nil : Sym α 0) :=
+theorem ofVector_nil : ↑(Vector.nil : List.Vector α 0) = (Sym.nil : Sym α 0) :=
   rfl
 
 @[simp]
-theorem ofVector_cons (a : α) (v : Vector α n) : ↑(Vector.cons a v) = a ::ₛ (↑v : Sym α n) := by
+theorem ofVector_cons (a : α) (v : List.Vector α n) :
+    ↑(Vector.cons a v) = a ::ₛ (↑v : Sym α n) := by
   cases v
   rfl
 
@@ -176,17 +177,16 @@ theorem mem_coe : a ∈ (s : Multiset α) ↔ a ∈ s :=
 theorem mem_cons_of_mem (h : a ∈ s) : a ∈ b ::ₛ s :=
   Multiset.mem_cons_of_mem h
 
---@[simp] Porting note (#10618): simp can prove it
 theorem mem_cons_self (a : α) (s : Sym α n) : a ∈ a ::ₛ s :=
   Multiset.mem_cons_self a s.1
 
-theorem cons_of_coe_eq (a : α) (v : Vector α n) : a ::ₛ (↑v : Sym α n) = ↑(a ::ᵥ v) :=
+theorem cons_of_coe_eq (a : α) (v : List.Vector α n) : a ::ₛ (↑v : Sym α n) = ↑(a ::ᵥ v) :=
   Subtype.ext <| by
     cases v
     rfl
 
 open scoped List in
-theorem sound {a b : Vector α n} (h : a.val ~ b.val) : (↑a : Sym α n) = ↑b :=
+theorem sound {a b : List.Vector α n} (h : a.val ~ b.val) : (↑a : Sym α n) = ↑b :=
   Subtype.ext <| Quotient.sound h
 
 /-- `erase s a h` is the sym that subtracts 1 from the
@@ -385,7 +385,7 @@ def equivCongr (e : α ≃ β) : Sym α n ≃ Sym β n where
 /-- "Attach" a proof that `a ∈ s` to each element `a` in `s` to produce
 an element of the symmetric power on `{x // x ∈ s}`. -/
 def attach (s : Sym α n) : Sym { x // x ∈ s } n :=
-  ⟨s.val.attach, by (conv_rhs => rw [← s.2, ← Multiset.card_attach]); rfl⟩
+  ⟨s.val.attach, by (conv_rhs => rw [← s.2, ← Multiset.card_attach])⟩
 
 @[simp]
 theorem attach_mk {m : Multiset α} {hc : Multiset.card m = n} :
@@ -441,7 +441,7 @@ theorem mem_cast (h : n = m) : a ∈ Sym.cast h s ↔ a ∈ s :=
 
 /-- Append a pair of `Sym` terms. -/
 def append (s : Sym α n) (s' : Sym α n') : Sym α (n + n') :=
-  ⟨s.1 + s'.1, by rw [map_add, s.2, s'.2]⟩
+  ⟨s.1 + s'.1, by rw [Multiset.card_add, s.2, s'.2]⟩
 
 @[simp]
 theorem append_inj_right (s : Sym α n) {t t' : Sym α n'} : s.append t = s.append t' ↔ t = t' :=
@@ -468,7 +468,7 @@ theorem mem_append_iff {s' : Sym α m} : a ∈ s.append s' ↔ a ∈ s ∨ a ∈
 def oneEquiv : α ≃ Sym α 1 where
   toFun a := ⟨{a}, by simp⟩
   invFun s := (Equiv.subtypeQuotientEquivQuotientSubtype
-      (·.length = 1) _ (fun l ↦ Iff.rfl) (fun l l' ↦ by rfl) s).liftOn
+      (·.length = 1) _ (fun _ ↦ Iff.rfl) (fun l l' ↦ by rfl) s).liftOn
     (fun l ↦ l.1.head <| List.length_pos.mp <| by simp)
     fun ⟨_, _⟩ ⟨_, h⟩ ↦ fun perm ↦ by
       obtain ⟨a, rfl⟩ := List.length_eq_one.mp h

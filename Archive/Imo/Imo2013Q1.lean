@@ -3,12 +3,11 @@ Copyright (c) 2021 David Renshaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Renshaw
 -/
-import Mathlib.Algebra.BigOperators.Pi
-import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.PNat.Basic
-import Mathlib.Tactic.Ring
+import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.Positivity.Basic
+import Mathlib.Tactic.Ring
 
 /-!
 # IMO 2013 Q1
@@ -28,7 +27,6 @@ We prove a slightly more general version where k does not need to be strictly po
 
 namespace Imo2013Q1
 
--- Porting note: simplified proof using `positivity`
 theorem arith_lemma (k n : ℕ) : 0 < 2 * n + 2 ^ k.succ := by positivity
 
 theorem prod_lemma (m : ℕ → ℕ+) (k : ℕ) (nm : ℕ+) :

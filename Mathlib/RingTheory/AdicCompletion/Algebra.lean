@@ -25,7 +25,7 @@ suppress_compilation
 
 open Submodule
 
-variable {R : Type*} [CommRing R] (I : Ideal R)
+variable {R S : Type*} [CommRing R] [CommRing S] (I : Ideal R)
 variable {M : Type*} [AddCommGroup M] [Module R M]
 
 namespace AdicCompletion
@@ -87,8 +87,10 @@ instance : CommRing (AdicCompletion I R) :=
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
-instance : Algebra R (AdicCompletion I R) where
-  toFun r := ⟨algebraMap R (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) r, by simp⟩
+instance [Algebra S R] : Algebra S (AdicCompletion I R) where
+  toFun r := ⟨algebraMap S (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) r, by
+    simp [-Ideal.Quotient.mk_algebraMap,
+      IsScalarTower.algebraMap_apply S R (R ⧸ (I ^ _ • ⊤ : Ideal R))]⟩
   map_one' := Subtype.ext <| map_one _
   map_mul' x y := Subtype.ext <| map_mul _ x y
   map_zero' := Subtype.ext <| map_zero _
@@ -197,10 +199,10 @@ theorem smul_mk {m n : ℕ} (hmn : m ≤ n) (r : AdicCauchySequence I R)
 good definitional behaviour for the module instance on adic completions -/
 instance : SMul (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) where
   smul r x :=
-    Quotient.liftOn r (· • x) fun b₁ b₂ (h : Setoid.Rel _ b₁ b₂) ↦ by
+    Quotient.liftOn r (· • x) fun b₁ b₂ h ↦ by
       refine Quotient.inductionOn' x (fun x ↦ ?_)
       have h : b₁ - b₂ ∈ (I : Submodule R R) := by
-        rwa [show I = I • ⊤ by simp, ← Submodule.quotientRel_r_def]
+        rwa [show I = I • ⊤ by simp, ← Submodule.quotientRel_def]
       rw [← sub_eq_zero, ← sub_smul, Submodule.Quotient.mk''_eq_mk,
         ← Submodule.Quotient.mk_smul, Submodule.Quotient.mk_eq_zero]
       exact Submodule.smul_mem_smul h mem_top
@@ -252,23 +254,15 @@ instance module : Module (AdicCompletion I R) (AdicCompletion I M) where
   mul_smul r s x := by
     ext n
     simp only [smul_eval, val_mul, mul_smul]
-  smul_zero r := by
-    ext n
-    rw [smul_eval, val_zero, smul_zero]
-  smul_add r x y := by
-    ext n
-    simp only [smul_eval, val_add, smul_add]
-  add_smul r s x := by
-    ext n
-    simp only [coe_eval, smul_eval, map_add, add_smul, val_add]
-  zero_smul x := by
-    ext n
-    simp only [smul_eval, _root_.map_zero, zero_smul, val_zero]
+  smul_zero r := by ext n; simp
+  smul_add r x y := by ext n; simp
+  add_smul r s x := by ext n; simp [val_smul, add_smul]
+  zero_smul x := by ext n; simp
 
 instance : IsScalarTower R (AdicCompletion I R) (AdicCompletion I M) where
   smul_assoc r s x := by
     ext n
-    rw [smul_eval, val_smul, val_smul, smul_eval, smul_assoc]
+    rw [smul_eval, val_smul_apply, val_smul_apply, smul_eval, smul_assoc]
 
 /-- A priori `AdicCompletion I R` has two `AdicCompletion I R`-module instances.
 Both agree definitionally. -/

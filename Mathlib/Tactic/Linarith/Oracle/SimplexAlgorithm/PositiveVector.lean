@@ -90,10 +90,10 @@ def findPositiveVector {n m : Nat} {matType : Nat → Nat → Type} [UsableInSim
 
   /- Using Gaussian elimination split variable into free and basic forming the tableau that will be
   operated by the Simplex Algorithm. -/
-  let initTableau := Gauss.getTableau B
+  let initTableau ← Gauss.getTableau B
 
   /- Run the Simplex Algorithm and extract the solution. -/
-  let res := runSimplexAlgorithm.run initTableau
+  let res ← runSimplexAlgorithm.run initTableau
   if res.fst.isOk then
     return extractSolution res.snd
   else

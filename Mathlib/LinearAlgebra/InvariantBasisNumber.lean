@@ -1,11 +1,13 @@
 /-
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Markus Himmel, Scott Morrison
+Authors: Markus Himmel, Kim Morrison
 -/
+import Mathlib.RingTheory.Ideal.Quotient.Basic
+import Mathlib.RingTheory.Noetherian.Orzech
 import Mathlib.RingTheory.OrzechProperty
-import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.LinearAlgebra.Finsupp.Pi
 
 /-!
 # Invariant basis number property
@@ -22,10 +24,10 @@ Let `R` be a (not necessary commutative) ring.
 
 It is also useful to consider the following stronger conditions:
 
-- the *rank condition*, witnessed by the type class `RankCondition R`, states that
-  the existence of a surjective linear map `(Fin n → R) →ₗ[R] (Fin m → R)` implies `m ≤ n`
+- The *rank condition*, witnessed by the type class `RankCondition R`, states that
+  the existence of a surjective linear map `(Fin n → R) →ₗ[R] (Fin m → R)` implies `m ≤ n`.
 
-- the *strong rank condition*, witnessed by the type class `StrongRankCondition R`, states
+- The *strong rank condition*, witnessed by the type class `StrongRankCondition R`, states
   that the existence of an injective linear map `(Fin n → R) →ₗ[R] (Fin m → R)`
   implies `n ≤ m`.
 
@@ -282,7 +284,7 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
   Quotient.liftOn' x (fun y => Ideal.Quotient.mk (I.pi ι') (e y))
     (by
       refine fun a b hab => Ideal.Quotient.eq.2 fun h => ?_
-      rw [Submodule.quotientRel_r_def] at hab
+      rw [Submodule.quotientRel_def] at hab
       rw [← LinearMap.map_sub]
       exact Ideal.map_pi _ _ hab e h)
 

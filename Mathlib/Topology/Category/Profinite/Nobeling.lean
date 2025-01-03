@@ -7,6 +7,7 @@ import Mathlib.Algebra.Category.ModuleCat.Free
 import Mathlib.Topology.Category.Profinite.CofilteredLimit
 import Mathlib.Topology.Category.Profinite.Product
 import Mathlib.Topology.LocallyConstant.Algebra
+import Mathlib.Topology.Separation.Profinite
 import Mathlib.Data.Bool.Basic
 
 /-!
@@ -43,6 +44,8 @@ spans can be proved directly.
 - [scholze2019condensed], Theorem 5.4.
 -/
 
+open CategoryTheory ContinuousMap Limits Opposite Profinite Submodule Topology
+
 universe u
 
 namespace Profinite
@@ -50,8 +53,6 @@ namespace Profinite
 namespace NobelingProof
 
 variable {I : Type u} (C : Set (I → Bool))
-
-open Profinite ContinuousMap CategoryTheory Limits Opposite Submodule
 
 section Projections
 /-!
@@ -155,7 +156,7 @@ theorem surjective_projRestricts (h : ∀ i, J i → K i) : Function.Surjective 
 variable (J) in
 theorem projRestricts_eq_id : ProjRestricts C (fun i (h : J i) ↦ h) = id := by
   ext ⟨x, y, hy, rfl⟩ i
-  simp (config := { contextual := true }) only [π, Proj, ProjRestricts_coe, id_eq, if_true]
+  simp +contextual only [π, Proj, ProjRestricts_coe, id_eq, if_true]
 
 theorem projRestricts_eq_comp (hJK : ∀ i, J i → K i) (hKL : ∀ i, K i → L i) :
     ProjRestricts C hJK ∘ ProjRestricts C hKL = ProjRestricts C (fun i ↦ hKL i ∘ hJK i) := by
@@ -312,10 +313,10 @@ instance : LinearOrder (Products I) :=
 theorem lt_iff_lex_lt (l m : Products I) : l < m ↔ List.Lex (·<·) l.val m.val := by
   cases l; cases m; rw [Subtype.mk_lt_mk]; exact Iff.rfl
 
-instance [IsWellOrder I (· < ·)] : IsWellFounded (Products I) (·<·) := by
+instance [WellFoundedLT I] : WellFoundedLT (Products I) := by
   have : (· < · : Products I → _ → _) = (fun l m ↦ List.Lex (·<·) l.val m.val) := by
     ext; exact lt_iff_lex_lt _ _
-  rw [this]
+  rw [WellFoundedLT, this]
   dsimp [Products]
   rw [(by rfl : (·>· : I → _) = flip (·<·))]
   infer_instance
@@ -412,7 +413,7 @@ theorem evalFacProps {l : Products I} (J K : I → Prop)
   have : l.eval (π C J) ∘ Homeomorph.setCongr (proj_eq_of_subset C J K hJK) =
       l.eval (π (π C K) J) := by
     ext; simp [Homeomorph.setCongr, Products.eval_eq]
-  rw [ProjRestricts, ← Function.comp.assoc, this, ← evalFacProp (π C K) J h]
+  rw [ProjRestricts, ← Function.comp_assoc, this, ← evalFacProp (π C K) J h]
 
 theorem prop_of_isGood {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)]
     (h : l.isGood (π C J)) : ∀ a, a ∈ l.val → J a := by
@@ -429,7 +430,7 @@ theorem prop_of_isGood {l : Products I} (J : I → Prop) [∀ j, Decidable (J j)
 end Products
 
 /-- The good products span `LocallyConstant C ℤ` if and only all the products do. -/
-theorem GoodProducts.span_iff_products [IsWellOrder I (· < ·)] :
+theorem GoodProducts.span_iff_products [WellFoundedLT I] :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) ↔
       ⊤ ≤ Submodule.span ℤ (Set.range (Products.eval C)) := by
   refine ⟨fun h ↦ le_trans h (span_mono (fun a ⟨b, hb⟩ ↦ ⟨b.val, hb⟩)), fun h ↦ le_trans h ?_⟩
@@ -602,7 +603,7 @@ theorem GoodProducts.finsupp_sum_mem_span_eval {a : I} {as : List I}
   simp only [Products.eval, List.map, List.prod_cons]
 
 /-- If `s` is a finite subset of `I`, then the good products span. -/
-theorem GoodProducts.spanFin [IsWellOrder I (· < ·)] :
+theorem GoodProducts.spanFin [WellFoundedLT I] :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval (π C (· ∈ s)))) := by
   rw [span_iff_products]
   refine le_trans (spanFinBasis.span C s) ?_
@@ -668,7 +669,7 @@ theorem fin_comap_jointlySurjective
   exact ⟨(Opposite.unop J), g, h⟩
 
 /-- The good products span all of `LocallyConstant C ℤ` if `C` is closed. -/
-theorem GoodProducts.span [IsWellOrder I (· < ·)] (hC : IsClosed C) :
+theorem GoodProducts.span [WellFoundedLT I] (hC : IsClosed C) :
     ⊤ ≤ Submodule.span ℤ (Set.range (eval C)) := by
   rw [span_iff_products]
   intro f _
@@ -680,7 +681,7 @@ theorem GoodProducts.span [IsWellOrder I (· < ·)] (hC : IsClosed C) :
 
 end Span
 
-variable [IsWellOrder I (· < ·)]
+variable [WellFoundedLT I]
 
 section Ordinal
 /-!
@@ -790,8 +791,7 @@ instance {α : Type*} [TopologicalSpace α] [Nonempty α] : Nontrivial (LocallyC
 theorem Products.isGood_nil {I} [LinearOrder I] :
     Products.isGood ({fun _ ↦ false} : Set (I → Bool)) Products.nil := by
   intro h
-  simp only [Products.lt_nil_empty, Products.eval, List.map, List.prod_nil, Set.image_empty,
-    Submodule.span_empty, Submodule.mem_bot, one_ne_zero] at h
+  simp [Products.eval, Products.nil] at h
 
 theorem Products.span_nil_eq_top {I} [LinearOrder I] :
     Submodule.span ℤ (eval ({fun _ ↦ false} : Set (I → Bool)) '' {nil}) = ⊤ := by
@@ -799,7 +799,7 @@ theorem Products.span_nil_eq_top {I} [LinearOrder I] :
   intro f _
   rw [Submodule.mem_span_singleton]
   refine ⟨f default, ?_⟩
-  simp only [eval, List.map, List.prod_nil, zsmul_eq_mul, mul_one]
+  simp only [eval, List.map, List.prod_nil, zsmul_eq_mul, mul_one, Products.nil]
   ext x
   obtain rfl : x = default := by simp only [Set.default_coe_singleton, eq_iff_true_of_subsingleton]
   rfl
@@ -834,7 +834,7 @@ instance (α : Type*) [TopologicalSpace α] : NoZeroSMulDivisors ℤ (LocallyCon
 theorem GoodProducts.linearIndependentSingleton {I} [LinearOrder I] :
     LinearIndependent ℤ (eval ({fun _ ↦ false} : Set (I → Bool))) := by
   refine linearIndependent_unique (eval ({fun _ ↦ false} : Set (I → Bool))) ?_
-  simp only [eval, Products.eval, List.map, List.prod_nil, ne_eq, one_ne_zero, not_false_eq_true]
+  simp [eval, Products.eval, Products.nil, default]
 
 end Zero
 
@@ -1043,7 +1043,7 @@ theorem smaller_mono {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : smaller C o₁ 
     ext x
     rw [eval, ← Products.eval_πs' _ h (Products.prop_of_isGood  C _ gl), eval]
   · rw [← LocallyConstant.coe_inj, coe_πs C o₂, ← LocallyConstant.toFun_eq_coe, coe_πs',
-      Function.comp.assoc, projRestricts_comp_projRestrict C _, coe_πs]
+      Function.comp_assoc, projRestricts_comp_projRestrict C _, coe_πs]
     rfl
 
 end GoodProducts
@@ -1055,10 +1055,9 @@ theorem Products.limitOrdinal (l : Products I) : l.isGood (π C (ord I · < o)) 
     ∃ (o' : Ordinal), o' < o ∧ l.isGood (π C (ord I · < o')) := by
   refine ⟨fun h ↦ ?_, fun ⟨o', ⟨ho', hl⟩⟩ ↦ isGood_mono C (le_of_lt ho') hl⟩
   use Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a))
-  have ha : ⊥ < o := by rw [Ordinal.bot_eq_zero, Ordinal.pos_iff_ne_zero]; exact ho.1
   have hslt : Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a)) < o := by
-    simp only [Finset.sup_lt_iff ha, List.mem_toFinset]
-    exact fun b hb ↦ ho.2 _ (prop_of_isGood C (ord I · < o) h b hb)
+    simp only [Finset.sup_lt_iff ho.pos, List.mem_toFinset]
+    exact fun b hb ↦ ho.succ_lt (prop_of_isGood C (ord I · < o) h b hb)
   refine ⟨hslt, fun he ↦ h ?_⟩
   have hlt : ∀ i ∈ l.val, ord I i < Finset.sup l.val.toFinset (fun a ↦ Order.succ (ord I a)) := by
     intro i hi
@@ -1343,7 +1342,7 @@ theorem CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
     cases' hx with hx₀ hx₁
     · have hx₀' : ProjRestrict C (ord I · < o) ⟨x, hx⟩ = x := by
         simpa only [ProjRestrict, Set.MapsTo.val_restrict_apply] using C0_projOrd C hsC ho hx₀
-      simp only [πs_apply_apply, hx₀', hx₀, LocallyConstant.piecewise'_apply_left,
+      simp only [C₀C, πs_apply_apply, hx₀', hx₀, LocallyConstant.piecewise'_apply_left,
         LocallyConstant.coe_comap, ContinuousMap.coe_mk, Function.comp_apply]
     · have hx₁' : (ProjRestrict C (ord I · < o) ⟨x, hx⟩).val ∈ π (C1 C ho) (ord I · < o) := by
         simpa only [ProjRestrict, Set.MapsTo.val_restrict_apply] using ⟨x, hx₁, rfl⟩
@@ -1361,7 +1360,7 @@ theorem succ_mono : CategoryTheory.Mono (ModuleCat.ofHom (πs C o)) := by
 include hC in
 theorem succ_exact :
     (ShortComplex.mk (ModuleCat.ofHom (πs C o)) (ModuleCat.ofHom (Linear_CC' C hsC ho))
-    (by ext; apply CC_comp_zero)).Exact := by
+    (by ext : 2; apply CC_comp_zero)).Exact := by
   rw [ShortComplex.moduleCat_exact_iff]
   intro f
   exact CC_exact C hC hsC ho
@@ -1662,7 +1661,7 @@ theorem maxTail_isGood (l : MaxProducts C ho)
   apply Submodule.add_mem
   · apply Submodule.finsupp_sum_mem
     intro q _
-    erw [LinearMap.map_smul (fₗ := πs C o) (c := w q) (x := eval (π C (ord I · < o)) q)]
+    rw [LinearMap.map_smul]
     apply Submodule.smul_mem
     apply Submodule.subset_span
     dsimp only [eval]
@@ -1703,7 +1702,7 @@ theorem linearIndependent_comp_of_eval
     LinearIndependent ℤ (eval (C' C ho)) →
     LinearIndependent ℤ (ModuleCat.ofHom (Linear_CC' C hsC ho) ∘ SumEval C ho ∘ Sum.inr) := by
   dsimp [SumEval, ModuleCat.ofHom]
-  erw [max_eq_eval_unapply C hsC ho]
+  rw [max_eq_eval_unapply C hsC ho]
   intro h
   let f := MaxToGood C hC hsC ho h₁
   have hf : f.Injective := maxToGood_injective C hC hsC ho h₁
@@ -1779,7 +1778,7 @@ def GoodProducts.Basis (hC : IsClosed C) :
 
 end Induction
 
-variable {S : Profinite} {ι : S → I → Bool} (hι : ClosedEmbedding ι)
+variable {S : Profinite} {ι : S → I → Bool} (hι : IsClosedEmbedding ι)
 include hι
 
 /--
@@ -1788,7 +1787,7 @@ Given a profinite set `S` and a closed embedding `S → (I → Bool)`, the `ℤ`
 -/
 theorem Nobeling_aux : Module.Free ℤ (LocallyConstant S ℤ) := Module.Free.of_equiv'
   (Module.Free.of_basis <| GoodProducts.Basis _ hι.isClosed_range) (LocallyConstant.congrLeftₗ ℤ
-  (Homeomorph.ofEmbedding ι hι.toEmbedding)).symm
+    (.ofIsEmbedding ι hι.isEmbedding)).symm
 
 end NobelingProof
 
@@ -1801,8 +1800,8 @@ def Nobeling.ι : S → ({C : Set S // IsClopen C} → Bool) := fun s C => decid
 
 open scoped Classical in
 /-- The map `Nobeling.ι` is a closed embedding. -/
-theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
-  apply Continuous.closedEmbedding
+theorem Nobeling.isClosedEmbedding : IsClosedEmbedding (Nobeling.ι S) := by
+  apply Continuous.isClosedEmbedding
   · dsimp (config := { unfoldPartialApp := true }) [ι]
     refine continuous_pi ?_
     intro C
@@ -1826,15 +1825,17 @@ theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
     rw [← congr_fun h ⟨C, hC⟩]
     exact decide_eq_true hh.1
 
+@[deprecated (since := "2024-10-26")]
+alias Nobeling.embedding := Nobeling.isClosedEmbedding
+
 end Profinite
 
 open Profinite NobelingProof
 
 /-- Nöbeling's theorem: the `ℤ`-module `LocallyConstant S ℤ` is free for every `S : Profinite` -/
 instance LocallyConstant.freeOfProfinite (S : Profinite.{u}) :
-    Module.Free ℤ (LocallyConstant S ℤ) :=
-  @Nobeling_aux {C : Set S // IsClopen C}
-    (IsWellOrder.linearOrder WellOrderingRel) WellOrderingRel.isWellOrder
-    S (Nobeling.ι S) (Nobeling.embedding S)
+    Module.Free ℤ (LocallyConstant S ℤ) := by
+  obtain ⟨_, _⟩ := exists_wellOrder {C : Set S // IsClopen C}
+  exact @Nobeling_aux {C : Set S // IsClopen C} _ _ S (Nobeling.ι S) (Nobeling.isClosedEmbedding S)
 
 set_option linter.style.longFile 2000

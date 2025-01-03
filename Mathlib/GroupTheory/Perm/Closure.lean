@@ -40,7 +40,7 @@ theorem closure_isCycle : closure { σ : Perm β | IsCycle σ } = ⊤ := by
 
 variable [DecidableEq α] [Fintype α]
 
-theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.support = ⊤) (x : α) :
+theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.support = univ) (x : α) :
     closure ({σ, swap x (σ x)} : Set (Perm α)) = ⊤ := by
   let H := closure ({σ, swap x (σ x)} : Set (Perm α))
   have h3 : σ ∈ H := subset_closure (Set.mem_insert σ _)
@@ -51,8 +51,7 @@ theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.su
     | zero => exact subset_closure (Set.mem_insert_of_mem _ (Set.mem_singleton _))
     | succ n ih =>
       convert H.mul_mem (H.mul_mem h3 ih) (H.inv_mem h3)
-      simp_rw [mul_swap_eq_swap_mul, mul_inv_cancel_right, pow_succ']
-      rfl
+      simp_rw [mul_swap_eq_swap_mul, mul_inv_cancel_right, pow_succ', coe_mul, comp_apply]
   have step2 : ∀ n : ℕ, swap x ((σ ^ n) x) ∈ H := by
     intro n
     induction n with
@@ -70,9 +69,9 @@ theorem closure_cycle_adjacent_swap {σ : Perm α} (h1 : IsCycle σ) (h2 : σ.su
       exact H.mul_mem (H.mul_mem (step1 n) ih) (step1 n)
   have step3 : ∀ y : α, swap x y ∈ H := by
     intro y
-    have hx : x ∈ (⊤ : Finset α) := Finset.mem_univ x
+    have hx : x ∈ univ := Finset.mem_univ x
     rw [← h2, mem_support] at hx
-    have hy : y ∈ (⊤ : Finset α) := Finset.mem_univ y
+    have hy : y ∈ univ := Finset.mem_univ y
     rw [← h2, mem_support] at hy
     cases' IsCycle.exists_pow_eq h1 hx hy with n hn
     rw [← hn]
@@ -97,7 +96,7 @@ theorem closure_cycle_coprime_swap {n : ℕ} {σ : Perm α} (h0 : Nat.Coprime n 
     closure ({σ, swap x ((σ ^ n) x)} : Set (Perm α)) = ⊤ := by
   rw [← Finset.card_univ, ← h2, ← h1.orderOf] at h0
   cases' exists_pow_eq_self_of_coprime h0 with m hm
-  have h2' : (σ ^ n).support = ⊤ := Eq.trans (support_pow_coprime h0) h2
+  have h2' : (σ ^ n).support = univ := Eq.trans (support_pow_coprime h0) h2
   have h1' : IsCycle ((σ ^ n) ^ (m : ℤ)) := by rwa [← hm] at h1
   replace h1' : IsCycle (σ ^ n) :=
     h1'.of_pow (le_trans (support_pow_le σ n) (ge_of_eq (congr_arg support hm)))

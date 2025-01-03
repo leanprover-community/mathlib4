@@ -5,8 +5,8 @@ Authors: Frédéric Dupuis
 -/
 
 import Mathlib.Analysis.SpecialFunctions.Pow.Real
-import Mathlib.Analysis.Normed.Algebra.Spectrum
 import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.NonUnital
+import Mathlib.Analysis.SpecialFunctions.Pow.Continuity
 
 /-!
 # Real powers defined via the continuous functional calculus
@@ -66,7 +66,7 @@ namespace CFC
 
 section NonUnital
 
-variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A]
+variable {A : Type*} [PartialOrder A] [NonUnitalRing A] [TopologicalSpace A] [StarRing A]
   [Module ℝ≥0 A] [SMulCommClass ℝ≥0 A A] [IsScalarTower ℝ≥0 A A]
   [NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
 
@@ -93,7 +93,7 @@ lemma nnrpow_add {a : A} {x y : ℝ≥0} (hx : 0 < x) (hy : 0 < y) :
   simp only [nnrpow_def]
   rw [← cfcₙ_mul _ _ a]
   congr! 2 with z
-  exact_mod_cast NNReal.rpow_add' z <| ne_of_gt (add_pos hx hy)
+  exact mod_cast z.rpow_add' <| ne_of_gt (add_pos hx hy)
 
 @[simp]
 lemma nnrpow_zero {a : A} : a ^ (0 : ℝ≥0) = 0 := by
@@ -201,14 +201,17 @@ lemma sqrt_eq_iff (a b : A) (ha : 0 ≤ a := by cfc_tac) (hb : 0 ≤ b := by cfc
     sqrt a = b ↔ b * b = a :=
   ⟨(mul_self_eq ·), (sqrt_unique ·)⟩
 
+lemma sqrt_eq_zero_iff (a : A) (ha : 0 ≤ a := by cfc_tac) : sqrt a = 0 ↔ a = 0 := by
+  rw [sqrt_eq_iff a _, mul_zero, eq_comm]
+
 end sqrt
 
 end NonUnital
 
 section Unital
 
-variable {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A]
-  [NormedAlgebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
+variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
+  [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
 
 /- ## `rpow` -/
 
@@ -287,6 +290,11 @@ lemma rpow_neg_one_eq_inv (a : Aˣ) (ha : (0 : A) ≤ a := by cfc_tac) :
   refine a.inv_eq_of_mul_eq_one_left ?_ |>.symm
   simpa [rpow_one (a : A)] using rpow_neg_mul_rpow 1 (spectrum.zero_not_mem ℝ≥0 a.isUnit)
 
+lemma rpow_neg_one_eq_cfc_inv {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A]
+    [NormedAlgebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 ((0 : A) ≤ ·)] (a : A) :
+    a ^ (-1 : ℝ) = cfc (·⁻¹ : ℝ≥0 → ℝ≥0) a :=
+  cfc_congr fun x _ ↦ NNReal.rpow_neg_one x
+
 lemma rpow_neg [UniqueContinuousFunctionalCalculus ℝ≥0 A] (a : Aˣ) (x : ℝ)
     (ha' : (0 : A) ≤ a := by cfc_tac) : (a : A) ^ (-x) = (↑a⁻¹ : A) ^ x := by
   suffices h₁ : ContinuousOn (fun z ↦ z ^ x) (Inv.inv '' (spectrum ℝ≥0 (a : A))) by
@@ -306,8 +314,10 @@ lemma rpow_intCast (a : Aˣ) (n : ℤ) (ha : (0 : A) ≤ a := by cfc_tac) :
 
 section unital_vs_nonunital
 
-variable [∀ (a : A), CompactSpace (spectrum ℝ a)]
-  [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
+variable [UniqueNonUnitalContinuousFunctionalCalculus ℝ≥0 A]
+
+-- provides instance `ContinuousFunctionalCalculus.compactSpace_spectrum`
+open scoped ContinuousFunctionalCalculus
 
 lemma nnrpow_eq_rpow {a : A} {x : ℝ≥0} (hx : 0 < x) : a ^ x = a ^ (x : ℝ) := by
   rw [nnrpow_def (A := A), rpow_def, cfcₙ_eq_cfc]

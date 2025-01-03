@@ -7,6 +7,7 @@ import Mathlib.Control.Basic
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.Linarith.Preprocessing
 import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
+import Mathlib.Tactic.Ring.Basic
 
 /-!
 # `linarith`: solving linear arithmetic goals
@@ -92,7 +93,7 @@ disequality hypotheses, since this would lead to a number of runs exponential in
 disequalities in the context.
 
 The oracle is very modular. It can easily be replaced with another function of type
-`List Comp → ℕ → MetaM ((Batteries.HashMap ℕ ℕ))`,
+`List Comp → ℕ → MetaM ((Std.HashMap ℕ ℕ))`,
 which takes a list of comparisons and the largest variable
 index appearing in those comparisons, and returns a map from comparison indices to coefficients.
 An alternate oracle can be specified in the `LinarithConfig` object.
@@ -130,7 +131,7 @@ linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear progra
 -/
 
 open Lean Elab Tactic Meta
-open Batteries
+open Batteries Mathlib
 
 
 namespace Linarith
@@ -191,22 +192,12 @@ implication, along with the type of `a` and `b`.
 
 For example, if `e` is `(a : ℕ) < b`, returns ``(`lt_of_not_ge, ℕ)``.
 -/
-def getContrLemma (e : Expr) : Option (Name × Expr) :=
-  match e.getAppFnArgs with
-  | (``LT.lt, #[t, _, _, _]) => (``lt_of_not_ge, t)
-  | (``LE.le, #[t, _, _, _]) => (``le_of_not_gt, t)
-  | (``Eq, #[t, _, _]) => (``eq_of_not_lt_of_not_gt, t)
-  | (``Ne, #[t, _, _]) => (``Not.intro, t)
-  | (``GE.ge, #[t, _, _, _]) => (``le_of_not_gt, t)
-  | (``GT.gt, #[t, _, _, _]) => (``lt_of_not_ge, t)
-  | (``Not, #[e']) => match e'.getAppFnArgs with
-    | (``LT.lt, #[t, _, _, _]) => (``Not.intro, t)
-    | (``LE.le, #[t, _, _, _]) => (``Not.intro, t)
-    | (``Eq, #[t, _, _]) => (``Not.intro, t)
-    | (``GE.ge, #[t, _, _, _]) => (``Not.intro, t)
-    | (``GT.gt, #[t, _, _, _]) => (``Not.intro, t)
-    | _ => none
-  | _ => none
+def getContrLemma (e : Expr) : MetaM (Name × Expr) := do
+  match ← e.ineqOrNotIneq? with
+  | (true, Ineq.lt, t, _) => pure (``lt_of_not_ge, t)
+  | (true, Ineq.le, t, _) => pure (``le_of_not_gt, t)
+  | (true, Ineq.eq, t, _) => pure (``eq_of_not_lt_of_not_gt, t)
+  | (false, _, t, _) => pure (``Not.intro, t)
 
 /--
 `applyContrLemma` inspects the target to see if it can be moved to a hypothesis by negation.
@@ -217,12 +208,12 @@ newly introduced local constant.
 Otherwise returns `none`.
 -/
 def applyContrLemma (g : MVarId) : MetaM (Option (Expr × Expr) × MVarId) := do
-  match getContrLemma (← withReducible g.getType') with
-  | some (nm, tp) => do
-      let [g] ← g.apply (← mkConst' nm) | failure
-      let (f, g) ← g.intro1P
-      return (some (tp, .fvar f), g)
-  | none => return (none, g)
+  try
+    let (nm, tp) ← getContrLemma (← withReducible g.getType')
+    let [g] ← g.apply (← mkConst' nm) | failure
+    let (f, g) ← g.intro1P
+    return (some (tp, .fvar f), g)
+  catch _ => return (none, g)
 
 /-- A map of keys to values, where the keys are `Expr` up to defeq and one key can be
 associated to multiple values. -/
@@ -286,7 +277,7 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
       if let some t := prefType then
         let (i, vs) ← hyp_set.find t
         proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g vs <|>
-        findLinarithContradiction cfg g ((hyp_set.eraseIdx i).toList.map (·.2))
+        findLinarithContradiction cfg g ((hyp_set.eraseIdxIfInBounds i).toList.map (·.2))
       else findLinarithContradiction cfg g (hyp_set.toList.map (·.2))
   let mut preprocessors := cfg.preprocessors
   if cfg.splitNe then
@@ -367,7 +358,7 @@ end Linarith
 open Parser Tactic Syntax
 
 /-- Syntax for the arguments of `linarith`, after the optional `!`. -/
-syntax linarithArgsRest := (config)? (&" only")? (" [" term,* "]")?
+syntax linarithArgsRest := optConfig (&" only")? (" [" term,* "]")?
 
 /--
 `linarith` attempts to find a contradiction between hypotheses that are linear (in)equalities.
@@ -461,9 +452,9 @@ Allow elaboration of `LinarithConfig` arguments to tactics.
 declare_config_elab elabLinarithConfig Linarith.LinarithConfig
 
 elab_rules : tactic
-  | `(tactic| linarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) => withMainContext do
+  | `(tactic| linarith $[!%$bang]? $cfg:optConfig $[only%$o]? $[[$args,*]]?) => withMainContext do
     let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `linarith)
-    let cfg := (← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome
+    let cfg := (← elabLinarithConfig cfg).updateReducibility bang.isSome
     commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg
 
 -- TODO restore this when `add_tactic_doc` is ported
@@ -476,9 +467,9 @@ elab_rules : tactic
 open Linarith
 
 elab_rules : tactic
-  | `(tactic| nlinarith $[!%$bang]? $[$cfg]? $[only%$o]? $[[$args,*]]?) => withMainContext do
+  | `(tactic| nlinarith $[!%$bang]? $cfg:optConfig $[only%$o]? $[[$args,*]]?) => withMainContext do
     let args ← ((args.map (TSepArray.getElems)).getD {}).mapM (elabLinarithArg `nlinarith)
-    let cfg := (← elabLinarithConfig (mkOptionalNode cfg)).updateReducibility bang.isSome
+    let cfg := (← elabLinarithConfig cfg).updateReducibility bang.isSome
     let cfg := { cfg with
       preprocessors := cfg.preprocessors.concat nlinarithExtras }
     commitIfNoEx do liftMetaFinishingTactic <| Linarith.linarith o.isSome args.toList cfg

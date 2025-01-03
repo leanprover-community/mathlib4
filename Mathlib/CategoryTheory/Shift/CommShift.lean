@@ -47,6 +47,18 @@ noncomputable def isoZero : shiftFunctor C (0 : A) ⋙ F ≅ F ⋙ shiftFunctor 
   isoWhiskerRight (shiftFunctorZero C A) F ≪≫ F.leftUnitor ≪≫
      F.rightUnitor.symm ≪≫ isoWhiskerLeft F (shiftFunctorZero D A).symm
 
+/-- For any functor `F : C ⥤ D` and any `a` in `A` such that `a = 0`,
+this is the obvious isomorphism `shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a` deduced from the
+isomorphisms `shiftFunctorZero'` on both categories `C` and `D`. -/
+@[simps!]
+noncomputable def isoZero' (a : A) (ha : a = 0) : shiftFunctor C a ⋙ F ≅ F ⋙ shiftFunctor D a :=
+  isoWhiskerRight (shiftFunctorZero' C a ha) F ≪≫ F.leftUnitor ≪≫
+     F.rightUnitor.symm ≪≫ isoWhiskerLeft F (shiftFunctorZero' D a ha).symm
+
+@[simp]
+lemma isoZero'_eq_isoZero : isoZero' F A 0 rfl = isoZero F A := by
+  ext; simp [isoZero', shiftFunctorZero']
+
 variable {F A}
 
 /-- If a functor `F : C ⥤ D` is equipped with "commutation isomorphisms" with the
@@ -132,6 +144,11 @@ lemma commShiftIso_zero :
     F.commShiftIso (0 : A) = CommShift.isoZero F A :=
   CommShift.zero
 
+set_option linter.docPrime false in
+lemma commShiftIso_zero' (a : A) (h : a = 0) :
+    F.commShiftIso a = CommShift.isoZero' F A a h := by
+  subst h; rw [CommShift.isoZero'_eq_isoZero, commShiftIso_zero]
+
 variable {A}
 
 lemma commShiftIso_add (a b : A) :
@@ -149,7 +166,7 @@ namespace CommShift
 
 variable (C) in
 instance id : CommShift (𝟭 C) A where
-  iso := fun a => rightUnitor _ ≪≫ (leftUnitor _).symm
+  iso := fun _ => rightUnitor _ ≪≫ (leftUnitor _).symm
 
 instance comp [F.CommShift A] [G.CommShift A] : (F ⋙ G).CommShift A where
   iso a := (Functor.associator _ _ _).symm ≪≫ isoWhiskerRight (F.commShiftIso a) _ ≪≫
@@ -246,7 +263,7 @@ variable {C D E J : Type*} [Category C] [Category D] [Category E] [Category J]
 /-- If `τ : F₁ ⟶ F₂` is a natural transformation between two functors
 which commute with a shift by an additive monoid `A`, this typeclass
 asserts a compatibility of `τ` with these shifts. -/
-class CommShift : Prop :=
+class CommShift : Prop where
   comm' (a : A) : (F₁.commShiftIso a).hom ≫ whiskerRight τ _ =
     whiskerLeft _ τ ≫ (F₂.commShiftIso a).hom
 

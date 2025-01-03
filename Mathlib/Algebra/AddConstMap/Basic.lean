@@ -5,7 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Logic.Function.Iterate
@@ -27,6 +27,8 @@ We use parameters `a` and `b` instead of `1` to accommodate for two use cases:
 - self-maps $f\colon S^1\to  S^1$ of degree other than one,
   including orientation-reversing maps.
 -/
+
+assert_not_exists Finset
 
 open Function Set
 
@@ -254,7 +256,7 @@ protected theorem rel_map_of_Icc [LinearOrderedAddCommGroup G] [Archimedean G] [
       calc
         y ≤ l + a + n • a := sub_le_iff_le_add.1 hny.2
         _ = l + (n + 1) • a := by rw [add_comm n, add_smul, one_smul, add_assoc]
-        _ ≤ l + 0 • a := add_le_add_left (zsmul_le_zsmul ha.le (by omega)) _
+        _ ≤ l + 0 • a := add_le_add_left (zsmul_le_zsmul_left ha.le (by omega)) _
         _ ≤ x := by simpa using hx.1
     · -- If `n = 0`, then `l < y ≤ l + a`, hence we can apply the assumption
       exact hf x (Ico_subset_Icc_self hx) y (by simpa using Ioc_subset_Icc_self hny) hxy
@@ -431,7 +433,7 @@ variable {G : Type*} [AddMonoid G] {a : G}
 as a monoid homomorphism from `Multiplicative G` to `G →+c[a, a] G`. -/
 @[simps! (config := .asFn)]
 def addLeftHom : Multiplicative G →* (G →+c[a, a] G) where
-  toFun c := Multiplicative.toAdd c +ᵥ .id
+  toFun c := c.toAdd +ᵥ .id
   map_one' := by ext; apply zero_add
   map_mul' _ _ := by ext; apply add_assoc
 

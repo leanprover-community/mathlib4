@@ -3,7 +3,11 @@
 # Check if there are changes to `nolints.json` and file a PR updating it if necessary.
 # DO NOT run this as a human; this is meant only for automation usage!
 
-set -e
+# Make this script robust against unintentional errors.
+# See e.g. http://redsymbol.net/articles/unofficial-bash-strict-mode/ for explanation.
+set -euo pipefail
+IFS=$'\n\t'
+
 set -x
 
 remote_name=origin-bot
@@ -17,7 +21,7 @@ git rev-parse --verify --quiet "refs/remotes/${remote_name}/${branch_name}" && e
 # Exit if there are no changes relative to master
 git diff-index --quiet "refs/remotes/${remote_name}/master" -- scripts/nolints.json && exit 0
 
-pr_title='chore(scripts): update nolints.json
+pr_title='chore(scripts): update nolints.json'
 pr_body='I am happy to remove some nolints for you!'
 
 git checkout -b "$branch_name"

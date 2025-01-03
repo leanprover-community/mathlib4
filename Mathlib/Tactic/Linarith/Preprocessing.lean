@@ -8,6 +8,7 @@ import Mathlib.Tactic.Zify
 import Mathlib.Tactic.CancelDenoms.Core
 import Batteries.Data.RBMap.Basic
 import Mathlib.Control.Basic
+import Mathlib.Util.AtomM
 
 /-!
 # Linarith preprocessing
@@ -29,9 +30,10 @@ namespace Linarith
 
 /-! ### Preprocessing -/
 
-open Lean hiding Rat
+open Lean
 open Elab Tactic Meta
 open Qq
+open Mathlib
 open Mathlib.Tactic (AtomM)
 open Batteries (RBSet)
 
@@ -54,18 +56,11 @@ Removes any expressions that are not proofs of inequalities, equalities, or nega
 partial def filterComparisons : Preprocessor where
   name := "filter terms that are not proofs of comparisons"
   transform h := do
-    let tp ← whnfR (← instantiateMVars (← inferType h))
-    if (← isProp tp) && (← aux tp) then pure [h]
-    else pure []
-where
-  /-- Implementation of the `filterComparisons` preprocessor. -/
-  aux (e : Expr) : MetaM Bool := do
-  match e.getAppFnArgs with
-  | (``Eq, _) | (``LE.le, _) | (``LT.lt, _) => pure true
-  | (``Not, #[e]) => match (← whnfR e).getAppFnArgs with
-    | (``LE.le, _) | (``LT.lt, _) => pure true
-    | _ => pure false
-  | _ => pure false
+    let tp ← instantiateMVars (← inferType h)
+    try
+      let (b, rel, _) ← tp.ineqOrNotIneq?
+      if b || rel != Ineq.eq then pure [h] else pure []
+    catch _ => pure []
 
 section removeNegations
 
@@ -107,16 +102,8 @@ open Mathlib.Tactic.Zify
 `isNatProp tp` is true iff `tp` is an inequality or equality between natural numbers
 or the negation thereof.
 -/
-partial def isNatProp (e : Expr) : Bool :=
-  match e.getAppFnArgs with
-  | (``Eq, #[.const ``Nat [], _, _]) => true
-  | (``LE.le, #[.const ``Nat [], _, _, _]) => true
-  | (``LT.lt, #[.const ``Nat [], _, _, _]) => true
-  | (``GE.ge, #[.const ``Nat [], _, _, _]) => true
-  | (``GT.gt, #[.const ``Nat [], _, _, _]) => true
-  | (``Not, #[e]) => isNatProp e
-  | _ => false
-
+partial def isNatProp (e : Expr) : MetaM Bool := succeeds <| do
+  let (_, _, .const ``Nat [], _, _) ← e.ineqOrNotIneq? | failure
 
 /-- If `e` is of the form `((n : ℕ) : C)`, `isNatCoe e` returns `⟨n, C⟩`. -/
 def isNatCoe (e : Expr) : Option (Expr × Expr) :=
@@ -164,10 +151,10 @@ def natToInt : GlobalBranchingPreprocessor where
   transform g l := do
     let l ← l.mapM fun h => do
       let t ← whnfR (← instantiateMVars (← inferType h))
-      if isNatProp t then
+      if ← isNatProp t then
         let (some (h', t'), _) ← Term.TermElabM.run' (run_for g (zifyProof none h t))
           | throwError "zifyProof failed on {h}"
-        if ← filterComparisons.aux t' then
+        if ← succeeds t'.ineqOrNotIneq? then
           pure h'
         else
           -- `zifyProof` turned our comparison into something that wasn't a comparison
@@ -179,7 +166,7 @@ def natToInt : GlobalBranchingPreprocessor where
         pure h
     let nonnegs ← l.foldlM (init := ∅) fun (es : RBSet (Expr × Expr) lexOrd.compare) h => do
       try
-        let (a, b) ← getRelSides (← inferType h)
+        let (_, _, a, b) ← (← inferType h).ineq?
         pure <| (es.insertMany (getNatComparisons a)).insertMany (getNatComparisons b)
       catch _ => pure es
     pure [(g, ((← nonnegs.toList.filterMapM mk_natCast_nonneg_prf) ++ l : List Expr))]
@@ -194,19 +181,12 @@ If `pf` is a proof of a strict inequality `(a : ℤ) < b`,
 and similarly if `pf` proves a negated weak inequality.
 -/
 def mkNonstrictIntProof (pf : Expr) : MetaM (Option Expr) := do
-  match (← instantiateMVars (← inferType pf)).getAppFnArgs with
-  | (``LT.lt, #[.const ``Int [], _, a, b]) =>
+  match ← (← inferType pf).ineqOrNotIneq? with
+  | (true, Ineq.lt, .const ``Int [], a, b) =>
     return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]]) pf
-  | (``GT.gt, #[.const ``Int [], _, a, b]) =>
-    return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[b, a]]) pf
-  | (``Not, #[P]) => match P.getAppFnArgs with
-    | (``LE.le, #[.const ``Int [], _, a, b]) =>
-      return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[b, a]])
-        (← mkAppM ``lt_of_not_ge #[pf])
-    | (``GE.ge, #[.const ``Int [], _, a, b]) =>
-      return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[a, b]])
-        (← mkAppM ``lt_of_not_ge #[pf])
-    | _ => return none
+  | (false, Ineq.le, .const ``Int [], a, b) =>
+    return mkApp (← mkAppM ``Iff.mpr #[← mkAppOptM ``Int.add_one_le_iff #[b, a]])
+      (← mkAppM ``lt_of_not_ge #[pf])
   | _ => return none
 
 /-- `strengthenStrictInt h` turns a proof `h` of a strict integer inequality `t1 < t2`
@@ -224,36 +204,10 @@ section compWithZero
 and turns it into a proof of a comparison `_ R 0`, where `R ∈ {=, ≤, <}`.
  -/
 partial def rearrangeComparison (e : Expr) : MetaM (Option Expr) := do
-  aux e (← instantiateMVars (← inferType e))
-where
-  /-- Implementation of `rearrangeComparison`, after type inference. -/
-  aux (proof e : Expr) : MetaM (Option Expr) :=
-    let isZero (e : Expr) := e.getAppFnArgs matches (``OfNat.ofNat, #[_, .lit (.natVal 0), _])
-    match e.getAppFnArgs with
-    | (``LE.le, #[_, _, a, b]) => match isZero a, isZero b with
-      | _, true => return proof
-      | true, _ => try? <| mkAppM ``neg_nonpos_of_nonneg #[proof]
-      | _, _    => try? <| mkAppM ``sub_nonpos_of_le #[proof]
-    | (``LT.lt, #[_, _, a, b]) => match isZero a, isZero b with
-      | _, true => return proof
-      | true, _ => try? <| mkAppM ``neg_neg_of_pos #[proof]
-      | _, _    => try? <| mkAppM ``sub_neg_of_lt #[proof]
-    | (``Eq, #[_, a, b]) => match isZero a, isZero b with
-      | _, true => return proof
-      | true, _ => try? <| mkAppM ``Eq.symm #[proof]
-      | _, _    => try? <| mkAppM ``sub_eq_zero_of_eq #[proof]
-    | (``GT.gt, #[_, _, a, b]) => match isZero a, isZero b with
-      | _, true => try? <| mkAppM ``neg_neg_of_pos #[proof]
-      | true, _ => try? <| mkAppM ``lt_zero_of_zero_gt #[proof]
-      | _, _    => try? <| mkAppM ``sub_neg_of_lt #[proof]
-    | (``GE.ge, #[_, _, a, b]) => match isZero a, isZero b with
-      | _, true => try? <| mkAppM ``neg_nonpos_of_nonneg #[proof]
-      | true, _ => try? <| mkAppM ``le_zero_of_zero_ge #[proof]
-      | _, _    => try? <| mkAppM ``sub_nonpos_of_le #[proof]
-    | (``Not, #[a]) => do
-      let some nproof ← flipNegatedComparison proof a | return none
-      aux nproof (← inferType nproof)
-    | a => throwError "couldn't rearrange comparison {a}"
+  match ← (← inferType e).ineq? with
+  | (Ineq.le, _) => try? <| mkAppM ``Linarith.sub_nonpos_of_le #[e]
+  | (Ineq.lt, _) => try? <| mkAppM ``Linarith.sub_neg_of_lt #[e]
+  | (Ineq.eq, _) => try? <| mkAppM ``sub_eq_zero_of_eq #[e]
 
 /--
 `compWithZero h` takes a proof `h` of an equality, inequality, or negation thereof,
@@ -296,7 +250,8 @@ def cancelDenoms : Preprocessor where
   name := "cancel denominators"
   transform := fun pf => (do
       let (_, lhs) ← parseCompAndExpr (← inferType pf)
-      guard <| lhs.containsConst (fun n => n = ``HDiv.hDiv || n = ``Div.div)
+      guard <| lhs.containsConst <| fun n =>
+        n = ``HDiv.hDiv || n = ``Div.div || n = ``Inv.inv || n == ``OfScientific.ofScientific
       pure [← normalizeDenominatorsLHS pf lhs])
     <|> return [pf]
 end cancelDenoms
@@ -319,18 +274,62 @@ partial def findSquares (s : RBSet (Nat × Bool) lexOrd.compare) (e : Expr) :
   | (``HPow.hPow, #[_, _, _, _, a, b]) => match b.numeral? with
     | some 2 => do
       let s ← findSquares s a
-      let ai ← AtomM.addAtom a
+      let (ai, _) ← AtomM.addAtom a
       return (s.insert (ai, true))
     | _ => e.foldlM findSquares s
   | (``HMul.hMul, #[_, _, _, _, a, b]) => do
-    let ai ← AtomM.addAtom a
-    let bi ← AtomM.addAtom b
+    let (ai, _) ← AtomM.addAtom a
+    let (bi, _) ← AtomM.addAtom b
     if ai = bi then do
       let s ← findSquares s a
       return (s.insert (ai, false))
     else
       e.foldlM findSquares s
   | _ => e.foldlM findSquares s
+
+/-- Get proofs of `-x^2 ≤ 0` and `-(x*x) ≤ 0`, when those terms appear in `ls` -/
+private def nlinarithGetSquareProofs (ls : List Expr) : MetaM (List Expr) := do
+  -- find the squares in `AtomM` to ensure deterministic behavior
+  let s ← AtomM.run .reducible do
+    let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
+      RBSet.empty
+    si.toList.mapM fun (i, is_sq) => return ((← get).atoms[i]!, is_sq)
+  let new_es ← s.filterMapM fun (e, is_sq) =>
+    observing? <| mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
+  let new_es ← compWithZero.globalize.transform new_es
+  trace[linarith] "nlinarith preprocessing found squares"
+  trace[linarith] "{s}"
+  linarithTraceProofs "so we added proofs" new_es
+  return new_es
+
+/--
+Get proofs for products of inequalities from `ls`.
+
+Note that the length of the resulting list is proportional to `ls.length^2`, which can make a large
+amount of work for the linarith oracle.
+-/
+private def nlinarithGetProductsProofs (ls : List Expr) : MetaM (List Expr) := do
+  let with_comps ← ls.mapM (fun e => do
+    let tp ← inferType e
+    try
+      let ⟨ine, _⟩ ← parseCompAndExpr tp
+      pure (ine, e)
+    catch _ => pure (Ineq.lt, e))
+  let products ← with_comps.mapDiagM fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
+    try
+      (some <$> match posa, posb with
+        | Ineq.eq, _ => mkAppM ``zero_mul_eq #[a, b]
+        | _, Ineq.eq => mkAppM ``mul_zero_eq #[a, b]
+        | Ineq.lt, Ineq.lt => mkAppM ``mul_pos_of_neg_of_neg #[a, b]
+        | Ineq.lt, Ineq.le => do
+            let a ← mkAppM ``le_of_lt #[a]
+            mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b]
+        | Ineq.le, Ineq.lt => do
+            let b ← mkAppM ``le_of_lt #[b]
+            mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b]
+        | Ineq.le, Ineq.le => mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b])
+    catch _ => pure none
+  compWithZero.globalize.transform products.reduceOption
 
 /--
 `nlinarithExtras` is the preprocessor corresponding to the `nlinarith` tactic.
@@ -344,38 +343,8 @@ This preprocessor is typically run last, after all inputs have been canonized.
 def nlinarithExtras : GlobalPreprocessor where
   name := "nonlinear arithmetic extras"
   transform ls := do
-    -- find the squares in `AtomM` to ensure deterministic behavior
-    let s ← AtomM.run .reducible do
-      let si ← ls.foldrM (fun h s' => do findSquares s' (← instantiateMVars (← inferType h)))
-        RBSet.empty
-      si.toList.mapM fun (i, is_sq) => return ((← get).atoms[i]!, is_sq)
-    let new_es ← s.filterMapM fun (e, is_sq) =>
-      observing? <| mkAppM (if is_sq then ``sq_nonneg else ``mul_self_nonneg) #[e]
-    let new_es ← compWithZero.globalize.transform new_es
-    trace[linarith] "nlinarith preprocessing found squares"
-    trace[linarith] "{s}"
-    linarithTraceProofs "so we added proofs" new_es
-    let with_comps ← (new_es ++ ls).mapM (fun e => do
-      let tp ← inferType e
-      try
-        let ⟨ine, _⟩ ← parseCompAndExpr tp
-        pure (ine, e)
-      catch _ => pure (Ineq.lt, e))
-    let products ← with_comps.mapDiagM fun (⟨posa, a⟩ : Ineq × Expr) ⟨posb, b⟩ =>
-      try
-        (some <$> match posa, posb with
-          | Ineq.eq, _ => mkAppM ``zero_mul_eq #[a, b]
-          | _, Ineq.eq => mkAppM ``mul_zero_eq #[a, b]
-          | Ineq.lt, Ineq.lt => mkAppM ``mul_pos_of_neg_of_neg #[a, b]
-          | Ineq.lt, Ineq.le => do
-              let a ← mkAppM ``le_of_lt #[a]
-              mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b]
-          | Ineq.le, Ineq.lt => do
-              let b ← mkAppM ``le_of_lt #[b]
-              mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b]
-          | Ineq.le, Ineq.le => mkAppM ``mul_nonneg_of_nonpos_of_nonpos #[a, b])
-      catch _ => pure none
-    let products ← compWithZero.globalize.transform products.reduceOption
+    let new_es ← nlinarithGetSquareProofs ls
+    let products ← nlinarithGetProductsProofs (new_es ++ ls)
     return (new_es ++ ls ++ products)
 
 end nlinarith
@@ -426,6 +395,6 @@ so the size of the list may change.
 -/
 def preprocess (pps : List GlobalBranchingPreprocessor) (g : MVarId) (l : List Expr) :
     MetaM (List Branch) := g.withContext <|
-  pps.foldlM (fun ls pp => return (← ls.mapM fun (g, l) => do pp.process g l).join) [(g, l)]
+  pps.foldlM (fun ls pp => return (← ls.mapM fun (g, l) => do pp.process g l).flatten) [(g, l)]
 
 end Linarith

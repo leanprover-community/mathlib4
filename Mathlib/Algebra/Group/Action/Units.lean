@@ -3,8 +3,9 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Units
+import Mathlib.Algebra.Group.Action.Faithful
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Units.Defs
 
 /-! # Group actions on and by `Mˣ`
 
@@ -71,8 +72,8 @@ instance mulAction' [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M]
     ⟨g • (m : M), (g⁻¹ • ((m⁻¹ : Mˣ) : M)),
       by rw [smul_mul_smul_comm, Units.mul_inv, mul_inv_cancel, one_smul],
       by rw [smul_mul_smul_comm, Units.inv_mul, inv_mul_cancel, one_smul]⟩
-  one_smul m := Units.ext <| one_smul _ _
-  mul_smul g₁ g₂ m := Units.ext <| mul_smul _ _ _
+  one_smul _ := Units.ext <| one_smul _ _
+  mul_smul _ _ _ := Units.ext <| mul_smul _ _ _
 
 @[to_additive (attr := simp)]
 lemma val_smul [Group G] [Monoid M] [MulAction G M] [SMulCommClass G M M] [IsScalarTower G M M]

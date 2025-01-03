@@ -1,13 +1,13 @@
 /-
-Copyright (c) 2019 Scott Morrison. All rights reserved.
+Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-import Mathlib.GroupTheory.QuotientGroup.Basic
+import Mathlib.GroupTheory.QuotientGroup.Defs
 
 /-!
 # The category of additive commutative groups has all colimits.
@@ -209,8 +209,7 @@ def descFun (s : Cocone F) : ColimitType.{w} F → s.pt := by
 def descMorphism (s : Cocone F) : colimit.{w} F ⟶ s.pt where
   toFun := descFun F s
   map_zero' := rfl
-  -- Porting note: in `mathlib3`, nothing needs to be done after `induction`
-  map_add' x y := Quot.induction_on₂ x y fun _ _ => by dsimp; rw [← quot_add F]; rfl
+  map_add' x y := Quot.induction_on₂ x y fun _ _ ↦ rfl
 
 /-- Evidence that the proposed colimit is the colimit. -/
 def colimitCoconeIsColimit : IsColimit (colimitCocone.{w} F) where
@@ -227,7 +226,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{w} F) where
       rw [map_neg, map_neg, ih]
     | add x y ihx ihy =>
       simp only [quot_add]
-      erw [m.map_add, (descMorphism F s).map_add, ihx, ihy]
+      rw [m.map_add, (descMorphism F s).map_add, ihx, ihy]
 
 end Colimits
 

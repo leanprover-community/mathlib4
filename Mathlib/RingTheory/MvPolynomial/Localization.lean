@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten
 -/
 import Mathlib.Algebra.MvPolynomial.CommRing
-import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Localization.Away.Basic
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.RingTheory.MvPolynomial.Basic
@@ -91,13 +91,13 @@ private noncomputable
 def auxHom : (MvPolynomial Unit R) ⧸ (Ideal.span { C r * X () - 1 }) →ₐ[R] S :=
   Ideal.Quotient.liftₐ (Ideal.span { C r * X () - 1}) (aeval (fun _ ↦ invSelf r)) <| by
     intro p hp
-    refine Submodule.span_induction hp ?_ ?_ ?_ ?_
+    refine Submodule.span_induction ?_ ?_ ?_ ?_ hp
     · rintro p ⟨q, rfl⟩
       simp
     · simp
-    · intro p q hp hq
+    · intro p q _ _ hp hq
       simp [hp, hq]
-    · intro a x hx
+    · intro a x _ hx
       simp [hx]
 
 @[simp]
