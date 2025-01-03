@@ -233,7 +233,7 @@ theorem Scheme.homOfLE_apply {U V : X.Opens} (e : U ≤ V) (x : U) :
 
 theorem Scheme.ι_image_homOfLE_le_ι_image {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
     U.ι ''ᵁ (X.homOfLE e ⁻¹ᵁ W) ≤ V.ι ''ᵁ W := by
-  simp only [← SetLike.coe_subset_coe, IsOpenMap.coe_function_obj, Set.image_subset_iff,
+  simp only [← SetLike.coe_subset_coe, IsOpenMap.coe_functor_obj, Set.image_subset_iff,
     Scheme.homOfLE_base, Opens.map_coe, Opens.inclusion'_apply]
   rintro _ h
   exact ⟨_, h, rfl⟩
@@ -595,7 +595,7 @@ def morphismRestrictRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V :
   refine Arrow.isoMk' _ _ ((Scheme.Opens.ι _).isoImage _ ≪≫ Scheme.isoOfEq _ ?_)
     ((Scheme.Opens.ι _).isoImage _) ?_
   · ext x
-    simp only [IsOpenMap.coe_function_obj, Opens.coe_inclusion',
+    simp only [IsOpenMap.coe_functor_obj, Opens.coe_inclusion',
       Opens.map_coe, Set.mem_image, Set.mem_preimage, SetLike.mem_coe, morphismRestrict_base]
     constructor
     · rintro ⟨⟨a, h₁⟩, h₂, rfl⟩

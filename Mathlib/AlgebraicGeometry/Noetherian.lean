@@ -158,7 +158,7 @@ lemma isLocallyNoetherian_of_isOpenImmersion {Y : Scheme} (f : X ⟶ Y) [IsOpenI
   · suffices Scheme.Hom.opensRange f ⊓ V = V by
       rw [this]
     rw [← Opens.coe_inj]
-    rw [Opens.coe_inf, Scheme.Hom.opensRange_coe, IsOpenMap.coe_function_obj,
+    rw [Opens.coe_inf, Scheme.Hom.opensRange_coe, IsOpenMap.coe_functor_obj,
       Set.inter_eq_right, Set.image_subset_iff, Set.preimage_range]
     exact Set.subset_univ _
 
