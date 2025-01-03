@@ -83,23 +83,26 @@ lemma T_apply_succ (n : ℕ) :
     · exact map_iteratedRange_le _ _ _ <| Submodule.mem_map_of_mem <| hn w n n.lt_succ_self
 
 include hv in
-lemma T_map_iSup_iteratedRange' :
+lemma T_apply (n : ℕ) (hn : n ≠ ⊥) (x) (hx : x ∈ iteratedRange v (π z) n) :
+    ∃ m, m < n ∧ T χ w x ∈ iteratedRange v (π z) m := by
+  obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hn
+  exact ⟨m, Nat.lt_succ_self m, T_apply_succ χ z w hv m <| Submodule.mem_map_of_mem hx⟩
+
+include hv in
+lemma T_map_iSup_iteratedRange :
     Submodule.map (T χ w) (iSup_iteratedRange v (π z)) ≤ iSup_iteratedRange v (π z) := by
   rw [Submodule.map_iSup, iSup_le_iff]
   rintro (_|i)
   · simp [Submodule.map_span]
   · exact (T_apply_succ χ z w hv i).trans (le_iSup _ _)
 
-include hv in
-lemma T_map_iSup_iteratedRange (x : V)
-    (hx : x ∈ iSup_iteratedRange v (π z)) : (T χ w) x ∈ iSup_iteratedRange v (π z) :=
-  T_map_iSup_iteratedRange' χ z w hv <| Submodule.mem_map_of_mem hx
-
 def iSupIR : LieSubmodule R A V where
   toSubmodule := iSup_iteratedRange v (π z)
   lie_mem {w} x hx := by
     have hx' : ⁅w, x⁆ = (T χ w) x + χ w • x := by simp
-    simpa only [hx'] using add_mem (T_map_iSup_iteratedRange χ z w hv x hx)
+    simpa only [hx'] using
+      add_mem
+        (T_map_iSup_iteratedRange χ z w hv <| Submodule.mem_map_of_mem hx)
         (Submodule.smul_mem (iSup_iteratedRange v (π z)) _ hx)
 
 include hv in
@@ -119,26 +122,22 @@ theorem trace_πza_zero (a : A) :
     fun _ hx ↦ (map_iteratedRange_iSup_le_iSup v (π z)) (Submodule.mem_map_of_mem hx)
   have hres : LieModule.toEnd R A U ⁅z, a⁆ = ⁅(π z).restrict hzU, LieModule.toEnd R A U a⁆ := by
     ext ⟨x, hx⟩
-    simp only [LieModule.toEnd_apply_apply, LieSubmodule.coe_bracket, LieHom.lie_apply,
-      Module.End.lie_apply, AddSubgroupClass.coe_sub]
-    -- why do we need this `erw` now?
-    erw [LinearMap.restrict_coe_apply, LinearMap.restrict_coe_apply]
-    simp only [LieSubmodule.coe_bracket, LieModule.toEnd_apply_apply, leibniz_lie z a,
-      add_sub_cancel_right]
-  rw [hres, LieRing.of_associative_ring_bracket, map_sub, LinearMap.trace_mul_comm, sub_self]
+    show ⁅⁅z, a⁆, x⁆ = ⁅z, ⁅a, x⁆⁆ - ⁅a, ⁅z, x⁆⁆
+    simp only [leibniz_lie z a, add_sub_cancel_right]
+  rw [hres, LinearMap.trace_lie]
 
 variable [IsNoetherian R V]
 
-theorem T_res_nilpotent :
-    IsNilpotent ((T χ w).restrict (T_map_iSup_iteratedRange χ z w hv)) := by
+theorem T_nilpotent_ : IsNilpotent ((T (V := iSupIR χ z hv) χ w)) := by
   suffices iSup_iteratedRange v (π z) ≤ Module.End.maxGenEigenspace (T χ w) 0 by
     rw [Module.Finite.Module.End.isNilpotent_iff_of_finite]
     intro x
     obtain ⟨n, hn⟩ : ∃ n : ℕ, (T χ w ^ n) x.1 = 0 := by
       simpa [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero] using this x.2
     use n
-    rw [LinearMap.pow_restrict, Subtype.ext_iff, LinearMap.restrict_apply, Subtype.coe_mk, hn,
-      ZeroMemClass.coe_zero]
+    ext
+    simp only [ZeroMemClass.coe_zero, ← hn]; clear hn
+    induction n <;> simp_all [pow_succ']
   apply iSup_le
   intro i x hx
   simp only [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero]
@@ -146,8 +145,25 @@ theorem T_res_nilpotent :
   exact T_map_iteratedRange_nilpotent χ z w hv i x hx
 
 theorem T_nilpotent : IsNilpotent ((T (V := iSupIR χ z hv) χ w)) := by
+  rw [Module.Finite.Module.End.isNilpotent_iff_of_finite]
+  simp only [iSupIR, iSup_iteratedRange, Subtype.forall, LieSubmodule.mem_mk_iff']
+  intro x hx
+  rw [Submodule.mem_iSup_of_directed] at hx
+  swap
+  · refine Monotone.directed_le fun a b ↦ iteratedRange_mono _ _
+  revert hx
+  simp only [forall_exists_index]
+  intro n
+  apply WellFoundedLT.induction n; clear n
+  intro n ih
+  obtain rfl | hn := eq_or_ne n ⊥
+  · simp +contextual [iteratedRange]
+    intro; use 0; simp
+  intro hx
+  obtain ⟨m, hmn, hm⟩ := T_apply χ z w hv n hn x hx
+  specialize ih m hmn
+  apply T_apply_succ at hx
   suffices iSup_iteratedRange v (π z) ≤ Module.End.maxGenEigenspace (T χ w) 0 by
-    rw [Module.Finite.Module.End.isNilpotent_iff_of_finite]
     intro x
     obtain ⟨n, hn⟩ : ∃ n : ℕ, (T χ w ^ n) x.1 = 0 := by
       simpa [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero] using this x.2
