@@ -192,7 +192,7 @@ theorem type_empty : type (@EmptyRelation Empty) = 0 :=
 
 theorem type_eq_one_of_unique (r) [IsWellOrder α r] [Nonempty α] [Subsingleton α] : type r = 1 := by
   cases nonempty_unique α
-  exact (RelIso.relIsoOfUniqueOfIrrefl r _).ordinal_type_eq
+  exact (RelIso.ofUniqueOfIrrefl r _).ordinal_type_eq
 
 @[simp]
 theorem type_eq_one_iff_unique [IsWellOrder α r] : type r = 1 ↔ Nonempty (Unique α) :=

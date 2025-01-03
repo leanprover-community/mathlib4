@@ -79,9 +79,12 @@ lemma toPartENat_le_iff_of_lt_aleph0 {c c' : Cardinal} (hc' : c' < ℵ₀) :
   simp_rw [← partENatOfENat_toENat, toENat_nat, ← toENat_le_nat,
    ← PartENat.withTopOrderIso.symm.le_iff_le, PartENat.ofENat_le, map_le_map_iff]
 
-lemma toPartENat_eq_iff_of_le_aleph0 {c c' : Cardinal} (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) :
+lemma toPartENat_inj_of_le_aleph0 {c c' : Cardinal} (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) :
     toPartENat c = toPartENat c' ↔ c = c' :=
   toPartENat_strictMonoOn.injOn.eq_iff hc hc'
+
+@[deprecated (since := "2024-12-29")] alias toPartENat_eq_iff_of_le_aleph0 :=
+  toPartENat_inj_of_le_aleph0
 
 theorem toPartENat_mono {c c' : Cardinal} (h : c ≤ c') :
     toPartENat c ≤ toPartENat c' :=
