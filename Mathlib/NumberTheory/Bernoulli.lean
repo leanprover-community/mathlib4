@@ -19,11 +19,11 @@ a sequence of rational numbers. They show up in the formula for the sums of $k$t
 powers. They are related to the Taylor series expansions of $x/\tan(x)$ and
 of $\coth(x)$, and also show up in the values that the Riemann Zeta function
 takes both at both negative and positive integers (and hence in the
-theory of modular forms). For example, if $1 \leq n$ is even then
+theory of modular forms). For example, if $1 \leq n$ then
 
 $$\zeta(2n)=\sum_{t\geq1}t^{-2n}=(-1)^{n+1}\frac{(2\pi)^{2n}B_{2n}}{2(2n)!}.$$
 
-Note however that this result is not yet formalised in Lean.
+This result is formalised in Lean: `riemannZeta_two_mul_nat`.
 
 The Bernoulli numbers can be formally defined using the power series
 

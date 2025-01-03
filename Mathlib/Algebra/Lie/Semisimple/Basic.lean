@@ -159,7 +159,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
       intro x hx
       suffices x ∈ J → x = 0 from this hx
       have := @this x.1
-      simp only [LieIdeal.incl_coe, LieIdeal.coe_toLieSubalgebra_toSubmodule,
+      simp only [LieIdeal.incl_coe, LieIdeal.toLieSubalgebra_toSubmodule,
         LieSubmodule.mem_mk_iff', Submodule.mem_map, LieSubmodule.mem_toSubmodule, Subtype.exists,
         LieSubmodule.mem_bot, ZeroMemClass.coe_eq_zero, forall_exists_index, and_imp, J'] at this
       exact fun _ ↦ this (↑x) x.property hx rfl
