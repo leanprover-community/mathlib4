@@ -50,17 +50,17 @@ instance : LawfulTraversable LazyList := by
   · induction xs using LazyList.rec with
     | nil =>
       simp only [Functor.map, LazyList.traverse, pure, Equiv.map, listEquivLazyList,
-        Equiv.coe_fn_symm_mk, toList, Equiv.coe_fn_mk, ofList]
+        Equiv.coe_fn_symm_mk, toList, List.map_nil, Equiv.coe_fn_mk, ofList]
     | cons =>
-      simpa only [Equiv.map, Functor.map, listEquivLazyList, Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk,
-        LazyList.traverse, Seq.seq, toList, ofList, cons.injEq, true_and]
+      simpa only [Functor.map, LazyList.traverse, Seq.seq, Equiv.map, listEquivLazyList,
+        Equiv.coe_fn_symm_mk, toList, List.map_cons, Equiv.coe_fn_mk, ofList, cons.injEq, true_and]
     | mk _ ih => ext; apply ih
-  · simp only [Equiv.map, listEquivLazyList, Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk, comp,
-      Functor.mapConst]
+  · simp only [Functor.mapConst, comp, Equiv.map, listEquivLazyList, Equiv.coe_fn_symm_mk,
+      List.map_eq_map, List.map_const, Equiv.coe_fn_mk]
     induction xs using LazyList.rec with
-    | nil => simp only [LazyList.traverse, pure, Functor.map, toList, ofList]
+    | nil => simp [LazyList.traverse, pure, Functor.map, toList, ofList]
     | cons =>
-      simpa only [toList, ofList, LazyList.traverse, Seq.seq, Functor.map, cons.injEq, true_and]
+      simpa [toList, ofList, LazyList.traverse, Seq.seq, Functor.map, cons.injEq, true_and]
     | mk _ ih => congr; apply ih
   · simp only [traverse, Equiv.traverse, listEquivLazyList, Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk]
     induction xs using LazyList.rec with

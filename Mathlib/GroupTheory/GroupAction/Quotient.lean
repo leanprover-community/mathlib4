@@ -17,9 +17,11 @@ import Mathlib.GroupTheory.GroupAction.Hom
 # Properties of group actions involving quotient groups
 
 This file proves properties of group actions which use the quotient group construction, notably
-* the orbit-stabilizer theorem `card_orbit_mul_card_stabilizer_eq_card_group`
-* the class formula `card_eq_sum_card_group_div_card_stabilizer'`
-* Burnside's lemma `sum_card_fixedBy_eq_card_orbits_mul_card_group`
+* the orbit-stabilizer theorem `MulAction.card_orbit_mul_card_stabilizer_eq_card_group`
+* the class formula `MulAction.card_eq_sum_card_group_div_card_stabilizer'`
+* Burnside's lemma `MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group`,
+
+as well as their analogues for additive groups.
 -/
 
 universe u v w
@@ -429,6 +431,29 @@ noncomputable def equivSubgroupOrbitsQuotientGroup [IsPretransitive α β]
     convert one_mem H
     · rw [inv_mul_eq_one, eq_comm, ← inv_mul_eq_one, ← Subgroup.mem_bot, ← free (g⁻¹ • x),
         mem_stabilizer_iff, mul_smul, (exists_smul_eq α (g⁻¹ • x) x).choose_spec]
+
+/-- If `α` acts on `β` with trivial stabilizers, `β` is equivalent
+to the product of the quotient of `β` by `α` and `α`.
+See `MulAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`. -/
+@[to_additive "If `α` acts freely on `β`, `β` is equivalent
+to the product of the quotient of `β` by `α` and `α`.
+See `AddAction.selfEquivOrbitsQuotientProd` with `φ = Quotient.out`."]
+noncomputable def selfEquivOrbitsQuotientProd'
+    {φ : Quotient (MulAction.orbitRel α β) → β} (hφ : Function.LeftInverse Quotient.mk'' φ)
+    (h : ∀ b : β, MulAction.stabilizer α b = ⊥) :
+    β ≃ Quotient (MulAction.orbitRel α β) × α :=
+  (MulAction.selfEquivSigmaOrbitsQuotientStabilizer' α β hφ).trans <|
+    (Equiv.sigmaCongrRight <| fun _ ↦
+      (Subgroup.quotientEquivOfEq (h _)).trans (QuotientGroup.quotientEquivSelf α)).trans <|
+    Equiv.sigmaEquivProd _ _
+
+/-- If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by `α` and
+`α`. -/
+@[to_additive "If `α` acts freely on `β`, `β` is equivalent to the product of the quotient of `β` by
+`α` and `α`."]
+noncomputable def selfEquivOrbitsQuotientProd (h : ∀ b : β, MulAction.stabilizer α b = ⊥) :
+    β ≃ Quotient (MulAction.orbitRel α β) × α :=
+  MulAction.selfEquivOrbitsQuotientProd' Quotient.out_eq' h
 
 end MulAction
 

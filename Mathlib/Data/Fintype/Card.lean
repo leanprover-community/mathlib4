@@ -378,14 +378,7 @@ instance (priority := 900) Finite.of_fintype (α : Type*) [Fintype α] : Finite 
   Fintype.finite ‹_›
 
 theorem finite_iff_nonempty_fintype (α : Type*) : Finite α ↔ Nonempty (Fintype α) :=
-  ⟨fun h =>
-    let ⟨_k, ⟨e⟩⟩ := @Finite.exists_equiv_fin α h
-    ⟨Fintype.ofEquiv _ e.symm⟩,
-    fun ⟨_⟩ => inferInstance⟩
-
-/-- See also `nonempty_encodable`, `nonempty_denumerable`. -/
-theorem nonempty_fintype (α : Type*) [Finite α] : Nonempty (Fintype α) :=
-  (finite_iff_nonempty_fintype α).mp ‹_›
+  ⟨fun _ => nonempty_fintype α, fun ⟨_⟩ => inferInstance⟩
 
 /-- Noncomputably get a `Fintype` instance from a `Finite` instance. This is not an
 instance because we want `Fintype` instances to be useful for computations. -/
@@ -878,8 +871,7 @@ noncomputable def fintypeOfNotInfinite {α : Type*} (h : ¬Infinite α) : Fintyp
 
 section
 
-open scoped Classical
-
+open scoped Classical in
 /-- Any type is (classically) either a `Fintype`, or `Infinite`.
 
 One can obtain the relevant typeclasses via `cases fintypeOrInfinite α`.

@@ -28,6 +28,20 @@ instance (C) [Quiver C] : Inhabited (HomRel C) where
 
 namespace CategoryTheory
 
+section
+
+variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+
+/-- A functor induces a `HomRel` on its domain, relating those maps that have the same image. -/
+def Functor.homRel : HomRel C :=
+  fun _ _ f g ↦ F.map f = F.map g
+
+@[simp]
+lemma Functor.homRel_iff {X Y : C} (f g : X ⟶ Y) :
+    F.homRel f g ↔ F.map f = F.map g := Iff.rfl
+
+end
+
 variable {C : Type _} [Category C] (r : HomRel C)
 
 /-- A `HomRel` is a congruence when it's an equivalence on every hom-set, and it can be composed
@@ -39,6 +53,16 @@ class Congruence : Prop where
   compLeft : ∀ {X Y Z} (f : X ⟶ Y) {g g' : Y ⟶ Z}, r g g' → r (f ≫ g) (f ≫ g')
   /-- Postcomposition with an arrow respects `r`. -/
   compRight : ∀ {X Y Z} {f f' : X ⟶ Y} (g : Y ⟶ Z), r f f' → r (f ≫ g) (f' ≫ g)
+
+/-- For `F : C ⥤ D`, `F.homRel` is a congruence.-/
+instance Functor.congruence_homRel {C D : Type*} [Category C] [Category D] (F : C ⥤ D) :
+    Congruence F.homRel where
+  equivalence :=
+    { refl := fun _ ↦ rfl
+      symm := by aesop
+      trans := by aesop }
+  compLeft := by aesop
+  compRight := by aesop
 
 /-- A type synonym for `C`, thought of as the objects of the quotient category. -/
 @[ext]
@@ -139,6 +163,16 @@ theorem functor_map_eq_iff [h : Congruence r] {X Y : C} (f f' : X ⟶ Y) :
   dsimp [functor]
   rw [Equivalence.quot_mk_eq_iff, compClosure_eq_self r]
   simpa only [compClosure_eq_self r] using h.equivalence
+
+theorem functor_homRel_eq_compClosure_eqvGen {X Y : C} (f g : X ⟶ Y) :
+    (functor r).homRel f g ↔ Relation.EqvGen (@CompClosure C _ r X Y) f g :=
+  Quot.eq
+
+theorem compClosure.congruence :
+    Congruence fun X Y => Relation.EqvGen (@CompClosure C _ r X Y) := by
+  convert inferInstanceAs (Congruence (functor r).homRel)
+  ext
+  rw [functor_homRel_eq_compClosure_eqvGen]
 
 variable {D : Type _} [Category D] (F : C ⥤ D)
 

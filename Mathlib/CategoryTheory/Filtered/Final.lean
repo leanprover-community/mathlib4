@@ -395,7 +395,7 @@ instance final_eval [∀ s, IsFiltered (I s)] (s : α) : (Pi.eval I s).Final := 
       s ⟨coeq f g, coeqHom f g⟩
     refine ⟨fun t => (c't t).1, fun t => (c't t).2, ?_⟩
     dsimp only [Pi.eval_obj, Pi.eval_map, c't]
-    rw [Function.update_same]
+    rw [Function.update_self]
     simpa using coeq_condition _ _
 
 open IsCofiltered in
@@ -408,7 +408,7 @@ instance initial_eval [∀ s, IsCofiltered (I s)] (s : α) : (Pi.eval I s).Initi
       s ⟨eq f g, eqHom f g⟩
     refine ⟨fun t => (c't t).1, fun t => (c't t).2, ?_⟩
     dsimp only [Pi.eval_obj, Pi.eval_map, c't]
-    rw [Function.update_same]
+    rw [Function.update_self]
     simpa using eq_condition _ _
 
 end Pi
