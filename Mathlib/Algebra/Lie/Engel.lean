@@ -198,7 +198,7 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
   obtain ⟨I, hI₁ : (I : LieSubalgebra R K') = LieSubalgebra.ofLe hKK'⟩ :=
     LieSubalgebra.exists_nested_lieIdeal_ofLe_normalizer hKK' hK'
   have hI₂ : (R ∙ (⟨x, hxK'⟩ : K')) ⊔ (LieSubmodule.toSubmodule I) = ⊤ := by
-    rw [← LieIdeal.coe_toLieSubalgebra_toSubmodule R K' I, hI₁]
+    rw [← LieIdeal.toLieSubalgebra_toSubmodule R K' I, hI₁]
     apply Submodule.map_injective_of_injective (K' : Submodule R L).injective_subtype
     simp only [LieSubalgebra.coe_ofLe, Submodule.map_sup, Submodule.map_subtype_range_inclusion,
       Submodule.map_top, Submodule.range_subtype]
