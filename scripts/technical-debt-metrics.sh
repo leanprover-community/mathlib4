@@ -80,6 +80,7 @@ titlesPathsAndRegexes=(
   "adaptation notes"               "*"      "adaptation_note"
   "disabled simpNF lints"          "*"      "nolint simpNF"
   "erw"                            "*"      "erw \["
+  "ofNat"                          "*"      "See note \[no_index around OfNat.ofNat\]"
   "maxHeartBeats modifications"    ":^MathlibTest" "^ *set_option .*maxHeartbeats"
 )
 
