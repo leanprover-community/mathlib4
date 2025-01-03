@@ -146,6 +146,13 @@ inductive ACApps where
 instance : Coe Expr ACApps := ⟨ACApps.ofExpr⟩
 attribute [coe] ACApps.ofExpr
 
+/-- `o₁.dthen fun h => o₂(h)` is like `o₁.then o₂` but `o₂` is allowed to depend on
+`h : o₁ = .eq`. -/
+@[macro_inline] private def _root_.Ordering.dthen :
+    (o : Ordering) → (o = .eq → Ordering) → Ordering
+  | .eq, f => f rfl
+  | o, _ => o
+
 /-- Ordering on `ACApps` sorts `.ofExpr` before `.apps`, and sorts `.apps` by function symbol,
   then by shortlex order. -/
 scoped instance : Ord ACApps where
@@ -154,9 +161,10 @@ scoped instance : Ord ACApps where
     | .ofExpr _, .apps _ _ => .lt
     | .apps _ _, .ofExpr _ => .gt
     | .apps op₁ args₁, .apps op₂ args₂ =>
-      compare op₁ op₂ |>.then <| compare args₁.size args₂.size |>.then <| Id.run do
-        for i in [:args₁.size] do
-          let o := compare args₁[i]! args₂[i]!
+      compare op₁ op₂ |>.then <| compare args₁.size args₂.size |>.dthen fun hs => Id.run do
+        for hi : i in [:args₁.size] do
+          let o :=
+            compare (args₁[i]'hi.right) (args₂[i]'(Batteries.BEqCmp.cmp_iff_eq.mp hs ▸ hi.right))
           if o != .eq then return o
         return .eq
 
