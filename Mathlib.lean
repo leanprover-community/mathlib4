@@ -3540,7 +3540,6 @@ import Mathlib.LinearAlgebra.Quotient.Defs
 import Mathlib.LinearAlgebra.Quotient.Pi
 import Mathlib.LinearAlgebra.Ray
 import Mathlib.LinearAlgebra.Reflection
-import Mathlib.LinearAlgebra.RootSystem.BaseChange
 import Mathlib.LinearAlgebra.RootSystem.Basic
 import Mathlib.LinearAlgebra.RootSystem.Defs
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
