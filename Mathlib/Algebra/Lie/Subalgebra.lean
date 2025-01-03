@@ -68,7 +68,7 @@ instance : AddSubgroupClass (LieSubalgebra R L) L where
   neg_mem {L'} x hx := show -x ∈ (L' : Submodule R L) from neg_mem hx
 
 /-- A Lie subalgebra forms a new Lie ring. -/
-instance (L' : LieSubalgebra R L) : LieRing L' where
+instance lieRing (L' : LieSubalgebra R L) : LieRing L' where
   bracket x y := ⟨⁅x.val, y.val⁆, L'.lie_mem' x.property y.property⟩
   lie_add := by
     intros
@@ -113,7 +113,7 @@ instance (L' : LieSubalgebra R L) [IsArtinian R L] : IsArtinian R L' :=
 end
 
 /-- A Lie subalgebra forms a new Lie algebra. -/
-instance (L' : LieSubalgebra R L) : LieAlgebra R L' where
+instance lieAlgebra (L' : LieSubalgebra R L) : LieAlgebra R L' where
   lie_smul := by
     { intros
       apply SetCoe.ext
@@ -230,7 +230,7 @@ instance : IsLieTower L' L M where
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie ring module
 `M` of `L`, we may regard `M` as a Lie ring module of `L'` by restriction. -/
-instance : LieRingModule L' M where
+instance lieRingModule : LieRingModule L' M where
   add_lie x y m := add_lie (x : L) y m
   lie_add x y m := lie_add (x : L) y m
   leibniz_lie x y m := leibniz_lie x (y : L) m
@@ -239,7 +239,7 @@ variable [Module R M]
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie module `M` of
 `L`, we may regard `M` as a Lie module of `L'` by restriction. -/
-instance [LieModule R L M] : LieModule R L' M where
+instance lieModule [LieModule R L M] : LieModule R L' M where
   smul_lie t x m := by
     rw [coe_bracket_of_module, Submodule.coe_smul_of_tower, smul_lie, coe_bracket_of_module]
   lie_smul t x m := by simp only [coe_bracket_of_module, lie_smul]
@@ -477,7 +477,7 @@ theorem sInf_glb (S : Set (LieSubalgebra R L)) : IsGLB S (sInf S) := by
 
 We provide explicit values for the fields `bot`, `top`, `inf` to get more convenient definitions
 than we would otherwise obtain from `completeLatticeOfInf`. -/
-instance instCompleteLattice : CompleteLattice (LieSubalgebra R L) :=
+instance completeLattice : CompleteLattice (LieSubalgebra R L) :=
   { completeLatticeOfInf _ sInf_glb with
     bot := ⊥
     bot_le := fun N _ h ↦ by
@@ -495,7 +495,7 @@ instance : Add (LieSubalgebra R L) where add := max
 
 instance : Zero (LieSubalgebra R L) where zero := ⊥
 
-instance instAddCommMonoid : AddCommMonoid (LieSubalgebra R L) where
+instance addCommMonoid : AddCommMonoid (LieSubalgebra R L) where
   add_assoc := sup_assoc
   zero_add := bot_sup_eq
   add_zero := sup_bot_eq
@@ -503,8 +503,8 @@ instance instAddCommMonoid : AddCommMonoid (LieSubalgebra R L) where
   nsmul := nsmulRec
 
 instance : CanonicallyOrderedAddCommMonoid (LieSubalgebra R L) :=
-  { LieSubalgebra.instAddCommMonoid,
-    LieSubalgebra.instCompleteLattice with
+  { LieSubalgebra.addCommMonoid,
+    LieSubalgebra.completeLattice with
     add_le_add_left := fun _a _b ↦ sup_le_sup_left
     exists_add_of_le := @fun _a b h ↦ ⟨b, (sup_eq_right.2 h).symm⟩
     le_self_add := fun _a _b ↦ le_sup_left }
