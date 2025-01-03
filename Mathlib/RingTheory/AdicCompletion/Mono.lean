@@ -28,6 +28,7 @@ variable {M} in
 lemma AdicCompletion.IsAdicCauchy.mono {f} (hf : IsAdicCauchy I M f) : IsAdicCauchy J M f :=
   fun _ _ h ↦ (hf h).mono (Submodule.smul_mono (pow_le_pow_left' hIJ _) le_rfl)
 
+/-- The canonical map `lim M/IⁿM ⟶ lim M⧸JⁿM` if `I ≤ J`. -/
 def AdicCompletion.homOfLE : AdicCompletion I M →ₗ[R] AdicCompletion J M where
   toFun v := ⟨fun i ↦ Submodule.mapQ _ _ .id
       (Submodule.smul_mono (pow_le_pow_left' hIJ i) le_rfl) (v.1 i), by
