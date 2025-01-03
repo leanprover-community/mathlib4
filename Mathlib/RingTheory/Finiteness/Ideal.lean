@@ -40,6 +40,19 @@ theorem fg_ker_comp {R S A : Type*} [CommRing R] [CommRing S] [CommRing A] (f : 
   let g₁ := (IsScalarTower.toAlgHom R S A).toLinearMap
   exact Submodule.fg_ker_comp f₁ g₁ hf (Submodule.fg_restrictScalars (RingHom.ker g) hg hsur) hsur
 
+lemma FG.mul {R : Type*} [CommSemiring R] {I J : Ideal R} (hI : I.FG) (hJ : J.FG) :
+    (I * J).FG := by
+  obtain ⟨s, rfl⟩ := hI
+  obtain ⟨t, rfl⟩ := hJ
+  rw [Ideal.span_mul_span]
+  exact Submodule.fg_def.mpr ⟨_, Set.toFinite _, rfl⟩
+
+lemma FG.pow {R : Type*} [CommSemiring R] {I : Ideal R} (hI : I.FG) (n : ℕ) :
+    (I ^ n).FG := by
+  induction n with
+  | zero => simpa using Module.Finite.out
+  | succ n IH => exact IH.mul hI
+
 theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (h : I.radical.FG) :
     ∃ n : ℕ, I.radical ^ n ≤ I := by
   have := le_refl I.radical; revert this

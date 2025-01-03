@@ -542,6 +542,18 @@ lemma sup_set_smul (s t : Set S) :
         · exact Submodule.mem_sup_right (mem_set_smul_of_mem_mem hr hn))
     (sup_le (set_smul_mono_left _ le_sup_left) (set_smul_mono_left _ le_sup_right))
 
+open Pointwise in
+lemma set_smul_eq_range [SMulCommClass R R M] (s : Set R) (N : Submodule R M) :
+    s • N =
+      LinearMap.range (Finsupp.lsum R (fun i : s ↦ N.subtype ∘ₗ Module.toModuleEnd R N i.1)) := by
+  apply le_antisymm
+  · rw [Submodule.set_smul_le_iff]
+    rintro r m hrs hm
+    exact ⟨Finsupp.single ⟨r, hrs⟩ ⟨m, hm⟩, by simp⟩
+  · rintro _ ⟨v, rfl⟩
+    refine sum_mem fun i _ ↦ ?_
+    exact Submodule.mem_set_smul_of_mem_mem i.2 (v i).2
+
 end set_acting_on_submodules
 
 end Submodule

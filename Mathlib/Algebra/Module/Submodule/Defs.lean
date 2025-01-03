@@ -260,6 +260,12 @@ instance module' [Semiring S] [SMul S R] [Module S M] [IsScalarTower S R M] : Mo
 instance module : Module R p :=
   p.module'
 
+instance {S₁ S₂ R M} [Semiring R] [AddCommMonoid M] [Module R M] (p : Submodule R M)
+    [Semiring S₁] [SMul S₁ R] [Module S₁ M] [IsScalarTower S₁ R M]
+    [Semiring S₂] [SMul S₂ R] [Module S₂ M] [IsScalarTower S₂ R M]
+    [SMulCommClass S₁ S₂ M] : SMulCommClass S₁ S₂ p :=
+  ⟨fun m n a ↦ Subtype.ext (smul_comm m n a.1)⟩
+
 end AddCommMonoid
 
 section AddCommGroup

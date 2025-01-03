@@ -134,19 +134,19 @@ def AdicCauchySequence.subring : Subring (ℕ → R) :=
   Subalgebra.toSubring (AdicCauchySequence.subalgebra I)
 
 instance : Mul (AdicCauchySequence I R) where
-  mul x y := ⟨x.val * y.val, fun hmn ↦ SModEq.mul (x.property hmn) (y.property hmn)⟩
+  mul x y := ⟨x.val * y.val, fun _ _ hmn ↦ SModEq.mul (x.property hmn) (y.property hmn)⟩
 
 instance : One (AdicCauchySequence I R) where
-  one := ⟨1, fun _ ↦ rfl⟩
+  one := ⟨1, fun _ _ _ ↦ rfl⟩
 
 instance : NatCast (AdicCauchySequence I R) where
-  natCast n := ⟨n, fun _ ↦ rfl⟩
+  natCast n := ⟨n, fun _ _ _ ↦ rfl⟩
 
 instance : IntCast (AdicCauchySequence I R) where
-  intCast n := ⟨n, fun _ ↦ rfl⟩
+  intCast n := ⟨n, fun _ _ _ ↦ rfl⟩
 
 instance : Pow (AdicCauchySequence I R) ℕ where
-  pow x n := ⟨x.val ^ n, fun hmn ↦ SModEq.pow n (x.property hmn)⟩
+  pow x n := ⟨x.val ^ n, fun _ _ hmn ↦ SModEq.pow n (x.property hmn)⟩
 
 instance : CommRing (AdicCauchySequence I R) :=
   let f : AdicCauchySequence I R → (ℕ → R) := Subtype.val
@@ -155,7 +155,7 @@ instance : CommRing (AdicCauchySequence I R) :=
     (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
 
 instance : Algebra R (AdicCauchySequence I R) where
-  toFun r := ⟨algebraMap R (∀ _, R) r, fun _ ↦ rfl⟩
+  toFun r := ⟨algebraMap R (∀ _, R) r, fun _ _ _ ↦ rfl⟩
   map_one' := Subtype.ext <| map_one _
   map_mul' x y := Subtype.ext <| map_mul _ x y
   map_zero' := Subtype.ext <| map_zero _
