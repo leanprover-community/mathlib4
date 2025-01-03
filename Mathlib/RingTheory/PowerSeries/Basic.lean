@@ -199,11 +199,6 @@ def constantCoeff : R⟦X⟧ →+* R :=
 def C : R →+* R⟦X⟧ :=
   MvPowerSeries.C Unit R
 
-@[simp] lemma algebraMap_eq {R : Type*} [CommSemiring R] : algebraMap R R⟦X⟧ = C R := rfl
-
-@[simp] lemma smul_def (r : R) (p : R⟦X⟧) : r • p = C R r * p :=
-  MvPowerSeries.smul_eq_C_mul _ _
-
 variable {R}
 
 /-- The variable of the formal power series ring. -/
