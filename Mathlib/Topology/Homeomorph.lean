@@ -690,10 +690,8 @@ This is `Equiv.piUnique` as a `Homeomorph`.
 -/
 @[simps! (config := .asFn)]
 def piUnique {α : Type*} [Unique α] (f : α → Type*) [∀ x, TopologicalSpace (f x)] :
-    (Π t, f t) ≃ₜ f default where
-  __ := Equiv.piUnique f
-  continuous_toFun := by fun_prop
-  continuous_invFun := Equiv.continuous_symm_of_isOpenMap (.piUnique f) <| isOpenMap_eval _
+    (Π t, f t) ≃ₜ f default :=
+  homeomorphOfContinuousOpen (Equiv.piUnique f) (continuous_apply default) (isOpenMap_eval _)
 
 end prod
 
