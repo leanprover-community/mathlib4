@@ -87,10 +87,10 @@ theorem dom_some (x : ℕ) : (some x).Dom :=
 instance addCommMonoid : AddCommMonoid PartENat where
   add := (· + ·)
   zero := 0
-  add_comm x y := Part.ext' and_comm fun _ _ => add_comm _ _
-  zero_add x := Part.ext' (iff_of_eq (true_and _)) fun _ _ => zero_add _
-  add_zero x := Part.ext' (iff_of_eq (and_true _)) fun _ _ => add_zero _
-  add_assoc x y z := Part.ext' and_assoc fun _ _ => add_assoc _ _ _
+  add_comm _ _ := Part.ext' and_comm fun _ _ => add_comm _ _
+  zero_add _ := Part.ext' (iff_of_eq (true_and _)) fun _ _ => zero_add _
+  add_zero _ := Part.ext' (iff_of_eq (and_true _)) fun _ _ => add_zero _
+  add_assoc _ _ _ := Part.ext' and_assoc fun _ _ => add_assoc _ _ _
   nsmul := nsmulRec
 
 instance : AddCommMonoidWithOne PartENat :=
@@ -139,7 +139,7 @@ instance : Top PartENat :=
 instance : Bot PartENat :=
   ⟨0⟩
 
-instance : Sup PartENat :=
+instance : Max PartENat :=
   ⟨fun x y => ⟨x.Dom ∧ y.Dom, fun h => x.get h.1 ⊔ y.get h.2⟩⟩
 
 theorem le_def (x y : PartENat) :
@@ -415,8 +415,8 @@ noncomputable instance : CanonicallyOrderedAddCommMonoid PartENat :=
   { PartENat.semilatticeSup, PartENat.orderBot,
     PartENat.orderedAddCommMonoid with
     le_self_add := fun a b =>
-      PartENat.casesOn b (le_top.trans_eq (add_top _).symm) fun b =>
-        PartENat.casesOn a (top_add _).ge fun a =>
+      PartENat.casesOn b (le_top.trans_eq (add_top _).symm) fun _ =>
+        PartENat.casesOn a (top_add _).ge fun _ =>
           (coe_le_coe.2 le_self_add).trans_eq (Nat.cast_add _ _)
     exists_add_of_le := fun {a b} =>
       PartENat.casesOn b (fun _ => ⟨⊤, (add_top _).symm⟩) fun b =>
@@ -602,7 +602,7 @@ def ofENat : ℕ∞ → PartENat :=
   | Option.none => none
   | Option.some n => some n
 
--- Porting note (#10754): new instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
 instance : Coe ℕ∞ PartENat := ⟨ofENat⟩
 
 -- Porting note: new. This could probably be moved to tests or removed.
@@ -731,8 +731,6 @@ theorem lt_wf : @WellFounded PartENat (· < ·) := by
 
 instance : WellFoundedLT PartENat :=
   ⟨lt_wf⟩
-
-instance isWellOrder : IsWellOrder PartENat (· < ·) := {}
 
 instance wellFoundedRelation : WellFoundedRelation PartENat :=
   ⟨(· < ·), lt_wf⟩

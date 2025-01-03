@@ -59,7 +59,6 @@ theorem convexJoin_singleton_left (t : Set E) (x : E) :
 theorem convexJoin_singleton_right (s : Set E) (y : E) :
     convexJoin 𝕜 s {y} = ⋃ x ∈ s, segment 𝕜 x y := by simp [convexJoin]
 
--- Porting note (#10618): simp can prove it
 theorem convexJoin_singletons (x : E) : convexJoin 𝕜 {x} {y} = segment 𝕜 x y := by simp
 
 @[simp]
@@ -105,7 +104,7 @@ end OrderedSemiring
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t u : Set E} {x y : E}
+variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s t : Set E} {x : E}
 
 theorem convexJoin_assoc_aux (s t u : Set E) :
     convexJoin 𝕜 (convexJoin 𝕜 s t) u ⊆ convexJoin 𝕜 s (convexJoin 𝕜 t u) := by
@@ -113,7 +112,7 @@ theorem convexJoin_assoc_aux (s t u : Set E) :
   rintro _ ⟨z, ⟨x, hx, y, hy, a₁, b₁, ha₁, hb₁, hab₁, rfl⟩, z, hz, a₂, b₂, ha₂, hb₂, hab₂, rfl⟩
   obtain rfl | hb₂ := hb₂.eq_or_lt
   · refine ⟨x, hx, y, ⟨y, hy, z, hz, left_mem_segment 𝕜 _ _⟩, a₁, b₁, ha₁, hb₁, hab₁, ?_⟩
-    linear_combination (norm := module) congr(-$hab₂ • (a₁ • x + b₁ • y))
+    linear_combination (norm := module) -hab₂ • (a₁ • x + b₁ • y)
   refine
     ⟨x, hx, (a₂ * b₁ / (a₂ * b₁ + b₂)) • y + (b₂ / (a₂ * b₁ + b₂)) • z,
       ⟨y, hy, z, hz, _, _, by positivity, by positivity, by field_simp, rfl⟩,

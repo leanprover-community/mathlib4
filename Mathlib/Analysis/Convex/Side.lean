@@ -345,7 +345,6 @@ end StrictOrderedCommRing
 section LinearOrderedField
 
 variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 @[simp]
 theorem wOppSide_self_iff {s : AffineSubspace R P} {x : P} : s.WOppSide x x ↔ x ∈ s := by
@@ -581,14 +580,13 @@ theorem wOppSide_iff_exists_wbtw {s : AffineSubspace R P} {x y : P} :
     · have : (r₂ / (r₁ + r₂)) • (y -ᵥ p₂ + (p₂ -ᵥ p₁) - (x -ᵥ p₁)) + (x -ᵥ p₁) =
           (r₂ / (r₁ + r₂)) • (p₂ -ᵥ p₁) := by
         rw [← neg_vsub_eq_vsub_rev p₂ y]
-        linear_combination (norm := match_scalars <;> field_simp) congr((r₁ + r₂)⁻¹ • $h)
-        ring
+        linear_combination (norm := match_scalars <;> field_simp) (r₁ + r₂)⁻¹ • h
       rw [lineMap_apply, ← vsub_vadd x p₁, ← vsub_vadd y p₂, vsub_vadd_eq_vsub_sub, vadd_vsub_assoc,
         ← vadd_assoc, vadd_eq_add, this]
       exact s.smul_vsub_vadd_mem (r₂ / (r₁ + r₂)) hp₂ hp₁ hp₁
     · exact Set.mem_image_of_mem _
         ⟨by positivity,
-          div_le_one_of_le (le_add_of_nonneg_left hr₁.le) (Left.add_pos hr₁ hr₂).le⟩
+          div_le_one_of_le₀ (le_add_of_nonneg_left hr₁.le) (Left.add_pos hr₁ hr₂).le⟩
 
 theorem SOppSide.exists_sbtw {s : AffineSubspace R P} {x y : P} (h : s.SOppSide x y) :
     ∃ p ∈ s, Sbtw R x p y := by

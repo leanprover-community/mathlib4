@@ -7,7 +7,6 @@ import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Data.Vector.Defs
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
-import Mathlib.Data.List.InsertNth
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 
@@ -21,9 +20,7 @@ universe u
 
 variable {α β γ σ φ : Type*} {m n : ℕ}
 
-namespace Mathlib
-
-namespace Vector
+namespace List.Vector
 
 @[inherit_doc]
 infixr:67 " ::ᵥ " => Vector.cons
@@ -73,11 +70,20 @@ theorem mk_toList : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n)
 
 @[simp] theorem length_val (v : Vector α n) : v.val.length = n := v.2
 
--- Porting note: not used in mathlib and coercions done differently in Lean 4
--- @[simp]
--- theorem length_coe (v : Vector α n) :
---     ((coe : { l : List α // l.length = n } → List α) v).length = n :=
---   v.2
+@[simp]
+theorem pmap_cons {p : α → Prop} (f : (a : α) → p a → β) (a : α) (v : Vector α n)
+    (hp : ∀ x ∈ (cons a v).toList, p x) :
+    (cons a v).pmap f hp = cons (f a (by
+      simp only [Nat.succ_eq_add_one, toList_cons, List.mem_cons, forall_eq_or_imp] at hp
+      exact hp.1))
+      (v.pmap f (by
+        simp only [Nat.succ_eq_add_one, toList_cons, List.mem_cons, forall_eq_or_imp] at hp
+        exact hp.2)) := rfl
+
+/-- Opposite direction of `Vector.pmap_cons` -/
+theorem pmap_cons' {p : α → Prop} (f : (a : α) → p a → β) (a : α) (v : Vector α n)
+    (ha : p a) (hp : ∀ x ∈ v.toList, p x) :
+    cons (f a ha) (v.pmap f hp) = (cons a v).pmap f (by simpa [ha]) := rfl
 
 @[simp]
 theorem toList_map {β : Type*} (v : Vector α n) (f : α → β) :
@@ -94,9 +100,44 @@ theorem tail_map {β : Type*} (v : Vector α (n + 1)) (f : α → β) :
   obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
   rw [h, map_cons, tail_cons, tail_cons]
 
-theorem get_eq_get (v : Vector α n) (i : Fin n) :
+@[simp]
+theorem getElem_map {β : Type*} (v : Vector α n) (f : α → β) {i : ℕ} (hi : i < n) :
+    (v.map f)[i] = f v[i] := by
+  simp only [getElem_def, toList_map, List.getElem_map]
+
+@[simp]
+theorem toList_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α n)
+    (hp : ∀ x ∈ v.toList, p x) :
+    (v.pmap f hp).toList = v.toList.pmap f hp := by cases v; rfl
+
+@[simp]
+theorem head_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α (n + 1))
+    (hp : ∀ x ∈ v.toList, p x) :
+    (v.pmap f hp).head = f v.head (hp _ <| by
+      rw [← cons_head_tail v, toList_cons, head_cons, List.mem_cons]; exact .inl rfl) := by
+  obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
+  simp_rw [h, pmap_cons, head_cons]
+
+@[simp]
+theorem tail_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α (n + 1))
+    (hp : ∀ x ∈ v.toList, p x) :
+    (v.pmap f hp).tail = v.tail.pmap f (fun x hx ↦ hp _ <| by
+      rw [← cons_head_tail v, toList_cons, List.mem_cons]; exact .inr hx) := by
+  obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
+  simp_rw [h, pmap_cons, tail_cons]
+
+@[simp]
+theorem getElem_pmap {p : α → Prop} (f : (a : α) → p a → β) (v : Vector α n)
+    (hp : ∀ x ∈ v.toList, p x) {i : ℕ} (hi : i < n) :
+    (v.pmap f hp)[i] = f v[i] (hp _ (by simp [getElem_def, List.getElem_mem])) := by
+  simp only [getElem_def, toList_pmap, List.getElem_pmap]
+
+theorem get_eq_get_toList (v : Vector α n) (i : Fin n) :
     v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
   rfl
+
+@[deprecated (since := "2024-12-20")]
+alias get_eq_get := get_eq_get_toList
 
 @[simp]
 theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a := by
@@ -105,7 +146,7 @@ theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a :=
 @[simp]
 theorem get_map {β : Type*} (v : Vector α n) (f : α → β) (i : Fin n) :
     (v.map f).get i = f (v.get i) := by
-  cases v; simp [Vector.map, get_eq_get]
+  cases v; simp [Vector.map, get_eq_get_toList]
 
 @[simp]
 theorem map₂_nil (f : α → β → γ) : Vector.map₂ f nil nil = nil :=
@@ -119,7 +160,7 @@ theorem map₂_cons (hd₁ : α) (tl₁ : Vector α n) (hd₂ : β) (tl₂ : Vec
 @[simp]
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f i := by
   conv_rhs => erw [← List.get_ofFn f ⟨i, by simp⟩]
-  simp only [get_eq_get]
+  simp only [get_eq_get_toList]
   congr <;> simp [Fin.heq_ext_iff]
 
 @[simp]
@@ -142,7 +183,7 @@ theorem get_tail (x : Vector α n) (i) : x.tail.get i = x.get ⟨i.1 + 1, by ome
 
 @[simp]
 theorem get_tail_succ : ∀ (v : Vector α n.succ) (i : Fin n), get (tail v) i = get v i.succ
-  | ⟨a :: l, e⟩, ⟨i, h⟩ => by simp [get_eq_get]; rfl
+  | ⟨a :: l, e⟩, ⟨i, h⟩ => by simp [get_eq_get_toList]; rfl
 
 @[simp]
 theorem tail_val : ∀ v : Vector α n.succ, v.tail.val = v.val.tail
@@ -220,7 +261,6 @@ theorem get_zero : ∀ v : Vector α n.succ, get v 0 = head v
 theorem head_ofFn {n : ℕ} (f : Fin n.succ → α) : head (ofFn f) = f 0 := by
   rw [← get_zero, get_ofFn]
 
---@[simp] Porting note (#10618): simp can prove it
 theorem get_cons_zero (a : α) (v : Vector α n) : get (a ::ᵥ v) 0 = a := by simp [get_zero]
 
 /-- Accessing the nth element of a vector made up
@@ -243,7 +283,7 @@ theorem last_def {v : Vector α (n + 1)} : v.last = v.get (Fin.last n) :=
 
 /-- The `last` element of a vector is the `head` of the `reverse` vector. -/
 theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
-  rw [← get_zero, last_def, get_eq_get, get_eq_get]
+  rw [← get_zero, last_def, get_eq_get_toList, get_eq_get_toList]
   simp_rw [toList_reverse]
   rw [List.get_eq_getElem, List.get_eq_getElem, ← Option.some_inj, Fin.cast, Fin.cast,
     ← List.getElem?_eq_getElem, ← List.getElem?_eq_getElem, List.getElem?_reverse]
@@ -311,7 +351,7 @@ theorem scanl_head : (scanl f b v).head = b := by
   · have : v = nil := by simp only [eq_iff_true_of_subsingleton]
     simp only [this, scanl_nil, head_cons]
   · rw [← cons_head_tail v]
-    simp only [← get_zero, get_eq_get, toList_scanl, toList_cons, List.scanl, Fin.val_zero,
+    simp only [← get_zero, get_eq_get_toList, toList_scanl, toList_cons, List.scanl, Fin.val_zero,
       List.get]
 
 /-- For an index `i : Fin n`, the nth element of `scanl` of a
@@ -328,7 +368,7 @@ theorem scanl_get (i : Fin n) :
   · exact i.elim0
   induction' n with n hn generalizing b
   · have i0 : i = 0 := Fin.eq_zero _
-    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get, List.get]
+    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get_toList, List.get]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine Fin.cases ?_ ?_ i
     · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
@@ -348,7 +388,7 @@ def mOfFn {m} [Monad m] {α : Type u} : ∀ {n}, (Fin n → m α) → m (Vector 
 
 theorem mOfFn_pure {m} [Monad m] [LawfulMonad m] {α} :
     ∀ {n} (f : Fin n → α), (@mOfFn m _ _ _ fun i => pure (f i)) = pure (ofFn f)
-  | 0, f => rfl
+  | 0, _ => rfl
   | n + 1, f => by
     rw [mOfFn, @mOfFn_pure m _ _ _ n _, ofFn]
     simp
@@ -478,71 +518,80 @@ def casesOn₃  {motive : ∀{n}, Vector α n → Vector β n → Vector γ n �
 def toArray : Vector α n → Array α
   | ⟨xs, _⟩ => cast (by rfl) xs.toArray
 
-section InsertNth
+section InsertIdx
 
 variable {a : α}
 
-/-- `v.insertNth a i` inserts `a` into the vector `v` at position `i`
+/-- `v.insertIdx a i` inserts `a` into the vector `v` at position `i`
 (and shifting later components to the right). -/
-def insertNth (a : α) (i : Fin (n + 1)) (v : Vector α n) : Vector α (n + 1) :=
-  ⟨v.1.insertNth i a, by
-    rw [List.length_insertNth, v.2]
-    rw [v.2, ← Nat.succ_le_succ_iff]
-    exact i.2⟩
+def insertIdx (a : α) (i : Fin (n + 1)) (v : Vector α n) : Vector α (n + 1) :=
+  ⟨v.1.insertIdx i a, by
+    rw [List.length_insertIdx, v.2]
+    split <;> omega⟩
 
-theorem insertNth_val {i : Fin (n + 1)} {v : Vector α n} :
-    (v.insertNth a i).val = v.val.insertNth i.1 a :=
+@[deprecated (since := "2024-10-21")] alias insertNth := insertIdx
+
+theorem insertIdx_val {i : Fin (n + 1)} {v : Vector α n} :
+    (v.insertIdx a i).val = v.val.insertIdx i.1 a :=
   rfl
+
+@[deprecated (since := "2024-10-21")] alias insertNth_val := insertIdx_val
 
 @[simp]
 theorem eraseIdx_val {i : Fin n} : ∀ {v : Vector α n}, (eraseIdx i v).val = v.val.eraseIdx i
   | _ => rfl
 
+@[deprecated (since := "2024-10-21")] alias eraseNth_val := eraseIdx_val
 @[deprecated (since := "2024-05-04")] alias removeNth_val := eraseIdx_val
 
-theorem eraseIdx_insertNth {v : Vector α n} {i : Fin (n + 1)} :
-    eraseIdx i (insertNth a i v) = v :=
-  Subtype.eq <| List.eraseIdx_insertNth i.1 v.1
+theorem eraseIdx_insertIdx {v : Vector α n} {i : Fin (n + 1)} :
+    eraseIdx i (insertIdx a i v) = v :=
+  Subtype.eq <| List.eraseIdx_insertIdx i.1 v.1
 
-@[deprecated (since := "2024-05-04")] alias removeNth_insertNth := eraseIdx_insertNth
+@[deprecated (since := "2024-05-04")] alias eraseIdx_insertNth := eraseIdx_insertIdx
+@[deprecated (since := "2024-05-04")] alias removeNth_insertNth := eraseIdx_insertIdx
 
-theorem eraseIdx_insertNth' {v : Vector α (n + 1)} :
+/-- Erasing an element after inserting an element, at different indices. -/
+theorem eraseIdx_insertIdx' {v : Vector α (n + 1)} :
     ∀ {i : Fin (n + 1)} {j : Fin (n + 2)},
-      eraseIdx (j.succAbove i) (insertNth a j v) = insertNth a (i.predAbove j) (eraseIdx i v)
+      eraseIdx (j.succAbove i) (insertIdx a j v) = insertIdx a (i.predAbove j) (eraseIdx i v)
   | ⟨i, hi⟩, ⟨j, hj⟩ => by
-    dsimp [insertNth, eraseIdx, Fin.succAbove, Fin.predAbove]
+    dsimp [insertIdx, eraseIdx, Fin.succAbove, Fin.predAbove]
     rw [Subtype.mk_eq_mk]
     simp only [Fin.lt_iff_val_lt_val]
     split_ifs with hij
     · rcases Nat.exists_eq_succ_of_ne_zero
         (Nat.pos_iff_ne_zero.1 (lt_of_le_of_lt (Nat.zero_le _) hij)) with ⟨j, rfl⟩
-      rw [← List.insertNth_eraseIdx_of_ge]
+      rw [← List.insertIdx_eraseIdx_of_ge]
       · simp; rfl
       · simpa
       · simpa [Nat.lt_succ_iff] using hij
     · dsimp
-      rw [← List.insertNth_eraseIdx_of_le i j _ _ _]
+      rw [← List.insertIdx_eraseIdx_of_le i j _ _ _]
       · rfl
       · simpa
       · simpa [not_lt] using hij
 
-@[deprecated (since := "2024-05-04")] alias removeNth_insertNth' := eraseIdx_insertNth'
+@[deprecated (since := "2024-05-04")] alias eraseIdx_insertNth' := eraseIdx_insertIdx'
+@[deprecated (since := "2024-05-04")] alias removeNth_insertNth' := eraseIdx_insertIdx'
 
-theorem insertNth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
+theorem insertIdx_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     ∀ v : Vector α n,
-      (v.insertNth a i).insertNth b j.succ = (v.insertNth b j).insertNth a (Fin.castSucc i)
+      (v.insertIdx a i).insertIdx b j.succ = (v.insertIdx b j).insertIdx a (Fin.castSucc i)
   | ⟨l, hl⟩ => by
     refine Subtype.eq ?_
-    simp only [insertNth_val, Fin.val_succ, Fin.castSucc, Fin.coe_castAdd]
-    apply List.insertNth_comm
+    simp only [insertIdx_val, Fin.val_succ, Fin.castSucc, Fin.coe_castAdd]
+    apply List.insertIdx_comm
     · assumption
     · rw [hl]
       exact Nat.le_of_succ_le_succ j.2
 
-end InsertNth
+@[deprecated (since := "2024-10-21")] alias insertNth_comm := insertIdx_comm
+
+end InsertIdx
 
 -- Porting note: renamed to `set` from `updateNth` to align with `List`
-section ModifyNth
+section Set
 
 /-- `set v n a` replaces the `n`th element of `v` with `a`. -/
 def set (v : Vector α n) (i : Fin n) (a : α) : Vector α n :=
@@ -555,12 +604,12 @@ theorem toList_set (v : Vector α n) (i : Fin n) (a : α) :
 
 @[simp]
 theorem get_set_same (v : Vector α n) (i : Fin n) (a : α) : (v.set i a).get i = a := by
-  cases v; cases i; simp [Vector.set, get_eq_get]
+  cases v; cases i; simp [Vector.set, get_eq_get_toList]
 
 theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
     (v.set i a).get j = v.get j := by
   cases v; cases i; cases j
-  simp only [get_eq_get, toList_set, toList_mk, Fin.cast_mk, List.get_eq_getElem]
+  simp only [get_eq_get_toList, toList_set, toList_mk, Fin.cast_mk, List.get_eq_getElem]
   rw [List.getElem_set_of_ne]
   · simpa using h
 
@@ -574,13 +623,15 @@ theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
   refine (List.prod_set v.toList i a).trans ?_
   simp_all
 
-@[to_additive]
+/-- Variant of `List.Vector.prod_set` that multiplies by the inverse of the replaced element.-/
+@[to_additive
+  "Variant of `List.Vector.sum_set` that subtracts the inverse of the replaced element."]
 theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
   refine (List.prod_set' v.toList i a).trans ?_
-  simp [get_eq_get, mul_assoc]
+  simp [get_eq_get_toList, mul_assoc]
 
-end ModifyNth
+end Set
 
 end Vector
 
@@ -742,6 +793,4 @@ theorem mapAccumr₂_cons {f : α → β → σ → σ × φ} :
 
 end Simp
 
-end Vector
-
-end Mathlib
+end List.Vector

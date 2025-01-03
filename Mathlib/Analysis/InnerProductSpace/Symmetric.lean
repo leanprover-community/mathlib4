@@ -3,7 +3,7 @@ Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Frédéric Dupuis, Heather Macbeth
 -/
-import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Analysis.InnerProductSpace.Subspace
 import Mathlib.Analysis.Normed.Operator.Banach
 import Mathlib.LinearAlgebra.SesquilinearForm
 
@@ -38,11 +38,8 @@ open ComplexConjugate
 
 section Seminormed
 
-variable {𝕜 E E' F G : Type*} [RCLike 𝕜]
+variable {𝕜 E : Type*} [RCLike 𝕜]
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [SeminormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-variable [SeminormedAddCommGroup G] [InnerProductSpace 𝕜 G]
-variable [SeminormedAddCommGroup E'] [InnerProductSpace ℝ E']
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
@@ -89,15 +86,13 @@ protected theorem IsSymmetric.id : (LinearMap.id : E →ₗ[𝕜] E).IsSymmetric
 theorem IsSymmetric.add {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
     (T + S).IsSymmetric := by
   intro x y
-  rw [LinearMap.add_apply, inner_add_left, hT x y, hS x y, ← inner_add_right]
-  rfl
+  rw [add_apply, inner_add_left, hT x y, hS x y, ← inner_add_right, add_apply]
 
 @[aesop safe apply]
 theorem IsSymmetric.sub {T S : E →ₗ[𝕜] E} (hT : T.IsSymmetric) (hS : S.IsSymmetric) :
     (T - S).IsSymmetric := by
   intro x y
-  rw [LinearMap.sub_apply, inner_sub_left, hT x y, hS x y, ← inner_sub_right]
-  rfl
+  rw [sub_apply, inner_sub_left, hT x y, hS x y, ← inner_sub_right, sub_apply]
 
 @[aesop safe apply]
 theorem IsSymmetric.smul {c : 𝕜} (hc : conj c = c) {T : E →ₗ[𝕜] E} (hT : T.IsSymmetric) :
@@ -152,7 +147,7 @@ theorem isSymmetric_iff_inner_map_self_real (T : V →ₗ[ℂ] V) :
   · intro h x y
     rw [← inner_conj_symm x (T y)]
     rw [inner_map_polarization T x y]
-    simp only [starRingEnd_apply, star_div', star_sub, star_add, star_mul]
+    simp only [starRingEnd_apply, star_div₀, star_sub, star_add, star_mul]
     simp only [← starRingEnd_apply]
     rw [h (x + y), h (x - y), h (x + Complex.I • y), h (x - Complex.I • y)]
     simp only [Complex.conj_I]
@@ -189,11 +184,8 @@ end Seminormed
 
 section Normed
 
-variable {𝕜 E E' F G : Type*} [RCLike 𝕜]
+variable {𝕜 E : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
-variable [NormedAddCommGroup G] [InnerProductSpace 𝕜 G]
-variable [NormedAddCommGroup E'] [InnerProductSpace ℝ E']
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 

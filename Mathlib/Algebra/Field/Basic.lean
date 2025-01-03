@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Leonardo de Moura, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Field.Defs
-import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Invertible
 import Mathlib.Order.Synonym
@@ -209,14 +208,6 @@ instance (priority := 100) Field.isDomain : IsDomain K :=
 
 end Field
 
-namespace RingHom
-
-protected theorem injective [DivisionRing K] [Semiring L] [Nontrivial L] (f : K →+* L) :
-    Injective f :=
-  (injective_iff_map_eq_zero f).2 fun _ ↦ (map_eq_zero f).1
-
-end RingHom
-
 section NoncomputableDefs
 
 variable {R : Type*} [Nontrivial R]
@@ -228,9 +219,9 @@ noncomputable abbrev DivisionRing.ofIsUnitOrEqZero [Ring R] (h : ∀ a : R, IsUn
   toRing := ‹Ring R›
   __ := groupWithZeroOfIsUnitOrEqZero h
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun q a => rfl
+  qsmul_def := fun _ _ => rfl
 
 /-- Constructs a `Field` structure on a `CommRing` consisting only of units and 0. -/
 -- See note [reducible non-instances]
@@ -274,9 +265,9 @@ protected abbrev divisionRing [DivisionRing L] (zero : f 0 = 0) (one : f 1 = 1)
   toRing := hf.ring f zero one add mul neg sub nsmul zsmul npow natCast intCast
   __ := hf.groupWithZero f zero one mul inv div npow zpow
   __ := hf.divisionSemiring f zero one add mul inv div nsmul nnqsmul npow zpow natCast nnratCast
-  ratCast_def q := hf <| by erw [ratCast, div, intCast, natCast, Rat.cast_def]
+  ratCast_def q := hf <| by rw [ratCast, div, intCast, natCast, Rat.cast_def]
   qsmul := (· • ·)
-  qsmul_def q a := hf <| by erw [qsmul, mul, Rat.smul_def, ratCast]
+  qsmul_def q a := hf <| by rw [qsmul, mul, Rat.smul_def, ratCast]
 
 /-- Pullback a `Field` along an injective function. -/
 -- See note [reducible non-instances]

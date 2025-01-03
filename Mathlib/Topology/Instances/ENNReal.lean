@@ -18,14 +18,14 @@ import Mathlib.Topology.Metrizable.Uniformity
 
 noncomputable section
 
-open Set Filter Metric Function
-open scoped Topology ENNReal NNReal
+open Filter Function Metric Set Topology
+open scoped Finset ENNReal NNReal
 
 variable {α : Type*} {β : Type*} {γ : Type*}
 
 namespace ENNReal
 
-variable {a b c d : ℝ≥0∞} {r p q : ℝ≥0} {x y z : ℝ≥0∞} {ε ε₁ ε₂ : ℝ≥0∞} {s : Set ℝ≥0∞}
+variable {a b : ℝ≥0∞} {r : ℝ≥0} {x : ℝ≥0∞} {ε : ℝ≥0∞}
 
 section TopologicalSpace
 
@@ -45,13 +45,16 @@ instance : T5Space ℝ≥0∞ := inferInstance
 instance : T4Space ℝ≥0∞ := inferInstance
 
 instance : SecondCountableTopology ℝ≥0∞ :=
-  orderIsoUnitIntervalBirational.toHomeomorph.embedding.secondCountableTopology
+  orderIsoUnitIntervalBirational.toHomeomorph.isEmbedding.secondCountableTopology
 
 instance : MetrizableSpace ENNReal :=
-  orderIsoUnitIntervalBirational.toHomeomorph.embedding.metrizableSpace
+  orderIsoUnitIntervalBirational.toHomeomorph.isEmbedding.metrizableSpace
 
-theorem embedding_coe : Embedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
-  coe_strictMono.embedding_of_ordConnected <| by rw [range_coe']; exact ordConnected_Iio
+theorem isEmbedding_coe : IsEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
+  coe_strictMono.isEmbedding_of_ordConnected <| by rw [range_coe']; exact ordConnected_Iio
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_coe := isEmbedding_coe
 
 theorem isOpen_ne_top : IsOpen { a : ℝ≥0∞ | a ≠ ∞ } := isOpen_ne
 
@@ -59,27 +62,30 @@ theorem isOpen_Ico_zero : IsOpen (Ico 0 b) := by
   rw [ENNReal.Ico_eq_Iio]
   exact isOpen_Iio
 
-theorem openEmbedding_coe : OpenEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
-  ⟨embedding_coe, by rw [range_coe']; exact isOpen_Iio⟩
+theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
+  ⟨isEmbedding_coe, by rw [range_coe']; exact isOpen_Iio⟩
+
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_coe := isOpenEmbedding_coe
 
 theorem coe_range_mem_nhds : range ((↑) : ℝ≥0 → ℝ≥0∞) ∈ 𝓝 (r : ℝ≥0∞) :=
-  IsOpen.mem_nhds openEmbedding_coe.isOpen_range <| mem_range_self _
+  IsOpen.mem_nhds isOpenEmbedding_coe.isOpen_range <| mem_range_self _
 
 @[norm_cast]
 theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {a : ℝ≥0} :
     Tendsto (fun a => (m a : ℝ≥0∞)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
-  embedding_coe.tendsto_nhds_iff.symm
+  isEmbedding_coe.tendsto_nhds_iff.symm
 
 @[fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ≥0∞) :=
-  embedding_coe.continuous
+  isEmbedding_coe.continuous
 
 theorem continuous_coe_iff {α} [TopologicalSpace α] {f : α → ℝ≥0} :
     (Continuous fun a => (f a : ℝ≥0∞)) ↔ Continuous f :=
-  embedding_coe.continuous_iff.symm
+  isEmbedding_coe.continuous_iff.symm
 
 theorem nhds_coe {r : ℝ≥0} : 𝓝 (r : ℝ≥0∞) = (𝓝 r).map (↑) :=
-  (openEmbedding_coe.map_nhds_eq r).symm
+  (isOpenEmbedding_coe.map_nhds_eq r).symm
 
 theorem tendsto_nhds_coe_iff {α : Type*} {l : Filter α} {x : ℝ≥0} {f : ℝ≥0∞ → α} :
     Tendsto f (𝓝 ↑x) l ↔ Tendsto (f ∘ (↑) : ℝ≥0 → α) (𝓝 x) l := by
@@ -91,7 +97,7 @@ theorem continuousAt_coe_iff {α : Type*} [TopologicalSpace α] {x : ℝ≥0} {f
 
 theorem nhds_coe_coe {r p : ℝ≥0} :
     𝓝 ((r : ℝ≥0∞), (p : ℝ≥0∞)) = (𝓝 (r, p)).map fun p : ℝ≥0 × ℝ≥0 => (↑p.1, ↑p.2) :=
-  ((openEmbedding_coe.prod openEmbedding_coe).map_nhds_eq (r, p)).symm
+  ((isOpenEmbedding_coe.prodMap isOpenEmbedding_coe).map_nhds_eq (r, p)).symm
 
 theorem continuous_ofReal : Continuous ENNReal.ofReal :=
   (continuous_coe_iff.2 continuous_id).comp continuous_real_toNNReal
@@ -153,7 +159,7 @@ theorem tendsto_nhds_top_iff_nat {m : α → ℝ≥0∞} {f : Filter α} :
   tendsto_nhds_top_iff_nnreal.trans
     ⟨fun h n => by simpa only [ENNReal.coe_natCast] using h n, fun h x =>
       let ⟨n, hn⟩ := exists_nat_gt x
-      (h n).mono fun y => lt_trans <| by rwa [← ENNReal.coe_natCast, coe_lt_coe]⟩
+      (h n).mono fun _ => lt_trans <| by rwa [← ENNReal.coe_natCast, coe_lt_coe]⟩
 
 theorem tendsto_nhds_top {m : α → ℝ≥0∞} {f : Filter α} (h : ∀ n : ℕ, ∀ᶠ a in f, ↑n < m a) :
     Tendsto m f (𝓝 ∞) :=
@@ -185,28 +191,36 @@ theorem nhds_zero_basis : (𝓝 (0 : ℝ≥0∞)).HasBasis (fun a : ℝ≥0∞ =
 theorem nhds_zero_basis_Iic : (𝓝 (0 : ℝ≥0∞)).HasBasis (fun a : ℝ≥0∞ => 0 < a) Iic :=
   nhds_bot_basis_Iic
 
--- Porting note (#11215): TODO: add a TC for `≠ ∞`?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add a TC for `≠ ∞`?
 @[instance]
-theorem nhdsWithin_Ioi_coe_neBot {r : ℝ≥0} : (𝓝[>] (r : ℝ≥0∞)).NeBot :=
-  nhdsWithin_Ioi_self_neBot' ⟨∞, ENNReal.coe_lt_top⟩
+theorem nhdsGT_coe_neBot {r : ℝ≥0} : (𝓝[>] (r : ℝ≥0∞)).NeBot :=
+  nhdsGT_neBot_of_exists_gt ⟨∞, ENNReal.coe_lt_top⟩
+
+@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ioi_coe_neBot := nhdsGT_coe_neBot
+
+@[instance] theorem nhdsGT_zero_neBot : (𝓝[>] (0 : ℝ≥0∞)).NeBot := nhdsGT_coe_neBot
+
+@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ioi_zero_neBot := nhdsGT_zero_neBot
+
+@[instance] theorem nhdsGT_one_neBot : (𝓝[>] (1 : ℝ≥0∞)).NeBot := nhdsGT_coe_neBot
+
+@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ioi_one_neBot := nhdsGT_one_neBot
+
+@[instance] theorem nhdsGT_nat_neBot (n : ℕ) : (𝓝[>] (n : ℝ≥0∞)).NeBot := nhdsGT_coe_neBot
+
+@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ioi_nat_neBot := nhdsGT_nat_neBot
 
 @[instance]
-theorem nhdsWithin_Ioi_zero_neBot : (𝓝[>] (0 : ℝ≥0∞)).NeBot :=
-  nhdsWithin_Ioi_coe_neBot
+theorem nhdsGT_ofNat_neBot (n : ℕ) [n.AtLeastTwo] : (𝓝[>] (OfNat.ofNat n : ℝ≥0∞)).NeBot :=
+  nhdsGT_coe_neBot
+
+@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ioi_ofNat_nebot := nhdsGT_ofNat_neBot
 
 @[instance]
-theorem nhdsWithin_Ioi_one_neBot : (𝓝[>] (1 : ℝ≥0∞)).NeBot := nhdsWithin_Ioi_coe_neBot
-
-@[instance]
-theorem nhdsWithin_Ioi_nat_neBot (n : ℕ) : (𝓝[>] (n : ℝ≥0∞)).NeBot := nhdsWithin_Ioi_coe_neBot
-
-@[instance]
-theorem nhdsWithin_Ioi_ofNat_nebot (n : ℕ) [n.AtLeastTwo] :
-    (𝓝[>] (OfNat.ofNat n : ℝ≥0∞)).NeBot := nhdsWithin_Ioi_coe_neBot
-
-@[instance]
-theorem nhdsWithin_Iio_neBot [NeZero x] : (𝓝[<] x).NeBot :=
+theorem nhdsLT_neBot [NeZero x] : (𝓝[<] x).NeBot :=
   nhdsWithin_Iio_self_neBot' ⟨0, NeZero.pos x⟩
+
+@[deprecated (since := "2024-12-22")] alias nhdsWithin_Iio_neBot := nhdsLT_neBot
 
 /-- Closed intervals `Set.Icc (x - ε) (x + ε)`, `ε ≠ 0`, form a basis of neighborhoods of an
 extended nonnegative real number `x ≠ ∞`. We use `Set.Icc` instead of `Set.Ioo` because this way the
@@ -419,7 +433,7 @@ theorem continuousOn_sub_left (a : ℝ≥0∞) : ContinuousOn (a - ·) { x : ℝ
 
 theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ => x - a := by
   by_cases a_infty : a = ∞
-  · simp [a_infty, continuous_const]
+  · simp [a_infty, continuous_const, tsub_eq_zero_of_le]
   · rw [show (fun x => x - a) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨x, a⟩ by rfl]
     apply ContinuousOn.comp_continuous continuousOn_sub (continuous_id'.prod_mk continuous_const)
     intro x
@@ -475,7 +489,7 @@ protected theorem continuous_zpow : ∀ n : ℤ, Continuous (· ^ n : ℝ≥0∞
   | (n : ℕ) => mod_cast ENNReal.continuous_pow n
   | .negSucc n => by simpa using (ENNReal.continuous_pow _).inv
 
-@[simp] -- Porting note (#11215): TODO: generalize to `[InvolutiveInv _] [ContinuousInv _]`
+@[simp] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to `[InvolutiveInv _] [ContinuousInv _]`
 protected theorem tendsto_inv_iff {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} :
     Tendsto (fun x => (m x)⁻¹) f (𝓝 a⁻¹) ↔ Tendsto m f (𝓝 a) :=
   ⟨fun h => by simpa only [inv_inv] using Tendsto.inv h, Tendsto.inv⟩
@@ -825,11 +839,11 @@ theorem finite_const_le_of_tsum_ne_top {ι : Type*} {a : ι → ℝ≥0∞} (tsu
 /-- Markov's inequality for `Finset.card` and `tsum` in `ℝ≥0∞`. -/
 theorem finset_card_const_le_le_of_tsum_le {ι : Type*} {a : ι → ℝ≥0∞} {c : ℝ≥0∞} (c_ne_top : c ≠ ∞)
     (tsum_le_c : ∑' i, a i ≤ c) {ε : ℝ≥0∞} (ε_ne_zero : ε ≠ 0) :
-    ∃ hf : { i : ι | ε ≤ a i }.Finite, ↑hf.toFinset.card ≤ c / ε := by
+    ∃ hf : { i : ι | ε ≤ a i }.Finite, #hf.toFinset ≤ c / ε := by
   have hf : { i : ι | ε ≤ a i }.Finite :=
     finite_const_le_of_tsum_ne_top (ne_top_of_le_ne_top c_ne_top tsum_le_c) ε_ne_zero
   refine ⟨hf, (ENNReal.le_div_iff_mul_le (.inl ε_ne_zero) (.inr c_ne_top)).2 ?_⟩
-  calc ↑hf.toFinset.card * ε = ∑ _i ∈ hf.toFinset, ε := by rw [Finset.sum_const, nsmul_eq_mul]
+  calc #hf.toFinset * ε = ∑ _i ∈ hf.toFinset, ε := by rw [Finset.sum_const, nsmul_eq_mul]
     _ ≤ ∑ i ∈ hf.toFinset, a i := Finset.sum_le_sum fun i => hf.mem_toFinset.1
     _ ≤ ∑' i, a i := ENNReal.sum_le_tsum _
     _ ≤ c := tsum_le_c
@@ -1090,7 +1104,7 @@ theorem edist_ne_top_of_mem_ball {a : β} {r : ℝ≥0∞} (x y : ball a r) : ed
   ne_of_lt <|
     calc
       edist x y ≤ edist a x + edist a y := edist_triangle_left x.1 y.1 a
-      _ < r + r := by rw [edist_comm a x, edist_comm a y]; exact add_lt_add x.2 y.2
+      _ < r + r := by rw [edist_comm a x, edist_comm a y]; exact ENNReal.add_lt_add x.2 y.2
       _ ≤ ∞ := le_top
 
 /-- Each ball in an extended metric space gives us a metric space, as the edist
@@ -1312,19 +1326,17 @@ lemma truncateToReal_eq_toReal {t x : ℝ≥0∞} (t_ne_top : t ≠ ∞) (x_le :
 lemma truncateToReal_le {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) {x : ℝ≥0∞} :
     truncateToReal t x ≤ t.toReal := by
   rw [truncateToReal]
-  apply (toReal_le_toReal _ t_ne_top).mpr (min_le_left t x)
-  simp_all only [ne_eq, min_eq_top, false_and, not_false_eq_true]
+  gcongr
+  exacts [t_ne_top, min_le_left t x]
 
 lemma truncateToReal_nonneg {t x : ℝ≥0∞} : 0 ≤ truncateToReal t x := toReal_nonneg
 
 /-- The truncated cast `ENNReal.truncateToReal t : ℝ≥0∞ → ℝ` is monotone when `t ≠ ∞`. -/
 lemma monotone_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) : Monotone (truncateToReal t) := by
   intro x y x_le_y
-  have obs_x : min t x ≠ ∞ := by
-    simp_all only [ne_eq, min_eq_top, false_and, not_false_eq_true]
-  have obs_y : min t y ≠ ∞ := by
-    simp_all only [ne_eq, min_eq_top, false_and, not_false_eq_true]
-  exact (ENNReal.toReal_le_toReal obs_x obs_y).mpr (min_le_min_left t x_le_y)
+  simp only [truncateToReal]
+  gcongr
+  exact ne_top_of_le_ne_top t_ne_top (min_le_left _ _)
 
 /-- The truncated cast `ENNReal.truncateToReal t : ℝ≥0∞ → ℝ` is continuous when `t ≠ ∞`. -/
 lemma continuous_truncateToReal {t : ℝ≥0∞} (t_ne_top : t ≠ ∞) : Continuous (truncateToReal t) := by
@@ -1360,6 +1372,33 @@ lemma liminf_const_sub (F : Filter ι) [NeBot F] (f : ι → ℝ≥0∞) {c : �
     Filter.liminf (fun i ↦ c - f i) F = c - Filter.limsup f F :=
   (Antitone.map_limsSup_of_continuousAt (F := F.map f) (f := fun (x : ℝ≥0∞) ↦ c - x)
     (fun _ _ h ↦ tsub_le_tsub_left h c) (continuous_sub_left c_ne_top).continuousAt).symm
+
+lemma le_limsup_mul {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞} :
+    limsup u f * liminf v f ≤ limsup (u * v) f :=
+  mul_le_of_forall_lt fun a a_u b b_v ↦ (le_limsup_iff).2 fun c c_ab ↦
+    Frequently.mono (Frequently.and_eventually ((frequently_lt_of_lt_limsup) a_u)
+    ((eventually_lt_of_lt_liminf) b_v)) fun _ ab_x ↦ c_ab.trans (mul_lt_mul ab_x.1 ab_x.2)
+
+/-- See also `ENNReal.limsup_mul_le`.-/
+lemma limsup_mul_le' {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞}
+    (h : limsup u f ≠ 0 ∨ limsup v f ≠ ∞) (h' : limsup u f ≠ ∞ ∨ limsup v f ≠ 0) :
+    limsup (u * v) f ≤ limsup u f * limsup v f := by
+  refine le_mul_of_forall_lt h h' fun a a_u b b_v ↦ (limsup_le_iff).2 fun c c_ab ↦ ?_
+  filter_upwards [eventually_lt_of_limsup_lt a_u, eventually_lt_of_limsup_lt b_v] with x a_x b_x
+  exact (mul_lt_mul a_x b_x).trans c_ab
+
+lemma le_liminf_mul {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞} :
+    liminf u f * liminf v f ≤ liminf (u * v) f := by
+  refine mul_le_of_forall_lt fun a a_u b b_v ↦ (le_liminf_iff).2 fun c c_ab ↦ ?_
+  filter_upwards [eventually_lt_of_lt_liminf a_u, eventually_lt_of_lt_liminf b_v] with x a_x b_x
+  exact c_ab.trans (mul_lt_mul a_x b_x)
+
+lemma liminf_mul_le {α : Type*} {f : Filter α} {u v : α → ℝ≥0∞}
+    (h : limsup u f ≠ 0 ∨ liminf v f ≠ ∞) (h' : limsup u f ≠ ∞ ∨ liminf v f ≠ 0) :
+    liminf (u * v) f ≤ limsup u f * liminf v f :=
+  le_mul_of_forall_lt h h' fun a a_u b b_v ↦ (liminf_le_iff).2 fun c c_ab ↦
+    Frequently.mono (((frequently_lt_of_liminf_lt) b_v).and_eventually
+    ((eventually_lt_of_limsup_lt) a_u)) fun _ ab_x ↦ (mul_lt_mul ab_x.2 ab_x.1).trans c_ab
 
 /-- If `xs : ι → ℝ≥0∞` is bounded, then we have `liminf (toReal ∘ xs) = toReal (liminf xs)`. -/
 lemma liminf_toReal_eq {ι : Type*} {F : Filter ι} [NeBot F] {b : ℝ≥0∞} (b_ne_top : b ≠ ∞)

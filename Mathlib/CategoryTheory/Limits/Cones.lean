@@ -162,7 +162,7 @@ instance inhabitedCocone (F : Discrete PUnit ⥤ C) : Inhabited (Cocone F) :=
            }
   }⟩
 
-@[reassoc] -- @[simp] -- Porting note (#10618): simp can prove this
+@[reassoc]
 theorem Cocone.w {F : J ⥤ C} (c : Cocone F) {j j' : J} (f : j ⟶ j') :
     F.map f ≫ c.ι.app j' = c.ι.app j := by
   rw [c.ι.naturality f]
@@ -195,7 +195,7 @@ def equiv (F : J ⥤ C) : Cone F ≅ ΣX, F.cones.obj X where
 /-- A map to the vertex of a cone naturally induces a cone by composition. -/
 @[simps]
 def extensions (c : Cone F) : yoneda.obj c.pt ⋙ uliftFunctor.{u₁} ⟶ F.cones where
-  app X f := (const J).map f.down ≫ c.π
+  app _ f := (const J).map f.down ≫ c.π
 
 /-- A map to the vertex of a cone induces a cone by composition. -/
 @[simps]
@@ -231,7 +231,7 @@ def equiv (F : J ⥤ C) : Cocone F ≅ ΣX, F.cocones.obj X where
 /-- A map from the vertex of a cocone naturally induces a cocone by composition. -/
 @[simps]
 def extensions (c : Cocone F) : coyoneda.obj (op c.pt) ⋙ uliftFunctor.{u₁} ⟶ F.cocones where
-  app X f := c.ι ≫ (const J).map f.down
+  app _ f := c.ι ≫ (const J).map f.down
 
 /-- A map from the vertex of a cocone induces a cocone by composition. -/
 @[simps]
@@ -283,7 +283,6 @@ namespace Cones
 /-- To give an isomorphism between cones, it suffices to give an
   isomorphism between their vertices which commutes with the cone
   maps. -/
--- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
 @[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
     (w : ∀ j, c.π.app j = φ.hom ≫ c'.π.app j := by aesop_cat) : c ≅ c' where
@@ -484,7 +483,6 @@ namespace Cocones
 /-- To give an isomorphism between cocones, it suffices to give an
   isomorphism between their vertices which commutes with the cocone
   maps. -/
--- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
 @[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {c c' : Cocone F} (φ : c.pt ≅ c'.pt)
     (w : ∀ j, c.ι.app j ≫ φ.hom = c'.ι.app j := by aesop_cat) : c ≅ c' where

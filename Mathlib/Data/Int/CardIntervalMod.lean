@@ -25,14 +25,16 @@ namespace Int
 variable (a b : ℤ) {r : ℤ}
 
 
-lemma Ico_filter_modEq_eq (v : ℤ) : (Ico a b).filter (· ≡ v [ZMOD r]) =
-    ((Ico (a - v) (b - v)).filter (r ∣ ·)).map ⟨(· + v), add_left_injective v⟩ := by
+lemma Ico_filter_modEq_eq (v : ℤ) :
+    {x ∈ Ico a b | x ≡ v [ZMOD r]} =
+    {x ∈ Ico (a - v) (b - v) | r ∣ x}.map ⟨(· + v), add_left_injective v⟩ := by
   ext x
   simp_rw [mem_map, mem_filter, mem_Ico, Function.Embedding.coeFn_mk, ← eq_sub_iff_add_eq,
     exists_eq_right, modEq_comm, modEq_iff_dvd, sub_lt_sub_iff_right, sub_le_sub_iff_right]
 
-lemma Ioc_filter_modEq_eq (v : ℤ) : (Ioc a b).filter (· ≡ v [ZMOD r]) =
-    ((Ioc (a - v) (b - v)).filter (r ∣ ·)).map ⟨(· + v), add_left_injective v⟩ := by
+lemma Ioc_filter_modEq_eq (v : ℤ) :
+    {x ∈ Ioc a b | x ≡ v [ZMOD r]} =
+    {x ∈ Ioc (a - v) (b - v) | r ∣ x}.map ⟨(· + v), add_left_injective v⟩ := by
   ext x
   simp_rw [mem_map, mem_filter, mem_Ioc, Function.Embedding.coeFn_mk, ← eq_sub_iff_add_eq,
     exists_eq_right, modEq_comm, modEq_iff_dvd, sub_lt_sub_iff_right, sub_le_sub_iff_right]
@@ -40,40 +42,40 @@ lemma Ioc_filter_modEq_eq (v : ℤ) : (Ioc a b).filter (· ≡ v [ZMOD r]) =
 variable (hr : 0 < r)
 include hr
 
-lemma Ico_filter_dvd_eq : (Ico a b).filter (r ∣ ·) =
-    (Ico ⌈a / (r : ℚ)⌉ ⌈b / (r : ℚ)⌉).map ⟨(· * r), mul_left_injective₀ hr.ne'⟩ := by
+lemma Ico_filter_dvd_eq :
+    {x ∈ Ico a b | r ∣ x} =
+      (Ico ⌈a / (r : ℚ)⌉ ⌈b / (r : ℚ)⌉).map ⟨(· * r), mul_left_injective₀ hr.ne'⟩ := by
   ext x
   simp only [mem_map, mem_filter, mem_Ico, ceil_le, lt_ceil, div_le_iff₀, lt_div_iff₀,
     dvd_iff_exists_eq_mul_left, cast_pos.2 hr, ← cast_mul, cast_lt, cast_le]
   aesop
 
-lemma Ioc_filter_dvd_eq : (Ioc a b).filter (r ∣ ·) =
-    (Ioc ⌊a / (r : ℚ)⌋ ⌊b / (r : ℚ)⌋).map ⟨(· * r), mul_left_injective₀ hr.ne'⟩ := by
+lemma Ioc_filter_dvd_eq :
+    {x ∈ Ioc a b | r ∣ x} =
+      (Ioc ⌊a / (r : ℚ)⌋ ⌊b / (r : ℚ)⌋).map ⟨(· * r), mul_left_injective₀ hr.ne'⟩ := by
   ext x
   simp only [mem_map, mem_filter, mem_Ioc, floor_lt, le_floor, div_lt_iff₀, le_div_iff₀,
     dvd_iff_exists_eq_mul_left, cast_pos.2 hr, ← cast_mul, cast_lt, cast_le]
   aesop
 
 /-- There are `⌈b / r⌉ - ⌈a / r⌉` multiples of `r` in `[a, b)`, if `a ≤ b`. -/
-theorem Ico_filter_dvd_card : ((Ico a b).filter (r ∣ ·)).card =
-    max (⌈b / (r : ℚ)⌉ - ⌈a / (r : ℚ)⌉) 0 := by
+theorem Ico_filter_dvd_card : #{x ∈ Ico a b | r ∣ x} = max (⌈b / (r : ℚ)⌉ - ⌈a / (r : ℚ)⌉) 0 := by
   rw [Ico_filter_dvd_eq _ _ hr, card_map, card_Ico, toNat_eq_max]
 
 /-- There are `⌊b / r⌋ - ⌊a / r⌋` multiples of `r` in `(a, b]`, if `a ≤ b`. -/
-theorem Ioc_filter_dvd_card : ((Ioc a b).filter (r ∣ ·)).card =
-    max (⌊b / (r : ℚ)⌋ - ⌊a / (r : ℚ)⌋) 0 := by
+theorem Ioc_filter_dvd_card : #{x ∈ Ioc a b | r ∣ x} = max (⌊b / (r : ℚ)⌋ - ⌊a / (r : ℚ)⌋) 0 := by
   rw [Ioc_filter_dvd_eq _ _ hr, card_map, card_Ioc, toNat_eq_max]
 
 /-- There are `⌈(b - v) / r⌉ - ⌈(a - v) / r⌉` numbers congruent to `v` mod `r` in `[a, b)`,
 if `a ≤ b`. -/
-theorem Ico_filter_modEq_card (v : ℤ) : ((Ico a b).filter (· ≡ v [ZMOD r])).card =
-    max (⌈(b - v) / (r : ℚ)⌉ - ⌈(a - v) / (r : ℚ)⌉) 0 := by
+theorem Ico_filter_modEq_card (v : ℤ) :
+    #{x ∈ Ico a b | x ≡ v [ZMOD r]} = max (⌈(b - v) / (r : ℚ)⌉ - ⌈(a - v) / (r : ℚ)⌉) 0 := by
   simp [Ico_filter_modEq_eq, Ico_filter_dvd_eq, toNat_eq_max, hr]
 
 /-- There are `⌊(b - v) / r⌋ - ⌊(a - v) / r⌋` numbers congruent to `v` mod `r` in `(a, b]`,
 if `a ≤ b`. -/
-theorem Ioc_filter_modEq_card (v : ℤ) : ((Ioc a b).filter (· ≡ v [ZMOD r])).card =
-    max (⌊(b - v) / (r : ℚ)⌋ - ⌊(a - v) / (r : ℚ)⌋) 0 := by
+theorem Ioc_filter_modEq_card (v : ℤ) :
+    #{x ∈ Ioc a b | x ≡ v [ZMOD r]} = max (⌊(b - v) / (r : ℚ)⌋ - ⌊(a - v) / (r : ℚ)⌋) 0 := by
   simp [Ioc_filter_modEq_eq, Ioc_filter_dvd_eq, toNat_eq_max, hr]
 
 end Int
@@ -82,36 +84,38 @@ namespace Nat
 
 variable (a b : ℕ) {r : ℕ}
 
-lemma Ico_filter_modEq_cast {v : ℕ} : ((Ico a b).filter (· ≡ v [MOD r])).map castEmbedding =
-    (Ico (a : ℤ) (b : ℤ)).filter (· ≡ v [ZMOD r]) := by
+lemma Ico_filter_modEq_cast {v : ℕ} :
+    {x ∈ Ico a b | x ≡ v [MOD r]}.map castEmbedding =
+      {x ∈ Ico (a : ℤ) (b : ℤ) | x ≡ v [ZMOD r]} := by
   ext x
   simp only [mem_map, mem_filter, mem_Ico, castEmbedding_apply]
   constructor
   · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact_mod_cast h
-  · intro h; lift x to ℕ using (by linarith); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
+  · intro h; lift x to ℕ using (by omega); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
 
-lemma Ioc_filter_modEq_cast {v : ℕ} : ((Ioc a b).filter (· ≡ v [MOD r])).map castEmbedding =
-    (Ioc (a : ℤ) (b : ℤ)).filter (· ≡ v [ZMOD r]) := by
+lemma Ioc_filter_modEq_cast {v : ℕ} :
+    {x ∈ Ioc a b | x ≡ v [MOD r]}.map castEmbedding =
+      {x ∈ Ioc (a : ℤ) (b : ℤ) | x ≡ v [ZMOD r]} := by
   ext x
   simp only [mem_map, mem_filter, mem_Ioc, castEmbedding_apply]
   constructor
   · simp_rw [forall_exists_index, ← natCast_modEq_iff]; intro y ⟨h, c⟩; subst c; exact_mod_cast h
-  · intro h; lift x to ℕ using (by linarith); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
+  · intro h; lift x to ℕ using (by omega); exact ⟨x, by simp_all [natCast_modEq_iff]⟩
 
 variable (hr : 0 < r)
 include hr
 
 /-- There are `⌈(b - v) / r⌉ - ⌈(a - v) / r⌉` numbers congruent to `v` mod `r` in `[a, b)`,
 if `a ≤ b`. `Nat` version of `Int.Ico_filter_modEq_card`. -/
-theorem Ico_filter_modEq_card (v : ℕ) : ((Ico a b).filter (· ≡ v [MOD r])).card =
-    max (⌈(b - v) / (r : ℚ)⌉ - ⌈(a - v) / (r : ℚ)⌉) 0 := by
+theorem Ico_filter_modEq_card (v : ℕ) :
+    #{x ∈ Ico a b | x ≡ v [MOD r]} = max (⌈(b - v) / (r : ℚ)⌉ - ⌈(a - v) / (r : ℚ)⌉) 0 := by
   simp_rw [← Ico_filter_modEq_cast _ _ ▸ card_map _,
     Int.Ico_filter_modEq_card _ _ (cast_lt.mpr hr), Int.cast_natCast]
 
 /-- There are `⌊(b - v) / r⌋ - ⌊(a - v) / r⌋` numbers congruent to `v` mod `r` in `(a, b]`,
 if `a ≤ b`. `Nat` version of `Int.Ioc_filter_modEq_card`. -/
-theorem Ioc_filter_modEq_card (v : ℕ) : ((Ioc a b).filter (· ≡ v [MOD r])).card =
-    max (⌊(b - v) / (r : ℚ)⌋ - ⌊(a - v) / (r : ℚ)⌋) 0 := by
+theorem Ioc_filter_modEq_card (v : ℕ) :
+    #{x ∈ Ioc a b | x ≡ v [MOD r]} = max (⌊(b - v) / (r : ℚ)⌋ - ⌊(a - v) / (r : ℚ)⌋) 0 := by
   simp_rw [← Ioc_filter_modEq_cast _ _ ▸ card_map _,
     Int.Ioc_filter_modEq_card _ _ (cast_lt.mpr hr), Int.cast_natCast]
 

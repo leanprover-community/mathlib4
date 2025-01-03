@@ -405,41 +405,41 @@ instance ULift.isometricSMul' : IsometricSMul M (ULift X) :=
 @[to_additive]
 instance {ι} {X : ι → Type*} [Fintype ι] [∀ i, SMul M (X i)] [∀ i, PseudoEMetricSpace (X i)]
     [∀ i, IsometricSMul M (X i)] : IsometricSMul M (∀ i, X i) :=
-  ⟨fun c => isometry_dcomp (fun _ => (c • ·)) fun i => isometry_smul (X i) c⟩
+  ⟨fun c => .piMap (fun _ => (c • ·)) fun i => isometry_smul (X i) c⟩
 
 @[to_additive]
 instance Pi.isometricSMul' {ι} {M X : ι → Type*} [Fintype ι] [∀ i, SMul (M i) (X i)]
     [∀ i, PseudoEMetricSpace (X i)] [∀ i, IsometricSMul (M i) (X i)] :
     IsometricSMul (∀ i, M i) (∀ i, X i) :=
-  ⟨fun c => isometry_dcomp (fun i => (c i • ·)) fun _ => isometry_smul _ _⟩
+  ⟨fun c => .piMap (fun i => (c i • ·)) fun _ => isometry_smul _ _⟩
 
 @[to_additive]
 instance Pi.isometricSMul'' {ι} {M : ι → Type*} [Fintype ι] [∀ i, Mul (M i)]
     [∀ i, PseudoEMetricSpace (M i)] [∀ i, IsometricSMul (M i)ᵐᵒᵖ (M i)] :
     IsometricSMul (∀ i, M i)ᵐᵒᵖ (∀ i, M i) :=
-  ⟨fun c => isometry_dcomp (fun i (x : M i) => x * c.unop i) fun _ => isometry_mul_right _⟩
+  ⟨fun c => .piMap (fun i (x : M i) => x * c.unop i) fun _ => isometry_mul_right _⟩
 
 instance Additive.isometricVAdd : IsometricVAdd (Additive M) X :=
-  ⟨fun c => isometry_smul X (toMul c)⟩
+  ⟨fun c => isometry_smul X c.toMul⟩
 
 instance Additive.isometricVAdd' [Mul M] [PseudoEMetricSpace M] [IsometricSMul M M] :
     IsometricVAdd (Additive M) (Additive M) :=
-  ⟨fun c x y => edist_smul_left (toMul c) (toMul x) (toMul y)⟩
+  ⟨fun c x y => edist_smul_left c.toMul x.toMul y.toMul⟩
 
 instance Additive.isometricVAdd'' [Mul M] [PseudoEMetricSpace M] [IsometricSMul Mᵐᵒᵖ M] :
     IsometricVAdd (Additive M)ᵃᵒᵖ (Additive M) :=
-  ⟨fun c x y => edist_smul_left (MulOpposite.op (toMul c.unop)) (toMul x) (toMul y)⟩
+  ⟨fun c x y => edist_smul_left (MulOpposite.op c.unop.toMul) x.toMul y.toMul⟩
 
 instance Multiplicative.isometricSMul {M X} [VAdd M X] [PseudoEMetricSpace X]
     [IsometricVAdd M X] : IsometricSMul (Multiplicative M) X :=
-  ⟨fun c => isometry_vadd X (toAdd c)⟩
+  ⟨fun c => isometry_vadd X c.toAdd⟩
 
 instance Multiplicative.isometricSMul' [Add M] [PseudoEMetricSpace M] [IsometricVAdd M M] :
     IsometricSMul (Multiplicative M) (Multiplicative M) :=
-  ⟨fun c x y => edist_vadd_left (toAdd c) (toAdd x) (toAdd y)⟩
+  ⟨fun c x y => edist_vadd_left c.toAdd x.toAdd y.toAdd⟩
 
 instance Multiplicative.isometricVAdd'' [Add M] [PseudoEMetricSpace M]
     [IsometricVAdd Mᵃᵒᵖ M] : IsometricSMul (Multiplicative M)ᵐᵒᵖ (Multiplicative M) :=
-  ⟨fun c x y => edist_vadd_left (AddOpposite.op (toAdd c.unop)) (toAdd x) (toAdd y)⟩
+  ⟨fun c x y => edist_vadd_left (AddOpposite.op c.unop.toAdd) x.toAdd y.toAdd⟩
 
 end Instances

@@ -199,7 +199,7 @@ theorem IsPath.of_cons {u v w : V} {h : G.Adj u v} {p : G.Walk v w} :
 @[simp]
 theorem cons_isPath_iff {u v w : V} (h : G.Adj u v) (p : G.Walk v w) :
     (cons h p).IsPath ↔ p.IsPath ∧ u ∉ p.support := by
-  constructor <;> simp (config := { contextual := true }) [isPath_def]
+  constructor <;> simp +contextual [isPath_def]
 
 protected lemma IsPath.cons {p : Walk G v w} (hp : p.IsPath) (hu : u ∉ p.support) {h : G.Adj u v} :
     (cons h p).IsPath :=
@@ -248,6 +248,15 @@ theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
     support_cons, List.tail_cons]
   have : p.support.Nodup → p.edges.Nodup := edges_nodup_of_support_nodup
   tauto
+
+protected lemma IsCycle.reverse {p : G.Walk u u} (h : p.IsCycle) : p.reverse.IsCycle := by
+  simp only [Walk.isCycle_def, nodup_tail_support_reverse] at h ⊢
+  exact ⟨h.1.reverse, fun h' ↦ h.2.1 (by simp_all [← Walk.length_eq_zero_iff]), h.2.2⟩
+
+@[simp]
+lemma isCycle_reverse {p : G.Walk u u} : p.reverse.IsCycle ↔ p.IsCycle where
+  mp h := by simpa using h.reverse
+  mpr := .reverse
 
 lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) (hp' : ¬ p.Nil) : p.tail.IsPath := by
   rw [Walk.isPath_def] at hp ⊢
@@ -488,7 +497,7 @@ end Walk
 namespace Walk
 
 variable {G G' G''}
-variable (f : G →g G') (f' : G' →g G'') {u v u' v' : V} (p : G.Walk u v)
+variable (f : G →g G') {u v : V} (p : G.Walk u v)
 variable {p f}
 
 theorem map_isPath_of_injective (hinj : Function.Injective f) (hp : p.IsPath) :
@@ -589,8 +598,8 @@ end Path
 
 namespace Walk
 
-variable {G} {p} {u v : V} {H : SimpleGraph V}
-variable (p : G.Walk u v)
+variable {G} {u v : V} {H : SimpleGraph V}
+variable {p : G.Walk u v}
 
 protected theorem IsPath.transfer (hp) (pp : p.IsPath) :
     (p.transfer H hp).IsPath := by
@@ -857,11 +866,11 @@ protected theorem lift_mk {β : Sort*} {f : V → β}
 
 protected theorem «exists» {p : G.ConnectedComponent → Prop} :
     (∃ c : G.ConnectedComponent, p c) ↔ ∃ v, p (G.connectedComponentMk v) :=
-  (surjective_quot_mk G.Reachable).exists
+  Quot.mk_surjective.exists
 
 protected theorem «forall» {p : G.ConnectedComponent → Prop} :
     (∀ c : G.ConnectedComponent, p c) ↔ ∀ v, p (G.connectedComponentMk v) :=
-  (surjective_quot_mk G.Reachable).forall
+  Quot.mk_surjective.forall
 
 theorem _root_.SimpleGraph.Preconnected.subsingleton_connectedComponent (h : G.Preconnected) :
     Subsingleton G.ConnectedComponent :=

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Topology.Algebra.Polynomial
-import Mathlib.Topology.ContinuousMap.Algebra
+import Mathlib.Topology.ContinuousMap.Star
 import Mathlib.Topology.UnitInterval
 import Mathlib.Algebra.Star.Subalgebra
 
@@ -164,7 +164,7 @@ open ContinuousMap
 /-- The preimage of polynomials on `[0,1]` under the pullback map by `x ↦ (b-a) * x + a`
 is the polynomials on `[a,b]`. -/
 theorem polynomialFunctions.comap_compRightAlgHom_iccHomeoI (a b : ℝ) (h : a < b) :
-    (polynomialFunctions I).comap (compRightAlgHom ℝ ℝ (iccHomeoI a b h).symm.toContinuousMap) =
+    (polynomialFunctions I).comap (compRightAlgHom ℝ ℝ (iccHomeoI a b h).symm) =
       polynomialFunctions (Set.Icc a b) := by
   ext f
   fconstructor

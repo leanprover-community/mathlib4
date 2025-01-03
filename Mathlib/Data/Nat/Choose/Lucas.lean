@@ -3,6 +3,7 @@ Copyright (c) 2023 Gareth Ma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gareth Ma
 -/
+import Mathlib.Algebra.CharP.Lemmas
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Polynomial.Basic
 
@@ -22,7 +23,7 @@ k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`, r
 
 open Finset hiding choose
 
-open Nat BigOperators Polynomial
+open Nat Polynomial
 
 namespace Choose
 
@@ -33,7 +34,7 @@ modulo `p`. Also see `choose_modEq_choose_mod_mul_choose_div_nat` for the versio
 theorem choose_modEq_choose_mod_mul_choose_div :
     choose n k ≡ choose (n % p) (k % p) * choose (n / p) (k / p) [ZMOD p] := by
   have decompose : ((X : (ZMod p)[X]) + 1) ^ n = (X + 1) ^ (n % p) * (X ^ p + 1) ^ (n / p) := by
-    simpa using add_pow_eq_add_pow_mod_mul_pow_add_pow_div _ (X : (ZMod p)[X]) 1
+    simpa using add_pow_eq_mul_pow_add_pow_div_char (X : (ZMod p)[X]) 1 p _
   simp only [← ZMod.intCast_eq_intCast_iff, Int.cast_mul, Int.cast_ofNat,
     ← coeff_X_add_one_pow _ n k, ← eq_intCast (Int.castRingHom (ZMod p)), ← coeff_map,
     Polynomial.map_pow, Polynomial.map_add, Polynomial.map_one, map_X, decompose]
@@ -47,8 +48,8 @@ theorem choose_modEq_choose_mod_mul_choose_div :
     rw [Prod.mk.injEq]
     constructor <;> intro h
     · simp only [mem_product, mem_range] at hx
-      have h' : x₁ < p := lt_of_lt_of_le hx.left <| mod_lt _ Fin.size_pos'
-      rw [h, add_mul_mod_self_left, add_mul_div_left _ _ Fin.size_pos', eq_comm (b := x₂)]
+      have h' : x₁ < p := lt_of_lt_of_le hx.left <| mod_lt _ Fin.pos'
+      rw [h, add_mul_mod_self_left, add_mul_div_left _ _ Fin.pos', eq_comm (b := x₂)]
       exact ⟨mod_eq_of_lt h', self_eq_add_left.mpr (div_eq_of_lt h')⟩
     · rw [← h.left, ← h.right, mod_add_div]
   simp only [finset_sum_coeff, coeff_mul_natCast, coeff_X_pow, ite_mul, zero_mul, ← cast_mul]

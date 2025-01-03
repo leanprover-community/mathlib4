@@ -3,9 +3,8 @@ Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.CategoryTheory.Comma.StructuredArrow
-import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.PUnit
+import Mathlib.CategoryTheory.Comma.StructuredArrow.Basic
+import Mathlib.CategoryTheory.Category.Cat
 
 /-!
 # The category of elements
@@ -47,7 +46,6 @@ def Functor.Elements (F : C ⥤ Type w) :=
 /-- Constructor for the type `F.Elements` when `F` is a functor to types. -/
 abbrev Functor.elementsMk (F : C ⥤ Type w) (X : C) (x : F.obj X) : F.Elements := ⟨X, x⟩
 
--- Porting note: added because Sigma.ext would be triggered automatically
 lemma Functor.Elements.ext {F : C ⥤ Type w} (x y : F.Elements) (h₁ : x.fst = y.fst)
     (h₂ : F.map (eqToHom h₁) x.snd = y.snd) : x = y := by
   cases x
@@ -223,9 +221,9 @@ def fromCostructuredArrow (F : Cᵒᵖ ⥤ Type v) : (CostructuredArrow yoneda F
         Category.comp_id, yoneda_obj_map]
       have : yoneda.map f.unop.left ≫ (unop X).hom = (unop Y).hom := by
         convert f.unop.3
-      erw [← this]
+      rw [← this]
       simp only [yoneda_map_app, FunctorToTypes.comp]
-      erw [Category.id_comp]⟩
+      rw [Category.id_comp]⟩
 
 @[simp]
 theorem fromCostructuredArrow_obj_mk (F : Cᵒᵖ ⥤ Type v) {X : C} (f : yoneda.obj X ⟶ F) :

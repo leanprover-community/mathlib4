@@ -3,9 +3,9 @@ Copyright (c) 2019 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
 -/
+import Mathlib.Algebra.Order.Group.Pointwise.Interval
 import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Data.Rat.Denumerable
-import Mathlib.Data.Set.Pointwise.Interval
+import Mathlib.Data.Rat.Cardinal
 import Mathlib.SetTheory.Cardinal.Continuum
 
 /-!
@@ -200,9 +200,12 @@ theorem mk_real : #ℝ = 𝔠 := by
 theorem mk_univ_real : #(Set.univ : Set ℝ) = 𝔠 := by rw [mk_univ, mk_real]
 
 /-- **Non-Denumerability of the Continuum**: The reals are not countable. -/
-theorem not_countable_real : ¬(Set.univ : Set ℝ).Countable := by
-  rw [← le_aleph0_iff_set_countable, not_le, mk_univ_real]
-  apply cantor
+instance : Uncountable ℝ := by
+  rw [← aleph0_lt_mk_iff, mk_real]
+  exact aleph0_lt_continuum
+
+theorem not_countable_real : ¬(Set.univ : Set ℝ).Countable :=
+  not_countable_univ
 
 /-- The cardinality of the interval (a, ∞). -/
 theorem mk_Ioi_real (a : ℝ) : #(Ioi a) = 𝔠 := by
@@ -249,7 +252,7 @@ theorem mk_Ioo_real {a b : ℝ} (h : a < b) : #(Ioo a b) = 𝔠 := by
   replace h := sub_pos_of_lt h
   have h2 : #(Inv.inv '' Ioo 0 (b - a)) ≤ #(Ioo 0 (b - a)) := mk_image_le
   refine le_trans ?_ h2
-  rw [image_inv, inv_Ioo_0_left h, mk_Ioi_real]
+  rw [image_inv_eq_inv, inv_Ioo_0_left h, mk_Ioi_real]
 
 /-- The cardinality of the interval [a, b). -/
 theorem mk_Ico_real {a b : ℝ} (h : a < b) : #(Ico a b) = 𝔠 :=

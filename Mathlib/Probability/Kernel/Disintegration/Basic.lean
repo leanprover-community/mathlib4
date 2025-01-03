@@ -3,8 +3,8 @@ Copyright (c) 2024 Yaël Dillies, Kin Yau James Wong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kin Yau James Wong, Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.MeasureCompProd
-import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+import Mathlib.Probability.Kernel.Composition.MeasureCompProd
+import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
 
 /-!
 # Disintegration of measures and kernels
@@ -80,7 +80,7 @@ private lemma IsCondKernel.apply_of_ne_zero_of_measurableSet [MeasurableSingleto
       have : Prod.mk a ⁻¹' (Prod.mk x '' s) = ∅ := by ext y; simp [Ne.symm hax]
       simp only [this, measure_empty]
   simp_rw [this]
-  rw [MeasureTheory.lintegral_indicator _ (measurableSet_singleton x)]
+  rw [MeasureTheory.lintegral_indicator (measurableSet_singleton x)]
   simp only [Measure.restrict_singleton, lintegral_smul_measure, lintegral_dirac]
   rw [← mul_assoc, ENNReal.inv_mul_cancel hx (measure_ne_top _ _), one_mul]
 
@@ -216,7 +216,7 @@ instance condKernelCountable.instIsCondKernel [∀ a, IsMarkovKernel (κCond a)]
   constructor
   ext a s hs
   conv_rhs => rw [← (κ a).disintegrate (κCond a)]
-  simp_rw [compProd_apply _ _ _ hs, condKernelCountable_apply, Measure.compProd_apply hs]
+  simp_rw [compProd_apply hs, condKernelCountable_apply, Measure.compProd_apply hs]
   congr
 
 end Countable

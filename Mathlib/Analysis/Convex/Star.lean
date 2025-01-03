@@ -327,7 +327,7 @@ theorem StarConvex.affine_image (f : E →ᵃ[𝕜] F) {s : Set E} (hs : StarCon
   rw [Convex.combo_affine_apply hab, hy'f]
 
 theorem StarConvex.neg (hs : StarConvex 𝕜 x s) : StarConvex 𝕜 (-x) (-s) := by
-  rw [← image_neg]
+  rw [← image_neg_eq_neg]
   exact hs.is_linear_image IsLinearMap.isLinearMap_neg
 
 theorem StarConvex.sub (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 y t) :
@@ -386,7 +386,7 @@ theorem starConvex_iff_div : StarConvex 𝕜 x s ↔ ∀ ⦃y⦄, y ∈ s →
 theorem StarConvex.mem_smul (hs : StarConvex 𝕜 0 s) (hx : x ∈ s) {t : 𝕜} (ht : 1 ≤ t) :
     x ∈ t • s := by
   rw [mem_smul_set_iff_inv_smul_mem₀ (zero_lt_one.trans_le ht).ne']
-  exact hs.smul_mem hx (by positivity) (inv_le_one ht)
+  exact hs.smul_mem hx (by positivity) (inv_le_one_of_one_le₀ ht)
 
 end AddCommGroup
 

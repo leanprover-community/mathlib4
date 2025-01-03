@@ -154,7 +154,7 @@ lemma lintegral_exponentialPDF_eq_antiDeriv {r : ℝ} (hr : 0 < r) (x : ℝ) :
         exact Continuous.continuousOn (Continuous.comp' (continuous_mul_left (-1)) this)
       · simp only [neg_mul, one_mul]
         exact fun _ _ ↦ HasDerivAt.hasDerivWithinAt hasDerivAt_neg_exp_mul_exp
-    · apply Integrable.aestronglyMeasurable (Integrable.const_mul _ _)
+    · refine Integrable.aestronglyMeasurable (Integrable.const_mul ?_ _)
       rw [← IntegrableOn, integrableOn_Icc_iff_integrableOn_Ioc]
       exact exp_neg_integrableOn_Ioc hr
     · refine ne_of_lt (IntegrableOn.setLIntegral_lt_top ?_)

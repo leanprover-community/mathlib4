@@ -6,6 +6,7 @@ Authors: Xavier Roblot
 import Mathlib.MeasureTheory.Group.GeometryOfNumbers
 import Mathlib.MeasureTheory.Measure.Lebesgue.VolumeOfBalls
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.Basic
+import Mathlib.Analysis.SpecialFunctions.Gamma.BohrMollerup
 
 /-!
 # Convex Bodies
@@ -40,7 +41,7 @@ variable (K : Type*) [Field K]
 
 namespace NumberField.mixedEmbedding
 
-open NumberField NumberField.InfinitePlace FiniteDimensional
+open NumberField NumberField.InfinitePlace Module
 
 section convexBodyLT
 
@@ -77,18 +78,9 @@ open scoped Classical
 
 variable [NumberField K]
 
-instance : IsAddHaarMeasure (volume : Measure (mixedSpace K)) := prod.instIsAddHaarMeasure _ _
-
-instance : NoAtoms (volume : Measure (mixedSpace K)) := by
-  obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
-  by_cases hw : IsReal w
-  · exact @prod.instNoAtoms_fst _ _ _ _ volume volume _ (pi_noAtoms ⟨w, hw⟩)
-  · exact @prod.instNoAtoms_snd _ _ _ _ volume volume _
-      (pi_noAtoms ⟨w, not_isReal_iff_isComplex.mp hw⟩)
-
 /-- The fudge factor that appears in the formula for the volume of `convexBodyLT`. -/
 noncomputable abbrev convexBodyLTFactor : ℝ≥0 :=
-  (2 : ℝ≥0) ^ NrRealPlaces K * NNReal.pi ^ NrComplexPlaces K
+  (2 : ℝ≥0) ^ nrRealPlaces K * NNReal.pi ^ nrComplexPlaces K
 
 theorem convexBodyLTFactor_ne_zero : convexBodyLTFactor K ≠ 0 :=
   mul_ne_zero (pow_ne_zero _ two_ne_zero) (pow_ne_zero _ pi_ne_zero)
@@ -104,10 +96,10 @@ theorem convexBodyLT_volume :
     _ = (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (2 * (f x.val))) *
           ∏ x : {w // InfinitePlace.IsComplex w}, ENNReal.ofReal (f x.val) ^ 2 * NNReal.pi := by
       simp_rw [volume_eq_prod, prod_prod, volume_pi, pi_pi, Real.volume_ball, Complex.volume_ball]
-    _ = ((2 : ℝ≥0) ^ NrRealPlaces K
+    _ = ((2 : ℝ≥0) ^ nrRealPlaces K
           * (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val)))
           * ((∏ x : {w // IsComplex w}, ENNReal.ofReal (f x.val) ^ 2) *
-            NNReal.pi ^ NrComplexPlaces K) := by
+            NNReal.pi ^ nrComplexPlaces K) := by
       simp_rw [ofReal_mul (by norm_num : 0 ≤ (2 : ℝ)), Finset.prod_mul_distrib, Finset.prod_const,
         Finset.card_univ, ofReal_ofNat, ofReal_coe_nnreal, coe_ofNat]
     _ = (convexBodyLTFactor K) * ((∏ x : {w // InfinitePlace.IsReal w}, .ofReal (f x.val)) *
@@ -132,9 +124,9 @@ theorem adjust_f {w₁ : InfinitePlace K} (B : ℝ≥0) (hf : ∀ w, w ≠ w₁ 
     ∃ g : InfinitePlace K → ℝ≥0, (∀ w, w ≠ w₁ → g w = f w) ∧ ∏ w, (g w) ^ mult w = B := by
   let S := ∏ w ∈ Finset.univ.erase w₁, (f w) ^ mult w
   refine ⟨Function.update f w₁ ((B * S⁻¹) ^ (mult w₁ : ℝ)⁻¹), ?_, ?_⟩
-  · exact fun w hw => Function.update_noteq hw _ f
-  · rw [← Finset.mul_prod_erase Finset.univ _ (Finset.mem_univ w₁), Function.update_same,
-      Finset.prod_congr rfl fun w hw => by rw [Function.update_noteq (Finset.ne_of_mem_erase hw)],
+  · exact fun w hw => Function.update_of_ne hw _ f
+  · rw [← Finset.mul_prod_erase Finset.univ _ (Finset.mem_univ w₁), Function.update_self,
+      Finset.prod_congr rfl fun w hw => by rw [Function.update_of_ne (Finset.ne_of_mem_erase hw)],
       ← NNReal.rpow_natCast, ← NNReal.rpow_mul, inv_mul_cancel₀, NNReal.rpow_one, mul_assoc,
       inv_mul_cancel₀, mul_one]
     · rw [Finset.prod_ne_zero_iff]
@@ -193,8 +185,8 @@ theorem convexBodyLT'_convex : Convex ℝ (convexBodyLT' K f w₀) := by
   refine Convex.prod (convex_pi (fun _ _ => convex_ball _ _)) (convex_pi (fun _ _ => ?_))
   split_ifs
   · simp_rw [abs_lt]
-    refine Convex.inter ((convex_halfspace_re_gt _).inter (convex_halfspace_re_lt _))
-      ((convex_halfspace_im_gt _).inter (convex_halfspace_im_lt _))
+    refine Convex.inter ((convex_halfSpace_re_gt _).inter (convex_halfSpace_re_lt _))
+      ((convex_halfSpace_im_gt _).inter (convex_halfSpace_im_lt _))
   · exact convex_ball _ _
 
 open MeasureTheory MeasureTheory.Measure
@@ -205,7 +197,7 @@ variable [NumberField K]
 
 /-- The fudge factor that appears in the formula for the volume of `convexBodyLT'`. -/
 noncomputable abbrev convexBodyLT'Factor : ℝ≥0 :=
-  (2 : ℝ≥0) ^ (NrRealPlaces K + 2) * NNReal.pi ^ (NrComplexPlaces K - 1)
+  (2 : ℝ≥0) ^ (nrRealPlaces K + 2) * NNReal.pi ^ (nrComplexPlaces K - 1)
 
 theorem convexBodyLT'Factor_ne_zero : convexBodyLT'Factor K ≠ 0 :=
   mul_ne_zero (pow_ne_zero _ two_ne_zero) (pow_ne_zero _ pi_ne_zero)
@@ -238,10 +230,10 @@ theorem convexBodyLT'_volume :
       · refine Finset.prod_congr rfl (fun w' hw' ↦ ?_)
         rw [if_neg (Finset.ne_of_mem_erase hw'), Complex.volume_ball]
       · simpa only [ite_true] using vol_box (f w₀)
-    _ = ((2 : ℝ≥0) ^ NrRealPlaces K *
+    _ = ((2 : ℝ≥0) ^ nrRealPlaces K *
           (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (f x.val))) *
             ((∏ x ∈ Finset.univ.erase  w₀, ENNReal.ofReal (f x.val) ^ 2) *
-              ↑pi ^ (NrComplexPlaces K - 1) * (4 * (f w₀) ^ 2)) := by
+              ↑pi ^ (nrComplexPlaces K - 1) * (4 * (f w₀) ^ 2)) := by
       simp_rw [ofReal_mul (by norm_num : 0 ≤ (2 : ℝ)), Finset.prod_mul_distrib, Finset.prod_const,
         Finset.card_erase_of_mem (Finset.mem_univ _), Finset.card_univ, ofReal_ofNat,
         ofReal_coe_nnreal, coe_ofNat]
@@ -385,7 +377,7 @@ theorem convexBodySum_compact : IsCompact (convexBodySum K B) := by
 
 /-- The fudge factor that appears in the formula for the volume of `convexBodyLt`. -/
 noncomputable abbrev convexBodySumFactor : ℝ≥0 :=
-  (2 : ℝ≥0) ^ NrRealPlaces K * (NNReal.pi / 2) ^ NrComplexPlaces K / (finrank ℚ K).factorial
+  (2 : ℝ≥0) ^ nrRealPlaces K * (NNReal.pi / 2) ^ nrComplexPlaces K / (finrank ℚ K).factorial
 
 theorem convexBodySumFactor_ne_zero : convexBodySumFactor K ≠ 0 := by
   refine div_ne_zero ?_ <| Nat.cast_ne_zero.mpr (Nat.factorial_ne_zero _)
@@ -418,7 +410,7 @@ theorem convexBodySum_volume :
     simp_rw [mixedEmbedding.finrank, div_one, Gamma_nat_eq_factorial, ofReal_div_of_pos
       (Nat.cast_pos.mpr (Nat.factorial_pos _)), Real.rpow_one, ofReal_natCast]
     suffices ∫ x : mixedSpace K, exp (-convexBodySumFun x) =
-        (2 : ℝ) ^ NrRealPlaces K * (π / 2) ^ NrComplexPlaces K by
+        (2 : ℝ) ^ nrRealPlaces K * (π / 2) ^ nrComplexPlaces K by
       rw [this, convexBodySumFactor, ofReal_mul (by positivity), ofReal_pow zero_le_two,
         ofReal_pow (by positivity), ofReal_div_of_pos zero_lt_two, ofReal_ofNat,
         ← NNReal.coe_real_pi, ofReal_coe_nnreal, coe_div (Nat.cast_ne_zero.mpr
@@ -429,28 +421,27 @@ theorem convexBodySum_volume :
               (∫ x : {w : InfinitePlace K // IsComplex w} → ℂ, ∏ w, exp (- 2 * ‖x w‖)) := by
         simp_rw [convexBodySumFun_apply', neg_add, ← neg_mul, Finset.mul_sum,
           ← Finset.sum_neg_distrib, exp_add, exp_sum, ← integral_prod_mul, volume_eq_prod]
-      _ = (∫ x : ℝ, exp (-|x|)) ^ NrRealPlaces K *
-              (∫ x : ℂ, Real.exp (-2 * ‖x‖)) ^ NrComplexPlaces K := by
+      _ = (∫ x : ℝ, exp (-|x|)) ^ nrRealPlaces K *
+              (∫ x : ℂ, Real.exp (-2 * ‖x‖)) ^ nrComplexPlaces K := by
         rw [integral_fintype_prod_eq_pow _ (fun x => exp (- ‖x‖)), integral_fintype_prod_eq_pow _
           (fun x => exp (- 2 * ‖x‖))]
         simp_rw [norm_eq_abs]
-      _ =  (2 * Gamma (1 / 1 + 1)) ^ NrRealPlaces K *
-              (π * (2 : ℝ) ^ (-(2 : ℝ) / 1) * Gamma (2 / 1 + 1)) ^ NrComplexPlaces K := by
+      _ =  (2 * Gamma (1 / 1 + 1)) ^ nrRealPlaces K *
+              (π * (2 : ℝ) ^ (-(2 : ℝ) / 1) * Gamma (2 / 1 + 1)) ^ nrComplexPlaces K := by
         rw [integral_comp_abs (f := fun x => exp (- x)), ← integral_exp_neg_rpow zero_lt_one,
           ← Complex.integral_exp_neg_mul_rpow le_rfl zero_lt_two]
         simp_rw [Real.rpow_one]
-      _ = (2 : ℝ) ^ NrRealPlaces K * (π / 2) ^ NrComplexPlaces K := by
+      _ = (2 : ℝ) ^ nrRealPlaces K * (π / 2) ^ nrComplexPlaces K := by
         simp_rw [div_one, one_add_one_eq_two, Gamma_add_one two_ne_zero, Gamma_two, mul_one,
           mul_assoc, ← Real.rpow_add_one two_ne_zero, show (-2 : ℝ) + 1 = -1 by norm_num,
-          Real.rpow_neg_one]
-        rfl
+          Real.rpow_neg_one, div_eq_mul_inv]
 
 end convexBodySum
 
 section minkowski
 
 open scoped Classical
-open MeasureTheory MeasureTheory.Measure FiniteDimensional ZSpan Real Submodule
+open MeasureTheory MeasureTheory.Measure Module ZSpan Real Submodule
 
 open scoped ENNReal NNReal nonZeroDivisors IntermediateField
 
@@ -578,7 +569,7 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
       rw [h_eq, ← norm_embedding_eq, Real.lt_sqrt (norm_nonneg _), ← Complex.re_add_im
         (embedding w₀ _), Complex.norm_eq_abs, Complex.abs_add_mul_I, Real.sq_sqrt (by positivity)]
       refine add_lt_add ?_ ?_
-      · rw [← sq_abs, sq_lt_one_iff (abs_nonneg _)]
+      · rw [← sq_abs, sq_lt_one_iff₀ (abs_nonneg _)]
         exact h_le₀.1
       · rw [sq_lt_sq, NNReal.abs_eq, ← NNReal.sq_sqrt B]
         exact h_le₀.2

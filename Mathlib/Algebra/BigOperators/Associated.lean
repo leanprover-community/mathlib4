@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Jens Wagemaker, Anne Baanen
 -/
 import Mathlib.Algebra.Associated.Basic
 import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Algebra.Group.Submonoid.Membership
 
 /-!
 # Products of associated, prime, and irreducible elements.
@@ -135,7 +136,7 @@ theorem Multiset.prod_primes_dvd [CancelCommMonoidWithZero α]
       Multiset.countP_pos] at this
     exact this ⟨b, b_in_s, assoc.symm⟩
 
-theorem Finset.prod_primes_dvd [CancelCommMonoidWithZero α] [Unique αˣ] {s : Finset α} (n : α)
+theorem Finset.prod_primes_dvd [CancelCommMonoidWithZero α] [Subsingleton αˣ] {s : Finset α} (n : α)
     (h : ∀ a ∈ s, Prime a) (div : ∀ a ∈ s, a ∣ n) : (∏ p ∈ s, p) ∣ n := by
   classical
     exact
@@ -170,7 +171,7 @@ theorem rel_associated_iff_map_eq_map {p q : Multiset α} :
 theorem prod_eq_one_iff {p : Multiset (Associates α)} :
     p.prod = 1 ↔ ∀ a ∈ p, (a : Associates α) = 1 :=
   Multiset.induction_on p (by simp)
-    (by simp (config := { contextual := true }) [mul_eq_one, or_imp, forall_and])
+    (by simp +contextual [mul_eq_one, or_imp, forall_and])
 
 theorem prod_le_prod {p q : Multiset (Associates α)} (h : p ≤ q) : p.prod ≤ q.prod := by
   haveI := Classical.decEq (Associates α)
@@ -187,7 +188,7 @@ variable [CancelCommMonoidWithZero α]
 
 theorem exists_mem_multiset_le_of_prime {s : Multiset (Associates α)} {p : Associates α}
     (hp : Prime p) : p ≤ s.prod → ∃ a ∈ s, p ≤ a :=
-  Multiset.induction_on s (fun ⟨d, Eq⟩ => (hp.ne_one (mul_eq_one.1 Eq.symm).1).elim)
+  Multiset.induction_on s (fun ⟨_, Eq⟩ => (hp.ne_one (mul_eq_one.1 Eq.symm).1).elim)
     fun a s ih h =>
     have : p ≤ a * s.prod := by simpa using h
     match Prime.le_or_le hp this with

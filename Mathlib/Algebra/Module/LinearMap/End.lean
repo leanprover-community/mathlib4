@@ -6,6 +6,8 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Module.LinearMap.Defs
+import Mathlib.Algebra.Module.Equiv.Opposite
+import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
 # Endomorphisms of a module
@@ -28,7 +30,7 @@ universe u v
 abbrev Module.End (R : Type u) (M : Type v) [Semiring R] [AddCommMonoid M] [Module R M] :=
   M →ₗ[R] M
 
-variable {R R₁ R₂ S M M₁ M₂ M₃ N N₁ N₂ : Type*}
+variable {R R₂ S M M₁ M₂ M₃ N₁ : Type*}
 
 namespace LinearMap
 
@@ -67,7 +69,7 @@ instance _root_.Module.End.instNontrivial [Nontrivial M] : Nontrivial (Module.En
 instance _root_.Module.End.monoid : Monoid (Module.End R M) where
   mul := (· * ·)
   one := (1 : M →ₗ[R] M)
-  mul_assoc f g h := LinearMap.ext fun x ↦ rfl
+  mul_assoc _ _ _ := LinearMap.ext fun _ ↦ rfl
   mul_one := comp_id
   one_mul := id_comp
 
@@ -299,7 +301,7 @@ section AddCommMonoid
 
 section SMulRight
 
-variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₁] [Module R M] [Module R M₁]
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M₁] [Module R M] [Module R M₁]
 variable [Semiring S] [Module R S] [Module S M] [IsScalarTower R S M]
 
 /-- When `f` is an `R`-linear map taking values in `S`, then `fun b ↦ f b • x` is an `R`-linear
@@ -361,7 +363,7 @@ section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
 variable [Module R M] [Module R M₂] [Module R M₃]
-variable (f g : M →ₗ[R] M₂)
+variable (f : M →ₗ[R] M₂)
 
 /-- Composition by `f : M₂ → M₃` is a linear map from the space of linear maps `M → M₂`
 to the space of linear maps `M → M₃`. -/

@@ -3,13 +3,12 @@ Copyright (c) 2024 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Jireh Loreaux
 -/
-
-import Mathlib.RingTheory.TwoSidedIdeal.Lattice
+import Mathlib.Algebra.Group.Subgroup.Map
+import Mathlib.Algebra.Module.Opposite
+import Mathlib.Algebra.Module.Submodule.Lattice
 import Mathlib.RingTheory.Congruence.Opposite
-import Mathlib.Algebra.BigOperators.Ring
-import Mathlib.Data.Fintype.BigOperators
-import Mathlib.RingTheory.Ideal.Basic
-import Mathlib.Order.GaloisConnection
+import Mathlib.RingTheory.Ideal.Defs
+import Mathlib.RingTheory.TwoSidedIdeal.Lattice
 
 /-!
 # Operations on two-sided ideals
@@ -89,29 +88,13 @@ variable [NonUnitalRingHomClass F R S]
 
 /--
 Preimage of a two-sided ideal, as a two-sided ideal. -/
-def comap (I : TwoSidedIdeal S) : TwoSidedIdeal R :=
-{ ringCon := I.ringCon.comap f }
+def comap (I : TwoSidedIdeal S) : TwoSidedIdeal R where
+  ringCon := I.ringCon.comap f
 
 lemma mem_comap {I : TwoSidedIdeal S} {x : R} :
     x ∈ I.comap f ↔ f x ∈ I := by
   simp [comap, RingCon.comap, mem_iff]
 
-/--
-The kernel of a ring homomorphism, as a two-sided ideal.
--/
-def ker : TwoSidedIdeal R :=
-  .mk'
-    {r | f r = 0} (map_zero _) (by rintro _ _ (h1 : f _ = 0) (h2 : f _ = 0); simp [h1, h2])
-    (by rintro _ (h : f _ = 0); simp [h]) (by rintro _ _ (h : f _ = 0); simp [h])
-    (by rintro _ _ (h : f _ = 0); simp [h])
-
-lemma mem_ker {x : R} : x ∈ ker f ↔ f x = 0 := by
-  delta ker; rw [mem_mk']
-  · rfl
-  · rintro _ _ (h1 : f _ = 0) (h2 : f _ = 0); simp [h1, h2]
-  · rintro _ (h : f _ = 0); simp [h]
-  · rintro _ _ (h : f _ = 0); simp [h]
-  · rintro _ _ (h : f _ = 0); simp [h]
 
 end NonUnitalNonAssocRing
 
@@ -146,10 +129,10 @@ lemma mem_span_iff_mem_addSubgroup_closure_absorbing {s : Set R}
   induction principle for `AddSubgroup`, we must also have `z ∈ J`. -/
   case mem_ideal_of_subset =>
     simp only [I, SetLike.mem_coe, mem_mk'] at hz
-    induction hz using closure_induction' with
+    induction hz using closure_induction with
     | mem x hx => exact hJ hx
     | one => exact zero_mem _
-    | mul x _ y _ hx hy => exact J.add_mem hx hy
+    | mul x y _ _ hx hy => exact J.add_mem hx hy
     | inv x _ hx => exact J.neg_mem hx
 
 open Pointwise Set
@@ -209,6 +192,47 @@ lemma mem_span_iff_mem_addSubgroup_closure {s : Set R} {z : R} :
     · rintro - x ⟨y, hy, r, -, rfl⟩
       exact ⟨y, hy, r * x, mem_univ _, (mul_assoc ..).symm⟩
 
+variable (I : TwoSidedIdeal R)
+
+instance : SMul R I where smul r x := ⟨r • x.1, I.mul_mem_left _ _ x.2⟩
+
+instance : SMul Rᵐᵒᵖ I where smul r x := ⟨r • x.1, I.mul_mem_right _ _ x.2⟩
+
+instance leftModule : Module R I :=
+  Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ ↦ rfl
+
+@[simp]
+lemma coe_smul {r : R} {x : I} : (r • x : R) = r * (x : R) := rfl
+
+instance rightModule : Module Rᵐᵒᵖ I :=
+  Function.Injective.module _ (coeAddMonoidHom I) Subtype.coe_injective fun _ _ ↦ rfl
+
+@[simp]
+lemma coe_mop_smul {r : Rᵐᵒᵖ} {x : I} : (r • x : R) = (x : R) * r.unop := rfl
+
+instance : SMulCommClass R Rᵐᵒᵖ I where
+  smul_comm r s x := Subtype.ext <| smul_comm r s x.1
+
+/--
+For any `I : RingCon R`, when we view it as an ideal, `I.subtype` is the injective `R`-linear map
+`I → R`.
+-/
+@[simps]
+def subtype : I →ₗ[R] R where
+  toFun x := x.1
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+/--
+For any `RingCon R`, when we view it as an ideal in `Rᵒᵖ`, `subtype` is the injective `Rᵐᵒᵖ`-linear
+map `I → Rᵐᵒᵖ`.
+-/
+@[simps]
+def subtypeMop : I →ₗ[Rᵐᵒᵖ] Rᵐᵒᵖ where
+  toFun x := MulOpposite.op x.1
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
 /-- Given an ideal `I`, `span I` is the smallest two-sided ideal containing `I`. -/
 def fromIdeal : Ideal R →o TwoSidedIdeal R where
   toFun I := span I
@@ -226,6 +250,7 @@ def asIdeal : TwoSidedIdeal R →o Ideal R where
     smul_mem' := fun r x hx => I.mul_mem_left r x hx }
   monotone' _ _ h _ h' := h h'
 
+@[simp]
 lemma mem_asIdeal {I : TwoSidedIdeal R} {x : R} :
     x ∈ asIdeal I ↔ x ∈ I := by simp [asIdeal]
 
@@ -266,8 +291,39 @@ def orderIsoIdeal : TwoSidedIdeal R ≃o Ideal R where
   right_inv J := SetLike.ext fun x ↦ mem_span_iff.trans
     ⟨fun h ↦ mem_mk' _ _ _ _ _ _ _ |>.1 <| h (mk'
       J J.zero_mem J.add_mem J.neg_mem (J.mul_mem_left _) (J.mul_mem_right _))
-      (fun x => by simp [mem_mk']), by aesop⟩
+      (fun x => by simp), by aesop⟩
 
 end CommRing
 
 end TwoSidedIdeal
+
+namespace Ideal
+variable {R : Type*} [Ring R]
+
+/-- Bundle an `Ideal` that is already two-sided as a `TwoSidedIdeal`. -/
+def toTwoSided (I : Ideal R) (mul_mem_right : ∀ {x y}, x ∈ I → x * y ∈ I) : TwoSidedIdeal R :=
+  TwoSidedIdeal.mk' I I.zero_mem I.add_mem I.neg_mem (I.smul_mem _) mul_mem_right
+
+@[simp]
+lemma mem_toTwoSided {I : Ideal R} {h} {x : R} :
+    x ∈ I.toTwoSided h ↔ x ∈ I := by
+  simp [toTwoSided]
+
+@[simp]
+lemma coe_toTwoSided (I : Ideal R) (h) : (I.toTwoSided h : Set R) = I := by
+  simp [toTwoSided]
+
+@[simp]
+lemma toTwoSided_asIdeal (I : TwoSidedIdeal R) (h) : (TwoSidedIdeal.asIdeal I).toTwoSided h = I :=
+  by ext; simp
+
+@[simp]
+lemma asIdeal_toTwoSided (I : Ideal R) (h) : TwoSidedIdeal.asIdeal (I.toTwoSided h) = I := by
+  ext
+  simp
+
+instance : CanLift (Ideal R) (TwoSidedIdeal R) TwoSidedIdeal.asIdeal
+    (fun I => ∀ {x y}, x ∈ I → x * y ∈ I) where
+  prf I mul_mem_right := ⟨I.toTwoSided mul_mem_right, asIdeal_toTwoSided ..⟩
+
+end Ideal

@@ -37,7 +37,7 @@ Let `Semiring R`, `Algebra R S` and `Module R N`.
 -/
 
 
-universe u v w
+universe u v
 
 noncomputable section
 
@@ -47,8 +47,7 @@ open DirectSum TensorProduct
 
 open Set LinearMap Submodule
 
-variable {R : Type u} {M : Type v} {N : Type w}
-  [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R : Type u} {N : Type v} [CommSemiring R]
 
 variable {σ : Type*}
 
@@ -182,6 +181,13 @@ noncomputable def rTensorAlgEquiv :
     erw [← rTensorAlgHom_apply_eq (S := S)]
     simp only [_root_.map_mul, rTensorAlgHom_apply_eq]
     rfl
+
+@[simp]
+lemma rTensorAlgEquiv_apply (x : (MvPolynomial σ S) ⊗[R] N) :
+    rTensorAlgEquiv x = rTensorAlgHom x := by
+  rw [← AlgHom.coe_coe, ← AlgEquiv.toAlgHom_eq_coe]
+  congr 1
+  ext _ d <;> simpa [rTensorAlgEquiv] using rTensor_apply_tmul_apply _ _ d
 
 /-- The tensor product of the polynomial algebra by an algebra
   is algebraically equivalent to a polynomial algebra with

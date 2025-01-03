@@ -130,13 +130,13 @@ theorem toNNReal_lt_of_lt_coe (h : a < p) : a.toNNReal < p :=
 theorem toReal_max (hr : a ≠ ∞) (hp : b ≠ ∞) :
     ENNReal.toReal (max a b) = max (ENNReal.toReal a) (ENNReal.toReal b) :=
   (le_total a b).elim
-    (fun h => by simp only [h, (ENNReal.toReal_le_toReal hr hp).2 h, max_eq_right]) fun h => by
-    simp only [h, (ENNReal.toReal_le_toReal hp hr).2 h, max_eq_left]
+    (fun h => by simp only [h, ENNReal.toReal_mono hp h, max_eq_right]) fun h => by
+    simp only [h, ENNReal.toReal_mono hr h, max_eq_left]
 
 theorem toReal_min {a b : ℝ≥0∞} (hr : a ≠ ∞) (hp : b ≠ ∞) :
     ENNReal.toReal (min a b) = min (ENNReal.toReal a) (ENNReal.toReal b) :=
-  (le_total a b).elim (fun h => by simp only [h, (ENNReal.toReal_le_toReal hr hp).2 h, min_eq_left])
-    fun h => by simp only [h, (ENNReal.toReal_le_toReal hp hr).2 h, min_eq_right]
+  (le_total a b).elim (fun h => by simp only [h, ENNReal.toReal_mono hp h, min_eq_left])
+    fun h => by simp only [h, ENNReal.toReal_mono hr h, min_eq_right]
 
 theorem toReal_sup {a b : ℝ≥0∞} : a ≠ ∞ → b ≠ ∞ → (a ⊔ b).toReal = a.toReal ⊔ b.toReal :=
   toReal_max
@@ -356,7 +356,7 @@ theorem smul_toNNReal (a : ℝ≥0) (b : ℝ≥0∞) : (a • b).toNNReal = a * 
   change ((a : ℝ≥0∞) * b).toNNReal = a * b.toNNReal
   simp only [ENNReal.toNNReal_mul, ENNReal.toNNReal_coe]
 
--- Porting note (#11215): TODO: upgrade to `→*₀`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: upgrade to `→*₀`
 /-- `ENNReal.toNNReal` as a `MonoidHom`. -/
 def toNNRealHom : ℝ≥0∞ →* ℝ≥0 where
   toFun := ENNReal.toNNReal
@@ -372,7 +372,7 @@ theorem toNNReal_prod {ι : Type*} {s : Finset ι} {f : ι → ℝ≥0∞} :
     (∏ i ∈ s, f i).toNNReal = ∏ i ∈ s, (f i).toNNReal :=
   map_prod toNNRealHom _ _
 
--- Porting note (#11215): TODO: upgrade to `→*₀`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: upgrade to `→*₀`
 /-- `ENNReal.toReal` as a `MonoidHom`. -/
 def toRealHom : ℝ≥0∞ →* ℝ :=
   (NNReal.toRealHom : ℝ≥0 →* ℝ).comp toNNRealHom
@@ -428,7 +428,7 @@ protected theorem trichotomy₂ {p q : ℝ≥0∞} (hpq : p ≤ q) :
   repeat' right
   have hq' : 0 < q := lt_of_lt_of_le hp hpq
   have hp' : p < ∞ := lt_of_le_of_lt hpq hq
-  simp [ENNReal.toReal_le_toReal hp'.ne hq.ne, ENNReal.toReal_pos_iff, hpq, hp, hp', hq', hq]
+  simp [ENNReal.toReal_mono hq.ne hpq, ENNReal.toReal_pos_iff, hp, hp', hq', hq]
 
 protected theorem dichotomy (p : ℝ≥0∞) [Fact (1 ≤ p)] : p = ∞ ∨ 1 ≤ p.toReal :=
   haveI : p = ⊤ ∨ 0 < p.toReal ∧ 1 ≤ p.toReal := by
@@ -518,8 +518,8 @@ theorem toReal_sSup (s : Set ℝ≥0∞) (hf : ∀ r ∈ s, r ≠ ∞) :
   obtain rfl | ha := eq_or_ne a ∞
   · simp
   rw [le_iInf_iff, le_ofReal_iff_toReal_le ha, le_ciInf_iff ⟨0, by simpa [mem_lowerBounds]⟩]
-  exact forall_congr' fun i ↦ (le_ofReal_iff_toReal_le ha (h _)).symm
-  exact Real.iInf_nonneg h
+  · exact forall_congr' fun i ↦ (le_ofReal_iff_toReal_le ha (h _)).symm
+  · exact Real.iInf_nonneg h
 
 theorem iInf_add : iInf f + a = ⨅ i, f i + a :=
   le_antisymm (le_iInf fun _ => add_le_add (iInf_le _ _) <| le_rfl)
@@ -541,7 +541,7 @@ theorem add_iInf {a : ℝ≥0∞} : a + iInf f = ⨅ b, a + f b := by
 
 theorem iInf_add_iInf (h : ∀ i j, ∃ k, f k + g k ≤ f i + g j) : iInf f + iInf g = ⨅ a, f a + g a :=
   suffices ⨅ a, f a + g a ≤ iInf f + iInf g from
-    le_antisymm (le_iInf fun a => add_le_add (iInf_le _ _) (iInf_le _ _)) this
+    le_antisymm (le_iInf fun _ => add_le_add (iInf_le _ _) (iInf_le _ _)) this
   calc
     ⨅ a, f a + g a ≤ ⨅ (a) (a'), f a + g a' :=
       le_iInf₂ fun a a' => let ⟨k, h⟩ := h a a'; iInf_le_of_le k h

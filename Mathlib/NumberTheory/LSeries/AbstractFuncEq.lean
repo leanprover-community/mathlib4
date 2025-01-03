@@ -103,7 +103,7 @@ section symmetry
 /-- Reformulated functional equation with `f` and `g` interchanged. -/
 lemma WeakFEPair.h_feq' (P : WeakFEPair E) (x : ℝ) (hx : 0 < x) :
     P.g (1 / x) = (P.ε⁻¹ * ↑(x ^ P.k)) • P.f x := by
-  rw [(div_div_cancel' (one_ne_zero' ℝ) ▸ P.h_feq (1 / x) (one_div_pos.mpr hx):), ← mul_smul]
+  rw [(div_div_cancel₀ (one_ne_zero' ℝ) ▸ P.h_feq (1 / x) (one_div_pos.mpr hx):), ← mul_smul]
   convert (one_smul ℂ (P.g (1 / x))).symm using 2
   rw [one_div, inv_rpow hx.le, ofReal_inv]
   field_simp [P.hε, (rpow_pos_of_pos hx _).ne']
@@ -135,7 +135,7 @@ namespace WeakFEPair
 /-- As `x → 0`, we have `f x = x ^ (-P.k) • constant` up to a rapidly decaying error. -/
 lemma hf_zero (P : WeakFEPair E) (r : ℝ) :
     (fun x ↦ P.f x - (P.ε * ↑(x ^ (-P.k))) • P.g₀) =O[𝓝[>] 0] (· ^ r) := by
-  have := (P.hg_top (-(r + P.k))).comp_tendsto tendsto_inv_zero_atTop
+  have := (P.hg_top (-(r + P.k))).comp_tendsto tendsto_inv_nhdsGT_zero
   simp_rw [IsBigO, IsBigOWith, eventually_nhdsWithin_iff] at this ⊢
   obtain ⟨C, hC⟩ := this
   use ‖P.ε‖ * C
@@ -167,7 +167,7 @@ lemma hf_zero' (P : WeakFEPair E) :
     filter_upwards [eventually_le_nhds zero_lt_one] with x hx' (hx : 0 < x)
     apply le_mul_of_one_le_right (norm_nonneg _)
     rw [norm_of_nonneg (rpow_pos_of_pos hx _).le, rpow_neg hx.le]
-    exact one_le_inv (rpow_pos_of_pos hx _) (rpow_le_one hx.le hx' P.hk.le)
+    exact (one_le_inv₀ (rpow_pos_of_pos hx _)).2 (rpow_le_one hx.le hx' P.hk.le)
 
 end WeakFEPair
 
@@ -226,8 +226,8 @@ theorem functional_equation (s : ℂ) :
   have step3 := mellin_const_smul (fun t ↦ (t : ℂ) ^ (-P.k : ℂ) • P.g (1 / t)) (P.k - s) P.ε
   rw [step2] at step3
   rw [← step3]
-  -- now the integrand matches `P.h_feq'` on `Ioi 0`, so we can apply `setIntegral_congr`
-  refine setIntegral_congr measurableSet_Ioi (fun t ht ↦ ?_)
+  -- now the integrand matches `P.h_feq'` on `Ioi 0`, so we can apply `setIntegral_congr_fun`
+  refine setIntegral_congr_fun measurableSet_Ioi (fun t ht ↦ ?_)
   simp_rw [P.h_feq' t ht, ← mul_smul]
   -- some simple `cpow` arithmetic to finish
   rw [cpow_neg, ofReal_cpow (le_of_lt ht)]
@@ -261,7 +261,7 @@ lemma hf_modif_int :
     LocallyIntegrableOn P.f_modif (Ioi 0) := by
   have : LocallyIntegrableOn (fun x : ℝ ↦ (P.ε * ↑(x ^ (-P.k))) • P.g₀) (Ioi 0) := by
     refine ContinuousOn.locallyIntegrableOn ?_ measurableSet_Ioi
-    refine ContinuousAt.continuousOn (fun x (hx : 0 < x) ↦ ?_)
+    refine continuousOn_of_forall_continuousAt (fun x (hx : 0 < x) ↦ ?_)
     refine (continuousAt_const.mul ?_).smul continuousAt_const
     exact continuous_ofReal.continuousAt.comp (continuousAt_rpow_const _ _ (Or.inl hx.ne'))
   refine LocallyIntegrableOn.add (fun x hx ↦ ?_) (fun x hx ↦ ?_)
@@ -343,7 +343,7 @@ lemma f_modif_aux2 [CompleteSpace E] {s : ℂ} (hs : P.k < re s) :
   _ = ∫ (x : ℝ) in Ioi 0, (x : ℂ) ^ (s - 1) •
       ((Ioo 0 1).indicator (fun t : ℝ ↦ P.f₀ - (P.ε * ↑(t ^ (-P.k))) • P.g₀) x
       + ({1} : Set ℝ).indicator (fun _ ↦ P.f₀ - P.f 1) x) :=
-    setIntegral_congr measurableSet_Ioi (fun x hx ↦ by simp [f_modif_aux1 P hx])
+    setIntegral_congr_fun measurableSet_Ioi (fun x hx ↦ by simp [f_modif_aux1 P hx])
   _ = ∫ (x : ℝ) in Ioi 0, (x : ℂ) ^ (s - 1) • ((Ioo 0 1).indicator
       (fun t : ℝ ↦ P.f₀ - (P.ε * ↑(t ^ (-P.k))) • P.g₀) x) := by
     refine setIntegral_congr_ae measurableSet_Ioi (eventually_of_mem (U := {1}ᶜ)
@@ -353,7 +353,7 @@ lemma f_modif_aux2 [CompleteSpace E] {s : ℂ} (hs : P.k < re s) :
     simp_rw [← indicator_smul, setIntegral_indicator measurableSet_Ioo,
       inter_eq_right.mpr Ioo_subset_Ioi_self, integral_Ioc_eq_integral_Ioo]
   _ = ∫ x : ℝ in Ioc 0 1, ((x : ℂ) ^ (s - 1) • P.f₀ - P.ε • (x : ℂ) ^ (s - P.k - 1) • P.g₀) := by
-    refine setIntegral_congr measurableSet_Ioc (fun x ⟨hx, _⟩ ↦ ?_)
+    refine setIntegral_congr_fun measurableSet_Ioc (fun x ⟨hx, _⟩ ↦ ?_)
     rw [ofReal_cpow hx.le, ofReal_neg, smul_sub, ← mul_smul, mul_comm, mul_assoc, mul_smul,
       mul_comm, ← cpow_add _ _ (ofReal_ne_zero.mpr hx.ne'), ← sub_eq_add_neg, sub_right_comm]
   _ = (∫ (x : ℝ) in Ioc 0 1, (x : ℂ) ^ (s - 1)) • P.f₀

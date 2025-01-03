@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Polynomial.Eval.SMul
 import Mathlib.Algebra.Polynomial.HasseDeriv
 
 /-!
@@ -25,14 +26,12 @@ noncomputable section
 
 namespace Polynomial
 
-open Polynomial
-
 variable {R : Type*} [Semiring R] (r : R) (f : R[X])
 
 /-- The Taylor expansion of a polynomial `f` at `r`. -/
 def taylor (r : R) : R[X] →ₗ[R] R[X] where
   toFun f := f.comp (X + C r)
-  map_add' f g := add_comp
+  map_add' _ _ := add_comp
   map_smul' c f := by simp only [smul_eq_C_mul, C_mul_comp, RingHom.id_apply]
 
 theorem taylor_apply : taylor r f = f.comp (X + C r) :=

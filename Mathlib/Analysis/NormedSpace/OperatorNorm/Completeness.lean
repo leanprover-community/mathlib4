@@ -20,13 +20,12 @@ open Filter hiding map_smul
 open scoped NNReal Topology Uniformity
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
-variable {𝕜 𝕜₂ 𝕜₃ E Eₗ F Fₗ G Gₗ 𝓕 : Type*}
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup G]
-  [NormedAddCommGroup Fₗ]
+variable {𝕜 𝕜₂ E F Fₗ : Type*}
+variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedAddCommGroup Fₗ]
 
-variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂] [NontriviallyNormedField 𝕜₃]
-  [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜₃ G] [NormedSpace 𝕜 Fₗ] (c : 𝕜)
-  {σ₁₂ : 𝕜 →+* 𝕜₂} {σ₂₃ : 𝕜₂ →+* 𝕜₃} (f g : E →SL[σ₁₂] F) (x y z : E)
+variable [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕜₂]
+  [NormedSpace 𝕜 E] [NormedSpace 𝕜₂ F] [NormedSpace 𝕜 Fₗ]
+  {σ₁₂ : 𝕜 →+* 𝕜₂} (f g : E →SL[σ₁₂] F)
 
 namespace ContinuousLinearMap
 
@@ -181,7 +180,7 @@ variable [CompleteSpace F] (e : E →L[𝕜] Fₗ) (h_dense : DenseRange e)
 
 section
 
-variable (h_e : UniformInducing e)
+variable (h_e : IsUniformInducing e)
 
 /-- Extension of a continuous linear map `f : E →SL[σ₁₂] F`, with `E` a normed space and `F` a
 complete normed space, along a uniform and dense embedding `e : E →L[𝕜] Fₗ`. -/
@@ -230,7 +229,7 @@ variable {N : ℝ≥0} (h_e : ∀ x, ‖x‖ ≤ N * ‖e x‖) [RingHomIsometri
 /-- If a dense embedding `e : E →L[𝕜] G` expands the norm by a constant factor `N⁻¹`, then the
 norm of the extension of `f` along `e` is bounded by `N * ‖f‖`. -/
 theorem opNorm_extend_le :
-    ‖f.extend e h_dense (uniformEmbedding_of_bound _ h_e).toUniformInducing‖ ≤ N * ‖f‖ := by
+    ‖f.extend e h_dense (isUniformEmbedding_of_bound _ h_e).isUniformInducing‖ ≤ N * ‖f‖ := by
   -- Add `opNorm_le_of_dense`?
   refine opNorm_le_bound _ ?_ (isClosed_property h_dense (isClosed_le ?_ ?_) fun x ↦ ?_)
   · cases le_total 0 N with

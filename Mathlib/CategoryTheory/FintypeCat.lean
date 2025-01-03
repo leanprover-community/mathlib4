@@ -6,7 +6,7 @@ Authors: Bhavik Mehta, Adam Topaz
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Skeletal
-import Mathlib.Data.Finite.Basic
+import Mathlib.Data.Finite.Prod
 
 /-!
 # The category of finite types.
@@ -20,9 +20,6 @@ are `Fin n` for `n : ℕ`. We prove that the obvious inclusion functor
 `FintypeCat.Skeleton.equivalence`.
 We prove that `FintypeCat.Skeleton` is a skeleton of `FintypeCat` in `FintypeCat.isSkeleton`.
 -/
-
-
-open scoped Classical
 
 open CategoryTheory
 
@@ -78,7 +75,7 @@ lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x
 lemma inv_hom_id_apply {X Y : FintypeCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
   congr_fun f.inv_hom_id y
 
--- Porting note (#10688): added to ease automation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
   funext

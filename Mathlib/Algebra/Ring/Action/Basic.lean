@@ -3,7 +3,7 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Algebra.GroupWithZero.Action.Defs
+import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.Ring.Hom.Defs
 
 /-!
@@ -42,11 +42,12 @@ class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extend
 
 section Semiring
 
-variable (M N G : Type*) [Monoid M] [Monoid N] [Group G]
-variable (A R S F : Type v) [AddMonoid A] [Semiring R] [CommSemiring S]
+variable (M N : Type*) [Monoid M] [Monoid N]
+variable (R : Type v) [Semiring R]
 
 -- note we could not use `extends` since these typeclasses are made with `old_structure_cmd`
-instance (priority := 100) MulSemiringAction.toMulDistribMulAction [h : MulSemiringAction M R] :
+instance (priority := 100) MulSemiringAction.toMulDistribMulAction
+    (M R) {_ : Monoid M} {_ : Semiring R} [h : MulSemiringAction M R] :
     MulDistribMulAction M R :=
   { h with }
 
@@ -91,8 +92,6 @@ abbrev MulSemiringAction.compHom (f : N →* M) [MulSemiringAction M R] : MulSem
 end
 
 section SimpLemmas
-
-variable {M G A R F}
 
 attribute [simp] smul_one smul_mul' smul_zero smul_add
 

@@ -33,6 +33,7 @@ if such exists (`IsIntegral A x`) or zero otherwise.
 For example, if `V` is a `𝕜`-vector space for some field `𝕜` and `f : V →ₗ[𝕜] V` then
 the minimal polynomial of `f` is `minpoly 𝕜 f`.
 -/
+@[stacks 09GM]
 noncomputable def minpoly (x : B) : A[X] :=
   if hx : IsIntegral A x then degree_lt_wf.min _ hx else 0
 
@@ -57,6 +58,9 @@ theorem ne_zero [Nontrivial A] (hx : IsIntegral A x) : minpoly A x ≠ 0 :=
 
 theorem eq_zero (hx : ¬IsIntegral A x) : minpoly A x = 0 :=
   dif_neg hx
+
+theorem ne_zero_iff [Nontrivial A] : minpoly A x ≠ 0 ↔ IsIntegral A x :=
+  ⟨fun h => of_not_not <| eq_zero.mt h, ne_zero⟩
 
 theorem algHom_eq (f : B →ₐ[A] B') (hf : Function.Injective f) (x : B) :
     minpoly A (f x) = minpoly A x := by

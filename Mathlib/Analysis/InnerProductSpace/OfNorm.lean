@@ -101,7 +101,7 @@ variable {E}
 
 theorem _root_.Continuous.inner_ {f g : ℝ → E} (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => inner_ 𝕜 (f x) (g x) := by
-  unfold inner_
+  unfold _root_.inner_
   fun_prop
 
 theorem inner_.norm_sq (x : E) : ‖x‖ ^ 2 = re (inner_ 𝕜 x x) := by
@@ -121,10 +121,10 @@ theorem inner_.conj_symm (x y : E) : conj (inner_ 𝕜 y x) = inner_ 𝕜 x y :=
   have I_smul (v : E) : ‖(I : 𝕜) • v‖ = ‖v‖ := by rw [norm_smul, norm_I_of_ne_zero hI, one_mul]
   have h₁ : ‖(I : 𝕜) • y - x‖ = ‖(I : 𝕜) • x + y‖ := by
     convert I_smul ((I : 𝕜) • x + y) using 2
-    linear_combination (norm := module) congr(-$hI' • x)
+    linear_combination (norm := module) -hI' • x
   have h₂ : ‖(I : 𝕜) • y + x‖ = ‖(I : 𝕜) • x - y‖ := by
     convert (I_smul ((I : 𝕜) • y + x)).symm using 2
-    linear_combination (norm := module) congr(-$hI' • y)
+    linear_combination (norm := module) -hI' • y
   rw [h₁, h₂]
   ring
 
@@ -194,7 +194,7 @@ private theorem rat_prop (r : ℚ) : innerProp' E (r : 𝕜) := by
 private theorem real_prop (r : ℝ) : innerProp' E (r : 𝕜) := by
   intro x y
   revert r
-  rw [← Function.funext_iff]
+  rw [← funext_iff]
   refine Rat.isDenseEmbedding_coe_real.dense.equalizer ?_ ?_ (funext fun X => ?_)
   · exact (continuous_ofReal.smul continuous_const).inner_ continuous_const
   · exact (continuous_conj.comp continuous_ofReal).mul continuous_const

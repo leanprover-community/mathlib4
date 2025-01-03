@@ -6,11 +6,10 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Basic
 import Batteries.Logic
+import Batteries.Tactic.Trans
 import Batteries.Util.LibraryNote
-import Batteries.Tactic.Lint.Basic
 import Mathlib.Data.Nat.Notation
 import Mathlib.Data.Int.Notation
-import Mathlib.Order.Defs
 
 /-!
 # Basic logic properties
@@ -37,7 +36,7 @@ section Miscellany
 --   And.decidable Or.decidable Decidable.false Xor.decidable Iff.decidable Decidable.true
 --   Implies.decidable Not.decidable Ne.decidable Bool.decidableEq Decidable.toBool
 
--- attribute [refl] HEq.refl -- FIXME This is still rejected after #857
+-- attribute [refl] HEq.refl -- FIXME This is still rejected after https://github.com/leanprover-community/mathlib4/pull/857
 attribute [trans] Iff.trans HEq.trans heq_of_eq_of_heq
 attribute [simp] cast_heq
 
@@ -132,10 +131,6 @@ open Function
 section Propositional
 
 /-! ### Declarations about `implies` -/
-
-instance : IsRefl Prop Iff := ⟨Iff.refl⟩
-
-instance : IsTrans Prop Iff := ⟨fun _ _ _ ↦ Iff.trans⟩
 
 alias Iff.imp := imp_congr
 
@@ -358,6 +353,10 @@ theorem xor_iff_iff_not : Xor' a b ↔ (a ↔ ¬b) := by simp only [← @xor_not
 
 theorem xor_iff_not_iff' : Xor' a b ↔ (¬a ↔ b) := by simp only [← @xor_not_left _ b, not_not]
 
+theorem xor_iff_or_and_not_and (a b : Prop) : Xor' a b ↔ (a ∨ b) ∧ (¬ (a ∧ b)) := by
+  rw [Xor', or_and_right, not_and_or, and_or_left, and_not_self_iff, false_or,
+    and_or_left, and_not_self_iff, or_false]
+
 end Propositional
 
 /-! ### Declarations about equality -/
@@ -429,6 +428,13 @@ theorem rec_heq_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : C a}
 theorem heq_rec_iff_heq {α β : Sort _} {a b : α} {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
     HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
 
+universe u
+variable {α β : Sort u} {e : β = α} {a : α} {b : β}
+
+lemma heq_of_eq_cast (e : β = α) : a = cast e b → HEq a b := by rintro rfl; simp
+
+lemma eq_cast_iff_heq : a = cast e b ↔ HEq a b := ⟨heq_of_eq_cast _, fun h ↦ by cases h; rfl⟩
+
 end Equality
 
 /-! ### Declarations about quantifiers -/
@@ -436,9 +442,6 @@ section Quantifiers
 section Dependent
 
 variable {α : Sort*} {β : α → Sort*} {γ : ∀ a, β a → Sort*}
-
-theorem pi_congr {β' : α → Sort _} (h : ∀ a, β a = β' a) : (∀ a, β a) = ∀ a, β' a :=
-  (funext h : β = β') ▸ rfl
 
 -- Porting note: some higher order lemmas such as `forall₂_congr` and `exists₂_congr`
 -- were moved to `Batteries`
@@ -475,8 +478,15 @@ than `forall_swap`. -/
 theorem imp_forall_iff {α : Type*} {p : Prop} {q : α → Prop} : (p → ∀ x, q x) ↔ ∀ x, p → q x :=
   forall_swap
 
+@[simp] lemma imp_forall_iff_forall (A : Prop) (B : A → Prop) :
+  (A → ∀ h : A, B h) ↔ ∀ h : A, B h := by by_cases h : A <;> simp [h]
+
 theorem exists_swap {p : α → β → Prop} : (∃ x y, p x y) ↔ ∃ y x, p x y :=
   ⟨fun ⟨x, y, h⟩ ↦ ⟨y, x, h⟩, fun ⟨y, x, h⟩ ↦ ⟨x, y, h⟩⟩
+
+theorem exists_and_exists_comm {P : α → Prop} {Q : β → Prop} :
+    (∃ a, P a) ∧ (∃ b, Q b) ↔ ∃ a b, P a ∧ Q b :=
+  ⟨fun ⟨⟨a, ha⟩, ⟨b, hb⟩⟩ ↦ ⟨a, b, ⟨ha, hb⟩⟩, fun ⟨a, b, ⟨ha, hb⟩⟩ ↦ ⟨⟨a, ha⟩, ⟨b, hb⟩⟩⟩
 
 export Classical (not_forall)
 
@@ -663,7 +673,7 @@ namespace Classical
 /-- Any prop `p` is decidable classically. A shorthand for `Classical.propDecidable`. -/
 noncomputable def dec (p : Prop) : Decidable p := by infer_instance
 
-variable {α : Sort*} {p : α → Prop}
+variable {α : Sort*}
 
 /-- Any predicate `p` is decidable classically. -/
 noncomputable def decPred (p : α → Prop) : DecidablePred p := by infer_instance
@@ -676,7 +686,6 @@ noncomputable def decEq (α : Sort*) : DecidableEq α := by infer_instance
 
 /-- Construct a function from a default value `H0`, and a function to use if there exists a value
 satisfying the predicate. -/
--- @[elab_as_elim] -- FIXME
 noncomputable def existsCases {α C : Sort*} {p : α → Prop} (H0 : C) (H : ∀ a, p a → C) : C :=
   if h : ∃ a, p a then H (Classical.choose h) (Classical.choose_spec h) else H0
 
@@ -715,20 +724,21 @@ alias by_contradiction := byContradiction -- TODO: remove? rename in core?
 
 alias prop_complete := propComplete -- TODO: remove? rename in core?
 
-@[elab_as_elim, deprecated (since := "2024-07-27")] theorem cases_true_false (p : Prop → Prop)
+@[elab_as_elim, deprecated "No deprecation message was provided." (since := "2024-07-27")]
+theorem cases_true_false (p : Prop → Prop)
     (h1 : p True) (h2 : p False) (a : Prop) : p a :=
   Or.elim (prop_complete a) (fun ht : a = True ↦ ht.symm ▸ h1) fun hf : a = False ↦ hf.symm ▸ h2
 
-@[deprecated (since := "2024-07-27")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-27")]
 theorem eq_false_or_eq_true (a : Prop) : a = False ∨ a = True := (prop_complete a).symm
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-07-27")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-27")]
 theorem cases_on (a : Prop) {p : Prop → Prop} (h1 : p True) (h2 : p False) : p a :=
   @cases_true_false p h1 h2 a
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-07-27")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-27")]
 theorem cases {p : Prop → Prop} (h1 : p True) (h2 : p False) (a) : p a := cases_on a h1 h2
 
 end Classical
@@ -736,7 +746,6 @@ end Classical
 /-- This function has the same type as `Exists.recOn`, and can be used to case on an equality,
 but `Exists.recOn` can only eliminate into Prop, while this version eliminates into any universe
 using the axiom of choice. -/
--- @[elab_as_elim] -- FIXME
 noncomputable def Exists.classicalRecOn {α : Sort*} {p : α → Prop} (h : ∃ a, p a)
     {C : Sort*} (H : ∀ a, p a → C) : C :=
   H (Classical.choose h) (Classical.choose_spec h)
@@ -975,7 +984,7 @@ theorem not_beq_of_ne {α : Type*} [BEq α] [LawfulBEq α] {a b : α} (ne : a �
   fun h => ne (eq_of_beq h)
 
 theorem beq_eq_decide {α : Type*} [BEq α] [LawfulBEq α] {a b : α} : (a == b) = decide (a = b) := by
-  rw [← beq_iff_eq a b]
+  rw [← beq_iff_eq (a := a) (b := b)]
   cases a == b <;> simp
 
 @[simp] lemma beq_eq_beq {α β : Type*} [BEq α] [LawfulBEq α] [BEq β] [LawfulBEq β] {a₁ a₂ : α}

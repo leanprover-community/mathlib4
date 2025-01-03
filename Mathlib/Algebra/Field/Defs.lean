@@ -45,8 +45,8 @@ field, division ring, skew field, skew-field, skewfield
 
 assert_not_imported Mathlib.Tactic.Common
 
--- `NeZero` should not be needed in the basic algebraic hierarchy.
-assert_not_exists NeZero
+-- `NeZero` theory should not be needed in the basic algebraic hierarchy
+assert_not_imported Mathlib.Algebra.NeZero
 
 assert_not_exists MonoidHom
 
@@ -172,6 +172,7 @@ See also note [forgetful inheritance].
 
 If the field has positive characteristic `p`, our division by zero convention forces
 `ratCast (1 / p) = 1 / 0 = 0`. -/
+@[stacks 09FD "first part"]
 class Field (K : Type u) extends CommRing K, DivisionRing K
 
 -- see Note [lower instance priority]
@@ -194,7 +195,7 @@ variable (K)
 end NNRat
 
 namespace Rat
-variable [DivisionRing K] {a b : K}
+variable [DivisionRing K]
 
 lemma cast_def (q : ℚ) : (q : K) = q.num / q.den := DivisionRing.ratCast_def _
 
