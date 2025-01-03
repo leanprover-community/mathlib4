@@ -441,8 +441,9 @@ lemma mul_mem_setRange_signTypeCast {a b : α}
   obtain ⟨b', rfl⟩ := hb
   exact ⟨_, coe_mul a' b'⟩
 
-lemma in_set_range_singType_cast_iff_abs (a : α) :
-    a ∈ Set.range SignType.cast ↔ |a| ∈ Set.range SignType.cast := by
+@[simp]
+lemma abs_mem_setRange_signTypeCast_iff {a : α} :
+    |a| ∈ Set.range SignType.cast ↔ a ∈ Set.range SignType.cast := by
   constructor
   · rintro ⟨s, rfl⟩
     cases s with
