@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Data.Set.UnionLift
-import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.Span.Basic
 import Mathlib.RingTheory.NonUnitalSubring.Basic
 
 /-!
@@ -835,9 +835,11 @@ def toTop : A →ₙₐ[R] (⊤ : NonUnitalSubalgebra R A) :=
 
 end IsScalarTower
 
-theorem range_top_iff_surjective [IsScalarTower R B B] [SMulCommClass R B B] (f : A →ₙₐ[R] B) :
+theorem range_eq_top [IsScalarTower R B B] [SMulCommClass R B B] (f : A →ₙₐ[R] B) :
     NonUnitalAlgHom.range f = (⊤ : NonUnitalSubalgebra R B) ↔ Function.Surjective f :=
   NonUnitalAlgebra.eq_top_iff
+
+@[deprecated (since := "2024-11-11")] alias range_top_iff_surjective := range_eq_top
 
 end NonUnitalAlgebra
 
@@ -976,7 +978,7 @@ noncomputable def iSupLift [Nonempty ι] (K : ι → NonUnitalSubalgebra R A) (d
               simp only
               rw [hf i k hik, hf j k hjk]
               rfl)
-            (↑(iSup K)) (by rw [coe_iSup_of_directed dir])
+            _ (by rw [coe_iSup_of_directed dir])
         map_zero' := by
           dsimp
           exact Set.iUnionLift_const _ (fun i : ι => (0 : K i)) (fun _ => rfl) _ (by simp)
@@ -1128,6 +1130,57 @@ theorem centralizer_univ : centralizer R Set.univ = center R A :=
 end Centralizer
 
 end NonUnitalSubalgebra
+
+namespace NonUnitalAlgebra
+
+open NonUnitalSubalgebra
+
+variable {R A : Type*} [CommSemiring R] [NonUnitalSemiring A]
+variable [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
+
+variable (R) in
+lemma adjoin_le_centralizer_centralizer (s : Set A) :
+    adjoin R s ≤ centralizer R (centralizer R s) :=
+  adjoin_le Set.subset_centralizer_centralizer
+
+lemma commute_of_mem_adjoin_of_forall_mem_commute {a b : A} {s : Set A}
+    (hb : b ∈ adjoin R s) (h : ∀ b ∈ s, Commute a b) :
+    Commute a b := by
+  have : a ∈ centralizer R s := by simpa only [Commute.symm_iff (a := a)] using h
+  exact adjoin_le_centralizer_centralizer R s hb a this
+
+lemma commute_of_mem_adjoin_singleton_of_commute {a b c : A}
+    (hc : c ∈ adjoin R {b}) (h : Commute a b) :
+    Commute a c :=
+  commute_of_mem_adjoin_of_forall_mem_commute hc <| by simpa
+
+lemma commute_of_mem_adjoin_self {a b : A} (hb : b ∈ adjoin R {a}) :
+    Commute a b :=
+  commute_of_mem_adjoin_singleton_of_commute hb rfl
+
+variable (R) in
+
+/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
+semiring.
+
+See note [reducible non-instances]. -/
+abbrev adjoinNonUnitalCommSemiringOfComm {s : Set A} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
+    NonUnitalCommSemiring (adjoin R s) :=
+  { (adjoin R s).toNonUnitalSemiring with
+    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦
+      have := adjoin_le_centralizer_centralizer R s
+      Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
+
+/-- If all elements of `s : Set A` commute pairwise, then `adjoin R s` is a non-unital commutative
+ring.
+
+See note [reducible non-instances]. -/
+abbrev adjoinNonUnitalCommRingOfComm (R : Type*) {A : Type*} [CommRing R] [NonUnitalRing A]
+    [Module R A] [IsScalarTower R A A] [SMulCommClass R A A] {s : Set A}
+    (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) : NonUnitalCommRing (adjoin R s) :=
+  { (adjoin R s).toNonUnitalRing, adjoinNonUnitalCommSemiringOfComm R hcomm with }
+
+end NonUnitalAlgebra
 
 section Nat
 

@@ -21,14 +21,22 @@ variable {ι κ α : Type*}
 
 section Preorder
 
-variable [Preorder α] [CommMonoid α] [TopologicalSpace α] [OrderClosedTopology α] [T2Space α]
-  {f : ℕ → α} {c : α}
+variable [Preorder α] [CommMonoid α] [TopologicalSpace α] {a c : α} {f : ι → α}
 
 @[to_additive]
-theorem tprod_le_of_prod_range_le (hf : Multipliable f) (h : ∀ n, ∏ i ∈ range n, f i ≤ c) :
-    ∏' n, f n ≤ c :=
-  let ⟨_l, hl⟩ := hf
-  hl.tprod_eq.symm ▸ le_of_tendsto' hl.tendsto_prod_nat h
+lemma hasProd_le_of_prod_le [ClosedIicTopology α]
+    (hf : HasProd f a) (h : ∀ s, ∏ i ∈ s, f i ≤ c) : a ≤ c :=
+  le_of_tendsto' hf h
+
+@[to_additive]
+theorem le_hasProd_of_le_prod [ClosedIciTopology α]
+    (hf : HasProd f a) (h : ∀ s, c ≤ ∏ i ∈ s, f i) : c ≤ a :=
+  ge_of_tendsto' hf h
+
+@[to_additive]
+theorem tprod_le_of_prod_range_le [ClosedIicTopology α] {f : ℕ → α} (hf : Multipliable f)
+    (h : ∀ n, ∏ i ∈ range n, f i ≤ c) : ∏' n, f n ≤ c :=
+  le_of_tendsto' hf.hasProd.tendsto_prod_nat h
 
 end Preorder
 
@@ -44,14 +52,6 @@ theorem hasProd_le (h : ∀ i, f i ≤ g i) (hf : HasProd f a₁) (hg : HasProd 
 @[to_additive]
 theorem hasProd_mono (hf : HasProd f a₁) (hg : HasProd g a₂) (h : f ≤ g) : a₁ ≤ a₂ :=
   hasProd_le h hf hg
-
-@[to_additive]
-theorem hasProd_le_of_prod_le (hf : HasProd f a) (h : ∀ s, ∏ i ∈ s, f i ≤ a₂) : a ≤ a₂ :=
-  le_of_tendsto' hf h
-
-@[to_additive]
-theorem le_hasProd_of_le_prod (hf : HasProd f a) (h : ∀ s, a₂ ≤ ∏ i ∈ s, f i) : a₂ ≤ a :=
-  ge_of_tendsto' hf h
 
 @[to_additive]
 theorem hasProd_le_inj {g : κ → α} (e : ι → κ) (he : Injective e)
@@ -302,6 +302,6 @@ end LinearOrderedCommRing
 
 theorem Summable.tendsto_atTop_of_pos [LinearOrderedField α] [TopologicalSpace α] [OrderTopology α]
     {f : ℕ → α} (hf : Summable f⁻¹) (hf' : ∀ n, 0 < f n) : Tendsto f atTop atTop :=
-  inv_inv f ▸ Filter.Tendsto.inv_tendsto_zero <|
+  inv_inv f ▸ Filter.Tendsto.inv_tendsto_nhdsGT_zero <|
     tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hf.tendsto_atTop_zero <|
       Eventually.of_forall fun _ ↦ inv_pos.2 (hf' _)

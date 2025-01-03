@@ -6,7 +6,6 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Tactic.Positivity.Core
-import Mathlib.Algebra.Order.Field.Basic
 
 /-!
 # Casts of rational numbers into linear ordered fields.
@@ -147,7 +146,7 @@ namespace NNRat
 variable {K} [LinearOrderedSemifield K] {p q : ℚ≥0}
 
 theorem cast_strictMono : StrictMono ((↑) : ℚ≥0 → K) := fun p q h => by
-  rwa [NNRat.cast_def, NNRat.cast_def, div_lt_div_iff, ← Nat.cast_mul, ← Nat.cast_mul,
+  rwa [NNRat.cast_def, NNRat.cast_def, div_lt_div_iff₀, ← Nat.cast_mul, ← Nat.cast_mul,
     Nat.cast_lt (α := K), ← NNRat.lt_def]
   · simp
   · simp

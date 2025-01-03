@@ -12,8 +12,7 @@ import Mathlib.Order.Interval.Set.WithBotTop
 # Topology on extended natural numbers
 -/
 
-open Set Filter
-open scoped Topology
+open Filter Set Topology
 
 namespace ENat
 

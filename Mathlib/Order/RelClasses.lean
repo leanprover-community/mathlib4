@@ -11,13 +11,11 @@ import Batteries.WF
 /-!
 # Unbundled relation classes
 
-In this file we prove some properties of `Is*` classes defined in `Order.Defs`. The main
+In this file we prove some properties of `Is*` classes defined in `Mathlib.Order.Defs`. The main
 difference between these classes and the usual order classes (`Preorder` etc) is that usual classes
 extend `LE` and/or `LT` while these classes take a relation as an explicit argument.
 
 -/
-
-set_option linter.deprecated false
 
 universe u v
 
@@ -88,7 +86,7 @@ theorem IsStrictOrder.swap (r) [IsStrictOrder α r] : IsStrictOrder α (swap r) 
 theorem IsPartialOrder.swap (r) [IsPartialOrder α r] : IsPartialOrder α (swap r) :=
   { @IsPreorder.swap α r _, @IsAntisymm.swap α r _ with }
 
-@[deprecated (since := "2024-07-30")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
 theorem IsLinearOrder.swap (r) [IsLinearOrder α r] : IsLinearOrder α (swap r) :=
   { @IsPartialOrder.swap α r _, @IsTotal.swap α r _ with }
 
@@ -214,7 +212,7 @@ instance (priority := 100) isStrictOrderConnected_of_isStrictTotalOrder [IsStric
     fun o ↦ o.elim (fun e ↦ e ▸ h) fun h' ↦ _root_.trans h' h⟩
 
 -- see Note [lower instance priority]
-@[deprecated (since := "2024-07-30")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
 instance (priority := 100) isStrictTotalOrder_of_isStrictTotalOrder [IsStrictTotalOrder α r] :
     IsStrictWeakOrder α r :=
   { isStrictWeakOrder_of_isOrderConnected with }
@@ -234,6 +232,11 @@ instance WellFoundedRelation.isWellFounded [h : WellFoundedRelation α] :
 theorem WellFoundedRelation.asymmetric {α : Sort*} [WellFoundedRelation α] {a b : α} :
     WellFoundedRelation.rel a b → ¬ WellFoundedRelation.rel b a :=
   fun hab hba => WellFoundedRelation.asymmetric hba hab
+termination_by a
+
+theorem WellFoundedRelation.asymmetric₃ {α : Sort*} [WellFoundedRelation α] {a b c : α} :
+    WellFoundedRelation.rel a b → WellFoundedRelation.rel b c → ¬ WellFoundedRelation.rel c a :=
+  fun hab hbc hca => WellFoundedRelation.asymmetric₃ hca hab hbc
 termination_by a
 
 lemma WellFounded.prod_lex {ra : α → α → Prop} {rb : β → β → Prop} (ha : WellFounded ra)
@@ -270,8 +273,8 @@ namespace IsWellFounded
 variable (r) [IsWellFounded α r]
 
 /-- Induction on a well-founded relation. -/
-theorem induction {C : α → Prop} : ∀ a, (∀ x, (∀ y, r y x → C y) → C x) → C a :=
-  wf.induction
+theorem induction {C : α → Prop} (a : α) (ind : ∀ x, (∀ y, r y x → C y) → C x) : C a :=
+  wf.induction _ ind
 
 /-- All values are accessible under the well-founded relation. -/
 theorem apply : ∀ a, Acc r a :=
@@ -296,6 +299,10 @@ end IsWellFounded
 theorem WellFounded.asymmetric {α : Sort*} {r : α → α → Prop} (h : WellFounded r) (a b) :
     r a b → ¬r b a :=
   @WellFoundedRelation.asymmetric _ ⟨_, h⟩ _ _
+
+theorem WellFounded.asymmetric₃ {α : Sort*} {r : α → α → Prop} (h : WellFounded r) (a b c) :
+    r a b → r b c → ¬r c a :=
+  @WellFoundedRelation.asymmetric₃ _ ⟨_, h⟩ _ _ _
 
 -- see Note [lower instance priority]
 instance (priority := 100) (r : α → α → Prop) [IsWellFounded α r] : IsAsymm α r :=
@@ -362,8 +369,8 @@ namespace WellFoundedLT
 variable [LT α] [WellFoundedLT α]
 
 /-- Inducts on a well-founded `<` relation. -/
-theorem induction {C : α → Prop} : ∀ a, (∀ x, (∀ y, y < x → C y) → C x) → C a :=
-  IsWellFounded.induction _
+theorem induction {C : α → Prop} (a : α) (ind : ∀ x, (∀ y, y < x → C y) → C x) : C a :=
+  IsWellFounded.induction _ _ ind
 
 /-- All values are accessible under the well-founded `<`. -/
 theorem apply : ∀ a : α, Acc (· < ·) a :=
@@ -390,8 +397,8 @@ namespace WellFoundedGT
 variable [LT α] [WellFoundedGT α]
 
 /-- Inducts on a well-founded `>` relation. -/
-theorem induction {C : α → Prop} : ∀ a, (∀ x, (∀ y, x < y → C y) → C x) → C a :=
-  IsWellFounded.induction _
+theorem induction {C : α → Prop} (a : α) (ind : ∀ x, (∀ y, x < y → C y) → C x) : C a :=
+  IsWellFounded.induction _ _ ind
 
 /-- All values are accessible under the well-founded `>`. -/
 theorem apply : ∀ a : α, Acc (· > ·) a :=
@@ -782,7 +789,7 @@ instance [LinearOrder α] : IsStrictTotalOrder α (· < ·) where
 
 instance [LinearOrder α] : IsOrderConnected α (· < ·) := by infer_instance
 
-@[deprecated (since := "2024-07-30")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-30")]
 instance [LinearOrder α] : IsStrictWeakOrder α (· < ·) := by infer_instance
 
 theorem transitive_le [Preorder α] : Transitive (@LE.le α _) :=

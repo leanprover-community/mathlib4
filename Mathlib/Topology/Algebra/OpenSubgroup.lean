@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Nailin Guan
 -/
 import Mathlib.Algebra.Module.Submodule.Lattice
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.RingTheory.Ideal.Defs
 import Mathlib.Topology.Algebra.Group.Quotient
 import Mathlib.Topology.Algebra.Ring.Basic
@@ -443,8 +442,7 @@ instance [ContinuousMul G] : Max (OpenNormalSubgroup G) :=
 @[to_additive]
 instance instSemilatticeSupOpenNormalSubgroup [ContinuousMul G] :
     SemilatticeSup (OpenNormalSubgroup G) :=
-  toSubgroup_injective.semilatticeSup
-    (fun (H : OpenNormalSubgroup G) ↦ ↑H.toOpenSubgroup) (fun _ _ ↦ rfl)
+  toSubgroup_injective.semilatticeSup _ (fun _ _ ↦ rfl)
 
 @[to_additive]
 instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) :=

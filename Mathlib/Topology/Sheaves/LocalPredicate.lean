@@ -215,7 +215,7 @@ def stalkToFiber (P : LocalPredicate T) (x : X) : (subsheafToTypes P).presheaf.s
   · exact f.1 ⟨x, (unop U).2⟩
   · aesop
 
--- Porting note (#11119): removed `simp` attribute,
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute,
 -- due to left hand side is not in simple normal form.
 theorem stalkToFiber_germ (P : LocalPredicate T) (U : Opens X) (x : X) (hx : x ∈ U) (f) :
     stalkToFiber P x ((subsheafToTypes P).presheaf.germ U x hx f) = f.1 ⟨x, hx⟩ := by

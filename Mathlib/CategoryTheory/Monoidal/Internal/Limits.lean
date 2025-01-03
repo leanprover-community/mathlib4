@@ -79,9 +79,9 @@ instance hasLimitsOfShape [HasLimitsOfShape J C] : HasLimitsOfShape J (Mon_ C) w
     { cone := limitCone F
       isLimit := limitConeIsLimit F }
 
-instance forgetPreservesLimitsOfShape : PreservesLimitsOfShape J (Mon_.forget C) where
+instance forget_freservesLimitsOfShape : PreservesLimitsOfShape J (Mon_.forget C) where
   preservesLimit := fun {F} =>
-    preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
+    preservesLimit_of_preserves_limit_cone (limitConeIsLimit F)
       (IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Mon_.forget C)) (forgetMapConeLimitConeIso F).symm)
 
 end Mon_

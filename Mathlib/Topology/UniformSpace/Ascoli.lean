@@ -513,7 +513,7 @@ is compact in the compact open topology. -/
 theorem ArzelaAscoli.isCompact_of_equicontinuous
     (S : Set C(X, α)) (hS1 : IsCompact (ContinuousMap.toFun '' S))
     (hS2 : Equicontinuous ((↑) : S → X → α)) : IsCompact S := by
-  suffices h : IsInducing (Equiv.Set.image (↑) S DFunLike.coe_injective) by
+  suffices h : IsInducing (Equiv.Set.image _ S DFunLike.coe_injective) by
     rw [isCompact_iff_compactSpace] at hS1 ⊢
     exact (Equiv.toHomeomorphOfIsInducing _ h).symm.compactSpace
   rw [← IsInducing.subtypeVal.of_comp_iff, ← EquicontinuousOn.isInducing_uniformOnFun_iff_pi _ _ _]

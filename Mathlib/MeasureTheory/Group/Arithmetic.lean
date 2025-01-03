@@ -419,7 +419,7 @@ theorem MeasurableSet.inv {s : Set G} (hs : MeasurableSet s) : MeasurableSet s�
 @[to_additive]
 theorem measurableEmbedding_inv [InvolutiveInv α] [MeasurableInv α] :
     MeasurableEmbedding (Inv.inv (α := α)) :=
-  ⟨inv_injective, measurable_inv, fun s hs ↦ s.image_inv ▸ hs.inv⟩
+  ⟨inv_injective, measurable_inv, fun s hs ↦ s.image_inv_eq_inv ▸ hs.inv⟩
 
 end Inv
 
