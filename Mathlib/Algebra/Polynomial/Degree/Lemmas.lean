@@ -94,6 +94,14 @@ theorem natDegree_C_mul_le (a : R) (f : R[X]) : (C a * f).natDegree ≤ f.natDeg
     _ = 0 + f.natDegree := by rw [natDegree_C a]
     _ = f.natDegree := zero_add _
 
+lemma degree_C_mul_le (r : R) (p : R[X]) : (C r * p).degree ≤ p.degree := by
+  by_cases hp : p = 0
+  · simp [hp]
+  by_cases hCp : C r * p = 0
+  · simp [hCp]
+  rw [degree_eq_natDegree hp, degree_eq_natDegree hCp]
+  simpa using natDegree_C_mul_le _ _
+
 theorem natDegree_mul_C_le (f : R[X]) (a : R) : (f * C a).natDegree ≤ f.natDegree :=
   calc
     (f * C a).natDegree ≤ f.natDegree + (C a).natDegree := natDegree_mul_le
@@ -137,6 +145,13 @@ theorem natDegree_C_mul_eq_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) :
   refine eq_natDegree_of_le_mem_support (natDegree_C_mul_le a p) ?_
   refine mem_support_iff.mpr ?_
   rwa [coeff_C_mul]
+
+lemma degree_C_mul_eq_of_mul_ne_zero (r : R) (p : R[X]) (h : r * p.leadingCoeff ≠ 0) :
+    (C r * p).degree = p.degree := by
+  by_cases hp : p = 0
+  · simp [hp]
+  rw [degree_eq_natDegree hp, degree_eq_natDegree, natDegree_C_mul_eq_of_mul_ne_zero h]
+  exact fun e ↦ h (by simpa using congr(($e).coeff p.natDegree))
 
 theorem natDegree_add_coeff_mul (f g : R[X]) :
     (f * g).coeff (f.natDegree + g.natDegree) = f.coeff f.natDegree * g.coeff g.natDegree := by
