@@ -610,6 +610,8 @@ lemma InjOn.image_diff_subset {f : α → β} {t : Set α} (h : InjOn f s) (hst 
     f '' (s \ t) = f '' s \ f '' t := by
   rw [h.image_diff, inter_eq_self_of_subset_right hst]
 
+alias image_diff_of_injOn := InjOn.image_diff_subset
+
 theorem InjOn.imageFactorization_injective (h : InjOn f s) :
     Injective (s.imageFactorization f) :=
   fun ⟨x, hx⟩ ⟨y, hy⟩ h' ↦ by simpa [imageFactorization, h.eq_iff hx hy] using h'

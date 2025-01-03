@@ -375,6 +375,21 @@ theorem of_uncurry_right [TopologicalSpace β] {_ : MeasurableSpace α} {_ : Mea
     StronglyMeasurable fun x => f x y :=
   hf.comp_measurable measurable_prod_mk_right
 
+protected theorem prod_swap {_ : MeasurableSpace α} {_ : MeasurableSpace β} [TopologicalSpace γ]
+    {f : β × α → γ} (hf : StronglyMeasurable f) :
+    StronglyMeasurable (fun z : α × β => f z.swap) :=
+  hf.comp_measurable measurable_swap
+
+protected theorem fst {_ : MeasurableSpace α} [mβ : MeasurableSpace β] [TopologicalSpace γ]
+    {f : α → γ} (hf : StronglyMeasurable f) :
+    StronglyMeasurable (fun z : α × β => f z.1) :=
+  hf.comp_measurable measurable_fst
+
+protected theorem snd [mα : MeasurableSpace α] {_ : MeasurableSpace β} [TopologicalSpace γ]
+    {f : β → γ} (hf : StronglyMeasurable f) :
+    StronglyMeasurable (fun z : α × β => f z.2) :=
+  hf.comp_measurable measurable_snd
+
 section Arithmetic
 
 variable {mα : MeasurableSpace α} [TopologicalSpace β]
