@@ -14,7 +14,7 @@ the `n`th standard simplex as the simplicial set consisting of all
 functions from `[m]` to `[n]`.
 
 In this file, we provide a description of `∂Δ[n]` as a colimit of the standard
-simplices, following the proof in [Kerodon, 0504](https://kerodon.net/tag/0504).
+simplices, following the proof of [Kerodon, 0504](https://kerodon.net/tag/0504).
 -/
 
 open Fin CategoryTheory Limits Simplicial SimplexCategory
@@ -22,16 +22,19 @@ open Fin CategoryTheory Limits Simplicial SimplexCategory
 namespace SSet.boundary
 open standardSimplex
 
+/-- The boundary `∂Δ[n]` is the coequalizer of a parallel pair of morphisms
+between two coproducts of the standard simplices indexed over `Fin (n + 3)`. -/
 def diagram (n : ℕ) : MultispanIndex SSet where
-  L := { (i, j) : Fin (n + 2) × Fin (n + 3) | i.castSucc < j }
+  L := { (i, j) : Fin (n + 2) × Fin (n + 2) | i ≤ j }
   R := Fin (n + 3)
   fstFrom p := p.1.1.castSucc
-  sndFrom p := p.1.2
+  sndFrom p := p.1.2.succ
   left _ := Δ[n]
   right _ := Δ[n + 1]
-  fst p := standardSimplex.map <| δ <| p.1.2.pred <| ne_zero_of_lt p.2
+  fst p := standardSimplex.map <| δ p.1.2
   snd p := standardSimplex.map <| δ p.1.1
 
+/-- The boundary `∂Δ[n]` forms a cone under the coequalizer diagram above. -/
 abbrev cocone (n : ℕ) : Multicofork (diagram n) := by
   refine Multicofork.ofπ (diagram n) ∂Δ[n + 2] ?_ ?_
   · intro k
@@ -44,23 +47,28 @@ abbrev cocone (n : ℕ) : Multicofork (diagram n) := by
     apply Subtype.ext
     rw [NatTrans.comp_app, NatTrans.comp_app]
     dsimp only [diagram, Set.coe_setOf, Set.mem_setOf_eq, types_comp_apply]
-    rw [← FunctorToTypes.comp, ← Functor.map_comp, ← δ_comp_δ' h]
+    rw [← FunctorToTypes.comp, ← Functor.map_comp, ← δ_comp_δ h]
     rfl
 
+/-- By definition, an `m`-simplex in `∂Δ[n]` is not surjective when viewed as
+a monotone function from `[m]` to `[n]`. We use the axiom of choice to pick
+`i : Fin (n + 1)` such that `i` is not in the image of `α`. -/
 noncomputable def skips {n : ℕ} {m : SimplexCategoryᵒᵖ} (α : ∂Δ[n].obj m) :
     Fin (n + 1) := Classical.choose <| not_forall.mp α.property
 
+/-- Our chosen element of `Fin (n + 1)` is indeed not in the image of `α`. -/
 lemma skips_spec {n : ℕ} {m : SimplexCategoryᵒᵖ} (α : ∂Δ[n].obj m) :
     ∀ k : Fin (m.unop.len + 1), asOrderHom α.1 k ≠ skips α :=
   not_exists.mp <| Classical.choose_spec <| not_forall.mp α.2
 
+/-- -/
 abbrev factor_δ₂ {n : ℕ} {m : SimplexCategoryᵒᵖ} (α : Δ[n + 2].obj m)
     (i : Fin (n + 2)) (j : Fin (n + 3)) : Δ[n].obj m :=
   factor_δ (factor_δ α j) i
 
 lemma δ_factor_δ₂_le {n : ℕ} {m : SimplexCategoryᵒᵖ} (α : Δ[n + 2].obj m)
-    {i j : Fin (n + 2)} (h : i ≤ j) (hi : ∀ x, (asOrderHom α) x ≠ i.castSucc)
-    (hj : ∀ x, (asOrderHom α) x ≠ j.succ) :
+    {i j : Fin (n + 2)} (h : i ≤ j) (hi : ∀ x, asOrderHom α x ≠ i.castSucc)
+    (hj : ∀ x, asOrderHom α x ≠ j.succ) :
     (standardSimplex.map (δ i)).app m (factor_δ₂ α i j.succ) =
       factor_δ α j.succ := by
   simp only [standardSimplex.factor_δ, predAbove_zero_succ]
@@ -76,8 +84,8 @@ lemma δ_factor_δ₂_le {n : ℕ} {m : SimplexCategoryᵒᵖ} (α : Δ[n + 2].o
   · exact not_or.mpr (And.intro hi hj) ∘ (predAbove_eq_self_iff i _).mp
 
 lemma δ_factor_δ₂_ge {n : ℕ} {m : SimplexCategoryᵒᵖ} (α : Δ[n + 2].obj m)
-    {i j : Fin (n + 2)} (h : i ≤ j) (hi : ∀ x, (asOrderHom α) x ≠ i.castSucc)
-    (hj : ∀ x, (asOrderHom α) x ≠ j.succ) :
+    {i j : Fin (n + 2)} (h : i ≤ j) (hi : ∀ x, asOrderHom α x ≠ i.castSucc)
+    (hj : ∀ x, asOrderHom α x ≠ j.succ) :
     (standardSimplex.map (δ j)).app m (factor_δ₂ α i j.succ) =
       factor_δ α i.castSucc := by
   simp only [standardSimplex.factor_δ, standardSimplex, uliftFunctor,
@@ -102,18 +110,16 @@ lemma π_factor_δ_lt {n : ℕ} (X : Multicofork (diagram n)) {m : SimplexCatego
     (α : Δ[n + 2].obj m) {i j : Fin (n + 3)} (h : i < j)
     (hi : ∀ x, asOrderHom α x ≠ i) (hj : ∀ x, asOrderHom α x ≠ j) :
     (X.π i).app m (factor_δ α i) = (X.π j).app m (factor_δ α j) := by
-  have hlast := Fin.ne_last_of_lt h
-  have h0 := Fin.ne_zero_of_lt h
-  have hle := Fin.castPred_le_pred_iff hlast h0 |>.mpr h
-  let ij : { (i, j) : Fin (n + 2) × Fin (n + 3) | i.castSucc < j } :=
-    ⟨(i.castPred hlast, j), h⟩
-  rw [← Fin.castSucc_castPred i hlast] at hi ⊢
-  rw [← Fin.succ_pred j h0] at hj ⊢
+  have hlast := ne_last_of_lt h
+  have h0 := ne_zero_of_lt h
+  have hle := castPred_le_pred_iff hlast h0 |>.mpr h
+  let ij : { (i, j) : Fin (n + 2) × Fin (n + 2) | i ≤ j } :=
+    ⟨(i.castPred hlast, j.pred h0), hle⟩
+  rw [← castSucc_castPred i hlast] at hi ⊢
+  rw [← succ_pred j h0] at hj ⊢
   rw [← δ_factor_δ₂_le α hle hi hj, ← δ_factor_δ₂_ge α hle hi hj,
-    ← FunctorToTypes.comp, ← FunctorToTypes.comp, Fin.succ_pred]
-  change ((diagram n).fst ij ≫ X.π _).app m _ =
-    ((diagram n).snd ij ≫ X.π _).app m _
-  rw [X.condition]
+    ← FunctorToTypes.comp, ← FunctorToTypes.comp]
+  exact X.condition ij ▸ rfl
 
 lemma π_factor_δ {n : ℕ} (X : Multicofork (diagram n))
     {m : SimplexCategoryᵒᵖ} (α : Δ[n + 2].obj m)
@@ -125,6 +131,7 @@ lemma π_factor_δ {n : ℕ} (X : Multicofork (diagram n))
   · rfl
   · exact π_factor_δ_lt X α h hj hi |>.symm
 
+/-- -/
 noncomputable def isColimit (n : ℕ) : IsColimit (cocone n) := by
   refine Multicofork.IsColimit.mk (cocone n) ?_ ?_ ?_
   · intro X

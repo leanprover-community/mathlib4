@@ -149,6 +149,9 @@ lemma coe_triangle_down_toOrderHom {n : ℕ} (a b c : Fin (n+1)) (hab : a ≤ b)
     ↑(triangle a b c hab hbc).down.toOrderHom = ![a, b, c] :=
   rfl
 
+/-- If `α` is an `m`-simplex of `Δ[n + 1]` and `j` is not in the image of `α`,
+then `factor_δ α j` is an `m`-simplex of `Δ[n]` such that postcomposition with
+`δ j` yields `α` (as witnessed by `factor_δ_spec`). -/
 def factor_δ {n : ℕ} {m : SimplexCategoryᵒᵖ} (α : Δ[n + 1].obj m)
     (j : Fin (n + 2)) : Δ[n].obj m :=
   standardSimplex.map (σ (Fin.predAbove 0 j)) |>.app m α
