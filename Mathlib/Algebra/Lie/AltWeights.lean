@@ -98,19 +98,17 @@ lemma T_map_iSup_iteratedRange (x : V)
 def iSupIR : LieSubmodule R A V where
   toSubmodule := iSup_iteratedRange v (π z)
   lie_mem {w} x hx := by
-    simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-      Submodule.mem_toAddSubmonoid]
     have hx' : ⁅w, x⁆ = (T χ w) x + χ w • x := by simp
-    rw [hx']
-    exact add_mem (T_map_iSup_iteratedRange χ z w hv x hx)
-      (Submodule.smul_mem (iSup_iteratedRange v (π z)) _ hx)
+    simpa only [hx'] using add_mem (T_map_iSup_iteratedRange χ z w hv x hx)
+        (Submodule.smul_mem (iSup_iteratedRange v (π z)) _ hx)
 
 include hv in
 lemma T_map_iteratedRange_nilpotent (N : ℕ) :
     ∀ x ∈ (iteratedRange v (π z)) N, (T χ w ^ N) x = 0 := by
-  induction' N with N ih
-  · simp [iteratedRange]
-  · intro x hx
+  induction N with
+  | zero => simp [iteratedRange]
+  | succ N ih =>
+    intro x hx
     rw [pow_succ, LinearMap.mul_apply, ih]
     exact T_apply_succ χ z w hv N <| Submodule.mem_map_of_mem hx
 
@@ -147,27 +145,38 @@ theorem T_res_nilpotent :
   use i
   exact T_map_iteratedRange_nilpotent χ z w hv i x hx
 
+theorem T_nilpotent : IsNilpotent ((T (V := iSupIR χ z hv) χ w)) := by
+  suffices iSup_iteratedRange v (π z) ≤ Module.End.maxGenEigenspace (T χ w) 0 by
+    rw [Module.Finite.Module.End.isNilpotent_iff_of_finite]
+    intro x
+    obtain ⟨n, hn⟩ : ∃ n : ℕ, (T χ w ^ n) x.1 = 0 := by
+      simpa [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero] using this x.2
+    use n
+    ext
+    simp only [ZeroMemClass.coe_zero, ← hn]; clear hn
+    induction n <;> simp_all [pow_succ']
+  apply iSup_le
+  intro i x hx
+  simp only [Module.End.mem_maxGenEigenspace, zero_smul, sub_zero]
+  use i
+  exact T_map_iteratedRange_nilpotent χ z w hv i x hx
+
 variable [IsPrincipalIdealRing R]
 variable [IsDomain R]
 variable [Module.Free R V]
 
-lemma trace_T_res_zero :
-    LinearMap.trace R (iSup_iteratedRange v (π z))
-      ((T χ w).restrict (T_map_iSup_iteratedRange χ z w hv)) = 0 := by
-  apply IsNilpotent.eq_zero
-  exact LinearMap.isNilpotent_trace_of_isNilpotent (T_res_nilpotent χ z w hv)
+lemma trace_T_iSupIR_eq_zero : LinearMap.trace R (iSupIR χ z hv) (T χ w) = 0 :=
+  LinearMap.isNilpotent_trace_of_isNilpotent (T_nilpotent χ z w hv) |>.eq_zero
 
 open Module (finrank)
+open LieModule
 
 lemma trace_πza (a : A) :
-    LinearMap.trace R (iSupIR χ z hv) (LieModule.toEnd R A _ ⁅z, a⁆) =
-      χ ⁅z, a⁆ • (finrank R (iSupIR χ z hv)) := by
-  rw [← LinearMap.trace_id, ← LinearMap.map_smul, ← sub_eq_zero, ← LinearMap.map_sub]
-  exact trace_T_res_zero χ z ⁅z, a⁆ hv
+    (toEnd R A _ ⁅z, a⁆).trace R (iSupIR χ z hv) = χ ⁅z, a⁆ • (finrank R (iSupIR χ z hv)) := by
+  simpa [T, sub_eq_zero] using trace_T_iSupIR_eq_zero χ z ⁅z, a⁆ hv
 
 variable [CharZero R]
 
-open LieModule in
 lemma lie_stable (x : L) (v : V) (hv : v ∈ weightSpace V χ) : ⁅x, v⁆ ∈ weightSpace V χ := by
   rw [mem_weightSpace] at hv ⊢
   intro a
@@ -175,16 +184,14 @@ lemma lie_stable (x : L) (v : V) (hv : v ∈ weightSpace V χ) : ⁅x, v⁆ ∈ 
   · simp only [lie_zero, smul_zero]
   suffices χ ⁅x, a⁆ = 0 by
     rw [leibniz_lie, hv a, lie_smul, lie_swap_lie, hv, this, zero_smul, neg_zero, zero_add]
-  have h := trace_πza χ x hv a
-  rw [trace_πza_zero χ x hv a] at h
-  suffices h' : finrank R ↥(iSupIR χ x hv) ≠ 0 by aesop
+  suffices finrank R ↥(iSupIR χ x hv) ≠ 0 by
+    have := trace_πza χ x hv a
+    simp_all [trace_πza_zero χ x hv a]
+  suffices Nontrivial (iSupIR χ x hv) from Module.finrank_pos.ne'
   have hvU : v ∈ iSupIR χ x hv := by
     apply Submodule.mem_iSup_of_mem 1
     apply Submodule.subset_span
     use 0, zero_lt_one
     rw [pow_zero, LinearMap.one_apply]
-  have iSup_iteratedRange_nontrivial : Nontrivial (iSupIR χ x hv) :=
-    ⟨⟨v, hvU⟩, 0, by simp only [ne_eq, LieSubmodule.mk_eq_zero, hv', not_false_eq_true]⟩
-  apply Nat.ne_of_lt'
-  apply Module.finrank_pos
+  exact nontrivial_of_ne ⟨v, hvU⟩ 0 <| by simp [hv']
 
