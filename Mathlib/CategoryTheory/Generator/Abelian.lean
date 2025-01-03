@@ -6,7 +6,7 @@ Authors: Markus Himmel
 import Mathlib.CategoryTheory.Abelian.Subobject
 import Mathlib.CategoryTheory.Limits.EssentiallySmall
 import Mathlib.CategoryTheory.Preadditive.Injective
-import Mathlib.CategoryTheory.Preadditive.Generator
+import Mathlib.CategoryTheory.Generator.Preadditive
 import Mathlib.CategoryTheory.Abelian.Opposite
 
 /-!

@@ -32,7 +32,7 @@ polynomial in `k` splits.
 
 algebraic closure, algebraically closed
 
-## Main reults
+## Main results
 
 - `IsAlgClosure.of_splits`: if `K / k` is algebraic, and every monic irreducible polynomial over
   `k` splits in `K`, then `K` is algebraically closed (in fact an algebraic closure of `k`).
