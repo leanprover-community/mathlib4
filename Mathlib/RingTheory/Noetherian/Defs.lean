@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kevin Buzzard
 -/
 import Mathlib.RingTheory.Finiteness.Basic
+import Mathlib.Order.Filter.AtTopBot
 
 /-!
 # Noetherian rings and modules
@@ -162,6 +163,33 @@ theorem set_has_maximal_iff_noetherian :
 theorem monotone_stabilizes_iff_noetherian :
     (∀ f : ℕ →o Submodule R M, ∃ n, ∀ m, n ≤ m → f n = f m) ↔ IsNoetherian R M := by
   rw [isNoetherian_iff, WellFounded.monotone_chain_condition]
+
+variable [IsNoetherian R M]
+
+open Filter
+/-- For an endomorphism of a Noetherian module, any sufficiently large iterate has disjoint kernel
+and range. -/
+theorem LinearMap.eventually_disjoint_ker_pow_range_pow (f : M →ₗ[R] M) :
+    ∀ᶠ n in atTop, Disjoint (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
+  obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.ker (f ^ n) = LinearMap.ker (f ^ m)⟩ :=
+    monotone_stabilizes_iff_noetherian.mpr inferInstance f.iterateKer
+  refine eventually_atTop.mpr ⟨n, fun m hm ↦ disjoint_iff.mpr ?_⟩
+  rw [← hn _ hm, Submodule.eq_bot_iff]
+  rintro - ⟨hx, ⟨x, rfl⟩⟩
+  apply LinearMap.pow_map_zero_of_le hm
+  replace hx : x ∈ LinearMap.ker (f ^ (n + m)) := by
+    simpa [f.pow_apply n, f.pow_apply m, ← f.pow_apply (n + m), ← iterate_add_apply] using hx
+  rwa [← hn _ (n.le_add_right m)] at hx
+
+lemma LinearMap.eventually_iSup_ker_pow_eq (f : M →ₗ[R] M) :
+    ∀ᶠ n in atTop, ⨆ m, LinearMap.ker (f ^ m) = LinearMap.ker (f ^ n) := by
+  obtain ⟨n, hn : ∀ m, n ≤ m → ker (f ^ n) = ker (f ^ m)⟩ :=
+    monotone_stabilizes_iff_noetherian.mpr inferInstance f.iterateKer
+  refine eventually_atTop.mpr ⟨n, fun m hm ↦ ?_⟩
+  refine le_antisymm (iSup_le fun l ↦ ?_) (le_iSup (fun i ↦ LinearMap.ker (f ^ i)) m)
+  rcases le_or_lt m l with h | h
+  · rw [← hn _ (hm.trans h), hn _ hm]
+  · exact f.iterateKer.monotone h.le
 
 end
 
