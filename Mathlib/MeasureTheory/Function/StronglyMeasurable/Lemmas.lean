@@ -39,20 +39,6 @@ theorem MeasureTheory.MeasurePreserving.aestronglyMeasurable_comp_iff {β : Type
     AEStronglyMeasurable (g ∘ f) μa ↔ AEStronglyMeasurable g μb := by
   rw [← hf.map_eq, h₂.aestronglyMeasurable_map_iff]
 
-lemma ENNReal.finStronglyMeasurable_of_measurable {f : α → ℝ≥0∞} (hf : ∫⁻ x, f x ∂μ ≠ ∞)
-    (hf_meas : Measurable f) :
-    FinStronglyMeasurable f μ := by
-  exact ⟨SimpleFunc.eapprox f, measure_support_eapprox_lt_top hf_meas hf,
-    SimpleFunc.tendsto_eapprox hf_meas⟩
-
-lemma ENNReal.aefinStronglyMeasurable_of_aemeasurable {f : α → ℝ≥0∞} (hf : ∫⁻ x, f x ∂μ ≠ ∞)
-    (hf_meas : AEMeasurable f μ) :
-    AEFinStronglyMeasurable f μ := by
-  have h := ENNReal.finStronglyMeasurable_of_measurable (μ := μ) (f := hf_meas.mk f) ?_
-    hf_meas.measurable_mk
-  · exact ⟨hf_meas.mk f, h, hf_meas.ae_eq_mk⟩
-  · rwa [lintegral_congr_ae hf_meas.ae_eq_mk.symm]
-
 section NormedSpace
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [CompleteSpace 𝕜]
