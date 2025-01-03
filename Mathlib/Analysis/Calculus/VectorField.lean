@@ -92,7 +92,7 @@ lemma lieBracketWithin_smul_left {c : 𝕜} (hV : DifferentiableWithinAt 𝕜 V 
 lemma lieBracket_smul_left {c : 𝕜} (hV : DifferentiableAt 𝕜 V x) :
     lieBracket 𝕜 (c • V) W x = c • lieBracket 𝕜 V W x := by
   simp only [← differentiableWithinAt_univ, ← lieBracketWithin_univ] at hV ⊢
-  exact lieBracketWithin_smul_left hV uniqueDiffWithinAt_univ
+  exact lieBracketWithin_smul_left hV .univ
 
 lemma lieBracketWithin_smul_right {c : 𝕜} (hW : DifferentiableWithinAt 𝕜 W s x)
     (hs : UniqueDiffWithinAt 𝕜 s x) :

@@ -232,10 +232,10 @@ protected theorem UniqueDiffWithinAt.univ : UniqueDiffWithinAt 𝕜 univ x := by
 alias uniqueDiffWithinAt_univ := UniqueDiffWithinAt.univ
 
 @[simp]
-protected theorem UniqueDiffon.univ : UniqueDiffOn 𝕜 (univ : Set E) := fun _ _ ↦ .univ
+protected theorem UniqueDiffOn.univ : UniqueDiffOn 𝕜 (univ : Set E) := fun _ _ ↦ .univ
 
 @[deprecated (since := "2025-01-02")]
-alias uniqueDiffOn_univ := UniqueDiffon.univ
+alias uniqueDiffOn_univ := UniqueDiffOn.univ
 
 @[simp]
 protected theorem UniqueDiffon.empty : UniqueDiffOn 𝕜 (∅ : Set E) := fun _ hx => hx.elim
