@@ -570,7 +570,8 @@ def arrowCongrEquiv (e₁₂ : M₁ ≃SL[σ₁₂] M₂) (e₄₃ : M₄ ≃SL[
 section Pi
 
 /-- Combine a family of linear equivalences into a linear equivalence of `pi`-types.
-This is `Equiv.piCongrLeft` as a `ContinuousLinearEquiv` -/
+This is `Equiv.piCongrLeft` as a `ContinuousLinearEquiv`.
+-/
 def piCongrLeft (R : Type*) [Semiring R] {ι ι' : Type*}
     (φ : ι → Type*) [∀ i, AddCommMonoid (φ i)] [∀ i, Module R (φ i)]
     [∀ i, TopologicalSpace (φ i)]
