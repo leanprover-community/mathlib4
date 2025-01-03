@@ -267,7 +267,6 @@ theorem exists_multiset_roots [DecidableEq R] :
             rw [← degree_add_divByMonic (monic_X_sub_C x) hdeg, degree_X_sub_C, add_comm]
             exact add_le_add (le_refl (1 : WithBot ℕ)) htd,
         by
-          change ∀ (a : R), count a (x ::ₘ t) = rootMultiplicity a p
           intro a
           conv_rhs => rw [← mul_divByMonic_eq_iff_isRoot.mpr hx]
           rw [rootMultiplicity_mul (mul_ne_zero (X_sub_C_ne_zero x) hdiv0),

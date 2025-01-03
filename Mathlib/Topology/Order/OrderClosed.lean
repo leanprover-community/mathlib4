@@ -12,7 +12,7 @@ In this file we introduce 3 typeclass mixins that relate topology and order stru
 
 - `ClosedIicTopology` says that all the intervals $(-∞, a]$ (formally, `Set.Iic a`)
   are closed sets;
-- `ClosedIciTopoplogy` says that all the intervals $[a, +∞)$ (formally, `Set.Ici a`)
+- `ClosedIciTopology` says that all the intervals $[a, +∞)$ (formally, `Set.Ici a`)
   are closed sets;
 - `OrderClosedTopology` says that the set of points `(x, y)` such that `x ≤ y`
   is closed in the product topology.
@@ -25,7 +25,7 @@ We prove many basic properties of such topologies.
 
 This file contains the proofs of the following facts.
 For exact requirements
-(`OrderClosedTopology` vs `ClosedIciTopoplogy` vs `ClosedIicTopology,
+(`OrderClosedTopology` vs `ClosedIciTopology` vs `ClosedIicTopology,
 `Preorder` vs `PartialOrder` vs `LinearOrder` etc)
 see their statements.
 
