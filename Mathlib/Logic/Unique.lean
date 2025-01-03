@@ -80,7 +80,7 @@ abbrev uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α 
   default := a
   uniq _ := Subsingleton.elim _ _
 
-instance PUnit.unique : Unique PUnit.{u} where
+instance PUnit.instUnique : Unique PUnit.{u} where
   default := PUnit.unit
   uniq x := subsingleton x _
 

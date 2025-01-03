@@ -191,12 +191,27 @@ lemma exp_cgf_of_ne_zero (hμ : μ ≠ 0) (hX : Integrable (fun ω ↦ exp (t * 
 lemma exp_cgf [IsProbabilityMeasure μ] (hX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
     exp (cgf X μ t) = mgf X μ t := by rw [cgf, exp_log (mgf_pos hX)]
 
+lemma mgf_id_map (hX : AEMeasurable X μ) : mgf id (μ.map X) = mgf X μ := by
+  ext t
+  rw [mgf, integral_map hX]
+  · rfl
+  · exact (measurable_const_mul _).exp.aestronglyMeasurable
+
 theorem mgf_neg : mgf (-X) μ t = mgf X μ (-t) := by simp_rw [mgf, Pi.neg_apply, mul_neg, neg_mul]
 
 theorem cgf_neg : cgf (-X) μ t = cgf X μ (-t) := by simp_rw [cgf, mgf_neg]
 
 theorem mgf_smul_left (α : ℝ) : mgf (α • X) μ t = mgf X μ (α * t) := by
   simp_rw [mgf, Pi.smul_apply, smul_eq_mul, mul_comm α t, mul_assoc]
+
+theorem mgf_const_add (α : ℝ) : mgf (fun ω => α + X ω) μ t = exp (t * α) * mgf X μ t := by
+  rw [mgf, mgf, ← integral_mul_left]
+  congr with x
+  dsimp
+  rw [mul_add, exp_add]
+
+theorem mgf_add_const (α : ℝ) : mgf (fun ω => X ω + α) μ t = mgf X μ t *  exp (t * α) := by
+  simp only [add_comm, mgf_const_add, mul_comm]
 
 section IndepFun
 
@@ -352,6 +367,11 @@ theorem measure_le_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
   exact mul_le_mul le_rfl (le_exp_log _) mgf_nonneg (exp_pos _).le
 
 end Chernoff
+
+lemma mgf_dirac {x : ℝ} (hX : μ.map X = .dirac x) (t : ℝ) : mgf X μ t = exp (x * t) := by
+  have : IsProbabilityMeasure (μ.map X) := by rw [hX]; infer_instance
+  rw [← mgf_id_map (.of_map_ne_zero <| IsProbabilityMeasure.ne_zero _), mgf, hX, integral_dirac,
+    mul_comm, id_def]
 
 end MomentGeneratingFunction
 

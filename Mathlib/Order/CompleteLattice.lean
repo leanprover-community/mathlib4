@@ -173,6 +173,15 @@ theorem sInf_singleton {a : α} : sInf {a} = a :=
 
 end
 
+instance {α : Type*} [CompleteSemilatticeInf α] : CompleteSemilatticeSup αᵒᵈ where
+  le_sSup := @CompleteSemilatticeInf.sInf_le α _
+  sSup_le := @CompleteSemilatticeInf.le_sInf α _
+
+instance {α : Type*} [CompleteSemilatticeSup α] : CompleteSemilatticeInf αᵒᵈ where
+  le_sInf := @CompleteSemilatticeSup.sSup_le α _
+  sInf_le := @CompleteSemilatticeSup.le_sSup α _
+
+
 /-- A complete lattice is a bounded lattice which has suprema and infima for every subset. -/
 class CompleteLattice (α : Type*) extends Lattice α, CompleteSemilatticeSup α,
   CompleteSemilatticeInf α, Top α, Bot α where

@@ -23,7 +23,7 @@ collection of linear functions.
 
 ## Implementation notes
 
-No concrete (semi)ring is used here, only ones with inferrable order/lattice structure, to support
+No concrete (semi)ring is used here, only ones with inferable order/lattice structure, to support
 `Real`, `Rat`, `EReal`, and others (`ERat` is not yet defined).
 
 Minima over `List α` are defined as producing a value in `WithTop α` so proofs about lists do not

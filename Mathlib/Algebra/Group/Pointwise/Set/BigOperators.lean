@@ -62,10 +62,10 @@ theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
       refine ⟨Function.update g i x, ?_, ?_⟩
       · intro j hj
         obtain rfl | hj := Finset.mem_insert.mp hj
-        · rwa [Function.update_same]
-        · rw [update_noteq (ne_of_mem_of_not_mem hj hi)]
+        · rwa [Function.update_self]
+        · rw [update_of_ne (ne_of_mem_of_not_mem hj hi)]
           exact hg hj
-      · rw [Finset.prod_update_of_not_mem hi, Function.update_same]
+      · rw [Finset.prod_update_of_not_mem hi, Function.update_self]
     · rintro ⟨g, hg, rfl⟩
       exact ⟨g i, hg (is.mem_insert_self _), is.prod g,
         ⟨⟨g, fun hi ↦ hg (Finset.mem_insert_of_mem hi), rfl⟩, rfl⟩⟩

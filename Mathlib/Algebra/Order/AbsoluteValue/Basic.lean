@@ -93,6 +93,12 @@ protected theorem eq_zero {x : R} : abv x = 0 ↔ x = 0 :=
 protected theorem add_le (x y : R) : abv (x + y) ≤ abv x + abv y :=
   abv.add_le' x y
 
+/-- The triangle inequality for an `AbsoluteValue` applied to a list. -/
+lemma listSum_le (l : List R) : abv l.sum ≤ (l.map abv).sum := by
+  induction l with
+  | nil => simp
+  | cons head tail ih => exact (abv.add_le ..).trans <| add_le_add_left ih (abv head)
+
 @[simp]
 protected theorem map_mul (x y : R) : abv (x * y) = abv x * abv y :=
   abv.map_mul' x y
@@ -174,6 +180,20 @@ theorem coe_toMonoidHom : ⇑abv.toMonoidHom = abv :=
 protected theorem map_pow (a : R) (n : ℕ) : abv (a ^ n) = abv a ^ n :=
   abv.toMonoidHom.map_pow a n
 
+omit [Nontrivial R] in
+/-- An absolute value satisfies `f (n : R) ≤ n` for every `n : ℕ`. -/
+lemma apply_nat_le_self (n : ℕ) : abv n ≤ n := by
+  cases subsingleton_or_nontrivial R
+  · simp [Subsingleton.eq_zero (n : R)]
+  induction n with
+  | zero => simp
+  | succ n hn =>
+    simp only [Nat.cast_succ]
+    calc
+      abv (n + 1) ≤ abv n + abv 1 := abv.add_le ..
+      _ = abv n + 1 := congrArg (abv n + ·) abv.map_one
+      _ ≤ n + 1 := add_le_add_right hn 1
+
 end IsDomain
 
 end Semiring
@@ -191,8 +211,8 @@ end Ring
 end OrderedRing
 
 section OrderedCommRing
-variable [OrderedCommRing S] [Ring R] (abv : AbsoluteValue R S)
-variable [NoZeroDivisors S]
+
+variable [OrderedCommRing S] [Ring R] (abv : AbsoluteValue R S) [NoZeroDivisors S]
 
 @[simp]
 protected theorem map_neg (a : R) : abv (-a) = abv a := by
@@ -218,6 +238,18 @@ instance [Nontrivial R] [IsDomain S] : MulRingNormClass (AbsoluteValue R S) R S 
     AbsoluteValue.monoidWithZeroHomClass with
     map_neg_eq_map := fun f => f.map_neg
     eq_zero_of_map_eq_zero := fun f _ => f.eq_zero.1 }
+
+open Int in
+lemma apply_natAbs_eq (x : ℤ) : abv (natAbs x) = abv x := by
+  obtain ⟨_, rfl | rfl⟩ := eq_nat_or_neg x <;> simp
+
+open Int in
+/-- Values of an absolute value coincide on the image of `ℕ` in `R`
+if and only if they coincide on the image of `ℤ` in `R`. -/
+lemma eq_on_nat_iff_eq_on_int {f g : AbsoluteValue R S} :
+    (∀ n : ℕ , f n = g n) ↔ ∀ n : ℤ , f n = g n := by
+  refine ⟨fun h z ↦ ?_, fun a n ↦ mod_cast a n⟩
+  obtain ⟨n , rfl | rfl⟩ := eq_nat_or_neg z <;> simp [h n]
 
 end OrderedCommRing
 
@@ -248,6 +280,37 @@ theorem abs_abv_sub_le_abv_sub (a b : R) : abs (abv a - abv b) ≤ abv (a - b) :
   abs_sub_le_iff.2 ⟨abv.le_sub _ _, by rw [abv.map_sub]; apply abv.le_sub⟩
 
 end LinearOrderedCommRing
+
+section trivial
+
+variable {R : Type*} [Semiring R] [DecidablePred fun x : R ↦ x = 0] [NoZeroDivisors R]
+variable {S : Type*} [OrderedSemiring S] [Nontrivial S]
+
+/-- The *trivial* absolute value takes the value `1` on all nonzero elements. -/
+protected
+def trivial: AbsoluteValue R S where
+  toFun x := if x = 0 then 0 else 1
+  map_mul' x y := by
+    rcases eq_or_ne x 0 with rfl | hx
+    · simp
+    rcases eq_or_ne y 0 with rfl | hy
+    · simp
+    simp [hx, hy]
+  nonneg' x := by rcases eq_or_ne x 0 with hx | hx <;> simp [hx]
+  eq_zero' x := by rcases eq_or_ne x 0 with hx | hx <;> simp [hx]
+  add_le' x y := by
+    rcases eq_or_ne x 0 with rfl | hx
+    · simp
+    rcases eq_or_ne y 0 with rfl | hy
+    · simp
+    simp only [hx, ↓reduceIte, hy, one_add_one_eq_two]
+    rcases eq_or_ne (x + y) 0 with hxy | hxy <;> simp [hxy, one_le_two]
+
+@[simp]
+lemma trivial_apply {x : R} (hx : x ≠ 0) : AbsoluteValue.trivial (S := S) x = 1 :=
+  if_neg hx
+
+end trivial
 
 end AbsoluteValue
 
