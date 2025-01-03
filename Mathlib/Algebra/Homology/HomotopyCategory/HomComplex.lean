@@ -529,8 +529,7 @@ lemma δ_ofHom {p : ℤ} (φ : F ⟶ G) : δ 0 p (Cochain.ofHom φ) = 0 := by
     ext
     simp
   · rw [δ_shape]
-    intro
-    exact h (by omega)
+    omega
 
 @[simp]
 lemma δ_ofHomotopy {φ₁ φ₂ : F ⟶ G} (h : Homotopy φ₁ φ₂) :

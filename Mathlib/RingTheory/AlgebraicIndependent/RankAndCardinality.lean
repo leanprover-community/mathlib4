@@ -31,8 +31,6 @@ noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
 
-open scoped Classical
-
 universe u v w
 
 open AlgebraicIndependent
