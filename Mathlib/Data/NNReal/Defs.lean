@@ -263,10 +263,8 @@ protected theorem coe_natCast (n : ℕ) : (↑(↑n : ℝ≥0) : ℝ) = n :=
 @[deprecated (since := "2024-04-17")]
 alias coe_nat_cast := NNReal.coe_natCast
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
-protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n : ℝ≥0) : ℝ) = OfNat.ofNat n :=
+protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((ofNat(n) : ℝ≥0) : ℝ) = ofNat(n) :=
   rfl
 
 @[simp, norm_cast]
