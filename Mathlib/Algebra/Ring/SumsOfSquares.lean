@@ -73,7 +73,7 @@ theorem IsSumSq.sum_mul_self {ι : Type*} [AddCommMonoid R] (s : Finset ι) (f :
 
 variable (R) in
 /--
-In an additive monoid with multiplication `R`, `sumSq R` is the submonoid of sums of
+In an additive monoid with multiplication `R`, `AddSubmonoid.sumSq R` is the submonoid of sums of
 squares in `R`.
 -/
 @[simps]
