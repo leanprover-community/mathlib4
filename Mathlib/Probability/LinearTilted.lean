@@ -145,9 +145,10 @@ lemma integrable_linTilted_iff {E : Type*} [NormedAddCommGroup E] [NormedSpace �
     Integrable g (μ.linTilted X t) ↔ Integrable (fun ω ↦ exp (t * X ω) • g ω) μ := by
   rw [Measure.linTilted, integrable_tilted_iff]
 
+/-- Auxiliary lemma for `memℒp_linTilted`. -/
 lemma memℒp_linTilted_nat (n : ℕ) [IsFiniteMeasure μ]
     (ht : t ∈ interior {x | Integrable (fun ω ↦ rexp (x * X ω)) μ}) :
-    Memℒp X n (Measure.linTilted X μ t) := by
+    Memℒp X n (μ.linTilted X t) := by
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrable_exp ht
   by_cases hn : n = 0
   · simp only [hn, CharP.cast_eq_zero, memℒp_zero_iff_aestronglyMeasurable]
@@ -166,26 +167,8 @@ lemma memℒp_linTilted_nat (n : ℕ) [IsFiniteMeasure μ]
 
 lemma memℒp_linTilted (p : ℝ≥0) [IsFiniteMeasure μ]
     (ht : t ∈ interior {x | Integrable (fun ω ↦ rexp (x * X ω)) μ}) :
-    Memℒp X p (Measure.linTilted X μ t) := by
-  have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrable_exp ht
-  by_cases hp : p = 0
-  · simp only [hp, ENNReal.coe_zero, memℒp_zero_iff_aestronglyMeasurable]
-    exact hX.aestronglyMeasurable.mono_ac (linTilted_absolutelyContinuous _ _ _)
-  refine ⟨hX.aestronglyMeasurable.mono_ac (linTilted_absolutelyContinuous _ _ _), ?_⟩
-  rw [eLpNorm_lt_top_iff_lintegral_rpow_nnnorm_lt_top]
-  rotate_left
-  · simp [hp]
-  · simp
-  simp only [ENNReal.coe_toReal]
-  simp_rw [← ofReal_norm_eq_coe_nnnorm]
-  have : ∫⁻ ω, (ENNReal.ofReal ‖X ω‖) ^ (p : ℝ) ∂(μ.linTilted X t)
-      = ∫⁻ ω, ENNReal.ofReal (‖X ω‖ ^ (p : ℝ)) ∂(μ.linTilted X t) := by
-    refine lintegral_congr fun ω ↦ ?_
-    exact ENNReal.ofReal_rpow_of_nonneg (norm_nonneg (X _)) p.2
-  rw [this]
-  refine Integrable.lintegral_lt_top ?_
-  simp_rw [norm_eq_abs]
-  sorry
+    Memℒp X p (μ.linTilted X t) :=
+  Memℒp.memℒp_of_exponent_le (q := ⌈(p : ℝ)⌉₊) (memℒp_linTilted_nat _ ht) (mod_cast Nat.le_ceil _)
 
 lemma variance_linTilted [NeZero μ] [IsFiniteMeasure μ]
     (ht : t ∈ interior {x | Integrable (fun ω ↦ rexp (x * X ω)) μ}) :
@@ -195,7 +178,7 @@ lemma variance_linTilted [NeZero μ] [IsFiniteMeasure μ]
     exact interior_subset ht
   have := isProbabilityMeasure_linTilted ht_int
   rw [Memℒp.variance_eq]
-  swap; · exact memℒp_linTilted_nat 2 ht
+  swap; · exact memℒp_linTilted 2 ht
   rw [integral_linTilted_self ht, iteratedDeriv_two_cgf ht, integral_linTilted, ← integral_div]
   simp only [Pi.pow_apply, Pi.sub_apply, smul_eq_mul]
   congr with ω
@@ -271,7 +254,9 @@ lemma integral_eq_integral_measure_ge [SFinite μ] {f : Ω → ℝ}
   _ = ∫ u in Ici 0, ∫ ω, if u ≤ f ω then 1 else 0 ∂μ := by
     rw [integral_integral_swap]
     refine (integrable_prod_iff ?_).mpr ?_
-    · sorry
+    · refine Measurable.aestronglyMeasurable ?_
+      refine Measurable.ite ?_ measurable_const measurable_const
+      exact measurableSet_le measurable_snd (hf_meas.comp measurable_fst)
     · simp only [Function.uncurry_apply_pair, norm_eq_abs]
       refine ⟨ae_of_all _ fun ω ↦ ?_, ?_⟩
       · sorry
@@ -311,7 +296,7 @@ lemma measure_ge_eq_integral_todo [IsFiniteMeasure μ] (ε : ℝ) (t : ℝ) (hX 
     refine mul_nonneg ?_ (exp_nonneg _)
     exact indicator_nonneg (fun _ _ ↦ zero_le_one) _
   refine setIntegral_congr_fun measurableSet_Ici fun u hu ↦ ?_
-  congr with x
+  congr with ω
   simp only [neg_mul, mem_setOf_eq, sub_nonneg, log_inv]
   simp only [Set.mem_Ici] at hu
   sorry
