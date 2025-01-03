@@ -3,8 +3,8 @@ Copyright (c) 2024 Yaël Dillies, Kin Yau James Wong. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Kin Yau James Wong, Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+import Mathlib.Probability.Kernel.Composition.MeasureCompProd
 
 /-!
 # Disintegration of measures and kernels
@@ -129,6 +129,7 @@ instance instIsCondKernel_zero (κCond : Kernel (α × β) Ω) : IsCondKernel 0 
 
 lemma disintegrate [κ.IsCondKernel κCond] : κ.fst ⊗ₖ κCond = κ := IsCondKernel.disintegrate
 
+/-- A conditional kernel is almost everywhere a probability measure. -/
 lemma IsCondKernel.isProbabilityMeasure_ae [IsFiniteKernel κ.fst] [κ.IsCondKernel κCond] (a : α) :
     ∀ᵐ b ∂(κ.fst a), IsProbabilityMeasure (κCond (a, b)) := by
   have h := disintegrate κ κCond
