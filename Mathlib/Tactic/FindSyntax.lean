@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.Command
+import Mathlib.Init
 
 /-!
 #  The `#find_syntax` command
