@@ -431,7 +431,7 @@ def signHom : α →*₀ SignType where
 
 theorem sign_pow (x : α) (n : ℕ) : sign (x ^ n) = sign x ^ n := map_pow signHom x n
 
-lemma zero_in_set_range_singType_cast : (0 : α) ∈ Set.range SignType.cast :=
+lemma zero_mem_setRange_signTypeCast : (0 : α) ∈ Set.range SignType.cast :=
   ⟨0, rfl⟩
 
 lemma in_set_range_singType_cast_mul_in_set_range_singType_cast {a b : α}
