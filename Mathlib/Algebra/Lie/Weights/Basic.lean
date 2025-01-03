@@ -725,15 +725,6 @@ instance [IsTriangularizable R L M] : IsTriangularizable R (LieModule.toEnd R L 
     rintro ⟨-, x, rfl⟩
     exact IsTriangularizable.maxGenEigenspace_eq_top x
 
-instance (L' : LieSubalgebra R L) [IsTriangularizable R L M] : IsTriangularizable R L' M where
-  iSup_eq_top x := IsTriangularizable.iSup_eq_top (x : L)
-
-instance (I : LieIdeal R L) [IsTriangularizable R L M] : IsTriangularizable R I M where
-  iSup_eq_top x := IsTriangularizable.iSup_eq_top (x : L)
-
-instance [IsTriangularizable R L M] : IsTriangularizable R (LieModule.toEnd R L M).range M where
-  iSup_eq_top := by rintro ⟨-, x, rfl⟩; exact IsTriangularizable.iSup_eq_top x
-
 @[simp]
 lemma iSup_genWeightSpaceOf_eq_top [IsTriangularizable R L M] (x : L) :
     ⨆ (φ : R), genWeightSpaceOf M φ x = ⊤ := by
