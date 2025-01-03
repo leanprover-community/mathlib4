@@ -450,6 +450,23 @@ theorem filter_ge_eq_Iic [DecidablePred (· ≤ a)] : ({x | x ≤ a} : Finset _)
 
 end LocallyFiniteOrderBot
 
+section LocallyFiniteOrder
+
+variable [LocallyFiniteOrder α]
+
+theorem Icc_bot [OrderBot α] : Icc (⊥ : α) a = Iic a := rfl
+
+theorem Icc_top [OrderTop α] : Icc a (⊤ : α) = Ici a := rfl
+
+theorem Ico_bot [OrderBot α] : Ico (⊥ : α) a = Iio a := rfl
+
+theorem Ioc_top [OrderTop α] : Ioc a (⊤ : α) = Ioi a := rfl
+
+theorem Icc_bot_top [BoundedOrder α] [Fintype α] : Icc (⊥ : α) (⊤ : α) = univ := by
+  rw [Icc_bot, Iic_top]
+
+end LocallyFiniteOrder
+
 variable [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
 
 theorem disjoint_Ioi_Iio (a : α) : Disjoint (Ioi a) (Iio a) :=
@@ -461,7 +478,6 @@ section PartialOrder
 
 variable [PartialOrder α] [LocallyFiniteOrder α] {a b c : α}
 
-@[simp]
 theorem Icc_self (a : α) : Icc a a = {a} := by rw [← coe_eq_singleton, coe_Icc, Set.Icc_self]
 
 @[simp]
@@ -471,18 +487,9 @@ theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
 theorem Ico_disjoint_Ico_consecutive (a b c : α) : Disjoint (Ico a b) (Ico b c) :=
   disjoint_left.2 fun _ hab hbc => (mem_Ico.mp hab).2.not_le (mem_Ico.mp hbc).1
 
-@[simp]
-theorem Ici_top [OrderTop α] : Ici (⊤ : α) = {⊤} :=
-  Icc_eq_singleton_iff.2 ⟨rfl, rfl⟩
+theorem Ici_top [OrderTop α] : Ici (⊤ : α) = {⊤} := Icc_eq_singleton_iff.2 ⟨rfl, rfl⟩
 
-@[simp]
-theorem Iic_bot [OrderBot α] : Iic (⊥ : α) = {⊥} :=
-  Icc_eq_singleton_iff.2 ⟨rfl, rfl⟩
-
-@[simp]
-theorem Icc_bot_top [BoundedOrder α] [Fintype α] : Icc (⊥ : α) ⊤ = univ := by
-  ext a
-  simp only [mem_Icc, bot_le, le_top, and_self, mem_univ]
+theorem Iic_bot [OrderBot α] : Iic (⊥ : α) = {⊥} := Icc_eq_singleton_iff.2 ⟨rfl, rfl⟩
 
 section DecidableEq
 
