@@ -468,9 +468,9 @@ lemma disjoint_span_singleton_of_not_mem (hx : x ∉ s) : Disjoint s (K ∙ x) :
   intro h
   contradiction
 
-lemma isCompl_span_singleton_of_iscoatom_of_not_mem (hs : IsCoatom s) (hx : x ∉ s) :
+lemma isCompl_span_singleton_of_isCoatom_of_not_mem (hs : IsCoatom s) (hx : x ∉ s) :
     IsCompl s (K ∙ x) := by
-  refine ⟨disjoint_span_singleton_of_not_mem hx, ?_⟩ 
+  refine ⟨disjoint_span_singleton_of_not_mem hx, ?_⟩
   rw [← covBy_top_iff] at hs
   simpa only [codisjoint_iff, sup_comm, not_lt_top_iff] using hs.2 (covBy_span_singleton_sup hx).1
 
@@ -632,9 +632,9 @@ def toSpanNonzeroSingleton : R ≃ₗ[R] R ∙ x :=
   rfl
 
 @[simp]
-lemma toSpanNonzeroSingleton_symm_apply_smul (y) :
-    (toSpanNonzeroSingleton R M x h).symm y • x = y :=
-  congrArg Subtype.val <| apply_symm_apply (toSpanNonzeroSingleton R M x h) y
+lemma toSpanNonzeroSingleton_symm_apply_smul (m : R ∙ x) :
+    (toSpanNonzeroSingleton R M x h).symm m • x = m :=
+  congrArg Subtype.val <| apply_symm_apply (toSpanNonzeroSingleton R M x h) m
 
 theorem toSpanNonzeroSingleton_one :
     LinearEquiv.toSpanNonzeroSingleton R M x h 1 =

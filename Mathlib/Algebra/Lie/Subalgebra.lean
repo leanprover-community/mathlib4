@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Basic
-import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.Artinian.Module
 
 /-!
 # Lie subalgebras

@@ -744,21 +744,20 @@ protected nonrec abbrev not (φ : L.Formula α) : L.Formula α :=
 protected abbrev imp : L.Formula α → L.Formula α → L.Formula α :=
   BoundedFormula.imp
 
-/-- Given a map `f : α → β ⊕ γ`, `iAlls f φ` transforms a `L.Formula α`
-into a `L.Formula β` by renaming variables with the map `f` and then universally
-quantifying over all variables `Sum.inr _`. -/
-noncomputable def iAlls [Finite γ] (f : α → β ⊕ γ)
-    (φ : L.Formula α) : L.Formula β :=
-  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
-  (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).alls
 
-/-- Given a map `f : α → β ⊕ γ`, `iExs f φ` transforms a `L.Formula α`
-into a `L.Formula β` by renaming variables with the map `f` and then existentially
+variable (β) in
+/-- `iAlls f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by universally
 quantifying over all variables `Sum.inr _`. -/
-noncomputable def iExs [Finite γ] (f : α → β ⊕ γ)
-    (φ : L.Formula α) : L.Formula β :=
-  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
-  (BoundedFormula.relabel (fun a => Sum.map id e (f a)) φ).exs
+noncomputable def iAlls [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin β))
+  (BoundedFormula.relabel (fun a => Sum.map id e a) φ).alls
+
+variable (β) in
+/-- `iExs f φ` transforms a `L.Formula (α ⊕ β)` into a `L.Formula β` by existentially
+quantifying over all variables `Sum.inr _`. -/
+noncomputable def iExs [Finite β] (φ : L.Formula (α ⊕ β)) : L.Formula α :=
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin β))
+  (BoundedFormula.relabel (fun a => Sum.map id e a) φ).exs
 
 /-- The biimplication between formulas, as a formula. -/
 protected nonrec abbrev iff (φ ψ : L.Formula α) : L.Formula α :=
