@@ -579,8 +579,7 @@ lemma exists_subsuperset_card_eq (hst : s ⊆ t) (hsn : #s ≤ n) (hnt : n ≤ #
 lemma exists_subset_card_eq (hns : n ≤ #s) : ∃ t ⊆ s, #t = n := by
   simpa using exists_subsuperset_card_eq s.empty_subset (by simp) hns
 
-lemma of_cardinality_between_of_disjoint [DecidableEq α] (hs : #s < n) (hn : n ≤ #s + #t)
-    (hst : Disjoint s t) :
+lemma of_cardinality_between_of_disjoint (hs : #s < n) (hn : n ≤ #s + #t) (hst : Disjoint s t) :
     ∃ (x : Finset α) (hxs : Disjoint x s), #(x.disjUnion s hxs) = n ∧ Nonempty x := by
   have hnst : n - #s ≤ #t := by omega
   obtain ⟨x, hxt, hxn⟩ := Finset.exists_subset_card_eq hnst
