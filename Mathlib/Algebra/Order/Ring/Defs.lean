@@ -109,6 +109,62 @@ universe u
 
 variable {α : Type u}
 
+-- TODO: use weaker typeclasses
+
+/-- An ordered semiring is a semiring with a order such that addition is monotone and
+multiplication by a nonnegative number is monotone. -/
+class IsOrderedRing (α : Type*) [Semiring α] [PartialOrder α] extends
+    IsOrderedAddMonoid α where
+  /-- `0 ≤ 1` in any ordered semiring. -/
+  protected zero_le_one : (0 : α) ≤ 1
+  /-- In an ordered semiring, we can multiply an inequality `a ≤ b` on the left
+  by a non-negative element `0 ≤ c` to obtain `c * a ≤ c * b`. -/
+  protected mul_le_mul_of_nonneg_left : ∀ a b c : α, a ≤ b → 0 ≤ c → c * a ≤ c * b
+  /-- In an ordered semiring, we can multiply an inequality `a ≤ b` on the right
+  by a non-negative element `0 ≤ c` to obtain `a * c ≤ b * c`. -/
+  protected mul_le_mul_of_nonneg_right : ∀ a b c : α, a ≤ b → 0 ≤ c → a * c ≤ b * c
+
+/-- A strict ordered semiring is a nontrivial semiring with a order such that addition is
+strictly monotone and multiplication by a positive number is strictly monotone. -/
+class IsStrictOrderedRing (α : Type*) [Semiring α] [PartialOrder α] extends
+    IsOrderedCancelAddMonoid α, Nontrivial α where
+  /-- In a strict ordered semiring, `0 ≤ 1`. -/
+  protected zero_le_one : (0 : α) ≤ 1
+  /-- Left multiplication by a positive element is strictly monotone. -/
+  protected mul_lt_mul_of_pos_left : ∀ a b c : α, a < b → 0 < c → c * a < c * b
+  /-- Right multiplication by a positive element is strictly monotone. -/
+  protected mul_lt_mul_of_pos_right : ∀ a b c : α, a < b → 0 < c → a * c < b * c
+
+section IsOrderedRing
+variable [Semiring α] [PartialOrder α] [IsOrderedRing α]
+
+-- see Note [lower instance priority]
+instance (priority := 100) IsOrderedRing.zeroLEOneClass : ZeroLEOneClass α :=
+  { ‹IsOrderedRing α› with }
+
+-- see Note [lower instance priority]
+instance (priority := 200) IsOrderedRing.toPosMulMono : PosMulMono α :=
+  ⟨fun x _ _ h => IsOrderedRing.mul_le_mul_of_nonneg_left _ _ _ h x.2⟩
+
+-- see Note [lower instance priority]
+instance (priority := 200) IsOrderedRing.toMulPosMono : MulPosMono α :=
+  ⟨fun x _ _ h => IsOrderedRing.mul_le_mul_of_nonneg_right _ _ _ h x.2⟩
+
+end IsOrderedRing
+
+section IsStrictOrderedRing
+variable [Semiring α] [PartialOrder α] [IsStrictOrderedRing α]
+
+-- see Note [lower instance priority]
+instance (priority := 200) IsStrictOrderedRing.toPosMulStrictMono : PosMulStrictMono α :=
+  ⟨fun x _ _ h => IsStrictOrderedRing.mul_lt_mul_of_pos_left _ _ _ h x.prop⟩
+
+-- see Note [lower instance priority]
+instance (priority := 200) IsStrictOrderedRing.toMulPosStrictMono : MulPosStrictMono α :=
+  ⟨fun x _ _ h => IsStrictOrderedRing.mul_lt_mul_of_pos_right _ _ _ h x.prop⟩
+
+end IsStrictOrderedRing
+
 /-! Note that `OrderDual` does not satisfy any of the ordered ring typeclasses due to the
 `zero_le_one` field. -/
 
@@ -194,17 +250,10 @@ class LinearOrderedCommRing (α : Type u) extends LinearOrderedRing α, CommMono
 section OrderedSemiring
 
 variable [OrderedSemiring α]
+
 -- see Note [lower instance priority]
-instance (priority := 100) OrderedSemiring.zeroLEOneClass : ZeroLEOneClass α :=
+instance OrderedSemiring.toIsOrderedRing : IsOrderedRing α :=
   { ‹OrderedSemiring α› with }
-
--- see Note [lower instance priority]
-instance (priority := 200) OrderedSemiring.toPosMulMono : PosMulMono α :=
-  ⟨fun x _ _ h => OrderedSemiring.mul_le_mul_of_nonneg_left _ _ _ h x.2⟩
-
--- see Note [lower instance priority]
-instance (priority := 200) OrderedSemiring.toMulPosMono : MulPosMono α :=
-  ⟨fun x _ _ h => OrderedSemiring.mul_le_mul_of_nonneg_right _ _ _ h x.2⟩
 
 end OrderedSemiring
 
@@ -253,12 +302,8 @@ section StrictOrderedSemiring
 variable [StrictOrderedSemiring α]
 
 -- see Note [lower instance priority]
-instance (priority := 200) StrictOrderedSemiring.toPosMulStrictMono : PosMulStrictMono α :=
-  ⟨fun x _ _ h => StrictOrderedSemiring.mul_lt_mul_of_pos_left _ _ _ h x.prop⟩
-
--- see Note [lower instance priority]
-instance (priority := 200) StrictOrderedSemiring.toMulPosStrictMono : MulPosStrictMono α :=
-  ⟨fun x _ _ h => StrictOrderedSemiring.mul_lt_mul_of_pos_right _ _ _ h x.prop⟩
+instance StrictOrderedSemiring.toIsStrictOrderedRing : IsStrictOrderedRing α :=
+  { ‹StrictOrderedSemiring α› with }
 
 -- See note [reducible non-instances]
 /-- A choice-free version of `StrictOrderedSemiring.toOrderedSemiring` to avoid using choice in
