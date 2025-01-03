@@ -543,7 +543,7 @@ theorem range_pullback_to_base_of_left :
       Set.range f.base ∩ Set.range g.base := by
   rw [pullback.condition, Scheme.comp_base, TopCat.coe_comp, Set.range_comp,
     range_pullback_snd_of_left, Opens.carrier_eq_coe, Opens.map_obj, Opens.coe_mk,
-    Set.image_preimage_eq_inter_range, Opens.carrier_eq_coe, Scheme.Hom.opensRange_coe]
+    Set.image_preimage_eq_inter_range, Opens.carrier_eq_coe, Scheme.Hom.coe_opensRange]
 
 theorem range_pullback_to_base_of_right :
     Set.range (pullback.fst g f ≫ g).base =
