@@ -42,8 +42,7 @@ open Set MeasureTheory MeasureSpace
 
 variable {x₀ : ℝ} {a b : ℕ} {f g : ℝ → ℝ}
 
-
-lemma sum_le_integral_of_le
+lemma sum_Ico_le_integral_of_le
     (hab : a ≤ b) (h : ∀ i ∈ Ico a b, ∀ x ∈ Ico (i : ℝ) (i + 1 : ℕ), f i ≤ g x)
     (hg : IntegrableOn g (Set.Ico a b)) :
     ∑ i ∈ Finset.Ico a b, f i ≤ ∫ x in a..b, g x := by
@@ -65,11 +64,18 @@ lemma sum_le_integral_of_le
     intro i hi
     exact A _ (by simpa using hi)
 
+lemma integral_le_sum_Ico_of_le
+    (hab : a ≤ b) (h : ∀ i ∈ Ico a b, ∀ x ∈ Ico (i : ℝ) (i + 1 : ℕ), g x ≤ f i)
+    (hg : IntegrableOn g (Set.Ico a b)) :
+    ∫ x in a..b, g x ≤ ∑ i ∈ Finset.Ico a b, f i := by
+  convert neg_le_neg (sum_Ico_le_integral_of_le (f := -f) (g := -g) hab
+    (fun i hi x hx ↦ neg_le_neg (h i hi x hx)) hg.neg) <;> simp
+
 lemma sum_mul_le_integral_of_monotone_antitone
     (hab : a ≤ b) (hf : MonotoneOn f (Icc a b)) (hg : AntitoneOn g (Icc (a - 1) (b - 1)))
     (fpos : 0 ≤ f a) (gpos : 0 ≤ g (b - 1)) :
     ∑ i ∈ Finset.Ico a b, f i * g i ≤ ∫ x in a..b, f x * g (x - 1) := by
-  apply sum_le_integral_of_le (f := fun x ↦ f x * g x) hab
+  apply sum_Ico_le_integral_of_le (f := fun x ↦ f x * g x) hab
   · intro i hi x hx
     simp only [Nat.cast_add, Nat.cast_one, mem_Ico] at hx hi
     have I0 : (i : ℝ) ≤ b - 1 := by
