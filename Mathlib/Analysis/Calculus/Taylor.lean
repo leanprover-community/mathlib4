@@ -305,8 +305,7 @@ theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (h
     simp [hx]
   -- The nth iterated derivative is differentiable
   have hf' : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc a b)) (Icc a b) :=
-    hf.differentiableOn_iteratedDerivWithin (mod_cast n.lt_succ_self)
-      (uniqueDiffOn_Icc h)
+    hf.differentiableOn_iteratedDerivWithin (mod_cast n.lt_succ_self) (.Icc h)
   -- We can uniformly bound the derivative of the Taylor polynomial
   have h' : ∀ y ∈ Ico a x,
       ‖((n ! : ℝ)⁻¹ * (x - y) ^ n) • iteratedDerivWithin (n + 1) f (Icc a b) y‖ ≤
@@ -350,4 +349,4 @@ theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ}
   intro x hx
   rw [div_mul_eq_mul_div₀]
   refine taylor_mean_remainder_bound hab hf hx fun y => ?_
-  exact (hf.continuousOn_iteratedDerivWithin rfl.le <| uniqueDiffOn_Icc h).norm.le_sSup_image_Icc
+  exact (hf.continuousOn_iteratedDerivWithin le_rfl <| .Icc h).norm.le_sSup_image_Icc

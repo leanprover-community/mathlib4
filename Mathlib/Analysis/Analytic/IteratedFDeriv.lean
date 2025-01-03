@@ -196,7 +196,7 @@ theorem HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum
   apply HasFPowerSeriesWithinOnBall.iteratedFDerivWithin_eq_sum_of_subset
   · exact h.mono inter_subset_left
   · exact h'.mono inter_subset_left
-  · exact hs.inter EMetric.isOpen_ball
+  · exact hs.inter_isOpen EMetric.isOpen_ball
   · exact ⟨hx, EMetric.mem_ball_self h.r_pos⟩
   · exact inter_subset_right
 
