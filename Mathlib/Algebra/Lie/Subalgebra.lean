@@ -225,7 +225,7 @@ instance : Bracket L' M where
 theorem coe_bracket_of_module (x : L') (m : M) : ⁅x, m⁆ = ⁅(x : L), m⁆ :=
   rfl
 
-instance : LieTower L' L M where
+instance : IsLieTower L' L M where
   leibniz_lie x y m := leibniz_lie x.val y m
 
 /-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie ring module

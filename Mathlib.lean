@@ -305,6 +305,7 @@ import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.PNatPowAssoc
 import Mathlib.Algebra.Group.Pi.Basic
 import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.Group.Pi.Units
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
 import Mathlib.Algebra.Group.Pointwise.Finset.Interval
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
@@ -319,6 +320,7 @@ import Mathlib.Algebra.Group.Semiconj.Units
 import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Group.Subgroup.Defs
+import Mathlib.Algebra.Group.Subgroup.Even
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Algebra.Group.Subgroup.Finsupp
 import Mathlib.Algebra.Group.Subgroup.Ker
@@ -4269,6 +4271,7 @@ import Mathlib.Probability.Kernel.Disintegration.Unique
 import Mathlib.Probability.Kernel.Integral
 import Mathlib.Probability.Kernel.Invariance
 import Mathlib.Probability.Kernel.MeasurableIntegral
+import Mathlib.Probability.Kernel.Proper
 import Mathlib.Probability.Kernel.RadonNikodym
 import Mathlib.Probability.Kernel.WithDensity
 import Mathlib.Probability.Martingale.Basic
