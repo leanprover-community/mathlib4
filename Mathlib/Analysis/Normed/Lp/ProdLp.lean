@@ -641,8 +641,7 @@ theorem prod_nnnorm_eq_of_L1 (x : WithLp 1 (α × β)) :
 
 theorem prod_dist_eq_of_L1 (x y : WithLp 1 (α × β)) :
     dist x y = dist x.fst y.fst + dist x.snd y.snd := by
-  simp_rw [dist_eq_norm, prod_norm_eq_of_L1]
-  rfl
+  simp_rw [dist_eq_norm, prod_norm_eq_of_L1, sub_fst, sub_snd]
 
 theorem prod_nndist_eq_of_L1 (x y : WithLp 1 (α × β)) :
     nndist x y = nndist x.fst y.fst + nndist x.snd y.snd :=
@@ -676,8 +675,7 @@ theorem prod_norm_sq_eq_of_L2 (x : WithLp 2 (α × β)) : ‖x‖ ^ 2 = ‖x.fst
 
 theorem prod_dist_eq_of_L2 (x y : WithLp 2 (α × β)) :
     dist x y = √(dist x.fst y.fst ^ 2 + dist x.snd y.snd ^ 2) := by
-  simp_rw [dist_eq_norm, prod_norm_eq_of_L2]
-  rfl
+  simp_rw [dist_eq_norm, prod_norm_eq_of_L2, sub_fst, sub_snd]
 
 theorem prod_nndist_eq_of_L2 (x y : WithLp 2 (α × β)) :
     nndist x y = NNReal.sqrt (nndist x.fst y.fst ^ 2 + nndist x.snd y.snd ^ 2) :=
