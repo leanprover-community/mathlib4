@@ -5,7 +5,7 @@ Authors: Kim Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.Grp.Limits
-import Mathlib.Algebra.Colimit.ModuleRing
+import Mathlib.Algebra.Colimit.Module
 
 /-!
 # The category of R-modules has all limits

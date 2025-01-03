@@ -1027,6 +1027,7 @@ def fixAbbreviation : List String → List String
   | "add" :: "_" :: "indicator" :: s  => "indicator" :: fixAbbreviation s
   | "is" :: "Square" :: s             => "even" :: fixAbbreviation s
   | "Is" :: "Square" :: s             => "Even" :: fixAbbreviation s
+  | "square" :: "In" :: s             => "evenIn" :: fixAbbreviation s
   -- "Regular" is well-used in mathlib with various meanings (e.g. in
   -- measure theory) and a direct translation
   -- "regular" --> ["add", "Regular"] in `nameDict` above seems error-prone.
@@ -1183,9 +1184,11 @@ partial def applyAttributes (stx : Syntax) (rawAttrs : Array Syntax) (thisAttr s
   if linter.existingAttributeWarning.get (← getOptions) then
     let appliedAttrs ← getAllSimpAttrs src
     if appliedAttrs.size > 0 then
+      let appliedAttrs := ", ".intercalate (appliedAttrs.toList.map toString)
+      -- Note: we're not bothering to print the correct attribute arguments.
       Linter.logLintIf linter.existingAttributeWarning stx m!"\
         The source declaration {src} was given the simp-attribute(s) {appliedAttrs} before \
-        calling @[{thisAttr}]. The preferred method is to use \
+        calling @[{thisAttr}]. The preferred method is to use something like \
         `@[{thisAttr} (attr := {appliedAttrs})]` to apply the attribute to both \
         {src} and the target declaration {tgt}."
     warnAttr stx Lean.Elab.Tactic.Ext.extExtension
