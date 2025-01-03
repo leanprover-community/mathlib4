@@ -265,37 +265,32 @@ theorem insert_apply_right {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a :
     Equiv.Set.insert H ⟨b, Or.inr b.2⟩ = Sum.inl b :=
   (Equiv.Set.insert H).apply_eq_iff_eq_symm_apply.2 rfl
 
-/-- If `s : Set α` is a set with decidable membership, then `s ⊕ sᶜ` is equivalent to `α`. -/
-@[deprecated Equiv.sumCompl (since := "2025-01-02")]
+/-- If `s : Set α` is a set with decidable membership, then `s ⊕ sᶜ` is equivalent to `α`.
+
+See also `Equiv.sumCompl`. -/
 protected def sumCompl {α} (s : Set α) [DecidablePred (· ∈ s)] : s ⊕ (sᶜ : Set α) ≃ α :=
   Equiv.sumCompl (· ∈ s)
 
-@[deprecated Equiv.sumCompl_apply_inl (since := "2025-01-02")]
 theorem sumCompl_apply_inl {α : Type u} (s : Set α) [DecidablePred (· ∈ s)] (x : s) :
     Equiv.Set.sumCompl s (Sum.inl x) = x :=
   rfl
 
-@[deprecated Equiv.sumCompl_apply_inr (since := "2025-01-02")]
 theorem sumCompl_apply_inr {α : Type u} (s : Set α) [DecidablePred (· ∈ s)] (x : (sᶜ : Set α)) :
     Equiv.Set.sumCompl s (Sum.inr x) = x :=
   rfl
 
-@[deprecated Equiv.sumCompl_symm_apply_of_pos (since := "2025-01-02")]
 theorem sumCompl_symm_apply_of_mem {α : Type u} {s : Set α} [DecidablePred (· ∈ s)] {x : α}
     (hx : x ∈ s) : (Equiv.Set.sumCompl s).symm x = Sum.inl ⟨x, hx⟩ :=
   sumCompl_symm_apply_of_pos hx
 
-@[deprecated Equiv.sumCompl_symm_apply_of_neg (since := "2025-01-02")]
 theorem sumCompl_symm_apply_of_not_mem {α : Type u} {s : Set α} [DecidablePred (· ∈ s)] {x : α}
     (hx : x ∉ s) : (Equiv.Set.sumCompl s).symm x = Sum.inr ⟨x, hx⟩ :=
   sumCompl_symm_apply_of_neg hx
 
-@[deprecated Equiv.sumCompl_symm_apply_pos (since := "2025-01-02")]
 theorem sumCompl_symm_apply {α : Type*} {s : Set α} [DecidablePred (· ∈ s)] {x : s} :
     (Equiv.Set.sumCompl s).symm x = Sum.inl x :=
   Set.sumCompl_symm_apply_of_mem x.2
 
-@[deprecated Equiv.sumCompl_symm_apply_neg (since := "2025-01-02")]
 theorem sumCompl_symm_apply_compl {α : Type*} {s : Set α} [DecidablePred (· ∈ s)]
     {x : (sᶜ : Set α)} : (Equiv.Set.sumCompl s).symm x = Sum.inr x :=
   Set.sumCompl_symm_apply_of_not_mem x.2

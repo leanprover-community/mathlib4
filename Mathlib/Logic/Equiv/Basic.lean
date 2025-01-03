@@ -538,7 +538,7 @@ theorem sumCompl_symm_apply_pos {α} {p : α → Prop} [DecidablePred p] {x : {x
   sumCompl_symm_apply_of_pos x.2
 
 @[simp]
-theorem sumCompl_symm_apply_compl {α} {p : α → Prop} [DecidablePred p] {x : {x // ¬ p x}} :
+theorem sumCompl_symm_apply_neg {α} {p : α → Prop} [DecidablePred p] {x : {x // ¬ p x}} :
     (sumCompl p).symm x = Sum.inr x :=
   sumCompl_symm_apply_of_neg x.2
 
