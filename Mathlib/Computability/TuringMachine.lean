@@ -2305,7 +2305,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S 
         TM1.stepAux (trStAct q o) v
             ((Tape.move Dir.right)^[(S k).length] (Tape.mk' ∅ (addBottom L))) =
           TM1.stepAux q v' ((Tape.move Dir.right)^[(S' k).length] (Tape.mk' ∅ (addBottom L'))) := by
-  simp only [Function.update_same]; cases o with simp only [stWrite, stVar, trStAct, TM1.stepAux]
+  simp only [Function.update_self]; cases o with simp only [stWrite, stVar, trStAct, TM1.stepAux]
   | push f =>
     have := Tape.write_move_right_n fun a : Γ' ↦ (a.1, update a.2 k (some (f v)))
     refine
@@ -2320,7 +2320,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S 
     by_cases h' : k' = k
     · subst k'
       split_ifs with h
-        <;> simp only [List.reverse_cons, Function.update_same, ListBlank.nth_mk, List.map]
+        <;> simp only [List.reverse_cons, Function.update_self, ListBlank.nth_mk, List.map]
       · rw [List.getI_eq_getElem _, List.getElem_append_right] <;>
         simp only [List.length_append, List.length_reverse, List.length_map, ← h,
           Nat.sub_self, List.length_singleton, List.getElem_singleton,
@@ -2333,8 +2333,8 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S 
         rw [List.getI_eq_default, List.getI_eq_default] <;>
           simp only [Nat.add_one_le_iff, h, List.length, le_of_lt, List.length_reverse,
             List.length_append, List.length_map]
-    · split_ifs <;> rw [Function.update_noteq h', ← proj_map_nth, hL]
-      rw [Function.update_noteq h']
+    · split_ifs <;> rw [Function.update_of_ne h', ← proj_map_nth, hL]
+      rw [Function.update_of_ne h']
   | peek f =>
     rw [Function.update_eq_self]
     use L, hL; rw [Tape.move_left_right]; congr
@@ -2363,7 +2363,7 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S 
       rw [ListBlank.nth_map, ListBlank.nth_modifyNth, proj, PointedMap.mk_val]
       by_cases h' : k' = k
       · subst k'
-        split_ifs with h <;> simp only [Function.update_same, ListBlank.nth_mk, List.tail]
+        split_ifs with h <;> simp only [Function.update_self, ListBlank.nth_mk, List.tail]
         · rw [List.getI_eq_default]
           · rfl
           rw [h, List.length_reverse, List.length_map]
@@ -2375,8 +2375,8 @@ theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S 
           rw [List.getI_eq_default, List.getI_eq_default] <;>
             simp only [Nat.add_one_le_iff, h, List.length, le_of_lt, List.length_reverse,
               List.length_append, List.length_map]
-      · split_ifs <;> rw [Function.update_noteq h', ← proj_map_nth, hL]
-        rw [Function.update_noteq h']
+      · split_ifs <;> rw [Function.update_of_ne h', ← proj_map_nth, hL]
+        rw [Function.update_of_ne h']
 
 end
 
@@ -2480,9 +2480,9 @@ theorem trCfg_init (k) (L : List (Γ k)) : TrCfg (TM2.init k L) (TM1.init (trIni
     simp only []
     by_cases h : k' = k
     · subst k'
-      simp only [Function.update_same]
+      simp only [Function.update_self]
       rw [ListBlank.nth_mk, List.getI_eq_iget_getElem?, ← List.map_reverse, List.getElem?_map]
-    · simp only [Function.update_noteq h]
+    · simp only [Function.update_of_ne h]
       rw [ListBlank.nth_mk, List.getI_eq_iget_getElem?, List.map, List.reverse_nil]
       cases L.reverse[i]? <;> rfl
   · rw [trInit, TM1.init]

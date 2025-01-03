@@ -96,13 +96,12 @@ derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor ser
 
 noncomputable section
 
-open scoped Classical
 open NNReal Topology Filter
 
 /-
 Porting note: These lines are not required in Mathlib4.
 attribute [local instance 1001]
-  NormedAddCommGroup.toAddCommGroup NormedSpace.toModule' AddCommGroup.toAddCommMonoid
+  NormedAddCommGroup.toAddCommGroup AddCommGroup.toAddCommMonoid
 -/
 
 open Set Fin Filter Function

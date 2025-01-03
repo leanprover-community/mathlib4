@@ -14,10 +14,10 @@ In this file we prove the primitive element theorem.
 
 ## Main results
 
-- `exists_primitive_element`: a finite separable extension `E / F` has a primitive element, i.e.
-  there is an `α : E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`.
+- `Field.exists_primitive_element`: a finite separable extension `E / F` has a primitive element,
+  i.e. there is an `α : E` such that `F⟮α⟯ = (⊤ : Subalgebra F E)`.
 
-- `exists_primitive_element_iff_finite_intermediateField`: a finite extension `E / F` has a
+- `Field.exists_primitive_element_iff_finite_intermediateField`: a finite extension `E / F` has a
   primitive element if and only if there exist only finitely many intermediate fields between `E`
   and `F`.
 

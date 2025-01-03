@@ -3,13 +3,12 @@ Copyright (c) 2024 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.Module.Torsion
 import Mathlib.FieldTheory.Perfect
 import Mathlib.LinearAlgebra.AnnihilatingPolynomial
-import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.Artinian.Instances
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent
 import Mathlib.RingTheory.SimpleModule
-import Mathlib.Algebra.Module.Torsion
 
 /-!
 # Semisimple linear endomorphisms
