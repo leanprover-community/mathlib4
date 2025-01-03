@@ -63,37 +63,53 @@ partial def prove_factors_aux
     {en n' : Q(ℕ)} {ea a' : Q(ℕ)} (hn : Q(IsNat $en $n')) (ha : Q(IsNat $ea $a')) :
     MetaM ((l : Q(List ℕ)) × Q(FactorsHelper $en $ea $l)) := do
   let n := n'.natLit!
+  let ⟨hn0⟩ ← if h : 0 < n then pure <| PLift.up h else
+    throwError m!"{n'} must be positive"
   let a := a'.natLit!
   let b := n.minFac
-  if b < n then
-    have m := n / b
+  let ⟨hab⟩ ← if h : a ≤ b then pure <| PLift.up h else
+    throwError m!"{q($a' < $(n').minFac)} does not hold"
+  if hbn : b < n then
+    let m := n / b
     have em : Q(ℕ) := mkRawNatLit m
     have hm : Q(IsNat $em $em) := q(⟨rfl⟩)
-    if b = a then
-      have h : Q($a' * $em = $en) := (q(Eq.refl $en) : Expr)
+    if hba_eq : b = a then
+      have h : Q($a' * $em = $en) :=
+        have : a * m = n := by simp [m, ← hba_eq, Nat.mul_div_cancel' (minFac_dvd _)]
+        (q(Eq.refl $en) : Expr)
       let hp₁ := q(isNat_mul rfl $ha $hm $h)
       let ⟨l, p₂⟩ ← prove_factors_aux hm ha
       pure ⟨q($ea :: $l), q(factorsHelper_same $en $em $ea $l $hp₁ $p₂)⟩
     else
       have eb : Q(ℕ) := mkRawNatLit b
-      have h : Q($eb * $em = $en) := (q(Eq.refl $en) : Expr)
       have hb : Q(IsNat $eb $eb) := q(⟨rfl⟩)
+      have h : Q($eb * $em = $en) :=
+        have : b * m = n := Nat.mul_div_cancel' (minFac_dvd _)
+        (q(Eq.refl $en) : Expr)
       have hp₁ := q(isNat_mul rfl $hb $hm $h)
-      have p₂ : Q(Nat.blt $ea $eb = true) := (q(Eq.refl (true)) : Expr)
+      have p₂ : Q(Nat.blt $ea $eb = true) :=
+        have : a < b := lt_of_le_of_ne hab <| Ne.symm hba_eq
+        (q(Eq.refl (true)) : Expr)
       let .isNat _ lit p₃ ← evalMinFac.core q($eb)  q(inferInstance) q($eb) hb b | failure
       assertInstancesCommute
       have : $lit =Q $eb := ⟨⟩
       let ⟨l, p₄⟩ ← prove_factors_aux hm hb
       pure ⟨q($eb :: $l), q(factorsHelper_cons $en $em $ea $eb $l $hp₁ $p₂ $p₃ $p₄)⟩
-  else if b = a then
-    have h : Q($en = $ea) := (q(Eq.refl $en) : Expr)
-    pure ⟨q([$ea]), q($h ▸ factorsHelper_same_sn $ea)⟩
-  else do
-    let p₁ : Q(Nat.blt $ea $en = true) := (q(Eq.refl true) : Expr)
-    let .isNat _ lit p₂ ← evalMinFac.core q($en) q(inferInstance) q($n') hn n | failure
-    have : $lit =Q $en := ⟨⟩
-    assertInstancesCommute
-    pure ⟨q([$en]), q(factorsHelper_sn $en $ea $p₁ $p₂)⟩
+  else
+    have hbn_eq : b = n := (minFac_le hn0).eq_or_lt.resolve_right hbn
+    if hba : b = a then
+      have h : Q($en = $ea) :=
+        have : n = a := hbn_eq.symm.trans hba
+        (q(Eq.refl $en) : Expr)
+      pure ⟨q([$ea]), q($h ▸ factorsHelper_same_sn $ea)⟩
+    else do
+      let p₁ : Q(Nat.blt $ea $en = true) :=
+        have : a < n := by omega
+        (q(Eq.refl true) : Expr)
+      let .isNat _ lit p₂ ← evalMinFac.core q($en) q(inferInstance) q($n') hn n | failure
+      have : $lit =Q $en := ⟨⟩
+      assertInstancesCommute
+      pure ⟨q([$en]), q(factorsHelper_sn $en $ea $p₁ $p₂)⟩
 
 end Mathlib.Meta.NormNum
 
