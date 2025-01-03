@@ -452,7 +452,8 @@ theorem integrable_const_iff {c : β} : Integrable (fun _ : α => c) μ ↔ c = 
 
 theorem Integrable.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ} (hX : AEMeasurable X μ)
     (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
-    Integrable X μ := ⟨hX.aestronglyMeasurable, hasFiniteIntegral.of_mem_Icc a b h⟩
+    Integrable X μ :=
+  ⟨hX.aestronglyMeasurable, hasFiniteIntegral.of_mem_Icc a b h⟩
 
 @[simp]
 theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α => c) μ :=
