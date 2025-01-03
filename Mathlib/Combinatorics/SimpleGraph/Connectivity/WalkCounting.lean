@@ -267,10 +267,8 @@ lemma natCard_odd_components_mono [Fintype V] [DecidableEq V] {G' : SimpleGraph 
   have aux (c : G'.ConnectedComponent) (hc : Odd (Nat.card c.supp)) :
       {c' : G.ConnectedComponent | c'.supp ⊆ c.supp ∧ Odd (Nat.card c'.supp)}.Nonempty := by
     refine Set.nonempty_of_ncard_ne_zero fun h' ↦ ?_
-    have := (c.odd_card_supp_iff_odd_subcomponents _ h).mp hc
-    simp only [Set.Nat.card_coe_set_eq _ ▸ h'] at this
-    contradiction
-    -- simpa [Set.Nat.card_coe_set_eq _  ▸ h'] using (c.odd_card_supp_iff_odd_subcomponents _ h).mp hc
+    simpa [-Nat.card_eq_fintype_card, -Set.coe_setOf, Set.Nat.card_coe_set_eq _  ▸ h']
+      using (c.odd_card_supp_iff_odd_subcomponents _ h).mp hc
   let f : {c : ConnectedComponent G' | Odd (Nat.card c.supp)} →
       {c : ConnectedComponent G | Odd (Nat.card c.supp)} :=
     fun ⟨c, hc⟩ ↦ ⟨(aux c hc).choose, (aux c hc).choose_spec.2⟩
