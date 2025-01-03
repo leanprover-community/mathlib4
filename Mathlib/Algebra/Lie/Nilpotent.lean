@@ -7,9 +7,10 @@ import Mathlib.Algebra.Lie.BaseChange
 import Mathlib.Algebra.Lie.Solvable
 import Mathlib.Algebra.Lie.Quotient
 import Mathlib.Algebra.Lie.Normalizer
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.Order.Filter.AtTopBot
-import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.Artinian.Module
 import Mathlib.RingTheory.Nilpotent.Lemmas
 
 /-!
@@ -428,7 +429,7 @@ theorem coe_lcs_range_toEnd_eq (k : ℕ) :
   | zero => simp
   | succ k ih =>
     simp only [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', ←
-      (lowerCentralSeries R (toEnd R L M).range M k).mem_coeSubmodule, ih]
+      (lowerCentralSeries R (toEnd R L M).range M k).mem_toSubmodule, ih]
     congr
     ext m
     constructor
@@ -442,7 +443,7 @@ theorem coe_lcs_range_toEnd_eq (k : ℕ) :
 theorem isNilpotent_range_toEnd_iff :
     IsNilpotent R (toEnd R L M).range M ↔ IsNilpotent R L M := by
   constructor <;> rintro ⟨k, hk⟩ <;> use k <;>
-      rw [← LieSubmodule.coe_toSubmodule_eq_iff] at hk ⊢ <;>
+      rw [← LieSubmodule.toSubmodule_inj] at hk ⊢ <;>
     simpa using hk
 
 end LieModule
@@ -550,13 +551,13 @@ theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
     suffices
       g '' {m | ∃ (x : L) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, n⁆ = m} =
         {m | ∃ (x : L₂) (n : _), n ∈ lowerCentralSeries R L M k ∧ ⁅x, g n⁆ = m} by
-      simp only [← LieSubmodule.mem_coeSubmodule] at this
+      simp only [← LieSubmodule.mem_toSubmodule] at this
       -- Porting note: was
-      -- simp [← LieSubmodule.mem_coeSubmodule, ← ih, LieSubmodule.lieIdeal_oper_eq_linear_span',
+      -- simp [← LieSubmodule.mem_toSubmodule, ← ih, LieSubmodule.lieIdeal_oper_eq_linear_span',
       --   Submodule.map_span, -Submodule.span_image, this,
-      --   -LieSubmodule.mem_coeSubmodule]
+      --   -LieSubmodule.mem_toSubmodule]
       simp_rw [lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span',
-        Submodule.map_span, LieSubmodule.mem_top, true_and, ← LieSubmodule.mem_coeSubmodule, this,
+        Submodule.map_span, LieSubmodule.mem_top, true_and, ← LieSubmodule.mem_toSubmodule, this,
         ← ih, Submodule.mem_map, exists_exists_and_eq_and]
     ext m₂
     constructor
@@ -570,7 +571,7 @@ include hf hg hfg in
 theorem Function.Surjective.lieModuleIsNilpotent [IsNilpotent R L M] : IsNilpotent R L₂ M₂ := by
   obtain ⟨k, hk⟩ := id (by infer_instance : IsNilpotent R L M)
   use k
-  rw [← LieSubmodule.coe_toSubmodule_eq_iff] at hk ⊢
+  rw [← LieSubmodule.toSubmodule_inj] at hk ⊢
   simp [← hf.lieModule_lcs_map_eq hg hfg k, hk]
 
 theorem Equiv.lieModule_isNilpotent_iff (f : L ≃ₗ⁅R⁆ L₂) (g : M ≃ₗ[R] M₂)
@@ -580,7 +581,7 @@ theorem Equiv.lieModule_isNilpotent_iff (f : L ≃ₗ⁅R⁆ L₂) (g : M ≃ₗ
     exact f.surjective.lieModuleIsNilpotent hg hfg
   · have hg : Surjective (g.symm : M₂ →ₗ[R] M) := g.symm.surjective
     refine f.symm.surjective.lieModuleIsNilpotent hg fun x m => ?_
-    rw [LinearEquiv.coe_coe, LieEquiv.coe_to_lieHom, ← g.symm_apply_apply ⁅f.symm x, g.symm m⁆, ←
+    rw [LinearEquiv.coe_coe, LieEquiv.coe_toLieHom, ← g.symm_apply_apply ⁅f.symm x, g.symm m⁆, ←
       hfg, f.apply_symm_apply, g.apply_symm_apply]
 
 @[simp]
@@ -637,18 +638,18 @@ theorem coe_lowerCentralSeries_ideal_quot_eq {I : LieIdeal R L} (k : ℕ) :
       LieSubmodule.toSubmodule (lowerCentralSeries R (L ⧸ I) (L ⧸ I) k) := by
   induction k with
   | zero =>
-    simp only [LieModule.lowerCentralSeries_zero, LieSubmodule.top_coeSubmodule,
-      LieIdeal.top_coe_lieSubalgebra, LieSubalgebra.top_coe_submodule]
+    simp only [LieModule.lowerCentralSeries_zero, LieSubmodule.top_toSubmodule,
+      LieIdeal.top_toLieSubalgebra, LieSubalgebra.top_toSubmodule]
   | succ k ih =>
     simp only [LieModule.lowerCentralSeries_succ, LieSubmodule.lieIdeal_oper_eq_linear_span]
     congr
     ext x
     constructor
     · rintro ⟨⟨y, -⟩, ⟨z, hz⟩, rfl : ⁅y, z⁆ = x⟩
-      rw [← LieSubmodule.mem_coeSubmodule, ih, LieSubmodule.mem_coeSubmodule] at hz
+      rw [← LieSubmodule.mem_toSubmodule, ih, LieSubmodule.mem_toSubmodule] at hz
       exact ⟨⟨LieSubmodule.Quotient.mk y, LieSubmodule.mem_top _⟩, ⟨z, hz⟩, rfl⟩
     · rintro ⟨⟨⟨y⟩, -⟩, ⟨z, hz⟩, rfl : ⁅y, z⁆ = x⟩
-      rw [← LieSubmodule.mem_coeSubmodule, ← ih, LieSubmodule.mem_coeSubmodule] at hz
+      rw [← LieSubmodule.mem_toSubmodule, ← ih, LieSubmodule.mem_toSubmodule] at hz
       exact ⟨⟨y, LieSubmodule.mem_top _⟩, ⟨z, hz⟩, rfl⟩
 
 /-- Note that the below inequality can be strict. For example the ideal of strictly-upper-triangular
@@ -671,7 +672,7 @@ theorem LieAlgebra.nilpotent_of_nilpotent_quotient {I : LieIdeal R L} (h₁ : I 
     exact LieModule.nilpotentOfNilpotentQuotient R L L h₁ this
   obtain ⟨k, hk⟩ := h₂
   use k
-  simp [← LieSubmodule.coe_toSubmodule_eq_iff, coe_lowerCentralSeries_ideal_quot_eq, hk]
+  simp [← LieSubmodule.toSubmodule_inj, coe_lowerCentralSeries_ideal_quot_eq, hk]
 
 theorem LieAlgebra.non_trivial_center_of_isNilpotent [Nontrivial L] [IsNilpotent R L] :
     Nontrivial <| center R L :=
@@ -773,7 +774,7 @@ theorem coe_lcs_eq [LieModule R L M] :
   | zero => simp
   | succ k ih =>
     simp_rw [lowerCentralSeries_succ, lcs_succ, LieSubmodule.lieIdeal_oper_eq_linear_span', ←
-      (I.lcs M k).mem_coeSubmodule, ih, LieSubmodule.mem_coeSubmodule, LieSubmodule.mem_top,
+      (I.lcs M k).mem_toSubmodule, ih, LieSubmodule.mem_toSubmodule, LieSubmodule.mem_top,
       true_and, (I : LieSubalgebra R L).coe_bracket_of_module]
     congr
     ext m
