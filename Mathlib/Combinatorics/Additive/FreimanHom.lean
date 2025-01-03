@@ -234,8 +234,7 @@ lemma isMulFreimanIso_empty : IsMulFreimanIso n (∅ : Set α) (∅ : Set β) f 
 
 @[to_additive] lemma IsMulFreimanHom.mul (h₁ : IsMulFreimanHom n A B₁ f₁)
     (h₂ : IsMulFreimanHom n A B₂ f₂) : IsMulFreimanHom n A (B₁ * B₂) (f₁ * f₂) where
-  -- TODO: Extract `Set.MapsTo.mul` from this proof
-  mapsTo _ ha := mul_mem_mul (h₁.mapsTo ha) (h₂.mapsTo ha)
+  mapsTo := h₁.mapsTo.mul h₂.mapsTo
   map_prod_eq_map_prod s t hsA htA hs ht h := by
     rw [Pi.mul_def, prod_map_mul, prod_map_mul, h₁.map_prod_eq_map_prod hsA htA hs ht h,
       h₂.map_prod_eq_map_prod hsA htA hs ht h]
@@ -284,8 +283,8 @@ lemma IsMulFreimanHom.mono (hmn : m ≤ n) (hf : IsMulFreimanHom n A B f) :
       obtain ha | ha := ha
       · exact htA ha
       · rwa [eq_of_mem_replicate ha]
-    · rw [_root_.map_add, card_replicate, hs, Nat.add_sub_cancel' hmn]
-    · rw [_root_.map_add, card_replicate, ht, Nat.add_sub_cancel' hmn]
+    · rw [card_add, card_replicate, hs, Nat.add_sub_cancel' hmn]
+    · rw [card_add, card_replicate, ht, Nat.add_sub_cancel' hmn]
     · rw [prod_add, prod_add, h]
 
 end CancelCommMonoid
@@ -317,8 +316,8 @@ lemma IsMulFreimanIso.mono {hmn : m ≤ n} (hf : IsMulFreimanIso n A B f) :
       obtain ha | ha := ha
       · exact htA ha
       · rwa [eq_of_mem_replicate ha]
-    · rw [_root_.map_add, card_replicate, hs, Nat.add_sub_cancel' hmn]
-    · rw [_root_.map_add, card_replicate, ht, Nat.add_sub_cancel' hmn]
+    · rw [card_add, card_replicate, hs, Nat.add_sub_cancel' hmn]
+    · rw [card_add, card_replicate, ht, Nat.add_sub_cancel' hmn]
 
 end CancelCommMonoid
 
@@ -327,16 +326,14 @@ variable [CommMonoid α] [DivisionCommMonoid β] {A : Set α} {B : Set β} {f : 
 
 @[to_additive]
 lemma IsMulFreimanHom.inv (hf : IsMulFreimanHom n A B f) : IsMulFreimanHom n A B⁻¹ f⁻¹ where
-  -- TODO: Extract `Set.MapsTo.inv` from this proof
-  mapsTo _ ha := inv_mem_inv.2 (hf.mapsTo ha)
+  mapsTo := hf.mapsTo.inv
   map_prod_eq_map_prod s t hsA htA hs ht h := by
     rw [Pi.inv_def, prod_map_inv, prod_map_inv, hf.map_prod_eq_map_prod hsA htA hs ht h]
 
 @[to_additive] lemma IsMulFreimanHom.div {β : Type*} [DivisionCommMonoid β] {B₁ B₂ : Set β}
     {f₁ f₂ : α → β} (h₁ : IsMulFreimanHom n A B₁ f₁) (h₂ : IsMulFreimanHom n A B₂ f₂) :
     IsMulFreimanHom n A (B₁ / B₂) (f₁ / f₂) where
-  -- TODO: Extract `Set.MapsTo.div` from this proof
-  mapsTo _ ha := div_mem_div (h₁.mapsTo ha) (h₂.mapsTo ha)
+  mapsTo := h₁.mapsTo.div h₂.mapsTo
   map_prod_eq_map_prod s t hsA htA hs ht h := by
     rw [Pi.div_def, prod_map_div, prod_map_div, h₁.map_prod_eq_map_prod hsA htA hs ht h,
       h₂.map_prod_eq_map_prod hsA htA hs ht h]

@@ -19,7 +19,7 @@ The following predicates are introduces for morphism properties `P`:
 We define `P.universally` for the class of morphisms which satisfy `P` after any base change.
 
 We also introduce properties `IsStableUnderProductsOfShape`, `IsStableUnderLimitsOfShape`,
-`IsStableUnderFiniteProducts`.
+`IsStableUnderFiniteProducts`, and similar properties for colimits and coproducts.
 
 -/
 
@@ -60,6 +60,13 @@ theorem IsStableUnderBaseChange.mk' {P : MorphismProperty C} [RespectsIso P]
     let e := sq.flip.isoPullback
     rw [← P.cancel_left_of_respectsIso e.inv, sq.flip.isoPullback_inv_fst]
     exact hP₂ _ _ _ f g hg
+
+instance IsStableUnderBaseChange.isomorphisms :
+    (isomorphisms C).IsStableUnderBaseChange where
+  of_isPullback {_ _ _ _ f g _ _} h hg :=
+    have : IsIso g := hg
+    have := hasPullback_of_left_iso g f
+    h.isoPullback_hom_snd ▸ inferInstanceAs (IsIso _)
 
 variable (C) in
 instance IsStableUnderBaseChange.monomorphisms :
@@ -151,6 +158,12 @@ theorem IsStableUnderCobaseChange.mk' {P : MorphismProperty C} [RespectsIso P]
     rw [← P.cancel_right_of_respectsIso _ e.hom, sq.flip.inr_isoPushout_hom]
     exact hP₂ _ _ _ f g hf
 
+instance IsStableUnderCobaseChange.isomorphisms :
+    (isomorphisms C).IsStableUnderCobaseChange where
+  of_isPushout {_ _ _ _ f g _ _} h (_ : IsIso f) :=
+    have := hasPushout_of_right_iso g f
+    h.inl_isoPushout_inv ▸ inferInstanceAs (IsIso _)
+
 variable (C) in
 instance IsStableUnderCobaseChange.epimorphisms :
     (epimorphisms C).IsStableUnderCobaseChange where
@@ -219,6 +232,13 @@ def IsStableUnderLimitsOfShape (J : Type*) [Category J] : Prop :=
     (_ : IsLimit c₁) (h₂ : IsLimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f),
       W (h₂.lift (Cone.mk _ (c₁.π ≫ f)))
 
+/-- The property that a morphism property `W` is stable under colimits
+indexed by a category `J`. -/
+def IsStableUnderColimitsOfShape (J : Type*) [Category J] : Prop :=
+  ∀ (X₁ X₂ : J ⥤ C) (c₁ : Cocone X₁) (c₂ : Cocone X₂)
+    (h₁ : IsColimit c₁) (_ : IsColimit c₂) (f : X₁ ⟶ X₂) (_ : W.functorCategory J f),
+      W (h₁.desc (Cocone.mk _ (f ≫ c₂.ι)))
+
 variable {W}
 
 lemma IsStableUnderLimitsOfShape.lim_map {J : Type*} [Category J]
@@ -227,34 +247,79 @@ lemma IsStableUnderLimitsOfShape.lim_map {J : Type*} [Category J]
     W (lim.map f) :=
   hW X Y _ _ (limit.isLimit X) (limit.isLimit Y) f hf
 
+lemma IsStableUnderColimitsOfShape.colim_map {J : Type*} [Category J]
+    (hW : W.IsStableUnderColimitsOfShape J) {X Y : J ⥤ C}
+    (f : X ⟶ Y) [HasColimitsOfShape J C] (hf : W.functorCategory _ f) :
+    W (colim.map f) :=
+  hW X Y _ _ (colimit.isColimit X) (colimit.isColimit Y) f hf
+
 variable (W)
 
 /-- The property that a morphism property `W` is stable under products indexed by a type `J`. -/
 abbrev IsStableUnderProductsOfShape (J : Type*) := W.IsStableUnderLimitsOfShape (Discrete J)
 
-lemma IsStableUnderProductsOfShape.mk (J : Type*)
-    [W.RespectsIso] [HasProductsOfShape J C]
-    (hW : ∀ (X₁ X₂ : J → C) (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
+/-- The property that a morphism property `W` is stable under coproducts indexed by a type `J`. -/
+abbrev IsStableUnderCoproductsOfShape (J : Type*) := W.IsStableUnderColimitsOfShape (Discrete J)
+
+lemma IsStableUnderProductsOfShape.mk (J : Type*) [W.RespectsIso]
+    (hW : ∀ (X₁ X₂ : J → C) [HasProduct X₁] [HasProduct X₂]
+      (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
       W (Limits.Pi.map f)) : W.IsStableUnderProductsOfShape J := by
   intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
   let φ := fun j => f.app (Discrete.mk j)
+  have : HasLimit X₁ := ⟨c₁, hc₁⟩
+  have : HasLimit X₂ := ⟨c₂, hc₂⟩
+  have : HasProduct fun j ↦ X₁.obj (Discrete.mk j) :=
+    hasLimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
+  have : HasProduct fun j ↦ X₂.obj (Discrete.mk j) :=
+    hasLimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
   have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
   refine (W.arrow_mk_iso_iff ?_).2 hf'
   refine Arrow.isoMk
-    (IsLimit.conePointUniqueUpToIso hc₁ (limit.isLimit X₁) ≪≫ (Pi.isoLimit _).symm)
+    (IsLimit.conePointUniqueUpToIso hc₁ (limit.isLimit X₁) ≪≫ (Pi.isoLimit X₁).symm)
     (IsLimit.conePointUniqueUpToIso hc₂ (limit.isLimit X₂) ≪≫ (Pi.isoLimit _).symm) ?_
   apply limit.hom_ext
   rintro ⟨j⟩
-  simp
+  simp [φ]
+
+lemma IsStableUnderCoproductsOfShape.mk (J : Type*) [W.RespectsIso]
+    (hW : ∀ (X₁ X₂ : J → C) [HasCoproduct X₁] [HasCoproduct X₂]
+      (f : ∀ j, X₁ j ⟶ X₂ j) (_ : ∀ (j : J), W (f j)),
+      W (Limits.Sigma.map f)) : W.IsStableUnderCoproductsOfShape J := by
+  intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
+  let φ := fun j => f.app (Discrete.mk j)
+  have : HasColimit X₁ := ⟨c₁, hc₁⟩
+  have : HasColimit X₂ := ⟨c₂, hc₂⟩
+  have : HasCoproduct fun j ↦ X₁.obj (Discrete.mk j) :=
+    hasColimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₁.obj j)))
+  have : HasCoproduct fun j ↦ X₂.obj (Discrete.mk j) :=
+    hasColimitOfIso (Discrete.natIso (fun j ↦ Iso.refl (X₂.obj j)))
+  have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
+  refine (W.arrow_mk_iso_iff ?_).1 hf'
+  refine Arrow.isoMk
+    ((Sigma.isoColimit _) ≪≫ IsColimit.coconePointUniqueUpToIso (colimit.isColimit X₁) hc₁)
+    ((Sigma.isoColimit _) ≪≫ IsColimit.coconePointUniqueUpToIso (colimit.isColimit X₂) hc₂) ?_
+  apply colimit.hom_ext
+  rintro ⟨j⟩
+  simp [φ]
 
 /-- The condition that a property of morphisms is stable by finite products. -/
 class IsStableUnderFiniteProducts : Prop where
   isStableUnderProductsOfShape (J : Type) [Finite J] : W.IsStableUnderProductsOfShape J
 
+/-- The condition that a property of morphisms is stable by finite coproducts. -/
+class IsStableUnderFiniteCoproducts : Prop where
+  isStableUnderCoproductsOfShape (J : Type) [Finite J] : W.IsStableUnderCoproductsOfShape J
+
 lemma isStableUnderProductsOfShape_of_isStableUnderFiniteProducts
     (J : Type) [Finite J] [W.IsStableUnderFiniteProducts] :
     W.IsStableUnderProductsOfShape J :=
   IsStableUnderFiniteProducts.isStableUnderProductsOfShape J
+
+lemma isStableUnderCoproductsOfShape_of_isStableUnderFiniteCoproducts
+    (J : Type) [Finite J] [W.IsStableUnderFiniteCoproducts] :
+    W.IsStableUnderCoproductsOfShape J :=
+  IsStableUnderFiniteCoproducts.isStableUnderCoproductsOfShape J
 
 end
 
@@ -295,6 +360,23 @@ instance IsStableUnderBaseChange.diagonal [IsStableUnderBaseChange P] [P.Respect
       rw [diagonal_iff, diagonal_pullback_fst, P.cancel_left_of_respectsIso,
         P.cancel_right_of_respectsIso]
       exact P.baseChange_map f _ (by simpa))
+
+lemma diagonal_isomorphisms : (isomorphisms C).diagonal = monomorphisms C :=
+  ext _ _ fun _ _ _ ↦ pullback.isIso_diagonal_iff _
+
+/-- If `P` is multiplicative and stable under base change, having the of-postcomp property
+wrt. `Q` is equivalent to `Q` implying `P` on the diagonal. -/
+lemma hasOfPostcompProperty_iff_le_diagonal [P.IsStableUnderBaseChange]
+    [P.IsMultiplicative] {Q : MorphismProperty C} [Q.IsStableUnderBaseChange] :
+    P.HasOfPostcompProperty Q ↔ Q ≤ P.diagonal := by
+  refine ⟨fun hP X Y f hf ↦ ?_, fun hP ↦ ⟨fun {Y X S} g f hf hcomp ↦ ?_⟩⟩
+  · exact hP.of_postcomp _ _ (Q.pullback_fst _ _ hf) (by simpa using P.id_mem X)
+  · set gr : Y ⟶ pullback (g ≫ f) f := pullback.lift (𝟙 Y) g (by simp)
+    have : g = gr ≫ pullback.snd _ _ := by simp [gr]
+    rw [this]
+    apply P.comp_mem
+    · exact P.of_isPullback (pullback_lift_diagonal_isPullback g f) (hP _ hf)
+    · exact P.pullback_snd _ _ hcomp
 
 end Diagonal
 

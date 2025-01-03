@@ -4,9 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 
--- First import Aesop and Qq
+-- First import Aesop, Qq, and Plausible
 import Aesop
 import Qq
+import Plausible
 
 -- Tools for analysing imports, like `#find_home`, `#minimize_imports`, ...
 import ImportGraph.Imports
@@ -45,7 +46,7 @@ import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.DefEqTransformations
-import Mathlib.Tactic.DeprecateMe
+import Mathlib.Tactic.DeprecateTo
 import Mathlib.Tactic.DeriveToExpr
 import Mathlib.Tactic.Eqns
 import Mathlib.Tactic.ExistsI
@@ -71,6 +72,7 @@ import Mathlib.Tactic.MkIffOfInductiveProp
 -- import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.NthRewrite
 import Mathlib.Tactic.Observe
+import Mathlib.Tactic.OfNat
 -- `positivity` imports `Data.Nat.Factorial.Basic`, but hopefully this can be rearranged.
 -- import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.ProjectionNotation
@@ -111,6 +113,7 @@ import Mathlib.Tactic.Widget.Conv
 import Mathlib.Tactic.WLOG
 import Mathlib.Util.AssertExists
 import Mathlib.Util.CountHeartbeats
+import Mathlib.Util.TransImports
 import Mathlib.Util.WhatsNew
 
 /-!

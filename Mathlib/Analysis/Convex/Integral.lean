@@ -81,9 +81,8 @@ theorem Convex.integral_mem [IsProbabilityMeasure μ] (hs : Convex ℝ s) (hsc :
 integrable function sending `μ`-a.e. points to `s`, then the average value of `f` belongs to `s`:
 `⨍ x, f x ∂μ ∈ s`. See also `Convex.centerMass_mem` for a finite sum version of this lemma. -/
 theorem Convex.average_mem [IsFiniteMeasure μ] [NeZero μ] (hs : Convex ℝ s) (hsc : IsClosed s)
-    (hfs : ∀ᵐ x ∂μ, f x ∈ s) (hfi : Integrable f μ) : (⨍ x, f x ∂μ) ∈ s := by
-  refine hs.integral_mem hsc (ae_mono' ?_ hfs) hfi.to_average
-  exact AbsolutelyContinuous.smul (refl _) _
+    (hfs : ∀ᵐ x ∂μ, f x ∈ s) (hfi : Integrable f μ) : (⨍ x, f x ∂μ) ∈ s :=
+  hs.integral_mem hsc (ae_mono' smul_absolutelyContinuous hfs) hfi.to_average
 
 /-- If `μ` is a non-zero finite measure on `α`, `s` is a convex closed set in `E`, and `f` is an
 integrable function sending `μ`-a.e. points to `s`, then the average value of `f` belongs to `s`:

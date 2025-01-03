@@ -44,7 +44,6 @@ sin, cos, tan, angle
 
 noncomputable section
 
-open scoped Classical
 open Topology Filter Set
 
 namespace Complex
@@ -137,11 +136,11 @@ theorem pi_div_two_le_two : π / 2 ≤ 2 := by
   exact (Classical.choose_spec exists_cos_eq_zero).1.2
 
 theorem two_le_pi : (2 : ℝ) ≤ π :=
-  (div_le_div_right (show (0 : ℝ) < 2 by norm_num)).1
+  (div_le_div_iff_of_pos_right (show (0 : ℝ) < 2 by norm_num)).1
     (by rw [div_self (two_ne_zero' ℝ)]; exact one_le_pi_div_two)
 
 theorem pi_le_four : π ≤ 4 :=
-  (div_le_div_right (show (0 : ℝ) < 2 by norm_num)).1
+  (div_le_div_iff_of_pos_right (show (0 : ℝ) < 2 by norm_num)).1
     (calc
       π / 2 ≤ 2 := pi_div_two_le_two
       _ = 4 / 2 := by norm_num)
@@ -200,8 +199,6 @@ theorem pi_ne_zero : pi ≠ 0 :=
 end NNReal
 
 namespace Real
-
-open Real
 
 @[simp]
 theorem sin_pi : sin π = 0 := by
@@ -804,7 +801,7 @@ theorem quadratic_root_cos_pi_div_five :
     push_neg
     intro n hn
     replace hn : n * 5 = 1 := by field_simp [mul_comm _ π, mul_assoc] at hn; norm_cast at hn
-    rcases Int.mul_eq_one_iff_eq_one_or_neg_one.mp hn with ⟨_, h⟩ | ⟨_, h⟩ <;> norm_num at h
+    omega
   suffices s * (2 * c) = s * (4 * c ^ 2 - 1) from mul_left_cancel₀ hs this
   calc s * (2 * c) = 2 * s * c := by rw [← mul_assoc, mul_comm 2]
                  _ = sin (2 * θ) := by rw [sin_two_mul]
@@ -887,7 +884,7 @@ theorem tan_nonpos_of_nonpos_of_neg_pi_div_two_le {x : ℝ} (hx0 : x ≤ 0) (hpx
 theorem strictMonoOn_tan : StrictMonoOn tan (Ioo (-(π / 2)) (π / 2)) := by
   rintro x hx y hy hlt
   rw [tan_eq_sin_div_cos, tan_eq_sin_div_cos,
-    div_lt_div_iff (cos_pos_of_mem_Ioo hx) (cos_pos_of_mem_Ioo hy), mul_comm, ← sub_pos, ← sin_sub]
+    div_lt_div_iff₀ (cos_pos_of_mem_Ioo hx) (cos_pos_of_mem_Ioo hy), mul_comm, ← sub_pos, ← sin_sub]
   exact sin_pos_of_pos_of_lt_pi (sub_pos.2 hlt) <| by linarith [hx.1, hy.2]
 
 theorem tan_lt_tan_of_lt_of_lt_pi_div_two {x y : ℝ} (hx₁ : -(π / 2) < x) (hy₂ : y < π / 2)
@@ -955,12 +952,12 @@ theorem tendsto_cos_pi_div_two : Tendsto cos (𝓝[<] (π / 2)) (𝓝[>] 0) := b
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
   · convert continuous_cos.continuousWithinAt.tendsto
     simp
-  · filter_upwards [Ioo_mem_nhdsWithin_Iio
-        (right_mem_Ioc.mpr (neg_lt_self pi_div_two_pos))] with x hx using cos_pos_of_mem_Ioo hx
+  · filter_upwards [Ioo_mem_nhdsLT (neg_lt_self pi_div_two_pos)] with x hx
+    exact cos_pos_of_mem_Ioo hx
 
 theorem tendsto_tan_pi_div_two : Tendsto tan (𝓝[<] (π / 2)) atTop := by
-  convert tendsto_cos_pi_div_two.inv_tendsto_zero.atTop_mul zero_lt_one tendsto_sin_pi_div_two
-    using 1
+  convert tendsto_cos_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul zero_lt_one
+    tendsto_sin_pi_div_two using 1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 
 theorem tendsto_sin_neg_pi_div_two : Tendsto sin (𝓝[>] (-(π / 2))) (𝓝 (-1)) := by
@@ -971,11 +968,11 @@ theorem tendsto_cos_neg_pi_div_two : Tendsto cos (𝓝[>] (-(π / 2))) (𝓝[>] 
   apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within
   · convert continuous_cos.continuousWithinAt.tendsto
     simp
-  · filter_upwards [Ioo_mem_nhdsWithin_Ioi
-        (left_mem_Ico.mpr (neg_lt_self pi_div_two_pos))] with x hx using cos_pos_of_mem_Ioo hx
+  · filter_upwards [Ioo_mem_nhdsGT (neg_lt_self pi_div_two_pos)] with x hx
+    exact cos_pos_of_mem_Ioo hx
 
 theorem tendsto_tan_neg_pi_div_two : Tendsto tan (𝓝[>] (-(π / 2))) atBot := by
-  convert tendsto_cos_neg_pi_div_two.inv_tendsto_zero.atTop_mul_neg (by norm_num)
+  convert tendsto_cos_neg_pi_div_two.inv_tendsto_nhdsGT_zero.atTop_mul_neg (by norm_num)
       tendsto_sin_neg_pi_div_two using 1
   simp only [Pi.inv_apply, ← div_eq_inv_mul, ← tan_eq_sin_div_cos]
 

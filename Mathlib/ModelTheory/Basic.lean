@@ -81,13 +81,13 @@ protected def sum (L' : Language.{u', v'}) : Language :=
   ⟨fun n => L.Functions n ⊕ L'.Functions n, fun n => L.Relations n ⊕ L'.Relations n⟩
 
 /-- The type of constants in a given language. -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 protected abbrev Constants :=
   L.Functions 0
 
 /-- The type of symbols in a given language. -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 abbrev Symbols :=
   (Σ l, L.Functions l) ⊕ (Σ l, L.Relations l)
@@ -229,7 +229,7 @@ scoped[FirstOrder] notation:25 A " ≃[" L "] " B => FirstOrder.Language.Equiv L
 -- The former reported an error.
 variable {L M N} {P : Type*} [Structure L P] {Q : Type*} [Structure L Q]
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- Interpretation of a constant symbol -/
 @[coe]
 def constantMap (c : L.Constants) : M := funMap c default

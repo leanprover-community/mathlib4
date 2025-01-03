@@ -224,7 +224,7 @@ theorem lift_cardinalMk_eq_lift_cardinalMk_field_pow_lift_rank [Module.Free K V]
     exact basis_finite_of_finite_spans _ t.finite_toSet ht hs
   have := lift_mk_eq'.2 ⟨hs.repr.toEquiv⟩
   rwa [Finsupp.equivFunOnFinite.cardinal_eq, mk_arrow, hs.mk_eq_rank'', lift_power, lift_lift,
-    lift_lift, lift_umax'] at this
+    lift_lift, lift_umax] at this
 
 @[deprecated (since := "2024-11-10")]
 alias lift_cardinal_mk_eq_lift_cardinal_mk_field_pow_lift_rank :=

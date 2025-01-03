@@ -1206,7 +1206,7 @@ def upperClosure (s : Set α) : UpperSet α :=
 def lowerClosure (s : Set α) : LowerSet α :=
   ⟨{ x | ∃ a ∈ s, x ≤ a }, fun _ _ hle h => h.imp fun _x hx => ⟨hx.1, hle.trans hx.2⟩⟩
 
--- Porting note (#11215): TODO: move `GaloisInsertion`s up, use them to prove lemmas
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: move `GaloisInsertion`s up, use them to prove lemmas
 
 @[simp]
 theorem mem_upperClosure : x ∈ upperClosure s ↔ ∃ a ∈ s, a ≤ x :=

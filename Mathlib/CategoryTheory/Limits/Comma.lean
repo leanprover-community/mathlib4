@@ -48,7 +48,7 @@ limit cone for `F ⋙ snd L R : J ⥤ R` we can build a cone for `F` which will 
 cone.
 -/
 @[simps]
-def coneOfPreserves [PreservesLimit (F ⋙ snd L R) R] (c₁ : Cone (F ⋙ fst L R))
+noncomputable def coneOfPreserves [PreservesLimit (F ⋙ snd L R) R] (c₁ : Cone (F ⋙ fst L R))
     {c₂ : Cone (F ⋙ snd L R)} (t₂ : IsLimit c₂) : Cone F where
   pt :=
     { left := c₁.pt
@@ -66,7 +66,7 @@ def coneOfPreserves [PreservesLimit (F ⋙ snd L R) R] (c₁ : Cone (F ⋙ fst L
 
 /-- Provided that `R` preserves the appropriate limit, then the cone in `coneOfPreserves` is a
 limit. -/
-def coneOfPreservesIsLimit [PreservesLimit (F ⋙ snd L R) R] {c₁ : Cone (F ⋙ fst L R)}
+noncomputable def coneOfPreservesIsLimit [PreservesLimit (F ⋙ snd L R) R] {c₁ : Cone (F ⋙ fst L R)}
     (t₁ : IsLimit c₁) {c₂ : Cone (F ⋙ snd L R)} (t₂ : IsLimit c₂) :
     IsLimit (coneOfPreserves F c₁ t₂) where
   lift s :=
@@ -95,7 +95,7 @@ a cocone for `F ⋙ snd L R : J ⥤ R` we can build a cocone for `F` which will 
 colimit cocone.
 -/
 @[simps]
-def coconeOfPreserves [PreservesColimit (F ⋙ fst L R) L] {c₁ : Cocone (F ⋙ fst L R)}
+noncomputable def coconeOfPreserves [PreservesColimit (F ⋙ fst L R) L] {c₁ : Cocone (F ⋙ fst L R)}
     (t₁ : IsColimit c₁) (c₂ : Cocone (F ⋙ snd L R)) : Cocone F where
   pt :=
     { left := c₁.pt
@@ -113,7 +113,8 @@ def coconeOfPreserves [PreservesColimit (F ⋙ fst L R) L] {c₁ : Cocone (F ⋙
 
 /-- Provided that `L` preserves the appropriate colimit, then the cocone in `coconeOfPreserves` is
 a colimit. -/
-def coconeOfPreservesIsColimit [PreservesColimit (F ⋙ fst L R) L] {c₁ : Cocone (F ⋙ fst L R)}
+noncomputable def coconeOfPreservesIsColimit [PreservesColimit (F ⋙ fst L R) L]
+    {c₁ : Cocone (F ⋙ fst L R)}
     (t₁ : IsColimit c₁) {c₂ : Cocone (F ⋙ snd L R)} (t₂ : IsColimit c₂) :
     IsColimit (coconeOfPreserves F t₁ c₂) where
   desc s :=

@@ -63,7 +63,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
     { liftAddHom fun x => (smulAddHom k A).flip (f x) with
       toFun := fun a => a.sum fun m t => t • f m
       map_smul' := fun t' a => by
-        -- Porting note(#12129): additional beta reduction needed
+        -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
         beta_reduce
         rw [Finsupp.smul_sum, sum_smul_index']
         · simp_rw [smul_assoc, MonoidHom.id_apply]
@@ -463,7 +463,7 @@ theorem lift_def (F : Multiplicative G →* A) :
 
 @[simp]
 theorem lift_symm_apply (F : k[G] →ₐ[k] A) (x : Multiplicative G) :
-    (lift k G A).symm F x = F (single (Multiplicative.toAdd x) 1) :=
+    (lift k G A).symm F x = F (single x.toAdd 1) :=
   rfl
 
 theorem lift_of (F : Multiplicative G →* A) (x : Multiplicative G) :

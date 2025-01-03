@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Group.Hom.Instances
+import Mathlib.Algebra.GroupWithZero.Action.End
 import Mathlib.Algebra.Module.End
 import Mathlib.Algebra.Ring.Opposite
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic

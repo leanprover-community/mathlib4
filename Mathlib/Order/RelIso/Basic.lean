@@ -363,12 +363,16 @@ noncomputable def Quotient.outRelEmbedding {_ : Setoid α} {r : α → α → Pr
     refine @fun x y => Quotient.inductionOn₂ x y fun a b => ?_
     apply iff_iff_eq.2 (H _ _ _ _ _ _) <;> apply Quotient.mk_out⟩
 
+set_option linter.deprecated false in
 /-- `Quotient.out'` as a relation embedding between the lift of a relation and the relation. -/
-@[simps]
+@[deprecated Quotient.outRelEmbedding (since := "2024-10-19"), simps]
 noncomputable def Quotient.out'RelEmbedding {_ : Setoid α} {r : α → α → Prop}
     (H : ∀ (a₁ b₁ a₂ b₂ : α), a₁ ≈ a₂ → b₁ ≈ b₂ → r a₁ b₁ = r a₂ b₂) :
     (fun a b => Quotient.liftOn₂' a b r H) ↪r r :=
   { Quotient.outRelEmbedding H with toFun := Quotient.out' }
+
+attribute [deprecated Quotient.outRelEmbedding_apply (since := "2024-10-19")]
+  Quotient.out'RelEmbedding_apply
 
 @[simp]
 theorem acc_lift₂_iff {_ : Setoid α} {r : α → α → Prop}
@@ -728,14 +732,18 @@ def emptySumLex (r : α → α → Prop) (s : β → β → Prop) [IsEmpty α] :
   ⟨Equiv.emptySum _ _, by simp⟩
 
 /-- Two irreflexive relations on a unique type are isomorphic. -/
-def relIsoOfUniqueOfIrrefl (r : α → α → Prop) (s : β → β → Prop) [IsIrrefl α r]
+def ofUniqueOfIrrefl (r : α → α → Prop) (s : β → β → Prop) [IsIrrefl α r]
     [IsIrrefl β s] [Unique α] [Unique β] : r ≃r s :=
-  ⟨Equiv.equivOfUnique α β, iff_of_false (not_rel_of_subsingleton s _ _)
+  ⟨Equiv.ofUnique α β, iff_of_false (not_rel_of_subsingleton s _ _)
       (not_rel_of_subsingleton r _ _) ⟩
 
+@[deprecated (since := "2024-12-26")] alias relIsoOfUniqueOfIrrefl := ofUniqueOfIrrefl
+
 /-- Two reflexive relations on a unique type are isomorphic. -/
-def relIsoOfUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] [IsRefl β s]
+def ofUniqueOfRefl (r : α → α → Prop) (s : β → β → Prop) [IsRefl α r] [IsRefl β s]
     [Unique α] [Unique β] : r ≃r s :=
-  ⟨Equiv.equivOfUnique α β, iff_of_true (rel_of_subsingleton s _ _) (rel_of_subsingleton r _ _)⟩
+  ⟨Equiv.ofUnique α β, iff_of_true (rel_of_subsingleton s _ _) (rel_of_subsingleton r _ _)⟩
+
+@[deprecated (since := "2024-12-26")] alias relIsoOfUniqueOfRefl := ofUniqueOfRefl
 
 end RelIso

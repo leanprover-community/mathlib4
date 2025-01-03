@@ -408,7 +408,7 @@ theorem Nonempty.preimage {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : S
   ⟨x, mem_preimage.2 <| hx.symm ▸ hy⟩
 
 instance (f : α → β) (s : Set α) [Nonempty s] : Nonempty (f '' s) :=
-  (Set.Nonempty.image f nonempty_of_nonempty_subtype).to_subtype
+  (Set.Nonempty.image f .of_subtype).to_subtype
 
 /-- image and preimage are a Galois connection -/
 @[simp]
@@ -420,6 +420,9 @@ theorem image_preimage_subset (f : α → β) (s : Set β) : f '' (f ⁻¹' s) �
 
 theorem subset_preimage_image (f : α → β) (s : Set α) : s ⊆ f ⁻¹' (f '' s) := fun _ =>
   mem_image_of_mem f
+
+theorem preimage_image_univ {f : α → β} : f ⁻¹' (f '' univ) = univ :=
+  Subset.antisymm (fun _ _ => trivial) (subset_preimage_image f univ)
 
 @[simp]
 theorem preimage_image_eq {f : α → β} (s : Set α) (h : Injective f) : f ⁻¹' (f '' s) = s :=

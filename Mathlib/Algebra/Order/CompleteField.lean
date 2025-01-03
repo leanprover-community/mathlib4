@@ -142,7 +142,7 @@ theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b :=
     rw [coe_mem_cutMap_iff]
     exact mod_cast sub_lt_comm.mp hq₁q
   · rintro _ ⟨_, ⟨qa, ha, rfl⟩, _, ⟨qb, hb, rfl⟩, rfl⟩
-    -- After leanprover/lean4#2734, `norm_cast` needs help with beta reduction.
+    -- After https://github.com/leanprover/lean4/pull/2734, `norm_cast` needs help with beta reduction.
     refine ⟨qa + qb, ?_, by beta_reduce; norm_cast⟩
     rw [mem_setOf_eq, cast_add]
     exact add_lt_add ha hb
@@ -237,7 +237,7 @@ theorem le_inducedMap_mul_self_of_mem_cutMap (ha : 0 < a) (b : β) (hb : b ∈ c
   · rw [pow_two] at hqa ⊢
     exact mul_self_le_mul_self (mod_cast hq'.le)
       (le_csSup (cutMap_bddAbove β a) <|
-        coe_mem_cutMap_iff.2 <| lt_of_mul_self_lt_mul_self ha.le hqa)
+        coe_mem_cutMap_iff.2 <| lt_of_mul_self_lt_mul_self₀ ha.le hqa)
 
 /-- Preparatory lemma for `inducedOrderRingHom`. -/
 theorem exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self (ha : 0 < a) (b : β)
@@ -251,7 +251,7 @@ theorem exists_mem_cutMap_mul_self_of_lt_inducedMap_mul_self (ha : 0 < a) (b : �
   refine ⟨(q ^ 2 : ℚ), coe_mem_cutMap_iff.2 ?_, hbq⟩
   rw [pow_two] at hqa ⊢
   push_cast
-  obtain ⟨q', hq', hqa'⟩ := lt_inducedMap_iff.1 (lt_of_mul_self_lt_mul_self
+  obtain ⟨q', hq', hqa'⟩ := lt_inducedMap_iff.1 (lt_of_mul_self_lt_mul_self₀
     (inducedMap_nonneg ha.le) hqa)
   exact mul_self_lt_mul_self (mod_cast hq.le) (hqa'.trans' <| by assumption_mod_cast)
 

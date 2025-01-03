@@ -279,7 +279,7 @@ def tprod : MultilinearMap R s (⨂[R] i, s i) where
   toFun := tprodCoeff R 1
   map_update_add' {_ f} i x y := (add_tprodCoeff (1 : R) f i x y).symm
   map_update_smul' {_ f} i r x := by
-    rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_same]
+    rw [smul_tprodCoeff', ← smul_tprodCoeff (1 : R) _ i, update_idem, update_self]
 
 variable {R}
 
@@ -404,7 +404,7 @@ def liftAux (φ : MultilinearMap R s E) : (⨂[R] i, s i) →+ E :=
 
 theorem liftAux_tprod (φ : MultilinearMap R s E) (f : Π i, s i) : liftAux φ (tprod R f) = φ f := by
   simp only [liftAux, liftAddHom, tprod_eq_tprodCoeff_one, tprodCoeff, AddCon.coe_mk']
-  -- The end of this proof was very different before leanprover/lean4#2644:
+  -- The end of this proof was very different before https://github.com/leanprover/lean4/pull/2644:
   -- rw [FreeAddMonoid.of, FreeAddMonoid.ofList, Equiv.refl_apply, AddCon.lift_coe]
   -- dsimp [FreeAddMonoid.lift, FreeAddMonoid.sumAux]
   -- show _ • _ = _
@@ -799,7 +799,7 @@ def isEmptyEquiv [IsEmpty ι] : (⨂[R] i : ι, s i) ≃ₗ[R] R where
   left_inv x := by
     refine x.induction_on ?_ ?_
     · intro x y
-      -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
+      -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
       simp only [map_smulₛₗ _, RingHom.id_apply, lift.tprod, constOfIsEmpty_apply, const_apply,
         smul_eq_mul, mul_one]
       congr
@@ -831,7 +831,7 @@ def subsingletonEquiv [Subsingleton ι] (i₀ : ι) : (⨂[R] _ : ι, M) ≃ₗ[
     dsimp only
     have : ∀ (f : ι → M) (z : M), (fun _ : ι ↦ z) = update f i₀ z := fun f z ↦ by
       ext i
-      rw [Subsingleton.elim i i₀, Function.update_same]
+      rw [Subsingleton.elim i i₀, Function.update_self]
     refine x.induction_on ?_ ?_
     · intro r f
       simp only [LinearMap.map_smul, LinearMap.id_apply, lift.tprod, ofSubsingleton_apply_apply,

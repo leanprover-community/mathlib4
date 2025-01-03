@@ -22,7 +22,7 @@ noncomputable section
 
 namespace TopCat
 
-variable {J : Type v} [SmallCategory J]
+variable {J : Type v} [Category.{w} J]
 
 /-- The projection from the product as a bundled continuous map. -/
 abbrev piπ {ι : Type v} (α : ι → TopCat.{max v u}) (i : ι) : TopCat.of (∀ i, α i) ⟶ α i :=
@@ -154,7 +154,7 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
     rintro S (_ | _) <;> {dsimp; ext; rfl}
   uniq := by
     intro S m h
-    -- Porting note (#11041): used to be `ext x`
+    -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): used to be `ext x`
     refine ContinuousMap.ext (fun (x : ↥(S.pt)) => Prod.ext ?_ ?_)
     · specialize h ⟨WalkingPair.left⟩
       apply_fun fun e => e x at h
@@ -185,7 +185,7 @@ theorem prodIsoProd_hom_snd (X Y : TopCat.{u}) :
 theorem prodIsoProd_hom_apply {X Y : TopCat.{u}} (x : ↑ (X ⨯ Y)) :
     (prodIsoProd X Y).hom x = ((Limits.prod.fst : X ⨯ Y ⟶ _) x,
     (Limits.prod.snd : X ⨯ Y ⟶ _) x) := by
-  -- Porting note (#11041): `ext` didn't pick this up.
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11041): `ext` didn't pick this up.
   apply Prod.ext
   · exact ConcreteCategory.congr_hom (prodIsoProd_hom_fst X Y) x
   · exact ConcreteCategory.congr_hom (prodIsoProd_hom_snd X Y) x
@@ -216,7 +216,7 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
   constructor
   · rintro ⟨y, rfl⟩
     simp_rw [Set.mem_inter_iff, Set.mem_preimage, Set.mem_range]
-    -- sizable changes in this proof after #13170
+    -- sizable changes in this proof after https://github.com/leanprover-community/mathlib4/pull/13170
     rw [← comp_apply, ← comp_apply]
     simp_rw [Limits.prod.map_fst,
       Limits.prod.map_snd, comp_apply]
@@ -242,8 +242,8 @@ theorem isInducing_prodMap {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (h
   constructor
   simp_rw [topologicalSpace_coe, prod_topology, induced_inf, induced_compose, ← coe_comp,
     prod.map_fst, prod.map_snd, coe_comp, ← induced_compose (g := f), ← induced_compose (g := g)]
-  erw [← hf.eq_induced, ← hg.eq_induced] -- now `erw` after #13170
-  rfl -- `rfl` was not needed before #13170
+  erw [← hf.eq_induced, ← hg.eq_induced] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
+  rfl -- `rfl` was not needed before https://github.com/leanprover-community/mathlib4/pull/13170
 
 @[deprecated (since := "2024-10-28")] alias inducing_prod_map := isInducing_prodMap
 
