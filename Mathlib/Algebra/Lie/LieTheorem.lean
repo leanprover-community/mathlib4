@@ -34,7 +34,7 @@ variable [LieRingModule L A] [LieRingModule A L]
 variable [AddCommGroup V] [Module R V] [Module.Free R V] [IsNoetherian R V]
 variable [LieRingModule L V] [LieModule R L V]
 variable [LieRingModule A V] [LieModule R A V]
-variable [LieTower L A V] [LieTower A L V]
+variable [IsLieTower L A V] [IsLieTower A L V]
 
 variable (χ : A → R)
 
