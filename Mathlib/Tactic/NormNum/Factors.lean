@@ -122,11 +122,11 @@ def evalPrimeFactorsList
     MetaM ((l : Q(List ℕ)) × Q(Nat.primeFactorsList $en = $l)) := do
   match n'.natLit! with
   | 0 =>
-    have : $n' =Q nat_lit 0 := ⟨⟩
+    have _ : $n' =Q nat_lit 0 := ⟨⟩
     have hen : Q($en = 0) := q($(hn).out)
     return ⟨_, q($hen ▸ Nat.primeFactorsList_zero)⟩
   | 1 =>
-    have : $n' =Q nat_lit 1 := ⟨⟩
+    let _ : $n' =Q nat_lit 1 := ⟨⟩
     have hen : Q($en = 1) := q($(hn).out)
     return ⟨_, q($hen ▸ Nat.primeFactorsList_one)⟩
   | _ => do
@@ -138,6 +138,7 @@ end Mathlib.Meta.NormNum
 
 open Qq Mathlib.Meta.NormNum
 
+/-- A simproc for terms of the form `Nat.primeFactorsList (OfNat.ofNat n)`. -/
 simproc Nat.primeFactorsList_ofNat (Nat.primeFactorsList _) := fun e => do
   let ⟨1, ~q(List ℕ), ~q(Nat.primeFactorsList (OfNat.ofNat $e))⟩ ← inferTypeQ e | return .continue
   let hn : Q(IsNat (OfNat.ofNat $e) $e) := q(⟨rfl⟩)
