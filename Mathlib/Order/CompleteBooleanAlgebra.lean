@@ -418,7 +418,6 @@ theorem iSup_inf_of_antitone {ι : Type*} [Preorder ι] [IsDirected ι (swap (·
 theorem himp_eq_sSup : a ⇨ b = sSup {w | w ⊓ a ≤ b} :=
   (isGreatest_himp a b).isLUB.sSup_eq.symm
 
-
 -- see Note [lower instance priority]
 instance (priority := 100) Frame.toDistribLattice : DistribLattice α :=
   DistribLattice.ofInfSupLe fun a b c => by

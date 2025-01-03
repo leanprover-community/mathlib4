@@ -906,10 +906,10 @@ theorem IsGLB.exists_between' (h : IsGLB s a) (h' : a ∉ s) (hb : a < b) : ∃ 
 
 end LinearOrder
 
-theorem isGreatest_himp {α} [GeneralizedHeytingAlgebra α] (a b : α) :
+theorem isGreatest_himp [GeneralizedHeytingAlgebra α] (a b : α) :
     IsGreatest {w | w ⊓ a ≤ b} (a ⇨ b) := by
   simp [IsGreatest, mem_upperBounds]
 
-theorem isLeast_sdiff {α} [GeneralizedCoheytingAlgebra α] (a b : α) :
+theorem isLeast_sdiff [GeneralizedCoheytingAlgebra α] (a b : α) :
     IsLeast {w | a ≤ b ⊔ w} (a \ b) := by
   simp [IsLeast, mem_lowerBounds]
