@@ -32,7 +32,8 @@ env:
 jobs:
   # Cancels previous runs of jobs in this file
   cancel:
-    if: github.repository == 'leanprover-community/mathlib4'
+    if: github.repository == 'leanprover-community/mathlib4' &&
+      github.ref != 'refs/heads/master'
     name: 'Cancel Previous Runs (CI)'
     runs-on: ubuntu-latest
     # timeout-minutes: 3
