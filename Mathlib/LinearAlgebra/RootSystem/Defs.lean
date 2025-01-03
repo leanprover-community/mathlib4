@@ -3,7 +3,7 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash, Deepro Choudhury, Scott Carnahan
 -/
-import Mathlib.LinearAlgebra.PerfectPairing
+import Mathlib.LinearAlgebra.PerfectPairing.Basic
 import Mathlib.LinearAlgebra.Reflection
 
 /-!
@@ -367,6 +367,13 @@ lemma isCrystallographic_iff :
 instance [P.IsCrystallographic] : P.flip.IsCrystallographic := by
   rw [isCrystallographic_iff, forall_comm]
   exact P.exists_int
+
+lemma IsCrystallographic.mem_range_algebraMap [P.IsCrystallographic]
+    (S : Type*) [CommRing S] [Algebra S R] (i j : ι) :
+    P.pairing i j ∈ (algebraMap S R).range := by
+  obtain ⟨k, hk⟩ := P.exists_int i j
+  simp only [RingHom.mem_range]
+  exact ⟨k, by simpa⟩
 
 /-- A root pairing is said to be reduced if any linearly dependent pair of roots is related by a
 sign. -/

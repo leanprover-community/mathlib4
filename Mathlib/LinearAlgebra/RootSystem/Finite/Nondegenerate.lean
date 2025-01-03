@@ -7,6 +7,7 @@ import Mathlib.LinearAlgebra.BilinearForm.Basic
 import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 import Mathlib.LinearAlgebra.Dimension.Localization
 import Mathlib.LinearAlgebra.QuadraticForm.Basic
+import Mathlib.LinearAlgebra.RootSystem.BaseChange
 import Mathlib.LinearAlgebra.RootSystem.Finite.CanonicalBilinear
 
 /-!
@@ -178,13 +179,15 @@ lemma ker_corootForm_eq_dualAnnihilator :
     LinearMap.ker P.CorootForm = P.rootSpan.dualAnnihilator.map P.toDualRight.symm :=
   P.flip.ker_rootForm_eq_dualAnnihilator
 
-lemma isCompl_rootSpan_dualAnnihilator :
-    IsCompl P.rootSpan (P.corootSpan.dualAnnihilator.map P.toDualLeft.symm) := by
-  simpa only [ker_rootForm_eq_dualAnnihilator] using P.isCompl_rootSpan_ker_rootForm
+variable (K : Type*) [Field K] [Algebra K R] [Module K M] [Module K N]
+  [IsScalarTower K R M] [IsScalarTower K R N]
 
-lemma isCompl_corootSpan_dualAnnihilator :
-    IsCompl P.corootSpan (P.rootSpan.dualAnnihilator.map P.toDualRight.symm) :=
-  P.flip.isCompl_rootSpan_dualAnnihilator
+instance : P.IsBalanced where
+    isPerfectCompl :=
+  { isCompl_left := by
+      simpa only [ker_rootForm_eq_dualAnnihilator] using P.isCompl_rootSpan_ker_rootForm
+    isCompl_right := by
+      simpa only [ker_corootForm_eq_dualAnnihilator] using P.isCompl_corootSpan_ker_corootForm }
 
 /-- See also `RootPairing.rootForm_restrict_nondegenerate_of_ordered`.
 
@@ -218,59 +221,6 @@ lemma rootSpan_eq_top_iff :
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩ <;> apply Submodule.eq_top_of_finrank_eq
   · rw [P.finrank_corootSpan_eq, h, finrank_top, P.toPerfectPairing.finrank_eq]
   · rw [← P.finrank_corootSpan_eq, h, finrank_top, P.toPerfectPairing.finrank_eq]
-
-section restrictScalars
-
-variable (K : Type*) [Field K] [Algebra K R] [NoZeroSMulDivisors K R]
-  [Module K M] [Module K N] [IsScalarTower K R M] [IsScalarTower K R N]
-  (hP : ∀ i j, P.pairing i j ∈ (algebraMap K R).range)
-
-open Submodule (injective_subtype span subset_span span_setOf_mem_eq_top)
-
-/-- Restriction of scalars for a root pairing with coefficients in a field.
-
-Note that we obtain a root system (not just a root pairing). -/
-def restrictScalars :
-    RootSystem ι K (span K (range P.root)) (span K (range P.coroot)) :=
-  { toPerfectPairing := (P.toPerfectPairing.restrictScalarsFieldSpan _ _
-      (injective_subtype _) (injective_subtype _)
-      (by simpa using P.isCompl_rootSpan_dualAnnihilator)
-      (by simpa using P.isCompl_corootSpan_dualAnnihilator)
-      (fun x y ↦ LinearMap.BilinMap.apply_apply_mem_of_mem_span
-        (LinearMap.range (Algebra.linearMap K R)) (range P.root) (range P.coroot)
-        ((LinearMap.restrictScalarsₗ K R _ _ _) ∘ₗ (P.toPerfectPairing.toLin.restrictScalars K))
-        (by rintro - ⟨i, rfl⟩ - ⟨j, rfl⟩; exact hP i j) _ _ x.property y.property))
-    root := ⟨fun i ↦ ⟨_, subset_span (mem_range_self i)⟩, fun i j h ↦ by simpa using h⟩
-    coroot := ⟨fun i ↦ ⟨_, subset_span (mem_range_self i)⟩, fun i j h ↦ by simpa using h⟩
-    root_coroot_two i := by
-      have : algebraMap K R 2 = 2 := by
-        rw [← Int.cast_two (R := K), ← Int.cast_two (R := R), map_intCast]
-      exact NoZeroSMulDivisors.algebraMap_injective K R <| by simp [this]
-    reflection_perm := P.reflection_perm
-    reflection_perm_root i j := by
-      ext; simpa [algebra_compatible_smul R] using P.reflection_perm_root i j
-    reflection_perm_coroot i j := by
-      ext; simpa [algebra_compatible_smul R] using P.reflection_perm_coroot i j
-    span_eq_top := by
-      rw [← span_setOf_mem_eq_top]
-      congr
-      ext ⟨x, hx⟩
-      simp }
-
-@[simp] lemma restrictScalars_toPerfectPairing_apply_apply
-    (x : span K (range P.root)) (y : span K (range P.coroot)) :
-    algebraMap K R ((P.restrictScalars K hP).toPerfectPairing x y) = P.toPerfectPairing x y := by
-  simp [restrictScalars]
-
-@[simp] lemma restrictScalars_coe_root (i : ι) :
-    (P.restrictScalars K hP).root i = P.root i :=
-  rfl
-
-@[simp] lemma restrictScalars_coe_coroot (i : ι) :
-    (P.restrictScalars K hP).coroot i = P.coroot i :=
-  rfl
-
-end restrictScalars
 
 end Field
 
