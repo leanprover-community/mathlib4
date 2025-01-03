@@ -10,7 +10,7 @@ import Mathlib.LinearAlgebra.Matrix.BaseChange
 /-!
 # Restriction to submodules and restriction of scalars for perfect pairings.
 
-Foo bar.
+We provide API for restricting perfect pairings to submodules and for restricting their scalars.
 
 ## Main definitions
  * `PerfectPairing.restrict`: restriction of a perfect pairing to submodules.
