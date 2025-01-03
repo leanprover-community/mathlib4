@@ -206,12 +206,12 @@ attribute [instance] commShift_unit commShift_counit
 @[reassoc (attr := simp)]
 lemma unit_app_commShiftIso_hom_app [adj.CommShift A] (a : A) (X : C) :
     adj.unit.app (X⟦a⟧) ≫ ((F ⋙ G).commShiftIso a).hom.app X = (adj.unit.app X)⟦a⟧' := by
-  simpa using (NatTrans.CommShift.comm_app adj.unit a X).symm
+  simpa using (NatTrans.shift_app_comm adj.unit a X).symm
 
 @[reassoc (attr := simp)]
 lemma commShiftIso_hom_app_counit_app [adj.CommShift A] (a : A) (Y : D) :
     ((G ⋙ F).commShiftIso a).hom.app Y ≫ (adj.counit.app Y)⟦a⟧' = adj.counit.app (Y⟦a⟧) := by
-  simpa using (NatTrans.CommShift.comm_app adj.counit a Y)
+  simpa using (NatTrans.shift_app_comm adj.counit a Y)
 
 namespace CommShift
 
