@@ -102,23 +102,23 @@ Then the Leibniz rule asserts for all `x : L₁`, `y : L₂`, and `m : M` that
 
 Common examples include the case where `L₁` is a Lie subalgebra of `L₂`
 and the case where `L₂` is a Lie ideal of `L₁`. -/
-class LieTower (L₁ L₂ M : Type*) [Bracket L₁ L₂] [Bracket L₁ M] [Bracket L₂ M] [Add M] where
+class IsLieTower (L₁ L₂ M : Type*) [Bracket L₁ L₂] [Bracket L₁ M] [Bracket L₂ M] [Add M] where
   protected leibniz_lie (x : L₁) (y : L₂) (m : M) : ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆
 
-section LieTower
+section IsLieTower
 
 variable {L₁ L₂ M : Type*} [Bracket L₁ L₂] [Bracket L₁ M] [Bracket L₂ M]
 
-lemma leibniz_lie [Add M] [LieTower L₁ L₂ M] (x : L₁) (y : L₂) (m : M) :
-    ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆ := LieTower.leibniz_lie x y m
+lemma leibniz_lie [Add M] [IsLieTower L₁ L₂ M] (x : L₁) (y : L₂) (m : M) :
+    ⁅x, ⁅y, m⁆⁆ = ⁅⁅x, y⁆, m⁆ + ⁅y, ⁅x, m⁆⁆ := IsLieTower.leibniz_lie x y m
 
-lemma lie_swap_lie [Bracket L₂ L₁] [AddCommGroup M] [LieTower L₁ L₂ M] [LieTower L₂ L₁ M]
+lemma lie_swap_lie [Bracket L₂ L₁] [AddCommGroup M] [IsLieTower L₁ L₂ M] [IsLieTower L₂ L₁ M]
     (x : L₁) (y : L₂) (m : M) : ⁅⁅x, y⁆, m⁆ = -⁅⁅y, x⁆, m⁆ := by
   have h1 := leibniz_lie x y m
   have h2 := leibniz_lie y x m
   convert congr($h1.symm - $h2) using 1 <;> simp only [add_sub_cancel_right, sub_add_cancel_right]
 
-end LieTower
+end IsLieTower
 
 section BasicProperties
 
@@ -144,7 +144,7 @@ theorem smul_lie : ⁅t • x, m⁆ = t • ⁅x, m⁆ :=
 theorem lie_smul : ⁅x, t • m⁆ = t • ⁅x, m⁆ :=
   LieModule.lie_smul t x m
 
-instance : LieTower L L M where
+instance : IsLieTower L L M where
   leibniz_lie x y m := LieRingModule.leibniz_lie x y m
 
 @[simp]
