@@ -490,7 +490,7 @@ theorem sdiff_eq_sInf : a \ b = sInf {w | a ≤ b ⊔ w} :=
   (isLeast_sdiff a b).isGLB.sInf_eq.symm
 
 theorem hnot_eq_sInf_codisjoint : ￢a = sInf {w | Codisjoint a w} := by
-  simp_rw [← Coframe.top_sdiff,sdiff_eq_sInf,codisjoint_iff]
+  simp [← Coframe.top_sdiff,sdiff_eq_sInf,codisjoint_iff,sup_comm]
 
 -- see Note [lower instance priority]
 instance (priority := 100) Coframe.toDistribLattice : DistribLattice α where
