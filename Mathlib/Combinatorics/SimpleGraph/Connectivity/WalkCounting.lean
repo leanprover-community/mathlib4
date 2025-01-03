@@ -5,11 +5,9 @@ Authors: Kyle Miller
 -/
 import Mathlib.Algebra.BigOperators.Ring.Nat
 import Mathlib.Combinatorics.SimpleGraph.Path
-import Mathlib.Combinatorics.SimpleGraph.Subgraph
-import Mathlib.SetTheory.Cardinal.Finite
 import Mathlib.Data.Finite.Card
-import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Data.Set.Card
+import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Counting walks of a given length
@@ -261,14 +259,18 @@ lemma odd_card_iff_odd_components [Finite V] : Odd (Nat.card V) ↔
   rw [Nat.card_eq_fintype_card, Fintype.card_ofFinset]
   exact (Finset.odd_sum_iff_odd_card_odd (fun x : G.ConnectedComponent ↦ Nat.card x.supp))
 
-lemma ncard_odd_components_mono [Fintype V] [DecidableEq V] {G' : SimpleGraph V}
+lemma natCard_odd_components_mono [Fintype V] [DecidableEq V] {G' : SimpleGraph V}
     [DecidableRel G.Adj] (h : G ≤ G') :
-     ({c : ConnectedComponent G' | Odd (Nat.card c.supp)}).ncard
-      ≤ ({c : ConnectedComponent G | Odd (Nat.card c.supp)}).ncard := by
+     Nat.card ({c : ConnectedComponent G' | Odd (Nat.card c.supp)})
+      ≤ Nat.card ({c : ConnectedComponent G | Odd (Nat.card c.supp)}) := by
+
   have aux (c : G'.ConnectedComponent) (hc : Odd (Nat.card c.supp)) :
       {c' : G.ConnectedComponent | c'.supp ⊆ c.supp ∧ Odd (Nat.card c'.supp)}.Nonempty := by
     refine Set.nonempty_of_ncard_ne_zero fun h' ↦ ?_
-    simpa [h'] using (c.odd_card_supp_iff_odd_subcomponents _ h).mp hc
+    have := (c.odd_card_supp_iff_odd_subcomponents _ h).mp hc
+    simp only [Set.Nat.card_coe_set_eq _ ▸ h'] at this
+    contradiction
+    -- simpa [Set.Nat.card_coe_set_eq _  ▸ h'] using (c.odd_card_supp_iff_odd_subcomponents _ h).mp hc
   let f : {c : ConnectedComponent G' | Odd (Nat.card c.supp)} →
       {c : ConnectedComponent G | Odd (Nat.card c.supp)} :=
     fun ⟨c, hc⟩ ↦ ⟨(aux c hc).choose, (aux c hc).choose_spec.2⟩
@@ -278,16 +280,16 @@ lemma ncard_odd_components_mono [Fintype V] [DecidableEq V] {G' : SimpleGraph V}
     ((fcc' ▸ (aux c.1 c.2).choose_spec.1) (ConnectedComponent.nonempty_supp _).some_mem)
       ((aux c'.1 c'.2).choose_spec.1 (ConnectedComponent.nonempty_supp _).some_mem))
 
-lemma odd_components_card_deleteVerts_mono [Fintype V] [DecidableEq V] (G G' : SimpleGraph V)
-    [DecidableRel G.Adj] (h : G ≤ G') (u : Set V) : Nat.card
-    ({c : ConnectedComponent ((⊤ : Subgraph G').deleteVerts u).coe | Odd (Nat.card c.supp)}) ≤
-    Nat.card ({c : ConnectedComponent ((⊤ : Subgraph G).deleteVerts u).coe | Odd (Nat.card c.supp)})
-    := by
+lemma natCard_odd_components_deleteVerts_mono [Fintype V] [DecidableEq V] (G G' : SimpleGraph V)
+    [DecidableRel G.Adj] (h : G ≤ G') (u : Set V) :
+    Nat.card ({c : ConnectedComponent ((⊤ : Subgraph G').deleteVerts u).coe |
+      Odd (Nat.card c.supp)}) ≤ Nat.card ({c :
+        ConnectedComponent ((⊤ : Subgraph G).deleteVerts u).coe | Odd (Nat.card c.supp)}) := by
   have : Fintype ((⊤ : Subgraph G').deleteVerts u).verts := by
     have : Fintype u := Fintype.ofFinite _
     simp only [Subgraph.induce_verts, Subgraph.verts_top]
     infer_instance
-  apply odd_components_card_mono
+  apply natCard_odd_components_mono
   intro v w hvw
   aesop
 
