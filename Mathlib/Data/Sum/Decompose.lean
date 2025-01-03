@@ -3,8 +3,7 @@ Copyright (c) 2024 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak
 -/
-import Mathlib.Logic.Equiv.Defs
-import Aesop
+import Mathlib.Data.Fintype.BigOperators
 
 /-!
 # Function to Sum decomposition
@@ -39,3 +38,11 @@ def Function.decomposeSum (f : α → β₁ ⊕ β₂) :
 lemma Function.eq_comp_decomposeSum (f : α → β₁ ⊕ β₂) :
     f = Sum.elim (Sum.inl ∘ (·.val.snd)) (Sum.inr ∘ (·.val.snd)) ∘ f.decomposeSum := by
   aesop
+
+lemma todo_name [Fintype α] [Fintype β₁] [DecidableEq β₁] [Fintype β₂] [DecidableEq β₂]
+    (f : α → β₁ ⊕ β₂) :
+    Fintype.card { x₁ : α × β₁ // f x₁.fst = Sum.inl x₁.snd } +
+    Fintype.card { x₂ : α × β₂ // f x₂.fst = Sum.inr x₂.snd } =
+    Fintype.card α := by
+  rw [←Fintype.card_sum]
+  exact Fintype.card_congr f.decomposeSum.symm
