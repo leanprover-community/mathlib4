@@ -176,12 +176,6 @@ theorem expand_aeval {A : Type*} [Semiring A] [Algebra R A] (p : ℕ) (P : R[X])
   refine Polynomial.induction_on P (fun a => by simp) (fun f g hf hg => ?_) fun n a _ => by simp
   rw [map_add, aeval_add, aeval_add, hf, hg]
 
-@[gcongr]
-theorem expand_dvd {a b : R[X]} (p : ℕ) (h : a ∣ b) : expand R p a ∣ expand R p b := by
-  rcases h with ⟨t, eqn⟩
-  use expand R p t
-  rw [eqn, map_mul]
-
 /-- The opposite of `expand`: sends `∑ aₙ xⁿᵖ` to `∑ aₙ xⁿ`. -/
 noncomputable def contract (p : ℕ) (f : R[X]) : R[X] :=
   ∑ n ∈ range (f.natDegree + 1), monomial n (f.coeff (n * p))
