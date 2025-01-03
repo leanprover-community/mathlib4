@@ -198,14 +198,14 @@ variable {F} {G : C ⥤ D} [G.CommShift B]
 open Functor in
 instance commShiftPullback (τ : F ⟶ G) [NatTrans.CommShift τ B] :
     NatTrans.CommShift (PullbackShift.natTrans φ τ) A where
-      comm' a := by
+      shift_comm _ := by
         ext
         dsimp [PullbackShift.natTrans]
         simp only [commShiftPullback_iso_eq φ _ _ _ rfl, Iso.trans_hom, isoWhiskerRight_hom,
           isoWhiskerLeft_hom, Iso.symm_hom, comp_app, comp_obj, whiskerRight_app, whiskerLeft_app,
           assoc]
         rw [← τ.naturality_assoc]
-        simp  [← NatTrans.CommShift.comm_app_assoc τ (φ a) _]
+        simp  [← NatTrans.shift_app_comm_assoc]
 
 variable (C) in
 /-- The natural isomorphism between the identity of `PullbackShift C φ` and the
@@ -220,7 +220,7 @@ structure on `PullbackShift.functor (𝟭 C) φ` (i.e the pullback of the canoni
 structure on `𝟭 C`).
 -/
 instance : NatTrans.CommShift (PullbackShift.natIsoId C φ).hom A where
-  comm' a := by
+  shift_comm _ := by
     ext
     simp [PullbackShift.natIsoId, Functor.commShiftPullback_iso_eq]
 
@@ -242,7 +242,7 @@ the composition of the pulled back `CommShift` structures on `F` and `G`).
 -/
 open Functor in
 instance : NatTrans.CommShift (PullbackShift.natIsoComp φ F G).hom A where
-  comm' _ := by
+  shift_comm _ := by
     ext
     dsimp [PullbackShift.natIsoComp]
     simp only [commShiftPullback_iso_eq φ _ _ _ rfl, Iso.trans_hom, isoWhiskerRight_hom,
