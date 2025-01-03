@@ -149,6 +149,26 @@ lemma coe_triangle_down_toOrderHom {n : ℕ} (a b c : Fin (n+1)) (hab : a ≤ b)
     ↑(triangle a b c hab hbc).down.toOrderHom = ![a, b, c] :=
   rfl
 
+def factor_δ {n : ℕ} {m : SimplexCategoryᵒᵖ} (α : Δ[n + 1].obj m)
+    (j : Fin (n + 2)) : Δ[n].obj m :=
+  standardSimplex.map (σ (Fin.predAbove 0 j)) |>.app m α
+
+lemma factor_δ_spec {n : ℕ} {m : SimplexCategoryᵒᵖ} (α : Δ[n + 1].obj m)
+    (j : Fin (n + 2)) (hj : ∀ k, α.down.toOrderHom k ≠ j) :
+    (standardSimplex.map (δ j)).app m (factor_δ α j) = α := by
+  change { down := SimplexCategory.factor_δ (m := m.unop.len) _ j ≫ δ j } = α
+  rw [SimplexCategory.factor_δ_spec _ j hj]
+  rfl
+
+lemma factor_δ_δ_eq {n : ℕ} {m : SimplexCategoryᵒᵖ}
+    (α : Δ[n].obj m) (j : Fin (n + 2)) :
+    factor_δ ((standardSimplex.map (δ j)).app m α) j = α := by
+  dsimp only [factor_δ]
+  rw [← FunctorToTypes.comp, ← Functor.map_comp]
+  change (standardSimplex.map (SimplexCategory.factor_δ _ _)).app _ _ = _
+  rw [SimplexCategory.factor_δ_δ_eq, CategoryTheory.Functor.map_id]
+  rfl
+
 end standardSimplex
 
 section
