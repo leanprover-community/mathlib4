@@ -413,7 +413,7 @@ lemma _root_.ModuleTopology.eq_coinduced_of_surjective
 
 end surjection
 
-section prod
+section Prod
 
 variable {R : Type*} [TopologicalSpace R] [Semiring R]
 variable {M : Type*} [AddCommMonoid M] [Module R M] [TopologicalSpace M] [hM : IsModuleTopology R M]
@@ -453,7 +453,7 @@ instance prod : IsModuleTopology R (M × N) := by
   -- and these maps are all continuous, hence `i` is too
   fun_prop
 
-end prod
+end Prod
 
 section Pi
 
