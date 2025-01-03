@@ -76,7 +76,6 @@ variable (R) in
 In an additive monoid with multiplication `R`, `AddSubmonoid.sumSq R` is the submonoid of sums of
 squares in `R`.
 -/
-@[simps]
 def sumSq [AddMonoid R] : AddSubmonoid R where
   carrier   := {S : R | IsSumSq S}
   zero_mem' := IsSumSq.zero
