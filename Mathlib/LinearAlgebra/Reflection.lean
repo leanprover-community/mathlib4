@@ -175,9 +175,9 @@ lemma reflection_mul_reflection_pow_apply (m : ℕ) (z : M)
     simp only [reflection_apply, map_add, map_sub, map_smul, hf, hg]
     -- `m` can be written in the form `2 * k + e`, where `e` is `0` or `1`.
     push_cast
+    rw [← Int.ediv_add_emod m 2]
     set k : ℤ := m / 2
     set e : ℤ := m % 2
-    rw [show m = 2 * k + e from (Int.ediv_add_emod m 2).symm]
     simp_rw [add_assoc (2 * k), add_sub_assoc (2 * k), add_comm (2 * k),
       add_mul_ediv_left _ k (by norm_num : (2 : ℤ) ≠ 0)]
     have he : e = 0 ∨ e = 1 := by omega
@@ -224,14 +224,8 @@ lemma reflection_mul_reflection_zpow_apply (m : ℤ) (z : M)
     have ht' : t = g x * f y - 2 := by rwa [mul_comm (g x)]
     rw [zpow_neg, ← inv_zpow, mul_inv_rev, reflection_inv, reflection_inv, zpow_natCast,
       reflection_mul_reflection_pow_apply hg hf m z t ht', add_right_comm z]
-    have aux {a b : ℤ} (hab : a + b = -3) : a / 2 = -(b / 2) - 2 := by
-      rw [← mul_right_inj' (by norm_num : (2 : ℤ) ≠ 0), mul_sub, mul_neg,
-        eq_sub_of_add_eq (Int.ediv_add_emod _ _), eq_sub_of_add_eq (Int.ediv_add_emod _ _)]
-      omega
-    rw [aux (by omega : (-m - 3) + m = (-3 : ℤ)),
-      aux (by omega : (-m - 2) + (m - 1) = (-3 : ℤ)),
-      aux (by omega : (-m - 1) + (m - 2) = (-3 : ℤ)),
-      aux (by omega : -m + (m - 3) = (-3 : ℤ))]
+    have aux (a b : ℤ) (hab : a + b = -3 := by omega) : a / 2 = -(b / 2) - 2 := by omega
+    rw [aux (-m - 3) m, aux (-m - 2) (m - 1), aux (-m - 1) (m - 2), aux (-m) (m - 3)]
     simp only [S_neg_sub_two, Polynomial.eval_neg]
     ring_nf
 
@@ -385,7 +379,8 @@ lemma reflection_reflection_iterate
   | succ n ih =>
     have hz : ∀ z : M, f y • g x • z = 2 • 2 • z := by
       intro z
-      rw [smul_smul, hgxfy, smul_smul, ← Nat.cast_smul_eq_nsmul R (2 * 2), Nat.cast_eq_ofNat]
+      rw [smul_smul, hgxfy, smul_smul, ← Nat.cast_smul_eq_nsmul R (2 * 2), show 2 * 2 = 4 from rfl,
+        Nat.cast_ofNat]
     simp only [iterate_succ', comp_apply, ih, two_smul, smul_sub, smul_add, map_add,
       LinearEquiv.trans_apply, reflection_apply_self, map_neg, reflection_apply, neg_sub, map_sub,
       map_nsmul, map_smul, smul_neg, hz, add_smul]

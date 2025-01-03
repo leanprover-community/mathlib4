@@ -18,7 +18,7 @@ and strictly less than `n`.
 - Also do the versions for integers?
 - One could generalise even further, defining 'locally finite partial orders', for which
   `Set.Ico a b` is `[Finite]`, and 'locally finite total orders', for which there is a list model.
-- Once the above is done, get rid of `Data.Int.range` (and maybe `List.range'`?).
+- Once the above is done, get rid of `Int.range` (and maybe `List.range'`?).
 -/
 
 
@@ -29,8 +29,8 @@ namespace List
 /-- `Ico n m` is the list of natural numbers `n ≤ x < m`.
 (Ico stands for "interval, closed-open".)
 
-See also `Order/Interval/Basic.lean` for modelling intervals in general preorders, as well as
-sibling definitions alongside it such as `Set.Ico`, `Multiset.Ico` and `Finset.Ico`
+See also `Mathlib/Order/Interval/Basic.lean` for modelling intervals in general preorders, as well
+as sibling definitions alongside it such as `Set.Ico`, `Multiset.Ico` and `Finset.Ico`
 for sets, multisets and finite sets respectively.
  -/
 def Ico (n m : ℕ) : List ℕ :=

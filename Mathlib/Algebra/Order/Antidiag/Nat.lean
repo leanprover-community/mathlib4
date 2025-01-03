@@ -244,9 +244,7 @@ theorem card_finMulAntidiag_of_squarefree {d n : ℕ} (hn : Squarefree n) :
     ArithmeticFunction.cardDistinctFactors_apply, ← List.card_toFinset, toFinset_factors,
     Finset.card_fin]
 
-theorem finMulAntidiag_three {n : ℕ} :
-    ∀ a ∈ finMulAntidiag 3 n, a 0 * a 1 * a 2 = n := by
-  intro a ha
+theorem finMulAntidiag_three {n : ℕ} (a) (ha : a ∈ finMulAntidiag 3 n) : a 0 * a 1 * a 2 = n := by
   rw [← (mem_finMulAntidiag.mp ha).1, Fin.prod_univ_three a]
 
 namespace card_pair_lcm_eq
