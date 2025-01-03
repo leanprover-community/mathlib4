@@ -225,7 +225,7 @@ theorem contract_mul_expand {p : ℕ} (hp : p ≠ 0) (f g : R[X]) :
     rw [← eq, mul_comm, mul_add]
   · rw [coeff_expand hp.bot_lt, if_neg h, mul_zero]
 
-theorem isCoprime_expand_iff {f g : R[X]} {p : ℕ} (hp : p ≠ 0) :
+@[simp] theorem isCoprime_expand {f g : R[X]} {p : ℕ} (hp : p ≠ 0) :
     IsCoprime (expand R p f) (expand R p g) ↔ IsCoprime f g :=
   ⟨fun ⟨a, b, eq⟩ ↦ ⟨contract p a, contract p b, by
     simp_rw [← contract_mul_expand hp, ← contract_add hp, eq, ← C_1, contract_C]⟩, (·.map _)⟩
