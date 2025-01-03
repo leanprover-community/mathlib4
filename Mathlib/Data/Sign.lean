@@ -434,7 +434,7 @@ theorem sign_pow (x : α) (n : ℕ) : sign (x ^ n) = sign x ^ n := map_pow signH
 lemma zero_mem_setRange_signTypeCast : (0 : α) ∈ Set.range SignType.cast :=
   ⟨0, rfl⟩
 
-lemma in_set_range_singType_cast_mul_in_set_range_singType_cast {a b : α}
+lemma mul_mem_setRange_signTypeCast {a b : α}
     (ha : a ∈ Set.range SignType.cast) (hb : b ∈ Set.range SignType.cast) :
     a * b ∈ Set.range SignType.cast := by
   obtain ⟨a', rfl⟩ := ha
