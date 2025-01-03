@@ -992,7 +992,7 @@ theorem mem_supp_iff (C : G.ConnectedComponent) (v : V) :
 theorem connectedComponentMk_mem {v : V} : v ∈ G.connectedComponentMk v :=
   rfl
 
-theorem nonempty_supp (C : G.ConnectedComponent) : Set.Nonempty (C.supp) := C.exists_rep
+theorem nonempty_supp (C : G.ConnectedComponent) : C.supp.Nonempty := C.exists_rep
 
 /-- The equivalence between connected components, induced by an isomorphism of graphs,
 itself defines an equivalence on the supports of each connected component.
@@ -1012,7 +1012,7 @@ lemma mem_coe_supp_of_adj {v w : V} {H : Subgraph G} {c : ConnectedComponent H.c
   rw [← (mem_supp_iff _ _).mp h.1]
   exact ⟨connectedComponentMk_eq_of_adj <| Subgraph.Adj.coe <| h.2 ▸ hadj.symm, rfl⟩
 
-lemma eq_of_common_vertex  {v : V} {c c' : ConnectedComponent G} (hc : v ∈ c.supp)
+lemma eq_of_common_vertex {v : V} {c c' : ConnectedComponent G} (hc : v ∈ c.supp)
     (hc' : v ∈ c'.supp) : c = c' := by
   simp only [mem_supp_iff] at *
   subst hc hc'

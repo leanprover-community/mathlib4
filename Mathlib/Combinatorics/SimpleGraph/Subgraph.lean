@@ -1180,7 +1180,7 @@ theorem deleteVerts_inter_verts_set_right_eq :
 instance instDecidableRel_deleteVerts_adj (u : Set V) [r : DecidableRel G.Adj] :
     DecidableRel (((⊤ : G.Subgraph).deleteVerts u).coe).Adj := by
   intro x y
-  cases' (r x y) with hl hr
+  cases' r x y with hl hr
   · left
     intro hadj
     exact hl (Subgraph.coe_adj_sub _ _ _ hadj)
