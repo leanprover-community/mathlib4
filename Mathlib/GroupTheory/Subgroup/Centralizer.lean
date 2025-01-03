@@ -17,9 +17,9 @@ namespace Subgroup
 
 variable {H K : Subgroup G}
 
-/-- The `centralizer` of `H` is the subgroup of `g : G` commuting with every `h : H`. -/
+/-- The `centralizer` of `s` is the subgroup of `g : G` commuting with every `h : s`. -/
 @[to_additive
-      "The `centralizer` of `H` is the additive subgroup of `g : G` commuting with every `h : H`."]
+      "The `centralizer` of `s` is the additive subgroup of `g : G` commuting with every `h : s`."]
 def centralizer (s : Set G) : Subgroup G :=
   { Submonoid.centralizer s with
     carrier := Set.centralizer s

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Anne Baanen
+Authors: Anne Baanen, Yongle Hu
 -/
 import Mathlib.RingTheory.Ideal.Pointwise
 import Mathlib.RingTheory.Localization.AtPrime
@@ -448,6 +448,9 @@ lemma under_smul {G : Type*} [Group G] [MulSemiringAction G B] [SMulCommClass G 
   ext a
   rw [mem_comap, mem_comap, mem_pointwise_smul_iff_inv_smul_mem, smul_algebraMap]
 
+variable (B) in
+theorem under_top : under A (⊤ : Ideal B) = ⊤ := comap_top
+
 variable {A}
 
 /-- `P` lies over `p` if `p` is the preimage of `P` of the `algebraMap`. -/
@@ -461,6 +464,10 @@ theorem over_def [P.LiesOver p] : p = P.under A := LiesOver.over
 theorem mem_of_liesOver [P.LiesOver p] (x : A) : x ∈ p ↔ algebraMap A B x ∈ P := by
   rw [P.over_def p]
   rfl
+
+variable (A B) in
+instance top_liesOver_top : (⊤ : Ideal B).LiesOver (⊤ : Ideal A) where
+  over := (under_top A B).symm
 
 theorem eq_top_iff_of_liesOver [P.LiesOver p] : P = ⊤ ↔ p = ⊤ := by
   rw [P.over_def p]
@@ -516,6 +523,23 @@ instance under_liesOver_of_liesOver [𝔓.LiesOver p] : (𝔓.under B).LiesOver 
 end CommSemiring
 
 section CommRing
+
+variable (A : Type*) [CommRing A] (B : Type*) [Ring B] [Nontrivial B]
+  [Algebra A B] [NoZeroSMulDivisors A B] {p : Ideal A}
+
+@[simp]
+theorem under_bot : under A (⊥ : Ideal B) = ⊥ :=
+  comap_bot_of_injective (algebraMap A B) (NoZeroSMulDivisors.algebraMap_injective A B)
+
+instance bot_liesOver_bot : (⊥ : Ideal B).LiesOver (⊥ : Ideal A) where
+  over := (under_bot A B).symm
+
+variable {A B} in
+theorem ne_bot_of_liesOver_of_ne_bot (hp : p ≠ ⊥) (P : Ideal B) [P.LiesOver p] : P ≠ ⊥ := by
+  contrapose! hp
+  rw [over_def P p, hp, under_bot]
+
+end CommRing
 
 namespace Quotient
 
@@ -606,8 +630,6 @@ def stabilizerHom : MulAction.stabilizer G P →* ((B ⧸ P) ≃ₐ[A ⧸ p] (B 
 
 end Quotient
 
-end CommRing
-
 section IsIntegral
 
 variable {A : Type*} [CommRing A] {B : Type*} [CommRing B] [Algebra A B] [Algebra.IsIntegral A B]
@@ -631,8 +653,54 @@ theorem IsMaximal.of_isMaximal_liesOver [P.IsMaximal] : p.IsMaximal := by
 instance Quotient.algebra_isIntegral_of_liesOver : Algebra.IsIntegral (A ⧸ p) (B ⧸ P) :=
   Algebra.IsIntegral.tower_top A
 
+theorem exists_ideal_liesOver_maximal_of_isIntegral [p.IsMaximal] (B : Type*) [CommRing B]
+    [Nontrivial B] [Algebra A B] [NoZeroSMulDivisors A B] [Algebra.IsIntegral A B] :
+    ∃ P : Ideal B, P.IsMaximal ∧ P.LiesOver p := by
+  rcases exists_ideal_over_maximal_of_isIntegral p <|
+    (NoZeroSMulDivisors.ker_algebraMap_eq_bot A B).trans_le bot_le with ⟨P, hm, hP⟩
+  exact ⟨P, hm, ⟨hP.symm⟩⟩
+
 end IsIntegral
 
 end ideal_liesOver
 
 end Ideal
+
+section primesOver
+
+variable {A : Type*} [CommSemiring A] (p : Ideal A) (B : Type*) [Semiring B] [Algebra A B]
+
+/-- The set of all prime ideals in `B` that lie over an ideal `p` of `A`. -/
+def primesOver : Set (Ideal B) :=
+  { P : Ideal B | P.IsPrime ∧ P.LiesOver p }
+
+variable {B}
+
+instance primesOver.isPrime (Q : primesOver p B) : Q.1.IsPrime :=
+  Q.2.1
+
+instance primesOver.liesOver (Q : primesOver p B) : Q.1.LiesOver p :=
+  Q.2.2
+
+/-- If an ideal `P` of `B` is prime and lying over `p`, then it is in `primesOver p B`. -/
+abbrev primesOver.mk (P : Ideal B) [hPp : P.IsPrime] [hp : P.LiesOver p] : primesOver p B :=
+  ⟨P, ⟨hPp, hp⟩⟩
+
+end primesOver
+
+section IsIntegral
+
+variable {A : Type*} [CommRing A] {p : Ideal A} [p.IsMaximal] {B : Type*} [CommRing B]
+  [Algebra A B] [NoZeroSMulDivisors A B] [Algebra.IsIntegral A B] (Q : primesOver p B)
+
+instance primesOver.isMaximal : Q.1.IsMaximal :=
+  Ideal.IsMaximal.of_liesOver_isMaximal Q.1 p
+
+variable (A B) in
+lemma primesOver_bot [Nontrivial A] [IsDomain B] : primesOver (⊥ : Ideal A) B = {⊥} := by
+  ext p
+  refine ⟨fun ⟨_, ⟨h⟩⟩ ↦ p.eq_bot_of_comap_eq_bot h.symm, ?_⟩
+  rintro rfl
+  exact ⟨Ideal.bot_prime, Ideal.bot_liesOver_bot A B⟩
+
+end IsIntegral

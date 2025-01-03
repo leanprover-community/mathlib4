@@ -292,8 +292,9 @@ Elaborates a call to `norm_num only? [args]` or `norm_num1`.
 -/
 -- FIXME: had to inline a bunch of stuff from `mkSimpContext` and `simpLocation` here
 def elabNormNum (cfg args loc : Syntax) (simpOnly := false) (useSimp := true) : TacticM Unit := do
-  let ctx ← getSimpContext cfg args (!useSimp || simpOnly)
   let g ← getMainGoal
+  g.withContext do
+  let ctx ← getSimpContext cfg args (!useSimp || simpOnly)
   let res ← match expandOptLocation loc with
   | .targets hyps simplifyTarget => normNumAt g ctx (← getFVarIds hyps) simplifyTarget useSimp
   | .wildcard => normNumAt g ctx (← g.getNondepPropHyps) (simplifyTarget := true) useSimp

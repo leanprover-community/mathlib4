@@ -141,14 +141,14 @@ theorem applyComposition_update (p : FormalMultilinearSeries 𝕜 E F) {n : ℕ}
   by_cases h : k = c.index j
   · rw [h]
     let r : Fin (c.blocksFun (c.index j)) → Fin n := c.embedding (c.index j)
-    simp only [Function.update_same]
+    simp only [Function.update_self]
     change p (c.blocksFun (c.index j)) (Function.update v j z ∘ r) = _
     let j' := c.invEmbedding j
     suffices B : Function.update v j z ∘ r = Function.update (v ∘ r) j' z by rw [B]
     suffices C : Function.update v (r j') z ∘ r = Function.update (v ∘ r) j' z by
       convert C; exact (c.embedding_comp_inv j).symm
     exact Function.update_comp_eq_of_injective _ (c.embedding _).injective _ _
-  · simp only [h, Function.update_eq_self, Function.update_noteq, Ne, not_false_iff]
+  · simp only [h, Function.update_eq_self, Function.update_of_ne, Ne, not_false_iff]
     let r : Fin (c.blocksFun k) → Fin n := c.embedding k
     change p (c.blocksFun k) (Function.update v j z ∘ r) = p (c.blocksFun k) (v ∘ r)
     suffices B : Function.update v j z ∘ r = v ∘ r by rw [B]
