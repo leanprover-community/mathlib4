@@ -336,18 +336,8 @@ theorem sizeof_of_step : ∀ {L₁ L₂ : List (α × Bool)},
   | _, _, @Step.not _ L1 L2 x b => by
     induction L1 with
     | nil =>
-      -- dsimp [sizeOf]
       dsimp
-      simp only [Bool.sizeOf_eq_one]
-
-      have H :
-        1 + (1 + 1) + (1 + (1 + 1) + sizeOf L2) =
-          sizeOf L2 + (1 + ((1 + 1) + (1 + 1) + 1)) := by
-        ac_rfl
-      rw [H]
-      apply Nat.lt_add_of_pos_right
-      apply Nat.lt_add_right
-      apply Nat.zero_lt_one
+      omega
     | cons hd tl ih =>
       dsimp
       exact Nat.add_lt_add_left ih _
