@@ -489,9 +489,8 @@ variable [BorelSpace X] [ConditionallyCompleteLinearOrder X] [ConditionallyCompl
 
 theorem MonotoneOn.memℒp_top (hmono : MonotoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (h's : MeasurableSet s) :
-    Memℒp f ⊤ (μ.restrict s) := by
+    Memℒp f ∞ (μ.restrict s) := by
   borelize E
-  have : CompactIccSpace E := by infer_instance
   have hbelow : BddBelow (f '' s) := ⟨f a, fun x ⟨y, hy, hyx⟩ => hyx ▸ hmono ha.1 hy (ha.2 hy)⟩
   have habove : BddAbove (f '' s) := ⟨f b, fun x ⟨y, hy, hyx⟩ => hyx ▸ hmono hy hb.1 (hb.2 hy)⟩
   have : IsBounded (f '' s) := Metric.isBounded_of_bddAbove_of_bddBelow habove hbelow
@@ -512,13 +511,12 @@ theorem MonotoneOn.memℒp_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsComp
     (hmono : MonotoneOn f s) : Memℒp f p (μ.restrict s) := by
   obtain rfl | h := s.eq_empty_or_nonempty
   · simp
-  · exact
-      hmono.memℒp_of_measure_ne_top (hs.isLeast_sInf h) (hs.isGreatest_sSup h)
-        hs.measure_lt_top.ne hs.measurableSet
+  · exact hmono.memℒp_of_measure_ne_top (hs.isLeast_sInf h) (hs.isGreatest_sSup h)
+      hs.measure_lt_top.ne hs.measurableSet
 
 theorem AntitoneOn.memℒp_top (hanti : AntitoneOn f s) {a b : X}
     (ha : IsLeast s a) (hb : IsGreatest s b) (h's : MeasurableSet s) :
-    Memℒp f ⊤ (μ.restrict s) :=
+    Memℒp f ∞ (μ.restrict s) :=
   MonotoneOn.memℒp_top (E := Eᵒᵈ) hanti ha hb h's
 
 theorem AntitoneOn.memℒp_of_measure_ne_top (hanti : AntitoneOn f s) {a b : X}
