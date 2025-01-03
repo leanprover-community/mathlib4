@@ -343,11 +343,16 @@ instance whiskerLeft [NatTrans.CommShift τ'' A] :
 instance associator : CommShift (Functor.associator F₁ G H).hom A where
   comm' a := by ext X; simp [Functor.commShiftIso_comp_hom_app]
 
-instance leftUnitor : CommShift F₁.leftUnitor.hom A where
-  comm' a := by ext X; simp [Functor.commShiftIso_comp_hom_app]
+instance leftUnitor : CommShift (Iso.refl F₁).hom A where
+  comm' a := by
+    -- ext X
+    dsimp
+    simp
 
-instance rightUnitor : CommShift F₁.rightUnitor.hom A where
-  comm' a := by ext X; simp [Functor.commShiftIso_comp_hom_app]
+instance rightUnitor : CommShift (Iso.refl F₁).hom A where
+  comm' a := by
+    ext X;
+    simp
 
 end CommShift
 

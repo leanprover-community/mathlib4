@@ -556,13 +556,16 @@ theorem mateEquiv_conjugateEquiv_vcomp
   unfold leftAdjointSquare.vcomp rightAdjointSquare.vcomp at vcomp
   unfold leftAdjointSquareConjugate.vcomp rightAdjointSquareConjugate.vcomp conjugateEquiv
   have vcompb := congr_app vcomp b
-  simp at vcompb
-  unfold mateEquiv
-  simp only [comp_obj, Equiv.coe_fn_mk, whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp,
-    assoc, comp_app, whiskerLeft_app, whiskerRight_app, id_obj, Functor.comp_map, Iso.homCongr_symm,
-    Equiv.instTrans_trans, Equiv.trans_apply, Iso.homCongr_apply, Iso.symm_inv, Iso.symm_hom,
-    rightUnitor_inv_app, leftUnitor_hom_app, map_id, Functor.id_map, comp_id, id_comp]
-  exact vcompb
+  simp only [Functor.comp_id, comp_obj, Functor.id_comp, whiskerLeft_comp, assoc, mateEquiv_apply,
+    whiskerLeft_twice, whiskerRight_comp, comp_app, whiskerLeft_app, whiskerRight_app,
+    leftUnitor_hom_app, map_id, rightUnitor_inv_app, Functor.id_map, id_obj, Functor.comp_map,
+    id_comp, whiskerRight_twice, naturality, naturality_assoc] at vcompb
+  simp only [comp_obj, mateEquiv_apply, whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp,
+    assoc, comp_app, whiskerLeft_app, whiskerRight_app, id_obj, Functor.comp_map, Functor.comp_id,
+    Functor.id_comp, Iso.homCongr_symm, Equiv.instTrans_trans, Equiv.trans_apply,
+    Iso.homCongr_apply, Iso.symm_inv, Iso.symm_hom, rightUnitor_inv_app, leftUnitor_hom_app,
+    comp_id, id_comp, naturality, naturality_assoc]
+  apply vcompb
 
 end mateEquivconjugateEquivVComp
 
@@ -595,12 +598,13 @@ theorem conjugateEquiv_mateEquiv_vcomp
   unfold leftAdjointSquare.vcomp rightAdjointSquare.vcomp at vcomp
   unfold leftAdjointConjugateSquare.vcomp rightAdjointConjugateSquare.vcomp conjugateEquiv
   have vcompb := congr_app vcomp b
-  simp at vcompb
-  unfold mateEquiv
-  simp only [comp_obj, Equiv.coe_fn_mk, whiskerLeft_comp, whiskerLeft_twice, whiskerRight_comp,
-    assoc, comp_app, whiskerLeft_app, whiskerRight_app, id_obj, Functor.comp_map, Iso.homCongr_symm,
-    Equiv.instTrans_trans, Equiv.trans_apply, Iso.homCongr_apply, Iso.symm_inv, Iso.symm_hom,
-    rightUnitor_inv_app, leftUnitor_hom_app, map_id, Functor.id_map, comp_id, id_comp]
+  simp only [Functor.id_comp, comp_obj, Functor.comp_id, whiskerRight_comp, mateEquiv_apply,
+    whiskerLeft_comp, whiskerLeft_twice, assoc, comp_app, whiskerLeft_app, whiskerRight_app,
+    leftUnitor_hom_app, map_id, rightUnitor_inv_app, id_obj, Functor.comp_map, id_comp] at vcompb
+  simp only [comp_obj, mateEquiv_apply, whiskerLeft_comp, whiskerRight_comp, assoc, comp_app,
+    whiskerLeft_app, whiskerRight_app, id_obj, Functor.comp_map, Functor.comp_id, Functor.id_comp,
+    Iso.homCongr_symm, Equiv.instTrans_trans, Equiv.trans_apply, Iso.homCongr_apply, Iso.symm_inv,
+    Iso.symm_hom, rightUnitor_inv_app, map_id, leftUnitor_hom_app, id_comp]
   exact vcompb
 
 end conjugateEquivmateEquivVComp
