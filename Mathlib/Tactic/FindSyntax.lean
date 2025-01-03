@@ -21,12 +21,12 @@ namespace Mathlib.FindSyntax
 open Lean Elab Command
 
 /--
-`extractSymbols expr` takes as input an `Expr`ession `expr`, assuming that it is the value
+`extractSymbols expr` takes as input an `Expr`ession `expr`, assuming that it is the `value`
 of a "parser".
 It returns the array of all subterms of `expr` that are the `Expr.lit` argument to
 `Lean.ParserDescr.symbol` and `Lean.ParserDescr.nonReservedSymbol` applications.
 
-The output array serves as a way of regenerating what the syntax tree of input parser.
+The output array serves as a way of regenerating what the syntax tree of the input parser is.
 -/
 def extractSymbols : Expr → Array Expr
   | .app a b =>
@@ -58,8 +58,12 @@ all the candidates for `syntax` terms that contain the string `str`.
 It also makes a very crude effort at regenerating what the syntax looks like:
 this is supposed to be just indicative of what the syntax may look like, but there is no
 guarantee or expectation of correctness.
+
+The optional trailing `approx`, as in `#find_syntax "∘" approx`, is only intended to make tests
+more stable: rather than outputting the exact count of the overall number of existing syntax
+declarations, it returns its round-down to the previous multiple of 100.
 -/
-elab "#find_syntax " id:str : command => do
+elab "#find_syntax " id:str d:(&" approx")? : command => do
   let prsr : Array Expr := #[.const ``ParserDescr [], .const ``TrailingParserDescr []]
   let mut symbs : Std.HashSet (Name × Array Expr) := {}
   -- We scan the environment in search of "parsers" whose name is not internal and that
@@ -77,8 +81,9 @@ elab "#find_syntax " id:str : command => do
     if 2 ≤ (nm.toString.splitOn id.getString).length || 2 ≤ (rem.splitOn id.getString).length then
       msgs := msgs.push <| .ofConstName nm ++ m!":\n  '{rem.trim}'\n"
   let uses := msgs.size
+  let numSymbs := if d.isSome then s!"over {(symbs.size / 100) * 100}" else s!"{symbs.size}"
   let head := m!"Found {uses} use{if uses == 1 then "" else "s"} \
-                among {symbs.size} syntax declarations"
+                among {numSymbs} syntax declarations"
   logInfo <| .joinSep (head::(msgs.push "").toList) "\n---\n\n"
 
 end Mathlib.FindSyntax
