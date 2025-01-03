@@ -900,15 +900,29 @@ lemma deriv_cgf_zero (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X 
 
 lemma iteratedDeriv_two_cgf (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
     iteratedDeriv 2 (cgf X μ) v
-      = μ[fun ω ↦ (X ω - deriv (cgf X μ) v)^2 * exp (v * X ω - cgf X μ v)] := by
+      = μ[fun ω ↦ (X ω - deriv (cgf X μ) v)^2 * exp (v * X ω)] / mgf X μ v := by
   sorry
 
 lemma iteratedDeriv_three_cgf (h : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
     iteratedDeriv 3 (cgf X μ) v
-      = μ[fun ω ↦ (X ω - deriv (cgf X μ) v)^3 * exp (v * X ω - cgf X μ v)] := by
+      = μ[fun ω ↦ (X ω - deriv (cgf X μ) v)^3 * exp (v * X ω)] / mgf X μ v := by
   sorry
 
 end CgfDeriv
+
+section Convexity
+
+lemma convexOn_cgf :
+    ConvexOn ℝ (interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (cgf X μ) := by
+  sorry
+
+/-- `2 cgf + log cgf''` is convex. -/
+lemma convexOn_two_cgf_add_log_iteratedDeriv_two_cgf :
+    ConvexOn ℝ (interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ})
+      (fun v ↦ 2 * cgf X μ v + log (iteratedDeriv 2 (cgf X μ) v)) := by
+  sorry
+
+end Convexity
 
 section IndepFun
 
