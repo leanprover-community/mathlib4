@@ -3,6 +3,7 @@ Copyright (c) 2025 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.Algebra.Rat
 import Mathlib.LinearAlgebra.PerfectPairing.Restrict
 import Mathlib.LinearAlgebra.RootSystem.Defs
 
@@ -94,12 +95,23 @@ def restrictScalars' :
     (P.restrictScalars' K hP).coroot i = P.coroot i :=
   rfl
 
+@[simp] lemma restrictScalars_pairing (i j : ι) :
+    algebraMap K L ((P.restrictScalars' K hP).pairing i j) = P.pairing i j := by
+  simp only [pairing, restrictScalars_toPerfectPairing_apply_apply, restrictScalars_coe_root,
+    restrictScalars_coe_coroot]
+
 end SubfieldValued
 
 /-- Restriction of scalars for a crystallographic root pairing. -/
 abbrev restrictScalars [P.IsCrystallographic] :
     RootSystem ι K (span K (range P.root)) (span K (range P.coroot)) :=
   P.restrictScalars' K <| IsCrystallographic.mem_range_algebraMap P K
+
+/-- Restriction of scalars to `ℚ` for a crystallographic root pairing in characteristic zero. -/
+abbrev restrictScalarsRat [CharZero L] [P.IsCrystallographic] :=
+  let _i : Module ℚ M := Module.compHom M (algebraMap ℚ L)
+  let _i : Module ℚ N := Module.compHom N (algebraMap ℚ L)
+  P.restrictScalars ℚ
 
 end restrictScalars
 
