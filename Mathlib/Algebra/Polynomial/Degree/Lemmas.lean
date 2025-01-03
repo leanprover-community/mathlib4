@@ -137,8 +137,7 @@ theorem natDegree_C_mul_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) :
 @[deprecated (since := "2025-01-03")]
 alias natDegree_C_mul_eq_of_mul_ne_zero := natDegree_C_mul_of_mul_ne_zero
 
-lemma degree_C_mul_of_mul_ne_zero (r : R) (p : R[X]) (h : r * p.leadingCoeff ≠ 0) :
-    (C r * p).degree = p.degree := by
+lemma degree_C_mul_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) : (C a * p).degree = p.degree := by
   rw [degree_mul' (by simpa)]; simp [left_ne_zero_of_mul h]
 
 theorem natDegree_add_coeff_mul (f g : R[X]) :
