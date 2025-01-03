@@ -224,11 +224,13 @@ theorem lie_mem_left (I : LieIdeal R L) (x y : L) (h : x ∈ I) : ⁅x, y⁆ ∈
   rw [← lie_skew, ← neg_lie]; apply lie_mem_right; assumption
 
 /-- An ideal of a Lie algebra is a Lie subalgebra. -/
-def lieIdealSubalgebra (I : LieIdeal R L) : LieSubalgebra R L :=
+def LieIdeal.toLieSubalgebra (I : LieIdeal R L) : LieSubalgebra R L :=
   { I.toSubmodule with lie_mem' := by intro x y _ hy; apply lie_mem_right; exact hy }
 
+@[deprecated (since := "2025-01-02")] alias lieIdealSubalgebra := LieIdeal.toLieSubalgebra
+
 instance : Coe (LieIdeal R L) (LieSubalgebra R L) :=
-  ⟨lieIdealSubalgebra R L⟩
+  ⟨LieIdeal.toLieSubalgebra R L⟩
 
 @[simp]
 theorem LieIdeal.coe_toLieSubalgebra (I : LieIdeal R L) : ((I : LieSubalgebra R L) : Set L) = I :=
@@ -238,12 +240,15 @@ theorem LieIdeal.coe_toLieSubalgebra (I : LieIdeal R L) : ((I : LieSubalgebra R 
 alias LieIdeal.coe_toSubalgebra := LieIdeal.coe_toLieSubalgebra
 
 @[simp]
-theorem LieIdeal.coe_toLieSubalgebra_toSubmodule (I : LieIdeal R L) :
+theorem LieIdeal.toLieSubalgebra_toSubmodule (I : LieIdeal R L) :
     ((I : LieSubalgebra R L) : Submodule R L) = LieSubmodule.toSubmodule I :=
   rfl
 
+@[deprecated (since := "2025-01-02")]
+alias LieIdeal.coe_toLieSubalgebra_toSubmodule := LieIdeal.toLieSubalgebra_toSubmodule
+
 @[deprecated (since := "2024-12-30")]
-alias LieIdeal.coe_to_lieSubalgebra_to_submodule := LieIdeal.coe_toLieSubalgebra_toSubmodule
+alias LieIdeal.coe_to_lieSubalgebra_to_submodule := LieIdeal.toLieSubalgebra_toSubmodule
 
 /-- An ideal of `L` is a Lie subalgebra of `L`, so it is a Lie ring. -/
 instance LieIdeal.lieRing (I : LieIdeal R L) : LieRing I :=
@@ -267,6 +272,12 @@ theorem LieIdeal.coe_bracket_of_module {R L : Type*} [CommRing R] [LieRing L] [L
 /-- Transfer the `LieModule` instance from the coercion `LieIdeal → LieSubalgebra`. -/
 instance LieIdeal.lieModule (I : LieIdeal R L) : LieModule R I M :=
   LieSubalgebra.lieModule (I : LieSubalgebra R L)
+
+instance (I : LieIdeal R L) : IsLieTower I L M where
+  leibniz_lie x y m := leibniz_lie x.val y m
+
+instance (I : LieIdeal R L) : IsLieTower L I M where
+  leibniz_lie x y m := leibniz_lie x y.val m
 
 end LieIdeal
 
@@ -300,7 +311,7 @@ theorem mem_toLieSubmodule (x : L) : x ∈ K.toLieSubmodule ↔ x ∈ K :=
 
 theorem exists_lieIdeal_coe_eq_iff :
     (∃ I : LieIdeal R L, ↑I = K) ↔ ∀ x y : L, y ∈ K → ⁅x, y⁆ ∈ K := by
-  simp only [← toSubmodule_inj, LieIdeal.coe_toLieSubalgebra_toSubmodule,
+  simp only [← toSubmodule_inj, LieIdeal.toLieSubalgebra_toSubmodule,
     Submodule.exists_lieSubmodule_coe_eq_iff L]
   exact Iff.rfl
 
@@ -1099,7 +1110,7 @@ theorem IsIdealMorphism.eq (hf : f.IsIdealMorphism) : f.idealRange = f.range := 
 theorem isIdealMorphism_iff : f.IsIdealMorphism ↔ ∀ (x : L') (y : L), ∃ z : L, ⁅x, f y⁆ = f z := by
   simp only [isIdealMorphism_def, idealRange_eq_lieSpan_range, ←
     LieSubalgebra.toSubmodule_inj, ← f.range.coe_toSubmodule,
-    LieIdeal.coe_toLieSubalgebra_toSubmodule, LieSubmodule.coe_lieSpan_submodule_eq_iff,
+    LieIdeal.toLieSubalgebra_toSubmodule, LieSubmodule.coe_lieSpan_submodule_eq_iff,
     LieSubalgebra.mem_toSubmodule, mem_range, exists_imp,
     Submodule.exists_lieSubmodule_coe_eq_iff]
   constructor
@@ -1288,7 +1299,7 @@ theorem ker_incl : I.incl.ker = ⊥ := by ext; simp
 @[simp]
 theorem incl_idealRange : I.incl.idealRange = I := by
   rw [LieHom.idealRange_eq_lieSpan_range, ← LieSubalgebra.coe_toSubmodule, ←
-    LieSubmodule.toSubmodule_inj, incl_range, coe_toLieSubalgebra_toSubmodule,
+    LieSubmodule.toSubmodule_inj, incl_range, toLieSubalgebra_toSubmodule,
     LieSubmodule.coe_lieSpan_submodule_eq_iff]
   use I
 

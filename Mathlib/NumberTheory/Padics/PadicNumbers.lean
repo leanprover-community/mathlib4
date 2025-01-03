@@ -952,8 +952,7 @@ theorem norm_eq_zpow_neg_valuation {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : �
   refine Quotient.inductionOn' x fun f hf => ?_
   change (PadicSeq.norm _ : ℝ) = (p : ℝ) ^ (-PadicSeq.valuation _)
   rw [PadicSeq.norm_eq_zpow_neg_valuation]
-  · change ↑((p : ℚ) ^ (-PadicSeq.valuation f)) = (p : ℝ) ^ (-PadicSeq.valuation f)
-    rw [Rat.cast_zpow, Rat.cast_natCast]
+  · rw [Rat.cast_zpow, Rat.cast_natCast]
   · apply CauSeq.not_limZero_of_not_congr_zero
     -- Porting note: was `contrapose! hf`
     intro hf'
