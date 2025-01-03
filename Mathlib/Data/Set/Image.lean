@@ -188,7 +188,7 @@ variable {f : α → β} {s t : Set α}
 
 @[deprecated mem_image (since := "2024-03-23")]
 theorem mem_image_iff_bex {f : α → β} {s : Set α} {y : β} :
-    y ∈ f '' s ↔ ∃ (x :) (_ : x ∈ s), f x = y :=
+    y ∈ f '' s ↔ ∃ (x : _) (_ : x ∈ s), f x = y :=
   bex_def.symm
 
 theorem image_eta (f : α → β) : f '' s = (fun x => f x) '' s :=
@@ -702,7 +702,7 @@ theorem exists_subset_range_and_iff {f : α → β} {p : Set β → Prop} :
 
 @[deprecated exists_subset_range_and_iff (since := "2024-06-06")]
 theorem exists_subset_range_iff {f : α → β} {p : Set β → Prop} :
-    (∃ (s :) (_ : s ⊆ range f), p s) ↔ ∃ s, p (f '' s) := by simp
+    (∃ (s : _) (_ : s ⊆ range f), p s) ↔ ∃ s, p (f '' s) := by simp
 
 @[simp]
 theorem forall_subset_range_iff {f : α → β} {p : Set β → Prop} :

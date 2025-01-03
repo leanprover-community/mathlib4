@@ -252,7 +252,7 @@ theorem ClassGroup.equiv_mk0 [IsDedekindDomain R] (I : (Ideal R)⁰) :
 
 theorem ClassGroup.mk0_eq_mk0_iff_exists_fraction_ring [IsDedekindDomain R] {I J : (Ideal R)⁰} :
     ClassGroup.mk0 I =
-      ClassGroup.mk0 J ↔ ∃ (x :) (_ : x ≠ (0 : K)), spanSingleton R⁰ x * I = J := by
+      ClassGroup.mk0 J ↔ ∃ (x : _) (_ : x ≠ (0 : K)), spanSingleton R⁰ x * I = J := by
   refine (ClassGroup.equiv K).injective.eq_iff.symm.trans ?_
   simp only [ClassGroup.equiv_mk0, QuotientGroup.mk'_eq_mk', mem_principal_ideals_iff,
     Units.ext_iff, Units.val_mul, FractionalIdeal.coe_mk0, exists_prop]

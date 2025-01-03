@@ -823,7 +823,7 @@ def toFiberBundle : @FiberBundle B F _ _ E a.totalSpaceTopology _ :=
   { totalSpaceMk_isInducing' := fun b ↦ a.inducing_totalSpaceMk_of_inducing_comp b
       (a.totalSpaceMk_isInducing b)
     trivializationAtlas' :=
-      { e | ∃ (e₀ :) (he₀ : e₀ ∈ a.pretrivializationAtlas),
+      { e | ∃ (e₀ : _) (he₀ : e₀ ∈ a.pretrivializationAtlas),
         e = a.trivializationOfMemPretrivializationAtlas he₀ },
     trivializationAt' := fun x ↦
       a.trivializationOfMemPretrivializationAtlas (a.pretrivialization_mem_atlas x),

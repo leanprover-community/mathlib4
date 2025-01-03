@@ -121,7 +121,7 @@ protected theorem IsChain.directed {f : β → α} {c : Set β} (h : IsChain (f 
     fun hab => ((h ha hb hab).elim fun h => ⟨⟨b, hb⟩, h, refl _⟩) fun h => ⟨⟨a, ha⟩, refl _, h⟩
 
 theorem IsChain.exists3 (hchain : IsChain r s) [IsTrans α r] {a b c} (mem1 : a ∈ s) (mem2 : b ∈ s)
-    (mem3 : c ∈ s) : ∃ (z :) (_ : z ∈ s), r a z ∧ r b z ∧ r c z := by
+    (mem3 : c ∈ s) : ∃ (z : _) (_ : z ∈ s), r a z ∧ r b z ∧ r c z := by
   rcases directedOn_iff_directed.mpr (IsChain.directed hchain) a mem1 b mem2 with ⟨z, mem4, H1, H2⟩
   rcases directedOn_iff_directed.mpr (IsChain.directed hchain) z mem4 c mem3 with
     ⟨z', mem5, H3, H4⟩

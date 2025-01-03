@@ -119,7 +119,7 @@ theorem SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge (f : α →ₛ ℝ
     have : μ s < μ s + ε / c := by
       have : (0 : ℝ≥0∞) < ε / c := ENNReal.div_pos_iff.2 ⟨ε0, ENNReal.coe_ne_top⟩
       simpa using ENNReal.add_lt_add_left ne_top this
-    obtain ⟨u, su, u_open, μu⟩ : ∃ (u :), u ⊇ s ∧ IsOpen u ∧ μ u < μ s + ε / c :=
+    obtain ⟨u, su, u_open, μu⟩ : ∃ (u : _), u ⊇ s ∧ IsOpen u ∧ μ u < μ s + ε / c :=
       s.exists_isOpen_lt_of_lt _ this
     refine ⟨Set.indicator u fun _ => c,
             fun x => ?_, u_open.lowerSemicontinuous_indicator (zero_le _), ?_⟩
@@ -333,7 +333,7 @@ theorem SimpleFunc.exists_upperSemicontinuous_le_lintegral_le (f : α →ₛ ℝ
         SimpleFunc.coe_zero, Set.piecewise_eq_indicator, SimpleFunc.coe_piecewise,
         false_and] using int_f
     have : (0 : ℝ≥0∞) < ε / c := ENNReal.div_pos_iff.2 ⟨ε0, ENNReal.coe_ne_top⟩
-    obtain ⟨F, Fs, F_closed, μF⟩ : ∃ (F :), F ⊆ s ∧ IsClosed F ∧ μ s < μ F + ε / c :=
+    obtain ⟨F, Fs, F_closed, μF⟩ : ∃ (F : _), F ⊆ s ∧ IsClosed F ∧ μ s < μ F + ε / c :=
       hs.exists_isClosed_lt_add μs_lt_top.ne this.ne'
     refine
       ⟨Set.indicator F fun _ => c, fun x => ?_, F_closed.upperSemicontinuous_indicator (zero_le _),

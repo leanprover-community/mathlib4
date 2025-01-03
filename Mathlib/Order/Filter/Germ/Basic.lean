@@ -74,7 +74,7 @@ def Germ (l : Filter α) (β : Type*) : Type _ :=
 
 /-- Setoid used to define the filter product. This is a dependent version of
   `Filter.germSetoid`. -/
-def productSetoid (l : Filter α) (ε : α → Type*) : Setoid ((a :) → ε a) where
+def productSetoid (l : Filter α) (ε : α → Type*) : Setoid ((a : _) → ε a) where
   r f g := ∀ᶠ a in l, f a = g a
   iseqv :=
     ⟨fun _ => Eventually.of_forall fun _ => rfl, fun h => h.mono fun _ => Eq.symm,
@@ -89,10 +89,10 @@ namespace Product
 
 variable {ε : α → Type*}
 
-instance coeTC : CoeTC ((a :) → ε a) (l.Product ε) :=
+instance coeTC : CoeTC ((a : _) → ε a) (l.Product ε) :=
   ⟨@Quotient.mk' _ (productSetoid _ ε)⟩
 
-instance instInhabited [(a :) → Inhabited (ε a)] : Inhabited (l.Product ε) :=
+instance instInhabited [(a : _) → Inhabited (ε a)] : Inhabited (l.Product ε) :=
   ⟨(↑fun a => (default : ε a) : l.Product ε)⟩
 
 end Product

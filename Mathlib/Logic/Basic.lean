@@ -755,17 +755,17 @@ section BoundedQuantifiers
 
 variable {α : Sort*} {r p q : α → Prop} {P Q : ∀ x, p x → Prop}
 
-theorem bex_def : (∃ (x :) (_ : p x), q x) ↔ ∃ x, p x ∧ q x :=
+theorem bex_def : (∃ (x : _) (_ : p x), q x) ↔ ∃ x, p x ∧ q x :=
   ⟨fun ⟨x, px, qx⟩ ↦ ⟨x, px, qx⟩, fun ⟨x, px, qx⟩ ↦ ⟨x, px, qx⟩⟩
 
 theorem BEx.elim {b : Prop} : (∃ x h, P x h) → (∀ a h, P a h → b) → b
   | ⟨a, h₁, h₂⟩, h' => h' a h₁ h₂
 
-theorem BEx.intro (a : α) (h₁ : p a) (h₂ : P a h₁) : ∃ (x :) (h : p x), P x h :=
+theorem BEx.intro (a : α) (h₁ : p a) (h₂ : P a h₁) : ∃ (x : _) (h : p x), P x h :=
   ⟨a, h₁, h₂⟩
 
 @[deprecated exists_eq_left (since := "2024-04-06")]
-theorem bex_eq_left {a : α} : (∃ (x :) (_ : x = a), p x) ↔ p a := by
+theorem bex_eq_left {a : α} : (∃ (x : _) (_ : x = a), p x) ↔ p a := by
   simp only [exists_prop, exists_eq_left]
 
 @[deprecated (since := "2024-04-06")] alias ball_congr := forall₂_congr
@@ -780,7 +780,7 @@ theorem BEx.imp_right (H : ∀ x h, P x h → Q x h) : (∃ x h, P x h) → ∃ 
 theorem BAll.imp_left (H : ∀ x, p x → q x) (h₁ : ∀ x, q x → r x) (x) (h : p x) : r x :=
   h₁ _ <| H _ h
 
-theorem BEx.imp_left (H : ∀ x, p x → q x) : (∃ (x :) (_ : p x), r x) → ∃ (x :) (_ : q x), r x
+theorem BEx.imp_left (H : ∀ x, p x → q x) : (∃ (x : _) (_ : p x), r x) → ∃ (x : _) (_ : q x), r x
   | ⟨x, hp, hr⟩ => ⟨x, H _ hp, hr⟩
 
 @[deprecated id (since := "2024-03-23")]
@@ -789,10 +789,10 @@ theorem ball_of_forall (h : ∀ x, p x) (x) : p x := h x
 @[deprecated forall_imp (since := "2024-03-23")]
 theorem forall_of_ball (H : ∀ x, p x) (h : ∀ x, p x → q x) (x) : q x := h x <| H x
 
-theorem exists_mem_of_exists (H : ∀ x, p x) : (∃ x, q x) → ∃ (x :) (_ : p x), q x
+theorem exists_mem_of_exists (H : ∀ x, p x) : (∃ x, q x) → ∃ (x : _) (_ : p x), q x
   | ⟨x, hq⟩ => ⟨x, H x, hq⟩
 
-theorem exists_of_exists_mem : (∃ (x :) (_ : p x), q x) → ∃ x, q x
+theorem exists_of_exists_mem : (∃ (x : _) (_ : p x), q x) → ∃ x, q x
   | ⟨x, _, hq⟩ => ⟨x, hq⟩
 
 @[deprecated (since := "2024-03-23")] alias bex_of_exists := exists_mem_of_exists
@@ -828,7 +828,7 @@ theorem forall₂_or_left : (∀ x, p x ∨ q x → r x) ↔ (∀ x, p x → r x
   Iff.trans (forall_congr' fun _ ↦ or_imp) forall_and
 
 theorem exists_mem_or_left :
-    (∃ (x :) (_ : p x ∨ q x), r x) ↔ (∃ (x :) (_ : p x), r x) ∨ ∃ (x :) (_ : q x), r x := by
+    (∃ (x : _) (_ : p x ∨ q x), r x) ↔ (∃ (x : _) (_ : p x), r x) ∨ ∃ (x : _) (_ : q x), r x := by
   simp only [exists_prop]
   exact Iff.trans (exists_congr fun x ↦ or_and_right) exists_or
 

@@ -577,7 +577,7 @@ def compPartialSumTargetSet (m M N : ℕ) : Set (Σ n, Composition n) :=
 
 theorem compPartialSumTargetSet_image_compPartialSumSource (m M N : ℕ)
     (i : Σ n, Composition n) (hi : i ∈ compPartialSumTargetSet m M N) :
-    ∃ (j :) (hj : j ∈ compPartialSumSource m M N), compChangeOfVariables m M N j hj = i := by
+    ∃ (j : _) (hj : j ∈ compPartialSumSource m M N), compChangeOfVariables m M N j hj = i := by
   rcases i with ⟨n, c⟩
   refine ⟨⟨c.length, c.blocksFun⟩, ?_, ?_⟩
   · simp only [compPartialSumTargetSet, Set.mem_setOf_eq] at hi

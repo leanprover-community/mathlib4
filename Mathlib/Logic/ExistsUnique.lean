@@ -149,7 +149,7 @@ theorem ExistsUnique.intro₂ {p : α → Sort*} [∀ x, Subsingleton (p x)]
   exact ExistsUnique.intro w ⟨hp, hq⟩ fun y ⟨hyp, hyq⟩ ↦ H y hyp hyq
 
 theorem ExistsUnique.exists₂ {p : α → Sort*} {q : ∀ (x : α) (_ : p x), Prop}
-    (h : ∃! x, ∃! hx : p x, q x hx) : ∃ (x :) (hx : p x), q x hx :=
+    (h : ∃! x, ∃! hx : p x, q x hx) : ∃ (x : _) (hx : p x), q x hx :=
   h.exists.imp fun _ hx ↦ hx.exists
 
 theorem ExistsUnique.unique₂ {p : α → Sort*} [∀ x, Subsingleton (p x)]

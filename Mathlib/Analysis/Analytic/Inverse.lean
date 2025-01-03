@@ -482,13 +482,13 @@ theorem radius_rightInv_pos_of_radius_pos
     {p : FormalMultilinearSeries 𝕜 E F} {i : E ≃L[𝕜] F} {x : E}
     (hp : 0 < p.radius) : 0 < (p.rightInv i x).radius := by
   obtain ⟨C, r, Cpos, rpos, ple⟩ :
-    ∃ (C r :) (_ : 0 < C) (_ : 0 < r), ∀ n : ℕ, ‖p n‖ ≤ C * r ^ n :=
+    ∃ (C r : _) (_ : 0 < C) (_ : 0 < r), ∀ n : ℕ, ‖p n‖ ≤ C * r ^ n :=
     le_mul_pow_of_radius_pos p hp
   let I := ‖(i.symm : F →L[𝕜] E)‖
   -- choose `a` small enough to make sure that `∑_{k ≤ n} aᵏ Qₖ` will be controllable by
   -- induction
   obtain ⟨a, apos, ha1, ha2⟩ :
-    ∃ (a :) (apos : 0 < a),
+    ∃ (a : _) (apos : 0 < a),
       2 * I * C * r ^ 2 * (I + 1) ^ 2 * a ≤ 1 ∧ r * (I + 1) * a ≤ 1 / 2 := by
     have :
       Tendsto (fun a => 2 * I * C * r ^ 2 * (I + 1) ^ 2 * a) (𝓝 0)

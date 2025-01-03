@@ -40,7 +40,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
     (inter : ∀ (i) (U1 U2 : Set (F.obj i)), U1 ∈ T i → U2 ∈ T i → U1 ∩ U2 ∈ T i)
     (compat : ∀ (i j : J) (f : i ⟶ j) (V : Set (F.obj j)) (_hV : V ∈ T j), F.map f ⁻¹' V ∈ T i) :
     IsTopologicalBasis
-      {U : Set C.pt | ∃ (j :) (V : Set (F.obj j)), V ∈ T j ∧ U = C.π.app j ⁻¹' V} := by
+      {U : Set C.pt | ∃ (j : _) (V : Set (F.obj j)), V ∈ T j ∧ U = C.π.app j ⁻¹' V} := by
   classical
   -- The limit cone for `F` whose topology is defined as an infimum.
   let D := limitConeInfi F
@@ -50,7 +50,7 @@ theorem isTopologicalBasis_cofiltered_limit (hC : IsLimit C) (T : ∀ j, Set (Se
   -- Reduce to the assertion of the theorem with `D` instead of `C`.
   suffices
     IsTopologicalBasis
-      {U : Set D.pt | ∃ (j :) (V : Set (F.obj j)), V ∈ T j ∧ U = D.π.app j ⁻¹' V} by
+      {U : Set D.pt | ∃ (j : _) (V : Set (F.obj j)), V ∈ T j ∧ U = D.π.app j ⁻¹' V} by
     convert this.isInducing hE
     ext U0
     constructor

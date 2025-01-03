@@ -267,7 +267,7 @@ theorem exists_upperCrossingTime_eq (f : ℕ → Ω → ℝ) (N : ℕ) (ω : Ω)
   have : StrictMono fun n => upperCrossingTime a b f N n ω :=
     strictMono_nat_of_lt_succ fun n => upperCrossingTime_lt_succ hab (h _)
   obtain ⟨_, ⟨k, rfl⟩, hk⟩ :
-      ∃ (m :) (_ : m ∈ Set.range fun n => upperCrossingTime a b f N n ω), N < m :=
+      ∃ (m : _) (_ : m ∈ Set.range fun n => upperCrossingTime a b f N n ω), N < m :=
     ⟨upperCrossingTime a b f N (N + 1) ω, ⟨N + 1, rfl⟩,
       lt_of_lt_of_le N.lt_succ_self (StrictMono.id_le this (N + 1))⟩
   exact not_le.2 hk upperCrossingTime_le

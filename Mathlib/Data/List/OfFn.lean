@@ -211,7 +211,7 @@ theorem ofFnRec_ofFn {C : List α → Sort*} (h : ∀ (n) (f : Fin n → α), C 
   equivSigmaTuple.rightInverse_symm.cast_eq (fun s => h s.1 s.2) ⟨n, f⟩
 
 theorem exists_iff_exists_tuple {P : List α → Prop} :
-    (∃ l : List α, P l) ↔ ∃ (n :) (f : Fin n → α), P (List.ofFn f) :=
+    (∃ l : List α, P l) ↔ ∃ (n : _) (f : Fin n → α), P (List.ofFn f) :=
   equivSigmaTuple.symm.surjective.exists.trans Sigma.exists
 
 theorem forall_iff_forall_tuple {P : List α → Prop} :

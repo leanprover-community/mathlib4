@@ -896,7 +896,7 @@ theorem eq_bot_of_subsingleton [Subsingleton S] : S = ⊥ := by
 theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x ∈ S, x ≠ (1 : M) :=
   calc
     Nontrivial S ↔ ∃ x : S, x ≠ 1 := nontrivial_iff_exists_ne 1
-    _ ↔ ∃ (x :) (hx : x ∈ S), (⟨x, hx⟩ : S) ≠ ⟨1, S.one_mem⟩ := Subtype.exists
+    _ ↔ ∃ (x : _) (hx : x ∈ S), (⟨x, hx⟩ : S) ≠ ⟨1, S.one_mem⟩ := Subtype.exists
     _ ↔ ∃ x ∈ S, x ≠ (1 : M) := by simp [Ne]
 
 /-- A submonoid is either the trivial submonoid or nontrivial. -/

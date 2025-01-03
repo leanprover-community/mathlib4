@@ -1514,7 +1514,7 @@ theorem join_append (S T : WSeq (WSeq α)) : join (append S T) ~ʷ append (join 
   apply
     liftRel_rec
       (fun c1 c2 =>
-        ∃ (s : WSeq α) (S T :),
+        ∃ (s : WSeq α) (S T : _),
           c1 = destruct (append s (join (append S T))) ∧
             c2 = destruct (append s (append (join S) (join T))))
       _ _ _

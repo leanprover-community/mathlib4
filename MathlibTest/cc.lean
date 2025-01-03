@@ -254,10 +254,10 @@ axiom C_ss : ∀ a ba, Subsingleton (C a ba)
 axiom a1 : A
 axiom a2 : A
 axiom a3 : A
-axiom mk_B1 : (a :) → B a
-axiom mk_B2 : (a :) → B a
-axiom mk_C1 : {a : _} → (ba :) → C a ba
-axiom mk_C2 : {a : _} → (ba :) → C a ba
+axiom mk_B1 : (a : _) → B a
+axiom mk_B2 : (a : _) → B a
+axiom mk_C1 : {a : _} → (ba : _) → C a ba
+axiom mk_C2 : {a : _} → (ba : _) → C a ba
 axiom tr_B : {a : _} → B a → B a
 axiom x : A → A
 axiom y : A → A
@@ -338,7 +338,7 @@ axiom inv' : (a : Nat) → a ≠ 0 → Nat
 example (a b : Nat) (h₁ : a ≠ 0) (h₂ : b ≠ 0) : a = b → inv' a h₁ = inv' b h₂ := by
   cc
 
-example (C : Nat → Type) (f : (n :) → C n → C n) (n m : Nat) (c : C n) (d : C m) :
+example (C : Nat → Type) (f : (n : _) → C n → C n) (n m : Nat) (c : C n) (d : C m) :
     HEq (f n) (f m) → HEq c d → HEq n m → HEq (f n c) (f m d) := by
   cc
 

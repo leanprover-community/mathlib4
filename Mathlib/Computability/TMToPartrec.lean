@@ -390,7 +390,7 @@ The continuations are:
   final result. In our notation this is just `_`.
 * `cons₁ fs v k`: evaluating the first part of a `cons`, that is `k (_ :: fs v)`, where `k` is the
   outer continuation.
-* `cons₂ ns k`: evaluating the second part of a `cons`: `k (ns.headI ::)`. (Technically we don't
+* `cons₂ ns k`: evaluating the second part of a `cons`: `k (ns.headI :: _)`. (Technically we don't
   need to hold on to all of `ns` here since we are already committed to taking the head, but this
   is more regular.)
 * `comp f k`: evaluating the first part of a composition: `k (f _)`.
@@ -471,7 +471,7 @@ evaluation, when we receive results from continuations built by `stepNormal`.
 
 * `Cont.halt v = v`, so we are done and transition to the `Cfg.halt v` state
 * `Cont.cons₁ fs as k v = k (v.headI :: fs as)`, so we evaluate `fs as` now with the continuation
-  `k (v.headI ::)` (called `cons₂ v k`).
+  `k (v.headI :: _)` (called `cons₂ v k`).
 * `Cont.cons₂ ns k v = k (ns.headI :: v)`, where we now have everything we need to evaluate
   `ns.headI :: v`, so we return it to `k`.
 * `Cont.comp f k v = k (f v)`, so we call `f v` with `k` as the continuation.

@@ -146,7 +146,7 @@ def isLocallyFraction : LocalPredicate (Localizations R) :=
 theorem isLocallyFraction_pred {U : Opens (PrimeSpectrum.Top R)} (f : ∀ x : U, Localizations R x) :
     (isLocallyFraction R).pred f =
       ∀ x : U,
-        ∃ (V :) (_ : x.1 ∈ V) (i : V ⟶ U),
+        ∃ (V : _) (_ : x.1 ∈ V) (i : V ⟶ U),
           ∃ r s : R,
             ∀ y : V, ¬s ∈ y.1.asIdeal ∧ f (i y : U) * algebraMap _ _ s = algebraMap _ _ r :=
   rfl
@@ -313,7 +313,7 @@ theorem const_apply' (f g : R) (U : Opens (PrimeSpectrum.Top R))
 
 theorem exists_const (U) (s : (structureSheaf R).1.obj (op U)) (x : PrimeSpectrum.Top R)
     (hx : x ∈ U) :
-    ∃ (V : Opens (PrimeSpectrum.Top R)) (_ : x ∈ V) (i : V ⟶ U) (f g : R) (hg :),
+    ∃ (V : Opens (PrimeSpectrum.Top R)) (_ : x ∈ V) (i : V ⟶ U) (f g : R) (hg : _),
       const R f g V hg = (structureSheaf R).1.map i.op s :=
   let ⟨V, hxV, iVU, f, g, hfg⟩ := s.2 ⟨x, hx⟩
   ⟨V, hxV, iVU, f, g, fun y hyV => (hfg ⟨y, hyV⟩).1,

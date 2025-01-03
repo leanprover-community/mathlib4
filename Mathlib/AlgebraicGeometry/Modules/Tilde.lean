@@ -75,7 +75,7 @@ theorem isLocallyFraction_pred {U : Opens (PrimeSpectrum.Top R)}
     (f : ∀ x : U, Localizations M x) :
     (isLocallyFraction M).pred f =
       ∀ y : U,
-        ∃ (V :) (_ : y.1 ∈ V) (i : V ⟶ U),
+        ∃ (V : _) (_ : y.1 ∈ V) (i : V ⟶ U),
           ∃ (m : M) (s: R), ∀ x : V, ¬s ∈ x.1.asIdeal ∧ s • f (i x) =
             LocalizedModule.mkLinearMap x.1.asIdeal.primeCompl M m :=
   rfl
@@ -339,7 +339,7 @@ theorem const_apply (m : M) (r : R) (U : Opens (PrimeSpectrum.Top R))
 
 theorem exists_const (U) (s : (tildeInModuleCat M).obj (op U)) (x : PrimeSpectrum.Top R)
     (hx : x ∈ U) :
-    ∃ (V : Opens (PrimeSpectrum.Top R)) (_ : x ∈ V) (i : V ⟶ U) (f : M) (g : R) (hg :),
+    ∃ (V : Opens (PrimeSpectrum.Top R)) (_ : x ∈ V) (i : V ⟶ U) (f : M) (g : R) (hg : _),
       const M f g V hg = (tildeInModuleCat M).map i.op s :=
   let ⟨V, hxV, iVU, f, g, hfg⟩ := s.2 ⟨x, hx⟩
   ⟨V, hxV, iVU, f, g, fun y hyV => (hfg ⟨y, hyV⟩).1, Subtype.eq <| funext fun y => by

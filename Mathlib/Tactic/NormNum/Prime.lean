@@ -229,7 +229,7 @@ theorem factorsHelper_same_sn (a : ℕ) : FactorsHelper a a [a] :=
 
 theorem factorsHelper_end (n : ℕ) (l : List ℕ) (H : FactorsHelper n 2 l) : Nat.factors n = l :=
   let ⟨h₁, h₂, h₃⟩ := H Nat.prime_two
-  have := List.chain'_iff_pairwise.1 (@List.Chain'.tail _ _ (_ ::) h₁)
+  have := List.chain'_iff_pairwise.1 (@List.Chain'.tail _ _ (_ :: _) h₁)
   (List.eq_of_perm_of_sorted (Nat.factors_unique h₃ h₂) this (Nat.factors_sorted _)).symm
 -/
 

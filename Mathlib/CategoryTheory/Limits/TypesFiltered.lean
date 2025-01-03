@@ -37,7 +37,7 @@ Elements in `F.obj j` and `F.obj j'` are equivalent if there is some `k : J` to 
 where their images are equal.
 -/
 protected def Rel (x y : Σ j, F.obj j) : Prop :=
-  ∃ (k :) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2
+  ∃ (k : _) (f : x.1 ⟶ k) (g : y.1 ⟶ k), F.map f x.2 = F.map g y.2
 
 theorem rel_of_quot_rel (x y : Σ j, F.obj j) :
     Quot.Rel F x y → FilteredColimit.Rel.{v, u} F x y :=
@@ -53,7 +53,7 @@ theorem eqvGen_quot_rel_of_rel (x y : Σ j, F.obj j) :
 noncomputable def isColimitOf (t : Cocone F) (hsurj : ∀ x : t.pt, ∃ i xi, x = t.ι.app i xi)
     (hinj :
       ∀ i j xi xj,
-        t.ι.app i xi = t.ι.app j xj → ∃ (k :) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj) :
+        t.ι.app i xi = t.ι.app j xj → ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj) :
     IsColimit t := by
   let α : t.pt → J := fun x => (hsurj x).choose
   let f : ∀ (x : t.pt), F.obj (α x) := fun x => (hsurj x).choose_spec.choose
@@ -109,7 +109,7 @@ theorem colimit_eq_iff_aux {i j : J} {xi : F.obj i} {xj : F.obj j} :
     Quot.eq, FilteredColimit.rel_eq_eqvGen_quot_rel]
 
 theorem isColimit_eq_iff {t : Cocone F} (ht : IsColimit t) {i j : J} {xi : F.obj i} {xj : F.obj j} :
-    t.ι.app i xi = t.ι.app j xj ↔ ∃ (k :) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj := by
+    t.ι.app i xi = t.ι.app j xj ↔ ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj := by
   refine Iff.trans ?_ (colimit_eq_iff_aux F)
   rw [← (IsColimit.coconePointUniqueUpToIso ht (colimitCoconeIsColimit F)).toEquiv.injective.eq_iff]
   convert Iff.rfl
@@ -120,7 +120,7 @@ theorem isColimit_eq_iff {t : Cocone F} (ht : IsColimit t) {i j : J} {xi : F.obj
 
 theorem colimit_eq_iff {i j : J} {xi : F.obj i} {xj : F.obj j} :
     colimit.ι F i xi = colimit.ι F j xj ↔
-      ∃ (k :) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj :=
+      ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f xi = F.map g xj :=
   isColimit_eq_iff _ (colimit.isColimit F)
 
 end CategoryTheory.Limits.Types.FilteredColimit

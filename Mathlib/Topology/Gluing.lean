@@ -107,7 +107,7 @@ theorem isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i 
   · intro h j; exact h ⟨j⟩
   · intro h j; cases j; apply h
 
-theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i :) (y : D.U i), 𝖣.ι i y = x :=
+theorem ι_jointly_surjective (x : 𝖣.glued) : ∃ (i : _) (y : D.U i), 𝖣.ι i y = x :=
   𝖣.ι_jointly_surjective (forget TopCat) x
 
 /-- An equivalence relation on `Σ i, D.U i` that holds iff `𝖣 .ι i x = 𝖣 .ι j y`.

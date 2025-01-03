@@ -87,7 +87,7 @@ notation3 "*'[" x "] " (...) ", " v:(scoped c => bar' x <| foo' x c) => v
 #guard_msgs in #check bar' 1
 
 -- Need to give type ascription to `p` so that `p x` elaborates when making matcher
-notation3 "MyPi " (...) ", " r:(scoped p => (x :) → (p : _ → _) x) => r
+notation3 "MyPi " (...) ", " r:(scoped p => (x : _) → (p : _ → _) x) => r
 /-- info: MyPi (x : ℕ) (y : ℕ), x < y : Prop -/
 #guard_msgs in #check MyPi (x : Nat) (y : Nat), x < y
 

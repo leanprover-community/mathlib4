@@ -57,7 +57,7 @@ theorem not_nil_right (r : α → α → Prop) (l : List α) : ¬Lex r l [] :=
 theorem nil_left_or_eq_nil {r : α → α → Prop} (l : List α) : List.Lex r [] l ∨ l = [] :=
   match l with
   | [] => Or.inr rfl
-  | (_ ::) => Or.inl nil
+  | (_ :: _) => Or.inl nil
 
 @[simp]
 theorem singleton_iff {r : α → α → Prop} (a b : α) : List.Lex r [a] [b] ↔ r a b :=

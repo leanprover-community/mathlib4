@@ -105,7 +105,7 @@ theorem colimit_exists_rep [HasColimit F] (x : ↑(colimit F)) :
 end
 
 theorem isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (x : F.obj i) (y : F.obj j)
-    (h : ∃ (k :) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y) :
+    (h : ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y) :
     D.ι.app i x = D.ι.app j y := by
   let E := (forget C).mapCocone D
   obtain ⟨k, f, g, (hfg : (F ⋙ forget C).map f x = F.map g y)⟩ := h
@@ -116,7 +116,7 @@ theorem isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (x : F.obj i) (y : F
   exact congrFun h2 y
 
 theorem colimit_rep_eq_of_exists [HasColimit F] {i j : J} (x : F.obj i) (y : F.obj j)
-    (h : ∃ (k :) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y) :
+    (h : ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y) :
     colimit.ι F i x = colimit.ι F j y :=
   Concrete.isColimit_rep_eq_of_exists F x y h
 
@@ -129,24 +129,24 @@ variable {C : Type u} [Category.{v} C] [ConcreteCategory.{max t w} C] {J : Type 
 
 theorem isColimit_exists_of_rep_eq {D : Cocone F} {i j : J} (hD : IsColimit D)
     (x : F.obj i) (y : F.obj j) (h : D.ι.app _ x = D.ι.app _ y) :
-    ∃ (k :) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y := by
+    ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y := by
   let E := (forget C).mapCocone D
   let hE : IsColimit E := isColimitOfPreserves _ hD
   exact (Types.FilteredColimit.isColimit_eq_iff (F ⋙ forget C) hE).mp h
 
 theorem isColimit_rep_eq_iff_exists {D : Cocone F} {i j : J} (hD : IsColimit D)
     (x : F.obj i) (y : F.obj j) :
-    D.ι.app i x = D.ι.app j y ↔ ∃ (k :) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y :=
+    D.ι.app i x = D.ι.app j y ↔ ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y :=
   ⟨Concrete.isColimit_exists_of_rep_eq.{t} _ hD _ _,
    Concrete.isColimit_rep_eq_of_exists _ _ _⟩
 
 theorem colimit_exists_of_rep_eq [HasColimit F] {i j : J} (x : F.obj i) (y : F.obj j)
     (h : colimit.ι F _ x = colimit.ι F _ y) :
-    ∃ (k :) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y :=
+    ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y :=
   Concrete.isColimit_exists_of_rep_eq.{t} F (colimit.isColimit _) x y h
 
 theorem colimit_rep_eq_iff_exists [HasColimit F] {i j : J} (x : F.obj i) (y : F.obj j) :
-    colimit.ι F i x = colimit.ι F j y ↔ ∃ (k :) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y :=
+    colimit.ι F i x = colimit.ι F j y ↔ ∃ (k : _) (f : i ⟶ k) (g : j ⟶ k), F.map f x = F.map g y :=
   ⟨Concrete.colimit_exists_of_rep_eq.{t} _ _ _, Concrete.colimit_rep_eq_of_exists _ _ _⟩
 
 end FilteredColimits

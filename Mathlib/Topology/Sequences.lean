@@ -277,7 +277,7 @@ instance (priority := 100) FirstCountableTopology.seq_compact_of_compact [Compac
   ⟨isCompact_univ.isSeqCompact⟩
 
 theorem CompactSpace.tendsto_subseq [CompactSpace X] (x : ℕ → X) :
-    ∃ (a :) (φ : ℕ → ℕ), StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
+    ∃ (a : _) (φ : ℕ → ℕ), StrictMono φ ∧ Tendsto (x ∘ φ) atTop (𝓝 a) :=
   SeqCompactSpace.tendsto_subseq x
 
 end FirstCountableTopology

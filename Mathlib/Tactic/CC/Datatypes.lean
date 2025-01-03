@@ -50,7 +50,7 @@ def liftFromEq (R : Name) (H : Expr) : MetaM Expr := do
   -- `HType : @Eq A a _`
   let some (A, a, _) := HType.eq?
     | throwError "failed to build liftFromEq equality proof expected: {H}"
-  -- `motive : (x :) → a = x → Prop := fun x h => R a x`
+  -- `motive : (x : _) → a = x → Prop := fun x h => R a x`
   let motive ←
     withLocalDeclD `x A fun x => do
       let hType ← mkEq a x

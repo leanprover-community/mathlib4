@@ -134,10 +134,10 @@ of `F.map f` is contained in that of `F.map g`;
 in other words (see `isMittagLeffler_iff_eventualRange`), the eventual range at `j` is attained
 by some `f : i ⟶ j`. -/
 def IsMittagLeffler : Prop :=
-  ∀ j : J, ∃ (i :) (f : i ⟶ j), ∀ ⦃k⦄ (g : k ⟶ j), range (F.map f) ⊆ range (F.map g)
+  ∀ j : J, ∃ (i : _) (f : i ⟶ j), ∀ ⦃k⦄ (g : k ⟶ j), range (F.map f) ⊆ range (F.map g)
 
 theorem isMittagLeffler_iff_eventualRange :
-    F.IsMittagLeffler ↔ ∀ j : J, ∃ (i :) (f : i ⟶ j), F.eventualRange j = range (F.map f) :=
+    F.IsMittagLeffler ↔ ∀ j : J, ∃ (i : _) (f : i ⟶ j), F.eventualRange j = range (F.map f) :=
   forall_congr' fun _ =>
     exists₂_congr fun _ _ =>
       ⟨fun h => (iInter₂_subset _ _).antisymm <| subset_iInter₂ h, fun h => h ▸ iInter₂_subset⟩
@@ -209,7 +209,7 @@ theorem eventualRange_eq_iff {f : i ⟶ j} :
   rw [he, F.map_comp]
   apply range_comp_subset_range
 
-theorem isMittagLeffler_iff_subset_range_comp : F.IsMittagLeffler ↔ ∀ j : J, ∃ (i :) (f : i ⟶ j),
+theorem isMittagLeffler_iff_subset_range_comp : F.IsMittagLeffler ↔ ∀ j : J, ∃ (i : _) (f : i ⟶ j),
     ∀ ⦃k⦄ (g : k ⟶ i), range (F.map f) ⊆ range (F.map <| g ≫ f) := by
   simp_rw [isMittagLeffler_iff_eventualRange, eventualRange_eq_iff]
 
@@ -234,11 +234,11 @@ theorem IsMittagLeffler.toPreimages (h : F.IsMittagLeffler) : (F.toPreimages s).
       rw [← Category.assoc, map_comp_apply, h₃, map_comp_apply]
 
 theorem isMittagLeffler_of_exists_finite_range
-    (h : ∀ j : J, ∃ (i :) (f : i ⟶ j), (range <| F.map f).Finite) : F.IsMittagLeffler := by
+    (h : ∀ j : J, ∃ (i : _) (f : i ⟶ j), (range <| F.map f).Finite) : F.IsMittagLeffler := by
   intro j
   obtain ⟨i, hi, hf⟩ := h j
   obtain ⟨m, ⟨i, f, hm⟩, hmin⟩ := Finset.wellFoundedLT.wf.has_min
-    { s : Finset (F.obj j) | ∃ (i :) (f : i ⟶ j), ↑s = range (F.map f) }
+    { s : Finset (F.obj j) | ∃ (i : _) (f : i ⟶ j), ↑s = range (F.map f) }
     ⟨_, i, hi, hf.coe_toFinset⟩
   refine ⟨i, f, fun k g =>
     (directedOn_range.mp <| F.ranges_directed j).is_bot_of_is_min ⟨⟨i, f⟩, rfl⟩ ?_ _ ⟨⟨k, g⟩, rfl⟩⟩

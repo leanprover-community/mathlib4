@@ -102,7 +102,7 @@ def grothendieckTopology : GrothendieckTopology X.AffineZariskiSite :=
 
 lemma mem_grothendieckTopology {U : X.AffineZariskiSite} {S : Sieve U} :
     S ∈ grothendieckTopology X U ↔
-      ∀ x ∈ U.toOpens, ∃ (V :) (f : V ⟶ U), S.arrows f ∧ x ∈ V.toOpens := by
+      ∀ x ∈ U.toOpens, ∃ (V : _) (f : V ⟶ U), S.arrows f ∧ x ∈ V.toOpens := by
   apply forall₂_congr fun x hxU ↦ ⟨?_, ?_⟩
   · rintro ⟨V, f, ⟨W, g, h, hg, rfl⟩, hxV⟩
     exact ⟨W, g, hg, h.le hxV⟩

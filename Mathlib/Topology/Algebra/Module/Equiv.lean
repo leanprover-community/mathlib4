@@ -812,7 +812,7 @@ variable (R M)
 -/
 @[simps! (config := .asFn) apply symm_apply]
 def piFinTwo (M : Fin 2 → Type*) [∀ i, AddCommMonoid (M i)] [∀ i, Module R (M i)]
-    [∀ i, TopologicalSpace (M i)] : ((i :) → M i) ≃L[R] M 0 × M 1 :=
+    [∀ i, TopologicalSpace (M i)] : ((i : _) → M i) ≃L[R] M 0 × M 1 :=
   { Homeomorph.piFinTwo M with toLinearEquiv := LinearEquiv.piFinTwo R M }
 
 /-- Continuous linear equivalence between vectors in `M² = Fin 2 → M` and `M × M`. -/

@@ -48,7 +48,7 @@ open Part Nat Nat.Upto
 
 namespace Fix
 
-variable (f : ((a :) → Part <| β a) →o (a :) → Part <| β a)
+variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
 
 theorem approx_mono' {i : ℕ} : Fix.approx f i ≤ Fix.approx f (succ i) := by
   induction i with
@@ -104,7 +104,7 @@ theorem exists_fix_le_approx (x : α) : ∃ i, Part.fix f x ≤ approx f i x := 
     cases hh _ _ h'
 
 /-- The series of approximations of `fix f` (see `approx`) as a `Chain` -/
-def approxChain : Chain ((a :) → Part <| β a) :=
+def approxChain : Chain ((a : _) → Part <| β a) :=
   ⟨approx f, approx_mono f⟩
 
 theorem le_f_of_mem_approx {x} : x ∈ approxChain f → x ≤ f x := by
@@ -120,7 +120,7 @@ end Fix
 open Fix
 
 variable {α : Type*}
-variable (f : ((a :) → Part <| β a) →o (a :) → Part <| β a)
+variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
 
 open OmegaCompletePartialOrder
 
@@ -146,7 +146,7 @@ theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
     intro y x
     apply approx_le_fix f
 
-theorem fix_le {X : (a :) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ X := by
+theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ X := by
   rw [fix_eq_ωSup f]
   apply ωSup_le _ _ _
   simp only [Fix.approxChain, OrderHom.coe_mk]
@@ -158,10 +158,10 @@ theorem fix_le {X : (a :) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ X 
     · apply f.monotone i_ih
     · apply hX
 
-variable {g : ((a :) → Part <| β a) → (a :) → Part <| β a}
+variable {g : ((a : _) → Part <| β a) → (a : _) → Part <| β a}
 
 theorem fix_eq_ωSup_of_ωScottContinuous (hc : ωScottContinuous g) : Part.fix g =
-    ωSup (approxChain (⟨g,hc.monotone⟩ : ((a :) → Part <| β a) →o (a :) → Part <| β a)) := by
+    ωSup (approxChain (⟨g,hc.monotone⟩ : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)) := by
   rw [← fix_eq_ωSup]
   rfl
 
@@ -240,19 +240,19 @@ variable (α β γ)
 
 /-- `Sigma.curry` as a monotone function. -/
 @[simps]
-def monotoneCurry [(x y :) → Preorder <| γ x y] :
+def monotoneCurry [(x y : _) → Preorder <| γ x y] :
     (∀ x : Σa, β a, γ x.1 x.2) →o ∀ (a) (b : β a), γ a b where
   toFun := curry
   monotone' _x _y h a b := h ⟨a, b⟩
 
 /-- `Sigma.uncurry` as a monotone function. -/
 @[simps]
-def monotoneUncurry [(x y :) → Preorder <| γ x y] :
+def monotoneUncurry [(x y : _) → Preorder <| γ x y] :
     (∀ (a) (b : β a), γ a b) →o ∀ x : Σa, β a, γ x.1 x.2 where
   toFun := uncurry
   monotone' _x _y h a := h a.1 a.2
 
-variable [(x y :) → OmegaCompletePartialOrder <| γ x y]
+variable [(x y : _) → OmegaCompletePartialOrder <| γ x y]
 
 open OmegaCompletePartialOrder.Chain
 
@@ -292,7 +292,7 @@ end Monotone
 
 open Fix
 
-instance hasFix [Fix <| (x : Sigma β) → γ x.1 x.2] : Fix ((x :) → (y : β x) → γ x y) :=
+instance hasFix [Fix <| (x : Sigma β) → γ x.1 x.2] : Fix ((x : _) → (y : β x) → γ x y) :=
   ⟨fun f ↦ curry (fix <| uncurry ∘ f ∘ curry)⟩
 
 variable [∀ x y, OmegaCompletePartialOrder <| γ x y]
@@ -303,13 +303,13 @@ variable {f : (∀ a b, γ a b) → ∀ a b, γ a b}
 
 theorem uncurry_curry_ωScottContinuous (hc : ωScottContinuous f) :
     ωScottContinuous <| (monotoneUncurry α β γ).comp <|
-      (⟨f,hc.monotone⟩ : ((x :) → (y : β x) → γ x y) →o (x :) → (y : β x) → γ x y).comp <|
+      (⟨f,hc.monotone⟩ : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y).comp <|
       monotoneCurry α β γ :=
   (ωScottContinuous_uncurry _ _ _).comp (hc.comp (ωScottContinuous_curry _ _ _))
 
 set_option linter.deprecated false in
 @[deprecated uncurry_curry_ωScottContinuous  (since := "2024-08-26")]
-theorem uncurry_curry_continuous {f : ((x :) → (y : β x) → γ x y) →o (x :) → (y : β x) → γ x y}
+theorem uncurry_curry_continuous {f : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y}
     (hc : Continuous f) :
     Continuous <| (monotoneUncurry α β γ).comp <| f.comp <| monotoneCurry α β γ :=
   continuous_comp _ _ (continuous_comp _ _ (continuous_curry _ _ _) hc) (continuous_uncurry _ _ _)
@@ -317,7 +317,7 @@ theorem uncurry_curry_continuous {f : ((x :) → (y : β x) → γ x y) →o (x 
 end Curry
 
 instance lawfulFix' [LawfulFix <| (x : Sigma β) → γ x.1 x.2] :
-    LawfulFix ((x y :) → γ x y) where
+    LawfulFix ((x y : _) → γ x y) where
   fix_eq {_f} hc := by
     dsimp [fix]
     conv_lhs => erw [LawfulFix.fix_eq (uncurry_curry_ωScottContinuous hc)]
