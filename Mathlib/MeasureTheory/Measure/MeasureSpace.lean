@@ -1194,6 +1194,9 @@ theorem map_zero (f : α → β) : (0 : Measure α).map f = 0 := by
 theorem map_of_not_aemeasurable {f : α → β} {μ : Measure α} (hf : ¬AEMeasurable f μ) :
     μ.map f = 0 := by simp [map, hf]
 
+theorem _root_.AEMeasurable.of_map_ne_zero {f : α → β} {μ : Measure α} (hf : μ.map f ≠ 0) :
+    AEMeasurable f μ := not_imp_comm.1 map_of_not_aemeasurable hf
+
 theorem map_congr {f g : α → β} (h : f =ᵐ[μ] g) : Measure.map f μ = Measure.map g μ := by
   by_cases hf : AEMeasurable f μ
   · have hg : AEMeasurable g μ := hf.congr h
