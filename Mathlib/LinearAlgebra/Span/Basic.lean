@@ -468,7 +468,7 @@ lemma disjoint_span_singleton_of_not_mem (hx : x ∉ s) : Disjoint s (K ∙ x) :
   intro h
   contradiction
 
-lemma isCompl_span_singleton_of_iscoatom_of_not_mem (hs : IsCoatom s) (hx : x ∉ s) :
+lemma isCompl_span_singleton_of_isCoatom_of_not_mem (hs : IsCoatom s) (hx : x ∉ s) :
     IsCompl s (K ∙ x) := by
   refine ⟨disjoint_span_singleton_of_not_mem hx, ?_⟩
   rw [← covBy_top_iff] at hs
