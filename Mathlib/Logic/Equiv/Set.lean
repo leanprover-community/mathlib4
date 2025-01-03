@@ -266,36 +266,36 @@ theorem insert_apply_right {α} {s : Set.{u} α} [DecidablePred (· ∈ s)] {a :
   (Equiv.Set.insert H).apply_eq_iff_eq_symm_apply.2 rfl
 
 /-- If `s : Set α` is a set with decidable membership, then `s ⊕ sᶜ` is equivalent to `α`. -/
+@[deprecated Equiv.sumCompl (since := "2025-01-02")]
 protected def sumCompl {α} (s : Set α) [DecidablePred (· ∈ s)] : s ⊕ (sᶜ : Set α) ≃ α :=
-  calc
-    s ⊕ (sᶜ : Set α) ≃ ↥(s ∪ sᶜ) := (Equiv.Set.union disjoint_compl_right).symm
-    _ ≃ @univ α := Equiv.Set.ofEq (by simp)
-    _ ≃ α := Equiv.Set.univ _
+  Equiv.sumCompl (· ∈ s)
 
-@[simp]
+@[deprecated Equiv.sumCompl_apply_inl (since := "2025-01-02")]
 theorem sumCompl_apply_inl {α : Type u} (s : Set α) [DecidablePred (· ∈ s)] (x : s) :
     Equiv.Set.sumCompl s (Sum.inl x) = x :=
   rfl
 
-@[simp]
+@[deprecated Equiv.sumCompl_apply_inr (since := "2025-01-02")]
 theorem sumCompl_apply_inr {α : Type u} (s : Set α) [DecidablePred (· ∈ s)] (x : (sᶜ : Set α)) :
     Equiv.Set.sumCompl s (Sum.inr x) = x :=
   rfl
 
+@[deprecated Equiv.sumCompl_symm_apply_of_pos (since := "2025-01-02")]
 theorem sumCompl_symm_apply_of_mem {α : Type u} {s : Set α} [DecidablePred (· ∈ s)] {x : α}
-    (hx : x ∈ s) : (Equiv.Set.sumCompl s).symm x = Sum.inl ⟨x, hx⟩ := by
-  simp [Equiv.Set.sumCompl, Equiv.Set.univ, union_apply_left, hx]
+    (hx : x ∈ s) : (Equiv.Set.sumCompl s).symm x = Sum.inl ⟨x, hx⟩ :=
+  sumCompl_symm_apply_of_pos hx
 
+@[deprecated Equiv.sumCompl_symm_apply_of_neg (since := "2025-01-02")]
 theorem sumCompl_symm_apply_of_not_mem {α : Type u} {s : Set α} [DecidablePred (· ∈ s)] {x : α}
-    (hx : x ∉ s) : (Equiv.Set.sumCompl s).symm x = Sum.inr ⟨x, hx⟩ := by
-  simp [Equiv.Set.sumCompl, Equiv.Set.univ, union_apply_right, hx]
+    (hx : x ∉ s) : (Equiv.Set.sumCompl s).symm x = Sum.inr ⟨x, hx⟩ :=
+  sumCompl_symm_apply_of_neg hx
 
-@[simp]
+@[deprecated Equiv.sumCompl_symm_apply_pos (since := "2025-01-02")]
 theorem sumCompl_symm_apply {α : Type*} {s : Set α} [DecidablePred (· ∈ s)] {x : s} :
     (Equiv.Set.sumCompl s).symm x = Sum.inl x :=
   Set.sumCompl_symm_apply_of_mem x.2
 
-@[simp]
+@[deprecated Equiv.sumCompl_symm_apply_neg (since := "2025-01-02")]
 theorem sumCompl_symm_apply_compl {α : Type*} {s : Set α} [DecidablePred (· ∈ s)]
     {x : (sᶜ : Set α)} : (Equiv.Set.sumCompl s).symm x = Sum.inr x :=
   Set.sumCompl_symm_apply_of_not_mem x.2
