@@ -42,7 +42,7 @@ Taking images under a closed embedding is strictly monotone on the preorder of i
 -/
 lemma IrreducibleCloseds.map_strictMono {f : X → Y} (hf : IsClosedEmbedding f) :
     StrictMono (IrreducibleCloseds.map hf.continuous hf.isClosedMap) :=
-  fun ⦃_ _⦄ UltV ↦ hf.inj.image_strictMono UltV
+  fun ⦃_ _⦄ UltV ↦ hf.injective.image_strictMono UltV
 
 /--
 If `f : X → Y` is a closed embedding, then the Krull dimension of `X` is less than or equal

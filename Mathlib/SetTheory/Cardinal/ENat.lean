@@ -260,6 +260,23 @@ theorem toENat_lift {a : Cardinal.{v}} : toENat (lift.{u} a) = toENat a := by
   | inl ha => lift a to ℕ∞ using ha; simp
   | inr ha => simp [toENat_eq_top.2, ha]
 
+theorem toENat_congr {α : Type u} {β : Type v} (e : α ≃ β) : toENat #α = toENat #β := by
+  rw [← toENat_lift, lift_mk_eq.{_, _,v}.mpr ⟨e⟩, toENat_lift]
+
+lemma toENat_le_iff_of_le_aleph0 {c c' : Cardinal} (h : c ≤ ℵ₀) :
+    toENat c ≤ toENat c' ↔ c ≤ c' := by
+  lift c to ℕ∞ using h
+  simp_rw [toENat_ofENat, enat_gc _]
+
+lemma toENat_le_iff_of_lt_aleph0 {c c' : Cardinal} (hc' : c' < ℵ₀) :
+    toENat c ≤ toENat c' ↔ c ≤ c' := by
+  lift c' to ℕ using hc'
+  simp_rw [toENat_nat, ← toENat_le_nat]
+
+lemma toENat_eq_iff_of_le_aleph0 {c c' : Cardinal} (hc : c ≤ ℵ₀) (hc' : c' ≤ ℵ₀) :
+    toENat c = toENat c' ↔ c = c' :=
+  toENat_strictMonoOn.injOn.eq_iff hc hc'
+
 @[simp, norm_cast]
 lemma ofENat_add (m n : ℕ∞) : ofENat (m + n) = m + n := by apply toENat_injOn <;> simp
 
@@ -287,5 +304,7 @@ def ofENatHom : ℕ∞ →+*o Cardinal where
   map_zero' := ofENat_zero
   map_add' := ofENat_add
   monotone' := ofENat_mono
+
+
 
 end Cardinal

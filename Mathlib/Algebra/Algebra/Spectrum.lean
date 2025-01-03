@@ -5,6 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Ideal.Nonunits
 import Mathlib.Tactic.NoncommRing
 
 /-!

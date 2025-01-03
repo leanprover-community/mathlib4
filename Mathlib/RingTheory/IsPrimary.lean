@@ -16,7 +16,7 @@ A proper submodule `S : Submodule R M` is primary iff
 
 * `Submodule.isPrimary_iff_zero_divisor_quotient_imp_nilpotent_smul`:
   A `N : Submodule R M` is primary if any zero divisor on `M ⧸ N` is nilpotent.
-  See `https://mathoverflow.net/questions/3910/primary-decomposition-for-modules`
+  See https://mathoverflow.net/questions/3910/primary-decomposition-for-modules
   for a comparison of this definition (a la Atiyah-Macdonald) vs "locally nilpotent" (Matsumura).
 
 ## Implementation details
@@ -61,7 +61,8 @@ lemma isPrimary_iff_zero_divisor_quotient_imp_nilpotent_smul :
   refine (and_congr_right fun _ ↦ ?_)
   simp_rw [S.mkQ_surjective.forall, ← map_smul, ne_eq, ← LinearMap.mem_ker, ker_mkQ]
   congr! 2
-  rw [forall_comm, ← or_iff_not_imp_left, ← LinearMap.range_eq_top.mpr S.mkQ_surjective, ← map_top]
+  rw [forall_comm, ← or_iff_not_imp_left,
+    ← LinearMap.range_eq_top.mpr S.mkQ_surjective, ← map_top]
   simp_rw [eq_bot_iff, ← map_pointwise_smul, map_le_iff_le_comap, comap_bot, ker_mkQ]
 
 end CommRing

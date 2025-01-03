@@ -5,8 +5,8 @@ Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Mathlib.Data.Countable.Defs
 import Mathlib.Data.Nat.Factors
-import Mathlib.Data.Set.Finite
 import Mathlib.Data.Nat.Prime.Infinite
+import Mathlib.Data.Set.Finite.Lattice
 
 /-!
 # Prime numbers

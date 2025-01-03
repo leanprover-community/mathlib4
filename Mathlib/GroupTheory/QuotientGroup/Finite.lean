@@ -6,6 +6,7 @@ Authors: Kevin Buzzard, Patrick Massot
 -- This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
 
 import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Data.Finite.Prod
 import Mathlib.GroupTheory.QuotientGroup.Basic
 
 /-!

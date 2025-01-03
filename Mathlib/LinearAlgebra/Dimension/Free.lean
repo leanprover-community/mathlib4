@@ -51,6 +51,7 @@ theorem lift_rank_mul_lift_rank :
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
 
 This is a simpler version of `lift_rank_mul_lift_rank` with `K` and `A` in the same universe. -/
+@[stacks 09G9]
 theorem rank_mul_rank (A : Type v) [AddCommGroup A]
     [Module K A] [Module F A] [IsScalarTower F K A] [Module.Free K A] :
     Module.rank F K * Module.rank K A = Module.rank F A := by
@@ -206,7 +207,7 @@ noncomputable def basisUnique (ι : Type*) [Unique ι]
     Basis ι R M :=
   haveI : Module.Finite R M :=
     Module.finite_of_finrank_pos (_root_.zero_lt_one.trans_le h.symm.le)
-  (finBasisOfFinrankEq R M h).reindex (Equiv.equivOfUnique _ _)
+  (finBasisOfFinrankEq R M h).reindex (Equiv.ofUnique _ _)
 
 @[simp]
 theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]

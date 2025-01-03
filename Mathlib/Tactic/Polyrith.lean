@@ -60,7 +60,7 @@ remember to force recompilation of any files that call `polyrith`.
 -/
 
 namespace Mathlib.Tactic.Polyrith
-open Lean hiding Rat
+open Lean
 open Meta Ring Qq PrettyPrinter AtomM
 initialize registerTraceClass `Meta.Tactic.polyrith
 
@@ -133,7 +133,7 @@ partial def parse {u : Level} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     (c : Ring.Cache sα) (e : Q($α)) : AtomM Poly := do
   let els := do
     try pure <| Poly.const (← (← NormNum.derive e).toRat)
-    catch _ => pure <| Poly.var (← addAtom e)
+    catch _ => pure <| Poly.var (← addAtom e).1
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
   match n, c.rα with
   | ``HAdd.hAdd, _ | ``Add.add, _ => match e with

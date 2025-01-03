@@ -4,14 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, George Shakan
 -/
 import Mathlib.Algebra.Group.Pointwise.Finset.Basic
-import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Field.Rat
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Positivity.Finset
 import Mathlib.Tactic.Ring
 
 /-!
@@ -164,7 +162,7 @@ private theorem mul_aux (hA : A.Nonempty) (hAB : A ⊆ B)
   have hA₀ : (0 : ℚ≥0) < #A := cast_pos.2 hA.card_pos
   have hA₀' : (0 : ℚ≥0) < #A' := cast_pos.2 hA'.card_pos
   exact mod_cast
-    (div_le_div_iff hA₀ hA₀').1
+    (div_le_div_iff₀ hA₀ hA₀').1
       (h _ <| mem_erase_of_ne_of_mem hA'.ne_empty <| mem_powerset.2 <| hAA'.trans hAB)
 
 /-- **Ruzsa's triangle inequality**. Multiplication version. -/
@@ -179,14 +177,14 @@ theorem ruzsa_triangle_inequality_mul_mul_mul (A B C : Finset G) :
   rw [mem_erase, mem_powerset, ← nonempty_iff_ne_empty] at hU
   refine cast_le.1 (?_ : (_ : ℚ≥0) ≤ _)
   push_cast
-  refine (le_div_iff₀ <| cast_pos.2 hB.card_pos).1 ?_
-  rw [mul_div_right_comm, mul_comm _ B]
-  refine (Nat.cast_le.2 <| card_le_card_mul_left _ hU.1).trans ?_
+  rw [← le_div_iff₀ (cast_pos.2 hB.card_pos), mul_div_right_comm, mul_comm _ B]
+  refine (Nat.cast_le.2 <| card_le_card_mul_left hU.1).trans ?_
   refine le_trans ?_
     (mul_le_mul (hUA _ hB') (cast_le.2 <| card_le_card <| mul_subset_mul_right hU.2)
       (zero_le _) (zero_le _))
-  rw [← mul_div_right_comm, ← mul_assoc]
-  refine (le_div_iff₀ <| cast_pos.2 hU.1.card_pos).2 ?_
+  #adaptation_note /-- 2024-11-01 `le_div_iff₀` is synthesizing wrong `GroupWithZero` without `@` -/
+  rw [← mul_div_right_comm, ← mul_assoc,
+    @le_div_iff₀ _ (_) _ _ _ _ _ _ _ (cast_pos.2 hU.1.card_pos)]
   exact mod_cast pluennecke_petridis_inequality_mul C (mul_aux hU.1 hU.2 hUA)
 
 /-- **Ruzsa's triangle inequality**. Mul-div-div version. -/

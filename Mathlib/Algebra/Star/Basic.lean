@@ -3,7 +3,6 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Regular.Basic
@@ -38,7 +37,6 @@ assert_not_exists Rat.instField
 universe u v w
 
 open MulOpposite
-open scoped NNRat
 
 /-- Notation typeclass (with no default notation!) for an algebraic structure with a star operation.
 -/
@@ -330,7 +328,7 @@ scoped[ComplexConjugate] notation "conj" => starRingEnd _
  into the bare function `star x` automatically since most lemmas are about `conj x`. -/
 theorem starRingEnd_apply (x : R) : starRingEnd R x = star x := rfl
 
-/- Porting note (#11119): removed `simp` attribute due to report by linter:
+/- Porting note (https://github.com/leanprover-community/mathlib4/issues/11119): removed `simp` attribute due to report by linter:
 
 simp can prove this:
   by simp only [RingHomCompTriple.comp_apply, RingHom.id_apply]
@@ -365,18 +363,22 @@ open scoped ComplexConjugate
 end CommSemiring
 
 @[simp]
-theorem star_inv' [DivisionSemiring R] [StarRing R] (x : R) : star x⁻¹ = (star x)⁻¹ :=
-  op_injective <| (map_inv₀ (starRingEquiv : R ≃+* Rᵐᵒᵖ) x).trans (op_inv (star x)).symm
+theorem star_inv₀ [GroupWithZero R] [StarMul R] (x : R) : star x⁻¹ = (star x)⁻¹ :=
+  op_injective <| (map_inv₀ (starMulEquiv : R ≃* Rᵐᵒᵖ) x).trans (op_inv (star x)).symm
+
+@[deprecated (since := "2024-11-18")] alias star_inv' := star_inv₀
 
 @[simp]
-theorem star_zpow₀ [DivisionSemiring R] [StarRing R] (x : R) (z : ℤ) : star (x ^ z) = star x ^ z :=
-  op_injective <| (map_zpow₀ (starRingEquiv : R ≃+* Rᵐᵒᵖ) x z).trans (op_zpow (star x) z).symm
+theorem star_zpow₀ [GroupWithZero R] [StarMul R] (x : R) (z : ℤ) : star (x ^ z) = star x ^ z :=
+  op_injective <| (map_zpow₀ (starMulEquiv : R ≃* Rᵐᵒᵖ) x z).trans (op_zpow (star x) z).symm
 
 /-- When multiplication is commutative, `star` preserves division. -/
 @[simp]
-theorem star_div' [Semifield R] [StarRing R] (x y : R) : star (x / y) = star x / star y := by
+theorem star_div₀ [CommGroupWithZero R] [StarMul R] (x y : R) : star (x / y) = star x / star y := by
   apply op_injective
-  rw [division_def, op_div, mul_comm, star_mul, star_inv', op_mul, op_inv]
+  rw [division_def, op_div, mul_comm, star_mul, star_inv₀, op_mul, op_inv]
+
+@[deprecated (since := "2024-11-18")] alias star_div' := star_div₀
 
 /-- Any commutative semiring admits the trivial `*`-structure.
 

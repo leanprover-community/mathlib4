@@ -147,7 +147,7 @@ section Prod
 variable [PseudoMetricSpace β]
 
 -- Porting note: added `let`, otherwise `simp` failed
-noncomputable instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
+instance Prod.pseudoMetricSpaceMax : PseudoMetricSpace (α × β) :=
   let i := PseudoEMetricSpace.toPseudoMetricSpaceOfDist
     (fun x y : α × β => dist x.1 y.1 ⊔ dist x.2 y.2)
     (fun _ _ => (max_lt (edist_lt_top _ _) (edist_lt_top _ _)).ne) fun x y => by

@@ -6,6 +6,7 @@ Authors: Damien Thomine, Pietro Monticone
 import Mathlib.Analysis.SpecialFunctions.Log.ENNRealLog
 import Mathlib.Data.Real.ENatENNReal
 import Mathlib.Dynamics.TopologicalEntropy.DynamicalEntourage
+import Mathlib.Data.ENat.Lattice
 
 /-!
 # Topological entropy via covers
@@ -469,7 +470,7 @@ lemma coverEntropyEntourage_le_log_coverMincard_div {T : X → X} {F : Set X} (F
     coverEntropyEntourage T F (U ○ U) ≤ log (coverMincard T F U n) / n := by
   -- Deal with the edge cases: `F = ∅` or `F` has no finite cover.
   rcases eq_or_ne (log (coverMincard T F U n)) ⊥ with logm_bot | logm_nneg
-  · rw [log_eq_bot_iff, ← ENat.toENNReal_zero, ENat.toENNReal_coe_eq_iff,
+  · rw [log_eq_bot_iff, ← ENat.toENNReal_zero, ENat.toENNReal_inj,
       coverMincard_eq_zero_iff T F U n] at logm_bot
     simp [logm_bot]
   rcases eq_or_ne (log (coverMincard T F U n)) ⊤ with logm_top | logm_fin
@@ -483,7 +484,7 @@ lemma coverEntropyEntourage_le_log_coverMincard_div {T : X → X} {F : Set X} (F
     eventually_atTop.2 ⟨1, fun m m_pos ↦ log_coverMincard_le_add F_inv U_symm n_pos m_pos⟩
   apply ((limsup_le_limsup) key).trans
   suffices h : atTop.limsup v = 0 by
-    have := @limsup_add_le_add_limsup ℕ atTop u v
+    have := @limsup_add_le ℕ atTop u v
     rw [h, add_zero] at this
     specialize this (Or.inr EReal.zero_ne_top) (Or.inr EReal.zero_ne_bot)
     exact this.trans_eq (limsup_const (log (coverMincard T F U n) / n))

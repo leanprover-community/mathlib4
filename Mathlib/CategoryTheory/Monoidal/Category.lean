@@ -124,7 +124,7 @@ scoped notation "𝟙_ " C:max => (MonoidalCategoryStruct.tensorUnit : C)
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Used to ensure that `𝟙_` notation is used, as the ascription makes this not automatic. -/
-@[delab app.CategoryTheory.MonoidalCategoryStruct.tensorUnit]
+@[app_delab CategoryTheory.MonoidalCategoryStruct.tensorUnit]
 def delabTensorUnit : Delab := whenPPOption getPPNotation <| withOverApp 3 do
   let e ← getExpr
   guard <| e.isAppOfArity ``MonoidalCategoryStruct.tensorUnit 3
@@ -404,7 +404,7 @@ theorem inv_tensor {W X Y Z : C} (f : W ⟶ X) [IsIso f] (g : Y ⟶ Z) [IsIso g]
     inv (f ⊗ g) = inv f ⊗ inv g := by
   simp [tensorHom_def ,whisker_exchange]
 
-variable {U V W X Y Z : C}
+variable {W X Y Z : C}
 
 theorem whiskerLeft_dite {P : Prop} [Decidable P]
     (X : C) {Y Z : C} (f : P → (Y ⟶ Z)) (f' : ¬P → (Y ⟶ Z)) :

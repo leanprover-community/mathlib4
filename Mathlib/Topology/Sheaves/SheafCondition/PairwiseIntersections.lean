@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Category.Pairwise
 import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!
@@ -273,10 +272,10 @@ theorem isSheaf_iff_isSheafPreservesLimitPairwiseIntersections :
   rw [isSheaf_iff_isSheafPairwiseIntersections]
   constructor
   · intro h ι U
-    exact ⟨preservesLimitOfPreservesLimitCone (Pairwise.coconeIsColimit U).op (h U).some⟩
+    exact ⟨preservesLimit_of_preserves_limit_cone (Pairwise.coconeIsColimit U).op (h U).some⟩
   · intro h ι U
     haveI := (h U).some
-    exact ⟨PreservesLimit.preserves (Pairwise.coconeIsColimit U).op⟩
+    exact ⟨isLimitOfPreserves _ (Pairwise.coconeIsColimit U).op⟩
 
 end TopCat.Presheaf
 
@@ -344,7 +343,7 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
   rcases j with (⟨⟨_ | _⟩⟩ | ⟨⟨_ | _⟩, ⟨_⟩⟩) <;>
   rcases g with ⟨⟩ <;>
   dsimp [Pairwise.diagram] <;>
-  simp only [Category.id_comp, s.condition, CategoryTheory.Functor.map_id, Category.comp_id]
+  simp only [ι, Category.id_comp, s.condition, CategoryTheory.Functor.map_id, Category.comp_id]
   rw [← cancel_mono (F.1.map (eqToHom <| inf_comm U V : U ⊓ V ⟶ _).op), Category.assoc,
     Category.assoc, ← F.1.map_comp, ← F.1.map_comp]
   exact s.condition.symm

@@ -32,7 +32,7 @@ and morphisms `C`-morphisms `Y ⟶ Y'` making the obvious triangle commute.
 -/
 -- We explicitly come from `PUnit.{1}` here to obtain the correct universe for morphisms of
 -- structured arrows.
--- Porting note(#5171): linter not ported yet
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
 -- @[nolint has_nonempty_instance]
 def StructuredArrow (S : D) (T : C ⥤ D) :=
   Comma (Functor.fromPUnit.{0} S) T
@@ -91,7 +91,7 @@ theorem eqToHom_right {X Y : StructuredArrow S T} (h : X = Y) :
   simp only [eqToHom_refl, id_right]
 
 @[simp]
-theorem left_eq_id {X Y : StructuredArrow S T} (f : X ⟶ Y) : f.left = 𝟙 _ := rfl
+theorem left_eq_id {X Y : StructuredArrow S T} (f : X ⟶ Y) : f.left = 𝟙 X.left := rfl
 
 /-- To construct a morphism of structured arrows,
 we need a morphism of the objects underlying the target,
@@ -100,7 +100,7 @@ and to check that the triangle commutes.
 @[simps]
 def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right)
     (w : f.hom ≫ T.map g = f'.hom := by aesop_cat) : f ⟶ f' where
-  left := 𝟙 _
+  left := 𝟙 f.left
   right := g
   w := by
     dsimp
@@ -329,6 +329,11 @@ noncomputable instance isEquivalenceMap₂
 
 end
 
+/-- `StructuredArrow.post` is a special case of `StructuredArrow.map₂` up to natural isomorphism. -/
+def postIsoMap₂ (S : C) (F : B ⥤ C) (G : C ⥤ D) :
+    post S F G ≅ map₂ (F := 𝟭 _) (𝟙 _) (𝟙 (F ⋙ G)) :=
+  NatIso.ofComponents fun _ => isoMk <| Iso.refl _
+
 /-- A structured arrow is called universal if it is initial. -/
 abbrev IsUniversal (f : StructuredArrow S T) := IsInitial f
 
@@ -374,7 +379,7 @@ and morphisms `C`-morphisms `Y ⟶ Y'` making the obvious triangle commute.
 -/
 -- We explicitly come from `PUnit.{1}` here to obtain the correct universe for morphisms of
 -- costructured arrows.
--- @[nolint has_nonempty_instance] -- Porting note(#5171): linter not ported yet
+-- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
 def CostructuredArrow (S : C ⥤ D) (T : D) :=
   Comma S (Functor.fromPUnit.{0} T)
 
@@ -431,7 +436,7 @@ theorem eqToHom_left {X Y : CostructuredArrow S T} (h : X = Y) :
   simp only [eqToHom_refl, id_left]
 
 @[simp]
-theorem right_eq_id {X Y : CostructuredArrow S T} (f : X ⟶ Y) : f.right = 𝟙 _ := rfl
+theorem right_eq_id {X Y : CostructuredArrow S T} (f : X ⟶ Y) : f.right = 𝟙 X.right := rfl
 
 /-- To construct a morphism of costructured arrows,
 we need a morphism of the objects underlying the source,
@@ -441,7 +446,7 @@ and to check that the triangle commutes.
 def homMk {f f' : CostructuredArrow S T} (g : f.left ⟶ f'.left)
     (w : S.map g ≫ f'.hom = f.hom := by aesop_cat) : f ⟶ f' where
   left := g
-  right := 𝟙 _
+  right := 𝟙 f.right
 
 /- Porting note: it appears the simp lemma is not getting generated but the linter
 picks up on it. Either way simp can prove this -/
@@ -665,6 +670,12 @@ noncomputable instance isEquivalenceMap₂
 
 end
 
+/-- `CostructuredArrow.post` is a special case of `CostructuredArrow.map₂` up to natural
+isomorphism. -/
+def postIsoMap₂ (S : C) (F : B ⥤ C) (G : C ⥤ D) :
+    post F G S ≅ map₂ (F := 𝟭 _) (𝟙 (F ⋙ G)) (𝟙 _) :=
+  NatIso.ofComponents fun _ => isoMk <| Iso.refl _
+
 /-- A costructured arrow is called universal if it is terminal. -/
 abbrev IsUniversal (f : CostructuredArrow S T) := IsTerminal f
 
@@ -875,7 +886,7 @@ variable {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) {G : D ⥤ E} {e : E}
 
 /-- The functor establishing the equivalence `StructuredArrow.preEquivalence`. -/
 @[simps!]
-def StructuredArrow.preEquivalence.functor (f : StructuredArrow e G) :
+def StructuredArrow.preEquivalenceFunctor (f : StructuredArrow e G) :
     StructuredArrow f (pre e F G) ⥤ StructuredArrow f.right F where
   obj g := mk g.hom.right
   map φ := homMk φ.right.right <| by
@@ -886,7 +897,7 @@ def StructuredArrow.preEquivalence.functor (f : StructuredArrow e G) :
 
 /-- The inverse functor establishing the equivalence `StructuredArrow.preEquivalence`. -/
 @[simps!]
-def StructuredArrow.preEquivalence.inverse (f : StructuredArrow e G) :
+def StructuredArrow.preEquivalenceInverse (f : StructuredArrow e G) :
     StructuredArrow f.right F ⥤ StructuredArrow f (pre e F G) where
   obj g := mk
             (Y := mk (Y := g.right)
@@ -898,12 +909,22 @@ def StructuredArrow.preEquivalence.inverse (f : StructuredArrow e G) :
 
 /-- A structured arrow category on a `StructuredArrow.pre e F G` functor is equivalent to the
 structured arrow category on F -/
+@[simps]
 def StructuredArrow.preEquivalence (f : StructuredArrow e G) :
     StructuredArrow f (pre e F G) ≌ StructuredArrow f.right F where
-  functor := StructuredArrow.preEquivalence.functor F f
-  inverse := StructuredArrow.preEquivalence.inverse F f
+  functor := preEquivalenceFunctor F f
+  inverse := preEquivalenceInverse F f
   unitIso := NatIso.ofComponents (fun _ => isoMk (isoMk (Iso.refl _)))
   counitIso := NatIso.ofComponents (fun _ => isoMk (Iso.refl _))
+
+/-- The functor `StructuredArrow d T ⥤ StructuredArrow e (T ⋙ S)` that `u : e ⟶ S.obj d`
+induces via `StructuredArrow.map₂` can be expressed up to isomorphism by
+`StructuredArrow.preEquivalence` and `StructuredArrow.proj`. -/
+def StructuredArrow.map₂IsoPreEquivalenceInverseCompProj (T : C ⥤ D) (S : D ⥤ E) (d : D) (e : E)
+    (u : e ⟶ S.obj d) :
+    map₂ (F := 𝟭 _) u (𝟙 (T ⋙ S)) ≅
+      (preEquivalence T (mk u)).inverse ⋙ proj (mk u) (pre _ T S) :=
+  NatIso.ofComponents fun _ => isoMk (Iso.refl _)
 
 /-- The functor establishing the equivalence `CostructuredArrow.preEquivalence`. -/
 @[simps!]
@@ -929,10 +950,19 @@ def CostructuredArrow.preEquivalence.inverse (f : CostructuredArrow G e) :
 costructured arrow category on F -/
 def CostructuredArrow.preEquivalence (f : CostructuredArrow G e) :
     CostructuredArrow (pre F G e) f ≌ CostructuredArrow F f.left where
-  functor := CostructuredArrow.preEquivalence.functor F f
-  inverse := CostructuredArrow.preEquivalence.inverse F f
+  functor := preEquivalence.functor F f
+  inverse := preEquivalence.inverse F f
   unitIso := NatIso.ofComponents (fun _ => isoMk (isoMk (Iso.refl _)))
   counitIso := NatIso.ofComponents (fun _ => isoMk (Iso.refl _))
+
+/-- The functor `CostructuredArrow T d ⥤ CostructuredArrow (T ⋙ S) e` that `u : S.obj d ⟶ e`
+induces via `CostructuredArrow.map₂` can be expressed up to isomorphism by
+`CostructuredArrow.preEquivalence` and `CostructuredArrow.proj`. -/
+def CostructuredArrow.map₂IsoPreEquivalenceInverseCompProj (T : C ⥤ D) (S : D ⥤ E) (d : D) (e : E)
+    (u : S.obj d ⟶ e) :
+    map₂ (F := 𝟭 _) (U := T ⋙ S) (𝟙 (T ⋙ S)) u ≅
+      (preEquivalence T (mk u)).inverse ⋙ proj (pre T S _) (mk u) :=
+  NatIso.ofComponents fun _ => isoMk (Iso.refl _)
 
 end Pre
 
