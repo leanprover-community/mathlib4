@@ -184,20 +184,19 @@ theorem iterToSum_X (b : S₁) : iterToSum R S₁ S₂ (X b) = X (Sum.inl b) :=
 theorem iterToSum_C_X (c : S₂) : iterToSum R S₁ S₂ (C (X c)) = X (Sum.inr c) :=
   Eq.trans (eval₂_C _ _ (X c)) (eval₂_X _ _ _)
 
+section isEmptyRingEquiv
+variable [IsEmpty σ]
+
 variable (σ) in
 /-- The algebra isomorphism between multivariable polynomials in no variables
 and the ground ring. -/
-@[simps!]
-def isEmptyAlgEquiv [he : IsEmpty σ] : MvPolynomial σ R ≃ₐ[R] R :=
-  AlgEquiv.ofAlgHom (aeval (IsEmpty.elim he)) (Algebra.ofId _ _)
-    (by ext)
-    (by
-      ext i m
-      exact IsEmpty.elim' he i)
+@[simps! apply]
+def isEmptyAlgEquiv : MvPolynomial σ R ≃ₐ[R] R :=
+  .ofAlgHom (aeval isEmptyElim) (Algebra.ofId _ _) (by ext) (by ext i m; exact isEmptyElim i)
 
 variable {R S₁} in
 @[simp]
-lemma aeval_injective_iff_of_isEmpty [IsEmpty σ] [CommSemiring S₁] [Algebra R S₁] {f : σ → S₁} :
+lemma aeval_injective_iff_of_isEmpty [CommSemiring S₁] [Algebra R S₁] {f : σ → S₁} :
     Function.Injective (aeval f : MvPolynomial σ R →ₐ[R] S₁) ↔
       Function.Injective (algebraMap R S₁) := by
   have : aeval f = (Algebra.ofId R S₁).comp (@isEmptyAlgEquiv R σ _ _).toAlgHom := by
@@ -206,16 +205,13 @@ lemma aeval_injective_iff_of_isEmpty [IsEmpty σ] [CommSemiring S₁] [Algebra R
   rw [this, ← Injective.of_comp_iff' _ (@isEmptyAlgEquiv R σ _ _).bijective]
   rfl
 
-section isEmptyRingEquiv
-variable [IsEmpty σ]
-
 variable (σ) in
 /-- The ring isomorphism between multivariable polynomials in no variables
 and the ground ring. -/
-@[simps!]
+@[simps! apply]
 def isEmptyRingEquiv : MvPolynomial σ R ≃+* R := (isEmptyAlgEquiv R σ).toRingEquiv
 
-@[simp] lemma isEmptyRingEquiv_toRingHom : (isEmptyRingEquiv R σ).symm.toRingHom = C := rfl
+lemma isEmptyRingEquiv_symm_toRingHom : (isEmptyRingEquiv R σ).symm.toRingHom = C := rfl
 @[simp] lemma isEmptyRingEquiv_symm_apply (r : R) : (isEmptyRingEquiv R σ).symm r = C r := rfl
 
 lemma isEmptyRingEquiv_eq_coeff_zero {σ R : Type*} [CommSemiring R] [IsEmpty σ] {x} :
@@ -287,7 +283,7 @@ noncomputable
 def commAlgEquiv : MvPolynomial S₁ (MvPolynomial S₂ R) ≃ₐ[R] MvPolynomial S₂ (MvPolynomial S₁ R) :=
   (sumAlgEquiv R S₁ S₂).symm.trans <| (renameEquiv _ (.sumComm S₁ S₂)).trans (sumAlgEquiv R S₂ S₁)
 
-lemma commAlgEquiv_C (p) : commAlgEquiv R S₁ S₂ (.C p) = .map C p := by
+@[simp] lemma commAlgEquiv_C (p) : commAlgEquiv R S₁ S₂ (.C p) = .map C p := by
   suffices (commAlgEquiv R S₁ S₂).toAlgHom.comp
       (IsScalarTower.toAlgHom R (MvPolynomial S₂ R) _) = mapAlgHom (Algebra.ofId _ _) by
     exact DFunLike.congr_fun this p
@@ -296,7 +292,7 @@ lemma commAlgEquiv_C (p) : commAlgEquiv R S₁ S₂ (.C p) = .map C p := by
 
 lemma commAlgEquiv_C_X (i) : commAlgEquiv R S₁ S₂ (.C (.X i)) = .X i := by simp [commAlgEquiv_C]
 
-lemma commAlgEquiv_X (i) : commAlgEquiv R S₁ S₂ (.X i) = .C (.X i) := by simp [commAlgEquiv]
+@[simp] lemma commAlgEquiv_X (i) : commAlgEquiv R S₁ S₂ (.X i) = .C (.X i) := by simp [commAlgEquiv]
 
 end commAlgEquiv
 
