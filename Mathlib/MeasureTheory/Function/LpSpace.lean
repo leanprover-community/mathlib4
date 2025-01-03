@@ -1296,13 +1296,9 @@ end MeasureTheory
 
 namespace ContinuousLinearMap
 
-variable {𝕜 D E F G : Type*} [NontriviallyNormedField 𝕜] [MeasurableSpace D]
-  [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-  [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-  [NormedAddCommGroup G] [NormedSpace 𝕜 G]
-  {p q r : ℝ≥0∞} {μ : Measure D}
-
-variable (L : E →L[𝕜] F →L[𝕜] G) (hpqr : p⁻¹ + q⁻¹ = r⁻¹)
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+  [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
+  {p q r : ℝ≥0∞} (L : E →L[𝕜] F →L[𝕜] G) (hpqr : p⁻¹ + q⁻¹ = r⁻¹)
 
 /-- Given `f` in `L^p` and `g` in `L^q`, the composition with a continuous bilinear map
 `fun x ↦ L (f x) (g x)` is in `L^r` where `r⁻¹ = p⁻¹ + q⁻¹`. -/
@@ -1327,7 +1323,7 @@ theorem nnnorm_bilinearCompLp_le (f : Lp E p μ) (g : Lp F q μ) :
   refine ENNReal.toNNReal_mono ?_ ?_
   · exact ENNReal.mul_ne_top ENNReal.coe_ne_top
       (ENNReal.mul_ne_top (Lp.eLpNorm_ne_top f) (Lp.eLpNorm_ne_top g))
-  · rw [eLpNorm_congr_ae (coeFn_bilinearCompLp _ _ _ _), ← mul_assoc]
+  · rw [eLpNorm_congr_ae (coeFn_bilinearCompLp L _ f g), ← mul_assoc]
     exact eLpNorm_le_eLpNorm_mul_eLpNorm'_of_norm' (Lp.aestronglyMeasurable f)
       (Lp.aestronglyMeasurable g) (L · ·) ‖L‖₊ (.of_forall fun x ↦ L.le_opNorm₂ (f x) (g x))
       (by simpa using hpqr.symm)
@@ -1335,10 +1331,10 @@ theorem nnnorm_bilinearCompLp_le (f : Lp E p μ) (g : Lp F q μ) :
 theorem norm_bilinearCompLp_le (f : Lp E p μ) (g : Lp F q μ) :
     ‖L.bilinearCompLp hpqr f g‖ ≤ ‖L‖ * ‖f‖ * ‖g‖ := L.nnnorm_bilinearCompLp_le hpqr f g
 
-variable (𝕜 μ) in
+variable (𝕜) in
 /-- Given `f` in `L^p` and `g` in `L^q`, obtain the composition with a continuous bilinear map
 `x ↦ L (f x) (g x)` in `L^r` as a bilinear map in `f` and `g`. -/
-def bilinearCompLpₗ : Lp E p μ →ₗ[𝕜] Lp F q μ →ₗ[𝕜] Lp G r μ :=
+def bilinearCompLpₗ (μ : Measure α := by volume_tac) : Lp E p μ →ₗ[𝕜] Lp F q μ →ₗ[𝕜] Lp G r μ :=
   LinearMap.mk₂ 𝕜 (L.bilinearCompLp hpqr)
     (fun f₁ f₂ g ↦ by
       ext
@@ -1367,42 +1363,42 @@ def bilinearCompLpₗ : Lp E p μ →ₗ[𝕜] Lp F q μ →ₗ[𝕜] Lp G r μ 
         with a ha1 ha2 ha3 ha4
       simp only [ha1, ha2, ha3, ha4, Pi.smul_apply, ContinuousLinearMap.map_smul])
 
-variable (𝕜 μ) in
+variable (𝕜) in
 /-- Given `f` in `L^p` and `g` in `L^q`, obtain the composition with a continuous bilinear map
 `x ↦ L (f x) (g x)` in `L^r` as a continuous bilinear map in `f` and `g`. -/
-def bilinearCompLpL [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)] :
+def bilinearCompLpL (μ : Measure α := by volume_tac) [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)] :
     Lp E p μ →L[𝕜] Lp F q μ →L[𝕜] Lp G r μ :=
-  (L.bilinearCompLpₗ 𝕜 μ hpqr).mkContinuous₂ ‖L‖ (L.norm_bilinearCompLp_le hpqr)
+  (L.bilinearCompLpₗ 𝕜 hpqr μ).mkContinuous₂ ‖L‖ (L.norm_bilinearCompLp_le hpqr)
 
 theorem coeFn_bilinearCompLpₗ (f : Lp E p μ) (g : Lp F q μ) :
-    L.bilinearCompLpₗ 𝕜 μ hpqr f g =ᵐ[μ] fun x ↦ L (f x) (g x) := L.coeFn_bilinearCompLp hpqr f g
+    L.bilinearCompLpₗ 𝕜 hpqr μ f g =ᵐ[μ] fun x ↦ L (f x) (g x) := L.coeFn_bilinearCompLp hpqr f g
 
 theorem coeFn_bilinearCompLpL [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)] (f : Lp E p μ)
-    (g : Lp F q μ) : L.bilinearCompLpL 𝕜 μ hpqr f g =ᵐ[μ] fun x ↦ L (f x) (g x) :=
+    (g : Lp F q μ) : L.bilinearCompLpL 𝕜 hpqr μ f g =ᵐ[μ] fun x ↦ L (f x) (g x) :=
   L.coeFn_bilinearCompLp hpqr f g
 
 theorem norm_bilinearCompLpL_le [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)] :
-    ‖L.bilinearCompLpL 𝕜 μ hpqr‖ ≤ ‖L‖ :=
+    ‖L.bilinearCompLpL 𝕜 hpqr μ‖ ≤ ‖L‖ :=
   LinearMap.mkContinuous₂_norm_le _ (norm_nonneg L) (L.norm_bilinearCompLp_le hpqr)
 
 variable (𝕜) in
 /-- Bilinear composition `L (f x) (g x)` as a continuous linear map in `g`, with `f` constant.
 Does not inherit `noncomputable` from `LinearMap.mkContinuous₂`. -/
 def bilinearRightLpL [Fact (1 ≤ q)] [Fact (1 ≤ r)] (f : Lp E p μ) : Lp F q μ →L[𝕜] Lp G r μ :=
-  (L.bilinearCompLpₗ 𝕜 μ hpqr f).mkContinuous (‖L‖ * ‖f‖) (L.norm_bilinearCompLp_le hpqr f)
+  (L.bilinearCompLpₗ 𝕜 hpqr μ f).mkContinuous (‖L‖ * ‖f‖) (L.norm_bilinearCompLp_le hpqr f)
 
 variable (𝕜) in
 /-- Bilinear composition `L (f x) (g x)` as a continuous linear map in `f`, with `g` constant.
 Does not inherit `noncomputable` from `LinearMap.mkContinuous₂`. -/
 def bilinearLeftLpL [Fact (1 ≤ p)] [Fact (1 ≤ r)] (g : Lp F q μ) : Lp E p μ →L[𝕜] Lp G r μ :=
-  ((L.bilinearCompLpₗ 𝕜 μ hpqr).flip g).mkContinuous (‖L‖ * ‖g‖) fun f ↦
+  ((L.bilinearCompLpₗ 𝕜 hpqr μ).flip g).mkContinuous (‖L‖ * ‖g‖) fun f ↦
     (L.norm_bilinearCompLp_le hpqr f g).trans_eq (mul_right_comm _ _ _)
 
 theorem bilinearRightLpL_eq_bilinearCompLpL_apply [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
-    (f : Lp E p μ): L.bilinearRightLpL 𝕜 hpqr f = L.bilinearCompLpL 𝕜 μ hpqr f := rfl
+    (f : Lp E p μ): L.bilinearRightLpL 𝕜 hpqr f = L.bilinearCompLpL 𝕜 hpqr μ f := rfl
 
 theorem bilinearLeftLpL_eq_bilinearCompLpL_flip_apply [Fact (1 ≤ p)] [Fact (1 ≤ q)] [Fact (1 ≤ r)]
-    (g : Lp F q μ) : L.bilinearLeftLpL 𝕜 hpqr g = (L.bilinearCompLpL 𝕜 μ hpqr).flip g := rfl
+    (g : Lp F q μ) : L.bilinearLeftLpL 𝕜 hpqr g = (L.bilinearCompLpL 𝕜 hpqr μ).flip g := rfl
 
 theorem coeFn_bilinearRightLpL [Fact (1 ≤ q)] [Fact (1 ≤ r)] (f : Lp E p μ) (g : Lp F q μ) :
     L.bilinearRightLpL 𝕜 hpqr f g =ᵐ[μ] fun x ↦ L (f x) (g x) := L.coeFn_bilinearCompLp hpqr f g
