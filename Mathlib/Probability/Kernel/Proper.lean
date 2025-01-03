@@ -11,7 +11,7 @@ import Mathlib.Probability.Kernel.Basic
 This file defines properness of measure kernels.
 
 For two σ-algebras `𝓑 ≤ 𝓧`, a `𝓑, 𝓧`-kernel `π : X → Measure X` is proper if
-`∫ x, f x * g x ∂(π x₀) = g x₀ * ∫ x, f x ∂(π x₀)` for all `x₀ : X`, `𝓧`-measurable function `f`
+`∫ x, g x * f x ∂(π x₀) = g x₀ * ∫ x, f x ∂(π x₀)` for all `x₀ : X`, `𝓧`-measurable function `f`
 and `𝓑`-measurable function `g`.
 
 By the standard machine, this is equivalent to having that, for all `B ∈ 𝓑`, `π` restricted to `B`
@@ -33,7 +33,7 @@ variable {X : Type*} {𝓑 𝓧 : MeasurableSpace X} {π : Kernel[𝓑, 𝓧] X 
   {f g : X → ℝ≥0∞} {x₀ : X}
 
 /-- For two σ-algebras `𝓑 ≤ 𝓧` on a space `X`, a `𝓑, 𝓧`-kernel `π : X → Measure X` is proper if
-`∫ x, f x * g x ∂(π x₀) = g x₀ * ∫ x, f x ∂(π x₀)` for all `x₀ : X`, `𝓧`-measurable function `f`
+`∫ x, g x * f x ∂(π x₀) = g x₀ * ∫ x, f x ∂(π x₀)` for all `x₀ : X`, `𝓧`-measurable function `f`
 and `𝓑`-measurable function `g`.
 
 By the standard machine, this is equivalent to having that, for all `B ∈ 𝓑`, `π` restricted to `B`
@@ -89,27 +89,27 @@ private lemma IsProper.lintegral_indicator_mul_indicator (hπ : IsProper π) (h�
 set_option linter.style.multiGoal false in -- false positive
 /-- Auxiliary lemma for `IsProper.lintegral_mul` and
 `IsProper.setLIntegral_eq_indicator_mul_lintegral`. -/
-private lemma IsProper.lintegral_mul_indicator (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧)
+private lemma IsProper.lintegral_indicator_mul (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧)
     (hf : Measurable[𝓧] f) (hB : MeasurableSet[𝓑] B) :
-    ∫⁻ x, f x * B.indicator 1 x ∂(π x₀) = B.indicator 1 x₀ * ∫⁻ x, f x ∂(π x₀) := by
+    ∫⁻ x, B.indicator 1 x * f x ∂(π x₀) = B.indicator 1 x₀ * ∫⁻ x, f x ∂(π x₀) := by
   refine hf.ennreal_induction ?_ ?_ ?_
   · rintro c A hA
-    simp_rw [← smul_indicator_one_apply, smul_mul_assoc, mul_comm, smul_eq_mul]
+    simp_rw [← smul_indicator_one_apply, mul_smul_comm, smul_eq_mul]
     rw [lintegral_const_mul, lintegral_const_mul, hπ.lintegral_indicator_mul_indicator h𝓑𝓧 hA hB,
       mul_left_comm] <;> measurability
   · rintro f₁ f₂ - _ _ hf₁ hf₂
-    simp only [Pi.add_apply, add_mul]
+    simp only [Pi.add_apply, mul_add]
     rw [lintegral_add_right, lintegral_add_right, hf₁, hf₂, mul_add] <;> measurability
   · rintro f' hf'_meas hf'_mono hf'
-    simp_rw [ENNReal.iSup_mul]
+    simp_rw [ENNReal.mul_iSup]
     rw [lintegral_iSup (by measurability), lintegral_iSup hf'_meas hf'_mono, ENNReal.mul_iSup]
     simp_rw [hf']
-    · exact hf'_mono.mul_const (zero_le _)
+    · exact hf'_mono.const_mul (zero_le _)
 
 lemma IsProper.setLIntegral_eq_indicator_mul_lintegral (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧)
     (hf : Measurable[𝓧] f) (hB : MeasurableSet[𝓑] B) (x₀ : X) :
     ∫⁻ x in B, f x ∂(π x₀) = B.indicator 1 x₀ * ∫⁻ x, f x ∂(π x₀) := by
-  simp [← hπ.lintegral_mul_indicator h𝓑𝓧 hf hB, ← indicator_mul_right,
+  simp [← hπ.lintegral_indicator_mul h𝓑𝓧 hf hB, ← indicator_mul_left,
     lintegral_indicator (h𝓑𝓧 _ hB)]
 
 lemma IsProper.setLIntegral_inter_eq_indicator_mul_setLIntegral (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧)
@@ -120,20 +120,20 @@ lemma IsProper.setLIntegral_inter_eq_indicator_mul_setLIntegral (hπ : IsProper 
 
 lemma IsProper.lintegral_mul (hπ : IsProper π) (h𝓑𝓧 : 𝓑 ≤ 𝓧) (hf : Measurable[𝓧] f)
     (hg : Measurable[𝓑] g) (x₀ : X) :
-    ∫⁻ x, f x * g x ∂(π x₀) = g x₀ * ∫⁻ x, f x ∂(π x₀) := by
+    ∫⁻ x, g x * f x ∂(π x₀) = g x₀ * ∫⁻ x, f x ∂(π x₀) := by
   refine hg.ennreal_induction ?_ ?_ ?_
   · rintro c A hA
-    simp_rw [← smul_indicator_one_apply, mul_smul_comm, smul_eq_mul]
-    rw [lintegral_const_mul, hπ.lintegral_mul_indicator h𝓑𝓧 hf hA, mul_assoc]
+    simp_rw [← smul_indicator_one_apply, smul_mul_assoc, smul_eq_mul]
+    rw [lintegral_const_mul, hπ.lintegral_indicator_mul h𝓑𝓧 hf hA]
     · measurability
   · rintro g₁ g₂ - _ hg₂_meas hg₁ hg₂
     simp only [Pi.add_apply, mul_add, add_mul]
     rw [lintegral_add_right, hg₁, hg₂]
-    · exact hf.mul (hg₂_meas.mono h𝓑𝓧 le_rfl)
+    · exact (hg₂_meas.mono h𝓑𝓧 le_rfl).mul hf
   · rintro g' hg'_meas hg'_mono hg'
-    simp_rw [ENNReal.iSup_mul, ENNReal.mul_iSup]
-    rw [lintegral_iSup (fun n ↦ hf.mul ((hg'_meas _).mono h𝓑𝓧 le_rfl))
-      (hg'_mono.const_mul (zero_le _))]
+    simp_rw [ENNReal.iSup_mul]
+    rw [lintegral_iSup (fun n ↦ ((hg'_meas _).mono h𝓑𝓧 le_rfl).mul hf)
+      (hg'_mono.mul_const (zero_le _))]
     simp_rw [hg']
 
 end ProbabilityTheory.Kernel
