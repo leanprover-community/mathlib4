@@ -442,7 +442,7 @@ theorem closure_subset {s t : Set G} (ht : IsSubgroup t) (h : s ⊆ t) : closure
 theorem closure_subset_iff {s t : Set G} (ht : IsSubgroup t) : closure s ⊆ t ↔ s ⊆ t :=
   ⟨fun h _ ha => h (mem_closure ha), fun h _ ha => closure_subset ht h ha⟩
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem closure_mono {s t : Set G} (h : s ⊆ t) : closure s ⊆ closure t :=
   closure_subset (closure.isSubgroup _) <| Set.Subset.trans h subset_closure
 

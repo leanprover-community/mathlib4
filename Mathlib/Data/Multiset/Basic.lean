@@ -3,13 +3,14 @@ Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Nat
+import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Nat.Basic
 import Mathlib.Algebra.Order.Sub.Unbundled.Basic
+import Mathlib.Data.List.Perm.Basic
+import Mathlib.Data.List.Perm.Lattice
 import Mathlib.Data.List.Perm.Subperm
 import Mathlib.Data.Set.List
 import Mathlib.Order.Hom.Basic
-import Mathlib.Data.List.Perm.Lattice
-import Mathlib.Data.List.Perm.Basic
 
 /-!
 # Multisets
@@ -1719,15 +1720,10 @@ def filter (s : Multiset α) : Multiset α :=
 theorem filter_zero : filter p 0 = 0 :=
   rfl
 
-#adaptation_note
-/--
-Please re-enable the linter once we moved to `nightly-2024-06-22` or later.
--/
-set_option linter.deprecated false in
 @[congr]
 theorem filter_congr {p q : α → Prop} [DecidablePred p] [DecidablePred q] {s : Multiset α} :
     (∀ x ∈ s, p x ↔ q x) → filter p s = filter q s :=
-  Quot.inductionOn s fun _l h => congr_arg ofList <| filter_congr' <| by simpa using h
+  Quot.inductionOn s fun _l h => congr_arg ofList <| List.filter_congr <| by simpa using h
 
 @[simp]
 theorem filter_add (s t : Multiset α) : filter p (s + t) = filter p s + filter p t :=

@@ -157,6 +157,10 @@ lemma RespectsIso.precomp (P : MorphismProperty C) [P.RespectsIso] {X Y Z : C} (
     [IsIso e] (f : Y ⟶ Z) (hf : P f) : P (e ≫ f) :=
   RespectsLeft.precomp (Q := isomorphisms C) e ‹IsIso e› f hf
 
+instance : RespectsIso (⊤ : MorphismProperty C) where
+  precomp _ _ _ _ := trivial
+  postcomp _ _ _ _ := trivial
+
 lemma RespectsIso.postcomp (P : MorphismProperty C) [P.RespectsIso] {X Y Z : C} (e : Y ⟶ Z)
     [IsIso e] (f : X ⟶ Y) (hf : P f) : P (f ≫ e) :=
   RespectsRight.postcomp (Q := isomorphisms C) e ‹IsIso e› f hf

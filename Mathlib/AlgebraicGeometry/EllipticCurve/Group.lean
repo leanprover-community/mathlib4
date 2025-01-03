@@ -62,6 +62,7 @@ elliptic curve, group law, class group
 -/
 
 open Ideal nonZeroDivisors Polynomial
+open scoped Polynomial.Bivariate
 
 local macro "C_simp" : tactic =>
   `(tactic| simp only [map_ofNat, C_0, C_1, C_neg, C_add, C_sub, C_mul, C_pow])

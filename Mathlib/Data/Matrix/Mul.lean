@@ -880,6 +880,18 @@ theorem submatrix_mulVec_equiv [Fintype n] [Fintype o] [NonUnitalNonAssocSemirin
     M.submatrix e₁ e₂ *ᵥ v = (M *ᵥ (v ∘ e₂.symm)) ∘ e₁ :=
   funext fun _ => Eq.symm (dotProduct_comp_equiv_symm _ _ _)
 
+@[simp]
+theorem submatrix_id_mul_left [Fintype n] [Fintype o] [Mul α] [AddCommMonoid α] {p : Type*}
+    (M : Matrix m n α) (N : Matrix o p α) (e₁ : l → m) (e₂ : n ≃ o) :
+    M.submatrix e₁ id * N.submatrix e₂ id = M.submatrix e₁ e₂.symm * N := by
+  ext; simp [mul_apply, ← e₂.bijective.sum_comp]
+
+@[simp]
+theorem submatrix_id_mul_right [Fintype n] [Fintype o] [Mul α] [AddCommMonoid α] {p : Type*}
+    (M : Matrix m n α) (N : Matrix o p α) (e₁ : l → p) (e₂ : o ≃ n) :
+    M.submatrix id e₂ * N.submatrix id e₁ = M * N.submatrix e₂.symm e₁ := by
+  ext; simp [mul_apply, ← e₂.bijective.sum_comp]
+
 theorem submatrix_vecMul_equiv [Fintype l] [Fintype m] [NonUnitalNonAssocSemiring α]
     (M : Matrix m n α) (v : l → α) (e₁ : l ≃ m) (e₂ : o → n) :
     v ᵥ* M.submatrix e₁ e₂ = ((v ∘ e₁.symm) ᵥ* M) ∘ e₂ :=

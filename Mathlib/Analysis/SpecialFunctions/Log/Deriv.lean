@@ -24,7 +24,7 @@ logarithm, derivative
 
 open Filter Finset Set
 
-open scoped Topology
+open scoped Topology ContDiff
 
 namespace Real
 
@@ -66,12 +66,13 @@ theorem deriv_log (x : ℝ) : deriv log x = x⁻¹ :=
 theorem deriv_log' : deriv log = Inv.inv :=
   funext deriv_log
 
-theorem contDiffOn_log {n : ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
-  suffices ContDiffOn ℝ ⊤ log {0}ᶜ from this.of_le le_top
+theorem contDiffOn_log {n : WithTop ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
+  suffices ContDiffOn ℝ ω log {0}ᶜ from this.of_le le_top
+  rw [← contDiffOn_infty_iff_contDiffOn_omega]
   refine (contDiffOn_top_iff_deriv_of_isOpen isOpen_compl_singleton).2 ?_
   simp [differentiableOn_log, contDiffOn_inv]
 
-theorem contDiffAt_log {n : ℕ∞} : ContDiffAt ℝ n log x ↔ x ≠ 0 :=
+theorem contDiffAt_log {n : WithTop ℕ∞} : ContDiffAt ℝ n log x ↔ x ≠ 0 :=
   ⟨fun h => continuousAt_log_iff.1 h.continuousAt, fun hx =>
     (contDiffOn_log x hx).contDiffAt <| IsOpen.mem_nhds isOpen_compl_singleton hx⟩
 

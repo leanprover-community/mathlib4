@@ -40,9 +40,9 @@ their defining property is invariant through shrinking. Injective
 functions are an example of how complicated it can get.
 -/
 
-universe u v w
+universe u v
 
-variable {α : Type u} {β : Type v} {γ : Sort w}
+variable {α : Type u} {β : Type v}
 
 namespace Plausible
 

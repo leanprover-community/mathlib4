@@ -731,7 +731,7 @@ theorem apply_mono {f g : α →𝒄 β} {x y : α} (h₁ : f ≤ g) (h₂ : x �
   OrderHom.apply_mono (show (f : α →o β) ≤ g from h₁) h₂
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-07-27")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-27")]
 theorem ite_continuous' {p : Prop} [hp : Decidable p] (f g : α → β) (hf : Continuous' f)
     (hg : Continuous' g) : Continuous' fun x => if p then f x else g x := by
   split_ifs <;> simp [*]
@@ -802,10 +802,10 @@ theorem seq_continuous' {β γ : Type v} (f : α → Part (β → γ)) (g : α �
   intro
   apply map_continuous' _ _ hg
 
+set_option linter.deprecated true
+
 theorem continuous (F : α →𝒄 β) (C : Chain α) : F (ωSup C) = ωSup (C.map F) :=
   F.ωScottContinuous.map_ωSup _
-
-set_option linter.deprecated true
 
 /-- Construct a continuous function from a bare function, a continuous function, and a proof that
 they are equal. -/

@@ -15,8 +15,6 @@ import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 * `Nat.instUniqueFactorizationMonoid`: the natural numbers have unique factorization
 -/
 
-variable {α : Type*}
-
 namespace Nat
 
 instance instWfDvdMonoid : WfDvdMonoid ℕ where

@@ -30,7 +30,7 @@ namespace Algebra
 
 namespace TensorProduct
 
-variable {R S A : Type*}
+variable {R A : Type*}
 
 section Basis
 

@@ -209,7 +209,7 @@ theorem det_permute' (σ : Perm n) (M : Matrix n n R) :
     (M.submatrix id σ).det = Perm.sign σ * M.det := by
   rw [← det_transpose, transpose_submatrix, det_permute, det_transpose]
 
-/-- Permuting rows and columns with the same equivalence has no effect. -/
+/-- Permuting rows and columns with the same equivalence does not change the determinant. -/
 @[simp]
 theorem det_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m R) :
     det (A.submatrix e e) = det A := by
@@ -221,6 +221,17 @@ theorem det_submatrix_equiv_self (e : n ≃ m) (A : Matrix m m R) :
   apply Fintype.prod_equiv e
   intro i
   rw [Equiv.permCongr_apply, Equiv.symm_apply_apply, submatrix_apply]
+
+/-- Permuting rows and columns with two equivalences does not change the absolute value of the
+determinant. -/
+@[simp]
+theorem abs_det_submatrix_equiv_equiv {R : Type*} [LinearOrderedCommRing R]
+    (e₁ e₂ : n ≃ m) (A : Matrix m m R) :
+    |(A.submatrix e₁ e₂).det| = |A.det| := by
+  have hee : e₂ = e₁.trans (e₁.symm.trans e₂) := by ext; simp
+  rw [hee]
+  show |((A.submatrix id (e₁.symm.trans e₂)).submatrix e₁ e₁).det| = |A.det|
+  rw [Matrix.det_submatrix_equiv_self, Matrix.det_permute', abs_mul, abs_unit_intCast, one_mul]
 
 /-- Reindexing both indices along the same equivalence preserves the determinant.
 

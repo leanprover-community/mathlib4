@@ -356,7 +356,6 @@ structure RightHomologyMapData where
 namespace RightHomologyMapData
 
 attribute [reassoc (attr := simp)] commp commg' commι
-attribute [nolint simpNF] mk.injEq
 
 /-- The right homology map data associated to the zero morphism between two short complexes. -/
 @[simps]

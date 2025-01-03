@@ -114,7 +114,7 @@ def StrictOrder.cof (r : α → α → Prop) : Cardinal :=
   Order.cof (swap rᶜ)
 
 /-- The set in the definition of `Order.StrictOrder.cof` is nonempty. -/
-@[deprecated (since := "2024-10-22")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-22")]
 theorem StrictOrder.cof_nonempty (r : α → α → Prop) [IsIrrefl α r] :
     { c | ∃ S : Set α, Unbounded r S ∧ #S = c }.Nonempty :=
   @Order.cof_nonempty α _ (IsRefl.swap rᶜ)
@@ -287,7 +287,6 @@ theorem lsub_lt_ord {ι} {f : ι → Ordinal} {c : Ordinal} (hι : #ι < c.cof) 
     (∀ i, f i < c) → lsub.{u, u} f < c :=
   lsub_lt_ord_lift (by rwa [(#ι).lift_id])
 
-set_option linter.deprecated false in
 theorem cof_iSup_le_lift {ι} {f : ι → Ordinal} (H : ∀ i, f i < iSup f) :
     cof (iSup f) ≤ Cardinal.lift.{v, u} #ι := by
   rw [← Ordinal.sup] at *

@@ -12,13 +12,17 @@ import Mathlib.Algebra.GroupWithZero.Units.Basic
 
 assert_not_exists DenselyOrdered
 
-variable {G₀ : Type*}
+variable {G₀ : Type*} [GroupWithZero G₀]
+
+/-- In a `GroupWithZero` `G₀`, the unit group `G₀ˣ` is equivalent to the subtype of nonzero
+elements. -/
+@[simps] def unitsEquivNeZero : G₀ˣ ≃ {a : G₀ // a ≠ 0} where
+  toFun a := ⟨a, a.ne_zero⟩
+  invFun a := Units.mk0 _ a.prop
+  left_inv _ := Units.ext rfl
+  right_inv _ := rfl
 
 namespace Equiv
-
-section GroupWithZero
-
-variable [GroupWithZero G₀]
 
 /-- Left multiplication by a nonzero element in a `GroupWithZero` is a permutation of the
 underlying type. -/
@@ -46,7 +50,5 @@ def divRight₀ (a : G₀) (ha : a ≠ 0) : G₀ ≃ G₀ where
   invFun := (· * a)
   left_inv _ := by simp [ha]
   right_inv _ := by simp [ha]
-
-end GroupWithZero
 
 end Equiv

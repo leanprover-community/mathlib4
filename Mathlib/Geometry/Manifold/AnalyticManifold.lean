@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Lee, Geoffrey Irving
 -/
 import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
+import Mathlib.Analysis.Calculus.ContDiff.Analytic
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 
 /-!

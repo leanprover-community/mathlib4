@@ -159,11 +159,23 @@ into the `lean-toolchain` file at the root directory of your project"
     IO.Process.exit 1
   return ()
 
+/-- Fetches the ProofWidgets cloud release and prunes non-JS files. -/
+def getProofWidgets (buildDir : FilePath) : IO Unit := do
+  if (← buildDir.pathExists) then return
+  -- Unpack the ProofWidgets cloud release (for its `.js` files)
+  let exitCode ← (← IO.Process.spawn {cmd := "lake", args := #["-q", "build", "proofwidgets:release"]}).wait
+  if exitCode != 0 then
+    throw <| IO.userError s!"Failed to fetch ProofWidgets cloud release: lake failed with error code {exitCode}"
+  -- prune non-js ProofWidgets files (e.g., `olean`, `.c`)
+  IO.FS.removeDirAll (buildDir / "lib")
+  IO.FS.removeDirAll (buildDir / "ir")
+
 /-- Downloads missing files, and unpacks files. -/
 def getFiles (hashMap : IO.HashMap) (forceDownload forceUnpack parallel decompress : Bool) :
     IO.CacheM Unit := do
   let isMathlibRoot ← IO.isMathlibRoot
-  if !isMathlibRoot then checkForToolchainMismatch
+  unless isMathlibRoot do checkForToolchainMismatch
+  getProofWidgets (← read).proofWidgetsBuildDir
   downloadFiles hashMap forceDownload parallel
   if decompress then
     IO.unpackCache hashMap forceUnpack

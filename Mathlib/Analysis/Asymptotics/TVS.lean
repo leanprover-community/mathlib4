@@ -125,7 +125,7 @@ lemma isLittleOTVS_one [ContinuousSMul 𝕜 E] {f : α → E} {l : Filter α} :
     rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
     obtain ⟨ε, hε₀, hε⟩ : ∃ ε : ℝ≥0, 0 < ε ∧ (ε * ‖c‖₊ / r : ℝ≥0∞) < 1 := by
       apply Eventually.exists_gt
-      refine eventually_lt_of_tendsto_lt zero_lt_one <| Continuous.tendsto' ?_ _ _ (by simp)
+      refine Continuous.tendsto' ?_ _ _ (by simp) |>.eventually_lt_const zero_lt_one
       fun_prop (disch := intros; first | apply ENNReal.coe_ne_top | positivity)
     filter_upwards [hr ε hε₀.ne'] with x hx
     refine mem_of_egauge_lt_one hUb (hx.trans_lt ?_)

@@ -710,7 +710,7 @@ theorem H1LequivOfIsTrivial_comp_H1_π [A.IsTrivial] :
 
 @[simp] theorem H1LequivOfIsTrivial_H1_π_apply_apply
     [A.IsTrivial] (f : oneCocycles A) (x : Additive G) :
-    H1LequivOfIsTrivial A (H1_π A f) x = f (Additive.toMul x) := rfl
+    H1LequivOfIsTrivial A (H1_π A f) x = f x.toMul := rfl
 
 @[simp] theorem H1LequivOfIsTrivial_symm_apply [A.IsTrivial] (f : Additive G →+ A) :
     (H1LequivOfIsTrivial A).symm f = H1_π A ((oneCocyclesLequivOfIsTrivial A).symm f) :=

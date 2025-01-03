@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Data.Nat.Choose.Basic
-import Mathlib.Data.List.Range
+import Mathlib.Data.List.FinRange
 import Mathlib.Data.List.Perm.Basic
+import Mathlib.Data.List.Lex
 
 /-! # sublists
 

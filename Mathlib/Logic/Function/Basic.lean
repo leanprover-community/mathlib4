@@ -8,6 +8,8 @@ import Mathlib.Logic.Basic
 import Mathlib.Logic.ExistsUnique
 import Mathlib.Logic.Nonempty
 import Batteries.Tactic.Init
+import Mathlib.Order.Defs.PartialOrder
+import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Miscellaneous function constructions and lemmas

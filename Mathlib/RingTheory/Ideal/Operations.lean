@@ -287,9 +287,7 @@ variable {R : Type u} [Semiring R]
 theorem add_eq_sup {I J : Ideal R} : I + J = I ⊔ J :=
   rfl
 
--- dsimp loops when applying this lemma to its LHS,
--- probably https://github.com/leanprover/lean4/pull/2867
-@[simp, nolint simpNF]
+@[simp]
 theorem zero_eq_bot : (0 : Ideal R) = ⊥ :=
   rfl
 
@@ -441,9 +439,7 @@ lemma sup_pow_add_le_pow_sup_pow {n m : ℕ} : (I ⊔ J) ^ (n + m) ≤ I ^ n ⊔
       ((Ideal.pow_le_pow_right hn).trans le_sup_left)))
   · refine (Ideal.mul_le_right.trans (Ideal.mul_le_left.trans
       ((Ideal.pow_le_pow_right ?_).trans le_sup_right)))
-    simp only [Finset.mem_range, Nat.lt_succ] at hi
-    rw [Nat.le_sub_iff_add_le hi]
-    nlinarith
+    omega
 
 variable (I J K)
 

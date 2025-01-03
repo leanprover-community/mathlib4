@@ -173,7 +173,7 @@ variable (x y : M)
 @[to_additive (attr := simp)]
 -- Porting note: removed dot notation
 theorem mrange_mk' : MonoidHom.mrange c.mk' = ⊤ :=
-  MonoidHom.mrange_eq_top_iff_surjective.2 mk'_surjective
+  MonoidHom.mrange_eq_top.2 mk'_surjective
 
 variable {f : M →* P}
 

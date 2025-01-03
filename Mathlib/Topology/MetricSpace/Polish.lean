@@ -102,7 +102,7 @@ instance (priority := 100) instMetrizableSpace (α : Type*) [TopologicalSpace α
   letI := upgradePolishSpace α
   infer_instance
 
-@[deprecated (since := "2024-02-23")]
+@[deprecated "No deprecation message was provided." (since := "2024-02-23")]
 theorem t2Space (α : Type*) [TopologicalSpace α] [PolishSpace α] : T2Space α := inferInstance
 
 /-- A countable product of Polish spaces is Polish. -/

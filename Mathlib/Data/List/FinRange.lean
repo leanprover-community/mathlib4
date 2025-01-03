@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau, Kim Morrison, Alex Keizer
 -/
 import Mathlib.Data.List.OfFn
-import Mathlib.Data.List.Range
 import Batteries.Data.List.Perm
+import Batteries.Data.List.FinRange
+import Mathlib.Data.List.Nodup
 
 /-!
 # Lists of elements of `Fin n`
@@ -21,21 +22,60 @@ namespace List
 
 variable {α : Type u}
 
+
+theorem finRange_eq_pmap_range (n : ℕ) : finRange n = (range n).pmap Fin.mk (by simp) := by
+  apply List.ext_getElem <;> simp [finRange]
+
+@[simp]
+theorem mem_finRange {n : ℕ} (a : Fin n) : a ∈ finRange n := by
+  rw [finRange_eq_pmap_range]
+  exact mem_pmap.2
+    ⟨a.1, mem_range.2 a.2, by
+      cases a
+      rfl⟩
+
+theorem nodup_finRange (n : ℕ) : (finRange n).Nodup := by
+  rw [finRange_eq_pmap_range]
+  exact (Pairwise.pmap (nodup_range n) _) fun _ _ _ _ => @Fin.ne_of_val_ne _ ⟨_, _⟩ ⟨_, _⟩
+
+@[simp]
+theorem finRange_eq_nil {n : ℕ} : finRange n = [] ↔ n = 0 := by
+  rw [← length_eq_zero, length_finRange]
+
+theorem pairwise_lt_finRange (n : ℕ) : Pairwise (· < ·) (finRange n) := by
+  rw [finRange_eq_pmap_range]
+  exact (List.pairwise_lt_range n).pmap (by simp) (by simp)
+
+theorem pairwise_le_finRange (n : ℕ) : Pairwise (· ≤ ·) (finRange n) := by
+  rw [finRange_eq_pmap_range]
+  exact (List.pairwise_le_range n).pmap (by simp) (by simp)
+
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10756): new theorem
+theorem get_finRange {n : ℕ} {i : ℕ} (h) :
+    (finRange n).get ⟨i, h⟩ = ⟨i, length_finRange n ▸ h⟩ := by
+  simp
+
+@[deprecated (since := "2024-08-19")] alias nthLe_finRange := get_finRange
+
+@[simp]
+theorem finRange_map_get (l : List α) : (finRange l.length).map l.get = l :=
+  List.ext_get (by simp) (by simp)
+
+@[simp] theorem indexOf_finRange {k : ℕ} (i : Fin k) : (finRange k).indexOf i = i := by
+  have : (finRange k).indexOf i < (finRange k).length := indexOf_lt_length.mpr (by simp)
+  have h₁ : (finRange k).get ⟨(finRange k).indexOf i, this⟩ = i := indexOf_get this
+  have h₂ : (finRange k).get ⟨i, by simp⟩ = i := get_finRange _
+  simpa using (Nodup.get_inj_iff (nodup_finRange k)).mp (Eq.trans h₁ h₂.symm)
+
 @[simp]
 theorem map_coe_finRange (n : ℕ) : ((finRange n) : List (Fin n)).map (Fin.val) = List.range n := by
-  simp_rw [finRange, map_pmap, pmap_eq_map]
-  exact List.map_id _
+  apply List.ext_getElem <;> simp
 
 theorem finRange_succ_eq_map (n : ℕ) : finRange n.succ = 0 :: (finRange n).map Fin.succ := by
   apply map_injective_iff.mpr Fin.val_injective
   rw [map_cons, map_coe_finRange, range_succ_eq_map, Fin.val_zero, ← map_coe_finRange, map_map,
     map_map]
   simp only [Function.comp_def, Fin.val_succ]
-
-theorem finRange_succ (n : ℕ) :
-    finRange n.succ = (finRange n |>.map Fin.castSucc |>.concat (.last _)) := by
-  apply map_injective_iff.mpr Fin.val_injective
-  simp [range_succ, Function.comp_def]
 
 -- Porting note: `map_nth_le` moved to `List.finRange_map_get` in Data.List.Range
 
@@ -45,7 +85,7 @@ theorem ofFn_eq_pmap {n} {f : Fin n → α} :
   exact ext_getElem (by simp) fun i hi1 hi2 => by simp [List.getElem_ofFn f i hi1]
 
 theorem ofFn_id (n) : ofFn id = finRange n :=
-  ofFn_eq_pmap
+  rfl
 
 theorem ofFn_eq_map {n} {f : Fin n → α} : ofFn f = (finRange n).map f := by
   rw [← ofFn_id, map_ofFn, Function.comp_id]

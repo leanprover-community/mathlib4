@@ -5,6 +5,7 @@ Authors: Leonardo de Moura, Jeremy Avigad
 -/
 import Mathlib.Logic.Basic
 import Mathlib.Logic.Function.Defs
+import Mathlib.Order.Defs.LinearOrder
 
 /-!
 # Booleans

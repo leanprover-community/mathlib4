@@ -3,14 +3,15 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Group.Subgroup.Basic
+import Mathlib.Algebra.Group.Conj
+import Mathlib.Algebra.Group.Subgroup.Lattice
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.Finset.Fin
 import Mathlib.Data.Finset.Sort
+import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sum
 import Mathlib.Data.Int.Order.Units
-import Mathlib.Data.Fintype.Prod
 import Mathlib.GroupTheory.Perm.Support
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Tactic.NormNum.Ineq

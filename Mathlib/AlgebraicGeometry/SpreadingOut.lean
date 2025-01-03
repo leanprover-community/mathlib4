@@ -49,8 +49,7 @@ open CategoryTheory
 
 namespace AlgebraicGeometry
 
-variable {X Y S : Scheme.{u}} (f : X ⟶ Y) (sX : X ⟶ S) (sY : Y ⟶ S) (e : f ≫ sY = sX)
-variable {R A : CommRingCat.{u}}
+variable {X Y S : Scheme.{u}} (f : X ⟶ Y) (sX : X ⟶ S) (sY : Y ⟶ S) {R A : CommRingCat.{u}}
 
 /-- The germ map at `x` is injective if there exists some affine `U ∋ x`
   such that the map `Γ(X, U) ⟶ X_x` is injective -/

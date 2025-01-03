@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Batteries.Data.Nat.Gcd
+import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.GroupWithZero.Nat
 
 /-!
 # Properties of `Nat.gcd`, `Nat.lcm`, and `Nat.Coprime`
@@ -299,7 +300,7 @@ theorem Coprime.mul_add_mul_ne_mul {m n a b : ℕ} (cop : Coprime m n) (ha : a �
         ((congr_arg _ h).mpr (Nat.dvd_mul_right m n)))
   rw [mul_comm, mul_ne_zero_iff, ← one_le_iff_ne_zero] at ha hb
   refine mul_ne_zero hb.2 ha.2 (eq_zero_of_mul_eq_self_left (ne_of_gt (add_le_add ha.1 hb.1)) ?_)
-  rw [← mul_assoc, ← h, add_mul, add_mul, mul_comm _ n, ← mul_assoc, mul_comm y]
+  rw [← mul_assoc, ← h, Nat.add_mul, Nat.add_mul, mul_comm _ n, ← mul_assoc, mul_comm y]
 
 variable {x n m : ℕ}
 

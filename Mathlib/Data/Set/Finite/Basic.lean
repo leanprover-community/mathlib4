@@ -324,8 +324,8 @@ instance (priority := 100) fintypeInsert' (a : α) (s : Set α) [Decidable <| a 
 instance fintypeImage [DecidableEq β] (s : Set α) (f : α → β) [Fintype s] : Fintype (f '' s) :=
   Fintype.ofFinset (s.toFinset.image f) <| by simp
 
-/-- If a function `f` has a partial inverse and sends a set `s` to a set with `[Fintype]` instance,
-then `s` has a `Fintype` structure as well. -/
+/-- If a function `f` has a partial inverse `g` and the image of `s` under `f` is a set with
+a `Fintype` instance, then `s` has a `Fintype` structure as well. -/
 def fintypeOfFintypeImage (s : Set α) {f : α → β} {g} (I : IsPartialInv f g) [Fintype (f '' s)] :
     Fintype s :=
   Fintype.ofFinset ⟨_, (f '' s).toFinset.2.filterMap g <| injective_of_isPartialInv_right I⟩

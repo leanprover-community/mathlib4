@@ -7,6 +7,7 @@ import Mathlib.Data.Sum.Order
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.RelIso.Set
 import Mathlib.Order.WellFounded
+
 /-!
 # Initial and principal segments
 
@@ -656,11 +657,14 @@ theorem monotone [PartialOrder α] (f : α ≤i β) : Monotone f :=
 theorem strictMono [PartialOrder α] (f : α ≤i β) : StrictMono f :=
   f.toOrderEmbedding.strictMono
 
-theorem map_isMin [PartialOrder α] (f : α ≤i β) (h : IsMin a) : IsMin (f a) := by
-  intro b hb
+@[simp]
+theorem isMin_apply_iff [PartialOrder α] (f : α ≤i β) : IsMin (f a) ↔ IsMin a := by
+  refine ⟨StrictMono.isMin_of_apply f.strictMono, fun h b hb ↦ ?_⟩
   obtain ⟨x, rfl⟩ := f.mem_range_of_le hb
   rw [f.le_iff_le] at hb ⊢
   exact h hb
+
+alias ⟨_, map_isMin⟩ := isMin_apply_iff
 
 @[simp]
 theorem map_bot [PartialOrder α] [OrderBot α] [OrderBot β] (f : α ≤i β) : f ⊥ = ⊥ :=
@@ -712,8 +716,11 @@ theorem monotone [PartialOrder α] (f : α <i β) : Monotone f :=
 theorem strictMono [PartialOrder α] (f : α <i β) : StrictMono f :=
   (f : α ≤i β).strictMono
 
-theorem map_isMin [PartialOrder α] (f : α <i β) (h : IsMin a) : IsMin (f a) :=
-  (f : α ≤i β).map_isMin h
+@[simp]
+theorem isMin_apply_iff [PartialOrder α] (f : α <i β) : IsMin (f a) ↔ IsMin a :=
+  (f : α ≤i β).isMin_apply_iff
+
+alias ⟨_, map_isMin⟩ := isMin_apply_iff
 
 @[simp]
 theorem map_bot [PartialOrder α] [OrderBot α] [OrderBot β] (f : α <i β) : f ⊥ = ⊥ :=

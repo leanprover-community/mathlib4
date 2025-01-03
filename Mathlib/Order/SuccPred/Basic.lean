@@ -339,7 +339,7 @@ lemma succ_eq_of_covBy (h : a ⋖ b) : succ a = b := (succ_le_of_lt h.lt).antisy
 
 alias _root_.CovBy.succ_eq := succ_eq_of_covBy
 
-theorem _root_.OrderIso.map_succ {β : Type*} [PartialOrder β] [SuccOrder β] (f : α ≃o β) (a : α) :
+theorem _root_.OrderIso.map_succ [PartialOrder β] [SuccOrder β] (f : α ≃o β) (a : α) :
     f (succ a) = succ (f a) := by
   by_cases h : IsMax a
   · rw [h.succ_eq, (f.isMax_apply.2 h).succ_eq]

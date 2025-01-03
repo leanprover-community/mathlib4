@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Kevin Buzzard
 import Mathlib.Algebra.Module.Submodule.IterateMapComap
 import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Order.PartialSups
-import Mathlib.RingTheory.Noetherian.Defs
+import Mathlib.RingTheory.Noetherian.Basic
 import Mathlib.RingTheory.OrzechProperty
 import Mathlib.Order.Filter.AtTopBot
 

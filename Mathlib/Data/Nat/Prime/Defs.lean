@@ -4,9 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
 -/
 import Batteries.Data.Nat.Gcd
+import Mathlib.Algebra.Group.Nat.Units
+import Mathlib.Algebra.GroupWithZero.Nat
 import Mathlib.Algebra.Prime.Defs
-import Mathlib.Algebra.Ring.Nat
-import Mathlib.Order.Lattice
+import Mathlib.Data.Nat.Sqrt
+import Mathlib.Order.Basic
 
 /-!
 # Prime numbers
@@ -24,15 +26,16 @@ This file deals with prime numbers: natural numbers `p ≥ 2` whose only divisor
 
 -/
 
-open Bool Subtype
+assert_not_exists Ring
 
-open Nat
+open Bool Subtype Nat
 
 namespace Nat
 variable {n : ℕ}
 
 /-- `Nat.Prime p` means that `p` is a prime number, that is, a natural number
-  at least 2 whose only divisors are `p` and `1`. -/
+  at least 2 whose only divisors are `p` and `1`.
+  The theorem `Nat.prime_def` witnesses this description of a prime number. -/
 @[pp_nodot]
 def Prime (p : ℕ) :=
   Irreducible p
@@ -77,7 +80,8 @@ theorem Prime.eq_one_or_self_of_dvd {p : ℕ} (pp : p.Prime) (m : ℕ) (hm : m �
   rintro rfl
   rw [hn, mul_one]
 
-theorem prime_def_lt'' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m = 1 ∨ m = p := by
+@[inherit_doc Nat.Prime]
+theorem prime_def {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m = 1 ∨ m = p := by
   refine ⟨fun h => ⟨h.two_le, h.eq_one_or_self_of_dvd⟩, fun h => ?_⟩
   have h1 := Nat.one_lt_two.trans_le h.1
   refine ⟨mt Nat.isUnit_iff.mp h1.ne', fun a b hab => ?_⟩
@@ -88,8 +92,11 @@ theorem prime_def_lt'' {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, m ∣ p → m 
   · rw [hab]
     exact dvd_mul_right _ _
 
+@[deprecated (since := "2024-11-19")]
+alias prime_def_lt'' := prime_def
+
 theorem prime_def_lt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m < p, m ∣ p → m = 1 :=
-  prime_def_lt''.trans <|
+  prime_def.trans <|
     and_congr_right fun p2 =>
       forall_congr' fun _ =>
         ⟨fun h l d => (h d).resolve_right (ne_of_lt l), fun h d =>
@@ -227,7 +234,7 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     · exact ⟨k2, dk, a⟩
     · refine
         have := minFac_lemma n k h
-        minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [k, e, left_distrib, add_right_comm])
+        minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [k, e, Nat.left_distrib, add_right_comm])
           fun m m2 d => ?_
       rcases Nat.eq_or_lt_of_le (a m m2 d) with me | ml
       · subst me

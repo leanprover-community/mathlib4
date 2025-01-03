@@ -5,7 +5,7 @@ Authors: Yury Kudryashov, Johannes Hölzl, Mario Carneiro, Patrick Massot
 -/
 import Mathlib.Data.Prod.PProd
 import Mathlib.Data.Set.Countable
-import Mathlib.Order.Filter.Basic
+import Mathlib.Order.Filter.Finite
 
 /-!
 # Filter bases

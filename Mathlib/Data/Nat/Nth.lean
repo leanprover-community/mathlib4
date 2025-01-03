@@ -237,9 +237,20 @@ theorem nth_eq_zero {n} :
   · rintro (⟨h₀, rfl⟩ | ⟨hf, hle⟩)
     exacts [nth_zero_of_zero h₀, nth_of_card_le hf hle]
 
+lemma lt_card_toFinset_of_nth_ne_zero {n : ℕ} (h : nth p n ≠ 0) (hf : (setOf p).Finite) :
+    n < #hf.toFinset := by
+  simp only [ne_eq, nth_eq_zero, not_or, not_exists, not_le] at h
+  exact h.2 hf
+
+lemma nth_mem_of_ne_zero {n : ℕ} (h : nth p n ≠ 0) : p (Nat.nth p n) :=
+  nth_mem n (lt_card_toFinset_of_nth_ne_zero h)
+
 theorem nth_eq_zero_mono (h₀ : ¬p 0) {a b : ℕ} (hab : a ≤ b) (ha : nth p a = 0) : nth p b = 0 := by
   simp only [nth_eq_zero, h₀, false_and, false_or] at ha ⊢
   exact ha.imp fun hf hle => hle.trans hab
+
+lemma nth_ne_zero_anti (h₀ : ¬p 0) {a b : ℕ} (hab : a ≤ b) (hb : nth p b ≠ 0) : nth p a ≠ 0 :=
+  mt (nth_eq_zero_mono h₀ hab) hb
 
 theorem le_nth_of_lt_nth_succ {k a : ℕ} (h : a < nth p (k + 1)) (ha : p a) : a ≤ nth p k := by
   cases' (setOf p).finite_or_infinite with hf hf

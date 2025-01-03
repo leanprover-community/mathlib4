@@ -3,7 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
-import Mathlib.AlgebraicTopology.SimplicialObject
+import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Fin.VecNotation
@@ -105,6 +105,13 @@ lemma map_apply {m₁ m₂ : SimplexCategoryᵒᵖ} (f : m₁ ⟶ m₂) {n : Sim
 def _root_.SSet.yonedaEquiv (X : SSet.{u}) (n : SimplexCategory) :
     (standardSimplex.obj n ⟶ X) ≃ X.obj (op n) :=
   yonedaCompUliftFunctorEquiv X n
+
+/-- The unique non-degenerate `n`-simplex in `Δ[n]`. -/
+def id (n : ℕ) : Δ[n] _[n] := yonedaEquiv Δ[n] [n] (𝟙 Δ[n])
+
+lemma id_eq_objEquiv_symm (n : ℕ) : id n = (objEquiv _ _).symm (𝟙 _) := rfl
+
+lemma objEquiv_id (n : ℕ) : objEquiv _ _ (id n) = 𝟙 _ := rfl
 
 /-- The (degenerate) `m`-simplex in the standard simplex concentrated in vertex `k`. -/
 def const (n : ℕ) (k : Fin (n+1)) (m : SimplexCategoryᵒᵖ) : Δ[n].obj m :=

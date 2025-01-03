@@ -67,12 +67,12 @@ def Scheme.isoSpec (X : Scheme) [IsAffine X] : X ≅ Spec Γ(X, ⊤) :=
 
 @[reassoc]
 theorem Scheme.isoSpec_hom_naturality {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
-    X.isoSpec.hom ≫ Spec.map (f.app ⊤) = f ≫ Y.isoSpec.hom := by
+    X.isoSpec.hom ≫ Spec.map (f.appTop) = f ≫ Y.isoSpec.hom := by
   simp only [isoSpec, asIso_hom, Scheme.toSpecΓ_naturality]
 
 @[reassoc]
 theorem Scheme.isoSpec_inv_naturality {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
-    Spec.map (f.app ⊤) ≫ Y.isoSpec.inv = X.isoSpec.inv ≫ f := by
+    Spec.map (f.appTop) ≫ Y.isoSpec.inv = X.isoSpec.inv ≫ f := by
   rw [Iso.eq_inv_comp, isoSpec, asIso_hom, ← Scheme.toSpecΓ_naturality_assoc, isoSpec,
     asIso_inv, IsIso.hom_inv_id, Category.comp_id]
 
@@ -112,13 +112,13 @@ theorem isAffine_of_isIso {X Y : Scheme} (f : X ⟶ Y) [IsIso f] [h : IsAffine Y
 to the arrow of the morphism on prime spectra induced by the map on global sections. -/
 noncomputable
 def arrowIsoSpecΓOfIsAffine {X Y : Scheme} [IsAffine X] [IsAffine Y] (f : X ⟶ Y) :
-    Arrow.mk f ≅ Arrow.mk (Spec.map (Scheme.Γ.map f.op)) :=
+    Arrow.mk f ≅ Arrow.mk (Spec.map f.appTop) :=
   Arrow.isoMk X.isoSpec Y.isoSpec (ΓSpec.adjunction.unit_naturality _)
 
 /-- If `f : A ⟶ B` is a ring homomorphism, the corresponding arrow is isomorphic
 to the arrow of the morphism induced on global sections by the map on prime spectra. -/
 def arrowIsoΓSpecOfIsAffine {A B : CommRingCat} (f : A ⟶ B) :
-    Arrow.mk f ≅ Arrow.mk ((Spec.map f).app ⊤) :=
+    Arrow.mk f ≅ Arrow.mk ((Spec.map f).appTop) :=
   Arrow.isoMk (Scheme.ΓSpecIso _).symm (Scheme.ΓSpecIso _).symm
     (Scheme.ΓSpecIso_inv_naturality f).symm
 
@@ -134,7 +134,7 @@ theorem Scheme.isoSpec_Spec (R : CommRingCat.{u}) :
     (Spec R).isoSpec.inv = Spec.map (Scheme.ΓSpecIso R).inv :=
   congr($(isoSpec_Spec R).inv)
 
-lemma ext_of_isAffine {X Y : Scheme} [IsAffine Y] {f g : X ⟶ Y} (e : f.app ⊤ = g.app ⊤) :
+lemma ext_of_isAffine {X Y : Scheme} [IsAffine Y] {f g : X ⟶ Y} (e : f.appTop = g.appTop) :
     f = g := by
   rw [← cancel_mono Y.toSpecΓ, Scheme.toSpecΓ_naturality, Scheme.toSpecΓ_naturality, e]
 
@@ -315,20 +315,23 @@ lemma isoSpec_hom_base_apply (x : U) :
   congr 1
   exact IsLocalRing.comap_closedPoint (U.stalkIso x).inv
 
-lemma isoSpec_inv_app_top :
-    hU.isoSpec.inv.app ⊤ = U.topIso.hom ≫ (Scheme.ΓSpecIso Γ(X, U)).inv := by
+lemma isoSpec_inv_appTop :
+    hU.isoSpec.inv.appTop = U.topIso.hom ≫ (Scheme.ΓSpecIso Γ(X, U)).inv := by
   simp only [Scheme.Opens.toScheme_presheaf_obj, isoSpec_inv, Scheme.isoSpec, asIso_inv,
-    Scheme.comp_coeBase, Opens.map_comp_obj, Opens.map_top, Scheme.comp_app, Scheme.inv_app_top,
+    Scheme.comp_coeBase, Opens.map_comp_obj, Opens.map_top, Scheme.comp_app, Scheme.inv_appTop,
     Scheme.Opens.topIso_hom, Scheme.ΓSpecIso_inv_naturality, IsIso.inv_comp_eq]
-  rw [Scheme.toSpecΓ_app_top]
+  rw [Scheme.toSpecΓ_appTop]
   erw [Iso.hom_inv_id_assoc]
 
-lemma isoSpec_hom_app_top :
-    hU.isoSpec.hom.app ⊤ = (Scheme.ΓSpecIso Γ(X, U)).hom ≫ U.topIso.inv := by
-  have := congr(inv $hU.isoSpec_inv_app_top)
+lemma isoSpec_hom_appTop :
+    hU.isoSpec.hom.appTop = (Scheme.ΓSpecIso Γ(X, U)).hom ≫ U.topIso.inv := by
+  have := congr(inv $hU.isoSpec_inv_appTop)
   rw [IsIso.inv_comp, IsIso.Iso.inv_inv, IsIso.Iso.inv_hom] at this
   have := (Scheme.Γ.map_inv hU.isoSpec.inv.op).trans this
   rwa [← op_inv, IsIso.Iso.inv_inv] at this
+
+@[deprecated (since := "2024-11-16")] alias isoSpec_inv_app_top := isoSpec_inv_appTop
+@[deprecated (since := "2024-11-16")] alias isoSpec_hom_app_top := isoSpec_hom_appTop
 
 /-- The open immersion `Spec Γ(X, U) ⟶ X` for an affine `U`. -/
 def fromSpec :
@@ -364,7 +367,7 @@ theorem map_fromSpec {V : X.Opens} (hV : IsAffineOpen V) (f : op U ⟶ op V) :
   conv_rhs =>
     rw [fromSpec, ← X.homOfLE_ι (V := U) f.unop.le, isoSpec_inv, Category.assoc,
       ← Scheme.isoSpec_inv_naturality_assoc,
-      ← Spec.map_comp_assoc, Scheme.homOfLE_app, ← Functor.map_comp]
+      ← Spec.map_comp_assoc, Scheme.homOfLE_appTop, ← Functor.map_comp]
   rw [fromSpec, isoSpec_inv, Category.assoc, ← Spec.map_comp_assoc, ← Functor.map_comp]
   rfl
 
@@ -377,21 +380,22 @@ lemma Spec_map_appLE_fromSpec (f : X ⟶ Y) {V : X.Opens} {U : Y.Opens}
   simp_rw [← Scheme.homOfLE_ι _ i]
   rw [Category.assoc, ← morphismRestrict_ι,
     ← Category.assoc _ (f ∣_ U) U.ι, ← @Scheme.isoSpec_inv_naturality_assoc,
-    ← Spec.map_comp_assoc, ← Spec.map_comp_assoc, Scheme.comp_app, morphismRestrict_app,
-    Scheme.homOfLE_app, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map,
+    ← Spec.map_comp_assoc, ← Spec.map_comp_assoc, Scheme.comp_appTop, morphismRestrict_appTop,
+    Scheme.homOfLE_appTop, Scheme.Hom.app_eq_appLE, Scheme.Hom.appLE_map,
     Scheme.Hom.appLE_map, Scheme.Hom.appLE_map, Scheme.Hom.map_appLE]
 
 lemma fromSpec_top [IsAffine X] : (isAffineOpen_top X).fromSpec = X.isoSpec.inv := by
-  rw [fromSpec, isoSpec_inv, Category.assoc, ← @Scheme.isoSpec_inv_naturality, Scheme.Opens.ι_app,
-    ← Spec.map_comp_assoc, ← X.presheaf.map_comp, ← op_comp, eqToHom_comp_homOfLE,
-    ← eqToHom_eq_homOfLE rfl, eqToHom_refl, op_id, X.presheaf.map_id, Spec.map_id, Category.id_comp]
+  rw [fromSpec, isoSpec_inv, Category.assoc, ← @Scheme.isoSpec_inv_naturality,
+    ← Spec.map_comp_assoc, Scheme.Opens.ι_appTop, ← X.presheaf.map_comp, ← op_comp,
+    eqToHom_comp_homOfLE, ← eqToHom_eq_homOfLE rfl, eqToHom_refl, op_id, X.presheaf.map_id,
+    Spec.map_id, Category.id_comp]
 
 lemma fromSpec_app_of_le (V : X.Opens) (h : U ≤ V) :
     hU.fromSpec.app V = X.presheaf.map (homOfLE h).op ≫
       (Scheme.ΓSpecIso Γ(X, U)).inv ≫ (Spec _).presheaf.map (homOfLE le_top).op := by
   have : U.ι ⁻¹ᵁ V = ⊤ := eq_top_iff.mpr fun x _ ↦ h x.2
   rw [IsAffineOpen.fromSpec, Scheme.comp_app, Scheme.Opens.ι_app, Scheme.app_eq _ this,
-    IsAffineOpen.isoSpec_inv_app_top]
+    ← Scheme.Hom.appTop, IsAffineOpen.isoSpec_inv_appTop]
   simp only [Scheme.Opens.toScheme_presheaf_map, Scheme.Opens.topIso_hom,
     Category.assoc, ← X.presheaf.map_comp_assoc]
   rfl
@@ -470,7 +474,7 @@ theorem ΓSpecIso_hom_fromSpec_app :
   simp only [fromSpec, Scheme.comp_coeBase, Opens.map_comp_obj, Scheme.comp_app,
     Scheme.Opens.ι_app_self, eqToHom_op, Scheme.app_eq _ U.ι_preimage_self,
     Scheme.Opens.toScheme_presheaf_map, eqToHom_unop, eqToHom_map U.ι.opensFunctor, Opens.map_top,
-    isoSpec_inv_app_top, Scheme.Opens.topIso_hom, Category.assoc, ← Functor.map_comp_assoc,
+    isoSpec_inv_appTop, Scheme.Opens.topIso_hom, Category.assoc, ← Functor.map_comp_assoc,
     eqToHom_trans, eqToHom_refl, X.presheaf.map_id, Category.id_comp, Iso.hom_inv_id_assoc]
 
 @[elementwise]
@@ -953,10 +957,10 @@ lemma specTargetImageRingHom_surjective : Function.Surjective (specTargetImageRi
   Ideal.Quotient.mk_surjective
 
 lemma specTargetImageFactorization_app_injective :
-    Function.Injective <| (specTargetImageFactorization f).app ⊤ := by
+    Function.Injective <| (specTargetImageFactorization f).appTop := by
   let φ : A ⟶ Γ(X, ⊤) := (((ΓSpec.adjunction).homEquiv X (op A)).symm f).unop
   let φ' : specTargetImage f ⟶ Scheme.Γ.obj (op X) := RingHom.kerLift φ
-  show Function.Injective <| ((ΓSpec.adjunction.homEquiv X _) φ'.op).app ⊤
+  show Function.Injective <| ((ΓSpec.adjunction.homEquiv X _) φ'.op).appTop
   rw [ΓSpec_adjunction_homEquiv_eq]
   apply (RingHom.kerLift_injective φ).comp
   exact ((ConcreteCategory.isIso_iff_bijective (Scheme.ΓSpecIso _).hom).mp inferInstance).injective
@@ -993,7 +997,7 @@ def affineTargetImageInclusion (f : X ⟶ Y) : affineTargetImage f ⟶ Y :=
   Spec.map (specTargetImageRingHom (f ≫ Y.isoSpec.hom)) ≫ Y.isoSpec.inv
 
 lemma affineTargetImageInclusion_app_surjective :
-    Function.Surjective <| (affineTargetImageInclusion f).app ⊤ := by
+    Function.Surjective <| (affineTargetImageInclusion f).appTop := by
   simp only [Scheme.comp_coeBase, Opens.map_comp_obj, Opens.map_top, Scheme.comp_app,
     CommRingCat.coe_comp, affineTargetImageInclusion]
   apply Function.Surjective.comp
@@ -1013,7 +1017,7 @@ def affineTargetImageFactorization (f : X ⟶ Y) : X ⟶ affineTargetImage f :=
   specTargetImageFactorization (f ≫ Y.isoSpec.hom)
 
 lemma affineTargetImageFactorization_app_injective :
-    Function.Injective <| (affineTargetImageFactorization f).app ⊤ :=
+    Function.Injective <| (affineTargetImageFactorization f).appTop :=
   specTargetImageFactorization_app_injective (f ≫ Y.isoSpec.hom)
 
 @[reassoc (attr := simp)]

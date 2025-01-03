@@ -161,9 +161,7 @@ instance pointwiseAddCommMonoid : AddCommMonoid (Submodule R M) where
 theorem add_eq_sup (p q : Submodule R M) : p + q = p ⊔ q :=
   rfl
 
--- dsimp loops when applying this lemma to its LHS,
--- probably https://github.com/leanprover/lean4/pull/2867
-@[simp, nolint simpNF]
+@[simp]
 theorem zero_eq_bot : (0 : Submodule R M) = ⊥ :=
   rfl
 

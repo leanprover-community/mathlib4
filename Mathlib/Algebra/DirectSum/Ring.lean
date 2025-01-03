@@ -63,9 +63,8 @@ instances for:
 * `A : ι → Submodule S`:
   `DirectSum.GSemiring.ofSubmodules`, `DirectSum.GCommSemiring.ofSubmodules`.
 
-If `CompleteLattice.independent (Set.range A)`, these provide a gradation of `⨆ i, A i`, and the
-mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
-`DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
+If `sSupIndep A`, these provide a gradation of `⨆ i, A i`, and the mapping `⨁ i, A i →+ ⨆ i, A i`
+can be obtained as `DirectSum.toMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
 
 ## Tags
 

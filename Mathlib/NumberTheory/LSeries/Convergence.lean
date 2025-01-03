@@ -119,3 +119,21 @@ lemma LSeries.abscissaOfAbsConv_le_one_of_isBigO_one {f : ℕ → ℂ} (h : f =O
   convert abscissaOfAbsConv_le_of_isBigO_rpow (x := 0) ?_
   · simp only [EReal.coe_zero, zero_add]
   · simpa only [Real.rpow_zero] using h
+
+/-- If `f` is real-valued and `x` is strictly greater than the abscissa of absolute convergence
+of `f`, then the real series `∑' n, f n / n ^ x` converges. -/
+lemma LSeries.summable_real_of_abscissaOfAbsConv_lt {f : ℕ → ℝ} {x : ℝ}
+    (h : abscissaOfAbsConv (f ·) < x) :
+    Summable fun n : ℕ ↦ f n / (n : ℝ) ^ x := by
+  have h' : abscissaOfAbsConv (f ·) < (x : ℂ).re := by simpa only [ofReal_re] using h
+  have := LSeriesSummable_of_abscissaOfAbsConv_lt_re h'
+  rw [LSeriesSummable, show term _ _ = fun n ↦ _ from rfl] at this
+  conv at this =>
+    enter [1, n]
+    rw [term_def, show (n : ℂ) = (n : ℝ) from rfl, ← ofReal_cpow n.cast_nonneg, ← ofReal_div,
+      show (0 : ℂ) = (0 : ℝ) from rfl, ← apply_ite]
+  rw [summable_ofReal] at this
+  refine this.congr_cofinite ?_
+  filter_upwards [Set.Finite.compl_mem_cofinite <| Set.finite_singleton 0] with n hn
+  simp only [Set.mem_compl_iff, Set.mem_singleton_iff] at hn
+  exact if_neg hn

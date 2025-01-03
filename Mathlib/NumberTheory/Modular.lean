@@ -175,13 +175,10 @@ def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     ![by
       refine
         LinearMap.GeneralLinearGroup.generalLinearEquiv ℝ (Fin 2 → ℝ)
-          (GeneralLinearGroup.toLinear (planeConformalMatrix (cd 0 : ℝ) (-(cd 1 : ℝ)) ?_))
+          (GeneralLinearGroup.toLin (planeConformalMatrix (cd 0 : ℝ) (-(cd 1 : ℝ)) ?_))
       norm_cast
       rw [neg_sq]
       exact hcd.sq_add_sq_ne_zero, LinearEquiv.refl ℝ (Fin 2 → ℝ)]
-
--- `simpNF` times out, but only in CI where all of `Mathlib` is imported
-attribute [nolint simpNF] lcRow0Extend_apply lcRow0Extend_symm_apply
 
 /-- The map `lcRow0` is proper, that is, preimages of cocompact sets are finite in
 `[[* , *], [c, d]]`. -/
@@ -210,17 +207,19 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
   ext ⟨g, rfl⟩ i j : 3
   fin_cases i <;> [fin_cases j; skip]
   -- the following are proved by `simp`, but it is replaced by `simp only` to avoid timeouts.
-  · simp only [mB, mulVec, dotProduct, Fin.sum_univ_two, coe_matrix_coe,
-      Int.coe_castRingHom, lcRow0_apply, Function.comp_apply, cons_val_zero, lcRow0Extend_apply,
-      LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLinear,
-      val_planeConformalMatrix, neg_neg, mulVecLin_apply, cons_val_one, head_cons, of_apply,
-      Fin.mk_zero, Fin.mk_one]
+  · simp only [Fin.isValue, Int.cast_one, map_apply_coe, RingHom.mapMatrix_apply,
+      Int.coe_castRingHom, lcRow0_apply, map_apply, Fin.zero_eta, id_eq, Function.comp_apply,
+      of_apply, cons_val', cons_val_zero, empty_val', cons_val_fin_one, lcRow0Extend_apply,
+      LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLin,
+      val_planeConformalMatrix, neg_neg, mulVecLin_apply, mulVec, dotProduct, Fin.sum_univ_two,
+      cons_val_one, head_cons, mB, f₁]
   · convert congr_arg (fun n : ℤ => (-n : ℝ)) g.det_coe.symm using 1
-    simp only [f₁, mulVec, dotProduct, Fin.sum_univ_two, Matrix.det_fin_two, Function.comp_apply,
-      Subtype.coe_mk, lcRow0Extend_apply, cons_val_zero,
-      LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLinear,
-      val_planeConformalMatrix, mulVecLin_apply, cons_val_one, head_cons, map_apply, neg_mul,
-      Int.cast_sub, Int.cast_mul, neg_sub, of_apply, Fin.mk_zero, Fin.mk_one]
+    simp only [Fin.zero_eta, id_eq, Function.comp_apply, lcRow0Extend_apply, cons_val_zero,
+      LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLin,
+      mulVecLin_apply, mulVec, dotProduct, det_fin_two, f₁]
+    simp only [Fin.isValue, Fin.mk_one, val_planeConformalMatrix, neg_neg, of_apply, cons_val',
+      empty_val', cons_val_fin_one, cons_val_one, head_fin_const, map_apply, Fin.sum_univ_two,
+      cons_val_zero, neg_mul, head_cons, Int.cast_sub, Int.cast_mul, neg_sub]
     ring
   · rfl
 

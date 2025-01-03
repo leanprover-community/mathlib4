@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.MeasureTheory.Constructions.Pi
+import Mathlib.Probability.ConditionalProbability
 import Mathlib.Probability.Kernel.Basic
 import Mathlib.Tactic.Peel
 
@@ -1211,5 +1212,57 @@ theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β
   · exact @MeasurableSet.empty _ (generateFrom {s i})
 
 end IndepFun
+
+variable {ι Ω α β : Type*} {mΩ : MeasurableSpace Ω} {mα : MeasurableSpace α}
+  {mβ : MeasurableSpace β} {κ : Kernel α Ω} {μ : Measure α} {X : ι → Ω → α} {Y : ι → Ω → β}
+  {f : _ → Set Ω} {t : ι → Set β} {s : Finset ι}
+
+/-- The probability of an intersection of preimages conditioning on another intersection factors
+into a product. -/
+lemma iIndepFun.cond_iInter [Finite ι] (hY : ∀ i, Measurable (Y i))
+    (hindep : iIndepFun (fun _ ↦ mα.prod mβ) (fun i ω ↦ (X i ω, Y i ω)) κ μ)
+    (hf : ∀ i ∈ s, MeasurableSet[mα.comap (X i)] (f i))
+    (hy : ∀ᵐ a ∂μ, ∀ i ∉ s, κ a (Y i ⁻¹' t i) ≠ 0) (ht : ∀ i, MeasurableSet (t i)) :
+    ∀ᵐ a ∂μ, (κ a)[⋂ i ∈ s, f i | ⋂ i, Y i ⁻¹' t i] = ∏ i ∈ s, (κ a)[f i | Y i in t i] := by
+  classical
+  cases nonempty_fintype ι
+  let g (i' : ι) := if i' ∈ s then Y i' ⁻¹' t i' ∩ f i' else Y i' ⁻¹' t i'
+  have hYt i : MeasurableSet[(mα.prod mβ).comap fun ω ↦ (X i ω, Y i ω)] (Y i ⁻¹' t i) :=
+    ⟨.univ ×ˢ t i, .prod .univ (ht _), by ext; simp [eq_comm]⟩
+  have hg i : MeasurableSet[(mα.prod mβ).comap fun ω ↦ (X i ω, Y i ω)] (g i) := by
+    by_cases hi : i ∈ s <;> simp only [hi, ↓reduceIte, g]
+    · obtain ⟨A, hA, hA'⟩ := hf i hi
+      exact (hYt _).inter ⟨A ×ˢ .univ, hA.prod .univ, by ext; simp [← hA']⟩
+    · exact hYt _
+  filter_upwards [hy, hindep.ae_isProbabilityMeasure, hindep.meas_iInter hYt, hindep.meas_iInter hg]
+    with a hy _ hYt hg
+  calc
+    _ = (κ a (⋂ i, Y i ⁻¹' t i))⁻¹ * κ a ((⋂ i, Y i ⁻¹' t i) ∩ ⋂ i ∈ s, f i) := by
+      rw [cond_apply]; exact .iInter fun i ↦ hY i (ht i)
+    _ = (κ a (⋂ i, Y i ⁻¹' t i))⁻¹ * κ a (⋂ i, g i) := by
+      congr
+      calc
+        _ = (⋂ i, Y i ⁻¹' t i) ∩ ⋂ i, if i ∈ s then f i else .univ := by
+          congr
+          simp only [Set.iInter_ite, Set.iInter_univ, Set.inter_univ]
+        _ = ⋂ i, Y i ⁻¹' t i ∩ (if i ∈ s then f i else .univ) := by rw [Set.iInter_inter_distrib]
+        _ = _ := Set.iInter_congr fun i ↦ by by_cases hi : i ∈ s <;> simp [hi, g]
+    _ = (∏ i, κ a (Y i ⁻¹' t i))⁻¹ * κ a (⋂ i, g i) := by
+      rw [hYt]
+    _ = (∏ i, κ a (Y i ⁻¹' t i))⁻¹ * ∏ i, κ a (g i) := by
+      rw [hg]
+    _ = ∏ i, (κ a (Y i ⁻¹' t i))⁻¹ * κ a (g i) := by
+      rw [Finset.prod_mul_distrib, ENNReal.prod_inv_distrib]
+      exact fun _ _ i _ _ ↦ .inr <| measure_ne_top _ _
+    _ = ∏ i, if i ∈ s then (κ a)[f i | Y i ⁻¹' t i] else 1 := by
+      refine Finset.prod_congr rfl fun i _ ↦ ?_
+      by_cases hi : i ∈ s
+      · simp only [hi, ↓reduceIte, g, cond_apply (hY i (ht i))]
+      · simp only [hi, ↓reduceIte, g, ENNReal.inv_mul_cancel (hy i hi) (measure_ne_top _ _)]
+    _ = _ := by simp
+
+-- TODO: We can't state `Kernel.iIndepFun.cond` (the `Kernel` analogue of
+-- `ProbabilityTheory.iIndepFun.cond`) because we don't have a version of `ProbabilityTheory.cond`
+-- for kernels
 
 end ProbabilityTheory.Kernel

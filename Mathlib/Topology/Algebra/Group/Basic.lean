@@ -284,7 +284,7 @@ variable [TopologicalSpace G] [InvolutiveInv G] [ContinuousInv G] {s : Set G}
 
 @[to_additive]
 theorem IsCompact.inv (hs : IsCompact s) : IsCompact s⁻¹ := by
-  rw [← image_inv]
+  rw [← image_inv_eq_inv]
   exact hs.image continuous_inv
 
 variable (G)

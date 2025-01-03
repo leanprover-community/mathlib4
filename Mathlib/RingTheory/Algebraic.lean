@@ -499,31 +499,34 @@ variable [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A]
 
 /-- If `x` is algebraic over `R`, then `x` is algebraic over `S` when `S` is an extension of `R`,
   and the map from `R` to `S` is injective. -/
-theorem IsAlgebraic.tower_top_of_injective
-    (hinj : Function.Injective (algebraMap R S)) {x : A}
+theorem IsAlgebraic.extendScalars (hinj : Function.Injective (algebraMap R S)) {x : A}
     (A_alg : IsAlgebraic R x) : IsAlgebraic S x :=
   let ⟨p, hp₁, hp₂⟩ := A_alg
   ⟨p.map (algebraMap _ _), by
     rwa [Ne, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
 
-/-- A special case of `IsAlgebraic.tower_top_of_injective`. This is extracted as a theorem
-  because in some cases `IsAlgebraic.tower_top_of_injective` will just runs out of memory. -/
+@[deprecated (since := "2024-11-18")]
+alias IsAlgebraic.tower_top_of_injective := IsAlgebraic.extendScalars
+
+/-- A special case of `IsAlgebraic.extendScalars`. This is extracted as a theorem
+  because in some cases `IsAlgebraic.extendScalars` will just runs out of memory. -/
 theorem IsAlgebraic.tower_top_of_subalgebra_le
     {A B : Subalgebra R S} (hle : A ≤ B) {x : S}
     (h : IsAlgebraic A x) : IsAlgebraic B x := by
   letI : Algebra A B := (Subalgebra.inclusion hle).toAlgebra
   haveI : IsScalarTower A B S := .of_algebraMap_eq fun _ ↦ rfl
-  exact h.tower_top_of_injective (Subalgebra.inclusion_injective hle)
+  exact h.extendScalars (Subalgebra.inclusion_injective hle)
 
 /-- If `x` is transcendental over `S`, then `x` is transcendental over `R` when `S` is an extension
   of `R`, and the map from `R` to `S` is injective. -/
-theorem Transcendental.of_tower_top_of_injective
-    (hinj : Function.Injective (algebraMap R S)) {x : A}
-    (h : Transcendental S x) : Transcendental R x :=
-  fun H ↦ h (H.tower_top_of_injective hinj)
+theorem Transcendental.restrictScalars (hinj : Function.Injective (algebraMap R S)) {x : A}
+    (h : Transcendental S x) : Transcendental R x := fun H ↦ h (H.extendScalars hinj)
 
-/-- A special case of `Transcendental.of_tower_top_of_injective`. This is extracted as a theorem
-  because in some cases `Transcendental.of_tower_top_of_injective` will just runs out of memory. -/
+@[deprecated (since := "2024-11-18")]
+alias Transcendental.of_tower_top_of_injective := Transcendental.restrictScalars
+
+/-- A special case of `Transcendental.restrictScalars`. This is extracted as a theorem
+  because in some cases `Transcendental.restrictScalars` will just runs out of memory. -/
 theorem Transcendental.of_tower_top_of_subalgebra_le
     {A B : Subalgebra R S} (hle : A ≤ B) {x : S}
     (h : Transcendental B x) : Transcendental A x :=
@@ -531,9 +534,12 @@ theorem Transcendental.of_tower_top_of_subalgebra_le
 
 /-- If A is an algebraic algebra over R, then A is algebraic over S when S is an extension of R,
   and the map from `R` to `S` is injective. -/
-theorem Algebra.IsAlgebraic.tower_top_of_injective (hinj : Function.Injective (algebraMap R S))
+theorem Algebra.IsAlgebraic.extendScalars (hinj : Function.Injective (algebraMap R S))
     [Algebra.IsAlgebraic R A] : Algebra.IsAlgebraic S A :=
-  ⟨fun _ ↦ _root_.IsAlgebraic.tower_top_of_injective hinj (Algebra.IsAlgebraic.isAlgebraic _)⟩
+  ⟨fun _ ↦ _root_.IsAlgebraic.extendScalars hinj (Algebra.IsAlgebraic.isAlgebraic _)⟩
+
+@[deprecated (since := "2024-11-18")]
+alias Algebra.IsAlgebraic.tower_top_of_injective := Algebra.IsAlgebraic.extendScalars
 
 theorem Algebra.IsAlgebraic.tower_bot_of_injective [Algebra.IsAlgebraic R A]
     (hinj : Function.Injective (algebraMap S A)) :
@@ -553,7 +559,7 @@ variable (L)
 @[stacks 09GF "part one"]
 theorem IsAlgebraic.tower_top {x : A} (A_alg : IsAlgebraic K x) :
     IsAlgebraic L x :=
-  A_alg.tower_top_of_injective (algebraMap K L).injective
+  A_alg.extendScalars (algebraMap K L).injective
 
 variable {L} (K) in
 /-- If `x` is transcendental over `L`, then `x` is transcendental over `K` when
@@ -564,7 +570,7 @@ theorem Transcendental.of_tower_top {x : A} (h : Transcendental L x) :
 /-- If A is an algebraic algebra over K, then A is algebraic over L when L is an extension of K -/
 @[stacks 09GF "part two"]
 theorem Algebra.IsAlgebraic.tower_top [Algebra.IsAlgebraic K A] : Algebra.IsAlgebraic L A :=
-  Algebra.IsAlgebraic.tower_top_of_injective (algebraMap K L).injective
+  Algebra.IsAlgebraic.extendScalars (algebraMap K L).injective
 
 variable (K)
 
@@ -928,7 +934,7 @@ theorem transcendental_supported_polynomial_aeval_X_iff
     exact Algebra.adjoin_mono (Set.singleton_subset_iff.2 (Set.mem_image_of_mem _ h))
       (Polynomial.aeval_mem_adjoin_singleton _ _)
   · rw [← transcendental_polynomial_aeval_X_iff R i]
-    refine h.of_tower_top_of_injective fun _ _ heq ↦ MvPolynomial.C_injective σ R ?_
+    refine h.restrictScalars fun _ _ heq ↦ MvPolynomial.C_injective σ R ?_
     simp_rw [← MvPolynomial.algebraMap_eq]
     exact congr($(heq).1)
 
@@ -945,3 +951,16 @@ theorem transcendental_supported_X_iff [Nontrivial R] {i : σ} {s : Set σ} :
     transcendental_supported_polynomial_aeval_X_iff R (i := i) (s := s) (f := Polynomial.X)
 
 end MvPolynomial
+
+section Infinite
+
+theorem Transcendental.infinite {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+    [Nontrivial R] {x : A} (hx : Transcendental R x) : Infinite A :=
+  .of_injective _ (transcendental_iff_injective.mp hx)
+
+theorem Algebra.Transcendental.infinite (R A : Type*) [CommRing R] [Ring A] [Algebra R A]
+    [Nontrivial R] [Algebra.Transcendental R A] : Infinite A :=
+  have ⟨x, hx⟩ := ‹Algebra.Transcendental R A›
+  hx.infinite
+
+end Infinite

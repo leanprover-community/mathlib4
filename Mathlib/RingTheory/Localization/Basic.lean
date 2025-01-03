@@ -73,7 +73,7 @@ open Function
 
 section CommSemiring
 
-variable {R : Type*} [CommSemiring R] {M : Submonoid R} {S : Type*} [CommSemiring S]
+variable {R : Type*} [CommSemiring R] {M N : Submonoid R} {S : Type*} [CommSemiring S]
 variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 namespace IsLocalization
@@ -237,7 +237,7 @@ end IsLocalization
 
 section
 
-variable (M)
+variable (M N)
 
 theorem isLocalization_of_algEquiv [Algebra R P] [IsLocalization M S] (h : S ≃ₐ[R] P) :
     IsLocalization M P := by
@@ -264,6 +264,14 @@ theorem isLocalization_iff_of_ringEquiv (h : S ≃+* P) :
       haveI := (h.toRingHom.comp <| algebraMap R S).toAlgebra; IsLocalization M P :=
   letI := (h.toRingHom.comp <| algebraMap R S).toAlgebra
   isLocalization_iff_of_algEquiv M { h with commutes' := fun _ => rfl }
+
+variable (S) in
+/-- If an algebra is simultaneously localizations for two submonoids, then an arbitrary algebra
+is a localization of one submonoid iff it is a localization of the other. -/
+theorem isLocalization_iff_of_isLocalization [IsLocalization M S] [IsLocalization N S]
+    [Algebra R P] : IsLocalization M P ↔ IsLocalization N P :=
+  ⟨fun _ ↦ isLocalization_of_algEquiv N (algEquiv M S P),
+    fun _ ↦ isLocalization_of_algEquiv M (algEquiv N S P)⟩
 
 end
 

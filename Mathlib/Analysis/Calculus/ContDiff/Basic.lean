@@ -26,7 +26,7 @@ Similar results are given for `C^n` functions on domains.
 We use the notation `E [×n]→L[𝕜] F` for the space of continuous multilinear maps on `E^n` with
 values in `F`. This is the space in which the `n`-th derivative of a function from `E` to `F` lives.
 
-In this file, we denote `⊤ : ℕ∞` with `∞`.
+In this file, we denote `(⊤ : ℕ∞) : WithTop ℕ∞` with `∞` and `⊤ : WithTop ℕ∞` with `ω`.
 
 ## Tags
 
@@ -35,9 +35,7 @@ derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor ser
 
 noncomputable section
 
-open scoped NNReal Nat
-
-local notation "∞" => (⊤ : ℕ∞)
+open scoped NNReal Nat ContDiff
 
 universe u uE uF uG
 
@@ -52,7 +50,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type uE} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {F : Type uF}
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] {G : Type uG} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
   {X : Type*} [NormedAddCommGroup X] [NormedSpace 𝕜 X] {s t : Set E} {f : E → F}
-  {g : F → G} {x x₀ : E} {b : E × F → G} {m n : ℕ∞} {p : E → FormalMultilinearSeries 𝕜 E F}
+  {g : F → G} {x x₀ : E} {b : E × F → G} {m n : WithTop ℕ∞} {p : E → FormalMultilinearSeries 𝕜 E F}
 
 /-! ### Constants -/
 
@@ -72,16 +70,18 @@ theorem iteratedFDeriv_zero_fun {n : ℕ} : (iteratedFDeriv 𝕜 n fun _ : E ↦
   funext fun x ↦ by simpa [← iteratedFDerivWithin_univ] using
     iteratedFDerivWithin_zero_fun uniqueDiffOn_univ (mem_univ x)
 
-theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) :=
-  contDiff_of_differentiable_iteratedFDeriv fun m _ => by
-    rw [iteratedFDeriv_zero_fun]
-    exact differentiable_const (0 : E[×m]→L[𝕜] F)
+theorem contDiff_zero_fun : ContDiff 𝕜 n fun _ : E => (0 : F) := by
+  suffices ContDiff 𝕜 ω (fun _ : E => (0 : F)) from this.of_le le_top
+  rw [← contDiff_infty_iff_contDiff_omega]
+  apply contDiff_of_differentiable_iteratedFDeriv fun m _ ↦ ?_
+  rw [iteratedFDeriv_zero_fun]
+  exact differentiable_const (0 : E[×m]→L[𝕜] F)
 
 /-- Constants are `C^∞`.
 -/
 theorem contDiff_const {c : F} : ContDiff 𝕜 n fun _ : E => c := by
-  suffices h : ContDiff 𝕜 ∞ fun _ : E => c from h.of_le le_top
-  rw [contDiff_top_iff_fderiv]
+  suffices h : ContDiff 𝕜 ω fun _ : E => c from h.of_le le_top
+  rw [← contDiff_infty_iff_contDiff_omega, contDiff_top_iff_fderiv]
   refine ⟨differentiable_const c, ?_⟩
   rw [fderiv_const]
   exact contDiff_zero_fun
@@ -144,8 +144,8 @@ theorem contDiffWithinAt_singleton : ContDiffWithinAt 𝕜 n f {x} x :=
 /-- Unbundled bounded linear functions are `C^∞`.
 -/
 theorem IsBoundedLinearMap.contDiff (hf : IsBoundedLinearMap 𝕜 f) : ContDiff 𝕜 n f := by
-  suffices h : ContDiff 𝕜 ∞ f from h.of_le le_top
-  rw [contDiff_top_iff_fderiv]
+  suffices h : ContDiff 𝕜 ω f from h.of_le le_top
+  rw [← contDiff_infty_iff_contDiff_omega, contDiff_top_iff_fderiv]
   refine ⟨hf.differentiable, ?_⟩
   simp_rw [hf.fderiv]
   exact contDiff_const
@@ -179,8 +179,8 @@ theorem contDiffOn_id {s} : ContDiffOn 𝕜 n (id : E → E) s :=
 /-- Bilinear functions are `C^∞`.
 -/
 theorem IsBoundedBilinearMap.contDiff (hb : IsBoundedBilinearMap 𝕜 b) : ContDiff 𝕜 n b := by
-  suffices h : ContDiff 𝕜 ∞ b from h.of_le le_top
-  rw [contDiff_top_iff_fderiv]
+  suffices h : ContDiff 𝕜 ω b from h.of_le le_top
+  rw [← contDiff_infty_iff_contDiff_omega, contDiff_top_iff_fderiv]
   refine ⟨hb.differentiable, ?_⟩
   simp only [hb.fderiv]
   exact hb.isBoundedLinearMap_deriv.contDiff
@@ -883,8 +883,8 @@ section ClmApplyConst
 
 /-- Application of a `ContinuousLinearMap` to a constant commutes with `iteratedFDerivWithin`. -/
 theorem iteratedFDerivWithin_clm_apply_const_apply
-    {s : Set E} (hs : UniqueDiffOn 𝕜 s) {n : ℕ∞} {c : E → F →L[𝕜] G} (hc : ContDiffOn 𝕜 n c s)
-    {i : ℕ} (hi : i ≤ n) {x : E} (hx : x ∈ s) {u : F} {m : Fin i → E} :
+    {s : Set E} (hs : UniqueDiffOn 𝕜 s) {c : E → F →L[𝕜] G}
+    (hc : ContDiffOn 𝕜 n c s) {i : ℕ} (hi : i ≤ n) {x : E} (hx : x ∈ s) {u : F} {m : Fin i → E} :
     (iteratedFDerivWithin 𝕜 i (fun y ↦ (c y) u) s x) m = (iteratedFDerivWithin 𝕜 i c s x) m u := by
   induction i generalizing x with
   | zero => simp
@@ -905,7 +905,7 @@ theorem iteratedFDerivWithin_clm_apply_const_apply
 
 /-- Application of a `ContinuousLinearMap` to a constant commutes with `iteratedFDeriv`. -/
 theorem iteratedFDeriv_clm_apply_const_apply
-    {n : ℕ∞} {c : E → F →L[𝕜] G} (hc : ContDiff 𝕜 n c)
+    {c : E → F →L[𝕜] G} (hc : ContDiff 𝕜 n c)
     {i : ℕ} (hi : i ≤ n) {x : E} {u : F} {m : Fin i → E} :
     (iteratedFDeriv 𝕜 i (fun y ↦ (c y) u) x) m = (iteratedFDeriv 𝕜 i c x) m u := by
   simp only [← iteratedFDerivWithin_univ]
@@ -977,7 +977,7 @@ To show that `x ↦ D_yf(x,y)g(x)` (taken within `t`) is `C^m` at `x₀` within 
 * `g` is `C^m` at `x₀` within `s`;
 * Derivatives are unique at `g(x)` within `t` for `x` sufficiently close to `x₀` within `s ∪ {x₀}`;
 * `t` is a neighborhood of `g(x₀)` within `g '' s`; -/
-theorem ContDiffWithinAt.fderivWithin'' {f : E → F → G} {g : E → F} {t : Set F} {n : ℕ∞}
+theorem ContDiffWithinAt.fderivWithin'' {f : E → F → G} {g : E → F} {t : Set F}
     (hf : ContDiffWithinAt 𝕜 n (Function.uncurry f) (insert x₀ s ×ˢ t) (x₀, g x₀))
     (hg : ContDiffWithinAt 𝕜 m g s x₀)
     (ht : ∀ᶠ x in 𝓝[insert x₀ s] x₀, UniqueDiffWithinAt 𝕜 t (g x)) (hmn : m + 1 ≤ n)
@@ -990,14 +990,18 @@ theorem ContDiffWithinAt.fderivWithin'' {f : E → F → G} {g : E → F} {t : S
     refine hf'.congr_of_eventuallyEq_insert ?_
     filter_upwards [hv, ht]
     exact fun y hy h2y => (hvf' y hy).fderivWithin h2y
-  induction' m with m
-  · obtain rfl := eq_top_iff.mpr hmn
+  match m with
+  | ω =>
+    intro k hk
+    apply this k hk
+    exact le_rfl
+  | ∞ =>
     rw [contDiffWithinAt_top]
-    exact fun m => this m le_top
-  exact this _ le_rfl
+    exact fun m => this m (mod_cast le_top)
+  | (m : ℕ) => exact this _ le_rfl
 
 /-- A special case of `ContDiffWithinAt.fderivWithin''` where we require that `s ⊆ g⁻¹(t)`. -/
-theorem ContDiffWithinAt.fderivWithin' {f : E → F → G} {g : E → F} {t : Set F} {n : ℕ∞}
+theorem ContDiffWithinAt.fderivWithin' {f : E → F → G} {g : E → F} {t : Set F}
     (hf : ContDiffWithinAt 𝕜 n (Function.uncurry f) (insert x₀ s ×ˢ t) (x₀, g x₀))
     (hg : ContDiffWithinAt 𝕜 m g s x₀)
     (ht : ∀ᶠ x in 𝓝[insert x₀ s] x₀, UniqueDiffWithinAt 𝕜 t (g x)) (hmn : m + 1 ≤ n)
@@ -1006,7 +1010,7 @@ theorem ContDiffWithinAt.fderivWithin' {f : E → F → G} {g : E → F} {t : Se
 
 /-- A special case of `ContDiffWithinAt.fderivWithin'` where we require that `x₀ ∈ s` and there
 are unique derivatives everywhere within `t`. -/
-protected theorem ContDiffWithinAt.fderivWithin {f : E → F → G} {g : E → F} {t : Set F} {n : ℕ∞}
+protected theorem ContDiffWithinAt.fderivWithin {f : E → F → G} {g : E → F} {t : Set F}
     (hf : ContDiffWithinAt 𝕜 n (Function.uncurry f) (s ×ˢ t) (x₀, g x₀))
     (hg : ContDiffWithinAt 𝕜 m g s x₀) (ht : UniqueDiffOn 𝕜 t) (hmn : m + 1 ≤ n) (hx₀ : x₀ ∈ s)
     (hst : s ⊆ g ⁻¹' t) : ContDiffWithinAt 𝕜 m (fun x => fderivWithin 𝕜 (f x) t (g x)) s x₀ := by
@@ -1016,7 +1020,7 @@ protected theorem ContDiffWithinAt.fderivWithin {f : E → F → G} {g : E → F
   exact eventually_of_mem self_mem_nhdsWithin fun x hx => ht _ (hst hx)
 
 /-- `x ↦ fderivWithin 𝕜 (f x) t (g x) (k x)` is smooth at a point within a set. -/
-theorem ContDiffWithinAt.fderivWithin_apply {f : E → F → G} {g k : E → F} {t : Set F} {n : ℕ∞}
+theorem ContDiffWithinAt.fderivWithin_apply {f : E → F → G} {g k : E → F} {t : Set F}
     (hf : ContDiffWithinAt 𝕜 n (Function.uncurry f) (s ×ˢ t) (x₀, g x₀))
     (hg : ContDiffWithinAt 𝕜 m g s x₀) (hk : ContDiffWithinAt 𝕜 m k s x₀) (ht : UniqueDiffOn 𝕜 t)
     (hmn : m + 1 ≤ n) (hx₀ : x₀ ∈ s) (hst : s ⊆ g ⁻¹' t) :
@@ -1026,7 +1030,7 @@ theorem ContDiffWithinAt.fderivWithin_apply {f : E → F → G} {g k : E → F} 
 
 /-- `fderivWithin 𝕜 f s` is smooth at `x₀` within `s`. -/
 theorem ContDiffWithinAt.fderivWithin_right (hf : ContDiffWithinAt 𝕜 n f s x₀)
-    (hs : UniqueDiffOn 𝕜 s) (hmn : (m + 1 : ℕ∞) ≤ n) (hx₀s : x₀ ∈ s) :
+    (hs : UniqueDiffOn 𝕜 s) (hmn : m + 1 ≤ n) (hx₀s : x₀ ∈ s) :
     ContDiffWithinAt 𝕜 m (fderivWithin 𝕜 f s) s x₀ :=
   ContDiffWithinAt.fderivWithin
     (ContDiffWithinAt.comp (x₀, x₀) hf contDiffWithinAt_snd <| prod_subset_preimage_snd s s)
@@ -1036,7 +1040,7 @@ theorem ContDiffWithinAt.fderivWithin_right (hf : ContDiffWithinAt 𝕜 n f s x�
 theorem ContDiffWithinAt.fderivWithin_right_apply
     {f : F → G} {k : F → F} {s : Set F} {n : ℕ∞} {x₀ : F}
     (hf : ContDiffWithinAt 𝕜 n f s x₀) (hk : ContDiffWithinAt 𝕜 m k s x₀)
-    (hs : UniqueDiffOn 𝕜 s) (hmn : (m + 1 : ℕ∞) ≤ n) (hx₀s : x₀ ∈ s) :
+    (hs : UniqueDiffOn 𝕜 s) (hmn : m + 1 ≤ n) (hx₀s : x₀ ∈ s) :
     ContDiffWithinAt 𝕜 m (fun x => fderivWithin 𝕜 f s x (k x)) s x₀ :=
   ContDiffWithinAt.fderivWithin_apply
     (ContDiffWithinAt.comp (x₀, x₀) hf contDiffWithinAt_snd <| prod_subset_preimage_snd s s)
@@ -1044,10 +1048,10 @@ theorem ContDiffWithinAt.fderivWithin_right_apply
 
 -- TODO: can we make a version of `ContDiffWithinAt.fderivWithin` for iterated derivatives?
 theorem ContDiffWithinAt.iteratedFderivWithin_right {i : ℕ} (hf : ContDiffWithinAt 𝕜 n f s x₀)
-    (hs : UniqueDiffOn 𝕜 s) (hmn : (m + i : ℕ∞) ≤ n) (hx₀s : x₀ ∈ s) :
+    (hs : UniqueDiffOn 𝕜 s) (hmn : m + i ≤ n) (hx₀s : x₀ ∈ s) :
     ContDiffWithinAt 𝕜 m (iteratedFDerivWithin 𝕜 i f s) s x₀ := by
   induction' i with i hi generalizing m
-  · rw [ENat.coe_zero, add_zero] at hmn
+  · simp only [CharP.cast_eq_zero, add_zero] at hmn
     exact (hf.of_le hmn).continuousLinearMap_comp
       ((continuousMultilinearCurryFin0 𝕜 E F).symm : _ →L[𝕜] E [×0]→L[𝕜] F)
   · rw [Nat.cast_succ, add_comm _ 1, ← add_assoc] at hmn
@@ -1056,7 +1060,7 @@ theorem ContDiffWithinAt.iteratedFderivWithin_right {i : ℕ} (hf : ContDiffWith
         _ →L[𝕜] E [×(i+1)]→L[𝕜] F)
 
 /-- `x ↦ fderiv 𝕜 (f x) (g x)` is smooth at `x₀`. -/
-protected theorem ContDiffAt.fderiv {f : E → F → G} {g : E → F} {n : ℕ∞}
+protected theorem ContDiffAt.fderiv {f : E → F → G} {g : E → F}
     (hf : ContDiffAt 𝕜 n (Function.uncurry f) (x₀, g x₀)) (hg : ContDiffAt 𝕜 m g x₀)
     (hmn : m + 1 ≤ n) : ContDiffAt 𝕜 m (fun x => fderiv 𝕜 (f x) (g x)) x₀ := by
   simp_rw [← fderivWithin_univ]
@@ -1065,44 +1069,44 @@ protected theorem ContDiffAt.fderiv {f : E → F → G} {g : E → F} {n : ℕ�
   rw [preimage_univ]
 
 /-- `fderiv 𝕜 f` is smooth at `x₀`. -/
-theorem ContDiffAt.fderiv_right (hf : ContDiffAt 𝕜 n f x₀) (hmn : (m + 1 : ℕ∞) ≤ n) :
+theorem ContDiffAt.fderiv_right (hf : ContDiffAt 𝕜 n f x₀) (hmn : m + 1 ≤ n) :
     ContDiffAt 𝕜 m (fderiv 𝕜 f) x₀ :=
   ContDiffAt.fderiv (ContDiffAt.comp (x₀, x₀) hf contDiffAt_snd) contDiffAt_id hmn
 
 theorem ContDiffAt.iteratedFDeriv_right {i : ℕ} (hf : ContDiffAt 𝕜 n f x₀)
-    (hmn : (m + i : ℕ∞) ≤ n) : ContDiffAt 𝕜 m (iteratedFDeriv 𝕜 i f) x₀ := by
+    (hmn : m + i ≤ n) : ContDiffAt 𝕜 m (iteratedFDeriv 𝕜 i f) x₀ := by
   rw [← iteratedFDerivWithin_univ, ← contDiffWithinAt_univ] at *
   exact hf.iteratedFderivWithin_right uniqueDiffOn_univ hmn trivial
 
 /-- `x ↦ fderiv 𝕜 (f x) (g x)` is smooth. -/
-protected theorem ContDiff.fderiv {f : E → F → G} {g : E → F} {n m : ℕ∞}
+protected theorem ContDiff.fderiv {f : E → F → G} {g : E → F}
     (hf : ContDiff 𝕜 m <| Function.uncurry f) (hg : ContDiff 𝕜 n g) (hnm : n + 1 ≤ m) :
     ContDiff 𝕜 n fun x => fderiv 𝕜 (f x) (g x) :=
   contDiff_iff_contDiffAt.mpr fun _ => hf.contDiffAt.fderiv hg.contDiffAt hnm
 
 /-- `fderiv 𝕜 f` is smooth. -/
-theorem ContDiff.fderiv_right (hf : ContDiff 𝕜 n f) (hmn : (m + 1 : ℕ∞) ≤ n) :
+theorem ContDiff.fderiv_right (hf : ContDiff 𝕜 n f) (hmn : m + 1 ≤ n) :
     ContDiff 𝕜 m (fderiv 𝕜 f) :=
   contDiff_iff_contDiffAt.mpr fun _x => hf.contDiffAt.fderiv_right hmn
 
 theorem ContDiff.iteratedFDeriv_right {i : ℕ} (hf : ContDiff 𝕜 n f)
-    (hmn : (m + i : ℕ∞) ≤ n) : ContDiff 𝕜 m (iteratedFDeriv 𝕜 i f) :=
+    (hmn : m + i ≤ n) : ContDiff 𝕜 m (iteratedFDeriv 𝕜 i f) :=
   contDiff_iff_contDiffAt.mpr fun _x => hf.contDiffAt.iteratedFDeriv_right hmn
 
 /-- `x ↦ fderiv 𝕜 (f x) (g x)` is continuous. -/
-theorem Continuous.fderiv {f : E → F → G} {g : E → F} {n : ℕ∞}
+theorem Continuous.fderiv {f : E → F → G} {g : E → F}
     (hf : ContDiff 𝕜 n <| Function.uncurry f) (hg : Continuous g) (hn : 1 ≤ n) :
     Continuous fun x => fderiv 𝕜 (f x) (g x) :=
   (hf.fderiv (contDiff_zero.mpr hg) hn).continuous
 
 /-- `x ↦ fderiv 𝕜 (f x) (g x) (k x)` is smooth. -/
-theorem ContDiff.fderiv_apply {f : E → F → G} {g k : E → F} {n m : ℕ∞}
+theorem ContDiff.fderiv_apply {f : E → F → G} {g k : E → F}
     (hf : ContDiff 𝕜 m <| Function.uncurry f) (hg : ContDiff 𝕜 n g) (hk : ContDiff 𝕜 n k)
     (hnm : n + 1 ≤ m) : ContDiff 𝕜 n fun x => fderiv 𝕜 (f x) (g x) (k x) :=
   (hf.fderiv hg hnm).clm_apply hk
 
 /-- The bundled derivative of a `C^{n+1}` function is `C^n`. -/
-theorem contDiffOn_fderivWithin_apply {m n : ℕ∞} {s : Set E} {f : E → F} (hf : ContDiffOn 𝕜 n f s)
+theorem contDiffOn_fderivWithin_apply {s : Set E} {f : E → F} (hf : ContDiffOn 𝕜 n f s)
     (hs : UniqueDiffOn 𝕜 s) (hmn : m + 1 ≤ n) :
     ContDiffOn 𝕜 m (fun p : E × E => (fderivWithin 𝕜 f s p.1 : E →L[𝕜] F) p.2) (s ×ˢ univ) :=
   ((hf.fderivWithin hs hmn).comp contDiffOn_fst (prod_subset_preimage_fst _ _)).clm_apply
@@ -1176,7 +1180,7 @@ theorem contDiffAt_pi : ContDiffAt 𝕜 n Φ x ↔ ∀ i, ContDiffAt 𝕜 n (fun
 theorem contDiff_pi : ContDiff 𝕜 n Φ ↔ ∀ i, ContDiff 𝕜 n fun x => Φ x i := by
   simp only [← contDiffOn_univ, contDiffOn_pi]
 
-theorem contDiff_update [DecidableEq ι] (k : ℕ∞) (x : ∀ i, F' i) (i : ι) :
+theorem contDiff_update [DecidableEq ι] (k : WithTop ℕ∞) (x : ∀ i, F' i) (i : ι) :
     ContDiff 𝕜 k (update x i) := by
   rw [contDiff_pi]
   intro j
@@ -1187,7 +1191,7 @@ theorem contDiff_update [DecidableEq ι] (k : ℕ∞) (x : ∀ i, F' i) (i : ι)
   · exact contDiff_const
 
 variable (F') in
-theorem contDiff_single [DecidableEq ι] (k : ℕ∞) (i : ι) :
+theorem contDiff_single [DecidableEq ι] (k : WithTop ℕ∞) (i : ι) :
     ContDiff 𝕜 k (Pi.single i : F' i → ∀ i, F' i) :=
   contDiff_update k 0 i
 
@@ -1207,7 +1211,7 @@ section Add
 
 theorem HasFTaylorSeriesUpToOn.add {n : WithTop ℕ∞} {q g} (hf : HasFTaylorSeriesUpToOn n f p s)
     (hg : HasFTaylorSeriesUpToOn n g q s) : HasFTaylorSeriesUpToOn n (f + g) (p + q) s := by
-  convert HasFTaylorSeriesUpToOn.continuousLinearMap_comp
+  exact HasFTaylorSeriesUpToOn.continuousLinearMap_comp
     (ContinuousLinearMap.fst 𝕜 F F + .snd 𝕜 F F) (hf.prod hg)
 
 -- The sum is smooth.
@@ -1637,6 +1641,10 @@ invertible element.  The proof is by induction, bootstrapping using an identity 
 derivative of inversion as a bilinear map of inversion itself. -/
 theorem contDiffAt_ring_inverse [CompleteSpace R] (x : Rˣ) :
     ContDiffAt 𝕜 n Ring.inverse (x : R) := by
+  suffices H : ∀ (n : ℕ∞), ContDiffAt 𝕜 n Ring.inverse (x : R) by
+    intro k hk
+    exact H ⊤ k (mod_cast le_top)
+  intro n
   induction' n using ENat.nat_induction with n IH Itop
   · intro m hm
     refine ⟨{ y : R | IsUnit y }, ?_, ?_⟩
@@ -1648,7 +1656,7 @@ theorem contDiffAt_ring_inverse [CompleteSpace R] (x : Rˣ) :
       · rintro _ ⟨x', rfl⟩
         exact (inverse_continuousAt x').continuousWithinAt
       · simp [ftaylorSeriesWithin]
-  · rw [show (n.succ : ℕ∞) = n + 1 from rfl, contDiffAt_succ_iff_hasFDerivAt]
+  · rw [show ((n.succ : ℕ∞) : WithTop ℕ∞) = n + 1 from rfl, contDiffAt_succ_iff_hasFDerivAt]
     refine ⟨fun x : R => -mulLeftRight 𝕜 R (inverse x) (inverse x), ?_, ?_⟩
     · refine ⟨{ y : R | IsUnit y }, x.nhds, ?_⟩
       rintro _ ⟨y, rfl⟩
@@ -1671,36 +1679,36 @@ variable {𝕜}
 -- TODO: the next few lemmas don't need `𝕜` or `𝕜'` to be complete
 -- A good way to show this is to generalize `contDiffAt_ring_inverse` to the setting
 -- of a function `f` such that `∀ᶠ x in 𝓝 a, x * f x = 1`.
-theorem ContDiffWithinAt.inv {f : E → 𝕜'} {n} (hf : ContDiffWithinAt 𝕜 n f s x) (hx : f x ≠ 0) :
+theorem ContDiffWithinAt.inv {f : E → 𝕜'} (hf : ContDiffWithinAt 𝕜 n f s x) (hx : f x ≠ 0) :
     ContDiffWithinAt 𝕜 n (fun x => (f x)⁻¹) s x :=
   (contDiffAt_inv 𝕜 hx).comp_contDiffWithinAt x hf
 
-theorem ContDiffOn.inv {f : E → 𝕜'} {n} (hf : ContDiffOn 𝕜 n f s) (h : ∀ x ∈ s, f x ≠ 0) :
+theorem ContDiffOn.inv {f : E → 𝕜'} (hf : ContDiffOn 𝕜 n f s) (h : ∀ x ∈ s, f x ≠ 0) :
     ContDiffOn 𝕜 n (fun x => (f x)⁻¹) s := fun x hx => (hf.contDiffWithinAt hx).inv (h x hx)
 
-nonrec theorem ContDiffAt.inv {f : E → 𝕜'} {n} (hf : ContDiffAt 𝕜 n f x) (hx : f x ≠ 0) :
+nonrec theorem ContDiffAt.inv {f : E → 𝕜'} (hf : ContDiffAt 𝕜 n f x) (hx : f x ≠ 0) :
     ContDiffAt 𝕜 n (fun x => (f x)⁻¹) x :=
   hf.inv hx
 
-theorem ContDiff.inv {f : E → 𝕜'} {n} (hf : ContDiff 𝕜 n f) (h : ∀ x, f x ≠ 0) :
+theorem ContDiff.inv {f : E → 𝕜'} (hf : ContDiff 𝕜 n f) (h : ∀ x, f x ≠ 0) :
     ContDiff 𝕜 n fun x => (f x)⁻¹ := by
   rw [contDiff_iff_contDiffAt]; exact fun x => hf.contDiffAt.inv (h x)
 
 -- TODO: generalize to `f g : E → 𝕜'`
-theorem ContDiffWithinAt.div [CompleteSpace 𝕜] {f g : E → 𝕜} {n} (hf : ContDiffWithinAt 𝕜 n f s x)
+theorem ContDiffWithinAt.div [CompleteSpace 𝕜] {f g : E → 𝕜} (hf : ContDiffWithinAt 𝕜 n f s x)
     (hg : ContDiffWithinAt 𝕜 n g s x) (hx : g x ≠ 0) :
     ContDiffWithinAt 𝕜 n (fun x => f x / g x) s x := by
   simpa only [div_eq_mul_inv] using hf.mul (hg.inv hx)
 
-theorem ContDiffOn.div [CompleteSpace 𝕜] {f g : E → 𝕜} {n} (hf : ContDiffOn 𝕜 n f s)
+theorem ContDiffOn.div [CompleteSpace 𝕜] {f g : E → 𝕜}  (hf : ContDiffOn 𝕜 n f s)
     (hg : ContDiffOn 𝕜 n g s) (h₀ : ∀ x ∈ s, g x ≠ 0) : ContDiffOn 𝕜 n (f / g) s := fun x hx =>
   (hf x hx).div (hg x hx) (h₀ x hx)
 
-nonrec theorem ContDiffAt.div [CompleteSpace 𝕜] {f g : E → 𝕜} {n} (hf : ContDiffAt 𝕜 n f x)
+nonrec theorem ContDiffAt.div [CompleteSpace 𝕜] {f g : E → 𝕜} (hf : ContDiffAt 𝕜 n f x)
     (hg : ContDiffAt 𝕜 n g x) (hx : g x ≠ 0) : ContDiffAt 𝕜 n (fun x => f x / g x) x :=
   hf.div hg hx
 
-theorem ContDiff.div [CompleteSpace 𝕜] {f g : E → 𝕜} {n} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g)
+theorem ContDiff.div [CompleteSpace 𝕜] {f g : E → 𝕜} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g)
     (h0 : ∀ x, g x ≠ 0) : ContDiff 𝕜 n fun x => f x / g x := by
   simp only [contDiff_iff_contDiffAt] at *
   exact fun x => (hf x).div (hg x) (h0 x)
@@ -1738,23 +1746,17 @@ section FunctionInverse
 
 open ContinuousLinearMap
 
-/-- If `f` is a local homeomorphism and the point `a` is in its target,
-and if `f` is `n` times continuously differentiable at `f.symm a`,
-and if the derivative at `f.symm a` is a continuous linear equivalence,
-then `f.symm` is `n` times continuously differentiable at the point `a`.
-
-This is one of the easy parts of the inverse function theorem: it assumes that we already have
-an inverse function. -/
-theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomorph E F)
+private theorem PartialHomeomorph.contDiffAt_symm_aux {n : ℕ∞}
+    [CompleteSpace E] (f : PartialHomeomorph E F)
     {f₀' : E ≃L[𝕜] F} {a : F} (ha : a ∈ f.target)
     (hf₀' : HasFDerivAt f (f₀' : E →L[𝕜] F) (f.symm a)) (hf : ContDiffAt 𝕜 n f (f.symm a)) :
     ContDiffAt 𝕜 n f.symm a := by
-  -- We prove this by induction on `n`
+    -- We prove this by induction on `n`
   induction' n using ENat.nat_induction with n IH Itop
-  · rw [contDiffAt_zero]
+  · apply contDiffAt_zero.2
     exact ⟨f.target, IsOpen.mem_nhds f.open_target ha, f.continuousOn_invFun⟩
   · obtain ⟨f', ⟨u, hu, hff'⟩, hf'⟩ := contDiffAt_succ_iff_hasFDerivAt.mp hf
-    rw [show (n.succ : ℕ∞) = n + 1 from rfl, contDiffAt_succ_iff_hasFDerivAt]
+    rw [show ((n.succ : ℕ∞) : WithTop ℕ∞) = n + 1 from rfl, contDiffAt_succ_iff_hasFDerivAt]
     -- For showing `n.succ` times continuous differentiability (the main inductive step), it
     -- suffices to produce the derivative and show that it is `n` times continuously differentiable
     have eq_f₀' : f' (f.symm a) = f₀' := (hff' (f.symm a) (mem_of_mem_nhds hu)).unique hf₀'
@@ -1790,6 +1792,24 @@ theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomor
   · refine contDiffAt_top.mpr ?_
     intro n
     exact Itop n (contDiffAt_top.mp hf n)
+
+/-- If `f` is a local homeomorphism and the point `a` is in its target,
+and if `f` is `n` times continuously differentiable at `f.symm a`,
+and if the derivative at `f.symm a` is a continuous linear equivalence,
+then `f.symm` is `n` times continuously differentiable at the point `a`.
+
+This is one of the easy parts of the inverse function theorem: it assumes that we already have
+an inverse function. -/
+theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomorph E F)
+    {f₀' : E ≃L[𝕜] F} {a : F} (ha : a ∈ f.target)
+    (hf₀' : HasFDerivAt f (f₀' : E →L[𝕜] F) (f.symm a)) (hf : ContDiffAt 𝕜 n f (f.symm a)) :
+    ContDiffAt 𝕜 n f.symm a := by
+  match n with
+  | ω =>
+    intro k hk
+    exact f.contDiffAt_symm_aux ha hf₀' (hf.of_le (m := k) le_top) k le_rfl
+  | (n : ℕ∞) =>
+    exact f.contDiffAt_symm_aux ha hf₀' hf
 
 /-- If `f` is an `n` times continuously differentiable homeomorphism,
 and if the derivative of `f` at each point is a continuous linear equivalence,
@@ -1905,14 +1925,14 @@ theorem contDiffOn_top_iff_derivWithin (hs : UniqueDiffOn 𝕜 s₂) :
     ContDiffOn 𝕜 ∞ f₂ s₂ ↔ DifferentiableOn 𝕜 f₂ s₂ ∧ ContDiffOn 𝕜 ∞ (derivWithin f₂ s₂) s₂ := by
   constructor
   · intro h
-    refine ⟨h.differentiableOn le_top, ?_⟩
+    refine ⟨h.differentiableOn (mod_cast le_top), ?_⟩
     refine contDiffOn_top.2 fun n => ((contDiffOn_succ_iff_derivWithin hs).1 ?_).2
-    exact h.of_le le_top
+    exact h.of_le (mod_cast le_top)
   · intro h
     refine contDiffOn_top.2 fun n => ?_
-    have A : (n : ℕ∞) ≤ ∞ := le_top
+    have A : (n : ℕ∞) ≤ ∞ := mod_cast le_top
     apply ((contDiffOn_succ_iff_derivWithin hs).2 ⟨h.1, h.2.of_le A⟩).of_le
-    exact WithTop.coe_le_coe.2 (Nat.le_succ n)
+    exact_mod_cast (Nat.le_succ n)
 
 /-- A function is `C^∞` on an open domain if and only if it is differentiable
 there, and its derivative (formulated with `deriv`) is `C^∞`. -/
@@ -1923,13 +1943,17 @@ theorem contDiffOn_top_iff_deriv_of_isOpen (hs : IsOpen s₂) :
 
 protected theorem ContDiffOn.derivWithin (hf : ContDiffOn 𝕜 n f₂ s₂) (hs : UniqueDiffOn 𝕜 s₂)
     (hmn : m + 1 ≤ n) : ContDiffOn 𝕜 m (derivWithin f₂ s₂) s₂ := by
-  cases m
-  · change ∞ + 1 ≤ n at hmn
-    have : n = ∞ := by simpa using hmn
-    rw [this] at hf
-    exact ((contDiffOn_top_iff_derivWithin hs).1 hf).2
-  · change (Nat.succ _ : ℕ∞) ≤ n at hmn
-    exact ((contDiffOn_succ_iff_derivWithin hs).1 (hf.of_le hmn)).2
+  rcases le_or_lt ∞ n with hn | hn
+  · have : ContDiffOn 𝕜 ∞ (derivWithin f₂ s₂) s₂ :=
+      ((contDiffOn_top_iff_derivWithin hs).1 (hf.of_le hn)).2
+    intro x hx k hk
+    exact this x hx k (mod_cast le_top)
+  · match m with
+    | ω => simpa using hmn.trans_lt hn
+    | ∞ => simpa using hmn.trans_lt hn
+    | (m : ℕ) =>
+      change (m.succ : ℕ∞) ≤ n at hmn
+      exact ((contDiffOn_succ_iff_derivWithin hs).1 (hf.of_le hmn)).2
 
 theorem ContDiffOn.deriv_of_isOpen (hf : ContDiffOn 𝕜 n f₂ s₂) (hs : IsOpen s₂) (hmn : m + 1 ≤ n) :
     ContDiffOn 𝕜 m (deriv f₂) s₂ :=

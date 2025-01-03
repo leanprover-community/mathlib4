@@ -391,6 +391,7 @@ theorem closure_le {s : Set R} {t : NonUnitalSubring R} : closure s ≤ t ↔ s 
 
 /-- `NonUnitalSubring` closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
+@[gcongr]
 theorem closure_mono ⦃s t : Set R⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Set.Subset.trans h subset_closure
 

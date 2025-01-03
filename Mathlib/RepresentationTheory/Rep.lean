@@ -254,7 +254,7 @@ variable (M G : Type) [Monoid M] [CommGroup G] [MulDistribMulAction M G]
 def ofMulDistribMulAction : Rep ℤ M := Rep.of (Representation.ofMulDistribMulAction M G)
 
 @[simp] theorem ofMulDistribMulAction_ρ_apply_apply (g : M) (a : Additive G) :
-    (ofMulDistribMulAction M G).ρ g a = Additive.ofMul (g • Additive.toMul a) := rfl
+    (ofMulDistribMulAction M G).ρ g a = Additive.ofMul (g • a.toMul) := rfl
 
 /-- Given an `R`-algebra `S`, the `ℤ`-linear representation associated to the natural action of
 `S ≃ₐ[R] S` on `Sˣ`. -/

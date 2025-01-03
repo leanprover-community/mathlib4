@@ -505,6 +505,7 @@ theorem encard_le_coe_iff_finite_ncard_le {k : ℕ} : s.encard ≤ k ↔ s.Finit
 theorem Infinite.ncard (hs : s.Infinite) : s.ncard = 0 := by
   rw [← Nat.card_coe_set_eq, @Nat.card_eq_zero_of_infinite _ hs.to_subtype]
 
+@[gcongr]
 theorem ncard_le_ncard (hst : s ⊆ t) (ht : t.Finite := by toFinite_tac) :
     s.ncard ≤ t.ncard := by
   rw [← Nat.cast_le (α := ℕ∞), ht.cast_ncard_eq, (ht.subset hst).cast_ncard_eq]
@@ -827,9 +828,15 @@ theorem ncard_diff_add_ncard_of_subset (h : s ⊆ t) (ht : t.Finite := by toFini
   rw [ht.cast_ncard_eq, (ht.subset h).cast_ncard_eq, (ht.diff _).cast_ncard_eq,
     encard_diff_add_encard_of_subset h]
 
-theorem ncard_diff (h : s ⊆ t) (ht : t.Finite := by toFinite_tac) :
+theorem ncard_diff (hst : s ⊆ t) (hs : s.Finite := by toFinite_tac) :
     (t \ s).ncard = t.ncard - s.ncard := by
-  rw [← ncard_diff_add_ncard_of_subset h ht, add_tsub_cancel_right]
+  obtain ht | ht := t.finite_or_infinite
+  · rw [← ncard_diff_add_ncard_of_subset hst ht, add_tsub_cancel_right]
+  · rw [ht.ncard, Nat.zero_sub, (ht.diff hs).ncard]
+
+lemma cast_ncard_sdiff {R : Type*} [AddGroupWithOne R] (hst : s ⊆ t) (ht : t.Finite) :
+    ((t \ s).ncard : R) = t.ncard - s.ncard := by
+  rw [ncard_diff hst (ht.subset hst), Nat.cast_sub (ncard_le_ncard hst ht)]
 
 theorem ncard_le_ncard_diff_add_ncard (s t : Set α) (ht : t.Finite := by toFinite_tac) :
     s.ncard ≤ (s \ t).ncard + t.ncard := by

@@ -180,7 +180,7 @@ theorem lowerSemicontinuous_aux {ι : Type*} {F : ι → α → E} {p : Filter �
       (𝓝 (∑ i ∈ Finset.range n, edist (f (u (i + 1))) (f (u i)))) := by
     apply tendsto_finset_sum
     exact fun i _ => Tendsto.edist (Ffs (u i.succ) (us i.succ)) (Ffs (u i) (us i))
-  exact (eventually_gt_of_tendsto_gt hlt this).mono fun i h => h.trans_le (sum_le (F i) n um us)
+  exact (this.eventually_const_lt hlt).mono fun i h => h.trans_le (sum_le (F i) n um us)
 
 /-- The map `(eVariationOn · s)` is lower semicontinuous for pointwise convergence *on `s`*.
 Pointwise convergence on `s` is encoded here as uniform convergence on the family consisting of the
