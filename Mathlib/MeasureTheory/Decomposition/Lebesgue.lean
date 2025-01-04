@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
 import Mathlib.MeasureTheory.Decomposition.UnsignedHahn
-import Mathlib.MeasureTheory.Function.AEEqOfIntegral
+import Mathlib.MeasureTheory.Function.AEEqOfLIntegral
+import Mathlib.MeasureTheory.Function.L1Space
 import Mathlib.MeasureTheory.Measure.Sub
 
 /-!
