@@ -483,6 +483,18 @@ namespace OrderIso
 
 variable [LE α] [LE β] [LE γ] (a : α) (b : β) (c : γ)
 
+/-- `Equiv.sumCongr` promoted to an order isomorphism. -/
+@[simps! apply]
+def sumCongr {α₁ α₂ β₁ β₂ : Type*} [LE α₁] [LE α₂] [LE β₁] [LE β₂]
+    (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : α₁ ⊕ β₁ ≃o α₂ ⊕ β₂ where
+  toEquiv := Equiv.sumCongr ea eb
+  map_rel_iff' := by rintro (a | a) (b | b) <;> simp
+
+@[simp]
+theorem sumCongr_symm {α₁ α₂ β₁ β₂ : Type*} [LE α₁] [LE α₂] [LE β₁] [LE β₂]
+    (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : (sumCongr ea eb).symm = sumCongr ea.symm eb.symm :=
+  rfl
+
 /-- `Equiv.sumComm` promoted to an order isomorphism. -/
 @[simps! apply]
 def sumComm (α β : Type*) [LE α] [LE β] : α ⊕ β ≃o β ⊕ α :=
@@ -552,7 +564,19 @@ theorem sumDualDistrib_symm_inl : (sumDualDistrib α β).symm (inl (toDual a)) =
 theorem sumDualDistrib_symm_inr : (sumDualDistrib α β).symm (inr (toDual b)) = toDual (inr b) :=
   rfl
 
-/-- `Equiv.SumAssoc` promoted to an order isomorphism. -/
+/-- `Equiv.sumCongr` promoted to an order isomorphism. -/
+@[simps! apply]
+def sumLexCongr {α₁ α₂ β₁ β₂ : Type*} [LE α₁] [LE α₂] [LE β₁] [LE β₂]
+    (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : α₁ ⊕ₗ β₁ ≃o α₂ ⊕ₗ β₂ where
+  toEquiv := ofLex.trans ((Equiv.sumCongr ea eb).trans toLex)
+  map_rel_iff' := by simp_rw [Lex.forall]; rintro (a | a) (b | b) <;> simp
+
+@[simp]
+theorem sumLexCongr_symm {α₁ α₂ β₁ β₂ : Type*} [LE α₁] [LE α₂] [LE β₁] [LE β₂]
+    (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : (sumLexCongr ea eb).symm = sumLexCongr ea.symm eb.symm :=
+  rfl
+
+/-- `Equiv.sumAssoc` promoted to an order isomorphism. -/
 def sumLexAssoc (α β γ : Type*) [LE α] [LE β] [LE γ] : (α ⊕ₗ β) ⊕ₗ γ ≃o α ⊕ₗ β ⊕ₗ γ :=
   { Equiv.sumAssoc α β γ with
     map_rel_iff' := fun {a b} =>
