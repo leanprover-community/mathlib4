@@ -35,7 +35,7 @@ lemma isIdempotentElem_idempotent (i : I) : IsIdempotentElem (idempotent V i : R
 /-- If a ring can be decomposed into direct sum of finite left ideals `Vᵢ`
   where `1 = e₁ + ... + eₙ` and `eᵢ ∈ Vᵢ`, then `eᵢ` is a family of complete
   orthogonal idempotents.-/
-theorem orthogonalIdempotents_idempotent [Fintype I]:
+theorem completeOrthogonalIdempotents_idempotent [Fintype I]:
     CompleteOrthogonalIdempotents fun i ↦ idempotent V i where
   idem := isIdempotentElem_idempotent V
   ortho := fun i j hij ↦ by
