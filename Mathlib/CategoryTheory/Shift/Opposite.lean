@@ -3,8 +3,9 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.CommShift
+import Mathlib.CategoryTheory.Shift.Adjunction
 import Mathlib.CategoryTheory.Preadditive.Opposite
+import Mathlib.CategoryTheory.Adjunction.Opposites
 
 /-!
 # The (naive) shift on the opposite category
@@ -20,11 +21,17 @@ define the shift on `Cᵒᵖ` so that `shiftFunctor Cᵒᵖ n` for `n : ℤ` ide
 of the shift on `Cᵒᵖ` shall combine the shift on `OppositeShift C A` and another
 construction of the "pullback" of a shift by a monoid morphism like `n ↦ -n`.
 
+Given a `CommShift` structure on a functor `F`, we define a `CommShift` structure on `F.op`
+(and vice versa).
+We also prove that, if an adjunction `F ⊣ G` is compatible with `CommShift` structures on
+`F` and `G`, then the opposite adjunction `G.op ⊣ F.op` is compatible with the opposite
+`CommShift` structures.
+
 -/
 
 namespace CategoryTheory
 
-open Limits
+open Limits Category
 
 section
 
@@ -172,5 +179,44 @@ noncomputable def commShiftUnop
     rfl
 
 end Functor
+
+namespace NatTrans
+
+attribute [local instance] Functor.commShiftOp
+
+variable {F} {G : C ⥤ D} [F.CommShift A] [G.CommShift A]
+
+open Opposite in
+lemma commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
+    NatTrans.CommShift (C := OppositeShift C A) (D := OppositeShift D A) (NatTrans.op τ) A where
+      shift_comm _ := by
+        ext
+        rw [← cancel_mono ((F.op.commShiftIso _ (C := OppositeShift C A)
+          (D := OppositeShift D A)).inv.app _), ← cancel_epi ((G.op.commShiftIso _
+          (C := OppositeShift C A) (D := OppositeShift D A)).inv.app _)]
+        dsimp
+        simp only [assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj,
+          Functor.op_obj, comp_id]
+        exact (op_inj_iff _ _).mpr (NatTrans.shift_app_comm τ _ (unop _))
+
+end NatTrans
+
+namespace Adjunction
+
+attribute [local instance] Functor.commShiftOp NatTrans.commShift_op
+
+variable {F} {G : D ⥤ C} (adj : F ⊣ G)
+
+/--
+If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F` and `G`, then
+the opposite adjunction `G.op ⊣ F.op` is compatible with the opposite `CommShift` structures.
+-/
+lemma commShift_op [F.CommShift A] [G.CommShift A]  [adj.CommShift A] :
+    Adjunction.CommShift (C := OppositeShift D A) (D := OppositeShift C A)
+      adj.op A where
+  commShift_unit := by dsimp; infer_instance
+  commShift_counit := by dsimp; infer_instance
+
+end Adjunction
 
 end CategoryTheory
