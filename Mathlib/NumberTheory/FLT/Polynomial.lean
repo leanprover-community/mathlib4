@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
 import Mathlib.Algebra.Polynomial.Expand
+import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.FLT.MasonStothers
 import Mathlib.RingTheory.Polynomial.Content
@@ -78,12 +79,6 @@ private lemma derivative_pow_eq_zero_iff {n : ℕ} (chn : ¬ringChar k ∣ n) {a
   · intro hd
     rw [derivative_pow, hd, MulZeroClass.mul_zero]
 
-private lemma mul_eq_zero_left_iff
-    {M₀ : Type*} [MulZeroClass M₀] [NoZeroDivisors M₀]
-    {a : M₀} {b : M₀}  (ha : a ≠ 0) : a * b = 0 ↔ b = 0 := by
-  rw [mul_eq_zero]
-  tauto
-
 private lemma radical_natDegree_le [DecidableEq k] {a : k[X]} (h : a ≠ 0) :
     (radical a).natDegree ≤ a.natDegree :=
   natDegree_le_of_dvd (radical_dvd_self a) h
@@ -140,9 +135,9 @@ private theorem Polynomial.flt_catalan_deriv [DecidableEq k]
     exfalso
     exact (ineq_pqr_contradiction hp hq hr hineq hpa hqb hrc)
   · rw [derivative_C_mul, derivative_C_mul, derivative_C_mul,
-        mul_eq_zero_left_iff (C_ne_zero.mpr hu),
-        mul_eq_zero_left_iff (C_ne_zero.mpr hv),
-        mul_eq_zero_left_iff (C_ne_zero.mpr hw),
+        mul_eq_zero_iff_left (C_ne_zero.mpr hu),
+        mul_eq_zero_iff_left (C_ne_zero.mpr hv),
+        mul_eq_zero_iff_left (C_ne_zero.mpr hw),
         derivative_pow_eq_zero_iff chp,
         derivative_pow_eq_zero_iff chq,
         derivative_pow_eq_zero_iff chr] at dr0
@@ -161,26 +156,7 @@ private lemma find_contract {a : k[X]}
     exact ha heq
   · rw [← natDegree_expand, ← heq]
 
-private theorem expand_dvd {a b : k[X]} (n : ℕ) (h : a ∣ b) :
-    expand k n a ∣ expand k n b := by
-  obtain ⟨t, eqn⟩ := h
-  use expand k n t
-  rw [eqn, map_mul]
-
 variable [DecidableEq k]
-
-private theorem is_coprime_of_expand
-    {a b : k[X]} {n : ℕ} (hn : n ≠ 0) :
-    IsCoprime (expand k n a) (expand k n b) → IsCoprime a b := by
-  simp_rw [← EuclideanDomain.gcd_isUnit_iff]
-  cases' EuclideanDomain.gcd_dvd a b with ha hb
-  have he := EuclideanDomain.dvd_gcd (expand_dvd n ha) (expand_dvd n hb)
-  intro hu
-  have heu := isUnit_of_dvd_unit he hu
-  rw [Polynomial.isUnit_iff] at heu ⊢
-  obtain ⟨r, hur, eq_r⟩ := heu
-  rw [eq_comm, expand_eq_C (zero_lt_iff.mpr hn), eq_comm] at eq_r
-  exact ⟨r, hur, eq_r⟩
 
 theorem Polynomial.flt_catalan_aux
     {p q r : ℕ} {a b c : k[X]} {u v w : k}
@@ -222,7 +198,7 @@ theorem Polynomial.flt_catalan_aux
         rw [← eq_d, eq_deg_a, hca, zero_mul]
       by_contra hnca; apply hnca
       apply ih_d _ _ _ ca_nz cb_nz cc_nz <;> clear ih_d <;> try rfl
-      · apply is_coprime_of_expand chn0
+      · apply (isCoprime_expand chn0).mp
         rwa [← eq_a, ← eq_b]
       · have _ : ch ≠ 1 := CharP.ringChar_ne_one
         have hch2 : 2 ≤ ch := by omega
