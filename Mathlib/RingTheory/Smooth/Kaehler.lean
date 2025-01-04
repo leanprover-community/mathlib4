@@ -447,3 +447,6 @@ theorem Algebra.FormallySmooth.iff_subsingleton_and_projective :
   show Function.Injective (Generators.self R S).toExtension.cotangentComplex ↔ _
   rw [← LinearMap.ker_eq_bot, ← Submodule.subsingleton_iff_eq_bot]
   rfl
+
+instance [Algebra.FormallySmooth R S] : Subsingleton (Algebra.H1Cotangent R S) :=
+  (Algebra.FormallySmooth.iff_subsingleton_and_projective.mp ‹_›).1
