@@ -246,7 +246,7 @@ theorem linfty_opNorm_def (A : Matrix m n α) :
     ‖A‖ = ((Finset.univ : Finset m).sup fun i : m => ∑ j : n, ‖A i j‖₊ : ℝ≥0) := by
   -- Porting note: added
   change ‖fun i => (WithLp.equiv 1 _).symm (A i)‖ = _
-  simp [Pi.norm_def, PiLp.nnnorm_eq_sum ENNReal.one_ne_top]
+  simp [Pi.norm_def, PiLp.nnnorm_eq_of_L1]
 
 @[deprecated (since := "2024-02-02")] alias linfty_op_norm_def := linfty_opNorm_def
 
