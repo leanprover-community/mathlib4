@@ -149,7 +149,7 @@ variable {V : Type*} [AddCommGroup V] [Module k V] [LieRingModule L V] [LieModul
 variable [CharZero k] [Module.Finite k V]
 
 open Submodule in
-theorem extend_weight [LieModule.IsTriangularizable k L V]
+theorem exists_nontrivial_weightSpace_of_lieIdeal [LieModule.IsTriangularizable k L V]
     (A : LieIdeal k L) (hA : IsCoatom A.toSubmodule)
     (χ₀ : Module.Dual k A) [Nontrivial (weightSpace V χ₀)] :
     ∃ (χ : Module.Dual k L), Nontrivial (weightSpace V χ) := by
@@ -210,7 +210,7 @@ private lemma exists_forall_lie_eq_smul_of_isSolvable_of_finite
     exact hAL <| LieSubmodule.lie_mem_lie (LieSubmodule.mem_top _) (LieSubmodule.mem_top _)
   change LieIdeal k L at A -- remove this line when bug in `lift` is fixed (#15865)
   obtain ⟨χ', _⟩ := exists_forall_lie_eq_smul_of_isSolvable_of_finite A
-  exact extend_weight A hA χ'
+  exact exists_nontrivial_weightSpace_of_lieIdeal A hA χ'
 termination_by Module.finrank k L
 decreasing_by
   simp_wf
