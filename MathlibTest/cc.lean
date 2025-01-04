@@ -592,3 +592,12 @@ example : "Miyahara Kō" = "Miyahara Kō" := by
   cc
 
 end lit
+
+section CCPanic
+
+example (n k : ℤ) (hnk : n = 2 * k + 1)
+    (hk : (2 * k + 1) * (2 * k + 1 + 1) = 2 * ((2 * k + 1) * (k + 1))) :
+    n * (n + 1) = 2 * ((2 * k + 1) * (k + 1)) := by
+  cc
+
+end CCPanic
