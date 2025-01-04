@@ -1177,6 +1177,14 @@ theorem deleteVerts_inter_verts_set_right_eq :
     G'.deleteVerts (s ∩ G'.verts) = G'.deleteVerts s := by
   ext <;> simp +contextual [imp_false]
 
+lemma disjoint_deleteVerts_verts_image_val {s : Set V}
+    {t : Set ((⊤ : Subgraph G).deleteVerts s).verts} :
+    Disjoint s (Subtype.val '' t) := by
+  rw [Set.disjoint_right]
+  intro v hv
+  obtain ⟨v', ⟨v'', rfl⟩⟩ := hv
+  exact v'.prop.2
+
 end DeleteVerts
 
 end Subgraph
