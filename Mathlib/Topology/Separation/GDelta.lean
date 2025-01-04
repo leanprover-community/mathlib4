@@ -60,7 +60,7 @@ protected theorem IsGδ.singleton [FirstCountableTopology X] [T1Space X] (x : X)
 
 theorem Set.Finite.isGδ [FirstCountableTopology X] {s : Set X} [T1Space X] (hs : s.Finite) :
     IsGδ s :=
-  Finite.induction_on hs .empty fun _ _ ↦ .union (.singleton _)
+  Finite.induction_on _ hs .empty fun _ _ ↦ .union (.singleton _)
 
 
 section PerfectlyNormal

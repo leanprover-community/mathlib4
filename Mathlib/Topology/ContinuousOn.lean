@@ -233,7 +233,7 @@ theorem nhds_of_Ici_Iic [LinearOrder α] {b : α}
 
 theorem nhdsWithin_biUnion {ι} {I : Set ι} (hI : I.Finite) (s : ι → Set α) (a : α) :
     𝓝[⋃ i ∈ I, s i] a = ⨆ i ∈ I, 𝓝[s i] a :=
-  Set.Finite.induction_on hI (by simp) fun _ _ hT ↦ by
+  Set.Finite.induction_on _ hI (by simp) fun _ _ hT ↦ by
     simp only [hT, nhdsWithin_union, iSup_insert, biUnion_insert]
 
 theorem nhdsWithin_sUnion {S : Set (Set α)} (hS : S.Finite) (a : α) :

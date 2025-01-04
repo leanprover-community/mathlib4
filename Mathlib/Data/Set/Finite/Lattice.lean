@@ -248,9 +248,9 @@ lemma map_finite_iInf {F ι : Type*} [CompleteLattice α] [CompleteLattice β] [
 theorem Finite.iSup_biInf_of_monotone {ι ι' α : Type*} [Preorder ι'] [Nonempty ι']
     [IsDirected ι' (· ≤ ·)] [Order.Frame α] {s : Set ι} (hs : s.Finite) {f : ι → ι' → α}
     (hf : ∀ i ∈ s, Monotone (f i)) : ⨆ j, ⨅ i ∈ s, f i j = ⨅ i ∈ s, ⨆ j, f i j := by
-  induction s, hs using Set.Finite.dinduction_on with
-  | H0 => simp [iSup_const]
-  | H1 _ _ ihs =>
+  induction s, hs using Set.Finite.induction_on with
+  | empty => simp [iSup_const]
+  | insert _ _ ihs =>
     rw [forall_mem_insert] at hf
     simp only [iInf_insert, ← ihs hf.2]
     exact iSup_inf_of_monotone hf.1 fun j₁ j₂ hj => iInf₂_mono fun i hi => hf.2 i hi hj
@@ -333,12 +333,12 @@ variable [Preorder α] [IsDirected α (· ≤ ·)] [Nonempty α] {s : Set α}
 
 /-- A finite set is bounded above. -/
 protected theorem Finite.bddAbove (hs : s.Finite) : BddAbove s :=
-  Finite.induction_on hs bddAbove_empty fun _ _ h => h.insert _
+  Finite.induction_on _ hs bddAbove_empty fun _ _ h => h.insert _
 
 /-- A finite union of sets which are all bounded above is still bounded above. -/
 theorem Finite.bddAbove_biUnion {I : Set β} {S : β → Set α} (H : I.Finite) :
     BddAbove (⋃ i ∈ I, S i) ↔ ∀ i ∈ I, BddAbove (S i) :=
-  Finite.induction_on H (by simp only [biUnion_empty, bddAbove_empty, forall_mem_empty])
+  Finite.induction_on _ H (by simp only [biUnion_empty, bddAbove_empty, forall_mem_empty])
     fun _ _ hs => by simp only [biUnion_insert, forall_mem_insert, bddAbove_union, hs]
 
 theorem infinite_of_not_bddAbove : ¬BddAbove s → s.Infinite :=
