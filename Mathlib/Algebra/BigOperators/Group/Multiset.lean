@@ -5,7 +5,8 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.Group.Prod
-import Mathlib.Data.Multiset.Basic
+import Mathlib.Algebra.Order.Group.Multiset
+import Mathlib.Algebra.Order.Sub.Unbundled.Basic
 
 /-!
 # Sums and products over multisets
