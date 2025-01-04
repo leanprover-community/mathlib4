@@ -1325,4 +1325,10 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} (hU : Nonempty U) (hV : Non
 
 end subtypeRestr
 
+/-- Partial homeomorphisms are continuous on their intended domain, the `source`. -/
+lemma continuous_comp_val {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y]
+    (p : PartialHomeomorph X Y) : Continuous <|p.toPartialEquiv ∘ (@Subtype.val X p.source) :=
+  p.continuousOn.comp_continuous continuous_subtype_val Subtype.coe_prop
+
+
 end PartialHomeomorph
