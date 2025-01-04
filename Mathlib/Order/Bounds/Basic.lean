@@ -916,8 +916,8 @@ theorem isLeast_sdiff [GeneralizedCoheytingAlgebra α] (a b : α) :
 
 theorem isGreatest_compl [HeytingAlgebra α] (a : α) :
     IsGreatest {w | Disjoint w a} (aᶜ) := by
-  simpa only [← himp_bot, disjoint_iff_inf_le] using (isGreatest_himp a ⊥)
+  simpa only [himp_bot, disjoint_iff_inf_le] using isGreatest_himp a ⊥
 
 theorem isLeast_hnot [CoheytingAlgebra α] (a : α) :
     IsLeast {w | Codisjoint a w} (￢a) := by
-  simpa only [← CoheytingAlgebra.top_sdiff, codisjoint_iff_le_sup] using (isLeast_sdiff ⊤ a)
+  simpa only [CoheytingAlgebra.top_sdiff, codisjoint_iff_le_sup] using isLeast_sdiff ⊤ a
