@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Iván Renison
 -/
 import Mathlib.Combinatorics.SimpleGraph.Basic
+import Mathlib.Combinatorics.SimpleGraph.Coloring
 import Mathlib.Combinatorics.SimpleGraph.Maps
 
 /-!
@@ -72,5 +73,55 @@ def Embedding.sumInr : H ↪g G ⊕g H where
   toFun u := _root_.Sum.inr u
   inj' u v := by simp
   map_rel_iff' := by simp
+
+/-- Color `G ⊕g H` with colorings of `G` and `H` -/
+def Coloring.sum (cG : G.Coloring γ) (cH : H.Coloring γ) : (G ⊕g H).Coloring γ := Coloring.mk
+  (Sum.elim cG cH) <| by
+  intro u v
+  cases u <;> cases v <;> simp
+  · exact cG.valid
+  · exact cH.valid
+
+/-- Get coloring of `G` from coloring of `G ⊕g H` -/
+def Coloring.sumLeft (c : (G ⊕g H).Coloring γ) : G.Coloring γ := Coloring.mk (c ∘ Sum.inl) <| by
+  intro u v h
+  exact c.valid h
+
+/-- Get coloring of `H` from coloring of `G ⊕g H` -/
+def Coloring.sumRight (c : (G ⊕g H).Coloring γ) : H.Coloring γ := Coloring.mk (c ∘ Sum.inr) <| by
+  intro u v h
+  exact c.valid h
+
+/-- Color `G ⊕g H` with `Fin (n + m)` given a coloring of `G` with `Fin n` and a coloring of `H`
+with `Fin m` -/
+def Coloring.sumFin {n m : ℕ} (cG : G.Coloring (Fin n)) (cH : H.Coloring (Fin m)) :
+    (G ⊕g H).Coloring (Fin (max n m)) := sum (G.recolorOfEmbedding Fin.castMaxEmbLeft cG)
+  (H.recolorOfEmbedding Fin.castMaxEmbRight cH)
+
+theorem Colorable.sum_max {n m : ℕ} (hG : G.Colorable n) (hH : H.Colorable m) :
+    (G ⊕g H).Colorable (max n m) := Nonempty.intro (hG.some.sumFin hH.some)
+
+theorem Colorable.sum_left {n : ℕ} (h : (G ⊕g H).Colorable n) : G.Colorable n :=
+  Nonempty.intro (h.some.sumLeft)
+
+theorem Colorable.sum_right {n : ℕ} (h : (G ⊕g H).Colorable n) : H.Colorable n :=
+  Nonempty.intro (h.some.sumRight)
+
+theorem ChromaticNumber_left_le_sum : G.chromaticNumber ≤ (G ⊕g H).chromaticNumber := by
+  refine chromaticNumber_le_of_forall_imp (fun n h ↦ h.sum_left)
+
+theorem ChromaticNumber_right_le_sum : H.chromaticNumber ≤ (G ⊕g H).chromaticNumber := by
+  refine chromaticNumber_le_of_forall_imp (fun n h ↦ h.sum_right)
+
+theorem ChromaticNumber_sum_eq :
+    (G ⊕g H).chromaticNumber = max G.chromaticNumber H.chromaticNumber := by
+  refine eq_max ChromaticNumber_left_le_sum ChromaticNumber_right_le_sum ?_
+  intro n hG hH
+  cases n
+  · simp
+  · rename_i n
+    let cG : G.Coloring (Fin n) := (chromaticNumber_le_iff_colorable.mp hG).some
+    let cH : H.Coloring (Fin n) := (chromaticNumber_le_iff_colorable.mp hH).some
+    exact chromaticNumber_le_iff_colorable.mpr (Nonempty.intro (cG.sum cH))
 
 end SimpleGraph
