@@ -820,6 +820,25 @@ theorem card_omega0 : card ω = ℵ₀ :=
 theorem lift_omega0 : lift ω = ω :=
   lift_lift _
 
+@[deprecated (since := "2024-09-30")]
+alias lift_omega := lift_omega0
+
+@[simp]
+theorem omega0_le_lift {c : Ordinal.{u}} : ω ≤ lift.{v} c ↔ ω ≤ c := by
+  rw [← lift_omega0.{v, u}, lift_le]
+
+@[simp]
+theorem lift_le_omega0 {c : Ordinal.{u}} : lift.{v} c ≤ ω ↔ c ≤ ω := by
+  rw [← lift_omega0.{v, u}, lift_le]
+
+@[simp]
+theorem omega0_lt_lift {c : Ordinal.{u}} : ω < lift.{v} c ↔ ω < c := by
+  rw [← lift_omega0.{v, u}, lift_lt]
+
+@[simp]
+theorem lift_lt_omega0 {c : Ordinal.{u}} : lift.{v} c < ω ↔ c < ω := by
+  rw [← lift_omega0.{v, u}, lift_lt]
+
 /-!
 ### Definition and first properties of addition on ordinals
 
