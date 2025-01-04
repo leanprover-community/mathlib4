@@ -4274,6 +4274,7 @@ import Mathlib.Probability.Kernel.MeasurableIntegral
 import Mathlib.Probability.Kernel.Proper
 import Mathlib.Probability.Kernel.RadonNikodym
 import Mathlib.Probability.Kernel.WithDensity
+import Mathlib.Probability.MarcinkiewiczZygmund
 import Mathlib.Probability.Martingale.Basic
 import Mathlib.Probability.Martingale.BorelCantelli
 import Mathlib.Probability.Martingale.Centering
