@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mitchell Lee
+Authors: Mitchell Lee, Junyan Xu
 -/
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Vanishing
@@ -11,11 +11,11 @@ import Mathlib.Algebra.Module.FinitePresentation
 
 Let $M$ be a module over a commutative ring $R$. Let us say that a relation
 $\sum_{i \in \iota} f_i x_i = 0$ in $M$ is *trivial* (`Module.IsTrivialRelation`) if there exist a
-finite index type $\kappa$, elements $(y_j)_{j \in \kappa}$ of $M$,
+finite index type $\kappa$ = `Fin k`, elements $(y_j)_{j \in \kappa}$ of $M$,
 and elements $(a_{ij})_{i \in \iota, j \in \kappa}$ of $R$ such that for all $i$,
 $$x_i = \sum_j a_{ij} y_j$$
 and for all $j$,
-$$\sum_{i} f_i a_{ij} = 0.$$
+$$\sum_i f_i a_{ij} = 0.$$
 
 The *equational criterion for flatness* [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK)
 (`Module.Flat.iff_forall_isTrivialRelation`) states that $M$ is flat if and only if every relation
@@ -25,24 +25,25 @@ The equational criterion for flatness can be stated in the following form
 (`Module.Flat.iff_forall_exists_factorization`). Let $M$ be an $R$-module. Then the following two
 conditions are equivalent:
 * $M$ is flat.
-* For all finite index types $\iota$, all elements $f \in R^{\iota}$, and all homomorphisms
-$x \colon R^{\iota} \to M$ such that $x(f) = 0$, there exist a finite index type $\kappa$ and module
-homomorphisms $a \colon R^{\iota} \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such
+* For finite free modules $R^l$, all elements $f \in R^l$, and all homomorphisms
+$x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and module
+homomorphisms $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
 that $x = y \circ a$ and $a(f) = 0$.
 
-Of course, the module $R^\iota$ in this statement can be replaced by an arbitrary free module
+Of course, the module $R^l$ in this statement can be replaced by an arbitrary free module
 (`Module.Flat.exists_factorization_of_apply_eq_zero_of_free`).
 
 We also have the following strengthening of the equational criterion for flatness
 (`Module.Flat.exists_factorization_of_comp_eq_zero_of_free`): Let $M$ be a
 flat module. Let $K$ and $N$ be finite $R$-modules with $N$ free, and let $f \colon K \to N$ and
-$x \colon N \to M$ be homomorphisms such that $x \circ f = 0$. Then there exist a finite index type
-$\kappa$ and module homomorphisms $a \colon N \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such
+$x \colon N \to M$ be homomorphisms such that $x \circ f = 0$. Then there exist a finite free module
+$R^k$ and module homomorphisms $a \colon N \to R^k$ and $y \colon R^k \to M$ such
 that $x = y \circ a$ and $a \circ f = 0$. We recover the usual equational criterion for flatness if
-$K = R$ and $N = R^\iota$. This is used in the proof of Lazard's theorem.
+$K = R$ and $N = R^l$. This is used in the proof of Lazard's theorem.
 
 We conclude that every homomorphism from a finitely presented module to a flat module factors
-through a finite free module (`Module.Flat.exists_factorization_of_isFinitelyPresented`).
+through a finite free module (`Module.Flat.exists_factorization_of_isFinitelyPresented`), and
+every finitely presented flat module is projective (`Module.Flat.projective_of_finitePresentation`).
 
 ## References
 
@@ -65,7 +66,7 @@ $(y_j)_{j \in \kappa}$ of $M$, and elements $(a_{ij})_{i \in \iota, j \in \kappa
 such that for all $i$,
 $$x_i = \sum_j a_{ij} y_j$$
 and for all $j$,
-$$\sum_{i} f_i a_{ij} = 0.$$
+$$\sum_i f_i a_{ij} = 0.$$
 By `Module.sum_smul_eq_zero_of_isTrivialRelation`, this condition implies $\sum_i f_i x_i = 0$. -/
 abbrev IsTrivialRelation : Prop :=
   ∃ (k : ℕ) (a : ι → Fin k → R) (y : Fin k → M),
@@ -84,7 +85,7 @@ theorem _root_.Equiv.isTrivialRelation_comp {κ} [Fintype κ] (e : κ ≃ ι) :
   simp_rw [isTrivialRelation_iff_vanishesTrivially, e.vanishesTrivially_comp]
 
 /-- If the relation given by $(f_i)_{i \in \iota}$ and $(x_i)_{i \in \iota}$ is trivial, then
-$\sum_{i} f_i x_i$ is actually equal to $0$. -/
+$\sum_i f_i x_i$ is actually equal to $0$. -/
 theorem sum_smul_eq_zero_of_isTrivialRelation (h : IsTrivialRelation f x) :
     ∑ i, f i • x i = 0 := by
   simpa using
@@ -96,22 +97,19 @@ end Module
 namespace Module.Flat
 
 variable (R M) in
-/-- **Equational criterion for flatness** [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK),
-combined form.
+/-- **Equational criterion for flatness**, combined form.
 
 Let $M$ be a module over a commutative ring $R$. The following are equivalent:
 * $M$ is flat.
 * For all ideals $I \subseteq R$, the map $I \otimes M \to M$ is injective.
 * Every $\sum_i f_i \otimes x_i$ that vanishes in $R \otimes M$ vanishes trivially.
 * Every relation $\sum_i f_i x_i = 0$ in $M$ is trivial.
-* For all finite index types $\iota$, all elements $f \in R^{\iota}$, and all homomorphisms
-$x \colon R^{\iota} \to M$ such that $x(f) = 0$, there exist a finite index type $\kappa$ and module
-homomorphisms $a \colon R^{\iota} \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such
+* For all finite free modules $R^l$, all elements $f \in R^l$, and all homomorphisms
+$x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and module
+homomorphisms $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
 that $x = y \circ a$ and $a(f) = 0$.
-* For all finite free modules $N$, all elements $f \in N$, and all homomorphisms $x \colon N \to M$
-such that $x(f) = 0$, there exist a finite index type $\kappa$ and module homomorphisms
-$a \colon N \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and
-$a(f) = 0$. -/
+-/
+@[stacks 00HK, stacks 058D "except (3)"]
 theorem tfae_equational_criterion : List.TFAE [
     Flat R M,
     ∀ I : Ideal R, Function.Injective (rTensor M I.subtype),
@@ -163,61 +161,61 @@ theorem tfae_equational_criterion : List.TFAE [
       simpa using DFunLike.congr_fun ha' j
   tfae_finish
 
-/-- **Equational criterion for flatness** [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK).
-
-A module $M$ is flat if and only if every relation $\sum_i f_i x_i = 0$ in $M$ is trivial. -/
+/-- **Equational criterion for flatness**:
+a module $M$ is flat if and only if every relation $\sum_i f_i x_i = 0$ in $M$ is trivial. -/
+@[stacks 00HK]
 theorem iff_forall_isTrivialRelation : Flat R M ↔ ∀ {l : ℕ} {f : Fin l → R} {x : Fin l → M},
     ∑ i, f i • x i = 0 → IsTrivialRelation f x :=
   (tfae_equational_criterion R M).out 0 3
 
-/-- **Equational criterion for flatness**
-[Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK), forward direction.
+/-- **Equational criterion for flatness**, forward direction.
 
 If $M$ is flat, then every relation $\sum_i f_i x_i = 0$ in $M$ is trivial. -/
+@[stacks 00HK]
 theorem isTrivialRelation_of_sum_smul_eq_zero [Flat R M] {ι : Type*} [Fintype ι] {f : ι → R}
     {x : ι → M} (h : ∑ i, f i • x i = 0) : IsTrivialRelation f x :=
   (Fintype.equivFin ι).symm.isTrivialRelation_comp.mp <| iff_forall_isTrivialRelation.mp ‹_› <| by
     simpa only [← (Fintype.equivFin ι).symm.sum_comp] using h
 
-/-- **Equational criterion for flatness**
-[Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK), backward direction.
+/-- **Equational criterion for flatness**, backward direction.
 
 If every relation $\sum_i f_i x_i = 0$ in $M$ is trivial, then $M$ is flat. -/
+@[stacks 00HK]
 theorem of_forall_isTrivialRelation (hfx : ∀ {l : ℕ} {f : Fin l → R} {x : Fin l → M},
     ∑ i, f i • x i = 0 → IsTrivialRelation f x) : Flat R M :=
   iff_forall_isTrivialRelation.mpr hfx
 
-/-- **Equational criterion for flatness**
-[Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK), alternate form.
+/-- **Equational criterion for flatness**, alternate form.
 
-A module $M$ is flat if and only if for all finite free modules $R^\iota$,
-all $f \in R^{\iota}$, and all homomorphisms $x \colon R^{\iota} \to M$ such that $x(f) = 0$, there
-exist a finite free module $R^\kappa$ and homomorphisms $a \colon R^{\iota} \to R^{\kappa}$ and
-$y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and $a(f) = 0$. -/
+A module $M$ is flat if and only if for all finite free modules $R^l$,
+all $f \in R^l$, and all homomorphisms $x \colon R^l \to M$ such that $x(f) = 0$, there
+exist a finite free module $R^k$ and homomorphisms $a \colon R^l \to R^k$ and
+$y \colon R^k \to M$ such that $x = y \circ a$ and $a(f) = 0$. -/
+@[stacks 058D "(1) ↔ (2)"]
 theorem iff_forall_exists_factorization : Flat R M ↔
     ∀ {l : ℕ} {f : Fin l →₀ R} {x : (Fin l →₀ R) →ₗ[R] M}, x f = 0 →
       ∃ (k : ℕ) (a : (Fin l →₀ R) →ₗ[R] (Fin k →₀ R)) (y : (Fin k →₀ R) →ₗ[R] M),
         x = y ∘ₗ a ∧ a f = 0 := (tfae_equational_criterion R M).out 0 4
 
-/-- **Equational criterion for flatness**
-[Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK), backward direction, alternate form.
+/-- **Equational criterion for flatness**, backward direction, alternate form.
 
-Let $M$ be a module over a commutative ring $R$. Suppose that for all finite free modules $R^\iota$,
-all $f \in R^{\iota}$, and all homomorphisms $x \colon R^{\iota} \to M$ such that $x(f) = 0$, there
-exist a finite free module $R^\kappa$ and homomorphisms $a \colon R^{\iota} \to R^{\kappa}$ and
-$y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and $a(f) = 0$. Then $M$ is flat. -/
-theorem of_forall_exists_factorization (h : ∀ {l : ℕ} {f : Fin l →₀ R}
-    {x : (Fin l →₀ R) →ₗ[R] M}, x f = 0 →
+Let $M$ be a module over a commutative ring $R$. Suppose that for all finite free modules $R^l$,
+all $f \in R^l$, and all homomorphisms $x \colon R^l \to M$ such that $x(f) = 0$, there
+exist a finite free module $R^k$ and homomorphisms $a \colon R^l \to R^k$ and
+$y \colon R^k \to M$ such that $x = y \circ a$ and $a(f) = 0$. Then $M$ is flat. -/
+@[stacks 058D "(2) → (1)"]
+theorem of_forall_exists_factorization
+    (h : ∀ {l : ℕ} {f : Fin l →₀ R} {x : (Fin l →₀ R) →ₗ[R] M}, x f = 0 →
       ∃ (k : ℕ) (a : (Fin l →₀ R) →ₗ[R] (Fin k →₀ R)) (y : (Fin k →₀ R) →ₗ[R] M),
       x = y ∘ₗ a ∧ a f = 0) : Flat R M := iff_forall_exists_factorization.mpr h
 
-/-- **Equational criterion for flatness** [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK),
-forward direction, second alternate form.
+/-- **Equational criterion for flatness**, forward direction, second alternate form.
 
 Let $M$ be a flat module over a commutative ring $R$. Let $N$ be a finite free module over $R$,
 let $f \in N$, and let $x \colon N \to M$ be a homomorphism such that $x(f) = 0$. Then there exist a
-finite index type $\kappa$ and module homomorphisms $a \colon N \to R^{\kappa}$ and
-$y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and $a(f) = 0$. -/
+finite free module $R^k$ and module homomorphisms $a \colon N \to R^k$ and
+$y \colon R^k \to M$ such that $x = y \circ a$ and $a(f) = 0$. -/
+@[stacks 058D "(1) → (2)"]
 theorem exists_factorization_of_apply_eq_zero_of_free [Flat R M] {N : Type*} [AddCommGroup N]
     [Module R N] [Free R N] [Module.Finite R N] {f : N} {x : N →ₗ[R] M} (h : x f = 0) :
     ∃ (k : ℕ) (a : N →ₗ[R] (Fin k →₀ R)) (y : (Fin k →₀ R) →ₗ[R] M), x = y ∘ₗ a ∧ a f = 0 :=
@@ -253,9 +251,10 @@ private theorem exists_factorization_of_comp_eq_zero_of_free_aux [Flat R M] {K :
 
 /-- Let $M$ be a flat module. Let $K$ and $N$ be finite $R$-modules with $N$
 free, and let $f \colon K \to N$ and $x \colon N \to M$ be homomorphisms such that
-$x \circ f = 0$. Then there exist a finite index type $\kappa$ and module homomorphisms
-$a \colon N \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and
+$x \circ f = 0$. Then there exist a finite free module $R^k$ and module homomorphisms
+$a \colon N \to R^k$ and $y \colon R^k \to M$ such that $x = y \circ a$ and
 $a \circ f = 0$. -/
+@[stacks 058D "(1) → (4)"]
 theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type*} [AddCommGroup K]
     [Module R K] [Module.Finite R K] [AddCommGroup N] [Module R N] [Free R N] [Module.Finite R N]
     {f : K →ₗ[R] N} {x : N →ₗ[R] M} (h : x ∘ₗ f = 0) :
@@ -268,8 +267,8 @@ theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type*} [A
     rwa [comp_assoc]⟩
 
 /-- Every homomorphism from a finitely presented module to a flat module factors through a finite
-free module. The "only if" part of https://stacks.math.columbia.edu/tag/058E. -/
-@[stacks 058E]
+free module. -/
+@[stacks 058E "only if"]
 theorem exists_factorization_of_isFinitelyPresented [Flat R M] {P : Type*} [AddCommGroup P]
     [Module R P] [FinitePresentation R P] (h₁ : P →ₗ[R] M) :
       ∃ (k : ℕ) (h₂ : P →ₗ[R] (Fin k →₀ R)) (h₃ : (Fin k →₀ R) →ₗ[R] M), h₁ = h₃ ∘ₗ h₂ := by
@@ -283,7 +282,7 @@ theorem exists_factorization_of_isFinitelyPresented [Flat R M] {P : Type*} [AddC
   apply (cancel_right K.mkQ_surjective).mp
   simpa [comp_assoc]
 
-@[stacks 00NX]
+@[stacks 00NX "(1) → (2)"]
 theorem projective_of_finitePresentation [Flat R M] [FinitePresentation R M] : Projective R M :=
   have ⟨_, f, g, eq⟩ := exists_factorization_of_isFinitelyPresented (.id (R := R) (M := M))
   .of_split f g eq.symm

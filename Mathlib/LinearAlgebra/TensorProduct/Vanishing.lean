@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Mitchell Lee. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mitchell Lee
+Authors: Mitchell Lee, Junyan Xu
 -/
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.TensorProduct.Finiteness
@@ -16,11 +16,11 @@ expression vanishes.
 
 Let us say that an expression $\sum_{i \in \iota} m_i \otimes n_i$ in $M \otimes N$
 *vanishes trivially* (`TensorProduct.VanishesTrivially`) if there exist a finite index type
-$\kappa$, elements $(y_j)_{j \in \kappa}$ of $N$, and elements
+$\kappa$ = `Fin k`, elements $(y_j)_{j \in \kappa}$ of $N$, and elements
 $(a_{ij})_{i \in \iota, j \in \kappa}$ of $R$ such that for all $i$,
 $$n_i = \sum_j a_{ij} y_j$$
 and for all $j$,
-$$\sum_{i} a_{ij} m_i = 0.$$
+$$\sum_i a_{ij} m_i = 0.$$
 (The terminology "trivial" comes from [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK).)
 It is not difficult to show (`TensorProduct.sum_tmul_eq_zero_of_vanishesTrivially`) that if
 $\sum_i m_i \otimes n_i$ vanishes trivially, then it vanishes; that is,
@@ -72,7 +72,7 @@ elements $(y_j)_{j \in \kappa}$ of $N$, and elements $(a_{ij})_{i \in \iota, j \
 such that for all $i$,
 $$n_i = \sum_j a_{ij} y_j$$
 and for all $j$,
-$$\sum_{i} a_{ij} m_i = 0.$$
+$$\sum_i a_{ij} m_i = 0.$$
 Note that this condition is not symmetric in $M$ and $N$.
 (The terminology "trivial" comes from [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK).)-/
 abbrev VanishesTrivially : Prop :=
@@ -148,7 +148,7 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range 
   exist $(a_{ij})_{i, j}$ such that for all $i$,
   $$n_i = \sum_j a_{ij} y_j$$
   and for all $j$,
-  $$\sum_{i} a_{ij} m_i = 0.$$
+  $$\sum_i a_{ij} m_i = 0.$$
   For this, take $a_{ij}$ to be the coefficient of $e_i$ in $k_j$. -/
   refine .of_fintype (κ := ma) (fun i ⟨⟨kj, _⟩, _⟩ ↦ (kj : ι →₀ R) i) (fun ⟨⟨_, yj⟩, _⟩ ↦ yj) ?_ ?_
   · intro i
