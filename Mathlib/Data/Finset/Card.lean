@@ -579,6 +579,21 @@ lemma exists_subsuperset_card_eq (hst : s ⊆ t) (hsn : #s ≤ n) (hnt : n ≤ #
 lemma exists_subset_card_eq (hns : n ≤ #s) : ∃ t ⊆ s, #t = n := by
   simpa using exists_subsuperset_card_eq s.empty_subset (by simp) hns
 
+lemma of_cardinality_between_of_disjoint (hs : #s < n) (hn : n ≤ #s + #t) (hst : Disjoint s t) :
+    ∃ (x : Finset α) (hxs : Disjoint x s), #(x.disjUnion s hxs) = n ∧ Nonempty x := by
+  have hnst : n - #s ≤ #t := by omega
+  obtain ⟨x, hxt, hxn⟩ := Finset.exists_subset_card_eq hnst
+  have hxs : Disjoint x s := disjoint_of_subset_left hxt hst.symm
+  refine ⟨x, hxs, ?_, ?_⟩
+  · rw [card_disjUnion]
+    omega
+  · by_contra ifempty
+    have : #x = 0 := by
+      rw [Finset.card_eq_zero]
+      rw [nonempty_subtype, not_exists] at ifempty
+      exact eq_empty_of_forall_not_mem ifempty
+    omega
+
 /-- Given a set `A` and a set `B` inside it, we can shrink `A` to any appropriate size, and keep `B`
 inside it. -/
 @[deprecated exists_subsuperset_card_eq (since := "2024-06-23")]
