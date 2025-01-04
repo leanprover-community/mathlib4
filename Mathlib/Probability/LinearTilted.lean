@@ -232,6 +232,8 @@ lemma measure_ge_eq_integral_exp_linTilted [IsFiniteMeasure μ] (ε : ℝ) (t : 
       * ∫ ω, {ω | ε ≤ X ω}.indicator 1 ω * exp (- t * (X ω - ε)) ∂(μ.linTilted X t) :=
   measure_eq_integral_exp_linTilted _ _ h_int (hX measurableSet_Ici)
 
+-- TODO: this should be deduced from the corresponding lemma about lintegral... but there is no
+-- `MeasureSpace` instance on `ℝ≥0∞`.
 lemma integral_eq_integral_measure_ge [SFinite μ] {f : Ω → ℝ}
     (hf_meas : Measurable f) (hf : 0 ≤ f) (hf_int : Integrable f μ) :
     ∫ ω, f ω ∂μ = ∫ u in Ici 0, (μ {x | u ≤ f x}).toReal := by
@@ -252,6 +254,19 @@ lemma integral_eq_integral_measure_ge [SFinite μ] {f : Ω → ℝ}
     rw [integral_indicator measurableSet_Icc]
     congr
   _ = ∫ u in Ici 0, ∫ ω, if u ≤ f ω then 1 else 0 ∂μ := by
+    have h_inter_eq x : Ici (0 : ℝ) ∩ {z | z ≤ f x} = Set.Icc 0 (f x) := by ext; simp
+    have h_if_eq y x : |if y ≤ f x then (1 : ℝ) else 0| = {z | z ≤ f x}.indicator 1 y := by
+      split_ifs with h <;> simp [h]
+    have h_if_eq' y x : ‖if y ≤ f x then (1 : ℝ) else 0‖₊ = {z | z ≤ f x}.indicator 1 y := by
+      split_ifs with h <;> simp [h]
+    have h_eq x : ∫ y in Set.Ici 0, |if y ≤ f x then 1 else 0| = f x := by
+      simp_rw [h_if_eq]
+      rw [setIntegral_indicator]
+      · simp only [Pi.one_apply, integral_const, MeasurableSet.univ, Measure.restrict_apply,
+          Set.univ_inter, smul_eq_mul, mul_one]
+        simp only [h_inter_eq, volume_Icc, sub_zero, ENNReal.toReal_ofReal_eq_iff, ge_iff_le]
+        exact hf x
+      · exact measurableSet_Iic
     rw [integral_integral_swap]
     refine (integrable_prod_iff ?_).mpr ?_
     · refine Measurable.aestronglyMeasurable ?_
@@ -259,19 +274,15 @@ lemma integral_eq_integral_measure_ge [SFinite μ] {f : Ω → ℝ}
       exact measurableSet_le measurable_snd (hf_meas.comp measurable_fst)
     · simp only [Function.uncurry_apply_pair, norm_eq_abs]
       refine ⟨ae_of_all _ fun ω ↦ ?_, ?_⟩
-      · sorry
-      · have h_eq x : ∫ y in Set.Ici 0, |if y ≤ f x then 1 else 0| = f x := by
-          have h_if_eq y : |if y ≤ f x then (1 : ℝ) else 0| = {z | z ≤ f x}.indicator 1 y := by
-            split_ifs with h <;> simp [h]
-          simp_rw [h_if_eq]
-          rw [setIntegral_indicator]
-          · simp only [Pi.one_apply, integral_const, MeasurableSet.univ, Measure.restrict_apply,
-              Set.univ_inter, smul_eq_mul, mul_one]
-            have : Ici (0 : ℝ) ∩ {z | z ≤ f x} = Set.Icc 0 (f x) := by ext; simp
-            simp only [this, volume_Icc, sub_zero, ENNReal.toReal_ofReal_eq_iff, ge_iff_le]
-            exact hf x
+      · constructor
+        · refine Measurable.aestronglyMeasurable ?_
+          exact Measurable.ite measurableSet_Iic measurable_const measurable_const
+        · unfold HasFiniteIntegral
+          simp only [h_if_eq', ENNReal.coe_indicator, Pi.one_apply, ENNReal.coe_one]
+          rw [setLIntegral_indicator]
+          · simp [inter_comm, h_inter_eq, inter_univ]
           · exact measurableSet_Iic
-        simp_rw [h_eq]
+      · simp_rw [h_eq]
         exact hf_int
   _ = ∫ u in Ici 0, (μ {x | u ≤ f x}).toReal := by
     congr with u
