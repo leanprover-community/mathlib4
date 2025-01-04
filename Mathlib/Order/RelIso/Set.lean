@@ -132,3 +132,83 @@ theorem wellFounded_iff_wellFounded_subrel {r : α → α → Prop} [IsTrans α 
     WellFounded r ↔ ∀ b, WellFounded (Subrel r { a | r a b }) where
   mp h _ := InvImage.wf Subtype.val h
   mpr h := ⟨fun a ↦ ⟨_, fun b hr ↦ ((h a).apply _).of_subrel ⟨b, hr⟩⟩⟩
+
+namespace Equiv
+
+variable {r : α → α → Prop} {x : α} [IsTrans α r] [IsTrichotomous α r] [DecidableRel r]
+
+variable (r x) in
+/-- A relation is isomorphic to the lexicographic sum of elements less than `x` and elements not
+less than `x`. -/
+def sumLexComplLeft : Sum.Lex (Subrel r {y | r y x}) (Subrel r {y | ¬ r y x}) ≃r r := by
+  refine ⟨Equiv.sumCompl _, ?_⟩
+  rintro (⟨a, ha⟩ | ⟨a, ha⟩) (⟨b, hb⟩ | ⟨b, hb⟩) <;> change r a b ↔ _
+  · simp
+  · simpa using trans_trichotomous_right ha hb
+  · simpa using fun h ↦ ha <| trans h hb
+  · simp
+
+@[simp]
+theorem sumLexComplLeft_apply_inl (a) : sumLexComplLeft r x (Sum.inl a) = a :=
+  rfl
+
+@[simp]
+theorem sumLexComplLeft_apply_inr (a) : sumLexComplLeft r x (Sum.inr a) = a :=
+  rfl
+
+theorem sumLexComplLeft_symm_apply_of_mem {y : α} (h : r y x) :
+    (sumLexComplLeft r x).symm y = Sum.inl ⟨y, h⟩ := by
+  apply sumCompl_apply_symm_of_pos
+
+theorem sumLexComplLeft_symm_apply_of_not_mem {y : α} (h : ¬ r y x) :
+    (sumLexComplLeft r x).symm y = Sum.inr ⟨y, h⟩ := by
+  apply sumCompl_apply_symm_of_neg
+
+@[simp]
+theorem sumLexComplLeft_symm_apply (y : {y // r y x}) :
+    (sumLexComplLeft r x).symm y = Sum.inl y :=
+  sumLexComplLeft_symm_apply_of_mem y.2
+
+@[simp]
+theorem sumLexComplLeft_symm_apply_neg (y : {y // ¬ r y x}) :
+    (sumLexComplLeft r x).symm y = Sum.inr y :=
+  sumLexComplLeft_symm_apply_of_not_mem y.2
+
+variable (r x) in
+/-- A relation is isomorphic to the lexicographic sum of elements not greater than `x` and elements
+greater than `x`. -/
+def sumLexComplRight : Sum.Lex (Subrel r {y | ¬ r x y}) (Subrel r {y | r x y}) ≃r r := by
+  refine ⟨(Equiv.sumComm _ _).trans <| Equiv.sumCompl _, ?_⟩
+  rintro (⟨a, ha⟩ | ⟨a, ha⟩) (⟨b, hb⟩ | ⟨b, hb⟩) <;> change r a b ↔ _
+  · simp
+  · simpa using trans_trichotomous_left ha hb
+  · simpa using fun h ↦ hb <| trans ha h
+  · simp
+
+@[simp]
+theorem sumLexComplRight_apply_inl (a) : sumLexComplRight r x (Sum.inl a) = a :=
+  rfl
+
+@[simp]
+theorem sumLexComplRight_apply_inr (a) : sumLexComplRight r x (Sum.inr a) = a :=
+  rfl
+
+theorem sumLexComplRight_symm_apply_of_mem {y : α} (h : r x y) :
+    (sumLexComplRight r x).symm y = Sum.inr ⟨y, h⟩ := by
+  simp [sumLexComplRight, sumCompl, h]
+
+theorem sumLexComplRight_symm_apply_of_not_mem {y : α} (h : ¬ r x y) :
+    (sumLexComplRight r x).symm y = Sum.inl ⟨y, h⟩ := by
+  simp [sumLexComplRight, sumCompl, h]
+
+@[simp]
+theorem sumLexComplRight_symm_apply (y : {y // r x y}) :
+    (sumLexComplRight r x).symm y = Sum.inr y :=
+  sumLexComplRight_symm_apply_of_mem y.2
+
+@[simp]
+theorem sumLexComplRight_symm_apply_neg (y : {y // ¬ r x y}) :
+    (sumLexComplRight r x).symm y = Sum.inl y :=
+  sumLexComplRight_symm_apply_of_not_mem y.2
+
+end Equiv
