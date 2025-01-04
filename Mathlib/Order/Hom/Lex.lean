@@ -18,6 +18,8 @@ open Set
 
 variable {α : Type*}
 
+/-! ### Relation isomorphism -/
+
 namespace RelIso
 
 variable {r : α → α → Prop} {x y : α} [IsTrans α r] [IsTrichotomous α r] [DecidableRel r]
@@ -103,6 +105,8 @@ theorem sumLexComplRight_symm_apply_neg (a : {y // ¬ r x y}) :
   sumLexComplRight_symm_apply_of_not_mem a.2
 
 end RelIso
+
+/-! ### Order isomorphism -/
 
 namespace OrderIso
 
