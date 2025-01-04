@@ -39,7 +39,7 @@ lemma isIdempotentElem_idempotent [DecidableEq I] (V : I → Ideal R)
   idempotents.-/
 theorem isOrthoIdempotent_idempotent [DecidableEq I] (V : I → Ideal R)
     [Decomposition V] :
-    OrthogonalIdempotents (R := R) fun i ↦ idempotent V i where
+    OrthogonalIdempotents fun i ↦ idempotent V i where
   idem := isIdempotentElem_idempotent V
   ortho := fun i j hij ↦ by
     simp only
