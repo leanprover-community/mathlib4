@@ -176,6 +176,7 @@ jobs:
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
 
       - name: check the cache
+        id: "check-cache"
         run: |
           # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
           # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
@@ -197,7 +198,7 @@ jobs:
           # storing and transferring oleans over the network.
           # Hopefully a future re-implementation of `cache` will obviate the present need for this hack.
           lake exe cache get Archive.lean
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build Archive"
+          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail Archive"
           lake exe cache put Archive.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
@@ -205,9 +206,11 @@ jobs:
 
       - name: build counterexamples
         id: counterexamples
+        # Even if building the archive failed, we build the Counterexamples directory.
+        if: ${{ !cancelled() }} && steps.check-cache.outcome == 'success'
         run: |
           lake exe cache get Counterexamples.lean
-          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build Counterexamples"
+          bash -o pipefail -c "env LEAN_ABORT_ON_PANIC=1 lake build --wfail Counterexamples"
           lake exe cache put Counterexamples.lean
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
