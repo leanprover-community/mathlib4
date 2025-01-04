@@ -276,8 +276,7 @@ import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.Embedding
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.Equiv.TypeTags
-import Mathlib.Algebra.Group.Even.Advanced
-import Mathlib.Algebra.Group.Even.Basic
+import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.EvenFunction
 import Mathlib.Algebra.Group.Ext
 import Mathlib.Algebra.Group.Fin.Basic

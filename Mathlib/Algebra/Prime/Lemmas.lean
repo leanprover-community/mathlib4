@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Jens Wagemaker
 -/
 import Mathlib.Algebra.Divisibility.Hom
 import Mathlib.Algebra.Group.Commute.Units
-import Mathlib.Algebra.Group.Even.Basic
+import Mathlib.Algebra.Group.Even
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Prime.Defs
