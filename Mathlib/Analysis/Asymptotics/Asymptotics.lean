@@ -1590,7 +1590,7 @@ end Sum
 section Prod
 variable {ι : Type*}
 
-theorem IsBigO.listProd {ι : Type*} {L : List ι} {f : ι → α → R} {g : ι → α → 𝕜}
+theorem IsBigO.listProd {L : List ι} {f : ι → α → R} {g : ι → α → 𝕜}
     (hf : ∀ i ∈ L, f i =O[l] g i) :
     (fun x ↦ (L.map (f · x)).prod) =O[l] (fun x ↦ (L.map (g · x)).prod) := by
   induction L with
@@ -1599,18 +1599,18 @@ theorem IsBigO.listProd {ι : Type*} {L : List ι} {f : ι → α → R} {g : ι
     simp only [List.map_cons, List.prod_cons, List.forall_mem_cons] at hf ⊢
     exact hf.1.mul (ihL hf.2)
 
-theorem IsBigO.multisetProd {ι R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
+theorem IsBigO.multisetProd {R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
     {s : Multiset ι} {f : ι → α → R} {g : ι → α → 𝕜} (hf : ∀ i ∈ s, f i =O[l] g i) :
     (fun x ↦ (s.map (f · x)).prod) =O[l] (fun x ↦ (s.map (g · x)).prod) := by
   obtain ⟨l, rfl⟩ : ∃ l : List ι, ↑l = s := Quotient.mk_surjective s
   exact mod_cast IsBigO.listProd hf
 
-theorem IsBigO.finsetProd {ι R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
+theorem IsBigO.finsetProd {R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
     {s : Finset ι} {f : ι → α → R} {g : ι → α → 𝕜}
     (hf : ∀ i ∈ s, f i =O[l] g i) : (∏ i ∈ s, f i ·) =O[l] (∏ i ∈ s, g i ·) :=
   .multisetProd hf
 
-theorem IsLittleO.listProd {ι : Type*} {L : List ι} {f : ι → α → R} {g : ι → α → 𝕜}
+theorem IsLittleO.listProd {L : List ι} {f : ι → α → R} {g : ι → α → 𝕜}
     (h₁ : ∀ i ∈ L, f i =O[l] g i) (h₂ : ∃ i ∈ L, f i =o[l] g i) :
     (fun x ↦ (L.map (f · x)).prod) =o[l] (fun x ↦ (L.map (g · x)).prod) := by
   induction L with
@@ -1622,14 +1622,14 @@ theorem IsLittleO.listProd {ι : Type*} {L : List ι} {f : ι → α → R} {g :
     | inl hi => exact hi.mul_isBigO <| .listProd h₁.2
     | inr hL => exact h₁.1.mul_isLittleO <| ihL h₁.2 hL
 
-theorem IsLittleO.multisetProd {ι R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
+theorem IsLittleO.multisetProd {R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
     {s : Multiset ι} {f : ι → α → R} {g : ι → α → 𝕜} (h₁ : ∀ i ∈ s, f i =O[l] g i)
     (h₂ : ∃ i ∈ s, f i =o[l] g i) :
     (fun x ↦ (s.map (f · x)).prod) =o[l] (fun x ↦ (s.map (g · x)).prod) := by
   obtain ⟨l, rfl⟩ : ∃ l : List ι, ↑l = s := Quotient.mk_surjective s
   exact mod_cast IsLittleO.listProd h₁ h₂
 
-theorem IsLittleO.finsetProd {ι R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
+theorem IsLittleO.finsetProd {R 𝕜 : Type*} [SeminormedCommRing R] [NormedField 𝕜]
     {s : Finset ι} {f : ι → α → R} {g : ι → α → 𝕜} (h₁ : ∀ i ∈ s, f i =O[l] g i)
     (h₂ : ∃ i ∈ s, f i =o[l] g i) : (∏ i ∈ s, f i ·) =o[l] (∏ i ∈ s, g i ·) :=
   .multisetProd h₁ h₂
