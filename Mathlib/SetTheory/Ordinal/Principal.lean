@@ -459,9 +459,6 @@ theorem principal_opow_omega0 : Principal (· ^ ·) ω := fun a b ha hb =>
     simp_rw [← natCast_opow]
     apply nat_lt_omega0
 
-@[deprecated (since := "2024-09-30")]
-alias principal_opow_omega := principal_opow_omega0
-
 theorem opow_omega0 (a1 : 1 < a) (h : a < ω) : a ^ ω = ω :=
   ((opow_le_of_limit (one_le_iff_ne_zero.1 <| le_of_lt a1) isLimit_omega0).2 fun _ hb =>
       (principal_opow_omega0 h hb).le).antisymm

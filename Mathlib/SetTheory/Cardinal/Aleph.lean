@@ -498,6 +498,9 @@ theorem aleph1_eq_lift {c : Cardinal.{u}} : ℵ₁ = lift.{v} c ↔ ℵ₁ = c :
 theorem lift_eq_aleph1 {c : Cardinal.{u}} : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
   simpa using lift_inj (b := ℵ₁)
 
+theorem lt_omega_iff_card_lt {x o : Ordinal} : x < ω_ o ↔ x.card < ℵ_ o := by
+  rw [← (isInitial_omega o).card_lt_card, card_omega]
+
 section deprecated
 
 set_option linter.docPrime false

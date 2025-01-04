@@ -234,6 +234,7 @@ example (α β : Type u) [Fintype α] [Fintype β] (h : α = β) : True := by
   trivial
 
 -- Check that metavariables in the goal do not prevent apply_fun from detecting the relation
+set_option linter.unusedTactic false in
 example (f : α ≃ β) (x y : α) (h : f x = f y) : x = y := by
   change _
   -- now the goal is a metavariable

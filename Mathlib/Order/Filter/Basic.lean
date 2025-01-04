@@ -222,7 +222,7 @@ theorem mem_inf_iff_superset {f g : Filter α} {s : Set α} :
 
 section CompleteLattice
 
-/- Complete lattice structure on `Filter α`. -/
+/-- Complete lattice structure on `Filter α`. -/
 instance instCompleteLatticeFilter : CompleteLattice (Filter α) where
   inf a b := min a b
   sup a b := max a b
@@ -847,6 +847,15 @@ theorem Eventually.choice {r : α → β → Prop} {l : Filter α} [l.NeBot] (h 
   haveI : Nonempty β := let ⟨_, hx⟩ := h.exists; hx.nonempty
   choose! f hf using fun x (hx : ∃ y, r x y) => hx
   exact ⟨f, h.mono hf⟩
+
+lemma skolem {ι : Type*} {α : ι → Type*} [∀ i, Nonempty (α i)]
+    {P : ∀ i : ι, α i → Prop} {F : Filter ι} :
+    (∀ᶠ i in F, ∃ b, P i b) ↔ ∃ b : (Π i, α i), ∀ᶠ i in F, P i (b i) := by
+  classical
+  refine ⟨fun H ↦ ?_, fun ⟨b, hb⟩ ↦ hb.mp (.of_forall fun x a ↦ ⟨_, a⟩)⟩
+  refine ⟨fun i ↦ if h : ∃ b, P i b then h.choose else Nonempty.some inferInstance, ?_⟩
+  filter_upwards [H] with i hi
+  exact dif_pos hi ▸ hi.choose_spec
 
 /-!
 ### Relation “eventually equal”

@@ -127,7 +127,7 @@ theorem smul_opposite_mul {H : Subgroup G} (x g : G) (h : H.op) :
 
 @[to_additive (attr := simp)]
 theorem normal_op {H : Subgroup G} : H.op.Normal ↔ H.Normal := by
-  simp only [← normalizer_eq_top, ← op_normalizer, op_eq_top]
+  simp only [← normalizer_eq_top_iff, ← op_normalizer, op_eq_top]
 
 @[to_additive] alias ⟨Normal.of_op, Normal.op⟩ := normal_op
 
