@@ -129,8 +129,8 @@ variable {K : Type*} [Field K] [Algebra F K]
 variable (F K) in
 
 /--
-If `K` is a simple finite field extension of `F` `K = F(k)`, then we can
-define a `Differential` on `K`.
+If `K` is a finite field extension of `F` then we can define a differential algebra on `K`, by
+choosing a primitive element of `K`, `k` and then using the equivalence to `AdjoinRoot (minpoly k)`.
 -/
 @[reducible]
 noncomputable def differentialFiniteDimensional [FiniteDimensional F K] : Differential K :=
