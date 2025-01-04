@@ -58,7 +58,7 @@ theorem Iio_castSucc (i : Fin n) : Iio (castSucc i) = (Iio i).map Fin.castSuccEm
   rw [Finset.map_map, Fin.map_valEmbedding_Iio]
   exact (Fin.map_valEmbedding_Iio i).symm
 
-theorem Iic_castSucc (i : Fin n) : Iic (castSucc i) = (Iic i).map (Fin.castSuccEmb) := by
+theorem Iic_castSucc (i : Fin n) : Iic (castSucc i) = (Iic i).map Fin.castSuccEmb := by
   rw [Iic_eq_cons_Iio, Iic_eq_cons_Iio, map_cons]
   simp only [Iio_castSucc, cons_eq_insert, castSuccEmb_apply]
   congr
