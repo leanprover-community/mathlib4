@@ -733,6 +733,12 @@ theorem card_eq_three : #s = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y ≠ z �
     simp only [xy, xz, yz, mem_insert, card_insert_of_not_mem, not_false_iff, mem_singleton,
       or_self_iff, card_singleton]
 
+theorem exists_disjoint_union_of_even_card (he : Even #s) :
+    ∃ (t u : Finset α), t ∪ u = s ∧ Disjoint t u ∧ #t = #u :=
+  let ⟨n, hn⟩ := he
+  let ⟨t, ht, ht'⟩ := exists_subset_card_eq (show n ≤ #s by omega)
+  ⟨t, s \ t, by simp [card_sdiff, disjoint_sdiff, *]⟩
+
 end DecidableEq
 
 theorem two_lt_card_iff : 2 < #s ↔ ∃ a b c, a ∈ s ∧ b ∈ s ∧ c ∈ s ∧ a ≠ b ∧ a ≠ c ∧ b ≠ c := by
