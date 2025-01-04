@@ -394,6 +394,11 @@ def support : Set V :=
 theorem mem_support {v : V} : v ∈ G.support ↔ ∃ w, G.Adj v w :=
   Iff.rfl
 
+instance support.memDecidable [Fintype V] [DecidableRel G.Adj] :
+    DecidablePred (· ∈ G.support) := by
+  unfold support Rel.dom
+  infer_instance
+
 theorem support_mono {G G' : SimpleGraph V} (h : G ≤ G') : G.support ⊆ G'.support :=
   Rel.dom_mono h
 
@@ -561,6 +566,12 @@ def fromEdgeSet : SimpleGraph V where
 @[simp]
 theorem fromEdgeSet_adj : (fromEdgeSet s).Adj v w ↔ s(v, w) ∈ s ∧ v ≠ w :=
   Iff.rfl
+
+instance [DecidableEq V] {s : Set (Sym2 V)} [DecidablePred (· ∈ s)] :
+    DecidableRel (fromEdgeSet s).Adj := by
+  intro v w
+  rw [fromEdgeSet_adj]
+  infer_instance
 
 -- Note: we need to make sure `fromEdgeSet_adj` and this lemma are confluent.
 -- In particular, both yield `s(u, v) ∈ (fromEdgeSet s).edgeSet` ==> `s(v, w) ∈ s ∧ v ≠ w`.
@@ -806,6 +817,12 @@ variable {G} {H : SimpleGraph V} {s s₁ s₂ : Set (Sym2 V)}
 
 @[simp] lemma deleteEdges_adj : (G.deleteEdges s).Adj v w ↔ G.Adj v w ∧ ¬s(v, w) ∈ s :=
   and_congr_right fun h ↦ (and_iff_left h.ne).not
+
+instance {G : SimpleGraph V} [DecidableRel G.Adj] {s : Set (Sym2 V)} [DecidablePred (· ∈ s)] :
+    DecidableRel (G.deleteEdges s).Adj := by
+  intro v w
+  rw [deleteEdges_adj]
+  infer_instance
 
 @[simp] lemma deleteEdges_edgeSet (G G' : SimpleGraph V) : G.deleteEdges G'.edgeSet = G \ G' := by
   ext; simp
