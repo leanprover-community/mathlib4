@@ -3,11 +3,8 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-<<<<<<< HEAD:Mathlib/Probability/Moments/Basic.lean
 import Mathlib.Data.Real.StarOrdered
-=======
 import Mathlib.Probability.IdentDistrib
->>>>>>> origin/master:Mathlib/Probability/Moments.lean
 import Mathlib.Probability.Variance
 
 /-!
