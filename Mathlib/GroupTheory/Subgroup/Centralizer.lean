@@ -11,7 +11,7 @@ import Mathlib.GroupTheory.Submonoid.Centralizer
 # Centralizers of subgroups
 -/
 
-variable {G : Type*} [Group G]
+variable {G G' : Type*} [Group G] [Group G']
 
 namespace Subgroup
 
@@ -59,6 +59,12 @@ theorem centralizer_le {s t : Set G} (h : s ⊆ t) : centralizer t ≤ centraliz
 @[to_additive (attr := simp)]
 theorem centralizer_eq_top_iff_subset {s : Set G} : centralizer s = ⊤ ↔ s ⊆ center G :=
   SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
+
+@[to_additive]
+theorem map_centralizer_le_centralizer_image (s : Set G) (f : G →* G') :
+    (Subgroup.centralizer s).map f ≤ Subgroup.centralizer (f '' s) := by
+  rintro - ⟨g, hg, rfl⟩ - ⟨h, hh, rfl⟩
+  rw [← map_mul, ← map_mul, hg h hh]
 
 @[to_additive]
 instance Centralizer.characteristic [hH : H.Characteristic] :
