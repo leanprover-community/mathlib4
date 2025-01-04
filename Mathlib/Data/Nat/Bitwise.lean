@@ -59,22 +59,16 @@ lemma bitwise_zero : bitwise f 0 0 = 0 := by
   simp only [bitwise_zero_right, ite_self]
 
 lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
-    bitwise f n m = bit (f (bodd n) (bodd m)) (bitwise f (n / 2) (m / 2)) := by
+    bitwise f n m = bit (f (bodd n) (bodd m)) (bitwise f n.div2 m.div2) := by
   conv_lhs => unfold bitwise
   have mod_two_iff_bod x : (x % 2 = 1 : Bool) = bodd x := by
     simp only [mod_two_of_bodd, cond]; cases bodd x <;> rfl
-  simp only [hn, hm, mod_two_iff_bod, ite_false, bit, two_mul, Bool.cond_eq_ite]
-  split_ifs <;> rfl
+  simp [hn, hm, mod_two_iff_bod, bit, div2_val, Nat.shiftLeft_succ, two_mul]
 
 theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
     (h : n ≠ 0) :
-    binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
-  cases n using bitCasesOn with
-  | h b n =>
-    rw [binaryRec_eq _ _ (by right; simpa [bit_eq_zero_iff] using h)]
-    generalize_proofs h; revert h
-    rw [bodd_bit, div2_bit]
-    simp
+    binaryRec z f n = n.bit_decomp ▸ f n.bodd n.div2 (binaryRec z f n.div2) := by
+  rw [binaryRec, dif_neg h, eqRec_eq_cast, eqRec_eq_cast]; rfl
 
 @[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
@@ -82,7 +76,7 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
   conv_lhs => unfold bitwise
   #adaptation_note /-- nightly-2024-03-16: simp was
   -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, Bool.cond_eq_ite] -/
-  simp only [bit, ite_apply, Bool.cond_eq_ite]
+  simp only [bit_val, ite_apply, Bool.cond_eq_ite]
   have h2 x : (x + x + 1) % 2 = 1 := by rw [← two_mul, add_comm]; apply add_mul_mod_self_left
   have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
   cases a <;> cases b <;> simp [h2, h4] <;> split_ifs
@@ -151,8 +145,7 @@ lemma bitwise_bit' {f : Bool → Bool → Bool} (a : Bool) (m : Nat) (b : Bool) 
   rw [← bit_ne_zero_iff] at ham hbn
   simp only [ham, hbn, bit_mod_two_eq_one_iff, Bool.decide_coe, ← div2_val, div2_bit, ne_eq,
     ite_false]
-  conv_rhs => simp only [bit, two_mul, Bool.cond_eq_ite]
-  split_ifs with hf <;> rfl
+  conv_rhs => simp [bit, Bool.cond_eq_ite, Nat.shiftLeft_succ, two_mul]
 
 lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
     bitwise f =
@@ -168,8 +161,8 @@ lemma bitwise_eq_binaryRec (f : Bool → Bool → Bool) :
     | z => simp only [bitwise_zero_right, binaryRec_zero, Bool.cond_eq_ite]
     | f yb y hyb =>
       rw [← bit_ne_zero_iff] at hyb
-      simp_rw [binaryRec_of_ne_zero _ _ hyb, bitwise_of_ne_zero hxb hyb, bodd_bit, ← div2_val,
-        div2_bit, eq_rec_constant, ih]
+      simp_rw [binaryRec_of_ne_zero _ _ hyb, bitwise_of_ne_zero hxb hyb, bodd_bit, div2_bit,
+        eq_rec_constant, ih]
 
 theorem zero_of_testBit_eq_false {n : ℕ} (h : ∀ i, testBit n i = false) : n = 0 := by
   induction' n using Nat.binaryRec with b n hn
@@ -241,12 +234,9 @@ theorem bitwise_swap {f : Bool → Bool → Bool} :
     bitwise (Function.swap f) = Function.swap (bitwise f) := by
   funext m n
   simp only [Function.swap]
-  induction' m using Nat.strongRecOn with m ih generalizing n
-  cases' m with m
-  <;> cases' n with n
-  <;> try rw [bitwise_zero_left, bitwise_zero_right]
-  · specialize ih ((m+1) / 2) (div_lt_self' ..)
-    simp [bitwise_of_ne_zero, ih]
+  induction' m using Nat.binaryRec' with bm m hm ihm generalizing n; · simp
+  induction' n using Nat.binaryRec' with bn n hn; · simp
+  rw [bitwise_bit' _ _ _ _ hm hn, bitwise_bit' _ _ _ _ hn hm, ihm]
 
 /-- If `f` is a commutative operation on bools such that `f false false = false`, then `bitwise f`
     is also commutative. -/
