@@ -353,7 +353,6 @@ section SpanNonneg
 variable {A : Type*} [NonUnitalRing A] [Module ℂ A] [SMulCommClass ℂ A A] [IsScalarTower ℂ A A]
 variable [StarRing A] [TopologicalSpace A] [StarModule ℂ A]
 variable [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
-variable [PartialOrder A] [StarOrderedRing A]
 
 open Submodule Complex
 open scoped ComplexStarModule
@@ -364,7 +363,8 @@ lemma CStarAlgebra.linear_combination_nonneg (x : A) :
     realPart_add_I_smul_imaginaryPart x]
 
 /-- A C⋆-algebra is spanned by its nonnegative elements. -/
-lemma CStarAlgebra.span_nonneg : Submodule.span ℂ {a : A | 0 ≤ a} = ⊤ := by
+lemma CStarAlgebra.span_nonneg [PartialOrder A] [StarOrderedRing A] :
+    Submodule.span ℂ {a : A | 0 ≤ a} = ⊤ := by
   refine eq_top_iff.mpr fun x _ => ?_
   rw [← CStarAlgebra.linear_combination_nonneg x]
   apply_rules [sub_mem, Submodule.smul_mem, add_mem]

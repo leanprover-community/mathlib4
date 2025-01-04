@@ -7,7 +7,6 @@ import Mathlib.Algebra.BigOperators.Associated
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.ENat.Basic
-import Mathlib.Data.Multiset.OrderedMonoid
 import Mathlib.RingTheory.UniqueFactorizationDomain.Defs
 
 /-!
