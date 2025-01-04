@@ -202,6 +202,12 @@ def isInitial : IsInitial (CommRingCat.of (ULift.{u} ℤ)) :=
         (hf := ULift.ringEquiv.symm.surjective)]
       apply RingHom.ext_int⟩)
 
+/-- `ULift.{u} ℤ` is initial in `CommRingCat`. -/
+def isInitial : IsInitial (CommRingCat.of (ULift.{u} ℤ)) :=
+  IsInitial.ofUnique (h := fun R ↦ ⟨⟨(Int.castRingHom R).comp ULift.ringEquiv.toRingHom⟩,
+    fun _ ↦ RingHom.precomp_injective_of_surjective (ULift.ringEquiv (α := ℤ)).symm.toRingHom
+      ULift.ringEquiv.symm.surjective (RingHom.ext_int _ _)⟩)
+
 end Terminal
 
 section Product
