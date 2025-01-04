@@ -63,7 +63,14 @@ def rtake : List α :=
   l.drop (l.length - n)
 
 @[simp]
-theorem rtake_nil : rtake ([] : List α) n = [] := by simp [rtake]
+lemma rtake_length_le {α : Type _} {n : ℕ} {l : List α} (h : List.length l ≤ n) :
+    l.rtake n  = l := by
+  unfold List.rtake
+  rw [Nat.sub_eq_zero_of_le h]
+  apply List.drop_zero
+
+theorem rtake_nil : rtake ([] : List α) n = [] := by
+  simp only [length_nil, Nat.zero_le, rtake_length_le]
 
 @[simp]
 theorem rtake_zero : rtake l 0 = [] := by simp [rtake]
@@ -79,6 +86,22 @@ theorem rtake_eq_reverse_take_reverse : l.rtake n = reverse (l.reverse.take n) :
 @[simp]
 theorem rtake_concat_succ (x : α) : rtake (l ++ [x]) (n + 1) = rtake l n ++ [x] := by
   simp [rtake_eq_reverse_take_reverse]
+
+@[simp]
+lemma length_rtake {l : List α} {t : Nat} (ht : t ≤ l.length) : (l.rtake t).length = t := by
+  unfold List.rtake
+  rw [List.length_drop]
+  apply Nat.sub_sub_self ht
+
+@[simp]
+lemma rtake_cons_eq_self_of_le_length {l : List α} {x : α} {t : Nat} (ht : t ≤ l.length) :
+    ((x :: l).rtake t) = (l.rtake t) := by
+  unfold List.rtake
+  rw [List.length_cons, Nat.succ_sub ht]
+  rfl
+
+
+
 
 /-- Drop elements from the tail end of a list that satisfy `p : α → Bool`.
 Implemented naively via `List.reverse` -/
@@ -223,5 +246,10 @@ lemma rdrop_append_of_le_length {l₁ l₂ : List α} (k : ℕ) :
 lemma rdrop_append_length_add {l₁ l₂ : List α} (k : ℕ) :
     List.rdrop (l₁ ++ l₂) (length l₂ + k) = List.rdrop l₁ k := by
   rw [← rdrop_add, rdrop_append_length]
+
+
+lemma rdrop_append_rtake {n : Nat} {l : List α} :  List.rdrop l n ++ List.rtake l n = l := by
+  unfold List.rdrop List.rtake
+  apply List.take_append_drop
 
 end List
