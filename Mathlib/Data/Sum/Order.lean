@@ -487,7 +487,7 @@ variable [LE α] [LE β] [LE γ] (a : α) (b : β) (c : γ)
 @[simps! apply]
 def sumCongr {α₁ α₂ β₁ β₂ : Type*} [LE α₁] [LE α₂] [LE β₁] [LE β₂]
     (ea : α₁ ≃o α₂) (eb : β₁ ≃o β₂) : α₁ ⊕ β₁ ≃o α₂ ⊕ β₂ where
-  toEquiv := Equiv.sumCongr ea eb
+  toEquiv := .sumCongr ea eb
   map_rel_iff' := by rintro (a | a) (b | b) <;> simp
 
 @[simp]
