@@ -5,6 +5,7 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.List.Sort
 import Mathlib.Data.Multiset.Range
+import Mathlib.Logic.Function.Defs
 
 /-!
 # Construct a sorted list from a multiset.
@@ -21,15 +22,35 @@ section sort
 variable (r : α → α → Prop) [DecidableRel r] [IsTrans α r] [IsAntisymm α r] [IsTotal α r]
 variable (r' : β → β → Prop) [DecidableRel r'] [IsTrans β r'] [IsAntisymm β r'] [IsTotal β r']
 
-/-- `sort s` constructs a sorted list from the multiset `s`.
-  (Uses merge sort algorithm.) -/
-def sort (s : Multiset α) : List α :=
-  Quot.liftOn s (mergeSort · (r · ·)) fun _ _ h =>
+instance (f : α → β) : IsTrans α (r' on f) :=
+  ⟨fun _ _ _ ↦ IsTrans.trans (f _) _ _⟩
+
+instance (f : α → β) : IsTotal α (r' on f) :=
+  ⟨fun _ _ ↦ IsTotal.total (f _) _⟩
+
+/-- `sort_with_antisymmetry s` constructs a sorted list from the multiset `s` with a function `f`,
+such that `f` preserves antisymmetry on `r'`. (That is, `r' (f a) (f b) ∧ r' (f b) (f a) ↔ a = b`.)
+  (This uses the merge sort algorithm).
+-/
+def sort_with_antisymmetry (f : α → β) (s : Multiset α) [IsAntisymm α (r' on f)]
+    : List α :=
+  Quot.liftOn s (mergeSort · (fun a b ↦ r' (f a) (f b))) fun _ _ h =>
     eq_of_perm_of_sorted ((mergeSort_perm _ _).trans <| h.trans (mergeSort_perm _ _).symm)
       (sorted_mergeSort IsTrans.trans
-        (fun a b => by simpa using IsTotal.total a b) _)
+        (fun a b => by simpa using IsTotal.total (f a) (f b)) _)
       (sorted_mergeSort IsTrans.trans
-        (fun a b => by simpa using IsTotal.total a b) _)
+        (fun a b => by simpa using IsTotal.total (f a) (f b)) _)
+
+instance (f : α ↪ β) : IsAntisymm α (r' on f) :=
+  ⟨fun _ _ a b ↦ f.injective (IsAntisymm.antisymm _ _ a b)⟩
+
+/-- `sort_embedding s` constructs a sorted list from the multiset `s` with an embedding `f`.
+-/
+def sort_embedding (f : α ↪ β) (s : Multiset α) : List α := sort_with_antisymmetry r' f s
+
+/-- `sort s` constructs a sorted list from the multiset `s`.
+  This is equivalent to `sort_by` with an identity embedding. -/
+def sort (s : Multiset α) : List α := sort_embedding r (Function.Embedding.refl α) s
 
 @[simp]
 theorem coe_sort (l : List α) : sort r l = mergeSort l (r · ·) :=
