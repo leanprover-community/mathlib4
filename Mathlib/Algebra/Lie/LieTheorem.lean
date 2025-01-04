@@ -140,6 +140,13 @@ private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpac
     rw [pow_zero, LinearMap.one_apply]
   exact nontrivial_of_ne ⟨v, hvU⟩ 0 <| by simp [hv']
 
+variable (R V) in
+/-- The weight space of `V` with respect to `χ : A → R`, a priori a Lie submodule for `A`, is also a
+Lie submodule for `L`. -/
+def weightSpaceOfIsLieTower (χ : A → R) : LieSubmodule R L V :=
+  { toSubmodule := weightSpace V χ
+    lie_mem {z v} hv := weightSpaceOfIsLieTower_aux χ z v hv }
+
 end
 
 section
@@ -162,9 +169,7 @@ theorem exists_nontrivial_weightSpace_of_lieIdeal [LieModule.IsTriangularizable 
   let π₁ : L →ₗ[k] A       := A.toSubmodule.linearProjOfIsCompl (k ∙ z) hA
   let π₂ : L →ₗ[k] (k ∙ z) := (k ∙ z).linearProjOfIsCompl ↑A hA.symm
 
-  set W : LieSubmodule k L V :=
-  { toSubmodule := weightSpace V χ₀
-    lie_mem := fun {z v} hv ↦ lie_stable χ₀ z v hv }
+  set W : LieSubmodule k L V := weightSpaceOfIsLieTower k V χ₀
   obtain ⟨c, hc⟩ : ∃ c, (toEnd k _ W z).HasEigenvalue c := by
     have : Nontrivial W := inferInstanceAs (Nontrivial (weightSpace V χ₀))
     apply Module.End.exists_hasEigenvalue_of_genEigenspace_eq_top
@@ -172,7 +177,7 @@ theorem exists_nontrivial_weightSpace_of_lieIdeal [LieModule.IsTriangularizable 
 
   obtain ⟨⟨v, hv⟩, hvc⟩ := hc.exists_hasEigenvector
   have hv' : ∀ (x : ↥A), ⁅x, v⁆ = χ₀ x • v := by
-    simpa [W, mem_weightSpace] using hv
+    simpa [W, weightSpaceOfIsLieTower, mem_weightSpace] using hv
 
   use (χ₀.comp π₁) + c • (e.comp π₂)
   refine nontrivial_of_ne ⟨v, ?_⟩ 0 ?_
