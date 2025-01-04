@@ -240,7 +240,7 @@ theorem tsub_lt_tsub_iff_left_of_le_of_le [AddLeftReflectLT α] (h₁ : b ≤ a)
   Contravariant.AddLECancellable.tsub_lt_tsub_iff_left_of_le_of_le Contravariant.AddLECancellable h₁
     h₂
 
-@[simp] 
+@[simp]
 lemma add_add_tsub_cancel (hcb : c ≤ b) : a + c + (b - c) = a + b :=
   Contravariant.AddLECancellable.add_add_tsub_cancel hcb
 
