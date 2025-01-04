@@ -154,7 +154,7 @@ theorem Finite.iUnion {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Fini
 
 /-- An indexed union of pairwise disjoint sets is finite iff all sets are finite, and all but
 finitely many are empty. -/
-lemma finite_biUnion_iff_of_pairwiseDisjoint {f : β → Set α} {s : Set β}
+lemma PairwiseDisjoint.finite_biUnion_iff {f : β → Set α} {s : Set β}
     (hs : s.PairwiseDisjoint f) :
     Set.Finite (⋃ i ∈ s, f i)
       ↔ (∀ i ∈ s, Set.Finite (f i)) ∧ Set.Finite {i ∈ s | (f i).Nonempty} := by
@@ -162,25 +162,20 @@ lemma finite_biUnion_iff_of_pairwiseDisjoint {f : β → Set α} {s : Set β}
   · intro h
     refine ⟨fun i hi ↦ ?_, ?_⟩
     · have : f i ⊆ ⋃ i ∈ s, f i := subset_biUnion_of_mem hi
-      exact Finite.subset h this
-    · let u : {i ∈ s | (f i).Nonempty} → ⋃ i ∈ s, f i := fun i ↦ ⟨i.2.2.choose, by
-        have : i.2.2.choose ∈ f i := i.2.2.choose_spec
-        simp only [mem_setOf_eq, mem_iUnion, exists_prop]
-        exact ⟨i, i.2.1, this⟩⟩
+      exact h.subset this
+    · let u : {i ∈ s | (f i).Nonempty} → ⋃ i ∈ s, f i :=
+        fun i ↦ ⟨i.2.2.choose, mem_biUnion i.2.1 i.2.2.choose_spec⟩
       have u_inj : Function.Injective u := by
         rintro ⟨i, hi⟩ ⟨j, hj⟩ hij
-        simp only [coe_setOf, mem_setOf_eq, Subtype.mk.injEq]
-        by_contra h'ij
-        have : Disjoint (f i) (f j) := hs hi.1 hj.1 h'ij
         have ui : (u ⟨i, hi⟩ : α) ∈ f i := hi.2.choose_spec
         rw [hij] at ui
         have uj : (u ⟨j, hj⟩ : α) ∈ f j := hj.2.choose_spec
-        exact disjoint_left.1 this ui uj
+        ext
+        exact hs.elim_set hi.1 hj.1 _ ui uj
       have : Finite (⋃ i ∈ s, f i) := h
       exact Finite.of_injective u u_inj
   · rintro ⟨h, h'⟩
-    have : ⋃ i ∈ s, f i = ⋃ i ∈ {i ∈ s | (f i).Nonempty}, f i := by
-      ext; simp; tauto
+    have : ⋃ i ∈ s, f i = ⋃ i ∈ {i ∈ s | (f i).Nonempty}, f i := by simp [iUnion_and]
     rw [this]
     apply Set.Finite.biUnion h'
     intro i hi
