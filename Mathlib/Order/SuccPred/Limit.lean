@@ -261,6 +261,17 @@ theorem isSuccPrelimit_iff_succ_lt : IsSuccPrelimit b ↔ ∀ a < b, succ a < b 
 @[deprecated isSuccPrelimit_iff_succ_lt (since := "2024-09-05")]
 alias isSuccLimit_iff_succ_lt := isSuccPrelimit_iff_succ_lt
 
+theorem coe_succ_Iio {a : α} (h : IsSuccPrelimit a)
+    (x : Iio a) : (succ x).1 = succ x.1 := by
+  apply coe_succ_of_mem
+  have := Subtype.mem x
+  rw [mem_Iio] at this ⊢
+  exact h.succ_lt this
+
+theorem succ_Iio {a : α} (h : IsSuccPrelimit a)
+    (x : Iio a) : succ x = ⟨succ x.1, h.succ_lt x.2⟩ :=
+  Subtype.val_inj.mp <| coe_succ_Iio h _
+
 section NoMaxOrder
 
 variable [NoMaxOrder α]
