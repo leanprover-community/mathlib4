@@ -924,12 +924,10 @@ private lemma faaDiBruno_aux2 {m : ℕ} (q : FormalMultilinearSeries 𝕜 F G)
     apply FormalMultilinearSeries.congr _ (by simp [hij])
     simp
 
-variable {n : WithTop ℕ∞} {g : F → G} {f : E → F}
-
 /-- *Faa di Bruno* formula: If two functions `g` and `f` have Taylor series up to `n` given by
 `q` and `p`, then `g ∘ f` also has a Taylor series, given by `q.taylorComp p`. -/
-theorem HasFTaylorSeriesUpToOn.comp (hg : HasFTaylorSeriesUpToOn n g q t)
-    (hf : HasFTaylorSeriesUpToOn n f p s) (h : MapsTo f s t) :
+theorem HasFTaylorSeriesUpToOn.comp {n : WithTop ℕ∞} {g : F → G} {f : E → F}
+    (hg : HasFTaylorSeriesUpToOn n g q t) (hf : HasFTaylorSeriesUpToOn n f p s) (h : MapsTo f s t) :
     HasFTaylorSeriesUpToOn n (g ∘ f) (fun x ↦ (q (f x)).taylorComp (p x)) s := by
   /- One has to check that the `m+1`-th term is the derivative of the `m`-th term. The `m`-th term
   is a sum, that one can differentiate term by term. Each term is a linear map into continuous
