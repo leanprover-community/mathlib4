@@ -135,15 +135,16 @@ alias span_induction' := span_induction
 
 /-- An induction principle for span membership. This is a version of `Submodule.span_induction`
 for binary predicates. -/
-theorem span_induction₂ {p : (x y : M) → x ∈ span R s → y ∈ span R s → Prop}
-    (mem_mem : ∀ (x) (y) (hx : x ∈ s) (hy : y ∈ s), p x y (subset_span hx) (subset_span hy))
+theorem span_induction₂ {N : Type*} [AddCommMonoid N] [Module R N] {t : Set N}
+    {p : (x : M) → (y : N) → x ∈ span R s → y ∈ span R t → Prop}
+    (mem_mem : ∀ (x) (y) (hx : x ∈ s) (hy : y ∈ t), p x y (subset_span hx) (subset_span hy))
     (zero_left : ∀ y hy, p 0 y (zero_mem _) hy) (zero_right : ∀ x hx, p x 0 hx (zero_mem _))
     (add_left : ∀ x y z hx hy hz, p x z hx hz → p y z hy hz → p (x + y) z (add_mem hx hy) hz)
     (add_right : ∀ x y z hx hy hz, p x y hx hy → p x z hx hz → p x (y + z) hx (add_mem hy hz))
     (smul_left : ∀ (r : R) x y hx hy, p x y hx hy → p (r • x) y (smul_mem _ r hx) hy)
     (smul_right : ∀ (r : R) x y hx hy, p x y hx hy → p x (r • y) hx (smul_mem _ r hy))
-    {a b : M} (ha : a ∈ Submodule.span R s)
-    (hb : b ∈ Submodule.span R s) : p a b ha hb := by
+    {a : M} {b : N} (ha : a ∈ Submodule.span R s)
+    (hb : b ∈ Submodule.span R t) : p a b ha hb := by
   induction hb using span_induction with
   | mem z hz => induction ha using span_induction with
     | mem _ h => exact mem_mem _ _ h hz
