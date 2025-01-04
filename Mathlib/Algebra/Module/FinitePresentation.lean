@@ -73,21 +73,21 @@ end Semiring
 
 section Ring
 
-variable (R M N) [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
-
-universe u in
-variable (R M : Type u) [Ring R] [AddCommGroup M] [Module R M] in
+universe u v in
+variable (R : Type u) (M : Type v) [Ring R] [AddCommGroup M] [Module R M] in
 /-- A finitely presented module is isomorphic to the quotient of a finite free module by a finitely
 generated submodule. -/
 theorem Module.FinitePresentation.equiv_quotient [fp : Module.FinitePresentation R M] :
-    ∃ (L : Type u) (_ : AddCommGroup L) (_ : Module R L) (K : Submodule R L) (_ : M ≃ₗ[R] L ⧸ K),
-      Module.Free R L ∧ Module.Finite R L ∧ K.FG := by
+    ∃ (L : Type max u v) (_ : AddCommGroup L) (_ : Module R L) (K : Submodule R L)
+      (_ : M ≃ₗ[R] L ⧸ K), Module.Free R L ∧ Module.Finite R L ∧ K.FG := by
   obtain ⟨ι, ⟨hι₁, hι₂⟩⟩ := fp
   use ι →₀ R, inferInstance, inferInstance
   use LinearMap.ker (Finsupp.linearCombination R Subtype.val)
   refine ⟨(LinearMap.quotKerEquivOfSurjective _ ?_).symm, inferInstance, inferInstance, hι₂⟩
   apply LinearMap.range_eq_top.mp
   simpa only [Finsupp.range_linearCombination, Subtype.range_coe_subtype, Finset.setOf_mem]
+
+variable (R M N) [Ring R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 -- Ideally this should be an instance but it makes mathlib much slower.
 lemma Module.finitePresentation_of_finite [IsNoetherianRing R] [h : Module.Finite R M] :
