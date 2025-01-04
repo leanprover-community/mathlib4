@@ -416,4 +416,83 @@ theorem ascPochhammer_eval_eq_zero_iff [IsDomain R]
     convert ascPochhammer_eval_neg_coe_nat_of_lt hrn
     simp [rnn]
 
+/-- `descPochhammer R n` is `0` for `0, 1, …, n-1`. -/
+theorem descPochhammer_eval_coe_nat_of_lt {k n : ℕ} (h : k < n) :
+    (descPochhammer R n).eval (k : R) = 0 := by
+  rw [descPochhammer_eval_eq_ascPochhammer, sub_add_eq_add_sub,
+    ←Nat.cast_add_one, ←neg_sub, ←Nat.cast_sub h]
+  exact ascPochhammer_eval_neg_coe_nat_of_lt (Nat.sub_lt_of_pos_le k.succ_pos h)
+
 end Ring
+
+section StrictOrderedRing
+
+variable {S : Type*} [StrictOrderedRing S]
+
+/-- `descPochhammer S n` is positive on `(n-1, ∞)`. -/
+theorem descPochhammer_pos {n : ℕ} {s : S} (h : n-1 < s) :
+    0 < (descPochhammer S n).eval s := by
+  rw [descPochhammer_eval_eq_ascPochhammer]
+  apply ascPochhammer_pos
+  rwa [←sub_pos, ←sub_add] at h
+
+/-- `descPochhammer S n` is nonnegative on `[n-1, ∞)`. -/
+theorem descPochhammer_nonneg {n : ℕ} {s : S} (h : n-1 ≤ s) :
+    0 ≤ (descPochhammer S n).eval s := by
+  cases eq_or_lt_of_le h with
+  | inl h =>
+    rw [←h, descPochhammer_eval_eq_ascPochhammer,
+      sub_sub_cancel_left, neg_add_cancel, ascPochhammer_eval_zero]
+    exact ite_nonneg zero_le_one (le_refl 0)
+  | inr h => exact le_of_lt (descPochhammer_pos h)
+
+/-- `descPochhammer S n` is at least `(s-n+1)^n` on `[n-1, ∞)`. -/
+theorem pow_le_descPochhammer_eval {n : ℕ} {s : S} (h : n-1 ≤ s) :
+    (s-n+1)^n ≤ (descPochhammer S n).eval s := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    rw [Nat.cast_add_one, add_sub_cancel_right] at h
+    have h' : n-1 ≤ s := by
+      trans (n : S)
+      · rw [sub_le_iff_le_add]
+        exact le_add_of_nonneg_right zero_le_one
+      · exact h
+    rw [pow_succ, descPochhammer_succ_eval]
+    apply mul_le_mul
+    any_goals rw [Nat.cast_add_one, sub_add, add_sub_cancel_right]
+    · trans (s-n+1)^n
+      · apply pow_le_pow_left₀
+        · rwa [←sub_nonneg] at h
+        · exact le_add_of_nonneg_right zero_le_one
+      · exact ih h'
+    · rwa [←sub_nonneg] at h
+    · exact descPochhammer_nonneg h'
+
+/-- `descPochhammer R n` is monotone on `[n-1, ∞)`. -/
+theorem MonotoneOn.descPochhammer_eval (n : ℕ) :
+    MonotoneOn (descPochhammer S n).eval (Set.Ici (n-1 : S)) := by
+  induction n with
+  | zero => simp [monotoneOn_const]
+  | succ n ih =>
+    intro a ha b hb hab
+    rw [Set.mem_Ici, Nat.cast_add_one, add_sub_cancel_right] at ha hb
+    have ha' : n-1 ≤ a := by
+      trans (n : S)
+      · rw [sub_le_iff_le_add]
+        exact le_add_of_nonneg_right zero_le_one
+      · exact ha
+    have hb' : n-1 ≤ b := by
+      trans (n : S)
+      · rw [sub_le_iff_le_add]
+        exact le_add_of_nonneg_right zero_le_one
+      · exact hb
+    simp_rw [descPochhammer_succ_eval]
+    apply mul_le_mul
+    · exact ih ha' hb' hab
+    · rw [sub_le_sub_iff_right]
+      exact hab
+    · rwa [←sub_nonneg] at ha
+    · exact descPochhammer_nonneg hb'
+
+end StrictOrderedRing
