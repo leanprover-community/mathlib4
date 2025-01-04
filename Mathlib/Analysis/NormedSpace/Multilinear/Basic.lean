@@ -658,7 +658,7 @@ variable (𝕜 E E' G G')
 def prodL :
     ContinuousMultilinearMap 𝕜 E G × ContinuousMultilinearMap 𝕜 E G' ≃ₗᵢ[𝕜]
       ContinuousMultilinearMap 𝕜 E (G × G') where
-  toEquiv := prodEquiv
+  __ := prodEquiv
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
   norm_map' f := opNorm_prod f.1 f.2
