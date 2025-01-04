@@ -1035,6 +1035,13 @@ lemma top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
   apply SimpleGraph.ConnectedComponent.sound
   exact (@SimpleGraph.top_connected V (Nonempty.intro v)).preconnected v w
 
+def toSubgraph (C : G.ConnectedComponent) : G.Subgraph :=
+  Subgraph.induce ⊤ C.supp
+
+@[simp]
+theorem toSubgraph_vertices (C : G.ConnectedComponent) : (toSubgraph C).verts = C.supp :=
+  rfl
+
 end ConnectedComponent
 
 -- TODO: Extract as lemma about general equivalence relation
