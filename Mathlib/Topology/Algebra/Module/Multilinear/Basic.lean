@@ -299,6 +299,47 @@ theorem _root_.ContinuousLinearMap.compContinuousMultilinearMap_coe (g : M₂ �
   ext m
   rfl
 
+/-- `ContinuousMultilinearMap.prod` as an `Equiv`. -/
+@[simps apply symm_apply_fst symm_apply_snd, simps (config := .lemmasOnly) symm_apply]
+def prodEquiv :
+    (ContinuousMultilinearMap R M₁ M₂ × ContinuousMultilinearMap R M₁ M₃) ≃
+      ContinuousMultilinearMap R M₁ (M₂ × M₃) where
+  toFun f := f.1.prod f.2
+  invFun f := ((ContinuousLinearMap.fst _ _ _).compContinuousMultilinearMap f,
+    (ContinuousLinearMap.snd _ _ _).compContinuousMultilinearMap f)
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+theorem prod_ext_iff {f g : ContinuousMultilinearMap R M₁ (M₂ × M₃)} :
+    f = g ↔ (ContinuousLinearMap.fst _ _ _).compContinuousMultilinearMap f =
+      (ContinuousLinearMap.fst _ _ _).compContinuousMultilinearMap g ∧
+      (ContinuousLinearMap.snd _ _ _).compContinuousMultilinearMap f =
+      (ContinuousLinearMap.snd _ _ _).compContinuousMultilinearMap g := by
+  rw [← Prod.mk.inj_iff, ← prodEquiv_symm_apply, ← prodEquiv_symm_apply, Equiv.apply_eq_iff_eq]
+
+theorem prod_ext {f g : ContinuousMultilinearMap R M₁ (M₂ × M₃)}
+    (h₁ : (ContinuousLinearMap.fst _ _ _).compContinuousMultilinearMap f =
+      (ContinuousLinearMap.fst _ _ _).compContinuousMultilinearMap g)
+    (h₂ : (ContinuousLinearMap.snd _ _ _).compContinuousMultilinearMap f =
+      (ContinuousLinearMap.snd _ _ _).compContinuousMultilinearMap g) : f = g :=
+  prod_ext_iff.mpr ⟨h₁, h₂⟩
+
+theorem eq_prod_iff {f : ContinuousMultilinearMap R M₁ (M₂ × M₃)}
+    {g : ContinuousMultilinearMap R M₁ M₂} {h : ContinuousMultilinearMap R M₁ M₃} :
+    f = g.prod h ↔ (ContinuousLinearMap.fst _ _ _).compContinuousMultilinearMap f = g ∧
+      (ContinuousLinearMap.snd _ _ _).compContinuousMultilinearMap f = h :=
+  prod_ext_iff
+
+theorem prod_add_prod [ContinuousAdd M₂] [ContinuousAdd M₃]
+    (f₁ f₂ : ContinuousMultilinearMap R M₁ M₂) (g₁ g₂ : ContinuousMultilinearMap R M₁ M₃) :
+    f₁.prod g₁ + f₂.prod g₂ = (f₁ + f₂).prod (g₁ + g₂) :=
+  rfl
+
+@[simp]
+theorem zero_prod_zero :
+    (0 : ContinuousMultilinearMap R M₁ M₂).prod (0 : ContinuousMultilinearMap R M₁ M₃) = 0 :=
+  rfl
+
 /-- `ContinuousMultilinearMap.pi` as an `Equiv`. -/
 @[simps]
 def piEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
@@ -306,12 +347,8 @@ def piEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
     (∀ i, ContinuousMultilinearMap R M₁ (M' i)) ≃ ContinuousMultilinearMap R M₁ (∀ i, M' i) where
   toFun := ContinuousMultilinearMap.pi
   invFun f i := (ContinuousLinearMap.proj i : _ →L[R] M' i).compContinuousMultilinearMap f
-  left_inv f := by
-    ext
-    rfl
-  right_inv f := by
-    ext
-    rfl
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 /-- An equivalence of the index set defines an equivalence between the spaces of continuous
 multilinear maps. This is the forward map of this equivalence. -/
@@ -452,6 +489,11 @@ theorem sub_apply (m : ∀ i, M₁ i) : (f - f') m = f m - f' m :=
 instance : AddCommGroup (ContinuousMultilinearMap R M₁ M₂) :=
   toMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
+
+theorem prod_sub_prod [AddCommGroup M₃] [Module R M₃] [TopologicalSpace M₃] [TopologicalAddGroup M₃]
+    (f₁ f₂ : ContinuousMultilinearMap R M₁ M₂) (g₁ g₂ : ContinuousMultilinearMap R M₁ M₃) :
+    f₁.prod g₁ - f₂.prod g₂ = (f₁ - f₂).prod (g₁ - g₂) :=
+  rfl
 
 end TopologicalAddGroup
 
