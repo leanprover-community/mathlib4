@@ -1066,7 +1066,6 @@ Q1050203:
 Q1050932:
   title: Hartogs's theorem
   url: https://github.com/girving/ray/blob/main/Ray/Hartogs/Hartogs.lean
-  identifiers: Pair.hartogs
   author: Geoffrey Irving
 
 Q1051404:

@@ -366,13 +366,6 @@ theorem measure_preimage_lt_top_of_integrable (f : α →ₛ E) (hf : Integrable
     (hx : x ≠ 0) : μ (f ⁻¹' {x}) < ∞ :=
   integrable_iff.mp hf x hx
 
-theorem measure_support_lt_top [Zero β] (f : α →ₛ β) (hf : ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞) :
-    μ (support f) < ∞ := by
-  rw [support_eq]
-  refine (measure_biUnion_finset_le _ _).trans_lt (ENNReal.sum_lt_top.mpr fun y hy => ?_)
-  rw [Finset.mem_filter] at hy
-  exact hf y hy.2
-
 theorem measure_support_lt_top_of_memℒp (f : α →ₛ E) (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : μ (support f) < ∞ :=
   f.measure_support_lt_top ((memℒp_iff hp_ne_zero hp_ne_top).mp hf)
