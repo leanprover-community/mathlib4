@@ -517,6 +517,9 @@ theorem σ_comp_σ {n} {i j : Fin (n + 1)} (H : i ≤ j) :
         (Fin.succ_le_castSucc_iff.mpr (H.trans_lt' h)), Fin.predAbove_of_le_castSucc _ k.succ
         (Fin.succ_le_castSucc_iff.mpr h)]
 
+section factor_δ
+open Fin
+
 /--
 If `f : [m] ⟶ [n+1]` is a morphism and `j` is not in the range of `f`,
 then `factor_δ f j` is a morphism `[m] ⟶ [n]` such that
@@ -524,9 +527,8 @@ then `factor_δ f j` is a morphism `[m] ⟶ [n]` such that
 -/
 def factor_δ {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fin (n+2)) :
     ([m] : SimplexCategory) ⟶ [n] :=
-  f ≫ σ (Fin.predAbove 0 j)
+  f ≫ σ (predAbove 0 j)
 
-open Fin in
 lemma factor_δ_spec {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fin (n+2))
     (hj : ∀ (k : Fin (m+1)), f.toOrderHom k ≠ j) :
     factor_δ f j ≫ δ j = f := by
@@ -553,6 +555,42 @@ lemma factor_δ_spec {m n : ℕ} (f : ([m] : SimplexCategory) ⟶ [n+1]) (j : Fi
       swap
       · rwa [succ_le_castSucc_iff, lt_pred_iff]
       rw [succ_pred]
+
+lemma factor_δ_δ_eq {n : ℕ} (j : Fin (n+2)) :
+    factor_δ (δ j) j = 𝟙 _ := by
+  dsimp only [factor_δ]
+  cases' j using cases with j
+  · exact δ_comp_σ_self' (by rfl)
+  · rw [predAbove_zero_succ, δ_comp_σ_succ]
+
+@[reassoc]
+lemma σ_predAbove_comp_σ_predAbove {n : ℕ} {p : Fin (n + 1)} {i j : Fin (n + 2)}
+    (h : i ≤ j) (hp : j = p.castSucc → i = p.castSucc) :
+    σ (p.castSucc.predAbove j.succ) ≫ σ (p.predAbove i) =
+      σ (p.predAbove i).castSucc ≫ σ (p.predAbove j) := by
+  rw [σ_comp_σ (predAbove_le_predAbove p h)]
+  obtain rfl | hp := or_iff_not_imp_right.mpr <| hp ∘ not_ne_iff.mp
+  · rw [predAbove_castSucc_self, predAbove_succ_of_le _ _ h]
+    rcases lt_or_eq_of_le h with (h | rfl)
+    · rw [predAbove_of_castSucc_lt p j h, succ_pred]
+    · rw [predAbove_castSucc_self, σ_comp_σ (by rfl)]
+  · rcases hp.lt_or_lt with (hp | hp)
+    · rw [predAbove_of_le_castSucc p j (le_of_lt hp),
+        predAbove_succ_of_lt _ _ hp, succ_castPred_eq_castPred_succ]
+    · rw [predAbove_of_castSucc_lt p j hp, succ_pred,
+        predAbove_succ_of_le _ _ (le_of_lt hp)]
+
+@[reassoc]
+lemma σ_predAbove_zero_comp_σ_predAbove_zero {n : ℕ} {i j : Fin (n + 2)}
+    (h : i ≤ j) :
+    σ (predAbove 0 j.succ) ≫ σ (predAbove 0 i) =
+      σ (predAbove 0 i.castSucc) ≫ σ (predAbove 0 j) := by
+  rw [← castSucc_zero, castSucc_predAbove_castSucc,
+    σ_predAbove_comp_σ_predAbove h]
+  rintro rfl
+  exact le_zero_iff.mp h
+
+end factor_δ
 
 @[simp]
 lemma δ_zero_mkOfSucc {n : ℕ} (i : Fin n) :

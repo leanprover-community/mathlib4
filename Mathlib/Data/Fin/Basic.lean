@@ -1115,9 +1115,32 @@ lemma succAbove_ne_last {a : Fin (n + 2)} {b : Fin (n + 1)} (ha : a ≠ last _) 
 
 lemma succAbove_last_apply (i : Fin n) : succAbove (last n) i = castSucc i := by rw [succAbove_last]
 
+lemma succAbove_eq_lt_iff {j : Fin (n + 1)} (h : j < p) (i : Fin n) :
+    p.succAbove i = j ↔ i.castSucc = j := by
+  by_cases hi : i.castSucc < p
+  · exact succAbove_of_castSucc_lt _ _ hi ▸ Iff.refl _
+  · apply Iff.intro <;> rintro rfl
+    · apply False.elim ∘ hi ∘ Fin.lt_trans lt_succ
+      exact succAbove_of_le_castSucc p i (Fin.not_lt.mp hi) ▸ h
+    · exact False.elim <| hi h
+
+lemma succAbove_eq_gt_iff {j : Fin (n + 1)} (h : p < j) (i : Fin n) :
+    p.succAbove i = j ↔ i.succ = j := by
+  by_cases hi : i.castSucc < p
+  · apply Iff.intro <;> rintro rfl
+    · exact False.elim <| Fin.lt_asymm hi <| succAbove_of_castSucc_lt p i hi ▸ h
+    · exact False.elim <| Fin.not_lt.mpr (castSucc_lt_iff_succ_le.mp hi) h
+  · exact succAbove_of_le_castSucc _ _ (Fin.not_lt.mp hi) ▸ Iff.refl _
+
 @[deprecated "No deprecation message was provided." (since := "2024-05-30")]
 lemma succAbove_lt_ge (p : Fin (n + 1)) (i : Fin n) :
     castSucc i < p ∨ p ≤ castSucc i := Nat.lt_or_ge (castSucc i) p
+
+lemma castSucc_le_succAbove (p : Fin (n + 1)) (i : Fin n) :
+    i.castSucc ≤ p.succAbove i := by
+  by_cases h : i.castSucc < p
+  · exact succAbove_of_castSucc_lt p i h ▸ Fin.le_rfl
+  · exact succAbove_of_le_castSucc p i (Fin.not_lt.mp h) ▸ castSucc_le_succ i
 
 /-- Embedding `i : Fin n` into `Fin (n + 1)` using a pivot `p` that is greater
 results in a value that is less than `p`. -/
@@ -1172,6 +1195,10 @@ lemma exists_succAbove_eq {x y : Fin (n + 1)} (h : x ≠ y) : ∃ z, y.succAbove
 
 @[simp] lemma range_succ (n : ℕ) : Set.range (Fin.succ : Fin n → Fin (n + 1)) = {0}ᶜ := by
   rw [← succAbove_zero]; exact range_succAbove (0 : Fin (n + 1))
+
+/-- For any pivot `p : Fin (n + 1)`, `p.succAbove` is not surjective. -/
+lemma succAbove_not_surjective : ¬Surjective p.succAbove :=
+  fun hs ↦ exists_succAbove_eq_iff.mp (hs p) rfl
 
 /-- `succAbove` is injective at the pivot -/
 lemma succAbove_left_injective : Injective (@succAbove n) := fun _ _ h => by
@@ -1356,6 +1383,58 @@ lemma predAbove_last_apply {i : Fin (n + 2)} :
   split_ifs with hi
   · rw [hi, predAbove_right_last]
   · rw [predAbove_last_of_ne_last hi]
+
+lemma predAbove_eq_lt_iff {p j : Fin n} (h : j < p) (i : Fin (n + 1)) :
+    p.predAbove i = j ↔ i = j.castSucc := by
+  by_cases hi : p.castSucc < i
+  · apply Iff.intro <;> rintro rfl
+    · apply False.elim ∘ Fin.not_lt.mpr (castSucc_lt_iff_succ_le.mp hi)
+      exact predAbove_of_castSucc_lt p i hi ▸ pred_lt_iff _ |>.mp h
+    · exact False.elim <| Fin.not_le.mpr hi <| Fin.le_of_lt h
+  · rw [predAbove_of_le_castSucc p i (Fin.not_lt.mp hi)]
+    apply castPred_eq_iff_eq_castSucc
+
+lemma predAbove_eq_gt_iff {p j : Fin n} (h : p < j) (i : Fin (n + 1)) :
+    p.predAbove i = j ↔ i = j.succ := by
+  by_cases hi : p.castSucc < i
+  · exact predAbove_of_castSucc_lt p i hi ▸ pred_eq_iff_eq_succ _
+  · apply Iff.intro <;> rintro rfl
+    · apply False.elim ∘ hi ∘ (lt_castPred_iff _).mp
+      exact predAbove_of_le_castSucc p i (Fin.not_lt.mp hi) ▸ h
+    · apply False.elim ∘ Fin.lt_asymm h ∘ succ_le_castSucc_iff.mp
+      exact Fin.not_lt.mp hi
+
+lemma predAbove_eq_self_iff (p : Fin n) (i : Fin (n + 1)) :
+    p.predAbove i = p ↔ i = p.castSucc ∨ i = p.succ := by
+  apply Iff.intro <;> intro hp
+  · by_cases hi : p.castSucc < i
+    · apply Or.inr ∘ (pred_eq_iff_eq_succ _).mp
+      exact predAbove_of_castSucc_lt p i hi ▸ hp
+    · apply Or.inl ∘ (castPred_eq_iff_eq_castSucc i _ p).mp
+      exact predAbove_of_le_castSucc p i (Fin.not_lt.mp hi) ▸ hp
+  · rcases hp with (rfl | rfl)
+    · exact predAbove_castSucc_self p
+    · exact predAbove_succ_self p
+
+lemma predAbove_le_predAbove (p : Fin n) {i j : Fin (n + 1)}
+    (h : i ≤ j) : p.predAbove i ≤ p.predAbove j := by
+  by_cases hi : p.castSucc < i
+  · rw [predAbove_of_castSucc_lt p j (Fin.lt_of_lt_of_le hi h),
+      predAbove_of_castSucc_lt p i hi]
+    exact pred_le_pred_iff.mpr h
+  · have hi := Fin.not_lt.mp hi
+    rw [predAbove_of_le_castSucc p i hi]
+    by_cases hj : p.castSucc < j
+    · rw [predAbove_of_castSucc_lt p j hj]
+      exact castPred_le_pred_iff _ _ |>.mpr (Fin.lt_of_le_of_lt hi hj)
+    · exact predAbove_of_le_castSucc p j (Fin.not_lt.mp hj) ▸ h
+
+lemma castSucc_predAbove_le (p : Fin n) (i : Fin (n + 1)) :
+    (p.predAbove i).castSucc ≤ i := by
+  by_cases h : p.castSucc < i
+  · rw [predAbove_of_castSucc_lt p i h, castSucc_pred_eq_pred_castSucc]
+    exact Fin.le_of_lt <| pred_castSucc_lt _
+  · simp [predAbove_of_le_castSucc p i (Fin.not_lt.mp h), castSucc_castPred]
 
 /-- Sending `Fin (n+1)` to `Fin n` by subtracting one from anything above `p`
 then back to `Fin (n+1)` with a gap around `p` is the identity away from `p`. -/
