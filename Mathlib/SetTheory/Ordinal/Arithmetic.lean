@@ -78,8 +78,7 @@ theorem lift_succ (a : Ordinal.{v}) : lift.{u} (succ a) = succ (lift.{u} a) := b
   rw [← add_one_eq_succ, lift_add, lift_one]
   rfl
 
-instance instAddLeftReflectLE :
-    AddLeftReflectLE Ordinal.{u} where
+instance : AddLeftReflectLE Ordinal.{u} where
   elim c a b := by
     refine inductionOn₃ a b c fun α r _ β s _ γ t _ ⟨f⟩ ↦ ?_
     have H₁ a : f (Sum.inl a) = Sum.inl a := by
@@ -100,13 +99,13 @@ theorem add_left_cancel (a) {b c : Ordinal} : a + b = a + c ↔ b = c := by
 private theorem add_lt_add_iff_left' (a) {b c : Ordinal} : a + b < a + c ↔ b < c := by
   rw [← not_le, ← not_le, add_le_add_iff_left]
 
-instance instAddLeftStrictMono : AddLeftStrictMono Ordinal.{u} :=
+instance : AddLeftStrictMono Ordinal.{u} :=
   ⟨fun a _b _c ↦ (add_lt_add_iff_left' a).2⟩
 
-instance instAddLeftReflectLT : AddLeftReflectLT Ordinal.{u} :=
+instance : AddLeftReflectLT Ordinal.{u} :=
   ⟨fun a _b _c ↦ (add_lt_add_iff_left' a).1⟩
 
-instance instAddRightReflectLT : AddRightReflectLT Ordinal.{u} :=
+instance : AddRightReflectLT Ordinal.{u} :=
   ⟨fun _a _b _c ↦ lt_imp_lt_of_le_imp_le fun h => add_le_add_right h _⟩
 
 theorem add_le_add_iff_right {a b : Ordinal} : ∀ n : ℕ, a + n ≤ b + n ↔ a ≤ b
@@ -2233,7 +2232,7 @@ theorem Ordinal.not_bddAbove_compl_of_small (s : Set Ordinal.{u}) [hs : Small.{u
 
 namespace Ordinal
 
-instance instCharZero : CharZero Ordinal := by
+instance : CharZero Ordinal := by
   refine ⟨fun a b h ↦ ?_⟩
   rwa [← Cardinal.ord_nat, ← Cardinal.ord_nat, Cardinal.ord_inj, Nat.cast_inj] at h
 
