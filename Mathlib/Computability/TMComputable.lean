@@ -98,6 +98,28 @@ instance inhabitedCfg : Inhabited (Cfg tm) :=
 def step : tm.Cfg → Option tm.Cfg :=
   Turing.TM2.step tm.m
 
+/--
+A (TM2) Multi-tape Turing Machine composing the operations of two other Multi-tape Turing Machines.
+This machine should work by first carrying out the oppertions of the first machine on the subset of
+tapes associated with the first machine, then copying the output tape of the first machine to the
+input tape of the second machine, then running the second machine.
+-/
+def comp (m1 m2 : FinTM2) : FinTM2 where
+  K := m1.K ⊕ m2.K
+  kDecidableEq := sorry
+  kFin := sorry
+  k₀ := Sum.inl m1.k₀
+  k₁ := Sum.inr m2.k₁
+  Γ := Sum.elim m1.Γ m2.Γ
+  Λ := Unit ⊕ m1.Λ ⊕ m2.Λ
+  main := Sum.inl ()
+  ΛFin := sorry
+  σ := m1.σ ⊕ m2.σ
+  initialState := Sum.inl m1.initialState
+  σFin := sorry
+  Γk₀Fin := sorry
+  m := sorry
+
 end
 
 end FinTM2
@@ -301,6 +323,12 @@ instance inhabitedTM2Computable :
 
 instance inhabitedTM2ComputableAux : Inhabited (TM2ComputableAux Bool Bool) :=
   ⟨(default : TM2Computable finEncodingBoolBool finEncodingBoolBool id).toTM2ComputableAux⟩
+
+def TM2ComputableInPolyTime.comp {α β γ : Type} {eα : FinEncoding α} {eβ : FinEncoding β}
+    {eγ : FinEncoding γ} {f : α → β} {g : β → γ} (h1 : TM2ComputableInPolyTime eα eβ f)
+    (h2 : TM2ComputableInPolyTime eβ eγ g) :
+    TM2ComputableInPolyTime eα eγ (g ∘ f) := sorry
+
 
 end
 
