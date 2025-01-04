@@ -14,12 +14,12 @@ import Mathlib.RingTheory.Unramified.Field
 Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
 
 - `Algebra.FormallyEtale.of_isSeparable`:
-    If `L` is separable over `K`, then `L` is formally etale over `K`.
+    If `L` is separable over `K`, then `L` is formally étale over `K`.
 - `Algebra.FormallyEtale.iff_isSeparable`:
-    If `L` is (essentially) of finite type over `K`, then `L/K` is etale iff `L/K` is separable.
+    If `L` is (essentially) of finite type over `K`, then `L/K` is étale iff `L/K` is separable.
 - `Algebra.FormallyEtale.iff_exists_algEquiv_prod`:
     If `A` is (essentially) of finite type over `K`,
-    then `A/K` is etale iff `A` is a finite product of separable field extensions.
+    then `A/K` is étale iff `A` is a finite product of separable field extensions.
 - `Algebra.Etale.iff_exists_algEquiv_prod`:
     `A/K` is etale iff `A` is a finite product of finite separable field extensions.
 
@@ -156,7 +156,7 @@ theorem iff_isSeparable [EssFiniteType K L] :
 attribute [local instance]
   IsArtinianRing.subtype_isMaximal_finite IsArtinianRing.fieldOfSubtypeIsMaximal in
 /--
-If `A` is an essentially of finite type algebra over a field `K`, then `A` is formally etale
+If `A` is an essentially of finite type algebra over a field `K`, then `A` is formally étale
 over `K` if and only if `A` is a finite product of separable field extensions.
 -/
 theorem iff_exists_algEquiv_prod [EssFiniteType K A] :
@@ -192,7 +192,7 @@ end Algebra.FormallyEtale
 attribute [local instance]
   IsArtinianRing.subtype_isMaximal_finite IsArtinianRing.fieldOfSubtypeIsMaximal in
 /--
-`A` is etale over a field `K` if and only if
+`A` is étale over a field `K` if and only if
 `A` is a finite product of finite separable field extensions.
 -/
 theorem Algebra.Etale.iff_exists_algEquiv_prod :
