@@ -111,7 +111,7 @@ instance isAlgebraic_sum [L.IsAlgebraic] [L'.IsAlgebraic] : IsAlgebraic (L.sum L
   fun _ => instIsEmptySum
 
 @[simp]
-theorem empty_card : Language.empty.card = 0 := by simp only [card, mk_sum, mk_sigma, mk_eq_zero,
+theorem card_empty : Language.empty.card = 0 := by simp only [card, mk_sum, mk_sigma, mk_eq_zero,
   sum_const, mk_eq_aleph0, lift_id', mul_zero, add_zero]
 
 instance isEmpty_empty : IsEmpty Language.empty.Symbols := by
