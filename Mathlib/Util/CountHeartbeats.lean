@@ -24,8 +24,6 @@ open Lean Elab Command Meta
 
 namespace Mathlib.CountHeartbeats
 
-
-
 open Tactic
 
 /--
@@ -176,3 +174,55 @@ elab "count_heartbeats! " n:(num)? "in" ppLine cmd:command : command => do
 end CountHeartbeats
 
 end Mathlib
+
+/-!
+#  The "countHeartbeats" linter
+
+The "countHeartbeats" linter counts the hearbeats of every declaration.
+-/
+
+open Lean Elab Command
+
+namespace Mathlib.Linter
+
+/--
+The "countHeartbeats" linter counts the hearbeats of every declaration.
+
+The effect of the linter is similar to `#count_hearbeats in xxx`, except that it applies
+to all declarations.
+
+Note that the linter only counts heartbeats in "top-level" declarations:
+it looks inside `set_option ... in`, but not, for instance, inside `mutual` blocks.
+
+There is a convenience notation `#count_heartbeats` that simply sets the linter option to true.
+-/
+register_option linter.countHeartbeats : Bool := {
+  defValue := false
+  descr := "enable the countHeartbeats linter"
+}
+
+namespace CountHeartbeats
+
+@[inherit_doc Mathlib.Linter.linter.countHeartbeats]
+def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
+  unless Linter.getLinterValue linter.countHeartbeats (← getOptions) do
+    return
+  if (← get).messages.hasErrors then
+    return
+  let mut msgs := #[]
+  if [``Lean.Parser.Command.declaration, `lemma].contains stx.getKind then
+    let s ← get
+    elabCommand (← `(command| count_heartbeats in $(⟨stx⟩)))
+    msgs := (← get).messages.unreported.toArray.filter (·.severity != .error)
+    set s
+  for msg in msgs do logInfo m!"{← msg.toString}"
+
+initialize addLinter countHeartbeatsLinter
+
+@[inherit_doc Mathlib.Linter.linter.countHeartbeats]
+macro "#count_heartbeats" : command =>
+  `(command| set_option linter.countHeartbeats true)
+
+end CountHeartbeats
+
+end Mathlib.Linter
