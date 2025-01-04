@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
 import Mathlib.Algebra.BigOperators.Fin
-import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Lean.Expr.ExtraRecognizers
 import Mathlib.LinearAlgebra.Prod
