@@ -209,9 +209,19 @@ lemma unit_app_commShiftIso_hom_app [adj.CommShift A] (a : A) (X : C) :
   simpa using (NatTrans.shift_app_comm adj.unit a X).symm
 
 @[reassoc (attr := simp)]
-lemma commShiftIso_hom_app_counit_app [adj.CommShift A] (a : A) (Y : D) :
+lemma unit_app_shift_commShiftIso_inv_app [adj.CommShift A] (a : A) (X : C) :
+    (adj.unit.app X)⟦a⟧' ≫ ((F ⋙ G).commShiftIso a).inv.app X = adj.unit.app (X⟦a⟧) := by
+  simp [← cancel_mono (((F ⋙ G).commShiftIso _).hom.app _)]
+
+@[reassoc (attr := simp)]
+lemma commShiftIso_hom_app_counit_app_shift [adj.CommShift A] (a : A) (Y : D) :
     ((G ⋙ F).commShiftIso a).hom.app Y ≫ (adj.counit.app Y)⟦a⟧' = adj.counit.app (Y⟦a⟧) := by
   simpa using (NatTrans.shift_app_comm adj.counit a Y)
+
+@[reassoc (attr := simp)]
+lemma commShiftIso_inv_app_counit_app [adj.CommShift A] (a : A) (Y : D) :
+    ((G ⋙ F).commShiftIso a).inv.app Y ≫ adj.counit.app (Y⟦a⟧) = (adj.counit.app Y)⟦a⟧' := by
+  simp [← cancel_epi (((G ⋙ F).commShiftIso _).hom.app _)]
 
 namespace CommShift
 
