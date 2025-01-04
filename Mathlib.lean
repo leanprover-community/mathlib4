@@ -1011,6 +1011,7 @@ import Mathlib.AlgebraicGeometry.Noetherian
 import Mathlib.AlgebraicGeometry.OpenImmersion
 import Mathlib.AlgebraicGeometry.Over
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
+import Mathlib.AlgebraicGeometry.PrimeSpectrum.ConstructibleSet
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.FreeLocus
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.IsOpenComapC
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Jacobson
