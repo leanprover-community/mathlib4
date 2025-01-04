@@ -3,8 +3,8 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Submonoid.Membership
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.Group.Submonoid.BigOperators
+import Mathlib.Algebra.Module.RingHom
 import Mathlib.Algebra.Ring.Action.Subobjects
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Prod
@@ -357,6 +357,7 @@ theorem closure_le {s : Set R} {t : Subsemiring R} : closure s ≤ t ↔ s ⊆ t
 
 /-- Subsemiring closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure s ≤ closure t`. -/
+@[gcongr]
 theorem closure_mono ⦃s t : Set R⦄ (h : s ⊆ t) : closure s ≤ closure t :=
   closure_le.2 <| Set.Subset.trans h subset_closure
 
@@ -389,6 +390,10 @@ def subsemiringClosure (M : Submonoid R) : Subsemiring R :=
 theorem subsemiringClosure_coe :
     (M.subsemiringClosure : Set R) = AddSubmonoid.closure (M : Set R) :=
   rfl
+
+theorem subsemiringClosure_mem {x : R} :
+    x ∈ M.subsemiringClosure ↔ x ∈ AddSubmonoid.closure (M : Set R) :=
+  Iff.rfl
 
 theorem subsemiringClosure_toAddSubmonoid :
     M.subsemiringClosure.toAddSubmonoid = AddSubmonoid.closure (M : Set R) :=
@@ -588,7 +593,7 @@ theorem mem_prod {s : Subsemiring R} {t : Subsemiring S} {p : R × S} :
     p ∈ s.prod t ↔ p.1 ∈ s ∧ p.2 ∈ t :=
   Iff.rfl
 
-@[mono]
+@[gcongr, mono]
 theorem prod_mono ⦃s₁ s₂ : Subsemiring R⦄ (hs : s₁ ≤ s₂) ⦃t₁ t₂ : Subsemiring S⦄ (ht : t₁ ≤ t₂) :
     s₁.prod t₁ ≤ s₂.prod t₂ :=
   Set.prod_mono hs ht
@@ -886,23 +891,17 @@ instance center.smulCommClass_left : SMulCommClass (center R') R' R' :=
 instance center.smulCommClass_right : SMulCommClass R' (center R') R' :=
   Submonoid.center.smulCommClass_right
 
-/-- If all the elements of a set `s` commute, then `closure s` is a commutative monoid. -/
-def closureCommSemiringOfComm {s : Set R'} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a * b = b * a) :
+lemma closure_le_centralizer_centralizer (s : Set R') :
+    closure s ≤ centralizer (centralizer s) :=
+  closure_le.mpr Set.subset_centralizer_centralizer
+
+/-- If all the elements of a set `s` commute, then `closure s` is a commutative semiring. -/
+abbrev closureCommSemiringOfComm {s : Set R'} (hcomm : ∀ x ∈ s, ∀ y ∈ s, x * y = y * x) :
     CommSemiring (closure s) :=
   { (closure s).toSemiring with
-    mul_comm := fun ⟨x, hx⟩ ⟨y, hy⟩ => by
-      ext
-      simp only [MulMemClass.mk_mul_mk]
-      induction hx, hy using closure_induction₂ with
-      | mem_mem x y hx hy => exact hcomm x hx y hy
-      | zero_left x _ => exact Commute.zero_left x
-      | zero_right x _ => exact Commute.zero_right x
-      | one_left x _ => exact Commute.one_left x
-      | one_right x _ => exact Commute.one_right x
-      | mul_left _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_left h₁ h₂
-      | mul_right _ _ _ _ _ _ h₁ h₂ => exact Commute.mul_right h₁ h₂
-      | add_left _ _ _ _ _ _ h₁ h₂ => exact Commute.add_left h₁ h₂
-      | add_right _ _ _ _ _ _ h₁ h₂ => exact Commute.add_right h₁ h₂ }
+    mul_comm := fun ⟨_, h₁⟩ ⟨_, h₂⟩ ↦
+      have := closure_le_centralizer_centralizer s
+      Subtype.ext <| Set.centralizer_centralizer_comm_of_comm hcomm _ (this h₁) _ (this h₂) }
 
 end Subsemiring
 

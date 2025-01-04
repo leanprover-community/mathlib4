@@ -106,7 +106,7 @@ instance instSetLike : SetLike (L.Substructure M) M :=
 def Simps.coe (S : L.Substructure M) : Set M :=
   S
 
-initialize_simps_projections Substructure (carrier → coe)
+initialize_simps_projections Substructure (carrier → coe, as_prefix coe)
 
 @[simp]
 theorem mem_carrier {s : L.Substructure M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
@@ -251,6 +251,7 @@ theorem closure_le : closure L s ≤ S ↔ s ⊆ S :=
 
 /-- Substructure closure of a set is monotone in its argument: if `s ⊆ t`,
 then `closure L s ≤ closure L t`. -/
+@[gcongr]
 theorem closure_mono ⦃s t : Set M⦄ (h : s ⊆ t) : closure L s ≤ closure L t :=
   (closure L).monotone h
 

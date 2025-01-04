@@ -97,8 +97,6 @@ theorem IsWellFounded.rank_eq_typein (r) [IsWellOrder α r] : rank r = Ordinal.t
 
 namespace WellFounded
 
-set_option linter.deprecated false
-
 variable {r : α → α → Prop} (hwf : WellFounded r)
 
 /-- The rank of an element `a` under a well-founded relation `r` is defined inductively as the
@@ -108,18 +106,22 @@ smallest ordinal greater than the ranks of all elements below it (i.e. elements 
 noncomputable def rank (a : α) : Ordinal.{u} :=
   (hwf.apply a).rank
 
+set_option linter.deprecated false in
 @[deprecated IsWellFounded.rank_eq (since := "2024-09-07")]
 theorem rank_eq : hwf.rank a = ⨆ b : { b // r b a }, Order.succ (hwf.rank b) :=
   (hwf.apply a).rank_eq
 
+set_option linter.deprecated false in
 @[deprecated IsWellFounded.rank_lt_of_rel (since := "2024-09-07")]
 theorem rank_lt_of_rel (h : r a b) : hwf.rank a < hwf.rank b :=
   Acc.rank_lt_of_rel _ h
 
+set_option linter.deprecated false in
 @[deprecated WellFoundedLT.rank_strictMono (since := "2024-09-07")]
 theorem rank_strictMono [Preorder α] [WellFoundedLT α] :
     StrictMono (rank <| @wellFounded_lt α _ _) := fun _ _ => rank_lt_of_rel _
 
+set_option linter.deprecated false in
 @[deprecated WellFoundedGT.rank_strictAnti (since := "2024-09-07")]
 theorem rank_strictAnti [Preorder α] [WellFoundedGT α] :
     StrictAnti (rank <| @wellFounded_gt α _ _) := fun _ _ => rank_lt_of_rel wellFounded_gt

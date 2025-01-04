@@ -6,7 +6,7 @@ Authors: Joseph Myers
 import Mathlib.Algebra.Order.Module.Algebra
 import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.Algebra.Ring.Subring.Units
-import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Rays in modules

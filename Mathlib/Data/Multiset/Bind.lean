@@ -202,12 +202,14 @@ theorem attach_bind_coe (s : Multiset α) (f : α → Multiset β) :
 variable {f s t}
 
 @[simp] lemma nodup_bind :
-    Nodup (bind s f) ↔ (∀ a ∈ s, Nodup (f a)) ∧ s.Pairwise fun a b => Disjoint (f a) (f b) := by
+    Nodup (bind s f) ↔ (∀ a ∈ s, Nodup (f a)) ∧ s.Pairwise (Disjoint on f) := by
   have : ∀ a, ∃ l : List β, f a = l := fun a => Quot.induction_on (f a) fun l => ⟨l, rfl⟩
   choose f' h' using this
   have : f = fun a ↦ ofList (f' a) := funext h'
   have hd : Symmetric fun a b ↦ List.Disjoint (f' a) (f' b) := fun a b h ↦ h.symm
-  exact Quot.induction_on s <| by simp [this, List.nodup_flatMap, pairwise_coe_iff_pairwise hd]
+  exact Quot.induction_on s <| by
+    unfold Function.onFun
+    simp [this, List.nodup_flatMap, pairwise_coe_iff_pairwise hd]
 
 @[simp]
 lemma dedup_bind_dedup [DecidableEq α] [DecidableEq β] (s : Multiset α) (f : α → Multiset β) :

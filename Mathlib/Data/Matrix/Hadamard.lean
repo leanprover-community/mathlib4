@@ -34,8 +34,6 @@ variable {α m n R : Type*}
 
 namespace Matrix
 
-open Matrix
-
 /-- `Matrix.hadamard` defines the Hadamard product,
     which is the pointwise product of two matrices of the same size. -/
 def hadamard [Mul α] (A : Matrix m n α) (B : Matrix m n α) : Matrix m n α :=

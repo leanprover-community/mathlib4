@@ -3,6 +3,7 @@ Copyright (c) 2015 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis
 -/
+import Mathlib.Algebra.Group.Nat.Units
 import Mathlib.Algebra.Order.Monoid.Unbundled.Pow
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Parity
@@ -18,6 +19,12 @@ assert_not_exists Set.Subsingleton
 open Function Int
 
 variable {α M R : Type*}
+
+theorem IsSquare.nonneg [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
+    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
+    {x : R} (h : IsSquare x) : 0 ≤ x := by
+  rcases h with ⟨y, rfl⟩
+  exact mul_self_nonneg y
 
 namespace MonoidHom
 
@@ -67,7 +74,7 @@ attribute [bound] pow_le_one₀ one_le_pow₀
 @[deprecated (since := "2024-10-04")] alias pow_le_pow_right := pow_le_pow_right₀
 @[deprecated (since := "2024-10-04")] alias le_self_pow := le_self_pow₀
 
-@[mono, gcongr, bound]
+@[deprecated pow_le_pow_left₀ (since := "2024-11-13")]
 theorem pow_le_pow_left {a b : R} (ha : 0 ≤ a) (hab : a ≤ b) : ∀ n, a ^ n ≤ b ^ n :=
   pow_le_pow_left₀ ha hab
 
@@ -143,49 +150,49 @@ end StrictOrderedRing
 section LinearOrderedSemiring
 variable [LinearOrderedSemiring R] {a b : R} {m n : ℕ}
 
-@[deprecated (since := "2024-11-12")]
+@[deprecated pow_le_pow_iff_left₀ (since := "2024-11-12")]
 lemma pow_le_pow_iff_left (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n ≤ b ^ n ↔ a ≤ b :=
   pow_le_pow_iff_left₀ ha hb hn
 
-@[deprecated (since := "2024-11-12")]
+@[deprecated pow_lt_pow_iff_left₀ (since := "2024-11-12")]
 lemma pow_lt_pow_iff_left (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n < b ^ n ↔ a < b :=
   pow_lt_pow_iff_left₀ ha hb hn
 
-@[deprecated (since := "2024-11-12")]
+@[deprecated pow_left_inj₀ (since := "2024-11-12")]
 lemma pow_left_inj (ha : 0 ≤ a) (hb : 0 ≤ b) (hn : n ≠ 0) : a ^ n = b ^ n ↔ a = b :=
   pow_left_inj₀ ha hb hn
 
-@[deprecated (since := "2024-11-12")]
+@[deprecated pow_right_injective₀ (since := "2024-11-12")]
 lemma pow_right_injective (ha₀ : 0 < a) (ha₁ : a ≠ 1) : Injective (a ^ ·) :=
   pow_right_injective₀ ha₀ ha₁
 
-@[deprecated (since := "2024-11-12")]
+@[deprecated pow_right_inj₀ (since := "2024-11-12")]
 lemma pow_right_inj (ha₀ : 0 < a) (ha₁ : a ≠ 1) : a ^ m = a ^ n ↔ m = n := pow_right_inj₀ ha₀ ha₁
 
-@[deprecated (since := "2024-11-12")]
+@[deprecated sq_le_one_iff₀ (since := "2024-11-12")]
 theorem sq_le_one_iff {a : R} (ha : 0 ≤ a) : a ^ 2 ≤ 1 ↔ a ≤ 1 := sq_le_one_iff₀ ha
 
-@[deprecated (since := "2024-11-12")]
+@[deprecated sq_lt_one_iff₀ (since := "2024-11-12")]
 theorem sq_lt_one_iff {a : R} (ha : 0 ≤ a) : a ^ 2 < 1 ↔ a < 1 := sq_lt_one_iff₀ ha
 
-@[deprecated (since := "2024-11-12")]
+@[deprecated one_le_sq_iff₀ (since := "2024-11-12")]
 theorem one_le_sq_iff {a : R} (ha : 0 ≤ a) : 1 ≤ a ^ 2 ↔ 1 ≤ a := one_le_sq_iff₀ ha
 
-@[deprecated (since := "2024-11-12")]
+@[deprecated one_lt_sq_iff₀ (since := "2024-11-12")]
 theorem one_lt_sq_iff {a : R} (ha : 0 ≤ a) : 1 < a ^ 2 ↔ 1 < a := one_lt_sq_iff₀ ha
 
-@[deprecated (since := "2024-11-12")]
+@[deprecated lt_of_pow_lt_pow_left₀ (since := "2024-11-12")]
 theorem lt_of_pow_lt_pow_left (n : ℕ) (hb : 0 ≤ b) (h : a ^ n < b ^ n) : a < b :=
   lt_of_pow_lt_pow_left₀ n hb h
 
-@[deprecated (since := "2024-11-12")]
+@[deprecated le_of_pow_le_pow_left₀ (since := "2024-11-12")]
 theorem le_of_pow_le_pow_left (hn : n ≠ 0) (hb : 0 ≤ b) (h : a ^ n ≤ b ^ n) : a ≤ b :=
   le_of_pow_le_pow_left₀ hn hb h
 
-@[deprecated (since := "2024-11-12")]
+@[deprecated sq_eq_sq₀ (since := "2024-11-12")]
 theorem sq_eq_sq {a b : R} (ha : 0 ≤ a) (hb : 0 ≤ b) : a ^ 2 = b ^ 2 ↔ a = b := sq_eq_sq₀ ha hb
 
-@[deprecated (since := "2024-11-12")]
+@[deprecated lt_of_mul_self_lt_mul_self₀ (since := "2024-11-12")]
 theorem lt_of_mul_self_lt_mul_self (hb : 0 ≤ b) : a * a < b * b → a < b :=
   lt_of_mul_self_lt_mul_self₀ hb
 

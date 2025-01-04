@@ -3,7 +3,7 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Topology.ContinuousMap.Bounded
+import Mathlib.Topology.ContinuousMap.Bounded.Star
 import Mathlib.Topology.ContinuousMap.Star
 import Mathlib.Topology.UniformSpace.Compact
 import Mathlib.Topology.CompactOpen
@@ -300,14 +300,6 @@ def linearIsometryBoundedOfCompact : C(α, E) ≃ₗᵢ[𝕜] α →ᵇ E :=
       ext
       norm_cast
     norm_map' := fun _ => rfl }
-
-variable {α E}
-
--- to match `BoundedContinuousFunction.evalCLM`
-/-- The evaluation at a point, as a continuous linear map from `C(α, 𝕜)` to `𝕜`. -/
-def evalCLM (x : α) : C(α, E) →L[𝕜] E :=
-  (BoundedContinuousFunction.evalCLM 𝕜 x).comp
-    (linearIsometryBoundedOfCompact α E 𝕜).toLinearIsometry.toContinuousLinearMap
 
 end
 

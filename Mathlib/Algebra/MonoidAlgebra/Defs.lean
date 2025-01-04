@@ -345,6 +345,10 @@ variable {S : Type*}
 instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R (MonoidAlgebra k G) :=
   Finsupp.smulZeroClass
 
+instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
+    NoZeroSMulDivisors R (MonoidAlgebra k G) :=
+  Finsupp.noZeroSMulDivisors
+
 instance distribSMul [Semiring k] [DistribSMul R k] : DistribSMul R (MonoidAlgebra k G) :=
   Finsupp.distribSMul _ _
 
@@ -1063,6 +1067,10 @@ section Semiring
 instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R k[G] :=
   Finsupp.smulZeroClass
 
+instance noZeroSMulDivisors [Zero R] [Semiring k] [SMulZeroClass R k] [NoZeroSMulDivisors R k] :
+    NoZeroSMulDivisors R k[G] :=
+  Finsupp.noZeroSMulDivisors
+
 variable [Semiring k] [AddMonoid G]
 
 instance semiring : Semiring k[G] :=
@@ -1300,7 +1308,7 @@ end
 
 @[simp]
 theorem of_apply [AddZeroClass G] (a : Multiplicative G) :
-    of k G a = single (Multiplicative.toAdd a) 1 :=
+    of k G a = single a.toAdd 1 :=
   rfl
 
 @[simp]
@@ -1324,7 +1332,7 @@ Note the order of the elements of the product are reversed compared to the argum
 -/
 @[simps]
 def singleHom [AddZeroClass G] : k × Multiplicative G →* k[G] where
-  toFun a := single (Multiplicative.toAdd a.2) a.1
+  toFun a := single a.2.toAdd a.1
   map_one' := rfl
   map_mul' _a _b := single_mul_single.symm
 

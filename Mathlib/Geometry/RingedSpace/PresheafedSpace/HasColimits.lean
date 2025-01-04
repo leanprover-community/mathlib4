@@ -263,7 +263,7 @@ instance : HasColimitsOfShape J (PresheafedSpace.{_, _, v} C) where
   has_colimit F := ⟨colimitCocone F, colimitCoconeIsColimit F⟩
 
 instance : PreservesColimitsOfShape J (PresheafedSpace.forget.{u, v, v} C) :=
-  ⟨fun {F} => preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F) <| by
+  ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F) <| by
     apply IsColimit.ofIsoColimit (colimit.isColimit _)
     fapply Cocones.ext
     · rfl
@@ -278,15 +278,12 @@ instance instHasColimits [HasLimits C] : HasColimits (PresheafedSpace.{_, _, v} 
 /-- The underlying topological space of a colimit of presheaved spaces is
 the colimit of the underlying topological spaces.
 -/
-instance forgetPreservesColimits [HasLimits C] : PreservesColimits (PresheafedSpace.forget C) where
+instance forget_preservesColimits [HasLimits C] :
+    PreservesColimits (PresheafedSpace.forget.{_, _, v} C) where
   preservesColimitsOfShape {J 𝒥} :=
-    { preservesColimit := fun {F} =>
-        preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F)
-          (by apply IsColimit.ofIsoColimit (colimit.isColimit _)
-              fapply Cocones.ext
-              · rfl
-              · intro j
-                simp) }
+    { preservesColimit := fun {F} => preservesColimit_of_preserves_colimit_cocone
+          (colimitCoconeIsColimit F)
+          (IsColimit.ofIsoColimit (colimit.isColimit _) (Cocones.ext (Iso.refl _))) }
 
 /-- The components of the colimit of a diagram of `PresheafedSpace C` is obtained
 via taking componentwise limits.

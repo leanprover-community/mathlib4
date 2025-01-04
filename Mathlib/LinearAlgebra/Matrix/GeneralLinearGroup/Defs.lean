@@ -5,6 +5,7 @@ Authors: Chris Birkbeck
 -/
 import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.Algebra.Ring.Subring.Units
 
 /-!
@@ -69,7 +70,8 @@ def det : GL n R →* Rˣ where
   map_one' := Units.ext det_one
   map_mul' _ _ := Units.ext <| det_mul _ _
 
-/-- The `GL n R` and `Matrix.GeneralLinearGroup R n` groups are multiplicatively equivalent -/
+/-- The groups `GL n R` (notation for `Matrix.GeneralLinearGroup n R`) and
+`LinearMap.GeneralLinearGroup R (n → R)` are multiplicatively equivalent -/
 def toLin : GL n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
   Units.mapEquiv toLinAlgEquiv'.toMulEquiv
 
@@ -108,22 +110,19 @@ theorem coe_inv : ↑A⁻¹ = (↑A : Matrix n n R)⁻¹ :=
   letI := A.invertible
   invOf_eq_nonsing_inv (↑A : Matrix n n R)
 
-/-- An element of the matrix general linear group on `(n) [Fintype n]` can be considered as an
-element of the endomorphism general linear group on `n → R`. -/
-def toLinear : GeneralLinearGroup n R ≃* LinearMap.GeneralLinearGroup R (n → R) :=
-  Units.mapEquiv Matrix.toLinAlgEquiv'.toRingEquiv.toMulEquiv
+@[deprecated (since := "2024-11-26")] alias toLinear := toLin
 
 -- Note that without the `@` and `‹_›`, Lean infers `fun a b ↦ _inst a b` instead of `_inst` as the
 -- decidability argument, which prevents `simp` from obtaining the instance by unification.
 -- These `fun a b ↦ _inst a b` terms also appear in the type of `A`, but simp doesn't get confused
 -- by them so for now we do not care.
 @[simp]
-theorem coe_toLinear : (@toLinear n ‹_› ‹_› _ _ A : (n → R) →ₗ[R] n → R) = Matrix.mulVecLin A :=
+theorem coe_toLin : (@toLin n ‹_› ‹_› _ _ A : (n → R) →ₗ[R] n → R) = Matrix.mulVecLin A :=
   rfl
 
 -- Porting note: is inserting toLinearEquiv here correct?
 @[simp]
-theorem toLinear_apply (v : n → R) : (toLinear A).toLinearEquiv v = Matrix.mulVecLin (↑A) v :=
+theorem toLin_apply (v : n → R) : (toLin A).toLinearEquiv v = Matrix.mulVecLin (↑A) v :=
   rfl
 
 end CoeLemmas
@@ -195,17 +194,17 @@ namespace SpecialLinearGroup
 
 variable {n : Type u} [DecidableEq n] [Fintype n] {R : Type v} [CommRing R]
 
--- Porting note: added implementation for the Coe
-/-- The map from SL(n) to GL(n) underlying the coercion, forgetting the value of the determinant.
--/
-@[coe]
-def coeToGL (A : SpecialLinearGroup n R) : GL n R :=
-  ⟨↑A, ↑A⁻¹,
-    congr_arg ((↑) : _ → Matrix n n R) (mul_inv_cancel A),
-    congr_arg ((↑) : _ → Matrix n n R) (inv_mul_cancel A)⟩
+
+/-- `toGL` is the map from the special linear group to the general linear group. -/
+def toGL : Matrix.SpecialLinearGroup n R →* Matrix.GeneralLinearGroup n R where
+  toFun A := ⟨↑A, ↑A⁻¹, congr_arg (·.1) (mul_inv_cancel A), congr_arg (·.1) (inv_mul_cancel A)⟩
+  map_one' := Units.ext rfl
+  map_mul' _ _ := Units.ext rfl
+
+@[deprecated (since := "2024-11-26")] alias coeToGL := toGL
 
 instance hasCoeToGeneralLinearGroup : Coe (SpecialLinearGroup n R) (GL n R) :=
-  ⟨coeToGL⟩
+  ⟨toGL⟩
 
 @[simp]
 theorem coeToGL_det (g : SpecialLinearGroup n R) :

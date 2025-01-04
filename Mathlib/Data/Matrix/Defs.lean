@@ -237,6 +237,16 @@ theorem sub_apply [Sub α] (A B : Matrix m n α) (i : m) (j : n) :
 theorem neg_apply [Neg α] (A : Matrix m n α) (i : m) (j : n) :
     (-A) i j = -(A i j) := rfl
 
+protected theorem dite_apply (P : Prop) [Decidable P]
+    (A : P → Matrix m n α) (B : ¬P → Matrix m n α) (i : m) (j : n) :
+    dite P A B i j = dite P (A · i j) (B · i j) := by
+  rw [dite_apply, dite_apply]
+
+protected theorem ite_apply (P : Prop) [Decidable P]
+    (A : Matrix m n α) (B : Matrix m n α) (i : m) (j : n) :
+    (if P then A else B) i j = if P then A i j else B i j :=
+  Matrix.dite_apply _ _ _ _ _
+
 end
 
 /-! simp-normal form pulls `of` to the outside. -/
@@ -319,6 +329,12 @@ def ofAddEquiv [Add α] : (m → n → α) ≃+ Matrix m n α where
     ⇑(ofAddEquiv : (m → n → α) ≃+ Matrix m n α) = of := rfl
 @[simp] lemma coe_ofAddEquiv_symm [Add α] :
     ⇑(ofAddEquiv.symm : Matrix m n α ≃+ (m → n → α)) = of.symm := rfl
+
+@[simp] lemma isAddUnit_iff [AddMonoid α] {A : Matrix m n α} :
+    IsAddUnit A ↔ ∀ i j, IsAddUnit (A i j) := by
+  simp_rw [isAddUnit_iff_exists, Classical.skolem, forall_and,
+    ← Matrix.ext_iff, add_apply, zero_apply]
+  rfl
 
 end Matrix
 

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.LinearAlgebra.LinearPMap
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.Logic.Small.Basic
 import Mathlib.RingTheory.Ideal.Defs
 
@@ -66,6 +66,12 @@ namespace Module.Baer
 
 variable {R Q} {M N : Type*} [AddCommGroup M] [AddCommGroup N]
 variable [Module R M] [Module R N] (i : M →ₗ[R] N) (f : M →ₗ[R] Q)
+
+lemma of_equiv (e : Q ≃ₗ[R] M) (h : Module.Baer R Q) : Module.Baer R M := fun I g ↦
+  have ⟨g', h'⟩ := h I (e.symm ∘ₗ g)
+  ⟨e ∘ₗ g', by simpa [LinearEquiv.eq_symm_apply] using h'⟩
+
+lemma congr (e : Q ≃ₗ[R] M) : Module.Baer R Q ↔ Module.Baer R M := ⟨of_equiv e, of_equiv e.symm⟩
 
 /-- If we view `M` as a submodule of `N` via the injective linear map `i : M ↪ N`, then a submodule
 between `M` and `N` is a submodule `N'` of `N`. To prove Baer's criterion, we need to consider

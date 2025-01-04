@@ -45,7 +45,6 @@ it suffices to assume that `f` is zero wherever `g` is. (This generalization is 
 the Fréchet derivative.)
 -/
 
-open scoped Classical
 open Set Topology Filter NNReal
 
 namespace Asymptotics
@@ -1149,7 +1148,7 @@ theorem isLittleO_const_iff_isLittleO_one {c : F''} (hc : c ≠ 0) :
    fun h => h.trans_isBigO <| isBigO_const_const _ hc _⟩
 
 @[simp]
-theorem isLittleO_one_iff : f' =o[l] (fun _x => 1 : α → F) ↔ Tendsto f' l (𝓝 0) := by
+theorem isLittleO_one_iff {f : α → E'''} : f =o[l] (fun _x => 1 : α → F) ↔ Tendsto f l (𝓝 0) := by
   simp only [isLittleO_iff, norm_one, mul_one, Metric.nhds_basis_closedBall.tendsto_right_iff,
     Metric.mem_closedBall, dist_zero_right]
 
@@ -1571,6 +1570,7 @@ variable {ι : Type*} {A : ι → α → E'} {C : ι → ℝ} {s : Finset ι}
 
 theorem IsBigOWith.sum (h : ∀ i ∈ s, IsBigOWith (C i) l (A i) g) :
     IsBigOWith (∑ i ∈ s, C i) l (fun x => ∑ i ∈ s, A i x) g := by
+  classical
   induction' s using Finset.induction_on with i s is IH
   · simp only [isBigOWith_zero', Finset.sum_empty, forall_true_iff]
   · simp only [is, Finset.sum_insert, not_false_iff]
@@ -1582,6 +1582,7 @@ theorem IsBigO.sum (h : ∀ i ∈ s, A i =O[l] g) : (fun x => ∑ i ∈ s, A i x
   exact ⟨_, IsBigOWith.sum hC⟩
 
 theorem IsLittleO.sum (h : ∀ i ∈ s, A i =o[l] g') : (fun x => ∑ i ∈ s, A i x) =o[l] g' := by
+  classical
   induction' s using Finset.induction_on with i s is IH
   · simp only [isLittleO_zero, Finset.sum_empty, forall_true_iff]
   · simp only [is, Finset.sum_insert, not_false_iff]
@@ -1855,8 +1856,9 @@ theorem bound_of_isBigO_cofinite (h : f =O[cofinite] g'') :
   exact fun hx => (div_le_iff₀ (norm_pos_iff.2 h₀)).1 (this _ hx)
 
 theorem isBigO_cofinite_iff (h : ∀ x, g'' x = 0 → f'' x = 0) :
-    f'' =O[cofinite] g'' ↔ ∃ C, ∀ x, ‖f'' x‖ ≤ C * ‖g'' x‖ :=
-  ⟨fun h' =>
+    f'' =O[cofinite] g'' ↔ ∃ C, ∀ x, ‖f'' x‖ ≤ C * ‖g'' x‖ := by
+  classical
+  exact ⟨fun h' =>
     let ⟨C, _C₀, hC⟩ := bound_of_isBigO_cofinite h'
     ⟨C, fun x => if hx : g'' x = 0 then by simp [h _ hx, hx] else hC hx⟩,
     fun h => (isBigO_top.2 h).mono le_top⟩

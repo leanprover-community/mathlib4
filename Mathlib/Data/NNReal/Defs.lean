@@ -53,7 +53,7 @@ open Function
 /-- Nonnegative real numbers. -/
 def NNReal := { r : ℝ // 0 ≤ r } deriving
   Zero, One, Semiring, StrictOrderedSemiring, CommMonoidWithZero, CommSemiring,
-  SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
+  PartialOrder, SemilatticeInf, SemilatticeSup, DistribLattice, OrderedCommSemiring,
   CanonicallyOrderedCommSemiring, Inhabited
 
 namespace NNReal
@@ -263,10 +263,8 @@ protected theorem coe_natCast (n : ℕ) : (↑(↑n : ℝ≥0) : ℝ) = n :=
 @[deprecated (since := "2024-04-17")]
 alias coe_nat_cast := NNReal.coe_natCast
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
-protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n : ℝ≥0) : ℝ) = OfNat.ofNat n :=
+protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((ofNat(n) : ℝ≥0) : ℝ) = ofNat(n) :=
   rfl
 
 @[simp, norm_cast]
@@ -791,13 +789,15 @@ theorem lt_div_iff' {a b r : ℝ≥0} (hr : r ≠ 0) : a < b / r ↔ r * a < b :
 theorem mul_lt_of_lt_div {a b r : ℝ≥0} (h : a < b / r) : a * r < b :=
   (lt_div_iff₀ <| pos_iff_ne_zero.2 fun hr => False.elim <| by simp [hr] at h).1 h
 
+@[deprecated div_le_div_of_nonneg_left (since := "2024-11-12")]
 theorem div_le_div_left_of_le {a b c : ℝ≥0} (c0 : c ≠ 0) (cb : c ≤ b) :
     a / b ≤ a / c :=
   div_le_div_of_nonneg_left (zero_le _) c0.bot_lt cb
 
+@[deprecated div_le_div_iff_of_pos_left (since := "2024-11-12")]
 nonrec theorem div_le_div_left {a b c : ℝ≥0} (a0 : 0 < a) (b0 : 0 < b) (c0 : 0 < c) :
     a / b ≤ a / c ↔ c ≤ b :=
-  div_le_div_left a0 b0 c0
+  div_le_div_iff_of_pos_left a0 b0 c0
 
 theorem le_of_forall_lt_one_mul_le {x y : ℝ≥0} (h : ∀ a < 1, a * x ≤ y) : x ≤ y :=
   le_of_forall_ge_of_dense fun a ha => by
@@ -915,7 +915,7 @@ namespace Real
 
 /-- The absolute value on `ℝ` as a map to `ℝ≥0`. -/
 -- Porting note (kmill): `pp_nodot` has no affect here
--- unless RFC https://github.com/leanprover/lean4/issues/1910 leads to dot notation for CoeFun
+-- unless RFC https://github.com/leanprover/lean4/issues/6178 leads to dot notation pp for CoeFun
 @[pp_nodot]
 def nnabs : ℝ →*₀ ℝ≥0 where
   toFun x := ⟨|x|, abs_nonneg x⟩

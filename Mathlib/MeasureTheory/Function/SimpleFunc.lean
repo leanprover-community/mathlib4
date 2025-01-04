@@ -665,7 +665,7 @@ theorem mem_image_of_mem_range_restrict {r : β} {s : Set α} {f : α →ₛ β}
     rw [restrict_of_not_measurable hs] at hr
     exact (h0 <| eq_zero_of_mem_range_zero hr).elim
 
-@[mono]
+@[gcongr, mono]
 theorem restrict_mono [Preorder β] (s : Set α) {f g : α →ₛ β} (H : f ≤ g) :
     f.restrict s ≤ g.restrict s :=
   if hs : MeasurableSet s then fun x => by
@@ -778,6 +778,12 @@ lemma iSup_coe_eapprox (hf : Measurable f) : ⨆ n, ⇑(eapprox f n) = f := by
 theorem eapprox_comp [MeasurableSpace γ] {f : γ → ℝ≥0∞} {g : α → γ} {n : ℕ} (hf : Measurable f)
     (hg : Measurable g) : (eapprox (f ∘ g) n : α → ℝ≥0∞) = (eapprox f n : γ →ₛ ℝ≥0∞) ∘ g :=
   funext fun a => approx_comp a hf hg
+
+lemma tendsto_eapprox {f : α → ℝ≥0∞} (hf_meas : Measurable f) (a : α) :
+    Tendsto (fun n ↦ eapprox f n a) atTop (𝓝 (f a)) := by
+  nth_rw 2 [← iSup_coe_eapprox hf_meas]
+  rw [iSup_apply]
+  exact tendsto_atTop_iSup fun _ _ hnm ↦ monotone_eapprox f hnm a
 
 /-- Approximate a function `α → ℝ≥0∞` by a series of simple functions taking their values
 in `ℝ≥0`. -/
@@ -1013,6 +1019,13 @@ theorem measurableSet_support [MeasurableSpace α] (f : α →ₛ β) : Measurab
   rw [f.support_eq]
   exact Finset.measurableSet_biUnion _ fun y _ => measurableSet_fiber _ _
 
+lemma measure_support_lt_top (f : α →ₛ β) (hf : ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞) :
+    μ (support f) < ∞ := by
+  rw [support_eq]
+  refine (measure_biUnion_finset_le _ _).trans_lt (ENNReal.sum_lt_top.mpr fun y hy => ?_)
+  rw [Finset.mem_filter] at hy
+  exact hf y hy.2
+
 /-- A `SimpleFunc` has finite measure support if it is equal to `0` outside of a set of finite
 measure. -/
 protected def FinMeasSupp {_m : MeasurableSpace α} (f : α →ₛ β) (μ : Measure α) : Prop :=
@@ -1089,6 +1102,12 @@ theorem iff_lintegral_lt_top {f : α →ₛ ℝ≥0∞} (hf : ∀ᵐ a ∂μ, f 
   ⟨fun h => h.lintegral_lt_top hf, fun h => of_lintegral_ne_top h.ne⟩
 
 end FinMeasSupp
+
+lemma measure_support_lt_top_of_lintegral_ne_top {f : α →ₛ ℝ≥0∞} (hf : f.lintegral μ ≠ ∞) :
+    μ (support f) < ∞ := by
+  refine measure_support_lt_top f ?_
+  rw [← finMeasSupp_iff]
+  exact FinMeasSupp.of_lintegral_ne_top hf
 
 end FinMeasSupp
 

@@ -298,18 +298,18 @@ elab_rules : tactic
   goal.withContext do
     let (tfaeListQ, tfaeList) ← getTFAEList (← goal.getType)
     closeMainGoal `tfae_finish <|← AtomM.run .reducible do
-      let is ← tfaeList.mapM AtomM.addAtom
+      let is ← tfaeList.mapM (fun e ↦ Prod.fst <$> AtomM.addAtom e)
       let mut hyps := #[]
       for hyp in ← getLocalHyps do
         let ty ← whnfR <|← instantiateMVars <|← inferType hyp
         if let (``Iff, #[p1, p2]) := ty.getAppFnArgs then
-          let q1 ← AtomM.addAtom p1
-          let q2 ← AtomM.addAtom p2
+          let (q1, _) ← AtomM.addAtom p1
+          let (q2, _) ← AtomM.addAtom p2
           hyps := hyps.push (q1, q2, ← mkAppM ``Iff.mp #[hyp])
           hyps := hyps.push (q2, q1, ← mkAppM ``Iff.mpr #[hyp])
         else if ty.isArrow then
-          let q1 ← AtomM.addAtom ty.bindingDomain!
-          let q2 ← AtomM.addAtom ty.bindingBody!
+          let (q1, _) ← AtomM.addAtom ty.bindingDomain!
+          let (q2, _) ← AtomM.addAtom ty.bindingBody!
           hyps := hyps.push (q1, q2, hyp)
       proveTFAE hyps (← get).atoms is tfaeListQ
 

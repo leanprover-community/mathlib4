@@ -207,17 +207,7 @@ open IsLocalization
 def LinearMap.extendScalarsOfIsLocalization (f : M →ₗ[R] N) : M →ₗ[A] N where
   toFun := f
   map_add' := f.map_add
-  map_smul' := by
-    intro r m
-    simp only [RingHom.id_apply]
-    rcases mk'_surjective S r with ⟨r, s, rfl⟩
-    calc f (mk' A r s • m)
-        = ((s : R) • mk' A 1 s) • f (mk' A r s • m) := by simp
-      _ = (mk' A 1 s) • (s : R) • f (mk' A r s • m) := by rw [smul_comm, smul_assoc]
-      _ = (mk' A 1 s) • f ((s : R) • mk' A r s • m) := by simp
-      _ = (mk' A 1 s) • f (r • m) := by rw [← smul_assoc, smul_mk'_self, algebraMap_smul]
-      _ = (mk' A 1 s) • r • f m := by simp
-      _ = mk' A r s • f m := by rw [smul_comm, ← smul_assoc, smul_mk'_one]
+  map_smul' := (IsLocalization.linearMap_compatibleSMul S A M N).map_smul _
 
 @[simp] lemma LinearMap.restrictScalars_extendScalarsOfIsLocalization (f : M →ₗ[R] N) :
     (f.extendScalarsOfIsLocalization S A).restrictScalars R = f := rfl
@@ -257,8 +247,7 @@ variable [IsScalarTower R Rₛ M'] [IsScalarTower R Rₛ N'] [IsLocalization S R
 @[simps!]
 noncomputable
 def mapExtendScalars : (M →ₗ[R] N) →ₗ[R] (M' →ₗ[Rₛ] N') :=
-  ((LinearMap.extendScalarsOfIsLocalizationEquiv
-    S Rₛ).restrictScalars R).toLinearMap.comp (map S f g)
+  ((LinearMap.extendScalarsOfIsLocalizationEquiv S Rₛ).restrictScalars R).toLinearMap ∘ₗ map S f g
 
 end IsLocalizedModule
 
@@ -273,7 +262,7 @@ noncomputable
 def LocalizedModule.map :
     (M →ₗ[R] N) →ₗ[R] (LocalizedModule S M →ₗ[Localization S] LocalizedModule S N) :=
   IsLocalizedModule.mapExtendScalars S (LocalizedModule.mkLinearMap S M)
-        (LocalizedModule.mkLinearMap S N) (Localization S)
+    (LocalizedModule.mkLinearMap S N) (Localization S)
 
 @[simp]
 lemma LocalizedModule.map_mk (f : M →ₗ[R] N) (x y) :
@@ -293,5 +282,17 @@ lemma LocalizedModule.map_injective (l : M →ₗ[R] N) (hl : Function.Injective
 lemma LocalizedModule.map_surjective (l : M →ₗ[R] N) (hl : Function.Surjective l) :
     Function.Surjective (map S l) :=
   IsLocalizedModule.map_surjective S (mkLinearMap S M) (mkLinearMap S N) l hl
+
+lemma LocalizedModule.restrictScalars_map_eq {M' N' : Type*} [AddCommMonoid M'] [AddCommMonoid N']
+    [Module R M'] [Module R N'] (g₁ : M →ₗ[R] M') (g₂ : N →ₗ[R] N')
+    [IsLocalizedModule S g₁] [IsLocalizedModule S g₂]
+    (l : M →ₗ[R] N) :
+    (map S l).restrictScalars R = (IsLocalizedModule.iso S g₂).symm ∘ₗ
+      IsLocalizedModule.map S g₁ g₂ l ∘ₗ IsLocalizedModule.iso S g₁ := by
+  rw [LinearEquiv.eq_toLinearMap_symm_comp, ← LinearEquiv.comp_toLinearMap_symm_eq]
+  apply IsLocalizedModule.linearMap_ext S g₁ g₂
+  rw [LinearMap.comp_assoc, IsLocalizedModule.iso_symm_comp]
+  ext
+  simp
 
 end LocalizedModule

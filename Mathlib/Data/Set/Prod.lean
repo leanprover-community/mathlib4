@@ -366,6 +366,9 @@ theorem prod_eq_iff_eq (ht : t.Nonempty) : s ×ˢ t = s₁ ×ˢ t ↔ s = s₁ :
   rintro ⟨rfl, rfl⟩
   rfl
 
+theorem subset_prod {s : Set (α × β)} : s ⊆ (Prod.fst '' s) ×ˢ (Prod.snd '' s) :=
+  fun _ hp ↦ mem_prod.2 ⟨mem_image_of_mem _ hp, mem_image_of_mem _ hp⟩
+
 section Mono
 
 variable [Preorder α] {f : α → Set β} {g : α → Set γ}
@@ -747,7 +750,7 @@ theorem pi_inter_compl (s : Set ι) : pi s t ∩ pi sᶜ t = pi univ t := by
 theorem pi_update_of_not_mem [DecidableEq ι] (hi : i ∉ s) (f : ∀ j, α j) (a : α i)
     (t : ∀ j, α j → Set (β j)) : (s.pi fun j => t j (update f i a j)) = s.pi fun j => t j (f j) :=
   (pi_congr rfl) fun j hj => by
-    rw [update_noteq]
+    rw [update_of_ne]
     exact fun h => hi (h ▸ hj)
 
 theorem pi_update_of_mem [DecidableEq ι] (hi : i ∈ s) (f : ∀ j, α j) (a : α i)
@@ -757,7 +760,7 @@ theorem pi_update_of_mem [DecidableEq ι] (hi : i ∈ s) (f : ∀ j, α j) (a : 
     (s.pi fun j => t j (update f i a j)) = ({i} ∪ s \ {i}).pi fun j => t j (update f i a j) := by
         rw [union_diff_self, union_eq_self_of_subset_left (singleton_subset_iff.2 hi)]
     _ = { x | x i ∈ t i a } ∩ (s \ {i}).pi fun j => t j (f j) := by
-        rw [union_pi, singleton_pi', update_same, pi_update_of_not_mem]; simp
+        rw [union_pi, singleton_pi', update_self, pi_update_of_not_mem]; simp
 
 theorem univ_pi_update [DecidableEq ι] {β : ι → Type*} (i : ι) (f : ∀ j, α j) (a : α i)
     (t : ∀ j, α j → Set (β j)) :
@@ -777,7 +780,7 @@ theorem eval_image_univ_pi_subset : eval i '' pi univ t ⊆ t i :=
 theorem subset_eval_image_pi (ht : (s.pi t).Nonempty) (i : ι) : t i ⊆ eval i '' s.pi t := by
   classical
   obtain ⟨f, hf⟩ := ht
-  refine fun y hy => ⟨update f i y, fun j hj => ?_, update_same _ _ _⟩
+  refine fun y hy => ⟨update f i y, fun j hj => ?_, update_self ..⟩
   obtain rfl | hji := eq_or_ne j i <;> simp [*, hf _ hj]
 
 theorem eval_image_pi (hs : i ∈ s) (ht : (s.pi t).Nonempty) : eval i '' s.pi t = t i :=
@@ -856,7 +859,7 @@ theorem update_preimage_pi [DecidableEq ι] {f : ∀ i, α i} (hi : i ∈ s)
     simp
   · obtain rfl | h := eq_or_ne j i
     · simpa
-    · rw [update_noteq h]
+    · rw [update_of_ne h]
       exact hf j hj h
 
 theorem update_image [DecidableEq ι] (x : (i : ι) → β i) (i : ι) (s : Set (β i)) :

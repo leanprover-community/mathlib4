@@ -159,8 +159,8 @@ instance IsStarNormal.instContinuousFunctionalCalculus {A : Type*} [CStarAlgebra
   spectrum_nonempty a _ := spectrum.nonempty a
   exists_cfc_of_predicate a ha := by
     refine ⟨(StarAlgebra.elemental ℂ a).subtype.comp <| continuousFunctionalCalculus a,
-      ?hom_closedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
-    case hom_closedEmbedding =>
+      ?hom_isClosedEmbedding, ?hom_id, ?hom_map_spectrum, ?predicate_hom⟩
+    case hom_isClosedEmbedding =>
       exact Isometry.isClosedEmbedding <|
         isometry_subtype_coe.comp <| StarAlgEquiv.isometry (continuousFunctionalCalculus a)
     case hom_id => exact congr_arg Subtype.val <| continuousFunctionalCalculus_map_id a
@@ -409,11 +409,11 @@ lemma SpectrumRestricts.nnreal_add {a b : A} (ha₁ : IsSelfAdjoint a)
   gcongr
   all_goals rw [← SpectrumRestricts.nnreal_iff_nnnorm] <;> first | rfl | assumption
 
-protected lemma IsSelfAdjoint.sq_spectrumRestricts {a : A} (ha : IsSelfAdjoint a) :
+lemma IsSelfAdjoint.sq_spectrumRestricts {a : A} (ha : IsSelfAdjoint a) :
     SpectrumRestricts (a ^ 2) ContinuousMap.realToNNReal := by
   rw [SpectrumRestricts.nnreal_iff, ← cfc_id (R := ℝ) a, ← cfc_pow .., cfc_map_spectrum ..]
   rintro - ⟨x, -, rfl⟩
-  exact _root_.sq_nonneg (id x)
+  exact sq_nonneg x
 
 open ComplexStarModule
 
@@ -465,7 +465,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
   have h_c_spec₀ : SpectrumRestricts (- (star c * c)) (ContinuousMap.realToNNReal ·) := by
     simp only [SpectrumRestricts.nnreal_iff, h_eq_a_neg]
     rw [← cfc_pow _ _ (ha := .star_mul_self b)]
-    simp only [cfc_map_spectrum (R := ℝ) (fun x => (-ContinuousMap.id ℝ ⊔ 0) x ^ 3) (star b * b)]
+    simp only [a, cfc_map_spectrum (R := ℝ) (fun x => (-ContinuousMap.id ℝ ⊔ 0) x ^ 3) (star b * b)]
     rintro - ⟨x, -, rfl⟩
     simp
   have c_eq := star_mul_self_add_self_mul_star c

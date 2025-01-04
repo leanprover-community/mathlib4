@@ -231,6 +231,11 @@ theorem C_inj {σ : Type*} (R : Type*) [CommSemiring R] (r s : R) :
     (C r : MvPolynomial σ R) = C s ↔ r = s :=
   (C_injective σ R).eq_iff
 
+@[simp] lemma C_eq_zero : (C a : MvPolynomial σ R) = 0 ↔ a = 0 := by rw [← map_zero C, C_inj]
+
+lemma C_ne_zero : (C a : MvPolynomial σ R) ≠ 0 ↔ a ≠ 0 :=
+  C_eq_zero.ne
+
 instance nontrivial_of_nontrivial (σ : Type*) (R : Type*) [CommSemiring R] [Nontrivial R] :
     Nontrivial (MvPolynomial σ R) :=
   inferInstanceAs (Nontrivial <| AddMonoidAlgebra R (σ →₀ ℕ))
@@ -839,9 +844,8 @@ theorem constantCoeff_X (i : σ) : constantCoeff (X i : MvPolynomial σ R) = 0 :
   simp [constantCoeff_eq]
 
 variable {R}
-/- porting note: increased priority because otherwise `simp` time outs when trying to simplify
-the left-hand side. `simpNF` linter indicated this and it was verified. -/
-@[simp 1001]
+
+@[simp]
 theorem constantCoeff_smul {R : Type*} [SMulZeroClass R S₁] (a : R) (f : MvPolynomial σ S₁) :
     constantCoeff (a • f) = a • constantCoeff f :=
   rfl
@@ -914,6 +918,13 @@ theorem eval₂_C (a) : (C a).eval₂ f g = f a := by
 @[simp]
 theorem eval₂_one : (1 : MvPolynomial σ R).eval₂ f g = 1 :=
   (eval₂_C _ _ _).trans f.map_one
+
+@[simp] theorem eval₂_natCast (n : Nat) : (n : MvPolynomial σ R).eval₂ f g = n :=
+  (eval₂_C _ _ _).trans (map_natCast f n)
+
+@[simp] theorem eval₂_ofNat (n : Nat) [n.AtLeastTwo] :
+    (ofNat(n) : MvPolynomial σ R).eval₂ f g = ofNat(n) :=
+  eval₂_natCast f g n
 
 @[simp]
 theorem eval₂_X (n) : (X n).eval₂ f g = g n := by
@@ -1065,6 +1076,10 @@ theorem eval_C : ∀ a, eval f (C a) = a :=
 theorem eval_X : ∀ n, eval f (X n) = f n :=
   eval₂_X _ _
 
+@[simp] theorem eval_ofNat (n : Nat) [n.AtLeastTwo] :
+    (ofNat(n) : MvPolynomial σ R).eval f = ofNat(n) :=
+  map_ofNat _ n
+
 @[simp]
 theorem smul_eval (x) (p : MvPolynomial σ R) (s) : eval x (s • p) = s * eval x p := by
   rw [smul_eq_C_mul, (eval x).map_mul, eval_C]
@@ -1124,6 +1139,10 @@ theorem map_monomial (s : σ →₀ ℕ) (a : R) : map f (monomial s a) = monomi
 @[simp]
 theorem map_C : ∀ a : R, map f (C a : MvPolynomial σ R) = C (f a) :=
   map_monomial _ _
+
+@[simp] protected theorem map_ofNat (n : Nat) [n.AtLeastTwo] :
+    (ofNat(n) : MvPolynomial σ R).map f = ofNat(n) :=
+  _root_.map_ofNat _ _
 
 @[simp]
 theorem map_X : ∀ n : σ, map f (X n : MvPolynomial σ R) = X n :=
@@ -1226,6 +1245,10 @@ theorem map_rightInverse {f : R →+* S₁} {g : S₁ →+* R} (hf : Function.Ri
 theorem eval_map (f : R →+* S₁) (g : σ → S₁) (p : MvPolynomial σ R) :
     eval g (map f p) = eval₂ f g p := by
   apply MvPolynomial.induction_on p <;> · simp +contextual
+
+theorem eval₂_comp (f : R →+* S₁) (g : σ → R) (p : MvPolynomial σ R) :
+    f (eval g p) = eval₂ f (f ∘ g) p := by
+  rw [← p.map_id, eval_map, eval₂_comp_right]
 
 @[simp]
 theorem eval₂_map [CommSemiring S₂] (f : R →+* S₁) (g : σ → S₂) (φ : S₁ →+* S₂)
@@ -1339,6 +1362,10 @@ theorem aeval_X (s : σ) : aeval f (X s : MvPolynomial _ R) = f s :=
 
 theorem aeval_C (r : R) : aeval f (C r) = algebraMap R S₁ r :=
   eval₂_C _ _ _
+
+@[simp] theorem aeval_ofNat (n : Nat) [n.AtLeastTwo] :
+    aeval f (ofNat(n) : MvPolynomial σ R) = ofNat(n) :=
+  map_ofNat _ _
 
 theorem aeval_unique (φ : MvPolynomial σ R →ₐ[R] S₁) : φ = aeval (φ ∘ X) := by
   ext i
@@ -1470,6 +1497,11 @@ theorem aevalTower_X (i : σ) : aevalTower g y (X i) = y i :=
 @[simp]
 theorem aevalTower_C (x : R) : aevalTower g y (C x) = g x :=
   eval₂_C _ _ _
+
+@[simp]
+theorem aevalTower_ofNat (n : Nat) [n.AtLeastTwo] :
+    aevalTower g y (ofNat(n) : MvPolynomial σ R) = ofNat(n) :=
+  _root_.map_ofNat _ _
 
 @[simp]
 theorem aevalTower_comp_C : (aevalTower g y : MvPolynomial σ R →+* A).comp C = g :=

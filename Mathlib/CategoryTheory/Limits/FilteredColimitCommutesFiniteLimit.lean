@@ -338,11 +338,11 @@ instance colimitLimitToLimitColimitCone_iso (F : J ⥤ K ⥤ Type v) :
     infer_instance
   apply Cones.cone_iso_of_hom_iso
 
-noncomputable instance filteredColimPreservesFiniteLimitsOfTypes :
+noncomputable instance filtered_colim_preservesFiniteLimits_of_types :
     PreservesFiniteLimits (colim : (K ⥤ Type v) ⥤ _) := by
-  apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{v₂}
+  apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{v₂}
   intro J _ _
-  refine ⟨fun {F} => ⟨fun {c} hc => IsLimit.ofIsoLimit (limit.isLimit _) ?_⟩⟩
+  refine ⟨fun {F} => ⟨fun {c} hc => ⟨IsLimit.ofIsoLimit (limit.isLimit _) ?_⟩⟩⟩
   symm
   trans colim.mapCone (limit.cone F)
   · exact Functor.mapIso _ (hc.uniqueUpToIso (limit.isLimit F))
@@ -356,20 +356,20 @@ variable [HasLimitsOfShape J C] [HasColimitsOfShape K C]
 variable [ReflectsLimitsOfShape J (forget C)] [PreservesColimitsOfShape K (forget C)]
 variable [PreservesLimitsOfShape J (forget C)]
 
-noncomputable instance filteredColimPreservesFiniteLimits :
+noncomputable instance filtered_colim_preservesFiniteLimits :
     PreservesLimitsOfShape J (colim : (K ⥤ C) ⥤ _) :=
   haveI : PreservesLimitsOfShape J ((colim : (K ⥤ C) ⥤ _) ⋙ forget C) :=
-    preservesLimitsOfShapeOfNatIso (preservesColimitNatIso _).symm
-  preservesLimitsOfShapeOfReflectsOfPreserves _ (forget C)
+    preservesLimitsOfShape_of_natIso (preservesColimitNatIso _).symm
+  preservesLimitsOfShape_of_reflects_of_preserves _ (forget C)
 
 end
 
-attribute [local instance] reflectsLimitsOfShapeOfReflectsIsomorphisms
+attribute [local instance] reflectsLimitsOfShape_of_reflectsIsomorphisms
 
 noncomputable instance [PreservesFiniteLimits (forget C)] [PreservesColimitsOfShape K (forget C)]
     [HasFiniteLimits C] [HasColimitsOfShape K C] [(forget C).ReflectsIsomorphisms] :
     PreservesFiniteLimits (colim : (K ⥤ C) ⥤ _) := by
-  apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{v}
+  apply preservesFiniteLimits_of_preservesFiniteLimitsOfSize.{v}
   intro J _ _
   infer_instance
 

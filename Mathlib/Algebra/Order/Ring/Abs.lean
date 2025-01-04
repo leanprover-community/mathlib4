@@ -7,6 +7,7 @@ import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.Data.Nat.Cast.Order.Ring
 
 /-!
@@ -94,15 +95,13 @@ lemma abs_le_one_iff_mul_self_le_one : |a| ≤ 1 ↔ a * a ≤ 1 := by
 lemma abs_sq (x : α) : |x ^ 2| = x ^ 2 := by simpa only [sq] using abs_mul_self x
 
 lemma sq_lt_sq : a ^ 2 < b ^ 2 ↔ |a| < |b| := by
-  simpa only [sq_abs] using
-    (pow_left_strictMonoOn₀ two_ne_zero).lt_iff_lt (abs_nonneg a) (abs_nonneg b)
+  simpa only [sq_abs] using sq_lt_sq₀ (abs_nonneg a) (abs_nonneg b)
 
 lemma sq_lt_sq' (h1 : -b < a) (h2 : a < b) : a ^ 2 < b ^ 2 :=
   sq_lt_sq.2 (lt_of_lt_of_le (abs_lt.2 ⟨h1, h2⟩) (le_abs_self _))
 
 lemma sq_le_sq : a ^ 2 ≤ b ^ 2 ↔ |a| ≤ |b| := by
-  simpa only [sq_abs] using
-    (pow_left_strictMonoOn₀ two_ne_zero).le_iff_le (abs_nonneg a) (abs_nonneg b)
+  simpa only [sq_abs] using sq_le_sq₀ (abs_nonneg a) (abs_nonneg b)
 
 lemma sq_le_sq' (h1 : -b ≤ a) (h2 : a ≤ b) : a ^ 2 ≤ b ^ 2 :=
   sq_le_sq.2 (le_trans (abs_le.mpr ⟨h1, h2⟩) (le_abs_self _))
@@ -150,6 +149,9 @@ theorem abs_sub_sq (a b : α) : |a - b| * |a - b| = a * a + b * b - (1 + 1) * a 
   rw [abs_mul_abs_self]
   simp only [mul_add, add_comm, add_left_comm, mul_comm, sub_eq_add_neg, mul_one, mul_neg,
     neg_add_rev, neg_neg, add_assoc]
+
+lemma abs_unit_intCast (a : ℤˣ) : |((a : ℤ) : α)| = 1 := by
+  cases Int.units_eq_one_or a <;> simp_all
 
 end LinearOrderedCommRing
 

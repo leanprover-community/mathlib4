@@ -4,12 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
 -/
 import Mathlib.Algebra.Module.ULift
+import Mathlib.Algebra.Order.Group.Synonym
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Topology.Algebra.Support
 import Mathlib.Topology.Bases
 import Mathlib.Topology.Homeomorph
-import Mathlib.Topology.Support
 
 /-!
 # Monoid actions continuous in the second variable
@@ -266,7 +267,7 @@ theorem smul_mem_nhds_smul_iff {t : Set α} (g : G) {a : α} : g • t ∈ 𝓝 
 
 @[to_additive] alias ⟨_, smul_mem_nhds_smul⟩ := smul_mem_nhds_smul_iff
 
-@[to_additive (attr := deprecated (since := "2024-08-06"))]
+@[to_additive (attr := deprecated "No deprecation message was provided." (since := "2024-08-06"))]
 alias smul_mem_nhds := smul_mem_nhds_smul
 
 @[to_additive (attr := simp)]

@@ -133,7 +133,7 @@ lemma traceForm_eq_zero_if_mem_lcs_of_mem_ucs {x y : L} (k : ℕ)
     simp [hy]
   | succ k ih =>
     rw [LieSubmodule.ucs_succ, LieSubmodule.mem_normalizer] at hy
-    simp_rw [LieIdeal.lcs_succ, ← LieSubmodule.mem_coeSubmodule,
+    simp_rw [LieIdeal.lcs_succ, ← LieSubmodule.mem_toSubmodule,
       LieSubmodule.lieIdeal_oper_eq_linear_span', LieSubmodule.mem_top, true_and] at hx
     refine Submodule.span_induction ?_ ?_ (fun z w _ _ hz hw ↦ ?_) (fun t z _ hz ↦ ?_) hx
     · rintro - ⟨z, w, hw, rfl⟩
@@ -189,7 +189,7 @@ lemma trace_toEnd_eq_zero_of_mem_lcs
     trace R _ (toEnd R L M x) = 0 := by
   replace hx : x ∈ lowerCentralSeries R L L 1 := antitone_lowerCentralSeries _ _ _ hk hx
   replace hx : x ∈ Submodule.span R {m | ∃ u v : L, ⁅u, v⁆ = m} := by
-    rw [lowerCentralSeries_succ, ← LieSubmodule.mem_coeSubmodule,
+    rw [lowerCentralSeries_succ, ← LieSubmodule.mem_toSubmodule,
       LieSubmodule.lieIdeal_oper_eq_linear_span'] at hx
     simpa using hx
   refine Submodule.span_induction (p := fun x _ ↦ trace R _ (toEnd R L M x) = 0)
@@ -225,11 +225,11 @@ lemma traceForm_eq_sum_genWeightSpaceOf
     fun χ m hm ↦ LieSubmodule.lie_mem _ <| LieSubmodule.lie_mem _ hm
   have hfin : {χ : R | (genWeightSpaceOf M χ z : Submodule R M) ≠ ⊥}.Finite := by
     convert finite_genWeightSpaceOf_ne_bot R L M z
-    exact LieSubmodule.coeSubmodule_eq_bot_iff (genWeightSpaceOf M _ _)
+    exact LieSubmodule.toSubmodule_eq_bot (genWeightSpaceOf M _ _)
   classical
-  have h := LieSubmodule.independent_iff_coe_toSubmodule.mp <| independent_genWeightSpaceOf R L M z
-  have hds := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top h <| by
-    simp [← LieSubmodule.iSup_coe_toSubmodule]
+  have h := LieSubmodule.iSupIndep_iff_toSubmodule.mp <| iSupIndep_genWeightSpaceOf R L M z
+  have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top h <| by
+    simp [← LieSubmodule.iSup_toSubmodule]
   simp only [LinearMap.coeFn_sum, Finset.sum_apply, traceForm_apply_apply,
     LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
   exact Finset.sum_congr (by simp) (fun χ _ ↦ rfl)
@@ -275,7 +275,8 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Modu
   replace hzc : 1 ⊗ₜ[R] z ∈ LieAlgebra.center A (A ⊗[R] L) := by
     simp only [mem_maxTrivSubmodule] at hzc ⊢
     intro y
-    exact y.induction_on rfl (fun a u ↦ by simp [hzc u]) (fun u v hu hv ↦ by simp [hu, hv])
+    exact y.induction_on rfl (fun a u ↦ by simp [hzc u])
+      (fun u v hu hv ↦ by simp [A, hu, hv])
   apply LinearMap.trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
   · exact IsTriangularizable.maxGenEigenspace_eq_top (1 ⊗ₜ[R] x)
   · exact fun μ ↦ trace_toEnd_eq_zero_of_mem_lcs A (A ⊗[R] L)
@@ -286,7 +287,7 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Modu
 lemma isLieAbelian_of_ker_traceForm_eq_bot [Module.Free R M] [Module.Finite R M]
     (h : LinearMap.ker (traceForm R L M) = ⊥) : IsLieAbelian L := by
   simpa only [← disjoint_lowerCentralSeries_maxTrivSubmodule_iff R L L, disjoint_iff_inf_le,
-    LieIdeal.coe_to_lieSubalgebra_to_submodule, LieSubmodule.coeSubmodule_eq_bot_iff, h]
+    LieIdeal.toLieSubalgebra_toSubmodule, LieSubmodule.toSubmodule_eq_bot, h]
     using lowerCentralSeries_one_inf_center_le_ker_traceForm R L M
 
 end LieModule
@@ -407,9 +408,9 @@ lemma traceForm_eq_sum_finrank_nsmul_mul (x y : L) :
       (genWeightSpace M χ) (genWeightSpace M χ) :=
     fun χ m hm ↦ LieSubmodule.lie_mem _ <| LieSubmodule.lie_mem _ hm
   classical
-  have hds := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
-    (LieSubmodule.independent_iff_coe_toSubmodule.mp <| independent_genWeightSpace' K L M)
-    (LieSubmodule.iSup_eq_top_iff_coe_toSubmodule.mp <| iSup_genWeightSpace_eq_top' K L M)
+  have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
+    (LieSubmodule.iSupIndep_iff_toSubmodule.mp <| iSupIndep_genWeightSpace' K L M)
+    (LieSubmodule.iSup_eq_top_iff_toSubmodule.mp <| iSup_genWeightSpace_eq_top' K L M)
   simp_rw [traceForm_apply_apply, LinearMap.trace_eq_sum_trace_restrict hds hxy,
     ← traceForm_genWeightSpace_eq K L M _ x y]
   rfl

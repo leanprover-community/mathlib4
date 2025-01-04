@@ -416,8 +416,7 @@ lemma smul_eq_iff_of_mem
         rw [mul_smul, ← eq1, Submonoid.mk_smul, smul_comm r t]
       · rintro ⟨a, ha, eq1⟩
         refine ⟨a, ha, ?_⟩
-        rw [← eq1, mul_comm, mul_smul, Submonoid.mk_smul]
-        rfl
+        rw [← eq1, mul_comm, mul_smul, Submonoid.mk_smul, Submonoid.smul_def, Submonoid.mk_smul]
 
 lemma eq_zero_of_smul_eq_zero
     (r : R) (hr : r ∈ S) (x : LocalizedModule S M) (hx : r • x = 0) : x = 0 := by
@@ -560,7 +559,7 @@ lemma IsLocalizedModule.eq_iff_exists [IsLocalizedModule S f] {x₁ x₂} :
     simp_rw [f.map_smul_of_tower, Submonoid.smul_def, ← Module.algebraMap_end_apply R R] at h
     exact ((Module.End_isUnit_iff _).mp <| map_units f c).1 h
 
-theorem IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocalizedModule S f] :
+instance IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocalizedModule S f] :
     IsLocalizedModule S (e ∘ₗ f : M →ₗ[R] M'') where
   map_units s := by
     rw [show algebraMap R (Module.End R M'') s = e ∘ₗ (algebraMap R (Module.End R M') s) ∘ₗ e.symm
@@ -575,6 +574,18 @@ theorem IsLocalizedModule.of_linearEquiv (e : M' ≃ₗ[R] M'') [hf : IsLocalize
     simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
       EmbeddingLike.apply_eq_iff_eq] at h
     exact hf.exists_of_eq h
+
+instance IsLocalizedModule.of_linearEquiv_right (e : M'' ≃ₗ[R] M) [hf : IsLocalizedModule S f] :
+    IsLocalizedModule S (f ∘ₗ e : M'' →ₗ[R] M') where
+  map_units s := hf.map_units s
+  surj' x := by
+    obtain ⟨⟨p, s⟩, h⟩ := hf.surj' x
+    exact ⟨⟨e.symm p, s⟩, by simpa using h⟩
+  exists_of_eq h := by
+    simp_rw [LinearMap.coe_comp, LinearEquiv.coe_coe, Function.comp_apply] at h
+    obtain ⟨c, hc⟩ := hf.exists_of_eq h
+    exact ⟨c, by simpa only [Submonoid.smul_def, map_smul, e.symm_apply_apply]
+      using congr(e.symm $hc)⟩
 
 variable (M) in
 lemma isLocalizedModule_id (R') [CommSemiring R'] [Algebra R R'] [IsLocalization S R'] [Module R' M]
@@ -702,6 +713,39 @@ instance localizedModuleIsLocalizedModule :
       erw [LocalizedModule.smul'_mk, LocalizedModule.mkLinearMap_apply, Submonoid.coe_subtype,
         LocalizedModule.mk_cancel t]
   exists_of_eq eq1 := by simpa only [eq_comm, one_smul] using LocalizedModule.mk_eq.mp eq1
+
+lemma IsLocalizedModule.of_restrictScalars (S : Submonoid R)
+    {N : Type*} [AddCommGroup N] [Module R N] [Module A M] [Module A N]
+    [IsScalarTower R A M] [IsScalarTower R A N]
+    (f : M →ₗ[A] N) [IsLocalizedModule S (f.restrictScalars R)] :
+    IsLocalizedModule (Algebra.algebraMapSubmonoid A S) f where
+  map_units x := by
+    obtain ⟨_, x, hx, rfl⟩ := x
+    have := IsLocalizedModule.map_units (f.restrictScalars R) ⟨x, hx⟩
+    simp only [← IsScalarTower.algebraMap_apply, Module.End_isUnit_iff] at this ⊢
+    exact this
+  surj' y := by
+    obtain ⟨⟨x, t⟩, e⟩ := IsLocalizedModule.surj S (f.restrictScalars R) y
+    exact ⟨⟨x, ⟨_, t, t.2, rfl⟩⟩, by simpa [Submonoid.smul_def] using e⟩
+  exists_of_eq {x₁ x₂} e := by
+    obtain ⟨c, hc⟩ := IsLocalizedModule.exists_of_eq (S := S) (f := f.restrictScalars R) e
+    refine ⟨⟨_, c, c.2, rfl⟩, by simpa [Submonoid.smul_def]⟩
+
+lemma IsLocalizedModule.of_exists_mul_mem {N : Type*} [AddCommGroup N] [Module R N]
+    (S T : Submonoid R) (h : S ≤ T) (h' : ∀ x : T, ∃ m : R, m * x ∈ S)
+    (f : M →ₗ[R] N) [IsLocalizedModule S f] :
+    IsLocalizedModule T f where
+  map_units x := by
+    obtain ⟨m, mx⟩ := h' x
+    have := IsLocalizedModule.map_units f ⟨_, mx⟩
+    rw [map_mul, (Algebra.commute_algebraMap_left _ _).isUnit_mul_iff] at this
+    exact this.2
+  surj' y := by
+    obtain ⟨⟨x, t⟩, e⟩ := IsLocalizedModule.surj S f y
+    exact ⟨⟨x, ⟨t, h t.2⟩⟩, e⟩
+  exists_of_eq {x₁ x₂} e := by
+    obtain ⟨c, hc⟩ := IsLocalizedModule.exists_of_eq (S := S) (f := f) e
+    exact ⟨⟨c, h c.2⟩, hc⟩
 
 namespace IsLocalizedModule
 
@@ -869,10 +913,18 @@ theorem is_universal :
       ∃! l : M' →ₗ[R] M'', l.comp f = g :=
   fun g h => ⟨lift S f g h, lift_comp S f g h, fun l hl => (lift_unique S f g h l hl).symm⟩
 
-theorem ringHom_ext (map_unit : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x))
+theorem linearMap_ext {N N'} [AddCommMonoid N] [Module R N] [AddCommMonoid N'] [Module R N']
+    (f' : N →ₗ[R] N') [IsLocalizedModule S f'] ⦃g g' : M' →ₗ[R] N'⦄
+    (h : g ∘ₗ f = g' ∘ₗ f) : g = g' :=
+  (is_universal S f _ <| map_units f').unique h rfl
+
+theorem ext (map_unit : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x))
     ⦃j k : M' →ₗ[R] M''⦄ (h : j.comp f = k.comp f) : j = k := by
   rw [← lift_unique S f (k.comp f) map_unit j h, lift_unique]
   rfl
+
+@[deprecated (since := "2024-12-07")]
+alias ringHom_ext := ext
 
 /-- If `(M', f)` and `(M'', g)` both satisfy universal property of localized module, then `M', M''`
 are isomorphic as `R`-module
@@ -1065,10 +1117,10 @@ noncomputable
 def map : (M →ₗ[R] N) →ₗ[R] (M' →ₗ[R] N') where
   toFun h := lift S f (g ∘ₗ h) (IsLocalizedModule.map_units g)
   map_add' h₁ h₂ := by
-    apply IsLocalizedModule.ringHom_ext S f (IsLocalizedModule.map_units g)
+    apply IsLocalizedModule.ext S f (IsLocalizedModule.map_units g)
     simp only [lift_comp, LinearMap.add_comp, LinearMap.comp_add]
   map_smul' r h := by
-    apply IsLocalizedModule.ringHom_ext S f (IsLocalizedModule.map_units g)
+    apply IsLocalizedModule.ext S f (IsLocalizedModule.map_units g)
     simp only [lift_comp, LinearMap.add_comp, LinearMap.comp_add, LinearMap.smul_comp,
       LinearMap.comp_smul, RingHom.id_apply]
 

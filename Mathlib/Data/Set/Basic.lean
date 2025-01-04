@@ -72,7 +72,7 @@ namespace Set
 
 variable {α : Type u} {s t : Set α}
 
-instance instBooleanAlgebraSet : BooleanAlgebra (Set α) :=
+instance instBooleanAlgebra : BooleanAlgebra (Set α) :=
   { (inferInstance : BooleanAlgebra (α → Prop)) with
     sup := (· ∪ ·),
     le := (· ≤ ·),
@@ -436,8 +436,9 @@ instance univ.nonempty [Nonempty α] : Nonempty (↥(Set.univ : Set α)) :=
 instance instNonemptyTop [Nonempty α] : Nonempty (⊤ : Set α) :=
   inferInstanceAs (Nonempty (univ : Set α))
 
-theorem nonempty_of_nonempty_subtype [Nonempty (↥s)] : s.Nonempty :=
-  nonempty_subtype.mp ‹_›
+theorem Nonempty.of_subtype [Nonempty (↥s)] : s.Nonempty := nonempty_subtype.mp ‹_›
+
+@[deprecated (since := "2024-11-23")] alias nonempty_of_nonempty_subtype := Nonempty.of_subtype
 
 /-! ### Lemmas about the empty set -/
 
@@ -501,8 +502,7 @@ alias ⟨Nonempty.ne_empty, _⟩ := nonempty_iff_ne_empty
 @[simp]
 theorem not_nonempty_empty : ¬(∅ : Set α).Nonempty := fun ⟨_, hx⟩ => hx
 
--- Porting note: removing `@[simp]` as it is competing with `isEmpty_subtype`.
--- @[simp]
+@[simp]
 theorem isEmpty_coe_sort {s : Set α} : IsEmpty (↥s) ↔ s = ∅ :=
   not_iff_not.1 <| by simpa using nonempty_iff_ne_empty
 
@@ -1006,7 +1006,6 @@ def subtypeInsertEquivOption
 
 /-! ### Lemmas about singletons -/
 
-/- porting note: instance was in core in Lean3 -/
 instance : LawfulSingleton α (Set α) :=
   ⟨fun x => Set.ext fun a => by
     simp only [mem_empty_iff_false, mem_insert_iff, or_false]
@@ -1204,7 +1203,7 @@ theorem eq_empty_of_ssubset_singleton {s : Set α} {x : α} (hs : s ⊂ {x}) : s
 
 theorem eq_of_nonempty_of_subsingleton {α} [Subsingleton α] (s t : Set α) [Nonempty s]
     [Nonempty t] : s = t :=
-  nonempty_of_nonempty_subtype.eq_univ.trans nonempty_of_nonempty_subtype.eq_univ.symm
+  Nonempty.of_subtype.eq_univ.trans Nonempty.of_subtype.eq_univ.symm
 
 theorem eq_of_nonempty_of_subsingleton' {α} [Subsingleton α] {s : Set α} (t : Set α)
     (hs : s.Nonempty) [Nonempty t] : s = t :=
@@ -1587,16 +1586,12 @@ theorem insert_diff_of_not_mem (s) (h : a ∉ t) : insert a s \ t = insert a (s 
   classical
     ext x
     by_cases h' : x ∈ t
-    · have : x ≠ a := by
-        intro H
-        rw [H] at h'
-        exact h h'
-      simp [h, h', this]
+    · simp [h, h', ne_of_mem_of_not_mem h' h]
     · simp [h, h']
 
 theorem insert_diff_self_of_not_mem {a : α} {s : Set α} (h : a ∉ s) : insert a s \ {a} = s := by
   ext x
-  simp [and_iff_left_of_imp fun hx : x ∈ s => show x ≠ a from fun hxa => h <| hxa ▸ hx]
+  simp [and_iff_left_of_imp (ne_of_mem_of_not_mem · h)]
 
 @[simp]
 theorem insert_diff_eq_singleton {a : α} {s : Set α} (h : a ∉ s) : insert a s \ s = {a} := by
