@@ -19,8 +19,8 @@ section OrthogonalIdempotents
 
 variable {R I : Type*} [Ring R] [DecidableEq I] (V : I → Ideal R) [Decomposition V]
 
-/-- The decomposition of `(1 : R)` into the direct sum of ideals which is also the identity
-  of the ring induced by the directsum.-/
+/-- The decomposition of `(1 : R)` where `1 = e₁ + e₂ + ⬝ ⬝ ⬝ + eₙ` which is induced by
+  the decomposition of the ring `R = V1 ⊕ V2 ⊕ ⬝ ⬝ ⬝ ⊕ Vn`.-/
 def idempotent (i : I) : R :=
   decompose V 1 i
 
