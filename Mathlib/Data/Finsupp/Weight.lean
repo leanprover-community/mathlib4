@@ -153,7 +153,7 @@ end OrderedAddCommMonoid
 
 section CanonicallyOrderedAddCommMonoid
 
-variable {M : Type*} [CanonicallyOrderedAddCommMonoid M] (w : σ → M)
+variable {M : Type*} [OrderedAddCommMonoid M] [CanonicallyOrderedAdd M] (w : σ → M)
 
 theorem le_weight_of_ne_zero' {s : σ} {f : σ →₀ ℕ} (hs : f s ≠ 0) :
     w s ≤ weight w f :=

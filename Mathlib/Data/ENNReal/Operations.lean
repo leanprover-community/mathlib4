@@ -102,7 +102,7 @@ end Mul
 section OperationsAndOrder
 
 protected theorem pow_pos : 0 < a → ∀ n : ℕ, 0 < a ^ n :=
-  CanonicallyOrderedCommSemiring.pow_pos
+  CanonicallyOrderedAdd.pow_pos
 
 protected theorem pow_ne_zero : a ≠ 0 → ∀ n : ℕ, a ^ n ≠ 0 := by
   simpa only [pos_iff_ne_zero] using ENNReal.pow_pos
@@ -213,7 +213,7 @@ theorem mul_self_lt_top_iff {a : ℝ≥0∞} : a * a < ⊤ ↔ a < ⊤ := by
   exact zero_lt_top
 
 theorem mul_pos_iff : 0 < a * b ↔ 0 < a ∧ 0 < b :=
-  CanonicallyOrderedCommSemiring.mul_pos
+  CanonicallyOrderedAdd.mul_pos
 
 theorem mul_pos (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b :=
   mul_pos_iff.2 ⟨pos_iff_ne_zero.2 ha, pos_iff_ne_zero.2 hb⟩
