@@ -898,7 +898,9 @@ theorem associated_apply (x y : M) :
 
 theorem associated_isSymm (Q : QuadraticForm R M) [Invertible (2 : R)] :
     (associatedHom S Q).IsSymm := fun x y ↦ by
-  simp only [associated_apply, sub_eq_add_neg, add_assoc, RingHom.id_apply, add_comm, add_left_comm]
+  simp only [RingHom.coe_addMonoidHom_id, associated_apply, sub_eq_add_neg, add_assoc, smul_add,
+    LinearMap.smul_def, half_moduleEnd_apply_eq_half_smul, smul_eq_mul, smul_neg,
+    AddMonoidHom.id_apply, add_comm, add_left_comm]
 
 /-- A version of `QuadraticMap.associated_isSymm` for general targets
 (using `flip` because `IsSymm` does not apply here). -/
@@ -965,7 +967,7 @@ instance canLift' :
 bilinear form is non-zero, i.e. there exists `x` such that `Q x ≠ 0`. -/
 theorem exists_quadraticMap_ne_zero {Q : QuadraticMap R M N}
     -- Porting note: added implicit argument
-    (hB₁ : associated' (R := R) (N := N) Q ≠ 0) :
+    (hB₁ : associated' (N := N) Q ≠ 0) :
     ∃ x, Q x ≠ 0 := by
   rw [← not_forall]
   intro h
@@ -1045,13 +1047,24 @@ theorem isOrtho_comm {x y : M} : IsOrtho Q x y ↔ IsOrtho Q y x := by simp_rw [
 
 alias ⟨IsOrtho.symm, _⟩ := isOrtho_comm
 
-theorem _root_.LinearMap.BilinForm.toQuadraticMap_isOrtho [IsCancelAdd R]
-    [NoZeroDivisors R] [CharZero R] {B : BilinMap R M R} {x y : M} (h : B.IsSymm) :
+theorem _root_.LinearMap.BilinForm.toQuadraticMap_isOrtho [IsCancelAdd N] [Invertible (2 : R)]
+    {B : BilinMap R M N} {x y : M} (h : B.IsConjSymm (AddMonoidHom.id N)) :
     B.toQuadraticMap.IsOrtho x y ↔ B.IsOrtho x y := by
-  letI : AddCancelMonoid R := { ‹IsCancelAdd R›, (inferInstanceAs <| AddCommMonoid R) with }
+  letI : AddCancelMonoid N := { ‹IsCancelAdd N›, (inferInstanceAs <| AddCommMonoid N) with }
   simp_rw [isOrtho_def, LinearMap.isOrtho_def, B.toQuadraticMap_apply, map_add,
     LinearMap.add_apply, add_comm _ (B y y), add_add_add_comm _ _ (B y y), add_comm (B y y)]
-  rw [add_right_eq_self (a := B x x + B y y), ← h, RingHom.id_apply, add_self_eq_zero]
+  rw [add_right_eq_self (a := B x x + B y y), ← h]
+  rw [AddMonoidHom.id_apply]
+  constructor
+  · intro h'
+    rw [← two_smul (R := R)] at h'
+    calc (B x) y = (1 : R) • (B x) y := by rw [MulAction.one_smul]
+    _ = (⅟2 * 2 : R) • (B x) y := by rw [invOf_mul_self']
+    _ =  (⅟2 : R) • ((2 : R) • (B x) y) := by rw [mul_smul]
+    _ =  (⅟2 : R) • 0 := by rw [h']
+    _ = 0 := by rw [DistribMulAction.smul_zero]
+  · intro h'
+    rw [h', AddZeroClass.zero_add]
 
 end CommSemiring
 
@@ -1098,13 +1111,13 @@ end Semiring
 
 section Ring
 
-variable [CommRing R] [AddCommGroup M] [Module R M]
+variable [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 
 /-- The associated bilinear form of an anisotropic quadratic form is nondegenerate. -/
-theorem separatingLeft_of_anisotropic [Invertible (2 : R)] (Q : QuadraticMap R M R)
+theorem separatingLeft_of_anisotropic [Invertible (2 : R)] (Q : QuadraticMap R M N)
     (hB : Q.Anisotropic) :
     -- Porting note: added implicit argument
-    (QuadraticMap.associated' (R := R) (N := R) Q).SeparatingLeft := fun x hx ↦ hB _ <| by
+    (QuadraticMap.associated' (N := N) Q).SeparatingLeft := fun x hx ↦ hB _ <| by
   rw [← hx x]
   exact (associated_eq_self_apply _ _ x).symm
 
@@ -1193,7 +1206,8 @@ theorem QuadraticMap.toMatrix'_smul (a : R) (Q : QuadraticMap R (n → R) R) :
 theorem QuadraticMap.isSymm_toMatrix' (Q : QuadraticMap R (n → R) R) : Q.toMatrix'.IsSymm := by
   ext i j
   rw [toMatrix', Matrix.transpose_apply, LinearMap.toMatrix₂'_apply, LinearMap.toMatrix₂'_apply,
-    ← associated_isSymm, RingHom.id_apply, associated_apply]
+    ← associated_isSymm, associated_apply, RingHom.coe_addMonoidHom_id, LinearMap.smul_def,
+    half_moduleEnd_apply_eq_half_smul, smul_eq_mul, AddMonoidHom.id_apply]
 
 end
 
