@@ -1588,6 +1588,7 @@ theorem IsLittleO.sum (h : ∀ i ∈ s, A i =o[l] g') : (fun x => ∑ i ∈ s, A
 end Sum
 
 section Prod
+variable {ι : Type*}
 
 theorem IsBigO.listProd {ι : Type*} {L : List ι} {f : ι → α → R} {g : ι → α → 𝕜}
     (hf : ∀ i ∈ L, f i =O[l] g i) :
