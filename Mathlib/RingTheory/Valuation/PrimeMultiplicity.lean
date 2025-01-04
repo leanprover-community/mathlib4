@@ -71,10 +71,10 @@ lemma adicValuation_pos_iff (a : K) :
     0 < adicValuation p a ↔ p ∣ num R a := by
   nth_rw 1 [← mk'_num_den' (A := R) a]
   simp only [map_div, adicValuation_coe, LinearOrderedAddCommGroupWithTop.sub_pos,
-    WithTop.map_eq_top_iff, map_eq_top_iff, emultiplicity_eq_top, not_not]
+    ENat.map_eq_top_iff, emultiplicity_eq_top]
   have : FiniteMultiplicity p (den R a) := .of_prime_left hp.out (by simp)
   simp only [this, not_true_eq_false, or_false]
-  rw [(WithTop.strictMono_map_iff.mpr Nat.strictMono_cast).lt_iff_lt]
+  rw [(ENat.strictMono_map_iff.mpr Nat.strictMono_cast).lt_iff_lt]
   constructor
   · exact fun h ↦ emultiplicity_ne_zero.mp (ENat.not_lt_zero _ <| · ▸ h)
   · intro h
