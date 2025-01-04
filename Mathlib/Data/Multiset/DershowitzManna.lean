@@ -136,59 +136,17 @@ private lemma isDershowitzMannaLT_singleton_wf [WellFoundedLT α] :
 private lemma transGen_oneStep_of_isDershowitzMannaLT :
     IsDershowitzMannaLT M N → TransGen OneStep M N := by
   classical
-  rintro ⟨X, Y, Z, Z_not_empty, MXY, NXZ, h⟩
-  revert X Y M N
-  induction Z using strongInductionOn
-  case ih Z IH =>
-    rintro M N X Y rfl rfl Y_lt_Z
-    cases em (card Z = 0)
-    · simp_all
-    cases em (card Z = 1)
-    case inl hyp' hyp =>
-      rw [card_eq_one] at hyp
-      obtain ⟨z, rfl⟩ := hyp
-      apply TransGen.single
-      refine ⟨X, Y, z, rfl, rfl, ?_⟩
-      simp only [mem_singleton, exists_eq_left] at Y_lt_Z
-      exact Y_lt_Z
-    case inr hyp' hyp =>
-      obtain ⟨z, z_in_Z⟩ : ∃ a, a ∈ Z := by
-        rw [← Z.card_pos_iff_exists_mem]
-        omega
-      let newZ := Z.erase z
-      have newZ_nonEmpty : newZ ≠ 0 := by
-        simp [newZ, ← sub_singleton, tsub_eq_zero_iff_le]
-        aesop
-      have newZ_sub_Z : newZ < Z := by simp (config := {zetaDelta := true}); exact z_in_Z
-      let f (z : α) : Multiset α := Y.filter (· < z)
-      let N' := X + newZ + f z
-      apply @transitive_transGen _ _ _ N'
-      -- step from `N'` to `M`
-      · apply IH newZ newZ_sub_Z newZ_nonEmpty
-        · change _ = (X + f z) + (Y - f z)
-          ext a
-          have count_lt := count_le_of_le a (filter_le (fun y => y < z) Y)
-          simp_all only [empty_eq_zero, ne_eq, card_eq_zero, not_false_eq_true,
-            count_add, count_sub]
-          let y := count a Y
-          let x := count a X
-          let fz := count a (filter (fun x => x < z) Y)
-          change x + y = x + fz + (y - fz)
-          omega
-        · unfold N'
-          rw [add_assoc, add_assoc, add_comm newZ (f z)]
-        · intro y y_in
-          obtain ⟨t, t_in_Z, y_lt_t⟩ := Y_lt_Z y (by aesop)
-          refine ⟨t, (mem_erase_of_ne ?_).2 t_in_Z, y_lt_t⟩
-          rintro rfl
-          simp [f, y_lt_t] at y_in
-      -- single step `N` to `N'`
-      · refine .single ⟨X + newZ, f z, z, rfl, ?_, by simp [f]⟩
-        have newZ_z_Z : newZ + {z} = Z := by
-          rw [add_comm, singleton_add]
-          apply cons_erase z_in_Z
-        have : X + newZ + {z} = X + (newZ + {z}) := by apply add_assoc
-        rw [this, newZ_z_Z]
+  rintro ⟨X, Y, Z, hZ, hM, hN, hYZ⟩
+  induction' Z using Multiset.induction_on with z Z ih generalizing X Y M N
+  · simp at hZ
+  obtain rfl | hZ := eq_or_ne Z 0
+  · exact .single ⟨X, Y, z, hM, hN, by simpa using hYZ⟩
+  let Y' : Multiset α := Y.filter (· < z)
+  refine .tail (b := X + Y' + Z) (ih (X + Y') (Y - Y') hZ ?_ rfl fun y hy ↦ ?_) <|
+    ⟨X + Z, Y', z, add_right_comm .., by simp [hN, add_comm (_ + _)], by simp [Y']⟩
+  · rw [add_add_tsub_cancel (filter_le ..), hM]
+  · simp only [sub_filter_eq_filter_not, mem_filter, Y'] at hy
+    simpa [hy.2] using hYZ y (by aesop)
 
 private lemma isDershowitzMannaLT_of_transGen_oneStep (hMN : TransGen OneStep M N) :
     IsDershowitzMannaLT M N :=
