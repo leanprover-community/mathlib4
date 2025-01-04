@@ -6,7 +6,6 @@ Authors: Leonardo de Moura
 import Mathlib.Data.Stream.Defs
 import Mathlib.Logic.Function.Basic
 import Mathlib.Data.List.Basic
-import Mathlib.Algebra.Order.Group.Nat
 
 /-!
 # Streams a.k.a. infinite lists a.k.a. infinite sequences
