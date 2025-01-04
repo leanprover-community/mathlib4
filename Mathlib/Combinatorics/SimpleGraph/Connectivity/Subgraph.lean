@@ -136,6 +136,18 @@ lemma end_mem_verts_toSubgraph (p : G.Walk u v) : v ∈ p.toSubgraph.verts := by
 theorem verts_toSubgraph (p : G.Walk u v) : p.toSubgraph.verts = { w | w ∈ p.support } :=
   Set.ext fun _ => p.mem_verts_toSubgraph
 
+theorem toSubgraph_nil_singleton (p : G.Walk u v)
+    : p.toSubgraph = G.singletonSubgraph u ↔ Nil p := by
+  refine ⟨?_, fun h ↦ Subgraph.ext_iff.mpr ⟨?_, ?_⟩⟩
+  · intro h
+    rw [SimpleGraph.eq_singletonSubgraph_iff_verts_eq, verts_toSubgraph] at h
+
+    rw [← Set.range_list_get] at h
+
+    have : p.support = [u] := by sorry
+    exact Walk.nil_iff_support_eq.mpr this
+  all_goals (cases h; rw [Walk.toSubgraph])
+
 theorem mem_edges_toSubgraph (p : G.Walk u v) {e : Sym2 V} :
     e ∈ p.toSubgraph.edgeSet ↔ e ∈ p.edges := by induction p <;> simp [*]
 
@@ -182,6 +194,19 @@ lemma toSubgraph_le_induce_support (p : G.Walk u v) :
     p.toSubgraph ≤ (⊤ : G.Subgraph).induce {v | v ∈ p.support} := by
   convert Subgraph.le_induce_top_verts
   exact p.verts_toSubgraph.symm
+
+instance (p : G.Walk u v) (h : w ∈ p.support) : CoeDep V w p.toSubgraph.verts :=
+  ⟨⟨w, (mem_verts_toSubgraph p).mpr h⟩⟩
+
+instance (p : G.Walk u v) : CoeDep V u p.toSubgraph.verts :=
+  ⟨⟨u, start_mem_verts_toSubgraph p⟩⟩
+
+instance (p : G.Walk u v) : CoeDep V v p.toSubgraph.verts :=
+  ⟨⟨v, end_mem_verts_toSubgraph p⟩⟩
+
+def toSubgraph_coe_walk (p : G.Walk u v) : p.toSubgraph.coe.Walk u v := match p with
+  | nil' s => sorry
+  | cons h p => sorry
 
 theorem toSubgraph_adj_getVert {u v} (w : G.Walk u v) {i : ℕ} (hi : i < w.length) :
     w.toSubgraph.Adj (w.getVert i) (w.getVert (i + 1)) := by
@@ -276,6 +301,25 @@ lemma connected_iff_forall_exists_walk_subgraph (H : G.Subgraph) :
         ∀ {u v}, u ∈ H.verts → v ∈ H.verts → ∃ p : G.Walk u v, p.toSubgraph ≤ H := by
   rw [H.connected_iff, preconnected_iff_forall_exists_walk_subgraph, and_comm]
 
+def subgraph_mapLe (G' G'' : G.Subgraph) (u v : V)
+      (h₁ : u ∈ G'.verts) (h₂ : v ∈ G'.verts) (h₃ : u ∈ G''.verts) (h₄ : v ∈ G''.verts)
+      (w : G'.coe.Walk ⟨u, h₁⟩ ⟨v, h₂⟩) (h : G' ≤ G'')
+    : G''.coe.Walk ⟨u, h₃⟩ ⟨v, h₄⟩ := by
+
+  sorry
+
+/-- If a walk W's subgraph is present in another subgraph T, T must have that same walk -/
+def toSubgraph_subgraph_coe_walk (T : G.Subgraph) (u v : T.verts)
+      (w : G.Walk u v) (h : w.toSubgraph ≤ T)
+    : T.coe.Walk u v :=
+  subgraph_mapLe w.toSubgraph T u v
+    w.start_mem_verts_toSubgraph
+    w.end_mem_verts_toSubgraph
+    u.coe_prop
+    v.coe_prop
+    w.toSubgraph_coe_walk
+    h
+
 end Subgraph
 
 section induced_subgraphs
@@ -363,5 +407,36 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
       refine ⟨hw, Walk.connected_induce_support _ _ _⟩
 
 end induced_subgraphs
+
+namespace ConnectedComponent
+
+/-- Turns a connected component into a subgraph of the component's graph. -/
+def toSubgraph (C : G.ConnectedComponent) : G.Subgraph :=
+  (⊤ : G.Subgraph).induce C.supp
+
+@[simp]
+theorem toSubgraph_vertices (C : G.ConnectedComponent) : (toSubgraph C).verts = C.supp :=
+  rfl
+
+theorem toSubgraph_support (C : G.ConnectedComponent) (u v : C.supp) (w : G.Walk u v)
+    : { v | v ∈ w.support } ⊆ C.supp := by
+  classical -- [DecidableEq V]
+  exact fun x h ↦ (ConnectedComponent.eq.mpr ⟨Walk.dropUntil w x h⟩).trans v.property
+
+theorem toSubgraph_reachable (C : G.ConnectedComponent) (u v : C.supp)
+    : C.toSubgraph.coe.Reachable u v := by
+  have w := Classical.choice (ConnectedComponent.eq.mp (supp_verts_mk_eq C u v))
+  use Subgraph.toSubgraph_subgraph_coe_walk ((⊤ : G.Subgraph).induce C.supp) u v w (
+      (Walk.toSubgraph_le_induce_support w).trans
+      (Subgraph.induce_mono_right (toSubgraph_support C u v w)))
+
+lemma toSubgraph_coe_connected (C : G.ConnectedComponent) : (toSubgraph C).coe.Connected := by
+  rw [connected_iff]
+  exact ⟨(toSubgraph_reachable C · ·), supp_nonEmpty C⟩
+
+theorem toSubgraph_connected (C : G.ConnectedComponent) : (toSubgraph C).Connected :=
+  .mk (toSubgraph_coe_connected C)
+
+end ConnectedComponent
 
 end SimpleGraph

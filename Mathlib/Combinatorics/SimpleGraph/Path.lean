@@ -1013,6 +1013,10 @@ theorem mem_supp_iff (C : G.ConnectedComponent) (v : V) :
 theorem connectedComponentMk_mem {v : V} : v ∈ G.connectedComponentMk v :=
   rfl
 
+theorem supp_nonEmpty (C : G.ConnectedComponent) : Nonempty (supp C) := by
+  use C.out
+  rw [mem_supp_iff, connectedComponentMk, Quot.out_eq C]
+
 /-- The equivalence between connected components, induced by an isomorphism of graphs,
 itself defines an equivalence on the supports of each connected component.
 -/
@@ -1056,12 +1060,11 @@ lemma top_supp_eq_univ (c : ConnectedComponent (⊤ : SimpleGraph V)) :
   apply SimpleGraph.ConnectedComponent.sound
   exact (@SimpleGraph.top_connected V (Nonempty.intro v)).preconnected v w
 
-def toSubgraph (C : G.ConnectedComponent) : G.Subgraph :=
-  Subgraph.induce ⊤ C.supp
-
-@[simp]
-theorem toSubgraph_vertices (C : G.ConnectedComponent) : (toSubgraph C).verts = C.supp :=
-  rfl
+lemma supp_verts_mk_eq (C : G.ConnectedComponent) (u v : C.supp) :
+    G.connectedComponentMk u = G.connectedComponentMk v :=
+  Eq.trans
+    ((mem_supp_iff C u).mp (Subtype.coe_prop u))
+    ((mem_supp_iff C v).mp (Subtype.coe_prop v)).symm
 
 end ConnectedComponent
 
