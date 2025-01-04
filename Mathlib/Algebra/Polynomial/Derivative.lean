@@ -664,7 +664,7 @@ section CommSemiringNoZeroDivisors
 
 variable [CommSemiring R] [NoZeroDivisors R]
 
-theorem derivative_pow_eq_zero_iff {n : ℕ} (chn : (n : R) ≠ 0) {a : R[X]} :
+theorem derivative_pow_eq_zero {n : ℕ} (chn : (n : R) ≠ 0) {a : R[X]} :
     derivative (a ^ n) = 0 ↔ derivative a = 0 := by
   nontriviality R
   rw [← C_ne_zero, C_eq_natCast] at chn
