@@ -19,6 +19,12 @@ open Polynomial UniqueFactorizationMonoid UniqueFactorizationDomain EuclideanDom
 
 variable {k : Type*} [Field k] [DecidableEq k]
 
+theorem radical_degree_le {a : k[X]} (h : a ≠ 0) :
+  (radical a).degree ≤ a.degree := degree_le_of_dvd (radical_dvd_self a) h
+
+theorem radical_natDegree_le {a : k[X]} (h : a ≠ 0) :
+  (radical a).natDegree ≤ a.natDegree := natDegree_le_of_dvd (radical_dvd_self a) h
+
 theorem divRadical_dvd_derivative (a : k[X]) : divRadical a ∣ derivative a := by
   induction a using induction_on_coprime
   · case h0 =>
