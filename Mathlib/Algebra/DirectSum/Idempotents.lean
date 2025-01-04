@@ -31,8 +31,7 @@ lemma decompose_eq_mul_idempotent [DecidableEq I] (V : I → Ideal R) [Decomposi
 
 lemma isIdempotentElem_idempotent [DecidableEq I] (V : I → Ideal R)
     [Decomposition V] (I : I) : IsIdempotentElem (idempotent V i : R) := by
-  rw [IsIdempotentElem, idempotent, ← smul_eq_mul, ← Submodule.coe_smul, ← smul_apply,
-    ← decompose_smul, smul_eq_mul, mul_one, decompose_coe, of_eq_same]
+  rw [IsIdempotentElem, ← decompose_eq_mul_idempotent, idempotent, decompose_coe, of_eq_same]
 
 /-- If a ring can be decomposed into direct sum of left ideals `Vᵢ`
   where `1 = e₁ + ... + eₙ` and `eᵢ ∈ Vᵢ`, then `eᵢ` is a family of orthogonal
