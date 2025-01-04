@@ -8,7 +8,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.GroupTheory.QuotientGroup.Defs
-
+import Mathlib.Data.DFinsupp.BigOperators
+import Mathlib.Algebra.Equiv.TransferInstance
 /-!
 # The category of additive commutative groups has all colimits.
 
@@ -24,14 +25,14 @@ of finitely supported functions, and we really should implement this as well (or
 
 universe w u v
 
-open CategoryTheory Limits
+open CategoryTheory Limits Classical
 
 -- [ROBOT VOICE]:
 -- You should pretend for now that this file was automatically generated.
 -- It follows the same template as colimits in Mon.
 namespace AddCommGrp
 
-variable {J : Type u} [Category.{v} J] (F : J ⥤ AddCommGrp.{max u v w})
+variable {J : Type u} [DecidableEq J] [Category.{v} J] (F : J ⥤ AddCommGrp.{w})
 
 namespace Colimits
 
@@ -42,220 +43,156 @@ then taking the quotient by the abelian group laws within each abelian group,
 and the identifications given by the morphisms in the diagram.
 -/
 
-/-- An inductive type representing all group expressions (without relations)
-on a collection of types indexed by the objects of `J`.
+abbrev Relations : AddSubgroup (DFinsupp (fun j ↦ F.obj j)) :=
+  AddSubgroup.closure {x | ∃ (j j' : J) (u : j ⟶ j') (a : F.obj j),
+    x = DFinsupp.single j' (F.map u a) - DFinsupp.single j a}
+
+def Quot : Type (max u w) := DFinsupp (fun j ↦ F.obj j) ⧸ Relations F
+
+-- Why is this necessary?
+instance : AddCommGroup (Quot F) := QuotientAddGroup.Quotient.addCommGroup (Relations F)
+
+/-- Inclusion into the quotient type implementing the colimit. -/
+def Quot.ι (j : J) : F.obj j →+ Quot F :=
+  (QuotientAddGroup.mk' _).comp (DFinsupp.singleAddHom (fun j ↦ F.obj j) j)
+
+lemma Quot.addMonoidHom_ext {α : Type*} [AddMonoid α] {f g : Quot F →+ α}
+    (h : ∀ (j : J) (x : F.obj j), f (Quot.ι F j x) = g (Quot.ι F j x)) : f = g := by
+  refine QuotientAddGroup.addMonoidHom_ext _ (DFinsupp.addHom_ext (fun j x ↦ ?_))
+  simp only [AddMonoidHom.coe_comp, QuotientAddGroup.coe_mk', Function.comp_apply]
+  simp only [ι] at h
+  exact h j x
+
+variable (c : Cocone F)
+
+/-- (implementation detail) Part of the universal property of the colimit cocone, but without
+    assuming that `Quot F` lives in the correct universe. -/
+def Quot.desc : Quot.{w} F →+ c.pt := by
+  refine QuotientAddGroup.lift _ (DFinsupp.sumAddHom c.ι.app) ?_
+  dsimp [Relations]
+  rw [AddSubgroup.closure_le]
+  intro _ ⟨_, _, _, _, eq⟩
+  rw [eq]
+  simp only [SetLike.mem_coe, AddMonoidHom.mem_ker, map_sub, DFinsupp.sumAddHom_single]
+  change (F.map _ ≫ c.ι.app _) _ - _ = 0
+  rw [c.ι.naturality]
+  simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.comp_id, sub_self]
+
+@[simp]
+lemma Quot.ι_desc (j : J) (x : F.obj j) : Quot.desc F c (Quot.ι F j x) = c.ι.app j x := by
+  dsimp [desc, ι]
+  erw [QuotientAddGroup.lift_mk']
+  simp
+
+@[simp]
+lemma Quot.map_ι {j j' : J} {f : j ⟶ j'} (x : F.obj j) :
+    Quot.ι F j' (F.map f x) = Quot.ι F j x := by
+  dsimp [ι]
+  refine eq_of_sub_eq_zero ?_
+  erw [← (QuotientAddGroup.mk' (Relations F)).map_sub, ← AddMonoidHom.mem_ker]
+  rw [QuotientAddGroup.ker_mk']
+  simp only [Relations, DFinsupp.singleAddHom_apply]
+  exact AddSubgroup.subset_closure ⟨j, j', f, x, rfl⟩
+
+/-- (implementation detail) A function `Quot F → α` induces a cocone on `F` as long as the universes
+    work out. -/
+@[simps]
+def toCocone {A : Type w} [AddCommGroup A] (f : Quot F →+ A) : Cocone F where
+  pt := AddCommGrp.of A
+  ι := { app := fun j => f.comp (Quot.ι F j) }
+
+lemma Quot.desc_toCocone_desc {A : Type w} [AddCommGroup A] (f : Quot F →+ A) (hc : IsColimit c) :
+    (hc.desc (toCocone F f)).comp (Quot.desc F c) = f := by
+  refine Quot.addMonoidHom_ext F (fun j x ↦ ?_)
+  rw [AddMonoidHom.comp_apply, ι_desc]
+  change ((c.ι.app j) ≫ hc.desc (toCocone F f)) _ = _
+  rw [hc.fac]
+  simp
+
+lemma Quot.desc_toCocone_desc_app {A : Type w} [AddCommGroup A] (f : Quot F →+ A) (hc : IsColimit c)
+    (x : Quot F) : hc.desc (toCocone F f) (Quot.desc F c x) = f x := by
+  conv_rhs => rw [← Quot.desc_toCocone_desc F c f hc]
+  simp
+
+noncomputable def isColimit_of_bijective_desc (h : Function.Bijective (Quot.desc F c)) :
+    IsColimit c where
+  desc s := AddCommGrp.ofHom ((Quot.desc F s).comp (AddEquiv.ofBijective
+    (Quot.desc F c) h).symm.toAddMonoidHom)
+  fac s j := by
+    ext x
+    simp only [Functor.const_obj_obj, AddEquiv.toAddMonoidHom_eq_coe, coe_comp, Function.comp_apply,
+      ofHom_apply, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe]
+    conv_lhs => erw [← Quot.ι_desc F c j x]
+    rw [← AddEquiv.ofBijective_apply _ h, AddEquiv.symm_apply_apply]
+    simp only [Quot.ι_desc, Functor.const_obj_obj]
+  uniq s m hm := by
+    ext x
+    obtain ⟨x, rfl⟩ := h.2 x
+    simp only [AddEquiv.toAddMonoidHom_eq_coe, ofHom_apply, AddMonoidHom.coe_comp,
+      AddMonoidHom.coe_coe, Function.comp_apply]
+    rw [← AddEquiv.ofBijective_apply _ h, AddEquiv.symm_apply_apply]
+    suffices eq : m.comp (AddEquiv.ofBijective (Quot.desc F c) h) = Quot.desc F s by
+      rw [← eq]; rfl
+    refine Quot.addMonoidHom_ext F (fun j x ↦ ?_)
+    simp [← hm j]
+
+/-- (internal implementation) the colimit cocone of a functor,
+implemented as a quotient of a sigma type
 -/
-inductive Prequotient
-  -- There's always `of`
-  | of : ∀ (j : J) (_ : F.obj j), Prequotient
-  -- Then one generator for each operation
-  | zero : Prequotient
-  | neg : Prequotient → Prequotient
-  | add : Prequotient → Prequotient → Prequotient
-
-instance : Inhabited (Prequotient.{w} F) :=
-  ⟨Prequotient.zero⟩
-
-open Prequotient
-
-/-- The relation on `Prequotient` saying when two expressions are equal
-because of the abelian group laws, or
-because one element is mapped to another by a morphism in the diagram.
--/
-inductive Relation : Prequotient.{w} F → Prequotient.{w} F → Prop
-  -- Make it an equivalence relation:
-  | refl : ∀ x, Relation x x
-  | symm : ∀ (x y) (_ : Relation x y), Relation y x
-  | trans : ∀ (x y z) (_ : Relation x y) (_ : Relation y z), Relation x z
-  -- There's always a `map` relation
-  | map : ∀ (j j' : J) (f : j ⟶ j') (x : F.obj j), Relation (Prequotient.of j' (F.map f x))
-      (Prequotient.of j x)
-  -- Then one relation per operation, describing the interaction with `of`
-  | zero : ∀ j, Relation (Prequotient.of j 0) zero
-  | neg : ∀ (j) (x : F.obj j), Relation (Prequotient.of j (-x)) (neg (Prequotient.of j x))
-  | add : ∀ (j) (x y : F.obj j), Relation (Prequotient.of j (x + y)) (add (Prequotient.of j x)
-      (Prequotient.of j y))
-  -- Then one relation per argument of each operation
-  | neg_1 : ∀ (x x') (_ : Relation x x'), Relation (neg x) (neg x')
-  | add_1 : ∀ (x x' y) (_ : Relation x x'), Relation (add x y) (add x' y)
-  | add_2 : ∀ (x y y') (_ : Relation y y'), Relation (add x y) (add x y')
-  -- And one relation per axiom
-  | zero_add : ∀ x, Relation (add zero x) x
-  | add_zero : ∀ x, Relation (add x zero) x
-  | neg_add_cancel : ∀ x, Relation (add (neg x) x) zero
-  | add_comm : ∀ x y, Relation (add x y) (add y x)
-  | add_assoc : ∀ x y z, Relation (add (add x y) z) (add x (add y z))
-
-/--
-The setoid corresponding to group expressions modulo abelian group relations and identifications.
--/
-def colimitSetoid : Setoid (Prequotient.{w} F) where
-  r := Relation F
-  iseqv := ⟨Relation.refl, fun r => Relation.symm _ _ r, fun r => Relation.trans _ _ _ r⟩
-
-attribute [instance] colimitSetoid
-
-/-- The underlying type of the colimit of a diagram in `AddCommGrp`.
--/
-def ColimitType : Type max u v w :=
-  Quotient (colimitSetoid.{w} F)
-
-instance : Zero (ColimitType.{w} F) where
-  zero := Quotient.mk _ zero
-
-instance : Neg (ColimitType.{w} F) where
-  neg := Quotient.map neg Relation.neg_1
-
-instance : Add (ColimitType.{w} F) where
-  add := Quotient.map₂ add <| fun _x x' rx y _y' ry =>
-    Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
-
-instance : AddCommGroup (ColimitType.{w} F) where
-  zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
-  add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
-  neg_add_cancel := Quotient.ind <| fun _ => Quotient.sound <| Relation.neg_add_cancel _
-  add_comm := Quotient.ind₂ <| fun _ _ => Quotient.sound <| Relation.add_comm _ _
-  add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
-    Quotient.sound <| Relation.add_assoc _ _ _
-  nsmul := nsmulRec
-  zsmul := zsmulRec
-
-instance ColimitTypeInhabited : Inhabited (ColimitType.{w} F) := ⟨0⟩
+@[simps]
+noncomputable def colimitCocone [Small.{w} (Quot.{w} F)] : Cocone F where
+  pt := AddCommGrp.of (Shrink (Quot F))
+  ι :=
+    { app := fun j =>
+        AddCommGrp.ofHom (Shrink.addEquiv.symm.toAddMonoidHom.comp (Quot.ι F j))
+      naturality := fun _ _ _ ↦ by
+        ext
+        dsimp
+        simp only [Category.comp_id, ofHom_apply, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe,
+          Function.comp_apply]
+        change Shrink.addEquiv.symm _ = _
+        rw [Quot.map_ι] }
 
 @[simp]
-theorem quot_zero : Quot.mk Setoid.r zero = (0 : ColimitType.{w} F) :=
-  rfl
+theorem Quot.desc_colimitCocone (F : J ⥤ AddCommGrp.{w}) [Small.{w} (Quot F)] :
+    Quot.desc F (colimitCocone F) = (Shrink.addEquiv (α := Quot F)).symm.toAddMonoidHom := by
+  refine Quot.addMonoidHom_ext F (fun j x ↦ ?_)
+  simp only [colimitCocone_pt, coe_of, AddEquiv.toAddMonoidHom_eq_coe, AddMonoidHom.coe_coe]
+  erw [Quot.ι_desc]
+  simp
 
-@[simp]
-theorem quot_neg (x) :
-    -- Porting note: force Lean to treat `ColimitType F` no as `Quot _`
-    (by exact Quot.mk Setoid.r (neg x) : ColimitType.{w} F) =
-      -(by exact Quot.mk Setoid.r x) :=
-  rfl
-
-@[simp]
-theorem quot_add (x y) :
-    (by exact Quot.mk Setoid.r (add x y) : ColimitType.{w} F) =
-      -- Porting note: force Lean to treat `ColimitType F` no as `Quot _`
-      (by exact Quot.mk Setoid.r x) + (by exact Quot.mk Setoid.r y) :=
-  rfl
-
-/-- The bundled abelian group giving the colimit of a diagram. -/
-def colimit : AddCommGrp :=
-  AddCommGrp.of (ColimitType.{w} F)
-
-/-- The function from a given abelian group in the diagram to the colimit abelian group. -/
-def coconeFun (j : J) (x : F.obj j) : ColimitType.{w} F :=
-  Quot.mk _ (Prequotient.of j x)
-
-/-- The group homomorphism from a given abelian group in the diagram to the colimit abelian
-group. -/
-def coconeMorphism (j : J) : F.obj j ⟶ colimit.{w} F where
-  toFun := coconeFun F j
-  map_zero' := by apply Quot.sound; apply Relation.zero
-  map_add' := by intros; apply Quot.sound; apply Relation.add
-
-@[simp]
-theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
-    F.map f ≫ coconeMorphism.{w} F j' = coconeMorphism F j := by
-  ext
-  apply Quot.sound
-  apply Relation.map
-
-@[simp]
-theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
-    (coconeMorphism.{w} F j') (F.map f x) = (coconeMorphism F j) x := by
-  rw [← cocone_naturality F f]
-  rfl
-
-/-- The cocone over the proposed colimit abelian group. -/
-def colimitCocone : Cocone F where
-  pt := colimit.{w} F
-  ι := { app := coconeMorphism F }
-
-/-- The function from the free abelian group on the diagram to the cone point of any other
-cocone. -/
-@[simp]
-def descFunLift (s : Cocone F) : Prequotient.{w} F → s.pt
-  | Prequotient.of j x => (s.ι.app j) x
-  | zero => 0
-  | neg x => -descFunLift s x
-  | add x y => descFunLift s x + descFunLift s y
-
-/-- The function from the colimit abelian group to the cone point of any other cocone. -/
-def descFun (s : Cocone F) : ColimitType.{w} F → s.pt := by
-  fapply Quot.lift
-  · exact descFunLift F s
-  · intro x y r
-    induction r with
-    | refl => rfl
-    | symm _ _ _ r_ih => exact r_ih.symm
-    | trans _ _ _ _ _ r_ih_h r_ih_k => exact Eq.trans r_ih_h r_ih_k
-    | map j j' f x => simpa only [descFunLift, Functor.const_obj_obj] using
-      DFunLike.congr_fun (s.ι.naturality f) x
-    | zero => simp
-    | neg => simp
-    | add => simp
-    | neg_1 _ _ _ r_ih => dsimp; rw [r_ih]
-    | add_1 _ _ _ _ r_ih => dsimp; rw [r_ih]
-    | add_2 _ _ _ _ r_ih => dsimp; rw [r_ih]
-    | zero_add => dsimp; rw [zero_add]
-    | add_zero => dsimp; rw [add_zero]
-    | neg_add_cancel => dsimp; rw [neg_add_cancel]
-    | add_comm => dsimp; rw [add_comm]
-    | add_assoc => dsimp; rw [add_assoc]
-
-/-- The group homomorphism from the colimit abelian group to the cone point of any other cocone. -/
-def descMorphism (s : Cocone F) : colimit.{w} F ⟶ s.pt where
-  toFun := descFun F s
-  map_zero' := rfl
-  map_add' x y := Quot.induction_on₂ x y fun _ _ ↦ rfl
-
-/-- Evidence that the proposed colimit is the colimit. -/
-def colimitCoconeIsColimit : IsColimit (colimitCocone.{w} F) where
-  desc s := descMorphism F s
-  uniq s m w := DFunLike.ext _ _ fun x => Quot.inductionOn x fun x => by
-    change (m : ColimitType F →+ s.pt) _ = (descMorphism F s : ColimitType F →+ s.pt) _
-    induction x using Prequotient.recOn with
-    | of j x => exact DFunLike.congr_fun (w j) x
-    | zero =>
-      dsimp only [quot_zero]
-      rw [map_zero, map_zero]
-    | neg x ih =>
-      dsimp only [quot_neg]
-      rw [map_neg, map_neg, ih]
-    | add x y ihx ihy =>
-      simp only [quot_add]
-      rw [m.map_add, (descMorphism F s).map_add, ihx, ihy]
+/-- (internal implementation) the fact that the proposed colimit cocone is the colimit -/
+noncomputable def colimitCoconeIsColimit [Small.{w} (Quot F)] :
+    IsColimit (colimitCocone F) := by
+  refine isColimit_of_bijective_desc F _ ?_
+  rw [Quot.desc_colimitCocone]
+  exact Shrink.addEquiv.symm.bijective
 
 end Colimits
 
-lemma hasColimit : HasColimit F := ⟨_, Colimits.colimitCoconeIsColimit.{w} F⟩
+open Colimits
 
-variable (J)
+lemma hasColimit_of_small_quot (h : Small.{w} (Quot F)) : HasColimit F :=
+  ⟨_, colimitCoconeIsColimit F⟩
 
-lemma hasColimitsOfShape : HasColimitsOfShape J AddCommGrp.{max u v w} where
-  has_colimit F := hasColimit.{w} F
+instance [Small.{w} J] : Small.{w} (Quot F) := by
+  have : Small.{w} (DFinsupp (fun j ↦ F.obj j)) := by
+    refine small_of_injective (f := fun x ↦ (fun j ↦ x j)) ?_
+    intro f f' eq
+    ext
+    simp only [DFunLike.coe_fn_eq] at eq
+    rw [eq]
+  exact small_of_surjective (QuotientAddGroup.mk'_surjective _)
 
-lemma hasColimitsOfSize : HasColimitsOfSize.{v, u} AddCommGrp.{max u v w} :=
-  ⟨fun _ => hasColimitsOfShape.{w} _⟩
+instance hasColimit [Small.{w} J] (F : J ⥤ AddCommGrp.{w}) : HasColimit F :=
+  hasColimit_of_small_quot F inferInstance
 
-instance hasColimits : HasColimits AddCommGrp.{w} := hasColimitsOfSize.{w}
+instance hasColimitsOfShape [Small.{w} J] : HasColimitsOfShape J (AddCommGrp.{w}) where
 
-instance : HasColimitsOfSize.{v, v} (AddCommGrpMax.{u, v}) := hasColimitsOfSize.{u}
-instance : HasColimitsOfSize.{u, u} (AddCommGrpMax.{u, v}) := hasColimitsOfSize.{v}
-instance : HasColimitsOfSize.{u, v} (AddCommGrpMax.{u, v}) := hasColimitsOfSize.{u}
-instance : HasColimitsOfSize.{v, u} (AddCommGrpMax.{u, v}) := hasColimitsOfSize.{u}
-instance : HasColimitsOfSize.{0, 0} (AddCommGrp.{u}) := hasColimitsOfSize.{u, 0, 0}
-
-example : HasColimits AddCommGrpMax.{v, u} :=
-  inferInstance
-
-example : HasColimits AddCommGrpMax.{u, v} :=
-  inferInstance
-
-example : HasColimits AddCommGrp.{u} :=
-  inferInstance
+/-- The category of additive commutative groups has all small colimits.
+-/
+instance (priority := 1300) hasColimitsOfSize [UnivLE.{u, w}] :
+    HasColimitsOfSize.{v, u} (AddCommGrp.{w}) where
 
 end AddCommGrp
 
