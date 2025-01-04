@@ -391,7 +391,7 @@ lemma ofComp_toAlgHom_monomial_sumElim (Q : Generators S T) (P : Generators R S)
   simp only [MvPolynomial.algebraMap_apply, ofComp_val, aeval_monomial]
   rw [Finsupp.prod_sumElim]
   simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr, ← map_pow, ← map_finsupp_prod,
-    C_mul, algebra.smul_def, MvPolynomial.algebraMap_apply, mul_assoc]
+    C_mul, Algebra.smul_def, MvPolynomial.algebraMap_apply, mul_assoc]
   nth_rw 2 [mul_comm]
 
 lemma toComp_toAlgHom_monomial (Q : Generators S T) (P : Generators R S) (j a) :
@@ -435,6 +435,9 @@ noncomputable abbrev ker : Ideal P.Ring := P.toExtension.ker
 lemma ker_eq_ker_aeval_val : P.ker = RingHom.ker (aeval P.val) := by
   simp only [ker, Extension.ker, toExtension_Ring, algebraMap_eq]
   rfl
+
+variable {P} in
+lemma aeval_val_eq_zero {x} (hx : x ∈ P.ker) : aeval P.val x = 0 := by rwa [← algebraMap_apply]
 
 lemma map_toComp_ker (Q : Generators S T) (P : Generators R S) :
     P.ker.map (Q.toComp P).toAlgHom.toRingHom = RingHom.ker (Q.ofComp P).toAlgHom := by
