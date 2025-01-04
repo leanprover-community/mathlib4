@@ -8,6 +8,7 @@ import Mathlib.Algebra.DirectSum.Decomposition
 
 /-!
 # Decomposition of the identity of a ring into orthogonal idempotents
+
 In this file we show that if a ring `R` can be decomposed into a direct sum
 of (left) ideals `R = V₁ ⊕ V₂ ⊕ ⬝ ⬝ ⬝ ⊕ Vₙ` then in the corresponding decomposition
 `1 = e₁ + e₂ + ⬝ ⬝ ⬝ + eₙ` with `eᵢ ∈ Vᵢ`, each `eᵢ` is an idempotent and the
