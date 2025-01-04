@@ -38,9 +38,6 @@ This file expands on the development in the core library.
   `i = Fin.last n` and `i = Fin.castSucc j`, a special case of `Fin.reverseInduction`;
 * `Fin.addCases`: define a function on `Fin (m + n)` by separately handling the cases
   `Fin.castAdd n i` and `Fin.natAdd m i`;
-* `Fin.succAboveCases`: given `i : Fin (n + 1)`, define a function on `Fin (n + 1)` by separately
-  handling the cases `j = i` and `j = Fin.succAbove i k`, same as `Fin.insertNth` but marked
-  as eliminator and works for `Sort*`. -- Porting note: this is in another file
 
 ### Embeddings and isomorphisms
 
