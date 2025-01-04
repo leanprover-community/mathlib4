@@ -16,7 +16,7 @@ import Mathlib.RingTheory.Polynomial.Content
 ## References
 
  * https://www.jstor.org/stable/2695734
- * https://pdf.sciencedirectassets.com/272482/1-s2.0-S0022314X00X00534/1-s2.0-S0022314X9892220X/main.pdf?X-Amz-Security-Token=IQoJb3JpZ2luX2VjEHkaCXVzLWVhc3QtMSJIMEYCIQCi4U%2BQq8XXsNyCFxOOB1z3779RcF1x5SgA3cEo0TChjwIhAOIeVRwHVjJLumM8vZQHR1y3zWmWiFoCWmiRXgNCgNksKrMFCDIQBRoMMDU5MDAzNTQ2ODY1IgzCehXHeTR%2FbAkQ1vUqkAXZQZ1uzW2ORh%2BxjPJSYFGOBvOaKRfNOH0fEfAKDO915O5jhejV1NpDCxsJ%2FVenTzqNQolhp3W1Ud3YwxfmJE9%2BHmOK81cXfDG2%2FiCCP3RLUGBo5NYG6UulB1hC2HuqF3db4hO1F3AU1qdap%2FigWk0kI567w9Zx3Fg1jDONDuSwvFnfrbq%2FzAWYFUXVNNgWq3RFbL4moZkvd2Oi92uI00mgNjO2q2gNoxQ5cpEJgzstAjGZ0t1GVDL0%2FinHDW1QOVoutv%2FnX1s%2BguKrJ%2F1KWtXyi2PSBYruBtPNm2jG%2BWSe2cH4GS%2FnKOmgZQds7If0Djn5IdiwXtLv%2BiznazuSKQsCVdb6rIWu0NSY5IieqxYqqf1jlhpSNWxONbtyUDxtSVh1WVE%2FbJNAyrkipq1mKHoDuyEuutIQQvm2EZxP%2F%2BLuuzo%2BE5in70q6UM%2Fyxvx0zDgQivRmhLCbRCd2eZLtpufKE5TSNVeF3MW1iLRi74GeJIo%2FkoeJBSVMdEKUO%2BsLu0lM3iO06tk2mHAz7F8hxthYuqNGausolbRjjacQD2NWL%2BLXzSj1kklmXbqGrB%2BNdCH3Xj7omcs3qDm3ofdJwvsT3rRCKPHKn2UWw%2FB1voNR6ug7H5t8EbEmfgpLlHcXUp6JtkuspWovHg98Kq5gnx%2BdXADm58qi73oJjRDYZdBEYy5S0SNjxBAZkhA4baZNnp2fhpN%2FcGP68AWpEU9lZvt8mxzjHL%2FxGtzsIjHqDj9OB%2FoPcJt3GDCBsz8bW6%2F7zMvdPQPbqYoG7y84%2Br1VBdEhFsGtzlIz7Hjum8a7khtvM1JoTma%2BbCOmW%2BbnsyG%2F6dgVSWUZsk8AlYuMz6fB8ib7L9laJvUVYE833mD06wmwUTCX1My6BjqwAQvbAglYdP7vv8fDLWJ6M5V1WTCHj2SZ5yVhrlx8kTbGO28MGihwVK1xXOZ2L%2BH462Dfyh0SdjCfbDriFbTlCAbtRMvfA8bKCdNdR88s21GwKvtGvhOoaREnpiwyIUqvZ4lWClEF%2FC0lxUXC92zUAc%2F0Gmu0LXtv63Ef8lZyxiVeeGTEAotj1Ot93DCuLKku58C8aDIz2iBdh83wAZKeub5%2B3DLqKEzUa5TY0sfaglxo&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20241206T174540Z&X-Amz-SignedHeaders=host&X-Amz-Expires=300&X-Amz-Credential=ASIAQ3PHCVTYTSABWTT7%2F20241206%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=a8c185e03d8f01e9c8cda0181dea98082cfdfc647a729536d5e4483417e2a8af&hash=6d39e45f4a1d3b9f09e6ee51ebb0768816354b07db3b3047ebf4402a5d3d2afb&host=68042c943591013ac2b2430a89b270f6af2c76d8dfd086a07176afe7c76c2c61&pii=S0022314X9892220X&tid=spdf-d9c90067-67e5-47f5-b707-b0ed31f3c86d&sid=b54c02540a819-44f4-85bd-e2390804978cgxrqa&type=client&tsoh=d3d3LnNjaWVuY2VkaXJlY3QuY29t&ua=13115606040b52595100&rr=8ede174ad9b2903f&cc=us 
+ * https://pdf.sciencedirectassets.com/272482/1-s2.0-S0022314X00X00534/1-s2.0-S0022314X9892220X/main.pdf?X-Amz-Security-Token=IQoJb3JpZ2luX2VjEHkaCXVzLWVhc3QtMSJIMEYCIQCi4U%2BQq8XXsNyCFxOOB1z3779RcF1x5SgA3cEo0TChjwIhAOIeVRwHVjJLumM8vZQHR1y3zWmWiFoCWmiRXgNCgNksKrMFCDIQBRoMMDU5MDAzNTQ2ODY1IgzCehXHeTR%2FbAkQ1vUqkAXZQZ1uzW2ORh%2BxjPJSYFGOBvOaKRfNOH0fEfAKDO915O5jhejV1NpDCxsJ%2FVenTzqNQolhp3W1Ud3YwxfmJE9%2BHmOK81cXfDG2%2FiCCP3RLUGBo5NYG6UulB1hC2HuqF3db4hO1F3AU1qdap%2FigWk0kI567w9Zx3Fg1jDONDuSwvFnfrbq%2FzAWYFUXVNNgWq3RFbL4moZkvd2Oi92uI00mgNjO2q2gNoxQ5cpEJgzstAjGZ0t1GVDL0%2FinHDW1QOVoutv%2FnX1s%2BguKrJ%2F1KWtXyi2PSBYruBtPNm2jG%2BWSe2cH4GS%2FnKOmgZQds7If0Djn5IdiwXtLv%2BiznazuSKQsCVdb6rIWu0NSY5IieqxYqqf1jlhpSNWxONbtyUDxtSVh1WVE%2FbJNAyrkipq1mKHoDuyEuutIQQvm2EZxP%2F%2BLuuzo%2BE5in70q6UM%2Fyxvx0zDgQivRmhLCbRCd2eZLtpufKE5TSNVeF3MW1iLRi74GeJIo%2FkoeJBSVMdEKUO%2BsLu0lM3iO06tk2mHAz7F8hxthYuqNGausolbRjjacQD2NWL%2BLXzSj1kklmXbqGrB%2BNdCH3Xj7omcs3qDm3ofdJwvsT3rRCKPHKn2UWw%2FB1voNR6ug7H5t8EbEmfgpLlHcXUp6JtkuspWovHg98Kq5gnx%2BdXADm58qi73oJjRDYZdBEYy5S0SNjxBAZkhA4baZNnp2fhpN%2FcGP68AWpEU9lZvt8mxzjHL%2FxGtzsIjHqDj9OB%2FoPcJt3GDCBsz8bW6%2F7zMvdPQPbqYoG7y84%2Br1VBdEhFsGtzlIz7Hjum8a7khtvM1JoTma%2BbCOmW%2BbnsyG%2F6dgVSWUZsk8AlYuMz6fB8ib7L9laJvUVYE833mD06wmwUTCX1My6BjqwAQvbAglYdP7vv8fDLWJ6M5V1WTCHj2SZ5yVhrlx8kTbGO28MGihwVK1xXOZ2L%2BH462Dfyh0SdjCfbDriFbTlCAbtRMvfA8bKCdNdR88s21GwKvtGvhOoaREnpiwyIUqvZ4lWClEF%2FC0lxUXC92zUAc%2F0Gmu0LXtv63Ef8lZyxiVeeGTEAotj1Ot93DCuLKku58C8aDIz2iBdh83wAZKeub5%2B3DLqKEzUa5TY0sfaglxo&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Date=20241206T174540Z&X-Amz-SignedHeaders=host&X-Amz-Expires=300&X-Amz-Credential=ASIAQ3PHCVTYTSABWTT7%2F20241206%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Signature=a8c185e03d8f01e9c8cda0181dea98082cfdfc647a729536d5e4483417e2a8af&hash=6d39e45f4a1d3b9f09e6ee51ebb0768816354b07db3b3047ebf4402a5d3d2afb&host=68042c943591013ac2b2430a89b270f6af2c76d8dfd086a07176afe7c76c2c61&pii=S0022314X9892220X&tid=spdf-d9c90067-67e5-47f5-b707-b0ed31f3c86d&sid=b54c02540a819-44f4-85bd-e2390804978cgxrqa&type=client&tsoh=d3d3LnNjaWVuY2VkaXJlY3QuY29t&ua=13115606040b52595100&rr=8ede174ad9b2903f&cc=us
  * https://en.wikipedia.org/wiki/Bhargava_factorial
 
  * https://www.youtube.com/watch?v=1YB-5occzSk
@@ -37,9 +37,11 @@ open scoped Nat Polynomial
 
 noncomputable def Set.gcd {α : Type*} (S : Set α) (hS : S.Nonempty) : S := ⟨hS.some, hS.some_mem⟩
 
-variable {R : Type*} [Semiring R] (S : Set R)
+variable {R : Type*} (S : Set R)
 
 namespace Polynomial
+
+variable [Semiring R]
 
 def fixedDivisor (𝒻 : R[X]) : Ideal R := Ideal.span <| 𝒻.eval '' S
 
@@ -64,7 +66,10 @@ example : f.fixedDivisor univ = Ideal.span {2} := by
 
 end Polynomial
 
+-- TODO - figure out why adding [Semiring R] breaks this
 variable [CommRing R] [IsDomain R] [IsDedekindDomain R]
+--set_option trace.Meta.synthInstance true
+--#synth CommRing R[X]
 
 variable (p : ℕ) [Fact p.Prime]
 
@@ -94,6 +99,12 @@ noncomputable def Set.pOrdering.pSequence {ν : S.pOrdering p} (k : ℕ) :=
 def pSequence.eq (ν₁ ν₂ : S.pOrdering p) : ν₁.pSequence = ν₂.pSequence := by
   ext n
   sorry
+
+open Polynomial (X C)
+
+-- c_0 + (c_1 * (x - a_0)) + (c_2 * (x - a_0) * (x - a_1))
+noncomputable def lemma_12_prod (pOrder: Set.pOrdering S p) (k: ℕ) (c: Fin (k + 1) → R): R[X]
+   := ∑ i : Fin (k + 1), (c i) • ∏ j ∈ Finset.range i, (X - Polynomial.C (pOrder.elems j).val)
 
 example (k l : ℕ) : (k ! * l !) ∣ (k + l) ! := k.factorial_mul_factorial_dvd_factorial_add l
 example (k l : ℤ) (hk : 0 ≤ k) (hl : 0 ≤ l) : (k.toNat ! * l.toNat !) ∣ (k + l).toNat ! := sorry
