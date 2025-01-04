@@ -758,17 +758,6 @@ open Module
 
 variable {F E : Type*} [Field F] [Ring E] [Algebra F E]
 
-/-
-porting note:
-Some of the lemmas in this section can be made faster by adding these short-cut instances
-```lean4
-instance (S : Subalgebra F E) : AddCommMonoid { x // x ∈ S } := inferInstance
-instance (S : Subalgebra F E) : AddCommGroup { x // x ∈ S } := inferInstance
-```
-However, this approach doesn't scale very well, so we should consider holding off on adding
-them until we have no choice.
--/
-
 /-- A `Subalgebra` is `FiniteDimensional` iff it is `FiniteDimensional` as a submodule. -/
 theorem Subalgebra.finiteDimensional_toSubmodule {S : Subalgebra F E} :
     FiniteDimensional F (Subalgebra.toSubmodule S) ↔ FiniteDimensional F S :=

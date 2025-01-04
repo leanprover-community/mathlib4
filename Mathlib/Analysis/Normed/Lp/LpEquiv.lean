@@ -91,9 +91,6 @@ section Equivₗᵢ
 
 variable [Fintype α] (𝕜 : Type*) [NontriviallyNormedField 𝕜] [∀ i, NormedSpace 𝕜 (E i)]
 variable (E)
-/- porting note: Lean is unable to work with `lpPiLpₗᵢ` if `E` is implicit without
-annotating with `(E := E)` everywhere, so we just make it explicit. This file has no
-dependencies. -/
 
 /-- The canonical `LinearIsometryEquiv` between `lp E p` and `PiLp p E` when `E : α → Type u`
 with `[Fintype α]` and `[Fact (1 ≤ p)]`. -/
@@ -145,9 +142,6 @@ theorem coe_addEquiv_lpBCF_symm (f : α →ᵇ E) : (AddEquiv.lpBCF.symm f : α 
   rfl
 
 variable (E)
-/- porting note: Lean is unable to work with `lpPiLpₗᵢ` if `E` is implicit without
-annotating with `(E := E)` everywhere, so we just make it explicit. This file has no
-dependencies. -/
 
 /-- The canonical map between `lp (fun _ : α ↦ E) ∞` and `α →ᵇ E` as a `LinearIsometryEquiv`. -/
 noncomputable def lpBCFₗᵢ : lp (fun _ : α ↦ E) ∞ ≃ₗᵢ[𝕜] α →ᵇ E :=

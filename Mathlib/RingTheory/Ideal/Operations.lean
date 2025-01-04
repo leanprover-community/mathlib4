@@ -157,16 +157,10 @@ theorem ideal_span_singleton_smul (r : R) (N : Submodule R M) :
 submodule `M'` of `x`, we only need to show that `r ^ n • x ∈ M'` for some `n` for each `r : s`. -/
 theorem mem_of_span_eq_top_of_smul_pow_mem (M' : Submodule R M) (s : Set R) (hs : Ideal.span s = ⊤)
     (x : M) (H : ∀ r : s, ∃ n : ℕ, ((r : R) ^ n : R) • x ∈ M') : x ∈ M' := by
-  obtain ⟨s', hs₁, hs₂⟩ := (Ideal.span_eq_top_iff_finite _).mp hs
-  replace H : ∀ r : s', ∃ n : ℕ, ((r : R) ^ n : R) • x ∈ M' := fun r => H ⟨_, hs₁ r.2⟩
-  choose n₁ n₂ using H
-  let N := s'.attach.sup n₁
-  have hs' := Ideal.span_pow_eq_top (s' : Set R) hs₂ N
-  apply M'.mem_of_span_top_of_smul_mem _ hs'
+  choose f hf using H
+  apply M'.mem_of_span_top_of_smul_mem _ (Ideal.span_range_pow_eq_top s hs f)
   rintro ⟨_, r, hr, rfl⟩
-  convert M'.smul_mem (r ^ (N - n₁ ⟨r, hr⟩)) (n₂ ⟨r, hr⟩) using 1
-  simp only [Subtype.coe_mk, smul_smul, ← pow_add]
-  rw [tsub_add_cancel_of_le (Finset.le_sup (s'.mem_attach _) : n₁ ⟨r, hr⟩ ≤ N)]
+  exact hf r
 
 open Pointwise in
 @[simp]

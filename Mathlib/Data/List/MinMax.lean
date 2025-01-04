@@ -89,7 +89,7 @@ end ArgAux
 
 section Preorder
 
-variable [Preorder β] [@DecidableRel β (· < ·)] {f : α → β} {l : List α} {a m : α}
+variable [Preorder β] [DecidableRel (α := β) (· < ·)] {f : α → β} {l : List α} {a m : α}
 
 /-- `argmax f l` returns `some a`, where `f a` is maximal among the elements of `l`, in the sense
 that there is no `b ∈ l` with `f a < f b`. If `a`, `b` are such that `f a = f b`, it returns
@@ -243,7 +243,7 @@ section MaximumMinimum
 
 section Preorder
 
-variable [Preorder α] [@DecidableRel α (· < ·)] {l : List α} {a m : α}
+variable [Preorder α] [DecidableRel (α := α) (· < ·)] {l : List α} {a m : α}
 
 /-- `maximum l` returns a `WithBot α`, the largest element of `l` for nonempty lists, and `⊥` for
 `[]`  -/
@@ -291,19 +291,23 @@ theorem minimum_eq_top {l : List α} : l.minimum = ⊤ ↔ l = [] :=
 @[simp, deprecated minimum_eq_top "Don't mix Option and WithTop" (since := "2024-05-27")]
 theorem minimum_eq_none {l : List α} : l.minimum = none ↔ l = [] := minimum_eq_top
 
-theorem not_lt_maximum_of_mem : a ∈ l → (maximum l : WithBot α) = m → ¬m < a :=
+theorem not_maximum_lt_of_mem : a ∈ l → (maximum l : WithBot α) = m → ¬m < a :=
   not_lt_of_mem_argmax
 
-theorem minimum_not_lt_of_mem : a ∈ l → (minimum l : WithTop α) = m → ¬a < m :=
+@[deprecated (since := "2024-12-29")] alias not_lt_maximum_of_mem := not_maximum_lt_of_mem
+
+theorem not_lt_minimum_of_mem : a ∈ l → (minimum l : WithTop α) = m → ¬a < m :=
   not_lt_of_mem_argmin
 
-theorem not_lt_maximum_of_mem' (ha : a ∈ l) : ¬maximum l < (a : WithBot α) := by
-  cases h : l.maximum
-  · simp_all
-  · simp [not_lt_maximum_of_mem ha h, not_false_iff]
+@[deprecated (since := "2024-12-29")] alias minimum_not_lt_of_mem := not_lt_minimum_of_mem
 
-theorem not_lt_minimum_of_mem' (ha : a ∈ l) : ¬(a : WithTop α) < minimum l :=
-  @not_lt_maximum_of_mem' αᵒᵈ _ _ _ _ ha
+theorem not_maximum_lt_of_mem' (ha : a ∈ l) : ¬maximum l < (a : WithBot α) := by
+  cases h : l.maximum <;> simp_all [not_maximum_lt_of_mem ha]
+
+@[deprecated (since := "2024-12-29")] alias not_lt_maximum_of_mem' := not_maximum_lt_of_mem'
+
+theorem not_lt_minimum_of_mem' (ha : a ∈ l) : ¬(a : WithTop α) < minimum l := by
+  cases h : l.minimum <;> simp_all [not_lt_minimum_of_mem ha]
 
 end Preorder
 
@@ -324,10 +328,10 @@ theorem minimum_le_of_mem : a ∈ l → (minimum l : WithTop α) = m → m ≤ a
   le_of_mem_argmin
 
 theorem le_maximum_of_mem' (ha : a ∈ l) : (a : WithBot α) ≤ maximum l :=
-  le_of_not_lt <| not_lt_maximum_of_mem' ha
+  le_of_not_lt <| not_maximum_lt_of_mem' ha
 
 theorem minimum_le_of_mem' (ha : a ∈ l) : minimum l ≤ (a : WithTop α) :=
-  @le_maximum_of_mem' αᵒᵈ _ _ _ ha
+  le_of_not_lt <| not_lt_minimum_of_mem' ha
 
 theorem minimum_concat (a : α) (l : List α) : minimum (l ++ [a]) = min (minimum l) a :=
   @maximum_concat αᵒᵈ _ _ _
@@ -343,11 +347,15 @@ theorem maximum_le_of_forall_le {b : WithBot α} (h : ∀ a ∈ l, a ≤ b) : l.
   induction l with
   | nil => simp
   | cons a l ih =>
-    simp only [maximum_cons, max_le_iff, WithBot.coe_le_coe]
+    simp only [maximum_cons, max_le_iff]
     exact ⟨h a (by simp), ih fun a w => h a (mem_cons.mpr (Or.inr w))⟩
 
-theorem le_minimum_of_forall_le {b : WithTop α} (h : ∀ a ∈ l, b ≤ a) : b ≤ l.minimum :=
-  maximum_le_of_forall_le (α := αᵒᵈ) h
+theorem le_minimum_of_forall_le {b : WithTop α} (h : ∀ a ∈ l, b ≤ a) : b ≤ l.minimum := by
+  induction l with
+  | nil => simp
+  | cons a l ih =>
+    simp only [minimum_cons, le_min_iff]
+    exact ⟨h a (by simp), ih fun a w => h a (mem_cons.mpr (Or.inr w))⟩
 
 theorem maximum_eq_coe_iff : maximum l = m ↔ m ∈ l ∧ ∀ a ∈ l, a ≤ m := by
   rw [maximum, ← WithBot.some_eq_coe, argmax_eq_some_iff]
@@ -359,13 +367,10 @@ theorem minimum_eq_coe_iff : minimum l = m ↔ m ∈ l ∧ ∀ a ∈ l, m ≤ a 
   @maximum_eq_coe_iff αᵒᵈ _ _ _
 
 theorem coe_le_maximum_iff : a ≤ l.maximum ↔ ∃ b, b ∈ l ∧ a ≤ b := by
-  induction l with
-  | nil => simp
-  | cons h t ih =>
-    simp [maximum_cons, ih]
+  induction' l <;> simp [maximum_cons, *]
 
-theorem minimum_le_coe_iff : l.minimum ≤ a ↔ ∃ b, b ∈ l ∧ b ≤ a :=
-  coe_le_maximum_iff (α := αᵒᵈ)
+theorem minimum_le_coe_iff : l.minimum ≤ a ↔ ∃ b, b ∈ l ∧ b ≤ a := by
+  induction' l <;> simp [minimum_cons, *]
 
 theorem maximum_ne_bot_of_ne_nil (h : l ≠ []) : l.maximum ≠ ⊥ :=
   match l, h with | _ :: _, _ => by simp [maximum_cons]
@@ -405,7 +410,7 @@ theorem le_maximum_of_length_pos_iff {b : α} (h : 0 < l.length) :
 @[simp]
 theorem minimum_of_length_pos_le_iff {b : α} (h : 0 < l.length) :
     minimum_of_length_pos h ≤ b ↔ l.minimum ≤ b :=
-  le_maximum_of_length_pos_iff (α := αᵒᵈ) h
+  WithTop.untop_le_iff _
 
 theorem maximum_of_length_pos_mem (h : 0 < l.length) :
     maximum_of_length_pos h ∈ l := by

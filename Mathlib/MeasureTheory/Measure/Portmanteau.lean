@@ -508,7 +508,7 @@ lemma integral_le_liminf_integral_of_forall_isOpen_measure_le_liminf_measure
       apply le_trans hi
       convert obs i with x
       have aux := ENNReal.ofReal_eq_coe_nnreal (f_nn x)
-      simp only [ContinuousMap.toFun_eq_coe, BoundedContinuousFunction.coe_to_continuous_fun] at aux
+      simp only [ContinuousMap.toFun_eq_coe, BoundedContinuousFunction.coe_toContinuousMap] at aux
       rw [aux]
       congr
       exact (Real.norm_of_nonneg (f_nn x)).symm

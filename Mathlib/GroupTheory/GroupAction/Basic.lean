@@ -17,13 +17,6 @@ This file primarily concerns itself with orbits, stabilizers, and other objects 
 actions. Despite this file being called `basic`, low-level helper lemmas for algebraic manipulation
 of `•` belong elsewhere.
 
-## Main definitions
-
-* `MulAction.orbit`
-* `MulAction.fixedPoints`
-* `MulAction.fixedBy`
-* `MulAction.stabilizer`
-
 -/
 
 
@@ -291,3 +284,17 @@ theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
     · simp only [smul_inv_smul]
 
 end MulAction
+
+section
+
+variable (R M : Type*) [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
+
+variable {M} in
+lemma Module.stabilizer_units_eq_bot_of_ne_zero {x : M} (hx : x ≠ 0) :
+    MulAction.stabilizer Rˣ x = ⊥ := by
+  rw [eq_bot_iff]
+  intro g (hg : g.val • x = x)
+  ext
+  rw [← sub_eq_zero, ← smul_eq_zero_iff_left hx, Units.val_one, sub_smul, hg, one_smul, sub_self]
+
+end

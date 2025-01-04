@@ -321,6 +321,19 @@ theorem map_eq_submodule_map (f : R →+* S) [h : RingHomSurjective f] (I : Idea
     I.map f = Submodule.map f.toSemilinearMap I :=
   Submodule.ext fun _ => mem_map_iff_of_surjective f h.1
 
+open Function in
+theorem IsMaximal.comap_piEvalRingHom {ι : Type*} {R : ι → Type*} [∀ i, Semiring (R i)]
+    {i : ι} {I : Ideal (R i)} (h : I.IsMaximal) : (I.comap <| Pi.evalRingHom R i).IsMaximal := by
+  refine isMaximal_iff.mpr ⟨I.ne_top_iff_one.mp h.ne_top, fun J x le hxI hxJ ↦ ?_⟩
+  have ⟨r, y, hy, eq⟩ := h.exists_inv hxI
+  classical
+  convert J.add_mem (J.mul_mem_left (update 0 i r) hxJ)
+    (b := update 1 i y) (le <| by apply update_self i y 1 ▸ hy)
+  ext j
+  obtain rfl | ne := eq_or_ne j i
+  · simpa [eq_comm] using eq
+  · simp [update_of_ne ne]
+
 end Surjective
 
 section Injective
@@ -353,7 +366,7 @@ theorem comap_of_equiv {I : Ideal R} (f : R ≃+* S) :
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `map f I = comap f.symm I`. -/
 theorem map_comap_of_equiv {I : Ideal R} (f : R ≃+* S) : I.map (f : R →+* S) = I.comap f.symm :=
   le_antisymm (Ideal.map_le_comap_of_inverse _ _ _ (Equiv.left_inv' _))
-      (Ideal.comap_le_map_of_inverse _ _ _ (Equiv.right_inv' _))
+    (Ideal.comap_le_map_of_inverse _ _ _ (Equiv.right_inv' _))
 
 /-- If `f : R ≃+* S` is a ring isomorphism and `I : Ideal R`, then `comap f.symm I = map f I`. -/
 @[simp]
@@ -384,6 +397,56 @@ theorem mem_map_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e
     exact ⟨(e : R ≃+* S).symm y, h, (e : R ≃+* S).apply_symm_apply y⟩
   · rintro ⟨x, hx, rfl⟩
     exact mem_map_of_mem e hx
+
+section Bijective
+
+variable (hf : Function.Bijective f) {I : Ideal R} {K : Ideal S}
+include hf
+
+/-- Special case of the correspondence theorem for isomorphic rings -/
+def relIsoOfBijective : Ideal S ≃o Ideal R where
+  toFun := comap f
+  invFun := map f
+  left_inv := map_comap_of_surjective _ hf.2
+  right_inv J :=
+    le_antisymm
+      (fun _ h ↦ have ⟨y, hy, eq⟩ := (mem_map_iff_of_surjective _ hf.2).mp h; hf.1 eq ▸ hy)
+      le_comap_map
+  map_rel_iff' {_ _} := by
+    refine ⟨fun h ↦ ?_, comap_mono⟩
+    have := map_mono (f := f) h
+    simpa only [Equiv.coe_fn_mk, map_comap_of_surjective f hf.2] using this
+
+theorem comap_le_iff_le_map : comap f K ≤ I ↔ K ≤ map f I :=
+  ⟨fun h => le_map_of_comap_le_of_surjective f hf.right h, fun h =>
+    (relIsoOfBijective f hf).right_inv I ▸ comap_mono h⟩
+
+lemma comap_map_of_bijective : (I.map f).comap f = I :=
+  le_antisymm ((comap_le_iff_le_map f hf).mpr fun _ ↦ id) le_comap_map
+
+theorem isMaximal_map_iff_of_bijective : IsMaximal (map f I) ↔ IsMaximal I := by
+  simpa only [isMaximal_def] using (relIsoOfBijective _ hf).symm.isCoatom_iff _
+
+theorem isMaximal_comap_iff_of_bijective : IsMaximal (comap f K) ↔ IsMaximal K := by
+  simpa only [isMaximal_def] using (relIsoOfBijective _ hf).isCoatom_iff _
+
+alias ⟨_, IsMaximal.map_bijective⟩ := isMaximal_map_iff_of_bijective
+alias ⟨_, IsMaximal.comap_bijective⟩ := isMaximal_comap_iff_of_bijective
+
+/-- A ring isomorphism sends a maximal ideal to a maximal ideal. -/
+instance map_isMaximal_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
+    {p : Ideal R} [hp : p.IsMaximal] : (map e p).IsMaximal :=
+  hp.map_bijective e (EquivLike.bijective e)
+
+theorem isMaximal_iff_of_bijective : (⊥ : Ideal R).IsMaximal ↔ (⊥ : Ideal S).IsMaximal :=
+  ⟨fun h ↦ map_bot (f := f) ▸ h.map_bijective f hf, fun h ↦ have e := RingEquiv.ofBijective f hf
+    map_bot (f := e.symm) ▸ h.map_bijective _ e.symm.bijective⟩
+
+@[deprecated (since := "2024-12-07")] alias map.isMaximal := IsMaximal.map_bijective
+@[deprecated (since := "2024-12-07")] alias comap.isMaximal := IsMaximal.comap_bijective
+@[deprecated (since := "2024-12-07")] alias RingEquiv.bot_maximal_iff := isMaximal_iff_of_bijective
+
+end Bijective
 
 end Semiring
 
@@ -431,7 +494,7 @@ theorem map_eq_top_or_isMaximal_of_surjective (hf : Function.Surjective f) {I : 
     · exact map_le_iff_le_comap.1 (le_of_lt hJ)
     · exact fun h => hJ.right (le_map_of_comap_le_of_surjective f hf (le_of_eq h.symm))
 
-theorem comap_isMaximal_of_surjective (hf : Function.Surjective f) {K : Ideal S} [H : IsMaximal K]:
+theorem comap_isMaximal_of_surjective (hf : Function.Surjective f) {K : Ideal S} [H : IsMaximal K] :
     IsMaximal (comap f K) := by
   refine ⟨⟨comap_ne_top _ H.1.1, fun J hJ => ?_⟩⟩
   suffices map f J = ⊤ by
@@ -458,48 +521,6 @@ theorem comap_le_comap_iff_of_surjective (hf : Function.Surjective f) (I J : Ide
 
 end Surjective
 
-
-section Bijective
-
-/-- Special case of the correspondence theorem for isomorphic rings -/
-def relIsoOfBijective (hf : Function.Bijective f) : Ideal S ≃o Ideal R where
-  toFun := comap f
-  invFun := map f
-  left_inv := (relIsoOfSurjective f hf.right).left_inv
-  right_inv J :=
-    Subtype.ext_iff.1
-      ((relIsoOfSurjective f hf.right).right_inv ⟨J, comap_bot_le_of_injective f hf.left⟩)
-  map_rel_iff' {_ _} := (relIsoOfSurjective f hf.right).map_rel_iff'
-
-theorem comap_le_iff_le_map (hf : Function.Bijective f) {I : Ideal R} {K : Ideal S} :
-    comap f K ≤ I ↔ K ≤ map f I :=
-  ⟨fun h => le_map_of_comap_le_of_surjective f hf.right h, fun h =>
-    (relIsoOfBijective f hf).right_inv I ▸ comap_mono h⟩
-
-lemma comap_map_of_bijective (hf : Function.Bijective f) {I : Ideal R} :
-    (I.map f).comap f = I :=
-  le_antisymm ((comap_le_iff_le_map f hf).mpr fun _ ↦ id) le_comap_map
-
-theorem map.isMaximal (hf : Function.Bijective f) {I : Ideal R} (H : IsMaximal I) :
-    IsMaximal (map f I) := by
-  refine
-    or_iff_not_imp_left.1 (map_eq_top_or_isMaximal_of_surjective f hf.right H) fun h => H.1.1 ?_
-  calc
-    I = comap f (map f I) := ((relIsoOfBijective f hf).right_inv I).symm
-    _ = comap f ⊤ := by rw [h]
-    _ = ⊤ := by rw [comap_top]
-
-/-- A ring isomorphism sends a maximal ideal to a maximal ideal. -/
-instance map_isMaximal_of_equiv {E : Type*} [EquivLike E R S] [RingEquivClass E R S] (e : E)
-    {p : Ideal R} [hp : p.IsMaximal] : (map e p).IsMaximal :=
-  map.isMaximal e (EquivLike.bijective e) hp
-
-end Bijective
-
-theorem RingEquiv.bot_maximal_iff (e : R ≃+* S) :
-    (⊥ : Ideal R).IsMaximal ↔ (⊥ : Ideal S).IsMaximal :=
-  ⟨fun h => map_bot (f := e.toRingHom) ▸ map.isMaximal e.toRingHom e.bijective h, fun h =>
-    map_bot (f := e.symm.toRingHom) ▸ map.isMaximal e.symm.toRingHom e.symm.bijective h⟩
 
 end Ring
 
@@ -701,6 +722,21 @@ theorem LinearEquiv.annihilator_eq (e : M ≃ₗ[R] M') :
     Module.annihilator R M = Module.annihilator R M' :=
   (e.annihilator_le_of_surjective e.surjective).antisymm (e.annihilator_le_of_injective e.injective)
 
+theorem Module.comap_annihilator {R₀} [CommSemiring R₀] [Module R₀ M]
+    [Algebra R₀ R] [IsScalarTower R₀ R M] :
+    (Module.annihilator R M).comap (algebraMap R₀ R) = Module.annihilator R₀ M := by
+  ext x
+  simp [mem_annihilator]
+
+lemma Module.annihilator_eq_bot {R M} [Ring R] [AddCommGroup M] [Module R M] :
+    Module.annihilator R M = ⊥ ↔ FaithfulSMul R M := by
+  rw [← le_bot_iff]
+  refine ⟨fun H ↦ ⟨fun {r s} H' ↦ ?_⟩, fun ⟨H⟩ {a} ha ↦ ?_⟩
+  · rw [← sub_eq_zero]
+    exact H (Module.mem_annihilator (r := r - s).mpr
+      (by simp only [sub_smul, H', sub_self, implies_true]))
+  · exact @H a 0 (by simp [Module.mem_annihilator.mp ha])
+
 namespace Submodule
 
 /-- `N.annihilator` is the ideal of all elements `r : R` such that `r • N = 0`. -/
@@ -855,6 +891,10 @@ end Ring
 section CommRing
 
 variable [CommRing R] [CommRing S]
+
+theorem map_ne_bot_of_ne_bot {S : Type*} [Ring S] [Nontrivial S] [Algebra R S]
+    [NoZeroSMulDivisors R S] {I : Ideal R} (h : I ≠ ⊥) : map (algebraMap R S) I ≠ ⊥ :=
+  (map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S)).mp.mt h
 
 theorem map_eq_iff_sup_ker_eq_of_surjective {I J : Ideal R} (f : R →+* S)
     (hf : Function.Surjective f) : map f I = map f J ↔ I ⊔ RingHom.ker f = J ⊔ RingHom.ker f := by

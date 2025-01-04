@@ -96,23 +96,17 @@ derivative, differentiability, higher derivative, `C^n`, multilinear, Taylor ser
 
 noncomputable section
 
-open scoped Classical
 open NNReal Topology Filter
 
 /-
 Porting note: These lines are not required in Mathlib4.
 attribute [local instance 1001]
-  NormedAddCommGroup.toAddCommGroup NormedSpace.toModule' AddCommGroup.toAddCommMonoid
+  NormedAddCommGroup.toAddCommGroup AddCommGroup.toAddCommMonoid
 -/
 
 open Set Fin Filter Function
 
-/-- Smoothness exponent for analytic functions. -/
-scoped [ContDiff] notation3 "ω" => (⊤ : WithTop ℕ∞)
-/-- Smoothness exponent for infinitely differentiable functions. -/
-scoped [ContDiff] notation3 "∞" => ((⊤ : ℕ∞) : WithTop ℕ∞)
-
-open ContDiff
+open scoped ContDiff
 
 universe u uE uF uG uX
 
@@ -694,6 +688,11 @@ protected theorem ContDiffOn.ftaylorSeriesWithin
       exact (Hp.mono ho).eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl (hs.inter o_open) ⟨hy, yo⟩
     exact ((Hp.mono ho).cont m le_rfl).congr fun y hy => (A y hy).symm
 
+theorem iteratedFDerivWithin_subset {n : ℕ} (st : s ⊆ t) (hs : UniqueDiffOn 𝕜 s)
+    (ht : UniqueDiffOn 𝕜 t) (h : ContDiffOn 𝕜 n f t) (hx : x ∈ s) :
+    iteratedFDerivWithin 𝕜 n f s x = iteratedFDerivWithin 𝕜 n f t x :=
+  (((h.ftaylorSeriesWithin ht).mono st).eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl hs hx).symm
+
 /-- On a set with unique differentiability, an analytic function is automatically `C^ω`, as its
 successive derivatives are also analytic. This does not require completeness of the space. See
 also `AnalyticOn.contDiffOn_of_completeSpace`.-/
@@ -1020,6 +1019,20 @@ protected theorem ContDiffAt.eventually (h : ContDiffAt 𝕜 n f x) (h' : n ≠ 
     ∀ᶠ y in 𝓝 x, ContDiffAt 𝕜 n f y := by
   simpa [nhdsWithin_univ] using ContDiffWithinAt.eventually h h'
 
+theorem iteratedFDerivWithin_eq_iteratedFDeriv {n : ℕ}
+    (hs : UniqueDiffOn 𝕜 s) (h : ContDiffAt 𝕜 n f x) (hx : x ∈ s) :
+    iteratedFDerivWithin 𝕜 n f s x = iteratedFDeriv 𝕜 n f x := by
+  rw [← iteratedFDerivWithin_univ]
+  rcases h.contDiffOn' le_rfl (by simp) with ⟨u, u_open, xu, hu⟩
+  rw [← iteratedFDerivWithin_inter_open u_open xu,
+    ← iteratedFDerivWithin_inter_open u_open xu (s := univ)]
+  apply iteratedFDerivWithin_subset
+  · exact inter_subset_inter_left _ (subset_univ _)
+  · exact hs.inter u_open
+  · apply uniqueDiffOn_univ.inter u_open
+  · simpa using hu
+  · exact ⟨hx, xu⟩
+
 /-! ### Smooth functions -/
 
 variable (𝕜) in
@@ -1149,15 +1162,22 @@ theorem contDiff_omega_iff_analyticOnNhd :
 
 /-! ### Iterated derivative -/
 
+/-- When a function is `C^n`, it admits `ftaylorSeries 𝕜 f` as a Taylor series up
+to order `n` in `s`. -/
+theorem ContDiff.ftaylorSeries (hf : ContDiff 𝕜 n f) :
+    HasFTaylorSeriesUpTo n f (ftaylorSeries 𝕜 f) := by
+  simp only [← contDiffOn_univ, ← hasFTaylorSeriesUpToOn_univ_iff, ← ftaylorSeriesWithin_univ]
+    at hf ⊢
+  exact ContDiffOn.ftaylorSeriesWithin hf uniqueDiffOn_univ
 
-/-- When a function is `C^n` in a set `s` of unique differentiability, it admits
-`ftaylorSeriesWithin 𝕜 f s` as a Taylor series up to order `n` in `s`. -/
+/-- For `n : ℕ∞`, a function is `C^n` iff it admits `ftaylorSeries 𝕜 f`
+as a Taylor series up to order `n`. -/
 theorem contDiff_iff_ftaylorSeries {n : ℕ∞} :
     ContDiff 𝕜 n f ↔ HasFTaylorSeriesUpTo n f (ftaylorSeries 𝕜 f) := by
   constructor
   · rw [← contDiffOn_univ, ← hasFTaylorSeriesUpToOn_univ_iff, ← ftaylorSeriesWithin_univ]
-    exact fun h => ContDiffOn.ftaylorSeriesWithin h uniqueDiffOn_univ
-  · intro h; exact ⟨ftaylorSeries 𝕜 f, h⟩
+    exact fun h ↦ ContDiffOn.ftaylorSeriesWithin h uniqueDiffOn_univ
+  · exact fun h ↦ ⟨ftaylorSeries 𝕜 f, h⟩
 
 theorem contDiff_iff_continuous_differentiable {n : ℕ∞} :
     ContDiff 𝕜 n f ↔

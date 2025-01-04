@@ -10,6 +10,7 @@ import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.Localization.Away.Basic
+import Mathlib.RingTheory.MaximalSpectrum
 import Mathlib.Tactic.StacksAttribute
 import Mathlib.Topology.KrullDimension
 import Mathlib.Topology.Sober
@@ -236,6 +237,12 @@ theorem discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical :
       rw [fin.mem_toFinset] at hM
       rwa [← hM.eq_of_le hI.1 hMI]
     exact ⟨fin.subset hpm, hpm⟩
+
+theorem discreteTopology_of_toLocalization_surjective
+    (surj : Function.Surjective (toPiLocalization R)) :
+    DiscreteTopology (PrimeSpectrum R) :=
+  discreteTopology_iff_finite_and_isPrime_imp_isMaximal.mpr ⟨finite_of_toPiLocalization_surjective
+    surj, fun I prime ↦ isMaximal_of_toPiLocalization_surjective surj ⟨I, prime⟩⟩
 
 section Comap
 
@@ -542,11 +549,14 @@ theorem isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton [Algebra R S]
     exact not_not.mpr (q.span_singleton_le_iff_mem.mp le)
   IsLocalization.isLocalization_iff_of_isLocalization _ _ (Localization.Away f)
 
-variable [DiscreteTopology (PrimeSpectrum R)]
+end BasicOpen
 
-variable (R) in
-lemma _root_.RingHom.toLocalizationIsMaximal_surjective_of_discreteTopology :
-    Function.Surjective (RingHom.toLocalizationIsMaximal R) := fun x ↦ by
+section DiscreteTopology
+
+variable (R) [DiscreteTopology (PrimeSpectrum R)]
+
+theorem toPiLocalization_surjective_of_discreteTopology :
+    Function.Surjective (toPiLocalization R) := fun x ↦ by
   have (p : PrimeSpectrum R) : ∃ f, (basicOpen f : Set _) = {p} :=
     have ⟨_, ⟨f, rfl⟩, hpf, hfp⟩ := isTopologicalBasis_basic_opens.isOpen_iff.mp
       (isOpen_discrete {p}) p rfl
@@ -555,16 +565,15 @@ lemma _root_.RingHom.toLocalizationIsMaximal_surjective_of_discreteTopology :
   let e := Equiv.ofInjective f fun p q eq ↦ Set.singleton_injective (hf p ▸ eq ▸ hf q)
   have loc a : IsLocalization.AtPrime (Localization.Away a.1) (e.symm a).1 :=
     (isLocalization_away_iff_atPrime_of_basicOpen_eq_singleton <| hf _).mp <| by
-      simp_rw [Equiv.apply_ofInjective_symm]; infer_instance
+      simp_rw [e, Equiv.apply_ofInjective_symm]; infer_instance
   let algE a := IsLocalization.algEquiv (e.symm a).1.primeCompl
     (Localization.AtPrime (e.symm a).1) (Localization.Away a.1)
   have span_eq : Ideal.span (Set.range f) = ⊤ := iSup_basicOpen_eq_top_iff.mp <| top_unique
     fun p _ ↦ TopologicalSpace.Opens.mem_iSup.mpr ⟨p, (hf p).ge rfl⟩
   replace hf a : (basicOpen a.1 : Set _) = {e.symm a} := by
-    simp_rw [← hf, Equiv.apply_ofInjective_symm]
-  have := (discreteTopology_iff_finite_and_isPrime_imp_isMaximal.mp ‹_›).2
+    simp_rw [e, ← hf, Equiv.apply_ofInjective_symm]
   obtain ⟨r, eq, -⟩ := Localization.existsUnique_algebraMap_eq_of_span_eq_top _ span_eq
-    (fun a ↦ algE a (x ⟨_, this _ inferInstance⟩)) fun a b ↦ by
+    (fun a ↦ algE a (x _)) fun a b ↦ by
       obtain rfl | ne := eq_or_ne a b; · rfl
       have ⟨n, hn⟩ : IsNilpotent (a * b : R) := (basicOpen_eq_bot_iff _).mp <| by
         simp_rw [basicOpen_mul, SetLike.ext'_iff, TopologicalSpace.Opens.coe_inf, hf]
@@ -573,19 +582,35 @@ lemma _root_.RingHom.toLocalizationIsMaximal_surjective_of_discreteTopology :
         (S := Localization.Away (a * b : R)) <| hn ▸ ⟨n, rfl⟩
       apply Subsingleton.elim
   refine ⟨r, funext fun I ↦ ?_⟩
-  have := eq (e ⟨I, I.2.isPrime⟩)
+  have := eq (e I)
   rwa [← AlgEquiv.symm_apply_eq, AlgEquiv.commutes, e.symm_apply_apply] at this
+
+theorem maximalSpectrumToPiLocalization_surjective_of_discreteTopology :
+    Function.Surjective (MaximalSpectrum.toPiLocalization R) := by
+  rw [← piLocalizationToMaximal_comp_toPiLocalization]
+  exact (piLocalizationToMaximal_surjective R).comp
+    (toPiLocalization_surjective_of_discreteTopology R)
 
 /-- If the prime spectrum of a commutative semiring R has discrete Zariski topology, then R is
 canonically isomorphic to the product of its localizations at the (finitely many) maximal ideals. -/
 @[stacks 00JA
 "See also `PrimeSpectrum.discreteTopology_iff_finite_isMaximal_and_sInf_le_nilradical`."]
-def _root_.RingHom.toLocalizationIsMaximalEquiv : R ≃+*
-    Π I : {I : Ideal R // I.IsMaximal}, haveI : I.1.IsMaximal := I.2; Localization.AtPrime I.1 :=
-  .ofBijective _ ⟨RingHom.toLocalizationIsMaximal_injective R,
-    RingHom.toLocalizationIsMaximal_surjective_of_discreteTopology R⟩
+def MaximalSpectrum.toPiLocalizationEquivtoLocalizationEquiv :
+    R ≃+* MaximalSpectrum.PiLocalization R :=
+  .ofBijective _ ⟨MaximalSpectrum.toPiLocalization_injective R,
+    maximalSpectrumToPiLocalization_surjective_of_discreteTopology R⟩
 
-end BasicOpen
+theorem discreteTopology_iff_toPiLocalization_surjective {R} [CommSemiring R] :
+    DiscreteTopology (PrimeSpectrum R) ↔ Function.Surjective (toPiLocalization R) :=
+  ⟨fun _ ↦ toPiLocalization_surjective_of_discreteTopology _,
+    discreteTopology_of_toLocalization_surjective⟩
+
+theorem discreteTopology_iff_toPiLocalization_bijective {R} [CommSemiring R] :
+    DiscreteTopology (PrimeSpectrum R) ↔ Function.Bijective (toPiLocalization R) :=
+  discreteTopology_iff_toPiLocalization_surjective.trans
+    (and_iff_right <| toPiLocalization_injective _).symm
+
+end DiscreteTopology
 
 section Order
 
@@ -684,8 +709,8 @@ lemma closure_range_comap :
 
 lemma denseRange_comap_iff_ker_le_nilRadical :
     DenseRange (comap f) ↔ RingHom.ker f ≤ nilradical R := by
-  rw [denseRange_iff_closure_range, closure_range_comap, ← Set.top_eq_univ, zeroLocus_eq_top_iff]
-  rfl
+  rw [denseRange_iff_closure_range, closure_range_comap, ← Set.top_eq_univ, zeroLocus_eq_top_iff,
+    SetLike.coe_subset_coe]
 
 @[stacks 00FL]
 lemma denseRange_comap_iff_minimalPrimes :
@@ -774,7 +799,7 @@ lemma basicOpen_injOn_isIdempotentElem :
 @[stacks 00EE]
 lemma existsUnique_idempotent_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R)}
     (hs : IsClopen s) : ∃! e : R, IsIdempotentElem e ∧ s = basicOpen e := by
-  refine exists_unique_of_exists_of_unique ?_ ?_; swap
+  refine existsUnique_of_exists_of_unique ?_ ?_; swap
   · rintro x y ⟨hx, rfl⟩ ⟨hy, eq⟩
     exact basicOpen_injOn_isIdempotentElem hx hy (SetLike.ext' eq)
   cases subsingleton_or_nontrivial R

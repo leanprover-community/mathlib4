@@ -135,7 +135,7 @@ def mapTriangleIso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ
   NatIso.ofComponents (fun T =>
     Triangle.isoMk _ _ (e.app _) (e.app _) (e.app _) (by simp) (by simp) (by
       dsimp
-      simp only [assoc, NatTrans.CommShift.comm_app e.hom (1 : ℤ) T.obj₁,
+      simp only [assoc, NatTrans.shift_app_comm e.hom (1 : ℤ) T.obj₁,
         NatTrans.naturality_assoc])) (by aesop_cat)
 
 end Additive
@@ -194,7 +194,7 @@ noncomputable instance [F.IsTriangulated] :
       comm₃ := by simp }
   exact isIso₂_of_isIso₁₃ φ (F.map_distinguished _ (binaryProductTriangle_distinguished X₁ X₃))
     (binaryProductTriangle_distinguished _ _)
-    (by dsimp; infer_instance) (by dsimp; infer_instance)
+    (by dsimp [φ]; infer_instance) (by dsimp [φ]; infer_instance)
 
 instance (priority := 100) [F.IsTriangulated] : F.Additive :=
   F.additive_of_preserves_binary_products

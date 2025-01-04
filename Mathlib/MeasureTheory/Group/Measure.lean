@@ -5,6 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.MeasureTheory.Group.Action
 import Mathlib.MeasureTheory.Measure.Prod
+import Mathlib.Topology.Algebra.Module.Equiv
 import Mathlib.Topology.ContinuousMap.CocompactMap
 
 /-!
@@ -603,13 +604,10 @@ theorem measure_univ_of_isMulLeftInvariant [WeaklyLocallyCompactSpace G] [Noncom
 @[to_additive]
 lemma _root_.MeasurableSet.mul_closure_one_eq {s : Set G} (hs : MeasurableSet s) :
     s * (closure {1} : Set G) = s := by
-  apply MeasurableSet.induction_on_open (C := fun t ↦ t • (closure {1} : Set G) = t) ?_ ?_ ?_ hs
-  · intro U hU
-    exact hU.mul_closure_one_eq
-  · rintro t - ht
-    exact compl_mul_closure_one_eq_iff.2 ht
-  · rintro f - - h''f
-    simp only [iUnion_smul, h''f]
+  induction s, hs using MeasurableSet.induction_on_open with
+  | isOpen U hU => exact hU.mul_closure_one_eq
+  | compl t _ iht => exact compl_mul_closure_one_eq_iff.2 iht
+  | iUnion f _ _ ihf => simp_rw [iUnion_mul f, ihf]
 
 @[to_additive (attr := simp)]
 lemma measure_mul_closure_one (s : Set G) (μ : Measure G) :

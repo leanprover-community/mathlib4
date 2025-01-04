@@ -359,10 +359,12 @@ attribute [local instance] hasLimitsOfShape_op_of_hasColimitsOfShape
 
 /-- If `C` has colimits, we can construct limits for `Cᵒᵖ`.
 -/
-instance hasLimits_op_of_hasColimits [HasColimits C] : HasLimits Cᵒᵖ :=
+instance hasLimits_op_of_hasColimits [HasColimitsOfSize.{v₂, u₂} C] :
+    HasLimitsOfSize.{v₂, u₂} Cᵒᵖ :=
   ⟨fun _ => inferInstance⟩
 
-theorem hasLimits_of_hasColimits_op [HasColimits Cᵒᵖ] : HasLimits C :=
+theorem hasLimits_of_hasColimits_op [HasColimitsOfSize.{v₂, u₂} Cᵒᵖ] :
+    HasLimitsOfSize.{v₂, u₂} C :=
   { has_limits_of_shape := fun _ _ => hasLimitsOfShape_of_hasColimitsOfShape_op }
 
 instance has_cofiltered_limits_op_of_has_filtered_colimits [HasFilteredColimitsOfSize.{v₂, u₂} C] :
@@ -485,10 +487,12 @@ theorem hasColimitsOfShape_of_hasLimitsOfShape_op [HasLimitsOfShape Jᵒᵖ Cᵒ
 
 /-- If `C` has limits, we can construct colimits for `Cᵒᵖ`.
 -/
-instance hasColimits_op_of_hasLimits [HasLimits C] : HasColimits Cᵒᵖ :=
+instance hasColimits_op_of_hasLimits [HasLimitsOfSize.{v₂, u₂} C] :
+    HasColimitsOfSize.{v₂, u₂} Cᵒᵖ :=
   ⟨fun _ => inferInstance⟩
 
-theorem hasColimits_of_hasLimits_op [HasLimits Cᵒᵖ] : HasColimits C :=
+theorem hasColimits_of_hasLimits_op [HasLimitsOfSize.{v₂, u₂} Cᵒᵖ] :
+    HasColimitsOfSize.{v₂, u₂} C :=
   { has_colimits_of_shape := fun _ _ => hasColimitsOfShape_of_hasLimitsOfShape_op }
 
 instance has_filtered_colimits_op_of_has_cofiltered_limits [HasCofilteredLimitsOfSize.{v₂, u₂} C] :
@@ -570,7 +574,8 @@ instance : HasProduct (op <| Z ·) := hasLimitOfIso
 def Cofan.op (c : Cofan Z) : Fan (op <| Z ·) := Fan.mk _ (fun a ↦ (c.inj a).op)
 
 /-- If a `Cofan` is colimit, then its opposite is limit. -/
-def Cofan.IsColimit.op {c : Cofan Z} (hc : IsColimit c) : IsLimit c.op := by
+-- noncomputability is just for performance (compilation takes a while)
+noncomputable def Cofan.IsColimit.op {c : Cofan Z} (hc : IsColimit c) : IsLimit c.op := by
   let e : Discrete.functor (Opposite.op <| Z ·) ≅ (Discrete.opposite α).inverse ⋙
     (Discrete.functor Z).op := Discrete.natIso (fun _ ↦ Iso.refl _)
   refine IsLimit.ofIsoLimit ((IsLimit.postcomposeInvEquiv e _).2
@@ -666,7 +671,8 @@ instance : HasCoproduct (op <| Z ·) := hasColimitOfIso
 def Fan.op (f : Fan Z) : Cofan (op <| Z ·) := Cofan.mk _ (fun a ↦ (f.proj a).op)
 
 /-- If a `Fan` is limit, then its opposite is colimit. -/
-def Fan.IsLimit.op {f : Fan Z} (hf : IsLimit f) : IsColimit f.op := by
+-- noncomputability is just for performance (compilation takes a while)
+noncomputable def Fan.IsLimit.op {f : Fan Z} (hf : IsLimit f) : IsColimit f.op := by
   let e : Discrete.functor (Opposite.op <| Z ·) ≅ (Discrete.opposite α).inverse ⋙
     (Discrete.functor Z).op := Discrete.natIso (fun _ ↦ Iso.refl _)
   refine IsColimit.ofIsoColimit ((IsColimit.precomposeHomEquiv e _).2
@@ -950,6 +956,7 @@ def unopOp {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g)
 
 /-- A pushout cone is a colimit cocone if and only if the corresponding pullback cone
 in the opposite category is a limit cone. -/
+noncomputable -- just for performance; compilation takes several seconds
 def isColimitEquivIsLimitOp {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     IsColimit c ≃ IsLimit c.op := by
   apply equivOfSubsingletonOfSubsingleton
@@ -963,6 +970,7 @@ def isColimitEquivIsLimitOp {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : Pushout
 
 /-- A pushout cone is a colimit cocone in `Cᵒᵖ` if and only if the corresponding pullback cone
 in `C` is a limit cone. -/
+noncomputable -- just for performance; compilation takes several seconds
 def isColimitEquivIsLimitUnop {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
     IsColimit c ≃ IsLimit c.unop := by
   apply equivOfSubsingletonOfSubsingleton

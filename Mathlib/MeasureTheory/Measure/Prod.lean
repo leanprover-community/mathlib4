@@ -70,23 +70,20 @@ variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : Measure γ}
   a measurable function. `measurable_measure_prod_mk_left` is strictly more general. -/
 theorem measurable_measure_prod_mk_left_finite [IsFiniteMeasure ν] {s : Set (α × β)}
     (hs : MeasurableSet s) : Measurable fun x => ν (Prod.mk x ⁻¹' s) := by
-  classical
-  refine induction_on_inter (C := fun s => Measurable fun x => ν (Prod.mk x ⁻¹' s))
-    generateFrom_prod.symm isPiSystem_prod ?_ ?_ ?_ ?_ hs
-  · simp
-  · rintro _ ⟨s, hs, t, _, rfl⟩
-    simp only [mk_preimage_prod_right_eq_if, measure_if]
-    exact measurable_const.indicator hs
-  · intro t ht h2t
-    simp_rw [preimage_compl, measure_compl (measurable_prod_mk_left ht) (measure_ne_top ν _)]
-    exact h2t.const_sub _
-  · intro f h1f h2f h3f
-    simp_rw [preimage_iUnion]
-    have : ∀ b, ν (⋃ i, Prod.mk b ⁻¹' f i) = ∑' i, ν (Prod.mk b ⁻¹' f i) := fun b =>
-      measure_iUnion (fun i j hij => Disjoint.preimage _ (h1f hij)) fun i =>
-        measurable_prod_mk_left (h2f i)
-    simp_rw [this]
-    apply Measurable.ennreal_tsum h3f
+  induction s, hs using induction_on_inter generateFrom_prod.symm isPiSystem_prod with
+  | empty => simp
+  | basic s hs =>
+    obtain ⟨s, hs, t, -, rfl⟩ := hs
+    classical simpa only [mk_preimage_prod_right_eq_if, measure_if]
+      using measurable_const.indicator hs
+  | compl s hs ihs =>
+    simp_rw [preimage_compl, measure_compl (measurable_prod_mk_left hs) (measure_ne_top ν _)]
+    exact ihs.const_sub _
+  | iUnion f hfd hfm ihf =>
+    have (a : α) : ν (Prod.mk a ⁻¹' ⋃ i, f i) = ∑' i, ν (Prod.mk a ⁻¹' f i) := by
+      rw [preimage_iUnion, measure_iUnion]
+      exacts [hfd.mono fun _ _ ↦ .preimage _, fun i ↦ measurable_prod_mk_left (hfm i)]
+    simpa only [this] using Measurable.ennreal_tsum ihf
 
 /-- If `ν` is an s-finite measure, and `s ⊆ α × β` is measurable, then `x ↦ ν { y | (x, y) ∈ s }`
   is a measurable function. -/
@@ -194,7 +191,7 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
       μ.prod ν (s ×ˢ t) ≤ μ.prod ν (S ×ˢ T) := by gcongr <;> apply subset_toMeasurable
       _ = μ S * ν T := by
         rw [prod_apply hSTm]
-        simp_rw [mk_preimage_prod_right_eq_if, measure_if,
+        simp_rw [S, mk_preimage_prod_right_eq_if, measure_if,
           lintegral_indicator (measurableSet_toMeasurable _ _), lintegral_const,
           restrict_apply_univ, mul_comm]
       _ = μ s * ν t := by rw [measure_toMeasurable, measure_toMeasurable]
@@ -506,7 +503,7 @@ theorem prod_apply_symm {s : Set (α × β)} (hs : MeasurableSet s) :
 theorem ae_ae_comm {p : α → β → Prop} (h : MeasurableSet {x : α × β | p x.1 x.2}) :
     (∀ᵐ x ∂μ, ∀ᵐ y ∂ν, p x y) ↔ ∀ᵐ y ∂ν, ∀ᵐ x ∂μ, p x y := calc
   _ ↔ ∀ᵐ x ∂μ.prod ν, p x.1 x.2 := .symm <| ae_prod_iff_ae_ae h
-  _ ↔ ∀ᵐ x ∂ν.prod μ, p x.2 x.1 := by rw [← prod_swap, ae_map_iff (by fun_prop) h]; rfl
+  _ ↔ ∀ᵐ x ∂ν.prod μ, p x.2 x.1 := by rw [← prod_swap, ae_map_iff (by fun_prop) h]; simp
   _ ↔ ∀ᵐ y ∂ν, ∀ᵐ x ∂μ, p x y := ae_prod_iff_ae_ae <| measurable_swap h
 
 /-- If `s ×ˢ t` is a null measurable set and `ν t ≠ 0`, then `s` is a null measurable set. -/
