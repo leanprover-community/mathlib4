@@ -351,7 +351,7 @@ lemma orbitRel_of_subMul (p : SubMulAction R M) :
 /-- Stabilizers in group SubMulAction coincide with stabilizers in the ambient space -/
 theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
     MulAction.stabilizer R m = MulAction.stabilizer R (m : M) := by
-  rw [← Subgroup.toSubmonoid_eq]
+  rw [← Subgroup.toSubmonoid_inj]
   exact stabilizer_of_subMul.submonoid m
 
 end MulActionGroup

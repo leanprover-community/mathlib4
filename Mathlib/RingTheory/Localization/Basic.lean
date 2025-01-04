@@ -93,12 +93,12 @@ theorem mapPiEvalRingHom_bijective : Bijective (mapPiEvalRingHom S) := by
     simp_rw [map_mk'] at eq
     rw [IsLocalization.eq] at eq ⊢
     obtain ⟨s, hs⟩ := eq
-    refine ⟨⟨update 0 i s, by apply update_same i s.1 0 ▸ s.2⟩, funext fun j ↦ ?_⟩
+    refine ⟨⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩, funext fun j ↦ ?_⟩
     obtain rfl | ne := eq_or_ne j i
     · simpa using hs
-    · simp [update_noteq ne]
+    · simp [update_of_ne ne]
   · obtain ⟨r, s, rfl⟩ := mk'_surjective S x
-    exact ⟨mk' (M := T) _ (update 0 i r) ⟨update 0 i s, by apply update_same i s.1 0 ▸ s.2⟩,
+    exact ⟨mk' (M := T) _ (update 0 i r) ⟨update 0 i s, by apply update_self i s.1 0 ▸ s.2⟩,
       by simp [map_mk']⟩
 
 end Localization

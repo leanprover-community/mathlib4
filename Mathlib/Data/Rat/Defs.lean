@@ -51,9 +51,8 @@ theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
   rfl
 
 -- TODO: Replace `Rat.ofNat_num`/`Rat.ofNat_den` in Batteries
--- See note [no_index around OfNat.ofNat]
-@[simp] lemma num_ofNat (n : ℕ) : num (no_index (OfNat.ofNat n)) = OfNat.ofNat n := rfl
-@[simp] lemma den_ofNat (n : ℕ) : den (no_index (OfNat.ofNat n)) = 1 := rfl
+@[simp] lemma num_ofNat (n : ℕ) : num ofNat(n) = ofNat(n) := rfl
+@[simp] lemma den_ofNat (n : ℕ) : den ofNat(n) = 1 := rfl
 
 @[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
 
@@ -386,11 +385,11 @@ theorem den_neg_eq_den (q : ℚ) : (-q).den = q.den :=
 theorem num_neg_eq_neg_num (q : ℚ) : (-q).num = -q.num :=
   rfl
 
-@[simp]
+-- Not `@[simp]` as `num_ofNat` is stronger.
 theorem num_zero : Rat.num 0 = 0 :=
   rfl
 
-@[simp]
+-- Not `@[simp]` as `den_ofNat` is stronger.
 theorem den_zero : Rat.den 0 = 1 :=
   rfl
 
@@ -399,7 +398,7 @@ lemma zero_of_num_zero {q : ℚ} (hq : q.num = 0) : q = 0 := by simpa [hq] using
 theorem zero_iff_num_zero {q : ℚ} : q = 0 ↔ q.num = 0 :=
   ⟨fun _ => by simp [*], zero_of_num_zero⟩
 
-@[simp]
+-- `Not `@[simp]` as `num_ofNat` is stronger.
 theorem num_one : (1 : ℚ).num = 1 :=
   rfl
 
