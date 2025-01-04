@@ -170,13 +170,11 @@ theorem iSup_succ [SuccOrder α] (x : α) : ⨆ a : Iio x, succ a.1 = x := by
     use succ x
     rintro _ ⟨a, rfl⟩
     exact succ_le_succ a.2.le
-  apply le_antisymm
+  apply le_antisymm _ (le_of_forall_lt fun y hy ↦ ?_)
   · rw [ciSup_le_iff' H]
     exact fun a ↦ succ_le_of_lt a.2
-  · apply le_of_forall_lt fun y hy ↦ ?_
-    rw [lt_ciSup_iff' H]
-    use ⟨y, hy⟩
-    exact lt_succ_of_not_isMax hy.not_isMax
+  · rw [lt_ciSup_iff' H]
+    exact ⟨⟨y, hy⟩, lt_succ_of_not_isMax hy.not_isMax⟩
 
 end ConditionallyCompleteLinearOrderBot
 
