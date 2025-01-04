@@ -1,35 +1,25 @@
 /-
 Copyright (c) 2019 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kim Morrison
+Authors: Kim Morrison, Sophie Morel
 -/
 import Mathlib.Algebra.Category.Grp.Preadditive
-import Mathlib.CategoryTheory.Limits.Shapes.Kernels
-import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
-import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
-import Mathlib.GroupTheory.QuotientGroup.Defs
-import Mathlib.Data.DFinsupp.BigOperators
 import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+import Mathlib.Data.DFinsupp.BigOperators
+import Mathlib.GroupTheory.QuotientGroup.Defs
 /-!
 # The category of additive commutative groups has all colimits.
 
-This file uses a "pre-automated" approach, just as for `Algebra.Category.MonCat.Colimits`.
-It is a very uniform approach, that conceivably could be synthesised directly
-by a tactic that analyses the shape of `AddCommGroup` and `MonoidHom`.
+This file constructs colimits in the categpry of additive commutative groups, as
+quotients of finitely supported functions.
 
-TODO:
-In fact, in `AddCommGrp` there is a much nicer model of colimits as quotients
-of finitely supported functions, and we really should implement this as well (or instead).
 -/
-
 
 universe w u v
 
 open CategoryTheory Limits
 
--- [ROBOT VOICE]:
--- You should pretend for now that this file was automatically generated.
--- It follows the same template as colimits in Mon.
 namespace AddCommGrp
 
 variable {J : Type u} [Category.{v} J] (F : J ⥤ AddCommGrp.{w})
