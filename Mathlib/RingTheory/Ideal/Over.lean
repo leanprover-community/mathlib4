@@ -482,18 +482,18 @@ theorem LiesOver.of_eq_comap [Q.LiesOver p] {F : Type*} [FunLike F B C]
     exact (over_def Q p).trans <|
       congrFun (congrFun (congrArg comap ((f : B →ₐ[A] C).comp_algebraMap.symm)) _) Q
 
-theorem LiesOver.of_eq_map_equiv [P.LiesOver p] {E : Type*} [EquivLike E B C]
+theorem LiesOver.of_eq_map_equiv [P.LiesOver p] {E : Type*} {_ : EquivLike E B C}
     [AlgEquivClass E A B C] (σ : E) (h : Q = P.map σ) : Q.LiesOver p := by
   rw [← show _ = P.map σ from comap_symm (σ : B ≃+* C)] at h
   exact of_eq_comap p (σ : B ≃ₐ[A] C).symm h
 
 variable (P) (Q)
 
-instance comap_liesOver [Q.LiesOver p] {F : Type*} [FunLike F B C] [AlgHomClass F A B C]
+instance comap_liesOver [Q.LiesOver p] {F : Type*} {_ : FunLike F B C} [AlgHomClass F A B C]
     (f : F) : (Q.comap f).LiesOver p :=
   LiesOver.of_eq_comap p f rfl
 
-instance map_equiv_liesOver [P.LiesOver p] {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C]
+instance map_equiv_liesOver [P.LiesOver p] {E : Type*} {_ : EquivLike E B C} [AlgEquivClass E A B C]
     (σ : E) : (P.map σ).LiesOver p :=
   LiesOver.of_eq_map_equiv p σ rfl
 
@@ -589,7 +589,7 @@ theorem nontrivial_of_liesOver_of_isPrime [hp : p.IsPrime] : Nontrivial (B ⧸ P
 
 section algEquiv
 
-variable {P} {E : Type*} [EquivLike E B C] [AlgEquivClass E A B C] (σ : E)
+variable {P} {E : Type*} {_ : EquivLike E B C} [AlgEquivClass E A B C] (σ : E)
 
 /-- An `A ⧸ p`-algebra isomorphism between `B ⧸ P` and `C ⧸ Q` induced by an `A`-algebra
   isomorphism between `B` and `C`, where `Q = σ P`. -/

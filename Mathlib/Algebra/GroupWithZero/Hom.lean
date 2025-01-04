@@ -227,7 +227,7 @@ end CommMonoidWithZero
 /-! ### Equivalences -/
 
 namespace MulEquivClass
-variable {F α β : Type*} [EquivLike F α β]
+variable {F α β : Type*} {_ : EquivLike F α β}
 
 -- See note [lower instance priority]
 instance (priority := 100) toZeroHomClass [MulZeroClass α] [MulZeroClass β] [MulEquivClass F α β] :

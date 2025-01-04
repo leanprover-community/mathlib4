@@ -45,27 +45,26 @@ class AlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R] [Semir
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 
 namespace AlgEquivClass
+variable (F R A B : Type*) {_ : CommSemiring R} {_ : Semiring A}
+  {_ : Semiring B} {_ : Algebra R A} {_ : Algebra R B} {_ : EquivLike F A B}
+  [h : AlgEquivClass F R A B]
 
 -- See note [lower instance priority]
-instance (priority := 100) toAlgHomClass (F R A B : Type*) [CommSemiring R] [Semiring A]
-    [Semiring B] [Algebra R A] [Algebra R B] [EquivLike F A B] [h : AlgEquivClass F R A B] :
-    AlgHomClass F R A B :=
+instance (priority := 100) toAlgHomClass : AlgHomClass F R A B :=
   { h with }
 
-instance (priority := 100) toLinearEquivClass (F R A B : Type*) [CommSemiring R]
-    [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [EquivLike F A B] [h : AlgEquivClass F R A B] : LinearEquivClass F R A B :=
+instance (priority := 100) toLinearEquivClass : LinearEquivClass F R A B :=
   { h with map_smulₛₗ := fun f => map_smulₛₗ f }
 
 /-- Turn an element of a type `F` satisfying `AlgEquivClass F R A B` into an actual `AlgEquiv`.
 This is declared as the default coercion from `F` to `A ≃ₐ[R] B`. -/
 @[coe]
-def toAlgEquiv {F R A B : Type*} [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A]
-    [Algebra R B] [EquivLike F A B] [AlgEquivClass F R A B] (f : F) : A ≃ₐ[R] B :=
+def toAlgEquiv {F R A B : Type*} {_ : CommSemiring R} {_ : Semiring A}
+  {_ : Semiring B} {_ : Algebra R A} {_ : Algebra R B} {_ : EquivLike F A B}
+  [h : AlgEquivClass F R A B] (f : F) : A ≃ₐ[R] B :=
   { (f : A ≃ B), (f : A ≃+* B) with commutes' := commutes f }
 
-instance (F R A B : Type*) [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-    [EquivLike F A B] [AlgEquivClass F R A B] : CoeTC F (A ≃ₐ[R] B) :=
+instance : CoeTC F (A ≃ₐ[R] B) :=
   ⟨toAlgEquiv⟩
 end AlgEquivClass
 

@@ -46,17 +46,17 @@ class CoalgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
 
 namespace CoalgEquivClass
 
-variable {F R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
-  [Module R A] [Module R B] [CoalgebraStruct R A] [CoalgebraStruct R B]
+variable {F R A B : Type*} {_ : CommSemiring R} {_ : AddCommMonoid A} {_ : AddCommMonoid B}
+  {_ : Module R A} {_ : Module R B} {_ : CoalgebraStruct R A} {_ : CoalgebraStruct R B}
+  {_ : EquivLike F A B} [CoalgEquivClass F R A B]
 
 /-- Reinterpret an element of a type of coalgebra equivalences as a coalgebra equivalence. -/
 @[coe]
-def toCoalgEquiv [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) : A ≃ₗc[R] B :=
+def toCoalgEquiv (f : F) : A ≃ₗc[R] B :=
   { (f : A →ₗc[R] B), (f : A ≃ₗ[R] B) with }
 
 /-- Reinterpret an element of a type of coalgebra equivalences as a coalgebra equivalence. -/
-instance instCoeToCoalgEquiv
-    [EquivLike F A B] [CoalgEquivClass F R A B] : CoeHead F (A ≃ₗc[R] B) where
+instance instCoeToCoalgEquiv : CoeHead F (A ≃ₗc[R] B) where
   coe f := toCoalgEquiv f
 
 end CoalgEquivClass

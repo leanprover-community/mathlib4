@@ -75,7 +75,7 @@ class BotHomClass (F : Type*) (α β : outParam Type*) [Bot α] [Bot β] [FunLik
 /-- `BoundedOrderHomClass F α β` states that `F` is a type of bounded order morphisms.
 
 You should extend this class when you extend `BoundedOrderHom`. -/
-class BoundedOrderHomClass (F α β : Type*) [LE α] [LE β]
+class BoundedOrderHomClass (F : Type*) (α β : outParam Type*) [LE α] [LE β]
   [BoundedOrder α] [BoundedOrder β] [FunLike F α β]
   extends RelHomClass F ((· ≤ ·) : α → α → Prop) ((· ≤ ·) : β → β → Prop) : Prop where
   /-- Morphisms preserve the top element. The preferred spelling is `_root_.map_top`. -/
@@ -93,37 +93,37 @@ attribute [simp] map_top map_bot
 
 section Hom
 
-variable [FunLike F α β]
+variable {_ : LE α} {_ : LE β} {_ : BoundedOrder α} {_ : BoundedOrder β} {_ : FunLike F α β}
 
 -- See note [lower instance priority]
-instance (priority := 100) BoundedOrderHomClass.toTopHomClass [LE α] [LE β]
-    [BoundedOrder α] [BoundedOrder β] [BoundedOrderHomClass F α β] : TopHomClass F α β :=
+instance (priority := 100) BoundedOrderHomClass.toTopHomClass
+    [BoundedOrderHomClass F α β] : TopHomClass F α β :=
   { ‹BoundedOrderHomClass F α β› with }
 
 -- See note [lower instance priority]
-instance (priority := 100) BoundedOrderHomClass.toBotHomClass [LE α] [LE β]
-    [BoundedOrder α] [BoundedOrder β] [BoundedOrderHomClass F α β] : BotHomClass F α β :=
+instance (priority := 100) BoundedOrderHomClass.toBotHomClass
+    [BoundedOrderHomClass F α β] : BotHomClass F α β :=
   { ‹BoundedOrderHomClass F α β› with }
 
 end Hom
 
 section Equiv
 
-variable [EquivLike F α β]
+variable {_ : EquivLike F α β}
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toTopHomClass [LE α] [OrderTop α]
+instance (priority := 100) OrderIsoClass.toTopHomClass {_ : LE α} [OrderTop α]
     [PartialOrder β] [OrderTop β] [OrderIsoClass F α β] : TopHomClass F α β :=
   { show OrderHomClass F α β from inferInstance with
     map_top := fun f => top_le_iff.1 <| (map_inv_le_iff f).1 le_top }
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toBotHomClass [LE α] [OrderBot α]
+instance (priority := 100) OrderIsoClass.toBotHomClass {_ : LE α} [OrderBot α]
     [PartialOrder β] [OrderBot β] [OrderIsoClass F α β] : BotHomClass F α β :=
   { map_bot := fun f => le_bot_iff.1 <| (le_map_inv_iff f).1 bot_le }
 
 -- See note [lower instance priority]
-instance (priority := 100) OrderIsoClass.toBoundedOrderHomClass [LE α] [BoundedOrder α]
+instance (priority := 100) OrderIsoClass.toBoundedOrderHomClass {_ : LE α} [BoundedOrder α]
     [PartialOrder β] [BoundedOrder β] [OrderIsoClass F α β] : BoundedOrderHomClass F α β :=
   { show OrderHomClass F α β from inferInstance, OrderIsoClass.toTopHomClass,
     OrderIsoClass.toBotHomClass with }
@@ -132,7 +132,7 @@ instance (priority := 100) OrderIsoClass.toBoundedOrderHomClass [LE α] [Bounded
 -- `OrderTop` parameters instance implicit in `OrderIsoClass.toTopHomClass`,
 -- and they apparently can't be figured out through unification.
 @[simp]
-theorem map_eq_top_iff [LE α] [OrderTop α] [PartialOrder β] [OrderTop β] [OrderIsoClass F α β]
+theorem map_eq_top_iff {_ : LE α} [OrderTop α] [PartialOrder β] [OrderTop β] [OrderIsoClass F α β]
     (f : F) {a : α} : f a = ⊤ ↔ a = ⊤ := by
   letI : TopHomClass F α β := OrderIsoClass.toTopHomClass
   rw [← map_top f, (EquivLike.injective f).eq_iff]
@@ -141,31 +141,31 @@ theorem map_eq_top_iff [LE α] [OrderTop α] [PartialOrder β] [OrderTop β] [Or
 -- `OrderBot` parameters instance implicit in `OrderIsoClass.toBotHomClass`,
 -- and they apparently can't be figured out through unification.
 @[simp]
-theorem map_eq_bot_iff [LE α] [OrderBot α] [PartialOrder β] [OrderBot β] [OrderIsoClass F α β]
+theorem map_eq_bot_iff {_ : LE α} [OrderBot α] [PartialOrder β] [OrderBot β] [OrderIsoClass F α β]
     (f : F) {a : α} : f a = ⊥ ↔ a = ⊥ := by
   letI : BotHomClass F α β := OrderIsoClass.toBotHomClass
   rw [← map_bot f, (EquivLike.injective f).eq_iff]
 
 end Equiv
 
-variable [FunLike F α β]
+variable {_ : FunLike F α β}
 
 /-- Turn an element of a type `F` satisfying `TopHomClass F α β` into an actual
 `TopHom`. This is declared as the default coercion from `F` to `TopHom α β`. -/
 @[coe]
-def TopHomClass.toTopHom [Top α] [Top β] [TopHomClass F α β] (f : F) : TopHom α β :=
+def TopHomClass.toTopHom {_ : Top α} {_ : Top β} [TopHomClass F α β] (f : F) : TopHom α β :=
   ⟨f, map_top f⟩
 
-instance [Top α] [Top β] [TopHomClass F α β] : CoeTC F (TopHom α β) :=
+instance {_ : Top α} {_ : Top β} [TopHomClass F α β] : CoeTC F (TopHom α β) :=
   ⟨TopHomClass.toTopHom⟩
 
 /-- Turn an element of a type `F` satisfying `BotHomClass F α β` into an actual
 `BotHom`. This is declared as the default coercion from `F` to `BotHom α β`. -/
 @[coe]
-def BotHomClass.toBotHom [Bot α] [Bot β] [BotHomClass F α β] (f : F) : BotHom α β :=
+def BotHomClass.toBotHom {_ : Bot α} {_ : Bot β} [BotHomClass F α β] (f : F) : BotHom α β :=
   ⟨f, map_bot f⟩
 
-instance [Bot α] [Bot β] [BotHomClass F α β] : CoeTC F (BotHom α β) :=
+instance {_ : Bot α} {_ : Bot β} [BotHomClass F α β] : CoeTC F (BotHom α β) :=
   ⟨BotHomClass.toBotHom⟩
 
 /-- Turn an element of a type `F` satisfying `BoundedOrderHomClass F α β` into an actual
