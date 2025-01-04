@@ -61,7 +61,7 @@ lemma _root_.PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective
     (hr₀ : α.app _ r₀ = α.app _ r₀')
     (hm₀ : φ.app _ m₀ = φ.app _ m₀') :
     φ.app _ (r₀ • m₀) = φ.app _ (r₀' • m₀') := by
-  apply hA _ (Presheaf.equalizerSieve (D := RingCat) r₀ r₀' ⊓
+  apply hA _ (Presheaf.equalizerSieve r₀ r₀' ⊓
       Presheaf.equalizerSieve (F := M₀.presheaf) m₀ m₀')
   · apply J.intersection_covering
     · exact Presheaf.equalizerSieve_mem J α _ _ hr₀
