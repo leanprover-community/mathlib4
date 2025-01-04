@@ -34,6 +34,10 @@ the main constructions deal with continuous ring morphisms.
 TODO: Generalise the results here from the concrete `Completion` to any `AbstractCompletion`.
 -/
 
+open Set Filter TopologicalSpace AddCommGroup
+
+open scoped Classical
+
 noncomputable section
 
 universe u
@@ -41,35 +45,15 @@ namespace UniformSpace.Completion
 
 open IsDenseInducing UniformSpace Function
 
-section one_and_mul
-variable (α : Type*) [Ring α] [UniformSpace α]
-
-instance one : One (Completion α) :=
-  ⟨(1 : α)⟩
-
-instance mul : Mul (Completion α) :=
-  ⟨curry <| (isDenseInducing_coe.prodMap isDenseInducing_coe).extend ((↑) ∘ uncurry (· * ·))⟩
-
-@[norm_cast]
-theorem coe_one : ((1 : α) : Completion α) = 1 :=
-  rfl
-
-end one_and_mul
-
 variable {α : Type*} [Ring α] [UniformSpace α] [TopologicalRing α]
-
-@[norm_cast]
-theorem coe_mul (a b : α) : ((a * b : α) : Completion α) = a * b :=
-  ((isDenseInducing_coe.prodMap isDenseInducing_coe).extend_eq
-      ((continuous_coe α).comp (@continuous_mul α _ _ _)) (a, b)).symm
 
 variable [UniformAddGroup α]
 
 instance : ContinuousMul (Completion α) where
   continuous_mul := by
-    let m := (AddMonoidHom.mul : α →+ α →+ α).compr₂ toCompl
+    let m := (AddMonoidHom.mul : α →+ α →+ α).compr₂ toComplAddHom
     have : Continuous fun p : α × α => m p.1 p.2 := (continuous_coe α).comp continuous_mul
-    have di : IsDenseInducing (toCompl : α → Completion α) := isDenseInducing_coe
+    have di : IsDenseInducing (toComplAddHom : α → Completion α) := isDenseInducing_coe
     exact (di.extend_Z_bilin di this :)
 
 @[deprecated _root_.continuous_mul (since := "2024-12-21")]
@@ -132,7 +116,7 @@ instance ring : Ring (Completion α) :=
 def coeRingHom : α →+* Completion α where
   toFun := (↑)
   map_one' := coe_one α
-  map_zero' := coe_zero
+  map_zero' := coe_zero α
   map_add' := coe_add
   map_mul' := coe_mul
 
