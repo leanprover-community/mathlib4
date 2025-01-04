@@ -693,6 +693,18 @@ theorem iteratedFDerivWithin_subset {n : ℕ} (st : s ⊆ t) (hs : UniqueDiffOn 
     iteratedFDerivWithin 𝕜 n f s x = iteratedFDerivWithin 𝕜 n f t x :=
   (((h.ftaylorSeriesWithin ht).mono st).eq_iteratedFDerivWithin_of_uniqueDiffOn le_rfl hs hx).symm
 
+theorem ContDiffWithinAt.eventually_hasFTaylorSeriesUpToOn {f : E → F} {s : Set E} {a : E}
+    (h : ContDiffWithinAt 𝕜 n f s a) (hs : UniqueDiffOn 𝕜 s) (ha : a ∈ s) {m : ℕ} (hm : m ≤ n) :
+    ∀ᶠ t in (𝓝[s] a).smallSets, HasFTaylorSeriesUpToOn m f (ftaylorSeriesWithin 𝕜 f s) t := by
+  rcases h.contDiffOn' hm (by simp) with ⟨U, hUo, haU, hfU⟩
+  have : ∀ᶠ t in (𝓝[s] a).smallSets, t ⊆ s ∩ U := by
+    rw [eventually_smallSets_subset]
+    exact inter_mem_nhdsWithin _ <| hUo.mem_nhds haU
+  refine this.mono fun t ht ↦ .mono ?_ ht
+  rw [insert_eq_of_mem ha] at hfU
+  refine (hfU.ftaylorSeriesWithin (hs.inter hUo)).congr_series fun k hk x hx ↦ ?_
+  exact iteratedFDerivWithin_inter_open hUo hx.2
+
 /-- On a set with unique differentiability, an analytic function is automatically `C^ω`, as its
 successive derivatives are also analytic. This does not require completeness of the space. See
 also `AnalyticOn.contDiffOn_of_completeSpace`.-/
