@@ -20,13 +20,13 @@ namespace Mathlib.Meta.NormNum
 Asserts that `l` is a sorted list of primes, lower bounded by a prime `p`, which multiplies to
 `n`. -/
 def FactorsHelper (n p : ℕ) (l : List ℕ) : Prop :=
-  p.Prime → List.Chain (· ≤ ·) p l ∧ (∀ a ∈ l, Nat.Prime a) ∧ List.prod l = n
+  p.Prime → l.Chain (· ≤ ·) p ∧ (∀ a ∈ l, Nat.Prime a) ∧ l.prod = n
 
 /-! The argument explicitness in this section is chosen to make only the numerals in the factors
 list appear in the proof term. -/
 
 theorem FactorsHelper.nil {a : ℕ} : FactorsHelper 1 a [] := fun _ =>
-  ⟨List.Chain.nil, by rintro _ ⟨⟩, List.prod_nil⟩
+  ⟨.nil, List.forall_mem_nil _, List.prod_nil⟩
 
 theorem FactorsHelper.cons_of_le
     {n m : ℕ} (a : ℕ) {b : ℕ} {l : List ℕ} (h₁ : IsNat (b * m) n) (h₂ : a ≤ b)
@@ -46,13 +46,13 @@ theorem FactorsHelper.singleton (n : ℕ) {a : ℕ} (h₁ : Nat.blt a n) (h₂ :
     FactorsHelper n a [n] :=
   FactorsHelper.nil.cons _ ⟨mul_one _⟩ h₁ h₂
 
-theorem FactorsHelper.same {n m : ℕ} (a : ℕ) {l : List ℕ}
+theorem FactorsHelper.cons_self {n m : ℕ} (a : ℕ) {l : List ℕ}
     (h : IsNat (a * m) n) (H : FactorsHelper m a l) :
     FactorsHelper n a (a :: l) := fun pa =>
   H.cons_of_le _ h le_rfl (Nat.prime_def_minFac.1 pa).2 pa
 
-theorem FactorsHelper.same_singleton (a : ℕ) : FactorsHelper a a [a] :=
-  FactorsHelper.nil.same _ ⟨mul_one _⟩
+theorem FactorsHelper.singleton_self (a : ℕ) : FactorsHelper a a [a] :=
+  FactorsHelper.nil.cons_self _ ⟨mul_one _⟩
 
 theorem FactorsHelper.primeFactorsList_eq {n : ℕ} {l : List ℕ} (H : FactorsHelper n 2 l) :
     Nat.primeFactorsList n = l :=
@@ -64,7 +64,7 @@ theorem FactorsHelper.primeFactorsList_eq {n : ℕ} {l : List ℕ} (H : FactorsH
 open Lean Elab Tactic Qq
 
 /-- Given `n` and `a` natural numerals, returns `(l, ⊢ factorsHelper n a l)`. -/
-partial def evalPrimeFactorsListAux
+private partial def evalPrimeFactorsListAux
     {en n' : Q(ℕ)} {ea a' : Q(ℕ)} (hn : Q(IsNat $en $n')) (ha : Q(IsNat $ea $a')) :
     MetaM ((l : Q(List ℕ)) × Q(FactorsHelper $en $ea $l)) := do
   let n := n'.natLit!
@@ -84,7 +84,7 @@ partial def evalPrimeFactorsListAux
         (q(Eq.refl $en) : Expr)
       let hp₁ := q(isNat_mul rfl $ha $hm $h)
       let ⟨l, p₂⟩ ← evalPrimeFactorsListAux hm ha
-      pure ⟨q($ea :: $l), q(($p₂).same _ $hp₁ )⟩
+      pure ⟨q($ea :: $l), q(($p₂).cons_self _ $hp₁ )⟩
     else
       have eb : Q(ℕ) := mkRawNatLit b
       have hb : Q(IsNat $eb $eb) := q(⟨rfl⟩)
@@ -106,7 +106,7 @@ partial def evalPrimeFactorsListAux
       have h : Q($en = $ea) :=
         have : n = a := hbn_eq.symm.trans hba
         (q(Eq.refl $en) : Expr)
-      pure ⟨q([$ea]), q($h ▸ FactorsHelper.same_singleton $ea)⟩
+      pure ⟨q([$ea]), q($h ▸ FactorsHelper.singleton_self $ea)⟩
     else do
       let p₁ : Q(Nat.blt $ea $en = true) :=
         have : a < n := by omega
