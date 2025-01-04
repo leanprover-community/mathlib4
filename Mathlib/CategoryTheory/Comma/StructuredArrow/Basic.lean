@@ -22,7 +22,7 @@ We prove that `𝟙 (T.obj Y)` is the initial object in `T`-structured objects w
 namespace CategoryTheory
 
 -- morphism levels before object levels. See note [CategoryTheory universes].
-universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
+universe v₁ v₂ v₃ v₄ v₅ v₆ u₁ u₂ u₃ u₄ u₅ u₆
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
 
@@ -327,11 +327,30 @@ noncomputable instance isEquivalenceMap₂
     (map₂ α β).IsEquivalence := by
   apply Comma.isEquivalenceMap
 
+/-- The composition of two applications of `map₂` is naturally isomorphic to a single such one. -/
+def map₂CompMap₂Iso {C' : Type u₆} [Category.{v₆} C'] {D' : Type u₅} [Category.{v₅} D']
+    {L'' : D'} {R'' : C' ⥤ D'} {F' : C' ⥤ C} {G' : D' ⥤ D} (α' : L ⟶ G'.obj L'')
+    (β' : R'' ⋙ G' ⟶ F' ⋙ R) :
+    map₂ α' β' ⋙ map₂ α β ≅
+    map₂ (α ≫ G.map α')
+      ((Functor.associator _ _ _).inv ≫ whiskerRight β' _ ≫ (Functor.associator _ _ _).hom ≫
+        whiskerLeft _ β ≫ (Functor.associator _ _ _).inv) :=
+  NatIso.ofComponents (fun X => isoMk (Iso.refl _))
+
 end
 
 /-- `StructuredArrow.post` is a special case of `StructuredArrow.map₂` up to natural isomorphism. -/
 def postIsoMap₂ (S : C) (F : B ⥤ C) (G : C ⥤ D) :
     post S F G ≅ map₂ (F := 𝟭 _) (𝟙 _) (𝟙 (F ⋙ G)) :=
+  NatIso.ofComponents fun _ => isoMk <| Iso.refl _
+
+/-- `StructuredArrow.map` is a special case of `StructuredArrow.map₂` up to natural isomorphism. -/
+def mapIsoMap₂ {S S' : D} (f : S ⟶ S') : map (T := T) f ≅ map₂ (F := 𝟭 _) (G := 𝟭 _) f (𝟙 T) :=
+  NatIso.ofComponents fun _ => isoMk <| Iso.refl _
+
+/-- `StructuredArrow.pre` is a special case of `StructuredArrow.map₂` up to natural isomorphism. -/
+def preIsoMap₂ (S : D) (F : B ⥤ C) (G : C ⥤ D) :
+    pre S F G ≅ map₂ (G := 𝟭 _) (𝟙 _) (𝟙 (F ⋙ G)) :=
   NatIso.ofComponents fun _ => isoMk <| Iso.refl _
 
 /-- A structured arrow is called universal if it is initial. -/
@@ -920,10 +939,10 @@ def StructuredArrow.preEquivalence (f : StructuredArrow e G) :
 /-- The functor `StructuredArrow d T ⥤ StructuredArrow e (T ⋙ S)` that `u : e ⟶ S.obj d`
 induces via `StructuredArrow.map₂` can be expressed up to isomorphism by
 `StructuredArrow.preEquivalence` and `StructuredArrow.proj`. -/
-def StructuredArrow.map₂IsoPreEquivalenceInverseCompProj (T : C ⥤ D) (S : D ⥤ E) (d : D) (e : E)
-    (u : e ⟶ S.obj d) :
-    map₂ (F := 𝟭 _) u (𝟙 (T ⋙ S)) ≅
-      (preEquivalence T (mk u)).inverse ⋙ proj (mk u) (pre _ T S) :=
+def StructuredArrow.map₂IsoPreEquivalenceInverseCompProj {T : C ⥤ D} {S : D ⥤ E} {T' : C ⥤ E}
+    (d : D) (e : E) (u : e ⟶ S.obj d) (α : T ⋙ S ⟶ T') :
+    map₂ (F := 𝟭 _) u α ≅ (preEquivalence T (mk u)).inverse ⋙ proj (mk u) (pre _ T S) ⋙
+      map₂ (F := 𝟭 _) (G := 𝟭 _) (𝟙 _) α :=
   NatIso.ofComponents fun _ => isoMk (Iso.refl _)
 
 /-- The functor establishing the equivalence `CostructuredArrow.preEquivalence`. -/
