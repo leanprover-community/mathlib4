@@ -106,7 +106,7 @@ instance instSetLike : SetLike (L.Substructure M) M :=
 def Simps.coe (S : L.Substructure M) : Set M :=
   S
 
-initialize_simps_projections Substructure (carrier → coe)
+initialize_simps_projections Substructure (carrier → coe, as_prefix coe)
 
 @[simp]
 theorem mem_carrier {s : L.Substructure M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
