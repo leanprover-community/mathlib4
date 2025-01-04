@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
 import Mathlib.Algebra.Group.Submonoid.Defs
+import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.GroupTheory.Congruence.Hom
 import Mathlib.GroupTheory.OreLocalization.Basic
 
@@ -261,6 +262,12 @@ theorem mk_one : mk 1 (1 : S) = 1 := OreLocalization.one_def
 @[to_additive]
 theorem mk_pow (n : ℕ) (a : M) (b : S) : mk a b ^ n = mk (a ^ n) (b ^ n) := by
   induction n <;> simp [pow_succ, *, ← mk_mul, ← mk_one]
+
+@[to_additive]
+theorem mk_prod {ι} (t : Finset ι) (f : ι → M) (s : ι → S) :
+    ∏ i in t, mk (f i) (s i) = mk (∏ i in t, f i) (∏ i in t, s i) := by
+  classical
+  induction t using Finset.induction_on <;> simp [mk_one, Finset.prod_insert, *, mk_mul]
 
 -- Porting note: mathport translated `rec` to `ndrec` in the name of this lemma
 @[to_additive (attr := simp)]

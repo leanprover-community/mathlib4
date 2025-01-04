@@ -1118,6 +1118,15 @@ theorem prod_ite_mem [DecidableEq α] (s t : Finset α) (f : α → β) :
     ∏ i ∈ s, (if i ∈ t then f i else 1) = ∏ i ∈ s ∩ t, f i := by
   rw [← Finset.prod_filter, Finset.filter_mem_eq_inter]
 
+@[to_additive]
+lemma prod_attach_eq_prod_dite [Fintype α] (s : Finset α) (f : s → β) [DecidablePred (· ∈ s)] :
+    ∏ i ∈ s.attach, f i = ∏ i, if h : i ∈ s then f ⟨i, h⟩ else 1 := by
+  rw [Finset.prod_dite, Finset.univ_eq_attach, Finset.prod_const_one, mul_one]
+  congr
+  · ext; simp
+  · ext; simp
+  · apply Function.hfunext <;> simp +contextual [Subtype.heq_iff_coe_eq]
+
 @[to_additive (attr := simp)]
 theorem prod_dite_eq [DecidableEq α] (s : Finset α) (a : α) (b : ∀ x : α, a = x → β) :
     ∏ x ∈ s, (if h : a = x then b x h else 1) = ite (a ∈ s) (b a rfl) 1 := by
