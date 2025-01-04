@@ -38,7 +38,7 @@ variable (R M)
 /-- `(•)` as an `AddMonoidHom`.
 
 This is a stronger version of `DistribMulAction.toAddMonoidEnd` -/
-@[simps! apply_apply]
+@[simps!]
 def Module.toAddMonoidEnd : R →+* AddMonoid.End M :=
   { DistribMulAction.toAddMonoidEnd R M with
     -- Porting note: the two `show`s weren't needed in mathlib3.
