@@ -156,7 +156,7 @@ instance comp {Z : PresheafedSpace C} (g : Y ⟶ Z) [hg : IsOpenImmersion g] :
     · exact c_iso' g ((opensFunctor f).obj U) (by ext; simp)
     · apply c_iso' f U
       ext1
-      dsimp only [Opens.map_coe, IsOpenMap.functor_obj_coe, comp_base, TopCat.coe_comp]
+      dsimp only [Opens.map_coe, IsOpenMap.coe_functor_obj, comp_base, TopCat.coe_comp]
       rw [Set.image_comp, Set.preimage_image_eq _ hg.base_open.injective]
 
 /-- For an open immersion `f : X ⟶ Y` and an open set `U ⊆ X`, we have the map `X(U) ⟶ Y(U)`. -/
