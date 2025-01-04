@@ -47,7 +47,7 @@ Monoid.mk : {M : Type u} →
 -/
 
 
-universe v u
+universe v
 
 open CategoryTheory
 
