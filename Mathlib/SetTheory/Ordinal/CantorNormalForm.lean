@@ -22,12 +22,14 @@ normal form:
 - It is ordered.
 - It has finitely many entries.
 
+To avoid explicit reference to the implementation detail of the ordering of the entries, we define
+`CNF.exponents` and `CNF.coeffs` as the lists with the respective values.
+
 # Todo
 
 - Add API for the coefficients of the Cantor normal form.
 - Prove the basic results relating the CNF to the arithmetic operations on ordinals.
 -/
-
 
 noncomputable section
 
@@ -65,82 +67,153 @@ We special-case `CNF 0 o = CNF 1 o = [(0, o)]` for `o ≠ 0`.
 def CNF (b o : Ordinal) : List (Ordinal × Ordinal) :=
   CNFRec b [] (fun o _ IH ↦ (log b o, o / b ^ log b o)::IH) o
 
+namespace CNF
+
+variable {b o e c x : Ordinal.{u}}
+
+/-- The exponents of the Cantor normal form are stored
+in the first entries of elements in `CNF`. -/
+def exponents (b o : Ordinal) := (CNF b o).map Prod.fst
+
+theorem mem_exponents_iff : e ∈ exponents b o ↔ ∃ c, (e, c) ∈ CNF b o := by
+  simp [exponents]
+
+theorem mem_exponents_of_mem (h : (e, c) ∈ CNF b o) : e ∈ exponents b o :=
+  mem_exponents_iff.2 ⟨c, h⟩
+
+/-- The coefficients of the Cantor normal form are stored
+in the second entries of elements in `CNF`. -/
+def coeffs (b o : Ordinal) := (CNF b o).map Prod.snd
+
+theorem mem_coeffs_iff : c ∈ coeffs b o ↔ ∃ e, (e, c) ∈ CNF b o := by
+  simp [coeffs]
+
+theorem mem_coeffs_of_mem (h : (e, c) ∈ CNF b o) : c ∈ coeffs b o :=
+  mem_coeffs_iff.2 ⟨e, h⟩
+
 @[simp]
-theorem CNF_zero (b : Ordinal) : CNF b 0 = [] :=
+theorem zero_right (b : Ordinal) : CNF b 0 = [] :=
   CNFRec_zero b _ _
 
+@[simp]
+theorem exponents_zero (b : Ordinal) : exponents b 0 = [] := by
+  rw [exponents, zero_right, map_nil]
+
+@[simp]
+theorem coeffs_zero (b : Ordinal) : coeffs b 0 = [] := by
+  rw [coeffs, zero_right, map_nil]
+
 /-- Recursive definition for the Cantor normal form. -/
-theorem CNF_ne_zero {b o : Ordinal} (ho : o ≠ 0) :
-    CNF b o = (log b o, o / b ^ log b o)::CNF b (o % b ^ log b o) :=
+protected theorem ne_zero (ho : o ≠ 0) :
+    CNF b o = ⟨log b o, o / b ^ log b o⟩::CNF b (o % b ^ log b o) :=
   CNFRec_pos b ho _ _
 
-theorem zero_CNF {o : Ordinal} (ho : o ≠ 0) : CNF 0 o = [(0, o)] := by simp [CNF_ne_zero ho]
+theorem zero_left (ho : o ≠ 0) : CNF 0 o = [(0, o)] := by simp [CNF.ne_zero ho]
 
-theorem one_CNF {o : Ordinal} (ho : o ≠ 0) : CNF 1 o = [(0, o)] := by simp [CNF_ne_zero ho]
+protected theorem one (ho : o ≠ 0) : CNF 1 o = [(0, o)] := by simp [CNF.ne_zero ho]
 
-theorem CNF_of_le_one {b o : Ordinal} (hb : b ≤ 1) (ho : o ≠ 0) : CNF b o = [(0, o)] := by
+protected theorem of_le_one (hb : b ≤ 1) (ho : o ≠ 0) : CNF b o = [(0, o)] := by
   rcases le_one_iff.1 hb with (rfl | rfl)
-  exacts [zero_CNF ho, one_CNF ho]
+  exacts [zero_left ho, CNF.one ho]
 
-theorem CNF_of_lt {b o : Ordinal} (ho : o ≠ 0) (hb : o < b) : CNF b o = [(0, o)] := by
-  rw [CNF_ne_zero ho, log_eq_zero hb, opow_zero, div_one, mod_one, CNF_zero]
+protected theorem of_lt (ho : o ≠ 0) (hb : o < b) : CNF b o = [(0, o)] := by
+  rw [CNF.ne_zero ho, log_eq_zero hb, opow_zero, div_one, mod_one, zero_right]
 
 /-- Evaluating the Cantor normal form of an ordinal returns the ordinal. -/
-theorem CNF_foldr (b o : Ordinal) : (CNF b o).foldr (fun p r ↦ b ^ p.1 * p.2 + r) 0 = o := by
+protected theorem foldr (b o : Ordinal) : (CNF b o).foldr (fun p r ↦ b ^ p.1 * p.2 + r) 0 = o := by
   refine CNFRec b ?_ ?_ o
-  · rw [CNF_zero, foldr_nil]
+  · rw [zero_right, foldr_nil]
   · intro o ho IH
-    rw [CNF_ne_zero ho, foldr_cons, IH, div_add_mod]
+    rw [CNF.ne_zero ho, foldr_cons, IH, div_add_mod]
 
 /-- Every exponent in the Cantor normal form `CNF b o` is less or equal to `log b o`. -/
-theorem CNF_fst_le_log {b o : Ordinal.{u}} {x : Ordinal × Ordinal} :
-    x ∈ CNF b o → x.1 ≤ log b o := by
+theorem le_log_of_mem_exponents : x ∈ exponents b o → x ≤ log b o := by
   refine CNFRec b ?_ (fun o ho H ↦ ?_) o
   · simp
-  · rw [CNF_ne_zero ho, mem_cons]
+  · rw [exponents, CNF.ne_zero ho, map_cons, mem_cons]
     rintro (rfl | h)
     · rfl
     · exact (H h).trans (log_mono_right _ (mod_opow_log_lt_self b ho).le)
+
+/-- Every coefficient in a Cantor normal form is positive. -/
+theorem pos_of_mem_coeffs : x ∈ coeffs b o → 0 < x := by
+  refine CNFRec b ?_ (fun o ho IH ↦ ?_) o
+  · simp
+  · rw [coeffs, CNF.ne_zero ho]
+    rintro (h | ⟨_, h⟩)
+    exacts [div_opow_log_pos b ho, IH h]
+
+/-- Every coefficient in the Cantor normal form `CNF b o` is less than `b`. -/
+theorem lt_of_mem_coeffs (hb : 1 < b) {x : Ordinal} : x ∈ coeffs b o → x < b := by
+  refine CNFRec b ?_ (fun o ho IH h ↦ ?_) o
+  · simp
+  · rw [coeffs, CNF.ne_zero ho] at h
+    obtain rfl | h := mem_cons.mp h
+    exacts [div_opow_log_lt o hb, IH h]
+
+/-- The exponents of the `CNF` are a decreasing sequence. -/
+theorem exponents_sorted (b o : Ordinal) : (exponents b o).Sorted (· > ·) := by
+  rw [exponents]
+  refine CNFRec b ?_ (fun o ho IH ↦ ?_) o
+  · rw [zero_right]
+    exact sorted_nil
+  · rcases le_or_lt b 1 with hb | hb
+    · rw [CNF.of_le_one hb ho]
+      exact sorted_singleton _
+    · obtain hob | hbo := lt_or_le o b
+      · rw [CNF.of_lt ho hob]
+        exact sorted_singleton _
+      · rw [CNF.ne_zero ho, map_cons, sorted_cons]
+        exact ⟨fun a H ↦ (le_log_of_mem_exponents H).trans_lt <|
+          log_mod_opow_log_lt_log_self hb hbo, IH⟩
+
+end CNF
+
+section deprecated
+
+set_option linter.deprecated false
+
+@[deprecated CNF.zero_right (since := "2024-10-31")]
+alias CNF_zero := CNF.zero_right
+
+@[deprecated CNF.zero_left (since := "2024-10-31")]
+alias zero_CNF := CNF.zero_left
+
+@[deprecated CNF.ne_zero (since := "2024-10-31")]
+alias CNF_ne_zero := CNF.ne_zero
+
+@[deprecated CNF.of_le_one (since := "2024-10-31")]
+alias CNF_of_le_one := CNF.of_le_one
+
+@[deprecated CNF.of_lt (since := "2024-10-31")]
+alias CNF_of_lt := CNF.of_lt
+
+@[deprecated CNF.foldr (since := "2024-10-31")]
+alias CNF_foldr := CNF.foldr
+
+@[deprecated CNF.le_log_of_mem_exponents (since := "2024-10-31")]
+theorem CNF_fst_le_log {b o : Ordinal.{u}} {x : Ordinal × Ordinal} (h : x ∈ CNF b o) :
+    x.1 ≤ log b o :=
+  CNF.le_log_of_mem_exponents (CNF.mem_exponents_of_mem h)
 
 /-- Every exponent in the Cantor normal form `CNF b o` is less or equal to `o`. -/
 @[deprecated CNF_fst_le_log (since := "2024-09-21")]
 theorem CNF_fst_le {b o : Ordinal.{u}} {x : Ordinal × Ordinal} (h : x ∈ CNF b o) : x.1 ≤ o :=
   (CNF_fst_le_log h).trans <| log_le_self _ _
 
-/-- Every coefficient in a Cantor normal form is positive. -/
-theorem CNF_lt_snd {b o : Ordinal.{u}} {x : Ordinal × Ordinal} : x ∈ CNF b o → 0 < x.2 := by
-  refine CNFRec b (by simp) (fun o ho IH ↦ ?_) o
-  rw [CNF_ne_zero ho]
-  rintro (h | ⟨_, h⟩)
-  · exact div_opow_log_pos b ho
-  · exact IH h
+@[deprecated CNF.pos_of_mem_coeffs (since := "2024-10-31")]
+theorem CNF_lt_snd {b o : Ordinal.{u}} {x : Ordinal × Ordinal} (h : x ∈ CNF b o) : 0 < x.2 :=
+  CNF.pos_of_mem_coeffs (CNF.mem_coeffs_of_mem h)
 
-/-- Every coefficient in the Cantor normal form `CNF b o` is less than `b`. -/
-theorem CNF_snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} :
-    x ∈ CNF b o → x.2 < b := by
-  refine CNFRec b ?_ (fun o ho IH ↦ ?_) o
-  · simp
-  · rw [CNF_ne_zero ho]
-    intro h
-    obtain rfl | h := mem_cons.mp h
-    · exact div_opow_log_lt o hb
-    · exact IH h
+@[deprecated CNF.lt_of_mem_coeffs (since := "2024-10-31")]
+theorem CNF_snd_lt {b o : Ordinal.{u}} (hb : 1 < b) {x : Ordinal × Ordinal} (h : x ∈ CNF b o) :
+    x.2 < b :=
+  CNF.lt_of_mem_coeffs hb (CNF.mem_coeffs_of_mem h)
 
-/-- The exponents of the Cantor normal form are decreasing. -/
-theorem CNF_sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· > ·) := by
-  refine CNFRec b ?_ (fun o ho IH ↦ ?_) o
-  · rw [CNF_zero]
-    exact sorted_nil
-  · rcases le_or_lt b 1 with hb | hb
-    · rw [CNF_of_le_one hb ho]
-      exact sorted_singleton _
-    · obtain hob | hbo := lt_or_le o b
-      · rw [CNF_of_lt ho hob]
-        exact sorted_singleton _
-      · rw [CNF_ne_zero ho, map_cons, sorted_cons]
-        refine ⟨fun a H ↦ ?_, IH⟩
-        rw [mem_map] at H
-        rcases H with ⟨⟨a, a'⟩, H, rfl⟩
-        exact (CNF_fst_le_log H).trans_lt (log_mod_opow_log_lt_log_self hb hbo)
+@[deprecated CNF.exponents_sorted (since := "2024-10-31")]
+theorem CNF_sorted (b o : Ordinal) : ((CNF b o).map Prod.fst).Sorted (· > ·) :=
+  CNF.exponents_sorted b o
+
+end deprecated
 
 end Ordinal
