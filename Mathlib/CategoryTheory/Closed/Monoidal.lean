@@ -72,6 +72,9 @@ namespace ihom
 def adjunction : tensorLeft A ⊣ ihom A :=
   Closed.adj
 
+instance : (tensorLeft A).IsLeftAdjoint  :=
+  (ihom.adjunction A).isLeftAdjoint
+
 /-- The evaluation natural transformation. -/
 def ev : ihom A ⋙ tensorLeft A ⟶ 𝟭 C :=
   (ihom.adjunction A).counit
