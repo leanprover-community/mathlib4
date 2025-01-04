@@ -131,7 +131,7 @@ variable (T) in
 In a commutative (possibly non-unital) semiring `R`, `NonUnitalSubsemiring.sumSq R` is
 the (possibly non-unital) subsemiring of sums of squares in `R`.
 -/
-def sumSq : NonUnitalSubsemiring T := (Subsemigroup.squareIn T).nonUnitalSubsemiringClosure
+def sumSq : NonUnitalSubsemiring T := (Subsemigroup.square T).nonUnitalSubsemiringClosure
 
 @[simp] theorem sumSq_toAddSubmonoid : (sumSq T).toAddSubmonoid = .sumSq T := by
   rw [sumSq, ← AddSubmonoid.closure_isSquare,
@@ -157,8 +157,8 @@ theorem IsSumSq.mul [NonUnitalCommSemiring R] {s₁ s₂ : R}
     (h₁ : IsSumSq s₁) (h₂ : IsSumSq s₂) : IsSumSq (s₁ * s₂) := by
   simpa using mul_mem (by simpa : _ ∈ NonUnitalSubsemiring.sumSq R) (by simpa)
 
-private theorem Submonoid.squareIn_subsemiringClosure {T : Type*} [CommSemiring T] :
-    (Submonoid.squareIn T).subsemiringClosure = .closure {x : T | IsSquare x} := by
+private theorem Submonoid.square_subsemiringClosure {T : Type*} [CommSemiring T] :
+    (Submonoid.square T).subsemiringClosure = .closure {x : T | IsSquare x} := by
   simp [Submonoid.subsemiringClosure_eq_closure]
 
 namespace Subsemiring
@@ -183,7 +183,7 @@ theorem mem_sumSq : s ∈ sumSq T ↔ IsSumSq s := by
 
 @[simp] theorem closure_isSquare : closure {x : T | IsSquare x} = sumSq T := by
   apply_fun toNonUnitalSubsemiring using toNonUnitalSubsemiring_injective
-  simp [← Submonoid.squareIn_subsemiringClosure]
+  simp [← Submonoid.square_subsemiringClosure]
 
 end Subsemiring
 
