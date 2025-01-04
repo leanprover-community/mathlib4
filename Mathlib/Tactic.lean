@@ -174,6 +174,7 @@ import Mathlib.Tactic.NormNum.BigOperators
 import Mathlib.Tactic.NormNum.Core
 import Mathlib.Tactic.NormNum.DivMod
 import Mathlib.Tactic.NormNum.Eq
+import Mathlib.Tactic.NormNum.Factors
 import Mathlib.Tactic.NormNum.GCD
 import Mathlib.Tactic.NormNum.Ineq
 import Mathlib.Tactic.NormNum.Inv
