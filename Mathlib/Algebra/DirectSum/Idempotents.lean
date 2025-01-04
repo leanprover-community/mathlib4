@@ -43,18 +43,10 @@ theorem completeOrthogonalIdempotents_idempotent [Fintype I]:
     rw [← decompose_eq_mul_idempotent, idempotent, decompose_coe,
       of_eq_of_ne (h := hij), Submodule.coe_zero]
   complete := by
-    classical
-    simp_rw [idempotent]
-    set e := decompose V 1 with e_eq
-    have : ∑ i : I, e i = ∑ i ∈ e.support, (e i : R) := by
-      symm
-      have := Finset.sum_subset (α := I) (β := R) (s₁ := e.support) (s₂ := Finset.univ)
-        (f := fun i ↦ e i) (Finset.subset_univ e.support) (fun i rfl hi ↦ by
-          simp only [ZeroMemClass.coe_eq_zero]
-          simp_all only [DFinsupp.mem_support_toFun, Decidable.not_not])
-      simp only at this
-      rw [this]
-    rw [this]; exact sum_support_decompose V 1
+    apply (decompose V).injective
+    refine DFunLike.ext _ _ fun i ↦ ?_
+    rw [decompose_sum, DFinsupp.finset_sum_apply]
+    simp [idempotent, of_apply]
 
 end OrthogonalIdempotents
 
