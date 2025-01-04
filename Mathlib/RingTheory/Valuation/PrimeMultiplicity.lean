@@ -7,7 +7,7 @@ import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.Localization.NumDen
 import Mathlib.RingTheory.Valuation.Basic
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
-import Mathlib.Algebra.UniqueFactorizationDomain.Multiplicity
+import Mathlib.RingTheory.UniqueFactorizationDomain.Multiplicity
 
 /-!
 # `multiplicity` of a prime in an integral domain as an additive valuation
