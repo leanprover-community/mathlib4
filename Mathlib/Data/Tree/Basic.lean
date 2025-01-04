@@ -18,10 +18,6 @@ We also specialize for `Tree Unit`, which is a binary tree without any
 additional data. We provide the notation `a △ b` for making a `Tree Unit` with children
 `a` and `b`.
 
-## TODO
-
-Implement a `Traversable` instance for `Tree`.
-
 ## References
 
 <https://leanprover-community.github.io/archive/stream/113488-general/topic/tactic.20question.html>
@@ -44,6 +40,15 @@ variable {α : Type u}
 
 instance : Inhabited (Tree α) :=
   ⟨nil⟩
+
+/--
+Do an action for every node of the tree.
+Actions are taken in node -> left subtree -> right subtree recursive order.
+This function is the `traverse` function for the `Traversable Tree` instance.
+-/
+def traverse {m:Type* → Type*} [Applicative m] {α β} (f:α → m β) :Tree α → m (Tree β)
+  | .nil => pure nil
+  | .node a l r => .node <$> f a <*> traverse f l <*> traverse f r
 
 /-- Apply a function to each value in the tree.  This is the `map` function for the `Tree` functor.
 -/
