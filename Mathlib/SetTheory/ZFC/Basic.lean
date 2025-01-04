@@ -308,6 +308,9 @@ instance : Inhabited PSet :=
 instance : IsEmpty («Type» ∅) :=
   ⟨PEmpty.elim⟩
 
+theorem empty_def : (∅ : PSet) = ⟨_, PEmpty.elim⟩ := by
+  simp [EmptyCollection.emptyCollection, PSet.empty]
+
 @[simp]
 theorem not_mem_empty (x : PSet.{u}) : x ∉ (∅ : PSet.{u}) :=
   IsEmpty.exists_iff.1

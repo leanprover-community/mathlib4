@@ -102,6 +102,13 @@ theorem map_coe (f : α → β) (a : α) : map f a = f a :=
 lemma map_eq_bot_iff {f : α → β} {a : WithBot α} :
     map f a = ⊥ ↔ a = ⊥ := Option.map_eq_none'
 
+theorem map_eq_some_iff {f : α → β} {y : β} {v : WithBot α} :
+    WithBot.map f v = .some y ↔ ∃ x, v = .some x ∧ f x = y := Option.map_eq_some'
+
+theorem some_eq_map_iff {f : α → β} {y : β} {v : WithBot α} :
+    .some y = WithBot.map f v ↔ ∃ x, v = .some x ∧ f x = y := by
+  cases v <;> simp [eq_comm]
+
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) :
     map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
@@ -669,6 +676,13 @@ theorem map_coe (f : α → β) (a : α) : map f a = f a :=
 @[simp]
 lemma map_eq_top_iff {f : α → β} {a : WithTop α} :
     map f a = ⊤ ↔ a = ⊤ := Option.map_eq_none'
+
+theorem map_eq_some_iff {f : α → β} {y : β} {v : WithTop α} :
+    WithTop.map f v = .some y ↔ ∃ x, v = .some x ∧ f x = y := Option.map_eq_some'
+
+theorem some_eq_map_iff {f : α → β} {y : β} {v : WithTop α} :
+    .some y = WithTop.map f v ↔ ∃ x, v = .some x ∧ f x = y := by
+  cases v <;> simp [eq_comm]
 
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) : map g₁ (map f₁ a) = map g₂ (map f₂ a) :=

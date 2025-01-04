@@ -485,7 +485,7 @@ theorem contMDiffOn_zero_iff :
   rw [contMDiffOn_iff]
   refine ⟨fun h ↦ h.1, fun h ↦ ⟨h, ?_⟩⟩
   intro x y
-  rw [show ((0 : ℕ∞) : WithTop ℕ∞) = 0 by rfl, contDiffOn_zero]
+  rw [WithTop.coe_zero, contDiffOn_zero]
   apply (continuousOn_extChartAt _).comp
   · apply h.comp ((continuousOn_extChartAt_symm _).mono inter_subset_left) (fun z hz ↦ ?_)
     simp only [preimage_inter, mem_inter_iff, mem_preimage] at hz

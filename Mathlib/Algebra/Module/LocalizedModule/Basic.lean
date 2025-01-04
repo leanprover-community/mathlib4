@@ -416,8 +416,7 @@ lemma smul_eq_iff_of_mem
         rw [mul_smul, ← eq1, Submonoid.mk_smul, smul_comm r t]
       · rintro ⟨a, ha, eq1⟩
         refine ⟨a, ha, ?_⟩
-        rw [← eq1, mul_comm, mul_smul, Submonoid.mk_smul]
-        rfl
+        rw [← eq1, mul_comm, mul_smul, Submonoid.mk_smul, Submonoid.smul_def, Submonoid.mk_smul]
 
 lemma eq_zero_of_smul_eq_zero
     (r : R) (hr : r ∈ S) (x : LocalizedModule S M) (hx : r • x = 0) : x = 0 := by

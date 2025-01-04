@@ -567,7 +567,7 @@ lemma getVert_eq_support_get? {u v n} (p : G.Walk u v) (h2 : n ≤ p.length) :
     · simp only [hn, getVert_zero, List.length_cons, Nat.zero_lt_succ, List.getElem?_eq_getElem,
       List.getElem_cons_zero]
     · push_neg at hn
-      nth_rewrite 2 [show n = (n - 1) + 1 from by omega]
+      nth_rewrite 2 [← Nat.sub_one_add_one hn]
       rw [Walk.getVert_cons q h hn, List.getElem?_cons_succ]
       exact getVert_eq_support_get? q (Nat.sub_le_of_le_add (Walk.length_cons _ _ ▸ h2))
 
@@ -1115,9 +1115,8 @@ theorem mem_support_iff_exists_getVert {u v w : V} {p : G.Walk v w} :
       exact hn.1.symm
     · right
       have hnp : ¬ p.Nil := by
-        rw [@nil_iff_length_eq]
-        have : 1 ≤ p.length := by omega
-        exact Nat.not_eq_zero_of_lt this
+        rw [nil_iff_length_eq]
+        omega
       rw [← support_tail_of_not_nil _ hnp]
       rw [mem_support_iff_exists_getVert]
       use n - 1

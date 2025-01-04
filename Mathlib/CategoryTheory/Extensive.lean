@@ -220,7 +220,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
         intro x
         cases' h : s.fst x with val val
         · simp only [Types.binaryCoproductCocone_pt, Functor.const_obj_obj, Sum.inl.injEq,
-            exists_unique_eq']
+            existsUnique_eq']
         · apply_fun f at h
           cases ((congr_fun s.condition x).symm.trans h).trans (congr_fun hαY val : _).symm
       delta ExistsUnique at this
@@ -235,7 +235,7 @@ instance types.finitaryExtensive : FinitaryExtensive (Type u) := by
         · apply_fun f at h
           cases ((congr_fun s.condition x).symm.trans h).trans (congr_fun hαX val : _).symm
         · simp only [Types.binaryCoproductCocone_pt, Functor.const_obj_obj, Sum.inr.injEq,
-            exists_unique_eq']
+            existsUnique_eq']
       delta ExistsUnique at this
       choose l hl hl' using this
       exact ⟨l, (funext hl).symm, Types.isTerminalPunit.hom_ext _ _,
