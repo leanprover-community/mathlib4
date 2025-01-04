@@ -38,6 +38,11 @@ noncomputable def specZIsTerminal : IsTerminal (Spec (CommRingCat.of ℤ)) :=
   @IsTerminal.isTerminalObj _ _ _ _ Scheme.Spec _ inferInstance
     (terminalOpOfInitial CommRingCat.zIsInitial)
 
+/-- `Spec ℤ` is the terminal object in the category of schemes. -/
+noncomputable def specULiftZIsTerminal : IsTerminal (Spec (.of (ULift.{u} ℤ))) :=
+  @IsTerminal.isTerminalObj _ _ _ _ Scheme.Spec _ inferInstance
+    (terminalOpOfInitial CommRingCat.isInitial)
+
 instance : HasTerminal Scheme :=
   hasTerminal_of_hasTerminal_of_preservesLimit Scheme.Spec
 
