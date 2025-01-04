@@ -1799,7 +1799,7 @@ Q2022775:
 Q2027347:
   title: Optional stopping theorem
   decl: MeasureTheory.submartingale_iff_expected_stoppedValue_mono
-  author: Kexing Ying
+  author: Kexing Ying, Rémy Degenne
   date: 2022
 
 Q2028341:
