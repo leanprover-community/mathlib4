@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp, Anne Baanen
 -/
 import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.Module.BigOperators
 import Mathlib.Data.Set.Subsingleton
 import Mathlib.Lean.Expr.ExtraRecognizers
 import Mathlib.LinearAlgebra.Prod
@@ -216,6 +217,11 @@ theorem linearIndependent_iff'' :
         H s (fun j => if j ∈ s then g j else 0) (fun j hj => if_neg hj)
           (by simp_rw [ite_smul, zero_smul, Finset.sum_extend_by_zero, hg]) i
       exact (if_pos hi).symm⟩
+
+theorem linearIndependent_add_smul_iff {c : ι → R} {i : ι} (h₀ : c i = 0) :
+    LinearIndependent R (v + (c · • v i)) ↔ LinearIndependent R v := by
+  simp [linearIndependent_iff_injective_linearCombination,
+    ← Finsupp.linearCombination_comp_addSubEquiv i c h₀]
 
 theorem not_linearIndependent_iff :
     ¬LinearIndependent R v ↔

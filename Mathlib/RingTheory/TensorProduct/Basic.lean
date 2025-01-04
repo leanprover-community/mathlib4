@@ -1178,17 +1178,6 @@ end TensorProduct
 
 end Algebra
 
-namespace LinearMap
-
-open Algebra.TensorProduct
-
-variable {R M₁ M₂ ι ι₂ : Type*} (A : Type*)
-  [Fintype ι] [Finite ι₂] [DecidableEq ι]
-  [CommSemiring R] [CommSemiring A] [Algebra R A]
-  [AddCommMonoid M₁] [Module R M₁] [AddCommMonoid M₂] [Module R M₂]
-
-end LinearMap
-
 lemma Algebra.baseChange_lmul {R B : Type*} [CommRing R] [CommRing B] [Algebra R B]
     {A : Type*} [CommRing A] [Algebra R A] (f : B) :
     (Algebra.lmul R B f).baseChange A = Algebra.lmul A (A ⊗[R] B) (1 ⊗ₜ f) := by
@@ -1348,3 +1337,14 @@ theorem smul_def (a : A) (b : B) (m : M) : a ⊗ₜ[R] b • m = a • b • m :
   rfl
 
 end TensorProduct.Algebra
+
+open LinearMap in
+lemma Submodule.map_range_rTensor_subtype_lid {R Q} [CommSemiring R] [AddCommMonoid Q]
+    [Module R Q] {I : Submodule R R} :
+    (range <| rTensor Q I.subtype).map (TensorProduct.lid R Q) = I • ⊤ := by
+  erw [← map_top, ← Submodule.map_comp, map_top]
+  refine le_antisymm ?_ fun q h ↦ Submodule.smul_induction_on h
+    (fun r hr q _ ↦ ⟨⟨r, hr⟩ ⊗ₜ q, by simp⟩) (by simp +contextual [add_mem])
+  rintro _ ⟨t, rfl⟩
+  exact t.induction_on (by simp) (by simp +contextual [Submodule.smul_mem_smul])
+    (by simp +contextual [add_mem])

@@ -485,3 +485,24 @@ lemma span_eq_iUnion_nat (s : Set M) :
     exact ⟨fun i ↦ (f i, g i), fun i ↦ (g i).2, rfl⟩
   · rintro ⟨f, hf, rfl⟩
     exact ⟨fun i ↦ (f i).1, fun i ↦ ⟨(f i).2, (hf i)⟩, rfl⟩
+
+section Ring
+
+variable {R M ι : Type*} [Ring R] [AddCommGroup M] [Module R M] (i : ι) (c : ι → R) (h₀ : c i = 0)
+
+/-- The linear isomorphism corresponding to a matrix with 1 on the diagonal
+and all other nonzero entries on the same row. -/
+def Finsupp.addSubEquiv : (ι →₀ R) ≃ₗ[R] (ι →₀ R) := by
+  refine .ofLinear (linearCombination _ fun j ↦ single j 1 + single i (c j))
+    (linearCombination _ fun j ↦ single j 1 - single i (c j)) ?_ ?_ <;>
+  ext j k <;> obtain rfl | hk := eq_or_ne i k
+  · simp [h₀]
+  · simp [single_eq_of_ne hk]
+  · simp [h₀]
+  · simp [single_eq_of_ne hk]
+
+theorem Finsupp.linearCombination_comp_addSubEquiv (v : ι → M) :
+    linearCombination R v ∘ₗ addSubEquiv i c h₀ = linearCombination R (v + (c · • v i)) := by
+  ext; simp [addSubEquiv]
+
+end Ring
