@@ -21,9 +21,7 @@ binary product and `𝟙_ C` for the explicit terminal object.
 
 # Projects
 
-- Construct an instance of chosen finite products in the category of affine scheme, using
-  the tensor product.
-- Construct chosen finite products in other categories appearing "in nature".
+- Construct chosen finite products in more categories appearing "in nature".
 
 -/
 
