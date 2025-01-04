@@ -9,7 +9,8 @@ import Mathlib.Data.Finset.Lattice.Lemmas
 # Difference of finite sets
 
 ## Main declarations
-* `Finset.instSDiffFinset`: Defines the set difference `s \ t` for finsets `s` and `t`.
+
+* `Finset.instSDiff`: Defines the set difference `s \ t` for finsets `s` and `t`.
 * `Finset.instGeneralizedBooleanAlgebra`: Finsets almost have a boolean algebra structure
 
 ## Tags
@@ -46,7 +47,7 @@ section Sdiff
 variable [DecidableEq α] {s t u v : Finset α} {a b : α}
 
 /-- `s \ t` is the set consisting of the elements of `s` that are not in `t`. -/
-instance : SDiff (Finset α) :=
+instance instSDiff : SDiff (Finset α) :=
   ⟨fun s₁ s₂ => ⟨s₁.1 - s₂.1, nodup_of_le (Multiset.sub_le_self ..) s₁.2⟩⟩
 
 @[simp]
@@ -212,6 +213,9 @@ theorem Nontrivial.sdiff_singleton_nonempty {c : α} {s : Finset α} (hS : s.Non
 
 theorem sdiff_sdiff_left' (s t u : Finset α) : (s \ t) \ u = s \ t ∩ (s \ u) :=
   _root_.sdiff_sdiff_left'
+
+lemma sdiff_inter_right_comm (s t u : Finset α) : s \ t ∩ u = (s ∩ u) \ t := by
+  ext; simp [and_right_comm]
 
 theorem sdiff_union_sdiff_cancel (hts : t ⊆ s) (hut : u ⊆ t) : s \ t ∪ t \ u = s \ u :=
   sdiff_sup_sdiff_cancel hts hut
