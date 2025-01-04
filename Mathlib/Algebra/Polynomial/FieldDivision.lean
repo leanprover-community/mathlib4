@@ -497,10 +497,10 @@ theorem rootSet_prod [CommRing S] [IsDomain S] [Algebra R S] {ι : Type*} (f : �
   rwa [← Polynomial.map_prod, Ne, Polynomial.map_eq_zero]
 
 theorem roots_C_mul_X_sub_C (b : R) (ha : a ≠ 0) : (C a * X - C b).roots = {a⁻¹ * b} := by
-  simp [roots_C_mul_X_sub_C_of_IsUnit b ⟨a, a⁻¹, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha⟩]
+  simp [roots_C_mul_X_sub_C_of_isUnit b ⟨a, a⁻¹, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha⟩]
 
 theorem roots_C_mul_X_add_C (b : R) (ha : a ≠ 0) : (C a * X + C b).roots = {-(a⁻¹ * b)} := by
-  simp [roots_C_mul_X_add_C_of_IsUnit b ⟨a, a⁻¹, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha⟩]
+  simp [roots_C_mul_X_add_C_of_isUnit b ⟨a, a⁻¹, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha⟩]
 
 theorem roots_degree_eq_one (h : degree p = 1) : p.roots = {-((p.coeff 1)⁻¹ * p.coeff 0)} := by
   rw [eq_X_add_C_of_degree_le_one (show degree p ≤ 1 by rw [h])]
