@@ -67,7 +67,7 @@ on `⨂[𝕜] i, Eᵢ`: for every `x` in `⨂[𝕜] i, Eᵢ` and every continuou
 
 * If all `Eᵢ` are separated and satisfy `SeparatingDual`, then the seminorm on
 `⨂[𝕜] i, Eᵢ` is a norm. This uses the construction of a basis of the `PiTensorProduct`, hence
-depends on PR #11156. It should probably go in a separate file.
+depends on PR https://github.com/leanprover-community/mathlib4/pull/11156. It should probably go in a separate file.
 
 * Adapt the remaining functoriality constructions/properties from `PiTensorProduct`.
 
@@ -430,13 +430,13 @@ protected theorem mapL_smul [DecidableEq ι] (i : ι) (c : 𝕜) (u : E i →L[�
     Pi.smul_apply]
 
 theorem mapL_opNorm : ‖mapL f‖ ≤ ∏ i, ‖f i‖ := by
-  rw [ContinuousLinearMap.opNorm_le_iff (Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _))]
+  rw [ContinuousLinearMap.opNorm_le_iff (by positivity)]
   intro x
   rw [mapL, liftIsometry]
   simp only [LinearIsometryEquiv.coe_mk, liftEquiv_apply, LinearMap.mkContinuous_apply]
   refine le_trans (norm_eval_le_injectiveSeminorm _ _)
     (mul_le_mul_of_nonneg_right ?_ (norm_nonneg x))
-  rw [ContinuousMultilinearMap.opNorm_le_iff _ (Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _))]
+  rw [ContinuousMultilinearMap.opNorm_le_iff (Finset.prod_nonneg (fun _ _ ↦ norm_nonneg _))]
   intro m
   simp only [ContinuousMultilinearMap.compContinuousLinearMap_apply]
   refine le_trans (injectiveSeminorm_tprod_le (fun i ↦ (f i) (m i))) ?_

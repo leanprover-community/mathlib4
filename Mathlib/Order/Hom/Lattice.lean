@@ -79,7 +79,7 @@ structure BoundedLatticeHom (α β : Type*) [Lattice α] [Lattice β] [BoundedOr
   /-- A `BoundedLatticeHom` preserves the bottom element. -/
   map_bot' : toFun ⊥ = ⊥
 
--- Porting note (#11215): TODO: remove this configuration and use the default configuration.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 initialize_simps_projections SupBotHom (+toSupHom, -toFun)
 initialize_simps_projections InfTopHom (+toInfHom, -toFun)

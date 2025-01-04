@@ -61,7 +61,7 @@ end
 
 section ConditionallyCompleteLattice
 
-variable [ConditionallyCompleteLattice α] {s t : Set α} {a b : α}
+variable [ConditionallyCompleteLattice α] {a b : α}
 
 theorem isLUB_ciSup [Nonempty ι] {f : ι → α} (H : BddAbove (range f)) :
     IsLUB (range f) (⨆ i, f i) :=
@@ -354,7 +354,7 @@ end ConditionallyCompleteLattice
 
 section ConditionallyCompleteLinearOrder
 
-variable [ConditionallyCompleteLinearOrder α] {s t : Set α} {a b : α}
+variable [ConditionallyCompleteLinearOrder α] {a b : α}
 
 /-- Indexed version of `exists_lt_of_lt_csSup`.
 When `b < iSup f`, there is an element `i` such that `b < f i`.
@@ -444,7 +444,7 @@ In this case we have `Sup ∅ = ⊥`, so we can drop some `Nonempty`/`Set.Nonemp
 
 section ConditionallyCompleteLinearOrderBot
 
-variable [ConditionallyCompleteLinearOrderBot α] {s : Set α} {f : ι → α} {a : α}
+variable [ConditionallyCompleteLinearOrderBot α] {f : ι → α} {a : α}
 
 @[simp]
 theorem ciSup_of_empty [IsEmpty ι] (f : ι → α) : ⨆ i, f i = ⊥ := by

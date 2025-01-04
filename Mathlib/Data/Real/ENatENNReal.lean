@@ -12,6 +12,7 @@ import Mathlib.Data.ENNReal.Basic
 In this file we define a coercion from `ℕ∞` to `ℝ≥0∞` and prove some basic lemmas about this map.
 -/
 
+assert_not_exists Finset
 
 open scoped Classical
 open NNReal ENNReal
@@ -23,12 +24,12 @@ namespace ENat
 variable {m n : ℕ∞}
 
 /-- Coercion from `ℕ∞` to `ℝ≥0∞`. -/
-@[coe] def toENNReal : ℕ∞ → ℝ≥0∞ := WithTop.map Nat.cast
+@[coe] def toENNReal : ℕ∞ → ℝ≥0∞ := ENat.map Nat.cast
 
 instance hasCoeENNReal : CoeTC ℕ∞ ℝ≥0∞ := ⟨toENNReal⟩
 
 @[simp]
-theorem map_coe_nnreal : WithTop.map ((↑) : ℕ → ℝ≥0) = ((↑) : ℕ∞ → ℝ≥0∞) :=
+theorem map_coe_nnreal : ENat.map ((↑) : ℕ → ℝ≥0) = ((↑) : ℕ∞ → ℝ≥0∞) :=
   rfl
 
 /-- Coercion `ℕ∞ → ℝ≥0∞` as an `OrderEmbedding`. -/
@@ -39,7 +40,7 @@ def toENNRealOrderEmbedding : ℕ∞ ↪o ℝ≥0∞ :=
 /-- Coercion `ℕ∞ → ℝ≥0∞` as a ring homomorphism. -/
 @[simps! (config := .asFn)]
 def toENNRealRingHom : ℕ∞ →+* ℝ≥0∞ :=
-  .withTopMap (Nat.castRingHom ℝ≥0) Nat.cast_injective
+  .ENatMap (Nat.castRingHom ℝ≥0) Nat.cast_injective
 
 @[simp, norm_cast]
 theorem toENNReal_top : ((⊤ : ℕ∞) : ℝ≥0∞) = ⊤ :=
@@ -77,7 +78,7 @@ theorem toENNReal_strictMono : StrictMono ((↑) : ℕ∞ → ℝ≥0∞) :=
 
 @[simp, norm_cast]
 theorem toENNReal_zero : ((0 : ℕ∞) : ℝ≥0∞) = 0 :=
-  map_zero toENNRealRingHom
+  _root_.map_zero toENNRealRingHom
 
 @[simp, norm_cast]
 theorem toENNReal_add (m n : ℕ∞) : ↑(m + n) = (m + n : ℝ≥0∞) :=
@@ -85,7 +86,7 @@ theorem toENNReal_add (m n : ℕ∞) : ↑(m + n) = (m + n : ℝ≥0∞) :=
 
 @[simp, norm_cast]
 theorem toENNReal_one : ((1 : ℕ∞) : ℝ≥0∞) = 1 :=
-  map_one toENNRealRingHom
+  _root_.map_one toENNRealRingHom
 
 @[simp, norm_cast]
 theorem toENNReal_mul (m n : ℕ∞) : ↑(m * n) = (m * n : ℝ≥0∞) :=

@@ -319,8 +319,11 @@ theorem IsInternal.submodule_iSup_eq_top (h : IsInternal A) : iSup A = ⊤ := by
   exact Function.Bijective.surjective h
 
 /-- If a direct sum of submodules is internal then the submodules are independent. -/
-theorem IsInternal.submodule_independent (h : IsInternal A) : CompleteLattice.Independent A :=
-  CompleteLattice.independent_of_dfinsupp_lsum_injective _ h.injective
+theorem IsInternal.submodule_iSupIndep (h : IsInternal A) : iSupIndep A :=
+  iSupIndep_of_dfinsupp_lsum_injective _ h.injective
+
+@[deprecated (since := "2024-11-24")]
+alias IsInternal.submodule_independent := IsInternal.submodule_iSupIndep
 
 /-- Given an internal direct sum decomposition of a module `M`, and a basis for each of the
 components of the direct sum, the disjoint union of these bases is a basis for `M`. -/
@@ -374,7 +377,7 @@ the two submodules are complementary. Over a `Ring R`, this is true as an iff, a
 `DirectSum.isInternal_submodule_iff_isCompl`. -/
 theorem IsInternal.isCompl {A : ι → Submodule R M} {i j : ι} (hij : i ≠ j)
     (h : (Set.univ : Set ι) = {i, j}) (hi : IsInternal A) : IsCompl (A i) (A j) :=
-  ⟨hi.submodule_independent.pairwiseDisjoint hij,
+  ⟨hi.submodule_iSupIndep.pairwiseDisjoint hij,
     codisjoint_iff.mpr <| Eq.symm <| hi.submodule_iSup_eq_top.symm.trans <| by
       rw [← sSup_pair, iSup, ← Set.image_univ, h, Set.image_insert_eq, Set.image_singleton]⟩
 
@@ -387,60 +390,76 @@ variable {ι : Type v} [dec_ι : DecidableEq ι]
 variable {M : Type*} [AddCommGroup M] [Module R M]
 
 /-- Note that this is not generally true for `[Semiring R]`; see
-`CompleteLattice.Independent.dfinsupp_lsum_injective` for details. -/
-theorem isInternal_submodule_of_independent_of_iSup_eq_top {A : ι → Submodule R M}
-    (hi : CompleteLattice.Independent A) (hs : iSup A = ⊤) : IsInternal A :=
+`iSupIndep.dfinsupp_lsum_injective` for details. -/
+theorem isInternal_submodule_of_iSupIndep_of_iSup_eq_top {A : ι → Submodule R M}
+    (hi : iSupIndep A) (hs : iSup A = ⊤) : IsInternal A :=
   ⟨hi.dfinsupp_lsum_injective,
-    -- Note: #8386 had to specify value of `f`
+    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to specify value of `f`
     (LinearMap.range_eq_top (f := DFinsupp.lsum _ _)).1 <|
       (Submodule.iSup_eq_range_dfinsupp_lsum _).symm.trans hs⟩
 
-/-- `iff` version of `DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top`,
-`DirectSum.IsInternal.submodule_independent`, and `DirectSum.IsInternal.submodule_iSup_eq_top`. -/
-theorem isInternal_submodule_iff_independent_and_iSup_eq_top (A : ι → Submodule R M) :
-    IsInternal A ↔ CompleteLattice.Independent A ∧ iSup A = ⊤ :=
-  ⟨fun i ↦ ⟨i.submodule_independent, i.submodule_iSup_eq_top⟩,
-    And.rec isInternal_submodule_of_independent_of_iSup_eq_top⟩
+@[deprecated (since := "2024-11-24")]
+alias isInternal_submodule_of_independent_of_iSup_eq_top :=
+  isInternal_submodule_of_iSupIndep_of_iSup_eq_top
+
+/-- `iff` version of `DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top`,
+`DirectSum.IsInternal.iSupIndep`, and `DirectSum.IsInternal.submodule_iSup_eq_top`. -/
+theorem isInternal_submodule_iff_iSupIndep_and_iSup_eq_top (A : ι → Submodule R M) :
+    IsInternal A ↔ iSupIndep A ∧ iSup A = ⊤ :=
+  ⟨fun i ↦ ⟨i.submodule_iSupIndep, i.submodule_iSup_eq_top⟩,
+    And.rec isInternal_submodule_of_iSupIndep_of_iSup_eq_top⟩
+
+@[deprecated (since := "2024-11-24")]
+alias isInternal_submodule_iff_independent_and_iSup_eq_top :=
+  isInternal_submodule_iff_iSupIndep_and_iSup_eq_top
 
 /-- If a collection of submodules has just two indices, `i` and `j`, then
 `DirectSum.IsInternal` is equivalent to `isCompl`. -/
 theorem isInternal_submodule_iff_isCompl (A : ι → Submodule R M) {i j : ι} (hij : i ≠ j)
     (h : (Set.univ : Set ι) = {i, j}) : IsInternal A ↔ IsCompl (A i) (A j) := by
   have : ∀ k, k = i ∨ k = j := fun k ↦ by simpa using Set.ext_iff.mp h k
-  rw [isInternal_submodule_iff_independent_and_iSup_eq_top, iSup, ← Set.image_univ, h,
-    Set.image_insert_eq, Set.image_singleton, sSup_pair, CompleteLattice.independent_pair hij this]
+  rw [isInternal_submodule_iff_iSupIndep_and_iSup_eq_top, iSup, ← Set.image_univ, h,
+    Set.image_insert_eq, Set.image_singleton, sSup_pair, iSupIndep_pair hij this]
   exact ⟨fun ⟨hd, ht⟩ ↦ ⟨hd, codisjoint_iff.mpr ht⟩, fun ⟨hd, ht⟩ ↦ ⟨hd, ht.eq_top⟩⟩
 
 @[simp]
 theorem isInternal_ne_bot_iff {A : ι → Submodule R M} :
     IsInternal (fun i : {i // A i ≠ ⊥} ↦ A i) ↔ IsInternal A := by
-  simp only [isInternal_submodule_iff_independent_and_iSup_eq_top]
-  exact Iff.and CompleteLattice.independent_ne_bot_iff_independent <| by simp
+  simp [isInternal_submodule_iff_iSupIndep_and_iSup_eq_top]
 
-lemma isInternal_biSup_submodule_of_independent {A : ι → Submodule R M} (s : Set ι)
-    (h : CompleteLattice.Independent <| fun i : s ↦ A i) :
+lemma isInternal_biSup_submodule_of_iSupIndep {A : ι → Submodule R M} (s : Set ι)
+    (h : iSupIndep <| fun i : s ↦ A i) :
     IsInternal <| fun (i : s) ↦ (A i).comap (⨆ i ∈ s, A i).subtype := by
-  refine (isInternal_submodule_iff_independent_and_iSup_eq_top _).mpr ⟨?_, by simp [iSup_subtype]⟩
+  refine (isInternal_submodule_iff_iSupIndep_and_iSup_eq_top _).mpr ⟨?_, by simp [iSup_subtype]⟩
   let p := ⨆ i ∈ s, A i
   have hp : ∀ i ∈ s, A i ≤ p := fun i hi ↦ le_biSup A hi
   let e : Submodule R p ≃o Set.Iic p := p.mapIic
   suffices (e ∘ fun i : s ↦ (A i).comap p.subtype) = fun i ↦ ⟨A i, hp i i.property⟩ by
-    rw [← CompleteLattice.independent_map_orderIso_iff e, this]
-    exact CompleteLattice.independent_of_independent_coe_Iic_comp h
+    rw [← iSupIndep_map_orderIso_iff e, this]
+    exact .of_coe_Iic_comp h
   ext i m
   change m ∈ ((A i).comap p.subtype).map p.subtype ↔ _
   rw [Submodule.map_comap_subtype, inf_of_le_right (hp i i.property)]
 
+@[deprecated (since := "2024-11-24")]
+alias isInternal_biSup_submodule_of_independent := isInternal_biSup_submodule_of_iSupIndep
+
 /-! Now copy the lemmas for subgroup and submonoids. -/
 
 
-theorem IsInternal.addSubmonoid_independent {M : Type*} [AddCommMonoid M] {A : ι → AddSubmonoid M}
-    (h : IsInternal A) : CompleteLattice.Independent A :=
-  CompleteLattice.independent_of_dfinsupp_sumAddHom_injective _ h.injective
+theorem IsInternal.addSubmonoid_iSupIndep {M : Type*} [AddCommMonoid M] {A : ι → AddSubmonoid M}
+    (h : IsInternal A) : iSupIndep A :=
+  iSupIndep_of_dfinsupp_sumAddHom_injective _ h.injective
 
-theorem IsInternal.addSubgroup_independent {M : Type*} [AddCommGroup M] {A : ι → AddSubgroup M}
-    (h : IsInternal A) : CompleteLattice.Independent A :=
-  CompleteLattice.independent_of_dfinsupp_sumAddHom_injective' _ h.injective
+@[deprecated (since := "2024-11-24")]
+alias IsInternal.addSubmonoid_independent := IsInternal.addSubmonoid_iSupIndep
+
+theorem IsInternal.addSubgroup_iSupIndep {G : Type*} [AddCommGroup G] {A : ι → AddSubgroup G}
+    (h : IsInternal A) : iSupIndep A :=
+  iSupIndep_of_dfinsupp_sumAddHom_injective' _ h.injective
+
+@[deprecated (since := "2024-11-24")]
+alias IsInternal.addSubgroup_independent := IsInternal.addSubgroup_iSupIndep
 
 end Ring
 

@@ -3,8 +3,9 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
+import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Data.Ineq
-import Mathlib.Algebra.Order.Field.Basic
 
 /-!
 # Lemmas for the linear_combination tactic
@@ -17,6 +18,7 @@ open Lean
 namespace Mathlib.Tactic.LinearCombination
 
 variable {α : Type*} {a a' a₁ a₂ b b' b₁ b₂ c : α}
+variable {K : Type*} {t s : K}
 
 /-! ### Addition -/
 
@@ -67,6 +69,42 @@ theorem mul_const_lt [StrictOrderedSemiring α] (p : b < c) {a : α} (ha : 0 < a
 theorem mul_const_lt_weak [OrderedSemiring α] (p : b < c) {a : α} (ha : 0 ≤ a) :
     a * b ≤ a * c :=
   mul_le_mul_of_nonneg_left p.le ha
+
+/-! ### Scalar multiplication -/
+
+theorem smul_eq_const [SMul K α] (p : t = s) (c : α) : t • c = s • c := p ▸ rfl
+
+theorem smul_le_const [OrderedRing K] [OrderedAddCommGroup α] [Module K α]
+    [OrderedSMul K α] (p : t ≤ s) {a : α} (ha : 0 ≤ a) :
+    t • a ≤ s • a :=
+  smul_le_smul_of_nonneg_right p ha
+
+theorem smul_lt_const [OrderedRing K] [OrderedAddCommGroup α] [Module K α]
+    [OrderedSMul K α] (p : t < s) {a : α} (ha : 0 < a) :
+    t • a < s • a :=
+  smul_lt_smul_of_pos_right p ha
+
+theorem smul_lt_const_weak [OrderedRing K] [OrderedAddCommGroup α] [Module K α]
+    [OrderedSMul K α] (p : t < s) {a : α} (ha : 0 ≤ a) :
+    t • a ≤ s • a :=
+  smul_le_smul_of_nonneg_right p.le ha
+
+theorem smul_const_eq [SMul K α] (p : b = c) (s : K) : s • b = s • c := p ▸ rfl
+
+theorem smul_const_le [OrderedSemiring K] [OrderedAddCommMonoid α] [Module K α]
+    [OrderedSMul K α] (p : b ≤ c) {s : K} (hs : 0 ≤ s) :
+    s • b ≤ s • c :=
+  smul_le_smul_of_nonneg_left p hs
+
+theorem smul_const_lt [OrderedSemiring K] [OrderedAddCommMonoid α] [Module K α]
+    [OrderedSMul K α] (p : b < c) {s : K} (hs : 0 < s) :
+    s • b < s • c :=
+  smul_lt_smul_of_pos_left p hs
+
+theorem smul_const_lt_weak [OrderedSemiring K] [OrderedAddCommMonoid α] [Module K α]
+    [OrderedSMul K α] (p : b < c) {s : K} (hs : 0 ≤ s) :
+    s • b ≤ s • c :=
+  smul_le_smul_of_nonneg_left p.le hs
 
 /-! ### Division -/
 
@@ -175,6 +213,24 @@ def mulConstRelData : Ineq.WithStrictness → Name
   | .le => ``mul_const_le
   | .lt true => ``mul_const_lt
   | .lt false => ``mul_const_lt_weak
+
+/-- Given an (in)equality, look up the lemma to left-scalar-multiply it by a constant (scalar).
+If relevant, also take into account the degree of positivity which can be proved of the constant:
+strict or non-strict. -/
+def smulRelConstData : Ineq.WithStrictness → Name
+  | .eq => ``smul_eq_const
+  | .le => ``smul_le_const
+  | .lt true => ``smul_lt_const
+  | .lt false => ``smul_lt_const_weak
+
+/-- Given an (in)equality, look up the lemma to right-scalar-multiply it by a constant (vector).
+If relevant, also take into account the degree of positivity which can be proved of the constant:
+strict or non-strict. -/
+def smulConstRelData : Ineq.WithStrictness → Name
+  | .eq => ``smul_const_eq
+  | .le => ``smul_const_le
+  | .lt true => ``smul_const_lt
+  | .lt false => ``smul_const_lt_weak
 
 /-- Given an (in)equality, look up the lemma to divide it by a constant.  If relevant, also take
 into account the degree of positivity which can be proved of the constant: strict or non-strict. -/

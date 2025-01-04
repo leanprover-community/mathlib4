@@ -5,6 +5,7 @@ Authors: Frédéric Dupuis
 -/
 import Mathlib.Analysis.InnerProductSpace.Projection
 import Mathlib.Analysis.Normed.Module.Dual
+import Mathlib.Analysis.Normed.Group.NullSubmodule
 
 /-!
 # The Fréchet-Riesz representation theorem
@@ -33,7 +34,6 @@ given by substituting `E →L[𝕜] 𝕜` with `E` using `toDual`.
 dual, Fréchet-Riesz
 -/
 
-
 noncomputable section
 
 open scoped Classical
@@ -48,6 +48,7 @@ open RCLike ContinuousLinearMap
 variable (𝕜 E : Type*)
 
 section Seminormed
+
 variable [RCLike 𝕜] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
@@ -68,6 +69,20 @@ variable {E}
 @[simp]
 theorem toDualMap_apply {x y : E} : toDualMap 𝕜 E x y = ⟪x, y⟫ :=
   rfl
+
+section NullSubmodule
+
+open LinearMap
+
+/-- For each `x : E`, the kernel of `⟪x, ⬝⟫` includes the null space. -/
+lemma nullSubmodule_le_ker_toDualMap_right (x : E) : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E x) :=
+  fun _ hx ↦ inner_eq_zero_of_right x ((mem_nullSubmodule_iff).mp hx)
+
+/-- The kernel of the map `x ↦ ⟪·, x⟫` includes the null space. -/
+lemma nullSubmodule_le_ker_toDualMap_left : nullSubmodule 𝕜 E ≤ ker (toDualMap 𝕜 E) :=
+  fun _ hx ↦ ContinuousLinearMap.ext <| fun y ↦ inner_eq_zero_of_left y hx
+
+end NullSubmodule
 
 end Seminormed
 

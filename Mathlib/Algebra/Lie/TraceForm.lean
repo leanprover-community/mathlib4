@@ -227,8 +227,8 @@ lemma traceForm_eq_sum_genWeightSpaceOf
     convert finite_genWeightSpaceOf_ne_bot R L M z
     exact LieSubmodule.coeSubmodule_eq_bot_iff (genWeightSpaceOf M _ _)
   classical
-  have h := LieSubmodule.independent_iff_coe_toSubmodule.mp <| independent_genWeightSpaceOf R L M z
-  have hds := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top h <| by
+  have h := LieSubmodule.iSupIndep_iff_coe_toSubmodule.mp <| iSupIndep_genWeightSpaceOf R L M z
+  have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top h <| by
     simp [← LieSubmodule.iSup_coe_toSubmodule]
   simp only [LinearMap.coeFn_sum, Finset.sum_apply, traceForm_apply_apply,
     LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
@@ -275,7 +275,8 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Modu
   replace hzc : 1 ⊗ₜ[R] z ∈ LieAlgebra.center A (A ⊗[R] L) := by
     simp only [mem_maxTrivSubmodule] at hzc ⊢
     intro y
-    exact y.induction_on rfl (fun a u ↦ by simp [hzc u]) (fun u v hu hv ↦ by simp [hu, hv])
+    exact y.induction_on rfl (fun a u ↦ by simp [hzc u])
+      (fun u v hu hv ↦ by simp [A, hu, hv])
   apply LinearMap.trace_comp_eq_zero_of_commute_of_trace_restrict_eq_zero
   · exact IsTriangularizable.maxGenEigenspace_eq_top (1 ⊗ₜ[R] x)
   · exact fun μ ↦ trace_toEnd_eq_zero_of_mem_lcs A (A ⊗[R] L)
@@ -407,8 +408,8 @@ lemma traceForm_eq_sum_finrank_nsmul_mul (x y : L) :
       (genWeightSpace M χ) (genWeightSpace M χ) :=
     fun χ m hm ↦ LieSubmodule.lie_mem _ <| LieSubmodule.lie_mem _ hm
   classical
-  have hds := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
-    (LieSubmodule.independent_iff_coe_toSubmodule.mp <| independent_genWeightSpace' K L M)
+  have hds := DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
+    (LieSubmodule.iSupIndep_iff_coe_toSubmodule.mp <| iSupIndep_genWeightSpace' K L M)
     (LieSubmodule.iSup_eq_top_iff_coe_toSubmodule.mp <| iSup_genWeightSpace_eq_top' K L M)
   simp_rw [traceForm_apply_apply, LinearMap.trace_eq_sum_trace_restrict hds hxy,
     ← traceForm_genWeightSpace_eq K L M _ x y]

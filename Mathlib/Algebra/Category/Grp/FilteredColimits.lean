@@ -128,18 +128,18 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
       ((forget Grp).mapCocone t) _
         fun j => funext fun x => DFunLike.congr_fun (h j) x
 
-@[to_additive forget₂AddMonPreservesFilteredColimits]
-noncomputable instance forget₂MonPreservesFilteredColimits :
+@[to_additive forget₂AddMon_preservesFilteredColimits]
+noncomputable instance forget₂Mon_preservesFilteredColimits :
     PreservesFilteredColimits.{u} (forget₂ Grp.{u} MonCat.{u}) where
       preserves_filtered_colimits x hx1 _ :=
       letI : Category.{u, u} x := hx1
-      ⟨fun {F} => preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
+      ⟨fun {F} => preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (MonCat.FilteredColimits.colimitCoconeIsColimit.{u, u} _)⟩
 
 @[to_additive]
-noncomputable instance forgetPreservesFilteredColimits :
+noncomputable instance forget_preservesFilteredColimits :
     PreservesFilteredColimits (forget Grp.{u}) :=
-  Limits.compPreservesFilteredColimits (forget₂ Grp MonCat) (forget MonCat.{u})
+  Limits.comp_preservesFilteredColimits (forget₂ Grp MonCat) (forget MonCat.{u})
 
 end
 
@@ -198,19 +198,19 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
         ((forget CommGrp).mapCocone t) _ fun j => funext fun x => DFunLike.congr_fun (h j) x
 
 @[to_additive]
-noncomputable instance forget₂GroupPreservesFilteredColimits :
+noncomputable instance forget₂Group_preservesFilteredColimits :
     PreservesFilteredColimits (forget₂ CommGrp Grp.{u}) where
   preserves_filtered_colimits J hJ1 _ :=
     letI : Category J := hJ1
     { preservesColimit := fun {F} =>
-        preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit.{u, u} F)
+        preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit.{u, u} F)
           (Grp.FilteredColimits.colimitCoconeIsColimit.{u, u}
             (F ⋙ forget₂ CommGrp Grp.{u})) }
 
 @[to_additive]
-noncomputable instance forgetPreservesFilteredColimits :
+noncomputable instance forget_preservesFilteredColimits :
     PreservesFilteredColimits (forget CommGrp.{u}) :=
-  Limits.compPreservesFilteredColimits (forget₂ CommGrp Grp) (forget Grp.{u})
+  Limits.comp_preservesFilteredColimits (forget₂ CommGrp Grp) (forget Grp.{u})
 
 end
 

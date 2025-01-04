@@ -155,7 +155,9 @@ lemma inter_singleton {a : α} {s : Finset α} :
     s ∩ {a} = if a ∈ s then {a} else ∅ := by
   split_ifs with h <;> simp [h]
 
-lemma union_eq_empty : s ∪ t = ∅ ↔ s = ∅ ∧ t = ∅ := sup_eq_bot_iff
+@[simp] lemma union_eq_empty : s ∪ t = ∅ ↔ s = ∅ ∧ t = ∅ := sup_eq_bot_iff
+@[simp] lemma union_nonempty : (s ∪ t).Nonempty ↔ s.Nonempty ∨ t.Nonempty :=
+  mod_cast Set.union_nonempty (α := α) (s := s) (t := t)
 
 theorem insert_union_comm (s t : Finset α) (a : α) : insert a s ∪ t = s ∪ insert a t := by
   rw [insert_union, union_insert]

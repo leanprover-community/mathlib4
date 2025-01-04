@@ -11,7 +11,8 @@ import Mathlib.Data.Set.Lattice
 
 This file is concerned with how big lattice or set operations behave when indexed by a finset.
 
-See also Lattice.lean, which is concerned with folding binary lattice operations over a finset.
+See also `Mathlib/Data/Finset/Lattice.lean`, which is concerned with folding binary lattice
+operations over a finset.
 -/
 
 assert_not_exists OrderedCommMonoid

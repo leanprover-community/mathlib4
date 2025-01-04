@@ -173,7 +173,7 @@ variable (x y : M)
 @[to_additive (attr := simp)]
 -- Porting note: removed dot notation
 theorem mrange_mk' : MonoidHom.mrange c.mk' = ⊤ :=
-  MonoidHom.mrange_eq_top_iff_surjective.2 mk'_surjective
+  MonoidHom.mrange_eq_top.2 mk'_surjective
 
 variable {f : M →* P}
 
@@ -256,7 +256,7 @@ lemma comapQuotientEquivOfSurj_symm_mk (c : Con M) {f : N →* M} (hf) (x : N) :
 MulEquiv function"]
 lemma comapQuotientEquivOfSurj_symm_mk' (c : Con M) (f : N ≃* M) (x : N) :
     ((@MulEquiv.symm (Con.Quotient (comap ⇑f _ c)) _ _ _
-      (comapQuotientEquivOfSurj c f f.surjective)) ⟦f x⟧) = ↑x :=
+      (comapQuotientEquivOfSurj c (f : N →* M) f.surjective)) ⟦f x⟧) = ↑x :=
   (MulEquiv.symm_apply_eq (@comapQuotientEquivOfSurj M N _ _ c f _)).mpr rfl
 
 /-- The **second isomorphism theorem for monoids**. -/

@@ -73,6 +73,14 @@ theorem coe_lt_one [LT α] {a : α} : (a : WithTop α) < 1 ↔ a < 1 :=
 protected theorem map_one {β} (f : α → β) : (1 : WithTop α).map f = (f 1 : WithTop β) :=
   rfl
 
+@[to_additive]
+theorem map_eq_one_iff {α} {f : α → β} {v : WithTop α} [One β] :
+    WithTop.map f v = 1 ↔ ∃ x, v = .some x ∧ f x = 1 := map_eq_some_iff
+
+@[to_additive]
+theorem one_eq_map_iff {α} {f : α → β} {v : WithTop α} [One β] :
+    1 = WithTop.map f v ↔ ∃ x, v = .some x ∧ f x = 1 := some_eq_map_iff
+
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithTop α) :=
   ⟨coe_le_coe.2 zero_le_one⟩
 
@@ -330,6 +338,24 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
 @[simp] lemma top_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊤ : WithTop α) ≠ no_index (OfNat.ofNat n) :=
   top_ne_natCast n
 
+@[simp] lemma map_ofNat {f : α → β} (n : ℕ) [n.AtLeastTwo] :
+    WithTop.map f (no_index (OfNat.ofNat n : WithTop α)) = f (OfNat.ofNat n) := map_coe f n
+
+@[simp] lemma map_natCast {f : α → β} (n : ℕ) :
+    WithTop.map f (n : WithTop α) = f n := map_coe f n
+
+lemma map_eq_ofNat_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithTop β} :
+    a.map f = OfNat.ofNat n ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
+
+lemma ofNat_eq_map_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithTop β} :
+    OfNat.ofNat n = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
+
+lemma map_eq_natCast_iff {f : β → α} {n : ℕ} {a : WithTop β} :
+    a.map f = n ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
+
+lemma natCast_eq_map_iff {f : β → α} {n : ℕ} {a : WithTop β} :
+    n = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
+
 end AddMonoidWithOne
 
 instance charZero [AddMonoidWithOne α] [CharZero α] : CharZero (WithTop α) :=
@@ -445,6 +471,14 @@ theorem coe_lt_one [LT α] : (a : WithBot α) < 1 ↔ a < 1 := coe_lt_coe
 protected theorem map_one {β} (f : α → β) : (1 : WithBot α).map f = (f 1 : WithBot β) :=
   rfl
 
+@[to_additive]
+theorem map_eq_one_iff {α} {f : α → β} {v : WithBot α} [One β] :
+    WithBot.map f v = 1 ↔ ∃ x, v = .some x ∧ f x = 1 := map_eq_some_iff
+
+@[to_additive]
+theorem one_eq_map_iff {α} {f : α → β} {v : WithBot α} [One β] :
+    1 = WithBot.map f v ↔ ∃ x, v = .some x ∧ f x = 1 := some_eq_map_iff
+
 instance zeroLEOneClass [Zero α] [LE α] [ZeroLEOneClass α] : ZeroLEOneClass (WithBot α) :=
   ⟨coe_le_coe.2 zero_le_one⟩
 
@@ -512,6 +546,24 @@ instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWi
   natCast_ne_bot n
 @[simp] lemma bot_ne_ofNat (n : ℕ) [n.AtLeastTwo] : (⊥ : WithBot α) ≠ no_index (OfNat.ofNat n) :=
   bot_ne_natCast n
+
+@[simp] lemma map_ofNat {f : α → β} (n : ℕ) [n.AtLeastTwo] :
+    WithBot.map f (no_index (OfNat.ofNat n : WithBot α)) = f (OfNat.ofNat n) := map_coe f n
+
+@[simp] lemma map_natCast {f : α → β} (n : ℕ) :
+    WithBot.map f (n : WithBot α) = f n := map_coe f n
+
+lemma map_eq_ofNat_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithBot β} :
+    a.map f = OfNat.ofNat n ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
+
+lemma ofNat_eq_map_iff {f : β → α} {n : ℕ} [n.AtLeastTwo] {a : WithBot β} :
+    OfNat.ofNat n = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
+
+lemma map_eq_natCast_iff {f : β → α} {n : ℕ} {a : WithBot β} :
+    a.map f = n ↔ ∃ x, a = .some x ∧ f x = n := map_eq_some_iff
+
+lemma natCast_eq_map_iff {f : β → α} {n : ℕ} {a : WithBot β} :
+    n = a.map f ↔ ∃ x, a = .some x ∧ f x = n := some_eq_map_iff
 
 end AddMonoidWithOne
 

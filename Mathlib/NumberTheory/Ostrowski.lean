@@ -427,7 +427,7 @@ private lemma param_upperbound {k : ℕ} (hk : k ≠ 0) :
       · exact le_of_lt (expr_pos hm notbdd)
       · rw [← Real.rpow_natCast, Real.rpow_le_rpow_left_iff (one_lt_of_not_bounded notbdd hm)]
         exact natLog_le_logb n m
-  apply le_of_pow_le_pow_left hk (mul_nonneg (rpow_nonneg
+  apply le_of_pow_le_pow_left₀ hk (mul_nonneg (rpow_nonneg
     (le_of_lt (expr_pos hm notbdd)) (k : ℝ)⁻¹) (rpow_nonneg (apply_nonneg f ↑m) (logb m n)))
   nth_rw 2 [← Real.rpow_natCast]
   rw [mul_rpow (rpow_nonneg (le_of_lt (expr_pos hm notbdd)) (k : ℝ)⁻¹)

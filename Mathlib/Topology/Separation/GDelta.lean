@@ -7,7 +7,7 @@ import Mathlib.Topology.Compactness.Lindelof
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
-import Mathlib.Topology.Separation.Basic
+import Mathlib.Topology.Separation.Regular
 import Mathlib.Topology.GDelta.Basic
 
 /-!
@@ -26,9 +26,9 @@ occasionally the literature swaps definitions for e.g. T₃ and regular.
 
 open Function Set Filter Topology TopologicalSpace
 
-universe u v
+universe u
 
-variable {X : Type*} {Y : Type*} [TopologicalSpace X]
+variable {X : Type*} [TopologicalSpace X]
 
 section Separation
 

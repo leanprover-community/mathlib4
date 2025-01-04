@@ -3,9 +3,11 @@ Copyright (c) 2021 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson, Yaël Dillies
 -/
+import Mathlib.Data.Finset.Lattice.Fold
 import Mathlib.Data.Finset.Order
+import Mathlib.Data.Set.Finite.Basic
+import Mathlib.Data.Set.Finite.Range
 import Mathlib.Order.Atoms
-import Mathlib.Data.Set.Finite
 import Mathlib.Order.Minimal
 
 /-!
@@ -247,9 +249,3 @@ theorem Finite.bddBelow_range [IsDirected α (· ≥ ·)] (f : β → α) : BddB
   refine ⟨M, fun a ha => ?_⟩
   obtain ⟨b, rfl⟩ := ha
   exact hM b
-
-@[deprecated (since := "2024-01-16")] alias Directed.fintype_le := Directed.finite_le
-@[deprecated (since := "2024-01-16")] alias Fintype.exists_le := Finite.exists_le
-@[deprecated (since := "2024-01-16")] alias Fintype.exists_ge := Finite.exists_ge
-@[deprecated (since := "2024-01-16")] alias Fintype.bddAbove_range := Finite.bddAbove_range
-@[deprecated (since := "2024-01-16")] alias Fintype.bddBelow_range := Finite.bddBelow_range

@@ -8,6 +8,8 @@ import Mathlib.Logic.Basic
 import Mathlib.Logic.ExistsUnique
 import Mathlib.Logic.Nonempty
 import Batteries.Tactic.Init
+import Mathlib.Order.Defs.PartialOrder
+import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Miscellaneous function constructions and lemmas
@@ -265,7 +267,7 @@ theorem not_surjective_Type {α : Type u} (f : α → Type max u v) : ¬Surjecti
   have hg : Injective g := by
     intro s t h
     suffices cast hU (g s).2 = cast hU (g t).2 by
-      simp only [cast_cast, cast_eq] at this
+      simp only [g, cast_cast, cast_eq] at this
       assumption
     · congr
   exact cantor_injective g hg

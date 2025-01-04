@@ -75,7 +75,7 @@ theorem ext ⦃f g : AbsoluteValue R S⦄ : (∀ x, f x = g x) → f = g :=
 def Simps.apply (f : AbsoluteValue R S) : R → S :=
   f
 
-initialize_simps_projections AbsoluteValue (toMulHom_toFun → apply)
+initialize_simps_projections AbsoluteValue (toFun → apply)
 
 @[simp]
 theorem coe_toMulHom : ⇑abv.toMulHom = abv :=

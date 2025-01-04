@@ -721,4 +721,61 @@ theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β
 
 end IndepFun
 
+variable {ι Ω α β : Type*} {mΩ : MeasurableSpace Ω} {mα : MeasurableSpace α}
+  {mβ : MeasurableSpace β} {μ : Measure Ω} {X : ι → Ω → α} {Y : ι → Ω → β} {f : _ → Set Ω}
+  {t : ι → Set β} {s : Finset ι}
+
+/-- The probability of an intersection of preimages conditioning on another intersection factors
+into a product. -/
+lemma cond_iInter [Finite ι] (hY : ∀ i, Measurable (Y i))
+    (hindep : iIndepFun (fun _ ↦ mα.prod mβ) (fun i ω ↦ (X i ω, Y i ω)) μ)
+    (hf : ∀ i ∈ s, MeasurableSet[mα.comap (X i)] (f i))
+    (hy : ∀ i ∉ s, μ (Y i ⁻¹' t i) ≠ 0) (ht : ∀ i, MeasurableSet (t i)) :
+    μ[⋂ i ∈ s, f i | ⋂ i, Y i ⁻¹' t i] = ∏ i ∈ s, μ[f i | Y i in t i] := by
+  have : IsProbabilityMeasure (μ : Measure Ω) := hindep.isProbabilityMeasure
+  classical
+  cases nonempty_fintype ι
+  let g (i' : ι) := if i' ∈ s then Y i' ⁻¹' t i' ∩ f i' else Y i' ⁻¹' t i'
+  calc
+    _ = (μ (⋂ i, Y i ⁻¹' t i))⁻¹ * μ ((⋂ i, Y i ⁻¹' t i) ∩ ⋂ i ∈ s, f i) := by
+      rw [cond_apply]; exact .iInter fun i ↦ hY i (ht i)
+    _ = (μ (⋂ i, Y i ⁻¹' t i))⁻¹ * μ (⋂ i, g i) := by
+      congr
+      calc
+        _ = (⋂ i, Y i ⁻¹' t i) ∩ ⋂ i, if i ∈ s then f i else .univ := by
+          congr
+          simp only [Set.iInter_ite, Set.iInter_univ, Set.inter_univ]
+        _ = ⋂ i, Y i ⁻¹' t i ∩ (if i ∈ s then f i else .univ) := by rw [Set.iInter_inter_distrib]
+        _ = _ := Set.iInter_congr fun i ↦ by by_cases hi : i ∈ s <;> simp [hi, g]
+    _ = (∏ i, μ (Y i ⁻¹' t i))⁻¹ * μ (⋂ i, g i) := by
+      rw [hindep.meas_iInter]
+      exact fun i ↦ ⟨.univ ×ˢ t i, MeasurableSet.univ.prod (ht _), by ext; simp [eq_comm]⟩
+    _ = (∏ i, μ (Y i ⁻¹' t i))⁻¹ * ∏ i, μ (g i) := by
+      rw [hindep.meas_iInter]
+      intro i
+      by_cases hi : i ∈ s <;> simp only [hi, ↓reduceIte, g]
+      · obtain ⟨A, hA, hA'⟩ := hf i hi
+        exact .inter ⟨.univ ×ˢ t i, MeasurableSet.univ.prod (ht _), by ext; simp [eq_comm]⟩
+          ⟨A ×ˢ Set.univ, hA.prod .univ, by ext; simp [← hA']⟩
+      · exact ⟨.univ ×ˢ t i, MeasurableSet.univ.prod (ht _), by ext; simp [eq_comm]⟩
+    _ = ∏ i, (μ (Y i ⁻¹' t i))⁻¹ * μ (g i) := by
+      rw [Finset.prod_mul_distrib, ENNReal.prod_inv_distrib]
+      exact fun _ _ i _ _ ↦ .inr <| measure_ne_top _ _
+    _ = ∏ i, if i ∈ s then μ[f i | Y i ⁻¹' t i] else 1 := by
+      refine Finset.prod_congr rfl fun i _ ↦ ?_
+      by_cases hi : i ∈ s
+      · simp only [hi, ↓reduceIte, g, cond_apply (hY i (ht i))]
+      · simp only [hi, ↓reduceIte, g, ENNReal.inv_mul_cancel (hy i hi) (measure_ne_top μ _)]
+    _ = _ := by simp
+
+lemma iIndepFun.cond [Finite ι] (hY : ∀ i, Measurable (Y i))
+    (hindep : iIndepFun (fun _ ↦ mα.prod mβ) (fun i ω ↦ (X i ω, Y i ω)) μ)
+    (hy : ∀ i, μ (Y i ⁻¹' t i) ≠ 0) (ht : ∀ i, MeasurableSet (t i)) :
+    iIndepFun (fun _ ↦ mα) X μ[|⋂ i, Y i ⁻¹' t i] := by
+  rw [iIndepFun_iff]
+  intro s f hf
+  convert cond_iInter hY hindep hf (fun i _ ↦ hy _) ht using 2 with i hi
+  simpa using cond_iInter hY hindep (fun j hj ↦ hf _ <| Finset.mem_singleton.1 hj ▸ hi)
+    (fun i _ ↦ hy _) ht
+
 end ProbabilityTheory

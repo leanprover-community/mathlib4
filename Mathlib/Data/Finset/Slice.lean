@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Data.Fintype.Powerset
 import Mathlib.Order.Antichain
 import Mathlib.Order.Interval.Finset.Nat
 

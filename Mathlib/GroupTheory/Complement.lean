@@ -3,7 +3,7 @@ Copyright (c) 2021 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Data.ZMod.Quotient
+import Mathlib.GroupTheory.Index
 
 /-!
 # Complements
@@ -257,11 +257,11 @@ lemma exists_left_transversal (H : Subgroup G) (g : G) :
     ∃ S ∈ leftTransversals (H : Set G), g ∈ S := by
   classical
     refine
-      ⟨Set.range (Function.update Quotient.out' _ g), range_mem_leftTransversals fun q => ?_,
-        Quotient.mk'' g, Function.update_same (Quotient.mk'' g) g Quotient.out'⟩
+      ⟨Set.range (Function.update Quotient.out _ g), range_mem_leftTransversals fun q => ?_,
+        Quotient.mk'' g, Function.update_same (Quotient.mk'' g) g Quotient.out⟩
     by_cases hq : q = Quotient.mk'' g
-    · exact hq.symm ▸ congr_arg _ (Function.update_same (Quotient.mk'' g) g Quotient.out')
-    · refine (Function.update_noteq ?_ g Quotient.out') ▸ q.out_eq'
+    · exact hq.symm ▸ congr_arg _ (Function.update_same (Quotient.mk'' g) g Quotient.out)
+    · refine (Function.update_noteq ?_ g Quotient.out) ▸ q.out_eq'
       exact hq
 
 @[to_additive]
@@ -269,11 +269,11 @@ lemma exists_right_transversal (H : Subgroup G) (g : G) :
     ∃ S ∈ rightTransversals (H : Set G), g ∈ S := by
   classical
     refine
-      ⟨Set.range (Function.update Quotient.out' _ g), range_mem_rightTransversals fun q => ?_,
-        Quotient.mk'' g, Function.update_same (Quotient.mk'' g) g Quotient.out'⟩
+      ⟨Set.range (Function.update Quotient.out _ g), range_mem_rightTransversals fun q => ?_,
+        Quotient.mk'' g, Function.update_same (Quotient.mk'' g) g Quotient.out⟩
     by_cases hq : q = Quotient.mk'' g
-    · exact hq.symm ▸ congr_arg _ (Function.update_same (Quotient.mk'' g) g Quotient.out')
-    · exact Eq.trans (congr_arg _ (Function.update_noteq hq g Quotient.out')) q.out_eq'
+    · exact hq.symm ▸ congr_arg _ (Function.update_same (Quotient.mk'' g) g Quotient.out)
+    · exact Eq.trans (congr_arg _ (Function.update_noteq hq g Quotient.out)) q.out_eq'
 
 /-- Given two subgroups `H' ⊆ H`, there exists a left transversal to `H'` inside `H`. -/
 @[to_additive "Given two subgroups `H' ⊆ H`, there exists a transversal to `H'` inside `H`"]
@@ -338,10 +338,10 @@ theorem equiv_fst_eq_iff_leftCosetEquivalence {g₁ g₂ : G} :
     exact Subtype.property _
   · intro h
     apply (mem_leftTransversals_iff_existsUnique_inv_mul_mem.1 hSK g₁).unique
-    · -- This used to be `simp [...]` before leanprover/lean4#2644
+    · -- This used to be `simp [...]` before https://github.com/leanprover/lean4/pull/2644
       rw [equiv_fst_eq_mul_inv]; simp
     · rw [SetLike.mem_coe, ← mul_mem_cancel_right h]
-      -- This used to be `simp [...]` before leanprover/lean4#2644
+      -- This used to be `simp [...]` before https://github.com/leanprover/lean4/pull/2644
       rw [equiv_fst_eq_mul_inv]; simp [equiv_fst_eq_mul_inv, ← mul_assoc]
 
 theorem equiv_snd_eq_iff_rightCosetEquivalence {g₁ g₂ : G} :
@@ -354,20 +354,20 @@ theorem equiv_snd_eq_iff_rightCosetEquivalence {g₁ g₂ : G} :
     exact Subtype.property _
   · intro h
     apply (mem_rightTransversals_iff_existsUnique_mul_inv_mem.1 hHT g₁).unique
-    · -- This used to be `simp [...]` before leanprover/lean4#2644
+    · -- This used to be `simp [...]` before https://github.com/leanprover/lean4/pull/2644
       rw [equiv_snd_eq_inv_mul]; simp
     · rw [SetLike.mem_coe, ← mul_mem_cancel_left h]
-      -- This used to be `simp [...]` before leanprover/lean4#2644
+      -- This used to be `simp [...]` before https://github.com/leanprover/lean4/pull/2644
       rw [equiv_snd_eq_inv_mul, mul_assoc]; simp
 
 theorem leftCosetEquivalence_equiv_fst (g : G) :
     LeftCosetEquivalence K g ((hSK.equiv g).fst : G) := by
-  -- This used to be `simp [...]` before leanprover/lean4#2644
+  -- This used to be `simp [...]` before https://github.com/leanprover/lean4/pull/2644
   rw [equiv_fst_eq_mul_inv]; simp [LeftCosetEquivalence, leftCoset_eq_iff]
 
 theorem rightCosetEquivalence_equiv_snd (g : G) :
     RightCosetEquivalence H g ((hHT.equiv g).snd : G) := by
-  -- This used to be `simp [...]` before leanprover/lean4#2644
+  -- This used to be `simp [...]` before https://github.com/leanprover/lean4/pull/2644
   rw [RightCosetEquivalence, rightCoset_eq_iff, equiv_snd_eq_inv_mul]; simp
 
 theorem equiv_fst_eq_self_of_mem_of_one_mem {g : G} (h1 : 1 ∈ T) (hg : g ∈ S) :
@@ -392,7 +392,7 @@ theorem equiv_fst_eq_one_of_mem_of_one_mem {g : G} (h1 : 1 ∈ S) (hg : g ∈ T)
   ext
   rw [equiv_fst_eq_mul_inv, equiv_snd_eq_self_of_mem_of_one_mem _ h1 hg, mul_inv_cancel]
 
--- This lemma has always been bad, but the linter only noticed after lean4#2644.
+-- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
 @[simp, nolint simpNF]
 theorem equiv_mul_right (g : G) (k : K) :
     hSK.equiv (g * k) = ((hSK.equiv g).fst, (hSK.equiv g).snd * k) := by
@@ -407,7 +407,7 @@ theorem equiv_mul_right_of_mem {g k : G} (h : k ∈ K) :
     hSK.equiv (g * k) = ((hSK.equiv g).fst, (hSK.equiv g).snd * ⟨k, h⟩) :=
   equiv_mul_right _ g ⟨k, h⟩
 
--- This lemma has always been bad, but the linter only noticed after lean4#2644.
+-- This lemma has always been bad, but the linter only noticed after https://github.com/leanprover/lean4/pull/2644.
 @[simp, nolint simpNF]
 theorem equiv_mul_left (h : H) (g : G) :
     hHT.equiv (h * g) = (h * (hHT.equiv g).fst, (hHT.equiv g).snd) := by
@@ -587,11 +587,11 @@ end Action
 
 @[to_additive]
 instance : Inhabited (leftTransversals (H : Set G)) :=
-  ⟨⟨Set.range Quotient.out', range_mem_leftTransversals Quotient.out_eq'⟩⟩
+  ⟨⟨Set.range Quotient.out, range_mem_leftTransversals Quotient.out_eq'⟩⟩
 
 @[to_additive]
 instance : Inhabited (rightTransversals (H : Set G)) :=
-  ⟨⟨Set.range Quotient.out', range_mem_rightTransversals Quotient.out_eq'⟩⟩
+  ⟨⟨Set.range Quotient.out, range_mem_rightTransversals Quotient.out_eq'⟩⟩
 
 theorem IsComplement'.isCompl (h : IsComplement' H K) : IsCompl H K := by
   refine
@@ -612,6 +612,14 @@ theorem IsComplement'.disjoint (h : IsComplement' H K) : Disjoint H K :=
 
 theorem IsComplement'.index_eq_card (h : IsComplement' H K) : K.index = Nat.card H :=
   (card_left_transversal h).symm
+
+/-- If `H` and `K` are complementary with `K` normal, then `G ⧸ K` is isomorphic to `H`. -/
+@[simps!]
+noncomputable def IsComplement'.QuotientMulEquiv [K.Normal] (h : H.IsComplement' K) :
+    G ⧸ K ≃* H :=
+  MulEquiv.symm
+  { (MemLeftTransversals.toEquiv h).symm with
+    map_mul' := fun _ _ ↦ rfl }
 
 theorem IsComplement.card_mul (h : IsComplement S T) :
     Nat.card S * Nat.card T = Nat.card G :=
@@ -653,84 +661,5 @@ theorem isComplement'_stabilizer {α : Type*} [MulAction G α] (a : α)
   specialize h1 (h * h') (by rwa [mul_smul, smul_def h', ← hg, ← mul_smul, hg])
   refine Prod.ext (eq_inv_of_mul_eq_one_right h1) (Subtype.ext ?_)
   rwa [Subtype.ext_iff, coe_one, coe_mul, ← self_eq_mul_left, mul_assoc (↑h) (↑h') g] at h1
-
-end Subgroup
-
-namespace Subgroup
-
-open Equiv Function MemLeftTransversals MulAction MulAction.quotient ZMod
-
-universe u
-
-variable {G : Type u} [Group G] (H : Subgroup G) (g : G)
-
-/-- Partition `G ⧸ H` into orbits of the action of `g : G`. -/
-noncomputable def quotientEquivSigmaZMod :
-    G ⧸ H ≃ Σq : orbitRel.Quotient (zpowers g) (G ⧸ H), ZMod (minimalPeriod (g • ·) q.out') :=
-  (selfEquivSigmaOrbits (zpowers g) (G ⧸ H)).trans
-    (sigmaCongrRight fun q => orbitZPowersEquiv g q.out')
-
-theorem quotientEquivSigmaZMod_symm_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
-    (k : ZMod (minimalPeriod (g • ·) q.out')) :
-    (quotientEquivSigmaZMod H g).symm ⟨q, k⟩ = g ^ (cast k : ℤ) • q.out' :=
-  rfl
-
-theorem quotientEquivSigmaZMod_apply (q : orbitRel.Quotient (zpowers g) (G ⧸ H)) (k : ℤ) :
-    quotientEquivSigmaZMod H g (g ^ k • q.out') = ⟨q, k⟩ := by
-  rw [apply_eq_iff_eq_symm_apply, quotientEquivSigmaZMod_symm_apply, ZMod.coe_intCast,
-    zpow_smul_mod_minimalPeriod]
-
-/-- The transfer transversal as a function. Given a `⟨g⟩`-orbit `q₀, g • q₀, ..., g ^ (m - 1) • q₀`
-  in `G ⧸ H`, an element `g ^ k • q₀` is mapped to `g ^ k • g₀` for a fixed choice of
-  representative `g₀` of `q₀`. -/
-noncomputable def transferFunction : G ⧸ H → G := fun q =>
-  g ^ (cast (quotientEquivSigmaZMod H g q).2 : ℤ) * (quotientEquivSigmaZMod H g q).1.out'.out'
-
-theorem transferFunction_apply (q : G ⧸ H) :
-    transferFunction H g q =
-      g ^ (cast (quotientEquivSigmaZMod H g q).2 : ℤ) *
-        (quotientEquivSigmaZMod H g q).1.out'.out' :=
-  rfl
-
-theorem coe_transferFunction (q : G ⧸ H) : ↑(transferFunction H g q) = q := by
-  rw [transferFunction_apply, ← smul_eq_mul, Quotient.coe_smul_out',
-    ← quotientEquivSigmaZMod_symm_apply, Sigma.eta, symm_apply_apply]
-
-/-- The transfer transversal as a set. Contains elements of the form `g ^ k • g₀` for fixed choices
-  of representatives `g₀` of fixed choices of representatives `q₀` of `⟨g⟩`-orbits in `G ⧸ H`. -/
-def transferSet : Set G :=
-  Set.range (transferFunction H g)
-
-theorem mem_transferSet (q : G ⧸ H) : transferFunction H g q ∈ transferSet H g :=
-  ⟨q, rfl⟩
-
-/-- The transfer transversal. Contains elements of the form `g ^ k • g₀` for fixed choices
-  of representatives `g₀` of fixed choices of representatives `q₀` of `⟨g⟩`-orbits in `G ⧸ H`. -/
-def transferTransversal : leftTransversals (H : Set G) :=
-  ⟨transferSet H g, range_mem_leftTransversals (coe_transferFunction H g)⟩
-
-theorem transferTransversal_apply (q : G ⧸ H) :
-    ↑(toEquiv (transferTransversal H g).2 q) = transferFunction H g q :=
-  toEquiv_apply (coe_transferFunction H g) q
-
-theorem transferTransversal_apply' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
-    (k : ZMod (minimalPeriod (g • ·) q.out')) :
-    ↑(toEquiv (transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out')) =
-      g ^ (cast k : ℤ) * q.out'.out' := by
-  rw [transferTransversal_apply, transferFunction_apply, ← quotientEquivSigmaZMod_symm_apply,
-    apply_symm_apply]
-
-theorem transferTransversal_apply'' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
-    (k : ZMod (minimalPeriod (g • ·) q.out')) :
-    ↑(toEquiv (g • transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out')) =
-      if k = 0 then g ^ minimalPeriod (g • ·) q.out' * q.out'.out'
-      else g ^ (cast k : ℤ) * q.out'.out' := by
-  rw [smul_apply_eq_smul_apply_inv_smul, transferTransversal_apply, transferFunction_apply, ←
-    mul_smul, ← zpow_neg_one, ← zpow_add, quotientEquivSigmaZMod_apply, smul_eq_mul, ← mul_assoc,
-    ← zpow_one_add, Int.cast_add, Int.cast_neg, Int.cast_one, intCast_cast, cast_id', id, ←
-    sub_eq_neg_add, cast_sub_one, add_sub_cancel]
-  by_cases hk : k = 0
-  · rw [if_pos hk, if_pos hk, zpow_natCast]
-  · rw [if_neg hk, if_neg hk]
 
 end Subgroup

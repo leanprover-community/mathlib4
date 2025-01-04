@@ -175,20 +175,29 @@ lemma isSigmaCompact_iff_sigmaCompactSpace {s : Set X} :
   isSigmaCompact_iff_isSigmaCompact_univ.trans isSigmaCompact_univ_iff
 
 -- see Note [lower instance priority]
-instance (priority := 200) CompactSpace.sigma_compact [CompactSpace X] : SigmaCompactSpace X :=
+instance (priority := 200) CompactSpace.sigmaCompact [CompactSpace X] : SigmaCompactSpace X :=
   ⟨⟨fun _ => univ, fun _ => isCompact_univ, iUnion_const _⟩⟩
+
+-- The `alias` command creates a definition, triggering the defLemma linter.
+@[nolint defLemma, deprecated (since := "2024-11-13")] alias
+CompactSpace.sigma_compact := CompactSpace.sigmaCompact
 
 theorem SigmaCompactSpace.of_countable (S : Set (Set X)) (Hc : S.Countable)
     (Hcomp : ∀ s ∈ S, IsCompact s) (HU : ⋃₀ S = univ) : SigmaCompactSpace X :=
   ⟨(exists_seq_cover_iff_countable ⟨_, isCompact_empty⟩).2 ⟨S, Hc, Hcomp, HU⟩⟩
 
 -- see Note [lower instance priority]
-instance (priority := 100) sigmaCompactSpace_of_locally_compact_second_countable
+instance (priority := 100) sigmaCompactSpace_of_locallyCompact_secondCountable
     [LocallyCompactSpace X] [SecondCountableTopology X] : SigmaCompactSpace X := by
   choose K hKc hxK using fun x : X => exists_compact_mem_nhds x
   rcases countable_cover_nhds hxK with ⟨s, hsc, hsU⟩
   refine SigmaCompactSpace.of_countable _ (hsc.image K) (forall_mem_image.2 fun x _ => hKc x) ?_
   rwa [sUnion_image]
+
+-- The `alias` command creates a definition, triggering the defLemma linter.
+@[nolint defLemma, deprecated (since := "2024-11-13")]
+alias sigmaCompactSpace_of_locally_compact_second_countable :=
+  sigmaCompactSpace_of_locallyCompact_secondCountable
 
 section
 -- Porting note: doesn't work on the same line
@@ -289,7 +298,7 @@ protected noncomputable def LocallyFinite.encodable {ι : Type*} {f : ι → Set
 /-- In a topological space with sigma compact topology, if `f` is a function that sends each point
 `x` of a closed set `s` to a neighborhood of `x` within `s`, then for some countable set `t ⊆ s`,
 the neighborhoods `f x`, `x ∈ t`, cover the whole set `s`. -/
-theorem countable_cover_nhdsWithin_of_sigma_compact {f : X → Set X} {s : Set X} (hs : IsClosed s)
+theorem countable_cover_nhdsWithin_of_sigmaCompact {f : X → Set X} {s : Set X} (hs : IsClosed s)
     (hf : ∀ x ∈ s, f x ∈ 𝓝[s] x) : ∃ t ⊆ s, t.Countable ∧ s ⊆ ⋃ x ∈ t, f x := by
   simp only [nhdsWithin, mem_inf_principal] at hf
   choose t ht hsub using fun n =>
@@ -301,17 +310,22 @@ theorem countable_cover_nhdsWithin_of_sigma_compact {f : X → Set X} {s : Set X
   rcases mem_iUnion₂.1 (hsub n ⟨hn, hx⟩) with ⟨y, hyt : y ∈ t n, hyf : x ∈ s → x ∈ f y⟩
   exact ⟨y, mem_iUnion.2 ⟨n, hyt⟩, hyf hx⟩
 
+@[deprecated (since := "2024-11-13")] alias
+countable_cover_nhdsWithin_of_sigma_compact := countable_cover_nhdsWithin_of_sigmaCompact
+
 /-- In a topological space with sigma compact topology, if `f` is a function that sends each
 point `x` to a neighborhood of `x`, then for some countable set `s`, the neighborhoods `f x`,
 `x ∈ s`, cover the whole space. -/
-theorem countable_cover_nhds_of_sigma_compact {f : X → Set X} (hf : ∀ x, f x ∈ 𝓝 x) :
+theorem countable_cover_nhds_of_sigmaCompact {f : X → Set X} (hf : ∀ x, f x ∈ 𝓝 x) :
     ∃ s : Set X, s.Countable ∧ ⋃ x ∈ s, f x = univ := by
   simp only [← nhdsWithin_univ] at hf
-  rcases countable_cover_nhdsWithin_of_sigma_compact isClosed_univ fun x _ => hf x with
+  rcases countable_cover_nhdsWithin_of_sigmaCompact isClosed_univ fun x _ => hf x with
     ⟨s, -, hsc, hsU⟩
   exact ⟨s, hsc, univ_subset_iff.1 hsU⟩
 end
 
+@[deprecated (since := "2024-11-13")] alias
+countable_cover_nhds_of_sigma_compact := countable_cover_nhds_of_sigmaCompact
 
 
 /-- An [exhaustion by compact sets](https://en.wikipedia.org/wiki/Exhaustion_by_compact_sets) of a

@@ -662,7 +662,7 @@ theorem setIntegral_gt_gt {R : ℝ} {f : X → ℝ} (hR : 0 ≤ R)
   have : IntegrableOn (fun _ => R) {x | ↑R < f x} μ := by
     refine ⟨aestronglyMeasurable_const, lt_of_le_of_lt ?_ hfint.2⟩
     refine setLIntegral_mono_ae hfint.1.ennnorm <| ae_of_all _ fun x hx => ?_
-    simp only [ENNReal.coe_le_coe, Real.nnnorm_of_nonneg hR,
+    simp only [ENNReal.coe_le_coe, Real.nnnorm_of_nonneg hR, enorm_eq_nnnorm,
       Real.nnnorm_of_nonneg (hR.trans <| le_of_lt hx), Subtype.mk_le_mk]
     exact le_of_lt hx
   rw [← sub_pos, ← smul_eq_mul, ← setIntegral_const, ← integral_sub hfint this,
@@ -941,7 +941,7 @@ theorem integrableOn_iUnion_of_summable_integral_norm {f : X → E} {s : ι → 
     (h : Summable fun i : ι => ∫ x : X in s i, ‖f x‖ ∂μ) : IntegrableOn f (iUnion s) μ := by
   refine ⟨AEStronglyMeasurable.iUnion fun i => (hi i).1, (lintegral_iUnion_le _ _).trans_lt ?_⟩
   have B := fun i => lintegral_coe_eq_integral (fun x : X => ‖f x‖₊) (hi i).norm
-  rw [tsum_congr B]
+  simp_rw [enorm_eq_nnnorm, tsum_congr B]
   have S' :
     Summable fun i : ι =>
       (⟨∫ x : X in s i, ‖f x‖₊ ∂μ, setIntegral_nonneg (hs i) fun x _ => NNReal.coe_nonneg _⟩ :
@@ -1019,10 +1019,9 @@ theorem Lp_toLp_restrict_smul (c : 𝕜) (f : Lp F p μ) (s : Set X) :
 `(Lp.memℒp f).restrict s).toLp f`. This map is non-expansive. -/
 theorem norm_Lp_toLp_restrict_le (s : Set X) (f : Lp E p μ) :
     ‖((Lp.memℒp f).restrict s).toLp f‖ ≤ ‖f‖ := by
-  rw [Lp.norm_def, Lp.norm_def, ENNReal.toReal_le_toReal (Lp.eLpNorm_ne_top _)
-    (Lp.eLpNorm_ne_top _)]
-  apply (le_of_eq _).trans (eLpNorm_mono_measure _ (Measure.restrict_le_self (s := s)))
-  exact eLpNorm_congr_ae (Memℒp.coeFn_toLp _)
+  rw [Lp.norm_def, Lp.norm_def, eLpNorm_congr_ae (Memℒp.coeFn_toLp _)]
+  refine ENNReal.toReal_mono (Lp.eLpNorm_ne_top _) ?_
+  exact eLpNorm_mono_measure _ Measure.restrict_le_self
 
 variable (X F 𝕜) in
 /-- Continuous linear map sending a function of `Lp F p μ` to the same function in
@@ -1400,7 +1399,7 @@ theorem integral_withDensity_eq_integral_smul {f : X → ℝ≥0} (f_meas : Meas
     · exact integral_nonneg fun x => NNReal.coe_nonneg _
     · refine ⟨f_meas.coe_nnreal_real.aemeasurable.aestronglyMeasurable, ?_⟩
       rw [withDensity_apply _ s_meas] at hs
-      rw [HasFiniteIntegral]
+      rw [hasFiniteIntegral_iff_nnnorm]
       convert hs with x
       simp only [NNReal.nnnorm_eq]
   · intro u u' _ u_int u'_int h h'
@@ -1493,7 +1492,7 @@ theorem measure_le_lintegral_thickenedIndicator (μ : Measure X) {E : Set X}
 
 end thickenedIndicator
 
--- We declare a new `{X : Type*}` to discard the instance `[MeasureableSpace X]`
+-- We declare a new `{X : Type*}` to discard the instance `[MeasurableSpace X]`
 -- which has been in scope for the entire file up to this point.
 variable {X : Type*}
 
