@@ -43,9 +43,8 @@ theorem isOrthoIdempotent_idempotent [DecidableEq I] (V : I → Ideal R)
   idem := isIdempotentElem_idempotent V
   ortho := fun i j hij ↦ by
     simp only
-    rw [← smul_eq_mul, idempotent, idempotent, ← Submodule.coe_smul, ← smul_apply,
-      ← decompose_smul, smul_eq_mul, mul_one, decompose_coe, of_eq_of_ne (h := hij),
-      Submodule.coe_zero]
+    rw [← decompose_eq_mul_idempotent, idempotent, decompose_coe,
+      of_eq_of_ne (h := hij), Submodule.coe_zero]
 
 end OrthogonalIdempotents
 
