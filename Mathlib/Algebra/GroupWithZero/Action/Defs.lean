@@ -3,8 +3,10 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yury Kudryashov
 -/
-import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Action.Opposite
+import Mathlib.Algebra.Group.Nat.Basic
+import Mathlib.Algebra.GroupWithZero.Hom
+import Mathlib.Algebra.GroupWithZero.Opposite
 
 /-!
 # Definitions of group actions
@@ -40,7 +42,7 @@ assert_not_exists Ring
 
 open Function
 
-variable {M N A B α β : Type*}
+variable {M M₀ M₀' N A A' B α β : Type*}
 
 /-- Typeclass for scalar multiplication that preserves `0` on the right. -/
 class SMulZeroClass (M A : Type*) [Zero A] extends SMul M A where
@@ -105,6 +107,168 @@ def SMulZeroClass.toZeroHom (x : M) :
   map_zero' := smul_zero x
 
 end smul_zero
+
+section Zero
+
+variable (M₀ A)
+
+/-- `SMulWithZero` is a class consisting of a Type `M₀` with `0 ∈ M₀` and a scalar multiplication
+of `M₀` on a Type `A` with `0`, such that the equality `r • m = 0` holds if at least one among `r`
+or `m` equals `0`. -/
+class SMulWithZero [Zero M₀] [Zero A] extends SMulZeroClass M₀ A where
+  /-- Scalar multiplication by the scalar `0` is `0`. -/
+  zero_smul : ∀ m : A, (0 : M₀) • m = 0
+
+instance MulZeroClass.toSMulWithZero [MulZeroClass M₀] : SMulWithZero M₀ M₀ where
+  smul := (· * ·)
+  smul_zero := mul_zero
+  zero_smul := zero_mul
+
+/-- Like `MulZeroClass.toSMulWithZero`, but multiplies on the right. -/
+instance MulZeroClass.toOppositeSMulWithZero [MulZeroClass M₀] : SMulWithZero M₀ᵐᵒᵖ M₀ where
+  smul := (· • ·)
+  smul_zero _ := zero_mul _
+  zero_smul := mul_zero
+
+variable {A} [Zero M₀] [Zero A] [SMulWithZero M₀ A]
+
+@[simp]
+theorem zero_smul (m : A) : (0 : M₀) • m = 0 :=
+  SMulWithZero.zero_smul m
+
+variable {M₀} {a : M₀} {b : A}
+
+lemma smul_eq_zero_of_left (h : a = 0) (b : A) : a • b = 0 := h.symm ▸ zero_smul _ b
+lemma left_ne_zero_of_smul : a • b ≠ 0 → a ≠ 0 := mt fun h ↦ smul_eq_zero_of_left h b
+
+variable [Zero M₀'] [Zero A'] [SMul M₀ A']
+
+/-- Pullback a `SMulWithZero` structure along an injective zero-preserving homomorphism.
+See note [reducible non-instances]. -/
+protected abbrev Function.Injective.smulWithZero (f : ZeroHom A' A) (hf : Function.Injective f)
+    (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) :
+    SMulWithZero M₀ A' where
+  smul := (· • ·)
+  zero_smul a := hf <| by simp [smul]
+  smul_zero a := hf <| by simp [smul]
+
+/-- Pushforward a `SMulWithZero` structure along a surjective zero-preserving homomorphism.
+See note [reducible non-instances]. -/
+protected abbrev Function.Surjective.smulWithZero (f : ZeroHom A A') (hf : Function.Surjective f)
+    (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) :
+    SMulWithZero M₀ A' where
+  smul := (· • ·)
+  zero_smul m := by
+    rcases hf m with ⟨x, rfl⟩
+    simp [← smul]
+  smul_zero c := by rw [← f.map_zero, ← smul, smul_zero]
+
+variable (A)
+
+/-- Compose a `SMulWithZero` with a `ZeroHom`, with action `f r' • m` -/
+def SMulWithZero.compHom (f : ZeroHom M₀' M₀) : SMulWithZero M₀' A where
+  smul := (f · • ·)
+  smul_zero m := smul_zero (f m)
+  zero_smul m := by show (f 0) • m = 0; rw [map_zero, zero_smul]
+
+end Zero
+
+instance AddMonoid.natSMulWithZero [AddMonoid A] : SMulWithZero ℕ A where
+  smul_zero := _root_.nsmul_zero
+  zero_smul := zero_nsmul
+
+instance AddGroup.intSMulWithZero [AddGroup A] : SMulWithZero ℤ A where
+  smul_zero := zsmul_zero
+  zero_smul := zero_zsmul
+
+section MonoidWithZero
+
+variable [MonoidWithZero M₀] [MonoidWithZero M₀'] [Zero A]
+variable (M₀ A)
+
+/-- An action of a monoid with zero `M₀` on a Type `A`, also with `0`, extends `MulAction` and
+is compatible with `0` (both in `M₀` and in `A`), with `1 ∈ M₀`, and with associativity of
+multiplication on the monoid `A`. -/
+class MulActionWithZero extends MulAction M₀ A where
+  -- these fields are copied from `SMulWithZero`, as `extends` behaves poorly
+  /-- Scalar multiplication by any element send `0` to `0`. -/
+  smul_zero : ∀ r : M₀, r • (0 : A) = 0
+  /-- Scalar multiplication by the scalar `0` is `0`. -/
+  zero_smul : ∀ m : A, (0 : M₀) • m = 0
+
+-- see Note [lower instance priority]
+instance (priority := 100) MulActionWithZero.toSMulWithZero (M₀ A) {_ : MonoidWithZero M₀}
+    {_ : Zero A} [m : MulActionWithZero M₀ A] : SMulWithZero M₀ A :=
+  { m with }
+
+/-- See also `Semiring.toModule` -/
+instance MonoidWithZero.toMulActionWithZero : MulActionWithZero M₀ M₀ :=
+  { MulZeroClass.toSMulWithZero M₀, Monoid.toMulAction M₀ with }
+
+/-- Like `MonoidWithZero.toMulActionWithZero`, but multiplies on the right. See also
+`Semiring.toOppositeModule` -/
+instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero M₀ᵐᵒᵖ M₀ :=
+  { MulZeroClass.toOppositeSMulWithZero M₀, Monoid.toOppositeMulAction with }
+
+protected lemma MulActionWithZero.subsingleton
+    [MulActionWithZero M₀ A] [Subsingleton M₀] : Subsingleton A :=
+  ⟨fun x y => by
+    rw [← one_smul M₀ x, ← one_smul M₀ y, Subsingleton.elim (1 : M₀) 0, zero_smul, zero_smul]⟩
+
+protected lemma MulActionWithZero.nontrivial
+    [MulActionWithZero M₀ A] [Nontrivial A] : Nontrivial M₀ :=
+  (subsingleton_or_nontrivial M₀).resolve_left fun _ =>
+    not_subsingleton A <| MulActionWithZero.subsingleton M₀ A
+
+variable {M₀ A}
+variable [MulActionWithZero M₀ A] [Zero A'] [SMul M₀ A'] (p : Prop) [Decidable p]
+
+lemma ite_zero_smul (a : M₀) (b : A) : (if p then a else 0 : M₀) • b = if p then a • b else 0 := by
+  rw [ite_smul, zero_smul]
+
+lemma boole_smul (a : A) : (if p then 1 else 0 : M₀) • a = if p then a else 0 := by simp
+
+lemma Pi.single_apply_smul {ι : Type*} [DecidableEq ι] (x : A) (i j : ι) :
+    (Pi.single i 1 : ι → M₀) j • x = (Pi.single i x : ι → A) j := by
+  rw [single_apply, ite_smul, one_smul, zero_smul, single_apply]
+
+/-- Pullback a `MulActionWithZero` structure along an injective zero-preserving homomorphism.
+See note [reducible non-instances]. -/
+protected abbrev Function.Injective.mulActionWithZero (f : ZeroHom A' A) (hf : Function.Injective f)
+    (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) : MulActionWithZero M₀ A' :=
+  { hf.mulAction f smul, hf.smulWithZero f smul with }
+
+/-- Pushforward a `MulActionWithZero` structure along a surjective zero-preserving homomorphism.
+See note [reducible non-instances]. -/
+protected abbrev Function.Surjective.mulActionWithZero (f : ZeroHom A A')
+    (hf : Function.Surjective f) (smul : ∀ (a : M₀) (b), f (a • b) = a • f b) :
+    MulActionWithZero M₀ A' :=
+  { hf.mulAction f smul, hf.smulWithZero f smul with }
+
+variable (A)
+
+/-- Compose a `MulActionWithZero` with a `MonoidWithZeroHom`, with action `f r' • m` -/
+def MulActionWithZero.compHom (f : M₀' →*₀ M₀) : MulActionWithZero M₀' A :=
+  { SMulWithZero.compHom A f.toZeroHom with
+    mul_smul := fun r s m => by show f (r * s) • m = (f r) • (f s) • m; simp [mul_smul]
+    one_smul := fun m => by show (f 1) • m = m; simp }
+
+end MonoidWithZero
+
+section GroupWithZero
+
+variable {α β : Type*} [GroupWithZero α] [GroupWithZero β] [MulActionWithZero α β]
+
+theorem smul_inv₀ [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (x : β) :
+    (c • x)⁻¹ = c⁻¹ • x⁻¹ := by
+  obtain rfl | hc := eq_or_ne c 0
+  · simp only [inv_zero, zero_smul]
+  obtain rfl | hx := eq_or_ne x 0
+  · simp only [inv_zero, smul_zero]
+  · refine inv_eq_of_mul_eq_one_left ?_
+    rw [smul_mul_smul_comm, inv_mul_cancel₀ hc, inv_mul_cancel₀ hx, one_smul]
+
+end GroupWithZero
 
 /-- Typeclass for scalar multiplication that preserves `0` and `+` on the right.
 
