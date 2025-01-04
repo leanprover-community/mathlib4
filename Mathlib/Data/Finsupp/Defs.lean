@@ -257,7 +257,7 @@ theorem single_eq_of_ne (h : a ≠ a') : (single a b : α →₀ M) a' = 0 := by
   classical exact Pi.single_eq_of_ne' h _
 
 theorem single_eq_update [DecidableEq α] (a : α) (b : M) :
-    ⇑(single a b) = Function.update (0 :) a b := by
+    ⇑(single a b) = Function.update (0 : _) a b := by
   classical rw [single_eq_set_indicator, ← Set.piecewise_eq_indicator, Set.piecewise_singleton]
 
 theorem single_eq_pi_single [DecidableEq α] (a : α) (b : M) : ⇑(single a b) = Pi.single a b :=

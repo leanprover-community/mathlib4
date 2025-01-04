@@ -300,7 +300,7 @@ lemma δAux_toAlgHom {Q : Generators.{u₁} S T}
 lemma δAux_ofComp (x : (Q.comp P).Ring) :
     δAux R Q ((Q.ofComp P).toAlgHom x) =
       P.toExtension.toKaehler.baseChange T (CotangentSpace.compEquiv Q P
-        (1 ⊗ₜ[(Q.comp P).Ring] (D R (Q.comp P).Ring) x :)).2 := by
+        (1 ⊗ₜ[(Q.comp P).Ring] (D R (Q.comp P).Ring) x : _)).2 := by
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower (Q.comp P).Ring (Q.comp P).Ring T := IsScalarTower.left _
   induction' x using MvPolynomial.induction_on with s x₁ x₂ hx₁ hx₂ p n IH

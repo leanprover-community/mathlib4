@@ -208,13 +208,13 @@ theorem smul_def {M : Type*} [MulAction ℝ M] (c : ℝ≥0) (x : M) : c • x =
   rfl
 
 instance {M N : Type*} [MulAction ℝ M] [MulAction ℝ N] [SMul M N] [IsScalarTower ℝ M N] :
-    IsScalarTower ℝ≥0 M N where smul_assoc r := (smul_assoc (r : ℝ) :)
+    IsScalarTower ℝ≥0 M N where smul_assoc r := smul_assoc (r : ℝ)
 
 instance smulCommClass_left {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCommClass ℝ M N] :
-    SMulCommClass ℝ≥0 M N where smul_comm r := (smul_comm (r : ℝ) :)
+    SMulCommClass ℝ≥0 M N where smul_comm r := smul_comm (r : ℝ)
 
 instance smulCommClass_right {M N : Type*} [MulAction ℝ N] [SMul M N] [SMulCommClass M ℝ N] :
-    SMulCommClass M ℝ≥0 N where smul_comm m r := (smul_comm m (r : ℝ) :)
+    SMulCommClass M ℝ≥0 N where smul_comm m r := smul_comm m (r : ℝ)
 
 /-- A `DistribMulAction` over `ℝ` restricts to a `DistribMulAction` over `ℝ≥0`. -/
 instance {M : Type*} [AddMonoid M] [DistribMulAction ℝ M] : DistribMulAction ℝ≥0 M :=

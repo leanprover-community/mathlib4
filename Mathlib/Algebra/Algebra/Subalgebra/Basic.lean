@@ -995,7 +995,7 @@ instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower 
 instance isScalarTower_mid {R S T : Type*} [CommSemiring R] [Semiring S] [AddCommMonoid T]
     [Algebra R S] [Module R T] [Module S T] [IsScalarTower R S T] (S' : Subalgebra R S) :
     IsScalarTower R S' T :=
-  ⟨fun _x y _z => (smul_assoc _ (y : S) _ :)⟩
+  ⟨fun _x y _z => smul_assoc _ (y : S) _⟩
 
 instance [SMul A α] [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S α :=
   inferInstanceAs (FaithfulSMul S.toSubsemiring α)

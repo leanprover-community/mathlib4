@@ -471,12 +471,12 @@ theorem coe_openToLocalization (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpect
     (hx : x ∈ U) :
     (openToLocalization R U x hx :
         (structureSheaf R).1.obj (op U) → Localization.AtPrime x.asIdeal) =
-      fun s => (s.1 ⟨x, hx⟩ :) :=
+      fun s => s.1 ⟨x, hx⟩ :=
   rfl
 
 theorem openToLocalization_apply (U : Opens (PrimeSpectrum.Top R)) (x : PrimeSpectrum.Top R)
     (hx : x ∈ U) (s : (structureSheaf R).1.obj (op U)) :
-    openToLocalization R U x hx s = (s.1 ⟨x, hx⟩ :) :=
+    openToLocalization R U x hx s = s.1 ⟨x, hx⟩ :=
   rfl
 
 /-- The ring homomorphism from the stalk of the structure sheaf of `R` at a point corresponding to

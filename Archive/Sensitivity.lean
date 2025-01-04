@@ -368,7 +368,7 @@ open Classical in
 subspace of `V (m+1)` spanned by the corresponding basis vectors non-trivially
 intersects the range of `g m`. -/
 theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
-    ∃ y ∈ Span (e '' H) ⊓ range (g m), y ≠ (0 :) := by
+    ∃ y ∈ Span (e '' H) ⊓ range (g m), y ≠ 0 := by
   let W := Span (e '' H)
   let img := range (g m)
   suffices 0 < dim (W ⊓ img) by

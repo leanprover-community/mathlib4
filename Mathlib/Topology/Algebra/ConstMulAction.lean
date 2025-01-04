@@ -162,7 +162,7 @@ variable [Monoid M] [MulAction M α] [ContinuousConstSMul M α]
 
 @[to_additive]
 instance Units.continuousConstSMul : ContinuousConstSMul Mˣ α where
-  continuous_const_smul m := (continuous_const_smul (m : M) :)
+  continuous_const_smul m := continuous_const_smul (m : M)
 
 @[to_additive]
 theorem smul_closure_subset (c : M) (s : Set α) : c • closure s ⊆ closure (c • s) :=

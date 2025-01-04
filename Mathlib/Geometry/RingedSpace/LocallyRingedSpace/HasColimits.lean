@@ -240,7 +240,7 @@ theorem coequalizer_π_stalk_isLocalHom (x : Y) :
     SetLike.ext' hV.symm
   have V_open : IsOpen ((coequalizer.π f.toShHom g.toShHom).base '' V.1) :=
     imageBasicOpen_image_open f g U s
-  have VleU : (⟨(coequalizer.π f.toShHom g.toShHom).base '' V.1, V_open⟩ :) ≤ U :=
+  have VleU : ⟨(coequalizer.π f.toShHom g.toShHom).base '' V.1, V_open⟩ ≤ U :=
     Set.image_subset_iff.mpr (Y.toRingedSpace.basicOpen_le _)
   have hxV : x ∈ V := ⟨hU, ha⟩
   rw [← CommRingCat.germ_res_apply (coequalizer f.toShHom g.toShHom).presheaf (homOfLE VleU) _
