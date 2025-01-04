@@ -21,7 +21,7 @@ variable {R I : Type*} [Ring R] [DecidableEq I] (V : I → Ideal R) [Decompositi
 
 /-- The decomposition of `(1 : R)` into the direct sum of ideals which is also the identity
   of the ring induced by the directsum.-/
-def idempotent   (i : I) : R :=
+def idempotent (i : I) : R :=
   decompose V 1 i
 
 lemma decompose_eq_mul_idempotent
