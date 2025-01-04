@@ -428,33 +428,6 @@ attribute [bound] norm_nonneg
 @[to_additive (attr := simp) abs_norm]
 theorem abs_norm' (z : E) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg' _
 
-namespace Mathlib.Meta.Positivity
-
-open Lean Meta Qq Function
-
-/-- Extension for the `positivity` tactic: multiplicative norms are nonnegative, via
-`norm_nonneg'`. -/
-@[positivity Norm.norm _]
-def evalMulNorm : PositivityExt where eval {u α} _zα _pα e := do
-  match u, α, e with
-  | 0, ~q(ℝ), ~q(@Norm.norm $β $instDist $a) =>
-    let _inst ← synthInstanceQ q(SeminormedGroup $β)
-    assertInstancesCommute
-    pure (.nonnegative q(norm_nonneg' $a))
-  | _, _, _ => throwError "not ‖ · ‖"
-
-/-- Extension for the `positivity` tactic: additive norms are nonnegative, via `norm_nonneg`. -/
-@[positivity Norm.norm _]
-def evalAddNorm : PositivityExt where eval {u α} _zα _pα e := do
-  match u, α, e with
-  | 0, ~q(ℝ), ~q(@Norm.norm $β $instDist $a) =>
-    let _inst ← synthInstanceQ q(SeminormedAddGroup $β)
-    assertInstancesCommute
-    pure (.nonnegative q(norm_nonneg $a))
-  | _, _, _ => throwError "not ‖ · ‖"
-
-end Mathlib.Meta.Positivity
-
 @[to_additive (attr := simp) norm_zero]
 theorem norm_one' : ‖(1 : E)‖ = 0 := by rw [← dist_one_right, dist_self]
 
@@ -875,6 +848,10 @@ theorem squeeze_one_norm {f : α → E} {a : α → ℝ} {t₀ : Filter α} (h :
 theorem tendsto_norm_div_self (x : E) : Tendsto (fun a => ‖a / x‖) (𝓝 x) (𝓝 0) := by
   simpa [dist_eq_norm_div] using
     tendsto_id.dist (tendsto_const_nhds : Tendsto (fun _a => (x : E)) (𝓝 x) _)
+
+@[to_additive]
+theorem tendsto_norm_div_self_nhdsGE (x : E) : Tendsto (fun a ↦ ‖a / x‖) (𝓝 x) (𝓝[≥] 0) :=
+  tendsto_nhdsWithin_iff.mpr ⟨tendsto_norm_div_self x, by simp⟩
 
 @[to_additive tendsto_norm]
 theorem tendsto_norm' {x : E} : Tendsto (fun a => ‖a‖) (𝓝 x) (𝓝 ‖x‖) := by
@@ -1377,18 +1354,28 @@ lemma nnnorm_pos' : 0 < ‖a‖₊ ↔ a ≠ 1 := pos_iff_ne_zero.trans nnnorm_n
 
 /-- See `tendsto_norm_one` for a version with full neighborhoods. -/
 @[to_additive "See `tendsto_norm_zero` for a version with full neighborhoods."]
-lemma tendsto_norm_one' : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>] 0) :=
+lemma tendsto_norm_nhdsNE_one : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>] 0) :=
   tendsto_norm_one.inf <| tendsto_principal_principal.2 fun _ hx ↦ norm_pos_iff'.2 hx
 
+@[deprecated (since := "2024-12-22")]
+alias tendsto_norm_zero' := tendsto_norm_nhdsNE_zero
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_norm_one' := tendsto_norm_nhdsNE_one
+
+@[deprecated (since := "2024-12-22")]
+alias tendsto_norm_nhdsWithin_zero := tendsto_norm_nhdsNE_zero
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_norm_nhdsWithin_one := tendsto_norm_nhdsNE_one
+
 @[to_additive]
-theorem tendsto_norm_div_self_punctured_nhds (a : E) :
-    Tendsto (fun x => ‖x / a‖) (𝓝[≠] a) (𝓝[>] 0) :=
+theorem tendsto_norm_div_self_nhdsNE (a : E) : Tendsto (fun x => ‖x / a‖) (𝓝[≠] a) (𝓝[>] 0) :=
   (tendsto_norm_div_self a).inf <|
     tendsto_principal_principal.2 fun _x hx => norm_pos_iff'.2 <| div_ne_one.2 hx
 
-@[to_additive]
-theorem tendsto_norm_nhdsWithin_one : Tendsto (norm : E → ℝ) (𝓝[≠] 1) (𝓝[>] 0) :=
-  tendsto_norm_one.inf <| tendsto_principal_principal.2 fun _x => norm_pos_iff'.2
+@[deprecated (since := "2024-12-22")]
+alias tendsto_norm_sub_self_punctured_nhds := tendsto_norm_sub_self_nhdsNE
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_norm_div_self_punctured_nhds := tendsto_norm_div_self_nhdsNE
 
 variable (E)
 
@@ -1401,9 +1388,15 @@ def normGroupNorm : GroupNorm E :=
 theorem coe_normGroupNorm : ⇑(normGroupNorm E) = norm :=
   rfl
 
-@[to_additive comap_norm_nhdsWithin_Ioi_zero]
-lemma comap_norm_nhdsWithin_Ioi_zero' : comap norm (𝓝[>] 0) = 𝓝[≠] (1 : E) := by
+/-- A version of `comap_norm_nhdsGT_zero` for a multiplicative normed group. -/
+@[to_additive comap_norm_nhdsGT_zero]
+lemma comap_norm_nhdsGT_zero' : comap norm (𝓝[>] 0) = 𝓝[≠] (1 : E) := by
   simp [nhdsWithin, comap_norm_nhds_one, Set.preimage, Set.compl_def]
+
+@[deprecated (since := "2024-12-22")]
+alias comap_norm_nhdsWithin_Ioi_zero := comap_norm_nhdsGT_zero
+@[to_additive existing comap_norm_nhdsWithin_Ioi_zero, deprecated (since := "2024-12-22")]
+alias comap_norm_nhdsWithin_Ioi_zero' := comap_norm_nhdsGT_zero'
 
 end NormedGroup
 
@@ -1419,6 +1412,58 @@ theorem hasCompactSupport_norm_iff : (HasCompactSupport fun x => ‖f x‖) ↔ 
 alias ⟨_, HasCompactSupport.norm⟩ := hasCompactSupport_norm_iff
 
 end NormedAddGroup
+
+/-! ### `positivity` extensions -/
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq Function
+
+/-- Extension for the `positivity` tactic: multiplicative norms are always nonnegative, and positive
+on non-one inputs. -/
+@[positivity ‖_‖]
+def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
+    let _seminormedGroup_E ← synthInstanceQ q(SeminormedGroup $E)
+    assertInstancesCommute
+    -- Check whether we are in a normed group and whether the context contains a `a ≠ 1` assumption
+    let o : Option (Q(NormedGroup $E) × Q($a ≠ 1)) := ← do
+      let .some normedGroup_E ← trySynthInstanceQ q(NormedGroup $E) | return none
+      let some pa ← findLocalDeclWithTypeQ? q($a ≠ 1) | return none
+      return some (normedGroup_E, pa)
+    match o with
+    -- If so, return a proof of `0 < ‖a‖`
+    | some (_normedGroup_E, pa) =>
+      assertInstancesCommute
+      return .positive q(norm_pos_iff'.2 $pa)
+    -- Else, return a proof of `0 ≤ ‖a‖`
+    | none => return .nonnegative q(norm_nonneg' $a)
+  | _, _, _ => throwError "not `‖·‖`"
+
+/-- Extension for the `positivity` tactic: additive norms are always nonnegative, and positive
+on non-zero inputs. -/
+@[positivity ‖_‖]
+def evalAddNorm : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
+    let _seminormedAddGroup_E ← synthInstanceQ q(SeminormedAddGroup $E)
+    assertInstancesCommute
+    -- Check whether we are in a normed group and whether the context contains a `a ≠ 0` assumption
+    let o : Option (Q(NormedAddGroup $E) × Q($a ≠ 0)) := ← do
+      let .some normedAddGroup_E ← trySynthInstanceQ q(NormedAddGroup $E) | return none
+      let some pa ← findLocalDeclWithTypeQ? q($a ≠ 0) | return none
+      return some (normedAddGroup_E, pa)
+    match o with
+    -- If so, return a proof of `0 < ‖a‖`
+    | some (_normedAddGroup_E, pa) =>
+      assertInstancesCommute
+      return .positive q(norm_pos_iff.2 $pa)
+    -- Else, return a proof of `0 ≤ ‖a‖`
+    | none => return .nonnegative q(norm_nonneg $a)
+  | _, _, _ => throwError "not `‖·‖`"
+
+end Mathlib.Meta.Positivity
 
 /-! ### Subgroups of normed groups -/
 

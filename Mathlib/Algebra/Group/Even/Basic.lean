@@ -90,7 +90,7 @@ end Add
 @[to_additive (attr := simp)]
 lemma IsSquare.one [MulOneClass α] : IsSquare (1 : α) := ⟨1, (mul_one _).symm⟩
 
-@[to_additive, deprecated (since := "2024-08-27")] alias isSquare_one := IsSquare.one
+@[to_additive, deprecated (since := "2024-12-27")] alias isSquare_one := IsSquare.one
 
 @[to_additive]
 lemma IsSquare.map [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
@@ -118,8 +118,8 @@ attribute [to_additive Even.exists_two_nsmul
 
 @[to_additive Even.two_nsmul] lemma IsSquare.sq (a : α) : IsSquare (a ^ 2) := ⟨a, pow_two _⟩
 
-@[deprecated (since := "2024-12-25")] alias IsSquare_sq := IsSquare.sq
-@[deprecated (since := "2024-12-25")] alias even_two_nsmul := Even.two_nsmul
+@[deprecated (since := "2024-12-27")] alias IsSquare_sq := IsSquare.sq
+@[deprecated (since := "2024-12-27")] alias even_two_nsmul := Even.two_nsmul
 
 end Monoid
 

@@ -214,7 +214,7 @@ theorem Subsemiring.toNonUnitalSubsemiring_injective :
     show (S₁.toNonUnitalSubsemiring : Set R) = S₂ from SetLike.ext'_iff.1 h)
 
 @[simp]
-theorem Subsemiring.toNonUnitalSubsemiring_eq {S₁ S₂ : Subsemiring R} :
+theorem Subsemiring.toNonUnitalSubsemiring_inj {S₁ S₂ : Subsemiring R} :
     S₁.toNonUnitalSubsemiring = S₂.toNonUnitalSubsemiring ↔ S₁ = S₂ :=
   toNonUnitalSubsemiring_injective.eq_iff
 

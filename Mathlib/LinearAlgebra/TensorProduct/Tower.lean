@@ -437,6 +437,11 @@ theorem cancelBaseChange_symm_tmul (m : M) (n : N) :
     (cancelBaseChange R A B M N).symm (m ⊗ₜ n) = m ⊗ₜ (1 ⊗ₜ n) :=
   rfl
 
+theorem lTensor_comp_cancelBaseChange (f : N →ₗ[R] Q) :
+    lTensor _ _ f ∘ₗ cancelBaseChange R A B M N =
+      (cancelBaseChange R A B M Q).toLinearMap ∘ₗ lTensor _ _ (lTensor _ _ f) := by
+  ext; simp
+
 end cancelBaseChange
 
 section leftComm
