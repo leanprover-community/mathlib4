@@ -183,9 +183,9 @@ lemma PairwiseDisjoint.finite_biUnion_iff {f : β → Set α} {s : Set β}
 
 /-- An indexed union of pairwise disjoint sets is finite iff all sets are finite, and all but
 finitely many are empty. -/
-lemma finite_iUnion_iff_of_pairwiseDisjoint {f : β → Set α} (hs : univ.PairwiseDisjoint f) :
+lemma PairwiseDisjoint.finite_iUnion_iff {f : β → Set α} (hs : univ.PairwiseDisjoint f) :
     Set.Finite (⋃ i, f i) ↔ (∀ i, Set.Finite (f i)) ∧ Set.Finite {i | (f i).Nonempty} := by
-  rw [← biUnion_univ, Set.finite_biUnion_iff_of_pairwiseDisjoint hs]
+  rw [← biUnion_univ, hs.finite_biUnion_iff]
   simp
 
 section preimage
