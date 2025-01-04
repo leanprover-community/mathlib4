@@ -301,7 +301,7 @@ theorem Integrable.integral_prod_left ⦃f : α × β → E⦄ (hf : Integrable 
       (norm_integral_le_integral_norm _).trans_eq <|
         (norm_of_nonneg <|
             integral_nonneg_of_ae <|
-              Eventually.of_forall fun y => (norm_nonneg (f (x, y)) : _)).symm
+              Eventually.of_forall fun y => (norm_nonneg (f (x, y)) :)).symm
 
 theorem Integrable.integral_prod_right [SFinite μ] ⦃f : α × β → E⦄
     (hf : Integrable f (μ.prod ν)) : Integrable (fun y => ∫ x, f (x, y) ∂μ) ν :=

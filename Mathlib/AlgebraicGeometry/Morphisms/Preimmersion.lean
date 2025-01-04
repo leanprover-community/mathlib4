@@ -116,7 +116,7 @@ instance : IsStableUnderBaseChange @IsPreimmersion := by
   refine .mk' fun X Y Z f g _ _ ↦ ?_
   have := pullback_fst (P := @SurjectiveOnStalks) f g inferInstance
   constructor
-  let L (x : (pullback f g : _)) : { x : X × Y | f.base x.1 = g.base x.2 } :=
+  let L (x : (pullback f g :)) : { x : X × Y | f.base x.1 = g.base x.2 } :=
     ⟨⟨(pullback.fst f g).base x, (pullback.snd f g).base x⟩,
     by simp only [Set.mem_setOf, ← Scheme.comp_base_apply, pullback.condition]⟩
   have : IsEmbedding L := IsEmbedding.of_comp (by fun_prop) continuous_subtype_val

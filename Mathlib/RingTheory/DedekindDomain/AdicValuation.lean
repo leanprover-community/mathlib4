@@ -364,7 +364,7 @@ variable {K}
 def adicValued : Valued K ℤₘ₀ :=
   Valued.mk' v.valuation
 
-theorem adicValued_apply {x : K} : (v.adicValued.v : _) x = v.valuation x :=
+theorem adicValued_apply {x : K} : v.adicValued.v x = v.valuation x :=
   rfl
 
 variable (K)

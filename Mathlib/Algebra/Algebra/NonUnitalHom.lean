@@ -474,7 +474,7 @@ lemma coe_restrictScalars' (f : A →ₙₐ[S] B) : (f.restrictScalars R : A →
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (A →ₙₐ[S] B) → A →ₙₐ[R] B) :=
-  fun _ _ h ↦ ext (congr_fun h : _)
+  fun _ _ h ↦ ext (congr_fun h :)
 
 end NonUnitalAlgHom
 

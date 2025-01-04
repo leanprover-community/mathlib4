@@ -91,7 +91,7 @@ theorem infLELeft_apply_mk (U V : Opens X) (x) (m) :
 
 @[simp]
 theorem leSupr_apply_mk {ι : Type*} (U : ι → Opens X) (i : ι) (x) (m) :
-    (leSupr U i) ⟨x, m⟩ = ⟨x, (le_iSup U i : _) m⟩ :=
+    (leSupr U i) ⟨x, m⟩ = ⟨x, (le_iSup U i :) m⟩ :=
   rfl
 
 /-- The functor from open sets in `X` to `TopCat`,

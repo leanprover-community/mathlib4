@@ -649,7 +649,7 @@ def localizationMapOfSpecializes {x y : PrimeSpectrum R} (h : x ⤳ y) :
       rw [← PrimeSpectrum.le_iff_specializes, ← asIdeal_le_asIdeal, ← SetLike.coe_subset_coe, ←
         Set.compl_subset_compl] at h
       exact (IsLocalization.map_units (Localization.AtPrime x.asIdeal)
-        ⟨a, show a ∈ x.asIdeal.primeCompl from h ha⟩ : _))
+        ⟨a, show a ∈ x.asIdeal.primeCompl from h ha⟩ :))
 
 section stableUnderSpecialization
 

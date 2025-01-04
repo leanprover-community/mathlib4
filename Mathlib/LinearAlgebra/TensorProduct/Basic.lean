@@ -1529,7 +1529,7 @@ instance CompatibleSMul.int : CompatibleSMul R ℤ M N :=
 
 instance CompatibleSMul.unit {S} [Monoid S] [DistribMulAction S M] [DistribMulAction S N]
     [CompatibleSMul R S M N] : CompatibleSMul R Sˣ M N :=
-  ⟨fun s m n => (CompatibleSMul.smul_tmul (s : S) m n : _)⟩
+  ⟨fun s m n => CompatibleSMul.smul_tmul (s : S) m n⟩
 
 end TensorProduct
 

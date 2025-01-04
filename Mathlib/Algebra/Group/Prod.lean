@@ -697,7 +697,7 @@ def embedProduct (α : Type*) [Monoid α] : αˣ →* α × αᵐᵒᵖ where
 
 @[to_additive]
 theorem embedProduct_injective (α : Type*) [Monoid α] : Function.Injective (embedProduct α) :=
-  fun _ _ h => Units.ext <| (congr_arg Prod.fst h : _)
+  fun _ _ h => Units.ext <| (congr_arg Prod.fst h :)
 
 end Units
 

@@ -228,7 +228,7 @@ def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     -- Porting note: added `letI`s
     letI : AddCommGroup (even Q') := AddSubgroupClass.toAddCommGroup _
     letI : HasDistribNeg (even Q') := NonUnitalNonAssocRing.toHasDistribNeg
-    { bilin := -(even.ι Q' : _).bilin
+    { bilin := -(even.ι Q' :).bilin
       contract := fun m => by
         simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticMap.neg_apply, map_neg, neg_neg]
       contract_mid := fun m₁ m₂ m₃ => by
