@@ -8,7 +8,6 @@ import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.ENat.Defs
 import Mathlib.Data.Nat.Cast.Order.Basic
-import Mathlib.Algebra.Order.Hom.Ring
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.Order.Nat
 
