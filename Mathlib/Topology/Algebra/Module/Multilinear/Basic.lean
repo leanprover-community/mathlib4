@@ -317,6 +317,7 @@ theorem prod_ext_iff {f g : ContinuousMultilinearMap R M₁ (M₂ × M₃)} :
       (ContinuousLinearMap.snd _ _ _).compContinuousMultilinearMap g := by
   rw [← Prod.mk.inj_iff, ← prodEquiv_symm_apply, ← prodEquiv_symm_apply, Equiv.apply_eq_iff_eq]
 
+@[ext]
 theorem prod_ext {f g : ContinuousMultilinearMap R M₁ (M₂ × M₃)}
     (h₁ : (ContinuousLinearMap.fst _ _ _).compContinuousMultilinearMap f =
       (ContinuousLinearMap.fst _ _ _).compContinuousMultilinearMap g)
@@ -330,9 +331,9 @@ theorem eq_prod_iff {f : ContinuousMultilinearMap R M₁ (M₂ × M₃)}
       (ContinuousLinearMap.snd _ _ _).compContinuousMultilinearMap f = h :=
   prod_ext_iff
 
-theorem prod_add_prod [ContinuousAdd M₂] [ContinuousAdd M₃]
+theorem add_prod_add [ContinuousAdd M₂] [ContinuousAdd M₃]
     (f₁ f₂ : ContinuousMultilinearMap R M₁ M₂) (g₁ g₂ : ContinuousMultilinearMap R M₁ M₃) :
-    f₁.prod g₁ + f₂.prod g₂ = (f₁ + f₂).prod (g₁ + g₂) :=
+    (f₁ + f₂).prod (g₁ + g₂) = f₁.prod g₁ + f₂.prod g₂ :=
   rfl
 
 @[simp]
@@ -490,9 +491,14 @@ instance : AddCommGroup (ContinuousMultilinearMap R M₁ M₂) :=
   toMultilinearMap_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
-theorem prod_sub_prod [AddCommGroup M₃] [Module R M₃] [TopologicalSpace M₃] [TopologicalAddGroup M₃]
+theorem neg_prod_neg [AddCommGroup M₃] [Module R M₃] [TopologicalSpace M₃] [TopologicalAddGroup M₃]
+    (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMultilinearMap R M₁ M₃) :
+    (-f).prod (-g) = - f.prod g :=
+  rfl
+
+theorem sub_prod_sub [AddCommGroup M₃] [Module R M₃] [TopologicalSpace M₃] [TopologicalAddGroup M₃]
     (f₁ f₂ : ContinuousMultilinearMap R M₁ M₂) (g₁ g₂ : ContinuousMultilinearMap R M₁ M₃) :
-    f₁.prod g₁ - f₂.prod g₂ = (f₁ - f₂).prod (g₁ - g₂) :=
+    (f₁ - f₂).prod (g₁ - g₂) = f₁.prod g₁ - f₂.prod g₂ :=
   rfl
 
 end TopologicalAddGroup
