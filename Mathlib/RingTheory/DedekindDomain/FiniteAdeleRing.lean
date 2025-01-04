@@ -336,8 +336,30 @@ instance : Algebra R (FiniteAdeleRing R K) :=
 instance : IsScalarTower R K (FiniteAdeleRing R K) :=
   IsScalarTower.of_algebraMap_eq' rfl
 
+/-- Coercion `FiniteAdeleRing R K → K_hat R K`. -/
+@[coe]
+def coe (x : FiniteAdeleRing R K) : K_hat R K := x.1
+
 instance : Coe (FiniteAdeleRing R K) (K_hat R K) where
   coe x := x.1
+
+@[simp, norm_cast]
+theorem coe_one : (1 : FiniteAdeleRing R K) = (1 : K_hat R K) := rfl
+
+@[simp, norm_cast]
+theorem coe_zero: (0 : FiniteAdeleRing R K) = (0 : K_hat R K) := rfl
+
+@[simp, norm_cast]
+theorem coe_add (x y : FiniteAdeleRing R K) : (x + y : FiniteAdeleRing R K) =
+  (x : K_hat R K) + (y : K_hat R K) := rfl
+
+@[simp, norm_cast]
+theorem coe_mul (x y : FiniteAdeleRing R K) : (x * y : FiniteAdeleRing R K) =
+  (x : K_hat R K) * (y : K_hat R K) := rfl
+
+@[simp, norm_cast]
+theorem coe_algebraMap (x : K) : (((algebraMap K (FiniteAdeleRing R K)) x) : K_hat R K) =
+      (algebraMap K (ProdAdicCompletions R K)) x := rfl
 
 @[ext]
 lemma ext {a₁ a₂ : FiniteAdeleRing R K} (h : (a₁ : K_hat R K) = a₂) : a₁ = a₂ :=
@@ -360,6 +382,17 @@ instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
 instance : CoeFun (FiniteAdeleRing R K)
     (fun _ ↦ ∀ (v : HeightOneSpectrum R), adicCompletion K v) where
   coe a v := a.1 v
+
+section Algebra
+
+variable (L : Type*) [Field L] [Algebra L K] [Algebra L (FiniteAdeleRing R K)]
+  [IsScalarTower L K (FiniteAdeleRing R K)]
+
+theorem algebraMap_extension (r : L) :
+  algebraMap L (FiniteAdeleRing R K) r = algebraMap K (FiniteAdeleRing R K) (algebraMap L K r) :=
+  IsScalarTower.algebraMap_apply L K (FiniteAdeleRing R K) r
+
+end Algebra
 
 open scoped algebraMap -- coercion from R to `FiniteAdeleRing R K`
 
