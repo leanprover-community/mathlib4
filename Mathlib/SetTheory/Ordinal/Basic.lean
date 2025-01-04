@@ -192,7 +192,7 @@ theorem type_empty : type (@EmptyRelation Empty) = 0 :=
 
 theorem type_eq_one_of_unique (r) [IsWellOrder α r] [Nonempty α] [Subsingleton α] : type r = 1 := by
   cases nonempty_unique α
-  exact (RelIso.relIsoOfUniqueOfIrrefl r _).ordinal_type_eq
+  exact (RelIso.ofUniqueOfIrrefl r _).ordinal_type_eq
 
 @[simp]
 theorem type_eq_one_iff_unique [IsWellOrder α r] : type r = 1 ↔ Nonempty (Unique α) :=
@@ -236,22 +236,62 @@ protected theorem one_ne_zero : (1 : Ordinal) ≠ 0 :=
 instance nontrivial : Nontrivial Ordinal.{u} :=
   ⟨⟨1, 0, Ordinal.one_ne_zero⟩⟩
 
+/-- `Quotient.inductionOn` specialized to ordinals.
+
+Not to be confused with well-founded recursion `Ordinal.induction`. -/
 @[elab_as_elim]
 theorem inductionOn {C : Ordinal → Prop} (o : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r], C (type r)) : C o :=
   Quot.inductionOn o fun ⟨α, r, wo⟩ => @H α r wo
 
+/-- `Quotient.inductionOn₂` specialized to ordinals.
+
+Not to be confused with well-founded recursion `Ordinal.induction`. -/
 @[elab_as_elim]
 theorem inductionOn₂ {C : Ordinal → Ordinal → Prop} (o₁ o₂ : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s], C (type r) (type s)) : C o₁ o₂ :=
   Quotient.inductionOn₂ o₁ o₂ fun ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ => @H α r wo₁ β s wo₂
 
+/-- `Quotient.inductionOn₃` specialized to ordinals.
+
+Not to be confused with well-founded recursion `Ordinal.induction`. -/
 @[elab_as_elim]
 theorem inductionOn₃ {C : Ordinal → Ordinal → Ordinal → Prop} (o₁ o₂ o₃ : Ordinal)
     (H : ∀ (α r) [IsWellOrder α r] (β s) [IsWellOrder β s] (γ t) [IsWellOrder γ t],
       C (type r) (type s) (type t)) : C o₁ o₂ o₃ :=
   Quotient.inductionOn₃ o₁ o₂ o₃ fun ⟨α, r, wo₁⟩ ⟨β, s, wo₂⟩ ⟨γ, t, wo₃⟩ =>
     @H α r wo₁ β s wo₂ γ t wo₃
+
+open Classical in
+/-- To prove a result on ordinals, it suffices to prove it for order types of well-orders. -/
+@[elab_as_elim]
+theorem inductionOnWellOrder {C : Ordinal → Prop} (o : Ordinal)
+    (H : ∀ (α) [LinearOrder α] [WellFoundedLT α], C (typeLT α)) : C o :=
+  inductionOn o fun α r wo ↦ @H α (linearOrderOfSTO r) wo.toIsWellFounded
+
+open Classical in
+/-- To define a function on ordinals, it suffices to define them on order types of well-orders.
+
+Since `LinearOrder` is data-carrying, `liftOnWellOrder_type` is not a definitional equality, unlike
+`Quotient.liftOn_mk` which is always def-eq. -/
+def liftOnWellOrder {δ : Sort v} (o : Ordinal) (f : ∀ (α) [LinearOrder α] [WellFoundedLT α], δ)
+    (c : ∀ (α) [LinearOrder α] [WellFoundedLT α] (β) [LinearOrder β] [WellFoundedLT β],
+      typeLT α = typeLT β → f α = f β) : δ :=
+  Quotient.liftOn o (fun w ↦ @f w.α (linearOrderOfSTO w.r) w.wo.toIsWellFounded)
+    fun w₁ w₂ h ↦ @c
+      w₁.α (linearOrderOfSTO w₁.r) w₁.wo.toIsWellFounded
+      w₂.α (linearOrderOfSTO w₂.r) w₂.wo.toIsWellFounded
+      (Quotient.sound h)
+
+@[simp]
+theorem liftOnWellOrder_type {δ : Sort v} (f : ∀ (α) [LinearOrder α] [WellFoundedLT α], δ)
+    (c : ∀ (α) [LinearOrder α] [WellFoundedLT α] (β) [LinearOrder β] [WellFoundedLT β],
+      typeLT α = typeLT β → f α = f β) {γ} [LinearOrder γ] [WellFoundedLT γ] :
+    liftOnWellOrder (typeLT γ) f c = f γ := by
+  change Quotient.liftOn' ⟦_⟧ _ _ = _
+  rw [Quotient.liftOn'_mk]
+  congr
+  exact LinearOrder.ext_lt fun _ _ ↦ Iff.rfl
 
 /-! ### The order on ordinals -/
 

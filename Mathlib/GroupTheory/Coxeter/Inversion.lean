@@ -209,7 +209,7 @@ theorem rightInvSeq_concat (ω : List B) (i : B) :
     ris (ω.concat i) = (List.map (MulAut.conj (s i)) (ris ω)).concat (s i) := by
   induction' ω with j ω ih
   · simp
-  · dsimp [rightInvSeq]
+  · dsimp [rightInvSeq, concat]
     rw [ih]
     simp only [concat_eq_append, wordProd_append, wordProd_cons, wordProd_nil, mul_one, mul_inv_rev,
       inv_simple, cons_append, cons.injEq, and_true]
@@ -245,7 +245,7 @@ theorem leftInvSeq_reverse (ω : List B) :
 theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
     (ris ω).getD j 1 =
       (π (ω.drop (j + 1)))⁻¹
-        * (Option.map (cs.simple) (ω.get? j)).getD 1
+        * (Option.map (cs.simple) ω[j]?).getD 1
         * π (ω.drop (j + 1)) := by
   induction' ω with i ω ih generalizing j
   · simp
@@ -258,14 +258,14 @@ theorem getD_rightInvSeq (ω : List B) (j : ℕ) :
 lemma getElem_rightInvSeq (ω : List B) (j : ℕ) (h : j < ω.length) :
     (ris ω)[j]'(by simp[h]) =
     (π (ω.drop (j + 1)))⁻¹
-      * (Option.map (cs.simple) (ω.get? j)).getD 1
+      * (Option.map (cs.simple) ω[j]?).getD 1
       * π (ω.drop (j + 1)) := by
   rw [← List.getD_eq_getElem (ris ω) 1, getD_rightInvSeq]
 
 theorem getD_leftInvSeq (ω : List B) (j : ℕ) :
     (lis ω).getD j 1 =
       π (ω.take j)
-        * (Option.map (cs.simple) (ω.get? j)).getD 1
+        * (Option.map (cs.simple) ω[j]?).getD 1
         * (π (ω.take j))⁻¹ := by
   induction' ω with i ω ih generalizing j
   · simp
@@ -288,18 +288,18 @@ theorem getD_rightInvSeq_mul_self (ω : List B) (j : ℕ) :
     ((ris ω).getD j 1) * ((ris ω).getD j 1) = 1 := by
   simp_rw [getD_rightInvSeq, mul_assoc]
   rcases em (j < ω.length) with hj | nhj
-  · rw [get?_eq_get hj]
+  · rw [getElem?_eq_getElem hj]
     simp [← mul_assoc]
-  · rw [get?_eq_none_iff.mpr (by omega)]
+  · rw [getElem?_eq_none_iff.mpr (by omega)]
     simp
 
 theorem getD_leftInvSeq_mul_self (ω : List B) (j : ℕ) :
     ((lis ω).getD j 1) * ((lis ω).getD j 1) = 1 := by
   simp_rw [getD_leftInvSeq, mul_assoc]
   rcases em (j < ω.length) with hj | nhj
-  · rw [get?_eq_get hj]
+  · rw [getElem?_eq_getElem hj]
     simp [← mul_assoc]
-  · rw [get?_eq_none_iff.mpr (by omega)]
+  · rw [getElem?_eq_none_iff.mpr (by omega)]
     simp
 
 theorem rightInvSeq_drop (ω : List B) (j : ℕ) :
@@ -417,11 +417,10 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
       drop_drop, nil_append, min_eq_left_of_lt (j_lt_j'.trans j'_lt_length), Nat.add_comm,
       ← add_assoc, Nat.sub_add_cancel (by omega), mul_left_inj, mul_right_inj]
     congr 2
-    show get? (take j ω ++ drop (j + 1) ω) (j' - 1) = get? ω j'
-    rw [get?_eq_getElem?, get?_eq_getElem?,
-      getElem?_append_right (by simp [Nat.le_sub_one_of_lt j_lt_j']), getElem?_drop]
+    show (List.take j ω ++ List.drop (j + 1) ω)[j' - 1]? = ω[j']?
+    rw [getElem?_append_right (by simp [Nat.le_sub_one_of_lt j_lt_j']), getElem?_drop]
     congr
-    show j + 1 + (j' - 1 - List.length (take j ω)) = j'
+    show j + 1 + (j' - 1 - List.length (List.take j ω)) = j'
     rw [length_take]
     omega
   have h₄ : t * t' = 1                                := by
@@ -450,12 +449,12 @@ theorem IsReduced.nodup_rightInvSeq {ω : List B} (rω : cs.IsReduced ω) : List
 theorem IsReduced.nodup_leftInvSeq {ω : List B} (rω : cs.IsReduced ω) : List.Nodup (lis ω) := by
   simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse, nodup_reverse]
   apply nodup_rightInvSeq
-  rwa [isReduced_reverse]
+  rwa [isReduced_reverse_iff]
 
 lemma getElem_succ_leftInvSeq_alternatingWord
     (i j : B) (p k : ℕ) (h : k + 1 < 2 * p) :
     (lis (alternatingWord i j (2 * p)))[k + 1]'(by simp; exact h) =
-    MulAut.conj (s i) ((lis (alternatingWord j i (2 * p)))[k]'(by simp; linarith)) := by
+    MulAut.conj (s i) ((lis (alternatingWord j i (2 * p)))[k]'(by simp; omega)) := by
   rw [cs.getElem_leftInvSeq (alternatingWord i j (2 * p)) (k + 1) (by simp[h]),
     cs.getElem_leftInvSeq (alternatingWord j i (2 * p)) k (by simp[h]; omega)]
   simp only [MulAut.conj, listTake_succ_alternatingWord i j p k h, cs.wordProd_cons, mul_assoc,
@@ -466,7 +465,7 @@ lemma getElem_succ_leftInvSeq_alternatingWord
 
 theorem getElem_leftInvSeq_alternatingWord
     (i j : B) (p k : ℕ) (h : k < 2 * p) :
-    (lis (alternatingWord i j (2 * p)))[k]'(by simp; linarith) =
+    (lis (alternatingWord i j (2 * p)))[k]'(by simp; omega) =
     π alternatingWord j i (2 * k + 1) := by
   revert i j
   induction k with

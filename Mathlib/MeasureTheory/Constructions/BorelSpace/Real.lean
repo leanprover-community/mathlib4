@@ -481,7 +481,7 @@ lemma measurable_of_real_prod {f : EReal × β → γ}
     (h_real : Measurable fun p : ℝ × β ↦ f (p.1, p.2))
     (h_bot : Measurable fun x ↦ f (⊥, x)) (h_top : Measurable fun x ↦ f (⊤, x)) : Measurable f :=
   .of_union₃_range_cover (measurableEmbedding_prod_mk_left _) (measurableEmbedding_prod_mk_left _)
-    (measurableEmbedding_coe.prod_mk .id) (by simp [-univ_subset_iff, subset_def, EReal.forall])
+    (measurableEmbedding_coe.prodMap .id) (by simp [-univ_subset_iff, subset_def, EReal.forall])
     h_bot h_top h_real
 
 lemma measurable_of_real_real {f : EReal × EReal → β}
@@ -584,7 +584,7 @@ lemma tendsto_measure_Icc_nhdsWithin_right (b : ℝ) :
 
 lemma tendsto_measure_Icc [NoAtoms μ] (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝 (0 : ℝ)) (𝓝 0) := by
-  rw [← nhds_left'_sup_nhds_right, tendsto_sup]
+  rw [← nhdsLT_sup_nhdsGE, tendsto_sup]
   constructor
   · apply tendsto_const_nhds.congr'
     filter_upwards [self_mem_nhdsWithin] with r (hr : r < 0)

@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johannes Hölzl, Mario Carneiro
+Authors: Johannes Hölzl, Mario Carneiro, Mitchell Lee
 -/
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Order.Filter.Pointwise
@@ -398,6 +398,149 @@ instance Subsemigroup.continuousMul [TopologicalSpace M] [Semigroup M] [Continuo
 instance Submonoid.continuousMul [TopologicalSpace M] [Monoid M] [ContinuousMul M]
     (S : Submonoid M) : ContinuousMul S :=
   S.toSubsemigroup.continuousMul
+
+section MulZeroClass
+
+open Filter
+
+variable {α β : Type*}
+variable [TopologicalSpace M] [MulZeroClass M] [ContinuousMul M]
+
+theorem exists_mem_nhds_zero_mul_subset
+    {K U : Set M} (hK : IsCompact K) (hU : U ∈ 𝓝 0) : ∃ V ∈ 𝓝 0, K * V ⊆ U := by
+  refine hK.induction_on ?_ ?_ ?_ ?_
+  · exact ⟨univ, by simp⟩
+  · rintro s t hst ⟨V, hV, hV'⟩
+    exact ⟨V, hV, (mul_subset_mul_right hst).trans hV'⟩
+  · rintro s t ⟨V, V_in, hV'⟩ ⟨W, W_in, hW'⟩
+    use V ∩ W, inter_mem V_in W_in
+    rw [union_mul]
+    exact
+      union_subset ((mul_subset_mul_left V.inter_subset_left).trans hV')
+        ((mul_subset_mul_left V.inter_subset_right).trans hW')
+  · intro x hx
+    have := tendsto_mul (show U ∈ 𝓝 (x * 0) by simpa using hU)
+    rw [nhds_prod_eq, mem_map, mem_prod_iff] at this
+    rcases this with ⟨t, ht, s, hs, h⟩
+    rw [← image_subset_iff, image_mul_prod] at h
+    exact ⟨t, mem_nhdsWithin_of_mem_nhds ht, s, hs, h⟩
+
+/-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
+Let `l` be a filter on `M` which is disjoint from the cocompact filter. Then, the multiplication map
+`M × M → M` tends to zero on the filter product `𝓝 0 ×ˢ l`. -/
+theorem tendsto_mul_nhds_zero_prod_of_disjoint_cocompact {l : Filter M}
+    (hl : Disjoint l (cocompact M)) :
+    Tendsto (fun x : M × M ↦ x.1 * x.2) (𝓝 0 ×ˢ l) (𝓝 0) := calc
+  map (fun x : M × M ↦ x.1 * x.2) (𝓝 0 ×ˢ l)
+  _ ≤ map (fun x : M × M ↦ x.1 * x.2) (𝓝ˢ ({0} ×ˢ Set.univ)) :=
+    map_mono <| nhds_prod_le_of_disjoint_cocompact 0 hl
+  _ ≤ 𝓝 0 := continuous_mul.tendsto_nhdsSet_nhds fun _ ⟨hx, _⟩ ↦ mul_eq_zero_of_left hx _
+
+/-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
+Let `l` be a filter on `M` which is disjoint from the cocompact filter. Then, the multiplication map
+`M × M → M` tends to zero on the filter product `l ×ˢ 𝓝 0`. -/
+theorem tendsto_mul_prod_nhds_zero_of_disjoint_cocompact {l : Filter M}
+    (hl : Disjoint l (cocompact M)) :
+    Tendsto (fun x : M × M ↦ x.1 * x.2) (l ×ˢ 𝓝 0) (𝓝 0) := calc
+  map (fun x : M × M ↦ x.1 * x.2) (l ×ˢ 𝓝 0)
+  _ ≤ map (fun x : M × M ↦ x.1 * x.2) (𝓝ˢ (Set.univ ×ˢ {0})) :=
+    map_mono <| prod_nhds_le_of_disjoint_cocompact 0 hl
+  _ ≤ 𝓝 0 := continuous_mul.tendsto_nhdsSet_nhds fun _ ⟨_, hx⟩ ↦ mul_eq_zero_of_right _ hx
+
+/-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
+Let `l` be a filter on `M × M` which is disjoint from the cocompact filter. Then, the multiplication
+map `M × M → M` tends to zero on `(𝓝 0).coprod (𝓝 0) ⊓ l`. -/
+theorem tendsto_mul_coprod_nhds_zero_inf_of_disjoint_cocompact {l : Filter (M × M)}
+    (hl : Disjoint l (cocompact (M × M))) :
+    Tendsto (fun x : M × M ↦ x.1 * x.2) ((𝓝 0).coprod (𝓝 0) ⊓ l) (𝓝 0) := by
+  have := calc
+    (𝓝 0).coprod (𝓝 0) ⊓ l
+    _ ≤ (𝓝 0).coprod (𝓝 0) ⊓ map Prod.fst l ×ˢ map Prod.snd l :=
+      inf_le_inf_left _ le_prod_map_fst_snd
+    _ ≤ 𝓝 0 ×ˢ map Prod.snd l ⊔ map Prod.fst l ×ˢ 𝓝 0 :=
+      coprod_inf_prod_le _ _ _ _
+  apply (Tendsto.sup _ _).mono_left this
+  · apply tendsto_mul_nhds_zero_prod_of_disjoint_cocompact
+    exact disjoint_map_cocompact continuous_snd hl
+  · apply tendsto_mul_prod_nhds_zero_of_disjoint_cocompact
+    exact disjoint_map_cocompact continuous_fst hl
+
+/-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
+Let `l` be a filter on `M × M` which is both disjoint from the cocompact filter and less than or
+equal to `(𝓝 0).coprod (𝓝 0)`. Then the multiplication map `M × M → M` tends to zero on `l`. -/
+theorem tendsto_mul_nhds_zero_of_disjoint_cocompact {l : Filter (M × M)}
+    (hl : Disjoint l (cocompact (M × M))) (h'l : l ≤ (𝓝 0).coprod (𝓝 0)) :
+    Tendsto (fun x : M × M ↦ x.1 * x.2) l (𝓝 0) := by
+  simpa [inf_eq_right.mpr h'l] using tendsto_mul_coprod_nhds_zero_inf_of_disjoint_cocompact hl
+
+/-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
+Let `f : α → M` and `g : α → M` be functions. If `f` tends to zero on a filter `l`
+and the image of `l` under `g` is disjoint from the cocompact filter on `M`, then
+`fun x : α ↦ f x * g x` also tends to zero on `l`. -/
+theorem Tendsto.tendsto_mul_zero_of_disjoint_cocompact_right {f g : α → M} {l : Filter α}
+    (hf : Tendsto f l (𝓝 0)) (hg : Disjoint (map g l) (cocompact M)) :
+    Tendsto (fun x ↦ f x * g x) l (𝓝 0) :=
+  tendsto_mul_nhds_zero_prod_of_disjoint_cocompact hg |>.comp (hf.prod_mk tendsto_map)
+
+/-- Let `M` be a topological space with a continuous multiplication operation and a `0`.
+Let `f : α → M` and `g : α → M` be functions. If `g` tends to zero on a filter `l`
+and the image of `l` under `f` is disjoint from the cocompact filter on `M`, then
+`fun x : α ↦ f x * g x` also tends to zero on `l`. -/
+theorem Tendsto.tendsto_mul_zero_of_disjoint_cocompact_left {f g : α → M} {l : Filter α}
+    (hf : Disjoint (map f l) (cocompact M)) (hg : Tendsto g l (𝓝 0)):
+    Tendsto (fun x ↦ f x * g x) l (𝓝 0) :=
+  tendsto_mul_prod_nhds_zero_of_disjoint_cocompact hf |>.comp (tendsto_map.prod_mk hg)
+
+/-- If `f : α → M` and `g : β → M` are continuous and both tend to zero on the cocompact filter,
+then `fun i : α × β ↦ f i.1 * g i.2` also tends to zero on the cocompact filter. -/
+theorem tendsto_mul_cocompact_nhds_zero [TopologicalSpace α] [TopologicalSpace β]
+    {f : α → M} {g : β → M} (f_cont : Continuous f) (g_cont : Continuous g)
+    (hf : Tendsto f (cocompact α) (𝓝 0)) (hg : Tendsto g (cocompact β) (𝓝 0)) :
+    Tendsto (fun i : α × β ↦ f i.1 * g i.2) (cocompact (α × β)) (𝓝 0) := by
+  set l : Filter (M × M) := map (Prod.map f g) (cocompact (α × β)) with l_def
+  set K : Set (M × M) := (insert 0 (range f)) ×ˢ (insert 0 (range g))
+  have K_compact : IsCompact K := .prod (hf.isCompact_insert_range_of_cocompact f_cont)
+    (hg.isCompact_insert_range_of_cocompact g_cont)
+  have K_mem_l : K ∈ l := eventually_map.mpr <| .of_forall fun ⟨x, y⟩ ↦
+    ⟨mem_insert_of_mem _ (mem_range_self _), mem_insert_of_mem _ (mem_range_self _)⟩
+  have l_compact : Disjoint l (cocompact (M × M)) := by
+    rw [disjoint_cocompact_right]
+    exact ⟨K, K_mem_l, K_compact⟩
+  have l_le_coprod : l ≤ (𝓝 0).coprod (𝓝 0) := by
+    rw [l_def, ← coprod_cocompact]
+    exact hf.prod_map_coprod hg
+  exact tendsto_mul_nhds_zero_of_disjoint_cocompact l_compact l_le_coprod |>.comp tendsto_map
+
+/-- If `f : α → M` and `g : β → M` both tend to zero on the cofinite filter, then so does
+`fun i : α × β ↦ f i.1 * g i.2`. -/
+theorem tendsto_mul_cofinite_nhds_zero {f : α → M} {g : β → M}
+    (hf : Tendsto f cofinite (𝓝 0)) (hg : Tendsto g cofinite (𝓝 0)) :
+    Tendsto (fun i : α × β ↦ f i.1 * g i.2) cofinite (𝓝 0) := by
+  letI : TopologicalSpace α := ⊥
+  haveI : DiscreteTopology α := discreteTopology_bot α
+  letI : TopologicalSpace β := ⊥
+  haveI : DiscreteTopology β := discreteTopology_bot β
+  rw [← cocompact_eq_cofinite] at *
+  exact tendsto_mul_cocompact_nhds_zero
+    continuous_of_discreteTopology continuous_of_discreteTopology hf hg
+
+end MulZeroClass
+
+section GroupWithZero
+
+lemma GroupWithZero.isOpen_singleton_zero [GroupWithZero M] [TopologicalSpace M]
+    [ContinuousMul M] [CompactSpace M] [T1Space M] :
+    IsOpen {(0 : M)} := by
+  obtain ⟨U, hU, h0U, h1U⟩ := t1Space_iff_exists_open.mp ‹_› zero_ne_one
+  obtain ⟨W, hW, hW'⟩ := exists_mem_nhds_zero_mul_subset isCompact_univ (hU.mem_nhds h0U)
+  by_cases H : ∃ x ≠ 0, x ∈ W
+  · obtain ⟨x, hx, hxW⟩ := H
+    cases h1U (hW' (by simpa [hx] using Set.mul_mem_mul (Set.mem_univ x⁻¹) hxW))
+  · obtain rfl : W = {0} := subset_antisymm
+      (by simpa [not_imp_not] using H) (by simpa using mem_of_mem_nhds hW)
+    simpa [isOpen_iff_mem_nhds]
+
+end GroupWithZero
 
 section MulOneClass
 
