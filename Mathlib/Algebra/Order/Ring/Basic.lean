@@ -20,6 +20,12 @@ open Function Int
 
 variable {α M R : Type*}
 
+theorem IsSquare.nonneg [Semiring R] [LinearOrder R] [IsRightCancelAdd R]
+    [ZeroLEOneClass R] [ExistsAddOfLE R] [PosMulMono R] [AddLeftStrictMono R]
+    {x : R} (h : IsSquare x) : 0 ≤ x := by
+  rcases h with ⟨y, rfl⟩
+  exact mul_self_nonneg y
+
 namespace MonoidHom
 
 variable [Ring R] [Monoid M] [LinearOrder M] [MulLeftMono M] (f : R →* M)
