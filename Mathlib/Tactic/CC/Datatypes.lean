@@ -3,11 +3,10 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Lean.Meta.CongrTheorems
 import Lean.Meta.Tactic.Rfl
 import Batteries.Data.RBMap.Basic
 import Mathlib.Lean.Meta.Basic
-import Std.Data.HashMap.Basic
+import Mathlib.Data.Ordering.Basic
 
 /-!
 # Datatypes for `cc`
@@ -145,13 +144,6 @@ inductive ACApps where
 
 instance : Coe Expr ACApps := ⟨ACApps.ofExpr⟩
 attribute [coe] ACApps.ofExpr
-
-/-- `o₁.dthen fun h => o₂(h)` is like `o₁.then o₂` but `o₂` is allowed to depend on
-`h : o₁ = .eq`. -/
-@[macro_inline] private def _root_.Ordering.dthen :
-    (o : Ordering) → (o = .eq → Ordering) → Ordering
-  | .eq, f => f rfl
-  | o, _ => o
 
 /-- Ordering on `ACApps` sorts `.ofExpr` before `.apps`, and sorts `.apps` by function symbol,
   then by shortlex order. -/
