@@ -153,6 +153,24 @@ instance hasColimitsOfSize [HasColimitsOfSize.{w, w'} A] [HasColimitsOfSize.{w, 
     [PreservesColimitsOfSize.{w, w'} L] : HasColimitsOfSize.{w, w'} (Comma L R) :=
   ⟨fun _ _ => inferInstance⟩
 
+instance preservesColimitsOfShape_fst
+    [HasColimitsOfShape J A] [HasColimitsOfShape J B]
+    [PreservesColimitsOfShape J L] :
+    PreservesColimitsOfShape J (Comma.fst L R) where
+  preservesColimit {F} :=
+    preservesColimit_of_preserves_colimit_cocone (h :=
+      coconeOfPreservesIsColimit F (colimit.isColimit _) (colimit.isColimit _))
+      ((colimit.isColimit _))
+
+instance preservesColimitsOfShape_snd
+    [HasColimitsOfShape J A] [HasColimitsOfShape J B]
+    [PreservesColimitsOfShape J L] :
+    PreservesColimitsOfShape J (Comma.snd L R) where
+  preservesColimit {F} :=
+    preservesColimit_of_preserves_colimit_cocone (h :=
+      coconeOfPreservesIsColimit F (colimit.isColimit _) (colimit.isColimit _))
+      ((colimit.isColimit _))
+
 end Comma
 
 namespace Arrow
