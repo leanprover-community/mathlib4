@@ -30,7 +30,7 @@ variable {R L A V : Type*} [CommRing R]
 variable [IsPrincipalIdealRing R] [IsDomain R] [CharZero R]
 variable [LieRing L] [LieAlgebra R L]
 variable [LieRing A] [LieAlgebra R A]
-variable [LieRingModule L A] [LieRingModule A L]
+variable [Bracket L A] [Bracket A L]
 variable [AddCommGroup V] [Module R V] [Module.Free R V] [Module.Finite R V]
 variable [LieRingModule L V] [LieModule R L V]
 variable [LieRingModule A V] [LieModule R A V]
@@ -45,7 +45,9 @@ local notation "π" => LieModule.toEnd R _ V
 
 private abbrev T (w : A) : Module.End R V := (π w) - χ w • 1
 
-lemma lie_stable (z : L) (v : V) (hv : v ∈ weightSpace V χ) : ⁅z, v⁆ ∈ weightSpace V χ := by
+/-- An auxiliary lemma used only in the definition `LieModule.weightSpaceOfIsLieTower` below. -/
+private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpace V χ) :
+    ⁅z, v⁆ ∈ weightSpace V χ := by
   rw [mem_weightSpace] at hv ⊢
   intro a
   rcases eq_or_ne v 0 with (rfl | hv')
