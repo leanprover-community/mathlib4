@@ -5,7 +5,7 @@ Authors: Florent Schaffhauser, Artie Khovanov
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Subsemiring.Basic
-import Mathlib.Algebra.Group.Even.Advanced
+import Mathlib.Algebra.Group.Subgroup.Even
 import Mathlib.Algebra.Algebra.Subalgebra.Unitization
 
 /-!
