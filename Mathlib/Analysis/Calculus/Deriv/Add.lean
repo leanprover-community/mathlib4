@@ -326,8 +326,7 @@ theorem derivWithin_const_sub (hxs : UniqueDiffWithinAt 𝕜 s x) (c : F) :
   simp [derivWithin, fderivWithin_const_sub hxs]
 
 theorem deriv_const_sub (c : F) : deriv (fun y => c - f y) x = -deriv f x := by
-  simp only [← derivWithin_univ,
-    derivWithin_const_sub (uniqueDiffWithinAt_univ : UniqueDiffWithinAt 𝕜 _ _)]
+  simpa only [← derivWithin_univ] using derivWithin_const_sub .univ c
 
 lemma differentiableAt_comp_sub_const {a b : 𝕜} :
     DifferentiableAt 𝕜 (fun x ↦ f (x - b)) a ↔ DifferentiableAt 𝕜 f (a - b) := by
