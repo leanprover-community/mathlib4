@@ -166,10 +166,8 @@ theorem iSup_Iio_eq_self_iff_isSuccPrelimit : ⨆ a : Iio x, a.1 = x ↔ IsSuccP
   rw [← sSup_eq_iSup', sSup_Iio_eq_self_iff_isSuccPrelimit]
 
 theorem iSup_succ [SuccOrder α] (x : α) : ⨆ a : Iio x, succ a.1 = x := by
-  have H : BddAbove (range fun a : Iio x ↦ succ a.1) := by
-    use succ x
-    rintro _ ⟨a, rfl⟩
-    exact succ_le_succ a.2.le
+  have H : BddAbove (range fun a : Iio x ↦ succ a.1) :=
+    ⟨succ x, by simp +contextual [upperBounds, succ_le_succ, le_of_lt]⟩
   apply le_antisymm _ (le_of_forall_lt fun y hy ↦ ?_)
   · rw [ciSup_le_iff' H]
     exact fun a ↦ succ_le_of_lt a.2
