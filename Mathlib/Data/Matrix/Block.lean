@@ -6,6 +6,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Matrix.Composition
 import Mathlib.Data.Matrix.ConjTranspose
+import Mathlib.Tactic.CC
 
 /-!
 # Block Matrices
@@ -607,7 +608,7 @@ theorem blockDiagonal'_transpose (M : ∀ i, Matrix (m' i) (n' i) α) :
     (blockDiagonal' M)ᵀ = blockDiagonal' fun k => (M k)ᵀ := by
   ext ⟨ii, ix⟩ ⟨ji, jx⟩
   simp only [transpose_apply, blockDiagonal'_apply]
-  split_ifs <;> cc
+  split_ifs <;> cc -- grind doesn't work
 
 @[simp]
 theorem blockDiagonal'_conjTranspose {α} [AddMonoid α] [StarAddMonoid α]

@@ -17,7 +17,16 @@ import Mathlib.Tactic.Convert
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.GeneralizeProofs
 import Mathlib.Tactic.SimpRw
-import Mathlib.Tactic.CC
+import Batteries.Data.RBMap.Alter
+import Mathlib.Logic.Basic
+import Mathlib.Tactic.Relation.Rfl
+import Mathlib.Tactic.Relation.Symm
+import Mathlib.Lean.Expr.Basic
+import Lean.Meta.CongrTheorems
+import Lean.Meta.Tactic.Rfl
+import Batteries.Data.RBMap.Basic
+import Mathlib.Lean.Meta.Basic
+import Std.Data.HashMap.Basic
 
 /-!
 # Equivalence between types
@@ -1396,7 +1405,7 @@ theorem swapCore_self (r a : α) : swapCore a a r = r := by
   split_ifs <;> simp [*]
 
 theorem swapCore_swapCore (r a b : α) : swapCore a b (swapCore a b r) = r := by
-  unfold swapCore; split_ifs <;> cc
+  unfold swapCore; split_ifs <;> grind
 
 theorem swapCore_comm (r a b : α) : swapCore a b r = swapCore b a r := by
   unfold swapCore
