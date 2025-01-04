@@ -10,6 +10,7 @@ import Mathlib.LinearAlgebra.FreeModule.PID
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Multiplicity
 import Mathlib.RingTheory.Polynomial.Content
+import Mathlib
 /-!
 # The generalized factorial function over subsets of a Dedekind Domain
 
@@ -105,6 +106,9 @@ open Polynomial (X C)
 -- c_0 + (c_1 * (x - a_0)) + (c_2 * (x - a_0) * (x - a_1))
 noncomputable def lemma_12_prod (pOrder: Set.pOrdering S p) (k: ℕ) (c: Fin (k + 1) → R): R[X]
    := ∑ i : Fin (k + 1), (c i) • ∏ j ∈ Finset.range i, (X - Polynomial.C (pOrder.elems j).val)
+
+lemma lemma_12 (pOrder: Set.pOrdering S p) (k: ℕ) (c: Fin (k + 1) → R) (e: ℕ) (s: R) (hs: s ∈ S):
+  (lemma_12_prod S p pOrder k c).eval s ≡ 0 [PMOD (p^e: R)] := by sorry
 
 example (k l : ℕ) : (k ! * l !) ∣ (k + l) ! := k.factorial_mul_factorial_dvd_factorial_add l
 example (k l : ℤ) (hk : 0 ≤ k) (hl : 0 ≤ l) : (k.toNat ! * l.toNat !) ∣ (k + l).toNat ! := sorry
