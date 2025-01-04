@@ -228,9 +228,9 @@ decreasing_by
 /-- **Lie's theorem**: Lie modules of solvable Lie algebras over fields of characteristic 0
 have a common eigenvector for the action of all elements of the Lie algebra.
 
-See `LieModule.exists_forall_lie_eq_smul_of_isNilpotent` for the variant that
+See `LieModule.exists_nontrivial_weightSpace_of_isNilpotent` for the variant that
 assumes that `L` is nilpotent and drops the condition that `k` is of characteristic zero. -/
-theorem exists_forall_lie_eq_smul_of_isSolvable
+theorem exists_nontrivial_weightSpace_of_isSolvable
     [IsSolvable k L] [LieModule.IsTriangularizable k L V] :
     ∃ χ : Module.Dual k L, Nontrivial (weightSpace V χ) := by
   let imL := (toEnd k L V).range

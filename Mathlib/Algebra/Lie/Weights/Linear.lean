@@ -244,9 +244,9 @@ lemma exists_forall_lie_eq_smul [LinearWeights R L M] [IsNoetherian R M] (χ : W
   have := hm₁ x
   rwa [coe_lie_shiftedGenWeightSpace_apply, sub_eq_zero] at this
 
-/-- See `LieModule.exists_forall_lie_eq_smul_of_isSolvable` for the variant that
+/-- See `LieModule.exists_nontrivial_weightSpace_of_isSolvable` for the variant that
 only assumes that `L` is solvable but additionally requires `k` to be of characteristic zero. -/
-lemma exists_forall_lie_eq_smul_of_isNilpotent [Field k] [LieAlgebra k L] [Module k M]
+lemma exists_nontrivial_weightSpace_of_isNilpotent [Field k] [LieAlgebra k L] [Module k M]
     [Module.Finite k M] [LieModule k L M] [LieAlgebra.IsNilpotent k L] [LinearWeights k L M]
     [IsTriangularizable k L M] [Nontrivial M] :
     ∃ χ : Module.Dual k L, Nontrivial (weightSpace M χ) := by
