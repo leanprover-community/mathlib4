@@ -30,8 +30,8 @@ variable {R L A V : Type*} [CommRing R]
 variable [IsPrincipalIdealRing R] [IsDomain R] [CharZero R]
 variable [LieRing L] [LieAlgebra R L]
 variable [LieRing A] [LieAlgebra R A]
-variable [LieRingModule L A] [LieRingModule A L]
-variable [AddCommGroup V] [Module R V] [Module.Free R V] [IsNoetherian R V]
+variable [Bracket L A] [Bracket A L]
+variable [AddCommGroup V] [Module R V] [Module.Free R V] [Module.Finite R V]
 variable [LieRingModule L V] [LieModule R L V]
 variable [LieRingModule A V] [LieModule R A V]
 variable [IsLieTower L A V] [IsLieTower A L V]
@@ -45,7 +45,9 @@ local notation "π" => LieModule.toEnd R _ V
 
 private abbrev T (w : A) : Module.End R V := (π w) - χ w • 1
 
-lemma lie_stable (z : L) (v : V) (hv : v ∈ weightSpace V χ) : ⁅z, v⁆ ∈ weightSpace V χ := by
+/-- An auxiliary lemma used only in the definition `LieModule.weightSpaceOfIsLieTower` below. -/
+private lemma weightSpaceOfIsLieTower_aux (z : L) (v : V) (hv : v ∈ weightSpace V χ) :
+    ⁅z, v⁆ ∈ weightSpace V χ := by
   rw [mem_weightSpace] at hv ⊢
   intro a
   rcases eq_or_ne v 0 with (rfl | hv')
@@ -138,6 +140,13 @@ lemma lie_stable (z : L) (v : V) (hv : v ∈ weightSpace V χ) : ⁅z, v⁆ ∈ 
     rw [pow_zero, LinearMap.one_apply]
   exact nontrivial_of_ne ⟨v, hvU⟩ 0 <| by simp [hv']
 
+variable (R V) in
+/-- The weight space of `V` with respect to `χ : A → R`, a priori a Lie submodule for `A`, is also a
+Lie submodule for `L`. -/
+def weightSpaceOfIsLieTower (χ : A → R) : LieSubmodule R L V :=
+  { toSubmodule := weightSpace V χ
+    lie_mem {z v} hv := weightSpaceOfIsLieTower_aux χ z v hv }
+
 end
 
 section
@@ -149,7 +158,7 @@ variable {V : Type*} [AddCommGroup V] [Module k V] [LieRingModule L V] [LieModul
 variable [CharZero k] [Module.Finite k V]
 
 open Submodule in
-theorem extend_weight [LieModule.IsTriangularizable k L V]
+theorem exists_nontrivial_weightSpace_of_lieIdeal [LieModule.IsTriangularizable k L V]
     (A : LieIdeal k L) (hA : IsCoatom A.toSubmodule)
     (χ₀ : Module.Dual k A) [Nontrivial (weightSpace V χ₀)] :
     ∃ (χ : Module.Dual k L), Nontrivial (weightSpace V χ) := by
@@ -160,9 +169,7 @@ theorem extend_weight [LieModule.IsTriangularizable k L V]
   let π₁ : L →ₗ[k] A       := A.toSubmodule.linearProjOfIsCompl (k ∙ z) hA
   let π₂ : L →ₗ[k] (k ∙ z) := (k ∙ z).linearProjOfIsCompl ↑A hA.symm
 
-  set W : LieSubmodule k L V :=
-  { toSubmodule := weightSpace V χ₀
-    lie_mem := fun {z v} hv ↦ lie_stable χ₀ z v hv }
+  set W : LieSubmodule k L V := weightSpaceOfIsLieTower k V χ₀
   obtain ⟨c, hc⟩ : ∃ c, (toEnd k _ W z).HasEigenvalue c := by
     have : Nontrivial W := inferInstanceAs (Nontrivial (weightSpace V χ₀))
     apply Module.End.exists_hasEigenvalue_of_genEigenspace_eq_top
@@ -170,7 +177,7 @@ theorem extend_weight [LieModule.IsTriangularizable k L V]
 
   obtain ⟨⟨v, hv⟩, hvc⟩ := hc.exists_hasEigenvector
   have hv' : ∀ (x : ↥A), ⁅x, v⁆ = χ₀ x • v := by
-    simpa [W, mem_weightSpace] using hv
+    simpa [W, weightSpaceOfIsLieTower, mem_weightSpace] using hv
 
   use (χ₀.comp π₁) + c • (e.comp π₂)
   refine nontrivial_of_ne ⟨v, ?_⟩ 0 ?_
@@ -210,7 +217,7 @@ private lemma exists_forall_lie_eq_smul_of_isSolvable_of_finite
     exact hAL <| LieSubmodule.lie_mem_lie (LieSubmodule.mem_top _) (LieSubmodule.mem_top _)
   change LieIdeal k L at A -- remove this line when bug in `lift` is fixed (#15865)
   obtain ⟨χ', _⟩ := exists_forall_lie_eq_smul_of_isSolvable_of_finite A
-  exact extend_weight A hA χ'
+  exact exists_nontrivial_weightSpace_of_lieIdeal A hA χ'
 termination_by Module.finrank k L
 decreasing_by
   simp_wf
@@ -219,8 +226,11 @@ decreasing_by
   exact hA.lt_top
 
 /-- **Lie's theorem**: Lie modules of solvable Lie algebras over fields of characteristic 0
-have a common eigenvector for the action of all elements of the Lie algebra. -/
-theorem exists_forall_lie_eq_smul_of_isSolvable
+have a common eigenvector for the action of all elements of the Lie algebra.
+
+See `LieModule.exists_nontrivial_weightSpace_of_isNilpotent` for the variant that
+assumes that `L` is nilpotent and drops the condition that `k` is of characteristic zero. -/
+theorem exists_nontrivial_weightSpace_of_isSolvable
     [IsSolvable k L] [LieModule.IsTriangularizable k L V] :
     ∃ χ : Module.Dual k L, Nontrivial (weightSpace V χ) := by
   let imL := (toEnd k L V).range
