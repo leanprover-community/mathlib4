@@ -42,29 +42,27 @@ The valuation on a fraction ring to `WithTop ℤ` given by a prime.
 noncomputable def adicValuation : AddValuation K (WithTop ℤ) :=
   ofValuation <|
     (toValuation <|
-      (multiplicity hp.out).map ((AddMonoidHom.withTopMap (Nat.castAddMonoidHom ℤ)).comp
-          ENat.toWithTop) rfl (by simp [Nat.mono_cast, Monotone.comp, OrderHomClass.mono]))
+      (multiplicity hp.out).map (AddMonoidHom.ENatMap (Nat.castAddMonoidHom ℤ)) rfl
+        (by simp [Nat.mono_cast, Monotone.comp, OrderHomClass.mono]))
       |>.extendToLocalization (S := nonZeroDivisors R) (B := K) <| by
       intro v hv
       apply Set.mem_compl
       intro nh
       simp only [SetLike.mem_coe, Valuation.mem_supp_iff, toValuation_apply, map_apply,
-        multiplicity_apply, AddMonoidHom.coe_comp, AddMonoidHom.withTopMap_apply,
-        Nat.coe_castAddMonoidHom, AddMonoidHom.coe_coe, Function.comp_apply,
-        ofAdd_toDual_eq_zero_iff, WithTop.map_eq_top_iff, map_eq_top_iff] at nh
-      exact multiplicity.finite_prime_left Fact.out (nonZeroDivisors.ne_zero hv)
-        |>.emultiplicity_ne_top nh
+        multiplicity_apply, AddMonoidHom.ENatMap_apply, Nat.coe_castAddMonoidHom,
+        ofAdd_toDual_eq_zero_iff, ENat.map_eq_top_iff, emultiplicity_eq_top] at nh
+      exact nh (.of_prime_left Fact.out (nonZeroDivisors.ne_zero hv))
 
 @[simp]
 theorem adicValuation_coe (r : R) :
-    adicValuation p (algebraMap R K r) = (emultiplicity p r).toWithTop.map (↑) := by
+    adicValuation p (algebraMap R K r) = (emultiplicity p r).map (↑) := by
   simp [adicValuation]
 
 variable {β : Type*} [Zero β]
 
 lemma adicValuation_coe_pos_iff (a : R) :
     0 < adicValuation p (algebraMap R K a) ↔ p ∣ a := by
-  simp [lt_iff_le_and_ne, WithTop.le_map, WithTop.zero_eq_map_iff, emultiplicity_eq_zero]
+  simp [lt_iff_le_and_ne, ENat.zero_eq_map_iff, emultiplicity_eq_zero]
 
 
 open IsFractionRing
@@ -74,7 +72,7 @@ lemma adicValuation_pos_iff (a : K) :
   nth_rw 1 [← mk'_num_den' (A := R) a]
   simp only [map_div, adicValuation_coe, LinearOrderedAddCommGroupWithTop.sub_pos,
     WithTop.map_eq_top_iff, map_eq_top_iff, emultiplicity_eq_top, not_not]
-  have : multiplicity.Finite p (den R a) := multiplicity.finite_prime_left hp.out (by simp)
+  have : FiniteMultiplicity p (den R a) := .of_prime_left hp.out (by simp)
   simp only [this, not_true_eq_false, or_false]
   rw [(WithTop.strictMono_map_iff.mpr Nat.strictMono_cast).lt_iff_lt]
   constructor

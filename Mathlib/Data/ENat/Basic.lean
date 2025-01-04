@@ -56,64 +56,6 @@ instance : CharZero ℕ∞ := inferInstanceAs (CharZero (WithTop ℕ))
 
 variable {a b c m n : ℕ∞}
 
-/--
-The identity equivalence `ℕ∞ ≃ WithTop ℕ` as an ordered ring isomorphism.
--/
-def toWithTop : ℕ∞ ≃+*o WithTop ℕ := OrderRingIso.refl _
-
-@[simp]
-lemma toWithTop_top : toWithTop ⊤ = ⊤ := rfl
-
-lemma toWithTop_eq_top_iff (a : ℕ∞) : toWithTop a = ⊤ ↔ a = ⊤ := Iff.rfl
-
-@[simp]
-lemma toWithTop_coe (a : ℕ) : toWithTop a = a := rfl
-
-@[simp]
-lemma toWithTop_eq_coe_iff (a : ℕ∞) (n : ℕ) : toWithTop a = n ↔ a = n := Iff.rfl
-
-@[simp]
-lemma toWithTop_ofNat (a : ℕ) [a.AtLeastTwo] : toWithTop (no_index (OfNat.ofNat a)) = a := rfl
-
-@[simp]
-lemma toWithTop_eq_ofNat_iff (v : ℕ∞) (a : ℕ) [a.AtLeastTwo] :
-    toWithTop v = no_index (OfNat.ofNat a) ↔ v = a := Iff.rfl
-
-/--
-The identity equivalence `WithTop ℕ ≃ ℕ∞` as an ordered ring isomorphism.
--/
-def ofWithTop : WithTop ℕ ≃+*o ℕ∞ := OrderRingIso.refl _
-
-@[simp]
-lemma ofWithTop_top : ofWithTop ⊤ = ⊤ := rfl
-
-lemma ofWithTop_eq_top_iff (a : WithTop ℕ) : ofWithTop a = ⊤ ↔ a = ⊤ := Iff.rfl
-
-@[simp]
-lemma ofWithTop_some (a : ℕ) : ofWithTop a = a := rfl
-
-@[simp]
-lemma ofWithTop_eq_some_iff (a : WithTop ℕ) (n : ℕ) : ofWithTop a = n ↔ a = n := Iff.rfl
-
-@[simp]
-lemma ofWithTop_ofNat (a : ℕ) [a.AtLeastTwo] : ofWithTop (no_index (OfNat.ofNat a)) = a := rfl
-
-@[simp]
-lemma ofWithTop_eq_ofNat_iff (v : ℕ∞) (a : ℕ) [a.AtLeastTwo] :
-    ofWithTop v = no_index (OfNat.ofNat a) ↔ v = a := Iff.rfl
-
-@[simp]
-lemma ofWithTop_symm : ofWithTop.symm = toWithTop := rfl
-
-@[simp]
-lemma toWithTop_symm : toWithTop.symm = ofWithTop := rfl
-
-@[simp]
-lemma ofWithTop_toWithTop (v : ℕ∞) : ofWithTop (toWithTop v) = v := rfl
-
-@[simp]
-lemma toWithTop_ofWithTop (v : WithTop ℕ) : toWithTop (ofWithTop v) = v := rfl
-
 /-- Lemmas about `WithTop` expect (and can output) `WithTop.some` but the normal form for coercion
 `ℕ → ℕ∞` is `Nat.cast`. -/
 @[simp] theorem some_eq_coe : (WithTop.some : ℕ → ℕ∞) = Nat.cast := rfl
@@ -463,6 +405,14 @@ theorem monotone_map_iff {f : ℕ → α} [Preorder α] : Monotone (ENat.map f) 
 protected theorem map_add {β F} [Add β] [FunLike F ℕ β] [AddHomClass F ℕ β]
     (f : F) (a b : ℕ∞) : (a + b).map f = a.map f + b.map f :=
   WithTop.map_add f a b
+
+@[to_additive]
+theorem map_eq_one_iff {β} {f : ℕ → β} {v : ℕ∞} [One β] :
+    ENat.map f v = 1 ↔ ∃ x, v = .some x ∧ f x = 1 := WithTop.map_eq_one_iff
+
+@[to_additive]
+theorem one_eq_map_iff {β} {f : ℕ → β} {v : ℕ∞} [One β] :
+    1 = ENat.map f v ↔ ∃ x, v = .some x ∧ f x = 1 := WithTop.one_eq_map_iff
 
 /-- A version of `ENat.map` for `OneHom`s. -/
 -- @[to_additive (attr := simps (config := .asFn))
