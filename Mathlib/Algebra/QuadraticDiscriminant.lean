@@ -7,6 +7,7 @@ import Mathlib.Order.Filter.AtTopBot.Field
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linarith.Frontend
+import Mathlib.Algebra.Polynomial.Roots
 
 /-!
 # Quadratic discriminants and roots of a quadratic
@@ -26,6 +27,8 @@ This file defines the discriminant of a quadratic and gives the solution to a qu
 - `discrim_le_zero`: if a quadratic is always non-negative, then its discriminant is non-positive.
 - `discrim_le_zero_of_nonpos`, `discrim_lt_zero`, `discrim_lt_zero_of_neg`: versions of this
   statement with other inequalities.
+- `quadratic_factor`: quadratic factors to `a*(x-x1)*(x-x2)` given `x1,x2` as its roots.
+- `quadratic_vieta`, `quadratic_vieta'`: Vieta's formula for quadratic.
 
 ## Tags
 
@@ -148,3 +151,46 @@ lemma discrim_lt_zero_of_neg (ha : a ≠ 0) (h : ∀ x : K, a * (x * x) + b * x 
     simpa only [neg_mul, ← neg_add, neg_pos]
 
 end LinearOrderedField
+
+namespace Polynomial
+
+/-- Quadratic factors to `a*(x-x1)*(x-x2)` given `x1,x2` as its roots. -/
+lemma quadratic_factor {R : Type*} [CommRing R] [IsDomain R] {a b c x1 x2 : R}
+    (hroots : (C a * X ^ 2 + C b * X + C c).roots = {x1, x2}) :
+    C a * X ^ 2 + C b * X + C c = C a * (X - C x1) * (X - C x2) := by
+  let p : R[X] := C a * X ^ 2 + C b * X + C c
+  have hp_natDegree_eq_two : p.natDegree = 2 := by
+    apply le_antisymm
+    · exact natDegree_quadratic_le
+    convert Polynomial.card_roots' p
+    rw [hroots, Multiset.card_pair]
+  have hp_natDegree_eq_roots_card : Multiset.card p.roots = p.natDegree := by
+    rw [hroots, Multiset.card_pair, hp_natDegree_eq_two]
+  convert (C_leadingCoeff_mul_prod_multiset_X_sub_C hp_natDegree_eq_roots_card).symm using 1
+  rw [leadingCoeff, hp_natDegree_eq_two]
+  simpa [p, hroots] using by ac_rfl
+
+/-- **Vieta's formula** for quadratic in term of `Polynomial.roots`. -/
+lemma quadratic_vieta {R : Type*} [CommRing R] [IsDomain R] {a b c x1 x2 : R}
+    (hroots : (C a * X ^ 2 + C b * X + C c).roots = {x1, x2}) :
+    a * (x1 + x2) = -b ∧ a * x1 * x2 = c := by
+  have hp_factor := Polynomial.quadratic_factor hroots
+  have hp_expand : C a * (X - C x1) * (X - C x2) = C a * X ^ 2 + C (-a * (x1 + x2)) * X +
+      C (a * x1 * x2) := by
+    simpa only [C_neg, C_add, C_mul] using by ring
+  constructor
+  · suffices -a * (x1 + x2) = b by linear_combination -this
+    apply_fun (·.coeff 1) at hp_factor
+    convert hp_factor.symm <;> simp [hp_expand]
+  · suffices a * x1 * x2 = c by linear_combination this
+    apply_fun (·.coeff 0) at hp_factor
+    convert hp_factor.symm <;> simp [hp_expand]
+
+/-- **Vieta's formula** for quadratic in term of `Polynomial.roots`. -/
+lemma quadratic_vieta' {R : Type*} [Field R] {a b c x1 x2 : R} (ha : a ≠ 0)
+    (hroots : (C a * X ^ 2 + C b * X + C c).roots = {x1, x2}) :
+    x1 + x2 = -b / a ∧ x1 * x2 = c / a := by
+  refine And.imp ?_ ?_ (quadratic_vieta hroots)
+  all_goals field_simp; intro h; linear_combination h
+
+end Polynomial
