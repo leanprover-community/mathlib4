@@ -585,12 +585,12 @@ lemma take_drop : (a.drop m).take n = (a.take (m + n)).drop m := by
 
 lemma drop_append_of_le_length (h : n ≤ x.length) :
     (x ++ₛ a).drop n = x.drop n ++ₛ a := by
-  obtain ⟨m, hm⟩ := le_iff_exists_add.mp h
+  obtain ⟨m, hm⟩ := Nat.exists_eq_add_of_le h
   ext k; rcases lt_or_ge k m with _ | hk
   · rw [get_drop, get_append_left, get_append_left, List.getElem_drop]; simpa [hm]
-  · obtain ⟨p, rfl⟩ := le_iff_exists_add.mp hk
+  · obtain ⟨p, rfl⟩ := Nat.exists_eq_add_of_le hk
     have hm' : m = (x.drop n).length := by simp [hm]
-    simp_rw [get_drop, ← add_assoc, ← hm, get_append_right, hm', get_append_right]
+    simp_rw [get_drop, ← Nat.add_assoc, ← hm, get_append_right, hm', get_append_right]
 
 -- Take theorem reduces a proof of equality of infinite streams to an
 -- induction over all their finite approximations.
