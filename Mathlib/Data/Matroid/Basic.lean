@@ -216,7 +216,7 @@ namespace Matroid
 variable {α : Type*} {M : Matroid α}
 
 /-- Typeclass for a matroid having finite ground set. Just a wrapper for `M.E.Finite`-/
-protected class Finite (M : Matroid α) : Prop where
+@[mk_iff] protected class Finite (M : Matroid α) : Prop where
   /-- The ground set is finite -/
   (ground_finite : M.E.Finite)
 
@@ -231,6 +231,9 @@ theorem ground_nonempty (M : Matroid α) [M.Nonempty] : M.E.Nonempty :=
 theorem ground_nonempty_iff (M : Matroid α) : M.E.Nonempty ↔ M.Nonempty :=
   ⟨fun h ↦ ⟨h⟩, fun ⟨h⟩ ↦ h⟩
 
+lemma nonempty_type (M : Matroid α) [h : M.Nonempty] : Nonempty α :=
+  ⟨M.ground_nonempty.some⟩
+
 theorem ground_finite (M : Matroid α) [M.Finite] : M.E.Finite :=
   Finite.ground_finite
 
@@ -241,7 +244,7 @@ instance finite_of_finite [Finite α] {M : Matroid α} : M.Finite :=
   ⟨Set.toFinite _⟩
 
 /-- A `FiniteRk` matroid is one whose bases are finite -/
-class FiniteRk (M : Matroid α) : Prop where
+@[mk_iff] class FiniteRk (M : Matroid α) : Prop where
   /-- There is a finite base -/
   exists_finite_base : ∃ B, M.Base B ∧ B.Finite
 
@@ -249,17 +252,14 @@ instance finiteRk_of_finite (M : Matroid α) [M.Finite] : FiniteRk M :=
   ⟨M.exists_base.imp (fun B hB ↦ ⟨hB, M.set_finite B (M.subset_ground _ hB)⟩)⟩
 
 /-- An `InfiniteRk` matroid is one whose bases are infinite. -/
-class InfiniteRk (M : Matroid α) : Prop where
+@[mk_iff] class InfiniteRk (M : Matroid α) : Prop where
   /-- There is an infinite base -/
   exists_infinite_base : ∃ B, M.Base B ∧ B.Infinite
 
 /-- A `RkPos` matroid is one whose bases are nonempty. -/
-class RkPos (M : Matroid α) : Prop where
+@[mk_iff] class RkPos (M : Matroid α) : Prop where
   /-- The empty set isn't a base -/
   empty_not_base : ¬M.Base ∅
-
-theorem rkPos_iff_empty_not_base : M.RkPos ↔ ¬M.Base ∅ :=
-  ⟨fun ⟨h⟩ ↦ h, fun h ↦ ⟨h⟩⟩
 
 section exchange
 namespace ExchangeProperty
@@ -432,7 +432,7 @@ theorem Base.nonempty [RkPos M] (hB : M.Base B) : B.Nonempty := by
   rw [nonempty_iff_ne_empty]; rintro rfl; exact M.empty_not_base hB
 
 theorem Base.rkPos_of_nonempty (hB : M.Base B) (h : B.Nonempty) : M.RkPos := by
-  rw [rkPos_iff_empty_not_base]
+  rw [rkPos_iff]
   intro he
   obtain rfl := he.eq_of_subset_base hB (empty_subset B)
   simp at h
@@ -634,6 +634,14 @@ theorem Base.exchange_base_of_indep' (hB : M.Base B) (he : e ∈ B) (hf : f ∉ 
   rw [← insert_diff_singleton_comm hfe] at *
   exact hB.exchange_base_of_indep hf hI
 
+lemma insert_base_of_insert_indep {M : Matroid α} {I : Set α} {e f : α}
+    (he : e ∉ I) (hf : f ∉ I) (heI : M.Base (insert e I)) (hfI : M.Indep (insert f I)) :
+    M.Base (insert f I) := by
+  obtain rfl | hef := eq_or_ne e f
+  · assumption
+  simpa [diff_singleton_eq_self he, hfI]
+    using heI.exchange_base_of_indep (e := e) (f := f) (by simp [hef.symm, hf])
+
 theorem Base.insert_dep (hB : M.Base B) (h : e ∈ M.E \ B) : M.Dep (insert e B) := by
   rw [← not_indep_iff (insert_subset h.1 hB.subset_ground)]
   exact h.2 ∘ (fun hi ↦ insert_eq_self.mp (hB.eq_of_subset_indep hi (subset_insert e B)).symm)
@@ -703,7 +711,7 @@ lemma ext_base_indep {M₁ M₂ : Matroid α} (hE : M₁.E = M₂.E) (hM₁ : �
 
 /-- A `Finitary` matroid is one where a set is independent if and only if it all
   its finite subsets are independent, or equivalently a matroid whose circuits are finite. -/
-class Finitary (M : Matroid α) : Prop where
+@[mk_iff] class Finitary (M : Matroid α) : Prop where
   /-- `I` is independent if all its finite subsets are independent. -/
   indep_of_forall_finite : ∀ I, (∀ J, J ⊆ I → J.Finite → M.Indep J) → M.Indep I
 
