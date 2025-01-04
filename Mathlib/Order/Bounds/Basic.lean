@@ -914,12 +914,10 @@ theorem isLeast_sdiff [GeneralizedCoheytingAlgebra α] {a b : α} :
     IsLeast {w | a ≤ b ⊔ w} (a \ b) := by
   simp [IsLeast, mem_lowerBounds]
 
-theorem isGreatest_compl [HeytingAlgebra α] {a : α} :
+theorem isGreatest_compl [HeytingAlgebra α] (a : α) :
     IsGreatest {w | Disjoint w a} (aᶜ) := by
-  simp only [← himp_bot,disjoint_iff_inf_le]
-  exact isGreatest_himp
+  simpa only [← himp_bot, disjoint_iff_inf_le] using isGreatest_himp
 
-theorem isLeast_hnot [CoheytingAlgebra α] {a : α} :
+theorem isLeast_hnot [CoheytingAlgebra α] (a : α) :
     IsLeast {w | Codisjoint a w} (￢a) := by
-  simp only [← CoheytingAlgebra.top_sdiff, codisjoint_iff_le_sup]
-  exact isLeast_sdiff
+  simpa only [← top_sdiff, codisjoint_iff_le_sup] using isLeast_sdiff
