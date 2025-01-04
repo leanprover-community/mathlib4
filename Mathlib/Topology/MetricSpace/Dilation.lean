@@ -62,7 +62,7 @@ structure Dilation where
   toFun : α → β
   edist_eq' : ∃ r : ℝ≥0, r ≠ 0 ∧ ∀ x y : α, edist (toFun x) (toFun y) = r * edist x y
 
-infixl:25 " →ᵈ " => Dilation
+@[inherit_doc] infixl:25 " →ᵈ " => Dilation
 
 /-- `DilationClass F α β r` states that `F` is a type of `r`-dilations.
 You should extend this typeclass when you extend `Dilation`. -/

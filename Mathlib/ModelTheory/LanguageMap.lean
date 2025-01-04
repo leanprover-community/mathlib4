@@ -278,7 +278,7 @@ structure LEquiv (L L' : Language) where
   left_inv : invLHom.comp toLHom = LHom.id L
   right_inv : toLHom.comp invLHom = LHom.id L'
 
-infixl:10 " ≃ᴸ " => LEquiv
+@[inherit_doc] infixl:10 " ≃ᴸ " => LEquiv
 
 -- \^L
 namespace LEquiv
