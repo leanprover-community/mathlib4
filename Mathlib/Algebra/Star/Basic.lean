@@ -89,6 +89,10 @@ theorem star_star [InvolutiveStar R] (r : R) : star (star r) = r :=
 theorem star_injective [InvolutiveStar R] : Function.Injective (star : R → R) :=
   Function.Involutive.injective star_involutive
 
+@[aesop unsafe 5% apply (rule_sets := [SetLike])]
+theorem mem_of_star_mem {S R : Type*} [InvolutiveStar R] [SetLike S R] [StarMemClass S R]
+    {s : S} {r : R} (hr : star r ∈ s) : r ∈ s := by rw [← star_star r]; exact star_mem hr
+
 @[simp]
 theorem star_inj [InvolutiveStar R] {x y : R} : star x = star y ↔ x = y :=
   star_injective.eq_iff
