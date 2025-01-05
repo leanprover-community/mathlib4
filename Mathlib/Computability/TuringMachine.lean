@@ -1162,8 +1162,7 @@ def SupportsStmt (S : Finset Λ) : Stmt₁ → Prop
   | goto l => ∀ a v, l a v ∈ S
   | halt => True
 
-open scoped Classical
-
+open scoped Classical in
 /-- The subterm closure of a statement. -/
 noncomputable def stmts₁ : Stmt₁ → Finset Stmt₁
   | Q@(move _ q) => insert Q (stmts₁ q)
@@ -1176,6 +1175,7 @@ theorem stmts₁_self {q : Stmt₁} : q ∈ stmts₁ q := by
   cases q <;> simp only [stmts₁, Finset.mem_insert_self, Finset.mem_singleton_self]
 
 theorem stmts₁_trans {q₁ q₂ : Stmt₁} : q₁ ∈ stmts₁ q₂ → stmts₁ q₁ ⊆ stmts₁ q₂ := by
+  classical
   intro h₁₂ q₀ h₀₁
   induction q₂ with (
     simp only [stmts₁] at h₁₂ ⊢
@@ -1205,8 +1205,10 @@ theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt₁} (h : q�
 
 /-- The set of all statements in a Turing machine, plus one extra value `none` representing the
 halt state. This is used in the TM1 to TM0 reduction. -/
-noncomputable def stmts (M : Λ → Stmt₁) (S : Finset Λ) : Finset (Option Stmt₁) :=
-  Finset.insertNone (S.biUnion fun q ↦ stmts₁ (M q))
+
+noncomputable def stmts (M : Λ → Stmt₁) (S : Finset Λ) : Finset (Option Stmt₁) := by
+  classical 
+  exact Finset.insertNone (S.biUnion fun q ↦ stmts₁ (M q))
 
 theorem stmts_trans {M : Λ → Stmt₁} {S : Finset Λ} {q₁ q₂ : Stmt₁} (h₁ : q₁ ∈ stmts₁ q₂) :
     some q₂ ∈ stmts M S → some q₁ ∈ stmts M S := by

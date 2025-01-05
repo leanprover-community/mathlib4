@@ -57,7 +57,6 @@ If ever someone extends `Valuation`, we should fully comply to the `DFunLike` by
 boilerplate lemmas to `ValuationClass`.
 -/
 
-open scoped Classical
 open Function Ideal
 
 noncomputable section
@@ -168,6 +167,7 @@ theorem map_add_lt {x y g} (hx : v x < g) (hy : v y < g) : v (x + y) < g :=
 
 theorem map_sum_le {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf : ∀ i ∈ s, v (f i) ≤ g) :
     v (∑ i ∈ s, f i) ≤ g := by
+  classical
   refine
     Finset.induction_on s (fun _ => v.map_zero ▸ zero_le')
       (fun a s has ih hf => ?_) hf
@@ -176,6 +176,7 @@ theorem map_sum_le {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hf :
 
 theorem map_sum_lt {ι : Type*} {s : Finset ι} {f : ι → R} {g : Γ₀} (hg : g ≠ 0)
     (hf : ∀ i ∈ s, v (f i) < g) : v (∑ i ∈ s, f i) < g := by
+  classical
   refine
     Finset.induction_on s (fun _ => v.map_zero ▸ (zero_lt_iff.2 hg))
       (fun a s has ih hf => ?_) hf
@@ -305,6 +306,7 @@ theorem map_sub_eq_of_lt_right (h : v x < v y) : v (x - y) = v y := by
   rw [sub_eq_add_neg, map_add_eq_of_lt_right, map_neg]
   rwa [map_neg]
 
+open scoped Classical in
 theorem map_sum_eq_of_lt {ι : Type*} {s : Finset ι} {f : ι → R} {j : ι}
     (hj : j ∈ s) (h0 : v (f j) ≠ 0) (hf : ∀ i ∈ s \ {j}, v (f i) < v (f j)) :
     v (∑ i ∈ s, f i) = v (f j) := by
