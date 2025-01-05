@@ -4759,7 +4759,8 @@ import Mathlib.SetTheory.Ordinal.Exponential
 import Mathlib.SetTheory.Ordinal.FixedPoint
 import Mathlib.SetTheory.Ordinal.FixedPointApproximants
 import Mathlib.SetTheory.Ordinal.NaturalOps
-import Mathlib.SetTheory.Ordinal.Notation
+import Mathlib.SetTheory.Ordinal.Notation.Cantor
+import Mathlib.SetTheory.Ordinal.Notation.FundamentalSequence
 import Mathlib.SetTheory.Ordinal.Principal
 import Mathlib.SetTheory.Ordinal.Rank
 import Mathlib.SetTheory.Ordinal.Topology
