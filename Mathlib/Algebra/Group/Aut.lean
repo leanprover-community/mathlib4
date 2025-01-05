@@ -160,7 +160,7 @@ variable (A) [Add A]
 /-- The group operation on additive automorphisms is defined by `g h => AddEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-instance instGroup : Group (AddAut A) where
+instance : Group (AddAut A) where
   mul g h := AddEquiv.trans h g
   one := AddEquiv.refl _
   inv := AddEquiv.symm
