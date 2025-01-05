@@ -85,8 +85,6 @@ variable [Algebra A B] [Algebra B C] [Algebra A C] [IsScalarTower A B C]
 
 open Finset Submodule
 
-open scoped Classical
-
 theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : Submodule B C).FG) :
     ∃ B₀ : Subalgebra A B, B₀.FG ∧ (⊤ : Submodule B₀ C).FG := by
   cases' hAC with x hx
@@ -94,6 +92,7 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : 
   have := hy
   simp_rw [eq_top_iff', mem_span_finset] at this
   choose f hf using this
+  classical
   let s : Finset B := Finset.image₂ f (x ∪ y * y) y
   have hxy :
     ∀ xi ∈ x, xi ∈ span (Algebra.adjoin A (↑s : Set B)) (↑(insert 1 y : Finset C) : Set C) :=
