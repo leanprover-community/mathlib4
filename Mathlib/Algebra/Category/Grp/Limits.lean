@@ -458,8 +458,6 @@ def kernelIsoKer {G H : AddCommGrp.{u}} (f : G ⟶ H) :
         simp [(AddSubgroup.coe_zero _).symm]
       map_add' := fun g g' => by
         refine Subtype.ext ?_
-        change _ = _ + _
-        dsimp
         simp }
   inv := kernel.lift f (AddSubgroup.subtype f.ker) <| by ext x; exact x.2
   hom_inv_id := by

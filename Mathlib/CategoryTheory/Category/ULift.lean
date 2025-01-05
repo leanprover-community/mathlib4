@@ -65,27 +65,8 @@ def ULift.equivalence : C ≌ ULift.{u₂} C where
     { hom := 𝟙 _
       inv := 𝟙 _ }
   counitIso :=
-    { hom :=
-        { app := fun _ => 𝟙 _
-          naturality := fun X Y f => by
-            change f ≫ 𝟙 _ = 𝟙 _ ≫ f
-            simp }
-      inv :=
-        { app := fun _ => 𝟙 _
-          naturality := fun X Y f => by
-            change f ≫ 𝟙 _ = 𝟙 _ ≫ f
-            simp }
-      hom_inv_id := by
-        ext
-        change 𝟙 _ ≫ 𝟙 _ = 𝟙 _
-        simp
-      inv_hom_id := by
-        ext
-        change 𝟙 _ ≫ 𝟙 _ = 𝟙 _
-        simp }
-  functor_unitIso_comp X := by
-    change 𝟙 X ≫ 𝟙 X = 𝟙 X
-    simp
+    { hom := { app := fun _ => 𝟙 _ }
+      inv := { app := fun _ => 𝟙 _ } }
 
 section ULiftHom
 /- Porting note: obviously we don't want code that looks like this long term
