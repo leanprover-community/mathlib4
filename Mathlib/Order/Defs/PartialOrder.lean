@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Batteries.Tactic.Trans
+import Mathlib.Logic.Basic
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.SplitIfs
@@ -105,7 +106,7 @@ def decidableLTOfDecidableLE [DecidableRel (α := α) (· ≤ ·)] : DecidableRe
     else isFalse fun hab' => hab (le_of_lt hab')
 
 lemma not_lt_iff_not_le_or_ge : ¬a < b ↔ ¬a ≤ b ∨ b ≤ a := by
-  rw [lt_iff_le_not_le, Classical.not_and_iff_or_not_not, Classical.not_not]
+  rw [lt_iff_le_not_le, not_and_or, Classical.not_not]
 
 end Preorder
 
