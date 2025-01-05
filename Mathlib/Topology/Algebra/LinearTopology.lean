@@ -185,7 +185,6 @@ lemma hasBasis_subbimodule [IsLinearTopology R M] [IsLinearTopology R' M] :
   set uR : Set R := univ -- Convenient to avoid type ascriptions
   set uR' : Set R' := univ
   have hRR : uR * uR ⊆ uR := subset_univ _
-  have hR'R' : uR' * uR' ⊆ uR' := subset_univ _
   have hRI : uR • (I : Set M) ⊆ I := smul_subset_iff.mpr fun x _ i hi ↦ I.smul_mem x hi
   have hR'J : uR' • (J : Set M) ⊆ J := smul_subset_iff.mpr fun x _ j hj ↦ J.smul_mem x hj
   have hRJ : uR • (J : Set M) ⊆ I := subset_trans (smul_subset_smul_left J_sub_I) hRI
