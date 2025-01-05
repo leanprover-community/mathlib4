@@ -340,6 +340,9 @@ lemma mem_closure {x : α} : x ∈ closure s ↔ ∀ ⦃L : BooleanSubalgebra α
 @[aesop safe 20 apply (rule_sets := [SetLike])]
 lemma subset_closure : s ⊆ closure s := fun _ hx ↦ mem_closure.2 fun _ hK ↦ hK hx
 
+@[aesop unsafe 50% apply (rule_sets := [SetLike])]
+theorem mem_closure_of_mem {s : Set α} {x : α} (hx : x ∈ s) : x ∈ closure s := subset_adjoin hx
+
 @[simp] lemma closure_le : closure s ≤ L ↔ s ⊆ L := ⟨subset_closure.trans, fun h ↦ sInf_le h⟩
 
 lemma closure_mono (hst : s ⊆ t) : closure s ≤ closure t := sInf_le_sInf fun _L ↦ hst.trans
