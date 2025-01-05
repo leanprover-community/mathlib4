@@ -49,7 +49,7 @@ end RelIso
 
 This is defined in terms of a predicate `α → Prop` rather than a `Set α`, as otherwise the type
 signature of `Subrel r {x | p x}` is not `simp` normal, leading to hard to debug `simpNF` issues. -/
-def Subrel (r : α → α → Prop) (p : α → Prop) : {x // p x} → {x // p x} → Prop :=
+def Subrel (r : α → α → Prop) (p : α → Prop) : Subtype p → Subtype p → Prop :=
   Subtype.val ⁻¹'o r
 
 @[simp]
