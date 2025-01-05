@@ -47,8 +47,8 @@ end RelIso
 
 /-- `Subrel r p` is the inherited relation on a subtype.
 
-This is defined in terms of a predicate `α → Prop` rather than a `Set α`, as otherwise the type
-signature of `Subrel r {x | p x}` is not `simp` normal, leading to hard to debug `simpNF` issues. -/
+We could also consider a Set.Subrel r s variant for dot notation, but this ends up interacting
+poorly with `simpNF`. -/
 def Subrel (r : α → α → Prop) (p : α → Prop) : Subtype p → Subtype p → Prop :=
   Subtype.val ⁻¹'o r
 
