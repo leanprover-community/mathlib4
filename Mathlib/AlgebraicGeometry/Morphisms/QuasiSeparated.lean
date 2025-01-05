@@ -5,6 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.Morphisms.Constructors
 import Mathlib.AlgebraicGeometry.Morphisms.QuasiCompact
+import Mathlib.CategoryTheory.Limits.Shapes.Pullback.Equalizer
 import Mathlib.Topology.QuasiSeparated
 import Mathlib.Topology.Sheaves.CommRingCat
 
@@ -169,6 +170,26 @@ theorem IsAffineOpen.isQuasiSeparated {X : Scheme} {U : X.Opens} (hU : IsAffineO
     IsQuasiSeparated (U : Set X) := by
   rw [isQuasiSeparated_iff_quasiSeparatedSpace]
   exacts [@AlgebraicGeometry.quasiSeparatedSpace_of_isAffine _ hU, U.isOpen]
+
+lemma quasiSeparatedSpace_iff_quasiCompact_prod_lift :
+    QuasiSeparatedSpace X ↔ QuasiCompact (prod.lift (𝟙 X) (𝟙 X)) := by
+  rw [← MorphismProperty.cancel_right_of_respectsIso @QuasiCompact _ (prodIsoPullback X X).hom,
+    ← HasAffineProperty.iff_of_isAffine (f := terminal.from X) (P := @QuasiSeparated),
+    quasiSeparated_iff]
+  congr!
+  ext : 1 <;> simp
+
+instance [QuasiSeparatedSpace X] : QuasiCompact (prod.lift (𝟙 X) (𝟙 X)) := by
+  rwa [← quasiSeparatedSpace_iff_quasiCompact_prod_lift]
+
+instance [QuasiSeparatedSpace Y] (f g : X ⟶ Y) : QuasiCompact (equalizer.ι f g) :=
+  MorphismProperty.of_isPullback (P := @QuasiCompact)
+    (isPullback_equalizer_prod f g).flip inferInstance
+
+instance [CompactSpace X] [QuasiSeparatedSpace Y] (f g : X ⟶ Y) :
+    CompactSpace (equalizer f g).carrier := by
+  constructor
+  simpa using QuasiCompact.isCompact_preimage (f := equalizer.ι f g) _ isOpen_univ isCompact_univ
 
 theorem QuasiSeparated.of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated (f ≫ g)] :
     QuasiSeparated f := by
