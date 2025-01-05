@@ -48,22 +48,23 @@ variable {G H : Type*} [MeasurableSpace G] [Group G] [TopologicalSpace G]
 
 open Metric Bornology in
 @[to_additive]
-lemma _root_.Measurable.exists_nhds_one_isBounded (f : G →* H) (hf : Measurable f) :
-    ∃ s, s ∈ 𝓝 (1 : G) ∧ IsBounded (f '' s) := by
+lemma _root_.MonoidHom.exists_nhds_isBounded (f : G →* H) (hf : Measurable f) (x : G) :
+    ∃ s ∈ 𝓝 x, IsBounded (f '' s) := by
   let K : PositiveCompacts G := Classical.arbitrary _
   obtain ⟨n, hn⟩ : ∃ n : ℕ, 0 < haar (interior K ∩ f ⁻¹' ball 1 n) := by
     by_contra!
     simp_rw [nonpos_iff_eq_zero, ← measure_iUnion_null_iff, ← inter_iUnion, ← preimage_iUnion,
       iUnion_ball_nat, preimage_univ, inter_univ] at this
     exact this.not_gt <| isOpen_interior.measure_pos _ K.interior_nonempty
-  refine ⟨_, div_mem_nhds_one_of_haar_pos_ne_top haar _
+  rw [← one_mul x, ← op_smul_eq_mul]
+  refine ⟨_, smul_mem_nhds_smul _ <| div_mem_nhds_one_of_haar_pos_ne_top haar _
     (isOpen_interior.measurableSet.inter <| hf measurableSet_ball) hn <|
       mt (measure_mono_top <| inter_subset_left.trans interior_subset) K.isCompact.measure_ne_top,
     ?_⟩
   have : Bornology.IsBounded (f '' (interior K ∩ f ⁻¹' ball 1 n)) :=
     isBounded_ball.subset <| (image_mono inter_subset_right).trans <| image_preimage_subset _ _
-  rw [image_div]
-  exact this.div this
+  rw [image_op_smul_distrib, image_div]
+  exact (this.div this).smul _
 
 end SeminormedGroup
 

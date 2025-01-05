@@ -594,10 +594,9 @@ open Pointwise
 private lemma steinhaus_mul_aux (μ : Measure G) [IsHaarMeasure μ] [μ.InnerRegularCompactLTTop]
     [LocallyCompactSpace G] (E : Set G) (hE : MeasurableSet E)
     (hEapprox : ∃ K ⊆ E, IsCompact K ∧ 0 < μ K) : E / E ∈ 𝓝 (1 : G) := by
-  /- For any inner regular measure `μ` and set `E` of positive measure, we can find a compact
-  set `K` of positive measure inside `E`. Further, there exists a neighborhood `V` of the
-  identity such that `v • K \ K` has small measure for all `v ∈ V`, say `< μ K`.
-  Then `v • K` and `K` can not be disjoint, as otherwise `μ (v • K \ K) = μ (v • K) = μ K`.
+  /- For any measure `μ` and set `E` containing a compact set `K` of positive measure, there exists
+  a neighborhood `V` of the identity such that `v • K \ K` has small measure for all `v ∈ V`, say
+  `< μ K`. Then `v • K` and `K` can not be disjoint, as otherwise `μ (v • K \ K) = μ (v • K) = μ K`.
   This show that `K / K` contains the neighborhood `V` of `1`, and therefore that it is
   itself such a neighborhood. -/
   obtain ⟨K, hKE, hK, K_closed, hKpos⟩ : ∃ K ⊆ E, IsCompact K ∧ IsClosed K ∧ 0 < μ K := by
@@ -611,13 +610,15 @@ private lemma steinhaus_mul_aux (μ : Measure G) [IsHaarMeasure μ] [μ.InnerReg
 
 /-- **Steinhaus Theorem** for finite mass sets.
 
-In any locally compact group `G` with an Haar measure `μ` that's inner regular on compact sets, for
-any measurable set `E` of finite positive measure, the set `E / E` is a neighbourhood of `1`. -/
+In any locally compact group `G` with an Haar measure `μ` that's inner regular on finite measure
+sets, for any measurable set `E` of finite positive measure, the set `E / E` is a neighbourhood of
+`1`. -/
 @[to_additive
 "**Steinhaus Theorem** for finite mass sets.
 
-In any locally compact group `G` with an Haar measure `μ` that's inner regular on compact sets, for
-any measurable set `E` of finite positive measure, the set `E - E` is a neighbourhood of `0`. "]
+In any locally compact group `G` with an Haar measure `μ` that's inner regular on finite measure
+sets, for any measurable set `E` of finite positive measure, the set `E - E` is a neighbourhood of
+`0`. "]
 theorem div_mem_nhds_one_of_haar_pos_ne_top (μ : Measure G) [IsHaarMeasure μ]
     [LocallyCompactSpace G] [μ.InnerRegularCompactLTTop] (E : Set G) (hE : MeasurableSet E)
     (hEpos : 0 < μ E) (hEfin : μ E ≠ ∞) : E / E ∈ 𝓝 (1 : G) :=
