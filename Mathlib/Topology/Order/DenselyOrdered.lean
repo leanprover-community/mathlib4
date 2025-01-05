@@ -388,9 +388,7 @@ theorem exists_countable_dense_no_bot_top [SeparableSpace α] [Nontrivial α] :
 theorem isClosed_Ico_iff {a b : α} : IsClosed (Set.Ico a b) ↔ b ≤ a := by
   refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
   have := h.closure_eq
-  rw [closure_Ico hab.ne, Set.ext_iff] at this
-  specialize this b
-  rw [Set.right_mem_Icc, Set.right_mem_Ico, iff_false] at this
+  rw [closure_Ico hab.ne, Icc_eq_Ico_same_iff] at this
   exact this hab.le
 
 /-- `Set.Ioc a b` is only closed if it is empty. -/
@@ -398,9 +396,7 @@ theorem isClosed_Ico_iff {a b : α} : IsClosed (Set.Ico a b) ↔ b ≤ a := by
 theorem isClosed_Ioc_iff {a b : α} : IsClosed (Set.Ioc a b) ↔ b ≤ a := by
   refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
   have := h.closure_eq
-  rw [closure_Ioc hab.ne, Set.ext_iff] at this
-  specialize this a
-  rw [Set.left_mem_Icc, Set.left_mem_Ioc, iff_false] at this
+  rw [closure_Ioc hab.ne, Icc_eq_Ioc_same_iff] at this
   exact this hab.le
 
 /-- `Set.Ioo a b` is only closed if it is empty. -/
@@ -408,9 +404,7 @@ theorem isClosed_Ioc_iff {a b : α} : IsClosed (Set.Ioc a b) ↔ b ≤ a := by
 theorem isClosed_Ioo_iff {a b : α} : IsClosed (Set.Ioo a b) ↔ b ≤ a := by
   refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
   have := h.closure_eq
-  rw [closure_Ioo hab.ne, Set.ext_iff] at this
-  specialize this a
-  rw [Set.left_mem_Icc, Set.left_mem_Ioo, iff_false] at this
+  rw [closure_Ioo hab.ne, Icc_eq_Ioo_same_iff] at this
   exact this hab.le
 
 end DenselyOrdered
