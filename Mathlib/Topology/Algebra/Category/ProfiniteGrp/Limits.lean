@@ -8,6 +8,11 @@ import Mathlib.Topology.Algebra.ClopenNhdofOne
 
 /-!
 # A profinite group is the projective limit of finite groups
+
+We give the topological group isomorphism between a profinite group and the projective limit of its quotients by open normal subgroups.
+
+## Main definitions
+
 In a profinite group `P` :
 * `QuotientOpenNormalSubgroup` : The functor that maps open normal subgroup of `P` to
   the quotient group of it (which is finite, as shown by previous lemmas).
