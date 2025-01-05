@@ -207,9 +207,8 @@ theorem mateEquiv_hcomp
       rightAdjointSquare.hcomp (mateEquiv adj₁ adj₂ α) (mateEquiv adj₃ adj₄ β) := by
   unfold leftAdjointSquare.hcomp rightAdjointSquare.hcomp mateEquiv Adjunction.comp
   ext c
-  simp only [comp_obj, mk'_unit, whiskerLeft_comp, whiskerLeft_twice, mk'_counit, whiskerRight_comp,
-    assoc, Equiv.coe_fn_mk, comp_app, whiskerLeft_app, whiskerRight_app, id_obj, associator_inv_app,
-    Functor.comp_map, associator_hom_app, map_id, id_comp, whiskerRight_twice]
+  dsimp
+  simp only [comp_id, map_comp, id_comp, assoc]
   slice_rhs 2 4 =>
     rw [← R₂.map_comp, ← R₂.map_comp, ← assoc, ← unit_naturality (adj₄)]
   rw [R₂.map_comp, L₄.map_comp, R₄.map_comp, R₂.map_comp]

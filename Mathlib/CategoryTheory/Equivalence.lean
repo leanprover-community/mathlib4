@@ -269,19 +269,18 @@ variable {E : Type u₃} [Category.{v₃} E]
 def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E where
   functor := e.functor ⋙ f.functor
   inverse := f.inverse ⋙ e.inverse
-  unitIso := by
-    refine Iso.trans e.unitIso ?_
-    exact isoWhiskerLeft e.functor (isoWhiskerRight f.unitIso e.inverse)
-  counitIso := by
-    refine Iso.trans ?_ f.counitIso
-    exact isoWhiskerLeft f.inverse (isoWhiskerRight e.counitIso f.functor)
+  unitIso := e.unitIso ≪≫ isoWhiskerRight (e.functor.rightUnitor.symm ≪≫
+    isoWhiskerLeft _ f.unitIso ≪≫ (Functor.associator _ _ _ ).symm) _ ≪≫ Functor.associator _ _ _
+  counitIso := (Functor.associator _ _ _ ).symm ≪≫ isoWhiskerRight ((Functor.associator _ _ _ ) ≪≫
+      isoWhiskerLeft _ e.counitIso ≪≫ f.inverse.rightUnitor) _ ≪≫ f.counitIso
   -- We wouldn't have needed to give this proof if we'd used `Equivalence.mk`,
   -- but we choose to avoid using that here, for the sake of good structure projection `simp`
   -- lemmas.
   functor_unitIso_comp X := by
     dsimp
-    rw [← f.functor.map_comp_assoc, e.functor.map_comp, ← counitInv_app_functor, fun_inv_map,
-      Iso.inv_hom_id_app_assoc, assoc, Iso.inv_hom_id_app, counit_app_functor, ← Functor.map_comp]
+    simp only [comp_id, id_comp, map_comp, fun_inv_map, comp_obj, id_obj, counitInv,
+      functor_unit_comp_assoc, assoc]
+    slice_lhs 2 3 => rw [← Functor.map_comp, Iso.inv_hom_id_app]
     simp
 
 /-- Composing a functor with both functors of an equivalence yields a naturally isomorphic
