@@ -37,7 +37,7 @@ We also have the following strengthening of the equational criterion for flatnes
 (`Module.Flat.exists_factorization_of_comp_eq_zero_of_free`): Let $M$ be a
 flat module. Let $K$ and $N$ be finite $R$-modules with $N$ free, and let $f \colon K \to N$ and
 $x \colon N \to M$ be homomorphisms such that $x \circ f = 0$. Then there exist a finite index type
-$\kappa$ and module homomorphisms $a \colon N \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such
+$\kappa$ and $R$-linear maps $a \colon N \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such
 that $x = y \circ a$ and $a \circ f = 0$. We recover the usual equational criterion for flatness if
 $K = R$ and $N = R^\iota$. This is used in the proof of Lazard's theorem.
 
@@ -108,7 +108,7 @@ $x \colon R^{\iota} \to M$ such that $x(f) = 0$, there exist a finite index type
 homomorphisms $a \colon R^{\iota} \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such
 that $x = y \circ a$ and $a(f) = 0$.
 * For all finite free modules $N$, all elements $f \in N$, and all homomorphisms $x \colon N \to M$
-such that $x(f) = 0$, there exist a finite index type $\kappa$ and module homomorphisms
+such that $x(f) = 0$, there exist a finite index type $\kappa$ and $R$-linear maps
 $a \colon N \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and
 $a(f) = 0$. -/
 theorem tfae_equational_criterion : List.TFAE [
@@ -241,7 +241,7 @@ forward direction, second alternate form.
 
 Let $M$ be a flat module over a commutative ring $R$. Let $N$ be a finite free module over $R$,
 let $f \in N$, and let $x \colon N \to M$ be a homomorphism such that $x(f) = 0$. Then there exist a
-finite index type $\kappa$ and module homomorphisms $a \colon N \to R^{\kappa}$ and
+finite index type $\kappa$ and $R$-linear maps $a \colon N \to R^{\kappa}$ and
 $y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and $a(f) = 0$. -/
 theorem exists_factorization_of_apply_eq_zero_of_free [Flat R M] {N : Type u} [AddCommGroup N]
     [Module R N] [Free R N] [Module.Finite R N] {f : N} {x : N →ₗ[R] M} (h : x f = 0) :
@@ -251,7 +251,7 @@ theorem exists_factorization_of_apply_eq_zero_of_free [Flat R M] {N : Type u} [A
 
 /-- Let $M$ be a flat module. Let $K$ and $N$ be finite $R$-modules with $N$
 free, and let $f \colon K \to N$ and $x \colon N \to M$ be homomorphisms such that
-$x \circ f = 0$. Then there exist a finite index type $\kappa$ and module homomorphisms
+$x \circ f = 0$. Then there exist a finite index type $\kappa$ and $R$-linear maps
 $a \colon N \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and
 $a \circ f = 0$. -/
 theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type u} [AddCommGroup K]
