@@ -42,7 +42,7 @@ structure BoundedContinuousFunction (α : Type u) (β : Type v) [TopologicalSpac
     [PseudoMetricSpace β] extends ContinuousMap α β : Type max u v where
   map_bounded' : ∃ C, ∀ x y, dist (toFun x) (toFun y) ≤ C
 
-scoped[BoundedContinuousFunction] infixr:25 " →ᵇ " => BoundedContinuousFunction
+@[inherit_doc] scoped[BoundedContinuousFunction] infixr:25 " →ᵇ " => BoundedContinuousFunction
 
 section
 
@@ -1220,10 +1220,9 @@ instance : NatCast (α →ᵇ R) :=
 @[simp, norm_cast]
 theorem coe_natCast (n : ℕ) : ((n : α →ᵇ R) : α → R) = n := rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n) : α →ᵇ R) : α → R) = OfNat.ofNat n :=
+    ((ofNat(n) : α →ᵇ R) : α → R) = ofNat(n) :=
   rfl
 
 instance : IntCast (α →ᵇ R) :=

@@ -564,10 +564,10 @@ theorem nfp_zero_left (a) : nfp 0 a = a := by
   rw [← iSup_iterate_eq_nfp]
   apply (Ordinal.iSup_le ?_).antisymm (Ordinal.le_iSup _ 0)
   intro n
-  induction' n with n _
+  cases n
   · rfl
   · rw [Function.iterate_succ']
-    exact Ordinal.zero_le a
+    simp
 
 @[simp]
 theorem nfp_zero : nfp 0 = id := by
@@ -579,8 +579,7 @@ theorem deriv_zero : deriv 0 = id :=
   deriv_eq_id_of_nfp_eq_id nfp_zero
 
 theorem deriv_zero_left (a) : deriv 0 a = a := by
-  rw [deriv_zero]
-  rfl
+  rw [deriv_zero, id_eq]
 
 end
 
@@ -689,7 +688,7 @@ theorem mul_eq_right_iff_opow_omega0_dvd {a b : Ordinal} : a * b = b ↔ a ^ ω 
   refine ⟨fun hab => ?_, fun h => ?_⟩
   · rw [dvd_iff_mod_eq_zero]
     rw [← div_add_mod b (a ^ ω), mul_add, ← mul_assoc, ← opow_one_add, one_add_omega0,
-      add_left_cancel] at hab
+      add_left_cancel_iff] at hab
     cases' eq_zero_or_opow_omega0_le_of_mul_eq_right hab with hab hab
     · exact hab
     refine (not_lt_of_le hab (mod_lt b (opow_ne_zero ω ?_))).elim

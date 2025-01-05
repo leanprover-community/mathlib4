@@ -210,8 +210,8 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
       exact (IsLocalization.map_eq (T := Algebra.algebraMapSubmonoid S (primeCompl p))
         (Submonoid.le_comap_map _) x).symm
   obtain ⟨pid, p', ⟨hp'0, hp'p⟩, hpu⟩ :=
-    (DiscreteValuationRing.iff_pid_with_one_nonzero_prime (Localization.AtPrime p)).mp
-      (IsLocalization.AtPrime.discreteValuationRing_of_dedekind_domain R hp0 _)
+    (IsDiscreteValuationRing.iff_pid_with_one_nonzero_prime (Localization.AtPrime p)).mp
+      (IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain R hp0 _)
   have : IsLocalRing.maximalIdeal (Localization.AtPrime p) ≠ ⊥ := by
     rw [Submodule.ne_bot_iff] at hp0 ⊢
     obtain ⟨x, x_mem, x_ne⟩ := hp0
