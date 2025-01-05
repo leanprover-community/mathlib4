@@ -6,31 +6,21 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.MeasureTheory.Measure.MeasureSpace
 
 /-!
-# AbsolutelyContinuous
+# Pushforward of a measure
+
+In this file we define the pushforward `MeasureTheory.Measure.map f μ`
+of a measure `μ` along an almost everywhere measurable map `f`.
+If `f` is not a.e. measurable, then we define `map f μ` to be zero.
 
 ## Main definitions
 
-* `FooBar`
+* `MeasureTheory.Measure.map f μ`: map of the measure `μ` along the map `f`.
 
 ## Main statements
 
-* `fooBar_unique`
+* `map_apply`: for `s` a measurable set, `μ.map f s = μ (f ⁻¹' s)`
+* `map_map`: `(μ.map f).map g = μ.map (g ∘ f)`
 
-## Notation
-
-
-
-## Implementation details
-
-
-
-## References
-
-* [F. Bar, *Quuxes*][bibkey]
-
-## Tags
-
-Foobars, barfoos
 -/
 
 variable {α β γ δ : Type*}

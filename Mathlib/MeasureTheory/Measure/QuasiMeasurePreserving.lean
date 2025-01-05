@@ -8,29 +8,16 @@ import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 /-!
 # AbsolutelyContinuous
 
+A map `f : α → β` is said to be *quasi measure preserving* (a.k.a. non-singular) w.r.t. measures
+`μa` and `μb` if it is measurable and `μb s = 0` implies `μa (f ⁻¹' s) = 0`.
+That last condition can also be written `μa.map f ≪ μb` (the map of `μa` by `f` is
+absolutely continuous with respect to `μb`).
+
 ## Main definitions
 
-* `FooBar`
+* `MeasureTheory.Measure.QuasiMeasurePreserving f μa μb`: `f` is quasi measure preserving with
+  respect to `μa` and `μb`.
 
-## Main statements
-
-* `fooBar_unique`
-
-## Notation
-
-
-
-## Implementation details
-
-
-
-## References
-
-* [F. Bar, *Quuxes*][bibkey]
-
-## Tags
-
-Foobars, barfoos
 -/
 
 variable {α β γ δ : Type*}

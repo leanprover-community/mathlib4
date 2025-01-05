@@ -8,29 +8,25 @@ import Mathlib.MeasureTheory.Measure.Map
 /-!
 # AbsolutelyContinuous
 
+We say that `μ` is absolutely continuous with respect to `ν`, or that `μ` is dominated by `ν`,
+if `ν(A) = 0` implies that `μ(A) = 0`. We denote that by `μ ≪ ν`.
+
+It is equivalent to an inequality of the almost everywhere filters of the measures:
+`μ ≪ ν ↔ ae μ ≤ ae ν`.
+
 ## Main definitions
 
-* `FooBar`
+* `MeasureTheory.Measure.AbsolutelyContinuous μ ν`: `μ` is absolutely continuous with respect to `ν`
 
 ## Main statements
 
-* `fooBar_unique`
+* `ae_le_iff_absolutelyContinuous`: `ae μ ≤ ae ν ↔ μ ≪ ν`
 
 ## Notation
 
+* `μ ≪ ν`: `MeasureTheory.Measure.AbsolutelyContinuous μ ν`. That is: `μ` is absolutely continuous
+  with respect to `ν`
 
-
-## Implementation details
-
-
-
-## References
-
-* [F. Bar, *Quuxes*][bibkey]
-
-## Tags
-
-Foobars, barfoos
 -/
 
 variable {α β δ ι R : Type*}
@@ -165,16 +161,16 @@ alias ae_mono' := AbsolutelyContinuous.ae_le
 theorem AbsolutelyContinuous.ae_eq (h : μ ≪ ν) {f g : α → δ} (h' : f =ᵐ[ν] g) : f =ᵐ[μ] g :=
   h.ae_le h'
 
-protected theorem _root_.MeasureTheory.AEDisjoint.of_absolutelyContinuous
+end Measure
+
+protected theorem AEDisjoint.of_absolutelyContinuous
     (h : AEDisjoint μ s t) {ν : Measure α} (h' : ν ≪ μ) :
     AEDisjoint ν s t := h' h
 
-protected theorem _root_.MeasureTheory.AEDisjoint.of_le
+protected theorem AEDisjoint.of_le
     (h : AEDisjoint μ s t) {ν : Measure α} (h' : ν ≤ μ) :
     AEDisjoint ν s t :=
   h.of_absolutelyContinuous (Measure.absolutelyContinuous_of_le h')
-
-end Measure
 
 @[mono]
 theorem ae_mono (h : μ ≤ ν) : ae μ ≤ ae ν :=
