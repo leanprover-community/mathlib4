@@ -18,7 +18,7 @@ spaces. It consists of the data of a topological space, satisfying the additiona
 being compact and Hausdorff, and satisfying `P`. We give a category structure to `CompHausLike P`
 induced by the forgetful functor to topological spaces.
 
-It used to be the case (before #12930 was merged) that several different categories of compact
+It used to be the case (before https://github.com/leanprover-community/mathlib4/pull/12930 was merged) that several different categories of compact
 Hausdorff spaces, possibly satisfying some extra property, were defined from scratch in this way.
 For example, one would define a structure `CompHaus` as follows:
 
@@ -125,15 +125,15 @@ theorem coe_comp {X Y Z : CompHausLike P} (f : X ⟶ Y) (g : Y ⟶ Z) :
     ((forget (CompHausLike P)).map f ≫ (forget (CompHausLike P)).map g) = g ∘ f :=
   rfl
 
--- Note (#10754): Lean does not see through the forgetful functor here
+-- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : TopologicalSpace ((forget (CompHausLike P)).obj X) :=
   inferInstanceAs (TopologicalSpace X.toTop)
 
--- Note (#10754): Lean does not see through the forgetful functor here
+-- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : CompactSpace ((forget (CompHausLike P)).obj X) :=
   inferInstanceAs (CompactSpace X.toTop)
 
--- Note (#10754): Lean does not see through the forgetful functor here
+-- Note (https://github.com/leanprover-community/mathlib4/issues/10754): Lean does not see through the forgetful functor here
 instance (X : CompHausLike.{u} P) : T2Space ((forget (CompHausLike P)).obj X) :=
   inferInstanceAs (T2Space X.toTop)
 
@@ -228,7 +228,7 @@ theorem isIso_of_bijective {X Y : CompHausLike.{u} P} (f : X ⟶ Y) (bij : Funct
 
 instance forget_reflectsIsomorphisms :
     (forget (CompHausLike.{u} P)).ReflectsIsomorphisms :=
-  ⟨by intro A B f hf; exact isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
+  ⟨by intro A B f hf; rw [isIso_iff_bijective] at hf; exact isIso_of_bijective _ hf⟩
 
 /-- Any continuous bijection of compact Hausdorff spaces induces an isomorphism. -/
 noncomputable def isoOfBijective {X Y : CompHausLike.{u} P} (f : X ⟶ Y)

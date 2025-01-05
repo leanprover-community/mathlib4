@@ -356,7 +356,6 @@ structure RightHomologyMapData where
 namespace RightHomologyMapData
 
 attribute [reassoc (attr := simp)] commp commg' commι
-attribute [nolint simpNF] mk.injEq
 
 /-- The right homology map data associated to the zero morphism between two short complexes. -/
 @[simps]
@@ -964,6 +963,70 @@ to the opcycles of this short complex. -/
 noncomputable def cyclesOpIso [S.HasRightHomology] :
     S.op.cycles ≅ Opposite.op S.opcycles :=
   S.rightHomologyData.op.cyclesIso
+
+@[reassoc (attr := simp)]
+lemma opcyclesOpIso_hom_toCycles_op [S.HasLeftHomology] :
+    S.opcyclesOpIso.hom ≫ S.toCycles.op = S.op.fromOpcycles := by
+  dsimp [opcyclesOpIso, toCycles]
+  rw [← cancel_epi S.op.pOpcycles, p_fromOpcycles,
+    RightHomologyData.pOpcycles_comp_opcyclesIso_hom_assoc,
+    LeftHomologyData.op_p, ← op_comp, LeftHomologyData.f'_i, op_g]
+
+@[reassoc (attr := simp)]
+lemma fromOpcycles_op_cyclesOpIso_inv [S.HasRightHomology]:
+    S.fromOpcycles.op ≫ S.cyclesOpIso.inv = S.op.toCycles := by
+  dsimp [cyclesOpIso, fromOpcycles]
+  rw [← cancel_mono S.op.iCycles, assoc, toCycles_i,
+    LeftHomologyData.cyclesIso_inv_comp_iCycles, RightHomologyData.op_i,
+    ← op_comp, RightHomologyData.p_g', op_f]
+
+@[reassoc (attr := simp)]
+lemma op_pOpcycles_opcyclesOpIso_hom [S.HasLeftHomology] :
+    S.op.pOpcycles ≫ S.opcyclesOpIso.hom = S.iCycles.op := by
+  dsimp [opcyclesOpIso]
+  rw [← S.leftHomologyData.op.p_comp_opcyclesIso_inv, assoc,
+    Iso.inv_hom_id, comp_id]
+  rfl
+
+@[reassoc (attr := simp)]
+lemma cyclesOpIso_inv_op_iCycles [S.HasRightHomology] :
+    S.cyclesOpIso.inv ≫ S.op.iCycles = S.pOpcycles.op := by
+  dsimp [cyclesOpIso]
+  rw [← S.rightHomologyData.op.cyclesIso_hom_comp_i, Iso.inv_hom_id_assoc]
+  rfl
+
+@[reassoc]
+lemma opcyclesOpIso_hom_naturality (φ : S₁ ⟶ S₂)
+    [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    opcyclesMap (opMap φ) ≫ (S₁.opcyclesOpIso).hom =
+      S₂.opcyclesOpIso.hom ≫ (cyclesMap φ).op := by
+  rw [← cancel_epi S₂.op.pOpcycles, p_opcyclesMap_assoc, opMap_τ₂,
+    op_pOpcycles_opcyclesOpIso_hom, op_pOpcycles_opcyclesOpIso_hom_assoc, ← op_comp,
+    ← op_comp, cyclesMap_i]
+
+@[reassoc]
+lemma opcyclesOpIso_inv_naturality (φ : S₁ ⟶ S₂)
+    [S₁.HasLeftHomology] [S₂.HasLeftHomology] :
+    (cyclesMap φ).op ≫ (S₁.opcyclesOpIso).inv =
+      S₂.opcyclesOpIso.inv ≫ opcyclesMap (opMap φ) := by
+  rw [← cancel_epi (S₂.opcyclesOpIso.hom), Iso.hom_inv_id_assoc,
+    ← opcyclesOpIso_hom_naturality_assoc, Iso.hom_inv_id, comp_id]
+
+@[reassoc]
+lemma cyclesOpIso_inv_naturality (φ : S₁ ⟶ S₂)
+    [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    (opcyclesMap φ).op ≫ (S₁.cyclesOpIso).inv =
+      S₂.cyclesOpIso.inv ≫ cyclesMap (opMap φ) := by
+  rw [← cancel_mono S₁.op.iCycles, assoc, assoc, cyclesOpIso_inv_op_iCycles, cyclesMap_i,
+    cyclesOpIso_inv_op_iCycles_assoc, ← op_comp, p_opcyclesMap, op_comp, opMap_τ₂]
+
+@[reassoc]
+lemma cyclesOpIso_hom_naturality (φ : S₁ ⟶ S₂)
+    [S₁.HasRightHomology] [S₂.HasRightHomology] :
+    cyclesMap (opMap φ) ≫ (S₁.cyclesOpIso).hom =
+      S₂.cyclesOpIso.hom ≫ (opcyclesMap φ).op := by
+  rw [← cancel_mono (S₁.cyclesOpIso).inv, assoc, assoc, Iso.hom_inv_id, comp_id,
+    cyclesOpIso_inv_naturality, Iso.hom_inv_id_assoc]
 
 @[simp]
 lemma leftHomologyMap'_op

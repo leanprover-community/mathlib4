@@ -532,7 +532,7 @@ section CyclotomicRing
 instance CyclotomicField.algebraBase : Algebra A (CyclotomicField n K) :=
   SplittingField.algebra' (cyclotomic n K)
 
-/-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` #10906 -/
+/-- Ensure there are no diamonds when `A = ℤ` but there are `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906 -/
 example : Ring.toIntAlgebra (CyclotomicField n ℚ) = CyclotomicField.algebraBase _ _ _ := rfl
 
 instance CyclotomicField.algebra' {R : Type*} [CommRing R] [Algebra R K] :
@@ -577,7 +577,7 @@ instance algebraBase : Algebra A (CyclotomicRing n A K) :=
   (adjoin A _).algebra
 
 -- Ensure that there is no diamonds with ℤ.
--- but there is at `reducible_and_instances` #10906
+-- but there is at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 example {n : ℕ+} : CyclotomicRing.algebraBase n ℤ ℚ = Ring.toIntAlgebra _ := rfl
 
 instance [IsFractionRing A K] :

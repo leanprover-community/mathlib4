@@ -140,6 +140,10 @@ theorem length_eq_one : length a = 1 ↔ ∃ m, a = FreeMonoid.of m :=
 theorem length_eq_two {v : FreeMonoid α} :
     v.length = 2 ↔ ∃ c d, v = FreeMonoid.of c * FreeMonoid.of d := List.length_eq_two
 
+@[to_additive]
+theorem length_eq_three {v : FreeMonoid α} : v.length = 3 ↔ ∃ (a b c : α), v = of a * of b * of c :=
+  List.length_eq_three
+
 @[to_additive (attr := simp)]
 theorem length_mul (a b : FreeMonoid α) : (a * b).length = a.length + b.length :=
   List.length_append _ _

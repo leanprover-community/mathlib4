@@ -13,7 +13,7 @@ import Mathlib.Topology.MetricSpace.Defs
 
 -/
 
-open Set Filter Bornology
+open Set Filter Bornology Topology
 open scoped NNReal Uniformity
 
 universe u v w
@@ -105,16 +105,16 @@ abbrev MetricSpace.induced {γ β} (f : γ → β) (hf : Function.Injective f) (
 `MetricSpace.induced` useful in case if the domain already has a `UniformSpace` structure. -/
 abbrev IsUniformEmbedding.comapMetricSpace {α β} [UniformSpace α] [m : MetricSpace β] (f : α → β)
     (h : IsUniformEmbedding f) : MetricSpace α :=
-  .replaceUniformity (.induced f h.inj m) h.comap_uniformity.symm
+  .replaceUniformity (.induced f h.injective m) h.comap_uniformity.symm
 
 @[deprecated (since := "2024-10-03")]
 alias UniformEmbedding.comapMetricSpace := IsUniformEmbedding.comapMetricSpace
 
 /-- Pull back a metric space structure by an embedding. This is a version of
 `MetricSpace.induced` useful in case if the domain already has a `TopologicalSpace` structure. -/
-abbrev IsEmbedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β]
+abbrev Topology.IsEmbedding.comapMetricSpace {α β} [TopologicalSpace α] [m : MetricSpace β]
     (f : α → β) (h : IsEmbedding f) : MetricSpace α :=
-  .replaceTopology (.induced f h.inj m) h.eq_induced
+  .replaceTopology (.induced f h.injective m) h.eq_induced
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding.comapMetricSpace := IsEmbedding.comapMetricSpace
@@ -146,7 +146,8 @@ instance [MetricSpace β] : MetricSpace (ULift β) :=
 
 section Prod
 
-instance Prod.metricSpaceMax [MetricSpace β] : MetricSpace (γ × β) := .ofT0PseudoMetricSpace _
+instance Prod.metricSpaceMax [MetricSpace β] : MetricSpace (γ × β) :=
+  .ofT0PseudoMetricSpace _
 
 end Prod
 
@@ -167,7 +168,7 @@ section SecondCountable
 
 open TopologicalSpace
 
--- Porting note (#11215): TODO: use `Countable` instead of `Encodable`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `Countable` instead of `Encodable`
 /-- A metric space is second countable if one can reconstruct up to any `ε>0` any element of the
 space from countably many data. -/
 theorem secondCountable_of_countable_discretization {α : Type u} [MetricSpace α]

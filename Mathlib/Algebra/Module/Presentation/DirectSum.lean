@@ -13,7 +13,7 @@ import Mathlib.Data.Finsupp.ToDFinsupp
 If `M : ι → Type _` is a family of `A`-modules, then the data of a presentation
 of each `M i`, we obtain a presentation of the module `⨁ i, M i`.
 In particular, from a presentation of an `A`-module `M`, we get
-a presention of `ι →₀ M`.
+a presentation of `ι →₀ M`.
 
 -/
 
@@ -61,7 +61,7 @@ def directSumEquiv :
   invFun t :=
     { var := fun ⟨i, g⟩ ↦ (t i).var g
       linearCombination_var_relation := fun ⟨i, r⟩ ↦ by
-        erw [← (t i).linearCombination_var_relation r]
+        rw [← (t i).linearCombination_var_relation r]
         apply Finsupp.linearCombination_embDomain }
   left_inv _ := rfl
   right_inv _ := rfl

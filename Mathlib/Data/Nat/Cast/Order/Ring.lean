@@ -30,18 +30,17 @@ theorem cast_nonneg {α} [OrderedSemiring α] (n : ℕ) : 0 ≤ (n : α) :=
   cast_nonneg' n
 
 /-- Specialisation of `Nat.ofNat_nonneg'`, which seems to be easier for Lean to use. -/
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_nonneg {α} [OrderedSemiring α] (n : ℕ) [n.AtLeastTwo] :
-    0 ≤ (no_index (OfNat.ofNat n : α)) :=
+    0 ≤ (ofNat(n) : α) :=
   ofNat_nonneg' n
 
 @[simp, norm_cast]
-theorem cast_min {α} [LinearOrderedSemiring α] {a b : ℕ} : ((min a b : ℕ) : α) = min (a : α) b :=
+theorem cast_min {α} [LinearOrderedSemiring α] (m n : ℕ) : (↑(min m n : ℕ) : α) = min (m : α) n :=
   (@mono_cast α _).map_min
 
 @[simp, norm_cast]
-theorem cast_max {α} [LinearOrderedSemiring α] {a b : ℕ} : ((max a b : ℕ) : α) = max (a : α) b :=
+theorem cast_max {α} [LinearOrderedSemiring α] (m n : ℕ) : (↑(max m n : ℕ) : α) = max (m : α) n :=
   (@mono_cast α _).map_max
 
 section Nontrivial
@@ -53,16 +52,14 @@ variable [NeZero (1 : α)]
 theorem cast_pos {α} [OrderedSemiring α] [Nontrivial α] {n : ℕ} : (0 : α) < n ↔ 0 < n := cast_pos'
 
 /-- See also `Nat.ofNat_pos`, specialised for an `OrderedSemiring`. -/
--- See note [no_index around OfNat.ofNat]
 @[simp low]
-theorem ofNat_pos' {n : ℕ} [n.AtLeastTwo] : 0 < (no_index (OfNat.ofNat n : α)) :=
+theorem ofNat_pos' {n : ℕ} [n.AtLeastTwo] : 0 < (ofNat(n) : α) :=
   cast_pos'.mpr (NeZero.pos n)
 
 /-- Specialisation of `Nat.ofNat_pos'`, which seems to be easier for Lean to use. -/
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_pos {α} [OrderedSemiring α] [Nontrivial α] {n : ℕ} [n.AtLeastTwo] :
-    0 < (no_index (OfNat.ofNat n : α)) :=
+    0 < (ofNat(n) : α) :=
   ofNat_pos'
 
 end Nontrivial
@@ -84,10 +81,9 @@ theorem cast_tsub [CanonicallyOrderedCommSemiring α] [Sub α] [OrderedSub α]
 theorem abs_cast [LinearOrderedRing α] (a : ℕ) : |(a : α)| = a :=
   abs_of_nonneg (cast_nonneg a)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem abs_ofNat [LinearOrderedRing α] (n : ℕ) [n.AtLeastTwo] :
-    |(no_index (OfNat.ofNat n : α))| = OfNat.ofNat n :=
+    |(ofNat(n) : α)| = ofNat(n) :=
   abs_cast n
 
 lemma mul_le_pow {a : ℕ} (ha : a ≠ 1) (b : ℕ) :

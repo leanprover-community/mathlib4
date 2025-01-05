@@ -3,14 +3,13 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Data.Fintype.Order
-import Mathlib.Data.Set.Finite
-import Mathlib.Order.Category.FinPartOrd
-import Mathlib.Order.Category.LinOrd
+import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
+import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Order.Category.FinPartOrd
+import Mathlib.Order.Category.LinOrd
 
 /-!
 # Nonempty finite linear orders
@@ -179,7 +178,7 @@ theorem epi_iff_surjective {A B : NonemptyFinLinOrd.{u}} (f : A ⟶ B) :
         exact h₂ (le_of_lt h₁)
       · exfalso
         exact hm a (eq_of_le_of_not_lt h₂ h₁)
-    simp [Y, DFunLike.coe] at h
+    simp [Y, p₁, p₂, DFunLike.coe] at h
   · intro h
     exact ConcreteCategory.epi_of_surjective f h
 

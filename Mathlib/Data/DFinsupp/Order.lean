@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Module.Defs
-import Mathlib.Data.DFinsupp.Basic
+import Mathlib.Data.DFinsupp.Module
 
 /-!
 # Pointwise order on finitely supported dependent functions
@@ -56,7 +56,7 @@ def orderEmbeddingToFun : (Π₀ i, α i) ↪o ∀ i, α i where
 @[simp, norm_cast]
 lemma coe_orderEmbeddingToFun : ⇑(orderEmbeddingToFun (α := α)) = DFunLike.coe := rfl
 
--- Porting note: we added implicit arguments here in #3414.
+-- Porting note: we added implicit arguments here in https://github.com/leanprover-community/mathlib4/pull/3414.
 theorem orderEmbeddingToFun_apply {f : Π₀ i, α i} {i : ι} :
     (@orderEmbeddingToFun ι α _ _ f) i = f i :=
   rfl
@@ -297,7 +297,7 @@ variable [∀ i, CanonicallyLinearOrderedAddCommMonoid (α i)] [DecidableEq ι] 
 theorem support_inf : (f ⊓ g).support = f.support ∩ g.support := by
   ext
   simp only [inf_apply, mem_support_iff, Ne, Finset.mem_inter]
-  simp only [inf_eq_min, ← nonpos_iff_eq_zero, min_le_iff, not_or]
+  simp only [← nonpos_iff_eq_zero, min_le_iff, not_or]
 
 @[simp]
 theorem support_sup : (f ⊔ g).support = f.support ∪ g.support := by

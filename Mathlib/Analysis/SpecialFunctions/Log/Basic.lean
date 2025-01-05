@@ -324,11 +324,13 @@ theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
   conv in log _ => rw [log_of_ne_zero (show (x : ℝ) ≠ 0 from x.2)]
   exact expOrderIso.symm.continuous.comp (continuous_subtype_val.norm.subtype_mk _)
 
-@[continuity]
+/-- The real logarithm is continuous as a function from nonzero reals. -/
+@[fun_prop]
 theorem continuous_log : Continuous fun x : { x : ℝ // x ≠ 0 } => log x :=
   continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ => id
 
-@[continuity]
+/-- The real logarithm is continuous as a function from positive reals. -/
+@[fun_prop]
 theorem continuous_log' : Continuous fun x : { x : ℝ // 0 < x } => log x :=
   continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ hx => ne_of_gt hx
 
@@ -380,6 +382,21 @@ theorem isLittleO_const_log_atTop {c : ℝ} : (fun _ => c) =o[atTop] log := by
     <| Tendsto.div_atTop (a := c) (by simp) tendsto_log_atTop
   filter_upwards [eventually_gt_atTop 1] with x hx
   aesop (add safe forward log_pos)
+
+/-- `Real.exp` as a `PartialHomeomorph` with `source = univ` and `target = {z | 0 < z}`. -/
+@[simps] noncomputable def expPartialHomeomorph : PartialHomeomorph ℝ ℝ where
+  toFun := Real.exp
+  invFun := Real.log
+  source := univ
+  target := Ioi (0 : ℝ)
+  map_source' x _ := exp_pos x
+  map_target' _ _ := mem_univ _
+  left_inv' _ _ := by simp
+  right_inv' _ hx := exp_log hx
+  open_source := isOpen_univ
+  open_target := isOpen_Ioi
+  continuousOn_toFun := continuousOn_exp
+  continuousOn_invFun x hx := (continuousAt_log (ne_of_gt hx)).continuousWithinAt
 
 end Real
 

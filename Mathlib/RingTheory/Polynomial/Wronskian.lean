@@ -114,21 +114,12 @@ theorem natDegree_wronskian_lt_add {a b : R[X]} (hw : wronskian a b ≠ 0) :
   · exact Polynomial.degree_eq_natDegree ha
   · exact Polynomial.degree_eq_natDegree hb
 
-variable {k : Type*} [Field k]
-
-@[simp]
-theorem dvd_derivative_iff {a : k[X]} : a ∣ derivative a ↔ derivative a = 0 where
-  mp h := by
-    by_cases a_nz : a = 0
-    · simp only [a_nz, derivative_zero]
-    exact eq_zero_of_dvd_of_degree_lt h (degree_derivative_lt a_nz)
-  mpr h := by simp [h]
-
 /--
 For coprime polynomials `a` and `b`, their Wronskian is zero
 if and only if their derivatives are zeros.
 -/
-theorem IsCoprime.wronskian_eq_zero_iff {a b : k[X]} (hc : IsCoprime a b) :
+theorem _root_.IsCoprime.wronskian_eq_zero_iff
+    [NoZeroDivisors R] {a b : R[X]} (hc : IsCoprime a b) :
     wronskian a b = 0 ↔ derivative a = 0 ∧ derivative b = 0 where
   mp hw := by
     rw [wronskian, sub_eq_iff_eq_add, zero_add] at hw
@@ -143,5 +134,8 @@ theorem IsCoprime.wronskian_eq_zero_iff {a b : k[X]} (hc : IsCoprime a b) :
     cases' hdab with hda hdb
     rw [wronskian]
     rw [hda, hdb]; simp only [MulZeroClass.mul_zero, MulZeroClass.zero_mul, sub_self]
+
+@[deprecated (since := "2024-11-06")]
+alias IsCoprime.wronskian_eq_zero_iff := IsCoprime.wronskian_eq_zero_iff
 
 end Polynomial

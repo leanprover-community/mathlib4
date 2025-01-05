@@ -378,7 +378,8 @@ that corresponds to repeated application of `f`.
 The forward direction is implemented by `Equiv.Perm.toCycle`.
 -/
 def isoCycle : { f : Perm α // IsCycle f } ≃ { s : Cycle α // s.Nodup ∧ s.Nontrivial } where
-  toFun f := ⟨toCycle (f : Perm α) f.prop, nodup_toCycle f f.prop, nontrivial_toCycle _ f.prop⟩
+  toFun f := ⟨toCycle (f : Perm α) f.prop, nodup_toCycle (f : Perm α) f.prop,
+    nontrivial_toCycle _ f.prop⟩
   invFun s := ⟨(s : Cycle α).formPerm s.prop.left, (s : Cycle α).isCycle_formPerm _ s.prop.right⟩
   left_inv f := by
     obtain ⟨x, hx, -⟩ := id f.prop

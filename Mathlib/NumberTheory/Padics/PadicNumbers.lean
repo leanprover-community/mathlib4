@@ -60,7 +60,7 @@ p-adic, p adic, padic, norm, valuation, cauchy, completion, p-adic completion
 
 noncomputable section
 
-open Nat multiplicity padicNorm CauSeq CauSeq.Completion Metric
+open Nat padicNorm CauSeq CauSeq.Completion Metric
 
 /-- The type of Cauchy sequences of rationals with respect to the `p`-adic norm. -/
 abbrev PadicSeq (p : ℕ) :=
@@ -199,7 +199,8 @@ open Classical in
 def valuation (f : PadicSeq p) : ℤ :=
   if hf : f ≈ 0 then 0 else padicValRat p (f (stationaryPoint hf))
 
-theorem norm_eq_pow_val {f : PadicSeq p} (hf : ¬f ≈ 0) : f.norm = (p : ℚ) ^ (-f.valuation : ℤ) := by
+theorem norm_eq_zpow_neg_valuation {f : PadicSeq p} (hf : ¬f ≈ 0) :
+    f.norm = (p : ℚ) ^ (-f.valuation : ℤ) := by
   rw [norm, valuation, dif_neg hf, dif_neg hf, padicNorm, if_neg]
   intro H
   apply CauSeq.not_limZero_of_not_congr_zero hf
@@ -209,9 +210,11 @@ theorem norm_eq_pow_val {f : PadicSeq p} (hf : ¬f ≈ 0) : f.norm = (p : ℚ) ^
   rw [stationaryPoint_spec hf le_rfl hn]
   simpa [H] using hε
 
+@[deprecated (since := "2024-12-10")] alias norm_eq_pow_val := norm_eq_zpow_neg_valuation
+
 theorem val_eq_iff_norm_eq {f g : PadicSeq p} (hf : ¬f ≈ 0) (hg : ¬g ≈ 0) :
     f.valuation = g.valuation ↔ f.norm = g.norm := by
-  rw [norm_eq_pow_val hf, norm_eq_pow_val hg, ← neg_inj, zpow_right_inj₀]
+  rw [norm_eq_zpow_neg_valuation hf, norm_eq_zpow_neg_valuation hg, ← neg_inj, zpow_right_inj₀]
   · exact mod_cast (Fact.out : p.Prime).pos
   · exact mod_cast (Fact.out : p.Prime).ne_one
 
@@ -945,12 +948,11 @@ def valuation : ℚ_[p] → ℤ :=
 theorem valuation_zero : valuation (0 : ℚ_[p]) = 0 :=
   dif_pos ((const_equiv p).2 rfl)
 
-theorem norm_eq_pow_val {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.valuation) := by
+theorem norm_eq_zpow_neg_valuation {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.valuation) := by
   refine Quotient.inductionOn' x fun f hf => ?_
   change (PadicSeq.norm _ : ℝ) = (p : ℝ) ^ (-PadicSeq.valuation _)
-  rw [PadicSeq.norm_eq_pow_val]
-  · change ↑((p : ℚ) ^ (-PadicSeq.valuation f)) = (p : ℝ) ^ (-PadicSeq.valuation f)
-    rw [Rat.cast_zpow, Rat.cast_natCast]
+  rw [PadicSeq.norm_eq_zpow_neg_valuation]
+  · rw [Rat.cast_zpow, Rat.cast_natCast]
   · apply CauSeq.not_limZero_of_not_congr_zero
     -- Porting note: was `contrapose! hf`
     intro hf'
@@ -963,7 +965,7 @@ lemma valuation_ratCast (q : ℚ) : valuation (q : ℚ_[p]) = padicValRat p q :=
   rcases eq_or_ne q 0 with rfl | hq
   · simp only [Rat.cast_zero, valuation_zero, padicValRat.zero]
   refine neg_injective ((zpow_right_strictMono₀ (mod_cast hp.out.one_lt)).injective
-    <| (norm_eq_pow_val (mod_cast hq)).symm.trans ?_)
+    <| (norm_eq_zpow_neg_valuation (mod_cast hq)).symm.trans ?_)
   rw [padicNormE.eq_padicNorm, ← Rat.cast_natCast, ← Rat.cast_zpow, Rat.cast_inj]
   exact padicNorm.eq_zpow_of_nonzero hq
 
@@ -989,29 +991,52 @@ lemma valuation_one : valuation (1 : ℚ_[p]) = 0 := by
 lemma valuation_p : valuation (p : ℚ_[p]) = 1 := by
   rw [valuation_natCast, padicValNat_self, cast_one]
 
-theorem valuation_map_add {x y : ℚ_[p]} (hxy : x + y ≠ 0) :
-    min (valuation x) (valuation y) ≤ valuation (x + y : ℚ_[p]) := by
+theorem le_valuation_add {x y : ℚ_[p]} (hxy : x + y ≠ 0) :
+    min x.valuation y.valuation ≤ (x + y).valuation := by
   by_cases hx : x = 0
   · simpa only [hx, zero_add] using min_le_right _ _
   by_cases hy : y = 0
   · simpa only [hy, add_zero] using min_le_left _ _
   have : ‖x + y‖ ≤ max ‖x‖ ‖y‖ := padicNormE.nonarchimedean x y
-  simpa only [norm_eq_pow_val hxy, norm_eq_pow_val hx, norm_eq_pow_val hy, le_max_iff,
+  simpa only [norm_eq_zpow_neg_valuation hxy, norm_eq_zpow_neg_valuation hx,
+    norm_eq_zpow_neg_valuation hy, le_max_iff,
     zpow_le_zpow_iff_right₀ (mod_cast hp.out.one_lt : 1 < (p : ℝ)), neg_le_neg_iff, ← min_le_iff]
 
 @[simp]
-theorem valuation_map_mul {x y : ℚ_[p]} (hx : x ≠ 0) (hy : y ≠ 0) :
-    valuation (x * y : ℚ_[p]) = valuation x + valuation y := by
+lemma valuation_mul {x y : ℚ_[p]} (hx : x ≠ 0) (hy : y ≠ 0) :
+    (x * y).valuation = x.valuation + y.valuation := by
   have h_norm : ‖x * y‖ = ‖x‖ * ‖y‖ := norm_mul x y
-  have hp_ne_one : (p : ℝ) ≠ 1 := by
-    rw [← Nat.cast_one, Ne, Nat.cast_inj]
-    exact Nat.Prime.ne_one hp.elim
-  have hp_pos : (0 : ℝ) < p := by
-    rw [← Nat.cast_zero, Nat.cast_lt]
-    exact Nat.Prime.pos hp.elim
-  rw [norm_eq_pow_val hx, norm_eq_pow_val hy, norm_eq_pow_val (mul_ne_zero hx hy), ←
-    zpow_add₀ (ne_of_gt hp_pos), zpow_right_inj₀ hp_pos hp_ne_one, ← neg_add, neg_inj] at h_norm
-  exact h_norm
+  have hp_ne_one : (p : ℝ) ≠ 1 := mod_cast (Fact.out : p.Prime).ne_one
+  have hp_pos : (0 : ℝ) < p := mod_cast NeZero.pos _
+  rwa [norm_eq_zpow_neg_valuation hx, norm_eq_zpow_neg_valuation hy,
+    norm_eq_zpow_neg_valuation (mul_ne_zero hx hy), ← zpow_add₀ hp_pos.ne',
+    zpow_right_inj₀ hp_pos hp_ne_one, ← neg_add, neg_inj] at h_norm
+
+@[simp]
+lemma valuation_inv (x : ℚ_[p]) : x⁻¹.valuation = -x.valuation := by
+  obtain rfl | hx := eq_or_ne x 0
+  · simp
+  have h_norm : ‖x⁻¹‖ = ‖x‖⁻¹ := norm_inv x
+  have hp_ne_one : (p : ℝ) ≠ 1 := mod_cast (Fact.out : p.Prime).ne_one
+  have hp_pos : (0 : ℝ) < p := mod_cast NeZero.pos _
+  rwa [norm_eq_zpow_neg_valuation hx, norm_eq_zpow_neg_valuation <| inv_ne_zero hx,
+    ← zpow_neg, zpow_right_inj₀ hp_pos hp_ne_one, neg_inj] at h_norm
+
+@[simp]
+lemma valuation_pow (x : ℚ_[p]) : ∀ n : ℕ, (x ^ n).valuation = n * x.valuation
+  | 0 => by simp
+  | n + 1 => by
+    obtain rfl | hx := eq_or_ne x 0
+    · simp
+    · simp [pow_succ, hx, valuation_mul, valuation_pow, _root_.add_one_mul]
+
+@[simp]
+lemma valuation_zpow (x : ℚ_[p]) : ∀ n : ℤ, (x ^ n).valuation = n * x.valuation
+  | (n : ℕ) => by simp
+  | .negSucc n => by simp [← neg_mul]; simp [Int.negSucc_eq]
+
+@[deprecated (since := "2024-12-10")] alias valuation_map_add := le_valuation_add
+@[deprecated (since := "2024-12-10")] alias valuation_map_mul := valuation_mul
 
 open Classical in
 /-- The additive `p`-adic valuation on `ℚ_[p]`, with values in `WithTop ℤ`. -/
@@ -1034,7 +1059,7 @@ theorem AddValuation.map_mul (x y : ℚ_[p]) :
   · by_cases hy : y = 0
     · rw [hy, if_pos rfl, mul_zero, if_pos rfl, WithTop.add_top]
     · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← WithTop.coe_add, WithTop.coe_eq_coe,
-        valuation_map_mul hx hy]
+        valuation_mul hx hy]
 
 theorem AddValuation.map_add (x y : ℚ_[p]) :
     min (addValuationDef x) (addValuationDef y) ≤ addValuationDef (x + y : ℚ_[p]) := by
@@ -1049,7 +1074,7 @@ theorem AddValuation.map_add (x y : ℚ_[p]) :
       · rw [hy, if_pos rfl, min_eq_left, add_zero]
         exact le_top
       · rw [if_neg hx, if_neg hy, if_neg hxy, ← WithTop.coe_min, WithTop.coe_le_coe]
-        exact valuation_map_add hxy
+        exact le_valuation_add hxy
 
 /-- The additive `p`-adic valuation on `ℚ_[p]`, as an `addValuation`. -/
 def addValuation : AddValuation ℚ_[p] (WithTop ℤ) :=
@@ -1071,7 +1096,7 @@ theorem norm_le_pow_iff_norm_lt_pow_add_one (x : ℚ_[p]) (n : ℤ) :
   have aux (n : ℤ) : 0 < ((p : ℝ) ^ n) := zpow_pos (mod_cast hp.1.pos) _
   by_cases hx0 : x = 0
   · simp [hx0, norm_zero, aux, le_of_lt (aux _)]
-  rw [norm_eq_pow_val hx0]
+  rw [norm_eq_zpow_neg_valuation hx0]
   have h1p : 1 < (p : ℝ) := mod_cast hp.1.one_lt
   have H := zpow_right_strictMono₀ h1p
   rw [H.le_iff_le, H.lt_iff_lt, Int.lt_add_one_iff]
@@ -1083,7 +1108,7 @@ theorem norm_lt_pow_iff_norm_le_pow_sub_one (x : ℚ_[p]) (n : ℤ) :
 theorem norm_le_one_iff_val_nonneg (x : ℚ_[p]) : ‖x‖ ≤ 1 ↔ 0 ≤ x.valuation := by
   by_cases hx : x = 0
   · simp only [hx, norm_zero, valuation_zero, zero_le_one, le_refl]
-  · rw [norm_eq_pow_val hx, ← zpow_zero (p : ℝ), zpow_le_zpow_iff_right₀, Right.neg_nonpos_iff]
+  · rw [norm_eq_zpow_neg_valuation hx, ← zpow_zero (p : ℝ), zpow_le_zpow_iff_right₀, neg_nonpos]
     exact Nat.one_lt_cast.2 (Nat.Prime.one_lt' p).1
 
 end NormLEIff

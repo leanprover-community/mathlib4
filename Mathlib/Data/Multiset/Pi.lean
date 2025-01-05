@@ -53,8 +53,8 @@ theorem cons_swap {a a' : α} {b : δ a} {b' : δ a'} {m : Multiset α} {f : ∀
   simp only [heq_iff_eq]
   rintro a'' _ rfl
   refine hfunext (by rw [Multiset.cons_swap]) fun ha₁ ha₂ _ => ?_
-  rcases ne_or_eq a'' a with (h₁ | rfl)
-  on_goal 1 => rcases eq_or_ne a'' a' with (rfl | h₂)
+  rcases Decidable.ne_or_eq a'' a with (h₁ | rfl)
+  on_goal 1 => rcases Decidable.eq_or_ne a'' a' with (rfl | h₂)
   all_goals simp [*, Pi.cons_same, Pi.cons_ne]
 
 @[simp, nolint simpNF] -- Porting note: false positive, this lemma can prove itself

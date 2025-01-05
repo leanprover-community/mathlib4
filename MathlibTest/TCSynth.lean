@@ -44,7 +44,7 @@ section
 #guard_msgs in
 variable {A : Type} [NormedRing A] [NormedAlgebra ℂ A] [StarRing A]
   [CStarRing A] [StarModule ℂ A] (x : A) in
-#synth NonUnitalNonAssocSemiring (elementalStarAlgebra ℂ x)
+#synth NonUnitalNonAssocSemiring (StarAlgebra.elemental ℂ x)
 
 end
 
@@ -84,7 +84,7 @@ end
 section
 
 -- Initial issue: https://github.com/leanprover-community/mathlib4/issues/12232
--- reduced from 9000 to 1000 after `@[simp low] map_zero` in #16679 (only 10 needed)
+-- reduced from 9000 to 1000 after `@[simp low] map_zero` in https://github.com/leanprover-community/mathlib4/pull/16679 (only 10 needed)
 
 open Equiv in
 set_option synthInstance.maxHeartbeats 1000 in

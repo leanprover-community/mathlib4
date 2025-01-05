@@ -14,7 +14,7 @@ This file defines some additional constructive equivalences using `Encodable` an
 function on `ℕ`.
 -/
 
-open Mathlib (Vector)
+open List (Vector)
 open Nat List
 
 namespace Encodable
@@ -127,11 +127,11 @@ noncomputable def _root_.Fintype.toEncodable (α : Type*) [Fintype α] : Encodab
   classical exact (Fintype.truncEncodable α).out
 
 /-- If `α` is encodable, then so is `Vector α n`. -/
-instance _root_.Vector.encodable [Encodable α] {n} : Encodable (Vector α n) :=
+instance List.Vector.encodable [Encodable α] {n} : Encodable (List.Vector α n) :=
   Subtype.encodable
 
 /-- If `α` is countable, then so is `Vector α n`. -/
-instance _root_.Vector.countable [Countable α] {n} : Countable (Vector α n) :=
+instance List.Vector.countable [Countable α] {n} : Countable (List.Vector α n) :=
   Subtype.countable
 
 /-- If `α` is encodable, then so is `Fin n → α`. -/

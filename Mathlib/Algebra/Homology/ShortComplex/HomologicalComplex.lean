@@ -149,6 +149,11 @@ lemma d_toCycles [K.HasHomology k] :
     K.d i j ≫ K.toCycles j k = 0 := by
   simp only [← cancel_mono (K.iCycles k), assoc, toCycles_i, d_comp_d, zero_comp]
 
+variable {i j} in
+lemma toCycles_eq_zero [K.HasHomology j] (hij : ¬ c.Rel i j) :
+    K.toCycles i j = 0 := by
+  rw [← cancel_mono (K.iCycles j), toCycles_i, zero_comp, K.shape _ _ hij]
+
 variable {i}
 
 section
@@ -257,6 +262,11 @@ instance : Mono (K.homologyι i) := by
 lemma fromOpcycles_d :
     K.fromOpcycles i j ≫ K.d j k = 0 := by
   simp only [← cancel_epi (K.pOpcycles i), p_fromOpcycles_assoc, d_comp_d, comp_zero]
+
+variable {i j} in
+lemma fromOpcycles_eq_zero (hij : ¬ c.Rel i j) :
+    K.fromOpcycles i j = 0 := by
+  rw [← cancel_epi (K.pOpcycles i), p_fromOpcycles, comp_zero, K.shape _ _ hij]
 
 variable {i}
 

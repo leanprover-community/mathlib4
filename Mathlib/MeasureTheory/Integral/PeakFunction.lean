@@ -107,7 +107,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto_aux
       apply Tendsto.mono_left _ nhdsWithin_le_nhds
       exact (tendsto_id.mul tendsto_const_nhds).add (tendsto_id.const_mul _)
     rw [zero_mul, zero_add, mul_zero] at A
-    have : Ioo (0 : ℝ) 1 ∈ 𝓝[>] 0 := Ioo_mem_nhdsWithin_Ioi ⟨le_rfl, zero_lt_one⟩
+    have : Ioo (0 : ℝ) 1 ∈ 𝓝[>] 0 := Ioo_mem_nhdsGT zero_lt_one
     rcases (((tendsto_order.1 A).2 ε εpos).and this).exists with ⟨δ, hδ, h'δ⟩
     exact ⟨δ, hδ, h'δ.1, h'δ.2⟩
   suffices ∀ᶠ i in l, ‖∫ x in s, φ i x • g x ∂μ‖ ≤ (δ * ∫ x in s, ‖g x‖ ∂μ) + 2 * δ by
@@ -317,15 +317,15 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
               exact lt_of_le_of_lt (measure_mono inter_subset_right) hs.measure_lt_top
             · exact (I n).mono inter_subset_right le_rfl
             · intro x hx
-              exact pow_le_pow_left t'_pos.le (le_of_lt (hv hx)) _
+              exact pow_le_pow_left₀ t'_pos.le (hv hx).le _
           _ ≤ ∫ y in s, c y ^ n ∂μ :=
             setIntegral_mono_set (I n) (J n) (Eventually.of_forall inter_subset_right)
       simp_rw [φ, ← div_eq_inv_mul, div_pow, div_div]
-      apply div_le_div (pow_nonneg t_pos n) _ _ B
-      · exact pow_le_pow_left (hnc _ hx.1) (ht x hx) _
-      · apply mul_pos (pow_pos (t_pos.trans_lt tt') _) (ENNReal.toReal_pos (hμ v v_open x₀_v).ne' _)
-        have : μ (v ∩ s) ≤ μ s := measure_mono inter_subset_right
-        exact ne_of_lt (lt_of_le_of_lt this hs.measure_lt_top)
+      have := ENNReal.toReal_pos (hμ v v_open x₀_v).ne'
+        ((measure_mono inter_subset_right).trans_lt hs.measure_lt_top).ne
+      gcongr
+      · exact hnc _ hx.1
+      · exact ht x hx
     have N :
       Tendsto (fun n => (μ (v ∩ s)).toReal⁻¹ * (t / t') ^ n) atTop
         (𝓝 ((μ (v ∩ s)).toReal⁻¹ * 0)) := by

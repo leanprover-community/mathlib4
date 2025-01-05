@@ -7,6 +7,7 @@ import Mathlib.Control.Basic
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.Linarith.Preprocessing
 import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
+import Mathlib.Tactic.Ring.Basic
 
 /-!
 # `linarith`: solving linear arithmetic goals
@@ -130,7 +131,7 @@ linarith, nlinarith, lra, nra, Fourier-Motzkin, linear arithmetic, linear progra
 -/
 
 open Lean Elab Tactic Meta
-open Batteries
+open Batteries Mathlib
 
 
 namespace Linarith
@@ -191,22 +192,12 @@ implication, along with the type of `a` and `b`.
 
 For example, if `e` is `(a : ℕ) < b`, returns ``(`lt_of_not_ge, ℕ)``.
 -/
-def getContrLemma (e : Expr) : Option (Name × Expr) :=
-  match e.getAppFnArgs with
-  | (``LT.lt, #[t, _, _, _]) => (``lt_of_not_ge, t)
-  | (``LE.le, #[t, _, _, _]) => (``le_of_not_gt, t)
-  | (``Eq, #[t, _, _]) => (``eq_of_not_lt_of_not_gt, t)
-  | (``Ne, #[t, _, _]) => (``Not.intro, t)
-  | (``GE.ge, #[t, _, _, _]) => (``le_of_not_gt, t)
-  | (``GT.gt, #[t, _, _, _]) => (``lt_of_not_ge, t)
-  | (``Not, #[e']) => match e'.getAppFnArgs with
-    | (``LT.lt, #[t, _, _, _]) => (``Not.intro, t)
-    | (``LE.le, #[t, _, _, _]) => (``Not.intro, t)
-    | (``Eq, #[t, _, _]) => (``Not.intro, t)
-    | (``GE.ge, #[t, _, _, _]) => (``Not.intro, t)
-    | (``GT.gt, #[t, _, _, _]) => (``Not.intro, t)
-    | _ => none
-  | _ => none
+def getContrLemma (e : Expr) : MetaM (Name × Expr) := do
+  match ← e.ineqOrNotIneq? with
+  | (true, Ineq.lt, t, _) => pure (``lt_of_not_ge, t)
+  | (true, Ineq.le, t, _) => pure (``le_of_not_gt, t)
+  | (true, Ineq.eq, t, _) => pure (``eq_of_not_lt_of_not_gt, t)
+  | (false, _, t, _) => pure (``Not.intro, t)
 
 /--
 `applyContrLemma` inspects the target to see if it can be moved to a hypothesis by negation.
@@ -217,12 +208,12 @@ newly introduced local constant.
 Otherwise returns `none`.
 -/
 def applyContrLemma (g : MVarId) : MetaM (Option (Expr × Expr) × MVarId) := do
-  match getContrLemma (← withReducible g.getType') with
-  | some (nm, tp) => do
-      let [g] ← g.apply (← mkConst' nm) | failure
-      let (f, g) ← g.intro1P
-      return (some (tp, .fvar f), g)
-  | none => return (none, g)
+  try
+    let (nm, tp) ← getContrLemma (← withReducible g.getType')
+    let [g] ← g.apply (← mkConst' nm) | failure
+    let (f, g) ← g.intro1P
+    return (some (tp, .fvar f), g)
+  catch _ => return (none, g)
 
 /-- A map of keys to values, where the keys are `Expr` up to defeq and one key can be
 associated to multiple values. -/
@@ -232,7 +223,7 @@ abbrev ExprMultiMap α := Array (Expr × List α)
 (If the key is not in the map it returns `self.size` as the index.) -/
 def ExprMultiMap.find {α : Type} (self : ExprMultiMap α) (k : Expr) : MetaM (Nat × List α) := do
   for h : i in [:self.size] do
-    let (k', vs) := self[i]'h.2
+    let (k', vs) := self[i]
     if ← isDefEq k' k then
       return (i, vs)
   return (self.size, [])
@@ -242,7 +233,7 @@ in the map. -/
 def ExprMultiMap.insert {α : Type} (self : ExprMultiMap α) (k : Expr) (v : α) :
     MetaM (ExprMultiMap α) := do
   for h : i in [:self.size] do
-    if ← isDefEq (self[i]'h.2).1 k then
+    if ← isDefEq self[i].1 k then
       return self.modify i fun (k, vs) => (k, v::vs)
   return self.push (k, [v])
 
@@ -286,7 +277,7 @@ def runLinarith (cfg : LinarithConfig) (prefType : Option Expr) (g : MVarId)
       if let some t := prefType then
         let (i, vs) ← hyp_set.find t
         proveFalseByLinarith cfg.transparency cfg.oracle cfg.discharger g vs <|>
-        findLinarithContradiction cfg g ((hyp_set.eraseIdx i).toList.map (·.2))
+        findLinarithContradiction cfg g ((hyp_set.eraseIdxIfInBounds i).toList.map (·.2))
       else findLinarithContradiction cfg g (hyp_set.toList.map (·.2))
   let mut preprocessors := cfg.preprocessors
   if cfg.splitNe then

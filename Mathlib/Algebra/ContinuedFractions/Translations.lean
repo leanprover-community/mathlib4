@@ -128,7 +128,8 @@ theorem second_contAux_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
 theorem first_cont_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :
     g.conts 1 = ⟨gp.b * g.h + gp.a, gp.b⟩ := by
   simp [nth_cont_eq_succ_nth_contAux]
-  -- Porting note (#10959): simp used to work here, but now it can't figure out that 1 + 1 = 2
+  -- Porting note https://github.com/leanprover-community/mathlib4/issues/10959
+  -- simp used to work here, but now it can't figure out that 1 + 1 = 2
   convert second_contAux_eq zeroth_s_eq
 
 theorem first_num_eq {gp : Pair K} (zeroth_s_eq : g.s.get? 0 = some gp) :

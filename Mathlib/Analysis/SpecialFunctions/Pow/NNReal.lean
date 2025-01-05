@@ -18,10 +18,7 @@ We also prove basic properties of these functions.
 
 noncomputable section
 
-open scoped Classical
-open Real NNReal ENNReal ComplexConjugate
-
-open Finset Function Set
+open Real NNReal ENNReal ComplexConjugate Finset Function Set
 
 namespace NNReal
 variable {x : ℝ≥0} {w y z : ℝ}
@@ -680,6 +677,7 @@ theorem coe_mul_rpow (x y : ℝ≥0) (z : ℝ) : ((x : ℝ≥0∞) * y) ^ z = (x
 
 theorem prod_coe_rpow {ι} (s : Finset ι) (f : ι → ℝ≥0) (r : ℝ) :
     ∏ i ∈ s, (f i : ℝ≥0∞) ^ r = ((∏ i ∈ s, f i : ℝ≥0) : ℝ≥0∞) ^ r := by
+  classical
   induction s using Finset.induction with
   | empty => simp
   | insert hi ih => simp_rw [prod_insert hi, ih, ← coe_mul_rpow, coe_mul]
@@ -692,6 +690,7 @@ theorem mul_rpow_of_nonneg (x y : ℝ≥0∞) {z : ℝ} (hz : 0 ≤ z) : (x * y)
 
 theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : ∀ i ∈ s, f i ≠ ∞) (r : ℝ) :
     ∏ i ∈ s, f i ^ r = (∏ i ∈ s, f i) ^ r := by
+  classical
   induction s using Finset.induction with
   | empty => simp
   | @insert i s hi ih =>
@@ -701,6 +700,7 @@ theorem prod_rpow_of_ne_top {ι} {s : Finset ι} {f : ι → ℝ≥0∞} (hf : �
 
 theorem prod_rpow_of_nonneg {ι} {s : Finset ι} {f : ι → ℝ≥0∞} {r : ℝ} (hr : 0 ≤ r) :
     ∏ i ∈ s, f i ^ r = (∏ i ∈ s, f i) ^ r := by
+  classical
   induction s using Finset.induction with
   | empty => simp
   | insert hi ih => simp_rw [prod_insert hi, ih, ← mul_rpow_of_nonneg _ _ hr]

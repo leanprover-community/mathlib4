@@ -146,9 +146,8 @@ theorem pureOneHom_apply (a : α) : pureOneHom a = pure a :=
 variable [One β]
 
 @[to_additive]
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
 protected theorem map_one [FunLike F α β] [OneHomClass F α β] (φ : F) : map φ 1 = 1 := by
-  rw [Filter.map_one', map_one, pure_one]
+  simp
 
 end One
 
@@ -303,9 +302,7 @@ theorem mul_pure : f * pure b = f.map (· * b) :=
   map₂_pure_right
 
 @[to_additive]
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
-theorem pure_mul_pure : (pure a : Filter α) * pure b = pure (a * b) :=
-  map₂_pure
+theorem pure_mul_pure : (pure a : Filter α) * pure b = pure (a * b) := by simp
 
 @[to_additive (attr := simp)]
 theorem le_mul_iff : h ≤ f * g ↔ ∀ ⦃s⦄, s ∈ f → ∀ ⦃t⦄, t ∈ g → s * t ∈ h :=
@@ -408,9 +405,7 @@ theorem div_pure : f / pure b = f.map (· / b) :=
   map₂_pure_right
 
 @[to_additive]
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
-theorem pure_div_pure : (pure a : Filter α) / pure b = pure (a / b) :=
-  map₂_pure
+theorem pure_div_pure : (pure a : Filter α) / pure b = pure (a / b) := by simp
 
 @[to_additive]
 protected theorem div_le_div : f₁ ≤ f₂ → g₁ ≤ g₂ → f₁ / g₁ ≤ f₂ / g₂ :=
@@ -826,9 +821,7 @@ theorem smul_pure : f • pure b = f.map (· • b) :=
   map₂_pure_right
 
 @[to_additive]
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
-theorem pure_smul_pure : (pure a : Filter α) • (pure b : Filter β) = pure (a • b) :=
-  map₂_pure
+theorem pure_smul_pure : (pure a : Filter α) • (pure b : Filter β) = pure (a • b) := by simp
 
 @[to_additive]
 theorem smul_le_smul : f₁ ≤ f₂ → g₁ ≤ g₂ → f₁ • g₁ ≤ f₂ • g₂ :=
@@ -914,9 +907,7 @@ theorem pure_vsub : (pure a : Filter β) -ᵥ g = g.map (a -ᵥ ·) :=
 theorem vsub_pure : f -ᵥ pure b = f.map (· -ᵥ b) :=
   map₂_pure_right
 
--- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it.
-theorem pure_vsub_pure : (pure a : Filter β) -ᵥ pure b = (pure (a -ᵥ b) : Filter α) :=
-  map₂_pure
+theorem pure_vsub_pure : (pure a : Filter β) -ᵥ pure b = (pure (a -ᵥ b) : Filter α) := by simp
 
 theorem vsub_le_vsub : f₁ ≤ f₂ → g₁ ≤ g₂ → f₁ -ᵥ g₁ ≤ f₂ -ᵥ g₂ :=
   map₂_mono

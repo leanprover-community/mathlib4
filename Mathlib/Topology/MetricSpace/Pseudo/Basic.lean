@@ -205,6 +205,8 @@ theorem cauchySeq_iff_tendsto_dist_atTop_0 [Nonempty β] [SemilatticeSup β] {u 
 
 end Real
 
+namespace Topology
+
 -- Porting note: `TopologicalSpace.IsSeparable.separableSpace` moved to `EMetricSpace`
 
 /-- The preimage of a separable set by an inducing map is separable. -/
@@ -226,6 +228,8 @@ protected theorem IsEmbedding.isSeparable_preimage {f : β → α} [TopologicalS
 
 @[deprecated (since := "2024-10-26")]
 alias _root_.Embedding.isSeparable_preimage := IsEmbedding.isSeparable_preimage
+
+end Topology
 
 /-- A compact set is separable. -/
 theorem IsCompact.isSeparable {s : Set α} (hs : IsCompact s) : IsSeparable s :=
