@@ -29,7 +29,7 @@ def Hollom : Type := ℕ × ℕ × ℕ
   deriving DecidableEq
 
 def ofHollom : Hollom ≃ ℕ × ℕ × ℕ := Equiv.refl _
-def toHollom : ℕ × ℕ × ℕ ≃ Hollom := Equiv.refl _
+@[match_pattern] def toHollom : ℕ × ℕ × ℕ ≃ Hollom := Equiv.refl _
 
 @[simp] lemma ofHollom_symm_eq : ofHollom.symm = toHollom := rfl
 @[simp] lemma toHollom_symm_eq : toHollom.symm = ofHollom := rfl
@@ -187,7 +187,7 @@ lemma mem_levelLine_iff {n s : ℕ} {x : Hollom} :
     simp
 
 -- implicit in 5.8.ii
-lemma levelLine_le_level {n s : ℕ} : levelLine n s ⊆ level n := by simp [Set.subset_def]
+lemma levelLine_subset_level {n s : ℕ} : levelLine n s ⊆ level n := by simp [Set.subset_def]
 
 -- 5.8.ii
 lemma isAntichain_levelLine {n s : ℕ} : IsAntichain (· ≤ ·) (levelLine n s) := by
@@ -199,6 +199,9 @@ lemma Set.finite_of_finite_fibers {α β : Type*} (f : α → β) {s : Set α}
     (himage : (f '' s).Finite)
     (hfibers : ∀ x ∈ f '' s, (s ∩ f ⁻¹' {x}).Finite) : s.Finite :=
   (himage.biUnion hfibers).subset <| fun x ↦ by aesop
+
+lemma iUnion_levelLine {n : ℕ} : ⋃ s, levelLine n s = level n := by
+  simp [Set.ext_iff]
 
 -- Lemma 5.9
 lemma no_infinite_antichain {A : Set Hollom} (hC : IsAntichain (· ≤ ·) A) : A.Finite := by
@@ -379,6 +382,12 @@ include hC hfC hfCid hf in
 lemma apply_mem_interval {x y z : Hollom} (hy : y ∈ C) (hz : z ∈ C) (hx : x ∈ Set.Icc y z) :
     f x ∈ Set.Icc y z :=
   ⟨le_apply_of_le hC hfC hfCid hf hy hx.1, apply_le_of_le hC hfC hfCid hf hz hx.2⟩
+
+include hf in
+lemma injOn_chain {D : Set Hollom} (hD : IsChain (· ≤ ·) D) : D.InjOn f := by
+  intro x hx y hy h
+  by_contra! h'
+  exact incomp_of_eq hf h h' (hD.total hx hy)
 
 def chainBetween (a b c d : ℕ) : Finset (ℕ × ℕ) :=
   if a ≤ c ∧ b ≤ d
@@ -834,7 +843,7 @@ lemma chain_intersect_antichain {α : Type*} [PartialOrder α] {s t : Set α}
   case inr h => exact ht hyt hxt hne.symm h
 
 open Classical in
-noncomputable def p (n : ℕ) (C : Set Hollom) (s : ℕ) : Hollom :=
+noncomputable def p (n : ℕ) (C : Set Hollom) (f : Hollom → Hollom) (s : ℕ) : Hollom :=
   if h : IsChain (· ≤ ·) C ∧ (∀ x, f x ∈ C) ∧ (∀ x ∈ C, f x = x) ∧
         (∀ x, IsAntichain (fun x1 x2 ↦ x1 ≤ x2) (f ⁻¹' {x})) ∧ (C ∩ level (n + 1)).Infinite ∧
         x0 n C + y0 n C ≤ s
@@ -842,41 +851,185 @@ noncomputable def p (n : ℕ) (C : Set Hollom) (s : ℕ) : Hollom :=
           (x0_y0_mem h.2.2.2.2.1.nonempty) h.2.2.2.2.2).choose
     else toHollom (0, 0, n + 1)
 
+include hC hfC hfCid hf in
+lemma p_mem_inter
+    (hnC : (C ∩ level (n + 1)).Infinite)
+    {s : ℕ} (hs : x0 n C + y0 n C ≤ s) :
+    p n C f s ∈ C ∩ levelLine (n + 1) s := by
+  rw [p, dif_pos ⟨hC, hfC, hfCid, hf, hnC, hs⟩]
+  exact Exists.choose_spec (C_touches_levelLine hC hfC hfCid hf hnC (x0_y0_mem hnC.nonempty) hs)
+
+include hC hfC hfCid hf in
+lemma p_mem_C
+    (hnC : (C ∩ level (n + 1)).Infinite) {s : ℕ} (hs : x0 n C + y0 n C ≤ s) :
+    p n C f s ∈ C :=
+  (p_mem_inter hC hfC hfCid hf hnC hs).1
+
+include hC hfC hfCid hf in
+lemma p_uniq
+    (hnC : (C ∩ level (n + 1)).Infinite)
+    {s : ℕ} (hs : x0 n C + y0 n C ≤ s)
+    {x : Hollom} (hx : x ∈ C ∩ levelLine (n + 1) s) :
+    p n C f s = x :=
+  chain_intersect_antichain hC isAntichain_levelLine (p_mem_inter hC hfC hfCid hf hnC hs) hx
+
+include hC hfC hfCid hf in
+lemma singleton_p (hnC : (C ∩ level (n + 1)).Infinite) {s : ℕ} (hs : x0 n C + y0 n C ≤ s) :
+    {p n C f s} = C ∩ levelLine (n + 1) s := by
+  rw [eq_comm, Set.eq_singleton_iff_unique_mem]
+  refine ⟨p_mem_inter hC hfC hfCid hf hnC hs, ?_⟩
+  intro x hx
+  exact (p_uniq hC hfC hfCid hf hnC hs hx).symm
+
+include hC hfC hfCid hf in
+lemma p_uniq'
+    (hnC : (C ∩ level (n + 1)).Infinite)
+    {s : ℕ} (hs : x0 n C + y0 n C ≤ s)
+    {x y : ℕ} (hxy : x + y = s)
+    (hxyC : toHollom (x, y, n + 1) ∈ C) :
+    p n C f s = toHollom (x, y, n + 1) :=
+  p_uniq hC hfC hfCid hf hnC hs (by simp [hxyC, hxy])
+
+include hC hfC hfCid hf in
+lemma p_zero
+    (hnC : (C ∩ level (n + 1)).Infinite) :
+    p n C f (x0 n C + y0 n C) = toHollom (x0 n C, y0 n C, n + 1) :=
+  p_uniq' hC hfC hfCid hf hnC le_rfl rfl (x0_y0_mem hnC.nonempty)
+
+include hC hfC hfCid hf in
+lemma p_lt_p
+    (hnC : (C ∩ level (n + 1)).Infinite)
+     {s₁ s₂ : ℕ} (hs₁ : x0 n C + y0 n C ≤ s₁) (h : s₁ < s₂) :
+    p n C f s₁ < p n C f s₂ := by
+  have h₁ : p n C f s₁ ∈ C ∩ _ := p_mem_inter hC hfC hfCid hf hnC hs₁
+  have h₂ : p n C f s₂ ∈ C ∩ _ := p_mem_inter hC hfC hfCid hf hnC (hs₁.trans h.le)
+  set x₁ : Hollom := p n C f s₁ with hx₁
+  set x₂ : Hollom := p n C f s₂ with hx₂
+  clear_value x₁ x₂
+  revert x₂ x₁
+  simp only [Set.mem_inter_iff, gt_iff_lt, and_imp, «forall», Prod.forall,
+    toHollom_mem_levelLine_iff]
+  rintro x₂ y₂ _ h₂ rfl rfl h₂' x₁ y₁ _ h₁ rfl rfl h₁'
+  apply lt_of_le_of_ne _ (by simp; omega)
+  apply hC.le_of_not_lt h₂ h₁
+  intro h'
+  replace h' := h'.le
+  simp only [toHollom_le_toHollom_iff_fixed_right] at h'
+  omega
+
+include hC hfC hfCid hf in
+lemma p_le_p
+    (hnC : (C ∩ level (n + 1)).Infinite)
+     {s₁ s₂ : ℕ} (hs₁ : x0 n C + y0 n C ≤ s₁) (h : s₁ ≤ s₂) :
+    p n C f s₁ ≤ p n C f s₂ := by
+  obtain rfl | h := h.eq_or_lt
+  case inl => simp
+  case inr => exact (p_lt_p hC hfC hfCid hf hnC hs₁ h).le
+
+include hC hfC hfCid hf in
+lemma p_strictMonoOn (hnC : (C ∩ level (n + 1)).Infinite) :
+    StrictMonoOn (p n C f) (Set.Ici (x0 n C + y0 n C)) :=
+  fun _ hx _ _ h ↦ p_lt_p hC hfC hfCid hf hnC hx h
+
+include hC hfC hfCid hf in
+lemma p_injOn (hnC : (C ∩ level (n + 1)).Infinite) :
+    Set.InjOn (p n C f) (Set.Ici (x0 n C + y0 n C)) :=
+  (p_strictMonoOn hC hfC hfCid hf hnC).injOn
+
+include hC hfC hfCid hf in
+lemma p_image_Icc {l : ℕ}
+    (hnC : (C ∩ level (n + 1)).Infinite) :
+    p n C f '' Set.Icc (x0 n C + y0 n C) (x0 n C + y0 n C + l) =
+      C ∩ Set.Icc (p n C f (x0 n C + y0 n C)) (p n C f (x0 n C + y0 n C + l)) := by
+  refine subset_antisymm ?_ ?_
+  · simp only [Set.image_subset_iff]
+    simp only [Set.preimage_inter, Set.subset_def, Set.mem_Icc, Set.mem_inter_iff, Set.mem_preimage,
+      and_imp]
+    intro i hi hil
+    exact ⟨p_mem_C hC hfC hfCid hf hnC hi, p_le_p hC hfC hfCid hf hnC le_rfl hi,
+      p_le_p hC hfC hfCid hf hnC hi hil⟩
+  · simp only [Set.subset_def, Set.mem_inter_iff, Set.mem_Icc, Set.mem_image, and_imp, «forall»,
+      Prod.forall]
+    rintro x y z hxyC hxyl hxyu
+    obtain rfl : z = n + 1 := by
+      have hl : p n C f (x0 n C + y0 n C) ∈ _ :=
+        levelLine_subset_level (p_mem_inter hC hfC hfCid hf hnC le_rfl).2
+      have hu : p n C f (x0 n C + y0 n C + l) ∈ _ :=
+        levelLine_subset_level (p_mem_inter hC hfC hfCid hf hnC (by simp)).2
+      simpa using ordConnected_level.out hl hu ⟨hxyl, hxyu⟩
+    have : x0 n C + y0 n C ≤ x + y := by
+      rw [p_zero hC hfC hfCid hf hnC, toHollom_le_toHollom_iff_fixed_right] at hxyl
+      omega
+    have' := p_uniq' hC hfC hfCid hf hnC this rfl hxyC
+    refine ⟨x + y, ⟨‹_›, ?_⟩, this⟩
+    by_contra! h
+    rw [← this] at hxyu
+    exact hxyu.not_lt (p_lt_p hC hfC hfCid hf hnC (by simp) h)
+
+include hC hfC hfCid hf in
+lemma p_image_Ici
+    (hnC : (C ∩ level (n + 1)).Infinite) :
+    p n C f '' Set.Ici (x0 n C + y0 n C) = C ∩ level (n + 1) := by
+  rw [← iUnion_levelLine, Set.inter_iUnion]
+  ext x
+  simp only [Set.mem_image, Set.mem_Ici, Set.mem_iUnion, Set.mem_inter_iff, exists_and_left]
+  constructor
+  · rintro ⟨s, hs, rfl⟩
+    exact ⟨p_mem_C hC hfC hfCid hf hnC hs, s, (p_mem_inter hC hfC hfCid hf hnC hs).2⟩
+  · simp only [and_imp, forall_exists_index]
+    intro hx s hx'
+    have : x0 n C + y0 n C ≤ s := by
+      revert x
+      simp only [«forall», Prod.forall, toHollom_mem_levelLine_iff, and_imp]
+      rintro x y _ hxy rfl rfl
+      have' := x0_y0_min hC  hxy
+      simp only [toHollom_le_toHollom_iff_fixed_right] at this
+      omega
+    exact ⟨s, ‹_›, p_uniq hC hfC hfCid hf hnC this ⟨hx, hx'⟩⟩
+
+open Finset in
+lemma surjOn_of_injOn_of_card_le {α β : Type*} {s : Finset α} {t : Finset β}
+    (f : α → β) (hf : Set.MapsTo f s t)
+    (hinj : Set.InjOn f s) (hst : #t ≤ #s) :
+    Set.SurjOn f s t := fun y hy ↦
+  let ⟨x, hx, hy⟩ :=
+    surj_on_of_inj_on_of_card_le (fun x _ ↦ f x) hf (fun _ _ h h' ↦ hinj h h') hst y hy
+  ⟨x, hx, hy.symm⟩
+
 open Finset in
 include hC hfC hfCid hf in
 lemma eqn_1_aux
     {n : ℕ}
-    (hnC : (C ∩ level (n + 1)).Nonempty)
+    (hnC : (C ∩ level (n + 1)).Infinite)
     (h : ∀ i : ℕ, ∃ j ∈ C ∩ level (n + 1), toHollom (i, y0 n C, n + 1) ≤ j)
-    (p : ℕ → Hollom) (hp : ∀ s ≥ x0 n C + y0 n C, p s ∈ C ∩ levelLine (n + 1) s)
     (i : ℕ) :
-    ∃ j, toHollom (x0 n C + j, y0 n C, n + 1) ∈ f ⁻¹' {p (x0 n C + y0 n C + i)} := by
+    False := by
   classical
-  have hp0 : p (x0 n C + y0 n C) = toHollom (x0 n C, y0 n C, n + 1) := by
-    refine chain_intersect_antichain hC isAntichain_levelLine (hp _ (by simp)) ?_
-    simp only [Set.mem_inter_iff, toHollom_mem_levelLine_iff, and_self, and_true]
-    exact x0_y0_mem hnC
+  have hp0 : p n C f (x0 n C + y0 n C) = toHollom (x0 n C, y0 n C, n + 1) := by
+    rw [p_zero hC hfC hfCid hf hnC]
+
   have hlow : toHollom (x0 n C, y0 n C, n + 1) ≤ toHollom (x0 n C + i, y0 n C, n + 1) := by simp
   obtain ⟨l, hl, hl'⟩ :
-      ∃ l, i ≤ l ∧ toHollom (x0 n C + i, y0 n C, n + 1) ≤ p (x0 n C + y0 n C + l) := by
+      ∃ l, i ≤ l ∧ toHollom (x0 n C + i, y0 n C, n + 1) ≤ p n C f (x0 n C + y0 n C + l) := by
     specialize h (x0 n C + i)
     simp only [Set.mem_inter_iff, «exists», toHollom_mem_level_iff, Prod.exists] at h
     obtain ⟨a, b, _, ⟨hab, rfl⟩, habC⟩ := h
     have habC' := habC
     simp only [toHollom_le_toHollom_iff_fixed_right] at habC'
-    have : p (a + b) = toHollom (a, b, n + 1) :=
-      chain_intersect_antichain hC isAntichain_levelLine (hp _ (by omega)) (by simp [hab])
+    have : p n C f (a + b) = toHollom (a, b, n + 1) :=
+      p_uniq' hC hfC hfCid hf hnC (by omega) rfl hab
     refine ⟨a + b - (x0 n C + y0 n C), by omega, habC.trans_eq ?_⟩
     rw [← this]
     congr 1
     omega
-  set top := p (x0 n C + y0 n C + l) with htop
+
+  set top := p n C f (x0 n C + y0 n C + l) with htop
   clear_value top
   induction top with | h x =>
   obtain ⟨x, y, z⟩ := x
   have htop' : toHollom (x, y, z) ∈ C ∩ levelLine (n + 1) (x0 n C + y0 n C + l) := by
     rw [htop]
-    exact hp _ (by simp)
+    exact p_mem_inter hC hfC hfCid hf hnC (by omega)
   simp only [Set.mem_inter_iff, toHollom_mem_levelLine_iff] at htop'
   obtain ⟨hxy, hxyC, rfl⟩ := htop'
   let E : Finset Hollom :=
@@ -897,49 +1050,42 @@ lemma eqn_1_aux
   have E_maps : ∀ z ∈ E, f z ∈ int := by
     intro z hz
     rw [← Finset.mem_coe, int_eq]
-    refine apply_mem_interval hC hfC hfCid hf (x0_y0_mem hnC) hxy ?_
+    refine apply_mem_interval hC hfC hfCid hf (x0_y0_mem hnC.nonempty) hxy ?_
     rw [← int_eq, Finset.mem_coe]
     exact E_subset hz
-  replace E_maps : ∀ z ∈ E, f z ∈ {z ∈ int | z ∈ C} := by
+  replace E_maps : Set.MapsTo f E {z ∈ int | z ∈ C}.toSet := by
     intro z hz
-    simp only [mem_filter]
+    simp only [coe_filter, Set.mem_setOf_eq]
     exact ⟨E_maps _ hz, hfC _⟩
-  -- have : {z ∈ int | z ∈ C} = (Finset.Icc (x0 n C + y0 n C) (x0 n C + y0 n C + l)).image p := by
-  --   simp only [embed, RelEmbedding.coe_mk, Function.Embedding.coeFn_mk, Finset.ext_iff, mem_filter,
-  --     mem_image, mem_Icc, Prod.exists, Prod.mk_le_mk, «forall», EmbeddingLike.apply_eq_iff_eq,
-  --     Prod.forall, Prod.mk.injEq, int]
-  --   intro a b c
-  --   constructor
-  --   · simp only [and_imp, forall_exists_index]
-  --     rintro a b ha hb hax hby rfl rfl rfl haC
-  --     refine ⟨a + b, ⟨by omega, by omega⟩, ?_⟩
-  --     exact chain_intersect_antichain hC isAntichain_levelLine (hp _ (by omega)) (by simp [haC])
-  --   · simp only [forall_exists_index, and_imp]
-  --     intro q hq hq' hq''
-  --     have := hp q hq
-  --     rw [hq''] at this
-  --     simp only [Set.mem_inter_iff, toHollom_mem_levelLine_iff] at this
-  --     refine ⟨⟨_, _, _, rfl, rfl, _⟩, hq'' ▸ (hp q hq).1⟩
-
+  have h₂ : {z ∈ int | z ∈ C} = (Icc (x0 n C + y0 n C) (x0 n C + y0 n C + l)).image (p n C f) := by
+    apply Finset.coe_injective
+    rw [coe_filter, coe_image, coe_Icc, p_image_Icc hC hfC hfCid hf hnC]
+    change ↑int ∩ C = _
+    rw [int_eq, Set.inter_comm, hp0, htop]
+  have E_card : #{z ∈ int | z ∈ C} = l + 1 := by
+    rw [h₂, card_image_of_injOn, Nat.card_Icc]
+    · omega
+    · simp only [coe_Icc]
+      exact Set.InjOn.mono Set.Icc_subset_Ici_self (p_injOn hC hfC hfCid hf hnC)
+  have hs : Set.SurjOn f E {z ∈ int | z ∈ C}.toSet := by
+    refine surjOn_of_injOn_of_card_le f E_maps ?_ ?_
+    · refine injOn_chain hf image_chainBetweenMem_isChain
+    · rw [E_card, card_E]
+  have : p n C f (x0 n C + y0 n C + i) ∈ {z ∈ int | z ∈ C}.toSet := by
+    rw [h₂, coe_image, coe_Icc]
+    refine ⟨_, ?_, rfl⟩
+    simp only [Set.mem_Icc, le_add_iff_nonneg_right, zero_le, add_le_add_iff_left, true_and, hl]
+  obtain ⟨z, hz, hz'⟩ := hs this
+  simp only [coe_image, Set.mem_image, mem_coe, Prod.exists, E] at hz
   sorry
 
 
-
-
-
-
--- include hC hfC hfCid hf in
--- lemma eqn_1_of_right_bias
---     (h : ∀ i : ℕ, ∃ j ∈ C ∩ level n, toHollom (i, y0 n C, n) ≤ j)
---     (i s : ℕ) {p : Hollom} (hp : p ∈ C ∩ levelLine (n + 1) s) :
---     ∃ j : ℕ, toHollom (x0 n C + j, y0 n C, n + 1) ∈ f ⁻¹' {p} := by
---   sorry
-
-
+    -- rw [this]
+    -- exact ⟨p_mem_inter hC hfC hfCid hf hnC (by omega), x + y, hxy, rfl⟩
 
 #exit
 
-include hfC hfCid hf in
+include hC hfC hfCid hf in
 lemma S_maps {x : Hollom} (hx : x ∈ S n C) (hx' : x ∉ C ∩ level n) : f x ∉ C ∩ level (n + 1) := by
   cases (C ∩ level (n + 1)).finite_or_infinite
   case inl h =>
@@ -952,7 +1098,20 @@ lemma S_maps {x : Hollom} (hx : x ∈ S n C) (hx' : x ∉ C ∩ level n) : f x �
     simp [level_eq, h, this] at hy
 
   case inr h =>
-    sorry
+    induction x with | h x =>
+    obtain ⟨x, y, n⟩ := x
+    obtain rfl := by simpa using S_subset_level hx
+    simp only [S, if_neg h, Set.mem_setOf_eq, ofHollom_toHollom] at hx
+    have (i : ℕ) : toHollom (x0 n C + i, y0 n C, n + 1) ≤ toHollom (x, y, n) :=
+      .next_min (hx.2.trans' (by simp))
+    intro hp
+    rw [← p_image_Ici hC hfC hfCid hf h] at hp
+
+
+
+
+
+
 
   -- · simp only [Set.not_infinite] at h
   --   rw [S, if_pos h] at hx
