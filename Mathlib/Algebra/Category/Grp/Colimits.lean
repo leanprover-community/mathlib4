@@ -182,12 +182,10 @@ lemma hasColimit_of_small_quot [DecidableEq J] (h : Small.{w} (Quot F)) : HasCol
   ⟨_, colimitCoconeIsColimit F⟩
 
 instance [DecidableEq J] [Small.{w} J] : Small.{w} (Quot F) := by
-  have : Small.{w} (DFinsupp (fun j ↦ F.obj j)) := by
-    refine small_of_injective (f := fun x ↦ (fun j ↦ x j)) ?_
-    intro f f' eq
-    ext
-    simp only [DFunLike.coe_fn_eq] at eq
-    rw [eq]
+  have : Small.{w} (DFinsupp (fun j ↦ F.obj j)) :=
+    small_of_injective (f := fun x j ↦ x j) (fun f f' eq ↦ by
+      ext j
+      exact congr_fun eq j)
   exact small_of_surjective (QuotientAddGroup.mk'_surjective _)
 
 instance hasColimit [Small.{w} J] (F : J ⥤ AddCommGrp.{w}) : HasColimit F := by
