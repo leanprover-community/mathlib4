@@ -127,8 +127,7 @@ noncomputable def isColimit_of_bijective_desc [DecidableEq J]
     (Quot.desc F c) h).symm.toAddMonoidHom)
   fac s j := by
     ext x
-    simp only [Functor.const_obj_obj, AddEquiv.toAddMonoidHom_eq_coe, coe_comp, Function.comp_apply,
-      ofHom_apply, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe]
+    dsimp
     conv_lhs => erw [← Quot.ι_desc F c j x]
     rw [← AddEquiv.ofBijective_apply _ h, AddEquiv.symm_apply_apply]
     simp only [Quot.ι_desc, Functor.const_obj_obj]
