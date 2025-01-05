@@ -393,19 +393,17 @@ theorem Nodup.take_eq_filter_mem [DecidableEq α] :
 theorem setOf_singleton_iff_nodup (H : Nodup l) {a : α} [DecidableEq α]
     : { x | x ∈ l } = {a} ↔ l = [a] := by
   refine ⟨fun h ↦ ?_, by simp_all⟩
-  induction' l with a' l ih
+  induction' l with a' l
   · absurd h
     rw [set_of_mem_empty]
     exact (Set.singleton_ne_empty a).symm
-  · have h₁ := H.not_mem
-    have h₂ := {x | x ∈ l}.mem_insert a'
+  · have h₁ := {x | x ∈ l}.mem_insert a'
     rw [List.set_of_mem_cons] at h
-    rw [h] at h₂
-    rw [h₂] at h₁ h
+    rw [h] at h₁
+    rw [h₁] at h
     congr
     exact l.set_of_mem_eq_empty_iff.mp <|
-      (Set.insert_diff_self_of_not_mem (Set.nmem_setOf_iff.mpr h₁)).symm.trans (by simp_all)
-
+      (Set.insert_diff_self_of_not_mem (Set.nmem_setOf_iff.mpr H.not_mem)).symm.trans (by simp_all)
 
 end List
 
