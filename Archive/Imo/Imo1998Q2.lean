@@ -40,7 +40,7 @@ Rearranging gives the result.
 -/
 
 
-open scoped Classical
+--open scoped Classical
 
 variable {C J : Type*} (r : C → J → Prop)
 

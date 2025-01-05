@@ -454,8 +454,6 @@ instance : CharP (PreTilt K v O hv p) p :=
 
 section Classical
 
-open scoped Classical
-
 open Perfection
 
 /-- The valuation `Perfection(O/(p)) → ℝ≥0` as a function.
