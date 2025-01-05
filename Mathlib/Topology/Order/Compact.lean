@@ -485,6 +485,30 @@ theorem eq_Icc_of_connected_compact {s : Set α} (h₁ : IsConnected s) (h₂ : 
     s = Icc (sInf s) (sSup s) :=
   eq_Icc_csInf_csSup_of_connected_bdd_closed h₁ h₂.bddBelow h₂.bddAbove h₂.isClosed
 
+/-- `Set.Ico a b` is only compact if it is empty. -/
+@[simp]
+theorem isCompact_Ico_iff [DenselyOrdered α] {a b : α} : IsCompact (Set.Ico a b) ↔ b ≤ a := by
+  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  have := Set.ext_iff.mp (eq_Icc_of_connected_compact (isConnected_Ico hab) h) b
+  rw [csInf_Ico hab, csSup_Ico hab, Set.right_mem_Icc, Set.right_mem_Ico, false_iff] at this
+  exact this hab.le
+
+/-- `Set.Ioc a b` is only compact if it is empty. -/
+@[simp]
+theorem isCompact_Ioc_iff [DenselyOrdered α] {a b : α} : IsCompact (Set.Ioc a b) ↔ b ≤ a := by
+  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  have := Set.ext_iff.mp (eq_Icc_of_connected_compact (isConnected_Ioc hab) h) a
+  rw [csInf_Ioc hab, csSup_Ioc hab, Set.left_mem_Icc, Set.left_mem_Ioc, false_iff] at this
+  exact this hab.le
+
+/-- `Set.Ioo a b` is only compact if it is empty. -/
+@[simp]
+theorem isCompact_Ioo_iff [DenselyOrdered α] {a b : α} : IsCompact (Set.Ioo a b) ↔ b ≤ a := by
+  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  have := Set.ext_iff.mp (eq_Icc_of_connected_compact (isConnected_Ioo hab) h) a
+  rw [csInf_Ioo hab, csSup_Ioo hab, Set.left_mem_Icc, Set.left_mem_Ioo, false_iff] at this
+  exact this hab.le
+
 /-- If `f : γ → β → α` is a function that is continuous as a function on `γ × β`, `α` is a
 conditionally complete linear order, and `K : Set β` is a compact set, then
 `fun x ↦ sSup (f x '' K)` is a continuous function. -/
