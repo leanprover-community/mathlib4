@@ -441,7 +441,7 @@ instance prod : IsModuleTopology R (M × N) := by
   -- then we need to show that `i` is continuous.
   rw [← continuous_id_iff_le]
   change @Continuous (M × N) P (_) τP i
-  -- But the identity map can be written as (m, n) ↦ (m, 0) + (0, n)
+  -- But `i` can be written as (m, n) ↦ (m, 0) + (0, n)
   -- or equivalently as i₁ ∘ pr₁ + i₂ ∘ pr₂, where prᵢ are the projections,
   -- the iⱼ's are linear inclusions M → P and N → P, and the addition is P × P → P.
   let i₁ : M →ₗ[R] P := LinearMap.inl R M N
