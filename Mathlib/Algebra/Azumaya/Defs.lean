@@ -13,7 +13,15 @@ The definition of Azumaya algebra is a finitely generated, projective and faithf
 where the tensorproduct `A ⊗[R] Aᵐᵒᵖ` is isomorphic to the endomorphism ring of A `End R A`
 via the map `f : a ⊗ b ↦ (x ↦ a * x * b.unop)`.
 TODO : Add the rest three definitions and prove they are equivalent.
-reference : Wikipedia, Noncommutative Algebra
+
+## Reference
+
+* <https://en.wikipedia.org/wiki/Azumaya_algebra>
+* [Benson Farb , R. Keith Dennis, *Noncommutative Algebra*]
+
+## Tags
+
+Azumaya algebra, central simple algebra, noncommutative algebra
 -/
 
 variable (R A : Type*) [CommRing R] [Ring A] [Algebra R A]
