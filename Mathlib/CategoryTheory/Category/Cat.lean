@@ -183,7 +183,7 @@ def typeToCat : Type u ⥤ Cat where
       apply ULift.ext
       aesop_cat
     · simp
-  map_comp f g := by apply Functor.ext; simp
+  map_comp f g := by apply Functor.ext; aesop_cat
 
 instance : Functor.Faithful typeToCat.{u} where
   map_injective {_X} {_Y} _f _g h :=
