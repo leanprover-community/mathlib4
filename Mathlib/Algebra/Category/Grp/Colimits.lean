@@ -58,11 +58,8 @@ def Quot.ι [DecidableEq J] (j : J) : F.obj j →+ Quot F :=
   (QuotientAddGroup.mk' _).comp (DFinsupp.singleAddHom (fun j ↦ F.obj j) j)
 
 lemma Quot.addMonoidHom_ext [DecidableEq J] {α : Type*} [AddMonoid α] {f g : Quot F →+ α}
-    (h : ∀ (j : J) (x : F.obj j), f (Quot.ι F j x) = g (Quot.ι F j x)) : f = g := by
-  refine QuotientAddGroup.addMonoidHom_ext _ (DFinsupp.addHom_ext (fun j x ↦ ?_))
-  simp only [AddMonoidHom.coe_comp, QuotientAddGroup.coe_mk', Function.comp_apply]
-  simp only [ι] at h
-  exact h j x
+    (h : ∀ (j : J) (x : F.obj j), f (Quot.ι F j x) = g (Quot.ι F j x)) : f = g :=
+  QuotientAddGroup.addMonoidHom_ext _ (DFinsupp.addHom_ext h)
 
 variable (c : Cocone F)
 
