@@ -21,7 +21,7 @@ its quotients by open normal subgroups.
   projective limit of its quotients by open normal subgroups ordered by inclusion.
 
 * `ContinuousMulEquivLimitQuotientOpenNormalSubgroup` : The `toLimitQuotientOpenNormalSubgroup` is a
-`ContinuousMulEquiv`
+  `ContinuousMulEquiv`
 
 ## Main Statements
 
@@ -54,24 +54,18 @@ where `P : ProfiniteGrp`. -/
 def QuotientOpenNormalSubgroup (P : ProfiniteGrp) :
     OpenNormalSubgroup P ⥤ FiniteGrp := {
     obj := fun H => FiniteGrp.of (P ⧸ H.toSubgroup)
-    map := fun {H K} fHK => QuotientGroup.map H.toSubgroup K.toSubgroup (.id _) <|
-        Subgroup.comap_id (N := P) K ▸ leOfHom fHK
-    map_id := fun H => by
-      simp only [QuotientGroup.map_id]
-      rfl
-    map_comp := fun {X Y Z} f g => (QuotientGroup.map_comp_map
-      X.toSubgroup Y.toSubgroup Z.toSubgroup (.id _) (.id _)
-      (Subgroup.comap_id Y.toSubgroup ▸ leOfHom f)
-      (Subgroup.comap_id Z.toSubgroup ▸ leOfHom g)).symm }
+    map := fun fHK => QuotientGroup.map _ _ (.id _) (leOfHom fHK)
+    map_id _ := QuotientGroup.map_id _
+    map_comp f g := (QuotientGroup.map_comp_map
+      _ _ _ (.id _) (.id _) (leOfHom f) (leOfHom g)).symm }
 
 /-- The continuous homomorphism from a profinite group `P` to the projective limit of
 its quotients by open normal subgroups ordered by inclusion.-/
 def toLimitQuotientOpenNormalSubgroup (P : ProfiniteGrp.{u}) : P ⟶
     limit ((QuotientOpenNormalSubgroup P) ⋙ (forget₂ FiniteGrp ProfiniteGrp)) where
-  toFun := fun p => { val := fun H => QuotientGroup.mk p
-                      property := fun _ => rfl }
-  map_one' := Subtype.val_inj.mp (by ext H; rfl)
-  map_mul' := fun x y => Subtype.val_inj.mp (by ext H; rfl)
+  toFun p := ⟨fun H => QuotientGroup.mk p, fun _ => rfl⟩
+  map_one' := Subtype.val_inj.mp rfl
+  map_mul' x y := Subtype.val_inj.mp rfl
   continuous_toFun := continuous_induced_rng.mpr (continuous_pi fun H ↦ by
     dsimp
     apply Continuous.mk
@@ -97,7 +91,7 @@ theorem toLimitQuotientOpenNormalSubgroup_dense (P : ProfiniteGrp.{u}) : Dense <
     let m : OpenNormalSubgroup P := { M with isOpen' := hMOpen }
     rcases QuotientGroup.mk'_surjective M (spc m) with ⟨origin, horigin⟩
     use (toLimitQuotientOpenNormalSubgroup P).toFun origin
-    refine ⟨?_, ⟨origin, rfl⟩⟩
+    refine ⟨?_, origin, rfl⟩
     rw [← hsv]
     apply hJ2
     intro a a_in_J
