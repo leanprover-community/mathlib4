@@ -232,6 +232,57 @@ lemma measure_ge_eq_integral_exp_linTilted [IsFiniteMeasure μ] (ε : ℝ) (t : 
       * ∫ ω, {ω | ε ≤ X ω}.indicator 1 ω * exp (- t * (X ω - ε)) ∂(μ.linTilted X t) :=
   measure_eq_integral_exp_linTilted _ _ h_int (hX measurableSet_Ici)
 
+noncomputable
+instance : MeasureSpace ℝ≥0 where
+  volume := (ℙ : Measure ℝ).comap (↑)
+
+lemma NNReal.volume_Icc (a b : ℝ≥0) : ℙ (Icc a b) = b - a := by
+  simp only [volume]
+  rw [Measure.comap_apply]
+  · convert Real.volume_Icc
+    sorry
+  · exact NNReal.coe_injective
+  · intro s hs
+    sorry
+  · exact measurableSet_Icc
+
+-- todo: check that this does what we want at ∞
+noncomputable
+instance : MeasureSpace ℝ≥0∞ where
+  volume := (ℙ : Measure ℝ≥0).map (↑)
+
+lemma lintegral_eq_lintegral_measure_ge [SFinite μ] {f : Ω → ℝ≥0∞}
+    (hf_meas : Measurable f) (hf_int : ∫⁻ ω, f ω ∂μ ≠ ∞) :
+    ∫⁻ ω, f ω ∂μ = ∫⁻ u, μ {x | u ≤ f x} := by
+  calc ∫⁻ ω, f ω ∂μ
+  _ = ∫⁻ ω, (∫⁻ u, (Icc 0 (f ω)).indicator 1 u) ∂μ := by
+    congr with ω
+    rw [lintegral_indicator_one]
+    swap; · exact measurableSet_Icc
+    sorry
+  _ = ∫⁻ ω, (∫⁻ u, if u ≤ f ω then 1 else 0) ∂μ := by
+    congr with ω
+    have h_eq u : (if u ≤ f ω then (1 : ℝ≥0∞) else 0) = (Icc 0 (f ω)).indicator 1 u := by
+      split_ifs with h <;> simp [h]
+    simp_rw [h_eq]
+  _ = ∫⁻ u, ∫⁻ ω, if u ≤ f ω then 1 else 0 ∂μ := by
+    have h_if_eq y x : |if y ≤ f x then (1 : ℝ) else 0| = {z | z ≤ f x}.indicator 1 y := by
+      split_ifs with h <;> simp [h]
+    have h_if_eq' y x : ‖if y ≤ f x then (1 : ℝ) else 0‖₊ = {z | z ≤ f x}.indicator 1 y := by
+      split_ifs with h <;> simp [h]
+    have : SFinite (ℙ : Measure ℝ≥0∞) := sorry
+    rw [lintegral_lintegral_swap]
+    refine Measurable.aemeasurable ?_
+    refine Measurable.ite ?_ measurable_const measurable_const
+    exact measurableSet_le measurable_snd (hf_meas.comp measurable_fst)
+  _ = ∫⁻ u, μ {x | u ≤ f x} := by
+    congr with u
+    have h_eq ω : (if u ≤ f ω then (1 : ℝ≥0∞) else 0) = {ω | u ≤ f ω}.indicator 1 ω := by
+      split_ifs with h <;> simp [h]
+    simp_rw [h_eq]
+    rw [lintegral_indicator_one]
+    exact hf_meas measurableSet_Ici
+
 -- TODO: this should be deduced from the corresponding lemma about lintegral... but there is no
 -- `MeasureSpace` instance on `ℝ≥0∞`.
 lemma integral_eq_integral_measure_ge [SFinite μ] {f : Ω → ℝ}
