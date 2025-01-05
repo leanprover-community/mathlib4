@@ -65,24 +65,10 @@ private lemma ineq_pqr_contradiction {p q r a b c : ℕ}
     _ = (q * r + r * p + p * q) * (a + b + c) := by ring
     _ ≤ _ := by gcongr
 
-private lemma derivative_pow_eq_zero_iff {n : ℕ} (chn : ¬ringChar k ∣ n) {a : k[X]}  :
-    derivative (a ^ n) = 0 ↔ derivative a = 0 := by
-  constructor
-  · intro apd
-    rw [derivative_pow, C_eq_natCast, mul_eq_zero, mul_eq_zero] at apd
-    rcases apd with (nz | powz) | goal
-    · rw [← C_eq_natCast, C_eq_zero] at nz
-      exact (chn (ringChar.dvd nz)).elim
-    · have az : a = 0 := pow_eq_zero powz
-      rw [az, map_zero]
-    · exact goal
-  · intro hd
-    rw [derivative_pow, hd, MulZeroClass.mul_zero]
-
 private theorem Polynomial.flt_catalan_deriv [DecidableEq k]
     {p q r : ℕ} (hp : 0 < p) (hq : 0 < q) (hr : 0 < r)
     (hineq : q * r + r * p + p * q ≤ p * q * r)
-    (chp : ¬ringChar k ∣ p) (chq : ¬ringChar k ∣ q) (chr : ¬ringChar k ∣ r)
+    (chp : (p : k) ≠ 0) (chq : (q : k) ≠ 0) (chr : (r : k) ≠ 0)
     {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0)
     (hab : IsCoprime a b) {u v w : k} (hu : u ≠ 0) (hv : v ≠ 0) (hw : w ≠ 0)
     (heq : C u * a ^ p + C v * b ^ q + C w * c ^ r = 0) :
@@ -132,9 +118,9 @@ private theorem Polynomial.flt_catalan_deriv [DecidableEq k]
         mul_eq_zero_iff_left (C_ne_zero.mpr hu),
         mul_eq_zero_iff_left (C_ne_zero.mpr hv),
         mul_eq_zero_iff_left (C_ne_zero.mpr hw),
-        derivative_pow_eq_zero_iff chp,
-        derivative_pow_eq_zero_iff chq,
-        derivative_pow_eq_zero_iff chr] at dr0
+        derivative_pow_eq_zero chp,
+        derivative_pow_eq_zero chq,
+        derivative_pow_eq_zero chr] at dr0
     exact dr0
 
 -- helper lemma that gives a baggage of small facts on `contract (ringChar k) a`
@@ -157,7 +143,7 @@ theorem Polynomial.flt_catalan_aux
     (heq : C u * a ^ p + C v * b ^ q + C w * c ^ r = 0)
     (hp : 0 < p) (hq : 0 < q) (hr : 0 < r)
     (hineq : q * r + r * p + p * q ≤ p * q * r)
-    (chp : ¬ringChar k ∣ p) (chq : ¬ringChar k ∣ q) (chr : ¬ringChar k ∣ r)
+    (chp : (p : k) ≠ 0) (chq : (q : k) ≠ 0) (chr : (r : k) ≠ 0)
     (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) (hab : IsCoprime a b)
     (hu : u ≠ 0) (hv : v ≠ 0) (hw : w ≠ 0) :
     a.natDegree = 0 := by
@@ -207,7 +193,7 @@ theorem Polynomial.flt_catalan_aux
 theorem Polynomial.flt_catalan
     {p q r : ℕ} (hp : 0 < p) (hq : 0 < q) (hr : 0 < r)
     (hineq : q * r + r * p + p * q ≤ p * q * r)
-    (chp : ¬ringChar k ∣ p) (chq : ¬ringChar k ∣ q) (chr : ¬ringChar k ∣ r)
+    (chp : (p : k) ≠ 0) (chq : (q : k) ≠ 0) (chr : (r : k) ≠ 0)
     {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0) (hab : IsCoprime a b)
     {u v w : k} (hu : u ≠ 0) (hv : v ≠ 0) (hw : w ≠ 0)
     (heq : C u * a ^ p + C v * b ^ q + C w * c ^ r = 0) :
@@ -232,7 +218,7 @@ theorem Polynomial.flt_catalan
 Take p = q = r = n and u = v = 1, w = -1.
 -/
 theorem Polynomial.flt
-    {n : ℕ} (hn : 3 ≤ n) (chn : ¬ringChar k ∣ n)
+    {n : ℕ} (hn : 3 ≤ n) (chn : (n : k) ≠ 0)
     {a b c : k[X]} (ha : a ≠ 0) (hb : b ≠ 0) (hc : c ≠ 0)
     (hab : IsCoprime a b) (heq : a ^ n + b ^ n = c ^ n) :
     a.natDegree = 0 ∧ b.natDegree = 0 ∧ c.natDegree = 0 := by
@@ -248,7 +234,7 @@ theorem Polynomial.flt
   rw [eq_lhs, mul_assoc, mul_assoc]
   exact Nat.mul_le_mul_right (n * n) hn
 
-theorem fermatLastTheoremPolynomial {n : ℕ} (hn : 3 ≤ n) (chn : ¬ringChar k ∣ n):
+theorem fermatLastTheoremPolynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k) ≠ 0):
     FermatLastTheoremWith' k[X] n := by
   rw [FermatLastTheoremWith']
   intros a b c ha hb hc heq
