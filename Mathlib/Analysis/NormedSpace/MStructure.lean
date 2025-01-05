@@ -352,8 +352,7 @@ lemma prod_norm_eq_add_idemFst [Fact (1 ≤ p)] (hp : 0 < p.toReal) (x : WithLp 
   rfl
 
 lemma idemFst_Lprojection :
-  IsLprojection (WithLp 1 (α × β)) (M := (AddMonoid.End (WithLp 1 (α × β))))
-    (idemFst (p := 1)) where
+    IsLprojection (WithLp 1 (α × β)) (idemFst : AddMonoid.End (WithLp 1 (α × β))) where
   proj := rfl
   Lnorm x := by
     rw [prod_norm_eq_add_idemFst (by simp only [one_toReal, zero_lt_one])]
@@ -361,10 +360,9 @@ lemma idemFst_Lprojection :
       AddMonoid.End.smul_def]
 
 lemma idemSnd_Lprojection :
-  IsLprojection (WithLp 1 (α × β)) (M := (AddMonoid.End (WithLp 1 (α × β))))
-    (idemSnd (p := 1)) := by
+    IsLprojection (WithLp 1 (α × β)) (idemSnd : AddMonoid.End (WithLp 1 (α × β))) := by
   rw [← idemFst_compl]
-  exact IsLprojection.Lcomplement idemFst_Lprojection
+  exact idemFst_Lprojection.Lcomplement
 
 end WithLp
 
