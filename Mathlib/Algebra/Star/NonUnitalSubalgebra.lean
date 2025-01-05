@@ -566,7 +566,6 @@ variable {R}
 
 /-- The `NonUnitalStarSubalgebra` obtained from `S : NonUnitalSubalgebra R A` by taking the
 smallest non-unital subalgebra containing both `S` and `star S`. -/
-@[simps toNonUnitalSubalgebra]
 def starClosure (S : NonUnitalSubalgebra R A) : NonUnitalStarSubalgebra R A where
   toNonUnitalSubalgebra := S ⊔ star S
   star_mem' := @fun a (ha : a ∈ S ⊔ star S) => show star a ∈ S ⊔ star S by
@@ -574,6 +573,12 @@ def starClosure (S : NonUnitalSubalgebra R A) : NonUnitalStarSubalgebra R A wher
     convert ha using 2
     simp only [Set.sup_eq_union, star_adjoin_comm, Set.union_star, coe_star, star_star,
       Set.union_comm]
+
+theorem starClosure_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A) :
+    S.starClosure.toNonUnitalSubalgebra = S ⊔ star S := rfl
+
+@[deprecated (since := "05-01-2025")] alias
+  starClosure_toNonunitalSubalgebra := starClosure_toNonUnitalSubalgebra
 
 theorem le_starClosure_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A) :
     S ≤ S.starClosure.toNonUnitalSubalgebra := by
@@ -611,9 +616,6 @@ theorem starClosure_le_iff {S₁ : NonUnitalSubalgebra R A} {S₂ : NonUnitalSta
     S₁.starClosure ≤ S₂ ↔ S₁ ≤ S₂.toNonUnitalSubalgebra :=
   ⟨fun h => le_sup_left.trans h, starClosure_le⟩
 
-@[deprecated (since := "05-01-2025")] alias
-  starClosure_toNonunitalSubalgebra := starClosure_toNonUnitalSubalgebra
-
 @[mono]
 theorem starClosure_mono : Monotone (starClosure (R := R) (A := A)) :=
   fun _ _ h => starClosure_le <| h.trans le_sup_left
@@ -638,7 +640,6 @@ open NonUnitalStarSubalgebra
 variable (R)
 
 /-- The minimal non-unital subalgebra that includes `s`. -/
-@[simps! toNonUnitalSubalgebra]
 def adjoin (s : Set A) : NonUnitalStarSubalgebra R A where
   toNonUnitalSubalgebra := NonUnitalAlgebra.adjoin R (s ∪ star s)
   star_mem' _ := by
@@ -652,6 +653,9 @@ theorem adjoin_eq_starClosure_adjoin (s : Set A) :
       NonUnitalAlgebra.adjoin R s ⊔ star (NonUnitalAlgebra.adjoin R s)
     from
       (NonUnitalSubalgebra.star_adjoin_comm R s).symm ▸ NonUnitalAlgebra.adjoin_union s (star s)
+
+theorem adjoin_toNonUnitalSubalgebra (s : Set A) :
+    (adjoin R s).toNonUnitalSubalgebra = NonUnitalAlgebra.adjoin R (s ∪ star s) := rfl
 
 @[aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
