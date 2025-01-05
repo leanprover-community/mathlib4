@@ -1509,8 +1509,6 @@ theorem Ioc_union_Ioc_union_Ioc_cycle :
   solve_by_elim (config := { maxDepth := 5 }) [min_le_of_left_le, min_le_of_right_le,
        le_max_of_le_left, le_max_of_le_right, le_refl]
 
-
-#exit
 end LinearOrder
 
 
