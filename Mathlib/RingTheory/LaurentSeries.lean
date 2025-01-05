@@ -88,7 +88,7 @@ structure on the `X`-adic completion of `K⸨X⸩`. Once this will be available,
 -/
 universe u
 
-open scoped Classical PowerSeries
+open scoped PowerSeries
 open HahnSeries Polynomial
 
 noncomputable section
