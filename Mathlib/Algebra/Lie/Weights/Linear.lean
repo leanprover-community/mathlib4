@@ -41,7 +41,7 @@ or `R` has characteristic zero.
 
 open Set
 
-variable (R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+variable (k R L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
   [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
 
 namespace LieModule
@@ -243,5 +243,20 @@ lemma exists_forall_lie_eq_smul [LinearWeights R L M] [IsNoetherian R M] (χ : W
   intro x
   have := hm₁ x
   rwa [coe_lie_shiftedGenWeightSpace_apply, sub_eq_zero] at this
+
+/-- See `LieModule.exists_nontrivial_weightSpace_of_isSolvable` for the variant that
+only assumes that `L` is solvable but additionally requires `k` to be of characteristic zero. -/
+lemma exists_nontrivial_weightSpace_of_isNilpotent [Field k] [LieAlgebra k L] [Module k M]
+    [Module.Finite k M] [LieModule k L M] [LieAlgebra.IsNilpotent k L] [LinearWeights k L M]
+    [IsTriangularizable k L M] [Nontrivial M] :
+    ∃ χ : Module.Dual k L, Nontrivial (weightSpace M χ) := by
+  obtain ⟨χ⟩ : Nonempty (Weight k L M) := by
+    by_contra contra
+    rw [not_nonempty_iff] at contra
+    simpa only [iSup_of_empty, bot_ne_top] using LieModule.iSup_genWeightSpace_eq_top' k L M
+  obtain ⟨m, hm₀, hm⟩ := exists_forall_lie_eq_smul k L M χ
+  simp only [LieSubmodule.nontrivial_iff_ne_bot, LieSubmodule.eq_bot_iff, Weight.coe_coe, ne_eq,
+    not_forall, Classical.not_imp]
+  exact ⟨χ.toLinear, m, by simpa [mem_weightSpace], hm₀⟩
 
 end LieModule
