@@ -3,6 +3,7 @@ Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
+import Mathlib.Probability.IdentDistrib
 import Mathlib.Probability.Variance
 
 /-!
@@ -31,7 +32,6 @@ import Mathlib.Probability.Variance
   `ProbabilityTheory.measure_ge_le_exp_mul_mgf` and
   `ProbabilityTheory.measure_le_le_exp_mul_mgf` for versions of these results using `mgf` instead
   of `cgf`.
-
 -/
 
 
@@ -180,9 +180,27 @@ theorem mgf_pos [IsProbabilityMeasure μ] (h_int_X : Integrable (fun ω => exp (
     0 < mgf X μ t :=
   mgf_pos' (IsProbabilityMeasure.ne_zero μ) h_int_X
 
+lemma mgf_id_map (hX : AEMeasurable X μ) : mgf id (μ.map X) = mgf X μ := by
+  ext t
+  rw [mgf, integral_map hX]
+  · rfl
+  · exact (measurable_const_mul _).exp.aestronglyMeasurable
+
 theorem mgf_neg : mgf (-X) μ t = mgf X μ (-t) := by simp_rw [mgf, Pi.neg_apply, mul_neg, neg_mul]
 
 theorem cgf_neg : cgf (-X) μ t = cgf X μ (-t) := by simp_rw [cgf, mgf_neg]
+
+theorem mgf_smul_left (α : ℝ) : mgf (α • X) μ t = mgf X μ (α * t) := by
+  simp_rw [mgf, Pi.smul_apply, smul_eq_mul, mul_comm α t, mul_assoc]
+
+theorem mgf_const_add (α : ℝ) : mgf (fun ω => α + X ω) μ t = exp (t * α) * mgf X μ t := by
+  rw [mgf, mgf, ← integral_mul_left]
+  congr with x
+  dsimp
+  rw [mul_add, exp_add]
+
+theorem mgf_add_const (α : ℝ) : mgf (fun ω => X ω + α) μ t = mgf X μ t *  exp (t * α) := by
+  simp only [add_comm, mgf_const_add, mul_comm]
 
 /-- This is a trivial application of `IndepFun.comp` but it will come up frequently. -/
 theorem IndepFun.exp_mul {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (s t : ℝ) :
@@ -258,6 +276,8 @@ theorem iIndepFun.integrable_exp_mul_sum [IsFiniteMeasure μ] {X : ι → Ω →
     refine IndepFun.integrable_exp_mul_add ?_ (h_int i (mem_insert_self _ _)) h_rec
     exact (h_indep.indepFun_finset_sum_of_not_mem h_meas hi_notin_s).symm
 
+-- TODO(vilin97): weaken `h_meas` to `AEMeasurable (X i)` or `AEStronglyMeasurable (X i)` throughout
+-- https://github.com/leanprover-community/mathlib4/issues/20367
 theorem iIndepFun.mgf_sum {X : ι → Ω → ℝ}
     (h_indep : iIndepFun (fun _ => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
     (s : Finset ι) : mgf (∑ i ∈ s, X i) μ t = ∏ i ∈ s, mgf (X i) μ t := by
@@ -281,6 +301,22 @@ theorem iIndepFun.cgf_sum {X : ι → Ω → ℝ}
   rw [← log_prod _ _ fun j hj => ?_]
   · rw [h_indep.mgf_sum h_meas]
   · exact (mgf_pos (h_int j hj)).ne'
+
+theorem mgf_congr_of_identDistrib
+    (X : Ω → ℝ) {Ω' : Type*} {m' : MeasurableSpace Ω'} {μ' : Measure Ω'} (X' : Ω' → ℝ)
+    (hident : IdentDistrib X X' μ μ') (t : ℝ) :
+    mgf X μ t = mgf X' μ' t := hident.comp (measurable_const_mul t).exp |>.integral_eq
+
+theorem mgf_sum_of_identDistrib
+    {X : ι → Ω → ℝ}
+    {s : Finset ι} {j : ι}
+    (h_meas : ∀ i, Measurable (X i))
+    (h_indep : iIndepFun (fun _ => inferInstance) X μ)
+    (hident : ∀ i ∈ s, ∀ j ∈ s, IdentDistrib (X i) (X j) μ μ)
+    (hj : j ∈ s) (t : ℝ) : mgf (∑ i ∈ s, X i) μ t = mgf (X j) μ t ^ #s := by
+  rw [h_indep.mgf_sum h_meas]
+  exact Finset.prod_eq_pow_card fun i hi =>
+    mgf_congr_of_identDistrib (X i) (X j) (hident i hi j hj) t
 
 /-- **Chernoff bound** on the upper tail of a real random variable. -/
 theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
@@ -331,6 +367,22 @@ theorem measure_le_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
   rw [exp_add]
   exact mul_le_mul le_rfl (le_exp_log _) mgf_nonneg (exp_pos _).le
 
+lemma mgf_dirac {x : ℝ} (hX : μ.map X = .dirac x) (t : ℝ) : mgf X μ t = exp (x * t) := by
+  have : IsProbabilityMeasure (μ.map X) := by rw [hX]; infer_instance
+  rw [← mgf_id_map (.of_map_ne_zero <| IsProbabilityMeasure.ne_zero _), mgf, hX, integral_dirac,
+    mul_comm, id_def]
+
 end MomentGeneratingFunction
+
+lemma aemeasurable_exp_mul {X : Ω → ℝ} (t : ℝ) (hX : AEMeasurable X μ) :
+    AEStronglyMeasurable (fun ω ↦ rexp (t * X ω)) μ :=
+  (measurable_exp.comp_aemeasurable (hX.const_mul t)).aestronglyMeasurable
+
+lemma integrable_exp_mul_of_le [IsFiniteMeasure μ] {X : Ω → ℝ} (t b : ℝ) (ht : 0 ≤ t)
+    (hX : AEMeasurable X μ) (hb : ∀ᵐ ω ∂μ, X ω ≤ b) :
+    Integrable (fun ω ↦ exp (t * X ω)) μ := by
+  refine .of_mem_Icc 0 (rexp (t * b)) (measurable_exp.comp_aemeasurable (hX.const_mul t)) ?_
+  filter_upwards [hb] with ω hb
+  exact ⟨by positivity, by gcongr⟩
 
 end ProbabilityTheory

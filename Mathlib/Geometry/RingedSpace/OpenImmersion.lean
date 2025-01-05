@@ -156,7 +156,7 @@ instance comp {Z : PresheafedSpace C} (g : Y ⟶ Z) [hg : IsOpenImmersion g] :
     · exact c_iso' g ((opensFunctor f).obj U) (by ext; simp)
     · apply c_iso' f U
       ext1
-      dsimp only [Opens.map_coe, IsOpenMap.functor_obj_coe, comp_base, TopCat.coe_comp]
+      dsimp only [Opens.map_coe, IsOpenMap.coe_functor_obj, comp_base, TopCat.coe_comp]
       rw [Set.image_comp, Set.preimage_image_eq _ hg.base_open.injective]
 
 /-- For an open immersion `f : X ⟶ Y` and an open set `U ⊆ X`, we have the map `X(U) ⟶ Y(U)`. -/
@@ -964,6 +964,7 @@ def pullbackConeOfLeft : PullbackCone f g := by
     rw [PresheafedSpace.stalkMap.comp, PresheafedSpace.stalkMap.comp] at this
     rw [← IsIso.eq_inv_comp] at this
     rw [this]
+    dsimp
     infer_instance
   · exact LocallyRingedSpace.Hom.ext'
         (PresheafedSpace.IsOpenImmersion.pullback_cone_of_left_condition _ _)
@@ -1206,7 +1207,7 @@ theorem invApp_app (U : Opens X) :
       (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.injective])) :=
   PresheafedSpace.IsOpenImmersion.invApp_app f.1 U
 
-attribute [elementwise] invApp_app
+attribute [elementwise nosimp] invApp_app
 
 @[reassoc (attr := simp)]
 theorem app_invApp (U : Opens Y) :

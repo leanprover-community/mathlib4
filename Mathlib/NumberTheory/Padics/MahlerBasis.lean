@@ -25,6 +25,9 @@ converges (uniformly) to `f`, and this construction defines a Banach-space isomo
 
 For this, we follow the argument of Bojanić [bojanic74].
 
+The formalisation of Mahler's theorem presented here is based on code written by Giulio Caflisch
+for his bachelor's thesis at ETH Zürich.
+
 ## References
 
 * [R. Bojanić, *A simple proof of Mahler's theorem on approximation of continuous functions of a
@@ -65,7 +68,7 @@ lemma norm_ascPochhammer_le (k : ℕ) (x : ℤ_[p]) :
 
 /-- The p-adic integers are a binomial ring, i.e. a ring where binomial coefficients make sense. -/
 noncomputable instance instBinomialRing : BinomialRing ℤ_[p] where
-  nsmul_right_injective n hn := smul_right_injective ℤ_[p] hn
+  nsmul_right_injective hn := smul_right_injective ℤ_[p] hn
   -- We define `multichoose` as a fraction in `ℚ_[p]` together with a proof that its norm is `≤ 1`.
   multichoose x k := ⟨(ascPochhammer ℤ_[p] k).eval x / (k.factorial : ℚ_[p]), by
     rw [norm_div, div_le_one (by simpa using k.factorial_ne_zero)]
@@ -178,9 +181,10 @@ private lemma bojanic_mahler_step2 {f : C(ℤ_[p], E)} {s t : ℕ}
     refine mul_le_mul_of_nonneg_right ?_ (by simp only [zero_le])
     -- remains to show norm of binomial coeff is `≤ p⁻¹`
     have : 0 < (p ^ t).choose (i + 1) := Nat.choose_pos (by omega)
-    rw [← zpow_neg_one, ← coe_le_coe, coe_nnnorm, Padic.norm_eq_pow_val (mod_cast this.ne'),
-      coe_zpow, NNReal.coe_natCast, (zpow_right_strictMono₀ (mod_cast hp.out.one_lt)).le_iff_le,
-      neg_le_neg_iff, Padic.valuation_natCast, Nat.one_le_cast]
+    rw [← zpow_neg_one, ← coe_le_coe, coe_nnnorm, Padic.norm_eq_zpow_neg_valuation
+      (mod_cast this.ne'), coe_zpow, NNReal.coe_natCast,
+      zpow_le_zpow_iff_right₀ (mod_cast hp.out.one_lt), neg_le_neg_iff, Padic.valuation_natCast,
+      Nat.one_le_cast]
     exact one_le_padicValNat_of_dvd this <| hp.out.dvd_choose_pow (by omega) (by omega)
   · -- Bounding the sum over `range (n + 1)`: every term is small by the choice of `t`
     refine norm_sum_le_of_forall_le_of_nonempty nonempty_range_succ (fun i _ ↦ ?_)
@@ -322,7 +326,7 @@ variable {p : ℕ} [hp : Fact p.Prime] {E : Type*}
 
 /--
 **Mahler's theorem**: for any continuous function `f` from `ℤ_[p]` to a `p`-adic Banach space, the
-Mahler series with coeffients `n ↦ Δ_[1]^[n] f 0` converges to the original function `f`.
+Mahler series with coefficients `n ↦ Δ_[1]^[n] f 0` converges to the original function `f`.
 -/
 lemma hasSum_mahler (f : C(ℤ_[p], E)) : HasSum (fun n ↦ mahlerTerm (Δ_[1]^[n] f 0) n) f := by
   -- First show `∑' n, mahler_term f n` converges to *something*.
@@ -364,7 +368,7 @@ noncomputable def mahlerEquiv : C(ℤ_[p], E) ≃ₗᵢ[ℚ_[p]] C₀(ℕ, E) wh
     · rw [← (hasSum_mahler f).tsum_eq]
       refine (norm_tsum_le _).trans (ciSup_le fun n ↦ ?_)
       refine le_trans (le_of_eq ?_) (BoundedContinuousFunction.norm_coe_le_norm _ n)
-      simp only [ZeroAtInftyContinuousMap.toBCF_toFun, ZeroAtInftyContinuousMap.coe_mk,
+      simp only [ZeroAtInftyContinuousMap.toBCF_apply, ZeroAtInftyContinuousMap.coe_mk,
         norm_mahlerTerm, (hasSum_mahler f).tsum_eq]
 
 lemma mahlerEquiv_apply (f : C(ℤ_[p], E)) : mahlerEquiv E f = fun n ↦ Δ_[1]^[n] f 0 := rfl

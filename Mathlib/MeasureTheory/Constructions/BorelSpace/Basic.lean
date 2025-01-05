@@ -210,16 +210,6 @@ instance (priority := 100) BorelSpace.countablyGenerated {α : Type*} [Topologic
   borelize α
   exact hb.borel_eq_generateFrom
 
-theorem MeasurableSet.induction_on_open [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α]
-    {C : Set α → Prop} (h_open : ∀ U, IsOpen U → C U)
-    (h_compl : ∀ t, MeasurableSet t → C t → C tᶜ)
-    (h_union :
-      ∀ f : ℕ → Set α,
-        Pairwise (Disjoint on f) → (∀ i, MeasurableSet (f i)) → (∀ i, C (f i)) → C (⋃ i, f i)) :
-    ∀ ⦃t⦄, MeasurableSet t → C t :=
-  MeasurableSpace.induction_on_inter BorelSpace.measurable_eq isPiSystem_isOpen
-    (h_open _ isOpen_empty) h_open h_compl h_union
-
 section
 
 variable [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α] [TopologicalSpace β]
@@ -231,6 +221,16 @@ theorem IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
 
 theorem IsOpen.nullMeasurableSet {μ} (h : IsOpen s) : NullMeasurableSet s μ :=
   h.measurableSet.nullMeasurableSet
+
+@[elab_as_elim]
+theorem MeasurableSet.induction_on_open {C : ∀ s : Set γ, MeasurableSet s → Prop}
+    (isOpen : ∀ U (hU : IsOpen U), C U hU.measurableSet)
+    (compl : ∀ t (ht : MeasurableSet t), C t ht → C tᶜ ht.compl)
+    (iUnion : ∀ f : ℕ → Set γ, Pairwise (Disjoint on f) → ∀ (hf : ∀ i, MeasurableSet (f i)),
+      (∀ i, C (f i) (hf i)) → C (⋃ i, f i) (.iUnion hf)) :
+    ∀ t (ht : MeasurableSet t), C t ht := fun t ht ↦
+  MeasurableSpace.induction_on_inter BorelSpace.measurable_eq isPiSystem_isOpen
+    (isOpen _ isOpen_empty) isOpen compl iUnion t ht
 
 instance (priority := 1000) {s : Set α} [h : HasCountableSeparatingOn α IsOpen s] :
     CountablySeparated s := by
@@ -265,8 +265,8 @@ theorem IsCompact.nullMeasurableSet [T2Space α] {μ} (h : IsCompact s) : NullMe
 then they can't be separated by a Borel measurable set. -/
 theorem Inseparable.mem_measurableSet_iff {x y : γ} (h : Inseparable x y) {s : Set γ}
     (hs : MeasurableSet s) : x ∈ s ↔ y ∈ s :=
-  hs.induction_on_open (C := fun s ↦ (x ∈ s ↔ y ∈ s)) (fun _ ↦ h.mem_open_iff) (fun _ _ ↦ Iff.not)
-    fun _ _ _ h ↦ by simp [h]
+  MeasurableSet.induction_on_open (fun _ ↦ h.mem_open_iff) (fun _ _ ↦ Iff.not)
+    (fun _ _ _ h ↦ by simp [h]) s hs
 
 /-- If `K` is a compact set in an R₁ space and `s ⊇ K` is a Borel measurable superset,
 then `s` includes the closure of `K` as well. -/

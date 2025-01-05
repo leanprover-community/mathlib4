@@ -85,7 +85,7 @@ Currently, `move_oper` supports `HAdd.hAdd`, `HMul.hMul`, `And`, `Or`, `Max.max`
 
 These lemmas should be added to `Mathlib.MoveAdd.move_oper_simpCtx`.
 
-See `test/MoveAdd.lean` for sample usage of `move_oper`.
+See `MathlibTest/MoveAdd.lean` for sample usage of `move_oper`.
 
 ## Implementation notes
 
@@ -336,7 +336,7 @@ def pairUp : List (Expr × Bool × Syntax) → List Expr →
 To support a new binary operation, extend the list in this definition, so that it contains
 enough lemmas to allow `simp` to close a generic permutation goal for the new binary operation.
 -/
-def move_oper_simpCtx : MetaM Simp.Context := do
+def moveOperSimpCtx : MetaM Simp.Context := do
   let simpNames := Elab.Tactic.simpOnlyBuiltins ++ [
     ``add_comm, ``add_assoc, ``add_left_comm,  -- for `HAdd.hAdd`
     ``mul_comm, ``mul_assoc, ``mul_left_comm,  -- for `HMul.hMul`
@@ -347,6 +347,9 @@ def move_oper_simpCtx : MetaM Simp.Context := do
     ]
   let simpThms ← simpNames.foldlM (·.addConst ·) ({} : SimpTheorems)
   Simp.mkContext {} (simpTheorems := #[simpThms])
+
+@[deprecated (since := "2024-12-07")]
+alias move_oper_simpCtx := moveOperSimpCtx
 
 /-- `reorderAndSimp mv op instr` takes as input an `MVarId`  `mv`, the name `op` of a binary
 operation and a list of "instructions" `instr` that it passes to `permuteExpr`.
@@ -368,7 +371,7 @@ def reorderAndSimp (mv : MVarId) (instr : List (Expr × Bool)) :
     throwError m!"There should only be 2 goals, instead of {twoGoals.length}"
   -- `permGoal` is the single goal `mv_permuted`, possibly more operations will be permuted later on
   let permGoal ← twoGoals.filterM fun v => return !(← v.isAssigned)
-  match ← (simpGoal (permGoal[1]!) (← move_oper_simpCtx)) with
+  match ← (simpGoal (permGoal[1]!) (← moveOperSimpCtx)) with
     | (some x, _) => throwError m!"'move_oper' could not solve {indentD x.2}"
     | (none, _) => return permGoal
 

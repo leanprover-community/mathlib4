@@ -105,20 +105,22 @@ lemma descSet_inter_of_ne (x y : lc.pt) (hn : x ≠ y) : descSet hc {x} ∩ desc
   rw [mem_descSet_singleton] at hx hy
   exact hn (hx ▸ hy)
 
-lemma exists_unique_mem_descSet (x : c.pt) : ∃! y : lc.pt, x ∈ descSet hc {y} :=
-  exists_unique_of_exists_of_unique
+lemma existsUnique_mem_descSet (x : c.pt) : ∃! y : lc.pt, x ∈ descSet hc {y} :=
+  existsUnique_of_exists_of_unique
     (Set.mem_iUnion.mp <| Set.eq_univ_iff_forall.mp (iUnion_descSet_singleton hc lc) x)
     fun y₁ y₂ h₁ h₂ ↦ by_contra fun hn ↦
       Set.eq_empty_iff_forall_not_mem.1 (descSet_inter_of_ne hc lc y₁ y₂ hn) x ⟨h₁, h₂⟩
+
+@[deprecated (since := "2024-12-17")] alias exists_unique_mem_descSet := existsUnique_mem_descSet
 
 /-- Given a colimit cocone in `Type u` and an arbitrary cocone over the diagram lifted to
   `Type (max u v)`, produce a function from the cocone point of the colimit cocone to the
   cocone point of the other cocone, that witnesses the colimit cocone also being a colimit
   in the higher universe. -/
-noncomputable def descFun (x : c.pt) : lc.pt := (exists_unique_mem_descSet hc lc x).exists.choose
+noncomputable def descFun (x : c.pt) : lc.pt := (existsUnique_mem_descSet hc lc x).exists.choose
 
 lemma descFun_apply_spec {x : c.pt} {y : lc.pt} : descFun hc lc x = y ↔ x ∈ descSet hc {y} :=
-  have hu := exists_unique_mem_descSet hc lc x
+  have hu := existsUnique_mem_descSet hc lc x
   have hm := hu.exists.choose_spec
   ⟨fun he ↦ he ▸ hm, hu.unique hm⟩
 

@@ -455,6 +455,15 @@ theorem coprod_neBot_left [NeBot f] [Nonempty β] : (f.coprod g).NeBot :=
 theorem coprod_neBot_right [NeBot g] [Nonempty α] : (f.coprod g).NeBot :=
   coprod_neBot_iff.2 (Or.inr ⟨‹_›, ‹_›⟩)
 
+theorem coprod_inf_prod_le (f₁ f₂ : Filter α) (g₁ g₂ : Filter β) :
+    f₁.coprod g₁ ⊓ f₂ ×ˢ g₂ ≤ f₁ ×ˢ g₂ ⊔ f₂ ×ˢ g₁ := calc
+  f₁.coprod g₁ ⊓ f₂ ×ˢ g₂
+  _ = (f₁ ×ˢ ⊤ ⊔ ⊤ ×ˢ g₁) ⊓ f₂ ×ˢ g₂            := by rw [coprod_eq_prod_top_sup_top_prod]
+  _ = f₁ ×ˢ ⊤ ⊓ f₂ ×ˢ g₂ ⊔ ⊤ ×ˢ g₁ ⊓ f₂ ×ˢ g₂   := inf_sup_right _ _ _
+  _ = (f₁ ⊓ f₂) ×ˢ g₂ ⊔ f₂ ×ˢ (g₁ ⊓ g₂)         := by simp [prod_inf_prod]
+  _ ≤ f₁ ×ˢ g₂ ⊔ f₂ ×ˢ g₁                       :=
+    sup_le_sup (prod_mono inf_le_left le_rfl) (prod_mono le_rfl inf_le_left)
+
 theorem principal_coprod_principal (s : Set α) (t : Set β) :
     (𝓟 s).coprod (𝓟 t) = 𝓟 (sᶜ ×ˢ tᶜ)ᶜ := by
   rw [Filter.coprod, comap_principal, comap_principal, sup_principal, Set.prod_eq, compl_inter,

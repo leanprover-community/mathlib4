@@ -7,7 +7,6 @@ import Mathlib.CategoryTheory.Category.Pairwise
 import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Final
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Topology.Sheaves.SheafCondition.OpensLeCover
 
 /-!
@@ -344,7 +343,7 @@ def interUnionPullbackConeLift : s.pt ⟶ F.1.obj (op (U ⊔ V)) := by
   rcases j with (⟨⟨_ | _⟩⟩ | ⟨⟨_ | _⟩, ⟨_⟩⟩) <;>
   rcases g with ⟨⟩ <;>
   dsimp [Pairwise.diagram] <;>
-  simp only [Category.id_comp, s.condition, CategoryTheory.Functor.map_id, Category.comp_id]
+  simp only [ι, Category.id_comp, s.condition, CategoryTheory.Functor.map_id, Category.comp_id]
   rw [← cancel_mono (F.1.map (eqToHom <| inf_comm U V : U ⊓ V ⟶ _).op), Category.assoc,
     Category.assoc, ← F.1.map_comp, ← F.1.map_comp]
   exact s.condition.symm
