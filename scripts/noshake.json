@@ -242,7 +242,8 @@
   ["Mathlib.Algebra.Group.Basic", "Mathlib.Init.Order.LinearOrder"],
   "Mathlib.Tactic.Measurability":
   ["Mathlib.Algebra.Group.Defs", "Mathlib.Tactic.Measurability.Init"],
-  "Mathlib.Tactic.Linter.UnusedTactic": ["Batteries.Tactic.Unreachable"],
+  "Mathlib.Tactic.Linter.UnusedTactic":
+  ["Batteries.Tactic.Unreachable", "Lean.Parser.Syntax"],
   "Mathlib.Tactic.LinearCombination":
   ["Mathlib.Tactic.LinearCombination.Lemmas"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
