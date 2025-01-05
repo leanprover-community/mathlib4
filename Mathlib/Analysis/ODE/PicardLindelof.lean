@@ -336,7 +336,7 @@ lemma mk_of_contDiffOn_one [NormedSpace ℝ E]
         rw [← mem_closedBall_iff_norm]
         exact closedBall_subset_closedBall (half_le_self (le_of_lt ha)) hx
       _ ≤ L := le_add_of_nonneg_right zero_le_one
-  set ε := a / L / 2 / 2 with hε
+  let ε := a / L / 2 / 2
   have hε0 : 0 < ε := half_pos <| half_pos <| div_pos ha hL0
   refine ⟨ε, hε0,
     ⟨a / 2, le_of_lt <| half_pos ha⟩, ⟨a / 2, le_of_lt <| half_pos ha⟩ / 2,
