@@ -3,6 +3,7 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+
 import Mathlib.Algebra.MvPolynomial.CommRing
 
 /-!
@@ -40,8 +41,6 @@ We show that algebraic independence is preserved under injective maps of the ind
 noncomputable section
 
 open Function Set Subalgebra MvPolynomial Algebra
-
-open scoped Classical
 
 variable {ι ι' : Type*} (R : Type*) {K A A' : Type*} (x : ι → A)
 variable [CommRing R] [CommRing A] [CommRing A'] [Algebra R A] [Algebra R A']
