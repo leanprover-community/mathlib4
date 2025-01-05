@@ -132,6 +132,7 @@ open Module
 -- deterministic timeout.
 instance : HasKernels (FDRep k G) := by infer_instance
 
+open scoped Classical in
 /-- Schur's Lemma: the dimension of the `Hom`-space between two irreducible representation is `0` if
 they are not isomorphic, and `1` if they are. -/
 theorem finrank_hom_simple_simple [IsAlgClosed k] (V W : FDRep k G) [Simple V] [Simple W] :
