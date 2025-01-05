@@ -374,8 +374,7 @@ theorem Dense.exists_countable_dense_subset_no_bot_top [Nontrivial α] {s : Set 
   · simp [hx]
   · simp [hx]
 
-variable (α)
-
+variable (α) in
 /-- If `α` is a nontrivial separable dense linear order, then there exists a
 countable dense set `s : Set α` that contains neither top nor bottom elements of `α`.
 For a dense set containing both bot and top elements, see
@@ -383,5 +382,35 @@ For a dense set containing both bot and top elements, see
 theorem exists_countable_dense_no_bot_top [SeparableSpace α] [Nontrivial α] :
     ∃ s : Set α, s.Countable ∧ Dense s ∧ (∀ x, IsBot x → x ∉ s) ∧ ∀ x, IsTop x → x ∉ s := by
   simpa using dense_univ.exists_countable_dense_subset_no_bot_top
+
+/-- `Set.Ico a b` is only compact if it is empty. -/
+@[simp]
+theorem isClosed_Ico_iff {a b : α} : IsClosed (Set.Ico a b) ↔ b ≤ a := by
+  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  have := h.closure_eq
+  rw [closure_Ico hab.ne, Set.ext_iff] at this
+  specialize this b
+  rw [Set.right_mem_Icc, Set.right_mem_Ico, iff_false] at this
+  exact this hab.le
+
+/-- `Set.Ioc a b` is only compact if it is empty. -/
+@[simp]
+theorem isClosed_Ioc_iff {a b : α} : IsClosed (Set.Ioc a b) ↔ b ≤ a := by
+  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  have := h.closure_eq
+  rw [closure_Ioc hab.ne, Set.ext_iff] at this
+  specialize this a
+  rw [Set.left_mem_Icc, Set.left_mem_Ioc, iff_false] at this
+  exact this hab.le
+
+/-- `Set.Ioo a b` is only compact if it is empty. -/
+@[simp]
+theorem isClosed_Ioo_iff {a b : α} : IsClosed (Set.Ioo a b) ↔ b ≤ a := by
+  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  have := h.closure_eq
+  rw [closure_Ioo hab.ne, Set.ext_iff] at this
+  specialize this a
+  rw [Set.left_mem_Icc, Set.left_mem_Ioo, iff_false] at this
+  exact this hab.le
 
 end DenselyOrdered
