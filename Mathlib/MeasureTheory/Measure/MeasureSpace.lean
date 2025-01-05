@@ -1651,4 +1651,4 @@ end MeasurableEquiv
 
 end
 
-set_option linter.style.longFile 1900
+set_option linter.style.longFile 1800
