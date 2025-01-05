@@ -1511,7 +1511,6 @@ theorem Ioc_union_Ioc_union_Ioc_cycle :
 
 end LinearOrder
 
-
 /-!
 ### Closed intervals in `α × β`
 -/
