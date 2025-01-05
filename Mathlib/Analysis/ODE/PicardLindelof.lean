@@ -71,7 +71,7 @@ differential equation, dynamical system, initial value problem
 
 open Function intervalIntegral MeasureTheory Metric Set
 open scoped Nat NNReal Topology
-#synth Sub ℝ≥0
+
 -- generalise
 lemma abs_sub_le_max_sub {a b c : ℝ} (hac : a ≤ b) (hcd : b ≤ c) (d : ℝ) :
     |b - d| ≤ (c - d) ⊔ (d - a) := by
@@ -642,6 +642,8 @@ lemma exists_funSpace_integrate_eq [CompleteSpace E] (hf : IsPicardLindelof f t�
     ∃ α : FunSpace t₀ x L, next hf hx α = α :=
   let ⟨_, _, h⟩ := exists_contractingWith_iterate_next hf hx
   ⟨_, h.isFixedPt_fixedPoint_iterate⟩
+
+-- define a flow using `FunSpace`? need to prove properties about it later
 
 end FunSpace
 
