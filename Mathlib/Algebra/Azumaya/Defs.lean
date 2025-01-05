@@ -9,7 +9,8 @@ import Mathlib.RingTheory.Finiteness.Defs
 
 /-!
 # Definition of Azumaya Algebras
-The definition of Azumaya algebra is a finitely generated, projective and faithful R-module
+An Azumaya algebra over a commutative ring `R` is a finitely generated, projective 
+and faithful R-algebra
 where the tensorproduct `A ⊗[R] Aᵐᵒᵖ` is isomorphic to the endomorphism ring of A `End R A`
 via the map `f : a ⊗ b ↦ (x ↦ a * x * b.unop)`.
 TODO : Add the rest three definitions and prove they are equivalent.
