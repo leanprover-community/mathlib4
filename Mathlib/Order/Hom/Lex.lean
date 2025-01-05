@@ -39,30 +39,12 @@ def sumLexComplLeft :
     · simp
 
 @[simp]
-theorem sumLexComplLeft_apply_inl (a : {y // r y x}) : sumLexComplLeft r x (Sum.inl a) = a :=
+theorem sumLexComplLeft_apply (a) : sumLexComplLeft r x a = Equiv.sumCompl (r · x) a :=
   rfl
 
 @[simp]
-theorem sumLexComplLeft_apply_inr (a : {y // ¬ r y x}) : sumLexComplLeft r x (Sum.inr a) = a :=
+theorem sumLexComplLeft_symm_apply (a) : sumLexComplLeft r x a = Equiv.sumCompl (r · x) a :=
   rfl
-
-theorem sumLexComplLeft_symm_apply_of_mem (h : r y x) :
-    (sumLexComplLeft r x).symm y = Sum.inl ⟨y, h⟩ :=
-  Equiv.sumCompl_apply_symm_of_pos (r · x) _ h
-
-theorem sumLexComplLeft_symm_apply_of_not_mem (h : ¬ r y x) :
-    (sumLexComplLeft r x).symm y = Sum.inr ⟨y, h⟩ :=
-  Equiv.sumCompl_apply_symm_of_neg (r · x) _ h
-
-@[simp]
-theorem sumLexComplLeft_symm_apply (a : {y // r y x}) :
-    (sumLexComplLeft r x).symm a = Sum.inl a :=
-  sumLexComplLeft_symm_apply_of_mem a.2
-
-@[simp]
-theorem sumLexComplLeft_symm_apply_neg (a : {y // ¬ r y x}) :
-    (sumLexComplLeft r x).symm a = Sum.inr a :=
-  sumLexComplLeft_symm_apply_of_not_mem a.2
 
 variable (r x) in
 /-- A relation is isomorphic to the lexicographic sum of elements not greater than `x` and elements
@@ -79,30 +61,12 @@ def sumLexComplRight :
     · simp
 
 @[simp]
-theorem sumLexComplRight_apply_inl (a : {y // ¬ r x y}) : sumLexComplRight r x (Sum.inl a) = a :=
+theorem sumLexComplRight_apply (a) : sumLexComplRight r x a = Equiv.sumCompl (r · x) a :=
   rfl
 
 @[simp]
-theorem sumLexComplRight_apply_inr (a : {y // r x y}) : sumLexComplRight r x (Sum.inr a) = a :=
+theorem sumLexComplRight_symm_apply (a) : sumLexComplRight r x a = Equiv.sumCompl (r · x) a :=
   rfl
-
-theorem sumLexComplRight_symm_apply_of_mem (h : r x y) :
-    (sumLexComplRight r x).symm y = Sum.inr ⟨y, h⟩ := by
-  simp [sumLexComplRight, h]
-
-theorem sumLexComplRight_symm_apply_of_not_mem (h : ¬ r x y) :
-    (sumLexComplRight r x).symm y = Sum.inl ⟨y, h⟩ := by
-  simp [sumLexComplRight, h]
-
-@[simp]
-theorem sumLexComplRight_symm_apply (a : {y // r x y}) :
-    (sumLexComplRight r x).symm a = Sum.inr a :=
-  sumLexComplRight_symm_apply_of_mem a.2
-
-@[simp]
-theorem sumLexComplRight_symm_apply_neg (a : {y // ¬ r x y}) :
-    (sumLexComplRight r x).symm a = Sum.inl a :=
-  sumLexComplRight_symm_apply_of_not_mem a.2
 
 end RelIso
 
