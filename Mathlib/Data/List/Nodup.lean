@@ -403,11 +403,8 @@ theorem setOf_singleton_iff_nodup [DecidableEq α] (H : Nodup l) {a : α}
     rw [h] at h₂
     rw [h₂] at h₁ h
     congr
-    exact l.set_of_mem_eq_empty_iff.mp ((Set.insert_diff_self_of_not_mem
-      (Set.nmem_setOf_iff.mpr h₁)).symm.trans (by
-        have := @Set.diff_self α {a}
-        nth_rw 1 [← h] at this
-        exact this)
+    exact l.set_of_mem_eq_empty_iff.mp (
+      (Set.insert_diff_self_of_not_mem (Set.nmem_setOf_iff.mpr h₁)).symm.trans (by simp_all)
     )
 
 end List
