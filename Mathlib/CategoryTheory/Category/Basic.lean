@@ -116,9 +116,7 @@ use in auto-params.
 -/
 macro (name := aesop_cat) "aesop_cat" c:Aesop.tactic_clause* : tactic =>
 `(tactic|
-  first | sorry_if_sorry |
-  aesop $c* (config := { introsTransparency? := some .default, terminal := true })
-            (rule_sets := [$(Lean.mkIdent `CategoryTheory):ident]))
+  first | sorry_if_sorry | grind)
 
 /--
 We also use `aesop_cat?` to pass along a `Try this` suggestion when using `aesop_cat`
@@ -158,6 +156,11 @@ class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1
 
 attribute [simp] Category.id_comp Category.comp_id Category.assoc
 attribute [trans] CategoryStruct.comp
+
+grind_pattern Category.id_comp => 𝟙 X ≫ f
+grind_pattern Category.comp_id => f ≫ 𝟙 Y
+grind_pattern Category.assoc => (f ≫ g) ≫ h
+grind_pattern Category.assoc => f ≫ g ≫ h
 
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : 𝟙 X ≫ f = f := by simp
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : f ≫ 𝟙 Y = f := by simp
