@@ -105,7 +105,7 @@ lemma Quot.desc_toCocone_desc [DecidableEq J] {A : Type w} [AddCommGroup A] (f :
     (hc : IsColimit c) : (hc.desc (toCocone F f)).comp (Quot.desc F c) = f := by
   refine Quot.addMonoidHom_ext F (fun j x ↦ ?_)
   rw [AddMonoidHom.comp_apply, ι_desc]
-  change ((c.ι.app j) ≫ hc.desc (toCocone F f)) _ = _
+  change (c.ι.app j ≫ hc.desc (toCocone F f)) _ = _
   rw [hc.fac]
   simp
 
