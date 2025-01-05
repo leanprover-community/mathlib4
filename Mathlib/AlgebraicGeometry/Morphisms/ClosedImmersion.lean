@@ -264,7 +264,6 @@ lemma Spec_iff {R : CommRingCat} {f : X ⟶ Spec R} :
   · intro H
     obtain ⟨h₁, h₂⟩ := IsClosedImmersion.isAffine_surjective_of_isAffine f
     let φ := (Scheme.ΓSpecIso R).inv ≫ f.appTop
-    have := φ.1.kerLift
     refine ⟨RingHom.ker φ.1, Scheme.isoSpec _ ≪≫ Scheme.Spec.mapIso
         (.op (RingEquiv.ofBijective φ.1.kerLift ?_).toCommRingCatIso), ?_⟩
     · exact ⟨φ.1.kerLift_injective, Ideal.Quotient.lift_surjective_of_surjective _ _

@@ -104,7 +104,6 @@ lemma pointsPi_injective [QuasiSeparatedSpace X] : Function.Injective (pointsPi 
 
 lemma pointsPi_surjective_of_isAffine [IsAffine X] : Function.Surjective (pointsPi R X) := by
   rintro f
-  have (i) := Spec.preimage (f i ≫ X.isoSpec.hom)
   refine ⟨Spec.map (CommRingCat.ofHom
     (Pi.ringHom fun i ↦ (Spec.preimage (f i ≫ X.isoSpec.hom)).1)) ≫ X.isoSpec.inv, ?_⟩
   ext i : 1
