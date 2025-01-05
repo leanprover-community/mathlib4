@@ -1329,7 +1329,7 @@ Q1191862:
 Q1194053:
   title: Metrization theorems
   decl: TopologicalSpace.metrizableSpace_of_t3_secondCountable
-  comment: "Urysohn's metrization theorem (only)"
+  # comment: "Urysohn's metrization theorem (only)"
 
 Q1196538:
   title: Descartes's theorem
@@ -1384,7 +1384,7 @@ Q1306092:
 Q1306095:
   title: Whitney embedding theorem
   decl: exists_embedding_euclidean_of_compact
-  comment: "baby version: for compact manifolds; embedding into some *n*"
+  # comment: "baby version: for compact manifolds; embedding into some *n*"
 
 Q1307676:
   title: Künneth theorem
