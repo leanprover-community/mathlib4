@@ -134,8 +134,7 @@ noncomputable def isColimit_of_bijective_desc [DecidableEq J]
   uniq s m hm := by
     ext x
     obtain ⟨x, rfl⟩ := h.2 x
-    simp only [AddEquiv.toAddMonoidHom_eq_coe, ofHom_apply, AddMonoidHom.coe_comp,
-      AddMonoidHom.coe_coe, Function.comp_apply]
+    dsimp
     rw [← AddEquiv.ofBijective_apply _ h, AddEquiv.symm_apply_apply]
     suffices eq : m.comp (AddEquiv.ofBijective (Quot.desc F c) h) = Quot.desc F s by
       rw [← eq]; rfl
