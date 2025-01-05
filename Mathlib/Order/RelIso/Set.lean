@@ -45,7 +45,7 @@ theorem range_eq (e : r ≃r s) : Set.range e = Set.univ :=
 
 end RelIso
 
-/-- `Subrel r p` is the inherited relation on a subset.
+/-- `Subrel r p` is the inherited relation on a subtype.
 
 This is defined in terms of a predicate `α → Prop` rather than a `Set α`, as otherwise the type
 signature of `Subrel r {x | p x}` is not `simp` normal, leading to hard to debug `simpNF` issues. -/
