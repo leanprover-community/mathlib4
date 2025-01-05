@@ -711,45 +711,43 @@ integral curve `α : ℝ → E` defined on a closed interval, with initial condi
 `x` may be different from `x₀`. -/
 theorem exists_eq_hasDerivWithinAt_Icc_of_contDiffAt
     (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
-    ∃ r > (0 : ℝ), ∃ ε > (0 : ℝ), ∀ x ∈ closedBall x₀ r, ∃ α : ℝ → E, α t₀ = x ∧
+    ∃ r > (0 : ℝ), ∀ x ∈ closedBall x₀ r, ∃ α : ℝ → E, α t₀ = x ∧ ∃ ε > (0 : ℝ),
       ∀ t ∈ Icc (t₀ - ε) (t₀ + ε), HasDerivWithinAt α (f (α t)) (Icc (t₀ - ε) (t₀ + ε)) t := by
   have ⟨ε, hε, a, b, _, _, hab, hpl⟩ := IsPicardLindelof.mk_of_contDiffOn_one hf t₀
-  refine ⟨a - b, sub_pos_of_lt hab, ε, hε, fun x hx ↦ ?_⟩
+  refine ⟨a - b, sub_pos_of_lt hab, fun x hx ↦ ?_⟩
   have ⟨α, hα1, hα2⟩ := hpl.exists_eq_hasDerivWithinAt hx
-  exact ⟨α, hα1, hα2⟩
+  exact ⟨α, hα1, ε, hε, hα2⟩
 
 /-- If a vector field `f : E → E` is continuously differentiable at `x₀ : E`, then it admits an
 integral curve `α : ℝ → E` defined on an open interval, with initial condition `α t₀ = x`, where
 `x` may be different from `x₀`. -/
 theorem exists_eq_hasDerivAt_Ioo_of_contDiffAt
     (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
-    ∃ r > (0 : ℝ), ∃ ε > (0 : ℝ), ∀ x ∈ closedBall x₀ r, ∃ α : ℝ → E, α t₀ = x ∧
+    ∃ r > (0 : ℝ), ∀ x ∈ closedBall x₀ r, ∃ α : ℝ → E, α t₀ = x ∧ ∃ ε > (0 : ℝ),
       ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), HasDerivAt α (f (α t)) t := by
-  have ⟨r, hr, ε, hε, H⟩ := exists_eq_hasDerivWithinAt_Icc_of_contDiffAt hf t₀
-  refine ⟨r, hr, ε, hε, fun x hx ↦ ?_⟩
-  have ⟨α, hα1, hα2⟩ := H x hx
-  refine ⟨α, hα1, fun _ ht ↦ hα2 _ (Ioo_subset_Icc_self ht) |>.mono Ioo_subset_Icc_self
+  have ⟨r, hr, H⟩ := exists_eq_hasDerivWithinAt_Icc_of_contDiffAt hf t₀
+  refine ⟨r, hr, fun x hx ↦ ?_⟩
+  have ⟨α, hα1, ε, hε, hα2⟩ := H x hx
+  refine ⟨α, hα1, ε, hε, fun _ ht ↦ hα2 _ (Ioo_subset_Icc_self ht) |>.mono Ioo_subset_Icc_self
     |>.hasDerivAt (Ioo_mem_nhds ht.1 ht.2)⟩
 
 /-- If a vector field `f : E → E` is continuously differentiable at `x₀ : E`, then it admits an
 integral curve `α : ℝ → E` defined on a closed interval, with initial condition `α t₀ = x₀`. -/
 theorem exists_eq_hasDerivWithinAt_Icc_of_contDiffAt₀
     (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
-    ∃ ε > (0 : ℝ), ∃ α : ℝ → E, α t₀ = x₀ ∧
+    ∃ α : ℝ → E, α t₀ = x₀ ∧ ∃ ε > (0 : ℝ),
       ∀ t ∈ Icc (t₀ - ε) (t₀ + ε), HasDerivWithinAt α (f (α t)) (Icc (t₀ - ε) (t₀ + ε)) t :=
-  have ⟨_, hr, ε, hε, H⟩ := exists_eq_hasDerivWithinAt_Icc_of_contDiffAt hf t₀
-  have ⟨α, hα⟩ := H x₀ (mem_closedBall_self (le_of_lt hr))
-  ⟨ε, hε, α, hα⟩
+  have ⟨_, hr, H⟩ := exists_eq_hasDerivWithinAt_Icc_of_contDiffAt hf t₀
+  H x₀ (mem_closedBall_self (le_of_lt hr))
 
 /-- If a vector field `f : E → E` is continuously differentiable at `x₀ : E`, then it admits an
 integral curve `α : ℝ → E` defined on an open interval, with initial condition `α t₀ = x₀`. -/
 theorem exists_eq_hasDerivAt_Ioo_of_contDiffAt₀
     (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
-    ∃ ε > (0 : ℝ), ∃ α : ℝ → E, α t₀ = x₀ ∧
+    ∃ α : ℝ → E, α t₀ = x₀ ∧ ∃ ε > (0 : ℝ),
       ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), HasDerivAt α (f (α t)) t :=
-  have ⟨_, hr, ε, hε, H⟩ := exists_eq_hasDerivAt_Ioo_of_contDiffAt hf t₀
-  have ⟨α, hα⟩ := H x₀ (mem_closedBall_self (le_of_lt hr))
-  ⟨ε, hε, α, hα⟩
+  have ⟨_, hr, H⟩ := exists_eq_hasDerivAt_Ioo_of_contDiffAt hf t₀
+  H x₀ (mem_closedBall_self (le_of_lt hr))
 
 open Classical in
 /-- If a vector field `f : E → E` is continuously differentiable at `x₀ : E`, then it admits a flow
@@ -757,14 +755,14 @@ open Classical in
 the domain. -/
 theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_Icc
     (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
-    ∃ r > (0 : ℝ), ∃ ε > (0 : ℝ), ∃ α : E → ℝ → E, ∀ x ∈ closedBall x₀ r, α x t₀ = x ∧
+    ∃ r > (0 : ℝ), ∃ α : E → ℝ → E, ∀ x ∈ closedBall x₀ r, α x t₀ = x ∧ ∃ ε > (0 : ℝ),
       ∀ t ∈ Icc (t₀ - ε) (t₀ + ε),
         HasDerivWithinAt (α x) (f (α x t)) (Icc (t₀ - ε) (t₀ + ε)) t := by
-  obtain ⟨r, hr, ε, hε, H⟩ := exists_eq_hasDerivWithinAt_Icc_of_contDiffAt hf t₀
+  obtain ⟨r, hr, H⟩ := exists_eq_hasDerivWithinAt_Icc_of_contDiffAt hf t₀
   set α := fun (x : E) ↦ if hx : x ∈ closedBall x₀ r then choose (H x hx) else 0 with hα
-  refine ⟨r, hr, ε, hε, α, fun x hx ↦ ?_⟩
-  have ⟨h1, h2⟩ := choose_spec (H x hx)
-  refine ⟨?_, fun t ht ↦ ?_⟩
+  refine ⟨r, hr, α, fun x hx ↦ ?_⟩
+  have ⟨h1, ε, hε, h2⟩ := choose_spec (H x hx)
+  refine ⟨?_, ε, hε, fun t ht ↦ ?_⟩
   · simp_rw [hα, dif_pos hx, h1]
   · simp_rw [hα, dif_pos hx, h2 t ht]
 
@@ -774,13 +772,13 @@ open Classical in
 the domain. -/
 theorem exists_forall_mem_closedBall_eq_hasDerivAt_Ioo
     (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
-    ∃ r > (0 : ℝ), ∃ ε > (0 : ℝ), ∃ α : E → ℝ → E, ∀ x ∈ closedBall x₀ r, α x t₀ = x ∧
+    ∃ r > (0 : ℝ), ∃ α : E → ℝ → E, ∀ x ∈ closedBall x₀ r, α x t₀ = x ∧ ∃ ε > (0 : ℝ),
       ∀ t ∈ Ioo (t₀ - ε) (t₀ + ε), HasDerivAt (α x) (f (α x t)) t := by
-  obtain ⟨r, hr, ε, hε, H⟩ := exists_eq_hasDerivAt_Ioo_of_contDiffAt hf t₀
+  obtain ⟨r, hr, H⟩ := exists_eq_hasDerivAt_Ioo_of_contDiffAt hf t₀
   set α := fun (x : E) ↦ if hx : x ∈ closedBall x₀ r then choose (H x hx) else 0 with hα
-  refine ⟨r, hr, ε, hε, α, fun x hx ↦ ?_⟩
-  have ⟨h1, h2⟩ := choose_spec (H x hx)
-  refine ⟨?_, fun t ht ↦ ?_⟩
+  refine ⟨r, hr, α, fun x hx ↦ ?_⟩
+  have ⟨h1, ε, hε, h2⟩ := choose_spec (H x hx)
+  refine ⟨?_, ε, hε, fun t ht ↦ ?_⟩
   · simp_rw [hα, dif_pos hx, h1]
   · simp_rw [hα, dif_pos hx, h2 t ht]
 
