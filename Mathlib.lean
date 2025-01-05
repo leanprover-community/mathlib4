@@ -2447,7 +2447,6 @@ import Mathlib.Data.DFinsupp.BigOperators
 import Mathlib.Data.DFinsupp.Defs
 import Mathlib.Data.DFinsupp.Encodable
 import Mathlib.Data.DFinsupp.Ext
-import Mathlib.Data.DFinsupp.FiniteInfinite
 import Mathlib.Data.DFinsupp.Interval
 import Mathlib.Data.DFinsupp.Lex
 import Mathlib.Data.DFinsupp.Module
@@ -2456,6 +2455,7 @@ import Mathlib.Data.DFinsupp.NeLocus
 import Mathlib.Data.DFinsupp.Notation
 import Mathlib.Data.DFinsupp.Order
 import Mathlib.Data.DFinsupp.Sigma
+import Mathlib.Data.DFinsupp.Size
 import Mathlib.Data.DFinsupp.Submonoid
 import Mathlib.Data.DFinsupp.WellFounded
 import Mathlib.Data.DList.Instances

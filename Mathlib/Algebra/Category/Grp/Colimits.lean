@@ -7,6 +7,7 @@ import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
 import Mathlib.Data.DFinsupp.BigOperators
+import Mathlib.Data.DFinsupp.Size
 import Mathlib.GroupTheory.QuotientGroup.Defs
 /-!
 # The category of additive commutative groups has all colimits.
@@ -178,12 +179,8 @@ open Colimits
 lemma hasColimit_of_small_quot [DecidableEq J] (h : Small.{w} (Quot F)) : HasColimit F :=
   ⟨_, colimitCoconeIsColimit F⟩
 
-instance [DecidableEq J] [Small.{w} J] : Small.{w} (Quot F) := by
-  have : Small.{w} (DFinsupp (fun j ↦ F.obj j)) :=
-    small_of_injective (f := fun x j ↦ x j) (fun f f' eq ↦ by
-      ext j
-      exact congr_fun eq j)
-  exact small_of_surjective (QuotientAddGroup.mk'_surjective _)
+instance [DecidableEq J] [Small.{w} J] : Small.{w} (Quot F) :=
+  small_of_surjective (QuotientAddGroup.mk'_surjective _)
 
 instance hasColimit [Small.{w} J] (F : J ⥤ AddCommGrp.{w}) : HasColimit F := by
   classical
