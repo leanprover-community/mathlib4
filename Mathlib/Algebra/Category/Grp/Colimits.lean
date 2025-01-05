@@ -138,8 +138,7 @@ noncomputable def isColimit_of_bijective_desc [DecidableEq J]
     rw [← AddEquiv.ofBijective_apply _ h, AddEquiv.symm_apply_apply]
     suffices eq : m.comp (AddEquiv.ofBijective (Quot.desc F c) h) = Quot.desc F s by
       rw [← eq]; rfl
-    refine Quot.addMonoidHom_ext F (fun j x ↦ ?_)
-    simp [← hm j]
+    exact Quot.addMonoidHom_ext F (by simp [← hm])
 
 /-- (internal implementation) The colimit cocone of a functor `F`, implemented as a quotient of
 `DFinsupp (fun j ↦ F.obj j)`, under the assumption that said quotient is small.
