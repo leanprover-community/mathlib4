@@ -46,7 +46,7 @@ assert_not_exists TopologicalSpace
 
 noncomputable section
 
-open scoped Classical Pointwise
+open scoped Pointwise
 
 universe u v
 
@@ -603,8 +603,10 @@ and is a homeomorphism when ι is finite. -/
 theorem sigmaToPi_injective : (sigmaToPi R).Injective := fun ⟨i, p⟩ ⟨j, q⟩ eq ↦ by
   obtain rfl | ne := eq_or_ne i j
   · congr; ext x
+    classical
     simpa using congr_arg (Function.update (0 : ∀ i, R i) i x ∈ ·.asIdeal) eq
   · refine (p.1.ne_top_iff_one.mp p.2.ne_top ?_).elim
+    classical
     have : Function.update (1 : ∀ i, R i) j 0 ∈ (sigmaToPi R ⟨j, q⟩).asIdeal := by simp
     simpa [← eq, Function.update_of_ne ne]
 
@@ -616,6 +618,7 @@ range of `sigmaToPi`, i.e. is not of the form `πᵢ⁻¹(𝔭)` for some prime 
 see https://math.stackexchange.com/a/1563190. -/
 theorem exists_maximal_nmem_range_sigmaToPi_of_infinite :
     ∃ (I : Ideal (Π i, R i)) (_ : I.IsMaximal), ⟨I, inferInstance⟩ ∉ Set.range (sigmaToPi R) := by
+  classical
   let J : Ideal (Π i, R i) := -- `J := Π₀ i, R i` is an ideal in `Π i, R i`
   { __ := AddMonoidHom.mrange DFinsupp.coeFnAddMonoidHom
     smul_mem' := by
