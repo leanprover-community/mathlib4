@@ -13,9 +13,9 @@ The snake lemma is proven in `Algebra/Homology/ShortComplex/SnakeLemma.lean` for
 categories, but for definitional equality and universe issues we reprove them here for modules.
 
 ## Main results
-- `SnakeLemma.δ`: The connecting homomorphism guaranteed by the snake lemma.
-- `SnakeLemma.exact_δ_left`: The connecting homomorphism is exact on the right.
-- `SnakeLemma.exact_δ_right`: The connecting homomorphism is exact on the left.
+- `SnakeLemma.δ`: The connecting linear map guaranteed by the snake lemma.
+- `SnakeLemma.exact_δ_left`: The connecting linear map is exact on the right.
+- `SnakeLemma.exact_δ_right`: The connecting linear map is exact on the left.
 
 -/
 
