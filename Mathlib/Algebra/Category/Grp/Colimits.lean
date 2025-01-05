@@ -49,7 +49,6 @@ the diagram.
 def Quot [DecidableEq J] : Type (max u w) :=
   DFinsupp (fun j ↦ F.obj j) ⧸ Relations F
 
--- Why is this necessary?
 instance [DecidableEq J] : AddCommGroup (Quot F) :=
   QuotientAddGroup.Quotient.addCommGroup (Relations F)
 
