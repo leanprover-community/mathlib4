@@ -23,7 +23,7 @@ and the type `lim Hom(F·, X)`.
 
 open CategoryTheory CategoryTheory.Limits
 
-universe v u w
+universe v u w u'
 
 namespace CategoryTheory.Limits
 
@@ -356,6 +356,52 @@ lemma Quot.ι_desc (j : J) (x : F.obj j) : Quot.desc c (Quot.ι F j x) = c.ι.ap
 @[simp]
 lemma Quot.map_ι {j j' : J} {f : j ⟶ j'} (x : F.obj j) : Quot.ι F j' (F.map f x) = Quot.ι F j x :=
   (Quot.sound ⟨f, rfl⟩).symm
+
+def uliftQuotToFun (F : J ⥤ Type u) : Quot F → Quot (F ⋙ uliftFunctor.{u'}) := by
+  refine Quot.lift (fun ⟨j, x⟩ ↦ Quot.ι _ j (ULift.up x)) ?_
+  intro ⟨j, x⟩ ⟨j', y⟩ ⟨(f : j ⟶ j'), (eq : y = F.map f x)⟩
+  dsimp
+  have eq : ULift.up y= (F ⋙ uliftFunctor.{u'}).map f (ULift.up x) := by
+    rw [eq]
+    dsimp
+  rw [eq, Quot.map_ι]
+
+@[simp]
+lemma uliftQuotToFun_ι (F : J ⥤ Type u) (j : J) (x : F.obj j) :
+    uliftQuotToFun F (Quot.ι F j x) = Quot.ι _ j (ULift.up x) := by
+  dsimp [uliftQuotToFun, Quot.ι]
+
+def uliftQuotInvFun (F : J ⥤ Type u) : Quot (F ⋙ uliftFunctor.{u'}) → Quot F := by
+  refine Quot.lift (fun ⟨j, x⟩ ↦ Quot.ι _ j x.down) ?_
+  intro ⟨j, x⟩ ⟨j', y⟩ ⟨(f : j ⟶ j'), (eq : y = ULift.up (F.map f x.down))⟩
+  rw [eq]
+  dsimp
+  rw [Quot.map_ι]
+
+@[simp]
+lemma uliftQuotInvFun_ι (F : J ⥤ Type u) (j : J) (x : (F ⋙ uliftFunctor.{u'}).obj j) :
+    uliftQuotInvFun F (Quot.ι _ j x) = Quot.ι F j x.down := by
+  dsimp [uliftQuotInvFun, Quot.ι]
+
+@[simp]
+def uliftQuot (F : J ⥤ Type u) : Quot F ≃ Quot (F ⋙ uliftFunctor.{u'}) where
+  toFun := uliftQuotToFun F
+  invFun := uliftQuotInvFun F
+  left_inv := by
+    intro x
+    obtain ⟨j, y, rfl⟩ := Quot.jointly_surjective x
+    rw [uliftQuotToFun_ι, uliftQuotInvFun_ι]
+  right_inv := by
+    intro x
+    obtain ⟨j, y, rfl⟩ := Quot.jointly_surjective x
+    rw [uliftQuotInvFun_ι, uliftQuotToFun_ι]
+    rfl
+
+lemma Quot.desc_uliftQuot {F : J ⥤ Type u} (c : Cocone F) :
+    ULift.up ∘ Quot.desc c = Quot.desc (uliftFunctor.{u'}.mapCocone c) ∘ uliftQuot F := by
+  ext x
+  obtain ⟨_, _, rfl⟩ := Quot.jointly_surjective x
+  dsimp
 
 /-- (implementation detail) A function `Quot F → α` induces a cocone on `F` as long as the universes
     work out. -/
