@@ -3,7 +3,6 @@ Copyright (c) 2024 Haitian Wang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Haitian Wang, Malvin Gattinger
 -/
-import Mathlib.Algebra.Order.Sub.Basic
 import Mathlib.Data.Multiset.OrderedMonoid
 
 /-!
