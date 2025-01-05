@@ -61,11 +61,11 @@ def sumLexComplRight :
     · simp
 
 @[simp]
-theorem sumLexComplRight_apply (a) : sumLexComplRight r x a = Equiv.sumCompl (r · x) a :=
+theorem sumLexComplRight_apply (a) : sumLexComplRight r x a = Equiv.sumCompl (r x ·) a.swap :=
   rfl
 
 @[simp]
-theorem sumLexComplRight_symm_apply (a) : sumLexComplRight r x a = Equiv.sumCompl (r · x) a :=
+theorem sumLexComplRight_symm_apply (a) : sumLexComplRight r x a = Equiv.sumCompl (r x ·) a.swap :=
   rfl
 
 end RelIso
