@@ -33,7 +33,7 @@ stopping time, stochastic process
 
 open Filter Order TopologicalSpace
 
-open scoped Classical MeasureTheory NNReal ENNReal Topology
+open scoped MeasureTheory NNReal ENNReal Topology
 
 namespace MeasureTheory
 
@@ -96,7 +96,9 @@ protected theorem measurableSet_eq_of_countable_range (hτ : IsStoppingTime f τ
   rw [this]
   refine (hτ.measurableSet_le i).diff ?_
   refine MeasurableSet.biUnion h_countable fun j _ => ?_
+  classical
   rw [Set.iUnion_eq_if]
+  
   split_ifs with hji
   · exact f.mono hji.le _ (hτ.measurableSet_le j)
   · exact @MeasurableSet.empty _ (f i)
