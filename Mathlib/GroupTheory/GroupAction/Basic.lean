@@ -17,6 +17,13 @@ This file primarily concerns itself with orbits, stabilizers, and other objects 
 actions. Despite this file being called `basic`, low-level helper lemmas for algebraic manipulation
 of `•` belong elsewhere.
 
+## Main definitions
+
+* `MulAction.orbit`
+* `MulAction.fixedPoints`
+* `MulAction.fixedBy`
+* `MulAction.stabilizer`
+
 -/
 
 
@@ -61,6 +68,14 @@ end Orbit
 section FixedPoints
 
 variable {M α}
+
+@[to_additive] theorem mem_fixedPoints_iff_subsingleton_orbit {a : α} :
+    a ∈ fixedPoints M α ↔ (orbit M a).Subsingleton := by
+  rw [mem_fixedPoints]
+  constructor
+  · rintro h _ ⟨m, rfl⟩ y ⟨p, rfl⟩
+    simp only [h]
+  · exact fun h m ↦ h (mem_orbit a m) (mem_orbit_self a)
 
 @[to_additive mem_fixedPoints_iff_card_orbit_eq_one]
 theorem mem_fixedPoints_iff_card_orbit_eq_one {a : α} [Fintype (orbit M a)] :
@@ -266,6 +281,8 @@ namespace MulAction
 variable {G : Type*} [Group G] {α : Type*} [MulAction G α]
 
 /-- To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions.-/
+@[to_additive
+  "To prove inclusion of a *subgroup* in a stabilizer, it is enough to prove inclusions."]
 theorem le_stabilizer_iff_smul_le (s : Set α) (H : Subgroup G) :
     H ≤ stabilizer G s ↔ ∀ g ∈ H, g • s ⊆ s := by
   constructor
