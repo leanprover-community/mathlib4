@@ -133,7 +133,10 @@ noncomputable def trianglehMapOfHomotopy :
   comm₂ := by
     dsimp
     simp only [← Functor.map_comp, triangleMapOfHomotopy_comm₂]
-  comm₃ := by simp [← Functor.map_comp_assoc, triangleMapOfHomotopy_comm₃]
+  comm₃ := by
+    dsimp
+    rw [← Functor.map_comp_assoc, triangleMapOfHomotopy_comm₃, Functor.map_comp, assoc, assoc]
+    simp
 
 end mapOfHomotopy
 
