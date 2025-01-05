@@ -28,7 +28,7 @@ section SchurZassenhausAbelian
 open MulOpposite MulAction Subgroup.leftTransversals MemLeftTransversals
 
 variable {G : Type*} [Group G] (H : Subgroup G) [IsCommutative H] [FiniteIndex H]
-  (α β : leftTransversals (H : Set G))
+  (α β : H.LeftTransversal)
 
 /-- The quotient of the transversals of an abelian normal `N` by the `diff` relation. -/
 def QuotientDiff :=
