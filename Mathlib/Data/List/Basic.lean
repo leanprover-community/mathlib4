@@ -332,7 +332,7 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
 lemma getLast_filter' {p : α → Bool} :
     ∀ (l : List α) (hlp : l.filter p ≠ []), p (l.getLast (hlp <| ·.symm ▸ rfl)) = true →
       (l.filter p).getLast hlp = l.getLast (hlp <| ·.symm ▸ rfl)
-  | [a], h, h' => by rw [List.getLast_singleton'] at h'; simp [List.filter_cons, h']
+  | [a], h, h' => by simp
   | a :: b :: as, h, h' => by
     rw [List.getLast_cons_cons] at h' ⊢
     simp only [List.filter_cons (x := a)] at h ⊢

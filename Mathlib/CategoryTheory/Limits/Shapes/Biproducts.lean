@@ -579,7 +579,7 @@ theorem biproduct.map_eq_map' {f g : J → C} [HasBiproduct f] [HasBiproduct g] 
   dsimp
   rw [biproduct.ι_π_assoc, biproduct.ι_π]
   split_ifs with h
-  · subst h; rw [eqToHom_refl, Category.id_comp]; erw [Category.comp_id]
+  · subst h; simp
   · simp
 
 @[reassoc (attr := simp)]

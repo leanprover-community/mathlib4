@@ -643,14 +643,10 @@ theorem hom_desc (h : IsColimit t) {W : C} (m : t.pt ⟶ W) :
     m =
       h.desc
         { pt := W
-          ι :=
-            { app := fun b => t.ι.app b ≫ m
-              naturality := by intros; erw [← assoc, t.ι.naturality, comp_id, comp_id] } } :=
+          ι := { app := fun b => t.ι.app b ≫ m } } :=
   h.uniq
     { pt := W
-      ι :=
-        { app := fun b => t.ι.app b ≫ m
-          naturality := _ } }
+      ι := { app := fun b => t.ι.app b ≫ m } }
     m fun _ => rfl
 
 /-- Two morphisms out of a colimit are equal if their compositions with

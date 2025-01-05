@@ -458,10 +458,10 @@ def lim : (J ⥤ C) ⥤ C where
   map α := limMap α
   map_id F := by
     apply Limits.limit.hom_ext; intro j
-    erw [limMap_π, Category.id_comp, Category.comp_id]
+    simp
   map_comp α β := by
     apply Limits.limit.hom_ext; intro j
-    erw [assoc, IsLimit.fac, IsLimit.fac, ← assoc, IsLimit.fac, assoc]; rfl
+    simp [assoc]
 
 end
 

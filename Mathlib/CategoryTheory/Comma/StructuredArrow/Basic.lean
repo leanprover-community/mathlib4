@@ -783,12 +783,7 @@ category of structured arrows `d ⟶ F.obj c` to the category of costructured ar
 def toCostructuredArrow (F : C ⥤ D) (d : D) :
     (StructuredArrow d F)ᵒᵖ ⥤ CostructuredArrow F.op (op d) where
   obj X := @CostructuredArrow.mk _ _ _ _ _ (op X.unop.right) F.op X.unop.hom.op
-  map f :=
-    CostructuredArrow.homMk f.unop.right.op
-      (by
-        dsimp
-        rw [← op_comp, ← f.unop.w, Functor.const_obj_map]
-        erw [Category.id_comp])
+  map f := CostructuredArrow.homMk f.unop.right.op (by simp [← op_comp])
 
 /-- For a functor `F : C ⥤ D` and an object `d : D`, we obtain a contravariant functor from the
 category of structured arrows `op d ⟶ F.op.obj c` to the category of costructured arrows
@@ -803,8 +798,8 @@ def toCostructuredArrow' (F : C ⥤ D) (d : D) :
       (by
         dsimp
         rw [← Quiver.Hom.unop_op (F.map (Quiver.Hom.unop f.unop.right)), ← unop_comp, ← F.op_map, ←
-          f.unop.w, Functor.const_obj_map]
-        erw [Category.id_comp])
+          f.unop.w]
+        simp)
 
 end StructuredArrow
 
@@ -818,12 +813,7 @@ category of costructured arrows `F.obj c ⟶ d` to the category of structured ar
 def toStructuredArrow (F : C ⥤ D) (d : D) :
     (CostructuredArrow F d)ᵒᵖ ⥤ StructuredArrow (op d) F.op where
   obj X := @StructuredArrow.mk _ _ _ _ _ (op X.unop.left) F.op X.unop.hom.op
-  map f :=
-    StructuredArrow.homMk f.unop.left.op
-      (by
-        dsimp
-        rw [← op_comp, f.unop.w, Functor.const_obj_map]
-        erw [Category.comp_id])
+  map f := StructuredArrow.homMk f.unop.left.op (by simp [← op_comp])
 
 /-- For a functor `F : C ⥤ D` and an object `d : D`, we obtain a contravariant functor from the
 category of costructured arrows `F.op.obj c ⟶ op d` to the category of structured arrows
@@ -839,7 +829,7 @@ def toStructuredArrow' (F : C ⥤ D) (d : D) :
         dsimp
         rw [← Quiver.Hom.unop_op (F.map f.unop.left.unop), ← unop_comp, ← F.op_map, f.unop.w,
           Functor.const_obj_map]
-        erw [Category.comp_id])
+        simp)
 
 end CostructuredArrow
 

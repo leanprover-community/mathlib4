@@ -117,10 +117,7 @@ def equivalenceLeftToRight (X : SimplicialObject.Augmented C) (F : Arrow C)
   left :=
     { app := fun x =>
         Limits.WidePullback.lift (X.hom.app _ ≫ G.right)
-          (fun i => X.left.map (SimplexCategory.const _ x.unop i).op ≫ G.left) fun i => by
-          dsimp
-          erw [Category.assoc, Arrow.w, Augmented.toArrow_obj_hom, NatTrans.naturality_assoc,
-            Functor.const_obj_map, Category.id_comp]
+          (fun i => X.left.map (SimplexCategory.const _ x.unop i).op ≫ G.left) fun i => by simp
       naturality := by
         intro x y f
         dsimp
@@ -280,9 +277,7 @@ def equivalenceRightToLeft (F : Arrow C) (X : CosimplicialObject.Augmented C)
           rw [Category.assoc, ← X.right.map_comp]
           rfl
         · dsimp
-          simp only [Functor.const_obj_map, ← NatTrans.naturality, WidePushout.head_desc_assoc,
-            WidePushout.head_desc, Category.assoc]
-          erw [Category.id_comp] }
+          simp [← NatTrans.naturality] }
 
 /-- A helper function used in defining the Čech conerve adjunction. -/
 @[simps]
@@ -408,10 +403,7 @@ def iso (X : C) : (Arrow.mk (terminal.from X)).cechNerve ≅ cechNerveTerminalFr
   NatIso.ofComponents (fun _ => wideCospan.limitIsoPi _ _) (fun {m n} f => by
     dsimp only [cechNerveTerminalFrom, Arrow.cechNerve]
     ext ⟨j⟩
-    simp only [Category.assoc, limit.lift_π, Fan.mk_π_app]
-    erw [wideCospan.limitIsoPi_hom_comp_pi,
-      wideCospan.limitIsoPi_hom_comp_pi, limit.lift_π]
-    rfl)
+    simp)
 
 end CechNerveTerminalFrom
 
