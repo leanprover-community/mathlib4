@@ -46,6 +46,7 @@ variable {G H : Type*} [MeasurableSpace G] [Group G] [TopologicalSpace G]
   [TopologicalGroup G] [BorelSpace G] [LocallyCompactSpace G]
   [MeasurableSpace H] [SeminormedGroup H] [OpensMeasurableSpace H]
 
+-- TODO: This could be streamlined by proving that inner regular always exist
 open Metric Bornology in
 @[to_additive]
 lemma _root_.MonoidHom.exists_nhds_isBounded (f : G →* H) (hf : Measurable f) (x : G) :
