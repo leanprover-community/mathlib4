@@ -85,7 +85,7 @@ theorem volume_Ioc : volume (Ioc a b) = b - a := by
 
 @[simp] theorem volume_Iio : volume (Iio a) = a := by simp [volume_apply_eq_volume_toReal]
 
-@[simp] theorem volume_singleton : volume ({a} : Set ℝ≥0) = 0 := by simp [← Icc_self a, - Icc_self]
+theorem volume_singleton : volume ({a} : Set ℝ≥0) = 0 := by simp [← Icc_self a, - Icc_self]
 
 @[simp] theorem volume_univ : volume (univ : Set ℝ≥0) = ∞ := by simp [volume_apply_eq_volume_toReal]
 
@@ -134,11 +134,11 @@ variable {a b : ℝ≥0∞}
 
 @[simp] lemma preimage_ofNNReal_Ioc {a b : ℝ≥0} : ofNNReal ⁻¹' (Ioc a b) = Ioc a b := by ext; simp
 
-@[simp] lemma preimage_ofNNReal_Ioc_top {a : ℝ≥0} : ofNNReal ⁻¹' (Ioc a ∞) = Ioi a := by ext; simp
+lemma preimage_ofNNReal_Ioc_top {a : ℝ≥0} : ofNNReal ⁻¹' (Ioc a ∞) = Ioi a := by ext; simp
 
 @[simp] lemma preimage_ofNNReal_Icc {a b : ℝ≥0} : ofNNReal ⁻¹' (Icc a b) = Icc a b := by ext; simp
 
-@[simp] lemma preimage_ofNNReal_Icc_top {a : ℝ≥0} : ofNNReal ⁻¹' (Icc a ∞) = Ici a := by ext; simp
+lemma preimage_ofNNReal_Icc_top {a : ℝ≥0} : ofNNReal ⁻¹' (Icc a ∞) = Ici a := by ext; simp
 
 @[simp] lemma preimage_ofNNReal_Ici {a : ℝ≥0} : ofNNReal ⁻¹' (Ici a) = Ici a := by ext; simp
 
@@ -180,7 +180,6 @@ theorem volume_Ioc : volume (Ioc a b) = b - a := by
   rw [volume_apply_eq_volume_ofNNReal measurableSet_Ioc]
   cases b <;> cases a <;> simp [ENNReal.sub_top]
 
-@[simp]
 theorem volume_singleton : volume ({a} : Set ℝ≥0∞) = 0 := by simp [← Icc_self a, - Icc_self]
 
 @[simp]
@@ -192,9 +191,7 @@ theorem volume_univ : volume (univ : Set ℝ≥0∞) = ∞ := by
 theorem volume_Ici {a : ℝ≥0} : volume (Ici (a : ℝ≥0∞)) = ∞ := by
   simp [volume_apply_eq_volume_ofNNReal measurableSet_Ici]
 
-@[simp]
-theorem volume_Ioi {a : ℝ≥0} : volume (Ioi a) = ∞ := by
-  simp [volume_apply_eq_volume_ofNNReal measurableSet_Ici]
+theorem volume_Ioi {a : ℝ≥0} : volume (Ioi a) = ∞ := by simp
 
 @[simp]
 theorem volume_Iic : volume (Iic a) = a := by
