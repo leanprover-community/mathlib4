@@ -383,7 +383,7 @@ theorem exists_countable_dense_no_bot_top [SeparableSpace α] [Nontrivial α] :
     ∃ s : Set α, s.Countable ∧ Dense s ∧ (∀ x, IsBot x → x ∉ s) ∧ ∀ x, IsTop x → x ∉ s := by
   simpa using dense_univ.exists_countable_dense_subset_no_bot_top
 
-/-- `Set.Ico a b` is only compact if it is empty. -/
+/-- `Set.Ico a b` is only closed if it is empty. -/
 @[simp]
 theorem isClosed_Ico_iff {a b : α} : IsClosed (Set.Ico a b) ↔ b ≤ a := by
   refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
@@ -393,7 +393,7 @@ theorem isClosed_Ico_iff {a b : α} : IsClosed (Set.Ico a b) ↔ b ≤ a := by
   rw [Set.right_mem_Icc, Set.right_mem_Ico, iff_false] at this
   exact this hab.le
 
-/-- `Set.Ioc a b` is only compact if it is empty. -/
+/-- `Set.Ioc a b` is only closed if it is empty. -/
 @[simp]
 theorem isClosed_Ioc_iff {a b : α} : IsClosed (Set.Ioc a b) ↔ b ≤ a := by
   refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
@@ -403,7 +403,7 @@ theorem isClosed_Ioc_iff {a b : α} : IsClosed (Set.Ioc a b) ↔ b ≤ a := by
   rw [Set.left_mem_Icc, Set.left_mem_Ioc, iff_false] at this
   exact this hab.le
 
-/-- `Set.Ioo a b` is only compact if it is empty. -/
+/-- `Set.Ioo a b` is only closed if it is empty. -/
 @[simp]
 theorem isClosed_Ioo_iff {a b : α} : IsClosed (Set.Ioo a b) ↔ b ≤ a := by
   refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
