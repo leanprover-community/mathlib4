@@ -1066,51 +1066,17 @@ theorem exists_union_disjoint_ncard_eq_of_even_finite [DecidableEq α] (he : Eve
     and_self, hutu, hdtu, hctu]
 
 theorem exists_union_disjoint_cardinal_eq_of_infinite (h : s.Infinite) : ∃ (t u : Set α),
-    t ∪ u = s ∧ Disjoint t u ∧ Cardinal.mk t = Cardinal.mk u := by
-  have f : s ⊕ s ≃ s := by
-      have : Inhabited (s ⊕ s ≃ s) := by
-        apply Classical.inhabited_of_nonempty
-        rw [← Cardinal.eq, Cardinal.mk_sum, Cardinal.add_eq_max (by
-          rw [Cardinal.aleph0_le_lift]
-          exact Cardinal.infinite_iff.mp (infinite_coe_iff.mpr h)
-          )]
-        simp only [Cardinal.lift_id, max_self]
-      exact this.default
-  use Subtype.val '' (f '' (Sum.inl '' univ)), Subtype.val '' (f '' (Sum.inr '' univ))
-  constructor
-  · ext v
-    simp only [image_univ, mem_union, mem_image, mem_image_equiv, mem_range,
-      Subtype.exists, exists_and_right, exists_eq_right]
-    refine ⟨fun h ↦ by
-      cases' h with hl hr
-      · obtain ⟨hvu, _⟩ := hl
-        exact hvu
-      · obtain ⟨hvu, _⟩ := hr
-        exact hvu, ?_⟩
-    · intro hv
-      rw [← exists_or]
-      use hv
-      simp only [Sum.exists, Sum.inl.injEq, exists_subtype_mk_eq_iff, exists_eq, true_and,
-        Subtype.exists, reduceCtorEq, exists_false, false_and, or_false, Sum.inr.injEq, false_or]
-      obtain ⟨a, ha⟩ := f.surjective ⟨v, hv⟩
-      rw [← ha]
-      simp only [EmbeddingLike.apply_eq_iff_eq]
-      cases' a with l r
-      · left; use l, l.coe_prop
-      · right; use r, r.coe_prop
-  · constructor
-    · simp only [image_univ, ← image_comp]
-      apply disjoint_image_of_injective (by
-        simp only [Subtype.val_injective, Function.Injective.of_comp_iff, f.injective])
-      rw [disjoint_right]
-      intro a ha
-      simp only [mem_range, Subtype.exists, not_exists] at *
-      intro v hv
-      obtain ⟨_, _, h⟩ := ha
-      rw [← h]
-      exact Sum.inl_ne_inr
-    · simp only [image_univ, Subtype.val_injective, Cardinal.mk_image_eq, f.injective,
-        Sum.inl_injective, Cardinal.mk_range_eq, Sum.inr_injective]
+    t ∪ u = s ∧ Disjoint t u ∧ #t = #u := by
+  have := h.to_subtype
+  have f : s ≃ s ⊕ s := by
+    apply Classical.choice
+    rw [← Cardinal.eq, ← add_def, add_mk_eq_self]
+  refine ⟨Subtype.val '' (f ⁻¹' (range .inl)), Subtype.val '' (f ⁻¹' (range .inr)), ?_, ?_, ?_⟩
+  · rw [← image_union, ← preimage_union]
+    simp
+  · exact disjoint_image_of_injective Subtype.val_injective
+      (isCompl_range_inl_range_inr.disjoint.preimage f)
+  · simp [mk_image_eq Subtype.val_injective]
 
 theorem exists_union_disjoint_cardinal_eq_iff [DecidableEq α] (s : Set α) :
     Even (s.ncard) ↔ ∃ (t u : Set α), t ∪ u = s ∧ Disjoint t u ∧ Cardinal.mk t = Cardinal.mk u := by
