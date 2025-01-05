@@ -191,7 +191,7 @@ instance hasColimit [Small.{w} J] (F : J ⥤ AddCommGrp.{w}) : HasColimit F := b
 
 
 /--
-If `J` is `w`-small, then any functor `J ⥤` AddCommGrp.{w}` has a colimit.
+If `J` is `w`-small, then any functor `J ⥤ AddCommGrp.{w}` has a colimit.
 -/
 instance hasColimitsOfShape [Small.{w} J] : HasColimitsOfShape J (AddCommGrp.{w}) where
 
