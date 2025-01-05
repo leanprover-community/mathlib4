@@ -39,7 +39,7 @@ morphisms in the diagram `J`.
 -/
 abbrev Relations [DecidableEq J] : AddSubgroup (DFinsupp (fun j ↦ F.obj j)) :=
   AddSubgroup.closure {x | ∃ (j j' : J) (u : j ⟶ j') (a : F.obj j),
-  x = DFinsupp.single j' (F.map u a) - DFinsupp.single j a}
+    x = DFinsupp.single j' (F.map u a) - DFinsupp.single j a}
 
 /--
 The candidate for the colimit of `F`, defined as the quotient of the direct sum
