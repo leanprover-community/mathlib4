@@ -84,27 +84,27 @@ def sumLexIioIci : Iio x ⊕ₗ Ici x ≃o α :=
     ofRelIsoLT (RelIso.sumLexComplLeft (· < ·) x)
 
 @[simp]
-theorem sumLexIioIci_apply_inl (a : Iio x) : sumLexIioIci x (Sum.inl a) = a :=
+theorem sumLexIioIci_apply_inl (a : Iio x) : sumLexIioIci x (ofLex <| Sum.inl a) = a :=
   rfl
 
 @[simp]
-theorem sumLexIioIci_apply_inr (a : Ici x) : sumLexIioIci x (Sum.inr a) = a :=
+theorem sumLexIioIci_apply_inr (a : Ici x) : sumLexIioIci x (ofLex <| Sum.inr a) = a :=
   rfl
 
 theorem sumLexIioIci_symm_apply_of_lt (h : y < x) :
-    (sumLexIioIci x).symm y = Sum.inl ⟨y, h⟩ := by
+    (sumLexIioIci x).symm y = ofLex <| Sum.inl ⟨y, h⟩ := by
   rw [symm_apply_eq, sumLexIioIci_apply_inl]
 
 theorem sumLexIioIci_symm_apply_of_le {y : α} (h : x ≤ y) :
-    (sumLexIioIci x).symm y = Sum.inr ⟨y, h⟩ := by
+    (sumLexIioIci x).symm y = ofLex <| Sum.inr ⟨y, h⟩ := by
   rw [symm_apply_eq, sumLexIioIci_apply_inr]
 
 @[simp]
-theorem sumLexIioIci_symm_apply_Iio (a : Iio x) : (sumLexIioIci x).symm a = Sum.inl a :=
+theorem sumLexIioIci_symm_apply_Iio (a : Iio x) : (sumLexIioIci x).symm a = ofLex <| Sum.inl a :=
   sumLexIioIci_symm_apply_of_lt a.2
 
 @[simp]
-theorem sumLexIioIci_symm_apply_Ici (a : Ici x) : (sumLexIioIci x).symm a = Sum.inr a :=
+theorem sumLexIioIci_symm_apply_Ici (a : Ici x) : (sumLexIioIci x).symm a = ofLex <| Sum.inr a :=
   sumLexIioIci_symm_apply_of_le a.2
 
 variable (x) in
@@ -115,19 +115,19 @@ def sumLexIicIoi : Iic x ⊕ₗ Ioi x ≃o α :=
     ofRelIsoLT (RelIso.sumLexComplRight (· < ·) x)
 
 @[simp]
-theorem sumLexIicIoi_apply_inl (a : Iic x) : sumLexIicIoi x (Sum.inl a) = a :=
+theorem sumLexIicIoi_apply_inl (a : Iic x) : sumLexIicIoi x (ofLex <| Sum.inl a) = a :=
   rfl
 
 @[simp]
-theorem sumLexIicIoi_apply_inr (a : Ioi x) : sumLexIicIoi x (Sum.inr a) = a :=
+theorem sumLexIicIoi_apply_inr (a : Ioi x) : sumLexIicIoi x (ofLex <| Sum.inr a) = a :=
   rfl
 
 theorem sumLexIicIoi_symm_apply_of_le (h : y ≤ x) :
-    (sumLexIicIoi x).symm y = Sum.inl ⟨y, h⟩ := by
+    (sumLexIicIoi x).symm y = ofLex <| Sum.inl ⟨y, h⟩ := by
   rw [symm_apply_eq, sumLexIicIoi_apply_inl]
 
 theorem sumLexIicIoi_symm_apply_of_lt {y : α} (h : x < y) :
-    (sumLexIicIoi x).symm y = Sum.inr ⟨y, h⟩ := by
+    (sumLexIicIoi x).symm y = ofLex <| Sum.inr ⟨y, h⟩ := by
   rw [symm_apply_eq, sumLexIicIoi_apply_inr]
 
 @[simp]
