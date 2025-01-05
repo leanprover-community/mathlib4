@@ -31,7 +31,7 @@ syntax (name := successIfFailWithMsg) "success_if_fail_with_msg " term:max tacti
 to `msg`. -/
 def successIfFailWithMessage {s α : Type} {m : Type → Type}
     [Monad m] [MonadLiftT BaseIO m] [MonadLiftT MetaM m] [MonadBacktrack s m] [MonadError m]
-    (msg : String) (tacs : m α) (ref : Option Syntax := none) : m Unit := do
+    (msg : String) (tacs : m α) (msgref : Syntax) (ref : Option Syntax := none) : m Unit := do
   let s ← saveState
   let err ←
     try _ ← tacs; pure none
