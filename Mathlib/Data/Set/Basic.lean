@@ -194,7 +194,7 @@ theorem forall_in_swap {p : α → β → Prop} : (∀ a ∈ s, ∀ (b), p a b) 
   tauto
 
 @[simp]
-theorem setOf_iff {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := by rfl
+theorem setOf_inj {p q : α → Prop} : { x | p x } = { x | q x } ↔ p = q := by rfl
 
 /-! ### Lemmas about `mem` and `setOf` -/
 
