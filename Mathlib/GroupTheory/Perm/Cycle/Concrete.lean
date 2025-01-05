@@ -467,8 +467,18 @@ set_option linter.unusedTactic false in
 notation3 (prettyPrint := false) "c["(l", "* => foldr (h t => List.cons h t) List.nil)"]" =>
   Cycle.formPerm (Cycle.ofList l) (Iff.mpr Cycle.nodup_coe_iff (by decide))
 
-unsafe instance instRepr [Repr α] : Repr (Perm α) :=
-  ⟨fun f _ => repr (Multiset.pmap toCycle (Perm.cycleFactorsFinset f).val
-    fun _ hg => (mem_cycleFactorsFinset_iff.mp (Finset.mem_def.mpr hg)).left)⟩
+unsafe instance instRepr [Repr α] : Repr (Perm α) where
+  reprPrec f prec :=
+    letI l := Quot.unquot <| Multiset.map repr <| Multiset.pmap toCycle
+      (Perm.cycleFactorsFinset f).val
+      fun _ hg => (mem_cycleFactorsFinset_iff.mp (Finset.mem_def.mpr hg)).left
+    match l with
+    | []  => "1"
+    | [f] => f
+    | l   =>
+      -- multiple terms, use `*` precedence
+      (if prec ≥ 70 then Lean.Format.paren else id)
+      (Lean.Format.fill
+        (Lean.Format.joinSep l (" *" ++ Lean.Format.line)))
 
 end Equiv.Perm
