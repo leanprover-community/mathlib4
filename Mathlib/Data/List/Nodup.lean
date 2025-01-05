@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
 import Mathlib.Data.List.Forall2
+import Mathlib.Data.List.Lemmas
 import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
@@ -388,6 +389,27 @@ theorem Nodup.take_eq_filter_mem [DecidableEq α] :
     intro x hx
     have : x ≠ b := fun h => (nodup_cons.1 hl).1 (h ▸ hx)
     simp (config := {contextual := true}) [List.mem_filter, this, hx]
+
+theorem setOf_singleton_iff_nodup [DecidableEq α] (H : Nodup l) {a : α}
+    : { x | x ∈ l } = {a} ↔ l = [a] := by
+  refine ⟨fun h ↦ ?_, by simp_all⟩
+  induction' l with a' l ih
+  · absurd h
+    rw [set_of_mem_empty]
+    exact (Set.singleton_ne_empty a).symm
+  · have h₁ := Nodup.not_mem H
+    have h₂ := Set.mem_insert a' {x | x ∈ l}
+    rw [List.set_of_mem_cons] at h
+    rw [h] at h₂
+    rw [h₂] at h₁ h
+    congr
+    exact l.set_of_mem_eq_empty_iff.mp ((Set.insert_diff_self_of_not_mem
+      (Set.nmem_setOf_iff.mpr h₁)).symm.trans (by
+        have := @Set.diff_self α {a}
+        nth_rw 1 [← h] at this
+        exact this)
+    )
+
 end List
 
 theorem Option.toList_nodup : ∀ o : Option α, o.toList.Nodup
