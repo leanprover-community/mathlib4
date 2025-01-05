@@ -1450,305 +1450,6 @@ end Sum
 
 /-! ### Absolute continuity -/
 
-/-- We say that `μ` is absolutely continuous with respect to `ν`, or that `μ` is dominated by `ν`,
-  if `ν(A) = 0` implies that `μ(A) = 0`. -/
-def AbsolutelyContinuous {_m0 : MeasurableSpace α} (μ ν : Measure α) : Prop :=
-  ∀ ⦃s : Set α⦄, ν s = 0 → μ s = 0
-
-@[inherit_doc MeasureTheory.Measure.AbsolutelyContinuous]
-scoped[MeasureTheory] infixl:50 " ≪ " => MeasureTheory.Measure.AbsolutelyContinuous
-
-theorem absolutelyContinuous_of_le (h : μ ≤ ν) : μ ≪ ν := fun s hs =>
-  nonpos_iff_eq_zero.1 <| hs ▸ le_iff'.1 h s
-
-alias _root_.LE.le.absolutelyContinuous := absolutelyContinuous_of_le
-
-theorem absolutelyContinuous_of_eq (h : μ = ν) : μ ≪ ν :=
-  h.le.absolutelyContinuous
-
-alias _root_.Eq.absolutelyContinuous := absolutelyContinuous_of_eq
-
-namespace AbsolutelyContinuous
-
-theorem mk (h : ∀ ⦃s : Set α⦄, MeasurableSet s → ν s = 0 → μ s = 0) : μ ≪ ν := by
-  intro s hs
-  rcases exists_measurable_superset_of_null hs with ⟨t, h1t, h2t, h3t⟩
-  exact measure_mono_null h1t (h h2t h3t)
-
-@[refl]
-protected theorem refl {_m0 : MeasurableSpace α} (μ : Measure α) : μ ≪ μ :=
-  rfl.absolutelyContinuous
-
-protected theorem rfl : μ ≪ μ := fun _s hs => hs
-
-instance instIsRefl {_ : MeasurableSpace α} : IsRefl (Measure α) (· ≪ ·) :=
-  ⟨fun _ => AbsolutelyContinuous.rfl⟩
-
-@[simp]
-protected lemma zero (μ : Measure α) : 0 ≪ μ := fun _ _ ↦ by simp
-
-@[trans]
-protected theorem trans (h1 : μ₁ ≪ μ₂) (h2 : μ₂ ≪ μ₃) : μ₁ ≪ μ₃ := fun _s hs => h1 <| h2 hs
-
-@[mono]
-protected theorem map (h : μ ≪ ν) {f : α → β} (hf : Measurable f) : μ.map f ≪ ν.map f :=
-  AbsolutelyContinuous.mk fun s hs => by simpa [hf, hs] using @h _
-
-protected theorem smul_left [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (h : μ ≪ ν) (c : R) :
-    c • μ ≪ ν := fun s hνs => by
-  simp only [h hνs, smul_apply, smul_zero, ← smul_one_smul ℝ≥0∞ c (0 : ℝ≥0∞)]
-
-/-- If `μ ≪ ν`, then `c • μ ≪ c • ν`.
-
-Earlier, this name was used for what's now called `AbsolutelyContinuous.smul_left`. -/
-protected theorem smul [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞] (h : μ ≪ ν) (c : R) :
-    c • μ ≪ c • ν := by
-  intro s hνs
-  rw [smul_apply, ← smul_one_smul ℝ≥0∞, smul_eq_mul, mul_eq_zero] at hνs ⊢
-  exact hνs.imp_right fun hs ↦ h hs
-
-@[deprecated (since := "2024-11-14")] protected alias smul_both := AbsolutelyContinuous.smul
-
-protected lemma add (h1 : μ₁ ≪ ν) (h2 : μ₂ ≪ ν') : μ₁ + μ₂ ≪ ν + ν' := by
-  intro s hs
-  simp only [coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
-  exact ⟨h1 hs.1, h2 hs.2⟩
-
-lemma add_left_iff {μ₁ μ₂ ν : Measure α} :
-    μ₁ + μ₂ ≪ ν ↔ μ₁ ≪ ν ∧ μ₂ ≪ ν := by
-  refine ⟨fun h ↦ ?_, fun h ↦ (h.1.add h.2).trans ?_⟩
-  · have : ∀ s, ν s = 0 → μ₁ s = 0 ∧ μ₂ s = 0 := by intro s hs0; simpa using h hs0
-    exact ⟨fun s hs0 ↦ (this s hs0).1, fun s hs0 ↦ (this s hs0).2⟩
-  · rw [← two_smul ℝ≥0]
-    exact AbsolutelyContinuous.rfl.smul_left 2
-
-lemma add_left {μ₁ μ₂ ν : Measure α} (h₁ : μ₁ ≪ ν) (h₂ : μ₂ ≪ ν) : μ₁ + μ₂ ≪ ν :=
-  Measure.AbsolutelyContinuous.add_left_iff.mpr ⟨h₁, h₂⟩
-
-lemma add_right (h1 : μ ≪ ν) (ν' : Measure α) : μ ≪ ν + ν' := by
-  intro s hs
-  simp only [coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
-  exact h1 hs.1
-
-end AbsolutelyContinuous
-
-@[simp]
-lemma absolutelyContinuous_zero_iff : μ ≪ 0 ↔ μ = 0 :=
-  ⟨fun h ↦ measure_univ_eq_zero.mp (h rfl), fun h ↦ h.symm ▸ AbsolutelyContinuous.zero _⟩
-
-alias absolutelyContinuous_refl := AbsolutelyContinuous.refl
-alias absolutelyContinuous_rfl := AbsolutelyContinuous.rfl
-
-lemma absolutelyContinuous_sum_left {μs : ι → Measure α} (hμs : ∀ i, μs i ≪ ν) :
-    Measure.sum μs ≪ ν :=
-  AbsolutelyContinuous.mk fun s hs hs0 ↦ by simp [sum_apply _ hs, fun i ↦ hμs i hs0]
-
-lemma absolutelyContinuous_sum_right {μs : ι → Measure α} (i : ι) (hνμ : ν ≪ μs i) :
-    ν ≪ Measure.sum μs := by
-  refine AbsolutelyContinuous.mk fun s hs hs0 ↦ ?_
-  simp only [sum_apply _ hs, ENNReal.tsum_eq_zero] at hs0
-  exact hνμ (hs0 i)
-
-lemma smul_absolutelyContinuous {c : ℝ≥0∞} : c • μ ≪ μ := .smul_left .rfl _
-
-theorem absolutelyContinuous_of_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hμ'_le : μ' ≤ c • μ) :
-    μ' ≪ μ :=
-  (Measure.absolutelyContinuous_of_le hμ'_le).trans smul_absolutelyContinuous
-
-lemma absolutelyContinuous_smul {c : ℝ≥0∞} (hc : c ≠ 0) : μ ≪ c • μ := by
-  simp [AbsolutelyContinuous, hc]
-
-theorem ae_le_iff_absolutelyContinuous : ae μ ≤ ae ν ↔ μ ≪ ν :=
-  ⟨fun h s => by
-    rw [measure_zero_iff_ae_nmem, measure_zero_iff_ae_nmem]
-    exact fun hs => h hs, fun h _ hs => h hs⟩
-
-alias ⟨_root_.LE.le.absolutelyContinuous_of_ae, AbsolutelyContinuous.ae_le⟩ :=
-  ae_le_iff_absolutelyContinuous
-
-alias ae_mono' := AbsolutelyContinuous.ae_le
-
-theorem AbsolutelyContinuous.ae_eq (h : μ ≪ ν) {f g : α → δ} (h' : f =ᵐ[ν] g) : f =ᵐ[μ] g :=
-  h.ae_le h'
-
-protected theorem _root_.MeasureTheory.AEDisjoint.of_absolutelyContinuous
-    (h : AEDisjoint μ s t) {ν : Measure α} (h' : ν ≪ μ) :
-    AEDisjoint ν s t := h' h
-
-protected theorem _root_.MeasureTheory.AEDisjoint.of_le
-    (h : AEDisjoint μ s t) {ν : Measure α} (h' : ν ≤ μ) :
-    AEDisjoint ν s t :=
-  h.of_absolutelyContinuous (Measure.absolutelyContinuous_of_le h')
-
-/-! ### Quasi measure preserving maps (a.k.a. non-singular maps) -/
-
-
-/-- A map `f : α → β` is said to be *quasi measure preserving* (a.k.a. non-singular) w.r.t. measures
-`μa` and `μb` if it is measurable and `μb s = 0` implies `μa (f ⁻¹' s) = 0`. -/
-structure QuasiMeasurePreserving {m0 : MeasurableSpace α} (f : α → β)
-  (μa : Measure α := by volume_tac)
-  (μb : Measure β := by volume_tac) : Prop where
-  protected measurable : Measurable f
-  protected absolutelyContinuous : μa.map f ≪ μb
-
-namespace QuasiMeasurePreserving
-
-protected theorem id {_m0 : MeasurableSpace α} (μ : Measure α) : QuasiMeasurePreserving id μ μ :=
-  ⟨measurable_id, map_id.absolutelyContinuous⟩
-
-variable {μa μa' : Measure α} {μb μb' : Measure β} {μc : Measure γ} {f : α → β}
-
-protected theorem _root_.Measurable.quasiMeasurePreserving
-    {_m0 : MeasurableSpace α} (hf : Measurable f) (μ : Measure α) :
-    QuasiMeasurePreserving f μ (μ.map f) :=
-  ⟨hf, AbsolutelyContinuous.rfl⟩
-
-theorem mono_left (h : QuasiMeasurePreserving f μa μb) (ha : μa' ≪ μa) :
-    QuasiMeasurePreserving f μa' μb :=
-  ⟨h.1, (ha.map h.1).trans h.2⟩
-
-theorem mono_right (h : QuasiMeasurePreserving f μa μb) (ha : μb ≪ μb') :
-    QuasiMeasurePreserving f μa μb' :=
-  ⟨h.1, h.2.trans ha⟩
-
-@[mono]
-theorem mono (ha : μa' ≪ μa) (hb : μb ≪ μb') (h : QuasiMeasurePreserving f μa μb) :
-    QuasiMeasurePreserving f μa' μb' :=
-  (h.mono_left ha).mono_right hb
-
-protected theorem comp {g : β → γ} {f : α → β} (hg : QuasiMeasurePreserving g μb μc)
-    (hf : QuasiMeasurePreserving f μa μb) : QuasiMeasurePreserving (g ∘ f) μa μc :=
-  ⟨hg.measurable.comp hf.measurable, by
-    rw [← map_map hg.1 hf.1]
-    exact (hf.2.map hg.1).trans hg.2⟩
-
-protected theorem iterate {f : α → α} (hf : QuasiMeasurePreserving f μa μa) :
-    ∀ n, QuasiMeasurePreserving f^[n] μa μa
-  | 0 => QuasiMeasurePreserving.id μa
-  | n + 1 => (hf.iterate n).comp hf
-
-protected theorem aemeasurable (hf : QuasiMeasurePreserving f μa μb) : AEMeasurable f μa :=
-  hf.1.aemeasurable
-
-theorem smul_measure {R : Type*} [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-    (hf : QuasiMeasurePreserving f μa μb) (c : R) : QuasiMeasurePreserving f (c • μa) (c • μb) :=
-  ⟨hf.1, by rw [Measure.map_smul]; exact hf.2.smul c⟩
-
-theorem ae_map_le (h : QuasiMeasurePreserving f μa μb) : ae (μa.map f) ≤ ae μb :=
-  h.2.ae_le
-
-theorem tendsto_ae (h : QuasiMeasurePreserving f μa μb) : Tendsto f (ae μa) (ae μb) :=
-  (tendsto_ae_map h.aemeasurable).mono_right h.ae_map_le
-
-theorem ae (h : QuasiMeasurePreserving f μa μb) {p : β → Prop} (hg : ∀ᵐ x ∂μb, p x) :
-    ∀ᵐ x ∂μa, p (f x) :=
-  h.tendsto_ae hg
-
-theorem ae_eq (h : QuasiMeasurePreserving f μa μb) {g₁ g₂ : β → δ} (hg : g₁ =ᵐ[μb] g₂) :
-    g₁ ∘ f =ᵐ[μa] g₂ ∘ f :=
-  h.ae hg
-
-theorem preimage_null (h : QuasiMeasurePreserving f μa μb) {s : Set β} (hs : μb s = 0) :
-    μa (f ⁻¹' s) = 0 :=
-  preimage_null_of_map_null h.aemeasurable (h.2 hs)
-
-theorem preimage_mono_ae {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h : s ≤ᵐ[μb] t) :
-    f ⁻¹' s ≤ᵐ[μa] f ⁻¹' t :=
-  eventually_map.mp <|
-    Eventually.filter_mono (tendsto_ae_map hf.aemeasurable) (Eventually.filter_mono hf.ae_map_le h)
-
-theorem preimage_ae_eq {s t : Set β} (hf : QuasiMeasurePreserving f μa μb) (h : s =ᵐ[μb] t) :
-    f ⁻¹' s =ᵐ[μa] f ⁻¹' t :=
-  EventuallyLE.antisymm (hf.preimage_mono_ae h.le) (hf.preimage_mono_ae h.symm.le)
-
-/-- The preimage of a null measurable set under a (quasi) measure preserving map is a null
-measurable set. -/
-theorem _root_.MeasureTheory.NullMeasurableSet.preimage {s : Set β} (hs : NullMeasurableSet s μb)
-    (hf : QuasiMeasurePreserving f μa μb) : NullMeasurableSet (f ⁻¹' s) μa :=
-  let ⟨t, htm, hst⟩ := hs
-  ⟨f ⁻¹' t, hf.measurable htm, hf.preimage_ae_eq hst⟩
-
-theorem preimage_iterate_ae_eq {s : Set α} {f : α → α} (hf : QuasiMeasurePreserving f μ μ) (k : ℕ)
-    (hs : f ⁻¹' s =ᵐ[μ] s) : f^[k] ⁻¹' s =ᵐ[μ] s := by
-  induction' k with k ih; · rfl
-  rw [iterate_succ, preimage_comp]
-  exact EventuallyEq.trans (hf.preimage_ae_eq ih) hs
-
-theorem image_zpow_ae_eq {s : Set α} {e : α ≃ α} (he : QuasiMeasurePreserving e μ μ)
-    (he' : QuasiMeasurePreserving e.symm μ μ) (k : ℤ) (hs : e '' s =ᵐ[μ] s) :
-    (⇑(e ^ k)) '' s =ᵐ[μ] s := by
-  rw [Equiv.image_eq_preimage]
-  obtain ⟨k, rfl | rfl⟩ := k.eq_nat_or_neg
-  · replace hs : (⇑e⁻¹) ⁻¹' s =ᵐ[μ] s := by rwa [Equiv.image_eq_preimage] at hs
-    replace he' : (⇑e⁻¹)^[k] ⁻¹' s =ᵐ[μ] s := he'.preimage_iterate_ae_eq k hs
-    rwa [Equiv.Perm.iterate_eq_pow e⁻¹ k, inv_pow e k] at he'
-  · rw [zpow_neg, zpow_natCast]
-    replace hs : e ⁻¹' s =ᵐ[μ] s := by
-      convert he.preimage_ae_eq hs.symm
-      rw [Equiv.preimage_image]
-    replace he : (⇑e)^[k] ⁻¹' s =ᵐ[μ] s := he.preimage_iterate_ae_eq k hs
-    rwa [Equiv.Perm.iterate_eq_pow e k] at he
-
--- Need to specify `α := Set α` below because of diamond; see https://github.com/leanprover-community/mathlib4/issues/10941
-theorem limsup_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
-    (hs : f ⁻¹' s =ᵐ[μ] s) : limsup (α := Set α) (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s :=
-  limsup_ae_eq_of_forall_ae_eq (fun n => (preimage f)^[n] s) fun n ↦ by
-    simpa only [Set.preimage_iterate_eq] using hf.preimage_iterate_ae_eq n hs
-
--- Need to specify `α := Set α` below because of diamond; see https://github.com/leanprover-community/mathlib4/issues/10941
-theorem liminf_preimage_iterate_ae_eq {f : α → α} (hf : QuasiMeasurePreserving f μ μ)
-    (hs : f ⁻¹' s =ᵐ[μ] s) : liminf (α := Set α) (fun n => (preimage f)^[n] s) atTop =ᵐ[μ] s :=
-  liminf_ae_eq_of_forall_ae_eq (fun n => (preimage f)^[n] s) fun n ↦ by
-    simpa only [Set.preimage_iterate_eq] using hf.preimage_iterate_ae_eq n hs
-
-/-- For a quasi measure preserving self-map `f`, if a null measurable set `s` is a.e. invariant,
-then it is a.e. equal to a measurable invariant set.
--/
-theorem exists_preimage_eq_of_preimage_ae {f : α → α} (h : QuasiMeasurePreserving f μ μ)
-    (hs : NullMeasurableSet s μ) (hs' : f ⁻¹' s =ᵐ[μ] s) :
-    ∃ t : Set α, MeasurableSet t ∧ t =ᵐ[μ] s ∧ f ⁻¹' t = t := by
-  obtain ⟨t, htm, ht⟩ := hs
-  refine ⟨limsup (f^[·] ⁻¹' t) atTop, ?_, ?_, ?_⟩
-  · exact .measurableSet_limsup fun n ↦ h.measurable.iterate n htm
-  · have : f ⁻¹' t =ᵐ[μ] t := (h.preimage_ae_eq ht.symm).trans (hs'.trans ht)
-    exact limsup_ae_eq_of_forall_ae_eq _ fun n ↦ .trans (h.preimage_iterate_ae_eq _ this) ht.symm
-  · simp only [Set.preimage_iterate_eq]
-    exact CompleteLatticeHom.apply_limsup_iterate (CompleteLatticeHom.setPreimage f) t
-
-open Pointwise
-
-@[to_additive]
-theorem smul_ae_eq_of_ae_eq {G α : Type*} [Group G] [MulAction G α] {_ : MeasurableSpace α}
-    {s t : Set α} {μ : Measure α} (g : G)
-    (h_qmp : QuasiMeasurePreserving (g⁻¹ • · : α → α) μ μ)
-    (h_ae_eq : s =ᵐ[μ] t) : (g • s : Set α) =ᵐ[μ] (g • t : Set α) := by
-  simpa only [← preimage_smul_inv] using h_qmp.ae_eq h_ae_eq
-
-end QuasiMeasurePreserving
-
-section Pointwise
-
-open Pointwise
-
-@[to_additive]
-theorem pairwise_aedisjoint_of_aedisjoint_forall_ne_one {G α : Type*} [Group G] [MulAction G α]
-    {_ : MeasurableSpace α} {μ : Measure α} {s : Set α}
-    (h_ae_disjoint : ∀ g ≠ (1 : G), AEDisjoint μ (g • s) s)
-    (h_qmp : ∀ g : G, QuasiMeasurePreserving (g • ·) μ μ) :
-    Pairwise (AEDisjoint μ on fun g : G => g • s) := by
-  intro g₁ g₂ hg
-  let g := g₂⁻¹ * g₁
-  replace hg : g ≠ 1 := by
-    rw [Ne, inv_mul_eq_one]
-    exact hg.symm
-  have : (g₂⁻¹ • ·) ⁻¹' (g • s ∩ s) = g₁ • s ∩ g₂ • s := by
-    rw [preimage_eq_iff_eq_image (MulAction.bijective g₂⁻¹), image_smul, smul_set_inter, smul_smul,
-      smul_smul, inv_mul_cancel, one_smul]
-  change μ (g₁ • s ∩ g₂ • s) = 0
-  exact this ▸ (h_qmp g₂⁻¹).preimage_null (h_ae_disjoint g hg)
-
-end Pointwise
-
 /-! ### The `cofinite` filter -/
 
 /-- The filter of sets `s` such that `sᶜ` has finite measure. -/
@@ -1785,17 +1486,6 @@ lemma _root_.AEMeasurable.nullMeasurableSet_preimage {f : α → β} {s : Set β
     (hf : AEMeasurable f μ) (hs : MeasurableSet s) : NullMeasurableSet (f ⁻¹' s) μ :=
   hf.nullMeasurable hs
 
-theorem NullMeasurableSet.mono_ac (h : NullMeasurableSet s μ) (hle : ν ≪ μ) :
-    NullMeasurableSet s ν :=
-  h.preimage <| (QuasiMeasurePreserving.id μ).mono_left hle
-
-theorem NullMeasurableSet.mono (h : NullMeasurableSet s μ) (hle : ν ≤ μ) : NullMeasurableSet s ν :=
-  h.mono_ac hle.absolutelyContinuous
-
-theorem AEDisjoint.preimage {ν : Measure β} {f : α → β} {s t : Set β} (ht : AEDisjoint ν s t)
-    (hf : QuasiMeasurePreserving f μ ν) : AEDisjoint μ (f ⁻¹' s) (f ⁻¹' t) :=
-  hf.preimage_null ht
-
 @[simp]
 theorem ae_eq_bot : ae μ = ⊥ ↔ μ = 0 := by
   rw [← empty_mem_iff_bot, mem_ae_iff, compl_empty, measure_univ_eq_zero]
@@ -1809,10 +1499,6 @@ instance Measure.ae.neBot [NeZero μ] : (ae μ).NeBot := ae_neBot.2 <| NeZero.ne
 @[simp]
 theorem ae_zero {_m0 : MeasurableSpace α} : ae (0 : Measure α) = ⊥ :=
   ae_eq_bot.2 rfl
-
-@[mono]
-theorem ae_mono (h : μ ≤ ν) : ae μ ≤ ae ν :=
-  h.absolutelyContinuous.ae_le
 
 theorem mem_ae_map_iff {f : α → β} (hf : AEMeasurable f μ) {s : Set β} (hs : MeasurableSet s) :
     s ∈ ae (μ.map f) ↔ f ⁻¹' s ∈ ae μ := by
@@ -1926,12 +1612,6 @@ nonrec theorem map_apply (hf : MeasurableEmbedding f) (μ : Measure α) (s : Set
     μ.map f s ≤ μ.map f t := by gcongr
     _ = μ (f ⁻¹' s) := by rw [map_apply hf.measurable htm, hft, measure_toMeasurable]
 
-lemma absolutelyContinuous_map (hf : MeasurableEmbedding f) (hμν : μ ≪ ν) :
-    μ.map f ≪ ν.map f := by
-  intro t ht
-  rw [hf.map_apply] at ht ⊢
-  exact hμν ht
-
 end MeasurableEmbedding
 
 namespace MeasurableEquiv
@@ -1967,12 +1647,8 @@ theorem map_ae (f : α ≃ᵐ β) (μ : Measure α) : Filter.map f (ae μ) = ae 
   ext s
   simp_rw [mem_map, mem_ae_iff, ← preimage_compl, f.map_apply]
 
-theorem quasiMeasurePreserving_symm (μ : Measure α) (e : α ≃ᵐ β) :
-    QuasiMeasurePreserving e.symm (map e μ) μ :=
-  ⟨e.symm.measurable, by rw [Measure.map_map, e.symm_comp_self, Measure.map_id] <;> measurability⟩
-
 end MeasurableEquiv
 
 end
 
-set_option linter.style.longFile 2100
+set_option linter.style.longFile 1900
