@@ -19,14 +19,17 @@ variable {M : Type u} [Monoid M] (S S' : Submonoid M)
 
 end Delab
 
+count_heartbeats in -- 4753
 example [Ring R] (S : Subring R) (hx : x ∈ S) (hy : y ∈ S) (hz : z ∈ S) (n m : ℕ) :
     n • x ^ 3 - 2 • y + z ^ m ∈ S := by
   aesop
 
+count_heartbeats in
 example [Ring R] (S : Set R) (hx : x ∈ S) (hy : y ∈ S) (hz : z ∈ S) (n m : ℕ) :
     n • x ^ 3 - y + z ^ m ∈ Subring.closure S := by
   aesop
 
+count_heartbeats in
 example [CommRing R] [Ring A] [Algebra R A] [StarRing R] [StarRing A] [StarModule R A]
     (r : R) (a b c : A) (n : ℕ) :
     -b + star (algebraMap R A r) + a ^ n * c ∈ StarAlgebra.adjoin R {a, b, c} := by
