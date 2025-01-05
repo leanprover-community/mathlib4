@@ -27,8 +27,7 @@ Algebra.TensorProduct.lift
   (Algebra.lsmul R R A) (Algebra.lsmul R R A)
   (fun _ _ ↦ by ext; simp [commute_iff_eq, mul_assoc])
 
-@[simp]
-lemma endo_apply (a : A) (b : Aᵐᵒᵖ) (x : A) : endo R A (a ⊗ₜ b) x = a * x * b.unop := by
+@[simp] lemma endo_apply (a : A) (b : Aᵐᵒᵖ) (x : A) : endo R A (a ⊗ₜ b) x = a * x * b.unop := by
   simp [mul_assoc]
 
 class IsAzumaya extends Module.Projective R A, FaithfulSMul R A : Prop where
