@@ -89,8 +89,6 @@ section Semiring
 
 open Finsupp
 
-open scoped Classical
-
 universe v₁ w₁
 
 variable {R S A}
@@ -104,7 +102,8 @@ theorem linearIndependent_smul {ι : Type v₁} {b : ι → S} {ι' : Type w₁}
     LinearIndependent R fun p : ι × ι' => b p.1 • c p.2 := by
   rw [linearIndependent_iff'] at hb hc; rw [linearIndependent_iff'']; rintro s g hg hsg ⟨i, k⟩
   by_cases hik : (i, k) ∈ s
-  · have h1 : ∑ i ∈ s.image Prod.fst ×ˢ s.image Prod.snd, g i • b i.1 • c i.2 = 0 := by
+  · classical 
+    have h1 : ∑ i ∈ s.image Prod.fst ×ˢ s.image Prod.snd, g i • b i.1 • c i.2 = 0 := by
       rw [← hsg]
       exact
         (Finset.sum_subset Finset.subset_product fun p _ hp =>
@@ -153,6 +152,7 @@ theorem Basis.smulTower_apply (ij) : (b.smulTower c) ij = b ij.1 • c ij.2 := b
   obtain ⟨i, j⟩ := ij
   rw [Basis.apply_eq_iff]
   ext ⟨i', j'⟩
+  classical
   rw [Basis.smulTower_repr, LinearEquiv.map_smul, Basis.repr_self, Finsupp.smul_apply,
     Finsupp.single_apply]
   dsimp only

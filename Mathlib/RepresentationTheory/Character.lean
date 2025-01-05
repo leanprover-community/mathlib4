@@ -98,8 +98,6 @@ section Orthogonality
 
 variable {G : Grp.{u}} [IsAlgClosed k]
 
-open scoped Classical
-
 variable [Fintype G] [Invertible (Fintype.card G : k)]
 
 /-- Orthogonality of characters for irreducible representations of finite group over an
