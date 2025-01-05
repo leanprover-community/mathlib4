@@ -66,7 +66,7 @@ protected def relEmbedding (r : α → α → Prop) (p : α → Prop) : Subrel r
 theorem relEmbedding_apply (r : α → α → Prop) (p a) : Subrel.relEmbedding r p a = a.1 :=
   rfl
 
-/-- A set inclusion as a relation embedding. -/
+/-- `Set.inclusion` as a relation embedding. -/
 protected def inclusionEmbedding (r : α → α → Prop) {s t : Set α} (h : s ⊆ t) :
     Subrel r (· ∈ s) ↪r Subrel r (· ∈ t) where
   toFun := Set.inclusion h
