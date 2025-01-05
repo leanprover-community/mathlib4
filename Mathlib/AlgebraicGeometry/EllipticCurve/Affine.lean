@@ -862,7 +862,8 @@ variable {F : Type u} [Field F] [Algebra R F] [Algebra S F] [IsScalarTower R S F
 lemma baseChange_slope (x₁ x₂ y₁ y₂ : F) :
     (W.baseChange K).toAffine.slope (f x₁) (f x₂) (f y₁) (f y₂) =
       f ((W.baseChange F).toAffine.slope x₁ x₂ y₁ y₂) := by
-  simp
+  erw [← map_slope, map_baseChange]
+  rfl
 
 namespace Point
 
