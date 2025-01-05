@@ -10,29 +10,69 @@ import Mathlib.Topology.Algebra.OpenSubgroup
 
 /-! # Linear topologies on modules and rings
 
-Following Bourbaki, *Algebra II*, chapter 4, §2, n° 3, a topology on a ring `R` is *linear* if
-it is invariant by translation and admits a basis of neighborhoods of 0 consisting of
-two-sided ideals.
+Let `M` be a (left) module over a ring `R`. Following
+[Stacks: Definition 15.36.1](https://stacks.math.columbia.edu/tag/07E8), we say that a
+topology on `M` is *`R`-linear* if it is invariant by translations and admits a basis of
+neighborhoods of 0 consisting of (left) `R`-submodules.
 
-- `tendsto_mul_zero_of_left`: for `f, g : ι → R` such that `f i` converges to `0`,
-`f i * g i` converges to `0`.
+If `M` is an `(R, R')`-bimodule, we show that a topology is both `R`-linear and `R'`-linear
+if and only if there exists a basis of neighborhoods of 0 consisting of `(R, R')`-subbimodules.
 
-- `tendsto_mul_zero_of_right`: for `f, g : ι → R` such that `g i` converges to `0`,
-`f i * g i` converges to `0`.
+In particular, we say that a topology on the ring `R` is *linear* if it is linear if
+it is linear when `R` is viewed as an `(R, Rᵐᵒᵖ)`-bimodule. By the previous results,
+this means that there exists a basis of neighborhoods of 0 consisting of two-sided ideals,
+hence our definition agrees with [N. Bourbaki, *Algebra II*, chapter 4, §2, n° 3][bourbaki1981].
 
-## Instances
+## Main definitions and statements
 
-- A discrete topology is a linear topology
+* `IsLinearTopology R M`: the topology on `M` is `R`-linear, meaning that there exists a basis
+of neighborhoods of 0 consisting of `R`-submodules. Note that we don't impose that the topology
+is invariant by translation, so you'll often want to add `ContinuousConstVAdd M M` to get
+something meaningless. To express that the topology of a ring `R` is linear, use
+`[IsLinearTopology R R] [IsLinearTopology Rᵐᵒᵖ R]`.
+* `IsLinearTopology.mk_of_hasBasis`: a convenient constructor for `IsLinearTopology`.
+See also `IsLinearTopology.mk_of_hasBasis'`.
+* The discrete topology on `M` is `R`-linear (declared as an `instance`).
+* `IsLinearTopology.hasBasis_subbimodule`: assume that `M` is an `(R, R')`-bimodule,
+and that its topology is both `R`-linear and `R'`-linear. Then there exists a basis of neighborhoods
+of 0 made of `(R, R')`-subbimodules. Note that this is not trivial, since the bases witnessing
+`R`-linearity and `R'`-linearity may have nothing to do with each other
+* `IsLinearTopology.tendsto_smul_zero`: assume that the topology on `M` is linear.
+For `m : ι → M` such that `m i` tends to 0, `r i • m i` still tends to 0 for any `r : ι → R`.
 
-## Note on the implementation
+* `IsLinearTopology.hasBasis_twoSidedIdeal`: if the ring `R` is linearly topologized,
+in the sense that we have both `IsLinearTopology R R` and `IsLinearTopology Rᵐᵒᵖ R`,
+then there exists a basis of neighborhoods of 0 consisting of two-sided ideals.
+* Conversely, to prove `IsLinearTopology R R` and `IsLinearTopology Rᵐᵒᵖ R`
+from a basis of two-sided ideals, use `IsLinearTopology.mk_of_hasBasis'` twice.
+* `IsLinearTopology.tendsto_mul_zero_of_left`: assume that the topology on `R` is (right-)linear.
+For `f, g : ι → R` such that `f i` tends to `0`, `f i * g i` still tends to `0`.
+* `IsLinearTopology.tendsto_mul_zero_of_right`: assume that the topology on `R` is (left-)linear.
+For `f, g : ι → R` such that `g i` tends to `0`, `f i * g i` still tends to `0`
+* If `R` is a commutative ring and its topology is left-linear, it is automatically
+right-linear (declared as a low-priority instance).
 
-The definition of Bourbaki doesn't presuppose, but implies, that a linear topology on a ring `R` is
-a ring topology. However, in some of our lemmas, we already assume that `R` is a topological ring.
-This unnecessary assumption will be made unnecessary by results in the ongoing PR #18437.
-Anyway, the idea will be to first define a topology on `R`, and then
-prove that it makes `R` a topological ring, and that it is a linear topology.
+## Notes on the implementation
 
-TODO: SMulCommClass and explicitness
+* Some statements assume `ContinuousAdd M` where `ContinuousConstVAdd M M`
+(invariance by translation) would be enough. In fact, in presence of `IsLinearTopology R M`,
+invariance by translation implies that `M` is a topological additive group on which `R` acts
+by homeomorphisms. Similarly, `IsLinearTopology R R` and `ContinuousConstVAdd R R` imply that
+`R` is a topological ring. All of this will follow from PR#18437.
+
+Nevertheless, we don't plan on adding those facts as instances: one should use directly
+results from PR#18437 to get `TopologicalAddGroup` and `TopologicalRing` instances.
+
+* The main constructor for `IsLinearTopology`, `IsLinearTopology.mk_of_hasBasis`
+is formulated in terms of the subobject classes `AddSubmonoidClass` and `SMulMemClass`
+to allow for more complicated types than `Submodule R M` or `Ideal R`. Unfortunately, the scalar
+ring in `SMulMemClass` is an `outParam`, which means that Lean only considers one base ring for
+a given subobject type. For example, Lean will *never* find `SMulMemClass (TwoSidedIdeal R) R R`
+because it prioritizes the (later-defined) instance of `SMulMemClass (TwoSidedIdeal R) Rᵐᵒᵖ R`.
+
+This makes `IsLinearTopology.mk_of_hasBasis` un-applicable to `TwoSidedIdeal` (and probably other
+types), thus we provide `IsLinearTopology.mk_of_hasBasis'` as an alternative not relying on
+typeclass inference.
 -/
 
 open scoped Topology
@@ -130,7 +170,7 @@ made of sub-`(R, R')`-bimodules.
 The proof is inspired by lemma 9 in [I. Kaplansky, *Topological Rings*](kaplansky_topological_1947).
 TODO: Formalize the lemma in its full strength.
 
-Note: due to the lack of a satisfying theory of bimodules, we use `AddSubgroup`s with
+Note: due to the lack of a satisfying theory of sub-bimodules, we use `AddSubgroup`s with
 extra conditions. -/
 lemma hasBasis_subbimodule [IsLinearTopology R M] [IsLinearTopology R' M] :
     (𝓝 (0 : M)).HasBasis
@@ -145,9 +185,9 @@ lemma hasBasis_subbimodule [IsLinearTopology R M] [IsLinearTopology R' M] :
   set uR : Set R := univ -- Convenient to avoid type ascriptions
   set uR' : Set R' := univ
   have hRR : uR * uR ⊆ uR := subset_univ _
-  have hRR' : uR' * uR' ⊆ uR' := subset_univ _
+  have hR'R' : uR' * uR' ⊆ uR' := subset_univ _
   have hRI : uR • (I : Set M) ⊆ I := smul_subset_iff.mpr fun x _ i hi ↦ I.smul_mem x hi
-  have hJR : uR' • (J : Set M) ⊆ J := smul_subset_iff.mpr fun x _ j hj ↦ J.smul_mem x hj
+  have hR'J : uR' • (J : Set M) ⊆ J := smul_subset_iff.mpr fun x _ j hj ↦ J.smul_mem x hj
   have hRJ : uR • (J : Set M) ⊆ I := subset_trans (smul_subset_smul_left J_sub_I) hRI
   -- Note that, on top of the obvious `R • I ⊆ I` and `R' • J ⊆ J`, we have `R • J ⊆ R • I ⊆ I`.
   -- Now set `S := J ∪ (R • J)`. We have:
@@ -163,7 +203,7 @@ lemma hasBasis_subbimodule [IsLinearTopology R M] [IsLinearTopology R' M] :
     _ ⊆ uR • (J : Set M) ∪ uR • (J : Set M) := by gcongr
     _ = uR • (J : Set M) := union_self _
     _ ⊆ S := subset_union_right
-  have hRS' : uR' • S ⊆ S := calc
+  have hR'S : uR' • S ⊆ S := calc
     uR' • S = uR' • (J : Set M) ∪ uR • uR' • (J : Set M) := by simp_rw [S, smul_union, smul_comm]
     _ ⊆ J ∪ uR • J := by gcongr
     _ = S := rfl
@@ -175,18 +215,16 @@ lemma hasBasis_subbimodule [IsLinearTopology R M] [IsLinearTopology R' M] :
     case zero => simp_rw [smul_zero]; exact zero_mem _
     case add => simp_rw [smul_add]; exact add_mem hx hy
     case neg => simp_rw [smul_neg]; exact neg_mem hx
-  have hRA' : ∀ r' : R', ∀ i ∈ A, r' • i ∈ A := fun r' i hi ↦ by
+  have hR'A : ∀ r' : R', ∀ i ∈ A, r' • i ∈ A := fun r' i hi ↦ by
     refine AddSubgroup.closure_induction (fun x hx => ?base) ?zero (fun x y _ _ hx hy ↦ ?add)
       (fun x _ hx ↦ ?neg) hi
-    case base => exact AddSubgroup.subset_closure <| hRS' <| Set.smul_mem_smul trivial hx
+    case base => exact AddSubgroup.subset_closure <| hR'S <| Set.smul_mem_smul trivial hx
     case zero => simp_rw [smul_zero]; exact zero_mem _
     case add => simp_rw [smul_add]; exact add_mem hx hy
     case neg => simp_rw [smul_neg]; exact neg_mem hx
-  have A_sub_I : (A : Set M) ⊆ I := by
-    exact I.toAddSubgroup.closure_le.mpr S_sub_I
-  have J_sub_A : (J : Set M) ⊆ A := by
-    exact subset_trans subset_union_left AddSubgroup.subset_closure
-  exact ⟨A, ⟨mem_of_superset hJ J_sub_A, hRA, hRA'⟩, A_sub_I⟩
+  have A_sub_I : (A : Set M) ⊆ I := I.toAddSubgroup.closure_le.mpr S_sub_I
+  have J_sub_A : (J : Set M) ⊆ A := subset_trans subset_union_left AddSubgroup.subset_closure
+  exact ⟨A, ⟨mem_of_superset hJ J_sub_A, hRA, hR'A⟩, A_sub_I⟩
 
 variable (R R') in
 open Set Pointwise in
@@ -212,6 +250,17 @@ theorem tendsto_smul_zero [IsLinearTopology R M] {ι : Type*} {f : Filter ι}
   intro I hI
   filter_upwards [ha I hI] with i ai_mem
   exact I.smul_mem _ ai_mem
+
+variable (R) in
+/-- If the left and right actions of `R` on `M` coincide, then a topology is `Rᵐᵒᵖ`-linear
+if and only if it is `R`-linear. -/
+theorem _root_.IsCentralScalar.isLinearTopology_iff [Module Rᵐᵒᵖ M] [IsCentralScalar R M] :
+    IsLinearTopology Rᵐᵒᵖ M ↔ IsLinearTopology R M := by
+  constructor <;> intro H
+  · exact mk_of_hasBasis' R (IsLinearTopology.hasBasis_submodule Rᵐᵒᵖ)
+      fun S r m hm ↦ op_smul_eq_smul r m ▸ S.smul_mem _ hm
+  · exact mk_of_hasBasis' Rᵐᵒᵖ (IsLinearTopology.hasBasis_submodule R)
+      fun S r m hm ↦ unop_smul_eq_smul r m ▸ S.smul_mem _ hm
 
 end Module
 
@@ -293,8 +342,8 @@ variable {R M : Type*} [CommRing R] [TopologicalSpace R]
 
 /-- If `R` is commutative and left-linearly topologized, it is also right-linearly topologized. -/
 instance (priority := 100) [IsLinearTopology R R] :
-    IsLinearTopology Rᵐᵒᵖ R :=
-  mk_of_hasBasis' Rᵐᵒᵖ (IsLinearTopology.hasBasis_ideal) (fun I _ _ ↦ I.mul_mem_right _)
+    IsLinearTopology Rᵐᵒᵖ R := by
+  rwa [IsCentralScalar.isLinearTopology_iff]
 
 end CommRing
 
