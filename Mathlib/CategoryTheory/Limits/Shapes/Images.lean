@@ -613,7 +613,7 @@ attribute [inherit_doc ImageMap] ImageMap.map ImageMap.map_ι
 attribute [-simp, nolint simpNF] ImageMap.mk.injEq
 
 instance inhabitedImageMap {f : Arrow C} [HasImage f.hom] : Inhabited (ImageMap (𝟙 f)) :=
-  ⟨⟨𝟙 _, by aesop⟩⟩
+  ⟨⟨𝟙 _, by simp⟩⟩
 
 attribute [reassoc (attr := simp)] ImageMap.map_ι
 

@@ -293,14 +293,14 @@ theorem eq_homEquiv_apply {A : C} {B : D} (f : F.obj A ⟶ B) (g : A ⟶ G.obj B
 def corepresentableBy (X : C) :
     (G ⋙ coyoneda.obj (Opposite.op X)).CorepresentableBy (F.obj X) where
   homEquiv := adj.homEquiv _ _
-  homEquiv_comp := by aesop_cat
+  homEquiv_comp := by simp
 
 /--  If `adj : F ⊣ G`, and `Y : D`, then `G.obj Y` represents `X ↦ (F.obj X ⟶ Y)`-/
 @[simps]
 def representableBy (Y : D) :
     (F.op ⋙ yoneda.obj Y).RepresentableBy (G.obj Y) where
   homEquiv := (adj.homEquiv _ _).symm
-  homEquiv_comp := by aesop_cat
+  homEquiv_comp := by simp
 
 end
 
