@@ -23,7 +23,6 @@ noncomputable section
 
 variable {α β γ : Type*}
 
-open scoped Classical
 open NNReal ENNReal
 
 open MeasureTheory
@@ -32,6 +31,7 @@ namespace PMF
 
 section Pure
 
+open scoped Classical in
 /-- The pure `PMF` is the `PMF` where all the mass lies in one point.
   The value of `pure a` is `1` at `a` and `0` elsewhere. -/
 def pure (a : α) : PMF α :=
@@ -39,6 +39,7 @@ def pure (a : α) : PMF α :=
 
 variable (a a' : α)
 
+open scoped Classical in
 @[simp]
 theorem pure_apply : pure a a' = if a' = a then 1 else 0 := rfl
 
@@ -61,6 +62,7 @@ section Measure
 
 variable (s : Set α)
 
+open scoped Classical in
 @[simp]
 theorem toOuterMeasure_pure_apply : (pure a).toOuterMeasure s = if a ∈ s then 1 else 0 := by
   refine (toOuterMeasure_apply (pure a) s).trans ?_
@@ -74,6 +76,7 @@ theorem toOuterMeasure_pure_apply : (pure a).toOuterMeasure s = if a ∈ s then 
 
 variable [MeasurableSpace α]
 
+open scoped Classical in
 /-- The measure of a set under `pure a` is `1` for sets containing `a` and `0` otherwise. -/
 @[simp]
 theorem toMeasure_pure_apply (hs : MeasurableSet s) :
