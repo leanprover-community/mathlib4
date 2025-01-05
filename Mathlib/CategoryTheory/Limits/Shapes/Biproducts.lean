@@ -625,7 +625,7 @@ instance biproduct.map_epi {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p 
       ι_colimMap_assoc, Discrete.functor_obj_eq_as, Discrete.natTrans_app, colimit.ι_desc_assoc,
       Cofan.mk_pt, Cofan.mk_ι_app, ι_π, ι_π_assoc]
     split
-    simp
+    all_goals simp_all
   rw [this]
   infer_instance
 
