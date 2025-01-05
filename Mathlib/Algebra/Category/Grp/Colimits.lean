@@ -147,9 +147,9 @@ noncomputable def isColimit_of_bijective_desc [DecidableEq J]
 noncomputable def colimitCocone [DecidableEq J] [Small.{w} (Quot.{w} F)] : Cocone F where
   pt := AddCommGrp.of (Shrink (Quot F))
   ι :=
-    { app := fun j =>
+    { app j :=
         AddCommGrp.ofHom (Shrink.addEquiv.symm.toAddMonoidHom.comp (Quot.ι F j))
-      naturality := fun _ _ _ ↦ by
+      naturality _ _ _ := by
         ext
         dsimp
         simp only [Category.comp_id, ofHom_apply, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe,
