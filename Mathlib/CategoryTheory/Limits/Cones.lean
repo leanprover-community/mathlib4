@@ -158,7 +158,7 @@ instance inhabitedCocone (F : Discrete PUnit ⥤ C) : Inhabited (Cocone F) :=
               intro X Y f
               match X, Y, f with
               | .mk A, .mk B, .up g =>
-                aesop_cat
+                simp
            }
   }⟩
 
@@ -408,7 +408,7 @@ def functoriality : Cone F ⥤ Cone (F ⋙ G) where
     { pt := G.obj A.pt
       π :=
         { app := fun j => G.map (A.π.app j)
-          naturality := by intros; erw [← G.map_comp]; aesop_cat } }
+          naturality := by intros; erw [← G.map_comp]; simp } }
   map f :=
     { hom := G.map f.hom
       w := fun j => by simp [-ConeMorphism.w, ← f.w j] }
@@ -606,7 +606,7 @@ def functoriality : Cocone F ⥤ Cocone (F ⋙ G) where
     { pt := G.obj A.pt
       ι :=
         { app := fun j => G.map (A.ι.app j)
-          naturality := by intros; erw [← G.map_comp]; aesop_cat } }
+          naturality := by intros; erw [← G.map_comp]; simp } }
   map f :=
     { hom := G.map f.hom
       w := by intros; rw [← Functor.map_comp, CoconeMorphism.w] }

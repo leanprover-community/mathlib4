@@ -86,7 +86,7 @@ theorem toKernelSubobject_arrow {M N : ModuleCat R} {f : M ⟶ N} (x : LinearMap
     convert this
   rw [Iso.trans_inv, ← LinearMap.coe_comp, ← hom_comp, Category.assoc]
   simp only [Category.assoc, kernelSubobject_arrow', kernelIsoKer_inv_kernel_ι]
-  aesop_cat
+  simp
 
 /-- An extensionality lemma showing that two elements of a cokernel by an image
 are equal if they differ by an element of the image.

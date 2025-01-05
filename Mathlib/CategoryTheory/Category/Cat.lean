@@ -182,8 +182,8 @@ def typeToCat : Type u ⥤ Cat where
       simp only [id_eq, eqToHom_refl, Cat.id_map, Category.comp_id, Category.id_comp]
       apply ULift.ext
       aesop_cat
-    · aesop_cat
-  map_comp f g := by apply Functor.ext; aesop_cat
+    · simp
+  map_comp f g := by apply Functor.ext; simp
 
 instance : Functor.Faithful typeToCat.{u} where
   map_injective {_X} {_Y} _f _g h :=
