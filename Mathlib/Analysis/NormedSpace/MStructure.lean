@@ -337,7 +337,7 @@ lemma idemSnd_apply (x : WithLp p (α × β)) : idemSnd x = (WithLp.equiv _ _).s
 lemma idemFst_compl : (1 : AddMonoid.End (WithLp p (α × β))) - idemFst = idemSnd := AddMonoidHom.ext
   fun x => by
     rw [AddMonoidHom.sub_apply, idemFst_apply, idemSnd_apply, AddMonoid.End.coe_one, id_eq,
-      sub_eq_iff_eq_add, add_comm, WithLp.mk_add_mk, zero_add, add_zero]; rfl
+      sub_eq_iff_eq_add, add_comm, ← WithLp.equiv_symm_add, Prod.mk_add_mk, zero_add, add_zero]; rfl
 
 theorem prod_norm_eq_sup_idemFst (x : WithLp ∞ (α × β)) :
     ‖x‖ = ‖idemFst x‖ ⊔ ‖(1 - idemFst) x‖ := by
