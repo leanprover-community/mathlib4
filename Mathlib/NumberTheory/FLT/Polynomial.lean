@@ -79,10 +79,6 @@ private lemma derivative_pow_eq_zero_iff {n : ℕ} (chn : ¬ringChar k ∣ n) {a
   · intro hd
     rw [derivative_pow, hd, MulZeroClass.mul_zero]
 
-private lemma radical_natDegree_le [DecidableEq k] {a : k[X]} (h : a ≠ 0) :
-    (radical a).natDegree ≤ a.natDegree :=
-  natDegree_le_of_dvd (radical_dvd_self a) h
-
 private theorem Polynomial.flt_catalan_deriv [DecidableEq k]
     {p q r : ℕ} (hp : 0 < p) (hq : 0 < q) (hr : 0 < r)
     (hineq : q * r + r * p + p * q ≤ p * q * r)
@@ -125,13 +121,11 @@ private theorem Polynomial.flt_catalan_deriv [DecidableEq k]
         ← radical_mul (hca.symm.mul_left hbc)] at nd_lt
 
     obtain ⟨hpa', hqb', hrc'⟩ := nd_lt
-    have habc := mul_ne_zero (mul_ne_zero ha hb) hc
-    have hpa := hpa'.trans (radical_natDegree_le habc)
-    have hqb := hqb'.trans (radical_natDegree_le habc)
-    have hrc := hrc'.trans (radical_natDegree_le habc)
+    have hpa := hpa'.trans natDegree_radical_le
+    have hqb := hqb'.trans natDegree_radical_le
+    have hrc := hrc'.trans natDegree_radical_le
     rw [natDegree_mul (mul_ne_zero ha hb) hc,
         natDegree_mul ha hb, Nat.add_one_le_iff] at hpa hqb hrc
-
     exfalso
     exact (ineq_pqr_contradiction hp hq hr hineq hpa hqb hrc)
   · rw [derivative_C_mul, derivative_C_mul, derivative_C_mul,
