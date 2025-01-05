@@ -357,6 +357,9 @@ lemma Quot.ι_desc (j : J) (x : F.obj j) : Quot.desc c (Quot.ι F j x) = c.ι.ap
 lemma Quot.map_ι {j j' : J} {f : j ⟶ j'} (x : F.obj j) : Quot.ι F j' (F.map f x) = Quot.ι F j x :=
   (Quot.sound ⟨f, rfl⟩).symm
 
+/--
+The obvious map from `Quot F` to `Quot (F ⋙ uliftFunctor.{u'})`.
+-/
 def uliftQuotToFun (F : J ⥤ Type u) : Quot F → Quot (F ⋙ uliftFunctor.{u'}) := by
   refine Quot.lift (fun ⟨j, x⟩ ↦ Quot.ι _ j (ULift.up x)) ?_
   intro ⟨j, x⟩ ⟨j', y⟩ ⟨(f : j ⟶ j'), (eq : y = F.map f x)⟩
@@ -371,6 +374,9 @@ lemma uliftQuotToFun_ι (F : J ⥤ Type u) (j : J) (x : F.obj j) :
     uliftQuotToFun F (Quot.ι F j x) = Quot.ι _ j (ULift.up x) := by
   dsimp [uliftQuotToFun, Quot.ι]
 
+/--
+The obvious map from `Quot (F ⋙ uliftFunctor.{u'})` to `Quot F`.
+-/
 def uliftQuotInvFun (F : J ⥤ Type u) : Quot (F ⋙ uliftFunctor.{u'}) → Quot F := by
   refine Quot.lift (fun ⟨j, x⟩ ↦ Quot.ι _ j x.down) ?_
   intro ⟨j, x⟩ ⟨j', y⟩ ⟨(f : j ⟶ j'), (eq : y = ULift.up (F.map f x.down))⟩
@@ -383,6 +389,9 @@ lemma uliftQuotInvFun_ι (F : J ⥤ Type u) (j : J) (x : (F ⋙ uliftFunctor.{u'
     uliftQuotInvFun F (Quot.ι _ j x) = Quot.ι F j x.down := by
   dsimp [uliftQuotInvFun, Quot.ι]
 
+/--
+The equivalence between `Quot F` and `Quot (F ⋙ uliftFunctor.{u'})`.
+-/
 @[simp]
 def uliftQuot (F : J ⥤ Type u) : Quot F ≃ Quot (F ⋙ uliftFunctor.{u'}) where
   toFun := uliftQuotToFun F

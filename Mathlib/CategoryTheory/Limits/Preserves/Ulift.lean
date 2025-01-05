@@ -37,8 +37,7 @@ def sectionsEquiv {J : Type*} [Category J] (K : J ⥤ Type u) :
 /--
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` preserves limits of arbitrary size.
 -/
-noncomputable
-instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where
+noncomputable instance : PreservesLimitsOfSize.{w', w} uliftFunctor.{v, u} where
   preservesLimitsOfShape {J} := {
     preservesLimit := fun {K} => {
       preserves := fun {c} hc => by
@@ -56,13 +55,6 @@ noncomputable instance : CreatesLimitsOfSize.{w, u} uliftFunctor.{v, u} where
 
 variable {J : Type*} [Category J] {K : J ⥤ Type u} {c : Cocone K} (hc : IsColimit c)
 variable {lc : Cocone (K ⋙ uliftFunctor.{v, u})}
-
-example : PreservesColimit K uliftFunctor.{v, u} where
-  preserves {c} hc := by
-    rw [isColimit_iff_bijective_desc, ← Function.Bijective.of_comp_iff _ (uliftQuot K).bijective,
-      ← Quot.desc_uliftQuot]
-    exact ULift.up_bijective.comp ((isColimit_iff_bijective_desc c).mp (Nonempty.intro hc)
-    )
 
 /--
 The functor `uliftFunctor : Type u ⥤ Type (max u v)` preserves colimits of arbitrary size.
