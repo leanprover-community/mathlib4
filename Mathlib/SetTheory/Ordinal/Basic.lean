@@ -435,7 +435,7 @@ theorem typein.principalSeg_coe (r : α → α → Prop) [IsWellOrder α r] :
 
 @[simp]
 theorem type_subrel (r : α → α → Prop) [IsWellOrder α r] (a : α) :
-    type (Subrel r { b // r b a }) = typein r a :=
+    type (Subrel r (r · a)) = typein r a :=
   rfl
 
 @[simp]
