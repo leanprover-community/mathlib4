@@ -875,7 +875,7 @@ lemma penultimate_concat {t u v} (p : G.Walk u v) (h : G.Adj v t) :
     (p.concat h).penultimate = v := by simp [penultimate, concat_eq_append, getVert_append]
 
 @[simp]
-lemma adj_penultimate_of_not_nil {p : G.Walk v w} (hp : ¬ p.Nil) :
+lemma adj_penultimate {p : G.Walk v w} (hp : ¬ p.Nil) :
     G.Adj p.penultimate w := by
   conv => rhs; rw [← getVert_length p]
   rw [nil_iff_length_eq] at hp
@@ -945,7 +945,7 @@ def firstDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
 def lastDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
   fst := p.penultimate
   snd := w
-  adj := p.adj_penultimate_of_not_nil hp
+  adj := p.adj_penultimate hp
 
 lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
     (p.firstDart hp).edge = s(v, p.snd) := rfl
