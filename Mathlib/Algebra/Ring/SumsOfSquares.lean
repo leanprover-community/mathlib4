@@ -44,20 +44,18 @@ theorem IsSumSq.rec' [Mul R] [Add R] [Zero R]
     {motive : (s : R) → (h : IsSumSq s) → Prop}
     (zero : motive 0 zero)
     (sq_add : ∀ {x s}, (hx : IsSquare x) → (hs : IsSumSq s) → motive s hs →
-      motive (x + s) (by rcases hx with ⟨_, rfl⟩; exact sq_add hs))
+      motive (x + s) (by rcases hx with ⟨_, rfl⟩; exact sq_add _ hs))
     {s : R} (h : IsSumSq s) : motive s h :=
   match h with
-  | .zero      => zero
-  | .sq_add ih => sq_add (.mul_self _) ih (rec' zero sq_add _)
+  | .zero        => zero
+  | .sq_add _ hs => sq_add (.mul_self _) hs (rec' zero sq_add _)
 
 /-- In an additive monoid with multiplication,
 if `s₁` and `s₂` are sums of squares, then `s₁ + s₂` is a sum of squares. -/
 @[aesop unsafe 90% apply]
 theorem IsSumSq.add [AddMonoid R] [Mul R] {s₁ s₂ : R}
     (h₁ : IsSumSq s₁) (h₂ : IsSumSq s₂) : IsSumSq (s₁ + s₂) := by
-  induction h₁ with
-  | zero        => simp_all
-  | sq_add _ ih => simp_all [add_assoc, sq_add]
+  induction h₁ <;> simp_all [add_assoc, sq_add]
 
 @[deprecated (since := "2024-08-09")] alias isSumSq.add := IsSumSq.add
 
@@ -85,7 +83,7 @@ end AddSubmonoid
 
 /-- In an additive unital magma with multiplication, `x * x` is a sum of squares for all `x`. -/
 theorem IsSumSq.mul_self [AddZeroClass R] [Mul R] (a : R) : IsSumSq (a * a) := by
-  rw [← add_zero (a * a)]; exact sq_add zero
+  rw [← add_zero (a * a)]; exact sq_add _ zero
 
 /-- In an additive unital magma with multiplication, squares are sums of squares
 (see Mathlib.Algebra.Group.Even.Basic). -/
@@ -101,9 +99,7 @@ sums of squares in `R`.
 theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
     closure {x : R | IsSquare x} = sumSq R := by
   refine closure_eq_of_le (fun x hx ↦ IsSquare.isSumSq hx) (fun x hx ↦ ?_)
-  induction hx with
-  | zero         => exact zero_mem _
-  | sq_add _ ih  => exact add_mem (subset_closure (.mul_self _)) ih
+  induction hx <;> aesop
 
 @[deprecated (since := "2024-08-09")] alias SquaresAddClosure := AddSubmonoid.closure_isSquare
 
@@ -117,8 +113,7 @@ theorem IsSumSq.sum [AddCommMonoid R] [Mul R] {ι : Type*} {I : Finset ι} {s : 
 /-- In an additive, commutative monoid with multiplication,
 a term of the form `∑ i ∈ I, x i`, where each `x i` is a square, is a sum of squares. -/
 theorem IsSumSq.sum_isSquare [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) {x : ι → R}
-    (ha : ∀ i ∈ I, IsSquare <| x i) :
-    IsSumSq (∑ i ∈ I, x i) := by aesop
+    (ha : ∀ i ∈ I, IsSquare <| x i) : IsSumSq (∑ i ∈ I, x i) := by aesop
 
 /-- In an additive, commutative monoid with multiplication,
 a term of the form `∑ i ∈ I, a i * a i` is a sum of squares. -/
@@ -203,8 +198,8 @@ sums of squares are non-negative.
 -/
 theorem IsSumSq.nonneg {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {s : R}
     (hs : IsSumSq s) : 0 ≤ s := by
-  induction ps using IsSumSq.rec'
-  | zero                   => aesop
-  | sq_add x s hx hs h_sum => exact add_nonneg (IsSquare.nonneg hx) h_sum
+  induction hs using IsSumSq.rec' with
+  | zero               => aesop
+  | sq_add hx hs h_sum => exact add_nonneg (IsSquare.nonneg hx) h_sum
 
 @[deprecated (since := "2024-08-09")] alias isSumSq.nonneg := IsSumSq.nonneg
