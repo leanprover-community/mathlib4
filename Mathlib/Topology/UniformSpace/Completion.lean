@@ -310,8 +310,9 @@ instance completeSpace : CompleteSpace (Completion α) :=
 
 instance t0Space : T0Space (Completion α) := SeparationQuotient.instT0Space
 
+variable {α} in
 /-- The map from a uniform space to its completion. -/
-@[coe] def coe' {α} [UniformSpace α] : α → Completion α := SeparationQuotient.mk ∘ pureCauchy
+@[coe] def coe' : α → Completion α := SeparationQuotient.mk ∘ pureCauchy
 
 /-- Automatic coercion from `α` to its completion. Not always injective. -/
 instance : Coe α (Completion α) :=
