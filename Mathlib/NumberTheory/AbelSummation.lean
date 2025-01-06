@@ -295,11 +295,7 @@ section summable
 
 open Filter abelSummationProof
 
-private theorem summable_mul_of_bigO_atTop_aux₁ {c : ℕ → 𝕜} {m : ℕ} :
-    Measurable fun t : ℝ ↦ ∑ k ∈ Icc m ⌊t⌋₊, c k :=
-  Measurable.comp' (g := fun n : ℕ ↦ ∑ k ∈ Icc m n, c k) (fun _ _ ↦ trivial) Nat.measurable_floor
-
-private theorem summable_mul_of_bigO_atTop_aux₂ (m : ℕ)
+private theorem summable_mul_of_bigO_atTop_aux (m : ℕ)
     (h_bdd : (fun n : ℕ ↦ ‖f n‖ * ∑ k ∈ Icc 0 n, ‖c k‖) =O[atTop] fun _ ↦ (1 : ℝ))
     (hf_int : IntegrableOn (deriv (fun t ↦ ‖f t‖)) (Set.Ici (m : ℝ)))
     (hf : ∀ n : ℕ, ∑ k ∈ Icc 0 n, ‖f k‖ * ‖c k‖ =
@@ -316,7 +312,8 @@ private theorem summable_mul_of_bigO_atTop_aux₂ (m : ℕ)
   | zero => simp only [range_zero, norm_mul, sum_empty, le_sup_iff, zero_le_one, or_true]
   | succ n =>
       have h_mes : Measurable fun t ↦ deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖ :=
-        (measurable_deriv _).mul summable_mul_of_bigO_atTop_aux₁
+        (measurable_deriv _).mul <| Measurable.comp' (g := fun n : ℕ ↦ ∑ k ∈ Icc 0 n, ‖c k‖)
+          (fun _ _ ↦ trivial) Nat.measurable_floor
       rw [Nat.range_eq_Icc_zero_sub_one _ n.add_one_ne_zero, add_tsub_cancel_right]
       calc
         _ = ∑ k ∈ Icc 0 n, ‖f k‖ * ‖c k‖ := by simp_rw [norm_mul]
@@ -344,7 +341,7 @@ theorem summable_mul_of_bigO_atTop
     {g : ℝ → ℝ} (hg₁ : (fun t ↦ deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖) =O[atTop] g)
     (hg₂ : IntegrableAtFilter g atTop) :
     Summable (fun n : ℕ ↦ f n * c n) := by
-  refine summable_mul_of_bigO_atTop_aux₂ c 0 h_bdd (by rwa [Nat.cast_zero]) (fun n ↦ ?_) hg₁ hg₂
+  refine summable_mul_of_bigO_atTop_aux c 0 h_bdd (by rwa [Nat.cast_zero]) (fun n ↦ ?_) hg₁ hg₂
   exact_mod_cast sum_mul_eq_sub_integral_mul' _ _ (fun _ ht ↦ hf_diff _ ht.1)
     (hf_int.mono_set Set.Icc_subset_Ici_self)
 
@@ -355,7 +352,7 @@ theorem summable_mul_of_bigO_atTop₀ (hc : c 0 = 0)
     {g : ℝ → ℝ} (hg₁ : (fun t ↦ deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖) =O[atTop] g)
     (hg₂ : IntegrableAtFilter g atTop) :
     Summable (fun n : ℕ ↦ f n * c n) := by
-  refine summable_mul_of_bigO_atTop_aux₂ c 1 h_bdd (by rwa [Nat.cast_one]) (fun n ↦ ?_) hg₁ hg₂
+  refine summable_mul_of_bigO_atTop_aux c 1 h_bdd (by rwa [Nat.cast_one]) (fun n ↦ ?_) hg₁ hg₂
   exact_mod_cast sum_mul_eq_sub_integral_mul₀' (fun n ↦ ‖c n‖) (norm_eq_zero.mpr hc) _
           (fun _ ht ↦ hf_diff _ ht.1) (hf_int.mono_set Set.Icc_subset_Ici_self)
 
