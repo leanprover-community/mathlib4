@@ -1030,7 +1030,7 @@ lemma Submodule.exists_eq_graph {G : Submodule S (H × I)} (hf₁ : Bijective (P
 
 /-- **Line test** for module isomorphisms.
 
-Let `f : G → H × I` be a linear map to a product of modules. Assume that `f` is surjective onto
+Let `f : G → H × I` be a (semi)linear map to a product of modules. Assume that `f` is surjective onto
 both factors and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` and every
 "horizontal line" `{(h, i) | h : H}` at most once. Then the image of `f` is the graph of some
 module isomorphism `f' : H ≃ I`. -/
