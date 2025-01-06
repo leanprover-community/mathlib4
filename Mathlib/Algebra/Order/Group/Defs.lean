@@ -132,12 +132,6 @@ instance (priority := 100) LinearOrderedCommGroup.to_noMinOrder [Nontrivial α] 
     obtain ⟨y, hy⟩ : ∃ a : α, 1 < a := exists_one_lt'
     exact fun a => ⟨a / y, (div_lt_self_iff a).mpr hy⟩⟩
 
--- See note [lower instance priority]
-@[to_additive]
-instance (priority := 100) IsOrderedMonoid.toIsOrderedCancelMonoid : IsOrderedCancelMonoid α where
-  le_of_mul_le_mul_left a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
-  le_of_mul_le_mul_right a b c bc := by simpa using mul_le_mul_left' bc a⁻¹
-
 @[to_additive (attr := simp)]
 theorem inv_le_self_iff : a⁻¹ ≤ a ↔ 1 ≤ a := by simp [inv_le_iff_one_le_mul']
 
