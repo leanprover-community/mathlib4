@@ -40,7 +40,7 @@ namespace FDRep
 
 section Monoid
 
-variable {G : Type u} [Monoid G]
+variable {G : Type u} [Monoid G]  
 
 /-- The character of a representation `V : FDRep k G` is the function associating to `g : G` the
 trace of the linear map `V.ρ g`. -/
