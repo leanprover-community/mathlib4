@@ -13,16 +13,16 @@ into all uniform spaces. Any uniform space `α` gets a completion `Completion α
 (ie. uniformly continuous map) `coe : α → Completion α` which solves the universal
 mapping problem of factorizing morphisms from `α` to any complete Hausdorff uniform space `β`.
 It means any uniformly continuous `f : α → β` gives rise to a unique morphism
-`Completion.extension f : Completion α → β` such that `f = Completion.extension f ∘ (↑)`.
+`Completion.extension f : Completion α → β` such that `f = Completion.extension f ∘ coe`.
 Actually `Completion.extension f` is defined for all maps from `α` to `β` but it has the desired
 properties only if `f` is uniformly continuous.
 
-Beware that `(↑)` is not injective if `α` is not Hausdorff. But its image is always
+Beware that `coe` is not injective if `α` is not Hausdorff. But its image is always
 dense. The adjoint functor acting on morphisms is then constructed by the usual abstract nonsense.
 For every uniform spaces `α` and `β`, it turns `f : α → β` into a morphism
   `Completion.map f : Completion α → Completion β`
 such that
-  `(↑) ∘ f = (Completion.map f) ∘ (↑)`
+  `coe ∘ f = (Completion.map f) ∘ coe`
 provided `f` is uniformly continuous. This construction is compatible with composition.
 
 In this file we introduce the following concepts:
