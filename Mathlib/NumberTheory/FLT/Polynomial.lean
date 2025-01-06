@@ -21,7 +21,7 @@ More generally, we can prove non-solvability of the Fermat-Catalan equation: the
 non-constant polynomial solution of the equation `u * a ^ p + v * b ^ q + w * c ^ r = 0`, where
 `p, q, r ≥ 3` with `p * q + q * r + r * p ≤ p * q * r` and not divisible by `char k`
 and `u, v, w` are nonzero elements in `k`.
-FLT is special case when `p = q = r = n`, `u = v = 1`, and `w = -1`.
+FLT is the special case where `p = q = r = n`, `u = v = 1`, and `w = -1`.
 
 The proof uses the Mason-Stothers theorem (Polynomial ABC theorem) and infinite descent
 (in the characteristic p case).
