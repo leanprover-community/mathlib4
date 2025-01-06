@@ -317,8 +317,7 @@ variable {α} in
 @[deprecated (since := "2025-01-05")] alias coe' := coe
 
 /-- Automatic coercion from `α` to its completion. Not always injective. -/
-instance : Coe α (Completion α) :=
-  ⟨(coe : α → Completion α)⟩
+instance : Coe α (Completion α) := ⟨coe⟩
 
 -- note [use has_coe_t]
 protected theorem coe_eq : (coe : α → Completion α) = SeparationQuotient.mk ∘ pureCauchy := rfl

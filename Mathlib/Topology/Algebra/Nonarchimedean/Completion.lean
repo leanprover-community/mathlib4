@@ -32,7 +32,7 @@ instance {G : Type*} [AddGroup G] [UniformSpace G] [UniformAddGroup G] [Nonarchi
     have : coeAddHom ⁻¹' C ∈ 𝓝 0 :=
       (continuous_coe G).continuousAt.preimage_mem_nhds (by rwa [Completion.coe_zero])
     /- Therefore, since `G` is nonarchimedean, there exists an open subgroup `W` of `G` that is
-    contained within `coe' ⁻¹' C`. -/
+    contained within `coeAddHom ⁻¹' C`. -/
     obtain ⟨W, hCW⟩ := NonarchimedeanAddGroup.is_nonarchimedean (coeAddHom ⁻¹' C) this
     /- Now, let `V = (W.map coeAddHom).topologicalClosure` be the result of mapping `W` back to
     `Completion G` and taking the topological closure. -/
