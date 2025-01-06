@@ -1081,8 +1081,8 @@ map from `Π i, M₁ᵢ ⟶ M₁ᵢ'` to `M ⟶ M₂` via `(fᵢ) ↦ v ↦ g(f�
     MultilinearMap R M₁' M₂ →ₗ[R]
     MultilinearMap R (fun i ↦ M₁ i →ₗ[R] M₁' i) (MultilinearMap R M₁ M₂) where
   toFun g := (LinearMap.applyₗ g).compMultilinearMap compLinearMapMultilinear
-  map_add' := by aesop
-  map_smul' := by aesop
+  map_add' := by simp
+  map_smul' := by simp
 
 end
 

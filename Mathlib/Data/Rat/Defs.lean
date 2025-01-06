@@ -167,23 +167,13 @@ theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → 
 
 attribute [simp] divInt_add_divInt
 
-@[deprecated divInt_add_divInt (since := "2024-03-18")]
-theorem add_def'' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
-    a /. b + c /. d = (a * d + c * b) /. (b * d) := divInt_add_divInt _ _ b0 d0
-
 attribute [simp] neg_divInt
 
 lemma neg_def (q : ℚ) : -q = -q.num /. q.den := by rw [← neg_divInt, num_divInt_den]
 
 @[simp] lemma divInt_neg (n d : ℤ) : n /. -d = -n /. d := divInt_neg' ..
 
-@[deprecated (since := "2024-03-18")] alias divInt_neg_den := divInt_neg
-
 attribute [simp] divInt_sub_divInt
-
-@[deprecated divInt_sub_divInt (since := "2024-03-18")]
-lemma sub_def'' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
-    a /. b - c /. d = (a * d - c * b) /. (b * d) := divInt_sub_divInt _ _ b0 d0
 
 @[simp]
 lemma divInt_mul_divInt' (n₁ d₁ n₂ d₂ : ℤ) : (n₁ /. d₁) * (n₂ /. d₂) = (n₁ * n₂) /. (d₁ * d₂) := by
@@ -270,16 +260,10 @@ protected theorem add_assoc : a + b + c = a + (b + c) :=
 protected lemma neg_add_cancel : -a + a = 0 := by
   simp [add_def, normalize_eq_mkRat, Int.neg_mul, Int.add_comm, ← Int.sub_eq_add_neg]
 
-@[deprecated zero_divInt (since := "2024-03-18")]
-lemma divInt_zero_one : 0 /. 1 = 0 := zero_divInt _
-
 @[simp] lemma divInt_one (n : ℤ) : n /. 1 = n := by simp [divInt, mkRat, normalize]
 @[simp] lemma mkRat_one (n : ℤ) : mkRat n 1 = n := by simp [mkRat_eq_divInt]
 
 lemma divInt_one_one : 1 /. 1 = 1 := by rw [divInt_one, intCast_one]
-
-@[deprecated divInt_one (since := "2024-03-18")]
-lemma divInt_neg_one_one : -1 /. 1 = -1 := by rw [divInt_one, intCast_neg, intCast_one]
 
 protected theorem mul_assoc : a * b * c = a * (b * c) :=
   numDenCasesOn' a fun n₁ d₁ h₁ =>

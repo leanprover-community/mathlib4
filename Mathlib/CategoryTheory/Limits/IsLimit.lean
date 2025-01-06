@@ -263,8 +263,8 @@ def conePointsIsoOfNatIso {F G : J ⥤ C} {s : Cone F} {t : Cone G} (P : IsLimit
     (w : F ≅ G) : s.pt ≅ t.pt where
   hom := Q.map s w.hom
   inv := P.map t w.inv
-  hom_inv_id := P.hom_ext (by aesop_cat)
-  inv_hom_id := Q.hom_ext (by aesop_cat)
+  hom_inv_id := P.hom_ext (by simp)
+  inv_hom_id := Q.hom_ext (by simp)
 
 @[reassoc]
 theorem conePointsIsoOfNatIso_hom_comp {F G : J ⥤ C} {s : Cone F} {t : Cone G} (P : IsLimit s)
@@ -723,8 +723,8 @@ def coconePointsIsoOfNatIso {F G : J ⥤ C} {s : Cocone F} {t : Cocone G} (P : I
     (Q : IsColimit t) (w : F ≅ G) : s.pt ≅ t.pt where
   hom := P.map t w.hom
   inv := Q.map s w.inv
-  hom_inv_id := P.hom_ext (by aesop_cat)
-  inv_hom_id := Q.hom_ext (by aesop_cat)
+  hom_inv_id := P.hom_ext (by simp)
+  inv_hom_id := Q.hom_ext (by simp)
 
 @[reassoc]
 theorem comp_coconePointsIsoOfNatIso_hom {F G : J ⥤ C} {s : Cocone F} {t : Cocone G}

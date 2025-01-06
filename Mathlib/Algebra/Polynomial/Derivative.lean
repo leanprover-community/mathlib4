@@ -3,7 +3,6 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Polynomial.Degree.Domain
 import Mathlib.Algebra.Polynomial.Degree.Support
 import Mathlib.Algebra.Polynomial.Eval.Coeff
@@ -660,6 +659,18 @@ theorem dvd_derivative_iff {P : R[X]} : P ∣ derivative P ↔ derivative P = 0 
   mpr h := by simp [h]
 
 end NoZeroDivisors
+
+section CommSemiringNoZeroDivisors
+
+variable [CommSemiring R] [NoZeroDivisors R]
+
+theorem derivative_pow_eq_zero {n : ℕ} (chn : (n : R) ≠ 0) {a : R[X]} :
+    derivative (a ^ n) = 0 ↔ derivative a = 0 := by
+  nontriviality R
+  rw [← C_ne_zero, C_eq_natCast] at chn
+  simp +contextual [derivative_pow, or_imp, chn]
+
+end CommSemiringNoZeroDivisors
 
 end Derivative
 
