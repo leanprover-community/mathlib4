@@ -134,7 +134,7 @@ open NormedAddCommGroup UniformSpace.Completion
 @[deprecated (since := "2025-01-05")] alias NormedAddCommGroup.norm_toCompl :=
   Completion.norm_coe
 
-def UniformSpace.Completion.denseRange_coeNormedAddGroupHom :
+theorem UniformSpace.Completion.denseRange_coeNormedAddGroupHom :
   DenseRange (coeNormedAddGroupHom : G → Completion G) := Completion.isDenseInducing_coe.dense
 
 @[deprecated (since := "2025-01-05")] alias NormedAddCommGroup.denseRange_toCompl :=
