@@ -1,12 +1,13 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Stephen Morgan, Scott Morrison, Johannes Hölzl
+Authors: Stephen Morgan, Kim Morrison, Johannes Hölzl
 -/
 import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
-import Mathlib.Tactic.PPWithUniv
 import Mathlib.Data.Set.Operations
+import Mathlib.Tactic.PPWithUniv
+import Mathlib.Tactic.ToAdditive
 
 /-!
 # The category `Type`.
@@ -41,13 +42,13 @@ universe v v' w u u'
 @[to_additive existing CategoryTheory.types]
 instance types : LargeCategory (Type u) where
   Hom a b := a → b
-  id a := id
+  id _ := id
   comp f g := g ∘ f
 
 theorem types_hom {α β : Type u} : (α ⟶ β) = (α → β) :=
   rfl
 
--- porting note (#10688): this lemma was not here in Lean 3. Lean 3 `ext` would solve this goal
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): this lemma was not here in Lean 3. Lean 3 `ext` would solve this goal
 -- because of its "if all else fails, apply all `ext` lemmas" policy,
 -- which apparently we want to move away from.
 @[ext] theorem types_ext {α β : Type u} (f g : α ⟶ β) (h : ∀ a : α, f a = g a) : f = g := by
@@ -117,7 +118,7 @@ lemma sections_property {F : J ⥤ Type w} (s : (F.sections : Type _))
   s.property f
 
 lemma sections_ext_iff {F : J ⥤ Type w} {x y : F.sections} : x = y ↔ ∀ j, x.val j = y.val j :=
-  Subtype.ext_iff.trans Function.funext_iff
+  Subtype.ext_iff.trans funext_iff
 
 variable (J)
 
@@ -191,7 +192,7 @@ Write this as `uliftFunctor.{5, 2}` to get `Type 2 ⥤ Type 5`.
 @[pp_with_univ]
 def uliftFunctor : Type u ⥤ Type max u v where
   obj X := ULift.{v} X
-  map {X} {Y} f := fun x : ULift.{v} X => ULift.up (f x.down)
+  map {X} {_} f := fun x : ULift.{v} X => ULift.up (f x.down)
 
 @[simp]
 theorem uliftFunctor_obj {X : Type u} : uliftFunctor.obj.{v} X = ULift.{v} X :=
@@ -264,7 +265,7 @@ def ofTypeFunctor (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m] :
   map_id := fun α => by funext X; apply id_map  /- Porting note: original proof is via
   `fun α => _root_.Functor.map_id` but I cannot get Lean to find this. Reproduced its
   original proof -/
-  map_comp f g := funext fun a => LawfulFunctor.comp_map f g _
+  map_comp f g := funext fun _ => LawfulFunctor.comp_map f g _
 
 variable (m : Type u → Type v) [_root_.Functor m] [LawfulFunctor m]
 

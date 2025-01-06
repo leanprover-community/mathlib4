@@ -169,11 +169,11 @@ theorem Sigma.curry_update {γ : ∀ a, β a → Type*} [DecidableEq α] [∀ a,
   obtain rfl | ha := eq_or_ne ia ja
   · obtain rfl | hb := eq_or_ne ib jb
     · simp
-    · simp only [update_same]
-      rw [Function.update_noteq (mt _ hb.symm), Function.update_noteq hb.symm]
+    · simp only [update_self]
+      rw [Function.update_of_ne (mt _ hb.symm), Function.update_of_ne hb.symm]
       rintro h
       injection h
-  · rw [Function.update_noteq (ne_of_apply_ne Sigma.fst _), Function.update_noteq]
+  · rw [Function.update_of_ne (ne_of_apply_ne Sigma.fst _), Function.update_of_ne]
     · exact ha.symm
     · exact ha.symm
 
@@ -243,7 +243,7 @@ protected theorem eq {α : Sort*} {β : α → Sort*} : ∀ {p₁ p₂ : Σ' a, 
     (Eq.recOn h₁ p₁.2 : β p₂.1) = p₂.2 → p₁ = p₂
   | ⟨_, _⟩, _, rfl, rfl => rfl
 
-@[simp]
+-- This should not be a simp lemma, since its discrimination tree key would just be `→`.
 theorem «forall» {p : (Σ'a, β a) → Prop} : (∀ x, p x) ↔ ∀ a b, p ⟨a, b⟩ :=
   ⟨fun h a b ↦ h ⟨a, b⟩, fun h ⟨a, b⟩ ↦ h a b⟩
 

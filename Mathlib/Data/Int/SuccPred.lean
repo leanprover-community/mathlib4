@@ -21,12 +21,16 @@ namespace Int
 @[instance] abbrev instSuccOrder : SuccOrder ℤ :=
   { SuccOrder.ofSuccLeIff succ fun {_ _} => Iff.rfl with succ := succ }
 
+instance instSuccAddOrder : SuccAddOrder ℤ := ⟨fun _ => rfl⟩
+
 -- so that Lean reads `Int.pred` through `PredOrder.pred`
 @[instance] abbrev instPredOrder : PredOrder ℤ where
   pred := pred
   pred_le _ := (sub_one_lt_of_le le_rfl).le
   min_of_le_pred ha := ((sub_one_lt_of_le le_rfl).not_le ha).elim
   le_pred_of_lt {_ _} := le_sub_one_of_lt
+
+instance instPredSubOrder : PredSubOrder ℤ := ⟨fun _ => rfl⟩
 
 @[simp]
 theorem succ_eq_succ : Order.succ = succ :=
@@ -36,46 +40,44 @@ theorem succ_eq_succ : Order.succ = succ :=
 theorem pred_eq_pred : Order.pred = pred :=
   rfl
 
+@[deprecated Order.one_le_iff_pos (since := "2024-09-04")]
 theorem pos_iff_one_le {a : ℤ} : 0 < a ↔ 1 ≤ a :=
   Order.succ_le_iff.symm
 
-theorem succ_iterate (a : ℤ) : ∀ n, succ^[n] a = a + n
-  | 0 => (add_zero a).symm
-  | n + 1 => by
-    rw [Function.iterate_succ', Int.ofNat_succ, ← add_assoc]
-    exact congr_arg _ (succ_iterate a n)
+@[deprecated Order.succ_iterate (since := "2024-09-04")]
+protected theorem succ_iterate (a : ℤ) : ∀ n, succ^[n] a = a + n :=
+  Order.succ_iterate a
 
-theorem pred_iterate (a : ℤ) : ∀ n, pred^[n] a = a - n
-  | 0 => (sub_zero a).symm
-  | n + 1 => by
-    rw [Function.iterate_succ', Int.ofNat_succ, ← sub_sub]
-    exact congr_arg _ (pred_iterate a n)
+@[deprecated Order.pred_iterate (since := "2024-09-04")]
+protected theorem pred_iterate (a : ℤ) : ∀ n, pred^[n] a = a - n :=
+  Order.pred_iterate a
 
 instance : IsSuccArchimedean ℤ :=
   ⟨fun {a b} h =>
-    ⟨(b - a).toNat, by
-      rw [succ_eq_succ, succ_iterate, toNat_sub_of_le h, ← add_sub_assoc, add_sub_cancel_left]⟩⟩
+    ⟨(b - a).toNat, by rw [succ_iterate, toNat_sub_of_le h, ← add_sub_assoc, add_sub_cancel_left]⟩⟩
 
 instance : IsPredArchimedean ℤ :=
   ⟨fun {a b} h =>
-    ⟨(b - a).toNat, by rw [pred_eq_pred, pred_iterate, toNat_sub_of_le h, sub_sub_cancel]⟩⟩
+    ⟨(b - a).toNat, by rw [pred_iterate, toNat_sub_of_le h, sub_sub_cancel]⟩⟩
 
 /-! ### Covering relation -/
 
 
+@[deprecated Order.covBy_iff_add_one_eq (since := "2024-09-04")]
 protected theorem covBy_iff_succ_eq {m n : ℤ} : m ⋖ n ↔ m + 1 = n :=
   succ_eq_iff_covBy.symm
 
-@[simp]
-theorem sub_one_covBy (z : ℤ) : z - 1 ⋖ z := by rw [Int.covBy_iff_succ_eq, sub_add_cancel]
+@[deprecated Order.sub_one_covBy (since := "2024-09-04")]
+theorem sub_one_covBy (z : ℤ) : z - 1 ⋖ z :=
+  Order.sub_one_covBy z
 
-@[simp]
+@[deprecated Order.covBy_add_one (since := "2024-09-04")]
 theorem covBy_add_one (z : ℤ) : z ⋖ z + 1 :=
-  Int.covBy_iff_succ_eq.mpr rfl
+  Order.covBy_add_one z
 
 @[simp, norm_cast]
 theorem natCast_covBy {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b := by
-  rw [Nat.covBy_iff_succ_eq, Int.covBy_iff_succ_eq]
+  rw [Order.covBy_iff_add_one_eq, Order.covBy_iff_add_one_eq]
   exact Int.natCast_inj
 
 end Int

@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Tactic.AdaptationNote
+import Mathlib.Tactic.Simps.Basic
 
 /-!
 # Subtypes
@@ -33,7 +34,7 @@ attribute [coe] Subtype.val
 initialize_simps_projections Subtype (val → coe)
 
 /-- A version of `x.property` or `x.2` where `p` is syntactically applied to the coercion of `x`
-  instead of `x.1`. A similar result is `Subtype.mem` in `Data.Set.Basic`. -/
+  instead of `x.1`. A similar result is `Subtype.mem` in `Mathlib.Data.Set.Basic`. -/
 theorem prop (x : Subtype p) : p x :=
   x.2
 
@@ -87,7 +88,7 @@ theorem coe_eq_iff {a : { a // p a }} {b : α} : ↑a = b ↔ ∃ h, a = ⟨b, h
 
 theorem coe_injective : Injective (fun (a : Subtype p) ↦ (a : α)) := fun _ _ ↦ Subtype.ext
 
-theorem val_injective : Injective (@val _ p) :=
+@[simp] theorem val_injective : Injective (@val _ p) :=
   coe_injective
 
 theorem coe_inj {a b : Subtype p} : (a : α) = b ↔ a = b :=
@@ -207,7 +208,7 @@ end Subtype
 namespace Subtype
 
 /-! Some facts about sets, which require that `α` is a type. -/
-variable {α β γ : Type*} {p : α → Prop}
+variable {α : Type*}
 
 @[simp]
 theorem coe_prop {S : Set α} (a : { a // a ∈ S }) : ↑a ∈ S :=

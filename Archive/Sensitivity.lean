@@ -41,7 +41,7 @@ noncomputable section
 
 local notation "√" => Real.sqrt
 
-open Function Bool LinearMap Fintype FiniteDimensional Module.DualBases
+open Bool Finset Fintype Function LinearMap Module Module.DualBases
 
 /-!
 ### The hypercube
@@ -357,7 +357,7 @@ local notation "Span" => Submodule.span ℝ
 natural number. -/
 
 
-local notation "Card " X:70 => Finset.card (Set.toFinset X)
+local notation "Card " X:70 => #(Set.toFinset X)
 
 /-! In the following, `⊓` and `⊔` will denote intersection and sums of ℝ-subspaces,
 equipped with their subspace structures. The notations come from the general
@@ -374,7 +374,7 @@ theorem exists_eigenvalue (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
   suffices 0 < dim (W ⊓ img) by
     exact mod_cast exists_mem_ne_zero_of_rank_pos this
   have dim_le : dim (W ⊔ img) ≤ 2 ^ (m + 1 : Cardinal) := by
-    convert ← rank_submodule_le (W ⊔ img)
+    convert ← Submodule.rank_le (W ⊔ img)
     rw [← Nat.cast_succ]
     apply dim_V
   have dim_add : dim (W ⊔ img) + dim (W ⊓ img) = dim W + 2 ^ m := by
@@ -431,20 +431,19 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
       (norm_sum_le _ fun p => coeffs y p * _)
     _ = ∑ p ∈ (coeffs y).support, |coeffs y p| * ite (p ∈ q.adjacent) 1 0 := by
       simp only [abs_mul, f_matrix]
-    _ = ∑ p ∈ (coeffs y).support.filter q.adjacent, |coeffs y p| := by
-      simp [Finset.sum_filter]; rfl
-    _ ≤ ∑ _p ∈ (coeffs y).support.filter q.adjacent, |coeffs y q| :=
-      (Finset.sum_le_sum fun p _ => H_max p)
-    _ = (((coeffs y).support.filter q.adjacent).card : ℝ) * |coeffs y q| := by
-      rw [Finset.sum_const, nsmul_eq_mul]
-    _ = (((coeffs y).support ∩ q.adjacent.toFinset).card : ℝ) * |coeffs y q| := by
+    _ = ∑ p ∈ (coeffs y).support with q.adjacent p, |coeffs y p| := by
+      simp [sum_filter]; rfl
+    _ ≤ ∑ p ∈ (coeffs y).support with q.adjacent p, |coeffs y q| := sum_le_sum fun p _ ↦ H_max p
+    _ = #{p ∈ (coeffs y).support | q.adjacent p} * |coeffs y q| := by
+      rw [sum_const, nsmul_eq_mul]
+    _ = #((coeffs y).support ∩ q.adjacent.toFinset) * |coeffs y q| := by
       congr with x; simp; rfl
-    _ ≤ Finset.card (H ∩ q.adjacent).toFinset * |ε q y| := by
+    _ ≤ #(H ∩ q.adjacent).toFinset * |ε q y| := by
       refine (mul_le_mul_right H_q_pos).2 ?_
       norm_cast
-      apply Finset.card_le_card
+      apply card_le_card
       rw [Set.toFinset_inter]
-      convert Finset.inter_subset_inter_right coeffs_support
+      convert inter_subset_inter_right coeffs_support
 
 end
 

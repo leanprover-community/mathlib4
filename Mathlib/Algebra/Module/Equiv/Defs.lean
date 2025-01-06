@@ -38,16 +38,14 @@ assert_not_exists Pi.module
 
 open Function
 
-universe u u' v w x y z
-
 variable {R : Type*} {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-variable {k : Type*} {K : Type*} {S : Type*} {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
-variable {N₁ : Type*} {N₂ : Type*} {N₃ : Type*} {N₄ : Type*} {ι : Type*}
+variable {S : Type*} {M : Type*} {M₁ : Type*} {M₂ : Type*} {M₃ : Type*}
+variable {N₁ : Type*} {N₂ : Type*}
 
 section
 
 /-- A linear equivalence is an invertible linear map. -/
--- Porting note (#11215): TODO @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO @[nolint has_nonempty_instance]
 structure LinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
   {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) (M₂ : Type*)
   [AddCommMonoid M] [AddCommMonoid M₂] [Module R M] [Module S M₂] extends LinearMap σ M M₂, M ≃+ M₂
@@ -133,7 +131,6 @@ namespace LinearEquiv
 
 section AddCommMonoid
 
-variable {M₄ : Type*}
 variable [Semiring R] [Semiring S]
 
 section
@@ -171,18 +168,9 @@ instance : EquivLike (M ≃ₛₗ[σ] M₂) M M₂ where
   left_inv := LinearEquiv.left_inv
   right_inv := LinearEquiv.right_inv
 
-/-- Helper instance for when inference gets stuck on following the normal chain
-`EquivLike → FunLike`.
-
-TODO: this instance doesn't appear to be necessary: remove it (after benchmarking?)
--/
-instance : FunLike (M ≃ₛₗ[σ] M₂) M M₂ where
-  coe := DFunLike.coe
-  coe_injective' := DFunLike.coe_injective
-
 instance : SemilinearEquivClass (M ≃ₛₗ[σ] M₂) σ M M₂ where
-  map_add := (·.map_add') --map_add' Porting note (#11215): TODO why did I need to change this?
-  map_smulₛₗ := (·.map_smul') --map_smul' Porting note (#11215): TODO why did I need to change this?
+  map_add := (·.map_add') --map_add' Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO why did I need to change this?
+  map_smulₛₗ := (·.map_smul') --map_smul' Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO why did I need to change this?
 
 -- Porting note: moved to a lower line since there is no shortcut `CoeFun` instance any more
 @[simp]
@@ -198,7 +186,7 @@ section
 
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
-variable [AddCommMonoid M₃] [AddCommMonoid M₄]
+variable [AddCommMonoid M₃]
 variable [AddCommMonoid N₁] [AddCommMonoid N₂]
 variable {module_M : Module R M} {module_S_M₂ : Module S M₂} {σ : R →+* S} {σ' : S →+* R}
 variable {re₁ : RingHomInvPair σ σ'} {re₂ : RingHomInvPair σ' σ}
@@ -327,6 +315,9 @@ theorem coe_toAddEquiv : e.toAddEquiv = e :=
 theorem toAddMonoidHom_commutes : e.toLinearMap.toAddMonoidHom = e.toAddEquiv.toAddMonoidHom :=
   rfl
 
+lemma coe_toAddEquiv_symm : (e₁₂.symm : M₂ ≃+ M₁) = (e₁₂ : M₁ ≃+ M₂).symm := by
+  rfl
+
 @[simp]
 theorem trans_apply (c : M₁) : (e₁₂.trans e₂₃ : M₁ ≃ₛₗ[σ₁₃] M₃) c = e₂₃ (e₁₂ c) :=
   rfl
@@ -402,6 +393,18 @@ theorem toLinearMap_symm_comp_eq (f : M₃ →ₛₗ[σ₃₁] M₁) (g : M₃ �
   constructor <;> intro H <;> ext
   · simp [← H, ← e₁₂.toEquiv.symm_comp_eq f g]
   · simp [H, e₁₂.toEquiv.symm_comp_eq f g]
+
+@[simp]
+theorem comp_toLinearMap_eq_iff (f g : M₃ →ₛₗ[σ₃₁] M₁) :
+    e₁₂.toLinearMap.comp f = e₁₂.toLinearMap.comp g ↔ f = g := by
+  refine ⟨fun h => ?_, congrArg e₁₂.comp⟩
+  rw [← (toLinearMap_symm_comp_eq g (e₁₂.toLinearMap.comp f)).mpr h, eq_toLinearMap_symm_comp]
+
+@[simp]
+theorem eq_comp_toLinearMap_iff (f g : M₂ →ₛₗ[σ₂₃] M₃) :
+    f.comp e₁₂.toLinearMap = g.comp e₁₂.toLinearMap ↔ f = g := by
+  refine ⟨fun h => ?_, fun a ↦ congrFun (congrArg LinearMap.comp a) e₁₂.toLinearMap⟩
+  rw [(eq_comp_toLinearMap_symm g (f.comp e₁₂.toLinearMap)).mpr h.symm, eq_comp_toLinearMap_symm]
 
 @[simp]
 theorem refl_symm [Module R M] : (refl R M).symm = LinearEquiv.refl R M :=
@@ -506,8 +509,7 @@ def _root_.RingEquiv.toSemilinearEquiv (f : R ≃+* S) :
     toFun := f
     map_smul' := f.map_mul }
 
-variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
-variable [AddCommMonoid M] [AddCommMonoid M₁] [AddCommMonoid M₂]
+variable [AddCommMonoid M]
 
 /-- An involutive linear map is a linear equivalence. -/
 def ofInvolutive {σ σ' : R →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]

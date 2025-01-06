@@ -28,7 +28,7 @@ to represent this case, `(h : DirectSum.IsInternal A) [SetLike.GradedMonoid A]` 
 needed. In the future there will likely be a data-carrying, constructive, typeclass version of
 `DirectSum.IsInternal` for providing an explicit decomposition function.
 
-When `CompleteLattice.Independent (Set.range A)` (a weaker condition than
+When `iSupIndep (Set.range A)` (a weaker condition than
 `DirectSum.IsInternal A`), these provide a grading of `⨆ i, A i`, and the
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
 `DirectSum.toAddMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
@@ -52,12 +52,6 @@ internally graded ring
 open DirectSum
 
 variable {ι : Type*} {σ S R : Type*}
-
-instance AddCommMonoid.ofSubmonoidOnSemiring [Semiring R] [SetLike σ R] [AddSubmonoidClass σ R]
-    (A : ι → σ) : ∀ i, AddCommMonoid (A i) := fun i => by infer_instance
-
-instance AddCommGroup.ofSubgroupOnRing [Ring R] [SetLike σ R] [AddSubgroupClass σ R] (A : ι → σ) :
-    ∀ i, AddCommGroup (A i) := fun i => by infer_instance
 
 theorem SetLike.algebraMap_mem_graded [Zero ι] [CommSemiring S] [Semiring R] [Algebra S R]
     (A : ι → Submodule S R) [SetLike.GradedOne A] (s : S) : algebraMap S R s ∈ A 0 := by
@@ -243,7 +237,7 @@ theorem coe_mul_of_apply_of_not_le (r : ⨁ i, A i) {i : ι} (r' : A i) (n : ι)
     · rw [DFinsupp.sum, Finset.sum_ite_of_false, Finset.sum_const_zero]
       exact fun x _ H => h ((self_le_add_left i x).trans_eq H)
 
-variable [Sub ι] [OrderedSub ι] [ContravariantClass ι ι (· + ·) (· ≤ ·)]
+variable [Sub ι] [OrderedSub ι] [AddLeftReflectLE ι]
 
 /- The following two lemmas only require the same hypotheses as `eq_tsub_iff_add_eq_of_le`, but we
   state them for `CanonicallyOrderedAddCommMonoid` + the above three typeclasses for convenience. -/
@@ -340,13 +334,9 @@ def subsemiring : Subsemiring R where
 /-- The semiring `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instSemiring : Semiring (A 0) := (subsemiring A).toSemiring
 
-/- The linter message "error: SetLike.GradeZero.coe_natCast.{u_4, u_2, u_1} Left-hand side
-  does not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
-@[nolint simpNF, simp, norm_cast] theorem coe_natCast (n : ℕ) : (n : A 0) = (n : R) := rfl
+@[simp, norm_cast] theorem coe_natCast (n : ℕ) : (n : A 0) = (n : R) := rfl
 
-/- The linter message "error: SetLike.GradeZero.coe_ofNat.{u_4, u_2, u_1} Left-hand side does
-  not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
-@[nolint simpNF, simp, norm_cast] theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
+@[simp, norm_cast] theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n) : A 0) = (OfNat.ofNat n : R) := rfl
 
 end Semiring
@@ -403,9 +393,7 @@ def subalgebra : Subalgebra S R where
 /-- The `S`-algebra `A 0` inherited from `R` in the presence of `SetLike.GradedMonoid A`. -/
 instance instAlgebra : Algebra S (A 0) := inferInstanceAs <| Algebra S (subalgebra A)
 
-/- The linter message "error: SetLike.GradeZero.coe_algebraMap.{u_4, u_3, u_1} Left-hand side
-  does not simplify, when using the simp lemma on itself." is wrong. The LHS does simplify. -/
-@[nolint simpNF, simp, norm_cast] theorem coe_algebraMap (s : S) :
+@[simp, norm_cast] theorem coe_algebraMap (s : S) :
     ↑(algebraMap _ (A 0) s) = algebraMap _ R s := rfl
 
 end Algebra

@@ -6,7 +6,9 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Field.Basic
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.Indicator
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.GroupWithZero.Action.Units
+import Mathlib.Algebra.Module.NatInt
+import Mathlib.Algebra.NoZeroSMulDivisors.Defs
 
 /-!
 # Further basic results about modules.
@@ -21,6 +23,17 @@ open Function Set
 universe u v
 
 variable {α R M M₂ : Type*}
+
+@[simp]
+theorem Units.neg_smul [Ring R] [AddCommGroup M] [Module R M] (u : Rˣ) (x : M) :
+    -u • x = -(u • x) := by
+  rw [Units.smul_def, Units.val_neg, _root_.neg_smul, Units.smul_def]
+
+@[simp]
+theorem invOf_two_smul_add_invOf_two_smul (R) [Semiring R] [AddCommMonoid M] [Module R M]
+    [Invertible (2 : R)] (x : M) :
+    (⅟ 2 : R) • x + (⅟ 2 : R) • x = x :=
+  Convex.combo_self invOf_two_add_invOf_two _
 
 @[deprecated (since := "2024-04-17")]
 alias map_nat_cast_smul := map_natCast_smul
@@ -95,32 +108,6 @@ theorem inv_intCast_smul_comm {α E : Type*} (R : Type*) [AddCommGroup E] [Divis
 @[deprecated (since := "2024-04-17")]
 alias inv_int_cast_smul_comm := inv_intCast_smul_comm
 
-
-
-section NoZeroSMulDivisors
-
-section Module
-
-variable [Ring R] [AddCommGroup M] [Module R M] [NoZeroSMulDivisors R M]
-
-instance [NoZeroSMulDivisors ℤ M] : NoZeroSMulDivisors ℕ M :=
-  ⟨fun {c x} hcx ↦ by rwa [← Nat.cast_smul_eq_nsmul ℤ c x, smul_eq_zero, Nat.cast_eq_zero] at hcx⟩
-
-end Module
-
-section GroupWithZero
-
-variable [GroupWithZero R] [AddMonoid M] [DistribMulAction R M]
-
--- see note [lower instance priority]
-/-- This instance applies to `DivisionSemiring`s, in particular `NNReal` and `NNRat`. -/
-instance (priority := 100) GroupWithZero.toNoZeroSMulDivisors : NoZeroSMulDivisors R M :=
-  ⟨fun {a _} h ↦ or_iff_not_imp_left.2 fun ha ↦ (smul_eq_zero_iff_eq <| Units.mk0 a ha).1 h⟩
-
-end GroupWithZero
-
-end NoZeroSMulDivisors
-
 namespace Function
 
 lemma support_smul_subset_left [Zero R] [Zero M] [SMulWithZero R M] (f : α → R) (g : α → M) :
@@ -135,7 +122,7 @@ lemma support_smul_subset_right [Zero M] [SMulZeroClass R M] (f : α → R) (g :
 
 lemma support_const_smul_of_ne_zero [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M]
     (c : R) (g : α → M) (hc : c ≠ 0) : support (c • g) = support g :=
-  ext fun x ↦ by simp only [hc, mem_support, Pi.smul_apply, Ne, smul_eq_zero, false_or_iff]
+  ext fun x ↦ by simp only [hc, mem_support, Pi.smul_apply, Ne, smul_eq_zero, false_or]
 
 lemma support_smul [Zero R] [Zero M] [SMulWithZero R M] [NoZeroSMulDivisors R M] (f : α → R)
     (g : α → M) : support (f • g) = support f ∩ support g :=

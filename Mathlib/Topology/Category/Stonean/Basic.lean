@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Adam Topaz
+Authors: Adam Topaz, Dagur Asgeirsson
 -/
 import Mathlib.Topology.ExtremallyDisconnected
 import Mathlib.Topology.Category.CompHaus.Projective
@@ -31,13 +31,18 @@ can be lifted along epimorphisms).
   spaces to compact Hausdorff spaces
 * `Stonean.toProfinite` : the functor from Stonean spaces to profinite spaces.
 
+## Implementation
+
+The category `Stonean` is defined using the structure `CompHausLike`. See the file
+`CompHausLike.Basic` for more information.
+
 -/
 universe u
 
 open CategoryTheory
 open scoped Topology
 
--- This was a global instance prior to #13170. We may experiment with removing it.
+-- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
 attribute [local instance] ConcreteCategory.instFunLike
 
 /-- `Stonean` is the category of extremally disconnected compact Hausdorff spaces. -/
@@ -128,7 +133,7 @@ lemma epi_iff_surjective {X Y : Stonean} (f : X ⟶ Y) :
   have hC : IsClosed C := (isCompact_range f.continuous).isClosed
   let U := Cᶜ
   have hUy : U ∈ 𝓝 y := by
-    simp only [C, Set.mem_range, hy, exists_false, not_false_eq_true, hC.compl_mem_nhds]
+    simp only [U, C, Set.mem_range, hy, exists_false, not_false_eq_true, hC.compl_mem_nhds]
   obtain ⟨V, hV, hyV, hVU⟩ := isTopologicalBasis_isClopen.mem_nhds_iff.mp hUy
   classical
   let g : Y ⟶ mkFinite (ULift (Fin 2)) :=

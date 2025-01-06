@@ -144,9 +144,9 @@ def outcome : List Instruction → State → State
 @[simp]
 theorem outcome_append (p₁ p₂ : List Instruction) (η : State) :
     outcome (p₁ ++ p₂) η = outcome p₂ (outcome p₁ η) := by
-  revert η
-  induction' p₁ with _ _ p₁_ih <;> intros <;> simp
-  apply p₁_ih
+  induction p₁ generalizing η with
+  | nil => simp
+  | cons _ _ p₁_ih => simp [p₁_ih]
 
 end Target
 
@@ -220,7 +220,7 @@ protected theorem StateEq.trans {t : Register} (ζ₁ ζ₂ ζ₃ : State) :
   · simp_all only
   · trans ζ₂ <;> assumption
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance (t : Register) : Trans (StateEq (t + 1)) (StateEq (t + 1)) (StateEq (t + 1)) :=
   ⟨@StateEq.trans _⟩
 
@@ -231,7 +231,7 @@ protected theorem StateEqStateEqRs.trans (t : Register) (ζ₁ ζ₂ ζ₃ : Sta
   simp [StateEq]; intros
   trans ζ₂ <;> assumption
 
--- Porting note (#10754): added instance
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added instance
 instance (t : Register) : Trans (StateEq (t + 1)) (StateEqRs (t + 1)) (StateEqRs (t + 1)) :=
   ⟨@StateEqStateEqRs.trans _⟩
 
@@ -279,10 +279,7 @@ theorem compiler_correctness
   | const => simp [StateEq, step]; rfl
   -- 5.II
   | var =>
-    simp [hmap, StateEq, step] -- Porting note: was `finish [hmap, StateEq, step]`
-    constructor
-    · simp_all only [read, loc]
-    · rfl
+    simp_all [StateEq, StateEqRs, step]
   -- 5.III
   | sum =>
     rename_i e_s₁ e_s₂ e_ih_s₁ e_ih_s₂

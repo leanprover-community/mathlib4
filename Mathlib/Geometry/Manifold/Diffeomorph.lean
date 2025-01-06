@@ -44,7 +44,7 @@ diffeomorphism, manifold
 -/
 
 
-open scoped Manifold Topology
+open scoped Manifold Topology ContDiff
 
 open Function Set
 
@@ -65,7 +65,7 @@ variable (I I' M M' n)
 
 /-- `n`-times continuously differentiable diffeomorphism between `M` and `M'` with respect to `I`
 and `I'`. -/
--- Porting note(#5171): was @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure Diffeomorph extends M ≃ M' where
   protected contMDiff_toFun : ContMDiff I I' n toEquiv
   protected contMDiff_invFun : ContMDiff I' I n toEquiv.symm
@@ -79,13 +79,11 @@ scoped[Manifold] notation M " ≃ₘ^" n:1000 "⟮" I ", " J "⟯ " N => Diffeom
 scoped[Manifold] notation M " ≃ₘ⟮" I ", " J "⟯ " N => Diffeomorph I J M N ⊤
 
 /-- `n`-times continuously differentiable diffeomorphism between `E` and `E'`. -/
-scoped[Manifold]
-  notation E " ≃ₘ^" n:1000 "[" 𝕜 "] " E' =>
-    Diffeomorph (modelWithCornersSelf 𝕜 E) (modelWithCornersSelf 𝕜 E') E E' n
+scoped[Manifold] notation E " ≃ₘ^" n:1000 "[" 𝕜 "] " E' => Diffeomorph 𝓘(𝕜, E) 𝓘(𝕜, E') E E' n
 
 /-- Infinitely differentiable diffeomorphism between `E` and `E'`. -/
 scoped[Manifold]
-  notation E " ≃ₘ[" 𝕜 "] " E' =>
+  notation3 E " ≃ₘ[" 𝕜 "] " E' =>
     Diffeomorph (modelWithCornersSelf 𝕜 E) (modelWithCornersSelf 𝕜 E') E E' ⊤
 
 namespace Diffeomorph
@@ -121,11 +119,11 @@ protected theorem contMDiffAt (h : M ≃ₘ^n⟮I, I'⟯ M') {x} : ContMDiffAt I
 protected theorem contMDiffWithinAt (h : M ≃ₘ^n⟮I, I'⟯ M') {s x} : ContMDiffWithinAt I I' n h s x :=
   h.contMDiffAt.contMDiffWithinAt
 
--- Porting note (#11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
 protected theorem contDiff (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E') : ContDiff 𝕜 n h :=
   h.contMDiff.contDiff
 
-protected theorem smooth (h : M ≃ₘ⟮I, I'⟯ M') : Smooth I I' h := h.contMDiff
+@[deprecated (since := "2024-11-21")] alias smooth := Diffeomorph.contDiff
 
 protected theorem mdifferentiable (h : M ≃ₘ^n⟮I, I'⟯ M') (hn : 1 ≤ n) : MDifferentiable I I' h :=
   h.contMDiff.mdifferentiable hn
@@ -383,8 +381,6 @@ end
 
 end Constructions
 
-variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners J N]
-
 theorem uniqueMDiffOn_image_aux (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : Set M}
     (hs : UniqueMDiffOn I s) : UniqueMDiffOn J (h '' s) := by
   convert hs.uniqueMDiffOn_preimage (h.toPartialHomeomorph_mdifferentiable hn)
@@ -401,14 +397,14 @@ theorem uniqueMDiffOn_preimage (h : M ≃ₘ^n⟮I, J⟯ N) (hn : 1 ≤ n) {s : 
     UniqueMDiffOn I (h ⁻¹' s) ↔ UniqueMDiffOn J s :=
   h.symm_image_eq_preimage s ▸ h.symm.uniqueMDiffOn_image hn
 
--- Porting note (#11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
 @[simp]
 theorem uniqueDiffOn_image (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) (hn : 1 ≤ n) {s : Set E} :
     UniqueDiffOn 𝕜 (h '' s) ↔ UniqueDiffOn 𝕜 s := by
   simp only [← uniqueMDiffOn_iff_uniqueDiffOn, uniqueMDiffOn_image, hn]
 
 @[simp]
--- Porting note (#11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: should use `E ≃ₘ^n[𝕜] F` notation
 theorem uniqueDiffOn_preimage (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, F)⟯ F) (hn : 1 ≤ n) {s : Set F} :
     UniqueDiffOn 𝕜 (h ⁻¹' s) ↔ UniqueDiffOn 𝕜 s :=
   h.symm_image_eq_preimage s ▸ h.symm.uniqueDiffOn_image hn
@@ -447,7 +443,16 @@ variable (I) (e : E ≃ₘ[𝕜] E')
 def transDiffeomorph (I : ModelWithCorners 𝕜 E H) (e : E ≃ₘ[𝕜] E') : ModelWithCorners 𝕜 E' H where
   toPartialEquiv := I.toPartialEquiv.trans e.toEquiv.toPartialEquiv
   source_eq := by simp
-  unique_diff' := by simp [range_comp e, I.unique_diff]
+  uniqueDiffOn' := by simp [range_comp e, I.uniqueDiffOn]
+  target_subset_closure_interior := by
+    simp only [PartialEquiv.trans_target, Equiv.toPartialEquiv_target,
+      Equiv.toPartialEquiv_symm_apply, Diffeomorph.toEquiv_coe_symm, target_eq, univ_inter]
+    change e.toHomeomorph.symm ⁻¹' _ ⊆ closure (interior (e.toHomeomorph.symm ⁻¹' (range I)))
+    rw [← e.toHomeomorph.symm.isOpenMap.preimage_interior_eq_interior_preimage
+      e.toHomeomorph.continuous_symm,
+      ← e.toHomeomorph.symm.isOpenMap.preimage_closure_eq_closure_preimage
+      e.toHomeomorph.continuous_symm]
+    exact preimage_mono I.range_subset_closure_interior
   continuous_toFun := e.continuous.comp I.continuous
   continuous_invFun := I.continuous_symm.comp e.symm.continuous
 
@@ -484,7 +489,8 @@ instance smoothManifoldWithCorners_transDiffeomorph [SmoothManifoldWithCorners I
     SmoothManifoldWithCorners (I.transDiffeomorph e) M := by
   refine smoothManifoldWithCorners_of_contDiffOn (I.transDiffeomorph e) M fun e₁ e₂ h₁ h₂ => ?_
   refine e.contDiff.comp_contDiffOn
-      (((contDiffGroupoid ⊤ I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn ?_)
+      (((contDiffGroupoid ∞ I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn ?_)
+  simp only [mapsTo_iff_subset_preimage]
   mfld_set_tac
 
 variable (I M)
@@ -495,18 +501,18 @@ def toTransDiffeomorph (e : E ≃ₘ[𝕜] F) : M ≃ₘ⟮I, I.transDiffeomorph
   toEquiv := Equiv.refl M
   contMDiff_toFun x := by
     refine contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, ?_⟩
-    refine e.contDiff.contDiffWithinAt.congr' (fun y hy ↦ ?_) ?_
+    refine e.contDiff.contDiffWithinAt.congr_of_mem (fun y hy ↦ ?_) ?_
     · simp only [Equiv.coe_refl, id, (· ∘ ·), I.coe_extChartAt_transDiffeomorph,
         (extChartAt I x).right_inv hy.1]
     · exact
-      ⟨(extChartAt I x).map_source (mem_extChartAt_source I x), trivial, by simp only [mfld_simps]⟩
+      ⟨(extChartAt I x).map_source (mem_extChartAt_source x), trivial, by simp only [mfld_simps]⟩
   contMDiff_invFun x := by
     refine contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, ?_⟩
-    refine e.symm.contDiff.contDiffWithinAt.congr' (fun y hy => ?_) ?_
+    refine e.symm.contDiff.contDiffWithinAt.congr_of_mem (fun y hy => ?_) ?_
     · simp only [mem_inter_iff, I.extChartAt_transDiffeomorph_target] at hy
       simp only [Equiv.coe_refl, Equiv.refl_symm, id, (· ∘ ·),
         I.coe_extChartAt_transDiffeomorph_symm, (extChartAt I x).right_inv hy.1]
-    exact ⟨(extChartAt _ x).map_source (mem_extChartAt_source _ x), trivial, by
+    exact ⟨(extChartAt _ x).map_source (mem_extChartAt_source x), trivial, by
       simp only [e.symm_apply_apply, Equiv.refl_symm, Equiv.coe_refl, mfld_simps]⟩
 
 variable {I M}
@@ -531,10 +537,8 @@ theorem contMDiff_transDiffeomorph_right {f : M' → M} :
     ContMDiff I' (I.transDiffeomorph e) n f ↔ ContMDiff I' I n f :=
   (toTransDiffeomorph I M e).contMDiff_diffeomorph_comp_iff le_top
 
--- Porting note (#10618): was `@[simp]` but now `simp` can prove it
-theorem smooth_transDiffeomorph_right {f : M' → M} :
-    Smooth I' (I.transDiffeomorph e) f ↔ Smooth I' I f :=
-  contMDiff_transDiffeomorph_right e
+@[deprecated (since := "2024-11-21")]
+alias smooth_transDiffeomorph_right := contMDiff_transDiffeomorph_right
 
 @[simp]
 theorem contMDiffWithinAt_transDiffeomorph_left {f : M → M'} {x s} :
@@ -556,9 +560,7 @@ theorem contMDiff_transDiffeomorph_left {f : M → M'} :
     ContMDiff (I.transDiffeomorph e) I' n f ↔ ContMDiff I I' n f :=
   ((toTransDiffeomorph I M e).contMDiff_comp_diffeomorph_iff le_top).symm
 
--- Porting note (#10618): was `@[simp]` but now `simp` can prove it
-theorem smooth_transDiffeomorph_left {f : M → M'} :
-    Smooth (I.transDiffeomorph e) I' f ↔ Smooth I I' f :=
-  e.contMDiff_transDiffeomorph_left
+@[deprecated (since := "2024-11-21")]
+alias smooth_transDiffeomorph_left := contMDiff_transDiffeomorph_left
 
 end Diffeomorph

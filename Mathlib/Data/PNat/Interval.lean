@@ -52,39 +52,23 @@ theorem map_subtype_embedding_uIcc : (uIcc a b).map (Embedding.subtype _) = uIcc
   map_subtype_embedding_Icc _ _
 
 @[simp]
-theorem card_Icc : (Icc a b).card = b + 1 - a := by
-  rw [← Nat.card_Icc]
-  -- Porting note: I had to change this to `erw` *and* provide the proof, yuck.
-  -- https://github.com/leanprover-community/mathlib4/issues/5164
-  erw [← Finset.map_subtype_embedding_Icc _ a b (fun c x _ hx _ hc _ => hc.trans_le hx)]
-  rw [card_map]
+theorem card_Icc : #(Icc a b) = b + 1 - a := by
+  rw [← Nat.card_Icc, ← map_subtype_embedding_Icc, card_map]
 
 @[simp]
-theorem card_Ico : (Ico a b).card = b - a := by
-  rw [← Nat.card_Ico]
-  -- Porting note: I had to change this to `erw` *and* provide the proof, yuck.
-  -- https://github.com/leanprover-community/mathlib4/issues/5164
-  erw [← Finset.map_subtype_embedding_Ico _ a b (fun c x _ hx _ hc _ => hc.trans_le hx)]
-  rw [card_map]
+theorem card_Ico : #(Ico a b) = b - a := by
+  rw [← Nat.card_Ico, ← map_subtype_embedding_Ico, card_map]
 
 @[simp]
-theorem card_Ioc : (Ioc a b).card = b - a := by
-  rw [← Nat.card_Ioc]
-  -- Porting note: I had to change this to `erw` *and* provide the proof, yuck.
-  -- https://github.com/leanprover-community/mathlib4/issues/5164
-  erw [← Finset.map_subtype_embedding_Ioc _ a b (fun c x _ hx _ hc _ => hc.trans_le hx)]
-  rw [card_map]
+theorem card_Ioc : #(Ioc a b) = b - a := by
+  rw [← Nat.card_Ioc, ← map_subtype_embedding_Ioc, card_map]
 
 @[simp]
-theorem card_Ioo : (Ioo a b).card = b - a - 1 := by
-  rw [← Nat.card_Ioo]
-  -- Porting note: I had to change this to `erw` *and* provide the proof, yuck.
-  -- https://github.com/leanprover-community/mathlib4/issues/5164
-  erw [← Finset.map_subtype_embedding_Ioo _ a b (fun c x _ hx _ hc _ => hc.trans_le hx)]
-  rw [card_map]
+theorem card_Ioo : #(Ioo a b) = b - a - 1 := by
+  rw [← Nat.card_Ioo, ← map_subtype_embedding_Ioo, card_map]
 
 @[simp]
-theorem card_uIcc : (uIcc a b).card = (b - a : ℤ).natAbs + 1 := by
+theorem card_uIcc : #(uIcc a b) = (b - a : ℤ).natAbs + 1 := by
   rw [← Nat.card_uIcc, ← map_subtype_embedding_uIcc, card_map]
 
 -- Porting note: `simpNF` says `simp` can prove this

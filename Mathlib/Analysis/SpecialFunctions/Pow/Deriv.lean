@@ -49,7 +49,7 @@ theorem hasStrictDerivAt_const_cpow {x y : ℂ} (h : x ≠ 0 ∨ y ≠ 0) :
   rcases em (x = 0) with (rfl | hx)
   · replace h := h.neg_resolve_left rfl
     rw [log_zero, mul_zero]
-    refine (hasStrictDerivAt_const _ 0).congr_of_eventuallyEq ?_
+    refine (hasStrictDerivAt_const y 0).congr_of_eventuallyEq ?_
     exact (isOpen_ne.eventually_mem h).mono fun y hy => (zero_cpow hy).symm
   · simpa only [cpow_def_of_ne_zero hx, mul_one] using
       ((hasStrictDerivAt_id y).const_mul (log x)).cexp
@@ -129,6 +129,16 @@ theorem Differentiable.cpow (hf : Differentiable ℂ f) (hg : Differentiable ℂ
 theorem Differentiable.const_cpow (hf : Differentiable ℂ f)
     (h0 : c ≠ 0 ∨ ∀ x, f x ≠ 0) : Differentiable ℂ (fun x ↦ c ^ f x) :=
   fun x ↦ (hf x).const_cpow (h0.imp_right fun h ↦ h x)
+
+@[fun_prop]
+lemma differentiable_const_cpow_of_neZero (z : ℂ) [NeZero z] :
+    Differentiable ℂ fun s : ℂ ↦ z ^ s :=
+  differentiable_id.const_cpow (.inl <| NeZero.ne z)
+
+@[fun_prop]
+lemma differentiableAt_const_cpow_of_neZero (z : ℂ) [NeZero z] (t : ℂ) :
+    DifferentiableAt ℂ (fun s : ℂ ↦ z ^ s) t :=
+  differentiableAt_id.const_cpow (.inl <| NeZero.ne z)
 
 end fderiv
 
@@ -272,7 +282,7 @@ theorem hasStrictFDerivAt_rpow_of_neg (p : ℝ × ℝ) (hp : p.1 < 0) :
   rw [div_eq_mul_inv, add_comm]; congr 2 <;> ring
 
 /-- The function `fun (x, y) => x ^ y` is infinitely smooth at `(x, y)` unless `x = 0`. -/
-theorem contDiffAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) {n : ℕ∞} :
+theorem contDiffAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) {n : WithTop ℕ∞} :
     ContDiffAt ℝ n (fun p : ℝ × ℝ => p.1 ^ p.2) p := by
   cases' hp.lt_or_lt with hneg hpos
   exacts
@@ -297,7 +307,7 @@ theorem hasStrictDerivAt_rpow_const_of_ne {x : ℝ} (hx : x ≠ 0) (p : ℝ) :
     HasStrictDerivAt (fun x => x ^ p) (p * x ^ (p - 1)) x := by
   cases' hx.lt_or_lt with hx hx
   · have := (hasStrictFDerivAt_rpow_of_neg (x, p) hx).comp_hasStrictDerivAt x
-      ((hasStrictDerivAt_id x).prod (hasStrictDerivAt_const _ _))
+      ((hasStrictDerivAt_id x).prod (hasStrictDerivAt_const x p))
     convert this using 1; simp
   · simpa using (hasStrictDerivAt_id x).rpow (hasStrictDerivAt_const x p) hx
 
@@ -348,7 +358,7 @@ theorem deriv_rpow_const' {p : ℝ} (h : 1 ≤ p) :
     (deriv fun x : ℝ => x ^ p) = fun x => p * x ^ (p - 1) :=
   funext fun _ => deriv_rpow_const (Or.inr h)
 
-theorem contDiffAt_rpow_const_of_ne {x p : ℝ} {n : ℕ∞} (h : x ≠ 0) :
+theorem contDiffAt_rpow_const_of_ne {x p : ℝ} {n : WithTop ℕ∞} (h : x ≠ 0) :
     ContDiffAt ℝ n (fun x => x ^ p) x :=
   (contDiffAt_rpow_of_ne (x, p) h).comp x (contDiffAt_id.prod contDiffAt_const)
 
@@ -358,7 +368,9 @@ theorem contDiff_rpow_const_of_le {p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
   · exact contDiff_zero.2 (continuous_id.rpow_const fun x => Or.inr <| by simpa using h)
   · have h1 : 1 ≤ p := le_trans (by simp) h
     rw [Nat.cast_succ, ← le_sub_iff_add_le] at h
-    rw [contDiff_succ_iff_deriv, deriv_rpow_const' h1]
+    rw [show ((n + 1 : ℕ) : WithTop ℕ∞) = n + 1 from rfl,
+      contDiff_succ_iff_deriv, deriv_rpow_const' h1]
+    simp only [WithTop.natCast_ne_top, analyticOn_univ, IsEmpty.forall_iff, true_and]
     exact ⟨differentiable_rpow_const h1, contDiff_const.mul (ihn h)⟩
 
 theorem contDiffAt_rpow_const_of_le {x p : ℝ} {n : ℕ} (h : ↑n ≤ p) :
@@ -383,31 +395,38 @@ open Real
 section fderiv
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f g : E → ℝ} {f' g' : E →L[ℝ] ℝ}
-  {x : E} {s : Set E} {c p : ℝ} {n : ℕ∞}
+  {x : E} {s : Set E} {c p : ℝ} {n : WithTop ℕ∞}
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  added `by exact` to deal with unification issues. -/
 theorem HasFDerivWithinAt.rpow (hf : HasFDerivWithinAt f f' s x) (hg : HasFDerivWithinAt g g' s x)
     (h : 0 < f x) : HasFDerivWithinAt (fun x => f x ^ g x)
-      ((g x * f x ^ (g x - 1)) • f' + (f x ^ g x * Real.log (f x)) • g') s x :=
-  (hasStrictFDerivAt_rpow_of_pos (f x, g x) h).hasFDerivAt.comp_hasFDerivWithinAt x (hf.prod hg)
+      ((g x * f x ^ (g x - 1)) • f' + (f x ^ g x * Real.log (f x)) • g') s x := by
+  exact (hasStrictFDerivAt_rpow_of_pos (f x, g x) h).hasFDerivAt.comp_hasFDerivWithinAt x
+    (hf.prod hg)
 
 theorem HasFDerivAt.rpow (hf : HasFDerivAt f f' x) (hg : HasFDerivAt g g' x) (h : 0 < f x) :
     HasFDerivAt (fun x => f x ^ g x)
-      ((g x * f x ^ (g x - 1)) • f' + (f x ^ g x * Real.log (f x)) • g') x :=
-  (hasStrictFDerivAt_rpow_of_pos (f x, g x) h).hasFDerivAt.comp x (hf.prod hg)
+      ((g x * f x ^ (g x - 1)) • f' + (f x ^ g x * Real.log (f x)) • g') x := by
+  exact (hasStrictFDerivAt_rpow_of_pos (f x, g x) h).hasFDerivAt.comp x (hf.prod hg)
 
 theorem HasStrictFDerivAt.rpow (hf : HasStrictFDerivAt f f' x) (hg : HasStrictFDerivAt g g' x)
     (h : 0 < f x) : HasStrictFDerivAt (fun x => f x ^ g x)
       ((g x * f x ^ (g x - 1)) • f' + (f x ^ g x * Real.log (f x)) • g') x :=
   (hasStrictFDerivAt_rpow_of_pos (f x, g x) h).comp x (hf.prod hg)
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  added `by exact` to deal with unification issues. -/
 theorem DifferentiableWithinAt.rpow (hf : DifferentiableWithinAt ℝ f s x)
     (hg : DifferentiableWithinAt ℝ g s x) (h : f x ≠ 0) :
-    DifferentiableWithinAt ℝ (fun x => f x ^ g x) s x :=
-  (differentiableAt_rpow_of_ne (f x, g x) h).comp_differentiableWithinAt x (hf.prod hg)
+    DifferentiableWithinAt ℝ (fun x => f x ^ g x) s x := by
+  exact (differentiableAt_rpow_of_ne (f x, g x) h).comp_differentiableWithinAt x (hf.prod hg)
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  added `by exact` to deal with unification issues. -/
 theorem DifferentiableAt.rpow (hf : DifferentiableAt ℝ f x) (hg : DifferentiableAt ℝ g x)
-    (h : f x ≠ 0) : DifferentiableAt ℝ (fun x => f x ^ g x) x :=
-  (differentiableAt_rpow_of_ne (f x, g x) h).comp x (hf.prod hg)
+    (h : f x ≠ 0) : DifferentiableAt ℝ (fun x => f x ^ g x) x := by
+  exact (differentiableAt_rpow_of_ne (f x, g x) h).comp x (hf.prod hg)
 
 theorem DifferentiableOn.rpow (hf : DifferentiableOn ℝ f s) (hg : DifferentiableOn ℝ g s)
     (h : ∀ x ∈ s, f x ≠ 0) : DifferentiableOn ℝ (fun x => f x ^ g x) s := fun x hx =>
@@ -455,13 +474,17 @@ theorem HasStrictFDerivAt.const_rpow (hf : HasStrictFDerivAt f f' x) (hc : 0 < c
     HasStrictFDerivAt (fun x => c ^ f x) ((c ^ f x * Real.log c) • f') x :=
   (hasStrictDerivAt_const_rpow hc (f x)).comp_hasStrictFDerivAt x hf
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  added `by exact` to deal with unification issues. -/
 theorem ContDiffWithinAt.rpow (hf : ContDiffWithinAt ℝ n f s x) (hg : ContDiffWithinAt ℝ n g s x)
-    (h : f x ≠ 0) : ContDiffWithinAt ℝ n (fun x => f x ^ g x) s x :=
-  (contDiffAt_rpow_of_ne (f x, g x) h).comp_contDiffWithinAt x (hf.prod hg)
+    (h : f x ≠ 0) : ContDiffWithinAt ℝ n (fun x => f x ^ g x) s x := by
+  exact (contDiffAt_rpow_of_ne (f x, g x) h).comp_contDiffWithinAt x (hf.prod hg)
 
+#adaptation_note /-- https://github.com/leanprover/lean4/pull/6024
+  added `by exact` to deal with unification issues. -/
 theorem ContDiffAt.rpow (hf : ContDiffAt ℝ n f x) (hg : ContDiffAt ℝ n g x) (h : f x ≠ 0) :
-    ContDiffAt ℝ n (fun x => f x ^ g x) x :=
-  (contDiffAt_rpow_of_ne (f x, g x) h).comp x (hf.prod hg)
+    ContDiffAt ℝ n (fun x => f x ^ g x) x := by
+  exact (contDiffAt_rpow_of_ne (f x, g x) h).comp x (hf.prod hg)
 
 theorem ContDiffOn.rpow (hf : ContDiffOn ℝ n f s) (hg : ContDiffOn ℝ n g s) (h : ∀ x ∈ s, f x ≠ 0) :
     ContDiffOn ℝ n (fun x => f x ^ g x) s := fun x hx => (hf x hx).rpow (hg x hx) (h x hx)
@@ -568,10 +591,10 @@ open Real Filter
 theorem tendsto_one_plus_div_rpow_exp (t : ℝ) :
     Tendsto (fun x : ℝ => (1 + t / x) ^ x) atTop (𝓝 (exp t)) := by
   apply ((Real.continuous_exp.tendsto _).comp (tendsto_mul_log_one_plus_div_atTop t)).congr' _
-  have h₁ : (1 : ℝ) / 2 < 1 := by linarith
+  have h₁ : (1 : ℝ) / 2 < 1 := by norm_num
   have h₂ : Tendsto (fun x : ℝ => 1 + t / x) atTop (𝓝 1) := by
     simpa using (tendsto_inv_atTop_zero.const_mul t).const_add 1
-  refine (eventually_ge_of_tendsto_gt h₁ h₂).mono fun x hx => ?_
+  refine (h₂.eventually_const_le h₁).mono fun x hx => ?_
   have hx' : 0 < 1 + t / x := by linarith
   simp [mul_comm x, exp_mul, exp_log hx']
 

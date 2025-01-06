@@ -7,7 +7,6 @@ import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.GroupWithZero.Action.Defs
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.GroupWithZero.Opposite
-import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Introduce `SMulWithZero`
@@ -35,6 +34,7 @@ We also add an `instance`:
 * `smulMonoidWithZeroHom`: Scalar multiplication bundled as a morphism of monoids with zero.
 -/
 
+assert_not_exists Units
 
 variable {R R' M M' : Type*}
 
@@ -127,7 +127,8 @@ class MulActionWithZero extends MulAction R M where
   zero_smul : ∀ m : M, (0 : R) • m = 0
 
 -- see Note [lower instance priority]
-instance (priority := 100) MulActionWithZero.toSMulWithZero [m : MulActionWithZero R M] :
+instance (priority := 100) MulActionWithZero.toSMulWithZero
+    (R M) {_ : MonoidWithZero R} {_ : Zero M} [m : MulActionWithZero R M] :
     SMulWithZero R M :=
   { m with }
 
@@ -199,8 +200,3 @@ theorem smul_inv₀ [SMulCommClass α β β] [IsScalarTower α β β] (c : α) (
     rw [smul_mul_smul_comm, inv_mul_cancel₀ hc, inv_mul_cancel₀ hx, one_smul]
 
 end GroupWithZero
-
--- This instance seems a bit incongruous in this file, but `#find_home!` told me to put it here.
-instance NonUnitalNonAssocSemiring.toDistribSMul [NonUnitalNonAssocSemiring R] :
-    DistribSMul R R where
-  smul_add := mul_add

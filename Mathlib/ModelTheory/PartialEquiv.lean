@@ -40,8 +40,8 @@ namespace FirstOrder
 
 namespace Language
 
-variable (L : Language.{u, v}) (M : Type w) (N : Type w') {P : Type*}
-variable [L.Structure M] [L.Structure N] [L.Structure P]
+variable (L : Language.{u, v}) (M : Type w) (N : Type w')
+variable [L.Structure M] [L.Structure N]
 
 open FirstOrder Structure Substructure
 
@@ -303,13 +303,13 @@ variable (S : ι →o M ≃ₚ[L] N)
 
 instance : DirectedSystem (fun i ↦ (S i).dom)
     (fun _ _ h ↦ Substructure.inclusion (dom_le_dom (S.monotone h))) where
-  map_self' := fun _ _ _ ↦ rfl
-  map_map' := fun _ _ _ ↦ rfl
+  map_self _ _ := rfl
+  map_map _ _ _ _ _ _ := rfl
 
 instance : DirectedSystem (fun i ↦ (S i).cod)
     (fun _ _ h ↦ Substructure.inclusion (cod_le_cod (S.monotone h))) where
-  map_self' := fun _ _ _ ↦ rfl
-  map_map' := fun _ _ _ ↦ rfl
+  map_self _ _ := rfl
+  map_map _ _ _ _ _ _ := rfl
 
 /-- The limit of a directed system of PartialEquivs. -/
 noncomputable def partialEquivLimit : M ≃ₚ[L] N where
@@ -347,8 +347,8 @@ lemma partialEquivLimit_comp_inclusion {i : ι} :
 
 theorem le_partialEquivLimit (i : ι) : S i ≤ partialEquivLimit S :=
   ⟨le_iSup (f := fun i ↦ (S i).dom) _, by
-    #adaptation_note /-- After lean4#5020, `simp` can no longer apply this lemma here. -/
-    rw [partialEquivLimit_comp_inclusion]
+    #adaptation_note /-- After https://github.com/leanprover/lean4/pull/5020, these two `simp` calls cannot be combined. -/
+    simp only [partialEquivLimit_comp_inclusion]
     simp only [cod_partialEquivLimit, dom_partialEquivLimit, ← Embedding.comp_assoc,
       subtype_comp_inclusion]⟩
 
@@ -389,32 +389,75 @@ theorem countable_self_fgequiv_of_countable [Countable M] :
 instance inhabited_self_FGEquiv : Inhabited (L.FGEquiv M M) :=
   ⟨⟨⟨⊥, ⊥, Equiv.refl L (⊥ : L.Substructure M)⟩, fg_bot⟩⟩
 
+instance inhabited_FGEquiv_of_IsEmpty_Constants_and_Relations
+    [IsEmpty L.Constants] [IsEmpty (L.Relations 0)] [L.Structure N] :
+    Inhabited (L.FGEquiv M N) :=
+  ⟨⟨⟨⊥, ⊥, {
+      toFun := isEmptyElim
+      invFun := isEmptyElim
+      left_inv := isEmptyElim
+      right_inv := isEmptyElim
+      map_fun' := fun {n} f x => by
+        cases n
+        · exact isEmptyElim f
+        · exact isEmptyElim (x 0)
+      map_rel' := fun {n} r x => by
+        cases n
+        · exact isEmptyElim r
+        · exact isEmptyElim (x 0)
+    }⟩, fg_bot⟩⟩
+
 /-- Maps to the symmetric finitely-generated partial equivalence. -/
 @[simps]
 def FGEquiv.symm (f : L.FGEquiv M N) : L.FGEquiv N M := ⟨f.1.symm, f.1.dom_fg_iff_cod_fg.1 f.2⟩
 
-lemma IsExtensionPair_iff_cod : L.IsExtensionPair M N ↔
+lemma isExtensionPair_iff_cod : L.IsExtensionPair M N ↔
     ∀ (f : L.FGEquiv N M) (m : M), ∃ g, m ∈ g.1.cod ∧ f ≤ g := by
   refine Iff.intro ?_ ?_ <;>
   · intro h f m
     obtain ⟨g, h1, h2⟩ := h f.symm m
     exact ⟨g.symm, h1, monotone_symm h2⟩
 
+/-- An alternate characterization of an extension pair is that every finitely generated partial
+isomorphism can be extended to include any particular element of the domain. -/
+theorem isExtensionPair_iff_exists_embedding_closure_singleton_sup :
+    L.IsExtensionPair M N ↔
+    ∀ (S : L.Substructure M) (_ : S.FG) (f : S ↪[L] N) (m : M),
+      ∃ g : (closure L {m} ⊔ S : L.Substructure M) ↪[L] N, f =
+        g.comp (Substructure.inclusion le_sup_right) := by
+  refine ⟨fun h S S_FG f m => ?_, fun h ⟨f, f_FG⟩ m => ?_⟩
+  · obtain ⟨⟨f', hf'⟩, mf', ff'1, ff'2⟩ := h ⟨⟨S, _, f.equivRange⟩, S_FG⟩ m
+    refine ⟨f'.toEmbedding.comp (Substructure.inclusion ?_), ?_⟩
+    · simp only [sup_le_iff, ff'1, closure_le, singleton_subset_iff, SetLike.mem_coe, mf',
+        and_self]
+    · ext ⟨x, hx⟩
+      rw [Embedding.subtype_equivRange] at ff'2
+      simp only [← ff'2, Embedding.comp_apply, Substructure.coe_inclusion, inclusion_mk,
+        Equiv.coe_toEmbedding, coeSubtype, PartialEquiv.toEmbedding_apply]
+  · obtain ⟨f', eq_f'⟩ := h f.dom f_FG f.toEmbedding m
+    refine ⟨⟨⟨closure L {m} ⊔ f.dom, f'.toHom.range, f'.equivRange⟩,
+      (fg_closure_singleton _).sup f_FG⟩,
+      subset_closure.trans (le_sup_left : (closure L) {m} ≤ _) (mem_singleton m),
+      ⟨le_sup_right, Embedding.ext (fun _ => ?_)⟩⟩
+    rw [PartialEquiv.toEmbedding] at eq_f'
+    simp only [Embedding.comp_apply, Substructure.coe_inclusion, Equiv.coe_toEmbedding, coeSubtype,
+      Embedding.equivRange_apply, eq_f']
+
 namespace IsExtensionPair
 
-protected alias ⟨cod, _⟩ := IsExtensionPair_iff_cod
+protected alias ⟨cod, _⟩ := isExtensionPair_iff_cod
 
 /-- The cofinal set of finite equivalences with a given element in their domain. -/
 def definedAtLeft
     (h : L.IsExtensionPair M N) (m : M) : Order.Cofinal (FGEquiv L M N) where
   carrier := {f | m ∈ f.val.dom}
-  mem_gt := fun f => h f m
+  isCofinal := fun f => h f m
 
 /-- The cofinal set of finite equivalences with a given element in their codomain. -/
 def definedAtRight
     (h : L.IsExtensionPair N M) (n : N) : Order.Cofinal (FGEquiv L M N) where
   carrier := {f | n ∈ f.val.cod}
-  mem_gt := fun f => h.cod f n
+  isCofinal := fun f => h.cod f n
 
 end IsExtensionPair
 

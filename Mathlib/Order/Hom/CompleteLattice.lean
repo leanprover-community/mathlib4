@@ -592,12 +592,6 @@ def tosSupHom (f : CompleteLatticeHom α β) : sSupHom α β :=
 def toBoundedLatticeHom (f : CompleteLatticeHom α β) : BoundedLatticeHom α β :=
   f
 
--- Porting note: We do not want CoeFun for this in lean 4
--- /-- Helper instance for when there's too many metavariables to apply `fun_like.has_coe_toFun`
--- directly. -/
--- instance : CoeFun (CompleteLatticeHom α β) fun _ => α → β :=
---   DFunLike.hasCoeToFun
-
 lemma toFun_eq_coe (f : CompleteLatticeHom α β) : f.toFun = f := rfl
 
 @[simp] lemma coe_tosInfHom (f : CompleteLatticeHom α β) : ⇑f.tosInfHom = f := rfl

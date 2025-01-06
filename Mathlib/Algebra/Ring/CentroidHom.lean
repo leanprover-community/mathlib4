@@ -61,8 +61,8 @@ attribute [nolint docBlame] CentroidHom.toAddMonoidHom
 /-- `CentroidHomClass F α` states that `F` is a type of centroid homomorphisms.
 
 You should extend this class when you extend `CentroidHom`. -/
-class CentroidHomClass (F α : Type*) [NonUnitalNonAssocSemiring α] [FunLike F α α] extends
-  AddMonoidHomClass F α α : Prop where
+class CentroidHomClass (F : Type*) (α : outParam Type*)
+    [NonUnitalNonAssocSemiring α] [FunLike F α α] extends AddMonoidHomClass F α α : Prop where
   /-- Commutativity of centroid homomorphims with left multiplication. -/
   map_mul_left (f : F) (a b : α) : f (a * b) = a * f b
   /-- Commutativity of centroid homomorphims with right multiplication. -/
@@ -101,13 +101,6 @@ instance : CentroidHomClass (CentroidHom α) α where
   map_mul_left f := f.map_mul_left'
   map_mul_right f := f.map_mul_right'
 
-
-/-- Helper instance for when there's too many metavariables to apply `DFunLike.CoeFun`
-directly. -/
-/- Porting note: Lean gave me `unknown constant 'DFunLike.CoeFun'` and says `CoeFun` is a type
-mismatch, so I used `library_search`. -/
-instance : CoeFun (CentroidHom α) fun _ ↦ α → α :=
-  inferInstanceAs (CoeFun (CentroidHom α) fun _ ↦ α → α)
 
 -- Porting note: removed @[simp]; not in normal form. (`toAddMonoidHom_eq_coe` below ensures that
 -- the LHS simplifies to the RHS anyway.)

@@ -133,7 +133,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
   rcases hB with ⟨c, hc, B, hO⟩
   obtain ⟨d, ⟨hcd, hd₀⟩, hd⟩ : ∃ d, (c < d ∧ 0 < d) ∧ d < π / 2 / b := by
     simpa only [max_lt_iff] using exists_between (max_lt hc hπb)
-  have hb' : d * b < π / 2 := (lt_div_iff hb).1 hd
+  have hb' : d * b < π / 2 := (lt_div_iff₀ hb).1 hd
   set aff := (fun w => d * (w - a * I) : ℂ → ℂ)
   set g := fun (ε : ℝ) (w : ℂ) => exp (ε * (exp (aff w) + exp (-aff w)))
   /- Since `g ε z → 1` as `ε → 0⁻`, it suffices to prove that `‖g ε z • f z‖ ≤ C`
@@ -362,7 +362,7 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
   -- Porting note: failed to clear hζ ζ
   · -- The estimate `hB` on `f` implies the required estimate on
     -- `f ∘ exp` with the same `c` and `B' = max B 0`.
-    rw [sub_zero, div_div_cancel' Real.pi_pos.ne']
+    rw [sub_zero, div_div_cancel₀ Real.pi_pos.ne']
     rcases hB with ⟨c, hc, B, hO⟩
     refine ⟨c, hc, max B 0, ?_⟩
     rw [← comap_comap, comap_abs_atTop, comap_sup, inf_sup_right]

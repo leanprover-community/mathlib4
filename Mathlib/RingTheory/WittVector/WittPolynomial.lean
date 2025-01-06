@@ -230,7 +230,7 @@ theorem xInTermsOfW_vars_aux (n : ℕ) :
   rw [xInTermsOfW_eq, mul_comm, vars_C_mul _ (Invertible.ne_zero _),
     vars_sub_of_disjoint, vars_X, range_succ, insert_eq]
   on_goal 1 =>
-    simp only [true_and_iff, true_or_iff, eq_self_iff_true, mem_union, mem_singleton]
+    simp only [true_and, true_or, eq_self_iff_true, mem_union, mem_singleton]
     intro i
     rw [mem_union, mem_union]
     apply Or.imp id

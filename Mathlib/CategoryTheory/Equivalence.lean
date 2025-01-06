@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Tim Baumann, Stephen Morgan, Scott Morrison, Floris van Doorn
+Authors: Tim Baumann, Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.FullSubcategory
@@ -269,20 +269,19 @@ variable {E : Type u₃} [Category.{v₃} E]
 def trans (e : C ≌ D) (f : D ≌ E) : C ≌ E where
   functor := e.functor ⋙ f.functor
   inverse := f.inverse ⋙ e.inverse
-  unitIso := by
-    refine Iso.trans e.unitIso ?_
-    exact isoWhiskerLeft e.functor (isoWhiskerRight f.unitIso e.inverse)
-  counitIso := by
-    refine Iso.trans ?_ f.counitIso
-    exact isoWhiskerLeft f.inverse (isoWhiskerRight e.counitIso f.functor)
+  unitIso := e.unitIso ≪≫ isoWhiskerRight (e.functor.rightUnitor.symm ≪≫
+    isoWhiskerLeft _ f.unitIso ≪≫ (Functor.associator _ _ _ ).symm) _ ≪≫ Functor.associator _ _ _
+  counitIso := (Functor.associator _ _ _ ).symm ≪≫ isoWhiskerRight ((Functor.associator _ _ _ ) ≪≫
+      isoWhiskerLeft _ e.counitIso ≪≫ f.inverse.rightUnitor) _ ≪≫ f.counitIso
   -- We wouldn't have needed to give this proof if we'd used `Equivalence.mk`,
   -- but we choose to avoid using that here, for the sake of good structure projection `simp`
   -- lemmas.
   functor_unitIso_comp X := by
     dsimp
-    rw [← f.functor.map_comp_assoc, e.functor.map_comp, ← counitInv_app_functor, fun_inv_map,
-      Iso.inv_hom_id_app_assoc, assoc, Iso.inv_hom_id_app, counit_app_functor, ← Functor.map_comp]
-    erw [comp_id, Iso.hom_inv_id_app, Functor.map_id]
+    simp only [comp_id, id_comp, map_comp, fun_inv_map, comp_obj, id_obj, counitInv,
+      functor_unit_comp_assoc, assoc]
+    slice_lhs 2 3 => rw [← Functor.map_comp, Iso.inv_hom_id_app]
+    simp
 
 /-- Composing a functor with both functors of an equivalence yields a naturally isomorphic
 functor. -/
@@ -293,13 +292,13 @@ def funInvIdAssoc (e : C ≌ D) (F : C ⥤ E) : e.functor ⋙ e.inverse ⋙ F �
 theorem funInvIdAssoc_hom_app (e : C ≌ D) (F : C ⥤ E) (X : C) :
     (funInvIdAssoc e F).hom.app X = F.map (e.unitInv.app X) := by
   dsimp [funInvIdAssoc]
-  aesop_cat
+  simp
 
 @[simp]
 theorem funInvIdAssoc_inv_app (e : C ≌ D) (F : C ⥤ E) (X : C) :
     (funInvIdAssoc e F).inv.app X = F.map (e.unit.app X) := by
   dsimp [funInvIdAssoc]
-  aesop_cat
+  simp
 
 /-- Composing a functor with both functors of an equivalence yields a naturally isomorphic
 functor. -/
@@ -310,29 +309,36 @@ def invFunIdAssoc (e : C ≌ D) (F : D ⥤ E) : e.inverse ⋙ e.functor ⋙ F �
 theorem invFunIdAssoc_hom_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
     (invFunIdAssoc e F).hom.app X = F.map (e.counit.app X) := by
   dsimp [invFunIdAssoc]
-  aesop_cat
+  simp
 
 @[simp]
 theorem invFunIdAssoc_inv_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
     (invFunIdAssoc e F).inv.app X = F.map (e.counitInv.app X) := by
   dsimp [invFunIdAssoc]
-  aesop_cat
+  simp
 
 /-- If `C` is equivalent to `D`, then `C ⥤ E` is equivalent to `D ⥤ E`. -/
 @[simps! functor inverse unitIso counitIso]
-def congrLeft (e : C ≌ D) : C ⥤ E ≌ D ⥤ E :=
-  Equivalence.mk ((whiskeringLeft _ _ _).obj e.inverse) ((whiskeringLeft _ _ _).obj e.functor)
-    (NatIso.ofComponents fun F => (e.funInvIdAssoc F).symm)
-    (NatIso.ofComponents fun F => e.invFunIdAssoc F)
+def congrLeft (e : C ≌ D) : C ⥤ E ≌ D ⥤ E where
+  functor := (whiskeringLeft _ _ _).obj e.inverse
+  inverse := (whiskeringLeft _ _ _).obj e.functor
+  unitIso := (NatIso.ofComponents fun F => (e.funInvIdAssoc F).symm)
+  counitIso := (NatIso.ofComponents fun F => e.invFunIdAssoc F)
+  functor_unitIso_comp F := by
+    ext X
+    dsimp
+    simp only [funInvIdAssoc_inv_app, id_obj, comp_obj, invFunIdAssoc_hom_app,
+      Functor.comp_map, ← F.map_comp, unit_inverse_comp, map_id]
 
 /-- If `C` is equivalent to `D`, then `E ⥤ C` is equivalent to `E ⥤ D`. -/
 @[simps! functor inverse unitIso counitIso]
-def congrRight (e : C ≌ D) : E ⥤ C ≌ E ⥤ D :=
-  Equivalence.mk ((whiskeringRight _ _ _).obj e.functor) ((whiskeringRight _ _ _).obj e.inverse)
-    (NatIso.ofComponents
-      fun F => F.rightUnitor.symm ≪≫ isoWhiskerLeft F e.unitIso ≪≫ Functor.associator _ _ _)
-    (NatIso.ofComponents
-      fun F => Functor.associator _ _ _ ≪≫ isoWhiskerLeft F e.counitIso ≪≫ F.rightUnitor)
+def congrRight (e : C ≌ D) : E ⥤ C ≌ E ⥤ D where
+  functor := (whiskeringRight _ _ _).obj e.functor
+  inverse := (whiskeringRight _ _ _).obj e.inverse
+  unitIso := NatIso.ofComponents
+      fun F => F.rightUnitor.symm ≪≫ isoWhiskerLeft F e.unitIso ≪≫ Functor.associator _ _ _
+  counitIso := NatIso.ofComponents
+      fun F => Functor.associator _ _ _ ≪≫ isoWhiskerLeft F e.counitIso ≪≫ F.rightUnitor
 
 section CancellationLemmas
 
@@ -518,7 +524,7 @@ i.e. faithful, full, and essentially surjective. -/
 noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C where
   obj X := F.objPreimage X
   map {X Y} f := F.preimage ((F.objObjPreimageIso X).hom ≫ f ≫ (F.objObjPreimageIso Y).inv)
-  map_id X := by apply F.map_injective; aesop_cat
+  map_id X := by apply F.map_injective; simp
   map_comp {X Y Z} f g := by apply F.map_injective; simp
 
 /-- Interpret a functor that is an equivalence as an equivalence.

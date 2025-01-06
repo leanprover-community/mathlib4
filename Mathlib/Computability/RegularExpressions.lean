@@ -220,9 +220,10 @@ theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] :
 
 theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
-  induction' x with _ _ ih generalizing P Q
-  · simp only [rmatch, matchEpsilon, Bool.or_eq_true_iff]
-  · repeat rw [rmatch]
+  induction x generalizing P Q with
+  | nil => simp only [rmatch, matchEpsilon, Bool.or_eq_true_iff]
+  | cons _ _ ih =>
+    repeat rw [rmatch]
     rw [deriv_add]
     exact ih _ _
 
@@ -273,7 +274,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
 
 theorem star_rmatch_iff (P : RegularExpression α) :
     ∀ x : List α, (star P).rmatch x ↔ ∃ S : List (List α), x
-          = S.join ∧ ∀ t ∈ S, t ≠ [] ∧ P.rmatch t :=
+          = S.flatten ∧ ∀ t ∈ S, t ≠ [] ∧ P.rmatch t :=
   fun x => by
     have IH := fun t (_h : List.length t < List.length x) => star_rmatch_iff P t
     clear star_rmatch_iff
@@ -305,16 +306,16 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · exact ⟨[], [], by tauto⟩
         · cases' t' with b t
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
-            simp only [eq_self_iff_true, not_true, Ne, false_and_iff] at helem
-          simp only [List.join, List.cons_append, List.cons_eq_cons] at hsum
-          refine ⟨t, U.join, hsum.2, ?_, ?_⟩
+            simp only [eq_self_iff_true, not_true, Ne, false_and] at helem
+          simp only [List.flatten, List.cons_append, List.cons_eq_cons] at hsum
+          refine ⟨t, U.flatten, hsum.2, ?_, ?_⟩
           · specialize helem (b :: t) (by simp)
             rw [rmatch] at helem
             convert helem.2
             exact hsum.1
-          · have hwf : U.join.length < (List.cons a x).length := by
+          · have hwf : U.flatten.length < (List.cons a x).length := by
               rw [hsum.1, hsum.2]
-              simp only [List.length_append, List.length_join, List.length]
+              simp only [List.length_append, List.length_flatten, List.length]
               omega
             rw [IH _ hwf]
             refine ⟨U, rfl, fun t h => helem t ?_⟩
@@ -363,7 +364,7 @@ def map (f : α → β) : RegularExpression α → RegularExpression β
 @[simp]
 protected theorem map_pow (f : α → β) (P : RegularExpression α) :
     ∀ n : ℕ, map f (P ^ n) = map f P ^ n
-  | 0 => by dsimp; rfl
+  | 0 => by unfold map; rfl
   | n + 1 => (congr_arg (· * map f P) (RegularExpression.map_pow f P n) : _)
 
 #adaptation_note /-- around nightly-2024-02-25,
@@ -372,7 +373,7 @@ protected theorem map_pow (f : α → β) (P : RegularExpression α) :
 theorem map_id : ∀ P : RegularExpression α, P.map id = P
   | 0 => rfl
   | 1 => rfl
-  | char a => rfl
+  | char _ => rfl
   | R + S => by simp_rw [map, map_id]
   | comp R S => by simp_rw [map, map_id]; rfl
   | star R => by simp_rw [map, map_id]
@@ -383,7 +384,7 @@ theorem map_id : ∀ P : RegularExpression α, P.map id = P
 theorem map_map (g : β → γ) (f : α → β) : ∀ P : RegularExpression α, (P.map f).map g = P.map (g ∘ f)
   | 0 => rfl
   | 1 => rfl
-  | char a => rfl
+  | char _ => rfl
   | R + S => by simp only [map, Function.comp_apply, map_map]
   | comp R S => by simp only [map, Function.comp_apply, map_map]
   | star R => by simp only [map, Function.comp_apply, map_map]

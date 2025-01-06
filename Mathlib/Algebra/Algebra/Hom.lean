@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.BigOperators.Finsupp
 
 /-!
 # Homomorphisms of `R`-algebras
@@ -24,7 +23,7 @@ This file defines bundled homomorphisms of `R`-algebras.
 universe u v w u₁ v₁
 
 /-- Defining the homomorphism in the category R-Alg. -/
--- @[nolint has_nonempty_instance] -- Porting note(#5171): linter not ported yet
+-- @[nolint has_nonempty_instance] -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
 structure AlgHom (R : Type u) (A : Type v) (B : Type w) [CommSemiring R] [Semiring A] [Semiring B]
   [Algebra R A] [Algebra R B] extends RingHom A B where
   commutes' : ∀ r : R, toFun (algebraMap R A r) = algebraMap R B r
@@ -45,10 +44,9 @@ class AlgHomClass (F : Type*) (R A B : outParam Type*)
   [FunLike F A B] extends RingHomClass F A B : Prop where
   commutes : ∀ (f : F) (r : R), f (algebraMap R A r) = algebraMap R B r
 
--- Porting note: `dangerousInstance` linter has become smarter about `outParam`s
--- attribute [nolint dangerousInstance] AlgHomClass.toRingHomClass
-
--- Porting note (#10618): simp can prove this
+-- For now, don't replace `AlgHom.commutes` and `AlgHomClass.commutes` with the more generic lemma.
+-- The file `Mathlib.NumberTheory.NumberField.CanonicalEmbedding.FundamentalCone` slows down by
+-- 15% if we would do so (see benchmark on PR https://github.com/leanprover-community/mathlib4/pull/18040).
 -- attribute [simp] AlgHomClass.commutes
 
 namespace AlgHomClass
@@ -62,7 +60,7 @@ instance (priority := 100) linearMapClass [AlgHomClass F R A B] : LinearMapClass
     map_smulₛₗ := fun f r x => by
       simp only [Algebra.smul_def, map_mul, commutes, RingHom.id_apply] }
 
--- Porting note (#11445): A new definition underlying a coercion `↑`.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): A new definition underlying a coercion `↑`.
 /-- Turn an element of a type `F` satisfying `AlgHomClass F α β` into an actual
 `AlgHom`. This is declared as the default coercion from `F` to `α →+* β`. -/
 @[coe]
@@ -84,8 +82,6 @@ section Semiring
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [Semiring C] [Semiring D]
 variable [Algebra R A] [Algebra R B] [Algebra R C] [Algebra R D]
-
--- Porting note: we don't port specialized `CoeFun` instances if there is `DFunLike` instead
 
 instance funLike : FunLike (A →ₐ[R] B) A B where
   coe f := f.toFun
@@ -117,14 +113,14 @@ protected theorem coe_coe {F : Type*} [FunLike F A B] [AlgHomClass F R A B] (f :
 theorem toFun_eq_coe (f : A →ₐ[R] B) : f.toFun = f :=
   rfl
 
--- Porting note (#11445): A new definition underlying a coercion `↑`.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): A new definition underlying a coercion `↑`.
 @[coe]
 def toMonoidHom' (f : A →ₐ[R] B) : A →* B := (f : A →+* B)
 
 instance coeOutMonoidHom : CoeOut (A →ₐ[R] B) (A →* B) :=
   ⟨AlgHom.toMonoidHom'⟩
 
--- Porting note (#11445): A new definition underlying a coercion `↑`.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): A new definition underlying a coercion `↑`.
 @[coe]
 def toAddMonoidHom' (f : A →ₐ[R] B) : A →+ B := (f : A →+* B)
 
@@ -221,7 +217,6 @@ protected theorem map_one : φ 1 = 1 :=
 protected theorem map_pow (x : A) (n : ℕ) : φ (x ^ n) = φ x ^ n :=
   map_pow _ _ _
 
--- @[simp] -- Porting note (#10618): simp can prove this
 @[deprecated map_smul (since := "2024-06-26")]
 protected theorem map_smul (r : R) (x : A) : φ (r • x) = r • φ x :=
   map_smul _ _ _
@@ -230,11 +225,6 @@ protected theorem map_smul (r : R) (x : A) : φ (r • x) = r • φ x :=
 protected theorem map_sum {ι : Type*} (f : ι → A) (s : Finset ι) :
     φ (∑ x ∈ s, f x) = ∑ x ∈ s, φ (f x) :=
   map_sum _ _ _
-
-@[deprecated map_finsupp_sum (since := "2024-06-26")]
-protected theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A) :
-    φ (f.sum g) = f.sum fun i a => φ (g i a) :=
-  map_finsupp_sum _ _ _
 
 /-- If a `RingHom` is `R`-linear, then it is an `AlgHom`. -/
 def mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : A →ₐ[R] B :=
@@ -354,10 +344,10 @@ protected theorem map_list_prod (s : List A) : φ s.prod = (s.map φ).prod :=
 @[simps (config := .lemmasOnly) toSemigroup_toMul_mul toOne_one]
 instance End : Monoid (A →ₐ[R] A) where
   mul := comp
-  mul_assoc ϕ ψ χ := rfl
+  mul_assoc _ _ _ := rfl
   one := AlgHom.id R A
-  one_mul ϕ := rfl
-  mul_one ϕ := rfl
+  one_mul _ := rfl
+  mul_one _ := rfl
 
 @[simp]
 theorem one_apply (x : A) : (1 : A →ₐ[R] A) x = x :=
@@ -372,27 +362,6 @@ theorem algebraMap_eq_apply (f : A →ₐ[R] B) {y : R} {x : A} (h : algebraMap 
   h ▸ (f.commutes _).symm
 
 end Semiring
-
-section CommSemiring
-
-variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
-variable [Algebra R A] [Algebra R B] (φ : A →ₐ[R] B)
-
-@[deprecated map_multiset_prod (since := "2024-06-26")]
-protected theorem map_multiset_prod (s : Multiset A) : φ s.prod = (s.map φ).prod :=
-  map_multiset_prod _ _
-
-@[deprecated map_prod (since := "2024-06-26")]
-protected theorem map_prod {ι : Type*} (f : ι → A) (s : Finset ι) :
-    φ (∏ x ∈ s, f x) = ∏ x ∈ s, φ (f x) :=
-  map_prod _ _ _
-
-@[deprecated map_finsupp_prod (since := "2024-06-26")]
-protected theorem map_finsupp_prod {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A) :
-    φ (f.prod g) = f.prod fun i a => φ (g i a) :=
-  map_finsupp_prod _ _ _
-
-end CommSemiring
 
 section Ring
 
@@ -421,11 +390,25 @@ def toNatAlgHom [Semiring R] [Semiring S] (f : R →+* S) : R →ₐ[ℕ] S :=
     toFun := f
     commutes' := fun n => by simp }
 
+@[simp]
+lemma toNatAlgHom_coe [Semiring R] [Semiring S] (f : R →+* S) :
+    ⇑f.toNatAlgHom = ⇑f := rfl
+
+lemma toNatAlgHom_apply [Semiring R] [Semiring S] (f : R →+* S) (x : R) :
+    f.toNatAlgHom x = f x := rfl
+
 /-- Reinterpret a `RingHom` as a `ℤ`-algebra homomorphism. -/
-def toIntAlgHom [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] (f : R →+* S) : R →ₐ[ℤ] S :=
+def toIntAlgHom [Ring R] [Ring S] (f : R →+* S) : R →ₐ[ℤ] S :=
   { f with commutes' := fun n => by simp }
 
-lemma toIntAlgHom_injective [Ring R] [Ring S] [Algebra ℤ R] [Algebra ℤ S] :
+@[simp]
+lemma toIntAlgHom_coe [Ring R] [Ring S] (f : R →+* S) :
+    ⇑f.toIntAlgHom = ⇑f := rfl
+
+lemma toIntAlgHom_apply [Ring R] [Ring S] (f : R →+* S) (x : R) :
+    f.toIntAlgHom x = f x := rfl
+
+lemma toIntAlgHom_injective [Ring R] [Ring S] :
     Function.Injective (RingHom.toIntAlgHom : (R →+* S) → _) :=
   fun _ _ e ↦ DFunLike.ext _ _ (fun x ↦ DFunLike.congr_fun e x)
 

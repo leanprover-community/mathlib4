@@ -6,6 +6,7 @@ Authors: Louis Carlin, Mario Carneiro
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Order.RelClasses
 
 /-!
 # Euclidean domains
@@ -101,6 +102,9 @@ local infixl:50 " ≺ " => EuclideanDomain.r
 local instance wellFoundedRelation : WellFoundedRelation R where
   wf := r_wellFounded
 
+instance isWellFounded : IsWellFounded R (· ≺ ·) where
+  wf := r_wellFounded
+
 -- see Note [lower instance priority]
 instance (priority := 70) : Div R :=
   ⟨EuclideanDomain.quotient⟩
@@ -155,11 +159,8 @@ section
 theorem GCD.induction {P : R → R → Prop} (a b : R) (H0 : ∀ x, P 0 x)
     (H1 : ∀ a b, a ≠ 0 → P (b % a) a → P a b) : P a b := by
   classical
-  exact if a0 : a = 0 then by
-    -- Porting note: required for hygiene, the equation compiler introduces a dummy variable `x`
-    -- See https://leanprover.zulipchat.com/#narrow/stream/270676-lean4/topic/unnecessarily.20tombstoned.20argument/near/314573315
-    change P a b
-    exact a0.symm ▸ H0 b
+  exact if a0 : a = 0 then
+    a0.symm ▸ H0 b
   else
     have _ := mod_lt b a0
     H1 _ _ a0 (GCD.induction (b % a) a H0 H1)

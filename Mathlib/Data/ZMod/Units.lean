@@ -32,8 +32,9 @@ lemma unitsMap_comp {d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
 lemma unitsMap_self (n : ℕ) : unitsMap (dvd_refl n) = MonoidHom.id _ := by
   simp [unitsMap, castHom_self]
 
-lemma IsUnit_cast_of_dvd (hm : n ∣ m) (a : Units (ZMod m)) : IsUnit (cast (a : ZMod m) : ZMod n) :=
+lemma isUnit_cast_of_dvd (hm : n ∣ m) (a : Units (ZMod m)) : IsUnit (cast (a : ZMod m) : ZMod n) :=
   Units.isUnit (unitsMap hm a)
+@[deprecated (since := "2024-12-16")] alias IsUnit_cast_of_dvd := isUnit_cast_of_dvd
 
 theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
     Function.Surjective (unitsMap h) := by
@@ -42,7 +43,7 @@ theorem unitsMap_surjective [hm : NeZero m] (h : n ∣ m) :
     have ⟨k, hk⟩ := this x.val.val (val_coe_unit_coprime x)
     refine ⟨unitOfCoprime _ hk, Units.ext ?_⟩
     have : NeZero n := ⟨fun hn ↦ hm.out (eq_zero_of_zero_dvd (hn ▸ h))⟩
-    simp [unitsMap_def]
+    simp [unitsMap_def, - castHom_apply]
   intro x hx
   let ps := m.primeFactors.filter (fun p ↦ ¬p ∣ x)
   use ps.prod id

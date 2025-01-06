@@ -213,14 +213,14 @@ theorem Memℒp.integral_indicator_norm_ge_le (hf : Memℒp f 1 μ) (hmeas : Str
       · assumption
   rw [ENNReal.tendsto_atTop_zero] at this
   obtain ⟨M, hM⟩ := this (ENNReal.ofReal ε) (ENNReal.ofReal_pos.2 hε)
-  simp only [true_and_iff, zero_tsub, zero_le, sub_zero, zero_add, coe_nnnorm,
+  simp only [zero_tsub, zero_le, sub_zero, zero_add, coe_nnnorm,
     Set.mem_Icc] at hM
   refine ⟨M, ?_⟩
   convert hM M le_rfl
   simp only [coe_nnnorm, ENNReal.ofReal_eq_coe_nnreal (norm_nonneg _)]
   rfl
 
-/-- This lemma is superceded by `MeasureTheory.Memℒp.integral_indicator_norm_ge_nonneg_le`
+/-- This lemma is superseded by `MeasureTheory.Memℒp.integral_indicator_norm_ge_nonneg_le`
 which does not require measurability. -/
 theorem Memℒp.integral_indicator_norm_ge_nonneg_le_of_meas (hf : Memℒp f 1 μ)
     (hmeas : StronglyMeasurable f) {ε : ℝ} (hε : 0 < ε) :
@@ -288,7 +288,7 @@ theorem Memℒp.eLpNorm_indicator_norm_ge_le (hf : Memℒp f p μ) (hmeas : Stro
     ENNReal.ofReal_rpow_of_pos hε]
   convert hM
   rename_i x
-  rw [ENNReal.coe_rpow_of_nonneg _ ENNReal.toReal_nonneg, nnnorm_indicator_eq_indicator_nnnorm,
+  rw [← ENNReal.coe_rpow_of_nonneg _ ENNReal.toReal_nonneg, nnnorm_indicator_eq_indicator_nnnorm,
     nnnorm_indicator_eq_indicator_nnnorm]
   have hiff : M ^ (1 / p.toReal) ≤ ‖f x‖₊ ↔ M ≤ ‖‖f x‖ ^ p.toReal‖₊ := by
     rw [coe_nnnorm, coe_nnnorm, Real.norm_rpow_of_nonneg (norm_nonneg _), norm_norm,
@@ -327,7 +327,7 @@ end
 
 theorem eLpNorm_indicator_le_of_bound {f : α → β} (hp_top : p ≠ ∞) {ε : ℝ} (hε : 0 < ε) {M : ℝ}
     (hf : ∀ x, ‖f x‖ < M) :
-    ∃ (δ : ℝ) (hδ : 0 < δ), ∀ s, MeasurableSet s →
+    ∃ (δ : ℝ) (_ : 0 < δ), ∀ s, MeasurableSet s →
       μ s ≤ ENNReal.ofReal δ → eLpNorm (s.indicator f) p μ ≤ ENNReal.ofReal ε := by
   by_cases hM : M ≤ 0
   · refine ⟨1, zero_lt_one, fun s _ _ => ?_⟩
@@ -363,7 +363,7 @@ variable {f : α → β}
 /-- Auxiliary lemma for `MeasureTheory.Memℒp.eLpNorm_indicator_le`. -/
 theorem Memℒp.eLpNorm_indicator_le' (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf : Memℒp f p μ)
     (hmeas : StronglyMeasurable f) {ε : ℝ} (hε : 0 < ε) :
-    ∃ (δ : ℝ) (hδ : 0 < δ), ∀ s, MeasurableSet s → μ s ≤ ENNReal.ofReal δ →
+    ∃ (δ : ℝ) (_ : 0 < δ), ∀ s, MeasurableSet s → μ s ≤ ENNReal.ofReal δ →
       eLpNorm (s.indicator f) p μ ≤ 2 * ENNReal.ofReal ε := by
   obtain ⟨M, hMpos, hM⟩ := hf.eLpNorm_indicator_norm_ge_pos_le hmeas hε
   obtain ⟨δ, hδpos, hδ⟩ :=
@@ -393,16 +393,16 @@ theorem Memℒp.eLpNorm_indicator_le' (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (h
 @[deprecated (since := "2024-07-27")]
 alias Memℒp.snorm_indicator_le' := Memℒp.eLpNorm_indicator_le'
 
-/-- This lemma is superceded by `MeasureTheory.Memℒp.eLpNorm_indicator_le` which does not require
+/-- This lemma is superseded by `MeasureTheory.Memℒp.eLpNorm_indicator_le` which does not require
 measurability on `f`. -/
 theorem Memℒp.eLpNorm_indicator_le_of_meas (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf : Memℒp f p μ)
     (hmeas : StronglyMeasurable f) {ε : ℝ} (hε : 0 < ε) :
-    ∃ (δ : ℝ) (hδ : 0 < δ), ∀ s, MeasurableSet s → μ s ≤ ENNReal.ofReal δ →
+    ∃ (δ : ℝ) (_ : 0 < δ), ∀ s, MeasurableSet s → μ s ≤ ENNReal.ofReal δ →
       eLpNorm (s.indicator f) p μ ≤ ENNReal.ofReal ε := by
   obtain ⟨δ, hδpos, hδ⟩ := hf.eLpNorm_indicator_le' hp_one hp_top hmeas (half_pos hε)
   refine ⟨δ, hδpos, fun s hs hμs => le_trans (hδ s hs hμs) ?_⟩
   rw [ENNReal.ofReal_div_of_pos zero_lt_two, (by norm_num : ENNReal.ofReal 2 = 2),
-      ENNReal.mul_div_cancel'] <;>
+      ENNReal.mul_div_cancel] <;>
     norm_num
 
 @[deprecated (since := "2024-07-27")]
@@ -410,7 +410,7 @@ alias Memℒp.snorm_indicator_le_of_meas := Memℒp.eLpNorm_indicator_le_of_meas
 
 theorem Memℒp.eLpNorm_indicator_le (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf : Memℒp f p μ) {ε : ℝ}
     (hε : 0 < ε) :
-    ∃ (δ : ℝ) (hδ : 0 < δ), ∀ s, MeasurableSet s → μ s ≤ ENNReal.ofReal δ →
+    ∃ (δ : ℝ) (_ : 0 < δ), ∀ s, MeasurableSet s → μ s ≤ ENNReal.ofReal δ →
       eLpNorm (s.indicator f) p μ ≤ ENNReal.ofReal ε := by
   have hℒp := hf
   obtain ⟨⟨f', hf', heq⟩, _⟩ := hf
@@ -448,7 +448,7 @@ theorem unifIntegrable_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f 
   revert f
   induction' n with n h
   · intro f hf
-  -- Porting note (#10754): added this instance
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added this instance
     have : Subsingleton (Fin Nat.zero) := subsingleton_fin_zero
     exact unifIntegrable_subsingleton hp_one hp_top hf
   intro f hfLp ε hε
@@ -517,12 +517,8 @@ theorem tendsto_Lp_finite_of_tendsto_ae_of_meas [IsFiniteMeasure μ] (hp : 1 ≤
     exact ⟨0, fun n _ => by simp [h]⟩
   by_cases hμ : μ = 0
   · exact ⟨0, fun n _ => by simp [hμ]⟩
-  have hε' : 0 < ε.toReal / 3 :=
-    div_pos (ENNReal.toReal_pos (gt_iff_lt.1 hε).ne.symm h.ne) (by norm_num)
-  have hdivp : 0 ≤ 1 / p.toReal := by
-    refine one_div_nonneg.2 ?_
-    rw [← ENNReal.zero_toReal, ENNReal.toReal_le_toReal ENNReal.zero_ne_top hp']
-    exact le_trans (zero_le _) hp
+  have hε' : 0 < ε.toReal / 3 := div_pos (ENNReal.toReal_pos hε.ne' h.ne) (by norm_num)
+  have hdivp : 0 ≤ 1 / p.toReal := by positivity
   have hpow : 0 < measureUnivNNReal μ ^ (1 / p.toReal) :=
     Real.rpow_pos_of_pos (measureUnivNNReal_pos hμ) _
   obtain ⟨δ₁, hδ₁, heLpNorm₁⟩ := hui hε'
@@ -641,7 +637,7 @@ theorem tendstoInMeasure_iff_tendsto_Lp_finite [IsFiniteMeasure μ] (hp : 1 ≤ 
         (fun n => (hf n).aestronglyMeasurable) hg.aestronglyMeasurable h,
       unifIntegrable_of_tendsto_Lp hp hp' hf hg h⟩⟩
 
-/-- This lemma is superceded by `unifIntegrable_of` which do not require `C` to be positive. -/
+/-- This lemma is superseded by `unifIntegrable_of` which do not require `C` to be positive. -/
 theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → β}
     (hf : ∀ i, StronglyMeasurable (f i))
     (h : ∀ ε : ℝ, 0 < ε → ∃ C : ℝ≥0, 0 < C ∧
@@ -790,7 +786,7 @@ theorem uniformIntegrable_const {g : α → β} (hp : 1 ≤ p) (hp_ne_top : p �
   ⟨fun _ => hg.1, unifIntegrable_const hp hp_ne_top hg,
     ⟨(eLpNorm g p μ).toNNReal, fun _ => le_of_eq (ENNReal.coe_toNNReal hg.2.ne).symm⟩⟩
 
-/-- This lemma is superceded by `uniformIntegrable_of` which only requires
+/-- This lemma is superseded by `uniformIntegrable_of` which only requires
 `AEStronglyMeasurable`. -/
 theorem uniformIntegrable_of' [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ ∞)
     (hf : ∀ i, StronglyMeasurable (f i))
@@ -851,7 +847,7 @@ theorem uniformIntegrable_of [IsFiniteMeasure μ] (hp : 1 ≤ p) (hp' : p ≠ �
   · rw [Set.indicator_of_not_mem hfx, Set.indicator_of_not_mem]
     rwa [Set.mem_setOf, hx] at hfx
 
-/-- This lemma is superceded by `UniformIntegrable.spec` which does not require measurability. -/
+/-- This lemma is superseded by `UniformIntegrable.spec` which does not require measurability. -/
 theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, StronglyMeasurable (f i))
     (hfu : UniformIntegrable f p μ) {ε : ℝ} (hε : 0 < ε) :
     ∃ C : ℝ≥0, ∀ i, eLpNorm ({ x | C ≤ ‖f i x‖₊ }.indicator (f i)) p μ ≤ ENNReal.ofReal ε := by
@@ -876,7 +872,7 @@ theorem UniformIntegrable.spec' (hp : p ≠ 0) (hp' : p ≠ ∞) (hf : ∀ i, St
           rwa [nnnorm_indicator_eq_indicator_nnnorm, Set.indicator_of_mem hx]
         _ ≤ eLpNorm (f (ℐ C)) p μ := eLpNorm_indicator_le _
     specialize this (2 * max M 1 * δ⁻¹ ^ (1 / p.toReal))
-    rw [ENNReal.coe_rpow_of_nonneg _ (one_div_nonneg.2 ENNReal.toReal_nonneg), ← ENNReal.coe_smul,
+    rw [← ENNReal.coe_rpow_of_nonneg _ (one_div_nonneg.2 ENNReal.toReal_nonneg), ← ENNReal.coe_smul,
       smul_eq_mul, mul_assoc, NNReal.inv_rpow,
       inv_mul_cancel₀ (NNReal.rpow_pos (NNReal.coe_pos.1 hδpos)).ne.symm, mul_one, ENNReal.coe_mul,
       ← NNReal.inv_rpow] at this

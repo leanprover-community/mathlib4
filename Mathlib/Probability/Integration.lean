@@ -51,8 +51,8 @@ theorem lintegral_mul_indicator_eq_lintegral_mul_lintegral_indicator {Mf mΩ : M
   apply @Measurable.ennreal_induction _ Mf
   · intro c' s' h_meas_s'
     simp_rw [← inter_indicator_mul]
-    rw [lintegral_indicator _ (MeasurableSet.inter (hMf _ h_meas_s') h_meas_T),
-      lintegral_indicator _ (hMf _ h_meas_s'), lintegral_indicator _ h_meas_T]
+    rw [lintegral_indicator (MeasurableSet.inter (hMf _ h_meas_s') h_meas_T),
+      lintegral_indicator (hMf _ h_meas_s'), lintegral_indicator h_meas_T]
     simp only [measurable_const, lintegral_const, univ_inter, lintegral_const_mul,
       MeasurableSet.univ, Measure.restrict_apply]
     rw [IndepSets_iff] at h_ind
@@ -142,7 +142,8 @@ theorem IndepFun.integrable_mul {β : Type*} [MeasurableSpace β] {X Y : Ω → 
   have hmul : ∫⁻ a, nX a * nY a ∂μ = (∫⁻ a, nX a ∂μ) * ∫⁻ a, nY a ∂μ :=
     lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' hnX hnY hXY''
   refine ⟨hX.1.mul hY.1, ?_⟩
-  simp_rw [HasFiniteIntegral, Pi.mul_apply, nnnorm_mul, ENNReal.coe_mul, hmul]
+  simp only [nX, nY] at hmul
+  simp_rw [hasFiniteIntegral_iff_nnnorm, Pi.mul_apply, nnnorm_mul, ENNReal.coe_mul, hmul]
   exact ENNReal.mul_lt_top hX.2 hY.2
 
 /-- If the product of two independent real-valued random variables is integrable and
@@ -157,7 +158,7 @@ theorem IndepFun.integrable_left_of_integrable_mul {β : Type*} [MeasurableSpace
     apply h'Y
     filter_upwards [I] with ω hω
     simpa using hω
-  refine lt_top_iff_ne_top.2 fun H => ?_
+  refine hasFiniteIntegral_iff_nnnorm.mpr <| lt_top_iff_ne_top.2 fun H => ?_
   have J : IndepFun (fun ω => ‖X ω‖₊ : Ω → ℝ≥0∞) (fun ω => ‖Y ω‖₊ : Ω → ℝ≥0∞) μ := by
     have M : Measurable fun x : β => (‖x‖₊ : ℝ≥0∞) := measurable_nnnorm.coe_nnreal_ennreal
     apply IndepFun.comp hXY M M
@@ -184,6 +185,7 @@ theorem IndepFun.integrable_right_of_integrable_mul {β : Type*} [MeasurableSpac
     apply IndepFun.comp hXY M M
   have A : (∫⁻ ω, ‖X ω * Y ω‖₊ ∂μ) < ∞ := h'XY.2
   simp only [nnnorm_mul, ENNReal.coe_mul] at A
+  simp_rw [enorm_eq_nnnorm] at H
   rw [lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' hX.ennnorm hY.ennnorm J, H] at A
   simp only [ENNReal.mul_top I, lt_self_iff_false] at A
 
