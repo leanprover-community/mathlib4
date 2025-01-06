@@ -107,7 +107,7 @@ namespace Hollom
 @[simp] lemma «exists» {p : Hollom → Prop} : (∃ x, p x) ↔ ∃ x, p (toHollom x) := Iff.rfl
 
 @[elab_as_elim, induction_eliminator, cases_eliminator]
-lemma induction {p : Hollom → Prop} (h : ∀ x, p (toHollom x)) : ∀ x, p x := h
+lemma induction {p : Hollom → Prop} (h : ∀ x y z, p (toHollom (x, y, z))) : ∀ x, p x := by simpa
 
 @[mk_iff]
 inductive HollomOrder : ℕ × ℕ × ℕ → ℕ × ℕ × ℕ → Prop
@@ -197,6 +197,7 @@ lemma level_eq (n : ℕ) : level n = {x | (ofHollom x).2.2 = n} := by
 For each `n`, there is an order embedding from ℕ × ℕ (which has the product order) to the Hollom
 partial order.
 -/
+@[simps]
 def embed (n : ℕ) : ℕ × ℕ ↪o Hollom where
   toFun x := toHollom (x.1, x.2, n)
   inj' x := by aesop
@@ -294,6 +295,10 @@ lemma test {f : ℕ → ℕ} {n₀ : ℕ} (hf : ∀ n ≥ n₀, f (n + 1) < f n)
   obtain ⟨m, n, h₁, h₂⟩ := univ_isPWO_of_linearOrder g (by simp)
   exact (hg h₁).not_le h₂
 
+lemma triangle_finite (n : ℕ) : {x : ℕ × ℕ | x.1 + x.2 ≤ n}.Finite :=
+  (Set.finite_Iic (n, n)).subset <| by
+    aesop (add simp Set.subset_def) (add norm tactic Lean.Elab.Tactic.Omega.omegaDefault)
+
 open Filter
 
 -- Lemma 5.10
@@ -317,20 +322,8 @@ lemma exists_finite_intersection (hC : IsChain (· ≤ ·) C) :
   let D : Set Hollom := {x | (ofHollom x).1 + (ofHollom x).2.1 ≤ 2 * (u + v)}
   have : ((C ∩ level (n + 1)) \ D).Infinite := by
     have : (C ∩ level (n + 1) ∩ D).Finite := by
-      have : C ∩ level (n + 1) ∩ D ⊆
-          (fun t ↦ toHollom (t.1, t.2, n + 1)) '' {x : ℕ × ℕ | x.1 + x.2 ≤ 2 * (u + v)} := by
-        intro x
-        induction x
-        case h x =>
-        rcases x with ⟨a, b, c⟩
-        simp +contextual [D]
-      refine .subset (.image _ ?_) this
-      have : {x : ℕ × ℕ | x.1 + x.2 ≤ 2 * (u + v)} ⊆ Set.Iic (2 * (u + v), 2 * (u + v)) := by
-        rintro ⟨x, y⟩ h
-        simp only [Set.mem_setOf_eq] at h
-        simp only [Set.mem_Iic, Prod.mk_le_mk]
-        omega
-      exact .subset (Set.finite_Iic _) this
+      refine .subset (.image (embed (n + 1)) (triangle_finite (2 * (u + v)))) ?_
+      simp +contextual [Set.subset_def, D]
     specialize hC' (n + 1) (by omega)
     rw [← (C ∩ level (n + 1)).inter_union_diff D, Set.infinite_union] at hC'
     refine hC'.resolve_left ?_
@@ -351,61 +344,47 @@ lemma exists_finite_intersection (hC : IsChain (· ≤ ·) C) :
       simp only [add_le_add_iff_right]
       exact Nat.sInf_le ⟨_, ⟨h1, by simp⟩, by simp⟩
 
+/--
+Given a chain `C` in a partial order `α`, the existence of the following are equivalent:
+* a partition of `α` into antichains, each which meets `C`
+* a function `f : α → C` which is the identity on `C` and for which each fiber is an antichain
+
+In fact, these two are in bijection, but we only need the weaker version that their existence
+is equivalent.
+-/
 lemma partition_iff_function {α : Type*} [PartialOrder α] {C : Set α} (hC : IsChain (· ≤ ·) C) :
     (∃ S, Setoid.IsPartition S ∧ ∀ A ∈ S, IsAntichain (· ≤ ·) A ∧ (A ∩ C).Nonempty) ↔
-    (∃ f, (∀ x, f x ∈ C) ∧ (∀ x ∈ C, f x = x) ∧ ∀ x, IsAntichain (· ≤ ·) (f ⁻¹' {x})) := by
+    (∃ f : α → α, (∀ x, f x ∈ C) ∧ (∀ x ∈ C, f x = x) ∧ ∀ x, IsAntichain (· ≤ ·) (f ⁻¹' {x})) := by
   constructor
-  · simp only [forall_exists_index, and_imp]
-    intro S hS hSA
+  · rintro ⟨S, hS, hSA⟩
     choose hS f hf hf' using hS
-    simp only at hf
     simp only [and_imp] at hf'
     choose hA g hg using hSA
-    refine ⟨fun x ↦ g (f x) (hf _).1, ?_, ?_, ?_⟩
-    · simp only [Set.subset_def, Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
-      intro a
-      exact (hg _ _).2
+    refine ⟨fun x ↦ g (f x) (hf _).1, fun a ↦ (hg _ _).2, ?_, ?_⟩
     · intro a ha
-      simp only
       have hfa : f a ∈ S := (hf _).1
-      have : g (f a) hfa ∈ f a ∩ C := hg _ _
-      have : a ∈ f a := (hf _).2
       by_contra!
       obtain h₁ | h₁ := hC (hg _ hfa).2 ha this
       · exact this ((hA _ hfa).eq (hg _ _).1 (hf _).2 h₁)
       · exact this ((hA _ hfa).eq' (hg _ _).1 (hf _).2 h₁)
     · intro x
-      have : ∀ a b : α, a ∈ f b → f b = f a := by
-        intro a b
-        exact hf' a _ (hf b).1
-      have : ((fun x ↦ g (f x) (hf _).1) ⁻¹' {x}) ⊆ f x := by
-        intro y hy
-        simp only [Set.mem_preimage, Set.mem_singleton_iff] at hy
-        have h := hg (f y) (hf _).1
-        have := this _ _ h.1
-        rw [hy] at this
-        rw [← this]
-        exact (hf _).2
-      apply IsAntichain.subset _ this
-      exact hA _ (hf _).1
-  · simp only [forall_exists_index, and_imp]
-    intro f hf hf' hfA
+      refine (hA (f x) (hf x).1).subset ?_
+      have (a b : α) : a ∈ f b → f b = f a := hf' a _ (hf b).1
+      intro y hy
+      simp only [Set.mem_preimage, Set.mem_singleton_iff] at hy
+      have := this _ _ (hg (f y) (hf _).1).1
+      rw [hy] at this
+      rw [← this]
+      exact (hf _).2
+  · rintro ⟨f, hf, hf', hfA⟩
     refine ⟨{{y | f y = f x} | (x : α)}, ⟨?_, ?_⟩, ?_⟩
     · simp only [Set.mem_setOf_eq, not_exists, ← Set.nonempty_iff_ne_empty]
       intro x
       exact ⟨x, rfl⟩
     · intro x
-      simp only [Set.mem_setOf_eq]
-      refine ⟨_, ⟨⟨x, rfl⟩, rfl⟩, ?_⟩
-      aesop
-    · simp only [Set.mem_setOf_eq, forall_exists_index, forall_apply_eq_imp_iff]
-      intro x
-      refine ⟨?_, ?_⟩
-      · exact hfA _
-      · obtain hx := hf x
-        refine ⟨f x, ?_, hx⟩
-        simp only [Set.mem_setOf_eq]
-        rw [hf' _ hx]
+      exact ⟨_, ⟨⟨x, rfl⟩, rfl⟩, by aesop⟩
+    · rintro A ⟨x, rfl⟩
+      exact ⟨hfA _, f x, hf' _ (hf x), hf x⟩
 
 variable
   (hC : IsChain (· ≤ ·) C)
@@ -1061,8 +1040,7 @@ lemma eqn_1_aux
 
   set top := p n C f (x0 n C + y0 n C + l) with htop
   clear_value top
-  induction top with | h x =>
-  obtain ⟨x, y, z⟩ := x
+  induction top with | h x y z =>
   have htop' : toHollom (x, y, z) ∈ C ∩ levelLine (n + 1) (x0 n C + y0 n C + l) := by
     rw [htop]
     exact p_mem_inter hC hfC hfCid hf hnC (by omega)
@@ -1132,8 +1110,7 @@ lemma S_maps {x : Hollom} (hx : x ∈ S n C) (hx' : x ∉ C ∩ level n) : f x �
     simp [level_eq, h, this] at hy
 
   case inr h =>
-    induction x with | h x =>
-    obtain ⟨x, y, n⟩ := x
+    induction x with | h x y n =>
     obtain rfl := by simpa using S_subset_level hx
     simp only [S, if_neg h, Set.mem_setOf_eq, ofHollom_toHollom] at hx
     have (i : ℕ) : toHollom (x0 n C + i, y0 n C, n + 1) ≤ toHollom (x, y, n) :=
