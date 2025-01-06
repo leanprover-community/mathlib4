@@ -88,7 +88,17 @@ theorem map_isLUB (hf : IsNormal f) {s : Set α} (hs : s.Nonempty) (hs' : IsLUB 
     by_cases ha : a ∈ s
     · simp_rw [mem_upperBounds, forall_mem_image] at hb
       exact hb ha
-    · have := IsLUB.mem_of_not_isSuccPrelimit
+    · have ha' : ¬ IsMin a := by
+        obtain ⟨c, hc⟩ := hs
+        obtain rfl | hc := (hs'.1 hc).eq_or_lt
+        · contradiction
+        · exact hc.not_isMin
+      have ha' := (IsLUB.isSuccPrelimit_of_not_mem hs' ha).isSuccLimit_of_not_isMin ha'
+      rw [le_iff_forall_le hf ha']
+      simp [mem_upperBounds] at hb
+      intro c hc
+      obtain ⟨d, hd, hcd, hda⟩ := hs'.exists_between hc
+      exact (hf.strictMono hcd).le.trans (hb d hd)
 
 #exit
 theorem map_isSuccLimit (hf : IsNormal f) (ha : IsSuccLimit a) : IsSuccLimit (f a) := by
