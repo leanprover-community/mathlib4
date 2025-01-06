@@ -125,10 +125,17 @@ class OrderedCancelCommMonoid (α : Type*) extends OrderedCommMonoid α where
 section OrderedCancelCommMonoid
 variable [OrderedCancelCommMonoid α]
 
-@[to_additive]
+@[to_additive OrderedCancelAddCommMonoid.toIsOrderedCancelAddMonoid]
 instance OrderedCancelCommMonoid.toIsOrderedCancelMonoid :
     IsOrderedCancelMonoid α where
   le_of_mul_le_mul_left := OrderedCancelCommMonoid.le_of_mul_le_mul_left
+
+-- See note [lower instance priority]
+@[to_additive OrderedCancelAddCommMonoid.toCancelAddCommMonoid]
+instance (priority := 100) OrderedCancelCommMonoid.toCancelCommMonoid : CancelCommMonoid α :=
+  { ‹OrderedCancelCommMonoid α› with
+    mul_left_cancel :=
+      fun _ _ _ h => (le_of_mul_le_mul_left' h.le).antisymm <| le_of_mul_le_mul_left' h.ge }
 
 end OrderedCancelCommMonoid
 
