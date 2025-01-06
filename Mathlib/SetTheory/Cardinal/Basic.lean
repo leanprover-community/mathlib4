@@ -2193,4 +2193,4 @@ end Cardinal
 
 -- end Tactic
 
-set_option linter.style.longFile 2400
+set_option linter.style.longFile 2300
