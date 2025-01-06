@@ -18,7 +18,7 @@ variable {R : Type*} [CommRing R] [IsDomain R] {p : R}
 namespace AddValuation
 
 /-- `multiplicity` of a prime in an integral domain as an additive valuation to `ℕ∞`. -/
-noncomputable def multiplicity (hp : Prime p) : AddValuation R ℕ∞ :=
+protected noncomputable def multiplicity (hp : Prime p) : AddValuation R ℕ∞ :=
   AddValuation.of (emultiplicity p) (emultiplicity_zero _) (emultiplicity_of_one_right hp.not_unit)
     (fun _ _ => min_le_emultiplicity_add) fun _ _ => emultiplicity_mul hp
 
@@ -27,7 +27,7 @@ alias _root_.multiplicity_addValuation := multiplicity
 
 @[simp]
 theorem multiplicity_apply {hp : Prime p} {r : R} :
-    multiplicity hp r = emultiplicity p r :=
+    AddValuation.multiplicity hp r = emultiplicity p r :=
   rfl
 
 @[deprecated (since := "2024-11-07")]
@@ -42,7 +42,7 @@ The valuation on a fraction ring to `WithTop ℤ` given by a prime.
 noncomputable def adicValuation : AddValuation K (WithTop ℤ) :=
   ofValuation <|
     (toValuation <|
-      (multiplicity hp.out).map (AddMonoidHom.ENatMap (Nat.castAddMonoidHom ℤ)) rfl
+      (AddValuation.multiplicity hp.out).map (AddMonoidHom.ENatMap (Nat.castAddMonoidHom ℤ)) rfl
         (by simp [Nat.mono_cast, Monotone.comp, OrderHomClass.mono]))
       |>.extendToLocalization (S := nonZeroDivisors R) (B := K) <| by
       intro v hv
