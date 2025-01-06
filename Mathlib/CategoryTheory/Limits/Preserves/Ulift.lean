@@ -14,7 +14,7 @@ import Mathlib.Data.Set.Subsingleton
 This file shows that `uliftFunctor.{v, u}` preserves all limits and colimits, including those
 potentially too big to exist in `Type u`.
 
-As this fnuctor is fully faithful, we also deduce that it creates `u`-small limits and
+As this functor is fully faithful, we also deduce that it creates `u`-small limits and
 colimits.
 
 -/
