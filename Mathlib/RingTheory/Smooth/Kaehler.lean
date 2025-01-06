@@ -31,7 +31,7 @@ import Mathlib.Tactic.StacksAttribute
   then `S` is formally smooth iff `Ω[S/R]` is projective and `I/I² → S ⊗[P] Ω[P⁄R]` is injective.
 - `Algebra.FormallySmooth.iff_subsingleton_and_projective`:
   An algebra is formally smooth if and only if `H¹(L_{R/S}) = 0` and `Ω_{S/R}` is projective.
-- `Algebra.Extension.equivH1Cotangent`:
+- `Algebra.Extension.equivH1CotangentOfFormallySmooth`:
   Any formally smooth extension can be used to calculate `H¹(L_{S/R})`.
 
 ## Future projects
@@ -451,25 +451,6 @@ theorem Algebra.FormallySmooth.iff_subsingleton_and_projective :
   rfl
 
 namespace Algebra.Extension
-
-/-- Given an `R`-algebra extension `0 → I → P → S → 0` of `S`,
-the infinitesimal extension associated to it is `0 → I/I² → P/I² → S → 0`. -/
-noncomputable
-def infinitesimal (P : Extension R S) : Extension R S where
-  Ring := P.Ring ⧸ P.ker ^ 2
-  σ := Ideal.Quotient.mk _ ∘ P.σ
-  algebraMap_σ x := by dsimp; exact P.algebraMap_σ x
-
-/-- The canonical map `P → P/I²` as maps between extensions. -/
-noncomputable
-def toInfinitesimal (P : Extension R S) : P.Hom P.infinitesimal where
-  toRingHom := Ideal.Quotient.mk _
-  toRingHom_algebraMap _ := rfl
-  algebraMap_toRingHom _ := rfl
-
-lemma ker_infinitesimal (P : Extension R S) :
-    P.infinitesimal.ker = P.ker.cotangentIdeal :=
-  AlgHom.ker_kerSquareLift _
 
 lemma CotangentSpace.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
     Function.Bijective (CotangentSpace.map P.toInfinitesimal) := by
