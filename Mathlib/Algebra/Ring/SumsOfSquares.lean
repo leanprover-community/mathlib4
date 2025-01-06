@@ -70,17 +70,18 @@ In an additive monoid with multiplication `R`, `AddSubmonoid.sumSq R` is the sub
 squares in `R`.
 -/
 def sumSq [AddMonoid T] : AddSubmonoid T where
-  carrier   := {S : T | IsSumSq S}
+  carrier   := {s : T | IsSumSq s}
   zero_mem' := .zero
   add_mem'  := .add
-
-@[deprecated (since := "2024-08-09")] alias SumSqIn := sumSq
-@[deprecated (since := "2025-01-03")] alias sumSqIn := sumSq
 
 @[simp] theorem mem_sumSq : s ∈ sumSq T ↔ IsSumSq s := Iff.rfl
 @[simp, norm_cast] theorem coe_sumSq : sumSq T = {s : T | IsSumSq s} := rfl
 
 end AddSubmonoid
+
+@[deprecated (since := "2024-08-09")] alias SumSqIn := AddSubmonoid.sumSq
+@[deprecated (since := "2025-01-03")] alias sumSqIn := AddSubmonoid.sumSq
+@[deprecated (since := "2025-01-06")] alias sumSq := AddSubmonoid.sumSq
 
 /-- In an additive unital magma with multiplication, `x * x` is a sum of squares for all `x`. -/
 theorem IsSumSq.mul_self [AddZeroClass R] [Mul R] (a : R) : IsSumSq (a * a) := by
@@ -201,7 +202,7 @@ In a linearly ordered semiring with the property `a ≤ b → ∃ c, a + c = b` 
 sums of squares are non-negative.
 -/
 theorem IsSumSq.nonneg {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {s : R}
-    (ps : IsSumSq s) : 0 ≤ s := by
+    (hs : IsSumSq s) : 0 ≤ s := by
   induction ps using IsSumSq.rec'
   case zero => aesop
   case sq_add x s hx hs h_sum => exact add_nonneg (IsSquare.nonneg hx) h_sum
