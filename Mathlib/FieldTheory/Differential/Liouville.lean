@@ -19,6 +19,12 @@ A proof of Liouville's theorem. Follows
 This file defines Liouville field extensions, which are differential field extensions which satisfy
 a slight generalization of Liouville's theorem. Note that this definition doesn't appear in the
 literature, and we introduce it as part of the formalization of Liouville's theorem.
+
+## Main declarations
+- `IsLiouville`: A field extension being Liouville
+- `liouville_of_finiteDimensional`: all finite dimensional field extensions
+  (of a field with characteristic 0) are Liouville.
+
 -/
 
 open Differential algebraMap IntermediateField Finset Polynomial
@@ -27,8 +33,8 @@ variable (F : Type*) (K : Type*) [Field F] [Field K] [Differential F] [Different
 variable [Algebra F K] [DifferentialAlgebra F K]
 
 /--
-We say that a differential field extension `K / F` is Liouville if, whenever an element `a ∈ F` can be
-written as `a = v + ∑ cᵢ * logDeriv uᵢ` for `v, cᵢ, uᵢ ∈ K` and `cᵢ` constant, it can also be
+We say that a differential field extension `K / F` is Liouville if, whenever an element `a ∈ F` can
+be written as `a = v + ∑ cᵢ * logDeriv uᵢ` for `v, cᵢ, uᵢ ∈ K` and `cᵢ` constant, it can also be
 written in that way with `v, cᵢ, uᵢ ∈ F`.
 -/
 class IsLiouville : Prop where
@@ -117,13 +123,11 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
       (NoZeroSMulDivisors.algebraMap_injective F K)
     -- We sum `e x` over all isomorphisms `e : K ≃ₐ[F] K`.
     -- Because this is a Galois extension each of the relevant values will be in `F`.
-
     -- We need to divide by `Fintype.card (K ≃ₐ[F] K)` to get the original answer.
     let c' (i : ι) := (c i) / (Fintype.card (K ≃ₐ[F] K))
     -- logDeriv turns sums to products, so the new `u` will be the product of the old `u` over all
     -- isomorphisms
     let u'' (i : ι) := ∏ x : (K ≃ₐ[F] K), x (u i)
-
     -- Each of the values of u'' are fixed by all isomorphisms.
     have : ∀ i, u'' i ∈ fixedField (⊤ : Subgroup (K ≃ₐ[F] K)) := by
       rintro i ⟨e, _⟩
@@ -133,10 +137,8 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
       simp
     have ffb : fixedField ⊤ = ⊥ := (IsGalois.tfae.out 0 1).mp (inferInstanceAs (IsGalois F K))
     simp_rw [ffb, IntermediateField.mem_bot, Set.mem_range] at this
-
     -- Therefore they are all in `F`. We use `choose` to get their values in `F`.
     choose u' hu' using this
-
     -- We do almost the same thing for `v''`, just with sum instead of product.
     let v'' := (∑ x : (K ≃ₐ[F] K), x v) / (Fintype.card ((K ≃ₐ[F] K)))
     have : v'' ∈ fixedField (⊤ : Subgroup (K ≃ₐ[F] K)) := by
@@ -148,8 +150,6 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
       simp
     rw [ffb, IntermediateField.mem_bot] at this
     obtain ⟨v', hv'⟩ := this
-
-
     exists ι, inferInstance, c', ?_, u', v'
     · -- We need to prove that all `c'` are constants.
       -- This is true because they are the division of a constant by
