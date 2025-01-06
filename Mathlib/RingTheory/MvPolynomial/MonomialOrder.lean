@@ -98,7 +98,7 @@ theorem degree_monomial {d : σ →₀ ℕ} (c : R) [Decidable (c = 0)] :
   simp only [degree, support_monomial]
   split_ifs with hc <;> simp
 
-theorem degree_X_le {s : σ} : m.degree (X s : MvPolynomial σ R) ≼[m] Finsupp.single s 1 :=
+theorem degree_X_le_single {s : σ} : m.degree (X s : MvPolynomial σ R) ≼[m] Finsupp.single s 1 :=
   degree_monomial_le 1
 
 theorem degree_X [Nontrivial R] {s : σ} :
