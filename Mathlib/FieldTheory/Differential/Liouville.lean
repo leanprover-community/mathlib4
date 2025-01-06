@@ -22,7 +22,7 @@ literature, and we introduce it as part of the formalization of Liouville's theo
 
 ## Main declarations
 - `IsLiouville`: A field extension being Liouville
-- `liouville_of_finiteDimensional`: all finite dimensional field extensions
+- `isLiouville_of_finiteDimensional`: all finite dimensional field extensions
   (of a field with characteristic 0) are Liouville.
 
 -/
@@ -191,7 +191,7 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
 We lift `isLiouville_of_finiteDimensional_galois` to non-Galois field extensions by using it for the
 normal closure then obtaining it for `F`.
 -/
-instance liouville_of_finiteDimensional [FiniteDimensional F K] :
+instance isLiouville_of_finiteDimensional [FiniteDimensional F K] :
     IsLiouville F K :=
   let map := IsAlgClosed.lift (M := AlgebraicClosure F) (R := F) (S := K)
   let K' := map.fieldRange
