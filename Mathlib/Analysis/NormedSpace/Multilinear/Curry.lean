@@ -162,15 +162,10 @@ def ContinuousMultilinearMap.curryLeft (f : ContinuousMultilinearMap 𝕜 Ei G) 
     exact f.cons_smul m c x
   cont := by
     refine (IsUniformInducing.isInducing ?_).continuous
-    dsimp
-    have := isUniformInducing_toUniformOnFun (𝕜 := 𝕜) (E := Ei) (F := G)
-    rw [← isUniformEmbedding_toUniformOnFun.of_comp_iff]
-    convert isUniformEmbedding_toUniformOnFun using 4 with s
-    -- rw?
-    -- erw [isUniformInducing_comp_iff]
-    -- rw [continuous_induced_rng, UniformOnFun.tendsto_iff_tendstoUniformlyOn ]
-    -- dsimp [Function.comp_def, toUniformOnFun]
-    -- simp_rw [ContinuousLinearMap.coe_mk]
+    rw [← isUniformInducing_toUniformOnFun.of_comp_iff]
+    dsimp [Function.comp_def]
+    rw [isUniformInducing_iff_uniformSpace]
+    sorry
 
 @[simp]
 theorem ContinuousMultilinearMap.curryLeft_apply (f : ContinuousMultilinearMap 𝕜 Ei G) (x : Ei 0)
