@@ -273,7 +273,7 @@ theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type u} [
       use κ₂, hκ₂, a₂ ∘ₗ a₁, y₂
       simp_rw [comp_assoc]
       exact ⟨trivial, sup_le (ha₁.trans (ker_le_ker_comp _ _)) ha₂⟩
-  convert this ⊤ Finite.out
+  convert this ⊤ Finite.finite
   simp only [top_le_iff, ker_eq_top]
 
 /-- Every homomorphism from a finitely presented module to a flat module factors through a finite
