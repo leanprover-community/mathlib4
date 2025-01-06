@@ -161,9 +161,8 @@ lemma IsStrictOrderedRing.of_mul_pos [Ring α] [PartialOrder α] [IsOrderedAddMo
   mul_lt_mul_of_pos_right a b c ab hc := by
     simpa only [sub_mul, sub_pos] using mul_pos _ _ (sub_pos.2 ab) hc
 
--- See note [reducible non instances]
 /-- Turn an ordered domain into a strict ordered ring. -/
-abbrev IsOrderedRing.toIsStrictOrderedRing (α : Type*)
+lemma IsOrderedRing.toIsStrictOrderedRing (α : Type*)
     [Ring α] [PartialOrder α] [IsOrderedRing α] [NoZeroDivisors α] [Nontrivial α] :
     IsStrictOrderedRing α :=
   .of_mul_pos fun _ _ ap bp ↦ (mul_nonneg ap.le bp.le).lt_of_ne' (mul_ne_zero ap.ne' bp.ne')
