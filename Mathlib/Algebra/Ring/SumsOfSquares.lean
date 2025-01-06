@@ -66,13 +66,16 @@ variable {T : Type*} [AddMonoid T] [Mul T] {s : T}
 
 variable (T) in
 /--
-In an additive monoid with multiplication `R`, `AddSubmonoid.sumSq R`
-is the submonoid of sums of squares in `R`.
+In an additive monoid with multiplication `R`, `AddSubmonoid.sumSq R` is the submonoid of sums of
+squares in `R`.
 -/
-def sumSq : AddSubmonoid T where
-  carrier := {s : T | IsSumSq s}
+def sumSq [AddMonoid R] : AddSubmonoid R where
+  carrier   := {S : R | IsSumSq S}
   zero_mem' := IsSumSq.zero
   add_mem' := IsSumSq.add
+
+@[deprecated (since := "2024-08-09")] alias SumSqIn := sumSq
+@[deprecated (since := "2025-01-03")] alias sumSqIn := sumSq
 
 @[simp] theorem mem_sumSq : s ∈ sumSq T ↔ IsSumSq s := Iff.rfl
 @[simp, norm_cast] theorem coe_sumSq : sumSq T = {s : T | IsSumSq s} := rfl
