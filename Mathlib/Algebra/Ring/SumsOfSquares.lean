@@ -34,8 +34,8 @@ then for all `a : R`, `a * a + s` is a sum of squares in `R`.
 -/
 @[mk_iff]
 inductive IsSumSq [Mul R] [Add R] [Zero R] : R → Prop
-  | zero                              : IsSumSq 0
-  | sq_add {a s : R} (hs : IsSumSq s) : IsSumSq (a * a + s)
+  | zero : IsSumSq 0
+  | sq_add (a : R) {s : R} (hs : IsSumSq s) : IsSumSq (a * a + s)
 
 @[deprecated (since := "2024-08-09")] alias isSumSq := IsSumSq
 
