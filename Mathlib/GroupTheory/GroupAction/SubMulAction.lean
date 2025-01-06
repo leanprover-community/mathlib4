@@ -181,7 +181,7 @@ instance : SetLike (SubMulAction R M) M :=
 @[to_additive]
 instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem mem_carrier {p : SubMulAction R M} {x : M} : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
   Iff.rfl
 
@@ -197,7 +197,7 @@ protected def copy (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : SubMulAc
   carrier := s
   smul_mem' := hs.symm ▸ p.smul_mem'
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem coe_copy (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : (p.copy s hs : Set M) = s :=
   rfl
 
@@ -234,7 +234,7 @@ instance : SMul R p where smul c x := ⟨c • x.1, smul_mem _ c x.2⟩
 
 variable {p}
 
-@[to_additive (attr := norm_cast), simp]
+@[to_additive (attr := norm_cast, simp)]
 theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 
@@ -248,7 +248,7 @@ protected def subtype : p →[R] M where
   toFun := Subtype.val
   map_smul' := by simp [val_smul]
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem subtype_apply (x : p) : p.subtype x = x :=
   rfl
 
@@ -274,7 +274,7 @@ instance (priority := 75) toMulAction : MulAction R S' :=
 protected def subtype : S' →[R] M where
   toFun := Subtype.val; map_smul' _ _ := rfl
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 protected theorem coeSubtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
 
@@ -306,11 +306,11 @@ instance isScalarTower' {S' : Type*} [SMul S' R] [SMul S' S] [SMul S' M] [IsScal
     [IsScalarTower S' S M] : IsScalarTower S' S p where
   smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
 
-@[to_additive (attr := norm_cast), simp]
+@[to_additive (attr := norm_cast, simp)]
 theorem val_smul_of_tower (s : S) (x : p) : ((s • x : p) : M) = s • (x : M) :=
   rfl
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem smul_mem_iff' {G} [Group G] [SMul G R] [MulAction G M] [IsScalarTower G R M] (g : G)
     {x : M} : g • x ∈ p ↔ x ∈ p :=
   ⟨fun h => inv_smul_smul g x ▸ p.smul_of_tower_mem g⁻¹ h, p.smul_of_tower_mem g⟩
