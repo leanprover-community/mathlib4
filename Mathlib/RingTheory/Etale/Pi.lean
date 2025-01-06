@@ -9,12 +9,12 @@ import Mathlib.RingTheory.Etale.Basic
 
 /-!
 
-# Formal-etaleness of finite products of rings
+# Formal-étaleness of finite products of rings
 
 ## Main result
 
-- `Algebra.FormallyEtale.pi_iff`: If `I` is finite, `Π i : I, A i` is `R`-formally-etale
-  if and only if each `A i` is `R`-formally-etale.
+- `Algebra.FormallyEtale.pi_iff`: If `I` is finite, `Π i : I, A i` is `R`-formally-étale
+  if and only if each `A i` is `R`-formally-étale.
 
 -/
 
