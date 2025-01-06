@@ -124,7 +124,7 @@ a term of the form `∑ i ∈ I, a i * a i` is a sum of squares. -/
 theorem IsSumSq.sum_mul_self [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) (a : ι → R) :
     IsSumSq (∑ i ∈ I, a i * a i) := by aesop
 
-@[deprecated (since := "2024-12-23")] alias isSumSq_sum_mul_self := IsSumSq.sum_mul_self
+@[deprecated (since := "2024-12-27")] alias isSumSq_sum_mul_self := IsSumSq.sum_mul_self
 
 namespace NonUnitalSubsemiring
 variable {T : Type*} [NonUnitalCommSemiring T] {s : T}
