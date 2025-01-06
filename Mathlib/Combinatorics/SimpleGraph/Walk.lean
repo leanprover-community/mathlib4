@@ -846,6 +846,16 @@ def drop {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk (p.getVert n) v :=
   | p, 0 => p.copy (getVert_zero p).symm rfl
   | .cons _ q, (n + 1) => q.drop n
 
+/-- The second vertex of a walk, or the only vertex in a nil walk. -/
+abbrev snd (p : G.Walk u v) : V := p.getVert 1
+
+@[simp] lemma adj_snd {p : G.Walk v w} (hp : ¬ p.Nil) :
+    G.Adj v p.snd := by
+  simpa using adj_getVert_succ p (by simpa [not_nil_iff_lt_length] using hp : 0 < p.length)
+
+lemma snd_cons {u v w} (q : G.Walk v w) (hadj : G.Adj u v) :
+    (q.cons hadj).snd = v := by simp
+
 /-- The walk obtained by taking the first `n` darts of a walk. -/
 def take {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk u (p.getVert n) :=
   match p, n with
@@ -854,7 +864,7 @@ def take {u v : V} (p : G.Walk u v) (n : ℕ) : G.Walk u (p.getVert n) :=
   | .cons h q, (n + 1) => .cons h (q.take n)
 
 /-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
-def penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
+abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
 
 @[simp]
 lemma penultimate_nil : (@nil _ G v).penultimate = v := rfl
@@ -880,16 +890,6 @@ lemma adj_penultimate {p : G.Walk v w} (hp : ¬ p.Nil) :
   conv => rhs; rw [← getVert_length p]
   rw [nil_iff_length_eq] at hp
   convert adj_getVert_succ _ _ <;> omega
-
-/-- The second vertex of a walk, or the only vertex in a nil walk. -/
-abbrev snd (p : G.Walk u v) : V := p.getVert 1
-
-@[simp] lemma adj_snd {p : G.Walk v w} (hp : ¬ p.Nil) :
-    G.Adj v p.snd := by
-  simpa using adj_getVert_succ p (by simpa [not_nil_iff_lt_length] using hp : 0 < p.length)
-
-lemma snd_cons {u v w} (q : G.Walk v w) (hadj : G.Adj u v) :
-    (q.cons hadj).snd = v := by simp
 
 /-- The walk obtained by removing the first dart of a walk. A nil walk stays nil. -/
 def tail (p : G.Walk u v) : G.Walk (p.snd) v := p.drop 1
