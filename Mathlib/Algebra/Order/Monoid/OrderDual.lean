@@ -17,14 +17,14 @@ open Function
 
 namespace OrderDual
 
-variable [CommMonoid α] [PartialOrder α]
-
 @[to_additive]
-instance isOrderedMonoid [IsOrderedMonoid α] : IsOrderedMonoid αᵒᵈ :=
+instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+    IsOrderedMonoid αᵒᵈ :=
   { mul_le_mul_left := fun _ _ h c => mul_le_mul_left' h c }
 
 @[to_additive]
-instance isOrderedCancelMonoid [IsOrderedCancelMonoid α] : IsOrderedCancelMonoid αᵒᵈ :=
+instance isOrderedCancelMonoid [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] :
+    IsOrderedCancelMonoid αᵒᵈ :=
   { le_of_mul_le_mul_left := fun _ _ _ : α => le_of_mul_le_mul_left' }
 
 end OrderDual
