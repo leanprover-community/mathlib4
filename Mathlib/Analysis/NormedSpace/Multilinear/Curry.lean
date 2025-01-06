@@ -116,6 +116,36 @@ theorem ContinuousLinearMap.uncurryLeft_apply
     f.uncurryLeft m = f (m 0) (tail m) :=
   rfl
 
+section toMove
+
+/-- The `Fin` version of `inf_iInf_nat_succ`. -/
+theorem Fin.iInf_succ {α} [CompleteLattice α] {n : ℕ} {f : Fin (n + 1) → α} :
+    ⨅ i, f i = f 0 ⊓ ⨅ i, f (.succ i) :=
+  le_antisymm
+    (le_inf (iInf_le _ _) <| iInf_mono' fun _ => ⟨_, le_rfl⟩)
+    (le_iInf <| Fin.cases inf_le_left fun _ => inf_le_right.trans (iInf_le _ _))
+
+theorem IsUniformInducing.finCons
+    {n : ℕ} {α : Type*} {β : Fin n.succ → Type*}
+    [UniformSpace α] [∀ i, UniformSpace (β i)] {x : α → β 0} {xs : α → Π i, β (Fin.succ i)}
+    (hx : IsUniformInducing x) (hxs : IsUniformInducing xs) :
+    IsUniformInducing (fun a => Fin.cons (x a) (xs a)) where
+  comap_uniformity := by
+    replace hx := hx.comap_uniformity
+    replace hxs := hxs.comap_uniformity
+    simp_rw [Pi.uniformity, Filter.comap_iInf, Filter.comap_comap, Function.comp_def] at hxs ⊢
+    rw [Fin.iInf_succ]
+    simp [hx, hxs]
+
+theorem IsUniformEmbedding.finCons
+    {n : ℕ} {α : Type*} {β : Fin n.succ → Type*}
+    [UniformSpace α] [∀ i, UniformSpace (β i)] (x : α → β 0) (xs : α → Π i, β (Fin.succ i))
+    (hx : IsUniformEmbedding x) (hxs : IsUniformEmbedding xs) :
+    IsUniformEmbedding (fun a => Fin.cons (x a) (xs a)) where
+  injective := fun _ _ hab => hx.injective <| congrFun hab 0
+  toIsUniformInducing := hx.isUniformInducing.finCons hxs.isUniformInducing
+
+end toMove
 /-- Given a continuous multilinear map `f` in `n+1` variables, split the first variable to obtain
 a continuous linear map into continuous multilinear maps in `n` variables, given by
 `x ↦ (m ↦ f (cons x m))`. -/
@@ -123,7 +153,7 @@ def ContinuousMultilinearMap.curryLeft (f : ContinuousMultilinearMap 𝕜 Ei G) 
     Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G where
   toFun x :=
     { toMultilinearMap := f.toMultilinearMap.curryLeft x
-      cont :=  (ContinuousMapClass.map_continuous f).comp (continuous_const.finCons continuous_id) }
+      cont := (ContinuousMapClass.map_continuous f).comp (continuous_const.finCons continuous_id) }
   map_add' x y := by
     ext m
     exact f.cons_add m x y
@@ -133,12 +163,14 @@ def ContinuousMultilinearMap.curryLeft (f : ContinuousMultilinearMap 𝕜 Ei G) 
   cont := by
     refine (IsUniformInducing.isInducing ?_).continuous
     dsimp
-    rw [← isUniformInducing_toUniformOnFun.of_comp_iff]
-    refine .comp ?_ isUniformInducing_toUniformOnFun
-    simp [Function.comp_def]
+    have := isUniformInducing_toUniformOnFun (𝕜 := 𝕜) (E := Ei) (F := G)
+    rw [← isUniformEmbedding_toUniformOnFun.of_comp_iff]
+    convert isUniformEmbedding_toUniformOnFun using 4 with s
+    -- rw?
+    -- erw [isUniformInducing_comp_iff]
     -- rw [continuous_induced_rng, UniformOnFun.tendsto_iff_tendstoUniformlyOn ]
-    dsimp [Function.comp_def, toUniformOnFun]
-    simp_rw [ContinuousLinearMap.coe_mk]
+    -- dsimp [Function.comp_def, toUniformOnFun]
+    -- simp_rw [ContinuousLinearMap.coe_mk]
 
 @[simp]
 theorem ContinuousMultilinearMap.curryLeft_apply (f : ContinuousMultilinearMap 𝕜 Ei G) (x : Ei 0)
