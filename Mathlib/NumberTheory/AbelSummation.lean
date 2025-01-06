@@ -35,10 +35,6 @@ Primed versions of the three results above are also stated for when the endpoint
 * `summable_mul_of_bigO_atTop`: let `c : ℕ → 𝕜` and `f : ℝ → 𝕜` with `𝕜 = ℝ` or `ℂ`, prove the
   summability of `n ↦ (c n) * (f n)` using Abel's formula under some `bigO` assumptions at infinity.
 
-* `summable_mul_of_bigO_atTop₀`: let `c : ℕ → 𝕜` and `f : ℝ → 𝕜` with `𝕜 = ℝ` or `ℂ`, prove the
-  summability of `n ↦ (c n) * (f n)` using Abel's formula under some `bigO` assumptions at infinity
-  and assuming `c 0 = 0`. This version can be useful to avoid difficulties near zero.
-
 ## References
 
 * <https://en.wikipedia.org/wiki/Abel%27s_summation_formula>
@@ -303,7 +299,7 @@ private theorem summable_mul_of_bigO_atTop_aux (m : ℕ)
         ∫ (t : ℝ) in Set.Ioc ↑m ↑n, deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖)
     {g : ℝ → ℝ}
     (hg₁ : (fun t ↦ deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖) =O[atTop] g)
-    (hg₂ : IntegrableAtFilter g atTop):
+    (hg₂ : IntegrableAtFilter g atTop) :
     Summable (fun n : ℕ ↦ f n * c n) := by
   obtain ⟨C₁, hC₁⟩ := Asymptotics.isBigO_one_nat_atTop_iff.mp h_bdd
   let C₂ := ∫ t in Set.Ioi (m : ℝ), ‖deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖‖
@@ -345,15 +341,25 @@ theorem summable_mul_of_bigO_atTop
   exact_mod_cast sum_mul_eq_sub_integral_mul' _ _ (fun _ ht ↦ hf_diff _ ht.1)
     (hf_int.mono_set Set.Icc_subset_Ici_self)
 
-theorem summable_mul_of_bigO_atTop₀ (hc : c 0 = 0)
+/-- A version of `summable_mul_of_bigO_atTop` that can be useful to avoid difficulties near zero. -/
+theorem summable_mul_of_bigO_atTop'
     (hf_diff : ∀ t ∈ Set.Ici 1, DifferentiableAt ℝ (fun x ↦ ‖f x‖) t)
     (hf_int : IntegrableOn (deriv (fun t ↦ ‖f t‖)) (Set.Ici 1))
-    (h_bdd : (fun n : ℕ ↦ ‖f n‖ * ∑ k ∈ Icc 0 n, ‖c k‖) =O[atTop] fun _ ↦ (1 : ℝ))
-    {g : ℝ → ℝ} (hg₁ : (fun t ↦ deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 0 ⌊t⌋₊, ‖c k‖) =O[atTop] g)
+    (h_bdd : (fun n : ℕ ↦ ‖f n‖ * ∑ k ∈ Icc 1 n, ‖c k‖) =O[atTop] fun _ ↦ (1 : ℝ))
+    {g : ℝ → ℝ} (hg₁ : (fun t ↦ deriv (fun t ↦ ‖f t‖) t * ∑ k ∈ Icc 1 ⌊t⌋₊, ‖c k‖) =O[atTop] g)
     (hg₂ : IntegrableAtFilter g atTop) :
     Summable (fun n : ℕ ↦ f n * c n) := by
-  refine summable_mul_of_bigO_atTop_aux c 1 h_bdd (by rwa [Nat.cast_one]) (fun n ↦ ?_) hg₁ hg₂
-  exact_mod_cast sum_mul_eq_sub_integral_mul₀' (fun n ↦ ‖c n‖) (norm_eq_zero.mpr hc) _
-          (fun _ ht ↦ hf_diff _ ht.1) (hf_int.mono_set Set.Icc_subset_Ici_self)
+  have h : ∀ n, ∑ k ∈ Icc 1 n, ‖c k‖ = ∑ k ∈ Icc 0 n, ‖(fun n ↦ if n = 0 then 0 else c n) k‖ := by
+    intro n
+    rw [Icc_eq_cons_Ioc n.zero_le, sum_cons, ← Nat.Icc_succ_left, Nat.succ_eq_add_one, zero_add]
+    simp_rw [if_pos, norm_zero, zero_add]
+    exact Finset.sum_congr rfl fun _ h ↦ by rw [if_neg (zero_lt_one.trans_le (mem_Icc.mp h).1).ne']
+  simp_rw [h] at h_bdd hg₁
+  refine Summable.congr_atTop (summable_mul_of_bigO_atTop_aux (fun n ↦ if n = 0 then 0 else c n) 1
+    h_bdd (by rwa [Nat.cast_one]) (fun n ↦ ?_) hg₁ hg₂) ?_
+  · exact_mod_cast sum_mul_eq_sub_integral_mul₀' _ (by simp only [reduceIte, norm_zero]) n
+      (fun _ ht ↦ hf_diff _ ht.1) (hf_int.mono_set Set.Icc_subset_Ici_self)
+  · filter_upwards [eventually_ne_atTop 0] with k hk
+    simp_rw [if_neg hk]
 
 end summable
