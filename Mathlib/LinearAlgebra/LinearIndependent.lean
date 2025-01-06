@@ -1496,10 +1496,10 @@ lemma exists_linearIndependent' (v : ι → V) :
   have hs {i : ι} (hi : i ∈ s) : v i ∈ t := by obtain ⟨a, rfl⟩ := hi; simp [hf]
   let f' (a : s) : t := ⟨v a.val, hs a.property⟩
   refine ⟨s, Subtype.val, Subtype.val_injective, hsp.symm ▸ by congr; aesop, ?_⟩
-  · rw [← show Subtype.val ∘ f' = v ∘ Subtype.val by ext; simp]
+  · rw [← show Subtype.val ∘ f' = v ∘ Subtype.val by ext; simp [f']]
     apply hli.comp
     rintro ⟨i, x, rfl⟩ ⟨j, y, rfl⟩ hij
-    simp only [Subtype.ext_iff, hf] at hij
+    simp only [Subtype.ext_iff, hf, f'] at hij
     simp [hij]
 
 variable {K t}

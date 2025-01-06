@@ -55,8 +55,6 @@ theorem zpow_strictAnti (h₀ : 0 < a) (h₁ : a < 1) : StrictAnti (a ^ · : ℤ
 theorem zpow_lt_iff_lt (hx : 1 < a) : a ^ m < a ^ n ↔ m < n :=
   zpow_lt_zpow_iff_right₀ hx
 
-@[deprecated (since := "2024-02-10")] alias ⟨_, zpow_lt_of_lt⟩ := zpow_lt_iff_lt
-
 @[deprecated zpow_le_zpow_iff_right₀ (since := "2024-10-08")]
 theorem zpow_le_iff_le (hx : 1 < a) : a ^ m ≤ a ^ n ↔ m ≤ n :=
   zpow_le_zpow_iff_right₀ hx
