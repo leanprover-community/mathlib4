@@ -3894,6 +3894,7 @@ import Mathlib.NumberTheory.EulerProduct.ExpLog
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.FLT.Four
 import Mathlib.NumberTheory.FLT.MasonStothers
+import Mathlib.NumberTheory.FLT.Polynomial
 import Mathlib.NumberTheory.FLT.Three
 import Mathlib.NumberTheory.FactorisationProperties
 import Mathlib.NumberTheory.Fermat
