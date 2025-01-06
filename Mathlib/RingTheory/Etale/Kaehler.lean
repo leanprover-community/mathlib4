@@ -47,7 +47,7 @@ lemma KaehlerDifferential.isBaseChange_of_formallyEtale [Algebra.FormallyEtale S
   ext
   simp
 
-instance KaehlerDifferential.isLocalizedModule (M : Submonoid S) [IsLocalization M T] :
+instance KaehlerDifferential.isLocalizedModule_map (M : Submonoid S) [IsLocalization M T] :
     IsLocalizedModule M (map R R S T) :=
   have := Algebra.FormallyEtale.of_isLocalization (Rₘ := T) M
   (isLocalizedModule_iff_isBaseChange M T _).mpr (isBaseChange_of_formallyEtale R S T)
