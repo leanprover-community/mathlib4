@@ -380,6 +380,8 @@ include hf in
 Given a formally smooth `R`-algebra `P` and a surjective algebra homomorphism `f : P →ₐ[R] S`
 with kernel `I` (typically a presentation `R[X] → S`),
 `S` is formally smooth iff the `P`-linear map `I/I² → S ⊗[P] Ω[P⁄R]` is split injective.
+Also see `Algebra.Extension.formallySmooth_iff_split_injection`
+for the version in terms of `Extension`.
 -/
 @[stacks 031I]
 theorem Algebra.FormallySmooth.iff_split_injection :
@@ -394,7 +396,7 @@ with kernel `I` (typically a presentation `R[X] → S`),
 `S` is formally smooth iff the `P`-linear map `I/I² → S ⊗[P] Ω[P⁄R]` is split injective.
 -/
 @[stacks 031I]
-theorem Algebra.FormallySmooth.iff_split_injection'
+theorem Algebra.Extension.formallySmooth_iff_split_injection
     (P : Algebra.Extension.{u} R S) [FormallySmooth R P.Ring] :
     Algebra.FormallySmooth R S ↔ ∃ l, l ∘ₗ P.cotangentComplex = LinearMap.id := by
   refine (Algebra.FormallySmooth.iff_split_injection P.algebraMap_surjective).trans ?_
