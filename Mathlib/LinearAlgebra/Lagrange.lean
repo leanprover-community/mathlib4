@@ -15,10 +15,10 @@ import Mathlib.RingTheory.Polynomial.Basic
 * In everything that follows, `s : Finset ι` is a finite set of indexes, with `v : ι → F` an
 indexing of the field over some type. We call the image of v on s the interpolation nodes,
 though strictly unique nodes are only defined when v is injective on s.
-* `Lagrange.basisDivisor x y`, with `x y : F`. These are the normalised irreducible factors of
+* `lagrangeBasisDivisor x y`, with `x y : F`. These are the normalised irreducible factors of
 the Lagrange basis polynomials. They evaluate to `1` at `x` and `0` at `y` when `x` and `y`
 are distinct.
-* `Lagrange.basis v i` with `i : ι`: the Lagrange basis polynomial that evaluates to `1` at `v i`
+* `lagrangeBasis v i` with `i : ι`: the Lagrange basis polynomial that evaluates to `1` at `v i`
 and `0` at `v j` for `i ≠ j`.
 * `Lagrange.interpolate v r` where `r : ι → F` is a function from the fintype to the field: the
 Lagrange interpolant that evaluates to `r i` at `x i` for all `i : ι`. The `r i` are the _values_
@@ -129,7 +129,7 @@ end PolynomialDetermination
 
 noncomputable section
 
-namespace Lagrange
+namespace LinearAlgebra
 
 open Polynomial
 
@@ -192,50 +192,48 @@ open Finset
 /-- Lagrange basis polynomials indexed by `s : Finset ι`, defined at nodes `v i` for a
 map `v : ι → F`. For `i, j ∈ s`, `basis s v i` evaluates to 0 at `v j` for `i ≠ j`. When
 `v` is injective on `s`, `basis s v i` evaluates to 1 at `v i`. -/
-protected def basis (s : Finset ι) (v : ι → F) (i : ι) : F[X] :=
+def lagrangeBasis (s : Finset ι) (v : ι → F) (i : ι) : F[X] :=
   ∏ j ∈ s.erase i, basisDivisor (v i) (v j)
 
 @[simp]
-theorem basis_empty : Lagrange.basis ∅ v i = 1 :=
+theorem basis_empty : lagrangeBasis ∅ v i = 1 :=
   rfl
 
 @[simp]
-theorem basis_singleton (i : ι) : Lagrange.basis {i} v i = 1 := by
-  rw [Lagrange.basis, erase_singleton, prod_empty]
+theorem basis_singleton (i : ι) : lagrangeBasis {i} v i = 1 := by
+  rw [lagrangeBasis, erase_singleton, prod_empty]
 
 @[simp]
-theorem basis_pair_left (hij : i ≠ j) : Lagrange.basis {i, j} v i = basisDivisor (v i) (v j) := by
-  simp only [Lagrange.basis, hij, erase_insert_eq_erase, erase_eq_of_not_mem, mem_singleton,
+theorem basis_pair_left (hij : i ≠ j) : lagrangeBasis {i, j} v i = basisDivisor (v i) (v j) := by
+  simp only [lagrangeBasis, hij, erase_insert_eq_erase, erase_eq_of_not_mem, mem_singleton,
     not_false_iff, prod_singleton]
 
 @[simp]
-theorem basis_pair_right (hij : i ≠ j) : Lagrange.basis {i, j} v j = basisDivisor (v j) (v i) := by
+theorem basis_pair_right (hij : i ≠ j) : lagrangeBasis {i, j} v j = basisDivisor (v j) (v i) := by
   rw [pair_comm]
   exact basis_pair_left hij.symm
 
-theorem basis_ne_zero (hvs : Set.InjOn v s) (hi : i ∈ s) : Lagrange.basis s v i ≠ 0 := by
-  simp_rw [Lagrange.basis, prod_ne_zero_iff, Ne, mem_erase]
+theorem basis_ne_zero (hvs : Set.InjOn v s) (hi : i ∈ s) : lagrangeBasis s v i ≠ 0 := by
+  simp_rw [lagrangeBasis, prod_ne_zero_iff, Ne, mem_erase]
   rintro j ⟨hij, hj⟩
   rw [basisDivisor_eq_zero_iff, hvs.eq_iff hi hj]
   exact hij.symm
 
 @[simp]
 theorem eval_basis_self (hvs : Set.InjOn v s) (hi : i ∈ s) :
-    (Lagrange.basis s v i).eval (v i) = 1 := by
-  rw [Lagrange.basis, eval_prod]
-  refine prod_eq_one fun j H => ?_
-  rw [eval_basisDivisor_left_of_ne]
-  rcases mem_erase.mp H with ⟨hij, hj⟩
-  exact mt (hvs hi hj) hij.symm
+    (lagrangeBasis s v i).eval (v i) = 1 := by
+  rw [lagrangeBasis, eval_prod]
+  exact prod_eq_one fun j H => (eval_basisDivisor_left_of_ne
+    (mt (hvs hi (mem_of_mem_erase H)) (ne_of_mem_erase H).symm))
 
 @[simp]
-theorem eval_basis_of_ne (hij : i ≠ j) (hj : j ∈ s) : (Lagrange.basis s v i).eval (v j) = 0 := by
-  simp_rw [Lagrange.basis, eval_prod, prod_eq_zero_iff]
+theorem eval_basis_of_ne (hij : i ≠ j) (hj : j ∈ s) : (lagrangeBasis s v i).eval (v j) = 0 := by
+  simp_rw [lagrangeBasis, eval_prod, prod_eq_zero_iff]
   exact ⟨j, ⟨mem_erase.mpr ⟨hij.symm, hj⟩, eval_basisDivisor_right⟩⟩
 
 @[simp]
 theorem natDegree_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
-    (Lagrange.basis s v i).natDegree = #s - 1 := by
+    (lagrangeBasis s v i).natDegree = #s - 1 := by
   have H : ∀ j, j ∈ s.erase i → basisDivisor (v i) (v j) ≠ 0 := by
     simp_rw [Ne, mem_erase, basisDivisor_eq_zero_iff]
     exact fun j ⟨hij₁, hj⟩ hij₂ => hij₁ (hvs hj hi hij₂.symm)
@@ -246,12 +244,12 @@ theorem natDegree_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
   exact H _ hj
 
 theorem degree_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
-    (Lagrange.basis s v i).degree = ↑(#s - 1) := by
+    (lagrangeBasis s v i).degree = ↑(#s - 1) := by
   rw [degree_eq_natDegree (basis_ne_zero hvs hi), natDegree_basis hvs hi]
 
 -- Porting note: Added `Nat.cast_withBot` rewrites
 theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) :
-    ∑ j ∈ s, Lagrange.basis s v j = 1 := by
+    ∑ j ∈ s, lagrangeBasis s v j = 1 := by
   refine eq_of_degrees_lt_of_eval_index_eq s hvs (lt_of_le_of_lt (degree_sum_le _ _) ?_) ?_ ?_
   · rw [Nat.cast_withBot, Finset.sup_lt_iff (WithBot.bot_lt_coe #s)]
     intro i hi
@@ -287,11 +285,11 @@ open Finset
 polynomial of degree `< #s` that takes value `r i` on `v i` for all `i` in `s`. -/
 @[simps]
 def interpolate (s : Finset ι) (v : ι → F) : (ι → F) →ₗ[F] F[X] where
-  toFun r := ∑ i ∈ s, C (r i) * Lagrange.basis s v i
+  toFun r := ∑ i ∈ s, C (r i) * lagrangeBasis s v i
   map_add' f g := by
     simp_rw [← Finset.sum_add_distrib]
-    have h : (fun x => C (f x) * Lagrange.basis s v x + C (g x) * Lagrange.basis s v x) =
-    (fun x => C ((f + g) x) * Lagrange.basis s v x) := by
+    have h : (fun x => C (f x) * lagrangeBasis s v x + C (g x) * lagrangeBasis s v x) =
+    (fun x => C ((f + g) x) * lagrangeBasis s v x) := by
       simp_rw [← add_mul, ← C_add, Pi.add_apply]
     rw [h]
   map_smul' c f := by
@@ -394,7 +392,7 @@ def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F #s ≃ₗ[F] s → F whe
 -- Porting note: Added `Nat.cast_withBot` rewrites
 theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : s.Nonempty)
     (hst : s ⊆ t) :
-    interpolate t v r = ∑ i ∈ s, interpolate (insert i (t \ s)) v r * Lagrange.basis s v i := by
+    interpolate t v r = ∑ i ∈ s, interpolate (insert i (t \ s)) v r * lagrangeBasis s v i := by
   symm
   refine eq_interpolate_of_eval_eq _ hvt (lt_of_le_of_lt (degree_sum_le _ _) ?_) fun i hi => ?_
   · simp_rw [Nat.cast_withBot, Finset.sup_lt_iff (WithBot.bot_lt_coe #t), degree_mul]
@@ -419,7 +417,7 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
       refine sum_eq_zero fun j hj => ?_
       rcases mem_erase.mp hj with ⟨hij, _⟩
       rw [eval_basis_of_ne hij hi', mul_zero]
-    · have H : (∑ j ∈ s, eval (v i) (Lagrange.basis s v j)) = 1 := by
+    · have H : (∑ j ∈ s, eval (v i) (lagrangeBasis s v j)) = 1 := by
         rw [← eval_finset_sum, sum_basis (hvt.mono hst) hs, eval_one]
       rw [← mul_one (r i), ← H, mul_sum]
       refine sum_congr rfl fun j hj => ?_
@@ -585,12 +583,12 @@ variable {s : Finset ι} {v : ι → F} (r : ι → F) {i : ι} {x : F}
 open Finset
 
 theorem basis_eq_prod_sub_inv_mul_nodal_div (hi : i ∈ s) :
-    Lagrange.basis s v i = C (nodalWeight s v i) * (nodal s v / (X - C (v i))) := by
-  simp_rw [Lagrange.basis, basisDivisor, nodalWeight, prod_mul_distrib, map_prod, ←
+    lagrangeBasis s v i = C (nodalWeight s v i) * (nodal s v / (X - C (v i))) := by
+  simp_rw [lagrangeBasis, basisDivisor, nodalWeight, prod_mul_distrib, map_prod, ←
     nodal_erase_eq_nodal_div hi, nodal]
 
 theorem eval_basis_not_at_node (hi : i ∈ s) (hxi : x ≠ v i) :
-    eval x (Lagrange.basis s v i) = eval x (nodal s v) * (nodalWeight s v i * (x - v i)⁻¹) := by
+    eval x (lagrangeBasis s v i) = eval x (nodal s v) * (nodalWeight s v i * (x - v i)⁻¹) := by
   rw [mul_comm, basis_eq_prod_sub_inv_mul_nodal_div hi, eval_mul, eval_C, ←
     nodal_erase_eq_nodal_div hi, eval_nodal, eval_nodal, mul_assoc, ← mul_prod_erase _ _ hi, ←
     mul_assoc (x - v i)⁻¹, inv_mul_cancel₀ (sub_ne_zero_of_ne hxi), one_mul]
@@ -625,4 +623,4 @@ theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hs : s.Nonempty)
 
 end LagrangeBarycentric
 
-end Lagrange
+end LinearAlgebra
