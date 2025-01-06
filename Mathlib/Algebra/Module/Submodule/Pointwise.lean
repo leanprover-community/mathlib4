@@ -475,8 +475,8 @@ lemma mem_singleton_set_smul [SMulCommClass R S M] (r : S) (x : M) :
       exact ⟨t • n, by aesop,  smul_comm _ _ _⟩
     · rcases h₁ with ⟨m₁, h₁, rfl⟩
       rcases h₂ with ⟨m₂, h₂, rfl⟩
-      exact ⟨m₁ + m₂, Submodule.add_mem _ h₁ h₂, by aesop⟩
-    · exact ⟨0, Submodule.zero_mem _, by aesop⟩
+      exact ⟨m₁ + m₂, Submodule.add_mem _ h₁ h₂, by simp⟩
+    · exact ⟨0, Submodule.zero_mem _, by simp⟩
   · aesop
 
 lemma smul_inductionOn_pointwise [SMulCommClass S R M] {a : S} {p : (x : M) → x ∈ a • N → Prop}
