@@ -190,6 +190,42 @@ theorem derivedSeries_eq_top (n : ℕ) (h : derivedSeries R L 1 = ⊤) :
   · rfl
   · rwa [derivedSeries_succ_eq_top_iff]
 
+theorem derivedSeries_scalars_aux (R₁ R₂ L : Type*) [CommRing R₁] [CommRing R₂]
+    [LieRing L] [LieAlgebra R₁ L] [LieAlgebra R₂ L] (k : ℕ)
+    (ih : ∀ (x : L), x ∈ derivedSeriesOfIdeal R₁ L k ⊤ ↔ x ∈ derivedSeriesOfIdeal R₂ L k ⊤) :
+    let I := derivedSeriesOfIdeal R₂ L k ⊤
+    (Submodule.span R₁ {⁅a, b⁆ | (a ∈ I) (b ∈ I)} : Set L) ≤
+    (Submodule.span R₂ {⁅a, b⁆ | (a ∈ I) (b ∈ I)} : Set L) := by
+  intro I x hx
+  simp only [SetLike.mem_coe] at hx ⊢
+  induction hx using Submodule.span_induction with
+  | mem y hy =>
+    obtain ⟨a, ha, b, hb, rfl⟩ := hy
+    exact Submodule.subset_span ⟨a, ha, b, hb, rfl⟩
+  | zero => sorry
+  | add => sorry
+  | smul => sorry
+
+theorem derivedSeries_scalars (R₁ R₂ L : Type*) [CommRing R₁] [CommRing R₂]
+    [LieRing L] [LieAlgebra R₁ L] [LieAlgebra R₂ L] (k : ℕ) :
+    (derivedSeries R₁ L k : Set L) = (derivedSeries R₂ L k : Set L) := by
+  show ((derivedSeries R₁ L k).toSubmodule : Set L) =
+       ((derivedSeries R₂ L k).toSubmodule : Set L)
+  rw [derivedSeries_def, derivedSeries_def]
+  induction k with
+  | zero => rfl
+  | succ k ih =>
+    rw [derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ]
+    rw [LieSubmodule.lieIdeal_oper_eq_linear_span', LieSubmodule.lieIdeal_oper_eq_linear_span']
+    rw [Set.ext_iff] at ih
+    simp only [SetLike.mem_coe, LieSubmodule.mem_toSubmodule] at ih
+    simp only [Subtype.exists, exists_prop, ih]
+    apply le_antisymm
+    · exact derivedSeries_scalars_aux _ _ L k ih
+    · simp only [← ih]
+      apply derivedSeries_scalars_aux _ _ L k
+      simp [ih]
+
 end LieIdeal
 
 namespace LieAlgebra
