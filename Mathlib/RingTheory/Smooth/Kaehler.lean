@@ -527,7 +527,7 @@ def homInfinitesimal (P₁ P₂ : Extension R S) [FormallySmooth R P₁.Ring] :
       exact FormallySmooth.liftOfSurjective_apply _
             (IsScalarTower.toAlgHom R P₂.infinitesimal.Ring S) _ _ x }
 
-/-- Formally smooth extensions have isomorphic `H¹(L)`. -/
+/-- Formally smooth extensions have isomorphic `H¹(L_P)`. -/
 noncomputable
 def H1Cotangent.equivOfFormallySmooth (P₁ P₂ : Extension R S)
     [FormallySmooth R P₁.Ring] [FormallySmooth R P₂.Ring] :
