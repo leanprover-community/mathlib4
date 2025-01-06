@@ -19,11 +19,12 @@ instance : CSLift ℕ+ Nat where
   lift := PNat.val
   inj := PNat.coe_injective
 
--- FIXME: this `no_index` seems to be in the wrong place, but
+-- FIXME: this `ofNat` seems to be in the wrong place, but
 -- #synth CSLiftVal (3 : ℕ+) _ doesn't work otherwise
-instance {n} : CSLiftVal (no_index (OfNat.ofNat (n+1)) : ℕ+) (n + 1) := ⟨rfl⟩
+instance {n} : CSLiftVal (ofNat(n+1) : ℕ+) (n + 1) := ⟨rfl⟩
 
 instance {n h} : CSLiftVal (Nat.toPNat n h) n := ⟨rfl⟩
+
 
 instance {n} : CSLiftVal (Nat.succPNat n) (n + 1) := ⟨rfl⟩
 

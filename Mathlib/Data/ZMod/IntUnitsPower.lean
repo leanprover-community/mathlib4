@@ -71,9 +71,8 @@ example : Int.instUnitsPow = DivInvMonoid.toZPow := rfl
   change ((n : R) • Additive.ofMul u).toMul = _
   rw [Nat.cast_smul_eq_nsmul, toMul_nsmul, toMul_ofMul]
 
--- See note [no_index around OfNat.ofNat]
 lemma uzpow_coe_nat (s : ℤˣ) (n : ℕ) [n.AtLeastTwo] :
-    s ^ (no_index (OfNat.ofNat n : R)) = s ^ (no_index (OfNat.ofNat n : ℕ)) :=
+    s ^ (ofNat(n) : R) = s ^ (ofNat(n) : ℕ) :=
   uzpow_natCast _ _
 
 @[simp] lemma one_uzpow (x : R) : (1 : ℤˣ) ^ x = 1 :=
