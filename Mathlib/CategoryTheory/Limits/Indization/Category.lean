@@ -27,8 +27,8 @@ Adopting the theorem numbering of [Kashiwara2006], we show that
   (6.1.18(ii)),
 * if `C` has finite coproducts, then `Ind C` has small coproducts (6.1.18(ii)),
 * if `C` has products indexed by `α`, then `Ind C` has products indexed by `α`, and the functor
-  `Ind C ⥤ Cᵒᵖ ⥤ Type v` creates such products, and the functor `C ⥤ Ind C` preserves
-  them (6.1.17).
+  `Ind C ⥤ Cᵒᵖ ⥤ Type v` creates such products (6.1.17)
+* the functor `C ⥤ Ind C` preserves small limits.
 
 More limit-colimit properties will follow.
 
@@ -123,10 +123,10 @@ instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
     HasLimitsOfShape (Discrete J) (Ind C) :=
   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (Ind.inclusion C)
 
-instance {J : Type v} : PreservesLimitsOfShape (Discrete J) (Ind.yoneda (C := C)) :=
-  letI _ : PreservesLimitsOfShape (Discrete J) (Ind.yoneda ⋙ Ind.inclusion C) :=
-    preservesLimitsOfShape_of_natIso Ind.yonedaCompInclusion.symm
-  preservesLimitsOfShape_of_reflects_of_preserves Ind.yoneda (Ind.inclusion C)
+instance : PreservesLimits (Ind.yoneda (C := C)) :=
+  letI _ : PreservesLimitsOfSize.{v, v} (Ind.yoneda ⋙ Ind.inclusion C) :=
+    preservesLimits_of_natIso Ind.yonedaCompInclusion.symm
+  preservesLimits_of_reflects_of_preserves Ind.yoneda (Ind.inclusion C)
 
 theorem Ind.isIndObject_inclusion_obj (X : Ind C) : IsIndObject ((Ind.inclusion C).obj X) :=
   X.2
