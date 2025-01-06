@@ -45,12 +45,10 @@ theorem mul_apply' (x y : 𝕜') : mul 𝕜 𝕜' x y = x * y :=
 theorem opNorm_mul_apply_le (x : 𝕜') : ‖mul 𝕜 𝕜' x‖ ≤ ‖x‖ :=
   opNorm_le_bound _ (norm_nonneg x) (norm_mul_le x)
 
-@[deprecated (since := "2024-02-02")] alias op_norm_mul_apply_le := opNorm_mul_apply_le
 
 theorem opNorm_mul_le : ‖mul 𝕜 𝕜'‖ ≤ 1 :=
   LinearMap.mkContinuous₂_norm_le _ zero_le_one _
 
-@[deprecated (since := "2024-02-02")] alias op_norm_mul_le := opNorm_mul_le
 
 /-- Multiplication on the left in a non-unital normed algebra `𝕜'` as a non-unital algebra
 homomorphism into the algebra of *continuous* linear maps. This is the left regular representation
@@ -87,22 +85,14 @@ theorem opNorm_mulLeftRight_apply_apply_le (x y : 𝕜') : ‖mulLeftRight 𝕜 
         (opNorm_le_bound _ (norm_nonneg _) fun _ => (norm_mul_le _ _).trans_eq (mul_comm _ _))
         (norm_nonneg _) (norm_nonneg _)
 
-@[deprecated (since := "2024-02-02")]
-alias op_norm_mulLeftRight_apply_apply_le :=
-  opNorm_mulLeftRight_apply_apply_le
-
 theorem opNorm_mulLeftRight_apply_le (x : 𝕜') : ‖mulLeftRight 𝕜 𝕜' x‖ ≤ ‖x‖ :=
   opNorm_le_bound _ (norm_nonneg x) (opNorm_mulLeftRight_apply_apply_le 𝕜 𝕜' x)
-
-@[deprecated (since := "2024-02-02")]
-alias op_norm_mulLeftRight_apply_le := opNorm_mulLeftRight_apply_le
 
 set_option maxSynthPendingDepth 2 in
 theorem opNorm_mulLeftRight_le :
     ‖mulLeftRight 𝕜 𝕜'‖ ≤ 1 :=
   opNorm_le_bound _ zero_le_one fun x => (one_mul ‖x‖).symm ▸ opNorm_mulLeftRight_apply_le 𝕜 𝕜' x
 
-@[deprecated (since := "2024-02-02")] alias op_norm_mulLeftRight_le := opNorm_mulLeftRight_le
 
 /-- This is a mixin class for non-unital normed algebras which states that the left-regular
 representation of the algebra on itself is isometric. Every unital normed algebra with `‖1‖ = 1` is
@@ -133,13 +123,11 @@ lemma isometry_mul : Isometry (mul 𝕜 𝕜') :=
 lemma opNorm_mul_apply (x : 𝕜') : ‖mul 𝕜 𝕜' x‖ = ‖x‖ :=
   (AddMonoidHomClass.isometry_iff_norm (mul 𝕜 𝕜')).mp (isometry_mul 𝕜 𝕜') x
 
-@[deprecated (since := "2024-02-02")] alias op_norm_mul_apply := opNorm_mul_apply
 
 @[simp]
 lemma opNNNorm_mul_apply (x : 𝕜') : ‖mul 𝕜 𝕜' x‖₊ = ‖x‖₊ :=
   Subtype.ext <| opNorm_mul_apply 𝕜 𝕜' x
 
-@[deprecated (since := "2024-02-02")] alias op_nnnorm_mul_apply := opNNNorm_mul_apply
 
 /-- Multiplication in a normed algebra as a linear isometry to the space of
 continuous linear maps. -/
@@ -210,7 +198,6 @@ variable {𝕜}
 theorem opNorm_lsmul_apply_le (x : 𝕜') : ‖(lsmul 𝕜 𝕜' x : E →L[𝕜] E)‖ ≤ ‖x‖ :=
   ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg x) fun y => norm_smul_le x y
 
-@[deprecated (since := "2024-02-02")] alias op_norm_lsmul_apply_le := opNorm_lsmul_apply_le
 
 /-- The norm of `lsmul` is at most 1 in any semi-normed group. -/
 theorem opNorm_lsmul_le : ‖(lsmul 𝕜 𝕜' : 𝕜' →L[𝕜] E →L[𝕜] E)‖ ≤ 1 := by
@@ -218,7 +205,6 @@ theorem opNorm_lsmul_le : ‖(lsmul 𝕜 𝕜' : 𝕜' →L[𝕜] E →L[𝕜] E
   simp_rw [one_mul]
   exact opNorm_lsmul_apply_le _
 
-@[deprecated (since := "2024-02-02")] alias op_norm_lsmul_le := opNorm_lsmul_le
 
 end SMulLinear
 
@@ -242,13 +228,11 @@ variable [SMulCommClass 𝕜 𝕜' 𝕜'] [RegularNormedAlgebra 𝕜 𝕜'] [Non
 theorem opNorm_mul : ‖mul 𝕜 𝕜'‖ = 1 :=
   (mulₗᵢ 𝕜 𝕜').norm_toContinuousLinearMap
 
-@[deprecated (since := "2024-02-02")] alias op_norm_mul := opNorm_mul
 
 @[simp]
 theorem opNNNorm_mul : ‖mul 𝕜 𝕜'‖₊ = 1 :=
   Subtype.ext <| opNorm_mul 𝕜 𝕜'
 
-@[deprecated (since := "2024-02-02")] alias op_nnnorm_mul := opNNNorm_mul
 
 end
 
@@ -267,7 +251,6 @@ theorem opNorm_lsmul [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace
   refine le_of_mul_le_mul_right ?_ (norm_pos_iff.mpr hy)
   simp_rw [one_mul, this]
 
-@[deprecated (since := "2024-02-02")] alias op_norm_lsmul := opNorm_lsmul
 
 end ContinuousLinearMap
 
