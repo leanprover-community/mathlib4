@@ -336,6 +336,13 @@ theorem add_prod_add [ContinuousAdd M₂] [ContinuousAdd M₃]
     (f₁ + f₂).prod (g₁ + g₂) = f₁.prod g₁ + f₂.prod g₂ :=
   rfl
 
+theorem smul_prod_smul {S : Type*} [Monoid S] [DistribMulAction S M₂] [DistribMulAction S M₃]
+    [ContinuousConstSMul S M₂] [SMulCommClass R S M₂]
+    [ContinuousConstSMul S M₃] [SMulCommClass R S M₃]
+    (c : S) (f : ContinuousMultilinearMap R M₁ M₂) (g : ContinuousMultilinearMap R M₁ M₃) :
+    (c • f).prod (c • g) = c • f.prod g :=
+  rfl
+
 @[simp]
 theorem zero_prod_zero :
     (0 : ContinuousMultilinearMap R M₁ M₂).prod (0 : ContinuousMultilinearMap R M₁ M₃) = 0 :=
