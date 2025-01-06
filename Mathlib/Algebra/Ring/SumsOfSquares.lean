@@ -15,11 +15,11 @@ We introduce a predicate for sums of squares in a ring.
 
 ## Main declarations
 
-- The predicate `IsSumSq : R → Prop`: for a type `R` with addition, multiplication and a zero,
+-`IsSumSq : R → Prop`: for a type `R` with addition, multiplication and a zero,
   an inductive predicate defining the property of being a sum of squares in `R`.
   `0 : R` is a sum of squares and if `S` is a sum of squares, then, for all `a : R`,
   `a * a + s` is a sum of squares.
-- The terms `AddMonoid.sumSq R` and `Subsemiring.sumSq R`: respectively
+- `AddMonoid.sumSq R` and `Subsemiring.sumSq R`: respectively
   the submonoid or subsemiring of sums of squares in an additive monoid or semiring `R`
   with multiplication.
 
@@ -50,8 +50,10 @@ theorem IsSumSq.rec' [Mul R] [Add R] [Zero R]
   | .zero        => zero
   | .sq_add _ hs => sq_add (.mul_self _) hs (rec' zero sq_add _)
 
-/-- In an additive monoid with multiplication,
-if `s₁` and `s₂` are sums of squares, then `s₁ + s₂` is a sum of squares. -/
+/--
+In an additive monoid with multiplication,
+if `s₁` and `s₂` are sums of squares, then `s₁ + s₂` is a sum of squares.
+-/
 @[aesop unsafe 90% apply]
 theorem IsSumSq.add [AddMonoid R] [Mul R] {s₁ s₂ : R}
     (h₁ : IsSumSq s₁) (h₂ : IsSumSq s₂) : IsSumSq (s₁ + s₂) := by
@@ -85,8 +87,10 @@ end AddSubmonoid
 theorem IsSumSq.mul_self [AddZeroClass R] [Mul R] (a : R) : IsSumSq (a * a) := by
   rw [← add_zero (a * a)]; exact sq_add _ zero
 
-/-- In an additive unital magma with multiplication, squares are sums of squares
-(see Mathlib.Algebra.Group.Even.Basic). -/
+/--
+In an additive unital magma with multiplication, squares are sums of squares
+(see Mathlib.Algebra.Group.Even.Basic).
+-/
 @[aesop unsafe 50% apply]
 theorem IsSquare.isSumSq [AddZeroClass R] [Mul R] {x : R} (hx : IsSquare x) :
     IsSumSq x := by rcases hx with ⟨_, rfl⟩; apply IsSumSq.mul_self
@@ -103,20 +107,26 @@ theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
 
 @[deprecated (since := "2024-08-09")] alias SquaresAddClosure := AddSubmonoid.closure_isSquare
 
-/-- In an additive, commutative monoid with multiplication, a finite sum of sums of squares
-is a sum of squares. -/
+/--
+In an additive, commutative monoid with multiplication, a finite sum of sums of squares
+is a sum of squares.
+-/
 @[aesop unsafe 90% apply]
 theorem IsSumSq.sum [AddCommMonoid R] [Mul R] {ι : Type*} {I : Finset ι} {s : ι → R}
     (hs : ∀ i ∈ I, IsSumSq <| s i) : IsSumSq (∑ i ∈ I, s i) := by
   simpa using sum_mem (S := AddSubmonoid.sumSq R) hs
 
-/-- In an additive, commutative monoid with multiplication,
-a term of the form `∑ i ∈ I, x i`, where each `x i` is a square, is a sum of squares. -/
+/--
+In an additive, commutative monoid with multiplication,
+a term of the form `∑ i ∈ I, x i`, where each `x i` is a square, is a sum of squares.
+-/
 theorem IsSumSq.sum_isSquare [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) {x : ι → R}
     (ha : ∀ i ∈ I, IsSquare <| x i) : IsSumSq (∑ i ∈ I, x i) := by aesop
 
-/-- In an additive, commutative monoid with multiplication,
-a term of the form `∑ i ∈ I, a i * a i` is a sum of squares. -/
+/--
+In an additive, commutative monoid with multiplication,
+a term of the form `∑ i ∈ I, a i * a i` is a sum of squares.
+-/
 theorem IsSumSq.sum_mul_self [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) (a : ι → R) :
     IsSumSq (∑ i ∈ I, a i * a i) := by aesop
 
@@ -149,8 +159,10 @@ theorem mem_sumSq : s ∈ sumSq T ↔ IsSumSq s := by
 
 end NonUnitalSubsemiring
 
-/-- In a commutative (possibly non-unital) semiring,
-if `s₁` and `s₂` are sums of squares, then `s₁ * s₂` is a sum of squares. -/
+/--
+In a commutative (possibly non-unital) semiring,
+if `s₁` and `s₂` are sums of squares, then `s₁ * s₂` is a sum of squares.
+-/
 @[aesop unsafe 50% apply]
 theorem IsSumSq.mul [NonUnitalCommSemiring R] {s₁ s₂ : R}
     (h₁ : IsSumSq s₁) (h₂ : IsSumSq s₂) : IsSumSq (s₁ * s₂) := by
