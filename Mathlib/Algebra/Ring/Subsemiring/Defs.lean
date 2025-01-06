@@ -139,12 +139,23 @@ instance : SubsemiringClass (Subsemiring R) R where
 
 initialize_simps_projections Subsemiring (carrier → coe, as_prefix coe)
 
+/-- Turn a `Subsemiring` into a `NonUnitalSubsemiring` by forgetting that it contains `1`. -/
+def toNonUnitalSubsemiring (S : Subsemiring R) : NonUnitalSubsemiring R :=
+  { S with }
+
 @[simp]
 theorem mem_toSubmonoid {s : Subsemiring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 
+@[simp]
+lemma mem_toNonUnitalSubsemiring {S : Subsemiring R} {x : R} :
+    x ∈ S.toNonUnitalSubsemiring ↔ x ∈ S := .rfl
+
 theorem mem_carrier {s : Subsemiring R} {x : R} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
+
+@[simp]
+lemma coe_toNonUnitalSubsemiring (S : Subsemiring R) : (S.toNonUnitalSubsemiring : Set R) = S := rfl
 
 /-- Two subsemirings are equal if they have the same elements. -/
 @[ext]
@@ -166,6 +177,19 @@ theorem toSubmonoid_injective : Function.Injective (toSubmonoid : Subsemiring R 
 theorem toAddSubmonoid_injective :
     Function.Injective (toAddSubmonoid : Subsemiring R → AddSubmonoid R)
   | _, _, h => ext (SetLike.ext_iff.mp h : _)
+
+lemma toNonUnitalSubsemiring_injective :
+    Function.Injective (toNonUnitalSubsemiring : Subsemiring R → _) :=
+  fun S₁ S₂ h => SetLike.ext'_iff.2 (
+    show (S₁.toNonUnitalSubsemiring : Set R) = S₂ from SetLike.ext'_iff.1 h)
+
+@[simp]
+lemma toNonUnitalSubsemiring_inj {S₁ S₂ : Subsemiring R} :
+    S₁.toNonUnitalSubsemiring = S₂.toNonUnitalSubsemiring ↔ S₁ = S₂ :=
+  toNonUnitalSubsemiring_injective.eq_iff
+
+lemma one_mem_toNonUnitalSubsemiring (S : Subsemiring R) : (1 : R) ∈ S.toNonUnitalSubsemiring :=
+  S.one_mem
 
 /-- Construct a `Subsemiring R` from a set `s`, a submonoid `sm`, and an additive
 submonoid `sa` such that `x ∈ s ↔ x ∈ sm ↔ x ∈ sa`. -/
