@@ -120,7 +120,7 @@ theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by
     rw [sub_zero, pow_two]; exact Ideal.mul_mem_mul hx hy
   · intro x y hx hy; exact add_mem hx hy
 
-lemma mk_mem_cotangentIdeal {I : Ideal R} {x} :
+lemma mk_mem_cotangentIdeal {I : Ideal R} {x : R} :
     Quotient.mk (I ^ 2) x ∈ I.cotangentIdeal ↔ x ∈ I := by
   refine ⟨fun ⟨y, hy, e⟩ ↦ ?_,  fun h ↦ ⟨x, h, rfl⟩⟩
   simpa using sub_mem hy (Ideal.pow_le_self two_ne_zero

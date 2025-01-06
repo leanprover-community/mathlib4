@@ -519,7 +519,7 @@ lemma H1Cotangent.map_toInfinitesimal_bijective (P : Extension.{u} R S) :
 
 /--
 Given extensions `0 → I₁ → P₁ → S → 0` and `0 → I₂ → P₂ → S → 0` with `P₁` formally smooth,
-there is an arbitrary map `P₁/I₁² → P₂/I₂²` of extensions.
+this is an arbitrarily chosen map `P₁/I₁² → P₂/I₂²` of extensions.
 -/
 noncomputable
 def homInfinitesimal (P₁ P₂ : Extension R S) [FormallySmooth R P₁.Ring] :
@@ -557,7 +557,7 @@ def H1Cotangent.equivOfFormallySmooth (P₁ P₂ : Extension R S)
 
 /-- Any formally smooth extension can be used to calculate `H¹(L_{S/R})`. -/
 noncomputable
-def equivH1Cotangent (P : Extension R S) [FormallySmooth R P.Ring] :
+def equivH1CotangentOfFormallySmooth (P : Extension R S) [FormallySmooth R P.Ring] :
     P.H1Cotangent ≃ₗ[S] H1Cotangent R S :=
   have : FormallySmooth R (Generators.self R S).toExtension.Ring :=
     inferInstanceAs (FormallySmooth R (MvPolynomial _ _))

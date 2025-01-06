@@ -367,7 +367,7 @@ def H1Cotangent.equiv {P₁ P₂ : Extension R S} (f₁ : P₁.Hom P₂) (f₂ :
   right_inv x :=
     show (map f₁ ∘ₗ map f₂) x = LinearMap.id x by
     rw [← Extension.H1Cotangent.map_id, eq_comm, map_eq _ (f₁.comp f₂),
-    Extension.H1Cotangent.map_comp]; rfl
+      Extension.H1Cotangent.map_comp]; rfl
 
 end Extension
 
