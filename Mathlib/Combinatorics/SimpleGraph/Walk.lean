@@ -891,33 +891,11 @@ abbrev snd (p : G.Walk u v) : V := p.getVert 1
 lemma snd_cons {u v w} (q : G.Walk v w) (hadj : G.Adj u v) :
     (q.cons hadj).snd = v := by simp
 
-/-- The penultimate vertex of a walk, or the only vertex in a nil walk. -/
-abbrev penultimate (p : G.Walk u v) : V := p.getVert (p.length - 1)
-
-@[simp]
-lemma penultimate_cons_nil (h : G.Adj u v) : (cons h nil).penultimate = u := rfl
-
-@[simp]
-lemma penultimate_cons_cons {w'} (h : G.Adj u v) (h₂ : G.Adj v w) (p : G.Walk w w') :
-    (cons h (cons h₂ p)).penultimate = (cons h₂ p).penultimate := rfl
-
-lemma penultimate_cons_of_not_nil (h : G.Adj u v) (p : G.Walk v w) (hp : ¬ p.Nil) :
-    (cons h p).penultimate = p.penultimate :=
-  p.notNilRec (by simp) hp h
-
-@[simp]
-lemma penultimate_concat {t u v} (p : G.Walk u v) (h : G.Adj v t) :
-    (p.concat h).penultimate = v := by simp [penultimate, concat_eq_append, getVert_append]
-
-@[simp]
-lemma adj_penultimate {p : G.Walk v w} (hp : ¬ p.Nil) :
-    G.Adj p.penultimate w := by
-  conv => rhs; rw [← getVert_length p]
-  rw [nil_iff_length_eq] at hp
-  convert adj_getVert_succ _ _ <;> omega
-
 /-- The walk obtained by removing the first dart of a walk. A nil walk stays nil. -/
 def tail (p : G.Walk u v) : G.Walk (p.snd) v := p.drop 1
+
+/-- The walk obtained by removing the last dart of a walk. A nil walk stays nil. -/
+def dropLast (p : G.Walk u v) : G.Walk u p.penultimate := p.take (p.length - 1)
 
 @[simp]
 lemma tail_nil : (@nil _ G v).tail = .nil := rfl
@@ -967,7 +945,7 @@ def firstDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
 def lastDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
   fst := p.penultimate
   snd := w
-  adj := p.adj_penultimate hp
+  adj := p.adj_penultimate_of_not_nil hp
 
 lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
     (p.firstDart hp).edge = s(v, p.snd) := rfl
@@ -984,8 +962,11 @@ lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
   | cons h q =>
     simp only [getVert_cons_succ, tail_cons_eq, cons_copy, copy_rfl_rfl]
 
+/--
+The reverse direction of `cons_tail_eq` for rewriting.
+-/
 lemma cons_tail_eq' (p : G.Walk x y) (hp : ¬ p.Nil) :
-    p = cons (p.adj_getVert_one hp) p.tail := (cons_tail_eq ..).symm
+    p = cons (p.adj_snd hp) p.tail := (cons_tail_eq _ hp).symm
 
 @[simp]
 lemma concat_dropLast_eq (p : G.Walk x y) (hp : G.Adj p.penultimate y) :
@@ -997,6 +978,9 @@ lemma concat_dropLast_eq (p : G.Walk x y) (hp : G.Adj p.penultimate y) :
     | nil => rfl
     | _ => simp [hind]
 
+/--
+The reverse direction of `concat_dropLast_eq` for rewriting.
+-/
 lemma conact_dropLast_eq' (p : G.Walk x y) (hp : ¬ p.Nil) :
     p = p.dropLast.concat (p.adj_penultimate_of_not_nil hp) := (concat_dropLast_eq ..).symm
 
