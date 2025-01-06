@@ -24,6 +24,8 @@ open Order Set
 
 variable {α β γ : Type*} {a b : α} {f : α → β} {g : β → γ}
 
+namespace Order
+
 /-- A normal function between well-orders is a strictly monotonic continuous function. -/
 structure IsNormal [LinearOrder α] [LinearOrder β] (f : α → β) : Prop where
   strictMono : StrictMono f
@@ -145,3 +147,5 @@ theorem map_iSup {ι} [Nonempty ι] {g : ι → α} (hf : IsNormal f) (hg : BddA
 end ConditionallyCompleteLinearOrder
 
 end IsNormal
+
+end Order
