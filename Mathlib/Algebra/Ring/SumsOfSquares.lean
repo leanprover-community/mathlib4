@@ -14,11 +14,11 @@ We introduce a predicate for sums of squares in a ring.
 
 ## Main declarations
 
-- The predicate `IsSumSq : R → Prop`: for a type `R` with addition, multiplication and a zero,
+- `IsSumSq : R → Prop`: for a type `R` with addition, multiplication and a zero,
   an inductive predicate defining the property of being a sum of squares in `R`.
   `0 : R` is a sum of squares and if `S` is a sum of squares, then, for all `a : R`,
   `a * a + s` is a sum of squares.
-- The term `AddMonoid.sumSq R`: the submonoid of sums of squares in an additive monoid `R`
+- `AddMonoid.sumSq R`: the submonoid of sums of squares in an additive monoid `R`
   with multiplication.
 
 -/
@@ -90,7 +90,7 @@ theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
 @[deprecated (since := "2024-08-09")] alias SquaresAddClosure := AddSubmonoid.closure_isSquare
 
 /-- In an additive, commutative monoid with multiplication,
-a term of the form `∑ i ∈ I, a i * a i` is a sum of squares. -/
+`∑ i ∈ I, a i * a i` is a sum of squares. -/
 theorem IsSumSq.sum_mul_self [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) (a : ι → R) :
     IsSumSq (∑ i ∈ I, a i * a i) := by
   induction I using Finset.cons_induction with
