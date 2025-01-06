@@ -27,7 +27,7 @@ variable (F : Type*) (K : Type*) [Field F] [Field K] [Differential F] [Different
 variable [Algebra F K] [DifferentialAlgebra F K]
 
 /--
-We say that a differential field extension `K / F` is Liouville if, whenever an element a ∈ F can be
+We say that a differential field extension `K / F` is Liouville if, whenever an element `a ∈ F` can be
 written as `a = v + ∑ cᵢ * logDeriv uᵢ` for `v, cᵢ, uᵢ ∈ K` and `cᵢ` constant, it can also be
 written in that way with `v, cᵢ, uᵢ ∈ F`.
 -/
