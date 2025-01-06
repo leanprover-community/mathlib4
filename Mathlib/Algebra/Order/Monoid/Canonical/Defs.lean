@@ -268,7 +268,7 @@ end NeZero
 
 section CanonicallyLinearOrderedCommMonoid
 
-variable [LinearOrderedCommMonoid α] [CanonicallyOrderedMul α]
+variable [CommMonoid α] [LinearOrder α] [CanonicallyOrderedMul α]
 
 @[to_additive]
 theorem min_mul_distrib (a b c : α) : min a (b * c) = min a (min a b * min a c) := by

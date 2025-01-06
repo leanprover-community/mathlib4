@@ -27,22 +27,24 @@ variable [AddLeftMono α] [ZeroLEOneClass α]
 
 /-- Specialisation of `Nat.cast_nonneg'`, which seems to be easier for Lean to use. -/
 @[simp]
-theorem cast_nonneg {α} [OrderedSemiring α] (n : ℕ) : 0 ≤ (n : α) :=
+theorem cast_nonneg {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] (n : ℕ) : 0 ≤ (n : α) :=
   cast_nonneg' n
 
 /-- Specialisation of `Nat.ofNat_nonneg'`, which seems to be easier for Lean to use. -/
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ofNat_nonneg {α} [OrderedSemiring α] (n : ℕ) [n.AtLeastTwo] :
+theorem ofNat_nonneg {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] (n : ℕ) [n.AtLeastTwo] :
     0 ≤ (no_index (OfNat.ofNat n : α)) :=
   ofNat_nonneg' n
 
 @[simp, norm_cast]
-theorem cast_min {α} [LinearOrderedSemiring α] (m n : ℕ) : (↑(min m n : ℕ) : α) = min (m : α) n :=
+theorem cast_min {α} [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] (m n : ℕ) :
+    (↑(min m n : ℕ) : α) = min (m : α) n :=
   (@mono_cast α _).map_min
 
 @[simp, norm_cast]
-theorem cast_max {α} [LinearOrderedSemiring α] (m n : ℕ) : (↑(max m n : ℕ) : α) = max (m : α) n :=
+theorem cast_max {α} [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] (m n : ℕ) :
+    (↑(max m n : ℕ) : α) = max (m : α) n :=
   (@mono_cast α _).map_max
 
 section Nontrivial
@@ -51,7 +53,8 @@ variable [NeZero (1 : α)]
 
 /-- Specialisation of `Nat.cast_pos'`, which seems to be easier for Lean to use. -/
 @[simp]
-theorem cast_pos {α} [OrderedSemiring α] [Nontrivial α] {n : ℕ} : (0 : α) < n ↔ 0 < n := cast_pos'
+theorem cast_pos {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α] {n : ℕ} :
+    (0 : α) < n ↔ 0 < n := cast_pos'
 
 /-- See also `Nat.ofNat_pos`, specialised for an `OrderedSemiring`. -/
 -- See note [no_index around OfNat.ofNat]
@@ -62,7 +65,8 @@ theorem ofNat_pos' {n : ℕ} [n.AtLeastTwo] : 0 < (no_index (OfNat.ofNat n : α)
 /-- Specialisation of `Nat.ofNat_pos'`, which seems to be easier for Lean to use. -/
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ofNat_pos {α} [OrderedSemiring α] [Nontrivial α] {n : ℕ} [n.AtLeastTwo] :
+theorem ofNat_pos {α} [Semiring α] [PartialOrder α] [IsOrderedRing α] [Nontrivial α]
+    {n : ℕ} [n.AtLeastTwo] :
     0 < (no_index (OfNat.ofNat n : α)) :=
   ofNat_pos'
 
@@ -73,8 +77,8 @@ end OrderedSemiring
 /-- A version of `Nat.cast_sub` that works for `ℝ≥0` and `ℚ≥0`. Note that this proof doesn't work
 for `ℕ∞` and `ℝ≥0∞`, so we use type-specific lemmas for these types. -/
 @[simp, norm_cast]
-theorem cast_tsub [OrderedCommSemiring α] [CanonicallyOrderedAdd α] [Sub α] [OrderedSub α]
-    [AddLeftReflectLE α] (m n : ℕ) : ↑(m - n) = (m - n : α) := by
+theorem cast_tsub [CommSemiring α] [PartialOrder α] [IsOrderedRing α] [CanonicallyOrderedAdd α]
+    [Sub α] [OrderedSub α] [AddLeftReflectLE α] (m n : ℕ) : ↑(m - n) = (m - n : α) := by
   rcases le_total m n with h | h
   · rw [Nat.sub_eq_zero_of_le h, cast_zero, tsub_eq_zero_of_le]
     exact mono_cast h
@@ -82,12 +86,12 @@ theorem cast_tsub [OrderedCommSemiring α] [CanonicallyOrderedAdd α] [Sub α] [
     rw [add_tsub_cancel_right, cast_add, add_tsub_cancel_right]
 
 @[simp, norm_cast]
-theorem abs_cast [LinearOrderedRing α] (a : ℕ) : |(a : α)| = a :=
+theorem abs_cast [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (a : ℕ) : |(a : α)| = a :=
   abs_of_nonneg (cast_nonneg a)
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem abs_ofNat [LinearOrderedRing α] (n : ℕ) [n.AtLeastTwo] :
+theorem abs_ofNat [Ring α] [LinearOrder α] [IsStrictOrderedRing α] (n : ℕ) [n.AtLeastTwo] :
     |(no_index (OfNat.ofNat n : α))| = OfNat.ofNat n :=
   abs_cast n
 
