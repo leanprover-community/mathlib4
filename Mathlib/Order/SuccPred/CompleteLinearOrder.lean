@@ -123,17 +123,17 @@ lemma exists_eq_ciSup_of_not_isSuccPrelimit'
 @[deprecated exists_eq_ciSup_of_not_isSuccPrelimit' (since := "2024-09-05")]
 alias exists_eq_ciSup_of_not_isSuccLimit' := exists_eq_ciSup_of_not_isSuccPrelimit'
 
-lemma IsLUB.mem_of_not_isSuccPrelimit (hs : IsLUB s x) (hx : ¬ IsSuccPrelimit x) : x ∈ s := by
-  obtain rfl | hs' := s.eq_empty_or_nonempty
-  · simp [show x = ⊥ by simpa using hs, isSuccPrelimit_bot] at hx
-  · exact hs.mem_of_nonempty_of_not_isSuccPrelimit hs' hx
+@[deprecated IsLUB.isSuccPrelimit_of_not_mem (since := "2025-01-05")]
+lemma IsLUB.mem_of_not_isSuccPrelimit (hs : IsLUB s x) (hx : ¬ IsSuccPrelimit x) : x ∈ s :=
+  hx.imp_symm hs.isSuccPrelimit_of_not_mem
 
 @[deprecated IsLUB.mem_of_not_isSuccPrelimit (since := "2024-09-05")]
 alias IsLUB.mem_of_not_isSuccLimit := IsLUB.mem_of_not_isSuccPrelimit
 
+@[deprecated IsLUB.isSuccPrelimit_of_not_mem (since := "2025-01-05")]
 lemma IsLUB.exists_of_not_isSuccPrelimit (hf : IsLUB (range f) x) (hx : ¬ IsSuccPrelimit x) :
     ∃ i, f i = x :=
-  hf.mem_of_not_isSuccPrelimit hx
+  hx.imp_symm hf.isSuccPrelimit_of_not_mem
 
 @[deprecated IsLUB.exists_of_not_isSuccPrelimit (since := "2024-09-05")]
 alias IsLUB.exists_of_not_isSuccLimit := IsLUB.exists_of_not_isSuccPrelimit
@@ -196,15 +196,17 @@ lemma exists_eq_iInf_of_not_isPredPrelimit (hf : ¬ IsPredPrelimit (⨅ i, f i))
 @[deprecated exists_eq_iInf_of_not_isPredPrelimit (since := "2024-09-05")]
 alias exists_eq_iInf_of_not_isPredLimit := exists_eq_iInf_of_not_isPredPrelimit
 
+@[deprecated IsGLB.isPredPrelimit_of_not_mem (since := "2025-01-05")]
 lemma IsGLB.mem_of_not_isPredPrelimit (hs : IsGLB s x) (hx : ¬ IsPredPrelimit x) : x ∈ s :=
-  hs.sInf_eq ▸ sInf_mem_of_not_isPredPrelimit (hs.sInf_eq ▸ hx)
+  hx.imp_symm hs.isPredPrelimit_of_not_mem
 
 @[deprecated IsGLB.mem_of_not_isPredPrelimit (since := "2024-09-05")]
 alias IsGLB.mem_of_not_isPredLimit := IsGLB.mem_of_not_isPredPrelimit
 
+@[deprecated IsGLB.isPredPrelimit_of_not_mem (since := "2025-01-05")]
 lemma IsGLB.exists_of_not_isPredPrelimit (hf : IsGLB (range f) x) (hx : ¬ IsPredPrelimit x) :
     ∃ i, f i = x :=
-  hf.mem_of_not_isPredPrelimit hx
+  hx.imp_symm hf.isPredPrelimit_of_not_mem
 
 @[deprecated IsGLB.exists_of_not_isPredPrelimit (since := "2024-09-05")]
 alias IsGLB.exists_of_not_isPredLimit := IsGLB.exists_of_not_isPredPrelimit

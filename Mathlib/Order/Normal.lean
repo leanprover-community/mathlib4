@@ -3,6 +3,7 @@ Copyright (c) 2025 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
+import Mathlib.Order.SuccPred.CompleteLinearOrder
 import Mathlib.Order.SuccPred.InitialSeg
 
 /-!
@@ -21,7 +22,7 @@ TODO: replace `Ordinal.IsNormal` by this more general notion.
 
 open Order Set
 
-variable {α β : Type*} {a b : α} [LinearOrder α] [LinearOrder β]
+variable {α β γ : Type*} {a b : α} [LinearOrder α] [LinearOrder β] [LinearOrder γ]
 
 /-- A normal function between well-orders is a strictly monotonic continuous function. -/
 structure IsNormal (f : α → β) : Prop where
@@ -32,9 +33,7 @@ structure IsNormal (f : α → β) : Prop where
     f a ∈ lowerBounds (upperBounds (f '' Iio a))
 
 namespace IsNormal
-variable {f : α → β}
-
---theorem of_
+variable {f : α → β} {g : β → γ}
 
 theorem of_succ_lt [SuccOrder α] [WellFoundedLT α]
     (hs : ∀ a, f a < f (succ a)) (hl : ∀ {a}, IsSuccLimit a → IsLUB (f '' Iio a) (f a)) :
@@ -76,28 +75,51 @@ theorem le_iff_forall_le (hf : IsNormal f) (ha : IsSuccLimit a) {b : β} :
     f a ≤ b ↔ ∀ a' < a, f a' ≤ b := by
   simpa [mem_upperBounds] using isLUB_le_iff (hf.isLUB_of_isSuccLimit ha)
 
-theorem lf_iff_exists_lt (hf : IsNormal f) (ha : IsSuccLimit a) {b : β} :
+theorem lt_iff_exists_lt (hf : IsNormal f) (ha : IsSuccLimit a) {b : β} :
     b < f a ↔ ∃ a' < a, b < f a' := by
   simpa [mem_upperBounds] using lt_isLUB_iff (hf.isLUB_of_isSuccLimit ha)
+
+theorem map_isLUB (hf : IsNormal f) {s : Set α} (hs : s.Nonempty) (hs' : IsLUB s a) :
+    IsLUB (f '' s) (f a) := by
+  constructor
+  · simp_rw [mem_upperBounds, forall_mem_image, hf.le_iff_le]
+    exact hs'.1
+  · intro b hb
+    by_cases ha : a ∈ s
+    · simp_rw [mem_upperBounds, forall_mem_image] at hb
+      exact hb ha
+    · have := IsLUB.mem_of_not_isSuccPrelimit
+
+#exit
+theorem map_isSuccLimit (hf : IsNormal f) (ha : IsSuccLimit a) : IsSuccLimit (f a) := by
+  refine ⟨?_, fun b hb ↦ ?_⟩
+  · obtain ⟨b, hb⟩ := not_isMin_iff.1 ha.not_isMin
+    exact not_isMin_iff.2 ⟨_, hf.strictMono hb⟩
+  · obtain ⟨c, hc, hc'⟩ := (hf.lt_iff_exists_lt ha).1 hb.lt
+    have hc' := hb.ge_of_gt hc'
+    rw [hf.le_iff_le] at hc'
+    exact hc.not_le hc'
 
 theorem _root_.InitialSeg.isNormal (f : α ≤i β) : IsNormal f where
   strictMono := f.strictMono
   mem_lowerBounds_upperBounds := by
-    intro a ha b hb
-    apply le_of_forall_lt
-    intro c hc
-    obtain ⟨c, rfl⟩ := f.mem_range_of_le hc.le
-    rw [f.lt_iff_lt] at hc
-    have := hb (mem_image_of_mem f hc)
-    simp only [mem_upperBounds] at hb
-
-    have := hb hc
-
-protected theorem id : IsNormal (@id α) where
-  strictMono := strictMono_id
-  isLUB_of_isSuccLimit := by
     intro a ha
-    simp
-    refine isLUB_Iio
+    rw [f.image_Iio]
+    exact (f.map_isSuccLimit ha).isLUB_Iio.2
+
+theorem _root_.PrincipalSeg.isNormal (f : α <i β) : IsNormal f :=
+  (f : α ≤i β).isNormal
+
+protected theorem id : IsNormal (@id α) :=
+  (InitialSeg.refl _).isNormal
+
+theorem trans (hg : IsNormal g) (hf : IsNormal f) : IsNormal (g ∘ f) where
+  strictMono := hg.strictMono.comp hf.strictMono
+  mem_lowerBounds_upperBounds := by
+    intro a ha b hb
+    simp_rw [Function.comp_apply, mem_upperBounds, forall_mem_image] at hb
+    simpa [hg.le_iff_forall_le (hf.map_isSuccLimit ha), hf.lt_iff_exists_lt ha] using
+      fun c d hd hc ↦ (hg.strictMono hc).le.trans (hb hd)
+
 
 end IsNormal

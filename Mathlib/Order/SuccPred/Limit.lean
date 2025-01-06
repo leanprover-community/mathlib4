@@ -338,6 +338,13 @@ theorem isLUB_Iio_iff_isSuccPrelimit : IsLUB (Iio a) a ↔ IsSuccPrelimit a := b
   obtain rfl := isLUB_Iic.unique ha
   cases hb.lt.false
 
+lemma _root_.IsLUB.isSuccPrelimit_of_not_mem {s : Set α} (hs : IsLUB s a) (hx : a ∉ s) :
+    IsSuccPrelimit a := by
+  intro b hb
+  obtain ⟨c, hc, hbc, hca⟩ := hs.exists_between hb.lt
+  obtain rfl := (hb.ge_of_gt hbc).antisymm hca
+  contradiction
+
 variable [SuccOrder α]
 
 theorem IsSuccPrelimit.le_succ_iff (hb : IsSuccPrelimit b) : b ≤ succ a ↔ b ≤ a :=
@@ -642,6 +649,10 @@ theorem IsPredLimit.isGLB_Ioi (ha : IsPredLimit a) : IsGLB (Ioi a) a :=
 
 theorem isGLB_Ioi_iff_isPredPrelimit : IsGLB (Ioi a) a ↔ IsPredPrelimit a := by
   simpa using isLUB_Iio_iff_isSuccPrelimit (a := toDual a)
+
+lemma _root_.IsGLB.isPredPrelimit_of_not_mem {s : Set α} (hs : IsGLB s a) (hx : a ∉ s) :
+    IsPredPrelimit a := by
+  simpa using (IsGLB.dual hs).isSuccPrelimit_of_not_mem hx
 
 variable [PredOrder α]
 
