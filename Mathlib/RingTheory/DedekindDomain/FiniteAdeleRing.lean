@@ -349,11 +349,12 @@ instance : Algebra (R_hat R K) (FiniteAdeleRing R K) where
     simp only [mem_adicCompletionIntegers, mem_compl_iff, mem_setOf_eq, map_mul] at hv ⊢
     exact mt (mul_le_one' (rhat v).2) hv
     ⟩
-  toFun r := ⟨r, by simp_all⟩
-  map_one' := by ext; rfl
-  map_mul' _ _ := by ext; rfl
-  map_zero' := by ext; rfl
-  map_add' _ _ := by ext; rfl
+  algebraMap := {
+    toFun r := ⟨r, by simp_all⟩
+    map_one' := by ext; rfl
+    map_mul' _ _ := by ext; rfl
+    map_zero' := by ext; rfl
+    map_add' _ _ := by ext; rfl}
   commutes' _ _ := mul_comm _ _
   smul_def' _ _ := rfl
 
