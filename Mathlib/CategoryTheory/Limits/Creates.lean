@@ -332,7 +332,7 @@ instance (priority := 100) preservesLimit_of_createsLimit_and_hasLimit (K : J �
     ((liftedLimitMapsToOriginal (limit.isLimit _)).symm ≪≫
       (Cones.functoriality K F).mapIso ((liftedLimitIsLimit (limit.isLimit _)).uniqueUpToIso t))⟩
 
-@[deprecated (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
 lemma preservesLimitOfCreatesLimitAndHasLimit (K : J ⥤ C) (F : C ⥤ D)
     [CreatesLimit K F] [HasLimit (K ⋙ F)] : PreservesLimit K F :=
   preservesLimit_of_createsLimit_and_hasLimit _ _
@@ -342,7 +342,7 @@ lemma preservesLimitOfCreatesLimitAndHasLimit (K : J ⥤ C) (F : C ⥤ D)
 instance (priority := 100) preservesLimitOfShape_of_createsLimitsOfShape_and_hasLimitsOfShape
     (F : C ⥤ D) [CreatesLimitsOfShape J F] [HasLimitsOfShape J D] : PreservesLimitsOfShape J F where
 
-@[deprecated (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
 lemma preservesLimitOfShapeOfCreatesLimitsOfShapeAndHasLimitsOfShape
     (F : C ⥤ D) [CreatesLimitsOfShape J F] [HasLimitsOfShape J D] :
     PreservesLimitsOfShape J F :=
@@ -354,7 +354,7 @@ instance (priority := 100) preservesLimits_of_createsLimits_and_hasLimits (F : C
     [CreatesLimitsOfSize.{w, w'} F] [HasLimitsOfSize.{w, w'} D] :
     PreservesLimitsOfSize.{w, w'} F where
 
-@[deprecated (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
 lemma preservesLimitsOfCreatesLimitsAndHasLimits (F : C ⥤ D)
     [CreatesLimitsOfSize.{w, w'} F] [HasLimitsOfSize.{w, w'} D] :
     PreservesLimitsOfSize.{w, w'} F :=
@@ -466,7 +466,7 @@ instance (priority := 100) preservesColimit_of_createsColimit_and_hasColimit (K 
         (Cocones.functoriality K F).mapIso
           ((liftedColimitIsColimit (colimit.isColimit _)).uniqueUpToIso t))⟩
 
-@[deprecated (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
 lemma preservesColimitOfCreatesColimitAndHasColimit (K : J ⥤ C) (F : C ⥤ D)
     [CreatesColimit K F] [HasColimit (K ⋙ F)] : PreservesColimit K F :=
   preservesColimit_of_createsColimit_and_hasColimit _ _
@@ -477,7 +477,7 @@ instance (priority := 100) preservesColimitOfShape_of_createsColimitsOfShape_and
     (F : C ⥤ D) [CreatesColimitsOfShape J F] [HasColimitsOfShape J D] :
     PreservesColimitsOfShape J F where
 
-@[deprecated (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
 lemma preservesColimitOfShapeOfCreatesColimitsOfShapeAndHasColimitsOfShape
     (F : C ⥤ D) [CreatesColimitsOfShape J F] [HasColimitsOfShape J D] :
     PreservesColimitsOfShape J F :=
@@ -489,7 +489,7 @@ instance (priority := 100) preservesColimits_of_createsColimits_and_hasColimits 
     [CreatesColimitsOfSize.{w, w'} F] [HasColimitsOfSize.{w, w'} D] :
     PreservesColimitsOfSize.{w, w'} F where
 
-@[deprecated (since := "2024-11-19")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-19")]
 lemma preservesColimitsOfCreatesColimitsAndHasColimits (F : C ⥤ D)
     [CreatesColimitsOfSize.{w, w'} F] [HasColimitsOfSize.{w, w'} D] :
     PreservesColimitsOfSize.{w, w'} F :=

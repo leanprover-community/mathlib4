@@ -24,7 +24,7 @@ logarithm, derivative
 
 open Filter Finset Set
 
-open scoped Topology
+open scoped Topology ContDiff
 
 namespace Real
 
@@ -66,14 +66,27 @@ theorem deriv_log (x : ℝ) : deriv log x = x⁻¹ :=
 theorem deriv_log' : deriv log = Inv.inv :=
   funext deriv_log
 
-theorem contDiffOn_log {n : ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
-  suffices ContDiffOn ℝ ⊤ log {0}ᶜ from this.of_le le_top
-  refine (contDiffOn_top_iff_deriv_of_isOpen isOpen_compl_singleton).2 ?_
-  simp [differentiableOn_log, contDiffOn_inv]
+theorem contDiffAt_log {n : WithTop ℕ∞} {x : ℝ} : ContDiffAt ℝ n log x ↔ x ≠ 0 := by
+  refine ⟨fun h ↦ continuousAt_log_iff.1 h.continuousAt, fun hx ↦ ?_⟩
+  have A y (hy : 0 < y) : ContDiffAt ℝ n log y := by
+    apply expPartialHomeomorph.contDiffAt_symm_deriv (f₀' := y) hy.ne' (by simpa)
+    · convert hasDerivAt_exp (log y)
+      rw [exp_log hy]
+    · exact analyticAt_rexp.contDiffAt
+  rcases hx.lt_or_lt with hx | hx
+  · have : ContDiffAt ℝ n (log ∘ (fun y ↦ -y)) x := by
+      apply ContDiffAt.comp
+      apply A _ (Left.neg_pos_iff.mpr hx)
+      apply contDiffAt_id.neg
+    convert this
+    ext x
+    simp
+  · exact A x hx
 
-theorem contDiffAt_log {n : ℕ∞} : ContDiffAt ℝ n log x ↔ x ≠ 0 :=
-  ⟨fun h => continuousAt_log_iff.1 h.continuousAt, fun hx =>
-    (contDiffOn_log x hx).contDiffAt <| IsOpen.mem_nhds isOpen_compl_singleton hx⟩
+theorem contDiffOn_log {n : WithTop ℕ∞} : ContDiffOn ℝ n log {0}ᶜ := by
+  intro x hx
+  simp only [mem_compl_iff, mem_singleton_iff] at hx
+  exact (contDiffAt_log.2 hx).contDiffWithinAt
 
 end Real
 
@@ -191,7 +204,7 @@ theorem tendsto_mul_log_one_plus_div_atTop (t : ℝ) :
     simpa [hasDerivAt_iff_tendsto_slope, slope_fun_def] using
       (((hasDerivAt_id (0 : ℝ)).const_mul t).const_add 1).log (by simp)
   have h₂ : Tendsto (fun x : ℝ => x⁻¹) atTop (𝓝[≠] 0) :=
-    tendsto_inv_atTop_zero'.mono_right (nhdsWithin_mono _ fun x hx => (Set.mem_Ioi.mp hx).ne')
+    tendsto_inv_atTop_nhdsGT_zero.mono_right (nhdsGT_le_nhdsNE _)
   simpa only [Function.comp_def, inv_inv] using h₁.comp h₂
 
 /-- A crude lemma estimating the difference between `log (1-x)` and its Taylor series at `0`,

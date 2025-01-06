@@ -4,10 +4,13 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.RingTheory.Finiteness.Projective
-import Mathlib.RingTheory.Localization.Module
-import Mathlib.RingTheory.Noetherian.Defs
+import Mathlib.RingTheory.Finiteness.TensorProduct
+import Mathlib.RingTheory.Localization.BaseChange
+import Mathlib.RingTheory.Noetherian.Basic
+
 /-!
 
 # Finitely Presented Modules
@@ -232,6 +235,36 @@ section CommRing
 variable {R M N N'} [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
 variable [AddCommGroup N'] [Module R N'] (S : Submonoid R) (f : N →ₗ[R] N') [IsLocalizedModule S f]
 
+open TensorProduct in
+instance {A} [CommRing A] [Algebra R A] [Module.FinitePresentation R M] :
+    Module.FinitePresentation A (A ⊗[R] M) := by
+  classical
+  obtain ⟨n, f, hf⟩ := Module.Finite.exists_fin' R M
+  have inst := Module.finitePresentation_of_projective A (A ⊗[R] (Fin n → R))
+  apply Module.finitePresentation_of_surjective (f.baseChange A)
+    (LinearMap.lTensor_surjective A hf)
+  have : Function.Exact ((LinearMap.ker f).subtype.baseChange A) (f.baseChange A) :=
+    lTensor_exact A f.exact_subtype_ker_map hf
+  rw [LinearMap.exact_iff] at this
+  rw [this, ← Submodule.map_top]
+  apply Submodule.FG.map
+  have : Module.Finite R (LinearMap.ker f) :=
+    ⟨(Submodule.fg_top _).mpr (Module.FinitePresentation.fg_ker f hf)⟩
+  exact Module.Finite.out (R := A) (M := A ⊗[R] LinearMap.ker f)
+
+open TensorProduct in
+lemma FinitePresentation.of_isBaseChange
+    {A} [CommRing A] [Algebra R A] [Module A N] [IsScalarTower R A N]
+    (f : M →ₗ[R] N) (h : IsBaseChange A f) [Module.FinitePresentation R M] :
+    Module.FinitePresentation A N :=
+  Module.finitePresentation_of_surjective
+    h.equiv.toLinearMap h.equiv.surjective (by simpa using Submodule.fg_bot)
+
+open TensorProduct in
+instance (S : Submonoid R) [Module.FinitePresentation R M] :
+    Module.FinitePresentation (Localization S) (LocalizedModule S M) :=
+  FinitePresentation.of_isBaseChange (LocalizedModule.mkLinearMap S M)
+    ((isLocalizedModule_iff_isBaseChange S _ _).mp inferInstance)
 
 lemma Module.FinitePresentation.exists_lift_of_isLocalizedModule
     [h : Module.FinitePresentation R M] (g : M →ₗ[R] N') :
@@ -340,7 +373,7 @@ lemma exists_bijective_map_powers [Module.Finite R M] [Module.FinitePresentation
     simp only [Module.algebraMap_end_apply, algebraMap_smul, LinearMap.map_smul_of_tower]
     rw [LinearMap.smul_comp, ← smul_assoc s₀.1, Algebra.smul_def s₀.1, IsUnit.mul_val_inv, one_smul]
     apply LinearMap.restrictScalars_injective R
-    apply IsLocalizedModule.ringHom_ext (.powers t) (LocalizedModule.mkLinearMap (.powers t) M)
+    apply IsLocalizedModule.ext (.powers t) (LocalizedModule.mkLinearMap (.powers t) M)
       (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap (.powers t) M))
     ext x
     have : s₂.1 • l' (l x) = s₂.1 • s₀.1 • x := congr($hs₂ x)
@@ -351,7 +384,7 @@ lemma exists_bijective_map_powers [Module.Finite R M] [Module.FinitePresentation
     simp only [Module.algebraMap_end_apply, algebraMap_smul, LinearMap.map_smul_of_tower]
     rw [LinearMap.comp_smul, ← smul_assoc s₀.1, Algebra.smul_def s₀.1, IsUnit.mul_val_inv, one_smul]
     apply LinearMap.restrictScalars_injective R
-    apply IsLocalizedModule.ringHom_ext (.powers t) (LocalizedModule.mkLinearMap (.powers t) N)
+    apply IsLocalizedModule.ext (.powers t) (LocalizedModule.mkLinearMap (.powers t) N)
       (IsLocalizedModule.map_units (LocalizedModule.mkLinearMap (.powers t) N))
     ext x
     have : s₁.1 • l (l' x) = s₁.1 • s₀.1 • x := congr($hs₁ x)
@@ -382,7 +415,7 @@ lemma Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule
   obtain ⟨l', s, H⟩ := Module.FinitePresentation.exists_lift_of_isLocalizedModule S g (l ∘ₗ f)
   have : Function.Bijective (IsLocalizedModule.map S f g l') := by
     have : IsLocalizedModule.map S f g l' = (s • LinearMap.id) ∘ₗ l := by
-      apply IsLocalizedModule.ringHom_ext S f (IsLocalizedModule.map_units g)
+      apply IsLocalizedModule.ext S f (IsLocalizedModule.map_units g)
       apply LinearMap.ext fun x ↦ ?_
       simp only [LinearMap.coe_comp, Function.comp_apply, IsLocalizedModule.map_apply,
         Basis.coe_repr_symm, LinearMap.coe_restrictScalars]
@@ -400,12 +433,12 @@ lemma Module.FinitePresentation.exists_lift_equiv_of_isLocalizedModule
     ((Module.End_isUnit_iff _).mp ((hsu.unit⁻¹).isUnit.map (algebraMap _ (End Rᵣₛ
       (LocalizedModule rs N))))).comp (hr' (r * s) (dvd_mul_right _ _))
   refine ⟨r * s, mul_mem hr s.2, LinearEquiv.ofBijective _ this, ?_⟩
-  apply IsLocalizedModule.ringHom_ext rs (LocalizedModule.mkLinearMap rs M) fun x ↦ map_units g
+  apply IsLocalizedModule.ext rs (LocalizedModule.mkLinearMap rs M) fun x ↦ map_units g
     ⟨x.1, SetLike.le_def.mp (Submonoid.powers_le.mpr (mul_mem hr s.2)) x.2⟩
   ext x
   apply ((Module.End_isUnit_iff _).mp (IsLocalizedModule.map_units g s)).1
   have : ∀ x, g (l' x) = s.1 • (l (f x)) := LinearMap.congr_fun H
-  simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
+  simp only [rs, LinearMap.coe_comp, LinearMap.coe_restrictScalars, LinearEquiv.coe_coe,
     Function.comp_apply, LocalizedModule.mkLinearMap_apply, LinearEquiv.ofBijective_apply,
     LinearMap.smul_apply, LocalizedModule.map_mk, algebraMap_end_apply]
   rw [← map_smul, ← smul_assoc, Algebra.smul_def s.1, hsu.mul_val_inv, one_smul]
@@ -428,7 +461,7 @@ instance Module.FinitePresentation.isLocalizedModule_map [Module.FinitePresentat
   · intro h
     obtain ⟨h', s, e⟩ := Module.FinitePresentation.exists_lift_of_isLocalizedModule S g (h ∘ₗ f)
     refine ⟨⟨h', s⟩, ?_⟩
-    apply IsLocalizedModule.ringHom_ext S f (IsLocalizedModule.map_units g)
+    apply IsLocalizedModule.ext S f (IsLocalizedModule.map_units g)
     refine e.symm.trans (by ext; simp)
   · intro h₁ h₂ e
     apply Module.Finite.exists_smul_of_comp_eq_of_isLocalizedModule S g

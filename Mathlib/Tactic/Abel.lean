@@ -436,14 +436,14 @@ The core of `abel_nf`, which rewrites the expression `e` into `abel` normal form
 -/
 partial def abelNFCore
     (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := do
-  let ctx := {
-    simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}]
-    congrTheorems := ← getSimpCongrTheorems }
+  let ctx ← Simp.mkContext
+    (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
+    (congrTheorems := ← getSimpCongrTheorems)
   let simp ← match cfg.mode with
   | .raw => pure pure
   | .term =>
     let thms := [``term_eq, ``termg_eq, ``add_zero, ``one_nsmul, ``one_zsmul, ``zsmul_zero]
-    let ctx' := { ctx with simpTheorems := #[← thms.foldlM (·.addConst ·) {:_}] }
+    let ctx' := ctx.setSimpTheorems #[← thms.foldlM (·.addConst ·) {:_}]
     pure fun r' : Simp.Result ↦ do
       r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
   let rec

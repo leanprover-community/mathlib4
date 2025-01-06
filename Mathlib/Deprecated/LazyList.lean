@@ -24,7 +24,7 @@ namespace LazyList
 open Function
 
 /-- Isomorphism between strict and lazy lists. -/
-@[deprecated (since := "2024-07-22")]
+@[deprecated "No deprecation message was provided."  (since := "2024-07-22")]
 def listEquivLazyList (α : Type*) : List α ≃ LazyList α where
   toFun := LazyList.ofList
   invFun := LazyList.toList
@@ -39,28 +39,28 @@ def listEquivLazyList (α : Type*) : List α ≃ LazyList α where
     · simp [toList, ofList]
     · simpa [ofList, toList]
 
-@[deprecated (since := "2024-07-22")]
+@[deprecated "No deprecation message was provided."  (since := "2024-07-22")]
 instance : Traversable LazyList where
   map := @LazyList.traverse Id _
   traverse := @LazyList.traverse
 
-@[deprecated (since := "2024-07-22")]
+@[deprecated "No deprecation message was provided."  (since := "2024-07-22")]
 instance : LawfulTraversable LazyList := by
   apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> ext <;> rename_i f xs
   · induction xs using LazyList.rec with
     | nil =>
       simp only [Functor.map, LazyList.traverse, pure, Equiv.map, listEquivLazyList,
-        Equiv.coe_fn_symm_mk, toList, Equiv.coe_fn_mk, ofList]
+        Equiv.coe_fn_symm_mk, toList, List.map_nil, Equiv.coe_fn_mk, ofList]
     | cons =>
-      simpa only [Equiv.map, Functor.map, listEquivLazyList, Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk,
-        LazyList.traverse, Seq.seq, toList, ofList, cons.injEq, true_and]
+      simpa only [Functor.map, LazyList.traverse, Seq.seq, Equiv.map, listEquivLazyList,
+        Equiv.coe_fn_symm_mk, toList, List.map_cons, Equiv.coe_fn_mk, ofList, cons.injEq, true_and]
     | mk _ ih => ext; apply ih
-  · simp only [Equiv.map, listEquivLazyList, Equiv.coe_fn_symm_mk, Equiv.coe_fn_mk, comp,
-      Functor.mapConst]
+  · simp only [Functor.mapConst, comp, Equiv.map, listEquivLazyList, Equiv.coe_fn_symm_mk,
+      List.map_eq_map, List.map_const, Equiv.coe_fn_mk]
     induction xs using LazyList.rec with
-    | nil => simp only [LazyList.traverse, pure, Functor.map, toList, ofList]
+    | nil => simp [LazyList.traverse, pure, Functor.map, toList, ofList]
     | cons =>
-      simpa only [toList, ofList, LazyList.traverse, Seq.seq, Functor.map, cons.injEq, true_and]
+      simpa [toList, ofList, LazyList.traverse, Seq.seq, Functor.map, cons.injEq, true_and]
     | mk _ ih => congr; apply ih
   · simp only [traverse, Equiv.traverse, listEquivLazyList, Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk]
     induction xs using LazyList.rec with
@@ -71,7 +71,7 @@ instance : LawfulTraversable LazyList := by
         Function.comp_def, Thunk.pure, ofList]
     | mk _ ih => apply ih
 
-@[deprecated (since := "2024-07-22"), simp]
+@[deprecated "No deprecation message was provided."  (since := "2024-07-22"), simp]
 theorem bind_singleton {α} (x : LazyList α) : x.bind singleton = x := by
   induction x using LazyList.rec (motive_2 := fun xs => xs.get.bind singleton = xs.get) with
   | nil => simp [LazyList.bind]
@@ -81,7 +81,7 @@ theorem bind_singleton {α} (x : LazyList α) : x.bind singleton = x := by
     simp [ih]
   | mk f ih => simp_all
 
-@[deprecated (since := "2024-07-22")]
+@[deprecated "No deprecation message was provided."  (since := "2024-07-22")]
 instance : LawfulMonad LazyList := LawfulMonad.mk'
   (id_map := by
     intro α xs
@@ -102,7 +102,7 @@ instance : LawfulMonad LazyList := LawfulMonad.mk'
   (bind_pure_comp := by
     intro _ _ f xs
     simp only [bind, Functor.map, pure, singleton]
-    induction xs using LazyList.traverse.induct (m := @Id) (f := f) with
+    induction xs using LazyList.traverse.induct with
     | case1 =>
       simp only [Thunk.pure, LazyList.bind, LazyList.traverse, Id.pure_eq]
     | case2 _ _ ih =>

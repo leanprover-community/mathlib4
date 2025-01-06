@@ -44,7 +44,7 @@ diffeomorphism, manifold
 -/
 
 
-open scoped Manifold Topology
+open scoped Manifold Topology ContDiff
 
 open Function Set
 
@@ -79,13 +79,11 @@ scoped[Manifold] notation M " ≃ₘ^" n:1000 "⟮" I ", " J "⟯ " N => Diffeom
 scoped[Manifold] notation M " ≃ₘ⟮" I ", " J "⟯ " N => Diffeomorph I J M N ⊤
 
 /-- `n`-times continuously differentiable diffeomorphism between `E` and `E'`. -/
-scoped[Manifold]
-  notation E " ≃ₘ^" n:1000 "[" 𝕜 "] " E' =>
-    Diffeomorph (modelWithCornersSelf 𝕜 E) (modelWithCornersSelf 𝕜 E') E E' n
+scoped[Manifold] notation E " ≃ₘ^" n:1000 "[" 𝕜 "] " E' => Diffeomorph 𝓘(𝕜, E) 𝓘(𝕜, E') E E' n
 
 /-- Infinitely differentiable diffeomorphism between `E` and `E'`. -/
 scoped[Manifold]
-  notation E " ≃ₘ[" 𝕜 "] " E' =>
+  notation3 E " ≃ₘ[" 𝕜 "] " E' =>
     Diffeomorph (modelWithCornersSelf 𝕜 E) (modelWithCornersSelf 𝕜 E') E E' ⊤
 
 namespace Diffeomorph
@@ -125,7 +123,7 @@ protected theorem contMDiffWithinAt (h : M ≃ₘ^n⟮I, I'⟯ M') {s x} : ContM
 protected theorem contDiff (h : E ≃ₘ^n⟮𝓘(𝕜, E), 𝓘(𝕜, E')⟯ E') : ContDiff 𝕜 n h :=
   h.contMDiff.contDiff
 
-protected theorem smooth (h : M ≃ₘ⟮I, I'⟯ M') : Smooth I I' h := h.contMDiff
+@[deprecated (since := "2024-11-21")] alias smooth := Diffeomorph.contDiff
 
 protected theorem mdifferentiable (h : M ≃ₘ^n⟮I, I'⟯ M') (hn : 1 ≤ n) : MDifferentiable I I' h :=
   h.contMDiff.mdifferentiable hn
@@ -491,7 +489,7 @@ instance smoothManifoldWithCorners_transDiffeomorph [SmoothManifoldWithCorners I
     SmoothManifoldWithCorners (I.transDiffeomorph e) M := by
   refine smoothManifoldWithCorners_of_contDiffOn (I.transDiffeomorph e) M fun e₁ e₂ h₁ h₂ => ?_
   refine e.contDiff.comp_contDiffOn
-      (((contDiffGroupoid ⊤ I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn ?_)
+      (((contDiffGroupoid ∞ I).compatible h₁ h₂).1.comp e.symm.contDiff.contDiffOn ?_)
   simp only [mapsTo_iff_subset_preimage]
   mfld_set_tac
 
@@ -539,9 +537,8 @@ theorem contMDiff_transDiffeomorph_right {f : M' → M} :
     ContMDiff I' (I.transDiffeomorph e) n f ↔ ContMDiff I' I n f :=
   (toTransDiffeomorph I M e).contMDiff_diffeomorph_comp_iff le_top
 
-theorem smooth_transDiffeomorph_right {f : M' → M} :
-    Smooth I' (I.transDiffeomorph e) f ↔ Smooth I' I f :=
-  contMDiff_transDiffeomorph_right e
+@[deprecated (since := "2024-11-21")]
+alias smooth_transDiffeomorph_right := contMDiff_transDiffeomorph_right
 
 @[simp]
 theorem contMDiffWithinAt_transDiffeomorph_left {f : M → M'} {x s} :
@@ -563,8 +560,7 @@ theorem contMDiff_transDiffeomorph_left {f : M → M'} :
     ContMDiff (I.transDiffeomorph e) I' n f ↔ ContMDiff I I' n f :=
   ((toTransDiffeomorph I M e).contMDiff_comp_diffeomorph_iff le_top).symm
 
-theorem smooth_transDiffeomorph_left {f : M → M'} :
-    Smooth (I.transDiffeomorph e) I' f ↔ Smooth I I' f :=
-  e.contMDiff_transDiffeomorph_left
+@[deprecated (since := "2024-11-21")]
+alias smooth_transDiffeomorph_left := contMDiff_transDiffeomorph_left
 
 end Diffeomorph

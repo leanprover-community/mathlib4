@@ -27,7 +27,7 @@ open Cardinal
 def continuum : Cardinal.{u} :=
   2 ^ ℵ₀
 
-scoped notation "𝔠" => Cardinal.continuum
+@[inherit_doc] scoped notation "𝔠" => Cardinal.continuum
 
 @[simp]
 theorem two_power_aleph0 : 2 ^ ℵ₀ = 𝔠 :=
@@ -87,8 +87,8 @@ theorem continuum_toNat : toNat continuum = 0 :=
   toNat_apply_of_aleph0_le aleph0_le_continuum
 
 @[simp]
-theorem continuum_toPartENat : toPartENat continuum = ⊤ :=
-  toPartENat_apply_of_aleph0_le aleph0_le_continuum
+theorem continuum_toENat : toENat continuum = ⊤ :=
+  (toENat_eq_top.2 aleph0_le_continuum)
 
 /-!
 ### Addition

@@ -288,8 +288,8 @@ def diag (i j : ι) : φ i →ₗ[R] φ j :=
 theorem update_apply (f : (i : ι) → M₂ →ₗ[R] φ i) (c : M₂) (i j : ι) (b : M₂ →ₗ[R] φ i) :
     (update f i b j) c = update (fun i => f i c) i (b c) j := by
   by_cases h : j = i
-  · rw [h, update_same, update_same]
-  · rw [update_noteq h, update_noteq h]
+  · rw [h, update_self, update_self]
+  · rw [update_of_ne h, update_of_ne h]
 
 variable (R φ)
 

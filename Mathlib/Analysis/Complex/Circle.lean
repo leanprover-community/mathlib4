@@ -41,17 +41,17 @@ open ComplexConjugate
 /-- The unit circle in `ℂ`, here given the structure of a submonoid of `ℂ`.
 
 Please use `Circle` when referring to the circle as a type. -/
-@[deprecated (since := "2024-07-24")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-24")]
 def circle : Submonoid ℂ :=
   Submonoid.unitSphere ℂ
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-07-24")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-24")]
 theorem mem_circle_iff_abs {z : ℂ} : z ∈ circle ↔ abs z = 1 :=
   mem_sphere_zero_iff_norm
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-07-24")]
+@[deprecated "No deprecation message was provided." (since := "2024-07-24")]
 theorem mem_circle_iff_normSq {z : ℂ} : z ∈ circle ↔ normSq z = 1 := by
   simp [Complex.abs, mem_circle_iff_abs]
 

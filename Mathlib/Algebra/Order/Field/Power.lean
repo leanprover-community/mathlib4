@@ -73,13 +73,13 @@ theorem zpow_injective (h₀ : 0 < a) (h₁ : a ≠ 1) : Injective (a ^ · : ℤ
 theorem zpow_inj (h₀ : 0 < a) (h₁ : a ≠ 1) : a ^ m = a ^ n ↔ m = n :=
   zpow_right_inj₀ h₀ h₁
 
-@[deprecated (since := "2024-10-08")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-08")]
 theorem zpow_le_max_of_min_le {x : α} (hx : 1 ≤ x) {a b c : ℤ} (h : min a b ≤ c) :
     x ^ (-c) ≤ max (x ^ (-a)) (x ^ (-b)) :=
   have : Antitone fun n : ℤ => x ^ (-n) := fun _ _ h => zpow_le_zpow_right₀ hx (neg_le_neg h)
   (this h).trans_eq this.map_min
 
-@[deprecated (since := "2024-10-08")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-08")]
 theorem zpow_le_max_iff_min_le {x : α} (hx : 1 < x) {a b c : ℤ} :
     x ^ (-c) ≤ max (x ^ (-a)) (x ^ (-b)) ↔ min a b ≤ c := by
   simp_rw [le_max_iff, min_le_iff, zpow_le_zpow_iff_right₀ hx, neg_le_neg_iff]
@@ -161,7 +161,7 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
       have m : Q(ℕ) := mkRawNatLit (n / 2)
       haveI' : $b =Q $m + $m := ⟨⟩
       haveI' : $e =Q $a ^ $b := ⟨⟩
-      pure (.nonnegative q(Even.zpow_nonneg (even_add_self _) $a))
+      pure (.nonnegative q(Even.zpow_nonneg (Even.add_self _) $a))
     | .app (.app (.app (.const `Neg.neg _) _) _) b' =>
       let b' ← whnfR b'
       let .true := b'.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ -n where n is a literal"
@@ -170,7 +170,7 @@ def evalZPow : PositivityExt where eval {u α} zα pα e := do
       have m : Q(ℕ) := mkRawNatLit (n / 2)
       haveI' : $b =Q (-$m) + (-$m) := ⟨⟩
       haveI' : $e =Q $a ^ $b := ⟨⟩
-      pure (.nonnegative q(Even.zpow_nonneg (even_add_self _) $a))
+      pure (.nonnegative q(Even.zpow_nonneg (Even.add_self _) $a))
     | _ => throwError "not a ^ n where n is a literal or a negated literal"
   orElse result do
     let ra ← core zα pα a

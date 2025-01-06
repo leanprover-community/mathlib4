@@ -70,14 +70,14 @@ instance functor_category_isIdempotentComplete [IsIdempotentComplete C] :
   let e : F ⟶ Y :=
     { app := fun j =>
         equalizer.lift (p.app j) (by simpa only [comp_id] using (congr_app hp j).symm)
-      naturality := fun j j' φ => equalizer.hom_ext (by simp) }
+      naturality := fun j j' φ => equalizer.hom_ext (by simp [Y]) }
   use Y, i, e
   constructor
   · ext j
     dsimp
     rw [assoc, equalizer.lift_ι, ← equalizer.condition, id_comp, comp_id]
   · ext j
-    simp
+    simp [Y, i, e]
 namespace KaroubiFunctorCategoryEmbedding
 
 variable {J C}

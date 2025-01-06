@@ -367,15 +367,15 @@ theorem coe_of_apply {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S
 `M` is said to be internal if the canonical map `(⨁ i, A i) →+ M` is bijective.
 
 For the alternate statement in terms of independence and spanning, see
-`DirectSum.subgroup_isInternal_iff_independent_and_supr_eq_top` and
-`DirectSum.isInternal_submodule_iff_independent_and_iSup_eq_top`. -/
+`DirectSum.subgroup_isInternal_iff_iSupIndep_and_supr_eq_top` and
+`DirectSum.isInternal_submodule_iff_iSupIndep_and_iSup_eq_top`. -/
 def IsInternal {M S : Type*} [DecidableEq ι] [AddCommMonoid M] [SetLike S M]
     [AddSubmonoidClass S M] (A : ι → S) : Prop :=
   Function.Bijective (DirectSum.coeAddMonoidHom A)
 
 theorem IsInternal.addSubmonoid_iSup_eq_top {M : Type*} [DecidableEq ι] [AddCommMonoid M]
     (A : ι → AddSubmonoid M) (h : IsInternal A) : iSup A = ⊤ := by
-  rw [AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_eq_top_iff_surjective]
+  rw [AddSubmonoid.iSup_eq_mrange_dfinsupp_sumAddHom, AddMonoidHom.mrange_eq_top]
   exact Function.Bijective.surjective h
 
 variable {M S : Type*} [AddCommMonoid M] [SetLike S M] [AddSubmonoidClass S M]

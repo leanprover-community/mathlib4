@@ -123,8 +123,8 @@ theorem nhds_mkOfNhds_single [DecidableEq α] {a₀ : α} {l : Filter α} (h : p
   · filter_upwards [hs] with b hb
     rcases eq_or_ne b a with (rfl | hb)
     · exact hs
-    · rwa [update_noteq hb]
-  · simpa only [update_noteq ha, mem_pure, eventually_pure] using hs
+    · rwa [update_of_ne hb]
+  · simpa only [update_of_ne ha, mem_pure, eventually_pure] using hs
 
 theorem nhds_mkOfNhds_filterBasis (B : α → FilterBasis α) (a : α) (h₀ : ∀ x, ∀ n ∈ B x, x ∈ n)
     (h₁ : ∀ x, ∀ n ∈ B x, ∃ n₁ ∈ B x, ∀ x' ∈ n₁, ∃ n₂ ∈ B x', n₂ ⊆ n) :
@@ -304,6 +304,11 @@ theorem discreteTopology_iff_forall_isClosed [TopologicalSpace α] :
 theorem singletons_open_iff_discrete {X : Type*} [TopologicalSpace X] :
     (∀ a : X, IsOpen ({a} : Set X)) ↔ DiscreteTopology X :=
   ⟨fun h => ⟨eq_bot_of_singletons_open h⟩, fun a _ => @isOpen_discrete _ _ a _⟩
+
+theorem DiscreteTopology.of_finite_of_isClosed_singleton [TopologicalSpace α] [Finite α]
+    (h : ∀ a : α, IsClosed {a}) : DiscreteTopology α :=
+  discreteTopology_iff_forall_isClosed.mpr fun s ↦
+    s.iUnion_of_singleton_coe ▸ isClosed_iUnion_of_finite fun _ ↦ h _
 
 theorem discreteTopology_iff_singleton_mem_nhds [TopologicalSpace α] :
     DiscreteTopology α ↔ ∀ x : α, {x} ∈ 𝓝 x := by

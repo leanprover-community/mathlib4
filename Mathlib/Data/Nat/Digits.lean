@@ -304,8 +304,8 @@ theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length
   induction' n using Nat.strong_induction_on with n IH
   rw [digits_eq_cons_digits_div hb hn, List.length]
   by_cases h : n / b = 0
-  · have hb0 : b ≠ 0 := (Nat.succ_le_iff.1 hb).ne_bot
-    simp [h, log_eq_zero_iff, ← Nat.div_eq_zero_iff hb0.bot_lt]
+  · simp [IH, h]
+    aesop
   · have : n / b < n := div_lt_self (Nat.pos_of_ne_zero hn) hb
     rw [IH _ this h, log_div_base, tsub_add_cancel_of_le]
     refine Nat.succ_le_of_lt (log_pos hb ?_)
@@ -406,6 +406,19 @@ theorem lt_base_pow_length_digits {b m : ℕ} (hb : 1 < b) : m < b ^ (digits b m
   rcases b with (_ | _ | b) <;> try simp_all
   exact lt_base_pow_length_digits'
 
+theorem digits_base_pow_mul {b k m : ℕ} (hb : 1 < b) (hm : 0 < m) :
+    digits b (b ^ k * m) = List.replicate k 0 ++ digits b m := by
+  induction k generalizing m with
+  | zero => simp
+  | succ k ih =>
+    have hmb : 0 < m * b := lt_mul_of_lt_of_one_lt' hm hb
+    let h1 := digits_def' hb hmb
+    have h2 : m = m * b / b :=
+      Nat.eq_div_of_mul_eq_left (not_eq_zero_of_lt hb) rfl
+    simp only [mul_mod_left, ← h2] at h1
+    rw [List.replicate_succ', List.append_assoc, List.singleton_append, ← h1, ← ih hmb]
+    ring_nf
+
 theorem ofDigits_digits_append_digits {b m n : ℕ} :
     ofDigits b (digits b n ++ digits b m) = n + b ^ (digits b n).length * m := by
   rw [ofDigits_append, ofDigits_digits, ofDigits_digits]
@@ -422,6 +435,13 @@ theorem digits_append_digits {b m n : ℕ} (hb : 0 < b) :
       exact getLast_digit_ne_zero b <| digits_ne_nil_iff_ne_zero.mp h_append
     · exact (List.getLast_append' _ _ h) ▸
           (getLast_digit_ne_zero _ <| digits_ne_nil_iff_ne_zero.mp h)
+
+theorem digits_append_zeroes_append_digits {b k m n : ℕ} (hb : 1 < b) (hm : 0 < m) :
+    digits b n ++ List.replicate k 0 ++ digits b m =
+    digits b (n + b ^ ((digits b n).length + k) * m) := by
+  rw [List.append_assoc, ← digits_base_pow_mul hb hm]
+  simp only [digits_append_digits (zero_lt_of_lt hb), digits_inj_iff, add_right_inj]
+  ring
 
 theorem digits_len_le_digits_len_succ (b n : ℕ) :
     (digits b n).length ≤ (digits b (n + 1)).length := by
@@ -801,8 +821,7 @@ theorem digits_one (b n) (n0 : 0 < n) (nb : n < b) : Nat.digits b n = [n] ∧ 1 
   have b2 : 1 < b :=
     lt_iff_add_one_le.mpr (le_trans (add_le_add_right (lt_iff_add_one_le.mp n0) 1) nb)
   refine ⟨?_, b2, n0⟩
-  rw [Nat.digits_def' b2 n0, Nat.mod_eq_of_lt nb,
-    (Nat.div_eq_zero_iff ((zero_le n).trans_lt nb)).2 nb, Nat.digits_zero]
+  rw [Nat.digits_def' b2 n0, Nat.mod_eq_of_lt nb, Nat.div_eq_zero_iff.2 <| .inr nb, Nat.digits_zero]
 
 /-
 Porting note: this part of the file is tactic related.

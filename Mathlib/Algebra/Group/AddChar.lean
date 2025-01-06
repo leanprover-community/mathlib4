@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Algebra.Ring.Regular
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstance
+import Mathlib.Algebra.BigOperators.Pi
+import Mathlib.Algebra.BigOperators.Ring
 
 /-!
 # Characters from additive to multiplicative monoids
@@ -253,7 +255,7 @@ lemma ne_one_iff : ψ ≠ 1 ↔ ∃ x, ψ x ≠ 1 := DFunLike.ne_iff
 lemma ne_zero_iff : ψ ≠ 0 ↔ ∃ x, ψ x ≠ 1 := DFunLike.ne_iff
 
 /-- An additive character is *nontrivial* if it takes a value `≠ 1`. -/
-@[deprecated (since := "2024-06-06")]
+@[deprecated "No deprecation message was provided." (since := "2024-06-06")]
 def IsNontrivial (ψ : AddChar A M) : Prop := ∃ a : A, ψ a ≠ 1
 
 set_option linter.deprecated false in

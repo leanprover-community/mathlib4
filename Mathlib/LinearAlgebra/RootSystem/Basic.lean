@@ -73,7 +73,7 @@ protected def equiv_of_mapsTo :
 
 end reflection_perm
 
-lemma infinite_of_linearly_independent_coxeterWeight_four [CharZero R] [NoZeroSMulDivisors ℤ M]
+lemma infinite_of_linearIndependent_coxeterWeight_four [CharZero R] [NoZeroSMulDivisors ℤ M]
     (P : RootPairing ι R M N) (i j : ι) (hl : LinearIndependent R ![P.root i, P.root j])
     (hc : P.coxeterWeight i j = 4) : Infinite ι := by
   refine (infinite_range_iff (Embedding.injective P.root)).mp (Infinite.mono ?_
@@ -93,6 +93,13 @@ lemma infinite_of_linearly_independent_coxeterWeight_four [CharZero R] [NoZeroSM
     exact hl
 
 variable [Finite ι] (P : RootPairing ι R M N) (i j : ι)
+
+lemma coxeterWeight_ne_four_of_linearIndependent [CharZero R] [NoZeroSMulDivisors ℤ M]
+    (hl : LinearIndependent R ![P.root i, P.root j]) :
+    P.coxeterWeight i j ≠ 4 := by
+  intro contra
+  have := P.infinite_of_linearIndependent_coxeterWeight_four i j hl contra
+  exact not_finite ι
 
 /-- Even though the roots may not span, coroots are distinguished by their pairing with the
 roots. The proof depends crucially on the fact that there are finitely-many roots.
@@ -128,7 +135,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   ext i
   apply P₁.injOn_dualMap_subtype_span_root_coroot (mem_range_self i) (hc ▸ mem_range_self i)
   simp only [LinearMap.coe_comp, LinearEquiv.coe_coe, comp_apply]
-  apply Dual.eq_of_preReflection_mapsTo' (P₁.ne_zero i) (finite_range P₁.root)
+  apply Dual.eq_of_preReflection_mapsTo' (finite_range P₁.root)
   · exact Submodule.subset_span (mem_range_self i)
   · exact P₁.coroot_root_two i
   · exact P₁.mapsTo_reflection_root i
@@ -161,7 +168,8 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisor
   rw [← hl]
   have hkl : (p.flip (coroot l)) (root k) = 2 := by
     simp only [hl, preReflection_apply, hk, PerfectPairing.flip_apply_apply, map_sub, hp j,
-      map_smul, smul_eq_mul, hp i, mul_sub, sα, α, α', β, mul_two, mul_add]
+      map_smul, smul_eq_mul, hp i, mul_sub, sα, α, α', β, mul_two, mul_add, LinearMap.sub_apply,
+      LinearMap.smul_apply]
     rw [mul_comm (p (root i) (coroot j))]
     abel
   suffices p.flip (coroot k) = p.flip (coroot l) from p.bijectiveRight.injective this
@@ -169,7 +177,7 @@ private lemma coroot_eq_coreflection_of_root_eq' [CharZero R] [NoZeroSMulDivisor
   have := injOn_dualMap_subtype_span_range_range (finite_range root)
     (c := p.flip ∘ coroot) hp hr
   apply this (mem_range_self k) (mem_range_self l)
-  refine Dual.eq_of_preReflection_mapsTo' hk₀ (finite_range root)
+  refine Dual.eq_of_preReflection_mapsTo' (finite_range root)
     (Submodule.subset_span <| mem_range_self k) (hp k) (hr k) hkl ?_
   rw [comp_apply, hl, hk, hij]
   exact (hr i).comp <| (hr j).comp (hr i)
@@ -224,7 +232,7 @@ protected lemma ext [CharZero R] [NoZeroSMulDivisors R M]
   rintro P₁ P₂ he hr - ⟨i, rfl⟩
   use i
   apply P₁.bijectiveRight.injective
-  apply Dual.eq_of_preReflection_mapsTo (P₁.ne_zero i) (finite_range P₁.root) P₁.span_eq_top
+  apply Dual.eq_of_preReflection_mapsTo (finite_range P₁.root) P₁.span_eq_top
   · exact hr ▸ he ▸ P₂.coroot_root_two i
   · exact hr ▸ he ▸ P₂.mapsTo_reflection_root i
   · exact P₁.coroot_root_two i
@@ -253,7 +261,7 @@ private lemma coroot_eq_coreflection_of_root_eq_of_span_eq_top [CharZero R] [NoZ
       preReflection_apply] -- v4.7.0-rc1 issues
   have hk₀ : root k ≠ 0 := fun h ↦ by simpa [h, ← PerfectPairing.toLin_apply] using hp k
   apply p.bijectiveRight.injective
-  apply Dual.eq_of_preReflection_mapsTo hk₀ (finite_range root) hsp (hp k) (hs k)
+  apply Dual.eq_of_preReflection_mapsTo (finite_range root) hsp (hp k) (hs k)
   · simp [map_sub, α, β, α', β', sα, sβ, sα', hk, preReflection_apply, hp i, hp j, mul_two,
       mul_comm (p α β')]
     ring -- v4.7.0-rc1 issues
