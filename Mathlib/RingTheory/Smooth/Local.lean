@@ -15,7 +15,7 @@ open TensorProduct IsLocalRing KaehlerDifferential
 
 /--
 The **Jacobian criterion** for smoothness of local algebras.
-Suppose `S` is a local `R`-algebra, and `0 → I → P → S → 0` be a presentation such that
+Suppose `S` is a local `R`-algebra, and `0 → I → P → S → 0` is a presentation such that
 `P` is formally-smooth over `R`, `Ω[P⁄R]` is finite free over `P`,
 (typically satisfied when `P` is the localization of a polynomial ring of finite type)
 and `I` is finitely generated.
