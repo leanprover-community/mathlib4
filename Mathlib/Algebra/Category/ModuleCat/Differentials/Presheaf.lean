@@ -182,8 +182,9 @@ noncomputable def relativeDifferentials' :
     PresheafOfModules.{u} (R ⋙ forget₂ _ _) where
   obj X := CommRingCat.KaehlerDifferential (φ'.app X)
   map f := CommRingCat.KaehlerDifferential.map (φ'.naturality f)
-  map_id _ := by ext; simp; rfl
-  map_comp _ _ := by ext; simp
+  -- Without `dsimp`, `ext` doesn't pick up the right lemmas.
+  map_id _ := by dsimp; ext; simp
+  map_comp _ _ := by dsimp; ext; simp
 
 attribute [simp] relativeDifferentials'_obj
 

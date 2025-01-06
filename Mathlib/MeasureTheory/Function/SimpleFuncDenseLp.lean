@@ -281,7 +281,7 @@ protected theorem eLpNorm'_eq {p : ℝ} (f : α →ₛ F) (μ : Measure α) :
     eLpNorm' f p μ = (∑ y ∈ f.range, (‖y‖₊ : ℝ≥0∞) ^ p * μ (f ⁻¹' {y})) ^ (1 / p) := by
   have h_map : (fun a => (‖f a‖₊ : ℝ≥0∞) ^ p) = f.map fun a : F => (‖a‖₊ : ℝ≥0∞) ^ p := by
     simp; rfl
-  rw [eLpNorm', h_map, lintegral_eq_lintegral, map_lintegral]
+  rw [eLpNorm'_eq_lintegral_nnnorm, h_map, lintegral_eq_lintegral, map_lintegral]
 
 @[deprecated (since := "2024-07-27")]
 protected alias snorm'_eq := SimpleFunc.eLpNorm'_eq
@@ -365,13 +365,6 @@ theorem integrable_of_isFiniteMeasure [IsFiniteMeasure μ] (f : α →ₛ E) : I
 theorem measure_preimage_lt_top_of_integrable (f : α →ₛ E) (hf : Integrable f μ) {x : E}
     (hx : x ≠ 0) : μ (f ⁻¹' {x}) < ∞ :=
   integrable_iff.mp hf x hx
-
-theorem measure_support_lt_top [Zero β] (f : α →ₛ β) (hf : ∀ y, y ≠ 0 → μ (f ⁻¹' {y}) < ∞) :
-    μ (support f) < ∞ := by
-  rw [support_eq]
-  refine (measure_biUnion_finset_le _ _).trans_lt (ENNReal.sum_lt_top.mpr fun y hy => ?_)
-  rw [Finset.mem_filter] at hy
-  exact hf y hy.2
 
 theorem measure_support_lt_top_of_memℒp (f : α →ₛ E) (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : μ (support f) < ∞ :=

@@ -84,8 +84,7 @@ theorem isLocallyFraction_pred {U : Opens (PrimeSpectrum.Top R)}
 noncomputable instance (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) (x : U.unop):
     Module ((Spec.structureSheaf R).val.obj U) (Localizations M x):=
   Module.compHom (R := (Localization.AtPrime x.1.asIdeal)) _
-    (StructureSheaf.openToLocalization R U.unop x x.2 :
-      (Spec.structureSheaf R).val.obj U →+* Localization.AtPrime x.1.asIdeal)
+    ((StructureSheaf.openToLocalization R U.unop x x.2).hom)
 
 @[simp]
 lemma sections_smul_localizations_def
@@ -161,7 +160,7 @@ noncomputable def tilde : (Spec (CommRingCat.of R)).Modules where
       map := fun {U V} i ↦ ofHom
         -- TODO: after https://github.com/leanprover-community/mathlib4/pull/19511 we need to hint `(Y := ...)`
         -- This suggests `restrictScalars` needs to be redesigned.
-        (Y := (restrictScalars ((Spec (CommRingCat.of R)).ringCatSheaf.val.map i)).obj
+        (Y := (restrictScalars ((Spec (CommRingCat.of R)).ringCatSheaf.val.map i).hom).obj
           (of ((Spec (CommRingCat.of R)).ringCatSheaf.val.obj V) (M.tildeInType.val.obj V)))
         { toFun := M.tildeInType.val.map i
           map_smul' := by intros; rfl
@@ -176,7 +175,7 @@ noncomputable def tildeInModuleCat :
     TopCat.Presheaf (ModuleCat R) (PrimeSpectrum.Top R) :=
   (PresheafOfModules.forgetToPresheafModuleCat (op ⊤) <|
     Limits.initialOpOfTerminal Limits.isTerminalTop).obj (tilde M).1 ⋙
-  ModuleCat.restrictScalars (StructureSheaf.globalSectionsIso R).hom
+  ModuleCat.restrictScalars (StructureSheaf.globalSectionsIso R).hom.hom
 
 namespace Tilde
 

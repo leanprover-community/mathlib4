@@ -3,7 +3,8 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.MeasurableIntegral
+import Mathlib.MeasureTheory.Measure.Prod
+import Mathlib.Probability.Kernel.MeasurableLIntegral
 
 /-!
 # Product and composition of kernels
@@ -571,21 +572,15 @@ lemma compProd_add_right (μ : Kernel α β) (κ η : Kernel (α × β) γ)
 lemma comapRight_compProd_id_prod {δ : Type*} {mδ : MeasurableSpace δ}
     (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel (α × β) γ) [IsSFiniteKernel η]
     {f : δ → γ} (hf : MeasurableEmbedding f) :
-    comapRight (κ ⊗ₖ η) (MeasurableEmbedding.id.prod_mk hf) = κ ⊗ₖ (comapRight η hf) := by
+    comapRight (κ ⊗ₖ η) (MeasurableEmbedding.id.prodMap hf) = κ ⊗ₖ (comapRight η hf) := by
   ext a t ht
   rw [comapRight_apply' _ _ _ ht, compProd_apply, compProd_apply ht]
-  swap; · exact (MeasurableEmbedding.id.prod_mk hf).measurableSet_image.mpr ht
-  refine lintegral_congr (fun b ↦ ?_)
-  simp only [id_eq, Set.mem_image, Prod.mk.injEq, Prod.exists]
-  rw [comapRight_apply']
-  swap; · exact measurable_prod_mk_left ht
-  congr with x
-  simp only [Set.mem_setOf_eq, Set.mem_image]
-  constructor
-  · rintro ⟨b', c, h, rfl, rfl⟩
-    exact ⟨c, h, rfl⟩
-  · rintro ⟨c, h, rfl⟩
-    exact ⟨b, c, h, rfl, rfl⟩
+  · refine lintegral_congr fun b ↦ ?_
+    rw [comapRight_apply']
+    · congr with x
+      aesop
+    · exact measurable_prod_mk_left ht
+  · exact (MeasurableEmbedding.id.prodMap hf).measurableSet_image.mpr ht
 
 end CompositionProduct
 
@@ -726,6 +721,12 @@ instance IsMarkovKernel.comap (κ : Kernel α β) [IsMarkovKernel κ] (hg : Meas
     IsMarkovKernel (comap κ g hg) :=
   ⟨fun a => ⟨by rw [comap_apply' κ hg a Set.univ, measure_univ]⟩⟩
 
+instance IsZeroOrMarkovKernel.comap (κ : Kernel α β) [IsZeroOrMarkovKernel κ] (hg : Measurable g) :
+    IsZeroOrMarkovKernel (comap κ g hg) := by
+  rcases eq_zero_or_isMarkovKernel κ with rfl | h
+  · simp only [comap_zero]; infer_instance
+  · have := IsMarkovKernel.comap κ hg; infer_instance
+
 instance IsFiniteKernel.comap (κ : Kernel α β) [IsFiniteKernel κ] (hg : Measurable g) :
     IsFiniteKernel (comap κ g hg) := by
   refine ⟨⟨IsFiniteKernel.bound κ, IsFiniteKernel.bound_lt_top κ, fun a => ?_⟩⟩
@@ -801,6 +802,12 @@ instance IsMarkovKernel.prodMkLeft (κ : Kernel α β) [IsMarkovKernel κ] :
 
 instance IsMarkovKernel.prodMkRight (κ : Kernel α β) [IsMarkovKernel κ] :
     IsMarkovKernel (prodMkRight γ κ) := by rw [Kernel.prodMkRight]; infer_instance
+
+instance IsZeroOrMarkovKernel.prodMkLeft (κ : Kernel α β) [IsZeroOrMarkovKernel κ] :
+    IsZeroOrMarkovKernel (prodMkLeft γ κ) := by rw [Kernel.prodMkLeft]; infer_instance
+
+instance IsZeroOrMarkovKernel.prodMkRight (κ : Kernel α β) [IsZeroOrMarkovKernel κ] :
+    IsZeroOrMarkovKernel (prodMkRight γ κ) := by rw [Kernel.prodMkRight]; infer_instance
 
 instance IsFiniteKernel.prodMkLeft (κ : Kernel α β) [IsFiniteKernel κ] :
     IsFiniteKernel (prodMkLeft γ κ) := by rw [Kernel.prodMkLeft]; infer_instance
@@ -957,19 +964,20 @@ lemma fst_map_id_prod (κ : Kernel α β) {γ : Type*} {mγ : MeasurableSpace γ
     fst (map κ (fun a ↦ (a, f a))) = κ := by
   rw [fst_map_prod _ hf, Kernel.map_id']
 
+/-- If `η` is a Markov kernel, use instead `fst_compProd` to get `(κ ⊗ₖ η).fst = κ`. -/
+lemma fst_compProd_apply (κ : Kernel α β) (η : Kernel (α × β) γ)
+    [IsSFiniteKernel κ] [IsSFiniteKernel η] (x : α) {s : Set β} (hs : MeasurableSet s) :
+    (κ ⊗ₖ η).fst x s = ∫⁻ b, s.indicator (fun b ↦ η (x, b) Set.univ) b ∂(κ x) := by
+  rw [Kernel.fst_apply' _ _ hs, Kernel.compProd_apply]
+  swap; · exact measurable_fst hs
+  have h_eq b : η (x, b) {c | b ∈ s} = s.indicator (fun b ↦ η (x, b) Set.univ) b := by
+    by_cases hb : b ∈ s <;> simp [hb]
+  simp_rw [Set.mem_setOf_eq, h_eq]
+
 @[simp]
 lemma fst_compProd (κ : Kernel α β) (η : Kernel (α × β) γ) [IsSFiniteKernel κ] [IsMarkovKernel η] :
     fst (κ ⊗ₖ η) = κ := by
-  ext x s hs
-  rw [fst_apply' _ _ hs, compProd_apply]
-  swap; · exact measurable_fst hs
-  simp only [Set.mem_setOf_eq]
-  classical
-  have : ∀ b : β, η (x, b) {_c | b ∈ s} = s.indicator (fun _ ↦ 1) b := by
-    intro b
-    by_cases hb : b ∈ s <;> simp [hb]
-  simp_rw [this]
-  rw [lintegral_indicator_const hs, one_mul]
+  ext x s hs; simp [fst_compProd_apply, hs]
 
 lemma fst_prodMkLeft (δ : Type*) [MeasurableSpace δ] (κ : Kernel α (β × γ)) :
     fst (prodMkLeft δ κ) = prodMkLeft δ (fst κ) := rfl

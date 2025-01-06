@@ -9,7 +9,7 @@ import Mathlib.Analysis.Normed.Group.Submodule
 import Mathlib.Analysis.Normed.Group.Uniform
 import Mathlib.LinearAlgebra.Basis.Defs
 import Mathlib.LinearAlgebra.DFinsupp
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # (Semi-)linear isometries
@@ -162,7 +162,7 @@ def Simps.apply (σ₁₂ : R →+* R₂) (E E₂ : Type*) [SeminormedAddCommGro
     [SeminormedAddCommGroup E₂] [Module R E] [Module R₂ E₂] (h : E →ₛₗᵢ[σ₁₂] E₂) : E → E₂ :=
   h
 
-initialize_simps_projections LinearIsometry (toLinearMap_toFun → apply)
+initialize_simps_projections LinearIsometry (toFun → apply)
 
 @[ext]
 theorem ext {f g : E →ₛₗᵢ[σ₁₂] E₂} (h : ∀ x, f x = g x) : f = g :=
@@ -668,8 +668,7 @@ def Simps.symm_apply (σ₁₂ : R →+* R₂) {σ₂₁ : R₂ →+* R} [RingHo
     [Module R E] [Module R₂ E₂] (h : E ≃ₛₗᵢ[σ₁₂] E₂) : E₂ → E :=
   h.symm
 
-initialize_simps_projections LinearIsometryEquiv (toLinearEquiv_toFun → apply,
-  toLinearEquiv_invFun → symm_apply)
+initialize_simps_projections LinearIsometryEquiv (toFun → apply, invFun → symm_apply)
 
 /-- Composition of `LinearIsometryEquiv`s as a `LinearIsometryEquiv`. -/
 def trans (e' : E₂ ≃ₛₗᵢ[σ₂₃] E₃) : E ≃ₛₗᵢ[σ₁₃] E₃ :=

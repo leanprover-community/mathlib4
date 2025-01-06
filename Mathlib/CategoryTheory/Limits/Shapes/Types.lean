@@ -117,7 +117,7 @@ noncomputable instance : Unique (⊤_ (Type u)) := Unique.mk' _
 noncomputable def isTerminalEquivUnique (X : Type u) : IsTerminal X ≃ Unique X :=
   equivOfSubsingletonOfSubsingleton
     (fun h => ((Iso.toEquiv (terminalIsoIsTerminal h).symm).unique))
-    (fun _ => IsTerminal.ofIso terminalIsTerminal (Equiv.toIso (Equiv.equivOfUnique _ _)))
+    (fun _ => IsTerminal.ofIso terminalIsTerminal (Equiv.toIso (Equiv.ofUnique _ _)))
 
 /-- A type is terminal if and only if it is isomorphic to `PUnit`. -/
 noncomputable def isTerminalEquivIsoPUnit (X : Type u) : IsTerminal X ≃ (X ≅ PUnit) := by
@@ -924,7 +924,7 @@ lemma pushoutCocone_inl_eq_inr_iff_of_isColimit {c : PushoutCocone f g} (hc : Is
     c.inl x₁ = c.inr x₂ ↔ ∃ (s : S), f s = x₁ ∧ g s = x₂ := by
   rw [pushoutCocone_inl_eq_inr_iff_of_iso
     (Cocones.ext (IsColimit.coconePointUniqueUpToIso hc (Pushout.isColimitCocone f g))
-    (by aesop_cat))]
+    (by simp))]
   have := (mono_iff_injective f).2 h₁
   apply Pushout.inl_eq_inr_iff
 

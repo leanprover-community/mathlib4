@@ -128,7 +128,7 @@ theorem isNilpotentOfIsNilpotentSpanSupEqTop (hnp : IsNilpotent <| toEnd R L M x
   obtain ⟨n, hn⟩ := hnp
   obtain ⟨k, hk⟩ := hIM
   have hk' : I.lcs M k = ⊥ := by
-    simp only [← coe_toSubmodule_eq_iff, I.coe_lcs_eq, hk, bot_coeSubmodule]
+    simp only [← toSubmodule_inj, I.coe_lcs_eq, hk, bot_toSubmodule]
   suffices ∀ l, lowerCentralSeries R L M (l * n) ≤ I.lcs M l by
     use k * n
     simpa [hk'] using this k
@@ -189,16 +189,16 @@ theorem LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer {K : LieSubalg
     { (R ∙ x) ⊔ (K : Submodule R L) with
       lie_mem' := fun {y z} => LieSubalgebra.lie_mem_sup_of_mem_normalizer hx₁ }
   have hxK' : x ∈ K' := Submodule.mem_sup_left (Submodule.subset_span (Set.mem_singleton _))
-  have hKK' : K ≤ K' := (LieSubalgebra.coe_submodule_le_coe_submodule K K').mp le_sup_right
+  have hKK' : K ≤ K' := (LieSubalgebra.toSubmodule_le_toSubmodule K K').mp le_sup_right
   have hK' : K' ≤ K.normalizer := by
-    rw [← LieSubalgebra.coe_submodule_le_coe_submodule]
+    rw [← LieSubalgebra.toSubmodule_le_toSubmodule]
     exact sup_le ((Submodule.span_singleton_le_iff_mem _ _).mpr hx₁) hK₂.le
   refine ⟨K', ?_, lt_iff_le_and_ne.mpr ⟨hKK', fun contra => hx₂ (contra.symm ▸ hxK')⟩⟩
   intro M _i1 _i2 _i3 _i4 h
   obtain ⟨I, hI₁ : (I : LieSubalgebra R K') = LieSubalgebra.ofLe hKK'⟩ :=
     LieSubalgebra.exists_nested_lieIdeal_ofLe_normalizer hKK' hK'
   have hI₂ : (R ∙ (⟨x, hxK'⟩ : K')) ⊔ (LieSubmodule.toSubmodule I) = ⊤ := by
-    rw [← LieIdeal.coe_to_lieSubalgebra_to_submodule R K' I, hI₁]
+    rw [← LieIdeal.toLieSubalgebra_toSubmodule R K' I, hI₁]
     apply Submodule.map_injective_of_injective (K' : Submodule R L).injective_subtype
     simp only [LieSubalgebra.coe_ofLe, Submodule.map_sup, Submodule.map_subtype_range_inclusion,
       Submodule.map_top, Submodule.range_subtype]
@@ -238,9 +238,9 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
       LieSubmodule.nontrivial_iff_ne_bot R K]
     have : Nontrivial (L' ⧸ K.toLieSubmodule) := by
       replace hK₂ : K.toLieSubmodule ≠ ⊤ := by
-        rwa [Ne, ← LieSubmodule.coe_toSubmodule_eq_iff, K.coe_toLieSubmodule,
-          LieSubmodule.top_coeSubmodule, ← LieSubalgebra.top_coe_submodule,
-          K.coe_to_submodule_eq_iff]
+        rwa [Ne, ← LieSubmodule.toSubmodule_inj, K.coe_toLieSubmodule,
+          LieSubmodule.top_toSubmodule, ← LieSubalgebra.top_toSubmodule,
+          K.toSubmodule_inj]
       exact Submodule.Quotient.nontrivial_of_lt_top _ hK₂.lt_top
     have : LieModule.IsNilpotent R K (L' ⧸ K.toLieSubmodule) := by
       -- Porting note: was refine' hK₁ _ fun x => _
@@ -250,9 +250,9 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
       apply Module.End.IsNilpotent.mapQ ?_ hx
       -- Porting note: mathlib3 solved this on its own with `submodule.mapq_linear._proof_5`
       intro X HX
-      simp only [LieSubalgebra.coe_toLieSubmodule, LieSubalgebra.mem_coe_submodule] at HX
+      simp only [LieSubalgebra.coe_toLieSubmodule, LieSubalgebra.mem_toSubmodule] at HX
       simp only [LieSubalgebra.coe_toLieSubmodule, Submodule.mem_comap, ad_apply,
-        LieSubalgebra.mem_coe_submodule]
+        LieSubalgebra.mem_toSubmodule]
       exact LieSubalgebra.lie_mem K x.prop HX
     exact nontrivial_max_triv_of_isNilpotent R K (L' ⧸ K.toLieSubmodule)
   haveI _i5 : IsNoetherian R L' := by
@@ -260,7 +260,7 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
     -- isNoetherian_of_surjective L _ (LinearMap.range_rangeRestrict (toEnd R L M))
     -- abusing the relation between `LieHom.rangeRestrict` and `LinearMap.rangeRestrict`
     refine isNoetherian_of_surjective L (LieHom.rangeRestrict (toEnd R L M)) ?_
-    simp only [LieHom.range_coeSubmodule, LieHom.coe_toLinearMap,
+    simp only [LieHom.range_toSubmodule, LieHom.coe_toLinearMap,
       LinearMap.range_eq_top]
     exact LieHom.surjective_rangeRestrict (toEnd R L M)
   obtain ⟨K, hK₁, hK₂⟩ := (LieSubalgebra.wellFoundedGT_of_noetherian R L').wf.has_min s hs

@@ -84,7 +84,7 @@ Cantor's theorem, König's theorem, Konig's theorem
 
 assert_not_exists Field
 
-open Mathlib (Vector)
+open List (Vector)
 open Function Order Set
 
 noncomputable section
@@ -245,6 +245,11 @@ we provide this statement separately so you don't have to solve the specializati
 -/
 theorem lift_mk_eq' {α : Type u} {β : Type v} : lift.{v} #α = lift.{u} #β ↔ Nonempty (α ≃ β) :=
   lift_mk_eq.{u, v, 0}
+
+theorem mk_congr_lift {α : Type u} {β : Type v} (e : α ≃ β) : lift.{v} #α = lift.{u} #β :=
+  lift_mk_eq'.2 ⟨e⟩
+
+alias _root_.Equiv.lift_cardinal_eq := mk_congr_lift
 
 -- Porting note: simpNF is not happy with universe levels.
 @[simp, nolint simpNF]
@@ -440,7 +445,7 @@ instance : Nontrivial Cardinal.{u} :=
   ⟨⟨1, 0, mk_ne_zero _⟩⟩
 
 theorem mk_eq_one (α : Type u) [Subsingleton α] [Nonempty α] : #α = 1 :=
-  let ⟨_⟩ := nonempty_unique α; (Equiv.equivOfUnique α (ULift (Fin 1))).cardinal_eq
+  let ⟨_⟩ := nonempty_unique α; (Equiv.ofUnique α (ULift (Fin 1))).cardinal_eq
 
 theorem le_one_iff_subsingleton {α : Type u} : #α ≤ 1 ↔ Subsingleton α :=
   ⟨fun ⟨f⟩ => ⟨fun _ _ => f.injective (Subsingleton.elim _ _)⟩, fun ⟨h⟩ =>
@@ -1786,12 +1791,12 @@ theorem mk_plift_false : #(PLift False) = 0 :=
   mk_eq_zero _
 
 @[simp]
-theorem mk_vector (α : Type u) (n : ℕ) : #(Mathlib.Vector α n) = #α ^ n :=
+theorem mk_vector (α : Type u) (n : ℕ) : #(List.Vector α n) = #α ^ n :=
   (mk_congr (Equiv.vectorEquivFin α n)).trans <| by simp
 
 theorem mk_list_eq_sum_pow (α : Type u) : #(List α) = sum fun n : ℕ => #α ^ n :=
   calc
-    #(List α) = #(Σn, Mathlib.Vector α n) := mk_congr (Equiv.sigmaFiberEquiv List.length).symm
+    #(List α) = #(Σn, List.Vector α n) := mk_congr (Equiv.sigmaFiberEquiv List.length).symm
     _ = sum fun n : ℕ => #α ^ n := by simp
 
 theorem mk_quot_le {α : Type u} {r : α → α → Prop} : #(Quot r) ≤ #α :=
@@ -1875,6 +1880,15 @@ theorem mk_image_eq {α β : Type u} {f : α → β} {s : Set α} (hf : Injectiv
 theorem mk_image_eq_lift {α : Type u} {β : Type v} (f : α → β) (s : Set α) (h : Injective f) :
     lift.{u} #(f '' s) = lift.{v} #s :=
   mk_image_eq_of_injOn_lift _ _ h.injOn
+
+@[simp]
+theorem mk_image_embedding_lift {β : Type v} (f : α ↪ β) (s : Set α) :
+    lift.{u} #(f '' s) = lift.{v} #s :=
+  mk_image_eq_lift _ _ f.injective
+
+@[simp]
+theorem mk_image_embedding (f : α ↪ β) (s : Set α) : #(f '' s) = #s := by
+  simpa using mk_image_embedding_lift f s
 
 theorem mk_iUnion_le_sum_mk {α ι : Type u} {f : ι → Set α} : #(⋃ i, f i) ≤ sum fun i => #(f i) :=
   calc
@@ -2035,6 +2049,17 @@ theorem mk_preimage_of_injective_of_subset_range (f : α → β) (s : Set β) (h
     (h2 : s ⊆ range f) : #(f ⁻¹' s) = #s := by
   convert mk_preimage_of_injective_of_subset_range_lift.{u, u} f s h h2 using 1 <;> rw [lift_id]
 
+@[simp]
+theorem mk_preimage_equiv_lift {β : Type v} (f : α ≃ β) (s : Set β) :
+    lift.{v} #(f ⁻¹' s) = lift.{u} #s := by
+  apply mk_preimage_of_injective_of_subset_range_lift _ _ f.injective
+  rw [f.range_eq_univ]
+  exact fun _ _ ↦ ⟨⟩
+
+@[simp]
+theorem mk_preimage_equiv (f : α ≃ β) (s : Set β) : #(f ⁻¹' s) = #s := by
+  simpa using mk_preimage_equiv_lift f s
+
 theorem mk_preimage_of_injective (f : α → β) (s : Set β) (h : Injective f) :
     #(f ⁻¹' s) ≤ #s := by
   rw [← lift_id #(↑(f ⁻¹' s)), ← lift_id #(↑s)]
@@ -2063,6 +2088,14 @@ theorem le_mk_iff_exists_subset {c : Cardinal} {α : Type u} {s : Set α} :
     c ≤ #s ↔ ∃ p : Set α, p ⊆ s ∧ #p = c := by
   rw [le_mk_iff_exists_set, ← Subtype.exists_set_subtype]
   apply exists_congr; intro t; rw [mk_image_eq]; apply Subtype.val_injective
+
+@[simp]
+theorem mk_range_inl {α : Type u} {β : Type v} : #(range (@Sum.inl α β)) = lift.{v} #α := by
+  rw [← lift_id'.{u, v} #_, (Equiv.Set.rangeInl α β).lift_cardinal_eq, lift_umax.{u, v}]
+
+@[simp]
+theorem mk_range_inr {α : Type u} {β : Type v} : #(range (@Sum.inr α β)) = lift.{u} #β := by
+  rw [← lift_id'.{v, u} #_, (Equiv.Set.rangeInr α β).lift_cardinal_eq, lift_umax.{v, u}]
 
 theorem two_le_iff : (2 : Cardinal) ≤ #α ↔ ∃ x y : α, x ≠ y := by
   rw [← Nat.cast_two, nat_succ, succ_le_iff, Nat.cast_one, one_lt_iff_nontrivial, nontrivial_iff]
@@ -2171,4 +2204,4 @@ end Cardinal
 
 -- end Tactic
 
-set_option linter.style.longFile 2200
+set_option linter.style.longFile 2400
