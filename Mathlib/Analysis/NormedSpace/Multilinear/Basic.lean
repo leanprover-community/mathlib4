@@ -535,7 +535,7 @@ theorem isLeast_opNNNorm (f : ContinuousMultilinearMap 𝕜 E G) :
 theorem opNNNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
     ‖f.prod g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   eq_of_forall_ge_iff fun _ ↦ by
-    simp only [opNNNorm_le_iff, prod_apply, Prod.nnnorm_def', max_le_iff, forall_and]
+    simp only [opNNNorm_le_iff, prod_apply, Prod.nnnorm_def, max_le_iff, forall_and]
 
 theorem opNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
     ‖f.prod g‖ = max ‖f‖ ‖g‖ :=
