@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
 import Mathlib.Data.List.Forall2
-import Mathlib.Data.List.Lemmas
 import Mathlib.Data.Set.Pairwise.Basic
 
 /-!
@@ -389,7 +388,6 @@ theorem Nodup.take_eq_filter_mem [DecidableEq α] :
     intro x hx
     have : x ≠ b := fun h => (nodup_cons.1 hl).1 (h ▸ hx)
     simp (config := {contextual := true}) [List.mem_filter, this, hx]
-
 end List
 
 theorem Option.toList_nodup : ∀ o : Option α, o.toList.Nodup
