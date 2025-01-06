@@ -17,9 +17,8 @@ variable {α β : Type*} [AddCommGroup α] [UniformSpace α] [UniformAddGroup α
 /-- A function `f` has a sum in an uniform additive group `α` if and only if it has that sum in the
 completion of `α`. -/
 theorem UniformSpace.Completion.hasSum_coe_comp_iff (f : β → α) (a : α) :
-    HasSum ((coe : α → Completion α) ∘ f) a ↔ HasSum f a := by
-  rw [← coeAddHom_eq_coe]
-  exact isDenseInducing_coe.hasSum_iff _ _
+    HasSum ((coe : α → Completion α) ∘ f) a ↔ HasSum f a :=
+    (isDenseInducing_coeAddHom α).hasSum_iff f a
 
 @[deprecated (since := "2025-01-05")] alias hasSum_iff_hasSum_compl :=
   UniformSpace.Completion.hasSum_coe_comp_iff
@@ -28,9 +27,8 @@ theorem UniformSpace.Completion.hasSum_coe_comp_iff (f : β → α) (a : α) :
 `Completion α` and its sum in `Completion α` lies in the range of `coe : α → Completion α`. -/
 theorem summable_iff_summable_compl_and_tsum_mem (f : β → α) :
     Summable f ↔
-      Summable ((coe : α → Completion α) ∘ f) ∧ ∑' i, (f i : Completion α) ∈ Set.range coe := by
-  simp_rw [← coeAddHom_eq_coe]
-  exact isDenseInducing_coe.summable_iff_tsum_comp_mem_range _
+      Summable ((coe : α → Completion α) ∘ f) ∧ ∑' i, (f i : Completion α) ∈ Set.range coe :=
+  (isDenseInducing_coeAddHom α).summable_iff_tsum_comp_mem_range f
 
 /-- A function `f` is summable in a uniform additive group `α` if and only if the net of its partial
 sums is Cauchy and its sum in `Completion α` lies in the range of `coe : α → Completion α`.

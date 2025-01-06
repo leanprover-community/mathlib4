@@ -34,8 +34,8 @@ The vertical maps in the above diagrams are also normed group homs constructed i
 ## Main definitions and results:
 
 * `NormedAddGroupHom.completion`: see the discussion above.
-* `NormedAddCommGroup.coeNormedAddGroupHom : NormedAddGroupHom G (completion G)`: the canonical map
-  from `G` to its completion, as a normed group hom
+* `UniformSpace.Completion.coeNormedAddGroupHom : NormedAddGroupHom G (completion G)`:
+  the canonical map from `G` to its completion, as a normed group hom
 * `NormedAddGroupHom.completion_coeNormedAddGroupHom`: the above diagram indeed commutes.
 * `NormedAddGroupHom.norm_completion`: `‖f.completion‖ = ‖f‖`
 * `NormedAddGroupHom.ker_le_ker_completion`: the kernel of `f.completion` contains the image of
@@ -134,8 +134,11 @@ open NormedAddCommGroup UniformSpace.Completion
 @[deprecated (since := "2025-01-05")] alias NormedAddCommGroup.norm_toCompl :=
   Completion.norm_coe
 
+def UniformSpace.Completion.denseRange_coeNormedAddGroupHom :
+  DenseRange (coeNormedAddGroupHom : G → Completion G) := Completion.isDenseInducing_coe.dense
+
 @[deprecated (since := "2025-01-05")] alias NormedAddCommGroup.denseRange_toCompl :=
-  Completion.denseRange_coe
+  Completion.denseRange_coeNormedAddGroupHom
 
 @[simp]
 theorem NormedAddGroupHom.completion_coeNormedAddGroupHom (f : NormedAddGroupHom G H) :

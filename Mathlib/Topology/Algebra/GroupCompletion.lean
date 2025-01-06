@@ -177,9 +177,19 @@ def coeAddHom : α →+ Completion α where
 
 @[deprecated (since := "2025-01-05")] alias toCompl := coeAddHom
 
-@[deprecated (since := "2025-01-05")] alias continuous_toCompl := continuous_coe
+theorem continuous_coeAddHom : Continuous (coeAddHom : α → Completion α) :=
+  continuous_coe α
 
-@[deprecated (since := "2025-01-05")] alias isDenseInducing_toCompl := isDenseInducing_coe
+@[deprecated (since := "2025-01-05")] alias continuous_toCompl := continuous_coeAddHom
+
+variable (α)
+
+theorem isDenseInducing_coeAddHom : IsDenseInducing (coeAddHom : α → Completion α) :=
+  isDenseInducing_coe
+
+@[deprecated (since := "2025-01-05")] alias isDenseInducing_toCompl := isDenseInducing_coeAddHom
+
+variable {α}
 
 @[simp, norm_cast] theorem coeAddHom_eq_coe : (coeAddHom : α → Completion α) = coe := rfl
 
