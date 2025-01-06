@@ -37,8 +37,10 @@ inductive IsSumSq [Mul R] [Add R] [Zero R] : R → Prop
 
 @[deprecated (since := "2024-08-09")] alias isSumSq := IsSumSq
 
-/-- In an additive monoid with multiplication,
-if `s₁` and `s₂` are sums of squares, then `s₁ + s₂` is a sum of squares. -/
+/--
+In an additive monoid with multiplication,
+if `s₁` and `s₂` are sums of squares, then `s₁ + s₂` is a sum of squares.
+-/
 theorem IsSumSq.add [AddMonoid R] [Mul R] {s₁ s₂ : R}
     (h₁ : IsSumSq s₁) (h₂ : IsSumSq s₂) : IsSumSq (s₁ + s₂) := by
   induction h₁ <;> simp_all [add_assoc, sq_add]
@@ -67,8 +69,10 @@ end AddSubmonoid
 @[deprecated (since := "2025-01-03")] alias sumSqIn := AddSubmonoid.sumSq
 @[deprecated (since := "2025-01-06")] alias sumSq := AddSubmonoid.sumSq
 
-/-- In an additive monoid with multiplication, squares are sums of squares
-(see Mathlib.Algebra.Group.Even). -/
+/--
+In an additive monoid with multiplication, squares are sums of squares
+(see Mathlib.Algebra.Group.Even).
+-/
 theorem mem_sumSq_of_isSquare [AddMonoid R] [Mul R] {x : R} (hx : IsSquare x) :
     x ∈ AddSubmonoid.sumSq R := by
   rcases hx with ⟨y, hy⟩
@@ -89,8 +93,10 @@ theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
 
 @[deprecated (since := "2024-08-09")] alias SquaresAddClosure := AddSubmonoid.closure_isSquare
 
-/-- In an additive, commutative monoid with multiplication,
-`∑ i ∈ I, a i * a i` is a sum of squares. -/
+/--
+In an additive, commutative monoid with multiplication,
+`∑ i ∈ I, a i * a i` is a sum of squares.
+-/
 theorem IsSumSq.sum_mul_self [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) (a : ι → R) :
     IsSumSq (∑ i ∈ I, a i * a i) := by
   induction I using Finset.cons_induction with
