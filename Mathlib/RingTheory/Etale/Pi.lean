@@ -30,4 +30,7 @@ theorem pi_iff [Finite I] :
   simp_rw [FormallyEtale.iff_unramified_and_smooth, forall_and]
   rw [FormallyUnramified.pi_iff A, FormallySmooth.pi_iff A]
 
+instance [Finite I] [∀ i, FormallyEtale R (A i)] : FormallyEtale R (Π i, A i) :=
+  .of_unramified_and_smooth
+
 end Algebra.FormallyEtale
