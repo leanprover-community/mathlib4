@@ -225,7 +225,6 @@ lemma commShiftIso_inv_app_counit_app [adj.CommShift A] (a : A) (Y : D) :
 
 namespace CommShift
 
-attribute [instance] commShift_unit commShift_counit
 
 /-- Constructor for `Adjunction.CommShift`. -/
 lemma mk' (h : NatTrans.CommShift adj.unit A) :
