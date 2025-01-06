@@ -28,7 +28,7 @@ variable (R : Type*)
 
 /--
 A semireal ring is a non-trivial commutative ring (with unit) in which `-1` is *not* a sum of
-squares. Note that `-1` does not make sense in a semiring. We define the class `IsSemireal R`
+squares. We define the class `IsSemireal R`
 for all additive monoids `R` equipped with a multiplication, a multiplicative unit and a negation.
 -/
 @[mk_iff]
