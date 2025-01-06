@@ -68,61 +68,31 @@ lemma isCoatom_comap_of_surjective
 end Subgroup
 end Coatom
 
-namespace SubgroupClass
-variable {G S : Type*} [SetLike S G]
-
--- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
-/-- A subgroup of an `OrderedCommGroup` is an `OrderedCommGroup`. -/
-@[to_additive "An additive subgroup of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`."]
-instance (priority := 75) toOrderedCommGroup [OrderedCommGroup G]
-    [SubgroupClass S G] (H : S) : OrderedCommGroup H :=
-  Subtype.coe_injective.orderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-
--- Prefer subclasses of `Group` over subclasses of `SubgroupClass`.
-/-- A subgroup of a `LinearOrderedCommGroup` is a `LinearOrderedCommGroup`. -/
-@[to_additive
-      "An additive subgroup of a `LinearOrderedAddCommGroup` is a
-        `LinearOrderedAddCommGroup`."]
-instance (priority := 75) toLinearOrderedCommGroup [LinearOrderedCommGroup G]
-    [SubgroupClass S G] (H : S) : LinearOrderedCommGroup H :=
-  Subtype.coe_injective.linearOrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-
-end SubgroupClass
-
 namespace Subgroup
 
 variable {G : Type*}
 
-/-- A subgroup of an `OrderedCommGroup` is an `OrderedCommGroup`. -/
+/-- A subgroup of an ordered group is an ordered group. -/
 @[to_additive "An `AddSubgroup` of an `AddOrderedCommGroup` is an `AddOrderedCommGroup`."]
-instance toOrderedCommGroup [OrderedCommGroup G] (H : Subgroup G) :
-    OrderedCommGroup H :=
-  Subtype.coe_injective.orderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-
-/-- A subgroup of a `LinearOrderedCommGroup` is a `LinearOrderedCommGroup`. -/
-@[to_additive
-      "An `AddSubgroup` of a `LinearOrderedAddCommGroup` is a
-        `LinearOrderedAddCommGroup`."]
-instance toLinearOrderedCommGroup [LinearOrderedCommGroup G] (H : Subgroup G) :
-    LinearOrderedCommGroup H :=
-  Subtype.coe_injective.linearOrderedCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
+instance toIsOrderedMonoid [CommGroup G] [PartialOrder G] [IsOrderedMonoid G] (H : Subgroup G) :
+    IsOrderedMonoid H :=
+  Subtype.coe_injective.isOrderedMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
 end Subgroup
 
 @[to_additive]
-lemma Subsemigroup.strictMono_topEquiv {G : Type*} [OrderedCommMonoid G] :
+lemma Subsemigroup.strictMono_topEquiv {G : Type*}
+    [CommMonoid G] [PartialOrder G] [IsOrderedMonoid G] :
     StrictMono (topEquiv (M := G)) := fun _ _ ↦ id
 
 @[to_additive]
-lemma MulEquiv.strictMono_subsemigroupCongr {G : Type*} [OrderedCommMonoid G] {S T : Subsemigroup G}
+lemma MulEquiv.strictMono_subsemigroupCongr {G : Type*}
+    [CommMonoid G] [PartialOrder G] [IsOrderedMonoid G] {S T : Subsemigroup G}
     (h : S = T) : StrictMono (subsemigroupCongr h) := fun _ _ ↦ id
 
 @[to_additive]
-lemma MulEquiv.strictMono_symm {G G' : Type*} [LinearOrderedCommMonoid G]
-    [LinearOrderedCommMonoid G'] {e : G ≃* G'} (he : StrictMono e) : StrictMono e.symm := by
+lemma MulEquiv.strictMono_symm {G G' : Type*} [CommMonoid G] [LinearOrder G] [IsOrderedMonoid G]
+    [CommMonoid G'] [LinearOrder G'] [IsOrderedMonoid G'] {e : G ≃* G'} (he : StrictMono e) :
+    StrictMono e.symm := by
   intro
   simp [← he.lt_iff_lt]

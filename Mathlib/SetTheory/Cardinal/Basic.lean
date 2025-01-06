@@ -638,11 +638,8 @@ instance canonicallyOrderedAdd : CanonicallyOrderedAdd Cardinal.{u} where
       ⟨#(↥(range f)ᶜ), mk_congr this.symm⟩
   le_self_add a _ := (add_zero a).ge.trans <| add_le_add_left (Cardinal.zero_le _) _
 
-instance orderedCommSemiring : OrderedCommSemiring Cardinal.{u} :=
-  CanonicallyOrderedAdd.toOrderedCommSemiring
-
-instance : LinearOrderedAddCommMonoid Cardinal.{u} :=
-  { Cardinal.orderedCommSemiring, Cardinal.linearOrder with }
+instance isOrderedRing : IsOrderedRing Cardinal.{u} :=
+  CanonicallyOrderedAdd.toIsOrderedRing
 
 instance orderBot : OrderBot Cardinal.{u} := inferInstance
 
@@ -658,13 +655,10 @@ instance : LinearOrderedCommMonoidWithZero Cardinal.{u} :=
     zero_le_one := zero_le _ }
 
 -- Computable instance to prevent a non-computable one being found via the one above
-instance : CommMonoidWithZero Cardinal.{u} :=
-  { Cardinal.orderedCommSemiring with }
+example : CommMonoidWithZero Cardinal.{u} := inferInstance
 
--- Porting note: new
 -- Computable instance to prevent a non-computable one being found via the one above
-instance : CommMonoid Cardinal.{u} :=
-  { Cardinal.orderedCommSemiring with }
+example : CommMonoid Cardinal.{u} := inferInstance
 
 theorem zero_power_le (c : Cardinal.{u}) : (0 : Cardinal.{u}) ^ c ≤ 1 := by
   by_cases h : c = 0

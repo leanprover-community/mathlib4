@@ -24,9 +24,7 @@ open Function Nat
 
 namespace Int
 
-instance instLinearOrderedAddCommGroup : LinearOrderedAddCommGroup ℤ where
-  __ := instLinearOrder
-  __ := instAddCommGroup
+instance instIsOrderedAddMonoid : IsOrderedAddMonoid ℤ where
   add_le_add_left _ _ := Int.add_le_add_left
 
 end Int
