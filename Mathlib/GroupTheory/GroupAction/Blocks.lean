@@ -15,26 +15,26 @@ import Mathlib.Tactic.IntervalCases
 Given `SMul G X`, an action of a type `G` on a type `X`, we define
 
 - the predicate `IsBlock G B` states that `B : Set X` is a block,
-which means that the sets `g • B`, for `g ∈ G`, are equal or disjoint.
-Under `Group G` and `MulAction G X`, this is equivalent to the classical
-definition `MulAction.IsBlock.def_one`
+  which means that the sets `g • B`, for `g ∈ G`, are equal or disjoint.
+  Under `Group G` and `MulAction G X`, this is equivalent to the classical
+  definition `MulAction.IsBlock.def_one`
 
 - a bunch of lemmas that give examples of “trivial” blocks : ⊥, ⊤, singletons,
-and non trivial blocks: orbit of the group, orbit of a normal subgroup…
+  and non trivial blocks: orbit of the group, orbit of a normal subgroup…
 
 The non-existence of nontrivial blocks is the definition of primitive actions.
 
 ## Results for actions on finite sets
 
 - `IsBlock.ncard_block_mul_ncard_orbit_eq` : The cardinality of a block
-multiplied by the number of its translates is the cardinal of the ambient type
+  multiplied by the number of its translates is the cardinal of the ambient type
 
 - `IsBlock.eq_univ_of_card_lt` : a too large block is equal to `Set.univ`
 
 - `IsBlock.subsingleton_of_card_lt` : a too small block is a subsingleton
 
 - `IsBlock.of_subset` : the intersections of the translates of a finite subset
-that contain a given point is a block
+  that contain a given point is a block
 
 ## References
 
@@ -65,7 +65,7 @@ theorem orbit.pairwiseDisjoint :
   exact (orbit.eq_or_disjoint x y).resolve_right h
 
 /-- Orbits of an element form a partition -/
-@[to_additive]
+@[to_additive "Orbits of an element of a partition"]
 theorem IsPartition.of_orbits :
     Setoid.IsPartition (Set.range fun a : X => orbit G a) := by
   apply orbit.pairwiseDisjoint.isPartition_of_exists_of_ne_empty
@@ -311,25 +311,10 @@ theorem isBlock_subtypeVal {C : SubMulAction G X} {B : Set C} :
   rw [← SubMulAction.inclusion.coe_eq, ← image_smul_set, ← image_smul_set, ne_eq,
     Set.image_eq_image C.inclusion_injective, disjoint_image_iff C.inclusion_injective]
 
-theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g : G) :
-    IsBlock (H.map (MulEquiv.toMonoidHom (MulAut.conj g))) (g • B) := by
-  rw [isBlock_iff_smul_eq_or_disjoint]
-  intro h'
-  obtain ⟨h, hH, hh⟩ := Subgroup.mem_map.mp (SetLike.coe_mem h')
-  simp only [MulEquiv.coe_toMonoidHom, MulAut.conj_apply] at hh
-  suffices h' • g • B = g • h • B by
-    simp only [this]
-    apply (hB.smul_eq_or_disjoint ⟨h, hH⟩).imp
-    · intro; congr
-    · exact Set.disjoint_image_of_injective (MulAction.injective g)
-  suffices (h' : G) • g • B = g • h • B by
-    rw [← this]; rfl
-  rw [← hh, smul_smul (g * h * g⁻¹) g B, smul_smul g h B, inv_mul_cancel_right]
-
 theorem _root_.AddAction.IsBlock.of_addsubgroup_of_conjugate
     {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] {B : Set X}
     {H : AddSubgroup G} (hB : AddAction.IsBlock H B) (g : G) :
-    AddAction.IsBlock (H.map (AddEquiv.toAddMonoidHom (AddAut.conj g))) (g +ᵥ B) := by
+    AddAction.IsBlock (H.map (AddAut.conj g).toAddMonoidHom) (g +ᵥ B) := by
   rw [AddAction.isBlock_iff_vadd_eq_or_disjoint]
   intro h'
   obtain ⟨h, hH, hh⟩ := AddSubgroup.mem_map.mp (SetLike.coe_mem h')
@@ -345,14 +330,21 @@ theorem _root_.AddAction.IsBlock.of_addsubgroup_of_conjugate
   erw [AddAut.conj_apply]
   simp
 
-/-- A translate of a block is a block -/
-theorem IsBlock.translate (g : G) (hB : IsBlock G B) :
-    IsBlock G (g • B) := by
-  rw [← isBlock_top] at hB ⊢
-  rw [← Subgroup.map_comap_eq_self_of_surjective
-          (G := G) (f := MulAut.conj g) (MulAut.conj g).surjective ⊤]
-  apply IsBlock.of_subgroup_of_conjugate
-  rwa [Subgroup.comap_top]
+@[to_additive existing AddAction.IsBlock.of_addsubgroup_of_conjugate]
+theorem IsBlock.of_subgroup_of_conjugate {H : Subgroup G} (hB : IsBlock H B) (g : G) :
+    IsBlock (H.map (MulAut.conj g).toMonoidHom) (g • B) := by
+  rw [isBlock_iff_smul_eq_or_disjoint]
+  intro h'
+  obtain ⟨h, hH, hh⟩ := Subgroup.mem_map.mp (SetLike.coe_mem h')
+  simp only [MulEquiv.coe_toMonoidHom, MulAut.conj_apply] at hh
+  suffices h' • g • B = g • h • B by
+    simp only [this]
+    apply (hB.smul_eq_or_disjoint ⟨h, hH⟩).imp
+    · intro; congr
+    · exact Set.disjoint_image_of_injective (MulAction.injective g)
+  suffices (h' : G) • g • B = g • h • B by
+    rw [← this]; rfl
+  rw [← hh, smul_smul (g * h * g⁻¹) g B, smul_smul g h B, inv_mul_cancel_right]
 
 /-- A translate of a block is a block -/
 theorem _root_.AddAction.IsBlock.translate
@@ -365,6 +357,16 @@ theorem _root_.AddAction.IsBlock.translate
     rwa [AddSubgroup.comap_top]
   · exact (AddAut.conj g).surjective
 
+/-- A translate of a block is a block -/
+@[to_additive existing]
+theorem IsBlock.translate (g : G) (hB : IsBlock G B) :
+    IsBlock G (g • B) := by
+  rw [← isBlock_top] at hB ⊢
+  rw [← Subgroup.map_comap_eq_self_of_surjective
+          (G := G) (f := MulAut.conj g) (MulAut.conj g).surjective ⊤]
+  apply IsBlock.of_subgroup_of_conjugate
+  rwa [Subgroup.comap_top]
+
 variable (G) in
 /-- For `SMul G X`, a block system of `X` is a partition of `X` into blocks
   for the action of `G` -/
@@ -372,8 +374,8 @@ variable (G) in
  for the additive action of `G`"]
 def IsBlockSystem (ℬ : Set (Set X)) := Setoid.IsPartition ℬ ∧ ∀ ⦃B⦄, B ∈ ℬ → IsBlock G B
 
-/-- Translates of a block form a block system. -/
-@[to_additive]
+/-- Translates of a block form a block system -/
+@[to_additive "Translates of a block form a block system"]
 theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
     (hB : IsBlock G B) (hBe : B.Nonempty) :
     IsBlockSystem G (Set.range fun g : G => g • B) := by
@@ -411,7 +413,7 @@ lemma smul_orbit_eq_orbit_smul (N : Subgroup G) [nN : N.Normal] (a : X) (g : G) 
     simp only [← mul_assoc, ← smul_smul, smul_inv_smul, inv_inv]
 
 /-- An orbit of a normal subgroup is a block -/
-@[to_additive]
+@[to_additive "An orbit of a normal subgroup is a block"]
 theorem IsBlock.orbit_of_normal {N : Subgroup G} [N.Normal] (a : X) :
     IsBlock G (orbit N a) := by
   rw [isBlock_iff_smul_eq_or_disjoint]
@@ -420,7 +422,7 @@ theorem IsBlock.orbit_of_normal {N : Subgroup G} [N.Normal] (a : X) :
   apply orbit.eq_or_disjoint
 
 /-- The orbits of a normal subgroup form a block system -/
-@[to_additive]
+@[to_additive "The orbits of a normal subgroup form a block system"]
 theorem IsBlockSystem.of_normal {N : Subgroup G} [N.Normal] :
     IsBlockSystem G (Set.range fun a : X => orbit N a) := by
   constructor
@@ -481,7 +483,7 @@ section Stabilizer
   (Wielandt, th. 7.5) -/
 
 /-- The orbit of `a` under a subgroup containing the stabilizer of `a` is a block -/
-@[to_additive]
+@[to_additive "The orbit of `a` under a subgroup containing the stabilizer of `a` is a block"]
 theorem IsBlock.of_orbit {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
     IsBlock G (MulAction.orbit H a) := by
   rw [isBlock_iff_smul_eq_of_nonempty]
@@ -493,13 +495,14 @@ theorem IsBlock.of_orbit {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
   simpa only [mem_stabilizer_iff, InvMemClass.coe_inv, mul_smul, inv_smul_eq_iff]
 
 /-- If `B` is a block containing `a`, then the stabilizer of `B` contains the stabilizer of `a` -/
-@[to_additive]
+@[to_additive
+  "If `B` is a block containing `a`, then the stabilizer of `B` contains the stabilizer of `a`"]
 theorem IsBlock.stabilizer_le (hB : IsBlock G B) {a : X} (ha : a ∈ B) :
     stabilizer G a ≤ stabilizer G B :=
   fun g hg ↦ hB.smul_eq_of_nonempty ⟨a, by rwa [← hg, smul_mem_smul_set_iff], ha⟩
 
 /-- A block containing `a` is the orbit of `a` under its stabilizer -/
-@[to_additive]
+@[to_additive "A block containing `a` is the orbit of `a` under its stabilizer"]
 theorem IsBlock.orbit_stabilizer_eq [IsPretransitive G X] (hB : IsBlock G B) {a : X} (ha : a ∈ B) :
     MulAction.orbit (stabilizer G B) a = B := by
   ext x
@@ -514,7 +517,9 @@ theorem IsBlock.orbit_stabilizer_eq [IsPretransitive G X] (hB : IsBlock G B) {a 
 
 /-- A subgroup containing the stabilizer of `a`
   is the stabilizer of the orbit of `a` under that subgroup -/
-@[to_additive]
+@[to_additive
+  "A subgroup containing the stabilizer of `a`
+  is the stabilizer of the orbit of `a` under that subgroup"]
 theorem stabilizer_orbit_eq {a : X} {H : Subgroup G} (hH : stabilizer G a ≤ H) :
     stabilizer G (orbit H a) = H := by
   ext g
