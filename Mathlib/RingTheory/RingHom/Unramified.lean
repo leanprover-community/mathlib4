@@ -14,7 +14,7 @@ import Mathlib.RingTheory.LocalProperties.Basic
 
 namespace RingHom
 
-variable {R S : Type*} [CommRing R] [CommRing S]
+variable {R : Type*} {S : Type*} [CommRing R] [CommRing S]
 
 /--
 A ring homomorphism `R →+* A` is formally unramified if `Ω[A⁄R]` is trivial.
