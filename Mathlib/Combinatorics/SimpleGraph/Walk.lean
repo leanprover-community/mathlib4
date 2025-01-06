@@ -974,13 +974,11 @@ lemma concat_dropLast_eq (p : G.Walk x y) (hp : G.Adj p.penultimate y) :
 
 @[simp] lemma cons_support_tail (p : G.Walk x y) (hp : ¬p.Nil) :
     x :: p.tail.support = p.support := by
-  conv => rhs; rw [← cons_tail_eq p hp]
-  rfl
+  rw [← support_cons, cons_tail_eq _ hp]
 
 @[simp] lemma length_tail_add_one {p : G.Walk x y} (hp : ¬ p.Nil) :
     p.tail.length + 1 = p.length := by
-  conv => rhs; rw [← cons_tail_eq p hp]
-  rfl
+  rw [← length_cons, cons_tail_eq _ hp]
 
 @[simp] lemma nil_copy {x' y' : V} {p : G.Walk x y} (hx : x = x') (hy : y = y') :
     (p.copy hx hy).Nil = p.Nil := by
