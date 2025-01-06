@@ -89,7 +89,7 @@ theorem IsSumSq.mul_self [AddZeroClass R] [Mul R] (a : R) : IsSumSq (a * a) := b
 
 /--
 In an additive unital magma with multiplication, squares are sums of squares
-(see Mathlib.Algebra.Group.Even.Basic).
+(see Mathlib.Algebra.Group.Even).
 -/
 @[aesop unsafe 50% apply]
 theorem IsSquare.isSumSq [AddZeroClass R] [Mul R] {x : R} (hx : IsSquare x) :
