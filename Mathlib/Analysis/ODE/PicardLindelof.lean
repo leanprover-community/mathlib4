@@ -22,10 +22,10 @@ and `x₀ : E`. If `f` is Lipschitz continuous in `x` within a closed ball aroun
 `t ∈ Icc tmin tmax`, where `t₀ - a / L ≤ tmin ≤ t₀ ≤ tmax ≤ t₀ + a / L`.
 
 We actually prove a more general version of this theorem for the existence of local flows. If there
-is some `b` such that `L * max (tmax - t₀) (t₀ - tmin) ≤ b < a`, then for every
-`x ∈ closedBall x₀ (a - b)`, there exists a (local) solution `α x` with the initial condition
-`α t₀ = x`. In other words, there exists a local flow `α : E → ℝ → E` defined on
-`closedBall x₀ (a - b)` and `Icc tmin tmax`.
+is some `r ≥ 0` such that `L * max (tmax - t₀) (t₀ - tmin) ≤ a - r`, then for every
+`x ∈ closedBall x₀ r`, there exists a (local) solution `α x` with the initial condition `α t₀ = x`.
+In other words, there exists a local flow `α : E → ℝ → E` defined on `closedBall x₀ r` and
+`Icc tmin tmax`.
 
 The proof relies on demonstrating the existence of a solution `α` to the following integral
 equation:
@@ -55,11 +55,9 @@ repeated applications of the right hand side of the the above equation.
   usage of the completeness condition on the space `E` until the application of the contraction
   mapping theorem.
 * We have chosen to formalise many of the real constants as `ℝ≥0`, so that the non-negativity of
-  certain quantities constructed from them can be shown more easily. However, this leads to a
-  potential confusion in the meaning of `a - b`. The (vacuous) validity of the existence theorem
-  `IsPicardLindelof.exists_eq_hasDerivWithinAt` when `a < b` crucially relies on `(a - b) : ℝ`
-  meaning `(a : ℝ) - (b : ℝ)`, which is negative. With this understanding, the condition `a < b`
-  does not need to be stated as part of `IsPicardLindelof`.
+  certain quantities constructed from them can be shown more easily. When subtraction is involved,
+  especially note whether it is the usual subtraction between two reals or the truncated subtraction
+  between two non-negative reals.
 * We only prove the existence of a solution in this file. For uniqueness, see `ODE_solution_unique`
   and related theorems in `Mathlib/Analysis/ODE/Gronwall.lean`.
 
@@ -272,13 +270,12 @@ lemma continuousOn_uncurry_of_lipschitzOnWith_continuousOn
   this.comp continuous_swap.continuousOn (preimage_swap_prod _ _).symm.subset
 
 /-- Prop structure holding the assumptions of the Picard-Lindelöf theorem.
-`IsPicardLindelof f t₀ x₀ a b L K` means that the time-dependent vector field `f` satisfies the
+`IsPicardLindelof f t₀ x₀ a r L K` means that the time-dependent vector field `f` satisfies the
 conditions to admit an integral curve `α : ℝ → E` to `f` defined on `Icc tmin tmax` with the
-initial condition `α t₀ = x`, where `‖x - x₀‖ ≤ a - b`. Note that the initial point `x` is allowed
-to differ from the point `x₀` about which the conditions on `f` are stated. The theorem is only
-meaningful when `b ≤ a` but is true vacuously otherwise. -/
+initial condition `α t₀ = x`, where `‖x - x₀‖ ≤ r`. Note that the initial point `x` is allowed
+to differ from the point `x₀` about which the conditions on `f` are stated. -/
 structure IsPicardLindelof {E : Type*} [NormedAddCommGroup E]
-    (f : ℝ → E → E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) (a b L K : ℝ≥0) : Prop where
+    (f : ℝ → E → E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) (a r L K : ℝ≥0) : Prop where
   /-- The vector field at any time is Lipschitz in with constant `K` within a closed ball. -/
   lipschitz : ∀ t ∈ Icc tmin tmax, LipschitzOnWith K (f t) (closedBall x₀ a)
   /-- The vector field is continuous in time within a closed ball. -/
@@ -286,30 +283,31 @@ structure IsPicardLindelof {E : Type*} [NormedAddCommGroup E]
   /-- `L` is an upper bound of the norm of the vector field. -/
   norm_le : ∀ t ∈ Icc tmin tmax, ∀ x ∈ closedBall x₀ a, ‖f t x‖ ≤ L
   /-- The time interval of validity. -/
-  mul_max_le : L * max (tmax - t₀) (t₀ - tmin) ≤ b
+  mul_max_le : L * max (tmax - t₀) (t₀ - tmin) ≤ a - r
 
 namespace IsPicardLindelof
 
 variable {E : Type*} [NormedAddCommGroup E]
-  {f : ℝ → E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ x : E} {a b L K : ℝ≥0}
+  {f : ℝ → E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ x : E} {a r L K : ℝ≥0}
 
 /-- The special case where the vector field is independent of time. -/
 lemma mk_of_time_independent
-    {f : E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {a b L K : ℝ≥0}
+    {f : E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {a r L K : ℝ≥0}
     (hb : ∀ x ∈ closedBall x₀ a, ‖f x‖ ≤ L)
     (hl : LipschitzOnWith K f (closedBall x₀ a))
-    (hm : L * max (tmax - t₀) (t₀ - tmin) ≤ b) :
-    (IsPicardLindelof (fun _ ↦ f) t₀ x₀ a b L K) where
+    (hm : L * max (tmax - t₀) (t₀ - tmin) ≤ a - r) :
+    (IsPicardLindelof (fun _ ↦ f) t₀ x₀ a r L K) where
   lipschitz := fun _ _ ↦ hl
   continuousOn := fun _ _ ↦ continuousOn_const
   norm_le := fun _ _ ↦ hb
   mul_max_le := hm
 
+-- add comments to explain the choice of constants
 -- statement seems a little funky
 lemma mk_of_contDiffOn_one [NormedSpace ℝ E]
     {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
-    ∃ (ε : ℝ) (hε : 0 < ε) (a b L K : ℝ≥0) (_ : b < a), IsPicardLindelof (fun _ ↦ f)
-      (tmin := t₀ - ε) (tmax := t₀ + ε) ⟨t₀, (by simp [le_of_lt hε])⟩ x₀ a b L K := by
+    ∃ (ε : ℝ) (hε : 0 < ε) (a r L K : ℝ≥0) (_ : 0 < r), IsPicardLindelof (fun _ ↦ f)
+      (tmin := t₀ - ε) (tmax := t₀ + ε) ⟨t₀, (by simp [le_of_lt hε])⟩ x₀ a r L K := by
   -- obtain ball of radius `a` within area in which f is `K`-lipschitz
   obtain ⟨K, s, hs, hl⟩ := hf.exists_lipschitzOnWith
   obtain ⟨a, ha : 0 < a, hss⟩ := Metric.mem_nhds_iff.mp hs
@@ -340,51 +338,33 @@ lemma mk_of_contDiffOn_one [NormedSpace ℝ E]
   have hε0 : 0 < ε := half_pos <| half_pos <| div_pos ha hL0
   refine ⟨ε, hε0,
     ⟨a / 2, le_of_lt <| half_pos ha⟩, ⟨a / 2, le_of_lt <| half_pos ha⟩ / 2,
-    ⟨L, le_of_lt hL0⟩, K, half_lt_self <| half_pos ha, ?_⟩
+    ⟨L, le_of_lt hL0⟩, K, half_pos <| half_pos ha, ?_⟩
   apply mk_of_time_independent hb
   · apply hl.mono
     apply subset_trans _ hss
     exact closedBall_subset_ball <| half_lt_self ha -- repeat
   · rw [NNReal.coe_mk, add_sub_cancel_left, sub_sub_cancel, max_self, NNReal.coe_div,
-      NNReal.coe_two, NNReal.coe_mk, mul_comm, ← le_div_iff₀ hL0, div_right_comm (a / 2),
+      NNReal.coe_two, NNReal.coe_mk, mul_comm, ← le_div_iff₀ hL0, sub_half, div_right_comm (a / 2),
       div_right_comm a]
 
--- generalise this to `a ≠ b` for flows
 /-- A time-independent, continuously differentiable ODE satisfies the hypotheses of the
 Picard-Lindelöf theorem. -/
-lemma mk_of_contDiffOn_one' [NormedSpace ℝ E]
+lemma mk_of_contDiffOn_one₀ [NormedSpace ℝ E]
     {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
     ∃ (ε : ℝ) (hε : 0 < ε) (a L K : ℝ≥0), IsPicardLindelof (fun _ ↦ f)
-      (tmin := t₀ - ε) (tmax := t₀ + ε) ⟨t₀, (by simp [le_of_lt hε])⟩ x₀ a a L K := by
-  obtain ⟨L, s, hs, hlip⟩ := hf.exists_lipschitzOnWith
-  obtain ⟨R₁, hR₁ : 0 < R₁, hball⟩ := Metric.mem_nhds_iff.mp hs
-  obtain ⟨R₂, hR₂ : 0 < R₂, hbdd⟩ := Metric.continuousAt_iff.mp hf.continuousAt.norm 1 zero_lt_one
-  have hbdd' : ∀ x ∈ Metric.ball x₀ R₂, ‖f x‖ ≤ 1 + ‖f x₀‖ := fun _ hx ↦
-    sub_le_iff_le_add.mp <| le_of_lt <| lt_of_abs_lt <| Real.dist_eq _ _ ▸ hbdd hx
-  set ε := min R₁ R₂ / 2 / (1 + ‖f x₀‖) with hε
-  have hε0 : 0 < ε := hε ▸ div_pos (half_pos <| lt_min hR₁ hR₂)
-    (add_pos_of_pos_of_nonneg zero_lt_one (norm_nonneg _))
-  refine ⟨ε, hε0, ⟨min R₁ R₂ / 2, by positivity⟩, ⟨1 + ‖f x₀‖, by positivity⟩, L, ?_⟩
-  apply mk_of_time_independent
-  · intro x hx
-    apply hbdd' x
-    apply mem_of_mem_of_subset hx
-    apply (closedBall_subset_ball <| half_lt_self <| lt_min hR₁ hR₂).trans
-    apply (Metric.ball_subset_ball <| min_le_right _ _).trans
-    exact subset_refl _
-  · apply hlip.mono
-    apply (closedBall_subset_ball <| half_lt_self <| lt_min hR₁ hR₂).trans
-    apply (Metric.ball_subset_ball <| min_le_left _ _).trans
-    exact hball
-  · rw [add_sub_cancel_left, sub_sub_cancel, max_self, hε, mul_div_left_comm,
-      NNReal.coe_mk _ (by positivity), NNReal.coe_mk _ (by positivity), div_self, mul_one]
-    exact ne_of_gt <| add_pos_of_pos_of_nonneg zero_lt_one <| norm_nonneg _
-
+      (tmin := t₀ - ε) (tmax := t₀ + ε) ⟨t₀, (by simp [le_of_lt hε])⟩ x₀ a 0 L K := by
+  obtain ⟨ε, hε, a, r, L, K, hr, hpl⟩ := mk_of_contDiffOn_one hf t₀
+  refine ⟨ε, hε, a, L, K, ?_⟩
+  refine ⟨hpl.lipschitz, hpl.continuousOn, hpl.norm_le, ?_⟩
+  apply le_trans hpl.mul_max_le
+  apply sub_le_sub_left
+  rw [NNReal.coe_le_coe]
+  exact le_of_lt hr
 
 -- show that `IsPicardLindelof` implies the assumptions in `hasDerivWithinAt_integrate_Icc`,
 -- particularly the continuity of `uncurry f`
 
-lemma continuousOn_uncurry (hf : IsPicardLindelof f t₀ x₀ a b L K) :
+lemma continuousOn_uncurry (hf : IsPicardLindelof f t₀ x₀ a r L K) :
     ContinuousOn (uncurry f) ((Icc tmin tmax) ×ˢ (closedBall x₀ a)) :=
   continuousOn_uncurry_of_lipschitzOnWith_continuousOn hf.lipschitz hf.continuousOn
 
@@ -398,22 +378,33 @@ lemma continuousOn_uncurry (hf : IsPicardLindelof f t₀ x₀ a b L K) :
 
 end IsPicardLindelof
 
-/-! ## Space of curves -/
+/-! ## Space of Lipschitz functions on a closed interval -/
 
-/-- The space of `L`-Lipschitz functions `α : Icc tmin tmax → E` satisfying the initial condition
-`α t₀ = x`.
+/-
+Plan for Corollary 1.2:
+* We need a complete space of functions whose type does not refer to the initial point, so that we
+  can state the distance between two functions with different initial conditions.
+* Move the dependence on intial point `x` to the definition of `next`.
+* Show that `next .. x` is a contraction map on the space of Lipschitz functions (without any
+  initial condition), and that the fixed point is a solution with initial point `x`.
+* `next .. x` applied to a Lipschitz function (with any initial point `x'`) repeatedly will
+  converge to the fixed point, which has initial point `x`.
+
+-/
+
+/-- The space of `L`-Lipschitz functions `α : Icc tmin tmax → E`.
 
 This will be shown to be a complete metric space on which `integrate` is a contracting map, leading
 to a fixed point that will serve as the solution to the ODE. The domain is a closed interval in
 order to easily inherit the sup metric from continuous maps on compact spaces. We cannot use
 functions `ℝ → E` with junk values outside the domain, as solutions will not be unique outside the
-domain, and the contracting map will fail to have a fixed point. -/
+domain, and the contracting map will thus fail to have a fixed point. -/
 structure FunSpace {E : Type*} [NormedAddCommGroup E]
-    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x : E) (L : ℝ≥0) where
+    {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) (r L : ℝ≥0) where
   /-- The domain is `Icc tmin tmax`. -/
   toFun : Icc tmin tmax → E
-  initial : toFun t₀ = x
   lipschitz : LipschitzWith L toFun
+  mem_closedBall₀ : toFun t₀ ∈ closedBall x₀ r
 
 namespace FunSpace
 
@@ -421,36 +412,36 @@ variable {E : Type*} [NormedAddCommGroup E]
 
 section
 
-variable {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x : E} {L : ℝ≥0}
+variable {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {r L : ℝ≥0}
 
 -- need `toFun_eq_coe`?
 
-instance : CoeFun (FunSpace t₀ x L) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
+instance : CoeFun (FunSpace t₀ x₀ r L) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
 
 /-- The constant map -/
-instance : Inhabited (FunSpace t₀ x L) :=
-  ⟨fun _ ↦ x, rfl, (LipschitzWith.const _).weaken (zero_le _)⟩
+instance : Inhabited (FunSpace t₀ x₀ r L) :=
+  ⟨fun _ ↦ x₀, (LipschitzWith.const _).weaken (zero_le _), mem_closedBall_self r.2⟩
 
 @[congr]
-lemma congr {α β : FunSpace t₀ x L} (h : α = β) (t : Icc tmin tmax) : α t = β t := by congr
+lemma congr {α β : FunSpace t₀ x₀ L r} (h : α = β) (t : Icc tmin tmax) : α t = β t := by congr
 
-protected lemma continuous (α : FunSpace t₀ x L) : Continuous α := α.lipschitz.continuous
+protected lemma continuous (α : FunSpace t₀ x₀ L r) : Continuous α := α.lipschitz.continuous
 
 /-- The embedding of `FunSpace` into the space of continuous maps. -/
-def toContinuousMap : FunSpace t₀ x L ↪ C(Icc tmin tmax, E) :=
+def toContinuousMap : FunSpace t₀ x₀ r L ↪ C(Icc tmin tmax, E) :=
   ⟨fun α ↦ ⟨α, α.continuous⟩, fun α β h ↦ by cases α; cases β; simpa using h⟩
 
 /-- The metric between two curves `α` and `β` is the supremum of the metric between `α t` and `β t`
 over all `t` in the domain. This is finite when the domain is compact, such as a closed
 interval in our case. -/
-noncomputable instance : MetricSpace (FunSpace t₀ x L) :=
+noncomputable instance : MetricSpace (FunSpace t₀ x₀ r L) :=
   MetricSpace.induced toContinuousMap toContinuousMap.injective inferInstance
 
 lemma isUniformInducing_toContinuousMap :
-    IsUniformInducing fun α : FunSpace t₀ x L ↦ α.toContinuousMap := ⟨rfl⟩
+    IsUniformInducing fun α : FunSpace t₀ x₀ r L ↦ α.toContinuousMap := ⟨rfl⟩
 
-lemma range_toContinuousMap : range (fun α : FunSpace t₀ x L ↦ α.toContinuousMap) =
-    { α : C(Icc tmin tmax, E) | α t₀ = x ∧ LipschitzWith L α } := by
+lemma range_toContinuousMap : range (fun α : FunSpace t₀ x₀ r L ↦ α.toContinuousMap) =
+    { α : C(Icc tmin tmax, E) | LipschitzWith L α ∧ α t₀ ∈ closedBall x₀ r } := by
   ext α
   constructor
   · rintro ⟨⟨α, hα1, hα2⟩, rfl⟩
@@ -459,58 +450,58 @@ lemma range_toContinuousMap : range (fun α : FunSpace t₀ x L ↦ α.toContinu
     exact ⟨⟨α, hα1, hα2⟩, rfl⟩
 
 /-- We show that `FunSpace` is complete in order to apply the contraction mapping theorem. -/
-instance [CompleteSpace E] : CompleteSpace (FunSpace t₀ x L) := by
+instance [CompleteSpace E] : CompleteSpace (FunSpace t₀ x₀ r L) := by
   rw [completeSpace_iff_isComplete_range <| isUniformInducing_toContinuousMap]
   apply IsClosed.isComplete
   rw [range_toContinuousMap, setOf_and]
-  apply isClosed_eq (continuous_eval_const _) continuous_const |>.inter
-  exact isClosed_setOf_lipschitzWith L |>.preimage continuous_coeFun
+  apply isClosed_setOf_lipschitzWith L |>.preimage continuous_coeFun |>.inter
+  simp_rw [mem_closedBall_iff_norm]
+  apply isClosed_le _ continuous_const
+  apply continuous_norm.comp
+  apply continuous_sub_right _ |>.comp
+  exact continuous_eval_const _
 
 end
 
 /-! ### Contracting map on the space of curves -/
 
-variable {f : ℝ → E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ x : E} {a b L K : ℝ≥0}
+variable {f : ℝ → E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ x : E} {a r L K : ℝ≥0}
 
-lemma comp_projIcc_mem_closedBall (hf : IsPicardLindelof f t₀ x₀ a b L K)
-    (hx : x ∈ closedBall x₀ (a - b)) (α : FunSpace t₀ x L) {t : ℝ} (ht : t ∈ Icc tmin tmax) :
+lemma comp_projIcc_mem_closedBall (hf : IsPicardLindelof f t₀ x₀ a r L K)
+    (α : FunSpace t₀ x₀ r L) {t : ℝ} (ht : t ∈ Icc tmin tmax) :
     (α ∘ projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2)) t ∈ closedBall x₀ a := by
   rw [comp_apply, mem_closedBall, dist_eq_norm, projIcc_of_mem _ ht]
   calc
-    ‖_‖ ≤ ‖_ - x‖ + ‖x - x₀‖ := norm_sub_le_norm_sub_add_norm_sub ..
-    _ = ‖_ - α t₀‖ + ‖x - x₀‖ := by rw [α.initial]
-    _ ≤ L * |t - t₀| + (a - b) := by
-      apply add_le_add _ (mem_closedBall_iff_norm.mp hx)
+    ‖_‖ ≤ ‖_ - α t₀‖ + ‖α t₀ - x₀‖ := norm_sub_le_norm_sub_add_norm_sub ..
+    _ ≤ L * |t - t₀| + r := by
+      apply add_le_add _ (mem_closedBall_iff_norm.mp α.mem_closedBall₀)
       rw [← dist_eq_norm]
       exact α.lipschitz.dist_le_mul ⟨t, ht⟩ t₀
-    _ ≤ L * max (tmax - t₀) (t₀ - tmin) + (a - b) := by
+    _ ≤ L * max (tmax - t₀) (t₀ - tmin) + r := by
       apply add_le_add_right
       apply mul_le_mul_of_nonneg_left _ L.2
       exact abs_sub_le_max_sub ht.1 ht.2 _
-    _ ≤ b + (a - b) := by
+    _ ≤ a - r + r := by
       apply add_le_add_right
       exact hf.mul_max_le
-    _ = a := add_sub_cancel _ _
+    _ = a := sub_add_cancel _ _
 
 variable [NormedSpace ℝ E]
 
 /-- The integrand in `next` is continuous. -/
-lemma continuousOn_comp_projIcc (hf : IsPicardLindelof f t₀ x₀ a b L K)
-    (hx : x ∈ closedBall x₀ (a - b)) (α : FunSpace t₀ x L) :
+lemma continuousOn_comp_projIcc (hf : IsPicardLindelof f t₀ x₀ a r L K) (α : FunSpace t₀ x₀ r L) :
     ContinuousOn (fun τ ↦ f τ ((α ∘ projIcc _ _ (le_trans t₀.2.1 t₀.2.2)) τ)) (Icc tmin tmax) := by
   apply continuousOn_comp
   · exact continuousOn_uncurry_of_lipschitzOnWith_continuousOn hf.lipschitz hf.continuousOn
   · exact α.continuous.comp continuous_projIcc |>.continuousOn -- abstract?
   · intro t ht
-    exact comp_projIcc_mem_closedBall hf hx _ ht
+    exact comp_projIcc_mem_closedBall hf _ ht
 
 /-- The map on `FunSpace` defined by `integrate`, some `n`-th interate of which will be a
 contracting map -/
-noncomputable def next (hf : IsPicardLindelof f t₀ x₀ a b L K)
-    (hx : x ∈ closedBall x₀ (a - b)) (α : FunSpace t₀ x L) : FunSpace t₀ x L where
+noncomputable def next (hf : IsPicardLindelof f t₀ x₀ a r L K)
+    (hx : x ∈ closedBall x₀ r) (α : FunSpace t₀ x₀ r L) : FunSpace t₀ x₀ r L where
   toFun t := integrate f t₀ x (α ∘ projIcc _ _ (le_trans t₀.2.1 t₀.2.2)) t
-  initial := by simp only [ContinuousMap.toFun_eq_coe, comp_apply, integrate_apply,
-      intervalIntegral.integral_same, add_zero]
   lipschitz := LipschitzWith.of_dist_le_mul fun t₁ t₂ ↦ by
     rw [dist_eq_norm, integrate_apply, integrate_apply, add_sub_add_left_eq_sub,
       integral_interval_sub_left]
@@ -518,24 +509,28 @@ noncomputable def next (hf : IsPicardLindelof f t₀ x₀ a b L K)
       apply intervalIntegral.norm_integral_le_of_norm_le_const
       intro t ht
       have ht : t ∈ Icc tmin tmax := subset_trans uIoc_subset_uIcc (uIcc_subset_Icc t₂.2 t₁.2) ht
-      exact hf.norm_le _ ht _ <| comp_projIcc_mem_closedBall hf hx _ ht
+      exact hf.norm_le _ ht _ <| comp_projIcc_mem_closedBall hf _ ht
     · apply ContinuousOn.intervalIntegrable
       apply ContinuousOn.mono _ <| uIcc_subset_Icc t₀.2 t₁.2
-      exact continuousOn_comp_projIcc hf hx _
+      exact continuousOn_comp_projIcc hf _
     · apply ContinuousOn.intervalIntegrable
       apply ContinuousOn.mono _ <| uIcc_subset_Icc t₀.2 t₂.2
-      exact continuousOn_comp_projIcc hf hx _
+      exact continuousOn_comp_projIcc hf _
+  mem_closedBall₀ := by simp [hx]
 
 @[simp]
-lemma next_apply (hf : IsPicardLindelof f t₀ x₀ a b L K) (hx : x ∈ closedBall x₀ (a - b))
-    (α : FunSpace t₀ x L) {t : Icc tmin tmax} :
-    α.next hf hx t = integrate f t₀ x (α ∘ (projIcc _ _ (le_trans t₀.2.1 t₀.2.2))) t := rfl
+lemma next_apply (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
+    (α : FunSpace t₀ x₀ r L) {t : Icc tmin tmax} :
+    next hf hx α t = integrate f t₀ x (α ∘ (projIcc _ _ (le_trans t₀.2.1 t₀.2.2))) t := rfl
+
+lemma next_apply₀ (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
+    (α : FunSpace t₀ x₀ r L) : next hf hx α t₀ = x := by simp
 
 /-- A key step in the inductive case of `dist_iterate_next_apply_le` -/
-lemma dist_comp_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a b L K)
-    (hx : x ∈ closedBall x₀ (a - b)) (n : ℕ) {t : ℝ} (ht : t ∈ Icc tmin tmax)
+lemma dist_comp_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
+    (hx : x ∈ closedBall x₀ r) (n : ℕ) {t : ℝ} (ht : t ∈ Icc tmin tmax)
     -- instead of `t : Icc tmin tmax` to simplify usage
-    (α β : FunSpace t₀ x L)
+    (α β : FunSpace t₀ x₀ r L)
     (h : dist ((next hf hx)^[n] α ⟨t, ht⟩) ((next hf hx)^[n] β ⟨t, ht⟩) ≤
       (K * |t - t₀.1|) ^ n / n ! * dist α β) :
     dist (f t ((next hf hx)^[n] α ⟨t, ht⟩)) (f t ((next hf hx)^[n] β ⟨t, ht⟩)) ≤
@@ -546,9 +541,9 @@ lemma dist_comp_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a b L K)
       apply hf.lipschitz t ht |>.dist_le_mul
       · -- missing lemma here?
         rw [← projIcc_val (le_trans t₀.2.1 t₀.2.2) ⟨t, ht⟩]
-        exact comp_projIcc_mem_closedBall hf hx _ ht
+        exact comp_projIcc_mem_closedBall hf _ ht
       · rw [← projIcc_val (le_trans t₀.2.1 t₀.2.2) ⟨t, ht⟩]
-        exact comp_projIcc_mem_closedBall hf hx _ ht
+        exact comp_projIcc_mem_closedBall hf _ ht
     _ ≤ K ^ (n + 1) * |t - t₀.1| ^ n / n ! * dist α β := by
       rw [pow_succ', mul_assoc, mul_div_assoc, mul_assoc]
       apply mul_le_mul_of_nonneg_left _ K.2
@@ -556,8 +551,8 @@ lemma dist_comp_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a b L K)
 
 /-- A time-dependent bound on the distance between the `n`-th iterates of `next` on two
 curves -/
-lemma dist_iterate_next_apply_le (hf : IsPicardLindelof f t₀ x₀ a b L K)
-    (hx : x ∈ closedBall x₀ (a - b)) (α β : FunSpace t₀ x L) (n : ℕ) (t : Icc tmin tmax) :
+lemma dist_iterate_next_apply_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
+    (hx : x ∈ closedBall x₀ r) (α β : FunSpace t₀ x₀ r L) (n : ℕ) (t : Icc tmin tmax) :
     dist ((next hf hx)^[n] α t) ((next hf hx)^[n] β t) ≤
       (K * |t.1 - t₀.1|) ^ n / n ! * dist α β := by
   induction n generalizing t with
@@ -591,22 +586,22 @@ lemma dist_iterate_next_apply_le (hf : IsPicardLindelof f t₀ x₀ a b L K)
       apply ContinuousOn.mono _ (uIcc_subset_Icc t₀.2 t.2)
       apply continuousOn_comp
         (continuousOn_uncurry_of_lipschitzOnWith_continuousOn hf.lipschitz hf.continuousOn)
-        _ (fun _ ht' ↦ comp_projIcc_mem_closedBall hf hx _ ht')
+        _ (fun _ ht' ↦ comp_projIcc_mem_closedBall hf _ ht')
       exact FunSpace.continuous _ |>.comp_continuousOn continuous_projIcc.continuousOn
     · apply ContinuousOn.intervalIntegrable
       apply ContinuousOn.mono _ (uIcc_subset_Icc t₀.2 t.2)
       apply continuousOn_comp
         (continuousOn_uncurry_of_lipschitzOnWith_continuousOn hf.lipschitz hf.continuousOn)
-        _ (fun _ ht' ↦ comp_projIcc_mem_closedBall hf hx _ ht')
+        _ (fun _ ht' ↦ comp_projIcc_mem_closedBall hf _ ht')
       exact FunSpace.continuous _ |>.comp_continuousOn continuous_projIcc.continuousOn
 
 /-- The `n`-th iterate of `next` has Lipschitz with constant
 $(K \max(t_{\mathrm{max}}, t_{\mathrm{min}})^n / n!$. -/
-lemma dist_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a b L K)
-    (hx : x ∈ closedBall x₀ (a - b)) (α β : FunSpace t₀ x L) (n : ℕ) :
+lemma dist_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
+    (hx : x ∈ closedBall x₀ r) (α β : FunSpace t₀ x₀ r L) (n : ℕ) :
     dist ((next hf hx)^[n] α) ((next hf hx)^[n] β) ≤
       (K * max (tmax - t₀) (t₀ - tmin)) ^ n / n ! * dist α β := by
-  have (α' β' : FunSpace t₀ x L) :
+  have (α' β' : FunSpace t₀ x₀ r L) :
     dist α' β' = dist α'.toContinuousMap β'.toContinuousMap := by rfl -- how to remove this?
   rw [this, ContinuousMap.dist_le]
   · intro t
@@ -623,8 +618,8 @@ lemma dist_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a b L K)
     exact sub_nonneg_of_le t₀.2.2
 
 /-- Some `n`-th iterate of `next` is a contracting map. -/
-lemma exists_contractingWith_iterate_next (hf : IsPicardLindelof f t₀ x₀ a b L K)
-    (hx : x ∈ closedBall x₀ (a - b)) :
+lemma exists_contractingWith_iterate_next (hf : IsPicardLindelof f t₀ x₀ a r L K)
+    (hx : x ∈ closedBall x₀ r) :
     ∃ (n : ℕ) (C : ℝ≥0), ContractingWith C (next hf hx)^[n] := by
   obtain ⟨n, hn⟩ := FloorSemiring.tendsto_pow_div_factorial_atTop (K * max (tmax - t₀) (t₀ - tmin))
     |>.eventually (gt_mem_nhds zero_lt_one) |>.exists
@@ -637,9 +632,9 @@ lemma exists_contractingWith_iterate_next (hf : IsPicardLindelof f t₀ x₀ a b
 -- consider flipping the equality
 /-- The map `FunSpace.iterate` has a fixed point. This will be used to construct the solution
 `α : ℝ → E` to the ODE. -/
-lemma exists_funSpace_integrate_eq [CompleteSpace E] (hf : IsPicardLindelof f t₀ x₀ a b L K)
-    (hx : x ∈ closedBall x₀ (a - b)) :
-    ∃ α : FunSpace t₀ x L, next hf hx α = α :=
+lemma exists_funSpace_integrate_eq [CompleteSpace E] (hf : IsPicardLindelof f t₀ x₀ a r L K)
+    (hx : x ∈ closedBall x₀ r) :
+    ∃ α : FunSpace t₀ x₀ r L, next hf hx α = α :=
   let ⟨_, _, h⟩ := exists_contractingWith_iterate_next hf hx
   ⟨_, h.isFixedPt_fixedPoint_iterate⟩
 
@@ -649,53 +644,42 @@ end FunSpace
 
 /-! ## Existence of a solution to an ODE -/
 
-section
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
 
 namespace IsPicardLindelof
 
-variable  {f : ℝ → E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ x : E} {a b L K : ℝ≥0}
+variable  {f : ℝ → E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ x : E} {a r L K : ℝ≥0}
 
 /-- Picard-Lindelöf (Cauchy-Lipschitz) theorem. This version shows the existence of a local solution
 whose initial point `x` may be be different from the centre `x₀` of the closed ball within which the
 properties of the vector field hold. This theorem is only meaningful when `b ≤ a`. -/
 theorem exists_eq_hasDerivWithinAt
-    (hf : IsPicardLindelof f t₀ x₀ a b L K) (hx : x ∈ closedBall x₀ (a - b)) :
+    (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r) :
     ∃ α : ℝ → E, α t₀ = x ∧ ∀ t ∈ Icc tmin tmax,
       HasDerivWithinAt α (f t (α t)) (Icc tmin tmax) t := by
   have ⟨α, hα⟩ := FunSpace.exists_funSpace_integrate_eq hf hx
   refine ⟨α ∘ projIcc _ _ (le_trans t₀.2.1 t₀.2.2),
-    by rw [comp_apply, projIcc_val, α.initial], fun t ht ↦ ?_⟩
+    by rw [comp_apply, projIcc_val, ← hα, FunSpace.next_apply₀], fun t ht ↦ ?_⟩
   apply hasDerivWithinAt_integrate_Icc t₀.2 hf.continuousOn_uncurry
     (α.continuous.comp continuous_projIcc |>.continuousOn) -- duplicate!
-    (fun _ ht' ↦ FunSpace.comp_projIcc_mem_closedBall hf hx _ ht')
+    (fun _ ht' ↦ FunSpace.comp_projIcc_mem_closedBall hf _ ht')
     x ht |>.congr_of_mem _ ht
   intro t' ht'
   rw [comp_apply, projIcc_of_mem _ ht', ← FunSpace.congr hα ⟨t', ht'⟩, FunSpace.next_apply]
 
 theorem exists_eq_hasDerivWithinAt₀
-    (hf : IsPicardLindelof f t₀ x₀ a a L K) :
+    (hf : IsPicardLindelof f t₀ x₀ a 0 L K) :
     ∃ α : ℝ → E, α t₀ = x₀ ∧ ∀ t ∈ Icc tmin tmax,
-      HasDerivWithinAt α (f t (α t)) (Icc tmin tmax) t := by
-  have hx : x₀ ∈ closedBall x₀ (a - a) := by simp
-  have ⟨α, hα⟩ := FunSpace.exists_funSpace_integrate_eq hf hx
-  refine ⟨α ∘ projIcc _ _ (le_trans t₀.2.1 t₀.2.2),
-    by rw [comp_apply, projIcc_val, α.initial], fun t ht ↦ ?_⟩
-  apply hasDerivWithinAt_integrate_Icc t₀.2 hf.continuousOn_uncurry
-    (α.continuous.comp continuous_projIcc |>.continuousOn) -- duplicate!
-    (fun _ ht' ↦ FunSpace.comp_projIcc_mem_closedBall hf hx _ ht')
-    x₀ ht |>.congr_of_mem _ ht
-  intro t' ht'
-  rw [comp_apply, projIcc_of_mem _ ht', ← FunSpace.congr hα ⟨t', ht'⟩, FunSpace.next_apply]
+      HasDerivWithinAt α (f t (α t)) (Icc tmin tmax) t :=
+  exists_eq_hasDerivWithinAt hf (mem_closedBall_self le_rfl)
 
 open Classical in
 /-- Picard-Lindelöf (Cauchy-Lipschitz) theorem. This version shows the existence of a local flow. -/
-theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt (hf : IsPicardLindelof f t₀ x₀ a b L K) :
-    ∃ α : E → ℝ → E, ∀ x ∈ closedBall x₀ (a - b), α x t₀ = x ∧ ∀ t ∈ Icc tmin tmax,
+theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt (hf : IsPicardLindelof f t₀ x₀ a r L K) :
+    ∃ α : E → ℝ → E, ∀ x ∈ closedBall x₀ r, α x t₀ = x ∧ ∀ t ∈ Icc tmin tmax,
       HasDerivWithinAt (α x) (f t (α x t)) (Icc tmin tmax) t := by
-  have (x) (hx : x ∈ closedBall x₀ (a - b)) := exists_eq_hasDerivWithinAt hf hx
-  set α := fun (x : E) ↦ if hx : x ∈ closedBall x₀ (a - b) then choose (this x hx) else 0 with hα
+  have (x) (hx : x ∈ closedBall x₀ r) := exists_eq_hasDerivWithinAt hf hx
+  set α := fun (x : E) ↦ if hx : x ∈ closedBall x₀ r then choose (this x hx) else 0 with hα
   refine ⟨α, fun x hx ↦ ?_⟩
   have ⟨h1, h2⟩ := choose_spec (this x hx)
   refine ⟨?_, fun t ht ↦ ?_⟩
@@ -715,8 +699,8 @@ theorem exists_eq_hasDerivWithinAt_Icc_of_contDiffAt
     (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
     ∃ r > (0 : ℝ), ∀ x ∈ closedBall x₀ r, ∃ α : ℝ → E, α t₀ = x ∧ ∃ ε > (0 : ℝ),
       ∀ t ∈ Icc (t₀ - ε) (t₀ + ε), HasDerivWithinAt α (f (α t)) (Icc (t₀ - ε) (t₀ + ε)) t := by
-  have ⟨ε, hε, a, b, _, _, hab, hpl⟩ := IsPicardLindelof.mk_of_contDiffOn_one hf t₀
-  refine ⟨a - b, sub_pos_of_lt hab, fun x hx ↦ ?_⟩
+  have ⟨ε, hε, a, r, _, _, hr, hpl⟩ := IsPicardLindelof.mk_of_contDiffOn_one hf t₀
+  refine ⟨r, hr, fun x hx ↦ ?_⟩
   have ⟨α, hα1, hα2⟩ := hpl.exists_eq_hasDerivWithinAt hx
   exact ⟨α, hα1, ε, hε, hα2⟩
 
@@ -783,7 +767,5 @@ theorem exists_forall_mem_closedBall_eq_hasDerivAt_Ioo
   refine ⟨?_, ε, hε, fun t ht ↦ ?_⟩
   · simp_rw [hα, dif_pos hx, h1]
   · simp_rw [hα, dif_pos hx, h2 t ht]
-
-end
 
 end ODE
