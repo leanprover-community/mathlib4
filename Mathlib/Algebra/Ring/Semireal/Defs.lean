@@ -35,8 +35,6 @@ class IsSemireal [Add R] [Mul R] [One R] [Zero R] : Prop where
   add_one_ne_zero_of_isSumSq {a : R} (ssa : IsSumSq a) : 1 + a ≠ 0
 
 @[deprecated (since := "2024-08-09")] alias isSemireal := IsSemireal
-@[deprecated (since := "2024-08-09")] alias isSemireal.neg_one_not_SumSq :=
-  IsSemireal.add_one_ne_zero_of_isSumSq
 
 theorem IsSemireal.not_isSumSq_neg_one {R : Type*} [AddGroup R] [One R] [Mul R] [IsSemireal R]:
     ¬ IsSumSq (-1 : R) := (by simpa using add_one_ne_zero_of_isSumSq ·)
