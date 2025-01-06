@@ -81,6 +81,14 @@ theorem IsOrderedCancelMonoid.toMulRightReflectLT :
     MulRightReflectLT α :=
   inferInstance
 
+-- See note [lower instance priority]
+@[to_additive IsOrderedCancelAddMonoid.toIsCancelAdd]
+instance (priority := 100) IsOrderedCancelMonoid.toIsCancelMul : IsCancelMul α where
+  mul_left_cancel _ _ _ h :=
+    (le_of_mul_le_mul_left' h.le).antisymm <| le_of_mul_le_mul_left' h.ge
+  mul_right_cancel _ _ _ h :=
+    (le_of_mul_le_mul_right' h.le).antisymm <| le_of_mul_le_mul_right' h.ge
+
 end IsOrderedCancelMonoid
 
 /-- An ordered (additive) commutative monoid is a commutative monoid with a partial order such that
@@ -121,13 +129,6 @@ variable [OrderedCancelCommMonoid α]
 instance OrderedCancelCommMonoid.toIsOrderedCancelMonoid :
     IsOrderedCancelMonoid α where
   le_of_mul_le_mul_left := OrderedCancelCommMonoid.le_of_mul_le_mul_left
-
--- See note [lower instance priority]
-@[to_additive OrderedCancelAddCommMonoid.toCancelAddCommMonoid]
-instance (priority := 100) OrderedCancelCommMonoid.toCancelCommMonoid : CancelCommMonoid α :=
-  { ‹OrderedCancelCommMonoid α› with
-    mul_left_cancel :=
-      fun _ _ _ h => (le_of_mul_le_mul_left' h.le).antisymm <| le_of_mul_le_mul_left' h.ge }
 
 end OrderedCancelCommMonoid
 

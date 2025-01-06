@@ -114,9 +114,7 @@ variable {α : Type u}
 /-- An ordered semiring is a semiring with a order such that addition is monotone and
 multiplication by a nonnegative number is monotone. -/
 class IsOrderedRing (α : Type*) [Semiring α] [PartialOrder α] extends
-    IsOrderedAddMonoid α where
-  /-- `0 ≤ 1` in any ordered semiring. -/
-  protected zero_le_one : (0 : α) ≤ 1
+    IsOrderedAddMonoid α, ZeroLEOneClass α where
   /-- In an ordered semiring, we can multiply an inequality `a ≤ b` on the left
   by a non-negative element `0 ≤ c` to obtain `c * a ≤ c * b`. -/
   protected mul_le_mul_of_nonneg_left : ∀ a b c : α, a ≤ b → 0 ≤ c → c * a ≤ c * b
@@ -124,16 +122,19 @@ class IsOrderedRing (α : Type*) [Semiring α] [PartialOrder α] extends
   by a non-negative element `0 ≤ c` to obtain `a * c ≤ b * c`. -/
   protected mul_le_mul_of_nonneg_right : ∀ a b c : α, a ≤ b → 0 ≤ c → a * c ≤ b * c
 
+attribute [instance 100] IsOrderedRing.toZeroLEOneClass
+
 /-- A strict ordered semiring is a nontrivial semiring with a order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
 class IsStrictOrderedRing (α : Type*) [Semiring α] [PartialOrder α] extends
-    IsOrderedCancelAddMonoid α, Nontrivial α where
-  /-- In a strict ordered semiring, `0 ≤ 1`. -/
-  protected zero_le_one : (0 : α) ≤ 1
+    IsOrderedCancelAddMonoid α, ZeroLEOneClass α, Nontrivial α where
   /-- Left multiplication by a positive element is strictly monotone. -/
   protected mul_lt_mul_of_pos_left : ∀ a b c : α, a < b → 0 < c → c * a < c * b
   /-- Right multiplication by a positive element is strictly monotone. -/
   protected mul_lt_mul_of_pos_right : ∀ a b c : α, a < b → 0 < c → a * c < b * c
+
+attribute [instance 100] IsStrictOrderedRing.toZeroLEOneClass
+attribute [instance 100] IsStrictOrderedRing.toNontrivial
 
 section IsOrderedRing
 variable [Semiring α] [PartialOrder α] [IsOrderedRing α]
@@ -152,6 +153,21 @@ instance (priority := 200) IsOrderedRing.toMulPosMono : MulPosMono α :=
 
 end IsOrderedRing
 
+lemma IsStrictOrderedRing.of_mul_pos [Ring α] [PartialOrder α] [IsOrderedAddMonoid α]
+    [ZeroLEOneClass α] [Nontrivial α] (mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b) :
+    IsStrictOrderedRing α where
+  mul_lt_mul_of_pos_left a b c ab hc := by
+    simpa only [mul_sub, sub_pos] using mul_pos _ _ hc (sub_pos.2 ab)
+  mul_lt_mul_of_pos_right a b c ab hc := by
+    simpa only [sub_mul, sub_pos] using mul_pos _ _ (sub_pos.2 ab) hc
+
+-- See note [reducible non instances]
+/-- Turn an ordered domain into a strict ordered ring. -/
+abbrev IsOrderedRing.toIsStrictOrderedRing (α : Type*)
+    [Ring α] [PartialOrder α] [IsOrderedRing α] [NoZeroDivisors α] [Nontrivial α] :
+    IsStrictOrderedRing α :=
+  .of_mul_pos fun _ _ ap bp ↦ (mul_nonneg ap.le bp.le).lt_of_ne' (mul_ne_zero ap.ne' bp.ne')
+
 section IsStrictOrderedRing
 variable [Semiring α] [PartialOrder α] [IsStrictOrderedRing α]
 
@@ -169,7 +185,41 @@ instance (priority := 100) IsStrictOrderedRing.toIsOrderedRing : IsOrderedRing �
   mul_le_mul_of_nonneg_left _ _ _ := mul_le_mul_of_nonneg_left
   mul_le_mul_of_nonneg_right _ _ _ := mul_le_mul_of_nonneg_right
 
+-- see Note [lower instance priority]
+instance (priority := 100) IsStrictOrderedRing.toCharZero :
+    CharZero α where
+  cast_injective :=
+    (strictMono_nat_of_lt_succ fun n ↦ by rw [Nat.cast_succ]; apply lt_add_one).injective
+
+-- see Note [lower instance priority]
+instance (priority := 100) IsStrictOrderedRing.toNoMaxOrder : NoMaxOrder α :=
+  ⟨fun a => ⟨a + 1, lt_add_of_pos_right _ one_pos⟩⟩
+
 end IsStrictOrderedRing
+
+section LinearOrder
+
+variable [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] [ExistsAddOfLE α]
+
+-- See note [lower instance priority]
+instance (priority := 100) IsStrictOrderedRing.noZeroDivisors : NoZeroDivisors α where
+  eq_zero_or_eq_zero_of_mul_eq_zero {a b} hab := by
+    contrapose! hab
+    obtain ha | ha := hab.1.lt_or_lt <;> obtain hb | hb := hab.2.lt_or_lt
+    exacts [(mul_pos_of_neg_of_neg ha hb).ne', (mul_neg_of_neg_of_pos ha hb).ne,
+      (mul_neg_of_pos_of_neg ha hb).ne, (mul_pos ha hb).ne']
+
+-- Note that we can't use `NoZeroDivisors.to_isDomain` since we are merely in a semiring.
+-- See note [lower instance priority]
+instance (priority := 100) IsStrictOrderedRing.isDomain : IsDomain α where
+  mul_left_cancel_of_ne_zero {a b c} ha h := by
+    obtain ha | ha := ha.lt_or_lt
+    exacts [(strictAnti_mul_left ha).injective h, (strictMono_mul_left_of_pos ha).injective h]
+  mul_right_cancel_of_ne_zero {b a c} ha h := by
+    obtain ha | ha := ha.lt_or_lt
+    exacts [(strictAnti_mul_right ha).injective h, (strictMono_mul_right_of_pos ha).injective h]
+
+end LinearOrder
 
 /-! Note that `OrderDual` does not satisfy any of the ordered ring typeclasses due to the
 `zero_le_one` field. -/
@@ -346,16 +396,6 @@ instance (priority := 100) StrictOrderedSemiring.toOrderedSemiring : OrderedSemi
       letI := @StrictOrderedSemiring.toOrderedSemiring' α _ (Classical.decRel _)
       mul_le_mul_of_nonneg_right }
 
--- see Note [lower instance priority]
-instance (priority := 100) StrictOrderedSemiring.toCharZero [StrictOrderedSemiring α] :
-    CharZero α where
-  cast_injective :=
-    (strictMono_nat_of_lt_succ fun n ↦ by rw [Nat.cast_succ]; apply lt_add_one).injective
-
--- see Note [lower instance priority]
-instance (priority := 100) StrictOrderedSemiring.toNoMaxOrder : NoMaxOrder α :=
-  ⟨fun a => ⟨a + 1, lt_add_of_pos_right _ one_pos⟩⟩
-
 end StrictOrderedSemiring
 
 section StrictOrderedCommSemiring
@@ -432,36 +472,6 @@ section LinearOrderedSemiring
 
 variable [LinearOrderedSemiring α]
 
--- see Note [lower instance priority]
-instance (priority := 200) LinearOrderedSemiring.toPosMulReflectLT : PosMulReflectLT α :=
-  ⟨fun a _ _ => (monotone_mul_left_of_nonneg a.2).reflect_lt⟩
-
--- see Note [lower instance priority]
-instance (priority := 200) LinearOrderedSemiring.toMulPosReflectLT : MulPosReflectLT α :=
-  ⟨fun a _ _ => (monotone_mul_right_of_nonneg a.2).reflect_lt⟩
-
-attribute [local instance] LinearOrderedSemiring.decidableLE LinearOrderedSemiring.decidableLT
-
-variable [ExistsAddOfLE α]
-
--- See note [lower instance priority]
-instance (priority := 100) LinearOrderedSemiring.noZeroDivisors : NoZeroDivisors α where
-  eq_zero_or_eq_zero_of_mul_eq_zero {a b} hab := by
-    contrapose! hab
-    obtain ha | ha := hab.1.lt_or_lt <;> obtain hb | hb := hab.2.lt_or_lt
-    exacts [(mul_pos_of_neg_of_neg ha hb).ne', (mul_neg_of_neg_of_pos ha hb).ne,
-      (mul_neg_of_pos_of_neg ha hb).ne, (mul_pos ha hb).ne']
-
--- Note that we can't use `NoZeroDivisors.to_isDomain` since we are merely in a semiring.
--- See note [lower instance priority]
-instance (priority := 100) LinearOrderedRing.isDomain : IsDomain α where
-  mul_left_cancel_of_ne_zero {a b c} ha h := by
-    obtain ha | ha := ha.lt_or_lt
-    exacts [(strictAnti_mul_left ha).injective h, (strictMono_mul_left_of_pos ha).injective h]
-  mul_right_cancel_of_ne_zero {b a c} ha h := by
-    obtain ha | ha := ha.lt_or_lt
-    exacts [(strictAnti_mul_right ha).injective h, (strictMono_mul_right_of_pos ha).injective h]
-
 -- See note [lower instance priority]
 instance (priority := 100) LinearOrderedSemiring.toLinearOrderedCancelAddCommMonoid :
     LinearOrderedCancelAddCommMonoid α where __ := ‹LinearOrderedSemiring α›
@@ -470,8 +480,6 @@ end LinearOrderedSemiring
 
 section LinearOrderedRing
 variable [LinearOrderedRing α]
-
-attribute [local instance] LinearOrderedRing.decidableLE LinearOrderedRing.decidableLT
 
 -- see Note [lower instance priority]
 instance (priority := 100) LinearOrderedRing.toLinearOrderedSemiring : LinearOrderedSemiring α :=
