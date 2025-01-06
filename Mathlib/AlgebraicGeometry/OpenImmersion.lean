@@ -65,9 +65,6 @@ theorem IsOpenImmersion.isOpen_range {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpe
     IsOpen (Set.range f.base) :=
   H.base_open.isOpen_range
 
-@[deprecated (since := "2024-03-17")]
-alias IsOpenImmersion.open_range := IsOpenImmersion.isOpen_range
-
 namespace Scheme.Hom
 
 variable {X Y : Scheme.{u}} (f : Scheme.Hom X Y) [H : IsOpenImmersion f]

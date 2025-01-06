@@ -217,8 +217,6 @@ lemma IsAbsoluteValue.abv_sum [Semiring R] [OrderedSemiring S] (abv : R → S) [
     (f : ι → R) (s : Finset ι) : abv (∑ i ∈ s, f i) ≤ ∑ i ∈ s, abv (f i) :=
   (IsAbsoluteValue.toAbsoluteValue abv).sum_le _ _
 
-@[deprecated (since := "2024-02-14")] alias abv_sum_le_sum_abv := IsAbsoluteValue.abv_sum
-
 nonrec lemma AbsoluteValue.map_prod [CommSemiring R] [Nontrivial R] [LinearOrderedCommRing S]
     (abv : AbsoluteValue R S) (f : ι → R) (s : Finset ι) :
     abv (∏ i ∈ s, f i) = ∏ i ∈ s, abv (f i) :=
