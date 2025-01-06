@@ -131,6 +131,10 @@ def UniformSpace.Completion.coeNormedAddGroupHom : NormedAddGroupHom G (Completi
 
 open NormedAddCommGroup UniformSpace.Completion
 
+@[simp, norm_cast]
+theorem UniformSpace.Completion.coeNormedAddGroupHom_eq_coe :
+  (coeNormedAddGroupHom : NormedAddGroupHom G (Completion G)) = (coe : G → Completion G) := rfl
+
 @[deprecated (since := "2025-01-05")] alias NormedAddCommGroup.norm_toCompl :=
   Completion.norm_coe
 
