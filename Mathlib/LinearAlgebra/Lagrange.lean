@@ -27,10 +27,9 @@ associated with the _nodes_`x i`.
 
 
 open Polynomial
+namespace Polynomial
 
 section PolynomialDetermination
-
-namespace Polynomial
 
 variable {R : Type*} [CommRing R] [IsDomain R] {f g : R[X]}
 
@@ -123,15 +122,9 @@ theorem eq_of_degree_le_of_eval_index_eq (hvs : Set.InjOn v s)
 
 end Indexed
 
-end Polynomial
-
 end PolynomialDetermination
 
 noncomputable section
-
-namespace LinearAlgebra
-
-open Polynomial
 
 section BasisDivisor
 variable {F : Type*} [Field F]
@@ -372,8 +365,8 @@ theorem eq_interpolate_iff {f : F[X]} (hvs : Set.InjOn v s) :
 and polynomials of degree less than `Fintype.card ι`. -/
 def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F #s ≃ₗ[F] s → F where
   toFun f i := f.1.eval (v i)
-  map_add' _ _ := funext fun _ => eval_add
-  map_smul' c f := funext <| by simp
+  map_add' _ _ := _root_.funext fun _ => eval_add
+  map_smul' c f := _root_.funext <| by simp
   invFun r :=
     ⟨interpolate s v fun x => if hx : x ∈ s then r ⟨x, hx⟩ else 0,
       mem_degreeLT.2 <| degree_interpolate_lt _ hvs⟩
@@ -622,5 +615,6 @@ theorem eval_interpolate_not_at_node' (hvs : Set.InjOn v s) (hs : s.Nonempty)
   simp only [mul_div_mul_left _ _ (eval_nodal_not_at_node hx), Pi.one_apply, mul_one]
 
 end LagrangeBarycentric
+end
 
-end LinearAlgebra
+end Polynomial
