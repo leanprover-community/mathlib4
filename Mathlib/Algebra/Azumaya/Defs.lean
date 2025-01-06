@@ -11,9 +11,8 @@ import Mathlib.RingTheory.Finiteness.Defs
 # Azumaya Algebras
 
 An Azumaya algebra over a commutative ring `R` is a finitely generated, projective
-and faithful R-algebra
-where the tensor product `A ⊗[R] Aᵐᵒᵖ` is isomorphic to the endomorphism ring of A `End R A`
-via the map `f : a ⊗ b ↦ (x ↦ a * x * b.unop)`.
+and faithful R-algebra where the tensor product `A ⊗[R] Aᵐᵒᵖ` is isomorphic to the
+endomorphism ring of A `End R A` via the map `f : a ⊗ b ↦ (x ↦ a * x * b.unop)`.
 TODO : Add the rest three definitions and prove they are equivalent:
 · There exist an `R`-algebra `B` such that `B ⊗[R] A` is Morita equivalent to `R`,
 · `Aᵐᵒᵖ ⊗[R] A` is Morita equivalent to `R`,
@@ -56,6 +55,8 @@ noncomputable abbrev TensorProduct.Algebra.moduleAux' : (A ⊗[R] Aᵐᵒᵖ) �
         Algebra.TensorProduct.one_def]
   }
 
+/-- An azumaya algebra is a finitely generated, projective and faithful R-algebra where
+  `TensorProduct.Algebra.moduleAux` is an isomorphism. -/
 class IsAzumaya extends Module.Projective R A, FaithfulSMul R A : Prop where
     fg : Module.Finite R A
     bij : Function.Bijective <| TensorProduct.Algebra.moduleAux' R A
