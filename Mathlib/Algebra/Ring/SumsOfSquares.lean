@@ -20,7 +20,8 @@ We introduce a predicate for sums of squares in a ring.
   `0 : R` is a sum of squares and if `S` is a sum of squares, then, for all `a : R`,
   `a * a + s` is a sum of squares.
 - The terms `AddMonoid.sumSq R` and `Subsemiring.sumSq R`: respectively
-  the submonoid and subsemiring of sums of squares in the corresponding structure `R`.
+  the submonoid or subsemiring of sums of squares in an additive monoid or semiring `R`
+  with multiplication.
 
 -/
 
