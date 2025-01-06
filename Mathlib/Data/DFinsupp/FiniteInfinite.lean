@@ -5,10 +5,9 @@ Authors: Johannes Hölzl, Kenny Lau
 -/
 import Mathlib.Data.DFinsupp.Defs
 import Mathlib.Data.Fintype.Pi
-import Mathlib.Logic.Small.Basic
 
 /-!
-# Finiteness, infiniteness and smallness of the `DFinsupp` type
+# Finiteness and infiniteness of the `DFinsupp` type
 
 ## Main results
 
@@ -16,7 +15,6 @@ import Mathlib.Logic.Small.Basic
 * `DFinsupp.infinite_of_left`: if the domain is infinite, then `DFinsupp` is infinite
 * `DFinsupp.infinite_of_exists_right`: if one fiber of the codomain is infinite,
   then `DFinsupp` is infinite
-*
 -/
 
 
@@ -48,14 +46,3 @@ instance DFinsupp.infinite_of_right {ι : Sort _} {π : ι → Sort _} [∀ i, I
   DFinsupp.infinite_of_exists_right (Classical.arbitrary ι)
 
 end FiniteInfinite
-
-section Small
-
-variable [(i : ι) → Zero (β i)]
-
-instance [Small.{w} ι] [∀ (i : ι), Small.{w} (β i)] :
-    Small.{w} (DFinsupp β) := small_of_injective (f := fun x j ↦ x j) (fun f f' eq ↦ by
-      ext j
-      exact congr_fun eq j)
-
-end Small
