@@ -821,7 +821,7 @@ lemma nil_iff_eq_nil : ∀ {p : G.Walk v v}, p.Nil ↔ p = nil
   | .nil | .cons _ _ => by simp
 
 @[simp]
-lemma reverse_nil_iff {p : G.Walk v w} : p.reverse.Nil ↔ p.Nil := by simp [nil_iff_length_eq]
+lemma nil_reverse {p : G.Walk v w} : p.reverse.Nil ↔ p.Nil := by simp [nil_iff_length_eq]
 
 alias ⟨Nil.eq_nil, _⟩ := nil_iff_eq_nil
 
@@ -962,12 +962,6 @@ lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
   | cons h q =>
     simp only [getVert_cons_succ, tail_cons_eq, cons_copy, copy_rfl_rfl]
 
-/--
-The reverse direction of `cons_tail_eq` for rewriting.
--/
-lemma cons_tail_eq' (p : G.Walk x y) (hp : ¬ p.Nil) :
-    p = cons (p.adj_snd hp) p.tail := (cons_tail_eq _ hp).symm
-
 @[simp]
 lemma concat_dropLast_eq (p : G.Walk x y) (hp : G.Adj p.penultimate y) :
     p.dropLast.concat hp = p := by
@@ -978,20 +972,14 @@ lemma concat_dropLast_eq (p : G.Walk x y) (hp : G.Adj p.penultimate y) :
     | nil => rfl
     | _ => simp [hind]
 
-/--
-The reverse direction of `concat_dropLast_eq` for rewriting.
--/
-lemma conact_dropLast_eq' (p : G.Walk x y) (hp : ¬ p.Nil) :
-    p = p.dropLast.concat (p.adj_penultimate_of_not_nil hp) := (concat_dropLast_eq ..).symm
-
 @[simp] lemma cons_support_tail (p : G.Walk x y) (hp : ¬p.Nil) :
     x :: p.tail.support = p.support := by
-  conv => rhs; rw [cons_tail_eq' p hp]
+  conv => rhs; rw [← cons_tail_eq p hp]
   rfl
 
 @[simp] lemma length_tail_add_one {p : G.Walk x y} (hp : ¬ p.Nil) :
     p.tail.length + 1 = p.length := by
-  conv => rhs; rw [cons_tail_eq' p hp]
+  conv => rhs; rw [← cons_tail_eq p hp]
   rfl
 
 @[simp] lemma nil_copy {x' y' : V} {p : G.Walk x y} (hx : x = x') (hy : y = y') :
