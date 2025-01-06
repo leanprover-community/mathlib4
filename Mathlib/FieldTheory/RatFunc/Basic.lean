@@ -495,12 +495,12 @@ section IsDomain
 variable [IsDomain K]
 
 instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) where
-  algebraMap := {
-    toFun x := RatFunc.mk (algebraMap _ _ x) 1
+  algebraMap :=
+  { toFun x := RatFunc.mk (algebraMap _ _ x) 1
     map_add' x y := by simp only [mk_one', RingHom.map_add, ofFractionRing_add]
     map_mul' x y := by simp only [mk_one', RingHom.map_mul, ofFractionRing_mul]
     map_one' := by simp only [mk_one', RingHom.map_one, ofFractionRing_one]
-    map_zero' := by simp only [mk_one', RingHom.map_zero, ofFractionRing_zero]}
+    map_zero' := by simp only [mk_one', RingHom.map_zero, ofFractionRing_zero] }
   smul := (· • ·)
   smul_def' c x := by
     induction' x using RatFunc.induction_on' with p q hq

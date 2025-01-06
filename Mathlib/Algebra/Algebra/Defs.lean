@@ -209,12 +209,12 @@ See note [reducible non-instances]. -/
 abbrev ofModule' [CommSemiring R] [Semiring A] [Module R A]
     (h₁ : ∀ (r : R) (x : A), r • (1 : A) * x = r • x)
     (h₂ : ∀ (r : R) (x : A), x * r • (1 : A) = r • x) : Algebra R A where
-  algebraMap := {
-    toFun r := r • (1 : A)
+  algebraMap :=
+  { toFun r := r • (1 : A)
     map_one' := one_smul _ _
     map_mul' r₁ r₂ := by simp only [h₁, mul_smul]
     map_zero' := zero_smul _ _
-    map_add' r₁ r₂ := add_smul r₁ r₂ 1}
+    map_add' r₁ r₂ := add_smul r₁ r₂ 1 }
   commutes' r x := by simp [h₁, h₂]
   smul_def' r x := by simp [h₁]
 

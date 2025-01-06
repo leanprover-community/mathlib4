@@ -149,8 +149,8 @@ instance instSemiring : Semiring (⨂[R] i, A i) where
 
 instance instAlgebra : Algebra R' (⨂[R] i, A i) where
   __ := hasSMul'
-  algebraMap := {
-    toFun := (· • 1)
+  algebraMap :=
+  { toFun := (· • 1)
     map_one' := by simp
     map_mul' r s := show (r * s) • 1 = mul (r • 1) (s • 1)  by
       rw [LinearMap.map_smul_of_tower, LinearMap.map_smul_of_tower, LinearMap.smul_apply, mul_comm,
@@ -159,8 +159,7 @@ instance instAlgebra : Algebra R' (⨂[R] i, A i) where
       show (1 : ⨂[R] i, A i) = 1 * 1
       rw [mul_one]
     map_zero' := by simp
-    map_add' := by simp [add_smul]
-  }
+    map_add' := by simp [add_smul] }
   commutes' r x := by
     simp only [RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
     change mul _ _ = mul _ _

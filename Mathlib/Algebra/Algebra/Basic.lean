@@ -34,12 +34,12 @@ variable [Semiring A] [Algebra R A]
 section PUnit
 
 instance _root_.PUnit.algebra : Algebra R PUnit.{v + 1} where
-  algebraMap := {
-    toFun _ := PUnit.unit
+  algebraMap :=
+  { toFun _ := PUnit.unit
     map_one' := rfl
     map_mul' _ _ := rfl
     map_zero' := rfl
-    map_add' _ _ := rfl}
+    map_add' _ _ := rfl }
   commutes' _ _ := rfl
   smul_def' _ _ := rfl
 
@@ -53,9 +53,9 @@ section ULift
 
 instance _root_.ULift.algebra : Algebra R (ULift A) :=
   { ULift.module' with
-    algebraMap := {
-      (ULift.ringEquiv : ULift A ≃+* A).symm.toRingHom.comp (algebraMap R A) with
-      toFun := fun r => ULift.up (algebraMap R A r)}
+    algebraMap :=
+    { (ULift.ringEquiv : ULift A ≃+* A).symm.toRingHom.comp (algebraMap R A) with
+      toFun := fun r => ULift.up (algebraMap R A r) }
     commutes' := fun r x => ULift.down_injective <| Algebra.commutes r x.down
     smul_def' := fun r x => ULift.down_injective <| Algebra.smul_def' r x.down }
 
@@ -145,12 +145,12 @@ abbrev semiringToRing (R : Type*) [CommRing R] [Semiring A] [Algebra R A] : Ring
     intCast_negSucc := fun z => by simp }
 
 instance {R : Type*} [Ring R] : Algebra (Subring.center R) R where
-  algebraMap := {
-    toFun := Subtype.val
+  algebraMap :=
+  { toFun := Subtype.val
     map_one' := rfl
     map_mul' _ _ := rfl
     map_zero' := rfl
-    map_add' _ _ := rfl}
+    map_add' _ _ := rfl }
   commutes' r x := (Subring.mem_center_iff.1 r.2 x).symm
   smul_def' _ _ := rfl
 

@@ -378,13 +378,12 @@ instance instInhabited (r : R → R → Prop) : Inhabited (RingQuot r) :=
 
 instance instAlgebra [Algebra S R] (r : R → R → Prop) : Algebra S (RingQuot r) where
   smul := (· • ·)
-  algebraMap := {
-    toFun r := ⟨Quot.mk _ (algebraMap S R r)⟩
+  algebraMap :=
+  { toFun r := ⟨Quot.mk _ (algebraMap S R r)⟩
     map_one' := by simp [← one_quot]
     map_mul' := by simp [mul_quot]
     map_zero' := by simp [← zero_quot]
-    map_add' := by simp [add_quot]
-  }
+    map_add' := by simp [add_quot] }
   commutes' r := by
     rintro ⟨⟨a⟩⟩
     simp [Algebra.commutes, mul_quot]

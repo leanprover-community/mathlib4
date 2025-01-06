@@ -54,8 +54,8 @@ variable [CommSemiring R] [CommSemiring S] [CommSemiring T] [Algebra R S] [Algeb
 /-- This is not an instance for the same reasons as `Polynomial.hasSMulPi'`. -/
 noncomputable def Polynomial.algebraPi : Algebra R[X] (S → T) where
   __ := Polynomial.hasSMulPi' R S T
-  algebraMap := {
-    toFun := fun p z => algebraMap S T (aeval z p)
+  algebraMap :=
+  { toFun := fun p z => algebraMap S T (aeval z p)
     map_one' := by
       funext z
       simp only [Polynomial.aeval_one, Pi.one_apply, map_one]
@@ -67,7 +67,7 @@ noncomputable def Polynomial.algebraPi : Algebra R[X] (S → T) where
       simp only [Polynomial.aeval_zero, Pi.zero_apply, map_zero]
     map_add' := fun f g => by
       funext z
-      simp only [Polynomial.aeval_add, Pi.add_apply, map_add]}
+      simp only [Polynomial.aeval_add, Pi.add_apply, map_add] }
   commutes' := fun p f => by
     funext z
     exact mul_comm _ _

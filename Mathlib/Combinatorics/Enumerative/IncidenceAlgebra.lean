@@ -297,8 +297,8 @@ instance moduleRight [Preorder α] [Semiring 𝕜] [AddCommMonoid 𝕝] [Module 
 
 instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α] [CommSemiring 𝕜]
     [CommSemiring 𝕝] [Algebra 𝕜 𝕝] : Algebra 𝕜 (IncidenceAlgebra 𝕝 α) where
-  algebraMap := {
-    toFun c := algebraMap 𝕜 𝕝 c • (1 : IncidenceAlgebra 𝕝 α)
+  algebraMap :=
+  { toFun c := algebraMap 𝕜 𝕝 c • (1 : IncidenceAlgebra 𝕝 α)
     map_one' := by
       ext; simp only [mul_boole, one_apply, Algebra.id.smul_eq_mul, constSMul_apply, map_one]
     map_mul' c d := by
@@ -315,8 +315,7 @@ instance algebraRight [PartialOrder α] [LocallyFiniteOrder α] [DecidableEq α]
           refine (sum_eq_zero fun x _ ↦ ?_).symm
           exact if_neg fun hx ↦ h <| hx.2.trans hx.1
     map_zero' := by dsimp; rw [map_zero, zero_smul]
-    map_add' c d := by dsimp; rw [map_add, add_smul]
-  }
+    map_add' c d := by dsimp; rw [map_add, add_smul] }
   commutes' c f := by classical ext a b hab; simp [if_pos hab, constSMul_apply, mul_comm]
   smul_def' c f := by classical ext a b hab; simp [if_pos hab, constSMul_apply, Algebra.smul_def]
 

@@ -66,13 +66,13 @@ instance Ring_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Ring A.X :=
       rw [TensorProduct.tmul_zero, map_zero] }
 
 instance Algebra_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Algebra R A.X where
-  algebraMap := {
-    A.one.hom with
+  algebraMap :=
+  { A.one.hom with
     map_zero' := A.one.hom.map_zero
     map_one' := rfl
     map_mul' := fun x y => by
       have h := LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp A.one_mul.symm) (x ⊗ₜ A.one y)
-      rwa [MonoidalCategory.leftUnitor_hom_apply, ← A.one.hom.map_smul] at h}
+      rwa [MonoidalCategory.leftUnitor_hom_apply, ← A.one.hom.map_smul] at h }
   commutes' := fun r a => by
     dsimp
     have h₁ := LinearMap.congr_fun (ModuleCat.hom_ext_iff.mp A.one_mul) (r ⊗ₜ a)
