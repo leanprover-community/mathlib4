@@ -79,8 +79,6 @@ def finZeroElim {α : Fin 0 → Sort*} (x : Fin 0) : α x :=
 
 namespace Fin
 
-@[deprecated (since := "2024-02-15")] alias eq_of_veq := eq_of_val_eq
-@[deprecated (since := "2024-02-15")] alias veq_of_eq := val_eq_of_eq
 @[deprecated (since := "2024-08-13")] alias ne_of_vne := ne_of_val_ne
 @[deprecated (since := "2024-08-13")] alias vne_of_ne := val_ne_of_ne
 
@@ -150,10 +148,6 @@ section coe
 
 theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
   Fin.ext_iff.symm
-
-@[deprecated Fin.ext_iff (since := "2024-02-20")]
-theorem eq_iff_veq (a b : Fin n) : a = b ↔ a.1 = b.1 :=
-  Fin.ext_iff
 
 theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
   Fin.ext_iff.not

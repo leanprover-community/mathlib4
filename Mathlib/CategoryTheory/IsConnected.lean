@@ -373,7 +373,6 @@ theorem isPreconnected_zigzag [IsPreconnected J] (j₁ j₂ : J) : Zigzag j₁ j
   equiv_relation _ zigzag_equivalence
     (fun f => Relation.ReflTransGen.single (Or.inl (Nonempty.intro f))) _ _
 
-@[deprecated (since := "2024-02-19")] alias isConnected_zigzag := isPreconnected_zigzag
 
 theorem zigzag_isPreconnected (h : ∀ j₁ j₂ : J, Zigzag j₁ j₂) : IsPreconnected J := by
   apply IsPreconnected.of_constant_of_preserves_morphisms
@@ -453,8 +452,5 @@ theorem nonempty_hom_of_preconnected_groupoid {G} [Groupoid G] [IsPreconnected G
      fun {_ _ _} => Nonempty.map2 (· ≫ ·)⟩
 
 attribute [instance] nonempty_hom_of_preconnected_groupoid
-
-@[deprecated (since := "2024-02-19")]
-alias nonempty_hom_of_connected_groupoid := nonempty_hom_of_preconnected_groupoid
 
 end CategoryTheory
