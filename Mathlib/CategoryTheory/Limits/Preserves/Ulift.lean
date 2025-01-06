@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Dagur Asgeirsson, Junyan Xu
+Authors: Dagur Asgeirsson, Junyan Xu, Sophie Morel
 -/
 import Mathlib.CategoryTheory.Limits.Creates
 import Mathlib.CategoryTheory.Limits.Types
@@ -10,11 +10,12 @@ import Mathlib.Data.Set.Subsingleton
 /-!
 # `ULift` creates small (co)limits
 
-This file shows that `uliftFunctor.{v, u}` creates (and hence preserves) limits and colimits indexed
-by `J` with `[Category.{w, u} J]`.
 
-It also shows that `uliftFunctor.{v, u}` *preserves* "all" limits,
-potentially too big to exist in `Type u`).
+This file shows that `uliftFunctor.{v, u}` preserves all limits and colimits, including those
+potentially too big to exist in `Type u`.
+
+As this fnuctor is fully faithful, we also deduce that it creates `u`-small limits and
+colimits.
 
 -/
 
@@ -64,7 +65,7 @@ noncomputable instance : PreservesColimitsOfSize.{w', w} uliftFunctor.{v, u} whe
   { preservesColimit := fun {F} ↦
     { preserves := fun {c} hc ↦ by
         rw [isColimit_iff_bijective_desc, ← Function.Bijective.of_comp_iff _
-          (uliftQuot F).bijective, ← Quot.desc_uliftQuot]
+          (quotQuotUliftEquiv F).bijective, Quot.desc_quotQuotUliftEquiv]
         exact ULift.up_bijective.comp ((isColimit_iff_bijective_desc c).mp (Nonempty.intro hc)) } }
 
 /--

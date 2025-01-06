@@ -360,54 +360,49 @@ lemma Quot.map_ι {j j' : J} {f : j ⟶ j'} (x : F.obj j) : Quot.ι F j' (F.map 
 /--
 The obvious map from `Quot F` to `Quot (F ⋙ uliftFunctor.{u'})`.
 -/
-def uliftQuotToFun (F : J ⥤ Type u) : Quot F → Quot (F ⋙ uliftFunctor.{u'}) := by
+def quotToQuotUlift (F : J ⥤ Type u) : Quot F → Quot (F ⋙ uliftFunctor.{u'}) := by
   refine Quot.lift (fun ⟨j, x⟩ ↦ Quot.ι _ j (ULift.up x)) ?_
   intro ⟨j, x⟩ ⟨j', y⟩ ⟨(f : j ⟶ j'), (eq : y = F.map f x)⟩
   dsimp
-  have eq : ULift.up y= (F ⋙ uliftFunctor.{u'}).map f (ULift.up x) := by
+  have eq : ULift.up y = (F ⋙ uliftFunctor.{u'}).map f (ULift.up x) := by
     rw [eq]
     dsimp
   rw [eq, Quot.map_ι]
 
 @[simp]
-lemma uliftQuotToFun_ι (F : J ⥤ Type u) (j : J) (x : F.obj j) :
-    uliftQuotToFun F (Quot.ι F j x) = Quot.ι _ j (ULift.up x) := by
-  dsimp [uliftQuotToFun, Quot.ι]
+lemma quotToQuotUlift_ι (F : J ⥤ Type u) (j : J) (x : F.obj j) :
+    quotToQuotUlift F (Quot.ι F j x) = Quot.ι _ j (ULift.up x) := by
+  dsimp [quotToQuotUlift, Quot.ι]
 
 /--
 The obvious map from `Quot (F ⋙ uliftFunctor.{u'})` to `Quot F`.
 -/
-def uliftQuotInvFun (F : J ⥤ Type u) : Quot (F ⋙ uliftFunctor.{u'}) → Quot F := by
-  refine Quot.lift (fun ⟨j, x⟩ ↦ Quot.ι _ j x.down) ?_
-  intro ⟨j, x⟩ ⟨j', y⟩ ⟨(f : j ⟶ j'), (eq : y = ULift.up (F.map f x.down))⟩
-  rw [eq]
-  dsimp
-  rw [Quot.map_ι]
+def quotUliftToQuot (F : J ⥤ Type u) : Quot (F ⋙ uliftFunctor.{u'}) → Quot F :=
+  Quot.lift (fun ⟨j, x⟩ ↦ Quot.ι _ j x.down)
+  (fun ⟨_, x⟩ ⟨_, y⟩ ⟨f, (eq : y = ULift.up (F.map f x.down))⟩ ↦ by simp [eq, Quot.map_ι])
 
 @[simp]
-lemma uliftQuotInvFun_ι (F : J ⥤ Type u) (j : J) (x : (F ⋙ uliftFunctor.{u'}).obj j) :
-    uliftQuotInvFun F (Quot.ι _ j x) = Quot.ι F j x.down := by
-  dsimp [uliftQuotInvFun, Quot.ι]
+lemma quotUliftToQuot_ι (F : J ⥤ Type u) (j : J) (x : (F ⋙ uliftFunctor.{u'}).obj j) :
+    quotUliftToQuot F (Quot.ι _ j x) = Quot.ι F j x.down := by
+  dsimp [quotUliftToQuot, Quot.ι]
 
 /--
 The equivalence between `Quot F` and `Quot (F ⋙ uliftFunctor.{u'})`.
 -/
 @[simp]
-def uliftQuot (F : J ⥤ Type u) : Quot F ≃ Quot (F ⋙ uliftFunctor.{u'}) where
-  toFun := uliftQuotToFun F
-  invFun := uliftQuotInvFun F
-  left_inv := by
-    intro x
+def quotQuotUliftEquiv (F : J ⥤ Type u) : Quot F ≃ Quot (F ⋙ uliftFunctor.{u'}) where
+  toFun := quotToQuotUlift F
+  invFun := quotUliftToQuot F
+  left_inv x := by
     obtain ⟨j, y, rfl⟩ := Quot.jointly_surjective x
-    rw [uliftQuotToFun_ι, uliftQuotInvFun_ι]
-  right_inv := by
-    intro x
+    rw [quotToQuotUlift_ι, quotUliftToQuot_ι]
+  right_inv x := by
     obtain ⟨j, y, rfl⟩ := Quot.jointly_surjective x
-    rw [uliftQuotInvFun_ι, uliftQuotToFun_ι]
+    rw [quotUliftToQuot_ι, quotToQuotUlift_ι]
     rfl
 
-lemma Quot.desc_uliftQuot {F : J ⥤ Type u} (c : Cocone F) :
-    ULift.up ∘ Quot.desc c = Quot.desc (uliftFunctor.{u'}.mapCocone c) ∘ uliftQuot F := by
+lemma Quot.desc_quotQuotUliftEquiv {F : J ⥤ Type u} (c : Cocone F) :
+    Quot.desc (uliftFunctor.{u'}.mapCocone c) ∘ quotQuotUliftEquiv F = ULift.up ∘ Quot.desc c := by
   ext x
   obtain ⟨_, _, rfl⟩ := Quot.jointly_surjective x
   dsimp
