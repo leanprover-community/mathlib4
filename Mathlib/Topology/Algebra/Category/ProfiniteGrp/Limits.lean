@@ -32,7 +32,7 @@ its quotients by open normal subgroups.
 
 universe u
 
-open CategoryTheory Topology TopologicalGroup
+open CategoryTheory TopologicalGroup
 
 namespace ProfiniteGrp
 
@@ -62,7 +62,7 @@ def QuotientOpenNormalSubgroup (P : ProfiniteGrp) :
 /-- The continuous homomorphism from a profinite group `P` to the projective limit of
 its quotients by open normal subgroups ordered by inclusion.-/
 def toLimitQuotientOpenNormalSubgroup (P : ProfiniteGrp.{u}) : P ⟶
-    limit ((QuotientOpenNormalSubgroup P) ⋙ (forget₂ FiniteGrp ProfiniteGrp)) where
+    limit (QuotientOpenNormalSubgroup P ⋙ forget₂ FiniteGrp ProfiniteGrp) where
   toFun p := ⟨fun H => QuotientGroup.mk p, fun _ => rfl⟩
   map_one' := Subtype.val_inj.mp rfl
   map_mul' x y := Subtype.val_inj.mp rfl
@@ -121,7 +121,7 @@ theorem toLimitQuotientOpenNormalSubgroup_injective (P : ProfiniteGrp.{u}) :
 /-- The topological group isomorphism between a profinite group and the projective limit of
 its quotients by open normal subgroups -/
 noncomputable def ContinuousMulEquivLimitQuotientOpenNormalSubgroup (P : ProfiniteGrp.{u}) :
-    P ≃ₜ* (limit ((QuotientOpenNormalSubgroup P) ⋙ (forget₂ FiniteGrp ProfiniteGrp))) := {
+    P ≃ₜ* (limit (QuotientOpenNormalSubgroup P ⋙ forget₂ FiniteGrp ProfiniteGrp)) := {
   (Continuous.homeoOfEquivCompactToT2 (f := Equiv.ofBijective _
   ⟨toLimitQuotientOpenNormalSubgroup_injective P, toLimitQuotientOpenNormalSubgroup_surjective P⟩)
     P.toLimitQuotientOpenNormalSubgroup.continuous_toFun)
