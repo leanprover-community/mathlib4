@@ -23,7 +23,7 @@ and the type `lim Hom(F·, X)`.
 
 open CategoryTheory CategoryTheory.Limits
 
-universe v u w u'
+universe u' v u w
 
 namespace CategoryTheory.Limits
 
