@@ -1061,15 +1061,6 @@ theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y �
   · rwa [ENat.coe_toNat] at h; rintro h'; simp [h'] at h
   simp [h]
 
-theorem exists_union_disjoint_ncard_eq_of_even_finite [DecidableEq α] (he : Even s.ncard)
-    (hs : s.Finite := by toFinite_tac) : ∃ (t u : Set α),
-    t ∪ u = s ∧ Disjoint t u ∧ t.ncard = u.ncard := by
-  rw [ncard_eq_toFinset_card s hs] at he
-  obtain ⟨t, u, hutu, hdtu, hctu⟩ := Finset.exists_disjoint_union_of_even_card he
-  use t.toSet, u.toSet
-  simp only [← Finset.coe_union, Finite.coe_toFinset, Finset.disjoint_coe, ncard_coe_Finset,
-    and_self, hutu, hdtu, hctu]
-
 open Cardinal
 
 theorem exists_union_disjoint_cardinal_eq_of_infinite (h : s.Infinite) : ∃ (t u : Set α),
@@ -1079,34 +1070,36 @@ theorem exists_union_disjoint_cardinal_eq_of_infinite (h : s.Infinite) : ∃ (t 
     apply Classical.choice
     rw [← Cardinal.eq, ← add_def, add_mk_eq_self]
   refine ⟨Subtype.val '' (f ⁻¹' (range .inl)), Subtype.val '' (f ⁻¹' (range .inr)), ?_, ?_, ?_⟩
-  · rw [← image_union, ← preimage_union]
-    simp
+  · simp [← image_union, ← preimage_union]
   · exact disjoint_image_of_injective Subtype.val_injective
       (isCompl_range_inl_range_inr.disjoint.preimage f)
   · simp [mk_image_eq Subtype.val_injective]
 
-theorem exists_union_disjoint_cardinal_eq_iff [DecidableEq α] (s : Set α) :
+theorem exists_union_disjoint_cardinal_eq_of_even (he : Even s.ncard) : ∃ (t u : Set α),
+    t ∪ u = s ∧ Disjoint t u ∧ #t = #u := by
+  obtain hs | hs := s.infinite_or_finite
+  · exact exists_union_disjoint_cardinal_eq_of_infinite hs
+  classical
+  rw [ncard_eq_toFinset_card s hs] at he
+  obtain ⟨t, u, hutu, hdtu, hctu⟩ := Finset.exists_disjoint_union_of_even_card he
+  use t.toSet, u.toSet
+  simp [← Finset.coe_union, *]
+
+theorem exists_union_disjoint_ncard_eq_of_even (he : Even s.ncard) : ∃ (t u : Set α),
+    t ∪ u = s ∧ Disjoint t u ∧ t.ncard = u.ncard := by
+  obtain ⟨t, u, hutu, hdtu, hctu⟩ := exists_union_disjoint_cardinal_eq_of_even he
+  exact ⟨t, u, hutu, hdtu, congrArg Cardinal.toNat hctu⟩
+
+theorem exists_union_disjoint_cardinal_eq_iff (s : Set α) :
     Even (s.ncard) ↔ ∃ (t u : Set α), t ∪ u = s ∧ Disjoint t u ∧ #t = #u := by
-  constructor <;> intro h
-  · obtain hfin | hnfin := s.finite_or_infinite
-    · obtain ⟨t, u, rfl, htu2, htu3⟩ := exists_union_disjoint_ncard_eq_of_even_finite h hfin
-      use t, u
-      refine ⟨rfl, htu2, ?_⟩
-      simp only [← @card_coe_set_eq] at htu3
-      rw [finite_union] at hfin
-      exact Cardinal.toNat_injOn (mem_Iio.mpr (Finite.lt_aleph0 hfin.1))
-        (mem_Iio.mpr (Finite.lt_aleph0 hfin.2)) htu3
-    · exact exists_union_disjoint_cardinal_eq_of_infinite hnfin
-  · obtain ⟨t, u, rfl, htu2, htu3⟩ := h
-    obtain hfin | hnfin := (t ∪ u).finite_or_infinite
-    · rw [finite_union] at hfin
-      rw [ncard_union_eq htu2 hfin.1 hfin.2]
-      have hn : Cardinal.toNat (Cardinal.mk t) = Cardinal.toNat (Cardinal.mk u) := by
-        congr
-      simp only [← Nat.card.eq_1, Nat.card_coe_set_eq] at hn
-      rw [hn]
-      exact Even.add_self u.ncard
-    · simp only [hnfin.ncard, even_zero]
+  use exists_union_disjoint_cardinal_eq_of_even
+  rintro ⟨t, u, rfl, hdtu, hctu⟩
+  obtain hfin | hnfin := (t ∪ u).finite_or_infinite
+  · rw [finite_union] at hfin
+    have hn : t.ncard = u.ncard := congrArg Cardinal.toNat hctu
+    rw [ncard_union_eq hdtu hfin.1 hfin.2, hn]
+    exact Even.add_self u.ncard
+  · simp [hnfin.ncard]
 
 end ncard
 end Set
