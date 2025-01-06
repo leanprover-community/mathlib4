@@ -487,10 +487,8 @@ theorem typein_surjOn (r : α → α → Prop) [IsWellOrder α r] :
 
 That is, `enum` maps an initial segment of the ordinals, those less than the order type of `r`, to
 the elements of `α`. -/
--- The explicit typing is required in order for `simp` to work properly.
 @[simps! symm_apply_coe]
-def enum (r : α → α → Prop) [IsWellOrder α r] :
-    @RelIso { o // o < type r } α (Subrel (· < ·) { o | o < type r }) r :=
+def enum (r : α → α → Prop) [IsWellOrder α r] : (· < · : Iio (type r) → Iio (type r) → Prop) ≃r r :=
   (typein r).subrelIso
 
 @[simp]
@@ -507,20 +505,20 @@ theorem enum_typein (r : α → α → Prop) [IsWellOrder α r] (a : α) :
     enum r ⟨typein r a, typein_lt_type r a⟩ = a :=
   enum_type (PrincipalSeg.ofElement r a)
 
-theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
+theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Iio (type r)} :
     r (enum r o₁) (enum r o₂) ↔ o₁ < o₂ :=
   (enum _).map_rel_iff
 
-theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
+theorem enum_le_enum (r : α → α → Prop) [IsWellOrder α r] {o₁ o₂ : Iio (type r)} :
     ¬r (enum r o₁) (enum r o₂) ↔ o₂ ≤ o₁ := by
   rw [enum_lt_enum (r := r), not_lt]
 
 @[simp]
-theorem enum_le_enum' (a : Ordinal) {o₁ o₂ : {o // o < type (· < ·)}} :
+theorem enum_le_enum' (a : Ordinal) {o₁ o₂ : Iio (type (· < ·))} :
     enum (· < ·) o₁ ≤ enum (α := a.toType) (· < ·) o₂ ↔ o₁ ≤ o₂ := by
   rw [← enum_le_enum, not_lt]
 
-theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : {o // o < type r}} :
+theorem enum_inj {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Iio (type r)} :
     enum r o₁ = enum r o₂ ↔ o₁ = o₂ :=
   EmbeddingLike.apply_eq_iff_eq _
 

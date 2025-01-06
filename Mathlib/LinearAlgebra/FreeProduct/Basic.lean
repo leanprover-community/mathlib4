@@ -189,7 +189,7 @@ theorem mul_injections (a₁ a₂ : A i) :
     ι' R A (DirectSum.lof R I A i a₁) * ι' R A (DirectSum.lof R I A i a₂)
       = ι' R A (DirectSum.lof R I A i (a₁ * a₂)) := by
   convert RingQuot.mkAlgHom_rel R <| rel.prod
-  aesop
+  simp
 
 /--The `i`th canonical injection, from `A i` to the free product, as
 a linear map.-/
