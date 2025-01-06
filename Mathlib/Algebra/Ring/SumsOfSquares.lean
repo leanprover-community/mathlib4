@@ -106,8 +106,8 @@ In a linearly ordered semiring with the property `a ≤ b → ∃ c, a + c = b` 
 sums of squares are non-negative.
 -/
 theorem IsSumSq.nonneg {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {s : R}
-    (ps : IsSumSq s) : 0 ≤ s := by
-  induction ps with
+    (hs : IsSumSq s) : 0 ≤ s := by
+  induction hs with
   | zero             => simp only [le_refl]
   | sq_add x s _ ih  => apply add_nonneg ?_ ih; simp only [← pow_two x, sq_nonneg]
 
