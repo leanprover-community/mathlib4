@@ -263,7 +263,7 @@ instance OrderedSemiring.toIsOrderedRing : IsOrderedRing α :=
 
 end OrderedSemiring
 
-section IsOrderedRing
+section OrderedRing
 
 variable [Ring α] [PartialOrder α] [IsOrderedRing α] {a b c : α}
 
@@ -283,7 +283,7 @@ lemma one_sub_le_one_add_mul_one_sub (h : c + b * c ≤ a + b) : 1 - a ≤ (1 + 
   rw [mul_one_sub, one_add_mul, sub_le_sub_iff, add_assoc, add_comm b]
   gcongr
 
-end IsOrderedRing
+end OrderedRing
 
 section OrderedRing
 
