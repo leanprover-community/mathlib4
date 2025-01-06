@@ -163,6 +163,12 @@ instance (priority := 200) IsStrictOrderedRing.toPosMulStrictMono : PosMulStrict
 instance (priority := 200) IsStrictOrderedRing.toMulPosStrictMono : MulPosStrictMono α :=
   ⟨fun x _ _ h => IsStrictOrderedRing.mul_lt_mul_of_pos_right _ _ _ h x.prop⟩
 
+-- see Note [lower instance priority]
+instance (priority := 100) IsStrictOrderedRing.toIsOrderedRing : IsOrderedRing α where
+  __ := ‹IsStrictOrderedRing α›
+  mul_le_mul_of_nonneg_left _ _ _ := mul_le_mul_of_nonneg_left
+  mul_le_mul_of_nonneg_right _ _ _ := mul_le_mul_of_nonneg_right
+
 end IsStrictOrderedRing
 
 /-! Note that `OrderDual` does not satisfy any of the ordered ring typeclasses due to the
