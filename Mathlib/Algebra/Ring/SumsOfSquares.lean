@@ -85,9 +85,7 @@ sums of squares in `R`.
 theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
     closure {x : R | IsSquare x} = sumSq R := by
   refine le_antisymm (closure_le.2 (fun x hx ↦ mem_sumSq_of_isSquare hx)) (fun x hx ↦ ?_)
-  induction hx with
-  | zero           => exact zero_mem _
-  | sq_add _ _ ih  => exact add_mem (subset_closure ⟨_, rfl⟩) ih
+  induction hx <;> aesop
 
 @[deprecated (since := "2024-08-09")] alias SquaresAddClosure := AddSubmonoid.closure_isSquare
 
