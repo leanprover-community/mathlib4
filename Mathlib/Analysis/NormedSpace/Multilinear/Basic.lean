@@ -610,14 +610,9 @@ variable (𝕜 E E' G G')
 def prodL :
     ContinuousMultilinearMap 𝕜 E G × ContinuousMultilinearMap 𝕜 E G' ≃ₗᵢ[𝕜]
       ContinuousMultilinearMap 𝕜 E (G × G') where
-  toFun f := f.1.prod f.2
-  invFun f :=
-    ((ContinuousLinearMap.fst 𝕜 G G').compContinuousMultilinearMap f,
-      (ContinuousLinearMap.snd 𝕜 G G').compContinuousMultilinearMap f)
+  __ := prodEquiv
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
-  left_inv f := by ext <;> rfl
-  right_inv f := by ext <;> rfl
   norm_map' f := opNorm_prod f.1 f.2
 
 /-- `ContinuousMultilinearMap.pi` as a `LinearIsometryEquiv`. -/
