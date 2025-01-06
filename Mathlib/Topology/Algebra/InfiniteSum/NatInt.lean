@@ -534,20 +534,6 @@ theorem pnat_multipliable_iff_multipliable_succ {α : Type*} [TopologicalSpace �
 
 @[to_additive]
 theorem tprod_pnat_eq_tprod_succ {α : Type*} [TopologicalSpace α] [CommMonoid α] [T2Space α]
-    (f : ℕ → α) : ∏' n : ℕ+, f n = ∏' n, f (n + 1) := by
-  by_cases hf2 : Multipliable fun n : ℕ+ => f n
-  · have hpos : HasProd (fun n : ℕ => f (n + 1)) (∏' n : ℕ+, f n) := by
-      rw [← _root_.Equiv.pnatEquivNat.hasProd_iff]
-      simp_rw [Equiv.pnatEquivNat, Equiv.coe_fn_mk] at *
-      have hf3 : Multipliable ((fun n : ℕ => f (n + 1)) ∘ PNat.natPred) := by
-        apply Multipliable.congr hf2 (by refine fun b => by simp)
-      rw [Multipliable.hasProd_iff hf3]
-      congr
-      funext
-      rw [comp_apply, PNat.natPred_add_one]
-    exact symm (HasProd.tprod_eq hpos)
-  · rw [tprod_eq_one_of_not_multipliable hf2]
-    rw [pnat_multipliable_iff_multipliable_succ] at hf2
-    rw [tprod_eq_one_of_not_multipliable hf2]
+    (f : ℕ → α) : ∏' n : ℕ+, f n = ∏' n, f (n + 1) := (Equiv.pnatEquivNat.symm.tprod_eq _).symm
 
 end pnat
