@@ -27,16 +27,16 @@ instance {G : Type*} [AddGroup G] [UniformSpace G] [UniformAddGroup G] [Nonarchi
     /- Since `Completion G` is regular, there is a closed neighborhood `C` of `0` which is
     contained in `U`. -/
     obtain ⟨C, ⟨hC, C_closed⟩, C_subset_U⟩ := (closed_nhds_basis 0).mem_iff.mp hU
-    /- By continuity, the preimage of `C` in `G`, written `toCompl ⁻¹' U'`,
+    /- By continuity, the preimage of `C` in `G`, written `coeAddHom ⁻¹' U'`,
     is a neighborhood of `0`. -/
-    have : toCompl ⁻¹' C ∈ 𝓝 0 :=
-      continuous_toCompl.continuousAt.preimage_mem_nhds (by rwa [map_zero])
+    have : coeAddHom ⁻¹' C ∈ 𝓝 0 :=
+      (continuous_coe G).continuousAt.preimage_mem_nhds (by rwa [Completion.coe_zero])
     /- Therefore, since `G` is nonarchimedean, there exists an open subgroup `W` of `G` that is
-    contained within `toCompl ⁻¹' C`. -/
-    obtain ⟨W, hCW⟩ := NonarchimedeanAddGroup.is_nonarchimedean (toCompl ⁻¹' C) this
-    /- Now, let `V = (W.map toCompl).topologicalClosure` be the result of mapping `W` back to
+    contained within `coe' ⁻¹' C`. -/
+    obtain ⟨W, hCW⟩ := NonarchimedeanAddGroup.is_nonarchimedean (coeAddHom ⁻¹' C) this
+    /- Now, let `V = (W.map coeAddHom).topologicalClosure` be the result of mapping `W` back to
     `Completion G` and taking the topological closure. -/
-    let V : Set (Completion G) := (W.map toCompl).topologicalClosure
+    let V : Set (Completion G) := (W.map coeAddHom).topologicalClosure
     /- We claim that this set `V` satisfies the
     desired properties. There are three conditions to check:
 
@@ -48,14 +48,14 @@ instance {G : Type*} [AddGroup G] [UniformSpace G] [UniformAddGroup G] [Nonarchi
     is a subgroup. Now, let us check that `V` is open. -/
     have : IsOpen V := by
       /- Since `V` is a subgroup of `Completion G`, it suffices to show that it is a neighborhood of
-      `0` in `Completion G`. This follows from the fact that `toCompl : G → Completion G` is dense
+      `0` in `Completion G`. This follows from the fact that `coeAddHom : G → Completion G` is dense
       inducing and `W` is a neighborhood of `0` in `G`. -/
       apply isOpen_of_mem_nhds (g := 0)
-      apply (isDenseInducing_toCompl _).closure_image_mem_nhds
+      apply isDenseInducing_coe.closure_image_mem_nhds
       exact mem_nhds_zero W
     use ⟨_, this⟩
     /- Finally, it remains to show that `V ⊆ U`. It suffices to show that `V ⊆ C`, which
-    follows from the fact that `W ⊆ toCompl ⁻¹' C` and `C` is closed. -/
+    follows from the fact that `W ⊆ coeAddHom ⁻¹' C` and `C` is closed. -/
     suffices V ⊆ C from this.trans C_subset_U
     exact closure_minimal (Set.image_subset_iff.mpr hCW) C_closed
 

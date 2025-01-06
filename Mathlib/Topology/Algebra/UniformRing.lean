@@ -67,9 +67,9 @@ variable [UniformAddGroup α]
 
 instance : ContinuousMul (Completion α) where
   continuous_mul := by
-    let m := (AddMonoidHom.mul : α →+ α →+ α).compr₂ toCompl
+    let m := (AddMonoidHom.mul : α →+ α →+ α).compr₂ coeAddHom
     have : Continuous fun p : α × α => m p.1 p.2 := (continuous_coe α).comp continuous_mul
-    have di : IsDenseInducing (toCompl : α → Completion α) := isDenseInducing_coe
+    have di : IsDenseInducing (coeAddHom : α → Completion α) := isDenseInducing_coe
     exact (di.extend_Z_bilin di this :)
 
 @[deprecated _root_.continuous_mul (since := "2024-12-21")]
@@ -139,6 +139,8 @@ def coeRingHom : α →+* Completion α where
 theorem continuous_coeRingHom : Continuous (coeRingHom : α → Completion α) :=
   continuous_coe α
 
+@[simp, norm_cast] theorem coeRingHom_eq_coe : (coeRingHom : α → Completion α) = coe := rfl
+
 variable {β : Type u} [UniformSpace β] [Ring β] [UniformAddGroup β] [TopologicalRing β]
   (f : α →+* β) (hf : Continuous f)
 
@@ -192,11 +194,11 @@ theorem map_smul_eq_mul_coe (r : R) :
   · simp_rw [map_coe (uniformContinuous_const_smul r) a, Algebra.smul_def, coe_mul]
 
 instance algebra : Algebra R (Completion A) :=
-  { (UniformSpace.Completion.coeRingHom : A →+* Completion A).comp (algebraMap R A) with
+  { UniformSpace.Completion.coeRingHom.comp (algebraMap R A) with
     commutes' := fun r x =>
       Completion.induction_on x (isClosed_eq (continuous_mul_left _) (continuous_mul_right _))
         fun a => by
-        simpa only [coe_mul] using congr_arg ((↑) : A → Completion A) (Algebra.commutes r a)
+        simpa only [coe_mul] using congr_arg (coe : A → Completion A) (Algebra.commutes r a)
     smul_def' := fun r x => congr_fun (map_smul_eq_mul_coe A R r) x }
 
 theorem algebraMap_def (r : R) :

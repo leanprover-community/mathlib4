@@ -67,7 +67,7 @@ norm of its derivative at the center is at most `C / R`. -/
 theorem norm_deriv_le_of_forall_mem_sphere_norm_le {c : ℂ} {R C : ℝ} {f : ℂ → F} (hR : 0 < R)
     (hd : DiffContOnCl ℂ f (ball c R)) (hC : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖deriv f c‖ ≤ C / R := by
-  set e : F →L[ℂ] F̂ := UniformSpace.Completion.toComplL
+  set e : F →L[ℂ] F̂ := UniformSpace.Completion.coeL
   have : HasDerivAt (e ∘ f) (e (deriv f c)) c :=
     e.hasFDerivAt.comp_hasDerivAt c
       (hd.differentiableAt isOpen_ball <| mem_ball_self hR).hasDerivAt

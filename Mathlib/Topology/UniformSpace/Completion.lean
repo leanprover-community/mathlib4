@@ -10,7 +10,7 @@ import Mathlib.Topology.UniformSpace.AbstractCompletion
 
 The goal is to construct a left-adjoint to the inclusion of complete Hausdorff uniform spaces
 into all uniform spaces. Any uniform space `α` gets a completion `Completion α` and a morphism
-(ie. uniformly continuous map) `(↑) : α → Completion α` which solves the universal
+(ie. uniformly continuous map) `coe : α → Completion α` which solves the universal
 mapping problem of factorizing morphisms from `α` to any complete Hausdorff uniform space `β`.
 It means any uniformly continuous `f : α → β` gives rise to a unique morphism
 `Completion.extension f : Completion α → β` such that `f = Completion.extension f ∘ (↑)`.
@@ -310,17 +310,20 @@ instance completeSpace : CompleteSpace (Completion α) :=
 
 instance t0Space : T0Space (Completion α) := SeparationQuotient.instT0Space
 
+variable {α} in
 /-- The map from a uniform space to its completion. -/
-@[coe] def coe' : α → Completion α := SeparationQuotient.mk ∘ pureCauchy
+@[coe] def coe : α → Completion α := SeparationQuotient.mk ∘ pureCauchy
+
+@[deprecated (since := "2025-01-05")] alias coe' := coe
 
 /-- Automatic coercion from `α` to its completion. Not always injective. -/
 instance : Coe α (Completion α) :=
-  ⟨coe' α⟩
+  ⟨(coe : α → Completion α)⟩
 
 -- note [use has_coe_t]
-protected theorem coe_eq : ((↑) : α → Completion α) = SeparationQuotient.mk ∘ pureCauchy := rfl
+protected theorem coe_eq : (coe : α → Completion α) = SeparationQuotient.mk ∘ pureCauchy := rfl
 
-theorem isUniformInducing_coe : IsUniformInducing ((↑) : α → Completion α) :=
+theorem isUniformInducing_coe : IsUniformInducing (coe : α → Completion α) :=
   SeparationQuotient.isUniformInducing_mk.comp isUniformInducing_pureCauchy
 
 @[deprecated (since := "2024-10-05")]
@@ -332,7 +335,7 @@ theorem comap_coe_eq_uniformity :
 
 variable {α}
 
-theorem denseRange_coe : DenseRange ((↑) : α → Completion α) :=
+theorem denseRange_coe : DenseRange (coe : α → Completion α) :=
   SeparationQuotient.surjective_mk.denseRange.comp denseRange_pureCauchy
     SeparationQuotient.continuous_mk
 
@@ -357,25 +360,25 @@ attribute [local instance]
 theorem nonempty_completion_iff : Nonempty (Completion α) ↔ Nonempty α :=
   cPkg.dense.nonempty_iff.symm
 
-theorem uniformContinuous_coe : UniformContinuous ((↑) : α → Completion α) :=
+theorem uniformContinuous_coe : UniformContinuous (coe : α → Completion α) :=
   cPkg.uniformContinuous_coe
 
-theorem continuous_coe : Continuous ((↑) : α → Completion α) :=
+theorem continuous_coe : Continuous (coe : α → Completion α) :=
   cPkg.continuous_coe
 
-theorem isUniformEmbedding_coe [T0Space α] : IsUniformEmbedding ((↑) : α → Completion α) :=
+theorem isUniformEmbedding_coe [T0Space α] : IsUniformEmbedding (coe : α → Completion α) :=
   { comap_uniformity := comap_coe_eq_uniformity α
     injective := separated_pureCauchy_injective }
 
 @[deprecated (since := "2024-10-01")]
 alias uniformEmbedding_coe := isUniformEmbedding_coe
 
-theorem coe_injective [T0Space α] : Function.Injective ((↑) : α → Completion α) :=
+theorem coe_injective [T0Space α] : Function.Injective (coe : α → Completion α) :=
   IsUniformEmbedding.injective (isUniformEmbedding_coe _)
 
 variable {α}
 
-theorem isDenseInducing_coe : IsDenseInducing ((↑) : α → Completion α) :=
+theorem isDenseInducing_coe : IsDenseInducing (coe : α → Completion α) :=
   { (isUniformInducing_coe α).isInducing with dense := denseRange_coe }
 
 /-- The uniform bijection between a complete space and its uniform completion. -/
@@ -387,7 +390,7 @@ open TopologicalSpace
 instance separableSpace_completion [SeparableSpace α] : SeparableSpace (Completion α) :=
   Completion.isDenseInducing_coe.separableSpace
 
-theorem isDenseEmbedding_coe [T0Space α] : IsDenseEmbedding ((↑) : α → Completion α) :=
+theorem isDenseEmbedding_coe [T0Space α] : IsDenseEmbedding (coe : α → Completion α) :=
   { isDenseInducing_coe with injective := separated_pureCauchy_injective }
 
 @[deprecated (since := "2024-09-30")]
@@ -520,7 +523,7 @@ open SeparationQuotient in
 quotient. -/
 def completionSeparationQuotientEquiv (α : Type u) [UniformSpace α] :
     Completion (SeparationQuotient α) ≃ Completion α := by
-  refine ⟨Completion.extension (lift' ((↑) : α → Completion α)),
+  refine ⟨Completion.extension (lift' (coe : α → Completion α)),
     Completion.map SeparationQuotient.mk, fun a ↦ ?_, fun a ↦ ?_⟩
   · refine induction_on a (isClosed_eq (continuous_map.comp continuous_extension) continuous_id) ?_
     refine SeparationQuotient.surjective_mk.forall.2 fun a ↦ ?_

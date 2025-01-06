@@ -12,14 +12,13 @@ import Mathlib.Topology.Algebra.UniformField
 # Normed space structure on the completion of a normed space
 
 If `E` is a normed space over `𝕜`, then so is `UniformSpace.Completion E`. In this file we provide
-necessary instances and define `UniformSpace.Completion.toComplₗᵢ` - coercion
+necessary instances and define `UniformSpace.Completion.coeₗᵢ` - coercion
 `E → UniformSpace.Completion E` as a bundled linear isometry.
 
 We also show that if `A` is a normed algebra over `𝕜`, then so is `UniformSpace.Completion A`.
 
 TODO: Generalise the results here from the concrete `completion` to any `AbstractCompletion`.
 -/
-
 
 noncomputable section
 
@@ -39,28 +38,38 @@ variable {𝕜 E}
 variable [Semiring 𝕜] [SeminormedAddCommGroup E] [Module 𝕜 E] [UniformContinuousConstSMul 𝕜 E]
 
 /-- Embedding of a normed space to its completion as a linear isometry. -/
-def toComplₗᵢ : E →ₗᵢ[𝕜] Completion E :=
-  { toCompl with
-    toFun := (↑)
+def coeₗᵢ : E →ₗᵢ[𝕜] Completion E :=
+  { coeAddHom with
+    toFun := coe
     map_smul' := coe_smul
     norm_map' := norm_coe }
 
-@[simp]
-theorem coe_toComplₗᵢ : ⇑(toComplₗᵢ : E →ₗᵢ[𝕜] Completion E) = ((↑) : E → Completion E) :=
+@[deprecated (since := "2025-01-05")] alias toComplₗᵢ := coeₗᵢ
+
+@[simp, norm_cast]
+theorem coeₗᵢ_eq_coe : (coeₗᵢ : E →ₗᵢ[𝕜] Completion E) = (coe : E → Completion E) :=
   rfl
+
+@[deprecated (since := "2025-01-05")] alias coe_toComplₗᵢ := coeₗᵢ_eq_coe
 
 /-- Embedding of a normed space to its completion as a continuous linear map. -/
-def toComplL : E →L[𝕜] Completion E :=
-  toComplₗᵢ.toContinuousLinearMap
+def coeL : E →L[𝕜] Completion E :=
+  coeₗᵢ.toContinuousLinearMap
 
-@[simp]
-theorem coe_toComplL : ⇑(toComplL : E →L[𝕜] Completion E) = ((↑) : E → Completion E) :=
+@[deprecated (since := "2025-01-05")] alias toComplL := coeL
+
+@[simp, norm_cast]
+theorem coeL_eq_coe : (coeL : E →L[𝕜] Completion E) = (coe : E → Completion E) :=
   rfl
 
+@[deprecated (since := "2025-01-05")] alias coe_toComplL := coeL_eq_coe
+
 @[simp]
-theorem norm_toComplL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-    [NormedSpace 𝕜 E] [Nontrivial E] : ‖(toComplL : E →L[𝕜] Completion E)‖ = 1 :=
-  (toComplₗᵢ : E →ₗᵢ[𝕜] Completion E).norm_toContinuousLinearMap
+theorem norm_coeL {𝕜 E : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
+    [NormedSpace 𝕜 E] [Nontrivial E] : ‖(coeL : E →L[𝕜] Completion E)‖ = 1 :=
+  (coeₗᵢ : E →ₗᵢ[𝕜] Completion E).norm_toContinuousLinearMap
+
+@[deprecated (since := "2025-01-05")] alias norm_toComplL := norm_coeL
 
 end Module
 

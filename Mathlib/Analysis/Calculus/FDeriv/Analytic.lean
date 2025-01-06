@@ -308,8 +308,8 @@ theorem HasFPowerSeriesWithinOnBall.hasSum_derivSeries_of_hasFDerivWithinAt
   the canonical embedding. As this is an embedding, it means that there was also convergence in
   the original space, to `f'`. -/
   let F' := UniformSpace.Completion F
-  let a : F →L[𝕜] F' := UniformSpace.Completion.toComplL
-  let b : (E →L[𝕜] F) →ₗᵢ[𝕜] (E →L[𝕜] F') := UniformSpace.Completion.toComplₗᵢ.postcomp
+  let a : F →L[𝕜] F' := UniformSpace.Completion.coeL
+  let b : (E →L[𝕜] F) →ₗᵢ[𝕜] (E →L[𝕜] F') := UniformSpace.Completion.coeₗᵢ.postcomp
   rw [← b.isEmbedding.hasSum_iff]
   have : HasFPowerSeriesWithinOnBall (a ∘ f) (a.compFormalMultilinearSeries p) s x r :=
     a.comp_hasFPowerSeriesWithinOnBall h

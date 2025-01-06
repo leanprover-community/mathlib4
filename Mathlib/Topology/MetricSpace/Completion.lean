@@ -163,7 +163,7 @@ protected theorem eq_of_dist_eq_zero (x y : Completion α) (h : dist x y = 0) : 
   eq_of_dist_eq_zero h
 
 /-- The embedding of a metric space in its completion is an isometry. -/
-theorem coe_isometry : Isometry ((↑) : α → Completion α) :=
+theorem coe_isometry : Isometry (coe : α → Completion α) :=
   Isometry.of_dist_eq Completion.dist_eq
 
 @[simp]

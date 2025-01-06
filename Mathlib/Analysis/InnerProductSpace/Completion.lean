@@ -80,9 +80,9 @@ protected theorem continuous_inner :
   rw [Completion.toInner, inner, uncurry_curry _]
   change
     Continuous
-      (((isDenseInducing_toCompl E).prodMap (isDenseInducing_toCompl E)).extend fun p : E × E =>
+      (((isDenseInducing_coeAddHom E).prodMap (isDenseInducing_coeAddHom E)).extend fun p : E × E =>
         inner' p.1 p.2)
-  exact (isDenseInducing_toCompl E).extend_Z_bilin (isDenseInducing_toCompl E) this
+  exact (isDenseInducing_coeAddHom E).extend_Z_bilin (isDenseInducing_coeAddHom E) this
 
 protected theorem Continuous.inner {α : Type*} [TopologicalSpace α] {f g : α → Completion E}
     (hf : Continuous f) (hg : Continuous g) : Continuous (fun x : α => inner (f x) (g x) : α → 𝕜) :=
