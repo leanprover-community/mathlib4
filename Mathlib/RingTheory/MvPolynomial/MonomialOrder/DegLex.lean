@@ -16,7 +16,7 @@ open scoped MonomialOrder
 
 variable {σ : Type*} [LinearOrder σ] {R : Type*} [CommSemiring R]
 
-theorem degLex_degree_degree [WellFoundedGT σ] {f : MvPolynomial σ R} :
+theorem degree_degLexDegree [WellFoundedGT σ] {f : MvPolynomial σ R} :
     (degLex.degree f).degree = f.totalDegree := by
   by_cases hf : f = 0
   · simp [hf]
@@ -34,7 +34,7 @@ theorem degLex_degree_degree [WellFoundedGT σ] {f : MvPolynomial σ R} :
 theorem degLex_totalDegree_monotone [WellFoundedGT σ] {f g : MvPolynomial σ R}
     (h : degLex.degree f ≼[degLex] degLex.degree g) :
     f.totalDegree ≤ g.totalDegree := by
-  simp only [← MvPolynomial.degLex_degree_degree]
+  simp only [← MvPolynomial.degree_degLexDegree]
   exact DegLex.monotone_degree h
 
 end MvPolynomial

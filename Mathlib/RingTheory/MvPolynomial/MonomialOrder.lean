@@ -366,7 +366,7 @@ theorem degree_smul {r : R} (hr : IsRegular r) {f : MvPolynomial σ R} :
   simp [lCoeff, hr.left.mul_left_eq_zero_iff, hf]
 
 theorem degree_prod_le {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset ι} :
-    m.degree (s.prod P) ≼[m] s.sum (fun i ↦ m.degree (P i)) := by
+    m.degree (∏ i ∈ s, P i) ≼[m] ∑ i ∈ s, m.degree (P i) := by
   classical
   induction s using Finset.induction_on with
   | empty =>
@@ -378,7 +378,7 @@ theorem degree_prod_le {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset �
     simp only [map_add, add_le_add_iff_left, hrec]
 
 theorem coeff_prod_of_sum_degree {ι : Type*} (P : ι → MvPolynomial σ R) (s : Finset ι) :
-    coeff (s.sum fun i ↦ m.degree (P i)) (s.prod P) = s.prod fun i ↦ m.lCoeff (P i) := by
+    coeff (∑ i ∈ s, m.degree (P i)) (∏ i ∈ s, P i) = ∏ i ∈ s, m.lCoeff (P i) := by
   classical
   induction s using Finset.induction_on with
   | empty => simp
@@ -390,7 +390,7 @@ theorem coeff_prod_of_sum_degree {ι : Type*} (P : ι → MvPolynomial σ R) (s 
 -- TODO : it suffices that all leading coefficients but one are regular
 theorem degree_prod_of_regular {ι : Type*}
     {P : ι → MvPolynomial σ R} {s : Finset ι} (H : ∀ i ∈ s, IsRegular (m.lCoeff (P i))) :
-    m.degree (s.prod P) = s.sum (fun i ↦ m.degree (P i)) := by
+    m.degree (∏ i ∈ s, P i) = ∑ i ∈ s, m.degree (P i) := by
   by_cases hR : Nontrivial R
   · apply m.toSyn.injective
     · refine le_antisymm degree_prod_le (m.le_degree ?_)
@@ -401,7 +401,7 @@ theorem degree_prod_of_regular {ι : Type*}
 
 theorem degree_prod [IsDomain R] {ι : Type*} {P : ι → MvPolynomial σ R} {s : Finset ι}
     (H : ∀ i ∈ s, P i ≠ 0) :
-    m.degree (s.prod P) = s.sum (fun i ↦ m.degree (P i)) := by
+    m.degree (∏ i in s, P i) = ∑ i ∈ s, m.degree (P i) := by
   apply degree_prod_of_regular
   intro i hi
   apply isRegular_of_ne_zero
@@ -411,7 +411,7 @@ theorem degree_prod [IsDomain R] {ι : Type*} {P : ι → MvPolynomial σ R} {s 
 -- TODO : it suffices that all leading coefficients but one are regular
 theorem lCoeff_prod_of_regular {ι : Type*}
     {P : ι → MvPolynomial σ R} {s : Finset ι} (H : ∀ i ∈ s, IsRegular (m.lCoeff (P i))) :
-    m.lCoeff (s.prod P) = s.prod (fun i ↦ m.lCoeff (P i)) := by
+    m.lCoeff (∏ i ∈ s, P i) = ∏ i ∈ s, m.lCoeff (P i) := by
   simp only [lCoeff, degree_prod_of_regular H, coeff_prod_of_sum_degree]
 
 end Semiring
