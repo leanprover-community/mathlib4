@@ -31,8 +31,8 @@ variable (R A B)
 open Algebra
 
 instance algebra : Algebra R (A × B) :=
-  { Prod.instModule,
-    RingHom.prod (algebraMap R A) (algebraMap R B) with
+  { Prod.instModule with
+    algebraMap := RingHom.prod (algebraMap R A) (algebraMap R B)
     commutes' := by
       rintro r ⟨a, b⟩
       dsimp
