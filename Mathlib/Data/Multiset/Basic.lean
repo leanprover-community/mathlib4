@@ -2014,21 +2014,20 @@ end
 section sub
 variable [DecidableEq α] {s t u : Multiset α} {a : α}
 
-/-- `s - t` is the multiset such that `count a (s - t) = count a s - count a t` for all `a`
-  (note that it is truncated subtraction, so it is `0` if `count a t ≥ count a s`). -/
+/-- `s - t` is the multiset such that `count a (s - t) = count a s - count a t` for all `a`.
+(note that it is truncated subtraction, so `count a (s - t) = 0` if `count a s ≤ count a t`). -/
 protected def sub (s t : Multiset α) : Multiset α :=
   (Quotient.liftOn₂ s t fun l₁ l₂ => (l₁.diff l₂ : Multiset α)) fun _v₁ _v₂ _w₁ _w₂ p₁ p₂ =>
     Quot.sound <| p₁.diff p₂
 
-instance : Sub (Multiset α) :=
-  ⟨Multiset.sub⟩
+instance : Sub (Multiset α) := ⟨.sub⟩
 
 @[simp]
-lemma coe_sub (s t : List α) : (s - t : Multiset α) = (s.diff t : List α) :=
+lemma coe_sub (s t : List α) : (s - t : Multiset α) = s.diff t :=
   rfl
 
 /-- This is a special case of `tsub_zero`, which should be used instead of this.
-  This is needed to prove `OrderedSub (Multiset α)`. -/
+This is needed to prove `OrderedSub (Multiset α)`. -/
 @[simp, nolint simpNF] -- We want to use this lemma earlier than the lemma simp can prove it with
 protected lemma sub_zero (s : Multiset α) : s - 0 = s :=
   Quot.inductionOn s fun _l => rfl
@@ -2087,10 +2086,8 @@ lemma filter_sub (p : α → Prop) [DecidablePred p] (s t : Multiset α) :
     · rw [erase_of_not_mem m]
 
 @[simp]
-lemma sub_filter_eq_filter_not (p) [DecidablePred p] (s : Multiset α) :
-    s - s.filter p = s.filter fun a ↦ ¬ p a := by
-  rw [← filter_add_not p s]
-  ext a; by_cases h : p a <;> simp [h]
+lemma sub_filter_eq_filter_not (p : α → Prop) [DecidablePred p] (s : Multiset α) :
+    s - s.filter p = s.filter fun a ↦ ¬ p a := by ext a; by_cases h : p a <;> simp [h]
 
 lemma cons_sub_of_le (a : α) {s t : Multiset α} (h : t ≤ s) : a ::ₘ s - t = a ::ₘ (s - t) := by
   rw [← singleton_add, ← singleton_add, add_tsub_assoc_of_le h]
@@ -2108,9 +2105,8 @@ lemma card_sub {s t : Multiset α} (h : t ≤ s) : card (s - t) = card s - card 
 
 /-! ### Union -/
 
-/-- `s ∪ t` is the lattice join operation with respect to the
-  multiset `≤`. The multiplicity of `a` in `s ∪ t` is the maximum
-  of the multiplicities in `s` and `t`. -/
+/-- `s ∪ t` is the multiset such that the multiplicity of each `a` in it is the maximum of the
+multiplicity of `a` in `s` and `t`. This is the supremum of multisets. -/
 def union (s t : Multiset α) : Multiset α := s - t + t
 
 instance : Union (Multiset α) := ⟨union⟩
@@ -2151,9 +2147,8 @@ lemma count_union (a : α) (s t : Multiset α) : count a (s ∪ t) = max (count 
 
 /-! ### Intersection -/
 
-/-- `s ∩ t` is the lattice meet operation with respect to the
-  multiset `≤`. The multiplicity of `a` in `s ∩ t` is the minimum
-  of the multiplicities in `s` and `t`. -/
+/-- `s ∩ t` is the multiset such that the multiplicity of each `a` in it is the minimum of the
+multiplicity of `a` in `s` and `t`. This is the infimum of multisets. -/
 def inter (s t : Multiset α) : Multiset α :=
   Quotient.liftOn₂ s t (fun l₁ l₂ => (l₁.bagInter l₂ : Multiset α)) fun _v₁ _v₂ _w₁ _w₂ p₁ p₂ =>
     Quot.sound <| p₁.bagInter p₂
