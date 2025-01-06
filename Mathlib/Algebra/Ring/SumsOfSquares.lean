@@ -69,10 +69,10 @@ variable (T) in
 In an additive monoid with multiplication `R`, `AddSubmonoid.sumSq R` is the submonoid of sums of
 squares in `R`.
 -/
-def sumSq [AddMonoid R] : AddSubmonoid R where
-  carrier   := {S : R | IsSumSq S}
-  zero_mem' := IsSumSq.zero
-  add_mem' := IsSumSq.add
+def sumSq [AddMonoid T] : AddSubmonoid T where
+  carrier   := {S : T | IsSumSq S}
+  zero_mem' := .zero
+  add_mem'  := .add
 
 @[deprecated (since := "2024-08-09")] alias SumSqIn := sumSq
 @[deprecated (since := "2025-01-03")] alias sumSqIn := sumSq
