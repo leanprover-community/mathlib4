@@ -229,6 +229,9 @@ theorem Injective.lieAlgebra_isSolvable [h₁ : IsSolvable R L] (h₂ : Injectiv
   apply LieIdeal.bot_of_map_eq_bot h₂; rw [eq_bot_iff, ← hk]
   apply LieIdeal.derivedSeries_map_le
 
+instance (A : LieIdeal R L) [IsSolvable R L] : IsSolvable R A :=
+  A.incl_injective.lieAlgebra_isSolvable
+
 theorem Surjective.lieAlgebra_isSolvable [h₁ : IsSolvable R L'] (h₂ : Surjective f) :
     IsSolvable R L := by
   obtain ⟨k, hk⟩ := id h₁
@@ -238,7 +241,7 @@ theorem Surjective.lieAlgebra_isSolvable [h₁ : IsSolvable R L'] (h₂ : Surjec
 
 end Function
 
-theorem LieHom.isSolvable_range (f : L' →ₗ⁅R⁆ L) [LieAlgebra.IsSolvable R L'] :
+instance LieHom.isSolvable_range (f : L' →ₗ⁅R⁆ L) [LieAlgebra.IsSolvable R L'] :
     LieAlgebra.IsSolvable R f.range :=
   f.surjective_rangeRestrict.lieAlgebra_isSolvable
 

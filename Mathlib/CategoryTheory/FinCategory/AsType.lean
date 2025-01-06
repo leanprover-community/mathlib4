@@ -13,8 +13,6 @@ import Mathlib.CategoryTheory.FinCategory.Basic
 
 universe w v u
 
-open scoped Classical
-
 noncomputable section
 
 namespace CategoryTheory
