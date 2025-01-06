@@ -457,8 +457,9 @@ instance : IsScalarTower R T (LocalizedModule S M) where
 
 noncomputable instance algebra' {A : Type*} [Semiring A] [Algebra R A] :
     Algebra R (LocalizedModule S A) :=
-  { (algebraMap (Localization S) (LocalizedModule S A)).comp (algebraMap R <| Localization S),
-    show Module R (LocalizedModule S A) by infer_instance with
+  { show Module R (LocalizedModule S A) by infer_instance with
+    algebraMap := (algebraMap (Localization S) (LocalizedModule S A)).comp
+      (algebraMap R <| Localization S)
     commutes' := by
       intro r x
       induction x using induction_on with | _ a s => _

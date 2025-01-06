@@ -25,7 +25,7 @@ variable {n : ℕ} (m : ℕ) [CharP R m]
 /-- The `ZMod n`-algebra structure on rings whose characteristic `m` divides `n`.
 See note [reducible non-instances]. -/
 abbrev algebra' (h : m ∣ n) : Algebra (ZMod n) R :=
-  { ZMod.castHom h R with
+  { algebraMap := ZMod.castHom h R
     smul := fun a r => cast a * r
     commutes' := fun a r =>
       show (cast a * r : R) = r * cast a by
