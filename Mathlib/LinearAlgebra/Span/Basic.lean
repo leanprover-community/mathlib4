@@ -137,9 +137,7 @@ theorem span_smul_eq_of_isUnit (s : Set M) (r : R) (hr : IsUnit r) : span R (r �
   apply le_antisymm
   · apply span_smul_le
   · convert span_smul_le (r • s) ((hr.unit⁻¹ : _) : R)
-    rw [smul_smul]
-    erw [hr.unit.inv_val]
-    rw [one_smul]
+    simp [smul_smul]
 
 /-- We can regard `coe_iSup_of_chain` as the statement that `(↑) : (Submodule R M) → Set M` is
 Scott continuous for the ω-complete partial order induced by the complete lattice structures. -/
