@@ -504,7 +504,7 @@ noncomputable instance : LinearOrderedRing ℝ := by infer_instance
 noncomputable instance : LinearOrderedSemiring ℝ := by infer_instance
 
 instance : IsDomain ℝ :=
-  { Real.nontrivial, Real.commRing, LinearOrderedRing.isDomain with }
+  { Real.nontrivial, Real.commRing, IsStrictOrderedRing.isDomain with }
 
 noncomputable instance instDivInvMonoid : DivInvMonoid ℝ where
 
