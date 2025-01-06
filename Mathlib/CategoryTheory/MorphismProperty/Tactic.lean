@@ -9,7 +9,7 @@ import Mathlib.CategoryTheory.MorphismProperty.Basic
 # The `addMorphismPropertyInstances` command
 
 We define a command `addMorphismPropertyInstances` that goes through all the lemmas tagged with
-`morphismPropertyInstance` and attempts to add the relavant instances of a morphism property,
+`morphismPropertyInstance` and attempts to add the relevant instances of a morphism property,
 provided that the appropriate stability instances on the morphism property are present.
 
 -/
@@ -34,7 +34,7 @@ syntax (name := morphismPropertyInstance) "morphismPropertyInstance" Parser.Tact
 
 /--
 Theorems tagged with `morphismPropertyInstance` are used in the `addMorphismPropertyInstances`
-command, which goes through all the tagged lemma and attempts to add the relavant instances of a
+command, which goes through all the tagged lemma and attempts to add the relevant instances of a
 morphism property, provided that the appropriate stability instances
 on the morphism property are present.
 
