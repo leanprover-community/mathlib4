@@ -282,6 +282,7 @@ def C : 𝕜 →+* C^∞⟮I, N; 𝓘(𝕜, A), A⟯ where
   map_add' c₁ c₂ := by ext; exact (algebraMap 𝕜 A).map_add _ _
 
 instance algebra : Algebra 𝕜 C^∞⟮I, N; 𝓘(𝕜, A), A⟯ where
+  -- __ := SmoothMap.semiring -- Porting note: Commented this out.
   smul := fun r f => ⟨r • f, contMDiff_const.smul f.contMDiff⟩
   algebraMap := SmoothMap.C
   commutes' := fun c f => by ext x; exact Algebra.commutes' _ _
