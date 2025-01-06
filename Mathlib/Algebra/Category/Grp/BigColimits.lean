@@ -8,10 +8,11 @@ import Mathlib.Algebra.Module.CharacterModule
 import Mathlib.Algebra.Group.Equiv.Basic
 
 /-!
-# The category of additive commutative groups has all colimits.
+# Existence of "big" colimits in the category of additive commutative groups
 
-This file constructs colimits in the categpry of additive commutative groups, as
-quotients of finitely supported functions.
+If `F : J ⥤ AddCommGrp.{w}` is a functor, we show that `F` admits a colimit if and only
+if `Colimits.Quot F` (the quotient of the direct sum of the commutative groups `F.obj j`
+by the relations given by the morphisms in the diagram) is `w`-small.
 
 -/
 
@@ -23,7 +24,7 @@ namespace AddCommGrp
 
 variable {J : Type u} [Category.{v} J] {F : J ⥤ AddCommGrp.{w}} (c : Cocone F)
 
-namespace Colimits
+open Colimits
 
 /--
 If `c` is a cocone of `F` such that `Quot.desc F c` is bijective, then `c` is a colimit
@@ -31,53 +32,49 @@ cocone of `F`.
 -/
 lemma isColimit_iff_bijective_desc [DecidableEq J] :
      Nonempty (IsColimit c) ↔ Function.Bijective (Quot.desc F c) := by
-  constructor
-  · refine fun ⟨hc⟩ => ?_
-    change Function.Bijective (Quot.desc F c).toIntLinearMap
-    rw [← CharacterModule.dual_bijective_iff_bijective]
-    constructor
-    · intro χ ψ eq
-      dsimp at eq
-      set A := ULift.{w} (AddCircle (1 : ℚ))
-      suffices eq : ofHom (AddEquiv.ulift.symm.toAddMonoidHom.comp χ) =
-          ofHom (AddEquiv.ulift.symm.toAddMonoidHom.comp ψ) by
-        apply (AddMonoidHom.postcompEquiv (@AddEquiv.ulift (AddCircle (1 : ℚ)) _).symm _).injective
-        dsimp at eq ⊢
-        ext
-        rw [← ofHom_apply, ← ofHom_apply, eq]
-      refine hc.hom_ext (fun j ↦ ?_)
-      ext x
-      change (ofHom (AddEquiv.ulift.symm.toAddMonoidHom.comp χ)) _ =
-        (ofHom (AddEquiv.ulift.symm.toAddMonoidHom.comp ψ)) _
-      dsimp
-      simp only [EmbeddingLike.apply_eq_iff_eq]
-      erw [← Quot.ι_desc _ c j x]
-      change χ.comp (Quot.desc F c).toIntLinearMap.toAddMonoidHom _ =
-        ψ.comp (Quot.desc F c).toIntLinearMap.toAddMonoidHom _
-      rw [eq]
-    · intro χ
-      set c' : Cocone F :=
-        { pt := AddCommGrp.of (ULift (AddCircle (1 : ℚ)))
-          ι :=
-            { app j := AddCommGrp.ofHom (((@AddEquiv.ulift _ _).symm.toAddMonoidHom.comp χ).comp
-                         (Quot.ι F j))
-              naturality {j j'} u := by
-                ext
-                change ofHom ((AddEquiv.ulift.symm.toAddMonoidHom.comp χ).comp (Quot.ι F j'))
-                  (F.map u _) = _
-                dsimp
-                rw [Quot.map_ι F (f := u)]
-                rfl } }
-      use AddEquiv.ulift.toAddMonoidHom.comp (hc.desc c')
-      refine Quot.addMonoidHom_ext _ (fun j x ↦ ?_)
-      dsimp
-      rw [Quot.ι_desc]
-      change AddEquiv.ulift ((c.ι.app j ≫ hc.desc c') x) = _
-      rw [hc.fac]
-      dsimp [c']
-      rw [AddEquiv.apply_symm_apply]
-  · exact fun h ↦ Nonempty.intro (isColimit_of_bijective_desc F c h)
+  refine ⟨fun ⟨hc⟩ => ?_, fun h ↦ Nonempty.intro (isColimit_of_bijective_desc F c h)⟩
+  change Function.Bijective (Quot.desc F c).toIntLinearMap
+  rw [← CharacterModule.dual_bijective_iff_bijective]
+  refine ⟨fun χ ψ eq ↦ ?_, fun χ ↦ ?_⟩
+  · dsimp at eq
+    suffices eq : ofHom (AddEquiv.ulift.symm.toAddMonoidHom.comp χ) =
+        ofHom (AddEquiv.ulift.symm.toAddMonoidHom.comp ψ) by
+      apply (AddMonoidHom.postcompEquiv (@AddEquiv.ulift (AddCircle (1 : ℚ)) _).symm _).injective
+      dsimp at eq ⊢
+      ext
+      rw [← ofHom_apply, ← ofHom_apply, eq]
+    refine hc.hom_ext (fun j ↦ ?_)
+    ext x
+    change (ofHom (AddEquiv.ulift.symm.toAddMonoidHom.comp χ)) _ =
+      (ofHom (AddEquiv.ulift.symm.toAddMonoidHom.comp ψ)) _
+    dsimp
+    simp only [EmbeddingLike.apply_eq_iff_eq]
+    erw [← Quot.ι_desc _ c j x]
+    change χ.comp (Quot.desc F c).toIntLinearMap.toAddMonoidHom _ = _
+    rw [eq]
+    dsimp
+  · set c' : Cocone F :=
+      { pt := AddCommGrp.of (ULift (AddCircle (1 : ℚ)))
+        ι :=
+          { app j := AddCommGrp.ofHom (((@AddEquiv.ulift _ _).symm.toAddMonoidHom.comp χ).comp
+                       (Quot.ι F j))
+            naturality {j j'} u := by
+              ext
+              change ofHom ((AddEquiv.ulift.symm.toAddMonoidHom.comp χ).comp _) (F.map u _) = _
+              dsimp
+              rw [Quot.map_ι F (f := u)]
+              rfl } }
+    use AddEquiv.ulift.toAddMonoidHom.comp (hc.desc c')
+    refine Quot.addMonoidHom_ext _ (fun j x ↦ ?_)
+    dsimp
+    rw [Quot.ι_desc]
+    change AddEquiv.ulift ((c.ι.app j ≫ hc.desc c') x) = _
+    rw [hc.fac]
+    dsimp [c']
+    rw [AddEquiv.apply_symm_apply]
 
-end Colimits
+lemma hasColimit_iff_small_quot [DecidableEq J] : HasColimit F ↔ Small.{w} (Quot F) :=
+  ⟨fun _ ↦ Small.mk ⟨_, ⟨(Equiv.ofBijective _ ((isColimit_iff_bijective_desc (colimit.cocone F)).mp
+    ⟨colimit.isColimit _⟩))⟩⟩, hasColimit_of_small_quot F⟩
 
 end AddCommGrp
