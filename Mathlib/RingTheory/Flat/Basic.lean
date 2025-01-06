@@ -205,8 +205,8 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
   have h₂ := F i
   rw [iff_rTensor_injective] at h₂
   have h₃ := h₂ hI
-  simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, EmbeddingLike.map_eq_zero_iff,
-    h₃, LinearMap.map_eq_zero_iff] at f
+  simp only [φ, τ, coe_comp, LinearEquiv.coe_coe, Function.comp_apply,
+    EmbeddingLike.map_eq_zero_iff, h₃, LinearMap.map_eq_zero_iff] at f
   simp [f]
 
 open scoped Classical in
@@ -266,7 +266,7 @@ instance {S} [CommRing S] [Algebra R S] [Module S M] [IsScalarTower R S M] [Flat
     Flat S (M ⊗[R] N) :=
   (iff_rTensor_injective' _ _).mpr fun I ↦ by
     simpa [AlgebraTensorModule.rTensor_tensor] using
-      rTensor_preserves_injective_linearMap (.restrictScalars R <| rTensor M I.subtype)
+      rTensor_preserves_injective_linearMap (.restrictScalars R <| I.subtype.rTensor M)
       (rTensor_preserves_injective_linearMap _ I.injective_subtype)
 
 example [Flat R M] [Flat R N] : Flat R (M ⊗[R] N) := inferInstance

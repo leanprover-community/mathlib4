@@ -102,7 +102,7 @@ def isoConstant [IsPreconnected J] {α : Type u₂} (F : J ⥤ Discrete α) (j :
     F ≅ (Functor.const J).obj (F.obj j) :=
   (IsPreconnected.IsoConstantAux.factorThroughDiscrete F).symm
     ≪≫ isoWhiskerRight (IsPreconnected.iso_constant _ j).some _
-    ≪≫ NatIso.ofComponents (fun _ => eqToIso Function.apply_invFun_apply) (by aesop_cat)
+    ≪≫ NatIso.ofComponents (fun _ => eqToIso Function.apply_invFun_apply) (by simp)
 
 /-- If `J` is connected, any functor to a discrete category is constant on objects.
 The converse is given in `IsConnected.of_any_functor_const_on_obj`.
@@ -258,6 +258,11 @@ theorem isPreconnected_of_isPreconnected_op [IsPreconnected Jᵒᵖ] : IsPreconn
 
 theorem isConnected_of_isConnected_op [IsConnected Jᵒᵖ] : IsConnected J :=
   isConnected_of_equivalent (opOpEquivalence J)
+
+variable (J) in
+@[simp]
+theorem isConnected_op_iff_isConnected : IsConnected Jᵒᵖ ↔ IsConnected J :=
+  ⟨fun _ => isConnected_of_isConnected_op, fun _ => isConnected_op⟩
 
 /-- j₁ and j₂ are related by `Zag` if there is a morphism between them. -/
 def Zag (j₁ j₂ : J) : Prop :=

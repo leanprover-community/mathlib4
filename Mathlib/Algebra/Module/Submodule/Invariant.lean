@@ -10,7 +10,7 @@ import Mathlib.Order.Sublattice
 # The lattice of invariant submodules
 
 In this file we defined the type `Module.End.invtSubmodule`, associated to a linear endomorphism of
-a module. Its utilty stems primarily from those occasions on which we wish to take advantage of the
+a module. Its utility stems primarily from those occasions on which we wish to take advantage of the
 lattice structure of invariant submodules.
 
 See also `Mathlib.Algebra.Polynomial.Module.AEval`.

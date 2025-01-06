@@ -78,7 +78,8 @@ protected abbrev Quotient : Type (max w u) := P.Ring ⧸ P.ker
 
 /-- `P.Quotient` is `P.Ring`-isomorphic to `S` and in particular `R`-isomorphic to `S`. -/
 def quotientEquiv : P.Quotient ≃ₐ[P.Ring] S :=
-  Ideal.quotientKerAlgEquivOfRightInverse (f := Algebra.ofId P.Ring S) P.aeval_val_σ
+  Ideal.quotientKerAlgEquivOfRightInverse (f := Algebra.ofId P.Ring S) (g := P.σ) <| fun x ↦ by
+    rw [Algebra.ofId_apply, P.algebraMap_apply, P.aeval_val_σ]
 
 @[simp]
 lemma quotientEquiv_mk (p : P.Ring) : P.quotientEquiv p = algebraMap P.Ring S p :=
@@ -143,8 +144,8 @@ instance ofBijectiveAlgebraMap_isFinite (h : Function.Bijective (algebraMap R S)
 
 lemma ofBijectiveAlgebraMap_dimension (h : Function.Bijective (algebraMap R S)) :
     (ofBijectiveAlgebraMap h).dimension = 0 := by
-  show Nat.card PEmpty - Nat.card PEmpty = 0
-  simp only [Nat.card_eq_fintype_card, Fintype.card_ofIsEmpty, le_refl, tsub_eq_zero_of_le]
+  simp_rw [dimension, ofBijectiveAlgebraMap, Generators.ofSurjectiveAlgebraMap,
+    Generators.ofSurjective, Nat.card_eq_fintype_card, Fintype.card_ofIsEmpty]
 
 variable (R) in
 /-- The canonical `R`-presentation of `R` with no generators and no relations. -/
@@ -393,9 +394,9 @@ private lemma span_range_relation_eq_ker_comp : Ideal.span
     (Set.range (Sum.elim (Algebra.Presentation.comp_relation_aux Q P)
       fun rp ↦ (rename Sum.inr) (P.relation rp))) = (Q.comp P.toGenerators).ker := by
   rw [Generators.ker_eq_ker_aeval_val, Q.aeval_comp_val_eq, ← AlgHom.comap_ker]
-  show _ = Ideal.comap _ (Q.ker)
-  rw [← Q.span_range_relation_eq_ker, ← Q.aux_image_relation P, ← Ideal.map_span,
-    Ideal.comap_map_of_surjective' _ (Q.aux_surjective P)]
+  show _ = Ideal.comap _ (RingHom.ker (aeval Q.val))
+  rw [← Q.ker_eq_ker_aeval_val, ← Q.span_range_relation_eq_ker, ← Q.aux_image_relation P,
+    ← Ideal.map_span, Ideal.comap_map_of_surjective' _ (Q.aux_surjective P)]
   rw [Set.Sum.elim_range, Ideal.span_union, Q.aux_ker, ← P.ker_eq_ker_aeval_val,
     ← P.span_range_relation_eq_ker, Ideal.map_span]
   congr

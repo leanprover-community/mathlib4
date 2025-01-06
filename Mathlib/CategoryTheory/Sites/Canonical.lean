@@ -36,7 +36,6 @@ universe v u
 
 namespace CategoryTheory
 
-open scoped Classical
 open CategoryTheory Category Limits Sieve
 
 variable {C : Type u} [Category.{v} C]

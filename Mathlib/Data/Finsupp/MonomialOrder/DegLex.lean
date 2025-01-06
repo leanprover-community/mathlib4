@@ -6,7 +6,7 @@ Authors: Antoine Chambert-Loir
 
 import Mathlib.Data.Finsupp.MonomialOrder
 import Mathlib.Data.Finsupp.Weight
-import Mathlib.Logic.Equiv.TransferInstance
+import Mathlib.Algebra.Equiv.TransferInstance
 
 /-! Homogeneous lexicographic monomial ordering
 

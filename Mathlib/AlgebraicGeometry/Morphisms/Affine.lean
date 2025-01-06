@@ -139,7 +139,7 @@ lemma isAffineOpen_of_isAffineOpen_basicOpen (U) (s : Set Γ(X, U))
     (hs : Ideal.span s = ⊤) (hs₂ : ∀ i ∈ s, IsAffineOpen (X.basicOpen i)) :
     IsAffineOpen U := by
   apply isAffine_of_isAffineOpen_basicOpen (U.topIso.inv '' s)
-  · rw [← Ideal.map_span U.topIso.inv, hs, Ideal.map_top]
+  · rw [← Ideal.map_span U.topIso.inv.hom, hs, Ideal.map_top]
   · rintro _ ⟨j, hj, rfl⟩
     rw [← (Scheme.Opens.ι _).isAffineOpen_iff_of_isOpenImmersion, Scheme.image_basicOpen]
     simpa [Scheme.Opens.toScheme_presheaf_obj] using hs₂ j hj
@@ -158,7 +158,7 @@ instance : HasAffineProperty @IsAffineHom fun X _ _ _ ↦ IsAffine X where
       rw [Scheme.preimage_basicOpen]
       exact (isAffineOpen_top X).basicOpen _
     · intro X Y _ f S hS hS'
-      apply_fun Ideal.map (f.appTop) at hS
+      apply_fun Ideal.map (f.appTop).hom at hS
       rw [Ideal.map_span, Ideal.map_top] at hS
       apply isAffine_of_isAffineOpen_basicOpen _ hS
       have : ∀ i : S, IsAffineOpen (f⁻¹ᵁ Y.basicOpen i.1) := hS'

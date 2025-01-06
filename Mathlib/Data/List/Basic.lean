@@ -211,9 +211,6 @@ theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length
 theorem replicate_add (m n) (a : α) : replicate (m + n) a = replicate m a ++ replicate n a := by
   rw [append_replicate_replicate]
 
-theorem replicate_succ' (n) (a : α) : replicate (n + 1) a = replicate n a ++ [a] :=
-  replicate_add n 1 a
-
 theorem replicate_subset_singleton (n) (a : α) : replicate n a ⊆ [a] := fun _ h =>
   mem_singleton.2 (eq_of_mem_replicate h)
 
@@ -300,7 +297,7 @@ theorem getLast_append' (l₁ l₂ : List α) (h : l₂ ≠ []) :
   | nil => simp
   | cons _ _ ih => simp only [cons_append]; rw [List.getLast_cons]; exact ih
 
-theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne_nil a l) = a := by
+theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (by simp) = a := by
   simp
 
 @[simp]
@@ -486,10 +483,6 @@ theorem exists_mem_iff_getElem {l : List α} {p : α → Prop} :
 theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
   simp [mem_iff_getElem, @forall_swap α]
-
-theorem getElem_cons {l : List α} {a : α} {n : ℕ} (h : n < (a :: l).length) :
-    (a :: l)[n] = if hn : n = 0 then a else l[n - 1]'(by rw [length_cons] at h; omega) := by
-  cases n <;> simp
 
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simp only [length_tail] at h; omega)) :
@@ -1032,6 +1025,15 @@ theorem cons_get_drop_succ {l : List α} {n} :
     l.get n :: l.drop (n.1 + 1) = l.drop n.1 :=
   (drop_eq_getElem_cons n.2).symm
 
+lemma drop_length_sub_one {l : List α} (h : l ≠ []) : l.drop (l.length - 1) = [l.getLast h] := by
+  induction l with
+  | nil => aesop
+  | cons a l ih =>
+    by_cases hl : l = []
+    · aesop
+    rw [length_cons, Nat.add_one_sub_one, List.drop_length_cons hl a]
+    aesop
+
 section TakeI
 
 variable [Inhabited α]
@@ -1224,11 +1226,11 @@ theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
   induction i generalizing b l with
   | zero =>
     cases l
-    · simp only [length, zero_eq, lt_self_iff_false] at h
+    · simp only [scanl, length, zero_eq, lt_self_iff_false] at h
     · simp
   | succ i hi =>
     cases l
-    · simp only [length] at h
+    · simp only [scanl, length] at h
       exact absurd h (by omega)
     · simp_rw [scanl_cons]
       rw [getElem_append_right]
@@ -1275,7 +1277,7 @@ theorem foldl_eq_of_comm_of_assoc [hcomm : Std.Commutative f] [hassoc : Std.Asso
   | a, b, c :: l => by
     simp only [foldl_cons]
     have : RightCommutative f := inferInstance
-    rw [← foldl_eq_of_comm_of_assoc .., this.right_comm]; rfl
+    rw [← foldl_eq_of_comm_of_assoc .., this.right_comm, foldl_cons]
 
 theorem foldl_eq_foldr [Std.Commutative f] [Std.Associative f] :
     ∀ a l, foldl f a l = foldr f a l
