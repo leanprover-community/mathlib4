@@ -122,16 +122,14 @@ a continuous linear map into continuous multilinear maps in `n` variables, given
 def ContinuousMultilinearMap.curryLeft (f : ContinuousMultilinearMap 𝕜 Ei G) :
     Ei 0 →L[𝕜] ContinuousMultilinearMap 𝕜 (fun i : Fin n => Ei i.succ) G where
   toFun x :=
-    { toMultilinearMap := (f.toMultilinearMap.curryLeft x)
-      cont :=
-        (ContinuousMapClass.map_continuous f).comp (continuous_const.fin_cons continuous_id) }
-  map_add' := fun x y => by
+    { toMultilinearMap := f.toMultilinearMap.curryLeft x
+      cont :=  (ContinuousMapClass.map_continuous f).comp (continuous_const.finCons continuous_id) }
+  map_add' x y := by
     ext m
     exact f.cons_add m x y
-  map_smul' := fun c x => by
+  map_smul' c x := by
     ext m
-    exact
-      f.cons_smul m c x
+    exact f.cons_smul m c x
   cont := by
     refine (IsUniformInducing.isInducing ?_).continuous
     dsimp
@@ -181,11 +179,10 @@ def continuousMultilinearCurryLeftEquiv :
       left_inv := ContinuousMultilinearMap.uncurry_curryLeft
       right_inv := ContinuousLinearMap.curry_uncurryLeft }
     (fun f => by
-      simp only [LinearEquiv.coe_mk]
-      exact LinearMap.mkContinuous_norm_le _ (norm_nonneg f) _)
-    (fun f => by
-      simp only [LinearEquiv.coe_symm_mk]
-      exact MultilinearMap.mkContinuous_norm_le _ (norm_nonneg f) _)
+      refine ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg f) fun x => ?_
+      refine opNorm_le_bound (mul_nonneg (norm_nonneg _) (norm_nonneg _)) fun m => ?_
+      exact ContinuousMultilinearMap.norm_map_cons_le f x m)
+    (fun f => opNorm_le_bound (norm_nonneg f) (ContinuousLinearMap.norm_map_tail_le f))
 
 variable {𝕜 Ei G}
 
