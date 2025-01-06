@@ -18,7 +18,7 @@ We introduce a predicate for sums of squares in a ring.
   an inductive predicate defining the property of being a sum of squares in `R`.
   `0 : R` is a sum of squares and if `S` is a sum of squares, then, for all `a : R`,
   `a * a + s` is a sum of squares.
-- The term `AddMonoid.sumSq R`: the submonoid of sums of squares in an additive monoid `R`
+- `AddMonoid.sumSq R`: the submonoid of sums of squares in an additive monoid `R`
   with multiplication.
 
 -/
