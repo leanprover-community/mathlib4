@@ -12,8 +12,8 @@ import Mathlib.RingTheory.Smooth.Kaehler
 # The differential module and etale algebras
 
 ## Main results
-`KaehlerDifferential.tensorKaehlerEquivOfEtale`:
-The canonical isomorphism `T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄S]` for `T` a formally etale `S`-algebra.
+`KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale`:
+The canonical isomorphism `T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄R]` for `T` a formally etale `S`-algebra.
 -/
 
 universe u
@@ -24,11 +24,11 @@ variable [Algebra R S] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
 open TensorProduct
 
 /--
-The canonical isomorphism `T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄S]` for `T` a formally etale `S`-algebra.
+The canonical isomorphism `T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄R]` for `T` a formally etale `S`-algebra.
 Also see `S ⊗[R] Ω[A⁄R] ≃ₗ[S] Ω[S ⊗[R] A⁄S]` at `KaehlerDifferential.tensorKaehlerEquiv`.
 -/
 @[simps! apply] noncomputable
-def KaehlerDifferential.tensorKaehlerEquivOfEtale [Algebra.FormallyEtale S T] :
+def KaehlerDifferential.tensorKaehlerEquivOfFormallyEtale [Algebra.FormallyEtale S T] :
     T ⊗[S] Ω[S⁄R] ≃ₗ[T] Ω[T⁄R] := by
   refine LinearEquiv.ofBijective (mapBaseChange R S T)
     ⟨?_, fun x ↦ (KaehlerDifferential.exact_mapBaseChange_map R S T x).mp (Subsingleton.elim _ _)⟩
@@ -40,13 +40,14 @@ def KaehlerDifferential.tensorKaehlerEquivOfEtale [Algebra.FormallyEtale S T] :
 lemma KaehlerDifferential.isBaseChange_of_formallyEtale [Algebra.FormallyEtale S T] :
     IsBaseChange T (map R R S T) := by
   show Function.Bijective _
-  convert (tensorKaehlerEquivOfEtale R S T).bijective using 1
-  show _ = ((tensorKaehlerEquivOfEtale R S T).toLinearMap.restrictScalars S : T ⊗[S] Ω[S⁄R] → _)
+  convert (tensorKaehlerEquivOfFormallyEtale R S T).bijective using 1
+  show _ = ((tensorKaehlerEquivOfFormallyEtale
+    R S T).toLinearMap.restrictScalars S : T ⊗[S] Ω[S⁄R] → _)
   congr!
   ext
   simp
 
-instance KaehlerDifferential.isLocalization (M : Submonoid S) [IsLocalization M T] :
+instance KaehlerDifferential.isLocalizedModule (M : Submonoid S) [IsLocalization M T] :
     IsLocalizedModule M (map R R S T) :=
   have := Algebra.FormallyEtale.of_isLocalization (Rₘ := T) M
   (isLocalizedModule_iff_isBaseChange M T _).mpr (isBaseChange_of_formallyEtale R S T)
