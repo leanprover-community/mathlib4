@@ -324,6 +324,13 @@ theorem IsSuccPrelimit.lt_iff_exists_lt (h : IsSuccPrelimit b) : a < b ↔ ∃ c
 theorem IsSuccLimit.lt_iff_exists_lt (h : IsSuccLimit b) : a < b ↔ ∃ c < b, a < c :=
   h.isSuccPrelimit.lt_iff_exists_lt
 
+lemma _root_.IsLUB.isSuccPrelimit_of_not_mem {s : Set α} (hs : IsLUB s a) (hx : a ∉ s) :
+    IsSuccPrelimit a := by
+  intro b hb
+  obtain ⟨c, hc, hbc, hca⟩ := hs.exists_between hb.lt
+  obtain rfl := (hb.ge_of_gt hbc).antisymm hca
+  contradiction
+
 variable [SuccOrder α]
 
 theorem IsSuccPrelimit.le_succ_iff (hb : IsSuccPrelimit b) : b ≤ succ a ↔ b ≤ a :=
@@ -619,6 +626,10 @@ theorem IsPredPrelimit.lt_iff_exists_lt (h : IsPredPrelimit b) : b < a ↔ ∃ c
 
 theorem IsPredLimit.lt_iff_exists_lt (h : IsPredLimit b) : b < a ↔ ∃ c, b < c ∧ c < a :=
   h.dual.lt_iff_exists_lt
+
+lemma _root_.IsGLB.isPredPrelimit_of_not_mem {s : Set α} (hs : IsGLB s a) (hx : a ∉ s) :
+    IsPredPrelimit a := by
+  simpa using (IsGLB.dual hs).isSuccPrelimit_of_not_mem hx
 
 variable [PredOrder α]
 
