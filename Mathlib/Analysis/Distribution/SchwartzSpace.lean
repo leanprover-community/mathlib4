@@ -514,9 +514,11 @@ instance instFirstCountableTopology : FirstCountableTopology 𝓢(E, F) :=
 
 end Topology
 
-section TemperateGrowth
+section TemperateFunction
 
 /-! ### Functions of temperate growth -/
+
+variable [NormedAddCommGroup D] [NormedSpace ℝ D] [NormedAddCommGroup G] [NormedSpace ℝ G]
 
 /-- A function is called of temperate growth if it is smooth and all iterated derivatives are
 polynomially bounded. -/
@@ -562,12 +564,141 @@ lemma _root_.Function.HasTemperateGrowth.const (c : F) :
     Function.HasTemperateGrowth (fun _ : E ↦ c) :=
   .of_fderiv (by simpa using .zero) (differentiable_const c) (k := 0) (C := ‖c‖) (fun x ↦ by simp)
 
+/-- Any Schwartz function `HasTemperateGrowth`. -/
+lemma hasTemperateGrowth (f : 𝓢(E, F)) : Function.HasTemperateGrowth f := by
+  refine ⟨f.smooth', ?_⟩
+  intro n
+  rcases f.decay' 0 n with ⟨C, hC⟩
+  exact ⟨0, C, by simpa using hC⟩
+
 lemma _root_.ContinuousLinearMap.hasTemperateGrowth (f : E →L[ℝ] F) :
     Function.HasTemperateGrowth f := by
   apply Function.HasTemperateGrowth.of_fderiv ?_ f.differentiable (k := 1) (C := ‖f‖) (fun x ↦ ?_)
   · have : fderiv ℝ f = fun _ ↦ f := by ext1 v; simp only [ContinuousLinearMap.fderiv]
     simpa [this] using .const _
   · exact (f.le_opNorm x).trans (by simp [mul_add])
+
+lemma _root_.Function.HasTemperateGrowth.id : (· : E → E).HasTemperateGrowth :=
+  (ContinuousLinearMap.id ℝ E).hasTemperateGrowth
+
+/-- The addition of two `HasTemperateGrowth` functions is a `HasTemperateGrowth` function. -/
+lemma _root_.Function.HasTemperateGrowth.add {f g : E → F} (hf : f.HasTemperateGrowth)
+    (hg : g.HasTemperateGrowth) : (f + g).HasTemperateGrowth := by
+  refine ⟨hf.1.add hg.1, fun n ↦ ?_⟩
+  rcases hf.2 n with ⟨kf, Cf, hCf⟩
+  rcases hg.2 n with ⟨kg, Cg, hCg⟩
+  have hCf_nn : 0 ≤ Cf := by simpa using le_trans (norm_nonneg _) (hCf 0)
+  have hCg_nn : 0 ≤ Cg := by simpa using le_trans (norm_nonneg _) (hCg 0)
+  use kf ⊔ kg, Cf + Cg
+  intro x
+  rw [iteratedFDeriv_add_apply (contDiff_infty.mp hf.1 n) (contDiff_infty.mp hg.1 n)]
+  refine le_trans (norm_add_le _ _) ?_
+  rw [add_mul]
+  refine add_le_add ?_ ?_
+  · refine le_trans (hCf x) (mul_le_mul_of_nonneg_left ?_ hCf_nn)
+    simp [pow_le_pow_right₀]
+  · refine le_trans (hCg x) (mul_le_mul_of_nonneg_left ?_ hCg_nn)
+    simp [pow_le_pow_right₀]
+
+/-- The composition of two `HasTemperateGrowth` functions is a `HasTemperateGrowth` function. -/
+theorem _root_.Function.HasTemperateGrowth.comp {g : F → G} (hg : g.HasTemperateGrowth) {f : E → F}
+    (hf : f.HasTemperateGrowth) : (g ∘ f).HasTemperateGrowth := by
+  refine ⟨hg.1.comp hf.1, fun n ↦ ?_⟩
+  -- Obtain `k, C` for derivatives `i ≤ n` of `g` and `f`.
+  rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨kg, Cg, ⟨hCg_nn, hCg⟩⟩
+  rcases hf.norm_iteratedFDeriv_le_uniform_aux n with ⟨kf, Cf, ⟨_, hCf⟩⟩
+  have hCf₀ (x) : ‖f x‖ ≤ Cf * (1 + ‖x‖) ^ kf := by simpa using hCf 0 n.zero_le x
+  -- Need to show `‖iteratedFDeriv ℝ n (fun x ↦ g (f x)) x‖ ≤ C * (1 + ‖x‖) ^ k` for some `k, C`.
+  -- Using `norm_iteratedFDeriv_comp_le` with
+  -- `hC : ∀ i ≤ n, ‖iteratedFDeriv 𝕜 i g (f x)‖ ≤ C`
+  -- `hD : ∀ (i : ℕ), 1 ≤ i → i ≤ n → ‖iteratedFDeriv 𝕜 i f x‖ ≤ D ^ i`
+  -- (where `C` and `D` can depend on `x`) gives
+  -- `‖iteratedFDeriv 𝕜 n (g ∘ f) x‖ ≤ n.factorial * C * D ^ n`.
+  -- For `D`, we can set `D = max 1 Cf * (1 + ‖x‖) ^ kf` to ensure `1 ≤ D`,
+  -- and then we have `‖iteratedFDeriv 𝕜 i f x‖ ≤ D ≤ D ^ i`.
+  -- For `C`, need to obtain upper bound of the form `C * (1 + ‖x‖) ^ k` from
+  -- `‖iteratedFDeriv 𝕜 i g (f x)‖ ≤ Cg * (1 + ‖f x‖) ^ kg` given `‖f x‖ ≤ Cf * (1 + ‖x‖) ^ kf`.
+  -- One way to obtain this is to note `1, ‖f x‖ ≤ max 1 Cf * (1 + ‖x‖) ^ kf`,
+  -- giving `1 + ‖f x‖ ≤ (2 * max 1 Cf) * (1 + ‖x‖) ^ kf` and therefore
+  -- `‖iteratedFDeriv ℝ i g (f x)‖ ≤ (Cg * (2 * max 1 Cf) ^ kg) * (1 + ‖x‖) ^ (kf * kg)`.
+  -- Combining these gives us the upper bound
+  -- `(n.factorial * Cg * 2 ^ kg * max 1 Cf ^ (kg + n)) * (1 + ‖x‖) ^ (kf * (kg + n))`.
+  have hD (x) : ∀ i, 1 ≤ i → i ≤ n →
+      ‖iteratedFDeriv ℝ i f x‖ ≤ (max 1 Cf * (1 + ‖x‖) ^ kf) ^ i := fun i hi hin ↦ by
+    refine le_trans (hCf i hin x) ?_
+    refine le_trans (mul_le_mul_of_nonneg_right (le_max_right 1 Cf) (by simp [add_nonneg])) ?_
+    refine le_self_pow₀ ?_ (Nat.one_le_iff_ne_zero.mp hi)
+    simp [one_le_mul_of_one_le_of_one_le, one_le_pow₀]
+  have hgf (x) : 1 + ‖f x‖ ≤ 2 * max 1 Cf * (1 + ‖x‖) ^ kf := by
+    rw [mul_assoc, two_mul]
+    refine add_le_add ?_ ?_
+    · simp [one_le_mul_of_one_le_of_one_le, one_le_pow₀]
+    · exact le_trans (hCf₀ x) <| mul_le_mul_of_nonneg_right (by simp) (by simp [add_nonneg])
+  have hC (x) : ∀ i ≤ n, ‖iteratedFDeriv ℝ i g (f x)‖ ≤
+      Cg * (2 * max 1 Cf * (1 + ‖x‖) ^ kf) ^ kg := fun i hi ↦ by
+    refine le_trans (hCg i hi (f x)) ?_
+    refine mul_le_mul_of_nonneg_left ?_ hCg_nn
+    exact pow_le_pow_left₀ (by simp [add_nonneg]) (hgf x) kg
+  use kf * (kg + n), n.factorial * Cg * 2 ^ kg * max 1 Cf ^ (kg + n)
+  intro x
+  have hn : n ≤ ∞ := by norm_cast; simp
+  refine le_of_le_of_eq (norm_iteratedFDeriv_comp_le hg.1 hf.1 hn x (hC x) (hD x)) ?_
+  ring
+
+lemma _root_.Function.HasTemperateGrowth.neg {f : E → F} (hf : f.HasTemperateGrowth) :
+    (-f ·).HasTemperateGrowth :=
+  .comp (-ContinuousLinearMap.id ℝ F).hasTemperateGrowth hf
+
+/-- Given a `HasTemperateGrowth` function taking values in `F →L[ℝ] G`, the application of this
+`ContinuousLinearMap` to a `HasTemperateGrowth` function is a `HasTemperateGrowth` function.
+
+Defined in analogy to `ContDiff.clm_apply` and `norm_iteratedFDeriv_clm_apply`.
+-/
+theorem _root_.Function.HasTemperateGrowth.clm_apply {f : E → F →L[ℝ] G}
+    (hf : f.HasTemperateGrowth) {g : E → F} (hg : g.HasTemperateGrowth) :
+    Function.HasTemperateGrowth fun x ↦ f x (g x) := by
+  refine ⟨hf.1.clm_apply hg.1, ?_⟩
+  intro n
+  rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨kg, Cg, ⟨_, hCg⟩⟩
+  rcases hf.norm_iteratedFDeriv_le_uniform_aux n with ⟨kf, Cf, ⟨hCf_nn, hCf⟩⟩
+  use kf + kg, 2 ^ n * Cf * Cg
+  intro x
+  have hn : n ≤ ∞ := by norm_cast; simp
+  refine le_trans (norm_iteratedFDeriv_clm_apply hf.1 hg.1 x hn) ?_
+  norm_cast
+  simp only [← Nat.sum_range_choose, Nat.cast_sum, Finset.sum_mul]
+  refine Finset.sum_le_sum fun i hi ↦ ?_
+  simp only [mul_assoc (Nat.choose _ _ : ℝ)]
+  refine mul_le_mul_of_nonneg_left ?_ (Nat.cast_nonneg _)
+  simp only [Finset.mem_range, Nat.lt_succ] at hi
+  refine le_trans (mul_le_mul (hCf i hi x) (hCg (n - i) (n.sub_le i) x) ?_ ?_) ?_
+  · simp
+  · refine mul_nonneg hCf_nn ?_
+    simp [pow_nonneg, add_nonneg]
+  refine le_of_eq ?_
+  ring
+
+/-- The composition of a continuous bilinear map with `HasTemperateGrowth` functions. -/
+theorem _root_.Function.HasTemperateGrowth.bilinear (B : E →L[ℝ] F →L[ℝ] G) {f : D → E}
+    (hf : f.HasTemperateGrowth) {g : D → F} (hg : g.HasTemperateGrowth) :
+    Function.HasTemperateGrowth fun x ↦ B (f x) (g x) :=
+  .clm_apply (.clm_apply (.const B) hf) hg
+
+/-- The scalar multiplication of two `HasTemperateGrowth` functions. -/
+theorem _root_.Function.HasTemperateGrowth.smul [NormedField 𝕜] [NormedAlgebra ℝ 𝕜]
+    [NormedSpace 𝕜 F] {f : E → 𝕜} {g : E → F} (hf : f.HasTemperateGrowth)
+    (hg : g.HasTemperateGrowth) : (f • g).HasTemperateGrowth :=
+  .bilinear (.lsmul ℝ 𝕜) hf hg
+
+/-- The multiplication of two `HasTemperateGrowth` functions. -/
+theorem _root_.Function.HasTemperateGrowth.mul [NonUnitalNormedRing 𝕜] [NormedSpace ℝ 𝕜]
+    [IsScalarTower ℝ 𝕜 𝕜] [SMulCommClass ℝ 𝕜 𝕜] {f g : E → 𝕜} (hf : f.HasTemperateGrowth)
+    (hg : g.HasTemperateGrowth) : (f * g).HasTemperateGrowth :=
+  .bilinear (.mul ℝ 𝕜) hf hg
+
+end TemperateFunction
+
+section TemperateMeasure
 
 variable [NormedAddCommGroup D] [MeasurableSpace D]
 
@@ -662,7 +793,7 @@ lemma integral_pow_mul_le_of_le_of_pow_mul_le
   exact (pow_mul_le_of_le_of_pow_mul_le (norm_nonneg _) (norm_nonneg _) (hf v) (h'f v)).trans
     (le_of_eq (by ring))
 
-end TemperateGrowth
+end TemperateMeasure
 
 section CLM
 
