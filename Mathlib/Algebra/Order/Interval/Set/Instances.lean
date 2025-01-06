@@ -41,7 +41,7 @@ variable {α : Type*}
 
 section OrderedSemiring
 
-variable [OrderedSemiring α]
+variable [Semiring α] [PartialOrder α] [IsOrderedRing α]
 
 /-! ### Instances for `↥(Set.Icc 0 1)` -/
 
@@ -84,9 +84,11 @@ theorem coe_eq_one {x : Icc (0 : α) 1} : (x : α) = 1 ↔ x = 1 := by
 theorem coe_ne_one {x : Icc (0 : α) 1} : (x : α) ≠ 1 ↔ x ≠ 1 :=
   not_iff_not.mpr coe_eq_one
 
+omit [IsOrderedRing α] in
 theorem coe_nonneg (x : Icc (0 : α) 1) : 0 ≤ (x : α) :=
   x.2.1
 
+omit [IsOrderedRing α] in
 theorem coe_le_one (x : Icc (0 : α) 1) : (x : α) ≤ 1 :=
   x.2.2
 
@@ -121,21 +123,23 @@ theorem mul_le_right {x y : Icc (0 : α) 1} : x * y ≤ y :=
 instance monoidWithZero : MonoidWithZero (Icc (0 : α) 1) :=
   Subtype.coe_injective.monoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
-instance commMonoidWithZero {α : Type*} [OrderedCommSemiring α] :
+instance commMonoidWithZero {α : Type*} [CommSemiring α] [PartialOrder α] [IsOrderedRing α] :
     CommMonoidWithZero (Icc (0 : α) 1) :=
   Subtype.coe_injective.commMonoidWithZero _ coe_zero coe_one coe_mul coe_pow
 
-instance cancelMonoidWithZero {α : Type*} [OrderedRing α] [NoZeroDivisors α] :
+instance cancelMonoidWithZero {α : Type*} [Ring α] [PartialOrder α] [IsOrderedRing α]
+    [NoZeroDivisors α] :
     CancelMonoidWithZero (Icc (0 : α) 1) :=
   @Function.Injective.cancelMonoidWithZero α _ NoZeroDivisors.toCancelMonoidWithZero _ _ _ _
     (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
 
-instance cancelCommMonoidWithZero {α : Type*} [OrderedCommRing α] [NoZeroDivisors α] :
+instance cancelCommMonoidWithZero {α : Type*} [CommRing α] [PartialOrder α] [IsOrderedRing α]
+    [NoZeroDivisors α] :
     CancelCommMonoidWithZero (Icc (0 : α) 1) :=
   @Function.Injective.cancelCommMonoidWithZero α _ NoZeroDivisors.toCancelCommMonoidWithZero _ _ _ _
     (fun v => v.val) Subtype.coe_injective coe_zero coe_one coe_mul coe_pow
 
-variable {β : Type*} [OrderedRing β]
+variable {β : Type*} [Ring β] [PartialOrder β] [IsOrderedRing β]
 
 theorem one_sub_mem {t : β} (ht : t ∈ Icc (0 : β) 1) : 1 - t ∈ Icc (0 : β) 1 := by
   rw [mem_Icc] at *
@@ -173,9 +177,11 @@ theorem coe_eq_zero [Nontrivial α] {x : Ico (0 : α) 1} : (x : α) = 0 ↔ x = 
 theorem coe_ne_zero [Nontrivial α] {x : Ico (0 : α) 1} : (x : α) ≠ 0 ↔ x ≠ 0 :=
   not_iff_not.mpr coe_eq_zero
 
+omit [IsOrderedRing α] in
 theorem coe_nonneg (x : Ico (0 : α) 1) : 0 ≤ (x : α) :=
   x.2.1
 
+omit [IsOrderedRing α] in
 theorem coe_lt_one (x : Ico (0 : α) 1) : (x : α) < 1 :=
   x.2.2
 
@@ -194,14 +200,15 @@ theorem coe_mul (x y : Ico (0 : α) 1) : ↑(x * y) = (x * y : α) :=
 instance semigroup : Semigroup (Ico (0 : α) 1) :=
   Subtype.coe_injective.semigroup _ coe_mul
 
-instance commSemigroup {α : Type*} [OrderedCommSemiring α] : CommSemigroup (Ico (0 : α) 1) :=
+instance commSemigroup {α : Type*} [CommSemiring α] [PartialOrder α] [IsOrderedRing α] :
+    CommSemigroup (Ico (0 : α) 1) :=
   Subtype.coe_injective.commSemigroup _ coe_mul
 
 end Set.Ico
 
 end OrderedSemiring
 
-variable [StrictOrderedSemiring α]
+variable [Semiring α] [PartialOrder α] [IsStrictOrderedRing α]
 
 /-! ### Instances for `↥(Set.Ioc 0 1)` -/
 
@@ -226,9 +233,11 @@ theorem coe_eq_one {x : Ioc (0 : α) 1} : (x : α) = 1 ↔ x = 1 := by
 theorem coe_ne_one {x : Ioc (0 : α) 1} : (x : α) ≠ 1 ↔ x ≠ 1 :=
   not_iff_not.mpr coe_eq_one
 
+omit [IsStrictOrderedRing α] in
 theorem coe_pos (x : Ioc (0 : α) 1) : 0 < (x : α) :=
   x.2.1
 
+omit [IsStrictOrderedRing α] in
 theorem coe_le_one (x : Ioc (0 : α) 1) : (x : α) ≤ 1 :=
   x.2.2
 
@@ -256,14 +265,15 @@ instance semigroup : Semigroup (Ioc (0 : α) 1) :=
 instance monoid : Monoid (Ioc (0 : α) 1) :=
   Subtype.coe_injective.monoid _ coe_one coe_mul coe_pow
 
-instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigroup (Ioc (0 : α) 1) :=
+instance commSemigroup {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α] :
+    CommSemigroup (Ioc (0 : α) 1) :=
   Subtype.coe_injective.commSemigroup _ coe_mul
 
-instance commMonoid {α : Type*} [StrictOrderedCommSemiring α] :
+instance commMonoid {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α] :
     CommMonoid (Ioc (0 : α) 1) :=
   Subtype.coe_injective.commMonoid _ coe_one coe_mul coe_pow
 
-instance cancelMonoid {α : Type*} [StrictOrderedRing α] [IsDomain α] :
+instance cancelMonoid {α : Type*} [Ring α] [PartialOrder α] [IsStrictOrderedRing α] [IsDomain α] :
     CancelMonoid (Ioc (0 : α) 1) :=
   { Set.Ioc.monoid with
     mul_left_cancel := fun a _ _ h =>
@@ -271,7 +281,8 @@ instance cancelMonoid {α : Type*} [StrictOrderedRing α] [IsDomain α] :
     mul_right_cancel := fun _ b _ h =>
       Subtype.ext <| mul_right_cancel₀ b.prop.1.ne' <| (congr_arg Subtype.val h : _) }
 
-instance cancelCommMonoid {α : Type*} [StrictOrderedCommRing α] [IsDomain α] :
+instance cancelCommMonoid {α : Type*} [CommRing α] [PartialOrder α] [IsStrictOrderedRing α]
+    [IsDomain α] :
     CancelCommMonoid (Ioc (0 : α) 1) :=
   { Set.Ioc.cancelMonoid, Set.Ioc.commMonoid with }
 
@@ -282,9 +293,11 @@ end Set.Ioc
 
 namespace Set.Ioo
 
+omit [IsStrictOrderedRing α] in
 theorem pos (x : Ioo (0 : α) 1) : 0 < (x : α) :=
   x.2.1
 
+omit [IsStrictOrderedRing α] in
 theorem lt_one (x : Ioo (0 : α) 1) : (x : α) < 1 :=
   x.2.2
 
@@ -299,10 +312,11 @@ theorem coe_mul (x y : Ioo (0 : α) 1) : ↑(x * y) = (x * y : α) :=
 instance semigroup : Semigroup (Ioo (0 : α) 1) :=
   Subtype.coe_injective.semigroup _ coe_mul
 
-instance commSemigroup {α : Type*} [StrictOrderedCommSemiring α] : CommSemigroup (Ioo (0 : α) 1) :=
+instance commSemigroup {α : Type*} [CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α] :
+    CommSemigroup (Ioo (0 : α) 1) :=
   Subtype.coe_injective.commSemigroup _ coe_mul
 
-variable {β : Type*} [OrderedRing β]
+variable {β : Type*} [Ring β] [PartialOrder β] [IsOrderedRing β]
 
 theorem one_sub_mem {t : β} (ht : t ∈ Ioo (0 : β) 1) : 1 - t ∈ Ioo (0 : β) 1 := by
   rw [mem_Ioo] at *

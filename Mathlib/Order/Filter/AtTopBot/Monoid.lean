@@ -17,7 +17,7 @@ namespace Filter
 
 section OrderedAddCommMonoid
 
-variable [OrderedAddCommMonoid β] {l : Filter α} {f g : α → β}
+variable [AddCommMonoid β] [PartialOrder β] [IsOrderedAddMonoid β] {l : Filter α} {f g : α → β}
 
 theorem tendsto_atTop_add_nonneg_left' (hf : ∀ᶠ x in l, 0 ≤ f x) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x + g x) l atTop :=
@@ -25,7 +25,7 @@ theorem tendsto_atTop_add_nonneg_left' (hf : ∀ᶠ x in l, 0 ≤ f x) (hg : Ten
 
 theorem tendsto_atBot_add_nonpos_left' (hf : ∀ᶠ x in l, f x ≤ 0) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x + g x) l atBot :=
-  @tendsto_atTop_add_nonneg_left' _ βᵒᵈ _ _ _ _ hf hg
+  tendsto_atTop_add_nonneg_left' (β := βᵒᵈ) hf hg
 
 theorem tendsto_atTop_add_nonneg_left (hf : ∀ x, 0 ≤ f x) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x + g x) l atTop :=
@@ -33,7 +33,7 @@ theorem tendsto_atTop_add_nonneg_left (hf : ∀ x, 0 ≤ f x) (hg : Tendsto g l 
 
 theorem tendsto_atBot_add_nonpos_left (hf : ∀ x, f x ≤ 0) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x + g x) l atBot :=
-  @tendsto_atTop_add_nonneg_left _ βᵒᵈ _ _ _ _ hf hg
+  tendsto_atTop_add_nonneg_left (β := βᵒᵈ) hf hg
 
 theorem tendsto_atTop_add_nonneg_right' (hf : Tendsto f l atTop) (hg : ∀ᶠ x in l, 0 ≤ g x) :
     Tendsto (fun x => f x + g x) l atTop :=
@@ -41,7 +41,7 @@ theorem tendsto_atTop_add_nonneg_right' (hf : Tendsto f l atTop) (hg : ∀ᶠ x 
 
 theorem tendsto_atBot_add_nonpos_right' (hf : Tendsto f l atBot) (hg : ∀ᶠ x in l, g x ≤ 0) :
     Tendsto (fun x => f x + g x) l atBot :=
-  @tendsto_atTop_add_nonneg_right' _ βᵒᵈ _ _ _ _ hf hg
+  tendsto_atTop_add_nonneg_right' (β := βᵒᵈ) hf hg
 
 theorem tendsto_atTop_add_nonneg_right (hf : Tendsto f l atTop) (hg : ∀ x, 0 ≤ g x) :
     Tendsto (fun x => f x + g x) l atTop :=
@@ -49,7 +49,7 @@ theorem tendsto_atTop_add_nonneg_right (hf : Tendsto f l atTop) (hg : ∀ x, 0 �
 
 theorem tendsto_atBot_add_nonpos_right (hf : Tendsto f l atBot) (hg : ∀ x, g x ≤ 0) :
     Tendsto (fun x => f x + g x) l atBot :=
-  @tendsto_atTop_add_nonneg_right _ βᵒᵈ _ _ _ _ hf hg
+  tendsto_atTop_add_nonneg_right (β := βᵒᵈ) hf hg
 
 theorem tendsto_atTop_add (hf : Tendsto f l atTop) (hg : Tendsto g l atTop) :
     Tendsto (fun x => f x + g x) l atTop :=
@@ -57,7 +57,7 @@ theorem tendsto_atTop_add (hf : Tendsto f l atTop) (hg : Tendsto g l atTop) :
 
 theorem tendsto_atBot_add (hf : Tendsto f l atBot) (hg : Tendsto g l atBot) :
     Tendsto (fun x => f x + g x) l atBot :=
-  @tendsto_atTop_add _ βᵒᵈ _ _ _ _ hf hg
+  tendsto_atTop_add (β := βᵒᵈ) hf hg
 
 theorem Tendsto.nsmul_atTop (hf : Tendsto f l atTop) {n : ℕ} (hn : 0 < n) :
     Tendsto (fun x => n • f x) l atTop :=
@@ -71,13 +71,14 @@ theorem Tendsto.nsmul_atTop (hf : Tendsto f l atTop) {n : ℕ} (hn : 0 < n) :
 
 theorem Tendsto.nsmul_atBot (hf : Tendsto f l atBot) {n : ℕ} (hn : 0 < n) :
     Tendsto (fun x => n • f x) l atBot :=
-  @Tendsto.nsmul_atTop α βᵒᵈ _ l f hf n hn
+  Tendsto.nsmul_atTop (β := βᵒᵈ) hf hn
 
 end OrderedAddCommMonoid
 
 section OrderedCancelAddCommMonoid
 
-variable [OrderedCancelAddCommMonoid β] {l : Filter α} {f g : α → β}
+variable [AddCommMonoid β] [PartialOrder β] [IsOrderedCancelAddMonoid β]
+  {l : Filter α} {f g : α → β}
 
 theorem tendsto_atTop_of_add_const_left (C : β) (hf : Tendsto (fun x => C + f x) l atTop) :
     Tendsto f l atTop :=

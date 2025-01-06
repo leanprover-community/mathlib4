@@ -81,6 +81,14 @@ theorem IsOrderedCancelMonoid.toMulRightReflectLT :
     MulRightReflectLT α :=
   inferInstance
 
+-- See note [lower instance priority]
+@[to_additive IsOrderedCancelAddMonoid.toIsCancelAdd]
+instance (priority := 100) IsOrderedCancelMonoid.toIsCancelMul : IsCancelMul α where
+  mul_left_cancel _ _ _ h :=
+    (le_of_mul_le_mul_left' h.le).antisymm <| le_of_mul_le_mul_left' h.ge
+  mul_right_cancel _ _ _ h :=
+    (le_of_mul_le_mul_right' h.le).antisymm <| le_of_mul_le_mul_right' h.ge
+
 end IsOrderedCancelMonoid
 
 /-- An ordered (additive) commutative monoid is a commutative monoid with a partial order such that
@@ -116,18 +124,6 @@ multiplication is cancellative and monotone. -/
   (since := "2025-01-05")]
 structure OrderedCancelCommMonoid (α : Type*) extends OrderedCommMonoid α where
   protected le_of_mul_le_mul_left : ∀ a b c : α, a * b ≤ a * c → b ≤ c
-
-section IsOrderedCancelMonoid
-variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α]
-
--- TODO: move to Algebra.Order.Monoid.Unbundled.Defs
--- See note [lower instance priority]
-@[to_additive IsOrderedCancelAddMonoid.toIsLeftCancelAdd]
-instance (priority := 100) IsOrderedCancelMonoid.toIsLeftCancelMul : IsLeftCancelMul α where
-  mul_left_cancel :=
-    fun _ _ _ h => (le_of_mul_le_mul_left' h.le).antisymm <| le_of_mul_le_mul_left' h.ge
-
-end IsOrderedCancelMonoid
 
 set_option linter.deprecated false in
 /-- A linearly ordered additive commutative monoid. -/
