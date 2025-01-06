@@ -936,6 +936,9 @@ theorem Fintype.coe_image_univ [Fintype α] [DecidableEq β] {f : α → β} :
 instance List.Subtype.fintype [DecidableEq α] (l : List α) : Fintype { x // x ∈ l } :=
   Fintype.ofList l.attach l.mem_attach
 
+instance List.setOf_fintype [DecidableEq α] (l : List α) : Fintype { x | x ∈ l } :=
+  Fintype.ofList l.attach l.mem_attach
+
 instance Multiset.Subtype.fintype [DecidableEq α] (s : Multiset α) : Fintype { x // x ∈ s } :=
   Fintype.ofMultiset s.attach s.mem_attach
 

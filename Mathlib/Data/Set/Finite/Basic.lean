@@ -695,6 +695,22 @@ theorem Finite.dinduction_on {C : ∀ s : Set α, s.Finite → Prop} (s : Set α
     Finite.induction_on h (fun _ => H0) fun has hs ih _ => H1 has hs (ih _)
   this h
 
+theorem setOf_nodup_perm (l : List α) (H : l.Nodup) [DecidableEq α]
+    : l.finite_toSet.toFinset.toList.Perm l := by
+  rw [List.perm_iff_count]
+  intro a
+  by_cases h : a ∈ l
+  · rw [l.count_eq_one_of_mem H h,
+      l.finite_toSet.toFinset.toList.count_eq_one_of_mem (Finset.nodup_toList _) (by simp_all)]
+  · rw [l.count_eq_zero_of_not_mem h,
+      l.finite_toSet.toFinset.toList.count_eq_zero_of_not_mem (by simp_all)]
+
+theorem setOf_eq_singleton_iff_of_nodup (l : List α) (H : l.Nodup) {a : α} [DecidableEq α]
+    : { x | x ∈ l } = {a} ↔ l = [a] := by
+  refine ⟨fun h ↦ (l.perm_singleton).mp ((setOf_nodup_perm l H).symm.trans ?_), by simp_all⟩
+  rw [List.perm_singleton, Finset.toList_eq_singleton_iff, toFinite_toFinset]
+  simp only [h, toFinset_singleton]
+
 section
 
 attribute [local instance] Nat.fintypeIio

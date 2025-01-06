@@ -390,21 +390,6 @@ theorem Nodup.take_eq_filter_mem [DecidableEq α] :
     have : x ≠ b := fun h => (nodup_cons.1 hl).1 (h ▸ hx)
     simp (config := {contextual := true}) [List.mem_filter, this, hx]
 
-theorem setOf_eq_singleton_iff_of_nodup (H : Nodup l) {a : α} [DecidableEq α]
-    : { x | x ∈ l } = {a} ↔ l = [a] := by
-  refine ⟨fun h ↦ ?_, by simp_all⟩
-  induction' l with a' l
-  · absurd h
-    rw [setOf_mem_empty]
-    exact (Set.singleton_ne_empty a).symm
-  · have h₁ := {x | x ∈ l}.mem_insert a'
-    rw [List.set_of_mem_cons] at h
-    rw [h] at h₁
-    rw [h₁] at h
-    congr
-    exact setOf_mem_eq_empty_iff.mp <|
-      (Set.insert_diff_self_of_not_mem (Set.nmem_setOf_iff.mpr H.not_mem)).symm.trans (by simp_all)
-
 end List
 
 theorem Option.toList_nodup : ∀ o : Option α, o.toList.Nodup
