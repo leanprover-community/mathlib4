@@ -21,7 +21,7 @@ Let `K` be a field, `A` be a `K`-algebra and `L` be a field extension of `K`.
     If `A` is (essentially) of finite type over `K`,
     then `A/K` is étale iff `A` is a finite product of separable field extensions.
 - `Algebra.Etale.iff_exists_algEquiv_prod`:
-    `A/K` is etale iff `A` is a finite product of finite separable field extensions.
+    `A/K` is étale iff `A` is a finite product of finite separable field extensions.
 
 ## References
 
