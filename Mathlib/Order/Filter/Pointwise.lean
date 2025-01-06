@@ -230,7 +230,8 @@ theorem inv_le_self : f⁻¹ ≤ f ↔ f⁻¹ = f :=
 end InvolutiveInv
 
 @[to_additive (attr := simp)]
-lemma inv_atTop {G : Type*} [OrderedCommGroup G] : (atTop : Filter G)⁻¹ = atBot :=
+lemma inv_atTop {G : Type*} [CommGroup G] [PartialOrder G] [IsOrderedMonoid G] :
+    (atTop : Filter G)⁻¹ = atBot :=
   (OrderIso.inv G).map_atTop
 
 /-! ### Filter addition/multiplication -/

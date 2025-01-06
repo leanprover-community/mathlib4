@@ -24,7 +24,7 @@ open Function
 variable {α : Type*}
 
 section LinearOrderedCommGroup
-variable [LinearOrderedCommGroup α] {a b : α}
+variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] {a b : α}
 
 @[to_additive] lemma mabs_pow (n : ℕ) (a : α) : |a ^ n|ₘ = |a|ₘ ^ n := by
   obtain ha | ha := le_total a 1
@@ -60,16 +60,29 @@ end LinearOrderedCommGroup
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α] {a b c : α}
+variable [AddCommGroup α] [LinearOrder α]
 
--- Porting note:
--- Lean can perfectly well find this instance,
--- but in the rewrites below it is going looking for it without having fixed `α`.
-example : AddRightMono α := inferInstance
+theorem min_abs_abs_le_abs_max {a b : α} : min |a| |b| ≤ |max a b| :=
+  (le_total a b).elim (fun h => (min_le_right _ _).trans_eq <| congr_arg _ (max_eq_right h).symm)
+    fun h => (min_le_left _ _).trans_eq <| congr_arg _ (max_eq_left h).symm
 
-theorem abs_le : |a| ≤ b ↔ -b ≤ a ∧ a ≤ b := by rw [abs_le', and_comm, @neg_le α]
+theorem min_abs_abs_le_abs_min {a b : α} : min |a| |b| ≤ |min a b| :=
+  (le_total a b).elim (fun h => (min_le_left _ _).trans_eq <| congr_arg _ (min_eq_left h).symm)
+    fun h => (min_le_right _ _).trans_eq <| congr_arg _ (min_eq_right h).symm
 
-theorem le_abs' : a ≤ |b| ↔ b ≤ -a ∨ a ≤ b := by rw [le_abs, or_comm, @le_neg α]
+theorem abs_max_le_max_abs_abs {a b : α} : |max a b| ≤ max |a| |b| :=
+  (le_total a b).elim (fun h => (congr_arg _ <| max_eq_right h).trans_le <| le_max_right _ _)
+    fun h => (congr_arg _ <| max_eq_left h).trans_le <| le_max_left _ _
+
+theorem abs_min_le_max_abs_abs {a b : α} : |min a b| ≤ max |a| |b| :=
+  (le_total a b).elim (fun h => (congr_arg _ <| min_eq_left h).trans_le <| le_max_left _ _) fun h =>
+    (congr_arg _ <| min_eq_right h).trans_le <| le_max_right _ _
+
+variable [IsOrderedAddMonoid α] {a b c : α}
+
+theorem abs_le : |a| ≤ b ↔ -b ≤ a ∧ a ≤ b := by rw [abs_le', and_comm, neg_le]
+
+theorem le_abs' : a ≤ |b| ↔ b ≤ -a ∨ a ≤ b := by rw [le_abs, or_comm, le_neg]
 
 theorem neg_le_of_abs_le (h : |a| ≤ b) : -b ≤ a :=
   (abs_le.mp h).1
@@ -149,22 +162,6 @@ theorem abs_le_max_abs_abs (hab : a ≤ b) (hbc : b ≤ c) : |b| ≤ max |a| |c|
   abs_le'.2
     ⟨by simp [hbc.trans (le_abs_self c)], by
       simp [((@neg_le_neg_iff α ..).mpr hab).trans (neg_le_abs a)]⟩
-
-theorem min_abs_abs_le_abs_max : min |a| |b| ≤ |max a b| :=
-  (le_total a b).elim (fun h => (min_le_right _ _).trans_eq <| congr_arg _ (max_eq_right h).symm)
-    fun h => (min_le_left _ _).trans_eq <| congr_arg _ (max_eq_left h).symm
-
-theorem min_abs_abs_le_abs_min : min |a| |b| ≤ |min a b| :=
-  (le_total a b).elim (fun h => (min_le_left _ _).trans_eq <| congr_arg _ (min_eq_left h).symm)
-    fun h => (min_le_right _ _).trans_eq <| congr_arg _ (min_eq_right h).symm
-
-theorem abs_max_le_max_abs_abs : |max a b| ≤ max |a| |b| :=
-  (le_total a b).elim (fun h => (congr_arg _ <| max_eq_right h).trans_le <| le_max_right _ _)
-    fun h => (congr_arg _ <| max_eq_left h).trans_le <| le_max_left _ _
-
-theorem abs_min_le_max_abs_abs : |min a b| ≤ max |a| |b| :=
-  (le_total a b).elim (fun h => (congr_arg _ <| min_eq_left h).trans_le <| le_max_left _ _) fun h =>
-    (congr_arg _ <| min_eq_right h).trans_le <| le_max_right _ _
 
 theorem eq_of_abs_sub_eq_zero {a b : α} (h : |a - b| = 0) : a = b :=
   sub_eq_zero.1 <| (abs_eq_zero (α := α)).1 h

@@ -110,8 +110,8 @@ Let `R` be a linearly ordered semiring in which the property `a ≤ b → ∃ c,
 (e.g. `R = ℕ`). If `S : R` is a sum of squares in `R`, then `0 ≤ S`. This is used in
 `Mathlib.Algebra.Ring.Semireal.Defs` to show that linearly ordered fields are semireal.
 -/
-theorem IsSumSq.nonneg {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {S : R}
-    (pS : IsSumSq S) : 0 ≤ S := by
+theorem IsSumSq.nonneg {R : Type*} [Semiring R] [LinearOrder R] [IsStrictOrderedRing R]
+    [ExistsAddOfLE R] {S : R} (pS : IsSumSq S) : 0 ≤ S := by
   induction pS with
   | zero             => simp only [le_refl]
   | sq_add x S _ ih  => apply add_nonneg ?_ ih; simp only [← pow_two x, sq_nonneg]
