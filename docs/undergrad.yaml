@@ -662,8 +662,8 @@ Numerical Analysis:
     rate of convergence: ''
     application to the calculation of multiple integrals: ''
   Approximation of numerical functions:
-    Lagrange interpolation: 'Lagrange.interpolate'
-    Lagrange polynomial of a function at (n + 1) points: 'Lagrange.interpolate'
+    Lagrange interpolation: 'Polynomial.interpolate'
+    Lagrange polynomial of a function at (n + 1) points: 'Polynomial.interpolate'
     estimation of the error: ''
   Ordinary differential equations:
     numerical aspects of Cauchy's problem: ''
