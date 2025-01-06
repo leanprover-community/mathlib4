@@ -12,9 +12,12 @@ import Mathlib.RingTheory.Finiteness.Defs
 
 An Azumaya algebra over a commutative ring `R` is a finitely generated, projective
 and faithful R-algebra
-where the tensorproduct `A ⊗[R] Aᵐᵒᵖ` is isomorphic to the endomorphism ring of A `End R A`
+where the tensor product `A ⊗[R] Aᵐᵒᵖ` is isomorphic to the endomorphism ring of A `End R A`
 via the map `f : a ⊗ b ↦ (x ↦ a * x * b.unop)`.
-TODO : Add the rest three definitions and prove they are equivalent.
+TODO : Add the rest three definitions and prove they are equivalent:
+· There exist an `R`-algebra `B` such that `B ⊗[R] A` is Morita equivalent to `R`,
+· `Aᵐᵒᵖ ⊗[R] A` is Morita equivalent to `R`,
+· The center of `A` is `R` and `A` is a separable algebra.
 
 ## Reference
 
@@ -32,14 +35,27 @@ open TensorProduct MulOpposite
 
 /-- The canonical map from `A ⊗[R] Aᵐᵒᵖ` to `Module.End R A` where
   `a ⊗ b` maps to `f : x ↦ a * x * b`-/
-noncomputable abbrev endo : (A ⊗[R] Aᵐᵒᵖ) →ₐ[R] Module.End R A :=
-Algebra.TensorProduct.lift
-  (Algebra.lsmul R R A) (Algebra.lsmul R R A)
-  (fun _ _ ↦ by ext; simp [commute_iff_eq, mul_assoc])
-
-@[simp] lemma endo_apply (a : A) (b : Aᵐᵒᵖ) (x : A) : endo R A (a ⊗ₜ b) x = a * x * b.unop := by
-  simp [mul_assoc]
+noncomputable abbrev TensorProduct.Algebra.moduleAux' : (A ⊗[R] Aᵐᵒᵖ) →ₐ[R] Module.End R A :=
+  {
+    __ := TensorProduct.Algebra.moduleAux
+    map_one' := by simp [Algebra.TensorProduct.one_def, Algebra.moduleAux]
+    map_mul' := fun x y ↦ by
+      induction x using TensorProduct.induction_on with
+      | zero => simp
+      | tmul x1 x2 =>
+        induction y using TensorProduct.induction_on with
+        | zero => simp
+        | tmul y1 y2 =>
+          ext; simp [mul_assoc, Algebra.moduleAux_apply]
+        | add y1 y2 hy1 hy2 => simp_all [mul_add]
+      | add x1 x2 hx1 hx2 => simp_all [add_mul]
+    map_zero' := rfl
+    commutes' := fun r ↦ by
+      ext a
+      simp [Algebra.moduleAux_apply, Algebra.algebraMap_eq_smul_one,
+        Algebra.TensorProduct.one_def]
+  }
 
 class IsAzumaya extends Module.Projective R A, FaithfulSMul R A : Prop where
     fg : Module.Finite R A
-    bij : Function.Bijective <| endo R A
+    bij : Function.Bijective <| TensorProduct.Algebra.moduleAux' R A
