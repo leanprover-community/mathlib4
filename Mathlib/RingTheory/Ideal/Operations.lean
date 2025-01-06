@@ -1207,12 +1207,13 @@ open Submodule
 
 instance algebraIdeal : Algebra (Ideal R) (Submodule R A) where
   __ := moduleSubmodule
-  toFun := map (Algebra.linearMap R A)
-  map_one' := by
-    rw [one_eq_span, map_span, Set.image_singleton, Algebra.linearMap_apply, map_one, one_eq_span]
-  map_mul' := (Submodule.map_mul · · <| Algebra.ofId R A)
-  map_zero' := map_bot _
-  map_add' := (map_sup · · _)
+  algebraMap := {
+    toFun := map (Algebra.linearMap R A)
+    map_one' := by
+      rw [one_eq_span, map_span, Set.image_singleton, Algebra.linearMap_apply, map_one, one_eq_span]
+    map_mul' := (Submodule.map_mul · · <| Algebra.ofId R A)
+    map_zero' := map_bot _
+    map_add' := (map_sup · · _)}
   commutes' I M := mul_comm_of_commute <| by rintro _ ⟨r, _, rfl⟩ a _; apply Algebra.commutes
   smul_def' I M := le_antisymm (smul_le.mpr fun r hr a ha ↦ by
     rw [Algebra.smul_def]; exact Submodule.mul_mem_mul ⟨r, hr, rfl⟩ ha) (Submodule.mul_le.mpr <| by
