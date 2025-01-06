@@ -103,6 +103,6 @@ end LinearOrderedSemifield
 
 instance linearOrderedCommGroupWithZero [LinearOrderedField α] :
     LinearOrderedCommGroupWithZero { x : α // 0 ≤ x } :=
-  LinearOrderedSemifield.toLinearOrderedCommGroupWithZero
+  CanonicallyOrderedAdd.toLinearOrderedCommGroupWithZero
 
 end Nonneg
