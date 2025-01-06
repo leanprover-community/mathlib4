@@ -138,7 +138,7 @@ private lemma find_contract {a : k[X]}
 
 variable [DecidableEq k]
 
-theorem Polynomial.flt_catalan_aux
+private theorem Polynomial.flt_catalan_aux
     {p q r : ℕ} {a b c : k[X]} {u v w : k}
     (heq : C u * a ^ p + C v * b ^ q + C w * c ^ r = 0)
     (hp : 0 < p) (hq : 0 < q) (hr : 0 < r)
@@ -189,7 +189,7 @@ theorem Polynomial.flt_catalan_aux
         simp_rw [← map_pow, ← map_mul, ← map_add] at heq
         rwa [Polynomial.expand_eq_zero (zero_lt_iff.mpr chn0)] at heq
 
--- Nonsolvability of Fermat-Catalan equation.
+/-- Nonsolvability of the Fermat-Catalan equation. -/
 theorem Polynomial.flt_catalan
     {p q r : ℕ} (hp : 0 < p) (hq : 0 < q) (hr : 0 < r)
     (hineq : q * r + r * p + p * q ≤ p * q * r)
@@ -234,7 +234,7 @@ theorem Polynomial.flt
   rw [eq_lhs, mul_assoc, mul_assoc]
   exact Nat.mul_le_mul_right (n * n) hn
 
-theorem fermatLastTheoremPolynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k) ≠ 0):
+theorem fermatLastTheoremWith'_polynomial {n : ℕ} (hn : 3 ≤ n) (chn : (n : k) ≠ 0) :
     FermatLastTheoremWith' k[X] n := by
   rw [FermatLastTheoremWith']
   intros a b c ha hb hc heq
