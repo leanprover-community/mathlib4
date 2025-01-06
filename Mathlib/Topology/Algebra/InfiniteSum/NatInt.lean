@@ -533,7 +533,7 @@ theorem pnat_multipliable_iff_multipliable_succ {α : Type*} [TopologicalSpace �
   Equiv.pnatEquivNat.symm.multipliable_iff.symm
 
 @[to_additive]
-theorem tprod_pnat_eq_tprod_succ {α : Type*} [TopologicalSpace α] [CommMonoid α] [T2Space α]
-    (f : ℕ → α) : ∏' n : ℕ+, f n = ∏' n, f (n + 1) := (Equiv.pnatEquivNat.symm.tprod_eq _).symm
+theorem tprod_pnat_eq_tprod_succ {α : Type*} [TopologicalSpace α] [CommMonoid α] (f : ℕ → α) :
+    ∏' n : ℕ+, f n = ∏' n, f (n + 1) := (Equiv.pnatEquivNat.symm.tprod_eq _).symm
 
 end pnat
