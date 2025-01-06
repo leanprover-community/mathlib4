@@ -225,13 +225,13 @@ def limit.isoLimitCone {F : J ⥤ C} [HasLimit F] (t : LimitCone F) : limit F �
 theorem limit.isoLimitCone_hom_π {F : J ⥤ C} [HasLimit F] (t : LimitCone F) (j : J) :
     (limit.isoLimitCone t).hom ≫ t.cone.π.app j = limit.π F j := by
   dsimp [limit.isoLimitCone, IsLimit.conePointUniqueUpToIso]
-  aesop_cat
+  simp
 
 @[reassoc (attr := simp)]
 theorem limit.isoLimitCone_inv_π {F : J ⥤ C} [HasLimit F] (t : LimitCone F) (j : J) :
     (limit.isoLimitCone t).inv ≫ limit.π F j = t.cone.π.app j := by
   dsimp [limit.isoLimitCone, IsLimit.conePointUniqueUpToIso]
-  aesop_cat
+  simp
 
 @[ext]
 theorem limit.hom_ext {F : J ⥤ C} [HasLimit F] {X : C} {f f' : X ⟶ limit F}
@@ -750,13 +750,13 @@ def colimit.isoColimitCocone {F : J ⥤ C} [HasColimit F] (t : ColimitCocone F) 
 theorem colimit.isoColimitCocone_ι_hom {F : J ⥤ C} [HasColimit F] (t : ColimitCocone F) (j : J) :
     colimit.ι F j ≫ (colimit.isoColimitCocone t).hom = t.cocone.ι.app j := by
   dsimp [colimit.isoColimitCocone, IsColimit.coconePointUniqueUpToIso]
-  aesop_cat
+  simp
 
 @[reassoc (attr := simp)]
 theorem colimit.isoColimitCocone_ι_inv {F : J ⥤ C} [HasColimit F] (t : ColimitCocone F) (j : J) :
     t.cocone.ι.app j ≫ (colimit.isoColimitCocone t).inv = colimit.ι F j := by
   dsimp [colimit.isoColimitCocone, IsColimit.coconePointUniqueUpToIso]
-  aesop_cat
+  simp
 
 @[ext]
 theorem colimit.hom_ext {F : J ⥤ C} [HasColimit F] {X : C} {f f' : colimit F ⟶ X}
