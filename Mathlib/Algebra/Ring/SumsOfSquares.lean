@@ -25,7 +25,6 @@ We introduce a predicate for sums of squares in a ring.
 
 -/
 
-universe u
 variable {R : Type*}
 
 /--
