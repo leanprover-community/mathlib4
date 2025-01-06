@@ -119,11 +119,11 @@ theorem isSquare_iff {q : ℚ} : IsSquare q ↔ IsSquare q.num ∧ IsSquare q.de
 
 @[norm_cast, simp]
 theorem isSquare_natCast_iff {n : ℕ} : IsSquare (n : ℚ) ↔ IsSquare n := by
-  simp_rw [isSquare_iff, num_natCast, den_natCast, isSquare_one, and_true, Int.isSquare_natCast_iff]
+  simp_rw [isSquare_iff, num_natCast, den_natCast, IsSquare.one, and_true, Int.isSquare_natCast_iff]
 
 @[norm_cast, simp]
 theorem isSquare_intCast_iff {z : ℤ} : IsSquare (z : ℚ) ↔ IsSquare z := by
-  simp_rw [isSquare_iff, intCast_num, intCast_den, isSquare_one, and_true]
+  simp_rw [isSquare_iff, intCast_num, intCast_den, IsSquare.one, and_true]
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]

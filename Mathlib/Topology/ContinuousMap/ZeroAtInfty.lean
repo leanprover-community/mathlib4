@@ -430,7 +430,6 @@ theorem isClosed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →�
       _ < ε := by simpa [add_halves ε] using add_lt_add_right (mem_ball.1 hg) (ε / 2)
   exact ⟨⟨f.toContinuousMap, this⟩, rfl⟩
 
-@[deprecated (since := "2024-03-17")] alias closed_range_toBCF := isClosed_range_toBCF
 
 /-- Continuous functions vanishing at infinity taking values in a complete space form a
 complete space. -/
