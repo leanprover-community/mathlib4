@@ -73,6 +73,10 @@ lemma isColimit_iff_bijective_desc [DecidableEq J] :
     dsimp [c']
     rw [AddEquiv.apply_symm_apply]
 
+/--
+A functor `F : J ⥤ AddCommGrp.{w}` has a colimit if and only if `Colimits.Quot F` is
+`w`-small.
+-/
 lemma hasColimit_iff_small_quot [DecidableEq J] : HasColimit F ↔ Small.{w} (Quot F) :=
   ⟨fun _ ↦ Small.mk ⟨_, ⟨(Equiv.ofBijective _ ((isColimit_iff_bijective_desc (colimit.cocone F)).mp
     ⟨colimit.isColimit _⟩))⟩⟩, hasColimit_of_small_quot F⟩
