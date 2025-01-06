@@ -30,8 +30,8 @@ The solutions is to use a typeclass, and that is exactly what we do in this file
 variable {α : Type*}
 
 /-- A linearly ordered commutative monoid with a zero element. -/
-class LinearOrderedCommMonoidWithZero (α : Type*) extends LinearOrderedCommMonoid α,
-  CommMonoidWithZero α where
+class LinearOrderedCommMonoidWithZero (α : Type*) extends CommMonoid α, LinearOrder α,
+    IsOrderedMonoid α, CommMonoidWithZero α where
   /-- `0 ≤ 1` in any linearly ordered commutative monoid. -/
   zero_le_one : (0 : α) ≤ 1
 
@@ -60,7 +60,7 @@ abbrev Function.Injective.linearOrderedCommMonoidWithZero {β : Type*} [Zero β]
     (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
     (hsup : ∀ x y, f (x ⊔ y) = max (f x) (f y)) (hinf : ∀ x y, f (x ⊓ y) = min (f x) (f y)) :
     LinearOrderedCommMonoidWithZero β :=
-  { LinearOrder.lift f hf hsup hinf, hf.orderedCommMonoid f one mul npow,
+  { LinearOrder.lift f hf hsup hinf, hf.isOrderedMonoid f one mul npow,
     hf.commMonoidWithZero f zero one mul npow with
     zero_le_one :=
       show f 0 ≤ f 1 by simp only [zero, one, LinearOrderedCommMonoidWithZero.zero_le_one] }
@@ -216,7 +216,7 @@ end LinearOrderedCommGroupWithZero
 instance instLinearOrderedCommMonoidWithZeroMultiplicativeOrderDual
     [LinearOrderedAddCommMonoidWithTop α] :
     LinearOrderedCommMonoidWithZero (Multiplicative αᵒᵈ) where
-  __ := Multiplicative.orderedCommMonoid
+  __ := Multiplicative.isOrderedMonoid
   __ := Multiplicative.linearOrder
   zero := Multiplicative.ofAdd (OrderDual.toDual ⊤)
   zero_mul := @top_add _ (_)
@@ -353,9 +353,9 @@ protected lemma min_le_iff : min (a : WithZero α) b ≤ c ↔ min a b ≤ c := 
 
 end LinearOrder
 
-instance orderedCommMonoid [OrderedCommMonoid α] : OrderedCommMonoid (WithZero α) :=
-  { WithZero.commMonoidWithZero.toCommMonoid, WithZero.partialOrder with
-    mul_le_mul_left := fun _ _ => mul_le_mul_left' }
+instance isOrderedMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+    IsOrderedMonoid (WithZero α) :=
+  { mul_le_mul_left := fun _ _ => mul_le_mul_left' }
 
 /-
 Note 1 : the below is not an instance because it requires `zero_le`. It seems
@@ -364,12 +364,12 @@ Note 2 : there is no multiplicative analogue because it does not seem necessary.
 Mathematicians might be more likely to use the order-dual version, where all
 elements are ≤ 1 and then 1 is the top element.
 -/
-/-- If `0` is the least element in `α`, then `WithZero α` is an `OrderedAddCommMonoid`. -/
+/-- If `0` is the least element in `α`, then `WithZero α` is an ordered `AddCommMonoid`. -/
 -- See note [reducible non-instances]
-protected abbrev orderedAddCommMonoid [OrderedAddCommMonoid α] (zero_le : ∀ a : α, 0 ≤ a) :
-    OrderedAddCommMonoid (WithZero α) :=
-  { WithZero.partialOrder, WithZero.addCommMonoid with
-    add_le_add_left := @add_le_add_left _ _ _ (WithZero.addLeftMono zero_le).. }
+protected abbrev isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
+    (zero_le : ∀ a : α, 0 ≤ a) :
+    IsOrderedAddMonoid (WithZero α) :=
+  { add_le_add_left := @add_le_add_left _ _ _ (WithZero.addLeftMono zero_le) }
 
 /-- Adding a new zero to a canonically ordered additive monoid produces another one. -/
 instance canonicallyOrderedAdd [AddZeroClass α] [Preorder α] [CanonicallyOrderedAdd α] :
@@ -382,12 +382,12 @@ instance canonicallyOrderedAdd [AddZeroClass α] [Preorder α] [CanonicallyOrder
       · exact le_rfl
       · exact WithZero.coe_le_coe.2 le_self_add }
 
-instance instLinearOrderedCommMonoidWithZero [LinearOrderedCommMonoid α] :
+instance instLinearOrderedCommMonoidWithZero [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α] :
     LinearOrderedCommMonoidWithZero (WithZero α) :=
   { WithZero.linearOrder, WithZero.commMonoidWithZero with
     mul_le_mul_left := fun _ _ ↦ mul_le_mul_left', zero_le_one := WithZero.zero_le _ }
 
-instance instLinearOrderedCommGroupWithZero [LinearOrderedCommGroup α] :
+instance instLinearOrderedCommGroupWithZero [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] :
     LinearOrderedCommGroupWithZero (WithZero α) where
   __ := instLinearOrderedCommMonoidWithZero
   __ := commGroupWithZero

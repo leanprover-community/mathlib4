@@ -29,8 +29,8 @@ variable {α : Type*}
 
 /-- A linearly ordered commutative monoid with an additively absorbing `⊤` element.
   Instances should include number systems with an infinite element adjoined. -/
-class LinearOrderedAddCommMonoidWithTop (α : Type*) extends LinearOrderedAddCommMonoid α,
-    OrderTop α where
+class LinearOrderedAddCommMonoidWithTop (α : Type*) extends
+    AddCommMonoid α, LinearOrder α, IsOrderedAddMonoid α, OrderTop α where
   /-- In a `LinearOrderedAddCommMonoidWithTop`, the `⊤` element is invariant under addition. -/
   protected top_add' : ∀ x : α, ⊤ + x = ⊤
 
@@ -41,10 +41,10 @@ class LinearOrderedAddCommGroupWithTop (α : Type*) extends LinearOrderedAddComm
   protected neg_top : -(⊤ : α) = ⊤
   protected add_neg_cancel : ∀ a : α, a ≠ ⊤ → a + -a = 0
 
-instance WithTop.linearOrderedAddCommMonoidWithTop [LinearOrderedAddCommMonoid α] :
+instance WithTop.linearOrderedAddCommMonoidWithTop
+    [AddCommMonoid α] [LinearOrder α] [IsOrderedAddMonoid α] :
     LinearOrderedAddCommMonoidWithTop (WithTop α) :=
-  { WithTop.orderTop, WithTop.linearOrder, WithTop.orderedAddCommMonoid with
-    top_add' := WithTop.top_add }
+  { top_add' := WithTop.top_add }
 
 section LinearOrderedAddCommMonoidWithTop
 variable [LinearOrderedAddCommMonoidWithTop α]
@@ -65,20 +65,23 @@ open Function
 
 namespace LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α]
-
-instance instNeg : Neg (WithTop α) where neg := Option.map fun a : α => -a
+instance instNeg [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] : Neg (WithTop α) where
+  neg := Option.map fun a : α => -a
 
 /-- If `α` has subtraction, we can extend the subtraction to `WithTop α`, by
 setting `x - ⊤ = ⊤` and `⊤ - x = ⊤`. This definition is only registered as an instance on linearly
 ordered additive commutative groups, to avoid conflicting with the instance `WithTop.instSub` on
 types with a bottom element. -/
-protected def sub : ∀ _ _ : WithTop α, WithTop α
+protected def sub [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] :
+    WithTop α → WithTop α → WithTop α
   | _, ⊤ => ⊤
   | ⊤, (x : α) => ⊤
   | (x : α), (y : α) => (x - y : α)
 
-instance instSub : Sub (WithTop α) where sub := WithTop.LinearOrderedAddCommGroup.sub
+instance instSub [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] : Sub (WithTop α) where
+  sub := WithTop.LinearOrderedAddCommGroup.sub
+
+variable [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]
 
 @[simp, norm_cast]
 theorem coe_neg (a : α) : ((-a : α) : WithTop α) = -a :=
