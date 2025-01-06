@@ -1207,7 +1207,7 @@ theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt₁} (h : q�
 halt state. This is used in the TM1 to TM0 reduction. -/
 
 noncomputable def stmts (M : Λ → Stmt₁) (S : Finset Λ) : Finset (Option Stmt₁) := by
-  classical 
+  classical
   exact Finset.insertNone (S.biUnion fun q ↦ stmts₁ (M q))
 
 theorem stmts_trans {M : Λ → Stmt₁} {S : Finset Λ} {q₁ q₂ : Stmt₁} (h₁ : q₁ ∈ stmts₁ q₂) :

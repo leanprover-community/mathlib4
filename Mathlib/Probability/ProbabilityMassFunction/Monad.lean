@@ -284,7 +284,7 @@ variable (s : Set β)
 @[simp]
 theorem toOuterMeasure_bindOnSupport_apply :
     (p.bindOnSupport f).toOuterMeasure s =
-      ∑' a, p a * if h : p a = 0 then 0 else (f a h).toOuterMeasure s := by  
+      ∑' a, p a * if h : p a = 0 then 0 else (f a h).toOuterMeasure s := by
   simp only [toOuterMeasure_apply, Set.indicator_apply, bindOnSupport_apply]
   classical
   calc

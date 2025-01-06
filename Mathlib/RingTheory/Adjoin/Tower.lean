@@ -66,7 +66,7 @@ theorem Algebra.fg_trans' {R S A : Type*} [CommSemiring R] [CommSemiring S] [Sem
   by
     classical
     exact ⟨s.image (algebraMap S A) ∪ t, by
-    rw [Finset.coe_union, Finset.coe_image, 
+    rw [Finset.coe_union, Finset.coe_image,
         Algebra.adjoin_algebraMap_image_union_eq_adjoin_adjoin,
         hs, Algebra.adjoin_top, ht, Subalgebra.restrictScalars_top,
         Subalgebra.restrictScalars_top
