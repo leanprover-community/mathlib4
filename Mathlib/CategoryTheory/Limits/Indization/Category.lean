@@ -111,19 +111,25 @@ instance : HasFilteredColimits (Ind C) where
   HasColimitsOfShape _ _ _ :=
     hasColimitsOfShape_of_hasColimitsOfShape_createsColimitsOfShape (Ind.inclusion C)
 
-noncomputable instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
-    CreatesLimitsOfShape (Discrete J) (Ind.inclusion C) :=
-  letI _ : CreatesLimitsOfShape (Discrete J) (fullSubcategoryInclusion (IsIndObject (C := C))) :=
-    createsLimitsOfShapeFullSubcategoryInclusion (closedUnderLimitsOfShape_of_limit
-      (isIndObject_limit_of_discrete_of_hasLimitsOfShape _))
-  inferInstanceAs <|
-    CreatesLimitsOfShape (Discrete J) ((Ind.equivalence C).functor ⋙ fullSubcategoryInclusion _)
+-- noncomputable instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
+--     CreatesLimitsOfShape (Discrete J) (Ind.inclusion C) :=
+--   letI _ : CreatesLimitsOfShape (Discrete J) (fullSubcategoryInclusion (IsIndObject (C := C))) :=
+--     createsLimitsOfShapeFullSubcategoryInclusion (closedUnderLimitsOfShape_of_limit
+--       (isIndObject_limit_of_discrete_of_hasLimitsOfShape _))
+--   inferInstanceAs <|
+--     CreatesLimitsOfShape (Discrete J) ((Ind.equivalence C).functor ⋙ fullSubcategoryInclusion _)
 
-instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
-    HasLimitsOfShape (Discrete J) (Ind C) :=
-  hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (Ind.inclusion C)
+-- instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
+--     HasLimitsOfShape (Discrete J) (Ind C) :=
+--   hasLimitsOfShape_of_hasLimitsOfShape_createsLimitsOfShape (Ind.inclusion C)
 
-instance {J : Type v} [HasLimitsOfShape (Discrete J) C] :
+variable {J : Type v}
+#synth ReflectsLimits (Discrete J) (Ind.inclusion C)
+
+example {J : Type v} : ReflectsLimitsOfShape (Discrete J) (Ind.inclusion C) :=
+  show_term inferInstance
+
+instance {J : Type v} /-[HasLimitsOfShape (Discrete J) C]-/ :
     PreservesLimitsOfShape (Discrete J) (Ind.yoneda (C := C)) :=
   letI _ : PreservesLimitsOfShape (Discrete J) (Ind.yoneda ⋙ Ind.inclusion C) :=
     preservesLimitsOfShape_of_natIso Ind.yonedaCompInclusion.symm
