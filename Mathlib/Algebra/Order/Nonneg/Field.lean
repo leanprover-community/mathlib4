@@ -103,6 +103,6 @@ end LinearOrderedSemifield
 
 instance linearOrderedCommGroupWithZero [LinearOrderedField α] :
     LinearOrderedCommGroupWithZero { x : α // 0 ≤ x } :=
-  inferInstance
+  LinearOrderedSemifield.toLinearOrderedCommGroupWithZero
 
 end Nonneg
