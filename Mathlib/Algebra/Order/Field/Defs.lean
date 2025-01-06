@@ -29,13 +29,13 @@ set_option linter.deprecated false in
 /-- A linear ordered semifield is a field with a linear order respecting the operations. -/
 @[deprecated "Use `[Semifield α] [LinearOrder α] [IsStrictOrderedRing α]` instead."
   (since := "2025-01-05")]
-class LinearOrderedSemifield (α : Type*) extends LinearOrderedCommSemiring α, Semifield α
+structure LinearOrderedSemifield (α : Type*) extends LinearOrderedCommSemiring α, Semifield α
 
 set_option linter.deprecated false in
 /-- A linear ordered field is a field with a linear order respecting the operations. -/
 @[deprecated "Use `[Field α] [LinearOrder α] [IsStrictOrderedRing α]` instead."
   (since := "2025-01-05")]
-class LinearOrderedField (α : Type*) extends LinearOrderedCommRing α, Field α
+structure LinearOrderedField (α : Type*) extends LinearOrderedCommRing α, Field α
 
 variable [Semifield α] [LinearOrder α] {a b c : α}
 

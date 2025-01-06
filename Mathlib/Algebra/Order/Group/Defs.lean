@@ -80,7 +80,7 @@ additive commutative group with a linear order in which
 addition is monotone. -/
 @[deprecated "Use `[AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α]` instead."
   (since := "2025-01-05")]
-class LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, LinearOrder α
+structure LinearOrderedAddCommGroup (α : Type u) extends OrderedAddCommGroup α, LinearOrder α
 
 set_option linter.existingAttributeWarning false in
 set_option linter.deprecated false in
@@ -90,7 +90,7 @@ multiplication is monotone. -/
 @[to_additive,
   deprecated "Use `[CommGroup α] [LinearOrder α] [IsOrderedMonoid α]` instead."
   (since := "2025-01-05")]
-class LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α, LinearOrder α
+structure LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α, LinearOrder α
 
 section LinearOrderedCommGroup
 

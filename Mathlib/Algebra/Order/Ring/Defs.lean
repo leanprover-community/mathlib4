@@ -229,7 +229,7 @@ set_option linter.deprecated false in
 multiplication by a nonnegative number is monotone. -/
 @[deprecated "Use `[Semiring α] [PartialOrder α] [IsOrderedRing α]` instead."
   (since := "2025-01-05")]
-class OrderedSemiring (α : Type u) extends Semiring α, OrderedAddCommMonoid α where
+structure OrderedSemiring (α : Type u) extends Semiring α, OrderedAddCommMonoid α where
   /-- `0 ≤ 1` in any ordered semiring. -/
   protected zero_le_one : (0 : α) ≤ 1
   /-- In an ordered semiring, we can multiply an inequality `a ≤ b` on the left
@@ -244,7 +244,7 @@ set_option linter.deprecated false in
 monotone and multiplication by a nonnegative number is monotone. -/
 @[deprecated "Use `[CommSemiring α] [PartialOrder α] [IsOrderedRing α]` instead."
   (since := "2025-01-05")]
-class OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring α where
+structure OrderedCommSemiring (α : Type u) extends OrderedSemiring α, CommSemiring α where
   mul_le_mul_of_nonneg_right a b c ha hc :=
     -- parentheses ensure this generates an `optParam` rather than an `autoParam`
     (by simpa only [mul_comm] using mul_le_mul_of_nonneg_left a b c ha hc)
@@ -254,7 +254,7 @@ set_option linter.deprecated false in
 multiplication by a nonnegative number is monotone. -/
 @[deprecated "Use `[Ring α] [PartialOrder α] [IsOrderedRing α]` instead."
   (since := "2025-01-05")]
-class OrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
+structure OrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α where
   /-- `0 ≤ 1` in any ordered ring. -/
   protected zero_le_one : 0 ≤ (1 : α)
   /-- The product of non-negative elements is non-negative. -/
@@ -265,14 +265,14 @@ set_option linter.deprecated false in
 and multiplication by a nonnegative number is monotone. -/
 @[deprecated "Use `[CommRing α] [PartialOrder α] [IsOrderedRing α]` instead."
   (since := "2025-01-05")]
-class OrderedCommRing (α : Type u) extends OrderedRing α, CommRing α
+structure OrderedCommRing (α : Type u) extends OrderedRing α, CommRing α
 
 set_option linter.deprecated false in
 /-- A `StrictOrderedSemiring` is a nontrivial semiring with a partial order such that addition is
 strictly monotone and multiplication by a positive number is strictly monotone. -/
 @[deprecated "Use `[Semiring α] [PartialOrder α] [IsStrictOrderedRing α]` instead."
   (since := "2025-01-05")]
-class StrictOrderedSemiring (α : Type u) extends Semiring α, OrderedCancelAddCommMonoid α,
+structure StrictOrderedSemiring (α : Type u) extends Semiring α, OrderedCancelAddCommMonoid α,
     Nontrivial α where
   /-- In a strict ordered semiring, `0 ≤ 1`. -/
   protected zero_le_one : (0 : α) ≤ 1
@@ -286,14 +286,14 @@ set_option linter.deprecated false in
 addition is strictly monotone and multiplication by a positive number is strictly monotone. -/
 @[deprecated "Use `[CommSemiring α] [PartialOrder α] [IsStrictOrderedRing α]` instead."
   (since := "2025-01-05")]
-class StrictOrderedCommSemiring (α : Type u) extends StrictOrderedSemiring α, CommSemiring α
+structure StrictOrderedCommSemiring (α : Type u) extends StrictOrderedSemiring α, CommSemiring α
 
 set_option linter.deprecated false in
 /-- A `StrictOrderedRing` is a ring with a partial order such that addition is strictly monotone
 and multiplication by a positive number is strictly monotone. -/
 @[deprecated "Use `[Ring α] [PartialOrder α] [IsStrictOrderedRing α]` instead."
   (since := "2025-01-05")]
-class StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, Nontrivial α where
+structure StrictOrderedRing (α : Type u) extends Ring α, OrderedAddCommGroup α, Nontrivial α where
   /-- In a strict ordered ring, `0 ≤ 1`. -/
   protected zero_le_one : 0 ≤ (1 : α)
   /-- The product of two positive elements is positive. -/
@@ -304,7 +304,7 @@ set_option linter.deprecated false in
 strictly monotone and multiplication by a positive number is strictly monotone. -/
 @[deprecated "Use `[CommRing α] [PartialOrder α] [IsStrictOrderedRing α]` instead."
   (since := "2025-01-05")]
-class StrictOrderedCommRing (α : Type*) extends StrictOrderedRing α, CommRing α
+structure StrictOrderedCommRing (α : Type*) extends StrictOrderedRing α, CommRing α
 
 /- It's not entirely clear we should assume `Nontrivial` at this point; it would be reasonable to
 explore changing this, but be warned that the instances involving `Domain` may cause typeclass
@@ -314,7 +314,7 @@ set_option linter.deprecated false in
 addition is monotone and multiplication by a positive number is strictly monotone. -/
 @[deprecated "Use `[Semiring α] [LinearOrder α] [IsStrictOrderedRing α]` instead."
   (since := "2025-01-05")]
-class LinearOrderedSemiring (α : Type u) extends StrictOrderedSemiring α,
+structure LinearOrderedSemiring (α : Type u) extends StrictOrderedSemiring α,
   LinearOrderedAddCommMonoid α
 
 set_option linter.deprecated false in
@@ -322,7 +322,7 @@ set_option linter.deprecated false in
 that addition is monotone and multiplication by a positive number is strictly monotone. -/
 @[deprecated "Use `[CommSemiring α] [LinearOrder α] [IsStrictOrderedRing α]` instead."
   (since := "2025-01-05")]
-class LinearOrderedCommSemiring (α : Type*) extends StrictOrderedCommSemiring α,
+structure LinearOrderedCommSemiring (α : Type*) extends StrictOrderedCommSemiring α,
   LinearOrderedSemiring α
 
 set_option linter.deprecated false in
@@ -330,14 +330,14 @@ set_option linter.deprecated false in
 multiplication by a positive number is strictly monotone. -/
 @[deprecated "Use `[Ring α] [LinearOrder α] [IsStrictOrderedRing α]` instead."
   (since := "2025-01-05")]
-class LinearOrderedRing (α : Type u) extends StrictOrderedRing α, LinearOrder α
+structure LinearOrderedRing (α : Type u) extends StrictOrderedRing α, LinearOrder α
 
 set_option linter.deprecated false in
 /-- A `LinearOrderedCommRing` is a commutative ring with a linear order such that addition is
 monotone and multiplication by a positive number is strictly monotone. -/
 @[deprecated "Use `[CommRing α] [LinearOrder α] [IsStrictOrderedRing α]` instead."
   (since := "2025-01-05")]
-class LinearOrderedCommRing (α : Type u) extends LinearOrderedRing α, CommMonoid α
+structure LinearOrderedCommRing (α : Type u) extends LinearOrderedRing α, CommMonoid α
 
 section OrderedRing
 
