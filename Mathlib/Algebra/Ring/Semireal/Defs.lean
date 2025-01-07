@@ -34,18 +34,18 @@ a multiplication, an addition, a multiplicative unit and an additive unit.
 -/
 @[mk_iff]
 class IsSemireal [Add R] [Mul R] [One R] [Zero R] : Prop where
-  add_one_ne_zero_of_isSumSq {s : R} (hs : IsSumSq s) : 1 + s ≠ 0
+  one_add_ne_zero {s : R} (hs : IsSumSq s) : 1 + s ≠ 0
 
 @[deprecated (since := "2024-08-09")] alias isSemireal := IsSemireal
 
 /-- In a semireal ring, `-1` is not a sum of squares. -/
 theorem IsSemireal.not_isSumSq_neg_one {R : Type*} [AddGroup R] [One R] [Mul R] [IsSemireal R]:
-    ¬ IsSumSq (-1 : R) := (by simpa using add_one_ne_zero_of_isSumSq ·)
+    ¬ IsSumSq (-1 : R) := (by simpa using one_add_ne_zero ·)
 
 /--
 Linearly ordered semirings with the property `a ≤ b → ∃ c, a + c = b` (e.g. `ℕ`)
 are semireal.
 -/
 instance [LinearOrderedSemiring R] [ExistsAddOfLE R] : IsSemireal R where
-  add_one_ne_zero_of_isSumSq hs amo := zero_ne_one' R (le_antisymm zero_le_one
-                                          (le_of_le_of_eq (le_add_of_nonneg_right hs.nonneg) amo))
+  one_add_ne_zero hs amo := zero_ne_one' R (le_antisymm zero_le_one
+                              (le_of_le_of_eq (le_add_of_nonneg_right hs.nonneg) amo))
