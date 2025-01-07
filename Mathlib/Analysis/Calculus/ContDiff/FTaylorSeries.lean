@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Analysis.Calculus.FDeriv.Add
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
 import Mathlib.Analysis.Calculus.FormalMultilinearSeries
+import Mathlib.Data.ENat.Lattice
 
 /-!
 # Iterated derivatives of a function
@@ -104,7 +105,7 @@ open ENat NNReal Topology Filter Set Fin Filter Function
 /-
 Porting note: These lines are not required in Mathlib4.
 attribute [local instance 1001]
-  NormedAddCommGroup.toAddCommGroup NormedSpace.toModule' AddCommGroup.toAddCommMonoid
+  NormedAddCommGroup.toAddCommGroup AddCommGroup.toAddCommMonoid
 -/
 
 /-- Smoothness exponent for analytic functions. -/
@@ -334,7 +335,8 @@ theorem hasFTaylorSeriesUpToOn_succ_nat_iff_right {n : ℕ} :
         have :
           HasFDerivWithinAt (𝕜 := 𝕜) (continuousMultilinearCurryRightEquiv' 𝕜 m E F ∘ (p · m.succ))
             ((p x).shift m.succ).curryLeft s x := Htaylor.fderivWithin _ A x hx
-        rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'] at this
+        rw [LinearIsometryEquiv.comp_hasFDerivWithinAt_iff'
+            (f' := ((p x).shift m.succ).curryLeft)] at this
         convert this
         ext y v
         change
@@ -627,10 +629,6 @@ theorem HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
         (IH (le_of_lt A) hx).symm
     rw [iteratedFDerivWithin_succ_eq_comp_left, Function.comp_apply, this.fderivWithin (hs x hx)]
     exact (ContinuousMultilinearMap.uncurry_curryLeft _).symm
-
-@[deprecated (since := "2024-03-28")]
-alias HasFTaylorSeriesUpToOn.eq_ftaylor_series_of_uniqueDiffOn :=
-  HasFTaylorSeriesUpToOn.eq_iteratedFDerivWithin_of_uniqueDiffOn
 
 /-- The iterated derivative commutes with shifting the function by a constant on the left. -/
 lemma iteratedFDerivWithin_comp_add_left' (n : ℕ) (a : E) :

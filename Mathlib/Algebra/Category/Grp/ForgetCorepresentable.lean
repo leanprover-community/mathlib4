@@ -4,9 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.Grp.Basic
-import Mathlib.Algebra.Group.ULift
-import Mathlib.CategoryTheory.Yoneda
-import Mathlib.Algebra.Category.MonCat.ForgetCorepresentable
 
 /-!
 # The forget functor is corepresentable

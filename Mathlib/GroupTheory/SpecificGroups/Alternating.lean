@@ -231,7 +231,7 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
         SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
       exact (mul_mem (Subgroup.normalClosure_normal.conj_mem _ h
         -- Porting note: added `: _`
-        ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) : _))
+        ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) :))
 
 /-- The normal closure of $(04)(13)$ within $A_5$ is the whole group. This will be
   used to show that the normal closure of any permutation of cycle type $(2,2)$ is the whole group.
@@ -265,7 +265,7 @@ theorem isConj_swap_mul_swap_of_cycleType_two {g : Perm (Fin 5)} (ha : g ∈ alt
   rw [← Multiset.eq_replicate_card] at h2
   rw [← sum_cycleType, h2, Multiset.sum_replicate, smul_eq_mul] at h
   have h : Multiset.card g.cycleType ≤ 3 :=
-    le_of_mul_le_mul_right (le_trans h (by simp only [card_fin]; ring_nf; decide)) (by simp)
+    le_of_mul_le_mul_right (le_trans h (by norm_num only [card_fin])) (by simp)
   rw [mem_alternatingGroup, sign_of_cycleType, h2] at ha
   norm_num at ha
   rw [pow_add, pow_mul, Int.units_pow_two, one_mul, neg_one_pow_eq_one_iff_even] at ha
