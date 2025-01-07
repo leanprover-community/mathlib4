@@ -43,6 +43,9 @@ def print_list(fn: str, pairs: List[Tuple[str, str]]) -> None:
 # keep in sync with make_site.py in the leanprover-community.github.io repo
 @dataclass
 class HundredTheorem:
+    """Data of an entry about a single theorem in Freek's 100 theorems list:
+    the webpages 100.html and 100-missing.html are generated automatically
+    using this data."""
     # this theorem's number in Freek's 100 theorems list
     number: str
     # a human-readable title
@@ -60,7 +63,6 @@ class HundredTheorem:
     note: Optional[str] = None
 
 # keep in sync with make_site.py in the leanprover-community.github.io repo!
-#
 # These field names match the names in the data files of the 1000+ theorems project upstream.
 # See https://github.com/1000-plus/1000-plus.github.io/blob/main/README.md#file-format
 # for the specification. Compared to the README,
@@ -68,6 +70,11 @@ class HundredTheorem:
 # - we omit some fields (for now), e.g. the msc classification, and only care about Lean formalisations
 @dataclass
 class ThousandPlusTheorem:
+    """
+    Data of an entry about a single theorem in Freek's experimental
+    1000+ theorems project: the webpages 1000.html and 1000-missing.html
+    are generated automatically using this data.
+    """
     # Wikidata identifier (the letter Q followed by a string as digits),
     # optionally followed by a letter (such as "A", "B" or "X" for disambiguation).
     # "Q1008566" and "Q4724004A" are valid identifiers, for example.
