@@ -353,7 +353,7 @@ theorem _root_.AddAction.IsBlock.translate
     AddAction.IsBlock G (g +ᵥ B) := by
   rw [← AddAction.isBlock_top] at hB ⊢
   rw [← AddSubgroup.map_comap_eq_self_of_surjective (G := G) ?_ ⊤]
-  · apply AddAction.IsBlock.of_addsubgroup_of_conjugate
+  · apply AddAction.IsBlock.of_addSubgroup_of_conjugate
     rwa [AddSubgroup.comap_top]
   · exact (AddAut.conj g).surjective
 
