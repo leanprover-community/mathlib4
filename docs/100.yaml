@@ -1,19 +1,9 @@
 # This file tracks the formalisation status of theorems from Freek Wiedijk's "Formalizing 100
 # Theorems" list at https://www.cs.ru.nl/~freek/100/
 #
-# This file, contains for each theorem in the list,
-# - an entry, labelled by its number,
-# - |title|: a human-readable title
-# - (optional) |decl|: if a theorem is formalised in mathlib, the archive or counterexamples,
-#     the name of the corresponding declaration
-# - (optional) |decls|: like |decl|, but a list of declarations
-#     (if one theorem is split into multiple declarations)
-# - (optional) |doc_decls|: ...
-# - (optional) |author|: author(s) of a formalisation
-# - (optional) |links|: for external projects, an URL referring to the result
-# - (optional) |note|: any additional notes or comments
-# These fields are checked by `scripts/yaml_check.py` in this repo and `make_site.py` in the
-# leanprover-community.github.io repo.
+# See yaml_check.py for documentation about the allowed fields in this file.
+# The structure of this file is checked by `scripts/yaml_check.py` in this repo
+# and by `make_site.py` in the leanprover-community.github.io repo.
 
 1:
   title  : The Irrationality of the Square Root of 2
