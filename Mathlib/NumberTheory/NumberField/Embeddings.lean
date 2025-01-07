@@ -1109,6 +1109,9 @@ end Rat
 
 namespace NumberField
 
+/-- A number field `K` is totally real if all of its infinite places
+are real. In other words, the image of every ring homomorphism `K → ℂ`
+is a subset of `ℝ`. -/
 class IsTotallyReal (K : Type*) [Field K] [NumberField K] where
   isReal : ∀ v : InfinitePlace K, v.IsReal
 
