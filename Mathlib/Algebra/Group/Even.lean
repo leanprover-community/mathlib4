@@ -48,13 +48,13 @@ def IsSquare (a : α) : Prop := ∃ r, a = r * r
 @[to_additive]
 lemma isSquare_iff_exists_mul_self (a : α) : IsSquare a ↔ ∃ r, a = r * r := Iff.rfl
 
-@[to_additive (attr := simp)] lemma IsSquare.mul_self (a : α) : IsSquare (a * a) := ⟨a, rfl⟩
+@[to_additive (attr := simp)] lemma IsSquare.mul_self (r : α) : IsSquare (r * r) := ⟨r, rfl⟩
 
 @[to_additive, deprecated (since := "2024-08-27")] alias isSquare_mul_self := IsSquare.mul_self
 
 @[to_additive]
 lemma isSquare_op_iff {a : α} : IsSquare (op a) ↔ IsSquare a :=
-  ⟨fun ⟨c, hc⟩ ↦ ⟨unop c, congr_arg unop hc⟩, fun ⟨c, hc⟩ ↦ ⟨op c, congr_arg op hc⟩⟩
+  ⟨fun ⟨r, hr⟩ ↦ ⟨unop r, congr_arg unop hr⟩, fun ⟨r, hr⟩ ↦ ⟨op r, congr_arg op hr⟩⟩
 
 @[to_additive]
 lemma isSquare_unop_iff {a : αᵐᵒᵖ} : IsSquare (unop a) ↔ IsSquare a := isSquare_op_iff.symm
@@ -103,9 +103,9 @@ lemma IsSquare.map {a : α} (f : F) : IsSquare a → IsSquare (f a) :=
 
 lemma exists_apply_eq_and_isSquare {b : β} {f : F} (hf : Function.Surjective f) :
     IsSquare b → ∃ a, f a = b ∧ IsSquare a := by
-  rintro ⟨r, rfl⟩
-  rcases hf r with ⟨s, rfl⟩
-  use s * s
+  rintro ⟨s, rfl⟩
+  rcases hf s with ⟨r, rfl⟩
+  use r * r
   simp
 
 end MonoidHom
@@ -121,7 +121,7 @@ attribute [to_additive Even.exists_two_nsmul
   "Alias of the forwards direction of `even_iff_exists_two_nsmul`."] IsSquare.exists_sq
 
 @[to_additive (attr := simp) Even.two_nsmul]
-lemma IsSquare.sq (a : α) : IsSquare (a ^ 2) := ⟨a, pow_two _⟩
+lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := ⟨r, pow_two _⟩
 
 @[deprecated (since := "2024-12-27")] alias even_two_nsmul := Even.two_nsmul
 
@@ -157,7 +157,7 @@ attribute [to_additive] IsSquare.inv
 
 @[to_additive (attr := aesop unsafe 20% apply)]
 lemma IsSquare.zpow (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
-  rintro ⟨a, rfl⟩; exact ⟨a ^ n, (Commute.refl _).mul_zpow _⟩
+  rintro ⟨r, rfl⟩; exact ⟨r ^ n, (Commute.refl _).mul_zpow _⟩
 
 end DivisionMonoid
 
@@ -167,7 +167,7 @@ lemma IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : Is
 
 @[to_additive (attr := aesop unsafe 80% apply)]
 lemma Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
-  rintro ⟨n, rfl⟩ a; exact ⟨a ^ n, zpow_add _ _ _⟩
+  rintro ⟨m, rfl⟩ a; exact ⟨a ^ m, zpow_add _ _ _⟩
 
 @[deprecated (since := "2024-01-07")] alias Even.zsmul' := Even.even_zsmul
 
