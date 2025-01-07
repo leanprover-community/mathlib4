@@ -931,7 +931,7 @@ variable [NormedAddCommGroup G] [BorelSpace G]
 theorem convolution_precompR_apply {g : G → E'' →L[𝕜] E'} (hf : LocallyIntegrable f μ)
     (hcg : HasCompactSupport g) (hg : Continuous g) (x₀ : G) (x : E'') :
     (f ⋆[L.precompR E'', μ] g) x₀ x = (f ⋆[L, μ] fun a => g a x) x₀ := by
-  have := hcg.convolutionExists_right (L.precompR E'' : _) hf hg x₀
+  have := hcg.convolutionExists_right (L.precompR E'' :) hf hg x₀
   simp_rw [convolution_def, ContinuousLinearMap.integral_apply this]
   rfl
 
@@ -1096,7 +1096,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
   have I3 : AEStronglyMeasurable (fun a : G => (L (f a)).comp (g' (q₀.fst, q₀.snd - a))) μ := by
     have T : HasCompactSupport fun y => g' (q₀.1, y) :=
       HasCompactSupport.intro hk fun x hx => g'_zero q₀.1 x hq₀ hx
-    apply (HasCompactSupport.convolutionExists_right (L.precompR (P × G) : _) T hf _ q₀.2).1
+    apply (HasCompactSupport.convolutionExists_right (L.precompR (P × G) :) T hf _ q₀.2).1
     have : ContinuousOn g' (s ×ˢ univ) :=
       hg.continuousOn_fderiv_of_isOpen (hs.prod isOpen_univ) le_rfl
     apply this.comp_continuous (continuous_const.prod_mk continuous_id')
@@ -1206,7 +1206,7 @@ theorem contDiffOn_convolution_right_with_param_aux {G : Type uP} {E' : Type uP}
         filter_upwards [prod_mem_prod M1 M2]
         rintro ⟨p, y⟩ ⟨hp, hy⟩
         exact hgs p y hp hy
-      apply ih (L.precompR (P × G) : _) B
+      apply ih (L.precompR (P × G) :) B
       convert hg.2.2
   | htop ih =>
     rw [contDiffOn_infty] at hg ⊢

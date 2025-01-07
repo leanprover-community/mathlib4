@@ -200,7 +200,7 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierSMulRight
   have aux1 : AEStronglyMeasurable (fun v ↦ (L v, f v)) μ :=
     L.continuous.aestronglyMeasurable.prod_mk hf
   -- Elaboration without the expected type is faster here:
-  exact (aux0.comp_aestronglyMeasurable aux1 : _)
+  exact (aux0.comp_aestronglyMeasurable aux1 :)
 
 variable {f}
 

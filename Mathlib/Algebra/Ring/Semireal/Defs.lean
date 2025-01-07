@@ -12,6 +12,8 @@ A semireal ring is a commutative ring (with unit) in which `-1` is *not* a sum o
 
 For instance, linearly ordered rings are semireal, because sums of squares are positive and `-1` is
 not.
+For instance, linearly ordered rings are semireal, because sums of squares are positive and `-1` is
+not.
 
 ## Main declaration
 

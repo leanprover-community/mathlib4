@@ -195,7 +195,7 @@ alias derivative_nat_cast := derivative_natCast
 
 @[simp]
 theorem derivative_ofNat (n : ℕ) [n.AtLeastTwo] :
-    derivative (no_index (OfNat.ofNat n) : R[X]) = 0 :=
+    derivative (ofNat(n) : R[X]) = 0 :=
   derivative_natCast
 
 theorem iterate_derivative_eq_zero {p : R[X]} {x : ℕ} (hx : p.natDegree < x) :

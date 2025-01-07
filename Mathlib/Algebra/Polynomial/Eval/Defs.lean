@@ -102,10 +102,9 @@ theorem eval₂_natCast (n : ℕ) : (n : R[X]).eval₂ f x = n := by
 @[deprecated (since := "2024-04-17")]
 alias eval₂_nat_cast := eval₂_natCast
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 lemma eval₂_ofNat {S : Type*} [Semiring S] (n : ℕ) [n.AtLeastTwo] (f : R →+* S) (a : S) :
-    (no_index (OfNat.ofNat n : R[X])).eval₂ f a = OfNat.ofNat n := by
+    (ofNat(n) : R[X]).eval₂ f a = OfNat.ofNat n := by
   simp [OfNat.ofNat]
 
 variable [Semiring T]
@@ -263,10 +262,9 @@ theorem eval₂_at_natCast {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) :
 @[deprecated (since := "2024-04-17")]
 alias eval₂_at_nat_cast := eval₂_at_natCast
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem eval₂_at_ofNat {S : Type*} [Semiring S] (f : R →+* S) (n : ℕ) [n.AtLeastTwo] :
-    p.eval₂ f (no_index (OfNat.ofNat n)) = f (p.eval (OfNat.ofNat n)) := by
+    p.eval₂ f ofNat(n) = f (p.eval (OfNat.ofNat n)) := by
   simp [OfNat.ofNat]
 
 @[simp]
@@ -279,10 +277,9 @@ theorem eval_natCast {n : ℕ} : (n : R[X]).eval x = n := by simp only [← C_eq
 @[deprecated (since := "2024-04-17")]
 alias eval_nat_cast := eval_natCast
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 lemma eval_ofNat (n : ℕ) [n.AtLeastTwo] (a : R) :
-    (no_index (OfNat.ofNat n : R[X])).eval a = OfNat.ofNat n := by
+    (ofNat(n) : R[X]).eval a = OfNat.ofNat n := by
   simp only [OfNat.ofNat, eval_natCast]
 
 @[simp]
@@ -398,7 +395,7 @@ theorem natCast_comp {n : ℕ} : (n : R[X]).comp p = n := by rw [← C_eq_natCas
 alias nat_cast_comp := natCast_comp
 
 @[simp]
-theorem ofNat_comp (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : R[X]).comp p = n :=
+theorem ofNat_comp (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : R[X]).comp p = n :=
   natCast_comp
 
 @[simp]
@@ -550,10 +547,9 @@ protected theorem map_natCast (n : ℕ) : (n : R[X]).map f = n :=
 @[deprecated (since := "2024-04-17")]
 alias map_nat_cast := map_natCast
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 protected theorem map_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : R[X]).map f = OfNat.ofNat n :=
+    (ofNat(n) : R[X]).map f = OfNat.ofNat n :=
   show (n : R[X]).map f = n by rw [Polynomial.map_natCast]
 
 --TODO rename to `map_dvd_map`

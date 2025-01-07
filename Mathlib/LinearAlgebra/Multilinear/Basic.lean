@@ -1555,13 +1555,11 @@ def MultilinearMap.curryRight (f : MultilinearMap R M M₂) :
   map_update_add' := @fun dec m i x y => by
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     ext z
-    change f (snoc (update m i (x + y)) z) = f (snoc (update m i x) z) + f (snoc (update m i y) z)
-    rw [snoc_update, snoc_update, snoc_update, f.map_update_add]
+    simp
   map_update_smul' := @fun dec m i c x => by
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     ext z
-    change f (snoc (update m i (c • x)) z) = c • f (snoc (update m i x) z)
-    rw [snoc_update, snoc_update, f.map_update_smul]
+    simp
 
 @[simp]
 theorem MultilinearMap.curryRight_apply (f : MultilinearMap R M M₂)

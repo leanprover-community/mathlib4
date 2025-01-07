@@ -582,7 +582,6 @@ theorem isSheaf_iff_multiequalizer [∀ (X : C) (S : J.Cover X), HasMultiequaliz
     · apply (@asIso _ _ _ _ _ h).symm
     · intro a
       symm
-      erw [IsIso.inv_comp_eq]
       simp
 
 end MultiequalizerConditions

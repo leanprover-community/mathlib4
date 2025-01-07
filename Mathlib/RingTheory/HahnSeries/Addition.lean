@@ -83,10 +83,9 @@ and the additive opposite of Hahn series over `Γ` with coefficients `R`.
 def addOppositeEquiv : HahnSeries Γ (Rᵃᵒᵖ) ≃+ (HahnSeries Γ R)ᵃᵒᵖ where
   toFun x := .op ⟨fun a ↦ (x.coeff a).unop, by convert x.isPWO_support; ext; simp⟩
   invFun x := ⟨fun a ↦ .op (x.unop.coeff a), by convert x.unop.isPWO_support; ext; simp⟩
-  left_inv x := by ext; simp
+  left_inv x := by simp
   right_inv x := by
     apply AddOpposite.unop_injective
-    ext
     simp
   map_add' x y := by
     apply AddOpposite.unop_injective
