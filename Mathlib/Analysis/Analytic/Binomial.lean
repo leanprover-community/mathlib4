@@ -266,7 +266,7 @@ theorem binomialSum_ODE {a : ℝ} {x : ℝ} (hx : |x| < 1) :
     apply lt_of_lt_of_le _ binomialSeries_radius_ge_one
     simp
   have h_afun : HasFPowerSeriesOnBall (a • binomialSum a) (a • binomialSeries ℝ a) 0 1 := by
-    exact HasFPowerSeriesOnBall.smul_const h_fun
+    exact HasFPowerSeriesOnBall.const_smul h_fun
   have h_fderiv := HasFPowerSeriesOnBall.fderiv h_fun
   have h_deriv : HasFPowerSeriesOnBall (deriv (binomialSum a))
     (compFormalMultilinearSeries (.apply ℝ ℝ 1) (binomialSeries ℝ a).derivSeries) 0 1 := by
