@@ -194,7 +194,7 @@ end CancelCommMonoid
 
 section OrderedCancelCommMonoid
 
-variable [OrderedCancelCommMonoid α] {s : Set α} {a : α}
+variable [CommMonoid α] [PartialOrder α] [IsOrderedCancelMonoid α] {s : Set α} {a : α}
 
 @[to_additive]
 theorem threeGPFree_insert_of_lt (hs : ∀ i ∈ s, i < a) :
