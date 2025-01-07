@@ -119,14 +119,14 @@ theorem IsSumSq.sum [AddCommMonoid R] [Mul R] {ι : Type*} {I : Finset ι} {s : 
 
 /--
 In an additive commutative monoid with multiplication,
-a term of the form `∑ i ∈ I, x i`, where each `x i` is a square, is a sum of squares.
+`∑ i ∈ I, x i`, where each `x i` is a square, is a sum of squares.
 -/
 theorem IsSumSq.sum_isSquare [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) {x : ι → R}
     (ha : ∀ i ∈ I, IsSquare <| x i) : IsSumSq (∑ i ∈ I, x i) := by aesop
 
 /--
 In an additive commutative monoid with multiplication,
-a term of the form `∑ i ∈ I, a i * a i` is a sum of squares.
+`∑ i ∈ I, a i * a i` is a sum of squares.
 -/
 theorem IsSumSq.sum_mul_self [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) (a : ι → R) :
     IsSumSq (∑ i ∈ I, a i * a i) := by aesop
