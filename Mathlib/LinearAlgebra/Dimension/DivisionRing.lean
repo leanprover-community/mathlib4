@@ -176,7 +176,7 @@ theorem linearIndependent_iff_card_eq_finrank_span {ι : Type*} [Fintype ι] {b 
       have h : span K (f '' Set.range b') = map f (span K (Set.range b')) := span_image f
       have hf : f '' Set.range b' = Set.range b := by
         ext x
-        simp [f, Set.mem_image, Set.mem_range]
+        simp [f, b', Set.mem_image, Set.mem_range]
       rw [hf] at h
       have hx : (x : V) ∈ span K (Set.range b) := x.property
       simp_rw [h] at hx

@@ -118,7 +118,7 @@ theorem extensionEmbedding_of_isReal_coe {v : InfinitePlace K} (hv : IsReal v) (
 theorem isometry_extensionEmbedding : Isometry (extensionEmbedding v) :=
   Isometry.of_dist_eq (extensionEmbedding_dist_eq_of_comp v.norm_embedding_eq)
 
-/-- The embedding `v.Completion →+* ℝ` at a real infinite palce is an isometry. -/
+/-- The embedding `v.Completion →+* ℝ` at a real infinite place is an isometry. -/
 theorem isometry_extensionEmbedding_of_isReal {v : InfinitePlace K} (hv : IsReal v) :
     Isometry (extensionEmbeddingOfIsReal hv) :=
   Isometry.of_dist_eq (extensionEmbedding_dist_eq_of_comp <| v.norm_embedding_of_isReal hv)

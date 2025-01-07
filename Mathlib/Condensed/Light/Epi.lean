@@ -3,10 +3,9 @@ Copyright (c) 2024 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.CategoryTheory.ConcreteCategory.EpiMono
-import Mathlib.CategoryTheory.Sites.EpiMono
+import Mathlib.CategoryTheory.Limits.Shapes.SequentialProduct
 import Mathlib.CategoryTheory.Sites.Coherent.SequentialLimit
-import Mathlib.Condensed.Light.Module
+import Mathlib.Condensed.Light.Limits
 /-!
 
 # Epimorphisms of light condensed objects
@@ -14,6 +13,8 @@ import Mathlib.Condensed.Light.Module
 This file characterises epimorphisms in light condensed sets and modules as the locally surjective
 morphisms. Here, the condition of locally surjective is phrased in terms of continuous surjections
 of light profinite sets.
+
+Further, we prove that the functor `lim : Discrete ℕ ⥤ LightCondMod R` preserves epimorphisms.
 -/
 
 universe v u w u' v'
@@ -91,5 +92,37 @@ lemma epi_π_app_zero_of_epi : Epi (c.π.app ⟨0⟩) := by
   · have := (freeForgetAdjunction R).isRightAdjoint
     exact isLimitOfPreserves _ hc
   · exact fun _ ↦ (forget R).map_epi _
+
+end LightCondensed
+
+open CategoryTheory.Limits.SequentialProduct
+
+namespace LightCondensed
+
+variable (n : ℕ)
+
+attribute [local instance] functorMap_epi Abelian.hasFiniteBiproducts
+
+variable {R : Type u} [Ring R] {M N : ℕ → LightCondMod.{u} R} (f : ∀ n, M n ⟶ N n) [∀ n, Epi (f n)]
+
+instance : Epi (Limits.Pi.map f) := by
+  have : Limits.Pi.map f = (cone f).π.app ⟨0⟩ := rfl
+  rw [this]
+  exact epi_π_app_zero_of_epi R (isLimit f) (fun n ↦ by simp; infer_instance)
+
+instance : (lim (J := Discrete ℕ) (C := LightCondMod R)).PreservesEpimorphisms where
+  preserves f _ := by
+    have : lim.map f = (Pi.isoLimit _).inv ≫ Limits.Pi.map (f.app ⟨·⟩) ≫ (Pi.isoLimit _).hom := by
+      apply limit.hom_ext
+      intro ⟨n⟩
+      simp only [lim_obj, lim_map, limMap, IsLimit.map, limit.isLimit_lift, limit.lift_π,
+        Cones.postcompose_obj_pt, limit.cone_x, Cones.postcompose_obj_π, NatTrans.comp_app,
+        Functor.const_obj_obj, limit.cone_π, Pi.isoLimit, Limits.Pi.map, Category.assoc,
+        limit.conePointUniqueUpToIso_hom_comp, Pi.cone_pt, Pi.cone_π, Discrete.natTrans_app,
+        Discrete.functor_obj_eq_as]
+      erw [IsLimit.conePointUniqueUpToIso_inv_comp_assoc]
+      rfl
+    rw [this]
+    infer_instance
 
 end LightCondensed

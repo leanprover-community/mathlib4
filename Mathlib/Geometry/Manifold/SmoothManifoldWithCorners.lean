@@ -303,7 +303,6 @@ alias closedEmbedding := isClosedEmbedding
 theorem isClosed_range : IsClosed (range I) :=
   I.isClosedEmbedding.isClosed_range
 
-@[deprecated (since := "2024-03-17")] alias closed_range := isClosed_range
 
 theorem range_eq_closure_interior : range I = closure (interior (range I)) :=
   Subset.antisymm I.range_subset_closure_interior I.isClosed_range.closure_interior_subset
@@ -1554,7 +1553,7 @@ lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 
   finite-dimensional space. This is the converse to
   `Manifold.locallyCompact_of_finiteDimensional`. -/
 theorem FiniteDimensional.of_locallyCompact_manifold
-    [CompleteSpace 𝕜] (I : ModelWithCorners 𝕜 E H) [Inhabited M] [LocallyCompactSpace M] :
+    [CompleteSpace 𝕜] (I : ModelWithCorners 𝕜 E H) [Nonempty M] [LocallyCompactSpace M] :
     FiniteDimensional 𝕜 E := by
   have := LocallyCompactSpace.of_locallyCompact_manifold M I
   exact FiniteDimensional.of_locallyCompactSpace 𝕜

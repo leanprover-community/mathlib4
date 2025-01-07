@@ -219,7 +219,7 @@ theorem fib_le_of_contsAux_b :
         -- use the recurrence of `contsAux`
         simp only [Nat.succ_eq_add_one, Nat.add_assoc, Nat.reduceAdd]
         suffices (fib n : K) + fib (n + 1) ≤ gp.a * ppconts.b + gp.b * pconts.b by
-          simpa [fib_add_two, add_comm, contsAux_recurrence s_ppred_nth_eq ppconts_eq pconts_eq]
+          simpa [g, fib_add_two, add_comm, contsAux_recurrence s_ppred_nth_eq ppconts_eq pconts_eq]
         -- make use of the fact that `gp.a = 1`
         suffices (fib n : K) + fib (n + 1) ≤ ppconts.b + gp.b * pconts.b by
           simpa [of_partNum_eq_one <| partNum_eq_s_a s_ppred_nth_eq]
@@ -267,7 +267,7 @@ theorem zero_le_of_contsAux_b : 0 ≤ ((of v).contsAux n).b := by
       · simp [zero_le_one]
       · have : g.contsAux (n + 2) = g.contsAux (n + 1) :=
           contsAux_stable_step_of_terminated terminated
-        simp only [this, IH]
+        simp only [g, this, IH]
     · -- non-terminating case
       calc
         (0 : K) ≤ fib (n + 1) := mod_cast (n + 1).fib.zero_le

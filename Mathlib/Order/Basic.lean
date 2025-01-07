@@ -3,6 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Mario Carneiro
 -/
+import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Data.Subtype
 import Mathlib.Order.Defs.LinearOrder
 import Mathlib.Order.Notation
@@ -289,7 +290,8 @@ section PartialOrder
 variable [PartialOrder α] {a b : α}
 
 -- See Note [decidable namespace]
-protected theorem Decidable.le_iff_eq_or_lt [@DecidableRel α (· ≤ ·)] : a ≤ b ↔ a = b ∨ a < b :=
+protected theorem Decidable.le_iff_eq_or_lt [DecidableRel (α := α) (· ≤ ·)] :
+    a ≤ b ↔ a = b ∨ a < b :=
   Decidable.le_iff_lt_or_eq.trans or_comm
 
 theorem le_iff_eq_or_lt : a ≤ b ↔ a = b ∨ a < b := le_iff_lt_or_eq.trans or_comm
@@ -302,7 +304,7 @@ lemma eq_iff_not_lt_of_le (hab : a ≤ b) : a = b ↔ ¬ a < b := by simp [hab, 
 alias LE.le.eq_iff_not_lt := eq_iff_not_lt_of_le
 
 -- See Note [decidable namespace]
-protected theorem Decidable.eq_iff_le_not_lt [@DecidableRel α (· ≤ ·)] :
+protected theorem Decidable.eq_iff_le_not_lt [DecidableRel (α := α) (· ≤ ·)] :
     a = b ↔ a ≤ b ∧ ¬a < b :=
   ⟨fun h ↦ ⟨h.le, h ▸ lt_irrefl _⟩, fun ⟨h₁, h₂⟩ ↦
     h₁.antisymm <| Decidable.byContradiction fun h₃ ↦ h₂ (h₁.lt_of_not_le h₃)⟩
@@ -1109,11 +1111,11 @@ instance preorder [Preorder α] (p : α → Prop) : Preorder (Subtype p) :=
 instance partialOrder [PartialOrder α] (p : α → Prop) : PartialOrder (Subtype p) :=
   PartialOrder.lift (fun (a : Subtype p) ↦ (a : α)) Subtype.coe_injective
 
-instance decidableLE [Preorder α] [h : @DecidableRel α (· ≤ ·)] {p : α → Prop} :
-    @DecidableRel (Subtype p) (· ≤ ·) := fun a b ↦ h a b
+instance decidableLE [Preorder α] [h : DecidableRel (α := α) (· ≤ ·)] {p : α → Prop} :
+    DecidableRel (α := Subtype p) (· ≤ ·) := fun a b ↦ h a b
 
-instance decidableLT [Preorder α] [h : @DecidableRel α (· < ·)] {p : α → Prop} :
-    @DecidableRel (Subtype p) (· < ·) := fun a b ↦ h a b
+instance decidableLT [Preorder α] [h : DecidableRel (α := α) (· < ·)] {p : α → Prop} :
+    DecidableRel (α := Subtype p) (· < ·) := fun a b ↦ h a b
 
 /-- A subtype of a linear order is a linear order. We explicitly give the proofs of decidable
 equality and decidable order in order to ensure the decidability instances are all definitionally
@@ -1256,8 +1258,8 @@ instance [∀ i, Preorder (π i)] [∀ i, DenselyOrdered (π i)] :
       obtain ⟨c, ha, hb⟩ := exists_between hi
       exact
         ⟨Function.update a i c,
-          ⟨le_update_iff.2 ⟨ha.le, fun _ _ ↦ le_rfl⟩, i, by rwa [update_same]⟩,
-          update_le_iff.2 ⟨hb.le, fun _ _ ↦ hab _⟩, i, by rwa [update_same]⟩⟩
+          ⟨le_update_iff.2 ⟨ha.le, fun _ _ ↦ le_rfl⟩, i, by rwa [update_self]⟩,
+          update_le_iff.2 ⟨hb.le, fun _ _ ↦ hab _⟩, i, by rwa [update_self]⟩⟩
 
 theorem le_of_forall_le_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α}
     (h : ∀ a, a₂ < a → a₁ ≤ a) : a₁ ≤ a₂ :=
@@ -1278,6 +1280,13 @@ theorem le_of_forall_ge_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂
 theorem eq_of_le_of_forall_ge_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α} (h₁ : a₂ ≤ a₁)
     (h₂ : ∀ a₃ < a₁, a₃ ≤ a₂) : a₁ = a₂ :=
   (le_of_forall_ge_of_dense h₂).antisymm h₁
+
+theorem forall_lt_le_iff [LinearOrder α] [DenselyOrdered α] {a b : α} : (∀ c < a, c ≤ b) ↔ a ≤ b :=
+  ⟨le_of_forall_ge_of_dense, fun hab _c hca ↦ hca.le.trans hab⟩
+
+theorem forall_gt_ge_iff [LinearOrder α] [DenselyOrdered α] {a b : α} :
+    (∀ c, a < c → b ≤ c) ↔ b ≤ a :=
+  forall_lt_le_iff (α := αᵒᵈ)
 
 theorem dense_or_discrete [LinearOrder α] (a₁ a₂ : α) :
     (∃ a, a₁ < a ∧ a < a₂) ∨ (∀ a, a₁ < a → a₂ ≤ a) ∧ ∀ a < a₂, a ≤ a₁ :=

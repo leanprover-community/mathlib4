@@ -83,7 +83,7 @@ scoped[Manifold] notation E " ≃ₘ^" n:1000 "[" 𝕜 "] " E' => Diffeomorph �
 
 /-- Infinitely differentiable diffeomorphism between `E` and `E'`. -/
 scoped[Manifold]
-  notation E " ≃ₘ[" 𝕜 "] " E' =>
+  notation3 E " ≃ₘ[" 𝕜 "] " E' =>
     Diffeomorph (modelWithCornersSelf 𝕜 E) (modelWithCornersSelf 𝕜 E') E E' ⊤
 
 namespace Diffeomorph

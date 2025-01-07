@@ -236,7 +236,7 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
     all_goals exact isCompact_quasispectrum _
   obtain ⟨has, hbs, hcs⟩ : σₙ ℝ a ⊆ s ∧ σₙ ℝ b ⊆ s ∧ σₙ ℝ (-c) ⊆ s := by
     refine ⟨?_, ?_, ?_⟩; all_goals intro; aesop
-  let _ : Zero s := ⟨0, by aesop⟩
+  let zero : Zero s := ⟨0, by aesop⟩
   have s0 : (0 : s) = (0 : ℝ) := rfl
   /- The continuous functional calculi for functions `f g : C(s, ℝ)₀` applied to `b` and `(-c)`
   are orthogonal (i.e., the product is always zero). -/
@@ -248,8 +248,8 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
     all_goals
       refine g.mul_nonUnitalStarAlgHom_apply_eq_zero s0 _ _ ?_ ?_
         (cfcₙHomSuperset_continuous hc' hcs)
-      all_goals simp only [star_trivial, cfcₙHomSuperset_id' hb' hbs, cfcₙHomSuperset_id' hc' hcs,
-        mul_neg, hbc, neg_zero]
+      all_goals simp only [zero, star_trivial, cfcₙHomSuperset_id' hb' hbs,
+        cfcₙHomSuperset_id' hc' hcs, mul_neg, hbc, neg_zero]
   have mul₂ (f g : C(s, ℝ)₀) : (cfcₙHomSuperset hc' hcs f) * (cfcₙHomSuperset hb' hbs g) = 0 := by
     simpa only [star_mul, star_zero, ← map_star, star_trivial] using congr(star $(mul₁ g f))
   /- `fun f ↦ cfcₙ f b + cfcₙ f (-c)` defines a star homomorphism `ψ : C(s, ℝ)₀ →⋆ₙₐ[ℝ] A` which
@@ -261,13 +261,14 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
       toFun := cfcₙHomSuperset hb' hbs + cfcₙHomSuperset hc' hcs
       map_zero' := by simp [-cfcₙHomSuperset_apply]
       map_mul' := fun f g ↦ by
-        simp only [Pi.add_apply, map_mul, mul_add, add_mul, mul₂, add_zero, mul₁, zero_add]
+        simp only [zero, Pi.add_apply, map_mul, mul_add, add_mul, mul₂, add_zero, mul₁,
+          zero_add]
       map_star' := fun f ↦ by simp [← map_star] }
   have key : (cfcₙHomSuperset ha has) = ψ :=
     UniqueNonUnitalContinuousFunctionalCalculus.eq_of_continuous_of_map_id s rfl
     (cfcₙHomSuperset ha has) ψ (cfcₙHomSuperset_continuous ha has)
     ((cfcₙHomSuperset_continuous hb' hbs).add (cfcₙHomSuperset_continuous hc' hcs))
-    (by simpa [ψ, -cfcₙHomSuperset_apply, cfcₙHomSuperset_id, sub_eq_add_neg] using habc)
+    (by simpa [zero, ψ, -cfcₙHomSuperset_apply, cfcₙHomSuperset_id, sub_eq_add_neg] using habc)
   /- Applying the equality of star homomorphisms to the function `(·⁺ : ℝ → ℝ)` we find that
   `b = cfcₙ id b + cfcₙ 0 (-c) = cfcₙ (·⁺) b - cfcₙ (·⁺) (-c) = cfcₙ (·⁺) a = a⁺`, where the
   second equality follows because these functions are equal on the spectra of `b` and `-c`,
@@ -284,8 +285,9 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
       all_goals
         refine cfcₙ_congr fun x hx ↦ Eq.symm ?_
         lift x to σₙ ℝ _ using hx
-        simp only [Subtype.val_injective.extend_apply, comp_apply, coe_mk, ContinuousMap.coe_mk,
-          Subtype.map_coe, id_eq, _root_.posPart_eq_self, f, Pi.zero_apply, posPart_eq_zero]
+        simp only [zero, Subtype.val_injective.extend_apply, comp_apply, coe_mk,
+          ContinuousMap.coe_mk, Subtype.map_coe, id_eq, _root_.posPart_eq_self, f, Pi.zero_apply,
+          posPart_eq_zero]
       · exact quasispectrum_nonneg_of_nonneg b hb x.val x.property
       · obtain ⟨x, hx⟩ := x
         simp only [← neg_nonneg]
@@ -297,7 +299,7 @@ lemma posPart_negPart_unique {a b c : A} (habc : a = b - c) (hbc : b * c = 0)
     _ = a⁺ := by
       refine cfcₙ_congr fun x hx ↦ ?_
       lift x to σₙ ℝ a using hx
-      simp [Subtype.val_injective.extend_apply, f]
+      simp [zero, Subtype.val_injective.extend_apply, f]
 
 end CFC
 
