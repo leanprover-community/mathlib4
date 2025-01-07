@@ -38,14 +38,15 @@ def box : ℕ → Finset α := disjointed fun n ↦ Icc (-n : α) n
 
 lemma box_succ_eq_sdiff (n : ℕ) :
     box (n + 1) = Icc (-n.succ : α) n.succ \ Icc (-n) n := by
-  rw [box, Icc_neg_mono.disjointed_natSucc]
+  rw [box, Icc_neg_mono.disjointed_add_one]
+  simp only [Nat.cast_add_one, Nat.succ_eq_add_one]
 
 lemma disjoint_box_succ_prod (n : ℕ) : Disjoint (box (n + 1)) (Icc (-n : α) n) := by
   rw [box_succ_eq_sdiff]; exact disjoint_sdiff_self_left
 
 @[simp] lemma box_succ_union_prod (n : ℕ) :
     box (n + 1) ∪ Icc (-n : α) n = Icc (-n.succ : α) n.succ :=
-  Icc_neg_mono.disjointed_natSucc_sup _
+  Icc_neg_mono.disjointed_add_one_sup _
 
 lemma box_succ_disjUnion (n : ℕ) :
     (box (n + 1)).disjUnion (Icc (-n : α) n) (disjoint_box_succ_prod _) =

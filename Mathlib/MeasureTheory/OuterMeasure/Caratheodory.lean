@@ -103,7 +103,7 @@ lemma isCaratheodory_disjointed {s : ℕ → Set α} (h : ∀ i, m.IsCaratheodor
   induction i with
   | zero => exact disjointed_zero s ▸ h 0
   | succ i _ =>
-    rw [disjointed_natSucc]
+    rw [disjointed_add_one]
     exact m.isCaratheodory_diff (h (i + 1)) (m.isCaratheodory_partialSups h i)
 
 theorem isCaratheodory_sum {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))

@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Yaël Dillies
 -/
 import Mathlib.Order.PartialSups
 import Mathlib.Order.Interval.Finset.Fin
-import Mathlib.Data.Nat.Cast.NeZero
 import Mathlib.Data.Nat.SuccPred
 
 /-!
@@ -39,7 +38,7 @@ We also provide set notation variants of some lemmas.
 Find a useful statement of `disjointedRec_succ`.
 -/
 
-open Finset
+open Finset Order
 
 variable {α β : Type*}
 
@@ -51,6 +50,9 @@ section Preorder -- the *source* is a preorder
 
 variable [Preorder β] [LocallyFiniteOrderBot β]
 
+/-- The function mapping `n` to `f n \ (⨆ m < n, f m)`. When `β` is a partial order, this is the
+unique function `g` having the same `partialSups` as `f` and such that `g m` and `g n` are
+disjoint whenever `m < n`.  -/
 def disjointed (f : β → α) (n : β) : α := f n \ (Iio n).sup f
 
 lemma disjointed_apply (f : β → α) (n : β) : disjointed f n = f n \ (Iio n).sup f := rfl
@@ -59,6 +61,9 @@ lemma disjointed_of_isMin (f : β → α) {n : β} (hn : IsMin n) :
     disjointed f n = f n := by
   have : Iio n = ∅ := by rwa [← Finset.coe_eq_empty, coe_Iio, Set.Iio_eq_empty_iff]
   simp only [disjointed_apply, this, sup_empty, sdiff_bot]
+
+@[simp] lemma disjointed_bot [OrderBot β] (f : β → α) : disjointed f ⊥ = f ⊥ :=
+  disjointed_of_isMin _ isMin_bot
 
 theorem disjointed_le_id : disjointed ≤ (id : (β → α) → β → α) :=
   fun _ _ ↦ sdiff_le
@@ -91,7 +96,7 @@ lemma disjointedRec {f : β → α} {p : α → Prop} (hdiff : ∀ ⦃t i⦄, p 
   suffices ∀ (s : Finset β), p (f n \ s.sup f) from this _
   intro s
   induction s using Finset.induction with
-  | empty => rw [sup_empty, sdiff_bot]; exact hpn
+  | empty => simpa only [sup_empty, sdiff_bot] using hpn
   | insert ht IH => rw [sup_insert, sup_comm, ← sdiff_sdiff]; exact hdiff IH
 
 end Preorder
@@ -190,28 +195,52 @@ theorem disjointed_unique' {f d : β → α} (hdisj : Pairwise (Disjoint on d))
     (hsups : partialSups d = partialSups f) : d = disjointed f :=
   disjointed_unique (fun hij ↦ hdisj hij.ne) hsups
 
-lemma disjointed_succ [SuccOrder β] (f : β → α) {n : β} (hn : ¬IsMax n) :
-    disjointed f (Order.succ n) = f (Order.succ n) \ partialSups f n := by
+section SuccOrder
+
+variable [SuccOrder β]
+
+lemma disjointed_succ (f : β → α) {n : β} (hn : ¬IsMax n) :
+    disjointed f (succ n) = f (succ n) \ partialSups f n := by
   rw [disjointed_apply, partialSups_apply, sup'_eq_sup]
   congr 2 with m
-  simpa only [mem_Iio, mem_Iic] using Order.lt_succ_iff_of_not_isMax hn
+  simpa only [mem_Iio, mem_Iic] using lt_succ_iff_of_not_isMax hn
 
-protected lemma Monotone.disjointed_succ [SuccOrder β] {f : β → α} (hf : Monotone f)
-    {n : β} (hn : ¬IsMax n) :
-    disjointed f (Order.succ n) = f (Order.succ n) \ f n := by
+protected lemma Monotone.disjointed_succ {f : β → α} (hf : Monotone f) {n : β} (hn : ¬IsMax n) :
+    disjointed f (succ n) = f (succ n) \ f n := by
   rwa [disjointed_succ, hf.partialSups_eq]
 
 /-- Note this lemma does not require `¬IsMax n`, unlike `disjointed_succ`. -/
-lemma Monotone.disjointed_succ_sup [SuccOrder β] {f : β → α} (hf : Monotone f) (n : β) :
-    disjointed f (Order.succ n) ⊔ f n = f (Order.succ n) := by
+lemma Monotone.disjointed_succ_sup {f : β → α} (hf : Monotone f) (n : β) :
+    disjointed f (succ n) ⊔ f n = f (succ n) := by
   by_cases h : IsMax n
-  · simpa only [Order.succ_eq_iff_isMax.mpr h, sup_eq_right] using disjointed_le f n
+  · simpa only [succ_eq_iff_isMax.mpr h, sup_eq_right] using disjointed_le f n
   · rw [disjointed_apply]
-    have : Iio (Order.succ n) = Iic n := by
-      ext; simp only [mem_Iio, Order.lt_succ_iff_eq_or_lt_of_not_isMax h, mem_Iic, le_iff_lt_or_eq,
+    have : Iio (succ n) = Iic n := by
+      ext; simp only [mem_Iio, lt_succ_iff_eq_or_lt_of_not_isMax h, mem_Iic, le_iff_lt_or_eq,
         Or.comm]
     rw [this, ← sup'_eq_sup, ← partialSups_apply, hf.partialSups_eq,
-      sdiff_sup_cancel <| hf <| Order.le_succ n]
+      sdiff_sup_cancel (hf (le_succ n))]
+
+end SuccOrder
+
+section SuccAddOrder
+
+variable [Add β] [One β] [SuccAddOrder β]
+
+theorem disjointed_add_one [NoMaxOrder β] (f : β → α) (n : β) :
+    disjointed f (n + 1) = f (n + 1) \ partialSups f n := by
+  simpa only [succ_eq_add_one] using disjointed_succ f (not_isMax n)
+
+protected lemma Monotone.disjointed_add_one_sup {f : β → α} (hf : Monotone f) (n : β) :
+    disjointed f (n + 1) ⊔ f n = f (n + 1) := by
+  simpa only [succ_eq_add_one n] using hf.disjointed_succ_sup n
+
+protected lemma Monotone.disjointed_add_one [NoMaxOrder β]  {f : β → α} (hf : Monotone f) (n : β) :
+    disjointed f (n + 1) = f (n + 1) \ f n := by
+  rw [← succ_eq_add_one, hf.disjointed_succ]
+  exact not_isMax n
+
+end SuccAddOrder
 
 end LinearOrder
 
@@ -287,21 +316,7 @@ variable [GeneralizedBooleanAlgebra α]
 
 @[simp]
 theorem disjointed_zero (f : ℕ → α) : disjointed f 0 = f 0 :=
-  disjointed_of_isMin _ isMin_bot
-
-theorem disjointed_natSucc (f : ℕ → α) (n : ℕ) :
-    disjointed f (n + 1) = f (n + 1) \ partialSups f n := by
-  simpa only [Order.succ_eq_add_one] using disjointed_succ f (not_isMax n)
-
-protected lemma Monotone.disjointed_natSucc {f : ℕ → α} (hf : Monotone f) (n : ℕ) :
-    disjointed f (n + 1) = f (n + 1) \ f n := by
-  rw [← Order.succ_eq_add_one, hf.disjointed_succ]
-  exact not_isMax n
-
-protected lemma Monotone.disjointed_natSucc_sup {f : ℕ → α} (hf : Monotone f) (n : ℕ) :
-    disjointed f (n + 1) ⊔ f n = f (n + 1) := by
-  rw [Monotone.disjointed_natSucc hf, sdiff_sup_cancel]
-  exact hf n.le_succ
+  disjointed_bot f
 
 -- Porting note: `disjointedRec` had a change in universe level.
 /-- A recursion principle for `disjointed`. To construct / define something for `disjointed f n`,
@@ -313,7 +328,7 @@ def Nat.disjointedRec {f : ℕ → α} {p : α → Sort*} (hdiff : ∀ ⦃t i⦄
     ∀ ⦃n⦄, p (f n) → p (disjointed f n)
   | 0 => fun h₀ ↦ disjointed_zero f ▸ h₀
   | n + 1 => fun h => by
-    suffices H : ∀ k, p (f (n + 1) \ partialSups f k) from disjointed_natSucc f n ▸ H n
+    suffices H : ∀ k, p (f (n + 1) \ partialSups f k) from disjointed_add_one f n ▸ H n
     intro k
     induction k with
     | zero => exact hdiff h
