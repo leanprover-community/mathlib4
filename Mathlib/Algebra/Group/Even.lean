@@ -90,18 +90,27 @@ end Add
 @[to_additive (attr := simp)]
 lemma IsSquare.one [MulOneClass α] : IsSquare (1 : α) := ⟨1, (mul_one _).symm⟩
 
+section MonoidHom
+variable [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
+
 @[to_additive (attr := aesop unsafe 80% apply)]
-lemma IsSquare.map [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
-    {m : α} (f : F) :
-    IsSquare m → IsSquare (f m) := by
-  rintro ⟨m, rfl⟩
-  exact ⟨f m, by simp⟩
+lemma IsSquare.map {a : α} (f : F) : IsSquare a → IsSquare (f a) :=
+  fun ⟨r, _⟩ => ⟨f r, by simp_all⟩
+
+lemma exists_map_eq_and_isSquare {b : β} {f : F} (hf : Function.Surjective f) :
+    IsSquare b → ∃ a, f a = b ∧ IsSquare a := by
+  rintro ⟨r, rfl⟩
+  rcases hf r with ⟨s, rfl⟩
+  use s * s
+  simp
+
+end MonoidHom
 
 section Monoid
 variable [Monoid α] {n : ℕ} {a : α}
 
 @[to_additive even_iff_exists_two_nsmul]
-lemma isSquare_iff_exists_sq (m : α) : IsSquare m ↔ ∃ c, m = c ^ 2 := by simp [IsSquare, pow_two]
+lemma isSquare_iff_exists_sq (a : α): IsSquare a ↔ ∃ r, a = r ^ 2 := by simp [IsSquare, pow_two]
 
 alias ⟨IsSquare.exists_sq, _⟩ := isSquare_iff_exists_sq
 attribute [to_additive Even.exists_two_nsmul
@@ -112,11 +121,11 @@ lemma IsSquare.sq (a : α) : IsSquare (a ^ 2) := ⟨a, pow_two _⟩
 
 @[to_additive (attr := aesop unsafe 20% apply)]
 lemma IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
-  rintro ⟨a, rfl⟩; exact ⟨a ^ n, (Commute.refl _).mul_pow _⟩
+  rintro ⟨r, rfl⟩; exact ⟨r ^ n, (Commute.refl _).mul_pow _⟩
 
 @[to_additive (attr := aesop unsafe 80% apply)]
 lemma Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
-  rintro ⟨n, rfl⟩ a; exact ⟨a ^ n, pow_add _ _ _⟩
+  rintro ⟨m, rfl⟩ a; exact ⟨a ^ m, pow_add _ _ _⟩
 
 end Monoid
 
