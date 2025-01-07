@@ -27,8 +27,8 @@ concurrency:
   # workflows on master get more expressive labels
   group: ${{ github.workflow }}-${{ github.ref }}.
     ${{ ( contains(fromJSON( '["refs/heads/master", "refs/heads/staging"]'), github.ref ) && github.run_id) || ''}}
-  # cancel any running workflow with the same label
-  cancel-in-progress: true
+  # cancel any running workflow with the same label (but not on this branch)
+  cancel-in-progress: ${{!startsWith(github.ref,'refs/heads/blizzard_inc/debug')}}
 
 jobs:
   windows-build:
@@ -36,8 +36,15 @@ jobs:
     steps:
       - name: checkout
         uses: actions/checkout@v4
-
-      - name: lean action
-        uses: leanprover/lean-action@v1
-        with:
-          build-args: "--log-level=error"
+      - name: install elan
+        shell: bash
+        run: |
+          : Install Elan
+          scripts/windows/install_elan.sh
+      - name: install other compiler
+        shell: bash
+        run: |
+          echo skipped
+      - name: grab the cache
+        shell: bash
+        run: lake exe cache get
