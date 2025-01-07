@@ -44,9 +44,8 @@ lemma continuous_isIdempotent_iff_linear_isIdempotent {P : E →L[𝕜] E} :
     IsIdempotentElem P ↔ IsIdempotentElem (P : E →ₗ[𝕜] E) := by
   constructor
   · intro h
-    rw [IsIdempotentElem]
-    conv_rhs => rw [← h]
-    rfl
+    rw [← ContinuousLinearMap.toLinearMapRingHom_apply]
+    exact h.map _
   · intro h
     apply (P*P).coe_injective
     rw [← h]
