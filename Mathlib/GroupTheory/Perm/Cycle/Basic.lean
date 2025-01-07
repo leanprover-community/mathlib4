@@ -5,9 +5,9 @@ Authors: Chris Hughes, Yaël Dillies
 -/
 
 import Mathlib.Algebra.Module.BigOperators
+import Mathlib.Data.List.Iterate
 import Mathlib.GroupTheory.Perm.Finite
 import Mathlib.GroupTheory.Perm.List
-import Mathlib.Data.List.Iterate
 
 /-!
 # Cycles of a permutation
