@@ -276,9 +276,7 @@ is given by `(β_ (Y ⨿ Z) X).hom ≫ (∂L X Y Z).inv ≫ (coprod.map (β_ X Y
 lemma SymmetricCategory.rightDistrib_of_leftDistrib
     [SymmetricCategory C] [IsMonoidalLeftDistrib C] {X Y Z : C} :
     ∂R X Y Z = (coprod.mapIso (β_ Y X) (β_ Z X)) ≪≫ (∂L X Y Z) ≪≫ (β_ X (Y ⨿ Z)) := by
-  ext
-  · simp [leftDistrib_hom, rightDistrib_hom]
-  · simp [leftDistrib_hom, rightDistrib_hom]
+  ext <;> simp [leftDistrib_hom, rightDistrib_hom]
 
 /-- A closed monoidal category is left distributive. -/
 instance MonoidalClosed.isMonoidalLeftDistrib [MonoidalClosed C] :
