@@ -6,6 +6,7 @@ Authors: Christopher Hoskin
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Units.Defs
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Subtype
 import Mathlib.Order.Notation
@@ -87,10 +88,13 @@ theorem pow {p : N} (n : ℕ) (h : IsIdempotentElem p) : IsIdempotentElem (p ^ n
 theorem pow_succ_eq {p : N} (n : ℕ) (h : IsIdempotentElem p) : p ^ (n + 1) = p :=
   Nat.recOn n ((Nat.zero_add 1).symm ▸ pow_one p) fun n ih => by rw [pow_succ, ih, h.eq]
 
+theorem iff_eq_one_of_isUnit {p : N} (h : IsUnit p) : IsIdempotentElem p ↔ p = 1 :=
+  ⟨fun idem ↦ have ⟨q, eq⟩ := h.exists_left_inv
+    by rw [← eq, ← idem.eq, ← mul_assoc, eq, one_mul, idem.eq], by rintro rfl; exact .one⟩
+
 @[simp]
 theorem iff_eq_one {p : G} : IsIdempotentElem p ↔ p = 1 :=
-  Iff.intro (fun h => mul_left_cancel ((mul_one p).symm ▸ h.eq : p * p = p * 1)) fun h =>
-    h.symm ▸ one
+  iff_eq_one_of_isUnit (Group.isUnit p)
 
 @[simp]
 theorem iff_eq_zero_or_one {p : G₀} : IsIdempotentElem p ↔ p = 0 ∨ p = 1 := by
@@ -102,6 +106,12 @@ theorem iff_eq_zero_or_one {p : G₀} : IsIdempotentElem p ↔ p = 0 ∨ p = 1 :
 lemma map {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N] {e : M}
     (he : IsIdempotentElem e) (f : F) : IsIdempotentElem (f e) := by
   rw [IsIdempotentElem, ← map_mul, he.eq]
+
+lemma of_mul_add {R} [Semiring R] {e₁ e₂ : R} (mul : e₁ * e₂ = 0) (add : e₁ + e₂ = 1) :
+    IsIdempotentElem e₁ ∧ IsIdempotentElem e₂ := by
+  simp_rw [IsIdempotentElem]; constructor
+  · conv_rhs => rw [← mul_one e₁, ← add, mul_add, mul, add_zero]
+  · conv_rhs => rw [← one_mul e₂, ← add, add_mul, mul, zero_add]
 
 /-! ### Instances on `Subtype IsIdempotentElem` -/
 

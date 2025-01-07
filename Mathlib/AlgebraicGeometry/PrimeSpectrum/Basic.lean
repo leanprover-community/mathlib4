@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.Idempotents
 import Mathlib.RingTheory.KrullDimension.Basic
 import Mathlib.RingTheory.LocalRing.ResidueField.Defs
 import Mathlib.RingTheory.LocalRing.RingHom.Basic
@@ -844,6 +845,73 @@ lemma exists_idempotent_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R)}
 @[deprecated (since := "2024-11-11")]
 alias exists_idempotent_basicOpen_eq_of_is_clopen := exists_idempotent_basicOpen_eq_of_isClopen
 
+lemma basicOpen_eq_zeroLocus_of_mul_add
+    (e f : R) (mul : e * f = 0) (add : e + f = 1) :
+    basicOpen e = zeroLocus {f} := by
+  ext p
+  suffices e ∉ p.asIdeal ↔ f ∈ p.asIdeal by simpa
+  refine ⟨(p.2.mem_or_mem_of_mul_eq_zero mul).resolve_left, fun h₁ h₂ ↦ p.2.1 ?_⟩
+  rw [Ideal.eq_top_iff_one, ← add]
+  exact add_mem h₂ h₁
+
+lemma zeroLocus_eq_basicOpen_of_mul_add
+    (e f : R) (mul : e * f = 0) (add : e + f = 1) :
+    zeroLocus {e} = basicOpen f := by
+  rw [basicOpen_eq_zeroLocus_of_mul_add f e] <;> simp only [mul, add, mul_comm, add_comm]
+
+open TopologicalSpace.Opens in
+lemma isClopen_iff_mul_add {s : Set (PrimeSpectrum R)} :
+    IsClopen s ↔ ∃ e f : R, e * f = 0 ∧ e + f = 1 ∧ s = basicOpen e := by
+  refine ⟨fun h ↦ ?_, ?_⟩; swap
+  · rintro ⟨e, f, mul, add, rfl⟩
+    refine ⟨?_, (basicOpen e).2⟩
+    rw [PrimeSpectrum.basicOpen_eq_zeroLocus_of_mul_add e f mul add]
+    exact isClosed_zeroLocus _
+  have ⟨e, he, hs⟩ := exists_idempotent_basicOpen_eq_of_isClopen h
+  have ⟨f, hf, hsc⟩ := exists_idempotent_basicOpen_eq_of_isClopen h.compl
+  have : e * f = 0 := basicOpen_injOn_isIdempotentElem (he.mul hf) .zero <| by
+    rw [basicOpen_mul, basicOpen_zero, SetLike.ext'_iff,
+      coe_inf, ← hs, ← hsc, Set.inter_compl_self, coe_bot]
+  refine ⟨e, f, this, ?_, hs⟩
+  apply basicOpen_injOn_isIdempotentElem _ .one; swap
+  · simp_rw [Set.mem_setOf, IsIdempotentElem,
+      add_mul, mul_add, mul_comm, this, zero_add, add_zero, he.eq, hf.eq]
+  rw [basicOpen_one, SetLike.ext'_iff, basicOpen_eq_zeroLocus_compl, coe_top, ← zeroLocus_span]
+  suffices Ideal.span {e + f} = Ideal.span {e, f} by
+    simp_rw [this, Ideal.span_insert, zeroLocus_sup, zeroLocus_span, Set.compl_inter,
+      ← basicOpen_eq_zeroLocus_compl, ← hs, ← hsc, Set.union_compl_self]
+  refine (Ideal.span_le.mpr ?_).antisymm (Ideal.span_le.mpr ?_)
+  · rintro _ rfl; exact add_mem (Ideal.subset_span (.inl rfl)) (Ideal.subset_span (.inr rfl))
+  simp_rw [Set.pair_subset_iff, SetLike.mem_coe, Ideal.mem_span_singleton]
+  exact ⟨⟨e, by rw [add_mul, he.eq, mul_comm, this, add_zero]⟩,
+    ⟨f, by rw [add_mul, this, zero_add, hf.eq]⟩⟩
+
+lemma isClopen_iff_mul_add_zeroLocus {s : Set (PrimeSpectrum R)} :
+    IsClopen s ↔ ∃ e f : R, e * f = 0 ∧ e + f = 1 ∧ s = zeroLocus {e} := by
+  rw [isClopen_iff_mul_add, exists_swap]
+  refine exists₂_congr fun e f ↦ ?_
+  rw [mul_comm, add_comm, ← and_assoc, ← and_assoc, and_congr_right]
+  intro ⟨mul, add⟩
+  rw [zeroLocus_eq_basicOpen_of_mul_add e f mul add]
+
+open TopologicalSpace (Clopens)
+
+/-- Clopen subsets in the prime spectrum of a commutative semiring are in 1-1 correspondence
+with complete orthogonal pairs of idempotents. -/
+def mulZeroaddOneEquivClopens :
+    {e : R × R | e.1 * e.2 = 0 ∧ e.1 + e.2 = 1} ≃ Clopens (PrimeSpectrum R) :=
+  .ofBijective (fun e ↦ ⟨basicOpen e.1.1, isClopen_iff_mul_add.mpr ⟨_, _, e.2.1, e.2.2, rfl⟩⟩) <| by
+    refine ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ eq ↦ Subtype.ext ?_, fun s ↦ ?_⟩; swap
+    · have ⟨e, f, mul, add, eq⟩ := isClopen_iff_mul_add.mp s.2
+      exact ⟨⟨(e, f), mul, add⟩, SetLike.ext' eq.symm⟩
+    have : x.1 = y.1 := basicOpen_injOn_isIdempotentElem (IsIdempotentElem.of_mul_add hx.1 hx.2).1
+      (IsIdempotentElem.of_mul_add hy.1 hy.2).1 <| SetLike.ext' (congr_arg (·.1) eq)
+    simp_rw [Prod.ext_iff, this, true_and]
+    calc x.2 = (y.1 + y.2) * x.2 := by rw [hy.2, one_mul]
+           _ = x.2 * y.2 := by rw [add_mul, ← this, hx.1, zero_add, mul_comm]
+           _ = y.2 * (x.1 + x.2) := by rw [mul_add, this, mul_comm y.2, hy.1, zero_add, mul_comm]
+           _ = y.2 := by rw [hx.2, mul_one]
+
 section IsIntegral
 
 open Polynomial
@@ -1060,7 +1128,7 @@ alias LocalRing.PrimeSpectrum.comap_residue := IsLocalRing.PrimeSpectrum.comap_r
 
 section KrullDimension
 
-theorem PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim [CommRing R] :
+theorem PrimeSpectrum.topologicalKrullDim_eq_ringKrullDim [CommSemiring R] :
     topologicalKrullDim (PrimeSpectrum R) = ringKrullDim R :=
   Order.krullDim_orderDual.symm.trans <| Order.krullDim_eq_of_orderIso
   (PrimeSpectrum.pointsEquivIrreducibleCloseds R).symm
@@ -1076,15 +1144,8 @@ namespace PrimeSpectrum
 @[stacks 00EC]
 lemma basicOpen_eq_zeroLocus_of_isIdempotentElem
     (e : R) (he : IsIdempotentElem e) :
-    basicOpen e = zeroLocus {1 - e} := by
-  ext p
-  suffices e ∉ p.asIdeal ↔ 1 - e ∈ p.asIdeal by simpa
-  constructor
-  · refine (p.2.mem_or_mem_of_mul_eq_zero ?_).resolve_left
-    rw [mul_sub, mul_one, he.eq, sub_self]
-  · refine fun h₁ h₂ ↦ p.2.1 ?_
-    rw [Ideal.eq_top_iff_one, ← sub_add_cancel 1 e]
-    exact add_mem h₁ h₂
+    basicOpen e = zeroLocus {1 - e} :=
+  basicOpen_eq_zeroLocus_of_mul_add _ _ (by simp [mul_sub, he.eq]) (by simp)
 
 @[stacks 00EC]
 lemma zeroLocus_eq_basicOpen_of_isIdempotentElem
