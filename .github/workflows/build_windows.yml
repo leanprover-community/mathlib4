@@ -46,7 +46,7 @@ jobs:
         run: |
           echo skipped
       - name: build the cache command
-        shell:bash
+        shell: bash
         run: lake build cache
       - name: grab a bit of cache
         shell: bash
