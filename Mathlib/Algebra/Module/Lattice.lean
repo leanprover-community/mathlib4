@@ -159,7 +159,7 @@ instance free [NoZeroSMulDivisors R K] (M : Submodule R V) [IsLattice K M] : Mod
   haveI : NoZeroSMulDivisors R V := by
     apply NoZeroSMulDivisors.of_algebraMap_injective' (A := K)
     exact NoZeroSMulDivisors.algebraMap_injective R K
-  /- torsion free, finite module over a PID -/
+  -- any torsion free finite module over a PID is free
   infer_instance
 
 /-- Any lattice has `R`-rank equal to the `K`-rank of `V`. -/
