@@ -68,13 +68,15 @@ variable (T) in
 In an additive monoid with multiplication `R`, `AddSubmonoid.sumSq R` is the submonoid of sums of
 squares in `R`.
 -/
+@[simps]
 def sumSq [AddMonoid T] : AddSubmonoid T where
   carrier   := {s : T | IsSumSq s}
   zero_mem' := .zero
   add_mem'  := .add
 
+attribute [norm_cast] coe_sumSq
+
 @[simp] theorem mem_sumSq : s ∈ sumSq T ↔ IsSumSq s := Iff.rfl
-@[simp, norm_cast] theorem coe_sumSq : sumSq T = {s : T | IsSumSq s} := rfl
 
 end AddSubmonoid
 
@@ -107,7 +109,7 @@ theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
 @[deprecated (since := "2024-08-09")] alias SquaresAddClosure := AddSubmonoid.closure_isSquare
 
 /--
-In an additive, commutative monoid with multiplication, a finite sum of sums of squares
+In an additive commutative monoid with multiplication, a finite sum of sums of squares
 is a sum of squares.
 -/
 @[aesop unsafe 90% apply]
@@ -116,14 +118,14 @@ theorem IsSumSq.sum [AddCommMonoid R] [Mul R] {ι : Type*} {I : Finset ι} {s : 
   simpa using sum_mem (S := AddSubmonoid.sumSq R) hs
 
 /--
-In an additive, commutative monoid with multiplication,
+In an additive commutative monoid with multiplication,
 a term of the form `∑ i ∈ I, x i`, where each `x i` is a square, is a sum of squares.
 -/
 theorem IsSumSq.sum_isSquare [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) {x : ι → R}
     (ha : ∀ i ∈ I, IsSquare <| x i) : IsSumSq (∑ i ∈ I, x i) := by aesop
 
 /--
-In an additive, commutative monoid with multiplication,
+In an additive commutative monoid with multiplication,
 a term of the form `∑ i ∈ I, a i * a i` is a sum of squares.
 -/
 theorem IsSumSq.sum_mul_self [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) (a : ι → R) :
@@ -132,7 +134,7 @@ theorem IsSumSq.sum_mul_self [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset 
 @[deprecated (since := "2024-12-27")] alias isSumSq_sum_mul_self := IsSumSq.sum_mul_self
 
 namespace NonUnitalSubsemiring
-variable {T : Type*} [NonUnitalCommSemiring T] {s : T}
+variable {T : Type*} [NonUnitalCommSemiring T]
 
 variable (T) in
 /--
@@ -147,7 +149,7 @@ def sumSq : NonUnitalSubsemiring T := (Subsemigroup.square T).nonUnitalSubsemiri
   simp
 
 @[simp]
-theorem mem_sumSq : s ∈ sumSq T ↔ IsSumSq s := by
+theorem mem_sumSq {s : T} : s ∈ sumSq T ↔ IsSumSq s := by
   rw [← NonUnitalSubsemiring.mem_toAddSubmonoid]; simp
 
 @[simp, norm_cast] theorem coe_sumSq : sumSq T = {s : T | IsSumSq s} := by ext; simp
@@ -172,7 +174,7 @@ private theorem Submonoid.square_subsemiringClosure {T : Type*} [CommSemiring T]
   simp [Submonoid.subsemiringClosure_eq_closure]
 
 namespace Subsemiring
-variable {T : Type*} [CommSemiring T] {s : T}
+variable {T : Type*} [CommSemiring T]
 
 variable (T) in
 /--
@@ -186,7 +188,7 @@ def sumSq : Subsemiring T where
     (sumSq T).toNonUnitalSubsemiring = .sumSq T := rfl
 
 @[simp]
-theorem mem_sumSq : s ∈ sumSq T ↔ IsSumSq s := by
+theorem mem_sumSq {s : T} : s ∈ sumSq T ↔ IsSumSq s := by
   rw [← Subsemiring.mem_toNonUnitalSubsemiring]; simp
 
 @[simp, norm_cast] theorem coe_sumSq : sumSq T = {s : T | IsSumSq s} := by ext; simp
