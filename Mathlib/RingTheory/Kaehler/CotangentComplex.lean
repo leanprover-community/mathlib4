@@ -206,10 +206,7 @@ def Hom.sub (f g : Hom P P') : P.CotangentSpace →ₗ[S] P'.Cotangent := by
     map_one_eq_zero' := ?_
     leibniz' := ?_ }
   · ext
-    simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
-      Cotangent.val_mk, Cotangent.val_zero, Ideal.toCotangent_eq_zero]
-    erw [LinearMap.codRestrict_apply]
-    simp only [LinearMap.sub_apply, AlgHom.toLinearMap_apply, map_one, sub_self, Submodule.zero_mem]
+    simp [Ideal.toCotangent_eq_zero]
   · intro x y
     ext
     simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
@@ -377,7 +374,7 @@ lemma cotangentSpaceBasis_repr_one_tmul (x i) :
   simp
 
 lemma cotangentSpaceBasis_apply (i) :
-    P.cotangentSpaceBasis i = 1 ⊗ₜ .D _ _ (.X i) := by
+    P.cotangentSpaceBasis i = ((1 : S) ⊗ₜ[P.Ring] D R P.Ring (.X i) :) := by
   simp [cotangentSpaceBasis, toExtension]
 
 universe w' u' v'
@@ -410,6 +407,12 @@ lemma repr_CotangentSpaceMap (f : Hom P P') (i j) :
   simp only [toExtension]
   rw [CotangentSpace.map_tmul, map_one]
   erw [cotangentSpaceBasis_repr_one_tmul, Hom.toAlgHom_X]
+
+@[simp]
+lemma toKaehler_cotangentSpaceBasis (i) :
+    P.toExtension.toKaehler (P.cotangentSpaceBasis i) = D R S (P.val i) := by
+  rw [cotangentSpaceBasis_apply]
+  exact (KaehlerDifferential.mapBaseChange_tmul ..).trans (by simp)
 
 end Generators
 

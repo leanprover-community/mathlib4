@@ -3,11 +3,11 @@ Copyright (c) 2022 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Equiv.TransferInstance
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Kernels
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
 # Transferring "abelian-ness" across a functor

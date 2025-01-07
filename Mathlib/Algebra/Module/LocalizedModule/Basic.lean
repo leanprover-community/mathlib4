@@ -416,8 +416,7 @@ lemma smul_eq_iff_of_mem
         rw [mul_smul, ← eq1, Submonoid.mk_smul, smul_comm r t]
       · rintro ⟨a, ha, eq1⟩
         refine ⟨a, ha, ?_⟩
-        rw [← eq1, mul_comm, mul_smul, Submonoid.mk_smul]
-        rfl
+        rw [← eq1, mul_comm, mul_smul, Submonoid.mk_smul, Submonoid.smul_def, Submonoid.mk_smul]
 
 lemma eq_zero_of_smul_eq_zero
     (r : R) (hr : r ∈ S) (x : LocalizedModule S M) (hx : r • x = 0) : x = 0 := by
@@ -678,8 +677,8 @@ there is a linear map `lift g ∘ mkLinearMap = g`.
 -/
 theorem lift_comp (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x)) :
     (lift S g h).comp (mkLinearMap S M) = g := by
-  ext x; dsimp; rw [LocalizedModule.lift_mk]
-  erw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, one_smul]
+  ext x
+  simp [LocalizedModule.lift_mk]
 
 /--
 If `g` is a linear map `M → M''` such that all scalar multiplication by `s : S` is invertible and
@@ -1234,7 +1233,7 @@ theorem mkOfAlgebra {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S'] [Al
       simp_rw [Submonoid.smul_def, Algebra.smul_def] at e
       exact (h₁ x x.2).mul_left_cancel e
     · intro a
-      refine ⟨((h₁ x x.2).unit⁻¹ : _) * a, ?_⟩
+      refine ⟨((h₁ x x.2).unit⁻¹ :) * a, ?_⟩
       rw [Module.algebraMap_end_apply, Algebra.smul_def, ← mul_assoc, IsUnit.mul_val_inv, one_mul]
   · exact h₂
   · intros x y
