@@ -791,45 +791,50 @@ open Equiv
 
 variable [Fintype ι] [DecidableEq ι]
 
+private lemma alternatization_map_eq_coe_aux (m : MultilinearMap R (fun _ : ι => M) N') :
+    (fun x ↦ ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ x) =
+      ⇑(∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ) := by
+  ext
+  simp
+
 private theorem alternization_map_eq_zero_of_eq_aux (m : MultilinearMap R (fun _ : ι => M) N')
-    (v : ι → M) (i j : ι) (i_ne_j : i ≠ j) (hv : v i = v j) :
-    (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ) v = 0 := by
-  rw [sum_apply]
-  exact
-    Finset.sum_involution (fun σ _ => swap i j * σ)
-      -- Porting note: `-Equiv.Perm.sign_swap'` is required.
-      (fun σ _ => by simp [Perm.sign_swap i_ne_j, apply_swap_eq_self hv, -Equiv.Perm.sign_swap'])
-      (fun σ _ _ => (not_congr swap_mul_eq_iff).mpr i_ne_j) (fun σ _ => Finset.mem_univ _)
-      fun σ _ => swap_mul_involutive i j σ
+    (v : ι → M) (i j : ι) (hv : v i = v j) (i_ne_j : i ≠ j) :
+    ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ v = 0 :=
+  Finset.sum_involution (fun σ _ => swap i j * σ)
+    -- Porting note: `-Equiv.Perm.sign_swap'` is required.
+    (fun σ _ => by simp [Perm.sign_swap i_ne_j, apply_swap_eq_self hv, -Equiv.Perm.sign_swap'])
+    (fun σ _ _ => (not_congr swap_mul_eq_iff).mpr i_ne_j) (fun σ _ => Finset.mem_univ _)
+    fun σ _ => swap_mul_involutive i j σ
 
 /-- Produce an `AlternatingMap` out of a `MultilinearMap`, by summing over all argument
 permutations. -/
 def alternatization : MultilinearMap R (fun _ : ι => M) N' →+ M [⋀^ι]→ₗ[R] N' where
   toFun m :=
-    { ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ with
-      toFun := ⇑(∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ)
-      map_eq_zero_of_eq' := fun v i j hvij hij =>
-        alternization_map_eq_zero_of_eq_aux m v i j hij hvij }
+    { toFun := fun x ↦ ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ x
+      map_add' := by rw [alternatization_map_eq_coe_aux]; simp
+      map_smul' := by rw [alternatization_map_eq_coe_aux]; simp
+      map_eq_zero_of_eq' := alternization_map_eq_zero_of_eq_aux m
+    }
   map_add' a b := by
     ext
-    simp only [mk_coe, AlternatingMap.coe_mk, sum_apply, smul_apply, domDomCongr_apply, add_apply,
-      smul_add, Finset.sum_add_distrib, AlternatingMap.add_apply]
+    simp only [domDomCongr_apply, add_apply, smul_add, Finset.sum_add_distrib,
+      AlternatingMap.coe_mk, coe_mk, AlternatingMap.add_apply]
   map_zero' := by
     ext
-    simp only [mk_coe, AlternatingMap.coe_mk, sum_apply, smul_apply, domDomCongr_apply,
-      zero_apply, smul_zero, Finset.sum_const_zero, AlternatingMap.zero_apply]
+    simp only [domDomCongr_apply, zero_apply, smul_zero, Finset.sum_const_zero,
+      AlternatingMap.coe_mk, coe_mk, AlternatingMap.zero_apply]
 
 theorem alternatization_def (m : MultilinearMap R (fun _ : ι => M) N') :
     ⇑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ : _) :=
-  rfl
+  alternatization_map_eq_coe_aux m
 
 theorem alternatization_coe (m : MultilinearMap R (fun _ : ι => M) N') :
     ↑(alternatization m) = (∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ : _) :=
-  coe_injective rfl
+  coe_injective (alternatization_map_eq_coe_aux m)
 
 theorem alternatization_apply (m : MultilinearMap R (fun _ : ι => M) N') (v : ι → M) :
     alternatization m v = ∑ σ : Perm ι, Equiv.Perm.sign σ • m.domDomCongr σ v := by
-  simp only [alternatization_def, smul_apply, sum_apply]
+  rfl
 
 end MultilinearMap
 
