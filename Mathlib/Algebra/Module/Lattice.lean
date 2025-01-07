@@ -35,6 +35,11 @@ Let `R` be a PID and `A = K` its field of fractions.
 - `Submodule.IsLattice.rank`: The `R`-rank of a lattice in `V` is equal to the `K`-rank of `V`.
 - `Submodule.IsLattice.inf`: The intersection of two lattices is a lattice.
 
+## Note
+
+In the case `R = ℤ` and `A = K` a field, there is also `IsZLattice` where the finitely
+generated condition is replaced by having the discrete topology. This is for example used
+for complex tori.
 -/
 
 universe u
@@ -49,8 +54,11 @@ namespace Submodule
 An `R`-submodule `M` of `V` is a lattice if it is finitely generated
 and spans `V` as an `A`-module.
 
-Note: `A` is marked as an `outParam` here. In practice this should not cause issues, since
-`R` and `A` are fixed, where typically `A` is the fraction field of `R`. -/
+Note 1: `A` is marked as an `outParam` here. In practice this should not cause issues, since
+`R` and `A` are fixed, where typically `A` is the fraction field of `R`.
+
+Note 2: In the case `R = ℤ` and `A = K` a field, there is also `IsZLattice` where the finitely
+generated condition is replaced by having the discrete topology. -/
 class IsLattice (A : outParam Type*) [CommRing A] [Algebra R A]
     {V : Type*} [AddCommMonoid V] [Module R V] [Module A V] [IsScalarTower R A V]
     [Algebra R A] [IsScalarTower R A V] (M : Submodule R V) : Prop where
