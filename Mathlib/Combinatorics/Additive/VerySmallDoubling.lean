@@ -25,38 +25,41 @@ open MulOpposite MulAction
 open scoped Pointwise RightActions
 
 namespace Finset
-variable {G : Type*} [Group G] [DecidableEq G] {A : Finset G}
+variable {G : Type*} [Group G] [DecidableEq G] {A : Finset G} {a : G}
 
-/-- A set with no doubling is either empty or the translate of a subgroup.
-
-Precisely, if `A` has no doubling then there exists a subgroup `H` such `aH = Ha = A` for all
-`a ∈ A`. -/
-@[to_additive "A set with no doubling is either empty or the translate of a subgroup.
-
-Precisely, if `A` has no doubling then there exists a subgroup `H` such `a + H = H + a = A` for all
-`a ∈ A`."]
-lemma exists_subgroup_of_no_doubling (hA : #(A * A) ≤ #A) :
-    ∃ H : Subgroup G, ∀ a ∈ A, a •> (H : Set G) = A ∧ (H : Set G) <• a = A := by
+@[to_additive]
+private lemma smul_stabilizer_of_no_doubling_aux (hA : #(A * A) ≤ #A) (ha : a ∈ A) :
+    a •> (stabilizer G A : Set G) = A ∧ (stabilizer G A : Set G) <• a = A := by
   have smul_A {a} (ha : a ∈ A) : a •> A = A * A :=
     eq_of_subset_of_card_le (smul_finset_subset_mul ha) (by simpa)
   have A_smul {a} (ha : a ∈ A) : A <• a = A * A :=
     eq_of_subset_of_card_le (op_smul_finset_subset_mul ha) (by simpa)
-  have smul_A_eq_op_smul_A {a} (ha : a ∈ A) : a •> A = A <• a := by rw [smul_A ha, A_smul ha]
-  have smul_A_eq_op_smul_A' {a} (ha : a ∈ A) : a⁻¹ •> A = A <• a⁻¹ := by
-    rw [inv_smul_eq_iff, smul_comm, smul_A_eq_op_smul_A ha, op_inv, inv_smul_smul]
+  have smul_A_eq_A_smul {a} (ha : a ∈ A) : a •> A = A <• a := by rw [smul_A ha, A_smul ha]
+  have mul_mem_A_comm {x a} (ha : a ∈ A) : x * a ∈ A ↔ a * x ∈ A := by
+    rw [← smul_mem_smul_finset_iff a, smul_A_eq_A_smul ha, ← op_smul_eq_mul, smul_comm,
+      smul_mem_smul_finset_iff, smul_eq_mul]
   let H := stabilizer G A
   have inv_smul_A {a} (ha : a ∈ A) : a⁻¹ • (A : Set G) = H := by
     ext x
-    refine ⟨?_, fun hx ↦ ?_⟩
-    · rintro ⟨b, hb, rfl⟩
-      simp [H, mul_smul, inv_smul_eq_iff, smul_A ha, smul_A hb]
+    rw [Set.mem_inv_smul_set_iff, smul_eq_mul]
+    refine ⟨fun hx ↦ ?_, fun hx ↦ ?_⟩
+    · simpa [← smul_A ha, mul_smul] using smul_A hx
     · norm_cast
-      rwa [smul_A_eq_op_smul_A' ha, op_inv, mem_inv_smul_finset_iff, op_smul_eq_mul, ← smul_eq_mul,
-        ← mem_inv_smul_finset_iff, inv_mem hx]
-  refine ⟨H, fun a ha ↦ ⟨?_, ?_⟩⟩
+      rwa [← mul_mem_A_comm ha, ← smul_eq_mul, ← mem_inv_smul_finset_iff, inv_mem hx]
+  refine ⟨?_, ?_⟩
   · rw [← inv_smul_A ha, smul_inv_smul]
   · rw [← inv_smul_A ha, smul_comm]
     norm_cast
-    rw [← smul_A_eq_op_smul_A ha, inv_smul_smul]
+    rw [← smul_A_eq_A_smul ha, inv_smul_smul]
+
+/-- A non-empty set with no doubling is the left translate of its stabilizer. -/
+@[to_additive "A non-empty set with no doubling is the left-translate of its stabilizer."]
+lemma smul_stabilizer_of_no_doubling (hA : #(A * A) ≤ #A) (ha : a ∈ A) :
+    a •> (stabilizer G A : Set G) = A := (smul_stabilizer_of_no_doubling_aux hA ha).1
+
+/-- A non-empty set with no doubling is the right translate of its stabilizer. -/
+@[to_additive "A non-empty set with no doubling is the right translate of its stabilizer."]
+lemma op_smul_stabilizer_of_no_doubling (hA : #(A * A) ≤ #A) (ha : a ∈ A) :
+    (stabilizer G A : Set G) <• a = A := (smul_stabilizer_of_no_doubling_aux hA ha).2
 
 end Finset
