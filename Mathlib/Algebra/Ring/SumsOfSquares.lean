@@ -174,8 +174,6 @@ private theorem Submonoid.square_subsemiringClosure {T : Type*} [CommSemiring T]
     (Submonoid.square T).subsemiringClosure = .closure {x : T | IsSquare x} := by
   simp [Submonoid.subsemiringClosure_eq_closure]
 
-example : IsSumSq 0 := by aesop
-
 namespace Subsemiring
 variable {T : Type*} [CommSemiring T]
 
