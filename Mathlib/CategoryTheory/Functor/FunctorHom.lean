@@ -131,7 +131,7 @@ def functorHomEquiv (A : C ⥤ Type max u v v') : (A ⟶ F.functorHom G) ≃ Hom
     ext X a Y f
     exact (HomObj.congr_app (congr_fun (φ.naturality f) a) Y (𝟙 _)).trans
       (congr_arg ((φ.app X a).app Y) (by simp))
-  right_inv x := by aesop
+  right_inv x := by simp
 
 variable {F G} in
 /-- Morphisms `(𝟙_ (C ⥤ Type max v' v u) ⟶ F.functorHom G)` are in bijection with
