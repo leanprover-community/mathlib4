@@ -114,16 +114,8 @@ open Distributive
 
 instance IsMonoidalLeftDistrib.of_isIso_coprodComparisonTensorLeft
     [i : ∀ {X Y Z : C}, IsIso (coprodComparison (tensorLeft X) Y Z)] : IsMonoidalLeftDistrib C where
-  preservesBinaryCoproducts_tensorLeft X := by
-    refine {
-      preservesColimit := by
-        intro K
-        have : PreservesColimit
-          (pair (K.obj { as := WalkingPair.left }) (K.obj { as := WalkingPair.right }))
-          (tensorLeft X) := by
-            apply PreservesColimitPair.of_iso_coprod_comparison (tensorLeft X) _ _
-        apply preservesColimit_of_iso_diagram (tensorLeft X) (diagramIsoPair K).symm
-    }
+  preservesBinaryCoproducts_tensorLeft X :=
+    preservesBinaryCoproducts_of_isIso_coprodComparison (tensorLeft X)
 
 variable [IsMonoidalLeftDistrib C]
 
