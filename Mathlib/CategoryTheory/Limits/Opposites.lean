@@ -32,10 +32,6 @@ namespace CategoryTheory.Limits
 variable {C : Type u₁} [Category.{v₁} C]
 variable {J : Type u₂} [Category.{v₂} J]
 
-@[deprecated (since := "2024-03-26")] alias isLimitCoconeOp := IsColimit.op
-@[deprecated (since := "2024-03-26")] alias isColimitConeOp := IsLimit.op
-@[deprecated (since := "2024-03-26")] alias isLimitCoconeUnop := IsColimit.unop
-@[deprecated (since := "2024-03-26")] alias isColimitConeUnop := IsLimit.unop
 
 /-- Turn a colimit for `F : J ⥤ Cᵒᵖ` into a limit for `F.leftOp : Jᵒᵖ ⥤ C`. -/
 @[simps]
@@ -359,10 +355,12 @@ attribute [local instance] hasLimitsOfShape_op_of_hasColimitsOfShape
 
 /-- If `C` has colimits, we can construct limits for `Cᵒᵖ`.
 -/
-instance hasLimits_op_of_hasColimits [HasColimits C] : HasLimits Cᵒᵖ :=
+instance hasLimits_op_of_hasColimits [HasColimitsOfSize.{v₂, u₂} C] :
+    HasLimitsOfSize.{v₂, u₂} Cᵒᵖ :=
   ⟨fun _ => inferInstance⟩
 
-theorem hasLimits_of_hasColimits_op [HasColimits Cᵒᵖ] : HasLimits C :=
+theorem hasLimits_of_hasColimits_op [HasColimitsOfSize.{v₂, u₂} Cᵒᵖ] :
+    HasLimitsOfSize.{v₂, u₂} C :=
   { has_limits_of_shape := fun _ _ => hasLimitsOfShape_of_hasColimitsOfShape_op }
 
 instance has_cofiltered_limits_op_of_has_filtered_colimits [HasFilteredColimitsOfSize.{v₂, u₂} C] :
@@ -485,10 +483,12 @@ theorem hasColimitsOfShape_of_hasLimitsOfShape_op [HasLimitsOfShape Jᵒᵖ Cᵒ
 
 /-- If `C` has limits, we can construct colimits for `Cᵒᵖ`.
 -/
-instance hasColimits_op_of_hasLimits [HasLimits C] : HasColimits Cᵒᵖ :=
+instance hasColimits_op_of_hasLimits [HasLimitsOfSize.{v₂, u₂} C] :
+    HasColimitsOfSize.{v₂, u₂} Cᵒᵖ :=
   ⟨fun _ => inferInstance⟩
 
-theorem hasColimits_of_hasLimits_op [HasLimits Cᵒᵖ] : HasColimits C :=
+theorem hasColimits_of_hasLimits_op [HasLimitsOfSize.{v₂, u₂} Cᵒᵖ] :
+    HasColimitsOfSize.{v₂, u₂} C :=
   { has_colimits_of_shape := fun _ _ => hasColimitsOfShape_of_hasLimitsOfShape_op }
 
 instance has_filtered_colimits_op_of_has_cofiltered_limits [HasCofilteredLimitsOfSize.{v₂, u₂} C] :
@@ -884,7 +884,7 @@ theorem unop_fst {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocon
     c.unop.fst = c.inl.unop := by simp
 
 theorem unop_snd {X Y Z : Cᵒᵖ} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
-    c.unop.snd = c.inr.unop := by aesop_cat
+    c.unop.snd = c.inr.unop := by simp
 
 -- Porting note: it was originally @[simps (config := lemmasOnly)]
 /-- The obvious map `PushoutCocone f.op g.op → PullbackCone f g` -/
@@ -894,10 +894,10 @@ def op {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) : Pullbac
     (Cone.whisker walkingSpanOpEquiv.inverse (Cocone.op c))
 
 theorem op_fst {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
-    c.op.fst = c.inl.op := by aesop_cat
+    c.op.fst = c.inl.op := by simp
 
 theorem op_snd {X Y Z : C} {f : X ⟶ Y} {g : X ⟶ Z} (c : PushoutCocone f g) :
-    c.op.snd = c.inr.op := by aesop_cat
+    c.op.snd = c.inr.op := by simp
 
 end PushoutCocone
 
@@ -913,10 +913,10 @@ def unop {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
       (Cone.whisker walkingSpanOpEquiv.functor c))
 
 theorem unop_inl {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
-    c.unop.inl = c.fst.unop := by aesop_cat
+    c.unop.inl = c.fst.unop := by simp
 
 theorem unop_inr {X Y Z : Cᵒᵖ} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
-    c.unop.inr = c.snd.unop := by aesop_cat
+    c.unop.inr = c.snd.unop := by simp
 
 /-- The obvious map `PullbackCone f g → PushoutCocone f.op g.op` -/
 @[simps!]
@@ -925,10 +925,10 @@ def op {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : PushoutC
     (Cocone.whisker walkingCospanOpEquiv.inverse (Cone.op c))
 
 theorem op_inl {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
-    c.op.inl = c.fst.op := by aesop_cat
+    c.op.inl = c.fst.op := by simp
 
 theorem op_inr {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) :
-    c.op.inr = c.snd.op := by aesop_cat
+    c.op.inr = c.snd.op := by simp
 
 /-- If `c` is a pullback cone, then `c.op.unop` is isomorphic to `c`. -/
 def opUnop {X Y Z : C} {f : X ⟶ Z} {g : Y ⟶ Z} (c : PullbackCone f g) : c.op.unop ≅ c :=

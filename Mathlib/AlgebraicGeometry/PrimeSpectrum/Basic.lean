@@ -142,7 +142,7 @@ theorem t1Space_iff_isField [IsDomain R] : T1Space (PrimeSpectrum R) ↔ IsField
         (mt
           (Ring.ne_bot_of_isMaximal_of_not_isField <|
             (isClosed_singleton_iff_isMaximal _).1 (T1Space.t1 ⟨⊥, hbot⟩))
-          (by aesop))
+          (by simp))
   · refine ⟨fun x => (isClosed_singleton_iff_isMaximal x).2 ?_⟩
     by_cases hx : x.asIdeal = ⊥
     · letI := h.toSemifield
@@ -649,7 +649,7 @@ def localizationMapOfSpecializes {x y : PrimeSpectrum R} (h : x ⤳ y) :
       rw [← PrimeSpectrum.le_iff_specializes, ← asIdeal_le_asIdeal, ← SetLike.coe_subset_coe, ←
         Set.compl_subset_compl] at h
       exact (IsLocalization.map_units (Localization.AtPrime x.asIdeal)
-        ⟨a, show a ∈ x.asIdeal.primeCompl from h ha⟩ : _))
+        ⟨a, show a ∈ x.asIdeal.primeCompl from h ha⟩ :))
 
 section stableUnderSpecialization
 
@@ -709,8 +709,8 @@ lemma closure_range_comap :
 
 lemma denseRange_comap_iff_ker_le_nilRadical :
     DenseRange (comap f) ↔ RingHom.ker f ≤ nilradical R := by
-  rw [denseRange_iff_closure_range, closure_range_comap, ← Set.top_eq_univ, zeroLocus_eq_top_iff]
-  rfl
+  rw [denseRange_iff_closure_range, closure_range_comap, ← Set.top_eq_univ, zeroLocus_eq_top_iff,
+    SetLike.coe_subset_coe]
 
 @[stacks 00FL]
 lemma denseRange_comap_iff_minimalPrimes :
@@ -799,7 +799,7 @@ lemma basicOpen_injOn_isIdempotentElem :
 @[stacks 00EE]
 lemma existsUnique_idempotent_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R)}
     (hs : IsClopen s) : ∃! e : R, IsIdempotentElem e ∧ s = basicOpen e := by
-  refine exists_unique_of_exists_of_unique ?_ ?_; swap
+  refine existsUnique_of_exists_of_unique ?_ ?_; swap
   · rintro x y ⟨hx, rfl⟩ ⟨hy, eq⟩
     exact basicOpen_injOn_isIdempotentElem hx hy (SetLike.ext' eq)
   cases subsingleton_or_nontrivial R
