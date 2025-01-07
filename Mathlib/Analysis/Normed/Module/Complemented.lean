@@ -28,13 +28,26 @@ open LinearMap (ker range)
 
 namespace IsIdempotentElem
 
-lemma ker_id_sub_eq_range {P : E →ₗ[𝕜] E} (h : IsIdempotentElem P) : ker (1 - P) = range P :=
-  (Submodule.toAddSubgroup_inj (ker (1 - P)) (range P)).mp (by
-  rw [LinearMap.range_toAddSubgroup, ← AddMonoid.End.ker_id_sub_eq_range (by
+instance : Ring (AddMonoid.End E) := by exact AddMonoid.End.instRing
+
+#check Module.toModuleEnd 
+
+lemma test  : (1 : E →ₗ[𝕜] E).toAddMonoidHom = (1 : AddMonoid.End E)  := by
+  rw [← LinearMap.toAddMonoidHom'_apply]
+  simp only [LinearMap.toAddMonoidHom'_apply]
+
+lemma ker_id_sub_eq_range {P : E →ₗ[𝕜] E} (h : IsIdempotentElem P) : ker (1 - P) = range P := by
+  apply (Submodule.toAddSubgroup_inj (ker (1 - P)) (range P)).mp
+  rw [LinearMap.range_toAddSubgroup, LinearMap.ker_toAddSubgroup]
+  rw [← LinearMap.toAddMonoidHom'_apply]
+  rw [AddMonoidHom.map_sub]
+  rw [LinearMap.toAddMonoidHom'_apply, LinearMap.toAddMonoidHom'_apply]
+
+  rw [AddMonoid.End.ker_id_sub_eq_range (by
     rw [IsIdempotentElem]
     conv_rhs => rw [← h]
     rfl)]
-  rfl)
+
 
 lemma range_id_sub_eq_ker {P : E →ₗ[𝕜] E} (h : IsIdempotentElem P) : range (1 - P) = ker P := by
   rw [← (ker_id_sub_eq_range (IsIdempotentElem.one_sub h)), sub_sub_cancel]
