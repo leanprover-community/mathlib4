@@ -393,19 +393,19 @@ variable {R : Type*} [Ring R]
 
 /-- Two multiplicative ring norms `f, g` on `R` are equivalent if there exists a positive constant
   `c` such that for all `x ∈ R`, `(f x)^c = g x`. -/
-@[deprecated "use AbsoluteValue.IsEquiv instead" (since := "2025-01-07")]
+@[deprecated "Use AbsoluteValue.IsEquiv instead" (since := "2025-01-07")]
 def equiv (f : MulRingNorm R) (g : MulRingNorm R) :=
   ∃ c : ℝ, 0 < c ∧ (fun x => (f x) ^ c) = g
 
 set_option linter.deprecated false in
 /-- Equivalence of multiplicative ring norms is reflexive. -/
-@[deprecated "use AbsoluteValue.isEquiv_refl instead" (since := "2025-01-07")]
+@[deprecated "Use AbsoluteValue.isEquiv_refl instead" (since := "2025-01-07")]
 lemma equiv_refl (f : MulRingNorm R) : equiv f f := by
     exact ⟨1, Real.zero_lt_one, by simp only [Real.rpow_one]⟩
 
 set_option linter.deprecated false in
 /-- Equivalence of multiplicative ring norms is symmetric. -/
-@[deprecated "use AbsoluteValue.isEquiv_symm instead" (since := "2025-01-07")]
+@[deprecated "Use AbsoluteValue.isEquiv_symm instead" (since := "2025-01-07")]
 lemma equiv_symm {f g : MulRingNorm R} (hfg : equiv f g) : equiv g f := by
   rcases hfg with ⟨c, hcpos, h⟩
   use 1/c
@@ -416,7 +416,7 @@ lemma equiv_symm {f g : MulRingNorm R} (hfg : equiv f g) : equiv g f := by
 
 set_option linter.deprecated false in
 /-- Equivalence of multiplicative ring norms is transitive. -/
-@[deprecated "use AbsoluteValue.isEquiv_trans instead" (since := "2025-01-07")]
+@[deprecated "Use AbsoluteValue.isEquiv_trans instead" (since := "2025-01-07")]
 lemma equiv_trans {f g k : MulRingNorm R} (hfg : equiv f g) (hgk : equiv g k) :
     equiv f k := by
   rcases hfg with ⟨c, hcPos, hfg⟩
