@@ -1030,10 +1030,10 @@ lemma Submodule.exists_eq_graph {G : Submodule S (H × I)} (hf₁ : Bijective (P
 
 /-- **Line test** for module isomorphisms.
 
-Let `f : G → H × I` be a (semi)linear map to a product of modules. Assume that `f` is surjective onto
-both factors and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` and every
-"horizontal line" `{(h, i) | h : H}` at most once. Then the image of `f` is the graph of some
-module isomorphism `f' : H ≃ I`. -/
+Let `f : G → H × I` be a linear (or semilinear) map to a product of modules. Assume that `f` is
+surjective onto both factors and that the image of `f` intersects every "vertical line"
+`{(h, i) | i : I}` and every "horizontal line" `{(h, i) | h : H}` at most once. Then the image of
+`f` is the graph of some module isomorphism `f' : H ≃ I`. -/
 lemma LinearMap.exists_linearEquiv_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surjective (Prod.fst ∘ f))
     (hf₂ : Surjective (Prod.snd ∘ f)) (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 ↔ (f g₁).2 = (f g₂).2) :
     ∃ e : H ≃ₗ[S] I, range f = e.toLinearMap.graph := by
