@@ -405,6 +405,9 @@ theorem norm_integral_le_integral_norm (f : α →ₛ E) (hf : Integrable f μ) 
   refine (norm_setToSimpleFunc_le_integral_norm _ (fun s _ _ => ?_) hf).trans (one_mul _).le
   exact (norm_weightedSMul_le s).trans (one_mul _).symm.le
 
+lemma abs_integral_le_integral_abs {f : α → ℝ} : |∫ a, f a ∂μ| ≤ ∫ a, |f a| ∂μ :=
+  norm_integral_le_integral_norm f
+
 theorem integral_add_measure {ν} (f : α →ₛ E) (hf : Integrable f (μ + ν)) :
     f.integral (μ + ν) = f.integral μ + f.integral ν := by
   simp_rw [integral_def]
