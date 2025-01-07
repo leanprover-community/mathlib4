@@ -963,7 +963,7 @@ lemma cons_tail_eq (p : G.Walk x y) (hp : ¬ p.Nil) :
     simp only [getVert_cons_succ, tail_cons_eq, cons_copy, copy_rfl_rfl]
 
 @[simp]
-lemma concat_dropLast_eq (p : G.Walk x y) (hp : G.Adj p.penultimate y) :
+lemma concat_dropLast (p : G.Walk x y) (hp : G.Adj p.penultimate y) :
     p.dropLast.concat hp = p := by
   induction p with
   | nil => simp at hp
