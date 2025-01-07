@@ -94,7 +94,7 @@ theorem IsRegular.of_finite_range_leftQuotient (h : Set.Finite (Set.range L.left
 **Myhill–Nerode theorem**. A language is regular if and only if the set of left quotients is finite.
 -/
 theorem isRegular_iff_finite_range_leftQuotient :
-    L.IsRegular ↔ Set.Finite (Set.range L.leftQuotient) :=
+    L.IsRegular ↔ (Set.range L.leftQuotient).Finite :=
   ⟨IsRegular.finite_range_leftQuotient, .of_finite_range_leftQuotient⟩
 
 end Language
