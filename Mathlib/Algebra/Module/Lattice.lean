@@ -87,7 +87,7 @@ instance smul [IsLattice A M] (a : Aˣ) : IsLattice A (a • M : Submodule R V) 
 lemma of_le_of_isLattice_of_fg {M N : Submodule R V} (hle : M ≤ N) [IsLattice A M]
     (hfg : N.FG) : IsLattice A N :=
   ⟨hfg, eq_top_iff.mpr <|
-    le_trans (b := span A M) (by rw [IsLattice.span_eq_top]) (Submodule.span_mono hle)⟩
+    le_trans (by rw [IsLattice.span_eq_top]) (Submodule.span_mono hle)⟩
 
 /-- The supremum of two lattices is a lattice. -/
 instance sup (M N : Submodule R V) [IsLattice A M] [IsLattice A N] :
