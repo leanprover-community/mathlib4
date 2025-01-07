@@ -97,7 +97,7 @@ variable [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F �
 lemma IsSquare.map {a : α} (f : F) : IsSquare a → IsSquare (f a) :=
   fun ⟨r, _⟩ => ⟨f r, by simp_all⟩
 
-lemma exists_map_eq_and_isSquare {b : β} {f : F} (hf : Function.Surjective f) :
+lemma exists_apply_eq_and_isSquare {b : β} {f : F} (hf : Function.Surjective f) :
     IsSquare b → ∃ a, f a = b ∧ IsSquare a := by
   rintro ⟨r, rfl⟩
   rcases hf r with ⟨s, rfl⟩
