@@ -72,6 +72,12 @@ lemma rank_eq_zero_iff :
     apply ha
     simpa using DFunLike.congr_fun (linearIndependent_iff.mp hs (Finsupp.single i a) (by simpa)) i
 
+/-- A free module of rank zero is trivial. -/
+lemma subsingleton_of_rank_zero [StrongRankCondition R] [Free R M] (h : Module.rank R M = 0) :
+    Subsingleton M := by
+  rw [← Basis.mk_eq_rank'' (Module.Free.chooseBasis R M), Cardinal.mk_eq_zero_iff] at h
+  exact (Module.Free.repr R M).subsingleton
+
 variable [Nontrivial R]
 
 section

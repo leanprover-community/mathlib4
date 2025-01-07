@@ -501,8 +501,8 @@ noncomputable def aevalDifferentialEquiv (P : SubmersivePresentation R S) :
         P.aevalDifferential).det := by
     convert P.jacobian_isUnit
     rw [LinearMap.toMatrix_eq_toMatrix', jacobian_eq_jacobiMatrix_det,
-      aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix]
-    simp [RingHom.map_det, RingHom.algebraMap_toAlgebra]
+      aevalDifferential_toMatrix'_eq_mapMatrix_jacobiMatrix, P.algebraMap_eq]
+    simp [RingHom.map_det]
   LinearEquiv.ofIsUnitDet this
 
 variable (P : SubmersivePresentation R S)
