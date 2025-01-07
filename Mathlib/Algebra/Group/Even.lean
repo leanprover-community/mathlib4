@@ -45,10 +45,10 @@ for some `r : α`. -/
 for some `r : α`."]
 def IsSquare (a : α) : Prop := ∃ r, a = r * r
 
-@[to_additive (attr := simp)] lemma IsSquare.mul_self (m : α) : IsSquare (m * m) := ⟨m, rfl⟩
+@[to_additive]
+lemma isSquare_iff_exists_mul_self (a : α) : IsSquare a ↔ ∃ r, a = r * r := Iff.rfl
 
-@[deprecated (since := "2024-08-27")] alias isSquare_mul_self := IsSquare.mul_self
-@[deprecated (since := "2024-08-27")] alias even_add_self := Even.add_self
+@[to_additive (attr := simp)] lemma IsSquare.mul_self (a : α) : IsSquare (a * a) := ⟨a, rfl⟩
 
 @[to_additive]
 lemma isSquare_op_iff {a : α} : IsSquare (op a) ↔ IsSquare a :=
@@ -90,9 +90,7 @@ end Add
 @[to_additive (attr := simp)]
 lemma IsSquare.one [MulOneClass α] : IsSquare (1 : α) := ⟨1, (mul_one _).symm⟩
 
-@[to_additive, deprecated (since := "2024-12-27")] alias isSquare_one := IsSquare.one
-
-@[to_additive]
+@[to_additive (attr := aesop unsafe 80% apply)]
 lemma IsSquare.map [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
     {m : α} (f : F) :
     IsSquare m → IsSquare (f m) := by
@@ -105,25 +103,24 @@ variable [Monoid α] {n : ℕ} {a : α}
 @[to_additive even_iff_exists_two_nsmul]
 lemma isSquare_iff_exists_sq (m : α) : IsSquare m ↔ ∃ c, m = c ^ 2 := by simp [IsSquare, pow_two]
 
-alias ⟨IsSquare.exists_sq, isSquare_of_exists_sq⟩ := isSquare_iff_exists_sq
-
+alias ⟨IsSquare.exists_sq, _⟩ := isSquare_iff_exists_sq
 attribute [to_additive Even.exists_two_nsmul
   "Alias of the forwards direction of `even_iff_exists_two_nsmul`."] IsSquare.exists_sq
 
-@[to_additive] lemma IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
+@[to_additive (attr := simp) Even.two_nsmul]
+lemma IsSquare.sq (a : α) : IsSquare (a ^ 2) := ⟨a, pow_two _⟩
+
+@[to_additive (attr := aesop unsafe 20% apply)]
+lemma IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨a, rfl⟩; exact ⟨a ^ n, (Commute.refl _).mul_pow _⟩
 
-@[to_additive Even.nsmul'] lemma Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
+@[to_additive (attr := aesop unsafe 80% apply)]
+lemma Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨n, rfl⟩ a; exact ⟨a ^ n, pow_add _ _ _⟩
-
-@[to_additive Even.two_nsmul] lemma IsSquare.sq (a : α) : IsSquare (a ^ 2) := ⟨a, pow_two _⟩
-
-@[deprecated (since := "2024-12-27")] alias IsSquare_sq := IsSquare.sq
-@[deprecated (since := "2024-12-27")] alias even_two_nsmul := Even.two_nsmul
 
 end Monoid
 
-@[to_additive]
+@[to_additive (attr := aesop unsafe 90% apply)]
 lemma IsSquare.mul [CommSemigroup α] {a b : α} : IsSquare a → IsSquare b → IsSquare (a * b) := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩; exact ⟨a * b, mul_mul_mul_comm _ _ _ _⟩
 
@@ -137,18 +134,28 @@ variable [DivisionMonoid α] {a : α}
   · exact (isSquare_op_iff.mpr h).map (MulEquiv.inv' α).symm
 
 alias ⟨_, IsSquare.inv⟩ := isSquare_inv
-
 attribute [to_additive] IsSquare.inv
 
-@[to_additive] lemma IsSquare.zpow (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
+@[to_additive (attr := aesop unsafe 20% apply)]
+lemma IsSquare.zpow (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨a, rfl⟩; exact ⟨a ^ n, (Commute.refl _).mul_zpow _⟩
 
 end DivisionMonoid
 
-@[to_additive]
+@[to_additive (attr := aesop unsafe 90% apply)]
 lemma IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : IsSquare b) :
     IsSquare (a / b) := by rw [div_eq_mul_inv]; exact ha.mul hb.inv
 
-@[to_additive (attr := simp) Even.zsmul']
+@[to_additive (attr := aesop unsafe 80% apply)]
 lemma Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨n, rfl⟩ a; exact ⟨a ^ n, zpow_add _ _ _⟩
+
+@[to_additive, deprecated (since := "2024-08-27")] alias isSquare_mul_self := IsSquare.mul_self
+@[to_additive, deprecated (since := "2024-12-27")] alias isSquare_one := IsSquare.one
+@[deprecated (since := "2024-12-27")] alias IsSquare_sq := IsSquare.sq
+@[deprecated (since := "2024-12-27")] alias even_two_nsmul := Even.two_nsmul
+@[deprecated (since := "2024-01-07")] alias Even.nsmul' := Even.even_nsmul
+@[deprecated (since := "2024-01-07")] alias Even.zsmul' := Even.even_zsmul
+
+example {G : Type*} [CommGroup G] {a b c d e : G} (ha : IsSquare a) {n : ℕ} {k : ℤ} (hk : Even k) :
+  IsSquare (a * (b * b) / (c ^ 2) * (d ^ k) * (e ^ (n + n))) := by aesop

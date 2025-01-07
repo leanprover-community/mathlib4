@@ -55,7 +55,9 @@ lemma Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow, o
 
 end DivisionMonoid
 
-@[simp] lemma isSquare_zero [MulZeroClass α] : IsSquare (0 : α) := ⟨0, (mul_zero _).symm⟩
+@[simp] lemma IsSquare.zero [MulZeroClass α] : IsSquare (0 : α) := ⟨0, (mul_zero _).symm⟩
+
+@[deprecated (since := "2024-01-07")] alias isSquare_zero := IsSquare.zero
 
 section Semiring
 variable [Semiring α] [Semiring β] {a b : α} {m n : ℕ}
