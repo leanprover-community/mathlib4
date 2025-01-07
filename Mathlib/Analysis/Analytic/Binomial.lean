@@ -116,7 +116,7 @@ theorem binomialSeries_radius_ge_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type 
     conv => arg 1; ext M; rw [← div_lt_iff₀ (by simpa)]
     apply exists_nat_gt
   obtain ⟨M, hM⟩ := this
-  have : ∀ k, (ascPochhammer ℕ (M + k)).smeval ‖a‖ * ((M + k)! : ℝ)⁻¹ * r^k ≤
+  have h_bound : ∀ k, (ascPochhammer ℕ (M + k)).smeval ‖a‖ * ((M + k)! : ℝ)⁻¹ * r^k ≤
       (ascPochhammer ℕ M).smeval ‖a‖ * (M ! : ℝ)⁻¹ := by
     intro k
     induction k with
@@ -152,6 +152,10 @@ theorem binomialSeries_radius_ge_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type 
   replace hb := Nat.exists_eq_add_of_le hb
   obtain ⟨k, hk⟩ := hb
   subst hk
+  -- for some reason, `rw` below cannot infer it
+  have _ : BoundedSMul 𝕂 (ContinuousMultilinearMap 𝕂 (fun (i : Fin (M + k)) ↦ 𝔸) 𝔸) := by
+    infer_instance
+  rw [norm_smul (Ring.choose a (M + k)) (ContinuousMultilinearMap.mkPiAlgebraFin 𝕂 (M + k) 𝔸)]
   simp [pow_add, div_eq_mul_inv]
   move_mul [r.toReal^M, r.toReal^M]
   apply mul_le_mul_of_nonneg_right _ (by simp)
@@ -164,7 +168,7 @@ theorem binomialSeries_radius_ge_one {𝕂 : Type v} [RCLike 𝕂] {𝔸 : Type 
     · apply pow_pos
       simpa
   conv => lhs; arg 1; rw [mul_comm]
-  apply this
+  apply h_bound
 
 open ContinuousLinearMap FormalMultilinearSeries
 
