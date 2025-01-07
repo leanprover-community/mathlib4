@@ -160,7 +160,8 @@ then
   then
     printf '<details><summary>No changes to technical debt.</summary>\n'
   else
-    printf '%s\n' "${rep}" |
+    printf '%s\n' "${rep}" |  # outputs lines containing `|Current number|Change|Type|`, so
+                              # `$2` refers to `Current number` and `$3` to `Change`.
       awk -F '|' -v rep="${rep}" '
         BEGIN{total=0; weight=0; absWeight=0}
         {absWeight+=$3+0}
