@@ -26,6 +26,7 @@ variable {α : Type u} {σ : Type v} {L : Language α}
 
 namespace Language
 
+variable (L) in
 /-- The *left quotient* of `x` is the set of suffixes `y` such that `x ++ y` is in `L`. -/
 def leftQuotient (x : List α) : Language α := { y | x ++ y ∈ L }
 
@@ -45,15 +46,16 @@ theorem leftQuotient_accepts_apply (M : DFA α σ) (x : List α) :
   simp [DFA.mem_accepts, DFA.mem_acceptsFrom, DFA.eval, DFA.evalFrom_of_append]
 
 theorem leftQuotient_accepts (M : DFA α σ) : leftQuotient M.accepts = M.acceptsFrom ∘ M.eval :=
-  funext <| leftQuotient_accepts M
+  funext <| leftQuotient_accepts_apply M
 
 theorem IsRegular.finite_range_leftQuotient (h : L.IsRegular) :
     (Set.range L.leftQuotient).Finite := by
   have ⟨σ, x, M, hM⟩ := h
-  rw [← hM, leftQuotient_accepts']
+  rw [← hM, leftQuotient_accepts]
   exact Set.finite_of_finite_preimage (Set.toFinite _)
     (Set.range_comp_subset_range M.eval M.acceptsFrom)
 
+variable (L) in
 /-- The left quotients of a language are the states of an automaton that accepts the language. -/
 def toDFA : DFA α (Set.range L.leftQuotient) where
   step s a := by
@@ -93,6 +95,6 @@ theorem IsRegular.of_finite_range_leftQuotient (h : Set.Finite (Set.range L.left
 -/
 theorem isRegular_iff_finite_range_leftQuotient :
     L.IsRegular ↔ Set.Finite (Set.range L.leftQuotient) :=
-  ⟨IsRegular.finite_range_leftQuotient, .of_finite_leftQuotient⟩
+  ⟨IsRegular.finite_range_leftQuotient, .of_finite_range_leftQuotient⟩
 
 end Language
