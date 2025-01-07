@@ -162,8 +162,7 @@ variable {R L}
 theorem LieAlgebra.isEngelian_of_subsingleton [Subsingleton L] : LieAlgebra.IsEngelian R L := by
   intro M _i1 _i2 _i3 _i4 _h
   use 1
-  suffices (⊤ : LieIdeal R L) = ⊥ by simp [this]
-  subsingleton [(LieSubmodule.subsingleton_iff R L L).mpr inferInstance]
+  simp
 
 theorem Function.Surjective.isEngelian {f : L →ₗ⁅R⁆ L₂} (hf : Function.Surjective f)
     (h : LieAlgebra.IsEngelian.{u₁, u₂, u₄} R L) : LieAlgebra.IsEngelian.{u₁, u₃, u₄} R L₂ := by

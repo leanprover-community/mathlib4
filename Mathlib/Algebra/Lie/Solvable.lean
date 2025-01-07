@@ -203,7 +203,7 @@ theorem derivedSeries_scalars_aux (R₁ R₂ L : Type*) [CommRing R₁] [CommRin
   | smul_mem c y hy =>
       obtain ⟨a, ha, b, hb, rfl⟩ := hy
       rw [← smul_lie]
-      refine Submodule.subset_span ⟨c • a, ?_, b, hb, rfl⟩ 
+      refine Submodule.subset_span ⟨c • a, ?_, b, hb, rfl⟩
       rw [← ih] at ha ⊢
       exact Submodule.smul_mem _ _ ha
 

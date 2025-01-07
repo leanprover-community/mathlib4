@@ -91,7 +91,7 @@ theorem lowerCentralSeries_succ :
 theorem lowerCentralSeries_scalars_aux (R₁ R₂ L M : Type*)
     [CommRing R₁] [CommRing R₂] [AddCommGroup M]
     [LieRing L] [LieAlgebra R₁ L] [LieAlgebra R₂ L] [Module R₁ M] [Module R₂ M] [LieRingModule L M]
-    [LieModule R₁ L M] [LieModule R₂ L M] (k : ℕ) :
+    [LieModule R₁ L M] (k : ℕ) :
     let I := lowerCentralSeries R₂ L M k; let S : Set M := {⁅a, b⁆ | (a : L) (b ∈ I)}
     (Submodule.span R₁ S : Set M) ≤ (Submodule.span R₂ S : Set M) := by
   intro I S x hx
@@ -102,7 +102,7 @@ theorem lowerCentralSeries_scalars_aux (R₁ R₂ L M : Type*)
   | smul_mem c y hy =>
       obtain ⟨a, b, hb, rfl⟩ := hy
       rw [← smul_lie]
-      exact Submodule.subset_span ⟨c • a, b, hb, rfl⟩ 
+      exact Submodule.subset_span ⟨c • a, b, hb, rfl⟩
 
 theorem lowerCentralSeries_scalars (R₁ R₂ L M : Type*) [CommRing R₁] [CommRing R₂] [AddCommGroup M]
     [LieRing L] [LieAlgebra R₁ L] [LieAlgebra R₂ L] [Module R₁ M] [Module R₂ M] [LieRingModule L M]
