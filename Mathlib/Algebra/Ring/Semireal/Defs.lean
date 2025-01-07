@@ -23,8 +23,9 @@ not.
 [lam_1984](https://doi.org/10.1216/RMJ-1984-14-4-767)
 -/
 
-variable (R : Type*)
+variable {R : Type*}
 
+variable (R) in
 /--
 A semireal ring is a commutative ring (with unit) in which `-1` is *not* a sum of
 squares. We define the predicate `IsSemireal R` for structures `R` equipped with
@@ -37,7 +38,7 @@ class IsSemireal [Add R] [Mul R] [One R] [Zero R] : Prop where
 @[deprecated (since := "2024-08-09")] alias isSemireal := IsSemireal
 
 /-- In a semireal ring, `-1` is not a sum of squares. -/
-theorem IsSemireal.not_isSumSq_neg_one {R : Type*} [AddGroup R] [One R] [Mul R] [IsSemireal R]:
+theorem IsSemireal.not_isSumSq_neg_one [AddGroup R] [One R] [Mul R] [IsSemireal R]:
     ¬ IsSumSq (-1 : R) := (by simpa using one_add_ne_zero ·)
 
 /--
