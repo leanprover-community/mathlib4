@@ -82,7 +82,7 @@ retraction of `f` and `v` be a basis of `M` indexed by `κ ⊕ σ`. Then
 if `s vᵢ = 0` for `i : κ` and `(s vⱼ)ⱼ` is linear independent for `j : σ`, then
 the images of `vᵢ` for `i : κ` form a basis of `P`.
 
-For convenience this is stated not for an arbitrary type `ι` with two maps `κ → ι` and `σ → ι`. -/
+For convenience this is stated for an arbitrary type `ι` with two maps `κ → ι` and `σ → ι`. -/
 noncomputable def Basis.ofSplitExact (hg : Function.Surjective g) (v : Basis ι R M)
     (hainj : Function.Injective a) (hsa : ∀ i, s (v (a i)) = 0)
     (hlib : LinearIndependent R (s ∘ v ∘ b))
