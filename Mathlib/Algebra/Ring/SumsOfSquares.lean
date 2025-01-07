@@ -96,7 +96,7 @@ theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
 @[deprecated (since := "2024-08-09")] alias SquaresAddClosure := AddSubmonoid.closure_isSquare
 
 /--
-In an additive, commutative monoid with multiplication,
+In an additive commutative monoid with multiplication,
 `∑ i ∈ I, a i * a i` is a sum of squares.
 -/
 theorem IsSumSq.sum_mul_self [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) (a : ι → R) :
