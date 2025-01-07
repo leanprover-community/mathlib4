@@ -364,24 +364,30 @@ instance commSemiring : CommSemiring Num where
   left_distrib _ _ _ := by simp only [← to_nat_inj, mul_to_nat, add_to_nat, mul_add]
   right_distrib _ _ _ := by simp only [← to_nat_inj, mul_to_nat, add_to_nat, add_mul]
 
-instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid Num where
-  le := (· ≤ ·)
-  lt := (· < ·)
+instance partialOrder : PartialOrder Num where
   lt_iff_le_not_le a b := by simp only [← lt_to_nat, ← le_to_nat, lt_iff_le_not_le]
   le_refl := by transfer
   le_trans a b c := by transfer_rw; apply le_trans
   le_antisymm a b := by transfer_rw; apply le_antisymm
+
+instance isOrderedCancelAddMonoid : IsOrderedCancelAddMonoid Num where
   add_le_add_left a b h c := by revert h; transfer_rw; exact fun h => add_le_add_left h c
   le_of_add_le_add_left a b c := by transfer_rw; apply le_of_add_le_add_left
 
-instance linearOrderedSemiring : LinearOrderedSemiring Num :=
-  { Num.commSemiring,
-    Num.orderedCancelAddCommMonoid with
-    le_total := by
+instance linearOrder : LinearOrder Num :=
+  { le_total := by
       intro a b
       transfer_rw
       apply le_total
-    zero_le_one := by decide
+    decidableLT := Num.decidableLT
+    decidableLE := Num.decidableLE
+    -- This is relying on an automatically generated instance name,
+    -- generated in a `deriving` handler.
+    -- See https://github.com/leanprover/lean4/issues/2343
+    decidableEq := instDecidableEqNum }
+
+instance isStrictOrderedRing : IsStrictOrderedRing Num :=
+  { zero_le_one := by decide
     mul_lt_mul_of_pos_left := by
       intro a b c
       transfer_rw
@@ -390,12 +396,6 @@ instance linearOrderedSemiring : LinearOrderedSemiring Num :=
       intro a b c
       transfer_rw
       apply mul_lt_mul_of_pos_right
-    decidableLT := Num.decidableLT
-    decidableLE := Num.decidableLE
-    -- This is relying on an automatically generated instance name,
-    -- generated in a `deriving` handler.
-    -- See https://github.com/leanprover/lean4/issues/2343
-    decidableEq := instDecidableEqNum
     exists_pair_ne := ⟨0, 1, by decide⟩ }
 
 @[norm_cast]
@@ -584,11 +584,12 @@ theorem cast_inj [AddMonoidWithOne α] [CharZero α] {m n : PosNum} : (m : α) =
   rw [← cast_to_nat m, ← cast_to_nat n, Nat.cast_inj, to_nat_inj]
 
 @[simp]
-theorem one_le_cast [LinearOrderedSemiring α] (n : PosNum) : (1 : α) ≤ n := by
+theorem one_le_cast [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] (n : PosNum) :
+    (1 : α) ≤ n := by
   rw [← cast_to_nat, ← Nat.cast_one, Nat.cast_le (α := α)]; apply to_nat_pos
 
 @[simp]
-theorem cast_pos [LinearOrderedSemiring α] (n : PosNum) : 0 < (n : α) :=
+theorem cast_pos [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] (n : PosNum) : 0 < (n : α) :=
   lt_of_lt_of_le zero_lt_one (one_le_cast n)
 
 @[simp, norm_cast]
@@ -603,11 +604,13 @@ theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
     simp [show m ≠ n from fun e => by rw [e] at this;exact lt_irrefl _ this]
 
 @[simp, norm_cast]
-theorem cast_lt [LinearOrderedSemiring α] {m n : PosNum} : (m : α) < n ↔ m < n := by
+theorem cast_lt [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] {m n : PosNum} :
+    (m : α) < n ↔ m < n := by
   rw [← cast_to_nat m, ← cast_to_nat n, Nat.cast_lt (α := α), lt_to_nat]
 
 @[simp, norm_cast]
-theorem cast_le [LinearOrderedSemiring α] {m n : PosNum} : (m : α) ≤ n ↔ m ≤ n := by
+theorem cast_le [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] {m n : PosNum} :
+    (m : α) ≤ n ↔ m ≤ n := by
   rw [← not_lt]; exact not_congr cast_lt
 
 end PosNum
@@ -742,15 +745,18 @@ theorem cmp_eq (m n) : cmp m n = Ordering.eq ↔ m = n := by
     simp [show m ≠ n from fun e => by rw [e] at this; exact lt_irrefl _ this]
 
 @[simp, norm_cast]
-theorem cast_lt [LinearOrderedSemiring α] {m n : Num} : (m : α) < n ↔ m < n := by
+theorem cast_lt [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] {m n : Num} :
+    (m : α) < n ↔ m < n := by
   rw [← cast_to_nat m, ← cast_to_nat n, Nat.cast_lt (α := α), lt_to_nat]
 
 @[simp, norm_cast]
-theorem cast_le [LinearOrderedSemiring α] {m n : Num} : (m : α) ≤ n ↔ m ≤ n := by
+theorem cast_le [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] {m n : Num} :
+    (m : α) ≤ n ↔ m ≤ n := by
   rw [← not_lt]; exact not_congr cast_lt
 
 @[simp, norm_cast]
-theorem cast_inj [LinearOrderedSemiring α] {m n : Num} : (m : α) = n ↔ m = n := by
+theorem cast_inj [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] {m n : Num} :
+    (m : α) = n ↔ m = n := by
   rw [← cast_to_nat m, ← cast_to_nat n, Nat.cast_inj, to_nat_inj]
 
 theorem lt_iff_cmp {m n} : m < n ↔ cmp m n = Ordering.lt :=
@@ -1202,15 +1208,18 @@ theorem le_to_int {m n : ZNum} : (m : ℤ) ≤ n ↔ m ≤ n := by
   rw [← not_lt]; exact not_congr lt_to_int
 
 @[simp, norm_cast]
-theorem cast_lt [LinearOrderedRing α] {m n : ZNum} : (m : α) < n ↔ m < n := by
+theorem cast_lt [Ring α] [LinearOrder α] [IsStrictOrderedRing α] {m n : ZNum} :
+    (m : α) < n ↔ m < n := by
   rw [← cast_to_int m, ← cast_to_int n, Int.cast_lt, lt_to_int]
 
 @[simp, norm_cast]
-theorem cast_le [LinearOrderedRing α] {m n : ZNum} : (m : α) ≤ n ↔ m ≤ n := by
+theorem cast_le [Ring α] [LinearOrder α] [IsStrictOrderedRing α] {m n : ZNum} :
+    (m : α) ≤ n ↔ m ≤ n := by
   rw [← not_lt]; exact not_congr cast_lt
 
 @[simp, norm_cast]
-theorem cast_inj [LinearOrderedRing α] {m n : ZNum} : (m : α) = n ↔ m = n := by
+theorem cast_inj [Ring α] [LinearOrder α] [IsStrictOrderedRing α] {m n : ZNum} :
+    (m : α) = n ↔ m = n := by
   rw [← cast_to_int m, ← cast_to_int n, Int.cast_inj (α := α), to_int_inj]
 
 /-- This tactic tries to turn an (in)equality about `ZNum`s to one about `Int`s by rewriting.
@@ -1296,8 +1305,8 @@ private theorem add_le_add_left : ∀ (a b : ZNum), a ≤ b → ∀ (c : ZNum), 
   transfer_rw
   exact fun h => _root_.add_le_add_left h c
 
-instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
-  { ZNum.linearOrder, ZNum.addCommGroup, ZNum.addMonoidWithOne with
+instance commRing : CommRing ZNum :=
+  { ZNum.addCommGroup, ZNum.addMonoidWithOne with
     mul := (· * ·)
     mul_assoc := by transfer
     zero_mul := by transfer
@@ -1310,14 +1319,21 @@ instance linearOrderedCommRing : LinearOrderedCommRing ZNum :=
     right_distrib := by
       transfer
       simp [mul_add, _root_.mul_comm]
-    mul_comm := mul_comm
-    exists_pair_ne := ⟨0, 1, by decide⟩
-    add_le_add_left := add_le_add_left
-    mul_pos := fun a b =>
-      show 0 < a → 0 < b → 0 < a * b by
-        transfer_rw
-        apply mul_pos
-    zero_le_one := by decide }
+    mul_comm := mul_comm }
+
+instance nontrivial : Nontrivial ZNum :=
+  { exists_pair_ne := ⟨0, 1, by decide⟩ }
+
+instance zeroLEOneClass : ZeroLEOneClass ZNum :=
+  { zero_le_one := by decide }
+
+instance isOrderedAddMonoid : IsOrderedAddMonoid ZNum :=
+  { add_le_add_left := add_le_add_left }
+
+instance isStrictOrderedRing : IsStrictOrderedRing ZNum :=
+  .of_mul_pos fun a b ↦ by
+    transfer_rw
+    apply mul_pos
 
 @[simp, norm_cast]
 theorem cast_sub [Ring α] (m n) : ((m - n : ZNum) : α) = m - n := by simp [sub_eq_neg_add]

@@ -27,7 +27,7 @@ variable {M : Type*} [CancelCommMonoidWithZero M]
 
 namespace Associates
 
-instance instOrderedCommMonoid : OrderedCommMonoid (Associates M) where
+instance instIsOrderedMonoid : IsOrderedMonoid (Associates M) where
   mul_le_mul_left := fun a _ ⟨d, hd⟩ c => hd.symm ▸ mul_assoc c a d ▸ le_mul_right
 
 instance : CanonicallyOrderedMul (Associates M) where
