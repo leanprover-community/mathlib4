@@ -265,8 +265,10 @@ instance SymmetricCategory.isMonoidalRightDistrib_of_isMonoidalLeftDistrib
     preservesColimitsOfShape_of_natIso (BraidedCategory.tensorLeftIsoTensorRight X)
 
 /-- A left distributive symmetric monoidal category is distributive. -/
-instance SymmetricCategory.isMonoidalDistrib_of_isMonoidalLeftDistrib
+lemma SymmetricCategory.isMonoidalDistrib_of_isMonoidalLeftDistrib
     [SymmetricCategory C] [IsMonoidalLeftDistrib C] : IsMonoidalDistrib C where
+      preservesBinaryCoproducts_tensorRight X :=
+        preservesColimitsOfShape_of_natIso (BraidedCategory.tensorLeftIsoTensorRight X)
 
 /-- The right distributivity isomorphism of the a left distributive symmetric monoidal category
 is given by `(β_ (Y ⨿ Z) X).hom ≫ (∂L X Y Z).inv ≫ (coprod.map (β_ X Y).hom (β_ X Z).hom)`. -/
