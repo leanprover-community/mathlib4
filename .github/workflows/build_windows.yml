@@ -34,19 +34,20 @@ jobs:
   windows-build:
     runs-on: windows-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v4
       - name: install elan
-        shell: bash
         run: |
-          : Install Elan
-          scripts/windows/install_elan.sh
+          set -o pipefail
+          curl -sSfL https://github.com/leanprover/elan/releases/download/v3.1.1/elan-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          ./elan-init -y --default-toolchain none
+          echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
+
+      - uses: actions/checkout@v4
       - name: install other compiler
         shell: bash
         run: |
           echo skipped
       - name: build the cache command
-        shell:bash
+        shell: bash
         run: lake build cache
       - name: grab a bit of cache
         shell: bash
