@@ -33,8 +33,8 @@ for all `b`), or that it's order-cancellable (`a + b ≤ a + c → b ≤ c` for 
 similarly for multiplication.
 -/
 
-deriving instance Zero, OrderedCommSemiring, Nontrivial,
-  LinearOrder, Bot, LinearOrderedAddCommMonoid, Sub,
+deriving instance Zero, CommSemiring, Nontrivial,
+  LinearOrder, Bot, Sub,
   LinearOrderedAddCommMonoidWithTop, WellFoundedRelation
   for ENat
   -- AddCommMonoidWithOne,
@@ -46,6 +46,7 @@ deriving instance Zero, OrderedCommSemiring, Nontrivial,
 namespace ENat
 
 -- Porting note: instances that derive failed to find
+instance : IsOrderedRing ℕ∞ := WithTop.instIsOrderedRing
 instance : CanonicallyOrderedAdd ℕ∞ := WithTop.canonicallyOrderedAdd
 instance : OrderBot ℕ∞ := WithTop.orderBot
 instance : OrderTop ℕ∞ := WithTop.orderTop
@@ -457,7 +458,8 @@ protected def _root_.MonoidWithZeroHom.ENatMap {S : Type*} [MulZeroOneClass S] [
 
 /-- A version of `ENat.map` for `RingHom`s. -/
 @[simps (config := .asFn)]
-protected def _root_.RingHom.ENatMap {S : Type*} [OrderedCommSemiring S] [CanonicallyOrderedAdd S]
+protected def _root_.RingHom.ENatMap {S : Type*} [CommSemiring S] [PartialOrder S]
+    [CanonicallyOrderedAdd S]
     [DecidableEq S] [Nontrivial S] (f : ℕ →+* S) (hf : Function.Injective f) : ℕ∞ →+* WithTop S :=
   {MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with}
 

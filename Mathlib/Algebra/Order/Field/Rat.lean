@@ -20,12 +20,4 @@ See note [foundational algebra order theory].
 rat, rationals, field, ℚ, numerator, denominator, num, denom
 -/
 
-namespace Rat
-
-instance instLinearOrderedField : LinearOrderedField ℚ where
-  __ := instLinearOrderedCommRing
-  __ := instField
-
-end Rat
-
-deriving instance LinearOrderedSemifield, LinearOrderedCommGroupWithZero for NNRat
+deriving instance LinearOrderedCommGroupWithZero for NNRat
