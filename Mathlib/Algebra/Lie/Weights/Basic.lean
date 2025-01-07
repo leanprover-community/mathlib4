@@ -228,7 +228,7 @@ variable {M}
 @[ext] lemma ext {χ₁ χ₂ : Weight R L M} (h : ∀ x, χ₁ x = χ₂ x) : χ₁ = χ₂ := by
   cases' χ₁ with f₁ _; cases' χ₂ with f₂ _; aesop
 
-lemma ext_iff' {χ₁ χ₂ : Weight R L M} : (χ₁ : L → R) = χ₂ ↔ χ₁ = χ₂ := by aesop
+lemma ext_iff' {χ₁ χ₂ : Weight R L M} : (χ₁ : L → R) = χ₂ ↔ χ₁ = χ₂ := by simp
 
 lemma exists_ne_zero (χ : Weight R L M) :
     ∃ x ∈ genWeightSpace M χ, x ≠ 0 := by
@@ -709,7 +709,7 @@ noncomputable instance Weight.instFintype [NoZeroSMulDivisors R M] [IsNoetherian
     Fintype (Weight R L M) :=
   Fintype.ofFinite _
 
-/-- A Lie module `M` of a Lie algebra `L` is triangularizable if the endomorhpism of `M` defined by
+/-- A Lie module `M` of a Lie algebra `L` is triangularizable if the endomorphism of `M` defined by
 any `x : L` is triangularizable. -/
 class IsTriangularizable : Prop where
   maxGenEigenspace_eq_top : ∀ x, ⨆ φ, (toEnd R L M x).maxGenEigenspace φ = ⊤

@@ -263,8 +263,8 @@ def conePointsIsoOfNatIso {F G : J ⥤ C} {s : Cone F} {t : Cone G} (P : IsLimit
     (w : F ≅ G) : s.pt ≅ t.pt where
   hom := Q.map s w.hom
   inv := P.map t w.inv
-  hom_inv_id := P.hom_ext (by aesop_cat)
-  inv_hom_id := Q.hom_ext (by aesop_cat)
+  hom_inv_id := P.hom_ext (by simp)
+  inv_hom_id := Q.hom_ext (by simp)
 
 @[reassoc]
 theorem conePointsIsoOfNatIso_hom_comp {F G : J ⥤ C} {s : Cone F} {t : Cone G} (P : IsLimit s)
@@ -643,14 +643,10 @@ theorem hom_desc (h : IsColimit t) {W : C} (m : t.pt ⟶ W) :
     m =
       h.desc
         { pt := W
-          ι :=
-            { app := fun b => t.ι.app b ≫ m
-              naturality := by intros; erw [← assoc, t.ι.naturality, comp_id, comp_id] } } :=
+          ι := { app := fun b => t.ι.app b ≫ m } } :=
   h.uniq
     { pt := W
-      ι :=
-        { app := fun b => t.ι.app b ≫ m
-          naturality := _ } }
+      ι := { app := fun b => t.ι.app b ≫ m } }
     m fun _ => rfl
 
 /-- Two morphisms out of a colimit are equal if their compositions with
@@ -723,8 +719,8 @@ def coconePointsIsoOfNatIso {F G : J ⥤ C} {s : Cocone F} {t : Cocone G} (P : I
     (Q : IsColimit t) (w : F ≅ G) : s.pt ≅ t.pt where
   hom := P.map t w.hom
   inv := Q.map s w.inv
-  hom_inv_id := P.hom_ext (by aesop_cat)
-  inv_hom_id := Q.hom_ext (by aesop_cat)
+  hom_inv_id := P.hom_ext (by simp)
+  inv_hom_id := Q.hom_ext (by simp)
 
 @[reassoc]
 theorem comp_coconePointsIsoOfNatIso_hom {F G : J ⥤ C} {s : Cocone F} {t : Cocone G}

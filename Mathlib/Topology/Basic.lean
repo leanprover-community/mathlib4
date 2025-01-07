@@ -1365,6 +1365,12 @@ theorem IsOpen.preimage (hf : Continuous f) {t : Set Y} (h : IsOpen t) :
     IsOpen (f ⁻¹' t) :=
   hf.isOpen_preimage t h
 
+lemma Equiv.continuous_symm_iff (e : X ≃ Y) : Continuous e.symm ↔ IsOpenMap e := by
+  simp_rw [continuous_def, ← Set.image_equiv_eq_preimage_symm, IsOpenMap]
+
+lemma Equiv.isOpenMap_symm_iff (e : X ≃ Y) : IsOpenMap e.symm ↔ Continuous e := by
+  simp_rw [← Equiv.continuous_symm_iff, Equiv.symm_symm]
+
 theorem continuous_congr {g : X → Y} (h : ∀ x, f x = g x) :
     Continuous f ↔ Continuous g :=
   .of_eq <| congrArg _ <| funext h

@@ -31,7 +31,7 @@ structure Zsqrtd (d : ℤ) where
   im : ℤ
   deriving DecidableEq
 
-prefix:100 "ℤ√" => Zsqrtd
+@[inherit_doc] prefix:100 "ℤ√" => Zsqrtd
 
 namespace Zsqrtd
 
@@ -927,9 +927,7 @@ def lift {d : ℤ} : { r : R // r * r = ↑d } ≃ (ℤ√d →+* R) where
         simp only [mul_re, Int.cast_add, Int.cast_mul, mul_im, this, r.prop]
         ring }
   invFun f := ⟨f sqrtd, by rw [← f.map_mul, dmuld, map_intCast]⟩
-  left_inv r := by
-    ext
-    simp
+  left_inv r := by simp
   right_inv f := by
     ext
     simp

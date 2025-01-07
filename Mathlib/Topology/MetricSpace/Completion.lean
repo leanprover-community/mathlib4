@@ -158,10 +158,6 @@ instance instMetricSpace : MetricSpace (Completion α) :=
       toUniformSpace := inferInstance
       uniformity_dist := Completion.uniformity_dist } _
 
-@[deprecated eq_of_dist_eq_zero (since := "2024-03-10")]
-protected theorem eq_of_dist_eq_zero (x y : Completion α) (h : dist x y = 0) : x = y :=
-  eq_of_dist_eq_zero h
-
 /-- The embedding of a metric space in its completion is an isometry. -/
 theorem coe_isometry : Isometry ((↑) : α → Completion α) :=
   Isometry.of_dist_eq Completion.dist_eq

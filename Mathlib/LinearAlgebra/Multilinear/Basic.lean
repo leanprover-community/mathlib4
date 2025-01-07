@@ -1081,8 +1081,8 @@ map from `Π i, M₁ᵢ ⟶ M₁ᵢ'` to `M ⟶ M₂` via `(fᵢ) ↦ v ↦ g(f�
     MultilinearMap R M₁' M₂ →ₗ[R]
     MultilinearMap R (fun i ↦ M₁ i →ₗ[R] M₁' i) (MultilinearMap R M₁ M₂) where
   toFun g := (LinearMap.applyₗ g).compMultilinearMap compLinearMapMultilinear
-  map_add' := by aesop
-  map_smul' := by aesop
+  map_add' := by simp
+  map_smul' := by simp
 
 end
 
@@ -1555,13 +1555,11 @@ def MultilinearMap.curryRight (f : MultilinearMap R M M₂) :
   map_update_add' := @fun dec m i x y => by
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     ext z
-    change f (snoc (update m i (x + y)) z) = f (snoc (update m i x) z) + f (snoc (update m i y) z)
-    rw [snoc_update, snoc_update, snoc_update, f.map_update_add]
+    simp
   map_update_smul' := @fun dec m i c x => by
     rw [Subsingleton.elim dec (by clear dec; infer_instance)]; clear dec
     ext z
-    change f (snoc (update m i (c • x)) z) = c • f (snoc (update m i x) z)
-    rw [snoc_update, snoc_update, f.map_update_smul]
+    simp
 
 @[simp]
 theorem MultilinearMap.curryRight_apply (f : MultilinearMap R M M₂)

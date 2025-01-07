@@ -677,8 +677,8 @@ there is a linear map `lift g ∘ mkLinearMap = g`.
 -/
 theorem lift_comp (g : M →ₗ[R] M'') (h : ∀ x : S, IsUnit ((algebraMap R (Module.End R M'')) x)) :
     (lift S g h).comp (mkLinearMap S M) = g := by
-  ext x; dsimp; rw [LocalizedModule.lift_mk]
-  erw [Module.End_algebraMap_isUnit_inv_apply_eq_iff, one_smul]
+  ext x
+  simp [LocalizedModule.lift_mk]
 
 /--
 If `g` is a linear map `M → M''` such that all scalar multiplication by `s : S` is invertible and

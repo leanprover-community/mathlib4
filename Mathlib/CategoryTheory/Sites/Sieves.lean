@@ -626,7 +626,6 @@ theorem pullbackArrows_comm [HasPullbacks C] {X Y : C} (f : Y ⟶ X) (R : Presie
   constructor
   · rintro ⟨_, h, k, hk, rfl⟩
     cases' hk with W g hg
-    change (Sieve.generate R).pullback f (h ≫ pullback.snd g f)
     rw [Sieve.pullback_apply, assoc, ← pullback.condition, ← assoc]
     exact Sieve.downward_closed _ (by exact Sieve.le_generate R W hg) (h ≫ pullback.fst g f)
   · rintro ⟨W, h, k, hk, comm⟩

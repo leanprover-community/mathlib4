@@ -94,8 +94,7 @@ lemma traceForm_lieInvariant : (traceForm R L M).lieInvariant L := by
   rw [LieHom.lie_apply, LinearMap.sub_apply, Module.Dual.lie_apply, LinearMap.zero_apply,
     LinearMap.zero_apply, traceForm_apply_lie_apply', sub_self]
 
-@[simp] lemma traceForm_eq_zero_of_isNilpotent
-    [Module.Free R M] [Module.Finite R M] [IsReduced R] [IsNilpotent R L M] :
+@[simp] lemma traceForm_eq_zero_of_isNilpotent [IsReduced R] [IsNilpotent R L M] :
     traceForm R L M = 0 := by
   ext x y
   simp only [traceForm_apply_apply, LinearMap.zero_apply, ← isNilpotent_iff_eq_zero]
@@ -287,7 +286,7 @@ lemma lowerCentralSeries_one_inf_center_le_ker_traceForm [Module.Free R M] [Modu
 lemma isLieAbelian_of_ker_traceForm_eq_bot [Module.Free R M] [Module.Finite R M]
     (h : LinearMap.ker (traceForm R L M) = ⊥) : IsLieAbelian L := by
   simpa only [← disjoint_lowerCentralSeries_maxTrivSubmodule_iff R L L, disjoint_iff_inf_le,
-    LieIdeal.coe_toLieSubalgebra_toSubmodule, LieSubmodule.toSubmodule_eq_bot, h]
+    LieIdeal.toLieSubalgebra_toSubmodule, LieSubmodule.toSubmodule_eq_bot, h]
     using lowerCentralSeries_one_inf_center_le_ker_traceForm R L M
 
 end LieModule
