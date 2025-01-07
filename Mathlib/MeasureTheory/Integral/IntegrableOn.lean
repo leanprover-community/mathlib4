@@ -332,7 +332,7 @@ theorem integrableOn_Lp_of_measure_ne_top {E} [NormedAddCommGroup E] {p : ℝ≥
   have hμ_restrict_univ : (μ.restrict s) Set.univ < ∞ := by
     simpa only [Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply, lt_top_iff_ne_top]
   haveI hμ_finite : IsFiniteMeasure (μ.restrict s) := ⟨hμ_restrict_univ⟩
-  exact ((Lp.memℒp _).restrict s).memℒp_of_exponent_le hp
+  exact ((Lp.memℒp _).restrict s).mono_exponent hp
 
 theorem Integrable.lintegral_lt_top {f : α → ℝ} (hf : Integrable f μ) :
     (∫⁻ x, ENNReal.ofReal (f x) ∂μ) < ∞ :=

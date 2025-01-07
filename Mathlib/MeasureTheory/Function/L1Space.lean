@@ -822,7 +822,7 @@ theorem Integrable.prod_mk {f : α → β} {g : α → γ} (hf : Integrable f μ
 
 theorem Memℒp.integrable {q : ℝ≥0∞} (hq1 : 1 ≤ q) {f : α → β} [IsFiniteMeasure μ]
     (hfq : Memℒp f q μ) : Integrable f μ :=
-  memℒp_one_iff_integrable.mp (hfq.memℒp_of_exponent_le hq1)
+  memℒp_one_iff_integrable.mp (hfq.mono_exponent hq1)
 
 /-- A non-quantitative version of Markov inequality for integrable functions: the measure of points
 where `‖f x‖ ≥ ε` is finite for all positive `ε`. -/
