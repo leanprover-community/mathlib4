@@ -107,7 +107,10 @@ hundred_decls: List[Tuple[str, str]] = []
 errors = 0
 for index, entry in hundred.items():
   # Check that the YAML fits the dataclass used in the website.
-  _thm = HundredTheorem(index, **entry)
+  try:
+    _thm = HundredTheorem(index, **entry)
+  except TypeError as e:
+    print(f"error: entry for theorem {index} is invalid: {e}")
   # Also verify that the |decl| and |decls| fields are not *both* provided.
   if _thm.decl and _thm.decls:
       print(f"warning: entry for theorem {index} has both a decl and a decls field; "
@@ -125,7 +128,10 @@ for index, entry in hundred.items():
 thousand_decls: List[Tuple[str, str]] = []
 for index, entry in thousand.items():
   # Check that the YAML fits the dataclass used in the website.
-  _thm = ThousandPlusTheorem(index, **entry)
+  try:
+    _thm = ThousandPlusTheorem(index, **entry)
+  except TypeError as e:
+    print(f"error: entry for theorem {index} is invalid: {e}")
   # Also verify that the |decl| and |decls| fields are not *both* provided.
   if _thm.decl and _thm.decls:
       print(f"warning: entry for theorem {index} has both a decl and a decls field; "
