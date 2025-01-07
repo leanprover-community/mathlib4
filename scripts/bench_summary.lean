@@ -163,7 +163,7 @@ Here is a summary of the steps:
 * process the final string to produce a summary (using `benchOutput`),
 * finally post the resulting output to the PR (using `gh pr comment ...`).
 -/
-def addBenchSummaryComment (PR : Nat) (repo : String) (jobID : String := "")
+def addBenchSummaryComment (PR : Nat) (repo : String) (jobID : Nat := 0)
     (author : String := "leanprover-bot") (tempFile : String := "benchOutput.json") :
     CommandElabM Unit := do
   let job_msg := s!"\n[CI run](https://github.com/{repo}/actions/runs/{jobID})"
