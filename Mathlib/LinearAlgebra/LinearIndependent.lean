@@ -1271,7 +1271,7 @@ lemma linearIndependent_algHom_toLinearMap
   apply LinearIndependent.of_comp (LinearMap.ltoFun K M L)
   exact (linearIndependent_monoidHom M L).comp
     (RingHom.toMonoidHom ∘ AlgHom.toRingHom)
-    (fun _ _ e ↦ AlgHom.ext (DFunLike.congr_fun e : _))
+    (fun _ _ e ↦ AlgHom.ext (DFunLike.congr_fun e :))
 
 lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K]
     [Semiring M] [Algebra K M] [CommRing L] [IsDomain L] [Algebra K L] [NoZeroSMulDivisors K L] :

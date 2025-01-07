@@ -105,7 +105,7 @@ theorem IsVanKampenColimit.isUniversal {F : J ⥤ C} {c : Cocone F} (H : IsVanKa
 /-- A universal colimit is a colimit. -/
 noncomputable def IsUniversalColimit.isColimit {F : J ⥤ C} {c : Cocone F}
     (h : IsUniversalColimit c) : IsColimit c := by
-  refine ((h c (𝟙 F) (𝟙 c.pt : _) (by rw [Functor.map_id, Category.comp_id, Category.id_comp])
+  refine ((h c (𝟙 F) (𝟙 c.pt :) (by rw [Functor.map_id, Category.comp_id, Category.id_comp])
     (NatTrans.equifibered_of_isIso _)) fun j => ?_).some
   haveI : IsIso (𝟙 c.pt) := inferInstance
   exact IsPullback.of_vert_isIso ⟨by simp⟩
@@ -423,7 +423,7 @@ theorem IsVanKampenColimit.map_reflective [HasColimitsOfShape J C]
     Gl.map (colimit.desc _ ⟨_, whiskerRight α' Gr ≫ c.2⟩) := by
     symm
     convert @IsColimit.coconePointUniqueUpToIso_hom_desc _ _ _ _ ((F' ⋙ Gr) ⋙ Gl)
-      (Gl.mapCocone ⟨_, (whiskerRight α' Gr ≫ c.2 : _)⟩) _ _ hl hr using 2
+      (Gl.mapCocone ⟨_, (whiskerRight α' Gr ≫ c.2 :)⟩) _ _ hl hr using 2
     · apply hr.hom_ext
       intro j
       rw [hr.fac, Functor.mapCocone_ι_app, ← Gl.map_comp, colimit.cocone_ι, colimit.ι_desc]

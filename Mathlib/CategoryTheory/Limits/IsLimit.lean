@@ -404,7 +404,7 @@ def ofFaithful {t : Cone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [G
 -/
 def mapConeEquiv {D : Type u₄} [Category.{v₄} D] {K : J ⥤ C} {F G : C ⥤ D} (h : F ≅ G) {c : Cone K}
     (t : IsLimit (mapCone F c)) : IsLimit (mapCone G c) := by
-  apply postcomposeInvEquiv (isoWhiskerLeft K h : _) (mapCone G c) _
+  apply postcomposeInvEquiv (isoWhiskerLeft K h :) (mapCone G c) _
   apply t.ofIsoLimit (postcomposeWhiskerLeftMapCone h.symm c).symm
 
 /-- A cone is a limit cone exactly if
@@ -442,7 +442,7 @@ theorem coneOfHom_homOfCone (s : Cone F) : coneOfHom h (homOfCone h s) = s := by
 
 @[simp]
 theorem homOfCone_coneOfHom {Y : C} (f : Y ⟶ X) : homOfCone h (coneOfHom h f) = f :=
-  congrArg ULift.down (congrFun (congrFun (congrArg NatTrans.app h.hom_inv_id) (op Y)) ⟨f⟩ : _)
+  congrArg ULift.down (congrFun (congrFun (congrArg NatTrans.app h.hom_inv_id) (op Y)) ⟨f⟩ :)
 
 /-- If `F.cones` is represented by `X`, the cone corresponding to the identity morphism on `X`
 will be a limit cone. -/
@@ -872,7 +872,7 @@ def ofFaithful {t : Cocone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) 
 def mapCoconeEquiv {D : Type u₄} [Category.{v₄} D] {K : J ⥤ C} {F G : C ⥤ D} (h : F ≅ G)
     {c : Cocone K} (t : IsColimit (mapCocone F c)) : IsColimit (mapCocone G c) := by
   apply IsColimit.ofIsoColimit _ (precomposeWhiskerLeftMapCocone h c)
-  apply (precomposeInvEquiv (isoWhiskerLeft K h : _) _).symm t
+  apply (precomposeInvEquiv (isoWhiskerLeft K h :) _).symm t
 
 /-- A cocone is a colimit cocone exactly if
 there is a unique cocone morphism from any other cocone.
@@ -908,7 +908,7 @@ theorem coconeOfHom_homOfCocone (s : Cocone F) : coconeOfHom h (homOfCocone h s)
 
 @[simp]
 theorem homOfCocone_cooneOfHom {Y : C} (f : X ⟶ Y) : homOfCocone h (coconeOfHom h f) = f :=
-  congrArg ULift.down (congrFun (congrFun (congrArg NatTrans.app h.hom_inv_id) Y) ⟨f⟩ : _)
+  congrArg ULift.down (congrFun (congrFun (congrArg NatTrans.app h.hom_inv_id) Y) ⟨f⟩ :)
 
 /-- If `F.cocones` is corepresented by `X`, the cocone corresponding to the identity morphism on `X`
 will be a colimit cocone. -/
