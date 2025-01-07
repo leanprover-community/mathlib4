@@ -37,11 +37,6 @@ instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable
   secondCountableTopology_of_countable_cover (singletons_open_iff_discrete.mpr hd)
     (iUnion_of_singleton α)
 
-@[deprecated DiscreteTopology.secondCountableTopology_of_countable (since := "2024-03-11")]
-theorem DiscreteTopology.secondCountableTopology_of_encodable {α : Type*}
-    [TopologicalSpace α] [DiscreteTopology α] [Countable α] : SecondCountableTopology α :=
-  DiscreteTopology.secondCountableTopology_of_countable
-
 theorem LinearOrder.bot_topologicalSpace_eq_generateFrom {α} [LinearOrder α] [PredOrder α]
     [SuccOrder α] : (⊥ : TopologicalSpace α) = generateFrom { s | ∃ a, s = Ioi a ∨ s = Iio a } := by
   let _ := Preorder.topology α
