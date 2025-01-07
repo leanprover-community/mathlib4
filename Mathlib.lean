@@ -690,6 +690,7 @@ import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.Int
 import Mathlib.Algebra.Order.Group.Lattice
 import Mathlib.Algebra.Order.Group.MinMax
+import Mathlib.Algebra.Order.Group.Multiset
 import Mathlib.Algebra.Order.Group.Nat
 import Mathlib.Algebra.Order.Group.Opposite
 import Mathlib.Algebra.Order.Group.OrderIso
@@ -3895,6 +3896,7 @@ import Mathlib.NumberTheory.EulerProduct.ExpLog
 import Mathlib.NumberTheory.FLT.Basic
 import Mathlib.NumberTheory.FLT.Four
 import Mathlib.NumberTheory.FLT.MasonStothers
+import Mathlib.NumberTheory.FLT.Polynomial
 import Mathlib.NumberTheory.FLT.Three
 import Mathlib.NumberTheory.FactorisationProperties
 import Mathlib.NumberTheory.Fermat
@@ -4389,6 +4391,7 @@ import Mathlib.RingTheory.EisensteinCriterion
 import Mathlib.RingTheory.EssentialFiniteness
 import Mathlib.RingTheory.Etale.Basic
 import Mathlib.RingTheory.Etale.Field
+import Mathlib.RingTheory.Etale.Pi
 import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.Extension
 import Mathlib.RingTheory.Filtration
