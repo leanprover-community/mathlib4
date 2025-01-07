@@ -31,13 +31,13 @@ variable {C D : Type*} [Category C] [Category D] [HasZeroObject C] [HasZeroObjec
 namespace Adjunction
 
 variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) [F.CommShift ℤ] [G.CommShift ℤ]
-  [adj.CommShift ℤ] [F.IsTriangulated]
+  [adj.CommShift ℤ]
 
 include adj in
 /--
 The right adjoint of a triangulated functor is triangulated.
 -/
-lemma isTriangulated_rightAdjoint : G.IsTriangulated where
+lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
   map_distinguished T hT := by
     have : G.Additive := adj.right_adjoint_additive
     obtain ⟨Z, f, g, mem⟩ := distinguished_cocone_triangle (G.map T.mor₁)
