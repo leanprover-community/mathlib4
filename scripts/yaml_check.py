@@ -38,41 +38,55 @@ def print_list(fn: str, pairs: List[Tuple[str, str]]) -> None:
     for (id, val) in pairs:
       out.write(f'{id}\n{val.strip()}\n\n')
 
-# keep in sync with make_site.py in the leanprover-community.github.io repo
-@dataclass
-class DocDecl:
-    name: str
-    decl_header_html: str
-    docs_link: str
-    src_link: str
+
 
 # keep in sync with make_site.py in the leanprover-community.github.io repo
 @dataclass
 class HundredTheorem:
+    # this theorem's number in Freek's 100 theorems list
     number: str
+    # a human-readable title
     title: str
+    # if a theorem is formalised in mathlib, the archive or counterexamples,
+    # the name of the corresponding declaration (optional)
     decl: Optional[str] = None
+    # like |decl|, but a list of declarations (if one theorem is split into multiple declarations) (optional)
     decls: Optional[List[str]] = None
-    doc_decls: Optional[List[DocDecl]] = None
+    # name(s) of the author(s) of this formalization (optional)
     author: Optional[str] = None
+    # Date of the formalization, in the form YYYY-MM-DD (optional)
+    date: Optional[str] = None
     links: Optional[Mapping[str, str]] = None
     note: Optional[str] = None
 
-# keep in sync with make_site.py in the leanprover-community.github.io repo
+# keep in sync with make_site.py in the leanprover-community.github.io repo!
+#
+# These field names match the names in the data files of the 1000+ theorems project upstream.
+# See https://github.com/1000-plus/1000-plus.github.io/blob/main/README.md#file-format
+# for the specification. Compared to the README,
+# - this |wikidata| field concatenates the upstream fielcs |wikidata| and |id_suffix|
+# - we omit some fields (for now), e.g. the msc classification, and only care about Lean formalisations
 @dataclass
 class ThousandPlusTheorem:
     # Wikidata identifier (the letter Q followed by a string as digits),
     # optionally followed by a letter (such as "A", "B" or "X" for disambiguation).
     # "Q1008566" and "Q4724004A" are valid identifiers, for example.
     wikidata: str
+    # a human-readable title
     title: str
+    # if a theorem is formalised in mathlib, the archive or counterexamples,
+    # the name of the corresponding declaration (optional)
     decl: Optional[str] = None
+    # like |decl|, but a list of declarations (if one theorem is split into multiple declarations) (optional)
     decls: Optional[List[str]] = None
-    doc_decls: Optional[List[DocDecl]] = None
+    # name(s) of the author(s) of this formalization (optional)
     author: Optional[str] = None
+    # Date of the formalization, in the form YYYY-MM-DD (optional)
     date: Optional[str] = None
+    # for external projects, an URL referring to the result
     url: Optional[str] = None
-    note: Optional[str] = None
+    # any additional notes or comments
+    comment: Optional[str] = None
 
 hundred_yaml = sys.argv[1]
 thousand_yaml = sys.argv[2]
