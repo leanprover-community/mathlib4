@@ -195,7 +195,7 @@ theorem taylorWithinEval_hasDerivAt_Ioo {f : ℝ → E} {a b t : ℝ} (x : ℝ) 
       (((n ! : ℝ)⁻¹ * (x - t) ^ n) • iteratedDerivWithin (n + 1) f (Icc a b) t) t :=
   have h_nhds : Ioo a b ∈ 𝓝 t := isOpen_Ioo.mem_nhds ht
   have h_nhds' : Ioo a b ∈ 𝓝[Icc a b] t := nhdsWithin_le_nhds h_nhds
-  (hasDerivWithinAt_taylorWithinEval (uniqueDiffWithinAt_Ioo ht) (uniqueDiffOn_Icc hx) h_nhds' ht
+  (hasDerivWithinAt_taylorWithinEval (.Ioo ht) (.Icc hx) h_nhds' ht
     Ioo_subset_Icc_self hf <| (hf' t ht).mono_of_mem_nhdsWithin h_nhds').hasDerivAt h_nhds
 
 /-- Calculate the derivative of the Taylor polynomial with respect to `x₀`.
@@ -206,7 +206,7 @@ theorem hasDerivWithinAt_taylorWithinEval_at_Icc {f : ℝ → E} {a b t : ℝ} (
     (hf' : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc a b)) (Icc a b)) :
     HasDerivWithinAt (fun y => taylorWithinEval f n (Icc a b) y x)
       (((n ! : ℝ)⁻¹ * (x - t) ^ n) • iteratedDerivWithin (n + 1) f (Icc a b) t) (Icc a b) t :=
-  hasDerivWithinAt_taylorWithinEval (uniqueDiffOn_Icc hx t ht) (uniqueDiffOn_Icc hx)
+  hasDerivWithinAt_taylorWithinEval (UniqueDiffOn.Icc hx t ht) (UniqueDiffOn.Icc hx)
     self_mem_nhdsWithin ht rfl.subset hf (hf' t ht)
 
 /-! ### Taylor's theorem with mean value type remainder estimate -/
@@ -230,7 +230,7 @@ theorem taylor_mean_remainder {f : ℝ → ℝ} {g g' : ℝ → ℝ} {x x₀ : �
   -- We apply the mean value theorem
   rcases exists_ratio_hasDerivAt_eq_ratio_slope (fun t => taylorWithinEval f n (Icc x₀ x) t x)
       (fun t => ((n ! : ℝ)⁻¹ * (x - t) ^ n) • iteratedDerivWithin (n + 1) f (Icc x₀ x) t) hx
-      (continuousOn_taylorWithinEval (uniqueDiffOn_Icc hx) hf)
+      (continuousOn_taylorWithinEval (.Icc hx) hf)
       (fun _ hy => taylorWithinEval_hasDerivAt_Ioo x hx hy hf hf') g g' gcont gdiff with ⟨y, hy, h⟩
   use y, hy
   -- The rest is simplifications and trivial calculations
@@ -305,8 +305,7 @@ theorem taylor_mean_remainder_bound {f : ℝ → E} {a b C x : ℝ} {n : ℕ} (h
     simp [hx]
   -- The nth iterated derivative is differentiable
   have hf' : DifferentiableOn ℝ (iteratedDerivWithin n f (Icc a b)) (Icc a b) :=
-    hf.differentiableOn_iteratedDerivWithin (mod_cast n.lt_succ_self)
-      (uniqueDiffOn_Icc h)
+    hf.differentiableOn_iteratedDerivWithin (mod_cast n.lt_succ_self) (.Icc h)
   -- We can uniformly bound the derivative of the Taylor polynomial
   have h' : ∀ y ∈ Ico a x,
       ‖((n ! : ℝ)⁻¹ * (x - y) ^ n) • iteratedDerivWithin (n + 1) f (Icc a b) y‖ ≤
@@ -350,4 +349,4 @@ theorem exists_taylor_mean_remainder_bound {f : ℝ → E} {a b : ℝ} {n : ℕ}
   intro x hx
   rw [div_mul_eq_mul_div₀]
   refine taylor_mean_remainder_bound hab hf hx fun y => ?_
-  exact (hf.continuousOn_iteratedDerivWithin rfl.le <| uniqueDiffOn_Icc h).norm.le_sSup_image_Icc
+  exact (hf.continuousOn_iteratedDerivWithin le_rfl <| .Icc h).norm.le_sSup_image_Icc

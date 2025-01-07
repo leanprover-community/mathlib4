@@ -141,7 +141,7 @@ private lemma UniqueMDiffWithinAt.bundle_preimage_aux {p : TotalSpace F Z}
       · simp [FiberBundle.chartedSpace_chartAt]
       · rfl
     simp only [UniqueMDiffWithinAt, A] at hs ⊢
-    exact (hs.prod (uniqueDiffWithinAt_univ (x := w))).mono this
+    exact (hs.prod .univ).mono this
   rcases p with ⟨x, v⟩
   dsimp
   rintro ⟨z, w⟩ ⟨hz, -⟩

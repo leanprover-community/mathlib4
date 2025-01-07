@@ -270,14 +270,14 @@ iterated derivative. -/
 theorem iteratedDeriv_succ : iteratedDeriv (n + 1) f = deriv (iteratedDeriv n f) := by
   ext x
   rw [← iteratedDerivWithin_univ, ← iteratedDerivWithin_univ, ← derivWithin_univ]
-  exact iteratedDerivWithin_succ uniqueDiffWithinAt_univ
+  exact iteratedDerivWithin_succ .univ
 
 /-- The `n`-th iterated derivative can be obtained by iterating `n` times the
 differentiation operation. -/
 theorem iteratedDeriv_eq_iterate : iteratedDeriv n f = deriv^[n] f := by
   ext x
   rw [← iteratedDerivWithin_univ]
-  convert iteratedDerivWithin_eq_iterate uniqueDiffOn_univ (F := F) (mem_univ x)
+  convert iteratedDerivWithin_eq_iterate .univ (F := F) (mem_univ x)
   simp [derivWithin_univ]
 
 /-- The `n+1`-th iterated derivative can be obtained by taking the `n`-th derivative of the

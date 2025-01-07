@@ -883,7 +883,7 @@ theorem HasFTaylorSeriesUpTo.eq_iteratedFDeriv
     p x m = iteratedFDeriv 𝕜 m f x := by
   rw [← iteratedFDerivWithin_univ]
   rw [← hasFTaylorSeriesUpToOn_univ_iff] at h
-  exact h.eq_iteratedFDerivWithin_of_uniqueDiffOn hmn uniqueDiffOn_univ (mem_univ _)
+  exact h.eq_iteratedFDerivWithin_of_uniqueDiffOn hmn .univ (mem_univ _)
 
 /-- In an open set, the iterated derivative within this set coincides with the global iterated
 derivative. -/
@@ -913,7 +913,7 @@ theorem iteratedFDeriv_succ_apply_right {n : ℕ} (m : Fin (n + 1) → E) :
     (iteratedFDeriv 𝕜 (n + 1) f x : (Fin (n + 1) → E) → F) m =
       iteratedFDeriv 𝕜 n (fun y => fderiv 𝕜 f y) x (init m) (m (last n)) := by
   rw [← iteratedFDerivWithin_univ, ← iteratedFDerivWithin_univ, ← fderivWithin_univ]
-  exact iteratedFDerivWithin_succ_apply_right uniqueDiffOn_univ (mem_univ _) _
+  exact iteratedFDerivWithin_succ_apply_right .univ (mem_univ _) _
 
 /-- Writing explicitly the `n+1`-th derivative as the composition of a currying linear equiv,
 and the `n`-th derivative of the derivative. -/
