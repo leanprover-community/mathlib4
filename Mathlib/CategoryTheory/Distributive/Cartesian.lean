@@ -66,7 +66,8 @@ abbrev CartesianDistribuitve :=
 attribute [local instance] symmetricOfHasFiniteProducts
 
 /-- Every cartesian distributive category is both left and right distributive. -/
-instance [CartesianDistribuitve C] : IsMonoidalDistrib C := by infer_instance
+instance [CartesianDistribuitve C] : IsMonoidalDistrib C :=
+  SymmetricCategory.isMonoidalDistrib_of_isMonoidalLeftDistrib
 
 /-- The coproduct coprojections are monic in a cartesian distributive category. -/
 instance [IsMonoidalLeftDistrib C] : MonoCoprod C :=
