@@ -189,7 +189,7 @@ variable {F} {G : C ⥤ D} [F.CommShift A] [G.CommShift A]
 open Opposite in
 lemma commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
     NatTrans.CommShift (C := OppositeShift C A) (D := OppositeShift D A) (NatTrans.op τ) A where
-      comm' _ := by
+      shift_comm _ := by
         ext
         rw [← cancel_mono ((F.op.commShiftIso _ (C := OppositeShift C A)
           (D := OppositeShift D A)).inv.app _), ← cancel_epi ((G.op.commShiftIso _
@@ -197,7 +197,7 @@ lemma commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
         dsimp
         simp only [assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj,
           Functor.op_obj, comp_id]
-        exact (op_inj_iff _ _).mpr (NatTrans.CommShift.comm_app τ _ (unop _))
+        exact (op_inj_iff _ _).mpr (NatTrans.shift_app_comm τ _ (unop _))
 
 end NatTrans
 
