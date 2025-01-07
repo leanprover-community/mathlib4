@@ -218,13 +218,15 @@ end Pow
 namespace NonemptyInterval
 
 @[to_additive]
-instance commMonoid [OrderedCommMonoid α] : CommMonoid (NonemptyInterval α) :=
+instance commMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+    CommMonoid (NonemptyInterval α) :=
   NonemptyInterval.toProd_injective.commMonoid _ toProd_one toProd_mul toProd_pow
 
 end NonemptyInterval
 
 @[to_additive]
-instance Interval.mulOneClass [OrderedCommMonoid α] : MulOneClass (Interval α) where
+instance Interval.mulOneClass [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+    MulOneClass (Interval α) where
   mul := (· * ·)
   one := 1
   one_mul s :=
@@ -235,7 +237,8 @@ instance Interval.mulOneClass [OrderedCommMonoid α] : MulOneClass (Interval α)
       simp_rw [mul_one, ← Function.id_def, Option.map_id, id]
 
 @[to_additive]
-instance Interval.commMonoid [OrderedCommMonoid α] : CommMonoid (Interval α) :=
+instance Interval.commMonoid [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] :
+    CommMonoid (Interval α) :=
   { Interval.mulOneClass with
     mul_comm := fun _ _ => Option.map₂_comm mul_comm
     mul_assoc := fun _ _ _ => Option.map₂_assoc mul_assoc }
@@ -243,7 +246,8 @@ instance Interval.commMonoid [OrderedCommMonoid α] : CommMonoid (Interval α) :
 namespace NonemptyInterval
 
 @[to_additive]
-theorem coe_pow_interval [OrderedCommMonoid α] (s : NonemptyInterval α) (n : ℕ) :
+theorem coe_pow_interval [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
+    (s : NonemptyInterval α) (n : ℕ) :
     ↑(s ^ n) = (s : Interval α) ^ n :=
   map_pow (⟨⟨(↑), coe_one_interval⟩, coe_mul_interval⟩ : NonemptyInterval α →* Interval α) _ _
 
@@ -254,7 +258,7 @@ end NonemptyInterval
 
 namespace Interval
 
-variable [OrderedCommMonoid α] (s : Interval α) {n : ℕ}
+variable [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α] (s : Interval α) {n : ℕ}
 
 @[to_additive]
 theorem bot_pow : ∀ {n : ℕ}, n ≠ 0 → (⊥ : Interval α) ^ n = ⊥
@@ -388,7 +392,7 @@ end Div
 
 section Inv
 
-variable [OrderedCommGroup α]
+variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
 
 @[to_additive]
 instance : Inv (NonemptyInterval α) :=
@@ -432,7 +436,7 @@ end Inv
 
 namespace NonemptyInterval
 
-variable [OrderedCommGroup α] {s t : NonemptyInterval α}
+variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] {s t : NonemptyInterval α}
 
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
@@ -445,7 +449,8 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pur
   · rintro ⟨b, c, rfl, rfl, h⟩
     rw [pure_mul_pure, h, pure_one]
 
-instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
+instance subtractionCommMonoid {α : Type u}
+    [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] :
     SubtractionCommMonoid (NonemptyInterval α) :=
   { NonemptyInterval.addCommMonoid with
     neg := Neg.neg
@@ -483,7 +488,7 @@ end NonemptyInterval
 
 namespace Interval
 
-variable [OrderedCommGroup α] {s t : Interval α}
+variable [CommGroup α] [PartialOrder α] [IsOrderedMonoid α] {s t : Interval α}
 
 @[to_additive]
 protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pure b ∧ a * b = 1 := by
@@ -495,7 +500,8 @@ protected theorem mul_eq_one_iff : s * t = 1 ↔ ∃ a b, s = pure a ∧ t = pur
       WithBot.coe_inj, NonemptyInterval.coe_eq_pure]
     exact NonemptyInterval.mul_eq_one_iff
 
-instance subtractionCommMonoid {α : Type u} [OrderedAddCommGroup α] :
+instance subtractionCommMonoid {α : Type u}
+    [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α] :
     SubtractionCommMonoid (Interval α) :=
   { Interval.addCommMonoid with
     neg := Neg.neg
@@ -531,7 +537,7 @@ end Interval
 
 section Length
 
-variable [OrderedAddCommGroup α]
+variable [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
 
 namespace NonemptyInterval
 
@@ -546,10 +552,12 @@ def length : α :=
 theorem length_nonneg : 0 ≤ s.length :=
   sub_nonneg_of_le s.fst_le_snd
 
+omit [IsOrderedAddMonoid α] in
 @[simp]
 theorem length_pure : (pure a).length = 0 :=
   sub_self _
 
+omit [IsOrderedAddMonoid α] in
 @[simp]
 theorem length_zero : (0 : NonemptyInterval α).length = 0 :=
   length_pure _
@@ -587,10 +595,12 @@ theorem length_nonneg : ∀ s : Interval α, 0 ≤ s.length
   | ⊥ => le_rfl
   | (s : NonemptyInterval α) => s.length_nonneg
 
+omit [IsOrderedAddMonoid α] in
 @[simp]
 theorem length_pure : (pure a).length = 0 :=
   NonemptyInterval.length_pure _
 
+omit [IsOrderedAddMonoid α] in
 @[simp]
 theorem length_zero : (0 : Interval α).length = 0 :=
   length_pure _
@@ -622,16 +632,19 @@ open Lean Meta Qq
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity NonemptyInterval.length _]
 def evalNonemptyIntervalLength : PositivityExt where
-  eval {u _α} _ _ e := do
-    let ~q(@NonemptyInterval.length _ $inst $a) := e | throwError "not NonemptyInterval.length"
+  eval {u α} _ _ e := do
+    let ~q(@NonemptyInterval.length _ $ig $ipo $a) := e |
+      throwError "not NonemptyInterval.length"
+    let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)
     assertInstancesCommute
     return .nonnegative q(NonemptyInterval.length_nonneg $a)
 
 /-- Extension for the `positivity` tactic: The length of an interval is always nonnegative. -/
 @[positivity Interval.length _]
 def evalIntervalLength : PositivityExt where
-  eval {u _α} _ _ e := do
-    let ~q(@Interval.length _ $inst $a) := e | throwError "not Interval.length"
+  eval {u α} _ _ e := do
+    let ~q(@Interval.length _ $ig $ipo $a) := e | throwError "not Interval.length"
+    let _i ← synthInstanceQ q(IsOrderedAddMonoid $α)
     assumeInstancesCommute
     return .nonnegative q(Interval.length_nonneg $a)
 
