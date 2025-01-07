@@ -77,7 +77,7 @@ lemma Submodule.top_le_span_of_exact_of_retraction (hg : Function.Surjective g)
   apply top_le_span_of_aux hs hfg (Sum.elim (v ∘ a) (v ∘ b)) hg hsa hlib
   rwa [Set.Sum.elim_range, hab]
 
-/-- Let `0 → K → M → P → 0` be an exact sequence of `R`-modules, let `s : M → K` be a
+/-- Let `0 → K → M → P → 0` be a split exact sequence of `R`-modules, let `s : M → K` be a
 retraction of `f` and `v` be a basis of `M` indexed by `κ ⊕ σ`. Then
 if `s vᵢ = 0` for `i : κ` and `(s vⱼ)ⱼ` is linear independent for `j : σ`, then
 the images of `vᵢ` for `i : κ` form a basis of `P`.
