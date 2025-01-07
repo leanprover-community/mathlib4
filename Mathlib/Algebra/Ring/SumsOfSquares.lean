@@ -212,7 +212,7 @@ sums of squares are non-negative.
 theorem IsSumSq.nonneg {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] {s : R}
     (hs : IsSumSq s) : 0 ≤ s := by
   induction hs using IsSumSq.rec' with
-  | zero               => aesop
-  | sq_add hx hs h_sum => exact add_nonneg (IsSquare.nonneg hx) h_sum
+  | zero           => aesop
+  | sq_add hx hs h => exact add_nonneg (IsSquare.nonneg hx) h
 
 @[deprecated (since := "2024-08-09")] alias isSumSq.nonneg := IsSumSq.nonneg
