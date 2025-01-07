@@ -304,7 +304,6 @@ end CycleOf
 
 section cycleFactors
 
-
 open scoped List in
 /-- Given a list `l : List α` and a permutation `f : Perm α` whose nonfixed points are all in `l`,
   recursively factors `f` into cycles. -/
