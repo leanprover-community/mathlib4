@@ -278,7 +278,7 @@ theorem affineBasisCover_map_range (X : Scheme.{u}) (x : X)
   erw [coe_comp, Set.range_comp]
   -- Porting note: `congr` fails to see the goal is comparing image of the same function
   refine congr_arg (_ '' ·) ?_
-  exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r : _)
+  exact (PrimeSpectrum.localization_away_comap_range (Localization.Away r) r :)
 
 theorem affineBasisCover_is_basis (X : Scheme.{u}) :
     TopologicalSpace.IsTopologicalBasis
