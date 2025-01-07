@@ -206,4 +206,4 @@ theorem mul_bot : x * ⊥ = ⊥ := by
 
 end Zero
 
-end IsQuantale
+end Quantale
