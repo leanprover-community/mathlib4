@@ -24,7 +24,7 @@ require "leanprover-community" / "plausible" @ git "v4.16.0-rc1"
 * as `moreServerArgs`, to set their default value in mathlib
   (as well as `Archive`, `Counterexamples` and `test`). -/
 abbrev mathlibOnlyLinters : Array LeanOption := #[
-  ⟨`linter.docPrime, true⟩,
+  ⟨`linter.docPrime, false⟩, -- this linter is disable until further notice
   ⟨`linter.hashCommand, true⟩,
   ⟨`linter.oldObtain, true,⟩,
   ⟨`linter.refine, true⟩,
