@@ -136,8 +136,7 @@ noncomputable def trianglehMapOfHomotopy :
   comm₃ := by
     dsimp
     rw [← Functor.map_comp_assoc, triangleMapOfHomotopy_comm₃, Functor.map_comp, assoc, assoc]
-    erw [← NatTrans.naturality]
-    rfl
+    simp
 
 end mapOfHomotopy
 
