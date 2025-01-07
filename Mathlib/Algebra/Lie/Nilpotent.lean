@@ -262,11 +262,6 @@ class IsNilpotent : Prop where
   mk_int ::
   nilpotent_int : ∃ k, lowerCentralSeries ℤ L M k = ⊥
 
--- move this
-instance : LieModule ℤ L M where
-  smul_lie n x m := zsmul_lie x m n
-  lie_smul n x m := lie_zsmul x m n
-
 section
 
 variable [LieModule R L M]
