@@ -36,8 +36,8 @@ jobs:
     steps:
       - name: install elan
         run: |
-        : Install Elan
-        scripts/windows/install_elan.sh
+          : Install Elan
+          scripts/windows/install_elan.sh
       - uses: actions/checkout@v4
       - name: install other compiler
         shell: bash
