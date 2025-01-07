@@ -319,7 +319,7 @@ section P
 
 variable [Fintype P.rels] [DecidableEq P.rels]
 
-private lemma jacobiMatrix_comp_inr_inr  (i j : P.rels) :
+private lemma jacobiMatrix_comp_inr_inr (i j : P.rels) :
     (Q.comp P).jacobiMatrix (Sum.inr i) (Sum.inr j) =
       MvPolynomial.rename Sum.inr (P.jacobiMatrix i j) := by
   rw [jacobiMatrix_apply, jacobiMatrix_apply]
