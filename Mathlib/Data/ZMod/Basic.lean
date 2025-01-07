@@ -1046,7 +1046,7 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
     refine (a.val_lt.not_le <| Nat.le_of_mul_le_mul_left ?_ zero_lt_two).elim
     rw [he, mul_comm]
     apply Nat.mul_le_mul_left
-    erw [Nat.succ_le_succ_iff, Nat.succ_le_succ_iff]; simp
+    simp
   · rintro (rfl | h)
     · rw [val_zero, mul_zero]
       apply dvd_zero

@@ -501,7 +501,7 @@ instance IsTorsionBySet.isScalarTower (hM : IsTorsionBySet R M I)
     @IsScalarTower S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _ :=
   -- Porting note: still needed to be fed the Module R / I M instance
   @IsScalarTower.mk S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _
-    (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x : _))
+    (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x :))
 
 /-- An `(R ⧸ Ideal.span {r})`-module is an `R`-module for which `IsTorsionBy R M r`. -/
 abbrev IsTorsionBy.module (hM : IsTorsionBy R M r) : Module (R ⧸ Ideal.span {r}) M :=
@@ -691,7 +691,7 @@ variable {R M}
 
 theorem _root_.Submodule.annihilator_top_inter_nonZeroDivisors [Module.Finite R M]
     (hM : Module.IsTorsion R M) : ((⊤ : Submodule R M).annihilator : Set R) ∩ R⁰ ≠ ∅ := by
-  obtain ⟨S, hS⟩ := ‹Module.Finite R M›.out
+  obtain ⟨S, hS⟩ := ‹Module.Finite R M›.fg_top
   refine Set.Nonempty.ne_empty ⟨_, ?_, (∏ x ∈ S, (@hM x).choose : R⁰).prop⟩
   rw [Submonoid.coe_finset_prod, SetLike.mem_coe, ← hS, mem_annihilator_span]
   intro n

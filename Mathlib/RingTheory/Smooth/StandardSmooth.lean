@@ -295,7 +295,8 @@ private lemma jacobiMatrix_comp_₁₁_det :
   rw [jacobian_eq_jacobiMatrix_det, AlgHom.map_det (aeval (Q.comp P).val), RingHom.map_det]
   congr
   ext i j : 1
-  simp only [Matrix.map_apply, RingHom.mapMatrix_apply, ← Q.jacobiMatrix_comp_inl_inl P]
+  simp only [Matrix.map_apply, RingHom.mapMatrix_apply, ← Q.jacobiMatrix_comp_inl_inl P,
+    Q.algebraMap_apply]
   apply aeval_sum_elim
 
 end Q
@@ -383,6 +384,7 @@ lemma baseChange_jacobian : (P.baseChange T).jacobian = 1 ⊗ₜ P.jacobian := b
     rfl
   rw [h]
   erw [← RingHom.map_det, aeval_map_algebraMap]
+  rw [P.algebraMap_apply]
   apply aeval_one_tmul
 
 end BaseChange

@@ -118,7 +118,7 @@ protected theorem ContMDiffWithinAt.mfderivWithin {x₀ : N} {f : N → M → M'
     · apply inter_subset_left.trans
       rw [preimage_subset_iff]
       intro a ha
-      refine ⟨PartialEquiv.map_source _ (inter_subset_right ha : _), ?_⟩
+      refine ⟨PartialEquiv.map_source _ (inter_subset_right ha :), ?_⟩
       rw [mem_preimage, PartialEquiv.left_inv (extChartAt I (g x₀))]
       · exact hu (inter_subset_left ha)
       · exact (inter_subset_right ha :)
