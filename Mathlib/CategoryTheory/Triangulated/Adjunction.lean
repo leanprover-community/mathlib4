@@ -1,11 +1,12 @@
 /-
 Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Joël Riou
+Authors: Sophie Morel, Joël Riou
 -/
 import Mathlib.CategoryTheory.Triangulated.Functor
 import Mathlib.CategoryTheory.Shift.Adjunction
 import Mathlib.CategoryTheory.Adjunction.Additive
+import Mathlib.CategoryTheory.Triangulated.Opposite.Functor
 
 /-!
 # The adjoint functor is triangulated
@@ -111,6 +112,27 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
         Functor.commShiftIso_hom_naturality, ← adj.shift_unit_app_assoc,
         ← Functor.map_comp, right_triangle_components, Functor.map_id, comp_id]
 
+include adj in
+open CategoryTheory.Pretriangulated.Opposite Functor in
+/--
+The left adjoint of a triangulated functor is triangulated.
+-/
+lemma isTriangulated_leftAdjoint [G.IsTriangulated] : F.IsTriangulated := by
+  have : Adjunction.CommShift adj.op ℤ := by
+    have heq : adj.op = PullbackShift.adjunction (AddMonoidHom.mk'
+        (fun (n : ℤ) => -n) (by intros; dsimp; omega)) adj.op := by
+      ext
+      simp [PullbackShift.adjunction, NatTrans.PullbackShift.natIsoId,
+        NatTrans.PullbackShift.natIsoComp, PullbackShift.functor, PullbackShift.natTrans]
+    rw [heq]
+    exact @Adjunction.commShiftPullback (OppositeShift D ℤ) _
+      ℤ ℤ _ _ (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega)) _
+      (OppositeShift C ℤ) _ _ G.op (G.commShiftOp ℤ) F.op adj.op (F.commShiftOp ℤ)
+      (adj.commShift_op ℤ)
+  have := G.isTriangulated_op
+  have := isTriangulated_rightAdjoint adj.op
+  exact F.isTriangulated_of_op
+
 /--
 We say that an adjunction `F ⊣ G` is triangulated if it is compatible with the `CommShift`
 structures on `F` and `G` (in the sense of `Adjunction.CommShift`) and if both `F` and `G`
@@ -129,6 +151,11 @@ attribute [instance] commShift leftAdjoint_isTriangulated rightAdjoint_isTriangu
 -/
 lemma mk' [F.IsTriangulated] : adj.IsTriangulated where
   rightAdjoint_isTriangulated := adj.isTriangulated_rightAdjoint
+
+/-- Constructor for `Adjunction.IsTriangulated`.
+-/
+lemma mk'' [G.IsTriangulated] : adj.IsTriangulated where
+  leftAdjoint_isTriangulated := adj.isTriangulated_leftAdjoint
 
 /-- The identity adjunction is triangulated.
 -/
