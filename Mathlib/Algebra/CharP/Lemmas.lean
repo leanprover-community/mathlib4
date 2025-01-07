@@ -7,7 +7,6 @@ import Mathlib.Algebra.CharP.Defs
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Data.Nat.Multiplicity
 import Mathlib.Data.Nat.Choose.Sum
-import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Characteristic of semirings
@@ -399,7 +398,3 @@ lemma frobenius_sub : frobenius R p (x - y) = frobenius R p x - frobenius R p y 
 
 end CommRing
 end frobenius
-
-lemma RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [Semiring L] [Nontrivial L]
-    (f : K →+* L) (p : ℕ) : CharP K p ↔ CharP L p := by
-  simp only [charP_iff, ← f.injective.eq_iff, map_natCast f, map_zero f]

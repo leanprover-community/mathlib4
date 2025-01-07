@@ -6,6 +6,7 @@ Authors: Jon Eugster, Eric Wieser
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.FreeAlgebra
 import Mathlib.RingTheory.Localization.FractionRing
+import Mathlib.RingTheory.SimpleRing.Basic
 
 /-!
 # Characteristics of algebras
@@ -183,3 +184,8 @@ instance charZero [CharZero R] : CharZero (FractionRing R) :=
   charZero_of_isFractionRing R
 
 end IsFractionRing
+
+
+lemma RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [Semiring L] [Nontrivial L]
+    (f : K →+* L) (p : ℕ) : CharP K p ↔ CharP L p := by
+  simp only [charP_iff, ← f.injective.eq_iff, map_natCast f, map_zero f]
