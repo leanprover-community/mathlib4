@@ -35,7 +35,7 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: install elan
-      run: |
+        run: |
         : Install Elan
         scripts/windows/install_elan.sh
       - uses: actions/checkout@v4
