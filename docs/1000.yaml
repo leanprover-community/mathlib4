@@ -657,7 +657,7 @@ Q670235:
     - UniqueFactorizationMonoid
     - UniqueFactorizationMonoid.factors_unique
   author: Chris Hughes
-  note: "it also has a generalized version, by showing that every Euclidean domain is a unique factorization domain, and showing that the integers form a Euclidean domain."
+  comment: "it also has a generalized version, by showing that every Euclidean domain is a unique factorization domain, and showing that the integers form a Euclidean domain."
 
 Q671663:
   title: Coleman–Mandula theorem
@@ -876,7 +876,7 @@ Q853067:
     - Pell.eq_pell
     - Pell.exists_of_not_isSquare
   author: Mario Carneiro (first), Michael Stoll (second)
-  note: "In `pell.eq_pell`, `d` is defined to be `a*a - 1` for an arbitrary `a > 1`."
+  comment: "In `pell.eq_pell`, `d` is defined to be `a*a - 1` for an arbitrary `a > 1`."
 
 Q856032:
   title: CAP theorem
