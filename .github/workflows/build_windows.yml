@@ -35,16 +35,18 @@ jobs:
     runs-on: windows-latest
     steps:
       - name: install elan
+        shell: bash
         run: |
           : Install Elan
           scripts/windows/install_elan.sh
-      - uses: actions/checkout@v4
+      - name: checkout
+        uses: actions/checkout@v4
       - name: install other compiler
         shell: bash
         run: |
           echo skipped
       - name: build the cache command
-        shell: bash
+        shell:bash
         run: lake build cache
       - name: grab a bit of cache
         shell: bash
