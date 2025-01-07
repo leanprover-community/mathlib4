@@ -91,8 +91,9 @@ theorem eq_one_iff {N : Subgroup G} [N.Normal] (x : G) : (x : G ⧸ N) = 1 ↔ x
   refine QuotientGroup.eq.trans ?_
   rw [mul_one, Subgroup.inv_mem_iff]
 
-/-- Note: `range_mk'` is a lemma about the primed constructor `QuotientGroup.mk'`, not a
-  modified version of some `range_mk` -/
+/- Note: `range_mk'` is a lemma about the primed constructor `QuotientGroup.mk'`, not a
+  modified version of some `range_mk`. -/
+set_option linter.docPrime false in
 @[to_additive (attr := simp)]
 theorem range_mk' : (QuotientGroup.mk' N).range = ⊤ :=
   MonoidHom.range_eq_top.mpr (mk'_surjective N)
