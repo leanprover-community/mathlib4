@@ -312,7 +312,7 @@ Q288465:
 
 Q303402:
   title: Rank–nullity theorem
-  decl: rank_range_add_rank_ker
+  decl: LinearMap.rank_range_add_rank_ker
 
 Q318767:
   title: Abel's theorem
@@ -1728,18 +1728,22 @@ Q1809539:
 
 Q1816952:
   title: Schur's lemma
+  decl: finrank_endomorphism_simple_eq_one
 
 Q1841237:
   title: Fubini's theorem on differentiation
+  # XXX: does mathib have this already?
 
 Q1855610:
   title: Theorem of de Moivre–Laplace
+  # special case of the central limit theorem: binomial converges to the normal distribution
 
 Q1888583:
   title: Holditch's theorem
 
 Q1893717:
   title: Rice's theorem
+  decl: rice
 
 Q1896455:
   title: Varignon's theorem
@@ -1779,6 +1783,7 @@ Q1995468:
 
 Q1996305:
   title: Burnside's theorem
+  # an external project proved part of this: TODO mention in this comment
 
 Q2000090:
   title: Art gallery theorem
@@ -1822,6 +1827,7 @@ Q2094241:
 
 Q2096184:
   title: Plancherel theorem
+  # TODO: mathlib has this, right? verify and add declaration
 
 Q2109761:
   title: Uniformization theorem
@@ -1982,6 +1988,7 @@ Q2379128:
 
 Q2379132:
   title: Going-up and going-down theorems
+  # TODO: does mathlib have these versions? add the right decls!
 
 Q2394548:
   title: Hurewicz theorem
@@ -2000,6 +2007,7 @@ Q2449984X:
 
 Q2471737:
   title: Carathéodory's theorem
+  decl: convexHull_eq_union
 
 Q2473965:
   title: Ugly duckling theorem
