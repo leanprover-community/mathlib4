@@ -6,6 +6,7 @@ Authors: Florent Schaffhauser, Artie Khovanov
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Algebra.Group.Subgroup.Even
+import Mathlib.Algebra.Ring.Parity
 
 /-!
 # Sums of squares
@@ -172,6 +173,8 @@ theorem IsSumSq.mul [NonUnitalCommSemiring R] {s₁ s₂ : R}
 private theorem Submonoid.square_subsemiringClosure {T : Type*} [CommSemiring T] :
     (Submonoid.square T).subsemiringClosure = .closure {x : T | IsSquare x} := by
   simp [Submonoid.subsemiringClosure_eq_closure]
+
+example : IsSumSq 0 := by aesop
 
 namespace Subsemiring
 variable {T : Type*} [CommSemiring T]
