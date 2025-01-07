@@ -100,15 +100,8 @@ into an actual `QuantaleHom`. This is declared as the default coercion from `F` 
 @[to_additive (attr := coe)
   "Turn an element of a type `F` satisfying `AddHomClass F α β` and `sSupHomClass F α β`
 into an actual `AddQuantaleHom`. This is declared as the default coercion from `F` to `α →ₙ+q β`."]
-def toQuantaleHom [MulHomClass F α β] [sSupHomClass F α β] (f : F) :
+def QuantaleHom.ofClass [MulHomClass F α β] [sSupHomClass F α β] (f : F) :
     α →ₙ*q β := { (f : α →ₙ* β) with map_sSup' := sSupHomClass.map_sSup f }
-
-/-- Any type satisfying `QuantaleHomClass` can be cast into `QuantaleHom` via
-  `QuantaleHomClass.toQuantaleHom`. -/
-@[to_additive "Any type satisfying `AddQuantaleHomClass` can be cast into `AddQuantaleHom` via
-  `AddQuantaleHomClass.toAddQuantaleHom`."]
-instance [MulHomClass F α β] [sSupHomClass F α β] : CoeTC F (α →ₙ*q β) :=
-  ⟨toQuantaleHom⟩
 
 end Quantale
 
@@ -121,10 +114,7 @@ variable [Semigroup α] [Semigroup β] [Semigroup γ] [Semigroup δ]
 @[to_additive]
 instance : FunLike (α →ₙ*q β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by
-    obtain ⟨⟨ _ ⟩, _⟩ := f
-    obtain ⟨⟨ _ ⟩, _⟩ := g
-    congr
+  coe_injective' f g h := by congr!
 
 @[to_additive]
 instance : MulHomClass (α →ₙ*q β) α β where
@@ -146,14 +136,12 @@ theorem ext (h : ∀ a, f a = g a) : f = g :=
 theorem toFun_eq_coe (f : α →ₙ*q β) : f.toFun = (f : α → β) := rfl
 
 @[to_additive (attr := simp)]
-theorem coe_mk (f : α →ₙ* β) (h) : (QuantaleHom.mk f h : α → β) = f := rfl
+theorem coe_mk (f : α →ₙ* β) (h) : mk f h = f := rfl
 
 @[to_additive (attr := simp)]
-theorem mk_coe (f : α →ₙ*q β) (h) : QuantaleHom.mk (f : α →ₙ* β) h = f := rfl
+theorem mk_coe (f : α →ₙ*q β) (h) : mk (f : α →ₙ* β) h = f := rfl
 
 section Id
-
-variable (α)
 
 /-- The identity map as a quantale homomorphism. -/
 @[to_additive "The identity map as an additive quantale homomorphism."]
@@ -203,8 +191,7 @@ end Comp
 section Bot
 
 /-- `⊥` is the quantale homomorphism sending all elements to `⊥`. -/
-
-@[to_additive]
+@[to_additive "`⊥` is the quantale homomorphism sending all elements to `⊥`."]
 instance [IsQuantale β] : Bot (α →ₙ*q β) := ⟨{ (⊥ : sSupHom α β) with
   map_mul' := by
     simp only [sSupHom.toFun_eq_coe, sSupHom.bot_apply, IsQuantale.mul_bot, implies_true]
