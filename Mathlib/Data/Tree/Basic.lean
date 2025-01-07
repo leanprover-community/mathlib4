@@ -46,7 +46,7 @@ Do an action for every node of the tree.
 Actions are taken in node -> left subtree -> right subtree recursive order.
 This function is the `traverse` function for the `Traversable Tree` instance.
 -/
-def traverse {m:Type* → Type*} [Applicative m] {α β} (f:α → m β) :Tree α → m (Tree β)
+def traverse {m : Type* → Type*} [Applicative m] {α β} (f : α → m β) : Tree α → m (Tree β)
   | .nil => pure nil
   | .node a l r => .node <$> f a <*> traverse f l <*> traverse f r
 
@@ -55,6 +55,24 @@ def traverse {m:Type* → Type*} [Applicative m] {α β} (f:α → m β) :Tree �
 def map {β} (f : α → β) : Tree α → Tree β
   | nil => nil
   | node a l r => node (f a) (map f l) (map f r)
+
+theorem id_map (t : Tree α) : t.map id = t := by
+  induction t with
+  | nil => rw [map]
+  | node v l r hl hr => rw [map, hl, hr, id_eq]
+
+theorem comp_map {β γ : Type*} (f : α → β) (g : β → γ) (t : Tree α) :
+    t.map (g ∘ f) = (t.map f).map g := by
+  induction t with
+  | nil => rw [map, map, map]
+  | node v l r hl hr => rw [map, map, map, hl, hr, Function.comp_apply]
+
+theorem id_traverse (t : Tree α) : t.traverse (pure : α → Id α) = t := by
+  induction t with
+  | nil => rw [traverse, Id.pure_eq nil]
+  | node v l r hl hr => rw [traverse, hl, hr, map_pure, pure_seq, Id.map_eq, seq_eq_bind,
+    Id.bind_eq,Id.map_eq]
+
 
 /-- The number of internal nodes (i.e. not including leaves) of a binary tree -/
 @[simp]
