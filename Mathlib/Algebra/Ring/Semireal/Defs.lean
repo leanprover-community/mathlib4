@@ -29,7 +29,7 @@ variable (R : Type*)
 
 /--
 A semireal ring is a commutative ring (with unit) in which `-1` is *not* a sum of
-squares. We define the class `IsSemireal R` for all structures equipped with
+squares. We define the predicate `IsSemireal R` for structures `R` equipped with
 a multiplication, an addition, a multiplicative unit and an additive unit.
 -/
 @[mk_iff]
