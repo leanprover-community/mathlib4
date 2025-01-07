@@ -133,13 +133,13 @@ theorem lmarginal_mono {f g : (∀ i, π i) → ℝ≥0∞} (hfg : f ≤ g) : �
   fun _ => lintegral_mono fun _ => hfg _
 
 variable {μ} in
-theorem lmarginal_const_smul (hf : Measurable f) (r : ENNReal) :
+theorem lmarginal_const_smul (hf : Measurable f) (r : ℝ≥0∞) :
     (∫⋯∫⁻_s, r • f ∂μ) x = r * (∫⋯∫⁻_s, f ∂μ) x := by
   simp_rw [lmarginal, Pi.smul_apply, smul_eq_mul]
   rw [lintegral_const_mul _ (by convert hf.comp measurable_updateFinset)]
 
 variable {μ} in
-theorem lmarginal_const_smul' (r : ENNReal) (hr : r ≠ ⊤):
+theorem lmarginal_const_smul' (r : ℝ≥0∞) (hr : r ≠ ∞):
     (∫⋯∫⁻_s, r • f ∂μ) x = r * (∫⋯∫⁻_s, f ∂μ) x := by
   simp_rw [lmarginal, Pi.smul_apply, smul_eq_mul]
   rw [lintegral_const_mul' _ _ hr]
