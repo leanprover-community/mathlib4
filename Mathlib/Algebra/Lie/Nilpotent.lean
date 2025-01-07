@@ -148,7 +148,7 @@ theorem eventually_iInf_lowerCentralSeries_eq [IsArtinian R M] :
 
 theorem trivial_iff_lower_central_eq_bot : IsTrivial L M ↔ lowerCentralSeries R L M 1 = ⊥ := by
   constructor <;> intro h
-  · erw [eq_bot_iff, LieSubmodule.lieSpan_le]; rintro m ⟨x, n, hn⟩; rw [← hn, h.trivial]; simp
+  · simp
   · rw [LieSubmodule.eq_bot_iff] at h; apply IsTrivial.mk; intro x m; apply h
     apply LieSubmodule.subset_lieSpan
     -- Porting note: was `use x, m; rfl`

@@ -206,10 +206,7 @@ def Hom.sub (f g : Hom P P') : P.CotangentSpace →ₗ[S] P'.Cotangent := by
     map_one_eq_zero' := ?_
     leibniz' := ?_ }
   · ext
-    simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
-      Cotangent.val_mk, Cotangent.val_zero, Ideal.toCotangent_eq_zero]
-    erw [LinearMap.codRestrict_apply]
-    simp only [LinearMap.sub_apply, AlgHom.toLinearMap_apply, map_one, sub_self, Submodule.zero_mem]
+    simp [Ideal.toCotangent_eq_zero]
   · intro x y
     ext
     simp only [LinearMap.coe_comp, LinearMap.coe_restrictScalars, Function.comp_apply,
@@ -377,7 +374,7 @@ lemma cotangentSpaceBasis_repr_one_tmul (x i) :
   simp
 
 lemma cotangentSpaceBasis_apply (i) :
-    P.cotangentSpaceBasis i = ((1 : S) ⊗ₜ[P.Ring] D R P.Ring (.X i) : _) := by
+    P.cotangentSpaceBasis i = ((1 : S) ⊗ₜ[P.Ring] D R P.Ring (.X i) :) := by
   simp [cotangentSpaceBasis, toExtension]
 
 universe w' u' v'
