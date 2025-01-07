@@ -896,7 +896,10 @@ lemma isClopen_iff_mul_add_zeroLocus {s : Set (PrimeSpectrum R)} :
 open TopologicalSpace (Clopens)
 
 /-- Clopen subsets in the prime spectrum of a commutative semiring are in 1-1 correspondence
-with complete orthogonal pairs of idempotents. -/
+with pairs of elements with product 0 and sum 1. Both elements in such pairs must be
+idempotents, but there may be idempotents that do not form such pairs (does not have a
+"complement"). For example, in the semiring {0, 0.5, 1} with ⊔ as + and ⊓ as *, 0.5 has
+no complement. -/
 def mulZeroaddOneEquivClopens :
     {e : R × R | e.1 * e.2 = 0 ∧ e.1 + e.2 = 1} ≃ Clopens (PrimeSpectrum R) :=
   .ofBijective (fun e ↦ ⟨basicOpen e.1.1, isClopen_iff_mul_add.mpr ⟨_, _, e.2.1, e.2.2, rfl⟩⟩) <| by
