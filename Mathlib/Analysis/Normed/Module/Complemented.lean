@@ -28,13 +28,12 @@ open LinearMap (ker range)
 
 namespace IsIdempotentElem
 
+open LinearMap in
 lemma ker_id_sub_eq_range {P : E →ₗ[𝕜] E} (h : IsIdempotentElem P) : ker (1 - P) = range P :=
   (Submodule.toAddSubgroup_inj (ker (1 - P)) (range P)).mp (by
-    rw [LinearMap.range_toAddSubgroup, LinearMap.ker_toAddSubgroup,
-      ← LinearMap.toAddMonoidHom'_apply, ← LinearMap.toAddMonoidEnd_apply,
-      ← LinearMap.toAddMonoidHom'_apply, ← LinearMap.toAddMonoidEnd_apply,
-      RingHom.map_sub, RingHom.map_one,
-      AddMonoid.End.ker_id_sub_eq_range (IsIdempotentElem.map h _)])
+    rw [range_toAddSubgroup, ker_toAddSubgroup, ← toAddMonoidHom'_apply,
+      ← toAddMonoidEnd_apply, ← toAddMonoidHom'_apply, ← toAddMonoidEnd_apply, RingHom.map_sub,
+      RingHom.map_one, AddMonoid.End.ker_id_sub_eq_range (h.map _)])
 
 lemma range_id_sub_eq_ker {P : E →ₗ[𝕜] E} (h : IsIdempotentElem P) : range (1 - P) = ker P := by
   rw [← (ker_id_sub_eq_range (IsIdempotentElem.one_sub h)), sub_sub_cancel]
