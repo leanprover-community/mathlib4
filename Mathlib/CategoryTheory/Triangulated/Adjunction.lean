@@ -132,8 +132,9 @@ lemma isTriangulated_leftAdjoint [G.IsTriangulated] : F.IsTriangulated := by
     have heq : adj.op = PullbackShift.adjunction (AddMonoidHom.mk'
         (fun (n : ℤ) => -n) (by intros; dsimp; omega)) adj.op := by
       ext
-      simp [PullbackShift.adjunction, NatTrans.PullbackShift.natIsoId,
+      dsimp [PullbackShift.adjunction, NatTrans.PullbackShift.natIsoId,
         NatTrans.PullbackShift.natIsoComp, PullbackShift.functor, PullbackShift.natTrans]
+      simp only [Int.reduceNeg, comp_id, id_comp]
     rw [heq]
     exact @Adjunction.commShiftPullback (OppositeShift D ℤ) _
       ℤ ℤ _ _ (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega)) _
