@@ -114,7 +114,9 @@ variable [Semigroup α] [Semigroup β] [Semigroup γ] [Semigroup δ]
 @[to_additive]
 instance : FunLike (α →ₙ*q β) α β where
   coe f := f.toFun
-  coe_injective' f g h := by congr!
+  coe_injective' f g h := by
+    obtain ⟨⟨ _ ⟩, _⟩ := f
+    congr
 
 @[to_additive]
 instance : MulHomClass (α →ₙ*q β) α β where
@@ -151,10 +153,10 @@ protected def id : α →ₙ*q α where
   map_sSup' _ := by simp_all only [Set.image_id']
 
 @[to_additive (attr := simp)]
-theorem coe_id : ⇑(QuantaleHom.id α) = id := rfl
+theorem coe_id : ⇑(@QuantaleHom.id α _ _) = id := rfl
 
 @[to_additive]
-instance : Inhabited (α →ₙ*q α) := ⟨QuantaleHom.id α⟩
+instance : Inhabited (α →ₙ*q α) := ⟨@QuantaleHom.id α _ _⟩
 
 end Id
 
@@ -179,11 +181,11 @@ theorem comp_assoc (f : γ →ₙ*q δ) (g : β →ₙ*q γ) (h : α →ₙ*q β
   rfl
 
 @[to_additive (attr := simp)]
-theorem comp_id (f : α →ₙ*q β) : f.comp (QuantaleHom.id α) = f :=
+theorem comp_id (f : α →ₙ*q β) : f.comp (@QuantaleHom.id α _ _) = f :=
   rfl
 
 @[to_additive (attr := simp)]
-theorem id_comp (f : α →ₙ*q β) : (QuantaleHom.id β).comp f = f :=
+theorem id_comp (f : α →ₙ*q β) : (@QuantaleHom.id β _ _).comp f = f :=
   rfl
 
 end Comp
