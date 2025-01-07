@@ -54,7 +54,7 @@ class HundredTheorem:
     decls: Optional[List[str]] = None
     # name(s) of the author(s) of this formalization (optional)
     author: Optional[str] = None
-    # Date of the formalization, in the form YYYY-MM-DD (optional)
+    # Date of the formalization, in the form `YYYY`, `YYYY-MM` or `YYYY-MM-DD` (optional)
     date: Optional[str] = None
     links: Optional[Mapping[str, str]] = None
     note: Optional[str] = None
@@ -81,7 +81,7 @@ class ThousandPlusTheorem:
     decls: Optional[List[str]] = None
     # name(s) of the author(s) of this formalization (optional)
     author: Optional[str] = None
-    # Date of the formalization, in the form YYYY-MM-DD (optional)
+    # Date of the formalization, in the form `YYYY`, `YYYY-MM` or `YYYY-MM-DD` (optional)
     date: Optional[str] = None
     # for external projects, an URL referring to the result
     url: Optional[str] = None
