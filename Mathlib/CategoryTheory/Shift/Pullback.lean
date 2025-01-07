@@ -260,10 +260,10 @@ and `PullbackShift.functor G φ`.
 -/
 def PullbackShift.adjunction {F} {G : D ⥤ C} (adj : F ⊣ G) :
     PullbackShift.functor φ F ⊣ PullbackShift.functor φ G where
-  unit := (NatTrans.PullbackShift.natIsoId C φ).hom ≫ (PullbackShift.natTrans φ
-      adj.unit) ≫ (NatTrans.PullbackShift.natIsoComp φ F G).hom
-  counit := (NatTrans.PullbackShift.natIsoComp φ G F).inv ≫ (PullbackShift.natTrans φ
-      adj.counit) ≫ (NatTrans.PullbackShift.natIsoId D φ).inv
+  unit := (NatTrans.PullbackShift.natIsoId C φ).hom ≫
+    PullbackShift.natTrans φ adj.unit ≫ (NatTrans.PullbackShift.natIsoComp φ F G).hom
+  counit := (NatTrans.PullbackShift.natIsoComp φ G F).inv ≫
+    PullbackShift.natTrans φ adj.counit ≫ (NatTrans.PullbackShift.natIsoId D φ).inv
   left_triangle_components _ := by
     simp [PullbackShift.natTrans, NatTrans.PullbackShift.natIsoComp,
       NatTrans.PullbackShift.natIsoId, PullbackShift.functor]
