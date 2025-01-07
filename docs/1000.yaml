@@ -110,9 +110,10 @@ Q188745:
 
 Q189136:
   title: Mean value theorem
-  decl: exists_deriv_eq_slope
-  # XXX: other branch found exists_ratio_deriv_eq_ratio_slope,
-  # is about Cauchy's vs Lagrange's Mean Value Theorem, TODO decide!
+  # two versions: Cauchy's vs Lagrange's mean value theorem; the wikipedia article mentions both
+  decls:
+    - exists_deriv_eq_slope
+    - exists_ratio_deriv_eq_ratio_slope
   author: Yury G. Kudryashov
   date: 2019
 
@@ -248,9 +249,9 @@ Q248931:
 
 Q253214:
   title: Heine–Borel theorem
-  # TODO: two versions in mathlib, which one do we want?
-  # decl: Metric.isCompact_iff_isClosed_bounded
-  # decl: FiniteDimensional.proper
+  decls:
+    - Metric.isCompact_iff_isClosed_bounded
+    - FiniteDimensional.proper
 
 Q255996:
   title: Equipartition theorem
@@ -311,7 +312,7 @@ Q288465:
 
 Q303402:
   title: Rank–nullity theorem
-  # TODO: this is also in mathlib, TODO add decl (and mention in overview)
+  decl: rank_range_add_rank_ker
 
 Q318767:
   title: Abel's theorem
@@ -767,7 +768,7 @@ Q764287:
 
 Q765987:
   title: Heine–Cantor theorem
-  # XXX: does mathlib have this?
+  decl: CompactSpace.uniformContinuous_of_continuous
 
 Q766722:
   title: Liouville's theorem
@@ -1033,7 +1034,7 @@ Q966837:
 
 Q967972:
   title: Open mapping theorem
-  # result in complex analysis. TODO does mathlib have this?
+  decl: AnalyticOnNhd.is_constant_or_isOpen
 
 Q973359:
   title: Rado's theorem
@@ -1085,7 +1086,7 @@ Q1037559:
 
 Q1038716:
   title: Identity theorem
-  # complex analysis, holomorphic functions: TODO add decl!
+  decl: AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq
 
 Q1046232:
   title: Szemerédi's theorem
