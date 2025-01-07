@@ -280,7 +280,7 @@ lemma δAux_C (r) :
 lemma δAux_toAlgHom {Q : Generators.{u₁} S T}
     {Q' : Generators.{u₃} S T} (f : Hom Q Q') (x) :
     δAux R Q' (f.toAlgHom x) = δAux R Q x + Finsupp.linearCombination _ (δAux R Q' ∘ f.val)
-      (Q.cotangentSpaceBasis.repr ((1 : T) ⊗ₜ[Q.Ring] D S Q.Ring x : _)) := by
+      (Q.cotangentSpaceBasis.repr ((1 : T) ⊗ₜ[Q.Ring] D S Q.Ring x :)) := by
   letI : AddCommGroup (T ⊗[S] Ω[S⁄R]) := inferInstance
   have : IsScalarTower Q.Ring Q.Ring T := IsScalarTower.left _
   induction' x using MvPolynomial.induction_on with s x₁ x₂ hx₁ hx₂ p n IH
