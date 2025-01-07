@@ -238,7 +238,7 @@ instance instDecidableRelSameCycle [DecidableEq α] [Fintype α] (f : Perm α) :
     · intro hxy
       by_cases hx : x ∈ f.support
       case pos =>
-        -- we can't invoke the GDR lemmas above without obtaining the decidable instance we are
+        -- we can't invoke the aux lemmas above without obtaining the decidable instance we are
         -- already building; but now we've left the data, so we can do this non-constructively
         -- without sacrificing computability.
         let _inst (f : Perm α) : DecidableRel (SameCycle f) := Classical.decRel _
