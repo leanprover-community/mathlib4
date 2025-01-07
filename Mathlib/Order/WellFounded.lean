@@ -90,25 +90,24 @@ protected theorem lt_sup {r : α → α → Prop} (wf : WellFounded r) {s : Set 
 
 section deprecated
 
-set_option linter.deprecated false
-
 open Classical in
+set_option linter.deprecated false in
 /-- A successor of an element `x` in a well-founded order is a minimal element `y` such that
-`x < y` if one exists. Otherwise it is `x` itself.
-
-Deprecated. If you have a linear order, consider defining a `SuccOrder` instance through
-`ConditionallyCompleteLinearOrder.toSuccOrder`. -/
-@[deprecated (since := "2024-10-25")]
+`x < y` if one exists. Otherwise it is `x` itself. -/
+@[deprecated "If you have a linear order, consider defining a `SuccOrder` instance through
+`ConditionallyCompleteLinearOrder.toSuccOrder`." (since := "2024-10-25")]
 protected noncomputable def succ {r : α → α → Prop} (wf : WellFounded r) (x : α) : α :=
   if h : ∃ y, r x y then wf.min { y | r x y } h else x
 
-@[deprecated (since := "2024-10-25")]
+set_option linter.deprecated false in
+@[deprecated "No deprecation message was provided." (since := "2024-10-25")]
 protected theorem lt_succ {r : α → α → Prop} (wf : WellFounded r) {x : α} (h : ∃ y, r x y) :
     r x (wf.succ x) := by
   rw [WellFounded.succ, dif_pos h]
   apply min_mem
 
-@[deprecated (since := "2024-10-25")]
+set_option linter.deprecated false in
+@[deprecated "No deprecation message was provided." (since := "2024-10-25")]
 protected theorem lt_succ_iff {r : α → α → Prop} [wo : IsWellOrder α r] {x : α} (h : ∃ y, r x y)
     (y : α) : r y (wo.wf.succ x) ↔ r y x ∨ y = x := by
   constructor

@@ -479,6 +479,21 @@ theorem contMDiffOn_iff :
     convert hdiff x (f x) (extChartAt I x x) (by simp only [hx, mfld_simps]) using 1
     mfld_set_tac
 
+/-- zero-smoothness on a set is equivalent to continuity on this set. -/
+theorem contMDiffOn_zero_iff :
+    ContMDiffOn I I' 0 f s ↔ ContinuousOn f s := by
+  rw [contMDiffOn_iff]
+  refine ⟨fun h ↦ h.1, fun h ↦ ⟨h, ?_⟩⟩
+  intro x y
+  rw [WithTop.coe_zero, contDiffOn_zero]
+  apply (continuousOn_extChartAt _).comp
+  · apply h.comp ((continuousOn_extChartAt_symm _).mono inter_subset_left) (fun z hz ↦ ?_)
+    simp only [preimage_inter, mem_inter_iff, mem_preimage] at hz
+    exact hz.2.1
+  · intro z hz
+    simp only [preimage_inter, mem_inter_iff, mem_preimage] at hz
+    exact hz.2.2
+
 /-- One can reformulate smoothness on a set as continuity on this set, and smoothness in any
 extended chart in the target. -/
 theorem contMDiffOn_iff_target :
@@ -525,6 +540,11 @@ theorem contMDiff_iff_target :
 
 @[deprecated (since := "2024-11-20")] alias smooth_iff_target := contMDiff_iff_target
 
+/-- zero-smoothness is equivalent to continuity. -/
+theorem contMDiff_zero_iff :
+    ContMDiff I I' 0 f ↔ Continuous f := by
+  rw [← contMDiffOn_univ, continuous_iff_continuousOn_univ, contMDiffOn_zero_iff]
+
 end SmoothManifoldWithCorners
 
 /-! ### Deducing smoothness from smoothness one step beyond -/
@@ -563,8 +583,8 @@ theorem ContMDiff.continuous (hf : ContMDiff I I' n f) : Continuous f :=
 
 theorem contMDiffWithinAt_top :
     ContMDiffWithinAt I I' ⊤ f s x ↔ ∀ n : ℕ, ContMDiffWithinAt I I' n f s x :=
-  ⟨fun h n => ⟨h.1, contDiffWithinAt_top.1 h.2 n⟩, fun H =>
-    ⟨(H 0).1, contDiffWithinAt_top.2 fun n => (H n).2⟩⟩
+  ⟨fun h n => ⟨h.1, contDiffWithinAt_infty.1 h.2 n⟩, fun H =>
+    ⟨(H 0).1, contDiffWithinAt_infty.2 fun n => (H n).2⟩⟩
 
 theorem contMDiffAt_top : ContMDiffAt I I' ⊤ f x ↔ ∀ n : ℕ, ContMDiffAt I I' n f x :=
   contMDiffWithinAt_top
@@ -690,7 +710,7 @@ theorem contMDiffWithinAt_iff_contMDiffOn_nhds
     (hu _ (mem_of_mem_nhdsWithin hxs hmem)).mono_of_mem_nhdsWithin hmem⟩
   -- The property is true in charts. Let `v` be a good neighborhood in the chart where the function
   -- is smooth.
-  rcases (contMDiffWithinAt_iff'.1 h).2.contDiffOn le_rfl with ⟨v, hmem, hsub, hv⟩
+  rcases (contMDiffWithinAt_iff'.1 h).2.contDiffOn le_rfl (by simp) with ⟨v, hmem, hsub, hv⟩
   have hxs' : extChartAt I x x ∈ (extChartAt I x).target ∩
       (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source) :=
     ⟨(extChartAt I x).map_source (mem_extChartAt_source _), by rwa [extChartAt_to_inv], by

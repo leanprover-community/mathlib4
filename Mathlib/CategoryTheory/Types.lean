@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.EpiMono
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.Data.Set.Operations
 import Mathlib.Tactic.PPWithUniv
+import Mathlib.Tactic.ToAdditive
 
 /-!
 # The category `Type`.

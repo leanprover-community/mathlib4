@@ -20,9 +20,8 @@
   title  : Gödel’s Incompleteness Theorem
   author : Shogo Saito
   links  :
-    results :
-    - First: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/First.lean
-    - Second: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/Second.lean
+    First incompleteness theorem: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/First.lean
+    Second incompleteness theorem: https://github.com/FormalizedFormalLogic/Incompleteness/blob/master/Incompleteness/Arith/Second.lean
     website: https://formalizedformallogic.github.io/Book/
 7:
   title  : Law of Quadratic Reciprocity
@@ -236,8 +235,8 @@
   author : Kexing Ying
 63:
   title  : Cantor’s Theorem
-  decl   : Cardinal.cantor
-  author : mathlib <!-- Mario and/or Johannes -->
+  decl: Function.cantor_surjective
+  author : Johannes Hölzl and Mario Carneiro
 64:
   title  : L’Hopital’s Rule
   decl   : deriv.lhopital_zero_nhds
@@ -281,10 +280,9 @@
   title  : Sylow’s Theorem
   decls  :
     - Sylow.exists_subgroup_card_pow_prime
-  links  :
-    sylow_conjugate: https://github.com/ChrisHughes24/Sylow/blob/7185e33eeb6d28ea1a423492e7b4a8634aa9723d/src/sylow.lean#L885
-    card_sylow_dvd: https://github.com/ChrisHughes24/Sylow/blob/7185e33eeb6d28ea1a423492e7b4a8634aa9723d/src/sylow.lean#L925
-    card_sylow_modeq_one: https://github.com/ChrisHughes24/Sylow/blob/7185e33eeb6d28ea1a423492e7b4a8634aa9723d/src/sylow.lean#L944
+    - Sylow.isPretransitive_of_finite
+    - Sylow.card_dvd_index
+    - card_sylow_modEq_one
   author : Chris Hughes
 73:
   title  : Ascending or Descending Sequences (Erdős–Szekeres Theorem)

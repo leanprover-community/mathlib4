@@ -333,11 +333,9 @@ to the same vertex.
 lemma IsCycles.other_adj_of_adj (h : G.IsCycles) (hadj : G.Adj v w) :
     ∃ w', w ≠ w' ∧ G.Adj v w' := by
   simp_rw [← SimpleGraph.mem_neighborSet] at hadj ⊢
-  cases' (G.neighborSet v).eq_empty_or_nonempty with hl hr
-  · exact ((Set.eq_empty_iff_forall_not_mem.mp hl) _ hadj).elim
-  · have := h hr
-    obtain ⟨w', hww'⟩ := (G.neighborSet v).exists_ne_of_one_lt_ncard (by omega) w
-    exact ⟨w', ⟨hww'.2.symm, hww'.1⟩⟩
+  have := h ⟨w, hadj⟩
+  obtain ⟨w', hww'⟩ := (G.neighborSet v).exists_ne_of_one_lt_ncard (by omega) w
+  exact ⟨w', ⟨hww'.2.symm, hww'.1⟩⟩
 
 open scoped symmDiff
 

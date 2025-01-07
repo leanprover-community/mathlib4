@@ -15,10 +15,7 @@ We construct the power functions `x ^ y`, where `x` and `y` are real numbers.
 
 noncomputable section
 
-open scoped Classical
-open Real ComplexConjugate
-
-open Finset Set
+open Real ComplexConjugate Finset Set
 
 /-
 ## Definitions
@@ -698,13 +695,49 @@ theorem one_lt_rpow_iff (hx : 0 ≤ x) : 1 < x ^ y ↔ 1 < x ∧ 0 < y ∨ 0 < x
   · rcases _root_.em (y = 0) with (rfl | hy) <;> simp [*, lt_irrefl, (zero_lt_one' ℝ).not_lt]
   · simp [one_lt_rpow_iff_of_pos hx, hx]
 
-theorem rpow_le_rpow_of_exponent_ge' (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hz : 0 ≤ z) (hyz : z ≤ y) :
+/-- This is a more general but less convenient version of `rpow_le_rpow_of_exponent_ge`.
+This version allows `x = 0`, so it explicitly forbids `x = y = 0`, `z ≠ 0`. -/
+theorem rpow_le_rpow_of_exponent_ge_of_imp (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hyz : z ≤ y)
+    (h : x = 0 → y = 0 → z = 0) :
     x ^ y ≤ x ^ z := by
   rcases eq_or_lt_of_le hx0 with (rfl | hx0')
-  · rcases eq_or_lt_of_le hz with (rfl | hz')
-    · exact (rpow_zero 0).symm ▸ rpow_le_one hx0 hx1 hyz
-    rw [zero_rpow, zero_rpow] <;> linarith
+  · rcases eq_or_ne y 0 with rfl | hy0
+    · rw [h rfl rfl]
+    · rw [zero_rpow hy0]
+      apply zero_rpow_nonneg
   · exact rpow_le_rpow_of_exponent_ge hx0' hx1 hyz
+
+/-- This version of `rpow_le_rpow_of_exponent_ge` allows `x = 0` but requires `0 ≤ z`.
+See also `rpow_le_rpow_of_exponent_ge_of_imp` for the most general version. -/
+theorem rpow_le_rpow_of_exponent_ge' (hx0 : 0 ≤ x) (hx1 : x ≤ 1) (hz : 0 ≤ z) (hyz : z ≤ y) :
+    x ^ y ≤ x ^ z :=
+  rpow_le_rpow_of_exponent_ge_of_imp hx0 hx1 hyz fun _ hy ↦ le_antisymm (hyz.trans_eq hy) hz
+
+theorem self_le_rpow_of_le_one (h₁ : 0 ≤ x) (h₂ : x ≤ 1) (h₃ : y ≤ 1) : x ≤ x ^ y := by
+  simpa only [rpow_one]
+    using rpow_le_rpow_of_exponent_ge_of_imp h₁ h₂ h₃ fun _ ↦ (absurd · one_ne_zero)
+
+theorem self_le_rpow_of_one_le (h₁ : 1 ≤ x) (h₂ : 1 ≤ y) : x ≤ x ^ y := by
+  simpa only [rpow_one] using rpow_le_rpow_of_exponent_le h₁ h₂
+
+theorem rpow_le_self_of_le_one (h₁ : 0 ≤ x) (h₂ : x ≤ 1) (h₃ : 1 ≤ y) : x ^ y ≤ x := by
+  simpa only [rpow_one]
+    using rpow_le_rpow_of_exponent_ge_of_imp h₁ h₂ h₃ fun _ ↦ (absurd · (one_pos.trans_le h₃).ne')
+
+theorem rpow_le_self_of_one_le (h₁ : 1 ≤ x) (h₂ : y ≤ 1) : x ^ y ≤ x := by
+  simpa only [rpow_one] using rpow_le_rpow_of_exponent_le h₁ h₂
+
+theorem self_lt_rpow_of_lt_one (h₁ : 0 < x) (h₂ : x < 1) (h₃ : y < 1) : x < x ^ y := by
+  simpa only [rpow_one] using rpow_lt_rpow_of_exponent_gt h₁ h₂ h₃
+
+theorem self_lt_rpow_of_one_lt (h₁ : 1 < x) (h₂ : 1 < y) : x < x ^ y := by
+  simpa only [rpow_one] using rpow_lt_rpow_of_exponent_lt h₁ h₂
+
+theorem rpow_lt_self_of_lt_one (h₁ : 0 < x) (h₂ : x < 1) (h₃ : 1 < y) : x ^ y < x := by
+  simpa only [rpow_one] using rpow_lt_rpow_of_exponent_gt h₁ h₂ h₃
+
+theorem rpow_lt_self_of_one_lt (h₁ : 1 < x) (h₂ : y < 1) : x ^ y < x := by
+  simpa only [rpow_one] using rpow_lt_rpow_of_exponent_lt h₁ h₂
 
 theorem rpow_left_injOn {x : ℝ} (hx : x ≠ 0) : InjOn (fun y : ℝ => y ^ x) { y : ℝ | 0 ≤ y } := by
   rintro y hy z hz (hyz : y ^ x = z ^ x)
@@ -936,36 +969,6 @@ theorem rpow_div_two_eq_sqrt {x : ℝ} (r : ℝ) (hx : 0 ≤ x) : x ^ (r / 2) = 
   ring
 
 end Sqrt
-
-variable {n : ℕ}
-
-theorem exists_rat_pow_btwn_rat_aux (hn : n ≠ 0) (x y : ℝ) (h : x < y) (hy : 0 < y) :
-    ∃ q : ℚ, 0 < q ∧ x < (q : ℝ) ^ n ∧ (q : ℝ) ^ n < y := by
-  have hn' : 0 < (n : ℝ) := mod_cast hn.bot_lt
-  obtain ⟨q, hxq, hqy⟩ :=
-    exists_rat_btwn (rpow_lt_rpow (le_max_left 0 x) (max_lt hy h) <| inv_pos.mpr hn')
-  have := rpow_nonneg (le_max_left 0 x) n⁻¹
-  have hq := this.trans_lt hxq
-  replace hxq := rpow_lt_rpow this hxq hn'
-  replace hqy := rpow_lt_rpow hq.le hqy hn'
-  rw [rpow_natCast, rpow_natCast, rpow_inv_natCast_pow _ hn] at hxq hqy
-  · exact ⟨q, mod_cast hq, (le_max_right _ _).trans_lt hxq, hqy⟩
-  · exact hy.le
-  · exact le_max_left _ _
-
-theorem exists_rat_pow_btwn_rat (hn : n ≠ 0) {x y : ℚ} (h : x < y) (hy : 0 < y) :
-    ∃ q : ℚ, 0 < q ∧ x < q ^ n ∧ q ^ n < y := by
-  apply_mod_cast exists_rat_pow_btwn_rat_aux hn x y <;> assumption
-
-/-- There is a rational power between any two positive elements of an archimedean ordered field. -/
-theorem exists_rat_pow_btwn {α : Type*} [LinearOrderedField α] [Archimedean α] (hn : n ≠ 0)
-    {x y : α} (h : x < y) (hy : 0 < y) : ∃ q : ℚ, 0 < q ∧ x < (q : α) ^ n ∧ (q : α) ^ n < y := by
-  obtain ⟨q₂, hx₂, hy₂⟩ := exists_rat_btwn (max_lt h hy)
-  obtain ⟨q₁, hx₁, hq₁₂⟩ := exists_rat_btwn hx₂
-  have : (0 : α) < q₂ := (le_max_right _ _).trans_lt hx₂
-  norm_cast at hq₁₂ this
-  obtain ⟨q, hq, hq₁, hq₂⟩ := exists_rat_pow_btwn_rat hn hq₁₂ this
-  refine ⟨q, hq, (le_max_left _ _).trans_lt <| hx₁.trans ?_, hy₂.trans' ?_⟩ <;> assumption_mod_cast
 
 end Real
 

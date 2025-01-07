@@ -270,14 +270,12 @@ instance : NatCast (X q) where
 
 @[simp] theorem snd_natCast (n : ℕ) : (n : X q).snd = (0 : ZMod q) := rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofNat_fst (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : X q).fst = OfNat.ofNat n :=
+    (ofNat(n) : X q).fst = OfNat.ofNat n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofNat_snd (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : X q).snd = 0 :=
+    (ofNat(n) : X q).snd = 0 :=
   rfl
 
 instance : AddGroupWithOne (X q) :=

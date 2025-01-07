@@ -361,16 +361,21 @@ theorem smul_closedBall (c : 𝕜) (x : E) {r : ℝ} (hr : 0 ≤ r) :
   · simp [hr, zero_smul_set, Set.singleton_zero, nonempty_closedBall]
   · exact smul_closedBall' hc x r
 
-theorem smul_closedUnitBall (c : 𝕜) : c • closedBall (0 : E) (1 : ℝ) = closedBall (0 : E) ‖c‖ := by
+theorem smul_unitClosedBall (c : 𝕜) : c • closedBall (0 : E) (1 : ℝ) = closedBall (0 : E) ‖c‖ := by
   rw [_root_.smul_closedBall _ _ zero_le_one, smul_zero, mul_one]
+
+@[deprecated (since := "2024-12-01")] alias smul_closedUnitBall := smul_unitClosedBall
 
 variable [NormedSpace ℝ E]
 
 /-- In a real normed space, the image of the unit closed ball under multiplication by a nonnegative
 number `r` is the closed ball of radius `r` with center at the origin. -/
-theorem smul_closedUnitBall_of_nonneg {r : ℝ} (hr : 0 ≤ r) :
+theorem smul_unitClosedBall_of_nonneg {r : ℝ} (hr : 0 ≤ r) :
     r • closedBall (0 : E) 1 = closedBall (0 : E) r := by
-  rw [smul_closedUnitBall, Real.norm_of_nonneg hr]
+  rw [smul_unitClosedBall, Real.norm_of_nonneg hr]
+
+@[deprecated (since := "2024-12-01")]
+alias smul_closedUnitBall_of_nonneg := smul_unitClosedBall_of_nonneg
 
 /-- In a nontrivial real normed space, a sphere is nonempty if and only if its radius is
 nonnegative. -/
@@ -400,6 +405,6 @@ theorem affinity_unitBall {r : ℝ} (hr : 0 < r) (x : E) : x +ᵥ r • ball (0 
 `fun y ↦ x + r • y`. -/
 theorem affinity_unitClosedBall {r : ℝ} (hr : 0 ≤ r) (x : E) :
     x +ᵥ r • closedBall (0 : E) 1 = closedBall x r := by
-  rw [smul_closedUnitBall, Real.norm_of_nonneg hr, vadd_closedBall_zero]
+  rw [smul_unitClosedBall, Real.norm_of_nonneg hr, vadd_closedBall_zero]
 
 end NormedAddCommGroup
