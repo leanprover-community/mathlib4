@@ -102,7 +102,7 @@ def limitConeInfiIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitConeInfi.{
     continuous_iff_coinduced_le.mpr
       (le_iInf fun j =>
         coinduced_le_iff_le_induced.mp <|
-          (continuous_iff_coinduced_le.mp (s.π.app j).continuous : _))
+          (continuous_iff_coinduced_le.mp (s.π.app j).continuous :))
   · rfl
 
 instance topCat_hasLimitsOfSize : HasLimitsOfSize.{w, v} TopCat.{max v u} where

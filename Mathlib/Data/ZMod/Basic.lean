@@ -39,6 +39,11 @@ open Function ZMod
 
 namespace ZMod
 
+/-- For non-zero `n : ℕ`, the ring `Fin n` is equivalent to `ZMod n`. -/
+def finEquiv : ∀ (n : ℕ) [NeZero n], Fin n ≃+* ZMod n
+  | 0, h => (h.ne _ rfl).elim
+  | _ + 1, _ => .refl _
+
 instance charZero : CharZero (ZMod 0) := inferInstanceAs (CharZero ℤ)
 
 /-- `val a` is a natural number defined as:
@@ -1041,7 +1046,7 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
     refine (a.val_lt.not_le <| Nat.le_of_mul_le_mul_left ?_ zero_lt_two).elim
     rw [he, mul_comm]
     apply Nat.mul_le_mul_left
-    erw [Nat.succ_le_succ_iff, Nat.succ_le_succ_iff]; simp
+    simp
   · rintro (rfl | h)
     · rw [val_zero, mul_zero]
       apply dvd_zero

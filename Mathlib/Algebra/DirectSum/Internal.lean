@@ -337,7 +337,7 @@ instance instSemiring : Semiring (A 0) := (subsemiring A).toSemiring
 @[simp, norm_cast] theorem coe_natCast (n : ℕ) : (n : A 0) = (n : R) := rfl
 
 @[simp, norm_cast] theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : A 0) = (OfNat.ofNat n : R) := rfl
+    (ofNat(n) : A 0) = (OfNat.ofNat n : R) := rfl
 
 end Semiring
 
