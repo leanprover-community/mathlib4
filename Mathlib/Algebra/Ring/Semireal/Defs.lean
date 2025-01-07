@@ -41,6 +41,6 @@ class IsSemireal [AddMonoid R] [Mul R] [One R] [Neg R] : Prop where
 @[deprecated (since := "2024-08-09")] alias isSemireal.neg_one_not_SumSq :=
   IsSemireal.not_isSumSq_neg_one
 
-instance [LinearOrderedRing R] : IsSemireal R where
+instance [Ring R] [LinearOrder R] [IsStrictOrderedRing R] : IsSemireal R where
   non_trivial := zero_ne_one
   not_isSumSq_neg_one := fun h ↦ (not_le (α := R)).2 neg_one_lt_zero h.nonneg
