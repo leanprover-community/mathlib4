@@ -308,10 +308,10 @@ variable [AddCommMonoid M] [Semiring R] [Module R M]
 @[simps]
 def toAddMonoidEnd : (M →ₗ[R] M) →+* (AddMonoid.End M) where
   toFun := toAddMonoidHom'
-  map_one' := sorry
-  map_mul' := sorry
-  map_zero' := sorry
-  map_add' := sorry
+  map_one' := rfl
+  map_mul' _ _  := rfl
+  map_zero' := rfl
+  map_add'  _ _ := rfl
 
 end
 
