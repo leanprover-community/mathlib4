@@ -50,6 +50,8 @@ lemma isSquare_iff_exists_mul_self (a : α) : IsSquare a ↔ ∃ r, a = r * r :=
 
 @[to_additive (attr := simp)] lemma IsSquare.mul_self (a : α) : IsSquare (a * a) := ⟨a, rfl⟩
 
+@[to_additive, deprecated (since := "2024-08-27")] alias isSquare_mul_self := IsSquare.mul_self
+
 @[to_additive]
 lemma isSquare_op_iff {a : α} : IsSquare (op a) ↔ IsSquare a :=
   ⟨fun ⟨c, hc⟩ ↦ ⟨unop c, congr_arg unop hc⟩, fun ⟨c, hc⟩ ↦ ⟨op c, congr_arg op hc⟩⟩
@@ -90,6 +92,8 @@ end Add
 @[to_additive (attr := simp)]
 lemma IsSquare.one [MulOneClass α] : IsSquare (1 : α) := ⟨1, (mul_one _).symm⟩
 
+@[to_additive, deprecated (since := "2024-12-27")] alias isSquare_one := IsSquare.one
+
 section MonoidHom
 variable [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
 
@@ -119,6 +123,10 @@ attribute [to_additive Even.exists_two_nsmul
 @[to_additive (attr := simp) Even.two_nsmul]
 lemma IsSquare.sq (a : α) : IsSquare (a ^ 2) := ⟨a, pow_two _⟩
 
+@[deprecated (since := "2024-12-27")] alias even_two_nsmul := Even.two_nsmul
+
+@[deprecated (since := "2024-12-27")] alias IsSquare_sq := IsSquare.sq
+
 @[to_additive (attr := aesop unsafe 20% apply)]
 lemma IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨r, rfl⟩; exact ⟨r ^ n, (Commute.refl _).mul_pow _⟩
@@ -126,6 +134,8 @@ lemma IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
 @[to_additive (attr := aesop unsafe 80% apply)]
 lemma Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨m, rfl⟩ a; exact ⟨a ^ m, pow_add _ _ _⟩
+
+@[deprecated (since := "2024-01-07")] alias Even.nsmul' := Even.even_nsmul
 
 end Monoid
 
@@ -159,11 +169,6 @@ lemma IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : Is
 lemma Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨n, rfl⟩ a; exact ⟨a ^ n, zpow_add _ _ _⟩
 
-@[to_additive, deprecated (since := "2024-08-27")] alias isSquare_mul_self := IsSquare.mul_self
-@[to_additive, deprecated (since := "2024-12-27")] alias isSquare_one := IsSquare.one
-@[deprecated (since := "2024-12-27")] alias IsSquare_sq := IsSquare.sq
-@[deprecated (since := "2024-12-27")] alias even_two_nsmul := Even.two_nsmul
-@[deprecated (since := "2024-01-07")] alias Even.nsmul' := Even.even_nsmul
 @[deprecated (since := "2024-01-07")] alias Even.zsmul' := Even.even_zsmul
 
 example {G : Type*} [CommGroup G] {a b c d e : G} (ha : IsSquare a) {n : ℕ} {k : ℤ} (hk : Even k) :
