@@ -104,9 +104,16 @@ with open(undergrad_yaml, 'r', encoding='utf8') as hy:
 
 hundred_decls: List[Tuple[str, str]] = []
 
+errors = 0
 for index, entry in hundred.items():
-  # check that the YAML fits the dataclass used in the website
+  # Check that the YAML fits the dataclass used in the website.
   _thm = HundredTheorem(index, **entry)
+  # Also verify that the |decl| and |decls| fields are not *both* provided.
+  if _thm.decl and _thm.decls:
+      print(f"warning: entry for theorem {index} has both a decl and a decls field; "
+      "please only provide one of these", file=sys.stderr)
+      errors += 1
+
   title = entry['title']
   if 'decl' in entry:
     hundred_decls.append((f'{index} {title}', entry['decl']))
@@ -117,8 +124,14 @@ for index, entry in hundred.items():
 
 thousand_decls: List[Tuple[str, str]] = []
 for index, entry in thousand.items():
-  # check that the YAML fits the dataclass used in the website
+  # Check that the YAML fits the dataclass used in the website.
   _thm = ThousandPlusTheorem(index, **entry)
+  # Also verify that the |decl| and |decls| fields are not *both* provided.
+  if _thm.decl and _thm.decls:
+      print(f"warning: entry for theorem {index} has both a decl and a decls field; "
+      "please only provide one of these", file=sys.stderr)
+      errors += 1
+
   title = entry['title']
   if 'decl' in entry:
     thousand_decls.append((f'{index} {title}', entry['decl']))
@@ -143,3 +156,6 @@ with open('overview.json', 'w', encoding='utf8') as f:
   json.dump(overview_decls, f)
 with open('undergrad.json', 'w', encoding='utf8') as f:
   json.dump(undergrad_decls, f)
+
+if errors:
+  sys.exit(errors)
