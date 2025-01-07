@@ -184,12 +184,31 @@ theorem Subset.congr_right : ∀ {x y z : PSet}, Equiv x y → (z ⊆ x ↔ z �
       let ⟨a, ab⟩ := βα b
       ⟨a, cb.trans (Equiv.symm ab)⟩⟩
 
+instance : Preorder PSet where
+  le := (· ⊆ ·)
+  le_refl := refl_of (· ⊆ ·)
+  le_trans _ _ _ := trans_of (· ⊆ ·)
+
+instance : HasSSubset PSet :=
+  ⟨(· < ·)⟩
+
+@[simp]
+theorem le_def (x y : PSet) : x ≤ y ↔ x ⊆ y :=
+  Iff.rfl
+
+@[simp]
+theorem lt_def (x y : PSet) : x < y ↔ x ⊂ y :=
+  Iff.rfl
+
 /-- `x ∈ y` as pre-sets if `x` is extensionally equivalent to a member of the family `y`. -/
 protected def Mem (y x : PSet.{u}) : Prop :=
   ∃ b, Equiv x (y.Func b)
 
 instance : Membership PSet PSet :=
   ⟨PSet.Mem⟩
+
+theorem mem_def {x y : PSet} : x ∈ y ↔ ∃ b, Equiv x (y.Func b) :=
+  Iff.rfl
 
 theorem Mem.mk {α : Type u} (A : α → PSet) (a : α) : A a ∈ mk α A :=
   ⟨a, Equiv.refl (A a)⟩
@@ -371,11 +390,14 @@ theorem mem_pair {x y z : PSet} : x ∈ ({y, z} : PSet) ↔ Equiv x y ∨ Equiv 
   simp
 
 /-- The n-th von Neumann ordinal -/
+@[deprecated "construct `ofNat` by using `Ordinal.toPSet` instead" (since := "2024-12-14")]
 def ofNat : ℕ → PSet
   | 0 => ∅
   | n + 1 => insert (ofNat n) (ofNat n)
 
+set_option linter.deprecated false in
 /-- The von Neumann ordinal ω -/
+@[deprecated "construct `omega` by using `Ordinal.toPSet` instead" (since := "2024-12-14")]
 def omega : PSet :=
   ⟨ULift ℕ, fun n => ofNat n.down⟩
 
@@ -817,8 +839,33 @@ theorem toSet_injective : Function.Injective toSet := fun _ _ h => ext <| Set.ex
 theorem toSet_inj {x y : ZFSet} : x.toSet = y.toSet ↔ x = y :=
   toSet_injective.eq_iff
 
+theorem eq_of_subset_of_subset {x y : ZFSet} (hx : x ⊆ y) (hy : y ⊆ x) : x = y :=
+  ext fun c => ⟨@hx c, @hy c⟩
+
+theorem antisymm_iff {x y : ZFSet} : x = y ↔ x ⊆ y ∧ y ⊆ x := by
+  refine ⟨?_, fun ⟨hx, hy⟩ ↦ eq_of_subset_of_subset hx hy⟩
+  rintro rfl
+  exact ⟨subset_rfl, subset_rfl⟩
+
 instance : IsAntisymm ZFSet (· ⊆ ·) :=
-  ⟨fun _ _ hab hba => ext fun c => ⟨@hab c, @hba c⟩⟩
+  ⟨fun _ _ => eq_of_subset_of_subset⟩
+
+instance : PartialOrder ZFSet where
+  le := (· ⊆ ·)
+  le_refl := refl_of (· ⊆ ·)
+  le_trans _ _ _ := trans_of (· ⊆ ·)
+  le_antisymm _ _ := antisymm_of (· ⊆ ·)
+
+instance : HasSSubset ZFSet :=
+  ⟨(· < ·)⟩
+
+@[simp]
+theorem le_def (x y : ZFSet) : x ≤ y ↔ x ⊆ y :=
+  Iff.rfl
+
+@[simp]
+theorem lt_def (x y : ZFSet) : x < y ↔ x ⊂ y :=
+  Iff.rfl
 
 /-- The empty ZFC set -/
 protected def empty : ZFSet :=
@@ -935,15 +982,19 @@ theorem singleton_eq_pair_iff {x y z : ZFSet} : ({x} : ZFSet) = {y, z} ↔ x = y
   rw [eq_comm, pair_eq_singleton_iff]
   simp_rw [eq_comm]
 
+set_option linter.deprecated false in
 /-- `omega` is the first infinite von Neumann ordinal -/
+@[deprecated "construct `omega` by using `Ordinal.toZFSet` instead" (since := "2024-12-14")]
 def omega : ZFSet :=
   mk PSet.omega
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "construct `omega` by using `Ordinal.toZFSet` instead" (since := "2024-12-14")]
 theorem omega_zero : ∅ ∈ omega :=
   ⟨⟨0⟩, Equiv.rfl⟩
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated "construct `omega` by using `Ordinal.toZFSet` instead" (since := "2024-12-14")]
 theorem omega_succ {n} : n ∈ omega.{u} → insert n n ∈ omega.{u} :=
   Quotient.inductionOn n fun x ⟨⟨n⟩, h⟩ =>
     ⟨⟨n + 1⟩,
@@ -1694,4 +1745,4 @@ noncomputable def toSet_equiv : ZFSet.{u} ≃ {s : Set ZFSet.{u} // Small.{u, u+
 
 end ZFSet
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1900
