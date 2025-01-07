@@ -28,24 +28,13 @@ open LinearMap (ker range)
 
 namespace IsIdempotentElem
 
-lemma ker_id_sub_eq_range {P : E →ₗ[𝕜] E} (h : IsIdempotentElem P) : ker (1 - P) = range P := by
-  ext x
-  constructor
-  · intro h
-    simp
-    use x
-    simp at h
-    rw [sub_eq_zero] at h
-    rw [← h]
-  · intro h
-    obtain ⟨y,hy⟩ := h
-    rw [← hy]
-    rw [ker]
-    simp
-    rw [sub_eq_zero]
-    rw [IsIdempotentElem] at h
-    conv_lhs => rw [← h]
-    simp only [LinearMap.mul_apply]
+lemma ker_id_sub_eq_range {P : E →ₗ[𝕜] E} (h : IsIdempotentElem P) : ker (1 - P) = range P :=
+  (Submodule.toAddSubgroup_inj (ker (1 - P)) (range P)).mp (by
+  rw [LinearMap.range_toAddSubgroup, ← AddMonoid.End.ker_id_sub_eq_range (by
+    rw [IsIdempotentElem]
+    conv_rhs => rw [← h]
+    rfl)]
+  rfl)
 
 lemma range_id_sub_eq_ker {P : E →ₗ[𝕜] E} (h : IsIdempotentElem P) : range (1 - P) = ker P := by
   rw [← (ker_id_sub_eq_range (IsIdempotentElem.one_sub h)), sub_sub_cancel]
