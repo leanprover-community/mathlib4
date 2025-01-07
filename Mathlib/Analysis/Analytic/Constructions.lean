@@ -21,7 +21,7 @@ We show that the following are analytic:
 
 noncomputable section
 
-open scoped Classical Topology
+open scoped Topology
 open Filter Asymptotics ENNReal NNReal
 
 variable {α : Type*}
@@ -164,36 +164,36 @@ theorem AnalyticAt.sub (hf : AnalyticAt 𝕜 f x) (hg : AnalyticAt 𝕜 g x) :
     AnalyticAt 𝕜 (f - g) x := by
   simpa only [sub_eq_add_neg] using hf.add hg.neg
 
-theorem HasFPowerSeriesWithinOnBall.smul_const (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
-    HasFPowerSeriesWithinOnBall (c • f) (c • pf) s x r :=
-  { r_le := le_trans hf.r_le pf.radius_smul_ge,
-    r_pos := hf.r_pos
-    hasSum := fun hy h'y => (hf.hasSum hy h'y).const_smul _ }
+theorem HasFPowerSeriesWithinOnBall.const_smul (hf : HasFPowerSeriesWithinOnBall f pf s x r) :
+    HasFPowerSeriesWithinOnBall (c • f) (c • pf) s x r where
+  r_le := le_trans hf.r_le pf.radius_le_smul
+  r_pos := hf.r_pos
+  hasSum := fun hy h'y => (hf.hasSum hy h'y).const_smul _
 
-theorem HasFPowerSeriesOnBall.smul_const (hf : HasFPowerSeriesOnBall f pf x r) :
-    HasFPowerSeriesOnBall (c • f) (c • pf) x r :=
-  { r_le := le_trans hf.r_le pf.radius_smul_ge,
-    r_pos := hf.r_pos
-    hasSum := fun hy => (hf.hasSum hy).const_smul _ }
+theorem HasFPowerSeriesOnBall.const_smul (hf : HasFPowerSeriesOnBall f pf x r) :
+    HasFPowerSeriesOnBall (c • f) (c • pf) x r where
+  r_le := le_trans hf.r_le pf.radius_le_smul
+  r_pos := hf.r_pos
+  hasSum := fun hy => (hf.hasSum hy).const_smul _
 
-theorem HasFPowerSeriesWithinAt.smul_const (hf : HasFPowerSeriesWithinAt f pf s x) :
+theorem HasFPowerSeriesWithinAt.const_smul (hf : HasFPowerSeriesWithinAt f pf s x) :
     HasFPowerSeriesWithinAt (c • f) (c • pf) s x :=
   let ⟨_, hrf⟩ := hf
-  hrf.smul_const.hasFPowerSeriesWithinAt
+  hrf.const_smul.hasFPowerSeriesWithinAt
 
-theorem HasFPowerSeriesAt.smul_const (hf : HasFPowerSeriesAt f pf x) :
+theorem HasFPowerSeriesAt.const_smul (hf : HasFPowerSeriesAt f pf x) :
     HasFPowerSeriesAt (c • f) (c • pf) x :=
   let ⟨_, hrf⟩ := hf
-  hrf.smul_const.hasFPowerSeriesAt
+  hrf.const_smul.hasFPowerSeriesAt
 
-theorem AnalyticWithinAt.smul_const (hf : AnalyticWithinAt 𝕜 f s x) :
+theorem AnalyticWithinAt.const_smul (hf : AnalyticWithinAt 𝕜 f s x) :
     AnalyticWithinAt 𝕜 (c • f) s x :=
   let ⟨_, hpf⟩ := hf
-  hpf.smul_const.analyticWithinAt
+  hpf.const_smul.analyticWithinAt
 
-theorem AnalyticAt.smul_const (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (c • f) x :=
+theorem AnalyticAt.const_smul (hf : AnalyticAt 𝕜 f x) : AnalyticAt 𝕜 (c • f) x :=
   let ⟨_, hpf⟩ := hf
-  hpf.smul_const.analyticAt
+  hpf.const_smul.analyticAt
 
 theorem AnalyticOn.add (hf : AnalyticOn 𝕜 f s) (hg : AnalyticOn 𝕜 g s) :
     AnalyticOn 𝕜 (f + g) s :=
@@ -447,8 +447,7 @@ variable {ι : Type*} [Fintype ι] {e : E} {Fm : ι → Type*}
 lemma FormalMultilinearSeries.radius_pi_le (p : Π i, FormalMultilinearSeries 𝕜 E (Fm i)) (i : ι) :
     (FormalMultilinearSeries.pi p).radius ≤ (p i).radius := by
   apply le_of_forall_nnreal_lt (fun r' hr' ↦ ?_)
-  obtain ⟨C, -, hC⟩ :  ∃ C > 0, ∀ (n : ℕ),
-    ‖pi p n‖ * ↑r' ^ n ≤ C := norm_mul_pow_le_of_lt_radius _ hr'
+  obtain ⟨C, -, hC⟩ : ∃ C > 0, ∀ n, ‖pi p n‖ * ↑r' ^ n ≤ C := norm_mul_pow_le_of_lt_radius _ hr'
   apply le_radius_of_bound _ C (fun n ↦ ?_)
   apply le_trans _ (hC n)
   gcongr
@@ -492,10 +491,12 @@ lemma HasFPowerSeriesWithinOnBall.pi
   hasSum {_} m hy := Pi.hasSum.2 (fun i ↦ (hf i).hasSum m hy)
 
 lemma hasFPowerSeriesWithinOnBall_pi_iff (hr : 0 < r) :
-    HasFPowerSeriesWithinOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e r
-      ↔ ∀ i, HasFPowerSeriesWithinOnBall (f i) (p i) s e r :=
-  ⟨fun h i ↦ ⟨h.r_le.trans (FormalMultilinearSeries.radius_pi_le _ _), hr,
-    fun m hy ↦ Pi.hasSum.1 (h.hasSum m hy) i⟩, fun h ↦ .pi h hr⟩
+    HasFPowerSeriesWithinOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e r ↔
+      ∀ i, HasFPowerSeriesWithinOnBall (f i) (p i) s e r where
+  mp h i :=
+    ⟨h.r_le.trans (FormalMultilinearSeries.radius_pi_le _ _), hr,
+      fun m hy ↦ Pi.hasSum.1 (h.hasSum m hy) i⟩
+  mpr h := .pi h hr
 
 lemma HasFPowerSeriesOnBall.pi
     (hf : ∀ i, HasFPowerSeriesOnBall (f i) (p i) e r) (hr : 0 < r) :
@@ -504,8 +505,8 @@ lemma HasFPowerSeriesOnBall.pi
   exact HasFPowerSeriesWithinOnBall.pi hf hr
 
 lemma hasFPowerSeriesOnBall_pi_iff (hr : 0 < r) :
-    HasFPowerSeriesOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) e r
-      ↔ ∀ i, HasFPowerSeriesOnBall (f i) (p i) e r := by
+    HasFPowerSeriesOnBall (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) e r ↔
+      ∀ i, HasFPowerSeriesOnBall (f i) (p i) e r := by
   simp_rw [← hasFPowerSeriesWithinOnBall_univ]
   exact hasFPowerSeriesWithinOnBall_pi_iff hr
 
@@ -518,8 +519,8 @@ lemma HasFPowerSeriesWithinAt.pi
   exact ⟨r, HasFPowerSeriesWithinOnBall.pi hr r_pos⟩
 
 lemma hasFPowerSeriesWithinAt_pi_iff :
-    HasFPowerSeriesWithinAt (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e
-      ↔ ∀ i, HasFPowerSeriesWithinAt (f i) (p i) s e := by
+    HasFPowerSeriesWithinAt (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) s e ↔
+      ∀ i, HasFPowerSeriesWithinAt (f i) (p i) s e := by
   refine ⟨fun h i ↦ ?_, fun h ↦ .pi h⟩
   obtain ⟨r, hr⟩ := h
   exact ⟨r, (hasFPowerSeriesWithinOnBall_pi_iff hr.r_pos).1 hr i⟩
@@ -531,8 +532,8 @@ lemma HasFPowerSeriesAt.pi
   exact HasFPowerSeriesWithinAt.pi hf
 
 lemma hasFPowerSeriesAt_pi_iff :
-    HasFPowerSeriesAt (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) e
-      ↔ ∀ i, HasFPowerSeriesAt (f i) (p i) e := by
+    HasFPowerSeriesAt (fun x ↦ (f · x)) (FormalMultilinearSeries.pi p) e ↔
+      ∀ i, HasFPowerSeriesAt (f i) (p i) e := by
   simp_rw [← hasFPowerSeriesWithinAt_univ]
   exact hasFPowerSeriesWithinAt_pi_iff
 
@@ -747,8 +748,9 @@ def formalMultilinearSeries_geometric : FormalMultilinearSeries 𝕜 A A :=
 
 /-- The geometric series as an `ofScalars` series. -/
 theorem formalMultilinearSeries_geometric_eq_ofScalars :
-    formalMultilinearSeries_geometric 𝕜 A = FormalMultilinearSeries.ofScalars A fun _ ↦ (1 : 𝕜) :=
-  by simp_rw [FormalMultilinearSeries.ext_iff, FormalMultilinearSeries.ofScalars,
+    formalMultilinearSeries_geometric 𝕜 A =
+      FormalMultilinearSeries.ofScalars A fun _ ↦ (1 : 𝕜) := by
+  simp_rw [FormalMultilinearSeries.ext_iff, FormalMultilinearSeries.ofScalars,
     formalMultilinearSeries_geometric, one_smul, implies_true]
 
 lemma formalMultilinearSeries_geometric_apply_norm_le (n : ℕ) :
@@ -770,9 +772,9 @@ lemma one_le_formalMultilinearSeries_geometric_radius (𝕜 : Type*) [Nontrivial
 
 lemma formalMultilinearSeries_geometric_radius (𝕜 : Type*) [NontriviallyNormedField 𝕜]
     (A : Type*) [NormedRing A] [NormOneClass A] [NormedAlgebra 𝕜 A] :
-    (formalMultilinearSeries_geometric 𝕜 A).radius = 1 := by
-  exact (formalMultilinearSeries_geometric_eq_ofScalars 𝕜 A ▸
-    FormalMultilinearSeries.ofScalars_radius_eq_of_tendsto A _ one_ne_zero (by simp))
+    (formalMultilinearSeries_geometric 𝕜 A).radius = 1 :=
+  formalMultilinearSeries_geometric_eq_ofScalars 𝕜 A ▸
+    FormalMultilinearSeries.ofScalars_radius_eq_of_tendsto A _ one_ne_zero (by simp)
 
 lemma hasFPowerSeriesOnBall_inverse_one_sub
     (𝕜 : Type*) [NontriviallyNormedField 𝕜]
@@ -913,6 +915,7 @@ theorem AnalyticOnNhd.div {f g : E → 𝕝} {s : Set E}
 theorem Finset.analyticWithinAt_sum {f : α → E → F} {c : E} {s : Set E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (fun z ↦ ∑ n ∈ N, f n z) s c := by
+  classical
   induction' N using Finset.induction with a B aB hB
   · simp only [Finset.sum_empty]
     exact analyticWithinAt_const
@@ -946,6 +949,7 @@ theorem Finset.analyticOnNhd_sum {f : α → E → F} {s : Set E}
 theorem Finset.analyticWithinAt_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} {s : Set E} (N : Finset α) (h : ∀ n ∈ N, AnalyticWithinAt 𝕜 (f n) s c) :
     AnalyticWithinAt 𝕜 (fun z ↦ ∏ n ∈ N, f n z) s c := by
+  classical
   induction' N using Finset.induction with a B aB hB
   · simp only [Finset.prod_empty]
     exact analyticWithinAt_const

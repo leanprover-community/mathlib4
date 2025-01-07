@@ -716,4 +716,8 @@ lemma mem_slitPlane_of_norm_lt_one {z : ℂ} (hz : ‖z‖ < 1) : 1 + z ∈ slit
 
 end slitPlane
 
+lemma _root_.IsCompact.reProdIm {s t : Set ℝ} (hs : IsCompact s) (ht : IsCompact t) :
+    IsCompact (s ×ℂ t) :=
+  equivRealProdCLM.toHomeomorph.isCompact_preimage.2 (hs.prod ht)
+
 end Complex

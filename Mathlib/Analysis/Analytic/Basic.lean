@@ -327,38 +327,20 @@ theorem min_radius_le_radius_add (p q : FormalMultilinearSeries 𝕜 E F) :
 theorem radius_neg (p : FormalMultilinearSeries 𝕜 E F) : (-p).radius = p.radius := by
   simp only [radius, neg_apply, norm_neg]
 
-theorem radius_smul_ge {p : FormalMultilinearSeries 𝕜 E F} {c : 𝕜} : p.radius ≤ (c • p).radius := by
-  simp only [radius, smul_apply, ContinuousMultilinearMap.opNorm_smul_eq]
-  apply iSup_mono
-  intro r
-  apply iSup_mono'
-  intro C
-  use ‖c‖ * C
-  apply iSup_mono'
-  intro h
-  simp
+theorem radius_le_smul {p : FormalMultilinearSeries 𝕜 E F} {c : 𝕜} : p.radius ≤ (c • p).radius := by
+  simp only [radius, smul_apply]
+  refine iSup_mono fun r ↦ iSup_mono' fun C ↦ ⟨‖c‖ * C, iSup_mono' fun h ↦ ?_⟩
+  simp only [le_refl, exists_prop, and_true]
   intro n
-  rw [mul_assoc]
-  apply mul_le_mul_of_nonneg_left
-  · apply h
-  · simp
+  rw [norm_smul c (p n), mul_assoc]
+  gcongr
+  exact h n
 
 theorem radius_smul_eq (p : FormalMultilinearSeries 𝕜 E F) {c : 𝕜}
     (hc : c ≠ 0) : (c • p).radius = p.radius := by
-  apply eq_of_le_of_le _ radius_smul_ge
-  simp only [radius, smul_apply, ContinuousMultilinearMap.opNorm_smul_eq]
-  apply iSup_mono
-  intro r
-  apply iSup_mono'
-  intro C
-  use C / ‖c‖
-  apply iSup_mono'
-  intro h
-  simp
-  intro n
-  rw [le_div_iff₀ (norm_pos_iff.mpr hc)]
-  convert h n using 1
-  ring
+  apply eq_of_le_of_le _ radius_le_smul
+  conv => rhs; rw [show p = c⁻¹ • (c • p) by simp [smul_smul, inv_mul_cancel₀ hc]]
+  apply radius_le_smul
 
 @[simp]
 theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p.radius := by
@@ -385,14 +367,16 @@ theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p
     intro h
     simp only [le_refl, le_sup_iff, exists_prop, and_true]
     intro n
-    by_cases hr : r = 0
-    · rw [hr]
+    cases eq_zero_or_pos r with
+    | inl hr =>
+      rw [hr]
       cases n <;> simp
-    right
-    replace hr : 0 < (r : ℝ) := pos_iff_ne_zero.mpr hr
-    specialize h (n + 1)
-    rw [le_div_iff₀ hr]
-    rwa [pow_succ, ← mul_assoc] at h
+    | inr hr =>
+      right
+      rw [← NNReal.coe_pos] at hr
+      specialize h (n + 1)
+      rw [le_div_iff₀ hr]
+      rwa [pow_succ, ← mul_assoc] at h
 
 @[simp]
 theorem radius_unshift (p : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z : F) :
@@ -614,14 +598,12 @@ theorem HasFPowerSeriesOnBall.unique (hf : HasFPowerSeriesOnBall f p x r)
 protected theorem HasFPowerSeriesWithinAt.eventually (hf : HasFPowerSeriesWithinAt f p s x) :
     ∀ᶠ r : ℝ≥0∞ in 𝓝[>] 0, HasFPowerSeriesWithinOnBall f p s x r :=
   let ⟨_, hr⟩ := hf
-  mem_of_superset (Ioo_mem_nhdsWithin_Ioi (left_mem_Ico.2 hr.r_pos)) fun _ hr' =>
-    hr.of_le hr'.1 hr'.2.le
+  mem_of_superset (Ioo_mem_nhdsGT hr.r_pos) fun _ hr' => hr.of_le hr'.1 hr'.2.le
 
 protected theorem HasFPowerSeriesAt.eventually (hf : HasFPowerSeriesAt f p x) :
     ∀ᶠ r : ℝ≥0∞ in 𝓝[>] 0, HasFPowerSeriesOnBall f p x r :=
   let ⟨_, hr⟩ := hf
-  mem_of_superset (Ioo_mem_nhdsWithin_Ioi (left_mem_Ico.2 hr.r_pos)) fun _ hr' =>
-    hr.mono hr'.1 hr'.2.le
+  mem_of_superset (Ioo_mem_nhdsGT hr.r_pos) fun _ hr' => hr.mono hr'.1 hr'.2.le
 
 theorem HasFPowerSeriesOnBall.eventually_hasSum (hf : HasFPowerSeriesOnBall f p x r) :
     ∀ᶠ y in 𝓝 0, HasSum (fun n : ℕ => p n fun _ : Fin n => y) (f (x + y)) := by

@@ -79,8 +79,6 @@ def finZeroElim {α : Fin 0 → Sort*} (x : Fin 0) : α x :=
 
 namespace Fin
 
-@[deprecated (since := "2024-02-15")] alias eq_of_veq := eq_of_val_eq
-@[deprecated (since := "2024-02-15")] alias veq_of_eq := val_eq_of_eq
 @[deprecated (since := "2024-08-13")] alias ne_of_vne := ne_of_val_ne
 @[deprecated (since := "2024-08-13")] alias vne_of_ne := val_ne_of_ne
 
@@ -150,10 +148,6 @@ section coe
 
 theorem val_eq_val (a b : Fin n) : (a : ℕ) = b ↔ a = b :=
   Fin.ext_iff.symm
-
-@[deprecated Fin.ext_iff (since := "2024-02-20")]
-theorem eq_iff_veq (a b : Fin n) : a = b ↔ a.1 = b.1 :=
-  Fin.ext_iff
 
 theorem ne_iff_vne (a b : Fin n) : a ≠ b ↔ a.1 ≠ b.1 :=
   Fin.ext_iff.not
@@ -269,7 +263,7 @@ This one instead uses a `NeZero n` typeclass hypothesis.
 theorem pos_iff_ne_zero' [NeZero n] (a : Fin n) : 0 < a ↔ a ≠ 0 := by
   rw [← val_fin_lt, val_zero', Nat.pos_iff_ne_zero, Ne, Ne, Fin.ext_iff, val_zero']
 
-@[simp] lemma cast_eq_self (a : Fin n) : cast rfl a = a := rfl
+@[simp] lemma cast_eq_self (a : Fin n) : a.cast rfl = a := rfl
 
 @[simp] theorem cast_eq_zero {k l : ℕ} [NeZero k] [NeZero l]
     (h : k = l) (x : Fin k) : Fin.cast h x = 0 ↔ x = 0 := by simp [← val_eq_val]
@@ -299,7 +293,7 @@ theorem revPerm_symm : (@revPerm n).symm = revPerm :=
   rfl
 
 theorem cast_rev (i : Fin n) (h : n = m) :
-    cast h i.rev = (i.cast h).rev := by
+    i.rev.cast h = (i.cast h).rev := by
   subst h; simp
 
 theorem rev_eq_iff {i j : Fin n} : rev i = j ↔ i = rev j := by
@@ -619,23 +613,23 @@ theorem coe_of_injective_castLE_symm {n k : ℕ} (h : n ≤ k) (i : Fin k) (hi) 
   rw [← coe_castLE h]
   exact congr_arg Fin.val (Equiv.apply_ofInjective_symm _ _)
 
-theorem leftInverse_cast (eq : n = m) : LeftInverse (cast eq.symm) (cast eq) :=
+theorem leftInverse_cast (eq : n = m) : LeftInverse (Fin.cast eq.symm) (Fin.cast eq) :=
   fun _ => rfl
 
-theorem rightInverse_cast (eq : n = m) : RightInverse (cast eq.symm) (cast eq) :=
+theorem rightInverse_cast (eq : n = m) : RightInverse (Fin.cast eq.symm) (Fin.cast eq) :=
   fun _ => rfl
 
-theorem cast_lt_cast (eq : n = m) {a b : Fin n} : cast eq a < cast eq b ↔ a < b :=
+theorem cast_lt_cast (eq : n = m) {a b : Fin n} : a.cast eq < b.cast eq ↔ a < b :=
   Iff.rfl
 
-theorem cast_le_cast (eq : n = m) {a b : Fin n} : cast eq a ≤ cast eq b ↔ a ≤ b :=
+theorem cast_le_cast (eq : n = m) {a b : Fin n} : a.cast eq ≤ b.cast eq ↔ a ≤ b :=
   Iff.rfl
 
 /-- The 'identity' equivalence between `Fin m` and `Fin n` when `m = n`. -/
 @[simps]
 def _root_.finCongr (eq : n = m) : Fin n ≃ Fin m where
-  toFun := cast eq
-  invFun := cast eq.symm
+  toFun := Fin.cast eq
+  invFun := Fin.cast eq.symm
   left_inv := leftInverse_cast eq
   right_inv := rightInverse_cast eq
 
@@ -656,12 +650,12 @@ a generic theorem about `cast`. -/
 lemma _root_.finCongr_eq_equivCast (h : n = m) : finCongr h = .cast (h ▸ rfl) := by subst h; simp
 
 @[simp]
-theorem cast_zero {n' : ℕ} [NeZero n] {h : n = n'} : cast h (0 : Fin n) =
+theorem cast_zero {n' : ℕ} [NeZero n] {h : n = n'} : (0 : Fin n).cast h =
     by { haveI : NeZero n' := by {rw [← h]; infer_instance}; exact 0} := rfl
 
 /-- While in many cases `Fin.cast` is better than `Equiv.cast`/`cast`, sometimes we want to apply
 a generic theorem about `cast`. -/
-theorem cast_eq_cast (h : n = m) : (cast h : Fin n → Fin m) = _root_.cast (h ▸ rfl) := by
+theorem cast_eq_cast (h : n = m) : (Fin.cast h : Fin n → Fin m) = _root_.cast (h ▸ rfl) := by
   subst h
   ext
   rfl
@@ -1513,9 +1507,8 @@ theorem coe_natCast_eq_mod (m n : ℕ) [NeZero m] :
     ((n : Fin m) : ℕ) = n % m :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 theorem coe_ofNat_eq_mod (m n : ℕ) [NeZero m] :
-    ((no_index (OfNat.ofNat n) : Fin m) : ℕ) = OfNat.ofNat n % m :=
+    ((ofNat(n) : Fin m) : ℕ) = ofNat(n) % m :=
   rfl
 
 section Mul
