@@ -24,7 +24,7 @@ If `f` is not a.e. measurable, then we define `map f μ` to be zero.
 
 -/
 
-variable {α β γ δ : Type*}
+variable {α β γ : Type*}
 
 open Set Function ENNReal NNReal
 open Filter hiding map
