@@ -8,7 +8,7 @@ import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.LinearAlgebra.Basis.Basic
 
 /-!
-# Basis from a splitting exact sequence
+# Basis from a split exact sequence
 
 Let `0 → K → M → P → 0` be an exact sequence of `R`-modules, let `s : M → K` be a
 retraction of `f` and `v` be a basis of `M` indexed by `κ ⊕ σ`. Then
