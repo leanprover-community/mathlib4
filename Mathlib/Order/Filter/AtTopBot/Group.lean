@@ -102,18 +102,18 @@ end OrderedGroup
 
 section LinearOrderedAddCommGroup
 
-variable [LinearOrderedAddCommGroup α]
+variable [AddCommGroup α] [LinearOrder α]
 
 /-- $\lim_{x\to+\infty}|x|=+\infty$ -/
 theorem tendsto_abs_atTop_atTop : Tendsto (abs : α → α) atTop atTop :=
   tendsto_atTop_mono le_abs_self tendsto_id
 
 /-- $\lim_{x\to-\infty}|x|=+\infty$ -/
-theorem tendsto_abs_atBot_atTop : Tendsto (abs : α → α) atBot atTop :=
+theorem tendsto_abs_atBot_atTop [IsOrderedAddMonoid α] : Tendsto (abs : α → α) atBot atTop :=
   tendsto_atTop_mono neg_le_abs tendsto_neg_atBot_atTop
 
 @[simp]
-theorem comap_abs_atTop : comap (abs : α → α) atTop = atBot ⊔ atTop := by
+theorem comap_abs_atTop [IsOrderedAddMonoid α] : comap (abs : α → α) atTop = atBot ⊔ atTop := by
   refine
     le_antisymm (((atTop_basis.comap _).le_basis_iff (atBot_basis.sup atTop_basis)).2 ?_)
       (sup_le tendsto_abs_atBot_atTop.le_comap tendsto_abs_atTop_atTop.le_comap)
