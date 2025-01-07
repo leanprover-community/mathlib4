@@ -127,7 +127,7 @@ attribute [instance] commShift leftAdjoint_isTriangulated rightAdjoint_isTriangu
 
 /-- Constructor for `Adjunction.IsTriangulated`.
 -/
-lemma mk' : adj.IsTriangulated where
+lemma mk' [F.IsTriangulated] : adj.IsTriangulated where
   rightAdjoint_isTriangulated := adj.isTriangulated_rightAdjoint
 
 /-- The identity adjunction is triangulated.
