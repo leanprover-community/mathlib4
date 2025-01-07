@@ -258,6 +258,7 @@ end NatTrans
 The adjunction `adj`, seen as an adjunction between `PullbackShift.functor F φ`
 and `PullbackShift.functor G φ`.
 -/
+@[simps (config := .lemmasOnly)]
 def PullbackShift.adjunction {F} {G : D ⥤ C} (adj : F ⊣ G) :
     PullbackShift.functor φ F ⊣ PullbackShift.functor φ G where
   unit := (NatTrans.PullbackShift.natIsoId C φ).hom ≫
