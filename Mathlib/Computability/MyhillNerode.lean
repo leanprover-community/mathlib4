@@ -22,7 +22,7 @@ there are finitely many such states.
 -/
 
 universe u v
-variable {α : Type u} {σ : Type v} (L : Language α)
+variable {α : Type u} {σ : Type v} {L : Language α}
 
 namespace Language
 
@@ -39,17 +39,16 @@ theorem leftQuotient_append (x y : List α) :
 @[simp]
 theorem mem_leftQuotient (x y : List α) : y ∈ L.leftQuotient x ↔ x ++ y ∈ L := Iff.rfl
 
-theorem leftQuotient_accepts (M : DFA α σ) (x : List α) :
+theorem leftQuotient_accepts_apply (M : DFA α σ) (x : List α) :
     leftQuotient M.accepts x = M.acceptsFrom (M.eval x) := by
   ext y
   simp [DFA.mem_accepts, DFA.mem_acceptsFrom, DFA.eval, DFA.evalFrom_of_append]
 
-/-- Like `leftQuotient_accepts`, but as an equality on functions. -/
-theorem leftQuotient_accepts' (M : DFA α σ) : leftQuotient M.accepts = M.acceptsFrom ∘ M.eval :=
+theorem leftQuotient_accepts (M : DFA α σ) : leftQuotient M.accepts = M.acceptsFrom ∘ M.eval :=
   funext <| leftQuotient_accepts M
 
-theorem finite_leftQuotient_of_isRegular (h : L.IsRegular) :
-    Set.Finite (Set.range L.leftQuotient) := by
+theorem IsRegular.finite_range_leftQuotient (h : L.IsRegular) :
+    (Set.range L.leftQuotient).Finite := by
   have ⟨σ, x, M, hM⟩ := h
   rw [← hM, leftQuotient_accepts']
   exact Set.finite_of_finite_preimage (Set.toFinite _)
@@ -66,17 +65,17 @@ def toDFA : DFA α (Set.range L.leftQuotient) where
   accept := { s | [] ∈ s.val }
 
 @[simp]
-theorem mem_toDFA_accept (s : Set.range L.leftQuotient) : s ∈ L.toDFA.accept ↔ [] ∈ s.val := Iff.rfl
+theorem mem_accept_toDFA (s : Set.range L.leftQuotient) : s ∈ L.toDFA.accept ↔ [] ∈ s.val := Iff.rfl
 
 @[simp]
-theorem toDFA_step (s : Set.range L.leftQuotient) (a : α) :
+theorem step_toDFA (s : Set.range L.leftQuotient) (a : α) :
     (L.toDFA.step s a).val = s.val.leftQuotient [a] := rfl
 
 @[simp]
-theorem toDFA_start : L.toDFA.start.val = L := rfl
+theorem start_toDFA : L.toDFA.start.val = L := rfl
 
 @[simp]
-theorem toDFA_accepts : L.toDFA.accepts = L := by
+theorem accepts_toDFA : L.toDFA.accepts = L := by
   ext x
   rw [DFA.mem_accepts]
   suffices L.toDFA.eval x = L.leftQuotient x by simp [this]
@@ -84,7 +83,7 @@ theorem toDFA_accepts : L.toDFA.accepts = L := by
   | base => simp
   | ind x a ih => simp [ih, leftQuotient_append]
 
-theorem isRegular_of_finite_leftQuotient (h : Set.Finite (Set.range L.leftQuotient)) :
+theorem IsRegular.of_finite_range_leftQuotient (h : Set.Finite (Set.range L.leftQuotient)) :
     L.IsRegular :=
   have ⟨n, ⟨f⟩⟩ := h.exists_equiv_fin
   ⟨Fin n, Fin.fintype n, DFA.reindex f L.toDFA, by simp⟩
@@ -92,7 +91,8 @@ theorem isRegular_of_finite_leftQuotient (h : Set.Finite (Set.range L.leftQuotie
 /--
 **Myhill–Nerode theorem**. A language is regular if and only if the set of left quotients is finite.
 -/
-theorem isRegular_iff_finite_leftQuotient : L.IsRegular ↔ Set.Finite (Set.range L.leftQuotient) :=
-  ⟨finite_leftQuotient_of_isRegular L, isRegular_of_finite_leftQuotient L⟩
+theorem isRegular_iff_finite_range_leftQuotient :
+    L.IsRegular ↔ Set.Finite (Set.range L.leftQuotient) :=
+  ⟨IsRegular.finite_range_leftQuotient, .of_finite_leftQuotient⟩
 
 end Language
