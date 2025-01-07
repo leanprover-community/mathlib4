@@ -445,11 +445,6 @@ def quotientKerAlgEquivOfRightInverse {f : A →ₐ[R₁] B} {g : B → A}
   { RingHom.quotientKerEquivOfRightInverse hf,
     kerLiftAlg f with }
 
-@[deprecated (since := "2024-02-27")]
-alias quotientKerAlgEquivOfRightInverse.apply := quotientKerAlgEquivOfRightInverse_apply
-@[deprecated (since := "2024-02-27")]
-alias QuotientKerAlgEquivOfRightInverseSymm.apply := quotientKerAlgEquivOfRightInverse_symm_apply
-
 /-- The **first isomorphism theorem** for algebras. -/
 @[simps!]
 noncomputable def quotientKerAlgEquivOfSurjective {f : A →ₐ[R₁] B} (hf : Function.Surjective f) :
