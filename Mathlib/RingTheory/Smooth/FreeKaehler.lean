@@ -5,6 +5,7 @@ Authors: Christian Merten
 -/
 import Mathlib.RingTheory.Smooth.Kaehler
 import Mathlib.RingTheory.Smooth.StandardSmooth
+import Mathlib.RingTheory.Smooth.StandardSmoothCotangent
 
 /-!
 # Standard smooth algebras
@@ -493,7 +494,7 @@ lemma _root_.Algebra.Extension.Cotangent.mk_eq_mk_iff_sub_mem {R S : Type*}
     (x y : P.ker) :
     Algebra.Extension.Cotangent.mk x = Algebra.Extension.Cotangent.mk y ↔
       x.val - y.val ∈ P.ker ^ 2 := by
-  sorry
+  simp [Extension.Cotangent.ext_iff, Ideal.toCotangent_eq]
 
 lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
     (P : Generators.{t₁} R S) [Finite P.vars] {σ : Type t₂} (b : Basis σ S P.toExtension.Cotangent)
@@ -591,9 +592,9 @@ lemma exists_presentation_of_free [Algebra.FinitePresentation R S]
       (by simpa [← hJ_eq_ker])
   let equiv1 : S ⊗[T] Q₁.toExtension.Cotangent ≃ₗ[S] P.toExtension.Cotangent := sorry
   let bQ₁ : Basis σ S (S ⊗[T] Q₁.toExtension.Cotangent) := b.map equiv1.symm
-  let Q₂ : Presentation.{0} T S := Presentation.localizationAway S gbar
-  let bQ₂ : Basis Unit S Q₂.toExtension.Cotangent := sorry
-  let P' : Presentation R S := Q₂.comp Q₁
+  let Q₂ : SubmersivePresentation.{0} T S := SubmersivePresentation.localizationAway S gbar
+  let bQ₂ : Basis Unit S Q₂.toExtension.Cotangent := Q₂.basisCotangent
+  let P' : Presentation R S := Q₂.toPresentation.comp Q₁
   let b' := Basis.prod bQ₂ bQ₁
   let equiv2 :
       (Q₂.toExtension.Cotangent × S ⊗[T] Q₁.toExtension.Cotangent) ≃ₗ[S] P'.toExtension.Cotangent :=

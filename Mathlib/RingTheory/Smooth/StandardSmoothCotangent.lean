@@ -142,12 +142,13 @@ noncomputable def basisCotangent : Basis P.rels S P.toExtension.Cotangent :=
     ext i j
     simp only [Function.comp_apply, P.cotangentComplexAux_apply]
   have hli : LinearIndependent S
-      (fun i ↦ Cotangent.mk ⟨P.relation i, P.relation_mem_ker i⟩) := by
+      (fun i ↦ Cotangent.mk (P := P.toExtension) ⟨P.relation i, P.relation_mem_ker i⟩) := by
     apply LinearIndependent.of_comp P.cotangentComplexAux
     rw [h]
     apply P.linearIndependent_aeval_val_pderiv_relation
   have hsp : ⊤ ≤ Submodule.span S
-      (Set.range fun i ↦ Cotangent.mk ⟨P.relation i, P.relation_mem_ker i⟩) := by
+      (Set.range fun i ↦
+        Cotangent.mk (P := P.toExtension) ⟨P.relation i, P.relation_mem_ker i⟩) := by
     rw [← _root_.eq_top_iff]
     apply Submodule.map_injective_of_injective P.cotangentComplexAux_injective
     rw [Submodule.map_top, LinearMap.range_eq_top_of_surjective _ P.cotangentComplexAux_surjective]
