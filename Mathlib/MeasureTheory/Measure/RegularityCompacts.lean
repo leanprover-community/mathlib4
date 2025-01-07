@@ -60,7 +60,7 @@ lemma innerRegularWRT_isCompact_isClosed_iff [TopologicalSpace α] [R1Space α] 
 
 /--
 If predicate `p` is preserved under intersections with sets satisfying predicate `q`, and sets
-satisfying `p` exploit the space arbitrarily well, then `μ` is inner regular with respect to
+satisfying `p` cover the space arbitrarily well, then `μ` is inner regular with respect to
 predicates `p` and `q`.
 -/
 theorem innerRegularWRT_of_exists_compl_lt {p q : Set α → Prop} (hpq : ∀ A B, p A → q B → p (A ∩ B))
@@ -167,7 +167,7 @@ A finite measure `μ` on a `PseudoEMetricSpace E` and `CompleteSpace E` with
 `SecondCountableTopology E` is inner regular. In other words, a finite measure
 on such a space is a tight measure.
 -/
-theorem InnerRegular_of_pseudoEMetricSpace_completeSpace_secondCountable [PseudoEMetricSpace α]
+instance InnerRegular_of_pseudoEMetricSpace_completeSpace_secondCountable [PseudoEMetricSpace α]
     [CompleteSpace α] [SecondCountableTopology α] [BorelSpace α]
     (P : Measure α) [IsFiniteMeasure P] :
     P.InnerRegular := by
@@ -177,10 +177,20 @@ theorem InnerRegular_of_pseudoEMetricSpace_completeSpace_secondCountable [Pseudo
   · exact fun s t hs_compact ht_open ↦ hs_compact.inter_right ht_open.isClosed_compl
 
 /--
-A measure `μ` on a `PseudoEMetricSpace E` and `CompleteSpace E` with
-`SecondCountableTopology E` is inner regular for finite measure sets with respect to compact sets.
+A special case of `innerRegular_of_pseudoEMetricSpace_completeSpace_secondCountable` for Polish
+spaces: A finite measure on a Polish space is a tight measure.
 -/
-theorem InnerRegularCompactLTTop_of_pseudoEMetricSpace_completeSpace_secondCountable
+instance InnerRegular_of_polishSpace [TopologicalSpace α]
+    [PolishSpace α] [BorelSpace α] (P : Measure α) [IsFiniteMeasure P] :
+    P.InnerRegular := by
+  letI := upgradePolishSpace α
+  exact InnerRegular_of_pseudoEMetricSpace_completeSpace_secondCountable P
+
+/--
+A measure `μ` on a `PseudoEMetricSpace E` and `CompleteSpace E` with `SecondCountableTopology E`
+is inner regular for finite measure sets with respect to compact sets.
+-/
+instance InnerRegularCompactLTTop_of_pseudoEMetricSpace_completeSpace_secondCountable
     [PseudoEMetricSpace α] [CompleteSpace α] [SecondCountableTopology α] [BorelSpace α]
     (μ : Measure α) :
     μ.InnerRegularCompactLTTop := by
@@ -197,6 +207,17 @@ theorem InnerRegularCompactLTTop_of_pseudoEMetricSpace_completeSpace_secondCount
       _ _ (μ.restrict A) _ IRC _ hA1 hA2' r hr'
   use K, hK1, hK2
   rwa [Measure.restrict_eq_self μ hK1] at hK3
+
+/--
+A special case of `innerRegularCompactLTTop_of_pseudoEMetricSpace_completeSpace_secondCountable`
+for Polish spaces: A measure `μ` on a Polish space inner regular for finite measure sets with
+respect to compact sets.
+-/
+instance InnerRegularCompactLTTop_of_polishSpace
+    [TopologicalSpace α] [PolishSpace α] [BorelSpace α] (μ : Measure α) :
+    μ.InnerRegularCompactLTTop := by
+  letI := upgradePolishSpace α
+  exact InnerRegularCompactLTTop_of_pseudoEMetricSpace_completeSpace_secondCountable μ
 
 theorem innerRegular_isCompact_isClosed_measurableSet_of_finite [PseudoEMetricSpace α]
     [CompleteSpace α] [SecondCountableTopology α] [BorelSpace α]
@@ -219,9 +240,9 @@ On a Polish space, any finite measure is regular with respect to compact and clo
 particular, a finite measure on a Polish space is a tight measure.
 -/
 theorem PolishSpace.innerRegular_isCompact_isClosed_measurableSet [TopologicalSpace α]
-    [PolishSpace α] [BorelSpace α] (μ : Measure α) [IsFiniteMeasure μ] :
-    μ.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) MeasurableSet := by
+    [PolishSpace α] [BorelSpace α] (P : Measure α) [IsFiniteMeasure P] :
+    P.InnerRegularWRT (fun s ↦ IsCompact s ∧ IsClosed s) MeasurableSet := by
   letI := upgradePolishSpace α
-  exact innerRegular_isCompact_isClosed_measurableSet_of_finite μ
+  exact innerRegular_isCompact_isClosed_measurableSet_of_finite P
 
 end MeasureTheory
