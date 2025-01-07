@@ -55,13 +55,15 @@ variable (T) in
 In an additive monoid with multiplication `R`, `AddSubmonoid.sumSq R` is the submonoid of sums of
 squares in `R`.
 -/
+@[simps]
 def sumSq [AddMonoid T] : AddSubmonoid T where
   carrier   := {s : T | IsSumSq s}
   zero_mem' := .zero
   add_mem'  := .add
 
+attribute [norm_cast] coe_sumSq
+
 @[simp] theorem mem_sumSq : s ∈ sumSq T ↔ IsSumSq s := Iff.rfl
-@[simp, norm_cast] theorem coe_sumSq : sumSq T = {s : T | IsSumSq s} := rfl
 
 end AddSubmonoid
 
