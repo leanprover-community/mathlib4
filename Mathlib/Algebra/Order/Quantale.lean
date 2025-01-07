@@ -165,15 +165,13 @@ theorem sup_mul_distrib : (x ⊔ y) * z = (x * z) ⊔ (y * z) := by
 instance : MulLeftMono α where
   elim := by
     intro _ _ _; simp only; intro
-    rw [← left_eq_sup, ← mul_sup_distrib, sup_of_le_left]
-    trivial
+    rwa [← left_eq_sup, ← mul_sup_distrib, sup_of_le_left]
 
 @[to_additive]
 instance : MulRightMono α where
   elim := by
     intro _ _ _; simp only; intro
-    rw [← left_eq_sup, ← sup_mul_distrib, sup_of_le_left]
-    trivial
+    rwa [← left_eq_sup, ← sup_mul_distrib, sup_of_le_left]
 
 @[to_additive]
 theorem leftMulResiduation_le_iff_mul_le : x ≤ y ⇨ₗ z ↔ x * y ≤ z where
@@ -191,4 +189,21 @@ theorem rightMulResiduation_le_iff_mul_le : x ≤ y ⇨ᵣ z ↔ y * x ≤ z whe
       iSup_le_iff, implies_true]
   mpr h1 := le_sSup h1
 
-end Quantale
+section Zero
+
+variable {α : Type*} [Semigroup α] [CompleteLattice α] [IsQuantale α]
+variable {x : α}
+
+@[to_additive (attr := simp)]
+theorem bot_mul : ⊥ * x = ⊥ := by
+  rw [← sSup_empty, sSup_mul_distrib]
+  simp only [Set.mem_empty_iff_false, not_false_eq_true, iSup_neg, iSup_bot, sSup_empty]
+
+@[to_additive (attr := simp)]
+theorem mul_bot : x * ⊥ = ⊥ := by
+  rw [← sSup_empty, mul_sSup_distrib]
+  simp only [Set.mem_empty_iff_false, not_false_eq_true, iSup_neg, iSup_bot, sSup_empty]
+
+end Zero
+
+end IsQuantale

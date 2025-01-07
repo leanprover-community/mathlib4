@@ -28,6 +28,8 @@ We use parameters `a` and `b` instead of `1` to accommodate for two use cases:
   including orientation-reversing maps.
 -/
 
+assert_not_exists Finset
+
 open Function Set
 
 /-- A bundled map `f : G → H` such that `f (x + a) = f x + b` for all `x`.
@@ -85,7 +87,7 @@ theorem map_add_one [AddMonoidWithOne G] [Add H] [AddConstMapClass F G H 1 b]
 @[scoped simp]
 theorem map_add_ofNat' [AddMonoidWithOne G] [AddMonoid H] [AddConstMapClass F G H 1 b]
     (f : F) (x : G) (n : ℕ) [n.AtLeastTwo] :
-    f (x + no_index (OfNat.ofNat n)) = f x + (OfNat.ofNat n : ℕ) • b :=
+    f (x + ofNat(n)) = f x + (OfNat.ofNat n : ℕ) • b :=
   map_add_nat' f x n
 
 theorem map_add_nat [AddMonoidWithOne G] [AddMonoidWithOne H] [AddConstMapClass F G H 1 1]
@@ -179,7 +181,7 @@ theorem map_sub_nat' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 
 @[scoped simp]
 theorem map_sub_ofNat' [AddGroupWithOne G] [AddGroup H] [AddConstMapClass F G H 1 b]
     (f : F) (x : G) (n : ℕ) [n.AtLeastTwo] :
-    f (x - no_index (OfNat.ofNat n)) = f x - OfNat.ofNat n • b :=
+    f (x - ofNat(n)) = f x - OfNat.ofNat n • b :=
   map_sub_nat' f x n
 
 @[scoped simp]
@@ -431,7 +433,7 @@ variable {G : Type*} [AddMonoid G] {a : G}
 as a monoid homomorphism from `Multiplicative G` to `G →+c[a, a] G`. -/
 @[simps! (config := .asFn)]
 def addLeftHom : Multiplicative G →* (G →+c[a, a] G) where
-  toFun c := Multiplicative.toAdd c +ᵥ .id
+  toFun c := c.toAdd +ᵥ .id
   map_one' := by ext; apply zero_add
   map_mul' _ _ := by ext; apply add_assoc
 

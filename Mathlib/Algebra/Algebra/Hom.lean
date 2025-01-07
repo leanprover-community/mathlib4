@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.BigOperators.Finsupp
 
 /-!
 # Homomorphisms of `R`-algebras
@@ -227,11 +226,6 @@ protected theorem map_sum {ι : Type*} (f : ι → A) (s : Finset ι) :
     φ (∑ x ∈ s, f x) = ∑ x ∈ s, φ (f x) :=
   map_sum _ _ _
 
-@[deprecated map_finsupp_sum (since := "2024-06-26")]
-protected theorem map_finsupp_sum {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A) :
-    φ (f.sum g) = f.sum fun i a => φ (g i a) :=
-  map_finsupp_sum _ _ _
-
 /-- If a `RingHom` is `R`-linear, then it is an `AlgHom`. -/
 def mk' (f : A →+* B) (h : ∀ (c : R) (x), f (c • x) = c • f x) : A →ₐ[R] B :=
   { f with
@@ -368,27 +362,6 @@ theorem algebraMap_eq_apply (f : A →ₐ[R] B) {y : R} {x : A} (h : algebraMap 
   h ▸ (f.commutes _).symm
 
 end Semiring
-
-section CommSemiring
-
-variable [CommSemiring R] [CommSemiring A] [CommSemiring B]
-variable [Algebra R A] [Algebra R B] (φ : A →ₐ[R] B)
-
-@[deprecated map_multiset_prod (since := "2024-06-26")]
-protected theorem map_multiset_prod (s : Multiset A) : φ s.prod = (s.map φ).prod :=
-  map_multiset_prod _ _
-
-@[deprecated map_prod (since := "2024-06-26")]
-protected theorem map_prod {ι : Type*} (f : ι → A) (s : Finset ι) :
-    φ (∏ x ∈ s, f x) = ∏ x ∈ s, φ (f x) :=
-  map_prod _ _ _
-
-@[deprecated map_finsupp_prod (since := "2024-06-26")]
-protected theorem map_finsupp_prod {α : Type*} [Zero α] {ι : Type*} (f : ι →₀ α) (g : ι → α → A) :
-    φ (f.prod g) = f.prod fun i a => φ (g i a) :=
-  map_finsupp_prod _ _ _
-
-end CommSemiring
 
 section Ring
 

@@ -108,7 +108,7 @@ theorem toMatrix_vecMul_coords (x : P) : b₂.coords x ᵥ* b.toMatrix b₂ = b.
   change _ = b.coord j x
   conv_rhs => rw [← b₂.affineCombination_coord_eq_self x]
   rw [Finset.map_affineCombination _ _ _ (b₂.sum_coord_apply_eq_one x)]
-  simp [Matrix.vecMul, Matrix.dotProduct, toMatrix_apply, coords]
+  simp [Matrix.vecMul, dotProduct, toMatrix_apply, coords]
 
 variable [DecidableEq ι]
 

@@ -369,7 +369,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
     (Multiplicative G →ₙ* A) ≃ (k[G] →ₙₐ[k] A) :=
   { (MonoidAlgebra.liftMagma k : (Multiplicative G →ₙ* A) ≃ (_ →ₙₐ[k] A)) with
     toFun := fun f =>
-      { (MonoidAlgebra.liftMagma k f : _) with
+      { (MonoidAlgebra.liftMagma k f :) with
         toFun := fun a => sum a fun m t => t • f (Multiplicative.ofAdd m) }
     invFun := fun F => F.toMulHom.comp (ofMagma k G) }
 
@@ -463,7 +463,7 @@ theorem lift_def (F : Multiplicative G →* A) :
 
 @[simp]
 theorem lift_symm_apply (F : k[G] →ₐ[k] A) (x : Multiplicative G) :
-    (lift k G A).symm F x = F (single (Multiplicative.toAdd x) 1) :=
+    (lift k G A).symm F x = F (single x.toAdd 1) :=
   rfl
 
 theorem lift_of (F : Multiplicative G →* A) (x : Multiplicative G) :

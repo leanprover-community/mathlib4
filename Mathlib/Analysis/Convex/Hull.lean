@@ -194,7 +194,7 @@ theorem affineSpan_convexHull (s : Set E) : affineSpan 𝕜 (convexHull 𝕜 s) 
   exact convexHull_subset_affineSpan s
 
 theorem convexHull_neg (s : Set E) : convexHull 𝕜 (-s) = -convexHull 𝕜 s := by
-  simp_rw [← image_neg]
+  simp_rw [← image_neg_eq_neg]
   exact AffineMap.image_convexHull (-1) _ |>.symm
 
 lemma convexHull_vadd (x : E) (s : Set E) : convexHull 𝕜 (x +ᵥ s) = x +ᵥ convexHull 𝕜 s :=

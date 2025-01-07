@@ -467,7 +467,8 @@ theorem ContMDiffWithinAt.mdifferentiableWithinAt (hf : ContMDiffWithinAt I I' n
     apply hf.1.preimage_mem_nhdsWithin
     exact extChartAt_source_mem_nhds (f x)
   rw [mdifferentiableWithinAt_iff]
-  exact ⟨hf.1.mono inter_subset_left, (hf.2.differentiableWithinAt hn).mono (by mfld_set_tac)⟩
+  exact ⟨hf.1.mono inter_subset_left, (hf.2.differentiableWithinAt (mod_cast hn)).mono
+    (by mfld_set_tac)⟩
 
 theorem ContMDiffAt.mdifferentiableAt (hf : ContMDiffAt I I' n f x) (hn : 1 ≤ n) :
     MDifferentiableAt I I' f x :=
@@ -477,27 +478,30 @@ theorem ContMDiff.mdifferentiableAt (hf : ContMDiff I I' n f) (hn : 1 ≤ n) :
     MDifferentiableAt I I' f x :=
   hf.contMDiffAt.mdifferentiableAt hn
 
+theorem ContMDiff.mdifferentiableWithinAt (hf : ContMDiff I I' n f) (hn : 1 ≤ n) :
+    MDifferentiableWithinAt I I' f s x :=
+  (hf.contMDiffAt.mdifferentiableAt hn).mdifferentiableWithinAt
+
 theorem ContMDiffOn.mdifferentiableOn (hf : ContMDiffOn I I' n f s) (hn : 1 ≤ n) :
     MDifferentiableOn I I' f s := fun x hx => (hf x hx).mdifferentiableWithinAt hn
 
-nonrec theorem SmoothWithinAt.mdifferentiableWithinAt (hf : SmoothWithinAt I I' f s x) :
-    MDifferentiableWithinAt I I' f s x :=
-  hf.mdifferentiableWithinAt le_top
+@[deprecated (since := "2024-11-20")]
+alias SmoothWithinAt.mdifferentiableWithinAt := ContMDiffWithinAt.mdifferentiableWithinAt
 
 theorem ContMDiff.mdifferentiable (hf : ContMDiff I I' n f) (hn : 1 ≤ n) : MDifferentiable I I' f :=
   fun x => (hf x).mdifferentiableAt hn
 
-nonrec theorem SmoothAt.mdifferentiableAt (hf : SmoothAt I I' f x) : MDifferentiableAt I I' f x :=
-  hf.mdifferentiableAt le_top
+@[deprecated (since := "2024-11-20")]
+alias SmoothAt.mdifferentiableAt := ContMDiffAt.mdifferentiableAt
 
-nonrec theorem SmoothOn.mdifferentiableOn (hf : SmoothOn I I' f s) : MDifferentiableOn I I' f s :=
-  hf.mdifferentiableOn le_top
+@[deprecated (since := "2024-11-20")]
+alias SmoothOn.mdifferentiableOn := ContMDiffOn.mdifferentiableOn
 
-theorem Smooth.mdifferentiable (hf : Smooth I I' f) : MDifferentiable I I' f :=
-  ContMDiff.mdifferentiable hf le_top
+@[deprecated (since := "2024-11-20")]
+alias Smooth.mdifferentiable := ContMDiff.mdifferentiable
 
-theorem Smooth.mdifferentiableAt (hf : Smooth I I' f) : MDifferentiableAt I I' f x :=
-  hf.mdifferentiable x
+@[deprecated (since := "2024-11-20")]
+alias Smooth.mdifferentiableAt := ContMDiff.mdifferentiableAt
 
 theorem MDifferentiableOn.continuousOn (h : MDifferentiableOn I I' f s) : ContinuousOn f s :=
   fun x hx => (h x hx).continuousWithinAt
@@ -505,8 +509,8 @@ theorem MDifferentiableOn.continuousOn (h : MDifferentiableOn I I' f s) : Contin
 theorem MDifferentiable.continuous (h : MDifferentiable I I' f) : Continuous f :=
   continuous_iff_continuousAt.2 fun x => (h x).continuousAt
 
-theorem Smooth.mdifferentiableWithinAt (hf : Smooth I I' f) : MDifferentiableWithinAt I I' f s x :=
-  hf.mdifferentiableAt.mdifferentiableWithinAt
+@[deprecated (since := "2024-11-20")]
+alias Smooth.mdifferentiableWithinAt := ContMDiff.mdifferentiableWithinAt
 
 /-! ### Deriving continuity from differentiability on manifolds -/
 
@@ -671,7 +675,7 @@ theorem mdifferentiableWithinAt_congr_nhds {t : Set M} (hst : 𝓝[s] x = 𝓝[t
 
 protected theorem MDifferentiableWithinAt.mfderivWithin (h : MDifferentiableWithinAt I I' f s x) :
     mfderivWithin I I' f s x =
-      fderivWithin 𝕜 (writtenInExtChartAt I I' x f : _) ((extChartAt I x).symm ⁻¹' s ∩ range I)
+      fderivWithin 𝕜 (writtenInExtChartAt I I' x f :) ((extChartAt I x).symm ⁻¹' s ∩ range I)
         ((extChartAt I x) x) := by
   simp only [mfderivWithin, h, if_pos]
 
@@ -683,16 +687,23 @@ theorem MDifferentiableAt.hasMFDerivAt (h : MDifferentiableAt I I' f x) :
 
 protected theorem MDifferentiableAt.mfderiv (h : MDifferentiableAt I I' f x) :
     mfderiv I I' f x =
-      fderivWithin 𝕜 (writtenInExtChartAt I I' x f : _) (range I) ((extChartAt I x) x) := by
+      fderivWithin 𝕜 (writtenInExtChartAt I I' x f :) (range I) ((extChartAt I x) x) := by
   simp only [mfderiv, h, if_pos]
 
 protected theorem HasMFDerivAt.mfderiv (h : HasMFDerivAt I I' f x f') : mfderiv I I' f x = f' :=
   (hasMFDerivAt_unique h h.mdifferentiableAt.hasMFDerivAt).symm
 
-theorem HasMFDerivWithinAt.mfderivWithin (h : HasMFDerivWithinAt I I' f s x f')
+protected theorem HasMFDerivWithinAt.mfderivWithin (h : HasMFDerivWithinAt I I' f s x f')
     (hxs : UniqueMDiffWithinAt I s x) : mfderivWithin I I' f s x = f' := by
   ext
   rw [hxs.eq h h.mdifferentiableWithinAt.hasMFDerivWithinAt]
+
+theorem HasMFDerivWithinAt.mfderivWithin_eq_zero (h : HasMFDerivWithinAt I I' f s x 0) :
+    mfderivWithin I I' f s x = 0 := by
+  simp only [mfld_simps, mfderivWithin, h.mdifferentiableWithinAt, ↓reduceIte]
+  simp only [HasMFDerivWithinAt, mfld_simps] at h
+  rw [fderivWithin, if_pos]
+  exact h.2
 
 theorem MDifferentiable.mfderivWithin (h : MDifferentiableAt I I' f x)
     (hxs : UniqueMDiffWithinAt I s x) : mfderivWithin I I' f s x = mfderiv I I' f x := by
@@ -921,7 +932,7 @@ theorem HasMFDerivWithinAt.congr_mono (h : HasMFDerivWithinAt I I' f s x f')
 theorem HasMFDerivAt.congr_of_eventuallyEq (h : HasMFDerivAt I I' f x f') (h₁ : f₁ =ᶠ[𝓝 x] f) :
     HasMFDerivAt I I' f₁ x f' := by
   rw [← hasMFDerivWithinAt_univ] at h ⊢
-  apply h.congr_of_eventuallyEq _ (mem_of_mem_nhds h₁ : _)
+  apply h.congr_of_eventuallyEq _ (mem_of_mem_nhds h₁ :)
   rwa [nhdsWithin_univ]
 
 theorem MDifferentiableWithinAt.congr_of_eventuallyEq (h : MDifferentiableWithinAt I I' f s x)
@@ -1002,7 +1013,7 @@ theorem tangentMapWithin_congr (h : ∀ x ∈ s, f x = f₁ x) (p : TangentBundl
 
 theorem Filter.EventuallyEq.mfderiv_eq (hL : f₁ =ᶠ[𝓝 x] f) :
     mfderiv I I' f₁ x = mfderiv I I' f x := by
-  have A : f₁ x = f x := (mem_of_mem_nhds hL : _)
+  have A : f₁ x = f x := (mem_of_mem_nhds hL :)
   rw [← mfderivWithin_univ, ← mfderivWithin_univ]
   rw [← nhdsWithin_univ] at hL
   exact hL.mfderivWithin_eq (uniqueMDiffWithinAt_univ I) A

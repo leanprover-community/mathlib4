@@ -67,7 +67,7 @@ variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
 /-- The torsion ideal of `x`, containing all `a` such that `a • x = 0`. -/
 @[simps!]
 def torsionOf (x : M) : Ideal R :=
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation on LinearMap.ker https://github.com/leanprover/lean4/issues/1910
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation on LinearMap.ker https://github.com/leanprover/lean4/issues/1629
   LinearMap.ker (LinearMap.toSpanSingleton R M x)
 
 @[simp]
@@ -96,13 +96,13 @@ theorem torsionOf_eq_bot_iff_of_noZeroSMulDivisors [Nontrivial R] [NoZeroSMulDiv
   · rw [mem_torsionOf_iff, smul_eq_zero] at hr
     tauto
 
-/-- See also `CompleteLattice.Independent.linearIndependent` which provides the same conclusion
+/-- See also `iSupIndep.linearIndependent` which provides the same conclusion
 but requires the stronger hypothesis `NoZeroSMulDivisors R M`. -/
-theorem CompleteLattice.Independent.linear_independent' {ι R M : Type*} {v : ι → M} [Ring R]
-    [AddCommGroup M] [Module R M] (hv : CompleteLattice.Independent fun i => R ∙ v i)
+theorem iSupIndep.linearIndependent' {ι R M : Type*} {v : ι → M} [Ring R]
+    [AddCommGroup M] [Module R M] (hv : iSupIndep fun i => R ∙ v i)
     (h_ne_zero : ∀ i, Ideal.torsionOf R M (v i) = ⊥) : LinearIndependent R v := by
   refine linearIndependent_iff_not_smul_mem_span.mpr fun i r hi => ?_
-  replace hv := CompleteLattice.independent_def.mp hv i
+  replace hv := iSupIndep_def.mp hv i
   simp only [iSup_subtype', ← Submodule.span_range_eq_iSup (ι := Subtype _), disjoint_iff] at hv
   have : r • v i ∈ (⊥ : Submodule R M) := by
     rw [← hv, Submodule.mem_inf]
@@ -112,6 +112,9 @@ theorem CompleteLattice.Independent.linear_independent' {ι R M : Type*} {v : ι
     simp
   rw [← Submodule.mem_bot R, ← h_ne_zero i]
   simpa using this
+
+@[deprecated (since := "2024-11-24")]
+alias CompleteLattice.Independent.linear_independent' := iSupIndep.linearIndependent'
 
 end TorsionOf
 
@@ -148,7 +151,7 @@ namespace Submodule
   `a • x = 0`. -/
 @[simps!]
 def torsionBy (a : R) : Submodule R M :=
-  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation on LinearMap.ker https://github.com/leanprover/lean4/issues/1910
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11036): broken dot notation on LinearMap.ker https://github.com/leanprover/lean4/issues/1629
   LinearMap.ker (DistribMulAction.toLinearMap R M a)
 
 /-- The submodule containing all elements `x` of `M` such that `a • x = 0` for all `a` in `s`. -/
@@ -443,8 +446,8 @@ theorem torsionBySet_isInternal {p : ι → Ideal R}
     (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤)
     (hM : Module.IsTorsionBySet R M (⨅ i ∈ S, p i : Ideal R)) :
     DirectSum.IsInternal fun i : S => torsionBySet R M <| p i :=
-  DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
-    (CompleteLattice.independent_iff_supIndep.mpr <| supIndep_torsionBySet_ideal hp)
+  DirectSum.isInternal_submodule_of_iSupIndep_of_iSup_eq_top
+    (iSupIndep_iff_supIndep.mpr <| supIndep_torsionBySet_ideal hp)
     (by
       apply (iSup_subtype'' ↑S fun i => torsionBySet R M <| p i).trans
       -- Porting note: times out if we change apply below to <|
@@ -498,7 +501,7 @@ instance IsTorsionBySet.isScalarTower (hM : IsTorsionBySet R M I)
     @IsScalarTower S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _ :=
   -- Porting note: still needed to be fed the Module R / I M instance
   @IsScalarTower.mk S (R ⧸ I) M _ (IsTorsionBySet.module hM).toSMul _
-    (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x : _))
+    (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x :))
 
 /-- An `(R ⧸ Ideal.span {r})`-module is an `R`-module for which `IsTorsionBy R M r`. -/
 abbrev IsTorsionBy.module (hM : IsTorsionBy R M r) : Module (R ⧸ Ideal.span {r}) M :=
@@ -688,7 +691,7 @@ variable {R M}
 
 theorem _root_.Submodule.annihilator_top_inter_nonZeroDivisors [Module.Finite R M]
     (hM : Module.IsTorsion R M) : ((⊤ : Submodule R M).annihilator : Set R) ∩ R⁰ ≠ ∅ := by
-  obtain ⟨S, hS⟩ := ‹Module.Finite R M›.out
+  obtain ⟨S, hS⟩ := ‹Module.Finite R M›.fg_top
   refine Set.Nonempty.ne_empty ⟨_, ?_, (∏ x ∈ S, (@hM x).choose : R⁰).prop⟩
   rw [Submonoid.coe_finset_prod, SetLike.mem_coe, ← hS, mem_annihilator_span]
   intro n

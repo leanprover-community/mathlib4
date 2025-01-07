@@ -21,7 +21,7 @@ When `k` is also a field, this `b` can be chosen to be a unit of `𝕎 k`.
 
 * `WittVector.exists_eq_pow_p_mul`: the existence of this element `b` over a perfect ring
 * `WittVector.exists_eq_pow_p_mul'`: the existence of this unit `b` over a perfect field
-* `WittVector.discreteValuationRing`: `𝕎 k` is a discrete valuation ring if `k` is a perfect field
+* `WittVector.isDiscreteValuationRing`: `𝕎 k` is a discrete valuation ring if `k` is a perfect field
 
 -/
 
@@ -147,8 +147,8 @@ https://github.com/leanprover/lean4/issues/1102
 -/
 /-- The ring of Witt Vectors of a perfect field of positive characteristic is a DVR.
 -/
-theorem discreteValuationRing : DiscreteValuationRing (𝕎 k) :=
-  DiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization (by
+theorem isDiscreteValuationRing : IsDiscreteValuationRing (𝕎 k) :=
+  IsDiscreteValuationRing.ofHasUnitMulPowIrreducibleFactorization (by
     refine ⟨p, irreducible p, fun {x} hx => ?_⟩
     obtain ⟨n, b, hb⟩ := exists_eq_pow_p_mul' x hx
     exact ⟨n, b, hb.symm⟩)

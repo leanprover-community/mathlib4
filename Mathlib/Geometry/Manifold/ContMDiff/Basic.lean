@@ -62,19 +62,20 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
     filter_upwards [hf.1.tendsto (extChartAt_source_mem_nhds (I := I') (f x)),
       inter_mem_nhdsWithin s (extChartAt_source_mem_nhds (I := I) x)]
     rintro x' (hfx' : f x' ∈ e'.source) ⟨hx's, hx'⟩
-    simp only [e.map_source hx', true_and, e.left_inv hx', st hx's, *]
+    simp only [e, e.map_source hx', true_and, e.left_inv hx', st hx's, *]
   refine ((hg.2.comp _ (hf.2.mono inter_subset_right)
       ((mapsTo_preimage _ _).mono_left inter_subset_left)).mono_of_mem_nhdsWithin
       (inter_mem ?_ self_mem_nhdsWithin)).congr_of_eventuallyEq ?_ ?_
   · filter_upwards [A]
     rintro x' ⟨ht, hfx'⟩
-    simp only [*, mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,
+    simp only [*, e, e',mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,
       true_and]
     exact mem_range_self _
   · filter_upwards [A]
     rintro x' ⟨-, hfx'⟩
-    simp only [*, (· ∘ ·), writtenInExtChartAt, e'.left_inv]
-  · simp only [e, e', writtenInExtChartAt, (· ∘ ·), mem_extChartAt_source, e.left_inv, e'.left_inv]
+    simp only [*, e, e', (· ∘ ·), writtenInExtChartAt, e'.left_inv]
+  · simp only [e, e', writtenInExtChartAt, (· ∘ ·), mem_extChartAt_source,
+      e.left_inv, e'.left_inv]
 
 /-- See note [comp_of_eq lemmas] -/
 theorem ContMDiffWithinAt.comp_of_eq {t : Set M'} {g : M' → M''} {x : M} {y : M'}
@@ -82,31 +83,21 @@ theorem ContMDiffWithinAt.comp_of_eq {t : Set M'} {g : M' → M''} {x : M} {y : 
     (st : MapsTo f s t) (hx : f x = y) : ContMDiffWithinAt I I'' n (g ∘ f) s x := by
   subst hx; exact hg.comp x hf st
 
-/-- The composition of `C^∞` functions within domains at points is `C^∞`. -/
-nonrec theorem SmoothWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
-    (hg : SmoothWithinAt I' I'' g t (f x)) (hf : SmoothWithinAt I I' f s x) (st : MapsTo f s t) :
-    SmoothWithinAt I I'' (g ∘ f) s x :=
-  hg.comp x hf st
+@[deprecated (since := "2024-11-20")] alias SmoothWithinAt.comp := ContMDiffWithinAt.comp
 
 /-- The composition of `C^n` functions on domains is `C^n`. -/
 theorem ContMDiffOn.comp {t : Set M'} {g : M' → M''} (hg : ContMDiffOn I' I'' n g t)
     (hf : ContMDiffOn I I' n f s) (st : s ⊆ f ⁻¹' t) : ContMDiffOn I I'' n (g ∘ f) s := fun x hx =>
   (hg _ (st hx)).comp x (hf x hx) st
 
-/-- The composition of `C^∞` functions on domains is `C^∞`. -/
-nonrec theorem SmoothOn.comp {t : Set M'} {g : M' → M''} (hg : SmoothOn I' I'' g t)
-    (hf : SmoothOn I I' f s) (st : s ⊆ f ⁻¹' t) : SmoothOn I I'' (g ∘ f) s :=
-  hg.comp hf st
+@[deprecated (since := "2024-11-20")] alias SmoothOn.comp := ContMDiffOn.comp
 
 /-- The composition of `C^n` functions on domains is `C^n`. -/
 theorem ContMDiffOn.comp' {t : Set M'} {g : M' → M''} (hg : ContMDiffOn I' I'' n g t)
     (hf : ContMDiffOn I I' n f s) : ContMDiffOn I I'' n (g ∘ f) (s ∩ f ⁻¹' t) :=
   hg.comp (hf.mono inter_subset_left) inter_subset_right
 
-/-- The composition of `C^∞` functions is `C^∞`. -/
-nonrec theorem SmoothOn.comp' {t : Set M'} {g : M' → M''} (hg : SmoothOn I' I'' g t)
-    (hf : SmoothOn I I' f s) : SmoothOn I I'' (g ∘ f) (s ∩ f ⁻¹' t) :=
-  hg.comp' hf
+@[deprecated (since := "2024-11-20")] alias SmoothOn.comp' := ContMDiffOn.comp'
 
 /-- The composition of `C^n` functions is `C^n`. -/
 theorem ContMDiff.comp {g : M' → M''} (hg : ContMDiff I' I'' n g) (hf : ContMDiff I I' n f) :
@@ -114,10 +105,7 @@ theorem ContMDiff.comp {g : M' → M''} (hg : ContMDiff I' I'' n g) (hf : ContMD
   rw [← contMDiffOn_univ] at hf hg ⊢
   exact hg.comp hf subset_preimage_univ
 
-/-- The composition of `C^∞` functions is `C^∞`. -/
-nonrec theorem Smooth.comp {g : M' → M''} (hg : Smooth I' I'' g) (hf : Smooth I I' f) :
-    Smooth I I'' (g ∘ f) :=
-  hg.comp hf
+@[deprecated (since := "2024-11-20")] alias Smooth.comp := ContMDiff.comp
 
 /-- The composition of `C^n` functions within domains at points is `C^n`. -/
 theorem ContMDiffWithinAt.comp' {t : Set M'} {g : M' → M''} (x : M)
@@ -125,11 +113,7 @@ theorem ContMDiffWithinAt.comp' {t : Set M'} {g : M' → M''} (x : M)
     ContMDiffWithinAt I I'' n (g ∘ f) (s ∩ f ⁻¹' t) x :=
   hg.comp x (hf.mono inter_subset_left) inter_subset_right
 
-/-- The composition of `C^∞` functions within domains at points is `C^∞`. -/
-nonrec theorem SmoothWithinAt.comp' {t : Set M'} {g : M' → M''} (x : M)
-    (hg : SmoothWithinAt I' I'' g t (f x)) (hf : SmoothWithinAt I I' f s x) :
-    SmoothWithinAt I I'' (g ∘ f) (s ∩ f ⁻¹' t) x :=
-  hg.comp' x hf
+@[deprecated (since := "2024-11-20")] alias SmoothWithinAt.comp' := ContMDiffWithinAt.comp'
 
 /-- `g ∘ f` is `C^n` within `s` at `x` if `g` is `C^n` at `f x` and
 `f` is `C^n` within `s` at `x`. -/
@@ -138,11 +122,8 @@ theorem ContMDiffAt.comp_contMDiffWithinAt {g : M' → M''} (x : M)
     ContMDiffWithinAt I I'' n (g ∘ f) s x :=
   hg.comp x hf (mapsTo_univ _ _)
 
-/-- `g ∘ f` is `C^∞` within `s` at `x` if `g` is `C^∞` at `f x` and
-`f` is `C^∞` within `s` at `x`. -/
-theorem SmoothAt.comp_smoothWithinAt {g : M' → M''} (x : M) (hg : SmoothAt I' I'' g (f x))
-    (hf : SmoothWithinAt I I' f s x) : SmoothWithinAt I I'' (g ∘ f) s x :=
-  hg.comp_contMDiffWithinAt x hf
+@[deprecated (since := "2024-11-20")]
+alias SmoothAt.comp_smoothWithinAt := ContMDiffAt.comp_contMDiffWithinAt
 
 /-- The composition of `C^n` functions at points is `C^n`. -/
 nonrec theorem ContMDiffAt.comp {g : M' → M''} (x : M) (hg : ContMDiffAt I' I'' n g (f x))
@@ -154,26 +135,19 @@ theorem ContMDiffAt.comp_of_eq {g : M' → M''} {x : M} {y : M'} (hg : ContMDiff
     (hf : ContMDiffAt I I' n f x) (hx : f x = y) : ContMDiffAt I I'' n (g ∘ f) x := by
   subst hx; exact hg.comp x hf
 
-/-- The composition of `C^∞` functions at points is `C^∞`. -/
-nonrec theorem SmoothAt.comp {g : M' → M''} (x : M) (hg : SmoothAt I' I'' g (f x))
-    (hf : SmoothAt I I' f x) : SmoothAt I I'' (g ∘ f) x :=
-  hg.comp x hf
+@[deprecated (since := "2024-11-20")] alias SmoothAt.comp := ContMDiffAt.comp
 
 theorem ContMDiff.comp_contMDiffOn {f : M → M'} {g : M' → M''} {s : Set M}
     (hg : ContMDiff I' I'' n g) (hf : ContMDiffOn I I' n f s) : ContMDiffOn I I'' n (g ∘ f) s :=
   hg.contMDiffOn.comp hf Set.subset_preimage_univ
 
-theorem Smooth.comp_smoothOn {f : M → M'} {g : M' → M''} {s : Set M} (hg : Smooth I' I'' g)
-    (hf : SmoothOn I I' f s) : SmoothOn I I'' (g ∘ f) s :=
-  hg.smoothOn.comp hf Set.subset_preimage_univ
+@[deprecated (since := "2024-11-20")] alias Smooth.comp_smoothOn := ContMDiff.comp_contMDiffOn
 
 theorem ContMDiffOn.comp_contMDiff {t : Set M'} {g : M' → M''} (hg : ContMDiffOn I' I'' n g t)
     (hf : ContMDiff I I' n f) (ht : ∀ x, f x ∈ t) : ContMDiff I I'' n (g ∘ f) :=
   contMDiffOn_univ.mp <| hg.comp hf.contMDiffOn fun x _ => ht x
 
-theorem SmoothOn.comp_smooth {t : Set M'} {g : M' → M''} (hg : SmoothOn I' I'' g t)
-    (hf : Smooth I I' f) (ht : ∀ x, f x ∈ t) : Smooth I I'' (g ∘ f) :=
-  hg.comp_contMDiff hf ht
+@[deprecated (since := "2024-11-20")] alias SmoothOn.comp_smooth := ContMDiffOn.comp_contMDiff
 
 end Composition
 
@@ -183,28 +157,24 @@ section id
 
 theorem contMDiff_id : ContMDiff I I n (id : M → M) :=
   ContMDiff.of_le
-    ((contDiffWithinAt_localInvariantProp ∞).liftProp_id contDiffWithinAtProp_id) le_top
+    ((contDiffWithinAt_localInvariantProp ⊤).liftProp_id contDiffWithinAtProp_id) le_top
 
-theorem smooth_id : Smooth I I (id : M → M) :=
-  contMDiff_id
+@[deprecated (since := "2024-11-20")] alias smooth_id := contMDiff_id
 
 theorem contMDiffOn_id : ContMDiffOn I I n (id : M → M) s :=
   contMDiff_id.contMDiffOn
 
-theorem smoothOn_id : SmoothOn I I (id : M → M) s :=
-  contMDiffOn_id
+@[deprecated (since := "2024-11-20")] alias smoothOn_id := contMDiffOn_id
 
 theorem contMDiffAt_id : ContMDiffAt I I n (id : M → M) x :=
   contMDiff_id.contMDiffAt
 
-theorem smoothAt_id : SmoothAt I I (id : M → M) x :=
-  contMDiffAt_id
+@[deprecated (since := "2024-11-20")] alias smoothAt_id := contMDiffAt_id
 
 theorem contMDiffWithinAt_id : ContMDiffWithinAt I I n (id : M → M) s x :=
   contMDiffAt_id.contMDiffWithinAt
 
-theorem smoothWithinAt_id : SmoothWithinAt I I (id : M → M) s x :=
-  contMDiffWithinAt_id
+@[deprecated (since := "2024-11-20")] alias smoothWithinAt_id := contMDiffWithinAt_id
 
 end id
 
@@ -223,11 +193,10 @@ theorem contMDiff_const : ContMDiff I I' n fun _ : M => c := by
 theorem contMDiff_one [One M'] : ContMDiff I I' n (1 : M → M') := by
   simp only [Pi.one_def, contMDiff_const]
 
-theorem smooth_const : Smooth I I' fun _ : M => c :=
-  contMDiff_const
+@[deprecated (since := "2024-11-20")] alias smooth_const := contMDiff_const
 
-@[to_additive]
-theorem smooth_one [One M'] : Smooth I I' (1 : M → M') := by simp only [Pi.one_def, smooth_const]
+@[deprecated (since := "2024-11-20")] alias smooth_one := contMDiff_one
+@[deprecated (since := "2024-11-20")] alias smooth_zero := contMDiff_zero
 
 theorem contMDiffOn_const : ContMDiffOn I I' n (fun _ : M => c) s :=
   contMDiff_const.contMDiffOn
@@ -236,12 +205,11 @@ theorem contMDiffOn_const : ContMDiffOn I I' n (fun _ : M => c) s :=
 theorem contMDiffOn_one [One M'] : ContMDiffOn I I' n (1 : M → M') s :=
   contMDiff_one.contMDiffOn
 
-theorem smoothOn_const : SmoothOn I I' (fun _ : M => c) s :=
-  contMDiffOn_const
+@[deprecated (since := "2024-11-20")] alias smoothOn_const := contMDiffOn_const
 
-@[to_additive]
-theorem smoothOn_one [One M'] : SmoothOn I I' (1 : M → M') s :=
-  contMDiffOn_one
+@[deprecated (since := "2024-11-20")] alias smoothOn_one := contMDiffOn_one
+@[deprecated (since := "2024-11-20")] alias smoothOn_zero := contMDiffOn_zero
+
 
 theorem contMDiffAt_const : ContMDiffAt I I' n (fun _ : M => c) x :=
   contMDiff_const.contMDiffAt
@@ -250,12 +218,10 @@ theorem contMDiffAt_const : ContMDiffAt I I' n (fun _ : M => c) x :=
 theorem contMDiffAt_one [One M'] : ContMDiffAt I I' n (1 : M → M') x :=
   contMDiff_one.contMDiffAt
 
-theorem smoothAt_const : SmoothAt I I' (fun _ : M => c) x :=
-  contMDiffAt_const
+@[deprecated (since := "2024-11-20")] alias smoothAt_const := contMDiffAt_const
 
-@[to_additive]
-theorem smoothAt_one [One M'] : SmoothAt I I' (1 : M → M') x :=
-  contMDiffAt_one
+@[deprecated (since := "2024-11-20")] alias smoothAt_one := contMDiffAt_one
+@[deprecated (since := "2024-11-20")] alias smoothAt_zero := contMDiffAt_zero
 
 theorem contMDiffWithinAt_const : ContMDiffWithinAt I I' n (fun _ : M => c) s x :=
   contMDiffAt_const.contMDiffWithinAt
@@ -264,12 +230,10 @@ theorem contMDiffWithinAt_const : ContMDiffWithinAt I I' n (fun _ : M => c) s x 
 theorem contMDiffWithinAt_one [One M'] : ContMDiffWithinAt I I' n (1 : M → M') s x :=
   contMDiffAt_const.contMDiffWithinAt
 
-theorem smoothWithinAt_const : SmoothWithinAt I I' (fun _ : M => c) s x :=
-  contMDiffWithinAt_const
+@[deprecated (since := "2024-11-20")] alias smoothWithinAt_const := contMDiffWithinAt_const
 
-@[to_additive]
-theorem smoothWithinAt_one [One M'] : SmoothWithinAt I I' (1 : M → M') s x :=
-  contMDiffWithinAt_one
+@[deprecated (since := "2024-11-20")] alias smoothWithinAt_one := contMDiffWithinAt_one
+@[deprecated (since := "2024-11-20")] alias smoothWithinAt_zero := contMDiffWithinAt_zero
 
 end id
 
@@ -305,12 +269,14 @@ section Inclusion
 
 open TopologicalSpace
 
-theorem contMdiffAt_subtype_iff {n : ℕ∞} {U : Opens M} {f : M → M'} {x : U} :
+theorem contMDiffAt_subtype_iff {n : ℕ∞} {U : Opens M} {f : M → M'} {x : U} :
     ContMDiffAt I I' n (fun x : U ↦ f x) x ↔ ContMDiffAt I I' n f x :=
   ((contDiffWithinAt_localInvariantProp n).liftPropAt_iff_comp_subtype_val _ _).symm
 
+@[deprecated (since := "2024-11-20")] alias contMdiffAt_subtype_iff := contMDiffAt_subtype_iff
+
 theorem contMDiff_subtype_val {n : ℕ∞} {U : Opens M} : ContMDiff I I n (Subtype.val : U → M) :=
-  fun _ ↦ contMdiffAt_subtype_iff.mpr contMDiffAt_id
+  fun _ ↦ contMDiffAt_subtype_iff.mpr contMDiffAt_id
 
 @[to_additive]
 theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞} {U : Opens M} {f : U → M'}
@@ -319,7 +285,7 @@ theorem ContMDiff.extend_one [T2Space M] [One M'] {n : ℕ∞} {U : Opens M} {f 
   refine contMDiff_of_mulTSupport (fun x h ↦ ?_) _
   lift x to U using Subtype.coe_image_subset _ _
     (supp.mulTSupport_extend_one_subset continuous_subtype_val h)
-  rw [← contMdiffAt_subtype_iff]
+  rw [← contMDiffAt_subtype_iff]
   simp_rw [← comp_def]
   rw [extend_comp Subtype.val_injective]
   exact diff.contMDiffAt
@@ -333,19 +299,14 @@ theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
   rw [Set.univ_inter]
   exact contDiffWithinAt_id.congr I.rightInvOn (congr_arg I (I.left_inv y))
 
-theorem smooth_subtype_iff {U : Opens M} {f : M → M'} {x : U} :
-    SmoothAt I I' (fun x : U ↦ f x) x ↔ SmoothAt I I' f x := contMdiffAt_subtype_iff
+@[deprecated (since := "2024-11-20")] alias smooth_subtype_iff := contMDiffAt_subtype_iff
 
-theorem smooth_subtype_val {U : Opens M} : Smooth I I (Subtype.val : U → M) := contMDiff_subtype_val
+@[deprecated (since := "2024-11-20")] alias smooth_subtype_val := contMDiff_subtype_val
 
-@[to_additive]
-theorem Smooth.extend_one [T2Space M] [One M'] {U : Opens M} {f : U → M'}
-    (supp : HasCompactMulSupport f) (diff : Smooth I I' f) : Smooth I I' (Subtype.val.extend f 1) :=
-  ContMDiff.extend_one supp diff
+@[deprecated (since := "2024-11-20")] alias Smooth.extend_one := ContMDiff.extend_one
+@[deprecated (since := "2024-11-20")] alias Smooth.extend_zero := ContMDiff.extend_zero
 
-theorem smooth_inclusion {U V : Opens M} (h : U ≤ V) :
-    Smooth I I (Opens.inclusion h : U → V) :=
-  contMDiff_inclusion h
+@[deprecated (since := "2024-11-20")] alias smooth_inclusion := contMDiff_inclusion
 
 end Inclusion
 

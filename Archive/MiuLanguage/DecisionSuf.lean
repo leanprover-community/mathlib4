@@ -308,10 +308,8 @@ theorem ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : D
   rcases eq_append_cons_U_of_count_U_pos hu with ⟨as, bs, rfl⟩
   use as, bs
   refine ⟨rfl, ?_, ?_, ?_⟩
-  · -- Porting note: `simp_rw [count_append]` didn't work
-    rw [count_append] at hu
-    simp_rw [count_cons, beq_self_eq_true, if_true, add_succ, beq_iff_eq, reduceCtorEq, reduceIte,
-      add_zero, succ_inj'] at hu
+  · simp_rw [count_append, count_cons, beq_self_eq_true, if_true, add_succ, beq_iff_eq,
+      reduceCtorEq, reduceIte, add_zero, succ_inj'] at hu
     rwa [count_append, count_append]
   · apply And.intro rfl
     rw [cons_append, cons_append]
