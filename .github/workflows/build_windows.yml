@@ -45,6 +45,19 @@ jobs:
         shell: bash
         run: |
           echo skipped
+      - name: build the cache command
+        shell:bash
+        run: lake build cache
+      - name: grab a bit of cache
+        shell: bash
+        run: |
+          rm -rf .lake/build/lib/Mathlib/
+          lake exe cache get Mathlib.Init
+          # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
+          lake build --no-build Mathlib.Init && lake exe cache get || echo "No cache for 'Mathlib.Init' available"
+
       - name: grab the cache
         shell: bash
-        run: lake exe cache get
+        run: |
+          rm -rf .lake/build/lib/Mathlib/
+          lake exe cache get
