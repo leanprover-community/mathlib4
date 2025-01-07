@@ -326,6 +326,7 @@ end ThirdIsoThm
 
 section CorrespTheorem
 
+-- All these theorems are primed because `QuotientGroup.mk'` is.
 set_option linter.docPrime false
 
 @[to_additive]
@@ -335,8 +336,8 @@ theorem le_comap_mk' (N : Subgroup G) [N.Normal] (H : Subgroup (G ⧸ N)) :
 
 @[to_additive (attr := simp)]
 theorem comap_map_mk' (N H : Subgroup G) [N.Normal] :
-    Subgroup.comap (mk' N) (Subgroup.map (mk' N) H) = N ⊔ H :=
-  by simp [Subgroup.comap_map_eq, sup_comm]
+    Subgroup.comap (mk' N) (Subgroup.map (mk' N) H) = N ⊔ H := by
+  simp [Subgroup.comap_map_eq, sup_comm]
 
 /-- The **correspondence theorem**, or lattice theorem,
   or fourth isomorphism theorem for multiplicative groups-/
