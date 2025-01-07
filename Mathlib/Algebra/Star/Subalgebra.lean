@@ -75,11 +75,9 @@ instance starModule (s : StarSubalgebra R A) : StarModule R s where
   star_smul r a := Subtype.ext (star_smul r (a : A))
 
 /-- Turn a `StarSubalgebra` into a `NonUnitalStarSubalgebra` by forgetting that it contains `1`. -/
-def toNonUnitalStarSubalgebra (S : StarSubalgebra R A) :
-    NonUnitalStarSubalgebra R A :=
-  { S with
-    carrier := S.carrier
-    smul_mem' := fun r _x hx => S.smul_mem hx r }
+def toNonUnitalStarSubalgebra (S : StarSubalgebra R A) : NonUnitalStarSubalgebra R A where
+  __ := S
+  smul_mem' r _x hx := S.smul_mem hx r
 
 lemma one_mem_toNonUnitalStarSubalgebra (S : StarSubalgebra R A) :
     1 ∈ S.toNonUnitalStarSubalgebra := S.one_mem'
@@ -446,8 +444,8 @@ open Submodule in
 lemma adjoin_eq_span (s : Set A) :
     Subalgebra.toSubmodule (adjoin R s).toSubalgebra = span R (Submonoid.closure (s ∪ star s)) := by
   rw [adjoin_toSubalgebra, Algebra.adjoin_eq_span]
-open Submodule in
 
+open Submodule in
 lemma adjoin_nonUnitalStarSubalgebra_eq_span (s : NonUnitalStarSubalgebra R A) :
     (adjoin R (s : Set A)).toSubalgebra.toSubmodule = span R {1} ⊔ s.toSubmodule := by
   rw [adjoin_eq_span, Submonoid.closure_eq_one_union, span_union,

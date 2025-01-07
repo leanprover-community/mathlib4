@@ -369,3 +369,15 @@ theorem eqLocusS_same (f : R →+* S) : f.eqLocusS f = ⊤ :=
   SetLike.ext fun _ => eq_self_iff_true _
 
 end RingHom
+
+/-- Turn a non-unital subsemiring containing `1` into a subsemiring. -/
+def NonUnitalSubsemiring.toSubsemiring (S : NonUnitalSubsemiring R) (h1 : 1 ∈ S) :
+    Subsemiring R where
+  __ := S
+  one_mem' := h1
+
+lemma Subsemiring.toNonUnitalSubsemiring_toSubsemiring (S : Subsemiring R) :
+    S.toNonUnitalSubsemiring.toSubsemiring S.one_mem = S := rfl
+
+lemma NonUnitalSubsemiring.toSubsemiring_toNonUnitalSubsemiring (S : NonUnitalSubsemiring R) (h1) :
+    (NonUnitalSubsemiring.toSubsemiring S h1).toNonUnitalSubsemiring = S := rfl
