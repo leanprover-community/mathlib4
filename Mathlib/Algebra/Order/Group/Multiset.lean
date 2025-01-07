@@ -7,7 +7,7 @@ import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Nat.Basic
 import Mathlib.Algebra.Order.Monoid.Unbundled.ExistsOfLE
 import Mathlib.Algebra.Order.Sub.Defs
-import Mathlib.Data.Multiset.Basic
+import Mathlib.Data.Multiset.Dedup
 
 /-!
 # Multisets form an ordered monoid
@@ -148,6 +148,13 @@ def countPAddMonoidHom : Multiset α →+ ℕ where
 @[simp] lemma coe_countPAddMonoidHom : (countPAddMonoidHom p : Multiset α → ℕ) = countP p := rfl
 
 end
+
+@[simp] lemma dedup_nsmul [DecidableEq α] {s : Multiset α} {n : ℕ} (hn : n ≠ 0) :
+    (n • s).dedup = s.dedup := by ext a; by_cases h : a ∈ s <;> simp [h, hn]
+
+lemma Nodup.le_nsmul_iff_le {s t : Multiset α} {n : ℕ} (h : s.Nodup) (hn : n ≠ 0) :
+    s ≤ n • t ↔ s ≤ t := by
+  classical simp [← h.le_dedup_iff_le, Iff.comm, ← h.le_dedup_iff_le, hn]
 
 /-! ### Multiplicity of an element -/
 
