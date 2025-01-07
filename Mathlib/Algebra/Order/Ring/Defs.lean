@@ -136,6 +136,22 @@ class IsStrictOrderedRing (α : Type*) [Semiring α] [PartialOrder α] extends
 attribute [instance 100] IsStrictOrderedRing.toZeroLEOneClass
 attribute [instance 100] IsStrictOrderedRing.toNontrivial
 
+lemma IsOrderedRing.of_mul_nonneg [Ring α] [PartialOrder α] [IsOrderedAddMonoid α]
+    [ZeroLEOneClass α] (mul_nonneg : ∀ a b : α, 0 ≤ a → 0 ≤ b → 0 ≤ a * b) :
+    IsOrderedRing α where
+  mul_le_mul_of_nonneg_left a b c ab hc := by
+    simpa only [mul_sub, sub_nonneg] using mul_nonneg _ _ hc (sub_nonneg.2 ab)
+  mul_le_mul_of_nonneg_right a b c ab hc := by
+    simpa only [sub_mul, sub_nonneg] using mul_nonneg _ _ (sub_nonneg.2 ab) hc
+
+lemma IsStrictOrderedRing.of_mul_pos [Ring α] [PartialOrder α] [IsOrderedAddMonoid α]
+    [ZeroLEOneClass α] [Nontrivial α] (mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b) :
+    IsStrictOrderedRing α where
+  mul_lt_mul_of_pos_left a b c ab hc := by
+    simpa only [mul_sub, sub_pos] using mul_pos _ _ hc (sub_pos.2 ab)
+  mul_lt_mul_of_pos_right a b c ab hc := by
+    simpa only [sub_mul, sub_pos] using mul_pos _ _ (sub_pos.2 ab) hc
+
 section IsOrderedRing
 variable [Semiring α] [PartialOrder α] [IsOrderedRing α]
 
@@ -152,14 +168,6 @@ instance (priority := 200) IsOrderedRing.toMulPosMono : MulPosMono α :=
   ⟨fun x _ _ h => IsOrderedRing.mul_le_mul_of_nonneg_right _ _ _ h x.2⟩
 
 end IsOrderedRing
-
-lemma IsStrictOrderedRing.of_mul_pos [Ring α] [PartialOrder α] [IsOrderedAddMonoid α]
-    [ZeroLEOneClass α] [Nontrivial α] (mul_pos : ∀ a b : α, 0 < a → 0 < b → 0 < a * b) :
-    IsStrictOrderedRing α where
-  mul_lt_mul_of_pos_left a b c ab hc := by
-    simpa only [mul_sub, sub_pos] using mul_pos _ _ hc (sub_pos.2 ab)
-  mul_lt_mul_of_pos_right a b c ab hc := by
-    simpa only [sub_mul, sub_pos] using mul_pos _ _ (sub_pos.2 ab) hc
 
 /-- Turn an ordered domain into a strict ordered ring. -/
 lemma IsOrderedRing.toIsStrictOrderedRing (α : Type*)
