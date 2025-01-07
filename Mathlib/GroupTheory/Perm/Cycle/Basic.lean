@@ -5,7 +5,7 @@ Authors: Chris Hughes, Yaël Dillies
 -/
 
 import Mathlib.Algebra.Module.BigOperators
-import Mathlib.Data.Fintype.Perm
+import Mathlib.Data.List.Iterate
 import Mathlib.GroupTheory.Perm.Finite
 import Mathlib.GroupTheory.Perm.List
 

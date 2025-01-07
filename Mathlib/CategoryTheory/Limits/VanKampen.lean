@@ -108,7 +108,7 @@ noncomputable def IsUniversalColimit.isColimit {F : J ⥤ C} {c : Cocone F}
   refine ((h c (𝟙 F) (𝟙 c.pt : _) (by rw [Functor.map_id, Category.comp_id, Category.id_comp])
     (NatTrans.equifibered_of_isIso _)) fun j => ?_).some
   haveI : IsIso (𝟙 c.pt) := inferInstance
-  exact IsPullback.of_vert_isIso ⟨by erw [NatTrans.id_app, Category.comp_id, Category.id_comp]⟩
+  exact IsPullback.of_vert_isIso ⟨by simp⟩
 
 /-- A van Kampen colimit is a colimit. -/
 noncomputable def IsVanKampenColimit.isColimit {F : J ⥤ C} {c : Cocone F}
@@ -345,10 +345,7 @@ theorem IsUniversalColimit.map_reflective
   let cf : (Cocones.precompose β.hom).obj c' ⟶ Gl.mapCocone c'' := by
     refine { hom := pullback.lift ?_ f ?_ ≫ (PreservesPullback.iso _ _ _).inv, w := ?_ }
     · exact inv <| adj.counit.app c'.pt
-    · rw [IsIso.inv_comp_eq, ← adj.counit_naturality_assoc f, ← cancel_mono (adj.counit.app <|
-        Gl.obj c.pt), Category.assoc, Category.assoc, adj.left_triangle_components]
-      erw [Category.comp_id]
-      rfl
+    · simp [← cancel_mono (adj.counit.app <| Gl.obj c.pt)]
     · intro j
       rw [← Category.assoc, Iso.comp_inv_eq]
       ext

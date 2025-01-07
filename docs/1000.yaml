@@ -39,6 +39,9 @@ Q32182:
 
 Q33481:
   title: Arrow's impossibility theorem
+  author: Benjamin Davidson, Andrew Souther
+  date: 2021
+  url: https://github.com/asouther4/lean-social-choice/blob/master/src/arrows_theorem.lean
 
 Q98831:
   title: Multiplication theorem
@@ -54,9 +57,13 @@ Q132427:
 
 Q132469:
   title: Fermat's Last Theorem
+  # See https://imperialcollegelondon.github.io/FLT/
 
 Q137164:
   title: Besicovitch covering theorem
+  decl: Besicovitch.exists_disjoint_closedBall_covering_ae
+  author: Sébastien Gouëzel
+  date: 2021
 
 Q154210:
   title: CPCTC
@@ -72,6 +79,9 @@ Q174955:
 
 Q179208:
   title: Cayley's theorem
+  decl: Equiv.Perm.subgroupOfMulAction
+  author: Eric Wieser
+  date: 2021
 
 Q179467:
   title: Fourier theorem
@@ -88,12 +98,17 @@ Q180345:
 Q182505:
   title: Bayes' theorem
   decl: ProbabilityTheory.cond_eq_inv_mul_cond_mul
+  author: Rishikesh Vaishnav
+  date: 2022
 
 Q184410:
   title: Four color theorem
 
 Q188295:
   title: Fermat's little theorem
+  decl: ZMod.pow_card_sub_one_eq_one
+  author: Aaron Anderson
+  date: 2020
 
 Q188745:
   title: Classification of Platonic solids
@@ -104,6 +119,7 @@ Q189136:
   # XXX: other branch found exists_ratio_deriv_eq_ratio_slope,
   # is about Cauchy's vs Lagrange's Mean Value Theorem, TODO decide!
   author: Yury G. Kudryashov
+  date: 2019
 
 Q190026:
   title: Ford's theorem
@@ -119,16 +135,25 @@ Q190556:
   title: De Moivre's theorem
   decl: Complex.cos_add_sin_mul_I_pow
   author: Abhimanyu Pallavi Sudhir
+  date: 2019
 
 Q191693:
   title: Lebesgue's decomposition theorem
+  decl: MeasureTheory.Measure.haveLebesgueDecomposition_of_sigmaFinite
+  author: Kexing Ying
+  date: 2021
 
 Q192760:
   title: Fundamental theorem of algebra
+  decl: Complex.isAlgClosed
+  author: Chris Hughes
+  date: 2019
 
 Q193286:
   title: Rolle's theorem
   decl: exists_deriv_eq_zero
+  author: Yury G. Kudryashov
+  date: 2019
 
 Q193878:
   title: Chinese remainder theorem
@@ -159,6 +184,7 @@ Q203565:
   title: Solutions of a general cubic equation
   decl: Theorems100.cubic_eq_zero_iff
   author: Jeoff Lee
+  date: 2022
 
 Q204884:
   title: Löb's theorem
@@ -529,6 +555,9 @@ Q608294:
 
 Q609612:
   title: Knaster–Tarski theorem
+  decl: fixedPoints.completeLattice
+  author: Kenny Lau
+  date: 2018
 
 Q612021:
   title: Gibbard–Satterthwaite theorem
@@ -563,6 +592,7 @@ Q642620:
   title: Krein–Milman theorem
   decl: closure_convexHull_extremePoints
   author: Yaël Dillies
+  date: 2022
 
 Q643513:
   title: Riesz–Fischer theorem
@@ -655,15 +685,22 @@ Q716171:
   title: Erdős–Ginzburg–Ziv theorem
   decl: ZMod.erdos_ginzburg_ziv
   author: Yaël Dillies
+  date: 2023
 
 Q718875:
   title: Erdős–Ko–Rado theorem
+  decl: Finset.erdos_ko_rado
+  author: Bhavik Mehta, Yaël Dillies
+  date: 2020
 
 Q719966:
   title: Toda's theorem
 
 Q720469:
   title: Chevalley–Warning theorem
+  decl: char_dvd_card_solutions_of_sum_lt
+  author: Johan Commelin
+  date: 2019
 
 Q721695:
   title: Szemerédi–Trotter theorem
@@ -702,6 +739,9 @@ Q744440:
 
 Q748233:
   title: Sylvester–Gallai theorem
+  author: Bhavik Mehta
+  url: https://github.com/YaelDillies/LeanCamCombi/blob/6a6a670f324b2af82ae17f21f9d51ac0bc859f6f/LeanCamCombi/SylvesterChvatal.lean#L610
+  date: 2022
 
 Q751120:
   title: Thue–Siegel–Roth theorem
@@ -709,6 +749,8 @@ Q751120:
 Q752375:
   title: Extreme value theorem
   decl: IsCompact.exists_isMinOn
+  author: Sébastien Gouëzel
+  date: 2018
 
 Q755986:
   title: Atiyah–Bott fixed-point theorem
@@ -720,6 +762,7 @@ Q756946:
   title: Lagrange's four-square theorem
   decl: Nat.sum_four_squares
   author: Chris Hughes
+  date: 2019
 
 Q764287:
   title: Van der Waerden's theorem
@@ -777,6 +820,9 @@ Q830513:
 
 Q834025:
   title: Cauchy integral theorem
+  decl: Complex.circleIntegral_div_sub_of_differentiable_on_off_countable
+  author: Yury Kudryashov
+  date: 2021
 
 Q834211:
   title: Wallace–Bolyai–Gerwien theorem
@@ -793,6 +839,9 @@ Q841893:
 
 Q842953:
   title: Lebesgue's density theorem
+  decl: Besicovitch.ae_tendsto_measure_inter_div
+  author: Oliver Nash
+  date: 2022
 
 Q844612:
   title: Brun's theorem
@@ -967,8 +1016,10 @@ Q944297:
   # Banach open mapping theorem/Banach-Schauder theorem in functional analysis is in mathlib (ContinuousLinearMap.isOpenMap)
 
 Q948664:
-  title: Kneser's theorem
-  # TODO: is this in mathlib already?
+  title: Kneser's addition theorem
+  author: Mantas Bakšys, Yaël Dillies
+  url: https://github.com/YaelDillies/LeanCamCombi/blob/master/LeanCamCombi/Kneser/Kneser.lean
+  date: 2022
 
 Q951327:
   title: Pasch's theorem
@@ -1166,6 +1217,7 @@ Q1097021:
   title: Minkowski's theorem
   decl: MeasureTheory.exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure
   author: Alex J. Best and Yaël Dillies
+  date: 2021
 
 Q1103054:
   title: Lions–Lax–Milgram theorem
@@ -1364,6 +1416,9 @@ Q1242398:
 
 Q1243340:
   title: Birkhoff–Von Neumann theorem
+  decl: doublyStochastic_eq_convexHull_permMatrix
+  author: Bhavik Mehta
+  date: 2024
 
 Q1249069:
   title: Richardson's theorem
@@ -1471,6 +1526,8 @@ Q1425529:
 Q1426292:
   title: Banach–Steinhaus theorem
   decl: banach_steinhaus
+  author: Jireh Loreaux
+  date: 2021
 
 Q1434158:
   title: Fluctuation dissipation theorem
@@ -1551,6 +1608,8 @@ Q1568612:
 Q1568811:
   title: Hahn decomposition theorem
   decl: MeasureTheory.SignedMeasure.exists_isCompl_positive_negative
+  author: Kexing Ying
+  date: 2021
 
 Q1572474:
   title: Lindemann–Weierstrass theorem
@@ -1582,6 +1641,9 @@ Q1632301:
 
 Q1632433:
   title: Helly's theorem
+  author: Vasily Nesterov
+  decl: Convex.helly_theorem
+  date: 2023
 
 Q1637085:
   title: Poynting's theorem
@@ -1597,6 +1659,9 @@ Q1683356:
 
 Q1687147:
   title: Sprague–Grundy theorem
+  decl: SetTheory.PGame.equiv_nim_grundyValue
+  author: Fox Thomson
+  date: 2020
 
 Q1694565:
   title: Vinogradov's theorem
@@ -1733,6 +1798,9 @@ Q2022775:
 
 Q2027347:
   title: Optional stopping theorem
+  decl: MeasureTheory.submartingale_iff_expected_stoppedValue_mono
+  author: Kexing Ying, Rémy Degenne
+  date: 2022
 
 Q2028341:
   title: Ado's theorem
@@ -1825,10 +1893,15 @@ Q2226774:
 
 Q2226786:
   title: Sperner's theorem
+  decl: IsAntichain.sperner
+  author: Bhavik Mehta, Alena Gusakov, Yaël Dillies
+  date: 2022
 
 Q2226800:
   title: Schur–Zassenhaus theorem
   decl: Subgroup.exists_left_complement'_of_coprime
+  author: Thomas Browning
+  date: 2021
 
 Q2226803:
   title: Tennenbaum's theorem
@@ -1837,7 +1910,10 @@ Q2226807:
   title: Vantieghems theorem
 
 Q2226855:
-  title: Sarkovskii's theorem
+  title: Sharkovskii's theorem
+  # TODO: Find the code
+  author: Bhavik Mehta
+  date: 2022
 
 Q2226868:
   title: Geometric mean theorem
@@ -1864,6 +1940,9 @@ Q2270905:
 
 Q2275191:
   title: Lebesgue differentiation theorem
+  decl: VitaliFamily.ae_tendsto_lintegral_div
+  author: Sébastien Gouëzel
+  date: 2021
 
 Q2277040:
   title: Shannon's expansion theorem
@@ -1882,6 +1961,7 @@ Q2310718:
 
 Q2338929:
   title: Exchange theorem
+  # aka Steinitz exchange lemma. This must definitely be in mathlib somewhere
 
 Q2345282:
   title: Shannon's theorem
@@ -1933,6 +2013,7 @@ Q2478371:
 
 Q2482753:
   title: Mann's theorem
+  # Done in LeanCamCombi
 
 Q2495664:
   title: Universal coefficient theorem
@@ -1951,6 +2032,7 @@ Q2524990:
 
 Q2525646:
   title: Jordan–Hölder theorem
+  decl: CompositionSeries.jordan_holder
 
 Q2533936:
   title: Descartes's theorem on total angular defect
@@ -2011,6 +2093,9 @@ Q2916568:
 
 Q2919401:
   title: Ostrowski's theorem
+  decl: Rat.AbsoluteValue.equiv_real_or_padic
+  author: David Kurniadi Angdinata, Fabrizio Barroero, Laura Capuano, Nirvana Coppola, María Inés de Frutos-Fernández, Sam van Gool, Silvain Rideau-Kikuchi, Amos Turchet, Francesco Veneziano
+  date: 2024
 
 Q2981012:
   title: Monge's theorem
@@ -2056,6 +2141,9 @@ Q3229335:
 
 Q3229352:
   title: Vitali covering theorem
+  decl: Vitali.exists_disjoint_covering_ae
+  author: Sébastien Gouëzel
+  date: 2021
 
 Q3345678:
   title: Moore–Aronszajn theorem
@@ -2092,6 +2180,9 @@ Q3526993:
 
 Q3526996:
   title: Kolmogorov extension theorem
+  author: Rémy Degenne, Peter Pfaffelhuber
+  date: 2023
+  url: https://github.com/RemyDegenne/kolmogorov_extension4
 
 Q3526998:
   title: Excision theorem
@@ -2161,6 +2252,9 @@ Q3527100:
 
 Q3527102:
   title: Kruskal–Katona theorem
+  decl: Finset.kruskal_katona
+  author: Bhavik Mehta, Yaël Dillies
+  date: 2020
 
 Q3527110:
   title: Lax–Wendroff theorem
@@ -2212,6 +2306,9 @@ Q3527214:
 
 Q3527215:
   title: Hilbert projection theorem
+  decl: exists_norm_eq_iInf_of_complete_convex
+  author: Zhouhang Zhou
+  date: 2019
 
 Q3527217:
   title: M. Riesz extension theorem
@@ -2242,9 +2339,15 @@ Q3527247:
 
 Q3527250:
   title: Hadamard three-lines theorem
+  decl: Complex.HadamardThreeLines.norm_le_interpStrip_of_mem_verticalClosedStrip
+  author: Xavier Généreux
+  date: 2023
 
 Q3527263:
   title: Kleene fixed-point theorem
+  decl: fixedPoints.lfp_eq_sSup_iterate
+  author: Ira Fesefeldt
+  date: 2024
 
 Q3527279:
   title: Wiener's tauberian theorem
@@ -2299,6 +2402,9 @@ Q3984052:
 
 Q3984053:
   title: Fourier inversion theorem
+  decl: Continuous.fourier_inversion
+  author: Sébastien Gouëzel
+  date: 2024
 
 Q3984056:
   title: No-communication theorem
@@ -2329,6 +2435,9 @@ Q4272645:
 
 Q4378868:
   title: Phragmén–Lindelöf theorem
+  decl: PhragmenLindelof.horizontal_strip
+  author: Yury G. Kudryashov
+  date: 2022
 
 Q4378889:
   title: Carathéodory's theorem
@@ -2416,6 +2525,9 @@ Q4677985:
 
 Q4695203:
   title: Four functions theorem
+  decl: four_functions_theorem
+  author: Yaël Dillies
+  date: 2023
 
 Q4700718:
   title: Akhiezer's theorem
@@ -2485,6 +2597,9 @@ Q4827308:
 
 Q4830725:
   title: Ax–Grothendieck theorem
+  decl: ax_grothendieck_zeroLocus
+  author: Chris Hughes
+  date: 2023
 
 Q4832965:
   title: Aztec diamond theorem
@@ -2698,6 +2813,9 @@ Q5166389:
 
 Q5171652:
   title: Corners theorem
+  decl: corners_theorem_nat
+  author: Yaël Dillies, Bhavik Mehta
+  date: 2022
 
 Q5172143:
   title: Corona theorem
@@ -3366,6 +3484,9 @@ Q7433034:
 
 Q7433182:
   title: Schwartz–Zippel theorem
+  decl: MvPolynomial.schwartz_zippel_sup_sum
+  author: Bolton Bailey, Yaël Dillies
+  date: 2023
 
 Q7433295:
   title: Osterwalder–Schrader theorem
@@ -3524,6 +3645,9 @@ Q7857350:
 
 Q7888360:
   title: Structure theorem for finitely generated modules over a principal ideal domain
+  decl: Module.equiv_free_prod_directSum
+  author: Pierre-Alexandre Bazin
+  date: 2022
 
 Q7894110:
   title: Universal approximation theorem
@@ -3587,6 +3711,9 @@ Q8066795:
 
 Q8074796:
   title: Zsigmondy's theorem
+  # TODO: Find the code
+  author: Mantas Bakšys
+  date: 2022
 
 Q8081891:
   title: Śleszyński–Pringsheim theorem
@@ -3605,6 +3732,9 @@ Q10942247:
 
 Q11352023:
   title: Vitali convergence theorem
+  decl: MeasureTheory.tendstoInMeasure_iff_tendsto_Lp
+  author: Igor Khavkine
+  date: 2024
 
 Q11573495:
   title: Plancherel theorem for spherical functions
@@ -3641,6 +3771,9 @@ Q15895894:
 
 Q16251580:
   title: Matiyasevich's theorem
+  decl: Pell.matiyasevic
+  author: Mario Carneiro
+  date: 2017
 
 Q16680059:
   title: Strong perfect graph theorem
@@ -3659,6 +3792,9 @@ Q17003552:
 
 Q17005116:
   title: Birkhoff's representation theorem
+  decl: LatticeHom.birkhoffSet
+  author: Yaël Dillies
+  date: 2022
 
 Q17008559:
   title: Davenport–Schmidt theorem
