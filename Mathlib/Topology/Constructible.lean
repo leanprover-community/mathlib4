@@ -344,9 +344,10 @@ lemma IsConstructible.induction_of_isTopologicalBasis {ι : Type*} [Nonempty ι]
         basis.isConstructible compact_inter _))
     (union : ∀ s hs t ht, P s hs → P t ht → P (s ∪ t) (hs.union ht))
     (s : Set X) (hs : IsConstructible s) : P s hs := by
-  induction hs using BooleanSubalgebra.closure_sdiff_sup_induction with
-  | sup => exact fun s hs t ht ↦ ⟨hs.1.union ht.1, hs.2.union ht.2⟩
-  | inf => exact fun s hs t ht ↦ ⟨hs.1.inter ht.1, hs.2.inter_isOpen ht.2 ht.1⟩
+  induction s, hs using BooleanSubalgebra.closure_sdiff_sup_induction with
+  | isSublattice =>
+    exact ⟨fun s hs t ht ↦ ⟨hs.1.union ht.1, hs.2.union ht.2⟩,
+      fun s hs t ht ↦ ⟨hs.1.inter ht.1, hs.2.inter_isOpen ht.2 ht.1⟩⟩
   | bot_mem => exact ⟨isOpen_empty, .empty⟩
   | top_mem => exact ⟨isOpen_univ, .univ⟩
   | sdiff U hU V hV =>
@@ -365,7 +366,7 @@ lemma IsConstructible.induction_of_isTopologicalBasis {ι : Type*} [Nonempty ι]
         (sdiff _ _ ht)
         (ih ⟨isOpen_biUnion fun  _ _ ↦ basis.isOpen ⟨_, rfl⟩, .biUnion hs
           fun i _ ↦ basis.isRetrocompact compact_inter _⟩)
-  | sup' s _ t _ hs' ht' => exact union _ _ _ _ hs' ht'
+  | sup s _ t _ hs' ht' => exact union _ _ _ _ hs' ht'
 
 end CompactSpace
 
