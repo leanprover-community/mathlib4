@@ -42,7 +42,7 @@ variable {α : ι → Type*} [Π i, Semiring (α i)] (I : Π i, Ideal (α i))
 
 section Pi
 
-/-- `I^n` as an ideal of `R^n`. -/
+/-- `Πᵢ Iᵢ` as an ideal of `Πᵢ Rᵢ`. -/
 def pi : Ideal (Π i, α i) where
   carrier := { x | ∀ i, x i ∈ I i }
   zero_mem' i := (I i).zero_mem
