@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.MeasureTheory.Measure.Map
 
 /-!
-# AbsolutelyContinuous
+# Absolute Continuity of Measures
 
 We say that `μ` is absolutely continuous with respect to `ν`, or that `μ` is dominated by `ν`,
 if `ν(A) = 0` implies that `μ(A) = 0`. We denote that by `μ ≪ ν`.

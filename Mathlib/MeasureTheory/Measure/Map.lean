@@ -31,7 +31,7 @@ open Filter hiding map
 
 namespace MeasureTheory
 
-variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {μγ : MeasurableSpace γ}
+variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
   {μ ν : Measure α} {s : Set α}
 
 namespace Measure

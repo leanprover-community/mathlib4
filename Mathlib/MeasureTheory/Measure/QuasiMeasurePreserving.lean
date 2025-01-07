@@ -7,7 +7,7 @@ import Mathlib.MeasureTheory.Measure.AbsolutelyContinuous
 import Mathlib.MeasureTheory.OuterMeasure.BorelCantelli
 
 /-!
-# AbsolutelyContinuous
+# Quasi Measure Preserving Functions
 
 A map `f : α → β` is said to be *quasi measure preserving* (a.k.a. non-singular) w.r.t. measures
 `μa` and `μb` if it is measurable and `μb s = 0` implies `μa (f ⁻¹' s) = 0`.
@@ -28,7 +28,7 @@ namespace MeasureTheory
 open Set Function ENNReal
 open Filter hiding map
 
-variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {μγ : MeasurableSpace γ}
+variable {mα : MeasurableSpace α} {mβ : MeasurableSpace β} {mγ : MeasurableSpace γ}
   {μ ν : Measure α} {s : Set α}
 
 namespace Measure
