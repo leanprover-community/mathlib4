@@ -21,10 +21,10 @@ open Order
 /--
 The ring theoretic Krull dimension is the Krull dimension of its spectrum ordered by inclusion.
 -/
-noncomputable def ringKrullDim (R : Type*) [CommSemiring R] : WithBot (WithTop ℕ) :=
+noncomputable def ringKrullDim (R : Type*) [CommRing R] : WithBot (WithTop ℕ) :=
   krullDim (PrimeSpectrum R)
 
-variable {R S : Type*} [CommSemiring R] [CommSemiring S]
+variable {R S : Type*} [CommRing R] [CommRing S]
 
 @[nontriviality]
 lemma ringKrullDim_eq_bot_of_subsingleton [Subsingleton R] :
@@ -44,7 +44,7 @@ theorem ringKrullDim_le_of_surjective (f : R →+* S) (hf : Function.Surjective 
         simpa using h))
 
 /-- If `I` is an ideal of `R`, then `ringKrullDim (R ⧸ I) ≤ ringKrullDim R`. -/
-theorem ringKrullDim_quotient_le {R} [CommRing R] (I : Ideal R) :
+theorem ringKrullDim_quotient_le (I : Ideal R) :
     ringKrullDim (R ⧸ I) ≤ ringKrullDim R :=
   ringKrullDim_le_of_surjective _ Ideal.Quotient.mk_surjective
 
