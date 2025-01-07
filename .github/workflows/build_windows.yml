@@ -34,13 +34,13 @@ jobs:
   windows-build:
     runs-on: windows-latest
     steps:
+      - name: checkout
+        uses: actions/checkout@v4
       - name: install elan
         shell: bash
         run: |
           : Install Elan
           scripts/windows/install_elan.sh
-      - name: checkout
-        uses: actions/checkout@v4
       - name: install other compiler
         shell: bash
         run: |
