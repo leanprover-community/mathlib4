@@ -1082,6 +1082,7 @@ import Mathlib.AlgebraicTopology.SimplicialCategory.SimplicialObject
 import Mathlib.AlgebraicTopology.SimplicialNerve
 import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.AlgebraicTopology.SimplicialObject.Coskeletal
+import Mathlib.AlgebraicTopology.SimplicialObject.Split
 import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
 import Mathlib.AlgebraicTopology.SimplicialSet.HomotopyCat
@@ -1091,7 +1092,6 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 import Mathlib.AlgebraicTopology.SimplicialSet.Path
 import Mathlib.AlgebraicTopology.SimplicialSet.StrictSegal
 import Mathlib.AlgebraicTopology.SingularSet
-import Mathlib.AlgebraicTopology.SplitSimplicialObject
 import Mathlib.AlgebraicTopology.TopologicalSimplex
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.Analytic.CPolynomial
