@@ -375,6 +375,13 @@ theorem leadingCoeff_mul_monic {p q : R[X]} (hq : Monic q) :
       rw [leadingCoeff_mul', hq.leadingCoeff, mul_one]
       rwa [hq.leadingCoeff, mul_one]
 
+lemma leadingCoeff_C_mul (ha : IsUnit a) (p : R[X]) : 
+    (C a * p).leadingCoeff = a * p.leadingCoeff := by
+  obtain rfl | hp := eq_or_ne p 0
+  · simp
+  · rw [leadingCoeff_mul', leadingCoeff_C]
+    simpa [ha.mul_right_eq_zero]
+
 @[simp]
 theorem leadingCoeff_mul_X_pow {p : R[X]} {n : ℕ} : leadingCoeff (p * X ^ n) = leadingCoeff p :=
   leadingCoeff_mul_monic (monic_X_pow n)
