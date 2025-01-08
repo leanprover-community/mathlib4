@@ -92,11 +92,11 @@ lemma dual_comp {C : Type*} [AddCommGroup C] [Module R C] (f : A →ₗ[R] B) (g
 
 lemma dual_injective_of_surjective (f : A →ₗ[R] B) (hf : Function.Surjective f) :
     Function.Injective (dual f) := by
-    intro φ ψ eq
-    ext x
-    obtain ⟨y, rfl⟩ := hf x
-    change (dual f) φ _ = (dual f) ψ _
-    rw [eq]
+  intro φ ψ eq
+  ext x
+  obtain ⟨y, rfl⟩ := hf x
+  change (dual f) φ _ = (dual f) ψ _
+  rw [eq]
 
 lemma dual_surjective_of_injective (f : A →ₗ[R] B) (hf : Function.Injective f) :
     Function.Surjective (dual f) :=
@@ -235,15 +235,12 @@ theorem _root_.rTensor_injective_iff_lcomp_surjective {f : A →ₗ[R] A'} :
 lemma surjective_of_dual_injective (f : A →ₗ[R] A') (hf : Function.Injective (dual f)) :
     Function.Surjective f := by
   rw [← LinearMap.range_eq_top, ← Submodule.unique_quotient_iff_eq_top]
-  refine Nonempty.intro (Unique.mk inferInstance
-    (fun a ↦ (eq_zero_of_character_apply (fun c ↦ ?_))))
+  refine ⟨Unique.mk inferInstance fun a ↦ eq_zero_of_character_apply fun c ↦ ?_⟩
   obtain ⟨b, rfl⟩ := QuotientAddGroup.mk'_surjective _ a
-  suffices eq : dual (Submodule.mkQ _) c = 0 by
-    change (dual (Submodule.mkQ _) c) b = 0
-    rw [eq, AddMonoidHom.zero_apply]
+  suffices eq : dual (Submodule.mkQ _) c = 0 from congr($eq b)
   refine hf ?_
   rw [← LinearMap.comp_apply, ← dual_comp, LinearMap.range_mkQ_comp, dual_zero]
-  dsimp
+  rfl
 
 lemma dual_injective_iff_surjective {f : A →ₗ[R] A'} :
     Function.Injective (dual f) ↔ Function.Surjective f :=
