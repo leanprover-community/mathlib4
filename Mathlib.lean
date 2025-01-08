@@ -1525,6 +1525,7 @@ import Mathlib.Analysis.SpecialFunctions.Log.ERealExp
 import Mathlib.Analysis.SpecialFunctions.Log.Monotone
 import Mathlib.Analysis.SpecialFunctions.Log.NegMulLog
 import Mathlib.Analysis.SpecialFunctions.MulExpNegSq
+import Mathlib.Analysis.SpecialFunctions.MulExpNegSqIntegral
 import Mathlib.Analysis.SpecialFunctions.NonIntegrable
 import Mathlib.Analysis.SpecialFunctions.OrdinaryHypergeometric
 import Mathlib.Analysis.SpecialFunctions.PolarCoord
@@ -4146,6 +4147,7 @@ import Mathlib.Order.WithBot
 import Mathlib.Order.Zorn
 import Mathlib.Order.ZornAtoms
 import Mathlib.Probability.BorelCantelli
+import Mathlib.Probability.BrownianMotion
 import Mathlib.Probability.CDF
 import Mathlib.Probability.ConditionalExpectation
 import Mathlib.Probability.ConditionalProbability
