@@ -355,9 +355,9 @@ theorem mem_integers_of_valuation_le_one (x : K)
     (h : ∀ v : HeightOneSpectrum R, v.valuation x ≤ 1) : x ∈ (algebraMap R K).range := by
   obtain ⟨⟨n, d, hd⟩, hx⟩ := IsLocalization.surj (nonZeroDivisors R) x
   obtain rfl : x = IsLocalization.mk' K n ⟨d, hd⟩ := IsLocalization.eq_mk'_iff_mul_eq.mpr hx
-  have hd0 := nonZeroDivisors.ne_zero hd
   obtain rfl | hn0 := eq_or_ne n 0
   · simp
+  have hd0 := nonZeroDivisors.ne_zero hd
   suffices Ideal.span {d} ∣ (Ideal.span {n} : Ideal R) by
     obtain ⟨z, rfl⟩ := Ideal.span_singleton_le_span_singleton.1 (Ideal.le_of_dvd this)
     use z
