@@ -467,18 +467,29 @@ variable {ι : Type*} [Finite ι] {A : ι → Type*} [∀ i, AddCommMonoid (A i)
 is the module topology. -/
 instance pi : IsModuleTopology R (∀ i, A i) := by
   -- This is an easy induction on the size of the finite set, given the result
-  -- for binary products above.
+  -- for binary products above. We use a "decategorified" induction principle for finite types.
   induction ι using Finite.induction_empty_option
-  · case of_equiv X Y e _ _ _ _ _ =>
+  · -- invariance under equivalence of the finite type we're taking the product over
+    case of_equiv X Y e _ _ _ _ _ =>
     exact iso (ContinuousLinearEquiv.piCongrLeft R A e)
-  · infer_instance
-  · case h_option X _ hind _ _ _ _ =>
-    let e : Option X ≃ X ⊕ Unit := Equiv.optionEquivSumPUnit X
-    -- Need `convert` because intermediate topologies don't match yet
-    convert iso (.piCongrLeft R A e.symm)
-    convert iso (ContinuousLinearEquiv.sumPiEquivProdPi R X Unit _).symm
-    refine prod (hM := hind) (hN := ?_)
-    exact iso (ContinuousLinearEquiv.piUnique R (fun t ↦ A (e.symm (Sum.inr t)))).symm
+  · -- empty case
+    infer_instance
+  · -- "inductive step" is to check for product over `Option ι` case when known for product over `ι`
+    case h_option ι _ hind _ _ _ _ =>
+    -- `Option ι` is a `Sum` of `ι` and `Unit`
+    let e : Option ι ≃ ι ⊕ Unit := Equiv.optionEquivSumPUnit ι
+    -- so suffices to check for a product of modules over `ι ⊕ Unit`
+    suffices IsModuleTopology R ((i' : ι ⊕ Unit) → A (e.symm i')) from iso (.piCongrLeft R A e.symm)
+    -- but such a product is isomorphic to a binary product
+    -- of (product over `ι`) and (product over `Unit`)
+    suffices IsModuleTopology R
+      (((s : ι) → A (e.symm (Sum.inl s))) × ((t : Unit) → A (e.symm (Sum.inr t)))) from
+      iso (ContinuousLinearEquiv.sumPiEquivProdPi R ι Unit _).symm
+    -- The product over `ι` has the module topology by the inductive hypothesis,
+    -- and the product over `Unit` is just a module which is assumed to have the module topology
+    have := iso (ContinuousLinearEquiv.piUnique R (fun t ↦ A (e.symm (Sum.inr t)))).symm
+    -- so the result follows from the previous lemma (binary products).
+    apply prod
 
 end Pi
 
