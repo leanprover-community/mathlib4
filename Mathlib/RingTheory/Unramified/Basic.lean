@@ -277,6 +277,34 @@ theorem localization_map [FormallyUnramified R S] :
 
 end Localization
 
+section Derivation
+
+variable {R S T M : Type*} [CommRing R] [CommRing S] [CommRing T]
+variable [Algebra R S] [Algebra S T] [Algebra R T] [IsScalarTower R S T]
+variable [AddCommGroup M] [Module R M] [Module S M] [Module T M]
+    [IsScalarTower R T M] [IsScalarTower S T M]
+
+variable (R S T) in
+lemma _root_.KaehlerDifferential.bijective_map_of_formallyUnramified
+     [Algebra.FormallyUnramified R S] :
+    Function.Bijective (KaehlerDifferential.map R S T T) := by
+  refine ⟨?_, KaehlerDifferential.map_surjective R S T⟩
+  rw [injective_iff_map_eq_zero]
+  intro x hx
+  obtain ⟨x, rfl⟩ := (KaehlerDifferential.exact_mapBaseChange_map R S T _).mp hx
+  rw [Subsingleton.elim x 0, map_zero]
+
+/-- If `S` is formally unramified over `R`, then any `R`-derivation is `S`-linear. -/
+lemma _root_.Derivation.map_smul_of_formallyUnramified [Algebra.FormallyUnramified R S]
+    (d : Derivation R T M) (s : S) (t : T) : d (s • t) = s • d t := by
+  rw [← d.liftKaehlerDifferential_comp_D, ← d.liftKaehlerDifferential_comp_D,
+    ← LinearMap.map_smul_of_tower]
+  congr 1
+  apply (KaehlerDifferential.bijective_map_of_formallyUnramified R S T).1
+  simp
+
+end Derivation
+
 end FormallyUnramified
 
 section

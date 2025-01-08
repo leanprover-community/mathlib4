@@ -231,6 +231,38 @@ lemma Hom.id_comp (f : Hom P P') : (Hom.id P').comp f = f := by
 end
 
 end Hom
+section TensorAlgebra
+
+variable (P : Extension.{w} R S) (T : Type*) [CommRing T] [Algebra R T]
+
+/-- Given an `R`-extension `P → S`, this is the base change `T ⊗ P → T ⊗ S` as a `R`-extension. -/
+noncomputable
+def tensorAlgebra : Extension R (T ⊗[R] S) :=
+  .ofSurjective (Algebra.TensorProduct.map (.id R T)
+    (IsScalarTower.toAlgHom R P.Ring S))
+    ((IsScalarTower.toAlgHom R P.Ring S).toLinearMap.lTensor_surjective _ P.algebraMap_surjective)
+
+noncomputable
+instance : Algebra T (P.tensorAlgebra T).Ring := TensorProduct.leftAlgebra
+
+instance : IsScalarTower T (P.tensorAlgebra T).Ring (T ⊗[R] S) :=
+  .of_algebraMap_eq fun r ↦ show r ⊗ₜ 1 = r ⊗ₜ algebraMap P.Ring S 1 by rw [map_one]
+
+instance : IsScalarTower R T (P.tensorAlgebra T).Ring := .of_algebraMap_eq' rfl
+
+attribute [local instance] TensorProduct.rightAlgebra in
+/-- The canonical map `P → T ⊗ P` as a map of extensions. -/
+noncomputable
+def toTensorAlgebra : P.Hom (P.tensorAlgebra T) where
+  toRingHom := algebraMap P.Ring (T ⊗[R] P.Ring)
+  toRingHom_algebraMap x := TensorProduct.includeRight.commutes x
+  algebraMap_toRingHom _ := rfl
+
+attribute [local instance] TensorProduct.rightAlgebra in
+lemma toTensorAlgebra_toRingHom_apply (x : P.Ring) :
+  (P.toTensorAlgebra T).toRingHom x = 1 ⊗ₜ x := rfl
+
+end TensorAlgebra
 
 section Cotangent
 
