@@ -3,7 +3,6 @@ Copyright (c) 2024 Jakob Stiefel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob Stiefel
 -/
-import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import Mathlib.Data.Complex.ExponentialBounds
 import Mathlib.Topology.ContinuousMap.Bounded.Basic
 import Mathlib.Topology.MetricSpace.Pseudo.Basic
