@@ -125,17 +125,6 @@ def tensorCotangentSpace
       ext a
       simp; rfl }
 
-/-- A map between extensions induce a map between kernels -/
-def Hom.mapKer {R R' S S' : Type*} [CommRing R] [CommRing R'] [CommRing S] [CommRing S']
-    [Algebra R S] [Algebra R' S'] [Algebra R R'] [Algebra S S']
-    {P : Extension R S} {P' : Extension R' S'} (f : P.Hom P')
-    [alg : Algebra P.Ring P'.Ring] (halg : alg = f.toRingHom.toAlgebra) :
-    P.ker →ₗ[P.Ring] P'.ker :=
-  (Algebra.linearMap P.Ring P'.Ring).restrict (q := P'.ker.restrictScalars P.Ring) fun x hx ↦ by
-    subst halg
-    show (algebraMap P'.Ring S' (f.toRingHom x)) = 0
-    simp [show algebraMap P.Ring S x = 0 from hx]
-
 set_option maxHeartbeats 220000 in
 /-- If `J ≃ Q ⊗ₚ I` (e.g. when `T = Q ⊗ₚ S` and `P → Q` is flat), then `T ⊗ₛ I/I² ≃ J/J²`. -/
 noncomputable
