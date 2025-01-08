@@ -482,7 +482,7 @@ end UnionInter
 
 namespace MeasurableSpace
 
-open Function -- required for scoped `on` notation
+open scoped Function -- required for scoped `on` notation
 
 variable {α : Type*}
 

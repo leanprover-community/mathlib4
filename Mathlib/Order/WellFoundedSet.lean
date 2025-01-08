@@ -46,7 +46,7 @@ Prove that `s` is partial well ordered iff it has no infinite descending chain o
 
 assert_not_exists OrderedSemiring
 
-open Function -- required for scoped `on` notation
+open scoped Function -- required for scoped `on` notation
 
 variable {ι α β γ : Type*} {π : ι → Type*}
 

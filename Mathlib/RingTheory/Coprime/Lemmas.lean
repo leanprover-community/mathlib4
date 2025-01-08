@@ -22,7 +22,7 @@ lemmas about `Pow` since these are easiest to prove via `Finset.prod`.
 
 universe u v
 
-open Function -- required for scoped `on` notation
+open scoped Function -- required for scoped `on` notation
 
 section IsCoprime
 

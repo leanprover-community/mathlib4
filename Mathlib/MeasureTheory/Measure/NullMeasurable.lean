@@ -207,7 +207,7 @@ end NullMeasurableSet
 
 open NullMeasurableSet
 
-open Function -- required for scoped `on` notation
+open scoped Function -- required for scoped `on` notation
 
 /-- If `sᵢ` is a countable family of (null) measurable pairwise `μ`-a.e. disjoint sets, then there
 exists a subordinate family `tᵢ ⊆ sᵢ` of measurable pairwise disjoint sets such that

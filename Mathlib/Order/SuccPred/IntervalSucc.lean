@@ -45,7 +45,7 @@ theorem biUnion_Ico_Ioc_map_succ [SuccOrder α] [IsSuccArchimedean α] [LinearOr
       · rw [hk.succ_eq, Ioc_self, empty_union]
       · rw [Ico_succ_right_eq_insert_of_not_isMax hmk hk, biUnion_insert]
 
-open Function -- required for scoped `on` notation
+open scoped Function -- required for scoped `on` notation
 
 /-- If `α` is a linear succ order, `β` is a preorder, and `f : α → β` is a monotone function, then
 the intervals `Set.Ioc (f n) (f (Order.succ n))` are pairwise disjoint. -/
@@ -91,7 +91,7 @@ end Monotone
 
 namespace Antitone
 
-open Function -- required for scoped `on` notation
+open scoped Function -- required for scoped `on` notation
 
 /-- If `α` is a linear succ order, `β` is a preorder, and `f : α → β` is an antitone function, then
 the intervals `Set.Ioc (f (Order.succ n)) (f n)` are pairwise disjoint. -/

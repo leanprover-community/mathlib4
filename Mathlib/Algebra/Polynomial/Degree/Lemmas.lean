@@ -180,7 +180,7 @@ theorem coeff_add_eq_right_of_lt (pn : p.natDegree < n) : (p + q).coeff n = q.co
   rw [add_comm]
   exact coeff_add_eq_left_of_lt pn
 
-open Function -- required for scoped `on` notation
+open scoped Function -- required for scoped `on` notation
 
 theorem degree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     (h : Set.Pairwise { i | i ∈ s ∧ f i ≠ 0 } (Ne on degree ∘ f)) :

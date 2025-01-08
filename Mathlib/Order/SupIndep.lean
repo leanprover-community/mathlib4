@@ -565,7 +565,7 @@ alias setIndependent_iff_pairwiseDisjoint := sSupIndep_iff_pairwiseDisjoint
 
 alias ⟨_, _root_.Set.PairwiseDisjoint.sSupIndep⟩ := sSupIndep_iff_pairwiseDisjoint
 
-open Function in -- required for scoped `on` notation
+open scoped Function in -- required for scoped `on` notation
 theorem iSupIndep_iff_pairwiseDisjoint {f : ι → α} : iSupIndep f ↔ Pairwise (Disjoint on f) :=
   ⟨iSupIndep.pairwiseDisjoint, fun hs _ =>
     disjoint_iSup_iff.2 fun _ => disjoint_iSup_iff.2 fun hij => hs hij.symm⟩

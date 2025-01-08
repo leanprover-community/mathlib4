@@ -185,7 +185,7 @@ end sum'
 
 section disjointSigma
 
-open Function -- required for scoped `on` notation
+open scoped Function -- required for scoped `on` notation
 
 variable {α ι : Type*} {M : ι → Matroid α}
 

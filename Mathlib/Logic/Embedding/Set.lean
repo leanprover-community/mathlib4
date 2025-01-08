@@ -160,7 +160,7 @@ variable {α ι : Type*} {s t r : Set α}
     range (Function.Embedding.sumSet h) = s ∪ t := by
   simp [Set.ext_iff]
 
-open Function -- required for scoped `on` notation
+open scoped Function -- required for scoped `on` notation
 
 /-- For an indexed family `s : ι → Set α` of disjoint sets,
 the natural injection from the sigma-type `(i : ι) × ↑(s i)` to `α`. -/

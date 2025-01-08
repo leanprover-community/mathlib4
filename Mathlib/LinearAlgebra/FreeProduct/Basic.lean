@@ -64,7 +64,7 @@ end DirectSum
 namespace RingQuot
 universe uS uA uB
 
-open Function -- required for scoped `on` notation
+open scoped Function -- required for scoped `on` notation
 
 /--If two `R`-algebras are `R`-equivalent and their quotients by a relation `rel` are defined,
 then their quotients are also `R`-equivalent.
@@ -137,7 +137,7 @@ inductive rel : FreeTensorAlgebra R A → FreeTensorAlgebra R A → Prop
         (tprod R (⨁ i, A i) 2 (fun | 0 => lof R I A i a₁ | 1 => lof R I A i a₂))
         (ι R <| lof R I A i (a₁ * a₂))
 
-open Function -- required for scoped `on` notation
+open scoped Function -- required for scoped `on` notation
 
 /--The generating equivalence relation for elements of the power algebra
 that are identified in the free product. -/

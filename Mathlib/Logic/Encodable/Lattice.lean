@@ -44,7 +44,7 @@ theorem iUnion_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C
     convert H1 b
     simp [Set.ext_iff]
 
-open Function in -- required for scoped `on` notation
+open scoped Function in -- required for scoped `on` notation
 theorem iUnion_decode₂_disjoint_on {f : β → Set α} (hd : Pairwise (Disjoint on f)) :
     Pairwise (Disjoint on fun i => ⋃ b ∈ decode₂ β i, f b) := by
   rintro i j ij

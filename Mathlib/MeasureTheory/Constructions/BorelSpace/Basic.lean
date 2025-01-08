@@ -222,7 +222,7 @@ theorem IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
 theorem IsOpen.nullMeasurableSet {μ} (h : IsOpen s) : NullMeasurableSet s μ :=
   h.measurableSet.nullMeasurableSet
 
-open Function in -- required for scoped `on` notation
+open scoped Function in -- required for scoped `on` notation
 @[elab_as_elim]
 theorem MeasurableSet.induction_on_open {C : ∀ s : Set γ, MeasurableSet s → Prop}
     (isOpen : ∀ U (hU : IsOpen U), C U hU.measurableSet)

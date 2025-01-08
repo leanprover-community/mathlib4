@@ -38,7 +38,7 @@ variable {α : Type*}
 
 namespace MeasureTheory
 
-open Function -- required for scoped `on` notation
+open scoped Function -- required for scoped `on` notation
 
 /-- An outer measure is a countably subadditive monotone function that sends `∅` to `0`. -/
 structure OuterMeasure (α : Type*) where

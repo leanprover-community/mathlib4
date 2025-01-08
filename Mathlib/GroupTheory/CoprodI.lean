@@ -812,7 +812,7 @@ open Pointwise
 
 open Cardinal
 
-open Function -- required for scoped `on` notation
+open scoped Function -- required for scoped `on` notation
 
 variable {G : Type*} [Group G]
 variable {H : ι → Type*} [∀ i, Group (H i)]
@@ -968,7 +968,7 @@ section PingPongLemma
 
 open Pointwise Cardinal
 
-open Function -- required for scoped `on` notation
+open scoped Function -- required for scoped `on` notation
 
 variable [Nontrivial ι]
 variable {G : Type u_1} [Group G] (a : ι → G)
