@@ -380,7 +380,7 @@ section NNReal
 
 variable {A : Type*} [NormedRing A] [PartialOrder A] [StarRing A] [StarOrderedRing A]
 variable [NormedAlgebra ℝ A] [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-variable [NonnegSpectrumClass ℝ A] [UniqueContinuousFunctionalCalculus ℝ A]
+variable [NonnegSpectrumClass ℝ A]
 
 open NNReal in
 instance Nonneg.instIsometricContinuousFunctionalCalculus :
@@ -449,7 +449,7 @@ section Unital
 
 variable {A : Type*} [NormedRing A] [StarRing A] [NormedAlgebra ℝ A] [PartialOrder A]
 variable [StarOrderedRing A] [IsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-variable [NonnegSpectrumClass ℝ A] [UniqueContinuousFunctionalCalculus ℝ A]
+variable [NonnegSpectrumClass ℝ A]
 
 lemma IsGreatest.nnnorm_cfc_nnreal [Nontrivial A] (f : ℝ≥0 → ℝ≥0) (a : A)
     (hf : ContinuousOn f (σ ℝ≥0 a) := by cfc_cont_tac) (ha : 0 ≤ a := by cfc_tac) :

@@ -127,8 +127,6 @@ protected lemma _root_.IsSelfAdjoint.log {a : A} : IsSelfAdjoint (log a) := cfc_
 lemma log_algebraMap {r : ℝ} : log (algebraMap ℝ A r) = algebraMap ℝ A (Real.log r) := by
   simp [log]
 
-variable [UniqueContinuousFunctionalCalculus ℝ A]
-
 -- TODO: Relate the hypothesis to a notion of strict positivity
 lemma log_smul {r : ℝ} (a : A) (ha₂ : ∀ x ∈ spectrum ℝ a, 0 < x) (hr : 0 < r)
     (ha₁ : IsSelfAdjoint a := by cfc_tac) :
