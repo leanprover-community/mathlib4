@@ -96,7 +96,7 @@ theorem centralMoment_two_eq_variance [IsFiniteMeasure μ] (hX : Memℒp X 2 μ)
 
 section MomentGeneratingFunction
 
-variable {t u v : ℝ}
+variable {t : ℝ}
 
 /-- Moment generating function of a real random variable `X`: `fun t => μ[exp(t*X)]`. -/
 def mgf (X : Ω → ℝ) (μ : Measure Ω) (t : ℝ) : ℝ :=
