@@ -37,9 +37,9 @@ Commands:
 * Linked files refer to local cache files with corresponding Lean sources
 * Commands ending with '!' should be used manually, when hot-fixes are needed
 
-# The arguments for 'get' and 'get!'
+# The arguments for 'get', 'get!' and 'get-'
 
-'get' and 'get!' can process list of paths, allowing the user to be more
+'get', 'get!' and 'get-' can process a list of paths, allowing the user to be more
 specific about what should be downloaded. For example, with automatic glob
 expansion in shell, one can call:
 
