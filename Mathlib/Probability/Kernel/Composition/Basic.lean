@@ -77,6 +77,7 @@ We define a kernel composition-product
 `compProd : Kernel α β → Kernel (α × β) γ → Kernel α (β × γ)`.
 -/
 
+open Function -- required for scoped `on` notation
 
 variable {γ : Type*} {mγ : MeasurableSpace γ} {s : Set (β × γ)}
 
