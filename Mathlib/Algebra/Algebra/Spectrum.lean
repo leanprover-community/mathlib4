@@ -5,6 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Star.Subalgebra
 import Mathlib.RingTheory.Ideal.Maps
+import Mathlib.RingTheory.Ideal.Nonunits
 import Mathlib.Tactic.NoncommRing
 
 /-!
@@ -53,7 +54,7 @@ local notation "↑ₐ" => algebraMap R A
 -- definition and basic properties
 /-- Given a commutative ring `R` and an `R`-algebra `A`, the *resolvent set* of `a : A`
 is the `Set R` consisting of those `r : R` for which `r•1 - a` is a unit of the
-algebra `A`.  -/
+algebra `A`. -/
 def resolventSet (a : A) : Set R :=
   {r : R | IsUnit (↑ₐ r - a)}
 
@@ -61,7 +62,7 @@ def resolventSet (a : A) : Set R :=
 is the `Set R` consisting of those `r : R` for which `r•1 - a` is not a unit of the
 algebra `A`.
 
-The spectrum is simply the complement of the resolvent set.  -/
+The spectrum is simply the complement of the resolvent set. -/
 def spectrum (a : A) : Set R :=
   (resolventSet R a)ᶜ
 
@@ -112,6 +113,10 @@ theorem zero_not_mem_iff {a : A} : (0 : R) ∉ σ a ↔ IsUnit a := by
   rw [zero_mem_iff, Classical.not_not]
 
 alias ⟨isUnit_of_zero_not_mem, zero_not_mem⟩ := spectrum.zero_not_mem_iff
+
+@[simp]
+lemma _root_.Units.zero_not_mem_spectrum (a : Aˣ) : 0 ∉ spectrum R (a : A) :=
+  spectrum.zero_not_mem R a.isUnit
 
 lemma subset_singleton_zero_compl {a : A} (ha : IsUnit a) : spectrum R a ⊆ {0}ᶜ :=
   Set.subset_compl_singleton_iff.mpr <| spectrum.zero_not_mem R ha
@@ -396,7 +401,7 @@ end CommSemiring
 
 section CommRing
 
-variable {F R A B : Type*} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
+variable {F R A : Type*} [CommRing R] [Ring A] [Algebra R A]
 variable [FunLike F A R] [AlgHomClass F R A R]
 
 local notation "σ" => spectrum R

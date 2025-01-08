@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Topology.ContinuousMap.Basic
 
 /-!
 # Continuous open maps
@@ -32,7 +32,7 @@ structure ContinuousOpenMap (α β : Type*) [TopologicalSpace α] [TopologicalSp
   ContinuousMap α β where
   map_open' : IsOpenMap toFun
 
-infixr:25 " →CO " => ContinuousOpenMap
+@[inherit_doc] infixr:25 " →CO " => ContinuousOpenMap
 
 section
 

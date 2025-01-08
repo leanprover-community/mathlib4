@@ -34,6 +34,8 @@ open CategoryTheory.Limits
 
 open TopologicalSpace
 
+open scoped AlgebraicGeometry
+
 variable {C : Type u} [Category.{v} C]
 variable {X Y : TopCat.{w}} (f : X ⟶ Y)
 variable ⦃ι : Type w⦄ {U : ι → Opens Y}
@@ -84,15 +86,13 @@ The pullback functor.
 def pullback (f : X ⟶ Y) : Y.Sheaf A ⥤ X.Sheaf A :=
   (Opens.map f).sheafPullback _ _ _
 
-lemma pullback_eq (f : X ⟶ Y) :
-    pullback A f = forget A Y ⋙ Presheaf.pullback A f ⋙ presheafToSheaf _ _ := rfl
-
 /--
 The pullback of a sheaf is isomorphic (actually definitionally equal) to the sheafification
 of the pullback as a presheaf.
 -/
 def pullbackIso (f : X ⟶ Y) :
-    pullback A f ≅ forget A Y ⋙ Presheaf.pullback A f ⋙ presheafToSheaf _ _ := Iso.refl _
+    pullback A f ≅ forget A Y ⋙ Presheaf.pullback A f ⋙ presheafToSheaf _ _ :=
+  Functor.sheafPullbackConstruction.sheafPullbackIso _ _ _ _
 
 /-- The adjunction between pullback and pushforward for sheaves on topological spaces. -/
 def pullbackPushforwardAdjunction (f : X ⟶ Y) :

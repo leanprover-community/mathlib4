@@ -11,7 +11,7 @@ import Mathlib.Topology.Category.TopCat.Basic
 
 # The category of sequential topological spaces
 
-We define the category `Sequential` of sequential topological spaces. We follow the ususal template
+We define the category `Sequential` of sequential topological spaces. We follow the usual template
 for defining categories of topological spaces, by giving it the induced category structure from
 `TopCat`.
 -/

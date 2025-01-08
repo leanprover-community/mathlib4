@@ -4,12 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
-import Mathlib.Data.Countable.Small
 import Mathlib.Data.Fintype.Option
-import Mathlib.Data.Fintype.Pi
-import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Shrink
 import Mathlib.Data.Fintype.Sum
+import Mathlib.Data.Finite.Prod
 
 /-!
 # The Hales-Jewett theorem
@@ -67,7 +65,6 @@ combinatorial line, Ramsey theory, arithmetic progression
 -/
 
 open Function
-open scoped Classical
 
 universe u v
 variable {η α ι κ : Type*}
@@ -109,6 +106,7 @@ lemma coe_apply (l : Subspace η α ι) (x : η → α) (i : ι) : l x i = (l.id
 
 -- Note: This is not made a `FunLike` instance to avoid having two syntactically different coercions
 lemma coe_injective [Nontrivial α] : Injective ((⇑) : Subspace η α ι → (η → α) → ι → α) := by
+  classical
   rintro l m hlm
   ext i
   simp only [funext_iff] at hlm
@@ -141,7 +139,7 @@ variable {η' α' ι' : Type*}
 def reindex (l : Subspace η α ι) (eη : η ≃ η') (eα : α ≃ α') (eι : ι ≃ ι') : Subspace η' α' ι' where
   idxFun i := (l.idxFun <| eι.symm i).map eα eη
   proper e := (eι.exists_congr fun i ↦ by cases h : idxFun l i <;>
-    simp [*, Function.funext_iff, Equiv.eq_symm_apply]).1 <| l.proper <| eη.symm e
+    simp [*, funext_iff, Equiv.eq_symm_apply]).1 <| l.proper <| eη.symm e
 
 @[simp] lemma reindex_apply (l : Subspace η α ι) (eη : η ≃ η') (eα : α ≃ α') (eι : ι ≃ ι') (x i) :
     l.reindex eη eα eι x i = eα (l (eα.symm ∘ x ∘ eη) <| eι.symm i) := by
@@ -154,7 +152,7 @@ def reindex (l : Subspace η α ι) (eη : η ≃ η') (eα : α ≃ α') (eι :
 
 protected lemma IsMono.reindex {eη : η ≃ η'} {eα : α ≃ α'} {eι : ι ≃ ι'} {C : (ι → α) → κ}
     (hl : l.IsMono C) : (l.reindex eη eα eι).IsMono fun x ↦ C <| eα.symm ∘ x ∘ eι := by
-  simp [reindex_isMono, Function.comp.assoc]; simpa [← Function.comp.assoc]
+  simp [reindex_isMono, Function.comp_assoc]; simpa [← Function.comp_assoc]
 
 end Subspace
 
@@ -455,6 +453,7 @@ end Line
 monoid, and `S` is a finite subset, then there exists a monochromatic homothetic copy of `S`. -/
 theorem exists_mono_homothetic_copy {M κ : Type*} [AddCommMonoid M] (S : Finset M) [Finite κ]
     (C : M → κ) : ∃ a > 0, ∃ (b : M) (c : κ), ∀ s ∈ S, C (a • s + b) = c := by
+  classical
   obtain ⟨ι, _inst, hι⟩ := Line.exists_mono_in_high_dimension S κ
   specialize hι fun v => C <| ∑ i, v i
   obtain ⟨l, c, hl⟩ := hι

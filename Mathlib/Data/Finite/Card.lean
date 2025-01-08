@@ -28,8 +28,6 @@ it. We generally put such theorems into the `SetTheory.Cardinal.Finite` module.
 
 noncomputable section
 
-open scoped Classical
-
 variable {α β γ : Type*}
 
 /-- There is (noncomputably) an equivalence between a finite type `α` and `Fin (Nat.card α)`. -/
@@ -42,11 +40,12 @@ def Finite.equivFinOfCardEq [Finite α] {n : ℕ} (h : Nat.card α = n) : α ≃
   subst h
   apply Finite.equivFin
 
+open scoped Classical in
 theorem Nat.card_eq (α : Type*) :
-    Nat.card α = if h : Finite α then @Fintype.card α (Fintype.ofFinite α) else 0 := by
+    Nat.card α = if _ : Finite α then @Fintype.card α (Fintype.ofFinite α) else 0 := by
   cases finite_or_infinite α
   · letI := Fintype.ofFinite α
-    simp only [*, Nat.card_eq_fintype_card, dif_pos]
+    simp only [this, *, Nat.card_eq_fintype_card, dif_pos]
   · simp only [*, card_eq_zero_of_infinite, not_finite_iff_infinite.mpr, dite_false]
 
 theorem Finite.card_pos_iff [Finite α] : 0 < Nat.card α ↔ Nonempty α := by
@@ -93,6 +92,7 @@ theorem card_le_of_embedding [Finite β] (f : α ↪ β) : Nat.card α ≤ Nat.c
 
 theorem card_le_of_surjective [Finite α] (f : α → β) (hf : Function.Surjective f) :
     Nat.card β ≤ Nat.card α := by
+  classical
   haveI := Fintype.ofFinite α
   haveI := Fintype.ofSurjective f hf
   simpa only [Nat.card_eq_fintype_card] using Fintype.card_le_of_surjective f hf
@@ -152,28 +152,27 @@ theorem card_range_le [Finite α] (f : α → β) : Nat.card (Set.range f) ≤ N
   card_le_of_surjective _ Set.surjective_onto_range
 
 theorem card_subtype_le [Finite α] (p : α → Prop) : Nat.card { x // p x } ≤ Nat.card α := by
+  classical
   haveI := Fintype.ofFinite α
   simpa only [Nat.card_eq_fintype_card] using Fintype.card_subtype_le p
 
 theorem card_subtype_lt [Finite α] {p : α → Prop} {x : α} (hx : ¬p x) :
     Nat.card { x // p x } < Nat.card α := by
+  classical
   haveI := Fintype.ofFinite α
   simpa only [Nat.card_eq_fintype_card, gt_iff_lt] using Fintype.card_subtype_lt hx
 
 end Finite
 
-namespace PartENat
+namespace ENat
 
 theorem card_eq_coe_natCard (α : Type*) [Finite α] : card α = Nat.card α := by
-  unfold PartENat.card
+  unfold ENat.card
   apply symm
-  rw [Cardinal.natCast_eq_toPartENat_iff]
+  rw [Cardinal.natCast_eq_toENat_iff]
   exact Finite.cast_card_eq_mk
 
-
-@[deprecated (since := "2024-05-25")] alias card_eq_coe_nat_card := card_eq_coe_natCard
-
-end PartENat
+end ENat
 
 namespace Set
 
@@ -181,7 +180,7 @@ theorem card_union_le (s t : Set α) : Nat.card (↥(s ∪ t)) ≤ Nat.card s + 
   cases' _root_.finite_or_infinite (↥(s ∪ t)) with h h
   · rw [finite_coe_iff, finite_union, ← finite_coe_iff, ← finite_coe_iff] at h
     cases h
-    rw [← Cardinal.natCast_le, Nat.cast_add, Finite.cast_card_eq_mk, Finite.cast_card_eq_mk,
+    rw [← @Nat.cast_le Cardinal, Nat.cast_add, Finite.cast_card_eq_mk, Finite.cast_card_eq_mk,
       Finite.cast_card_eq_mk]
     exact Cardinal.mk_union_le s t
   · exact Nat.card_eq_zero_of_infinite.trans_le (zero_le _)
@@ -205,5 +204,9 @@ theorem equiv_image_eq_iff_subset (e : α ≃ α) (hs : s.Finite) : e '' s = s �
     ge_of_eq (Nat.card_congr (e.image s).symm)⟩
 
 end Finite
+
+theorem eq_top_of_card_le_of_finite [Finite α] {s : Set α} (h : Nat.card α ≤ Nat.card s) : s = ⊤ :=
+  Set.Finite.eq_of_subset_of_card_le univ.toFinite (subset_univ s) <|
+    Nat.card_congr (Equiv.Set.univ α) ▸ h
 
 end Set

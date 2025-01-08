@@ -3,12 +3,14 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Init.Algebra.Classes
 import Mathlib.Logic.Nontrivial.Basic
-import Mathlib.Order.BoundedOrder
+import Mathlib.Order.TypeTags
 import Mathlib.Data.Option.NAry
+import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Lift
 import Mathlib.Data.Option.Basic
+import Mathlib.Order.Lattice
+import Mathlib.Order.BoundedOrder.Basic
 
 /-!
 # `WithBot`, `WithTop`
@@ -23,33 +25,9 @@ Adding a `bot` or a `top` to an order.
 
 variable {α β γ δ : Type*}
 
-/-- Attach `⊥` to a type. -/
-def WithBot (α : Type*) :=
-  Option α
-
 namespace WithBot
 
 variable {a b : α}
-
-instance [Repr α] : Repr (WithBot α) :=
-  ⟨fun o _ =>
-    match o with
-    | none => "⊥"
-    | some a => "↑" ++ repr a⟩
-
-/-- The canonical map from `α` into `WithBot α` -/
-@[coe, match_pattern] def some : α → WithBot α :=
-  Option.some
-
--- Porting note: changed this from `CoeTC` to `Coe` but I am not 100% confident that's correct.
-instance coe : Coe α (WithBot α) :=
-  ⟨some⟩
-
-instance bot : Bot (WithBot α) :=
-  ⟨none⟩
-
-instance inhabited : Inhabited (WithBot α) :=
-  ⟨⊥⟩
 
 instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
   Option.nontrivial
@@ -82,22 +60,6 @@ theorem bot_ne_coe : ⊥ ≠ (a : WithBot α) :=
 @[simp]
 theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
   nofun
-
-/-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
-@[elab_as_elim, induction_eliminator, cases_eliminator]
-def recBotCoe {C : WithBot α → Sort*} (bot : C ⊥) (coe : ∀ a : α, C a) : ∀ n : WithBot α, C n
-  | ⊥ => bot
-  | (a : α) => coe a
-
-@[simp]
-theorem recBotCoe_bot {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C a) :
-    @recBotCoe _ C d f ⊥ = d :=
-  rfl
-
-@[simp]
-theorem recBotCoe_coe {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C a) (x : α) :
-    @recBotCoe _ C d f ↑x = f x :=
-  rfl
 
 /-- Specialization of `Option.getD` to values in `WithBot α` that respects API boundaries.
 -/
@@ -135,6 +97,17 @@ theorem map_bot (f : α → β) : map f ⊥ = ⊥ :=
 @[simp]
 theorem map_coe (f : α → β) (a : α) : map f a = f a :=
   rfl
+
+@[simp]
+lemma map_eq_bot_iff {f : α → β} {a : WithBot α} :
+    map f a = ⊥ ↔ a = ⊥ := Option.map_eq_none'
+
+theorem map_eq_some_iff {f : α → β} {y : β} {v : WithBot α} :
+    WithBot.map f v = .some y ↔ ∃ x, v = .some x ∧ f x = y := Option.map_eq_some'
+
+theorem some_eq_map_iff {f : α → β} {y : β} {v : WithBot α} :
+    .some y = WithBot.map f v ↔ ∃ x, v = .some x ∧ f x = y := by
+  cases v <;> simp [eq_comm]
 
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) :
@@ -192,6 +165,13 @@ theorem eq_unbot_iff {a : α} {b : WithBot α} (h : b ≠ ⊥) :
   induction b
   · simpa using h rfl
   · simp
+
+/-- The equivalence between the non-bottom elements of `WithBot α` and `α`. -/
+@[simps] def _root_.Equiv.withBotSubtypeNe : {y : WithBot α // y ≠ ⊥} ≃ α where
+  toFun := fun ⟨x,h⟩ => WithBot.unbot x h
+  invFun x := ⟨x, WithBot.coe_ne_bot⟩
+  left_inv _ := by simp
+  right_inv _ := by simp
 
 section LE
 
@@ -332,21 +312,23 @@ instance preorder [Preorder α] : Preorder (WithBot α) where
   lt_iff_le_not_le := by
     intros a b
     cases a <;> cases b <;> simp [lt_iff_le_not_le]
-  le_refl o a ha := ⟨a, ha, le_rfl⟩
-  le_trans o₁ o₂ o₃ h₁ h₂ a ha :=
+  le_refl _ a ha := ⟨a, ha, le_rfl⟩
+  le_trans _ _ _ h₁ h₂ a ha :=
     let ⟨b, hb, ab⟩ := h₁ a ha
     let ⟨c, hc, bc⟩ := h₂ b hb
     ⟨c, hc, le_trans ab bc⟩
 
 instance partialOrder [PartialOrder α] : PartialOrder (WithBot α) :=
   { WithBot.preorder with
-    le_antisymm := fun o₁ o₂ h₁ h₂ => by
-      cases' o₁ with a
-      · cases' o₂ with b
-        · rfl
-        rcases h₂ b rfl with ⟨_, ⟨⟩, _⟩
-      · rcases h₁ a rfl with ⟨b, ⟨⟩, h₁'⟩
-        rcases h₂ b rfl with ⟨_, ⟨⟩, h₂'⟩
+    le_antisymm := fun o₁ o₂ h₁ h₂ ↦ by
+      cases o₁ with
+      | bot =>
+        cases o₂ with
+        | bot => rfl
+        | coe b => obtain ⟨_, ⟨⟩, _⟩ := h₂ b rfl
+      | coe a =>
+        obtain ⟨b, ⟨⟩, h₁'⟩ := h₁ a rfl
+        obtain ⟨_, ⟨⟩, h₂'⟩ := h₂ b rfl
         rw [le_antisymm h₁' h₂'] }
 
 section Preorder
@@ -416,12 +398,19 @@ instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (WithBot α) where
   le_sup_left := fun o₁ o₂ a ha => by cases ha; cases o₂ <;> simp
   le_sup_right := fun o₁ o₂ a ha => by cases ha; cases o₁ <;> simp
   sup_le := fun o₁ o₂ o₃ h₁ h₂ a ha => by
-    cases' o₁ with b <;> cases' o₂ with c <;> cases ha
-    · exact h₂ a rfl
-    · exact h₁ a rfl
-    · rcases h₁ b rfl with ⟨d, ⟨⟩, h₁'⟩
-      simp only [coe_le_coe] at h₂
-      exact ⟨d, rfl, sup_le h₁' h₂⟩
+    cases o₁ with
+    | bot =>
+      cases o₂ with
+      | bot => exact h₁ a ha
+      | coe c => exact h₂ a ha
+    | coe b =>
+      cases o₂ with
+      | bot => exact h₁ a ha
+      | coe c =>
+        cases ha
+        obtain ⟨d, ⟨⟩, h₁'⟩ := h₁ b rfl
+        simp only [coe_le_coe] at h₂
+        exact ⟨d, rfl, sup_le h₁' h₂⟩
 
 theorem coe_sup [SemilatticeSup α] (a b : α) : ((a ⊔ b : α) : WithBot α) = (a : WithBot α) ⊔ b :=
   rfl
@@ -463,13 +452,13 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithBot α) :=
 instance decidableEq [DecidableEq α] : DecidableEq (WithBot α) :=
   inferInstanceAs <| DecidableEq (Option α)
 
-instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] : @DecidableRel (WithBot α) (· ≤ ·)
-  | none, x => isTrue fun a h => Option.noConfusion h
+instance decidableLE [LE α] [DecidableRel (α := α) (· ≤ ·)] : DecidableRel (α := WithBot α) (· ≤ ·)
+  | none, _ => isTrue fun _ h => Option.noConfusion h
   | Option.some x, Option.some y =>
       if h : x ≤ y then isTrue (coe_le_coe.2 h) else isFalse <| by simp [*]
   | Option.some x, none => isFalse fun h => by rcases h x rfl with ⟨y, ⟨_⟩, _⟩
 
-instance decidableLT [LT α] [@DecidableRel α (· < ·)] : @DecidableRel (WithBot α) (· < ·)
+instance decidableLT [LT α] [DecidableRel (α := α) (· < ·)] : DecidableRel (α := WithBot α) (· < ·)
   | none, Option.some x => isTrue <| by exists x, rfl; rintro _ ⟨⟩
   | Option.some x, Option.some y =>
       if h : x < y then isTrue <| by simp [*] else isFalse <| by simp [*]
@@ -499,7 +488,7 @@ instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithBot �
   have acc_bot := ⟨_, by simp [not_lt_bot]⟩
   .intro fun
     | ⊥ => acc_bot
-    | (a : α) => (wellFounded_lt.1 a).rec fun a _ ih =>
+    | (a : α) => (wellFounded_lt.1 a).rec fun _ _ ih =>
       .intro _ fun
         | ⊥, _ => acc_bot
         | (b : α), hlt => ih _ (coe_lt_coe.1 hlt)
@@ -559,33 +548,9 @@ instance noMaxOrder [LT α] [NoMaxOrder α] [Nonempty α] : NoMaxOrder (WithBot 
 
 end WithBot
 
---TODO(Mario): Construct using order dual on `WithBot`
-/-- Attach `⊤` to a type. -/
-def WithTop (α : Type*) :=
-  Option α
-
 namespace WithTop
 
 variable {a b : α}
-
-instance [Repr α] : Repr (WithTop α) :=
-  ⟨fun o _ =>
-    match o with
-    | none => "⊤"
-    | some a => "↑" ++ repr a⟩
-
-/-- The canonical map from `α` into `WithTop α` -/
-@[coe, match_pattern] def some : α → WithTop α :=
-  Option.some
-
-instance coeTC : CoeTC α (WithTop α) :=
-  ⟨some⟩
-
-instance top : Top (WithTop α) :=
-  ⟨none⟩
-
-instance inhabited : Inhabited (WithTop α) :=
-  ⟨⊤⟩
 
 instance nontrivial [Nonempty α] : Nontrivial (WithTop α) :=
   Option.nontrivial
@@ -618,22 +583,6 @@ theorem top_ne_coe : ⊤ ≠ (a : WithTop α) :=
 @[simp]
 theorem coe_ne_top : (a : WithTop α) ≠ ⊤ :=
   nofun
-
-/-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/
-@[elab_as_elim, induction_eliminator, cases_eliminator]
-def recTopCoe {C : WithTop α → Sort*} (top : C ⊤) (coe : ∀ a : α, C a) : ∀ n : WithTop α, C n
-  | none => top
-  | Option.some a => coe a
-
-@[simp]
-theorem recTopCoe_top {C : WithTop α → Sort*} (d : C ⊤) (f : ∀ a : α, C a) :
-    @recTopCoe _ C d f ⊤ = d :=
-  rfl
-
-@[simp]
-theorem recTopCoe_coe {C : WithTop α → Sort*} (d : C ⊤) (f : ∀ a : α, C a) (x : α) :
-    @recTopCoe _ C d f ↑x = f x :=
-  rfl
 
 /-- `WithTop.toDual` is the equivalence sending `⊤` to `⊥` and any `a : α` to `toDual a : αᵒᵈ`.
 See `WithTop.toDualBotEquiv` for the related order-iso.
@@ -724,6 +673,17 @@ theorem map_top (f : α → β) : map f ⊤ = ⊤ :=
 theorem map_coe (f : α → β) (a : α) : map f a = f a :=
   rfl
 
+@[simp]
+lemma map_eq_top_iff {f : α → β} {a : WithTop α} :
+    map f a = ⊤ ↔ a = ⊤ := Option.map_eq_none'
+
+theorem map_eq_some_iff {f : α → β} {y : β} {v : WithTop α} :
+    WithTop.map f v = .some y ↔ ∃ x, v = .some x ∧ f x = y := Option.map_eq_some'
+
+theorem some_eq_map_iff {f : α → β} {y : β} {v : WithTop α} :
+    .some y = WithTop.map f v ↔ ∃ x, v = .some x ∧ f x = y := by
+  cases v <;> simp [eq_comm]
+
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) : map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
   Option.map_comm h _
@@ -790,6 +750,13 @@ theorem untop_eq_iff {a : WithTop α} {b : α} (h : a ≠ ⊤) :
 theorem eq_untop_iff {a : α} {b : WithTop α} (h : b ≠ ⊤) :
     a = b.untop h ↔ a = b :=
   WithBot.eq_unbot_iff (α := αᵒᵈ) h
+
+/-- The equivalence between the non-top elements of `WithTop α` and `α`. -/
+@[simps] def _root_.Equiv.withTopSubtypeNe : {y : WithTop α // y ≠ ⊤} ≃ α where
+  toFun := fun ⟨x,h⟩ => WithTop.untop x h
+  invFun x := ⟨x, WithTop.coe_ne_top⟩
+  left_inv _ := by simp
+  right_inv _:= by simp
 
 section LE
 
@@ -973,11 +940,37 @@ theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithBot αᵒᵈ) :
 
 lemma forall_lt_iff_eq_bot [Preorder α] {x : WithBot α} :
     (∀ y : α, x < y) ↔ x = ⊥ :=
-  ⟨fun h ↦ forall_ne_iff_eq_bot.mp (fun x ↦ (h x).ne'), fun h ↦ h ▸ fun y ↦ bot_lt_coe y⟩
+  ⟨fun h ↦ forall_ne_iff_eq_bot.mp (fun x ↦ (h x).ne'), fun h y ↦ h ▸ bot_lt_coe y⟩
+
+lemma forall_le_iff_eq_bot [Preorder α] [NoMinOrder α] {x : WithBot α} :
+    (∀ y : α, x ≤ y) ↔ x = ⊥ := by
+  refine ⟨fun h ↦ forall_lt_iff_eq_bot.1 fun y ↦ ?_, fun h _ ↦ h ▸ bot_le⟩
+  obtain ⟨w, hw⟩ := exists_lt y
+  exact (h w).trans_lt (coe_lt_coe.2 hw)
+
+lemma le_of_forall_lt_iff_le [LinearOrder α] [DenselyOrdered α] [NoMinOrder α]
+    {x y : WithBot α} : (∀ z : α, x < z → y ≤ z) ↔ y ≤ x := by
+  refine ⟨fun h ↦ ?_, fun h z x_z ↦ h.trans x_z.le⟩
+  induction x with
+  | bot => exact le_of_eq <| forall_le_iff_eq_bot.1 fun z ↦ h z (bot_lt_coe z)
+  | coe x =>
+    rw [le_coe_iff]
+    rintro y rfl
+    exact le_of_forall_le_of_dense (by exact_mod_cast h)
+
+lemma ge_of_forall_gt_iff_ge [LinearOrder α] [DenselyOrdered α] [NoMinOrder α]
+    {x y : WithBot α} : (∀ z : α, z < x → z ≤ y) ↔ x ≤ y := by
+  apply Iff.intro _ (fun h _ x_z ↦ x_z.le.trans h)
+  induction y with
+  | bot => simpa using forall_le_iff_eq_bot.1
+  | coe y =>
+    rw [le_coe_iff]
+    rintro h x rfl
+    exact le_of_forall_ge_of_dense (by exact_mod_cast h)
 
 section LE
 
-variable [LE α] {a b : α}
+variable [LE α]
 
 theorem toDual_le_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
     WithBot.toDual a ≤ b ↔ WithTop.ofDual b ≤ a :=
@@ -1007,7 +1000,7 @@ end LE
 
 section LT
 
-variable [LT α] {a b : α}
+variable [LT α]
 
 theorem toDual_lt_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
     WithBot.toDual a < b ↔ WithTop.ofDual b < a :=
@@ -1132,7 +1125,7 @@ alias ⟨_, _root_.StrictMono.withTop_map⟩ := strictMono_map_iff
 theorem map_le_iff (f : α → β) (a b : WithTop α)
     (mono_iff : ∀ {a b}, f a ≤ f b ↔ a ≤ b) :
     a.map f ≤ b.map f ↔ a ≤ b := by
-  erw [← toDual_le_toDual_iff, toDual_map, toDual_map, WithBot.map_le_iff, toDual_le_toDual_iff]
+  rw [← toDual_le_toDual_iff, toDual_map, toDual_map, WithBot.map_le_iff, toDual_le_toDual_iff]
   simp [mono_iff]
 
 theorem coe_untop'_le (a : WithTop α) (b : α) : a.untop' b ≤ a :=
@@ -1142,10 +1135,21 @@ theorem coe_untop'_le (a : WithTop α) (b : α) : a.untop' b ≤ a :=
 theorem coe_top_lt [OrderTop α] {x : WithTop α} : (⊤ : α) < x ↔ x = ⊤ :=
   WithBot.lt_coe_bot (α := αᵒᵈ)
 
-lemma forall_lt_iff_eq_top {x : WithTop α} : (∀ y : α, y < x) ↔ x = ⊤ :=
-  ⟨fun h ↦ forall_ne_iff_eq_top.mp (fun x ↦ (h x).ne), fun h ↦ h ▸ fun y ↦ coe_lt_top y⟩
+lemma forall_gt_iff_eq_top {x : WithTop α} : (∀ y : α, y < x) ↔ x = ⊤ :=
+  WithBot.forall_lt_iff_eq_bot (α := αᵒᵈ)
+
+lemma forall_ge_iff_eq_top [NoMaxOrder α] {x : WithTop α} : (∀ y : α, y ≤ x) ↔ x = ⊤ :=
+  WithBot.forall_le_iff_eq_bot (α := αᵒᵈ)
 
 end Preorder
+
+lemma le_of_forall_lt_iff_le [LinearOrder α] [DenselyOrdered α] [NoMaxOrder α]
+    {x y : WithTop α} : (∀ z : α, x < z → y ≤ z) ↔ y ≤ x :=
+  WithBot.ge_of_forall_gt_iff_ge (α := αᵒᵈ)
+
+lemma ge_of_forall_gt_iff_ge [LinearOrder α] [DenselyOrdered α] [NoMaxOrder α]
+    {x y : WithTop α} : (∀ z : α, z < x → z ≤ y) ↔ x ≤ y :=
+  WithBot.le_of_forall_lt_iff_le (α := αᵒᵈ)
 
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (WithTop α) :=
   { WithTop.partialOrder with
@@ -1177,12 +1181,12 @@ instance distribLattice [DistribLattice α] : DistribLattice (WithTop α) :=
 instance decidableEq [DecidableEq α] : DecidableEq (WithTop α) :=
   inferInstanceAs <| DecidableEq (Option α)
 
-instance decidableLE [LE α] [@DecidableRel α (· ≤ ·)] :
-    @DecidableRel (WithTop α) (· ≤ ·) := fun _ _ =>
+instance decidableLE [LE α] [DecidableRel (α := α) (· ≤ ·)] :
+    DecidableRel (α := WithTop α) (· ≤ ·) := fun _ _ =>
   decidable_of_decidable_of_iff toDual_le_toDual_iff
 
-instance decidableLT [LT α] [@DecidableRel α (· < ·)] :
-    @DecidableRel (WithTop α) (· < ·) := fun _ _ =>
+instance decidableLT [LT α] [DecidableRel (α := α) (· < ·)] :
+    DecidableRel (α := WithTop α) (· < ·) := fun _ _ =>
   decidable_of_decidable_of_iff toDual_lt_toDual_iff
 
 instance isTotal_le [LE α] [IsTotal α (· ≤ ·)] : IsTotal (WithTop α) (· ≤ ·) :=

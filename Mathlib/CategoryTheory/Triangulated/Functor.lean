@@ -72,18 +72,19 @@ section Additive
 variable [Preadditive C] [Preadditive D] [F.Additive]
 
 /-- The functor `F.mapTriangle` commutes with the shift. -/
-@[simps!]
 noncomputable def mapTriangleCommShiftIso (n : ℤ) :
     Triangle.shiftFunctor C n ⋙ F.mapTriangle ≅ F.mapTriangle ⋙ Triangle.shiftFunctor D n :=
   NatIso.ofComponents (fun T => Triangle.isoMk _ _
     ((F.commShiftIso n).app _) ((F.commShiftIso n).app _) ((F.commShiftIso n).app _)
-    (by aesop_cat) (by aesop_cat) (by
+    (by simp) (by simp) (by
       dsimp
       simp only [map_units_smul, map_comp, Linear.units_smul_comp, assoc,
         Linear.comp_units_smul, ← F.commShiftIso_hom_naturality_assoc]
       rw [F.map_shiftFunctorComm_hom_app T.obj₁ 1 n]
       simp only [comp_obj, assoc, Iso.inv_hom_id_app_assoc,
         ← Functor.map_comp, Iso.inv_hom_id_app, map_id, comp_id])) (by aesop_cat)
+
+attribute [simps!] mapTriangleCommShiftIso
 
 attribute [local simp] map_zsmul comp_zsmul zsmul_comp
   commShiftIso_zero commShiftIso_add commShiftIso_comp_hom_app
@@ -102,7 +103,7 @@ def mapTriangleRotateIso :
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
       ((F.commShiftIso (1 : ℤ)).symm.app _)
-      (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
+      (by simp) (by simp) (by simp)) (by aesop_cat)
 
 /-- `F.mapTriangle` commutes with the inverse of the rotation of triangles. -/
 @[simps!]
@@ -111,7 +112,7 @@ noncomputable def mapTriangleInvRotateIso [F.Additive] :
       Pretriangulated.invRotate C ⋙ F.mapTriangle :=
   NatIso.ofComponents
     (fun T => Triangle.isoMk _ _ ((F.commShiftIso (-1 : ℤ)).symm.app _) (Iso.refl _) (Iso.refl _)
-      (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
+      (by simp) (by simp) (by simp)) (by aesop_cat)
 
 
 variable (C) in
@@ -134,7 +135,7 @@ def mapTriangleIso {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) [F₁.CommShift ℤ
   NatIso.ofComponents (fun T =>
     Triangle.isoMk _ _ (e.app _) (e.app _) (e.app _) (by simp) (by simp) (by
       dsimp
-      simp only [assoc, NatTrans.CommShift.comm_app e.hom (1 : ℤ) T.obj₁,
+      simp only [assoc, NatTrans.shift_app_comm e.hom (1 : ℤ) T.obj₁,
         NatTrans.naturality_assoc])) (by aesop_cat)
 
 end Additive
@@ -172,8 +173,8 @@ instance (priority := 100) [F.IsTriangulated] : PreservesZeroMorphisms F where
 noncomputable instance [F.IsTriangulated] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₃ : C), IsIso (prodComparison F X₁ X₃) by
-    have := fun (X₁ X₃ : C) ↦ PreservesLimitPair.ofIsoProdComparison F X₁ X₃
-    exact ⟨fun {K} ↦ preservesLimitOfIsoDiagram F (diagramIsoPair K).symm⟩
+    have := fun (X₁ X₃ : C) ↦ PreservesLimitPair.of_iso_prod_comparison F X₁ X₃
+    exact ⟨fun {K} ↦ preservesLimit_of_iso_diagram F (diagramIsoPair K).symm⟩
   intro X₁ X₃
   let φ : F.mapTriangle.obj (binaryProductTriangle X₁ X₃) ⟶
       binaryProductTriangle (F.obj X₁) (F.obj X₃) :=
@@ -193,7 +194,7 @@ noncomputable instance [F.IsTriangulated] :
       comm₃ := by simp }
   exact isIso₂_of_isIso₁₃ φ (F.map_distinguished _ (binaryProductTriangle_distinguished X₁ X₃))
     (binaryProductTriangle_distinguished _ _)
-    (by dsimp; infer_instance) (by dsimp; infer_instance)
+    (by dsimp [φ]; infer_instance) (by dsimp [φ]; infer_instance)
 
 instance (priority := 100) [F.IsTriangulated] : F.Additive :=
   F.additive_of_preserves_binary_products
@@ -304,6 +305,6 @@ lemma isTriangulated_of_essSurj_mapComposableArrows_two
   exact ⟨Octahedron.ofIso (e₁ := (e.app 0).symm) (e₂ := (e.app 1).symm) (e₃ := (e.app 2).symm)
     (comm₁₂ := ComposableArrows.naturality' e.inv 0 1)
     (comm₂₃ := ComposableArrows.naturality' e.inv 1 2)
-    (H := (someOctahedron rfl h₁₂' h₂₃' h₁₃').map F) _ _ _ _ _⟩
+    (H := (someOctahedron rfl h₁₂' h₂₃' h₁₃').map F) ..⟩
 
 end CategoryTheory

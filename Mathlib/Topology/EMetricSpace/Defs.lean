@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Robert Y. Lewis, Johannes Hölzl, Mario Carneiro, Sébastien Gouëzel
 -/
 import Mathlib.Data.ENNReal.Inv
-import Mathlib.Topology.UniformSpace.Basic
+import Mathlib.Topology.UniformSpace.OfFun
+import Mathlib.Topology.Bases
 
 /-!
 # Extended metric spaces
@@ -25,10 +26,10 @@ to `EMetricSpace` at the end.
 -/
 
 assert_not_exists Nat.instLocallyFiniteOrder
-assert_not_exists UniformEmbedding
+assert_not_exists IsUniformEmbedding
 assert_not_exists TendstoUniformlyOnFilter
 
-open Set Filter
+open Filter Set Topology
 
 universe u v w
 
@@ -275,8 +276,15 @@ instance {α : Type*} {p : α → Prop} [PseudoEMetricSpace α] : PseudoEMetricS
   PseudoEMetricSpace.induced Subtype.val ‹_›
 
 /-- The extended pseudodistance on a subset of a pseudoemetric space is the restriction of
-the original pseudodistance, by definition -/
+the original pseudodistance, by definition. -/
 theorem Subtype.edist_eq {p : α → Prop} (x y : Subtype p) : edist x y = edist (x : α) y := rfl
+
+/-- The extended pseudodistance on a subtype of a pseudoemetric space is the restriction of
+the original pseudodistance, by definition. -/
+@[simp]
+theorem Subtype.edist_mk_mk {p : α → Prop} {x y : α} (hx : p x) (hy : p y) :
+    edist (⟨x, hx⟩ : Subtype p) ⟨y, hy⟩ = edist x y :=
+  rfl
 
 namespace MulOpposite
 
@@ -307,11 +315,12 @@ end ULift
 /-- The product of two pseudoemetric spaces, with the max distance, is an extended
 pseudometric spaces. We make sure that the uniform structure thus constructed is the one
 corresponding to the product of uniform spaces, to avoid diamond problems. -/
-instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] : PseudoEMetricSpace (α × β) where
+instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] :
+  PseudoEMetricSpace (α × β) where
   edist x y := edist x.1 y.1 ⊔ edist x.2 y.2
   edist_self x := by simp
   edist_comm x y := by simp [edist_comm]
-  edist_triangle x y z :=
+  edist_triangle _ _ _ :=
     max_le (le_trans (edist_triangle _ _ _) (add_le_add (le_max_left _ _) (le_max_left _ _)))
       (le_trans (edist_triangle _ _ _) (add_le_add (le_max_right _ _) (le_max_right _ _)))
   uniformity_edist := uniformity_prod.trans <| by
@@ -447,7 +456,7 @@ theorem tendsto_nhdsWithin_nhds {a b} :
     Tendsto f (𝓝[s] a) (𝓝 b) ↔
       ∀ ε > 0, ∃ δ > 0, ∀ {x : α}, x ∈ s → edist x a < δ → edist (f x) b < ε := by
   rw [← nhdsWithin_univ b, tendsto_nhdsWithin_nhdsWithin]
-  simp only [mem_univ, true_and_iff]
+  simp only [mem_univ, true_and]
 
 theorem tendsto_nhds_nhds {a b} :
     Tendsto f (𝓝 a) (𝓝 b) ↔ ∀ ε > 0, ∃ δ > 0, ∀ ⦃x⦄, edist x a < δ → edist (f x) b < ε :=
@@ -491,11 +500,11 @@ theorem tendsto_nhds {f : Filter β} {u : β → α} {a : α} :
 theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {u : β → α} {a : α} :
     Tendsto u atTop (𝓝 a) ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, edist (u n) a < ε :=
   (atTop_basis.tendsto_iff nhds_basis_eball).trans <| by
-    simp only [exists_prop, true_and_iff, mem_Ici, mem_ball]
+    simp only [exists_prop, true_and, mem_Ici, mem_ball]
 
 section Compact
 
--- Porting note (#11215): TODO: generalize to a uniform space with metrizable uniformity
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: generalize to a uniform space with metrizable uniformity
 /-- For a set `s` in a pseudo emetric space, if for every `ε > 0` there exists a countable
 set that is `ε`-dense in `s`, then there exists a countable subset `t ⊆ s` that is dense in `s`. -/
 theorem subset_countable_closure_of_almost_dense_set (s : Set α)
@@ -548,7 +557,7 @@ theorem _root_.TopologicalSpace.IsSeparable.separableSpace {s : Set α} (hs : Is
   rcases hs.exists_countable_dense_subset with ⟨t, hts, htc, hst⟩
   lift t to Set s using hts
   refine ⟨⟨t, countable_of_injective_of_countable_image Subtype.coe_injective.injOn htc, ?_⟩⟩
-  rwa [inducing_subtype_val.dense_iff, Subtype.forall]
+  rwa [IsInducing.subtypeVal.dense_iff, Subtype.forall]
 
 end Compact
 
@@ -655,11 +664,11 @@ theorem edist_ofAdd (a b : X) : edist (ofAdd a) (ofAdd b) = edist a b :=
   rfl
 
 @[simp]
-theorem edist_toMul (a b : Additive X) : edist (toMul a) (toMul b) = edist a b :=
+theorem edist_toMul (a b : Additive X) : edist a.toMul b.toMul = edist a b :=
   rfl
 
 @[simp]
-theorem edist_toAdd (a b : Multiplicative X) : edist (toAdd a) (toAdd b) = edist a b :=
+theorem edist_toAdd (a b : Multiplicative X) : edist a.toAdd b.toAdd = edist a b :=
   rfl
 
 end

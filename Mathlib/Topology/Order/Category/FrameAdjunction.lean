@@ -76,7 +76,7 @@ lemma isOpen_iff (U : Set (PT L)) : IsOpen U ↔ ∃ u : L, {x | x u} = U := Iff
 
 end PT
 
--- This was a global instance prior to #13170. We may experiment with removing it.
+-- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
 attribute [local instance] CategoryTheory.ConcreteCategory.instFunLike
 
 /-- The covariant functor `pt` from the category of locales to the category of
@@ -97,7 +97,7 @@ a point `x` of the space `X` a point of the locale of opens of `X`. -/
 @[simps]
 def localePointOfSpacePoint (x : X) : PT (Opens X) where
   toFun := (x ∈ ·)
-  map_inf' a b := rfl
+  map_inf' _ _ := rfl
   map_top' := rfl
   map_sSup' S := by simp [Prop.exists_iff]
 
@@ -109,11 +109,10 @@ def counitAppCont : FrameHom L (Opens <| PT L) where
   map_sSup' S := by ext; simp
 
 /-- The forgetful functor `topToLocale` is left adjoint to the functor `pt`. -/
-def adjunctionTopToLocalePT : topToLocale ⊣ pt :=
-  Adjunction.mkOfUnitCounit
-    { unit := { app := fun X ↦ ⟨localePointOfSpacePoint X, continuous_def.2 <|
+def adjunctionTopToLocalePT : topToLocale ⊣ pt where
+  unit := { app := fun X ↦ ⟨localePointOfSpacePoint X, continuous_def.2 <|
         by rintro _ ⟨u, rfl⟩; simpa using u.2⟩ }
-      counit := { app := fun L ↦ ⟨counitAppCont L⟩ } }
+  counit := { app := fun L ↦ ⟨counitAppCont L⟩ }
 
 end locale_top_adjunction
 
