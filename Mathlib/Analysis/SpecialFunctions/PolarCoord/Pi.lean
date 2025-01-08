@@ -9,8 +9,8 @@ import Mathlib.MeasureTheory.Constructions.Pi
 /-!
 # Polar coordinates change of variables for pi-types
 
-The polar coordinates change of variables formula for the Lebesgue integral for a function
-defined on the product space `ι → ℝ × ℝ` and `ι → ℂ`.
+The polar coordinates change of variables formulas for the Lebesgue integral for a function
+defined on the pi-space `ι → ℝ × ℝ` or `ι → ℂ`.
 
 -/
 
@@ -64,6 +64,6 @@ protected theorem Complex.lintegral_comp_pi_polarCoord_symm {f : (ι → ℂ) �
     ∫⁻ p in (Set.univ.pi fun _ : ι ↦ Complex.polarCoord.target),
       (∏ i, .ofReal (p i).1) * f (fun i ↦ Complex.polarCoord.symm (p i)) = ∫⁻ p, f p := by
   let e := MeasurableEquiv.piCongrRight (fun _ : ι ↦ measurableEquivRealProd.symm)
-  have he := volume_preserving_pi (fun _ : ι ↦ Complex.volume_preserving_equiv_real_prod.symm)
-  rw [← MeasurePreserving.lintegral_comp_emb he e.measurableEmbedding]
-  exact lintegral_comp_pi_polarCoord_symm <| (MeasurableEquiv.measurable_comp_iff e).mpr hf
+  rw [← MeasurePreserving.lintegral_comp_emb ?_ e.measurableEmbedding]
+  · exact lintegral_comp_pi_polarCoord_symm <| (MeasurableEquiv.measurable_comp_iff e).mpr hf
+  · exact volume_preserving_pi (fun _ : ι ↦ Complex.volume_preserving_equiv_real_prod.symm)
