@@ -5,6 +5,7 @@ Authors: Arthur Paulino
 -/
 
 import Cache.Requests
+import Lean.Elab.ParseImportsFast
 import Batteries.Data.String.Matcher
 
 def help : String := "Mathlib4 caching CLI
@@ -107,17 +108,16 @@ def main (args : List String) : IO Unit := do
     let allFiles := System.FilePath.walkDir (← IO.Process.getCurrentDir)
       (fun p ↦ pure (p.fileName != some ".lake"))
     let leanFiles := (← allFiles).filter (fun p ↦ p.extension == some "lean")
-    -- For each file, find all lines starting with "import Mathlib.",
+    -- For each file, find all imports starting with Mathlib.
+    -- (We use proper parsing, to not be confused by lines like
+    -- 'import Mathlib -- comment' or 'import /- comment -/ Mathlib'.)
     let mut allModules := #[]
     for fi in leanFiles do
-      allModules := allModules.append
-        ((← FS.lines fi).filter (·.startsWith "import Mathlib.")|>.map (·.stripPrefix "import "))
-    -- make sure to not barf on lines like "import Mathlib.X.Y -- a comment here":
-    -- strip everything after a comment.
-    allModules := allModules.map fun mod ↦
-      if mod.containsSubstr "--" then ((mod.splitOn "--").get! 0).trimRight else mod
+      let imports ← Lean.parseImports' (← IO.FS.readFile fi) ""
+      allModules := allModules.append <|
+        imports.map (fun imp ↦ imp.module) |>.filter (·.getRoot == `Mathlib)
     -- and turn each "import Mathlib.X.Y.Z" into an argument "Mathlib.X.Y.Z.lean" to `get`.
-    let args := allModules.map fun mod ↦ mkFilePath (mod.splitOn ".") |>.addExtension "lean"
+    let args := allModules.map fun mod ↦ mkFilePath (mod.components.map (fun s ↦ s.toString)) |>.addExtension "lean"
     let hm ← hashMemo.filterByFilePaths args.toList
     getFiles hm false false goodCurl true
   let pack (overwrite verbose unpackedOnly := false) := do
