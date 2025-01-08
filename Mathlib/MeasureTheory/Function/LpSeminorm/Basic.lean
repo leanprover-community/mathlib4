@@ -872,7 +872,7 @@ lemma eLpNorm_indicator_const_le (c : G) (p : ℝ≥0∞) :
     eLpNorm (s.indicator fun _ => c) p μ ≤ eLpNorm (t.indicator fun _ => c) p μ :=
       eLpNorm_mono (norm_indicator_le_of_subset (subset_toMeasurable _ _) _)
     _ = ‖c‖₊ * μ t ^ (1 / p.toReal) :=
-      (eLpNorm_indicator_const (measurableSet_toMeasurable _ _) hp h'p)
+      eLpNorm_indicator_const (measurableSet_toMeasurable ..) hp h'p
     _ = ‖c‖₊ * μ s ^ (1 / p.toReal) := by rw [measure_toMeasurable]
 
 lemma Memℒp.indicator (hs : MeasurableSet s) (hf : Memℒp f p μ) : Memℒp (s.indicator f) p μ :=
@@ -1191,6 +1191,12 @@ lemma eLpNorm_lt_top_of_finite [Finite α] [IsFiniteMeasure μ] : eLpNorm f p μ
 
 @[simp] lemma eLpNorm_of_isEmpty [IsEmpty α] (f : α → E) (p : ℝ≥0∞) : eLpNorm f p μ = 0 := by
   simp [Subsingleton.elim f 0]
+
+@[deprecated (since := "2024-07-27")]
+alias snormEssSup_piecewise := eLpNormEssSup_piecewise
+
+@[deprecated (since := "2024-07-27")]
+alias snorm_top_piecewise := eLpNorm_top_piecewise
 
 section MapMeasure
 
