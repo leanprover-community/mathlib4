@@ -366,7 +366,7 @@ theorem mem_integers_of_valuation_le_one (x : K)
     · exact h.symm
     · simp [hd0] at h
   classical
-  have ine : ∀ {r : R}, r ≠ 0 → Ideal.span {r} ≠ ⊥ := fun {r} ↦ mt Ideal.span_singleton_eq_bot.mp
+  have ine {r : R} : r ≠ 0 → Ideal.span {r} ≠ ⊥ := mt Ideal.span_singleton_eq_bot.mp
   rw [← Associates.mk_le_mk_iff_dvd, ← Associates.factors_le, Associates.factors_mk _ (ine hn0),
     Associates.factors_mk _ (ine hd0), WithTop.coe_le_coe, Multiset.le_iff_count]
   rintro ⟨v, hv⟩
