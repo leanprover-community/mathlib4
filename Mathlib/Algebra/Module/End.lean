@@ -6,6 +6,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Module.NatInt
+import Mathlib.Algebra.Ring.Idempotents
 
 /-!
 # Module structure and endomorphisms
@@ -86,6 +87,17 @@ end AddCommGroup
 section AddCommGroup
 
 variable [Ring R] [AddCommGroup M] [Module R M]
+
+open AddMonoidHom in
+open Module in
+lemma ker_id_sub_eq_range  {p : R} (h : IsIdempotentElem p) :
+    ker (toAddMonoidEnd R M (1 - p)) = AddMonoidHom.range (toAddMonoidEnd R M p) := by
+  ext x
+  rw [mem_ker, AddMonoidHom.mem_range, map_sub, map_one, sub_apply, toAddMonoidEnd_apply_apply,
+    sub_eq_zero, AddMonoid.End.coe_one, id_eq]
+  simp_rw [toAddMonoidEnd_apply_apply]
+  exact ⟨fun h => ⟨x,h.symm⟩, fun ⟨y,hy⟩ => by
+    rw [← hy, ← smul_assoc, smul_eq_mul, h]⟩
 
 section
 
