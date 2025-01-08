@@ -57,9 +57,11 @@ def toPaths (args : List String) : List FilePath :=
     else
       mkFilePath (arg.toName.components.map Name.toString) |>.withExtension "lean"
 
+/-- Commands which (potentially) call `curl` for downloading files -/
 def curlArgs : List String :=
   ["get", "get!", "get-", "put", "put!", "put-unpacked", "commit", "commit!"]
 
+/-- Commands which (potentially) call `leantar` for decompressing downloaded files -/
 def leanTarArgs : List String :=
   ["get", "get!", "pack", "pack!", "unpack", "lookup"]
 
