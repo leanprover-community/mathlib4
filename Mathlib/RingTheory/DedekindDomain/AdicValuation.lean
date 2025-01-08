@@ -362,9 +362,8 @@ theorem mem_integers_of_valuation_le_one (x : K)
     obtain ⟨z, rfl⟩ := Ideal.span_singleton_le_span_singleton.1 (Ideal.le_of_dvd this)
     use z
     rw [map_mul, mul_comm, mul_eq_mul_left_iff] at hx
-    cases' hx with h h
-    · exact h.symm
-    · simp [hd0] at h
+    refine (hx.resolve_right fun h => ?_).symm
+    simp [hd0] at h
   classical
   have ine {r : R} : r ≠ 0 → Ideal.span {r} ≠ ⊥ := mt Ideal.span_singleton_eq_bot.mp
   rw [← Associates.mk_le_mk_iff_dvd, ← Associates.factors_le, Associates.factors_mk _ (ine hn0),
