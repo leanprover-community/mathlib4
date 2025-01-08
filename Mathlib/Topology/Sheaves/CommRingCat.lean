@@ -174,7 +174,6 @@ instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf
   -- Porting note: this is a hack to make the `refine` below works
   set m := _
   change Function.Injective (algebraMap _ (Localization m))
-  change Function.Injective (algebraMap (F.presheaf.obj U) _)
   haveI : IsLocalization _ (Localization m) := Localization.isLocalization
   -- Porting note: `M` and `S` need to be specified manually, so used a hack to save some typing
   refine IsLocalization.injective (M := m) (S := Localization m) ?_

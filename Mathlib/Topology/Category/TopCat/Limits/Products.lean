@@ -225,7 +225,6 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
     exact ⟨exists_apply_eq_apply _ _, exists_apply_eq_apply _ _⟩
   · rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
     use (prodIsoProd W X).inv (x₁, x₂)
-    change (forget TopCat).map _ _ = _
     apply Concrete.limit_ext
     rintro ⟨⟨⟩⟩
     · change limit.π (pair Y Z) _ ((prod.map f g) _) = _

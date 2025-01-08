@@ -213,7 +213,6 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
       comp_apply, comp_apply, hx₁, hx₂, ← comp_apply, pullback.condition]
     rfl -- `rfl` was not needed before https://github.com/leanprover-community/mathlib4/pull/13170
   use (pullbackIsoProdSubtype f₁ f₂).inv ⟨⟨x₁, x₂⟩, this⟩
-  change (forget TopCat).map _ _ = _
   apply Concrete.limit_ext
   rintro (_ | _ | _) <;>
   erw [← comp_apply, ← comp_apply] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
@@ -224,11 +223,9 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
   · simp only [cospan_left, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
       pullbackIsoProdSubtype_inv_fst_assoc, comp_apply]
     erw [hx₁] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
-    rfl
   · simp only [cospan_right, limit.lift_π, PullbackCone.mk_pt, PullbackCone.mk_π_app,
       pullbackIsoProdSubtype_inv_snd_assoc, comp_apply]
     erw [hx₂] -- now `erw` after https://github.com/leanprover-community/mathlib4/pull/13170
-    rfl
 
 theorem pullback_fst_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :
     Set.range (pullback.fst f g) = { x : X | ∃ y : Y, f x = g y } := by
