@@ -419,11 +419,9 @@ lemma PNat.isCoprime_iff {m n : ℕ+} : IsCoprime (m : ℕ) n ↔ m = 1 ∨ n = 
 @[simp]
 lemma Semifield.isCoprime_iff {R : Type*} [Semifield R] {m n : R} :
     IsCoprime m n ↔ m ≠ 0 ∨ n ≠ 0 := by
-  obtain rfl | hm := eq_or_ne m 0
-  · simp [isCoprime_zero_left]
   obtain rfl | hn := eq_or_ne n 0
   · simp [isCoprime_zero_right]
-  simp only [ne_eq, hm, not_false_eq_true, hn, or_self, iff_true]
+  suffices IsCoprime m n by simpa [hn]
   refine ⟨0, n⁻¹, ?_⟩
   simp [inv_mul_cancel₀ hn]
 
