@@ -380,6 +380,8 @@ include hf in
 Given a formally smooth `R`-algebra `P` and a surjective algebra homomorphism `f : P →ₐ[R] S`
 with kernel `I` (typically a presentation `R[X] → S`),
 `S` is formally smooth iff the `P`-linear map `I/I² → S ⊗[P] Ω[P⁄R]` is split injective.
+Also see `Algebra.Extension.formallySmooth_iff_split_injection`
+for the version in terms of `Extension`.
 -/
 @[stacks 031I]
 theorem Algebra.FormallySmooth.iff_split_injection :
@@ -387,6 +389,26 @@ theorem Algebra.FormallySmooth.iff_split_injection :
   have := (retractionKerCotangentToTensorEquivSection (R := R) hf).nonempty_congr
   simp only [nonempty_subtype] at this
   rw [this, ← Algebra.FormallySmooth.iff_split_surjection _ hf]
+
+/--
+Given a formally smooth `R`-algebra `P` and a surjective algebra homomorphism `f : P →ₐ[R] S`
+with kernel `I` (typically a presentation `R[X] → S`),
+`S` is formally smooth iff the `P`-linear map `I/I² → S ⊗[P] Ω[P⁄R]` is split injective.
+-/
+@[stacks 031I]
+theorem Algebra.Extension.formallySmooth_iff_split_injection
+    (P : Algebra.Extension.{u} R S) [FormallySmooth R P.Ring] :
+    Algebra.FormallySmooth R S ↔ ∃ l, l ∘ₗ P.cotangentComplex = LinearMap.id := by
+  refine (Algebra.FormallySmooth.iff_split_injection P.algebraMap_surjective).trans ?_
+  let e : P.ker.Cotangent ≃ₗ[P.Ring] P.Cotangent :=
+    { __ := AddEquiv.refl _, map_smul' r m := by ext1; simp; rfl }
+  constructor
+  · intro ⟨l, hl⟩
+    exact ⟨(e.comp l).extendScalarsOfSurjective P.algebraMap_surjective,
+      LinearMap.ext (DFunLike.congr_fun hl : _)⟩
+  · intro ⟨l, hl⟩
+    exact ⟨e.symm.toLinearMap ∘ₗ l.restrictScalars P.Ring,
+      LinearMap.ext (DFunLike.congr_fun hl : _)⟩
 
 include hf in
 /--
@@ -447,3 +469,6 @@ theorem Algebra.FormallySmooth.iff_subsingleton_and_projective :
   show Function.Injective (Generators.self R S).toExtension.cotangentComplex ↔ _
   rw [← LinearMap.ker_eq_bot, ← Submodule.subsingleton_iff_eq_bot]
   rfl
+
+instance [Algebra.FormallySmooth R S] : Subsingleton (Algebra.H1Cotangent R S) :=
+  (Algebra.FormallySmooth.iff_subsingleton_and_projective.mp ‹_›).1
