@@ -178,7 +178,6 @@ theorem egauge_add_add_le {U V : Set E} (hU : Balanced 𝕜 U) (hV : Balanced �
   | inl hab =>
     refine ⟨b, ?_, hbc⟩
     rw [smul_add]
-    have := hU.smul_mono (𝕜 := 𝕜) hab ha
     exact add_mem_add (hU.smul_mono hab ha) hb
   | inr hba =>
     refine ⟨a, ?_, hac⟩
