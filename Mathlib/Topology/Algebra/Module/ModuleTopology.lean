@@ -466,7 +466,7 @@ variable {ι : Type*} [Finite ι] {A : ι → Type*} [∀ i, AddCommMonoid (A i)
 /-- The product of the module topologies for a finite family of modules over a topological ring
 is the module topology. -/
 instance pi : IsModuleTopology R (∀ i, A i) := by
-  -- This is an easy induction on the size of the finite set, given the result
+  -- This is an easy induction on the size of the finite type, given the result
   -- for binary products above. We use a "decategorified" induction principle for finite types.
   induction ι using Finite.induction_empty_option
   · -- invariance under equivalence of the finite type we're taking the product over
