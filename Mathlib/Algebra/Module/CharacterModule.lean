@@ -235,8 +235,7 @@ theorem _root_.rTensor_injective_iff_lcomp_surjective {f : A →ₗ[R] A'} :
 lemma surjective_of_dual_injective (f : A →ₗ[R] A') (hf : Function.Injective (dual f)) :
     Function.Surjective f := by
   rw [← LinearMap.range_eq_top, ← Submodule.unique_quotient_iff_eq_top]
-  refine Nonempty.intro (Unique.mk inferInstance
-    (fun a ↦ (eq_zero_of_character_apply (fun c ↦ ?_))))
+  refine ⟨Unique.mk inferInstance fun a ↦ eq_zero_of_character_apply fun c ↦ ?_⟩
   obtain ⟨b, rfl⟩ := QuotientAddGroup.mk'_surjective _ a
   suffices eq : dual (Submodule.mkQ _) c = 0 by
     change (dual (Submodule.mkQ _) c) b = 0
