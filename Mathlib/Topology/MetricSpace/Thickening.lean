@@ -650,10 +650,7 @@ theorem IsCompact.exists_thickening_image_subset
   · use 1, by positivity, ∅, by simp, by simp
   · exact fun s t hst ⟨ε, hε, V, hV, hthickening⟩ ↦ ⟨ε, hε, V, nhdsSet_mono hst hV, hthickening⟩
   · rintro s t ⟨ε₁, hε₁, V₁, hV₁, hV₁thickening⟩ ⟨ε₂, hε₂, V₂, hV₂, hV₂thickening⟩
-    refine ⟨min ε₁ ε₂, by positivity, V₁ ∪ V₂, ?_, ?_⟩
-    · let aux := nhdsSet_union V₁ V₂ -- morally: rewrite by that, done :-)
-      --rw [nhdsSet_union V₁ V₂]--apply nhdsSet_union hV₁ hV₂
-      sorry --aesop
+    refine ⟨min ε₁ ε₂, by positivity, V₁ ∪ V₂, union_mem_nhdsSet hV₁ hV₂, ?_⟩
     rw [image_union, thickening_union]
     calc thickening (ε₁ ⊓ ε₂) (f '' V₁) ∪ thickening (ε₁ ⊓ ε₂) (f '' V₂)
       _ ⊆ thickening ε₁ (f '' V₁) ∪ thickening ε₂ (f '' V₂) := by gcongr <;> norm_num
@@ -662,12 +659,16 @@ theorem IsCompact.exists_thickening_image_subset
   · intro x hx
     have : {f x} ⊆ U := by rw [@singleton_subset_iff]; exact hKU hx
     obtain ⟨δ, hδ, hthick⟩ := (isCompact_singleton (x := f x)).exists_thickening_subset_open ho this
-    let V' := ball (f x) (δ / 2)
+    specialize hf ⟨x, hx⟩
+    -- f is continuous at x: this implies some nbhd of x is mapped to a nbhd of f x, choose that!
+    -- then use below... tomorrow!
 
-    sorry
-
-
-
+    -- let V' := ball (f x) (δ / 2)
+    -- use K ∩ f ⁻¹' V'
+    -- constructor
+    -- · rw [mem_nhdsWithin]
+    --   use f ⁻¹' V'
+    stop
 
   -- obtain ⟨r, hr₀, hr⟩ := (hK.image_of_continuousOn (hf.mono (subset_of_mem_nhdsSet hs))
   --   ).exists_thickening_subset_open ho hKU.image_subset
