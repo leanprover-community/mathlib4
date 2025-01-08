@@ -788,6 +788,9 @@ lemma eLpNorm_indicator_eq_eLpNorm_restrict (hs : MeasurableSet s) :
   --               `∘` well.
   exact (Set.indicator_comp_of_zero (g := fun x : ℝ≥0∞ => x ^ p.toReal) h_zero).symm
 
+@[deprecated (since := "2024-07-27")]
+alias snorm_indicator_eq_restrict := eLpNorm_indicator_eq_eLpNorm_restrict
+
 @[deprecated (since := "2025-01-07")]
 alias eLpNorm_indicator_eq_restrict := eLpNorm_indicator_eq_eLpNorm_restrict
 

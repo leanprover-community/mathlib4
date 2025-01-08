@@ -495,6 +495,37 @@ For a set `s` with `(hs : MeasurableSet s)` and `(hμs : μ s < ∞)`, we build
 `indicatorConstLp p hs hμs c`, the element of `Lp` corresponding to `s.indicator (fun _ => c)`.
 -/
 
+@[deprecated (since := "2024-07-27")]
+alias snormEssSup_indicator_le := eLpNormEssSup_indicator_le
+
+@[deprecated (since := "2024-07-27")]
+alias snormEssSup_indicator_const_le := eLpNormEssSup_indicator_const_le
+
+@[deprecated (since := "2024-07-27")]
+alias snormEssSup_indicator_const_eq := eLpNormEssSup_indicator_const_eq
+
+@[deprecated (since := "2024-07-27")]
+alias snorm_indicator_le := eLpNorm_indicator_le
+
+@[deprecated (since := "2024-07-27")]
+alias snorm_indicator_const₀ := eLpNorm_indicator_const₀
+
+@[deprecated (since := "2024-07-27")]
+alias snorm_indicator_const := eLpNorm_indicator_const
+
+@[deprecated (since := "2024-07-27")]
+alias snorm_indicator_const' := eLpNorm_indicator_const'
+
+@[deprecated (since := "2024-07-27")]
+alias snorm_indicator_const_le := eLpNorm_indicator_const_le
+
+@[deprecated (since := "2024-07-27")]
+alias snormEssSup_indicator_eq_snormEssSup_restrict :=
+  eLpNormEssSup_indicator_eq_eLpNormEssSup_restrict
+
+@[deprecated (since := "2024-07-27")]
+alias snorm_indicator_eq_snorm_restrict := eLpNorm_indicator_eq_eLpNorm_restrict
+
 /-- The `ℒ^p` norm of the indicator of a set is uniformly small if the set itself has small measure,
 for any `p < ∞`. Given here as an existential `∀ ε > 0, ∃ η > 0, ...` to avoid later
 management of `ℝ≥0∞`-arithmetic. -/
