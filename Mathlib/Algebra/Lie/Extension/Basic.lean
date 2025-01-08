@@ -10,10 +10,8 @@ import Mathlib.Algebra.Lie.Abelian
 
 Copy group extension API from GroupTheory.GroupExtension.Defs
 
-Problem: If I want to build a central extension from a cocycle, I need to make the Lie ring
-structure, and the Lie algebra structure, and the extension structure.  Perhaps it is better to
-assume the structure pre-exists, and make a prop "comes from the 2-cocycle `c`" for the Lie
-structure on `L × V`.  Then, we don't need to `letI` the typeclasses.
+We use a type alias for the product, so that we can produce instances depending on the
+cocycle. We should add reducible equivalences.
 
 Also, need a `make an abelian Lie algebra` class?
 
@@ -22,6 +20,17 @@ variable (R N L M : Type*)
 
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing N] [LieAlgebra R N] [LieRing M]
   [LieAlgebra R M]
+
+/-- `IsLieExtension R N L M inl rightHom` is the statement that the sequence of Lie algebra
+homomorphisms
+`0 → N → L → M → 0`. -/
+structure IsLieExtension (inl : N →ₗ⁅R⁆ L) (rightHom : L →ₗ⁅R⁆ M) where
+  /-- The inclusion map is injective. -/
+  inl_injective : Function.Injective inl
+  /-- The range of the inclusion map is equal to the kernel of the projection map. -/
+  range_inl_eq_ker_rightHom : LinearMap.range inl.toLinearMap = LinearMap.ker rightHom.toLinearMap
+  /-- The projection map is surjective. -/
+  rightHom_surjective : Function.Surjective rightHom
 
 /-- `LieExtension N E G` is a short exact sequence of Lie algebra homomorphisms
 `0 → N → L → M → 0`. -/
@@ -37,10 +46,6 @@ structure LieExtension where
   /-- The projection map is surjective. -/
   rightHom_surjective : Function.Surjective rightHom
 
-/-- A Lie extension is a surjective Lie algebra homomorphism. Delete? -/
-def IsLieExtension (f : L →ₗ⁅R⁆ M) : Prop :=
-  Function.Surjective f
-
 namespace LieExtension
 
 variable {R L M N V : Type*}
@@ -50,7 +55,7 @@ variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing N] [LieAlgebra R N] 
 
 /-- Construct an extension from a surjective Lie algebra homomorphism. -/
 @[simps!]
-def ofSurjection (f : L →ₗ⁅R⁆ M) (hf : Function.Surjective f) :
+def ofSurjective (f : L →ₗ⁅R⁆ M) (hf : Function.Surjective f) :
     LieExtension R (LieHom.ker f) L M where
   inl := f.ker.incl
   rightHom := f
@@ -89,6 +94,8 @@ instance : LinearMapClass S.Splitting R M L where
   map_add f := f.sectionHom.map_add'
   map_smulₛₗ f := f.sectionHom.map_smul'
 
+section TwoCocycleTriv
+
 /-- A Lie algebra 2-cocycle with coefficients in a module with trivial action. -/
 structure twoCocycleTriv (R L V) [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup V]
     [Module R V] where
@@ -97,23 +104,37 @@ structure twoCocycleTriv (R L V) [CommRing R] [LieRing L] [LieAlgebra R L] [AddC
   map_eq_zero_of_eq' x : toFun x x = 0
   cocycle x y z : toFun x ⁅y, z⁆ = toFun ⁅x, y⁆ z + toFun y ⁅x, z⁆
 
+variable [AddCommGroup V] [Module R V] (c : twoCocycleTriv R L V)
+
 set_option linter.unusedVariables false in
 /-- We introduce a type alias for `L × V` in order to avoid typeclass inference problems with
 central extensions. -/
 @[nolint unusedArguments]
-def ofTwoCocycleTrivModule (R L V) [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup V]
-    [Module R V] (c : twoCocycleTriv R L V) := L × V
+def ofTwoCocycleTrivModule (c : twoCocycleTriv R L V) := L × V
 
-instance [AddCommGroup V] [Module R V] (c : twoCocycleTriv R L V) :
-    AddCommGroup (ofTwoCocycleTrivModule R L V c) :=
-  Prod.instAddCommGroup
+/-- The casting function to the type synonym. -/
+--@[reducible] -- this makes a mess
+def ofProd : L × V ≃ ofTwoCocycleTrivModule c := Equiv.refl _
 
-instance [AddCommGroup V] [Module R V] (c : twoCocycleTriv R L V) :
-    Module R (ofTwoCocycleTrivModule R L V c) :=
-  Prod.instModule
+instance : AddCommGroup (ofTwoCocycleTrivModule c) :=
+  inferInstanceAs <| AddCommGroup (L × V)
 
-instance [AddCommGroup V] [Module R V] (c : twoCocycleTriv R L V) :
-    LieRing (ofTwoCocycleTrivModule R L V c) where
+instance : Module R (ofTwoCocycleTrivModule c) :=
+  inferInstanceAs <| Module R (L × V)
+
+@[simp] theorem of_zero : ofProd c (0 : L × V) = 0 := rfl
+@[simp] theorem of_add (x y : L × V) : ofProd c (x + y) = ofProd c x + ofProd c y := rfl
+
+@[simp] theorem of_symm_zero : (ofProd c).symm (0 : ofTwoCocycleTrivModule c) = 0 := rfl
+@[simp] theorem of_symm_add (x y : ofTwoCocycleTrivModule c) :
+  (ofProd c).symm (x + y) = (ofProd c).symm x + (ofProd c).symm y := rfl
+
+@[simp] theorem of_nsmul (n : ℕ) (x : L × V) :
+  (ofProd c) (n • x) = n • (ofProd c) x := rfl
+@[simp] theorem of_symm_nsmul (n : ℕ) (x : ofTwoCocycleTrivModule c) :
+  (ofProd c).symm (n • x) = n • (ofProd c).symm x := rfl
+
+instance : LieRing (ofTwoCocycleTrivModule c) where
   bracket x y := (⁅x.1, y.1⁆, c.toFun x.1 y.1)
   add_lie x y z := by simp [ofTwoCocycleTrivModule]
   lie_add x y z := by simp [ofTwoCocycleTrivModule]
@@ -121,44 +142,42 @@ instance [AddCommGroup V] [Module R V] (c : twoCocycleTriv R L V) :
   leibniz_lie x y z := by simp [ofTwoCocycleTrivModule, c.cocycle x.1 y.1 z.1]
 
 @[simp]
-lemma bracket_ofTwoCocycleTriv [AddCommGroup V] [Module R V] {c : twoCocycleTriv R L V}
-    (x y : ofTwoCocycleTrivModule R L V c) : ⁅x, y⁆ = (⁅x.1, y.1⁆, c.toFun x.1 y.1) :=
+lemma bracket_ofTwoCocycleTriv {c : twoCocycleTriv R L V}
+    (x y : ofTwoCocycleTrivModule c) : ⁅x, y⁆ = (⁅x.1, y.1⁆, c.toFun x.1 y.1) :=
   rfl
 
-instance [AddCommGroup V] [Module R V] (c : twoCocycleTriv R L V) :
-    LieAlgebra R (ofTwoCocycleTrivModule R L V c) where
+instance : LieAlgebra R (ofTwoCocycleTrivModule c) where
   lie_smul r x y := by
     simp only [bracket_ofTwoCocycleTriv]
     rw [show (r • y).1 = r • (y.1) by rfl, lie_smul r x.1 y.1, map_smul (c.toFun x.1) r y.1,
       Prod.smul_mk]
 
 /-- The Lie algebra map from a central extension. -/
-def rightHomTwoCocycleTriv [AddCommGroup V] [Module R V] (c : twoCocycleTriv R L V) :
-    (ofTwoCocycleTrivModule R L V c) →ₗ⁅R⁆ L where
+def rightHomTwoCocycleTriv : (ofTwoCocycleTrivModule c) →ₗ⁅R⁆ L where
   toLinearMap := LinearMap.fst R L V
   map_lie' {x y} := by
     simp only [ofTwoCocycleTrivModule, AddHom.toFun_eq_coe, LinearMap.coe_toAddHom,
       LinearMap.fst_apply]
     exact rfl
 
-lemma surjection_of_cocycle [AddCommGroup V] [Module R V] (c : twoCocycleTriv R L V) :
-    Function.Surjective (rightHomTwoCocycleTriv c) := by
+lemma surjection_of_cocycle : Function.Surjective (rightHomTwoCocycleTriv c) := by
   intro x
   use (x, 0)
   exact rfl
 
 /-- A Lie extension from a trivial 2-cocycle -/
-def ofTwoCocycleTriv [AddCommGroup V] [Module R V]
-    (c : twoCocycleTriv R L V) :
-    LieExtension R (LieHom.ker (rightHomTwoCocycleTriv c)) (ofTwoCocycleTrivModule R L V c) L :=
-  ofSurjection (rightHomTwoCocycleTriv c) (surjection_of_cocycle c)
+def ofTwoCocycleTriv :
+    LieExtension R (LieHom.ker (rightHomTwoCocycleTriv c)) (ofTwoCocycleTrivModule c) L :=
+  ofSurjective (rightHomTwoCocycleTriv c) (surjection_of_cocycle c)
 
-/-!
-lemma isCentral_ofTwoCocycleTriv [LieRing V] [LieAlgebra R V] [LieRing (L × V)]
-    [LieAlgebra R (L × V)]  (c : twoCocycleTriv R L V) :
-    IsCentral (ofTwoCocycleTriv c) := by
+lemma isCentral_ofTwoCocycleTriv : IsCentral (ofTwoCocycleTriv c) := by
+  dsimp only [IsCentral]
+  rw [LieModule.trivial_iff_le_maximal_trivial]
+  intro x hx
+  simp_all only [LieHom.mem_ker, LieModule.mem_maxTrivSubmodule, bracket_ofTwoCocycleTriv]
+  intro y
+  simp [show x.1 = (ofTwoCocycleTriv c).rightHom x by rfl, hx]
 
-  sorry
--/
+end TwoCocycleTriv
 
 end LieExtension

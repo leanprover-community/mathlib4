@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Carnahan
 -/
 import Mathlib.Algebra.Lie.BaseChange
+import Mathlib.Algebra.Lie.InvariantForm
+import Mathlib.Algebra.Lie.Extension.Basic
 import Mathlib.Algebra.Polynomial.Laurent
 
 /-!
@@ -59,6 +61,9 @@ instance instLieRing : LieRing (LoopAlgebra R L) :=
 instance instLieAlgebra : LieAlgebra R (LoopAlgebra R L) :=
   LieAlgebra.RestrictScalars.lieAlgebra R (LaurentPolynomial R) (LaurentPolynomial R ⊗[R] L)
 
+-- I need a way to construct linear maps out of LoopAlgebra, by specifying the map on
+-- `x ⊗ T ^ n` for `x ∈ L`.  Maybe first a lemma saying LoopAlgebra is spanned by such things.
+
 /-!
 /-- The evaluation representation, given by composing a representation with the evaluation map
 `L[z,z^{-1}] → L` attached to a unit in `R`. -/
@@ -73,7 +78,30 @@ instance instLieAlgebra : LieAlgebra R (LoopAlgebra R L) :=
 -/
 
 section CentralExt
+/-!
+/-- The residue pairing on a Loop algebra. -/
+def residuePairing (Φ : LinearMap.BilinForm R L)
+    (hΦ : LinearMap.BilinForm.lieInvariant L Φ) :
+    (LoopAlgebra R L) →ₗ[R] (LoopAlgebra R L) →ₗ[R] R where
+  toFun f := {
+    toFun := fun g => by
 
+      sorry -- Res_{z = 0} f dg.
+    map_add' := sorry
+    map_smul' := sorry }
+  map_add' := sorry
+  map_smul' := sorry
+
+/-- A 2-cocycle on a loop algebra given by an invariant bilinear form. -/
+def twoCocycle_of_Bilinear (Φ : LinearMap.BilinForm R L)
+    (hΦ : LinearMap.BilinForm.lieInvariant L Φ) :
+    LieExtension.twoCocycleTriv R (LoopAlgebra R L) R where
+  toFun := sorry -- residue pairing
+  map_eq_zero_of_eq' := sorry
+  cocycle := sorry
+
+--⁅A ⊗ f(t), B ⊗ g(t)⁆ = ⁅A,B⁆ ⊗ f(t)*g(t) + (Res fdg) * (A,B) • K
+-/
 -- show that an invariant bilinear form on `L` produces a 2-cocycle for `LoopAlgebra R L`.
 -- define central extensions given by invariant bilinear forms
 -- extend central characters to reps of positive part
