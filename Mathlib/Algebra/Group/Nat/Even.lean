@@ -44,10 +44,10 @@ lemma not_even_iff : ¬ Even n ↔ n % 2 = 1 := by rw [even_iff, mod_two_not_eq_
 
 @[parity_simps] lemma even_add_one : Even (n + 1) ↔ ¬Even n := by simp [even_add]
 
-lemma succ_mod_two_eq_zero_iff {m : ℕ} : (m + 1) % 2 = 0 ↔ m % 2 = 1 := by
+lemma succ_mod_two_eq_zero_iff : (m + 1) % 2 = 0 ↔ m % 2 = 1 := by
   simp [← Nat.even_iff, ← Nat.not_even_iff, parity_simps]
 
-lemma succ_mod_two_eq_one_iff {m : ℕ} : (m + 1) % 2 = 1 ↔ m % 2 = 0 := by
+lemma succ_mod_two_eq_one_iff : (m + 1) % 2 = 1 ↔ m % 2 = 0 := by
   simp [← Nat.even_iff, ← Nat.not_even_iff, parity_simps]
 
 lemma two_not_dvd_two_mul_add_one (n : ℕ) : ¬2 ∣ 2 * n + 1 := by simp [add_mod]
@@ -82,13 +82,13 @@ lemma two_mul_div_two_of_even : Even n → 2 * (n / 2) = n := fun h ↦
 lemma div_two_mul_two_of_even : Even n → n / 2 * 2 = n :=
   fun h ↦ Nat.div_mul_cancel ((even_iff_exists_two_nsmul _).1 h)
 
-theorem one_lt_of_ne_zero_of_even {n : ℕ} (h0 : n ≠ 0) (hn : Even n) : 1 < n := by
+theorem one_lt_of_ne_zero_of_even (h0 : n ≠ 0) (hn : Even n) : 1 < n := by
   refine Nat.one_lt_iff_ne_zero_and_ne_one.mpr (And.intro h0 ?_)
   intro h
   rw [h] at hn
   exact Nat.not_even_one hn
 
-theorem add_one_lt_of_even {n m : ℕ} (hn : Even n) (hm : Even m) (hnm : n < m) :
+theorem add_one_lt_of_even (hn : Even n) (hm : Even m) (hnm : n < m) :
     n + 1 < m := by
   rcases hn with ⟨n, rfl⟩
   rcases hm with ⟨m, rfl⟩

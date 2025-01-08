@@ -100,11 +100,9 @@ theorem isOpen_iff (U : Set 𝖣.glued) : IsOpen U ↔ ∀ i, IsOpen (𝖣.ι i 
   delta CategoryTheory.GlueData.ι
   simp_rw [← Multicoequalizer.ι_sigmaπ 𝖣.diagram]
   rw [← (homeoOfIso (Multicoequalizer.isoCoequalizer 𝖣.diagram).symm).isOpen_preimage]
-  rw [coequalizer_isOpen_iff]
+  rw [coequalizer_isOpen_iff, colimit_isOpen_iff.{u}]
   dsimp only [GlueData.diagram_l, GlueData.diagram_left, GlueData.diagram_r, GlueData.diagram_right,
     parallelPair_obj_one]
-  rw [colimit_isOpen_iff.{_,u}]  -- Porting note: changed `.{u}` to `.{_,u}`.  fun fact: the proof
-                                 -- breaks down if this `rw` is merged with the `rw` above.
   constructor
   · intro h j; exact h ⟨j⟩
   · intro h j; cases j; apply h
@@ -197,7 +195,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
       show _ = Sigma.mk j y from ConcreteCategory.congr_hom (sigmaIsoSigma.{_, u} D.U).inv_hom_id _]
     change InvImage D.Rel (sigmaIsoSigma.{_, u} D.U).hom _ _
     rw [← (InvImage.equivalence _ _ D.rel_equiv).eqvGen_iff]
-    refine Relation.EqvGen.mono ?_ (D.eqvGen_of_π_eq h : _)
+    refine Relation.EqvGen.mono ?_ (D.eqvGen_of_π_eq h :)
     rintro _ _ ⟨x⟩
     obtain ⟨⟨⟨i, j⟩, y⟩, rfl⟩ :=
       (ConcreteCategory.bijective_of_isIso (sigmaIsoSigma.{u, u} _).inv).2 x
@@ -274,17 +272,14 @@ theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
   -- Porting note: `show` was not needed, since `rw [← Set.image_image]` worked.
   show (fun x => ((forget TopCat).map _ ((forget TopCat).map _ x))) '' _ = _
   rw [← Set.image_image]
-  -- Porting note: `congr 1` was here, instead of `congr_arg`, however, it did nothing.
-  refine congr_arg ?_ ?_
+  congr! 1
   rw [← Set.eq_preimage_iff_image_eq, Set.preimage_preimage]
   · change _ = (D.t i j ≫ D.t j i ≫ _) ⁻¹' _
     rw [𝖣.t_inv_assoc]
   rw [← isIso_iff_bijective]
   apply (forget TopCat).map_isIso
 
--- Porting note: the goal was simply `IsOpen (𝖣.ι i '' U)`.
--- I had to manually add the explicit type ascription.
-theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' (U : Set (D.U i))) := by
+theorem open_image_open (i : D.J) (U : Opens (𝖣.U i)) : IsOpen (𝖣.ι i '' U) := by
   rw [isOpen_iff]
   intro j
   rw [preimage_image_eq_image]
@@ -393,15 +388,8 @@ def ofOpenSubsets : TopCat.GlueData.{u} :=
     { J
       U := fun i => (Opens.toTopCat <| TopCat.of α).obj (U i)
       V := fun _ j => (Opens.map <| Opens.inclusion' _).obj (U j)
-      t := fun i j => ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by
-        -- Porting note: was `continuity`, see https://github.com/leanprover-community/mathlib4/issues/5030
-        refine Continuous.subtype_mk ?_ ?_
-        refine Continuous.subtype_mk ?_ ?_
-        continuity⟩
-      V_id := fun i => by
-        ext
-        -- Porting note: no longer needed `cases U i`!
-        simp
+      t := fun i j => ⟨fun x => ⟨⟨x.1.1, x.2⟩, x.1.2⟩, by fun_prop⟩
+      V_id := fun i => by ext; simp
       t_id := fun i => by ext; rfl
       t_inter := fun _ _ _ _ hx => hx
       cocycle := fun _ _ _ _ _ => rfl }
@@ -445,8 +433,7 @@ theorem fromOpenSubsetsGlue_isOpenMap : IsOpenMap (fromOpenSubsetsGlue U) := by
     apply (Opens.isOpenEmbedding (X := TopCat.of α) (U i)).isOpenMap
     convert hs i using 1
     erw [← ι_fromOpenSubsetsGlue, coe_comp, Set.preimage_comp]
-    --  porting note: `congr 1` did nothing, so I replaced it with `apply congr_arg`
-    apply congr_arg
+    congr! 1
     exact Set.preimage_image_eq _ (fromOpenSubsetsGlue_injective U)
   · refine ⟨Set.mem_image_of_mem _ hx, ?_⟩
     rw [ι_fromOpenSubsetsGlue_apply]

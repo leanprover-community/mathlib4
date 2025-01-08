@@ -55,7 +55,7 @@ variable (R : Type u) (M : Type v) [CommRing R] [AddCommGroup M] [Module R M]
 
 /--
 A module `M` over a commutative ring `R` is *faithfully flat* if it is flat and,
-for all `R`-module homomorphism `f : N → N'` such that `id ⊗ f = 0`, we have `f = 0`.
+for all `R`-linear maps `f : N → N'` such that `id ⊗ f = 0`, we have `f = 0`.
 -/
 @[mk_iff] class FaithfullyFlat extends Module.Flat R M : Prop where
   submodule_ne_top : ∀ ⦃m : Ideal R⦄ (_ : Ideal.IsMaximal m), m • (⊤ : Submodule R M) ≠ ⊤
@@ -188,11 +188,10 @@ lemma of_linearEquiv {N : Type*} [AddCommGroup N] [Module R N] [FaithfullyFlat R
 
 section
 
-open Classical
-
 /-- A direct sum of faithfully flat `R`-modules is faithfully flat. -/
 instance directSum {ι : Type*} [Nonempty ι] (M : ι → Type*) [∀ i, AddCommGroup (M i)]
     [∀ i, Module R (M i)] [∀ i, FaithfullyFlat R (M i)] : FaithfullyFlat R (⨁ i, M i) := by
+  classical
   rw [iff_flat_and_lTensor_faithful]
   refine ⟨inferInstance, fun N _ _ hN ↦ ?_⟩
   obtain ⟨i⟩ := ‹Nonempty ι›
@@ -202,8 +201,8 @@ instance directSum {ι : Type*} [Nonempty ι] (M : ι → Type*) [∀ i, AddComm
   apply (TensorProduct.directSumLeft R M N).toEquiv.nontrivial
 
 /-- Free `R`-modules over discrete types are flat. -/
-instance finsupp (ι : Type v) [Nonempty ι] : FaithfullyFlat R (ι →₀ R) :=
-  of_linearEquiv _ _ (finsuppLEquivDirectSum R R ι)
+instance finsupp (ι : Type v) [Nonempty ι] : FaithfullyFlat R (ι →₀ R) := by
+  classical exact of_linearEquiv _ _ (finsuppLEquivDirectSum R R ι)
 
 end
 

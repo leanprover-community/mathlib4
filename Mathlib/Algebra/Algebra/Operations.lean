@@ -89,6 +89,7 @@ theorem toSubMulAction_one : (1 : Submodule R A).toSubMulAction = 1 :=
 theorem one_eq_span_one_set : (1 : Submodule R A) = span R 1 :=
   one_eq_span
 
+@[simp]
 theorem one_le {P : Submodule R A} : (1 : Submodule R A) ≤ P ↔ (1 : A) ∈ P := by
   -- Porting note: simpa no longer closes refl goals, so added `SetLike.mem_coe`
   simp only [one_eq_span, span_le, Set.singleton_subset_iff, SetLike.mem_coe]
@@ -143,10 +144,6 @@ theorem smul_mono_left (h : I ≤ J) : I • N ≤ J • N :=
 instance : CovariantClass (Submodule R A) (Submodule R M) HSMul.hSMul LE.le :=
   ⟨fun _ _ => smul_mono le_rfl⟩
 
-@[deprecated smul_mono_right (since := "2024-03-31")]
-protected theorem smul_mono_right (h : N ≤ P) : I • N ≤ I • P :=
-  _root_.smul_mono_right I h
-
 variable (I J N P)
 
 @[simp]
@@ -179,10 +176,6 @@ protected theorem smul_assoc {B} [Semiring B] [Module R B] [Module A B] [Module 
       (fun j hj n hn ↦ (smul_assoc r j n).symm ▸ smul_mem_smul (smul_mem_smul hr hj) hn)
       fun m₁ m₂ ↦ (smul_add r m₁ m₂) ▸ add_mem)
 
-@[deprecated smul_inf_le (since := "2024-03-31")]
-protected theorem smul_inf_le (M₁ M₂ : Submodule R M) :
-    I • (M₁ ⊓ M₂) ≤ I • M₁ ⊓ I • M₂ := smul_inf_le _ _ _
-
 theorem smul_iSup {ι : Sort*} {I : Submodule R A} {t : ι → Submodule R M} :
     I • (⨆ i, t i)= ⨆ i, I • t i :=
   toAddSubmonoid_injective <| by
@@ -194,11 +187,6 @@ theorem iSup_smul {ι : Sort*} {t : ι → Submodule R A} {N : Submodule R M} :
     (fun i t ht ↦ mem_iSup_of_mem i <| smul_mem_smul ht hs)
     (by simp_rw [zero_smul]; apply zero_mem) fun x y ↦ by simp_rw [add_smul]; apply add_mem)
     (iSup_le fun i ↦ Submodule.smul_mono_left <| le_iSup _ i)
-
-@[deprecated smul_iInf_le (since := "2024-03-31")]
-protected theorem smul_iInf_le {ι : Sort*} {I : Submodule R A} {t : ι → Submodule R M} :
-    I • iInf t ≤ ⨅ i, I • t i :=
-  smul_iInf_le
 
 protected theorem one_smul : (1 : Submodule R A) • N = N := by
   refine le_antisymm (smul_le.mpr fun r hr m hm ↦ ?_) fun m hm ↦ ?_
@@ -811,11 +799,14 @@ theorem le_div_iff {I J K : Submodule R A} : I ≤ J / K ↔ ∀ x ∈ I, ∀ z 
 theorem le_div_iff_mul_le {I J K : Submodule R A} : I ≤ J / K ↔ I * K ≤ J := by
   rw [le_div_iff, mul_le]
 
-@[simp]
 theorem one_le_one_div {I : Submodule R A} : 1 ≤ 1 / I ↔ I ≤ 1 := by
   constructor; all_goals intro hI
   · rwa [le_div_iff_mul_le, one_mul] at hI
   · rwa [le_div_iff_mul_le, one_mul]
+
+@[simp]
+theorem one_mem_div {I J : Submodule R A} : 1 ∈ I / J ↔ J ≤ I := by
+  rw [← one_le, le_div_iff_mul_le, one_mul]
 
 theorem le_self_mul_one_div {I : Submodule R A} (hI : I ≤ 1) : I ≤ I * (1 / I) := by
   refine (mul_one I).symm.trans_le ?_  -- Porting note: drop `rw {occs := _}` in favor of `refine`
