@@ -6,8 +6,6 @@ Authors: Andrew Yang
 import Mathlib.CategoryTheory.Functor.Flat
 import Mathlib.CategoryTheory.Sites.Continuous
 import Mathlib.Tactic.ApplyFun
-
-#align_import category_theory.sites.cover_preserving from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 /-!
 # Cover-preserving functors between sites.
 
@@ -53,15 +51,13 @@ variable {L : GrothendieckTopology A}
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is *cover-preserving*
 if for all covering sieves `R` in `C`, `R.functorPushforward G` is a covering sieve in `D`.
 -/
--- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed `@[nolint has_nonempty_instance]`
 structure CoverPreserving (G : C ⥤ D) : Prop where
   cover_preserve : ∀ {U : C} {S : Sieve U} (_ : S ∈ J U), S.functorPushforward G ∈ K (G.obj U)
-#align category_theory.cover_preserving CategoryTheory.CoverPreserving
 
 /-- The identity functor on a site is cover-preserving. -/
 theorem idCoverPreserving : CoverPreserving J J (𝟭 _) :=
   ⟨fun hS => by simpa using hS⟩
-#align category_theory.id_cover_preserving CategoryTheory.idCoverPreserving
 
 /-- The composition of two cover-preserving functors is cover-preserving. -/
 theorem CoverPreserving.comp {F} (hF : CoverPreserving J K F) {G} (hG : CoverPreserving K L G) :
@@ -69,7 +65,6 @@ theorem CoverPreserving.comp {F} (hF : CoverPreserving J K F) {G} (hG : CoverPre
   ⟨fun hS => by
     rw [Sieve.functorPushforward_comp]
     exact hG.cover_preserve (hF.cover_preserve hS)⟩
-#align category_theory.cover_preserving.comp CategoryTheory.CoverPreserving.comp
 
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is called compatible preserving if for each
 compatible family of elements at `C` and valued in `G.op ⋙ ℱ`, and each commuting diagram
@@ -77,17 +72,18 @@ compatible family of elements at `C` and valued in `G.op ⋙ ℱ`, and each comm
 This is actually stronger than merely preserving compatible families because of the definition of
 `functorPushforward` used.
 -/
--- Porting note(#5171): linter not ported yet @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet @[nolint has_nonempty_instance]
 structure CompatiblePreserving (K : GrothendieckTopology D) (G : C ⥤ D) : Prop where
   compatible :
-    ∀ (ℱ : SheafOfTypes.{w} K) {Z} {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T}
+    ∀ (ℱ : Sheaf K (Type w)) {Z} {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T}
       (_ : x.Compatible) {Y₁ Y₂} {X} (f₁ : X ⟶ G.obj Y₁) (f₂ : X ⟶ G.obj Y₂) {g₁ : Y₁ ⟶ Z}
       {g₂ : Y₂ ⟶ Z} (hg₁ : T g₁) (hg₂ : T g₂) (_ : f₁ ≫ G.map g₁ = f₂ ≫ G.map g₂),
       ℱ.val.map f₁.op (x g₁ hg₁) = ℱ.val.map f₂.op (x g₂ hg₂)
-#align category_theory.compatible_preserving CategoryTheory.CompatiblePreserving
 
-variable {J K} {G : C ⥤ D} (hG : CompatiblePreserving.{w} K G) (ℱ : SheafOfTypes.{w} K) {Z : C}
+section
+variable {J K} {G : C ⥤ D} (hG : CompatiblePreserving.{w} K G) (ℱ : Sheaf K (Type w)) {Z : C}
 variable {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T} (h : x.Compatible)
+include hG h
 
 /-- `CompatiblePreserving` functors indeed preserve compatible families. -/
 theorem Presieve.FamilyOfElements.Compatible.functorPushforward :
@@ -100,7 +96,6 @@ theorem Presieve.FamilyOfElements.Compatible.functorPushforward :
     simpa using this
   apply hG.compatible ℱ h _ _ hf₁ hf₂
   simpa using eq
-#align category_theory.presieve.family_of_elements.compatible.functor_pushforward CategoryTheory.Presieve.FamilyOfElements.Compatible.functorPushforward
 
 @[simp]
 theorem CompatiblePreserving.apply_map {Y : C} {f : Y ⟶ Z} (hf : T f) :
@@ -109,7 +104,8 @@ theorem CompatiblePreserving.apply_map {Y : C} {f : Y ⟶ Z} (hf : T f) :
   rcases getFunctorPushforwardStructure (image_mem_functorPushforward G T hf) with
     ⟨X, g, f', hg, eq⟩
   simpa using hG.compatible ℱ h f' (𝟙 _) hg hf (by simp [eq])
-#align category_theory.compatible_preserving.apply_map CategoryTheory.CompatiblePreserving.apply_map
+
+end
 
 open Limits.WalkingCospan
 
@@ -136,7 +132,7 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
     simp
   conv_lhs => rw [eq₁]
   conv_rhs => rw [eq₂]
-  simp only [op_comp, Functor.map_comp, types_comp_apply, eqToHom_op, eqToHom_map]
+  simp only [c, op_comp, Functor.map_comp, types_comp_apply, eqToHom_op, eqToHom_map]
   apply congr_arg -- Porting note: was `congr 1` which for some reason doesn't do anything here
   -- despite goal being of the form f a = f b, with f=`ℱ.val.map (Quiver.Hom.op c'.pt.hom)`
   /-
@@ -146,7 +142,6 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
   injection c'.π.naturality WalkingCospan.Hom.inl with _ e₁
   injection c'.π.naturality WalkingCospan.Hom.inr with _ e₂
   exact hx (c'.π.app left).right (c'.π.app right).right hg₁ hg₂ (e₁.symm.trans e₂)
-#align category_theory.compatible_preserving_of_flat CategoryTheory.compatiblePreservingOfFlat
 
 theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [F.Full] [F.Faithful]
     (hF : ∀ {c : C} {d : D} (_ : d ⟶ F.obj c), Σc', F.obj c' ≅ d) : CompatiblePreserving K F := by
@@ -158,10 +153,6 @@ theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [F.Full] [F.Faithful
   simpa using
     hx (F.preimage <| e.hom ≫ f₁) (F.preimage <| e.hom ≫ f₂) hg₁ hg₂
       (F.map_injective <| by simpa using he)
-#align category_theory.compatible_preserving_of_downwards_closed CategoryTheory.compatiblePreservingOfDownwardsClosed
-
-variable (J K)
-
 
 variable {F J K}
 
@@ -172,14 +163,15 @@ This result is basically <https://stacks.math.columbia.edu/tag/00WW>.
 -/
 lemma Functor.isContinuous_of_coverPreserving (hF₁ : CompatiblePreserving.{w} K F)
     (hF₂ : CoverPreserving J K F) : Functor.IsContinuous.{w} F J K where
-  op_comp_isSheafOfTypes G X S hS x hx := by
-    apply exists_unique_of_exists_of_unique
-    · have H := G.2 _ (hF₂.cover_preserve hS)
+  op_comp_isSheaf_of_types G X S hS x hx := by
+    apply existsUnique_of_exists_of_unique
+    · have H := (isSheaf_iff_isSheaf_of_type _ _).1 G.2 _ (hF₂.cover_preserve hS)
       exact ⟨H.amalgamate (x.functorPushforward F) (hx.functorPushforward hF₁),
         fun V f hf => (H.isAmalgamation (hx.functorPushforward hF₁) (F.map f) _).trans
           (hF₁.apply_map _ hx hf)⟩
     · intro y₁ y₂ hy₁ hy₂
-      apply (Presieve.isSeparated_of_isSheaf _ _ G.cond _ (hF₂.cover_preserve hS)).ext
+      apply (Presieve.isSeparated_of_isSheaf _ _ ((isSheaf_iff_isSheaf_of_type _ _).1 G.2) _
+        (hF₂.cover_preserve hS)).ext
       rintro Y _ ⟨Z, g, h, hg, rfl⟩
       dsimp
       simp only [Functor.map_comp, types_comp_apply]

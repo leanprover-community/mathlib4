@@ -72,10 +72,10 @@ lemma isComplex_iff_of_iso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂
 lemma isComplex₀ (S : ComposableArrows C 0) : S.IsComplex where
   -- See https://github.com/leanprover/lean4/issues/2862
   -- Without `decide := true`, simp gets stuck at `hi : autoParam False _auto✝`
-  zero i hi := by simp (config := {decide := true}) at hi
+  zero i hi := by simp +decide at hi
 
 lemma isComplex₁ (S : ComposableArrows C 1) : S.IsComplex where
-  zero i hi := by exfalso; omega
+  zero i hi := by omega
 
 variable (S)
 
@@ -159,7 +159,7 @@ lemma exact_iff_of_iso {S₁ S₂ : ComposableArrows C n} (e : S₁ ≅ S₂) :
 lemma exact₀ (S : ComposableArrows C 0) : S.Exact where
   toIsComplex := S.isComplex₀
   -- See https://github.com/leanprover/lean4/issues/2862
-  exact i hi := by simp [autoParam] at hi
+  exact i hi := by simp at hi
 
 lemma exact₁ (S : ComposableArrows C 1) : S.Exact where
   toIsComplex := S.isComplex₁
@@ -260,11 +260,11 @@ lemma exact_iff_δlast {n : ℕ} (S : ComposableArrows C (n + 2)) :
       exact h.exact n (by omega)
   · rintro ⟨h, h'⟩
     refine Exact.mk (IsComplex.mk (fun i hi => ?_)) (fun i hi => ?_)
-    · simp only [add_le_add_iff_right, ge_iff_le] at hi
+    · simp only [Nat.add_le_add_iff_right] at hi
       obtain hi | rfl := hi.lt_or_eq
       · exact h.toIsComplex.zero i
       · exact h'.toIsComplex.zero 0
-    · simp only [add_le_add_iff_right, ge_iff_le] at hi
+    · simp only [Nat.add_le_add_iff_right] at hi
       obtain hi | rfl := hi.lt_or_eq
       · exact h.exact i
       · exact h'.exact 0

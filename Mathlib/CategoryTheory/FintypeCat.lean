@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Adam Topaz
 -/
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.FullSubcategory
+import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Skeletal
-import Mathlib.Data.Fintype.Card
-
-#align_import category_theory.Fintype from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
+import Mathlib.Data.Finite.Prod
 
 /-!
 # The category of finite types.
@@ -23,16 +21,11 @@ are `Fin n` for `n : ℕ`. We prove that the obvious inclusion functor
 We prove that `FintypeCat.Skeleton` is a skeleton of `FintypeCat` in `FintypeCat.isSkeleton`.
 -/
 
-
-open scoped Classical
-
 open CategoryTheory
 
 /-- The category of finite types. -/
 def FintypeCat :=
   Bundled Fintype
-set_option linter.uppercaseLean3 false in
-#align Fintype FintypeCat
 
 namespace FintypeCat
 
@@ -42,8 +35,6 @@ instance : CoeSort FintypeCat Type* :=
 /-- Construct a bundled `FintypeCat` from the underlying type and typeclass. -/
 def of (X : Type*) [Fintype X] : FintypeCat :=
   Bundled.of X
-set_option linter.uppercaseLean3 false in
-#align Fintype.of FintypeCat.of
 
 instance : Inhabited FintypeCat :=
   ⟨of PEmpty⟩
@@ -58,16 +49,12 @@ instance : Category FintypeCat :=
 @[simps!]
 def incl : FintypeCat ⥤ Type* :=
   inducedFunctor _
-set_option linter.uppercaseLean3 false in
-#align Fintype.incl FintypeCat.incl
 
 instance : incl.Full := InducedCategory.full _
 instance : incl.Faithful := InducedCategory.faithful _
 
 instance concreteCategoryFintype : ConcreteCategory FintypeCat :=
   ⟨incl⟩
-set_option linter.uppercaseLean3 false in
-#align Fintype.concrete_category_Fintype FintypeCat.concreteCategoryFintype
 
 /- Help typeclass inference infer fullness of forgetful functor. -/
 instance : (forget FintypeCat).Full := inferInstanceAs <| FintypeCat.incl.Full
@@ -75,14 +62,10 @@ instance : (forget FintypeCat).Full := inferInstanceAs <| FintypeCat.incl.Full
 @[simp]
 theorem id_apply (X : FintypeCat) (x : X) : (𝟙 X : X → X) x = x :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align Fintype.id_apply FintypeCat.id_apply
 
 @[simp]
 theorem comp_apply {X Y Z : FintypeCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) : (f ≫ g) x = g (f x) :=
   rfl
-set_option linter.uppercaseLean3 false in
-#align Fintype.comp_apply FintypeCat.comp_apply
 
 @[simp]
 lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x) = x :=
@@ -92,7 +75,7 @@ lemma hom_inv_id_apply {X Y : FintypeCat} (f : X ≅ Y) (x : X) : f.inv (f.hom x
 lemma inv_hom_id_apply {X Y : FintypeCat} (f : X ≅ Y) (y : Y) : f.hom (f.inv y) = y :=
   congr_fun f.inv_hom_id y
 
--- Porting note (#10688): added to ease automation
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10688): added to ease automation
 @[ext]
 lemma hom_ext {X Y : FintypeCat} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
   funext
@@ -112,8 +95,15 @@ def equivEquivIso {A B : FintypeCat} : A ≃ B ≃ (A ≅ B) where
       right_inv := congr_fun i.inv_hom_id }
   left_inv := by aesop_cat
   right_inv := by aesop_cat
-set_option linter.uppercaseLean3 false in
-#align Fintype.equiv_equiv_iso FintypeCat.equivEquivIso
+
+instance (X Y : FintypeCat) : Finite (X ⟶ Y) :=
+  inferInstanceAs <| Finite (X → Y)
+
+instance (X Y : FintypeCat) : Finite (X ≅ Y) :=
+  Finite.of_injective _ (fun _ _ h ↦ Iso.ext h)
+
+instance (X : FintypeCat) : Finite (Aut X) :=
+  inferInstanceAs <| Finite (X ≅ X)
 
 universe u
 
@@ -126,16 +116,12 @@ skeletal category equivalent to `Fintype.{u}`.
 -/
 def Skeleton : Type u :=
   ULift ℕ
-set_option linter.uppercaseLean3 false in
-#align Fintype.skeleton FintypeCat.Skeleton
 
 namespace Skeleton
 
 /-- Given any natural number `n`, this creates the associated object of `Fintype.Skeleton`. -/
 def mk : ℕ → Skeleton :=
   ULift.up
-set_option linter.uppercaseLean3 false in
-#align Fintype.skeleton.mk FintypeCat.Skeleton.mk
 
 instance : Inhabited Skeleton :=
   ⟨mk 0⟩
@@ -143,14 +129,10 @@ instance : Inhabited Skeleton :=
 /-- Given any object of `Fintype.Skeleton`, this returns the associated natural number. -/
 def len : Skeleton → ℕ :=
   ULift.down
-set_option linter.uppercaseLean3 false in
-#align Fintype.skeleton.len FintypeCat.Skeleton.len
 
 @[ext]
 theorem ext (X Y : Skeleton) : X.len = Y.len → X = Y :=
   ULift.ext _ _
-set_option linter.uppercaseLean3 false in
-#align Fintype.skeleton.ext FintypeCat.Skeleton.ext
 
 instance : SmallCategory Skeleton.{u} where
   Hom X Y := ULift.{u} (Fin X.len) → ULift.{u} (Fin Y.len)
@@ -177,15 +159,11 @@ theorem is_skeletal : Skeletal Skeleton.{u} := fun X Y ⟨h⟩ =>
             change ((h.inv ≫ h.hom) _).down = _
             simp
             rfl }
-set_option linter.uppercaseLean3 false in
-#align Fintype.skeleton.is_skeletal FintypeCat.Skeleton.is_skeletal
 
 /-- The canonical fully faithful embedding of `Fintype.Skeleton` into `FintypeCat`. -/
 def incl : Skeleton.{u} ⥤ FintypeCat.{u} where
   obj X := FintypeCat.of (ULift (Fin X.len))
   map f := f
-set_option linter.uppercaseLean3 false in
-#align Fintype.skeleton.incl FintypeCat.Skeleton.incl
 
 instance : incl.Full where map_surjective f := ⟨f, rfl⟩
 
@@ -204,15 +182,11 @@ noncomputable instance : incl.IsEquivalence where
 /-- The equivalence between `Fintype.Skeleton` and `Fintype`. -/
 noncomputable def equivalence : Skeleton ≌ FintypeCat :=
   incl.asEquivalence
-set_option linter.uppercaseLean3 false in
-#align Fintype.skeleton.equivalence FintypeCat.Skeleton.equivalence
 
 @[simp]
 theorem incl_mk_nat_card (n : ℕ) : Fintype.card (incl.obj (mk n)) = n := by
   convert Finset.card_fin n
   apply Fintype.ofEquiv_card
-set_option linter.uppercaseLean3 false in
-#align Fintype.skeleton.incl_mk_nat_card FintypeCat.Skeleton.incl_mk_nat_card
 
 end Skeleton
 
@@ -220,8 +194,77 @@ end Skeleton
 lemma isSkeleton : IsSkeletonOf FintypeCat Skeleton Skeleton.incl where
   skel := Skeleton.is_skeletal
   eqv := by infer_instance
-set_option linter.uppercaseLean3 false in
-#align Fintype.is_skeleton FintypeCat.isSkeleton
 
+section Universes
+
+universe v
+
+/-- If `u` and `v` are two arbitrary universes, we may construct a functor
+`uSwitch.{u, v} : FintypeCat.{u} ⥤ FintypeCat.{v}` by sending
+`X : FintypeCat.{u}` to `ULift.{v} (Fin (Fintype.card X))`. -/
+noncomputable def uSwitch : FintypeCat.{u} ⥤ FintypeCat.{v} where
+  obj X := FintypeCat.of <| ULift.{v} (Fin (Fintype.card X))
+  map {X Y} f x := ULift.up <| (Fintype.equivFin Y) (f ((Fintype.equivFin X).symm x.down))
+  map_comp {X Y Z} f g := by ext; simp
+
+/-- Switching the universe of an object `X : FintypeCat.{u}` does not change `X` up to equivalence
+of types. This is natural in the sense that it commutes with `uSwitch.map f` for
+any `f : X ⟶ Y` in `FintypeCat.{u}`. -/
+noncomputable def uSwitchEquiv (X : FintypeCat.{u}) :
+    uSwitch.{u, v}.obj X ≃ X :=
+  Equiv.ulift.trans (Fintype.equivFin X).symm
+
+lemma uSwitchEquiv_naturality {X Y : FintypeCat.{u}} (f : X ⟶ Y)
+    (x : uSwitch.{u, v}.obj X) :
+    f (X.uSwitchEquiv x) = Y.uSwitchEquiv (uSwitch.map f x) := by
+  simp only [uSwitch, uSwitchEquiv, Equiv.trans_apply]
+  erw [Equiv.ulift_apply, Equiv.ulift_apply]
+  simp only [Equiv.symm_apply_apply]
+
+lemma uSwitchEquiv_symm_naturality {X Y : FintypeCat.{u}} (f : X ⟶ Y) (x : X) :
+    uSwitch.map f (X.uSwitchEquiv.symm x) = Y.uSwitchEquiv.symm (f x) := by
+  rw [← Equiv.apply_eq_iff_eq_symm_apply, ← uSwitchEquiv_naturality f,
+    Equiv.apply_symm_apply]
+
+lemma uSwitch_map_uSwitch_map {X Y : FintypeCat.{u}} (f : X ⟶ Y) :
+    uSwitch.map (uSwitch.map f) =
+    (equivEquivIso ((uSwitch.obj X).uSwitchEquiv.trans X.uSwitchEquiv)).hom ≫
+      f ≫ (equivEquivIso ((uSwitch.obj Y).uSwitchEquiv.trans
+      Y.uSwitchEquiv)).inv := by
+  ext x
+  simp only [comp_apply, equivEquivIso_apply_hom, Equiv.trans_apply]
+  rw [uSwitchEquiv_naturality f, ← uSwitchEquiv_naturality]
+  rfl
+
+/-- `uSwitch.{u, v}` is an equivalence of categories with quasi-inverse `uSwitch.{v, u}`. -/
+noncomputable def uSwitchEquivalence : FintypeCat.{u} ≌ FintypeCat.{v} where
+  functor := uSwitch
+  inverse := uSwitch
+  unitIso := NatIso.ofComponents (fun X ↦ (equivEquivIso <|
+    (uSwitch.obj X).uSwitchEquiv.trans X.uSwitchEquiv).symm) <| by
+    simp [uSwitch_map_uSwitch_map]
+  counitIso := NatIso.ofComponents (fun X ↦ equivEquivIso <|
+    (uSwitch.obj X).uSwitchEquiv.trans X.uSwitchEquiv) <| by
+    simp [uSwitch_map_uSwitch_map]
+  functor_unitIso_comp X := by
+    ext x
+    simp [← uSwitchEquiv_naturality]
+
+instance : uSwitch.IsEquivalence :=
+  uSwitchEquivalence.isEquivalence_functor
+
+end Universes
 
 end FintypeCat
+
+namespace FunctorToFintypeCat
+
+universe u v w
+
+variable {C : Type u} [Category.{v} C] (F G : C ⥤ FintypeCat.{w}) {X Y : C}
+
+lemma naturality (σ : F ⟶ G) (f : X ⟶ Y) (x : F.obj X) :
+    σ.app Y (F.map f x) = G.map f (σ.app X x) :=
+  congr_fun (σ.naturality f) x
+
+end FunctorToFintypeCat

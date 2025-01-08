@@ -26,19 +26,18 @@ open Limits Projective Opposite
 variable {C : Type u} [Category.{v} C] [Abelian C]
 
 /-- The preadditive Co-Yoneda functor on `P` preserves homology if `P` is projective. -/
-noncomputable instance preservesHomologyPreadditiveCoyonedaObjOfProjective
+noncomputable instance preservesHomology_preadditiveCoyonedaObj_of_projective
     (P : C) [hP : Projective P] :
     (preadditiveCoyonedaObj (op P)).PreservesHomology := by
   haveI := (projective_iff_preservesEpimorphisms_preadditiveCoyoneda_obj' P).mp hP
   haveI := @Functor.preservesEpimorphisms_of_preserves_of_reflects _ _ _ _ _ _ _ _ this _
-  apply Functor.preservesHomologyOfPreservesEpisAndKernels
+  apply Functor.preservesHomology_of_preservesEpis_and_kernels
 
 /-- The preadditive Co-Yoneda functor on `P` preserves finite colimits if `P` is projective. -/
-noncomputable instance preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective
+noncomputable instance preservesFiniteColimits_preadditiveCoyonedaObj_of_projective
     (P : C) [hP : Projective P] :
     PreservesFiniteColimits (preadditiveCoyonedaObj (op P)) := by
-  apply Functor.preservesFiniteColimitsOfPreservesHomology
-#align category_theory.preserves_finite_colimits_preadditive_coyoneda_obj_of_projective CategoryTheory.preservesFiniteColimitsPreadditiveCoyonedaObjOfProjective
+  apply Functor.preservesFiniteColimits_of_preservesHomology
 
 /-- An object is projective if its preadditive Co-Yoneda functor preserves finite colimits. -/
 theorem projective_of_preservesFiniteColimits_preadditiveCoyonedaObj (P : C)
@@ -47,6 +46,5 @@ theorem projective_of_preservesFiniteColimits_preadditiveCoyonedaObj (P : C)
   dsimp
   have := Functor.preservesHomologyOfExact (preadditiveCoyonedaObj (op P))
   infer_instance
-#align category_theory.projective_of_preserves_finite_colimits_preadditive_coyoneda_obj CategoryTheory.projective_of_preservesFiniteColimits_preadditiveCoyonedaObj
 
 end CategoryTheory

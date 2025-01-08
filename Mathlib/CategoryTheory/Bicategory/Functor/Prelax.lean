@@ -57,7 +57,6 @@ variable {D : Type u₃} [Quiver.{v₃ + 1} D] [∀ a b : D, Quiver.{w₃ + 1} (
 structure PrelaxFunctorStruct extends Prefunctor B C where
   /-- The action of a lax prefunctor on 2-morphisms. -/
   map₂ {a b : B} {f g : a ⟶ b} : (f ⟶ g) → (map f ⟶ map g)
-#align category_theory.prelax_functor CategoryTheory.PrelaxFunctorStruct
 
 initialize_simps_projections PrelaxFunctorStruct (+toPrefunctor, -obj, -map)
 
@@ -77,21 +76,11 @@ def mkOfHomPrefunctors (F : B → C) (F' : (a : B) → (b : B) → Prefunctor (a
   map {a b} := (F' a b).obj
   map₂ {a b} := (F' a b).map
 
-variable (F : PrelaxFunctorStruct B C)
-
--- Porting note: deleted syntactic tautologies `toPrefunctor_eq_coe : F.toPrefunctor = F`
--- and `to_prefunctor_obj : (F : Prefunctor B C).obj = F.obj`
--- and `to_prefunctor_map`
-#noalign category_theory.prelax_functor.to_prefunctor_eq_coe
-#noalign category_theory.prelax_functor.to_prefunctor_obj
-#noalign category_theory.prelax_functor.to_prefunctor_map
-
 /-- The identity lax prefunctor. -/
 @[simps]
 def id (B : Type u₁) [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)] :
     PrelaxFunctorStruct B B :=
   { Prefunctor.id B with map₂ := fun η => η }
-#align category_theory.prelax_functor.id CategoryTheory.PrelaxFunctorStruct.id
 
 instance : Inhabited (PrelaxFunctorStruct B B) :=
   ⟨PrelaxFunctorStruct.id B⟩
@@ -101,7 +90,6 @@ instance : Inhabited (PrelaxFunctorStruct B B) :=
 def comp (F : PrelaxFunctorStruct B C) (G : PrelaxFunctorStruct C D) : PrelaxFunctorStruct B D where
   toPrefunctor := F.toPrefunctor.comp G.toPrefunctor
   map₂ := fun η => G.map₂ (F.map₂ η)
-#align category_theory.prelax_functor.comp CategoryTheory.PrelaxFunctorStruct.comp
 
 end PrelaxFunctorStruct
 
@@ -110,7 +98,7 @@ end
 /-- A prelax functor between bicategories is a lax prefunctor such that `map₂` is a functor.
 This structure will be extended to define `LaxFunctor` and `OplaxFunctor`.
 -/
-structure PrelaxFunctor (B: Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C]
+structure PrelaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂) [Bicategory.{w₂, v₂} C]
     extends PrelaxFunctorStruct B C where
   /-- Prelax functors preserves identity 2-morphisms. -/
   map₂_id : ∀ {a b : B} (f : a ⟶ b), map₂ (𝟙 f) = 𝟙 (map f) := by aesop -- TODO: why not aesop_cat?
@@ -207,3 +195,5 @@ lemma map₂_inv_hom_isIso {f g : a ⟶ b} (η : f ⟶ g) [IsIso η] :
 end
 
 end PrelaxFunctor
+
+end CategoryTheory

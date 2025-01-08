@@ -8,8 +8,6 @@ import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 
-#align_import category_theory.concrete_category.elementwise from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
-
 /-!
 In this file we provide various simp lemmas in its elementwise form via `Tactic.Elementwise`.
 -/

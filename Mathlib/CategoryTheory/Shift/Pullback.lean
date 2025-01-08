@@ -3,7 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.Basic
+import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 
 /-!
@@ -35,7 +35,7 @@ attribute [local instance] endofunctorMonoidalCategory
 /-- The shift on `PullbackShift C φ` is obtained by precomposing the shift on `C` with
 the monoidal functor `Discrete.addMonoidalFunctor φ : Discrete A ⥤ Discrete B`. -/
 noncomputable instance : HasShift (PullbackShift C φ) A where
-  shift := (Discrete.addMonoidalFunctor φ).comp (@HasShift.shift C B _ _ _)
+  shift := Discrete.addMonoidalFunctor φ ⋙ shiftMonoidalFunctor C B
 
 instance [HasZeroObject C] : HasZeroObject (PullbackShift C φ) := by
   dsimp [PullbackShift]
@@ -63,7 +63,7 @@ lemma pullbackShiftFunctorZero_inv_app :
     (shiftFunctorZero _ A).inv.app X =
       (shiftFunctorZero C B).inv.app X ≫ (pullbackShiftIso C φ 0 0 (by simp)).inv.app X := by
   change (shiftFunctorZero C B).inv.app X ≫ _ = _
-  dsimp [Discrete.eqToHom]
+  dsimp [Discrete.eqToHom, Discrete.addMonoidalFunctor_ε]
   congr 2
   apply eqToHom_map
 
@@ -72,6 +72,21 @@ lemma pullbackShiftFunctorZero_hom_app :
       (pullbackShiftIso C φ 0 0 (by simp)).hom.app X ≫ (shiftFunctorZero C B).hom.app X := by
   rw [← cancel_epi ((shiftFunctorZero _ A).inv.app X), Iso.inv_hom_id_app,
     pullbackShiftFunctorZero_inv_app, assoc, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app]
+  rfl
+
+lemma pullbackShiftFunctorZero'_inv_app :
+    (shiftFunctorZero _ A).inv.app X = (shiftFunctorZero' C (φ 0) (by rw [map_zero])).inv.app X ≫
+      (pullbackShiftIso C φ 0 (φ 0) rfl).inv.app X := by
+  rw [pullbackShiftFunctorZero_inv_app]
+  simp only [Functor.id_obj, pullbackShiftIso, eqToIso.inv, eqToHom_app, shiftFunctorZero',
+    Iso.trans_inv, NatTrans.comp_app, eqToIso_refl, Iso.refl_inv, NatTrans.id_app, assoc]
+  erw [comp_id]
+
+lemma pullbackShiftFunctorZero'_hom_app :
+    (shiftFunctorZero _ A).hom.app X = (pullbackShiftIso C φ 0 (φ 0) rfl).hom.app X ≫
+      (shiftFunctorZero' C (φ 0) (by rw [map_zero])).hom.app X := by
+  rw [← cancel_epi ((shiftFunctorZero _ A).inv.app X), Iso.inv_hom_id_app,
+    pullbackShiftFunctorZero'_inv_app, assoc, Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app]
   rfl
 
 lemma pullbackShiftFunctorAdd'_inv_app :
@@ -86,6 +101,7 @@ lemma pullbackShiftFunctorAdd'_inv_app :
     shiftFunctorAdd'_eq_shiftFunctorAdd]
   change _ ≫ _ = _
   congr 1
+  rw [Discrete.addMonoidalFunctor_μ]
   dsimp [Discrete.eqToHom]
   congr 2
   apply eqToHom_map
@@ -101,5 +117,55 @@ lemma pullbackShiftFunctorAdd'_hom_app :
     Iso.inv_hom_id_app_assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app_assoc,
     ← Functor.map_comp, Iso.hom_inv_id_app, Functor.map_id]
   rfl
+
+namespace Functor
+
+variable {D : Type*} [Category D] [HasShift D B] (F : C ⥤ D) [F.CommShift B]
+
+/-- If `F : C ⥤ D` commutes with the shifts on `C` and `D`, then it also commutes with
+their pullbacks by an additive map.
+-/
+noncomputable def commShiftPullback :
+    F.CommShift A (C := PullbackShift C φ) (D := PullbackShift D φ) where
+  iso a := isoWhiskerRight (pullbackShiftIso C φ a (φ a) rfl) F ≪≫
+    F.commShiftIso (φ a) ≪≫ isoWhiskerLeft _  (pullbackShiftIso D φ a (φ a) rfl).symm
+  zero := by
+    ext
+    dsimp
+    simp only [F.commShiftIso_zero' (A := B) (φ 0) (by rw [map_zero]), CommShift.isoZero'_hom_app,
+      assoc, CommShift.isoZero_hom_app, pullbackShiftFunctorZero'_hom_app, map_comp,
+      pullbackShiftFunctorZero'_inv_app]
+    dsimp
+    rfl
+  add a b := by
+    ext
+    dsimp
+    simp only [CommShift.isoAdd_hom_app, map_comp, assoc]
+    dsimp
+    rw [F.commShiftIso_add' (a := φ a) (b := φ b) (by rw [φ.map_add]),
+      ← shiftFunctorAdd'_eq_shiftFunctorAdd, ← shiftFunctorAdd'_eq_shiftFunctorAdd,
+      pullbackShiftFunctorAdd'_hom_app φ _ a b (a + b) rfl (φ a) (φ b) (φ (a + b)) rfl rfl rfl,
+      pullbackShiftFunctorAdd'_inv_app φ _ a b (a + b) rfl (φ a) (φ b) (φ (a + b)) rfl rfl rfl]
+    dsimp
+    simp only [CommShift.isoAdd'_hom_app, assoc, map_comp, NatTrans.naturality_assoc,
+      Iso.inv_hom_id_app_assoc]
+    slice_rhs 9 10 => rw [← map_comp, Iso.inv_hom_id_app, map_id]
+    erw [id_comp]
+    slice_rhs 6 7 => erw [← (CommShift.iso (φ b)).hom.naturality]
+    slice_rhs 4 5 => rw [← map_comp, (pullbackShiftIso C φ b (φ b) rfl).hom.naturality, map_comp]
+    simp only [comp_obj, Functor.comp_map, assoc]
+    slice_rhs 3 4 => rw [← map_comp, Iso.inv_hom_id_app, map_id]
+    slice_rhs 4 5 => rw [← map_comp]; erw [← map_comp]; rw [Iso.inv_hom_id_app, map_id, map_id]
+    rw [id_comp, id_comp, assoc, assoc]; rfl
+
+lemma commShiftPullback_iso_eq (a : A) (b : B) (h : b = φ a) :
+    letI : F.CommShift (C := PullbackShift C φ) (D := PullbackShift D φ) A := F.commShiftPullback φ
+    F.commShiftIso a (C := PullbackShift C φ) (D := PullbackShift D φ) =
+      isoWhiskerRight (pullbackShiftIso C φ a b h) F ≪≫ (F.commShiftIso b) ≪≫
+        isoWhiskerLeft F (pullbackShiftIso D φ a b h).symm := by
+  obtain rfl : b = φ a := h
+  rfl
+
+end Functor
 
 end CategoryTheory

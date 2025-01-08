@@ -3,7 +3,7 @@ Copyright (c) 2024 Kalle Kytölä. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Topology.CompletelyRegular
+import Mathlib.Topology.Separation.CompletelyRegular
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 
 /-!
@@ -13,7 +13,7 @@ import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
 * `diracProba`: The Dirac delta mass at a point as a probability measure.
 
 ## Main results
-* `embedding_diracProba`: If `X` is a completely regular T0 space with its Borel sigma algebra,
+* `isEmbedding_diracProba`: If `X` is a completely regular T0 space with its Borel sigma algebra,
   then the mapping that takes a point `x : X` to the delta-measure `diracProba x` is an embedding
   `X ↪ ProbabilityMeasure X`.
 
@@ -36,7 +36,7 @@ lemma CompletelyRegularSpace.exists_BCNN {X : Type*} [TopologicalSpace X] [Compl
   set g' := BoundedContinuousFunction.mkOfBound
       ⟨fun x ↦ Real.toNNReal (g x), continuous_real_toNNReal.comp g_cont.subtype_val⟩ 1 g_bdd
   set f := 1 - g'
-  refine ⟨f, by simp [f, g', gx_zero], fun y y_in_K ↦ by simp [f, g', g_one_on_K y_in_K]⟩
+  refine ⟨f, by simp [f, g', gx_zero], fun y y_in_K ↦ by simp [f, g', g_one_on_K y_in_K, tsub_self]⟩
 
 namespace MeasureTheory
 
@@ -101,7 +101,7 @@ lemma not_tendsto_diracProba_of_not_tendsto [CompletelyRegularSpace X] {x : X} (
              lintegral_dirac' _ (measurable_coe_nnreal_ennreal_iff.mpr f.continuous.measurable)]
   apply not_tendsto_iff_exists_frequently_nmem.mpr
   refine ⟨Ioi 0, Ioi_mem_nhds (by simp only [ENNReal.coe_one, zero_lt_one]),
-          hU.mp (eventually_of_forall ?_)⟩
+          hU.mp (Eventually.of_forall ?_)⟩
   intro x x_notin_U
   rw [f_vanishes_outside x
         (compl_subset_compl.mpr (show interior U ⊆ U from interior_subset) x_notin_U)]
@@ -122,7 +122,9 @@ guarantee injectivity of `diracProba`). -/
 noncomputable def diracProbaInverse : range (diracProba (X := X)) → X :=
   fun μ' ↦ (mem_range.mp μ'.prop).choose
 
-@[simp] lemma diracProba_diracProbaInverse (μ : range (diracProba (X := X))) :
+-- We redeclare `X` here to temporarily avoid the `[TopologicalSpace X]` instance.
+@[simp] lemma diracProba_diracProbaInverse {X : Type*} [MeasurableSpace X]
+    (μ : range (diracProba (X := X))) :
     diracProba (diracProbaInverse μ) = μ := (mem_range.mp μ.prop).choose_spec
 
 lemma diracProbaInverse_eq [T0Space X] {x : X} {μ : range (diracProba (X := X))}
@@ -171,15 +173,20 @@ lemma continuous_diracProbaEquivSymm [T0Space X] [CompletelyRegularSpace X] :
 
 /-- In a completely regular T0 topological space `X`, `diracProbaEquiv` is a homeomorphism to
 its image in `ProbabilityMeasure X`. -/
-noncomputable def diracProbaHomeomorph [T0Space X] [CompletelyRegularSpace X]
-    [MeasurableSpace X] [OpensMeasurableSpace X] : X ≃ₜ range (diracProba (X := X)) :=
+noncomputable def diracProbaHomeomorph [T0Space X] [CompletelyRegularSpace X] :
+    X ≃ₜ range (diracProba (X := X)) :=
   @Homeomorph.mk X _ _ _ diracProbaEquiv continuous_diracProbaEquiv continuous_diracProbaEquivSymm
 
 /-- If `X` is a completely regular T0 space with its Borel sigma algebra, then the mapping
 that takes a point `x : X` to the delta-measure `diracProba x` is an embedding
 `X → ProbabilityMeasure X`. -/
-theorem embedding_diracProba [T0Space X] [CompletelyRegularSpace X]
-    [MeasurableSpace X] [OpensMeasurableSpace X] : Embedding (fun (x : X) ↦ diracProba x) :=
-  embedding_subtype_val.comp diracProbaHomeomorph.embedding
+theorem isEmbedding_diracProba [T0Space X] [CompletelyRegularSpace X] :
+    IsEmbedding (fun (x : X) ↦ diracProba x) :=
+  IsEmbedding.subtypeVal.comp diracProbaHomeomorph.isEmbedding
+
+@[deprecated (since := "2024-10-26")]
+alias embedding_diracProba := isEmbedding_diracProba
 
 end embed_to_probabilityMeasure
+
+end MeasureTheory

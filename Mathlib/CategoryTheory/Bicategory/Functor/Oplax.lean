@@ -4,8 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuma Mizuno
 -/
 import Mathlib.CategoryTheory.Bicategory.Functor.Prelax
-
-#align_import category_theory.bicategory.functor from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
+import Mathlib.Tactic.CategoryTheory.ToApp
 
 /-!
 # Oplax functors
@@ -38,19 +37,6 @@ section
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
 variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
 
--- Porting note: in Lean 3 the below auxiliary definition was only used once, in the definition
--- of oplax functor, with a comment that it had to be used to fix a timeout. The timeout is
--- not present in Lean 4, however Lean 4 is not as good at seeing through the definition,
--- meaning that `simp` wasn't functioning as well as it should. I have hence removed
--- the auxiliary definition.
---@[simp]
---def OplaxFunctor.Map₂AssociatorAux (obj : B → C) (map : ∀ {X Y : B}, (X ⟶ Y) → (obj X ⟶ obj Y))
---    (map₂ : ∀ {a b : B} {f g : a ⟶ b}, (f ⟶ g) → (map f ⟶ map g))
---    (map_comp : ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), map (f ≫ g) ⟶ map f ≫ map g) {a b c d : B}
---    (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) : Prop := ...
-
-#noalign category_theory.oplax_functor.map₂_associator_aux
-
 /-- An oplax functor `F` between bicategories `B` and `C` consists of a function between objects
 `F.obj`, a function between 1-morphisms `F.map`, and a function between 2-morphisms `F.map₂`.
 
@@ -64,90 +50,66 @@ of 2-morphisms.
 -/
 structure OplaxFunctor (B : Type u₁) [Bicategory.{w₁, v₁} B] (C : Type u₂)
   [Bicategory.{w₂, v₂} C] extends PrelaxFunctor B C where
+  /-- The 2-morphism underlying the oplax unity constraint. -/
   mapId (a : B) : map (𝟙 a) ⟶ 𝟙 (obj a)
+  /-- The 2-morphism underlying the oplax functoriality constraint. -/
   mapComp {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : map (f ≫ g) ⟶ map f ≫ map g
+  /-- Naturality of the oplax functoriality constraint, on the left. -/
   mapComp_naturality_left :
     ∀ {a b c : B} {f f' : a ⟶ b} (η : f ⟶ f') (g : b ⟶ c),
       map₂ (η ▷ g) ≫ mapComp f' g = mapComp f g ≫ map₂ η ▷ map g := by
     aesop_cat
+  /-- Naturality of the lax functoriality constraight, on the right. -/
   mapComp_naturality_right :
     ∀ {a b c : B} (f : a ⟶ b) {g g' : b ⟶ c} (η : g ⟶ g'),
       map₂ (f ◁ η) ≫ mapComp f g' = mapComp f g ≫ map f ◁ map₂ η := by
     aesop_cat
-  -- Porting note: `map₂_associator_aux` was used here in lean 3, but this was a hack
-  -- to avoid a timeout; we revert this hack here (because it was causing other problems
-  -- and was not necessary in lean 4)
+  /-- Oplax associativity. -/
   map₂_associator :
     ∀ {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d),
       map₂ (α_ f g h).hom ≫ mapComp f (g ≫ h) ≫ map f ◁ mapComp g h =
     mapComp (f ≫ g) h ≫ mapComp f g ▷ map h ≫ (α_ (map f) (map g) (map h)).hom := by
     aesop_cat
+  /-- Oplax left unity. -/
   map₂_leftUnitor :
     ∀ {a b : B} (f : a ⟶ b),
       map₂ (λ_ f).hom = mapComp (𝟙 a) f ≫ mapId a ▷ map f ≫ (λ_ (map f)).hom := by
     aesop_cat
+  /-- Oplax right unity. -/
   map₂_rightUnitor :
     ∀ {a b : B} (f : a ⟶ b),
       map₂ (ρ_ f).hom = mapComp f (𝟙 b) ≫ map f ◁ mapId b ≫ (ρ_ (map f)).hom := by
     aesop_cat
-#align category_theory.oplax_functor CategoryTheory.OplaxFunctor
-#align category_theory.oplax_functor.map_id CategoryTheory.OplaxFunctor.mapId
-#align category_theory.oplax_functor.map_comp CategoryTheory.OplaxFunctor.mapComp
-#align category_theory.oplax_functor.map_comp_naturality_left' CategoryTheory.OplaxFunctor.mapComp_naturality_left
-#align category_theory.oplax_functor.map_comp_naturality_left CategoryTheory.OplaxFunctor.mapComp_naturality_left
-#align category_theory.oplax_functor.map_comp_naturality_right' CategoryTheory.OplaxFunctor.mapComp_naturality_right
-#align category_theory.oplax_functor.map_comp_naturality_right CategoryTheory.OplaxFunctor.mapComp_naturality_right
-#align category_theory.oplax_functor.map₂_id' CategoryTheory.PrelaxFunctor.map₂_id
-#align category_theory.oplax_functor.map₂_comp' CategoryTheory.PrelaxFunctor.map₂_comp
-#align category_theory.oplax_functor.map₂_associator' CategoryTheory.OplaxFunctor.map₂_associator
-#align category_theory.oplax_functor.map₂_left_unitor CategoryTheory.OplaxFunctor.map₂_leftUnitor
-#align category_theory.oplax_functor.map₂_left_unitor' CategoryTheory.OplaxFunctor.map₂_leftUnitor
-#align category_theory.oplax_functor.map₂_right_unitor CategoryTheory.OplaxFunctor.map₂_rightUnitor
-#align category_theory.oplax_functor.map₂_right_unitor' CategoryTheory.OplaxFunctor.map₂_rightUnitor
-
-#align category_theory.oplax_functor.map_functor CategoryTheory.PrelaxFunctor.mapFunctor
 
 initialize_simps_projections OplaxFunctor (+toPrelaxFunctor, -obj, -map, -map₂)
 
 namespace OplaxFunctor
 
-attribute [reassoc (attr := simp)]
+attribute [reassoc (attr := simp), to_app (attr := simp)]
   mapComp_naturality_left mapComp_naturality_right map₂_associator
-
--- the simpNF linter complains that `map₂_leftUnitor_assoc` etc can be
--- proved with `simp` so I move them here
-attribute [reassoc] map₂_leftUnitor map₂_rightUnitor
-attribute [simp] map₂_leftUnitor map₂_rightUnitor
+attribute [simp, reassoc, to_app] map₂_leftUnitor map₂_rightUnitor
 
 section
 
 /-- The underlying prelax functor. -/
 add_decl_doc OplaxFunctor.toPrelaxFunctor
 
-attribute [nolint docBlame] CategoryTheory.OplaxFunctor.mapId
-  CategoryTheory.OplaxFunctor.mapComp
-  CategoryTheory.OplaxFunctor.mapComp_naturality_left
-  CategoryTheory.OplaxFunctor.mapComp_naturality_right
-  CategoryTheory.OplaxFunctor.map₂_associator
-  CategoryTheory.OplaxFunctor.map₂_leftUnitor
-  CategoryTheory.OplaxFunctor.map₂_rightUnitor
-
-#noalign category_theory.oplax_functor.has_coe_to_prelax
-
 variable (F : OplaxFunctor B C)
 
--- Porting note: `to_prelax_eq_coe` and `to_prelaxFunctor_obj` are
--- syntactic tautologies in lean 4
-#noalign category_theory.oplax_functor.to_prelax_eq_coe
-#noalign category_theory.oplax_functor.to_prelax_functor_obj
+@[reassoc, to_app]
+lemma mapComp_assoc_right {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    F.mapComp f (g ≫ h) ≫ F.map f ◁ F.mapComp g h = F.map₂ (α_ f g h).inv ≫
+    F.mapComp (f ≫ g) h ≫ F.mapComp f g ▷ F.map h ≫
+    (α_ (F.map f) (F.map g) (F.map h)).hom := by
+  rw [← F.map₂_associator, ← F.map₂_comp_assoc]
+  simp
 
--- Porting note: removed lemma `to_prelaxFunctor_map` relating the now
--- nonexistent `PrelaxFunctor.map` and `OplaxFunctor.map`
-#noalign CategoryTheory.OplaxFunctor.to_prelaxFunctor_map
-
--- Porting note: removed lemma `to_prelaxFunctor_map₂` relating
--- `PrelaxFunctor.map₂` to nonexistent `OplaxFunctor.map₂`
-#noalign category_theory.oplax_functor.to_prelax_functor_map₂
+@[reassoc, to_app]
+lemma mapComp_assoc_left {a b c d : B} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
+    F.mapComp (f ≫ g) h ≫ F.mapComp f g ▷ F.map h =
+    F.map₂ (α_ f g h).hom ≫ F.mapComp f (g ≫ h) ≫ F.map f ◁ F.mapComp g h
+    ≫ (α_ (F.map f) (F.map g) (F.map h)).inv := by
+  simp
 
 /-- The identity oplax functor. -/
 @[simps]
@@ -155,7 +117,6 @@ def id (B : Type u₁) [Bicategory.{w₁, v₁} B] : OplaxFunctor B B where
   toPrelaxFunctor := PrelaxFunctor.id B
   mapId := fun a => 𝟙 (𝟙 a)
   mapComp := fun f g => 𝟙 (f ≫ g)
-#align category_theory.oplax_functor.id CategoryTheory.OplaxFunctor.id
 
 instance : Inhabited (OplaxFunctor B B) :=
   ⟨id B⟩
@@ -177,10 +138,8 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D where
       mapComp_naturality_right, assoc]
   map₂_associator := fun f g h => by
     dsimp
-    -- Porting note: if you use the `map₂_associator_aux` hack in the definition of
-    -- `map₂_associator` then the `simp only` call below does not seem to apply `map₂_associator`
     simp only [map₂_associator, ← PrelaxFunctor.map₂_comp_assoc, ← mapComp_naturality_right_assoc,
-      whiskerLeft_comp, assoc]
+      Bicategory.whiskerLeft_comp, assoc]
     simp only [map₂_associator, PrelaxFunctor.map₂_comp, mapComp_naturality_left_assoc,
       comp_whiskerRight, assoc]
   map₂_leftUnitor := fun f => by
@@ -190,28 +149,23 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D where
   map₂_rightUnitor := fun f => by
     dsimp
     simp only [map₂_rightUnitor, PrelaxFunctor.map₂_comp, mapComp_naturality_right_assoc,
-      whiskerLeft_comp, assoc]
-#align category_theory.oplax_functor.comp CategoryTheory.OplaxFunctor.comp
+      Bicategory.whiskerLeft_comp, assoc]
 
 /-- A structure on an oplax functor that promotes an oplax functor to a pseudofunctor.
-See `Pseudofunctor.mkOfOplax`.
--/
--- Porting note(#5171): linter not ported yet
+
+See `Pseudofunctor.mkOfOplax`. -/
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet
 -- @[nolint has_nonempty_instance]
--- Porting note: removing primes in structure name because
--- my understanding is that they're no longer needed
 structure PseudoCore (F : OplaxFunctor B C) where
+  /-- The isomorphism giving rise to the oplax unity constraint -/
   mapIdIso (a : B) : F.map (𝟙 a) ≅ 𝟙 (F.obj a)
+  /-- The isomorphism giving rise to the oplax functoriality constraint -/
   mapCompIso {a b c : B} (f : a ⟶ b) (g : b ⟶ c) : F.map (f ≫ g) ≅ F.map f ≫ F.map g
+  /-- `mapIdIso` gives rise to the oplax unity constraint -/
   mapIdIso_hom : ∀ {a : B}, (mapIdIso a).hom = F.mapId a := by aesop_cat
+  /-- `mapCompIso` gives rise to the oplax functoriality constraint -/
   mapCompIso_hom :
     ∀ {a b c : B} (f : a ⟶ b) (g : b ⟶ c), (mapCompIso f g).hom = F.mapComp f g := by aesop_cat
-#align category_theory.oplax_functor.pseudo_core CategoryTheory.OplaxFunctor.PseudoCore
-
-attribute [nolint docBlame] CategoryTheory.OplaxFunctor.PseudoCore.mapIdIso
-  CategoryTheory.OplaxFunctor.PseudoCore.mapCompIso
-  CategoryTheory.OplaxFunctor.PseudoCore.mapIdIso_hom
-  CategoryTheory.OplaxFunctor.PseudoCore.mapCompIso_hom
 
 attribute [simp] PseudoCore.mapIdIso_hom PseudoCore.mapCompIso_hom
 
@@ -220,3 +174,5 @@ end
 end OplaxFunctor
 
 end
+
+end CategoryTheory

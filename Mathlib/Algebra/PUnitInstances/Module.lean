@@ -7,12 +7,10 @@ import Mathlib.Algebra.PUnitInstances.Algebra
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Ring.Action.Basic
 
-#align_import algebra.punit_instances from "leanprover-community/mathlib"@"6cb77a8eaff0ddd100e87b1591c6d3ad319514ff"
-
 /-!
 # Instances on PUnit
 
-This file collects facts about module structures on the one-element type.
+This file collects facts about module structures on the one-element type
 -/
 
 namespace PUnit
@@ -26,8 +24,6 @@ instance smul : SMul R PUnit :=
 @[to_additive (attr := simp)]
 theorem smul_eq {R : Type*} (y : PUnit) (r : R) : r • y = unit :=
   rfl
-#align punit.smul_eq PUnit.smul_eq
-#align punit.vadd_eq PUnit.vadd_eq
 
 @[to_additive]
 instance : IsCentralScalar R PUnit :=
@@ -71,5 +67,29 @@ instance module [Semiring R] : Module R PUnit where
   __ := PUnit.distribMulAction
   add_smul := by subsingleton
   zero_smul := by subsingleton
+
+@[to_additive]
+instance : SMul PUnit R where smul _ x := x
+
+/-- The one-element type acts trivially on every element. -/
+@[to_additive (attr := simp)]
+lemma smul_eq' (r : PUnit) (a : R) : r • a = a := rfl
+
+@[to_additive] instance [SMul R S] : SMulCommClass PUnit R S := ⟨by simp⟩
+instance [SMul R S] : IsScalarTower PUnit R S := ⟨by simp⟩
+
+instance : MulAction PUnit R where
+  __ := inferInstanceAs (SMul PUnit R)
+  one_smul _ := rfl
+  mul_smul _ _ _ := rfl
+
+instance [Zero R] : SMulZeroClass PUnit R where
+  __ := inferInstanceAs (SMul PUnit R)
+  smul_zero _ := rfl
+
+instance [AddMonoid R] : DistribMulAction PUnit R where
+  __ := inferInstanceAs (MulAction PUnit R)
+  __ := inferInstanceAs (SMulZeroClass PUnit R)
+  smul_add _ _ _ := rfl
 
 end PUnit

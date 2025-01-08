@@ -41,15 +41,15 @@ instance [FinitaryPreExtensive C] [Preregular C] : Precoherent C where
     refine ⟨α, inferInstance, ?_⟩
     obtain ⟨Y, g, _, g', hg⟩ := Preregular.exists_fac f (Sigma.desc π₁)
     let X₂ := fun a ↦ pullback g' (Sigma.ι X₁ a)
-    let π₂ := fun a ↦ pullback.fst (f := g') (g := Sigma.ι X₁ a) ≫ g
-    let π' := fun a ↦ pullback.fst (f := g') (g := Sigma.ι X₁ a)
+    let π₂ := fun a ↦ pullback.fst g' (Sigma.ι X₁ a) ≫ g
+    let π' := fun a ↦ pullback.fst g' (Sigma.ι X₁ a)
     have _ := FinitaryPreExtensive.sigma_desc_iso (fun a ↦ Sigma.ι X₁ a) g' inferInstance
     refine ⟨X₂, π₂, ?_, ?_⟩
-    · have : (Sigma.desc π' ≫ g) = Sigma.desc π₂ := by ext; simp
+    · have : (Sigma.desc π' ≫ g) = Sigma.desc π₂ := by ext; simp [π₂, π']
       rw [← effectiveEpi_desc_iff_effectiveEpiFamily, ← this]
       infer_instance
-    · refine ⟨id, fun b ↦ pullback.snd, fun b ↦ ?_⟩
-      simp only [π₂, id_eq, Category.assoc, ← hg]
+    · refine ⟨id, fun b ↦ pullback.snd _ _, fun b ↦ ?_⟩
+      simp only [X₂, π₂, id_eq, Category.assoc, ← hg]
       rw [← Category.assoc, pullback.condition]
       simp
 
@@ -78,9 +78,9 @@ theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive
           Set.mem_setOf_eq]
         exact Or.inr ⟨_, Sigma.desc f, ⟨rfl, inferInstance⟩⟩
       · rintro R g ⟨W, ψ, σ, ⟨⟩, rfl⟩
-        change _ ∈ sieves ((extensiveCoverage C) ⊔ (regularCoverage C)).toGrothendieck _
+        change _ ∈ ((extensiveCoverage C) ⊔ (regularCoverage C)).toGrothendieck _ R
         rw [Sieve.pullback_comp]
-        apply pullback_stable'
+        apply pullback_stable
         have : generate (Presieve.ofArrows X fun (i : I) ↦ Sigma.ι X i) ≤
             (generate (Presieve.ofArrows X f)).pullback (Sigma.desc f) := by
           rintro Q q ⟨E, e, r, ⟨hq, rfl⟩⟩
@@ -92,3 +92,5 @@ theorem extensive_regular_generate_coherent [Preregular C] [FinitaryPreExtensive
         aesop
     | top => apply Coverage.Saturate.top
     | transitive Y T => apply Coverage.Saturate.transitive Y T<;> [assumption; assumption]
+
+end CategoryTheory

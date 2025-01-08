@@ -17,6 +17,3 @@ def _root_.Equiv.pnatEquivNat : ℕ+ ≃ ℕ where
   invFun := Nat.succPNat
   left_inv := PNat.succPNat_natPred
   right_inv := Nat.natPred_succPNat
-#align equiv.pnat_equiv_nat Equiv.pnatEquivNat
-#align equiv.pnat_equiv_nat_symm_apply Equiv.pnatEquivNat_symm_apply
-#align equiv.pnat_equiv_nat_apply Equiv.pnatEquivNat_apply

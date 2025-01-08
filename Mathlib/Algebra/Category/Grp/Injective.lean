@@ -3,14 +3,13 @@ Copyright (c) 2022 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
+import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.Grp.ZModuleEquivalence
 import Mathlib.Algebra.EuclideanDomain.Int
-import Mathlib.Algebra.Module.Injective
+import Mathlib.Algebra.Category.ModuleCat.Injective
+import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.Topology.Instances.AddCircle
-import Mathlib.Topology.Instances.Rat
-
-#align_import algebra.category.Group.injective from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Injective objects in the category of abelian groups
@@ -43,8 +42,6 @@ universe u
 
 variable (A : Type u) [AddCommGroup A]
 
-set_option linter.uppercaseLean3 false
-
 theorem Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun I g ↦ by
   rcases IsPrincipalIdealRing.principal I with ⟨m, rfl⟩
   obtain rfl | h0 := eq_or_ne m 0
@@ -60,17 +57,14 @@ theorem Module.Baer.of_divisible [DivisibleBy A ℤ] : Module.Baer ℤ A := fun 
 
 namespace AddCommGrp
 
-theorem injective_as_module_iff : Injective (⟨A⟩ : ModuleCat ℤ) ↔
+theorem injective_as_module_iff : Injective (ModuleCat.of ℤ A) ↔
     Injective (⟨A,inferInstance⟩ : AddCommGrp) :=
-  ((forget₂ (ModuleCat ℤ) AddCommGrp).asEquivalence.map_injective_iff ⟨A⟩).symm
-#noalign AddCommGroup.injective_of_injective_as_module
-#noalign AddCommGroup.injective_as_module_of_injective_as_Ab
+  ((forget₂ (ModuleCat ℤ) AddCommGrp).asEquivalence.map_injective_iff (ModuleCat.of ℤ A)).symm
 
 instance injective_of_divisible [DivisibleBy A ℤ] :
     Injective (⟨A,inferInstance⟩ : AddCommGrp) :=
   (injective_as_module_iff A).mp <|
     Module.injective_object_of_injective_module (inj := (Module.Baer.of_divisible A).injective)
-#align AddCommGroup.injective_of_divisible AddCommGrp.injective_of_divisible
 
 instance injective_ratCircle : Injective <| of <| ULift.{u} <| AddCircle (1 : ℚ) :=
   injective_of_divisible _

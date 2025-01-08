@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Louis Carlin, Mario Carneiro
 -/
 import Mathlib.Algebra.EuclideanDomain.Defs
-import Mathlib.Algebra.Order.Group.Int
-import Mathlib.Algebra.Ring.Int
-
-#align_import algebra.euclidean_domain.instances from "leanprover-community/mathlib"@"e1bccd6e40ae78370f01659715d3c948716e3b7e"
+import Mathlib.Algebra.Order.Group.Unbundled.Int
+import Mathlib.Algebra.Ring.Int.Defs
 
 /-!
 # Instances for Euclidean domains

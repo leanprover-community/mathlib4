@@ -8,8 +8,6 @@ import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Products
 import Mathlib.CategoryTheory.Limits.Shapes.Biproducts
 import Mathlib.CategoryTheory.Shift.Basic
 
-#align_import category_theory.triangulated.basic from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
-
 /-!
 # Triangles
 
@@ -52,7 +50,6 @@ structure Triangle where mk' ::
   mor₂ : obj₂ ⟶ obj₃
   /-- the third morphism of a triangle -/
   mor₃ : obj₃ ⟶ obj₁⟦(1 : ℤ)⟧
-#align category_theory.pretriangulated.triangle CategoryTheory.Pretriangulated.Triangle
 
 variable {C}
 
@@ -67,7 +64,6 @@ def Triangle.mk {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ X⟦(1 : ℤ)
   mor₁ := f
   mor₂ := g
   mor₃ := h
-#align category_theory.pretriangulated.triangle.mk CategoryTheory.Pretriangulated.Triangle.mk
 
 section
 
@@ -83,7 +79,6 @@ instance : Inhabited (Triangle C) :=
 @[simps!]
 def contractibleTriangle (X : C) : Triangle C :=
   Triangle.mk (𝟙 X) (0 : X ⟶ 0) 0
-#align category_theory.pretriangulated.contractible_triangle CategoryTheory.Pretriangulated.contractibleTriangle
 
 end
 
@@ -116,7 +111,6 @@ structure TriangleMorphism (T₁ : Triangle C) (T₂ : Triangle C) where
   comm₂ : T₁.mor₂ ≫ hom₃ = hom₂ ≫ T₂.mor₂ := by aesop_cat
   /-- the third commutative square of a triangle morphism -/
   comm₃ : T₁.mor₃ ≫ hom₁⟦1⟧' = hom₃ ≫ T₂.mor₃ := by aesop_cat
-#align category_theory.pretriangulated.triangle_morphism CategoryTheory.Pretriangulated.TriangleMorphism
 
 attribute [reassoc (attr := simp)] TriangleMorphism.comm₁ TriangleMorphism.comm₂
   TriangleMorphism.comm₃
@@ -128,7 +122,6 @@ def triangleMorphismId (T : Triangle C) : TriangleMorphism T T where
   hom₁ := 𝟙 T.obj₁
   hom₂ := 𝟙 T.obj₂
   hom₃ := 𝟙 T.obj₃
-#align category_theory.pretriangulated.triangle_morphism_id CategoryTheory.Pretriangulated.triangleMorphismId
 
 instance (T : Triangle C) : Inhabited (TriangleMorphism T T) :=
   ⟨triangleMorphismId T⟩
@@ -143,7 +136,6 @@ def TriangleMorphism.comp (f : TriangleMorphism T₁ T₂) (g : TriangleMorphism
   hom₁ := f.hom₁ ≫ g.hom₁
   hom₂ := f.hom₂ ≫ g.hom₂
   hom₃ := f.hom₃ ≫ g.hom₃
-#align category_theory.pretriangulated.triangle_morphism.comp CategoryTheory.Pretriangulated.TriangleMorphism.comp
 
 /-- Triangles with triangle morphisms form a category.
 -/
@@ -152,12 +144,11 @@ instance triangleCategory : Category (Triangle C) where
   Hom A B := TriangleMorphism A B
   id A := triangleMorphismId A
   comp f g := f.comp g
-#align category_theory.pretriangulated.triangle_category CategoryTheory.Pretriangulated.triangleCategory
 
 @[ext]
 lemma Triangle.hom_ext {A B : Triangle C} (f g : A ⟶ B)
     (h₁ : f.hom₁ = g.hom₁) (h₂ : f.hom₂ = g.hom₂) (h₃ : f.hom₃ = g.hom₃) : f = g :=
-  TriangleMorphism.ext _ _ h₁ h₂ h₃
+  TriangleMorphism.ext h₁ h₂ h₃
 
 @[simp]
 lemma id_hom₁ (A : Triangle C) : TriangleMorphism.hom₁ (𝟙 A) = 𝟙 _ := rfl
@@ -189,7 +180,6 @@ def Triangle.homMk (A B : Triangle C)
   comm₁ := comm₁
   comm₂ := comm₂
   comm₃ := comm₃
-#align category_theory.pretriangulated.triangle.hom_mk CategoryTheory.Pretriangulated.Triangle.homMk
 
 @[simps]
 def Triangle.isoMk (A B : Triangle C)
@@ -206,7 +196,6 @@ def Triangle.isoMk (A B : Triangle C)
     (by simp only [← cancel_mono (iso₁.hom⟦(1 : ℤ)⟧'), Category.assoc, comm₃,
       Iso.inv_hom_id_assoc, ← Functor.map_comp, Iso.inv_hom_id,
       Functor.map_id, Category.comp_id])
-#align category_theory.pretriangulated.triangle.iso_mk CategoryTheory.Pretriangulated.Triangle.isoMk
 
 lemma Triangle.isIso_of_isIsos {A B : Triangle C} (f : A ⟶ B)
     (h₁ : IsIso f.hom₁) (h₂ : IsIso f.hom₂) (h₃ : IsIso f.hom₃) : IsIso f := by
@@ -260,7 +249,7 @@ def binaryProductTriangleIsoBinaryBiproductTriangle
     (X₁ X₂ : C) [HasZeroMorphisms C] [HasBinaryBiproduct X₁ X₂] :
     binaryProductTriangle X₁ X₂ ≅ binaryBiproductTriangle X₁ X₂ :=
   Triangle.isoMk _ _ (Iso.refl _) (biprod.isoProd X₁ X₂).symm (Iso.refl _)
-    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    (by aesop_cat) (by simp) (by simp)
 
 section
 
@@ -271,9 +260,9 @@ variable {J : Type*} (T : J → Triangle C)
 /-- The product of a family of triangles. -/
 @[simps!]
 def productTriangle : Triangle C :=
-  Triangle.mk (Pi.map (fun j => (T j).mor₁))
-    (Pi.map (fun j => (T j).mor₂))
-    (Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
+  Triangle.mk (Limits.Pi.map (fun j => (T j).mor₁))
+    (Limits.Pi.map (fun j => (T j).mor₂))
+    (Limits.Pi.map (fun j => (T j).mor₃) ≫ inv (piComparison _ _))
 
 /-- A projection from the product of a family of triangles. -/
 @[simps]

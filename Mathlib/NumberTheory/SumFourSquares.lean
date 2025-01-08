@@ -3,12 +3,11 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Parity
+import Mathlib.Algebra.Ring.Int.Units
+import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.ZMod.Basic
 import Mathlib.FieldTheory.Finite.Basic
-import Mathlib.Data.Fintype.BigOperators
-
-#align_import number_theory.sum_four_squares from "leanprover-community/mathlib"@"bd9851ca476957ea4549eb19b40e7b5ade9428cc"
 
 /-!
 # Lagrange's four square theorem
@@ -57,7 +56,6 @@ theorem sq_add_sq_of_two_mul_sq_add_sq {m x y : ℤ} (h : 2 * m = x ^ 2 + y ^ 2)
       _ = 2 * 2 * (((x - y) / 2) ^ 2 + ((x + y) / 2) ^ 2) := by
         set_option simprocs false in
         simp [mul_add, pow_succ, mul_comm, mul_assoc, mul_left_comm]
-#align int.sq_add_sq_of_two_mul_sq_add_sq Int.sq_add_sq_of_two_mul_sq_add_sq
 
 theorem lt_of_sum_four_squares_eq_mul {a b c d k m : ℕ}
     (h : a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = k * m)
@@ -69,7 +67,7 @@ theorem lt_of_sum_four_squares_eq_mul {a b c d k m : ℕ}
     2 ^ 2 * (k * ↑m) = ∑ i : Fin 4, (2 * ![a, b, c, d] i) ^ 2 := by
       simp [← h, Fin.sum_univ_succ, mul_add, mul_pow, add_assoc]
     _ < ∑ _i : Fin 4, m ^ 2 := Finset.sum_lt_sum_of_nonempty Finset.univ_nonempty fun i _ ↦ by
-      refine pow_lt_pow_left ?_ (zero_le _) two_ne_zero
+      refine Nat.pow_lt_pow_left ?_ two_ne_zero
       fin_cases i <;> assumption
     _ = 2 ^ 2 * (m * m) := by simp; ring
 
@@ -92,15 +90,12 @@ theorem exists_sq_add_sq_add_one_eq_mul (p : ℕ) [hp : Fact p.Prime] :
   · exact (mul_le_mul' le_rfl hb).trans_lt (Nat.mul_div_lt_iff_not_dvd.2 hodd.not_two_dvd_nat)
   · exact lt_of_le_of_ne hp.1.two_le (hodd.ne_two_of_dvd_nat (dvd_refl _)).symm
   · exact hp.1.pos
-#align int.exists_sq_add_sq_add_one_eq_k Int.exists_sq_add_sq_add_one_eq_mul
 
 end Int
 
 namespace Nat
 
 open Int
-
-open scoped Classical
 
 private theorem sum_four_squares_of_two_mul_sum_four_squares {m a b c d : ℤ}
     (h : a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = 2 * m) :
@@ -130,6 +125,7 @@ private theorem sum_four_squares_of_two_mul_sum_four_squares {m a b c d : ℤ}
 /-- Lagrange's **four squares theorem** for a prime number. Use `Nat.sum_four_squares` instead. -/
 protected theorem Prime.sum_four_squares {p : ℕ} (hp : p.Prime) :
     ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = p := by
+  classical
   have := Fact.mk hp
   -- Find `a`, `b`, `c`, `d`, `0 < m < p` such that `a ^ 2 + b ^ 2 + c ^ 2 + d ^ 2 = m * p`
   have natAbs_iff {a b c d : ℤ} {k : ℕ} :
@@ -224,6 +220,5 @@ theorem sum_four_squares (n : ℕ) : ∃ a b c d : ℕ, a ^ 2 + b ^ 2 + c ^ 2 + 
     rcases hm with ⟨a, b, c, d, rfl⟩
     rcases hn with ⟨w, x, y, z, rfl⟩
     exact ⟨_, _, _, _, euler_four_squares _ _ _ _ _ _ _ _⟩
-#align nat.sum_four_squares Nat.sum_four_squares
 
 end Nat

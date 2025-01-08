@@ -8,9 +8,7 @@ import Mathlib.FieldTheory.PrimitiveElement
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Minpoly
 import Mathlib.LinearAlgebra.Matrix.ToLinearEquiv
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
-import Mathlib.FieldTheory.Galois
-
-#align_import ring_theory.norm from "leanprover-community/mathlib"@"fecd3520d2a236856f254f27714b80dcfe28ea57"
+import Mathlib.FieldTheory.Galois.Basic
 
 /-!
 # Norm for (finite) ring extensions
@@ -48,7 +46,7 @@ variable {K L F : Type*} [Field K] [Field L] [Field F]
 variable [Algebra K L] [Algebra K F]
 variable {ι : Type w}
 
-open FiniteDimensional
+open Module
 
 open LinearMap
 
@@ -66,7 +64,6 @@ theorem PowerBasis.norm_gen_eq_coeff_zero_minpoly (pb : PowerBasis R S) :
     norm R pb.gen = (-1) ^ pb.dim * coeff (minpoly R pb.gen) 0 := by
   rw [norm_eq_matrix_det pb.basis, det_eq_sign_charpoly_coeff, charpoly_leftMulMatrix,
     Fintype.card_fin]
-#align algebra.power_basis.norm_gen_eq_coeff_zero_minpoly Algebra.PowerBasis.norm_gen_eq_coeff_zero_minpoly
 
 /-- Given `pb : PowerBasis R S`, then the norm of `pb.gen` is
 `((minpoly R pb.gen).aroots F).prod`. -/
@@ -77,10 +74,9 @@ theorem PowerBasis.norm_gen_eq_prod_roots [Algebra R F] (pb : PowerBasis R S)
   have := minpoly.monic pb.isIntegral_gen
   rw [PowerBasis.norm_gen_eq_coeff_zero_minpoly, ← pb.natDegree_minpoly, RingHom.map_mul,
     ← coeff_map,
-    prod_roots_eq_coeff_zero_of_monic_of_split (this.map _) ((splits_id_iff_splits _).2 hf),
+    prod_roots_eq_coeff_zero_of_monic_of_splits (this.map _) ((splits_id_iff_splits _).2 hf),
     this.natDegree_map, map_pow, ← mul_assoc, ← mul_pow]
   simp only [map_neg, _root_.map_one, neg_mul, neg_neg, one_pow, one_mul]
-#align algebra.power_basis.norm_gen_eq_prod_roots Algebra.PowerBasis.norm_gen_eq_prod_roots
 
 end EqProdRoots
 
@@ -92,16 +88,15 @@ variable [Finite ι]
 theorem norm_zero [Nontrivial S] [Module.Free R S] [Module.Finite R S] : norm R (0 : S) = 0 := by
   nontriviality
   rw [norm_apply, coe_lmul_eq_mul, map_zero, LinearMap.det_zero' (Module.Free.chooseBasis R S)]
-#align algebra.norm_zero Algebra.norm_zero
 
 @[simp]
 theorem norm_eq_zero_iff [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Finite R S] {x : S} :
     norm R x = 0 ↔ x = 0 := by
   constructor
-  on_goal 1 => let b := Module.Free.chooseBasis R S
   swap
   · rintro rfl; exact norm_zero
-  · letI := Classical.decEq (Module.Free.ChooseBasisIndex R S)
+  · let b := Module.Free.chooseBasis R S
+    let decEq := Classical.decEq (Module.Free.ChooseBasisIndex R S)
     rw [norm_eq_matrix_det b, ← Matrix.exists_mulVec_eq_zero_iff]
     rintro ⟨v, v_ne, hv⟩
     rw [← b.equivFun.apply_symm_apply v, b.equivFun_symm_apply, b.equivFun_apply,
@@ -111,29 +106,24 @@ theorem norm_eq_zero_iff [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Fin
     · contrapose! v_ne with sum_eq
       apply b.equivFun.symm.injective
       rw [b.equivFun_symm_apply, sum_eq, LinearEquiv.map_zero]
-#align algebra.norm_eq_zero_iff Algebra.norm_eq_zero_iff
 
 theorem norm_ne_zero_iff [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Finite R S] {x : S} :
     norm R x ≠ 0 ↔ x ≠ 0 := not_iff_not.mpr norm_eq_zero_iff
-#align algebra.norm_ne_zero_iff Algebra.norm_ne_zero_iff
 
 /-- This is `Algebra.norm_eq_zero_iff` composed with `Algebra.norm_apply`. -/
 @[simp]
 theorem norm_eq_zero_iff' [IsDomain R] [IsDomain S] [Module.Free R S] [Module.Finite R S] {x : S} :
     LinearMap.det (LinearMap.mul R S x) = 0 ↔ x = 0 := norm_eq_zero_iff
-#align algebra.norm_eq_zero_iff' Algebra.norm_eq_zero_iff'
 
 theorem norm_eq_zero_iff_of_basis [IsDomain R] [IsDomain S] (b : Basis ι R S) {x : S} :
     Algebra.norm R x = 0 ↔ x = 0 := by
   haveI : Module.Free R S := Module.Free.of_basis b
   haveI : Module.Finite R S := Module.Finite.of_basis b
   exact norm_eq_zero_iff
-#align algebra.norm_eq_zero_iff_of_basis Algebra.norm_eq_zero_iff_of_basis
 
 theorem norm_ne_zero_iff_of_basis [IsDomain R] [IsDomain S] (b : Basis ι R S) {x : S} :
     Algebra.norm R x ≠ 0 ↔ x ≠ 0 :=
   not_iff_not.mpr (norm_eq_zero_iff_of_basis b)
-#align algebra.norm_ne_zero_iff_of_basis Algebra.norm_ne_zero_iff_of_basis
 
 end EqZeroIff
 
@@ -146,13 +136,12 @@ theorem norm_eq_norm_adjoin [FiniteDimensional K L] [Algebra.IsSeparable K L] (x
   letI := Algebra.isSeparable_tower_top_of_isSeparable K K⟮x⟯ L
   let pbL := Field.powerBasisOfFiniteOfSeparable K⟮x⟯ L
   let pbx := IntermediateField.adjoin.powerBasis (Algebra.IsSeparable.isIntegral K x)
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [← AdjoinSimple.algebraMap_gen K x, norm_eq_matrix_det (pbx.basis.smul pbL.basis) _,
-    smul_leftMulMatrix_algebraMap, det_blockDiagonal, norm_eq_matrix_det pbx.basis]
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
+  erw [← AdjoinSimple.algebraMap_gen K x, norm_eq_matrix_det (pbx.basis.smulTower pbL.basis) _,
+    smulTower_leftMulMatrix_algebraMap, det_blockDiagonal, norm_eq_matrix_det pbx.basis]
   simp only [Finset.card_fin, Finset.prod_const]
   congr
   rw [← PowerBasis.finrank, AdjoinSimple.algebraMap_gen K x]
-#align algebra.norm_eq_norm_adjoin Algebra.norm_eq_norm_adjoin
 
 variable {K}
 
@@ -164,9 +153,8 @@ theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_one {x : L} (hx : ¬Is
   contrapose! hx
   obtain ⟨s, ⟨b⟩⟩ := hx
   refine .of_mem_of_fg K⟮x⟯.toSubalgebra ?_ x ?_
-  · exact (Submodule.fg_iff_finiteDimensional _).mpr (of_fintype_basis b)
+  · exact (Submodule.fg_iff_finiteDimensional _).mpr (.of_fintype_basis b)
   · exact IntermediateField.subset_adjoin K _ (Set.mem_singleton x)
-#align intermediate_field.adjoin_simple.norm_gen_eq_one IntermediateField.AdjoinSimple.norm_gen_eq_one
 
 theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
     (hf : (minpoly K x).Splits (algebraMap K F)) :
@@ -177,9 +165,7 @@ theorem _root_.IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots (x : L)
   · simp [minpoly.eq_zero hx, IntermediateField.AdjoinSimple.norm_gen_eq_one hx, aroots_def]
   rw [← adjoin.powerBasis_gen hx, PowerBasis.norm_gen_eq_prod_roots] <;>
     rw [adjoin.powerBasis_gen hx, ← minpoly.algebraMap_eq injKxL] <;>
-    try simp only [AdjoinSimple.algebraMap_gen _ _]
-  exact hf
-#align intermediate_field.adjoin_simple.norm_gen_eq_prod_roots IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots
+    simp only [AdjoinSimple.algebraMap_gen _ _, hf]
 
 end IntermediateField
 
@@ -202,14 +188,12 @@ theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
     · exact nodup_roots hfx.map
     · intro x; rfl
   · intro σ; simp only [PowerBasis.liftEquiv'_apply_coe]
-#align algebra.norm_eq_prod_embeddings_gen Algebra.norm_eq_prod_embeddings_gen
 
 theorem norm_eq_prod_roots [Algebra.IsSeparable K L] [FiniteDimensional K L] {x : L}
     (hF : (minpoly K x).Splits (algebraMap K F)) :
     algebraMap K F (norm K x) =
       ((minpoly K x).aroots F).prod ^ finrank K⟮x⟯ L := by
   rw [norm_eq_norm_adjoin K x, map_pow, IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots _ hF]
-#align algebra.norm_eq_prod_roots Algebra.norm_eq_prod_roots
 
 theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAlgClosed E]
     [Algebra.IsSeparable K F] [FiniteDimensional K F] (pb : PowerBasis K L) :
@@ -229,7 +213,6 @@ theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAl
   · intro σ
     simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
       IsScalarTower.coe_toAlgHom']
-#align algebra.prod_embeddings_eq_finrank_pow Algebra.prod_embeddings_eq_finrank_pow
 
 variable (K)
 
@@ -244,7 +227,6 @@ theorem norm_eq_prod_embeddings [FiniteDimensional K L] [Algebra.IsSeparable K L
   · exact (prod_embeddings_eq_finrank_pow L (L := K⟮x⟯) E (adjoin.powerBasis hx)).symm
   · haveI := Algebra.isSeparable_tower_bot_of_isSeparable K K⟮x⟯ L
     exact Algebra.IsSeparable.isSeparable K _
-#align algebra.norm_eq_prod_embeddings Algebra.norm_eq_prod_embeddings
 
 theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L) :
     algebraMap K L (norm K x) = ∏ σ : L ≃ₐ[K] L, σ x := by
@@ -255,7 +237,6 @@ theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L
   · intro σ
     simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
       AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, id.map_eq_id, RingHom.id_apply]
-#align algebra.norm_eq_prod_automorphisms Algebra.norm_eq_prod_automorphisms
 
 theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [Algebra.IsSeparable K L]
     [FiniteDimensional K L] {x : L} (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
@@ -267,7 +248,6 @@ theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [Algeb
     rw [← aeval_def] at hy ⊢
     exact minpoly.aeval_of_isScalarTower R x y hy
   · apply IsAlgClosed.splits_codomain
-#align algebra.is_integral_norm Algebra.isIntegral_norm
 
 lemma norm_eq_of_algEquiv [Ring T] [Algebra R T] (e : S ≃ₐ[R] T) (x) :
     Algebra.norm R (e x) = Algebra.norm R x := by
@@ -298,49 +278,12 @@ lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring
     Algebra.norm A₁ x = e₁.symm (Algebra.norm A₂ (e₂ x)) := by
   letI := (RingHom.comp (e₂ : B₁ →+* B₂) (algebraMap A₁ B₁)).toAlgebra' ?_
   · let e' : B₁ ≃ₐ[A₁] B₂ := { e₂ with commutes' := fun _ ↦ rfl }
-    rw [← Algebra.norm_eq_of_ringEquiv e₁ he, ← Algebra.norm_eq_of_algEquiv e',
-      RingEquiv.symm_apply_apply]
-    rfl
+    rw [← Algebra.norm_eq_of_ringEquiv e₁ he, ← Algebra.norm_eq_of_algEquiv e']
+    simp [e']
   intros c x
   apply e₂.symm.injective
   simp only [RingHom.coe_comp, RingHom.coe_coe, Function.comp_apply, _root_.map_mul,
     RingEquiv.symm_apply_apply, commutes]
-
-variable {F} (L)
-
--- TODO. Generalize this proof to rings
-theorem norm_norm [Algebra L F] [IsScalarTower K L F] [Algebra.IsSeparable K F] (x : F) :
-    norm K (norm L x) = norm K x := by
-  by_cases hKF : FiniteDimensional K F
-  · let A := AlgebraicClosure K
-    apply (algebraMap K A).injective
-    haveI : FiniteDimensional L F := FiniteDimensional.right K L F
-    haveI : FiniteDimensional K L := FiniteDimensional.left K L F
-    haveI : Algebra.IsSeparable K L := Algebra.isSeparable_tower_bot_of_isSeparable K L F
-    haveI : Algebra.IsSeparable L F := Algebra.isSeparable_tower_top_of_isSeparable K L F
-    letI : ∀ σ : L →ₐ[K] A,
-        haveI := σ.toRingHom.toAlgebra
-        Fintype (F →ₐ[L] A) := fun _ => inferInstance
-    rw [norm_eq_prod_embeddings K A (_ : F),
-      Fintype.prod_equiv algHomEquivSigma (fun σ : F →ₐ[K] A => σ x)
-        (fun π : Σ f : L →ₐ[K] A, _ => (π.2 : F → A) x) fun _ => rfl]
-    suffices ∀ σ : L →ₐ[K] A,
-        haveI := σ.toRingHom.toAlgebra
-        ∏ π : F →ₐ[L] A, π x = σ (norm L x)
-      by simp_rw [← Finset.univ_sigma_univ, Finset.prod_sigma, this, norm_eq_prod_embeddings]
-    intro σ
-    letI : Algebra L A := σ.toRingHom.toAlgebra
-    rw [← norm_eq_prod_embeddings L A (_ : F)]
-    simp [RingHom.algebraMap_toAlgebra]
-  · rw [norm_eq_one_of_not_module_finite hKF]
-    by_cases hKL : FiniteDimensional K L
-    · have hLF : ¬FiniteDimensional L F := by
-        refine (mt ?_) hKF
-        intro hKF
-        exact FiniteDimensional.trans K L F
-      rw [norm_eq_one_of_not_module_finite hLF, _root_.map_one]
-    · rw [norm_eq_one_of_not_module_finite hKL]
-#align algebra.norm_norm Algebra.norm_norm
 
 end EqProdEmbeddings
 

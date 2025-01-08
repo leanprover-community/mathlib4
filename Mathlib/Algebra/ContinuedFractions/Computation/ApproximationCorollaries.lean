@@ -5,19 +5,16 @@ Authors: Kevin Kappelmann
 -/
 import Mathlib.Algebra.ContinuedFractions.Computation.Approximations
 import Mathlib.Algebra.ContinuedFractions.ConvergentsEquiv
-import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Algebra.Order.Archimedean.Basic
 import Mathlib.Tactic.GCongr
 import Mathlib.Topology.Order.LeftRightNhds
-
-#align_import algebra.continued_fractions.computation.approximation_corollaries from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Corollaries From Approximation Lemmas (`Algebra.ContinuedFractions.Computation.Approximations`)
 
 ## Summary
 
-We show that the generalized continued fraction given by `GenContFract.of` in fact
-is a (regular) continued fraction. Using the equivalence of the convergents computations
+Using the equivalence of the convergents computations
 (`GenContFract.convs` and `GenContFract.convs'`) for
 continued fractions (see `Algebra.ContinuedFractions.ConvergentsEquiv`), it follows that the
 convergents computations for `GenContFract.of` are equivalent.
@@ -40,38 +37,15 @@ Moreover, we show the convergence of the continued fractions computations, that 
 convergence, fractions
 -/
 
-
 variable {K : Type*} (v : K) [LinearOrderedField K] [FloorRing K]
 
 open GenContFract (of)
-open GenContFract
 open scoped Topology
-
-theorem GenContFract.of_isSimpContFract :
-    (of v).IsSimpContFract := fun _ _ nth_partNum_eq =>
-  of_partNum_eq_one nth_partNum_eq
-#align generalized_continued_fraction.of_is_simple_continued_fraction GenContFract.of_isSimpContFract
-
-/-- Creates the simple continued fraction of a value. -/
-nonrec def SimpContFract.of : SimpContFract K :=
-  ⟨of v, GenContFract.of_isSimpContFract v⟩
-#align simple_continued_fraction.of SimpContFract.of
-
-theorem SimpContFract.of_isContFract :
-    (SimpContFract.of v).IsContFract := fun _ _ nth_partDen_eq =>
-  lt_of_lt_of_le zero_lt_one (of_one_le_get?_partDen nth_partDen_eq)
-#align simple_continued_fraction.of_is_continued_fraction SimpContFract.of_isContFract
-
-/-- Creates the continued fraction of a value. -/
-def ContFract.of : ContFract K :=
-  ⟨SimpContFract.of v, SimpContFract.of_isContFract v⟩
-#align continued_fraction.of ContFract.of
 
 namespace GenContFract
 
 theorem of_convs_eq_convs' : (of v).convs = (of v).convs' :=
   @ContFract.convs_eq_convs' _ _ (ContFract.of v)
-#align generalized_continued_fraction.of_convergents_eq_convergents' GenContFract.of_convs_eq_convs'
 
 /-- The recurrence relation for the convergents of the continued fraction expansion
 of an element `v` of `K` in terms of the convergents of the inverse of its fractional part.
@@ -79,7 +53,6 @@ of an element `v` of `K` in terms of the convergents of the inverse of its fract
 theorem convs_succ (n : ℕ) :
     (of v).convs (n + 1) = ⌊v⌋ + 1 / (of (Int.fract v)⁻¹).convs n := by
   rw [of_convs_eq_convs', convs'_succ, of_convs_eq_convs']
-#align generalized_continued_fraction.convergents_succ GenContFract.convs_succ
 
 section Convergence
 
@@ -104,7 +77,7 @@ theorem of_convergence_epsilon :
   exists N
   intro n n_ge_N
   let g := of v
-  cases' Decidable.em (g.TerminatedAt n) with terminatedAt_n not_terminatedAt_n
+  rcases Decidable.em (g.TerminatedAt n) with terminatedAt_n | not_terminatedAt_n
   · have : v = g.convs n := of_correctness_of_terminatedAt terminatedAt_n
     have : v - g.convs n = 0 := sub_eq_zero.mpr this
     rw [this]
@@ -124,9 +97,9 @@ theorem of_convergence_epsilon :
     have zero_lt_B : 0 < B := B_ineq.trans_lt' <| mod_cast fib_pos.2 n.succ_pos
     have nB_pos : 0 < nB := nB_ineq.trans_lt' <| mod_cast fib_pos.2 <| succ_pos _
     have zero_lt_mul_conts : 0 < B * nB := by positivity
-    suffices 1 < ε * (B * nB) from (div_lt_iff zero_lt_mul_conts).mpr this
+    suffices 1 < ε * (B * nB) from (div_lt_iff₀ zero_lt_mul_conts).mpr this
     -- use that `N' ≥ n` was obtained from the archimedean property to show the following
-    calc 1 < ε * (N' : K) := (div_lt_iff' ε_pos).mp one_div_ε_lt_N'
+    calc 1 < ε * (N' : K) := (div_lt_iff₀' ε_pos).mp one_div_ε_lt_N'
       _ ≤ ε * (B * nB) := ?_
     -- cancel `ε`
     gcongr
@@ -138,12 +111,10 @@ theorem of_convergence_epsilon :
       _ ≤ fib (n + 1) * fib (n + 1) := by exact_mod_cast (fib (n + 1)).le_mul_self
       _ ≤ fib (n + 1) * fib (n + 2) := by gcongr; exact_mod_cast fib_le_fib_succ
       _ ≤ B * nB := by gcongr
-#align generalized_continued_fraction.of_convergence_epsilon GenContFract.of_convergence_epsilon
 
 theorem of_convergence [TopologicalSpace K] [OrderTopology K] :
     Filter.Tendsto (of v).convs Filter.atTop <| 𝓝 v := by
   simpa [LinearOrderedAddCommGroup.tendsto_nhds, abs_sub_comm] using of_convergence_epsilon v
-#align generalized_continued_fraction.of_convergence GenContFract.of_convergence
 
 end Convergence
 

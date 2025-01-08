@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Scott Morrison
+Authors: Mario Carneiro, Kim Morrison
 -/
 import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.TryThis
@@ -18,8 +18,6 @@ Evaluate expressions in the language of additive, commutative monoids and groups
 assert_not_exists OrderedAddCommMonoid
 assert_not_exists TopologicalSpace
 assert_not_exists PseudoMetricSpace
-
-set_option autoImplicit true
 
 namespace Mathlib.Tactic.Abel
 open Lean Elab Meta Tactic Qq
@@ -249,11 +247,11 @@ theorem term_atom_pfg {α} [AddCommGroup α] (x x' : α) (h : x = x') : x = term
 /-- Interpret an expression as an atom for `abel`'s normal form. -/
 def evalAtom (e : Expr) : M (NormalExpr × Expr) := do
   let { expr := e', proof?, .. } ← (← readThe AtomM.Context).evalAtom e
-  let i ← AtomM.addAtom e'
+  let (i, a) ← AtomM.addAtom e'
   let p ← match proof? with
   | none => iapp ``term_atom #[e]
-  | some p => iapp ``term_atom_pf #[e, e', p]
-  return (← term' (← intToExpr 1, 1) (i, e') (← zero'), p)
+  | some p => iapp ``term_atom_pf #[e, a, p]
+  return (← term' (← intToExpr 1, 1) (i, a) (← zero'), p)
 
 theorem unfold_sub {α} [SubtractionMonoid α] (a b c : α) (h : a + -b = c) : a - b = c := by
   rw [sub_eq_add_neg, h]
@@ -342,7 +340,7 @@ partial def eval (e : Expr) : M (NormalExpr × Expr) := do
     let (e₁, p₁) ← eval e
     let (e₂, p₂) ← evalNeg e₁
     return (e₂, ← iapp `Mathlib.Tactic.Abel.subst_into_neg #[e, e₁, e₂, p₁, p₂])
-  | (`AddMonoid.nsmul, #[_, _, e₁, e₂]) => do
+  | (``AddMonoid.nsmul, #[_, _, e₁, e₂]) => do
     let n ← if (← read).isGroup then mkAppM ``Int.ofNat #[e₁] else pure e₁
     let (e', p) ← eval <| ← iapp ``smul #[n, e₂]
     return (e', ← iapp ``unfold_smul #[e₁, e₂, e', p])
@@ -388,7 +386,7 @@ elab_rules : tactic | `(tactic| abel1 $[!%$tk]?) => withMainContext do
     | throwError "abel1 requires an equality goal"
   trace[abel] "running on an equality `{e₁} = {e₂}`."
   let c ← mkContext e₁
-  closeMainGoal <| ← AtomM.run tm <| ReaderT.run (r := c) do
+  closeMainGoal `abel1 <| ← AtomM.run tm <| ReaderT.run (r := c) do
     let (e₁', p₁) ← eval e₁
     trace[abel] "found `{p₁}`, a proof that `{e₁} = {e₁'.e}`"
     let (e₂', p₂) ← eval e₂
@@ -400,9 +398,9 @@ elab_rules : tactic | `(tactic| abel1 $[!%$tk]?) => withMainContext do
 
 @[inherit_doc abel1] macro (name := abel1!) "abel1!" : tactic => `(tactic| abel1 !)
 
-theorem term_eq [AddCommMonoid α] (n : ℕ) (x a : α) : term n x a = n • x + a := rfl
+theorem term_eq {α : Type*} [AddCommMonoid α] (n : ℕ) (x a : α) : term n x a = n • x + a := rfl
 /-- A type synonym used by `abel` to represent `n • x + a` in an additive commutative group. -/
-theorem termg_eq [AddCommGroup α] (n : ℤ) (x a : α) : termg n x a = n • x + a := rfl
+theorem termg_eq {α : Type*} [AddCommGroup α] (n : ℤ) (x a : α) : termg n x a = n • x + a := rfl
 
 /-- True if this represents an atomic expression. -/
 def NormalExpr.isAtom : NormalExpr → Bool
@@ -438,14 +436,14 @@ The core of `abel_nf`, which rewrites the expression `e` into `abel` normal form
 -/
 partial def abelNFCore
     (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (e : Expr) : MetaM Simp.Result := do
-  let ctx := {
-    simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}]
-    congrTheorems := ← getSimpCongrTheorems }
+  let ctx ← Simp.mkContext
+    (simpTheorems := #[← Elab.Tactic.simpOnlyBuiltins.foldlM (·.addConst ·) {}])
+    (congrTheorems := ← getSimpCongrTheorems)
   let simp ← match cfg.mode with
   | .raw => pure pure
   | .term =>
     let thms := [``term_eq, ``termg_eq, ``add_zero, ``one_nsmul, ``one_zsmul, ``zsmul_zero]
-    let ctx' := { ctx with simpTheorems := #[← thms.foldlM (·.addConst ·) {:_}] }
+    let ctx' := ctx.setSimpTheorems #[← thms.foldlM (·.addConst ·) {:_}]
     pure fun r' : Simp.Result ↦ do
       r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
   let rec
@@ -514,7 +512,7 @@ which rewrites all group expressions into a normal form.
 * `abel_nf` works as both a tactic and a conv tactic.
   In tactic mode, `abel_nf at h` can be used to rewrite in a hypothesis.
 -/
-elab (name := abelNF) "abel_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic => do
+elab (name := abelNF) "abel_nf" tk:"!"? cfg:optConfig loc:(location)? : tactic => do
   let mut cfg ← elabAbelNFConfig cfg
   if tk.isSome then cfg := { cfg with red := .default }
   let loc := (loc.map expandLocation).getD (.targets #[] true)
@@ -522,20 +520,20 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic 
   withLocation loc (abelNFLocalDecl s cfg) (abelNFTarget s cfg)
     fun _ ↦ throwError "abel_nf made no progress"
 
-@[inherit_doc abelNF] macro "abel_nf!" cfg:(config)? loc:(location)? : tactic =>
-  `(tactic| abel_nf ! $(cfg)? $(loc)?)
+@[inherit_doc abelNF] macro "abel_nf!" cfg:optConfig loc:(location)? : tactic =>
+  `(tactic| abel_nf ! $cfg:optConfig $(loc)?)
 
-@[inherit_doc abelNF] syntax (name := abelNFConv) "abel_nf" "!"? (config)? : conv
+@[inherit_doc abelNF] syntax (name := abelNFConv) "abel_nf" "!"? optConfig : conv
 
 /-- Elaborator for the `abel_nf` tactic. -/
 @[tactic abelNFConv] def elabAbelNFConv : Tactic := fun stx ↦ match stx with
-  | `(conv| abel_nf $[!%$tk]? $(_cfg)?) => withMainContext do
-    let mut cfg ← elabAbelNFConfig stx[2]
+  | `(conv| abel_nf $[!%$tk]? $cfg:optConfig) => withMainContext do
+    let mut cfg ← elabAbelNFConfig cfg
     if tk.isSome then cfg := { cfg with red := .default }
     Conv.applySimpResult (← abelNFCore (← IO.mkRef {}) cfg (← instantiateMVars (← Conv.getLhs)))
   | _ => Elab.throwUnsupportedSyntax
 
-@[inherit_doc abelNF] macro "abel_nf!" cfg:(config)? : conv => `(conv| abel_nf ! $(cfg)?)
+@[inherit_doc abelNF] macro "abel_nf!" cfg:optConfig : conv => `(conv| abel_nf ! $cfg:optConfig)
 
 /--
 Tactic for evaluating expressions in abelian groups.
@@ -564,3 +562,5 @@ macro (name := abelConv) "abel" : conv =>
   `(conv| first | discharge => abel1 | try_this abel_nf)
 @[inherit_doc abelConv] macro "abel!" : conv =>
   `(conv| first | discharge => abel1! | try_this abel_nf!)
+
+end Mathlib.Tactic.Abel

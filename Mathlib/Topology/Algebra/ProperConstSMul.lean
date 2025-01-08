@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Topology.Algebra.ConstMulAction
-import Mathlib.Topology.ProperMap
+import Mathlib.Topology.Maps.Proper.Basic
 /-!
 # Actions by proper maps
 
@@ -61,7 +61,7 @@ instance {M X Y : Type*}
     [SMul M X] [TopologicalSpace X] [ProperConstSMul M X]
     [SMul M Y] [TopologicalSpace Y] [ProperConstSMul M Y] :
     ProperConstSMul M (X × Y) :=
-  ⟨fun c ↦ (isProperMap_smul c X).prod_map (isProperMap_smul c Y)⟩
+  ⟨fun c ↦ (isProperMap_smul c X).prodMap (isProperMap_smul c Y)⟩
 
 instance {M ι : Type*} {X : ι → Type*}
     [∀ i, SMul M (X i)] [∀ i, TopologicalSpace (X i)] [∀ i, ProperConstSMul M (X i)] :

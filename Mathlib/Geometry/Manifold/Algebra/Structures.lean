@@ -5,8 +5,6 @@ Authors: Nicolò Cavalleri
 -/
 import Mathlib.Geometry.Manifold.Algebra.LieGroup
 
-#align_import geometry.manifold.algebra.structures from "leanprover-community/mathlib"@"d1bd9c5df2867c1cb463bc6364446d57bdd9f7f1"
-
 /-!
 # Smooth structures
 
@@ -14,7 +12,7 @@ In this file we define smooth structures that build on Lie groups. We prefer usi
 instead of Lie mainly because Lie ring has currently another use in mathematics.
 -/
 
-open scoped Manifold
+open scoped Manifold ContDiff
 
 section SmoothRing
 
@@ -26,23 +24,20 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalS
 If `R` is a ring, then negation is automatically smooth, as it is multiplication with `-1`. -/
 class SmoothRing (I : ModelWithCorners 𝕜 E H) (R : Type*) [Semiring R] [TopologicalSpace R]
     [ChartedSpace H R] extends SmoothAdd I R : Prop where
-  smooth_mul : Smooth (I.prod I) I fun p : R × R => p.1 * p.2
-#align smooth_ring SmoothRing
+  smooth_mul : ContMDiff (I.prod I) I ⊤ fun p : R × R => p.1 * p.2
 
 -- see Note [lower instance priority]
 instance (priority := 100) SmoothRing.toSmoothMul (I : ModelWithCorners 𝕜 E H) (R : Type*)
     [Semiring R] [TopologicalSpace R] [ChartedSpace H R] [h : SmoothRing I R] :
     SmoothMul I R :=
   { h with }
-#align smooth_ring.to_has_smooth_mul SmoothRing.toSmoothMul
 
 -- see Note [lower instance priority]
 instance (priority := 100) SmoothRing.toLieAddGroup (I : ModelWithCorners 𝕜 E H) (R : Type*)
     [Ring R] [TopologicalSpace R] [ChartedSpace H R] [SmoothRing I R] : LieAddGroup I R where
-  compatible := StructureGroupoid.compatible (contDiffGroupoid ⊤ I)
-  smooth_add := smooth_add I
-  smooth_neg := by simpa only [neg_one_mul] using @smooth_mul_left 𝕜 _ H _ E _ _ I R _ _ _ _ (-1)
-#align smooth_ring.to_lie_add_group SmoothRing.toLieAddGroup
+  compatible := StructureGroupoid.compatible (contDiffGroupoid ∞ I)
+  smooth_add := contMDiff_add I
+  smooth_neg := by simpa only [neg_one_mul] using contMDiff_mul_left (G := R) (a := -1)
 
 end SmoothRing
 
@@ -51,12 +46,11 @@ instance (priority := 100) fieldSmoothRing {𝕜 : Type*} [NontriviallyNormedFie
     SmoothRing 𝓘(𝕜) 𝕜 :=
   { normedSpaceLieAddGroup with
     smooth_mul := by
-      rw [smooth_iff]
+      rw [contMDiff_iff]
       refine ⟨continuous_mul, fun x y => ?_⟩
       simp only [mfld_simps]
       rw [contDiffOn_univ]
       exact contDiff_mul }
-#align field_smooth_ring fieldSmoothRing
 
 variable {𝕜 R E H : Type*} [TopologicalSpace R] [TopologicalSpace H] [NontriviallyNormedField 𝕜]
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] [ChartedSpace H R] (I : ModelWithCorners 𝕜 E H)
@@ -65,4 +59,3 @@ variable {𝕜 R E H : Type*} [TopologicalSpace R] [TopologicalSpace H] [Nontriv
 see note [Design choices about smooth algebraic structures]. -/
 theorem topologicalSemiring_of_smooth [Semiring R] [SmoothRing I R] : TopologicalSemiring R :=
   { continuousMul_of_smooth I, continuousAdd_of_smooth I with }
-#align topological_semiring_of_smooth topologicalSemiring_of_smooth
