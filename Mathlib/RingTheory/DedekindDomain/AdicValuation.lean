@@ -361,7 +361,7 @@ theorem mem_integers_of_valuation_le_one (x : K)
   suffices Ideal.span {d} ∣ (Ideal.span {n} : Ideal R) by
     obtain ⟨z, rfl⟩ := Ideal.span_singleton_le_span_singleton.1 (Ideal.le_of_dvd this)
     use z
-    rw [map_mul, mul_comm,mul_eq_mul_left_iff] at hx
+    rw [map_mul, mul_comm, mul_eq_mul_left_iff] at hx
     cases' hx with h h
     · exact h.symm
     · simp [hd0] at h
