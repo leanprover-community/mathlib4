@@ -64,8 +64,8 @@ theorem RingHom.charP {R A : Type*} [NonAssocSemiring R] [NonAssocSemiring A] (f
 
 /-- If `R →+* A` is injective, then `R` is of characteristic `p` if and only if `A` is also of
 characteristic `p`. Similar to `RingHom.charZero_iff`. -/
-theorem RingHom.charP_iff {R A : Type*} [NonAssocSemiring R] [NonAssocSemiring A] (f : R →+* A)
-    (H : Function.Injective f) (p : ℕ) : CharP R p ↔ CharP A p :=
+protected theorem RingHom.charP_iff {R A : Type*} [NonAssocSemiring R] [NonAssocSemiring A]
+    (f : R →+* A) (H : Function.Injective f) (p : ℕ) : CharP R p ↔ CharP A p :=
   ⟨fun _ ↦ charP_of_injective_ringHom H p, fun _ ↦ f.charP H p⟩
 
 /-- If a ring homomorphism `R →+* A` is injective then `A` has the same exponential characteristic
@@ -132,12 +132,15 @@ end QAlgebra
 An algebra over a field has the same characteristic as the field.
 -/
 
+lemma RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [Semiring L] [Nontrivial L]
+    (f : K →+* L) (p : ℕ) : CharP K p ↔ CharP L p := by
+  simp only [charP_iff, ← f.injective.eq_iff, map_natCast f, map_zero f]
 
 section
 
 variable (K L : Type*) [Field K] [CommSemiring L] [Nontrivial L] [Algebra K L]
 
-theorem Algebra.charP_iff (p : ℕ) : CharP K p ↔ CharP L p :=
+protected theorem Algebra.charP_iff (p : ℕ) : CharP K p ↔ CharP L p :=
   (algebraMap K L).charP_iff_charP p
 
 theorem Algebra.ringChar_eq : ringChar K = ringChar L := by
@@ -184,8 +187,3 @@ instance charZero [CharZero R] : CharZero (FractionRing R) :=
   charZero_of_isFractionRing R
 
 end IsFractionRing
-
-
-lemma RingHom.charP_iff_charP {K L : Type*} [DivisionRing K] [Semiring L] [Nontrivial L]
-    (f : K →+* L) (p : ℕ) : CharP K p ↔ CharP L p := by
-  simp only [charP_iff, ← f.injective.eq_iff, map_natCast f, map_zero f]
