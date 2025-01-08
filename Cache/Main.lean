@@ -88,9 +88,20 @@ def main (args : List String) : IO Unit := do
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
+
+  let noteManyStaleFiles := do
+    let numberAllCacheFiles := (← getLocalCacheSet).size
+    let currentHits := hashMap.size
+    -- If at least 80% of all current cache files are orphaned, warn the user.
+    -- (IOW, the total cache size is at least 5x the number of current hits.)
+    if 5 * currentHits < numberAllCacheFiles then
+      IO.println "note: currently, more than 80% of all files in the cache are not used \
+      (they might be useful for other versions of mathlib, or orphaned): \
+      to increase disk space, run cache clean to delete these files"
   let get (args : List String) (force := false) (decompress := true) := do
     let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByFilePaths (toPaths args)
     getFiles hashMap force force goodCurl decompress
+    if args.isEmpty then noteManyStaleFiles
   let miniget := do
     -- Find all .lean files in subdirectories (excluding .lake) of the current directory.
     let allFiles := System.FilePath.walkDir (← IO.Process.getCurrentDir)
