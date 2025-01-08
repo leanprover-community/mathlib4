@@ -16,8 +16,6 @@ Commands:
   get  [ARGS]  Download linked files missing on the local cache and decompress
   get! [ARGS]  Download all linked files and decompress
   get- [ARGS]  Download linked files missing to the local cache, but do no compress
-  miniget      Like get, but only download all files imported in some .lean file
-    from the current directory
   pack         Compress non-compressed build files into the local cache
   pack!        Compress build files into the local cache (no skipping)
   unpack       Decompress linked already downloaded files
@@ -48,7 +46,11 @@ $ lake exe cache get Mathlib/Algebra/Field/*.lean Mathlib/Data/*.lean
 Which will download the cache for:
 * Every Lean file inside 'Mathlib/Algebra/Field/'
 * Every Lean file inside 'Mathlib/Data/'
-* Everything that's needed for the above"
+* Everything that's needed for the above
+
+If no arguments are given, 'get', 'get!' and 'get-' download information about all files imported
+in some .lean file in the current directory or a subdirectory thereof (ignoring .lake folders).
+"
 
 open Lean System in
 /-- Note that this normalizes the path strings, which is needed when running from a unix shell
@@ -63,11 +65,11 @@ def toPaths (args : List String) : List FilePath :=
 
 /-- Commands which (potentially) call `curl` for downloading files -/
 def curlArgs : List String :=
-  ["get", "get!", "get-", "miniget", "put", "put!", "put-unpacked", "commit", "commit!"]
+  ["get", "get!", "get-", "put", "put!", "put-unpacked", "commit", "commit!"]
 
 /-- Commands which (potentially) call `leantar` for decompressing downloaded files -/
 def leanTarArgs : List String :=
-  ["get", "get!", "miniget", "pack", "pack!", "unpack", "lookup"]
+  ["get", "get!", "pack", "pack!", "unpack", "lookup"]
 
 open Cache IO Hashing Requests System in
 open System.FilePath in
@@ -90,24 +92,22 @@ def main (args : List String) : IO Unit := do
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl
   if leanTarArgs.contains (args.headD "") then validateLeanTar
   let get (args : List String) (force := false) (decompress := true) := do
-    let hashMap ← if args.isEmpty then pure hashMap else hashMemo.filterByFilePaths (toPaths args)
-    getFiles hashMap force force goodCurl decompress
-  let miniget := do
-    -- Find all .lean files in subdirectories (excluding .lake) of the current directory.
-    let allFiles := System.FilePath.walkDir (← IO.Process.getCurrentDir)
-      (fun p ↦ pure (p.fileName != some ".lake"))
-    let leanFiles := (← allFiles).filter (fun p ↦ p.extension == some "lean")
-    -- For each file, find all imports starting with Mathlib.
-    let mut allModules := #[]
-    for fi in leanFiles do
-      let imports ← Lean.parseImports' (← IO.FS.readFile fi) ""
-      allModules := allModules.append <|
-        imports.map (fun imp ↦ imp.module) |>.filter (·.getRoot == `Mathlib)
-    -- and turn each "import Mathlib.X.Y.Z" into an argument "Mathlib.X.Y.Z.lean" to `get`.
-    let args := allModules.map
-      fun mod ↦ mkFilePath (mod.components.map (·.toString)) |>.addExtension "lean"
-    let hm ← hashMemo.filterByFilePaths args.toList
-    getFiles hm false false goodCurl true
+    let mut getArgs := toPaths args
+    if args.isEmpty then
+      -- Find all .lean files in subdirectories (excluding .lake) of the current directory.
+      let allFiles := System.FilePath.walkDir (← IO.Process.getCurrentDir)
+        (fun p ↦ pure (p.fileName != some ".lake"))
+      let leanFiles := (← allFiles).filter (fun p ↦ p.extension == some "lean")
+      -- For each file, find all imports starting with Mathlib.
+      let mut allModules := #[]
+      for fi in leanFiles do
+        let imports ← Lean.parseImports' (← IO.FS.readFile fi) ""
+        allModules := allModules.append <|
+          imports.map (fun imp ↦ imp.module) |>.filter (·.getRoot == `Mathlib)
+      -- and turn each "import Mathlib.X.Y.Z" into an argument "Mathlib.X.Y.Z.lean" to `get`.
+      getArgs := allModules.toList.map
+        fun mod ↦ mkFilePath (mod.components.map (fun s ↦ s.toString)) |>.addExtension "lean"
+    getFiles (← hashMemo.filterByFilePaths getArgs) force force goodCurl decompress
   let pack (overwrite verbose unpackedOnly := false) := do
     packCache hashMap overwrite verbose unpackedOnly (← getGitCommitHash)
   let put (overwrite unpackedOnly := false) := do
@@ -116,7 +116,6 @@ def main (args : List String) : IO Unit := do
   | "get"  :: args => get args
   | "get!" :: args => get args (force := true)
   | "get-" :: args => get args (decompress := false)
-  | ["miniget"] => miniget
   | ["pack"] => discard <| pack
   | ["pack!"] => discard <| pack (overwrite := true)
   | ["unpack"] => unpackCache hashMap false
