@@ -293,7 +293,7 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
   uniq t m h := MonoidHom.ext fun y => congr_fun
       ((Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget MonCat)).uniq ((forget MonCat).mapCocone t)
         ((forget MonCat).map m)
-        fun j => funext fun x => DFunLike.congr_fun (h j) x) y
+        fun j => funext fun x => congr_hom (h j) x) y
 
 @[to_additive]
 instance forget_preservesFilteredColimits :
@@ -358,15 +358,15 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
     MonCat.FilteredColimits.colimitDesc.{v, u} (F ⋙ forget₂ CommMonCat MonCat.{max v u})
       ((forget₂ CommMonCat MonCat.{max v u}).mapCocone t)
   fac t j :=
-    DFunLike.coe_injective <|
+    ConcreteCategory.coe_ext <|
       (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommMonCat.{max v u})).fac
         ((forget CommMonCat).mapCocone t) j
   uniq t m h :=
-    DFunLike.coe_injective <|
+    ConcreteCategory.coe_ext <|
       (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommMonCat.{max v u})).uniq
         ((forget CommMonCat.{max v u}).mapCocone t)
         ((forget CommMonCat.{max v u}).map m) fun j => funext fun x =>
-          DFunLike.congr_fun (h j) x
+          congr_hom (h j) x
 
 @[to_additive forget₂AddMonPreservesFilteredColimits]
 noncomputable instance forget₂Mon_preservesFilteredColimits :

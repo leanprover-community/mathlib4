@@ -117,14 +117,14 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
     MonCat.FilteredColimits.colimitDesc.{v, u} (F ⋙ forget₂ Grp MonCat.{max v u})
       ((forget₂ Grp MonCat).mapCocone t)
   fac t j :=
-    DFunLike.coe_injective <|
+    ConcreteCategory.coe_ext <|
       (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget Grp)).fac
       ((forget Grp).mapCocone t) j
   uniq t _ h :=
-    DFunLike.coe_injective' <|
+    ConcreteCategory.coe_ext <|
       (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget Grp)).uniq
       ((forget Grp).mapCocone t) _
-        fun j => funext fun x => DFunLike.congr_fun (h j) x
+        fun j => funext fun x => congr_hom (h j) x
 
 @[to_additive forget₂AddMon_preservesFilteredColimits]
 noncomputable instance forget₂Mon_preservesFilteredColimits :
@@ -187,13 +187,13 @@ def colimitCoconeIsColimit : IsColimit (colimitCocone.{v, u} F) where
           (F ⋙ forget₂ CommGrp Grp.{max v u})).desc
       ((forget₂ CommGrp Grp.{max v u}).mapCocone t)
   fac t j :=
-    DFunLike.coe_injective <|
+    ConcreteCategory.coe_ext <|
       (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommGrp)).fac
         ((forget CommGrp).mapCocone t) j
   uniq t _ h :=
-    DFunLike.coe_injective <|
+    ConcreteCategory.coe_ext <|
       (Types.TypeMax.colimitCoconeIsColimit.{v, u} (F ⋙ forget CommGrp)).uniq
-        ((forget CommGrp).mapCocone t) _ fun j => funext fun x => DFunLike.congr_fun (h j) x
+        ((forget CommGrp).mapCocone t) _ fun j => funext fun x => congr_hom (h j) x
 
 @[to_additive]
 noncomputable instance forget₂Group_preservesFilteredColimits :

@@ -454,7 +454,7 @@ agrees with the usual group-theoretical kernel.
 def kernelIsoKer {G H : AddCommGrp.{u}} (f : G ⟶ H) :
     kernel f ≅ AddCommGrp.of f.ker where
   hom :=
-    { toFun := fun g => ⟨kernel.ι f g, DFunLike.congr_fun (kernel.condition f) g⟩
+    { toFun := fun g => ⟨kernel.ι f g, congr_hom (kernel.condition f) g⟩
       map_zero' := by
         refine Subtype.ext ?_
         simp [(AddSubgroup.coe_zero _).symm]
@@ -470,14 +470,14 @@ def kernelIsoKer {G H : AddCommGrp.{u}} (f : G ⟶ H) :
     refine equalizer.hom_ext ?_
     ext x
     dsimp
-    apply DFunLike.congr_fun (kernel.lift_ι f _ _)
+    apply congr_hom (kernel.lift_ι f _ _)
   inv_hom_id := by
     apply AddCommGrp.ext
     simp only [AddMonoidHom.coe_mk, coe_id, coe_comp]
     rintro ⟨x, mem⟩
     refine Subtype.ext ?_
     simp only [ZeroHom.coe_mk, Function.comp_apply, id_eq]
-    apply DFunLike.congr_fun (kernel.lift_ι f _ _)
+    apply congr_hom (kernel.lift_ι f _ _)
 
 @[simp]
 theorem kernelIsoKer_hom_comp_subtype {G H : AddCommGrp.{u}} (f : G ⟶ H) :

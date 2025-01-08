@@ -89,7 +89,7 @@ noncomputable def limitCone : Cone F :=
     π :=
     { app := limitπMonoidHom F
       naturality := fun _ _ f =>
-        DFunLike.coe_injective ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) } }
+        ConcreteCategory.coe_ext ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) } }
 
 /-- Witness that the limit cone in `MonCat` is a limit cone.
 (Internal use only; use the limits API.)
