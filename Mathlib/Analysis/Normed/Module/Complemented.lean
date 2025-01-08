@@ -37,17 +37,9 @@ lemma range_id_sub_eq_ker {P : E →ₗ[𝕜] E} (h : IsIdempotentElem P) : rang
 
 end IsIdempotentElem
 
-@[simp]
-lemma continuous_ker_eq_linear_ker {P : E →L[𝕜] E} : ker (P : E →ₗ[𝕜] E) = ker P := rfl
-
-@[simp]
-lemma continuous_range_eq_linear_range {P : E →L[𝕜] E} : range (P : E →ₗ[𝕜] E) = range P  := rfl
-
 lemma IsIdempotentElem.ker_id_sub_eq_range_cont {P : E →L[𝕜] E} (h : IsIdempotentElem P) :
-    ker (1 - P) = range P := by
-  rw [← continuous_ker_eq_linear_ker, ← continuous_range_eq_linear_range,
-    ← ContinuousLinearMap.toLinearMapRingHom_apply, ← ContinuousLinearMap.toLinearMapRingHom_apply,
-    RingHom.map_sub, RingHom.map_one, ker_id_sub_eq_range (h.map _)]
+    ker (1 - P) = range P :=
+  (Submodule.toAddSubgroup_inj (ker (1 - P)) (range P)).mp (_root_.ker_id_sub_eq_range h)
 
 lemma IsIdempotentElem.range_id_sub_eq_ker_cont {P : E →L[𝕜] E} (h : IsIdempotentElem P) :
     range (1 - P) = ker P := by
