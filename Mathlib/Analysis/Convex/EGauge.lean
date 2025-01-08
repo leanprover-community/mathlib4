@@ -160,6 +160,29 @@ lemma egauge_smul_right (h : c = 0 → s.Nonempty) (x : E) :
 
 end Module
 
+section Module'
+
+variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*} [AddCommGroup E] [Module 𝕜 E]
+    {c : 𝕜} {s : Set E} {x : E}
+
+theorem egauge_add_add_le {U V : Set E} (hU : Balanced 𝕜 U) (hV : Balanced 𝕜 V) (a b : E) :
+    egauge 𝕜 (U + V) (a + b) ≤ max (egauge 𝕜 U a) (egauge 𝕜 V b) := by
+  refine le_of_forall_lt' fun c hc ↦ ?_
+  simp only [max_lt_iff, egauge_lt_iff] at hc ⊢
+  rcases hc with ⟨⟨a, ha, hac⟩, ⟨b, hb, hbc⟩⟩
+  cases le_total ‖a‖₊ ‖b‖₊ with
+  | inl hab =>
+    refine ⟨b, ?_, hbc⟩
+    rw [smul_add]
+    have := hU.smul_mono (𝕜 := 𝕜) hab ha
+    exact add_mem_add (hU.smul_mono hab ha) hb
+  | inr hba =>
+    refine ⟨a, ?_, hac⟩
+    rw [smul_add]
+    exact add_mem_add ha (hV.smul_mono hba hb)
+
+end Module'
+
 section SeminormedAddCommGroup
 
 variable (𝕜 : Type*) [NormedField 𝕜] {E : Type*} [SeminormedAddCommGroup E] [NormedSpace 𝕜 E]

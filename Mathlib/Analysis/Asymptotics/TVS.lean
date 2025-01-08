@@ -120,7 +120,7 @@ theorem IsLittleOTVS.add [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
   calc
     egauge 𝕜 U' (f₁ x + f₂ x) ≤ egauge 𝕜 (U + U) (f₁ x + f₂ x) := by
       gcongr
-    _ ≤ max (egauge 𝕜 U (f₁ x)) (egauge 𝕜 U (f₂ x)) := ?_
+    _ ≤ max (egauge 𝕜 U (f₁ x)) (egauge 𝕜 U (f₂ x)) := egauge_add_add_le hUb hUb _ _
     _ ≤ ε * egauge 𝕜 (V₁ ∩ V₂) (g x) := by
       apply max_le
       · refine hx₁.trans ?_
@@ -129,19 +129,6 @@ theorem IsLittleOTVS.add [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
       · refine hx₂.trans ?_
         gcongr
         apply inter_subset_right
-  -- TODO: move to `egauge 𝕜 (U + V) (a + b) ≤ max (egauge 𝕜 U a) (egauge 𝕜 V b)`
-  refine le_of_forall_lt' fun c hc ↦ ?_
-  simp only [max_lt_iff, egauge_lt_iff] at hc ⊢
-  rcases hc with ⟨⟨a, ha, hac⟩, ⟨b, hb, hbc⟩⟩
-  cases le_total ‖a‖₊ ‖b‖₊ with
-  | inl hab =>
-    refine ⟨b, ?_, hbc⟩
-    rw [smul_add]
-    exact add_mem_add (hUb.smul_mono hab ha) hb
-  | inr hba =>
-    refine ⟨a, ?_, hac⟩
-    rw [smul_add]
-    exact add_mem_add ha (hUb.smul_mono hba hb)
 
 protected lemma IsLittleOTVS.smul_left {f : α → E} {g : α → F} {l : Filter α}
     (h : f =o[𝕜;l] g) (c : α → 𝕜) :
