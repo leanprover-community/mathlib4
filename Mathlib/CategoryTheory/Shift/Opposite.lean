@@ -150,7 +150,6 @@ namespace Functor
 Given a `CommShift` structure on `F`, this is the corresponding `CommShift` structure on
 `OppositeShift.functor F` (for the naive shifts on the opposite categories).
 -/
-@[simps]
 noncomputable instance commShiftOp [CommShift F A] :
     CommShift (OppositeShift.functor A F) A where
   iso a := (NatIso.op (F.commShiftIso a)).symm
