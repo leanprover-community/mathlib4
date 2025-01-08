@@ -63,7 +63,7 @@ lemma egauge_lt_iff : egauge 𝕜 s x < r ↔ ∃ c : 𝕜, x ∈ c • s ∧ �
 
 lemma le_egauge_inter (s t : Set E) (x : E) :
     egauge 𝕜 s x ⊔ egauge 𝕜 t x ≤ egauge 𝕜 (s ∩ t) x :=
-  max_le_iff.2 ⟨egauge_anti _ inter_subset_left _, egauge_anti _ inter_subset_right _⟩
+  max_le (egauge_anti _ inter_subset_left _) (egauge_anti _ inter_subset_right _)
 
 end SMul
 
@@ -173,16 +173,12 @@ theorem egauge_add_add_le {U V : Set E} (hU : Balanced 𝕜 U) (hV : Balanced �
     egauge 𝕜 (U + V) (a + b) ≤ max (egauge 𝕜 U a) (egauge 𝕜 V b) := by
   refine le_of_forall_lt' fun c hc ↦ ?_
   simp only [max_lt_iff, egauge_lt_iff] at hc ⊢
-  rcases hc with ⟨⟨a, ha, hac⟩, ⟨b, hb, hbc⟩⟩
-  cases le_total ‖a‖₊ ‖b‖₊ with
-  | inl hab =>
-    refine ⟨b, ?_, hbc⟩
-    rw [smul_add]
-    exact add_mem_add (hU.smul_mono hab ha) hb
-  | inr hba =>
-    refine ⟨a, ?_, hac⟩
-    rw [smul_add]
-    exact add_mem_add ha (hV.smul_mono hba hb)
+  rcases hc with ⟨⟨x, hx, hxc⟩, ⟨y, hy, hyc⟩⟩
+  wlog hxy : ‖x‖ ≤ ‖y‖ generalizing a b x y U V
+  · simpa only [add_comm] using this hV hU b a y hy hyc x hx hxc (le_of_not_le hxy)
+  refine ⟨y, ?_, hyc⟩
+  rw [smul_add]
+  exact add_mem_add (hU.smul_mono hxy hx) hy
 
 end VectorSpace
 
