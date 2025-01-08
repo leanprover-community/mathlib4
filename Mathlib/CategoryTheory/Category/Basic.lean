@@ -157,10 +157,8 @@ class Category (obj : Type u) extends CategoryStruct.{v} obj : Type max u (v + 1
 attribute [simp] Category.id_comp Category.comp_id Category.assoc
 attribute [trans] CategoryStruct.comp
 
-grind_pattern Category.id_comp => 𝟙 X ≫ f
-grind_pattern Category.comp_id => f ≫ 𝟙 Y
-grind_pattern Category.assoc => (f ≫ g) ≫ h
-grind_pattern Category.assoc => f ≫ g ≫ h
+attribute [grind =] Category.id_comp Category.comp_id
+attribute [grind _=_] Category.assoc
 
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : 𝟙 X ≫ f = f := by simp
 example {C} [Category C] {X Y : C} (f : X ⟶ Y) : f ≫ 𝟙 Y = f := by simp
