@@ -6,8 +6,8 @@ Authors: Andrew Yang
 import Mathlib.CategoryTheory.Elementwise
 import Mathlib.CategoryTheory.Limits.FunctorCategory.EpiMono
 import Mathlib.Tactic.CategoryTheory.Elementwise
-import Mathlib.CategoryTheory.Adhesive
-import Mathlib.CategoryTheory.Sites.ConcreteSheafification
+import Mathlib.CategoryTheory.Sites.IsSheafFor
+
 
 /-!
 
@@ -29,7 +29,7 @@ open Opposite CategoryTheory
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
+variable {C : Type u} [Category.{v} C]
 
 /-- A subpresheaf of a presheaf consists of a subset of `F.obj U` for every `U`,
 compatible with the restriction maps `F.map i`. -/
