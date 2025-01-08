@@ -9,7 +9,6 @@ import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.RingTheory.Ideal.Quotient.Basic
 import Mathlib.RingTheory.Noetherian.Orzech
 import Mathlib.RingTheory.OrzechProperty
-import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.LinearAlgebra.Finsupp.Pi
 
 /-!
