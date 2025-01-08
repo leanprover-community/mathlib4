@@ -43,7 +43,6 @@ theorem isFiltered_of_isFiltered_costructuredArrow (L : A ⥤ T) (R : B ⥤ T)
     colim.map ?_ ≫
     colimit.pre _ R' ≫
     (colimitIsoColimitGrothendieck L (limit F)).inv
-  rw [← Functor.assoc, ← Functor.assoc]
   exact (limitCompWhiskeringLeftIsoCompLimit F (R' ⋙ CostructuredArrow.grothendieckProj L)).hom⟩
 
 end CategoryTheory
