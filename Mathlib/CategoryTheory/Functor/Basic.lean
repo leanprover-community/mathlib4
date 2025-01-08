@@ -116,9 +116,6 @@ protected theorem comp_id (F : C ⥤ D) : F ⋙ 𝟭 D = F := by cases F; rfl
 
 protected theorem id_comp (F : C ⥤ D) : 𝟭 C ⋙ F = F := by cases F; rfl
 
--- example {α β} (x y : α) (f : α → β) {P : Prop} [Decidable P] :
---     f (if P then x else y) = if P then f x else f y := by grind
-
 @[simp]
 theorem map_dite (F : C ⥤ D) {X Y : C} {P : Prop} [Decidable P]
     (f : P → (X ⟶ Y)) (g : ¬P → (X ⟶ Y)) :

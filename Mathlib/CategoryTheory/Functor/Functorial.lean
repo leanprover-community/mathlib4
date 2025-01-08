@@ -35,16 +35,16 @@ we can write `map F f : F X ⟶ F Y` for the action of `F` on a morphism `f : X 
 def map (F : C → D) [Functorial.{v₁, v₂} F] {X Y : C} (f : X ⟶ Y) : F X ⟶ F Y :=
   Functorial.map'.{v₁, v₂} f
 
-@[simp]
+@[simp, grind =]
 theorem map'_as_map {F : C → D} [Functorial.{v₁, v₂} F] {X Y : C} {f : X ⟶ Y} :
     Functorial.map'.{v₁, v₂} f = map F f :=
   rfl
 
-@[simp]
+@[simp, grind =]
 theorem Functorial.map_id {F : C → D} [Functorial.{v₁, v₂} F] {X : C} : map F (𝟙 X) = 𝟙 (F X) :=
   Functorial.map_id' X
 
-@[simp]
+@[simp, grind =]
 theorem Functorial.map_comp {F : C → D} [Functorial.{v₁, v₂} F] {X Y Z : C} {f : X ⟶ Y}
     {g : Y ⟶ Z} : map F (f ≫ g) = map F f ≫ map F g :=
   Functorial.map_comp' f g
@@ -62,9 +62,11 @@ end Functor
 instance (F : C ⥤ D) : Functorial.{v₁, v₂} F.obj :=
   { F with map' := F.map }
 
-@[simp]
+@[simp, grind =]
 theorem map_functorial_obj (F : C ⥤ D) {X Y : C} (f : X ⟶ Y) : map F.obj f = F.map f :=
   rfl
+
+attribute [grind] id
 
 instance functorial_id : Functorial.{v₁, v₁} (id : C → C) where map' f := f
 
