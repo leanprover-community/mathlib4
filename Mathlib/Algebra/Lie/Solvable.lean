@@ -190,7 +190,7 @@ theorem derivedSeries_eq_top (n : ℕ) (h : derivedSeries R L 1 = ⊤) :
   · rfl
   · rwa [derivedSeries_succ_eq_top_iff]
 
-theorem derivedSeries_scalars_aux (R₁ R₂ L : Type*) [CommRing R₁] [CommRing R₂]
+private theorem coe_derivedSeries_eq_int_aux (R₁ R₂ L : Type*) [CommRing R₁] [CommRing R₂]
     [LieRing L] [LieAlgebra R₁ L] [LieAlgebra R₂ L] (k : ℕ)
     (ih : ∀ (x : L), x ∈ derivedSeriesOfIdeal R₁ L k ⊤ ↔ x ∈ derivedSeriesOfIdeal R₂ L k ⊤) :
     let I := derivedSeriesOfIdeal R₂ L k ⊤; let S : Set L := {⁅a, b⁆ | (a ∈ I) (b ∈ I)}
@@ -207,11 +207,9 @@ theorem derivedSeries_scalars_aux (R₁ R₂ L : Type*) [CommRing R₁] [CommRin
       rw [← ih] at ha ⊢
       exact Submodule.smul_mem _ _ ha
 
-theorem derivedSeries_scalars (R₁ R₂ L : Type*) [CommRing R₁] [CommRing R₂]
-    [LieRing L] [LieAlgebra R₁ L] [LieAlgebra R₂ L] (k : ℕ) :
-    (derivedSeries R₁ L k : Set L) = (derivedSeries R₂ L k : Set L) := by
-  show ((derivedSeries R₁ L k).toSubmodule : Set L) =
-       ((derivedSeries R₂ L k).toSubmodule : Set L)
+theorem coe_derivedSeries_eq_int (k : ℕ) :
+    (derivedSeries R L k : Set L) = (derivedSeries ℤ L k : Set L) := by
+  show ((derivedSeries R L k).toSubmodule : Set L) = ((derivedSeries ℤ L k).toSubmodule : Set L)
   rw [derivedSeries_def, derivedSeries_def]
   induction k with
   | zero => rfl
@@ -222,9 +220,9 @@ theorem derivedSeries_scalars (R₁ R₂ L : Type*) [CommRing R₁] [CommRing R�
     simp only [SetLike.mem_coe, LieSubmodule.mem_toSubmodule] at ih
     simp only [Subtype.exists, exists_prop, ih]
     apply le_antisymm
-    · exact derivedSeries_scalars_aux _ _ L k ih
+    · exact coe_derivedSeries_eq_int_aux _ _ L k ih
     · simp only [← ih]
-      apply derivedSeries_scalars_aux _ _ L k
+      apply coe_derivedSeries_eq_int_aux _ _ L k
       simp [ih]
 
 end LieIdeal
@@ -241,7 +239,7 @@ instance isSolvableBot : IsSolvable (⊥ : LieIdeal R L) :=
   ⟨⟨0, Subsingleton.elim _ ⊥⟩⟩
 
 lemma isSolvable_iff : IsSolvable L ↔ ∃ k, derivedSeries R L k = ⊥ := by
-  simp [isSolvable_iff_int, SetLike.ext'_iff, LieIdeal.derivedSeries_scalars R ℤ L]
+  simp [isSolvable_iff_int, SetLike.ext'_iff, LieIdeal.coe_derivedSeries_eq_int]
 
 lemma IsSolvable.solvable [IsSolvable L] : ∃ k, derivedSeries R L k = ⊥ :=
   (isSolvable_iff R L).mp ‹_›

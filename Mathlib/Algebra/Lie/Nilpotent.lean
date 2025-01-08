@@ -88,7 +88,7 @@ theorem lowerCentralSeries_succ :
     lowerCentralSeries R L M (k + 1) = ⁅(⊤ : LieIdeal R L), lowerCentralSeries R L M k⁆ :=
   (⊤ : LieSubmodule R L M).lcs_succ k
 
-theorem lowerCentralSeries_scalars_aux (R₁ R₂ L M : Type*)
+private theorem coe_lowerCentralSeries_eq_int_aux (R₁ R₂ L M : Type*)
     [CommRing R₁] [CommRing R₂] [AddCommGroup M]
     [LieRing L] [LieAlgebra R₁ L] [LieAlgebra R₂ L] [Module R₁ M] [Module R₂ M] [LieRingModule L M]
     [LieModule R₁ L M] (k : ℕ) :
@@ -104,12 +104,10 @@ theorem lowerCentralSeries_scalars_aux (R₁ R₂ L M : Type*)
       rw [← smul_lie]
       exact Submodule.subset_span ⟨c • a, b, hb, rfl⟩
 
-theorem lowerCentralSeries_scalars (R₁ R₂ L M : Type*) [CommRing R₁] [CommRing R₂] [AddCommGroup M]
-    [LieRing L] [LieAlgebra R₁ L] [LieAlgebra R₂ L] [Module R₁ M] [Module R₂ M] [LieRingModule L M]
-    [LieModule R₁ L M] [LieModule R₂ L M] (k : ℕ) :
-    (lowerCentralSeries R₁ L M k : Set M) = (lowerCentralSeries R₂ L M k : Set M) := by
-  show ((lowerCentralSeries R₁ L M k).toSubmodule : Set M) =
-       ((lowerCentralSeries R₂ L M k).toSubmodule : Set M)
+theorem coe_lowerCentralSeries_eq_int [LieModule R L M] (k : ℕ) :
+    (lowerCentralSeries R L M k : Set M) = (lowerCentralSeries ℤ L M k : Set M) := by
+  show ((lowerCentralSeries R L M k).toSubmodule : Set M) =
+       ((lowerCentralSeries ℤ L M k).toSubmodule : Set M)
   induction k with
   | zero => rfl
   | succ k ih =>
@@ -119,9 +117,9 @@ theorem lowerCentralSeries_scalars (R₁ R₂ L M : Type*) [CommRing R₁] [Comm
     simp only [SetLike.mem_coe, LieSubmodule.mem_toSubmodule] at ih
     simp only [LieSubmodule.mem_top, ih, true_and]
     apply le_antisymm
-    · exact lowerCentralSeries_scalars_aux _ _ L M k
+    · exact coe_lowerCentralSeries_eq_int_aux _ _ L M k
     · simp only [← ih]
-      exact lowerCentralSeries_scalars_aux _ _ L M k
+      exact coe_lowerCentralSeries_eq_int_aux _ _ L M k
 
 end LieModule
 
@@ -252,11 +250,6 @@ theorem derivedSeries_le_lowerCentralSeries (k : ℕ) :
 
 /-- A Lie module is nilpotent if its lower central series reaches 0 (in a finite number of
 steps). -/
-class IsNilpotent' : Prop where
-  nilpotent : ∃ k, lowerCentralSeries R L M k = ⊥
-
-/-- A Lie module is nilpotent if its lower central series reaches 0 (in a finite number of
-steps). -/
 @[mk_iff isNilpotent_iff_int]
 class IsNilpotent : Prop where
   mk_int ::
@@ -269,7 +262,7 @@ variable [LieModule R L M]
 /-- See also `LieModule.isNilpotent_iff_exists_ucs_eq_top`. -/
 lemma isNilpotent_iff :
     IsNilpotent L M ↔ ∃ k, lowerCentralSeries R L M k = ⊥ := by
-  simp [isNilpotent_iff_int, SetLike.ext'_iff, lowerCentralSeries_scalars R ℤ L M]
+  simp [isNilpotent_iff_int, SetLike.ext'_iff, coe_lowerCentralSeries_eq_int R L M]
 
 lemma IsNilpotent.nilpotent [IsNilpotent L M] : ∃ k, lowerCentralSeries R L M k = ⊥ :=
   (isNilpotent_iff R L M).mp ‹_›
@@ -400,7 +393,7 @@ theorem nilpotencyLength_eq_succ_iff (k : ℕ) :
     nilpotencyLength L M = k + 1 ↔
       lowerCentralSeries R L M (k + 1) = ⊥ ∧ lowerCentralSeries R L M k ≠ ⊥ := by
   have aux (k : ℕ) : lowerCentralSeries R L M k = ⊥ ↔ lowerCentralSeries ℤ L M k = ⊥ := by
-    simp [SetLike.ext'_iff, lowerCentralSeries_scalars R ℤ L M]
+    simp [SetLike.ext'_iff, coe_lowerCentralSeries_eq_int R L M]
   let s := {k | lowerCentralSeries ℤ L M k = ⊥}
   rw [aux, ne_eq, aux]
   change sInf s = k + 1 ↔ k + 1 ∈ s ∧ k ∉ s
