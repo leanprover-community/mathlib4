@@ -134,7 +134,7 @@ lemma hasColimit_fiberwiseColimit [HasColimit G] : HasColimit (fiberwiseColimit 
 
 variable {G}
 
-/-- For a functor `G : Grothendieck F ⥤ H`, every cocone over `fiberwiseColim G` induces a
+/-- For a functor `G : Grothendieck F ⥤ H`, every cocone over `fiberwiseColimit G` induces a
 cocone over `G` itself. -/
 @[simps]
 def coconeOfCoconeFiberwiseColimit (c : Cocone (fiberwiseColimit G)) : Cocone G where
