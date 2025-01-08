@@ -179,7 +179,7 @@ Given a `CommShift` structure on `OppositeShift.functor F` (for the naive shifts
 categories), this is the corresponding `CommShift` structure on `F`.
 -/
 @[simps]
-noncomputable instance commShiftUnop
+noncomputable def commShiftUnop
     [CommShift (OppositeShift.functor A F) A] : CommShift F A where
   iso a := NatIso.removeOp ((OppositeShift.functor A F).commShiftIso a).symm
   zero := by
@@ -225,8 +225,8 @@ end NatTrans
 namespace NatTrans
 
 variable (C) in
-/-- The obvious isomorphism between the identity of `OppositeShift C A` and the
-pullback of the identity of `C`.
+/-- The obvious isomorphism between the identity of `OppositeShift C A` and
+`OppositeShift.functor (𝟙 C)`.
 -/
 def OppositeShift.natIsoId : 𝟭 (OppositeShift C A) ≅ OppositeShift.functor A (𝟭 C) := Iso.refl _
 
