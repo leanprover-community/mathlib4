@@ -116,7 +116,7 @@ def of : CompHausLike P where
 theorem coe_of : (CompHausLike.of P X : Type _) = X :=
   rfl
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id (X : CompHausLike P) : (𝟙 ((forget (CompHausLike P)).obj X)) = id :=
   rfl
 
