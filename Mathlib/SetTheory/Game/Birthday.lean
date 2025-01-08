@@ -215,10 +215,9 @@ theorem birthday_natCast (n : ℕ) : birthday n = n := by
   rw [← toGame_natCast]
   exact birthday_ordinalToGame _
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem birthday_ofNat (n : ℕ) [n.AtLeastTwo] :
-    birthday (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+    birthday ofNat(n) = OfNat.ofNat n :=
   birthday_natCast n
 
 @[simp]
