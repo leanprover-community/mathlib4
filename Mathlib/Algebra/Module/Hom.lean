@@ -143,6 +143,4 @@ end AddMonoidHom
 
 open AddMonoidHom in
 lemma AddMonoid.End.ker_id_sub_eq_range [AddCommGroup M] {p : AddMonoid.End M}
-    (h : IsIdempotentElem p) : ker (1 - p) = AddMonoidHom.range p := by
-  have e1 (f : AddMonoid.End M) : ((Module.toAddMonoidEnd (AddMonoid.End M) M) f) = f := rfl
-  rw [← (e1 p), ← _root_.ker_id_sub_eq_range h, e1 (1-p), e1 p]
+    (h : IsIdempotentElem p) : ker (1 - p) = AddMonoidHom.range p := _root_.ker_id_sub_eq_range h
