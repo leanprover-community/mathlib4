@@ -121,11 +121,12 @@ theorem IsLittleOTVS.add [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     egauge 𝕜 U' (f₁ x + f₂ x) ≤ egauge 𝕜 (U + U) (f₁ x + f₂ x) := by
       gcongr
     _ ≤ max (egauge 𝕜 U (f₁ x)) (egauge 𝕜 U (f₂ x)) := egauge_add_add_le hUb hUb _ _
-    _ ≤ ε * egauge 𝕜 (V₁ ∩ V₂) (g x) := by
-      have := mul_le_mul_left' (a := ε) <| le_egauge_inter (𝕜 := 𝕜) V₁ V₂ (g x)
-      rw [mul_max] at this
-      refine trans ?_ this
+    _ ≤ ε * max (egauge 𝕜 V₁ (g x)) (egauge 𝕜 V₂ (g x)) := by
+      rw [mul_max]
       gcongr
+    _ ≤ ε * egauge 𝕜 (V₁ ∩ V₂) (g x) := by
+      gcongr
+      apply le_egauge_inter
 
 protected lemma IsLittleOTVS.smul_left {f : α → E} {g : α → F} {l : Filter α}
     (h : f =o[𝕜;l] g) (c : α → 𝕜) :
