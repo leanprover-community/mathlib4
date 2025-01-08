@@ -105,6 +105,44 @@ theorem isLittleOTVS_map {f : α → E} {g : α → F} {k : β → α} {l : Filt
     f =o[𝕜; map k l] g ↔ (f ∘ k) =o[𝕜;l] (g ∘ k) := by
   simp [IsLittleOTVS]
 
+theorem IsLittleOTVS.add [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
+    {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
+    (h₁ : f₁ =o[𝕜; l] g) (h₂ : f₂ =o[𝕜; l] g) : (f₁ + f₂) =o[𝕜; l] g := by
+  intro U' hU'
+  obtain ⟨U, hU, hUb, hUU'⟩ : ∃ U ∈ 𝓝 (0 : E), Balanced 𝕜 U ∧ U + U ⊆ U' := by
+    rcases exists_open_nhds_zero_add_subset hU' with ⟨U₁, hU₁o, hU₁, hU₁U'⟩
+    rcases (nhds_basis_balanced 𝕜 E).mem_iff.mp (hU₁o.mem_nhds hU₁) with ⟨U, ⟨hU₀, hUb⟩, hUU₁⟩
+    exact ⟨U, hU₀, hUb, trans (by gcongr <;> assumption) hU₁U'⟩
+  rcases h₁ U hU with ⟨V₁, hV₁, hVf₁⟩
+  rcases h₂ U hU with ⟨V₂, hV₂, hVf₂⟩
+  refine ⟨V₁ ∩ V₂, inter_mem hV₁ hV₂, fun ε hε ↦ ?_⟩
+  filter_upwards [hVf₁ ε hε, hVf₂ ε hε] with x hx₁ hx₂
+  calc
+    egauge 𝕜 U' (f₁ x + f₂ x) ≤ egauge 𝕜 (U + U) (f₁ x + f₂ x) := by
+      gcongr
+    _ ≤ max (egauge 𝕜 U (f₁ x)) (egauge 𝕜 U (f₂ x)) := ?_
+    _ ≤ ε * egauge 𝕜 (V₁ ∩ V₂) (g x) := by
+      apply max_le
+      · refine hx₁.trans ?_
+        gcongr
+        apply inter_subset_left
+      · refine hx₂.trans ?_
+        gcongr
+        apply inter_subset_right
+  -- TODO: move to `egauge 𝕜 (U + V) (a + b) ≤ max (egauge 𝕜 U a) (egauge 𝕜 V b)`
+  refine le_of_forall_lt' fun c hc ↦ ?_
+  simp only [max_lt_iff, egauge_lt_iff] at hc ⊢
+  rcases hc with ⟨⟨a, ha, hac⟩, ⟨b, hb, hbc⟩⟩
+  cases le_total ‖a‖₊ ‖b‖₊ with
+  | inl hab =>
+    refine ⟨b, ?_, hbc⟩
+    rw [smul_add]
+    exact add_mem_add (hUb.smul_mono hab ha) hb
+  | inr hba =>
+    refine ⟨a, ?_, hac⟩
+    rw [smul_add]
+    exact add_mem_add ha (hUb.smul_mono hba hb)
+
 protected lemma IsLittleOTVS.smul_left {f : α → E} {g : α → F} {l : Filter α}
     (h : f =o[𝕜;l] g) (c : α → 𝕜) :
     (fun x ↦ c x • f x) =o[𝕜;l] (fun x ↦ c x • g x) := by
