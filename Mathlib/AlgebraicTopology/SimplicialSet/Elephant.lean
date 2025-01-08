@@ -79,6 +79,7 @@ abbrev Path : ℕ → Type u := trunc (by omega) |>.obj X |>.Path₁
 
 /-- The spine of an `n + 1`-simplex in an `n + 1`-truncated simplicial set `X` is the path of edges
 of length `n + 1` formed by traversing through its vertices in order. -/
+@[simps]
 def spine {m} (hmn : m ≤ n + 1) (Δ : X _[m]ₙ₊₁) : Path X m where
   vertex i := X.map (SimplexCategory.const [0] [m] i).op Δ
   arrow i := X.map (SimplexCategory.mkOfSucc i).op Δ
@@ -135,6 +136,8 @@ end SSet
 
 namespace SSet.Truncated.StrictSegal
 
+open SimplexCategory
+
 variable {n} {X : SSet.Truncated.{u} (n + 1)} [StrictSegal X]
 
 /-- The fields of `StrictSegal` define an equivalence between `X [m]ₙ₊₁` and `Path X m`.-/
@@ -145,5 +148,30 @@ def spineEquiv {m : ℕ} (hmn : m ≤ n + 1) : X _[m]ₙ₊₁ ≃ Path X m wher
     exact congrFun (spineToSimplex_spine (X := X) hmn)
   right_inv := by
     exact congrFun (spine_spineToSimplex (X := X) hmn)
+
+theorem spineInjective {m : ℕ} (hmn : m ≤ n + 1) : Function.Injective (spineEquiv (X := X) hmn) :=
+  Equiv.injective _
+
+@[simp]
+theorem spineToSimplex_vertex {m : ℕ} (hmn : m ≤ n + 1) (i : Fin (m + 1)) (f : Path X m) :
+    X.map (const (SimplexCategory.mk 0) (SimplexCategory.mk m) i).op (spineToSimplex hmn f) =
+      f.vertex i := by
+  rw [← spine_vertex]
+  congr
+  exact (congrFun (spine_spineToSimplex (X := X) hmn) f)
+
+  -- , spine_spineToSimplex]
+
+@[simp]
+theorem spineToSimplex_arrow {m : ℕ} (hmn : m ≤ n + 1) (i : Fin m) (f : Path X m) :
+    X.map (mkOfSucc i).op (spineToSimplex hmn f) = f.arrow i := by
+  rw [← spine_arrow]
+  congr
+  exact congrFun (spine_spineToSimplex (X := X) hmn) f
+
+/-- In the presence of the strict Segal condition, a path of length `n` can be "composed" by taking
+the diagonal edge of the resulting `n`-simplex. -/
+def spineToDiagonal {m : ℕ} (hmn : m ≤ n + 1) (f : Path X m) : X _[1]ₙ₊₁ :=
+    X.map ((SimplexCategory.diag m).op) (spineToSimplex hmn f)
 
 end SSet.Truncated.StrictSegal
