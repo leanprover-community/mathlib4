@@ -131,6 +131,7 @@ theorem index_subset : ∀ p : X × Set X, p ∈ h.index → p.1 ∈ s :=
 theorem covering_disjoint : h.index.PairwiseDisjoint h.covering :=
   h.exists_disjoint_covering_ae.choose_spec.2.1
 
+open scoped Function in -- required for scoped `on` notation
 theorem covering_disjoint_subtype : Pairwise (Disjoint on fun x : h.index => h.covering x) :=
   (pairwise_subtype_iff_pairwise_set _ _).2 h.covering_disjoint
 
