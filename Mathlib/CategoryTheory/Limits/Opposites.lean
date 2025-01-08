@@ -32,10 +32,6 @@ namespace CategoryTheory.Limits
 variable {C : Type u₁} [Category.{v₁} C]
 variable {J : Type u₂} [Category.{v₂} J]
 
-@[deprecated (since := "2024-03-26")] alias isLimitCoconeOp := IsColimit.op
-@[deprecated (since := "2024-03-26")] alias isColimitConeOp := IsLimit.op
-@[deprecated (since := "2024-03-26")] alias isLimitCoconeUnop := IsColimit.unop
-@[deprecated (since := "2024-03-26")] alias isColimitConeUnop := IsLimit.unop
 
 /-- Turn a colimit for `F : J ⥤ Cᵒᵖ` into a limit for `F.leftOp : Jᵒᵖ ⥤ C`. -/
 @[simps]
