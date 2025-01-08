@@ -104,7 +104,8 @@ def main (args : List String) : IO Unit := do
       allModules := allModules.append <|
         imports.map (fun imp ↦ imp.module) |>.filter (·.getRoot == `Mathlib)
     -- and turn each "import Mathlib.X.Y.Z" into an argument "Mathlib.X.Y.Z.lean" to `get`.
-    let args := allModules.map fun mod ↦ mkFilePath (mod.components.map (fun s ↦ s.toString)) |>.addExtension "lean"
+    let args := allModules.map
+      fun mod ↦ mkFilePath (mod.components.map (·.toString)) |>.addExtension "lean"
     let hm ← hashMemo.filterByFilePaths args.toList
     getFiles hm false false goodCurl true
   let pack (overwrite verbose unpackedOnly := false) := do
