@@ -458,6 +458,34 @@ noncomputable
 def H1Cotangent.map : H1Cotangent R S' →ₗ[S'] H1Cotangent S T :=
   Extension.H1Cotangent.map (Generators.defaultHom _ _).toExtensionHom
 
+open Extension IsScalarTower
+
+variable {S T} in
+/-- `H¹(L_{T/R}) ≃ H¹(L_{T'/R})` if `T ≃ T'`. -/
+noncomputable
+def H1Cotangent.mapEquiv
+    {T' : Type*} [CommRing T'] [Algebra S T'] [Algebra R T'] [IsScalarTower R S T']
+    (e : T ≃ₐ[S] T') :
+    H1Cotangent R T ≃ₗ[S] H1Cotangent R T' :=
+  letI := e.toRingHom.toAlgebra
+  letI := e.symm.toRingHom.toAlgebra
+  haveI : IsScalarTower S T T' := .of_algebraMap_eq' e.toAlgHom.comp_algebraMap.symm
+  haveI : IsScalarTower R T T' :=
+    .of_algebraMap_eq' (e.toAlgHom.restrictScalars R).comp_algebraMap.symm
+  haveI : IsScalarTower S T' T := .of_algebraMap_eq' e.symm.toAlgHom.comp_algebraMap.symm
+  haveI : IsScalarTower R T' T :=
+    .of_algebraMap_eq' (e.symm.toAlgHom.restrictScalars R).comp_algebraMap.symm
+  haveI : IsScalarTower T T' T := .of_algebraMap_eq fun r ↦ (e.symm_apply_apply r).symm
+  haveI : IsScalarTower T' T T' := .of_algebraMap_eq fun r ↦ (e.apply_symm_apply r).symm
+  haveI H₁ : (map R R T' T).restrictScalars T ∘ₗ map R R T T' = .id :=
+    ((H1Cotangent.map_comp _ _).symm.trans (H1Cotangent.map_eq _ _)).trans (H1Cotangent.map_id)
+  haveI H₂ : (map R R T T').restrictScalars T' ∘ₗ map R R T' T = .id :=
+    ((H1Cotangent.map_comp _ _).symm.trans (H1Cotangent.map_eq _ _)).trans (H1Cotangent.map_id)
+  { __ := (map R R T T').restrictScalars S
+    invFun := (map R R T' T).restrictScalars S
+    left_inv := DFunLike.congr_fun H₁
+    right_inv := DFunLike.congr_fun H₂ }
+
 variable {R S S' T}
 
 /-- `H¹(L_{S/R})` is independent of the presentation chosen. -/

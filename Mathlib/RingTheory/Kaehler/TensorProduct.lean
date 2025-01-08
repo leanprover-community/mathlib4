@@ -7,6 +7,7 @@ import Mathlib.RingTheory.Kaehler.Basic
 import Mathlib.RingTheory.Unramified.Basic
 import Mathlib.RingTheory.Localization.BaseChange
 import Mathlib.RingTheory.Kaehler.CotangentComplex
+import Mathlib.RingTheory.Smooth.Kaehler
 import Mathlib.RingTheory.Flat.Equalizer
 
 /-!
@@ -625,5 +626,99 @@ def Extension.h1CotangentTensorAlgebraEquiv [Module.Flat R T] :
     apply H1Cotangent.liftBaseChange_map_injective
     exact DFunLike.congr_fun (P.comp_h1CotangentTensorAlgebra T) _
   right_inv := DFunLike.congr_fun (P.comp_h1CotangentTensorAlgebra T)
+
+attribute [local instance] TensorProduct.rightAlgebra in
+lemma Extension.h1CotangentTensorAlgebraEquiv_apply [Module.Flat R T] (x) :
+    P.h1CotangentTensorAlgebraEquiv T x =
+      ((H1Cotangent.map (P.toTensorAlgebra T)).restrictScalars R).liftBaseChange T x := rfl
+
+/-- If `T` is formally smooth and flat over `R` (e.g. when `T` is smooth),
+then `T ⊗ H¹(L_{S/R}) ≃ H¹(L_{T ⊗ S/R})`. -/
+noncomputable
+def H1Cotangent.tensorEquiv (R S T : Type u)
+    [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra R T]
+    [Module.Flat R T] [FormallySmooth R T] :
+  T ⊗[R] H1Cotangent R S ≃ₗ[T] H1Cotangent R (T ⊗[R] S) :=
+  haveI : FormallySmooth T ((Generators.self R S).toExtension.tensorAlgebra T).Ring :=
+    inferInstanceAs (FormallySmooth T (T ⊗[R] MvPolynomial _ R))
+  haveI : FormallySmooth R ((Generators.self R S).toExtension.tensorAlgebra T).Ring :=
+    Algebra.FormallySmooth.comp _ T _
+  Extension.h1CotangentTensorAlgebraEquiv _ _ ≪≫ₗ
+  (Extension.equivH1CotangentOfFormallySmooth _).restrictScalars T
+
+attribute [local instance] TensorProduct.rightAlgebra in
+open Extension in
+lemma H1Cotangent.tensorEquiv_toLinearMap (R S T : Type u)
+    [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra R T]
+    [Module.Flat R T] [FormallySmooth R T] :
+    (H1Cotangent.tensorEquiv R S T).toLinearMap =
+      ((H1Cotangent.map R R S (T ⊗[R] S)).restrictScalars R).liftBaseChange T := by
+  let P := (Generators.self R S).toExtension.tensorAlgebra T
+  let F : (Generators.self R (T ⊗[R] S)).toExtension.Hom P :=
+    { toRingHom := (MvPolynomial.aeval P.σ).toRingHom
+      toRingHom_algebraMap := (MvPolynomial.aeval P.σ).commutes
+      algebraMap_toRingHom := by
+        have : (IsScalarTower.toAlgHom R P.Ring (T ⊗[R] S)).comp (MvPolynomial.aeval P.σ) =
+            IsScalarTower.toAlgHom _ (Generators.self R (T ⊗[R] S)).toExtension.Ring _ := by
+          ext i
+          show _ = (algebraMap (Generators.self R (T ⊗[R] S)).Ring (T ⊗[R] S)) (.X i)
+          simp
+        exact DFunLike.congr_fun this }
+  have : FormallySmooth R (Generators.self R (T ⊗[R] S)).toExtension.Ring :=
+    inferInstanceAs (FormallySmooth R (MvPolynomial _ _))
+  have : FormallySmooth T P.Ring := inferInstanceAs (FormallySmooth T (T ⊗ MvPolynomial _ _))
+  have : FormallySmooth R P.Ring := .comp _ T _
+  ext x : 3
+  simp only [tensorEquiv, AlgebraTensorModule.curry_apply, curry_apply,
+    LinearMap.coe_restrictScalars, LinearEquiv.coe_coe, LinearEquiv.trans_apply,
+    h1CotangentTensorAlgebraEquiv_apply, LinearMap.liftBaseChange_tmul, one_smul,
+    LinearEquiv.restrictScalars_apply, map]
+  rw [equivH1CotangentOfFormallySmooth,
+    ← H1Cotangent.equivOfFormallySmooth_symm, LinearEquiv.symm_apply_eq,
+    H1Cotangent.equivOfFormallySmooth_apply F,
+    ← (Extension.H1Cotangent.map F).coe_restrictScalars S, ← LinearMap.comp_apply,
+    ← H1Cotangent.map_comp, H1Cotangent.map_eq]
+
+attribute [local instance] TensorProduct.rightAlgebra in
+lemma H1Cotangent.tensorEquiv_apply (R S T : Type u)
+    [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra R T]
+    [Module.Flat R T] [FormallySmooth R T] (x) :
+    H1Cotangent.tensorEquiv R S T x =
+      ((H1Cotangent.map R R S (T ⊗[R] S)).restrictScalars R).liftBaseChange T x := by
+  rw [← tensorEquiv_toLinearMap]; rfl
+
+attribute [local instance] TensorProduct.rightAlgebra in
+lemma H1Cotangent.isBaseChange (R S T ST : Type u)
+    [CommRing R] [CommRing S] [CommRing T]
+    [Algebra R S] [Algebra R T]
+    [Module.Flat R T] [FormallySmooth R T]
+    [CommRing ST] [Algebra R ST] [Algebra S ST] [Algebra T ST]
+    [IsScalarTower R T ST] [IsScalarTower R S ST] [h : Algebra.IsPushout R T S ST] :
+    IsBaseChange T ((H1Cotangent.map R R S ST).restrictScalars R) := by
+  let f : T ⊗[R] S →ₐ[T] ST := Algebra.TensorProduct.lift
+    (IsScalarTower.toAlgHom _ _ _) (IsScalarTower.toAlgHom _ _ _) fun _ _ ↦ .all _ _
+  let e : T ⊗[R] S ≃ₐ[T] ST := .ofBijective f <| by
+    show Function.Bijective f.toLinearMap
+    convert show Function.Bijective ((IsScalarTower.toAlgHom R S ST).toLinearMap.liftBaseChange T)
+      from h.out
+    ext; simp [f]
+  letI := e.toRingHom.toAlgebra
+  have : IsScalarTower S (T ⊗[R] S) ST := .of_algebraMap_eq fun r ↦
+    show algebraMap S ST r = f (1 ⊗ₜ r) by simp [f]
+  have : IsScalarTower R (T ⊗[R] S) ST := .of_algebraMap_eq fun r ↦ by
+    rw [IsScalarTower.algebraMap_apply R S ST, IsScalarTower.algebraMap_apply R S (T ⊗[R] S),
+    ← IsScalarTower.algebraMap_apply S]
+  convert (TensorProduct.isBaseChange R (H1Cotangent R S) T).comp
+    (IsBaseChange.ofEquiv (tensorEquiv R S T ≪≫ₗ H1Cotangent.mapEquiv R e)) using 1
+  ext x : 1
+  dsimp
+  rw [H1Cotangent.tensorEquiv_apply]
+  dsimp
+  show _ = (map R R (T ⊗[R] S) ST).restrictScalars S _
+  rw [one_smul, ← LinearMap.comp_apply, map, map, map, ← Extension.H1Cotangent.map_comp,
+    Extension.H1Cotangent.map_eq]
 
 end Algebra
