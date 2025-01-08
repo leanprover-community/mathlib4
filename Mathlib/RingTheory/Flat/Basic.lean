@@ -112,12 +112,6 @@ theorem rTensor_preserves_injective_linearMap [Flat R M] (f : N →ₗ[R] P)
   rw [rTensor_injective_iff_subtype (fun _ _ ↦ (Subtype.ext <| hf <| Subtype.ext_iff.mp ·)) se]
   exact (flat_iff R M).mp ‹_› _ (Finite.iff_fg.mp inferInstance)
 
-@[deprecated (since := "2024-03-29")]
-alias preserves_injective_linearMap := rTensor_preserves_injective_linearMap
-
-@[deprecated (since := "2024-03-29")]
-alias lTensor_inj_iff_rTensor_inj := LinearMap.lTensor_inj_iff_rTensor_inj
-
 /-- If `M` is a flat module, then `𝟙 M ⊗ f` is injective for all injective linear maps `f`. -/
 theorem lTensor_preserves_injective_linearMap [Flat R M] (f : N →ₗ[R] P)
     (hf : Function.Injective f) : Function.Injective (f.lTensor M) :=
@@ -305,7 +299,8 @@ lemma injective_characterModule_iff_rTensor_preserves_injective_linearMap :
       (f : N →ₗ[R] N'), Function.Injective f → Function.Injective (f.rTensor M) := by
   simp_rw [injective_iff, rTensor_injective_iff_lcomp_surjective, Surjective, DFunLike.ext_iff]; rfl
 
-/-- `CharacterModule M` is an injective module iff `M` is flat. -/
+/-- `CharacterModule M` is an injective module iff `M` is flat.
+See [Lambek_1964] for a self-contained proof. -/
 theorem iff_characterModule_injective [Small.{v} R] :
     Flat R M ↔ Module.Injective R (CharacterModule M) := by
   rw [injective_characterModule_iff_rTensor_preserves_injective_linearMap,

@@ -886,8 +886,6 @@ theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
     _ = a ^ n * a := congrArg (· * a) (zpow_natCast a n)
     _ = a ^ (n + 1) := (pow_succ _ _).symm
 
-@[deprecated (since := "2024-03-20")] alias zpow_coe_nat := zpow_natCast
-@[deprecated (since := "2024-03-20")] alias coe_nat_zsmul := natCast_zsmul
 
 @[to_additive ofNat_zsmul]
 lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (ofNat(n) : ℤ) = a ^ OfNat.ofNat n :=
