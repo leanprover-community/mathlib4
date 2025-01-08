@@ -637,15 +637,11 @@ lemma locally_of_iff (hQl : LocalizationAwayPreserves Q)
 associated property of scheme morphisms can be checked on stalks. -/
 lemma of_stalkMap (hQ : OfLocalizationPrime Q) (H : ∀ x, Q (f.stalkMap x).hom) : P f := by
   have hQi := (HasRingHomProperty.isLocal_ringHomProperty P).respectsIso
-  haveI : (toMorphismProperty Q).RespectsIso := by
-    rw [← toMorphismProperty_respectsIso_iff]
-    exact (HasRingHomProperty.isLocal_ringHomProperty P).respectsIso
   wlog hY : IsAffine Y generalizing X Y f
   · rw [IsLocalAtTarget.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
     intro U
     refine this (fun x ↦ ?_) U.2
-    exact (MorphismProperty.arrow_mk_iso_iff (toMorphismProperty Q)
-      (AlgebraicGeometry.morphismRestrictStalkMap f U x)).mpr (H x.val)
+    exact (hQi.arrow_mk_iso_iff (AlgebraicGeometry.morphismRestrictStalkMap f U x)).mpr (H x.val)
   wlog hX : IsAffine X generalizing X f
   · rw [IsLocalAtSource.iff_of_iSup_eq_top (P := P) _ (iSup_affineOpens_eq_top _)]
     intro U
@@ -666,9 +662,39 @@ lemma of_stalkMap (hQ : OfLocalizationPrime Q) (H : ∀ x, Q (f.stalkMap x).hom)
   rw [Spec_iff (P := P)]
   apply hQ
   intro P hP
-  replace H : toMorphismProperty Q (Scheme.Hom.stalkMap (Spec.map φ) _) := H ⟨P, hP⟩
-  rwa [MorphismProperty.arrow_mk_iso_iff (toMorphismProperty Q)
-    (Scheme.arrowStalkMapSpecIso φ _)] at H
+  specialize H ⟨P, hP⟩
+  rwa [hQi.arrow_mk_iso_iff (Scheme.arrowStalkMapSpecIso φ _)] at H
+
+/-- Let `Q` be a property of ring maps that is stable under localization.
+Then if the associated property of scheme morphisms holds for `f`, `Q` holds on all stalks. -/
+lemma stalkMap
+      (hQ : ∀ {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) (_ : Q f)
+        (J : Ideal S) (_ : J.IsPrime), Q (Localization.localRingHom _ J f rfl))
+      (hf : P f) (x : X) : Q (f.stalkMap x).hom := by
+  have hQi := (HasRingHomProperty.isLocal_ringHomProperty P).respectsIso
+  wlog h : IsAffine X ∧ IsAffine Y generalizing X Y f
+  · obtain ⟨U, hU, hfx, _⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_affine_open Y)
+      (Opens.mem_top <| f.base x)
+    obtain ⟨V, hV, hx, e⟩ := Opens.isBasis_iff_nbhd.mp (isBasis_affine_open X)
+      (show x ∈ f ⁻¹ᵁ U from hfx)
+    rw [← hQi.arrow_mk_iso_iff (Scheme.Hom.resLEStalkMap f e ⟨x, hx⟩)]
+    exact this (IsLocalAtSource.resLE _ hf) _ ⟨hV, hU⟩
+  obtain ⟨hX, hY⟩ := h
+  wlog hXY : ∃ R S, Y = Spec R ∧ X = Spec S generalizing X Y
+  · have : Q ((X.isoSpec.inv ≫ f ≫ Y.isoSpec.hom).stalkMap (X.isoSpec.hom.base x)).hom := by
+      refine this ?_ (X.isoSpec.hom.base x) inferInstance inferInstance ?_
+      · rwa [P.cancel_left_of_respectsIso, P.cancel_right_of_respectsIso]
+      · use Γ(Y, ⊤), Γ(X, ⊤)
+    rw [Scheme.stalkMap_comp, Scheme.stalkMap_comp, CommRingCat.hom_comp,
+      hQi.cancel_right_isIso, CommRingCat.hom_comp, hQi.cancel_left_isIso] at this
+    have heq : (X.isoSpec.inv.base (X.isoSpec.hom.base x)) = x := by simp
+    rwa [hQi.arrow_mk_iso_iff
+      (Scheme.arrowStalkMapIsoOfInseparable f <| Inseparable.of_eq heq)] at this
+  obtain ⟨R, S, rfl, rfl⟩ := hXY
+  obtain ⟨φ, rfl⟩ := Spec.exists_preimage_map f
+  rw [hQi.arrow_mk_iso_iff (Scheme.arrowStalkMapSpecIso φ _)]
+  rw [Spec_iff (P := P)] at hf
+  apply hQ _ hf
 
 end HasRingHomProperty
 

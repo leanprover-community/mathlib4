@@ -59,6 +59,16 @@ instance : MorphismProperty.IsMultiplicative @Flat where
 instance isStableUnderBaseChange : MorphismProperty.IsStableUnderBaseChange @Flat :=
   HasRingHomProperty.isStableUnderBaseChange RingHom.Flat.isStableUnderBaseChange
 
+lemma of_stalkMap (H : ∀ x, (f.stalkMap x).hom.Flat) : Flat f :=
+  HasRingHomProperty.of_stalkMap RingHom.Flat.ofLocalizationPrime H
+
+lemma stalkMap [Flat f] (x : X) : (f.stalkMap x).hom.Flat :=
+  HasRingHomProperty.stalkMap (P := @Flat)
+    (fun f hf J hJ ↦ hf.localRingHom J (J.comap f) rfl) ‹_› x
+
+lemma iff_flat_stalkMap : Flat f ↔ ∀ x, (f.stalkMap x).hom.Flat :=
+  ⟨fun _ ↦ stalkMap f, fun H ↦ of_stalkMap f H⟩
+
 end Flat
 
 end AlgebraicGeometry

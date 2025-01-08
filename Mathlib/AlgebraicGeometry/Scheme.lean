@@ -761,6 +761,14 @@ lemma stalkMap_germ_apply (U : Y.Opens) (x : X) (hx : f.base x ∈ U) (y) :
       X.presheaf.germ (f ⁻¹ᵁ U) x hx (f.app U y) :=
   PresheafedSpace.stalkMap_germ_apply f.toPshHom U x hx y
 
+/-- If `x` and `y` are inseparable, the stalk maps are isomorphic. -/
+noncomputable def arrowStalkMapIsoOfInseparable {x y : X}
+    (h : Inseparable x y) : Arrow.mk (f.stalkMap x) ≅ Arrow.mk (f.stalkMap y) :=
+  Arrow.isoMk (Y.presheaf.stalkCongr <| h.map f.continuous) (X.presheaf.stalkCongr h) <| by
+    simp only [Arrow.mk_left, Arrow.mk_right, Functor.id_obj, TopCat.Presheaf.stalkCongr_hom,
+      Arrow.mk_hom]
+    rw [Scheme.stalkSpecializes_stalkMap]
+
 end Scheme
 
 end Stalks

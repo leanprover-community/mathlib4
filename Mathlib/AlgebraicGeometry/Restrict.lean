@@ -705,6 +705,27 @@ lemma resLE_appLE {U : Y.Opens} {V : X.Opens} (e : V ≤ f ⁻¹ᵁ U)
   rw [← X.presheaf.map_comp, ← X.presheaf.map_comp]
   rfl
 
+@[simp]
+lemma resLE_base_coe (x : V) : ((f.resLE U V e).base x).val = f.base x := by
+  simp [resLE, morphismRestrict_base]
+
+/-- The stalk map of `f.resLE U V` at `x : V` is is the stalk map of `f` at `x`. -/
+def resLEStalkMap (x : V) :
+    Arrow.mk ((f.resLE U V e).stalkMap x) ≅ Arrow.mk (f.stalkMap x) :=
+  Arrow.isoMk (U.stalkIso _ ≪≫
+      (Y.presheaf.stalkCongr <| Inseparable.of_eq <| by simp)) (V.stalkIso x) <| by
+    apply TopCat.Presheaf.stalk_hom_ext
+    intro W hxW
+    simp only [Arrow.mk_right, Functor.id_obj, Arrow.mk_left, Iso.trans_hom,
+      TopCat.Presheaf.stalkCongr_hom, Arrow.mk_hom, Category.assoc, Opens.germ_stalkIso_hom_assoc,
+      TopCat.Presheaf.germ_stalkSpecializes_assoc, stalkMap_germ, app_eq_appLE, stalkMap_germ_assoc,
+      resLE_appLE, Opens.germ_stalkIso_hom]
+    have : V.ι ''ᵁ resLE f U V e ⁻¹ᵁ W ≤ f ⁻¹ᵁ U.ι ''ᵁ W := by
+      simp [resLE_preimage, image_preimage_eq_opensRange_inter]
+    rw [← X.presheaf.germ_res (homOfLE this)]
+    · simp
+    · exact ⟨x, hxW, rfl⟩
+
 end Scheme.Hom
 
 /-- `f.resLE U V` induces `f.appLE U V` on global sections. -/
