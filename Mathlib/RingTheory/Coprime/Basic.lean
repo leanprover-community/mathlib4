@@ -413,9 +413,7 @@ lemma Nat.isCoprime_iff {m n : ℕ} : IsCoprime m n ↔ m = 1 ∨ n = 1 := by
     · exact isCoprime_one_right
 
 /-- `IsCoprime` is not a useful definition for `PNat`; consider using `Nat.Coprime` instead. -/
-@[simp]
-lemma PNat.isCoprime_iff {m n : ℕ+} : IsCoprime (m : ℕ) n ↔ m = 1 ∨ n = 1 := by
-  rw [← PNat.coe_inj, ← PNat.coe_inj, PNat.one_coe, Nat.isCoprime_iff]
+lemma PNat.isCoprime_iff {m n : ℕ+} : IsCoprime (m : ℕ) n ↔ m = 1 ∨ n = 1 := by simp
 
 /-- `IsCoprime` is not a useful definition if an inverse is available. -/
 @[simp]
