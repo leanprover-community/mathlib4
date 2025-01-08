@@ -301,7 +301,7 @@ lemma smul_inv_mul_eq_inv_mul_opSMul (h : #(A * A) < (3 / 2 : ℚ) * #A) (ha : a
           ← invMulSubgroup_eq_inv_mul _ h, ← invMulSubgroup_eq_mul_inv _ h, coe_mul_coe]
 
 open scoped RightActions in
-theorem very_small_doubling (h : #(A * A) < (3 / 2 : ℚ) * #A) :
+theorem doubling_lt_three_halves (h : #(A * A) < (3 / 2 : ℚ) * #A) :
     ∃ (H : Subgroup G) (_ : Fintype H), Fintype.card H < (3 / 2 : ℚ) * #A ∧ ∀ a ∈ A,
       (A : Set G) ⊆ a • H ∧ a •> (H : Set G) = H <• a := by
   let H := invMulSubgroup A h
