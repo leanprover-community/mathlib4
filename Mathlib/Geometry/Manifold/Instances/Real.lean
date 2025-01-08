@@ -296,10 +296,14 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
 
 variable {x y : ℝ} [hxy : Fact (x < y)]
 
-lemma IccLeftChart_extend_left_eq :
-    ((IccLeftChart x y).extend (𝓡∂ 1)) (Icc.left hxy.out.le) = 0 := by
-  calc ((IccLeftChart x y).extend (𝓡∂ 1)) (Icc.left hxy.out.le)
-    _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by norm_num [IccLeftChart]
+-- TODO: how to avoid passing hxy_twice?
+lemma IccLeftChart_extend_left_eq [hxy_twice : Fact (x ≤ y)] :
+    -- this have is not recognised...
+    have := hxy.out.le;
+    ((IccLeftChart x y).extend (𝓡∂ 1)) (Icc.instOrderBotElem.bot) = 0 := by
+  calc ((IccLeftChart x y).extend (𝓡∂ 1)) (Icc.instOrderBotElem.bot)
+    _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by
+      norm_num [IccLeftChart, show (⊥ : Set.Icc x y) = x by rfl]
     _ = 0 := rfl
 
 lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
@@ -309,8 +313,9 @@ lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.v
   rw [this]
   norm_num [hp.1]
 
-lemma IccLeftChart_extend_left_mem_frontier :
-    (IccLeftChart x y).extend (𝓡∂ 1) (Icc.left hxy.out.le) ∈ frontier (range (𝓡∂ 1)) := by
+-- TODO: how to avoid passing hxy_twice?
+lemma IccLeftChart_extend_left_mem_frontier [hxy_twice : Fact (x ≤ y)] :
+    (IccLeftChart x y).extend (𝓡∂ 1) (Icc.instOrderBotElem.bot) ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccLeftChart_extend_left_eq, frontier_range_modelWithCornersEuclideanHalfSpace]
   exact rfl
 
@@ -362,14 +367,17 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) => z 0 := continuous_apply 0
     exact (A.comp B).comp continuous_subtype_val
 
-lemma IccRightChart_extend_right_eq :
-    (IccRightChart x y).extend (𝓡∂ 1) (Icc.right hxy.out.le) = 0 := by
-  calc ((IccRightChart x y).extend (𝓡∂ 1)) (Icc.right hxy.out.le)
-    _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by norm_num [IccRightChart]
+-- TODO: how to avoid passing hxy_twice?
+lemma IccRightChart_extend_right_eq [hxy_twice : Fact (x ≤ y)] :
+    (IccRightChart x y).extend (𝓡∂ 1) (Icc.instOrderTopElem.top) = 0 := by
+  calc ((IccRightChart x y).extend (𝓡∂ 1)) (Icc.instOrderTopElem.top)
+    _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by
+      norm_num [IccRightChart, show (⊤ : Set.Icc x y) = y by rfl]
     _ = 0 := rfl
 
-lemma IccRightChart_extend_right_mem_frontier :
-    (IccRightChart x y).extend (𝓡∂ 1) (Icc.right hxy.out.le) ∈ frontier (range (𝓡∂ 1)) := by
+-- TODO: how to avoid passing hxy_twice?
+lemma IccRightChart_extend_right_mem_frontier [hxy_twice : Fact (x ≤ y)] :
+    (IccRightChart x y).extend (𝓡∂ 1) (Icc.instOrderTopElem.top) ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccRightChart_extend_right_eq, frontier_range_modelWithCornersEuclideanHalfSpace]
   exact rfl
 

@@ -1012,8 +1012,8 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
             filter_upwards [C1, C2] with x G'x hx
             apply EReal.coe_le_coe_iff.1
             have : x ∈ Ioo m M := by
-              simp only [hm.trans_le hx.1,
-                (hx.2.trans_lt hu.right).trans_le (min_le_left M b), mem_Ioo, and_self_iff]
+              simp only [hm.trans_le hx.left,
+                (hx.right.trans_lt hu.right).trans_le (min_le_left M b), mem_Ioo, and_self_iff]
             refine (H this).out.le.trans_eq ?_
             exact (EReal.coe_toReal G'x.ne (f_lt_G' x).ne_bot).symm
     -- bound from above the increase of `g u - g a` on the right of `t`, using the derivative at `t`
