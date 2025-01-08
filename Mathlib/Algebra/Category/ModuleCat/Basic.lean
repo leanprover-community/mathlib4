@@ -188,11 +188,9 @@ end
 instance : Inhabited (ModuleCat R) :=
   ⟨of R R⟩
 
-instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) where
-  forget :=
-    { obj := fun R => R
-      map := fun f => f.hom }
-  forget_faithful := ⟨fun h => by ext x; simpa using congrFun h x⟩
+instance moduleConcreteCategory : ConcreteCategory.{v} (ModuleCat.{v} R) (· →ₗ[R] ·) carrier where
+  hom := Hom.hom
+  ofHom := ofHom
 
 /- Not a `@[simp]` lemma since it will rewrite the (co)domain of maps and cause
 definitional equality issues. -/
@@ -455,13 +453,13 @@ def endMulEquiv : End M ≃* (M →ₗ[R] M) where
 
 /-- The scalar multiplication on an object of `ModuleCat R` considered as
 a morphism of rings from `R` to the endomorphisms of the underlying abelian group. -/
-def smul : R →+* End ((forget₂ (ModuleCat R) AddCommGrp).obj M) where
+def smul : R →+* End (AddCommGrp.of M) where
   toFun r :=
     { toFun := fun (m : M) => r • m
       map_zero' := by dsimp; rw [smul_zero]
       map_add' := fun x y => by dsimp; rw [smul_add] }
   map_one' := AddMonoidHom.ext (fun x => by dsimp; rw [one_smul])
-  map_zero' := AddMonoidHom.ext (fun x => by dsimp; rw [zero_smul]; rfl)
+  map_zero' := AddMonoidHom.ext (fun x => by dsimp; rw [zero_smul])
   map_mul' r s := AddMonoidHom.ext (fun (x : M) => (smul_smul r s x).symm)
   map_add' r s := AddMonoidHom.ext (fun (x : M) => add_smul r s x)
 
@@ -483,7 +481,7 @@ def smulNatTrans : R →+* End (forget₂ (ModuleCat R) AddCommGrp) where
   map_one' := NatTrans.ext (by aesop_cat)
   map_zero' := NatTrans.ext (by aesop_cat)
   map_mul' _ _ := NatTrans.ext (by aesop_cat)
-  map_add' _ _ := NatTrans.ext (by aesop_cat)
+  map_add' x y := NatTrans.ext (by aesop_cat)
 
 variable {R}
 

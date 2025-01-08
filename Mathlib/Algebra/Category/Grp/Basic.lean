@@ -94,6 +94,16 @@ theorem coe_id' {G : Type _} [Group G] :
       (CategoryStruct.id (X := Grp.of G)) = id :=
   rfl
 
+/-- This lemma can hopefully be removed once we have a proper `Hom` structure set up for `Grp`. -/
+@[to_additive (attr := simp)]
+theorem coe_comp'' {G H K : Grp} (f : G ⟶ H) (g : H ⟶ K) :
+    DFunLike.coe (F := G →* K) (f ≫ g) = g ∘ f :=
+  rfl
+
+/-- This lemma can hopefully be removed once we have a proper `Hom` structure set up for `Grp`. -/
+@[to_additive (attr := simp)]
+lemma coe_id'' (X : Grp) : DFunLike.coe (F := (↑X →* ↑X)) (𝟙 X) = id := rfl
+
 @[to_additive]
 instance : Inhabited Grp :=
   ⟨Grp.of PUnit⟩
@@ -228,6 +238,18 @@ theorem coe_id' {G : Type _} [CommGroup G] :
     @DFunLike.coe (G →* G) G (fun _ ↦ G) MonoidHom.instFunLike
       (CategoryStruct.id (X := CommGrp.of G)) = id :=
   rfl
+
+/-- This lemma can hopefully be removed once we have a proper `Hom` structure set up for `Grp`. -/
+@[to_additive (attr := simp)]
+theorem coe_comp'' {G H K : CommGrp} (f : G ⟶ H) (g : H ⟶ K) :
+    DFunLike.coe (F := G →* K) (f ≫ g) = g ∘ f :=
+  rfl
+
+/--
+This lemma can hopefully be removed once we have a proper `Hom` structure set up for `CommGrp`.
+-/
+@[to_additive (attr := simp)]
+lemma coe_id'' (X : CommGrp) : DFunLike.coe (F := (↑X →* ↑X)) (𝟙 X) = id := rfl
 
 @[to_additive]
 instance ofUnique (G : Type*) [CommGroup G] [i : Unique G] : Unique (CommGrp.of G) :=
