@@ -80,6 +80,7 @@ theorem thickening_of_nonpos (hδ : δ ≤ 0) (s : Set α) : thickening δ s = �
 
 /-- The (open) thickening `Metric.thickening δ E` of a fixed subset `E` is an increasing function of
 the thickening radius `δ`. -/
+@[gcongr]
 theorem thickening_mono {δ₁ δ₂ : ℝ} (hle : δ₁ ≤ δ₂) (E : Set α) :
     thickening δ₁ E ⊆ thickening δ₂ E :=
   preimage_mono (Iio_subset_Iio (ENNReal.ofReal_le_ofReal hle))
@@ -640,18 +641,44 @@ end Metric
 
 -- TODO: address review comment!
 open Metric in
-theorem IsCompact.exists_thickening_image_subset [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+theorem IsCompact.exists_thickening_image_subset
+    {β : Type*} [PseudoEMetricSpace α] [PseudoEMetricSpace β]
     {f : α → β} {K : Set α} {U : Set β} (hK : IsCompact K) (ho : IsOpen U)
-    {s : Set α} (hs : s ∈ 𝓝ˢ K) (hf : ContinuousOn f s) (hKU : MapsTo f K U) :
+    {s : Set α} (hs : s ∈ 𝓝ˢ K) (hf : ∀ x : K, ContinuousAt f x) (hKU : MapsTo f K U) :
     ∃ ε > 0, ∃ V ∈ 𝓝ˢ K, thickening ε (f '' V) ⊆ U := by
-  obtain ⟨r, hr₀, hr⟩ := (hK.image_of_continuousOn (hf.mono (subset_of_mem_nhdsSet hs))
-    ).exists_thickening_subset_open ho hKU.image_subset
-  refine ⟨r / 2, half_pos hr₀, f ⁻¹' thickening (r / 2) (f '' K),
-    hf.tendsto_nhdsSet hs (mapsTo_image _ _) (thickening_mem_nhdsSet _ (half_pos hr₀)), ?_⟩
-  calc
-    thickening (r / 2) (f '' (f ⁻¹' thickening (r / 2) (f '' K))) ⊆
-        thickening (r / 2) (thickening (r / 2) (f '' K)) :=
-      thickening_subset_of_subset _ (image_preimage_subset _ _)
-    _ ⊆ thickening (r / 2 + r / 2) (f '' K) := (thickening_thickening_subset _ _ _)
-    _ = thickening r (f '' K) := by rw [add_halves]
-    _ ⊆ U := hr
+  apply hK.induction_on (p := fun K ↦ ∃ ε > 0, ∃ V ∈ 𝓝ˢ K, thickening ε (f '' V) ⊆ U)
+  · use 1, by positivity, ∅, by simp, by simp
+  · exact fun s t hst ⟨ε, hε, V, hV, hthickening⟩ ↦ ⟨ε, hε, V, nhdsSet_mono hst hV, hthickening⟩
+  · rintro s t ⟨ε₁, hε₁, V₁, hV₁, hV₁thickening⟩ ⟨ε₂, hε₂, V₂, hV₂, hV₂thickening⟩
+    refine ⟨min ε₁ ε₂, by positivity, V₁ ∪ V₂, ?_, ?_⟩
+    · let aux := nhdsSet_union V₁ V₂ -- morally: rewrite by that, done :-)
+      --rw [nhdsSet_union V₁ V₂]--apply nhdsSet_union hV₁ hV₂
+      sorry --aesop
+    rw [image_union, thickening_union]
+    calc thickening (ε₁ ⊓ ε₂) (f '' V₁) ∪ thickening (ε₁ ⊓ ε₂) (f '' V₂)
+      _ ⊆ thickening ε₁ (f '' V₁) ∪ thickening ε₂ (f '' V₂) := by gcongr <;> norm_num
+      _ ⊆ U ∪ U := by gcongr
+      _ = U := union_eq_self_of_subset_left fun ⦃a⦄ a ↦ a
+  · intro x hx
+    have : {f x} ⊆ U := by rw [@singleton_subset_iff]; exact hKU hx
+    obtain ⟨δ, hδ, hthick⟩ := (isCompact_singleton (x := f x)).exists_thickening_subset_open ho this
+    let V' := ball (f x) (δ / 2)
+
+    sorry
+
+
+
+
+  -- obtain ⟨r, hr₀, hr⟩ := (hK.image_of_continuousOn (hf.mono (subset_of_mem_nhdsSet hs))
+  --   ).exists_thickening_subset_open ho hKU.image_subset
+  -- refine ⟨r / 2, half_pos hr₀, f ⁻¹' thickening (r / 2) (f '' K),
+  --   hf.tendsto_nhdsSet hs (mapsTo_image _ _) (thickening_mem_nhdsSet _ (half_pos hr₀)), ?_⟩
+  -- calc
+  --   thickening (r / 2) (f '' (f ⁻¹' thickening (r / 2) (f '' K))) ⊆
+  --       thickening (r / 2) (thickening (r / 2) (f '' K)) :=
+  --     thickening_subset_of_subset _ (image_preimage_subset _ _)
+  --   _ ⊆ thickening (r / 2 + r / 2) (f '' K) := (thickening_thickening_subset _ _ _)
+  --   _ = thickening r (f '' K) := by rw [add_halves]
+  --   _ ⊆ U := hr
+
+#check IsCompact.induction_on
