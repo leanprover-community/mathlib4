@@ -33,4 +33,4 @@ lemma Ideal.isCompact_of_fg [TopologicalSemiring R] [CompactSpace R]
 
 variable (R M) in
 lemma Module.Finite.compactSpace [CompactSpace R] [Module.Finite R M] : CompactSpace M :=
-  ⟨Submodule.isCompact_of_fg (Module.Finite.out (R := R))⟩
+  ⟨Submodule.isCompact_of_fg (Module.Finite.fg_top (R := R))⟩
