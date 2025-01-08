@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.Ring.Idempotents
+import Mathlib.Algebra.Group.Subgroup.Ker
 
 /-!
 # Module structure and endomorphisms
