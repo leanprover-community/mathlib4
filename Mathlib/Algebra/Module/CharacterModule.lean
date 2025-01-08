@@ -238,9 +238,7 @@ lemma surjective_of_dual_injective (f : A →ₗ[R] A') (hf : Function.Injective
   refine Nonempty.intro (Unique.mk inferInstance
     (fun a ↦ (eq_zero_of_character_apply (fun c ↦ ?_))))
   obtain ⟨b, rfl⟩ := QuotientAddGroup.mk'_surjective _ a
-  suffices eq : dual (Submodule.mkQ _) c = 0 by
-    change (dual (Submodule.mkQ _) c) b = 0
-    rw [eq, AddMonoidHom.zero_apply]
+  suffices eq : dual (Submodule.mkQ _) c = 0 from congr($eq b)
   refine hf ?_
   rw [← LinearMap.comp_apply, ← dual_comp, LinearMap.range_mkQ_comp, dual_zero]
   dsimp
