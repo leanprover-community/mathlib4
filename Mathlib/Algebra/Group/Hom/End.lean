@@ -52,20 +52,6 @@ instance instRing [AddCommGroup M] : Ring (AddMonoid.End M) :=
     intCast_ofNat := natCast_zsmul _,
     intCast_negSucc := negSucc_zsmul _ }
 
-open AddMonoidHom in
-lemma ker_id_sub_eq_range [AddCommGroup M] {p : AddMonoid.End M} (h : IsIdempotentElem p) :
-    ker (1 - p) = range p := by
-  ext x
-  rw [mem_ker, sub_apply, sub_eq_zero, one_apply, mem_range]
-  constructor
-  · intro h
-    use x
-    rw [ ← h]
-  · intro ⟨y,hy⟩
-    rw [← hy]
-    conv_lhs => rw [← h]
-    rfl
-
 end AddMonoid.End
 
 /-!
