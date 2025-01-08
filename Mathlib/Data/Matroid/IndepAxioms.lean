@@ -153,7 +153,7 @@ namespace IndepMatroid
       by_contra h; push_neg at h
       obtain ⟨I, e, -, hIe, h⟩ := h
       refine hIe <| indep_compact _ fun J hJss hJfin ↦ ?_
-      exact indep_subset (h (J \ {e}) (by rwa [diff_subset_iff]) (hJfin.diff _)) (by simp)
+      exact indep_subset (h (J \ {e}) (by rwa [diff_subset_iff]) hJfin.diff) (by simp)
   IndepMatroid.mk
   (E := E)
   (Indep := Indep)
