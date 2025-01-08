@@ -10,10 +10,11 @@ import Mathlib.CategoryTheory.Types
 
 A concrete category is a category `C` where the objects and morphisms correspond with types and
 (bundled) functions between these types. We define concrete categories using
-`class ConcreteCategory`.
+`class ConcreteCategory`. To convert an object to a type, write `ToHom`. To convert a morphism
+to a (bundled) function, write `hom`.
 
 Each concrete category `C` comes with a canonical faithful functor `forget C : C ⥤ Type*`,
-see `class HasForget`. In particular, we impose no restrictions on the carrier type `C`, so `Type`
+see `class HasForget`. In particular, we impose no restrictions on the category `C`, so `Type`
 has the identity forgetful functor.
 
 We say that a concrete category `C` admits a *forgetful functor* to a concrete category `D`, if it
@@ -38,6 +39,9 @@ We do not use `CoeSort` to convert objects in a concrete category to types, sinc
 to elaboration mismatches between results taking a `[ConcreteCategory C]` instance and specific
 types `C` that hold a `ConcreteCategory C` instance: the first gets a literal `CoeSort.coe` and
 the second gets unfolded to the actual `coe` field.
+
+`ToType` and `ToHom` are `abbrev`s so that we do not need to copy over instances such as `Ring`
+or `RingHomClass` respectively.
 
 Since `X → Y` is not a `FunLike`, the category of types is not a `ConcreteCategory`, but it does
 have a `HasForget` instance.
@@ -95,48 +99,77 @@ Note that `ConcreteCategory` potentially depends on three independent universe l
 They are specified that order, to avoid unnecessary universe annotations.
 -/
 class ConcreteCategory (C : Type u) [Category.{v} C]
-    (F : outParam <| C → C → Type*) (carrier : outParam <| C → Type w)
-    [outParam <| ∀ X Y, FunLike (F X Y) (carrier X) (carrier Y)] where
+    (FC : outParam <| C → C → Type*) (CC : outParam <| C → Type w)
+    [outParam <| ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] where
   /-- Convert a morphism of `C` to a bundled function. -/
-  (hom : ∀ {X Y}, (X ⟶ Y) → F X Y)
+  (hom : ∀ {X Y}, (X ⟶ Y) → FC X Y)
   /-- Convert a bundled function to a morphism of `C`. -/
-  (ofHom : ∀ {X Y}, F X Y → (X ⟶ Y))
-  (hom_ofHom : ∀ {X Y} (f : F X Y), hom (ofHom f) = f := by aesop_cat)
+  (ofHom : ∀ {X Y}, FC X Y → (X ⟶ Y))
+  (hom_ofHom : ∀ {X Y} (f : FC X Y), hom (ofHom f) = f := by aesop_cat)
   (ofHom_hom : ∀ {X Y} (f : X ⟶ Y), ofHom (hom f) = f := by aesop_cat)
-  (id_apply : ∀ {X} (x : carrier X), hom (𝟙 X) x = x := by aesop_cat)
-  (comp_apply : ∀ {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z) (x : carrier X),
+  (id_apply : ∀ {X} (x : CC X), hom (𝟙 X) x = x := by aesop_cat)
+  (comp_apply : ∀ {X Y Z} (f : X ⟶ Y) (g : Y ⟶ Z) (x : CC X),
     hom (f ≫ g) x = hom g (hom f x) := by aesop_cat)
+
 export ConcreteCategory (id_apply comp_apply)
 
 section
 
-variable {C : Type u} [Category.{v} C] {F : C → C → Type*} {carrier : C → Type w}
-variable [∀ X Y, FunLike (F X Y) (carrier X) (carrier Y)]
-variable [ConcreteCategory C F carrier]
+variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type w}
+variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
+variable [ConcreteCategory C FC CC]
+
+/-- `ToType X` converts the object `X` of the concrete category `C` to a type.
+
+This is an `abbrev` so that instances on `X` (e.g. `Ring`) do not need to be redeclared.
+-/
+abbrev ToType [ConcreteCategory C FC CC] := CC
+
+/-- `ToHom X Y` is the type of (bundled) functions between objects `X Y : C`.
+
+This is an `abbrev` so that instances (e.g. `RingHomClass`) do not need to be redeclared.
+-/
+abbrev ToHom [ConcreteCategory C FC CC] := FC
 
 namespace ConcreteCategory
+
+/- TODO: or should we prime all the `CC`/`FC` based fields and copy them over with `ToType`/`ToFun`?
+/-- Convert a morphism of `C` to a bundled function. -/
+abbrev hom {X Y : C} : (X ⟶ Y) → ToHom X Y := hom'
+
+/-- Convert a bundled function to a morphism of `C`. -/
+abbrev ofHom {X Y : C} : ToHom X Y → (X ⟶ Y) := ofHom'
+
+lemma hom_ofHom {X Y : C} (f : ToHom X Y) : hom (ofHom f) = f := hom_ofHom' f
+
+lemma ofHom_hom {X Y : C} (f : X ⟶ Y) : ofHom (hom f) = f := ofHom_hom' f
+
+lemma id_apply {X : C} (x : ToType X) : hom (𝟙 X) x = x := id_apply' x
+lemma comp_apply {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : ToType X) :
+    hom (f ≫ g) x = hom g (hom f x) := comp_apply' f g x
+-/
 
 attribute [simp] id_apply comp_apply
 
 /-- We can apply morphisms of concrete categories by first casting them down
 to the base functions.
 -/
-instance {X Y : C} : CoeFun (X ⟶ Y) (fun _ ↦ carrier X → carrier Y) where
+instance {X Y : C} : CoeFun (X ⟶ Y) (fun _ ↦ ToType X → ToType Y) where
   coe f := hom f
 
 /--
 `ConcreteCategory.hom` bundled as an `Equiv`.
 -/
-def homEquiv {X Y : C} : (X ⟶ Y) ≃ F X Y where
+def homEquiv {X Y : C} : (X ⟶ Y) ≃ ToHom X Y where
   toFun := hom
   invFun := ofHom
   left_inv := ofHom_hom
   right_inv := hom_ofHom
 
-lemma hom_bijective {X Y : C} : Function.Bijective (hom : (X ⟶ Y) → F X Y) :=
+lemma hom_bijective {X Y : C} : Function.Bijective (hom : (X ⟶ Y) → ToHom X Y) :=
   homEquiv.bijective
 
-lemma hom_injective {X Y : C} : Function.Injective (hom : (X ⟶ Y) → F X Y) :=
+lemma hom_injective {X Y : C} : Function.Injective (hom : (X ⟶ Y) → ToHom X Y) :=
   hom_bijective.injective
 
 @[ext] lemma hom_ext {X Y : C} {f g : X ⟶ Y} (h : hom f = hom g) : f = g :=
@@ -148,8 +181,10 @@ lemma coe_ext {X Y : C} {f g : X ⟶ Y} (h : ⇑(hom f) = ⇑(hom g)) : f = g :=
 lemma ext_apply {X Y : C} {f g : X ⟶ Y} (h : ∀ x, f x = g x) : f = g :=
   hom_ext (DFunLike.ext _ _ h)
 
+-- TODO: this inheritance is not forgetful, so we can't make `forget Type`
+-- reducibly defeq to the identity functor.
 instance toHasForget : HasForget C where
-  forget.obj := carrier
+  forget.obj := ToType
   forget.map f := ⇑(hom f)
   forget_faithful.map_injective h := coe_ext h
 
@@ -174,7 +209,7 @@ attribute [local instance] HasForget.toFunLike
 
 The intended usecase is to prove theorems referencing only `(forget C)`
 and not `(forget C).obj X` nor `(forget C).map f`: those should be written
-as `carrier X` and `ConcreteCategory.hom f` respectively.
+as `ToType X` and `ConcreteCategory.hom f` respectively.
 -/
 abbrev HasForget.toConcreteCategory [HasForget C] :
     ConcreteCategory C (· ⟶ ·) _ where
@@ -198,7 +233,7 @@ theorem forget_eq_ConcreteCategory_hom [HasForget C] {X Y : C} (f : X ⟶ Y) :
 
 end
 
-theorem forget_obj (X : C) : (forget C).obj X = carrier X := rfl
+theorem forget_obj (X : C) : (forget C).obj X = ToType X := rfl
 
 @[simp]
 theorem forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := rfl
@@ -206,20 +241,20 @@ theorem forget_map_eq_coe {X Y : C} (f : X ⟶ Y) : (forget C).map f = f := rfl
 /-- Analogue of `congr_fun h x`,
 when `h : f = g` is an equality between morphisms in a concrete category.
 -/
-theorem congr_hom {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : carrier X) : f x = g x :=
-  congrFun (congrArg (fun k : X ⟶ Y => (k : carrier X → carrier Y)) h) x
+theorem congr_hom {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : ToType X) : f x = g x :=
+  congrFun (congrArg (fun k : X ⟶ Y => (k : ToType X → ToType Y)) h) x
 
-protected theorem congr_arg {X Y : C} (f : X ⟶ Y) {x x' : carrier X} (h : x = x') : f x = f x' :=
-  congrArg (f : carrier X → carrier Y) h
+protected theorem congr_arg {X Y : C} (f : X ⟶ Y) {x x' : ToType X} (h : x = x') : f x = f x' :=
+  congrArg (f : ToType X → ToType Y) h
 
-theorem coe_id {X : C} : (𝟙 X : carrier X → carrier X) = id :=
+theorem coe_id {X : C} : (𝟙 X : ToType X → ToType X) = id :=
   (forget _).map_id X
 
-theorem coe_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : carrier X → carrier Z) = g ∘ f :=
+theorem coe_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : ToType X → ToType Z) = g ∘ f :=
   (forget _).map_comp f g
 
 /-- Variation of `ConcreteCategory.comp_apply` that uses `forget` instead. -/
-theorem comp_apply' {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : carrier X) :
+theorem comp_apply' {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (x : ToType X) :
     (forget C).map (f ≫ g) x = (forget C).map g ((forget C).map f x) := comp_apply f g x
 
 @[deprecated (since := "2024-12-10")]
@@ -246,11 +281,11 @@ abbrev forget₂ (C : Type u) (D : Type u') [Category.{v} C] [HasForget.{w} C]
   HasForget₂.forget₂
 
 lemma forget₂_comp_apply
-    {C : Type u} [Category.{v} C] {F : C → C → Type*} {cC : C → Type w}
-    [∀ X Y, FunLike (F X Y) (cC X) (cC Y)]
+    {C : Type u} [Category.{v} C] {FC : C → C → Type*} {cC : C → Type w}
+    [∀ X Y, FunLike (FC X Y) (cC X) (cC Y)]
     {D : Type u'} [Category.{v'} D] {G : D → D → Type*} {cD : D → Type w}
     [∀ X Y, FunLike (G X Y) (cD X) (cD Y)]
-    [ConcreteCategory C F cC] [ConcreteCategory D G cD]
+    [ConcreteCategory C FC cC] [ConcreteCategory D G cD]
     [HasForget₂ C D] {X Y Z : C}
     (f : X ⟶ Y) (g : Y ⟶ Z) (x : cD ((forget₂ C D).obj X)) :
     ((forget₂ C D).map (f ≫ g) x) =
