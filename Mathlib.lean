@@ -4325,6 +4325,7 @@ import Mathlib.RingTheory.AdicCompletion.AsTensorProduct
 import Mathlib.RingTheory.AdicCompletion.Basic
 import Mathlib.RingTheory.AdicCompletion.Exactness
 import Mathlib.RingTheory.AdicCompletion.Functoriality
+import Mathlib.RingTheory.AdicCompletion.Noetherian
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Adjoin.Dimension
 import Mathlib.RingTheory.Adjoin.FG
@@ -4628,6 +4629,7 @@ import Mathlib.RingTheory.PolynomialAlgebra
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.RingTheory.PowerSeries.Derivative
+import Mathlib.RingTheory.PowerSeries.Eval
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Order
 import Mathlib.RingTheory.PowerSeries.PiTopology
