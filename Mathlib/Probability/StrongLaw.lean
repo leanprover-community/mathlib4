@@ -62,6 +62,8 @@ open Set (indicator)
 
 open scoped Topology MeasureTheory ProbabilityTheory ENNReal NNReal
 
+open scoped Function -- required for scoped `on` notation
+
 namespace ProbabilityTheory
 
 /-! ### Prerequisites on truncations -/
