@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.SpecialFunctions.Gamma.Basic
-import Mathlib.Analysis.SpecialFunctions.PolarCoord
+import Mathlib.Analysis.SpecialFunctions.PolarCoord.Basic
 import Mathlib.Analysis.Complex.Convex
 import Mathlib.Data.Nat.Factorial.DoubleFactorial
 

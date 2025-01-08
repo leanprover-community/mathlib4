@@ -6,6 +6,14 @@ Authors: Xavier Roblot
 import Mathlib.Analysis.SpecialFunctions.PolarCoord.Basic
 import Mathlib.MeasureTheory.Constructions.Pi
 
+/-!
+# Polar coordinates change of variables for pi-types
+
+The polar coordinates change of variables formula for the Lebesgue integral for a function
+defined on the product space `ι → ℝ × ℝ` and `ι → ℂ`.
+
+-/
+
 open ENNReal MeasureTheory MeasureTheory.Measure
 
 variable {ι : Type*} [DecidableEq ι]
@@ -41,7 +49,7 @@ private theorem lintegral_comp_pi_polarCoord_symm_aux {f : (ι → ℝ × ℝ) �
       · simp_rw [lmarginal_insert _ hf hi₀, ← lintegral_comp_polarCoord_symm,
           Function.apply_update (f := fun _ ↦ polarCoord.symm)]
       · simp_rw [h_ind hf, lmarginal_update_of_not_mem (h s) hi₀, Function.comp_def,
-          Finset.prod_insert hi₀, Function.update_same, smul_eq_mul, mul_assoc,
+          Finset.prod_insert hi₀, Function.update_self, smul_eq_mul, mul_assoc,
           ← lmarginal_const_smul' _ ofReal_ne_top, Pi.smul_def, smul_eq_mul]
       · simp_rw [← lmarginal_update_of_not_mem (h _) hi₀, lmarginal_insert _ (h _) hi₀]
 
