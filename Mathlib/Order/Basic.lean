@@ -1258,8 +1258,8 @@ instance [∀ i, Preorder (π i)] [∀ i, DenselyOrdered (π i)] :
       obtain ⟨c, ha, hb⟩ := exists_between hi
       exact
         ⟨Function.update a i c,
-          ⟨le_update_iff.2 ⟨ha.le, fun _ _ ↦ le_rfl⟩, i, by rwa [update_same]⟩,
-          update_le_iff.2 ⟨hb.le, fun _ _ ↦ hab _⟩, i, by rwa [update_same]⟩⟩
+          ⟨le_update_iff.2 ⟨ha.le, fun _ _ ↦ le_rfl⟩, i, by rwa [update_self]⟩,
+          update_le_iff.2 ⟨hb.le, fun _ _ ↦ hab _⟩, i, by rwa [update_self]⟩⟩
 
 theorem le_of_forall_le_of_dense [LinearOrder α] [DenselyOrdered α] {a₁ a₂ : α}
     (h : ∀ a, a₂ < a → a₁ ≤ a) : a₁ ≤ a₂ :=

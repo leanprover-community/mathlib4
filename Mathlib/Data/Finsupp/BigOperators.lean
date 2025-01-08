@@ -70,6 +70,8 @@ theorem Finset.mem_sup_support_iff [Zero M] {s : Finset (ι →₀ M)} {x : ι} 
     x ∈ s.sup Finsupp.support ↔ ∃ f ∈ s, x ∈ f.support :=
   Multiset.mem_sup_map_support_iff
 
+open scoped Function -- required for scoped `on` notation
+
 theorem List.support_sum_eq [AddMonoid M] (l : List (ι →₀ M))
     (hl : l.Pairwise (_root_.Disjoint on Finsupp.support)) :
     l.sum.support = l.foldr (Finsupp.support · ⊔ ·) ∅ := by

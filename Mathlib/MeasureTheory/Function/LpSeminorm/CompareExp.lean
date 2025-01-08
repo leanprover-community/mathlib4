@@ -306,7 +306,7 @@ variable {𝕜 α E F : Type*} {m : MeasurableSpace α} {μ : Measure α} [Norme
 theorem eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm (p : ℝ≥0∞) (hf : AEStronglyMeasurable f μ)
     (φ : α → 𝕜) : eLpNorm (φ • f) p μ ≤ eLpNorm φ ∞ μ * eLpNorm f p μ :=
   (eLpNorm_le_eLpNorm_top_mul_eLpNorm p φ hf (· • ·)
-    (Eventually.of_forall fun _ => nnnorm_smul_le _ _) : _)
+    (Eventually.of_forall fun _ => nnnorm_smul_le _ _) :)
 
 @[deprecated (since := "2024-07-27")]
 alias snorm_smul_le_snorm_top_mul_snorm := eLpNorm_smul_le_eLpNorm_top_mul_eLpNorm
@@ -314,7 +314,7 @@ alias snorm_smul_le_snorm_top_mul_snorm := eLpNorm_smul_le_eLpNorm_top_mul_eLpNo
 theorem eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top (p : ℝ≥0∞) (f : α → E) {φ : α → 𝕜}
     (hφ : AEStronglyMeasurable φ μ) : eLpNorm (φ • f) p μ ≤ eLpNorm φ p μ * eLpNorm f ∞ μ :=
   (eLpNorm_le_eLpNorm_mul_eLpNorm_top p hφ f (· • ·)
-    (Eventually.of_forall fun _ => nnnorm_smul_le _ _) : _)
+    (Eventually.of_forall fun _ => nnnorm_smul_le _ _) :)
 
 @[deprecated (since := "2024-07-27")]
 alias snorm_smul_le_snorm_mul_snorm_top := eLpNorm_smul_le_eLpNorm_mul_eLpNorm_top
@@ -356,5 +356,40 @@ theorem Memℒp.smul_of_top_left {p : ℝ≥0∞} {f : α → E} {φ : α → �
   simp only [ENNReal.div_top, add_zero]
 
 end BoundedSMul
+
+section Mul
+
+variable {α : Type*} [MeasurableSpace α] {𝕜 : Type*} [NormedRing 𝕜] {μ : Measure α}
+  {p q r : ℝ≥0∞} {f : α → 𝕜} {φ : α → 𝕜}
+
+theorem Memℒp.mul (hf : Memℒp f r μ) (hφ : Memℒp φ q μ) (hpqr : 1 / p = 1 / q + 1 / r) :
+    Memℒp (φ * f) p μ :=
+  Memℒp.smul hf hφ hpqr
+
+/-- Variant of `Memℒp.mul` where the function is written as `fun x ↦ φ x * f x`
+instead of `φ * f`. -/
+theorem Memℒp.mul' (hf : Memℒp f r μ) (hφ : Memℒp φ q μ) (hpqr : 1 / p = 1 / q + 1 / r) :
+    Memℒp (fun x ↦ φ x * f x) p μ :=
+  Memℒp.smul hf hφ hpqr
+
+theorem Memℒp.mul_of_top_right (hf : Memℒp f p μ) (hφ : Memℒp φ ∞ μ) : Memℒp (φ * f) p μ :=
+  Memℒp.smul_of_top_right hf hφ
+
+/-- Variant of `Memℒp.mul_of_top_right` where the function is written as `fun x ↦ φ x * f x`
+instead of `φ * f`. -/
+theorem Memℒp.mul_of_top_right' (hf : Memℒp f p μ) (hφ : Memℒp φ ∞ μ) :
+    Memℒp (fun x ↦ φ x * f x) p μ :=
+  Memℒp.smul_of_top_right hf hφ
+
+theorem Memℒp.mul_of_top_left (hf : Memℒp f ∞ μ) (hφ : Memℒp φ p μ) : Memℒp (φ * f) p μ :=
+  Memℒp.smul_of_top_left hf hφ
+
+/-- Variant of `Memℒp.mul_of_top_left` where the function is written as `fun x ↦ φ x * f x`
+instead of `φ * f`. -/
+theorem Memℒp.mul_of_top_left' (hf : Memℒp f ∞ μ) (hφ : Memℒp φ p μ) :
+    Memℒp (fun x ↦ φ x * f x) p μ :=
+  Memℒp.smul_of_top_left hf hφ
+
+end Mul
 
 end MeasureTheory
