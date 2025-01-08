@@ -45,6 +45,9 @@ instance topologicalSpaceUnbundled (X : TopCat) : TopologicalSpace X :=
 instance concreteCategory : ConcreteCategory TopCat (fun X Y => ContinuousMap X Y) Bundled.α :=
   inferInstanceAs <| ConcreteCategory (Bundled TopologicalSpace) _ _
 
+/-- TODO: replace this with a `Hom` structure + `CoeFun` instance -/
+instance funLike (X Y : TopCat) : FunLike (X ⟶ Y) X Y := ContinuousMap.instFunLike
+
 @[simp]
 theorem id_app (X : TopCat.{u}) (x : ↑X) : (𝟙 X : X ⟶ X) x = x := rfl
 

@@ -51,9 +51,11 @@ namespace BundledHom
 
 variable [𝒞 : BundledHom hom]
 
-instance {α β} (Iα : c α) (Iβ : c β) : FunLike (hom Iα Iβ) α β where
+abbrev instFunLike {α β} (Iα : c α) (Iβ : c β) : FunLike (hom Iα Iβ) α β where
   coe := BundledHom.toFun 𝒞 _ _
   coe_injective' := BundledHom.hom_ext 𝒞 _ _
+
+attribute [local instance] BundledHom.instFunLike
 
 set_option synthInstance.checkSynthOrder false in
 /-- Every `@BundledHom c _` defines a category with objects in `Bundled c`.
