@@ -629,14 +629,15 @@ theorem tendsto_measure_iInter_le {α ι : Type*} {_ : MeasurableSpace α} {μ :
 /-- Some version of continuity of a measure in the emptyset using the intersection along a set of
 sets. -/
 theorem exists_measure_iInter_lt {α ι : Type*} {_ : MeasurableSpace α} {μ : Measure α}
-    [Nonempty ι] [SemilatticeSup ι] [Countable ι] {f : ι → Set α}
+    [SemilatticeSup ι] [Countable ι] {f : ι → Set α}
     (hm : ∀ i, NullMeasurableSet (f i) μ) {ε : ℝ≥0∞} (hε : 0 < ε) (hfin : ∃ i, μ (f i) ≠ ∞)
     (hfem : ⋂ n, f n = ∅) : ∃ m, μ (⋂ n ≤ m, f n) < ε := by
   let F m := μ (⋂ n ≤ m, f n)
   have hFAnti : Antitone F :=
       fun i j hij => measure_mono (biInter_subset_biInter_left fun k hki => le_trans hki hij)
   suffices Filter.Tendsto F Filter.atTop (𝓝 0) by
-    rw [ENNReal.tendsto_atTop_zero_iff_lt_of_antitone hFAnti] at this
+    rw [@ENNReal.tendsto_atTop_zero_iff_lt_of_antitone
+         _ (nonempty_of_exists hfin) _ _ hFAnti] at this
     exact this ε hε
   have hzero : μ (⋂ n, f n) = 0 := by
     simp only [hfem, measure_empty]
