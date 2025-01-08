@@ -6,9 +6,7 @@ Authors: Patrick Massot, Kevin Buzzard, Kim Morrison, Johan Commelin, Chris Hugh
 -/
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Hom.Instances
-import Mathlib.Algebra.Group.Subgroup.Ker
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Algebra.Ring.Idempotents
 
 /-!
 # Instances on spaces of monoid and group morphisms
