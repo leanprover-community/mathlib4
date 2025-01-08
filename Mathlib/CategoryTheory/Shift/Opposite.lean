@@ -151,7 +151,7 @@ Given a `CommShift` structure on `F`, this is the corresponding `CommShift` stru
 `OppositeShift.functor F` (for the naive shifts on the opposite categories).
 -/
 @[simps]
-noncomputable def commShiftOp [CommShift F A] :
+noncomputable instance commShiftOp [CommShift F A] :
     CommShift (OppositeShift.functor A F) A where
   iso a := (NatIso.op (F.commShiftIso a)).symm
   zero := by
@@ -171,12 +171,15 @@ noncomputable def commShiftOp [CommShift F A] :
     erw [oppositeShiftFunctorAdd_inv_app, oppositeShiftFunctorAdd_hom_app]
     rfl
 
+lemma commShiftOp_iso_eq [CommShift F A] (a : A) :
+    (OppositeShift.functor A F).commShiftIso a = (NatIso.op (F.commShiftIso a)).symm := rfl
+
 /--
 Given a `CommShift` structure on `OppositeShift.functor F` (for the naive shifts on the opposite
 categories), this is the corresponding `CommShift` structure on `F`.
 -/
 @[simps]
-noncomputable def commShiftUnop
+noncomputable instance commShiftUnop
     [CommShift (OppositeShift.functor A F) A] : CommShift F A where
   iso a := NatIso.removeOp ((OppositeShift.functor A F).commShiftIso a).symm
   zero := by
@@ -206,7 +209,7 @@ attribute [local instance] Functor.commShiftOp
 variable {F} {G : C ⥤ D} [F.CommShift A] [G.CommShift A]
 
 open Opposite in
-lemma commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
+instance commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
     NatTrans.CommShift (OppositeShift.natTrans A τ) A where
       shift_comm _ := by
         ext
@@ -216,6 +219,10 @@ lemma commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
         simp only [assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj,
           Functor.op_obj, comp_id]
         exact (op_inj_iff _ _).mpr (NatTrans.shift_app_comm τ _ (unop _))
+
+end NatTrans
+
+namespace NatTrans
 
 variable (C) in
 /-- The obvious isomorphism between the identity of `OppositeShift C A` and the
@@ -229,16 +236,26 @@ The natural isomorphism `NatTrans.OppositeShift.natIsoId C A` commutes with shif
 instance : NatTrans.CommShift (OppositeShift.natIsoId C A).hom A where
   shift_comm _ := by
     ext
-    simp [OppositeShift.natIsoId, OppositeShift.functor]
+    dsimp [OppositeShift.natIsoId, Functor.commShiftOp_iso_eq]
+    simp only [Functor.commShiftIso_id_hom_app, Functor.comp_obj, Functor.id_obj, Functor.map_id,
+      comp_id, Functor.commShiftIso_id_inv_app, CategoryTheory.op_id, id_comp]
+    rfl
 
-
-variable (F) {E : Type*} [Category E] [HasShift E A] (G : D ⥤ E) [G.CommShift A]
+variable {E : Type*} [Category E] [HasShift E A] (G : D ⥤ E)
 
 /-- The obvious isomorphism between `OppositeShift.functor (F ⋙ G)` and the
 composition of `OppositeShift.functor F` and `OppositeShift.functor G`.
 -/
 def OppositeShift.natIsoComp : OppositeShift.functor A (F ⋙ G) ≅
     OppositeShift.functor A F ⋙ OppositeShift.functor A G := Iso.refl _
+
+instance [F.CommShift A] [G.CommShift A] :
+    NatTrans.CommShift (OppositeShift.natIsoComp A F G).hom A where
+  shift_comm _ := by
+    ext
+    dsimp [OppositeShift.natIsoComp, Functor.commShiftOp_iso_eq]
+    simp only [Functor.map_id, comp_id, id_comp]
+    rfl
 
 end NatTrans
 
