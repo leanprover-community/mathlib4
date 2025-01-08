@@ -167,7 +167,7 @@ instance : SubringClass (Subring R) R where
 initialize_simps_projections Subring (carrier → coe, as_prefix coe)
 
 /-- Turn a `Subring` into a `NonUnitalSubring` by forgetting that it contains `1`. -/
-def toNonUnitalSubring (S : Subring R) : NonUnitalSubring R := { S with }
+def toNonUnitalSubring (S : Subring R) : NonUnitalSubring R where __ := S
 
 @[simp]
 theorem mem_toSubsemiring {s : Subring R} {x : R} : x ∈ s.toSubsemiring ↔ x ∈ s := Iff.rfl

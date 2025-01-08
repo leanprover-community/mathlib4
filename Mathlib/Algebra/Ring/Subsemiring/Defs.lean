@@ -140,8 +140,7 @@ instance : SubsemiringClass (Subsemiring R) R where
 initialize_simps_projections Subsemiring (carrier → coe, as_prefix coe)
 
 /-- Turn a `Subsemiring` into a `NonUnitalSubsemiring` by forgetting that it contains `1`. -/
-def toNonUnitalSubsemiring (S : Subsemiring R) : NonUnitalSubsemiring R :=
-  { S with }
+def toNonUnitalSubsemiring (S : Subsemiring R) : NonUnitalSubsemiring R where __ := S
 
 @[simp]
 theorem mem_toSubmonoid {s : Subsemiring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=
