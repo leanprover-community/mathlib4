@@ -98,8 +98,6 @@ def main (args : List String) : IO Unit := do
       (fun p ↦ pure (p.fileName != some ".lake"))
     let leanFiles := (← allFiles).filter (fun p ↦ p.extension == some "lean")
     -- For each file, find all imports starting with Mathlib.
-    -- (We use proper parsing, to not be confused by lines like
-    -- 'import Mathlib -- comment' or 'import /- comment -/ Mathlib'.)
     let mut allModules := #[]
     for fi in leanFiles do
       let imports ← Lean.parseImports' (← IO.FS.readFile fi) ""
