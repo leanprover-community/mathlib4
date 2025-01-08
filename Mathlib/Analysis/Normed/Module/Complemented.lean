@@ -40,17 +40,6 @@ lemma range_id_sub_eq_ker {P : E →ₗ[𝕜] E} (h : IsIdempotentElem P) : rang
 
 end IsIdempotentElem
 
-lemma continuous_isIdempotent_iff_linear_isIdempotent {P : E →L[𝕜] E} :
-    IsIdempotentElem P ↔ IsIdempotentElem (P : E →ₗ[𝕜] E) := by
-  constructor
-  · intro h
-    rw [← ContinuousLinearMap.toLinearMapRingHom_apply]
-    exact h.map _
-  · intro h
-    apply (P*P).coe_injective
-    rw [← h]
-    rfl
-
 @[simp]
 lemma continuous_ker_eq_linear_ker {P : E →L[𝕜] E} : ker (P : E →ₗ[𝕜] E) = ker P := rfl
 
@@ -60,8 +49,8 @@ lemma continuous_range_eq_linear_range {P : E →L[𝕜] E} : range (P : E →�
 lemma IsIdempotentElem.ker_id_sub_eq_range_cont {P : E →L[𝕜] E} (h : IsIdempotentElem P) :
     ker (1 - P) = range P := by
   rw [← continuous_ker_eq_linear_ker, ← continuous_range_eq_linear_range,
-    ← (continuous_isIdempotent_iff_linear_isIdempotent.mp h).ker_id_sub_eq_range]
-  rfl
+    ← ContinuousLinearMap.toLinearMapRingHom_apply, ← ContinuousLinearMap.toLinearMapRingHom_apply,
+    RingHom.map_sub, RingHom.map_one, ker_id_sub_eq_range (h.map _)]
 
 lemma IsIdempotentElem.range_id_sub_eq_ker_cont {P : E →L[𝕜] E} (h : IsIdempotentElem P) :
     range (1 - P) = ker P := by
