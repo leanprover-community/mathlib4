@@ -355,7 +355,7 @@ theorem FiniteMultiplicity.multiplicity_eq_iff (hf : FiniteMultiplicity a b) {n 
 
 -- See note [no_index around OfNat.ofNat]
 theorem emultiplicity_eq_ofNat {a b n : ℕ} [n.AtLeastTwo] :
-    emultiplicity a b = (no_index (OfNat.ofNat n) : ℕ∞) ↔ a ^ n ∣ b ∧ ¬a ^ (n + 1) ∣ b :=
+    emultiplicity a b = (ofNat(n) : ℕ∞) ↔ a ^ ofNat(n) ∣ b ∧ ¬a ^ (ofNat(n) + 1) ∣ b :=
   emultiplicity_eq_coe
 
 @[deprecated (since := "2024-11-30")]
