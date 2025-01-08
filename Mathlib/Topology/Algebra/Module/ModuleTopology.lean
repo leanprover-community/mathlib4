@@ -489,7 +489,7 @@ instance pi : IsModuleTopology R (∀ i, A i) := by
     -- and the product over `Unit` is just a module which is assumed to have the module topology
     have := iso (ContinuousLinearEquiv.piUnique R (fun t ↦ A (e.symm (Sum.inr t)))).symm
     -- so the result follows from the previous lemma (binary products).
-    apply prod
+    exact prod
 
 end Pi
 
