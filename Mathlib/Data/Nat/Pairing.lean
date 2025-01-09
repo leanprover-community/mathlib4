@@ -45,10 +45,10 @@ theorem pair_unpair (n : ℕ) : pair (unpair n).1 (unpair n).2 = n := by
   dsimp only [unpair]; let s := sqrt n
   have sm : s * s + (n - s * s) = n := Nat.add_sub_cancel' (sqrt_le _)
   split_ifs with h
-  · simp [pair, h, sm]
+  · simp [s, pair, h, sm]
   · have hl : n - s * s - s ≤ s := Nat.sub_le_iff_le_add.2
       (Nat.sub_le_iff_le_add'.2 <| by rw [← Nat.add_assoc]; apply sqrt_le_add)
-    simp [pair, hl.not_lt, Nat.add_assoc, Nat.add_sub_cancel' (le_of_not_gt h), sm]
+    simp [s, pair, hl.not_lt, Nat.add_assoc, Nat.add_sub_cancel' (le_of_not_gt h), sm]
 
 theorem pair_unpair' {n a b} (H : unpair n = (a, b)) : pair a b = n := by
   simpa [H] using pair_unpair n
@@ -80,7 +80,7 @@ theorem pair_eq_pair {a b c d : ℕ} : pair a b = pair c d ↔ a = c ∧ b = d :
 theorem unpair_lt {n : ℕ} (n1 : 1 ≤ n) : (unpair n).1 < n := by
   let s := sqrt n
   simp only [unpair, Nat.sub_le_iff_le_add]
-  by_cases h : n - s * s < s <;> simp only [h, ↓reduceIte]
+  by_cases h : n - s * s < s <;> simp [s, h, ↓reduceIte]
   · exact lt_of_lt_of_le h (sqrt_le_self _)
   · simp only [not_lt] at h
     have s0 : 0 < s := sqrt_pos.2 n1

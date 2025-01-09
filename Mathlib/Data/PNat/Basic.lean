@@ -56,12 +56,12 @@ theorem natPred_inj {m n : ℕ+} : m.natPred = n.natPred ↔ m = n :=
 
 @[simp, norm_cast]
 lemma val_ofNat (n : ℕ) [NeZero n] :
-    ((no_index (OfNat.ofNat n) : ℕ+) : ℕ) = OfNat.ofNat n :=
+    ((ofNat(n) : ℕ+) : ℕ) = OfNat.ofNat n :=
   rfl
 
 @[simp]
 lemma mk_ofNat (n : ℕ) (h : 0 < n) :
-    @Eq ℕ+ (⟨no_index (OfNat.ofNat n), h⟩ : ℕ+) (haveI : NeZero n := ⟨h.ne'⟩; OfNat.ofNat n) :=
+    @Eq ℕ+ (⟨ofNat(n), h⟩ : ℕ+) (haveI : NeZero n := ⟨h.ne'⟩; OfNat.ofNat n) :=
   rfl
 
 end PNat
@@ -182,17 +182,17 @@ theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (p1 hp) :
 
 @[simp]
 theorem ofNat_le_ofNat {m n : ℕ} [NeZero m] [NeZero n] :
-    (no_index (OfNat.ofNat m) : ℕ+) ≤ no_index (OfNat.ofNat n) ↔ OfNat.ofNat m ≤ OfNat.ofNat n :=
+    (ofNat(m) : ℕ+) ≤ ofNat(n) ↔ OfNat.ofNat m ≤ OfNat.ofNat n :=
   .rfl
 
 @[simp]
 theorem ofNat_lt_ofNat {m n : ℕ} [NeZero m] [NeZero n] :
-    (no_index (OfNat.ofNat m) : ℕ+) < no_index (OfNat.ofNat n) ↔ OfNat.ofNat m < OfNat.ofNat n :=
+    (ofNat(m) : ℕ+) < ofNat(n) ↔ OfNat.ofNat m < OfNat.ofNat n :=
   .rfl
 
 @[simp]
 theorem ofNat_inj {m n : ℕ} [NeZero m] [NeZero n] :
-    (no_index (OfNat.ofNat m) : ℕ+) = no_index (OfNat.ofNat n) ↔ OfNat.ofNat m = OfNat.ofNat n :=
+    (ofNat(m) : ℕ+) = ofNat(n) ↔ OfNat.ofNat m = OfNat.ofNat n :=
   Subtype.mk_eq_mk
 
 @[simp, norm_cast]

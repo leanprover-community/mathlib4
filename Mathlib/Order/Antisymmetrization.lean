@@ -34,11 +34,10 @@ section Relation
 
 variable (r : α → α → Prop)
 
-/-- The antisymmetrization relation `AntisymmRel r a b` means that both `r a b` and `r b a`. -/
+/-- The antisymmetrization relation `AntisymmRel r` is defined so that
+`AntisymmRel r a b ↔ r a b ∧ r b a`. -/
 def AntisymmRel (a b : α) : Prop :=
   r a b ∧ r b a
-
-theorem antisymmRel_iff {r} : AntisymmRel r a b ↔ r a b ∧ r b a := Iff.rfl
 
 theorem AntisymmRel.le [LE α] (h : AntisymmRel (· ≤ ·) a b) : a ≤ b := h.1
 theorem AntisymmRel.ge [LE α] (h : AntisymmRel (· ≤ ·) a b) : b ≤ a := h.2
@@ -71,7 +70,7 @@ theorem AntisymmRel.trans [IsTrans α r] (hab : AntisymmRel r a b) (hbc : Antisy
   ⟨_root_.trans hab.1 hbc.1, _root_.trans hbc.2 hab.2⟩
 
 instance [IsTrans α r] : IsTrans α (AntisymmRel r) where
-  trans _ _ _ := AntisymmRel.trans
+  trans _ _ _ := .trans
 
 instance AntisymmRel.decidableRel [DecidableRel r] : DecidableRel (AntisymmRel r) :=
   fun _ _ ↦ instDecidableAnd
@@ -133,7 +132,7 @@ section Preorder
 variable [Preorder α] [Preorder β]
 
 theorem le_iff_lt_or_antisymmRel : a ≤ b ↔ a < b ∨ AntisymmRel (· ≤ ·) a b := by
-  rw [lt_iff_le_not_le, antisymmRel_iff]
+  rw [lt_iff_le_not_le, AntisymmRel]
   tauto
 
 alias ⟨LE.le.lt_or_antisymmRel, _⟩ := le_iff_lt_or_antisymmRel
@@ -198,16 +197,16 @@ theorem AntisymmRel.lt_congr_right (h : AntisymmRel (· ≤ ·) b c) : a < b ↔
 
 theorem AntisymmRel.antisymmRel_congr
     (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :
-      AntisymmRel (· ≤ ·) a c ↔ AntisymmRel (· ≤ ·) b d := by
-  rw [antisymmRel_iff, antisymmRel_iff, h₁.le_congr h₂, h₂.le_congr h₁]
+    AntisymmRel (· ≤ ·) a c ↔ AntisymmRel (· ≤ ·) b d :=
+  rel_congr h₁ h₂
 
 theorem AntisymmRel.antisymmRel_congr_left (h : AntisymmRel (· ≤ ·) a b) :
     AntisymmRel (· ≤ ·) a c ↔ AntisymmRel (· ≤ ·) b c :=
-  h.antisymmRel_congr (antisymmRel_refl _ c)
+  rel_congr_left h
 
 theorem AntisymmRel.antisymmRel_congr_right (h : AntisymmRel (· ≤ ·) b c) :
     AntisymmRel (· ≤ ·) a b ↔ AntisymmRel (· ≤ ·) a c :=
-  (antisymmRel_refl _ a).antisymmRel_congr h
+  rel_congr_right h
 
 theorem AntisymmRel.image (h : AntisymmRel (· ≤ ·) a b) {f : α → β} (hf : Monotone f) :
     AntisymmRel (· ≤ ·) (f a) (f b) :=
@@ -256,7 +255,7 @@ instance [WellFoundedLT α] : WellFoundedLT (Antisymmetrization α (· ≤ ·)) 
 instance [WellFoundedGT α] : WellFoundedGT (Antisymmetrization α (· ≤ ·)) :=
   wellFoundedGT_antisymmetrization_iff.mpr ‹_›
 
-instance [@DecidableRel α (· ≤ ·)] [@DecidableRel α (· < ·)] [IsTotal α (· ≤ ·)] :
+instance [DecidableRel (α := α) (· ≤ ·)] [DecidableRel (α := α) (· < ·)] [IsTotal α (· ≤ ·)] :
     LinearOrder (Antisymmetrization α (· ≤ ·)) :=
   { instPartialOrderAntisymmetrization with
     le_total := fun a b => Quotient.inductionOn₂' a b <| total_of (· ≤ ·),

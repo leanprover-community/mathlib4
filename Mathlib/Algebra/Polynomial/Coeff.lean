@@ -101,6 +101,7 @@ lemma coeff_list_sum_map {ι : Type*} (l : List ι) (f : ι → R[X]) (n : ℕ) 
     (l.map f).sum.coeff n = (l.map (fun a => (f a).coeff n)).sum := by
   simp_rw [coeff_list_sum, List.map_map, Function.comp_def, lcoeff_apply]
 
+@[simp]
 theorem coeff_sum [Semiring S] (n : ℕ) (f : ℕ → R → S[X]) :
     coeff (p.sum f) n = p.sum fun a b => coeff (f a b) n := by
   rcases p with ⟨⟩
@@ -171,13 +172,11 @@ theorem coeff_mul_C (p : R[X]) (n : ℕ) (a : R) : coeff (p * C a) n = coeff p n
 @[simp] lemma coeff_natCast_mul {a k : ℕ} :
   coeff ((a : R[X]) * p) k = a * coeff p k := coeff_C_mul _
 
--- See note [no_index around OfNat.ofNat]
 @[simp] lemma coeff_mul_ofNat {a k : ℕ} [Nat.AtLeastTwo a] :
-  coeff (p * (no_index (OfNat.ofNat a) : R[X])) k = coeff p k * OfNat.ofNat a := coeff_mul_C _ _ _
+  coeff (p * (ofNat(a) : R[X])) k = coeff p k * ofNat(a) := coeff_mul_C _ _ _
 
--- See note [no_index around OfNat.ofNat]
 @[simp] lemma coeff_ofNat_mul {a k : ℕ} [Nat.AtLeastTwo a] :
-  coeff ((no_index (OfNat.ofNat a) : R[X]) * p) k = OfNat.ofNat a * coeff p k := coeff_C_mul _
+  coeff ((ofNat(a) : R[X]) * p) k = ofNat(a) * coeff p k := coeff_C_mul _
 
 @[simp] lemma coeff_mul_intCast [Ring S] {p : S[X]} {a : ℤ} {k : ℕ} :
   coeff (p * (a : S[X])) k = coeff p k * (↑a : S) := coeff_mul_C _ _ _

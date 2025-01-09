@@ -543,6 +543,9 @@ instance : Inhabited (α →+* α) :=
   ⟨id α⟩
 
 @[simp]
+theorem coe_id : ⇑(RingHom.id α) = _root_.id := rfl
+
+@[simp]
 theorem id_apply (x : α) : RingHom.id α x = x :=
   rfl
 

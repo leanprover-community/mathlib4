@@ -187,21 +187,21 @@ variable {R M}
 
 theorem End_algebraMap_isUnit_inv_apply_eq_iff {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
-    (↑(h.unit⁻¹) : Module.End S M) m = m' ↔ m = x • m' :=
-  { mp := fun H => H ▸ (End_isUnit_apply_inv_apply_of_isUnit h m).symm
-    mpr := fun H =>
-      H.symm ▸ by
-        apply_fun ⇑h.unit.val using ((Module.End_isUnit_iff _).mp h).injective
-        simpa using End_isUnit_apply_inv_apply_of_isUnit h (x • m') }
+    (↑(h.unit⁻¹) : Module.End S M) m = m' ↔ m = x • m' where
+  mp H := H ▸ (End_isUnit_apply_inv_apply_of_isUnit h m).symm
+  mpr H :=
+    H.symm ▸ by
+      apply_fun ⇑h.unit.val using ((Module.End_isUnit_iff _).mp h).injective
+      simpa using End_isUnit_apply_inv_apply_of_isUnit h (x • m')
 
 theorem End_algebraMap_isUnit_inv_apply_eq_iff' {x : R}
     (h : IsUnit (algebraMap R (Module.End S M) x)) (m m' : M) :
-    m' = (↑h.unit⁻¹ : Module.End S M) m ↔ m = x • m' :=
-  { mp := fun H => H ▸ (End_isUnit_apply_inv_apply_of_isUnit h m).symm
-    mpr := fun H =>
-      H.symm ▸ by
-        apply_fun (↑h.unit : M → M) using ((Module.End_isUnit_iff _).mp h).injective
-        simpa using End_isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm }
+    m' = (↑h.unit⁻¹ : Module.End S M) m ↔ m = x • m' where
+  mp H := H ▸ (End_isUnit_apply_inv_apply_of_isUnit h m).symm
+  mpr H :=
+    H.symm ▸ by
+      apply_fun (↑h.unit : M → M) using ((Module.End_isUnit_iff _).mp h).injective
+      simpa using End_isUnit_apply_inv_apply_of_isUnit h (x • m') |>.symm
 
 end
 
@@ -334,18 +334,21 @@ theorem algebra_compatible_smul (r : R) (m : M) : r • m = (algebraMap R A) r �
 theorem algebraMap_smul (r : R) (m : M) : (algebraMap R A) r • m = r • m :=
   (algebra_compatible_smul A r m).symm
 
+/-- If `M` is `A`-torsion free and `algebraMap R A` is injective, `M` is also `R`-torsion free. -/
+lemma NoZeroSMulDivisors.of_algebraMap_injective' {R A M : Type*} [CommSemiring R] [Semiring A]
+    [Algebra R A] [AddCommMonoid M] [Module R M] [Module A M] [IsScalarTower R A M]
+    [NoZeroSMulDivisors A M] (h : Function.Injective (algebraMap R A)) :
+    NoZeroSMulDivisors R M where
+  eq_zero_or_eq_zero_of_smul_eq_zero hx := by
+    rw [← algebraMap_smul (A := A)] at hx
+    obtain (hc|hx) := eq_zero_or_eq_zero_of_smul_eq_zero hx
+    · exact Or.inl <| (map_eq_zero_iff _ h).mp hc
+    · exact Or.inr hx
+
 theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [IsDomain A] [Algebra R A]
     [AddCommGroup M] [Module R M] [Module A M] [IsScalarTower R A M] [NoZeroSMulDivisors R A]
-    [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M := by
-  refine ⟨fun {r m} h => ?_⟩
-  rw [algebra_compatible_smul A r m] at h
-  rcases smul_eq_zero.1 h with H | H
-  · have : Function.Injective (algebraMap R A) :=
-      NoZeroSMulDivisors.iff_algebraMap_injective.1 inferInstance
-    left
-    exact (injective_iff_map_eq_zero _).1 this _ H
-  · right
-    exact H
+    [NoZeroSMulDivisors A M] : NoZeroSMulDivisors R M :=
+  of_algebraMap_injective' (A := A) (NoZeroSMulDivisors.iff_algebraMap_injective.1 inferInstance)
 
 variable {A}
 

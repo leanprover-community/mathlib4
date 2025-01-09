@@ -66,7 +66,7 @@ namespace CFC
 
 section NonUnital
 
-variable {A : Type*} [PartialOrder A] [NonUnitalNormedRing A] [StarRing A]
+variable {A : Type*} [PartialOrder A] [NonUnitalRing A] [TopologicalSpace A] [StarRing A]
   [Module ℝ≥0 A] [SMulCommClass ℝ≥0 A A] [IsScalarTower ℝ≥0 A A]
   [NonUnitalContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
 
@@ -210,8 +210,8 @@ end NonUnital
 
 section Unital
 
-variable {A : Type*} [PartialOrder A] [NormedRing A] [StarRing A]
-  [NormedAlgebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
+variable {A : Type*} [PartialOrder A] [Ring A] [StarRing A] [TopologicalSpace A]
+  [Algebra ℝ A] [ContinuousFunctionalCalculus ℝ≥0 (fun (a : A) => 0 ≤ a)]
 
 /- ## `rpow` -/
 
@@ -365,7 +365,7 @@ lemma sqrt_rpow_nnreal {a : A} {x : ℝ≥0} : sqrt (a ^ (x : ℝ)) = a ^ (x / 2
     by_cases hx : x = 0
     case pos => simp [hx, rpow_zero _ htriv]
     case neg =>
-      have h₁ : 0 < x := lt_of_le_of_ne (by aesop) (Ne.symm hx)
+      have h₁ : 0 < x := lt_of_le_of_ne (by simp) (Ne.symm hx)
       have h₂ : (x : ℝ) / 2 = NNReal.toReal (x / 2) := rfl
       have h₃ : 0 < x / 2 := by positivity
       rw [← nnrpow_eq_rpow h₁, h₂, ← nnrpow_eq_rpow h₃, sqrt_nnrpow (A := A)]

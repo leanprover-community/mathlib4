@@ -217,8 +217,8 @@ theorem lsum_apply (S) [AddCommMonoid M] [Module R M] [Fintype ι] [Semiring S]
     lsum R φ S f = ∑ i : ι, (f i).comp (proj i) := rfl
 
 @[simp high]
-theorem lsum_single {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommRing R] {M : ι → Type*}
-    [(i : ι) → AddCommGroup (M i)] [(i : ι) → Module R (M i)] :
+theorem lsum_single {ι R : Type*} [Fintype ι] [DecidableEq ι] [CommSemiring R] {M : ι → Type*}
+    [(i : ι) → AddCommMonoid (M i)] [(i : ι) → Module R (M i)] :
     LinearMap.lsum R M R (LinearMap.single R M) = LinearMap.id :=
   LinearMap.ext fun x => by simp [Finset.univ_sum_single]
 
@@ -288,8 +288,8 @@ def diag (i j : ι) : φ i →ₗ[R] φ j :=
 theorem update_apply (f : (i : ι) → M₂ →ₗ[R] φ i) (c : M₂) (i j : ι) (b : M₂ →ₗ[R] φ i) :
     (update f i b j) c = update (fun i => f i c) i (b c) j := by
   by_cases h : j = i
-  · rw [h, update_same, update_same]
-  · rw [update_noteq h, update_noteq h]
+  · rw [h, update_self, update_self]
+  · rw [update_of_ne h, update_of_ne h]
 
 variable (R φ)
 
@@ -458,7 +458,7 @@ def piCurry {ι : Type*} {κ : ι → Type*} (α : ∀ i, κ i → Type*)
   rfl
 
 /-- This is `Equiv.piOptionEquivProd` as a `LinearEquiv` -/
-def piOptionEquivProd {ι : Type*} {M : Option ι → Type*} [(i : Option ι) → AddCommGroup (M i)]
+def piOptionEquivProd {ι : Type*} {M : Option ι → Type*} [(i : Option ι) → AddCommMonoid (M i)]
     [(i : Option ι) → Module R (M i)] :
     ((i : Option ι) → M i) ≃ₗ[R] M none × ((i : ι) → M (some i)) :=
   { Equiv.piOptionEquivProd with

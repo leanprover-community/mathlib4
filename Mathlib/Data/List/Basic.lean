@@ -73,7 +73,6 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
 lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
   rw [mem_cons, mem_singleton]
 
-@[deprecated (since := "2024-03-23")] alias mem_split := append_of_mem
 
 -- The simpNF linter says that the LHS can be simplified via `List.mem_map`.
 -- However this is a higher priority lemma.
@@ -211,9 +210,6 @@ theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length
 theorem replicate_add (m n) (a : α) : replicate (m + n) a = replicate m a ++ replicate n a := by
   rw [append_replicate_replicate]
 
-theorem replicate_succ' (n) (a : α) : replicate (n + 1) a = replicate n a ++ [a] :=
-  replicate_add n 1 a
-
 theorem replicate_subset_singleton (n) (a : α) : replicate n a ⊆ [a] := fun _ h =>
   mem_singleton.2 (eq_of_mem_replicate h)
 
@@ -300,7 +296,7 @@ theorem getLast_append' (l₁ l₂ : List α) (h : l₂ ≠ []) :
   | nil => simp
   | cons _ _ ih => simp only [cons_append]; rw [List.getLast_cons]; exact ih
 
-theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne_nil a l) = a := by
+theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (by simp) = a := by
   simp
 
 @[simp]
@@ -329,19 +325,19 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
 
 /-- If the last element of `l` does not satisfy `p`, then it is also the last element of
 `l.filter p`. -/
-lemma getLast_filter {p : α → Bool} :
+lemma getLast_filter' {p : α → Bool} :
     ∀ (l : List α) (hlp : l.filter p ≠ []), p (l.getLast (hlp <| ·.symm ▸ rfl)) = true →
       (l.filter p).getLast hlp = l.getLast (hlp <| ·.symm ▸ rfl)
-  | [a], h, h' => by rw [List.getLast_singleton'] at h'; simp [List.filter_cons, h']
+  | [a], h, h' => by simp
   | a :: b :: as, h, h' => by
     rw [List.getLast_cons_cons] at h' ⊢
     simp only [List.filter_cons (x := a)] at h ⊢
     obtain ha | ha := Bool.eq_false_or_eq_true (p a)
     · simp only [ha, ite_true]
-      rw [getLast_cons, getLast_filter (b :: as) _ h']
+      rw [getLast_cons, getLast_filter' (b :: as) _ h']
       exact ne_nil_of_mem <| mem_filter.2 ⟨getLast_mem _, h'⟩
     · simp only [ha, cond_false] at h ⊢
-      exact getLast_filter (b :: as) h h'
+      exact getLast_filter' (b :: as) h h'
 
 /-! ### getLast? -/
 
@@ -486,10 +482,6 @@ theorem exists_mem_iff_getElem {l : List α} {p : α → Prop} :
 theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
   simp [mem_iff_getElem, @forall_swap α]
-
-theorem getElem_cons {l : List α} {a : α} {n : ℕ} (h : n < (a :: l).length) :
-    (a :: l)[n] = if hn : n = 0 then a else l[n - 1]'(by rw [length_cons] at h; omega) := by
-  cases n <;> simp
 
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simp only [length_tail] at h; omega)) :
@@ -739,10 +731,10 @@ end IndexOf
 section deprecated
 
 @[simp]
-theorem getElem?_length (l : List α) : l[l.length]? = none := getElem?_len_le le_rfl
+theorem getElem?_length (l : List α) : l[l.length]? = none := getElem?_eq_none le_rfl
 
 @[deprecated getElem?_length (since := "2024-06-12")]
-theorem get?_length (l : List α) : l.get? l.length = none := get?_len_le le_rfl
+theorem get?_length (l : List α) : l.get? l.length = none := get?_eq_none le_rfl
 
 @[deprecated (since := "2024-05-03")] alias get?_injective := get?_inj
 
@@ -831,49 +823,23 @@ theorem get_reverse (l : List α) (i : Nat) (h1 h2) :
   dsimp
   omega
 
-set_option linter.deprecated false
-
 theorem get_reverse' (l : List α) (n) (hn') :
     l.reverse.get n = l.get ⟨l.length - 1 - n, hn'⟩ := by
-  rw [eq_comm]
-  convert get_reverse l.reverse n (by simpa) n.2 using 1
   simp
 
 theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) : l = [l.get ⟨0, by omega⟩] := by
   refine ext_get (by convert h) fun n h₁ h₂ => ?_
-  simp only [get_singleton]
+  simp
   congr
   omega
 
 end deprecated
 
-theorem modifyTailIdx_modifyTailIdx {f g : List α → List α} (m : ℕ) :
-    ∀ (n) (l : List α),
-      (l.modifyTailIdx f n).modifyTailIdx g (m + n) =
-        l.modifyTailIdx (fun l => (f l).modifyTailIdx g m) n
-  | 0, _ => rfl
-  | _ + 1, [] => rfl
-  | n + 1, a :: l => congr_arg (List.cons a) (modifyTailIdx_modifyTailIdx m n l)
-
-@[deprecated (since := "2024-10-21")]
-alias modifyNthTail_modifyNthTail := modifyTailIdx_modifyTailIdx
-
-theorem modifyTailIdx_modifyTailIdx_le {f g : List α → List α} (m n : ℕ) (l : List α)
-    (h : n ≤ m) :
-    (l.modifyTailIdx f n).modifyTailIdx g m =
-      l.modifyTailIdx (fun l => (f l).modifyTailIdx g (m - n)) n := by
-  rcases Nat.exists_eq_add_of_le h with ⟨m, rfl⟩
-  rw [Nat.add_comm, modifyTailIdx_modifyTailIdx, Nat.add_sub_cancel]
-
 @[deprecated (since := "2024-10-21")]
 alias modifyNthTail_modifyNthTail_le := modifyTailIdx_modifyTailIdx_le
 
-theorem modifyTailIdx_modifyTailIdx_same {f g : List α → List α} (n : ℕ) (l : List α) :
-    (l.modifyTailIdx f n).modifyTailIdx g n = l.modifyTailIdx (g ∘ f) n := by
-  rw [modifyTailIdx_modifyTailIdx_le n n l (le_refl n), Nat.sub_self]; rfl
-
 @[deprecated (since := "2024-10-21")]
-alias modifyNthTail_modifyNthTail_same := modifyTailIdx_modifyTailIdx_same
+alias modifyNthTail_modifyNthTail_same := modifyTailIdx_modifyTailIdx_self
 @[deprecated (since := "2024-05-04")] alias removeNth_eq_nthTail := eraseIdx_eq_modifyTailIdx
 
 @[deprecated (since := "2024-10-21")] alias modifyNth_eq_set := modify_eq_set
@@ -905,14 +871,9 @@ theorem flatMap_pure_eq_map (f : α → β) (l : List α) : l.flatMap (pure ∘ 
 
 @[deprecated (since := "2024-10-16")] alias bind_pure_eq_map := flatMap_pure_eq_map
 
-set_option linter.deprecated false in
-@[deprecated flatMap_pure_eq_map (since := "2024-03-24")]
-theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) = map f l :=
-  bind_pure_eq_map f l
-
 theorem flatMap_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = g x) :
     List.flatMap l f = List.flatMap l g :=
-  (congr_arg List.flatten <| map_congr_left h : _)
+  (congr_arg List.flatten <| map_congr_left h :)
 
 @[deprecated (since := "2024-10-16")] alias bind_congr := flatMap_congr
 
@@ -1043,8 +1004,8 @@ theorem zipWith_flip (f : α → β → γ) : ∀ as bs, zipWith (flip f) bs as 
     (x.drop m).take n ++ x.drop (n + m) = x.drop m := by rw [Nat.add_comm, drop_take_append_drop]
 
 /-- `take_concat_get` in simp normal form -/
-@[simp] lemma take_concat_get' (l : List α) (i : ℕ) (h : i < l.length) :
-  l.take i ++ [l[i]] = l.take (i + 1) := by simpa using take_concat_get l i h
+lemma take_concat_get' (l : List α) (i : ℕ) (h : i < l.length) :
+  l.take i ++ [l[i]] = l.take (i + 1) := by simp
 
 /-- `eq_nil_or_concat` in simp normal form -/
 lemma eq_nil_or_concat' (l : List α) : l = [] ∨ ∃ L b, l = L ++ [b] := by
@@ -1057,6 +1018,15 @@ theorem cons_getElem_drop_succ {l : List α} {n : Nat} {h : n < l.length} :
 theorem cons_get_drop_succ {l : List α} {n} :
     l.get n :: l.drop (n.1 + 1) = l.drop n.1 :=
   (drop_eq_getElem_cons n.2).symm
+
+lemma drop_length_sub_one {l : List α} (h : l ≠ []) : l.drop (l.length - 1) = [l.getLast h] := by
+  induction l with
+  | nil => aesop
+  | cons a l ih =>
+    by_cases hl : l = []
+    · aesop
+    rw [length_cons, Nat.add_one_sub_one, List.drop_length_cons hl a]
+    aesop
 
 section TakeI
 
@@ -1250,11 +1220,11 @@ theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
   induction i generalizing b l with
   | zero =>
     cases l
-    · simp only [length, zero_eq, lt_self_iff_false] at h
+    · simp only [scanl, length, zero_eq, lt_self_iff_false] at h
     · simp
   | succ i hi =>
     cases l
-    · simp only [length] at h
+    · simp only [scanl, length] at h
       exact absurd h (by omega)
     · simp_rw [scanl_cons]
       rw [getElem_append_right]
@@ -1301,7 +1271,7 @@ theorem foldl_eq_of_comm_of_assoc [hcomm : Std.Commutative f] [hassoc : Std.Asso
   | a, b, c :: l => by
     simp only [foldl_cons]
     have : RightCommutative f := inferInstance
-    rw [← foldl_eq_of_comm_of_assoc .., this.right_comm]; rfl
+    rw [← foldl_eq_of_comm_of_assoc .., this.right_comm, foldl_cons]
 
 theorem foldl_eq_foldr [Std.Commutative f] [Std.Associative f] :
     ∀ a l, foldl f a l = foldr f a l

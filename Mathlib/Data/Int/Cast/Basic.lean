@@ -60,10 +60,9 @@ theorem cast_natCast (n : ℕ) : ((n : ℤ) : R) = n :=
   AddGroupWithOne.intCast_ofNat _
 -- expected `n` to be implicit, and `HasLiftT`
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem cast_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n) : ℤ) : R) = OfNat.ofNat n := by
+    ((ofNat(n) : ℤ) : R) = ofNat(n) := by
   simpa only [OfNat.ofNat] using AddGroupWithOne.intCast_ofNat (R := R) n
 
 @[simp, norm_cast]
@@ -73,7 +72,7 @@ theorem cast_one : ((1 : ℤ) : R) = 1 := by
 
 @[simp, norm_cast]
 theorem cast_neg : ∀ n, ((-n : ℤ) : R) = -n
-  | (0 : ℕ) => by erw [cast_zero, neg_zero]
+  | (0 : ℕ) => by simp
   | (n + 1 : ℕ) => by erw [cast_natCast, cast_negSucc]
   | -[n+1] => by erw [cast_natCast, cast_negSucc, neg_neg]
 -- type had `HasLiftT`

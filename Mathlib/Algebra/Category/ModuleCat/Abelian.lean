@@ -29,9 +29,9 @@ variable {R : Type u} [Ring R] {M N : ModuleCat.{v} R} (f : M ⟶ N)
 
 /-- In the category of modules, every monomorphism is normal. -/
 def normalMono (hf : Mono f) : NormalMono f where
-  Z := of R (N ⧸ LinearMap.range f)
-  g := f.range.mkQ
-  w := LinearMap.range_mkQ_comp _
+  Z := of R (N ⧸ LinearMap.range f.hom)
+  g := ofHom f.hom.range.mkQ
+  w := hom_ext <| LinearMap.range_mkQ_comp _
   isLimit :=
     /- The following [invalid Lean code](https://github.com/leanprover-community/lean/issues/341)
         might help you understand what's going on here:
@@ -43,16 +43,16 @@ def normalMono (hf : Mono f) : NormalMono f where
         ```
       -/
         IsKernel.isoKernel _ _ (kernelIsLimit _)
-          (LinearEquiv.toModuleIso'
+          (LinearEquiv.toModuleIso
             ((Submodule.quotEquivOfEqBot _ (ker_eq_bot_of_mono _)).symm ≪≫ₗ
-              (LinearMap.quotKerEquivRange f ≪≫ₗ
+              (LinearMap.quotKerEquivRange f.hom ≪≫ₗ
               LinearEquiv.ofEq _ _ (Submodule.ker_mkQ _).symm))) <| by ext; rfl
 
 /-- In the category of modules, every epimorphism is normal. -/
 def normalEpi (hf : Epi f) : NormalEpi f where
-  W := of R (LinearMap.ker f)
-  g := (LinearMap.ker f).subtype
-  w := LinearMap.comp_ker_subtype _
+  W := of R (LinearMap.ker f.hom)
+  g := ofHom (LinearMap.ker f.hom).subtype
+  w := hom_ext <| LinearMap.comp_ker_subtype _
   isColimit :=
     /- The following invalid Lean code might help you understand what's going on here:
         ```
@@ -63,9 +63,9 @@ def normalEpi (hf : Epi f) : NormalEpi f where
         ```
       -/
         IsCokernel.cokernelIso _ _ (cokernelIsColimit _)
-          (LinearEquiv.toModuleIso'
+          (LinearEquiv.toModuleIso
             (Submodule.quotEquivOfEq _ _ (Submodule.range_subtype _) ≪≫ₗ
-                LinearMap.quotKerEquivRange f ≪≫ₗ
+                LinearMap.quotKerEquivRange f.hom ≪≫ₗ
               LinearEquiv.ofTop _ (range_eq_top_of_epi _))) <| by ext; rfl
 
 /-- The category of R-modules is abelian. -/

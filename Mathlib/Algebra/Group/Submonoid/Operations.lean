@@ -870,7 +870,13 @@ def inclusion {S T : Submonoid M} (h : S ≤ T) : S →* T :=
 theorem mrange_subtype (s : Submonoid M) : mrange s.subtype = s :=
   SetLike.coe_injective <| (coe_mrange _).trans <| Subtype.range_coe
 
-@[to_additive (attr := deprecated (since := "2024-11-25"))] alias range_subtype := mrange_subtype
+-- `alias` doesn't add the deprecation suggestion to the `to_additive` version
+-- see https://github.com/leanprover-community/mathlib4/issues/19424
+@[to_additive] alias range_subtype := mrange_subtype
+attribute [deprecated mrange_subtype (since := "2024-11-25")] range_subtype
+attribute [deprecated AddSubmonoid.mrange_subtype (since := "2024-11-25")]
+AddSubmonoid.range_subtype
+
 
 @[to_additive]
 theorem eq_top_iff' : S = ⊤ ↔ ∀ x : M, x ∈ S :=
@@ -994,18 +1000,18 @@ instance smul [SMul M' α] (S : Submonoid M') : SMul S α :=
 @[to_additive]
 instance smulCommClass_left [SMul M' β] [SMul α β] [SMulCommClass M' α β]
     (S : Submonoid M') : SMulCommClass S α β :=
-  ⟨fun a _ _ => (smul_comm (a : M') _ _ : _)⟩
+  ⟨fun a _ _ => smul_comm (a : M') _ _⟩
 
 @[to_additive]
 instance smulCommClass_right [SMul α β] [SMul M' β] [SMulCommClass α M' β]
     (S : Submonoid M') : SMulCommClass α S β :=
-  ⟨fun a s => (smul_comm a (s : M') : _)⟩
+  ⟨fun a s => smul_comm a (s : M')⟩
 
 /-- Note that this provides `IsScalarTower S M' M'` which is needed by `SMulMulAssoc`. -/
 instance isScalarTower [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β]
       (S : Submonoid M') :
     IsScalarTower S α β :=
-  ⟨fun a => (smul_assoc (a : M') : _)⟩
+  ⟨fun a => smul_assoc (a : M')⟩
 
 section SMul
 variable [SMul M' α] {S : Submonoid M'}

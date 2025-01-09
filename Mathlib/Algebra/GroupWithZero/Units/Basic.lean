@@ -5,12 +5,10 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Group.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Logic.Equiv.Defs
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Tactic.Spread
 import Mathlib.Util.AssertExists
-import Mathlib.Data.Subtype
 
 /-!
 # Lemmas about units in a `MonoidWithZero` or a `GroupWithZero`.
@@ -20,8 +18,11 @@ We also define `Ring.inverse`, a globally defined function on any ring
 -/
 
 -- Guard against import creep
-assert_not_exists Multiplicative
 assert_not_exists DenselyOrdered
+assert_not_exists Equiv
+assert_not_exists Multiplicative
+assert_not_exists Subtype.restrict
+
 
 variable {α M₀ G₀ : Type*}
 variable [MonoidWithZero M₀]
@@ -314,10 +315,6 @@ lemma div_eq_one_iff_eq (hb : b ≠ 0) : a / b = 1 ↔ a = b := hb.isUnit.div_eq
 lemma div_mul_cancel_right₀ (hb : b ≠ 0) (a : G₀) : b / (a * b) = a⁻¹ :=
   hb.isUnit.div_mul_cancel_right _
 
-set_option linter.deprecated false in
-@[deprecated div_mul_cancel_right₀ (since := "2024-03-20")]
-lemma div_mul_left (hb : b ≠ 0) : b / (a * b) = 1 / a := hb.isUnit.div_mul_left
-
 lemma mul_div_mul_right (a b : G₀) (hc : c ≠ 0) : a * c / (b * c) = a / b :=
   hc.isUnit.mul_div_mul_right _ _
 
@@ -392,14 +389,6 @@ theorem Ring.inverse_eq_inv (a : G₀) : Ring.inverse a = a⁻¹ := by
 theorem Ring.inverse_eq_inv' : (Ring.inverse : G₀ → G₀) = Inv.inv :=
   funext Ring.inverse_eq_inv
 
-/-- In a `GroupWithZero` `α`, the unit group `αˣ` is equivalent to the subtype of nonzero
-elements. -/
-@[simps] def unitsEquivNeZero [GroupWithZero α] : αˣ ≃ {a : α // a ≠ 0} where
-  toFun a := ⟨a, a.ne_zero⟩
-  invFun a := Units.mk0 _ a.prop
-  left_inv _ := Units.ext rfl
-  right_inv _ := rfl
-
 end GroupWithZero
 
 section CommGroupWithZero
@@ -421,10 +410,6 @@ instance (priority := 100) CommGroupWithZero.toDivisionCommMonoid :
 
 lemma div_mul_cancel_left₀ (ha : a ≠ 0) (b : G₀) : a / (a * b) = b⁻¹ :=
   ha.isUnit.div_mul_cancel_left _
-
-@[deprecated div_mul_cancel_left₀ (since := "2024-03-22")]
-lemma div_mul_right (b : G₀) (ha : a ≠ 0) : a / (a * b) = 1 / b := by
-  simp [div_mul_cancel_left₀ ha]
 
 lemma mul_div_cancel_left_of_imp (h : a = 0 → b = 0) : a * b / a = b := by
   rw [mul_comm, mul_div_cancel_of_imp h]
@@ -492,5 +477,3 @@ noncomputable def commGroupWithZeroOfIsUnitOrEqZero [hM : CommMonoidWithZero M]
   { groupWithZeroOfIsUnitOrEqZero h, hM with }
 
 end NoncomputableDefs
-
-@[deprecated (since := "2024-03-20")] alias mul_div_cancel' := mul_div_cancel₀
