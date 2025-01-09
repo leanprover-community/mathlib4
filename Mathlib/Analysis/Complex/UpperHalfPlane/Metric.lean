@@ -79,7 +79,7 @@ protected theorem dist_comm (z w : ℍ) : dist z w = dist w z := by
 
 theorem dist_le_iff_le_sinh :
     dist z w ≤ r ↔ dist (z : ℂ) w / (2 * √(z.im * w.im)) ≤ sinh (r / 2) := by
-  rw [← div_le_div_right (zero_lt_two' ℝ), ← sinh_le_sinh, sinh_half_dist]
+  rw [← div_le_div_iff_of_pos_right (zero_lt_two' ℝ), ← sinh_le_sinh, sinh_half_dist]
 
 theorem dist_eq_iff_eq_sinh :
     dist z w = r ↔ dist (z : ℂ) w / (2 * √(z.im * w.im)) = sinh (r / 2) := by
@@ -157,8 +157,14 @@ theorem cmp_dist_eq_cmp_dist_coe_center (z w : ℍ) (r : ℝ) :
       ((mul_neg_of_pos_of_neg w.im_pos (sinh_neg_iff.2 hr₀)).trans_le dist_nonneg).cmp_eq_gt.symm]
   have hr₀' : 0 ≤ w.im * Real.sinh r := by positivity
   have hzw₀ : 0 < 2 * z.im * w.im := by positivity
-  simp only [← cosh_strictMonoOn.cmp_map_eq dist_nonneg hr₀, ←
-    (pow_left_strictMonoOn₀ two_ne_zero).cmp_map_eq dist_nonneg hr₀', dist_coe_center_sq]
+  #adaptation_note
+  /--
+  After the bug fix in https://github.com/leanprover/lean4/pull/6024,
+  we need to give Lean the hint `(y := w.im * Real.sinh r)`.
+  -/
+  simp only [← cosh_strictMonoOn.cmp_map_eq dist_nonneg hr₀,
+    ← (pow_left_strictMonoOn₀ two_ne_zero).cmp_map_eq dist_nonneg (y := w.im * Real.sinh r) hr₀',
+    dist_coe_center_sq]
   rw [← cmp_mul_pos_left hzw₀, ← cmp_sub_zero, ← mul_sub, ← cmp_add_right, zero_add]
 
 theorem dist_eq_iff_dist_coe_center_eq :

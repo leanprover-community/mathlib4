@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.Hom
+import Mathlib.Data.Set.Finite.Lemmas
+import Mathlib.Data.Finsupp.Defs
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Ideal.Span
 import Mathlib.Tactic.Algebraize
@@ -99,11 +101,11 @@ section ModuleAndAlgebra
 
 variable (R A B M N : Type*)
 
-/-- A module over a semiring is `Finite` if it is finitely generated as a module. -/
+/-- A module over a semiring is `Module.Finite` if it is finitely generated as a module. -/
 protected class Module.Finite [Semiring R] [AddCommMonoid M] [Module R M] : Prop where
-  out : (⊤ : Submodule R M).FG
+  fg_top : (⊤ : Submodule R M).FG
 
-attribute [inherit_doc Module.Finite] Module.Finite.out
+attribute [inherit_doc Module.Finite] Module.Finite.fg_top
 
 namespace Module
 
@@ -129,7 +131,7 @@ variable {R M N}
 
 /-- See also `Module.Finite.exists_fin'`. -/
 lemma exists_fin [Module.Finite R M] : ∃ (n : ℕ) (s : Fin n → M), Submodule.span R (range s) = ⊤ :=
-  Submodule.fg_iff_exists_fin_generating_family.mp out
+  Submodule.fg_iff_exists_fin_generating_family.mp fg_top
 
 end Finite
 
@@ -141,7 +143,7 @@ namespace RingHom
 
 variable {A B C : Type*} [CommRing A] [CommRing B] [CommRing C]
 
-/-- A ring morphism `A →+* B` is `Finite` if `B` is finitely generated as `A`-module. -/
+/-- A ring morphism `A →+* B` is `RingHom.Finite` if `B` is finitely generated as `A`-module. -/
 @[algebraize Module.Finite]
 def Finite (f : A →+* B) : Prop :=
   letI : Algebra A B := f.toAlgebra

@@ -193,7 +193,7 @@ variable {C : Type u₁} [Category.{v₁} C]
 open Quiver
 
 -- Porting note:
--- This def was originally marked `@[simp]`, but the meaning is different in lean4: lean4#2042
+-- This def was originally marked `@[simp]`, but the meaning is different in lean4: https://github.com/leanprover/lean4/issues/2042
 -- So, the `@[simp]` was removed, and the two equational lemmas below added instead.
 /-- A path in a category can be composed to a single morphism. -/
 def composePath {X : C} : ∀ {Y : C} (_ : Path X Y), X ⟶ Y
@@ -216,7 +216,7 @@ theorem composePath_comp {X Y Z : C} (f : Path X Y) (g : Path Y Z) :
   · simp [ih]
 
 @[simp]
--- Porting note (#11215): TODO get rid of `(id X : C)` somehow?
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO get rid of `(id X : C)` somehow?
 theorem composePath_id {X : Paths C} : composePath (𝟙 X) = 𝟙 (id X : C) := rfl
 
 @[simp]

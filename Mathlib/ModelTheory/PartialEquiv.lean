@@ -347,7 +347,7 @@ lemma partialEquivLimit_comp_inclusion {i : ι} :
 
 theorem le_partialEquivLimit (i : ι) : S i ≤ partialEquivLimit S :=
   ⟨le_iSup (f := fun i ↦ (S i).dom) _, by
-    #adaptation_note /-- After lean4#5020, these two `simp` calls cannot be combined. -/
+    #adaptation_note /-- After https://github.com/leanprover/lean4/pull/5020, these two `simp` calls cannot be combined. -/
     simp only [partialEquivLimit_comp_inclusion]
     simp only [cod_partialEquivLimit, dom_partialEquivLimit, ← Embedding.comp_assoc,
       subtype_comp_inclusion]⟩
@@ -451,13 +451,13 @@ protected alias ⟨cod, _⟩ := isExtensionPair_iff_cod
 def definedAtLeft
     (h : L.IsExtensionPair M N) (m : M) : Order.Cofinal (FGEquiv L M N) where
   carrier := {f | m ∈ f.val.dom}
-  mem_gt := fun f => h f m
+  isCofinal := fun f => h f m
 
 /-- The cofinal set of finite equivalences with a given element in their codomain. -/
 def definedAtRight
     (h : L.IsExtensionPair N M) (n : N) : Order.Cofinal (FGEquiv L M N) where
   carrier := {f | n ∈ f.val.cod}
-  mem_gt := fun f => h.cod f n
+  isCofinal := fun f => h.cod f n
 
 end IsExtensionPair
 

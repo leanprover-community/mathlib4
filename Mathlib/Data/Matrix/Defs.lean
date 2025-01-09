@@ -77,7 +77,7 @@ purpose of this approach is to ensure that terms of the form `(fun i j ↦ _) * 
 appear, as the type of `*` can be misleading.
 
 Porting note: In Lean 3, it is also safe to use pattern matching in a definition as `| i j := _`,
-which can only be unfolded when fully-applied. leanprover/lean4#2042 means this does not
+which can only be unfolded when fully-applied. https://github.com/leanprover/lean4/issues/2042 means this does not
 (currently) work in Lean 4.
 -/
 def of : (m → n → α) ≃ Matrix m n α :=
@@ -133,7 +133,7 @@ theorem map_injective {f : α → β} (hf : Function.Injective f) :
 def transpose (M : Matrix m n α) : Matrix n m α :=
   of fun x y => M y x
 
--- TODO: set as an equation lemma for `transpose`, see mathlib4#3024
+-- TODO: set as an equation lemma for `transpose`, see https://github.com/leanprover-community/mathlib4/pull/3024
 @[simp]
 theorem transpose_apply (M : Matrix m n α) (i j) : transpose M i j = M j i :=
   rfl
@@ -237,6 +237,16 @@ theorem sub_apply [Sub α] (A B : Matrix m n α) (i : m) (j : n) :
 theorem neg_apply [Neg α] (A : Matrix m n α) (i : m) (j : n) :
     (-A) i j = -(A i j) := rfl
 
+protected theorem dite_apply (P : Prop) [Decidable P]
+    (A : P → Matrix m n α) (B : ¬P → Matrix m n α) (i : m) (j : n) :
+    dite P A B i j = dite P (A · i j) (B · i j) := by
+  rw [dite_apply, dite_apply]
+
+protected theorem ite_apply (P : Prop) [Decidable P]
+    (A : Matrix m n α) (B : Matrix m n α) (i : m) (j : n) :
+    (if P then A else B) i j = if P then A i j else B i j :=
+  Matrix.dite_apply _ _ _ _ _
+
 end
 
 /-! simp-normal form pulls `of` to the outside. -/
@@ -319,6 +329,12 @@ def ofAddEquiv [Add α] : (m → n → α) ≃+ Matrix m n α where
     ⇑(ofAddEquiv : (m → n → α) ≃+ Matrix m n α) = of := rfl
 @[simp] lemma coe_ofAddEquiv_symm [Add α] :
     ⇑(ofAddEquiv.symm : Matrix m n α ≃+ (m → n → α)) = of.symm := rfl
+
+@[simp] lemma isAddUnit_iff [AddMonoid α] {A : Matrix m n α} :
+    IsAddUnit A ↔ ∀ i j, IsAddUnit (A i j) := by
+  simp_rw [isAddUnit_iff_exists, Classical.skolem, forall_and,
+    ← Matrix.ext_iff, add_apply, zero_apply]
+  rfl
 
 end Matrix
 
@@ -449,7 +465,7 @@ theorem reindex_symm (eₘ : m ≃ l) (eₙ : n ≃ o) :
 theorem reindex_trans {l₂ o₂ : Type*} (eₘ : m ≃ l) (eₙ : n ≃ o) (eₘ₂ : l ≃ l₂) (eₙ₂ : o ≃ o₂) :
     (reindex eₘ eₙ).trans (reindex eₘ₂ eₙ₂) =
       (reindex (eₘ.trans eₘ₂) (eₙ.trans eₙ₂) : Matrix m n α ≃ _) :=
-  Equiv.ext fun A => (A.submatrix_submatrix eₘ.symm eₙ.symm eₘ₂.symm eₙ₂.symm : _)
+  Equiv.ext fun A => (A.submatrix_submatrix eₘ.symm eₙ.symm eₘ₂.symm eₙ₂.symm :)
 
 theorem transpose_reindex (eₘ : m ≃ l) (eₙ : n ≃ o) (M : Matrix m n α) :
     (reindex eₘ eₙ M)ᵀ = reindex eₙ eₘ Mᵀ :=

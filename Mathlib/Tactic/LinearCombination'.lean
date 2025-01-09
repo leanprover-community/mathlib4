@@ -36,7 +36,7 @@ implementation, but this version is provided for backward-compatibility.
 -/
 
 namespace Mathlib.Tactic.LinearCombination'
-open Lean hiding Rat
+open Lean
 open Elab Meta Term
 
 variable {α : Type*} {a a' a₁ a₂ b b' b₁ b₂ c : α}

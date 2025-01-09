@@ -9,7 +9,7 @@ import Mathlib.Data.Nat.Prime.Basic
 /-!
 # Prime numbers in the naturals and the integers
 
-TODO: This file can probably be merged with `Data/Nat/Int/NatPrime.lean`.
+TODO: This file can probably be merged with `Mathlib/Data/Int/NatPrime.lean`.
 -/
 
 
@@ -38,10 +38,9 @@ end Nat
 
 namespace Int
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem prime_ofNat_iff {n : ℕ} :
-    Prime (no_index (OfNat.ofNat n : ℤ)) ↔ Nat.Prime (OfNat.ofNat n) :=
+    Prime (ofNat(n) : ℤ) ↔ Nat.Prime (OfNat.ofNat n) :=
   Nat.prime_iff_prime_int.symm
 
 theorem prime_two : Prime (2 : ℤ) :=

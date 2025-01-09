@@ -51,7 +51,7 @@ theorem nhds_eq_update : (𝓝 : Γ₀ → Filter Γ₀) = update pure 0 (⨅ γ
 -/
 
 theorem nhds_zero : 𝓝 (0 : Γ₀) = ⨅ γ ≠ 0, 𝓟 (Iio γ) := by
-  rw [nhds_eq_update, update_same]
+  rw [nhds_eq_update, update_self]
 
 /-- In a linearly ordered group with zero element adjoined, `U` is a neighbourhood of `0` if and
 only if there exists a nonzero element `γ₀` such that `Iio γ₀ ⊆ U`. -/
@@ -166,7 +166,7 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
       refine ((hasBasis_nhds_zero.prod_nhds hasBasis_nhds_zero).tendsto_iff hasBasis_nhds_zero).2
         fun γ hγ => ⟨(γ, 1), ⟨hγ, one_ne_zero⟩, ?_⟩
       rintro ⟨x, y⟩ ⟨hx : x < γ, hy : y < 1⟩
-      exact (mul_lt_mul₀ hx hy).trans_eq (mul_one γ)
+      exact (mul_lt_mul'' hx hy zero_le' zero_le').trans_eq (mul_one γ)
     · rw [zero_mul, nhds_prod_eq, nhds_of_ne_zero hy, prod_pure, tendsto_map'_iff]
       refine (hasBasis_nhds_zero.tendsto_iff hasBasis_nhds_zero).2 fun γ hγ => ?_
       refine ⟨γ / y, div_ne_zero hγ hy, fun x hx => ?_⟩

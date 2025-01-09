@@ -6,6 +6,7 @@ Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin, Lu
 import Mathlib.Algebra.Algebra.Opposite
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.BigOperators.RingEquiv
+import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Matrix.Mul
 import Mathlib.LinearAlgebra.Pi
 

@@ -66,7 +66,7 @@ theorem fg_pi {ι : Type*} {M : ι → Type*} [Finite ι] [∀ i, AddCommMonoid 
     choose t htf hts using hsb
     refine
       ⟨⋃ i, (LinearMap.single R _ i) '' t i, Set.finite_iUnion fun i => (htf i).image _, ?_⟩
-    -- Note: #8386 changed `span_image` into `span_image _`
+    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 changed `span_image` into `span_image _`
     simp_rw [span_iUnion, span_image _, hts, Submodule.iSup_map_single]
 
 theorem FG.map {N : Submodule R M} (hs : N.FG) : (N.map f).FG :=
@@ -118,6 +118,17 @@ theorem fg_restrictScalars {R S M : Type*} [CommSemiring R] [Semiring S] [Algebr
   obtain ⟨X, rfl⟩ := hfin
   use X
   exact (Submodule.restrictScalars_span R S h (X : Set M)).symm
+
+lemma FG.of_restrictScalars (R) {A M} [CommSemiring R] [Semiring A] [AddCommMonoid M]
+    [Algebra R A] [Module R M] [Module A M] [IsScalarTower R A M] (S : Submodule A M)
+    (hS : (S.restrictScalars R).FG) : S.FG := by
+  obtain ⟨s, e⟩ := hS
+  refine ⟨s, Submodule.restrictScalars_injective R _ _ (le_antisymm ?_ ?_)⟩
+  · show Submodule.span A s ≤ S
+    have := Submodule.span_le.mp e.le
+    rwa [Submodule.span_le]
+  · rw [← e]
+    exact Submodule.span_le_restrictScalars _ _ _
 
 theorem FG.stabilizes_of_iSup_eq {M' : Submodule R M} (hM' : M'.FG) (N : ℕ →o Submodule R M)
     (H : iSup N = M') : ∃ n, M' = N n := by
@@ -240,13 +251,13 @@ theorem equiv_iff (e : M ≃ₗ[R] N) : Module.Finite R M ↔ Module.Finite R N 
 
 instance ulift [Module.Finite R M] : Module.Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
-theorem iff_fg {N : Submodule R M} : Module.Finite R N ↔ N.FG := Module.finite_def.trans (fg_top _)
+theorem iff_fg {N : Submodule R M} : Module.Finite R N ↔ N.FG := Module.finite_def.trans N.fg_top
 
 variable (R M)
 
 instance bot : Module.Finite R (⊥ : Submodule R M) := iff_fg.mpr fg_bot
 
-instance top [Module.Finite R M] : Module.Finite R (⊤ : Submodule R M) := iff_fg.mpr out
+instance top [Module.Finite R M] : Module.Finite R (⊤ : Submodule R M) := iff_fg.mpr fg_top
 
 variable {M}
 
