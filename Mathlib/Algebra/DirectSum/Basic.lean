@@ -90,8 +90,7 @@ end AddCommGroup
 
 variable [∀ i, AddCommMonoid (β i)]
 
-@[ext] theorem ext {x y : DirectSum ι β} (w : ∀ i, x i = y i) :
-    x = y :=
+@[ext] theorem ext {x y : DirectSum ι β} (w : ∀ i, x i = y i) : x = y :=
   DFunLike.ext _ _ w
 
 @[simp]
