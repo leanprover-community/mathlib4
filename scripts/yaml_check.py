@@ -110,6 +110,7 @@ for index, entry in hundred.items():
     _thm = HundredTheorem(index, **entry)
   except TypeError as e:
     print(f"error: entry for theorem {index} is invalid: {e}")
+    errors += 1
   # Also verify that the |decl| and |decls| fields are not *both* provided.
   if _thm.decl and _thm.decls:
       print(f"warning: entry for theorem {index} has both a decl and a decls field; "
