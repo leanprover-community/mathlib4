@@ -650,9 +650,11 @@ theorem isCompact_closure_of_totallyBounded [CompleteSpace α] {s : Set α} (ht 
     IsCompact (closure s) :=
   isCompact_of_totallyBounded_isClosed (TotallyBounded.closure ht) isClosed_closure
 
+/-- The Bornology arising from the Totally Bounded sets -/
 abbrev totallyBoundedBornology : Bornology α :=
   Bornology.ofBounded (setOf (TotallyBounded)) (totallyBounded_empty)
     (fun _ hs _ ht => hs.subset ht) (fun _ hs _ => hs.union) totallyBounded_singleton
+
 /-- Given a family of points `xs n`, a family of entourages `V n` of the diagonal and a family of
 natural numbers `u n`, the intersection over `n` of the `V n`-neighborhood of `xs 1, ..., xs (u n)`.
 Designed to be relatively compact when `V n` tends to the diagonal. -/
