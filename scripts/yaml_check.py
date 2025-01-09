@@ -167,4 +167,5 @@ with open('undergrad.json', 'w', encoding='utf8') as f:
   json.dump(undergrad_decls, f)
 
 if errors:
-  sys.exit(errors)
+  # Return an error code of at most 125 so this return value can be used further in shell scripts.
+  sys.exit(min(errors, 125))
