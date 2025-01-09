@@ -81,6 +81,9 @@ elab "#find_syntax " id:str d:(&" approx")? : command => do
     -- then we include an entry into the final message.
     if 2 ≤ (nm.toString.splitOn id.getString).length || 2 ≤ (rem.splitOn id.getString).length then
       msgs := msgs.push <| .ofConstName nm ++ m!":\n  '{rem.trim}'\n"
+  -- We sort the messages to produce a more stable output.
+  let msgsToString ← msgs.mapM (·.toString)
+  msgs := (msgs.zip msgsToString).qsort (·.2 < ·.2) |>.map (·.1)
   let uses := msgs.size
   let numSymbs := if d.isSome then s!"over {(symbs.size / 100) * 100}" else s!"{symbs.size}"
   let head := m!"Found {uses} use{if uses == 1 then "" else "s"} \

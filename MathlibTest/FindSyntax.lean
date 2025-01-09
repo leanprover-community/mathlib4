@@ -28,13 +28,13 @@ info: Found 1 use among over 500 syntax declarations
 info: Found 2 uses among over 500 syntax declarations
 ---
 
-«stx_,*»:
-  ',*'
+«stx_,*,?»:
+  ',*,?'
 
 ---
 
-«stx_,*,?»:
-  ',*,?'
+«stx_,*»:
+  ',*'
 
 ---
 -/
@@ -62,6 +62,11 @@ Lean.Parser.Tactic.refine':
 
 ---
 
+Lean.Parser.Tactic.refine:
+  'refine'
+
+---
+
 Lean.Parser.Tactic.tacticRefine_lift'_:
   'refine_lift''
 
@@ -69,11 +74,6 @@ Lean.Parser.Tactic.tacticRefine_lift'_:
 
 Lean.Parser.Tactic.tacticRefine_lift_:
   'refine_lift'
-
----
-
-Lean.Parser.Tactic.refine:
-  'refine'
 
 ---
 -/
