@@ -360,6 +360,10 @@ lemma Cotangent.val_mk (x : P.ker) : (mk x).val = Ideal.toCotangent _ x := rfl
 lemma Cotangent.mk_surjective : Function.Surjective (mk (P := P)) :=
   fun x ↦ Ideal.toCotangent_surjective P.ker x.val
 
+lemma Cotangent.mk_eq_zero_iff {P : Extension R S} (x : P.ker) :
+    Cotangent.mk x = 0 ↔ x.val ∈ P.ker ^ 2 := by
+  simp [Cotangent.ext_iff, Ideal.toCotangent_eq_zero]
+
 variable {P'}
 variable [Algebra R R'] [Algebra R' R''] [Algebra R' S'']
 variable [Algebra S S'] [Algebra S' S''] [Algebra S S'']
