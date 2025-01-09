@@ -178,6 +178,9 @@ lemma image_op_one [DecidableEq α] : (1 : Finset α).image op = 1 := rfl
 @[to_additive (attr := simp)]
 lemma map_op_one : (1 : Finset α).map opEquiv.toEmbedding = 1 := rfl
 
+@[to_additive (attr := simp)]
+lemma one_product_one [One β] : (1 ×ˢ 1 : Finset (α × β)) = 1 := by ext; simp [Prod.ext_iff]
+
 end One
 
 /-! ### Finset negation/inversion -/
@@ -294,6 +297,10 @@ lemma inv_univ [Fintype α] : (univ : Finset α)⁻¹ = univ := by ext; simp
 
 @[to_additive (attr := simp)]
 lemma inv_inter (s t : Finset α) : (s ∩ t)⁻¹ = s⁻¹ ∩ t⁻¹ := coe_injective <| by simp
+
+@[to_additive (attr := simp)]
+lemma inv_product [DecidableEq β] [InvolutiveInv β] (s : Finset α) (t : Finset β) :
+    (s ×ˢ t)⁻¹ = s⁻¹ ×ˢ t⁻¹ := mod_cast s.toSet.inv_prod t.toSet
 
 end InvolutiveInv
 
@@ -600,6 +607,11 @@ theorem image_mul [DecidableEq β] : (s * t).image (f : α → β) = s.image f *
 lemma image_op_mul (s t : Finset α) : (s * t).image op = t.image op * s.image op :=
   image_image₂_antidistrib op_mul
 
+@[to_additive (attr := simp)]
+lemma product_mul_product_comm [DecidableEq β] (s₁ s₂ : Finset α) (t₁ t₂ : Finset β) :
+    (s₁ ×ˢ t₁) * (s₂ ×ˢ t₂) = (s₁ * s₂) ×ˢ (t₁ * t₂) :=
+  mod_cast s₁.toSet.prod_mul_prod_comm s₂ t₁.toSet t₂
+
 @[to_additive]
 lemma map_op_mul (s t : Finset α) :
     (s * t).map opEquiv.toEmbedding = t.map opEquiv.toEmbedding * s.map opEquiv.toEmbedding := by
@@ -740,11 +752,11 @@ theorem singleton_div_singleton (a b : α) : ({a} : Finset α) / {b} = {a / b} :
 theorem div_subset_div : s₁ ⊆ s₂ → t₁ ⊆ t₂ → s₁ / t₁ ⊆ s₂ / t₂ :=
   image₂_subset
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem div_subset_div_left : t₁ ⊆ t₂ → s / t₁ ⊆ s / t₂ :=
   image₂_subset_left
 
-@[to_additive]
+@[to_additive (attr := gcongr)]
 theorem div_subset_div_right : s₁ ⊆ s₂ → s₁ / t ⊆ s₂ / t :=
   image₂_subset_right
 
@@ -1068,6 +1080,11 @@ lemma map_op_pow (s : Finset α) :
     ∀ n : ℕ, (s ^ n).map opEquiv.toEmbedding = s.map opEquiv.toEmbedding ^ n
   | 0 => by simp [singleton_one]
   | n + 1 => by rw [pow_succ, pow_succ', map_op_mul, map_op_pow]
+
+@[to_additive]
+lemma product_pow [Monoid β] (s : Finset α) (t : Finset β) : ∀ n, (s ×ˢ t) ^ n = (s ^ n) ×ˢ (t ^ n)
+  | 0 => by simp
+  | n + 1 => by simp [pow_succ, product_pow _ _ n]
 
 end Monoid
 
@@ -1471,6 +1488,8 @@ end SMul
 section Mul
 
 variable [Mul α] [DecidableEq α] {s t u : Finset α} {a : α}
+
+@[to_additive] lemma smul_finset_subset_mul : a ∈ s → a • t ⊆ s * t := image_subset_image₂_right
 
 @[to_additive]
 theorem op_smul_finset_subset_mul : a ∈ t → op a • s ⊆ s * t :=

@@ -58,6 +58,10 @@ lemma card_eq_card_finite_toFinset {s : Set α} (hs : s.Finite) : Nat.card s = h
 
 @[simp] lemma card_eq_zero_of_infinite [Infinite α] : Nat.card α = 0 := mk_toNat_of_infinite
 
+lemma cast_card [Finite α] : (Nat.card α : Cardinal) = Cardinal.mk α := by
+  rw [Nat.card, Cardinal.cast_toNat_of_lt_aleph0]
+  exact Cardinal.lt_aleph0_of_finite _
+
 lemma _root_.Set.Infinite.card_eq_zero {s : Set α} (hs : s.Infinite) : Nat.card s = 0 :=
   @card_eq_zero_of_infinite _ hs.to_subtype
 
@@ -236,7 +240,7 @@ lemma card_prod_singleton (s : Set α) (b : β) : Nat.card (s ×ˢ {b}) = Nat.ca
   rw [prod_singleton, Nat.card_image_of_injective (Prod.mk.inj_right b)]
 
 theorem natCard_pos (hs : s.Finite) : 0 < Nat.card s ↔ s.Nonempty := by
-  simp [pos_iff_ne_zero, Nat.card_eq_zero, hs.to_subtype, Set.nonempty_def, nonempty_iff_ne_empty]
+  simp [pos_iff_ne_zero, Nat.card_eq_zero, hs.to_subtype, nonempty_iff_ne_empty]
 
 protected alias ⟨_, Nonempty.natCard_pos⟩ := natCard_pos
 

@@ -249,10 +249,20 @@ theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
   have : p.support.Nodup → p.edges.Nodup := edges_nodup_of_support_nodup
   tauto
 
-lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) (hp' : ¬ p.Nil) : p.tail.IsPath := by
-  rw [Walk.isPath_def] at hp ⊢
-  rw [← cons_support_tail _ hp', List.nodup_cons] at hp
-  exact hp.2
+protected lemma IsCycle.reverse {p : G.Walk u u} (h : p.IsCycle) : p.reverse.IsCycle := by
+  simp only [Walk.isCycle_def, nodup_tail_support_reverse] at h ⊢
+  exact ⟨h.1.reverse, fun h' ↦ h.2.1 (by simp_all [← Walk.length_eq_zero_iff]), h.2.2⟩
+
+@[simp]
+lemma isCycle_reverse {p : G.Walk u u} : p.reverse.IsCycle ↔ p.IsCycle where
+  mp h := by simpa using h.reverse
+  mpr := .reverse
+
+lemma IsPath.tail {p : G.Walk u v} (hp : p.IsPath) : p.tail.IsPath := by
+  cases p with
+  | nil => simp
+  | cons hadj p =>
+    simp_all [Walk.isPath_def]
 
 /-! ### About paths -/
 
@@ -264,6 +274,26 @@ theorem IsPath.length_lt [Fintype V] {u v : V} {p : G.Walk u v} (hp : p.IsPath) 
     p.length < Fintype.card V := by
   rw [Nat.lt_iff_add_one_le, ← length_support]
   exact hp.support_nodup.length_le_card
+
+lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
+    Set.InjOn p.getVert {i | i ≤ p.length} := by
+  intro n hn m hm hnm
+  induction p generalizing n m with
+  | nil => aesop
+  | @cons v w u h p ihp =>
+    simp only [length_cons, Set.mem_setOf_eq] at hn hm hnm
+    by_cases hn0 : n = 0 <;> by_cases hm0 : m = 0
+    · aesop
+    · simp only [hn0, getVert_zero, Walk.getVert_cons p h hm0] at hnm
+      have hvp : v ∉ p.support := by aesop
+      exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(m - 1), ⟨hnm.symm, by omega⟩⟩)).elim
+    · simp only [hm0, Walk.getVert_cons p h hn0] at hnm
+      have hvp : v ∉ p.support := by aesop
+      exact (hvp (Walk.mem_support_iff_exists_getVert.mpr ⟨(n - 1), ⟨hnm, by omega⟩⟩)).elim
+    · simp only [Walk.getVert_cons _ _ hn0, Walk.getVert_cons _ _ hm0] at hnm
+      have := ihp hp.of_cons (by omega : (n - 1) ≤ p.length)
+        (by omega : (m - 1) ≤ p.length) hnm
+      omega
 
 /-! ### Walk decompositions -/
 

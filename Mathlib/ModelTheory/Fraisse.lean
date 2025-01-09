@@ -218,7 +218,6 @@ theorem age_directLimit {ι : Type w} [Preorder ι] [IsDirected ι (· ≤ ·)] 
     rw [Embedding.coe_toHom, DirectLimit.of_apply, @Quotient.mk_eq_iff_out _ (_),
       DirectLimit.equiv_iff G f _ (hi (out x).1 (Finset.mem_image_of_mem _ hx)),
       DirectedSystem.map_self]
-    rfl
   · rintro ⟨i, Mfg, ⟨e⟩⟩
     exact ⟨Mfg, ⟨Embedding.comp (DirectLimit.of L ι G f i) e⟩⟩
 
@@ -389,7 +388,7 @@ protected theorem isExtensionPair : L.IsExtensionPair M N := by
   refine ⟨⟨⟨S, g.toHom.range, g.equivRange⟩, S_FG⟩,
     subset_closure.trans (le_sup_right : _ ≤ S) (mem_singleton m), ⟨le_sup_left, ?_⟩⟩
   ext
-  simp [Subtype.mk_le_mk, PartialEquiv.le_def, g_eq]
+  simp [S, Subtype.mk_le_mk, PartialEquiv.le_def, g_eq]
 
 /-- The Fraïssé limit of a class is unique, in that any two Fraïssé limits are isomorphic. -/
 theorem nonempty_equiv : Nonempty (M ≃[L] N) := by

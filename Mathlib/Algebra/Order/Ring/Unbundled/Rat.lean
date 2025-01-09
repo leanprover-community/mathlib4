@@ -105,13 +105,11 @@ protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
           · apply Int.mul_nonneg h.2 (Int.natCast_nonneg _)
         · simp only [Int.natCast_pos, Nat.pos_iff_ne_zero]
           exact Nat.gcd_ne_zero_right (Nat.mul_ne_zero hb ha)
-      · simp only [divInt_ofNat, ← zero_iff_num_zero, mkRat_eq_zero hb] at h'
-        simp [h']
+      · simp [h']
       · simp only [Rat.sub_def, normalize_eq]
         refine ⟨fun H => ?_, fun H _ => ?_⟩
         · refine Int.ediv_nonneg ?_ (Int.natCast_nonneg _)
           rw [Int.sub_nonneg]
-          push_neg at h
           obtain hb|hb := Ne.lt_or_lt h'
           · apply H
             intro H'
@@ -198,9 +196,6 @@ instance : AddLeftMono ℚ where
   simp [Int.le_iff_lt_or_eq, instLE, Rat.blt, Int.not_lt]
 @[simp] lemma num_pos {a : ℚ} : 0 < a.num ↔ 0 < a := lt_iff_lt_of_le_iff_le num_nonpos
 @[simp] lemma num_neg {a : ℚ} : a.num < 0 ↔ a < 0 := lt_iff_lt_of_le_iff_le num_nonneg
-
-@[deprecated (since := "2024-02-16")] alias num_nonneg_iff_zero_le := num_nonneg
-@[deprecated (since := "2024-02-16")] alias num_pos_iff_pos := num_pos
 
 theorem div_lt_div_iff_mul_lt_mul {a b c d : ℤ} (b_pos : 0 < b) (d_pos : 0 < d) :
     (a : ℚ) / b < c / d ↔ a * d < c * b := by

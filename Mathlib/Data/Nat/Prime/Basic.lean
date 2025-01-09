@@ -194,6 +194,9 @@ theorem eq_or_coprime_of_le_prime {n p} (n_pos : 0 < n) (hle : n ≤ p) (pp : Pr
     p = n ∨ Coprime p n :=
   hle.eq_or_lt.imp Eq.symm fun h => coprime_of_lt_prime n_pos h pp
 
+theorem prime_eq_prime_of_dvd_pow {m p q} (pp : Prime p) (pq : Prime q) (h : p ∣ q ^ m) : p = q :=
+  (prime_dvd_prime_iff_eq pp pq).mp (pp.dvd_of_dvd_pow h)
+
 theorem dvd_prime_pow {p : ℕ} (pp : Prime p) {m i : ℕ} : i ∣ p ^ m ↔ ∃ k ≤ m, i = p ^ k := by
   simp_rw [_root_.dvd_prime_pow (prime_iff.mp pp) m, associated_eq_eq]
 
@@ -216,8 +219,8 @@ theorem ne_one_iff_exists_prime_dvd : ∀ {n}, n ≠ 1 ↔ ∃ p : ℕ, p.Prime 
   | 1 => by simp [Nat.not_prime_one]
   | n + 2 => by
     let a := n + 2
-    let ha : a ≠ 1 := Nat.succ_succ_ne_one n
-    simp only [true_iff, Ne, not_false_iff, ha]
+    have ha : a ≠ 1 := Nat.succ_succ_ne_one n
+    simp only [a, true_iff, Ne, not_false_iff, ha]
     exact ⟨a.minFac, Nat.minFac_prime ha, a.minFac_dvd⟩
 
 theorem eq_one_iff_not_exists_prime_dvd {n : ℕ} : n = 1 ↔ ∀ p : ℕ, p.Prime → ¬p ∣ n := by

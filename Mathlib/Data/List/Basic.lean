@@ -73,7 +73,6 @@ theorem _root_.Decidable.List.eq_or_ne_mem_of_mem [DecidableEq α]
 lemma mem_pair {a b c : α} : a ∈ [b, c] ↔ a = b ∨ a = c := by
   rw [mem_cons, mem_singleton]
 
-@[deprecated (since := "2024-03-23")] alias mem_split := append_of_mem
 
 -- The simpNF linter says that the LHS can be simplified via `List.mem_map`.
 -- However this is a higher priority lemma.
@@ -211,9 +210,6 @@ theorem eq_replicate_length {a : α} : ∀ {l : List α}, l = replicate l.length
 theorem replicate_add (m n) (a : α) : replicate (m + n) a = replicate m a ++ replicate n a := by
   rw [append_replicate_replicate]
 
-theorem replicate_succ' (n) (a : α) : replicate (n + 1) a = replicate n a ++ [a] :=
-  replicate_add n 1 a
-
 theorem replicate_subset_singleton (n) (a : α) : replicate n a ⊆ [a] := fun _ h =>
   mem_singleton.2 (eq_of_mem_replicate h)
 
@@ -300,7 +296,7 @@ theorem getLast_append' (l₁ l₂ : List α) (h : l₂ ≠ []) :
   | nil => simp
   | cons _ _ ih => simp only [cons_append]; rw [List.getLast_cons]; exact ih
 
-theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (concat_ne_nil a l) = a := by
+theorem getLast_concat' {a : α} (l : List α) : getLast (concat l a) (by simp) = a := by
   simp
 
 @[simp]
@@ -332,7 +328,7 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
 lemma getLast_filter' {p : α → Bool} :
     ∀ (l : List α) (hlp : l.filter p ≠ []), p (l.getLast (hlp <| ·.symm ▸ rfl)) = true →
       (l.filter p).getLast hlp = l.getLast (hlp <| ·.symm ▸ rfl)
-  | [a], h, h' => by rw [List.getLast_singleton'] at h'; simp [List.filter_cons, h']
+  | [a], h, h' => by simp
   | a :: b :: as, h, h' => by
     rw [List.getLast_cons_cons] at h' ⊢
     simp only [List.filter_cons (x := a)] at h ⊢
@@ -486,10 +482,6 @@ theorem exists_mem_iff_getElem {l : List α} {p : α → Prop} :
 theorem forall_mem_iff_getElem {l : List α} {p : α → Prop} :
     (∀ x ∈ l, p x) ↔ ∀ (i : ℕ) (_ : i < l.length), p l[i] := by
   simp [mem_iff_getElem, @forall_swap α]
-
-theorem getElem_cons {l : List α} {a : α} {n : ℕ} (h : n < (a :: l).length) :
-    (a :: l)[n] = if hn : n = 0 then a else l[n - 1]'(by rw [length_cons] at h; omega) := by
-  cases n <;> simp
 
 theorem get_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simp only [length_tail] at h; omega)) :
@@ -879,14 +871,9 @@ theorem flatMap_pure_eq_map (f : α → β) (l : List α) : l.flatMap (pure ∘ 
 
 @[deprecated (since := "2024-10-16")] alias bind_pure_eq_map := flatMap_pure_eq_map
 
-set_option linter.deprecated false in
-@[deprecated flatMap_pure_eq_map (since := "2024-03-24")]
-theorem bind_ret_eq_map (f : α → β) (l : List α) : l.bind (List.ret ∘ f) = map f l :=
-  bind_pure_eq_map f l
-
 theorem flatMap_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = g x) :
     List.flatMap l f = List.flatMap l g :=
-  (congr_arg List.flatten <| map_congr_left h : _)
+  (congr_arg List.flatten <| map_congr_left h :)
 
 @[deprecated (since := "2024-10-16")] alias bind_congr := flatMap_congr
 
@@ -1031,6 +1018,15 @@ theorem cons_getElem_drop_succ {l : List α} {n : Nat} {h : n < l.length} :
 theorem cons_get_drop_succ {l : List α} {n} :
     l.get n :: l.drop (n.1 + 1) = l.drop n.1 :=
   (drop_eq_getElem_cons n.2).symm
+
+lemma drop_length_sub_one {l : List α} (h : l ≠ []) : l.drop (l.length - 1) = [l.getLast h] := by
+  induction l with
+  | nil => aesop
+  | cons a l ih =>
+    by_cases hl : l = []
+    · aesop
+    rw [length_cons, Nat.add_one_sub_one, List.drop_length_cons hl a]
+    aesop
 
 section TakeI
 
@@ -1224,11 +1220,11 @@ theorem getElem_succ_scanl {i : ℕ} (h : i + 1 < (scanl f b l).length) :
   induction i generalizing b l with
   | zero =>
     cases l
-    · simp only [length, zero_eq, lt_self_iff_false] at h
+    · simp only [scanl, length, zero_eq, lt_self_iff_false] at h
     · simp
   | succ i hi =>
     cases l
-    · simp only [length] at h
+    · simp only [scanl, length] at h
       exact absurd h (by omega)
     · simp_rw [scanl_cons]
       rw [getElem_append_right]
@@ -1275,7 +1271,7 @@ theorem foldl_eq_of_comm_of_assoc [hcomm : Std.Commutative f] [hassoc : Std.Asso
   | a, b, c :: l => by
     simp only [foldl_cons]
     have : RightCommutative f := inferInstance
-    rw [← foldl_eq_of_comm_of_assoc .., this.right_comm]; rfl
+    rw [← foldl_eq_of_comm_of_assoc .., this.right_comm, foldl_cons]
 
 theorem foldl_eq_foldr [Std.Commutative f] [Std.Associative f] :
     ∀ a l, foldl f a l = foldr f a l
