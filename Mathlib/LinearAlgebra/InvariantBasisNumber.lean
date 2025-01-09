@@ -3,12 +3,10 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Kim Morrison
 -/
-import Mathlib.Algebra.Module.Projective
-import Mathlib.LinearAlgebra.Matrix.SemiringInverse
-import Mathlib.LinearAlgebra.Matrix.ToLin
 import Mathlib.RingTheory.Ideal.Quotient.Basic
 import Mathlib.RingTheory.Noetherian.Orzech
 import Mathlib.RingTheory.OrzechProperty
+import Mathlib.RingTheory.PrincipalIdealDomain
 import Mathlib.LinearAlgebra.Finsupp.Pi
 
 /-!
@@ -102,7 +100,6 @@ variants) should be formalized.
 free module, rank, Orzech property, (strong) rank condition, invariant basis number, IBN
 
 -/
-
 
 noncomputable section
 
@@ -304,28 +301,24 @@ private def induced_equiv [Fintype ι'] (I : Ideal R) (e : (ι → R) ≃ₗ[R] 
 
 end
 
-/-- Nontrivial commutative semirings satisfy the rank condition.
+section
 
-In fact, any nontrivial commutative ring satisfies the strong rank condition, see
-`commRing_strongRankCondition`, but it is not clear whether this generalizes to semirings.
-We prove this instance separately to avoid dependency on `LinearAlgebra.Charpoly.Basic`. -/
-instance (priority := 100) rankCondition_of_nontrivial_of_commSemiring {R : Type*}
-    [CommSemiring R] [Nontrivial R] : RankCondition R where
-  le_of_fin_surjective {n m} f hf := by
-    by_contra! lt
-    let p : (Fin m → R) →ₗ[R] Fin n → R :=
-      ⟨⟨(· ∘ Fin.castLE lt.le), fun _ _ ↦ rfl⟩, fun _ _ ↦ rfl⟩
-    have hp : Surjective p := fun x ↦ ⟨(Fin.castLE lt.le).extend x 0,
-      funext fun _ ↦ (Fin.castLE_injective lt.le).extend_apply ..⟩
-    have ⟨g, eq⟩ := (p ∘ₗ f).exists_rightInverse_of_surjective
-      (LinearMap.range_eq_top.mpr <| hp.comp hf)
-    apply_fun Matrix.toLinAlgEquiv'.symm at eq
-    rw [← LinearMap.mul_eq_comp, ← LinearMap.one_eq_id, map_mul, map_one,
-      Matrix.mul_eq_one_comm_of_equiv (Equiv.refl _), ← map_mul,
-      ← map_one Matrix.toLinAlgEquiv'.symm, Matrix.toLinAlgEquiv'.symm.injective.eq_iff] at eq
-    have := congr_fun ((p.coe_comp f ▸ LinearMap.injective_of_comp_eq_id _ _ eq).of_comp_right hf
-      (a₁ := fun i ↦ if i.1 = n then 1 else 0) (a₂ := 0) <| by ext i; simp [p, i.2.ne]) ⟨n, lt⟩
-    simp at this
+attribute [local instance] Ideal.Quotient.field
 
-@[deprecated (since := "2025-01-08")] alias invariantBasisNumber_of_nontrivial_of_commRing :=
-  rankCondition_of_nontrivial_of_commSemiring
+/-- Nontrivial commutative rings have the invariant basis number property.
+
+There are two stronger results in mathlib: `commRing_strongRankCondition`, which says that any
+nontrivial commutative ring satisfies the strong rank condition, and
+`rankCondition_of_nontrivial_of_commSemiring`, which says that any nontrivial commutative semiring
+satisfies the rank condition.
+
+We prove this instance separately to avoid dependency on
+`Mathlib.LinearAlgebra.Charpoly.Basic` or `Mathlib.LinearAlgebra.Matrix.ToLin`. -/
+instance (priority := 100) invariantBasisNumber_of_nontrivial_of_commRing {R : Type u} [CommRing R]
+    [Nontrivial R] : InvariantBasisNumber R :=
+  ⟨fun e =>
+    let ⟨I, _hI⟩ := Ideal.exists_maximal R
+    eq_of_fin_equiv (R ⧸ I)
+      ((Ideal.piQuotEquiv _ _).symm ≪≫ₗ induced_equiv _ e ≪≫ₗ Ideal.piQuotEquiv _ _)⟩
+
+end

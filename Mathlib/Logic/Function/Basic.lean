@@ -7,6 +7,7 @@ import Mathlib.Data.Set.Defs
 import Mathlib.Logic.Basic
 import Mathlib.Logic.ExistsUnique
 import Mathlib.Logic.Nonempty
+import Mathlib.Logic.Nontrivial.Defs
 import Batteries.Tactic.Init
 import Mathlib.Order.Defs.PartialOrder
 import Mathlib.Order.Defs.Unbundled
@@ -206,6 +207,15 @@ protected theorem Surjective.exists₃ (hf : Surjective f) {p : β → β → β
 
 theorem Surjective.injective_comp_right (hf : Surjective f) : Injective fun g : β → γ ↦ g ∘ f :=
   fun _ _ h ↦ funext <| hf.forall.2 <| congr_fun h
+
+theorem injective_comp_right_iff_surjective [Nontrivial γ] :
+    Injective (fun g : β → γ ↦ g ∘ f) ↔ Surjective f := by
+  refine ⟨not_imp_not.mp fun not_surj inj ↦ not_subsingleton γ ⟨fun c c' ↦ ?_⟩,
+    (·.injective_comp_right)⟩
+  have ⟨b₀, hb⟩ := not_forall.mp not_surj
+  classical have := inj (a₁ := fun _ ↦ c) (a₂ := (if · = b₀ then c' else c)) ?_
+  · simpa using congr_fun this b₀
+  ext a; simp only [comp_apply, if_neg fun h ↦ hb ⟨a, h⟩]
 
 protected theorem Surjective.right_cancellable (hf : Surjective f) {g₁ g₂ : β → γ} :
     g₁ ∘ f = g₂ ∘ f ↔ g₁ = g₂ :=
@@ -696,6 +706,18 @@ theorem Injective.surjective_comp_right' (hf : Injective f) (g₀ : β → γ) :
 theorem Injective.surjective_comp_right [Nonempty γ] (hf : Injective f) :
     Surjective fun g : β → γ ↦ g ∘ f :=
   hf.surjective_comp_right' fun _ ↦ Classical.choice ‹_›
+
+theorem surjective_comp_right_iff_injective [Nontrivial γ] :
+    Surjective (fun g : β → γ ↦ g ∘ f) ↔ Injective f := by
+  refine ⟨not_imp_not.mp fun not_inj surj ↦ not_subsingleton γ ⟨fun c c' ↦ ?_⟩,
+    (·.surjective_comp_right)⟩
+  simp only [Injective, not_forall] at not_inj
+  have ⟨a₁, a₂, eq, ne⟩ := not_inj
+  have ⟨f, hf⟩ := surj (if · = a₂ then c else c')
+  have h₁ := congr_fun hf a₁
+  have h₂ := congr_fun hf a₂
+  simp only [comp_apply, if_neg ne, reduceIte] at h₁ h₂
+  rw [← h₁, eq, h₂]
 
 theorem Bijective.comp_right (hf : Bijective f) : Bijective fun g : β → γ ↦ g ∘ f :=
   ⟨hf.surjective.injective_comp_right, fun g ↦
