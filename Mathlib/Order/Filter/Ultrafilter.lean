@@ -261,7 +261,7 @@ theorem comap_pure {m : α → β} (a : α) (inj : Injective m) (large) :
       rw [coe_pure, ← principal_singleton, ← image_singleton, preimage_image_eq _ inj]
 
 theorem pure_injective : Injective (pure : α → Ultrafilter α) := fun _ _ h =>
-  Filter.pure_injective (congr_arg Ultrafilter.toFilter h : _)
+  Filter.pure_injective (congr_arg Ultrafilter.toFilter h :)
 
 instance [Inhabited α] : Inhabited (Ultrafilter α) :=
   ⟨pure default⟩
