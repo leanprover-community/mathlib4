@@ -17,7 +17,7 @@ quotients of finitely supported functions.
 
 -/
 
-universe w u v
+universe u' w u v
 
 open CategoryTheory Limits
 
@@ -93,6 +93,89 @@ lemma Quot.map_ι [DecidableEq J] {j j' : J} {f : j ⟶ j'} (x : F.obj j) :
   rw [QuotientAddGroup.ker_mk']
   simp only [DFinsupp.singleAddHom_apply]
   exact AddSubgroup.subset_closure ⟨j, j', f, x, rfl⟩
+
+/--
+The obvious additive map from `Quot F` to `Quot (F ⋙ uliftFunctor.{u'})`.
+-/
+def quotToQuotUlift [DecidableEq J] : Quot F →+ Quot (F ⋙ uliftFunctor.{u'}) := by
+  refine QuotientAddGroup.lift (Relations F) (DFinsupp.sumAddHom (fun j ↦ (Quot.ι _ j).comp
+    AddEquiv.ulift.symm.toAddMonoidHom)) ?_
+  rw [AddSubgroup.closure_le]
+  intro _ hx
+  obtain ⟨j, j', u, a, rfl⟩ := hx
+  rw [SetLike.mem_coe, AddMonoidHom.mem_ker, map_sub, DFinsupp.sumAddHom_single,
+    DFinsupp.sumAddHom_single]
+  change Quot.ι (F ⋙ uliftFunctor) j' ((F ⋙ uliftFunctor).map u (AddEquiv.ulift.symm a)) - _ = _
+  rw [Quot.map_ι]
+  dsimp
+  rw [sub_self]
+
+@[simp]
+lemma quotToQuotUlift_ι [DecidableEq J] (j : J) (x : F.obj j) :
+    quotToQuotUlift F (Quot.ι F j x) = Quot.ι _ j (ULift.up x) := by
+  dsimp [quotToQuotUlift, Quot.ι]
+  conv_lhs => erw [AddMonoidHom.comp_apply (QuotientAddGroup.mk' (Relations F))
+    (DFinsupp.singleAddHom _ j), QuotientAddGroup.lift_mk']
+  simp only [DFinsupp.singleAddHom_apply, DFinsupp.sumAddHom_single, AddMonoidHom.coe_comp,
+    AddMonoidHom.coe_coe, Function.comp_apply]
+  rfl
+
+/--
+The obvious additive map from `Quot (F ⋙ uliftFunctor.{u'})` to `Quot F`.
+-/
+def quotUliftToQuot [DecidableEq J] : Quot (F ⋙ uliftFunctor.{u'}) →+ Quot F := by
+  refine QuotientAddGroup.lift (Relations (F ⋙ uliftFunctor))
+    (DFinsupp.sumAddHom (fun j ↦ (Quot.ι _ j).comp AddEquiv.ulift.toAddMonoidHom)) ?_
+  rw [AddSubgroup.closure_le]
+  intro _ hx
+  obtain ⟨j, j', u, a, rfl⟩ := hx
+  rw [SetLike.mem_coe, AddMonoidHom.mem_ker, map_sub, DFinsupp.sumAddHom_single,
+    DFinsupp.sumAddHom_single]
+  change Quot.ι F j' (F.map u (AddEquiv.ulift a)) - _ = _
+  rw [Quot.map_ι]
+  dsimp
+  rw [sub_self]
+
+@[simp]
+lemma quotUliftToQuot_ι [DecidableEq J] (j : J) (x : (F ⋙ uliftFunctor.{u'}).obj j) :
+    quotUliftToQuot F (Quot.ι _ j x) = Quot.ι F j x.down := by
+  dsimp [quotUliftToQuot, Quot.ι]
+  conv_lhs => erw [AddMonoidHom.comp_apply (QuotientAddGroup.mk' (Relations (F ⋙ uliftFunctor)))
+    (DFinsupp.singleAddHom _ j), QuotientAddGroup.lift_mk']
+  simp only [Functor.comp_obj, uliftFunctor_obj, coe_of, DFinsupp.singleAddHom_apply,
+    DFinsupp.sumAddHom_single, AddMonoidHom.coe_comp, AddMonoidHom.coe_coe, Function.comp_apply]
+  rfl
+
+/--
+The additive equivalence between `Quot F` and `Quot (F ⋙ uliftFunctor.{u'})`.
+-/
+@[simp]
+def quotQuotUliftAddEquiv [DecidableEq J] : Quot F ≃+ Quot (F ⋙ uliftFunctor.{u'}) where
+  toFun := quotToQuotUlift F
+  invFun := quotUliftToQuot F
+  left_inv x := by
+    conv_rhs => rw [← AddMonoidHom.id_apply _ x]
+    rw [← AddMonoidHom.comp_apply, Quot.addMonoidHom_ext F (f := (quotUliftToQuot F).comp
+      (quotToQuotUlift F)) (fun j a ↦ ?_)]
+    rw [AddMonoidHom.comp_apply, AddMonoidHom.id_apply, quotToQuotUlift_ι, quotUliftToQuot_ι]
+  right_inv x := by
+    conv_rhs => rw [← AddMonoidHom.id_apply _ x]
+    rw [← AddMonoidHom.comp_apply, Quot.addMonoidHom_ext _ (f := (quotToQuotUlift F).comp
+      (quotUliftToQuot F)) (fun j a ↦ ?_)]
+    rw [AddMonoidHom.comp_apply, AddMonoidHom.id_apply, quotUliftToQuot_ι, quotToQuotUlift_ι]
+    rfl
+  map_add' _ _ := by simp
+
+lemma Quot.desc_quotQuotUliftAddEquiv [DecidableEq J] (c : Cocone F) :
+    (Quot.desc (F ⋙ uliftFunctor.{u'}) (uliftFunctor.{u'}.mapCocone c)).comp
+    (quotQuotUliftAddEquiv F).toAddMonoidHom =
+    AddEquiv.ulift.symm.toAddMonoidHom.comp (Quot.desc F c) := by
+  refine Quot.addMonoidHom_ext _ (fun j a ↦ ?_)
+  dsimp
+  simp only [quotToQuotUlift_ι, Functor.comp_obj, uliftFunctor_obj, coe_of, ι_desc,
+    Functor.const_obj_obj]
+  erw [Quot.ι_desc]
+  rfl
 
 /-- (implementation detail) A morphism of commutative additive groups `Quot F →+ A`
 induces a cocone on `F` as long as the universes work out.
