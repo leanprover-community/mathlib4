@@ -12,7 +12,13 @@ import Mathlib.MeasureTheory.Order.Group.Lattice
 For `X` a real random variable and `μ` a finite measure, the set
 `{t | Integrable (fun ω ↦ exp (t * X ω)) μ}` is an interval containing zero. This is the set of
 points for which the moment generating function `mgf X μ t` is well defined.
+We denote that set by `integrableExpSet X μ`.
+
 We prove the integrability of other functions for `t` in the interior of that interval.
+
+## Main definitions
+
+* `ProbabilityTheory.IntegrableExpSet`: the interval of reals for which `exp (t * X)` is integrable.
 
 ## Main results
 
@@ -253,7 +259,30 @@ lemma integrable_pow_of_integrable_exp_mul (ht : t ≠ 0)
   · simpa using ht_int_pos
   · simpa using ht_int_neg
 
-section MemInterior
+section IntegrableExpSet
+
+/-- The interval of reals for which `exp (t * X)` is integrable. -/
+def integrableExpSet (X : Ω → ℝ) (μ : Measure Ω) : Set ℝ :=
+  {t | Integrable (fun ω ↦ exp (t * X ω)) μ}
+
+lemma integrable_of_mem_integrableExpSet (h : t ∈ integrableExpSet X μ) :
+    Integrable (fun ω ↦ exp (t * X ω)) μ := h
+
+/-- `integrableExpSet X μ` is a convex subset of `ℝ` (it is an interval). -/
+lemma convex_integrableExpSet [IsFiniteMeasure μ] : Convex ℝ (integrableExpSet X μ) := by
+  rintro t₁ ht₁ t₂ ht₂ a b ha hb hab
+  wlog h_le : t₁ ≤ t₂
+  · rw [add_comm] at hab ⊢
+    refine this ht₂ ht₁ hb ha hab (not_le.mp h_le).le
+  refine integrable_exp_mul_of_le_of_le ht₁ ht₂ ?_ ?_
+  · simp only [smul_eq_mul]
+    calc t₁
+    _ = a * t₁ + b * t₁ := by rw [← add_mul, hab, one_mul]
+    _ ≤ a * t₁ + b * t₂ := by gcongr
+  · simp only [smul_eq_mul]
+    calc a * t₁ + b * t₂
+    _ ≤ a * t₂ + b * t₂ := by gcongr
+    _ = t₂ := by rw [← add_mul, hab, one_mul]
 
 lemma add_half_inf_sub_mem_Ioo {l u v : ℝ} (hv : v ∈ Set.Ioo l u) :
     v + ((v - l) ⊓ (u - v)) / 2 ∈ Set.Ioo l u := by
@@ -279,10 +308,9 @@ lemma sub_half_inf_sub_mem_Ioo {l u v : ℝ} (hv : v ∈ Set.Ioo l u) :
       exact le_add_of_nonneg_right (by positivity)
     _ < u := hv.2
 
-/-- If the interior of the interval `{t | Integrable (fun ω ↦ exp (t * X ω)) μ}` is nonempty,
+/-- If the interior of the interval `integrableExpSet X μ` is nonempty,
 then `X` is a.e. measurable. -/
-lemma aemeasurable_of_mem_interior_integrable_exp
-    (hv : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) :
+lemma aemeasurable_of_mem_interior_integrableExpSet (hv : v ∈ interior (integrableExpSet X μ)) :
     AEMeasurable X μ := by
   rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hv
   obtain ⟨l, u, hvlu, h_subset⟩ := hv
@@ -299,10 +327,10 @@ lemma aemeasurable_of_mem_interior_integrable_exp
   · exact aemeasurable_of_aemeasurable_exp_mul hvt
       (h_subset (add_half_inf_sub_mem_Ioo hvlu)).aemeasurable
 
-/-- If `v` belongs to the interior of the interval `{t | Integrable (fun ω ↦ exp (t * X ω)) μ}`,
+/-- If `v` belongs to the interior of the interval `integrableExpSet X μ`,
 then `|X| ^ n * exp (v * X)` is integrable for all `n : ℕ`. -/
 lemma integrable_pow_abs_mul_exp_of_mem_interior
-    (hv : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
+    (hv : v ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     Integrable (fun ω ↦ |X ω| ^ n * exp (v * X ω)) μ := by
   rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hv
   obtain ⟨l, u, hvlu, h_subset⟩ := hv
@@ -312,26 +340,23 @@ lemma integrable_pow_abs_mul_exp_of_mem_interior
   · exact h_subset (add_half_inf_sub_mem_Ioo hvlu)
   · exact h_subset (sub_half_inf_sub_mem_Ioo hvlu)
 
-/-- If `v` belongs to the interior of the interval `{t | Integrable (fun ω ↦ exp (t * X ω)) μ}`,
+/-- If `v` belongs to the interior of the interval `integrableExpSet X μ`,
 then `X ^ n * exp (v * X)` is integrable for all `n : ℕ`. -/
-lemma integrable_pow_mul_exp_of_mem_interior
-    (hv : v ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
+lemma integrable_pow_mul_exp_of_mem_interior (hv : v ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     Integrable (fun ω ↦ X ω ^ n * exp (v * X ω)) μ := by
   rw [← integrable_norm_iff]
   · simp_rw [norm_eq_abs, abs_mul, abs_pow, abs_exp]
     exact integrable_pow_abs_mul_exp_of_mem_interior hv n
-  · have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrable_exp hv
+  · have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet hv
     exact ((hX.pow_const _).mul
       (measurable_exp.comp_aemeasurable (hX.const_mul _))).aestronglyMeasurable
 
-lemma integrable_pow_abs_of_mem_interior
-    (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
+lemma integrable_pow_abs_of_mem_interior (h : 0 ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     Integrable (fun ω ↦ |X ω| ^ n) μ := by
   convert integrable_pow_abs_mul_exp_of_mem_interior h n
   simp
 
-lemma integrable_pow_of_mem_interior
-    (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
+lemma integrable_pow_of_mem_interior (h : 0 ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     Integrable (fun ω ↦ X ω ^ n) μ := by
   convert integrable_pow_mul_exp_of_mem_interior h n
   simp
@@ -345,7 +370,7 @@ lemma integrable_norm_rpow_iff {α E : Type*} {_ : MeasurableSpace α} {μ : Mea
     ENNReal.div_self p_zero p_top]
 
 lemma rpow_le_add_pow_floor_pow_ceil {x p : ℝ} (hx_nonneg : 0 ≤ x) (hp : 1 ≤ p) :
-    x ^ (p : ℝ) ≤ x ^ ⌊(p : ℝ)⌋₊ + x ^ ⌈(p : ℝ)⌉₊ := by
+    x ^ p ≤ x ^ ⌊p⌋₊ + x ^ ⌈p⌉₊ := by
   have hn : 1 ≤ ⌊p⌋₊ := Nat.le_floor (mod_cast hp)
   have hm : 1 ≤ ⌈p⌉₊ := hn.trans (Nat.floor_le_ceil _)
   by_cases hx_zero : x = 0
@@ -368,18 +393,16 @@ lemma rpow_le_add_pow_floor_pow_ceil {x p : ℝ} (hx_nonneg : 0 ≤ x) (hp : 1 �
     _ ≤ _ := le_add_of_nonneg_left (by positivity)
 
 lemma memℒp_of_mem_interior_of_one_le {p : ℝ≥0} (hp : 1 ≤ p)
-    (h : 0 ∈ interior {x | Integrable (fun ω ↦ exp (x * X ω)) μ}) :
+    (h : 0 ∈ interior (integrableExpSet X μ)) :
     Memℒp X p μ := by
-  have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrable_exp h
+  have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet h
   rw [← integrable_norm_rpow_iff hX.aestronglyMeasurable ?_ (by simp)]
   swap
   · suffices 0 < p by simp [this.ne']
     positivity
   simp only [norm_eq_abs, ENNReal.coe_toReal]
   let n := ⌊(p : ℝ)⌋₊
-  have hn : 1 ≤ n := Nat.le_floor (mod_cast hp)
   let m := ⌈(p : ℝ)⌉₊
-  have hm : 1 ≤ m := hn.trans (Nat.floor_le_ceil _)
   have h_le (x : ℝ) (hx_nonneg : 0 ≤ x) : x ^ (p : ℝ) ≤ x ^ n + x ^ m :=
     rpow_le_add_pow_floor_pow_ceil hx_nonneg hp
   have h_int : Integrable (fun ω ↦ |X ω| ^ n + |X ω| ^ m) μ :=
@@ -391,20 +414,19 @@ lemma memℒp_of_mem_interior_of_one_le {p : ℝ≥0} (hp : 1 ≤ p)
   · positivity
   · positivity
 
-lemma memℒp_of_mem_interior_nat
-    (h : 0 ∈ interior {x | Integrable (fun ω ↦ exp (x * X ω)) μ}) (n : ℕ) :
+lemma memℒp_of_mem_interior_nat (h : 0 ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     Memℒp X n μ := by
   by_cases hn : n = 0
   · simp only [hn, CharP.cast_eq_zero, memℒp_zero_iff_aestronglyMeasurable]
-    exact (aemeasurable_of_mem_interior_integrable_exp h).aestronglyMeasurable
+    exact (aemeasurable_of_mem_interior_integrableExpSet h).aestronglyMeasurable
   · exact memℒp_of_mem_interior_of_one_le (mod_cast (by omega)) h
 
-lemma memℒp_of_mem_interior (p : ℝ≥0) [IsFiniteMeasure μ]
-    (ht : 0 ∈ interior {x | Integrable (fun ω ↦ exp (x * X ω)) μ}) :
+lemma memℒp_of_mem_interior [IsFiniteMeasure μ]
+    (ht : 0 ∈ interior (integrableExpSet X μ)) (p : ℝ≥0) :
     Memℒp X p μ :=
   (memℒp_of_mem_interior_nat ht ⌈(p : ℝ)⌉₊).memℒp_of_exponent_le (mod_cast Nat.le_ceil _)
 
-end MemInterior
+end IntegrableExpSet
 
 end FiniteMoments
 
