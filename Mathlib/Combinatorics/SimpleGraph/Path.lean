@@ -242,7 +242,7 @@ lemma IsCycle.three_le_length {v : V} {p : G.Walk v v} (hp : p.IsCycle) : 3 ≤ 
   | .cons _ (.cons _ .nil) => simp at hp
   | .cons _ (.cons _ (.cons _ _)) => simp_rw [SimpleGraph.Walk.length_cons]; omega
 
-lemma not_nil_of_IsCycle_cons {p : G.Walk u v} {h : G.Adj v u} (hc : (Walk.cons h p).IsCycle) :
+lemma not_nil_of_isCycle_cons {p : G.Walk u v} {h : G.Adj v u} (hc : (Walk.cons h p).IsCycle) :
     ¬ p.Nil := by
   have := Walk.length_cons _ _ ▸ Walk.IsCycle.three_le_length hc
   rw [Walk.not_nil_iff_lt_length]
