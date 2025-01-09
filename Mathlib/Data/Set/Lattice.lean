@@ -248,8 +248,7 @@ theorem subset_iUnion : ∀ (s : ι → Set β) (i : ι), s i ⊆ ⋃ i, s i :=
 theorem iInter_subset : ∀ (s : ι → Set β) (i : ι), ⋂ i, s i ⊆ s i :=
   iInf_le
 
-lemma iInter_subset_iUnion {ι : Sort*} [Nonempty ι] {f : ι → Set α} : ⋂ i, f i ⊆ ⋃ i, f i :=
-  iInf_le_iSup
+lemma iInter_subset_iUnion [Nonempty ι] {s : ι → Set α} : ⋂ i, s i ⊆ ⋃ i, s i := iInf_le_iSup
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:107:6: warning: expanding binder group (i j) -/
 theorem subset_iUnion₂ {s : ∀ i, κ i → Set α} (i : ι) (j : κ i) : s i j ⊆ ⋃ (i') (j'), s i' j' :=
@@ -731,8 +730,8 @@ theorem biInter_subset_of_mem {s : Set α} {t : α → Set β} {x : α} (xs : x 
     ⋂ x ∈ s, t x ⊆ t x :=
   iInter₂_subset x xs
 
-lemma biInter_subset_biUnion {ι : Type*} {s : Set ι} (hs : s.Nonempty) {f : ι → Set α} :
-    ⋂ i ∈ s, f i ⊆ ⋃ i ∈ s, f i := biInf_le_biSup hs
+lemma biInter_subset_biUnion {s : Set α} (hs : s.Nonempty) {t : α → Set β} :
+    ⋂ x ∈ s, t x ⊆ ⋃ x ∈ s, t x := biInf_le_biSup hs
 
 theorem biUnion_subset_biUnion_left {s s' : Set α} {t : α → Set β} (h : s ⊆ s') :
     ⋃ x ∈ s, t x ⊆ ⋃ x ∈ s', t x :=

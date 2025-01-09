@@ -632,7 +632,7 @@ theorem le_iSup (f : ι → α) (i : ι) : f i ≤ iSup f :=
 theorem iInf_le (f : ι → α) (i : ι) : iInf f ≤ f i :=
   sInf_le ⟨i, rfl⟩
 
-lemma iInf_le_iSup {ι : Sort*} [Nonempty ι] {f : ι → α} : ⨅ i, f i ≤ ⨆ i, f i :=
+lemma iInf_le_iSup [Nonempty ι] : ⨅ i, f i ≤ ⨆ i, f i :=
   (iInf_le _ (Classical.arbitrary _)).trans <| le_iSup _ (Classical.arbitrary _)
 
 @[deprecated le_iSup (since := "2024-12-13")]
