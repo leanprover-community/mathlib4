@@ -957,9 +957,6 @@ theorem SeminormedCommGroup.mem_closure_iff :
 @[to_additive]
 theorem SeminormedGroup.tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ} {l : Filter ι} :
     TendstoUniformlyOn f 1 l s ↔ ∀ ε > 0, ∀ᶠ i in l, ∀ x ∈ s, ‖f i x‖ < ε := by
-  #adaptation_note /-- nightly-2024-03-11.
-  Originally this was `simp_rw` instead of `simp only`,
-  but this creates a bad proof term with nested `OfNat.ofNat` that trips up `@[to_additive]`. -/
   simp only [tendstoUniformlyOn_iff, Pi.one_apply, dist_one_left]
 
 @[to_additive]
