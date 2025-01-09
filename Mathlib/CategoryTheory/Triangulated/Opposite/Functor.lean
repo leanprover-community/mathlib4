@@ -32,9 +32,7 @@ namespace Pretriangulated.Opposite
 `CategoryTheory.Triangulated.Opposite.Basic`.
 -/
 noncomputable scoped instance commShiftOpInt : F.op.CommShift ℤ := by
-  letI F' : OppositeShift C ℤ ⥤ OppositeShift D ℤ := F.op
-  letI : F'.CommShift ℤ := F.commShiftOp ℤ
-  apply F'.commShiftPullback
+  apply (OppositeShift.functor ℤ F).commShiftPullback
 
 end Pretriangulated.Opposite
 

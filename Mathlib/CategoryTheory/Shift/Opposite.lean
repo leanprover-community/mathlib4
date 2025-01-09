@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Shift.Adjunction
 import Mathlib.CategoryTheory.Preadditive.Opposite
-import Mathlib.CategoryTheory.Adjunction.Opposites
 
 /-!
 # The (naive) shift on the opposite category
@@ -121,18 +120,37 @@ lemma oppositeShiftFunctorAdd'_hom_app :
 
 end
 
-variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D) (A : Type*) [AddMonoid A]
-  [HasShift C A] [HasShift D A]
+variable {C D : Type*} [Category C] [Category D] (A : Type*) [AddMonoid A]
+  [HasShift C A] [HasShift D A] (F : C ⥤ D)
+
+/--
+The functor `F.op`, seen as a functor from `OppositeShift C A` to `OppositeShift D A`.
+(We will use this to carry a `CommShift` instance for the naive shifts on the opposite category.
+Then, in the pretriangulated case, we will be able to put a `CommShift` instance on `F.op`
+for the modified shifts and not deal with instance clashes.
+-/
+def OppositeShift.functor : OppositeShift C A ⥤ OppositeShift D A := F.op
+
+variable {F} in
+/--
+The natural transformation `τ`, seen as a natural transformation from `OppositeShift.functor F A`
+to `OppositeShift.functor G A`..
+-/
+def OppositeShift.natTrans {G : C ⥤ D} (τ : F ⟶ G) :
+    OppositeShift.functor A G ⟶ OppositeShift.functor A F where
+  app X := (NatTrans.op τ).app X
+  naturality X Y f := by
+     dsimp [OppositeShift.functor]
+     rw [← op_comp, ← τ.naturality, op_comp]
 
 namespace Functor
 
 /--
 Given a `CommShift` structure on `F`, this is the corresponding `CommShift` structure on
-`F.op` (for the naive shifts on the opposite categories).
+`OppositeShift.functor F` (for the naive shifts on the opposite categories).
 -/
-@[simps]
-noncomputable def commShiftOp [CommShift F A] :
-    CommShift (C := OppositeShift C A) (D := OppositeShift D A) F.op A where
+noncomputable instance commShiftOp [CommShift F A] :
+    CommShift (OppositeShift.functor A F) A where
   iso a := (NatIso.op (F.commShiftIso a)).symm
   zero := by
     simp only
@@ -151,15 +169,17 @@ noncomputable def commShiftOp [CommShift F A] :
     erw [oppositeShiftFunctorAdd_inv_app, oppositeShiftFunctorAdd_hom_app]
     rfl
 
+lemma commShiftOp_iso_eq [CommShift F A] (a : A) :
+    (OppositeShift.functor A F).commShiftIso a = (NatIso.op (F.commShiftIso a)).symm := rfl
+
 /--
-Given a `CommShift` structure on `F.op` (for the naive shifts on the opposite categories),
-this is the corresponding `CommShift` structure on `F`.
+Given a `CommShift` structure on `OppositeShift.functor F` (for the naive shifts on the opposite
+categories), this is the corresponding `CommShift` structure on `F`.
 -/
 @[simps]
 noncomputable def commShiftUnop
-    [CommShift (C := OppositeShift C A) (D := OppositeShift D A) F.op A] : CommShift F A where
-  iso a := NatIso.removeOp (F.op.commShiftIso (C := OppositeShift C A)
-    (D := OppositeShift D A) a).symm
+    [CommShift (OppositeShift.functor A F) A] : CommShift F A where
+  iso a := NatIso.removeOp ((OppositeShift.functor A F).commShiftIso a).symm
   zero := by
     simp only
     rw [commShiftIso_zero]
@@ -187,19 +207,79 @@ attribute [local instance] Functor.commShiftOp
 variable {F} {G : C ⥤ D} [F.CommShift A] [G.CommShift A]
 
 open Opposite in
-lemma commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
-    NatTrans.CommShift (C := OppositeShift C A) (D := OppositeShift D A) (NatTrans.op τ) A where
+instance commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
+    NatTrans.CommShift (OppositeShift.natTrans A τ) A where
       shift_comm _ := by
         ext
-        rw [← cancel_mono ((F.op.commShiftIso _ (C := OppositeShift C A)
-          (D := OppositeShift D A)).inv.app _), ← cancel_epi ((G.op.commShiftIso _
-          (C := OppositeShift C A) (D := OppositeShift D A)).inv.app _)]
+        rw [← cancel_mono (((OppositeShift.functor A F).commShiftIso _ ).inv.app _),
+          ← cancel_epi (((OppositeShift.functor A G).commShiftIso _).inv.app _)]
         dsimp
         simp only [assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj,
           Functor.op_obj, comp_id]
         exact (op_inj_iff _ _).mpr (NatTrans.shift_app_comm τ _ (unop _))
 
 end NatTrans
+
+namespace NatTrans
+
+variable (C) in
+/-- The obvious isomorphism between the identity of `OppositeShift C A` and
+`OppositeShift.functor (𝟙 C)`.
+-/
+def OppositeShift.natIsoId : 𝟭 (OppositeShift C A) ≅ OppositeShift.functor A (𝟭 C) := Iso.refl _
+
+/--
+The natural isomorphism `NatTrans.OppositeShift.natIsoId C A` commutes with shifts.
+-/
+instance : NatTrans.CommShift (OppositeShift.natIsoId C A).hom A where
+  shift_comm _ := by
+    ext
+    dsimp [OppositeShift.natIsoId, Functor.commShiftOp_iso_eq]
+    simp only [Functor.commShiftIso_id_hom_app, Functor.comp_obj, Functor.id_obj, Functor.map_id,
+      comp_id, Functor.commShiftIso_id_inv_app, CategoryTheory.op_id, id_comp]
+    rfl
+
+variable {E : Type*} [Category E] [HasShift E A] (G : D ⥤ E)
+
+/-- The obvious isomorphism between `OppositeShift.functor (F ⋙ G)` and the
+composition of `OppositeShift.functor F` and `OppositeShift.functor G`.
+-/
+def OppositeShift.natIsoComp : OppositeShift.functor A (F ⋙ G) ≅
+    OppositeShift.functor A F ⋙ OppositeShift.functor A G := Iso.refl _
+
+instance [F.CommShift A] [G.CommShift A] :
+    NatTrans.CommShift (OppositeShift.natIsoComp A F G).hom A where
+  shift_comm _ := by
+    ext
+    dsimp [OppositeShift.natIsoComp, Functor.commShiftOp_iso_eq]
+    simp only [Functor.map_id, comp_id, id_comp]
+    rfl
+
+end NatTrans
+
+/--
+The adjunction `adj`, seen as an adjunction between `OppositeShift.functor G`
+and `OppositeShift.functor F`.
+-/
+@[simps (config := .lemmasOnly)]
+def OppositeShift.adjunction {F} {G : D ⥤ C} (adj : F ⊣ G) :
+    OppositeShift.functor A G ⊣ OppositeShift.functor A F where
+  unit := (NatTrans.OppositeShift.natIsoId D A).hom ≫
+    OppositeShift.natTrans A adj.counit ≫ (NatTrans.OppositeShift.natIsoComp A G F).hom
+  counit := (NatTrans.OppositeShift.natIsoComp A F G).inv ≫
+    OppositeShift.natTrans A adj.unit ≫ (NatTrans.OppositeShift.natIsoId C A).inv
+  left_triangle_components _ := by
+    dsimp [OppositeShift.natTrans, NatTrans.OppositeShift.natIsoComp,
+      NatTrans.OppositeShift.natIsoId, OppositeShift.functor]
+    simp only [comp_id, id_comp, Quiver.Hom.unop_op]
+    rw [← op_comp, adj.right_triangle_components]
+    rfl
+  right_triangle_components _ := by
+    dsimp [OppositeShift.natTrans, NatTrans.OppositeShift.natIsoComp,
+      NatTrans.OppositeShift.natIsoId, OppositeShift.functor]
+    simp only [comp_id, id_comp, Quiver.Hom.unop_op]
+    rw [← op_comp, adj.left_triangle_components]
+    rfl
 
 namespace Adjunction
 
@@ -209,13 +289,13 @@ variable {F} {G : D ⥤ C} (adj : F ⊣ G)
 
 /--
 If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F` and `G`, then
-the opposite adjunction `G.op ⊣ F.op` is compatible with the opposite `CommShift` structures.
+the opposite adjunction `OppositeShift.adjunction adj` is compatible with the opposite
+`CommShift` structures.
 -/
 lemma commShift_op [F.CommShift A] [G.CommShift A]  [adj.CommShift A] :
-    Adjunction.CommShift (C := OppositeShift D A) (D := OppositeShift C A)
-      adj.op A where
-  commShift_unit := by dsimp; infer_instance
-  commShift_counit := by dsimp; infer_instance
+    Adjunction.CommShift (OppositeShift.adjunction A adj) A where
+  commShift_unit := by dsimp [OppositeShift.adjunction]; infer_instance
+  commShift_counit := by dsimp [OppositeShift.adjunction]; infer_instance
 
 end Adjunction
 
