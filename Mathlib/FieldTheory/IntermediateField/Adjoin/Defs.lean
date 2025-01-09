@@ -387,7 +387,7 @@ theorem adjoin_subset_adjoin_iff {F' : Type*} [Field F'] [Algebra F' E] {S S' : 
     (subset_adjoin _ _).trans h⟩, fun ⟨hF, hS⟩ =>
       (Subfield.closure_le (t := (adjoin F' S').toSubfield)).mpr (Set.union_subset hF hS)⟩
 
-/-- `F[S][T] = F[S ∪ T]` -/
+/-- Adjoining S and then T is the same as adjoining `S ∪ T`. -/
 theorem adjoin_adjoin_left (T : Set E) :
     (adjoin (adjoin F S) T).restrictScalars _ = adjoin F (S ∪ T) := by
   rw [SetLike.ext'_iff]
