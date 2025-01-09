@@ -189,8 +189,8 @@ lemma Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
 end ringChar
 
 lemma CharP.neg_one_ne_one [Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)] : (-1 : R) ≠ (1 : R) := by
-  rw [ne_comm, ← sub_ne_zero, sub_neg_eq_add, one_add_one_eq_two,
-    show (2 : R) = (2 : ℕ) by norm_cast, Ne, CharP.cast_eq_zero_iff R p 2]
+  rw [ne_comm, ← sub_ne_zero, sub_neg_eq_add, one_add_one_eq_two, ← Nat.cast_two, Ne,
+    CharP.cast_eq_zero_iff R p 2]
   exact fun h ↦ (Fact.out : 2 < p).not_le <| Nat.le_of_dvd (by decide) h
 
 namespace CharP
