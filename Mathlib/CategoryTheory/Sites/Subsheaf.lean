@@ -57,7 +57,7 @@ instance : PartialOrder (Subpresheaf F) :=
   PartialOrder.lift Subpresheaf.obj (fun _ _ => Subpresheaf.ext)
 
 instance : Top (Subpresheaf F) :=
-  ⟨⟨fun _ => ⊤, @fun U _ _ x _ => by aesop_cat⟩⟩
+  ⟨⟨fun _ => ⊤, @fun U _ _ x _ => by simp⟩⟩
 
 instance : Nonempty (Subpresheaf F) :=
   inferInstance
@@ -98,7 +98,7 @@ instance {G G' : Subpresheaf F} (h : G ≤ G') : Mono (Subpresheaf.homOfLe h) :=
     NatTrans.ext <|
       funext fun U =>
         funext fun x =>
-          Subtype.ext <| (congr_arg Subtype.val <| (congr_fun (congr_app e U) x : _) : _)⟩
+          Subtype.ext <| (congr_arg Subtype.val <| (congr_fun (congr_app e U) x :) :)⟩
 
 @[reassoc (attr := simp)]
 theorem Subpresheaf.homOfLe_ι {G G' : Subpresheaf F} (h : G ≤ G') :
@@ -194,7 +194,7 @@ theorem Subpresheaf.eq_sheafify (h : Presieve.IsSheaf J F) (hG : Presieve.IsShea
     exact ((hG _ hs).amalgamate _ (G.family_of_elements_compatible s)).2
   apply (h _ hs).isSeparatedFor.ext
   intro V i hi
-  exact (congr_arg Subtype.val ((hG _ hs).valid_glue (G.family_of_elements_compatible s) _ hi) : _)
+  exact (congr_arg Subtype.val ((hG _ hs).valid_glue (G.family_of_elements_compatible s) _ hi) :)
 
 theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
     Presieve.IsSheaf J (G.sheafify J).toPresheaf := by
@@ -293,7 +293,7 @@ theorem Subpresheaf.to_sheafify_lift_unique (h : Presieve.IsSheaf J F')
   rintro V i hi
   dsimp at hi
   rw [← FunctorToTypes.naturality, ← FunctorToTypes.naturality]
-  exact (congr_fun (congr_app e <| op V) ⟨_, hi⟩ : _)
+  exact (congr_fun (congr_app e <| op V) ⟨_, hi⟩ :)
 
 theorem Subpresheaf.sheafify_le (h : G ≤ G') (hF : Presieve.IsSheaf J F)
     (hG' : Presieve.IsSheaf J G'.toPresheaf) : G.sheafify J ≤ G' := by
@@ -358,7 +358,7 @@ instance isIso_toImagePresheaf {F F' : Cᵒᵖ ⥤ (Type (max v w))} (f : F ⟶ 
     · intro x y e
       have := (NatTrans.mono_iff_mono_app f).mp hf X
       rw [mono_iff_injective] at this
-      exact this (congr_arg Subtype.val e : _)
+      exact this (congr_arg Subtype.val e :)
     · rintro ⟨_, ⟨x, rfl⟩⟩
       exact ⟨x, rfl⟩
   apply NatIso.isIso_of_isIso_app
