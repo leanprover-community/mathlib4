@@ -315,25 +315,27 @@ lemma exists_pow_btwn_of_lt_mul {a b c : α} (h : a < b * c) (hb₀ : 0 < b) (hb
   rw [(Nat.succ_pred_eq_of_ne_zero hn).symm, pow_succ, mul_lt_mul_right hc₀] at H
   exact Nat.find_min this (Nat.sub_one_lt hn) H
 
-/-- If `0 < a < b * c` and `0 < c < 1`, then there is a power `c ^ n` with `n : ℤ`
+/-- If `a < b * c`, `b` is positive and `0 < c < 1`, then there is a power `c ^ n` with `n : ℤ`
 strictly between `a` and `b`. -/
-lemma exists_zpow_btwn_of_lt_mul {a b c : α} (h : a < b * c) (ha : 0 < a) (hc₀ : 0 < c)
+lemma exists_zpow_btwn_of_lt_mul {a b c : α} (h : a < b * c) (hb₀ : 0 < b) (hc₀ : 0 < c)
     (hc₁ : c < 1) :
     ∃ n : ℤ, a < c ^ n ∧ c ^ n < b := by
-  have hb₀ : 0 < b := pos_of_mul_pos_left (ha.trans h) hc₀.le
-  rcases le_or_lt b 1 with hb₁ | hb₁
-  · obtain ⟨n, hn⟩ := exists_pow_btwn_of_lt_mul h hb₀ hb₁ hc₀ hc₁
-    exact ⟨n, mod_cast hn⟩
-  · rcases lt_or_le a 1 with ha₁ | ha₁
-    · refine ⟨0, ?_⟩
-      rw [zpow_zero]
-      exact ⟨ha₁, hb₁⟩
-    · have : b⁻¹ < a⁻¹ * c := by rwa [lt_inv_mul_iff₀' ha, inv_mul_lt_iff₀ hb₀]
-      obtain ⟨n, hn₁, hn₂⟩ :=
-        exists_pow_btwn_of_lt_mul this (inv_pos_of_pos ha) (inv_le_one_of_one_le₀ ha₁) hc₀ hc₁
-      refine ⟨-n, ?_, ?_⟩
-      · rwa [lt_inv_comm₀ (pow_pos hc₀ n) ha, ← zpow_natCast, ← zpow_neg] at hn₂
-      · rwa [inv_lt_comm₀ hb₀ (pow_pos hc₀ n), ← zpow_natCast, ← zpow_neg] at hn₁
+  rcases le_or_lt a 0 with ha | ha
+  · obtain ⟨n, hn⟩ := exists_pow_lt_of_lt_one hb₀ hc₁
+    exact ⟨n, ha.trans_lt (zpow_pos hc₀ _), mod_cast hn⟩
+  · rcases le_or_lt b 1 with hb₁ | hb₁
+    · obtain ⟨n, hn⟩ := exists_pow_btwn_of_lt_mul h hb₀ hb₁ hc₀ hc₁
+      exact ⟨n, mod_cast hn⟩
+    · rcases lt_or_le a 1 with ha₁ | ha₁
+      · refine ⟨0, ?_⟩
+        rw [zpow_zero]
+        exact ⟨ha₁, hb₁⟩
+      · have : b⁻¹ < a⁻¹ * c := by rwa [lt_inv_mul_iff₀' ha, inv_mul_lt_iff₀ hb₀]
+        obtain ⟨n, hn₁, hn₂⟩ :=
+          exists_pow_btwn_of_lt_mul this (inv_pos_of_pos ha) (inv_le_one_of_one_le₀ ha₁) hc₀ hc₁
+        refine ⟨-n, ?_, ?_⟩
+        · rwa [lt_inv_comm₀ (pow_pos hc₀ n) ha, ← zpow_natCast, ← zpow_neg] at hn₂
+        · rwa [inv_lt_comm₀ hb₀ (pow_pos hc₀ n), ← zpow_natCast, ← zpow_neg] at hn₁
 
 end LinearOrderedSemifield
 
