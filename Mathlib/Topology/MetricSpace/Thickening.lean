@@ -658,36 +658,16 @@ theorem IsCompact.exists_thickening_image_subset
   · intro x hx
     have : {f x} ⊆ U := by rw [@singleton_subset_iff]; exact hKU hx
     obtain ⟨δ, hδ, hthick⟩ := (isCompact_singleton (x := f x)).exists_thickening_subset_open ho this
-    specialize hf ⟨x, hx⟩
-
     let V := f ⁻¹' (thickening (δ / 2) { f x})
     have : V ∈ 𝓝 x := by
-      apply hf
+      apply hf ⟨x, hx⟩
       apply isOpen_thickening.mem_nhds
       exact (self_subset_thickening (by positivity) _) rfl
-    use K ∩ V, inter_mem_nhdsWithin K this, δ / 2, by positivity, V
-    constructor
-    · rw [mem_nhdsSet_iff_exists]
-      -- Is this too ambitious? Is V really open, or do I need something weaker?
-      have hV : IsOpen V := sorry -- continuity or so? or too ambitious?
-      use V, hV, by simp, by simp
-    · calc thickening (δ / 2) (f '' V)
-        _ ⊆ thickening (δ / 2) (thickening (δ / 2) { f x}) :=
-          thickening_subset_of_subset _ (image_preimage_subset f _)
-        _ ⊆ thickening ((δ / 2) + (δ / 2)) ({ f x}) :=
-          thickening_thickening_subset (δ / 2) (δ / 2) {f x}
-        _ ⊆ U := by simp [hthick]
-
-  -- obtain ⟨r, hr₀, hr⟩ := (hK.image_of_continuousOn (hf.mono (subset_of_mem_nhdsSet hs))
-  --   ).exists_thickening_subset_open ho hKU.image_subset
-  -- refine ⟨r / 2, half_pos hr₀, f ⁻¹' thickening (r / 2) (f '' K),
-  --   hf.tendsto_nhdsSet hs (mapsTo_image _ _) (thickening_mem_nhdsSet _ (half_pos hr₀)), ?_⟩
-  -- calc
-  --   thickening (r / 2) (f '' (f ⁻¹' thickening (r / 2) (f '' K))) ⊆
-  --       thickening (r / 2) (thickening (r / 2) (f '' K)) :=
-  --     thickening_subset_of_subset _ (image_preimage_subset _ _)
-  --   _ ⊆ thickening (r / 2 + r / 2) (f '' K) := (thickening_thickening_subset _ _ _)
-  --   _ = thickening r (f '' K) := by rw [add_halves]
-  --   _ ⊆ U := hr
-
-#check IsCompact.induction_on
+    refine ⟨K ∩ (interior V), inter_mem_nhdsWithin K (interior_mem_nhds.mpr this),
+      δ / 2, by positivity, V, by rw [← subset_interior_iff_mem_nhdsSet]; simp, ?_⟩
+    calc thickening (δ / 2) (f '' V)
+      _ ⊆ thickening (δ / 2) (thickening (δ / 2) { f x}) :=
+        thickening_subset_of_subset _ (image_preimage_subset f _)
+      _ ⊆ thickening ((δ / 2) + (δ / 2)) ({ f x}) :=
+        thickening_thickening_subset (δ / 2) (δ / 2) {f x}
+      _ ⊆ U := by simp [hthick]
