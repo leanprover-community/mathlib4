@@ -126,5 +126,5 @@ def IsManifold.locallyRingedSpace : LocallyRingedSpace where
   IsSheaf := (smoothSheafCommRing IM 𝓘(𝕜) M 𝕜).cond
   isLocalRing x := smoothSheafCommRing.instLocalRing_stalk IM x
 
-@[deprecated (since := "2024-12-08")]
+@[deprecated (since := "2025-01-09")]
 noncomputable alias SmoothManifoldWithCorners.locallyRingedSpace := IsManifold.locallyRingedSpace

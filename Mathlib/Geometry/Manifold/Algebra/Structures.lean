@@ -28,7 +28,7 @@ class ContMDiffRing (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
     [ChartedSpace H R] extends ContMDiffAdd I n R : Prop where
   contMDiff_mul : ContMDiff (I.prod I) I n fun p : R × R => p.1 * p.2
 
-@[deprecated (since := "2024-12-08")] alias SmoothRing := ContMDiffRing
+@[deprecated (since := "2025-01-09")] alias SmoothRing := ContMDiffRing
 
 -- see Note [lower instance priority]
 instance (priority := 100) ContMDiffRing.toContMDiffMul (I : ModelWithCorners 𝕜 E H) (R : Type*)
@@ -67,5 +67,5 @@ theorem topologicalSemiring_of_contMDiffRing  [Semiring R] [ContMDiffRing I n R]
     TopologicalSemiring R :=
   { continuousMul_of_contMDiffMul I n, continuousAdd_of_contMDiffAdd I n with }
 
-@[deprecated (since := "2024-12-08")]
+@[deprecated (since := "2025-01-09")]
 alias topologicalSemiring_of_smooth := topologicalSemiring_of_contMDiffRing

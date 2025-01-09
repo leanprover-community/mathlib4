@@ -233,7 +233,7 @@ class ContMDiffInv₀ {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} 
   /-- Inversion is `C^n` away from `0`. -/
   contMDiffAt_inv₀ : ∀ ⦃x : G⦄, x ≠ 0 → ContMDiffAt I I n (fun y ↦ y⁻¹) x
 
-@[deprecated (since := "2024-12-08")] alias SmoothInv₀ := ContMDiffInv₀
+@[deprecated (since := "2025-01-09")] alias SmoothInv₀ := ContMDiffInv₀
 
 instance {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} : ContMDiffInv₀ 𝓘(𝕜) n 𝕜 where
   contMDiffAt_inv₀ x hx := by
@@ -287,7 +287,7 @@ note [Design choices about smooth algebraic structures]. -/
 theorem hasContinuousInv₀_of_hasContMDiffInv₀ : HasContinuousInv₀ G :=
   { continuousAt_inv₀ := fun _ hx ↦ (contMDiffAt_inv₀ (I := I) (n := n) hx).continuousAt }
 
-@[deprecated (since := "2024-12-08")]
+@[deprecated (since := "2025-01-09")]
 alias hasContinuousInv₀_of_hasSmoothInv₀ := hasContinuousInv₀_of_hasContMDiffInv₀
 
 theorem contMDiffOn_inv₀ : ContMDiffOn I I n (Inv.inv : G → G) {0}ᶜ := fun _x hx =>

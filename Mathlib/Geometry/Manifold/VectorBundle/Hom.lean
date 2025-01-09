@@ -85,7 +85,7 @@ instance Bundle.ContinuousLinearMap.vectorPrebundle.isContMDiff :
       contMDiffOn_continuousLinearMapCoordChange,
       continuousLinearMapCoordChange_apply (RingHom.id 𝕜) e₁ e₁' e₂ e₂'⟩
 
-@[deprecated (since := "2024-12-08")]
+@[deprecated (since := "2025-01-09")]
 alias Bundle.ContinuousLinearMap.vectorPrebundle.isSmooth :=
   Bundle.ContinuousLinearMap.vectorPrebundle.isContMDiff
 

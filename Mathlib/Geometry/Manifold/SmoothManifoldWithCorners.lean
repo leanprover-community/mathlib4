@@ -661,7 +661,7 @@ class IsManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [TopologicalSpace M] [ChartedSpace H M] extends
     HasGroupoid M (contDiffGroupoid n I) : Prop
 
-@[deprecated (since := "2024-12-08")] alias SmoothManifoldWithCorners := IsManifold
+@[deprecated (since := "2025-01-09")] alias SmoothManifoldWithCorners := IsManifold
 
 /-- Building a `C^n` manifold from a `HasGroupoid` assumption. -/
 theorem IsManifold.mk' {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
@@ -671,7 +671,7 @@ theorem IsManifold.mk' {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [gr : HasGroupoid M (contDiffGroupoid n I)] : IsManifold I n M :=
   { gr with }
 
-@[deprecated (since := "2024-12-08")] alias SmoothManifoldWithCorners.mk' := IsManifold.mk'
+@[deprecated (since := "2025-01-09")] alias SmoothManifoldWithCorners.mk' := IsManifold.mk'
 
 theorem isManifold_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
@@ -684,7 +684,7 @@ theorem isManifold_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     haveI : HasGroupoid M (contDiffGroupoid n I) := hasGroupoid_of_pregroupoid _ (h _ _)
     apply StructureGroupoid.compatible
 
-@[deprecated (since := "2024-12-08")]
+@[deprecated (since := "2025-01-09")]
 alias smoothManifoldWithCorners_of_contDiffOn := isManifold_of_contDiffOn
 
 /-- For any model with corners, the model space is a `C^n` manifold -/
@@ -807,7 +807,7 @@ theorem PartialHomeomorph.isManifold_singleton
   @IsManifold.mk' _ _ _ _ _ _ _ _ _ _ _ (id _) <|
     e.singleton_hasGroupoid h (contDiffGroupoid n I)
 
-@[deprecated (since := "2024-12-08")]
+@[deprecated (since := "2025-01-09")]
 alias PartialHomeomorph.singleton_smoothManifoldWithCorners :=
   PartialHomeomorph.isManifold_singleton
 
@@ -818,7 +818,7 @@ theorem Topology.IsOpenEmbedding.isManifold_singleton {𝕜 E H : Type*}
     @IsManifold 𝕜 _ E _ _ H _ I n M _ h.singletonChartedSpace :=
   (h.toPartialHomeomorph f).isManifold_singleton (by simp)
 
-@[deprecated (since := "2024-12-08")]
+@[deprecated (since := "2025-01-09")]
 alias Topology.IsOpenEmbedding.singleton_smoothManifoldWithCorners :=
   Topology.IsOpenEmbedding.isManifold_singleton
 

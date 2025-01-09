@@ -47,7 +47,7 @@ class ContMDiffAdd {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
     Prop where
   contMDiff_add : ContMDiff (I.prod I) I n fun p : G × G => p.1 + p.2
 
-@[deprecated (since := "2024-12-08")] alias SmoothAdd := ContMDiffAdd
+@[deprecated (since := "2025-01-09")] alias SmoothAdd := ContMDiffAdd
 
 -- See note [Design choices about smooth algebraic structures]
 /-- Basic hypothesis to talk about a `C^n` (Lie) monoid or a `C^n` semigroup.
@@ -61,7 +61,7 @@ class ContMDiffMul {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [To
     Prop where
   contMDiff_mul : ContMDiff (I.prod I) I n fun p : G × G => p.1 * p.2
 
-@[deprecated (since := "2024-12-08")] alias SmoothMul := ContMDiffMul
+@[deprecated (since := "2025-01-09")] alias SmoothMul := ContMDiffMul
 
 section ContMDiffMul
 
@@ -114,7 +114,7 @@ technical reasons, see note [Design choices about smooth algebraic structures]."
 theorem continuousMul_of_contMDiffMul [ContMDiffMul I n G] : ContinuousMul G :=
   ⟨(contMDiff_mul I n).continuous⟩
 
-@[deprecated (since := "2024-12-08")] alias continuousMul_of_smooth := continuousMul_of_contMDiffMul
+@[deprecated (since := "2025-01-09")] alias continuousMul_of_smooth := continuousMul_of_contMDiffMul
 
 end
 
@@ -295,7 +295,7 @@ structure ContMDiffAddMonoidMorphism (I : ModelWithCorners 𝕜 E H) (I' : Model
     extends G →+ G' where
   contMDiff_toFun : ContMDiff I I' n toFun
 
-@[deprecated (since := "2024-12-08")] alias SmoothAddMonoidMorphism := ContMDiffAddMonoidMorphism
+@[deprecated (since := "2025-01-09")] alias SmoothAddMonoidMorphism := ContMDiffAddMonoidMorphism
 
 /-- Morphism of `C^n` monoids. -/
 @[to_additive]
@@ -305,7 +305,7 @@ structure ContMDiffMonoidMorphism (I : ModelWithCorners 𝕜 E H) (I' : ModelWit
     G →* G' where
   contMDiff_toFun : ContMDiff I I' n toFun
 
-@[deprecated (since := "2024-12-08")] alias SmoothMonoidMorphism := ContMDiffMonoidMorphism
+@[deprecated (since := "2025-01-09")] alias SmoothMonoidMorphism := ContMDiffMonoidMorphism
 
 @[to_additive]
 instance : One (ContMDiffMonoidMorphism I I' n G G') :=

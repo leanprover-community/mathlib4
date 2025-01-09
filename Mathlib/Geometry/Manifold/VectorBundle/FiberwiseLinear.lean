@@ -141,7 +141,7 @@ theorem ContMDiffFiberwiseLinear.locality_aux₁
   · intro y hy; exact ⟨(y, 0), heu ⟨p, hp⟩ ⟨_, _⟩ hy, rfl⟩
   · rw [← hesu, e.restr_source_inter]; exact heφ ⟨p, hp⟩
 
-@[deprecated (since := "2024-12-08")]
+@[deprecated (since := "2025-01-09")]
 alias SmoothFiberwiseLinear.locality_aux₁ := ContMDiffFiberwiseLinear.locality_aux₁
 
 /-- Let `e` be a partial homeomorphism of `B × F` whose source is `U ×ˢ univ`, for some set `U` in
@@ -217,7 +217,7 @@ theorem ContMDiffFiberwiseLinear.locality_aux₂
   rw [hΦφ]
   apply hux
 
-@[deprecated (since := "2024-12-08")]
+@[deprecated (since := "2025-01-09")]
 alias SmoothFiberwiseLinear.locality_aux₂ := ContMDiffFiberwiseLinear.locality_aux₂
 
 -- Having this private lemma speeds up `simp` calls below a lot.
@@ -288,7 +288,7 @@ def contMDiffFiberwiseLinear (n : WithTop ℕ∞) : StructureGroupoid (B × F) w
     rintro e e' ⟨φ, U, hU, hφ, h2φ, heφ⟩ hee'
     exact ⟨φ, U, hU, hφ, h2φ, Setoid.trans hee' heφ⟩
 
-@[deprecated (since := "2024-12-08")] alias smoothFiberwiseLinear := contMDiffFiberwiseLinear
+@[deprecated (since := "2025-01-09")] alias smoothFiberwiseLinear := contMDiffFiberwiseLinear
 
 @[simp]
 theorem mem_contMDiffFiberwiseLinear_iff {n : WithTop ℕ∞} (e : PartialHomeomorph (B × F) (B × F)) :
@@ -299,5 +299,5 @@ theorem mem_contMDiffFiberwiseLinear_iff {n : WithTop ℕ∞} (e : PartialHomeom
         e.EqOnSource (FiberwiseLinear.partialHomeomorph φ hU hφ.continuousOn h2φ.continuousOn) :=
   mem_aux
 
-@[deprecated (since := "2024-12-08")]
+@[deprecated (since := "2025-01-09")]
 alias mem_smoothFiberwiseLinear_iff := mem_contMDiffFiberwiseLinear_iff
