@@ -231,12 +231,12 @@ variable [NoZeroSMulDivisors R S]
 attribute [local instance] Ideal.Quotient.field
 
 private noncomputable def f (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
-    (hx' : IsIntegral R x) : S ⧸ I.map (algebraMap R S) ≃+*
-    (R ⧸ I)[X] ⧸ span {(minpoly R x).map (Ideal.Quotient.mk I)} :=
-    (quotAdjoinEquivQuotMap hx (NoZeroSMulDivisors.algebraMap_injective
-    (Algebra.adjoin R {x}) S)).symm.trans
-    (((Algebra.adjoin.powerBasis' hx').quotientEquivQuotientMinpolyMap I).toRingEquiv.trans
-    (quotEquivOfEq (by rw [Algebra.adjoin.powerBasis'_minpoly_gen hx'])))
+    (hx' : IsIntegral R x) :
+    S ⧸ I.map (algebraMap R S) ≃+* (R ⧸ I)[X] ⧸ span {(minpoly R x).map (Ideal.Quotient.mk I)} :=
+  (quotAdjoinEquivQuotMap hx (NoZeroSMulDivisors.algebraMap_injective
+    (Algebra.adjoin R {x}) S)).symm.trans <|
+    ((Algebra.adjoin.powerBasis' hx').quotientEquivQuotientMinpolyMap I).toRingEquiv.trans <|
+    quotEquivOfEq (by rw [Algebra.adjoin.powerBasis'_minpoly_gen hx'])
 
 private lemma f_symm_aux (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (hx' : IsIntegral R x) (Q : R[X]) :
