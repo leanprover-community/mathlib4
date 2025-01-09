@@ -41,9 +41,9 @@ private lemma rot_coprime
     {hp : 0 < p} {hq : 0 < q} {hr : 0 < r}
     {hu : u ≠ 0} {hv : v ≠ 0} {hw : w ≠ 0}
     (heq : C u * a ^ p + C v * b ^ q + C w * c ^ r = 0) (hab : IsCoprime a b) : IsCoprime b c := by
-  have hCu : IsUnit (C u) := Ne.isUnit_C hu
-  have hCv : IsUnit (C v) := Ne.isUnit_C hv
-  have hCw : IsUnit (C w) := Ne.isUnit_C hw
+  have hCu : IsUnit (C u) := hu.isUnit_C
+  have hCv : IsUnit (C v) := hv.isUnit_C
+  have hCw : IsUnit (C w) := hw.isUnit_C
   rw [← IsCoprime.pow_iff hp hq, ← isCoprime_mul_units_left hCu hCv] at hab
   rw [add_eq_zero_iff_neg_eq] at heq
   rw [← IsCoprime.pow_iff hq hr, ← isCoprime_mul_units_left hCv hCw,
@@ -96,32 +96,32 @@ private theorem Polynomial.flt_catalan_deriv [DecidableEq k]
       (mul_ne_zero hCu hap) (mul_ne_zero hCv hbq) (mul_ne_zero hCw hcr)
       habp heq with nd_lt | dr0
   · simp_rw [radical_mul habcp, radical_mul habp,
-        radical_mul_of_isUnit_left hu.isUnit_C,
-        radical_mul_of_isUnit_left hv.isUnit_C,
-        radical_mul_of_isUnit_left hw.isUnit_C,
-        radical_pow a hp, radical_pow b hq, radical_pow c hr,
-        natDegree_mul hCu hap,
-        natDegree_mul hCv hbq,
-        natDegree_mul hCw hcr,
-        natDegree_C, natDegree_pow, zero_add,
-        ← radical_mul hab,
-        ← radical_mul (hca.symm.mul_left hbc)] at nd_lt
+      radical_mul_of_isUnit_left hu.isUnit_C,
+      radical_mul_of_isUnit_left hv.isUnit_C,
+      radical_mul_of_isUnit_left hw.isUnit_C,
+      radical_pow a hp, radical_pow b hq, radical_pow c hr,
+      natDegree_mul hCu hap,
+      natDegree_mul hCv hbq,
+      natDegree_mul hCw hcr,
+      natDegree_C, natDegree_pow, zero_add,
+      ← radical_mul hab,
+      ← radical_mul (hca.symm.mul_left hbc)] at nd_lt
 
     obtain ⟨hpa', hqb', hrc'⟩ := nd_lt
     have hpa := hpa'.trans natDegree_radical_le
     have hqb := hqb'.trans natDegree_radical_le
     have hrc := hrc'.trans natDegree_radical_le
     rw [natDegree_mul (mul_ne_zero ha hb) hc,
-        natDegree_mul ha hb, Nat.add_one_le_iff] at hpa hqb hrc
+      natDegree_mul ha hb, Nat.add_one_le_iff] at hpa hqb hrc
     exfalso
     exact (ineq_pqr_contradiction hp hq hr hineq hpa hqb hrc)
   · rw [derivative_C_mul, derivative_C_mul, derivative_C_mul,
-        mul_eq_zero_iff_left (C_ne_zero.mpr hu),
-        mul_eq_zero_iff_left (C_ne_zero.mpr hv),
-        mul_eq_zero_iff_left (C_ne_zero.mpr hw),
-        derivative_pow_eq_zero chp,
-        derivative_pow_eq_zero chq,
-        derivative_pow_eq_zero chr] at dr0
+      mul_eq_zero_iff_left (C_ne_zero.mpr hu),
+      mul_eq_zero_iff_left (C_ne_zero.mpr hv),
+      mul_eq_zero_iff_left (C_ne_zero.mpr hw),
+      derivative_pow_eq_zero chp,
+      derivative_pow_eq_zero chq,
+      derivative_pow_eq_zero chr] at dr0
     exact dr0
 
 -- helper lemma that gives a baggage of small facts on `contract (ringChar k) a`

@@ -65,7 +65,7 @@ theorem orbit.pairwiseDisjoint :
   exact (orbit.eq_or_disjoint x y).resolve_right h
 
 /-- Orbits of an element form a partition -/
-@[to_additive "Orbits of an element of a partition"]
+@[to_additive "Orbits of an element form a partition"]
 theorem IsPartition.of_orbits :
     Setoid.IsPartition (Set.range fun a : X => orbit G a) := by
   apply orbit.pairwiseDisjoint.isPartition_of_exists_of_ne_empty
@@ -80,7 +80,7 @@ section SMul
 
 variable (G : Type*) {X : Type*} [SMul G X] {B : Set X} {a : X}
 
--- Change terminology : is_fully_invariant ?
+-- Change terminology to IsFullyInvariant?
 /-- A set `B` is a `G`-fixed block if `g • B = B` for all `g : G`. -/
 @[to_additive "A set `B` is a `G`-fixed block if `g +ᵥ B = B` for all `g : G`."]
 def IsFixedBlock (B : Set X) := ∀ g : G, g • B = B
