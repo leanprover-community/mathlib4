@@ -32,7 +32,7 @@ theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := 
 
 @[aesop safe apply (rule_sets := [SetLike])]
 lemma ofNat_mem [AddSubmonoidWithOneClass S R] (s : S) (n : ℕ) [n.AtLeastTwo] :
-    no_index (OfNat.ofNat n) ∈ s := by
+    ofNat(n) ∈ s := by
   rw [← Nat.cast_ofNat]; exact natCast_mem s n
 
 instance (priority := 74) AddSubmonoidWithOneClass.toAddMonoidWithOne
@@ -161,11 +161,11 @@ theorem copy_eq (S : Subsemiring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = 
   SetLike.coe_injective hs
 
 theorem toSubmonoid_injective : Function.Injective (toSubmonoid : Subsemiring R → Submonoid R)
-  | _, _, h => ext (SetLike.ext_iff.mp h : _)
+  | _, _, h => ext (SetLike.ext_iff.mp h :)
 
 theorem toAddSubmonoid_injective :
     Function.Injective (toAddSubmonoid : Subsemiring R → AddSubmonoid R)
-  | _, _, h => ext (SetLike.ext_iff.mp h : _)
+  | _, _, h => ext (SetLike.ext_iff.mp h :)
 
 /-- Construct a `Subsemiring R` from a set `s`, a submonoid `sm`, and an additive
 submonoid `sa` such that `x ∈ s ↔ x ∈ sm ↔ x ∈ sa`. -/
