@@ -514,7 +514,6 @@ theorem subset_eq_empty {s t : Set α} (h : t ⊆ s) (e : s = ∅) : t = ∅ :=
 
 theorem forall_mem_empty {p : α → Prop} : (∀ x ∈ (∅ : Set α), p x) ↔ True :=
   iff_true_intro fun _ => False.elim
-@[deprecated (since := "2024-03-23")] alias ball_empty_iff := forall_mem_empty
 
 instance (α : Type u) : IsEmpty.{u + 1} (↥(∅ : Set α)) :=
   ⟨fun x => x.2⟩
@@ -843,10 +842,6 @@ theorem union_inter_distrib_left (s t u : Set α) : s ∪ t ∩ u = (s ∪ t) �
 theorem inter_union_distrib_right (s t u : Set α) : s ∩ t ∪ u = (s ∪ u) ∩ (t ∪ u) :=
   sup_inf_right _ _ _
 
-@[deprecated (since := "2024-03-22")] alias inter_distrib_left := inter_union_distrib_left
-@[deprecated (since := "2024-03-22")] alias inter_distrib_right := union_inter_distrib_right
-@[deprecated (since := "2024-03-22")] alias union_distrib_left := union_inter_distrib_left
-@[deprecated (since := "2024-03-22")] alias union_distrib_right := inter_union_distrib_right
 
 theorem union_union_distrib_left (s t u : Set α) : s ∪ (t ∪ u) = s ∪ t ∪ (s ∪ u) :=
   sup_sup_distrib_left _ _ _
@@ -979,12 +974,10 @@ theorem forall_insert_of_forall {P : α → Prop} {a : α} {s : Set α} (H : ∀
 theorem exists_mem_insert {P : α → Prop} {a : α} {s : Set α} :
     (∃ x ∈ insert a s, P x) ↔ (P a ∨ ∃ x ∈ s, P x) := by
   simp [mem_insert_iff, or_and_right, exists_and_left, exists_or]
-@[deprecated (since := "2024-03-23")] alias bex_insert_iff := exists_mem_insert
 
 theorem forall_mem_insert {P : α → Prop} {a : α} {s : Set α} :
     (∀ x ∈ insert a s, P x) ↔ P a ∧ ∀ x ∈ s, P x :=
   forall₂_or_left.trans <| and_congr_left' forall_eq
-@[deprecated (since := "2024-03-23")] alias ball_insert_iff := forall_mem_insert
 
 /-- Inserting an element to a set is equivalent to the option type. -/
 def subtypeInsertEquivOption

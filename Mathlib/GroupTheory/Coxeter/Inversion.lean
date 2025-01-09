@@ -42,6 +42,8 @@ inversions of $w$ in some order, but we do not prove that in this file.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace CoxeterSystem
 
 open List Matrix Function

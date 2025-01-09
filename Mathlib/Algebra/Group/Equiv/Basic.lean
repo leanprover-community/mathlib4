@@ -634,6 +634,34 @@ protected theorem map_div [Group G] [DivisionMonoid H] (h : G ≃* H) (x y : G) 
 
 end MulEquiv
 
+namespace MonoidHom
+
+/-- The equivalence `(β →* γ) ≃ (α →* γ)` obtained by precomposition with
+a multiplicative equivalence `e : α ≃* β`. -/
+@[to_additive (attr := simps)
+"The equivalence `(β →+ γ) ≃ (α →+ γ)` obtained by precomposition with
+an additive equivalence `e : α ≃+ β`."]
+def precompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
+    (β →* γ) ≃ (α →* γ) where
+  toFun f := f.comp e
+  invFun g := g.comp e.symm
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
+/-- The equivalence `(γ →* α) ≃ (γ →* β)` obtained by postcomposition with
+a multiplicative equivalence `e : α ≃* β`. -/
+@[to_additive (attr := simps)
+"The equivalence `(γ →+ α) ≃ (γ →+ β)` obtained by postcomposition with
+an additive equivalence `e : α ≃+ β`."]
+def postcompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
+    (γ →* α) ≃ (γ →* β) where
+  toFun f := e.toMonoidHom.comp f
+  invFun g := e.symm.toMonoidHom.comp g
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
+end MonoidHom
+
 -- Porting note: we want to add
 -- `@[simps (config := .asFn)]`
 -- here, but it generates simp lemmas which aren't in simp normal form

@@ -46,6 +46,8 @@ prove analogous results.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace CoxeterSystem
 
 open List Matrix Function Classical
