@@ -48,12 +48,14 @@ but add these assumptions later as needed. (Quite a few results still do not req
   `extChartAt I x` is the canonical such partial equiv around `x`.
 
 As specific examples of models with corners, we define (in `Geometry.Manifold.Instances.Real`)
-* `modelWithCornersSelf ℝ (EuclideanSpace ℝ (Fin n))` for the model space used to define
+* `modelWithCornersEuclideanHalfSpace n :
+  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
   `n`-dimensional real manifolds without boundary (with notation `𝓡 n` in the locale `Manifold`)
 * `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
   used to define `n`-dimensional real manifolds with boundary (with notation `𝓡∂ n` in the locale
   `Manifold`)
-* `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
+* `modelWithCornersEuclideanQuadrant n :
+  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
   to define `n`-dimensional real manifolds with corners
 
 With these definitions at hand, to invoke an `n`-dimensional real manifold without boundary,
@@ -257,12 +259,12 @@ theorem target_eq : I.target = range (I : H → E) := by
 protected theorem uniqueDiffOn : UniqueDiffOn 𝕜 (range I) :=
   I.target_eq ▸ I.uniqueDiffOn'
 
+@[deprecated (since := "2024-09-30")]
+protected alias unique_diff := ModelWithCorners.uniqueDiffOn
+
 theorem range_subset_closure_interior : range I ⊆ closure (interior (range I)) := by
   rw [← I.target_eq]
   exact I.target_subset_closure_interior
-
-@[deprecated (since := "2024-09-30")]
-protected alias unique_diff := ModelWithCorners.uniqueDiffOn
 
 @[simp, mfld_simps]
 protected theorem left_inv (x : H) : I.symm (I x) = x := by refine I.left_inv' ?_; simp
@@ -301,7 +303,6 @@ alias closedEmbedding := isClosedEmbedding
 theorem isClosed_range : IsClosed (range I) :=
   I.isClosedEmbedding.isClosed_range
 
-@[deprecated (since := "2024-03-17")] alias closed_range := isClosed_range
 
 theorem range_eq_closure_interior : range I = closure (interior (range I)) :=
   Subset.antisymm I.range_subset_closure_interior I.isClosed_range.closure_interior_subset
@@ -369,7 +370,7 @@ protected theorem secondCountableTopology [SecondCountableTopology E] (I : Model
   I.isClosedEmbedding.isEmbedding.secondCountableTopology
 
 include I in
-/-- Every smooth manifold is a Fréchet space (T1 space) -- regardless of whether it is
+/-- Every manifold is a Fréchet space (T1 space) -- regardless of whether it is
 Hausdorff. -/
 protected theorem t1Space (M : Type*) [TopologicalSpace M] [ChartedSpace H M] : T1Space M := by
   have : T2Space H := I.isClosedEmbedding.toIsEmbedding.t2Space
@@ -858,6 +859,12 @@ theorem map_extend_nhds {x : M} (hy : x ∈ f.source) :
     map (f.extend I) (𝓝 x) = 𝓝[range I] f.extend I x := by
   rwa [extend_coe, comp_apply, ← I.map_nhds_eq, ← f.map_nhds_eq, map_map]
 
+theorem map_extend_nhds_of_mem_interior_range {x : M} (hx : x ∈ f.source)
+    (h'x : f.extend I x ∈ interior (range I)) :
+    map (f.extend I) (𝓝 x) = 𝓝 (f.extend I x) := by
+  rw [f.map_extend_nhds hx, nhdsWithin_eq_nhds]
+  exact mem_of_superset (isOpen_interior.mem_nhds h'x) interior_subset
+
 theorem map_extend_nhds_of_boundaryless [I.Boundaryless] {x : M} (hx : x ∈ f.source) :
     map (f.extend I) (𝓝 x) = 𝓝 (f.extend I x) := by
   rw [f.map_extend_nhds hx, I.range_eq_univ, nhdsWithin_univ]
@@ -870,6 +877,12 @@ theorem extend_target_mem_nhdsWithin {y : M} (hy : y ∈ f.source) :
 theorem extend_image_nhd_mem_nhds_of_boundaryless [I.Boundaryless] {x} (hx : x ∈ f.source)
     {s : Set M} (h : s ∈ 𝓝 x) : (f.extend I) '' s ∈ 𝓝 ((f.extend I) x) := by
   rw [← f.map_extend_nhds_of_boundaryless hx, Filter.mem_map]
+  filter_upwards [h] using subset_preimage_image (f.extend I) s
+
+theorem extend_image_nhd_mem_nhds_of_mem_interior_range {x} (hx : x ∈ f.source)
+    (h'x : f.extend I x ∈ interior (range I)) {s : Set M} (h : s ∈ 𝓝 x) :
+    (f.extend I) '' s ∈ 𝓝 ((f.extend I) x) := by
+  rw [← f.map_extend_nhds_of_mem_interior_range hx h'x, Filter.mem_map]
   filter_upwards [h] using subset_preimage_image (f.extend I) s
 
 theorem extend_target_subset_range : (f.extend I).target ⊆ range I := by simp only [mfld_simps]
@@ -1169,6 +1182,12 @@ theorem map_extChartAt_nhds_of_boundaryless [I.Boundaryless] (x : M) :
   rw [extChartAt]
   exact map_extend_nhds_of_boundaryless (chartAt H x) (mem_chart_source H x)
 
+theorem extChartAt_image_nhd_mem_nhds_of_mem_interior_range {x y} (hx : y ∈ (extChartAt I x).source)
+    (h'x : extChartAt I x y ∈ interior (range I)) {s : Set M} (h : s ∈ 𝓝 y) :
+    (extChartAt I x) '' s ∈ 𝓝 (extChartAt I x y) := by
+  rw [extChartAt]
+  exact extend_image_nhd_mem_nhds_of_mem_interior_range _ (by simpa using hx) h'x h
+
 variable {x} in
 theorem extChartAt_image_nhd_mem_nhds_of_boundaryless [I.Boundaryless]
     {x : M} (hx : s ∈ 𝓝 x) : extChartAt I x '' s ∈ 𝓝 (extChartAt I x x) := by
@@ -1189,10 +1208,14 @@ theorem extChartAt_target_mem_nhdsWithin_of_mem {x : M} {y : E} (hy : y ∈ (ext
   apply extChartAt_target_mem_nhdsWithin'
   exact (extChartAt I x).map_target hy
 
-theorem extChartAt_target_union_comp_range_mem_nhds_of_mem {y : E} {x : M}
+theorem extChartAt_target_union_compl_range_mem_nhds_of_mem {y : E} {x : M}
     (hy : y ∈ (extChartAt I x).target) : (extChartAt I x).target ∪ (range I)ᶜ ∈ 𝓝 y := by
   rw [← nhdsWithin_univ, ← union_compl_self (range I), nhdsWithin_union]
   exact Filter.union_mem_sup (extChartAt_target_mem_nhdsWithin_of_mem hy) self_mem_nhdsWithin
+
+@[deprecated (since := "2024-11-27")] alias
+extChartAt_target_union_comp_range_mem_nhds_of_mem :=
+extChartAt_target_union_compl_range_mem_nhds_of_mem
 
 /-- If we're boundaryless, `extChartAt` has open target -/
 theorem isOpen_extChartAt_target [I.Boundaryless] (x : M) : IsOpen (extChartAt I x).target := by
@@ -1270,7 +1293,7 @@ lemma extChartAt_target_subset_closure_interior {x : M} :
   rw [mem_closure_iff_nhds]
   intro t ht
   have A : t ∩ ((extChartAt I x).target ∪ (range I)ᶜ) ∈ 𝓝 y :=
-    inter_mem ht (extChartAt_target_union_comp_range_mem_nhds_of_mem hy)
+    inter_mem ht (extChartAt_target_union_compl_range_mem_nhds_of_mem hy)
   have B : y ∈ closure (interior (range I)) := by
     apply I.range_subset_closure_interior (extChartAt_target_subset_range x hy)
   obtain ⟨z, ⟨tz, h'z⟩, hz⟩ :
@@ -1279,6 +1302,13 @@ lemma extChartAt_target_subset_closure_interior {x : M} :
   refine ⟨z, ⟨tz, ?_⟩⟩
   have h''z : z ∈ (extChartAt I x).target := by simpa [interior_subset hz] using h'z
   exact (extChartAt_target_eventuallyEq_of_mem h''z).symm.mem_interior hz
+
+variable (I) in
+theorem interior_extChartAt_target_nonempty (x : M) :
+    (interior (extChartAt I x).target).Nonempty := by
+  by_contra! H
+  have := extChartAt_target_subset_closure_interior (mem_extChartAt_target (I := I) x)
+  simp only [H, closure_empty, mem_empty_iff_false] at this
 
 lemma extChartAt_mem_closure_interior {x₀ x : M}
     (hx : x ∈ closure (interior s)) (h'x : x ∈ (extChartAt I x₀).source) :
@@ -1482,6 +1512,7 @@ theorem writtenInExtChartAt_chartAt_symm_comp [ChartedSpace H H'] (x : M') {y}
 end ExtendedCharts
 
 section Topology
+
 -- Let `M` be a topological manifold over the field 𝕜.
 variable
   {E : Type*} {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -1496,6 +1527,36 @@ lemma Manifold.locallyCompact_of_finiteDimensional
   have : ProperSpace E := FiniteDimensional.proper 𝕜 E
   have : LocallyCompactSpace H := I.locallyCompactSpace
   exact ChartedSpace.locallyCompactSpace H M
+
+variable (M)
+
+/-- A locally compact manifold must be modelled on a locally compact space. -/
+lemma LocallyCompactSpace.of_locallyCompact_manifold (I : ModelWithCorners 𝕜 E H)
+    [h : Nonempty M] [LocallyCompactSpace M] :
+    LocallyCompactSpace E := by
+  rcases h with ⟨x⟩
+  obtain ⟨y, hy⟩ := interior_extChartAt_target_nonempty I x
+  have h'y : y ∈ (extChartAt I x).target := interior_subset hy
+  obtain ⟨s, hmem, hss, hcom⟩ :=
+    LocallyCompactSpace.local_compact_nhds ((extChartAt I x).symm y) (extChartAt I x).source
+      ((isOpen_extChartAt_source x).mem_nhds ((extChartAt I x).map_target h'y))
+  have : IsCompact <| (extChartAt I x) '' s :=
+    hcom.image_of_continuousOn <| (continuousOn_extChartAt x).mono hss
+  apply this.locallyCompactSpace_of_mem_nhds_of_addGroup (x := y)
+  rw [← (extChartAt I x).right_inv h'y]
+  apply extChartAt_image_nhd_mem_nhds_of_mem_interior_range
+    (PartialEquiv.map_target (extChartAt I x) h'y) _ hmem
+  simp only [(extChartAt I x).right_inv h'y]
+  exact interior_mono (extChartAt_target_subset_range x) hy
+
+/-- Riesz's theorem applied to manifolds: a locally compact manifolds must be modelled on a
+  finite-dimensional space. This is the converse to
+  `Manifold.locallyCompact_of_finiteDimensional`. -/
+theorem FiniteDimensional.of_locallyCompact_manifold
+    [CompleteSpace 𝕜] (I : ModelWithCorners 𝕜 E H) [Nonempty M] [LocallyCompactSpace M] :
+    FiniteDimensional 𝕜 E := by
+  have := LocallyCompactSpace.of_locallyCompact_manifold M I
+  exact FiniteDimensional.of_locallyCompactSpace 𝕜
 
 end Topology
 

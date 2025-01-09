@@ -193,26 +193,34 @@ theorem nhds_zero_basis_Iic : (𝓝 (0 : ℝ≥0∞)).HasBasis (fun a : ℝ≥0�
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add a TC for `≠ ∞`?
 @[instance]
-theorem nhdsWithin_Ioi_coe_neBot {r : ℝ≥0} : (𝓝[>] (r : ℝ≥0∞)).NeBot :=
-  nhdsWithin_Ioi_self_neBot' ⟨∞, ENNReal.coe_lt_top⟩
+theorem nhdsGT_coe_neBot {r : ℝ≥0} : (𝓝[>] (r : ℝ≥0∞)).NeBot :=
+  nhdsGT_neBot_of_exists_gt ⟨∞, ENNReal.coe_lt_top⟩
+
+@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ioi_coe_neBot := nhdsGT_coe_neBot
+
+@[instance] theorem nhdsGT_zero_neBot : (𝓝[>] (0 : ℝ≥0∞)).NeBot := nhdsGT_coe_neBot
+
+@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ioi_zero_neBot := nhdsGT_zero_neBot
+
+@[instance] theorem nhdsGT_one_neBot : (𝓝[>] (1 : ℝ≥0∞)).NeBot := nhdsGT_coe_neBot
+
+@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ioi_one_neBot := nhdsGT_one_neBot
+
+@[instance] theorem nhdsGT_nat_neBot (n : ℕ) : (𝓝[>] (n : ℝ≥0∞)).NeBot := nhdsGT_coe_neBot
+
+@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ioi_nat_neBot := nhdsGT_nat_neBot
 
 @[instance]
-theorem nhdsWithin_Ioi_zero_neBot : (𝓝[>] (0 : ℝ≥0∞)).NeBot :=
-  nhdsWithin_Ioi_coe_neBot
+theorem nhdsGT_ofNat_neBot (n : ℕ) [n.AtLeastTwo] : (𝓝[>] (OfNat.ofNat n : ℝ≥0∞)).NeBot :=
+  nhdsGT_coe_neBot
+
+@[deprecated (since := "2024-12-22")] alias nhdsWithin_Ioi_ofNat_nebot := nhdsGT_ofNat_neBot
 
 @[instance]
-theorem nhdsWithin_Ioi_one_neBot : (𝓝[>] (1 : ℝ≥0∞)).NeBot := nhdsWithin_Ioi_coe_neBot
-
-@[instance]
-theorem nhdsWithin_Ioi_nat_neBot (n : ℕ) : (𝓝[>] (n : ℝ≥0∞)).NeBot := nhdsWithin_Ioi_coe_neBot
-
-@[instance]
-theorem nhdsWithin_Ioi_ofNat_nebot (n : ℕ) [n.AtLeastTwo] :
-    (𝓝[>] (OfNat.ofNat n : ℝ≥0∞)).NeBot := nhdsWithin_Ioi_coe_neBot
-
-@[instance]
-theorem nhdsWithin_Iio_neBot [NeZero x] : (𝓝[<] x).NeBot :=
+theorem nhdsLT_neBot [NeZero x] : (𝓝[<] x).NeBot :=
   nhdsWithin_Iio_self_neBot' ⟨0, NeZero.pos x⟩
+
+@[deprecated (since := "2024-12-22")] alias nhdsWithin_Iio_neBot := nhdsLT_neBot
 
 /-- Closed intervals `Set.Icc (x - ε) (x + ε)`, `ε ≠ 0`, form a basis of neighborhoods of an
 extended nonnegative real number `x ≠ ∞`. We use `Set.Icc` instead of `Set.Ioo` because this way the
@@ -279,6 +287,35 @@ instance : ContinuousAdd ℝ≥0∞ := by
 protected theorem tendsto_atTop_zero [Nonempty β] [SemilatticeSup β] {f : β → ℝ≥0∞} :
     Tendsto f atTop (𝓝 0) ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, f n ≤ ε :=
   .trans (atTop_basis.tendsto_iff nhds_zero_basis_Iic) (by simp only [true_and]; rfl)
+
+theorem tendsto_atTop_zero_iff_le_of_antitone {β : Type*} [Nonempty β] [SemilatticeSup β]
+    {f : β → ℝ≥0∞} (hf : Antitone f) :
+    Filter.Tendsto f Filter.atTop (𝓝 0) ↔ ∀ ε, 0 < ε → ∃ n : β, f n ≤ ε := by
+  rw [ENNReal.tendsto_atTop_zero]
+  refine ⟨fun h ↦ fun ε hε ↦ ?_, fun h ↦ fun ε hε ↦ ?_⟩
+  · obtain ⟨n, hn⟩ := h ε hε
+    exact ⟨n, hn n le_rfl⟩
+  · obtain ⟨n, hn⟩ := h ε hε
+    exact ⟨n, fun m hm ↦ (hf hm).trans hn⟩
+
+theorem tendsto_atTop_zero_iff_lt_of_antitone {β : Type*} [Nonempty β] [SemilatticeSup β]
+    {f : β → ℝ≥0∞} (hf : Antitone f) :
+    Filter.Tendsto f Filter.atTop (𝓝 0) ↔ ∀ ε, 0 < ε → ∃ n : β, f n < ε := by
+  rw [ENNReal.tendsto_atTop_zero_iff_le_of_antitone hf]
+  constructor <;> intro h ε hε
+  · obtain ⟨n, hn⟩ := h (min 1 (ε / 2))
+      (lt_min_iff.mpr ⟨zero_lt_one, (ENNReal.div_pos_iff.mpr ⟨ne_of_gt hε, ENNReal.two_ne_top⟩)⟩)
+    · refine ⟨n, hn.trans_lt ?_⟩
+      by_cases hε_top : ε = ∞
+      · rw [hε_top]
+        exact (min_le_left _ _).trans_lt ENNReal.one_lt_top
+      refine (min_le_right _ _).trans_lt ?_
+      rw [ENNReal.div_lt_iff (Or.inr hε.ne') (Or.inr hε_top)]
+      conv_lhs => rw [← mul_one ε]
+      rw [ENNReal.mul_lt_mul_left hε.ne' hε_top]
+      norm_num
+  · obtain ⟨n, hn⟩ := h ε hε
+    exact ⟨n, hn.le⟩
 
 theorem tendsto_sub : ∀ {a b : ℝ≥0∞}, (a ≠ ∞ ∨ b ≠ ∞) →
     Tendsto (fun p : ℝ≥0∞ × ℝ≥0∞ => p.1 - p.2) (𝓝 (a, b)) (𝓝 (a - b))
@@ -1168,7 +1205,7 @@ theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
 @[continuity, fun_prop]
 theorem Continuous.edist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => edist (f b) (g b) :=
-  continuous_edist.comp (hf.prod_mk hg : _)
+  continuous_edist.comp (hf.prod_mk hg :)
 
 theorem Filter.Tendsto.edist {f g : β → α} {x : Filter β} {a b : α} (hf : Tendsto f x (𝓝 a))
     (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x => edist (f x) (g x)) x (𝓝 (edist a b)) :=

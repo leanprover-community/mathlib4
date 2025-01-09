@@ -231,6 +231,10 @@ def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : ([1] : SimplexCategory) ⟶ [n]
       | 0, 1, _ => h
   }
 
+@[simp]
+lemma mkOfLe_refl {n} (j : Fin (n + 1)) :
+    mkOfLe j j (by omega) = [1].const [n] j := Hom.ext_one_left _ _
+
 /-- The morphism `[1] ⟶ [n]` that picks out the "diagonal composite" edge-/
 def diag (n : ℕ) : ([1] : SimplexCategory) ⟶ [n] :=
   mkOfLe 0 n (Fin.zero_le _)
@@ -725,15 +729,15 @@ instance {n} : Inhabited (Truncated n) :=
 /-- The fully faithful inclusion of the truncated simplex category into the usual
 simplex category.
 -/
-def inclusion {n : ℕ} : SimplexCategory.Truncated n ⥤ SimplexCategory :=
+def inclusion (n : ℕ) : SimplexCategory.Truncated n ⥤ SimplexCategory :=
   fullSubcategoryInclusion _
 
-instance (n : ℕ) : (inclusion : Truncated n ⥤ _).Full := FullSubcategory.full _
-instance (n : ℕ) : (inclusion : Truncated n ⥤ _).Faithful := FullSubcategory.faithful _
+instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Full := FullSubcategory.full _
+instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Faithful := FullSubcategory.faithful _
 
 /-- A proof that the full subcategory inclusion is fully faithful.-/
 noncomputable def inclusion.fullyFaithful (n : ℕ) :
-    (inclusion : Truncated n ⥤ _).op.FullyFaithful := Functor.FullyFaithful.ofFullyFaithful _
+    (inclusion n : Truncated n ⥤ _).op.FullyFaithful := Functor.FullyFaithful.ofFullyFaithful _
 
 @[ext]
 theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :

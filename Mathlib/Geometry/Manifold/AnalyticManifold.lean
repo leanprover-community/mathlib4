@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Lee, Geoffrey Irving
 -/
 import Mathlib.Analysis.Analytic.Constructions
-import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
 
 /-!
@@ -15,9 +14,6 @@ half-space (to get manifolds with boundaries) for which changes of coordinates a
 interior and smooth everywhere (including at the boundary).  The definition mirrors
 `SmoothManifoldWithCorners`, but using an `analyticGroupoid` in place of `contDiffGroupoid`.  All
 analytic manifolds are smooth manifolds.
-
-Completeness is required throughout, but this is nonessential: it is due to many of the lemmas about
-AnalyticOn` requiring completeness for ease of proof.
 -/
 
 noncomputable section
@@ -167,11 +163,10 @@ instance AnalyticManifold.prod {E A : Type} [NormedAddCommGroup E] [NormedSpace 
 
 /-- Analytic manifolds are smooth manifolds. -/
 instance AnalyticManifold.smoothManifoldWithCorners [ChartedSpace H M]
-    [cm : AnalyticManifold I M] [CompleteSpace E] :
+    [cm : AnalyticManifold I M] :
     SmoothManifoldWithCorners I M where
-  compatible := by
-    intro f g hf hg
-    have m := cm.compatible hf hg
-    exact ⟨m.1.contDiffOn, m.2.contDiffOn⟩
+  compatible hf hg := ⟨(cm.compatible hf hg).1.contDiffOn I.uniqueDiffOn_preimage_source,
+    (cm.compatible hg hf).1.contDiffOn I.uniqueDiffOn_preimage_source⟩
+
 
 end AnalyticManifold

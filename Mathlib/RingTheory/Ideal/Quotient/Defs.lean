@@ -89,7 +89,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext 1100]
 theorem ringHom_ext [NonAssocSemiring S] ⦃f g : R ⧸ I →+* S⦄ (h : f.comp (mk I) = g.comp (mk I)) :
     f = g :=
-  RingHom.ext fun x => Quotient.inductionOn' x <| (RingHom.congr_fun h : _)
+  RingHom.ext fun x => Quotient.inductionOn' x <| (RingHom.congr_fun h :)
 
 instance inhabited : Inhabited (R ⧸ I) :=
   ⟨mk I 37⟩

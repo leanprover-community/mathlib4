@@ -66,7 +66,7 @@ theorem decomposition_Q (n q : ℕ) :
       symm
       conv_rhs => rw [sub_eq_add_neg, add_comm]
       let q' : Fin (n + 1) := ⟨q, Nat.succ_le_iff.mp hqn⟩
-      rw [← @Finset.add_sum_erase _ _ _ _ _ _ q' (by simp)]
+      rw [← @Finset.add_sum_erase _ _ _ _ _ _ q' (by simp [q'])]
       congr
       · have hnaq' : n = a + q := by omega
         simp only [Fin.val_mk, (HigherFacesVanish.of_P q n).comp_Hσ_eq hnaq',

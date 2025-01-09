@@ -110,13 +110,8 @@ theorem grading.right_inv : Function.RightInverse (coeLinearMap (grading R)) gra
   induction' zz using DirectSum.induction_on with i zz d1 d2 ih1 ih2
   · simp only [map_zero]
   · rcases i with (_ | ⟨⟨⟩⟩) <;> rcases zz with ⟨⟨a, b⟩, hab : _ = _⟩ <;> dsimp at hab <;>
-      cases hab <;>
-      -- Porting note: proof was `decide`
-      -- now we need a `simp` and two `erw` subproofs...
-      simp only [coeLinearMap_of, decompose, AddMonoidHom.coe_mk,
-        ZeroHom.coe_mk, sub_self, sub_zero]
-    · erw [map_zero (of (grading R ·) 1), add_zero]; rfl
-    · erw [map_zero (of (grading R ·) 0), zero_add]; rfl
+      -- Porting note: proof was `decide` (without reverting any free variables).
+      cases hab <;> decide +revert
   · simp only [map_add, ih1, ih2]
 
 theorem grading.left_inv : Function.LeftInverse (coeLinearMap (grading R)) grading.decompose :=

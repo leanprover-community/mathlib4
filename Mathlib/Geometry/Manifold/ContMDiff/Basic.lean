@@ -62,19 +62,20 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
     filter_upwards [hf.1.tendsto (extChartAt_source_mem_nhds (I := I') (f x)),
       inter_mem_nhdsWithin s (extChartAt_source_mem_nhds (I := I) x)]
     rintro x' (hfx' : f x' ∈ e'.source) ⟨hx's, hx'⟩
-    simp only [e.map_source hx', true_and, e.left_inv hx', st hx's, *]
+    simp only [e, e.map_source hx', true_and, e.left_inv hx', st hx's, *]
   refine ((hg.2.comp _ (hf.2.mono inter_subset_right)
       ((mapsTo_preimage _ _).mono_left inter_subset_left)).mono_of_mem_nhdsWithin
       (inter_mem ?_ self_mem_nhdsWithin)).congr_of_eventuallyEq ?_ ?_
   · filter_upwards [A]
     rintro x' ⟨ht, hfx'⟩
-    simp only [*, mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,
+    simp only [*, e, e',mem_preimage, writtenInExtChartAt, (· ∘ ·), mem_inter_iff, e'.left_inv,
       true_and]
     exact mem_range_self _
   · filter_upwards [A]
     rintro x' ⟨-, hfx'⟩
-    simp only [*, (· ∘ ·), writtenInExtChartAt, e'.left_inv]
-  · simp only [e, e', writtenInExtChartAt, (· ∘ ·), mem_extChartAt_source, e.left_inv, e'.left_inv]
+    simp only [*, e, e', (· ∘ ·), writtenInExtChartAt, e'.left_inv]
+  · simp only [e, e', writtenInExtChartAt, (· ∘ ·), mem_extChartAt_source,
+      e.left_inv, e'.left_inv]
 
 /-- See note [comp_of_eq lemmas] -/
 theorem ContMDiffWithinAt.comp_of_eq {t : Set M'} {g : M' → M''} {x : M} {y : M'}

@@ -7,19 +7,19 @@ import Mathlib.Order.BoundedOrder.Basic
 import Mathlib.Order.Lattice
 
 /-!
-# bounded lattices
+# Bounded lattices
 
 This file defines top and bottom elements (greatest and least elements) of a type, the bounded
-variants of different kinds of lattices, sets up the typeclass hierarchy between them and provides
+variants of different kinds of lattices, sets up the typeclass hierarchy between them, and provides
 instances for `Prop` and `fun`.
 
 ## Common lattices
 
-* Distributive lattices with a bottom element. Notated by `[DistribLattice α] [OrderBot α]`
+* Distributive lattices with a bottom element. Notated by `[DistribLattice α] [OrderBot α]`.
   It captures the properties of `Disjoint` that are common to `GeneralizedBooleanAlgebra` and
   `DistribLattice` when `OrderBot`.
 * Bounded and distributive lattice. Notated by `[DistribLattice α] [BoundedOrder α]`.
-  Typical examples include `Prop` and `Det α`.
+  Typical examples include `Prop` and `Set α`.
 -/
 
 open Function OrderDual

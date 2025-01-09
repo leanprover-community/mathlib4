@@ -805,9 +805,6 @@ theorem lcm_eq_of_associated_right [NormalizedGCDMonoid α] {m n : α} (h : Asso
 
 end LCM
 
-@[deprecated (since := "2024-02-12")] alias GCDMonoid.prime_of_irreducible := Irreducible.prime
-@[deprecated (since := "2024-02-12")] alias GCDMonoid.irreducible_iff_prime := irreducible_iff_prime
-
 end GCDMonoid
 
 section UniqueUnit
@@ -815,14 +812,14 @@ section UniqueUnit
 variable [CancelCommMonoidWithZero α] [Subsingleton αˣ]
 
 -- see Note [lower instance priority]
-instance (priority := 100) normalizationMonoidOfUniqueUnits : NormalizationMonoid α where
+instance (priority := 100) NormalizationMonoid.ofUniqueUnits : NormalizationMonoid α where
   normUnit _ := 1
   normUnit_zero := rfl
   normUnit_mul _ _ := (mul_one 1).symm
   normUnit_coe_units _ := Subsingleton.elim _ _
 
 instance uniqueNormalizationMonoidOfUniqueUnits : Unique (NormalizationMonoid α) where
-  default := normalizationMonoidOfUniqueUnits
+  default := .ofUniqueUnits
   uniq := fun ⟨u, _, _, _⟩ => by congr; simp [eq_iff_true_of_subsingleton]
 
 instance subsingleton_gcdMonoid_of_unique_units : Subsingleton (GCDMonoid α) :=
@@ -1315,8 +1312,8 @@ namespace Associates
 variable [CancelCommMonoidWithZero α] [GCDMonoid α]
 
 instance instGCDMonoid : GCDMonoid (Associates α) where
-  gcd := Quotient.map₂' gcd fun _ _ (ha : Associated _ _) _ _ (hb : Associated _ _) => ha.gcd hb
-  lcm := Quotient.map₂' lcm fun _ _ (ha : Associated _ _) _ _ (hb : Associated _ _) => ha.lcm hb
+  gcd := Quotient.map₂ gcd fun _ _ (ha : Associated _ _) _ _ (hb : Associated _ _) => ha.gcd hb
+  lcm := Quotient.map₂ lcm fun _ _ (ha : Associated _ _) _ _ (hb : Associated _ _) => ha.lcm hb
   gcd_dvd_left := by rintro ⟨a⟩ ⟨b⟩; exact mk_le_mk_of_dvd (gcd_dvd_left _ _)
   gcd_dvd_right := by rintro ⟨a⟩ ⟨b⟩; exact mk_le_mk_of_dvd (gcd_dvd_right _ _)
   dvd_gcd := by

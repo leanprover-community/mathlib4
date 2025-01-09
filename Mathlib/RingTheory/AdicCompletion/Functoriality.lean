@@ -128,7 +128,7 @@ private theorem adicCompletionAux_val_apply (f : M →ₗ[R] N) {n : ℕ} (x : A
 def map (f : M →ₗ[R] N) :
     AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I N where
   toFun := adicCompletionAux I f
-  map_add' := by aesop
+  map_add' := by simp
   map_smul' r x := by
     ext n
     simp only [adicCompletionAux_val_apply, smul_eval, smul_eq_mul, RingHom.id_apply]
@@ -302,7 +302,7 @@ theorem sum_comp_sumInv : sum I M ∘ₗ sumInv I M = LinearMap.id := by
   simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq, mk_apply_coe,
     Submodule.mkQ_apply]
   rw [← DirectSum.sum_univ_of (((sumInv I M) ((AdicCompletion.mk I (⨁ (j : ι), M j)) f)))]
-  simp only [sumInv_apply, map_mk, map_sum, sum_of, val_sum, mk_apply_coe,
+  simp only [sumInv_apply, map_mk, map_sum, sum_of, val_sum_apply, mk_apply_coe,
     AdicCauchySequence.map_apply_coe, Submodule.mkQ_apply]
   simp only [← Submodule.mkQ_apply, ← map_sum]
   erw [DirectSum.sum_univ_of]
