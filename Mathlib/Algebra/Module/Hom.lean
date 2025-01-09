@@ -140,3 +140,7 @@ protected def smul [Semiring R] [AddCommMonoid M] [Module R M] : R →+ M →+ M
     ⇑(.smul : R →+ M →+ M) = AddMonoidHom.smulLeft := rfl
 
 end AddMonoidHom
+
+open AddMonoidHom in
+lemma AddMonoid.End.ker_id_sub_eq_range [AddCommGroup M] {p : AddMonoid.End M}
+    (h : IsIdempotentElem p) : ker (1 - p) = AddMonoidHom.range p := _root_.ker_id_sub_eq_range h

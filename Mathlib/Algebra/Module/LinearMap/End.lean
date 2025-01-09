@@ -8,6 +8,7 @@ import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Module.LinearMap.Defs
 import Mathlib.Algebra.Module.Equiv.Opposite
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+import Mathlib.Algebra.Group.Hom.End
 
 /-!
 # Endomorphisms of a module
@@ -298,6 +299,22 @@ end Module
 namespace LinearMap
 
 section AddCommMonoid
+
+section
+
+variable [AddCommMonoid M] [Semiring R] [Module R M]
+
+/-- `LinearMap.toAddMonoidHom'` promoted to a `RingHom`. -/
+@[simps]
+def toAddMonoidEnd : (M →ₗ[R] M) →+* (AddMonoid.End M) where
+  toFun := toAddMonoidHom'
+  map_one' := rfl
+  map_mul' _ _  := rfl
+  map_zero' := rfl
+  map_add'  _ _ := rfl
+
+end
+
 
 section SMulRight
 
