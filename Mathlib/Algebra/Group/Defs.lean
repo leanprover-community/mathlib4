@@ -934,6 +934,8 @@ section InvOneClass
 class NegZeroClass (G : Type*) extends Zero G, Neg G where
   protected neg_zero : -(0 : G) = 0
 
+attribute [instance mid-1] NegZeroClass.toZero
+
 /-- A `SubNegMonoid` where `-0 = 0`. -/
 class SubNegZeroMonoid (G : Type*) extends SubNegMonoid G, NegZeroClass G
 
