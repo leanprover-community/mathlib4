@@ -89,16 +89,24 @@ variable [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
   [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
 
+/-- See `Filter.HasBasis.isLittleOTVS_iff` for additionally using a basis on `F`. -/
+theorem _root_.Filter.HasBasis.isLittleOTVS_iff_left {ιE : Sort*} {pE : ιE → Prop}
+    {sE : ιE → Set E} (hE : HasBasis (𝓝 (0 : E)) pE sE)
+    {f : α → E} {g : α → F} {l : Filter α} :
+    f =o[𝕜;l] g ↔ ∀ i, pE i → ∃ V ∈ 𝓝 0, ∀ ε ≠ (0 : ℝ≥0),
+      ∀ᶠ x in l, egauge 𝕜 (sE i) (f x) ≤ ε * egauge 𝕜 V (g x) := by
+  refine hE.forall_iff ?_
+  rintro s t hsub ⟨V, hV₀, hV⟩
+  exact ⟨V, hV₀, fun ε hε ↦ (hV ε hε).mono fun x ↦ le_trans <| egauge_anti _ hsub _⟩
+
 theorem _root_.Filter.HasBasis.isLittleOTVS_iff {ιE ιF : Sort*} {pE : ιE → Prop} {pF : ιF → Prop}
     {sE : ιE → Set E} {sF : ιF → Set F} (hE : HasBasis (𝓝 (0 : E)) pE sE)
     (hF : HasBasis (𝓝 (0 : F)) pF sF) {f : α → E} {g : α → F} {l : Filter α} :
     f =o[𝕜;l] g ↔ ∀ i, pE i → ∃ j, pF j ∧ ∀ ε ≠ (0 : ℝ≥0),
       ∀ᶠ x in l, egauge 𝕜 (sE i) (f x) ≤ ε * egauge 𝕜 (sF j) (g x) := by
-  refine (hE.forall_iff ?_).trans <| forall₂_congr fun _ _ ↦ hF.exists_iff ?_
-  · rintro s t hsub ⟨V, hV₀, hV⟩
-    exact ⟨V, hV₀, fun ε hε ↦ (hV ε hε).mono fun x ↦ le_trans <| egauge_anti _ hsub _⟩
-  · refine fun s t hsub h ε hε ↦ (h ε hε).mono fun x hx ↦ hx.trans ?_
-    gcongr
+  refine hE.isLittleOTVS_iff_left.trans <| forall₂_congr fun _ _ ↦ hF.exists_iff ?_
+  refine fun s t hsub h ε hε ↦ (h ε hε).mono fun x hx ↦ hx.trans ?_
+  gcongr
 
 @[simp]
 theorem isLittleOTVS_map {f : α → E} {g : α → F} {k : β → α} {l : Filter β} :
@@ -108,18 +116,14 @@ theorem isLittleOTVS_map {f : α → E} {g : α → F} {k : β → α} {l : Filt
 theorem IsLittleOTVS.add [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
     (h₁ : f₁ =o[𝕜; l] g) (h₂ : f₂ =o[𝕜; l] g) : (f₁ + f₂) =o[𝕜; l] g := by
-  intro U' hU'
-  obtain ⟨U, hU, hUb, hUU'⟩ : ∃ U ∈ 𝓝 (0 : E), Balanced 𝕜 U ∧ U + U ⊆ U' := by
-    rcases exists_open_nhds_zero_add_subset hU' with ⟨U₁, hU₁o, hU₁, hU₁U'⟩
-    rcases (nhds_basis_balanced 𝕜 E).mem_iff.mp (hU₁o.mem_nhds hU₁) with ⟨U, ⟨hU₀, hUb⟩, hUU₁⟩
-    exact ⟨U, hU₀, hUb, trans (by gcongr <;> assumption) hU₁U'⟩
-  rcases h₁ U hU with ⟨V₁, hV₁, hVf₁⟩
-  rcases h₂ U hU with ⟨V₂, hV₂, hVf₂⟩
+  rw [(nhds_basis_balanced 𝕜 E).add_self.isLittleOTVS_iff_left]
+  rintro U ⟨hU, hUb⟩
+  obtain ⟨V₁, hV₁, hVf₁⟩ := h₁ U hU
+  obtain ⟨V₂, hV₂, hVf₂⟩ := h₂ U hU
   refine ⟨V₁ ∩ V₂, inter_mem hV₁ hV₂, fun ε hε ↦ ?_⟩
   filter_upwards [hVf₁ ε hε, hVf₂ ε hε] with x hx₁ hx₂
   calc
-    egauge 𝕜 U' (f₁ x + f₂ x) ≤ egauge 𝕜 (U + U) (f₁ x + f₂ x) := by
-      gcongr
+    egauge 𝕜 (U + U) (f₁ x + f₂ x)
     _ ≤ max (egauge 𝕜 U (f₁ x)) (egauge 𝕜 U (f₂ x)) := egauge_add_add_le hUb hUb _ _
     _ ≤ ε * max (egauge 𝕜 V₁ (g x)) (egauge 𝕜 V₂ (g x)) := by
       rw [mul_max]
