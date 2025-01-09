@@ -238,6 +238,57 @@ theorem toSubgraph_adj_iff {u v u' v'} (w : G.Walk u v) :
     rw [← Subgraph.mem_edgeSet, ← hi.1, Subgraph.mem_edgeSet]
     exact toSubgraph_adj_getVert _ hi.2
 
+namespace IsCycle
+
+lemma neighborSet_toSubgraph_endpoint {u} {p : G.Walk u u} (hpc : p.IsCycle) :
+    p.toSubgraph.neighborSet u = {p.snd, p.penultimate} := by
+  have hadj1 := p.toSubgraph_adj_snd hpc.not_nil
+  have hadj2 := (p.toSubgraph_adj_penultimate hpc.not_nil).symm
+  ext v
+  simp_all only [Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
+    SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
+  refine ⟨?_, by aesop⟩
+  rintro ⟨i, (hl | hr)⟩
+  · rw [hpc.getVert_endpoint_iff (by omega)] at hl
+    cases hl.1 <;> aesop
+  · cases' (hpc.getVert_endpoint_iff (by omega)).mp hr.2 with h1 h2
+    · contradiction
+    · simp only [penultimate, ← h2, add_tsub_cancel_right]
+      aesop
+
+lemma neighborSet_toSubgraph_internal {u} {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
+    (h : i ≠ 0) (h' : i < p.length) :
+    p.toSubgraph.neighborSet (p.getVert i) = {p.getVert (i - 1), p.getVert (i + 1)} := by
+  have hadj1 := ((show i - 1 + 1 = i from by omega) ▸
+    p.toSubgraph_adj_getVert (by omega : (i - 1) < p.length)).symm
+  have hadj2 := p.toSubgraph_adj_getVert (by omega : i < p.length)
+  ext v
+  simp_all only [ne_eq, Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
+    SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
+    Prod.swap_prod_mk]
+  refine ⟨?_, by aesop⟩
+  rintro ⟨i', (⟨hl1, hl2⟩ | ⟨hr1, hr2⟩)⟩
+  · apply hpc.getVert_injOn' (by rw [Set.mem_setOf_eq]; omega)
+      (by rw [Set.mem_setOf_eq]; omega) at hl1
+    aesop
+  · apply hpc.getVert_injOn (by rw [Set.mem_setOf_eq]; omega)
+      (by rw [Set.mem_setOf_eq]; omega) at hr2
+    aesop
+
+lemma ncard_neighborSet_toSubgraph_eq_two {u v} {p : G.Walk u u} (hpc : p.IsCycle)
+    (h : v ∈ p.support) : (p.toSubgraph.neighborSet v).ncard = 2 := by
+  simp only [SimpleGraph.Walk.mem_support_iff_exists_getVert] at h ⊢
+  obtain ⟨i, hi⟩ := h
+  by_cases he : i = 0 ∨ i = p.length
+  · have huv : u = v := by aesop
+    rw [← huv, hpc.neighborSet_toSubgraph_endpoint]
+    exact Set.ncard_pair hpc.snd_ne_penultimate
+  push_neg at he
+  rw [← hi.1, hpc.neighborSet_toSubgraph_internal he.1 (by omega)]
+  exact Set.ncard_pair (hpc.getVert_sub_one_neq_getVert_add_one (by omega))
+
+end IsCycle
+
 end Walk
 
 namespace Subgraph
@@ -373,60 +424,5 @@ lemma extend_finset_to_connected (Gpc : G.Preconnected) {t : Finset V} (tn : t.N
       refine ⟨hw, Walk.connected_induce_support _ _ _⟩
 
 end induced_subgraphs
-
-section IsCycle
-
-namespace Walk
-
-lemma IsCycle.neighborSet_toSubgraph_endpoint {u : V} {p : G.Walk u u} (hpc : p.IsCycle) :
-    p.toSubgraph.neighborSet u = {p.snd, p.penultimate} := by
-  have hadj1 := p.toSubgraph_adj_snd hpc.not_nil
-  have hadj2 := (p.toSubgraph_adj_penultimate hpc.not_nil).symm
-  ext v
-  simp_all only [Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
-    SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk]
-  refine ⟨?_, by aesop⟩
-  rintro ⟨i, (hl | hr)⟩
-  · rw [hpc.getVert_endpoint_iff (by omega)] at hl
-    cases hl.1 <;> aesop
-  · cases' (hpc.getVert_endpoint_iff (by omega)).mp hr.2 with h1 h2
-    · contradiction
-    · simp only [penultimate, ← h2, add_tsub_cancel_right]
-      aesop
-
-lemma IsCycle.neighborSet_toSubgraph_internal {u : V} {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle)
-    (h : i ≠ 0) (h' : i < p.length) :
-    p.toSubgraph.neighborSet (p.getVert i) = {p.getVert (i - 1), p.getVert (i + 1)} := by
-  have hadj1 := ((show i - 1 + 1 = i from by omega) ▸
-    p.toSubgraph_adj_getVert (by omega : (i - 1) < p.length)).symm
-  have hadj2 := p.toSubgraph_adj_getVert (by omega : i < p.length)
-  ext v
-  simp_all only [ne_eq, Subgraph.mem_neighborSet, Set.mem_insert_iff, Set.mem_singleton_iff,
-    SimpleGraph.Walk.toSubgraph_adj_iff, Sym2.eq, Sym2.rel_iff', Prod.mk.injEq,
-    Prod.swap_prod_mk]
-  refine ⟨?_, by aesop⟩
-  rintro ⟨i', (⟨hl1, hl2⟩ | ⟨hr1, hr2⟩)⟩
-  · apply hpc.getVert_injOn' (by rw [Set.mem_setOf_eq]; omega)
-      (by rw [Set.mem_setOf_eq]; omega) at hl1
-    aesop
-  · apply hpc.getVert_injOn (by rw [Set.mem_setOf_eq]; omega)
-      (by rw [Set.mem_setOf_eq]; omega) at hr2
-    aesop
-
-lemma IsCycle.ncard_neighborSet_toSubgraph_eq_two {u v : V} {p : G.Walk u u} (hpc : p.IsCycle)
-    (h : v ∈ p.support) : (p.toSubgraph.neighborSet v).ncard = 2 := by
-  simp only [SimpleGraph.Walk.mem_support_iff_exists_getVert] at h ⊢
-  obtain ⟨i, hi⟩ := h
-  by_cases he : i = 0 ∨ i = p.length
-  · have huv : u = v := by aesop
-    rw [← huv, hpc.neighborSet_toSubgraph_endpoint]
-    exact Set.ncard_pair hpc.snd_ne_penultimate
-  push_neg at he
-  rw [← hi.1, hpc.neighborSet_toSubgraph_internal he.1 (by omega)]
-  exact Set.ncard_pair (hpc.getVert_sub_one_neq_getVert_add_one (by omega))
-
-end Walk
-
-end IsCycle
 
 end SimpleGraph
