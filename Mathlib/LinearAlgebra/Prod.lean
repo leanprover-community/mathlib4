@@ -993,7 +993,7 @@ variable {R S G H I : Type*}
   [AddCommMonoid H] [Module S H]
   [AddCommMonoid I] [Module S I]
 
-/-- **Vertical line test** for module homomorphisms.
+/-- **Vertical line test** for linear maps.
 
 Let `f : G → H × I` be a linear (or semilinear) map to a product. Assume that `f` is surjective on
 the first factor and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` at
@@ -1019,10 +1019,10 @@ lemma LinearMap.exists_range_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surj
   simpa only [mem_range, Eq.comm, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, mem_graph_iff,
     coe_mk, AddHom.coe_mk, AddMonoidHom.coe_coe, Set.mem_range] using hf' x
 
-/-- **Vertical line test** for module homomorphisms.
+/-- **Vertical line test** for linear maps.
 
 Let `G ≤ H × I` be a submodule of a product of modules. Assume that `G` maps bijectively to the
-first factor. Then `G` is the graph of some module homomorphism `f : H →ₗ[R] I`. -/
+first factor. Then `G` is the graph of some linear map `f : H →ₗ[R] I`. -/
 lemma Submodule.exists_eq_graph {G : Submodule S (H × I)} (hf₁ : Bijective (Prod.fst ∘ G.subtype)) :
     ∃ f : H →ₗ[S] I, G = LinearMap.graph f := by
   simpa only [range_subtype] using LinearMap.exists_range_eq_graph hf₁.surjective
@@ -1030,10 +1030,10 @@ lemma Submodule.exists_eq_graph {G : Submodule S (H × I)} (hf₁ : Bijective (P
 
 /-- **Line test** for module isomorphisms.
 
-Let `f : G → H × I` be a homomorphism to a product of modules. Assume that `f` is surjective onto
-both factors and that the image of `f` intersects every "vertical line" `{(h, i) | i : I}` and every
-"horizontal line" `{(h, i) | h : H}` at most once. Then the image of `f` is the graph of some
-module isomorphism `f' : H ≃ I`. -/
+Let `f : G → H × I` be a linear (or semilinear) map to a product of modules. Assume that `f` is
+surjective onto both factors and that the image of `f` intersects every "vertical line"
+`{(h, i) | i : I}` and every "horizontal line" `{(h, i) | h : H}` at most once. Then the image of
+`f` is the graph of some module isomorphism `f' : H ≃ I`. -/
 lemma LinearMap.exists_linearEquiv_eq_graph {f : G →ₛₗ[σ] H × I} (hf₁ : Surjective (Prod.fst ∘ f))
     (hf₂ : Surjective (Prod.snd ∘ f)) (hf : ∀ g₁ g₂, (f g₁).1 = (f g₂).1 ↔ (f g₁).2 = (f g₂).2) :
     ∃ e : H ≃ₗ[S] I, range f = e.toLinearMap.graph := by

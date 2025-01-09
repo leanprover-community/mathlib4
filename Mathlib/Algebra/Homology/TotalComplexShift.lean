@@ -33,6 +33,8 @@ these two compositions of isomorphisms differ by the sign `(x * y).negOnePow`.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category ComplexShape Limits
 
 namespace HomologicalComplex₂
@@ -102,18 +104,8 @@ instance : ((shiftFunctor₂ C y).obj K).HasTotal (up ℤ) := fun n =>
       invFun := fun ⟨⟨a, b⟩, h⟩ => ⟨(a, b - y), by
         simp only [Set.mem_preimage, instTotalComplexShape_π, Set.mem_singleton_iff] at h ⊢
         omega⟩
-      left_inv := by
-        rintro ⟨⟨a, b⟩, h⟩
-        ext
-        · rfl
-        · dsimp
-          omega
-      right_inv := by
-        intro ⟨⟨a, b⟩, h⟩
-        ext
-        · rfl
-        · dsimp
-          omega }
+      left_inv _ := by simp
+      right_inv _ := by simp }
     (fun _ => Iso.refl _)
 
 instance : ((shiftFunctor₂ C y ⋙ shiftFunctor₁ C x).obj K).HasTotal (up ℤ) := by
