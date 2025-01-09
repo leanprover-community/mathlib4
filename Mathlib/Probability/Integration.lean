@@ -141,7 +141,7 @@ theorem lintegral_fin_prod_eq_lintegral_fin_prod_lintegral_of_indepFun {ι : Typ
         lintegral_congr fun ω ↦ congrFun (Finset.prod_insert hj) ω
       _ = (∫⁻ ω, X j ω ∂μ) * ∫⁻ ω, (∏ i ∈ s, X i) ω ∂μ := by
         apply lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'
-        · exact Measurable.aemeasurable (x_mea j)
+        · exact (x_mea j).aemeasurable
         · exact s.aemeasurable_prod' (fun i _ ↦ (x_mea i).aemeasurable)
         · exact (iIndepFun.indepFun_finset_prod_of_not_mem hX (fun i ↦ x_mea i) hj).symm
       _ = ∏ i' ∈ insert j s, ∫⁻ ω, X i' ω ∂μ := by
