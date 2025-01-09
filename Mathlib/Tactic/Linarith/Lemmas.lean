@@ -61,6 +61,7 @@ theorem add_neg [IsStrictOrderedRing α] {a b : α} (ha : a < 0)
     (hb : b < 0) : a + b < 0 :=
   _root_.add_neg ha hb
 
+variable (α) in
 lemma natCast_nonneg [IsOrderedRing α] (n : ℕ) : (0 : α) ≤ n := Nat.cast_nonneg n
 
 @[deprecated (since := "2024-04-17")]
