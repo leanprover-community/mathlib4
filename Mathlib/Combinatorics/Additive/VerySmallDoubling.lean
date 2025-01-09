@@ -28,7 +28,8 @@ For the converse, use the existing facts from the pointwise API: `∅ ^ 2 = ∅`
 
 ## References
 
-[*An elementary non-commutative Freiman theorem*, Terence Tao](https://terrytao.wordpress.com/2009/11/10/an-elementary-non-commutative-freiman-theorem/)
+* [*An elementary non-commutative Freiman theorem*, Terence Tao](https://terrytao.wordpress.com/2009/11/10/an-elementary-non-commutative-freiman-theorem/)
+* [*Introduction to approximate groups*, Matthew Tointon][tointon2020]
 -/
 
 open MulOpposite MulAction
@@ -301,6 +302,14 @@ lemma smul_inv_mul_eq_inv_mul_opSMul (h : #(A * A) < (3 / 2 : ℚ) * #A) (ha : a
           ← invMulSubgroup_eq_inv_mul _ h, ← invMulSubgroup_eq_mul_inv _ h, coe_mul_coe]
 
 open scoped RightActions in
+/-- If `A` has doubling strictly less than `3 / 2`, then there exists a subgroup `H` of the
+normaliser of `A` of size strictly less than `3 / 2 * #A` such that `A` is a subset of a coset of
+`H` (in fact a subset of `a • H` for every `a ∈ A`).
+
+Note that this is sharp: `A = {0, 1}` in `ℤ` has doubling `3 / 2` and can't be covered by a subgroup
+of size at most `2`.
+
+This is Theorem 2.2.1 in [tointon2020]. -/
 theorem doubling_lt_three_halves (h : #(A * A) < (3 / 2 : ℚ) * #A) :
     ∃ (H : Subgroup G) (_ : Fintype H), Fintype.card H < (3 / 2 : ℚ) * #A ∧ ∀ a ∈ A,
       (A : Set G) ⊆ a • H ∧ a •> (H : Set G) = H <• a := by
