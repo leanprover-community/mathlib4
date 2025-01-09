@@ -307,15 +307,13 @@ open Fact.Manifold
 lemma IccLeftChart_extend_left_eq :
     ((IccLeftChart x y).extend (𝓡∂ 1)) (Icc.instOrderBotElem.bot) = 0 := by
   calc ((IccLeftChart x y).extend (𝓡∂ 1)) (Icc.instOrderBotElem.bot)
-    _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by
-      norm_num [IccLeftChart, Icc.coe_bot]
+    _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by norm_num [IccLeftChart, Icc.coe_bot]
     _ = 0 := rfl
 
 lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
     (((IccLeftChart x y).extend (𝓡∂ 1)) p) 0 > 0 := by
   set lhs := (IccLeftChart x y).extend (𝓡∂ 1) p
-  have : lhs 0 = p.val - x := rfl
-  rw [this]
+  rw [show lhs 0 = p.val - x by rfl]
   norm_num [hp.1]
 
 lemma IccLeftChart_extend_left_mem_frontier :
@@ -374,8 +372,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
 lemma IccRightChart_extend_right_eq :
     (IccRightChart x y).extend (𝓡∂ 1) (Icc.instOrderTopElem.top) = 0 := by
   calc ((IccRightChart x y).extend (𝓡∂ 1)) (Icc.instOrderTopElem.top)
-    _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by
-      norm_num [IccRightChart, Icc.coe_top]
+    _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by norm_num [IccRightChart, Icc.coe_top]
     _ = 0 := rfl
 
 lemma IccRightChart_extend_right_mem_frontier :
