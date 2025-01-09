@@ -1832,7 +1832,7 @@ Q2094241:
 
 Q2096184:
   title: Plancherel theorem
-  # TODO: mathlib has this, right? verify and add declaration
+  # also in undergrad.yml
 
 Q2109761:
   title: Uniformization theorem
@@ -2926,7 +2926,8 @@ Q5436274:
 
 Q5437947:
   title: Fatou–Lebesgue theorem
-  # a.k.a. Fatou's lemma in measure theorem --- surely exists, right?
+  # essentially Fatou's lemma in measure theory: let's count that as well
+  decl: MeasureTheory.lintegral_liminf_le
 
 Q5438320:
   title: Faustman–Ohlin theorem
