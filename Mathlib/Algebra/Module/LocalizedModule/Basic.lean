@@ -399,9 +399,8 @@ noncomputable instance isModule' : Module R (LocalizedModule S M) :=
   { Module.compHom (LocalizedModule S M) <| algebraMap R (Localization S) with }
 
 theorem smul'_mk (r : R) (s : S) (m : M) : r • mk m s = mk (r • m) s := by
-  conv => rhs; rw [← one_mul s]
-  rw [← mk_smul_mk r m 1 s]
-  rfl
+  erw [mk_smul_mk r m 1 s]
+  rw [one_mul]
 
 lemma smul_eq_iff_of_mem
     (r : R) (hr : r ∈ S) (x y : LocalizedModule S M) :
