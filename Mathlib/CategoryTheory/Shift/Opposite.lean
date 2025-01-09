@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Shift.Adjunction
 import Mathlib.CategoryTheory.Preadditive.Opposite
-import Mathlib.CategoryTheory.Adjunction.Opposites
 
 /-!
 # The (naive) shift on the opposite category
