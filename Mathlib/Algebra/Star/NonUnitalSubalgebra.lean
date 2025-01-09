@@ -714,9 +714,15 @@ protected def gi : GaloisInsertion (adjoin R : Set A → NonUnitalStarSubalgebra
 theorem adjoin_le {S : NonUnitalStarSubalgebra R A} {s : Set A} (hs : s ⊆ S) : adjoin R s ≤ S :=
   NonUnitalStarAlgebra.gc.l_le hs
 
+@[simp]
 theorem adjoin_le_iff {S : NonUnitalStarSubalgebra R A} {s : Set A} : adjoin R s ≤ S ↔ s ⊆ S :=
   NonUnitalStarAlgebra.gc _ _
 
+@[gcongr]
+theorem adjoin_mono (H : s ⊆ t) : adjoin R s ≤ adjoin R t :=
+  NonUnitalStarAlgebra.gc.monotone_l H
+
+@[simp]
 lemma adjoin_eq (s : NonUnitalStarSubalgebra R A) : adjoin R (s : Set A) = s :=
   le_antisymm (adjoin_le le_rfl) (subset_adjoin R (s : Set A))
 
