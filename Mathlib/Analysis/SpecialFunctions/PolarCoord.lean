@@ -89,10 +89,6 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
 
-theorem continuous_polarCoord_symm :
-    Continuous (polarCoord.symm) :=
-  Continuous.prod_mk (by fun_prop) (by fun_prop)
-
 def fDeriv_polarCoord_symm : ℝ × ℝ → ℝ × ℝ →L[ℝ] ℝ × ℝ :=
   fun p : ℝ × ℝ ↦ (LinearMap.toContinuousLinearMap (Matrix.toLin (Basis.finTwoProd ℝ)
     (Basis.finTwoProd ℝ) !![cos p.2, -p.1 * sin p.2; sin p.2, p.1 * cos p.2]))
@@ -180,10 +176,6 @@ It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
 protected noncomputable def polarCoord : PartialHomeomorph ℂ (ℝ × ℝ) :=
   equivRealProdCLM.toHomeomorph.transPartialHomeomorph polarCoord
 
-protected theorem continuous_polarCoord_symm :
-    Continuous (Complex.polarCoord.symm) :=
-  equivRealProdCLM.symm.continuous.comp continuous_polarCoord_symm
-
 protected theorem polarCoord_apply (a : ℂ) :
     Complex.polarCoord a = (Complex.abs a, Complex.arg a) := by
   simp_rw [Complex.abs_def, Complex.normSq_apply, ← pow_two]
@@ -235,12 +227,13 @@ noncomputable def fDeriv_pi_polarCoord_symm : (ι → ℝ × ℝ) → (ι → �
 
 theorem injOn_pi_polarCoord_symm :
     Set.InjOn (fun p (i : ι) ↦ polarCoord.symm (p i)) (Set.univ.pi fun _ ↦ polarCoord.target) :=
-  fun _ hx _ hy h ↦ funext fun i ↦ polarCoord.symm.injOn (hx i trivial)
-    (hy i trivial) ((funext_iff.mp h) i)
+  fun _ hx _ hy h ↦ funext fun i ↦ polarCoord.symm.injOn (hx i trivial) (hy i trivial)
+    ((funext_iff.mp h) i)
 
 theorem abs_fst_of_mem_pi_polarCoord_target {p : ι → ℝ × ℝ}
     (hp : p ∈ (Set.univ.pi fun _ : ι ↦ polarCoord.target)) (i : ι) :
-    |(p i).1| = (p i).1 := abs_of_pos ((Set.mem_univ_pi.mp hp) i).1
+    |(p i).1| = (p i).1 :=
+  abs_of_pos ((Set.mem_univ_pi.mp hp) i).1
 
 variable [Fintype ι]
 
