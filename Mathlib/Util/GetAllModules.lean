@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Kim Morrison, Damiano Testa
 -/
 
 import Mathlib.Init
-import Mathlib.ListArrayMap
+import Batteries.Data.List.ArrayMap
 import Lean.Util.Path
 
 /-!

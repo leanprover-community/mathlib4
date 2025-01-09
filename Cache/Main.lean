@@ -5,7 +5,7 @@ Authors: Arthur Paulino
 -/
 
 import Cache.Requests
-import Mathlib.ListArrayMap
+import Batteries.Data.List.ArrayMap
 
 def help : String := "Mathlib4 caching CLI
 Usage: cache [COMMAND]

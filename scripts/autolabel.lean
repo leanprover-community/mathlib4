@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Eugster, Damiano Testa
 -/
 import Lean.Elab.Command
-import Mathlib.ListArrayMap
+import Batteries.Data.List.ArrayMap
 
 /-!
 # Automatic labelling of PRs

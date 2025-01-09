@@ -10,11 +10,11 @@ import Mathlib.Lean.Expr.ReplaceRec
 import Mathlib.Lean.EnvExtension
 import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Name
-import Mathlib.ListArrayMap
 import Lean.Elab.Tactic.Ext
 import Lean.Meta.Tactic.Symm
 import Lean.Meta.Tactic.Rfl
 import Lean.Meta.Match.MatcherInfo
+import Batteries.Data.List.ArrayMap
 import Batteries.Lean.NameMapAttribute
 import Batteries.Tactic.Lint -- useful to lint this file and for DiscrTree.elements
 import Batteries.Tactic.Trans
