@@ -641,9 +641,9 @@ end Metric
 
 open Metric in
 theorem IsCompact.exists_thickening_image_subset
-    {β : Type*} [PseudoEMetricSpace α] [PseudoEMetricSpace β]
+    [PseudoEMetricSpace α] {β : Type*} [PseudoEMetricSpace β]
     {f : α → β} {K : Set α} {U : Set β} (hK : IsCompact K) (ho : IsOpen U)
-    {s : Set α} (hs : s ∈ 𝓝ˢ K) (hf : ∀ x : K, ContinuousAt f x) (hKU : MapsTo f K U) :
+    (hf : ∀ x : K, ContinuousAt f x) (hKU : MapsTo f K U) :
     ∃ ε > 0, ∃ V ∈ 𝓝ˢ K, thickening ε (f '' V) ⊆ U := by
   apply hK.induction_on (p := fun K ↦ ∃ ε > 0, ∃ V ∈ 𝓝ˢ K, thickening ε (f '' V) ⊆ U)
   · use 1, by positivity, ∅, by simp, by simp
