@@ -21,6 +21,7 @@ but not necessarily additive categories, as is assumed in some sources.
 TODO: generalise this to n-angulated categories as in https://arxiv.org/abs/1006.4592
 -/
 
+assert_not_exists TwoSidedIdeal
 
 noncomputable section
 
@@ -219,7 +220,7 @@ lemma contractible_distinguished₁ (X : C) :
   refine isomorphic_distinguished _
     (inv_rot_of_distTriang _ (contractible_distinguished X)) _ ?_
   exact Triangle.isoMk _ _ (Functor.mapZeroObject _).symm (Iso.refl _) (Iso.refl _)
-    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    (by simp) (by simp) (by simp)
 
 /-- Obvious triangles `X ⟶ 0 ⟶ X⟦1⟧ ⟶ X⟦1⟧` are distinguished -/
 lemma contractible_distinguished₂ (X : C) :
@@ -227,7 +228,7 @@ lemma contractible_distinguished₂ (X : C) :
   refine isomorphic_distinguished _
     (inv_rot_of_distTriang _ (contractible_distinguished₁ (X⟦(1 : ℤ)⟧))) _ ?_
   exact Triangle.isoMk _ _ ((shiftEquiv C (1 : ℤ)).unitIso.app X) (Iso.refl _) (Iso.refl _)
-    (by aesop_cat) (by aesop_cat)
+    (by simp) (by simp)
     (by dsimp; simp only [shift_shiftFunctorCompIsoId_inv_app, id_comp])
 
 namespace Triangle
@@ -531,7 +532,7 @@ lemma binaryBiproductTriangle_distinguished (X₁ X₂ : C) :
   dsimp at he₁ he₂
   refine isomorphic_distinguished _ mem _ (Iso.symm ?_)
   refine Triangle.isoMk _ _ (Iso.refl _) e (Iso.refl _)
-    (by aesop_cat) (by aesop_cat) (by aesop_cat)
+    (by aesop_cat) (by aesop_cat) (by simp)
 
 lemma binaryProductTriangle_distinguished (X₁ X₂ : C) :
     binaryProductTriangle X₁ X₂ ∈ distTriang C :=

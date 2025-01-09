@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Kernel.Composition.Basic
-import Mathlib.MeasureTheory.Integral.SetIntegral
+import Mathlib.Probability.Kernel.MeasurableIntegral
 
 /-!
 # Bochner integral of a function against the composition-product of two kernels
@@ -134,7 +134,7 @@ theorem _root_.MeasureTheory.Integrable.integral_compProd [NormedSpace ℝ E]
       (norm_integral_le_integral_norm _).trans_eq <|
         (norm_of_nonneg <|
             integral_nonneg_of_ae <|
-              Eventually.of_forall fun y => (norm_nonneg (f (x, y)) : _)).symm
+              Eventually.of_forall fun y => (norm_nonneg (f (x, y)) :)).symm
 
 /-! ### Bochner integral -/
 

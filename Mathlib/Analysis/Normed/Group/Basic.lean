@@ -849,6 +849,10 @@ theorem tendsto_norm_div_self (x : E) : Tendsto (fun a => ‖a / x‖) (𝓝 x) 
   simpa [dist_eq_norm_div] using
     tendsto_id.dist (tendsto_const_nhds : Tendsto (fun _a => (x : E)) (𝓝 x) _)
 
+@[to_additive]
+theorem tendsto_norm_div_self_nhdsGE (x : E) : Tendsto (fun a ↦ ‖a / x‖) (𝓝 x) (𝓝[≥] 0) :=
+  tendsto_nhdsWithin_iff.mpr ⟨tendsto_norm_div_self x, by simp⟩
+
 @[to_additive tendsto_norm]
 theorem tendsto_norm' {x : E} : Tendsto (fun a => ‖a‖) (𝓝 x) (𝓝 ‖x‖) := by
   simpa using tendsto_id.dist (tendsto_const_nhds : Tendsto (fun _a => (1 : E)) _ _)
@@ -953,9 +957,6 @@ theorem SeminormedCommGroup.mem_closure_iff :
 @[to_additive]
 theorem SeminormedGroup.tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ} {l : Filter ι} :
     TendstoUniformlyOn f 1 l s ↔ ∀ ε > 0, ∀ᶠ i in l, ∀ x ∈ s, ‖f i x‖ < ε := by
-  #adaptation_note /-- nightly-2024-03-11.
-  Originally this was `simp_rw` instead of `simp only`,
-  but this creates a bad proof term with nested `OfNat.ofNat` that trips up `@[to_additive]`. -/
   simp only [tendstoUniformlyOn_iff, Pi.one_apply, dist_one_left]
 
 @[to_additive]
@@ -1239,10 +1240,10 @@ theorem le_norm_self (r : ℝ) : r ≤ ‖r‖ :=
 @[deprecated (since := "2024-04-05")] alias nnnorm_coe_nat := nnnorm_natCast
 
 @[simp 1100] lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(no_index (OfNat.ofNat n) : ℝ)‖ = OfNat.ofNat n := norm_natCast n
+    ‖(ofNat(n) : ℝ)‖ = OfNat.ofNat n := norm_natCast n
 
 @[simp 1100] lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(no_index (OfNat.ofNat n) : ℝ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
+    ‖(ofNat(n) : ℝ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
 
 lemma norm_two : ‖(2 : ℝ)‖ = 2 := abs_of_pos zero_lt_two
 lemma nnnorm_two : ‖(2 : ℝ)‖₊ = 2 := NNReal.eq <| by simp

@@ -259,9 +259,9 @@ theorem map_coe_atTop_of_Ioo_subset (hb : s ⊆ Iio b) (hs : ∀ a' < b, ∃ a <
 
 theorem map_coe_atBot_of_Ioo_subset (ha : s ⊆ Ioi a) (hs : ∀ b' > a, ∃ b > a, Ioo a b ⊆ s) :
     map ((↑) : s → α) atBot = 𝓝[>] a := by
-  -- the elaborator gets stuck without `(... : _)`
+  -- the elaborator gets stuck without `(... :)`
   refine (map_coe_atTop_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha)
-    fun b' hb' => ?_ : _)
+    fun b' hb' => ?_ :)
   simpa only [OrderDual.exists, dual_Ioo] using hs b' hb'
 
 /-- The `atTop` filter for an open interval `Ioo a b` comes from the left-neighbourhoods filter at
@@ -374,8 +374,7 @@ theorem Dense.exists_countable_dense_subset_no_bot_top [Nontrivial α] {s : Set 
   · simp [hx]
   · simp [hx]
 
-variable (α)
-
+variable (α) in
 /-- If `α` is a nontrivial separable dense linear order, then there exists a
 countable dense set `s : Set α` that contains neither top nor bottom elements of `α`.
 For a dense set containing both bot and top elements, see
@@ -383,5 +382,29 @@ For a dense set containing both bot and top elements, see
 theorem exists_countable_dense_no_bot_top [SeparableSpace α] [Nontrivial α] :
     ∃ s : Set α, s.Countable ∧ Dense s ∧ (∀ x, IsBot x → x ∉ s) ∧ ∀ x, IsTop x → x ∉ s := by
   simpa using dense_univ.exists_countable_dense_subset_no_bot_top
+
+/-- `Set.Ico a b` is only closed if it is empty. -/
+@[simp]
+theorem isClosed_Ico_iff {a b : α} : IsClosed (Set.Ico a b) ↔ b ≤ a := by
+  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  have := h.closure_eq
+  rw [closure_Ico hab.ne, Icc_eq_Ico_same_iff] at this
+  exact this hab.le
+
+/-- `Set.Ioc a b` is only closed if it is empty. -/
+@[simp]
+theorem isClosed_Ioc_iff {a b : α} : IsClosed (Set.Ioc a b) ↔ b ≤ a := by
+  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  have := h.closure_eq
+  rw [closure_Ioc hab.ne, Icc_eq_Ioc_same_iff] at this
+  exact this hab.le
+
+/-- `Set.Ioo a b` is only closed if it is empty. -/
+@[simp]
+theorem isClosed_Ioo_iff {a b : α} : IsClosed (Set.Ioo a b) ↔ b ≤ a := by
+  refine ⟨fun h => le_of_not_lt fun hab => ?_, by simp_all⟩
+  have := h.closure_eq
+  rw [closure_Ioo hab.ne, Icc_eq_Ioo_same_iff] at this
+  exact this hab.le
 
 end DenselyOrdered

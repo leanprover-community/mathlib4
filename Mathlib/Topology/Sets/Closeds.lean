@@ -274,7 +274,7 @@ theorem isClopen (s : Clopens α) : IsClopen (s : Set α) :=
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : Clopens α) : Set α := s
 
-initialize_simps_projections Clopens (carrier → coe)
+initialize_simps_projections Clopens (carrier → coe, as_prefix coe)
 
 /-- Reinterpret a clopen as an open. -/
 @[simps]

@@ -474,5 +474,3 @@ attribute [deprecated sub_add_cancel_left (since := "2024-03-20")] IsAddUnit.sub
 -- @[deprecated (since := "2024-03-20")] alias IsUnit.mul_div_cancel := IsUnit.mul_div_cancel_right
 -- @[deprecated (since := "2024-03-20")]
 -- alias IsAddUnit.add_sub_cancel := IsAddUnit.add_sub_cancel_right
-@[deprecated (since := "2024-03-20")] alias IsUnit.mul_div_cancel' := IsUnit.mul_div_cancel
-@[deprecated (since := "2024-03-20")] alias IsAddUnit.add_sub_cancel' := IsAddUnit.add_sub_cancel

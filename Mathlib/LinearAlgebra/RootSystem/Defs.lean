@@ -110,14 +110,16 @@ Note that the latter assumptions `[Free ℤ X₁] [Finite ℤ X₁] [Free ℤ X�
 supplied as mixins. -/
 abbrev RootDatum (X₁ X₂ : Type*) [AddCommGroup X₁] [AddCommGroup X₂] := RootPairing ι ℤ X₁ X₂
 
-/-- A root system is a root pairing for which the roots span their ambient module.
+/-- A root system is a root pairing for which the roots and coroots span their ambient modules.
 
 Note that this is slightly more general than the usual definition in the sense that `N` is not
 required to be the dual of `M`. -/
 structure RootSystem extends RootPairing ι R M N where
-  span_eq_top : span R (range root) = ⊤
+  span_root_eq_top : span R (range root) = ⊤
+  span_coroot_eq_top : span R (range coroot) = ⊤
 
-attribute [simp] RootSystem.span_eq_top
+attribute [simp] RootSystem.span_root_eq_top
+attribute [simp] RootSystem.span_coroot_eq_top
 
 namespace RootPairing
 

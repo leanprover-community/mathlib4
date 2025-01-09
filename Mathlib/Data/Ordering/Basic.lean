@@ -38,6 +38,13 @@ def Compares [LT α] : Ordering → α → α → Prop
 
 @[simp] lemma compares_gt [LT α] (a b : α) : Compares gt a b = (a > b) := rfl
 
+/-- `o₁.dthen fun h => o₂(h)` is like `o₁.then o₂` but `o₂` is allowed to depend on
+`h : o₁ = .eq`. -/
+@[macro_inline] def dthen :
+    (o : Ordering) → (o = .eq → Ordering) → Ordering
+  | .eq, f => f rfl
+  | o, _ => o
+
 end Ordering
 
 /--

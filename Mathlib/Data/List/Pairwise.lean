@@ -49,15 +49,6 @@ theorem Pairwise.forall (hR : Symmetric R) (hl : l.Pairwise R) :
 theorem Pairwise.set_pairwise (hl : Pairwise R l) (hr : Symmetric R) : { x | x ∈ l }.Pairwise R :=
   hl.forall hr
 
--- Porting note: Duplicate of `pairwise_map` but with `f` explicit.
-@[deprecated "No deprecation message was provided." (since := "2024-02-25")]
-theorem pairwise_map' (f : β → α) :
-    ∀ {l : List β}, Pairwise R (map f l) ↔ Pairwise (R on f) l
-  | [] => by simp only [map, Pairwise.nil]
-  | b :: l => by
-    simp only [map, pairwise_cons, mem_map, forall_exists_index, and_imp,
-      forall_apply_eq_imp_iff₂, pairwise_map]
-
 theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop} (hr : Reflexive r)
     (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → r a b) : l.Pairwise r := by
   rw [pairwise_iff_forall_sublist]

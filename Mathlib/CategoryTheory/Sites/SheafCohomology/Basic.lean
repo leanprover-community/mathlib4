@@ -31,6 +31,8 @@ of sets `yoneda.obj U` to `F`.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe w' w v u
 
 namespace CategoryTheory

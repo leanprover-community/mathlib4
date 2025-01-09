@@ -187,7 +187,7 @@ lemma Module.FinitePresentation.fg_ker [Module.Finite R M]
     exact ⟨_, hy, by simp⟩
   apply Submodule.fg_of_fg_map_of_fg_inf_ker f.range.mkQ
   · rw [this]
-    exact Module.Finite.out
+    exact Module.Finite.fg_top
   · rw [Submodule.ker_mkQ, inf_comm, ← Submodule.map_comap_eq, ← LinearMap.ker_comp, hf]
     exact hs'.map f
 
@@ -201,8 +201,8 @@ lemma Module.finitePresentation_of_ker [Module.FinitePresentation R N]
     Module.FinitePresentation R M := by
   obtain ⟨s, hs⟩ : (⊤ : Submodule R M).FG := by
     apply Submodule.fg_of_fg_map_of_fg_inf_ker l
-    · rw [Submodule.map_top, LinearMap.range_eq_top.mpr hl]; exact Module.Finite.out
-    · rw [top_inf_eq, ← Submodule.fg_top]; exact Module.Finite.out
+    · rw [Submodule.map_top, LinearMap.range_eq_top.mpr hl]; exact Module.Finite.fg_top
+    · rw [top_inf_eq, ← Submodule.fg_top]; exact Module.Finite.fg_top
   refine ⟨s, hs, ?_⟩
   let π := Finsupp.linearCombination R ((↑) : s → M)
   have H : Function.Surjective π :=
@@ -250,7 +250,7 @@ instance {A} [CommRing A] [Algebra R A] [Module.FinitePresentation R M] :
   apply Submodule.FG.map
   have : Module.Finite R (LinearMap.ker f) :=
     ⟨(Submodule.fg_top _).mpr (Module.FinitePresentation.fg_ker f hf)⟩
-  exact Module.Finite.out (R := A) (M := A ⊗[R] LinearMap.ker f)
+  exact Module.Finite.fg_top (R := A) (M := A ⊗[R] LinearMap.ker f)
 
 open TensorProduct in
 lemma FinitePresentation.of_isBaseChange

@@ -130,7 +130,7 @@ theorem isoRestrict_hom_ofRestrict : (isoRestrict f).hom ≫ Y.ofRestrict _ = f 
   erw [Category.comp_id, comp_c_app, f.c.naturality_assoc, ← X.presheaf.map_comp]
   trans f.c.app x ≫ X.presheaf.map (𝟙 _)
   · congr 1
-  · erw [X.presheaf.map_id, Category.comp_id]
+  · simp
 
 @[reassoc (attr := simp)]
 theorem isoRestrict_inv_ofRestrict : (isoRestrict f).inv ≫ f = Y.ofRestrict _ := by
@@ -156,7 +156,7 @@ instance comp {Z : PresheafedSpace C} (g : Y ⟶ Z) [hg : IsOpenImmersion g] :
     · exact c_iso' g ((opensFunctor f).obj U) (by ext; simp)
     · apply c_iso' f U
       ext1
-      dsimp only [Opens.map_coe, IsOpenMap.functor_obj_coe, comp_base, TopCat.coe_comp]
+      dsimp only [Opens.map_coe, IsOpenMap.coe_functor_obj, comp_base, TopCat.coe_comp]
       rw [Set.image_comp, Set.preimage_image_eq _ hg.base_open.injective]
 
 /-- For an open immersion `f : X ⟶ Y` and an open set `U ⊆ X`, we have the map `X(U) ⟶ Y(U)`. -/
@@ -417,7 +417,7 @@ theorem pullbackConeOfLeftLift_snd :
     erw [← s.pt.presheaf.map_comp, ← s.pt.presheaf.map_comp]
     trans s.snd.c.app x ≫ s.pt.presheaf.map (𝟙 _)
     · congr 1
-    · rw [s.pt.presheaf.map_id]; erw [Category.comp_id]
+    · simp
 
 instance pullbackConeSndIsOpenImmersion : IsOpenImmersion (pullbackConeOfLeft f g).snd := by
   erw [CategoryTheory.Limits.PullbackCone.mk_snd]

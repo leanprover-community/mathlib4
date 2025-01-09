@@ -157,7 +157,7 @@ theorem sum_const [AddCommMonoid α] (n : ℕ) (x : α) : ∑ _i : Fin n, x = n 
 
 @[to_additive]
 theorem prod_congr' {M : Type*} [CommMonoid M] {a b : ℕ} (f : Fin b → M) (h : a = b) :
-    (∏ i : Fin a, f (cast h i)) = ∏ i : Fin b, f i := by
+    (∏ i : Fin a, f (i.cast h)) = ∏ i : Fin b, f i := by
   subst h
   congr
 

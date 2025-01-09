@@ -138,7 +138,7 @@ def ofNatSucc : ℕ → PosNum
 def ofNat (n : ℕ) : PosNum :=
   ofNatSucc (Nat.pred n)
 
-instance {n : ℕ} : OfNat PosNum (n + 1) where
+instance (priority := low) {n : ℕ} : OfNat PosNum (n + 1) where
   ofNat := ofNat (n + 1)
 
 open Ordering

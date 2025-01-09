@@ -207,6 +207,8 @@ variable {α R : Type*} [DecidableEq α]
 section Semiring
 variable [Semiring R]
 
+open scoped Function -- required for scoped `on` notation
+
 -- TODO: Can we prove one of the following two from the other one?
 /-- The **multinomial theorem**. -/
 lemma sum_pow_eq_sum_piAntidiag_of_commute (s : Finset α) (f : α → R)

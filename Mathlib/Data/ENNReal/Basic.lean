@@ -359,10 +359,8 @@ lemma coe_ne_one : (r : ℝ≥0∞) ≠ 1 ↔ r ≠ 1 := coe_eq_one.not
 
 @[simp, norm_cast] lemma coe_pow (x : ℝ≥0) (n : ℕ) : (↑(x ^ n) : ℝ≥0∞) = x ^ n := rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
-theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n) : ℝ≥0) : ℝ≥0∞) = OfNat.ofNat n := rfl
+theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] : ((ofNat(n) : ℝ≥0) : ℝ≥0∞) = ofNat(n) := rfl
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add lemmas about `OfNat.ofNat` and `<`/`≤`
 
@@ -465,9 +463,7 @@ theorem coe_natCast (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
 
 @[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ENNReal.ofReal n = n := by simp [ENNReal.ofReal]
 
--- See note [no_index around OfNat.ofNat]
-@[simp] theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ENNReal.ofReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+@[simp] theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] : ENNReal.ofReal ofNat(n) = ofNat(n) :=
   ofReal_natCast n
 
 @[simp, aesop (rule_sets := [finiteness]) safe apply]
@@ -476,10 +472,10 @@ theorem natCast_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.natCast_n
 @[simp] theorem natCast_lt_top (n : ℕ) : (n : ℝ≥0∞) < ∞ := WithTop.natCast_lt_top n
 
 @[simp, aesop (rule_sets := [finiteness]) safe apply]
-lemma ofNat_ne_top {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) ≠ ∞ := natCast_ne_top n
+lemma ofNat_ne_top {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) ≠ ∞ := natCast_ne_top n
 
 @[simp]
-lemma ofNat_lt_top {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) < ∞ := natCast_lt_top n
+lemma ofNat_lt_top {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) < ∞ := natCast_lt_top n
 
 @[simp] theorem top_ne_natCast (n : ℕ) : ∞ ≠ n := WithTop.top_ne_natCast n
 
@@ -493,9 +489,7 @@ theorem toNNReal_nat (n : ℕ) : (n : ℝ≥0∞).toNNReal = n := by
 theorem toReal_nat (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
   rw [← ENNReal.ofReal_natCast n, ENNReal.toReal_ofReal (Nat.cast_nonneg _)]
 
--- See note [no_index around OfNat.ofNat]
-@[simp] theorem toReal_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ENNReal.toReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+@[simp] theorem toReal_ofNat (n : ℕ) [n.AtLeastTwo] : ENNReal.toReal ofNat(n) = ofNat(n) :=
   toReal_nat n
 
 theorem le_coe_iff : a ≤ ↑r ↔ ∃ p : ℝ≥0, a = p ∧ p ≤ r := WithTop.le_coe_iff

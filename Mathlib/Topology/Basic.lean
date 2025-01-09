@@ -1365,6 +1365,12 @@ theorem IsOpen.preimage (hf : Continuous f) {t : Set Y} (h : IsOpen t) :
     IsOpen (f ⁻¹' t) :=
   hf.isOpen_preimage t h
 
+lemma Equiv.continuous_symm_iff (e : X ≃ Y) : Continuous e.symm ↔ IsOpenMap e := by
+  simp_rw [continuous_def, ← Set.image_equiv_eq_preimage_symm, IsOpenMap]
+
+lemma Equiv.isOpenMap_symm_iff (e : X ≃ Y) : IsOpenMap e.symm ↔ Continuous e := by
+  simp_rw [← Equiv.continuous_symm_iff, Equiv.symm_symm]
+
 theorem continuous_congr {g : X → Y} (h : ∀ x, f x = g x) :
     Continuous f ↔ Continuous g :=
   .of_eq <| congrArg _ <| funext h
@@ -1659,7 +1665,7 @@ However, lemmas with this conclusion are not nice to use in practice because
     continuous_add.comp (continuous_id.prod_mk continuous_id)
   ```
   The second is a valid proof, which is accepted if you write it as
-  `continuous_add.comp (continuous_id.prod_mk continuous_id : _)`
+  `continuous_add.comp (continuous_id.prod_mk continuous_id :)`
 
 2. If the operation has more than 2 arguments, they are impractical to use, because in your
   application the arguments in the domain might be in a different order or associated differently.

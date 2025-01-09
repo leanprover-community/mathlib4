@@ -292,7 +292,7 @@ instance (priority := 75) NonUnitalSubalgebraClass.nonUnitalNormedRing {S 𝕜 E
 
 instance ULift.nonUnitalSeminormedRing : NonUnitalSeminormedRing (ULift α) :=
   { ULift.seminormedAddCommGroup, ULift.nonUnitalRing with
-    norm_mul := fun x y => (norm_mul_le x.down y.down : _) }
+    norm_mul := fun x y => (norm_mul_le x.down y.down :) }
 
 /-- Non-unital seminormed ring structure on the product of two non-unital seminormed rings,
   using the sup norm. -/
@@ -1097,6 +1097,10 @@ instance toSeminormedCommRing [SeminormedCommRing R] [_h : SubringClass S R] (s 
 
 instance toNormedCommRing [NormedCommRing R] [SubringClass S R] (s : S) : NormedCommRing s :=
   { SubringClass.toNormedRing s with mul_comm := mul_comm }
+
+instance toNormOneClass [SeminormedRing R] [NormOneClass R] [SubringClass S R] (s : S) :
+    NormOneClass s :=
+  .induced s R <| SubringClass.subtype _
 
 end SubringClass
 

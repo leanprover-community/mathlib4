@@ -428,7 +428,6 @@ private theorem edgeDensity_star_not_uniform [Nonempty α]
   set q : ℝ :=
     (∑ ab ∈ (chunk hP G ε hU).parts.product (chunk hP G ε hV).parts,
       (G.edgeDensity ab.1 ab.2 : ℝ)) / (↑4 ^ #P.parts * ↑4 ^ #P.parts)
-  change _ ≤ |p - q|
   set r : ℝ := ↑(G.edgeDensity ((star hP G ε hU V).biUnion id) ((star hP G ε hV U).biUnion id))
   set s : ℝ := ↑(G.edgeDensity (G.nonuniformWitness ε U V) (G.nonuniformWitness ε V U))
   set t : ℝ := ↑(G.edgeDensity U V)

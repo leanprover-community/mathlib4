@@ -26,7 +26,7 @@ variable {N : Type*} [AddCommGroup N] [Module R N] (V V₁ V₂ : Submodule R N)
 def SModEq (x y : M) : Prop :=
   (Submodule.Quotient.mk x : M ⧸ U) = Submodule.Quotient.mk y
 
-notation:50 x " ≡ " y " [SMOD " N "]" => SModEq N x y
+@[inherit_doc] notation:50 x " ≡ " y " [SMOD " N "]" => SModEq N x y
 
 variable {U U₁ U₂}
 

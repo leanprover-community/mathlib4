@@ -198,12 +198,14 @@ theorem exists_disjoint_subfamily_covering_enlargement_closedBall
 alias exists_disjoint_subfamily_covering_enlargment_closedBall :=
   exists_disjoint_subfamily_covering_enlargement_closedBall
 
-/-- The measurable Vitali covering theorem. Assume one is given a family `t` of closed sets with
-nonempty interior, such that each `a ∈ t` is included in a ball `B (x, r)` and covers a definite
-proportion of the ball `B (x, 3 r)` for a given measure `μ` (think of the situation where `μ` is
-a doubling measure and `t` is a family of balls). Consider a (possibly non-measurable) set `s`
-at which the family is fine, i.e., every point of `s` belongs to arbitrarily small elements of `t`.
-Then one can extract from `t` a disjoint subfamily that covers almost all `s`.
+/-- The measurable **Vitali covering theorem**.
+
+Assume one is given a family `t` of closed sets with nonempty interior, such that each `a ∈ t` is
+included in a ball `B (x, r)` and covers a definite proportion of the ball `B (x, 3 r)` for a given
+measure `μ` (think of the situation where `μ` is a doubling measure and `t` is a family of balls).
+Consider a (possibly non-measurable) set `s` at which the family is fine, i.e., every point of `s`
+belongs to arbitrarily small elements of `t`. Then one can extract from `t` a disjoint subfamily
+that covers almost all `s`.
 
 For more flexibility, we give a statement with a parameterized family of sets.
 -/

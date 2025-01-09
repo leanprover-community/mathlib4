@@ -133,6 +133,7 @@ lemma disjoint_partialSups_right [DistribLattice α] [OrderBot α] {f : ℕ → 
     Disjoint x (partialSups f n) ↔ ∀ k ≤ n, Disjoint x (f k) :=
   partialSups_iff_forall (Disjoint x) disjoint_sup_right
 
+open scoped Function in -- required for scoped `on` notation
 /- Note this lemma requires a distributive lattice, so is not useful (or true) in situations such as
 submodules. -/
 theorem partialSups_disjoint_of_disjoint [DistribLattice α] [OrderBot α] (f : ℕ → α)

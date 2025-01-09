@@ -12,6 +12,8 @@ import Mathlib.Algebra.Ring.NegOnePow
 In this file, we collect various formulas about determinant of matrices.
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace Matrix
 
 variable {R : Type*} [CommRing R]

@@ -22,15 +22,7 @@ variable {R : Type u} {S : Type v} [Semiring R] [Semiring S] (I : Ideal R) (J : 
 namespace Ideal
 
 /-- `I × J` as an ideal of `R × S`. -/
-def prod : Ideal (R × S) where
-  carrier := { x | x.fst ∈ I ∧ x.snd ∈ J }
-  zero_mem' := by simp
-  add_mem' := by
-    rintro ⟨a₁, a₂⟩ ⟨b₁, b₂⟩ ⟨ha₁, ha₂⟩ ⟨hb₁, hb₂⟩
-    exact ⟨I.add_mem ha₁ hb₁, J.add_mem ha₂ hb₂⟩
-  smul_mem' := by
-    rintro ⟨a₁, a₂⟩ ⟨b₁, b₂⟩ ⟨hb₁, hb₂⟩
-    exact ⟨I.mul_mem_left _ hb₁, J.mul_mem_left _ hb₂⟩
+def prod : Ideal (R × S) := I.comap (RingHom.fst R S) ⊓ J.comap (RingHom.snd R S)
 
 @[simp]
 theorem mem_prod {r : R} {s : S} : (⟨r, s⟩ : R × S) ∈ prod I J ↔ r ∈ I ∧ s ∈ J :=
@@ -78,11 +70,16 @@ theorem map_prodComm_prod :
 
 /-- Ideals of `R × S` are in one-to-one correspondence with pairs of ideals of `R` and ideals of
     `S`. -/
-def idealProdEquiv : Ideal (R × S) ≃ Ideal R × Ideal S where
+def idealProdEquiv : Ideal (R × S) ≃o Ideal R × Ideal S where
   toFun I := ⟨map (RingHom.fst R S) I, map (RingHom.snd R S) I⟩
   invFun I := prod I.1 I.2
   left_inv I := (ideal_prod_eq I).symm
   right_inv := fun ⟨I, J⟩ => by simp
+  map_rel_iff' {I J} := by
+    simp only [Equiv.coe_fn_mk, ge_iff_le, Prod.mk_le_mk]
+    refine ⟨fun h ↦ ?_, fun h ↦ ⟨map_mono h, map_mono h⟩⟩
+    rw [ideal_prod_eq I, ideal_prod_eq J]
+    exact inf_le_inf (comap_mono h.1) (comap_mono h.2)
 
 @[simp]
 theorem idealProdEquiv_symm_apply (I : Ideal R) (J : Ideal S) :

@@ -81,6 +81,10 @@ theorem add_apply (p q : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (p + q) n
 @[simp]
 theorem sub_apply (p q : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (p - q) n = p n - q n := rfl
 
+@[simp]
+theorem smul_apply [Semiring 𝕜'] [Module 𝕜' F] [ContinuousConstSMul 𝕜' F] [SMulCommClass 𝕜 𝕜' F]
+    (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) (a : 𝕜') : (a • f) n = a • f n := rfl
+
 @[ext]
 protected theorem ext {p q : FormalMultilinearSeries 𝕜 E F} (h : ∀ n, p n = q n) : p = q :=
   funext h

@@ -1828,12 +1828,12 @@ theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b ↦ trCfg 
       cases' s with d a <;> rfl
     intro e
     refine TransGen.head ?_ (TransGen.head' this ?_)
-    · simp only [TM1.step, TM1.stepAux]
+    · simp only [TM1.step, TM1.stepAux, tr]
       rw [e]
       rfl
     cases e' : M q' _
     · apply ReflTransGen.single
-      simp only [TM1.step, TM1.stepAux]
+      simp only [TM1.step, TM1.stepAux, tr]
       rw [e']
       rfl
     · rfl
@@ -1926,7 +1926,6 @@ section
 variable [DecidableEq K]
 
 /-- The step function for the TM2 model. -/
-@[simp]
 def stepAux : Stmt₂ → σ → (∀ k, List (Γ k)) → Cfg₂
   | push k f q, v, S => stepAux q v (update S k (f v :: S k))
   | peek k f q, v, S => stepAux q (f v (S k).head?) S
@@ -1937,10 +1936,12 @@ def stepAux : Stmt₂ → σ → (∀ k, List (Γ k)) → Cfg₂
   | halt, v, S => ⟨none, v, S⟩
 
 /-- The step function for the TM2 model. -/
-@[simp]
 def step (M : Λ → Stmt₂) : Cfg₂ → Option Cfg₂
   | ⟨none, _, _⟩ => none
   | ⟨some l, v, S⟩ => some (stepAux (M l) v S)
+
+attribute [simp] stepAux.eq_1 stepAux.eq_2 stepAux.eq_3
+  stepAux.eq_4 stepAux.eq_5 stepAux.eq_6 stepAux.eq_7 step.eq_1 step.eq_2
 
 /-- The (reflexive) reachability relation for the TM2 model. -/
 def Reaches (M : Λ → Stmt₂) : Cfg₂ → Cfg₂ → Prop :=
@@ -2292,7 +2293,7 @@ noncomputable def trStmts₁ : Stmt₂ → Finset Λ'₂₁
 
 theorem trStmts₁_run {k : K} {s : StAct₂ k} {q : Stmt₂} :
     trStmts₁ (stRun s q) = {go k s q, ret q} ∪ trStmts₁ q := by
-  cases s <;> simp only [trStmts₁]
+  cases s <;> simp only [trStmts₁, stRun]
 
 theorem tr_respects_aux₂ [DecidableEq K] {k : K} {q : Stmt₂₁} {v : σ} {S : ∀ k, List (Γ k)}
     {L : ListBlank (∀ k, Option (Γ k))}

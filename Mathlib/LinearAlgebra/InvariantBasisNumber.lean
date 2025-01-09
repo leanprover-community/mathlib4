@@ -241,8 +241,8 @@ theorem nontrivial_of_invariantBasisNumber : Nontrivial R := by
   exact
     { toFun := 0
       invFun := 0
-      map_add' := by aesop
-      map_smul' := by aesop
+      map_add' := by simp
+      map_smul' := by simp
       left_inv := fun _ => by simp [eq_iff_true_of_subsingleton]
       right_inv := fun _ => by simp [eq_iff_true_of_subsingleton] }
 
@@ -280,8 +280,8 @@ variable {R : Type u} [CommRing R] (I : Ideal R) {ι : Type v} [Fintype ι] {ι'
 
 /-- An `R`-linear map `R^n → R^m` induces a function `R^n/I^n → R^m/I^m`. -/
 private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
-    (ι → R) ⧸ I.pi ι → (ι' → R) ⧸ I.pi ι' := fun x =>
-  Quotient.liftOn' x (fun y => Ideal.Quotient.mk (I.pi ι') (e y))
+    (ι → R) ⧸ Ideal.pi (fun _ ↦ I) → (ι' → R) ⧸ Ideal.pi fun _ ↦ I := fun x =>
+  Quotient.liftOn' x (fun y => Ideal.Quotient.mk _ (e y))
     (by
       refine fun a b hab => Ideal.Quotient.eq.2 fun h => ?_
       rw [Submodule.quotientRel_def] at hab
@@ -291,30 +291,14 @@ private def induced_map (I : Ideal R) (e : (ι → R) →ₗ[R] ι' → R) :
 /-- An isomorphism of `R`-modules `R^n ≃ R^m` induces an isomorphism of `R/I`-modules
     `R^n/I^n ≃ R^m/I^m`. -/
 private def induced_equiv [Fintype ι'] (I : Ideal R) (e : (ι → R) ≃ₗ[R] ι' → R) :
-    ((ι → R) ⧸ I.pi ι) ≃ₗ[R ⧸ I] (ι' → R) ⧸ I.pi ι' where
+    ((ι → R) ⧸ Ideal.pi fun _ ↦ I) ≃ₗ[R ⧸ I] (ι' → R) ⧸ Ideal.pi fun _ ↦ I where
   -- Porting note: Lean couldn't correctly infer `(I.pi ι)` and `(I.pi ι')` on their own
   toFun := induced_map I e
   invFun := induced_map I e.symm
-  map_add' := by
-    rintro ⟨a⟩ ⟨b⟩
-    convert_to Ideal.Quotient.mk (I.pi ι') _ = Ideal.Quotient.mk (I.pi ι') _
-    congr
-    simp only [map_add]
-  map_smul' := by
-    rintro ⟨a⟩ ⟨b⟩
-    convert_to Ideal.Quotient.mk (I.pi ι') _ = Ideal.Quotient.mk (I.pi ι') _
-    congr
-    simp only [LinearEquiv.coe_coe, LinearEquiv.map_smulₛₗ, RingHom.id_apply]
-  left_inv := by
-    rintro ⟨a⟩
-    convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
-    congr
-    simp only [LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
-  right_inv := by
-    rintro ⟨a⟩
-    convert_to Ideal.Quotient.mk (I.pi ι') _ = Ideal.Quotient.mk (I.pi ι') _
-    congr
-    simp only [LinearEquiv.coe_coe,  LinearEquiv.apply_symm_apply]
+  map_add' := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (map_add ..)
+  map_smul' := by rintro ⟨a⟩ ⟨b⟩; exact congr_arg _ (map_smul ..)
+  left_inv := by rintro ⟨a⟩; exact congr_arg _ (e.left_inv ..)
+  right_inv := by rintro ⟨a⟩; exact congr_arg _ (e.right_inv ..)
 
 end
 
@@ -332,6 +316,6 @@ instance (priority := 100) invariantBasisNumber_of_nontrivial_of_commRing {R : T
   ⟨fun e =>
     let ⟨I, _hI⟩ := Ideal.exists_maximal R
     eq_of_fin_equiv (R ⧸ I)
-      ((Ideal.piQuotEquiv _ _).symm ≪≫ₗ (induced_equiv _ e ≪≫ₗ Ideal.piQuotEquiv _ _))⟩
+      ((Ideal.piQuotEquiv _ _).symm ≪≫ₗ induced_equiv _ e ≪≫ₗ Ideal.piQuotEquiv _ _)⟩
 
 end

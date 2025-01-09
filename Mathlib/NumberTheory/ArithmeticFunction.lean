@@ -568,6 +568,7 @@ theorem map_mul_of_coprime {f : ArithmeticFunction R} (hf : f.IsMultiplicative) 
 
 end MonoidWithZero
 
+open scoped Function in -- required for scoped `on` notation
 theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : ArithmeticFunction R}
     (hf : f.IsMultiplicative) (s : Finset ι) (hs : (s : Set ι).Pairwise (Coprime on g)) :
     f (∏ i ∈ s, g i) = ∏ i ∈ s, f (g i) := by

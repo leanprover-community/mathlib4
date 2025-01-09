@@ -429,7 +429,7 @@ instance : SetLike (UpperSet α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : UpperSet α) : Set α := s
 
-initialize_simps_projections UpperSet (carrier → coe)
+initialize_simps_projections UpperSet (carrier → coe, as_prefix coe)
 
 @[ext]
 theorem ext {s t : UpperSet α} : (s : Set α) = t → s = t :=
@@ -455,7 +455,7 @@ instance : SetLike (LowerSet α) α where
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : LowerSet α) : Set α := s
 
-initialize_simps_projections LowerSet (carrier → coe)
+initialize_simps_projections LowerSet (carrier → coe, as_prefix coe)
 
 @[ext]
 theorem ext {s t : LowerSet α} : (s : Set α) = t → s = t :=

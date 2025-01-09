@@ -529,6 +529,10 @@ theorem _root_.Function.Injective.injOn_range (h : Injective (g ∘ f)) : InjOn 
   rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ H
   exact congr_arg f (h H)
 
+theorem _root_.Set.InjOn.injective_iff (s : Set β) (h : InjOn g s) (hs : range f ⊆ s) :
+    Injective (g ∘ f) ↔ Injective f :=
+  ⟨(·.of_comp), fun h _ ↦ by aesop⟩
+
 theorem injOn_iff_injective : InjOn f s ↔ Injective (s.restrict f) :=
   ⟨fun H a b h => Subtype.eq <| H a.2 b.2 h, fun H a as b bs h =>
     congr_arg Subtype.val <| @H ⟨a, as⟩ ⟨b, bs⟩ h⟩

@@ -546,7 +546,7 @@ theorem norm_iteratedFDeriv_clm_apply {f : E → F →L[𝕜] G} {g : E → F} {
     (Set.mem_univ x) hn
 
 theorem norm_iteratedFDerivWithin_clm_apply_const {f : E → F →L[𝕜] G} {c : F} {s : Set E} {x : E}
-    {N : WithTop ℕ∞} {n : ℕ} (hf : ContDiffOn 𝕜 N f s) (hs : UniqueDiffOn 𝕜 s)
+    {N : WithTop ℕ∞} {n : ℕ} (hf : ContDiffWithinAt 𝕜 N f s x) (hs : UniqueDiffOn 𝕜 s)
     (hx : x ∈ s) (hn : n ≤ N) :
     ‖iteratedFDerivWithin 𝕜 n (fun y : E => (f y) c) s x‖ ≤
       ‖c‖ * ‖iteratedFDerivWithin 𝕜 n f s x‖ := by
@@ -559,10 +559,10 @@ theorem norm_iteratedFDerivWithin_clm_apply_const {f : E → F →L[𝕜] G} {c 
   exact f.le_opNorm c
 
 theorem norm_iteratedFDeriv_clm_apply_const {f : E → F →L[𝕜] G} {c : F} {x : E}
-    {N : WithTop ℕ∞} {n : ℕ} (hf : ContDiff 𝕜 N f) (hn : n ≤ N) :
+    {N : WithTop ℕ∞} {n : ℕ} (hf : ContDiffAt 𝕜 N f x) (hn : n ≤ N) :
     ‖iteratedFDeriv 𝕜 n (fun y : E => (f y) c) x‖ ≤ ‖c‖ * ‖iteratedFDeriv 𝕜 n f x‖ := by
   simp only [← iteratedFDerivWithin_univ]
-  exact norm_iteratedFDerivWithin_clm_apply_const hf.contDiffOn uniqueDiffOn_univ
+  exact norm_iteratedFDerivWithin_clm_apply_const hf.contDiffWithinAt uniqueDiffOn_univ
     (Set.mem_univ x) hn
 
 end Apply

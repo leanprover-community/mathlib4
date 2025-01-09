@@ -347,7 +347,7 @@ theorem hasColimitsOfShape_of_reflective (R : D ⥤ C) [Reflective R] [HasColimi
       let t : IsColimit c := isColimitOfPreserves (monadicLeftAdjoint R) (colimit.isColimit _)
       apply HasColimit.mk ⟨_, (IsColimit.precomposeInvEquiv _ _).symm t⟩
       apply
-        (isoWhiskerLeft F (asIso (monadicAdjunction R).counit) : _) ≪≫ F.rightUnitor
+        (isoWhiskerLeft F (asIso (monadicAdjunction R).counit) :) ≪≫ F.rightUnitor
 
 /-- If `C` has colimits then any reflective subcategory has colimits. -/
 theorem hasColimits_of_reflective (R : D ⥤ C) [Reflective R] [HasColimitsOfSize.{v, u} C] :
@@ -671,7 +671,7 @@ theorem hasLimitsOfShape_of_coreflective (R : D ⥤ C) [Coreflective R] [HasLimi
       let t : IsLimit c := isLimitOfPreserves (comonadicRightAdjoint R) (limit.isLimit _)
       apply HasLimit.mk ⟨_, (IsLimit.postcomposeHomEquiv _ _).symm t⟩
       apply
-        (F.rightUnitor ≪≫ (isoWhiskerLeft F ((asIso (comonadicAdjunction R).unit) : _) )).symm
+        (F.rightUnitor ≪≫ (isoWhiskerLeft F ((asIso (comonadicAdjunction R).unit) :) )).symm
 
 /-- If `C` has limits then any coreflective subcategory has limits. -/
 theorem hasLimits_of_coreflective (R : D ⥤ C) [Coreflective R] [HasLimitsOfSize.{v, u} C] :

@@ -390,12 +390,6 @@ lemma haarScalarFactor_pos_of_isHaarMeasure (μ' μ : Measure G) [IsHaarMeasure 
     [IsHaarMeasure μ'] : 0 < haarScalarFactor μ' μ :=
   pos_iff_ne_zero.2 (fun H ↦ by simpa [H] using haarScalarFactor_eq_mul μ' μ μ')
 
-@[deprecated (since := "2024-02-12")]
-alias haarScalarFactor_pos_of_isOpenPosMeasure := haarScalarFactor_pos_of_isHaarMeasure
-
-@[deprecated (since := "2024-02-12")]
-alias addHaarScalarFactor_pos_of_isOpenPosMeasure := addHaarScalarFactor_pos_of_isAddHaarMeasure
-
 /-!
 ### Uniqueness of measure of sets with compact closure
 
@@ -681,13 +675,6 @@ lemma isHaarMeasure_eq_of_isProbabilityMeasure [LocallyCompactSpace G] (μ' μ :
   ext s _hs
   simp [A s, ← Z]
 
-@[deprecated (since := "2024-02-12")]
-alias haarScalarFactor_eq_one_of_isProbabilityMeasure := isHaarMeasure_eq_of_isProbabilityMeasure
-
-@[deprecated (since := "2024-02-12")]
-alias addHaarScalarFactor_eq_one_of_isProbabilityMeasure :=
-  isAddHaarMeasure_eq_of_isProbabilityMeasure
-
 /-!
 ### Uniqueness of measure of open sets
 
@@ -896,8 +883,6 @@ lemma isMulLeftInvariant_eq_smul [LocallyCompactSpace G] [SecondCountableTopolog
   -- one could use as well `isMulLeftInvariant_eq_smul_of_innerRegular`, as in a
   -- second countable topological space all Haar measures are regular and inner regular
 
-@[deprecated (since := "2024-02-12")] alias isHaarMeasure_eq_smul := isMulLeftInvariant_eq_smul
-@[deprecated (since := "2024-02-12")] alias isAddHaarMeasure_eq_smul := isAddLeftInvariant_eq_smul
 
 /-- An invariant σ-finite measure is absolutely continuous with respect to a Haar measure in a
 second countable group. -/

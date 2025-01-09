@@ -25,9 +25,9 @@ The equational criterion for flatness can be stated in the following form
 (`Module.Flat.iff_forall_exists_factorization`). Let $M$ be an $R$-module. Then the following two
 conditions are equivalent:
 * $M$ is flat.
-* For all finite index types $\iota$, all elements $f \in R^{\iota}$, and all homomorphisms
+* For all finite index types $\iota$, all elements $f \in R^{\iota}$, and all linear maps
 $x \colon R^{\iota} \to M$ such that $x(f) = 0$, there exist a finite index type $\kappa$ and module
-homomorphisms $a \colon R^{\iota} \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such
+linear maps $a \colon R^{\iota} \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such
 that $x = y \circ a$ and $a(f) = 0$.
 
 Of course, the module $R^\iota$ in this statement can be replaced by an arbitrary free module
@@ -36,12 +36,12 @@ Of course, the module $R^\iota$ in this statement can be replaced by an arbitrar
 We also have the following strengthening of the equational criterion for flatness
 (`Module.Flat.exists_factorization_of_comp_eq_zero_of_free`): Let $M$ be a
 flat module. Let $K$ and $N$ be finite $R$-modules with $N$ free, and let $f \colon K \to N$ and
-$x \colon N \to M$ be homomorphisms such that $x \circ f = 0$. Then there exist a finite index type
-$\kappa$ and module homomorphisms $a \colon N \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such
+$x \colon N \to M$ be linear maps such that $x \circ f = 0$. Then there exist a finite index type
+$\kappa$ and $R$-linear maps $a \colon N \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such
 that $x = y \circ a$ and $a \circ f = 0$. We recover the usual equational criterion for flatness if
 $K = R$ and $N = R^\iota$. This is used in the proof of Lazard's theorem.
 
-We conclude that every homomorphism from a finitely presented module to a flat module factors
+We conclude that every linear map from a finitely presented module to a flat module factors
 through a finite free module (`Module.Flat.exists_factorization_of_isFinitelyPresented`).
 
 ## References
@@ -103,12 +103,12 @@ Let $M$ be a module over a commutative ring $R$. The following are equivalent:
 * For all ideals $I \subseteq R$, the map $I \otimes M \to M$ is injective.
 * Every $\sum_i f_i \otimes x_i$ that vanishes in $R \otimes M$ vanishes trivially.
 * Every relation $\sum_i f_i x_i = 0$ in $M$ is trivial.
-* For all finite index types $\iota$, all elements $f \in R^{\iota}$, and all homomorphisms
+* For all finite index types $\iota$, all elements $f \in R^{\iota}$, and all linear maps
 $x \colon R^{\iota} \to M$ such that $x(f) = 0$, there exist a finite index type $\kappa$ and module
-homomorphisms $a \colon R^{\iota} \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such
+linear maps $a \colon R^{\iota} \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such
 that $x = y \circ a$ and $a(f) = 0$.
-* For all finite free modules $N$, all elements $f \in N$, and all homomorphisms $x \colon N \to M$
-such that $x(f) = 0$, there exist a finite index type $\kappa$ and module homomorphisms
+* For all finite free modules $N$, all elements $f \in N$, and all linear maps $x \colon N \to M$
+such that $x(f) = 0$, there exist a finite index type $\kappa$ and $R$-linear maps
 $a \colon N \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and
 $a(f) = 0$. -/
 theorem tfae_equational_criterion : List.TFAE [
@@ -203,8 +203,8 @@ theorem of_forall_isTrivialRelation (hfx : ∀ {ι : Type u} [Fintype ι] {f : �
 [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK), alternate form.
 
 A module $M$ is flat if and only if for all finite free modules $R^\iota$,
-all $f \in R^{\iota}$, and all homomorphisms $x \colon R^{\iota} \to M$ such that $x(f) = 0$, there
-exist a finite free module $R^\kappa$ and homomorphisms $a \colon R^{\iota} \to R^{\kappa}$ and
+all $f \in R^{\iota}$, and all linear maps $x \colon R^{\iota} \to M$ such that $x(f) = 0$, there
+exist a finite free module $R^\kappa$ and linear maps $a \colon R^{\iota} \to R^{\kappa}$ and
 $y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and $a(f) = 0$. -/
 theorem iff_forall_exists_factorization : Flat R M ↔
     ∀ {ι : Type u} [Fintype ι] {f : ι →₀ R} {x : (ι →₀ R) →ₗ[R] M}, x f = 0 →
@@ -215,8 +215,8 @@ theorem iff_forall_exists_factorization : Flat R M ↔
 [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK), forward direction, alternate form.
 
 Let $M$ be a flat module. Let $R^\iota$ be a finite free module, let $f \in R^{\iota}$ be an
-element, and let $x \colon R^{\iota} \to M$ be a homomorphism such that $x(f) = 0$. Then there
-exist a finite free module $R^\kappa$ and homomorphisms $a \colon R^{\iota} \to R^{\kappa}$ and
+element, and let $x \colon R^{\iota} \to M$ be a linear map such that $x(f) = 0$. Then there
+exist a finite free module $R^\kappa$ and linear maps $a \colon R^{\iota} \to R^{\kappa}$ and
 $y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and $a(f) = 0$. -/
 theorem exists_factorization_of_apply_eq_zero [Flat R M] {ι : Type u} [_root_.Finite ι]
     {f : ι →₀ R} {x : (ι →₀ R) →ₗ[R] M} (h : x f = 0) :
@@ -228,8 +228,8 @@ theorem exists_factorization_of_apply_eq_zero [Flat R M] {ι : Type u} [_root_.F
 [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK), backward direction, alternate form.
 
 Let $M$ be a module over a commutative ring $R$. Suppose that for all finite free modules $R^\iota$,
-all $f \in R^{\iota}$, and all homomorphisms $x \colon R^{\iota} \to M$ such that $x(f) = 0$, there
-exist a finite free module $R^\kappa$ and homomorphisms $a \colon R^{\iota} \to R^{\kappa}$ and
+all $f \in R^{\iota}$, and all linear maps $x \colon R^{\iota} \to M$ such that $x(f) = 0$, there
+exist a finite free module $R^\kappa$ and linear maps $a \colon R^{\iota} \to R^{\kappa}$ and
 $y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and $a(f) = 0$. Then $M$ is flat. -/
 theorem of_forall_exists_factorization (h : ∀ {ι : Type u} [Fintype ι] {f : ι →₀ R}
     {x : (ι →₀ R) →ₗ[R] M}, x f = 0 →
@@ -240,8 +240,8 @@ theorem of_forall_exists_factorization (h : ∀ {ι : Type u} [Fintype ι] {f : 
 forward direction, second alternate form.
 
 Let $M$ be a flat module over a commutative ring $R$. Let $N$ be a finite free module over $R$,
-let $f \in N$, and let $x \colon N \to M$ be a homomorphism such that $x(f) = 0$. Then there exist a
-finite index type $\kappa$ and module homomorphisms $a \colon N \to R^{\kappa}$ and
+let $f \in N$, and let $x \colon N \to M$ be a linear map such that $x(f) = 0$. Then there exist a
+finite index type $\kappa$ and $R$-linear maps $a \colon N \to R^{\kappa}$ and
 $y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and $a(f) = 0$. -/
 theorem exists_factorization_of_apply_eq_zero_of_free [Flat R M] {N : Type u} [AddCommGroup N]
     [Module R N] [Free R N] [Module.Finite R N] {f : N} {x : N →ₗ[R] M} (h : x f = 0) :
@@ -250,8 +250,8 @@ theorem exists_factorization_of_apply_eq_zero_of_free [Flat R M] {N : Type u} [A
   exact ((tfae_equational_criterion R M).out 0 5 rfl rfl).mp ‹Flat R M› h
 
 /-- Let $M$ be a flat module. Let $K$ and $N$ be finite $R$-modules with $N$
-free, and let $f \colon K \to N$ and $x \colon N \to M$ be homomorphisms such that
-$x \circ f = 0$. Then there exist a finite index type $\kappa$ and module homomorphisms
+free, and let $f \colon K \to N$ and $x \colon N \to M$ be linear maps such that
+$x \circ f = 0$. Then there exist a finite index type $\kappa$ and $R$-linear maps
 $a \colon N \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and
 $a \circ f = 0$. -/
 theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type u} [AddCommGroup K]
@@ -273,10 +273,10 @@ theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type u} [
       use κ₂, hκ₂, a₂ ∘ₗ a₁, y₂
       simp_rw [comp_assoc]
       exact ⟨trivial, sup_le (ha₁.trans (ker_le_ker_comp _ _)) ha₂⟩
-  convert this ⊤ Finite.out
+  convert this ⊤ Finite.fg_top
   simp only [top_le_iff, ker_eq_top]
 
-/-- Every homomorphism from a finitely presented module to a flat module factors through a finite
+/-- Every linear map from a finitely presented module to a flat module factors through a finite
 free module. -/
 theorem exists_factorization_of_isFinitelyPresented [Flat R M] {P : Type u} [AddCommGroup P]
     [Module R P] [FinitePresentation R P] (h₁ : P →ₗ[R] M) :

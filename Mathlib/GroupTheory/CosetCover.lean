@@ -54,10 +54,10 @@ section leftCoset_cover_const
 theorem exists_leftTransversal_of_FiniteIndex
     {D H : Subgroup G} [D.FiniteIndex] (hD_le_H : D ≤ H) :
     ∃ t : Finset H,
-      (t : Set H) ∈ leftTransversals (D.subgroupOf H) ∧
+      IsComplement (t : Set H) (D.subgroupOf H) ∧
         ⋃ g ∈ t, (g : G) • (D : Set G) = H := by
-  have ⟨t, ht⟩ := exists_left_transversal (D.subgroupOf H) 1
-  have hf : t.Finite := (MemLeftTransversals.finite_iff ht.1).mpr inferInstance
+  have ⟨t, ht⟩ := (D.subgroupOf H).exists_isComplement_left 1
+  have hf : t.Finite := ht.1.finite_left_iff.mpr inferInstance
   refine ⟨hf.toFinset, hf.coe_toFinset.symm ▸ ht.1, ?_⟩
   ext x
   suffices (∃ y ∈ t, ∃ d ∈ D, y * d = x) ↔ x ∈ H by simpa using this
@@ -65,8 +65,8 @@ theorem exists_leftTransversal_of_FiniteIndex
   · rintro ⟨⟨y, hy⟩, -, d, h, rfl⟩
     exact H.mul_mem hy (hD_le_H h)
   · intro hx
-    exact ⟨_, (MemLeftTransversals.toFun ht.1 ⟨x, hx⟩).2, _,
-      MemLeftTransversals.inv_toFun_mul_mem ht.1 ⟨x, hx⟩, mul_inv_cancel_left _ _⟩
+    exact ⟨_, (ht.1.toLeftFun ⟨x, hx⟩).2, _,
+      ht.1.inv_toLeftFun_mul_mem ⟨x, hx⟩, mul_inv_cancel_left _ _⟩
 
 variable {ι : Type*} {s : Finset ι} {H : Subgroup G} {g : ι → G}
 
@@ -238,7 +238,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
   have ⟨k, hkfi, hk⟩ : ∃ k, (H k.1.1).FiniteIndex ∧ K k = D :=
     have ⟨j, hj, hjfi⟩ := exists_finiteIndex_of_leftCoset_cover hcovers
     have ⟨x, hx⟩ : (t j hj hjfi).Nonempty := Finset.nonempty_coe_sort.mp
-      (MemLeftTransversals.toEquiv (ht j hj hjfi).1).symm.nonempty
+      (ht j hj hjfi).1.leftQuotientEquiv.symm.nonempty
     ⟨⟨⟨j, hj⟩, ⟨x, dif_pos hjfi ▸ hx⟩⟩, hjfi, if_pos hjfi⟩
   -- Since `D` is the unique subgroup of finite index whose cosets occur in the new covering,
   -- the cosets of the other subgroups can be omitted.
@@ -260,7 +260,7 @@ theorem leftCoset_cover_filter_FiniteIndex_aux
     by_cases hfi : (H i).FiniteIndex
     · rw [← relindex_mul_index (hD_le i.2 hfi), Nat.cast_mul, mul_comm,
         mul_inv_cancel_right₀ (Nat.cast_ne_zero.mpr hfi.finiteIndex)]
-      simpa [K, hfi] using card_left_transversal (ht i.1 i.2 hfi).1
+      simpa [K, hfi] using (ht i.1 i.2 hfi).1.card_left
     · rw [of_not_not (FiniteIndex.mk.mt hfi), Nat.cast_zero, inv_zero, zero_mul]
       simpa [K, hfi] using hHD i hfi
   refine ⟨?_, ?_, ?_⟩

@@ -318,7 +318,7 @@ noncomputable def sheafify : SheafOfModules.{v} R where
 def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val :=
   homMk φ (fun X r₀ m₀ ↦ by
     simpa using (Sheafify.map_smul_eq α φ (α.app _ r₀) (φ.app _ m₀) (𝟙 _)
-      r₀ (by aesop) m₀ (by simp)).symm)
+      r₀ (by simp) m₀ (by simp)).symm)
 
 lemma toSheafify_app_apply (X : Cᵒᵖ) (x : M₀.obj X) :
     ((toSheafify α φ).app X).hom x = φ.app X x := rfl

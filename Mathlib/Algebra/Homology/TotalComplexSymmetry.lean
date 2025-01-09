@@ -20,6 +20,9 @@ are compatible `[TotalComplexShapeSymmetrySymmetry c₁ c₂ c]`, then the isomo
 
 -/
 
+assert_not_exists Ideal
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category Limits
 
 namespace HomologicalComplex₂

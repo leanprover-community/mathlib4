@@ -202,6 +202,25 @@ theorem component.of [DecidableEq ι] (i j : ι) (b : M j) :
     component R ι M i ((lof R ι M j) b) = if h : j = i then Eq.recOn h b else 0 :=
   DFinsupp.single_apply
 
+section map
+
+variable {R} {N : ι → Type*} [∀ i, AddCommMonoid (N i)] [∀ i, Module R (N i)]
+  (f : Π i, M i →ₗ[R] N i)
+
+/-- The linear map between direct sums induced by a family of linear maps. -/
+def lmap : (⨁ i, M i) →ₗ[R] ⨁ i, N i := DFinsupp.mapRange.linearMap f
+
+@[simp] theorem lmap_apply (x i) : lmap f x i = f i (x i) := rfl
+
+@[simp] theorem lmap_lof [DecidableEq ι] (i) (x : M i) :
+    lmap f (lof R _ _ _ x) = lof R _ _ _ (f i x) :=
+  DFinsupp.mapRange_single (hf := fun _ ↦ map_zero _)
+
+theorem lmap_injective : Function.Injective (lmap f) ↔ ∀ i, Function.Injective (f i) := by
+  classical exact DFinsupp.mapRange_injective (hf := fun _ ↦ map_zero _)
+
+end map
+
 section CongrLeft
 
 variable {κ : Type*}

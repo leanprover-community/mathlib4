@@ -310,6 +310,8 @@ structure IndexedPartition {ι α : Type*} (s : ι → Set α) where
   /-- membership invariance for `index`-/
   mem_index : ∀ x, x ∈ s (index x)
 
+open scoped Function -- required for scoped `on` notation
+
 /-- The non-constructive constructor for `IndexedPartition`. -/
 noncomputable def IndexedPartition.mk' {ι α : Type*} (s : ι → Set α)
     (dis : Pairwise (Disjoint on s)) (nonempty : ∀ i, (s i).Nonempty)

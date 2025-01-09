@@ -3,12 +3,13 @@ Copyright (c) 2015 Nathaniel Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Field.Basic
+import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.NatInt
 import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+import Mathlib.Algebra.Ring.Invertible
 
 /-!
 # Further basic results about modules.

@@ -61,7 +61,7 @@ theorem map_mkQ_eq {N₁ N₂ : Submodule R M} (h : N₁ ≤ N₂) (h' : N₂.FG
 
 theorem map_mkQ_eq_top {N : Submodule R M} [Module.Finite R M] :
     N.map (Submodule.mkQ (𝔪 • ⊤)) = ⊤ ↔ N = ⊤ := by
-  rw [← map_mkQ_eq (N₁ := N) le_top Module.Finite.out, Submodule.map_top, Submodule.range_mkQ]
+  rw [← map_mkQ_eq (N₁ := N) le_top Module.Finite.fg_top, Submodule.map_top, Submodule.range_mkQ]
 
 theorem map_tensorProduct_mk_eq_top {N : Submodule R M} [Module.Finite R M] :
     N.map (TensorProduct.mk R k M 1) = ⊤ ↔ N = ⊤ := by
@@ -267,7 +267,7 @@ theorem free_of_lTensor_residueField_injective (hg : Surjective g) (h : Exact f 
     (hf : Function.Injective (f.lTensor k)) :
     Module.Free R P := by
   have := Module.finitePresentation_of_free_of_surjective g hg
-    (by rw [h.linearMap_ker_eq, LinearMap.range_eq_map]; exact (Module.Finite.out).map f)
+    (by rw [h.linearMap_ker_eq, LinearMap.range_eq_map]; exact (Module.Finite.fg_top).map f)
   apply free_of_maximalIdeal_rTensor_injective
   rw [← LinearMap.lTensor_inj_iff_rTensor_inj]
   apply lTensor_injective_of_exact_of_exact_of_rTensor_injective

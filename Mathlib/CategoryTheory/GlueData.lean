@@ -443,9 +443,9 @@ def GlueData'.t'' (D : GlueData' C) (i j k : D.J) :
   else
     haveI := Ne.symm hij
     pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by rw [dif_neg hik]))
-        (eqToHom (by aesop)) (by delta f'; aesop) (by delta f'; aesop) ≫
+        (eqToHom (by simp)) (by delta f'; aesop) (by delta f'; aesop) ≫
       D.t' i j k hij hik hjk ≫
-      pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by aesop)) (eqToHom (by aesop))
+      pullback.map _ _ _ _ (eqToHom (by aesop)) (eqToHom (by aesop)) (eqToHom (by simp))
         (by delta f'; aesop) (by delta f'; aesop)
 
 open scoped Classical in

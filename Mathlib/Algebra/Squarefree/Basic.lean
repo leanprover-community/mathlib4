@@ -160,9 +160,6 @@ theorem Squarefree.isRadical {x : R} (hx : Squarefree x) : IsRadical x :=
 theorem Squarefree.dvd_pow_iff_dvd {x y : R} {n : ℕ} (hsq : Squarefree x) (h0 : n ≠ 0) :
     x ∣ y ^ n ↔ x ∣ y := ⟨hsq.isRadical n y, (·.pow h0)⟩
 
-@[deprecated (since := "2024-02-12")]
-alias UniqueFactorizationMonoid.dvd_pow_iff_dvd_of_squarefree := Squarefree.dvd_pow_iff_dvd
-
 end
 
 variable [CancelCommMonoidWithZero R] {x y p d : R}

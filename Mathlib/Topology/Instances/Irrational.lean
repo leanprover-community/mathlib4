@@ -36,7 +36,6 @@ open Filter Topology
 protected theorem IsGδ.setOf_irrational : IsGδ { x | Irrational x } :=
   (countable_range _).isGδ_compl
 
-@[deprecated (since := "2024-02-15")] alias isGδ_irrational := IsGδ.setOf_irrational
 
 theorem dense_irrational : Dense { x : ℝ | Irrational x } := by
   refine Real.isTopologicalBasis_Ioo_rat.dense_iff.2 ?_

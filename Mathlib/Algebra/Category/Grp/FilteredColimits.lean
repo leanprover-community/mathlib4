@@ -95,11 +95,9 @@ noncomputable instance colimitGroup : Group (G.{v, u} F) :=
     inv_mul_cancel := fun x => by
       refine Quot.inductionOn x ?_; clear x; intro x
       obtain ⟨j, x⟩ := x
-      erw [colimit_inv_mk_eq,
-        colimit_mul_mk_eq (F ⋙ forget₂ Grp MonCat.{max v u}) ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j),
-        colimit_one_eq (F ⋙ forget₂ Grp MonCat.{max v u}) j]
-      dsimp
-      erw [CategoryTheory.Functor.map_id, inv_mul_cancel] }
+      erw [colimit_inv_mk_eq]
+      erw [colimit_mul_mk_eq (F ⋙ forget₂ Grp MonCat.{max v u}) ⟨j, _⟩ ⟨j, _⟩ j (𝟙 j) (𝟙 j)]
+      simp [colimit_one_eq (F ⋙ forget₂ Grp MonCat.{max v u}) j] }
 
 /-- The bundled group giving the filtered colimit of a diagram. -/
 @[to_additive "The bundled additive group giving the filtered colimit of a diagram."]

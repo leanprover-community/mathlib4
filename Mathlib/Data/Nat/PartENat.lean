@@ -114,9 +114,8 @@ theorem natCast_inj {x y : ℕ} : (x : PartENat) = y ↔ x = y :=
 theorem dom_natCast (x : ℕ) : (x : PartENat).Dom :=
   trivial
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem dom_ofNat (x : ℕ) [x.AtLeastTwo] : (no_index (OfNat.ofNat x : PartENat)).Dom :=
+theorem dom_ofNat (x : ℕ) [x.AtLeastTwo] : (ofNat(x) : PartENat).Dom :=
   trivial
 
 @[simp]
@@ -189,10 +188,9 @@ theorem get_zero (h : (0 : PartENat).Dom) : (0 : PartENat).get h = 0 :=
 theorem get_one (h : (1 : PartENat).Dom) : (1 : PartENat).get h = 1 :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem get_ofNat' (x : ℕ) [x.AtLeastTwo] (h : (no_index (OfNat.ofNat x : PartENat)).Dom) :
-    Part.get (no_index (OfNat.ofNat x : PartENat)) h = (no_index (OfNat.ofNat x)) :=
+theorem get_ofNat' (x : ℕ) [x.AtLeastTwo] (h : (ofNat(x) : PartENat).Dom) :
+    Part.get (ofNat(x) : PartENat) h = ofNat(x) :=
   get_natCast' x h
 
 nonrec theorem get_eq_iff_eq_some {a : PartENat} {ha : a.Dom} {b : ℕ} : a.get ha = b ↔ a = some b :=
@@ -327,9 +325,8 @@ theorem zero_lt_top : (0 : PartENat) < ⊤ :=
 theorem one_lt_top : (1 : PartENat) < ⊤ :=
   natCast_lt_top 1
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ofNat_lt_top (x : ℕ) [x.AtLeastTwo] : (no_index (OfNat.ofNat x : PartENat)) < ⊤ :=
+theorem ofNat_lt_top (x : ℕ) [x.AtLeastTwo] : (ofNat(x) : PartENat) < ⊤ :=
   natCast_lt_top x
 
 @[simp]
@@ -344,9 +341,8 @@ theorem zero_ne_top : (0 : PartENat) ≠ ⊤ :=
 theorem one_ne_top : (1 : PartENat) ≠ ⊤ :=
   natCast_ne_top 1
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ofNat_ne_top (x : ℕ) [x.AtLeastTwo] : (no_index (OfNat.ofNat x : PartENat)) ≠ ⊤ :=
+theorem ofNat_ne_top (x : ℕ) [x.AtLeastTwo] : (ofNat(x) : PartENat) ≠ ⊤ :=
   natCast_ne_top x
 
 theorem not_isMax_natCast (x : ℕ) : ¬IsMax (x : PartENat) :=
@@ -556,7 +552,7 @@ theorem toWithTop_natCast' (n : ℕ) {_ : Decidable (n : PartENat).Dom} :
 
 @[simp]
 theorem toWithTop_ofNat (n : ℕ) [n.AtLeastTwo] {_ : Decidable (OfNat.ofNat n : PartENat).Dom} :
-    toWithTop (no_index (OfNat.ofNat n : PartENat)) = OfNat.ofNat n := toWithTop_natCast' n
+    toWithTop (ofNat(n) : PartENat) = OfNat.ofNat n := toWithTop_natCast' n
 
 -- Porting note: statement changed. Mathlib 3 statement was
 -- ```
@@ -621,7 +617,7 @@ theorem ofENat_zero : ofENat 0 = 0 := rfl
 theorem ofENat_one : ofENat 1 = 1 := rfl
 
 @[simp, norm_cast]
-theorem ofENat_ofNat (n : Nat) [n.AtLeastTwo] : ofENat (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+theorem ofENat_ofNat (n : Nat) [n.AtLeastTwo] : ofENat ofNat(n) = OfNat.ofNat n :=
   rfl
 
 @[simp, norm_cast]
@@ -679,7 +675,7 @@ theorem withTopEquiv_one : withTopEquiv 1 = 1 := by
   simp
 
 theorem withTopEquiv_ofNat (n : Nat) [n.AtLeastTwo] :
-    withTopEquiv (no_index (OfNat.ofNat n)) = OfNat.ofNat n := by
+    withTopEquiv ofNat(n) = OfNat.ofNat n := by
   simp
 
 theorem withTopEquiv_le {x y : PartENat} : withTopEquiv x ≤ withTopEquiv y ↔ x ≤ y := by
@@ -701,7 +697,7 @@ theorem withTopEquiv_symm_one : withTopEquiv.symm 1 = 1 := by
   simp
 
 theorem withTopEquiv_symm_ofNat (n : Nat) [n.AtLeastTwo] :
-    withTopEquiv.symm (no_index (OfNat.ofNat n)) = OfNat.ofNat n := by
+    withTopEquiv.symm ofNat(n) = OfNat.ofNat n := by
   simp
 
 theorem withTopEquiv_symm_le {x y : ℕ∞} : withTopEquiv.symm x ≤ withTopEquiv.symm y ↔ x ≤ y := by

@@ -30,9 +30,6 @@ More information can be found in `Mathlib/Algebra/BigOperators/Group/Finset.lean
 Finsets are directly used to define fintypes in Lean.
 A `Fintype α` instance for a type `α` consists of a universal `Finset α` containing every term of
 `α`, called `univ`. See `Mathlib/Data/Fintype/Basic.lean`.
-There is also `univ'`, the noncomputable partner to `univ`,
-which is defined to be `α` as a finset if `α` is finite,
-and the empty finset otherwise. See `Mathlib/Data/Fintype/Basic.lean`.
 
 `Finset.card`, the size of a finset is defined in `Mathlib/Data/Finset/Card.lean`.
 This is then used to define `Fintype.card`, the size of a type.
@@ -66,7 +63,7 @@ assert_not_exists DirectedSystem
 
 assert_not_exists CompleteLattice
 
-assert_not_exists OrderedCommMonoid
+assert_not_exists Monoid
 
 open Multiset Subtype Function
 
@@ -356,7 +353,7 @@ theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {s : Finset α} (hx : x ∈
     SizeOf.sizeOf x < SizeOf.sizeOf s := by
   cases s
   dsimp [SizeOf.sizeOf, SizeOf.sizeOf, Multiset.sizeOf]
-  rw [add_comm]
+  rw [Nat.add_comm]
   refine lt_trans ?_ (Nat.lt_succ_self _)
   exact Multiset.sizeOf_lt_sizeOf_of_mem hx
 

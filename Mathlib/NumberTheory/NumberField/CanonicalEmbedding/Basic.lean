@@ -388,7 +388,7 @@ theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
       (univ.image (fun w : {w : InfinitePlace K // IsComplex w} ↦ w.1)) := by
     ext; simp [isReal_or_isComplex]
   rw [this, sup_union, univ.sup_image, univ.sup_image,
-    Prod.nnnorm_def', Pi.nnnorm_def, Pi.nnnorm_def]
+    Prod.nnnorm_def, Pi.nnnorm_def, Pi.nnnorm_def]
   congr
   · ext w
     simp [normAtPlace_apply_isReal w.prop]
@@ -979,6 +979,7 @@ theorem neg_of_mem_negA_plusPart (hx : x ∈ negAt s '' (plusPart A)) {w : {w //
   rw [negAt_apply_of_isReal_and_not_mem _ hw]
   exact hy.2 w
 
+open scoped Function in -- required for scoped `on` notation
  /-- The images of `plusPart` by `negAt` are pairwise disjoint. -/
  theorem disjoint_negAt_plusPart : Pairwise (Disjoint on (fun s ↦ negAt s '' (plusPart A))) := by
   intro s t hst

@@ -22,6 +22,7 @@ Gödel's Beta function, which is used in proving Gödel's incompleteness theorem
 Chinese Remainder Theorem, Gödel, beta function
 -/
 
+open scoped Function -- required for scoped `on` notation
 namespace Nat
 
 variable {ι : Type*}

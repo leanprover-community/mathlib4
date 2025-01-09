@@ -492,6 +492,54 @@ theorem not_mem_Ioo_of_le (ha : c ≤ a) : c ∉ Ioo a b := fun h => lt_irrefl _
 
 theorem not_mem_Ioo_of_ge (hb : b ≤ c) : c ∉ Ioo a b := fun h => lt_irrefl _ <| h.2.trans_le hb
 
+section matched_intervals
+
+@[simp] theorem Icc_eq_Ioc_same_iff : Icc a b = Ioc a b ↔ ¬a ≤ b where
+  mp h := by simpa using Set.ext_iff.mp h a
+  mpr h := by rw [Icc_eq_empty h, Ioc_eq_empty (mt le_of_lt h)]
+
+@[simp] theorem Icc_eq_Ico_same_iff : Icc a b = Ico a b ↔ ¬a ≤ b where
+  mp h := by simpa using Set.ext_iff.mp h b
+  mpr h := by rw [Icc_eq_empty h, Ico_eq_empty (mt le_of_lt h)]
+
+@[simp] theorem Icc_eq_Ioo_same_iff : Icc a b = Ioo a b ↔ ¬a ≤ b where
+  mp h := by simpa using Set.ext_iff.mp h b
+  mpr h := by rw [Icc_eq_empty h, Ioo_eq_empty (mt le_of_lt h)]
+
+@[simp] theorem Ioc_eq_Ico_same_iff : Ioc a b = Ico a b ↔ ¬a < b where
+  mp h := by simpa using Set.ext_iff.mp h a
+  mpr h := by rw [Ioc_eq_empty h, Ico_eq_empty h]
+
+@[simp] theorem Ioo_eq_Ioc_same_iff : Ioo a b = Ioc a b ↔ ¬a < b where
+  mp h := by simpa using Set.ext_iff.mp h b
+  mpr h := by rw [Ioo_eq_empty h, Ioc_eq_empty h]
+
+@[simp] theorem Ioo_eq_Ico_same_iff : Ioo a b = Ico a b ↔ ¬a < b where
+  mp h := by simpa using Set.ext_iff.mp h a
+  mpr h := by rw [Ioo_eq_empty h, Ico_eq_empty h]
+
+-- Mirrored versions of the above for `simp`.
+
+@[simp] theorem Ioc_eq_Icc_same_iff : Ioc a b = Icc a b ↔ ¬a ≤ b :=
+  eq_comm.trans Icc_eq_Ioc_same_iff
+
+@[simp] theorem Ico_eq_Icc_same_iff : Ico a b = Icc a b ↔ ¬a ≤ b :=
+  eq_comm.trans Icc_eq_Ico_same_iff
+
+@[simp] theorem Ioo_eq_Icc_same_iff : Ioo a b = Icc a b ↔ ¬a ≤ b :=
+  eq_comm.trans Icc_eq_Ioo_same_iff
+
+@[simp] theorem Ico_eq_Ioc_same_iff : Ico a b = Ioc a b ↔ ¬a < b :=
+  eq_comm.trans Ioc_eq_Ico_same_iff
+
+@[simp] theorem Ioc_eq_Ioo_same_iff : Ioc a b = Ioo a b ↔ ¬a < b :=
+  eq_comm.trans Ioo_eq_Ioc_same_iff
+
+@[simp] theorem Ico_eq_Ioo_same_iff : Ico a b = Ioo a b ↔ ¬a < b :=
+  eq_comm.trans Ioo_eq_Ico_same_iff
+
+end matched_intervals
+
 end Preorder
 
 section PartialOrder
@@ -1460,6 +1508,7 @@ theorem Ioc_union_Ioc_union_Ioc_cycle :
   all_goals
   solve_by_elim (config := { maxDepth := 5 }) [min_le_of_left_le, min_le_of_right_le,
        le_max_of_le_left, le_max_of_le_right, le_refl]
+
 end LinearOrder
 
 /-!

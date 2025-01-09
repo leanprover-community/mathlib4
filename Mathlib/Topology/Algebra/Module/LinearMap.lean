@@ -505,7 +505,7 @@ theorem natCast_apply [ContinuousAdd M₁] (n : ℕ) (m : M₁) : (↑n : M₁ �
 
 @[simp]
 theorem ofNat_apply [ContinuousAdd M₁] (n : ℕ) [n.AtLeastTwo] (m : M₁) :
-    ((no_index (OfNat.ofNat n) : M₁ →L[R₁] M₁)) m = OfNat.ofNat n • m :=
+    (ofNat(n) : M₁ →L[R₁] M₁) m = OfNat.ofNat n • m :=
   rfl
 
 section ApplyAction

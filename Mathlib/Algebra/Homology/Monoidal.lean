@@ -22,6 +22,8 @@ In particular, we obtain a monoidal category structure on
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Limits MonoidalCategory Category
 
 namespace HomologicalComplex

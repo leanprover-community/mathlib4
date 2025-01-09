@@ -60,6 +60,8 @@ or enough injectives).
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe w v u
 
 open CategoryTheory Limits Pretriangulated

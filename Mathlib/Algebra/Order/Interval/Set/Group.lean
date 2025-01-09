@@ -146,6 +146,7 @@ end LinearOrderedAddCommGroup
 
 /-! ### Lemmas about disjointness of translates of intervals -/
 
+open scoped Function -- required for scoped `on` notation
 section PairwiseDisjoint
 
 section OrderedCommGroup

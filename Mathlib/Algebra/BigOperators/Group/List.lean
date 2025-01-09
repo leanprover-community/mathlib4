@@ -5,7 +5,6 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Int
-import Mathlib.Data.List.Lemmas
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Flatten
 import Mathlib.Data.List.Pairwise
@@ -636,10 +635,6 @@ attribute [deprecated map_list_sum (since := "2024-05-02")] AddMonoidHom.map_lis
 end MonoidHom
 
 end MonoidHom
-
-set_option linter.deprecated false in
-@[simp, deprecated "No deprecation message was provided." (since := "2024-10-17")]
-lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
 
 namespace List
 

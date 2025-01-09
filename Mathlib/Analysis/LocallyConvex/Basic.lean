@@ -215,8 +215,6 @@ theorem Balanced.absorbs_self (hA : Balanced 𝕜 A) : Absorbs 𝕜 A A :=
 theorem Balanced.smul_mem_iff (hs : Balanced 𝕜 s) (h : ‖a‖ = ‖b‖) : a • x ∈ s ↔ b • x ∈ s :=
   ⟨(hs.smul_mem_mono · h.ge), (hs.smul_mem_mono · h.le)⟩
 
-@[deprecated (since := "2024-02-02")] alias Balanced.mem_smul_iff := Balanced.smul_mem_iff
-
 variable [TopologicalSpace E] [ContinuousSMul 𝕜 E]
 
 /-- Every neighbourhood of the origin is absorbent. -/
@@ -235,10 +233,6 @@ theorem Balanced.zero_insert_interior (hA : Balanced 𝕜 A) :
     apply insert_subset_insert
     exact ((isOpenMap_smul₀ h).mapsTo_interior <| hA.smul_mem ha).image_subset
 
-@[deprecated Balanced.zero_insert_interior (since := "2024-02-03")]
-theorem balanced_zero_union_interior (hA : Balanced 𝕜 A) : Balanced 𝕜 ((0 : Set E) ∪ interior A) :=
-  hA.zero_insert_interior
-
 /-- The interior of a balanced set is balanced if it contains the origin. -/
 protected theorem Balanced.interior (hA : Balanced 𝕜 A) (h : (0 : E) ∈ interior A) :
     Balanced 𝕜 (interior A) := by
@@ -255,9 +249,6 @@ section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] {s : Set E}
 
-@[deprecated Absorbent.zero_mem (since := "2024-02-02")]
-theorem Absorbent.zero_mem' (hs : Absorbent 𝕜 s) : (0 : E) ∈ s := hs.zero_mem
-
 variable [Module ℝ E] [SMulCommClass ℝ 𝕜 E]
 
 protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (convexHull ℝ s) := by
@@ -268,8 +259,6 @@ protected theorem Balanced.convexHull (hs : Balanced 𝕜 s) : Balanced 𝕜 (co
   intro x hx y hy u v hu hv huv a ha
   simp only [smul_add, ← smul_comm]
   exact convex_convexHull ℝ s (hx a ha) (hy a ha) hu hv huv
-
-@[deprecated (since := "2024-02-02")] alias balanced_convexHull_of_balanced := Balanced.convexHull
 
 end NontriviallyNormedField
 

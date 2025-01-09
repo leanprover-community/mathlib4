@@ -1,6 +1,12 @@
 import Mathlib.Tactic.Linter.HaveLetLinter
 import Mathlib.Tactic.Tauto
 
+
+-- #adaptation_note
+-- The haveLet linter started failing after https://github.com/leanprover/lean4/pull/6299
+-- Disabling aync elaboration fixes it, but of course we're not going to do that globally.
+set_option Elab.async false
+
 set_option linter.haveLet 1
 
 /--

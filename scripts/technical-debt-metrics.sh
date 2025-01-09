@@ -159,12 +159,14 @@ then
   then
     printf '<details><summary>No changes to technical debt.</summary>\n'
   else
-    printf '%s\n' "${rep}" |
+    printf '%s\n' "${rep}" |  # outputs lines containing `|Current number|Change|Type|`, so
+                              # `$2` refers to `Current number` and `$3` to `Change`.
       awk -F '|' -v rep="${rep}" '
-        BEGIN{total=0; weight=0}
+        BEGIN{total=0; weight=0; absWeight=0}
+        {absWeight+=$3+0}
         (($3+0 == $3) && (!($2+0 == 0))) {total+=1 / $2; weight+=$3 / $2}
         END{
-          average=weight/total
+          if (total == 0) {average=absWeight} else {average=weight/total}
           if(average < 0) {change= "Decrease"; average=-average; weight=-weight} else {change= "Increase"}
           printf("<details><summary>%s in tech debt: (relative, absolute) = (%4.2f, %4.2f)</summary>\n\n%s\n", change, average, weight, rep) }'
   fi

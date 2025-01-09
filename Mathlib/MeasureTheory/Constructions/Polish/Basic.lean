@@ -251,7 +251,7 @@ theorem AnalyticSet.iInter [hι : Nonempty ι] [Countable ι] [T2Space α] {s : 
     apply Subset.antisymm
     · rintro y ⟨x, rfl⟩
       refine mem_iInter.2 fun n => ?_
-      have : f n ((x : γ) n) = F x := (mem_iInter.1 x.2 n : _)
+      have : f n ((x : γ) n) = F x := (mem_iInter.1 x.2 n :)
       rw [← this, ← f_range n]
       exact mem_range_self _
     · intro y hy
@@ -740,10 +740,10 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
       by_contra! h
       have A : x ∈ q ⟨(s m, s n), h⟩ \ q ⟨(s n, s m), h.symm⟩ :=
         haveI := mem_iInter.1 (hxs m).2 (s n)
-        (mem_iInter.1 this h : _)
+        (mem_iInter.1 this h :)
       have B : x ∈ q ⟨(s n, s m), h.symm⟩ \ q ⟨(s m, s n), h⟩ :=
         haveI := mem_iInter.1 (hxs n).2 (s m)
-        (mem_iInter.1 this h.symm : _)
+        (mem_iInter.1 this h.symm :)
       exact A.2 B.1
     -- the points `y n` are nearby, and therefore they form a Cauchy sequence.
     have cauchy_y : CauchySeq y := by

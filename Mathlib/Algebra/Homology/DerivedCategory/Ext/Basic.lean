@@ -40,6 +40,8 @@ sheaves over `X` shall be in `Type u`.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 universe w'' w' w v u
 
 namespace CategoryTheory

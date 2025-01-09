@@ -106,6 +106,7 @@ structure OrderedFinpartition (n : ℕ) where
   disjoint : PairwiseDisjoint univ fun m ↦ range (emb m)
   /-- The parts cover everything -/
   cover x : ∃ m, x ∈ range (emb m)
+  deriving DecidableEq
 
 namespace OrderedFinpartition
 
@@ -401,10 +402,10 @@ def extendMiddle (c : OrderedFinpartition n) (k : Fin c.length) : OrderedFinpart
       rcases eq_or_ne (c.index i) k with rfl | hi
       · have A : update c.partSize (c.index i) (c.partSize (c.index i) + 1) (c.index i) =
           c.partSize (c.index i) + 1 := by simp
-        exact ⟨c.index i, cast A.symm (succ (c.invEmbedding i)), by simp⟩
+        exact ⟨c.index i, (succ (c.invEmbedding i)).cast A.symm , by simp⟩
       · have A : update c.partSize k (c.partSize k + 1) (c.index i) = c.partSize (c.index i) := by
           simp [hi]
-        exact ⟨c.index i, cast A.symm (c.invEmbedding i), by simp [hi]⟩
+        exact ⟨c.index i, (c.invEmbedding i).cast A.symm, by simp [hi]⟩
 
 lemma index_extendMiddle_zero (c : OrderedFinpartition n) (i : Fin c.length) :
     (c.extendMiddle i).index 0 = i := by
@@ -678,8 +679,8 @@ def extendEquiv (n : ℕ) :
           · simp only [↓reduceDIte, comp_apply]
             rcases eq_or_ne j 0 with rfl | hj
             · simpa using c.emb_zero
-            · let j' := Fin.pred (cast B.symm j) (by simpa using hj)
-              have : j = cast B (succ j') := by simp [j']
+            · let j' := Fin.pred (j.cast B.symm) (by simpa using hj)
+              have : j = (succ j').cast B := by simp [j']
               simp only [this, coe_cast, val_succ, cast_mk, cases_succ', comp_apply, succ_mk,
                 Nat.succ_eq_add_one, succ_pred]
               rfl

@@ -217,10 +217,10 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (α ⊕ β) where
   finsetIco := sumLift₂ Ico Ico
   finsetIoc := sumLift₂ Ioc Ioc
   finsetIoo := sumLift₂ Ioo Ioo
-  finset_mem_Icc := by rintro (a | a) (b | b) (x | x) <;> simp
-  finset_mem_Ico := by rintro (a | a) (b | b) (x | x) <;> simp
-  finset_mem_Ioc := by rintro (a | a) (b | b) (x | x) <;> simp
-  finset_mem_Ioo := by rintro (a | a) (b | b) (x | x) <;> simp
+  finset_mem_Icc := by simp
+  finset_mem_Ico := by simp
+  finset_mem_Ioc := by simp
+  finset_mem_Ioo := by simp
 
 variable (a₁ a₂ : α) (b₁ b₂ : β)
 

@@ -228,6 +228,7 @@ namespace Finset
 
 variable [Monoid β] [Monoid γ]
 
+open scoped Function -- required for scoped `on` notation
 
 /-- Proof used in definition of `Finset.noncommProd` -/
 @[to_additive]

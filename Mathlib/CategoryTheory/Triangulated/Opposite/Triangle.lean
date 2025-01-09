@@ -73,7 +73,7 @@ equivalence `triangleOpEquivalence C : (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` 
 @[simps!]
 noncomputable def unitIso : 𝟭 _ ≅ functor C ⋙ inverse C :=
   NatIso.ofComponents (fun T => Iso.op
-    (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by aesop_cat) (by aesop_cat)
+    (Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) (by simp) (by simp)
       (Quiver.Hom.op_inj
         (by simp [shift_unop_opShiftFunctorEquivalence_counitIso_inv_app]))))
     (fun {T₁ T₂} f => Quiver.Hom.unop_inj (by aesop_cat))
@@ -84,8 +84,8 @@ equivalence `triangleOpEquivalence C : (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` 
 noncomputable def counitIso : inverse C ⋙ functor C ≅ 𝟭 _ :=
   NatIso.ofComponents (fun T => by
     refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) ?_ ?_ ?_
-    · aesop_cat
-    · aesop_cat
+    · simp
+    · simp
     · dsimp
       rw [Functor.map_id, comp_id, id_comp, Functor.map_comp,
         ← opShiftFunctorEquivalence_counitIso_inv_naturality_assoc,

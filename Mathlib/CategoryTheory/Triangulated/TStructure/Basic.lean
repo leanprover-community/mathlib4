@@ -38,6 +38,8 @@ use depending on the context.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace CategoryTheory
 
 open Limits

@@ -346,7 +346,7 @@ def productLimitCone {J : Type v} (F : J → TypeMax.{v, u}) :
       π := Discrete.natTrans (fun ⟨j⟩ f => f j) }
   isLimit :=
     { lift := fun s x j => s.π.app ⟨j⟩ x
-      uniq := fun _ _ w => funext fun x => funext fun j => (congr_fun (w ⟨j⟩) x : _) }
+      uniq := fun _ _ w => funext fun x => funext fun j => (congr_fun (w ⟨j⟩) x :) }
 
 /-- The categorical product in `TypeMax.{v, u}` is the type theoretic product `Π j, F j`. -/
 noncomputable def productIso {J : Type v} (F : J → TypeMax.{v, u}) : ∏ᶜ F ≅ ∀ j, F j :=
@@ -385,7 +385,7 @@ noncomputable def productLimitCone :
     have : Small.{u} (∀ j, F j) := inferInstance
     { lift := fun s x => (equivShrink _) (fun j => s.π.app ⟨j⟩ x)
       uniq := fun s m w => funext fun x => Shrink.ext <| funext fun j => by
-        simpa using (congr_fun (w ⟨j⟩) x : _) }
+        simpa using (congr_fun (w ⟨j⟩) x :) }
 
 /-- The categorical product in `Type u` indexed in `Type v`
 is the type theoretic product `Π j, F j`, after shrinking back to `Type u`. -/
@@ -924,7 +924,7 @@ lemma pushoutCocone_inl_eq_inr_iff_of_isColimit {c : PushoutCocone f g} (hc : Is
     c.inl x₁ = c.inr x₂ ↔ ∃ (s : S), f s = x₁ ∧ g s = x₂ := by
   rw [pushoutCocone_inl_eq_inr_iff_of_iso
     (Cocones.ext (IsColimit.coconePointUniqueUpToIso hc (Pushout.isColimitCocone f g))
-    (by aesop_cat))]
+    (by simp))]
   have := (mono_iff_injective f).2 h₁
   apply Pushout.inl_eq_inr_iff
 

@@ -124,7 +124,7 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
     letI : TopologicalSpace (hat K × hat K) := instTopologicalSpaceProd
     have : ContinuousAt (fun y : hat K => ((y, hatInv y) : hat K × hat K)) x :=
       continuous_id.continuousAt.prod (continuous_hatInv x_ne)
-    exact (_root_.continuous_mul.continuousAt.comp this : _)
+    exact (_root_.continuous_mul.continuousAt.comp this :)
   have clo : x ∈ closure (c '' {0}ᶜ) := by
     have := isDenseInducing_coe.dense x
     rw [← image_univ, show (univ : Set K) = {0} ∪ {0}ᶜ from (union_compl_self _).symm,

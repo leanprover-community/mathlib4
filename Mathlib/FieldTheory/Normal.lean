@@ -142,7 +142,7 @@ instance normal_iSup {ι : Type*} (t : ι → IntermediateField F K) [h : ∀ i,
     Normal F (⨆ i, t i : IntermediateField F K) := by
   refine { toIsAlgebraic := isAlgebraic_iSup fun i => (h i).1, splits' := fun x => ?_ }
   obtain ⟨s, hx⟩ := exists_finset_of_mem_supr'' (fun i => (h i).1) x.2
-  let E : IntermediateField F K := ⨆ i ∈ s, adjoin F ((minpoly F (i.2 : _)).rootSet K)
+  let E : IntermediateField F K := ⨆ i ∈ s, adjoin F ((minpoly F (i.2 :)).rootSet K)
   have hF : Normal F E := by
     haveI : IsSplittingField F E (∏ i ∈ s, minpoly F i.snd) := by
       refine isSplittingField_iSup ?_ fun i _ => adjoin_rootSet_isSplittingField ?_

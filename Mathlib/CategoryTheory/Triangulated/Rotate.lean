@@ -101,13 +101,9 @@ def invRotate : Triangle C ⥤ Triangle C where
     hom₃ := f.hom₂
     comm₁ := by
       dsimp
-      simp only [neg_comp, assoc, comp_neg, neg_inj, ← Functor.map_comp_assoc, ← f.comm₃]
-      rw [Functor.map_comp, assoc]
-      erw [← NatTrans.naturality]
-      rfl
-    comm₃ := by
-      erw [← reassoc_of% f.comm₂, Category.assoc, ← NatTrans.naturality]
-      rfl }
+      simp only [comp_neg, ← Functor.map_comp_assoc, ← f.comm₃]
+      rw [Functor.map_comp]
+      simp }
 
 variable {C}
 variable [∀ n : ℤ, Functor.Additive (shiftFunctor C n)]

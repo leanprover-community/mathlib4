@@ -46,6 +46,8 @@ one edge, and the edges of the subgraph represent the paired vertices.
 * Hall's Marriage Theorem (see `Mathlib.Combinatorics.Hall.Basic`)
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open Function
 
 namespace SimpleGraph

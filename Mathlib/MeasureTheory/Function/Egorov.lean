@@ -15,8 +15,8 @@ convergence in measure.
 
 ## Main results
 
-* `MeasureTheory.Egorov`: Egorov's theorem which shows that a sequence of almost everywhere
-  convergent functions converges uniformly except on an arbitrarily small set.
+* `MeasureTheory.tendstoUniformlyOn_of_ae_tendsto`: Egorov's theorem which shows that a sequence of
+  almost everywhere convergent functions converges uniformly except on an arbitrarily small set.
 
 -/
 

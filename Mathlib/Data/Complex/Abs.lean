@@ -76,10 +76,9 @@ nonrec theorem abs_of_nonneg {r : ℝ} (h : 0 ≤ r) : Complex.abs r = r :=
 @[simp]
 theorem abs_natCast (n : ℕ) : Complex.abs n = n := Complex.abs_of_nonneg (Nat.cast_nonneg n)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem abs_ofNat (n : ℕ) [n.AtLeastTwo] :
-    Complex.abs (no_index (OfNat.ofNat n : ℂ)) = OfNat.ofNat n :=
+    Complex.abs ofNat(n) = ofNat(n) :=
   abs_natCast n
 
 theorem mul_self_abs (z : ℂ) : Complex.abs z * Complex.abs z = normSq z :=
@@ -198,9 +197,6 @@ theorem abs_im_div_abs_le_one (z : ℂ) : |z.im / Complex.abs z| ≤ 1 :=
     div_le_iff₀ (AbsoluteValue.pos Complex.abs hz), one_mul, abs_im_le_abs]
 
 @[simp, norm_cast] lemma abs_intCast (n : ℤ) : abs n = |↑n| := by rw [← ofReal_intCast, abs_ofReal]
-
-@[deprecated "No deprecation message was provided." (since := "2024-02-14")]
-lemma int_cast_abs (n : ℤ) : |↑n| = Complex.abs n := (abs_intCast _).symm
 
 theorem normSq_eq_abs (x : ℂ) : normSq x = (Complex.abs x) ^ 2 := by
   simp [abs, sq, abs_def, Real.mul_self_sqrt (normSq_nonneg _)]

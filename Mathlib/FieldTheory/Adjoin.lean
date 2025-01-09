@@ -928,7 +928,7 @@ theorem exists_finset_of_mem_supr' {ι : Type*} {f : ι → IntermediateField F 
 
 theorem exists_finset_of_mem_supr'' {ι : Type*} {f : ι → IntermediateField F E}
     (h : ∀ i, Algebra.IsAlgebraic F (f i)) {x : E} (hx : x ∈ ⨆ i, f i) :
-    ∃ s : Finset (Σ i, f i), x ∈ ⨆ i ∈ s, adjoin F ((minpoly F (i.2 : _)).rootSet E) := by
+    ∃ s : Finset (Σ i, f i), x ∈ ⨆ i ∈ s, adjoin F ((minpoly F (i.2 :)).rootSet E) := by
 -- Porting note: writing `fun i x1 hx1 => ...` does not work.
   refine exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le (fun i => ?_)) hx)
   intro x1 hx1
@@ -1099,7 +1099,7 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
   AlgEquiv.ofBijective
     (AdjoinRoot.liftHom (minpoly F α) (AdjoinSimple.gen F α) (aeval_gen_minpoly F α))
     (by
-      set f := AdjoinRoot.lift _ _ (aeval_gen_minpoly F α : _)
+      set f := AdjoinRoot.lift _ _ (aeval_gen_minpoly F α :)
       haveI := Fact.mk (minpoly.irreducible h)
       constructor
       · exact RingHom.injective f
@@ -1163,7 +1163,7 @@ theorem isAlgebraic_adjoin_simple {x : L} (hx : IsIntegral K x) : Algebra.IsAlge
 @[stacks 09GN]
 theorem adjoin.finrank {x : L} (hx : IsIntegral K x) :
     Module.finrank K K⟮x⟯ = (minpoly K x).natDegree := by
-  rw [PowerBasis.finrank (adjoin.powerBasis hx : _)]
+  rw [PowerBasis.finrank (adjoin.powerBasis hx :)]
   rfl
 
 /-- If `K / E / F` is a field extension tower, `S ⊂ K` is such that `F(S) = K`,

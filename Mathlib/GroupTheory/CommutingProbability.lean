@@ -21,6 +21,9 @@ This file introduces the commuting probability of finite groups.
 * Neumann's theorem.
 -/
 
+assert_not_exists Ideal
+assert_not_exists TwoSidedIdeal
+
 noncomputable section
 
 open scoped Classical

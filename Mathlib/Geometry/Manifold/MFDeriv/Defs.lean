@@ -340,7 +340,7 @@ variable (I I') in
 `f x`. -/
 def mfderiv (f : M → M') (x : M) : TangentSpace I x →L[𝕜] TangentSpace I' (f x) :=
   if MDifferentiableAt I I' f x then
-    (fderivWithin 𝕜 (writtenInExtChartAt I I' x f : E → E') (range I) ((extChartAt I x) x) : _)
+    (fderivWithin 𝕜 (writtenInExtChartAt I I' x f : E → E') (range I) ((extChartAt I x) x) :)
   else 0
 
 variable (I I') in

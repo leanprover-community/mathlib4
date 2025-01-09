@@ -231,7 +231,7 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
         SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
       exact (mul_mem (Subgroup.normalClosure_normal.conj_mem _ h
         -- Porting note: added `: _`
-        ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) : _))
+        ⟨Fin.cycleRange 2, Fin.isThreeCycle_cycleRange_two.mem_alternatingGroup⟩) (inv_mem h) :))
 
 /-- The normal closure of $(04)(13)$ within $A_5$ is the whole group. This will be
   used to show that the normal closure of any permutation of cycle type $(2,2)$ is the whole group.

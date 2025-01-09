@@ -625,23 +625,6 @@ instance (priority := 100) of_covariant_left [IsLeftCancelMul G]
 
 end TwoUniqueProds
 
-@[deprecated (since := "2024-02-04")]
-alias UniqueProds.mulHom_image_of_injective := UniqueProds.of_injective_mulHom
-@[deprecated (since := "2024-02-04")]
-alias UniqueSums.addHom_image_of_injective := UniqueSums.of_injective_addHom
-@[deprecated (since := "2024-02-04")]
-alias UniqueProds.mulHom_image_iff := MulEquiv.uniqueProds_iff
-@[deprecated (since := "2024-02-04")]
-alias UniqueSums.addHom_image_iff := AddEquiv.uniqueSums_iff
-@[deprecated (since := "2024-02-04")]
-alias TwoUniqueProds.mulHom_image_of_injective := TwoUniqueProds.of_injective_mulHom
-@[deprecated (since := "2024-02-04")]
-alias TwoUniqueSums.addHom_image_of_injective := TwoUniqueSums.of_injective_addHom
-@[deprecated (since := "2024-02-04")]
-alias TwoUniqueProds.mulHom_image_iff := MulEquiv.twoUniqueProds_iff
-@[deprecated (since := "2024-02-04")]
-alias TwoUniqueSums.addHom_image_iff := AddEquiv.twoUniqueSums_iff
-
 instance {ι} (G : ι → Type*) [∀ i, AddZeroClass (G i)] [∀ i, TwoUniqueSums (G i)] :
     TwoUniqueSums (Π₀ i, G i) :=
   TwoUniqueSums.of_injective_addHom

@@ -449,6 +449,17 @@ theorem lintegral_eq_iSup_eapprox_lintegral {f : α → ℝ≥0∞} (hf : Measur
     _ = ⨆ n, (eapprox f n).lintegral μ := by
       congr; ext n; rw [(eapprox f n).lintegral_eq_lintegral]
 
+lemma lintegral_eapprox_le_lintegral {f : α → ℝ≥0∞} (hf : Measurable f) (n : ℕ) :
+    (eapprox f n).lintegral μ ≤ ∫⁻ x, f x ∂μ := by
+  rw [lintegral_eq_iSup_eapprox_lintegral hf]
+  exact le_iSup (fun n ↦ (eapprox f n).lintegral μ) n
+
+lemma measure_support_eapprox_lt_top {f : α → ℝ≥0∞} (hf_meas : Measurable f)
+    (hf : ∫⁻ x, f x ∂μ ≠ ∞) (n : ℕ) :
+    μ (support (eapprox f n)) < ∞ :=
+  measure_support_lt_top_of_lintegral_ne_top <|
+    ((lintegral_eapprox_le_lintegral hf_meas n).trans_lt hf.lt_top).ne
+
 /-- If `f` has finite integral, then `∫⁻ x in s, f x ∂μ` is absolutely continuous in `s`: it tends
 to zero as `μ s` tends to zero. This lemma states this fact in terms of `ε` and `δ`. -/
 theorem exists_pos_setLIntegral_lt_of_measure_lt {f : α → ℝ≥0∞} (h : ∫⁻ x, f x ∂μ ≠ ∞) {ε : ℝ≥0∞}
@@ -1292,6 +1303,8 @@ theorem lintegral_tsum [Countable β] {f : β → α → ℝ≥0∞} (hf : ∀ i
     · exact fun a => Finset.sum_le_sum_of_subset Finset.subset_union_right
 
 open Measure
+
+open scoped Function -- required for scoped `on` notation
 
 theorem lintegral_iUnion₀ [Countable β] {s : β → Set α} (hm : ∀ i, NullMeasurableSet (s i) μ)
     (hd : Pairwise (AEDisjoint μ on s)) (f : α → ℝ≥0∞) :

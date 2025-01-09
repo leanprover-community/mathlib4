@@ -263,7 +263,7 @@ variable [AddCommMonoid R] [TopologicalSpace R]
 
 theorem HasSum.matrix_transpose {f : X → Matrix m n R} {a : Matrix m n R} (hf : HasSum f a) :
     HasSum (fun x => (f x)ᵀ) aᵀ :=
-  (hf.map (Matrix.transposeAddEquiv m n R) continuous_id.matrix_transpose : _)
+  (hf.map (Matrix.transposeAddEquiv m n R) continuous_id.matrix_transpose :)
 
 theorem Summable.matrix_transpose {f : X → Matrix m n R} (hf : Summable f) :
     Summable fun x => (f x)ᵀ :=
@@ -283,7 +283,7 @@ theorem Matrix.transpose_tsum [T2Space R] {f : X → Matrix m n R} : (∑' x, f 
 
 theorem HasSum.matrix_conjTranspose [StarAddMonoid R] [ContinuousStar R] {f : X → Matrix m n R}
     {a : Matrix m n R} (hf : HasSum f a) : HasSum (fun x => (f x)ᴴ) aᴴ :=
-  (hf.map (Matrix.conjTransposeAddEquiv m n R) continuous_id.matrix_conjTranspose : _)
+  (hf.map (Matrix.conjTransposeAddEquiv m n R) continuous_id.matrix_conjTranspose :)
 
 theorem Summable.matrix_conjTranspose [StarAddMonoid R] [ContinuousStar R] {f : X → Matrix m n R}
     (hf : Summable f) : Summable fun x => (f x)ᴴ :=
@@ -359,7 +359,7 @@ theorem Matrix.blockDiagonal_tsum [DecidableEq p] [T2Space R] {f : X → p → M
 
 theorem HasSum.matrix_blockDiag {f : X → Matrix (m × p) (n × p) R} {a : Matrix (m × p) (n × p) R}
     (hf : HasSum f a) : HasSum (fun x => blockDiag (f x)) (blockDiag a) :=
-  (hf.map (blockDiagAddMonoidHom m n p R) <| Continuous.matrix_blockDiag continuous_id : _)
+  (hf.map (blockDiagAddMonoidHom m n p R) <| Continuous.matrix_blockDiag continuous_id :)
 
 theorem Summable.matrix_blockDiag {f : X → Matrix (m × p) (n × p) R} (hf : Summable f) :
     Summable fun x => blockDiag (f x) :=

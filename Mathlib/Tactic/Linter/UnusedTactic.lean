@@ -93,7 +93,6 @@ initialize allowedRef : IO.Ref (Std.HashSet SyntaxNodeKind) ←
     `Mathlib.Tactic.Propose.propose',
     `Lean.Parser.Tactic.traceState,
     `Mathlib.Tactic.tacticMatch_target_,
-    ``Lean.Parser.Tactic.change,
     `change?,
     `«tactic#adaptation_note_»,
     `tacticSleep_heartbeats_,

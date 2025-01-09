@@ -18,6 +18,7 @@ represents the rotations of the `n`-gon by `2πi/n`, and `sr i` represents the r
 `n`-gon. `DihedralGroup 0` corresponds to the infinite dihedral group.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 /-- For `n ≠ 0`, `DihedralGroup n` represents the symmetry group of the regular `n`-gon.
 `r i` represents the rotations of the `n`-gon by `2πi/n`, and `sr i` represents the reflections of

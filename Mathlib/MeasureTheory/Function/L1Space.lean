@@ -158,6 +158,12 @@ theorem hasFiniteIntegral_const [IsFiniteMeasure μ] (c : β) :
     HasFiniteIntegral (fun _ : α => c) μ :=
   hasFiniteIntegral_const_iff.2 (Or.inr <| measure_lt_top _ _)
 
+theorem HasFiniteIntegral.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ}
+    (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+    HasFiniteIntegral X μ := by
+  apply (hasFiniteIntegral_const (max ‖a‖ ‖b‖)).mono'
+  filter_upwards [h.mono fun ω h ↦ h.1, h.mono fun ω h ↦ h.2] with ω using abs_le_max_abs_abs
+
 theorem hasFiniteIntegral_of_bounded [IsFiniteMeasure μ] {f : α → β} {C : ℝ}
     (hC : ∀ᵐ a ∂μ, ‖f a‖ ≤ C) : HasFiniteIntegral f μ :=
   (hasFiniteIntegral_const C).mono' hC
@@ -166,9 +172,6 @@ theorem HasFiniteIntegral.of_finite [Finite α] [IsFiniteMeasure μ] {f : α →
     HasFiniteIntegral f μ :=
   let ⟨_⟩ := nonempty_fintype α
   hasFiniteIntegral_of_bounded <| ae_of_all μ <| norm_le_pi_norm f
-
-@[deprecated (since := "2024-02-05")]
-alias hasFiniteIntegral_of_fintype := HasFiniteIntegral.of_finite
 
 theorem HasFiniteIntegral.mono_measure {f : α → β} (h : HasFiniteIntegral f ν) (hμ : μ ≤ ν) :
     HasFiniteIntegral f μ :=
@@ -407,7 +410,7 @@ def Integrable {α} {_ : MeasurableSpace α} (f : α → ε)
   AEStronglyMeasurable f μ ∧ HasFiniteIntegral f μ
 
 /-- Notation for `Integrable` with respect to a non-standard σ-algebra. -/
-scoped notation "Integrable[" mα "]" => @Integrable _ _ _ mα
+scoped notation "Integrable[" mα "]" => @Integrable _ _ _ _ mα
 
 theorem memℒp_one_iff_integrable {f : α → β} : Memℒp f 1 μ ↔ Integrable f μ := by
   simp_rw [Integrable, hasFiniteIntegral_iff_nnnorm, Memℒp, eLpNorm_one_eq_lintegral_nnnorm]
@@ -450,6 +453,11 @@ theorem integrable_const_iff {c : β} : Integrable (fun _ : α => c) μ ↔ c = 
   have : AEStronglyMeasurable (fun _ : α => c) μ := aestronglyMeasurable_const
   rw [Integrable, and_iff_right this, hasFiniteIntegral_const_iff]
 
+theorem Integrable.of_mem_Icc [IsFiniteMeasure μ] (a b : ℝ) {X : α → ℝ} (hX : AEMeasurable X μ)
+    (h : ∀ᵐ ω ∂μ, X ω ∈ Set.Icc a b) :
+    Integrable X μ :=
+  ⟨hX.aestronglyMeasurable, .of_mem_Icc a b h⟩
+
 @[simp]
 theorem integrable_const [IsFiniteMeasure μ] (c : β) : Integrable (fun _ : α => c) μ :=
   integrable_const_iff.2 <| Or.inr <| measure_lt_top _ _
@@ -463,7 +471,6 @@ lemma Integrable.of_finite [Finite α] [MeasurableSingletonClass α] [IsFiniteMe
 @[deprecated Integrable.of_finite (since := "2024-10-05"), nolint deprecatedNoSince]
 lemma Integrable.of_isEmpty [IsEmpty α] {f : α → β} : Integrable f μ := .of_finite
 
-@[deprecated (since := "2024-02-05")] alias integrable_of_fintype := Integrable.of_finite
 
 theorem Memℒp.integrable_norm_rpow {f : α → β} {p : ℝ≥0∞} (hf : Memℒp f p μ) (hp_ne_zero : p ≠ 0)
     (hp_ne_top : p ≠ ∞) : Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ := by

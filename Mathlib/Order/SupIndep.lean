@@ -503,7 +503,7 @@ alias CompleteLattice.independent_map_orderIso_iff := iSupIndep_map_orderIso_iff
 subset of the rest. -/
 theorem iSupIndep.disjoint_biSup {ι : Type*} {α : Type*} [CompleteLattice α] {t : ι → α}
     (ht : iSupIndep t) {x : ι} {y : Set ι} (hx : x ∉ y) : Disjoint (t x) (⨆ i ∈ y, t i) :=
-  Disjoint.mono_right (biSup_mono fun _ hi => (ne_of_mem_of_not_mem hi hx : _)) (ht x)
+  Disjoint.mono_right (biSup_mono fun _ hi => (ne_of_mem_of_not_mem hi hx :)) (ht x)
 
 @[deprecated (since := "2024-11-24")]
 alias CompleteLattice.Independent.disjoint_biSup := iSupIndep.disjoint_biSup
@@ -565,6 +565,7 @@ alias setIndependent_iff_pairwiseDisjoint := sSupIndep_iff_pairwiseDisjoint
 
 alias ⟨_, _root_.Set.PairwiseDisjoint.sSupIndep⟩ := sSupIndep_iff_pairwiseDisjoint
 
+open scoped Function in -- required for scoped `on` notation
 theorem iSupIndep_iff_pairwiseDisjoint {f : ι → α} : iSupIndep f ↔ Pairwise (Disjoint on f) :=
   ⟨iSupIndep.pairwiseDisjoint, fun hs _ =>
     disjoint_iSup_iff.2 fun _ => disjoint_iSup_iff.2 fun hij => hs hij.symm⟩

@@ -95,7 +95,7 @@ namespace Sieve
 to check a family is compatible.
 -/
 def SecondObj : Type max v u :=
-  ∏ᶜ fun f : Σ(Y Z : _) (_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
+  ∏ᶜ fun f : Σ (Y Z : _) (_ : Z ⟶ Y), { f' : Y ⟶ X // S f' } => P.obj (op f.2.1)
 
 variable {P S}
 

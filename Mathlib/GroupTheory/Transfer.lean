@@ -35,15 +35,15 @@ open Finset MulAction
 
 open scoped Pointwise
 
-variable (R S T : leftTransversals (H : Set G)) [FiniteIndex H]
+variable (R S T : H.LeftTransversal) [FiniteIndex H]
 
 /-- The difference of two left transversals -/
 @[to_additive "The difference of two left transversals"]
 noncomputable def diff : A :=
-  let α := MemLeftTransversals.toEquiv S.2
-  let β := MemLeftTransversals.toEquiv T.2
-  (@Finset.univ (G ⧸ H) H.fintypeQuotientOfFiniteIndex).prod fun q =>
-    ϕ
+  let α := S.2.leftQuotientEquiv
+  let β := T.2.leftQuotientEquiv
+  let _ := H.fintypeQuotientOfFiniteIndex
+  ∏ q : G ⧸ H, ϕ
       ⟨(α q : G)⁻¹ * β q,
         QuotientGroup.leftRel_apply.mp <|
           Quotient.exact' ((α.symm_apply_apply q).trans (β.symm_apply_apply q).symm)⟩
@@ -103,23 +103,23 @@ lemma mem_transferSet (q : G ⧸ H) : transferFunction H g q ∈ transferSet H g
 variable (H) in
 /-- The transfer transversal. Contains elements of the form `g ^ k • g₀` for fixed choices
   of representatives `g₀` of fixed choices of representatives `q₀` of `⟨g⟩`-orbits in `G ⧸ H`. -/
-def transferTransversal : leftTransversals (H : Set G) :=
-  ⟨transferSet H g, range_mem_leftTransversals (coe_transferFunction g)⟩
+def transferTransversal : H.LeftTransversal :=
+  ⟨transferSet H g, isComplement_range_left (coe_transferFunction g)⟩
 
 lemma transferTransversal_apply (q : G ⧸ H) :
-    ↑(toEquiv (transferTransversal H g).2 q) = transferFunction H g q :=
-  toEquiv_apply (coe_transferFunction g) q
+    ↑((transferTransversal H g).2.leftQuotientEquiv q) = transferFunction H g q :=
+  IsComplement.leftQuotientEquiv_apply (coe_transferFunction g) q
 
 lemma transferTransversal_apply' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
     (k : ZMod (minimalPeriod (g • ·) q.out)) :
-    ↑(toEquiv (transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out)) =
+    ↑((transferTransversal H g).2.leftQuotientEquiv (g ^ (cast k : ℤ) • q.out)) =
       g ^ (cast k : ℤ) * q.out.out := by
   rw [transferTransversal_apply, transferFunction_apply, ← quotientEquivSigmaZMod_symm_apply,
     apply_symm_apply]
 
 lemma transferTransversal_apply'' (q : orbitRel.Quotient (zpowers g) (G ⧸ H))
     (k : ZMod (minimalPeriod (g • ·) q.out)) :
-    ↑(toEquiv (g • transferTransversal H g).2 (g ^ (cast k : ℤ) • q.out)) =
+    ↑((g • transferTransversal H g).2.leftQuotientEquiv (g ^ (cast k : ℤ) • q.out)) =
       if k = 0 then g ^ minimalPeriod (g • ·) q.out * q.out.out
       else g ^ (cast k : ℤ) * q.out.out := by
   rw [smul_apply_eq_smul_apply_inv_smul, transferTransversal_apply, transferFunction_apply, ←
@@ -141,14 +141,14 @@ the transfer homomorphism is `transfer ϕ : G →* A`. -/
 @[to_additive "Given `ϕ : H →+ A` from `H : AddSubgroup G` to an additive commutative group `A`,
 the transfer homomorphism is `transfer ϕ : G →+ A`."]
 noncomputable def transfer [FiniteIndex H] : G →* A :=
-  let T : leftTransversals (H : Set G) := Inhabited.default
+  let T : H.LeftTransversal := default
   { toFun := fun g => diff ϕ T (g • T)
     -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
     map_one' := by beta_reduce; rw [one_smul, diff_self]
     -- Porting note: added `simp only` (not just beta reduction)
     map_mul' := fun g h => by simp only; rw [mul_smul, ← diff_mul_diff, smul_diff_smul] }
 
-variable (T : leftTransversals (H : Set G))
+variable (T : H.LeftTransversal)
 
 @[to_additive]
 theorem transfer_def [FiniteIndex H] (g : G) : transfer ϕ g = diff ϕ T (g • T) := by

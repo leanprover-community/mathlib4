@@ -89,6 +89,9 @@ theorem IsAtom.lt_iff (h : IsAtom a) : x < a ↔ x = ⊥ :=
 
 theorem IsAtom.le_iff (h : IsAtom a) : x ≤ a ↔ x = ⊥ ∨ x = a := by rw [le_iff_lt_or_eq, h.lt_iff]
 
+lemma IsAtom.bot_lt (h : IsAtom a) : ⊥ < a :=
+  h.lt_iff.mpr rfl
+
 lemma IsAtom.le_iff_eq (ha : IsAtom a) (hb : b ≠ ⊥) : b ≤ a ↔ b = a :=
   ha.le_iff.trans <| or_iff_right hb
 
@@ -165,6 +168,9 @@ theorem IsCoatom.lt_iff (h : IsCoatom a) : a < x ↔ x = ⊤ :=
 
 theorem IsCoatom.le_iff (h : IsCoatom a) : a ≤ x ↔ x = ⊤ ∨ x = a :=
   h.dual.le_iff
+
+lemma IsCoatom.lt_top (h : IsCoatom a) : a < ⊤ :=
+  h.lt_iff.mpr rfl
 
 lemma IsCoatom.le_iff_eq (ha : IsCoatom a) (hb : b ≠ ⊤) : a ≤ b ↔ b = a := ha.dual.le_iff_eq hb
 

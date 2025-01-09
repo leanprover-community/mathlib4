@@ -303,12 +303,6 @@ theorem isMaximal_of_irreducible [CommRing R] [IsPrincipalIdealRing R] {p : R}
       refine (of_irreducible_mul hp).resolve_right (mt (fun hb => ?_) (not_le_of_lt hI))
       erw [Ideal.span_singleton_le_span_singleton, IsUnit.mul_right_dvd hb]⟩⟩
 
-@[deprecated (since := "2024-02-12")]
-protected alias irreducible_iff_prime := irreducible_iff_prime
-
-@[deprecated (since := "2024-02-12")]
-protected alias associates_irreducible_iff_prime := associates_irreducible_iff_prime
-
 variable [CommRing R] [IsDomain R] [IsPrincipalIdealRing R]
 
 section

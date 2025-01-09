@@ -112,7 +112,7 @@ def isLimitOfCompMono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mono i] (s : Pu
     ⟨l, h₁, h₂⟩
   refine ⟨l, h₁, h₂, ?_⟩
   intro m hm₁ hm₂
-  exact (PullbackCone.IsLimit.hom_ext H (hm₁.trans h₁.symm) (hm₂.trans h₂.symm) : _)
+  exact (PullbackCone.IsLimit.hom_ext H (hm₁.trans h₁.symm) (hm₂.trans h₂.symm) :)
 
 end PullbackCone
 
@@ -299,7 +299,7 @@ def isColimitOfEpiComp (f : X ⟶ Y) (g : X ⟶ Z) (h : W ⟶ X) [Epi h] (s : Pu
     ⟨l, h₁, h₂⟩
   refine ⟨l, h₁, h₂, ?_⟩
   intro m hm₁ hm₂
-  exact (PushoutCocone.IsColimit.hom_ext H (hm₁.trans h₁.symm) (hm₂.trans h₂.symm) : _)
+  exact (PushoutCocone.IsColimit.hom_ext H (hm₁.trans h₁.symm) (hm₂.trans h₂.symm) :)
 
 end PushoutCocone
 

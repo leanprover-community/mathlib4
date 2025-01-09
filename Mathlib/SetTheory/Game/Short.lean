@@ -209,7 +209,7 @@ instance shortNat : ∀ n : ℕ, Short n
   | 0 => PGame.short0
   | n + 1 => @PGame.shortAdd _ _ (shortNat n) PGame.short1
 
-instance shortOfNat (n : ℕ) [Nat.AtLeastTwo n] : Short (no_index (OfNat.ofNat n)) := shortNat n
+instance shortOfNat (n : ℕ) [Nat.AtLeastTwo n] : Short ofNat(n) := shortNat n
 
 instance shortBit0 (x : PGame.{u}) [Short x] : Short (x + x) := by infer_instance
 

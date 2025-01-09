@@ -905,17 +905,24 @@ theorem subtypeDomain_apply {a : Subtype p} {v : α →₀ M} : (subtypeDomain p
 theorem subtypeDomain_zero : subtypeDomain p (0 : α →₀ M) = 0 :=
   rfl
 
-theorem subtypeDomain_eq_zero_iff' {f : α →₀ M} : f.subtypeDomain p = 0 ↔ ∀ x, p x → f x = 0 := by
-  classical simp_rw [← support_eq_empty, support_subtypeDomain, subtype_eq_empty,
-      not_mem_support_iff]
+theorem subtypeDomain_eq_iff_forall {f g : α →₀ M} :
+    f.subtypeDomain p = g.subtypeDomain p ↔ ∀ x, p x → f x = g x := by
+  simp_rw [DFunLike.ext_iff, subtypeDomain_apply, Subtype.forall]
+
+theorem subtypeDomain_eq_iff {f g : α →₀ M}
+    (hf : ∀ x ∈ f.support, p x) (hg : ∀ x ∈ g.support, p x) :
+    f.subtypeDomain p = g.subtypeDomain p ↔ f = g :=
+  subtypeDomain_eq_iff_forall.trans
+    ⟨fun H ↦ Finsupp.ext fun _a ↦ (em _).elim (H _ <| hf _ ·) fun haf ↦ (em _).elim (H _ <| hg _ ·)
+        fun hag ↦ (not_mem_support_iff.mp haf).trans (not_mem_support_iff.mp hag).symm,
+      fun H _ _ ↦ congr($H _)⟩
+
+theorem subtypeDomain_eq_zero_iff' {f : α →₀ M} : f.subtypeDomain p = 0 ↔ ∀ x, p x → f x = 0 :=
+  subtypeDomain_eq_iff_forall (g := 0)
 
 theorem subtypeDomain_eq_zero_iff {f : α →₀ M} (hf : ∀ x ∈ f.support, p x) :
     f.subtypeDomain p = 0 ↔ f = 0 :=
-  subtypeDomain_eq_zero_iff'.trans
-    ⟨fun H =>
-      ext fun x => by
-        classical exact if hx : p x then H x hx else not_mem_support_iff.1 <| mt (hf x) hx,
-      fun H x _ => by simp [H]⟩
+  subtypeDomain_eq_iff (g := 0) hf (by simp)
 
 @[to_additive]
 theorem prod_subtypeDomain_index [CommMonoid N] {v : α →₀ M} {h : α → M → N}
@@ -1504,7 +1511,8 @@ end
 /-- Given an `AddCommMonoid M` and `s : Set α`, `restrictSupportEquiv s M` is the `Equiv`
 between the subtype of finitely supported functions with support contained in `s` and
 the type of finitely supported functions from `s`. -/
-def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
+-- TODO: add [DecidablePred (· ∈ s)] as an assumption
+@[simps] def restrictSupportEquiv (s : Set α) (M : Type*) [AddCommMonoid M] :
     { f : α →₀ M // ↑f.support ⊆ s } ≃ (s →₀ M) where
   toFun f := subtypeDomain (· ∈ s) f.1
   invFun f := letI := Classical.decPred (· ∈ s); ⟨f.extendDomain, support_extendDomain_subset _⟩

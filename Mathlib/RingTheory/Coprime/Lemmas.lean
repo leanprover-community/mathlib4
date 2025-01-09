@@ -22,6 +22,8 @@ lemmas about `Pow` since these are easiest to prove via `Finset.prod`.
 
 universe u v
 
+open scoped Function -- required for scoped `on` notation
+
 section IsCoprime
 
 variable {R : Type u} {I : Type v} [CommSemiring R] {x y z : R} {s : I → R} {t : Finset I}

@@ -96,7 +96,7 @@ instance [Nonempty J] : Faithful (const J : C ⥤ J ⥤ C) where
 def compConstIso (F : C ⥤ D) :
     F ⋙ Functor.const J ≅ Functor.const J ⋙ (whiskeringRight J C D).obj F :=
   NatIso.ofComponents
-    (fun X => NatIso.ofComponents (fun _ => Iso.refl _) (by aesop_cat))
+    (fun X => NatIso.ofComponents (fun _ => Iso.refl _) (by simp))
     (by aesop_cat)
 
 /-- The canonical isomorphism

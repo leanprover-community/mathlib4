@@ -74,10 +74,7 @@ theorem Real.isTopologicalBasis_Ioo_rat :
 theorem Real.cobounded_eq : cobounded ℝ = atBot ⊔ atTop := by
   simp only [← comap_dist_right_atTop (0 : ℝ), Real.dist_eq, sub_zero, comap_abs_atTop]
 
-@[deprecated (since := "2024-02-07")] alias Real.cocompact_eq := cocompact_eq_atBot_atTop
 
-@[deprecated (since := "2024-02-07")] alias Real.atBot_le_cocompact := atBot_le_cocompact
-@[deprecated (since := "2024-02-07")] alias Real.atTop_le_cocompact := atTop_le_cocompact
 
 /- TODO(Mario): Prove that these are uniform isomorphisms instead of uniform embeddings
 lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (fun p : ℚ => p + r) :=

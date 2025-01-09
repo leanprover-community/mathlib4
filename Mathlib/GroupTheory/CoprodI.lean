@@ -812,6 +812,8 @@ open Pointwise
 
 open Cardinal
 
+open scoped Function -- required for scoped `on` notation
+
 variable {G : Type*} [Group G]
 variable {H : ι → Type*} [∀ i, Group (H i)]
 variable (f : ∀ i, H i →* G)
@@ -965,6 +967,8 @@ def _root_.freeGroupEquivCoprodI {ι : Type u_1} :
 section PingPongLemma
 
 open Pointwise Cardinal
+
+open scoped Function -- required for scoped `on` notation
 
 variable [Nontrivial ι]
 variable {G : Type u_1} [Group G] (a : ι → G)

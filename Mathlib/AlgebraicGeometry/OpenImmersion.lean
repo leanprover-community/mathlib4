@@ -46,7 +46,7 @@ protected def scheme (X : LocallyRingedSpace.{u})
     (h :
       ∀ x : X,
         ∃ (R : CommRingCat) (f : Spec.toLocallyRingedSpace.obj (op R) ⟶ X),
-          (x ∈ Set.range f.base : _) ∧ LocallyRingedSpace.IsOpenImmersion f) :
+          (x ∈ Set.range f.base :) ∧ LocallyRingedSpace.IsOpenImmersion f) :
     Scheme where
   toLocallyRingedSpace := X
   local_affine := by
@@ -64,9 +64,6 @@ end LocallyRingedSpace.IsOpenImmersion
 theorem IsOpenImmersion.isOpen_range {X Y : Scheme.{u}} (f : X ⟶ Y) [H : IsOpenImmersion f] :
     IsOpen (Set.range f.base) :=
   H.base_open.isOpen_range
-
-@[deprecated (since := "2024-03-17")]
-alias IsOpenImmersion.open_range := IsOpenImmersion.isOpen_range
 
 namespace Scheme.Hom
 
@@ -225,7 +222,7 @@ namespace Scheme
 instance basic_open_isOpenImmersion {R : CommRingCat.{u}} (f : R) :
     IsOpenImmersion (Spec.map (CommRingCat.ofHom (algebraMap R (Localization.Away f)))) := by
   apply SheafedSpace.IsOpenImmersion.of_stalk_iso (H := ?_)
-  · exact (PrimeSpectrum.localization_away_isOpenEmbedding (Localization.Away f) f : _)
+  · exact (PrimeSpectrum.localization_away_isOpenEmbedding (Localization.Away f) f :)
   · intro x
     exact Spec_map_localization_isIso R (Submonoid.powers f) x
 
@@ -416,7 +413,7 @@ theorem _root_.AlgebraicGeometry.isIso_iff_stalk_iso {X Y : Scheme.{u}} (f : X �
   · intro H; exact ⟨inferInstance, (TopCat.homeoOfIso (asIso f.base)).isOpenEmbedding⟩
 
 /-- An open immersion induces an isomorphism from the domain onto the image -/
-def isoRestrict : X ≅ (Z.restrict H.base_open : _) :=
+def isoRestrict : X ≅ (Z.restrict H.base_open :) :=
   Scheme.fullyFaithfulForgetToLocallyRingedSpace.preimageIso
     (LocallyRingedSpace.IsOpenImmersion.isoRestrict f.toLRSHom)
 
@@ -543,7 +540,7 @@ theorem range_pullback_to_base_of_left :
       Set.range f.base ∩ Set.range g.base := by
   rw [pullback.condition, Scheme.comp_base, TopCat.coe_comp, Set.range_comp,
     range_pullback_snd_of_left, Opens.carrier_eq_coe, Opens.map_obj, Opens.coe_mk,
-    Set.image_preimage_eq_inter_range, Opens.carrier_eq_coe, Scheme.Hom.opensRange_coe]
+    Set.image_preimage_eq_inter_range, Opens.carrier_eq_coe, Scheme.Hom.coe_opensRange]
 
 theorem range_pullback_to_base_of_right :
     Set.range (pullback.fst g f ≫ g).base =

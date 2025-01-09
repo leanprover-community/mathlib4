@@ -242,6 +242,8 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
 
 variable [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ]
 
+open scoped Function -- required for scoped `on` notation
+
 /-- Assume that a function `f` has a derivative at every point of a set `s`. Then one may
 partition `s` into countably many disjoint relatively measurable sets (i.e., intersections
 of `s` with measurable sets `t n`) on which `f` is well approximated by linear maps `A n`. -/

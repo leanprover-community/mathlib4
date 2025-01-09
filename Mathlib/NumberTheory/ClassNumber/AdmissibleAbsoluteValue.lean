@@ -5,7 +5,7 @@ Authors: Anne Baanen
 -/
 import Mathlib.Data.Real.Basic
 import Mathlib.Combinatorics.Pigeonhole
-import Mathlib.Algebra.Order.EuclideanAbsoluteValue
+import Mathlib.Algebra.Order.AbsoluteValue.Euclidean
 
 /-!
 # Admissible absolute values

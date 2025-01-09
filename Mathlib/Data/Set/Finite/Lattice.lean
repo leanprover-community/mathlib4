@@ -152,6 +152,35 @@ theorem Finite.iUnion {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Fini
   · rw [he i hi, mem_empty_iff_false] at hx
     contradiction
 
+/-- An indexed union of pairwise disjoint sets is finite iff all sets are finite, and all but
+finitely many are empty. -/
+lemma finite_iUnion_iff {ι : Type*} {s : ι → Set α} (hs : Pairwise fun i j ↦ Disjoint (s i) (s j)) :
+    (⋃ i, s i).Finite ↔ (∀ i, (s i).Finite) ∧ {i | (s i).Nonempty}.Finite where
+  mp h := by
+    refine ⟨fun i ↦ h.subset <| subset_iUnion _ _, ?_⟩
+    let u (i : {i | (s i).Nonempty}) : ⋃ i, s i := ⟨i.2.choose, mem_iUnion.2 ⟨i.1, i.2.choose_spec⟩⟩
+    have u_inj : Function.Injective u := by
+      rintro ⟨i, hi⟩ ⟨j, hj⟩ hij
+      ext
+      refine hs.eq <| not_disjoint_iff.2 ⟨u ⟨i, hi⟩, hi.choose_spec, ?_⟩
+      rw [hij]
+      exact hj.choose_spec
+    have : Finite (⋃ i, s i) := h
+    exact .of_injective u u_inj
+  mpr h := h.2.iUnion (fun _ _ ↦ h.1 _) (by simp [not_nonempty_iff_eq_empty])
+
+@[simp] lemma finite_iUnion_of_subsingleton {ι : Sort*} [Subsingleton ι] {s : ι → Set α} :
+    (⋃ i, s i).Finite ↔ ∀ i, (s i).Finite := by
+  rw [← iUnion_plift_down, finite_iUnion_iff _root_.Subsingleton.pairwise]
+  simp [PLift.forall, Finite.of_subsingleton]
+
+/-- An indexed union of pairwise disjoint sets is finite iff all sets are finite, and all but
+finitely many are empty. -/
+lemma PairwiseDisjoint.finite_biUnion_iff {f : β → Set α} {s : Set β} (hs : s.PairwiseDisjoint f) :
+    (⋃ i ∈ s, f i).Finite ↔ (∀ i ∈ s, (f i).Finite) ∧ {i ∈ s | (f i).Nonempty}.Finite := by
+  rw [finite_iUnion_iff (by aesop (add unfold safe [Pairwise, PairwiseDisjoint, Set.Pairwise]))]
+  simp
+
 section preimage
 variable {f : α → β} {s : Set β}
 

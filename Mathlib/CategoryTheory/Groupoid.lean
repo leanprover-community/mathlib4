@@ -95,7 +95,7 @@ variable (X Y)
 /-- In a groupoid, isomorphisms are equivalent to morphisms. -/
 def Groupoid.isoEquivHom : (X ≅ Y) ≃ (X ⟶ Y) where
   toFun := Iso.hom
-  invFun f := ⟨f, Groupoid.inv f, (by aesop_cat), (by aesop_cat)⟩
+  invFun f := ⟨f, Groupoid.inv f, (by simp), (by simp)⟩
   left_inv _ := Iso.ext rfl
   right_inv _ := rfl
 

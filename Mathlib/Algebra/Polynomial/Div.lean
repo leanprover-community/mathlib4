@@ -396,7 +396,6 @@ theorem modByMonic_eq_zero_iff_dvd (hq : Monic q) : p %ₘ q = 0 ↔ q ∣ p :=
       degree_eq_natDegree (mt leadingCoeff_eq_zero.2 hrpq0)] at this
     exact not_lt_of_ge (Nat.le_add_right _ _) (WithBot.coe_lt_coe.1 this)⟩
 
-@[deprecated (since := "2024-03-23")] alias dvd_iff_modByMonic_eq_zero := modByMonic_eq_zero_iff_dvd
 
 /-- See `Polynomial.mul_left_modByMonic` for the other multiplication order. That version, unlike
 this one, requires commutativity. -/

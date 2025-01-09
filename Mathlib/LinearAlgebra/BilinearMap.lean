@@ -196,7 +196,7 @@ def restrictScalars₁₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N �
 
 theorem restrictScalars₁₂_injective : Function.Injective
     (LinearMap.restrictScalars₁₂ R' S' : (M →ₗ[R] N →ₗ[S] Pₗ) → (M →ₗ[R'] N →ₗ[S'] Pₗ)) :=
-  fun _ _ h ↦ ext₂ (congr_fun₂ h : _)
+  fun _ _ h ↦ ext₂ (congr_fun₂ h :)
 
 @[simp]
 theorem restrictScalars₁₂_inj {B B' : M →ₗ[R] N →ₗ[S] Pₗ} :
