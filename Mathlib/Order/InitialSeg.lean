@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Floris van Doorn, Violeta Hernández Palacios
 import Mathlib.Data.Sum.Order
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.RelIso.Set
+import Mathlib.Order.UpperLower.Basic
 import Mathlib.Order.WellFounded
 
 /-!
@@ -670,6 +671,9 @@ alias ⟨_, map_isMin⟩ := isMin_apply_iff
 theorem map_bot [PartialOrder α] [OrderBot α] [OrderBot β] (f : α ≤i β) : f ⊥ = ⊥ :=
   (map_isMin f isMin_bot).eq_bot
 
+theorem image_Iio [PartialOrder α] (f : α ≤i β) (a : α) : f '' Set.Iio a = Set.Iio (f a) :=
+  f.toOrderEmbedding.image_Iio f.isLowerSet_range a
+
 theorem le_apply_iff [LinearOrder α] (f : α ≤i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b := by
   constructor
   · intro h
@@ -725,6 +729,9 @@ alias ⟨_, map_isMin⟩ := isMin_apply_iff
 @[simp]
 theorem map_bot [PartialOrder α] [OrderBot α] [OrderBot β] (f : α <i β) : f ⊥ = ⊥ :=
   (f : α ≤i β).map_bot
+
+theorem image_Iio [PartialOrder α] (f : α <i β) (a : α) : f '' Set.Iio a = Set.Iio (f a) :=
+  (f : α ≤i β).image_Iio a
 
 theorem le_apply_iff [LinearOrder α] (f : α <i β) : b ≤ f a ↔ ∃ c ≤ a, f c = b :=
   (f : α ≤i β).le_apply_iff
