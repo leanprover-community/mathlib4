@@ -544,7 +544,7 @@ theorem _root_.IsClosed.not_mem_iff_infDist_pos (h : IsClosed s) (hs : s.Nonempt
     x ∉ s ↔ 0 < infDist x s := by
   simp [h.mem_iff_infDist_zero hs, infDist_nonneg.gt_iff_ne]
 
-theorem infDist_pos_iff_not_mem_closure [PseudoMetricSpace α] (hs : s.Nonempty) :
+theorem infDist_pos_iff_not_mem_closure (hs : s.Nonempty) :
     0 < infDist x s ↔ x ∉ closure s := by
   rw [isClosed_closure.not_mem_iff_infDist_pos hs.closure, infDist_closure]
 
