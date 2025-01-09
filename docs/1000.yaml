@@ -1332,8 +1332,8 @@ Q1153441:
 Q1153584:
   title: Monotone convergence theorem
   decls:
-    - integral_tendsto_of_tendsto_of_antitone
-    - lintegral_tendsto_of_tendsto_of_monotone
+    - Measure_theory.integral_tendsto_of_tendsto_of_antitone
+    - Measure_theory.lintegral_tendsto_of_tendsto_of_monotone
 
 Q1166774:
   title: Stone's representation theorem for Boolean algebras
