@@ -1,6 +1,23 @@
 import Mathlib.Tactic.Linter.UnusedTactic
 import Mathlib.Tactic.AdaptationNote
 
+example (h : 0 + 1 = 0) : False := by
+  change 1 = 0 at h
+  simp at h
+
+example : 0 + 1 = 1 := by
+  change 1 = 1
+  rfl
+
+/--
+warning: 'change 1 = 1' tactic does nothing
+note: this linter can be disabled with `set_option linter.unusedTactic false`
+-/
+#guard_msgs in
+example : 1 = 1 := by
+  change 1 = 1
+  rfl
+
 def why2 : True → True := (by refine ·)
 
 example : True := by
