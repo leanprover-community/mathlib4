@@ -25,7 +25,7 @@ namespace Nonneg
 
 variable {α : Type*}
 
-instance floorSemiring [OrderedSemiring α] [FloorSemiring α] :
+instance floorSemiring [Semiring α] [PartialOrder α] [IsOrderedRing α] [FloorSemiring α] :
     FloorSemiring { r : α // 0 ≤ r } where
   floor a := ⌊(a : α)⌋₊
   ceil a := ⌈(a : α)⌉₊
@@ -34,12 +34,14 @@ instance floorSemiring [OrderedSemiring α] [FloorSemiring α] :
   gc_ceil a n := FloorSemiring.gc_ceil (a : α) n
 
 @[norm_cast]
-theorem nat_floor_coe [OrderedSemiring α] [FloorSemiring α] (a : { r : α // 0 ≤ r }) :
+theorem nat_floor_coe [Semiring α] [PartialOrder α] [IsOrderedRing α] [FloorSemiring α]
+    (a : { r : α // 0 ≤ r }) :
     ⌊(a : α)⌋₊ = ⌊a⌋₊ :=
   rfl
 
 @[norm_cast]
-theorem nat_ceil_coe [OrderedSemiring α] [FloorSemiring α] (a : { r : α // 0 ≤ r }) :
+theorem nat_ceil_coe [Semiring α] [PartialOrder α] [IsOrderedRing α] [FloorSemiring α]
+    (a : { r : α // 0 ≤ r }) :
     ⌈(a : α)⌉₊ = ⌈a⌉₊ :=
   rfl
 
