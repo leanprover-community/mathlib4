@@ -3,7 +3,8 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Probability.Kernel.MeasurableIntegral
+import Mathlib.MeasureTheory.Measure.Prod
+import Mathlib.Probability.Kernel.MeasurableLIntegral
 
 /-!
 # Product and composition of kernels
@@ -76,6 +77,7 @@ We define a kernel composition-product
 `compProd : Kernel α β → Kernel (α × β) γ → Kernel α (β × γ)`.
 -/
 
+open scoped Function -- required for scoped `on` notation
 
 variable {γ : Type*} {mγ : MeasurableSpace γ} {s : Set (β × γ)}
 
@@ -307,7 +309,7 @@ theorem ae_null_of_compProd_null (h : (κ ⊗ₖ η) a s = 0) :
   rw [Filter.eventuallyLE_antisymm_iff]
   exact
     ⟨Filter.EventuallyLE.trans_eq
-        (Filter.Eventually.of_forall fun x => (measure_mono (Set.preimage_mono hst) : _)) ht,
+        (Filter.Eventually.of_forall fun x => measure_mono (Set.preimage_mono hst)) ht,
       Filter.Eventually.of_forall fun x => zero_le _⟩
 
 theorem ae_ae_of_ae_compProd {p : β × γ → Prop} (h : ∀ᵐ bc ∂(κ ⊗ₖ η) a, p bc) :
@@ -963,19 +965,20 @@ lemma fst_map_id_prod (κ : Kernel α β) {γ : Type*} {mγ : MeasurableSpace γ
     fst (map κ (fun a ↦ (a, f a))) = κ := by
   rw [fst_map_prod _ hf, Kernel.map_id']
 
+/-- If `η` is a Markov kernel, use instead `fst_compProd` to get `(κ ⊗ₖ η).fst = κ`. -/
+lemma fst_compProd_apply (κ : Kernel α β) (η : Kernel (α × β) γ)
+    [IsSFiniteKernel κ] [IsSFiniteKernel η] (x : α) {s : Set β} (hs : MeasurableSet s) :
+    (κ ⊗ₖ η).fst x s = ∫⁻ b, s.indicator (fun b ↦ η (x, b) Set.univ) b ∂(κ x) := by
+  rw [Kernel.fst_apply' _ _ hs, Kernel.compProd_apply]
+  swap; · exact measurable_fst hs
+  have h_eq b : η (x, b) {c | b ∈ s} = s.indicator (fun b ↦ η (x, b) Set.univ) b := by
+    by_cases hb : b ∈ s <;> simp [hb]
+  simp_rw [Set.mem_setOf_eq, h_eq]
+
 @[simp]
 lemma fst_compProd (κ : Kernel α β) (η : Kernel (α × β) γ) [IsSFiniteKernel κ] [IsMarkovKernel η] :
     fst (κ ⊗ₖ η) = κ := by
-  ext x s hs
-  rw [fst_apply' _ _ hs, compProd_apply]
-  swap; · exact measurable_fst hs
-  simp only [Set.mem_setOf_eq]
-  classical
-  have : ∀ b : β, η (x, b) {_c | b ∈ s} = s.indicator (fun _ ↦ 1) b := by
-    intro b
-    by_cases hb : b ∈ s <;> simp [hb]
-  simp_rw [this]
-  rw [lintegral_indicator_const hs, one_mul]
+  ext x s hs; simp [fst_compProd_apply, hs]
 
 lemma fst_prodMkLeft (δ : Type*) [MeasurableSpace δ] (κ : Kernel α (β × γ)) :
     fst (prodMkLeft δ κ) = prodMkLeft δ (fst κ) := rfl
@@ -1060,6 +1063,104 @@ lemma snd_swapRight (κ : Kernel α (β × γ)) : snd (swapRight κ) = fst κ :=
   · exact measurable_snd hs
 
 end FstSnd
+
+section sectLsectR
+
+variable {γ δ : Type*} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ}
+
+/-- Define a `Kernel α γ` from a `Kernel (α × β) γ` by taking the comap of `fun a ↦ (a, b)` for
+a given `b : β`. -/
+noncomputable def sectL (κ : Kernel (α × β) γ) (b : β) : Kernel α γ :=
+  comap κ (fun a ↦ (a, b)) (measurable_id.prod_mk measurable_const)
+
+@[simp] theorem sectL_apply (κ : Kernel (α × β) γ) (b : β) (a : α) : sectL κ b a = κ (a, b) := rfl
+
+@[simp] lemma sectL_zero (b : β) : sectL (0 : Kernel (α × β) γ) b = 0 := by simp [sectL]
+
+instance (κ : Kernel (α × β) γ) (b : β) [IsMarkovKernel κ] : IsMarkovKernel (sectL κ b) := by
+  rw [sectL]; infer_instance
+
+instance (κ : Kernel (α × β) γ) (b : β) [IsZeroOrMarkovKernel κ] :
+    IsZeroOrMarkovKernel (sectL κ b) := by
+  rw [sectL]; infer_instance
+
+instance (κ : Kernel (α × β) γ) (b : β) [IsFiniteKernel κ] : IsFiniteKernel (sectL κ b) := by
+  rw [sectL]; infer_instance
+
+instance (κ : Kernel (α × β) γ) (b : β) [IsSFiniteKernel κ] : IsSFiniteKernel (sectL κ b) := by
+  rw [sectL]; infer_instance
+
+instance (κ : Kernel (α × β) γ) (a : α) (b : β) [NeZero (κ (a, b))] : NeZero ((sectL κ b) a) := by
+  rw [sectL_apply]; infer_instance
+
+instance (priority := 100) {κ : Kernel (α × β) γ} [∀ b, IsMarkovKernel (sectL κ b)] :
+    IsMarkovKernel κ := by
+  refine ⟨fun _ ↦ ⟨?_⟩⟩
+  rw [← sectL_apply, measure_univ]
+
+--I'm not sure this lemma is actually useful
+lemma comap_sectL (κ : Kernel (α × β) γ) (b : β) {f : δ → α} (hf : Measurable f) :
+    comap (sectL κ b) f hf = comap κ (fun d ↦ (f d, b)) (hf.prod_mk measurable_const) := by
+  ext d s
+  rw [comap_apply, sectL_apply, comap_apply]
+
+@[simp]
+lemma sectL_prodMkLeft (α : Type*) [MeasurableSpace α] (κ : Kernel β γ) (a : α) {b : β} :
+    sectL (prodMkLeft α κ) b a = κ b := rfl
+
+@[simp]
+lemma sectL_prodMkRight (β : Type*) [MeasurableSpace β] (κ : Kernel α γ) (b : β) :
+    sectL (prodMkRight β κ) b = κ := rfl
+
+/-- Define a `Kernel β γ` from a `Kernel (α × β) γ` by taking the comap of `fun b ↦ (a, b)` for
+a given `a : α`. -/
+noncomputable def sectR (κ : Kernel (α × β) γ) (a : α) : Kernel β γ :=
+  comap κ (fun b ↦ (a, b)) (measurable_const.prod_mk measurable_id)
+
+@[simp] theorem sectR_apply (κ : Kernel (α × β) γ) (b : β) (a : α) : sectR κ a b = κ (a, b) := rfl
+
+@[simp] lemma sectR_zero (a : α) : sectR (0 : Kernel (α × β) γ) a = 0 := by simp [sectR]
+
+instance (κ : Kernel (α × β) γ) (a : α) [IsMarkovKernel κ] : IsMarkovKernel (sectR κ a) := by
+  rw [sectR]; infer_instance
+
+instance (κ : Kernel (α × β) γ) (a : α) [IsZeroOrMarkovKernel κ] :
+    IsZeroOrMarkovKernel (sectR κ a) := by
+  rw [sectR]; infer_instance
+
+instance (κ : Kernel (α × β) γ) (a : α) [IsFiniteKernel κ] : IsFiniteKernel (sectR κ a) := by
+  rw [sectR]; infer_instance
+
+instance (κ : Kernel (α × β) γ) (a : α) [IsSFiniteKernel κ] : IsSFiniteKernel (sectR κ a) := by
+  rw [sectR]; infer_instance
+
+instance (κ : Kernel (α × β) γ) (a : α) (b : β) [NeZero (κ (a, b))] : NeZero ((sectR κ a) b) := by
+  rw [sectR_apply]; infer_instance
+
+instance (priority := 100) {κ : Kernel (α × β) γ} [∀ b, IsMarkovKernel (sectR κ b)] :
+    IsMarkovKernel κ := by
+  refine ⟨fun _ ↦ ⟨?_⟩⟩
+  rw [← sectR_apply, measure_univ]
+
+--I'm not sure this lemma is actually useful
+lemma comap_sectR (κ : Kernel (α × β) γ) (a : α) {f : δ → β} (hf : Measurable f) :
+    comap (sectR κ a) f hf = comap κ (fun d ↦ (a, f d)) (measurable_const.prod_mk hf) := by
+  ext d s
+  rw [comap_apply, sectR_apply, comap_apply]
+
+@[simp]
+lemma sectR_prodMkLeft (α : Type*) [MeasurableSpace α] (κ : Kernel β γ) (a : α) :
+    sectR (prodMkLeft α κ) a = κ := rfl
+
+@[simp]
+lemma sectR_prodMkRight (β : Type*) [MeasurableSpace β] (κ : Kernel α γ) (b : β) {a : α} :
+    sectR (prodMkRight β κ) a b = κ a := rfl
+
+@[simp] lemma sectL_swapRight (κ : Kernel (α × β) γ) : sectL (swapLeft κ) = sectR κ := rfl
+
+@[simp] lemma sectR_swapRight (κ : Kernel (α × β) γ) : sectR (swapLeft κ) = sectL κ := rfl
+
+end sectLsectR
 
 section Comp
 
@@ -1202,6 +1303,7 @@ variable {γ δ : Type*} {mγ : MeasurableSpace γ} {mδ : MeasurableSpace δ}
 noncomputable def prod (κ : Kernel α β) (η : Kernel α γ) : Kernel α (β × γ) :=
   κ ⊗ₖ swapLeft (prodMkLeft β η)
 
+@[inherit_doc]
 scoped[ProbabilityTheory] infixl:100 " ×ₖ " => ProbabilityTheory.Kernel.prod
 
 theorem prod_apply' (κ : Kernel α β) [IsSFiniteKernel κ] (η : Kernel α γ) [IsSFiniteKernel η]

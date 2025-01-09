@@ -37,8 +37,7 @@ open Polynomial
 
 variable [IsLocalization M S]
 
-open scoped Classical
-
+open scoped Classical in
 /-- `coeffIntegerNormalization p` gives the coefficients of the polynomial
 `integerNormalization p` -/
 noncomputable def coeffIntegerNormalization (p : S[X]) (i : ℕ) : R :=
@@ -71,6 +70,7 @@ theorem integerNormalization_coeff (p : S[X]) (i : ℕ) :
 
 theorem integerNormalization_spec (p : S[X]) :
     ∃ b : M, ∀ i, algebraMap R S ((integerNormalization M p).coeff i) = (b : R) • p.coeff i := by
+  classical
   use Classical.choose (exist_integer_multiples_of_finset M (p.support.image p.coeff))
   intro i
   rw [integerNormalization_coeff, coeffIntegerNormalization]

@@ -85,7 +85,7 @@ Currently, `move_oper` supports `HAdd.hAdd`, `HMul.hMul`, `And`, `Or`, `Max.max`
 
 These lemmas should be added to `Mathlib.MoveAdd.move_oper_simpCtx`.
 
-See `test/MoveAdd.lean` for sample usage of `move_oper`.
+See `MathlibTest/MoveAdd.lean` for sample usage of `move_oper`.
 
 ## Implementation notes
 

@@ -428,33 +428,6 @@ attribute [bound] norm_nonneg
 @[to_additive (attr := simp) abs_norm]
 theorem abs_norm' (z : E) : |‖z‖| = ‖z‖ := abs_of_nonneg <| norm_nonneg' _
 
-namespace Mathlib.Meta.Positivity
-
-open Lean Meta Qq Function
-
-/-- Extension for the `positivity` tactic: multiplicative norms are nonnegative, via
-`norm_nonneg'`. -/
-@[positivity Norm.norm _]
-def evalMulNorm : PositivityExt where eval {u α} _zα _pα e := do
-  match u, α, e with
-  | 0, ~q(ℝ), ~q(@Norm.norm $β $instDist $a) =>
-    let _inst ← synthInstanceQ q(SeminormedGroup $β)
-    assertInstancesCommute
-    pure (.nonnegative q(norm_nonneg' $a))
-  | _, _, _ => throwError "not ‖ · ‖"
-
-/-- Extension for the `positivity` tactic: additive norms are nonnegative, via `norm_nonneg`. -/
-@[positivity Norm.norm _]
-def evalAddNorm : PositivityExt where eval {u α} _zα _pα e := do
-  match u, α, e with
-  | 0, ~q(ℝ), ~q(@Norm.norm $β $instDist $a) =>
-    let _inst ← synthInstanceQ q(SeminormedAddGroup $β)
-    assertInstancesCommute
-    pure (.nonnegative q(norm_nonneg $a))
-  | _, _, _ => throwError "not ‖ · ‖"
-
-end Mathlib.Meta.Positivity
-
 @[to_additive (attr := simp) norm_zero]
 theorem norm_one' : ‖(1 : E)‖ = 0 := by rw [← dist_one_right, dist_self]
 
@@ -876,6 +849,10 @@ theorem tendsto_norm_div_self (x : E) : Tendsto (fun a => ‖a / x‖) (𝓝 x) 
   simpa [dist_eq_norm_div] using
     tendsto_id.dist (tendsto_const_nhds : Tendsto (fun _a => (x : E)) (𝓝 x) _)
 
+@[to_additive]
+theorem tendsto_norm_div_self_nhdsGE (x : E) : Tendsto (fun a ↦ ‖a / x‖) (𝓝 x) (𝓝[≥] 0) :=
+  tendsto_nhdsWithin_iff.mpr ⟨tendsto_norm_div_self x, by simp⟩
+
 @[to_additive tendsto_norm]
 theorem tendsto_norm' {x : E} : Tendsto (fun a => ‖a‖) (𝓝 x) (𝓝 ‖x‖) := by
   simpa using tendsto_id.dist (tendsto_const_nhds : Tendsto (fun _a => (1 : E)) _ _)
@@ -980,9 +957,6 @@ theorem SeminormedCommGroup.mem_closure_iff :
 @[to_additive]
 theorem SeminormedGroup.tendstoUniformlyOn_one {f : ι → κ → G} {s : Set κ} {l : Filter ι} :
     TendstoUniformlyOn f 1 l s ↔ ∀ ε > 0, ∀ᶠ i in l, ∀ x ∈ s, ‖f i x‖ < ε := by
-  #adaptation_note /-- nightly-2024-03-11.
-  Originally this was `simp_rw` instead of `simp only`,
-  but this creates a bad proof term with nested `OfNat.ofNat` that trips up `@[to_additive]`. -/
   simp only [tendstoUniformlyOn_iff, Pi.one_apply, dist_one_left]
 
 @[to_additive]
@@ -1266,10 +1240,10 @@ theorem le_norm_self (r : ℝ) : r ≤ ‖r‖ :=
 @[deprecated (since := "2024-04-05")] alias nnnorm_coe_nat := nnnorm_natCast
 
 @[simp 1100] lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(no_index (OfNat.ofNat n) : ℝ)‖ = OfNat.ofNat n := norm_natCast n
+    ‖(ofNat(n) : ℝ)‖ = OfNat.ofNat n := norm_natCast n
 
 @[simp 1100] lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(no_index (OfNat.ofNat n) : ℝ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
+    ‖(ofNat(n) : ℝ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
 
 lemma norm_two : ‖(2 : ℝ)‖ = 2 := abs_of_pos zero_lt_two
 lemma nnnorm_two : ‖(2 : ℝ)‖₊ = 2 := NNReal.eq <| by simp
@@ -1435,6 +1409,58 @@ theorem hasCompactSupport_norm_iff : (HasCompactSupport fun x => ‖f x‖) ↔ 
 alias ⟨_, HasCompactSupport.norm⟩ := hasCompactSupport_norm_iff
 
 end NormedAddGroup
+
+/-! ### `positivity` extensions -/
+
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq Function
+
+/-- Extension for the `positivity` tactic: multiplicative norms are always nonnegative, and positive
+on non-one inputs. -/
+@[positivity ‖_‖]
+def evalMulNorm : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
+    let _seminormedGroup_E ← synthInstanceQ q(SeminormedGroup $E)
+    assertInstancesCommute
+    -- Check whether we are in a normed group and whether the context contains a `a ≠ 1` assumption
+    let o : Option (Q(NormedGroup $E) × Q($a ≠ 1)) := ← do
+      let .some normedGroup_E ← trySynthInstanceQ q(NormedGroup $E) | return none
+      let some pa ← findLocalDeclWithTypeQ? q($a ≠ 1) | return none
+      return some (normedGroup_E, pa)
+    match o with
+    -- If so, return a proof of `0 < ‖a‖`
+    | some (_normedGroup_E, pa) =>
+      assertInstancesCommute
+      return .positive q(norm_pos_iff'.2 $pa)
+    -- Else, return a proof of `0 ≤ ‖a‖`
+    | none => return .nonnegative q(norm_nonneg' $a)
+  | _, _, _ => throwError "not `‖·‖`"
+
+/-- Extension for the `positivity` tactic: additive norms are always nonnegative, and positive
+on non-zero inputs. -/
+@[positivity ‖_‖]
+def evalAddNorm : PositivityExt where eval {u α} _ _ e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@Norm.norm $E $_n $a) =>
+    let _seminormedAddGroup_E ← synthInstanceQ q(SeminormedAddGroup $E)
+    assertInstancesCommute
+    -- Check whether we are in a normed group and whether the context contains a `a ≠ 0` assumption
+    let o : Option (Q(NormedAddGroup $E) × Q($a ≠ 0)) := ← do
+      let .some normedAddGroup_E ← trySynthInstanceQ q(NormedAddGroup $E) | return none
+      let some pa ← findLocalDeclWithTypeQ? q($a ≠ 0) | return none
+      return some (normedAddGroup_E, pa)
+    match o with
+    -- If so, return a proof of `0 < ‖a‖`
+    | some (_normedAddGroup_E, pa) =>
+      assertInstancesCommute
+      return .positive q(norm_pos_iff.2 $pa)
+    -- Else, return a proof of `0 ≤ ‖a‖`
+    | none => return .nonnegative q(norm_nonneg $a)
+  | _, _, _ => throwError "not `‖·‖`"
+
+end Mathlib.Meta.Positivity
 
 /-! ### Subgroups of normed groups -/
 
