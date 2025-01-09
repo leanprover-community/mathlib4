@@ -110,7 +110,6 @@ def quotToQuotUlift [DecidableEq J] : Quot F →+ Quot (F ⋙ uliftFunctor.{u'})
   dsimp
   rw [sub_self]
 
-@[simp]
 lemma quotToQuotUlift_ι [DecidableEq J] (j : J) (x : F.obj j) :
     quotToQuotUlift F (Quot.ι F j x) = Quot.ι _ j (ULift.up x) := by
   dsimp [quotToQuotUlift, Quot.ι]
@@ -136,7 +135,6 @@ def quotUliftToQuot [DecidableEq J] : Quot (F ⋙ uliftFunctor.{u'}) →+ Quot F
   dsimp
   rw [sub_self]
 
-@[simp]
 lemma quotUliftToQuot_ι [DecidableEq J] (j : J) (x : (F ⋙ uliftFunctor.{u'}).obj j) :
     quotUliftToQuot F (Quot.ι _ j x) = Quot.ι F j x.down := by
   dsimp [quotUliftToQuot, Quot.ι]
