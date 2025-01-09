@@ -73,8 +73,7 @@ lemma isSemisimple_iff' :
 
 lemma isSemisimple_iff :
     f.IsSemisimple ↔ ∀ p ∈ invtSubmodule f, ∃ q ∈ invtSubmodule f, IsCompl p q := by
-  simp_rw [isSemisimple_iff']
-  aesop
+  simp [isSemisimple_iff']
 
 lemma isSemisimple_restrict_iff (p) (hp : p ∈ invtSubmodule f) :
     IsSemisimple (LinearMap.restrict f hp) ↔

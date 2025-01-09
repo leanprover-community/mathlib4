@@ -90,7 +90,6 @@
   "Mathlib.Tactic.Core",
   "Mathlib.Tactic.DefEqTransformations",
   "Mathlib.Tactic.DeriveFintype",
-  "Mathlib.Tactic.DeriveToExpr",
   "Mathlib.Tactic.Eqns",
   "Mathlib.Tactic.ExistsI",
   "Mathlib.Tactic.ExtendDoc",
@@ -275,7 +274,6 @@
    "Mathlib.Tactic.Positivity.Core"],
   "Mathlib.Tactic.FinCases": ["Mathlib.Data.Fintype.Basic"],
   "Mathlib.Tactic.Eval": ["Qq.Macro"],
-  "Mathlib.Tactic.DeriveToExpr": ["Lean.Elab.Deriving.Ord"],
   "Mathlib.Tactic.DeriveFintype":
   ["Mathlib.Data.Fintype.Basic",
    "Mathlib.Data.Fintype.Sigma",
@@ -386,6 +384,8 @@
   "Mathlib.Data.List.Range": ["Batteries.Data.Nat.Lemmas"],
   "Mathlib.Data.List.ProdSigma":
   ["Batteries.Data.Nat.Lemmas", "Mathlib.Data.List.Basic"],
+  "Mathlib.Data.List.Permutation":
+  ["Mathlib.Data.List.Flatten", "Mathlib.Data.List.Lemmas"],
   "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertIdx"],
   "Mathlib.Data.List.Defs": ["Batteries.Data.RBMap.Basic"],
   "Mathlib.Data.List.Basic":

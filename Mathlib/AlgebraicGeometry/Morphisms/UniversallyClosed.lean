@@ -109,7 +109,7 @@ lemma compactSpace_of_universallyClosed
   let Ti (i : 𝒰.J) : T.Opens := basicOpen (MvPolynomial.X i)
   let fT : pullback f q ⟶ T := pullback.snd f q
   let p : pullback f q ⟶ X := pullback.fst f q
-  let Z : Set (pullback f q : _) := (⨆ i, fT ⁻¹ᵁ (Ti i) ⊓ p ⁻¹ᵁ (U i) : (pullback f q).Opens)ᶜ
+  let Z : Set (pullback f q :) := (⨆ i, fT ⁻¹ᵁ (Ti i) ⊓ p ⁻¹ᵁ (U i) : (pullback f q).Opens)ᶜ
   have hZ : IsClosed Z := by
     simp only [Z, isClosed_compl_iff, Opens.coe_iSup, Opens.coe_inf, Opens.map_coe]
     exact isOpen_iUnion fun i ↦ (fT.continuous.1 _ (Ti i).2).inter (p.continuous.1 _ (U i).2)

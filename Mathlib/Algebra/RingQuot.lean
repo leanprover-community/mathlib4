@@ -412,7 +412,7 @@ theorem ringQuot_ext [Semiring T] {r : R → R → Prop} (f g : RingQuot r →+*
     (w : f.comp (mkRingHom r) = g.comp (mkRingHom r)) : f = g := by
   ext x
   rcases mkRingHom_surjective r x with ⟨x, rfl⟩
-  exact (RingHom.congr_fun w x : _)
+  exact (RingHom.congr_fun w x :)
 
 variable [Semiring T]
 
