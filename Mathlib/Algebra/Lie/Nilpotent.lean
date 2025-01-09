@@ -106,8 +106,7 @@ private theorem coe_lowerCentralSeries_eq_int_aux (R₁ R₂ L M : Type*)
 
 theorem coe_lowerCentralSeries_eq_int [LieModule R L M] (k : ℕ) :
     (lowerCentralSeries R L M k : Set M) = (lowerCentralSeries ℤ L M k : Set M) := by
-  show ((lowerCentralSeries R L M k).toSubmodule : Set M) =
-       ((lowerCentralSeries ℤ L M k).toSubmodule : Set M)
+  rw [← LieSubmodule.coe_toSubmodule, ← LieSubmodule.coe_toSubmodule]
   induction k with
   | zero => rfl
   | succ k ih =>

@@ -209,8 +209,8 @@ private theorem coe_derivedSeries_eq_int_aux (R₁ R₂ L : Type*) [CommRing R�
 
 theorem coe_derivedSeries_eq_int (k : ℕ) :
     (derivedSeries R L k : Set L) = (derivedSeries ℤ L k : Set L) := by
-  show ((derivedSeries R L k).toSubmodule : Set L) = ((derivedSeries ℤ L k).toSubmodule : Set L)
-  rw [derivedSeries_def, derivedSeries_def]
+  rw [← LieSubmodule.coe_toSubmodule, ← LieSubmodule.coe_toSubmodule, derivedSeries_def,
+    derivedSeries_def]
   induction k with
   | zero => rfl
   | succ k ih =>
