@@ -192,6 +192,7 @@ lemma tendsto_toReal_atTop : Tendsto EReal.toReal (𝓝[≠] ⊤) atTop := by
 lemma tendsto_toReal_atBot : Tendsto EReal.toReal (𝓝[≠] ⊥) atBot := by
   rw [nhdsWithin_bot, tendsto_map'_iff]
   exact tendsto_id
+
 /-! ### toENNReal -/
 
 lemma continuous_toENNReal : Continuous EReal.toENNReal := by

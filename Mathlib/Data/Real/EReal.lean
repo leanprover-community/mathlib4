@@ -686,7 +686,7 @@ theorem coe_ennreal_nsmul (n : ℕ) (x : ℝ≥0∞) : (↑(n • x) : EReal) = 
 /-! ### toENNReal -/
 
 /-- `x.toENNReal` returns `x` if it is nonnegative, `0` otherwise. -/
-noncomputable def toENNReal (x : EReal) : ENNReal :=
+noncomputable def toENNReal (x : EReal) : ℝ≥0∞ :=
   if x = ⊤ then ⊤
   else ENNReal.ofReal x.toReal
 
@@ -735,7 +735,7 @@ lemma coe_toENNReal_eq_max {x : EReal} : x.toENNReal = max 0 x := by
   · rw [toENNReal_of_nonpos hx, max_eq_left hx, coe_ennreal_zero]
 
 @[simp]
-lemma toENNReal_coe {x : ENNReal} : (x : EReal).toENNReal = x := by
+lemma toENNReal_coe {x : ℝ≥0∞} : (x : EReal).toENNReal = x := by
   by_cases h_top : x = ⊤
   · rw [h_top, coe_ennreal_top, toENNReal_top]
   rwa [toENNReal, if_neg _, toReal_coe_ennreal, ENNReal.ofReal_toReal_eq_iff]
