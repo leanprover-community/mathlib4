@@ -391,6 +391,10 @@ theorem subsemiringClosure_coe :
     (M.subsemiringClosure : Set R) = AddSubmonoid.closure (M : Set R) :=
   rfl
 
+theorem subsemiringClosure_mem {x : R} :
+    x ∈ M.subsemiringClosure ↔ x ∈ AddSubmonoid.closure (M : Set R) :=
+  Iff.rfl
+
 theorem subsemiringClosure_toAddSubmonoid :
     M.subsemiringClosure.toAddSubmonoid = AddSubmonoid.closure (M : Set R) :=
   rfl
@@ -524,6 +528,7 @@ protected def gi : GaloisInsertion (@closure R _) (↑) where
 variable {R}
 
 /-- Closure of a subsemiring `S` equals `S`. -/
+@[simp]
 theorem closure_eq (s : Subsemiring R) : closure (s : Set R) = s :=
   (Subsemiring.gi R).l_u_eq s
 

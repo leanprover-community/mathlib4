@@ -606,7 +606,7 @@ theorem sigmaToPi_injective : (sigmaToPi R).Injective := fun ⟨i, p⟩ ⟨j, q�
     simpa using congr_arg (Function.update (0 : ∀ i, R i) i x ∈ ·.asIdeal) eq
   · refine (p.1.ne_top_iff_one.mp p.2.ne_top ?_).elim
     have : Function.update (1 : ∀ i, R i) j 0 ∈ (sigmaToPi R ⟨j, q⟩).asIdeal := by simp
-    simpa [← eq, Function.update_noteq ne]
+    simpa [← eq, Function.update_of_ne ne]
 
 variable [Infinite ι] [∀ i, Nontrivial (R i)]
 
