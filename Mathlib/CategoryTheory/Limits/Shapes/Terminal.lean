@@ -43,7 +43,7 @@ section Univ
 variable (X : C) {F₁ : Discrete.{w} PEmpty ⥤ C} {F₂ : Discrete.{w'} PEmpty ⥤ C}
 
 theorem hasTerminalChangeDiagram (h : HasLimit F₁) : HasLimit F₂ :=
-  ⟨⟨⟨⟨limit F₁, by aesop_cat, by aesop_cat⟩,
+  ⟨⟨⟨⟨limit F₁, by aesop_cat, by simp⟩,
     isLimitChangeEmptyCone C (limit.isLimit F₁) _ (eqToIso rfl)⟩⟩⟩
 
 theorem hasTerminalChangeUniverse [h : HasLimitsOfShape (Discrete.{w} PEmpty) C] :
@@ -51,7 +51,7 @@ theorem hasTerminalChangeUniverse [h : HasLimitsOfShape (Discrete.{w} PEmpty) C]
   has_limit _ := hasTerminalChangeDiagram C (h.1 (Functor.empty C))
 
 theorem hasInitialChangeDiagram (h : HasColimit F₁) : HasColimit F₂ :=
-  ⟨⟨⟨⟨colimit F₁, by aesop_cat, by aesop_cat⟩,
+  ⟨⟨⟨⟨colimit F₁, by aesop_cat, by simp⟩,
     isColimitChangeEmptyCocone C (colimit.isColimit F₁) _ (eqToIso rfl)⟩⟩⟩
 
 theorem hasInitialChangeUniverse [h : HasColimitsOfShape (Discrete.{w} PEmpty) C] :
@@ -92,7 +92,7 @@ theorem hasTerminal_of_unique (X : C) [∀ Y, Nonempty (Y ⟶ X)] [∀ Y, Subsin
     ⟨Classical.inhabited_of_nonempty', (Subsingleton.elim · _)⟩⟩
 
 theorem IsTerminal.hasTerminal {X : C} (h : IsTerminal X) : HasTerminal C :=
-  { has_limit := fun F => HasLimit.mk ⟨⟨X, by aesop_cat, by aesop_cat⟩,
+  { has_limit := fun F => HasLimit.mk ⟨⟨X, by aesop_cat, by simp⟩,
     isLimitChangeEmptyCone _ h _ (Iso.refl _)⟩ }
 
 /-- We can more explicitly show that a category has an initial object by specifying the object,
@@ -104,7 +104,7 @@ theorem hasInitial_of_unique (X : C) [∀ Y, Nonempty (X ⟶ Y)] [∀ Y, Subsing
 
 theorem IsInitial.hasInitial {X : C} (h : IsInitial X) : HasInitial C where
   has_colimit F :=
-    HasColimit.mk ⟨⟨X, by aesop_cat, by aesop_cat⟩, isColimitChangeEmptyCocone _ h _ (Iso.refl _)⟩
+    HasColimit.mk ⟨⟨X, by aesop_cat, by simp⟩, isColimitChangeEmptyCocone _ h _ (Iso.refl _)⟩
 
 /-- The map from an object to the terminal object. -/
 abbrev terminal.from [HasTerminal C] (P : C) : P ⟶ ⊤_ C :=
