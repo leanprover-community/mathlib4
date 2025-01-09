@@ -3,6 +3,8 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Order.Heyting.Hom
+import Mathlib.Order.Idempotents
 import Mathlib.RingTheory.Finiteness.Ideal
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Over
@@ -900,19 +902,22 @@ with pairs of elements with product 0 and sum 1. Both elements in such pairs mus
 idempotents, but there may be idempotents that do not form such pairs (does not have a
 "complement"). For example, in the semiring {0, 0.5, 1} with ⊔ as + and ⊓ as *, 0.5 has
 no complement. -/
-def mulZeroaddOneEquivClopens :
-    {e : R × R | e.1 * e.2 = 0 ∧ e.1 + e.2 = 1} ≃ Clopens (PrimeSpectrum R) :=
-  .ofBijective (fun e ↦ ⟨basicOpen e.1.1, isClopen_iff_mul_add.mpr ⟨_, _, e.2.1, e.2.2, rfl⟩⟩) <| by
-    refine ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ eq ↦ Subtype.ext ?_, fun s ↦ ?_⟩; swap
-    · have ⟨e, f, mul, add, eq⟩ := isClopen_iff_mul_add.mp s.2
-      exact ⟨⟨(e, f), mul, add⟩, SetLike.ext' eq.symm⟩
-    have : x.1 = y.1 := basicOpen_injOn_isIdempotentElem (IsIdempotentElem.of_mul_add hx.1 hx.2).1
-      (IsIdempotentElem.of_mul_add hy.1 hy.2).1 <| SetLike.ext' (congr_arg (·.1) eq)
-    simp_rw [Prod.ext_iff, this, true_and]
-    calc x.2 = (y.1 + y.2) * x.2 := by rw [hy.2, one_mul]
-           _ = x.2 * y.2 := by rw [add_mul, ← this, hx.1, zero_add, mul_comm]
-           _ = y.2 * (x.1 + x.2) := by rw [mul_add, this, mul_comm y.2, hy.1, zero_add, mul_comm]
-           _ = y.2 := by rw [hx.2, mul_one]
+def mulZeroAddOneEquivClopens :
+    {e : R × R // e.1 * e.2 = 0 ∧ e.1 + e.2 = 1} ≃o Clopens (PrimeSpectrum R) where
+  toEquiv := .ofBijective
+    (fun e ↦ ⟨basicOpen e.1.1, isClopen_iff_mul_add.mpr ⟨_, _, e.2.1, e.2.2, rfl⟩⟩) <| by
+      refine ⟨fun ⟨x, hx⟩ ⟨y, hy⟩ eq ↦ mul_eq_zero_add_eq_one_ext_left ?_, fun s ↦ ?_⟩
+      · exact basicOpen_injOn_isIdempotentElem (IsIdempotentElem.of_mul_add hx.1 hx.2).1
+          (IsIdempotentElem.of_mul_add hy.1 hy.2).1 <| SetLike.ext' (congr_arg (·.1) eq)
+      · have ⟨e, f, mul, add, eq⟩ := isClopen_iff_mul_add.mp s.2
+        exact ⟨⟨(e, f), mul, add⟩, SetLike.ext' eq.symm⟩
+  map_rel_iff' {a b} := show basicOpen _ ≤ basicOpen _ ↔ _ by
+    rw [← inf_eq_left, ← basicOpen_mul]
+    refine ⟨fun h ↦ ?_, (by rw [·])⟩
+    rw [← inf_eq_left]
+    have := (IsIdempotentElem.of_mul_add a.2.1 a.2.2).1
+    exact mul_eq_zero_add_eq_one_ext_left (basicOpen_injOn_isIdempotentElem
+      (this.mul (IsIdempotentElem.of_mul_add b.2.1 b.2.2).1) this h)
 
 section IsIntegral
 
@@ -1175,12 +1180,8 @@ open TopologicalSpace (Clopens Opens)
 with idempotent elements in the ring. -/
 @[stacks 00EE]
 def isIdempotentElemEquivClopens :
-    {e : R | IsIdempotentElem e} ≃ Clopens (PrimeSpectrum R) :=
-  .ofBijective (fun e ↦ ⟨basicOpen e.1, isClopen_iff.mpr ⟨_, e.2, rfl⟩⟩)
-    ⟨fun x y eq ↦ Subtype.ext (basicOpen_injOn_isIdempotentElem x.2 y.2 <|
-      SetLike.ext' (congr_arg (·.1) eq)), fun s ↦
-        have ⟨e, he, h⟩ := exists_idempotent_basicOpen_eq_of_isClopen s.2
-        ⟨⟨e, he⟩, Clopens.ext h.symm⟩⟩
+    {e : R // IsIdempotentElem e} ≃o Clopens (PrimeSpectrum R) :=
+  .trans .isIdempotentElemMulZeroAddOne mulZeroAddOneEquivClopens
 
 lemma basicOpen_isIdempotentElemEquivClopens_symm (s) :
     basicOpen (isIdempotentElemEquivClopens (R := R).symm s).1 = s.toOpens :=
@@ -1195,41 +1196,33 @@ lemma isIdempotentElemEquivClopens_apply_toOpens (e) :
 lemma isIdempotentElemEquivClopens_mul (e₁ e₂ : {e : R | IsIdempotentElem e}) :
     isIdempotentElemEquivClopens ⟨_, e₁.2.mul e₂.2⟩ =
       isIdempotentElemEquivClopens e₁ ⊓ isIdempotentElemEquivClopens e₂ :=
-  Clopens.ext <| by simp_rw [coe_isIdempotentElemEquivClopens_apply, basicOpen_mul]; rfl
+  map_inf ..
 
 lemma isIdempotentElemEquivClopens_one_sub (e : {e : R | IsIdempotentElem e}) :
     isIdempotentElemEquivClopens ⟨_, e.2.one_sub⟩ = (isIdempotentElemEquivClopens e)ᶜ :=
-  SetLike.ext' <| by
-    simp_rw [Clopens.coe_compl, coe_isIdempotentElemEquivClopens_apply]
-    rw [basicOpen_eq_zeroLocus_compl, basicOpen_eq_zeroLocus_of_isIdempotentElem _ e.2]
+  map_compl ..
 
 lemma isIdempotentElemEquivClopens_symm_inf (s₁ s₂) :
     letI e := isIdempotentElemEquivClopens (R := R).symm
     e (s₁ ⊓ s₂) = ⟨_, (e s₁).2.mul (e s₂).2⟩ :=
-  isIdempotentElemEquivClopens.symm_apply_eq.mpr <| by
-    simp_rw [isIdempotentElemEquivClopens_mul, Equiv.apply_symm_apply]
+  map_inf ..
 
 lemma isIdempotentElemEquivClopens_symm_compl (s : Clopens (PrimeSpectrum R)) :
     isIdempotentElemEquivClopens.symm sᶜ = ⟨_, (isIdempotentElemEquivClopens.symm s).2.one_sub⟩ :=
-  isIdempotentElemEquivClopens.symm_apply_eq.mpr <| by
-    rw [isIdempotentElemEquivClopens_one_sub, Equiv.apply_symm_apply]
+  map_compl ..
 
 lemma isIdempotentElemEquivClopens_symm_top :
     isIdempotentElemEquivClopens.symm ⊤ = ⟨(1 : R), .one⟩ :=
-  isIdempotentElemEquivClopens.symm_apply_eq.mpr <| Clopens.ext <| by
-    rw [coe_isIdempotentElemEquivClopens_apply, basicOpen_one]; rfl
+  map_top _
 
 lemma isIdempotentElemEquivClopens_symm_bot :
     isIdempotentElemEquivClopens.symm ⊥ = ⟨(0 : R), .zero⟩ :=
-  isIdempotentElemEquivClopens.symm_apply_eq.mpr <| Clopens.ext <| by
-    rw [coe_isIdempotentElemEquivClopens_apply, basicOpen_zero]; rfl
+  map_bot _
 
 lemma isIdempotentElemEquivClopens_symm_sup (s₁ s₂ : Clopens (PrimeSpectrum R)) :
     letI e := isIdempotentElemEquivClopens (R := R).symm
-    e (s₁ ⊔ s₂) = ⟨_, (e s₁).2.add_sub_mul (e s₂).2⟩ := Subtype.ext <| by
-  rw [← compl_compl (_ ⊔ _), compl_sup, isIdempotentElemEquivClopens_symm_compl]
-  simp_rw [isIdempotentElemEquivClopens_symm_inf, isIdempotentElemEquivClopens_symm_compl]
-  ring
+    e (s₁ ⊔ s₂) = ⟨_, (e s₁).2.add_sub_mul (e s₂).2⟩ :=
+  map_sup ..
 
 end PrimeSpectrum
 
