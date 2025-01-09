@@ -266,7 +266,7 @@ Return the number of files which had new style errors.
 `moduleNames` are the names of all the modules to lint,
 `mode` specifies what kind of output this script should produce,
 `fix` configures whether fixable errors should be corrected in-place. -/
-def lintModules (nolints: Array String) (moduleNames : Array Lean.Name) (style : ErrorFormat)
+def lintModules (nolints : Array String) (moduleNames : Array Lean.Name) (style : ErrorFormat)
     (fix : Bool) : IO UInt32 := do
   let styleExceptions := parseStyleExceptions nolints
   let mut numberErrorFiles : UInt32 := 0
