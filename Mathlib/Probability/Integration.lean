@@ -143,7 +143,7 @@ theorem lintegral_fin_prod_eq_lintegral_fin_prod_lintegral_of_indepFun {ι : Typ
         apply lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'
         · exact Measurable.aemeasurable (x_mea j)
         · exact s.aemeasurable_prod' (fun i _ ↦ (x_mea i).aemeasurable)
-        · apply (iIndepFun.indepFun_finset_prod_of_not_mem hX (fun i ↦ x_mea i) hj).symm
+        · exact (iIndepFun.indepFun_finset_prod_of_not_mem hX (fun i ↦ x_mea i) hj).symm
       _ = ∏ i' ∈ insert j s, ∫⁻ (ω : Ω), X i' ω ∂μ := by
         simp only [Finset.prod_apply]
         rw [v, Finset.prod_insert hj]
