@@ -49,5 +49,3 @@ variable {f}
 theorem isOpenMap_of_hasStrictDerivAt {f' : 𝕜 → 𝕜}
     (hf : ∀ x, HasStrictDerivAt f (f' x) x) (h0 : ∀ x, f' x ≠ 0) : IsOpenMap f :=
   isOpenMap_iff_nhds_le.2 fun x => ((hf x).map_nhds_eq (h0 x)).ge
-@[deprecated (since := "2024-03-23")]
-alias open_map_of_strict_deriv := isOpenMap_of_hasStrictDerivAt
