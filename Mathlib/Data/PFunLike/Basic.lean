@@ -35,6 +35,9 @@ class PMapAddZeroClass (F : Type*) (M γ N : outParam Type*) [SetLike γ M]
     [AddZeroClass M] [AddZeroClass N] [AddMemClass γ M] [ZeroMemClass γ M]
     extends PMapAddClass F M γ N, PMapZeroClass F M γ N
 
+theorem pmap_neg (G H F γ : Type*) [AddGroup G] [SubtractionMonoid H] [SetLike γ G]
+    [AddSubgroupClass γ G] []
+
 class PMapSMulClass (F : Type*) (M X γ : outParam Type*) [SetLike γ X] [SMul M X]
     (Y : outParam Type*) [SMul M Y] [SMulMemClass γ M X] extends PFunLike F X γ Y where
   pmap_smul : ∀ (f : F) (x : domain f) (c : M), f (c • x) = c • (f x)
