@@ -36,7 +36,7 @@ structure ContinuousOrderHom (α β : Type*) [Preorder α] [Preorder β] [Topolo
   [TopologicalSpace β] extends OrderHom α β where
   continuous_toFun : Continuous toFun
 
-infixr:25 " →Co " => ContinuousOrderHom
+@[inherit_doc] infixr:25 " →Co " => ContinuousOrderHom
 
 section
 
