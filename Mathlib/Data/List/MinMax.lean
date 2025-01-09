@@ -449,7 +449,7 @@ lemma getD_max?_eq_unbot'_maximum (l : List α) (d : α) :
     cases hz : l.max? with
     | none => simp [List.max?_eq_none_iff.mp hz] at hy
     | some z =>
-      have : Std.Antisymm (α := α) (· ≤ ·) := ⟨_root_.le_antisymm⟩
+      have : Std.Antisymm (α := α) (· ≤ ·) := ⟨fun _ _ => _root_.le_antisymm⟩
       rw [List.max?_eq_some_iff] at hz
       · rw [Option.getD_some]
         exact _root_.le_antisymm (hy.right _ hz.left) (hz.right _ hy.left)
