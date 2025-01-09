@@ -1179,7 +1179,7 @@ protected theorem _root_.IsUnit.set : IsUnit a → IsUnit ({a} : Set α) :=
 @[to_additive]
 lemma prod_pow [Monoid β] (s : Set α) (t : Set β) : ∀ n, (s ×ˢ t) ^ n = (s ^ n) ×ˢ (t ^ n)
   | 0 => by simp
-  | n+1 => by simp [pow_succ, prod_pow _ _ n]
+  | n + 1 => by simp [pow_succ, prod_pow _ _ n]
 
 end Monoid
 

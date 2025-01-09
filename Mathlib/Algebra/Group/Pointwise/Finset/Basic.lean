@@ -1084,7 +1084,7 @@ lemma map_op_pow (s : Finset α) :
 @[to_additive]
 lemma product_pow [Monoid β] (s : Finset α) (t : Finset β) : ∀ n, (s ×ˢ t) ^ n = (s ^ n) ×ˢ (t ^ n)
   | 0 => by simp
-  | n+1 => by simp [pow_succ, product_pow _ _ n]
+  | n + 1 => by simp [pow_succ, product_pow _ _ n]
 
 end Monoid
 
