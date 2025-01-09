@@ -34,6 +34,7 @@ This is a ring hom if the ring has characteristic dividing `n`
 -/
 
 assert_not_exists Submodule
+assert_not_exists TwoSidedIdeal
 
 open Function ZMod
 

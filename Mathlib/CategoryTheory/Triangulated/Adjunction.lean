@@ -30,6 +30,8 @@ if `E : C ≌ D` is an equivalence of pretriangulated categories, then
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace CategoryTheory
 
 open Category Limits Preadditive Pretriangulated Adjunction
