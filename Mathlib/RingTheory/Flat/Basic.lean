@@ -107,9 +107,6 @@ theorem iff_rTensor_injective' :
   rewrite [← rTensor_comp_apply] at hx₀
   rw [(injective_iff_map_eq_zero _).mp (h hfg) y hx₀, LinearMap.map_zero]
 
-@[deprecated (since := "2024-03-29")]
-alias lTensor_inj_iff_rTensor_inj := LinearMap.lTensor_inj_iff_rTensor_inj
-
 /-- The `lTensor`-variant of `iff_rTensor_injective`. . -/
 theorem iff_lTensor_injective :
     Module.Flat R M ↔ ∀ ⦃I : Ideal R⦄ (_ : I.FG), Function.Injective (lTensor M I.subtype) := by
@@ -246,7 +243,8 @@ theorem iff_characterModule_baer : Flat R M ↔ Module.Baer R (CharacterModule M
   simp_rw [iff_rTensor_injective', Baer, rTensor_injective_iff_lcomp_surjective,
     Surjective, DFunLike.ext_iff, Subtype.forall]; rfl
 
-/-- `CharacterModule M` is an injective module iff `M` is flat. -/
+/-- `CharacterModule M` is an injective module iff `M` is flat.
+See [Lambek_1964] for a self-contained proof. -/
 theorem iff_characterModule_injective [Small.{v} R] :
     Flat R M ↔ Module.Injective R (CharacterModule M) :=
   iff_characterModule_baer.trans Module.Baer.iff_injective
@@ -258,9 +256,6 @@ theorem rTensor_preserves_injective_linearMap {N' : Type*} [AddCommGroup N'] [Mo
     [h : Flat R M] (L : N →ₗ[R] N') (hL : Function.Injective L) :
     Function.Injective (L.rTensor M) :=
   rTensor_injective_iff_lcomp_surjective.2 ((iff_characterModule_baer.1 h).extension_property _ hL)
-
-@[deprecated (since := "2024-03-29")]
-alias preserves_injective_linearMap := rTensor_preserves_injective_linearMap
 
 instance {S} [CommRing S] [Algebra R S] [Module S M] [IsScalarTower R S M] [Flat S M] [Flat R N] :
     Flat S (M ⊗[R] N) :=

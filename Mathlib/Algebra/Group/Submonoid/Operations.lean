@@ -1000,18 +1000,18 @@ instance smul [SMul M' α] (S : Submonoid M') : SMul S α :=
 @[to_additive]
 instance smulCommClass_left [SMul M' β] [SMul α β] [SMulCommClass M' α β]
     (S : Submonoid M') : SMulCommClass S α β :=
-  ⟨fun a _ _ => (smul_comm (a : M') _ _ : _)⟩
+  ⟨fun a _ _ => smul_comm (a : M') _ _⟩
 
 @[to_additive]
 instance smulCommClass_right [SMul α β] [SMul M' β] [SMulCommClass α M' β]
     (S : Submonoid M') : SMulCommClass α S β :=
-  ⟨fun a s => (smul_comm a (s : M') : _)⟩
+  ⟨fun a s => smul_comm a (s : M')⟩
 
 /-- Note that this provides `IsScalarTower S M' M'` which is needed by `SMulMulAssoc`. -/
 instance isScalarTower [SMul α β] [SMul M' α] [SMul M' β] [IsScalarTower M' α β]
       (S : Submonoid M') :
     IsScalarTower S α β :=
-  ⟨fun a => (smul_assoc (a : M') : _)⟩
+  ⟨fun a => smul_assoc (a : M')⟩
 
 section SMul
 variable [SMul M' α] {S : Submonoid M'}

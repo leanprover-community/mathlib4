@@ -386,6 +386,7 @@ instance smul_nnreal (μ : Measure α) [OuterRegular μ] (c : ℝ≥0) :
     OuterRegular (c • μ) :=
   OuterRegular.smul μ coe_ne_top
 
+open scoped Function in -- required for scoped `on` notation
 /-- If the restrictions of a measure to countably many open sets covering the space are
 outer regular, then the measure itself is outer regular. -/
 lemma of_restrict [OpensMeasurableSpace α] {μ : Measure α} {s : ℕ → Set α}
