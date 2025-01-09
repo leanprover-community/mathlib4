@@ -464,22 +464,30 @@ lemma equivTangentBundleProd_eq_tangentMap_prod_tangentMap :
       (tangentMap (I.prod I') I Prod.fst p, tangentMap (I.prod I') I' Prod.snd p) := by
   simp only [tangentMap_prod_fst, tangentMap_prod_snd]; rfl
 
-variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
+variable [IsManifold I (n + 1) M] [IsManifold I' (n + 1) M']
 
 /-- The canonical equivalence between the tangent bundle of a product and the product of
 tangent bundles is smooth. -/
 lemma contMDiff_equivTangentBundleProd :
-    ContMDiff (I.prod I').tangent (I.tangent.prod I'.tangent) ⊤
+    haveI : IsManifold I 1 M := .of_le (n := n + 1) le_add_self
+    haveI : IsManifold I' 1 M' := .of_le (n := n + 1) le_add_self
+    ContMDiff (I.prod I').tangent (I.tangent.prod I'.tangent) n
       (equivTangentBundleProd I M I' M') := by
+  haveI : IsManifold I 1 M := .of_le (n := n + 1) le_add_self
+  haveI : IsManifold I' 1 M' := .of_le (n := n + 1) le_add_self
   rw [equivTangentBundleProd_eq_tangentMap_prod_tangentMap]
-  exact (contMDiff_fst.contMDiff_tangentMap le_top).prod_mk
-    (contMDiff_snd.contMDiff_tangentMap le_top)
+  exact (contMDiff_fst.contMDiff_tangentMap le_rfl).prod_mk
+    (contMDiff_snd.contMDiff_tangentMap le_rfl)
 
 /-- The canonical equivalence between the product of tangent bundles and the tangent bundle of a
 product is smooth. -/
 lemma smooth_equivTangentBundleProd_symm :
-    ContMDiff (I.tangent.prod I'.tangent) (I.prod I').tangent ⊤
+    haveI : IsManifold I 1 M := .of_le (n := n + 1) le_add_self
+    haveI : IsManifold I' 1 M' := .of_le (n := n + 1) le_add_self
+    ContMDiff (I.tangent.prod I'.tangent) (I.prod I').tangent n
       (equivTangentBundleProd I M I' M').symm := by
+  haveI : IsManifold I 1 M := .of_le (n := n + 1) le_add_self
+  haveI : IsManifold I' 1 M' := .of_le (n := n + 1) le_add_self
   /- I am really unhappy with this proof, but I haven't found a more functorial one, so I have to
   unfold more definitions than I'd like. The argument goes as follows: since we're looking at a
   map into a vector bundle whose basis map is smooth, it suffices to check the smoothness of the
@@ -506,11 +514,11 @@ lemma smooth_equivTangentBundleProd_symm :
   · -- check that, in the fiber, the first projection is smooth in charts
     -- for this, write down a map which is obviously smooth (`C` below) and then check that the two
     -- maps coincide, up to obvious compositions.
-    have C : ContMDiffAt I.tangent (I.prod I').tangent ⊤ (fun (p : TangentBundle I M)
+    have C : ContMDiffAt I.tangent (I.prod I').tangent n (fun (p : TangentBundle I M)
         ↦ (⟨(p.1, b.1), (p.2, 0)⟩ : TangentBundle (I.prod I') (M × M'))) a := by
       let f : M → M × M' := fun m ↦ (m, b.1)
-      have A : ContMDiff I.tangent (I.prod I').tangent ⊤ (tangentMap I (I.prod I') f) := by
-        apply ContMDiff.contMDiff_tangentMap _ le_top
+      have A : ContMDiff I.tangent (I.prod I').tangent n (tangentMap I (I.prod I') f) := by
+        apply ContMDiff.contMDiff_tangentMap _ le_rfl
         exact contMDiff_id.prod_mk contMDiff_const
       have B : tangentMap I (I.prod I') f = fun p ↦ ⟨(p.1, b.1), (p.2, 0)⟩ := by
         ext p : 1
@@ -525,9 +533,9 @@ lemma smooth_equivTangentBundleProd_symm :
       ModelWithCorners.toPartialEquiv_coe_symm, ModelWithCorners.source_eq, Set.univ_prod_univ,
       ModelWithCorners.target_eq, PartialEquiv.coe_trans, comp_def, PartialEquiv.coe_trans_symm,
       PartialEquiv.coe_symm_mk, modelWithCorners_prod_coe, comp_apply] at Z
-    have D1 : ContMDiff (𝓘(𝕜, E × E')) (𝓘(𝕜, E)) ⊤ (Prod.fst : E × E' → E) := by
+    have D1 : ContMDiff (𝓘(𝕜, E × E')) (𝓘(𝕜, E)) n (Prod.fst : E × E' → E) := by
       rw [contMDiff_iff_contDiff]; exact contDiff_fst
-    have D2 : ContMDiffAt (I.tangent.prod I'.tangent) I.tangent ⊤ Prod.fst (a, b) := contMDiffAt_fst
+    have D2 : ContMDiffAt (I.tangent.prod I'.tangent) I.tangent n Prod.fst (a, b) := contMDiffAt_fst
     have U' := (ContMDiffAt.comp a D1.contMDiffAt Z).comp (a, b) D2
     apply U'.congr_of_eventuallyEq
     filter_upwards [chart_source_mem_nhds (ModelProd (ModelProd H E) (ModelProd H' E')) (a, b)]
@@ -537,7 +545,7 @@ lemma smooth_equivTangentBundleProd_symm :
       PartialEquiv.prod_source, Set.mem_prod, TangentBundle.mem_chart_source_iff] at hp
     let φ (x : E) := I ((chartAt H a.proj) ((chartAt H p.1.proj).symm (I.symm x)))
     have D0 : DifferentiableWithinAt 𝕜 φ (Set.range I) (I ((chartAt H p.1.proj) p.1.proj)) := by
-      apply ContDiffWithinAt.differentiableWithinAt (n := (⊤ : ℕ∞)) _ (mod_cast le_top)
+      apply ContDiffWithinAt.differentiableWithinAt (n := n + 1) _ le_add_self
       apply contDiffWithinAt_ext_coord_change
       simp [hp.1]
     have D (w : TangentBundle I' M') :
@@ -548,7 +556,7 @@ lemma smooth_equivTangentBundleProd_symm :
     let φ' (x : E') := I' ((chartAt H' b.proj) ((chartAt H' b.proj).symm (I'.symm x)))
     have D0' : DifferentiableWithinAt 𝕜 φ' (Set.range I')
         (I' ((chartAt H' b.proj) b.proj)) := by
-      apply ContDiffWithinAt.differentiableWithinAt (n := (⊤ : ℕ∞)) _ (mod_cast le_top)
+      apply ContDiffWithinAt.differentiableWithinAt (n := n + 1) _ le_add_self
       apply contDiffWithinAt_ext_coord_change
       simp
     have D' : DifferentiableWithinAt 𝕜 (φ' ∘ Prod.snd) (Set.range (Prod.map I I'))
@@ -566,7 +574,7 @@ lemma smooth_equivTangentBundleProd_symm :
     · let φ'' (x : E') := I' ((chartAt H' b.proj) ((chartAt H' p.2.proj).symm (I'.symm x)))
       have D0' : DifferentiableWithinAt 𝕜 φ'' (Set.range I')
           (I' ((chartAt H' p.2.proj) p.2.proj)) := by
-        apply ContDiffWithinAt.differentiableWithinAt (n := (⊤ : ℕ∞)) _ (mod_cast le_top)
+        apply ContDiffWithinAt.differentiableWithinAt (n := n + 1) _ le_add_self
         apply contDiffWithinAt_ext_coord_change
         simp [hp.2]
       have D' : DifferentiableWithinAt 𝕜 (φ'' ∘ Prod.snd) (Set.range (Prod.map I I'))
@@ -583,11 +591,11 @@ lemma smooth_equivTangentBundleProd_symm :
   · -- check that, in the fiber, the second projection is smooth in charts
     -- for this, write down a map which is obviously smooth (`C` below) and then check that the two
     -- maps coincide, up to obvious compositions.
-    have C : ContMDiffAt I'.tangent (I.prod I').tangent ⊤ (fun (p : TangentBundle I' M')
+    have C : ContMDiffAt I'.tangent (I.prod I').tangent n (fun (p : TangentBundle I' M')
         ↦ (⟨(a.1, p.1), (0, p.2)⟩ : TangentBundle (I.prod I') (M × M'))) b := by
       let f : M' → M × M' := fun m ↦ (a.1, m)
-      have A : ContMDiff I'.tangent (I.prod I').tangent ⊤ (tangentMap I' (I.prod I') f) := by
-        apply ContMDiff.contMDiff_tangentMap _ le_top
+      have A : ContMDiff I'.tangent (I.prod I').tangent n (tangentMap I' (I.prod I') f) := by
+        apply ContMDiff.contMDiff_tangentMap _ le_rfl
         exact contMDiff_const.prod_mk contMDiff_id
       have B : tangentMap I' (I.prod I') f = fun p ↦ ⟨(a.1, p.1), (0, p.2)⟩ := by
         ext p : 1
@@ -602,9 +610,9 @@ lemma smooth_equivTangentBundleProd_symm :
       ModelWithCorners.toPartialEquiv_coe_symm, ModelWithCorners.source_eq, Set.univ_prod_univ,
       ModelWithCorners.target_eq, PartialEquiv.coe_trans, comp_def, PartialEquiv.coe_trans_symm,
       PartialEquiv.coe_symm_mk, modelWithCorners_prod_coe, comp_apply] at Z
-    have D1 : ContMDiff (𝓘(𝕜, E × E')) (𝓘(𝕜, E')) ⊤ (Prod.snd : E × E' → E') := by
+    have D1 : ContMDiff (𝓘(𝕜, E × E')) (𝓘(𝕜, E')) n (Prod.snd : E × E' → E') := by
       rw [contMDiff_iff_contDiff]; exact contDiff_snd
-    have D2 : ContMDiffAt (I.tangent.prod I'.tangent) I'.tangent ⊤ Prod.snd (a, b) :=
+    have D2 : ContMDiffAt (I.tangent.prod I'.tangent) I'.tangent n Prod.snd (a, b) :=
       contMDiffAt_snd
     have U' := (ContMDiffAt.comp b D1.contMDiffAt Z).comp (a, b) D2
     apply U'.congr_of_eventuallyEq
@@ -615,7 +623,7 @@ lemma smooth_equivTangentBundleProd_symm :
       PartialEquiv.prod_source, Set.mem_prod, TangentBundle.mem_chart_source_iff] at hp
     let φ (x : E') := I' ((chartAt H' b.proj) ((chartAt H' p.2.proj).symm (I'.symm x)))
     have D0 : DifferentiableWithinAt 𝕜 φ (Set.range I') (I' ((chartAt H' p.2.proj) p.2.proj)) := by
-      apply ContDiffWithinAt.differentiableWithinAt (n := (⊤ : ℕ∞)) _ (mod_cast le_top)
+      apply ContDiffWithinAt.differentiableWithinAt (n := n + 1) _ le_add_self
       apply contDiffWithinAt_ext_coord_change
       simp [hp.2]
     have D (w : TangentBundle I M) :
@@ -626,7 +634,7 @@ lemma smooth_equivTangentBundleProd_symm :
     let φ' (x : E) := I ((chartAt H a.proj) ((chartAt H a.proj).symm (I.symm x)))
     have D0' : DifferentiableWithinAt 𝕜 φ' (Set.range I)
         (I ((chartAt H a.proj) a.proj)) := by
-      apply ContDiffWithinAt.differentiableWithinAt (n := (⊤ : ℕ∞)) _ (mod_cast le_top)
+      apply ContDiffWithinAt.differentiableWithinAt (n := n + 1) _ le_add_self
       apply contDiffWithinAt_ext_coord_change
       simp
     have D' : DifferentiableWithinAt 𝕜 (φ' ∘ Prod.fst) (Set.range (Prod.map I I'))
@@ -644,7 +652,7 @@ lemma smooth_equivTangentBundleProd_symm :
     · let φ'' (x : E) := I ((chartAt H a.proj) ((chartAt H p.1.proj).symm (I.symm x)))
       have D0' : DifferentiableWithinAt 𝕜 φ'' (Set.range I)
           (I ((chartAt H p.1.proj) p.1.proj)) := by
-        apply ContDiffWithinAt.differentiableWithinAt (n := (⊤ : ℕ∞)) _ (mod_cast le_top)
+        apply ContDiffWithinAt.differentiableWithinAt (n := n + 1) _ le_add_self
         apply contDiffWithinAt_ext_coord_change
         simp [hp.1]
       have D' : DifferentiableWithinAt 𝕜 (φ'' ∘ Prod.fst) (Set.range (Prod.map I I'))
