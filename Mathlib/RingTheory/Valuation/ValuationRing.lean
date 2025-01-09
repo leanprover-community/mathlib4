@@ -154,19 +154,14 @@ noncomputable instance linearOrder : LinearOrder (ValueGroup A K) where
   le_total := ValuationRing.le_total _ _
   decidableLE := by classical infer_instance
 
-noncomputable instance linearOrderedCommGroupWithZero :
-    LinearOrderedCommGroupWithZero (ValueGroup A K) :=
-  { linearOrder .. with
-    mul_assoc := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; apply Quotient.sound'; rw [mul_assoc]
+instance commGroupWithZero :
+    CommGroupWithZero (ValueGroup A K) :=
+  { mul_assoc := by rintro ⟨a⟩ ⟨b⟩ ⟨c⟩; apply Quotient.sound'; rw [mul_assoc]
     one_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [one_mul]
     mul_one := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_one]
     mul_comm := by rintro ⟨a⟩ ⟨b⟩; apply Quotient.sound'; rw [mul_comm]
-    mul_le_mul_left := by
-      rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
-      use c; simp only [Algebra.smul_def]; ring
     zero_mul := by rintro ⟨a⟩; apply Quotient.sound'; rw [zero_mul]
     mul_zero := by rintro ⟨a⟩; apply Quotient.sound'; rw [mul_zero]
-    zero_le_one := ⟨0, by rw [zero_smul]⟩
     exists_pair_ne := by
       use 0, 1
       intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
@@ -183,6 +178,19 @@ noncomputable instance linearOrderedCommGroupWithZero :
       simp only [Classical.not_not] at ha ⊢
       rw [ha]
       rfl }
+
+noncomputable instance linearOrderedCommGroupWithZero :
+    LinearOrderedCommGroupWithZero (ValueGroup A K) :=
+  { linearOrder .., commGroupWithZero .. with
+    mul_le_mul_left := by
+      rintro ⟨a⟩ ⟨b⟩ ⟨c, rfl⟩ ⟨d⟩
+      use c; simp only [Algebra.smul_def]; ring
+    zero_le_one := ⟨0, by rw [zero_smul]⟩
+    exists_pair_ne := by
+      use 0, 1
+      intro c; obtain ⟨d, hd⟩ := Quotient.exact' c
+      apply_fun fun t => d⁻¹ • t at hd
+      simp only [inv_smul_smul, smul_zero, one_ne_zero] at hd }
 
 /-- Any valuation ring induces a valuation on its fraction field. -/
 def valuation : Valuation K (ValueGroup A K) where
