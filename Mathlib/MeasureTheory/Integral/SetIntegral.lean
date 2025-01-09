@@ -640,21 +640,6 @@ theorem norm_setIntegral_le_of_norm_le_const' {C : ℝ} (hs : μ s < ∞) (hsm :
 @[deprecated (since := "2024-04-17")]
 alias norm_set_integral_le_of_norm_le_const' := norm_setIntegral_le_of_norm_le_const'
 
-theorem norm_integral_sub_setIntegral_le [IsFiniteMeasure μ] {C : ℝ}
-    (hf : ∀ᵐ (x : X) ∂μ, ‖f x‖ ≤ C) {K : Set X} (hK : MeasurableSet K) (hf1 : Integrable f μ) :
-    ‖∫ (x : X), f x ∂μ - ∫ x in K, f x ∂μ‖ ≤ (μ Kᶜ).toReal * C := by
-  have h0 : ∫ (x : X), f x ∂μ - ∫ x in K, f x ∂μ = ∫ x in Kᶜ, f x ∂μ := by
-    rw [sub_eq_iff_eq_add, add_comm, integral_add_compl hK hf1]
-  have h1 : ‖∫ x in Kᶜ, f x ∂μ‖ ≤ ∫ (x : X), ‖f x‖ ∂(μ.restrict Kᶜ) :=
-    norm_integral_le_integral_norm f
-  have h2 : ∫ x in Kᶜ, ‖f x‖ ∂μ ≤ ∫ _ in Kᶜ, C ∂μ :=
-    integral_mono_ae (Integrable.restrict (Integrable.norm hf1))
-        (integrable_const C) (ae_restrict_of_ae hf)
-  have h3 : ∫ _ in Kᶜ, C ∂μ = (μ Kᶜ).toReal * C := by
-    rw [setIntegral_const C, smul_eq_mul]
-  rw [h0]
-  apply le_trans h1 (le_trans h2 (le_of_eq h3))
-
 theorem setIntegral_eq_zero_iff_of_nonneg_ae {f : X → ℝ} (hf : 0 ≤ᵐ[μ.restrict s] f)
     (hfi : IntegrableOn f s μ) : ∫ x in s, f x ∂μ = 0 ↔ f =ᵐ[μ.restrict s] 0 :=
   integral_eq_zero_iff_of_nonneg_ae hf hfi
