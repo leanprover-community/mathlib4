@@ -2,17 +2,12 @@
 # 1000+ theorems project (https://1000-plus.github.io/).
 # This file and associated infrastructure are work in progress.
 #
-# This file, contains for each theorem in the project,
-# - an entry, labelled by its wikidata entry,
-# - |title|: a human-readable title
-# - (optional) |decl|: if a theorem is formalised in mathlib, the archive or counterexamples,
-#     the name of the corresponding declaration
-# - (optional) |decls|: like |decl|, but a list of declarations
-#     (if one theorem is split into multiple declarations)
-# - (optional) |author|: author(s) of a formalisation
-# - (optional) |date|: date of completion of the first formalisation
-# - (optional) |url|: for external projects, an URL referring to the result
-
+# See yaml_check.py for documentation about the allowed fields in this file.
+# Note that the field names in this file should match the specification of the
+# upstream project, hence should not be changed without due consideration.
+# The structure of this file is checked by `scripts/yaml_check.py` in this repo
+# and by `make_site.py` in the leanprover-community.github.io repo.
+#
 # Current TODOs/unresolved questions:
 # - add infrastructure for updating the information upstream when formalisations are added
 # - perhaps add a wikidata version of the stacks attribute, and generate this file automatically
@@ -661,7 +656,7 @@ Q670235:
     - UniqueFactorizationMonoid
     - UniqueFactorizationMonoid.factors_unique
   author: Chris Hughes
-  note: "it also has a generalized version, by showing that every Euclidean domain is a unique factorization domain, and showing that the integers form a Euclidean domain."
+  comment: "it also has a generalized version, by showing that every Euclidean domain is a unique factorization domain, and showing that the integers form a Euclidean domain."
 
 Q671663:
   title: Coleman–Mandula theorem
@@ -880,7 +875,7 @@ Q853067:
     - Pell.eq_pell
     - Pell.exists_of_not_isSquare
   author: Mario Carneiro (first), Michael Stoll (second)
-  note: "In `pell.eq_pell`, `d` is defined to be `a*a - 1` for an arbitrary `a > 1`."
+  comment: "In `pell.eq_pell`, `d` is defined to be `a*a - 1` for an arbitrary `a > 1`."
 
 Q856032:
   title: CAP theorem
