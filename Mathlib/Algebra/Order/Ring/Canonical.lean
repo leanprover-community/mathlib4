@@ -43,17 +43,15 @@ instance (priority := 100) toMulLeftMono [NonUnitalNonAssocSemiring α]
 variable [CommSemiring α] [PartialOrder α] [CanonicallyOrderedAdd α]
 
 -- TODO: make it an instance
-/-- Construct an `IsOrderedMonoid` from a canonically ordered `CommSemiring`. -/
 lemma toIsOrderedMonoid : IsOrderedMonoid α where
   mul_le_mul_left _ _ := mul_le_mul_left'
 
 -- TODO: make it an instance
-/-- Construct an `IsOrderedRing` from a canonically ordered `CommSemiring`. -/
 lemma toIsOrderedRing : IsOrderedRing α where
   zero_le_one := zero_le _
   add_le_add_left _ _ := add_le_add_left
-  mul_le_mul_of_nonneg_left := fun _ _ _ h _ => mul_le_mul_left' h _
-  mul_le_mul_of_nonneg_right := fun _ _ _ h _ => mul_le_mul_right' h _
+  mul_le_mul_of_nonneg_left _ _ _ h _ := mul_le_mul_left' h _
+  mul_le_mul_of_nonneg_right _ _ _ h _ := mul_le_mul_right' h _
 
 @[simp]
 protected theorem mul_pos [NoZeroDivisors α] {a b : α} :
