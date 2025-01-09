@@ -530,6 +530,14 @@ theorem coe_prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R]
     ⇑(RingEquiv.prodCongr f g) = Prod.map f g :=
   rfl
 
+/-- This is `Equiv.piOptionEquivProd` as a `RingEquiv`. -/
+@[simps!]
+def piOptionEquivProd {ι : Type*} {R : Option ι → Type*} [Π i, NonUnitalNonAssocSemiring (R i)] :
+    (Π i, R i) ≃+* R none × (Π i, R (some i)) where
+  toEquiv := Equiv.piOptionEquivProd
+  map_add' _ _ := rfl
+  map_mul' _ _ := rfl
+
 end NonUnitalSemiring
 
 section Semiring
