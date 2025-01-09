@@ -98,7 +98,7 @@ theorem comp_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
 @[simp]
 theorem mk_lift [FormallySmooth R A] (I : Ideal B) (hI : IsNilpotent I)
     (g : A →ₐ[R] B ⧸ I) (x : A) : Ideal.Quotient.mk I (FormallySmooth.lift I hI g x) = g x :=
-  AlgHom.congr_fun (FormallySmooth.comp_lift I hI g : _) x
+  AlgHom.congr_fun (FormallySmooth.comp_lift I hI g :) x
 
 variable {C : Type u} [CommRing C] [Algebra R C]
 
@@ -202,7 +202,7 @@ theorem of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRi
     refine Ideal.Quotient.liftₐ _ (FormallySmooth.lift I ⟨2, hI⟩ (i.comp f)) ?_
     have : RingHom.ker f ≤ I.comap (FormallySmooth.lift I ⟨2, hI⟩ (i.comp f)) := by
       rintro x (hx : f x = 0)
-      have : _ = i (f x) := (FormallySmooth.mk_lift I ⟨2, hI⟩ (i.comp f) x : _)
+      have : _ = i (f x) := (FormallySmooth.mk_lift I ⟨2, hI⟩ (i.comp f) x :)
       rwa [hx, map_zero, ← Ideal.Quotient.mk_eq_mk, Submodule.Quotient.mk_eq_zero] at this
     intro x hx
     have := (Ideal.pow_right_mono this 2).trans (Ideal.le_comap_pow _ 2) hx
