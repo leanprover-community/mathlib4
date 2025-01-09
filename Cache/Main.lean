@@ -49,11 +49,7 @@ $ lake exe cache get Mathlib/Algebra/Field/*.lean Mathlib/Data/*.lean
 Which will download the cache for:
 * Every Lean file inside 'Mathlib/Algebra/Field/'
 * Every Lean file inside 'Mathlib/Data/'
-* Everything that's needed for the above
-
-If no arguments are given, 'get', 'get!' and 'get-' download information about all files imported
-in some .lean file in the current directory or a subdirectory thereof (ignoring .lake folders).
-"
+* Everything that's needed for the above"
 
 open Lean System in
 /-- Note that this normalizes the path strings, which is needed when running from a unix shell
