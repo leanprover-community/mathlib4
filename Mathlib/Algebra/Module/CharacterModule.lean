@@ -79,11 +79,8 @@ from `B⋆` to `A⋆`.
 
 @[simp]
 lemma dual_zero : dual (0 : A →ₗ[R] B) = 0 := by
-  ext
-  dsimp
-  rw [AddMonoidHom.zero_apply, AddMonoidHom.comp_apply]
-  dsimp
-  rw [AddMonoidHom.map_zero]
+  ext f
+  exact map_zero f
 
 lemma dual_comp {C : Type*} [AddCommGroup C] [Module R C] (f : A →ₗ[R] B) (g : B →ₗ[R] C) :
     dual (g.comp f) = (dual f).comp (dual g) := by
