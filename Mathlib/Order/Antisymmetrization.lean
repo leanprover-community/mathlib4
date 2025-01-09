@@ -34,7 +34,8 @@ section Relation
 
 variable (r : α → α → Prop)
 
-/-- The antisymmetrization relation `AntisymmRel r` is defined so that `AntisymmRel r a b ↔ r a b ∧ r b a`. -/
+/-- The antisymmetrization relation `AntisymmRel r` is defined so that
+`AntisymmRel r a b ↔ r a b ∧ r b a`. -/
 def AntisymmRel (a b : α) : Prop :=
   r a b ∧ r b a
 
