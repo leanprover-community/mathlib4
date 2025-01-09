@@ -233,6 +233,10 @@ theorem mapRange.linearEquiv_toLinearMap (f : M ≃ₗ[R] N) :
     (mapRange.linearEquiv f).toLinearMap = (mapRange.linearMap f.toLinearMap : (α →₀ M) →ₗ[R] _) :=
   LinearMap.ext fun _ => rfl
 
+/- def mapRange.finsuppLinearMap [Module S P] [SMulCommClass R S P] :
+    (α →₀ M →ₗ[R] P) →ₗ[S] M →ₗ[R] α →₀ P :=
+  LinearMap.flip _ -/
+
 section Prod
 
 /-- The linear equivalence between `α × β →₀ M` and `α →₀ β →₀ M`.
