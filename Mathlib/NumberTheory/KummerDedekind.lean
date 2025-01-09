@@ -241,16 +241,16 @@ private noncomputable def f (hx : (conductor R x).comap (algebraMap R S) ⊔ I =
 private lemma f_symm_aux (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤)
     (hx' : IsIntegral R x) (Q : R[X]) :
     (f hx hx').symm (Q.map (Ideal.Quotient.mk I)) = Q.aeval x := by
-    apply (f hx hx').injective
-    rw [f, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.symm_trans_apply, RingEquiv.symm_symm,
-      RingEquiv.coe_trans, Function.comp_apply, RingEquiv.symm_apply_apply,
-      RingEquiv.symm_trans_apply, quotEquivOfEq_symm, quotEquivOfEq_mk]
-    congr
-    convert (adjoin.powerBasis' hx').quotientEquivQuotientMinpolyMap_symm_apply_mk I Q
-    apply (quotAdjoinEquivQuotMap hx
-      (NoZeroSMulDivisors.algebraMap_injective ((adjoin R {x})) S)).injective
-    simp only [RingEquiv.apply_symm_apply, adjoin.powerBasis'_gen, quotAdjoinEquivQuotMap_apply_mk,
-      coe_aeval_mk_apply]
+  apply (f hx hx').injective
+  rw [f, AlgEquiv.toRingEquiv_eq_coe, RingEquiv.symm_trans_apply, RingEquiv.symm_symm,
+    RingEquiv.coe_trans, Function.comp_apply, RingEquiv.symm_apply_apply,
+    RingEquiv.symm_trans_apply, quotEquivOfEq_symm, quotEquivOfEq_mk]
+  congr
+  convert (adjoin.powerBasis' hx').quotientEquivQuotientMinpolyMap_symm_apply_mk I Q
+  apply (quotAdjoinEquivQuotMap hx
+    (NoZeroSMulDivisors.algebraMap_injective ((adjoin R {x})) S)).injective
+  simp only [RingEquiv.apply_symm_apply, adjoin.powerBasis'_gen, quotAdjoinEquivQuotMap_apply_mk,
+    coe_aeval_mk_apply]
 
 open Classical in
 /-- The first half of the **Kummer-Dedekind Theorem** in the monogenic case, stating that the prime
