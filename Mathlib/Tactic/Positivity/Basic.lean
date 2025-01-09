@@ -290,12 +290,12 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
     pure (.nonnegative q((even_two_mul $m).pow_nonneg $a))
   orElse result do
     let ra ← core zα pα a
-    let ofNonneg (pa : Q(0 ≤ $a)) (_rα : Q(Ring $α)) (_oα : Q(IsOrderedRing $α)) :
+    let ofNonneg (pa : Q(0 ≤ $a)) (_rα : Q(Semiring $α)) (_oα : Q(IsOrderedRing $α)) :
         MetaM (Strictness zα pα e) := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute
       pure (.nonnegative q(pow_nonneg $pa $b))
-    let ofNonzero (pa : Q($a ≠ 0)) (_rα : Q(Ring $α)) (_oα : Q(IsOrderedRing $α)) :
+    let ofNonzero (pa : Q($a ≠ 0)) (_rα : Q(Semiring $α)) (_oα : Q(IsOrderedRing $α)) :
         MetaM (Strictness zα pα e) := do
       haveI' : $e =Q $a ^ $b := ⟨⟩
       assumeInstancesCommute

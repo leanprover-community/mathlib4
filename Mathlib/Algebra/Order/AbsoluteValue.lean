@@ -29,7 +29,8 @@ variable {ι α R S : Type*}
 
 /-- `AbsoluteValue R S` is the type of absolute values on `R` mapping to `S`:
 the maps that preserve `*`, are nonnegative, positive definite and satisfy the triangle equality. -/
-structure AbsoluteValue (R S : Type*) [Semiring R] [OrderedSemiring S] extends R →ₙ* S where
+structure AbsoluteValue (R S : Type*) [Semiring R] [Semiring S] [PartialOrder S] extends
+    R →ₙ* S where
   /-- The absolute value is nonnegative -/
   nonneg' : ∀ x, 0 ≤ toFun x
   /-- The absolute value is positive definitive -/
@@ -45,7 +46,7 @@ section OrderedSemiring
 
 section Semiring
 
-variable {R S : Type*} [Semiring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
+variable {R S : Type*} [Semiring R] [Semiring S] [PartialOrder S] (abv : AbsoluteValue R S)
 
 instance funLike : FunLike (AbsoluteValue R S) R S where
   coe f := f.toFun
@@ -121,7 +122,7 @@ end Semiring
 
 section Ring
 
-variable {R S : Type*} [Ring R] [OrderedSemiring S] (abv : AbsoluteValue R S)
+variable {R S : Type*} [Ring R] [Semiring S] [PartialOrder S] (abv : AbsoluteValue R S)
 
 protected theorem sub_le (a b c : R) : abv (a - c) ≤ abv (a - b) + abv (b - c) := by
   simpa [sub_eq_add_neg, add_assoc] using abv.add_le (a - b) (b - c)
@@ -142,7 +143,7 @@ section IsDomain
 
 -- all of these are true for `NoZeroDivisors S`; but it doesn't work smoothly with the
 -- `IsDomain`/`CancelMonoidWithZero` API
-variable {R S : Type*} [Semiring R] [OrderedRing S] (abv : AbsoluteValue R S)
+variable {R S : Type*} [Semiring R] [Semiring S] [PartialOrder S] (abv : AbsoluteValue R S)
 variable [IsDomain S] [Nontrivial R]
 
 @[simp]
@@ -180,7 +181,8 @@ end Semiring
 
 section Ring
 
-variable {R S : Type*} [Ring R] [OrderedRing S] (abv : AbsoluteValue R S)
+variable {R S : Type*} [Ring R] [Ring S] [PartialOrder S] [IsOrderedRing S]
+  (abv : AbsoluteValue R S)
 
 @[bound]
 protected theorem le_sub (a b : R) : abv a - abv b ≤ abv (a - b) :=
@@ -191,7 +193,7 @@ end Ring
 end OrderedRing
 
 section OrderedCommRing
-variable [OrderedCommRing S] [Ring R] (abv : AbsoluteValue R S)
+variable [CommRing S] [PartialOrder S] [IsOrderedRing S] [Ring R] (abv : AbsoluteValue R S)
 variable [NoZeroDivisors S]
 
 @[simp]
@@ -223,7 +225,8 @@ end OrderedCommRing
 
 section LinearOrderedRing
 
-variable {R S : Type*} [Semiring R] [LinearOrderedRing S] (abv : AbsoluteValue R S)
+variable {R S : Type*} [Semiring R] [Ring S] [LinearOrder S] [IsStrictOrderedRing S]
+  (abv : AbsoluteValue R S)
 
 /-- `AbsoluteValue.abs` is `abs` as a bundled `AbsoluteValue`. -/
 @[simps]
@@ -241,7 +244,8 @@ end LinearOrderedRing
 
 section LinearOrderedCommRing
 
-variable {R S : Type*} [Ring R] [LinearOrderedCommRing S] (abv : AbsoluteValue R S)
+variable {R S : Type*} [Ring R] [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
+  (abv : AbsoluteValue R S)
 
 @[bound]
 theorem abs_abv_sub_le_abv_sub (a b : R) : abs (abv a - abv b) ≤ abv (a - b) :=
@@ -259,7 +263,7 @@ multiplicative.
 
 See also the type `AbsoluteValue` which represents a bundled version of absolute values.
 -/
-class IsAbsoluteValue {S} [OrderedSemiring S] {R} [Semiring R] (f : R → S) : Prop where
+class IsAbsoluteValue {S} [Semiring S] [PartialOrder S] {R} [Semiring R] (f : R → S) : Prop where
   /-- The absolute value is nonnegative -/
   abv_nonneg' : ∀ x, 0 ≤ f x
   /-- The absolute value is positive definitive -/
@@ -273,7 +277,7 @@ namespace IsAbsoluteValue
 
 section OrderedSemiring
 
-variable {S : Type*} [OrderedSemiring S]
+variable {S : Type*} [Semiring S] [PartialOrder S]
 variable {R : Type*} [Semiring R] (abv : R → S) [IsAbsoluteValue abv]
 
 lemma abv_nonneg (x) : 0 ≤ abv x := abv_nonneg' x
@@ -318,7 +322,7 @@ end OrderedSemiring
 
 section LinearOrderedRing
 
-variable {S : Type*} [LinearOrderedRing S]
+variable {S : Type*} [Ring S] [LinearOrder S] [IsStrictOrderedRing S]
 
 instance abs_isAbsoluteValue : IsAbsoluteValue (abs : S → S) :=
   AbsoluteValue.abs.isAbsoluteValue
@@ -327,7 +331,7 @@ end LinearOrderedRing
 
 section OrderedRing
 
-variable {S : Type*} [OrderedRing S]
+variable {S : Type*} [Ring S] [PartialOrder S]
 
 section Semiring
 
@@ -354,7 +358,7 @@ variable {R : Type*} [Ring R] (abv : R → S) [IsAbsoluteValue abv]
 theorem abv_sub_le (a b c : R) : abv (a - c) ≤ abv (a - b) + abv (b - c) := by
   simpa [sub_eq_add_neg, add_assoc] using abv_add abv (a - b) (b - c)
 
-theorem sub_abv_le_abv_sub (a b : R) : abv a - abv b ≤ abv (a - b) :=
+theorem sub_abv_le_abv_sub [IsOrderedRing S] (a b : R) : abv a - abv b ≤ abv (a - b) :=
   (toAbsoluteValue abv).le_sub a b
 
 end Ring
@@ -362,7 +366,8 @@ end Ring
 end OrderedRing
 
 section OrderedCommRing
-variable [OrderedCommRing S] [NoZeroDivisors S] [Ring R] (abv : R → S) [IsAbsoluteValue abv]
+variable [CommRing S] [PartialOrder S] [IsOrderedRing S] [NoZeroDivisors S] [Ring R]
+  (abv : R → S) [IsAbsoluteValue abv]
 
 theorem abv_neg (a : R) : abv (-a) = abv a :=
   (toAbsoluteValue abv).map_neg a
@@ -374,7 +379,7 @@ end OrderedCommRing
 
 section LinearOrderedCommRing
 
-variable {S : Type*} [LinearOrderedCommRing S]
+variable {S : Type*} [CommRing S] [LinearOrder S] [IsStrictOrderedRing S]
 
 section Ring
 
@@ -389,7 +394,7 @@ end LinearOrderedCommRing
 
 section LinearOrderedField
 
-variable {S : Type*} [LinearOrderedSemifield S]
+variable {S : Type*} [Semifield S] [LinearOrder S]
 
 section Semiring
 
