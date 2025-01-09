@@ -89,6 +89,7 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
 
+/-- The derivative of `polarCoord.symm`, see `hasFDerivAt_polarCoord_symm`. -/
 def fDeriv_polarCoord_symm : ℝ × ℝ → ℝ × ℝ →L[ℝ] ℝ × ℝ :=
   fun p : ℝ × ℝ ↦ (LinearMap.toContinuousLinearMap (Matrix.toLin (Basis.finTwoProd ℝ)
     (Basis.finTwoProd ℝ) !![cos p.2, -p.1 * sin p.2; sin p.2, p.1 * cos p.2]))
@@ -222,6 +223,7 @@ open ENNReal MeasureTheory MeasureTheory.Measure
 variable {ι : Type*}
 
 open ContinuousLinearMap in
+/-- The derivative of `polarCoord.symm` on `ι → ℝ × ℝ`, see `hasFDerivAt_pi_polarCoord_symm`. -/
 noncomputable def fDeriv_pi_polarCoord_symm : (ι → ℝ × ℝ) → (ι → ℝ × ℝ) →L[ℝ] ι → ℝ × ℝ :=
   fun p ↦ pi fun i ↦ (fDeriv_polarCoord_symm (p i)).comp (proj i)
 
