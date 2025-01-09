@@ -6,6 +6,10 @@ Authors: Nick Ward
 import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 import Mathlib.Util.Superscript
 
+import Mathlib.CategoryTheory.Category.ReflQuiv
+
+open CategoryTheory Category Limits Functor Opposite Simplicial SimplexCategory
+
 namespace SSet.Truncated
 
 /-- Some quick attempts to prove that `[m]` is `n`-truncated (`m ≤ n`). -/
@@ -24,6 +28,11 @@ scoped macro:1000 (priority := high)
   X:term " _[" m:term "," p:term "]"n:subscript(term) : term =>
     `(($X : SSet.Truncated $(⟨n.raw[0]⟩)).obj
       (Opposite.op ⟨SimplexCategory.mk $m, $p⟩))
+
+-- set_option quotPrecheck false
+-- local macro:max (priority := high) "[" n:term "]₂" : term =>
+--   `((⟨SimplexCategory.mk $n, by decide⟩ : SimplexCategory.Truncated 2))
+
 
 end SSet.Truncated
 
@@ -175,3 +184,254 @@ def spineToDiagonal {m : ℕ} (hmn : m ≤ n + 1) (f : Path X m) : X _[1]ₙ₊�
     X.map ((SimplexCategory.diag m).op) (spineToSimplex hmn f)
 
 end SSet.Truncated.StrictSegal
+
+namespace SSet.Truncated
+
+
+/-- A 2-truncated simplicial set `S` has an underlying refl quiver with `S _[0]₂` as its underlying
+type. -/
+def OneTruncation₂ (S : SSet.Truncated 2) := S _[0]₂
+
+/-- Abbreviations for face maps in the 2-truncated simplex category. -/
+abbrev δ₂ {n} (i : Fin (n + 2)) (hn := by decide) (hn' := by decide) :
+    (⟨[n], hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[n + 1], hn'⟩ := SimplexCategory.δ i
+
+/-- Abbreviations for degeneracy maps in the 2-truncated simplex category. -/
+abbrev σ₂ {n} (i : Fin (n + 1)) (hn := by decide) (hn' := by decide) :
+    (⟨[n+1], hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[n], hn'⟩ := SimplexCategory.σ i
+
+@[reassoc (attr := simp)]
+lemma δ₂_zero_comp_σ₂_zero : δ₂ (0 : Fin 2) ≫ σ₂ 0 = 𝟙 _ := SimplexCategory.δ_comp_σ_self
+
+@[reassoc (attr := simp)]
+lemma δ₂_one_comp_σ₂_zero : δ₂ (1 : Fin 2) ≫ σ₂ 0 = 𝟙 _ := SimplexCategory.δ_comp_σ_succ
+
+/-- The hom-types of the refl quiver underlying a simplicial set `S` are types of edges in `S _[1]₂`
+together with source and target equalities. -/
+@[ext]
+structure OneTruncation₂.Hom {S : SSet.Truncated 2} (X Y : OneTruncation₂ S) where
+  /-- An arrow in `OneTruncation₂.Hom X Y` includes the data of a 1-simplex. -/
+  edge : S _[1]₂
+  /-- An arrow in `OneTruncation₂.Hom X Y` includes a source equality. -/
+  src_eq : S.map (δ₂ 1).op edge = X
+  /-- An arrow in `OneTruncation₂.Hom X Y` includes a target equality. -/
+  tgt_eq : S.map (δ₂ 0).op edge = Y
+
+/-- A 2-truncated simplicial set `S` has an underlying refl quiver `SSet.OneTruncation₂ S`. -/
+instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
+  Hom X Y := OneTruncation₂.Hom X Y
+  id X :=
+    { edge := S.map (σ₂ (n := 0) 0).op X
+      src_eq := by
+        simp only [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_one_comp_σ₂_zero,
+          op_id, FunctorToTypes.map_id_apply]
+      tgt_eq := by
+        simp only [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_zero,
+          op_id, FunctorToTypes.map_id_apply] }
+
+@[simp]
+lemma OneTruncation₂.id_edge {S : SSet.Truncated 2} (X : OneTruncation₂ S) :
+    OneTruncation₂.Hom.edge (𝟙rq X) = S.map (σ₂ 0).op X := rfl
+
+/-- The functor that carries a 2-truncated simplicial set to its underlying refl quiver. -/
+@[simps]
+def oneTruncation₂ : SSet.Truncated.{u} 2 ⥤ ReflQuiv.{u, u} where
+  obj S := ReflQuiv.of (OneTruncation₂ S)
+  map {S T} F := {
+    obj := F.app (op ⟨SimplexCategory.mk 0, by decide⟩)
+    map := fun f ↦
+      { edge := F.app _ f.edge
+        src_eq := by rw [← FunctorToTypes.naturality, f.src_eq]
+        tgt_eq := by rw [← FunctorToTypes.naturality, f.tgt_eq] }
+    map_id := fun X ↦ OneTruncation₂.Hom.ext (by
+      dsimp
+      rw [← FunctorToTypes.naturality]) }
+
+@[ext]
+lemma OneTruncation₂.hom_ext {S : SSet.Truncated 2} {x y : OneTruncation₂ S} {f g : x ⟶ y} :
+    f.edge = g.edge → f = g := OneTruncation₂.Hom.ext
+
+/-- The map that picks up the initial vertex of a 2-simplex, as a morphism in the 2-truncated
+simplex category. -/
+def ι0₂ : (⟨SimplexCategory.mk 0, by decide⟩ : SimplexCategory.Truncated 2) ⟶
+    ⟨SimplexCategory.mk 2, by decide⟩ := δ₂ (n := 0) 1 ≫ δ₂ (n := 1) 1
+
+/-- The map that picks up the middle vertex of a 2-simplex, as a morphism in the 2-truncated
+simplex category. -/
+def ι1₂ : (⟨SimplexCategory.mk 0, by decide⟩ : SimplexCategory.Truncated 2) ⟶
+    ⟨SimplexCategory.mk 2, by decide⟩ := δ₂ (n := 0) 0 ≫ δ₂ (n := 1) 2
+
+/-- The map that picks up the final vertex of a 2-simplex, as a morphism in the 2-truncated
+simplex category. -/
+def ι2₂ : (⟨SimplexCategory.mk 0, by decide⟩ : SimplexCategory.Truncated 2) ⟶
+    ⟨SimplexCategory.mk 2, by decide⟩ := δ₂ (n := 0) 0 ≫ δ₂ (n := 1) 1
+
+/-- The initial vertex of a 2-simplex in a 2-truncated simplicial set. -/
+def ev0₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι0₂.op φ
+
+/-- The middle vertex of a 2-simplex in a 2-truncated simplicial set. -/
+def ev1₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι1₂.op φ
+
+/-- The final vertex of a 2-simplex in a 2-truncated simplicial set. -/
+def ev2₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : OneTruncation₂ V := V.map ι2₂.op φ
+
+/-- The 0th face of a 2-simplex, as a morphism in the 2-truncated simplex category. -/
+def δ0₂ : (⟨SimplexCategory.mk 1, by decide⟩ : SimplexCategory.Truncated 2) ⟶
+    ⟨SimplexCategory.mk 2, by decide⟩ := δ₂ (n := 1) 0
+
+/-- The 1st face of a 2-simplex, as a morphism in the 2-truncated simplex category. -/
+def δ1₂ : (⟨SimplexCategory.mk 1, by decide⟩ : SimplexCategory.Truncated 2) ⟶
+    ⟨SimplexCategory.mk 2, by decide⟩ := δ₂ (n := 1) 1
+
+/-- The 2nd face of a 2-simplex, as a morphism in the 2-truncated simplex category. -/
+def δ2₂ : (⟨SimplexCategory.mk 1, by decide⟩ : SimplexCategory.Truncated 2) ⟶
+    ⟨SimplexCategory.mk 2, by decide⟩ := δ₂ (n := 1) 2
+
+private lemma map_map_of_eq.{w}  {C : Type u} [Category.{v} C] (V : Cᵒᵖ ⥤ Type w) {X Y Z : C}
+    {α : X ⟶ Y} {β : Y ⟶ Z} {γ : X ⟶ Z} {φ} :
+    α ≫ β = γ → V.map α.op (V.map β.op φ) = V.map γ.op φ := by
+  rintro rfl
+  change (V.map _ ≫ V.map _) _ = _
+  rw [← map_comp]; rfl
+
+/-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
+0th face of a 2-simplex. -/
+def ev12₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev1₂ φ ⟶ ev2₂ φ :=
+  ⟨V.map δ0₂.op φ,
+    map_map_of_eq V (SimplexCategory.δ_comp_δ (i := 0) (j := 1) (by decide)).symm,
+    map_map_of_eq V rfl⟩
+
+/-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
+1st face of a 2-simplex. -/
+def ev02₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev2₂ φ :=
+  ⟨V.map δ1₂.op φ, map_map_of_eq V rfl, map_map_of_eq V rfl⟩
+
+/-- The arrow in the ReflQuiver `OneTruncation₂ V` of a 2-truncated simplicial set arising from the
+2nd face of a 2-simplex. -/
+def ev01₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev1₂ φ :=
+  ⟨V.map δ2₂.op φ, map_map_of_eq V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), map_map_of_eq V rfl⟩
+
+
+/-- A refl prefunctor between the underlying refl quivers of a 2-truncated simplicial sets induces a
+map on paths. -/
+def reflPrefunctorPathMap {X Y : SSet.Truncated.{u} 2} (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y)
+    {n : ℕ} (σ : Path X n) : Path Y n where
+      vertex i := F.obj (σ.vertex i)
+      arrow i := (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).edge
+      arrow_src i := (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).src_eq
+      arrow_tgt i := (F.map ⟨σ.arrow i, σ.arrow_src i, σ.arrow_tgt i⟩).tgt_eq
+
+/-- The components of a map of 2-truncated simplicial sets built from a map on underlying reflexive
+quivers, under the assumption that the codomain is `StrictSegal`. -/
+def toStrictSegal₂.mk.app {X Y : SSet.Truncated 2} [StrictSegal Y]
+    (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y)
+    (n : SimplexCategory.Truncated 2) : X.obj (op n) ⟶ Y.obj (op n) := by
+  obtain ⟨n, hn⟩ := n
+  induction' n using SimplexCategory.rec with n
+  match n with
+  | 0 => exact fun x => F.obj x
+  | 1 => exact fun f => (F.map ⟨f, rfl, rfl⟩).edge
+  | 2 => exact fun φ =>
+          StrictSegal.spineToSimplex (X := Y) (Nat.le_refl _)
+            (reflPrefunctorPathMap F (X.spine (Nat.le_refl _) φ))
+
+@[simp] theorem toStrictSegal₂.mk.app_zero {X Y : SSet.Truncated 2} [StrictSegal Y]
+    (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y) (x : X _[0]₂) :
+    mk.app F ⟨SimplexCategory.mk 0, by decide⟩ x = F.obj x := rfl
+
+@[simp] theorem toStrictSegal₂.mk.app_one {X Y : SSet.Truncated 2} [StrictSegal Y]
+    (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y) (f : X _[1]₂) :
+    mk.app F ⟨SimplexCategory.mk 1, by decide⟩ f = (F.map ⟨f, rfl, rfl⟩).edge := rfl
+
+@[simp] theorem toStrictSegal₂.mk.app_two {X Y : SSet.Truncated 2} [StrictSegal Y]
+    (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y) (φ : X _[2]₂) :
+    mk.app F ⟨SimplexCategory.mk 2, by decide⟩ φ =
+      StrictSegal.spineToSimplex
+        (Nat.le_refl _) (reflPrefunctorPathMap F (X.spine (Nat.le_refl _) φ)) := rfl
+
+/-- A map of 2-truncated simplicial sets built from a map on underlying reflexive quivers, under
+the assumption that the codomain is `StrictSegal`. -/
+@[simps!]
+def toStrictSegal₂.mk {X Y : SSet.Truncated 2} [StrictSegal Y]
+    (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y)
+    (hyp : (φ : X _[2]₂) → (F.map (ev02₂ φ)).edge =
+      StrictSegal.spineToDiagonal
+        (Nat.le_refl _) (reflPrefunctorPathMap F (X.spine (Nat.le_refl _) φ))) : X ⟶ Y where
+  app := fun n => toStrictSegal₂.mk.app F n.unop
+  naturality := by
+    rintro ⟨⟨m, hm⟩⟩ ⟨⟨n, hn⟩⟩ ⟨α : (⟨n, hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨m, hm⟩⟩
+    rw [show Opposite.op α = α.op by rfl]
+    induction' m using SimplexCategory.rec with m
+    induction' n using SimplexCategory.rec with n
+    dsimp at α ⊢
+    let OK {n m hn hm} (f : (⟨[n], hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[m], hm⟩) :=
+      X.map f.op ≫ mk.app F ⟨[n], hn⟩ = mk.app F ⟨[m], hm⟩ ≫ Y.map f.op
+    show OK α
+    have fac : ∀ {n m hn hm} {α : (⟨[n], hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[m], hm⟩} k hk
+      {β : (⟨[n], hn⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[k], hk⟩}
+      {γ : (⟨[k], hk⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[m], hm⟩},
+      α = β ≫ γ → OK β → OK γ → OK α := by
+        rintro _ _ _ _ _ k hk β γ rfl h1 h2
+        dsimp only [OK] at h1 h2 ⊢
+        rw [op_comp, map_comp, map_comp, assoc, h1, ← assoc, h2, assoc]
+    have const10 (α : (⟨[1], by decide⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[0], by decide⟩) :
+        OK α := by
+      ext x
+      cases SimplexCategory.eq_const_to_zero α
+      dsimp
+      sorry
+    have const01 (α : (⟨[0], by decide⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[1], by decide⟩) :
+        OK α := by
+      ext x
+      sorry
+    have const02 (α : (⟨[0], by decide⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[2], by decide⟩) :
+        OK α := by
+      ext x
+      sorry
+    have nat1m {m hm} (α : (⟨[1], by decide⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[m], hm⟩) :
+        OK α := by
+      match m with
+      | 0 => apply const10
+      | 1 =>
+        match α, eq_of_one_to_one α with
+        | _, .inr rfl =>
+          dsimp [OK]
+          rw [(_ : X.map _ = id), (_ : Prefunctor.map _ _ = id)]; rfl
+          all_goals sorry
+        | _, .inl ⟨i, rfl⟩ =>
+          exact fac 0 (by decide) (const_fac_thru_zero ..) (const10 ..) (const01 ..)
+      | 2 =>
+        match α, eq_of_one_to_two α with
+        | _, .inl rfl =>
+          ext x
+          sorry
+        | _, .inr (.inl rfl) =>
+          ext x
+          sorry
+        | _, .inr (.inr (.inl rfl)) =>
+          ext x
+          sorry
+        | _, .inr (.inr (.inr ⟨i, rfl⟩)) =>
+          exact fac 0 (by decide) (const_fac_thru_zero ..) (const10 ..) (const02 ..)
+    have nat2m (α : (⟨[2], by decide⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[m], hm⟩) :
+        OK α := by
+      dsimp [OK]
+      sorry
+      -- apply (cancel_mono (nerve₂.seagull _)).1
+      -- simp [nerve₂.seagull]
+      -- congr 1 <;> rw [← map_comp, ← op_comp, ← nat1m, ← nat1m, op_comp, map_comp, assoc]
+    match n with
+      | 0 =>
+        match m with
+        | 0 =>
+          ext x
+          simp [SimplexCategory.rec]
+          cases SimplexCategory.hom_zero_zero α
+          show F.obj (X.map (𝟙 _).op x) = Y.map (𝟙 _).op (F.obj x)
+          simp [Functor.map_id]
+        | 1 => apply const01
+        | 2 => apply const02
+      | 1 => apply nat1m
+      | 2 => apply nat2m
+
+end SSet.Truncated
