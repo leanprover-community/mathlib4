@@ -68,7 +68,7 @@ theorem one_sub_iff {p : R} : IsIdempotentElem (1 - p) ↔ IsIdempotentElem p :=
   ⟨fun h => sub_sub_cancel 1 p ▸ h.one_sub, IsIdempotentElem.one_sub⟩
 
 @[simp]
-theorem mul_one_sub_self {p : R} (h : IsIdempotentElem p )  : p * (1 - p) = 0 := by
+theorem mul_one_sub_self {p : R} (h : IsIdempotentElem p) : p * (1 - p) = 0 := by
   rw [mul_sub, mul_one, h.eq, sub_self]
 
 @[simp]
