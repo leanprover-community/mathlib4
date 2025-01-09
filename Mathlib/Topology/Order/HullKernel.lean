@@ -100,7 +100,7 @@ lemma upperClosureFinite_eq (hT : ∀ p ∈ T, InfPrime p) (F : Finset α) :
   rw [coe_upperClosure]
   induction' F using Finset.induction_on with a F' _ I4
   · simp only [coe_empty, mem_empty_iff_false, iUnion_of_empty, iUnion_empty, Set.preimage_empty,
-      inf_empty, Ici_top]
+      inf_empty, Set.Ici_top]
     symm
     by_contra hf
     rw [← Set.not_nonempty_iff_eq_empty, not_not] at hf
