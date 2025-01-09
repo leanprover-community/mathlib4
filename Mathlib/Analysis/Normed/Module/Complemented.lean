@@ -20,6 +20,58 @@ is always a complemented subspace.
 complemented subspace, normed vector space
 -/
 
+/-
+TODO: Move this to the correct place
+-/
+
+noncomputable section
+
+theorem AddMonoidHom.ker_prod_ker_le_ker_coprod {M : Type*} [AddCommGroup M] {M₂ : Type*}
+    [AddCommGroup M₂]  {M₃ : Type*} [AddCommGroup M₃] (f : M →+ M₃) (g : M₂ →+ M₃) :
+    (ker f).prod (ker g) ≤ ker (f.coprod g) := by
+  rintro ⟨y, z⟩
+  --simp +contextual only [Subgroup.mem_prod, mem_ker, coprod_apply, add_zero, implies_true]
+  intro h
+  rw [AddSubgroup.mem_prod, mem_ker, mem_ker] at h
+  rw [mem_ker, coprod_apply, h.1, h.2, add_zero]
+
+theorem AddMonoidHom.ker_coprod_of_disjoint_range {M : Type*} [AddCommGroup M] {M₂ : Type*}
+    [AddCommGroup M₂] {M₃ : Type*}
+    [AddCommGroup M₃] (f : M →+ M₃) (g : M₂ →+ M₃)
+    (hd : Disjoint (range f) (range g)) : ker (f.coprod g) = (ker f).prod (ker g) := by
+  apply le_antisymm _ (ker_prod_ker_le_ker_coprod f g)
+  rintro ⟨y, z⟩ h
+  simp only [mem_ker, AddSubgroup.mem_prod, coprod_apply] at h ⊢
+  have : f y ∈ (range f) ⊓ (range g) := by
+    simp only [AddSubgroup.mem_inf, mem_range, exists_apply_eq_apply, true_and]
+    --simp only [true_and, mem_range, mem_inf, exists_apply_eq_apply]
+    use -z
+    rwa [eq_comm, map_neg, ← sub_eq_zero, sub_neg_eq_add]
+  rw [hd.eq_bot, AddSubgroup.mem_bot] at this
+  rw [this] at h
+  simpa [this] using h
+
+variable {G : Type*} [AddCommGroup G] (p q : AddSubgroup G) --(h : IsCompl p q)
+
+theorem AddSubgroup.sup_eq_range (p q : AddSubgroup G) :
+    p ⊔ q = AddMonoidHom.range (p.subtype.coprod q.subtype) := by
+  apply AddSubgroup.ext fun x => by simp [AddSubgroup.mem_sup, SetLike.exists]
+
+open AddMonoidHom in
+/-- If `q` is a complement of `p`, then `p × q` is isomorphic to `E`. It is the unique
+linear map `f : E → p` such that `f x = x` for `x ∈ p` and `f x = 0` for `x ∈ q`. -/
+def AddSubgroup.prodEquivOfIsCompl (h : IsCompl p q) : (p × q) ≃+ G := by
+  apply AddEquiv.ofBijective (p.subtype.coprod q.subtype)
+  constructor
+  · rw [← ker_eq_bot_iff]
+    rw[ (ker_coprod_of_disjoint_range p.subtype q.subtype), ker_subtype, ker_subtype,
+      AddSubgroup.bot_sum_bot]
+    rw [range_subtype, range_subtype]
+    exact h.1
+  · rw [← range_eq_top, ← AddSubgroup.sup_eq_range, h.sup_eq_top]
+
+end
+
 
 variable {𝕜 E F G : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E]
   [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedAddCommGroup G] [NormedSpace 𝕜 G]
