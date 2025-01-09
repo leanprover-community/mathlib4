@@ -98,9 +98,9 @@ nonrec lemma LocallyOfFiniteType.jacobsonSpace
     let e := Homeomorph.ofIsEmbedding _ (X.affineCover.map i).isOpenEmbedding.isEmbedding
     exact .of_isClosedEmbedding e.symm.isClosedEmbedding
   obtain ⟨S, rfl⟩ := hX
-  obtain ⟨φ : R →+* S, rfl⟩ : ∃ φ, Spec.map φ = f := ⟨_, Spec.map_preimage _⟩
-  have : RingHom.FiniteType φ := HasRingHomProperty.Spec_iff.mp ‹_›
-  algebraize [φ]
+  obtain ⟨φ, rfl : Spec.map φ = f⟩ := Spec.homEquiv.symm.surjective f
+  have : RingHom.FiniteType φ.hom := HasRingHomProperty.Spec_iff.mp ‹_›
+  algebraize [φ.hom]
   have := PrimeSpectrum.isJacobsonRing_iff_jacobsonSpace.mpr ‹_›
   exact PrimeSpectrum.isJacobsonRing_iff_jacobsonSpace.mp (isJacobsonRing_of_finiteType (A := R))
 
