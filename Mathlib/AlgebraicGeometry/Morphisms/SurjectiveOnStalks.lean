@@ -129,7 +129,7 @@ lemma isEmbedding_pullback {X Y S : Scheme.{u}} (f : X ⟶ S) (g : Y ⟶ S) [Sur
       (continuous_fst.1 _ ((𝒱 ijk.1).map ijk.2.1 ≫
       (𝒰.pullbackCover f).map ijk.1).opensRange.2).inter (continuous_snd.1 _
       ((𝒲 ijk.1).map ijk.2.2 ≫ (𝒰.pullbackCover g).map ijk.1).opensRange.2)⟩
-  have : Set.range L ⊆ (iSup U : _) := by
+  have : Set.range L ⊆ (iSup U :) := by
     simp only [Scheme.Cover.pullbackCover_J, Scheme.Cover.pullbackCover_obj, Set.range_subset_iff]
     intro z
     simp only [SetLike.mem_coe, TopologicalSpace.Opens.mem_iSup, Sigma.exists, Prod.exists]

@@ -267,7 +267,7 @@ structure AffineIsometryEquiv extends P ≃ᵃ[𝕜] P₂ where
 variable {𝕜 P P₂}
 
 -- `≃ᵃᵢ` would be more consistent with the linear isometry equiv notation, but it is uglier
-notation:25 P " ≃ᵃⁱ[" 𝕜:25 "] " P₂:0 => AffineIsometryEquiv 𝕜 P P₂
+@[inherit_doc] notation:25 P " ≃ᵃⁱ[" 𝕜:25 "] " P₂:0 => AffineIsometryEquiv 𝕜 P P₂
 
 namespace AffineIsometryEquiv
 
