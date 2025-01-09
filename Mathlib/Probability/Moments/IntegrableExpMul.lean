@@ -41,6 +41,22 @@ namespace ProbabilityTheory
 
 variable {Ω ι : Type*} {m : MeasurableSpace Ω} {X : Ω → ℝ} {p : ℕ} {μ : Measure Ω} {t u v : ℝ}
 
+-- todo: move
+lemma le_inv_mul_exp (x : ℝ) {c : ℝ} (hc : 0 < c) : x ≤ c⁻¹ * exp (c * x) := by
+    rw [le_inv_mul_iff₀ hc]
+    calc c * x
+    _ ≤ c * x + 1 := le_add_of_nonneg_right zero_le_one
+    _ ≤ _ := Real.add_one_le_exp (c * x)
+
+-- todo: move
+lemma rpow_max {x y p : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hp : 0 ≤ p) :
+    (max x y) ^ p = max (x ^ p) (y ^ p) := by
+  rcases le_total x y with hxy | hxy
+  · rw [max_eq_right hxy, max_eq_right]
+    exact rpow_le_rpow hx hxy hp
+  · rw [max_eq_left hxy, max_eq_left]
+    exact rpow_le_rpow hy hxy hp
+
 section Interval
 
 /-- Auxiliary lemma for `integrable_exp_mul_of_nonneg_of_le`. -/
@@ -118,6 +134,33 @@ lemma integrable_exp_mul_of_le_of_le [IsFiniteMeasure μ] {a b : ℝ}
 
 end Interval
 
+section IntegrableExpSet
+
+/-- The interval of reals for which `exp (t * X)` is integrable. -/
+def integrableExpSet (X : Ω → ℝ) (μ : Measure Ω) : Set ℝ :=
+  {t | Integrable (fun ω ↦ exp (t * X ω)) μ}
+
+lemma integrable_of_mem_integrableExpSet (h : t ∈ integrableExpSet X μ) :
+    Integrable (fun ω ↦ exp (t * X ω)) μ := h
+
+/-- `integrableExpSet X μ` is a convex subset of `ℝ` (it is an interval). -/
+lemma convex_integrableExpSet [IsFiniteMeasure μ] : Convex ℝ (integrableExpSet X μ) := by
+  rintro t₁ ht₁ t₂ ht₂ a b ha hb hab
+  wlog h_le : t₁ ≤ t₂
+  · rw [add_comm] at hab ⊢
+    exact this ht₂ ht₁ hb ha hab (not_le.mp h_le).le
+  refine integrable_exp_mul_of_le_of_le ht₁ ht₂ ?_ ?_
+  · simp only [smul_eq_mul]
+    calc t₁
+    _ = a * t₁ + b * t₁ := by rw [← add_mul, hab, one_mul]
+    _ ≤ a * t₁ + b * t₂ := by gcongr
+  · simp only [smul_eq_mul]
+    calc a * t₁ + b * t₂
+    _ ≤ a * t₂ + b * t₂ := by gcongr
+    _ = t₂ := by rw [← add_mul, hab, one_mul]
+
+end IntegrableExpSet
+
 section FiniteMoments
 
 lemma integrable_exp_mul_abs_add (ht_int_pos : Integrable (fun ω ↦ exp ((v + t) * X ω)) μ)
@@ -180,21 +223,6 @@ lemma integrable_exp_abs_mul_abs (ht_int_pos : Integrable (fun ω ↦ exp (t * X
     exact integrable_exp_mul_abs ht_int_pos ht_int_neg
   · simp_rw [abs_of_nonpos ht_nonpos]
     exact integrable_exp_mul_abs ht_int_neg (by simpa using ht_int_pos)
-
--- todo: move
-lemma le_inv_mul_exp (x : ℝ) {c : ℝ} (hc : 0 < c) : x ≤ c⁻¹ * exp (c * x) := by
-    rw [le_inv_mul_iff₀ hc]
-    calc c * x
-    _ ≤ c * x + 1 := le_add_of_nonneg_right zero_le_one
-    _ ≤ _ := Real.add_one_le_exp (c * x)
-
-lemma rpow_max {x y p : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hp : 0 ≤ p) :
-    (max x y) ^ p = max (x ^ p) (y ^ p) := by
-  rcases le_total x y with hxy | hxy
-  · rw [max_eq_right hxy, max_eq_right]
-    exact rpow_le_rpow hx hxy hp
-  · rw [max_eq_left hxy, max_eq_left]
-    exact rpow_le_rpow hy hxy hp
 
 /-- Auxiliary lemma for `rpow_abs_le_mul_max_exp`. -/
 lemma rpow_abs_le_mul_max_exp_of_pos (x : ℝ) {t p : ℝ} (hp : 0 ≤ p) (ht : 0 < t) :
@@ -362,29 +390,6 @@ lemma integrable_pow_of_integrable_exp_mul (ht : t ≠ 0)
 
 section IntegrableExpSet
 
-/-- The interval of reals for which `exp (t * X)` is integrable. -/
-def integrableExpSet (X : Ω → ℝ) (μ : Measure Ω) : Set ℝ :=
-  {t | Integrable (fun ω ↦ exp (t * X ω)) μ}
-
-lemma integrable_of_mem_integrableExpSet (h : t ∈ integrableExpSet X μ) :
-    Integrable (fun ω ↦ exp (t * X ω)) μ := h
-
-/-- `integrableExpSet X μ` is a convex subset of `ℝ` (it is an interval). -/
-lemma convex_integrableExpSet [IsFiniteMeasure μ] : Convex ℝ (integrableExpSet X μ) := by
-  rintro t₁ ht₁ t₂ ht₂ a b ha hb hab
-  wlog h_le : t₁ ≤ t₂
-  · rw [add_comm] at hab ⊢
-    exact this ht₂ ht₁ hb ha hab (not_le.mp h_le).le
-  refine integrable_exp_mul_of_le_of_le ht₁ ht₂ ?_ ?_
-  · simp only [smul_eq_mul]
-    calc t₁
-    _ = a * t₁ + b * t₁ := by rw [← add_mul, hab, one_mul]
-    _ ≤ a * t₁ + b * t₂ := by gcongr
-  · simp only [smul_eq_mul]
-    calc a * t₁ + b * t₂
-    _ ≤ a * t₂ + b * t₂ := by gcongr
-    _ = t₂ := by rw [← add_mul, hab, one_mul]
-
 lemma add_half_inf_sub_mem_Ioo {l u v : ℝ} (hv : v ∈ Set.Ioo l u) :
     v + ((v - l) ⊓ (u - v)) / 2 ∈ Set.Ioo l u := by
   have h_pos : 0 < (v - l) ⊓ (u - v) := by simp [hv.1, hv.2]
@@ -506,18 +511,9 @@ lemma integrable_pow_of_mem_interior_integrableExpSet
   convert integrable_pow_mul_exp_of_mem_interior_integrableExpSet h n
   simp
 
--- todo: move to L1Space
-lemma integrable_norm_rpow_iff {α E : Type*} {_ : MeasurableSpace α} {μ : Measure α}
-    [NormedAddCommGroup E] {p : ℝ≥0∞} {f : α → E}
-    (hf : AEStronglyMeasurable f μ) (p_zero : p ≠ 0) (p_top : p ≠ ∞) :
-    Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ ↔ Memℒp f p μ := by
-  rw [← memℒp_norm_rpow_iff (q := p) hf p_zero p_top, ← memℒp_one_iff_integrable,
-    ENNReal.div_self p_zero p_top]
-
 /-- If 0 belongs to the interior of `integrableExpSet X μ`, then `X` is in `ℒp` for all
 finite `p`. -/
-lemma memℒp_of_mem_interior_integrableExpSet (p : ℝ≥0)
-    (h : 0 ∈ interior (integrableExpSet X μ)) :
+lemma memℒp_of_mem_interior_integrableExpSet (h : 0 ∈ interior (integrableExpSet X μ)) (p : ℝ≥0) :
     Memℒp X p μ := by
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet h
   by_cases hp_zero : p = 0
@@ -526,11 +522,6 @@ lemma memℒp_of_mem_interior_integrableExpSet (p : ℝ≥0)
   rw [← integrable_norm_rpow_iff hX.aestronglyMeasurable (mod_cast hp_zero) (by simp)]
   simp only [norm_eq_abs, ENNReal.coe_toReal]
   exact integrable_rpow_abs_of_mem_interior_integrableExpSet h p.2
-
-/-- If 0 belongs to the interior of `integrableExpSet X μ`, then `X` is in `ℒp` for all `p : ℕ`. -/
-lemma memℒp_nat_of_mem_interior_integrableExpSet (h : 0 ∈ interior (integrableExpSet X μ)) (n : ℕ) :
-    Memℒp X n μ :=
-  memℒp_of_mem_interior_integrableExpSet n h
 
 end IntegrableExpSet
 
