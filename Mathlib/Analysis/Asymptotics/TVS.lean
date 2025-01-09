@@ -89,24 +89,16 @@ variable [NontriviallyNormedField 𝕜]
   [AddCommGroup E] [TopologicalSpace E] [Module 𝕜 E]
   [AddCommGroup F] [TopologicalSpace F] [Module 𝕜 F]
 
-/-- See `Filter.HasBasis.isLittleOTVS_iff` for additionally using a basis on `F`. -/
-theorem _root_.Filter.HasBasis.isLittleOTVS_iff_left {ιE : Sort*} {pE : ιE → Prop}
-    {sE : ιE → Set E} (hE : HasBasis (𝓝 (0 : E)) pE sE)
-    {f : α → E} {g : α → F} {l : Filter α} :
-    f =o[𝕜;l] g ↔ ∀ i, pE i → ∃ V ∈ 𝓝 0, ∀ ε ≠ (0 : ℝ≥0),
-      ∀ᶠ x in l, egauge 𝕜 (sE i) (f x) ≤ ε * egauge 𝕜 V (g x) := by
-  refine hE.forall_iff ?_
-  rintro s t hsub ⟨V, hV₀, hV⟩
-  exact ⟨V, hV₀, fun ε hε ↦ (hV ε hε).mono fun x ↦ le_trans <| egauge_anti _ hsub _⟩
-
 theorem _root_.Filter.HasBasis.isLittleOTVS_iff {ιE ιF : Sort*} {pE : ιE → Prop} {pF : ιF → Prop}
     {sE : ιE → Set E} {sF : ιF → Set F} (hE : HasBasis (𝓝 (0 : E)) pE sE)
     (hF : HasBasis (𝓝 (0 : F)) pF sF) {f : α → E} {g : α → F} {l : Filter α} :
     f =o[𝕜;l] g ↔ ∀ i, pE i → ∃ j, pF j ∧ ∀ ε ≠ (0 : ℝ≥0),
       ∀ᶠ x in l, egauge 𝕜 (sE i) (f x) ≤ ε * egauge 𝕜 (sF j) (g x) := by
-  refine hE.isLittleOTVS_iff_left.trans <| forall₂_congr fun _ _ ↦ hF.exists_iff ?_
-  refine fun s t hsub h ε hε ↦ (h ε hε).mono fun x hx ↦ hx.trans ?_
-  gcongr
+  refine (hE.forall_iff ?_).trans <| forall₂_congr fun _ _ ↦ hF.exists_iff ?_
+  · rintro s t hsub ⟨V, hV₀, hV⟩
+    exact ⟨V, hV₀, fun ε hε ↦ (hV ε hε).mono fun x ↦ le_trans <| egauge_anti _ hsub _⟩
+  · refine fun s t hsub h ε hε ↦ (h ε hε).mono fun x hx ↦ hx.trans ?_
+    gcongr
 
 @[simp]
 theorem isLittleOTVS_map {f : α → E} {g : α → F} {k : β → α} {l : Filter β} :
@@ -116,7 +108,7 @@ theorem isLittleOTVS_map {f : α → E} {g : α → F} {k : β → α} {l : Filt
 theorem IsLittleOTVS.add [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     {f₁ f₂ : α → E} {g : α → F} {l : Filter α}
     (h₁ : f₁ =o[𝕜; l] g) (h₂ : f₂ =o[𝕜; l] g) : (f₁ + f₂) =o[𝕜; l] g := by
-  rw [(nhds_basis_balanced 𝕜 E).add_self.isLittleOTVS_iff_left]
+  rw [(nhds_basis_balanced 𝕜 E).add_self.isLittleOTVS_iff (basis_sets _)]
   rintro U ⟨hU, hUb⟩
   obtain ⟨V₁, hV₁, hVf₁⟩ := h₁ U hU
   obtain ⟨V₂, hV₂, hVf₂⟩ := h₂ U hU
