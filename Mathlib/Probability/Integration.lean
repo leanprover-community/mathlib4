@@ -135,9 +135,9 @@ theorem lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*} [DecidableEq �
   induction s using Finset.induction
   case empty => simp only [Finset.prod_empty, lintegral_const, measure_univ, mul_one]
   case insert _ _ j s hj v =>
-    calc  ∫⁻ ω, ∏ i ∈ insert j s, X i ω ∂μ
-      _ = ∫⁻ ω, (∏ i ∈ insert j s, X i) ω ∂μ := by simp
-      _ =  ∫⁻ ω, (X j * ∏ i ∈ s, X i) ω ∂μ :=
+    calc  ∫⁻ (ω : Ω), ∏ i ∈ insert j s, X i ω ∂μ
+      _ = ∫⁻ (ω : Ω), (∏ i ∈ insert j s, X i) ω ∂μ := by simp only [Finset.prod_apply]
+      _ =  ∫⁻ (ω : Ω), (X j * ∏ i ∈ s, X i) ω ∂μ :=
         lintegral_congr fun ω ↦ congrFun (Finset.prod_insert hj) ω
       _ = (∫⁻ ω, X j ω ∂μ) * ∫⁻ ω, (∏ i ∈ s, X i) ω ∂μ := by
         apply lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'
