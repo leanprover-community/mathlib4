@@ -144,6 +144,8 @@ theorem IsBigO.of_bound' (h : ∀ᶠ x in l, ‖f x‖ ≤ ‖g x‖) : f =O[l] 
 theorem IsBigO.bound : f =O[l] g → ∃ c : ℝ, ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ :=
   isBigO_iff.1
 
+/-- See also `Filter.Eventually.isBigO`, which is the same lemma
+stated using `Filter.Eventually` instead of `Filter.EventuallyLE`. -/
 theorem IsBigO.of_norm_eventuallyLE {g : α → ℝ} (h : (‖f ·‖) ≤ᶠ[l] g) : f =O[l] g :=
   .of_bound' <| h.mono fun _ h ↦ h.trans <| le_abs_self _
 
@@ -486,6 +488,8 @@ theorem _root_.Filter.Eventually.trans_isBigO {f : α → E} {g : α → F'} {k 
     (hfg : ∀ᶠ x in l, ‖f x‖ ≤ ‖g x‖) (hgk : g =O[l] k) : f =O[l] k :=
   (IsBigO.of_bound' hfg).trans hgk
 
+/-- See also `Asymptotics.IsBigO.of_norm_eventuallyLE`, which is the same lemma
+stated using `Filter.EventuallyLE` instead of `Filter.Eventually`. -/
 theorem _root_.Filter.Eventually.isBigO {f : α → E} {g : α → ℝ} {l : Filter α}
     (hfg : ∀ᶠ x in l, ‖f x‖ ≤ g x) : f =O[l] g :=
   .of_norm_eventuallyLE hfg
