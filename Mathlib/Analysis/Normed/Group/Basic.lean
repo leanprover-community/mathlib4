@@ -1240,10 +1240,10 @@ theorem le_norm_self (r : ℝ) : r ≤ ‖r‖ :=
 @[deprecated (since := "2024-04-05")] alias nnnorm_coe_nat := nnnorm_natCast
 
 @[simp 1100] lemma norm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(no_index (OfNat.ofNat n) : ℝ)‖ = OfNat.ofNat n := norm_natCast n
+    ‖(ofNat(n) : ℝ)‖ = OfNat.ofNat n := norm_natCast n
 
 @[simp 1100] lemma nnnorm_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ‖(no_index (OfNat.ofNat n) : ℝ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
+    ‖(ofNat(n) : ℝ)‖₊ = OfNat.ofNat n := nnnorm_natCast n
 
 lemma norm_two : ‖(2 : ℝ)‖ = 2 := abs_of_pos zero_lt_two
 lemma nnnorm_two : ‖(2 : ℝ)‖₊ = 2 := NNReal.eq <| by simp

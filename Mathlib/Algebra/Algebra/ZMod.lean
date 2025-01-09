@@ -10,6 +10,7 @@ import Mathlib.Data.ZMod.Basic
 # The `ZMod n`-algebra structure on rings whose characteristic divides `n`
 -/
 
+assert_not_exists TwoSidedIdeal
 
 namespace ZMod
 

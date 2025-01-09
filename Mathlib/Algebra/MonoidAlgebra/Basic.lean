@@ -323,8 +323,8 @@ def equivariantOfLinearOfComm
     · intro g r c' _nm _nz w
       dsimp at *
       simp only [add_smul, f.map_add, w, add_left_inj, single_eq_algebraMap_mul_of, ← smul_smul]
-      erw [algebraMap_smul (MonoidAlgebra k G) r, algebraMap_smul (MonoidAlgebra k G) r, f.map_smul,
-        h g v, of_apply]
+      rw [algebraMap_smul (MonoidAlgebra k G) r, algebraMap_smul (MonoidAlgebra k G) r, f.map_smul,
+        of_apply, h g v]
 
 variable (h : ∀ (g : G) (v : V), f (single g (1 : k) • v) = single g (1 : k) • f v)
 
@@ -369,7 +369,7 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
     (Multiplicative G →ₙ* A) ≃ (k[G] →ₙₐ[k] A) :=
   { (MonoidAlgebra.liftMagma k : (Multiplicative G →ₙ* A) ≃ (_ →ₙₐ[k] A)) with
     toFun := fun f =>
-      { (MonoidAlgebra.liftMagma k f : _) with
+      { (MonoidAlgebra.liftMagma k f :) with
         toFun := fun a => sum a fun m t => t • f (Multiplicative.ofAdd m) }
     invFun := fun F => F.toMulHom.comp (ofMagma k G) }
 

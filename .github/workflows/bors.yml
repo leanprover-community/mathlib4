@@ -25,7 +25,8 @@ env:
 concurrency:
   # label each workflow run; only the latest with each label will run
   # workflows on master get more expressive labels
-  group: ${{ github.workflow }}-${{ github.ref }}.${{(github.ref == 'refs/heads/master' && github.run_id) || ''}}
+  group: ${{ github.workflow }}-${{ github.ref }}.
+    ${{ ( contains(fromJSON( '["refs/heads/master", "refs/heads/staging"]'), github.ref ) && github.run_id) || ''}}
   # cancel any running workflow with the same label
   cancel-in-progress: true
 
@@ -137,7 +138,7 @@ jobs:
         run: |
           rm -rf .lake/build/lib/Mathlib/
           # Fail quickly if the cache is completely cold, by checking for Mathlib.Init
-          lake exe cache get Mathlib.Init
+          lake exe cache get Mathlib/Init.lean
           lake build --no-build Mathlib.Init && lake exe cache get || echo "No cache for 'Mathlib.Init' available"
 
       - name: update {Mathlib, Tactic, Counterexamples, Archive}.lean
