@@ -132,7 +132,7 @@ section Preorder
 variable [Preorder α] [Preorder β]
 
 theorem le_iff_lt_or_antisymmRel : a ≤ b ↔ a < b ∨ AntisymmRel (· ≤ ·) a b := by
-  rw [lt_iff_le_not_le, antisymmRel_iff]
+  rw [lt_iff_le_not_le, AntisymmRel]
   tauto
 
 alias ⟨LE.le.lt_or_antisymmRel, _⟩ := le_iff_lt_or_antisymmRel
@@ -197,16 +197,16 @@ theorem AntisymmRel.lt_congr_right (h : AntisymmRel (· ≤ ·) b c) : a < b ↔
 
 theorem AntisymmRel.antisymmRel_congr
     (h₁ : AntisymmRel (· ≤ ·) a b) (h₂ : AntisymmRel (· ≤ ·) c d) :
-    AntisymmRel (· ≤ ·) a c ↔ AntisymmRel (· ≤ ·) b d := by
-  rw [antisymmRel_iff, antisymmRel_iff, h₁.le_congr h₂, h₂.le_congr h₁]
+    AntisymmRel (· ≤ ·) a c ↔ AntisymmRel (· ≤ ·) b d :=
+  rel_congr h₁ h₂
 
 theorem AntisymmRel.antisymmRel_congr_left (h : AntisymmRel (· ≤ ·) a b) :
     AntisymmRel (· ≤ ·) a c ↔ AntisymmRel (· ≤ ·) b c :=
-  h.antisymmRel_congr (antisymmRel_refl _ c)
+  rel_congr_left h
 
 theorem AntisymmRel.antisymmRel_congr_right (h : AntisymmRel (· ≤ ·) b c) :
     AntisymmRel (· ≤ ·) a b ↔ AntisymmRel (· ≤ ·) a c :=
-  (antisymmRel_refl _ a).antisymmRel_congr h
+  rel_congr_right h
 
 theorem AntisymmRel.image (h : AntisymmRel (· ≤ ·) a b) {f : α → β} (hf : Monotone f) :
     AntisymmRel (· ≤ ·) (f a) (f b) :=
