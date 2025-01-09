@@ -567,6 +567,20 @@ theorem exists_open_nhds_one_mul_subset {U : Set M} (hU : U ∈ 𝓝 (1 : M)) :
     ∃ V : Set M, IsOpen V ∧ (1 : M) ∈ V ∧ V * V ⊆ U := by
   simpa only [mul_subset_iff] using exists_open_nhds_one_split hU
 
+@[to_additive]
+theorem Filter.HasBasis.mul_self {p : ι → Prop} {s : ι → Set M} (h : (𝓝 1).HasBasis p s) :
+    (𝓝 1).HasBasis p fun i => s i * s i where
+  mem_iff' U := by
+    constructor
+    · intro hU
+      obtain ⟨U₁, hU₁o, hU₁, hU₁U'⟩ := exists_open_nhds_one_mul_subset hU
+      obtain ⟨i, hi, hs⟩ := h.mem_iff.1 (hU₁o.mem_nhds hU₁)
+      exact ⟨i, hi, mul_subset_mul hs hs |>.trans hU₁U'⟩
+    · rintro ⟨i, hi, hs⟩
+      rw [h.mem_iff]
+      refine ⟨i, hi, subset_mul_left _ ?_ |>.trans hs⟩
+      exact h.forall_mem_mem.1 (fun _ => mem_of_mem_nhds) _ hi
+
 end MulOneClass
 
 section ContinuousMul
