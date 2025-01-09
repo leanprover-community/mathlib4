@@ -151,28 +151,11 @@ lemma isLittleOTVS_one [ContinuousSMul 𝕜 E] {f : α → E} {l : Filter α} :
 
 lemma IsLittleOTVS.tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g : α → E} {l : Filter α}
     (h : g =o[𝕜;l] f) : Tendsto (fun x ↦ (f x)⁻¹ • g x) l (𝓝 0) := by
-  rw [(basis_sets _).isLittleOTVS_iff nhds_basis_ball] at h
-  rw [(nhds_basis_balanced 𝕜 E).tendsto_right_iff]
-  rintro U ⟨hU, hUB⟩
-  rcases h U hU with ⟨ε, hε₀, hε⟩
-  lift ε to ℝ≥0 using hε₀.le; norm_cast at hε₀
-  rcases NormedField.exists_one_lt_norm 𝕜 with ⟨c, hc⟩
-  filter_upwards [hε (ε / 2 / ‖c‖₊) (ne_of_gt <| div_pos (half_pos hε₀) (one_pos.trans hc))]
-    with x hx
-  refine mem_of_egauge_lt_one hUB ?_
-  rw [id, egauge_smul_right (fun _ ↦ Filter.nonempty_of_mem hU), nnnorm_inv]
-  calc
-    ↑‖f x‖₊⁻¹ * egauge 𝕜 U (g x)
-      ≤ (↑‖f x‖₊)⁻¹ * (↑(ε / 2 / ‖c‖₊) * egauge 𝕜 (ball 0 ε) (f x)) :=
-      mul_le_mul' ENNReal.coe_inv_le hx
-    _ ≤ (↑‖f x‖₊)⁻¹ * ((ε / 2 / ‖c‖₊) * (‖c‖₊ * ‖f x‖₊ / ε)) := by
-      gcongr
-      · refine ENNReal.coe_div_le.trans ?_; gcongr; apply ENNReal.coe_div_le
-      · exact egauge_ball_le_of_one_lt_norm hc (.inl hε₀.ne')
-    _ = (‖f x‖₊ / ‖f x‖₊) * (ε / ε) * (‖c‖₊ / ‖c‖₊) * (1 / 2) := by
-      simp only [div_eq_mul_inv, one_mul]; ring
-    _ ≤ 1 * 1 * 1 * (1 / 2) := by gcongr <;> apply ENNReal.div_self_le_one
-    _ < 1 := by norm_num
+  rw [← isLittleOTVS_one (𝕜 := 𝕜)]
+  intro U hU
+  rcases h.smul_left f⁻¹ U hU with ⟨V, hV₀, hV⟩
+  refine ⟨V, hV₀, fun ε hε ↦ (hV ε hε).mono fun x hx ↦ hx.trans ?_⟩
+  by_cases hx₀ : f x = 0 <;> simp [hx₀, egauge_zero_right _ (Filter.nonempty_of_mem hV₀)]
 
 lemma isLittleOTVS_iff_tendsto_inv_smul [ContinuousSMul 𝕜 E] {f : α → 𝕜} {g : α → E} {l : Filter α}
     (h₀ : ∀ᶠ x in l, f x = 0 → g x = 0) :
