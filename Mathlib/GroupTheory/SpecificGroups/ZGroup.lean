@@ -29,15 +29,6 @@ A Z-group is a group whose Sylow subgroups are all cyclic.
 
 -/
 
-namespace Subgroup
-
-theorem map_centralizer_le_centralizer_map {G G' : Type*} [Group G] [Group G']
-    (f : G →* G') (H : Subgroup G) : H.centralizer.map f ≤ Subgroup.centralizer (H.map f) := by
-  rintro - ⟨g, hg, rfl⟩ - ⟨h, hh, rfl⟩
-  rw [← map_mul, ← map_mul, hg h hh]
-
-end Subgroup
-
 namespace IsCyclic
 
 /-- A `MulDistribMulAction` action on a cyclic group of order `n` factors through `ZMod n`. -/
@@ -157,9 +148,8 @@ theorem normalizer_le_centralizer_or_le_commutator {G : Type*} [Group G] [Finite
   · rw [← SetLike.coe_subset_coe, ← Subgroup.centralizer_eq_top_iff_subset, eq_top_iff,
       ← Subgroup.map_subtype_le_map_subtype, ← MonoidHom.range_eq_map,
       P.normalizer.range_subtype] at h
-    refine h.trans ((Subgroup.map_centralizer_le_centralizer_map _ _).trans ?_)
-    rw [P.coe_subtype, Subgroup.map_subgroupOf_eq_of_le P.le_normalizer]
-    rfl
+    replace h := h.trans (Subgroup.map_centralizer_le_centralizer_image _ _)
+    rwa [← Subgroup.coe_map, P.coe_subtype, Subgroup.map_subgroupOf_eq_of_le P.le_normalizer] at h
   · rw [P.coe_subtype, ← Subgroup.map_subtype_le_map_subtype,
       Subgroup.map_subgroupOf_eq_of_le P.le_normalizer, Subgroup.map_subtype_commutator] at h
     exact h.trans (Subgroup.commutator_mono le_top le_top)
@@ -361,23 +351,14 @@ theorem isZGroup_iff_mulEquiv [Finite G] :
     IsZGroup G ↔ ∃ (m n : ℕ) (φ : Multiplicative (ZMod m) →* MulAut (Multiplicative (ZMod n)))
       (_ : G ≃* SemidirectProduct _ _ φ), Nat.Coprime m n := by
   refine ⟨fun hG ↦ ?_, ?_⟩
-  · obtain ⟨H, hH⟩ := Subgroup.exists_right_complement'_of_coprime
-      (IsZGroup.coprime_commutator_index G)
-    exact ⟨_, _, _, (SemidirectProduct.mulEquivSubgroup hH).symm.trans
-      (SemidirectProduct.congr' (zmodCyclicMulEquiv (IsZGroup.isCyclic_commutator G)).symm
-        (hH.symm.QuotientMulEquiv.symm.trans
-          (zmodCyclicMulEquiv IsZGroup.isCyclic_abelianization).symm)),
-            (IsZGroup.coprime_commutator_index G).symm⟩
+  · obtain ⟨H, hH⟩ := Subgroup.exists_right_complement'_of_coprime hG.coprime_commutator_index
+    exact ⟨_, _, _, (SemidirectProduct.mulEquivSubgroup hH).symm.trans (SemidirectProduct.congr'
+      (zmodCyclicMulEquiv hG.isCyclic_commutator).symm (hH.symm.QuotientMulEquiv.symm.trans
+      (zmodCyclicMulEquiv hG.isCyclic_abelianization).symm)), (hG.coprime_commutator_index).symm⟩
   · rintro ⟨m, n, φ, e, h⟩
-    have : Finite (Multiplicative (ZMod n)) := by
-      refine Nat.finite_of_card_ne_zero ?_
-      refine ne_zero_of_dvd_ne_zero ?_
-        (Subgroup.card_dvd_of_injective (SemidirectProduct.inl (φ := φ))
-          SemidirectProduct.inl_injective)
-      rw [Nat.card_congr e.symm.toEquiv]
-      exact Finite.card_pos.ne'
+    have := Finite.of_injective _ (e.symm.injective.comp SemidirectProduct.inl_injective)
     rw [← m.card_zmod, ← n.card_zmod, Nat.coprime_comm] at h
-    have key : IsZGroup (Multiplicative (ZMod n) ⋊[φ] Multiplicative (ZMod m)) :=
+    have : IsZGroup (Multiplicative (ZMod n) ⋊[φ] Multiplicative (ZMod m)) :=
       isZGroup_of_coprime SemidirectProduct.range_inl_eq_ker_rightHom.ge h
     exact IsZGroup.of_injective (f := e.toMonoidHom) e.injective
 
