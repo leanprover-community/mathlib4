@@ -15,20 +15,24 @@ import Mathlib.Tactic.Qify
 /-!
 # Sets with very small doubling
 
-This file characterises sets with no doubling (finsets `A` such that `#(A ^ 2) = #A`) as the sets
-which are either empty or translates of a subgroup.
-
-For the converse, use the existing facts from the pointwise API: `∅ ^ 2 = ∅` (`Finset.empty_pow`),
-`(a • H) ^ 2 = a ^ 2 • H ^ 2 = a ^ 2 • H` (`smul_pow`, `coe_set_pow`)
+For a finset `A` in a group, its *doubling* is `#(A * A) / #A`. This file characterises sets with
+* no doubling as the sets which are either empty or translates of a subgroup.
+  For the converse, use the existing facts from the pointwise API: `∅ ^ 2 = ∅` (`Finset.empty_pow`),
+  `(a • H) ^ 2 = a ^ 2 • H ^ 2 = a ^ 2 • H` (`smul_pow`, `coe_set_pow`).
+* doubling strictly less than `3 / 2` as the sets that are contained in a coset of a subgroup of
+  size strictly less than `3 / 2 * #A`.
 
 ## TODO
 
-* Do we need a version stated using the doubling constant (`Finset.mulConst`)?
-* Add characterisation for sets with doubling < φ. See Tao's blogpost.
+* Do we need versions stated using the doubling constant (`Finset.mulConst`)?
+* Add characterisation of sets with doubling < φ. See
+  https://terrytao.wordpress.com/2009/11/10/an-elementary-non-commutative-freiman-theorem.
+* Add characterisation of sets with doubling ≤ 2 - ε. See
+  https://terrytao.wordpress.com/2011/03/12/hamidounes-freiman-kneser-theorem-for-nonabelian-groups.
 
 ## References
 
-* [*An elementary non-commutative Freiman theorem*, Terence Tao](https://terrytao.wordpress.com/2009/11/10/an-elementary-non-commutative-freiman-theorem/)
+* [*An elementary non-commutative Freiman theorem*, Terence Tao](https://terrytao.wordpress.com/2009/11/10/an-elementary-non-commutative-freiman-theorem)
 * [*Introduction to approximate groups*, Matthew Tointon][tointon2020]
 -/
 
