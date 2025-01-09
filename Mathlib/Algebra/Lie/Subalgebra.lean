@@ -218,17 +218,22 @@ section LieModule
 variable {M : Type w} [AddCommGroup M] [LieRingModule L M]
 variable {N : Type w₁} [AddCommGroup N] [LieRingModule L N] [Module R N]
 
-/-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie ring module
-`M` of `L`, we may regard `M` as a Lie ring module of `L'` by restriction. -/
-instance lieRingModule : LieRingModule L' M where
+instance : Bracket L' M where
   bracket x m := ⁅(x : L), m⁆
-  add_lie x y m := add_lie (x : L) y m
-  lie_add x y m := lie_add (x : L) y m
-  leibniz_lie x y m := leibniz_lie (x : L) y m
 
 @[simp]
 theorem coe_bracket_of_module (x : L') (m : M) : ⁅x, m⁆ = ⁅(x : L), m⁆ :=
   rfl
+
+instance : IsLieTower L' L M where
+  leibniz_lie x y m := leibniz_lie x.val y m
+
+/-- Given a Lie algebra `L` containing a Lie subalgebra `L' ⊆ L`, together with a Lie ring module
+`M` of `L`, we may regard `M` as a Lie ring module of `L'` by restriction. -/
+instance lieRingModule : LieRingModule L' M where
+  add_lie x y m := add_lie (x : L) y m
+  lie_add x y m := lie_add (x : L) y m
+  leibniz_lie x y m := leibniz_lie x (y : L) m
 
 variable [Module R M]
 
