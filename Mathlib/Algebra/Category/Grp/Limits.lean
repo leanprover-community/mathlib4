@@ -6,7 +6,6 @@ Authors: Kim Morrison
 
 import Mathlib.Algebra.Category.MonCat.ForgetCorepresentable
 import Mathlib.Algebra.Category.Grp.ForgetCorepresentable
-import Mathlib.Algebra.Category.MonCat.ForgetCorepresentable
 import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.Algebra.Category.MonCat.Limits
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
