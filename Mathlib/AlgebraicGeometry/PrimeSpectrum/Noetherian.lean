@@ -44,9 +44,8 @@ section IsArtinianRing
 variable (R : Type u) [CommRing R] [IsArtinianRing R]
 
 instance : Finite (PrimeSpectrum R) :=
-  @Finite.of_injective _ (setOf Ideal.IsPrime)
-    (Set.finite_coe_iff.mpr (IsArtinianRing.primeSpectrum_finite R))
-    (fun x ↦ ⟨x.1, x.2⟩) fun _ _ e ↦ PrimeSpectrum.ext congr($e)
+  have : Finite {I : Ideal R // I.IsPrime} := IsArtinianRing.primeSpectrum_finite R
+  Finite.of_injective _ (equivSubtype R).injective
 
 instance : DiscreteTopology (PrimeSpectrum R) :=
   discreteTopology_iff_finite_and_isPrime_imp_isMaximal.mpr
