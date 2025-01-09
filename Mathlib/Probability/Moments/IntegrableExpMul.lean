@@ -55,7 +55,7 @@ lemma integrable_exp_mul_of_le_of_measurable [IsFiniteMeasure μ] (hX : Measurab
     swap; · exact add_nonneg zero_le_one (Set.indicator_nonneg (fun ω _ ↦ by positivity) _)
     rcases le_or_lt 0 (X ω) with h_nonneg | h_neg
     · simp only [Set.mem_setOf_eq, h_nonneg, Set.indicator_of_mem]
-      calc rexp (t * X ω) ≤ 1 + rexp (t * X ω) := (le_add_iff_nonneg_left _).mpr zero_le_one
+      calc exp (t * X ω) ≤ 1 + exp (t * X ω) := (le_add_iff_nonneg_left _).mpr zero_le_one
       _ ≤ 1 + exp (u * X ω) := by gcongr
     · simp only [Set.mem_setOf_eq, not_le.mpr h_neg, not_false_eq_true, Set.indicator_of_not_mem,
         add_zero, exp_le_one_iff]
@@ -114,10 +114,10 @@ end Interval
 
 section FiniteMoments
 
-lemma integrable_exp_mul_abs_add (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
-    Integrable (fun ω ↦ rexp (t * |X ω| + v * X ω)) μ := by
-  have h_int_add : Integrable (fun a ↦ rexp ((v + t) * X a) + rexp ((v - t) * X a)) μ :=
+lemma integrable_exp_mul_abs_add (ht_int_pos : Integrable (fun ω ↦ exp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp ((v - t) * X ω)) μ) :
+    Integrable (fun ω ↦ exp (t * |X ω| + v * X ω)) μ := by
+  have h_int_add : Integrable (fun a ↦ exp ((v + t) * X a) + exp ((v - t) * X a)) μ :=
     ht_int_pos.add <| by simpa using ht_int_neg
   refine Integrable.mono h_int_add ?_ (ae_of_all _ fun ω ↦ ?_)
   · by_cases ht : t = 0
@@ -135,7 +135,7 @@ lemma integrable_exp_mul_abs_add (ht_int_pos : Integrable (fun ω ↦ rexp ((v +
     exact measurable_exp.comp_aemeasurable ((hX.abs.const_mul _).add (hX.const_mul _))
   · simp only [norm_eq_abs, abs_exp]
     conv_rhs => rw [abs_of_nonneg (by positivity)]
-    -- ⊢ exp (t * |X ω| + v * X ω) ≤ rexp ((v + t) * X ω) + rexp ((v - t) * X ω)
+    -- ⊢ exp (t * |X ω| + v * X ω) ≤ exp ((v + t) * X ω) + exp ((v - t) * X ω)
     rcases le_total 0 (X ω) with h_nonneg | h_nonpos
     · rw [abs_of_nonneg h_nonneg, ← add_mul, add_comm, le_add_iff_nonneg_right]
       positivity
@@ -143,43 +143,43 @@ lemma integrable_exp_mul_abs_add (ht_int_pos : Integrable (fun ω ↦ rexp ((v +
         ← sub_eq_add_neg, le_add_iff_nonneg_left]
       positivity
 
-/-- If `ω ↦ rexp (t * X ω)` is integrable at `t` and `-t`, then `ω ↦ rexp (t * |X ω|)` is
+/-- If `ω ↦ exp (t * X ω)` is integrable at `t` and `-t`, then `ω ↦ exp (t * |X ω|)` is
 integrable. -/
-lemma integrable_exp_mul_abs (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
-    Integrable (fun ω ↦ rexp (t * |X ω|)) μ := by
+lemma integrable_exp_mul_abs (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp (- t * X ω)) μ) :
+    Integrable (fun ω ↦ exp (t * |X ω|)) μ := by
   have h := integrable_exp_mul_abs_add (t := t) (μ := μ) (X := X) (v := 0) ?_ ?_
   · simpa using h
   · simpa using ht_int_pos
   · simpa using ht_int_neg
 
-/-- If `rexp ((v + t) * X)` and `rexp ((v - t) * X)` are integrable, then
-`ω ↦ rexp (t * |X| + v * X)` is integrable. -/
-lemma integrable_exp_abs_mul_abs_add (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) :
-    Integrable (fun ω ↦ rexp (|t| * |X ω| + v * X ω)) μ := by
+/-- If `exp ((v + t) * X)` and `exp ((v - t) * X)` are integrable, then
+`ω ↦ exp (t * |X| + v * X)` is integrable. -/
+lemma integrable_exp_abs_mul_abs_add (ht_int_pos : Integrable (fun ω ↦ exp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp ((v - t) * X ω)) μ) :
+    Integrable (fun ω ↦ exp (|t| * |X ω| + v * X ω)) μ := by
   rcases le_total 0 t with ht_nonneg | ht_nonpos
   · simp_rw [abs_of_nonneg ht_nonneg]
     exact integrable_exp_mul_abs_add ht_int_pos ht_int_neg
   · simp_rw [abs_of_nonpos ht_nonpos]
     exact integrable_exp_mul_abs_add ht_int_neg (by simpa using ht_int_pos)
 
-/-- If `ω ↦ rexp (t * X ω)` is integrable at `t` and `-t`, then `ω ↦ rexp (|t| * |X ω|)` is
+/-- If `ω ↦ exp (t * X ω)` is integrable at `t` and `-t`, then `ω ↦ exp (|t| * |X ω|)` is
 integrable. -/
-lemma integrable_exp_abs_mul_abs (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) :
-    Integrable (fun ω ↦ rexp (|t| * |X ω|)) μ := by
+lemma integrable_exp_abs_mul_abs (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp (- t * X ω)) μ) :
+    Integrable (fun ω ↦ exp (|t| * |X ω|)) μ := by
   rcases le_total 0 t with ht_nonneg | ht_nonpos
   · simp_rw [abs_of_nonneg ht_nonneg]
     exact integrable_exp_mul_abs ht_int_pos ht_int_neg
   · simp_rw [abs_of_nonpos ht_nonpos]
     exact integrable_exp_mul_abs ht_int_neg (by simpa using ht_int_pos)
 
-/-- If `rexp ((v + t) * X)` and `rexp ((v - t) * X)` are integrable, then for all `n : ℕ`,
+/-- If `exp ((v + t) * X)` and `exp ((v - t) * X)` are integrable, then for all `n : ℕ`,
 `|X| ^ n * exp (v * X)` is integrable. -/
 lemma integrable_pow_abs_mul_exp_of_integrable_exp_mul (ht : t ≠ 0)
-    (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) (n : ℕ) :
+    (ht_int_pos : Integrable (fun ω ↦ exp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp ((v - t) * X ω)) μ) (n : ℕ) :
     Integrable (fun ω ↦ |X ω| ^ n * exp (v * X ω)) μ := by
   suffices Integrable (fun ω ↦ (t * |X ω|) ^ n / n.factorial * exp (v * X ω)) μ by
     have h_eq ω : |X ω| ^ n * exp (v * X ω)
@@ -211,11 +211,11 @@ lemma integrable_pow_abs_mul_exp_of_integrable_exp_mul (ht : t ≠ 0)
     gcongr
     exact h_le _
 
-/-- If `rexp ((v + t) * X)` and `rexp ((v - t) * X)` are integrable, then for all `n : ℕ`,
+/-- If `exp ((v + t) * X)` and `exp ((v - t) * X)` are integrable, then for all `n : ℕ`,
 `X ^ n * exp (v * X)` is integrable. -/
 lemma integrable_pow_mul_exp_of_integrable_exp_mul (ht : t ≠ 0)
-    (ht_int_pos : Integrable (fun ω ↦ rexp ((v + t) * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp ((v - t) * X ω)) μ) (n : ℕ) :
+    (ht_int_pos : Integrable (fun ω ↦ exp ((v + t) * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp ((v - t) * X ω)) μ) (n : ℕ) :
     Integrable (fun ω ↦ X ω ^ n * exp (v * X ω)) μ := by
   rw [← integrable_norm_iff]
   · simp_rw [norm_eq_abs, abs_mul, abs_pow, abs_exp]
@@ -231,22 +231,22 @@ lemma integrable_pow_mul_exp_of_integrable_exp_mul (ht : t ≠ 0)
     exact ((hX.pow_const _).mul
       (measurable_exp.comp_aemeasurable (hX.const_mul _))).aestronglyMeasurable
 
-/-- If `ω ↦ rexp (t * X ω)` is integrable at `t` and `-t` for `t ≠ 0`, then `ω ↦ |X ω| ^ n` is
+/-- If `ω ↦ exp (t * X ω)` is integrable at `t` and `-t` for `t ≠ 0`, then `ω ↦ |X ω| ^ n` is
 integrable for all `n : ℕ`. That is, all moments of `X` are finite. -/
 lemma integrable_pow_abs_of_integrable_exp_mul (ht : t ≠ 0)
-    (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) (n : ℕ) :
+    (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp (- t * X ω)) μ) (n : ℕ) :
     Integrable (fun ω ↦ |X ω| ^ n) μ := by
   have h := integrable_pow_abs_mul_exp_of_integrable_exp_mul (μ := μ) (X := X) ht (v := 0) ?_ ?_ n
   · simpa using h
   · simpa using ht_int_pos
   · simpa using ht_int_neg
 
-/-- If `ω ↦ rexp (t * X ω)` is integrable at `t` and `-t` for `t ≠ 0`, then `ω ↦ X ω ^ n` is
+/-- If `ω ↦ exp (t * X ω)` is integrable at `t` and `-t` for `t ≠ 0`, then `ω ↦ X ω ^ n` is
 integrable for all `n : ℕ`. -/
 lemma integrable_pow_of_integrable_exp_mul (ht : t ≠ 0)
-    (ht_int_pos : Integrable (fun ω ↦ rexp (t * X ω)) μ)
-    (ht_int_neg : Integrable (fun ω ↦ rexp (- t * X ω)) μ) (n : ℕ) :
+    (ht_int_pos : Integrable (fun ω ↦ exp (t * X ω)) μ)
+    (ht_int_neg : Integrable (fun ω ↦ exp (- t * X ω)) μ) (n : ℕ) :
     Integrable (fun ω ↦ X ω ^ n) μ := by
   have h := integrable_pow_mul_exp_of_integrable_exp_mul (μ := μ) (X := X) ht (v := 0) ?_ ?_ n
   · simpa using h
@@ -323,6 +323,86 @@ lemma integrable_pow_mul_exp_of_mem_interior
   · have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrable_exp hv
     exact ((hX.pow_const _).mul
       (measurable_exp.comp_aemeasurable (hX.const_mul _))).aestronglyMeasurable
+
+lemma integrable_pow_abs_of_mem_interior
+    (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
+    Integrable (fun ω ↦ |X ω| ^ n) μ := by
+  convert integrable_pow_abs_mul_exp_of_mem_interior h n
+  simp
+
+lemma integrable_pow_of_mem_interior
+    (h : 0 ∈ interior {t | Integrable (fun ω ↦ exp (t * X ω)) μ}) (n : ℕ) :
+    Integrable (fun ω ↦ X ω ^ n) μ := by
+  convert integrable_pow_mul_exp_of_mem_interior h n
+  simp
+
+-- todo: move to L1Space
+lemma integrable_norm_rpow_iff {α E : Type*} {_ : MeasurableSpace α} {μ : Measure α}
+    [NormedAddCommGroup E] {p : ℝ≥0∞} {f : α → E}
+    (hf : AEStronglyMeasurable f μ) (p_zero : p ≠ 0) (p_top : p ≠ ∞) :
+    Integrable (fun x : α => ‖f x‖ ^ p.toReal) μ ↔ Memℒp f p μ := by
+  rw [← memℒp_norm_rpow_iff (q := p) hf p_zero p_top, ← memℒp_one_iff_integrable,
+    ENNReal.div_self p_zero p_top]
+
+lemma rpow_le_add_pow_floor_pow_ceil {x p : ℝ} (hx_nonneg : 0 ≤ x) (hp : 1 ≤ p) :
+    x ^ (p : ℝ) ≤ x ^ ⌊(p : ℝ)⌋₊ + x ^ ⌈(p : ℝ)⌉₊ := by
+  have hn : 1 ≤ ⌊p⌋₊ := Nat.le_floor (mod_cast hp)
+  have hm : 1 ≤ ⌈p⌉₊ := hn.trans (Nat.floor_le_ceil _)
+  by_cases hx_zero : x = 0
+  · rw [hx_zero, zero_pow, zero_pow, zero_rpow, zero_add]
+    · suffices 0 < p by simp [this.ne']
+      positivity
+    · omega
+    · omega
+  rcases le_total x 1 with hx | hx
+  · calc x ^ p
+    _ ≤ x ^ ⌊p⌋₊ := by
+      rw [← rpow_natCast]
+      exact rpow_le_rpow_of_exponent_ge (lt_of_le_of_ne' hx_nonneg hx_zero) hx
+        (Nat.floor_le (by positivity))
+    _ ≤ _ := le_add_of_nonneg_right (by positivity)
+  · calc x ^ p
+    _ ≤ x ^ ⌈p⌉₊ := by
+      rw [← rpow_natCast]
+      exact rpow_le_rpow_of_exponent_le hx (Nat.le_ceil _)
+    _ ≤ _ := le_add_of_nonneg_left (by positivity)
+
+lemma memℒp_of_mem_interior_of_one_le {p : ℝ≥0} (hp : 1 ≤ p)
+    (h : 0 ∈ interior {x | Integrable (fun ω ↦ exp (x * X ω)) μ}) :
+    Memℒp X p μ := by
+  have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrable_exp h
+  rw [← integrable_norm_rpow_iff hX.aestronglyMeasurable ?_ (by simp)]
+  swap
+  · suffices 0 < p by simp [this.ne']
+    positivity
+  simp only [norm_eq_abs, ENNReal.coe_toReal]
+  let n := ⌊(p : ℝ)⌋₊
+  have hn : 1 ≤ n := Nat.le_floor (mod_cast hp)
+  let m := ⌈(p : ℝ)⌉₊
+  have hm : 1 ≤ m := hn.trans (Nat.floor_le_ceil _)
+  have h_le (x : ℝ) (hx_nonneg : 0 ≤ x) : x ^ (p : ℝ) ≤ x ^ n + x ^ m :=
+    rpow_le_add_pow_floor_pow_ceil hx_nonneg hp
+  have h_int : Integrable (fun ω ↦ |X ω| ^ n + |X ω| ^ m) μ :=
+    (integrable_pow_abs_of_mem_interior h n).add (integrable_pow_abs_of_mem_interior h m)
+  refine h_int.mono (hX.abs.pow_const _).aestronglyMeasurable (ae_of_all _ fun ω ↦ ?_)
+  simp_rw [norm_eq_abs, abs_rpow_of_nonneg (abs_nonneg _), abs_abs]
+  rw [(abs_add_eq_add_abs_iff _ _).mpr (Or.inl ⟨?_, ?_⟩), abs_pow, abs_pow, abs_abs]
+  · exact h_le _ (abs_nonneg _)
+  · positivity
+  · positivity
+
+lemma memℒp_of_mem_interior_nat
+    (h : 0 ∈ interior {x | Integrable (fun ω ↦ exp (x * X ω)) μ}) (n : ℕ) :
+    Memℒp X n μ := by
+  by_cases hn : n = 0
+  · simp only [hn, CharP.cast_eq_zero, memℒp_zero_iff_aestronglyMeasurable]
+    exact (aemeasurable_of_mem_interior_integrable_exp h).aestronglyMeasurable
+  · exact memℒp_of_mem_interior_of_one_le (mod_cast (by omega)) h
+
+lemma memℒp_of_mem_interior (p : ℝ≥0) [IsFiniteMeasure μ]
+    (ht : 0 ∈ interior {x | Integrable (fun ω ↦ exp (x * X ω)) μ}) :
+    Memℒp X p μ :=
+  (memℒp_of_mem_interior_nat ht ⌈(p : ℝ)⌉₊).memℒp_of_exponent_le (mod_cast Nat.le_ceil _)
 
 end MemInterior
 
