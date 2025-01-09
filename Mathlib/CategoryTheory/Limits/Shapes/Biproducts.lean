@@ -280,7 +280,7 @@ def whiskerToCone {f : J → C} (c : Bicone f) (g : K ≃ J) :
     (c.whisker g).toCone ≅
       (Cones.postcompose (Discrete.functorComp f g).inv).obj
         (c.toCone.whisker (Discrete.functor (Discrete.mk ∘ g))) :=
-  Cones.ext (Iso.refl _) (by aesop_cat)
+  Cones.ext (Iso.refl _) (by simp)
 
 /-- Taking the cocone of a whiskered bicone results in a cone isomorphic to one gained
 by whiskering the cocone and precomposing with a suitable isomorphism. -/
@@ -288,7 +288,7 @@ def whiskerToCocone {f : J → C} (c : Bicone f) (g : K ≃ J) :
     (c.whisker g).toCocone ≅
       (Cocones.precompose (Discrete.functorComp f g).hom).obj
         (c.toCocone.whisker (Discrete.functor (Discrete.mk ∘ g))) :=
-  Cocones.ext (Iso.refl _) (by aesop_cat)
+  Cocones.ext (Iso.refl _) (by simp)
 
 /-- Whiskering a bicone with an equivalence between types preserves being a bilimit bicone. -/
 noncomputable def whiskerIsBilimitIff {f : J → C} (c : Bicone f) (g : K ≃ J) :
@@ -579,7 +579,7 @@ theorem biproduct.map_eq_map' {f g : J → C} [HasBiproduct f] [HasBiproduct g] 
   dsimp
   rw [biproduct.ι_π_assoc, biproduct.ι_π]
   split_ifs with h
-  · subst h; rw [eqToHom_refl, Category.id_comp]; erw [Category.comp_id]
+  · subst h; simp
   · simp
 
 @[reassoc (attr := simp)]
@@ -625,7 +625,7 @@ instance biproduct.map_epi {f g : J → C} [HasBiproduct f] [HasBiproduct g] (p 
       ι_colimMap_assoc, Discrete.functor_obj_eq_as, Discrete.natTrans_app, colimit.ι_desc_assoc,
       Cofan.mk_pt, Cofan.mk_ι_app, ι_π, ι_π_assoc]
     split
-    all_goals aesop
+    all_goals simp_all
   rw [this]
   infer_instance
 
@@ -1757,7 +1757,7 @@ instance biprod.map_epi {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
 instance prod.map_epi {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Epi f]
     [Epi g] [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] : Epi (prod.map f g) := by
   rw [show prod.map f g = (biprod.isoProd _ _).inv ≫ biprod.map f g ≫
-    (biprod.isoProd _ _).hom by aesop]
+    (biprod.isoProd _ _).hom by simp]
   infer_instance
 
 instance biprod.map_mono {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
@@ -1769,7 +1769,7 @@ instance biprod.map_mono {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
 instance coprod.map_mono {W X Y Z : C} (f : W ⟶ Y) (g : X ⟶ Z) [Mono f]
     [Mono g] [HasBinaryBiproduct W X] [HasBinaryBiproduct Y Z] : Mono (coprod.map f g) := by
   rw [show coprod.map f g = (biprod.isoCoprod _ _).inv ≫ biprod.map f g ≫
-    (biprod.isoCoprod _ _).hom by aesop]
+    (biprod.isoCoprod _ _).hom by simp]
   infer_instance
 
 section BiprodKernel

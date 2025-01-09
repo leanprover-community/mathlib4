@@ -978,14 +978,11 @@ lemma mod_two_ne_zero : n % 2 ≠ 0 ↔ n % 2 = 1 := mod_two_not_eq_zero
 lemma div_mod_eq_mod_mul_div (a b c : ℕ) : a / b % c = a % (b * c) / b :=
   (mod_mul_right_div_self a b c).symm
 
-/-- Variant of `Nat.lt_div_iff_mul_lt` (added in Lean 4.16) that assumes `d ∣ n`. -/
+/-- Variant of `Nat.lt_div_iff_mul_lt` that assumes `d ∣ n`. -/
 protected lemma lt_div_iff_mul_lt' (hdn : d ∣ n) (a : ℕ) : a < n / d ↔ d * a < n := by
   obtain rfl | hd := d.eq_zero_or_pos
   · simp [Nat.zero_dvd.1 hdn]
   · rw [← Nat.mul_lt_mul_left hd, ← Nat.eq_mul_of_div_eq_right hdn rfl]
-
-@[deprecated Nat.lt_div_iff_mul_lt' (since := "2024-12-29")]
-protected alias lt_div_iff_mul_lt := Nat.lt_div_iff_mul_lt'
 
 lemma mul_div_eq_iff_dvd {n d : ℕ} : d * (n / d) = n ↔ d ∣ n :=
   calc

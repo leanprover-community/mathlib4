@@ -58,6 +58,9 @@ instance GroupCone.instGroupConeClass (G : Type*) [CommGroup G] :
   one_mem {C} := C.one_mem'
   eq_one_of_mem_of_inv_mem {C} := C.eq_one_of_mem_of_inv_mem'
 
+initialize_simps_projections GroupCone (carrier → coe, as_prefix coe)
+initialize_simps_projections AddGroupCone (carrier → coe, as_prefix coe)
+
 /-- Typeclass for maximal additive cones. -/
 class IsMaxCone {S G : Type*} [AddCommGroup G] [SetLike S G] (C : S) : Prop where
   mem_or_neg_mem (a : G) : a ∈ C ∨ -a ∈ C
@@ -74,19 +77,17 @@ namespace GroupCone
 variable {H : Type*} [OrderedCommGroup H] {a : H}
 
 variable (H) in
-/-- Construct a cone from the set of elements of
-a partially ordered abelian group that are at least 1. -/
-@[to_additive nonneg
-"Construct a cone from the set of non-negative elements of a partially ordered abelian group."]
+/-- The cone of elements that are at least 1. -/
+@[to_additive "The cone of non-negative elements."]
 def oneLE : GroupCone H where
   __ := Submonoid.oneLE H
   eq_one_of_mem_of_inv_mem' {a} := by simpa using ge_antisymm
 
-@[to_additive (attr := simp) nonneg_toAddSubmonoid]
+@[to_additive (attr := simp)]
 lemma oneLE_toSubmonoid : (oneLE H).toSubmonoid = .oneLE H := rfl
-@[to_additive (attr := simp) mem_nonneg]
+@[to_additive (attr := simp)]
 lemma mem_oneLE : a ∈ oneLE H ↔ 1 ≤ a := Iff.rfl
-@[to_additive (attr := simp, norm_cast) coe_nonneg]
+@[to_additive (attr := simp, norm_cast)]
 lemma coe_oneLE : oneLE H = {x : H | 1 ≤ x} := rfl
 
 @[to_additive nonneg.isMaxCone]

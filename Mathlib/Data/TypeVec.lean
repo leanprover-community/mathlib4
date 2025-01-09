@@ -376,7 +376,7 @@ theorem const_nil {β} (x : β) (α : TypeVec 0) : TypeVec.const x α = nilFun :
 
 @[typevec]
 theorem repeat_eq_append1 {β} {n} (α : TypeVec n) :
-    repeatEq (α ::: β) = splitFun (α := (α ⊗ α) ::: _ )
+    repeatEq (α ::: β) = splitFun (α := (α ⊗ α) ::: _)
     (α' := («repeat» n Prop) ::: _) (repeatEq α) (uncurry Eq) := by
   induction n <;> rfl
 
