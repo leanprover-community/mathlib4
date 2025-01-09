@@ -257,6 +257,10 @@ theorem det_zero [Module.Free A M] :
     LinearMap.det (0 : M →ₗ[A] M) = (0 : A) ^ Module.finrank A M := by
   simp only [← zero_smul A (1 : M →ₗ[A] M), det_smul, mul_one, MonoidHom.map_one]
 
+theorem det_eq_one_of_not_module_finite (h : ¬Module.Finite R M) (f : M →ₗ[R] M) : f.det = 1 := by
+  rw [LinearMap.det, dif_neg, MonoidHom.one_apply]
+  exact fun ⟨_, ⟨b⟩⟩ ↦ h (Module.Finite.of_basis b)
+
 theorem det_eq_one_of_subsingleton [Subsingleton M] (f : M →ₗ[R] M) :
     LinearMap.det (f : M →ₗ[R] M) = 1 := by
   have b : Basis (Fin 0) R M := Basis.empty M
@@ -324,6 +328,13 @@ theorem bot_lt_ker_of_det_eq_zero {𝕜 : Type*} [Field 𝕜] [Module 𝕜 M] {f
   contrapose hf
   simp only [bot_lt_iff_ne_bot, Classical.not_not, ← isUnit_iff_ker_eq_bot] at hf
   exact isUnit_iff_ne_zero.1 (f.isUnit_det hf)
+
+/-- When the function is over the base ring, the determinant is the evaluation at `1`. -/
+@[simp] lemma det_ring (f : R →ₗ[R] R) : f.det = f 1 := by
+  simp [← det_toMatrix (Basis.singleton Unit R)]
+
+lemma det_mulLeft (a : R) : (mulLeft R a).det = a := by simp
+lemma det_mulRight (a : R) : (mulRight R a).det = a := by simp
 
 end LinearMap
 
@@ -549,6 +560,16 @@ theorem Basis.det_comp_basis [Module A M'] (b : Basis ι A M) (b' : Basis ι A M
   congr 1; ext i j
   rw [Basis.toMatrix_apply, LinearMap.toMatrix_apply, Function.comp_apply]
 
+@[simp]
+theorem Basis.det_basis (b : Basis ι A M) (b' : Basis ι A M) :
+    LinearMap.det (b'.equiv b (Equiv.refl ι)).toLinearMap = b'.det b :=
+  (b.det_comp_basis b' (LinearMap.id)).symm
+
+theorem Basis.det_inv (b : Basis ι A M) (b' : Basis ι A M) :
+    (b.isUnit_det b').unit⁻¹ = b'.det b := by
+  rw [← Units.mul_eq_one_iff_inv_eq, IsUnit.unit_spec, ← Basis.det_basis, ← Basis.det_basis]
+  exact LinearEquiv.det_mul_det_symm _
+
 theorem Basis.det_reindex {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (b : Basis ι R M) (v : ι' → M)
     (e : ι ≃ ι') : (b.reindex e).det v = b.det (v ∘ e) := by
   rw [Basis.det_apply, Basis.toMatrix_reindex', det_reindexAlgEquiv, Basis.det_apply]
@@ -574,6 +595,11 @@ theorem Basis.det_map' (b : Basis ι R M) (f : M ≃ₗ[R] M') :
 theorem Pi.basisFun_det : (Pi.basisFun R ι).det = Matrix.detRowAlternating := by
   ext M
   rw [Basis.det_apply, Basis.coePiBasisFun.toMatrix_eq_transpose, det_transpose]
+
+theorem Pi.basisFun_det_apply (v : ι → ι → R) :
+    (Pi.basisFun R ι).det v = (Matrix.of v).det := by
+  rw [Pi.basisFun_det]
+  rfl
 
 /-- If we fix a background basis `e`, then for any other basis `v`, we can characterise the
 coordinates provided by `v` in terms of determinants relative to `e`. -/

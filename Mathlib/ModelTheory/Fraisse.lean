@@ -218,7 +218,6 @@ theorem age_directLimit {ι : Type w} [Preorder ι] [IsDirected ι (· ≤ ·)] 
     rw [Embedding.coe_toHom, DirectLimit.of_apply, @Quotient.mk_eq_iff_out _ (_),
       DirectLimit.equiv_iff G f _ (hi (out x).1 (Finset.mem_image_of_mem _ hx)),
       DirectedSystem.map_self]
-    rfl
   · rintro ⟨i, Mfg, ⟨e⟩⟩
     exact ⟨Mfg, ⟨Embedding.comp (DirectLimit.of L ι G f i) e⟩⟩
 

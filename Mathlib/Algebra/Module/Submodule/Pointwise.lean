@@ -347,11 +347,6 @@ instance : CovariantClass (Set S) (Submodule R M) HSMul.hSMul LE.le :=
   ⟨fun _ _ _ le => set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := hr)
     (mem2 := le hm)⟩
 
-@[deprecated smul_mono_right (since := "2024-03-31")]
-theorem set_smul_mono_right {p q : Submodule R M} (le : p ≤ q) :
-    s • p ≤ s • q :=
-  smul_mono_right s le
-
 lemma set_smul_mono_left {s t : Set S} (le : s ≤ t) :
     s • N ≤ t • N :=
   set_smul_le _ _ _ fun _ _ hr hm => mem_set_smul_of_mem_mem (mem1 := le hr)
@@ -475,9 +470,25 @@ lemma mem_singleton_set_smul [SMulCommClass R S M] (r : S) (x : M) :
       exact ⟨t • n, by aesop,  smul_comm _ _ _⟩
     · rcases h₁ with ⟨m₁, h₁, rfl⟩
       rcases h₂ with ⟨m₂, h₂, rfl⟩
-      exact ⟨m₁ + m₂, Submodule.add_mem _ h₁ h₂, by aesop⟩
-    · exact ⟨0, Submodule.zero_mem _, by aesop⟩
+      exact ⟨m₁ + m₂, Submodule.add_mem _ h₁ h₂, by simp⟩
+    · exact ⟨0, Submodule.zero_mem _, by simp⟩
   · aesop
+
+lemma smul_inductionOn_pointwise [SMulCommClass S R M] {a : S} {p : (x : M) → x ∈ a • N → Prop}
+    (smul₀ : ∀ (s : M) (hs : s ∈ N), p (a • s) (Submodule.smul_mem_pointwise_smul _ _ _ hs))
+    (smul₁ : ∀ (r : R) (m : M) (mem : m ∈ a • N), p m mem → p (r • m) (Submodule.smul_mem _ _ mem))
+    (add : ∀ (x y : M) (hx : x ∈ a • N) (hy : y ∈ a • N),
+      p x hx → p y hy → p (x + y) (Submodule.add_mem _ hx hy))
+    (zero : p 0 (Submodule.zero_mem _)) {x : M} (hx : x ∈ a • N) :
+    p x hx := by
+  simp_all only [← Submodule.singleton_set_smul]
+  let p' (x : M) (hx : x ∈ ({a} : Set S) • N) : Prop :=
+    p x (by rwa [← Submodule.singleton_set_smul])
+  refine Submodule.set_smul_inductionOn (motive := p') _ (N.singleton_set_smul a ▸ hx)
+      (fun r n hr hn ↦ ?_) smul₁ add zero
+  · simp only [Set.mem_singleton_iff] at hr
+    subst hr
+    exact smul₀ n hn
 
 -- Note that this can't be generalized to `Set S`, because even though `SMulCommClass R R M` implies
 -- `SMulComm R R N` for all `R`-submodules `N`, `SMulCommClass R S N` for all `R`-submodules `N`

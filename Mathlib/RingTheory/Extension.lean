@@ -115,6 +115,9 @@ def self : Extension R S where
   σ := _root_.id
   algebraMap_σ _ := rfl
 
+/-- The kernel of an extension. -/
+abbrev ker : Ideal P.Ring := RingHom.ker (algebraMap P.Ring S)
+
 section Localization
 
 variable (M : Submonoid S) {S' : Type*} [CommRing S'] [Algebra S S'] [IsLocalization M S']
@@ -232,10 +235,30 @@ end
 
 end Hom
 
-section Cotangent
+section Infinitesimal
 
-/-- The kernel of an extension. -/
-abbrev ker : Ideal P.Ring := RingHom.ker (algebraMap P.Ring S)
+/-- Given an `R`-algebra extension `0 → I → P → S → 0` of `S`,
+the infinitesimal extension associated to it is `0 → I/I² → P/I² → S → 0`. -/
+noncomputable
+def infinitesimal (P : Extension R S) : Extension R S where
+  Ring := P.Ring ⧸ P.ker ^ 2
+  σ := Ideal.Quotient.mk _ ∘ P.σ
+  algebraMap_σ x := by dsimp; exact P.algebraMap_σ x
+
+/-- The canonical map `P → P/I²` as maps between extensions. -/
+noncomputable
+def toInfinitesimal (P : Extension R S) : P.Hom P.infinitesimal where
+  toRingHom := Ideal.Quotient.mk _
+  toRingHom_algebraMap _ := rfl
+  algebraMap_toRingHom _ := rfl
+
+lemma ker_infinitesimal (P : Extension R S) :
+    P.infinitesimal.ker = P.ker.cotangentIdeal :=
+  AlgHom.ker_kerSquareLift _
+
+end Infinitesimal
+
+section Cotangent
 
 /-- The cotangent space of an extension.
 This is a type synonym so that `P.Ring` can act on it through the action of `S` without creating

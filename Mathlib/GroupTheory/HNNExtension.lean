@@ -3,7 +3,7 @@ Copyright (c) 2023 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-
+import Mathlib.Algebra.Ring.Int.Units
 import Mathlib.GroupTheory.Coprod.Basic
 import Mathlib.GroupTheory.Complement
 
@@ -181,7 +181,7 @@ structure TransversalPair : Type _ where
   compl : ∀ u, IsComplement (toSubgroup A B u : Subgroup G) (set u)
 
 instance TransversalPair.nonempty : Nonempty (TransversalPair G A B) := by
-  choose t ht using fun u ↦ (toSubgroup A B u).exists_right_transversal 1
+  choose t ht using fun u ↦ (toSubgroup A B u).exists_isComplement_right 1
   exact ⟨⟨t, fun i ↦ (ht i).1⟩⟩
 
 /-- A reduced word is a `head`, which is an element of `G`, followed by the product list of pairs.

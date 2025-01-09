@@ -495,10 +495,10 @@ theorem eval_const : ∀ n m, eval (Code.const n) m = Part.some n
   | n + 1, m => by simp! [eval_const n m]
 
 @[simp]
-theorem eval_id (n) : eval Code.id n = Part.some n := by simp! [Seq.seq]
+theorem eval_id (n) : eval Code.id n = Part.some n := by simp! [Seq.seq, Code.id]
 
 @[simp]
-theorem eval_curry (c n x) : eval (curry c n) x = eval c (Nat.pair n x) := by simp! [Seq.seq]
+theorem eval_curry (c n x) : eval (curry c n) x = eval c (Nat.pair n x) := by simp! [Seq.seq, curry]
 
 theorem const_prim : Primrec Code.const :=
   (_root_.Primrec.id.nat_iterate (_root_.Primrec.const zero)

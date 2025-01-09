@@ -3,7 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.Basic
+import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
@@ -25,6 +25,8 @@ construction of the "pullback" of a shift by a monoid morphism like `n ↦ -n`.
 namespace CategoryTheory
 
 open Limits
+
+section
 
 variable (C : Type*) [Category C] (A : Type*) [AddMonoid A] [HasShift C A]
 
@@ -109,5 +111,66 @@ lemma oppositeShiftFunctorAdd'_hom_app :
       ((shiftFunctorAdd' C a b c h).inv.app X.unop).op := by
   subst h
   simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, oppositeShiftFunctorAdd_hom_app]
+
+end
+
+variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D) (A : Type*) [AddMonoid A]
+  [HasShift C A] [HasShift D A]
+
+namespace Functor
+
+/--
+Given a `CommShift` structure on `F`, this is the corresponding `CommShift` structure on
+`F.op` (for the naive shifts on the opposite categories).
+-/
+@[simps]
+noncomputable def commShiftOp [CommShift F A] :
+    CommShift (C := OppositeShift C A) (D := OppositeShift D A) F.op A where
+  iso a := (NatIso.op (F.commShiftIso a)).symm
+  zero := by
+    simp only
+    rw [commShiftIso_zero]
+    ext
+    simp only [op_obj, comp_obj, Iso.symm_hom, NatIso.op_inv, NatTrans.op_app,
+      CommShift.isoZero_inv_app, op_comp, CommShift.isoZero_hom_app, op_map]
+    erw [oppositeShiftFunctorZero_inv_app, oppositeShiftFunctorZero_hom_app]
+    rfl
+  add a b := by
+    simp only
+    rw [commShiftIso_add]
+    ext
+    simp only [op_obj, comp_obj, Iso.symm_hom, NatIso.op_inv, NatTrans.op_app,
+      CommShift.isoAdd_inv_app, op_comp, Category.assoc, CommShift.isoAdd_hom_app, op_map]
+    erw [oppositeShiftFunctorAdd_inv_app, oppositeShiftFunctorAdd_hom_app]
+    rfl
+
+/--
+Given a `CommShift` structure on `F.op` (for the naive shifts on the opposite categories),
+this is the corresponding `CommShift` structure on `F`.
+-/
+@[simps]
+noncomputable def commShiftUnop
+    [CommShift (C := OppositeShift C A) (D := OppositeShift D A) F.op A] : CommShift F A where
+  iso a := NatIso.removeOp (F.op.commShiftIso (C := OppositeShift C A)
+    (D := OppositeShift D A) a).symm
+  zero := by
+    simp only
+    rw [commShiftIso_zero]
+    ext
+    simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
+      CommShift.isoZero_inv_app, op_map, unop_comp, Quiver.Hom.unop_op, CommShift.isoZero_hom_app]
+    erw [oppositeShiftFunctorZero_hom_app, oppositeShiftFunctorZero_inv_app]
+    rfl
+  add a b := by
+    simp only
+    rw [commShiftIso_add]
+    ext
+    simp only [comp_obj, NatIso.removeOp_hom, Iso.symm_hom, NatTrans.removeOp_app, op_obj,
+      CommShift.isoAdd_inv_app, op_map, unop_comp, Quiver.Hom.unop_op, Category.assoc,
+      CommShift.isoAdd_hom_app]
+    erw [oppositeShiftFunctorAdd_hom_app, oppositeShiftFunctorAdd_inv_app]
+    rfl
+
+end Functor
 
 end CategoryTheory
