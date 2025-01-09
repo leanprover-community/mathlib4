@@ -63,11 +63,7 @@ lemma egauge_lt_iff : egauge 𝕜 s x < r ↔ ∃ c : 𝕜, x ∈ c • s ∧ �
 
 lemma egauge_union (s t : Set E) (x : E) : egauge 𝕜 (s ∪ t) x = egauge 𝕜 s x ⊓ egauge 𝕜 t x := by
   unfold egauge
-  classical
-  rw [← iInf_inf_eq]
-  congr with c
-  simp_rw [iInf_eq_if, smul_set_union, mem_union]
-  by_cases hs : x ∈ c • s <;> by_cases ht : x ∈ c • t <;> simp [hs, ht]
+  simp [smul_set_union, iInf_or, iInf_inf_eq]
 
 lemma le_egauge_inter (s t : Set E) (x : E) :
     egauge 𝕜 s x ⊔ egauge 𝕜 t x ≤ egauge 𝕜 (s ∩ t) x :=

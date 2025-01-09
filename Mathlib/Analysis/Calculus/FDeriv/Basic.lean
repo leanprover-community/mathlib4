@@ -418,15 +418,9 @@ theorem HasFDerivAtFilter.isBigO_sub (h : HasFDerivAtFilter f f' x L) :
 
 @[fun_prop]
 protected theorem HasStrictFDerivAt.hasFDerivAt (hf : HasStrictFDerivAt f f' x) :
-    HasFDerivAt f f' x := by
-  refine .of_isLittleOTVS fun U hU => ?_
-  obtain ⟨V, hV0, hV⟩ := hf.isLittleOTVS _ hU
-  refine ⟨V, hV0, fun ε hε => ?_⟩
-  specialize hV ε hε
-  simp_rw [nhds_prod_eq, eventually_prod_self_iff'] at hV
-  obtain ⟨W, hWx, hW⟩ := hV
-  filter_upwards [hWx] with y hy
-  exact hW y hy x (mem_of_mem_nhds hWx)
+    HasFDerivAt f f' x :=
+  .of_isLittleOTVS <| by
+    simpa only using hf.isLittleOTVS.comp_tendsto (tendsto_id.prod_mk_nhds tendsto_const_nhds)
 
 protected theorem HasStrictFDerivAt.differentiableAt (hf : HasStrictFDerivAt f f' x) :
     DifferentiableAt 𝕜 f x :=
