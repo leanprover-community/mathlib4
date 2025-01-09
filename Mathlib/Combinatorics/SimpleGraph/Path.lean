@@ -327,6 +327,12 @@ lemma IsCycle.getVert_injOn' {p : G.Walk u u} (hpc : p.IsCycle) :
       show p.length - (p.length - m) = m from by omega])
   omega
 
+lemma IsCycle.snd_ne_penultimate {p : G.Walk u u} (hp : p.IsCycle) : p.snd ≠ p.penultimate := by
+  intro h
+  have := hp.three_le_length
+  apply hp.getVert_injOn (by simp; omega) (by simp; omega) at h
+  omega
+
 lemma IsCycle.getVert_endpoint_iff {i : ℕ} {p : G.Walk u u} (hpc : p.IsCycle) (hl : i ≤ p.length) :
     p.getVert i = u ↔ i = 0 ∨ i = p.length := by
   refine ⟨?_, by aesop⟩
