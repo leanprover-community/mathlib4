@@ -415,7 +415,6 @@ lemma IsCycle.neighborSet_toSubgraph_internal {u : V} {i : ℕ} {p : G.Walk u u}
 
 lemma IsCycle.ncard_neighborSet_toSubgraph_eq_two {u v : V} {p : G.Walk u u} (hpc : p.IsCycle)
     (h : v ∈ p.support) : (p.toSubgraph.neighborSet v).ncard = 2 := by
-  have hpcl :=  Walk.IsCycle.three_le_length hpc
   simp only [SimpleGraph.Walk.mem_support_iff_exists_getVert] at h ⊢
   obtain ⟨i, hi⟩ := h
   by_cases he : i = 0 ∨ i = p.length
