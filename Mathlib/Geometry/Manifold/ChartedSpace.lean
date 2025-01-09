@@ -849,6 +849,38 @@ theorem piChartedSpace_chartAt {ι : Type*} [Finite ι] (H : ι → Type*)
     chartAt (H := ModelPi H) f = PartialHomeomorph.pi fun i ↦ chartAt (H i) (f i) :=
   rfl
 
+/-- The disjoint union of two charted spaces on `H` is a charted space over `H`. -/
+instance ChartedSpace.sum [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
+    [cm : ChartedSpace H M] [cm' : ChartedSpace H M'] [Nonempty H] [Nonempty M] [Nonempty M']:
+    ChartedSpace H (M ⊕ M') where
+  atlas := ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inl) '' cm.atlas) ∪
+    ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inr) '' cm'.atlas)
+  -- At `x : M`, the chart is the chart in `M`; at `x' ∈ M'`, it is the chart in `M'`.
+  chartAt := Sum.elim (fun x ↦ (cm.chartAt x).lift_openEmbedding IsOpenEmbedding.inl)
+    (fun x ↦ (cm'.chartAt x).lift_openEmbedding IsOpenEmbedding.inr)
+  mem_chart_source p := by
+    by_cases h : Sum.isLeft p
+    · let x := Sum.getLeft p h
+      rw [Sum.eq_left_getLeft_of_isLeft h, Sum.elim_inl, lift_openEmbedding_source,
+        ← PartialHomeomorph.lift_openEmbedding_source _ IsOpenEmbedding.inl]
+      use x, cm.mem_chart_source x
+    · have h' : Sum.isRight p := Sum.not_isLeft.mp h
+      let x := Sum.getRight p h'
+      rw [Sum.eq_right_getRight_of_isRight h', Sum.elim_inr, lift_openEmbedding_source,
+        ← PartialHomeomorph.lift_openEmbedding_source _ IsOpenEmbedding.inr]
+      use x, cm'.mem_chart_source x
+  chart_mem_atlas p := by
+    by_cases h : Sum.isLeft p
+    · rw [Sum.eq_left_getLeft_of_isLeft h, Sum.elim_inl]
+      left
+      let x := Sum.getLeft p h
+      use ChartedSpace.chartAt x, cm.chart_mem_atlas x
+    · have h' : Sum.isRight p := Sum.not_isLeft.mp h
+      rw [Sum.eq_right_getRight_of_isRight h', Sum.elim_inr]
+      right
+      let x := Sum.getRight p h'
+      use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
+
 end ChartedSpace
 
 /-! ### Constructing a topology from an atlas -/
@@ -1358,41 +1390,3 @@ def PartialHomeomorph.toStructomorph {e : PartialHomeomorph M H} (he : e ∈ atl
       mem_groupoid := fun _ c' _ ⟨_, ⟨x, _⟩, _⟩ ↦ (this.false x).elim }
 
 end HasGroupoid
-
-
-/-- The disjoint union of two charted spaces on `H` is a charted space over `H`. -/
-instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') where
-  atlas := (foo '' cm.atlas) ∪ (bar '' cm'.atlas)
-  -- At `x : M`, the chart is the chart in `M`; at `x' ∈ M'`, it is the chart in `M'`.
-  chartAt := Sum.elim (fun x ↦ (cm.chartAt x).lift_openEmbedding IsOpenEmbedding.inl)
-    (fun x ↦ (cm'.chartAt x).lift_openEmbedding IsOpenEmbedding.inr)
-  mem_chart_source p := by
-    by_cases h : Sum.isLeft p
-    · let x := Sum.getLeft p h
-      rw [Sum.eq_left_getLeft_of_isLeft h]
-      let aux := cm.mem_chart_source x
-      dsimp
-      rw [PartialHomeomorph.lift_openEmbedding_source]
-      use x
-    · have h' : Sum.isRight p := Sum.not_isLeft.mp h
-      let x := Sum.getRight p h'
-      rw [Sum.eq_right_getRight_of_isRight h']
-      let aux := cm'.mem_chart_source x
-      dsimp
-      rw [PartialHomeomorph.lift_openEmbedding_source]
-      use x
-  chart_mem_atlas p := by
-    by_cases h : Sum.isLeft p
-    · let x := Sum.getLeft p h
-      rw [Sum.eq_left_getLeft_of_isLeft h]
-      dsimp
-      left
-      let aux := cm.chart_mem_atlas x
-      use ChartedSpace.chartAt x
-    · have h' : Sum.isRight p := Sum.not_isLeft.mp h
-      let x := Sum.getRight p h'
-      rw [Sum.eq_right_getRight_of_isRight h']
-      dsimp
-      right
-      let aux := cm'.chart_mem_atlas x
-      use ChartedSpace.chartAt x

@@ -1387,10 +1387,4 @@ lemma lift_openEmbedding_source (e : PartialHomeomorph X Z) (hf : IsOpenEmbeddin
 lemma lift_openEmbedding_target (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf).target = e.target := rfl
 
-noncomputable example (e : PartialHomeomorph X Z) : PartialHomeomorph (X ⊕ X') Z :=
-    e.lift_openEmbedding IsOpenEmbedding.inl
-
-noncomputable example (e : PartialHomeomorph X Z) : PartialHomeomorph (X' ⊕ X) Z :=
-    e.lift_openEmbedding IsOpenEmbedding.inr
-
 end PartialHomeomorph
