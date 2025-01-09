@@ -160,7 +160,11 @@ theorem realize_genericPolyMapSurjOnOfInjOn
     Set.MapsTo, Set.mem_def, injOnAlt, funext_iff, Set.SurjOn, Set.image, setOf,
     Set.subset_def, Equiv.forall_congr_left (mvPolynomialSupportLEEquiv mons)]
   simp +singlePass only [← Sum.elim_comp_inl_inr]
-  simp [Set.mem_def, Function.comp_def]
+  -- was `simp` and very slow (https://github.com/leanprover-community/mathlib4/issues/19751)
+  simp only [Function.comp_def, Sum.elim_inl, Sum.elim_inr, Fin.castAdd_zero, Fin.cast_eq_self,
+    Nat.add_zero, Term.realize_var, Term.realize_relabel, realize_termOfFreeCommRing,
+    lift_genericPolyMap, Nat.reduceAdd, Fin.isValue, Function.uncurry_apply_pair, Fin.cons_zero,
+    Fin.cons_one, ↓reduceIte, one_ne_zero]
 
 theorem ACF_models_genericPolyMapSurjOnOfInjOn_of_prime [Fintype ι]
     {p : ℕ} (hp : p.Prime) (φ : ring.Formula (α ⊕ ι)) (mons : ι → Finset (ι →₀ ℕ)) :
