@@ -801,6 +801,17 @@ theorem eq_of_linearIndependent_of_span_subtype [Nontrivial R] {s t : Set M}
   convert y.mem
   rw [← Subtype.mk.inj hy]
 
+theorem le_of_span_le_span [Nontrivial R] {s t u : Set M} (hl : LinearIndependent R ((↑) : u → M))
+    (hsu : s ⊆ u) (htu : t ⊆ u) (hst : span R s ≤ span R t) : s ⊆ t := by
+  have :=
+    eq_of_linearIndependent_of_span_subtype (hl.mono (Set.union_subset hsu htu))
+      Set.subset_union_right (Set.union_subset (Set.Subset.trans subset_span hst) subset_span)
+  rw [← this]; apply Set.subset_union_left
+
+theorem span_le_span_iff [Nontrivial R] {s t u : Set M} (hl : LinearIndependent R ((↑) : u → M))
+    (hsu : s ⊆ u) (htu : t ⊆ u) : span R s ≤ span R t ↔ s ⊆ t :=
+  ⟨le_of_span_le_span hl hsu htu, span_mono⟩
+
 end Semiring
 
 section Module
@@ -1279,17 +1290,6 @@ lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K]
   apply (linearIndependent_algHom_toLinearMap K M L).restrict_scalars
   simp_rw [Algebra.smul_def, mul_one]
   exact NoZeroSMulDivisors.algebraMap_injective K L
-
-theorem le_of_span_le_span [Nontrivial R] {s t u : Set M} (hl : LinearIndependent R ((↑) : u → M))
-    (hsu : s ⊆ u) (htu : t ⊆ u) (hst : span R s ≤ span R t) : s ⊆ t := by
-  have :=
-    eq_of_linearIndependent_of_span_subtype (hl.mono (Set.union_subset hsu htu))
-      Set.subset_union_right (Set.union_subset (Set.Subset.trans subset_span hst) subset_span)
-  rw [← this]; apply Set.subset_union_left
-
-theorem span_le_span_iff [Nontrivial R] {s t u : Set M} (hl : LinearIndependent R ((↑) : u → M))
-    (hsu : s ⊆ u) (htu : t ⊆ u) : span R s ≤ span R t ↔ s ⊆ t :=
-  ⟨le_of_span_le_span hl hsu htu, span_mono⟩
 
 end Module
 
