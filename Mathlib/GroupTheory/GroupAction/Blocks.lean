@@ -327,7 +327,7 @@ theorem _root_.AddAction.IsBlock.of_addSubgroup_of_conjugate
   suffices (h' : G) +ᵥ (g +ᵥ B) = g +ᵥ (h +ᵥ B) by
     exact this
   rw [← hh, vadd_vadd, vadd_vadd]
-  erw [AddAut.conj_apply]
+  erw [AddAut.conj_apply] -- FIXME
   simp
 
 @[to_additive existing]
