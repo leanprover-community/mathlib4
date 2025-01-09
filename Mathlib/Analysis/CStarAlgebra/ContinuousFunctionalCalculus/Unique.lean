@@ -32,13 +32,23 @@ section RCLike
 
 variable {𝕜 A : Type*} [RCLike 𝕜]
 
-instance RCLike.uniqueContinuousFunctionalCalculus [TopologicalSpace A]
+instance (priority := 100) RCLike.uniqueContinuousFunctionalCalculus [TopologicalSpace A]
     [T2Space A] [Ring A] [StarRing A] [Algebra 𝕜 A] :
     UniqueContinuousFunctionalCalculus 𝕜 A where
   eq_of_continuous_of_map_id s _ φ ψ hφ hψ h :=
     ContinuousMap.starAlgHom_ext_map_X hφ hψ <| by
       convert h using 1
       all_goals exact congr_arg _ (by ext; simp)
+
+instance Real.uniqueContinuousFunctionalCalculus [TopologicalSpace A]
+    [T2Space A] [Ring A] [StarRing A] [Algebra ℝ A] :
+    UniqueContinuousFunctionalCalculus ℝ A :=
+  inferInstance
+
+instance Complex.uniqueContinuousFunctionalCalculus [TopologicalSpace A]
+    [T2Space A] [Ring A] [StarRing A] [Algebra ℂ A] :
+    UniqueContinuousFunctionalCalculus ℂ A :=
+  inferInstance
 
 end RCLike
 

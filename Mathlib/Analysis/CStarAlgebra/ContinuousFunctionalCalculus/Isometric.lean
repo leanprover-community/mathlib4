@@ -425,7 +425,7 @@ section NNReal
 variable {A : Type*} [NonUnitalNormedRing A] [PartialOrder A] [StarRing A] [StarOrderedRing A]
 variable [NormedSpace ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
 variable [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-variable [NonnegSpectrumClass ℝ A] [UniqueNonUnitalContinuousFunctionalCalculus ℝ A]
+variable [NonnegSpectrumClass ℝ A]
 
 open NNReal in
 instance Nonneg.instNonUnitalIsometricContinuousFunctionalCalculus :
@@ -509,7 +509,7 @@ section NonUnital
 variable {A : Type*} [NonUnitalNormedRing A] [StarRing A] [NormedSpace ℝ A]
 variable [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [PartialOrder A]
 variable [StarOrderedRing A] [NonUnitalIsometricContinuousFunctionalCalculus ℝ A IsSelfAdjoint]
-variable [NonnegSpectrumClass ℝ A] [UniqueNonUnitalContinuousFunctionalCalculus ℝ A]
+variable [NonnegSpectrumClass ℝ A]
 
 lemma IsGreatest.nnnorm_cfcₙ_nnreal (f : ℝ≥0 → ℝ≥0) (a : A)
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
