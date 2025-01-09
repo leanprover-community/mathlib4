@@ -131,7 +131,7 @@ theorem lintegral_fin_prod_eq_lintegral_fin_prod_lintegral_of_indepFun {ι : Typ
     [IsProbabilityMeasure μ] (s : Finset ι) (X : ι → Ω → ℝ≥0∞)
     (hX : iIndepFun (fun _ ↦ ENNReal.measurableSpace) X μ)
     (x_mea : ∀ i, Measurable (X i)) :
-    ∫⁻ (ω : Ω), ∏ i ∈ s, (X i ω) ∂μ = ∏ i ∈ s, ∫⁻ (ω : Ω), X i ω ∂μ := by
+    ∫⁻ ω, ∏ i ∈ s, (X i ω) ∂μ = ∏ i ∈ s, ∫⁻ ω, X i ω ∂μ := by
   induction s using Finset.induction
   case empty => simp only [Finset.prod_empty, lintegral_const, measure_univ, mul_one]
   case insert _ _ j s hj v =>
