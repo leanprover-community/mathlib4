@@ -488,7 +488,7 @@ instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal :=
 
 lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=
   ⟨fun _ ↦ isMaximal_of_isPrime p, fun h ↦ h.isPrime⟩
-bb88c3a0c3092554467cd9886:Mathlib/RingTheory/Artinian/Module.lean
+
 variable (R)
 
 lemma primeSpectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
