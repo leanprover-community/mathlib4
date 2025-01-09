@@ -187,4 +187,13 @@ theorem card_fintypeIic : Fintype.card (Set.Iic b) = b + 1 := by
 theorem card_fintypeIio : Fintype.card (Set.Iio b) = b := by
   rw [Fintype.card_ofFinset, card_Iio]
 
+@[simp]
+theorem Ici_zero : Ici (0 : Fin (n + 1)) = univ := by rw [← bot_eq_zero, Ici_bot]
+
+@[simp]
+theorem Iio_zero : Iio (0 : Fin (n + 1)) = ∅ := by rw [← bot_eq_zero, Iio_bot]
+
+@[simp]
+theorem Iic_zero : Iic (0 : Fin (n + 1)) = {0} := by rw [← bot_eq_zero, Iic_bot]
+
 end Fin

@@ -175,32 +175,27 @@ section Interval
 
 variable {M : Type*} [CommMonoid M] {n : ℕ} {v : Fin (n + 1) → M}
 
-@[to_additive]
-theorem prod_Ioi_zero : ∏ i ∈ Ioi 0, v i = ∏ j : Fin n, v j.succ := by
-  rw [Ioi_zero_eq_map, Finset.prod_map, val_succEmb]
+-- @[to_additive]
+-- theorem prod_Ioi_zero : ∏ i ∈ Ioi 0, v i = ∏ j : Fin n, v j.succ := by simp
+--   -- rw [Ioi_zero_eq_map, Finset.prod_map, val_succEmb]
 
-@[to_additive]
-theorem prod_Ioi_succ (i : Fin n) : ∏ j ∈ Ioi i.succ, v j = ∏ j ∈ Ioi i, v j.succ := by
-  rw [Ioi_succ, Finset.prod_map, val_succEmb]
+-- @[to_additive]
+-- theorem prod_Ioi_succ (i : Fin n) : ∏ j ∈ Ioi i.succ, v j = ∏ j ∈ Ioi i, v j.succ := by
+--   rw [Ioi_succ, Finset.prod_map, val_succEmb]
 
-@[to_additive (attr := simp)]
-theorem prod_Ici_zero : ∏ i ∈ Ici 0, v i = ∏ j : Fin (n + 1), v j := by
-  rw [← bot_eq_zero, Ici_bot]
-
-@[to_additive]
-theorem prod_Ici_succ (i : Fin n) :
-    ∏ j ∈ Ici i.succ, v j = ∏ j ∈ Ici i, v j.succ := by
-  rw [Ici_succ, Finset.prod_map, val_succEmb]
-
-@[to_additive (attr := simp)]
-theorem prod_Iio_zero : ∏ i ∈ Iio 0, v i = 1 := by
-  rw [← bot_eq_zero, Iio_bot, prod_empty]
+-- @[to_additive]
+-- theorem prod_Ici_succ (i : Fin n) :
+--     ∏ j ∈ Ici i.succ, v j = ∏ j ∈ Ici i, v j.succ := by
+--   rw [Ici_succ, Finset.prod_map, val_succEmb]
 
 @[to_additive]
 theorem prod_Iio_succ (i : Fin n) :
     ∏ j ∈ Iio i.succ, v j = (∏ j ∈ Iio i.castSucc, v j) * v i.castSucc := by
   calc
-    _ = ∏ j ∈ Icc 0 i.castSucc, v j := prod_congr rfl (fun _ _ => rfl)
+    _ = ∏ j ∈ Ico 0 i.succ, v j :=
+      prod_congr (by rw [← bot_eq_zero, Ico_bot]) (fun _ _ => rfl)
+    _ = ∏ j ∈ Icc 0 i.castSucc, v j :=
+      prod_congr rfl (fun _ _ => rfl)
     _ = ∏ j ∈ insert i.castSucc (Ico 0 i.castSucc), v j :=
       prod_congr (by simp only [zero_le, Ico_insert_right]) (fun _ _ => rfl)
     _ = v i.castSucc * ∏ j ∈ Iio i.castSucc, v j :=
@@ -211,7 +206,9 @@ theorem prod_Iio_succ (i : Fin n) :
 theorem prod_Iio_eq_univ (i : Fin (n + 1)) :
     ∏ j ∈ Iio i, v j = ∏ j : Fin i, v (Fin.castLE i.isLt.le j) := by
   induction i using Fin.induction with
-  | zero => simp only [prod_Iio_zero, val_zero, univ_eq_empty, prod_empty]
+  | zero =>
+    conv_lhs => rw [← bot_eq_zero]
+    simp only [Iio_bot, prod_empty, val_zero, univ_eq_empty]
   | succ i hi => simp only [prod_Iio_succ, hi, prod_univ_castSucc, val_succ]; congr
 
 @[to_additive (attr := simp)]
@@ -222,7 +219,8 @@ theorem prod_Iic_zero : ∏ j ∈ Iic 0, v j = v 0 := by
 theorem prod_Iic_succ (i : Fin n) :
     ∏ j ∈ Iic i.succ, v j = (∏ j ∈ Iic i.castSucc, v j) * v i.succ := by
   calc
-    _ = ∏ j ∈ Icc 0 i.succ, v j := prod_congr rfl (fun _ _ => rfl)
+    _ = ∏ j ∈ Icc 0 i.succ, v j :=
+      prod_congr (by rw [← bot_eq_zero, Icc_bot]) (fun _ _ => rfl)
     _ = ∏ j ∈ insert i.succ (Ico 0 i.succ), v j :=
       prod_congr (by simp only [zero_le, Ico_insert_right]) (fun _ _ => rfl)
     _ = v i.succ * ∏ j ∈ Iic i.castSucc, v j :=
