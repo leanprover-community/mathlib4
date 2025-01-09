@@ -224,7 +224,7 @@ end CommMonoid
 
 section LeftCancelMonoid
 
-variable [LeftCancelMonoid M] {a b : M}
+variable [Monoid M] [IsLeftCancelMul M] {a b : M}
 
 @[to_additive (attr := simp)]
 theorem mul_right_eq_self : a * b = a ↔ b = 1 := calc
