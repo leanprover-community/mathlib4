@@ -7,13 +7,13 @@ import Mathlib.Geometry.Manifold.VectorBundle.Basic
 
 /-! # Tangent bundles
 
-This file defines the tangent bundle as a smooth vector bundle.
+This file defines the tangent bundle as a `C^n` vector bundle.
 
 Let `M` be a manifold with model `I` on `(E, H)`. The tangent space `TangentSpace I (x : M)` has
 already been defined as a type synonym for `E`, and the tangent bundle `TangentBundle I M` as an
 abbrev of `Bundle.TotalSpace E (TangentSpace I : M → Type _)`.
 
-In this file, when `M` is smooth, we construct a smooth vector bundle structure
+In this file, when `M` is `C^1`, we construct a vector bundle structure
 on `TangentBundle I M` using the `VectorBundleCore` construction indexed by the charts of `M`
 with fibers `E`. Given two charts `i, j : PartialHomeomorph M H`, the coordinate change
 between `i` and `j` at a point `x : M` is the derivative of the composite
@@ -22,19 +22,19 @@ between `i` and `j` at a point `x : M` is the derivative of the composite
 E -----> H -----> M --> H --> E
 ```
 within the set `range I ⊆ E` at `I (i x) : E`.
-This defines a smooth vector bundle `TangentBundle` with fibers `TangentSpace`.
+This defines a vector bundle `TangentBundle` with fibers `TangentSpace`.
 
 ## Main definitions and results
 
 * `tangentBundleCore I M` is the vector bundle core for the tangent bundle over `M`.
 
-* When `M` is a smooth manifold with corners, `TangentBundle I M` has a smooth vector bundle
+* When `M` is a `C^{n+1}` manifold, `TangentBundle I M` has a `C^n` vector bundle
 structure over `M`. In particular, it is a topological space, a vector bundle, a fiber bundle,
-and a smooth manifold.
+and a `C^n` manifold.
 -/
 
 
-open Bundle Set SmoothManifoldWithCorners PartialHomeomorph ContinuousLinearMap
+open Bundle Set IsManifold PartialHomeomorph ContinuousLinearMap
 
 open scoped Manifold Topology Bundle ContDiff
 
@@ -42,31 +42,34 @@ noncomputable section
 
 section General
 
-variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {n : WithTop ℕ∞} {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
   [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [SmoothManifoldWithCorners I M] {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  [SmoothManifoldWithCorners I' M'] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+   {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
+   {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 /-- Auxiliary lemma for tangent spaces: the derivative of a coordinate change between two charts is
-  smooth on its source. -/
-theorem contDiffOn_fderiv_coord_change (i j : atlas H M) :
-    ContDiffOn 𝕜 ∞ (fderivWithin 𝕜 (j.1.extend I ∘ (i.1.extend I).symm) (range I))
+  `C^n` on its source. -/
+theorem contDiffOn_fderiv_coord_change [IsManifold I (n + 1) M]
+    (i j : atlas H M) :
+    ContDiffOn 𝕜 n (fderivWithin 𝕜 (j.1.extend I ∘ (i.1.extend I).symm) (range I))
       ((i.1.extend I).symm ≫ j.1.extend I).source := by
   have h : ((i.1.extend I).symm ≫ j.1.extend I).source ⊆ range I := by
     rw [i.1.extend_coord_change_source]; apply image_subset_range
   intro x hx
-  refine (ContDiffWithinAt.fderivWithin_right ?_ I.uniqueDiffOn (n := ∞) (mod_cast le_top)
+  refine (ContDiffWithinAt.fderivWithin_right ?_ I.uniqueDiffOn le_rfl
     <| h hx).mono h
   refine (PartialHomeomorph.contDiffOn_extend_coord_change (subset_maximalAtlas j.2)
     (subset_maximalAtlas i.2) x hx).mono_of_mem_nhdsWithin ?_
   exact i.1.extend_coord_change_source_mem_nhdsWithin j.1 hx
 
-open SmoothManifoldWithCorners
+open IsManifold
+
+variable [IsManifold I 1 M] [IsManifold I' 1 M']
 
 variable (I M) in
-/-- Let `M` be a smooth manifold with corners with model `I` on `(E, H)`.
+/-- Let `M` be a `C^1` manifold with model `I` on `(E, H)`.
 Then `tangentBundleCore I M` is the vector bundle core for the tangent bundle over `M`.
 It is indexed by the atlas of `M`, with fiber `E` and its change of coordinates from the chart `i`
 to the chart `j` at point `x : M` is the derivative of the composite
@@ -84,18 +87,20 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
   coordChange i j x :=
     fderivWithin 𝕜 (j.1.extend I ∘ (i.1.extend I).symm) (range I) (i.1.extend I x)
   coordChange_self i x hx v := by
-    simp only
+    dsimp only
     rw [Filter.EventuallyEq.fderivWithin_eq, fderivWithin_id', ContinuousLinearMap.id_apply]
     · exact I.uniqueDiffWithinAt_image
     · filter_upwards [i.1.extend_target_mem_nhdsWithin hx] with y hy
       exact (i.1.extend I).right_inv hy
     · simp_rw [Function.comp_apply, i.1.extend_left_inv hx]
   continuousOn_coordChange i j := by
-    refine (contDiffOn_fderiv_coord_change i j).continuousOn.comp
+    have : IsManifold I (0 + 1) M := by simp; infer_instance
+    refine (contDiffOn_fderiv_coord_change (n := 0) i j).continuousOn.comp
       (i.1.continuousOn_extend.mono ?_) ?_
     · rw [i.1.extend_source]; exact inter_subset_left
     simp_rw [← i.1.extend_image_source_inter, mapsTo_image]
   coordChange_comp := by
+    have : IsManifold I (0 + 1) M := by simp; infer_instance
     rintro i j k x ⟨⟨hxi, hxj⟩, hxk⟩ v
     rw [fderivWithin_fderivWithin, Filter.EventuallyEq.fderivWithin_eq]
     · have := i.1.extend_preimage_mem_nhds (I := I) hxi (j.1.extend_source_mem_nhds (I := I) hxj)
@@ -103,9 +108,9 @@ def tangentBundleCore : VectorBundleCore 𝕜 M E (atlas H M) where
       simp_rw [Function.comp_apply, (j.1.extend I).left_inv hy]
     · simp_rw [Function.comp_apply, i.1.extend_left_inv hxi, j.1.extend_left_inv hxj]
     · exact (contDiffWithinAt_extend_coord_change' (subset_maximalAtlas k.2)
-        (subset_maximalAtlas j.2) hxk hxj).differentiableWithinAt (mod_cast le_top)
+        (subset_maximalAtlas j.2) hxk hxj).differentiableWithinAt le_rfl
     · exact (contDiffWithinAt_extend_coord_change' (subset_maximalAtlas j.2)
-        (subset_maximalAtlas i.2) hxj hxi).differentiableWithinAt (mod_cast le_top)
+        (subset_maximalAtlas i.2) hxj hxi).differentiableWithinAt le_rfl
     · intro x _; exact mem_range_self _
     · exact I.uniqueDiffWithinAt_image
     · rw [Function.comp_apply, i.1.extend_left_inv hxi]
@@ -154,7 +159,7 @@ lemma hasFDerivWithinAt_tangentCoordChange {x y z : M}
   have h' : extChartAt I x z ∈ ((extChartAt I x).symm ≫ (extChartAt I y)).source := by
     rw [PartialEquiv.trans_source'', PartialEquiv.symm_symm, PartialEquiv.symm_target]
     exact mem_image_of_mem _ h
-  ((contDiffWithinAt_ext_coord_change y x h').differentiableWithinAt (by simp)).hasFDerivWithinAt
+  ((contDiffWithinAt_ext_coord_change y x h').differentiableWithinAt le_rfl).hasFDerivWithinAt
 
 lemma continuousOn_tangentCoordChange (x y : M) : ContinuousOn (tangentCoordChange I x y)
     ((extChartAt I x).source ∩ (extChartAt I y).source) := by
@@ -283,7 +288,11 @@ theorem continuousLinearMapAt_model_space (b b' : F) :
 
 end TangentBundle
 
-instance tangentBundleCore.isSmooth : (tangentBundleCore I M).IsSmooth I := by
+omit [IsManifold I 1 M] in
+lemma tangentBundleCore.isContMDiff [h : IsManifold I (n + 1) M] :
+    haveI : IsManifold I 1 M := .of_le (n := n + 1) le_add_self
+    (tangentBundleCore I M).IsContMDiff I n := by
+  have : IsManifold I n M := .of_le (n := n + 1) (le_self_add)
   refine ⟨fun i j => ?_⟩
   rw [contMDiffOn_iff_source_of_mem_maximalAtlas (subset_maximalAtlas i.2),
     contMDiffOn_iff_contDiffOn]
@@ -293,8 +302,36 @@ instance tangentBundleCore.isSmooth : (tangentBundleCore I M).IsSmooth I := by
     · exact (i.1.extend_image_source_inter j.1).subset
   · apply inter_subset_left
 
-instance TangentBundle.smoothVectorBundle : SmoothVectorBundle E (TangentSpace I : M → Type _) I :=
-  (tangentBundleCore I M).smoothVectorBundle
+@[deprecated (since := "2025-01-09")]
+alias tangentBundleCore.isSmooth := tangentBundleCore.isContMDiff
+
+omit [IsManifold I 1 M] in
+lemma TangentBundle.contMDiffVectorBundle [h : IsManifold I (n + 1) M] :
+    haveI : IsManifold I 1 M := .of_le (n := n + 1) le_add_self
+    ContMDiffVectorBundle n E (TangentSpace I : M → Type _) I := by
+  have : IsManifold I 1 M := .of_le (n := n + 1) le_add_self
+  have : (tangentBundleCore I M).IsContMDiff I n := tangentBundleCore.isContMDiff
+  exact (tangentBundleCore I M).instContMDiffVectorBundle
+
+@[deprecated (since := "2025-01-09")]
+alias TangentBundle.smoothVectorBundle := TangentBundle.contMDiffVectorBundle
+
+omit [IsManifold I 1 M] in
+instance [h : IsManifold I ∞ M] :
+    ContMDiffVectorBundle ∞ E (TangentSpace I : M → Type _) I := by
+  have : IsManifold I (∞ + 1) M := h
+  exact TangentBundle.contMDiffVectorBundle
+
+omit [IsManifold I 1 M] in
+instance [IsManifold I ω M] :
+    ContMDiffVectorBundle ω E (TangentSpace I : M → Type _) I :=
+  TangentBundle.contMDiffVectorBundle
+
+omit [IsManifold I 1 M] in
+instance [h : IsManifold I 2 M] :
+    ContMDiffVectorBundle 1 E (TangentSpace I : M → Type _) I := by
+  have : IsManifold I (1 + 1) M := h
+  exact TangentBundle.contMDiffVectorBundle
 
 end TangentBundleInstances
 
@@ -396,7 +433,7 @@ theorem contMDiff_tangentBundleModelSpaceHomeomorph_symm {n : ℕ∞} :
   exact ⟨rfl, rfl⟩
 
 variable (H I) in
-/-- In the tangent bundle to the model space, the second projection is smooth. -/
+/-- In the tangent bundle to the model space, the second projection is `C^n`. -/
 lemma contMDiff_snd_tangentBundle_modelSpace {n : ℕ∞} :
     ContMDiff I.tangent 𝓘(𝕜, E) n (fun (p : TangentBundle I H) ↦ p.2) := by
   change ContMDiff I.tangent 𝓘(𝕜, E) n
@@ -407,7 +444,7 @@ lemma contMDiff_snd_tangentBundle_modelSpace {n : ℕ∞} :
     rfl
   · exact contMDiff_tangentBundleModelSpaceHomeomorph
 
-/-- A vector field on a vector space is smooth in the manifold sense iff it is smooth in the vector
+/-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense-/
 lemma contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt
     {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} {s : Set E} {x : E} :
@@ -421,7 +458,7 @@ lemma contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt
     convert h.contMDiffWithinAt with y
     simp
 
-/-- A vector field on a vector space is smooth in the manifold sense iff it is smooth in the vector
+/-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense-/
 lemma contMDiffAt_vectorSpace_iff_contDiffAt
     {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} {x : E} :
@@ -430,7 +467,7 @@ lemma contMDiffAt_vectorSpace_iff_contDiffAt
   simp only [← contMDiffWithinAt_univ, ← contDiffWithinAt_univ,
     contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt]
 
-/-- A vector field on a vector space is smooth in the manifold sense iff it is smooth in the vector
+/-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense-/
 lemma contMDiffOn_vectorSpace_iff_contDiffOn
     {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} {s : Set E} :
@@ -438,7 +475,7 @@ lemma contMDiffOn_vectorSpace_iff_contDiffOn
       ContDiffOn 𝕜 n V s := by
   simp only [ContMDiffOn, ContDiffOn, contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt ]
 
-/-- A vector field on a vector space is smooth in the manifold sense iff it is smooth in the vector
+/-- A vector field on a vector space is `C^n` in the manifold sense iff it is `C^n` in the vector
 space sense-/
 lemma contMDiff_vectorSpace_iff_contDiff
     {V : Π (x : E), TangentSpace 𝓘(𝕜, E) x} {n : ℕ∞} :
