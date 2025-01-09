@@ -53,7 +53,7 @@ section LeftRight
 variable [MulLeftMono G] [MulRightMono G]
 
 @[to_additive]
-def ciSup_mul_le_ciSup_mul_ciSup (hf : BddAbove (range f)) (hg : BddAbove (range g)) :
+lemma ciSup_mul_le_ciSup_mul_ciSup (hf : BddAbove (range f)) (hg : BddAbove (range g)) :
     ⨆ i, f i * g i ≤ (⨆ i, f i) * ⨆ i, g i :=
   ciSup_le fun i ↦ mul_le_mul' (le_ciSup hf i) (le_ciSup hg i)
 
