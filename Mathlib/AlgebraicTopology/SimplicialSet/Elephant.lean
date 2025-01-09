@@ -229,6 +229,9 @@ instance (S : SSet.Truncated 2) : ReflQuiver (OneTruncation₂ S) where
         simp only [← FunctorToTypes.map_comp_apply, ← op_comp, δ₂_zero_comp_σ₂_zero,
           op_id, FunctorToTypes.map_id_apply] }
 
+-- lemma OneTruncation₂.reflPrefunctor_map {S T : SSet.Truncated 2}
+--     (F : OneTruncation₂ S ⥤rq OneTruncation₂ T) {X Y : OneTruncation₂ S} (f : Hom)
+
 @[simp]
 lemma OneTruncation₂.id_edge {S : SSet.Truncated 2} (X : OneTruncation₂ S) :
     OneTruncation₂.Hom.edge (𝟙rq X) = S.map (σ₂ 0).op X := rfl
@@ -311,7 +314,6 @@ def ev02₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev2₂ φ :=
 def ev01₂ {V : SSet.Truncated 2} (φ : V _[2]₂) : ev0₂ φ ⟶ ev1₂ φ :=
   ⟨V.map δ2₂.op φ, map_map_of_eq V (SimplexCategory.δ_comp_δ (j := 1) le_rfl), map_map_of_eq V rfl⟩
 
-
 /-- A refl prefunctor between the underlying refl quivers of a 2-truncated simplicial sets induces a
 map on paths. -/
 def reflPrefunctorPathMap {X Y : SSet.Truncated.{u} 2} (F : OneTruncation₂ X ⥤rq OneTruncation₂ Y)
@@ -378,16 +380,72 @@ def toStrictSegal₂.mk {X Y : SSet.Truncated 2} [StrictSegal Y]
         OK α := by
       ext x
       cases SimplexCategory.eq_const_to_zero α
-      dsimp
-      sorry
+      have lem : [1].const [0] 0 = σ₂ (n := 0) 0 := by ext i; match i with | 0 | 1 => rfl
+      rw [lem]
+      simp only [types_comp_apply, mk.app_zero]
+      rw [← OneTruncation₂.id_edge, ← OneTruncation₂.id_edge]
+      have := congrArg (fun f => f.edge) (ReflPrefunctor.map_id F x)
+      rw [← ReflPrefunctor.map_id]
+      simp only [mk.app_one]
+      congr 1
+      · simp only [OneTruncation₂.id_edge]
+        refine congrArg F.obj ?_
+        refine congr_fun (?_ : X.map _ ≫ X.map _ = 𝟙 _) x
+        rw [← map_comp, ← op_comp, δ₂_one_comp_σ₂_zero, op_id, CategoryTheory.Functor.map_id]
+      · simp only [OneTruncation₂.id_edge]
+        refine congrArg F.obj ?_
+        refine congr_fun (?_ : X.map _ ≫ X.map _ = 𝟙 _) x
+        rw [← map_comp, ← op_comp, δ₂_zero_comp_σ₂_zero, op_id, CategoryTheory.Functor.map_id]
+      · have : ∀ f a b (h1 : X.map (δ₂ 1).op f = a) (h2 : X.map (δ₂ 0).op f = b), x = a → x = b →
+          f = X.map (σ₂ (n := 0) 0).op x →
+          HEq (F.map ⟨f, h1, h2⟩) (F.map (ReflQuiver.id (obj := OneTruncation₂ X) x)) := by
+            rintro _ _ _ h1 h2 rfl rfl rfl
+            refine congr_arg_heq F.map ?_
+            apply OneTruncation₂.hom_ext
+            simp only [len_mk, id_eq, Nat.reduceAdd, Fin.isValue]
+            rw [← OneTruncation₂.id_edge]
+        apply this
+        · simp only [SimplexCategory.len_mk]
+          refine congr_fun (?_ : X.map _ ≫ X.map _ = 𝟙 _).symm x
+          rw [← map_comp, ← op_comp, δ₂_one_comp_σ₂_zero, op_id, CategoryTheory.Functor.map_id]
+        · simp only [SimplexCategory.len_mk]
+          refine congr_fun (?_ : X.map _ ≫ X.map _ = 𝟙 _).symm x
+          rw [← map_comp, ← op_comp, δ₂_zero_comp_σ₂_zero, op_id, CategoryTheory.Functor.map_id]
+        · simp
     have const01 (α : (⟨[0], by decide⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[1], by decide⟩) :
         OK α := by
-      ext x
-      sorry
+      ext f
+      obtain ⟨i : Fin 2, rfl⟩ := exists_eq_const_of_zero α
+      match i with
+      | 0 =>
+        have lem : [0].const [1] 0 = δ₂ 1 := by ext i; match i with | 0 => rfl
+        rw [lem]
+        simp only [id_eq, types_comp_apply, mk.app_zero, mk.app_one]
+        rw [OneTruncation₂.Hom.src_eq]
+      | 1 =>
+        have lem : [0].const [1] 1 = δ₂ 0 := by ext i; match i with | 0 => rfl
+        rw [lem]
+        simp only [id_eq, types_comp_apply, mk.app_zero, mk.app_one]
+        rw [OneTruncation₂.Hom.tgt_eq]
     have const02 (α : (⟨[0], by decide⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[2], by decide⟩) :
         OK α := by
-      ext x
-      sorry
+      ext φ
+      obtain ⟨i : Fin 3, rfl⟩ := exists_eq_const_of_zero α
+      match i with
+      | 0 =>
+        have lem : [0].const [2] 0 = ι0₂ := by ext i; match i with | 0 => rfl
+        rw [lem]
+        dsimp only [id_eq, types_comp_apply, mk.app_zero]
+        simp only [mk.app_two]
+        sorry
+      | 1 =>
+        have lem :  [0].const [2] 1 = ι1₂ := by ext i; match i with | 0 => rfl
+        rw [lem]
+        sorry
+      | 2 =>
+        have lem :  [0].const [2] 2 = ι2₂ := by ext i; match i with | 0 => rfl
+        rw [lem]
+        sorry
     have nat1m {m hm} (α : (⟨[1], by decide⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[m], hm⟩) :
         OK α := by
       match m with
