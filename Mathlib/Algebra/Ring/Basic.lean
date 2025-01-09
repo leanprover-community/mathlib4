@@ -183,3 +183,43 @@ lemma noZeroDivisors_iff_isDomain_or_subsingleton [Ring α] :
   rw [← isCancelMulZero_iff_noZeroDivisors, isCancelMulZero_iff_isDomain_or_subsingleton]
 
 end NoZeroDivisors
+
+section DivisionMonoid
+variable [DivisionMonoid R] [HasDistribNeg R] {a b : R}
+
+lemma one_div_neg_one_eq_neg_one : (1 : R) / -1 = -1 :=
+  have : -1 * -1 = (1 : R) := by rw [neg_mul_neg, one_mul]
+  Eq.symm (eq_one_div_of_mul_eq_one_right this)
+
+lemma one_div_neg_eq_neg_one_div (a : R) : 1 / -a = -(1 / a) :=
+  calc
+    1 / -a = 1 / (-1 * a) := by rw [neg_eq_neg_one_mul]
+    _ = 1 / a * (1 / -1) := by rw [one_div_mul_one_div_rev]
+    _ = 1 / a * -1 := by rw [one_div_neg_one_eq_neg_one]
+    _ = -(1 / a) := by rw [mul_neg, mul_one]
+
+lemma div_neg_eq_neg_div (a b : R) : b / -a = -(b / a) :=
+  calc
+    b / -a = b * (1 / -a) := by rw [← inv_eq_one_div, division_def]
+    _ = b * -(1 / a) := by rw [one_div_neg_eq_neg_one_div]
+    _ = -(b * (1 / a)) := by rw [neg_mul_eq_mul_neg]
+    _ = -(b / a) := by rw [mul_one_div]
+
+lemma neg_div (a b : R) : -b / a = -(b / a) := by
+  rw [neg_eq_neg_one_mul, mul_div_assoc, ← neg_eq_neg_one_mul]
+
+@[field_simps]
+lemma neg_div' (a b : R) : -(b / a) = -b / a := by simp [neg_div]
+
+@[simp]
+lemma neg_div_neg_eq (a b : R) : -a / -b = a / b := by rw [div_neg_eq_neg_div, neg_div, neg_neg]
+
+lemma neg_inv : -a⁻¹ = (-a)⁻¹ := by rw [inv_eq_one_div, inv_eq_one_div, div_neg_eq_neg_div]
+
+lemma div_neg (a : R) : a / -b = -(a / b) := by rw [← div_neg_eq_neg_div]
+
+lemma inv_neg : (-a)⁻¹ = -a⁻¹ := by rw [neg_inv]
+
+lemma inv_neg_one : (-1 : R)⁻¹ = -1 := by rw [← neg_inv, inv_one]
+
+end DivisionMonoid
