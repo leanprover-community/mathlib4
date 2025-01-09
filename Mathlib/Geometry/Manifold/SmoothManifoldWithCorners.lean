@@ -10,17 +10,16 @@ import Mathlib.Data.Bundle
 import Mathlib.Geometry.Manifold.ChartedSpace
 
 /-!
-# Smooth manifolds (possibly with boundary or corners)
+# `C^n` manifolds (possibly with boundary or corners)
 
-A smooth manifold is a manifold modelled on a normed vector space, or a subset like a
-half-space (to get manifolds with boundaries) for which the changes of coordinates are smooth maps.
+A `C^n` manifold is a manifold modelled on a normed vector space, or a subset like a
+half-space (to get manifolds with boundaries) for which the changes of coordinates are `C^n` maps.
 We define a model with corners as a map `I : H → E` embedding nicely the topological space `H` in
 the vector space `E` (or more precisely as a structure containing all the relevant properties).
 Given such a model with corners `I` on `(E, H)`, we define the groupoid of local
-homeomorphisms of `H` which are smooth when read in `E` (for any regularity `n : ℕ∞`).
+homeomorphisms of `H` which are `C^n` when read in `E` (for any regularity `n : WithTop ℕ∞`).
 With this groupoid at hand and the general machinery of charted spaces, we thus get the notion
-of `C^n` manifold with respect to any model with corners `I` on `(E, H)`. We also introduce a
-specific type class for `C^∞` manifolds as these are the most commonly used.
+of `C^n` manifold with respect to any model with corners `I` on `(E, H)`.
 
 Some texts assume manifolds to be Hausdorff and second countable. We (in mathlib) assume neither,
 but add these assumptions later as needed. (Quite a few results still do not require them.)
@@ -30,18 +29,18 @@ but add these assumptions later as needed. (Quite a few results still do not req
 * `ModelWithCorners 𝕜 E H` :
   a structure containing information on the way a space `H` embeds in a
   model vector space E over the field `𝕜`. This is all that is needed to
-  define a smooth manifold with model space `H`, and model vector space `E`.
+  define a `C^n` manifold with model space `H`, and model vector space `E`.
 * `modelWithCornersSelf 𝕜 E` :
   trivial model with corners structure on the space `E` embedded in itself by the identity.
 * `contDiffGroupoid n I` :
   when `I` is a model with corners on `(𝕜, E, H)`, this is the groupoid of partial homeos of `H`
   which are of class `C^n` over the normed field `𝕜`, when read in `E`.
-* `SmoothManifoldWithCorners I M` :
-  a type class saying that the charted space `M`, modelled on the space `H`, has `C^∞` changes of
+* `IsManifold I n M` :
+  a type class saying that the charted space `M`, modelled on the space `H`, has `C^n` changes of
   coordinates with respect to the model with corners `I` on `(𝕜, E, H)`. This type class is just
-  a shortcut for `HasGroupoid M (contDiffGroupoid ∞ I)`.
+  a shortcut for `HasGroupoid M (contDiffGroupoid n I)`.
 * `extChartAt I x`:
-  in a smooth manifold with corners with the model `I` on `(E, H)`, the charts take values in `H`,
+  in a `C^n` manifold with corners with the model `I` on `(E, H)`, the charts take values in `H`,
   but often we may want to use their `E`-valued version, obtained by composing the charts with `I`.
   Since the target is in general not open, we can not register them as partial homeomorphisms, but
   we register them as `PartialEquiv`s.
@@ -49,20 +48,22 @@ but add these assumptions later as needed. (Quite a few results still do not req
 
 As specific examples of models with corners, we define (in `Geometry.Manifold.Instances.Real`)
 * `modelWithCornersEuclideanHalfSpace n :
+  ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space used to
+  define `n`-dimensional real manifolds without boundary
+  (with notation `𝓡 n` in the locale `Manifold`)
+* `modelWithCornersEuclideanHalfSpace n :
   ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
-  `n`-dimensional real manifolds without boundary (with notation `𝓡 n` in the locale `Manifold`)
-* `ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space
   used to define `n`-dimensional real manifolds with boundary (with notation `𝓡∂ n` in the locale
   `Manifold`)
 * `modelWithCornersEuclideanQuadrant n :
   ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanQuadrant n)` for the model space used
   to define `n`-dimensional real manifolds with corners
 
-With these definitions at hand, to invoke an `n`-dimensional real manifold without boundary,
+With these definitions at hand, to invoke an `n`-dimensional `C^∞` real manifold without boundary,
 one could use
 
   `variable {n : ℕ} {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace ℝ (Fin n)) M]
-   [SmoothManifoldWithCorners (𝓡 n) M]`.
+   [IsManifold (𝓡 n) ∞ M]`.
 
 However, this is not the recommended way: a theorem proved using this assumption would not apply
 for instance to the tangent space of such a manifold, which is modelled on
@@ -75,7 +76,7 @@ the right properties, like
 
   `variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   {I : ModelWithCorners ℝ E E} [I.Boundaryless]
-  {M : Type*} [TopologicalSpace M] [ChartedSpace E M] [SmoothManifoldWithCorners I M]`
+  {M : Type*} [TopologicalSpace M] [ChartedSpace E M] [IsManifold I ∞ M]`
 
 Here, `I.Boundaryless` is a typeclass property ensuring that there is no boundary (this is for
 instance the case for `modelWithCornersSelf`, or products of these). Note that one could consider
@@ -83,6 +84,10 @@ as a natural assumption to only use the trivial model with corners `modelWithCor
 but again in product manifolds the natural model with corners will not be this one but the product
 one (and they are not defeq as `(fun p : E × F ↦ (p.1, p.2))` is not defeq to the identity).
 So, it is important to use the above incantation to maximize the applicability of theorems.
+
+Even better, if the result should apply in a parallel way to smooth manifolds and to analytic
+manifolds, the last typeclass should be replaced with `[IsManifold I n M]`
+for `n : WithTop ℕ∞`.
 
 We also define `TangentSpace I (x : M)` as a type synonym of `E`, and `TangentBundle I M` as a
 type synonym for `Π (x : M), TangentSpace I x` (in the form of an
@@ -108,13 +113,6 @@ half space), and an embedding of `H` into `E` (which can be the identity for `H 
 `Subtype.val` for manifolds with corners). We say that the pair `(E, H)` with their embedding is a
 model with corners, and we encompass all the relevant properties (in particular the fact that the
 image of `H` in `E` should have unique differentials) in the definition of `ModelWithCorners`.
-
-We concentrate on `C^∞` manifolds: all the definitions work equally well for `C^n` manifolds, but
-later on it is a pain to carry all over the smoothness parameter, especially when one wants to deal
-with `C^k` functions as there would be additional conditions `k ≤ n` everywhere. Since one deals
-almost all the time with `C^∞` (or analytic) manifolds, this seems to be a reasonable choice that
-one could revisit later if needed. `C^k` manifolds are still available, but they should be called
-using `HasGroupoid M (contDiffGroupoid k I)` where `I` is the model with corners.
 
 I have considered using the model with corners `I` as a typeclass argument, possibly `outParam`, to
 get lighter notations later on, but it did not turn out right, as on `E × F` there are two natural
@@ -142,7 +140,7 @@ open scoped Manifold Filter Topology ContDiff
 
 /-- A structure containing information on the way a space `H` embeds in a
 model vector space `E` over the field `𝕜`. This is all what is needed to
-define a smooth manifold with model space `H`, and model vector space `E`.
+define a `C^n` manifold with model space `H`, and model vector space `E`.
 
 We require two conditions `uniqueDiffOn'` and `target_subset_closure_interior`, which
 are satisfied in the relevant cases (where `range I = univ` or a half space or a quadrant) and
@@ -303,7 +301,6 @@ alias closedEmbedding := isClosedEmbedding
 theorem isClosed_range : IsClosed (range I) :=
   I.isClosedEmbedding.isClosed_range
 
-@[deprecated (since := "2024-03-17")] alias closed_range := isClosed_range
 
 theorem range_eq_closure_interior : range I = closure (interior (range I)) :=
   Subset.antisymm I.range_subset_closure_interior I.isClosed_range.closure_interior_subset
@@ -525,7 +522,7 @@ end Boundaryless
 
 section contDiffGroupoid
 
-/-! ### Smooth functions on models with corners -/
+/-! ### `C^n` functions on models with corners -/
 
 
 variable {m n : WithTop ℕ∞} {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
@@ -620,10 +617,10 @@ theorem symm_trans_mem_contDiffGroupoid (e : PartialHomeomorph M H) :
 
 variable {E' H' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [TopologicalSpace H']
 
-/-- The product of two smooth partial homeomorphisms is smooth. -/
+/-- The product of two `C^n` partial homeomorphisms is `C^n`. -/
 theorem contDiffGroupoid_prod {I : ModelWithCorners 𝕜 E H} {I' : ModelWithCorners 𝕜 E' H'}
-    {e : PartialHomeomorph H H} {e' : PartialHomeomorph H' H'} (he : e ∈ contDiffGroupoid ∞ I)
-    (he' : e' ∈ contDiffGroupoid ∞ I') : e.prod e' ∈ contDiffGroupoid ∞ (I.prod I') := by
+    {e : PartialHomeomorph H H} {e' : PartialHomeomorph H' H'} (he : e ∈ contDiffGroupoid n I)
+    (he' : e' ∈ contDiffGroupoid n I') : e.prod e' ∈ contDiffGroupoid n (I.prod I') := by
   cases' he with he he_symm
   cases' he' with he' he'_symm
   simp only at he he_symm he' he'_symm
@@ -649,72 +646,127 @@ instance : ClosedUnderRestriction (contDiffGroupoid n I) :=
 
 end contDiffGroupoid
 
-section SmoothManifoldWithCorners
+section IsManifold
 
-/-! ### Smooth manifolds with corners -/
+/-! ### `C^n` manifolds (possibly with boundary or corners) -/
 
-
-/-- Typeclass defining smooth manifolds with corners with respect to a model with corners, over a
-field `𝕜` and with infinite smoothness to simplify typeclass search and statements later on. -/
-class SmoothManifoldWithCorners {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+/-- Typeclass defining manifolds with respect to a model with corners, over a
+field `𝕜`. This definition includes the model with corners `I` (which might allow boundary, corners,
+or not, so this class covers both manifolds with boundary and manifolds without boundary), and
+a smoothness parameter `n : WithTop ℕ∞` (where `n = 0` means topological manifold, `n = ∞` means
+smooth manifold and `n = ω` means analytic manifold). -/
+class IsManifold {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M] extends
-    HasGroupoid M (contDiffGroupoid ∞ I) : Prop
+    (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞) (M : Type*)
+    [TopologicalSpace M] [ChartedSpace H M] extends
+    HasGroupoid M (contDiffGroupoid n I) : Prop
 
-theorem SmoothManifoldWithCorners.mk' {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+@[deprecated (since := "2025-01-09")] alias SmoothManifoldWithCorners := IsManifold
+
+/-- Building a `C^n` manifold from a `HasGroupoid` assumption. -/
+theorem IsManifold.mk' {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    [gr : HasGroupoid M (contDiffGroupoid ∞ I)] : SmoothManifoldWithCorners I M :=
+    (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞)
+    (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+    [gr : HasGroupoid M (contDiffGroupoid n I)] : IsManifold I n M :=
   { gr with }
 
-theorem smoothManifoldWithCorners_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
+@[deprecated (since := "2025-01-09")] alias SmoothManifoldWithCorners.mk' := IsManifold.mk'
+
+theorem isManifold_of_contDiffOn {𝕜 : Type*} [NontriviallyNormedField 𝕜]
     {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    (I : ModelWithCorners 𝕜 E H) (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
+    (I : ModelWithCorners 𝕜 E H) (n : WithTop ℕ∞) (M : Type*)
+    [TopologicalSpace M] [ChartedSpace H M]
     (h : ∀ e e' : PartialHomeomorph M H, e ∈ atlas H M → e' ∈ atlas H M →
-      ContDiffOn 𝕜 ∞ (I ∘ e.symm ≫ₕ e' ∘ I.symm) (I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I)) :
-    SmoothManifoldWithCorners I M where
+      ContDiffOn 𝕜 n (I ∘ e.symm ≫ₕ e' ∘ I.symm) (I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I)) :
+    IsManifold I n M where
   compatible := by
-    haveI : HasGroupoid M (contDiffGroupoid ∞ I) := hasGroupoid_of_pregroupoid _ (h _ _)
+    haveI : HasGroupoid M (contDiffGroupoid n I) := hasGroupoid_of_pregroupoid _ (h _ _)
     apply StructureGroupoid.compatible
 
-/-- For any model with corners, the model space is a smooth manifold -/
-instance model_space_smooth {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
+@[deprecated (since := "2025-01-09")]
+alias smoothManifoldWithCorners_of_contDiffOn := isManifold_of_contDiffOn
+
+/-- For any model with corners, the model space is a `C^n` manifold -/
+instance intIsManifoldModelSpace {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*}
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
-    {I : ModelWithCorners 𝕜 E H} : SmoothManifoldWithCorners I H :=
+    {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞} : IsManifold I n H :=
   { hasGroupoid_model_space _ _ with }
 
-end SmoothManifoldWithCorners
+end IsManifold
 
-namespace SmoothManifoldWithCorners
+namespace IsManifold
 
-/- We restate in the namespace `SmoothManifoldWithCorners` some lemmas that hold for general
+/- We restate in the namespace `IsManifold` some lemmas that hold for general
 charted space with a structure groupoid, avoiding the need to specify the groupoid
-`contDiffGroupoid ∞ I` explicitly. -/
+`contDiffGroupoid n I` explicitly. -/
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] (I : ModelWithCorners 𝕜 E H) (M : Type*)
-  [TopologicalSpace M] [ChartedSpace H M]
+  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+  {n : WithTop ℕ∞} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
 
-/-- The maximal atlas of `M` for the smooth manifold with corners structure corresponding to the
+protected theorem of_le {m n : WithTop ℕ∞} (hmn : m ≤ n)
+    [IsManifold I n M] : IsManifold I m M := by
+  have : HasGroupoid M (contDiffGroupoid m I) :=
+    hasGroupoid_of_le (G₁ := contDiffGroupoid n I) (by infer_instance)
+      (contDiffGroupoid_le hmn)
+  exact mk' I m M
+
+/-- A typeclass registering that a smoothness exponent is smaller than `∞`. Used to deduce that
+some manifolds are `C^n` when they are `C^∞`. -/
+class _root_.ENat.LEInfty (m : WithTop ℕ∞) where
+  out : m ≤ ∞
+
+open ENat
+
+instance (n : ℕ) : LEInfty (n : WithTop ℕ∞) := ⟨mod_cast le_top⟩
+instance (n : ℕ) [n.AtLeastTwo] : LEInfty (no_index (OfNat.ofNat n) : WithTop ℕ∞) :=
+  inferInstanceAs (LEInfty (n : WithTop ℕ∞))
+instance : LEInfty (1 : WithTop ℕ∞) := inferInstanceAs (LEInfty ((1 : ℕ) : WithTop ℕ∞))
+instance : LEInfty (0 : WithTop ℕ∞) := inferInstanceAs (LEInfty ((0 : ℕ) : WithTop ℕ∞))
+
+instance {a : WithTop ℕ∞} [IsManifold I ∞ M] [h : LEInfty a] :
+    IsManifold I a M :=
+  IsManifold.of_le h.out
+
+instance {a : WithTop ℕ∞} [IsManifold I ω M] :
+    IsManifold I a M :=
+  IsManifold.of_le le_top
+
+instance : IsManifold I 0 M := by
+  suffices HasGroupoid M (contDiffGroupoid 0 I) from mk' I 0 M
+  constructor
+  intro e e' he he'
+  rw [contDiffGroupoid_zero_eq]
+  trivial
+
+instance [IsManifold I 2 M] :
+    IsManifold I 1 M :=
+  IsManifold.of_le one_le_two
+
+variable (I n M) in
+/-- The maximal atlas of `M` for the `C^n` manifold with corners structure corresponding to the
 model with corners `I`. -/
 def maximalAtlas :=
-  (contDiffGroupoid ∞ I).maximalAtlas M
+  (contDiffGroupoid n I).maximalAtlas M
 
-variable {I M}
-
-theorem subset_maximalAtlas [SmoothManifoldWithCorners I M] : atlas H M ⊆ maximalAtlas I M :=
+theorem subset_maximalAtlas [IsManifold I n M] : atlas H M ⊆ maximalAtlas I n M :=
   StructureGroupoid.subset_maximalAtlas _
 
-theorem chart_mem_maximalAtlas [SmoothManifoldWithCorners I M] (x : M) :
-    chartAt H x ∈ maximalAtlas I M :=
+theorem chart_mem_maximalAtlas [IsManifold I n M] (x : M) :
+    chartAt H x ∈ maximalAtlas I n M :=
   StructureGroupoid.chart_mem_maximalAtlas _ x
 
-theorem compatible_of_mem_maximalAtlas {e e' : PartialHomeomorph M H} (he : e ∈ maximalAtlas I M)
-    (he' : e' ∈ maximalAtlas I M) : e.symm.trans e' ∈ contDiffGroupoid ∞ I :=
+theorem compatible_of_mem_maximalAtlas {e e' : PartialHomeomorph M H} (he : e ∈ maximalAtlas I n M)
+    (he' : e' ∈ maximalAtlas I n M) : e.symm.trans e' ∈ contDiffGroupoid n I :=
   StructureGroupoid.compatible_of_mem_maximalAtlas he he'
 
-/-- The empty set is a smooth manifold w.r.t. any charted space and model. -/
-instance empty [IsEmpty M] : SmoothManifoldWithCorners I M := by
-  apply smoothManifoldWithCorners_of_contDiffOn
+lemma maximalAtlas_subset_of_le {m n : WithTop ℕ∞} (h : m ≤ n) :
+    maximalAtlas I n M ⊆ maximalAtlas I m M :=
+  StructureGroupoid.maximalAtlas_mono (contDiffGroupoid_le h)
+
+/-- The empty set is a `C^n` manifold w.r.t. any charted space and model. -/
+instance empty [IsEmpty M] : IsManifold I n M := by
+  apply isManifold_of_contDiffOn
   intro e e' _ _ x hx
   set t := I.symm ⁻¹' (e.symm ≫ₕ e').source ∩ range I
   -- Since `M` is empty, the condition about compatibility of transition maps is vacuous.
@@ -730,51 +782,61 @@ instance empty [IsEmpty M] : SmoothManifoldWithCorners I M := by
     _ = ∅ := empty_inter (range I)
   apply (this ▸ hx).elim
 
-/-- The product of two smooth manifolds with corners is naturally a smooth manifold with corners. -/
+/-- The product of two `C^n` manifolds is naturally a `C^n` manifold. -/
 instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
     [NormedSpace 𝕜 E] {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H : Type*}
     [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {H' : Type*} [TopologicalSpace H']
     {I' : ModelWithCorners 𝕜 E' H'} (M : Type*) [TopologicalSpace M] [ChartedSpace H M]
-    [SmoothManifoldWithCorners I M] (M' : Type*) [TopologicalSpace M'] [ChartedSpace H' M']
-    [SmoothManifoldWithCorners I' M'] : SmoothManifoldWithCorners (I.prod I') (M × M') where
+    [IsManifold I n M] (M' : Type*) [TopologicalSpace M'] [ChartedSpace H' M']
+    [IsManifold I' n M'] :
+    IsManifold (I.prod I') n (M × M') where
   compatible := by
     rintro f g ⟨f1, hf1, f2, hf2, rfl⟩ ⟨g1, hg1, g2, hg2, rfl⟩
     rw [PartialHomeomorph.prod_symm, PartialHomeomorph.prod_trans]
-    have h1 := (contDiffGroupoid ∞ I).compatible hf1 hg1
-    have h2 := (contDiffGroupoid ∞ I').compatible hf2 hg2
+    have h1 := (contDiffGroupoid n I).compatible hf1 hg1
+    have h2 := (contDiffGroupoid n I').compatible hf2 hg2
     exact contDiffGroupoid_prod h1 h2
 
-end SmoothManifoldWithCorners
+end IsManifold
 
-theorem PartialHomeomorph.singleton_smoothManifoldWithCorners
+theorem PartialHomeomorph.isManifold_singleton
     {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H}
+    {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞}
     {M : Type*} [TopologicalSpace M] (e : PartialHomeomorph M H) (h : e.source = Set.univ) :
-    @SmoothManifoldWithCorners 𝕜 _ E _ _ H _ I M _ (e.singletonChartedSpace h) :=
-  @SmoothManifoldWithCorners.mk' _ _ _ _ _ _ _ _ _ _ (id _) <|
-    e.singleton_hasGroupoid h (contDiffGroupoid ∞ I)
+    @IsManifold 𝕜 _ E _ _ H _ I n M _ (e.singletonChartedSpace h) :=
+  @IsManifold.mk' _ _ _ _ _ _ _ _ _ _ _ (id _) <|
+    e.singleton_hasGroupoid h (contDiffGroupoid n I)
 
-theorem Topology.IsOpenEmbedding.singleton_smoothManifoldWithCorners {𝕜 E H : Type*}
+@[deprecated (since := "2025-01-09")]
+alias PartialHomeomorph.singleton_smoothManifoldWithCorners :=
+  PartialHomeomorph.isManifold_singleton
+
+theorem Topology.IsOpenEmbedding.isManifold_singleton {𝕜 E H : Type*}
     [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H]
-    {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [Nonempty M] {f : M → H}
-    (h : IsOpenEmbedding f) :
-    @SmoothManifoldWithCorners 𝕜 _ E _ _ H _ I M _ h.singletonChartedSpace :=
-  (h.toPartialHomeomorph f).singleton_smoothManifoldWithCorners (by simp)
+    {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞}
+    {M : Type*} [TopologicalSpace M] [Nonempty M] {f : M → H} (h : IsOpenEmbedding f) :
+    @IsManifold 𝕜 _ E _ _ H _ I n M _ h.singletonChartedSpace :=
+  (h.toPartialHomeomorph f).isManifold_singleton (by simp)
+
+@[deprecated (since := "2025-01-09")]
+alias Topology.IsOpenEmbedding.singleton_smoothManifoldWithCorners :=
+  Topology.IsOpenEmbedding.isManifold_singleton
 
 @[deprecated (since := "2024-10-18")]
 alias OpenEmbedding.singleton_smoothManifoldWithCorners :=
-  IsOpenEmbedding.singleton_smoothManifoldWithCorners
+  Topology.IsOpenEmbedding.isManifold_singleton
 
 namespace TopologicalSpace.Opens
 
 open TopologicalSpace
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {M : Type*}
-  [TopologicalSpace M] [ChartedSpace H M] [SmoothManifoldWithCorners I M] (s : Opens M)
+  [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H] {I : ModelWithCorners 𝕜 E H} {n : WithTop ℕ∞}
+  {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I n M]
+  (s : Opens M)
 
-instance : SmoothManifoldWithCorners I s :=
-  { s.instHasGroupoid (contDiffGroupoid ∞ I) with }
+instance : IsManifold I n s :=
+  { s.instHasGroupoid (contDiffGroupoid n I) with }
 
 end TopologicalSpace.Opens
 
@@ -783,14 +845,15 @@ section ExtendedCharts
 open scoped Topology
 
 variable {𝕜 E M H E' M' H' : Type*} [NontriviallyNormedField 𝕜] [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] [TopologicalSpace H] [TopologicalSpace M] (f f' : PartialHomeomorph M H)
+  [NormedSpace 𝕜 E] [TopologicalSpace H] [TopologicalSpace M] {n : WithTop ℕ∞}
+  (f f' : PartialHomeomorph M H)
   {I : ModelWithCorners 𝕜 E H} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] [TopologicalSpace H']
   [TopologicalSpace M'] {I' : ModelWithCorners 𝕜 E' H'} {s t : Set M}
 
 /-!
 ### Extended charts
 
-In a smooth manifold with corners, the model space is the space `H`. However, we will also
+In a `C^n` manifold with corners, the model space is the space `H`. However, we will also
 need to use extended charts taking values in the model vector space `E`. These extended charts are
 not `PartialHomeomorph` as the target is not open in `E` in general, but we can still register them
 as `PartialEquiv`.
@@ -1072,25 +1135,25 @@ theorem extend_coord_change_source_mem_nhdsWithin' {x : M} (hxf : x ∈ f.source
 
 variable {f f'}
 
-open SmoothManifoldWithCorners
+open IsManifold
 
-theorem contDiffOn_extend_coord_change [ChartedSpace H M] (hf : f ∈ maximalAtlas I M)
-    (hf' : f' ∈ maximalAtlas I M) :
-    ContDiffOn 𝕜 ∞ (f.extend I ∘ (f'.extend I).symm) ((f'.extend I).symm ≫ f.extend I).source := by
+theorem contDiffOn_extend_coord_change [ChartedSpace H M] (hf : f ∈ maximalAtlas I n M)
+    (hf' : f' ∈ maximalAtlas I n M) :
+    ContDiffOn 𝕜 n (f.extend I ∘ (f'.extend I).symm) ((f'.extend I).symm ≫ f.extend I).source := by
   rw [extend_coord_change_source, I.image_eq]
   exact (StructureGroupoid.compatible_of_mem_maximalAtlas hf' hf).1
 
-theorem contDiffWithinAt_extend_coord_change [ChartedSpace H M] (hf : f ∈ maximalAtlas I M)
-    (hf' : f' ∈ maximalAtlas I M) {x : E} (hx : x ∈ ((f'.extend I).symm ≫ f.extend I).source) :
-    ContDiffWithinAt 𝕜 ∞ (f.extend I ∘ (f'.extend I).symm) (range I) x := by
+theorem contDiffWithinAt_extend_coord_change [ChartedSpace H M] (hf : f ∈ maximalAtlas I n M)
+    (hf' : f' ∈ maximalAtlas I n M) {x : E} (hx : x ∈ ((f'.extend I).symm ≫ f.extend I).source) :
+    ContDiffWithinAt 𝕜 n (f.extend I ∘ (f'.extend I).symm) (range I) x := by
   apply (contDiffOn_extend_coord_change hf hf' x hx).mono_of_mem_nhdsWithin
   rw [extend_coord_change_source] at hx ⊢
   obtain ⟨z, hz, rfl⟩ := hx
   exact I.image_mem_nhdsWithin ((PartialHomeomorph.open_source _).mem_nhds hz)
 
-theorem contDiffWithinAt_extend_coord_change' [ChartedSpace H M] (hf : f ∈ maximalAtlas I M)
-    (hf' : f' ∈ maximalAtlas I M) {x : M} (hxf : x ∈ f.source) (hxf' : x ∈ f'.source) :
-    ContDiffWithinAt 𝕜 ∞ (f.extend I ∘ (f'.extend I).symm) (range I) (f'.extend I x) := by
+theorem contDiffWithinAt_extend_coord_change' [ChartedSpace H M] (hf : f ∈ maximalAtlas I n M)
+    (hf' : f' ∈ maximalAtlas I n M) {x : M} (hxf : x ∈ f.source) (hxf' : x ∈ f'.source) :
+    ContDiffWithinAt 𝕜 n (f.extend I ∘ (f'.extend I).symm) (range I) (f'.extend I x) := by
   refine contDiffWithinAt_extend_coord_change hf hf' ?_
   rw [← extend_image_source_inter]
   exact mem_image_of_mem _ ⟨hxf', hxf⟩
@@ -1433,16 +1496,16 @@ theorem ext_coord_change_source (x x' : M) :
       I '' ((chartAt H x').symm ≫ₕ chartAt H x).source :=
   extend_coord_change_source _ _
 
-open SmoothManifoldWithCorners
+open IsManifold
 
-theorem contDiffOn_ext_coord_change [SmoothManifoldWithCorners I M] (x x' : M) :
-    ContDiffOn 𝕜 ∞ (extChartAt I x ∘ (extChartAt I x').symm)
+theorem contDiffOn_ext_coord_change [IsManifold I n M] (x x' : M) :
+    ContDiffOn 𝕜 n (extChartAt I x ∘ (extChartAt I x').symm)
       ((extChartAt I x').symm ≫ extChartAt I x).source :=
   contDiffOn_extend_coord_change (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas x')
 
-theorem contDiffWithinAt_ext_coord_change [SmoothManifoldWithCorners I M] (x x' : M) {y : E}
+theorem contDiffWithinAt_ext_coord_change [IsManifold I n M] (x x' : M) {y : E}
     (hy : y ∈ ((extChartAt I x').symm ≫ extChartAt I x).source) :
-    ContDiffWithinAt 𝕜 ∞ (extChartAt I x ∘ (extChartAt I x').symm) (range I) y :=
+    ContDiffWithinAt 𝕜 n (extChartAt I x ∘ (extChartAt I x').symm) (range I) y :=
   contDiffWithinAt_extend_coord_change (chart_mem_maximalAtlas x) (chart_mem_maximalAtlas x') hy
 
 variable (I I') in
@@ -1566,7 +1629,7 @@ section TangentSpace
 /- We define the tangent space to `M` modelled on `I : ModelWithCorners 𝕜 E H` as a type synonym
 for `E`. This is enough to define linear maps between tangent spaces, for instance derivatives,
 but the interesting part is to define a manifold structure on the whole tangent bundle, which
-requires that `M` is a smooth manifold with corners. The definition is put here to avoid importing
+requires that `M` is a `C^n` manifold. The definition is put here to avoid importing
 all the smooth bundle structure when defining manifold derivatives. -/
 
 set_option linter.unusedVariables false in
@@ -1597,11 +1660,10 @@ instance : Inhabited (TangentSpace I x) := ⟨0⟩
 
 variable (M) in
 -- is empty if the base manifold is empty
-/-- The tangent bundle to a smooth manifold, as a Sigma type. Defined in terms of
+/-- The tangent bundle to a manifold, as a Sigma type. Defined in terms of
 `Bundle.TotalSpace` to be able to put a suitable topology on it. -/
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was nolint has_nonempty_instance
-abbrev TangentBundle :=
-  Bundle.TotalSpace E (TangentSpace I : M → Type _)
+abbrev TangentBundle := Bundle.TotalSpace E (TangentSpace I : M → Type _)
 
 end TangentSpace
 

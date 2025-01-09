@@ -67,7 +67,6 @@ alias ⟨_, Nonempty.coe_sort⟩ := nonempty_coe_sort
 
 theorem Nonempty.exists_mem {s : Finset α} (h : s.Nonempty) : ∃ x : α, x ∈ s :=
   h
-@[deprecated (since := "2024-03-23")] alias Nonempty.bex := Nonempty.exists_mem
 
 theorem Nonempty.mono {s t : Finset α} (hst : s ⊆ t) (hs : s.Nonempty) : t.Nonempty :=
   Set.Nonempty.mono hst hs

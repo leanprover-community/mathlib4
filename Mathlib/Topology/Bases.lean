@@ -290,6 +290,10 @@ protected theorem IsTopologicalBasis.continuous_iff {β : Type*} [TopologicalSpa
     Continuous f ↔ ∀ s ∈ B, IsOpen (f ⁻¹' s) := by
   rw [hB.eq_generateFrom, continuous_generateFrom_iff]
 
+@[simp] lemma isTopologicalBasis_empty : IsTopologicalBasis (∅ : Set (Set α)) ↔ IsEmpty α where
+  mp h := by simpa using h.sUnion_eq.symm
+  mpr h := ⟨by simp, by simp [Set.univ_eq_empty_iff.2], Subsingleton.elim ..⟩
+
 variable (α)
 
 /-- A separable space is one with a countable dense subset, available through
@@ -522,14 +526,8 @@ theorem isSeparable_range [TopologicalSpace β] [SeparableSpace α] {f : α → 
 theorem IsSeparable.of_subtype (s : Set α) [SeparableSpace s] : IsSeparable s := by
   simpa using isSeparable_range (continuous_subtype_val (p := (· ∈ s)))
 
-@[deprecated (since := "2024-02-05")]
-alias isSeparable_of_separableSpace_subtype := IsSeparable.of_subtype
-
 theorem IsSeparable.of_separableSpace [h : SeparableSpace α] (s : Set α) : IsSeparable s :=
   IsSeparable.mono (isSeparable_univ_iff.2 h) (subset_univ _)
-
-@[deprecated (since := "2024-02-05")]
-alias isSeparable_of_separableSpace := IsSeparable.of_separableSpace
 
 end TopologicalSpace
 
