@@ -71,8 +71,18 @@ def curlArgs : List String :=
 def leanTarArgs : List String :=
   ["get", "get!", "pack", "pack!", "unpack", "lookup"]
 
+-- Copied from ImportGraph/RequiredModules.lean.
+namespace Lean.NameSet
+
+def ofList (l : List Name) : NameSet :=
+  l.foldl (fun s n => s.insert n) {}
+
+def ofArray (a : Array Name) : NameSet :=
+  a.foldl (fun s n => s.insert n) {}
+
+end Lean.NameSet
+
 open Cache IO Hashing Requests System in
-open System.FilePath in
 def main (args : List String) : IO Unit := do
   if Lean.versionString == "4.8.0-rc1" && Lean.githash == "b470eb522bfd68ca96938c23f6a1bce79da8a99f" then do
     println "Unfortunately, you have a broken Lean v4.8.0-rc1 installation."
@@ -99,10 +109,10 @@ def main (args : List String) : IO Unit := do
         (fun p ↦ pure (p.fileName != some ".lake"))
       let leanFiles := (← allFiles).filter (fun p ↦ p.extension == some "lean")
       -- For each file, find all imports starting with Mathlib.
-      let mut allModules := #[]
+      let mut allModules := Lean.NameSet.empty
       for fi in leanFiles do
         let imports ← Lean.parseImports' (← IO.FS.readFile fi) ""
-        allModules := allModules.append <|
+        allModules := allModules.append <| Lean.NameSet.ofArray <|
           imports.map (fun imp ↦ imp.module) |>.filter (·.getRoot == `Mathlib)
       -- and turn each "import Mathlib.X.Y.Z" into an argument "Mathlib.X.Y.Z.lean" to `get`.
       getArgs := allModules.toList.map
