@@ -9,7 +9,7 @@ Usage:
  of theorems. The order of these files is important.)
 
 """
-from typing import Dict, Mapping, Mapping, Optional, Union, Tuple, List
+from typing import Dict, Mapping, Optional, Union, Tuple, List
 from dataclasses import dataclass
 import yaml
 import json
