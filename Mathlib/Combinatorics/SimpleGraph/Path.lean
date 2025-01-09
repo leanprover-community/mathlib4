@@ -242,6 +242,12 @@ lemma IsCycle.three_le_length {v : V} {p : G.Walk v v} (hp : p.IsCycle) : 3 ≤ 
   | .cons _ (.cons _ .nil) => simp at hp
   | .cons _ (.cons _ (.cons _ _)) => simp_rw [SimpleGraph.Walk.length_cons]; omega
 
+lemma not_nil_of_IsCycle_cons {p : G.Walk u v} {h : G.Adj v u} (hc : (Walk.cons h p).IsCycle) :
+    ¬ p.Nil := by
+  have := Walk.length_cons _ _ ▸ Walk.IsCycle.three_le_length hc
+  rw [Walk.not_nil_iff_lt_length]
+  omega
+
 theorem cons_isCycle_iff {u v : V} (p : G.Walk v u) (h : G.Adj u v) :
     (Walk.cons h p).IsCycle ↔ p.IsPath ∧ ¬s(u, v) ∈ p.edges := by
   simp only [Walk.isCycle_def, Walk.isPath_def, Walk.isTrail_def, edges_cons, List.nodup_cons,
@@ -296,12 +302,6 @@ lemma IsPath.getVert_injOn {p : G.Walk u v} (hp : p.IsPath) :
       omega
 
 /-! ### About cycles -/
-
-lemma not_nil_of_IsCycle_cons {p : G.Walk u v} {h : G.Adj v u} (hc : (Walk.cons h p).IsCycle) :
-    ¬ p.Nil := by
-  have := Walk.length_cons _ _ ▸ Walk.IsCycle.three_le_length hc
-  rw [Walk.not_nil_iff_lt_length]
-  omega
 
 lemma IsCycle.getVert_injOn {p : G.Walk u u} (hpc : p.IsCycle) :
     Set.InjOn p.getVert {i | 1 ≤ i ∧ i ≤ p.length} := by
