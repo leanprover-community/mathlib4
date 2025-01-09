@@ -486,18 +486,19 @@ instance : Algebra R (v.adicCompletionIntegers K) where
       letI : Valued K ℤₘ₀ := adicValued v
       rw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
-  toFun r :=
-    ⟨(algebraMap R K r : adicCompletion K v), by
-      simpa only [mem_adicCompletionIntegers, Valued.valuedCompletion_apply] using
-        v.valuation_le_one _⟩
-  map_one' := by simp only [map_one]; rfl
-  map_mul' x y := by
-    ext
-    simp only [map_mul, UniformSpace.Completion.coe_mul, MulMemClass.mk_mul_mk]
-  map_zero' := by simp only [map_zero]; rfl
-  map_add' x y := by
-    ext
-    simp only [map_add, UniformSpace.Completion.coe_add, AddMemClass.mk_add_mk]
+  algebraMap :=
+  { toFun r :=
+      ⟨(algebraMap R K r : adicCompletion K v), by
+        simpa only [mem_adicCompletionIntegers, Valued.valuedCompletion_apply] using
+          v.valuation_le_one _⟩
+    map_one' := by simp only [map_one]; rfl
+    map_mul' x y := by
+      ext
+      simp only [map_mul, UniformSpace.Completion.coe_mul, MulMemClass.mk_mul_mk]
+    map_zero' := by simp only [map_zero]; rfl
+    map_add' x y := by
+      ext
+      simp only [map_add, UniformSpace.Completion.coe_add, AddMemClass.mk_add_mk] }
   commutes' r x := by
     rw [mul_comm]
   smul_def' r x := by

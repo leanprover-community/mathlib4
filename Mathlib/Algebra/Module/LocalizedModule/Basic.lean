@@ -457,21 +457,21 @@ instance : IsScalarTower R T (LocalizedModule S M) where
       smul'_mk, mul_smul]
 
 noncomputable instance algebra' {A : Type*} [Semiring A] [Algebra R A] :
-    Algebra R (LocalizedModule S A) :=
-  { (algebraMap (Localization S) (LocalizedModule S A)).comp (algebraMap R <| Localization S),
-    show Module R (LocalizedModule S A) by infer_instance with
-    commutes' := by
-      intro r x
-      induction x using induction_on with | _ a s => _
-      dsimp
-      rw [← Localization.mk_one_eq_algebraMap, algebraMap_mk, mk_mul_mk, mk_mul_mk, mul_comm,
-        Algebra.commutes]
-    smul_def' := by
-      intro r x
-      induction x using induction_on with | _ a s => _
-      dsimp
-      rw [← Localization.mk_one_eq_algebraMap, algebraMap_mk, mk_mul_mk, smul'_mk,
-        Algebra.smul_def, one_mul] }
+    Algebra R (LocalizedModule S A) where
+  algebraMap := (algebraMap (Localization S) (LocalizedModule S A)).comp
+    (algebraMap R <| Localization S)
+  commutes' := by
+    intro r x
+    induction x using induction_on with | _ a s => _
+    dsimp
+    rw [← Localization.mk_one_eq_algebraMap, algebraMap_mk, mk_mul_mk, mk_mul_mk, mul_comm,
+      Algebra.commutes]
+  smul_def' := by
+    intro r x
+    induction x using induction_on with | _ a s => _
+    dsimp
+    rw [← Localization.mk_one_eq_algebraMap, algebraMap_mk, mk_mul_mk, smul'_mk,
+      Algebra.smul_def, one_mul]
 
 section
 

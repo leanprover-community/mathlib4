@@ -49,7 +49,7 @@ variable [DivisionSemiring S] [CharZero S]
 
 instance _root_.DivisionSemiring.toNNRatAlgebra : Algebra ℚ≥0 R where
   smul_def' := smul_def
-  toRingHom := castHom _
+  algebraMap := castHom _
   commutes' := cast_commute
 
 instance _root_.RingHomClass.toLinearMapClassNNRat [FunLike F R S] [RingHomClass F R S] :
@@ -89,7 +89,7 @@ variable [DivisionRing S] [CharZero S]
 
 instance _root_.DivisionRing.toRatAlgebra : Algebra ℚ R where
   smul_def' := smul_def
-  toRingHom := castHom _
+  algebraMap := castHom _
   commutes' := cast_commute
 
 instance _root_.RingHomClass.toLinearMapClassRat [FunLike F R S] [RingHomClass F R S] :

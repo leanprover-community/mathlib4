@@ -534,7 +534,7 @@ noncomputable instance {A : Type*} [Semiring A] [Algebra ℝ≥0∞ A] : Algebra
   smul := (· • ·)
   commutes' r x := by simp [Algebra.commutes]
   smul_def' r x := by simp [← Algebra.smul_def (r : ℝ≥0∞) x, smul_def]
-  toRingHom := (algebraMap ℝ≥0∞ A).comp (ofNNRealHom : ℝ≥0 →+* ℝ≥0∞)
+  algebraMap := (algebraMap ℝ≥0∞ A).comp (ofNNRealHom : ℝ≥0 →+* ℝ≥0∞)
 
 -- verify that the above produces instances we might care about
 noncomputable example : Algebra ℝ≥0 ℝ≥0∞ := inferInstance

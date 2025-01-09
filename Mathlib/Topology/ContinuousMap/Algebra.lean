@@ -670,7 +670,7 @@ theorem ContinuousMap.C_apply (r : R) (a : α) : ContinuousMap.C r a = algebraMa
   rfl
 
 instance ContinuousMap.algebra : Algebra R C(α, A) where
-  toRingHom := ContinuousMap.C
+  algebraMap := ContinuousMap.C
   commutes' c f := by ext x; exact Algebra.commutes' _ _
   smul_def' c f := by ext x; exact Algebra.smul_def' _ _
 

@@ -484,11 +484,12 @@ theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂]) = x * y := by ext <;> simp
 -- for `ℍ[R]`)
 instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂] where
   smul := (· • ·)
-  toFun s := coe (algebraMap S R s)
-  map_one' := by simp only [map_one, coe_one]
-  map_zero' := by simp only [map_zero, coe_zero]
-  map_mul' x y := by simp only [map_mul, coe_mul]
-  map_add' x y := by simp only [map_add, coe_add]
+  algebraMap :=
+  { toFun s := coe (algebraMap S R s)
+    map_one' := by simp only [map_one, coe_one]
+    map_zero' := by simp only [map_zero, coe_zero]
+    map_mul' x y := by simp only [map_mul, coe_mul]
+    map_add' x y := by simp only [map_add, coe_add] }
   smul_def' s x := by ext <;> simp [Algebra.smul_def]
   commutes' s x := by ext <;> simp [Algebra.commutes]
 

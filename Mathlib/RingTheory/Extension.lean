@@ -64,7 +64,7 @@ attribute [simp] algebraMap_σ
 noncomputable instance {R₀} [CommRing R₀] [Algebra R₀ R] [Algebra R₀ S] [IsScalarTower R₀ R S] :
     Algebra R₀ P.Ring where
   __ := Module.compHom P.Ring (algebraMap R₀ R)
-  __ := (algebraMap R P.Ring).comp (algebraMap R₀ R)
+  algebraMap := (algebraMap R P.Ring).comp (algebraMap R₀ R)
   smul_def' _ _ := smul_def _ _
   commutes' _ _ := commutes _ _
 

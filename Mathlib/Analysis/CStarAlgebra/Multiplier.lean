@@ -358,19 +358,20 @@ instance instModule {S : Type*} [Semiring S] [Module S A] [SMulCommClass 𝕜 S 
 
 -- TODO: generalize to `Algebra S 𝓜(𝕜, A)` once `ContinuousLinearMap.algebra` is generalized.
 instance instAlgebra : Algebra 𝕜 𝓜(𝕜, A) where
-  toFun k :=
-    { toProd := algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A)) k
-      central := fun x y => by
-        simp_rw [Prod.algebraMap_apply, Algebra.algebraMap_eq_smul_one, smul_apply, one_apply,
-          mul_smul_comm, smul_mul_assoc] }
-  map_one' := ext (𝕜 := 𝕜) (A := A) _ _ <| map_one <| algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A))
-  map_mul' _ _ :=
-    ext (𝕜 := 𝕜) (A := A) _ _ <|
-      Prod.ext (map_mul (algebraMap 𝕜 (A →L[𝕜] A)) _ _)
-        ((map_mul (algebraMap 𝕜 (A →L[𝕜] A)) _ _).trans (Algebra.commutes _ _))
-  map_zero' := ext (𝕜 := 𝕜) (A := A) _ _ <| map_zero <| algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A))
-  map_add' _ _ := ext (𝕜 := 𝕜) (A := A) _ _ <|
-    map_add (algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A))) _ _
+  algebraMap :=
+  { toFun k :=
+      { toProd := algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A)) k
+        central := fun x y => by
+          simp_rw [Prod.algebraMap_apply, Algebra.algebraMap_eq_smul_one, smul_apply, one_apply,
+            mul_smul_comm, smul_mul_assoc] }
+    map_one' := ext (𝕜 := 𝕜) (A := A) _ _ <| map_one <| algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A))
+    map_mul' _ _ :=
+      ext (𝕜 := 𝕜) (A := A) _ _ <|
+        Prod.ext (map_mul (algebraMap 𝕜 (A →L[𝕜] A)) _ _)
+          ((map_mul (algebraMap 𝕜 (A →L[𝕜] A)) _ _).trans (Algebra.commutes _ _))
+    map_zero' := ext (𝕜 := 𝕜) (A := A) _ _ <| map_zero <| algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A))
+    map_add' _ _ := ext (𝕜 := 𝕜) (A := A) _ _ <|
+      map_add (algebraMap 𝕜 ((A →L[𝕜] A) × (A →L[𝕜] A))) _ _ }
   commutes' _ _ := ext (𝕜 := 𝕜) (A := A) _ _ <|
     Prod.ext (Algebra.commutes _ _) (Algebra.commutes _ _).symm
   smul_def' _ _ := ext (𝕜 := 𝕜) (A := A) _ _ <|

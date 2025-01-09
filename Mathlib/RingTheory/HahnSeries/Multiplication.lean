@@ -756,7 +756,7 @@ section Algebra
 variable [CommSemiring R] {A : Type*} [Semiring A] [Algebra R A]
 
 instance : Algebra R (HahnSeries Γ A) where
-  toRingHom := C.comp (algebraMap R A)
+  algebraMap := C.comp (algebraMap R A)
   smul_def' r x := by
     ext
     simp

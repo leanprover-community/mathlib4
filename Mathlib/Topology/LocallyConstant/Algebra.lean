@@ -247,7 +247,7 @@ section Algebra
 variable [CommSemiring R] [Semiring Y] [Algebra R Y]
 
 instance : Algebra R (LocallyConstant X Y) where
-  toRingHom := constRingHom.comp <| algebraMap R Y
+  algebraMap := constRingHom.comp <| algebraMap R Y
   commutes' := by
     intros
     ext
