@@ -149,12 +149,6 @@ instance instContinuousFunctionalCalculus :
     · exact eigenvalues_eq_spectrum_real ha ▸ Set.range_nonempty _
   predicate_zero := .zero _
 
-instance instUniqueContinuousFunctionalCalculus :
-    UniqueContinuousFunctionalCalculus ℝ (Matrix n n 𝕜) :=
-  let _ : NormedRing (Matrix n n 𝕜) := Matrix.linftyOpNormedRing
-  let _ : NormedAlgebra ℝ (Matrix n n 𝕜) := Matrix.linftyOpNormedAlgebra
-  inferInstance
-
 /-- The continuous functional calculus of a Hermitian matrix as a triple product using the
 spectral theorem. Note that this actually operates on bare functions since every function is
 continuous on the spectrum of a matrix, since the spectrum is finite. This is shown to be equal to
