@@ -35,14 +35,12 @@ All statements have their counterpart for colimits.
 -/
 
 
-universe v u
-
 open CategoryTheory
 
 namespace CategoryTheory.Limits
 
-variable {J K : Type v} [SmallCategory J] [SmallCategory K]
-variable {C : Type u} [Category.{v} C]
+variable {J K : Type*} [Category J] [Category K]
+variable {C : Type*} [Category C]
 variable (F : J ⥤ K ⥤ C)
 
 -- We could try introducing a "dependent functor type" to handle this?
@@ -486,9 +484,9 @@ end
 
 section
 
-variable [HasLimits C]
+variable [HasLimitsOfShape K C] [HasLimitsOfShape J C] [HasLimitsOfShape (K × J) C] [HasLimit G]
+  [HasLimit (curry.obj G ⋙ lim)]
 
--- Certainly one could weaken the hypotheses here.
 open CategoryTheory.prod
 
 /-- A variant of the Fubini theorem for a functor `G : J × K ⥤ C`,
@@ -525,7 +523,8 @@ end
 
 section
 
-variable [HasColimits C]
+variable [HasColimitsOfShape K C] [HasColimitsOfShape J C] [HasColimitsOfShape (K × J) C]
+  [HasColimit G] [HasColimit (curry.obj G ⋙ colim)]
 
 open CategoryTheory.prod
 

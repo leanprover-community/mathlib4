@@ -9,7 +9,7 @@ Usage:
  of theorems. The order of these files is important.)
 
 """
-from typing import Dict, Mapping, Optional, Union, Tuple, List
+from typing import Dict, Mapping, Mapping, Optional, Union, Tuple, List
 from dataclasses import dataclass
 import yaml
 import json
@@ -60,7 +60,6 @@ class HundredTheorem:
     note: Optional[str] = None
 
 # keep in sync with make_site.py in the leanprover-community.github.io repo!
-#
 # These field names match the names in the data files of the 1000+ theorems project upstream.
 # See https://github.com/1000-plus/1000-plus.github.io/blob/main/README.md#file-format
 # for the specification. Compared to the README,
