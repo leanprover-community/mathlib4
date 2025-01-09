@@ -127,7 +127,7 @@ theorem lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun'' (h_meas_f : AEMea
     ∫⁻ ω, f ω * g ω ∂μ = (∫⁻ ω, f ω ∂μ) * ∫⁻ ω, g ω ∂μ :=
   lintegral_mul_eq_lintegral_mul_lintegral_of_indepFun' h_meas_f h_meas_g h_indep_fun
 
-theorem lintegral_fin_prod_eq_lintegral_fin_prod_lintegral_of_indepFun {ι : Type*} [DecidableEq ι]
+theorem lintegral_prod_eq_prod_lintegral_of_indepFun {ι : Type*} [DecidableEq ι]
     [IsProbabilityMeasure μ] (s : Finset ι) (X : ι → Ω → ℝ≥0∞)
     (hX : iIndepFun (fun _ ↦ ENNReal.measurableSpace) X μ)
     (x_mea : ∀ i, Measurable (X i)) :
