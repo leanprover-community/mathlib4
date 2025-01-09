@@ -413,11 +413,39 @@ Geometry:
 
   Differentiable manifolds:
     smooth manifold (with boundary and corners): 'SmoothManifoldWithCorners'
+    analytic manifold (with boundary and corners): 'AnalyticManifold'
     smooth map between manifolds: 'MDifferentiableAt'
+    product of manifolds: 'ModelWithCorners.prod'
+    interior of a manifold: 'ModelWithCorners.interior'
+    boundary of a manifold: 'ModelWithCorners.boundary'
     tangent bundle: 'TangentBundle'
     tangent map: 'tangentMap'
+    vector field: VectorField
+    pullback of vector fields: VectorField.pullback
+    # caution: on a normed space so far... manifold version is awaiting review (PR #xxx)
+    Lie bracket of vector field: VectorField.lieBracket
+    Jacobi/Leibniz identity: VectorField.leibniz_identity_lieBracket
+    # TODO: restate this using vector fields, once the manifold version has landed
+    integral curves: 'IsIntegralCurve'
+    local existence of integral curves: exists_isIntegralCurveAt_of_contMDiffAt_boundaryless
+    uniform time existence: exists_isIntegralCurve_of_isIntegralCurveOn
+    # corollary for compact manifolds not yet
+    uniqueness of integral curves: 'isIntegralCurveOn_Ioo_eqOn_of_contMDiff_boundaryless'
     Lie group: 'LieGroup'
     sphere: 'EuclideanSpace.instSmoothManifoldWithCornersSphere'
+
+  Smooth vector and fiber bundles:
+    (topological) fiber bundle: FiberBundle
+    (topological) vector bundle: VectorBundle
+    (topological) trivial vector bundle: Bundle.Trivial.vectorBundle
+    (topological) direct sum of vector bundles: VectorBundle.prod
+    (topological) pullback vector bundle: VectorBundle.pullback
+    (topological) Hom bundle: Bundle.ContinuousLinearMap.vectorBundle
+    smooth vector bundle: SmoothVectorBundle
+    (smooth) trivial bundle: Bundle.Trivial.smoothVectorBundle
+    # (smooth) direct sum is missing (December 2024)
+    (smooth) pullback vector bundle: SmoothVectorBundle.pullback
+    (smooth) Hom bundle: SmoothVectorBundle.continuousLinearMap
 
   Algebraic geometry:
     prime spectrum: 'PrimeSpectrum'
