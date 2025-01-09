@@ -373,7 +373,7 @@ theorem normalizedFactorsMapEquivNormalizedFactorsMinPolyMk_symm_apply_eq_span
   rw [normalizedFactorsEquivOfQuotEquiv_symm]
   dsimp [normalizedFactorsEquivOfQuotEquiv, idealFactorsEquivOfQuotEquiv, OrderIso.ofHomInv]
   simp only [map_span, image_singleton, coe_coe,f_symm_aux hx hx' Q]
-  refine le_antisymm (fun a ha ↦ ?_) (span_le.2 <| union_subset_iff.2 <|
+  refine le_antisymm (fun a ha ↦ ?_) (span_le.mpr <| union_subset_iff.mpr <|
     ⟨le_comap_of_map_le (by simp), by simp [mem_span_singleton]⟩)
   rw [mem_comap, Ideal.mem_span_singleton] at ha
   obtain ⟨a', ha'⟩ := ha
