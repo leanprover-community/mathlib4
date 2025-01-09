@@ -1325,4 +1325,35 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} (hU : Nonempty U) (hV : Non
 
 end subtypeRestr
 
+variable {X X' Z : Type*} [TopologicalSpace X] [TopologicalSpace X'] [TopologicalSpace Z]
+    [Nonempty Z] {f : X → X'}
+
+/-- Extend a partial homeomorphism `e : X → Z` to `X' → Z`, using an open embedding `X → X'`.
+
+-/
+noncomputable def lift_openEmbedding
+    (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
+    PartialHomeomorph X' Z where
+  toFun := extend f e (Classical.arbitrary (α := X' → Z))
+  invFun := sorry
+  source := f '' e.source
+  target := sorry
+  map_source' := sorry
+  map_target' := sorry
+  left_inv' := sorry
+  right_inv' := sorry
+  open_source := sorry
+  open_target := sorry
+  continuousOn_toFun := sorry
+  continuousOn_invFun := sorry
+
+@[simp]
+lemma lift_openEmbedding_toFun (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
+    (e.lift_openEmbedding hf) = extend f e (Classical.arbitrary (α := (X' → Z))) := rfl
+
+lemma lift_openEmbedding_apply (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) {x : X} :
+    (lift_openEmbedding e hf) (f x) = e x := by
+  simp_rw [e.lift_openEmbedding_toFun]
+  apply hf.injective.extend_apply
+
 end PartialHomeomorph
