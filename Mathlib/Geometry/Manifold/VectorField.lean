@@ -49,8 +49,9 @@ noncomputable section
 /- We work in the `VectorField` namespace because pullbacks, Lie brackets, and so on, are notions
 that make sense in a variety of contexts. We also prefix the notions with `m` to distinguish the
 manifold notions from the vector spaces notions. For instance, the Lie bracket of two vector
-fields in a manifold is denoted with `mlieBracket I V W x`, where `I` is the relevant model with
-corners, `V W : Π (x : M), TangentSpace I x` are the vector fields, and `x : M` is the basepoint.
+fields in a manifold is denoted with `VectorField.mlieBracket I V W x`, where `I` is the relevant
+model with corners, `V W : Π (x : M), TangentSpace I x` are the vector fields, and `x : M` is
+the basepoint.
 -/
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
@@ -74,7 +75,7 @@ section
 open ContinuousLinearMap
 
 variable {V W V₁ W₁ : Π (x : M'), TangentSpace I' x}
-variable {c : 𝕜} {m n : ℕ∞} {t : Set M'} {y₀ : M'}
+variable {c : 𝕜} {m n : WithTop ℕ∞} {t : Set M'} {y₀ : M'}
 
 variable (I I') in
 /-- The pullback of a vector field under a map between manifolds, within a set `s`. -/
@@ -158,7 +159,7 @@ lemma mpullbackWithin_eq_pullbackWithin {f : E → E'} {V : E' → E'} {s : Set 
 /-! ### Smoothness of pullback of vector fields -/
 section
 
-variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M'] [CompleteSpace E]
+variable [IsManifold I 2 M] [IsManifold I' 2 M'] [CompleteSpace E]
 
 /-- The pullback of a differentiable vector field by a `C^n` function with `2 ≤ n` is
 differentiable. Version within a set at a point. -/
@@ -198,7 +199,7 @@ protected lemma _root_.MDifferentiableWithinAt.mpullbackWithin_vectorField_inter
       (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
         E (TangentSpace I (M := M)) E' (TangentSpace I' (M := M'))
         x₀ x (f x₀) (f x) (mfderivWithin I I' f s x)) s x₀ :=
-    (hf.mfderivWithin_const hmn hx₀ hs).mdifferentiableWithinAt le_rfl
+    ((hf.of_le hmn).mfderivWithin_const le_rfl hx₀ hs).mdifferentiableWithinAt le_rfl
   -- therefore, its inverse in coordinates also depends smoothly on the point
   have : MDifferentiableWithinAt I 𝓘(𝕜, E' →L[𝕜] E)
       (ContinuousLinearMap.inverse ∘ (fun (x : M) ↦ ContinuousLinearMap.inCoordinates
@@ -299,6 +300,13 @@ protected lemma _root_.MDifferentiable.mpullback_vectorField
     MDifferentiable I I.tangent (fun (y : M) ↦ (mpullback I I' f V y : TangentBundle I M)) :=
   fun x ↦ MDifferentiableAt.mpullback_vectorField (hV (f x)) (hf x) (hf' x) hmn
 
+end
+
+section
+
+variable [IsManifold I n M] [IsManifold I' n M'] [CompleteSpace E]
+[IsManifold I 1 M] [IsManifold I' 1 M']
+
 /-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
 Version within a set at a point. -/
 protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter
@@ -364,6 +372,8 @@ protected lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter
   rw [inCoordinates_eq hx h'x, inCoordinates_eq h'x (by exact hx)]
   simp only [inverse_equiv_comp, inverse_comp_equiv, ContinuousLinearEquiv.symm_symm, ϕ]
   rfl
+
+#exit
 
 lemma _root_.ContMDiffWithinAt.mpullbackWithin_vectorField_inter_of_eq
     (hV : ContMDiffWithinAt I' I'.tangent m
