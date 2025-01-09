@@ -215,7 +215,7 @@ lemma mk' (h : NatTrans.CommShift adj.unit A) :
     refine (compatibilityCounit_of_compatibilityUnit adj _ _ (fun X ↦ ?_) _).symm
     simpa only [NatTrans.comp_app,
       Functor.commShiftIso_id_hom_app, whiskerRight_app, id_comp,
-      Functor.commShiftIso_comp_hom_app] using congr_app (h.comm' a) X⟩
+      Functor.commShiftIso_comp_hom_app] using congr_app (h.shift_comm a) X⟩
 
 end CommShift
 
@@ -227,14 +227,14 @@ lemma shift_unit_app [adj.CommShift A] (a : A) (X : C) :
       adj.unit.app (X⟦a⟧) ≫
         G.map ((F.commShiftIso a).hom.app X) ≫
           (G.commShiftIso a).hom.app (F.obj X) := by
-  simpa [Functor.commShiftIso_comp_hom_app] using NatTrans.CommShift.comm_app adj.unit a X
+  simpa [Functor.commShiftIso_comp_hom_app] using NatTrans.shift_app_comm adj.unit a X
 
 @[reassoc]
 lemma shift_counit_app [adj.CommShift A] (a : A) (Y : D) :
     (adj.counit.app Y)⟦a⟧' =
       (F.commShiftIso a).inv.app (G.obj Y) ≫ F.map ((G.commShiftIso a).inv.app Y) ≫
         adj.counit.app (Y⟦a⟧) := by
-  have eq := NatTrans.CommShift.comm_app adj.counit a Y
+  have eq := NatTrans.shift_app_comm adj.counit a Y
   simp only [Functor.comp_obj, Functor.id_obj, Functor.commShiftIso_comp_hom_app, assoc,
     Functor.commShiftIso_id_hom_app, comp_id] at eq
   simp only [← eq, Functor.comp_obj, Functor.id_obj, ← F.map_comp_assoc, Iso.inv_hom_id_app,

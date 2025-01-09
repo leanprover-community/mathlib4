@@ -308,6 +308,17 @@ section LocallyFiniteOrderTop
 
 variable [LocallyFiniteOrderTop α]
 
+@[simp]
+theorem Ioi_eq_empty : Ioi a = ∅ ↔ IsMax a := by
+  rw [← coe_eq_empty, coe_Ioi, Set.Ioi_eq_empty_iff]
+
+@[simp]
+theorem Ioi_top [OrderTop α] : Ioi (⊤ : α) = ∅ := Ioi_eq_empty.mpr isMax_top
+
+@[simp]
+theorem Ici_bot [OrderBot α] [Fintype α] : Ici (⊥ : α) = univ := by
+  ext a; simp only [mem_Ici, bot_le, mem_univ]
+
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Ici : (Ici a).Nonempty := ⟨a, mem_Ici.2 le_rfl⟩
 @[simp]
@@ -347,6 +358,16 @@ end LocallyFiniteOrderTop
 section LocallyFiniteOrderBot
 
 variable [LocallyFiniteOrderBot α]
+
+@[simp]
+theorem Iio_eq_empty : Iio a = ∅ ↔ IsMin a := Ioi_eq_empty (α := αᵒᵈ)
+
+@[simp]
+theorem Iio_bot [OrderBot α] : Iio (⊥ : α) = ∅ := Iio_eq_empty.mpr isMin_bot
+
+@[simp]
+theorem Iic_top [OrderTop α] [Fintype α] : Iic (⊤ : α) = univ := by
+  ext a; simp only [mem_Iic, le_top, mem_univ]
 
 @[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 lemma nonempty_Iic : (Iic a).Nonempty := ⟨a, mem_Iic.2 le_rfl⟩
@@ -425,6 +446,27 @@ theorem filter_ge_eq_Iic [DecidablePred (· ≤ a)] : ({x | x ≤ a} : Finset _)
 
 end LocallyFiniteOrderBot
 
+section LocallyFiniteOrder
+
+variable [LocallyFiniteOrder α]
+
+@[simp]
+theorem Icc_bot [OrderBot α] : Icc (⊥ : α) a = Iic a := rfl
+
+@[simp]
+theorem Icc_top [OrderTop α] : Icc a (⊤ : α) = Ici a := rfl
+
+@[simp]
+theorem Ico_bot [OrderBot α] : Ico (⊥ : α) a = Iio a := rfl
+
+@[simp]
+theorem Ioc_top [OrderTop α] : Ioc a (⊤ : α) = Ioi a := rfl
+
+theorem Icc_bot_top [BoundedOrder α] [Fintype α] : Icc (⊥ : α) (⊤ : α) = univ := by
+  rw [Icc_bot, Iic_top]
+
+end LocallyFiniteOrder
+
 variable [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
 
 theorem disjoint_Ioi_Iio (a : α) : Disjoint (Ioi a) (Iio a) :=
@@ -445,6 +487,12 @@ theorem Icc_eq_singleton_iff : Icc a b = {c} ↔ a = c ∧ b = c := by
 
 theorem Ico_disjoint_Ico_consecutive (a b c : α) : Disjoint (Ico a b) (Ico b c) :=
   disjoint_left.2 fun _ hab hbc => (mem_Ico.mp hab).2.not_le (mem_Ico.mp hbc).1
+
+@[simp]
+theorem Ici_top [OrderTop α] : Ici (⊤ : α) = {⊤} := Icc_eq_singleton_iff.2 ⟨rfl, rfl⟩
+
+@[simp]
+theorem Iic_bot [OrderBot α] : Iic (⊥ : α) = {⊥} := Icc_eq_singleton_iff.2 ⟨rfl, rfl⟩
 
 section DecidableEq
 
