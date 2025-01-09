@@ -1173,7 +1173,9 @@ Q1067156:
 
 Q1067156X:
   title: Bounded convergence theorem
-  # TODO: is this in mathlib already?
+  decls:
+    - MeasureTheory.FiniteMeasure.tendsto_lintegral_nn_of_le_const
+    - MeasureTheory.tendsto_lintegral_nn_filter_of_le_const
 
 Q1068085:
   title: Closed graph theorem
@@ -1295,7 +1297,7 @@ Q1144897:
   title: Brouwer fixed-point theorem
   author: Brendan Seamas Murphy
   url: https://github.com/Shamrock-Frost/BrouwerFixedPoint/blob/master/src/brouwer_fixed_point.lean
-  note: "in Lean 3"
+  comment: "in Lean 3"
 
 Q1146791:
   title: Fermat polygonal number theorem
