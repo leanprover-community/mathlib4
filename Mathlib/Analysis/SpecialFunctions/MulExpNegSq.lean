@@ -69,11 +69,6 @@ theorem mulExpNegSq_deriv (x : ℝ) : deriv (fun x => x * (Real.exp (- x * x))) 
   rw [← expNegSq_deriv x]
   apply deriv_mul differentiableAt_id' (expNegSq_differentiableAt x)
 
-theorem mul_le_one_of_le_inv {x y : ℝ} (hy : y > 0) : x ≤ y⁻¹ → y * x ≤ 1 := by
-  intro h
-  have := mul_le_mul_of_nonneg_left h (le_of_lt hy)
-  rwa [CommGroupWithZero.mul_inv_cancel y (ne_of_gt hy)] at this
-
 theorem emul_le_exp {x : ℝ} : Real.exp 1 * x ≤ x.exp := by
   by_cases hx0 : x ≤ 0
   · apply (lt_of_le_of_lt
@@ -89,7 +84,7 @@ theorem mulExpNegSq_deriv_le_one (x : ℝ) : ‖deriv (fun y ↦ y * (-y * y).ex
   let y := x * x
   have hy : y = x * x := by rfl
   rw [neg_mul, mul_assoc, neg_mul, ← hy]
-  apply mul_le_one_of_le_inv (Real.exp_pos _)
+  apply mul_le_of_le_inv_mul₀ (zero_le_one' ℝ) (Real.exp_nonneg _)
   simp [← Real.exp_neg (-y), abs_le]
   constructor
   · have twomul_le_exp : 2 * y ≤ y.exp := by
@@ -115,7 +110,10 @@ section mulExpNegMulSq
 
 variable {E: Type*}
 
-/-- Definition of mulExpNegMulSq -/
+/--
+mulExpNegMulSq transforms a continuous function `g` into another continuous function with useful
+boundedness and convergence properties.
+-/
 noncomputable
 def mulExpNegMulSq [TopologicalSpace E] {g : E → ℝ} (hg: Continuous g) (ε : ℝ) :
     ContinuousMap E ℝ where
