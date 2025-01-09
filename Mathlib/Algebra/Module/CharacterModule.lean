@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Junyan Xu
 -/
 
+import Mathlib.Algebra.Category.ModuleCat.Basic
 import Mathlib.Algebra.Category.Grp.Injective
+import Mathlib.Topology.Instances.AddCircle
 import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
@@ -215,38 +217,7 @@ lemma exists_character_apply_ne_zero_of_ne_zero {a : A} (ne_zero : a ≠ 0) :
 lemma eq_zero_of_character_apply {a : A} (h : ∀ c : CharacterModule A, c a = 0) : a = 0 := by
   contrapose! h; exact exists_character_apply_ne_zero_of_ne_zero h
 
-variable (A)
-
-/-- For an abelian group `A`, this is the morphism from `A` into the product of copies of
-`ℚ / ℤ` indexed by `CharacterModule A` sending `a : A` to the family `c ↦ a`.
--/
-def homToPi : A →+ (_ : CharacterModule A) → AddCircle (1 : ℚ) where
-  toFun a c := c a
-  map_zero' := by ext _; simp
-  map_add' _ _ := by ext _; simp
-
-/-- For an abelian group `A`, the morphism from `A` into the product of copies of `ℚ / ℤ`
-indexed by `CharacterModule A` sending `a : A` to the family `c ↦ a` is injective.
--/
-lemma homToPi_injective : Function.Injective (homToPi A) := by
-  refine (injective_iff_map_eq_zero _).mpr (fun a ha ↦ CharacterModule.eq_zero_of_character_apply
-    (fun c ↦ ?_))
-  apply_fun (fun f ↦ f c) at ha
-  exact ha
-
-variable {A A'}
-
-/-- For a morphism of abelian groups `f : A →+ A'`, we have `f = 0` if
-the composition of `f` with any character of `A'` is `0`.
--/
-lemma hom_eq_zero_of_character_apply {f : A →+ A'}
-    (h : ∀ (c : CharacterModule A'), c.comp f = 0) : f = 0 := by
-  ext a
-  refine eq_zero_of_character_apply (fun c ↦ ?_)
-  change (c.comp f) a = 0
-  rw [h c, AddMonoidHom.zero_apply]
-
-variable [Module R A] [Module R A'] [Module R B] {R B}
+variable [Module R A] [Module R A'] [Module R B] {R A' B}
 
 lemma dual_surjective_iff_injective {f : A →ₗ[R] A'} :
     Function.Surjective (dual f) ↔ Function.Injective f :=
