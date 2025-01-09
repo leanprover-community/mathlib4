@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Data.Int.Interval
-import Mathlib.Data.Int.SuccPred
 import Mathlib.Data.Int.ConditionallyCompleteOrder
 import Mathlib.Topology.Instances.Discrete
 import Mathlib.Topology.MetricSpace.Bounded

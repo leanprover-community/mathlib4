@@ -530,7 +530,7 @@ theorem nnnorm_def' (a : 𝓜(𝕜, A)) : ‖a‖₊ = ‖toProdMulOppositeHom a
 
 instance instNormedSpace : NormedSpace 𝕜 𝓜(𝕜, A) :=
   { DoubleCentralizer.instModule with
-    norm_smul_le := fun k a => (norm_smul_le k a.toProdMulOpposite : _) }
+    norm_smul_le := fun k a => (norm_smul_le k a.toProdMulOpposite :) }
 
 instance instNormedAlgebra : NormedAlgebra 𝕜 𝓜(𝕜, A) :=
   { DoubleCentralizer.instAlgebra, DoubleCentralizer.instNormedSpace with }
