@@ -135,7 +135,7 @@ theorem lintegral_fin_prod_eq_lintegral_fin_prod_lintegral_of_indepFun {ι : Typ
   induction s using Finset.induction
   case empty => simp only [Finset.prod_empty, lintegral_const, measure_univ, mul_one]
   case insert _ _ j s hj v =>
-    calc  ∫⁻ (ω : Ω), ∏ i ∈ insert j s, X i ω ∂μ
+    calc  ∫⁻ ω, ∏ i ∈ insert j s, X i ω ∂μ
       _ = ∫⁻ (ω : Ω), (∏ i ∈ insert j s, X i) ω ∂μ := by simp
       _ =  ∫⁻ (ω : Ω), (X j * ∏ i ∈ s, X i) ω ∂μ :=
         lintegral_congr fun ω ↦ congrFun (Finset.prod_insert hj) ω
