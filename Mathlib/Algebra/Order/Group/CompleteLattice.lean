@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Algebra.Order.Group.OrderIso
+import Mathlib.Algebra.Order.Group.Pointwise.Bounds
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 /-!
@@ -12,7 +12,7 @@ import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 
 open Function Set
 
-variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G] [Nonempty ι] {f : ι → G}
+variable {ι G : Type*} [Group G] [ConditionallyCompleteLattice G] [Nonempty ι] {f g : ι → G}
 
 section Right
 variable [MulRightMono G]
@@ -47,3 +47,19 @@ lemma mul_ciInf (hf : BddBelow (range f)) (a : G) : (a * ⨅ i, f i) = ⨅ i, a 
   (OrderIso.mulLeft a).map_ciInf hf
 
 end Left
+
+section LeftRight
+
+variable [MulLeftMono G] [MulRightMono G]
+
+@[to_additive]
+def ciSup_mul_le_ciSup_mul_ciSup (hf : BddAbove (range f)) (hg : BddAbove (range g)) :
+    ⨆ i, f i * g i ≤ (⨆ i, f i) * ⨆ i, g i :=
+  ciSup_le fun i ↦ mul_le_mul' (le_ciSup hf i) (le_ciSup hg i)
+
+@[to_additive]
+lemma ciInf_mul_ciInf_le_ciInf_mul (hf : BddBelow (range f)) (hg : BddBelow (range g)) :
+    (⨅ i, f i) * ⨅ i, g i ≤ ⨅ i, f i * g i :=
+  le_ciInf fun i ↦ mul_le_mul' (ciInf_le hf i) (ciInf_le hg i)
+
+end LeftRight
