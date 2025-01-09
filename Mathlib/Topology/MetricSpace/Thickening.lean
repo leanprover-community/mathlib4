@@ -639,7 +639,6 @@ theorem thickening_ball [PseudoMetricSpace α] (x : α) (ε δ : ℝ) :
 
 end Metric
 
--- TODO: address review comment!
 open Metric in
 theorem IsCompact.exists_thickening_image_subset
     {β : Type*} [PseudoEMetricSpace α] [PseudoEMetricSpace β]
@@ -660,15 +659,24 @@ theorem IsCompact.exists_thickening_image_subset
     have : {f x} ⊆ U := by rw [@singleton_subset_iff]; exact hKU hx
     obtain ⟨δ, hδ, hthick⟩ := (isCompact_singleton (x := f x)).exists_thickening_subset_open ho this
     specialize hf ⟨x, hx⟩
-    -- f is continuous at x: this implies some nbhd of x is mapped to a nbhd of f x, choose that!
-    -- then use below... tomorrow!
 
-    -- let V' := ball (f x) (δ / 2)
-    -- use K ∩ f ⁻¹' V'
-    -- constructor
-    -- · rw [mem_nhdsWithin]
-    --   use f ⁻¹' V'
-    stop
+    let V := f ⁻¹' (thickening (δ / 2) { f x})
+    have : V ∈ 𝓝 x := by
+      apply hf
+      apply isOpen_thickening.mem_nhds
+      exact (self_subset_thickening (by positivity) _) rfl
+    use K ∩ V, inter_mem_nhdsWithin K this, δ / 2, by positivity, V
+    constructor
+    · rw [mem_nhdsSet_iff_exists]
+      -- Is this too ambitious? Is V really open, or do I need something weaker?
+      have hV : IsOpen V := sorry -- continuity or so? or too ambitious?
+      use V, hV, by simp, by simp
+    · calc thickening (δ / 2) (f '' V)
+        _ ⊆ thickening (δ / 2) (thickening (δ / 2) { f x}) :=
+          thickening_subset_of_subset _ (image_preimage_subset f _)
+        _ ⊆ thickening ((δ / 2) + (δ / 2)) ({ f x}) :=
+          thickening_thickening_subset (δ / 2) (δ / 2) {f x}
+        _ ⊆ U := by simp [hthick]
 
   -- obtain ⟨r, hr₀, hr⟩ := (hK.image_of_continuousOn (hf.mono (subset_of_mem_nhdsSet hs))
   --   ).exists_thickening_subset_open ho hKU.image_subset
