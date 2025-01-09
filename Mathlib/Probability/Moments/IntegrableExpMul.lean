@@ -273,7 +273,7 @@ lemma convex_integrableExpSet [IsFiniteMeasure μ] : Convex ℝ (integrableExpSe
   rintro t₁ ht₁ t₂ ht₂ a b ha hb hab
   wlog h_le : t₁ ≤ t₂
   · rw [add_comm] at hab ⊢
-    refine this ht₂ ht₁ hb ha hab (not_le.mp h_le).le
+    exact this ht₂ ht₁ hb ha hab (not_le.mp h_le).le
   refine integrable_exp_mul_of_le_of_le ht₁ ht₂ ?_ ?_
   · simp only [smul_eq_mul]
     calc t₁
@@ -329,7 +329,7 @@ lemma aemeasurable_of_mem_interior_integrableExpSet (hv : v ∈ interior (integr
 
 /-- If `v` belongs to the interior of the interval `integrableExpSet X μ`,
 then `|X| ^ n * exp (v * X)` is integrable for all `n : ℕ`. -/
-lemma integrable_pow_abs_mul_exp_of_mem_interior
+lemma integrable_pow_abs_mul_exp_of_mem_interior_integrableExpSet
     (hv : v ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     Integrable (fun ω ↦ |X ω| ^ n * exp (v * X ω)) μ := by
   rw [mem_interior_iff_mem_nhds, mem_nhds_iff_exists_Ioo_subset] at hv
@@ -342,23 +342,30 @@ lemma integrable_pow_abs_mul_exp_of_mem_interior
 
 /-- If `v` belongs to the interior of the interval `integrableExpSet X μ`,
 then `X ^ n * exp (v * X)` is integrable for all `n : ℕ`. -/
-lemma integrable_pow_mul_exp_of_mem_interior (hv : v ∈ interior (integrableExpSet X μ)) (n : ℕ) :
+lemma integrable_pow_mul_exp_of_mem_interior_integrableExpSet
+    (hv : v ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     Integrable (fun ω ↦ X ω ^ n * exp (v * X ω)) μ := by
   rw [← integrable_norm_iff]
   · simp_rw [norm_eq_abs, abs_mul, abs_pow, abs_exp]
-    exact integrable_pow_abs_mul_exp_of_mem_interior hv n
+    exact integrable_pow_abs_mul_exp_of_mem_interior_integrableExpSet hv n
   · have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet hv
     exact ((hX.pow_const _).mul
       (measurable_exp.comp_aemeasurable (hX.const_mul _))).aestronglyMeasurable
 
-lemma integrable_pow_abs_of_mem_interior (h : 0 ∈ interior (integrableExpSet X μ)) (n : ℕ) :
+/-- If 0 belongs to the interior of the interval `integrableExpSet X μ`,
+then `|X| ^ n` is integrable for all `n : ℕ`. -/
+lemma integrable_pow_abs_of_mem_interior_integrableExpSet
+    (h : 0 ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     Integrable (fun ω ↦ |X ω| ^ n) μ := by
-  convert integrable_pow_abs_mul_exp_of_mem_interior h n
+  convert integrable_pow_abs_mul_exp_of_mem_interior_integrableExpSet h n
   simp
 
-lemma integrable_pow_of_mem_interior (h : 0 ∈ interior (integrableExpSet X μ)) (n : ℕ) :
+/-- If 0 belongs to the interior of the interval `integrableExpSet X μ`,
+then `X ^ n` is integrable for all `n : ℕ`. -/
+lemma integrable_pow_of_mem_interior_integrableExpSet
+    (h : 0 ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     Integrable (fun ω ↦ X ω ^ n) μ := by
-  convert integrable_pow_mul_exp_of_mem_interior h n
+  convert integrable_pow_mul_exp_of_mem_interior_integrableExpSet h n
   simp
 
 -- todo: move to L1Space
@@ -369,6 +376,7 @@ lemma integrable_norm_rpow_iff {α E : Type*} {_ : MeasurableSpace α} {μ : Mea
   rw [← memℒp_norm_rpow_iff (q := p) hf p_zero p_top, ← memℒp_one_iff_integrable,
     ENNReal.div_self p_zero p_top]
 
+-- todo: move somewhere?
 lemma rpow_le_add_pow_floor_pow_ceil {x p : ℝ} (hx_nonneg : 0 ≤ x) (hp : 1 ≤ p) :
     x ^ p ≤ x ^ ⌊p⌋₊ + x ^ ⌈p⌉₊ := by
   have hn : 1 ≤ ⌊p⌋₊ := Nat.le_floor (mod_cast hp)
@@ -392,7 +400,11 @@ lemma rpow_le_add_pow_floor_pow_ceil {x p : ℝ} (hx_nonneg : 0 ≤ x) (hp : 1 �
       exact rpow_le_rpow_of_exponent_le hx (Nat.le_ceil _)
     _ ≤ _ := le_add_of_nonneg_left (by positivity)
 
-lemma memℒp_of_mem_interior_of_one_le {p : ℝ≥0} (hp : 1 ≤ p)
+/-- If 0 belongs to the interior of `integrableExpSet X μ`, then `X` is in `ℒp` for all
+finite `p` with `1 ≤ p`.
+If `μ` is a finite measure, the condition `1 ≤ p` is not necessary: see
+`memℒp_of_mem_interior_integrableExpSet`. -/
+lemma memℒp_of_mem_interior_integrableExpSet_of_one_le {p : ℝ≥0} (hp : 1 ≤ p)
     (h : 0 ∈ interior (integrableExpSet X μ)) :
     Memℒp X p μ := by
   have hX : AEMeasurable X μ := aemeasurable_of_mem_interior_integrableExpSet h
@@ -406,7 +418,8 @@ lemma memℒp_of_mem_interior_of_one_le {p : ℝ≥0} (hp : 1 ≤ p)
   have h_le (x : ℝ) (hx_nonneg : 0 ≤ x) : x ^ (p : ℝ) ≤ x ^ n + x ^ m :=
     rpow_le_add_pow_floor_pow_ceil hx_nonneg hp
   have h_int : Integrable (fun ω ↦ |X ω| ^ n + |X ω| ^ m) μ :=
-    (integrable_pow_abs_of_mem_interior h n).add (integrable_pow_abs_of_mem_interior h m)
+    (integrable_pow_abs_of_mem_interior_integrableExpSet h n).add
+      (integrable_pow_abs_of_mem_interior_integrableExpSet h m)
   refine h_int.mono (hX.abs.pow_const _).aestronglyMeasurable (ae_of_all _ fun ω ↦ ?_)
   simp_rw [norm_eq_abs, abs_rpow_of_nonneg (abs_nonneg _), abs_abs]
   rw [(abs_add_eq_add_abs_iff _ _).mpr (Or.inl ⟨?_, ?_⟩), abs_pow, abs_pow, abs_abs]
@@ -414,17 +427,23 @@ lemma memℒp_of_mem_interior_of_one_le {p : ℝ≥0} (hp : 1 ≤ p)
   · positivity
   · positivity
 
-lemma memℒp_of_mem_interior_nat (h : 0 ∈ interior (integrableExpSet X μ)) (n : ℕ) :
+/-- If 0 belongs to the interior of `integrableExpSet X μ`, then `X` is in `ℒp` for all `p : ℕ`. -/
+lemma memℒp_nat_of_mem_interior_integrableExpSet (h : 0 ∈ interior (integrableExpSet X μ)) (n : ℕ) :
     Memℒp X n μ := by
   by_cases hn : n = 0
   · simp only [hn, CharP.cast_eq_zero, memℒp_zero_iff_aestronglyMeasurable]
     exact (aemeasurable_of_mem_interior_integrableExpSet h).aestronglyMeasurable
-  · exact memℒp_of_mem_interior_of_one_le (mod_cast (by omega)) h
+  · exact memℒp_of_mem_interior_integrableExpSet_of_one_le (mod_cast (by omega)) h
 
-lemma memℒp_of_mem_interior [IsFiniteMeasure μ]
+/-- If 0 belongs to the interior of `integrableExpSet X μ` and `μ` is a finite measure,
+then `X` is in `ℒp` for all finite `p`.
+If `μ` is not finite, see `memℒp_of_mem_interior_integrableExpSet_of_one_le` for the same result
+restricted to `1 ≤ p`. -/
+lemma memℒp_of_mem_interior_integrableExpSet [IsFiniteMeasure μ]
     (ht : 0 ∈ interior (integrableExpSet X μ)) (p : ℝ≥0) :
     Memℒp X p μ :=
-  (memℒp_of_mem_interior_nat ht ⌈(p : ℝ)⌉₊).memℒp_of_exponent_le (mod_cast Nat.le_ceil _)
+  (memℒp_nat_of_mem_interior_integrableExpSet ht ⌈(p : ℝ)⌉₊).memℒp_of_exponent_le
+    (mod_cast Nat.le_ceil _)
 
 end IntegrableExpSet
 
