@@ -198,19 +198,11 @@ theorem IsLittleOTVS.add [TopologicalAddGroup E] [ContinuousSMul 𝕜 E]
     (h₁ : f₁ =o[𝕜; l] g) (h₂ : f₂ =o[𝕜; l] g) : (f₁ + f₂) =o[𝕜; l] g := by
   rw [(nhds_basis_balanced 𝕜 E).add_self.isLittleOTVS_iff (basis_sets _)]
   rintro U ⟨hU, hUb⟩
-  obtain ⟨V₁, hV₁, hVf₁⟩ := h₁ U hU
-  obtain ⟨V₂, hV₂, hVf₂⟩ := h₂ U hU
-  refine ⟨V₁ ∩ V₂, inter_mem hV₁ hV₂, fun ε hε ↦ ?_⟩
+  rcases ((h₁.eventually_smallSets U hU).and (h₂.eventually_smallSets U hU)).exists_mem_of_smallSets
+    with ⟨V, hV, hVf₁, hVf₂⟩
+  refine ⟨V, hV, fun ε hε ↦ ?_⟩
   filter_upwards [hVf₁ ε hε, hVf₂ ε hε] with x hx₁ hx₂
-  calc
-    egauge 𝕜 (U + U) (f₁ x + f₂ x)
-    _ ≤ max (egauge 𝕜 U (f₁ x)) (egauge 𝕜 U (f₂ x)) := egauge_add_add_le hUb hUb _ _
-    _ ≤ ε * max (egauge 𝕜 V₁ (g x)) (egauge 𝕜 V₂ (g x)) := by
-      rw [mul_max]
-      gcongr
-    _ ≤ ε * egauge 𝕜 (V₁ ∩ V₂) (g x) := by
-      gcongr
-      apply le_egauge_inter
+  exact (egauge_add_add_le hUb hUb _ _).trans (max_le hx₁ hx₂)
 
 protected lemma IsLittleOTVS.smul_left (h : f =o[𝕜;l] g) (c : α → 𝕜) :
     (fun x ↦ c x • f x) =o[𝕜;l] (fun x ↦ c x • g x) := by
