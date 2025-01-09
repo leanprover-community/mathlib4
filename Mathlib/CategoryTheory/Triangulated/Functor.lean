@@ -19,6 +19,8 @@ distinguished triangles: this defines the typeclass `Functor.IsTriangulated`.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace CategoryTheory
 
 open Category Limits Pretriangulated Preadditive

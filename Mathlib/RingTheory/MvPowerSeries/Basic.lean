@@ -347,7 +347,7 @@ def C : R →+* MvPowerSeries σ R :=
   { monomial R (0 : σ →₀ ℕ) with
     map_one' := rfl
     map_mul' := fun a b => (monomial_mul_monomial 0 0 a b).symm
-    map_zero' := (monomial R (0 : _)).map_zero }
+    map_zero' := (monomial R 0).map_zero }
 
 variable {σ} {R}
 
