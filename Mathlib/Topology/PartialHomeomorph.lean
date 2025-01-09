@@ -1352,7 +1352,6 @@ noncomputable def lift_openEmbedding
   open_source := hf.isOpenMap _ e.open_source
   open_target := e.open_target
   continuousOn_toFun := by
-    --dsimp
     set F := (extend f (↑e) (Classical.arbitrary (X' → Z))) with F_eq
     have heq : EqOn F (e ∘ (hf.toPartialHomeomorph).symm) (f '' e.source) := by
       intro x ⟨x₀, hx₀, hxx₀⟩
@@ -1361,13 +1360,9 @@ noncomputable def lift_openEmbedding
       apply e.continuousOn_toFun.comp; swap
       · intro x' ⟨x, hx, hx'x⟩
         rw [← hx'x, hf.toPartialHomeomorph_left_inv]; exact hx
-      apply Continuous.continuousOn  -- risky move, too strong?
-      rw [continuous_iff_continuousOn_univ]
-      convert PartialHomeomorph.continuousOn_toFun (hf.toPartialHomeomorph).symm
-      rw [PartialHomeomorph.symm_source]
-
-      -- easy missing lemma
-      sorry
+      have : ContinuousOn (hf.toPartialHomeomorph).symm (f '' univ) := by
+        apply (hf.toPartialHomeomorph).continuousOn_invFun
+      apply this.mono; gcongr; exact fun ⦃a⦄ a ↦ trivial
     apply ContinuousOn.congr this heq
   continuousOn_invFun := hf.continuous.comp_continuousOn e.continuousOn_invFun
 
