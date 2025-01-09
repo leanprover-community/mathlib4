@@ -72,7 +72,7 @@ theorem mul_one_sub_self {p : R} (h : IsIdempotentElem p) : p * (1 - p) = 0 := b
   rw [mul_sub, mul_one, h.eq, sub_self]
 
 @[simp]
-theorem one_sub_mul_self {p : R} (h : IsIdempotentElem p ) : (1 - p) * p = 0 := by
+theorem one_sub_mul_self {p : R} (h : IsIdempotentElem p) : (1 - p) * p = 0 := by
   rw [sub_mul, one_mul, h.eq, sub_self]
 
 theorem add_sub_mul_of_commute {R} [Ring R] {p q : R} (h : Commute p q)
