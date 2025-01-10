@@ -42,7 +42,9 @@ open Finset Order
 
 variable {α β : Type*}
 
-section GeneralizedBooleanAlgebra -- the *target* is a GBA
+open scoped Function -- required for scoped `on` notation
+
+section GeneralizedBooleanAlgebra
 
 variable [GeneralizedBooleanAlgebra α]
 

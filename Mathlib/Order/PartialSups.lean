@@ -55,20 +55,16 @@ lemma partialSups_apply (f : β → α) (n : β) :
     partialSups f n = (Iic n).sup' nonempty_Iic f :=
   rfl
 
-/-- An induction principle for proving something about `partialSups`. -/
-lemma partialSups_iff_forall {f : β → α} (p : α → Prop) (hp : ∀ {a b}, p (a ⊔ b) ↔ p a ∧ p b) :
-    ∀ {n : β}, p (partialSups f n) ↔ ∀ k ≤ n, p (f k) := by
+lemma partialSups_iff_forall {f : β → α} (p : α → Prop)
+    (hp : ∀ {a b}, p (a ⊔ b) ↔ p a ∧ p b) {n : β} :
+    p (partialSups f n) ↔ ∀ k ≤ n, p (f k) := by
   classical
-  have (s : Finset β) (hs : s.Nonempty) : p (s.sup' hs f) ↔ ∀ k ∈ s, p (f k) := by
-    induction' s using Finset.induction_on with k s hk ih
-    · simp only [Finset.not_nonempty_empty] at hs
-    · by_cases hs' : s.Nonempty
-      · simp only [Finset.sup'_insert hs', hp, ih, mem_insert, forall_eq_or_imp]
-      · simp only [not_nonempty_iff_eq_empty.mp hs', insert_emptyc_eq, sup'_singleton,
-          mem_singleton, forall_eq]
-  intro n
-  simp only [partialSups_apply, this, mem_Iic]
-
+  rw [partialSups_apply, comp_sup'_eq_sup'_comp (γ := Propᵒᵈ) _ p, sup'_eq_sup]
+  · show (Iic n).inf (p ∘ f) ↔ _
+    simp [Finset.inf_eq_iInf]
+  · intro x y
+    rw [hp]
+    rfl
 
 @[simp]
 lemma partialSups_le_iff {f : β → α} {n : β} {a : α} :
@@ -196,6 +192,7 @@ lemma disjoint_partialSups_right {f : β → α} {n : β} {x : α} :
     Disjoint x (partialSups f n) ↔ ∀ k ≤ n, Disjoint x (f k) :=
   partialSups_iff_forall (Disjoint x) disjoint_sup_right
 
+open scoped Function in -- required for scoped `on` notation
 /- Note this lemma requires a distributive lattice, so is not useful (or true) in situations such as
 submodules. -/
 theorem partialSups_disjoint_of_disjoint (f : β → α) (h : Pairwise (Disjoint on f))

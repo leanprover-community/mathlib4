@@ -388,7 +388,8 @@ variable {R} (P Q)
 
 protected theorem mul_one : M * 1 = M := by
   conv_lhs => rw [one_eq_span, ← span_eq M]
-  erw [span_mul_span, mul_one, span_eq]
+  rw [span_mul_span]
+  simp
 
 protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
     map f.toLinearMap (M * N) = map f.toLinearMap M * map f.toLinearMap N :=
@@ -832,7 +833,9 @@ protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Subm
     obtain ⟨xz, xz_mem, hxz⟩ := hx (h z) ⟨z, hz, rfl⟩
     convert xz_mem
     apply h.injective
-    erw [map_mul, h.apply_symm_apply, hxz]
+    rw [map_mul, h.apply_symm_apply]
+    simp only [AlgEquiv.toLinearMap_apply] at hxz
+    rw [hxz]
 
 end Quotient
 
