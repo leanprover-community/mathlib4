@@ -289,7 +289,7 @@ theorem star_natCast [NonAssocSemiring R] [StarRing R] (n : ℕ) : star (n : R) 
 
 @[simp]
 theorem star_ofNat [NonAssocSemiring R] [StarRing R] (n : ℕ) [n.AtLeastTwo] :
-    star (ofNat(n) : R) = OfNat.ofNat n :=
+    star (ofNat(n) : R) = ofNat(n) :=
   star_natCast _
 
 section
