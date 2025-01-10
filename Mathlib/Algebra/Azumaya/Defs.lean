@@ -20,21 +20,20 @@ TODO : Add the three more definitions and prove they are equivalent:
 
 ## Reference
 
-* <https://en.wikipedia.org/wiki/Azumaya_algebra>
-* [Benson Farb , R. Keith Dennis, *Noncommutative Algebra*]
+* [Benson Farb , R. Keith Dennis, *Noncommutative Algebra*][bensonfarb1993]
 
 ## Tags
 
 Azumaya algebra, central simple algebra, noncommutative algebra
 -/
 
-variable (R A : Type*) [CommRing R] [Ring A] [Algebra R A]
+variable (R A : Type*) [CommSemiring R] [Semiring A] [Algebra R A]
 
 open TensorProduct MulOpposite
 
 /-- The canonical map from `A ⊗[R] Aᵐᵒᵖ` to `Module.End R A` where
   `a ⊗ b` maps to `f : x ↦ a * x * b`-/
-noncomputable abbrev TensorProduct.Algebra.moduleAux' : (A ⊗[R] Aᵐᵒᵖ) →ₐ[R] Module.End R A :=
+noncomputable abbrev AlgHom.tensorMopToEnd : (A ⊗[R] Aᵐᵒᵖ) →ₐ[R] Module.End R A :=
   {
     __ := TensorProduct.Algebra.moduleAux
     map_one' := by simp [Algebra.TensorProduct.one_def, Algebra.moduleAux]
@@ -56,6 +55,6 @@ noncomputable abbrev TensorProduct.Algebra.moduleAux' : (A ⊗[R] Aᵐᵒᵖ) �
   }
 
 /-- An azumaya algebra is a finitely generated, projective and faithful R-algebra where
-  `TensorProduct.Algebra.moduleAux` is an isomorphism. -/
+  `AlgHom.tensorMopToEnd` is an isomorphism. -/
 class IsAzumaya extends Module.Projective R A, FaithfulSMul R A, Module.Finite R A: Prop where
-    bij : Function.Bijective <| TensorProduct.Algebra.moduleAux' R A
+    bij : Function.Bijective <| AlgHom.tensorMopToEnd R A
