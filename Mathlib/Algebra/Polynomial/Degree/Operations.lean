@@ -12,7 +12,7 @@ import Mathlib.Algebra.Polynomial.Degree.Definitions
 ## Main results
 - `degree_mul` : The degree of the product is the sum of degrees
 - `leadingCoeff_add_of_degree_eq` and `leadingCoeff_add_of_degree_lt` :
-    The leading_coefficient of a sum is determined by the leading coefficients and degrees
+    The leading coefficient of a sum is determined by the leading coefficients and degrees
 -/
 
 noncomputable section

@@ -66,7 +66,7 @@ Lots is missing!
 --  This would likely involve adding a `comapDomain` analogue of
 --  `AddMonoidAlgebra.mapDomainAlgHom` and an `R`-linear version of
 --  `Polynomial.toFinsuppIso`.
--- Add `degree, int_degree, int_trailing_degree, leading_coeff, trailing_coeff,...`.
+-- Add `degree, intDegree, intTrailingDegree, leadingCoeff, trailingCoeff,...`.
 -/
 
 
