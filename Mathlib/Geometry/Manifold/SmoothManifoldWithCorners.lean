@@ -139,6 +139,11 @@ scoped[Manifold] notation "∞" => (⊤ : ℕ∞)
 
 /-! ### Models with corners. -/
 
+instance foo (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] : SMul 𝕜 E := by infer_instance
+
+-- instance bar (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
+--     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : NormedSpace ℝ E := by infer_instance--sorry -- TODO!
 
 /-- A structure containing information on the way a space `H` embeds in a
 model vector space `E` over the field `𝕜`. This is all what is needed to
@@ -158,7 +163,7 @@ If further conditions turn out to be useful, they can be added here.
 -/
 @[ext] -- Porting note(#5171): was nolint has_nonempty_instance
 structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
-    [NormedAddCommGroup E] [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] extends
+    [NormedAddCommGroup E] [NormedSpace 𝕜 E] [SMul ℝ E] (H : Type*) [TopologicalSpace H] extends
     PartialEquiv H E where
   source_eq : source = univ
   uniqueDiffOn' : UniqueDiffOn 𝕜 toPartialEquiv.target
@@ -170,18 +175,27 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
 
 -- need a better constructor!
 def ModelWithCorners.mk_of_IsRCLikeNormedField {𝕜 E H : Type*}
-    [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [TopologicalSpace H]
-    (hK : IsRCLikeNormedField 𝕜) (e : PartialEquiv H E) (hsource : e.source = univ)
-    (hcont : Continuous e) (hinv : Continuous e.symm) (hconvex : Convex ℝ (interior (range e))) :
-    ModelWithCorners 𝕜 E H where --:= sorry
+    [NontriviallyNormedField 𝕜] [NormedAddCommGroup E] [NormedSpace 𝕜 E] [SMul ℝ E]
+    [TopologicalSpace H] (hK : IsRCLikeNormedField 𝕜) (e : PartialEquiv H E)
+    (hsource : e.source = univ) (hcont : Continuous e) (hinv : Continuous e.symm)
+    (hconvex : Convex ℝ (interior (range e))) : ModelWithCorners 𝕜 E H where
   __ := e
   source_eq := hsource
   continuous_toFun := hcont
   continuous_invFun := hinv
-  convex_interior_range := sorry -- use hconvex
-  uniqueDiffOn' := sorry -- prove from hconvex
-  target_subset_closure_interior := sorry -- prove from hconvex
+  convex_interior_range _ := hconvex
+  uniqueDiffOn' := by
+    have : e.target ⊆ closure (interior e.target) := sorry
+    have : UniqueDiffOn 𝕜 (closure (interior e.target)) := by
+      sorry
+    sorry--apply hconvex.uniqueDiff
+  target_subset_closure_interior := by
+    show e.target ⊆ closure (interior e.target)
+    have h := hconvex --hK
+    -- XXX: how to prove?
+    sorry -- prove from hconvex
 
+#exit
 -- TODO: toReal for a complex model...
 
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
