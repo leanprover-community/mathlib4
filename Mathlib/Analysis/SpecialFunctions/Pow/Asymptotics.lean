@@ -207,11 +207,11 @@ theorem isTheta_cpow_rpow (hl_im : IsBoundedUnder (· ≤ ·) l fun x => |(g x).
     (fun x => f x ^ g x) =Θ[l] fun x => abs (f x) ^ (g x).re :=
   calc
     (fun x => f x ^ g x) =Θ[l]
-        (show α → ℝ from fun x => abs (f x) ^ (g x).re / Real.exp (arg (f x) * im (g x))) :=
-      isTheta_of_norm_eventuallyEq' <| hl.mono fun _ => abs_cpow_of_imp
-    _ =Θ[l] (show α → ℝ from fun x => abs (f x) ^ (g x).re / (1 : ℝ)) :=
-      ((isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl_im))
-    _ =ᶠ[l] (show α → ℝ from fun x => abs (f x) ^ (g x).re) := by
+        (fun x => abs (f x) ^ (g x).re / Real.exp (arg (f x) * im (g x))) :=
+      .of_norm_eventuallyEq <| hl.mono fun _ => abs_cpow_of_imp
+    _ =Θ[l] fun x => abs (f x) ^ (g x).re / (1 : ℝ) :=
+      (isTheta_refl _ _).div (isTheta_exp_arg_mul_im hl_im)
+    _ =ᶠ[l] (fun x => abs (f x) ^ (g x).re) := by
       simp only [ofReal_one, div_one]
       rfl
 
@@ -322,11 +322,11 @@ theorem isLittleO_log_rpow_rpow_atTop {s : ℝ} (r : ℝ) (hs : 0 < s) :
   have H : 0 < s / r' := div_pos hs hr
   calc
     (fun x => log x ^ r) =O[atTop] fun x => log x ^ r' :=
-      IsBigO.of_bound 1 <|
-        (tendsto_log_atTop.eventually_ge_atTop 1).mono fun x hx => by
-          have hx₀ : 0 ≤ log x := zero_le_one.trans hx
-          simp [r', norm_eq_abs, abs_rpow_of_nonneg, abs_rpow_of_nonneg hx₀,
-            rpow_le_rpow_of_exponent_le (hx.trans (le_abs_self _))]
+      .of_norm_eventuallyLE <| by
+        filter_upwards [tendsto_log_atTop.eventually_ge_atTop 1] with x hx
+        rw [Real.norm_of_nonneg (by positivity)]
+        gcongr
+        exacts [hx, le_max_left _ _]
     _ =o[atTop] fun x => (x ^ (s / r')) ^ r' :=
       ((isLittleO_log_rpow_atTop H).rpow hr <|
         (_root_.tendsto_rpow_atTop H).eventually <| eventually_ge_atTop 0)

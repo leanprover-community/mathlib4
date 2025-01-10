@@ -17,6 +17,8 @@ Johan Commelin to the Liquid Tensor Experiment.
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace Int
 
 /-- The map `ℤ → ℤˣ` which sends `n` to `(-1 : ℤˣ) ^ n`. -/
