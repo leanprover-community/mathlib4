@@ -1134,10 +1134,8 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
           ((hasSum_geometric_of_norm_lt_one this).mul_left 2)
     exact hA.norm_le_of_bounded hBL hAB
   suffices L =O[𝓟 (EMetric.ball (x, x) r' ∩ ((insert x s) ×ˢ (insert x s)))]
-      fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ by
-    refine (IsBigO.of_bound 1 (eventually_principal.2 fun y hy => ?_)).trans this
-    rw [one_mul]
-    exact (hL y hy).trans (le_abs_self _)
+      fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ from
+    .trans (.of_norm_eventuallyLE (eventually_principal.2 hL)) this
   simp_rw [L, mul_right_comm _ (_ * _)]
   exact (isBigO_refl _ _).const_mul_left _
 
