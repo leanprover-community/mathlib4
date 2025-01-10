@@ -467,6 +467,8 @@ end
 
 variable {G : J ⥤ C} (α : F ⟶ G)
 
+theorem limMap_eq : limMap α = lim.map α := rfl
+
 theorem limit.map_pre [HasLimitsOfShape K C] (E : K ⥤ J) :
     lim.map α ≫ limit.pre G E = limit.pre F E ≫ lim.map (whiskerLeft E α) := by
   ext
@@ -991,6 +993,8 @@ def colim : (J ⥤ C) ⥤ C where
 end
 
 variable {G : J ⥤ C} (α : F ⟶ G)
+
+theorem colimMap_eq : colimMap α = colim.map α := rfl
 
 @[reassoc]
 theorem colimit.ι_map (j : J) : colimit.ι F j ≫ colim.map α = α.app j ≫ colimit.ι G j := by simp

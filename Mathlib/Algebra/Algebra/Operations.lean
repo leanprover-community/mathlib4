@@ -67,6 +67,7 @@ section Module
 
 variable {R : Type u} [Semiring R] {A : Type v} [Semiring A] [Module R A]
 
+-- TODO: Why is this in a file about `Algebra`?
 /-- `1 : Submodule R A` is the submodule `R ∙ 1` of A.
 TODO: potentially change this back to `LinearMap.range (Algebra.linearMap R A)`
 once a version of `Algebra` without the `commutes'` field is introduced.
@@ -324,6 +325,15 @@ theorem pow_subset_pow {n : ℕ} : (↑M : Set A) ^ n ⊆ ↑(M ^ n : Submodule 
 theorem pow_mem_pow {x : A} (hx : x ∈ M) (n : ℕ) : x ^ n ∈ M ^ n :=
   pow_subset_pow _ <| Set.pow_mem_pow hx
 
+lemma restrictScalars_pow {A B C : Type*} [Semiring A] [Semiring B]
+    [Semiring C] [SMul A B] [Module A C] [Module B C]
+    [IsScalarTower A C C] [IsScalarTower B C C] [IsScalarTower A B C]
+    {I : Submodule B C} :
+    ∀ {n : ℕ}, (hn : n ≠ 0) → (I ^ n).restrictScalars A = I.restrictScalars A ^ n
+  | 1, _ => by simp [Submodule.pow_one]
+  | n + 2, _ => by
+    simp [Submodule.pow_succ (n := n + 1), restrictScalars_mul, restrictScalars_pow n.succ_ne_zero]
+
 end Module
 
 variable {ι : Sort uι}
@@ -388,7 +398,8 @@ variable {R} (P Q)
 
 protected theorem mul_one : M * 1 = M := by
   conv_lhs => rw [one_eq_span, ← span_eq M]
-  erw [span_mul_span, mul_one, span_eq]
+  rw [span_mul_span]
+  simp
 
 protected theorem map_mul {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A') :
     map f.toLinearMap (M * N) = map f.toLinearMap M * map f.toLinearMap N :=
@@ -832,7 +843,9 @@ protected theorem map_div {B : Type*} [CommSemiring B] [Algebra R B] (I J : Subm
     obtain ⟨xz, xz_mem, hxz⟩ := hx (h z) ⟨z, hz, rfl⟩
     convert xz_mem
     apply h.injective
-    erw [map_mul, h.apply_symm_apply, hxz]
+    rw [map_mul, h.apply_symm_apply]
+    simp only [AlgEquiv.toLinearMap_apply] at hxz
+    rw [hxz]
 
 end Quotient
 

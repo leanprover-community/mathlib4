@@ -31,8 +31,10 @@ namespace Pretriangulated.Opposite
 /-- If `F` commutes with shifts, so does `F.op`, for the shifts chosen on `Cᵒᵖ` in
 `CategoryTheory.Triangulated.Opposite.Basic`.
 -/
-noncomputable scoped instance commShiftOpInt : F.op.CommShift ℤ := by
-  apply (OppositeShift.functor ℤ F).commShiftPullback
+noncomputable scoped instance commShiftOpInt : F.op.CommShift ℤ :=
+  inferInstanceAs ((PullbackShift.functor
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))
+      (OppositeShift.functor ℤ F)).CommShift ℤ)
 
 end Pretriangulated.Opposite
 
