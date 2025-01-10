@@ -2,8 +2,7 @@ import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.GroupTheory.GroupAction.SubMulAction
 import Mathlib.LinearAlgebra.LinearPMap.Basic
 
-class PFunLike (F : Type*) (α : outParam Type*) (γ : outParam Type*) (β : outParam Type*)
-  [SetLike γ α] where
+class PFunLike (F : Type*) (α γ β : outParam Type*) [SetLike γ α] where
 domain : F → γ
 coe : Π (f : F), (domain f) → β
 coe_injective : Π (f g : F), domain f = domain g →
@@ -22,30 +21,77 @@ lemma ext {F α β γ : Type*} [SetLike γ α] [PFunLike F α γ β] {f g : F} (
 
 end PFunLike
 
-class PMapZeroClass (F : Type*) (M γ N : outParam Type*) [SetLike γ M] [Zero M] [Zero N]
-    [ZeroMemClass γ M] extends PFunLike F M γ N where
+class ZeroPHomClass (F : Type*) (M γ N : outParam Type*) [SetLike γ M] [Zero M] [Zero N]
+    [ZeroMemClass γ M] [PFunLike F M γ N] where
   pmap_zero : ∀ (f : F), f 0 = 0
 
-class PMapAddClass (F : Type*) (α γ β : outParam Type*)
-    [SetLike γ α] [Add α] [Add β] [AddMemClass γ α]
-    extends PFunLike F α γ β where
-  pmap_add : ∀ (f : F) (x y : domain f), f (x + y) = f x + f y
+@[to_additive]
+class OnePHomClass (F : Type*) (M γ N : outParam Type*) [SetLike γ M] [One M] [One N]
+    [OneMemClass γ M] [PFunLike F M γ N] where
+  pmap_one : ∀ (f : F), f 1 = 1
 
-class PMapAddZeroClass (F : Type*) (M γ N : outParam Type*) [SetLike γ M]
-    [AddZeroClass M] [AddZeroClass N] [AddMemClass γ M] [ZeroMemClass γ M]
-    extends PMapAddClass F M γ N, PMapZeroClass F M γ N
+class AddPHomClass (F : Type*) (M γ N : outParam Type*)
+    [SetLike γ M] [Add M] [Add N] [AddMemClass γ M] [PFunLike F M γ N] where
+  pmap_add : ∀ (f : F) (x y : PFunLike.domain f), f (x + y) = f x + f y
 
-theorem pmap_neg (G H F γ : Type*) [AddGroup G] [SubtractionMonoid H] [SetLike γ G]
-    [AddSubgroupClass γ G] []
+@[to_additive]
+class MulPHomClass (F : Type*) (M γ N : outParam Type*)
+    [SetLike γ M] [Mul M] [Mul N] [MulMemClass γ M] [PFunLike F M γ N] where
+  pmap_mul : ∀ (f : F) (x y : PFunLike.domain f), f (x * y) = f x * f y
 
-class PMapSMulClass (F : Type*) (M X γ : outParam Type*) [SetLike γ X] [SMul M X]
-    (Y : outParam Type*) [SMul M Y] [SMulMemClass γ M X] extends PFunLike F X γ Y where
-  pmap_smul : ∀ (f : F) (x : domain f) (c : M), f (c • x) = c • (f x)
+class AddMonoidPHomClass (F : Type*) (M γ N : outParam Type*) [SetLike γ M]
+    [AddZeroClass M] [AddZeroClass N] [AddSubmonoidClass γ M] [PFunLike F M γ N]
+    extends AddPHomClass F M γ N, ZeroPHomClass F M γ N
 
-class LinearPMapClass (F : Type*) (δ α γ β : outParam Type*) [Semiring δ] [AddCommMonoid α]
-    [AddCommMonoid β] [Module δ α] [Module δ β]
-    [SetLike γ α] [SMulMemClass γ δ α] [AddMemClass γ α]
-    extends PMapSMulClass F δ α γ β, PMapAddClass F α γ β
+@[to_additive]
+class MonoidPHomClass (F : Type*) (M γ N : outParam Type*) [SetLike γ M]
+    [MulOneClass M] [MulOneClass N] [SubmonoidClass γ M] [PFunLike F M γ N]
+    extends MulPHomClass F M γ N, OnePHomClass F M γ N
+
+@[to_additive]
+theorem pmap_mul_eq_one {F M γ N : Type*} [MulOneClass M] [MulOneClass N] [SetLike γ M]
+    [SubmonoidClass γ M] [PFunLike F M γ N] [MonoidPHomClass F M γ N]
+    {f : F} {a b : PFunLike.domain f} (h : a * b = 1) : f a * f b = 1 := by
+  rw [← MulPHomClass.pmap_mul, h, OnePHomClass.pmap_one]
+
+@[to_additive]
+theorem pmap_inv {F G γ H : Type*} [Group G] [DivisionMonoid H] [SetLike γ G]
+    [SubgroupClass γ G] [PFunLike F G γ H] [MonoidPHomClass F G γ H]
+    {f : F} (a : PFunLike.domain f) : f (a⁻¹) = (f a)⁻¹ :=
+  eq_inv_of_mul_eq_one_left <| pmap_mul_eq_one <| inv_mul_cancel _
+
+@[to_additive]
+theorem pmap_div {F G γ H : Type*} [Group G] [DivisionMonoid H] [SetLike γ G]
+    [SubgroupClass γ G] [PFunLike F G γ H] [MonoidPHomClass F G γ H]
+    {f : F} (a b : PFunLike.domain f) : f (a / b) = f a / f b := by
+  rw [div_eq_mul_inv, div_eq_mul_inv, MulPHomClass.pmap_mul, pmap_inv]
+
+class AddActionPSemiHomClass (F : Type*) {M N : outParam Type*} (φ : outParam (M → N))
+    (X γ Y : outParam Type*) [SetLike γ X] [VAdd M X] [VAdd N Y] [PFunLike F X γ Y]
+    [VAddMemClass γ M X] where
+  pmap_vadd : ∀ (f : F) (c : M) (x : PFunLike.domain f), f (c +ᵥ x) = φ c +ᵥ f x
+
+@[to_additive]
+class MulActionPSemiHomClass (F : Type*) {M N : outParam Type*} (φ : outParam (M → N))
+    (X γ Y : outParam Type*) [SetLike γ X] [SMul M X] [SMul N Y] [PFunLike F X γ Y]
+    [SMulMemClass γ M X] where
+  pmap_smul : ∀ (f : F) (c : M) (x : PFunLike.domain f), f (c • x) = φ c • f x
+
+@[to_additive]
+abbrev MulActionPHomClass (F : Type*) (M X γ Y : outParam Type*) [SetLike γ X]
+    [SMul M X] [SMul M Y] [PFunLike F X γ Y] [SMulMemClass γ M X] :=
+  MulActionPSemiHomClass F (@id M) X γ Y
+
+class SemilinearPMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
+    (σ : outParam (R →+* S)) (M γ N : outParam Type*) [SetLike γ M]
+    [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S N] [PFunLike F M γ N]
+    [AddMemClass γ M] [SMulMemClass γ R M]
+    extends AddPHomClass F M γ N, MulActionPSemiHomClass F σ M γ N
+
+abbrev LinearPMapClass (F : Type*) (R M γ N : outParam Type*) [Semiring R] [SetLike γ M]
+    [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] [PFunLike F M γ N]
+    [AddMemClass γ M] [SMulMemClass γ R M] :=
+  SemilinearPMapClass F (RingHom.id R) M γ N
 
 instance (priority := 900) SMulMemClass.SMulWithZero (R M α : Type*) [Zero R] [Zero M]
     [SMulWithZero R M] [SetLike α M] [SMulMemClass α R M] [ZeroMemClass α M] (a : α) :
@@ -53,84 +99,22 @@ instance (priority := 900) SMulMemClass.SMulWithZero (R M α : Type*) [Zero R] [
   smul_zero r := by ext1; simp
   zero_smul m := by ext1; simp
 
-instance (priority := 100) LinearPMapClass.toPMapAddZeroClass (F δ α γ β : Type*)
-    [Semiring δ] [AddCommMonoid α] [AddCommMonoid β] [Module δ α] [Module δ β]
-    [SetLike γ α] [SMulMemClass γ δ α] [AddMemClass γ α] [ZeroMemClass γ α]
-    [LinearPMapClass F δ α γ β] :
-    PMapAddZeroClass F α γ β where
+instance (priority := 100) SemilinearPMapClass.toAddMonoidPHomClass (F : Type*)
+    {R S : outParam Type*} [Semiring R] [Semiring S] (σ : outParam (R →+* S))
+    (M γ N : outParam Type*) [SetLike γ M] [AddCommMonoid M] [AddCommMonoid N] [Module R M]
+    [Module S N] [PFunLike F M γ N] [AddSubmonoidClass γ M] [SMulMemClass γ R M]
+    [SemilinearPMapClass F σ M γ N] :
+    AddMonoidPHomClass F M γ N where
   pmap_zero f := by
-    rw [← zero_smul δ 0, PMapSMulClass.pmap_smul, zero_smul]
+    rw [← zero_smul R 0, MulActionPSemiHomClass.pmap_smul, map_zero, zero_smul]
 
-/-
+variable {R E F : Type*} [Ring R] [AddCommGroup E] [Module R E] [AddCommGroup F] [Module R F]
 
-theorem pmap_zero {F δ α γ β : Type*} [Zero α] [Zero β] [Zero δ] [SMulWithZero δ α]
-    [SetLike γ α] [Add α] [SMul δ α] [SMulMemClass γ δ α] [AddMemClass γ α] [Add β] [SMul δ β]
-    [LinearPMapClass F δ α γ β] (f : F) [ZeroMemClass γ α] : f 0 = 0 := by
-  rw [← zero_smul δ (0 : PFunLike.domain f)]
-
-variable {R E F : Type*} [Ring R] [AddCommGroup E] [Module R E]
-    [AddCommGroup F] [Module R F]
-
-instance : LinearPMapClass (E →ₗ.[R] F) R E (Submodule R E) F where
+instance LinearPMap.PFunLike : PFunLike (E →ₗ.[R] F) E (Submodule R E) F where
   domain f := f.domain
   coe f := f.toFun
   coe_injective _ _ hd h := LinearPMap.ext hd h
-  pmap_smul f x c := f.toFun.map_smul c x
+
+instance LinearPMap.LinearPMapClass : LinearPMapClass (E →ₗ.[R] F) R E (Submodule R E) F where
   pmap_add f x y := f.toFun.map_add x y
-
-lemma test (f : E →ₗ.[R] F) (x y : f.domain) : f (x + y) = f x + f y :=
-  LinearPMapClass.pmap_add f x y
-
-export pmul_hom_class (pmap_mul)
-
-structure pmul_hom (α β : Type*) [has_mul α] [has_mul β] :=
-(domain : subsemigroup α)
-(to_mul_hom : domain →ₙ* β)
-
-infixr ` →.ₙ* `:25 := pmul_hom
-
-namespace pmul_hom
-
-instance (α β : Type*) [has_mul α] [has_mul β] :
-  pmul_hom_class (pmul_hom α β) α (subsemigroup α) β :=
-{ domain := pmul_hom.domain,
-  coe := λ f, f.to_mul_hom,
-  coe_injective := λ f g h h',
-  begin
-    rcases f with ⟨f_dom, f⟩,
-    rcases g with ⟨g_dom, g⟩,
-    obtain rfl : f_dom = g_dom := h,
-    obtain rfl : f = g := mul_hom.ext (λ x, h' _ _ rfl),
-    refl,
-  end,
-  pmap_mul := λ f, map_mul f.to_mul_hom }
-
--- this would be our standard `ext` lemma
-@[ext]
-lemma ext {α β : Type*} [has_mul α] [has_mul β] {f g : α →.ₙ* β} (h : domain f = domain g)
-  (h' : ∀ ⦃x : domain f⦄ ⦃y : domain g⦄, (x : α) = (y : α) → f x = g y) : f = g :=
-PFunLike.coe_injective f g h h'
-
--- see? it works!
-example {α β : Type*} [has_mul α] [has_mul β] (f : α →.ₙ* β) (x y : domain f) :
-  f (x * y) = f x * f y :=
-pmap_mul f x y
-
--- this instance seems dangerous: all of a sudden `α →ₙ* β` would have *two* `has_coe_to_fun`
--- instances, one coercing to `α → β` from the `fun_like` instance and another coercing to
--- `λ f, domain f → β` from the `PFunLike` instance, but maybe this isn't so much of a problem.
--- even if it is a problem, perhaps we can just solve it by lowering the priority on this one?
-instance dangerous {α β : Type*} [has_mul α] [has_mul β] :
-  pmul_hom_class (mul_hom α β) α (subsemigroup α) β  :=
-{ domain := λ f, ⊤,
-  coe := λ f x, match x with ⟨x, _⟩ := f x end,
-  coe_injective := λ f g _ h, mul_hom.ext (λ x, h ⟨x, true.intro⟩ ⟨x, true.intro⟩ rfl),
-  pmap_mul := λ f,
-  begin
-    simp_rw [SetLike.forall],
-    rintros x _ y _,
-    exact map_mul f x y,
-  end }
-
-end pmul_hom
--/
+  pmap_smul f c x := f.toFun.map_smul c x
