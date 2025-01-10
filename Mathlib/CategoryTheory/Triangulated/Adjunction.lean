@@ -126,12 +126,11 @@ lemma isTriangulated_rightAdjoint [F.IsTriangulated] : G.IsTriangulated where
         ← Functor.map_comp, right_triangle_components, Functor.map_id, comp_id]
 
 include adj in
-open CategoryTheory.Pretriangulated.Opposite Functor in
+open Pretriangulated.Opposite Functor in
 /--
 The left adjoint of a triangulated functor is triangulated.
 -/
 lemma isTriangulated_leftAdjoint [G.IsTriangulated] : F.IsTriangulated := by
-  have := G.isTriangulated_op
   have := isTriangulated_rightAdjoint adj.op
   exact F.isTriangulated_of_op
 

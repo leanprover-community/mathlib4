@@ -27,6 +27,8 @@ namespace CategoryTheory
 variable {C D : Type*} [Category C] [Category D] [HasShift C ℤ] [HasShift D ℤ] (F : C ⥤ D)
   [F.CommShift ℤ]
 
+open Category Limits Pretriangulated Opposite
+
 namespace Pretriangulated.Opposite
 
 /-- If `F` commutes with shifts, so does `F.op`, for the shifts chosen on `Cᵒᵖ` in
@@ -64,8 +66,6 @@ noncomputable scoped instance commShiftOpInt_adjunction {G : D ⥤ C} [G.CommShi
 end Pretriangulated.Opposite
 
 namespace Functor
-
-open Category Limits Pretriangulated Opposite
 
 @[reassoc]
 lemma op_commShiftIso_hom_app (X : Cᵒᵖ) (n m : ℤ) (h : n + m = 0):
@@ -153,9 +153,13 @@ lemma map_opShiftFunctorEquivalence_counitIso_inv_app_unop (X : Cᵒᵖ) (n : �
     Iso.inv_hom_id_app]
   simp
 
+end Functor
+
 variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
   [Pretriangulated C] [HasZeroObject D] [Preadditive D]
   [∀ (n : ℤ), (shiftFunctor D n).Additive] [Pretriangulated D]
+
+namespace Functor
 
 /--
 If `F : C ⥤ D` commutes with shifts, this expresses the compatibility of `F.mapTriangle`
@@ -213,14 +217,23 @@ noncomputable def opMapTriangleCompTriangleOpEquivalenceInverse :
   CatCommSq.iso (F.op.mapTriangle) (triangleOpEquivalence C).inverse
       (triangleOpEquivalence D).inverse F.mapTriangle.op
 
+end Functor
+
+namespace Pretriangulated.Opposite
+
+open Functor in
 /-- If `F` is triangulated, so is `F.op`.
 -/
-lemma isTriangulated_op [F.IsTriangulated] : F.op.IsTriangulated where
+scoped instance isTriangulated_op [F.IsTriangulated] : F.op.IsTriangulated where
   map_distinguished T dT := by
     rw [mem_distTriang_op_iff]
     exact Pretriangulated.isomorphic_distinguished _
       ((F.map_distinguished _ (unop_distinguished _ dT))) _
       (((opMapTriangleCompTriangleOpEquivalenceInverse F).symm.app T).unop)
+
+end Pretriangulated.Opposite
+
+namespace Functor
 
 /-- If `F.op` is triangulated, so is `F`.
 -/
@@ -238,10 +251,11 @@ lemma isTriangulated_of_op [F.op.IsTriangulated] : F.IsTriangulated where
     rw [← this, Functor.comp_obj, ← mem_distTriang_op_iff] at dT
     exact dT
 
+open Pretriangulated.Opposite in
 /-- `F` is triangulated if and only if `F.op` is triangulated.
 -/
 lemma op_isTriangulated_iff : F.op.IsTriangulated ↔ F.IsTriangulated :=
-  ⟨fun _ ↦ F.isTriangulated_of_op, fun _ ↦ F.isTriangulated_op⟩
+  ⟨fun _ ↦ F.isTriangulated_of_op, fun _ ↦ inferInstance⟩
 
 end Functor
 
