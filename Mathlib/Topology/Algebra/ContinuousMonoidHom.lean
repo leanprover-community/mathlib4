@@ -518,6 +518,21 @@ set_option linter.docPrime false in -- This is about `ContinuousMulEquiv.mk'`
 @[simp]
 lemma coe_mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y)  : ⇑(mk' f h) = f := rfl
 
+variable {U V : Type*} [TopologicalSpace U] [TopologicalSpace V]
+    [Monoid U] [Monoid V]
+
+/--The coersion from `ContinuousMulEquiv` to `ContinuousMonoidHom` induced by `toMonoidHom`-/
+def toContinuousMonoidHom (f : U ≃ₜ* V) : ContinuousMonoidHom U V := {
+  f.toMonoidHom with
+  continuous_toFun := f.continuous_toFun }
+
+lemma toContinuousMonoidHom_toMonoidHom (f : U ≃ₜ* V) : f.toContinuousMonoidHom = f.toMonoidHom :=
+  rfl
+
+lemma toContinuousMonoidHom_tocontinuousMap (f : U ≃ₜ* V) :
+    f.toContinuousMonoidHom = toContinuousMap f :=
+  rfl
+
 end coe
 
 section bijective
