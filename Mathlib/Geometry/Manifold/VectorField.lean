@@ -1320,7 +1320,7 @@ protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField
     {U V : Π (x : M), TangentSpace I x} {s : Set M} {x : M}
     (hU : ContMDiffWithinAt I I.tangent n (fun x ↦ (U x : TangentBundle I M)) s x)
     (hV : ContMDiffWithinAt I I.tangent n (fun x ↦ (V x : TangentBundle I M)) s x)
-    (hs : UniqueMDiffOn I s) (hx : x ∈ s) (hmn : m + 1 ≤ n) (hn0 : minSmoothness 𝕜 2 ≤ n) :
+    (hs : UniqueMDiffOn I s) (hx : x ∈ s) (hmn : minSmoothness 𝕜 (m + 1) ≤ n) :
     ContMDiffWithinAt I I.tangent m
       (fun x ↦ (mlieBracketWithin I U V s x : TangentBundle I M)) s x := by
   /- The statement is not obvious, since at different points the Lie bracket is defined using
@@ -1330,10 +1330,18 @@ protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField
   space Lie bracket, given by an explicit formula). Pulling back this Lie bracket in `M` gives
   locally a smooth function, which coincides with the initial Lie bracket by invariance
   under diffeos. -/
+  have min2 : minSmoothness 𝕜 2 ≤ n + 1 := by
+    simp only [minSmoothness] at hmn ⊢
+    split_ifs with h
+    · simp [h] at hmn
+      apply le_trans _ (add_le_add_right hmn 1)
+      simp only [add_assoc]
+      exact le_add_self
+    · simpa [h] using hmn
   apply contMDiffWithinAt_iff_le_ne_infty.2 (fun m' hm' h'm' ↦ ?_)
   have : IsManifold I n M := IsManifold.of_le (n := n + 1) le_self_add
   have hn : 1 ≤ m' + 1 := le_add_self
-  have hm'n : m' + 1 ≤ n := le_trans (add_le_add_right hm' 1) hmn
+  have hm'n : m' + 1 ≤ n := le_trans (add_le_add_right hm' 1) (le_minSmoothness.trans hmn)
   have : IsManifold I (m' + 1) M := IsManifold.of_le (n := n + 1) (hm'n.trans le_self_add)
   have pre_mem : (extChartAt I x) ⁻¹' ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s)
       ∈ 𝓝[s] x := by
@@ -1375,12 +1383,12 @@ protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField
     with y hy hyU hyV h'yU h'yV hy_chart hys
   simp only [Bundle.TotalSpace.mk_inj]
   rw [mpullback_mlieBracketWithin (h'yU.mdifferentiableWithinAt hn)
-    (h'yV.mdifferentiableWithinAt hn) hs (contMDiffAt_extChartAt' hy_chart) hys hn0 hy]
+    (h'yV.mdifferentiableWithinAt hn) hs (contMDiffAt_extChartAt' hy_chart) hys min2 hy]
   exact Filter.EventuallyEq.mlieBracketWithin_vectorField_eq_of_mem hyU hyV hys
 
 /-- If two vector fields are `C^n` with `n ≥ m + 1`, then their Lie bracket is `C^m`. -/
 lemma _root_.ContMDiffAt.mlieBracket_vectorField {m n : ℕ∞}
-    {U V : Π (x : M), TangentSpace I x} {x : M}
+    [IsManifold I (n + 1) M] {U V : Π (x : M), TangentSpace I x} {x : M}
     (hU : ContMDiffAt I I.tangent n (fun x ↦ (U x : TangentBundle I M)) x)
     (hV : ContMDiffAt I I.tangent n (fun x ↦ (V x : TangentBundle I M)) x)
     (hmn : m + 1 ≤ n) :
@@ -1390,7 +1398,7 @@ lemma _root_.ContMDiffAt.mlieBracket_vectorField {m n : ℕ∞}
 
 /-- If two vector fields are `C^n` with `n ≥ m + 1`, then their Lie bracket is `C^m`. -/
 lemma _root_.ContMDiffOn.mlieBracketWithin_vectorField {m n : ℕ∞}
-    {U V : Π (x : M), TangentSpace I x}
+    [IsManifold I (n + 1) M] {U V : Π (x : M), TangentSpace I x}
     (hU : ContMDiffOn I I.tangent n (fun x ↦ (U x : TangentBundle I M)) s)
     (hV : ContMDiffOn I I.tangent n (fun x ↦ (V x : TangentBundle I M)) s)
     (hs : UniqueMDiffOn I s) (hmn : m + 1 ≤ n) :
@@ -1399,7 +1407,7 @@ lemma _root_.ContMDiffOn.mlieBracketWithin_vectorField {m n : ℕ∞}
 
 /-- If two vector fields are `C^n` with `n ≥ m + 1`, then their Lie bracket is `C^m`. -/
 lemma _root_.ContDiff.mlieBracket_vectorField {m n : ℕ∞}
-    {U V : Π (x : M), TangentSpace I x}
+    [IsManifold I (n + 1) M] {U V : Π (x : M), TangentSpace I x}
     (hU : ContMDiff I I.tangent n (fun x ↦ (U x : TangentBundle I M)))
     (hV : ContMDiff I I.tangent n (fun x ↦ (V x : TangentBundle I M)))
     (hmn : m + 1 ≤ n) :
