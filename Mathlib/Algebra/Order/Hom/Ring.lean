@@ -33,9 +33,7 @@ making some typeclasses and instances irrelevant.
 ordered ring homomorphism, order homomorphism
 -/
 
-assert_not_exists
-  FloorRing
-  Archimedean
+assert_not_exists FloorRing Archimedean
 
 open Function
 

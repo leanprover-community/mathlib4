@@ -15,9 +15,7 @@ This file proves lemmas about the instances defined in `Algebra.Group.Pi.Basic` 
 imports.
 -/
 
-assert_not_exists
-  AddMonoidWithOne
-  MonoidWithZero
+assert_not_exists AddMonoidWithOne MonoidWithZero
 
 universe u v w
 

@@ -12,9 +12,7 @@ Main definitions include `Ideal.map`, `Ideal.comap`, `RingHom.ker`, `Module.anni
 and `Submodule.annihilator`.
 -/
 
-assert_not_exists
-  Basis -- See `RingTheory.Ideal.Basis`
-  Submodule.hasQuotient -- See `RingTheory.Ideal.QuotientOperations`
+assert_not_exists Basis -- See `RingTheory.Ideal.Basis` Submodule.hasQuotient -- See `RingTheory.Ideal.QuotientOperations`
 
 universe u v w x
 

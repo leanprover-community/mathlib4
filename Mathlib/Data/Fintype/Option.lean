@@ -10,9 +10,7 @@ import Mathlib.Data.Finset.Option
 # fintype instances for option
 -/
 
-assert_not_exists
-  MonoidWithZero
-  MulAction
+assert_not_exists MonoidWithZero MulAction
 
 open Function
 

@@ -12,9 +12,7 @@ import Mathlib.Algebra.Group.Semiconj.Units
 See also `MulAut.conj` and `Quandle.conj`.
 -/
 
-assert_not_exists
-  MonoidWithZero
-  Multiset
+assert_not_exists MonoidWithZero Multiset
 
 universe u v
 

@@ -16,9 +16,7 @@ import Mathlib.Algebra.Ring.Invertible
 
 -/
 
-assert_not_exists
-  Nonneg.inv
-  Multiset
+assert_not_exists Nonneg.inv Multiset
 
 open Function Set
 

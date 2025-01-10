@@ -10,9 +10,7 @@ import Mathlib.Data.Multiset.Fold
 # The fold operation for a commutative associative operation over a finset.
 -/
 
-assert_not_exists
-  OrderedCommMonoid
-  MonoidWithZero
+assert_not_exists OrderedCommMonoid MonoidWithZero
 
 namespace Finset
 

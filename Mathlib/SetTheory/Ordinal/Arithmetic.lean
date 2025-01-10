@@ -50,9 +50,7 @@ Some properties of the operations are also used to discuss general tools on ordi
 Various other basic arithmetic results are given in `Principal.lean` instead.
 -/
 
-assert_not_exists
-  Field
-  Module
+assert_not_exists Field Module
 
 noncomputable section
 

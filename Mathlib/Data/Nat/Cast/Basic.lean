@@ -21,13 +21,6 @@ the natural numbers into an additive monoid with a one (`Nat.cast`).
 * `castRingHom`: `cast` bundled as a `RingHom`.
 -/
 
-assert_not_exists
-  OrderedCommGroup
-  Commute.zero_right
-  Commute.add_right
-  abs_eq_max_neg
-  NeZero.natCast_ne
--- TODO: `MulOpposite.op_natCast` was not intended to be imported
 -- assert_not_exists MulOpposite.op_natCast
 
 -- Porting note: There are many occasions below where we need `simp [map_zero f]`

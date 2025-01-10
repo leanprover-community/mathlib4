@@ -16,12 +16,7 @@ This file contains the commutative ring instance on the rational numbers.
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists
-  OrderedCommMonoid
-  Field
-  PNat
-  Nat.dvd_mul
-  IsDomain.toCancelMonoidWithZero
+assert_not_exists OrderedCommMonoid Field PNat Nat.dvd_mul IsDomain.toCancelMonoidWithZero
 
 namespace Rat
 

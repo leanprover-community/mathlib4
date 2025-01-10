@@ -43,9 +43,7 @@ We provide `Infinite` instances for
 
 -/
 
-assert_not_exists
-  MonoidWithZero
-  MulAction
+assert_not_exists MonoidWithZero MulAction
 
 open Function
 

@@ -37,10 +37,7 @@ See the documentation of `to_additive.attr` for more information.
 
 -- TODO
 -- assert_not_exists AddCommMonoidWithOne
-assert_not_exists
-  MonoidWithZero
-  MulAction
-  OrderedCommMonoid
+assert_not_exists MonoidWithZero MulAction OrderedCommMonoid
 
 variable {ι κ α β γ : Type*}
 
