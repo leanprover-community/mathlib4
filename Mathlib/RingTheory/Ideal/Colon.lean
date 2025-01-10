@@ -23,7 +23,7 @@ variable {R M M' F G : Type*}
 section Semiring
 
 variable [Semiring R] [AddCommMonoid M] [Module R M]
-variable {N P : Submodule R M}
+variable {N N₁ N₂ P P₁ P₂ : Submodule R M}
 
 /-- `N.colon P` is the ideal of all elements `r : R` such that `r • P ⊆ N`. -/
 def colon (N P : Submodule R M) : Ideal R where
@@ -36,9 +36,12 @@ def colon (N P : Submodule R M) : Ideal R where
     intro x hx y hy
     exact N.smul_mem _ (hx hy)
 
-instance (priority := low) : (N.colon P).IsTwoSided := inferInstanceAs (annihilator _).IsTwoSided
-
 theorem mem_colon {r} : r ∈ N.colon P ↔ ∀ p ∈ P, r • p ∈ N := Set.smul_set_subset_iff
+
+instance (priority := low) : (N.colon P).IsTwoSided where
+  mul_mem_of_left {r} s hr p hp := by
+    obtain ⟨p, hp, rfl⟩ := hp
+    exact hr ⟨_, P.smul_mem _ hp, (mul_smul ..).symm⟩
 
 @[simp]
 theorem colon_top {I : Ideal R} [I.IsTwoSided] : I.colon ⊤ = I := by

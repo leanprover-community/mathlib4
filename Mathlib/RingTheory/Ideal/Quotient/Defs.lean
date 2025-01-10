@@ -50,7 +50,7 @@ instance one (I : Ideal R) : One (R ⧸ I) :=
 
 /-- On `Ideal`s, `Submodule.quotientRel` is a ring congruence. -/
 protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R where
-  __ := QuotientAddGroup.con I.toAddSubgroup with
+  __ := QuotientAddGroup.con I.toAddSubgroup
   mul' {a₁ b₁ a₂ b₂} h₁ h₂ := by
     rw [Submodule.quotientRel_def] at h₁ h₂ ⊢
     exact mul_sub_mul_mem I h₁ h₂
