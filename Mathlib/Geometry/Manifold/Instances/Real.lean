@@ -308,12 +308,12 @@ lemma IccLeftChart_extend_left_eq :
     (IccLeftChart x y).extend (𝓡∂ 1) ⊥ = 0 := by
   calc ((IccLeftChart x y).extend (𝓡∂ 1)) ⊥
     _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by norm_num [IccLeftChart, Icc.coe_bot]
-    _ = 0 := rfl
+    _ = 0 := rfl -- missing API?
 
 lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
     0 < ((IccLeftChart x y).extend (𝓡∂ 1)) p 0 := by
   set lhs := (IccLeftChart x y).extend (𝓡∂ 1) p
-  rw [show lhs 0 = p.val - x by rfl]
+  rw [show lhs 0 = p.val - x by rfl] -- missing API?
   norm_num [hp.1]
 
 lemma IccLeftChart_extend_left_mem_frontier :
@@ -373,7 +373,7 @@ lemma IccRightChart_extend_right_eq :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ = 0 := by
   calc (IccRightChart x y).extend (𝓡∂ 1) ⊤
     _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by norm_num [IccRightChart, Icc.coe_top]
-    _ = 0 := rfl
+    _ = 0 := rfl -- same missing API?
 
 lemma IccRightChart_extend_right_mem_frontier :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ ∈ frontier (range (𝓡∂ 1)) := by
