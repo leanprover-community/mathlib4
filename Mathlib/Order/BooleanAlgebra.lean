@@ -512,10 +512,9 @@ abbrev GeneralizedBooleanAlgebra.toBooleanAlgebra [GeneralizedBooleanAlgebra α]
   compl a := ⊤ \ a
   inf_compl_le_bot _ := disjoint_sdiff_self_right.le_bot
   top_le_sup_compl _ := le_sup_sdiff
-  sdiff_eq _ _ := by
-      -- Porting note: changed `rw` to `erw` here.
-      -- https://github.com/leanprover-community/mathlib4/issues/5164
-      erw [← inf_sdiff_assoc, inf_top_eq]
+  sdiff_eq a b := by
+    change _ = a ⊓ (⊤ \ b)
+    rw [← inf_sdiff_assoc, inf_top_eq]
 
 section BooleanAlgebra
 
@@ -681,7 +680,7 @@ theorem codisjoint_himp_self_right : Codisjoint x (x ⇨ y) :=
   @disjoint_sdiff_self_right αᵒᵈ _ _ _
 
 theorem himp_le : x ⇨ y ≤ z ↔ y ≤ z ∧ Codisjoint x z :=
-  (@le_sdiff αᵒᵈ _ _ _ _).trans <| and_congr_right' <| @Codisjoint_comm _ (_) _ _ _
+  (@le_sdiff αᵒᵈ _ _ _ _).trans <| and_congr_right' <| @codisjoint_comm _ (_) _ _ _
 
 @[simp] lemma himp_le_iff : x ⇨ y ≤ x ↔ x = ⊤ :=
   ⟨fun h ↦ codisjoint_self.1 <| codisjoint_himp_self_right.mono_right h, fun h ↦ le_top.trans h.ge⟩

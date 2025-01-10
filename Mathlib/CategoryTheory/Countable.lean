@@ -16,8 +16,6 @@ A category is countable in this sense if it has countably many objects and count
 
 universe w v u
 
-open scoped Classical
-
 noncomputable section
 
 namespace CategoryTheory

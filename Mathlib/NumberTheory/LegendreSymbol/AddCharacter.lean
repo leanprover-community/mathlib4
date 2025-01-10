@@ -92,7 +92,7 @@ lemma not_isPrimitive_mulShift [Finite R] (e : AddChar R R') {r : R}
 /-- Definition for a primitive additive character on a finite ring `R` into a cyclotomic extension
 of a field `R'`. It records which cyclotomic extension it is, the character, and the
 fact that the character is primitive. -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- can't prove that they always exist (referring to providing an `Inhabited` instance)
 -- @[nolint has_nonempty_instance]
 structure PrimitiveAddChar (R : Type u) [CommRing R] (R' : Type v) [Field R'] where

@@ -82,7 +82,7 @@ theorem mk_len (n : SimplexCategory) : ([n.len] : SimplexCategory) = n :=
 protected def rec {F : SimplexCategory → Sort*} (h : ∀ n : ℕ, F [n]) : ∀ X, F X := fun n =>
   h n.len
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- Morphisms in the `SimplexCategory`. -/
 protected def Hom (a b : SimplexCategory) :=
   Fin (a.len + 1) →o Fin (b.len + 1)
@@ -230,6 +230,10 @@ def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : ([1] : SimplexCategory) ⟶ [n]
       | 0, 0, _ | 1, 1, _ => le_rfl
       | 0, 1, _ => h
   }
+
+@[simp]
+lemma mkOfLe_refl {n} (j : Fin (n + 1)) :
+    mkOfLe j j (by omega) = [1].const [n] j := Hom.ext_one_left _ _
 
 /-- The morphism `[1] ⟶ [n]` that picks out the "diagonal composite" edge-/
 def diag (n : ℕ) : ([1] : SimplexCategory) ⟶ [n] :=
@@ -564,6 +568,50 @@ lemma δ_one_mkOfSucc {n : ℕ} (i : Fin n) :
   fin_cases x
   aesop
 
+/-- If `i + 1 < j`, `mkOfSucc i ≫ δ j` is the morphism `[1] ⟶ [n]` that
+sends `0` and `1` to `i` and `i + 1`, respectively. -/
+lemma mkOfSucc_δ_lt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
+    (h : i.succ.castSucc < j) :
+    mkOfSucc i ≫ δ j = mkOfSucc i.castSucc := by
+  ext x
+  fin_cases x
+  · simp [δ, Fin.succAbove_of_castSucc_lt _ _ (Nat.lt_trans _ h)]
+  · simp [δ, Fin.succAbove_of_castSucc_lt _ _ h]
+
+/-- If `i + 1 > j`, `mkOfSucc i ≫ δ j` is the morphism `[1] ⟶ [n]` that
+sends `0` and `1` to `i + 1` and `i + 2`, respectively. -/
+lemma mkOfSucc_δ_gt {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
+    (h : j < i.succ.castSucc) :
+    mkOfSucc i ≫ δ j = mkOfSucc i.succ := by
+  ext x
+  simp only [δ, len_mk, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, OrderHom.comp_coe,
+    OrderEmbedding.toOrderHom_coe, Function.comp_apply, Fin.succAboveOrderEmb_apply]
+  fin_cases x <;> rw [Fin.succAbove_of_le_castSucc]
+  · rfl
+  · exact Nat.le_of_lt_succ h
+  · rfl
+  · exact Nat.le_of_lt h
+
+/-- If `i + 1 = j`, `mkOfSucc i ≫ δ j` is the morphism `[1] ⟶ [n]` that
+sends `0` and `1` to `i` and `i + 2`, respectively. -/
+lemma mkOfSucc_δ_eq {n : ℕ} {i : Fin n} {j : Fin (n + 2)}
+    (h : j = i.succ.castSucc) :
+    mkOfSucc i ≫ δ j = intervalEdge i 2 (by omega) := by
+  ext x
+  fin_cases x
+  · subst h
+    simp only [δ, len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk,
+      Fin.zero_eta, OrderHom.comp_coe, OrderEmbedding.toOrderHom_coe, Function.comp_apply,
+      mkOfSucc_homToOrderHom_zero, Fin.succAboveOrderEmb_apply,
+      Fin.castSucc_succAbove_castSucc, Fin.succAbove_succ_self]
+    rfl
+  · simp only [δ, len_mk, Nat.reduceAdd, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, Fin.mk_one,
+      OrderHom.comp_coe, OrderEmbedding.toOrderHom_coe, Function.comp_apply,
+      mkOfSucc_homToOrderHom_one, Fin.succAboveOrderEmb_apply]
+    subst h
+    rw [Fin.succAbove_castSucc_self]
+    rfl
+
 theorem eq_of_one_to_two (f : ([1] : SimplexCategory) ⟶ [2]) :
     f = (δ (n := 1) 0) ∨ f = (δ (n := 1) 1) ∨ f = (δ (n := 1) 2) ∨
       ∃ a, f = SimplexCategory.const _ _ a := by
@@ -681,15 +729,15 @@ instance {n} : Inhabited (Truncated n) :=
 /-- The fully faithful inclusion of the truncated simplex category into the usual
 simplex category.
 -/
-def inclusion {n : ℕ} : SimplexCategory.Truncated n ⥤ SimplexCategory :=
+def inclusion (n : ℕ) : SimplexCategory.Truncated n ⥤ SimplexCategory :=
   fullSubcategoryInclusion _
 
-instance (n : ℕ) : (inclusion : Truncated n ⥤ _).Full := FullSubcategory.full _
-instance (n : ℕ) : (inclusion : Truncated n ⥤ _).Faithful := FullSubcategory.faithful _
+instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Full := FullSubcategory.full _
+instance (n : ℕ) : (inclusion n : Truncated n ⥤ _).Faithful := FullSubcategory.faithful _
 
 /-- A proof that the full subcategory inclusion is fully faithful.-/
 noncomputable def inclusion.fullyFaithful (n : ℕ) :
-    (inclusion : Truncated n ⥤ _).op.FullyFaithful := Functor.FullyFaithful.ofFullyFaithful _
+    (inclusion n : Truncated n ⥤ _).op.FullyFaithful := Functor.FullyFaithful.ofFullyFaithful _
 
 @[ext]
 theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
@@ -755,12 +803,12 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
   simp only [σ, mkHom, Hom.toOrderHom_mk, OrderHom.coe_mk]
   by_cases h : b ≤ i
   · use b
-    -- This was not needed before leanprover/lean4#2644
+    -- This was not needed before https://github.com/leanprover/lean4/pull/2644
     dsimp
     rw [Fin.predAbove_of_le_castSucc i b (by simpa only [Fin.coe_eq_castSucc] using h)]
     simp only [len_mk, Fin.coe_eq_castSucc, Fin.castPred_castSucc]
   · use b.succ
-    -- This was not needed before leanprover/lean4#2644
+    -- This was not needed before https://github.com/leanprover/lean4/pull/2644
     dsimp
     rw [Fin.predAbove_of_castSucc_lt i b.succ _, Fin.pred_succ]
     rw [not_le] at h
@@ -813,7 +861,7 @@ theorem iso_eq_iso_refl {x : SimplexCategory} (e : x ≅ x) : e = Iso.refl x := 
   have eq₁ := Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso e) i)
   have eq₂ :=
     Finset.orderEmbOfFin_unique' h fun i => Finset.mem_univ ((orderIsoOfIso (Iso.refl x)) i)
-  -- Porting note: the proof was rewritten from this point in #3414 (reenableeta)
+  -- Porting note: the proof was rewritten from this point in https://github.com/leanprover-community/mathlib4/pull/3414 (reenableeta)
   -- It could be investigated again to see if the original can be restored.
   ext x
   replace eq₁ := congr_arg (· x) eq₁
@@ -831,7 +879,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
   simp only [len_mk, σ, mkHom, comp_toOrderHom, Hom.toOrderHom_mk, OrderHom.comp_coe,
     OrderHom.coe_mk, Function.comp_apply]
   by_cases h' : x ≤ Fin.castSucc i
-  · -- This was not needed before leanprover/lean4#2644
+  · -- This was not needed before https://github.com/leanprover/lean4/pull/2644
     dsimp
     rw [Fin.predAbove_of_le_castSucc i x h']
     dsimp [δ]
@@ -842,7 +890,7 @@ theorem eq_σ_comp_of_not_injective' {n : ℕ} {Δ' : SimplexCategory} (θ : mk 
     let y := x.pred <| by rintro (rfl : x = 0); simp at h'
     have hy : x = y.succ := (Fin.succ_pred x _).symm
     rw [hy] at h' ⊢
-    -- This was not needed before leanprover/lean4#2644
+    -- This was not needed before https://github.com/leanprover/lean4/pull/2644
     conv_rhs => dsimp
     rw [Fin.predAbove_of_castSucc_lt i y.succ h', Fin.pred_succ]
     by_cases h'' : y = i

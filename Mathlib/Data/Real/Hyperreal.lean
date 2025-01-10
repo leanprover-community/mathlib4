@@ -11,7 +11,6 @@ import Mathlib.Analysis.SpecificLimits.Basic
 -/
 
 
-open scoped Classical
 open Filter Germ Topology
 
 /-- Hyperreal numbers on the ultrafilter extending the cofinite filter -/
@@ -73,10 +72,9 @@ theorem coe_neg (x : ℝ) : ↑(-x) = (-x : ℝ*) :=
 theorem coe_add (x y : ℝ) : ↑(x + y) = (x + y : ℝ*) :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
 theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    ((no_index (OfNat.ofNat n : ℝ)) : ℝ*) = OfNat.ofNat n :=
+    ((ofNat(n) : ℝ) : ℝ*) = OfNat.ofNat n :=
   rfl
 
 @[simp, norm_cast]
@@ -181,6 +179,7 @@ theorem epsilon_lt_pos (x : ℝ) : 0 < x → ε < x :=
 def IsSt (x : ℝ*) (r : ℝ) :=
   ∀ δ : ℝ, 0 < δ → (r - δ : ℝ*) < x ∧ x < r + δ
 
+open scoped Classical in
 /-- Standard part function: like a "round" to ℝ instead of ℤ -/
 noncomputable def st : ℝ* → ℝ := fun x => if h : ∃ r, IsSt x r then Classical.choose h else 0
 
@@ -426,7 +425,7 @@ theorem infinitePos_abs_iff_infinite_abs {x : ℝ*} : InfinitePos |x| ↔ Infini
   cases le_total 0 x <;> simp [*, abs_of_nonneg, abs_of_nonpos, infinite_neg]
 
 -- Porting note: swapped LHS with RHS;
--- Porting note (#11215): TODO: make it a `simp` lemma
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: make it a `simp` lemma
 @[simp] theorem infinitePos_abs_iff_infinite {x : ℝ*} : InfinitePos |x| ↔ Infinite x :=
   infinitePos_abs_iff_infinite_abs.trans infinite_abs_iff
 
@@ -525,10 +524,11 @@ theorem not_infinite_mul {x y : ℝ*} (hx : ¬Infinite x) (hy : ¬Infinite y) : 
 theorem st_add {x y : ℝ*} (hx : ¬Infinite x) (hy : ¬Infinite y) : st (x + y) = st x + st y :=
   (isSt_st' (not_infinite_add hx hy)).unique ((isSt_st' hx).add (isSt_st' hy))
 
-theorem st_neg (x : ℝ*) : st (-x) = -st x :=
-  if h : Infinite x then by
-    rw [h.st_eq, (infinite_neg.2 h).st_eq, neg_zero]
-  else (isSt_st' (not_infinite_neg h)).unique (isSt_st' h).neg
+theorem st_neg (x : ℝ*) : st (-x) = -st x := by
+  classical
+  by_cases h : Infinite x
+  · rw [h.st_eq, (infinite_neg.2 h).st_eq, neg_zero]
+  · exact (isSt_st' (not_infinite_neg h)).unique (isSt_st' h).neg
 
 theorem st_mul {x y : ℝ*} (hx : ¬Infinite x) (hy : ¬Infinite y) : st (x * y) = st x * st y :=
   have hx' := isSt_st' hx
@@ -738,7 +738,7 @@ theorem Infinite.mul {x y : ℝ*} : Infinite x → Infinite y → Infinite (x * 
 end Hyperreal
 
 /-
-Porting note (#11215): TODO: restore `positivity` plugin
+Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: restore `positivity` plugin
 
 namespace Tactic
 

@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.EventuallyMeasurable
+import Mathlib.MeasureTheory.MeasurableSpace.EventuallyMeasurable
 import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.MeasureTheory.Measure.AEDisjoint
 
@@ -55,8 +55,8 @@ the output type.
 measurable, measure, null measurable, completion
 -/
 
-
 open Filter Set Encodable
+open scoped ENNReal
 
 variable {ι α β γ : Type*}
 
@@ -207,6 +207,8 @@ end NullMeasurableSet
 
 open NullMeasurableSet
 
+open scoped Function -- required for scoped `on` notation
+
 /-- If `sᵢ` is a countable family of (null) measurable pairwise `μ`-a.e. disjoint sets, then there
 exists a subordinate family `tᵢ ⊆ sᵢ` of measurable pairwise disjoint sets such that
 `tᵢ =ᵐ[μ] sᵢ`. -/
@@ -264,7 +266,7 @@ theorem measure_inter_add_diff₀ (s : Set α) (ht : NullMeasurableSet t μ) :
 and their intersection has finite measure,
 then `s \ t` and `t \ s` have equal measures too. -/
 theorem measure_diff_symm (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
-    (h : μ s = μ t) (hfin : μ (s ∩ t) ≠ ⊤) : μ (s \ t) = μ (t \ s) := by
+    (h : μ s = μ t) (hfin : μ (s ∩ t) ≠ ∞) : μ (s \ t) = μ (t \ s) := by
   rw [← ENNReal.add_right_inj hfin, measure_inter_add_diff₀ _ ht, inter_comm,
     measure_inter_add_diff₀ _ hs, h]
 

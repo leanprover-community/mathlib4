@@ -246,15 +246,16 @@ lemma map_toUnit_comp_terminalCompariso (A : C) :
 open Limits
 
 /-- If `terminalComparison F` is an Iso, then `F` preserves terminal objects. -/
-noncomputable def preservesLimitEmptyOfIsIsoTerminalComparison [IsIso (terminalComparison F)] :
+lemma preservesLimit_empty_of_isIso_terminalComparison [IsIso (terminalComparison F)] :
     PreservesLimit (Functor.empty.{0} C) F := by
-  apply preservesLimitOfPreservesLimitCone terminal.isLimit
+  apply preservesLimit_of_preserves_limit_cone terminal.isLimit
   apply isLimitChangeEmptyCone D terminal.isLimit
   exact asIso (terminalComparison F)|>.symm
 
 /-- If `F` preserves terminal objects, then `terminalComparison F` is an isomorphism. -/
-def preservesTerminalIso [h : PreservesLimit (Functor.empty.{0} C) F] : F.obj (𝟙_ C) ≅ 𝟙_ D :=
-  (isLimitChangeEmptyCone D (h.preserves terminal.isLimit) (asEmptyCone (F.obj (𝟙_ C)))
+noncomputable def preservesTerminalIso [h : PreservesLimit (Functor.empty.{0} C) F] :
+    F.obj (𝟙_ C) ≅ 𝟙_ D :=
+  (isLimitChangeEmptyCone D (isLimitOfPreserves _ terminal.isLimit) (asEmptyCone (F.obj (𝟙_ C)))
     (Iso.refl _)).conePointUniqueUpToIso terminal.isLimit
 
 @[simp]
@@ -415,14 +416,14 @@ variable [PreservesLimit (pair A B) F]
 
 /-- If `F` preserves the limit of the pair `(A, B)`, then the binary fan given by
 `(F.map fst A B, F.map (snd A B))` is a limit cone. -/
-def isLimitChosenFiniteProductsOfPreservesLimits :
+noncomputable def isLimitChosenFiniteProductsOfPreservesLimits :
     IsLimit <| BinaryFan.mk (F.map (fst A B)) (F.map (snd A B)) :=
   mapIsLimitOfPreservesOfIsLimit F (fst _ _) (snd _ _) <|
     (product A B).isLimit.ofIsoLimit <| isoBinaryFanMk (product A B).cone
 
 /-- If `F` preserves the limit of the pair `(A, B)`, then `prodComparison F A B` is an isomorphism.
 -/
-def prodComparisonIso : F.obj (A ⊗ B) ≅ F.obj A ⊗ F.obj B :=
+noncomputable def prodComparisonIso : F.obj (A ⊗ B) ≅ F.obj A ⊗ F.obj B :=
   IsLimit.conePointUniqueUpToIso (isLimitChosenFiniteProductsOfPreservesLimits F A B)
     (product _ _).isLimit
 
@@ -456,9 +457,10 @@ end PreservesLimitPairs
 section ProdComparisonIso
 
 /-- If `prodComparison F A B` is an isomorphism, then `F` preserves the limit of `pair A B`. -/
-noncomputable def preservesLimitPairOfIsIsoProdComparison (A B : C) [IsIso (prodComparison F A B)] :
+lemma preservesLimit_pair_of_isIso_prodComparison (A B : C)
+    [IsIso (prodComparison F A B)] :
     PreservesLimit (pair A B) F := by
- apply preservesLimitOfPreservesLimitCone (product A B).isLimit
+ apply preservesLimit_of_preserves_limit_cone (product A B).isLimit
  refine IsLimit.equivOfNatIsoOfIso (pairComp A B F) _
     ((product (F.obj A) (F.obj B)).cone.extend (prodComparison F A B))
       (BinaryFan.ext (by exact Iso.refl _) ?_ ?_) |>.invFun
@@ -470,12 +472,12 @@ noncomputable def preservesLimitPairOfIsIsoProdComparison (A B : C) [IsIso (prod
 
   /-- If `prodComparison F A B` is an isomorphism for all `A B` then `F` preserves limits of shape
 `Discrete (WalkingPair)`. -/
-noncomputable def preservesLimitsOfShapeDiscreteWalkingPairOfIsoProdComparison
+lemma preservesLimitsOfShape_discrete_walkingPair_of_isIso_prodComparison
     [∀ A B, IsIso (prodComparison F A B)] : PreservesLimitsOfShape (Discrete WalkingPair) F := by
   constructor
   intro K
-  refine @preservesLimitOfIsoDiagram _ _ _ _ _ _ _ _ _ (diagramIsoPair K).symm ?_
-  apply preservesLimitPairOfIsIsoProdComparison
+  refine @preservesLimit_of_iso_diagram _ _ _ _ _ _ _ _ _ (diagramIsoPair K).symm ?_
+  apply preservesLimit_pair_of_isIso_prodComparison
 
 end ProdComparisonIso
 

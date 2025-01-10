@@ -12,13 +12,13 @@ This file presents a skewed version of `Mathlib.Algebra.MonoidAlgebra.Basic` wit
 irreducible definition.
 
 The definition is separated from `Finsupp` by wrapping it with a structure.
-For #15878, the goal is only to get this separation right. This means that
+For https://github.com/leanprover-community/mathlib4/pull/15878, the goal is only to get this separation right. This means that
 most of what makes these objects skewed is currently missing from this PR.
 
 The goal will then be to define a skewed convolution product on `SkewMonoidAlgebra k G`.
 Here, the product of two elements `f g : SkewMonoidAlgebra k G` is the finitely supported
 function whose value at `a` is the sum of `f x * (x • g y)` over all pairs `x, y`
-such that `x * y = a`. (See #10541 at line 558 for an implementation.)
+such that `x * y = a`. (See https://github.com/leanprover-community/mathlib4/pull/10541 at line 558 for an implementation.)
 
 The associativity of the skewed multiplication depends on the `[MulSemiringAction G k]` instance.
 In particular, this means that unlike in `Mathlib.Algebra.MonoidAlgebra.Basic`, `G` will

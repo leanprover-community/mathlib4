@@ -322,20 +322,11 @@ theorem FiniteDimensional.of_rank_eq_nat {n : ℕ} (h : Module.rank K V = n) :
     FiniteDimensional K V :=
   Module.finite_of_rank_eq_nat h
 
-@[deprecated (since := "2024-02-02")]
-alias finiteDimensional_of_rank_eq_nat := FiniteDimensional.of_rank_eq_nat
-
 theorem FiniteDimensional.of_rank_eq_zero (h : Module.rank K V = 0) : FiniteDimensional K V :=
   Module.finite_of_rank_eq_zero h
 
-@[deprecated (since := "2024-02-02")]
-alias finiteDimensional_of_rank_eq_zero := FiniteDimensional.of_rank_eq_zero
-
 theorem FiniteDimensional.of_rank_eq_one (h : Module.rank K V = 1) : FiniteDimensional K V :=
   Module.finite_of_rank_eq_one h
-
-@[deprecated (since := "2024-02-02")]
-alias finiteDimensional_of_rank_eq_one := FiniteDimensional.of_rank_eq_one
 
 variable (K V)
 
@@ -757,17 +748,6 @@ section SubalgebraRank
 open Module
 
 variable {F E : Type*} [Field F] [Ring E] [Algebra F E]
-
-/-
-porting note:
-Some of the lemmas in this section can be made faster by adding these short-cut instances
-```lean4
-instance (S : Subalgebra F E) : AddCommMonoid { x // x ∈ S } := inferInstance
-instance (S : Subalgebra F E) : AddCommGroup { x // x ∈ S } := inferInstance
-```
-However, this approach doesn't scale very well, so we should consider holding off on adding
-them until we have no choice.
--/
 
 /-- A `Subalgebra` is `FiniteDimensional` iff it is `FiniteDimensional` as a submodule. -/
 theorem Subalgebra.finiteDimensional_toSubmodule {S : Subalgebra F E} :
