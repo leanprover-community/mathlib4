@@ -792,7 +792,7 @@ instance ContinuousFunctionalCalculus.toNonUnital : NonUnitalContinuousFunctiona
       fun _ ↦ cfcHom_predicate ha _⟩
 
 open scoped NonUnitalContinuousFunctionalCalculus in
-lemma cfcₙHom_eq_cfcₙHom_of_cfcHom [UniqueHom R A] {a : A}
+lemma cfcₙHom_eq_cfcₙHom_of_cfcHom [ContinuousMapZero.UniqueHom R A] {a : A}
     (ha : p a) : cfcₙHom (R := R) ha = cfcₙHom_of_cfcHom R ha := by
   refine ContinuousMapZero.UniqueHom.eq_of_continuous_of_map_id
       (σₙ R a) ?_ _ _ ?_ ?_ ?_
