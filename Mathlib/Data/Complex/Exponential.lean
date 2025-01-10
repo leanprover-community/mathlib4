@@ -1503,3 +1503,5 @@ theorem one_sub_rexp_re_le_abs_one_sub_cexp (x : ℂ) :
   _ = 1 - Real.exp x.re := by simp [Complex.abs_exp]
 
 end Complex
+
+set_option linter.style.longFile 1700
