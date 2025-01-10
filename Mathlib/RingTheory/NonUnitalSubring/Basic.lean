@@ -300,7 +300,7 @@ theorem sInf_toAddSubgroup (s : Set (NonUnitalSubring R)) :
 /-- `NonUnitalSubring`s of a ring form a complete lattice. -/
 instance : CompleteLattice (NonUnitalSubring R) :=
   { completeLatticeOfInf (NonUnitalSubring R) fun _s =>
-      IsGLB.of_image (@fun _ _ : NonUnitalSubring R => SetLike.coe_subset_coe)
+      IsGLB.of_image (@fun _ _ : NonUnitalSubring R => OrderedSetLike.coe_subset_coe)
         isGLB_biInf with
     bot := ⊥
     bot_le := fun s _x hx => (mem_bot.mp hx).symm ▸ zero_mem s

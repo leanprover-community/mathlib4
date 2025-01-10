@@ -434,7 +434,7 @@ instance instStructureGroupoidOrderTop : OrderTop (StructureGroupoid H) where
   le_top _ _ _ := ⟨trivial, trivial⟩
 
 instance : CompleteLattice (StructureGroupoid H) :=
-  { SetLike.instPartialOrder,
+  { SetLike.toOrderedSetLike,
     completeLatticeOfInf _ (by
       exact fun s =>
       ⟨fun S Ss F hF => mem_iInter₂.mp hF S Ss,

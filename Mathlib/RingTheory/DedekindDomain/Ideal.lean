@@ -318,7 +318,7 @@ theorem dimensionLEOne : DimensionLEOne A := ⟨by
     exact mul_left_mono _ ((coeIdeal_le_coeIdeal (FractionRing A)).mpr hM.le)
   obtain ⟨y, _hy, rfl⟩ := (mem_coeIdeal _).mp (le_one hx)
   -- Since `M` is strictly greater than `P`, let `z ∈ M \ P`.
-  obtain ⟨z, hzM, hzp⟩ := SetLike.exists_of_lt hM
+  obtain ⟨z, hzM, hzp⟩ := OrderedSetLike.exists_of_lt hM
   -- We have `z * y ∈ M * (M⁻¹ * P) = P`.
   have zy_mem := mul_mem_mul (mem_coeIdeal_of_mem A⁰ hzM) hx
   rw [← RingHom.map_mul, ← mul_assoc, h.mul_inv_eq_one M'_ne, one_mul] at zy_mem
@@ -403,7 +403,7 @@ lemma not_inv_le_one_of_ne_bot [IsDedekindDomain A] {I : Ideal A}
   -- such that removing element `M` from the product is not contained in `J`.
   obtain ⟨Z, hle, hnle⟩ := exists_multiset_prod_cons_le_and_prod_not_le hNF hJ0 hJI
   -- Choose an element `b` of the product that is not in `J`.
-  obtain ⟨b, hbZ, hbJ⟩ := SetLike.not_le_iff_exists.mp hnle
+  obtain ⟨b, hbZ, hbJ⟩ := OrderedSetLike.not_le_iff_exists.mp hnle
   have hnz_fa : algebraMap A K a ≠ 0 :=
     mt ((injective_iff_map_eq_zero _).mp (IsFractionRing.injective A K) a) ha0
   -- Then `b a⁻¹ : K` is in `M⁻¹` but not in `1`.
@@ -467,8 +467,7 @@ theorem coe_ideal_mul_inv [h : IsDedekindDomain A] (I : Ideal A) (hI0 : I ≠ �
   have x_mul_mem : ∀ b ∈ (I⁻¹ : FractionalIdeal A⁰ K), x * b ∈ (I⁻¹ : FractionalIdeal A⁰ K) := by
     intro b hb
     rw [mem_inv_iff (coeIdeal_ne_zero.mpr hI0)]
-    dsimp only at hx
-    rw [val_eq_coe, mem_coe, mem_inv_iff hJ0] at hx
+    rw [mem_inv_iff hJ0] at hx
     simp only [mul_assoc, mul_comm b] at hx ⊢
     intro y hy
     exact hx _ (mul_mem_mul hy hb)
@@ -625,8 +624,8 @@ instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :
           intro J hJ
           obtain ⟨_J_ne, H, hunit, P_eq⟩ := Ideal.dvdNotUnit_iff_lt.mpr hJ
           exact Ideal.isUnit_iff.mp ((hirr.isUnit_or_isUnit P_eq).resolve_right hunit)
-        rw [Ideal.dvd_iff_le, Ideal.dvd_iff_le, Ideal.dvd_iff_le, SetLike.le_def, SetLike.le_def,
-          SetLike.le_def]
+        rw [Ideal.dvd_iff_le, Ideal.dvd_iff_le, Ideal.dvd_iff_le, OrderedSetLike.le_def,
+          OrderedSetLike.le_def, OrderedSetLike.le_def]
         contrapose!
         rintro ⟨⟨x, x_mem, x_not_mem⟩, ⟨y, y_mem, y_not_mem⟩⟩
         exact
@@ -699,7 +698,7 @@ theorem Ideal.pow_lt_self (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) (e :
 
 theorem Ideal.exists_mem_pow_not_mem_pow_succ (I : Ideal A) (hI0 : I ≠ ⊥) (hI1 : I ≠ ⊤) (e : ℕ) :
     ∃ x ∈ I ^ e, x ∉ I ^ (e + 1) :=
-  SetLike.exists_of_lt (I.pow_right_strictAnti hI0 hI1 e.lt_succ_self)
+  OrderedSetLike.exists_of_lt (I.pow_right_strictAnti hI0 hI1 e.lt_succ_self)
 
 open UniqueFactorizationMonoid
 
@@ -754,7 +753,7 @@ theorem Ideal.exist_integer_multiples_not_mem {J : Ideal A} (hJ : J ≠ ⊤) {ι
   have hI0 : I ≠ 0 := spanFinset_ne_zero.mpr ⟨j, hjs, hjf⟩
   -- We claim the multiplier `a` we're looking for is in `I⁻¹ \ (J / I)`.
   suffices ↑J / I < I⁻¹ by
-    obtain ⟨_, a, hI, hpI⟩ := SetLike.lt_iff_le_and_exists.mp this
+    obtain ⟨_, a, hI, hpI⟩ := OrderedSetLike.lt_iff_le_and_exists.mp this
     rw [mem_inv_iff hI0] at hI
     refine ⟨a, fun i hi => ?_, ?_⟩
     -- By definition, `a ∈ I⁻¹` multiplies elements of `I` into elements of `1`,

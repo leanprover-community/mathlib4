@@ -83,7 +83,7 @@ theorem range_comp [RingHomSurjective τ₁₂] [RingHomSurjective τ₂₃] [Ri
 
 theorem range_comp_le_range [RingHomSurjective τ₂₃] [RingHomSurjective τ₁₃] (f : M →ₛₗ[τ₁₂] M₂)
     (g : M₂ →ₛₗ[τ₂₃] M₃) : range (g.comp f : M →ₛₗ[τ₁₃] M₃) ≤ range g :=
-  SetLike.coe_mono (Set.range_comp_subset_range f g)
+  OrderedSetLike.coe_mono (Set.range_comp_subset_range f g)
 
 theorem range_eq_top [RingHomSurjective τ₁₂] {f : F} :
     range f = ⊤ ↔ Surjective f := by
@@ -96,7 +96,7 @@ theorem range_le_iff_comap [RingHomSurjective τ₁₂] {f : F} {p : Submodule R
     range f ≤ p ↔ comap f p = ⊤ := by rw [range_eq_map, map_le_iff_le_comap, eq_top_iff]
 
 theorem map_le_range [RingHomSurjective τ₁₂] {f : F} {p : Submodule R M} : map f p ≤ range f :=
-  SetLike.coe_mono (Set.image_subset_range f p)
+  OrderedSetLike.coe_mono (Set.image_subset_range f p)
 
 @[simp]
 theorem range_neg {R : Type*} {R₂ : Type*} {M : Type*} {M₂ : Type*} [Semiring R] [Ring R₂]
@@ -185,7 +185,7 @@ theorem range_le_ker_iff {f : M →ₛₗ[τ₁₂] M₂} {g : M₂ →ₛₗ[τ
     mem_ker.2 <| Exists.elim hx fun y hy => by rw [← hy, ← comp_apply, h, zero_apply]⟩
 
 theorem comap_le_comap_iff {f : F} (hf : range f = ⊤) {p p'} : comap f p ≤ comap f p' ↔ p ≤ p' :=
-  ⟨fun H ↦ by rwa [SetLike.le_def, (range_eq_top.1 hf).forall], comap_mono⟩
+  ⟨fun H ↦ by rwa [OrderedSetLike.le_def, (range_eq_top.1 hf).forall], comap_mono⟩
 
 theorem comap_injective {f : F} (hf : range f = ⊤) : Injective (comap f) := fun _ _ h =>
   le_antisymm ((comap_le_comap_iff hf).1 (le_of_eq h)) ((comap_le_comap_iff hf).1 (ge_of_eq h))
@@ -224,7 +224,7 @@ theorem ker_le_iff [RingHomSurjective τ₁₂] {p : Submodule R M} :
     rw [← SetLike.mem_coe, range_coe]
     exact ⟨⟨0, map_zero f⟩, h⟩
   · rintro ⟨y, h₁, h₂⟩
-    rw [SetLike.le_def]
+    rw [OrderedSetLike.le_def]
     intro z hz
     simp only [mem_ker, SetLike.mem_coe] at hz
     rw [← SetLike.mem_coe, range_coe, Set.mem_range] at h₁

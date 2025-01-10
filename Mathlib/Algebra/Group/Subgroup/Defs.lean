@@ -54,7 +54,7 @@ assert_not_exists Ring
 open Function
 open scoped Int
 
-variable {G : Type*} [Group G] {A : Type*} [AddGroup A]
+variable {G : Type*} [Group G] {A : Type*} [AddGroup A] {S : Type*}
 
 section SubgroupClass
 
@@ -90,7 +90,9 @@ theorem inv_mem_iff {S G} [InvolutiveInv G] {_ : SetLike S G} [InvMemClass S G] 
     {x : G} : x⁻¹ ∈ H ↔ x ∈ H :=
   ⟨fun h => inv_inv x ▸ inv_mem h, inv_mem⟩
 
-variable {M S : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
+section
+
+variable {M : Type*} [DivInvMonoid M] [SetLike S M] [hSM : SubgroupClass S M] {H K : S}
 
 /-- A subgroup is closed under division. -/
 @[to_additive (attr := aesop safe apply (rule_sets := [SetLike]))
@@ -107,7 +109,11 @@ theorem zpow_mem {x : M} (hx : x ∈ K) : ∀ n : ℤ, x ^ n ∈ K
     rw [zpow_negSucc]
     exact inv_mem (pow_mem hx n.succ)
 
-variable [SetLike S G] [SubgroupClass S G]
+end
+
+section
+
+variable [SetLike S G] [SubgroupClass S G] {H K : S}
 
 @[to_additive /-(attr := simp)-/] -- Porting note: `simp` cannot simplify LHS
 theorem exists_inv_mem_iff_exists_mem {P : G → Prop} :
@@ -138,19 +144,13 @@ theorem coe_inv (x : H) : (x⁻¹).1 = x.1⁻¹ :=
 
 end InvMemClass
 
+end
+
 namespace SubgroupClass
 
--- Here we assume H, K, and L are subgroups, but in fact any one of them
--- could be allowed to be a subsemigroup.
--- Counterexample where K and L are submonoids: H = ℤ, K = ℕ, L = -ℕ
--- Counterexample where H and K are submonoids: H = {n | n = 0 ∨ 3 ≤ n}, K = 3ℕ + 4ℕ, L = 5ℤ
-@[to_additive]
-theorem subset_union {H K L : S} : (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤ L := by
-  refine ⟨fun h ↦ ?_, fun h x xH ↦ h.imp (· xH) (· xH)⟩
-  rw [or_iff_not_imp_left, SetLike.not_le_iff_exists]
-  exact fun ⟨x, xH, xK⟩ y yH ↦ (h <| mul_mem xH yH).elim
-    ((h yH).resolve_left fun yK ↦ xK <| (mul_mem_cancel_right yK).mp ·)
-    (mul_mem_cancel_left <| (h xH).resolve_left xK).mp
+section
+
+variable [SetLike S G] [SubgroupClass S G] {H K : S}
 
 /-- A subgroup of a group inherits a division -/
 @[to_additive "An additive subgroup of an `AddGroup` inherits a subtraction."]
@@ -209,10 +209,29 @@ theorem coe_pow (x : H) (n : ℕ) : ((x ^ n : H) : G) = (x : G) ^ n :=
 theorem coe_zpow (x : H) (n : ℤ) : ((x ^ n : H) : G) = (x : G) ^ n :=
   rfl
 
+end
+
+section
+
+variable [OrderedSetLike S G] [SubgroupClass S G] {H K L : S}
+
+-- Here we assume H, K, and L are subgroups, but in fact any one of them
+-- could be allowed to be a subsemigroup.
+-- Counterexample where K and L are submonoids: H = ℤ, K = ℕ, L = -ℕ
+-- Counterexample where H and K are submonoids: H = {n | n = 0 ∨ 3 ≤ n}, K = 3ℕ + 4ℕ, L = 5ℤ
+@[to_additive]
+theorem subset_union : (H : Set G) ⊆ K ∪ L ↔ H ≤ K ∨ H ≤ L := by
+  simp [← OrderedSetLike.coe_subset_coe]
+  refine ⟨fun h ↦ ?_, fun h x xH ↦ h.imp (· xH) (· xH)⟩
+  rw [or_iff_not_imp_left, Set.not_subset]
+  exact fun ⟨x, xH, xK⟩ y yH ↦ (h <| mul_mem xH yH).elim
+    ((h yH).resolve_left fun yK ↦ xK <| (mul_mem_cancel_right yK).mp ·)
+    (mul_mem_cancel_left <| (h xH).resolve_left xK).mp
+
 /-- The inclusion homomorphism from a subgroup `H` contained in `K` to `K`. -/
 @[to_additive "The inclusion homomorphism from an additive subgroup `H` contained in `K` to `K`."]
 def inclusion {H K : S} (h : H ≤ K) : H →* K :=
-  MonoidHom.mk' (fun x => ⟨x, h x.prop⟩) fun _ _=> rfl
+  MonoidHom.mk' (fun x => ⟨x, OrderedSetLike.le_def.mp h x.prop⟩) fun _ _=> rfl
 
 @[to_additive (attr := simp)]
 theorem inclusion_self (x : H) : inclusion le_rfl x = x := by
@@ -220,7 +239,8 @@ theorem inclusion_self (x : H) : inclusion le_rfl x = x := by
   rfl
 
 @[to_additive (attr := simp)]
-theorem inclusion_mk {h : H ≤ K} (x : G) (hx : x ∈ H) : inclusion h ⟨x, hx⟩ = ⟨x, h hx⟩ :=
+theorem inclusion_mk {h : H ≤ K} (x : G) (hx : x ∈ H) :
+    inclusion h ⟨x, hx⟩ = ⟨x, OrderedSetLike.le_def.mp h hx⟩ :=
   rfl
 
 @[to_additive]
@@ -244,6 +264,8 @@ theorem subtype_comp_inclusion {H K : S} (hH : H ≤ K) :
     (SubgroupClass.subtype K).comp (inclusion hH) = SubgroupClass.subtype H := by
   ext
   simp only [MonoidHom.comp_apply, coeSubtype, coe_inclusion]
+
+end
 
 end SubgroupClass
 
@@ -281,6 +303,8 @@ instance : SetLike (Subgroup G) G where
     obtain ⟨⟨⟨hp,_⟩,_⟩,_⟩ := p
     obtain ⟨⟨⟨hq,_⟩,_⟩,_⟩ := q
     congr
+
+@[to_additive] instance : OrderedSetLike (Subgroup G) G := SetLike.toOrderedSetLike
 
 -- Porting note: Below can probably be written more uniformly
 @[to_additive]

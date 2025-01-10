@@ -51,6 +51,8 @@ instance instSetLike : SetLike (NonUnitalStarSubsemiring R) R where
   coe {s} := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
+instance : OrderedSetLike (NonUnitalStarSubsemiring R) R := SetLike.toOrderedSetLike
+
 instance instNonUnitalSubsemiringClass : NonUnitalSubsemiringClass (NonUnitalStarSubsemiring R) R
     where
   add_mem {s} := s.add_mem'

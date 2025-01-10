@@ -109,7 +109,8 @@ lemma cfcₙAux_mem_range_inr (f : C(σₙ 𝕜 a, 𝕜)₀) :
     (ContinuousMapZero.adjoin_id_dense (s := σₙ 𝕜 a) rfl) ⟨f, rfl⟩
   rw [← SetLike.mem_coe]
   refine closure_minimal ?_ ?_ h₁
-  · rw [← NonUnitalStarSubalgebra.coe_map, SetLike.coe_subset_coe, NonUnitalStarSubalgebra.map_le]
+  · rw [← NonUnitalStarSubalgebra.coe_map, OrderedSetLike.coe_subset_coe,
+      NonUnitalStarSubalgebra.map_le]
     apply NonUnitalStarAlgebra.adjoin_le
     apply Set.singleton_subset_iff.mpr
     rw [SetLike.mem_coe, NonUnitalStarSubalgebra.mem_comap, cfcₙAux_id hp₁ a ha]

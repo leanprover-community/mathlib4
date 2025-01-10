@@ -80,6 +80,8 @@ instance instSetLike : SetLike (VonNeumannAlgebra H) (H →L[ℂ] H) where
   coe S := S.carrier
   coe_injective' S T h := by obtain ⟨⟨⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩, _⟩, _⟩ := S; cases T; congr
 
+instance : OrderedSetLike (VonNeumannAlgebra H) (H →L[ℂ] H) := SetLike.toOrderedSetLike
+
 -- Porting note: `StarMemClass` should be in `Prop`?
 noncomputable instance instStarMemClass : StarMemClass (VonNeumannAlgebra H) (H →L[ℂ] H) where
   star_mem {s} := s.star_mem'

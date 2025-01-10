@@ -461,7 +461,7 @@ theorem Zlattice.FG [hs : IsZLattice K L] : L.FG := by
     · rw [fract, SetLike.mem_coe, sub_eq_add_neg]
       refine Submodule.add_mem _ h_mem
         (neg_mem (Set.mem_of_subset_of_mem ?_ (Subtype.mem (floor b x))))
-      rw [SetLike.coe_subset_coe, Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq]
+      rw [OrderedSetLike.coe_subset_coe, Basis.coe_mk, Subtype.range_coe_subtype, Set.setOf_mem_eq]
       exact span_le.mpr h_incl
   · -- `span ℤ s` is finitely generated because `s` is finite
     rw [ker_mkQ, inf_of_le_right (span_le.mpr h_incl)]

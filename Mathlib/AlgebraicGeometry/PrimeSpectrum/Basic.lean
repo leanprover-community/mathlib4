@@ -171,7 +171,7 @@ theorem isIrreducible_zeroLocus_iff_of_radical (I : Ideal R) (hI : I.IsRadical) 
         refine fun h x y h' => h _ _ ?_
         rw [← hI.radical_le_iff] at h' ⊢
         simpa only [Ideal.radical_inf, Ideal.radical_mul] using h'
-      · simp_rw [or_iff_not_imp_left, SetLike.not_le_iff_exists]
+      · simp_rw [or_iff_not_imp_left, OrderedSetLike.not_le_iff_exists]
         rintro h s t h' ⟨x, hx, hx'⟩ y hy
         exact h (h' ⟨Ideal.mul_mem_right _ _ hx, Ideal.mul_mem_left _ _ hy⟩) hx'
 
@@ -445,7 +445,7 @@ theorem basicOpen_zero : basicOpen (0 : R) = ⊥ :=
 
 theorem basicOpen_le_basicOpen_iff (f g : R) :
     basicOpen f ≤ basicOpen g ↔ f ∈ (Ideal.span ({g} : Set R)).radical := by
-  rw [← SetLike.coe_subset_coe, basicOpen_eq_zeroLocus_compl, basicOpen_eq_zeroLocus_compl,
+  rw [← OrderedSetLike.coe_subset_coe, basicOpen_eq_zeroLocus_compl, basicOpen_eq_zeroLocus_compl,
     Set.compl_subset_compl, zeroLocus_subset_zeroLocus_singleton_iff]
 
 theorem basicOpen_mul (f g : R) : basicOpen (f * g) = basicOpen f ⊓ basicOpen g :=
@@ -623,7 +623,7 @@ We endow `PrimeSpectrum R` with a partial order, where `x ≤ y` if and only if 
 theorem le_iff_mem_closure (x y : PrimeSpectrum R) :
     x ≤ y ↔ y ∈ closure ({x} : Set (PrimeSpectrum R)) := by
   rw [← asIdeal_le_asIdeal, ← zeroLocus_vanishingIdeal_eq_closure, mem_zeroLocus,
-    vanishingIdeal_singleton, SetLike.coe_subset_coe]
+    vanishingIdeal_singleton, OrderedSetLike.coe_subset_coe]
 
 theorem le_iff_specializes (x y : PrimeSpectrum R) : x ≤ y ↔ x ⤳ y :=
   (le_iff_mem_closure x y).trans specializes_iff_mem_closure.symm
@@ -646,8 +646,8 @@ def localizationMapOfSpecializes {x y : PrimeSpectrum R} (h : x ⤳ y) :
     (algebraMap R (Localization.AtPrime x.asIdeal))
     (by
       rintro ⟨a, ha⟩
-      rw [← PrimeSpectrum.le_iff_specializes, ← asIdeal_le_asIdeal, ← SetLike.coe_subset_coe, ←
-        Set.compl_subset_compl] at h
+      rw [← PrimeSpectrum.le_iff_specializes, ← asIdeal_le_asIdeal, ← OrderedSetLike.coe_subset_coe,
+        ← Set.compl_subset_compl] at h
       exact (IsLocalization.map_units (Localization.AtPrime x.asIdeal)
         ⟨a, show a ∈ x.asIdeal.primeCompl from h ha⟩ :))
 
@@ -710,7 +710,7 @@ lemma closure_range_comap :
 lemma denseRange_comap_iff_ker_le_nilRadical :
     DenseRange (comap f) ↔ RingHom.ker f ≤ nilradical R := by
   rw [denseRange_iff_closure_range, closure_range_comap, ← Set.top_eq_univ, zeroLocus_eq_top_iff,
-    SetLike.coe_subset_coe]
+    OrderedSetLike.coe_subset_coe]
 
 @[stacks 00FL]
 lemma denseRange_comap_iff_minimalPrimes :

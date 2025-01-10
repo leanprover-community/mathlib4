@@ -162,6 +162,8 @@ instance : SetLike (AffineSubspace k P) P where
   coe := carrier
   coe_injective' p q _ := by cases p; cases q; congr
 
+instance : OrderedSetLike (AffineSubspace k P) P := SetLike.toOrderedSetLike
+
 /-- A point is in an affine subspace coerced to a set if and only if it is in that affine
 subspace. -/
 -- Porting note: removed `simp`, proof is `simp only [SetLike.mem_coe]`
@@ -206,7 +208,7 @@ def directionOfNonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) : Su
 theorem directionOfNonempty_eq_direction {s : AffineSubspace k P} (h : (s : Set P).Nonempty) :
     directionOfNonempty h = s.direction := by
   refine le_antisymm ?_ (Submodule.span_le.2 Set.Subset.rfl)
-  rw [← SetLike.coe_subset_coe, directionOfNonempty, direction, Submodule.coe_set_mk,
+  rw [← OrderedSetLike.coe_subset_coe, directionOfNonempty, direction, Submodule.coe_set_mk,
     AddSubmonoid.coe_set_mk]
   exact vsub_set_subset_vectorSpan k _
 
@@ -447,7 +449,7 @@ theorem spanPoints_subset_coe_of_subset_coe {s : Set P} {s1 : AffineSubspace k P
   have hp1s1 : p1 ∈ (s1 : Set P) := Set.mem_of_mem_of_subset hp1 h
   refine vadd_mem_of_mem_direction ?_ hp1s1
   have hs : vectorSpan k s ≤ s1.direction := vectorSpan_mono k h
-  rw [SetLike.le_def] at hs
+  rw [OrderedSetLike.le_def] at hs
   rw [← SetLike.mem_coe]
   exact Set.mem_of_mem_of_subset hv hs
 
@@ -853,7 +855,7 @@ theorem direction_lt_of_nonempty {s1 s2 : AffineSubspace k P} (h : s1 < s2)
   cases' hn with p hp
   rw [lt_iff_le_and_exists] at h
   rcases h with ⟨hle, p2, hp2, hp2s1⟩
-  rw [SetLike.lt_iff_le_and_exists]
+  rw [OrderedSetLike.lt_iff_le_and_exists]
   use direction_le hle, p2 -ᵥ p, vsub_mem_direction hp2 (hle hp)
   intro hm
   rw [vsub_right_mem_direction_iff_mem hp p2] at hm
@@ -876,7 +878,7 @@ theorem sup_direction_lt_of_nonempty_of_inter_empty {s1 s2 : AffineSubspace k P}
     s1.direction ⊔ s2.direction < (s1 ⊔ s2).direction := by
   cases' h1 with p1 hp1
   cases' h2 with p2 hp2
-  rw [SetLike.lt_iff_le_and_exists]
+  rw [OrderedSetLike.lt_iff_le_and_exists]
   use sup_direction_le s1 s2, p2 -ᵥ p1,
     vsub_mem_direction ((le_sup_right : s2 ≤ s1 ⊔ s2) hp2) ((le_sup_left : s1 ≤ s1 ⊔ s2) hp1)
   intro h

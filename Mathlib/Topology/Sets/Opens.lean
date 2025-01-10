@@ -72,6 +72,8 @@ instance : SetLike (Opens α) α where
   coe := Opens.carrier
   coe_injective' := fun ⟨_, _⟩ ⟨_, _⟩ _ => by congr
 
+instance : OrderedSetLike (Opens α) α := SetLike.toOrderedSetLike
+
 instance : CanLift (Set α) (Opens α) (↑) IsOpen :=
   ⟨fun s h => ⟨⟨s, h⟩, rfl⟩⟩
 
@@ -250,7 +252,7 @@ theorem isOpenEmbedding' (U : Opens α) : IsOpenEmbedding (Subtype.val : U → �
 alias openEmbedding' := isOpenEmbedding'
 
 theorem isOpenEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
-    IsOpenEmbedding (Set.inclusion <| SetLike.coe_subset_coe.2 i) where
+    IsOpenEmbedding (Set.inclusion <| OrderedSetLike.coe_subset_coe.2 i) where
   toIsEmbedding := .inclusion i
   isOpen_range := by
     rw [Set.range_inclusion i]
@@ -390,7 +392,8 @@ def _root_.Homeomorph.opensCongr (f : α ≃ₜ β) : Opens α ≃o Opens β whe
   left_inv _ := ext <| f.toEquiv.preimage_symm_preimage _
   right_inv _ := ext <| f.toEquiv.symm_preimage_preimage _
   map_rel_iff' := by
-    simp only [← SetLike.coe_subset_coe]; exact f.symm.surjective.preimage_subset_preimage_iff
+    simp only [← OrderedSetLike.coe_subset_coe]
+    exact f.symm.surjective.preimage_subset_preimage_iff
 
 @[simp]
 theorem _root_.Homeomorph.opensCongr_symm (f : α ≃ₜ β) : f.opensCongr.symm = f.symm.opensCongr :=
@@ -416,6 +419,8 @@ theorem toOpens_injective : Injective (toOpens : OpenNhdsOf x → Opens α)
 instance : SetLike (OpenNhdsOf x) α where
   coe U := U.1
   coe_injective' := SetLike.coe_injective.comp toOpens_injective
+
+instance : OrderedSetLike (OpenNhdsOf x) α := SetLike.toOrderedSetLike
 
 instance canLiftSet : CanLift (Set α) (OpenNhdsOf x) (↑) fun s => IsOpen s ∧ x ∈ s :=
   ⟨fun s hs => ⟨⟨⟨s, hs.1⟩, hs.2⟩, rfl⟩⟩

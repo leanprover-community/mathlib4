@@ -70,6 +70,8 @@ instance : SetLike YoungDiagram (ℕ × ℕ) where
   coe y := y.cells
   coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
+instance : OrderedSetLike YoungDiagram (ℕ × ℕ) := SetLike.toOrderedSetLike
+
 @[simp]
 theorem mem_cells {μ : YoungDiagram} (c : ℕ × ℕ) : c ∈ μ.cells ↔ c ∈ μ :=
   Iff.rfl

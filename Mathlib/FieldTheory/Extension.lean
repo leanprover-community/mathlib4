@@ -162,7 +162,7 @@ theorem union_isExtendible [alg : Algebra.IsAlgebraic F E]
   refine ⟨union _ this, le_of_carrier_le_iSup (fun π ↦ le_union c hc π.2)
     (fun π ↦ (ge π).trans <| le_union _ _ ⟨_, rfl⟩) (carrier_union _ _).le, ?_⟩
   simp_rw [carrier_union, iSup_range', eq]
-  exact (subset_adjoin _ _).trans (SetLike.coe_subset_coe.mpr <|
+  exact (subset_adjoin _ _).trans (OrderedSetLike.coe_subset_coe.mpr <|
     le_sup_right.trans <| le_iSup_of_le (Classical.arbitrary _) le_rfl)
 
 end Chain
@@ -177,7 +177,7 @@ theorem nonempty_algHom_of_exist_lifts_finset [alg : Algebra.IsAlgebraic F E]
       fun _ ↦ ⟨_, union_isExtendible c hc hext, le_union c hc⟩
   suffices ϕ.carrier = ⊤ from ⟨ϕ.emb.comp <| ((equivOfEq this).trans topEquiv).symm⟩
   by_contra!
-  obtain ⟨α, -, hα⟩ := SetLike.exists_of_lt this.lt_top
+  obtain ⟨α, -, hα⟩ := OrderedSetLike.exists_of_lt this.lt_top
   let _ : Algebra ϕ.carrier K := ϕ.emb.toAlgebra
   let Λ := ϕ.carrier⟮α⟯ →ₐ[ϕ.carrier] K
   have := finiteDimensional_adjoin (S := {α}) fun _ _ ↦ ((alg.tower_top ϕ.carrier).isIntegral).1 _
@@ -250,7 +250,7 @@ theorem exists_algHom_adjoin_of_splits' :
   have := exists_algHom_adjoin_of_splits'' f' (S := S) fun s hs ↦ ?_
   · obtain ⟨φ, hφ⟩ := this; refine ⟨φ.comp <|
       inclusion (?_ : (adjoin L S).restrictScalars F ≤ (adjoin L' S).restrictScalars F), ?_⟩
-    · simp_rw [← SetLike.coe_subset_coe, coe_restrictScalars, adjoin_subset_adjoin_iff]
+    · simp_rw [← OrderedSetLike.coe_subset_coe, coe_restrictScalars, adjoin_subset_adjoin_iff]
       exact ⟨subset_adjoin_of_subset_left S (F := L'.toSubfield) le_rfl, subset_adjoin _ _⟩
     · ext x
       exact congr($hφ _).trans (congr_arg f <| AlgEquiv.symm_apply_apply _ _)

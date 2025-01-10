@@ -654,7 +654,7 @@ variable {R}
 
 theorem image_specComap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal S) :
     f.specComap '' zeroLocus I = zeroLocus (I.comap f) := by
-  simp only [Set.ext_iff, Set.mem_image, mem_zeroLocus, SetLike.coe_subset_coe]
+  simp only [Set.ext_iff, Set.mem_image, mem_zeroLocus, OrderedSetLike.coe_subset_coe]
   refine fun p => ⟨?_, fun h_I_p => ?_⟩
   · rintro ⟨p, hp, rfl⟩ a ha
     exact hp ha

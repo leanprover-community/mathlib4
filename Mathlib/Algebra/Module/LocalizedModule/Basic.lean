@@ -1275,7 +1275,7 @@ lemma LocalizedModule.subsingleton_iff_ker_eq_top {S : Submonoid R} :
 
 lemma LocalizedModule.subsingleton_iff {S : Submonoid R} :
     Subsingleton (LocalizedModule S M) ↔ ∀ m : M, ∃ r ∈ S, r • m = 0 := by
-  simp_rw [subsingleton_iff_ker_eq_top, ← top_le_iff, SetLike.le_def,
+  simp_rw [subsingleton_iff_ker_eq_top, ← top_le_iff, OrderedSetLike.le_def,
     mem_ker_mkLinearMap_iff, Submodule.mem_top, true_implies]
 
 end Subsingleton

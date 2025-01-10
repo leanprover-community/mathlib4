@@ -242,7 +242,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Subgroup G} : (↑(⨅ i, S i) : Set G
 @[to_additive "The `AddSubgroup`s of an `AddGroup` form a complete lattice."]
 instance : CompleteLattice (Subgroup G) :=
   { completeLatticeOfInf (Subgroup G) fun _s =>
-      IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
+      IsGLB.of_image OrderedSetLike.coe_subset_coe isGLB_biInf with
     bot := ⊥
     bot_le := fun S _x hx => (mem_bot.1 hx).symm ▸ S.one_mem
     top := ⊤
@@ -530,7 +530,8 @@ theorem mem_closure_pair {x y z : C} :
 
 @[to_additive]
 theorem disjoint_def {H₁ H₂ : Subgroup G} : Disjoint H₁ H₂ ↔ ∀ {x : G}, x ∈ H₁ → x ∈ H₂ → x = 1 :=
-  disjoint_iff_inf_le.trans <| by simp only [Disjoint, SetLike.le_def, mem_inf, mem_bot, and_imp]
+  disjoint_iff_inf_le.trans <| by
+    simp only [Disjoint, OrderedSetLike.le_def, mem_inf, mem_bot, and_imp]
 
 @[to_additive]
 theorem disjoint_def' {H₁ H₂ : Subgroup G} :

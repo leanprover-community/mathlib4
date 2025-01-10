@@ -81,7 +81,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Subsemigroup M} : (↑(⨅ i, S i) : S
 @[to_additive "The `AddSubsemigroup`s of an `AddMonoid` form a complete lattice."]
 instance : CompleteLattice (Subsemigroup M) :=
   { completeLatticeOfInf (Subsemigroup M) fun _ =>
-      IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
+      IsGLB.of_image OrderedSetLike.coe_subset_coe isGLB_biInf with
     le := (· ≤ ·)
     lt := (· < ·)
     bot := ⊥

@@ -94,6 +94,8 @@ namespace Subsemigroup
 instance : SetLike (Subsemigroup M) M :=
   ⟨Subsemigroup.carrier, fun p q h => by cases p; cases q; congr⟩
 
+@[to_additive] instance : OrderedSetLike (Subsemigroup M) M := SetLike.toOrderedSetLike
+
 @[to_additive]
 instance : MulMemClass (Subsemigroup M) M where mul_mem := fun {_ _ _} => Subsemigroup.mul_mem' _
 

@@ -224,7 +224,7 @@ lemma exists_basis_of_span_of_maximalIdeal_rTensor_injective [Module.FinitePrese
     {ι : Type u} (v : ι → M) (hv : Submodule.span R (Set.range v) = ⊤) :
     ∃ (κ : Type u) (a : κ → ι) (b : Basis κ R M), ∀ i, b i = v (a i) := by
   have := (map_tensorProduct_mk_eq_top (N := Submodule.span R (Set.range v))).mpr hv
-  rw [← Submodule.span_image, ← Set.range_comp, eq_top_iff, ← SetLike.coe_subset_coe,
+  rw [← Submodule.span_image, ← Set.range_comp, eq_top_iff, ← OrderedSetLike.coe_subset_coe,
     Submodule.top_coe] at this
   have : Submodule.span k (Set.range (TensorProduct.mk R k M 1 ∘ v)) = ⊤ := by
     rw [eq_top_iff]

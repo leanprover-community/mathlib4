@@ -206,7 +206,7 @@ theorem range_polarization_domRestrict_le_span_coroot :
 
 theorem corootSpan_dualAnnihilator_le_ker_rootForm :
     P.corootSpan.dualAnnihilator.map P.toDualLeft.symm ≤ LinearMap.ker P.RootForm := by
-  rw [← SetLike.coe_subset_coe, coe_corootSpan_dualAnnihilator_map]
+  rw [← OrderedSetLike.coe_subset_coe, coe_corootSpan_dualAnnihilator_map]
   intro x hx
   simp only [coroot', PerfectPairing.flip_apply_apply, mem_setOf_eq] at hx
   ext y

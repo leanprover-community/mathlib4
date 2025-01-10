@@ -87,6 +87,8 @@ instance HomogeneousIdeal.setLike : SetLike (HomogeneousIdeal 𝒜) A where
   coe I := I.toIdeal
   coe_injective' _ _ h := HomogeneousIdeal.toIdeal_injective <| SetLike.coe_injective h
 
+instance : OrderedSetLike (HomogeneousIdeal 𝒜) A := SetLike.toOrderedSetLike
+
 @[ext]
 theorem HomogeneousIdeal.ext {I J : HomogeneousIdeal 𝒜} (h : I.toIdeal = J.toIdeal) : I = J :=
   HomogeneousIdeal.toIdeal_injective h
@@ -290,7 +292,8 @@ variable {𝒜}
 namespace HomogeneousIdeal
 
 instance : PartialOrder (HomogeneousIdeal 𝒜) :=
-  SetLike.instPartialOrder
+  letI : OrderedSetLike (HomogeneousIdeal 𝒜) A := SetLike.toOrderedSetLike
+  inferInstance
 
 instance : Top (HomogeneousIdeal 𝒜) :=
   ⟨⟨⊤, Ideal.IsHomogeneous.top 𝒜⟩⟩

@@ -320,7 +320,7 @@ lemma isTorsionFree_of_subsingleton [Subsingleton G] : IsTorsionFree G :=
 @[to_additive]
 lemma isTorsionFree_iff_torsion_eq_bot {G} [CommGroup G] :
     IsTorsionFree G ↔ CommGroup.torsion G = ⊥ := by
-  rw [IsTorsionFree, eq_bot_iff, SetLike.le_def]
+  rw [IsTorsionFree, eq_bot_iff, OrderedSetLike.le_def]
   simp [not_imp_not, CommGroup.mem_torsion]
 
 end Monoid

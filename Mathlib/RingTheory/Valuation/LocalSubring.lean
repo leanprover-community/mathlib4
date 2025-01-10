@@ -92,7 +92,7 @@ lemma LocalSubring.exists_valuationRing_of_isMax {R : LocalSubring K} (hR : IsMa
   have hx0 : x ≠ 0 := fun e ↦ hx (e ▸ zero_mem _)
   apply mem_of_isMax_of_isIntegral hR
   let S := Algebra.adjoin R.toSubring {x}
-  have : R.toSubring < S.toSubring := SetLike.lt_iff_le_and_exists.mpr
+  have : R.toSubring < S.toSubring := OrderedSetLike.lt_iff_le_and_exists.mpr
     ⟨fun r hr ↦ algebraMap_mem S ⟨r, hr⟩, ⟨x, Algebra.self_mem_adjoin_singleton _ _, hx⟩⟩
   have := map_maximalIdeal_eq_top_of_isMax hR this
   rw [Ideal.eq_top_iff_one] at this

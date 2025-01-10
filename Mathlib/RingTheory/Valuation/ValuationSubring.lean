@@ -48,6 +48,8 @@ instance : SetLike (ValuationSubring K) K where
     replace h := SetLike.coe_injective' h
     congr
 
+instance : OrderedSetLike (ValuationSubring K) K := SetLike.toOrderedSetLike
+
 theorem mem_carrier (x : K) : x ∈ A.carrier ↔ x ∈ A := Iff.refl _
 
 @[simp]

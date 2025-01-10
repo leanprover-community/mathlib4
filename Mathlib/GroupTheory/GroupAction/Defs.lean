@@ -551,7 +551,7 @@ theorem mem_stabilizer_iff {a : α} {g : G} : g ∈ stabilizer G a ↔ g • a =
 @[to_additive]
 lemma le_stabilizer_smul_left [SMul α β] [IsScalarTower G α β] (a : α) (b : β) :
     stabilizer G a ≤ stabilizer G (a • b) := by
-  simp_rw [SetLike.le_def, mem_stabilizer_iff, ← smul_assoc]; rintro a h; rw [h]
+  simp_rw [OrderedSetLike.le_def, mem_stabilizer_iff, ← smul_assoc]; rintro a h; rw [h]
 
 -- This lemma does not need `MulAction G α`, only `SMul G α`.
 -- We use `G'` instead of `G` to locally reduce the typeclass assumptions.
@@ -559,7 +559,7 @@ lemma le_stabilizer_smul_left [SMul α β] [IsScalarTower G α β] (a : α) (b :
 lemma le_stabilizer_smul_right {G'} [Group G'] [SMul α β] [MulAction G' β]
     [SMulCommClass G' α β] (a : α) (b : β) :
     stabilizer G' b ≤ stabilizer G' (a • b) := by
-  simp_rw [SetLike.le_def, mem_stabilizer_iff, smul_comm]; rintro a h; rw [h]
+  simp_rw [OrderedSetLike.le_def, mem_stabilizer_iff, smul_comm]; rintro a h; rw [h]
 
 @[to_additive (attr := simp)]
 lemma stabilizer_smul_eq_left [SMul α β] [IsScalarTower G α β] (a : α) (b : β)

@@ -62,7 +62,7 @@ lemma Module.mem_support_iff' :
 lemma Module.mem_support_iff_exists_annihilator :
     p ∈ Module.support R M ↔ ∃ m : M, (R ∙ m).annihilator ≤ p.asIdeal := by
   rw [Module.mem_support_iff']
-  simp_rw [not_imp_not, SetLike.le_def, Submodule.mem_annihilator_span_singleton]
+  simp_rw [not_imp_not, OrderedSetLike.le_def, Submodule.mem_annihilator_span_singleton]
 
 lemma Module.mem_support_iff_of_span_eq_top {s : Set M} (hs : Submodule.span R s = ⊤) :
     p ∈ Module.support R M ↔ ∃ m ∈ s, (R ∙ m).annihilator ≤ p.asIdeal := by
@@ -70,7 +70,7 @@ lemma Module.mem_support_iff_of_span_eq_top {s : Set M} (hs : Submodule.span R s
   · contrapose
     rw [not_mem_support_iff, LocalizedModule.subsingleton_iff_ker_eq_top, ← top_le_iff,
       ← hs, Submodule.span_le, Set.subset_def]
-    simp_rw [SetLike.le_def, Submodule.mem_annihilator_span_singleton, SetLike.mem_coe,
+    simp_rw [OrderedSetLike.le_def, Submodule.mem_annihilator_span_singleton, SetLike.mem_coe,
       LocalizedModule.mem_ker_mkLinearMap_iff]
     push_neg
     simp_rw [and_comm]
@@ -117,7 +117,7 @@ lemma Module.support_eq_empty [Subsingleton M] :
 lemma Module.support_of_algebra {A : Type*} [Ring A] [Algebra R A] :
     Module.support R A = PrimeSpectrum.zeroLocus (RingHom.ker (algebraMap R A)) := by
   ext p
-  simp only [mem_support_iff', ne_eq, PrimeSpectrum.mem_zeroLocus, SetLike.coe_subset_coe]
+  simp only [mem_support_iff', ne_eq, PrimeSpectrum.mem_zeroLocus, OrderedSetLike.coe_subset_coe]
   refine ⟨fun ⟨m, hm⟩ x hx ↦ not_not.mp fun hx' ↦ ?_, fun H ↦ ⟨1, fun r hr e ↦ ?_⟩⟩
   · simpa [Algebra.smul_def, (show _ = _ from hx)] using hm _ hx'
   · exact hr (H ((Algebra.algebraMap_eq_smul_one _).trans e))
@@ -133,7 +133,7 @@ lemma Module.mem_support_iff_of_finite [Module.Finite R M] :
   classical
   obtain ⟨s, hs⟩ := ‹Module.Finite R M›
   refine ⟨annihilator_le_of_mem_support, fun H ↦ (mem_support_iff_of_span_eq_top hs).mpr ?_⟩
-  simp only [SetLike.le_def, Submodule.mem_annihilator_span_singleton] at H ⊢
+  simp only [OrderedSetLike.le_def, Submodule.mem_annihilator_span_singleton] at H ⊢
   contrapose! H
   choose x hx hx' using Subtype.forall'.mp H
   refine ⟨s.attach.prod x, ?_, ?_⟩

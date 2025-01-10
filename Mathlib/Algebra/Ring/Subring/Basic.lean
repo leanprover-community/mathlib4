@@ -333,7 +333,7 @@ theorem sInf_toAddSubgroup (s : Set (Subring R)) :
 /-- Subrings of a ring form a complete lattice. -/
 instance : CompleteLattice (Subring R) :=
   { completeLatticeOfInf (Subring R) fun _ =>
-      IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
+      IsGLB.of_image OrderedSetLike.coe_subset_coe isGLB_biInf with
     bot := ⊥
     bot_le := fun s _x hx =>
       let ⟨n, hn⟩ := mem_bot.1 hx

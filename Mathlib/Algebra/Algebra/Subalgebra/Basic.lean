@@ -37,6 +37,8 @@ instance : SetLike (Subalgebra R A) A where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+instance : OrderedSetLike (Subalgebra R A) A := SetLike.toOrderedSetLike
+
 instance SubsemiringClass : SubsemiringClass (Subalgebra R A) A where
   add_mem {s} := add_mem (s := s.toSubsemiring)
   mul_mem {s} := mul_mem (s := s.toSubsemiring)
@@ -239,7 +241,7 @@ def toSubmodule : Subalgebra R A ↪o Submodule R A where
           smul_mem' := fun c {x} hx ↦
             (Algebra.smul_def c x).symm ▸ mul_mem (S.range_le ⟨c, rfl⟩) hx }
       inj' := fun _ _ h ↦ ext fun x ↦ SetLike.ext_iff.mp h x }
-  map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
+  map_rel_iff' := OrderedSetLike.coe_subset_coe.symm.trans OrderedSetLike.coe_subset_coe
 
 /- TODO: bundle other forgetful maps between algebraic substructures, e.g.
   `toSubsemiring` and `toSubring` in this file. -/
@@ -502,7 +504,7 @@ theorem range_comp (f : A →ₐ[R] B) (g : B →ₐ[R] C) : (g.comp f).range = 
   SetLike.coe_injective (Set.range_comp g f)
 
 theorem range_comp_le_range (f : A →ₐ[R] B) (g : B →ₐ[R] C) : (g.comp f).range ≤ g.range :=
-  SetLike.coe_mono (Set.range_comp_subset_range f g)
+  OrderedSetLike.coe_mono (Set.range_comp_subset_range f g)
 
 /-- Restrict the codomain of an algebra homomorphism. -/
 def codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f x ∈ S) : A →ₐ[R] S :=

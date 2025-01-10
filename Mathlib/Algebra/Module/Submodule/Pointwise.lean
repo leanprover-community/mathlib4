@@ -91,10 +91,10 @@ scoped[Pointwise] attribute [instance] Submodule.involutivePointwiseNeg
 
 @[simp]
 theorem neg_le_neg (S T : Submodule R M) : -S ≤ -T ↔ S ≤ T :=
-  SetLike.coe_subset_coe.symm.trans Set.neg_subset_neg
+  OrderedSetLike.coe_subset_coe.symm.trans Set.neg_subset_neg
 
 theorem neg_le (S T : Submodule R M) : -S ≤ T ↔ S ≤ -T :=
-  SetLike.coe_subset_coe.symm.trans Set.neg_subset
+  OrderedSetLike.coe_subset_coe.symm.trans Set.neg_subset
 
 /-- `Submodule.pointwiseNeg` as an order isomorphism. -/
 def negOrderIso : Submodule R M ≃o Submodule R M where

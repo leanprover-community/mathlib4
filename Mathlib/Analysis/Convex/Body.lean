@@ -60,6 +60,8 @@ instance : SetLike (ConvexBody V) V where
     cases L
     congr
 
+instance : OrderedSetLike (ConvexBody V) V := SetLike.toOrderedSetLike
+
 protected theorem convex (K : ConvexBody V) : Convex ℝ (K : Set V) :=
   K.convex'
 
@@ -152,7 +154,7 @@ instance : Module ℝ≥0 (ConvexBody V) where
 
 theorem smul_le_of_le (K : ConvexBody V) (h_zero : 0 ∈ K) {a b : ℝ≥0} (h : a ≤ b) :
     a • K ≤ b • K := by
-  rw [← SetLike.coe_subset_coe, coe_smul', coe_smul']
+  rw [← OrderedSetLike.coe_subset_coe, coe_smul', coe_smul']
   obtain rfl | ha := eq_zero_or_pos a
   · rw [Set.zero_smul_set K.nonempty, Set.zero_subset]
     exact Set.mem_smul_set.mpr ⟨0, h_zero, smul_zero _⟩

@@ -66,7 +66,7 @@ theorem restrictScalarsEquiv_symm_mk [Ring S] [SMul S R] [Module S M] [IsScalarT
 end Module
 
 theorem nontrivial_of_lt_top (h : p < ⊤) : Nontrivial (M ⧸ p) := by
-  obtain ⟨x, _, not_mem_s⟩ := SetLike.exists_of_lt h
+  obtain ⟨x, _, not_mem_s⟩ := OrderedSetLike.exists_of_lt h
   refine ⟨⟨mk x, 0, ?_⟩⟩
   simpa using not_mem_s
 

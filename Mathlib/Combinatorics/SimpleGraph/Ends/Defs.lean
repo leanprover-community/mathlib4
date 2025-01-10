@@ -50,6 +50,8 @@ instance ComponentCompl.setLike : SetLike (G.ComponentCompl K) V where
   coe := ComponentCompl.supp
   coe_injective' _ _ := ComponentCompl.supp_inj.mp
 
+instance : OrderedSetLike (G.ComponentCompl K) V := SetLike.toOrderedSetLike
+
 @[simp]
 theorem ComponentCompl.mem_supp_iff {v : V} {C : ComponentCompl G K} :
     v ∈ C ↔ ∃ vK : v ∉ K, G.componentComplMk vK = C :=

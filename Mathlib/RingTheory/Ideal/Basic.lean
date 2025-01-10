@@ -209,7 +209,7 @@ theorem not_isField_iff_exists_ideal_bot_lt_and_lt_top [Nontrivial R] :
     rw [bot_lt_iff_ne_bot, lt_top_iff_ne_top]
     exact ⟨mt Ideal.span_singleton_eq_bot.mp nz, mt Ideal.span_singleton_eq_top.mp nu⟩
   · rintro ⟨I, bot_lt, lt_top⟩ hf
-    obtain ⟨x, mem, ne_zero⟩ := SetLike.exists_of_lt bot_lt
+    obtain ⟨x, mem, ne_zero⟩ := OrderedSetLike.exists_of_lt bot_lt
     rw [Submodule.mem_bot] at ne_zero
     obtain ⟨y, hy⟩ := hf.mul_inv_cancel ne_zero
     rw [lt_top_iff_ne_top, Ne, Ideal.eq_top_iff_one, ← hy] at lt_top

@@ -40,6 +40,8 @@ instance instSetLike : SetLike (Sublattice α) α where
   coe L := L.carrier
   coe_injective' L M h := by cases L; congr
 
+instance : OrderedSetLike (Sublattice α) α := SetLike.toOrderedSetLike
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (L : Sublattice α) : Set α := L
 
@@ -192,7 +194,7 @@ instance instCompleteLattice : CompleteLattice (Sublattice α) where
   inf_le_left := fun _L _M _a ↦ And.left
   inf_le_right := fun _L _M _a ↦ And.right
   __ := completeLatticeOfInf (Sublattice α)
-      fun _s ↦ IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf
+      fun _s ↦ IsGLB.of_image OrderedSetLike.coe_subset_coe isGLB_biInf
 
 lemma subsingleton_iff : Subsingleton (Sublattice α) ↔ IsEmpty α :=
   ⟨fun _ ↦ univ_eq_empty_iff.1 <| coe_inj.2 <| Subsingleton.elim ⊤ ⊥,
@@ -341,7 +343,7 @@ lemma top_prod (L : Sublattice β) : (⊤ : Sublattice α).prod L = L.comap Latt
 
 lemma le_prod_iff {M : Sublattice β} {N : Sublattice (α × β)} :
     N ≤ L.prod M ↔ N ≤ comap LatticeHom.fst L ∧ N ≤ comap LatticeHom.snd M := by
-  simp [SetLike.le_def, forall_and]
+  simp [OrderedSetLike.le_def, forall_and]
 
 @[simp] lemma prod_eq_bot {M : Sublattice β} : L.prod M = ⊥ ↔ L = ⊥ ∨ M = ⊥ := by
   simpa only [← coe_inj] using Set.prod_eq_empty_iff
@@ -383,7 +385,8 @@ attribute [norm_cast] coe_pi
 lemma pi_univ_bot [Nonempty κ] : (pi univ fun _ ↦ ⊥ : Sublattice (∀ i, π i)) = ⊥ := by simp
 
 lemma le_pi {s : Set κ} {L : ∀ i, Sublattice (π i)} {M : Sublattice (∀ i, π i)} :
-    M ≤ pi s L ↔ ∀ i ∈ s, M ≤ comap (Pi.evalLatticeHom i) (L i) := by simp [SetLike.le_def]; aesop
+    M ≤ pi s L ↔ ∀ i ∈ s, M ≤ comap (Pi.evalLatticeHom i) (L i) :=
+  by simp [OrderedSetLike.le_def]; aesop
 
 @[simp] lemma pi_univ_eq_bot_iff {L : ∀ i, Sublattice (π i)} : pi univ L = ⊥ ↔ ∃ i, L i = ⊥ := by
   simp_rw [← coe_inj]; simp

@@ -536,7 +536,7 @@ theorem orderIsoMapComap_symm_apply' (e : M ≃ₛₗ[τ₁₂] M₂) (p : Submo
 
 theorem inf_comap_le_comap_add (f₁ f₂ : M →ₛₗ[τ₁₂] M₂) :
     comap f₁ q ⊓ comap f₂ q ≤ comap (f₁ + f₂) q := by
-  rw [SetLike.le_def]
+  rw [OrderedSetLike.le_def]
   intro m h
   change f₁ m + f₂ m ∈ q
   change f₁ m ∈ q ∧ f₂ m ∈ q at h
@@ -556,7 +556,7 @@ variable (p : Submodule R M) (q : Submodule R₂ M₂)
 variable (pₗ : Submodule R N) (qₗ : Submodule R N₂)
 
 theorem comap_le_comap_smul (fₗ : N →ₗ[R] N₂) (c : R) : comap fₗ qₗ ≤ comap (c • fₗ) qₗ := by
-  rw [SetLike.le_def]
+  rw [OrderedSetLike.le_def]
   intro m h
   change c • fₗ m ∈ qₗ
   change fₗ m ∈ qₗ at h

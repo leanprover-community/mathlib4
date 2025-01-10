@@ -126,6 +126,8 @@ instance : SetLike (Submonoid M) M where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+@[to_additive] instance : OrderedSetLike (Submonoid M) M := SetLike.toOrderedSetLike
+
 @[to_additive]
 instance : SubmonoidClass (Submonoid M) M where
   one_mem := Submonoid.one_mem'

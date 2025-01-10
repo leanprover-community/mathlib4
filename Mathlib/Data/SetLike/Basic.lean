@@ -98,6 +98,14 @@ class SetLike (A : Type*) (B : outParam Type*) where
   /-- The coercion from a term of a `SetLike` to its corresponding `Set` is injective. -/
   protected coe_injective' : Function.Injective coe
 
+/-- A class to indicate that there is a canonical order preserving injection
+between `A` and `Set B`. -/
+class OrderedSetLike (A : Type*) (B : outParam Type*) extends PartialOrder A where
+  /-- The coercion from a term of a `SetLike` to its corresponding `Set`. -/
+  protected coe : A → Set B
+  /-- The coercion from a `SetLike` type preserves the ordering. -/
+  protected coe_subset_coe' {S T : A} : coe S ⊆ coe T ↔ S ≤ T
+
 attribute [coe] SetLike.coe
 namespace SetLike
 
@@ -186,15 +194,32 @@ protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rf
 
 @[simp] lemma setOf_mem_eq (a : A) : {b | b ∈ a} = a := rfl
 
-instance (priority := 100) instPartialOrder : PartialOrder A :=
-  { PartialOrder.lift (SetLike.coe : A → Set B) coe_injective with
-    le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K }
+def toOrderedSetLike : OrderedSetLike A B where
+  __ := PartialOrder.lift (SetLike.coe : A → Set B) coe_injective
+  __ := (by assumption : SetLike A B)
+  le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K
+  coe_subset_coe' := .rfl
 
-theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T :=
-  Iff.rfl
+end SetLike
 
-@[simp, norm_cast] lemma coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T := .rfl
-@[simp, norm_cast] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := .rfl
+namespace OrderedSetLike
+
+variable {A : Type*} {B : Type*} [OrderedSetLike A B]
+variable {p q : A}
+
+instance : SetLike A B where
+  coe := OrderedSetLike.coe
+  coe_injective' := fun _ _ h ↦ by
+    simpa [le_antisymm_iff, ← OrderedSetLike.coe_subset_coe'] using h
+
+@[simp, norm_cast] lemma coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T :=
+  OrderedSetLike.coe_subset_coe'
+
+theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T := by
+  simp [← coe_subset_coe, Set.subset_def]
+
+@[simp, norm_cast] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := by
+  rw [ssubset_iff_subset_ne, lt_iff_le_and_ne, coe_subset_coe, SetLike.coe_ne_coe]
 
 @[gcongr] protected alias ⟨_, GCongr.coe_subset_coe⟩ := coe_subset_coe
 @[gcongr] protected alias ⟨_, GCongr.coe_ssubset_coe⟩ := coe_ssubset_coe
@@ -205,13 +230,13 @@ theorem coe_mono : Monotone (SetLike.coe : A → Set B) := fun _ _ => coe_subset
 @[mono]
 theorem coe_strictMono : StrictMono (SetLike.coe : A → Set B) := fun _ _ => coe_ssubset_coe.mpr
 
-theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q :=
-  Set.not_subset
+theorem not_le_iff_exists : ¬p ≤ q ↔ ∃ x ∈ p, x ∉ q := by
+  simpa [← coe_subset_coe] using Set.not_subset
 
-theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p :=
-  Set.exists_of_ssubset
+theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p := by
+  simpa [← coe_ssubset_coe] using Set.exists_of_ssubset
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_le, not_le_iff_exists]
 
-end SetLike
+end OrderedSetLike

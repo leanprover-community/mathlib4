@@ -424,7 +424,7 @@ theorem le_iff_mem_closure (x y : ProjectiveSpectrum 𝒜) :
     x ≤ y ↔ y ∈ closure ({x} : Set (ProjectiveSpectrum 𝒜)) := by
   rw [← as_ideal_le_as_ideal, ← zeroLocus_vanishingIdeal_eq_closure, mem_zeroLocus,
     vanishingIdeal_singleton]
-  simp only [as_ideal_le_as_ideal, coe_subset_coe]
+  simp only [as_ideal_le_as_ideal, OrderedSetLike.coe_subset_coe]
 
 end Order
 

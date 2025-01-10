@@ -94,7 +94,7 @@ theorem coe_iInf {ι : Sort*} {S : ι → Submonoid M} : (↑(⨅ i, S i) : Set 
 instance : CompleteLattice (Submonoid M) :=
   { (completeLatticeOfInf (Submonoid M)) fun _ =>
       IsGLB.of_image (f := (SetLike.coe : Submonoid M → Set M))
-        (@fun S T => show (S : Set M) ≤ T ↔ S ≤ T from SetLike.coe_subset_coe)
+        (@fun S T => show (S : Set M) ≤ T ↔ S ≤ T from OrderedSetLike.coe_subset_coe)
         isGLB_biInf with
     le := (· ≤ ·)
     lt := (· < ·)
@@ -284,7 +284,7 @@ theorem iSup_eq_closure {ι : Sort*} (p : ι → Submonoid M) :
 @[to_additive]
 theorem disjoint_def {p₁ p₂ : Submonoid M} :
     Disjoint p₁ p₂ ↔ ∀ {x : M}, x ∈ p₁ → x ∈ p₂ → x = 1 := by
-  simp_rw [disjoint_iff_inf_le, SetLike.le_def, mem_inf, and_imp, mem_bot]
+  simp_rw [disjoint_iff_inf_le, OrderedSetLike.le_def, mem_inf, and_imp, mem_bot]
 
 @[to_additive]
 theorem disjoint_def' {p₁ p₂ : Submonoid M} :

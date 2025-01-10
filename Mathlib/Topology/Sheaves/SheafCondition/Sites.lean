@@ -56,7 +56,7 @@ theorem iSup_eq_of_mem_grothendieck (hR : Sieve.generate R ∈ Opens.grothendiec
     intro f
     exact f.2.1.le
   intro x hxU
-  rw [Opens.coe_iSup, Set.mem_iUnion]
+  rw [← SetLike.mem_coe, Opens.coe_iSup, Set.mem_iUnion]
   obtain ⟨V, iVU, ⟨W, iVW, iWU, hiWU, -⟩, hxV⟩ := hR x hxU
   exact ⟨⟨W, ⟨iWU, hiWU⟩⟩, iVW.le hxV⟩
 

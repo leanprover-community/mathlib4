@@ -67,7 +67,7 @@ theorem single_mem_supported {s : Set α} {a : α} (b : M) (h : a ∈ s) :
 
 theorem supported_eq_span_single (s : Set α) :
     supported R R s = span R ((fun i => single i 1) '' s) := by
-  refine (span_eq_of_le _ ?_ (SetLike.le_def.2 fun l hl => ?_)).symm
+  refine (span_eq_of_le _ ?_ (OrderedSetLike.le_def.2 fun l hl => ?_)).symm
   · rintro _ ⟨_, hp, rfl⟩
     exact single_mem_supported R 1 hp
   · rw [← l.sum_single]

@@ -34,6 +34,8 @@ instance setLike : SetLike (StarSubsemiring R) R where
   coe {s} := s.carrier
   coe_injective' p q h := by obtain ⟨⟨⟨⟨_, _⟩, _⟩, _⟩, _⟩ := p; cases q; congr
 
+instance : OrderedSetLike (StarSubsemiring R) R := SetLike.toOrderedSetLike
+
 instance starMemClass : StarMemClass (StarSubsemiring R) R where
   star_mem {s} := s.star_mem'
 

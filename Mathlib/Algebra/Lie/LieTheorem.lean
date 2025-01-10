@@ -162,7 +162,7 @@ theorem exists_nontrivial_weightSpace_of_lieIdeal [LieModule.IsTriangularizable 
     (A : LieIdeal k L) (hA : IsCoatom A.toSubmodule)
     (χ₀ : Module.Dual k A) [Nontrivial (weightSpace V χ₀)] :
     ∃ (χ : Module.Dual k L), Nontrivial (weightSpace V χ) := by
-  obtain ⟨z, -, hz⟩ := SetLike.exists_of_lt (hA.lt_top)
+  obtain ⟨z, -, hz⟩ := OrderedSetLike.exists_of_lt (hA.lt_top)
   let e : (k ∙ z) ≃ₗ[k] k := (LinearEquiv.toSpanNonzeroSingleton k L z <| by aesop).symm
   have he : ∀ x, e x • z = x := by simp [e]
   have hA : IsCompl A.toSubmodule (k ∙ z) := isCompl_span_singleton_of_isCoatom_of_not_mem hA hz

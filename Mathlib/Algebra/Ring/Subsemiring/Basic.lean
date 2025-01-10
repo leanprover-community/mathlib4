@@ -228,7 +228,8 @@ theorem sInf_toAddSubmonoid (s : Set (Subsemiring R)) :
 instance : CompleteLattice (Subsemiring R) :=
   { completeLatticeOfInf (Subsemiring R) fun _ =>
       IsGLB.of_image
-        (fun {s t : Subsemiring R} => show (s : Set R) ⊆ t ↔ s ≤ t from SetLike.coe_subset_coe)
+        (fun {s t : Subsemiring R} =>
+          show (s : Set R) ⊆ t ↔ s ≤ t from OrderedSetLike.coe_subset_coe)
         isGLB_biInf with
     bot := ⊥
     bot_le := fun s _ hx =>

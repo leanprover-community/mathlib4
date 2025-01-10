@@ -102,13 +102,13 @@ theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : S
   have J₁F : ¬ (Disjoint (F : Set α) J₁) := by
     intro hdis
     apply J₁S
-    simp only [le_eq_subset, mem_setOf_eq, SetLike.coe_subset_coe, S]
+    simp only [le_eq_subset, mem_setOf_eq, OrderedSetLike.coe_subset_coe, S]
     exact ⟨J₁.isIdeal, le_trans IJ' le_sup_left, hdis⟩
 
   have J₂F : ¬ (Disjoint (F : Set α) J₂) := by
     intro hdis
     apply J₂S
-    simp only [le_eq_subset, mem_setOf_eq, SetLike.coe_subset_coe, S]
+    simp only [le_eq_subset, mem_setOf_eq, OrderedSetLike.coe_subset_coe, S]
     exact ⟨J₂.isIdeal, le_trans IJ' le_sup_left, hdis⟩
 
   -- Thus, pick cᵢ ∈ F ∩ Jᵢ.

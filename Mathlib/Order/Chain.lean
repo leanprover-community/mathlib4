@@ -288,6 +288,8 @@ instance : SetLike (Flag α) α where
     cases t
     congr
 
+instance : OrderedSetLike (Flag α) α := SetLike.toOrderedSetLike
+
 @[ext]
 theorem ext : (s : Set α) = t → s = t :=
   SetLike.ext'

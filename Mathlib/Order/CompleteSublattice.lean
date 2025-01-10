@@ -60,6 +60,8 @@ instance instSetLike : SetLike (CompleteSublattice α) α where
   coe L := L.carrier
   coe_injective' L M h := by cases L; cases M; congr; exact SetLike.coe_injective' h
 
+instance : OrderedSetLike (CompleteSublattice α) α := SetLike.toOrderedSetLike
+
 instance instBot : Bot L where
   bot := ⟨⊥, by simpa using L.sSupClosed' <| empty_subset _⟩
 

@@ -102,6 +102,8 @@ attribute [coe] Substructure.carrier
 instance instSetLike : SetLike (L.Substructure M) M :=
   ⟨Substructure.carrier, fun p q h => by cases p; cases q; congr⟩
 
+instance : OrderedSetLike (L.Substructure M) M := SetLike.toOrderedSetLike
+
 /-- See Note [custom simps projection] -/
 def Simps.coe (S : L.Substructure M) : Set M :=
   S
@@ -206,7 +208,8 @@ theorem coe_iInf {ι : Sort*} {S : ι → L.Substructure M} :
 instance instCompleteLattice : CompleteLattice (L.Substructure M) :=
   { completeLatticeOfInf (L.Substructure M) fun _ =>
       IsGLB.of_image
-        (fun {S T : L.Substructure M} => show (S : Set M) ≤ T ↔ S ≤ T from SetLike.coe_subset_coe)
+        (fun {S T : L.Substructure M} =>
+          show (S : Set M) ≤ T ↔ S ≤ T from OrderedSetLike.coe_subset_coe)
         isGLB_biInf with
     le := (· ≤ ·)
     lt := (· < ·)
@@ -797,7 +800,7 @@ theorem range_comp (f : M →[L] N) (g : N →[L] P) : range (g.comp f : M →[L
   SetLike.coe_injective (Set.range_comp g f)
 
 theorem range_comp_le_range (f : M →[L] N) (g : N →[L] P) : range (g.comp f : M →[L] P) ≤ range g :=
-  SetLike.coe_mono (Set.range_comp_subset_range f g)
+  OrderedSetLike.coe_mono (Set.range_comp_subset_range f g)
 
 theorem range_eq_top {f : M →[L] N} : range f = ⊤ ↔ Function.Surjective f := by
   rw [SetLike.ext'_iff, range_coe, coe_top, Set.range_eq_univ]
@@ -806,7 +809,7 @@ theorem range_le_iff_comap {f : M →[L] N} {p : L.Substructure N} : range f ≤
   rw [range_eq_map, map_le_iff_le_comap, eq_top_iff]
 
 theorem map_le_range {f : M →[L] N} {p : L.Substructure M} : map f p ≤ range f :=
-  SetLike.coe_mono (Set.image_subset_range f p)
+  OrderedSetLike.coe_mono (Set.image_subset_range f p)
 
 /-- The substructure of elements `x : M` such that `f x = g x` -/
 def eqLocus (f g : M →[L] N) : Substructure L M where

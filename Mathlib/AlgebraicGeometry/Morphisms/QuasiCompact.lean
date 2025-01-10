@@ -102,7 +102,7 @@ theorem isCompact_basicOpen (X : Scheme) {U : X.Opens} (hU : IsCompact (U : Set 
   haveI : Finite s := hs.to_subtype
   refine ⟨Set.range g, Set.finite_range g, ?_⟩
   refine (Set.inter_eq_right.mpr
-            (SetLike.coe_subset_coe.2 <| RingedSpace.basicOpen_le _ _)).symm.trans ?_
+            (OrderedSetLike.coe_subset_coe.2 <| RingedSpace.basicOpen_le _ _)).symm.trans ?_
   rw [e, Set.iUnion₂_inter]
   apply le_antisymm <;> apply Set.iUnion₂_subset
   · intro i hi

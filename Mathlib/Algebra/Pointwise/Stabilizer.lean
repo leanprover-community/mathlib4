@@ -62,7 +62,8 @@ lemma stabilizer_mul_self (s : Set G) : (stabilizer G s : Set G) * s = s := by
 @[to_additive]
 lemma stabilizer_inf_stabilizer_le_stabilizer_apply₂ {f : Set α → Set α → Set α}
     (hf : ∀ a : G, a • f s t = f (a • s) (a • t)) :
-    stabilizer G s ⊓ stabilizer G t ≤ stabilizer G (f s t) := by aesop (add simp [SetLike.le_def])
+    stabilizer G s ⊓ stabilizer G t ≤ stabilizer G (f s t) := by
+  aesop (add simp [OrderedSetLike.le_def])
 
 @[to_additive]
 lemma stabilizer_inf_stabilizer_le_stabilizer_union :

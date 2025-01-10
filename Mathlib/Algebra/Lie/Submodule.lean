@@ -55,6 +55,8 @@ instance : SetLike (LieSubmodule R L M) M where
   coe s := s.carrier
   coe_injective' N O h := by cases N; cases O; congr; exact SetLike.coe_injective' h
 
+instance : OrderedSetLike (LieSubmodule R L M) M := SetLike.toOrderedSetLike
+
 instance : AddSubgroupClass (LieSubmodule R L M) M where
   add_mem {N} _ _ := N.add_mem'
   zero_mem N := N.zero_mem'
@@ -529,9 +531,9 @@ theorem iSup_toSubmodule {ι} (p : ι → LieSubmodule R L M) :
 
 /-- The set of Lie submodules of a Lie module form a complete lattice. -/
 instance : CompleteLattice (LieSubmodule R L M) :=
-  { toSubmodule_injective.completeLattice toSubmodule sup_toSubmodule inf_toSubmodule
-      sSup_toSubmodule_eq_iSup sInf_toSubmodule_eq_iInf rfl rfl with
-    toPartialOrder := SetLike.instPartialOrder }
+  { SetLike.toOrderedSetLike,
+    toSubmodule_injective.completeLattice toSubmodule sup_toSubmodule inf_toSubmodule
+      sSup_toSubmodule_eq_iSup sInf_toSubmodule_eq_iInf rfl rfl with }
 
 theorem mem_iSup_of_mem {ι} {b : M} {N : ι → LieSubmodule R L M} (i : ι) (h : b ∈ N i) :
     b ∈ ⨆ i, N i :=
@@ -775,7 +777,7 @@ theorem span_empty : lieSpan R L (∅ : Set M) = ⊥ :=
 
 @[simp]
 theorem span_univ : lieSpan R L (Set.univ : Set M) = ⊤ :=
-  eq_top_iff.2 <| SetLike.le_def.2 <| subset_lieSpan
+  eq_top_iff.2 <| OrderedSetLike.le_def.2 <| subset_lieSpan
 
 theorem lieSpan_eq_bot_iff : lieSpan R L s = ⊥ ↔ ∀ m ∈ s, m = (0 : M) := by
   rw [_root_.eq_bot_iff, lieSpan_le, bot_coe, subset_singleton_iff]
@@ -792,7 +794,7 @@ lemma isCompactElement_lieSpan_singleton (m : M) :
     CompleteLattice.IsCompactElement (lieSpan R L {m}) := by
   rw [CompleteLattice.isCompactElement_iff_le_of_directed_sSup_le]
   intro s hne hdir hsup
-  replace hsup : m ∈ (↑(sSup s) : Set M) := (SetLike.le_def.mp hsup) (subset_lieSpan rfl)
+  replace hsup : m ∈ (↑(sSup s) : Set M) := (OrderedSetLike.le_def.mp hsup) (subset_lieSpan rfl)
   suffices (↑(sSup s) : Set M) = ⋃ N ∈ s, ↑N by
     obtain ⟨N : LieSubmodule R L M, hN : N ∈ s, hN' : m ∈ N⟩ := by
       simp_rw [this, Set.mem_iUnion, SetLike.mem_coe, exists_prop] at hsup; assumption
@@ -1051,19 +1053,18 @@ theorem comap_map_le : I ≤ comap f (map f I) := by rw [← map_le_iff_le_comap
 
 @[mono]
 theorem map_mono : Monotone (map f) := fun I₁ I₂ h ↦ by
-  rw [SetLike.le_def] at h
+  rw [OrderedSetLike.le_def] at h
   apply LieSubmodule.lieSpan_mono (Set.image_subset (⇑f) h)
 
 @[mono]
 theorem comap_mono : Monotone (comap f) := fun J₁ J₂ h ↦ by
-  rw [← SetLike.coe_subset_coe] at h ⊢
-  dsimp only [SetLike.coe]
-  exact Set.preimage_mono h
+  rw [← OrderedSetLike.coe_subset_coe] at h ⊢
+  apply Set.preimage_mono (f := f) h
 
 theorem map_of_image (h : f '' I = J) : I.map f = J := by
   apply le_antisymm
   · erw [LieSubmodule.lieSpan_le, Submodule.map_coe, h]
-  · rw [← SetLike.coe_subset_coe, ← h]; exact LieSubmodule.subset_lieSpan
+  · rw [← OrderedSetLike.coe_subset_coe, ← h]; exact LieSubmodule.subset_lieSpan
 
 /-- Note that this is not a special case of `LieSubmodule.subsingleton_of_bot`. Indeed, given
 `I : LieIdeal R L`, in general the two lattices `LieIdeal R I` and `LieSubmodule R L I` are
@@ -1264,7 +1265,7 @@ theorem map_comap_eq (h : f.IsIdealMorphism) : map f (comap f J) = f.idealRange 
   apply le_antisymm
   · rw [le_inf_iff]; exact ⟨f.map_le_idealRange _, map_comap_le⟩
   · rw [f.isIdealMorphism_def] at h
-    rw [← SetLike.coe_subset_coe, LieSubmodule.inf_coe, ← coe_toLieSubalgebra, h]
+    rw [← OrderedSetLike.coe_subset_coe, LieSubmodule.inf_coe, ← coe_toLieSubalgebra, h]
     rintro y ⟨⟨x, h₁⟩, h₂⟩; rw [← h₁] at h₂ ⊢; exact mem_map h₂
 
 @[simp]

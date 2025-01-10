@@ -118,7 +118,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
     exact isOpen_inter_eq_singleton_of_mem_discrete (zero_mem L)
   refine IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed Z (fun n => ?_)
     (fun n => ?_) ((S 0).isCompact.inter_right h_clos) (fun n => (S n).isClosed.inter h_clos)
-  · refine Set.inter_subset_inter_left _ (SetLike.coe_subset_coe.mpr ?_)
+  · refine Set.inter_subset_inter_left _ (OrderedSetLike.coe_subset_coe.mpr ?_)
     refine ConvexBody.smul_le_of_le K h_zero ?_
     rw [add_le_add_iff_left]
     exact le_of_lt <| (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.1 (Nat.lt.base n)

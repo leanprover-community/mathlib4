@@ -55,7 +55,7 @@ theorem spanNorm_eq_bot_iff [IsDomain R] [IsDomain S] [Module.Free R S] [Module.
   simp only [spanNorm, Ideal.span_eq_bot, Set.mem_image, SetLike.mem_coe, forall_exists_index,
     and_imp, forall_apply_eq_imp_iff₂,
     Algebra.norm_eq_zero_iff_of_basis (Module.Free.chooseBasis R S), @eq_bot_iff _ _ _ I,
-    SetLike.le_def]
+    OrderedSetLike.le_def]
   rfl
 
 variable (R)

@@ -46,7 +46,8 @@ lemma coe_set_eq_one [Group G] {s : Subgroup G} : (s : Set G) = 1 ↔ s = ⊥ :=
   (SetLike.ext'_iff.trans (by rfl)).symm
 
 @[to_additive (attr := simp)]
-lemma op_smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :
+lemma op_smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G]
+    {s : S} {a : G} (ha : a ∈ s) :
     MulOpposite.op a • (s : Set G) = s := by
   ext; simp [Set.mem_smul_set_iff_inv_smul_mem, mul_mem_cancel_right, ha]
 
@@ -199,8 +200,8 @@ theorem iSup_induction' {ι : Sort*} (S : ι → Subgroup G) {C : ∀ x, (x ∈ 
 @[to_additive]
 theorem closure_mul_le (S T : Set G) : closure (S * T) ≤ closure S ⊔ closure T :=
   sInf_le fun _x ⟨_s, hs, _t, ht, hx⟩ => hx ▸
-    (closure S ⊔ closure T).mul_mem (SetLike.le_def.mp le_sup_left <| subset_closure hs)
-      (SetLike.le_def.mp le_sup_right <| subset_closure ht)
+    (closure S ⊔ closure T).mul_mem (OrderedSetLike.le_def.mp le_sup_left <| subset_closure hs)
+      (OrderedSetLike.le_def.mp le_sup_right <| subset_closure ht)
 
 @[to_additive]
 lemma closure_pow_le : ∀ {n}, n ≠ 0 → closure (s ^ n) ≤ closure s

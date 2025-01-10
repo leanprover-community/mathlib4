@@ -47,7 +47,7 @@ noncomputable def extend (hs : LinearIndependent K ((↑) : s → V)) :
     Basis (hs.extend (subset_univ s)) K V :=
   Basis.mk
     (@LinearIndependent.restrict_of_comp_subtype _ _ _ id _ _ _ _ (hs.linearIndependent_extend _))
-    (SetLike.coe_subset_coe.mp <| by simpa using hs.subset_span_extend (subset_univ s))
+    (OrderedSetLike.coe_subset_coe.mp <| by simpa using hs.subset_span_extend (subset_univ s))
 
 theorem extend_apply_self (hs : LinearIndependent K ((↑) : s → V)) (x : hs.extend _) :
     Basis.extend hs x = x :=
@@ -280,7 +280,7 @@ open Submodule LinearMap
 `f : V →ₗ[K] K` such that `p ≤ ker f`. -/
 theorem Submodule.exists_le_ker_of_lt_top (p : Submodule K V) (hp : p < ⊤) :
     ∃ (f : V →ₗ[K] K), f ≠ 0 ∧ p ≤ ker f := by
-  rcases SetLike.exists_of_lt hp with ⟨v, -, hpv⟩; clear hp
+  rcases OrderedSetLike.exists_of_lt hp with ⟨v, -, hpv⟩; clear hp
   rcases (LinearPMap.supSpanSingleton ⟨p, 0⟩ v (1 : K) hpv).toFun.exists_extend with ⟨f, hf⟩
   refine ⟨f, ?_, ?_⟩
   · rintro rfl
