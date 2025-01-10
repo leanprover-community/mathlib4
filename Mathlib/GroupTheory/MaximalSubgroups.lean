@@ -39,7 +39,7 @@ abbrev IsMaximal (K : Subgroup G) : Prop :=
   IsCoatom K
 
 @[to_additive]
-theorem isMaximal_def {K : Subgroup G} : K.IsMaximal ↔ IsCoatom K := Eq.to_iff rfl
+theorem isMaximal_def {K : Subgroup G} : K.IsMaximal ↔ IsCoatom K := Iff.rfl
 
 @[to_additive]
 theorem IsMaximal.ne_top {K : Subgroup G} (h : K.IsMaximal) : K ≠ ⊤ := h.1
@@ -50,7 +50,7 @@ theorem IsMaximal.eq_top_of_lt {K H : Subgroup G} (h : K.IsMaximal) (hH : K < H)
 
 @[to_additive]
 theorem isMaximal_iff {K : Subgroup G} :
-    K.IsMaximal ↔ K ≠ ⊤ ∧ ∀ (H : Subgroup G) (g), K ≤ H → g ∉ K → g ∈ H → H = ⊤ :=
+    K.IsMaximal ↔ K ≠ ⊤ ∧ ∀ H g, K ≤ H → g ∉ K → g ∈ H → H = ⊤ :=
   SetLike.isCoatom_iff
 
 @[to_additive]
