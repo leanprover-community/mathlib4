@@ -4,9 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Order.Ring.Defs
-import Mathlib.Algebra.Group.Int.Even
-import Mathlib.Algebra.Group.Int.Units
-import Mathlib.Algebra.Group.Int.TypeTags
 import Mathlib.Data.Nat.Dist
 import Mathlib.Data.Ordmap.Ordnode
 import Mathlib.Tactic.Abel
