@@ -100,27 +100,6 @@ theorem adjoin_simple_toSubalgebra_of_integral (hα : IsIntegral F α) :
   rintro x (rfl : x = α)
   rwa [isAlgebraic_iff_isIntegral]
 
-/-- Characterize `IsSplittingField` with `IntermediateField.adjoin` instead of `Algebra.adjoin`. -/
-theorem _root_.isSplittingField_iff_intermediateField {p : F[X]} :
-    p.IsSplittingField F E ↔ p.Splits (algebraMap F E) ∧ adjoin F (p.rootSet E) = ⊤ := by
-  rw [← toSubalgebra_injective.eq_iff,
-      adjoin_algebraic_toSubalgebra fun _ ↦ isAlgebraic_of_mem_rootSet]
-  exact ⟨fun ⟨spl, adj⟩ ↦ ⟨spl, adj⟩, fun ⟨spl, adj⟩ ↦ ⟨spl, adj⟩⟩
-
--- Note: p.Splits (algebraMap F E) also works
-theorem isSplittingField_iff {p : F[X]} {K : IntermediateField F E} :
-    p.IsSplittingField F K ↔ p.Splits (algebraMap F K) ∧ K = adjoin F (p.rootSet E) := by
-  suffices _ → (Algebra.adjoin F (p.rootSet K) = ⊤ ↔ K = adjoin F (p.rootSet E)) by
-    exact ⟨fun h ↦ ⟨h.1, (this h.1).mp h.2⟩, fun h ↦ ⟨h.1, (this h.1).mpr h.2⟩⟩
-  rw [← toSubalgebra_injective.eq_iff,
-      adjoin_algebraic_toSubalgebra fun x ↦ isAlgebraic_of_mem_rootSet]
-  refine fun hp ↦ (adjoin_rootSet_eq_range hp K.val).symm.trans ?_
-  rw [← K.range_val, eq_comm]
-
-theorem adjoin_rootSet_isSplittingField {p : F[X]} (hp : p.Splits (algebraMap F E)) :
-    p.IsSplittingField F (adjoin F (p.rootSet E)) :=
-  isSplittingField_iff.mpr ⟨splits_of_splits hp fun _ hx ↦ subset_adjoin F (p.rootSet E) hx, rfl⟩
-
 section Supremum
 
 variable {K L : Type*} [Field K] [Field L] [Algebra K L] (E1 E2 : IntermediateField K L)
