@@ -5,6 +5,8 @@ Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Int.Units
+import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Opposite
 import Mathlib.Data.List.Dedup
 import Mathlib.Data.List.Flatten
 import Mathlib.Data.List.Pairwise

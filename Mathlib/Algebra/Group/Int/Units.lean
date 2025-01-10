@@ -3,7 +3,9 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
+import Mathlib.Tactic.Tauto
 import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Nat.Units
 
 /-!
