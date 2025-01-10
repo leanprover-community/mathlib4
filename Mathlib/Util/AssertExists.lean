@@ -78,8 +78,8 @@ elab "assert_exists " n:ident : command => do
   let _ ← liftCoreM <| realizeGlobalConstNoOverloadWithInfo n
 
 /--
-`assert_not_exists n` is a user command that asserts that a declaration named `n` *does not exist*
-in the current import scope.
+`assert_not_exists d₁ d₂ ... dₙ` is a user command that asserts that the declarations named
+`d₁ d₂ ... dₙ` *does not exist* in the current import scope.
 
 Be careful to use names (e.g. `Rat`) rather than notations (e.g. `ℚ`).
 
