@@ -224,7 +224,7 @@ namespace Pretriangulated.Opposite
 open Functor in
 /-- If `F` is triangulated, so is `F.op`.
 -/
-scoped instance isTriangulated_op [F.IsTriangulated] : F.op.IsTriangulated where
+scoped instance functor_isTriangulated_op [F.IsTriangulated] : F.op.IsTriangulated where
   map_distinguished T dT := by
     rw [mem_distTriang_op_iff]
     exact Pretriangulated.isomorphic_distinguished _
