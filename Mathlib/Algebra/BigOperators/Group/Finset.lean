@@ -544,6 +544,12 @@ theorem prod_disj_sum (s : Finset α) (t : Finset γ) (f : α ⊕ γ → β) :
   rfl
 
 @[to_additive]
+lemma prod_sum_eq_prod_toLeft_mul_prod_toRight (s : Finset (α ⊕ γ)) (f : α ⊕ γ → β) :
+    ∏ x ∈ s, f x = (∏ x ∈ s.toLeft, f (Sum.inl x)) * ∏ x ∈ s.toRight, f (Sum.inr x) := by
+  rw [← Finset.toLeft_disjSum_toRight (u := s), Finset.prod_disj_sum, Finset.toLeft_disjSum,
+    Finset.toRight_disjSum]
+
+@[to_additive]
 theorem prod_sum_elim (s : Finset α) (t : Finset γ) (f : α → β) (g : γ → β) :
     ∏ x ∈ s.disjSum t, Sum.elim f g x = (∏ x ∈ s, f x) * ∏ x ∈ t, g x := by simp
 
@@ -946,8 +952,8 @@ theorem prod_eq_mul {s : Finset α} {f : α → β} (a b : α) (hn : a ≠ b)
 "A sum over `s.subtype p` equals one over `{x ∈ s | p x}`."]
 theorem prod_subtype_eq_prod_filter (f : α → β) {p : α → Prop} [DecidablePred p] :
     ∏ x ∈ s.subtype p, f x = ∏ x ∈ s with p x, f x := by
-  conv_lhs => erw [← prod_map (s.subtype p) (Function.Embedding.subtype _) f]
-  exact prod_congr (subtype_map _) fun x _hx => rfl
+  have := prod_map (s.subtype p) (Function.Embedding.subtype _) f
+  simp_all
 
 /-- If all elements of a `Finset` satisfy the predicate `p`, a product
 over `s.subtype p` equals that product over `s`. -/

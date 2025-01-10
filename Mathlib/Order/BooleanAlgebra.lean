@@ -512,10 +512,9 @@ abbrev GeneralizedBooleanAlgebra.toBooleanAlgebra [GeneralizedBooleanAlgebra α]
   compl a := ⊤ \ a
   inf_compl_le_bot _ := disjoint_sdiff_self_right.le_bot
   top_le_sup_compl _ := le_sup_sdiff
-  sdiff_eq _ _ := by
-      -- Porting note: changed `rw` to `erw` here.
-      -- https://github.com/leanprover-community/mathlib4/issues/5164
-      erw [← inf_sdiff_assoc, inf_top_eq]
+  sdiff_eq a b := by
+    change _ = a ⊓ (⊤ \ b)
+    rw [← inf_sdiff_assoc, inf_top_eq]
 
 section BooleanAlgebra
 
