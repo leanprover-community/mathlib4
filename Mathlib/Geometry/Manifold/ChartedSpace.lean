@@ -849,11 +849,9 @@ theorem piChartedSpace_chartAt {ι : Type*} [Finite ι] (H : ι → Type*)
     chartAt (H := ModelPi H) f = PartialHomeomorph.pi fun i ↦ chartAt (H i) (f i) :=
   rfl
 
-variable [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
-    [Nonempty H] [Nonempty M] [Nonempty M']
-
 /-- The disjoint union of two charted spaces on `H` is a charted space over `H`. -/
-def ChartedSpace.sum (cm : ChartedSpace H M) (cm' : ChartedSpace H M') :
+instance ChartedSpace.sum [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
+    [cm : ChartedSpace H M] [cm' : ChartedSpace H M'] [Nonempty H] [Nonempty M] [Nonempty M']:
     ChartedSpace H (M ⊕ M') where
   atlas := ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inl) '' cm.atlas) ∪
     ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inr) '' cm'.atlas)
@@ -882,24 +880,6 @@ def ChartedSpace.sum (cm : ChartedSpace H M) (cm' : ChartedSpace H M') :
       right
       let x := Sum.getRight p h'
       use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
-
-lemma ChartedSpace.sum_chartAt_inl (cm : ChartedSpace H M) (cm' : ChartedSpace H M') (x : M) :
-    (cm.sum cm').chartAt (Sum.inl x) = (cm.chartAt x).lift_openEmbedding IsOpenEmbedding.inl := rfl
-
-lemma ChartedSpace.sum_chartAt_inr (cm : ChartedSpace H M) (cm' : ChartedSpace H M') (x' : M') :
-    (cm.sum cm').chartAt (Sum.inr x') = (cm'.chartAt x').lift_openEmbedding IsOpenEmbedding.inr :=
-  rfl
-
-attribute [instance] ChartedSpace.sum
-
-lemma ChartedSpace.mem_atlas_sum (cm : ChartedSpace H M) (cm' : ChartedSpace H M')
-    {e : PartialHomeomorph (M ⊕ M') H} (he : e ∈ (cm.sum cm').atlas) :
-    (∃ f : PartialHomeomorph M H, f ∈ cm.atlas ∧ e = (f.lift_openEmbedding IsOpenEmbedding.inl))
-    ∨ (∃ f' : PartialHomeomorph M' H, f' ∈ cm'.atlas ∧
-      e = (f'.lift_openEmbedding IsOpenEmbedding.inr)) := by
-    obtain (⟨x, hx, hxe⟩ | ⟨x, hx, hxe⟩) := he
-    · rw [← hxe]; left; use x
-    · rw [← hxe]; right; use x
 
 end ChartedSpace
 
