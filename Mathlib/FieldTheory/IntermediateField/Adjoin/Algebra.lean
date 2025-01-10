@@ -9,7 +9,7 @@ import Mathlib.FieldTheory.IntermediateField.Algebraic
 /-!
 # Adjoining Elements to Fields
 
-This file relates `IntermediateField.Adjoin` to `Algebra.adjoin`.
+This file relates `IntermediateField.adjoin` to `Algebra.adjoin`.
 -/
 
 open Module Polynomial
