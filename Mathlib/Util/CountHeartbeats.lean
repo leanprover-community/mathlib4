@@ -79,7 +79,8 @@ elab "count_heartbeats! " n:(num)? "in" ppLine tac:tacticSeq : tactic => do
   logVariation counts
 
 /--
-Count the heartbeats used in the enclosed command.
+`count_heartbeats in cmd` counts the heartbeats used in the enclosed command `cmd`.
+Use `count_heartbeats` to count the heartbeats in *all* the following declarations.
 
 This is most useful for setting sufficient but reasonable limits via `set_option maxHeartbeats`
 for long running declarations.
