@@ -89,7 +89,7 @@ variable [BraidedCategory V]
 
 instance : BraidedCategory (Action V G) :=
   braidedCategoryOfFaithful (Action.forget V G) (fun X Y => mkIso (β_ _ _)
-    (fun g => by simp [FunctorCategoryEquivalence.inverse])) (by aesop_cat)
+    (fun g => by simp [FunctorCategoryEquivalence.inverse])) (by simp)
 
 /-- When `V` is braided the forgetful functor `Action V G` to `V` is braided. -/
 instance : (Action.forget V G).Braided where

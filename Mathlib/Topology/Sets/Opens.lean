@@ -118,7 +118,7 @@ protected theorem isOpen (U : Opens α) : IsOpen (U : Set α) :=
 /-- See Note [custom simps projection]. -/
 def Simps.coe (U : Opens α) : Set α := U
 
-initialize_simps_projections Opens (carrier → coe)
+initialize_simps_projections Opens (carrier → coe, as_prefix coe)
 
 /-- The interior of a set, as an element of `Opens`. -/
 @[simps]

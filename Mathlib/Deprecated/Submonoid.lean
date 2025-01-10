@@ -184,7 +184,6 @@ theorem IsSubmonoid.pow_mem {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : ∀ {n 
       the `AddSubmonoid`."]
 theorem IsSubmonoid.powers_subset {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : powers a ⊆ s :=
   fun _ ⟨_, hx⟩ => hx ▸ hs.pow_mem h
-@[deprecated (since := "2024-02-21")] alias IsSubmonoid.power_subset := IsSubmonoid.powers_subset
 
 end powers
 
