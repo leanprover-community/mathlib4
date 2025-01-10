@@ -13,6 +13,7 @@ import Mathlib.Data.List.Perm.Basic
 import Mathlib.Data.List.Range
 import Mathlib.Data.List.Rotate
 import Mathlib.Data.List.ProdSigma
+import Mathlib.Algebra.Group.Opposite
 
 /-!
 # Sums and products from lists
