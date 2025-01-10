@@ -268,23 +268,11 @@ theorem mul_left_self_sup : J * I ⊔ I = I :=
 theorem mul_le_right [I.IsTwoSided] : I * J ≤ I :=
   mul_le.2 fun _ hr _ _ ↦ I.mul_mem_right _ hr
 
-#adaptation_note
-/--
-On nightly-2024-11-12, we had to add `nolint simpNF` to the following lemma,
-as otherwise we get a deterministic timeout in typeclass inference.
-This should be investigated.
--/
-@[simp, nolint simpNF]
+@[simp]
 theorem sup_mul_right_self [I.IsTwoSided] : I ⊔ I * J = I :=
   sup_eq_left.2 mul_le_right
 
-#adaptation_note
-/--
-On nightly-2024-11-12, we had to add `nolint simpNF` to the following lemma,
-as otherwise we get a deterministic timeout in typeclass inference.
-This should be investigated.
--/
-@[simp, nolint simpNF]
+@[simp]
 theorem mul_right_self_sup [I.IsTwoSided] : I * J ⊔ I = I :=
   sup_eq_right.2 mul_le_right
 
