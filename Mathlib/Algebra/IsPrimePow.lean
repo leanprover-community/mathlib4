@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.Algebra.Associated.Basic
-import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Nat
-import Mathlib.Data.Nat.PrimeFin
-import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Order.Nat
+import Mathlib.Data.Nat.Prime.Basic
 
 /-!
 # Prime powers
