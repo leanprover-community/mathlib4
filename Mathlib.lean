@@ -2959,6 +2959,7 @@ import Mathlib.Data.Set.Sups
 import Mathlib.Data.Set.SymmDiff
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Data.SetLike.Closure
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.Data.Setoid.Basic
 import Mathlib.Data.Setoid.Partition
