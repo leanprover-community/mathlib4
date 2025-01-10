@@ -33,8 +33,9 @@ variable {G : Type*} [Group G]
 
 namespace Subgroup
 
-/-- A subgroup is maximal if it is maximal in the collection of proper subgroups. -/
-@[to_additive]
+/-- A subgroup is maximal if it is maximal in the collection of proper subgroups -/
+@[to_additive
+  "An additive subgroup is maximal if it is maximal in the collection of proper additive subgroups"]
 abbrev IsMaximal (K : Subgroup G) : Prop :=
   IsCoatom K
 
