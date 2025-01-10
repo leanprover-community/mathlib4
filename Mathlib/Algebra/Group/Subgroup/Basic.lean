@@ -642,9 +642,7 @@ theorem map_equiv_normalizer_eq (H : Subgroup G) (f : G ≃* N) :
   simp only [mem_normalizer_iff, mem_map_equiv]
   rw [f.toEquiv.forall_congr]
   intro
-  erw [f.toEquiv.symm_apply_apply]
-  simp only [map_mul, map_inv]
-  erw [f.toEquiv.symm_apply_apply]
+  simp
 
 /-- The image of the normalizer is equal to the normalizer of the image of a bijective
   function. -/

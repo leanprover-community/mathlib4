@@ -85,10 +85,9 @@ theorem toNat_le_toNat (hcd : c ≤ d) (hd : d < ℵ₀) : toNat c ≤ toNat d :
 theorem toNat_lt_toNat (hcd : c < d) (hd : d < ℵ₀) : toNat c < toNat d :=
   toNat_strictMonoOn (hcd.trans hd) hd hcd
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] :
-    Cardinal.toNat (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+    Cardinal.toNat ofNat(n) = OfNat.ofNat n :=
   toNat_natCast n
 
 /-- `toNat` has a right-inverse: coercion. -/

@@ -46,6 +46,7 @@ noncomputable section
 
 open NNReal ENNReal MeasureTheory
 
+open scoped Function -- required for scoped `on` notation
 namespace MeasureTheory
 
 variable {α β : Type*} {m : MeasurableSpace α}

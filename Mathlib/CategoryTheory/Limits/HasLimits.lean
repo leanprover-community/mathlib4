@@ -458,14 +458,16 @@ def lim : (J ⥤ C) ⥤ C where
   map α := limMap α
   map_id F := by
     apply Limits.limit.hom_ext; intro j
-    erw [limMap_π, Category.id_comp, Category.comp_id]
+    simp
   map_comp α β := by
     apply Limits.limit.hom_ext; intro j
-    erw [assoc, IsLimit.fac, IsLimit.fac, ← assoc, IsLimit.fac, assoc]; rfl
+    simp [assoc]
 
 end
 
 variable {G : J ⥤ C} (α : F ⟶ G)
+
+theorem limMap_eq : limMap α = lim.map α := rfl
 
 theorem limit.map_pre [HasLimitsOfShape K C] (E : K ⥤ J) :
     lim.map α ≫ limit.pre G E = limit.pre F E ≫ lim.map (whiskerLeft E α) := by
@@ -991,6 +993,8 @@ def colim : (J ⥤ C) ⥤ C where
 end
 
 variable {G : J ⥤ C} (α : F ⟶ G)
+
+theorem colimMap_eq : colimMap α = colim.map α := rfl
 
 @[reassoc]
 theorem colimit.ι_map (j : J) : colimit.ι F j ≫ colim.map α = α.app j ≫ colimit.ι G j := by simp
