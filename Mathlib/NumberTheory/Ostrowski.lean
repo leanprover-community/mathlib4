@@ -130,7 +130,7 @@ lemma exists_minimal_nat_zero_lt_and_lt_one :
   -- There is a positive integer with absolute value different from one.
   obtain ⟨n, hn1, hn2⟩ : ∃ n : ℕ, n ≠ 0 ∧ f n ≠ 1 := by
     contrapose! hf_nontriv
-    refine (isNontrivial_iff_not_eq_trivial f).not_left.mpr <| eq_on_nat_iff_eq.mp fun n ↦ ?_
+    refine (isNontrivial_iff_ne_trivial f).not_left.mpr <| eq_on_nat_iff_eq.mp fun n ↦ ?_
     rcases eq_or_ne n 0 with rfl | hn
     · simp
     · simp [hf_nontriv, hn]
