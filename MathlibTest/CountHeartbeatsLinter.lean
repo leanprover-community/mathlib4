@@ -1,7 +1,7 @@
 import Mathlib.Util.CountHeartbeats
 
 -- sets the `countHeartbeats` linter option to `true`
-#count_heartbeats
+count_heartbeats
 
 mutual -- mutual declarations get ignored
 theorem XY : True := trivial

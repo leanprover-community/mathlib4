@@ -188,13 +188,13 @@ namespace Mathlib.Linter
 /--
 The "countHeartbeats" linter counts the hearbeats of every declaration.
 
-The effect of the linter is similar to `#count_hearbeats in xxx`, except that it applies
+The effect of the linter is similar to `count_heartbeats in xxx`, except that it applies
 to all declarations.
 
 Note that the linter only counts heartbeats in "top-level" declarations:
 it looks inside `set_option ... in`, but not, for instance, inside `mutual` blocks.
 
-There is a convenience notation `#count_heartbeats` that simply sets the linter option to true.
+There is a convenience notation `count_heartbeats` that simply sets the linter option to true.
 -/
 register_option linter.countHeartbeats : Bool := {
   defValue := false
@@ -220,7 +220,7 @@ def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
 initialize addLinter countHeartbeatsLinter
 
 @[inherit_doc Mathlib.Linter.linter.countHeartbeats]
-macro "#count_heartbeats" : command =>
+macro "count_heartbeats" : command =>
   `(command| set_option linter.countHeartbeats true)
 
 end CountHeartbeats
