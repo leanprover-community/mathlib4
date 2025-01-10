@@ -95,10 +95,10 @@ theorem mulExpNegSq_deriv_le_one (x : ℝ) : ‖deriv (fun y ↦ y * (-y * y).ex
       apply mul_le_mul_of_nonneg_right this (mul_self_nonneg x)
     apply le_trans twomul_le_exp _
     simp only [le_add_iff_nonneg_right, zero_le_one]
-  · apply le_trans (Real.one_le_exp (mul_self_nonneg x)) _
-    simp [(mul_self_nonneg x)]
+  · apply le_trans (Real.one_le_exp (mul_self_nonneg x)) (le_add_of_nonneg_right _)
+    simp [hy, (mul_self_nonneg x)]
 
-theorem mulExpNegSq_lipschitz1 : LipschitzWith 1 mulExpNegSq := by
+theorem mulExpNegSq_lipschitzWith_one : LipschitzWith 1 mulExpNegSq := by
   apply lipschitzWith_of_nnnorm_deriv_le
       (Differentiable.mul differentiable_id' expNegSq_differentiable) mulExpNegSq_deriv_le_one
 
@@ -171,7 +171,7 @@ theorem mulExpNegMulSq_lipschitz {f g : E → ℝ} (hf: Continuous f) (hg: Conti
     abs_of_pos (inv_pos_of_pos (Real.sqrt_pos_of_pos hε)), ← one_mul (abs ((g x) - (f x)))]
   rw [← inv_mul_cancel₀ (ne_of_gt (Real.sqrt_pos_of_pos hε)), mul_assoc]
   rw [mul_le_mul_left (inv_pos_of_pos (Real.sqrt_pos_of_pos hε))]
-  have hlip := mulExpNegSq_lipschitz1 (ε.sqrt * g x) (ε.sqrt * f x)
+  have hlip := mulExpNegSq_lipschitzWith_one (ε.sqrt * g x) (ε.sqrt * f x)
   rw [ENNReal.coe_one, one_mul, ← (toReal_le_toReal (edist_ne_top _ _) (edist_ne_top _ _))] at hlip
   apply le_trans (hlip) _
   have h : (edist (ε.sqrt * g x) (ε.sqrt * f x)).toReal
