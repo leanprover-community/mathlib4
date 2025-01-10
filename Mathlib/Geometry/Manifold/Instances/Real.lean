@@ -398,31 +398,19 @@ instance IccChartedSpace (x y : ℝ) [h : Fact (x < y)] :
       simpa only [not_lt] using h'
   chart_mem_atlas z := by by_cases h' : (z : ℝ) < y <;> simp [h']
 
-/-- Copy of `IccManifold`, to be able to state a lemma about its charts at a specific point. -/
-def IccManifold2 (x y : ℝ) [h : Fact (x < y)] :
-    ChartedSpace (EuclideanHalfSpace 1) (Icc x y) where
-  atlas := {IccLeftChart x y, IccRightChart x y}
-  chartAt z := if z.val < y then IccLeftChart x y else IccRightChart x y
-  mem_chart_source z := by
-    by_cases h' : z.val < y
-    · simp only [h', if_true]
-      exact h'
-    · simp only [h', if_false]
-      apply lt_of_lt_of_le h.out
-      simpa only [not_lt] using h'
-  chart_mem_atlas z := by by_cases h' : (z : ℝ) < y <;> simp [h']
+@[simp]
+lemma IccManifold.chartAt {x y : ℝ} [h : Fact (x < y)] {z : Set.Icc x y} :
+    chartAt _ z = if z.val < y then IccLeftChart x y else IccRightChart x y := rfl
 
-lemma IccManifold2.leftCharts {x y : ℝ} [h : Fact (x < y)] {z : Set.Icc x y} (h : z.val < y) :
-    (IccManifold2 x y).chartAt z = IccLeftChart x y := by
-  unfold IccManifold2
-  simp_all only [reduceIte]
+lemma IccManifold.chartAt_of_neq_top {x y : ℝ} [h : Fact (x < y)] {z : Set.Icc x y} (h : z.val < y) :
+    chartAt _ z = IccLeftChart x y := by
+  simp [IccManifold.chartAt] -- reduceIte
 
-lemma IccManifold2.rightCharts {x y : ℝ} [h : Fact (x < y)] {z : Set.Icc x y} (h : z.val ≥ y) :
-    (IccManifold2 x y).chartAt z = IccRightChart x y := by
-  unfold IccManifold2
-  simp_all only [reduceIte, not_lt.mpr h]
+lemma IccManifold.chartAt_of_getop {x y : ℝ} [h : Fact (x < y)] {z : Set.Icc x y} (h : z.val ≥ y) :
+    chartAt _ z = IccRightChart x y := by
+  simp [IccManifold.chartAt, reduceIte, not_lt.mpr h]
 
-lemma Icc_isBoundaryPoint_left : (𝓡∂ 1).IsBoundaryPoint (X : Icc x y) := by
+lemma IccManifold.isBoundaryPoint_bot : (𝓡∂ 1).IsBoundaryPoint ⊥ := by
   rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt]
   have : chartAt (EuclideanHalfSpace 1) X = IccLeftChart x y :=
     IccManifold2.leftCharts (by norm_num [hxy.out])
