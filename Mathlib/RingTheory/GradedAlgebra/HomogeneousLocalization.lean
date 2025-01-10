@@ -716,7 +716,8 @@ def awayMapₐ : Away 𝒜 f →ₐ[𝒜 0] Away 𝒜 x where
 
 /-- This is a convenient constructor for `Away 𝒜 f` when `f` is homogeneous.
 `Away.mk 𝒜 hf n x hx` is the fraction `x / f ^ n`. -/
-protected def Away.mk {d : ι} (hf : f ∈ 𝒜 d) (n : ℕ) (x : A) (hx : x ∈ 𝒜 (n • d)) : Away 𝒜 f :=
+protected nonrec def Away.mk {d : ι}
+    (hf : f ∈ 𝒜 d) (n : ℕ) (x : A) (hx : x ∈ 𝒜 (n • d)) : Away 𝒜 f :=
   .mk ⟨n • d, ⟨x, hx⟩, ⟨f ^ n, SetLike.pow_mem_graded n hf⟩, ⟨n, rfl⟩⟩
 
 @[simp]
