@@ -6,7 +6,6 @@ Authors: Eric Wieser
 import Mathlib.Tactic.Monotonicity.Attr
 import Mathlib.Tactic.SetLike
 import Mathlib.Data.Set.Basic
-import Mathlib.Order.Atoms
 
 /-!
 # Typeclass for types with a set-like extensionality property
@@ -214,10 +213,5 @@ theorem exists_of_lt : p < q → ∃ x ∈ q, x ∉ p :=
 
 theorem lt_iff_le_and_exists : p < q ↔ p ≤ q ∧ ∃ x ∈ q, x ∉ p := by
   rw [lt_iff_le_not_le, not_le_iff_exists]
-
-theorem isCoatom_iff [OrderTop A] {K : A} :
-    IsCoatom K ↔ K ≠ ⊤ ∧ ∀ H g, K ≤ H → g ∉ K → g ∈ H → H = ⊤ := by
-  simp_rw [IsCoatom, lt_iff_le_not_le, SetLike.not_le_iff_exists,
-    and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm (a := _ ≤ _), and_comm]
 
 end SetLike

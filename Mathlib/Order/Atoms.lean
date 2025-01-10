@@ -9,6 +9,7 @@ import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.WellFounded
 import Mathlib.Tactic.Nontriviality
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Data.SetLike.Basic
 
 /-!
 # Atoms, Coatoms, and Simple Lattices
@@ -182,6 +183,22 @@ theorem covBy_top_iff : a ⋖ ⊤ ↔ IsCoatom a :=
   toDual_covBy_toDual_iff.symm.trans bot_covBy_iff
 
 alias ⟨CovBy.isCoatom, IsCoatom.covBy_top⟩ := covBy_top_iff
+
+namespace SetLike
+
+variable {A B : Type*} [SetLike A B]
+
+theorem isAtom_iff [OrderBot A] {K : A} :
+    IsAtom K ↔ K ≠ ⊥ ∧ ∀ H g, H ≤ K → g ∉ H → g ∈ K → H = ⊥ := by
+  simp_rw [IsAtom, lt_iff_le_not_le, SetLike.not_le_iff_exists,
+    and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
+
+theorem isCoatom_iff [OrderTop A] {K : A} :
+    IsCoatom K ↔ K ≠ ⊤ ∧ ∀ H g, K ≤ H → g ∉ K → g ∈ H → H = ⊤ := by
+  simp_rw [IsCoatom, lt_iff_le_not_le, SetLike.not_le_iff_exists,
+    and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
+
+end SetLike
 
 end PartialOrder
 
