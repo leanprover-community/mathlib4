@@ -521,7 +521,7 @@ lemma coe_mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y)  : ⇑(mk' f
 variable {U V : Type*} [TopologicalSpace U] [TopologicalSpace V]
     [Monoid U] [Monoid V]
 
-/--The coersion from `ContinuousMulEquiv` to `ContinuousMonoidHom` induced by `toMonoidHom`-/
+/--The coercion from `ContinuousMulEquiv` to `ContinuousMonoidHom` induced by `toMonoidHom`-/
 def toContinuousMonoidHom (f : U ≃ₜ* V) : ContinuousMonoidHom U V :=
 { f.toMonoidHom with
   continuous_toFun := f.continuous_toFun }
