@@ -834,7 +834,7 @@ lemma preservesLeftHomology_of_zero_g (hg : S.g = 0)
     f' := by
       have := h.isIso_i hg
       let e : parallelPair h.f' 0 ≅ parallelPair S.f 0 :=
-        parallelPair.ext (Iso.refl _) (asIso h.i) (by aesop_cat) (by aesop_cat)
+        parallelPair.ext (Iso.refl _) (asIso h.i) (by simp) (by simp)
       exact Limits.preservesColimit_of_iso_diagram F e.symm}⟩
 
 /-- If a short complex `S` is such that `S.f = 0` and that the kernel of `S.g` is preserved
@@ -848,7 +848,7 @@ lemma preservesRightHomology_of_zero_f (hf : S.f = 0)
     g' := by
       have := h.isIso_p hf
       let e : parallelPair S.g 0 ≅ parallelPair h.g' 0 :=
-        parallelPair.ext (asIso h.p) (Iso.refl _) (by aesop_cat) (by aesop_cat)
+        parallelPair.ext (asIso h.p) (Iso.refl _) (by simp) (by simp)
       exact Limits.preservesLimit_of_iso_diagram F e }⟩
 
 end Functor

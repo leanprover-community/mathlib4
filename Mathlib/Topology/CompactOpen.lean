@@ -279,16 +279,10 @@ theorem compactOpen_eq_iInf_induced :
   convert isOpen_induced (isOpen_setOf_mapsTo (isCompact_iff_isCompact_univ.1 hK) hU)
   simp [mapsTo_univ_iff, Subtype.forall, MapsTo]
 
-@[deprecated (since := "2024-03-05")]
-alias compactOpen_eq_sInf_induced := compactOpen_eq_iInf_induced
-
 theorem nhds_compactOpen_eq_iInf_nhds_induced (f : C(X, Y)) :
     𝓝 f = ⨅ (s) (_ : IsCompact s), (𝓝 (f.restrict s)).comap (ContinuousMap.restrict s) := by
   rw [compactOpen_eq_iInf_induced]
   simp only [nhds_iInf, nhds_induced]
-
-@[deprecated (since := "2024-03-05")]
-alias nhds_compactOpen_eq_sInf_nhds_induced := nhds_compactOpen_eq_iInf_nhds_induced
 
 theorem tendsto_compactOpen_restrict {ι : Type*} {l : Filter ι} {F : ι → C(X, Y)} {f : C(X, Y)}
     (hFf : Filter.Tendsto F l (𝓝 f)) (s : Set X) :
@@ -370,15 +364,6 @@ def curry (f : C(X × Y, Z)) : C(X, C(Y, Z)) where
 @[simp]
 theorem curry_apply (f : C(X × Y, Z)) (a : X) (b : Y) : f.curry a b = f (a, b) :=
   rfl
-
-/-- Auxiliary definition, see `ContinuousMap.curry` and `Homeomorph.curry`. -/
-@[deprecated ContinuousMap.curry (since := "2024-03-05")]
-def curry' (f : C(X × Y, Z)) (a : X) : C(Y, Z) := curry f a
-
-set_option linter.deprecated false in
-/-- If a map `α × β → γ` is continuous, then its curried form `α → C(β, γ)` is continuous. -/
-@[deprecated ContinuousMap.curry (since := "2024-03-05")]
-theorem continuous_curry' (f : C(X × Y, Z)) : Continuous (curry' f) := (curry f).continuous
 
 /-- To show continuity of a map `α → C(β, γ)`, it suffices to show that its uncurried form
     `α × β → γ` is continuous. -/

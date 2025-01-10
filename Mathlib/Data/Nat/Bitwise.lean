@@ -80,12 +80,9 @@ theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n →
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
     bitwise f (bit a m) (bit b n) = bit (f a b) (bitwise f m n) := by
   conv_lhs => unfold bitwise
-  #adaptation_note /-- nightly-2024-03-16: simp was
-  -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, Bool.cond_eq_ite] -/
   simp only [bit, ite_apply, Bool.cond_eq_ite]
-  have h2 x : (x + x + 1) % 2 = 1 := by rw [← two_mul, add_comm]; apply add_mul_mod_self_left
   have h4 x : (x + x + 1) / 2 = x := by rw [← two_mul, add_comm]; simp [add_mul_div_left]
-  cases a <;> cases b <;> simp [h2, h4] <;> split_ifs
+  cases a <;> cases b <;> simp [h4] <;> split_ifs
     <;> simp_all +decide [two_mul]
 
 lemma bit_mod_two_eq_zero_iff (a x) :
@@ -371,29 +368,15 @@ theorem even_xor {m n : ℕ} : Even (m ^^^ n) ↔ (Even m ↔ Even n) := by
 @[simp] theorem bit_lt_two_pow_succ_iff {b x n} : bit b x < 2 ^ (n + 1) ↔ x < 2 ^ n := by
   cases b <;> simp <;> omega
 
-/-- If `x` and `y` fit within `n` bits, then the result of any bitwise operation on `x` and `y` also
-fits within `n` bits -/
-theorem bitwise_lt {f x y n} (hx : x < 2 ^ n) (hy : y < 2 ^ n) :
-    bitwise f x y < 2 ^ n := by
-  induction x using Nat.binaryRec' generalizing n y with
-  | z =>
-    simp only [bitwise_zero_left]
-    split <;> assumption
-  | @f bx nx hnx ih =>
-    cases y using Nat.binaryRec' with
-    | z =>
-      simp only [bitwise_zero_right]
-      split <;> assumption
-    | f «by» ny hny =>
-      rw [bitwise_bit' _ _ _ _ hnx hny]
-      cases n <;> simp_all
+@[deprecated bitwise_lt_two_pow (since := "2024-12-28")]
+alias bitwise_lt := bitwise_lt_two_pow
 
 lemma shiftLeft_lt {x n m : ℕ} (h : x < 2 ^ n) : x <<< m < 2 ^ (n + m) := by
   simp only [Nat.pow_add, shiftLeft_eq, Nat.mul_lt_mul_right (Nat.two_pow_pos _), h]
 
 /-- Note that the LHS is the expression used within `Std.BitVec.append`, hence the name. -/
 lemma append_lt {x y n m} (hx : x < 2 ^ n) (hy : y < 2 ^ m) : y <<< n ||| x < 2 ^ (n + m) := by
-  apply bitwise_lt
+  apply bitwise_lt_two_pow
   · rw [add_comm]; apply shiftLeft_lt hy
   · apply lt_of_lt_of_le hx <| Nat.pow_le_pow_right (le_succ _) (le_add_right _ _)
 
