@@ -20,6 +20,24 @@ define the shift on `Cᵒᵖ` so that `shiftFunctor Cᵒᵖ n` for `n : ℤ` ide
 of the shift on `Cᵒᵖ` shall combine the shift on `OppositeShift C A` and another
 construction of the "pullback" of a shift by a monoid morphism like `n ↦ -n`.
 
+If `F : C ⥤ D` is a functor between categories equipped with shifts by `A`, we define
+a type synonym `OppositeShift.functor A F` for `F.op`. When `F` has a `CommShift` structure
+by `A`, we define a `CommShift` structure by `A` on `OppositeShift.functor A F`. In this
+way, we can make this an instance and reserve `F.op` for the `CommShift` instance by
+the modified shift in the case of (pre)triangulated categories.
+
+Similarly,if `τ` is a natural transformation between functors `F,G : C ⥤ D`, we define
+a type synonym for `τ.op` called
+`OppositeShift.natTrans A τ : OppositeShift.functor A F ⟶ OppositeShift.functor A G`.
+When `τ` has a `CommShift` structure by `A` (i.e. is compatible with `CommShift` structures
+on `F` and `G`), we define a `CommShift` structure by `A` on `OppositeShift.natTrans A τ`.
+
+Finally, if we have an adjunction `F ⊣ G` (with `G : D ⥤ C`), we define a type synonym
+`OppositeShift.adjunction A adj :  OppositeShift.functor A G ⊣ OppositeShift.functor A F`
+for `adj.op`, and we show that, if `adj` compatible with `CommShift` structures
+on `F` and `G`, then `OppositeShift.adjunction A adj` is also compatible with the pulled back
+`CommShift` structures.
+
 Given a `CommShift` structure on a functor `F`, we define a `CommShift` structure on `F.op`
 (and vice versa).
 We also prove that, if an adjunction `F ⊣ G` is compatible with `CommShift` structures on
