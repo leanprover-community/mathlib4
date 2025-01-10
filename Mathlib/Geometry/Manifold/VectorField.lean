@@ -1316,8 +1316,12 @@ lemma mpullback_mlieBracket
 
 #check ContDiffWithinAt.lieBracketWithin_vectorField
 
+#check contMDiffWithinAt_iff_nat
+
 /-- If two vector fields are `C^n` with `n ≥ m + 1`, then their Lie bracket is `C^m`. -/
-protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField {m : WithTop ℕ∞}
+protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField
+    [IsManifold I (n + 1) M]
+    {m : WithTop ℕ∞}
     {U V : Π (x : M), TangentSpace I x} {s : Set M} {x : M}
     (hU : ContMDiffWithinAt I I.tangent n (fun x ↦ (U x : TangentBundle I M)) s x)
     (hV : ContMDiffWithinAt I I.tangent n (fun x ↦ (V x : TangentBundle I M)) s x)
@@ -1331,7 +1335,8 @@ protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField {m : With
   space Lie bracket, given by an explicit formula). Pulling back this Lie bracket in `M` gives
   locally a smooth function, which coincides with the initial Lie bracket by invariance
   under diffeos. -/
---  apply contMDiffWithinAt_iff_nat.2 (fun m' hm' ↦ ?_)
+  have : IsManifold I (m + 1) M := IsManifold.of_le (n := n + 1) (hmn.trans le_self_add)
+  apply contMDiffWithinAt_iff_le_ne_infty.2 (fun m' hm' h'm' ↦ ?_)
   --have hn : (1 : ℕ∞) ≤ m' + 1 := by exact_mod_cast (show 1 ≤ m' + 1 by omega)
   --have hm'n : m' + 1 ≤ n := le_trans (add_le_add_right hm' 1) hmn
   have pre_mem : (extChartAt I x) ⁻¹' ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s)
@@ -1347,20 +1352,21 @@ protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField {m : With
       ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) (extChartAt I x x) :=
     ContDiffWithinAt.lieBracketWithin_vectorField
       (contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt.1
-        (contMDiffWithinAt_mpullbackWithin_extChartAt_symm (hU) hs hx hmn))
+        (contMDiffWithinAt_mpullbackWithin_extChartAt_symm hU hs hx le_rfl))
       (contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt.1
-        (contMDiffWithinAt_mpullbackWithin_extChartAt_symm (hV.of_le hm'n) hs hx))
-      (hs.uniqueDiffOn_target_inter x) le_rfl (by simp [hx])
-  have B : ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent m' (fun y ↦ (mlieBracketWithin 𝓘(𝕜, E) U' V'
+        (contMDiffWithinAt_mpullbackWithin_extChartAt_symm hV hs hx le_rfl))
+      (hs.uniqueDiffOn_target_inter x) hmn (by simp [hx])
+  have B : ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent m (fun y ↦ (mlieBracketWithin 𝓘(𝕜, E) U' V'
       ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) y : TangentBundle 𝓘(𝕜, E) E))
       ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) (extChartAt I x x) := by
     rw [← mlieBracketWithin_eq_lieBracketWithin] at A
     exact contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt.2 A
-  have C : ContMDiffWithinAt I I.tangent m' (fun y ↦ (mpullback I 𝓘(𝕜, E) (extChartAt I x)
+  have C : ContMDiffWithinAt I I.tangent m (fun y ↦ (mpullback I 𝓘(𝕜, E) (extChartAt I x)
       ((mlieBracketWithin 𝓘(𝕜, E) U' V'
       ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s))) y : TangentBundle I M)) s x :=
-    ContMDiffWithinAt.mpullback_vectorField_of_mem_nhdsWithin_of_eq B contMDiffAt_extChartAt
-      (isInvertible_mfderiv_extChartAt (mem_extChartAt_source x)) le_top pre_mem rfl
+    ContMDiffWithinAt.mpullback_vectorField_of_mem_nhdsWithin_of_eq B (n := m + 1)
+      contMDiffAt_extChartAt
+      (isInvertible_mfderiv_extChartAt (mem_extChartAt_source x)) le_rfl pre_mem rfl
   apply C.congr_of_eventuallyEq_of_mem _ hx
   filter_upwards [eventually_eventually_nhdsWithin.2 pre_mem,
     eventually_eventually_nhdsWithin.2 (eventuallyEq_mpullback_mpullbackWithin_extChartAt U),
@@ -1373,6 +1379,8 @@ protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField {m : With
   rw [mpullback_mlieBracketWithin (h'yU.mdifferentiableWithinAt hn)
     (h'yV.mdifferentiableWithinAt hn) hs (contMDiffAt_extChartAt' hy_chart) hys hy]
   exact Filter.EventuallyEq.mlieBracketWithin_vectorField_eq_of_mem hyU hyV hys
+
+#exit
 
 /-- If two vector fields are `C^n` with `n ≥ m + 1`, then their Lie bracket is `C^m`. -/
 lemma _root_.ContMDiffAt.mlieBracket_vectorField {m n : ℕ∞}
