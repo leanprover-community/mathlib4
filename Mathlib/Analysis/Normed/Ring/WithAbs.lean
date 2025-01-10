@@ -34,7 +34,9 @@ variable {R S K : Type*} [Semiring R] [OrderedSemiring S] [Field K]
 
 /-- Type synonym for a semiring which depends on an absolute value. This is a function that takes
 an absolute value on a semiring and returns the semiring. We use this to assign and infer instances
-on a semiring that depend on absolute values. -/
+on a semiring that depend on absolute values.
+
+This is also helpful when dealing with several absolute values on the same semiring. -/
 @[nolint unusedArguments]
 def WithAbs : AbsoluteValue R S → Type _ := fun _ => R
 
@@ -42,7 +44,7 @@ namespace WithAbs
 
 variable (v : AbsoluteValue R ℝ)
 
-/-- Canonical equivalence between `WithAbs v` and `R`. -/
+/-- The canonical equivalence between `WithAbs v` and `R`. -/
 def equiv : WithAbs v ≃ R := Equiv.refl (WithAbs v)
 
 instance instNonTrivial [Nontrivial R] : Nontrivial (WithAbs v) := inferInstanceAs (Nontrivial R)
@@ -51,7 +53,12 @@ instance instUnique [Unique R] : Unique (WithAbs v) := inferInstanceAs (Unique R
 
 instance instSemiring : Semiring (WithAbs v) := inferInstanceAs (Semiring R)
 
+instance instCommSemiring [CommSemiring R] : CommSemiring (WithAbs v) :=
+  inferInstanceAs (CommSemiring R)
+
 instance instRing [Ring R] : Ring (WithAbs v) := inferInstanceAs (Ring R)
+
+instance instCommRing [CommRing R] : CommRing (WithAbs v) := inferInstanceAs (CommRing R)
 
 instance instInhabited : Inhabited (WithAbs v) := ⟨0⟩
 
@@ -61,14 +68,52 @@ instance normedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : NormedRing 
 instance normedField (v : AbsoluteValue K ℝ) : NormedField (WithAbs v) :=
   v.toNormedField
 
-/-! `WithAbs.equiv` preserves the ring structure. -/
+lemma norm_eq_abv {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) (x : WithAbs v) :
+    ‖x‖ = v (WithAbs.equiv v x) := rfl
+
+section module
+
+variable {R S : Type*} [Semiring R]
+
+instance instModule_left [AddCommGroup S] [Module R S] (v : AbsoluteValue R ℝ) :
+    Module (WithAbs v) S :=
+  inferInstanceAs <| Module R S
+
+instance instModule_right [Semiring S] [Module R S] (v : AbsoluteValue S ℝ) :
+    Module R (WithAbs v) :=
+  inferInstanceAs <| Module R S
+
+end module
+
+section algebra
+
+variable {R S : Type*} [CommSemiring R] [Semiring S] [Algebra R S]
+
+instance instAlgebra_left (v : AbsoluteValue R ℝ) : Algebra (WithAbs v) S :=
+  inferInstanceAs <| Algebra R S
+
+instance instAlgebra_right (v : AbsoluteValue S ℝ) : Algebra R (WithAbs v) :=
+  inferInstanceAs <| Algebra R S
+
+end algebra
+
+/-!
+### `WithAbs.equiv` preserves the ring structure.
+-/
 
 variable (x y : WithAbs v) (r s : R)
+
 @[simp]
 theorem equiv_zero : WithAbs.equiv v 0 = 0 := rfl
 
 @[simp]
 theorem equiv_symm_zero : (WithAbs.equiv v).symm 0 = 0 := rfl
+
+@[simp]
+theorem equiv_one : (WithAbs.equiv v) 1 = 1 := rfl
+
+@[simp]
+theorem equiv_symm_one : (WithAbs.equiv v).symm 1 = 1 := rfl
 
 @[simp]
 theorem equiv_add : WithAbs.equiv v (x + y) = WithAbs.equiv v x + WithAbs.equiv v y := rfl
@@ -100,10 +145,65 @@ theorem equiv_symm_mul :
     (WithAbs.equiv v).symm (x * y) = (WithAbs.equiv v).symm x * (WithAbs.equiv v).symm y :=
   rfl
 
+@[simp]
+theorem equiv_pow (n : ℕ) :
+    (WithAbs.equiv v) (x ^ n) = (WithAbs.equiv v) x ^ n := rfl
+
+@[simp]
+theorem equiv_symm_pow (n : ℕ) :
+    (WithAbs.equiv v).symm (r ^ n) = (WithAbs.equiv v).symm r ^ n := rfl
+
+section zpow
+
+variable {F : Type*} [Field F]
+
+@[simp]
+theorem equiv_zpow (v : AbsoluteValue F ℝ) (x : WithAbs v) (n : ℤ) :
+    (WithAbs.equiv v) (x ^ n) = (WithAbs.equiv v) x ^ n := rfl
+
+@[simp]
+theorem equiv_symm_zpow (v : AbsoluteValue F ℝ) (r : F) (n : ℤ) :
+    (WithAbs.equiv v).symm (r ^ n) = (WithAbs.equiv v).symm r ^ n := rfl
+
+end zpow
+
+section module
+
+variable {R S : Type*} [Ring R] [Ring S] [Module R S] (v : AbsoluteValue S ℝ)
+
+@[simp]
+lemma equiv_smul (c : R) (x : WithAbs v) : WithAbs.equiv v (c • x) = c • WithAbs.equiv v x := rfl
+
+@[simp]
+lemma equiv_symm_smul (c : R) (s : S) :
+    (WithAbs.equiv v).symm (c • s) = c • (WithAbs.equiv v).symm s := rfl
+
+end module
+
+section algebra
+
+variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
+
+@[simp]
+lemma equiv_apply_algebraMap {v : AbsoluteValue R ℝ} (v' : AbsoluteValue S ℝ) (x : WithAbs v) :
+    WithAbs.equiv v' (algebraMap (WithAbs v) (WithAbs v') x) =
+      algebraMap R S (WithAbs.equiv v x) :=
+  rfl
+
+@[simp]
+lemma equiv_symm_apply_algebraMap {v : AbsoluteValue R ℝ} (v' : AbsoluteValue S ℝ) (x : WithAbs v) :
+    (WithAbs.equiv v').symm (algebraMap R S (WithAbs.equiv v x)) =
+      algebraMap (WithAbs v) (WithAbs v') x := by
+  rw [← WithAbs.equiv_apply_algebraMap v', Equiv.symm_apply_apply]
+
+end algebra
+
 /-- `WithAbs.equiv` as a ring equivalence. -/
 def ringEquiv : WithAbs v ≃+* R := RingEquiv.refl _
 
-/-! The completion of a field at an absolute value. -/
+/-!
+### The completion of a field at an absolute value.
+-/
 
 variable {K : Type*} [Field K] {v : AbsoluteValue K ℝ}
   {L : Type*} [NormedField L] {f : WithAbs v →+* L}
