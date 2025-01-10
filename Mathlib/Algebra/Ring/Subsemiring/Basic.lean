@@ -793,12 +793,18 @@ theorem ofLeftInverseS_symm_apply {g : S → R} {f : R →+* S} (h : Function.Le
 
 /-- Given an equivalence `e : R ≃+* S` of semirings and a subsemiring `s` of `R`,
 `subsemiring_map e s` is the induced equivalence between `s` and `s.map e` -/
-@[simps!]
-def subsemiringMap (e : R ≃+* S) (s : Subsemiring R) : s ≃+* s.map e.toRingHom :=
+def subsemiringMap (e : R ≃+* S) (s : Subsemiring R) : s ≃+* s.map (e : R →+* S) :=
   { e.toAddEquiv.addSubmonoidMap s.toAddSubmonoid, e.toMulEquiv.submonoidMap s.toSubmonoid with }
 
--- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
-attribute [nolint simpNF] RingEquiv.subsemiringMap_symm_apply_coe RingEquiv.subsemiringMap_apply_coe
+@[simp]
+theorem subsemiringMap_apply_coe (e : R ≃+* S) (s : Subsemiring R) (x : s) :
+    ((subsemiringMap e s) x : S) = e x :=
+  rfl
+
+@[simp]
+theorem subsemiringMap_symm_apply_coe (e : R ≃+* S) (s : Subsemiring R) (x : s.map e.toRingHom) :
+    ((subsemiringMap e s).symm x : R) = e.symm x :=
+  rfl
 
 end RingEquiv
 
