@@ -797,6 +797,20 @@ instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedA
     have h2 := (contDiffGroupoid n I').compatible hf2 hg2
     exact contDiffGroupoid_prod h1 h2
 
+section DisjointUnion
+
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] [IsManifold I n M']
+  -- {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M''] [IsManifold I n M'']
+
+/-- The disjoint union of two `C^n` manifolds modelled on `(E, H)`
+is a `C^n` manifold modeled on `(E, H)`. -/
+-- XXX. do I really need the same model twice? or can/should one generalise this?
+instance IsManifold.disjointUnion [Nonempty M] [Nonempty M'] [Nonempty H] :
+    IsManifold I n (M ⊕ M') where
+  compatible := sorry
+
+end DisjointUnion
+
 end IsManifold
 
 theorem PartialHomeomorph.isManifold_singleton
