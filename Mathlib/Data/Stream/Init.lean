@@ -25,8 +25,11 @@ variable (m n : ℕ) (x y : List α) (a b : Stream' α)
 instance [Inhabited α] : Inhabited (Stream' α) :=
   ⟨Stream'.const default⟩
 
-protected theorem eta (s : Stream' α) : (head s::tail s) = s :=
+@[simp] protected theorem eta (s : Stream' α) : head s :: tail s = s :=
   funext fun i => by cases i <;> rfl
+
+/-- Alias for `Stream'.eta` to match `List` API. -/
+alias cons_head_tail := Stream'.eta
 
 @[ext]
 protected theorem ext {s₁ s₂ : Stream' α} : (∀ n, get s₁ n = get s₂ n) → s₁ = s₂ :=
@@ -58,10 +61,10 @@ theorem drop_drop (n m : ℕ) (s : Stream' α) : drop n (drop m s) = drop (m + n
 
 @[simp] theorem get_tail {n : ℕ} {s : Stream' α} : s.tail.get n = s.get (n + 1) := rfl
 
-@[simp] theorem tail_drop' {i : ℕ} {s : Stream' α} : tail (drop i s) = s.drop (i+1) := by
+@[simp] theorem tail_drop' {i : ℕ} {s : Stream' α} : tail (drop i s) = s.drop (i + 1) := by
   ext; simp [Nat.add_comm, Nat.add_assoc, Nat.add_left_comm]
 
-@[simp] theorem drop_tail' {i : ℕ} {s : Stream' α} : drop i (tail s) = s.drop (i+1) := rfl
+@[simp] theorem drop_tail' {i : ℕ} {s : Stream' α} : drop i (tail s) = s.drop (i + 1) := rfl
 
 theorem tail_drop (n : ℕ) (s : Stream' α) : tail (drop n s) = drop n (tail s) := by simp
 
@@ -69,13 +72,11 @@ theorem get_succ (n : ℕ) (s : Stream' α) : get s (succ n) = get (tail s) n :=
   rfl
 
 @[simp]
-theorem get_succ_cons (n : ℕ) (s : Stream' α) (x : α) : get (x::s) n.succ = get s n :=
+theorem get_succ_cons (n : ℕ) (s : Stream' α) (x : α) : get (x :: s) n.succ = get s n :=
   rfl
 
 @[simp] lemma get_cons_append_zero {a : α} {x : List α} {s : Stream' α} :
   (a :: x ++ₛ s).get 0 = a := rfl
-
-@[simp] lemma cons_head_tail (a : Stream' α) : a.head :: a.tail = a := by ext n; cases n <;> rfl
 
 @[simp] lemma append_eq_cons {a : α} {as : Stream' α} : [a] ++ₛ as = a :: as := by rfl
 
@@ -260,15 +261,15 @@ def IsBisimulation :=
   ∀ ⦃s₁ s₂⦄, s₁ ~ s₂ →
       head s₁ = head s₂ ∧ tail s₁ ~ tail s₂
 
-theorem get_of_bisim (bisim : IsBisimulation R) :
-    ∀ {s₁ s₂} (n), s₁ ~ s₂ → get s₁ n = get s₂ n ∧ drop (n + 1) s₁ ~ drop (n + 1) s₂
-  | _, _, 0, h => bisim h
-  | _, _, n + 1, h =>
+theorem get_of_bisim (bisim : IsBisimulation R) {s₁ s₂} :
+    ∀ n, s₁ ~ s₂ → get s₁ n = get s₂ n ∧ drop (n + 1) s₁ ~ drop (n + 1) s₂
+  | 0, h => bisim h
+  | n + 1, h =>
     match bisim h with
     | ⟨_, trel⟩ => get_of_bisim bisim n trel
 
 -- If two streams are bisimilar, then they are equal
-theorem eq_of_bisim (bisim : IsBisimulation R) : ∀ {s₁ s₂}, s₁ ~ s₂ → s₁ = s₂ := fun r =>
+theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} : s₁ ~ s₂ → s₁ = s₂ := fun r =>
   Stream'.ext fun n => And.left (get_of_bisim R bisim n r)
 
 end Bisim
@@ -320,7 +321,7 @@ section Corec
 theorem corec_def (f : α → β) (g : α → α) (a : α) : corec f g a = map f (iterate g a) :=
   rfl
 
-theorem corec_eq (f : α → β) (g : α → α) (a : α) : corec f g a = f a::corec f g (g a) := by
+theorem corec_eq (f : α → β) (g : α → α) (a : α) : corec f g a = f a :: corec f g (g a) := by
   rw [corec_def, map_eq, head_iterate, tail_iterate]; rfl
 
 theorem corec_id_id_eq_const (a : α) : corec id id a = const a := by
@@ -333,12 +334,12 @@ end Corec
 
 section Corec'
 
-theorem corec'_eq (f : α → β × α) (a : α) : corec' f a = (f a).1::corec' f (f a).2 :=
+theorem corec'_eq (f : α → β × α) (a : α) : corec' f a = (f a).1 :: corec' f (f a).2 :=
   corec_eq _ _ _
 
 end Corec'
 
-theorem unfolds_eq (g : α → β) (f : α → α) (a : α) : unfolds g f a = g a::unfolds g f (f a) := by
+theorem unfolds_eq (g : α → β) (f : α → α) (a : α) : unfolds g f a = g a :: unfolds g f (f a) := by
   unfold unfolds; rw [corec_eq]
 
 theorem get_unfolds_head_tail : ∀ (n : ℕ) (s : Stream' α),
@@ -463,13 +464,13 @@ lemma get_append_left (h : n < x.length) : (x ++ₛ a).get n = x[n] := by
 
 @[simp] lemma get_append_length : (x ++ₛ a).get x.length = a.get 0 := get_append_right 0 x a
 
-lemma append_left_injective (h : x ++ₛ a = x ++ₛ b) : a = b := by
+lemma append_right_injective (h : x ++ₛ a = x ++ₛ b) : a = b := by
   ext n; replace h := congr_arg (fun a ↦ a.get (x.length + n)) h; simpa using h
 
-@[simp] lemma append_left_inj : x ++ₛ a = x ++ₛ b ↔ a = b :=
-  ⟨append_left_injective x a b, by simp (config := {contextual := true})⟩
+@[simp] lemma append_right_inj : x ++ₛ a = x ++ₛ b ↔ a = b :=
+  ⟨append_right_injective x a b, by simp (config := {contextual := true})⟩
 
-lemma append_right_injective (h : x ++ₛ a = y ++ₛ b) (hl : x.length = y.length) : x = y := by
+lemma append_left_injective (h : x ++ₛ a = y ++ₛ b) (hl : x.length = y.length) : x = y := by
   apply List.ext_getElem hl
   intros
   rw [← get_append_left, ← get_append_left, h]
@@ -566,7 +567,7 @@ theorem take_append_of_le_length (h : n ≤ x.length) :
   intro _ _ _; rw [List.getElem_take, take_get, get_append_left]
 
 lemma take_add : a.take (m + n) = a.take m ++ (a.drop m).take n := by
-  apply append_right_injective _ _ (a.drop (m + n)) ((a.drop m).drop n) <;>
+  apply append_left_injective _ _ (a.drop (m + n)) ((a.drop m).drop n) <;>
     simp [- drop_drop]
 
 @[gcongr] lemma take_prefix_take_left (h : m ≤ n) : a.take m <+: a.take n := by
