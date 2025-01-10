@@ -121,7 +121,7 @@ section Mul
 variable [Preorder α] [Mul α] [MulLeftMono α] [MulRightMono α]
 
 @[to_additive]
-instance : Mul (NonemptyInterval α) :=
+instance NonemptyInterval.instMul : Mul (NonemptyInterval α) :=
   ⟨fun s t => ⟨s.toProd * t.toProd, mul_le_mul' s.fst_le_snd t.fst_le_snd⟩⟩
 
 @[to_additive]
@@ -528,6 +528,41 @@ instance divisionCommMonoid : DivisionCommMonoid (Interval α) :=
           | exact congr_arg some (inv_eq_of_mul_eq_one_right <| Option.some_injective _ h) }
 
 end Interval
+
+namespace NonemptyInterval
+variable [LinearOrderedSemiring α]
+
+/-- Unlike `NonemptyInterval.instMul`, this works for semirings. -/
+instance instMulOfSemiring : Mul (NonemptyInterval α) where
+  mul a b :=
+    { fst := a.fst * b.fst ⊓ a.fst * b.snd ⊓ a.snd * b.fst ⊓ a.snd * b.snd
+      snd := a.fst * b.fst ⊔ a.fst * b.snd ⊔ a.snd * b.fst ⊔ a.snd * b.snd
+      fst_le_snd := by
+        dsimp
+        apply inf_le_sup.trans ?_
+        gcongr
+        apply inf_le_sup.trans ?_
+        gcongr
+        apply inf_le_sup.trans ?_
+        rfl }
+
+/-- `fst_mul` for rings. -/
+@[simp] theorem fst_mul' (a b : NonemptyInterval α) :
+  (a * b).fst = a.fst * b.fst ⊓ a.fst * b.snd ⊓ a.snd * b.fst ⊓ a.snd * b.snd := rfl
+
+/-- `fst_mul` for rings. -/
+@[simp] theorem snd_mul' (a b : NonemptyInterval α) :
+  (a * b).snd = a.fst * b.fst ⊔ a.fst * b.snd ⊔ a.snd * b.fst ⊔ a.snd * b.snd := rfl
+
+instance : MulZeroOneClass (NonemptyInterval α) where
+  mul_zero a := by ext <;> simp
+  zero_mul a := by ext <;> simp
+  mul_one a := by ext <;> simp [a.fst_le_snd]
+  one_mul a := by ext <;> simp [a.fst_le_snd]
+
+-- TODO: Semiring (NonemptyInterval α)
+
+end NonemptyInterval
 
 section Length
 
