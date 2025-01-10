@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 import Mathlib.Data.SetLike.Fintype
 import Mathlib.Order.Filter.EventuallyConst
+import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Noetherian.Defs
@@ -59,10 +60,10 @@ theorem isArtinian_iff (R M) [Semiring R] [AddCommMonoid M] [Module R M] : IsArt
     WellFounded (· < · : Submodule R M → Submodule R M → Prop) :=
   isWellFounded_iff _ _
 
-section
+section Semiring
 
 variable {R M P N : Type*}
-variable [Ring R] [AddCommGroup M] [AddCommGroup P] [AddCommGroup N]
+variable [Semiring R] [AddCommMonoid M] [AddCommMonoid P] [AddCommMonoid N]
 variable [Module R M] [Module R P] [Module R N]
 
 theorem isArtinian_of_injective (f : M →ₗ[R] P) (h : Function.Injective f) [IsArtinian R P] :
@@ -86,10 +87,6 @@ theorem isArtinian_of_surjective (f : M →ₗ[R] P) (hf : Function.Surjective f
       show A.comap f < B.comap f from Submodule.comap_strictMono_of_surjective hf hAB)
     (InvImage.wf (Submodule.comap f) IsWellFounded.wf)⟩
 
-instance isArtinian_of_quotient_of_artinian
-    (N : Submodule R M) [IsArtinian R M] : IsArtinian R (M ⧸ N) :=
-  isArtinian_of_surjective M (Submodule.mkQ N) (Submodule.Quotient.mk_surjective N)
-
 variable {M}
 
 instance isArtinian_range (f : M →ₗ[R] P) [IsArtinian R M] : IsArtinian R (LinearMap.range f) :=
@@ -101,74 +98,17 @@ theorem isArtinian_of_linearEquiv (f : M ≃ₗ[R] P) [IsArtinian R M] : IsArtin
 theorem LinearEquiv.isArtinian_iff (f : M ≃ₗ[R] P) : IsArtinian R M ↔ IsArtinian R P :=
   ⟨fun _ ↦ isArtinian_of_linearEquiv f, fun _ ↦ isArtinian_of_linearEquiv f.symm⟩
 
-theorem isArtinian_of_range_eq_ker [IsArtinian R M] [IsArtinian R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
-    (h : LinearMap.range f = LinearMap.ker g) : IsArtinian R N :=
-  wellFounded_lt_exact_sequence (LinearMap.range f) (Submodule.map (f.ker.liftQ f le_rfl))
-    (Submodule.comap (f.ker.liftQ f le_rfl))
-    (Submodule.comap g.rangeRestrict) (Submodule.map g.rangeRestrict)
-    (Submodule.gciMapComap <| LinearMap.ker_eq_bot.mp <| Submodule.ker_liftQ_eq_bot _ _ _ le_rfl)
-    (Submodule.giMapComap g.surjective_rangeRestrict)
-    (by simp [Submodule.map_comap_eq, inf_comm, Submodule.range_liftQ])
-    (by simp [Submodule.comap_map_eq, h])
-
-theorem isArtinian_iff_submodule_quotient (S : Submodule R P) :
-    IsArtinian R P ↔ IsArtinian R S ∧ IsArtinian R (P ⧸ S) := by
-  refine ⟨fun h ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ ?_⟩
-  apply isArtinian_of_range_eq_ker S.subtype S.mkQ
-  rw [Submodule.ker_mkQ, Submodule.range_subtype]
-
-instance isArtinian_prod [IsArtinian R M] [IsArtinian R P] : IsArtinian R (M × P) :=
-  isArtinian_of_range_eq_ker (LinearMap.inl R M P) (LinearMap.snd R M P) (LinearMap.range_inl R M P)
-
 instance (priority := 100) isArtinian_of_finite [Finite M] : IsArtinian R M :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 
 -- Porting note: elab_as_elim can only be global and cannot be changed on an imported decl
 -- attribute [local elab_as_elim] Finite.induction_empty_option
 
-instance isArtinian_sup (M₁ M₂ : Submodule R P) [IsArtinian R M₁] [IsArtinian R M₂] :
-    IsArtinian R ↥(M₁ ⊔ M₂) := by
-  have := isArtinian_range (M₁.subtype.coprod M₂.subtype)
-  rwa [LinearMap.range_coprod, Submodule.range_subtype, Submodule.range_subtype] at this
-
-variable {ι : Type*} [Finite ι]
-
-instance isArtinian_pi :
-    ∀ {M : ι → Type*} [∀ i, AddCommGroup (M i)]
-      [∀ i, Module R (M i)] [∀ i, IsArtinian R (M i)], IsArtinian R (∀ i, M i) := by
-  apply Finite.induction_empty_option _ _ _ ι
-  · exact fun e h ↦ isArtinian_of_linearEquiv (LinearEquiv.piCongrLeft R _ e)
-  · infer_instance
-  · exact fun ih ↦ isArtinian_of_linearEquiv (LinearEquiv.piOptionEquivProd R).symm
-
-/-- A version of `isArtinian_pi` for non-dependent functions. We need this instance because
-sometimes Lean fails to apply the dependent version in non-dependent settings (e.g., it fails to
-prove that `ι → ℝ` is finite dimensional over `ℝ`). -/
-instance isArtinian_pi' [IsArtinian R M] : IsArtinian R (ι → M) :=
-  isArtinian_pi
-
---Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
-instance isArtinian_finsupp [IsArtinian R M] : IsArtinian R (ι →₀ M) :=
-  isArtinian_of_linearEquiv (Finsupp.linearEquivFunOnFinite _ _ _).symm
-
-instance isArtinian_iSup :
-    ∀ {M : ι → Submodule R P} [∀ i, IsArtinian R (M i)], IsArtinian R ↥(⨆ i, M i) := by
-  apply Finite.induction_empty_option _ _ _ ι
-  · intro _ _ e h _ _; rw [← e.iSup_comp]; apply h
-  · intros; rw [iSup_of_empty]; infer_instance
-  · intro _ _ ih _ _; rw [iSup_option]; infer_instance
-
-end
-
-open Submodule Function
-
-section Ring
-
-variable {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
+open Submodule
 
 theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [h : IsArtinian R M] {s : Set M}
     (hs : LinearIndependent R ((↑) : s → M)) : s.Finite := by
-  refine by_contradiction fun hf => (RelEmbedding.wellFounded_iff_no_descending_seq.1 h.wf).elim' ?_
+  refine by_contradiction fun hf ↦ (RelEmbedding.wellFounded_iff_no_descending_seq.1 h.wf).elim' ?_
   have f : ℕ ↪ s := Set.Infinite.natEmbedding s hf
   have : ∀ n, (↑) ∘ f '' { m | n ≤ m } ⊆ s := by
     rintro n x ⟨y, _, rfl⟩
@@ -179,10 +119,10 @@ theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [h : IsArtinian R 
     rw [span_le_span_iff hs (this b) (this a),
       Set.image_subset_image_iff (Subtype.coe_injective.comp f.injective), Set.subset_def]
     simp only [Set.mem_setOf_eq]
-    exact ⟨fun hab x => le_trans hab, fun h => h _ le_rfl⟩
-  exact ⟨⟨fun n => span R (Subtype.val ∘ f '' { m | n ≤ m }), fun x y => by
+    exact ⟨fun hab x ↦ hab.trans, (· _ le_rfl)⟩
+  exact ⟨⟨fun n ↦ span R (Subtype.val ∘ f '' { m | n ≤ m }), fun x y ↦ by
     rw [le_antisymm_iff, ← this y x, ← this x y]
-    exact fun ⟨h₁, h₂⟩ => le_antisymm_iff.2 ⟨h₂, h₁⟩⟩, by
+    exact fun ⟨h₁, h₂⟩ ↦ le_antisymm_iff.2 ⟨h₂, h₁⟩⟩, by
     intro a b
     conv_rhs => rw [GT.gt, lt_iff_le_not_le, this, this, ← lt_iff_le_not_le]
     rfl⟩
@@ -219,69 +159,17 @@ theorem induction {P : Submodule R M → Prop} (hgt : ∀ I, (∀ J < I, P J) �
     P I :=
   WellFoundedLT.induction I hgt
 
-end IsArtinian
-
-namespace LinearMap
-
-variable [IsArtinian R M]
-
-/-- For any endomorphism of an Artinian module, any sufficiently high iterate has codisjoint kernel
-and range. -/
-theorem eventually_codisjoint_ker_pow_range_pow (f : M →ₗ[R] M) :
-    ∀ᶠ n in atTop, Codisjoint (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
-  obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.range (f ^ n) = LinearMap.range (f ^ m)⟩ :=
-    IsArtinian.monotone_stabilizes f.iterateRange
-  refine eventually_atTop.mpr ⟨n, fun m hm ↦ codisjoint_iff.mpr ?_⟩
-  simp_rw [← hn _ hm, Submodule.eq_top_iff', Submodule.mem_sup]
-  intro x
-  rsuffices ⟨y, hy⟩ : ∃ y, (f ^ m) ((f ^ n) y) = (f ^ m) x
-  · exact ⟨x - (f ^ n) y, by simp [hy], (f ^ n) y, by simp⟩
-  -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `mem_range` into `mem_range (f := _)`
-  simp_rw [f.pow_apply n, f.pow_apply m, ← iterate_add_apply, ← f.pow_apply (m + n),
-    ← f.pow_apply m, ← mem_range (f := _), ← hn _ (n.le_add_left m), hn _ hm]
-  exact LinearMap.mem_range_self (f ^ m) x
-
-lemma eventually_iInf_range_pow_eq (f : Module.End R M) :
-    ∀ᶠ n in atTop, ⨅ m, LinearMap.range (f ^ m) = LinearMap.range (f ^ n) := by
-  obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.range (f ^ n) = LinearMap.range (f ^ m)⟩ :=
-    IsArtinian.monotone_stabilizes f.iterateRange
-  refine eventually_atTop.mpr ⟨n, fun l hl ↦ le_antisymm (iInf_le _ _) (le_iInf fun m ↦ ?_)⟩
-  rcases le_or_lt l m with h | h
-  · rw [← hn _ (hl.trans h), hn _ hl]
-  · exact f.iterateRange.monotone h.le
-
-/-- This is the Fitting decomposition of the module `M` with respect to the endomorphism `f`.
-
-See also `LinearMap.isCompl_iSup_ker_pow_iInf_range_pow` for an alternative spelling. -/
-theorem eventually_isCompl_ker_pow_range_pow [IsNoetherian R M] (f : M →ₗ[R] M) :
-    ∀ᶠ n in atTop, IsCompl (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
-  filter_upwards [f.eventually_disjoint_ker_pow_range_pow.and
-    f.eventually_codisjoint_ker_pow_range_pow] with n hn
-  simpa only [isCompl_iff]
-
-/-- This is the Fitting decomposition of the module `M` with respect to the endomorphism `f`.
-
-See also `LinearMap.eventually_isCompl_ker_pow_range_pow` for an alternative spelling. -/
-theorem isCompl_iSup_ker_pow_iInf_range_pow [IsNoetherian R M] (f : M →ₗ[R] M) :
-    IsCompl (⨆ n, LinearMap.ker (f ^ n)) (⨅ n, LinearMap.range (f ^ n)) := by
-  obtain ⟨k, hk⟩ := eventually_atTop.mp <| f.eventually_isCompl_ker_pow_range_pow.and <|
-    f.eventually_iInf_range_pow_eq.and f.eventually_iSup_ker_pow_eq
-  obtain ⟨h₁, h₂, h₃⟩ := hk k (le_refl k)
-  rwa [h₂, h₃]
-
-end LinearMap
-
-namespace IsArtinian
-
-variable [IsArtinian R M]
+open Function
 
 /-- Any injective endomorphism of an Artinian module is surjective. -/
 theorem surjective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f) : Surjective f := by
-  obtain ⟨n, hn⟩ := eventually_atTop.mp f.eventually_codisjoint_ker_pow_range_pow
-  specialize hn (n + 1) (n.le_add_right 1)
-  rw [codisjoint_iff, LinearMap.ker_eq_bot.mpr (LinearMap.iterate_injective s _), bot_sup_eq,
-    LinearMap.range_eq_top] at hn
-  exact LinearMap.surjective_of_iterate_surjective n.succ_ne_zero hn
+  have h := ‹IsArtinian R M›; contrapose! h
+  rw [IsArtinian, WellFoundedLT, isWellFounded_iff]
+  refine (RelEmbedding.natGT (LinearMap.range <| f ^ ·) ?_).not_wellFounded_of_decreasing_seq
+  intro n
+  simp_rw [pow_succ, LinearMap.mul_eq_comp, LinearMap.range_comp, ← Submodule.map_top (f ^ n)]
+  refine Submodule.map_strictMono_of_injective (LinearMap.iterate_injective s n) (Ne.lt_top ?_)
+  rwa [Ne, LinearMap.range_eq_top]
 
 /-- Any injective endomorphism of an Artinian module is bijective. -/
 theorem bijective_of_injective_endomorphism (f : M →ₗ[R] M) (s : Injective f) : Bijective f :=
@@ -306,11 +194,132 @@ theorem disjoint_partial_infs_eventually_top (f : ℕ → Submodule R M)
 
 end IsArtinian
 
+namespace LinearMap
+
+variable [IsArtinian R M]
+
+lemma eventually_iInf_range_pow_eq (f : Module.End R M) :
+    ∀ᶠ n in atTop, ⨅ m, LinearMap.range (f ^ m) = LinearMap.range (f ^ n) := by
+  obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.range (f ^ n) = LinearMap.range (f ^ m)⟩ :=
+    IsArtinian.monotone_stabilizes f.iterateRange
+  refine eventually_atTop.mpr ⟨n, fun l hl ↦ le_antisymm (iInf_le _ _) (le_iInf fun m ↦ ?_)⟩
+  rcases le_or_lt l m with h | h
+  · rw [← hn _ (hl.trans h), hn _ hl]
+  · exact f.iterateRange.monotone h.le
+
+end LinearMap
+
+end Semiring
+
+section Ring
+
+variable {R M P N : Type*}
+variable [Ring R] [AddCommGroup M] [AddCommGroup P] [AddCommGroup N]
+variable [Module R M] [Module R P] [Module R N]
+
+instance isArtinian_of_quotient_of_artinian
+    (N : Submodule R M) [IsArtinian R M] : IsArtinian R (M ⧸ N) :=
+  isArtinian_of_surjective M (Submodule.mkQ N) (Submodule.Quotient.mk_surjective N)
+
+theorem isArtinian_of_range_eq_ker [IsArtinian R M] [IsArtinian R P] (f : M →ₗ[R] N) (g : N →ₗ[R] P)
+    (h : LinearMap.range f = LinearMap.ker g) : IsArtinian R N :=
+  wellFounded_lt_exact_sequence (LinearMap.range f) (Submodule.map (f.ker.liftQ f le_rfl))
+    (Submodule.comap (f.ker.liftQ f le_rfl))
+    (Submodule.comap g.rangeRestrict) (Submodule.map g.rangeRestrict)
+    (Submodule.gciMapComap <| LinearMap.ker_eq_bot.mp <| Submodule.ker_liftQ_eq_bot _ _ _ le_rfl)
+    (Submodule.giMapComap g.surjective_rangeRestrict)
+    (by simp [Submodule.map_comap_eq, inf_comm, Submodule.range_liftQ])
+    (by simp [Submodule.comap_map_eq, h])
+
+theorem isArtinian_iff_submodule_quotient (S : Submodule R P) :
+    IsArtinian R P ↔ IsArtinian R S ∧ IsArtinian R (P ⧸ S) := by
+  refine ⟨fun h ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ ?_⟩
+  apply isArtinian_of_range_eq_ker S.subtype S.mkQ
+  rw [Submodule.ker_mkQ, Submodule.range_subtype]
+
+instance isArtinian_prod [IsArtinian R M] [IsArtinian R P] : IsArtinian R (M × P) :=
+  isArtinian_of_range_eq_ker (LinearMap.inl R M P) (LinearMap.snd R M P) (LinearMap.range_inl R M P)
+
+instance isArtinian_sup (M₁ M₂ : Submodule R P) [IsArtinian R M₁] [IsArtinian R M₂] :
+    IsArtinian R ↥(M₁ ⊔ M₂) := by
+  have := isArtinian_range (M₁.subtype.coprod M₂.subtype)
+  rwa [LinearMap.range_coprod, Submodule.range_subtype, Submodule.range_subtype] at this
+
+variable {ι : Type*} [Finite ι]
+
+instance isArtinian_pi :
+    ∀ {M : ι → Type*} [Π i, AddCommGroup (M i)]
+      [Π i, Module R (M i)] [∀ i, IsArtinian R (M i)], IsArtinian R (Π i, M i) := by
+  apply Finite.induction_empty_option _ _ _ ι
+  · exact fun e h ↦ isArtinian_of_linearEquiv (LinearEquiv.piCongrLeft R _ e)
+  · infer_instance
+  · exact fun ih ↦ isArtinian_of_linearEquiv (LinearEquiv.piOptionEquivProd R).symm
+
+/-- A version of `isArtinian_pi` for non-dependent functions. We need this instance because
+sometimes Lean fails to apply the dependent version in non-dependent settings (e.g., it fails to
+prove that `ι → ℝ` is finite dimensional over `ℝ`). -/
+instance isArtinian_pi' [IsArtinian R M] : IsArtinian R (ι → M) :=
+  isArtinian_pi
+
+--Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): new instance
+instance isArtinian_finsupp [IsArtinian R M] : IsArtinian R (ι →₀ M) :=
+  isArtinian_of_linearEquiv (Finsupp.linearEquivFunOnFinite _ _ _).symm
+
+instance isArtinian_iSup :
+    ∀ {M : ι → Submodule R P} [∀ i, IsArtinian R (M i)], IsArtinian R ↥(⨆ i, M i) := by
+  apply Finite.induction_empty_option _ _ _ ι
+  · intro _ _ e h _ _; rw [← e.iSup_comp]; apply h
+  · intros; rw [iSup_of_empty]; infer_instance
+  · intro _ _ ih _ _; rw [iSup_option]; infer_instance
+
+open Submodule Function
+
+namespace LinearMap
+
+variable [IsArtinian R M]
+
+/-- For any endomorphism of an Artinian module, any sufficiently high iterate has codisjoint kernel
+and range. -/
+theorem eventually_codisjoint_ker_pow_range_pow (f : M →ₗ[R] M) :
+    ∀ᶠ n in atTop, Codisjoint (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
+  obtain ⟨n, hn : ∀ m, n ≤ m → LinearMap.range (f ^ n) = LinearMap.range (f ^ m)⟩ :=
+    IsArtinian.monotone_stabilizes f.iterateRange
+  refine eventually_atTop.mpr ⟨n, fun m hm ↦ codisjoint_iff.mpr ?_⟩
+  simp_rw [← hn _ hm, Submodule.eq_top_iff', Submodule.mem_sup]
+  intro x
+  rsuffices ⟨y, hy⟩ : ∃ y, (f ^ m) ((f ^ n) y) = (f ^ m) x
+  · exact ⟨x - (f ^ n) y, by simp [hy], (f ^ n) y, by simp⟩
+  -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 had to change `mem_range` into `mem_range (f := _)`
+  simp_rw [f.pow_apply n, f.pow_apply m, ← iterate_add_apply, ← f.pow_apply (m + n),
+    ← f.pow_apply m, ← mem_range (f := _), ← hn _ (n.le_add_left m), hn _ hm]
+  exact LinearMap.mem_range_self (f ^ m) x
+
+/-- This is the Fitting decomposition of the module `M` with respect to the endomorphism `f`.
+
+See also `LinearMap.isCompl_iSup_ker_pow_iInf_range_pow` for an alternative spelling. -/
+theorem eventually_isCompl_ker_pow_range_pow [IsNoetherian R M] (f : M →ₗ[R] M) :
+    ∀ᶠ n in atTop, IsCompl (LinearMap.ker (f ^ n)) (LinearMap.range (f ^ n)) := by
+  filter_upwards [f.eventually_disjoint_ker_pow_range_pow.and
+    f.eventually_codisjoint_ker_pow_range_pow] with n hn
+  simpa only [isCompl_iff]
+
+/-- This is the Fitting decomposition of the module `M` with respect to the endomorphism `f`.
+
+See also `LinearMap.eventually_isCompl_ker_pow_range_pow` for an alternative spelling. -/
+theorem isCompl_iSup_ker_pow_iInf_range_pow [IsNoetherian R M] (f : M →ₗ[R] M) :
+    IsCompl (⨆ n, LinearMap.ker (f ^ n)) (⨅ n, LinearMap.range (f ^ n)) := by
+  obtain ⟨k, hk⟩ := eventually_atTop.mp <| f.eventually_isCompl_ker_pow_range_pow.and <|
+    f.eventually_iInf_range_pow_eq.and f.eventually_iSup_ker_pow_eq
+  obtain ⟨h₁, h₂, h₃⟩ := hk k (le_refl k)
+  rwa [h₂, h₃]
+
+end LinearMap
+
 end Ring
 
-section CommRing
+section CommSemiring
 
-variable {R : Type*} (M : Type*) [CommRing R] [AddCommGroup M] [Module R M] [IsArtinian R M]
+variable {R : Type*} (M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M] [IsArtinian R M]
 
 namespace IsArtinian
 
@@ -334,13 +343,13 @@ theorem exists_pow_succ_smul_dvd (r : R) (x : M) :
 
 end IsArtinian
 
-end CommRing
+end CommSemiring
 
-theorem isArtinian_of_submodule_of_artinian (R M) [Ring R] [AddCommGroup M] [Module R M]
+theorem isArtinian_of_submodule_of_artinian (R M) [Semiring R] [AddCommMonoid M] [Module R M]
     (N : Submodule R M) (_ : IsArtinian R M) : IsArtinian R N := inferInstance
 
 /-- If `M / S / R` is a scalar tower, and `M / R` is Artinian, then `M / S` is also Artinian. -/
-theorem isArtinian_of_tower (R) {S M} [CommRing R] [Ring S] [AddCommGroup M] [Algebra R S]
+theorem isArtinian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M] [SMul R S]
     [Module S M] [Module R M] [IsScalarTower R S M] (h : IsArtinian R M) : IsArtinian S M :=
   ⟨(Submodule.restrictScalarsEmbedding R S M).wellFounded h.wf⟩
 
@@ -356,20 +365,25 @@ convenience in the commutative case. For a right Artinian ring, use `IsArtinian 
 For equivalent definitions, see `Mathlib.RingTheory.Artinian.Ring`.
 -/
 @[stacks 00J5]
-abbrev IsArtinianRing (R) [Ring R] :=
+abbrev IsArtinianRing (R) [Semiring R] :=
   IsArtinian R R
 
-theorem isArtinianRing_iff {R} [Ring R] : IsArtinianRing R ↔ IsArtinian R R := Iff.rfl
+theorem isArtinianRing_iff {R} [Semiring R] : IsArtinianRing R ↔ IsArtinian R R := Iff.rfl
 
-instance DivisionRing.instIsArtinianRing {K : Type*} [DivisionRing K] : IsArtinianRing K :=
+instance DivisionSemiring.instIsArtinianRing {K : Type*} [DivisionSemiring K] : IsArtinianRing K :=
   ⟨Finite.wellFounded_of_trans_of_irrefl _⟩
 
-theorem Ring.isArtinian_of_zero_eq_one {R} [Ring R] (h01 : (0 : R) = 1) : IsArtinianRing R :=
+instance DivisionRing.instIsArtinianRing {K : Type*} [DivisionRing K] : IsArtinianRing K :=
+  inferInstance
+
+theorem Ring.isArtinian_of_zero_eq_one {R} [Semiring R] (h01 : (0 : R) = 1) : IsArtinianRing R :=
   have := subsingleton_of_zero_eq_one h01
   inferInstance
 
 instance (R) [CommRing R] [IsArtinianRing R] (I : Ideal R) : IsArtinianRing (R ⧸ I) :=
   isArtinian_of_tower R inferInstance
+
+open Submodule Function
 
 theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M]
     (N : Submodule R M) [IsArtinianRing R] (hN : N.FG) : IsArtinian R N := by
@@ -390,7 +404,7 @@ theorem isArtinian_of_fg_of_artinian {R M} [Ring R] [AddCommGroup M] [Module R M
 
 instance isArtinian_of_fg_of_artinian' {R M} [Ring R] [AddCommGroup M] [Module R M]
     [IsArtinianRing R] [Module.Finite R M] : IsArtinian R M :=
-  have : IsArtinian R (⊤ : Submodule R M) := isArtinian_of_fg_of_artinian _ Module.Finite.out
+  have : IsArtinian R (⊤ : Submodule R M) := isArtinian_of_fg_of_artinian _ Module.Finite.fg_top
   isArtinian_of_linearEquiv (LinearEquiv.ofTop (⊤ : Submodule R M) rfl)
 
 theorem IsArtinianRing.of_finite (R S) [CommRing R] [Ring S] [Algebra R S]
@@ -403,17 +417,56 @@ theorem isArtinian_span_of_finite (R) {M} [Ring R] [AddCommGroup M] [Module R M]
     {A : Set M} (hA : A.Finite) : IsArtinian R (Submodule.span R A) :=
   isArtinian_of_fg_of_artinian _ (Submodule.fg_def.mpr ⟨A, hA, rfl⟩)
 
-theorem Function.Surjective.isArtinianRing {R} [Ring R] {S} [Ring S] {F}
+theorem Function.Surjective.isArtinianRing {R} [Semiring R] {S} [Semiring S] {F}
     [FunLike F R S] [RingHomClass F R S]
     {f : F} (hf : Function.Surjective f) [H : IsArtinianRing R] : IsArtinianRing S := by
   rw [isArtinianRing_iff] at H ⊢
   exact ⟨(Ideal.orderEmbeddingOfSurjective f hf).wellFounded H.wf⟩
 
+instance isArtinianRing_rangeS {R} [Semiring R] {S} [Semiring S] (f : R →+* S) [IsArtinianRing R] :
+    IsArtinianRing f.rangeS :=
+  f.rangeSRestrict_surjective.isArtinianRing
+
 instance isArtinianRing_range {R} [Ring R] {S} [Ring S] (f : R →+* S) [IsArtinianRing R] :
     IsArtinianRing f.range :=
-  f.rangeRestrict_surjective.isArtinianRing
+  isArtinianRing_rangeS f
+
+theorem RingEquiv.isArtinianRing {R S} [Semiring R] [Semiring S] (f : R ≃+* S)
+    [IsArtinianRing R] : IsArtinianRing S :=
+  f.surjective.isArtinianRing
+
+instance {R S} [Semiring R] [Semiring S] [IsArtinianRing R] [IsArtinianRing S] :
+    IsArtinianRing (R × S) :=
+  Ideal.idealProdEquiv.toOrderEmbedding.wellFoundedLT
+
+instance {ι} [Finite ι] : ∀ {R : ι → Type*} [Π i, Semiring (R i)] [∀ i, IsArtinianRing (R i)],
+    IsArtinianRing (Π i, R i) := by
+  apply Finite.induction_empty_option _ _ _ ι
+  · exact fun e h ↦ RingEquiv.isArtinianRing (.piCongrLeft _ e)
+  · infer_instance
+  · exact fun ih ↦ RingEquiv.isArtinianRing (.symm .piOptionEquivProd)
 
 namespace IsArtinianRing
+
+section CommSemiring
+
+variable (R : Type*) [CommSemiring R] [IsArtinianRing R]
+
+@[stacks 00J7]
+lemma maximal_ideals_finite : {I : Ideal R | I.IsMaximal}.Finite := by
+  set Spec := {I : Ideal R | I.IsMaximal}
+  obtain ⟨_, ⟨s, rfl⟩, H⟩ := IsArtinian.set_has_minimal
+    (range (Finset.inf · Subtype.val : Finset Spec → Ideal R)) ⟨⊤, ∅, by simp⟩
+  refine Set.finite_def.2 ⟨s, fun p ↦ ?_⟩
+  classical
+  obtain ⟨q, hq1, hq2⟩ := p.2.isPrime.inf_le'.mp <| inf_eq_right.mp <|
+    inf_le_right.eq_of_not_lt (H (p ⊓ s.inf Subtype.val) ⟨insert p s, by simp⟩)
+  rwa [← Subtype.ext <| q.2.eq_of_le p.2.ne_top hq2]
+
+lemma subtype_isMaximal_finite : Finite {I : Ideal R | I.IsMaximal} :=
+  (maximal_ideals_finite R).to_subtype
+
+end CommSemiring
 
 variable {R : Type*} [CommRing R] [IsArtinianRing R]
 
@@ -428,31 +481,20 @@ lemma isField_of_isDomain [IsDomain R] : IsField R := by
   rw [mul_eq_zero, sub_eq_zero] at hy
   exact ⟨_, hy.resolve_left <| pow_ne_zero _ hx⟩
 
+/- Does not hold in a commutative semiring:
+consider {0, 0.5, 1} with ⊔ as + and ⊓ as *, then both {0} and {0, 0.5} are prime ideals. -/
 instance isMaximal_of_isPrime (p : Ideal R) [p.IsPrime] : p.IsMaximal :=
   Ideal.Quotient.maximal_of_isField _ (isField_of_isDomain _)
 
 lemma isPrime_iff_isMaximal (p : Ideal R) : p.IsPrime ↔ p.IsMaximal :=
   ⟨fun _ ↦ isMaximal_of_isPrime p, fun h ↦ h.isPrime⟩
 
-variable (R) in
-lemma primeSpectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
-  set Spec := {I : Ideal R | I.IsPrime}
-  obtain ⟨_, ⟨s, rfl⟩, H⟩ := IsArtinian.set_has_minimal
-    (range (Finset.inf · Subtype.val : Finset Spec → Ideal R)) ⟨⊤, ∅, by simp⟩
-  refine Set.finite_def.2 ⟨s, fun p ↦ ?_⟩
-  classical
-  obtain ⟨q, hq1, hq2⟩ := p.2.inf_le'.mp <| inf_eq_right.mp <|
-    inf_le_right.eq_of_not_lt (H (p ⊓ s.inf Subtype.val) ⟨insert p s, by simp⟩)
-  rwa [← Subtype.ext <| (@isMaximal_of_isPrime _ _ _ _ q.2).eq_of_le p.2.1 hq2]
-
 variable (R)
-@[stacks 00J7]
-lemma maximal_ideals_finite : {I : Ideal R | I.IsMaximal}.Finite := by
-  simp_rw [← isPrime_iff_isMaximal]
-  apply primeSpectrum_finite R
 
-@[local instance] lemma subtype_isMaximal_finite : Finite {I : Ideal R | I.IsMaximal} :=
-  (maximal_ideals_finite R).to_subtype
+lemma primeSpectrum_finite : {I : Ideal R | I.IsPrime}.Finite := by
+  simpa only [isPrime_iff_isMaximal] using maximal_ideals_finite R
+
+attribute [local instance] subtype_isMaximal_finite
 
 /-- A temporary field instance on the quotients by maximal ideals. -/
 @[local instance] noncomputable def fieldOfSubtypeIsMaximal

@@ -25,9 +25,9 @@ The equational criterion for flatness can be stated in the following form
 (`Module.Flat.iff_forall_exists_factorization`). Let $M$ be an $R$-module. Then the following two
 conditions are equivalent:
 * $M$ is flat.
-* For finite free modules $R^l$, all elements $f \in R^l$, and all homomorphisms
-$x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and module
-homomorphisms $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
+* For finite free modules $R^l$, all elements $f \in R^l$, and all linear maps
+$x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and
+linear maps $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
 that $x = y \circ a$ and $a(f) = 0$.
 
 Of course, the module $R^l$ in this statement can be replaced by an arbitrary free module
@@ -36,12 +36,12 @@ Of course, the module $R^l$ in this statement can be replaced by an arbitrary fr
 We also have the following strengthening of the equational criterion for flatness
 (`Module.Flat.exists_factorization_of_comp_eq_zero_of_free`): Let $M$ be a
 flat module. Let $K$ and $N$ be finite $R$-modules with $N$ free, and let $f \colon K \to N$ and
-$x \colon N \to M$ be homomorphisms such that $x \circ f = 0$. Then there exist a finite free module
-$R^k$ and module homomorphisms $a \colon N \to R^k$ and $y \colon R^k \to M$ such
+$x \colon N \to M$ be linear maps such that $x \circ f = 0$. Then there exist a finite free module
+$R^k$ and linear maps $a \colon N \to R^k$ and $y \colon R^k \to M$ such
 that $x = y \circ a$ and $a \circ f = 0$. We recover the usual equational criterion for flatness if
 $K = R$ and $N = R^l$. This is used in the proof of Lazard's theorem.
 
-We conclude that every homomorphism from a finitely presented module to a flat module factors
+We conclude that every linear map from a finitely presented module to a flat module factors
 through a finite free module (`Module.Flat.exists_factorization_of_isFinitelyPresented`), and
 every finitely presented flat module is projective (`Module.Flat.projective_of_finitePresentation`).
 
@@ -104,9 +104,9 @@ Let $M$ be a module over a commutative ring $R$. The following are equivalent:
 * For all ideals $I \subseteq R$, the map $I \otimes M \to M$ is injective.
 * Every $\sum_i f_i \otimes x_i$ that vanishes in $R \otimes M$ vanishes trivially.
 * Every relation $\sum_i f_i x_i = 0$ in $M$ is trivial.
-* For all finite free modules $R^l$, all elements $f \in R^l$, and all homomorphisms
-$x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and module
-homomorphisms $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
+* For all finite free modules $R^l$, all elements $f \in R^l$, and all linear maps
+$x \colon R^l \to M$ such that $x(f) = 0$, there exist a finite free module $R^k$ and
+linear maps $a \colon R^l \to R^k$ and $y \colon R^k \to M$ such
 that $x = y \circ a$ and $a(f) = 0$.
 -/
 @[stacks 00HK, stacks 058D "except (3)"]
@@ -188,8 +188,8 @@ theorem of_forall_isTrivialRelation (hfx : ∀ {l : ℕ} {f : Fin l → R} {x : 
 /-- **Equational criterion for flatness**, alternate form.
 
 A module $M$ is flat if and only if for all finite free modules $R^l$,
-all $f \in R^l$, and all homomorphisms $x \colon R^l \to M$ such that $x(f) = 0$, there
-exist a finite free module $R^k$ and homomorphisms $a \colon R^l \to R^k$ and
+all $f \in R^l$, and all linear maps $x \colon R^l \to M$ such that $x(f) = 0$, there
+exist a finite free module $R^k$ and linear maps $a \colon R^l \to R^k$ and
 $y \colon R^k \to M$ such that $x = y \circ a$ and $a(f) = 0$. -/
 @[stacks 058D "(1) ↔ (2)"]
 theorem iff_forall_exists_factorization : Flat R M ↔
@@ -200,8 +200,8 @@ theorem iff_forall_exists_factorization : Flat R M ↔
 /-- **Equational criterion for flatness**, backward direction, alternate form.
 
 Let $M$ be a module over a commutative ring $R$. Suppose that for all finite free modules $R^l$,
-all $f \in R^l$, and all homomorphisms $x \colon R^l \to M$ such that $x(f) = 0$, there
-exist a finite free module $R^k$ and homomorphisms $a \colon R^l \to R^k$ and
+all $f \in R^l$, and all linear maps $x \colon R^l \to M$ such that $x(f) = 0$, there
+exist a finite free module $R^k$ and linear maps $a \colon R^l \to R^k$ and
 $y \colon R^k \to M$ such that $x = y \circ a$ and $a(f) = 0$. Then $M$ is flat. -/
 @[stacks 058D "(2) → (1)"]
 theorem of_forall_exists_factorization
@@ -212,8 +212,8 @@ theorem of_forall_exists_factorization
 /-- **Equational criterion for flatness**, forward direction, second alternate form.
 
 Let $M$ be a flat module over a commutative ring $R$. Let $N$ be a finite free module over $R$,
-let $f \in N$, and let $x \colon N \to M$ be a homomorphism such that $x(f) = 0$. Then there exist a
-finite free module $R^k$ and module homomorphisms $a \colon N \to R^k$ and
+let $f \in N$, and let $x \colon N \to M$ be a linear map such that $x(f) = 0$. Then there exist a
+finite free module $R^k$ and linear maps $a \colon N \to R^k$ and
 $y \colon R^k \to M$ such that $x = y \circ a$ and $a(f) = 0$. -/
 @[stacks 058D "(1) → (2)"]
 theorem exists_factorization_of_apply_eq_zero_of_free [Flat R M] {N : Type*} [AddCommGroup N]
@@ -246,12 +246,12 @@ private theorem exists_factorization_of_comp_eq_zero_of_free_aux [Flat R M] {K :
       use k₂, a₂ ∘ₗ a₁, y₂
       simp_rw [comp_assoc]
       exact ⟨trivial, sup_le (ha₁.trans (ker_le_ker_comp _ _)) ha₂⟩
-  convert this ⊤ Finite.out
+  convert this ⊤ Finite.fg_top
   simp only [top_le_iff, ker_eq_top]
 
 /-- Let $M$ be a flat module. Let $K$ and $N$ be finite $R$-modules with $N$
-free, and let $f \colon K \to N$ and $x \colon N \to M$ be homomorphisms such that
-$x \circ f = 0$. Then there exist a finite free module $R^k$ and module homomorphisms
+free, and let $f \colon K \to N$ and $x \colon N \to M$ be linear maps such that
+$x \circ f = 0$. Then there exist a finite free module $R^k$ and linear maps
 $a \colon N \to R^k$ and $y \colon R^k \to M$ such that $x = y \circ a$ and
 $a \circ f = 0$. -/
 @[stacks 058D "(1) → (4)"]
