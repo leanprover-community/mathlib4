@@ -866,7 +866,7 @@ lemma isClopen_iff_mul_add {s : Set (PrimeSpectrum R)} :
   refine ⟨fun h ↦ ?_, ?_⟩; swap
   · rintro ⟨e, f, mul, add, rfl⟩
     refine ⟨?_, (basicOpen e).2⟩
-    rw [PrimeSpectrum.basicOpen_eq_zeroLocus_of_mul_add e f mul add]
+    rw [basicOpen_eq_zeroLocus_of_mul_add e f mul add]
     exact isClosed_zeroLocus _
   have ⟨e, he, hs⟩ := exists_idempotent_basicOpen_eq_of_isClopen h
   have ⟨f, hf, hsc⟩ := exists_idempotent_basicOpen_eq_of_isClopen h.compl
