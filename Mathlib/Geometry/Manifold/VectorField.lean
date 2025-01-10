@@ -583,6 +583,18 @@ lemma eventually_contMDiffWithinAt_mpullbackWithin_extChartAt_symm
   simp only [mfld_simps] at hy h'y
   simp [hy, h'y]
 
+omit [CompleteSpace E] in
+lemma eventuallyEq_mpullback_mpullbackWithin_extChartAt (V : Π (x : M), TangentSpace I x) :
+    V =ᶠ[𝓝[s] x] mpullback I 𝓘(𝕜, E) (extChartAt I x)
+      (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm V (range I)) := by
+  apply nhdsWithin_le_nhds
+  filter_upwards [extChartAt_source_mem_nhds (I := I) x] with y hy
+  have A : (extChartAt I x).symm (extChartAt I x y) = y := (extChartAt I x).left_inv hy
+  rw [mpullback_apply, mpullbackWithin_apply,
+    ← (isInvertible_mfderiv_extChartAt hy).inverse_comp_apply_of_right,
+    mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt' hy, A]
+  simp only [ContinuousLinearMap.inverse_id, ContinuousLinearMap.coe_id', id_eq]
+
 end
 
 lemma mpullbackWithin_comp_of_left
@@ -1302,19 +1314,10 @@ lemma mpullback_mlieBracket
   simp only [← mlieBracketWithin_univ, ← mdifferentiableWithinAt_univ] at hV hW ⊢
   exact mpullback_mlieBracketWithin hV hW uniqueMDiffOn_univ hf (mem_univ _) hn (by simp)
 
-lemma eventuallyEq_mpullback_mpullbackWithin_extChartAt (V : Π (x : M), TangentSpace I x) :
-    V =ᶠ[𝓝[s] x] mpullback I 𝓘(𝕜, E) (extChartAt I x)
-      (mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm V (range I)) := by
-  apply nhdsWithin_le_nhds
-  filter_upwards [extChartAt_source_mem_nhds (I := I) x] with y hy
-  have A : (extChartAt I x).symm (extChartAt I x y) = y := (extChartAt I x).left_inv hy
-  rw [mpullback_apply, mpullbackWithin_apply,
-    ← (isInvertible_mfderiv_extChartAt hy).inverse_comp_apply_of_right,
-    mfderivWithin_extChartAt_symm_comp_mfderiv_extChartAt' hy, A]
-  simp only [ContinuousLinearMap.inverse_id, ContinuousLinearMap.coe_id', id_eq]
+#check ContDiffWithinAt.lieBracketWithin_vectorField
 
 /-- If two vector fields are `C^n` with `n ≥ m + 1`, then their Lie bracket is `C^m`. -/
-protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField {m n : ℕ∞}
+protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField {m : WithTop ℕ∞}
     {U V : Π (x : M), TangentSpace I x} {s : Set M} {x : M}
     (hU : ContMDiffWithinAt I I.tangent n (fun x ↦ (U x : TangentBundle I M)) s x)
     (hV : ContMDiffWithinAt I I.tangent n (fun x ↦ (V x : TangentBundle I M)) s x)
@@ -1328,9 +1331,9 @@ protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField {m n : �
   space Lie bracket, given by an explicit formula). Pulling back this Lie bracket in `M` gives
   locally a smooth function, which coincides with the initial Lie bracket by invariance
   under diffeos. -/
-  apply contMDiffWithinAt_iff_nat.2 (fun m' hm' ↦ ?_)
-  have hn : (1 : ℕ∞) ≤ m' + 1 := by exact_mod_cast (show 1 ≤ m' + 1 by omega)
-  have hm'n : m' + 1 ≤ n := le_trans (add_le_add_right hm' 1) hmn
+--  apply contMDiffWithinAt_iff_nat.2 (fun m' hm' ↦ ?_)
+  --have hn : (1 : ℕ∞) ≤ m' + 1 := by exact_mod_cast (show 1 ≤ m' + 1 by omega)
+  --have hm'n : m' + 1 ≤ n := le_trans (add_le_add_right hm' 1) hmn
   have pre_mem : (extChartAt I x) ⁻¹' ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s)
       ∈ 𝓝[s] x := by
     filter_upwards [self_mem_nhdsWithin,
@@ -1339,12 +1342,12 @@ protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField {m n : �
       by simpa only [mem_preimage, (extChartAt I x).left_inv h'y] using hy⟩
   let U' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm U (range I)
   let V' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm V (range I)
-  have A : ContDiffWithinAt 𝕜 m' (lieBracketWithin 𝕜 U' V'
+  have A : ContDiffWithinAt 𝕜 m (lieBracketWithin 𝕜 U' V'
       ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s))
       ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) (extChartAt I x x) :=
     ContDiffWithinAt.lieBracketWithin_vectorField
       (contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt.1
-        (contMDiffWithinAt_mpullbackWithin_extChartAt_symm (hU.of_le hm'n) hs hx))
+        (contMDiffWithinAt_mpullbackWithin_extChartAt_symm (hU) hs hx hmn))
       (contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt.1
         (contMDiffWithinAt_mpullbackWithin_extChartAt_symm (hV.of_le hm'n) hs hx))
       (hs.uniqueDiffOn_target_inter x) le_rfl (by simp [hx])
