@@ -208,7 +208,7 @@ protected theorem Surjective.exists₃ (hf : Surjective f) {p : β → β → β
 theorem Surjective.injective_comp_right (hf : Surjective f) : Injective fun g : β → γ ↦ g ∘ f :=
   fun _ _ h ↦ funext <| hf.forall.2 <| congr_fun h
 
-theorem injective_comp_right_iff_surjective [Nontrivial γ] :
+theorem injective_comp_right_iff_surjective {γ : Type*} [Nontrivial γ] :
     Injective (fun g : β → γ ↦ g ∘ f) ↔ Surjective f := by
   refine ⟨not_imp_not.mp fun not_surj inj ↦ not_subsingleton γ ⟨fun c c' ↦ ?_⟩,
     (·.injective_comp_right)⟩
@@ -707,7 +707,7 @@ theorem Injective.surjective_comp_right [Nonempty γ] (hf : Injective f) :
     Surjective fun g : β → γ ↦ g ∘ f :=
   hf.surjective_comp_right' fun _ ↦ Classical.choice ‹_›
 
-theorem surjective_comp_right_iff_injective [Nontrivial γ] :
+theorem surjective_comp_right_iff_injective {γ : Type*} [Nontrivial γ] :
     Surjective (fun g : β → γ ↦ g ∘ f) ↔ Injective f := by
   refine ⟨not_imp_not.mp fun not_inj surj ↦ not_subsingleton γ ⟨fun c c' ↦ ?_⟩,
     (·.surjective_comp_right)⟩
