@@ -1387,4 +1387,13 @@ lemma lift_openEmbedding_source (e : PartialHomeomorph X Z) (hf : IsOpenEmbeddin
 lemma lift_openEmbedding_target (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf).target = e.target := rfl
 
+-- TODO: shouldn't be hard to prove...
+lemma lift_openEmbedding_trans (e e' : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
+    (e.lift_openEmbedding hf).symm.trans (e'.lift_openEmbedding hf) = e.symm.trans e' := by
+  ext x
+  · simp [hf.injective.extend_apply e']
+  · simp [hf.injective.extend_apply e]
+  · dsimp
+    sorry
+
 end PartialHomeomorph

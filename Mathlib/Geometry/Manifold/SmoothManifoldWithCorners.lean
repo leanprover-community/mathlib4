@@ -799,7 +799,8 @@ instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedA
 
 section DisjointUnion
 
-variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] [IsManifold I n M']
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+  [hM : IsManifold I n M] [hM' : IsManifold I n M']
   -- {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M''] [IsManifold I n M'']
 
 /-- The disjoint union of two `C^n` manifolds modelled on `(E, H)`
@@ -810,13 +811,15 @@ instance disjointUnion [Nonempty M] [Nonempty M'] [Nonempty H] :
   compatible {e} e' he he' := by
     obtain (⟨f, hf, hef⟩ | ⟨f, hf, hef⟩) := ChartedSpace.mem_atlas_sum he
     · obtain (⟨f', hf', he'f'⟩ | ⟨f', hf', he'f'⟩) := ChartedSpace.mem_atlas_sum he'
-      · rw [hef, he'f']
-        -- next: need a lemma about lift_openEmbedding and trans (twice the same),
-        -- then should be obvious
-        sorry
+      · rw [hef, he'f', f.lift_openEmbedding_trans f' (X' := M ⊕ M') IsOpenEmbedding.inl]
+        exact hM.compatible hf hf'
       · rw [hef, he'f']
         sorry -- lift across two different embeddings...
-    · sorry -- two cases, similar to the ones above
+    · -- analogous argument to the first case: can I deduplicate?
+      obtain (⟨f', hf', he'f'⟩ | ⟨f', hf', he'f'⟩) := ChartedSpace.mem_atlas_sum he'
+      · sorry
+      · rw [hef, he'f', f.lift_openEmbedding_trans f' (X' := M ⊕ M') IsOpenEmbedding.inr]
+        exact hM'.compatible hf hf'
 
 end DisjointUnion
 
