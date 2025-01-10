@@ -260,15 +260,17 @@ theorem IsLocalRing.linearIndependent_of_flat [Flat R M] {ι : Type u} (v : ι �
   have ⟨l, a, y, hay, hfa⟩ := Flat.isTrivialRelation_of_sum_smul_eq_zero hfx
   have : x n ∉ 𝔪 • (⊤ : Submodule R M) := by
     simpa only [← LinearMap.ker_tensorProductMk] using hx.ne_zero n
-  let n : ↥(insert n s) := ⟨n, Finset.mem_insert_self ..⟩
+  set n : ↥(insert n s) := ⟨n, Finset.mem_insert_self ..⟩ with n_def
   obtain ⟨j, hj⟩ : ∃ j, IsUnit (a n j) := by
-    contrapose! this; simp_rw [hay n]; exact sum_mem fun _ _ ↦ Submodule.smul_mem_smul (this _) ⟨⟩
+    contrapose! this
+    rw [show x n = _ from hay n]
+    exact sum_mem fun _ _ ↦ Submodule.smul_mem_smul (this _) ⟨⟩
   let a' (i : ι) : R := if hi : _ then a ⟨i, hi⟩ j else 0
   have a_eq i : a i j = a' i.1 := by simp_rw [a', dif_pos i.2]
   have hfn : f n = -(∑ i in s, f i * a' i) * hj.unit⁻¹ := by
     rw [← hj.mul_left_inj, mul_assoc, hj.val_inv_mul, mul_one, eq_neg_iff_add_eq_zero]
     convert hfa j
-    simp_rw [a_eq, Finset.sum_coe_sort _ (fun i ↦ f i * a' i), s.sum_insert hn]
+    simp_rw [a_eq, Finset.sum_coe_sort _ (fun i ↦ f i * a' i), s.sum_insert hn, n_def]
   let c (i : ι) : R := -(if i = n then 0 else a' i) * hj.unit⁻¹
   specialize ih (x + (c · • x n)) ?_ f ?_
   · convert (linearIndependent_add_smul_iff (c := Ideal.Quotient.mk _ ∘ c) (i := n.1) ?_).mpr hx
