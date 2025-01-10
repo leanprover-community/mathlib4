@@ -808,14 +808,15 @@ is a `C^n` manifold modeled on `(E, H)`. -/
 instance disjointUnion [Nonempty M] [Nonempty M'] [Nonempty H] :
     IsManifold I n (M ⊕ M') where
   compatible {e} e' he he' := by
-    rw [cm.mem_atlas_sum cm'] at he
-    rw [cm.mem_atlas_sum cm'] at he'
-    -- now, distinguish all four cases: two of them are similar each; need two arguments...
-    dsimp
-
-
-
-    sorry
+    obtain (⟨f, hf, hef⟩ | ⟨f, hf, hef⟩) := ChartedSpace.mem_atlas_sum he
+    · obtain (⟨f', hf', he'f'⟩ | ⟨f', hf', he'f'⟩) := ChartedSpace.mem_atlas_sum he'
+      · rw [hef, he'f']
+        -- next: need a lemma about lift_openEmbedding and trans (twice the same),
+        -- then should be obvious
+        sorry
+      · rw [hef, he'f']
+        sorry -- lift across two different embeddings...
+    · sorry -- two cases, similar to the ones above
 
 end DisjointUnion
 
