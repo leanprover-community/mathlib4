@@ -17,7 +17,6 @@ import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Perm.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commute.Defs
-import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
