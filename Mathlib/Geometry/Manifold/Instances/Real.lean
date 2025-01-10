@@ -41,7 +41,6 @@ The manifold structure on the interval `[x, y] = Icc x y` requires the assumptio
 typeclass. We provide it as `[Fact (x < y)]`.
 -/
 
-
 noncomputable section
 
 open Set Function
@@ -258,7 +257,7 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
   source := { z : Icc x y | z.val < y }
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun := fun z : Icc x y => ⟨fun _ => z.val - x, sub_nonneg.mpr z.property.1⟩
-  invFun z := ⟨min (z.val 0 + x) y, by simp [le_refl, z.prop, le_of_lt h.out]⟩
+  invFun z := ⟨min (z.val 0 + x) y, by simp [le_refl, z.prop, h.out.le]⟩
   map_source' := by simp only [imp_self, sub_lt_sub_iff_right, mem_setOf_eq, forall_true_iff]
   map_target' := by
     simp only [min_lt_iff, mem_setOf_eq]; intro z hz; left
@@ -299,29 +298,28 @@ def IccLeftChart (x y : ℝ) [h : Fact (x < y)] :
 
 variable {x y : ℝ} [hxy : Fact (x < y)]
 
-/-- The endpoint `x ∈ Icc x y`, as a point in `Icc x y` (assuming `x ≤ y`). -/
-abbrev X : Icc x y := ⟨x, ⟨le_refl x, by have := hxy.out; linarith⟩⟩
+namespace Fact.Manifold
 
-/-- The endpoint `y ∈ Icc x y`, as a point in `Icc x y` (assuming `x ≤ y`). -/
-abbrev Y : Icc x y := ⟨y, ⟨by have := hxy.out; linarith, le_refl y⟩⟩
+scoped instance : Fact (x ≤ y) := Fact.mk hxy.out.le
 
-lemma IccLeftChart_extend_left_eq : ((IccLeftChart x y).extend (𝓡∂ 1)) X = 0 := by
-  let zero : EuclideanHalfSpace 1 := ⟨fun _ ↦ 0, by norm_num⟩
-  calc ((IccLeftChart x y).extend (𝓡∂ 1)) X
-    _ = (𝓡∂ 1) ((IccLeftChart x y) X) := rfl
-    _ = (𝓡∂ 1) zero := by
-      congr; ext; rw [IccLeftChart]
-      norm_num
+end Fact.Manifold
+
+open Fact.Manifold
+
+lemma IccLeftChart_extend_left_eq :
+    ((IccLeftChart x y).extend (𝓡∂ 1)) (Icc.instOrderBotElem.bot) = 0 := by
+  calc ((IccLeftChart x y).extend (𝓡∂ 1)) (Icc.instOrderBotElem.bot)
+    _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by norm_num [IccLeftChart, Icc.coe_bot]
     _ = 0 := rfl
 
 lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
     (((IccLeftChart x y).extend (𝓡∂ 1)) p) 0 > 0 := by
   set lhs := (IccLeftChart x y).extend (𝓡∂ 1) p
-  have : lhs 0 = p.val - x := rfl
-  rw [this]
+  rw [show lhs 0 = p.val - x by rfl]
   norm_num [hp.1]
 
-lemma IccLeftChart_boundary : (IccLeftChart x y).extend (𝓡∂ 1) X ∈ frontier (range (𝓡∂ 1)) := by
+lemma IccLeftChart_extend_left_mem_frontier :
+    (IccLeftChart x y).extend (𝓡∂ 1) (Icc.instOrderBotElem.bot) ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccLeftChart_extend_left_eq, frontier_range_modelWithCornersEuclideanHalfSpace]
   exact rfl
 
@@ -334,7 +332,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
   target := { z : EuclideanHalfSpace 1 | z.val 0 < y - x }
   toFun z := ⟨fun _ => y - z.val, sub_nonneg.mpr z.property.2⟩
   invFun z :=
-    ⟨max (y - z.val 0) x, by simp [le_refl, z.prop, le_of_lt h.out, sub_eq_add_neg]⟩
+    ⟨max (y - z.val 0) x, by simp [le_refl, z.prop, h.out.le, sub_eq_add_neg]⟩
   map_source' := by simp only [imp_self, mem_setOf_eq, sub_lt_sub_iff_left, forall_true_iff]
   map_target' := by
     simp only [lt_max_iff, mem_setOf_eq]; intro z hz; left
@@ -373,16 +371,14 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) => z 0 := continuous_apply 0
     exact (A.comp B).comp continuous_subtype_val
 
-lemma IccRightChart_extend_right_eq : (IccRightChart x y).extend (𝓡∂ 1) Y = 0 := by
-  let zero : EuclideanHalfSpace 1 := ⟨fun _ ↦ 0, by norm_num⟩
-  calc ((IccRightChart x y).extend (𝓡∂ 1)) Y
-    _ = (𝓡∂ 1) ((IccRightChart x y) Y) := rfl
-    _ = (𝓡∂ 1) zero := by
-      congr; ext; rw [IccRightChart]
-      norm_num
+lemma IccRightChart_extend_right_eq :
+    (IccRightChart x y).extend (𝓡∂ 1) (Icc.instOrderTopElem.top) = 0 := by
+  calc ((IccRightChart x y).extend (𝓡∂ 1)) (Icc.instOrderTopElem.top)
+    _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by norm_num [IccRightChart, Icc.coe_top]
     _ = 0 := rfl
 
-lemma IccRightChart_boundary : (IccRightChart x y).extend (𝓡∂ 1) Y ∈ frontier (range (𝓡∂ 1)) := by
+lemma IccRightChart_extend_right_mem_frontier :
+    (IccRightChart x y).extend (𝓡∂ 1) (Icc.instOrderTopElem.top) ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccRightChart_extend_right_eq, frontier_range_modelWithCornersEuclideanHalfSpace]
   exact rfl
 
