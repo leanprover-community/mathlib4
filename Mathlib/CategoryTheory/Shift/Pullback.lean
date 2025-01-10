@@ -12,11 +12,21 @@ import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 Given a shift by a monoid `B` on a category `C` and a monoid morphism  `φ : A →+ B`,
 we define a shift by `A` on a category `PullbackShift C φ` which is a type synonym for `C`.
 
-If `F : C ⥤ D` is a functor between categories equipped with shifts by `B`, and if `F`
-has a `CommShift` structure by `B`, we define a pulled back `CommShift` structure by `A`
-on `F`.
-We also prove that, if an adjunction `F ⊣ G` is compatible with `CommShift` structures
-on `F` and `G`, then it is also compatible with the pulled back `CommShift` structures.
+If `F : C ⥤ D` is a functor between categories equipped with shifts by `B`, we define
+a type synonyms `PullbackShift.functor F φ` for `F`. When `F` has a `CommShift` structure
+by `B`, we define a pulled back `CommShift` structure by `A` on `PullbackShift.functor F φ`.
+
+Similarly,if `τ` is a natural transformation between functors `F,G : C ⥤ D`, we define
+a type synonym
+`PullbackShift.natTrans τ φ : PullbackShift.functor F φ ⟶ PullbackShift.functor G φ`.
+When `τ` has a `CommShift` structure by `B`, we define a pulled back `CommShift`
+structure by `A` on `PullbackShift.natTrans τ φ`.
+
+Finally, if we have an adjunction `F ⊣ G` (with `G : D ⥤ C`), we define a type synonym
+`PullbackShift.adjunction adj φ :  PullbackShift.functor F φ ⊣ PullbackShift.functor G φ`
+and we show that, if `adj` compatible with `CommShift` structures
+on `F` and `G`, then `PullbackShift.adjunction adj φ` iis also compatible with the pulled back
+`CommShift` structures.
 -/
 
 namespace CategoryTheory
