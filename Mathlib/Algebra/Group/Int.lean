@@ -16,8 +16,9 @@ This file contains the additive group and multiplicative monoid instances on the
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists Ring
 assert_not_exists DenselyOrdered
+assert_not_exists Ring
+assert_not_exists Set.range
 
 open Nat
 
@@ -55,7 +56,7 @@ instance instAddCommGroup : AddCommGroup ℤ where
 /-!
 ### Extra instances to short-circuit type class resolution
 
-These also prevent non-computable instances like `Int.normedCommRing` being used to construct
+These also prevent non-computable instances like `Int.instNormedCommRing` being used to construct
 these instances non-computably.
 -/
 

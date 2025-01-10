@@ -64,9 +64,6 @@ add_decl_doc AddEquiv.toAddHom
 /-- `MulEquiv α β` is the type of an equiv `α ≃ β` which preserves multiplication. -/
 @[to_additive]
 structure MulEquiv (M N : Type*) [Mul M] [Mul N] extends M ≃ N, M →ₙ* N
--- Porting note: remove when `to_additive` can do this
--- https://github.com/leanprover-community/mathlib4/issues/660
-attribute [to_additive existing] MulEquiv.toMulHom
 
 /-- The `Equiv` underlying a `MulEquiv`. -/
 add_decl_doc MulEquiv.toEquiv
@@ -449,14 +446,20 @@ section unique
 
 /-- The `MulEquiv` between two monoids with a unique element. -/
 @[to_additive "The `AddEquiv` between two `AddMonoid`s with a unique element."]
-def mulEquivOfUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
-  { Equiv.equivOfUnique M N with map_mul' := fun _ _ => Subsingleton.elim _ _ }
+def ofUnique {M N} [Unique M] [Unique N] [Mul M] [Mul N] : M ≃* N :=
+  { Equiv.ofUnique M N with map_mul' := fun _ _ => Subsingleton.elim _ _ }
+
+@[to_additive (attr := deprecated ofUnique (since := "2024-12-25"))]
+alias mulEquivOfUnique := ofUnique
+
+/-- Alias of `AddEquiv.ofEquiv`. -/
+add_decl_doc AddEquiv.addEquivOfUnique
 
 /-- There is a unique monoid homomorphism between two monoids with a unique element. -/
 @[to_additive "There is a unique additive monoid homomorphism between two additive monoids with
   a unique element."]
 instance {M N} [Unique M] [Unique N] [Mul M] [Mul N] : Unique (M ≃* N) where
-  default := mulEquivOfUnique
+  default := ofUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
 
 end unique
@@ -630,6 +633,34 @@ protected theorem map_div [Group G] [DivisionMonoid H] (h : G ≃* H) (x y : G) 
   map_div h x y
 
 end MulEquiv
+
+namespace MonoidHom
+
+/-- The equivalence `(β →* γ) ≃ (α →* γ)` obtained by precomposition with
+a multiplicative equivalence `e : α ≃* β`. -/
+@[to_additive (attr := simps)
+"The equivalence `(β →+ γ) ≃ (α →+ γ)` obtained by precomposition with
+an additive equivalence `e : α ≃+ β`."]
+def precompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
+    (β →* γ) ≃ (α →* γ) where
+  toFun f := f.comp e
+  invFun g := g.comp e.symm
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
+/-- The equivalence `(γ →* α) ≃ (γ →* β)` obtained by postcomposition with
+a multiplicative equivalence `e : α ≃* β`. -/
+@[to_additive (attr := simps)
+"The equivalence `(γ →+ α) ≃ (γ →+ β)` obtained by postcomposition with
+an additive equivalence `e : α ≃+ β`."]
+def postcompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ : Type*) [Monoid γ] :
+    (γ →* α) ≃ (γ →* β) where
+  toFun f := e.toMonoidHom.comp f
+  invFun g := e.symm.toMonoidHom.comp g
+  left_inv _ := by ext; simp
+  right_inv _ := by ext; simp
+
+end MonoidHom
 
 -- Porting note: we want to add
 -- `@[simps (config := .asFn)]`
