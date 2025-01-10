@@ -220,7 +220,7 @@ namespace NatTrans
 variable {F} {G : C ⥤ D} [F.CommShift A] [G.CommShift A]
 
 open Opposite in
-instance commShiftOp (τ : F ⟶ G) [NatTrans.CommShift τ A] :
+instance commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
     NatTrans.CommShift (OppositeShift.natTrans A τ) A where
   shift_comm _ := by
     ext
@@ -303,7 +303,7 @@ If an adjunction `F ⊣ G` is compatible with `CommShift` structures on `F` and 
 the opposite adjunction `OppositeShift.adjunction adj` is compatible with the opposite
 `CommShift` structures.
 -/
-instance commShiftOp [F.CommShift A] [G.CommShift A]  [adj.CommShift A] :
+instance commShift_op [F.CommShift A] [G.CommShift A]  [adj.CommShift A] :
     Adjunction.CommShift (OppositeShift.adjunction A adj) A where
   commShift_unit := by dsimp [OppositeShift.adjunction]; infer_instance
   commShift_counit := by dsimp [OppositeShift.adjunction]; infer_instance
