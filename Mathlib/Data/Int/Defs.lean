@@ -219,7 +219,7 @@ than `b`, and the `pred` of a number less than `b`. -/
 where
   /-- The positive case of `Int.inductionOn'`. -/
   pos : ∀ n : ℕ, C (b + n)
-  | 0 => cast (by erw [Int.add_zero]) H0
+  | 0 => cast (by simp) H0
   | n+1 => cast (by rw [Int.add_assoc]; rfl) <|
     Hs _ (Int.le_add_of_nonneg_right (ofNat_nonneg _)) (pos n)
 

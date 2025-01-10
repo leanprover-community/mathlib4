@@ -354,10 +354,10 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
             induction Y using Opposite.rec' with | h Y => ?_
             let f : Y ⟶ X := f'.unop; have : f' = f.op := rfl; clear_value f; subst this
             rcases f with (_ | ⟨j, k⟩ | ⟨j, k⟩)
-            · erw [Category.id_comp, CategoryTheory.Functor.map_id]
-              rw [Category.comp_id]
-            · erw [Category.id_comp]; congr 1
-            erw [Category.id_comp]
+            · simp
+            · simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
+              congr 1
+            simp only [Functor.const_obj_obj, Functor.const_obj_map, Category.id_comp]
             -- It remains to show that the blue is equal to red + green in the original diagram.
             -- The proof strategy is illustrated in ![this diagram](https://i.imgur.com/mBzV1Rx.png)
             -- where we prove red = pink = light-blue = green = blue.

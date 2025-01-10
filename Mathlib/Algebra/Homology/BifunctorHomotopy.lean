@@ -17,6 +17,8 @@ the morphism `f₂` in `HomologicalComplex C c₂` (TODO).
 
 -/
 
+assert_not_exists TwoSidedIdeal
+
 open CategoryTheory Category Limits
 
 variable {C₁ C₂ D I₁ I₂ J : Type*} [Category C₁] [Category C₂] [Category D]

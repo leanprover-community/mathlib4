@@ -139,12 +139,18 @@ theorem IsBigO.of_bound (c : ℝ) (h : ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x�
   isBigO_iff.2 ⟨c, h⟩
 
 theorem IsBigO.of_bound' (h : ∀ᶠ x in l, ‖f x‖ ≤ ‖g x‖) : f =O[l] g :=
-  IsBigO.of_bound 1 <| by
-    simp_rw [one_mul]
-    exact h
+  .of_bound 1 <| by simpa only [one_mul] using h
 
 theorem IsBigO.bound : f =O[l] g → ∃ c : ℝ, ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ :=
   isBigO_iff.1
+
+/-- See also `Filter.Eventually.isBigO`, which is the same lemma
+stated using `Filter.Eventually` instead of `Filter.EventuallyLE`. -/
+theorem IsBigO.of_norm_eventuallyLE {g : α → ℝ} (h : (‖f ·‖) ≤ᶠ[l] g) : f =O[l] g :=
+  .of_bound' <| h.mono fun _ h ↦ h.trans <| le_abs_self _
+
+theorem IsBigO.of_norm_le {g : α → ℝ} (h : ∀ x, ‖f x‖ ≤ g x) : f =O[l] g :=
+  .of_norm_eventuallyLE <| .of_forall h
 
 /-- The Landau notation `f =o[l] g` where `f` and `g` are two functions on a type `α` and `l` is
 a filter on `α`, means that eventually for `l`, `‖f‖` is bounded by an arbitrarily small constant
@@ -482,9 +488,11 @@ theorem _root_.Filter.Eventually.trans_isBigO {f : α → E} {g : α → F'} {k 
     (hfg : ∀ᶠ x in l, ‖f x‖ ≤ ‖g x‖) (hgk : g =O[l] k) : f =O[l] k :=
   (IsBigO.of_bound' hfg).trans hgk
 
+/-- See also `Asymptotics.IsBigO.of_norm_eventuallyLE`, which is the same lemma
+stated using `Filter.EventuallyLE` instead of `Filter.Eventually`. -/
 theorem _root_.Filter.Eventually.isBigO {f : α → E} {g : α → ℝ} {l : Filter α}
     (hfg : ∀ᶠ x in l, ‖f x‖ ≤ g x) : f =O[l] g :=
-  IsBigO.of_bound' <| hfg.mono fun _x hx => hx.trans <| Real.le_norm_self _
+  .of_norm_eventuallyLE hfg
 
 section
 
