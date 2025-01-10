@@ -1076,7 +1076,7 @@ lemma monotone_separately_iff_jointly {h : α × β → γ} :
       fun _ _ _ hab => h (Prod.mk_le_mk_iff_left.mpr hab)⟩ ⟩
 
 lemma antitone_separately_iff_jointly {h : α × β → γ} :
-    (∀ a, Antitone (h ∘ Prod.mk a)) ∧ (∀ b, Antitone (fun a => h (a,b))) ↔ Antitone h :=
+    (∀ a, Antitone (h ∘ Prod.mk a)) ∧ (∀ b, Antitone (fun a => h (a, b))) ↔ Antitone h :=
   ⟨fun ⟨h₂, h₁⟩ _ _ hab =>
       le_trans (h₁ _ (Prod.mk_le_mk.mp hab).1) (h₂ _ (Prod.mk_le_mk.mp hab).2),
     fun h => ⟨fun _ _ _ hab => h (Prod.mk_le_mk_iff_right.mpr hab),
