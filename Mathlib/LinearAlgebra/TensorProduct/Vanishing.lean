@@ -55,19 +55,21 @@ is injective for every submodule $M' \subseteq M$.
 
 -/
 
-variable (R : Type*) [CommRing R]
-variable {M : Type*} [AddCommGroup M] [Module R M]
-variable {N : Type*} [AddCommGroup N] [Module R N]
+universe u
+
+variable (R : Type u) [CommRing R]
+variable {M : Type u} [AddCommGroup M] [Module R M]
+variable {N : Type u} [AddCommGroup N] [Module R N]
 
 open DirectSum LinearMap Function Submodule Finsupp
 
 namespace TensorProduct
 
-variable {ι : Type*} [Fintype ι] {m : ι → M} {n : ι → N}
+variable {ι : Type u} [Fintype ι] {m : ι → M} {n : ι → N}
 
 variable (m n) in
 /-- An expression $\sum_i m_i \otimes n_i$ in $M \otimes N$
-*vanishes trivially* if there exist a finite index type $\kappa$ = `Fin k`,
+*vanishes trivially* if there exist a finite index type $\kappa$,
 elements $(y_j)_{j \in \kappa}$ of $N$, and elements $(a_{ij})_{i \in \iota, j \in \kappa}$ of $R$
 such that for all $i$,
 $$n_i = \sum_j a_{ij} y_j$$
@@ -76,24 +78,8 @@ $$\sum_{i} a_{ij} m_i = 0.$$
 Note that this condition is not symmetric in $M$ and $N$.
 (The terminology "trivial" comes from [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK).)-/
 abbrev VanishesTrivially : Prop :=
-  ∃ (k : ℕ) (a : ι → Fin k → R) (y : Fin k → N),
+  ∃ (κ : Type u) (_ : Fintype κ) (a : ι → κ → R) (y : κ → N),
     (∀ i, n i = ∑ j, a i j • y j) ∧ ∀ j, ∑ i, a i j • m i = 0
-
-variable {R}
-
-theorem VanishesTrivially.of_fintype {κ} [Fintype κ] (a : ι → κ → R) (y : κ → N)
-    (hay : ∀ i, n i = ∑ j, a i j • y j) (ham : ∀ j, ∑ i, a i j • m i = 0) :
-    VanishesTrivially R m n :=
-  have e := (Fintype.equivFin κ).symm
-  ⟨Fintype.card κ, (a · ∘ e), y ∘ e, by simpa only [← e.sum_comp] using hay, by
-    rwa [← e.forall_congr_right] at ham⟩
-
-theorem _root_.Equiv.vanishesTrivially_comp {κ} [Fintype κ] (e : κ ≃ ι) :
-    VanishesTrivially R (m ∘ e) (n ∘ e) ↔ VanishesTrivially R m n := by
-  simp [VanishesTrivially, ← e.forall_congr_right,
-    ← (e.arrowCongr (.refl _)).exists_congr_right, ← e.sum_comp]
-
-variable (R)
 
 /-- **Equational criterion for vanishing**
 [A. Altman and S. Kleiman, *A term of commutative algebra* (Lemma 8.16)][altman2021term],
@@ -103,7 +89,7 @@ If the expression $\sum_i m_i \otimes n_i$ vanishes trivially, then it vanishes.
 That is, $\sum_i m_i \otimes n_i = 0$. -/
 theorem sum_tmul_eq_zero_of_vanishesTrivially (hmn : VanishesTrivially R m n) :
     ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N) := by
-  obtain ⟨k, a, y, h₁, h₂⟩ := hmn
+  obtain ⟨κ, _, a, y, h₁, h₂⟩ := hmn
   simp_rw [h₁, tmul_sum, tmul_smul]
   rw [Finset.sum_comm]
   simp_rw [← tmul_smul, ← smul_tmul, ← sum_tmul, h₂, zero_tmul, Finset.sum_const_zero]
@@ -143,6 +129,7 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range 
   Write it as a finite sum of pure tensors. -/
   obtain ⟨kn, hkn⟩ := en_mem_range
   obtain ⟨ma, rfl : kn = ∑ kj ∈ ma, kj.1 ⊗ₜ[R] kj.2⟩ := exists_finset kn
+  use ↑↑ma, FinsetCoe.fintype ma
   /- Let $\sum_j k_j \otimes y_j$ be the sum obtained in the previous step.
   In order to show that $\sum_i m_i \otimes n_i$ vanishes trivially, it suffices to prove that there
   exist $(a_{ij})_{i, j}$ such that for all $i$,
@@ -150,7 +137,9 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range 
   and for all $j$,
   $$\sum_{i} a_{ij} m_i = 0.$$
   For this, take $a_{ij}$ to be the coefficient of $e_i$ in $k_j$. -/
-  refine .of_fintype (κ := ma) (fun i ⟨⟨kj, _⟩, _⟩ ↦ (kj : ι →₀ R) i) (fun ⟨⟨_, yj⟩, _⟩ ↦ yj) ?_ ?_
+  use fun i ⟨⟨kj, _⟩, _⟩ ↦ (kj : ι →₀ R) i
+  use fun ⟨⟨_, yj⟩, _⟩ ↦ yj
+  constructor
   · intro i
     classical
     apply_fun finsuppScalarLeft R N ι at hkn
@@ -222,7 +211,7 @@ theorem vanishesTrivially_iff_sum_tmul_eq_zero_of_rTensor_injective
 Assume that every expression $\sum_i m_i \otimes n_i$ which vanishes also vanishes trivially.
 Then, for every submodule $M' \subseteq M$, the map $M' \otimes N \to M \otimes N$ is injective. -/
 theorem rTensor_injective_of_forall_vanishesTrivially
-    (hMN : ∀ {l : ℕ} {m : Fin l → M} {n : Fin l → N},
+    (hMN : ∀ {ι : Type u} [Fintype ι] {m : ι → M} {n : ι → N},
       ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N) → VanishesTrivially R m n)
     (M' : Submodule R M) : Injective (rTensor N M'.subtype) := by
   apply (injective_iff_map_eq_zero _).mpr
@@ -231,12 +220,9 @@ theorem rTensor_injective_of_forall_vanishesTrivially
   rw [← Finset.sum_attach]
   apply sum_tmul_eq_zero_of_vanishesTrivially
   simp only [map_sum, rTensor_tmul, coe_subtype] at hx
-  have e := (Fintype.equivFin s).symm
-  rw [← Finset.sum_coe_sort, ← e.sum_comp] at hx
-  have := hMN hx
-  rw [← e.vanishesTrivially_comp]
+  have := hMN ((Finset.sum_attach s _).trans hx)
   unfold VanishesTrivially at this ⊢
-  convert this
+  convert this with κ _ a y j
   symm
   convert (injective_iff_map_eq_zero' _).mp (injective_subtype M') _
   simp
@@ -244,40 +230,35 @@ theorem rTensor_injective_of_forall_vanishesTrivially
 /-- Every expression $\sum_i m_i \otimes n_i$ which vanishes also vanishes trivially if and only if
 for every submodule $M' \subseteq M$, the map $M' \otimes N \to M \otimes N$ is injective. -/
 theorem forall_vanishesTrivially_iff_forall_rTensor_injective :
-    (∀ {l : ℕ} {m : Fin l → M} {n : Fin l → N},
+    (∀ {ι : Type u} [Fintype ι] {m : ι → M} {n : ι → N},
       ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N) → VanishesTrivially R m n) ↔
     ∀ M' : Submodule R M, Injective (rTensor N M'.subtype) := by
   constructor
   · intro h
     exact rTensor_injective_of_forall_vanishesTrivially R h
-  · intro h k m n hmn
+  · intro h ι _ m n hmn
     exact vanishesTrivially_of_sum_tmul_eq_zero_of_rTensor_injective R (h _) hmn
 
 /-- Every expression $\sum_i m_i \otimes n_i$ which vanishes also vanishes trivially if and only if
 for every finitely generated submodule $M' \subseteq M$, the map $M' \otimes N \to M \otimes N$ is
 injective. -/
-theorem forall_vanishesTrivially_iff_forall_fg_rTensor_injective :
-    (∀ {l : ℕ} {m : Fin l → M} {n : Fin l → N},
+theorem forall_vanishesTrivially_iff_forall_FG_rTensor_injective :
+    (∀ {ι : Type u} [Fintype ι] {m : ι → M} {n : ι → N},
       ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N) → VanishesTrivially R m n) ↔
     ∀ (M' : Submodule R M) (_ : M'.FG), Injective (rTensor N M'.subtype) := by
   constructor
   · intro h M' _
     exact rTensor_injective_of_forall_vanishesTrivially R h M'
-  · intro h k m n hmn
+  · intro h ι _ m n hmn
     exact vanishesTrivially_of_sum_tmul_eq_zero_of_rTensor_injective R
       (h _ (fg_span (Set.finite_range _))) hmn
 
 /-- If the map $M' \otimes N \to M \otimes N$ is injective for every finitely generated submodule
 $M' \subseteq M$, then it is in fact injective for every submodule $M' \subseteq M$. -/
-theorem rTensor_injective_of_forall_fg_rTensor_injective
+theorem rTensor_injective_of_forall_FG_rTensor_injective
     (hMN : ∀ (M' : Submodule R M) (_ : M'.FG), Injective (rTensor N M'.subtype))
     (M' : Submodule R M) : Injective (rTensor N M'.subtype) :=
   (forall_vanishesTrivially_iff_forall_rTensor_injective R).mp
-    ((forall_vanishesTrivially_iff_forall_fg_rTensor_injective R).mpr hMN) M'
-
-@[deprecated (since := "2025-01-03")] alias forall_vanishesTrivially_iff_forall_FG_rTensor_injective
-  := forall_vanishesTrivially_iff_forall_fg_rTensor_injective
-@[deprecated (since := "2025-01-03")] alias rTensor_injective_of_forall_FG_rTensor_injective :=
-  rTensor_injective_of_forall_fg_rTensor_injective
+    ((forall_vanishesTrivially_iff_forall_FG_rTensor_injective R).mpr hMN) M'
 
 end TensorProduct
