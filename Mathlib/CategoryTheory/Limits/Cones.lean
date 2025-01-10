@@ -416,7 +416,7 @@ def functoriality : Cone F ⥤ Cone (F ⋙ G) where
 
 /-- Functoriality is functorial. -/
 def functorialityCompFunctoriality (H : D ⥤ E) :
-    (functoriality F G) ⋙ (functoriality (F ⋙ G) H) ≅ functoriality F (G ⋙ H) :=
+    functoriality F G ⋙ functoriality (F ⋙ G) H ≅ functoriality F (G ⋙ H) :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp [functoriality])
 
 instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full where
@@ -619,7 +619,7 @@ def functoriality : Cocone F ⥤ Cocone (F ⋙ G) where
 
 /-- Functoriality is functorial. -/
 def functorialityCompFunctoriality (H : D ⥤ E) :
-    (functoriality F G) ⋙ (functoriality (F ⋙ G) H) ≅ functoriality F (G ⋙ H) :=
+    functoriality F G ⋙ functoriality (F ⋙ G) H ≅ functoriality F (G ⋙ H) :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp [functoriality])
 
 
