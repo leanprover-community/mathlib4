@@ -131,17 +131,6 @@ open CategoryTheory.Pretriangulated.Opposite Functor in
 The left adjoint of a triangulated functor is triangulated.
 -/
 lemma isTriangulated_leftAdjoint [G.IsTriangulated] : F.IsTriangulated := by
-  have : Adjunction.CommShift adj.op ℤ := by
-    have heq : adj.op = PullbackShift.adjunction (AddMonoidHom.mk'
-        (fun (n : ℤ) => -n) (by intros; dsimp; omega)) (OppositeShift.adjunction ℤ adj) := by
-      ext
-      dsimp [PullbackShift.adjunction, NatTrans.PullbackShift.natIsoId,
-        NatTrans.PullbackShift.natIsoComp, PullbackShift.functor, PullbackShift.natTrans,
-        OppositeShift.adjunction, OppositeShift.natTrans, NatTrans.OppositeShift.natIsoId,
-        NatTrans.OppositeShift.natIsoComp, OppositeShift.functor]
-      simp only [Int.reduceNeg, comp_id, id_comp]
-    rw [heq]
-    exact Adjunction.commShiftPullback _ (OppositeShift.adjunction ℤ adj)
   have := G.isTriangulated_op
   have := isTriangulated_rightAdjoint adj.op
   exact F.isTriangulated_of_op

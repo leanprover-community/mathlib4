@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
 import Mathlib.CategoryTheory.Triangulated.Opposite.Pretriangulated
+import Mathlib.CategoryTheory.Adjunction.Opposites
 
 /-!
 # Opposites of functors between pretriangulated categories,
@@ -31,10 +32,34 @@ namespace Pretriangulated.Opposite
 /-- If `F` commutes with shifts, so does `F.op`, for the shifts chosen on `Cᵒᵖ` in
 `CategoryTheory.Triangulated.Opposite.Basic`.
 -/
-noncomputable scoped instance commShiftOpInt : F.op.CommShift ℤ :=
+noncomputable scoped instance commShiftOpInt_functor : F.op.CommShift ℤ :=
   inferInstanceAs ((PullbackShift.functor
     (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))
       (OppositeShift.functor ℤ F)).CommShift ℤ)
+
+variable {F}
+
+noncomputable scoped instance commShiftOpInt_natTrans {G : C ⥤ D} [G.CommShift ℤ] (τ : F ⟶ G)
+    [NatTrans.CommShift τ ℤ] : NatTrans.CommShift (NatTrans.op τ) ℤ :=
+  inferInstanceAs (NatTrans.CommShift (PullbackShift.natTrans
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))
+      (OppositeShift.natTrans ℤ τ)) ℤ)
+
+noncomputable scoped instance commShiftOpInt_adjunction {G : D ⥤ C} [G.CommShift ℤ] (adj : F ⊣ G)
+    [Adjunction.CommShift adj ℤ] : Adjunction.CommShift adj.op ℤ := by
+  have eq : adj.op = PullbackShift.adjunction
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))
+      (OppositeShift.adjunction ℤ adj) := by
+    ext
+    dsimp [PullbackShift.adjunction, NatTrans.PullbackShift.natIsoId,
+      NatTrans.PullbackShift.natIsoComp, PullbackShift.functor, PullbackShift.natTrans,
+      OppositeShift.adjunction, OppositeShift.natTrans, NatTrans.OppositeShift.natIsoId,
+      NatTrans.OppositeShift.natIsoComp, OppositeShift.functor]
+    simp only [Int.reduceNeg, Category.comp_id, Category.id_comp]
+  rw [eq]
+  exact inferInstanceAs (Adjunction.CommShift (PullbackShift.adjunction
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))
+      (OppositeShift.adjunction ℤ adj)) ℤ)
 
 end Pretriangulated.Opposite
 
