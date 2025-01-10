@@ -424,7 +424,7 @@ theorem Nonempty.subset_preimage_const {s : Set α} (hs : Set.Nonempty s) (t : S
 
 @[simp]
 theorem preimage_eq_preimage {f : β → α} (hf : Surjective f) : f ⁻¹' s = f ⁻¹' t ↔ s = t :=
-  (injective_comp_right_iff_surjective.mpr hf).eq_iff
+  hf.injective_comp_right.eq_iff
 
 theorem image_inter_preimage (f : α → β) (s : Set α) (t : Set β) :
     f '' (s ∩ f ⁻¹' t) = f '' s ∩ t := by
@@ -1055,7 +1055,7 @@ theorem Injective.preimage_image (hf : Injective f) (s : Set α) : f ⁻¹' (f '
   preimage_image_eq s hf
 
 theorem Injective.preimage_surjective (hf : Injective f) : Surjective (preimage f) :=
-  surjective_comp_right_iff_injective.mpr hf
+  hf.surjective_comp_right
 
 theorem Injective.subsingleton_image_iff (hf : Injective f) {s : Set α} :
     (f '' s).Subsingleton ↔ s.Subsingleton :=
