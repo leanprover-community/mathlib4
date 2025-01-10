@@ -328,7 +328,7 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
 lemma getLast_filter' {p : α → Bool} :
     ∀ (l : List α) (hlp : l.filter p ≠ []), p (l.getLast (hlp <| ·.symm ▸ rfl)) = true →
       (l.filter p).getLast hlp = l.getLast (hlp <| ·.symm ▸ rfl)
-  | [a], h, h' => by rw [List.getLast_singleton'] at h'; simp [List.filter_cons, h']
+  | [a], h, h' => by simp
   | a :: b :: as, h, h' => by
     rw [List.getLast_cons_cons] at h' ⊢
     simp only [List.filter_cons (x := a)] at h ⊢
@@ -873,7 +873,7 @@ theorem flatMap_pure_eq_map (f : α → β) (l : List α) : l.flatMap (pure ∘ 
 
 theorem flatMap_congr {l : List α} {f g : α → List β} (h : ∀ x ∈ l, f x = g x) :
     List.flatMap l f = List.flatMap l g :=
-  (congr_arg List.flatten <| map_congr_left h : _)
+  (congr_arg List.flatten <| map_congr_left h :)
 
 @[deprecated (since := "2024-10-16")] alias bind_congr := flatMap_congr
 

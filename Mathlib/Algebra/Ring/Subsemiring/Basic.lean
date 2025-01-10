@@ -528,6 +528,7 @@ protected def gi : GaloisInsertion (@closure R _) (↑) where
 variable {R}
 
 /-- Closure of a subsemiring `S` equals `S`. -/
+@[simp]
 theorem closure_eq (s : Subsemiring R) : closure (s : Set R) = s :=
   (Subsemiring.gi R).l_u_eq s
 
