@@ -40,8 +40,8 @@ written in that way with `v, cᵢ, uᵢ ∈ F`.
 class IsLiouville : Prop where
   isLiouville (a : F) (ι : Type) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
     (u : ι → K) (v : K) (h : a = ∑ x, c x * logDeriv (u x) + v′) :
-    ∃ (ι' : Type) (_ : Fintype ι') (c' : ι' → F) (_ : ∀ x, (c' x)′ = 0)
-      (u' : ι' → F) (v' : F), a = ∑ x, c' x * logDeriv (u' x) + v'′
+    ∃ (ι₀ : Type) (_ : Fintype ι₀) (c₀ : ι₀ → F) (_ : ∀ x, (c₀ x)′ = 0)
+      (u₀ : ι₀ → F) (v₀ : F), a = ∑ x, c₀ x * logDeriv (u₀ x) + v₀′
 
 instance IsLiouville.rfl : IsLiouville F F where
   isLiouville (a : F) (ι : Type) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
@@ -53,19 +53,19 @@ lemma IsLiouville.trans {A : Type*} [Field A] [Algebra K A] [Algebra F A]
     (inst1 : IsLiouville F K) (inst2 : IsLiouville K A) : IsLiouville F A where
   isLiouville (a : F) (ι : Type) [Fintype ι] (c : ι → F) (hc : ∀ x, (c x)′ = 0)
       (u : ι → A) (v : A) (h : a = ∑ x, c x * logDeriv (u x) + v′) := by
-    obtain ⟨ι'', _, c'', hc', u'', v', h'⟩ := inst2.isLiouville (a : K) ι
+    obtain ⟨ι₀, _, c₀, hc₀, u₀, v₀, h₀⟩ := inst2.isLiouville (a : K) ι
         ((↑) ∘ c)
         (fun _ ↦ by simp only [Function.comp_apply, ← coe_deriv, lift_map_eq_zero_iff, hc])
         ((↑) ∘ u) v (by simpa only [Function.comp_apply, ← IsScalarTower.algebraMap_apply])
-    have hc (x : ι'') := mem_range_of_deriv_eq_zero F (hc' x)
-    choose c' hc using hc
-    apply inst1.isLiouville a ι'' c' _ u'' v'
-    · rw [h']
+    have hc (x : ι₀) := mem_range_of_deriv_eq_zero F (hc₀ x)
+    choose c₀ hc using hc
+    apply inst1.isLiouville a ι₀ c₀ _ u₀ v₀
+    · rw [h₀]
       simp [hc]
     · intro
       apply_fun ((↑) : F → K)
       · simp only [Function.comp_apply, coe_deriv, hc, algebraMap.coe_zero]
-        apply hc'
+        apply hc₀
       · apply NoZeroSMulDivisors.algebraMap_injective
 
 section Algebraic
@@ -124,45 +124,45 @@ private local instance isLiouville_of_finiteDimensional_galois [FiniteDimensiona
     -- We sum `e x` over all isomorphisms `e : K ≃ₐ[F] K`.
     -- Because this is a Galois extension each of the relevant values will be in `F`.
     -- We need to divide by `Fintype.card (K ≃ₐ[F] K)` to get the original answer.
-    let c' (i : ι) := (c i) / (Fintype.card (K ≃ₐ[F] K))
+    let c₀ (i : ι) := (c i) / (Fintype.card (K ≃ₐ[F] K))
     -- logDeriv turns sums to products, so the new `u` will be the product of the old `u` over all
     -- isomorphisms
-    let u'' (i : ι) := ∏ x : (K ≃ₐ[F] K), x (u i)
-    -- Each of the values of u'' are fixed by all isomorphisms.
-    have : ∀ i, u'' i ∈ fixedField (⊤ : Subgroup (K ≃ₐ[F] K)) := by
+    let u₁ (i : ι) := ∏ x : (K ≃ₐ[F] K), x (u i)
+    -- Each of the values of u₁ are fixed by all isomorphisms.
+    have : ∀ i, u₁ i ∈ fixedField (⊤ : Subgroup (K ≃ₐ[F] K)) := by
       rintro i ⟨e, _⟩
-      change e (u'' i) = u'' i
-      simp only [u'', map_prod]
+      change e (u₁ i) = u₁ i
+      simp only [u₁, map_prod]
       apply Fintype.prod_equiv (Equiv.mulLeft e)
       simp
     have ffb : fixedField ⊤ = ⊥ := (IsGalois.tfae.out 0 1).mp (inferInstanceAs (IsGalois F K))
     simp_rw [ffb, IntermediateField.mem_bot, Set.mem_range] at this
     -- Therefore they are all in `F`. We use `choose` to get their values in `F`.
-    choose u' hu' using this
-    -- We do almost the same thing for `v''`, just with sum instead of product.
-    let v'' := (∑ x : (K ≃ₐ[F] K), x v) / (Fintype.card ((K ≃ₐ[F] K)))
-    have : v'' ∈ fixedField (⊤ : Subgroup (K ≃ₐ[F] K)) := by
+    choose u₀ hu₀ using this
+    -- We do almost the same thing for `v₁`, just with sum instead of product.
+    let v₁ := (∑ x : (K ≃ₐ[F] K), x v) / (Fintype.card ((K ≃ₐ[F] K)))
+    have : v₁ ∈ fixedField (⊤ : Subgroup (K ≃ₐ[F] K)) := by
       rintro ⟨e, _⟩
-      change e v'' = v''
-      simp only [v'', map_div₀, map_sum, map_natCast]
+      change e v₁ = v₁
+      simp only [v₁, map_div₀, map_sum, map_natCast]
       congr 1
       apply Fintype.sum_equiv (Equiv.mulLeft e)
       simp
     rw [ffb, IntermediateField.mem_bot] at this
-    obtain ⟨v', hv'⟩ := this
-    exists ι, inferInstance, c', ?_, u', v'
-    · -- We need to prove that all `c'` are constants.
+    obtain ⟨v₀, hv₀⟩ := this
+    exists ι, inferInstance, c₀, ?_, u₀, v₀
+    · -- We need to prove that all `c₀` are constants.
       -- This is true because they are the division of a constant by
       -- a natural nubmer (which is also constant)
       intro x
-      simp [c', Derivation.leibniz_div, hc]
+      simp [c₀, Derivation.leibniz_div, hc]
     · -- Proving that this works is mostly straightforward algebraic manipulation,
       apply_fun (algebraMap F K)
       case inj =>
         exact NoZeroSMulDivisors.algebraMap_injective F K
-      simp only [map_add, map_sum, map_mul, ← logDeriv_algebraMap, hu', ← deriv_algebraMap, hv']
-      unfold u'' v'' c'
-      clear c' u'' u' hu' v'' v' hv'
+      simp only [map_add, map_sum, map_mul, ← logDeriv_algebraMap, hu₀, ← deriv_algebraMap, hv₀]
+      unfold u₁ v₁ c₀
+      clear c₀ u₁ u₀ hu₀ v₁ v₀ hv₀
       push_cast
       rw [Derivation.leibniz_div_const, smul_eq_mul, inv_mul_eq_div]
       case h => simp
