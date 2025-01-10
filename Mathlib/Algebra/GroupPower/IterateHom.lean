@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Int.Even
-import Mathlib.Algebra.Group.Int.Units
-import Mathlib.Algebra.Group.Int.TypeTags
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Common
+import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Iterates of monoid homomorphisms
