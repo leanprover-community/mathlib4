@@ -522,8 +522,8 @@ variable {U V : Type*} [TopologicalSpace U] [TopologicalSpace V]
     [Monoid U] [Monoid V]
 
 /--The coersion from `ContinuousMulEquiv` to `ContinuousMonoidHom` induced by `toMonoidHom`-/
-def toContinuousMonoidHom (f : U ≃ₜ* V) : ContinuousMonoidHom U V := {
-  f.toMonoidHom with
+def toContinuousMonoidHom (f : U ≃ₜ* V) : ContinuousMonoidHom U V :=
+{ f.toMonoidHom with
   continuous_toFun := f.continuous_toFun }
 
 lemma toContinuousMonoidHom_toMonoidHom (f : U ≃ₜ* V) : f.toContinuousMonoidHom = f.toMonoidHom :=
