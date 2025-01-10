@@ -241,7 +241,7 @@ theorem compl_mul {P : { P : M // IsLprojection X P }} {Q : M} : ↑Pᶜ * Q = Q
   rw [coe_compl, sub_mul, one_mul]
 
 theorem mul_compl_self {P : { P : M // IsLprojection X P }} : (↑P : M) * ↑Pᶜ = 0 := by
-  rw [coe_compl, mul_sub, mul_one, P.prop.proj.eq, sub_self]
+  rw [coe_compl, P.prop.proj.mul_one_sub_self]
 
 theorem distrib_lattice_lemma [FaithfulSMul M X] {P Q R : { P : M // IsLprojection X P }} :
     ((↑P : M) + ↑Pᶜ * R) * (↑P + ↑Q * ↑R * ↑Pᶜ) = ↑P + ↑Q * ↑R * ↑Pᶜ := by
