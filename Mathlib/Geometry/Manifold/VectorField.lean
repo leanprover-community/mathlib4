@@ -1314,18 +1314,13 @@ lemma mpullback_mlieBracket
   simp only [← mlieBracketWithin_univ, ← mdifferentiableWithinAt_univ] at hV hW ⊢
   exact mpullback_mlieBracketWithin hV hW uniqueMDiffOn_univ hf (mem_univ _) hn (by simp)
 
-#check ContDiffWithinAt.lieBracketWithin_vectorField
-
-#check contMDiffWithinAt_iff_nat
-
 /-- If two vector fields are `C^n` with `n ≥ m + 1`, then their Lie bracket is `C^m`. -/
 protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField
-    [IsManifold I (n + 1) M]
-    {m : WithTop ℕ∞}
+    [IsManifold I (n + 1) M] {m : WithTop ℕ∞}
     {U V : Π (x : M), TangentSpace I x} {s : Set M} {x : M}
     (hU : ContMDiffWithinAt I I.tangent n (fun x ↦ (U x : TangentBundle I M)) s x)
     (hV : ContMDiffWithinAt I I.tangent n (fun x ↦ (V x : TangentBundle I M)) s x)
-    (hs : UniqueMDiffOn I s) (hx : x ∈ s) (hmn : m + 1 ≤ n) :
+    (hs : UniqueMDiffOn I s) (hx : x ∈ s) (hmn : m + 1 ≤ n) (hn0 : minSmoothness 𝕜 2 ≤ n) :
     ContMDiffWithinAt I I.tangent m
       (fun x ↦ (mlieBracketWithin I U V s x : TangentBundle I M)) s x := by
   /- The statement is not obvious, since at different points the Lie bracket is defined using
@@ -1335,10 +1330,11 @@ protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField
   space Lie bracket, given by an explicit formula). Pulling back this Lie bracket in `M` gives
   locally a smooth function, which coincides with the initial Lie bracket by invariance
   under diffeos. -/
-  have : IsManifold I (m + 1) M := IsManifold.of_le (n := n + 1) (hmn.trans le_self_add)
   apply contMDiffWithinAt_iff_le_ne_infty.2 (fun m' hm' h'm' ↦ ?_)
-  --have hn : (1 : ℕ∞) ≤ m' + 1 := by exact_mod_cast (show 1 ≤ m' + 1 by omega)
-  --have hm'n : m' + 1 ≤ n := le_trans (add_le_add_right hm' 1) hmn
+  have : IsManifold I n M := IsManifold.of_le (n := n + 1) le_self_add
+  have hn : 1 ≤ m' + 1 := le_add_self
+  have hm'n : m' + 1 ≤ n := le_trans (add_le_add_right hm' 1) hmn
+  have : IsManifold I (m' + 1) M := IsManifold.of_le (n := n + 1) (hm'n.trans le_self_add)
   have pre_mem : (extChartAt I x) ⁻¹' ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s)
       ∈ 𝓝[s] x := by
     filter_upwards [self_mem_nhdsWithin,
@@ -1347,7 +1343,7 @@ protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField
       by simpa only [mem_preimage, (extChartAt I x).left_inv h'y] using hy⟩
   let U' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm U (range I)
   let V' := mpullbackWithin 𝓘(𝕜, E) I (extChartAt I x).symm V (range I)
-  have A : ContDiffWithinAt 𝕜 m (lieBracketWithin 𝕜 U' V'
+  have A : ContDiffWithinAt 𝕜 m' (lieBracketWithin 𝕜 U' V'
       ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s))
       ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) (extChartAt I x x) :=
     ContDiffWithinAt.lieBracketWithin_vectorField
@@ -1355,32 +1351,32 @@ protected lemma _root_.ContMDiffWithinAt.mlieBracketWithin_vectorField
         (contMDiffWithinAt_mpullbackWithin_extChartAt_symm hU hs hx le_rfl))
       (contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt.1
         (contMDiffWithinAt_mpullbackWithin_extChartAt_symm hV hs hx le_rfl))
-      (hs.uniqueDiffOn_target_inter x) hmn (by simp [hx])
-  have B : ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent m (fun y ↦ (mlieBracketWithin 𝓘(𝕜, E) U' V'
+      (hs.uniqueDiffOn_target_inter x) hm'n (by simp [hx])
+  have B : ContMDiffWithinAt 𝓘(𝕜, E) 𝓘(𝕜, E).tangent m' (fun y ↦ (mlieBracketWithin 𝓘(𝕜, E) U' V'
       ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) y : TangentBundle 𝓘(𝕜, E) E))
       ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) (extChartAt I x x) := by
     rw [← mlieBracketWithin_eq_lieBracketWithin] at A
     exact contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt.2 A
-  have C : ContMDiffWithinAt I I.tangent m (fun y ↦ (mpullback I 𝓘(𝕜, E) (extChartAt I x)
+  have C : ContMDiffWithinAt I I.tangent m' (fun y ↦ (mpullback I 𝓘(𝕜, E) (extChartAt I x)
       ((mlieBracketWithin 𝓘(𝕜, E) U' V'
       ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s))) y : TangentBundle I M)) s x :=
-    ContMDiffWithinAt.mpullback_vectorField_of_mem_nhdsWithin_of_eq B (n := m + 1)
+    ContMDiffWithinAt.mpullback_vectorField_of_mem_nhdsWithin_of_eq B (n := m' + 1)
       contMDiffAt_extChartAt
       (isInvertible_mfderiv_extChartAt (mem_extChartAt_source x)) le_rfl pre_mem rfl
   apply C.congr_of_eventuallyEq_of_mem _ hx
   filter_upwards [eventually_eventually_nhdsWithin.2 pre_mem,
     eventually_eventually_nhdsWithin.2 (eventuallyEq_mpullback_mpullbackWithin_extChartAt U),
     eventually_eventually_nhdsWithin.2 (eventuallyEq_mpullback_mpullbackWithin_extChartAt V),
-    eventually_contMDiffWithinAt_mpullbackWithin_extChartAt_symm (hU.of_le hm'n) hs hx,
-    eventually_contMDiffWithinAt_mpullbackWithin_extChartAt_symm (hV.of_le hm'n) hs hx,
+    eventually_contMDiffWithinAt_mpullbackWithin_extChartAt_symm (hU.of_le hm'n) hs hx
+      (add_le_add_right hm'n 1) (by simp [h'm']),
+    eventually_contMDiffWithinAt_mpullbackWithin_extChartAt_symm (hV.of_le hm'n) hs hx
+      (add_le_add_right hm'n 1) (by simp [h'm']),
     nhdsWithin_le_nhds (chart_source_mem_nhds H x), self_mem_nhdsWithin]
     with y hy hyU hyV h'yU h'yV hy_chart hys
   simp only [Bundle.TotalSpace.mk_inj]
   rw [mpullback_mlieBracketWithin (h'yU.mdifferentiableWithinAt hn)
-    (h'yV.mdifferentiableWithinAt hn) hs (contMDiffAt_extChartAt' hy_chart) hys hy]
+    (h'yV.mdifferentiableWithinAt hn) hs (contMDiffAt_extChartAt' hy_chart) hys hn0 hy]
   exact Filter.EventuallyEq.mlieBracketWithin_vectorField_eq_of_mem hyU hyV hys
-
-#exit
 
 /-- If two vector fields are `C^n` with `n ≥ m + 1`, then their Lie bracket is `C^m`. -/
 lemma _root_.ContMDiffAt.mlieBracket_vectorField {m n : ℕ∞}
