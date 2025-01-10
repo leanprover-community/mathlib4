@@ -64,7 +64,7 @@ theorem quadraticCharFun_eq_zero_iff {a : F} : quadraticCharFun F a = 0 ↔ a = 
   simp only [quadraticCharFun]
   by_cases ha : a = 0
   · simp only [ha, if_true]
-  · simp only [ha, if_false, iff_false_iff]
+  · simp only [ha, if_false]
     split_ifs <;> simp only [neg_eq_zero, one_ne_zero, not_false_iff]
 
 @[simp]
@@ -73,7 +73,7 @@ theorem quadraticCharFun_zero : quadraticCharFun F 0 = 0 := by
 
 @[simp]
 theorem quadraticCharFun_one : quadraticCharFun F 1 = 1 := by
-  simp only [quadraticCharFun, one_ne_zero, isSquare_one, if_true, if_false]
+  simp only [quadraticCharFun, one_ne_zero, IsSquare.one, if_true, if_false]
 
 /-- If `ringChar F = 2`, then `quadraticCharFun F` takes the value `1` on nonzero elements. -/
 theorem quadraticCharFun_eq_one_of_char_two (hF : ringChar F = 2) {a : F} (ha : a ≠ 0) :
@@ -129,7 +129,6 @@ variable {F}
 theorem quadraticChar_eq_zero_iff {a : F} : quadraticChar F a = 0 ↔ a = 0 :=
   quadraticCharFun_eq_zero_iff
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem quadraticChar_zero : quadraticChar F 0 = 0 := by
   simp only [quadraticChar_apply, quadraticCharFun_zero]
 
@@ -137,11 +136,11 @@ theorem quadraticChar_zero : quadraticChar F 0 = 0 := by
 theorem quadraticChar_one_iff_isSquare {a : F} (ha : a ≠ 0) :
     quadraticChar F a = 1 ↔ IsSquare a := by
   simp only [quadraticChar_apply, quadraticCharFun, ha, if_false, ite_eq_left_iff,
-    (by omega : (-1 : ℤ) ≠ 1), imp_false, not_not]
+    (by omega : (-1 : ℤ) ≠ 1), imp_false, not_not, reduceCtorEq]
 
 /-- The quadratic character takes the value `1` on nonzero squares. -/
 theorem quadraticChar_sq_one' {a : F} (ha : a ≠ 0) : quadraticChar F (a ^ 2) = 1 := by
-  simp only [quadraticChar_apply, quadraticCharFun, sq_eq_zero_iff, ha, IsSquare_sq, if_true,
+  simp only [quadraticChar_apply, quadraticCharFun, sq_eq_zero_iff, ha, IsSquare.sq, if_true,
     if_false]
 
 /-- The square of the quadratic character on nonzero arguments is `1`. -/
@@ -213,7 +212,7 @@ when the domain has odd characteristic. -/
 theorem quadraticChar_ne_one (hF : ringChar F ≠ 2) : quadraticChar F ≠ 1 := by
   rcases quadraticChar_exists_neg_one' hF with ⟨a, ha⟩
   intro hχ
-  simp only [hχ, one_apply a.isUnit, one_ne_zero] at ha
+  simp only [hχ, one_apply a.isUnit, one_ne_zero, reduceCtorEq] at ha
 
 set_option linter.deprecated false in
 @[deprecated quadraticChar_ne_one (since := "2024-06-16")]
@@ -223,7 +222,7 @@ theorem quadraticChar_isNontrivial (hF : ringChar F ≠ 2) : (quadraticChar F).I
 open Finset in
 /-- The number of solutions to `x^2 = a` is determined by the quadratic character. -/
 theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
-    ↑{x : F | x ^ 2 = a}.toFinset.card = quadraticChar F a + 1 := by
+    #{x : F | x ^ 2 = a}.toFinset = quadraticChar F a + 1 := by
   -- we consider the cases `a = 0`, `a` is a nonzero square and `a` is a nonsquare in turn
   by_cases h₀ : a = 0
   · simp only [h₀, sq_eq_zero_iff, Set.setOf_eq_eq_singleton, Set.toFinset_card,
@@ -247,7 +246,7 @@ theorem quadraticChar_card_sqrts (hF : ringChar F ≠ 2) (a : F) :
       ext1
       -- Porting note(https://github.com/leanprover-community/mathlib4/issues/5026):
       -- added (Set.mem_toFinset), Set.mem_setOf
-      simp only [(Set.mem_toFinset), Set.mem_setOf, not_mem_empty, iff_false_iff]
+      simp only [s, (Set.mem_toFinset), Set.mem_setOf, not_mem_empty, iff_false]
       rw [isSquare_iff_exists_sq] at h
       exact fun h' ↦ h ⟨_, h'.symm⟩
 
@@ -284,15 +283,13 @@ theorem quadraticChar_neg_one [DecidableEq F] (hF : ringChar F ≠ 2) :
 theorem FiniteField.isSquare_neg_one_iff : IsSquare (-1 : F) ↔ Fintype.card F % 4 ≠ 3 := by
   classical -- suggested by the linter (instead of `[DecidableEq F]`)
   by_cases hF : ringChar F = 2
-  · simp only [FiniteField.isSquare_of_char_two hF, Ne, true_iff_iff]
+  · simp only [FiniteField.isSquare_of_char_two hF, Ne, true_iff]
     exact fun hf ↦
       one_ne_zero <|
         (Nat.odd_of_mod_four_eq_three hf).symm.trans <| FiniteField.even_card_of_char_two hF
   · have h₁ := FiniteField.odd_card_of_char_ne_two hF
     rw [← quadraticChar_one_iff_isSquare (neg_ne_zero.mpr (one_ne_zero' F)),
       quadraticChar_neg_one hF, χ₄_nat_eq_if_mod_four, h₁]
-    simp only [Nat.one_ne_zero, if_false, ite_eq_left_iff, (by omega : (-1 : ℤ) ≠ 1), imp_false,
-      not_not, Ne]
-    exact ⟨fun h ↦ ne_of_eq_of_ne h (by omega), (Nat.odd_mod_four_iff.mp h₁).resolve_right⟩
+    omega
 
 end SpecialValues

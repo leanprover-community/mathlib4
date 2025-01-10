@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2020 Scott Morrison. All rights reserved.
+Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Products.Basic
@@ -35,14 +35,12 @@ All statements have their counterpart for colimits.
 -/
 
 
-universe v u
-
 open CategoryTheory
 
 namespace CategoryTheory.Limits
 
-variable {J K : Type v} [SmallCategory J] [SmallCategory K]
-variable {C : Type u} [Category.{v} C]
+variable {J K : Type*} [Category J] [Category K]
+variable {C : Type*} [Category C]
 variable (F : J ⥤ K ⥤ C)
 
 -- We could try introducing a "dependent functor type" to handle this?
@@ -368,7 +366,7 @@ theorem limitFlipCompLimIsoLimitCompLim_hom_π_π (j) (k) :
     (limitFlipCompLimIsoLimitCompLim F).hom ≫ limit.π _ j ≫ limit.π _ k =
       (limit.π _ k ≫ limit.π _ j : limit (_ ⋙ lim) ⟶ _) := by
   dsimp [limitFlipCompLimIsoLimitCompLim]
-  simp
+  simp [Equivalence.counit]
 
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
 -- See note [dsimp, simp]
@@ -402,7 +400,7 @@ theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_hom (j) (k) :
         (colimit.ι _ k ≫ colimit.ι (F ⋙ colim) j : _ ⟶ colimit (F⋙ colim)) := by
   dsimp [colimitFlipCompColimIsoColimitCompColim]
   slice_lhs 1 3 => simp only []
-  simp
+  simp [Equivalence.unit]
 
 @[simp, reassoc]
 theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_inv (k) (j) :
@@ -411,7 +409,7 @@ theorem colimitFlipCompColimIsoColimitCompColim_ι_ι_inv (k) (j) :
         (colimit.ι _ j ≫ colimit.ι (F.flip ⋙ colim) k : _ ⟶ colimit (F.flip ⋙ colim)) := by
   dsimp [colimitFlipCompColimIsoColimitCompColim]
   slice_lhs 1 3 => simp only []
-  simp
+  simp [Equivalence.counitInv]
 
 end
 
@@ -486,9 +484,9 @@ end
 
 section
 
-variable [HasLimits C]
+variable [HasLimitsOfShape K C] [HasLimitsOfShape J C] [HasLimitsOfShape (K × J) C] [HasLimit G]
+  [HasLimit (curry.obj G ⋙ lim)]
 
--- Certainly one could weaken the hypotheses here.
 open CategoryTheory.prod
 
 /-- A variant of the Fubini theorem for a functor `G : J × K ⥤ C`,
@@ -507,15 +505,11 @@ noncomputable def limitCurrySwapCompLimIsoLimitCurryCompLim :
 theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
     (limitCurrySwapCompLimIsoLimitCurryCompLim G).hom ≫ limit.π _ j ≫ limit.π _ k =
       (limit.π _ k ≫ limit.π _ j : limit (_ ⋙ lim) ⟶ _) := by
-  dsimp [limitCurrySwapCompLimIsoLimitCurryCompLim]
-  simp only [Iso.refl_hom, Prod.braiding_counitIso_hom_app, Limits.HasLimit.isoOfEquivalence_hom_π,
-    Iso.refl_inv, limitIsoLimitCurryCompLim_hom_π_π, eqToIso_refl, Category.assoc]
-  erw [NatTrans.id_app]
-  -- Why can't `simp` do this?
-  dsimp
-  -- Porting note: the original proof only had `simp`.
-  -- However, now `CategoryTheory.Bifunctor.map_id` does not get used by `simp`
-  rw [CategoryTheory.Bifunctor.map_id]
+  dsimp [limitCurrySwapCompLimIsoLimitCurryCompLim, Equivalence.counit]
+  rw [Category.assoc, Category.assoc, limitIsoLimitCurryCompLim_hom_π_π,
+    HasLimit.isoOfEquivalence_hom_π]
+  dsimp [Equivalence.counit]
+  rw [← prod_id, G.map_id]
   simp
 
 -- Porting note: Added type annotation `limit (_ ⋙ lim) ⟶ _`
@@ -523,18 +517,14 @@ theorem limitCurrySwapCompLimIsoLimitCurryCompLim_hom_π_π {j} {k} :
 theorem limitCurrySwapCompLimIsoLimitCurryCompLim_inv_π_π {j} {k} :
     (limitCurrySwapCompLimIsoLimitCurryCompLim G).inv ≫ limit.π _ k ≫ limit.π _ j =
       (limit.π _ j ≫ limit.π _ k : limit (_ ⋙ lim) ⟶ _) := by
-  dsimp [limitCurrySwapCompLimIsoLimitCurryCompLim]
-  simp only [Iso.refl_hom, Prod.braiding_counitIso_hom_app, Limits.HasLimit.isoOfEquivalence_inv_π,
-    Iso.refl_inv, limitIsoLimitCurryCompLim_hom_π_π, eqToIso_refl, Category.assoc]
-  erw [NatTrans.id_app]
-  -- Porting note (#10618): `simp` can do this in lean 4.
-  simp
+  simp [limitCurrySwapCompLimIsoLimitCurryCompLim]
 
 end
 
 section
 
-variable [HasColimits C]
+variable [HasColimitsOfShape K C] [HasColimitsOfShape J C] [HasColimitsOfShape (K × J) C]
+  [HasColimit G] [HasColimit (curry.obj G ⋙ colim)]
 
 open CategoryTheory.prod
 
@@ -567,11 +557,9 @@ theorem colimitCurrySwapCompColimIsoColimitCurryCompColim_ι_ι_inv {j} {k} :
             _ ⟶ colimit (curry.obj (Prod.swap K J ⋙ G) ⋙ colim)) := by
   dsimp [colimitCurrySwapCompColimIsoColimitCurryCompColim]
   slice_lhs 1 3 => simp only []
-  simp only [colimitIsoColimitCurryCompColim_ι_ι_inv, HasColimit.isoOfEquivalence_inv_π,
-    Functor.id_obj, Functor.comp_obj, Prod.braiding_inverse_obj, Prod.braiding_functor_obj,
-    Prod.braiding_counitIso_inv_app, Prod.swap_obj, Iso.refl_hom, NatTrans.id_app, Category.id_comp,
-    Category.assoc, colimitIsoColimitCurryCompColim_ι_hom, curry_obj_obj_obj]
-  erw [CategoryTheory.Bifunctor.map_id]
+  rw [colimitIsoColimitCurryCompColim_ι_ι_inv, HasColimit.isoOfEquivalence_inv_π]
+  dsimp [Equivalence.counitInv]
+  rw [CategoryTheory.Bifunctor.map_id]
   simp
 
 end

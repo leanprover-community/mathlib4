@@ -40,6 +40,9 @@ instance (α : Type u) : Inhabited (FreeRing α) := by
   dsimp only [FreeRing]
   infer_instance
 
+instance (α : Type u) : Nontrivial (FreeRing α) :=
+  inferInstanceAs <| Nontrivial (FreeAbelianGroup _)
+
 namespace FreeRing
 
 variable {α : Type u}
@@ -50,6 +53,18 @@ def of (x : α) : FreeRing α :=
 
 theorem of_injective : Function.Injective (of : α → FreeRing α) :=
   FreeAbelianGroup.of_injective.comp FreeMonoid.of_injective
+
+@[simp]
+theorem of_ne_zero (x : α) : of x ≠ 0 := FreeAbelianGroup.of_ne_zero _
+
+@[simp]
+theorem zero_ne_of (x : α) : 0 ≠ of x := FreeAbelianGroup.zero_ne_of _
+
+@[simp]
+theorem of_ne_one (x : α) : of x ≠ 1 := FreeAbelianGroup.of_injective.ne <| FreeMonoid.of_ne_one _
+
+@[simp]
+theorem one_ne_of (x : α) : 1 ≠ of x := FreeAbelianGroup.of_injective.ne <| FreeMonoid.one_ne_of _
 
 @[elab_as_elim, induction_eliminator]
 protected theorem induction_on {C : FreeRing α → Prop} (z : FreeRing α) (hn1 : C (-1))
@@ -63,7 +78,7 @@ protected theorem induction_on {C : FreeRing α → Prop} (z : FreeRing α) (hn1
       convert hm _ _ (hb a) ih
       rw [of, ← FreeAbelianGroup.of_mul]
       rfl)
-    (fun m ih => hn _ ih) ha
+    (fun _ ih => hn _ ih) ha
 
 section lift
 

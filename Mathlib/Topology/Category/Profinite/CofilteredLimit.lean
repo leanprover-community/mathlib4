@@ -26,7 +26,7 @@ namespace Profinite
 
 open CategoryTheory Limits
 
--- This was a global instance prior to #13170. We may experiment with removing it.
+-- This was a global instance prior to https://github.com/leanprover-community/mathlib4/pull/13170. We may experiment with removing it.
 attribute [local instance] ConcreteCategory.instFunLike
 
 universe u v
@@ -116,7 +116,7 @@ theorem exists_locallyConstant_fin_two (hC : IsLimit C) (f : LocallyConstant C.p
   apply LocallyConstant.locallyConstant_eq_of_fiber_zero_eq
   simp only [Fin.isValue, Functor.const_obj_obj, LocallyConstant.coe_comap, Set.preimage_comp,
     LocallyConstant.ofIsClopen_fiber_zero]
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [← h]
 
 open Classical in
@@ -168,11 +168,10 @@ theorem exists_locallyConstant_finite_nonempty {α : Type*} [Finite α] [Nonempt
   dsimp [σ]
   have h1 : ι (f x) = gg (C.π.app j x) := by
     change f.map (fun a b => if a = b then (0 : Fin 2) else 1) x = _
-    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [h]
+    rw [h]
     rfl
   have h2 : ∃ a : α, ι a = gg (C.π.app j x) := ⟨f x, h1⟩
-  -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
   erw [dif_pos h2]
   apply_fun ι
   · rw [h2.choose_spec]

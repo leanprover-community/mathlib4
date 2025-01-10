@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2017 Scott Morrison. All rights reserved.
+Copyright (c) 2017 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Stephen Morgan, Scott Morrison, Floris van Doorn
+Authors: Stephen Morgan, Kim Morrison, Floris van Doorn
 -/
 import Mathlib.CategoryTheory.Functor.Const
 import Mathlib.CategoryTheory.DiscreteCategory
@@ -158,11 +158,11 @@ instance inhabitedCocone (F : Discrete PUnit ⥤ C) : Inhabited (Cocone F) :=
               intro X Y f
               match X, Y, f with
               | .mk A, .mk B, .up g =>
-                aesop_cat
+                simp
            }
   }⟩
 
-@[reassoc] -- @[simp] -- Porting note (#10618): simp can prove this
+@[reassoc]
 theorem Cocone.w {F : J ⥤ C} (c : Cocone F) {j j' : J} (f : j ⟶ j') :
     F.map f ≫ c.ι.app j' = c.ι.app j := by
   rw [c.ι.naturality f]
@@ -195,7 +195,7 @@ def equiv (F : J ⥤ C) : Cone F ≅ ΣX, F.cones.obj X where
 /-- A map to the vertex of a cone naturally induces a cone by composition. -/
 @[simps]
 def extensions (c : Cone F) : yoneda.obj c.pt ⋙ uliftFunctor.{u₁} ⟶ F.cones where
-  app X f := (const J).map f.down ≫ c.π
+  app _ f := (const J).map f.down ≫ c.π
 
 /-- A map to the vertex of a cone induces a cone by composition. -/
 @[simps]
@@ -231,7 +231,7 @@ def equiv (F : J ⥤ C) : Cocone F ≅ ΣX, F.cocones.obj X where
 /-- A map from the vertex of a cocone naturally induces a cocone by composition. -/
 @[simps]
 def extensions (c : Cocone F) : coyoneda.obj (op c.pt) ⋙ uliftFunctor.{u₁} ⟶ F.cocones where
-  app X f := c.ι ≫ (const J).map f.down
+  app _ f := c.ι ≫ (const J).map f.down
 
 /-- A map from the vertex of a cocone induces a cocone by composition. -/
 @[simps]
@@ -283,7 +283,6 @@ namespace Cones
 /-- To give an isomorphism between cones, it suffices to give an
   isomorphism between their vertices which commutes with the cone
   maps. -/
--- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
 @[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {c c' : Cone F} (φ : c.pt ≅ c'.pt)
     (w : ∀ j, c.π.app j = φ.hom ≫ c'.π.app j := by aesop_cat) : c ≅ c' where
@@ -409,7 +408,7 @@ def functoriality : Cone F ⥤ Cone (F ⋙ G) where
     { pt := G.obj A.pt
       π :=
         { app := fun j => G.map (A.π.app j)
-          naturality := by intros; erw [← G.map_comp]; aesop_cat } }
+          naturality := by intros; erw [← G.map_comp]; simp } }
   map f :=
     { hom := G.map f.hom
       w := fun j => by simp [-ConeMorphism.w, ← f.w j] }
@@ -484,7 +483,6 @@ namespace Cocones
 /-- To give an isomorphism between cocones, it suffices to give an
   isomorphism between their vertices which commutes with the cocone
   maps. -/
--- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule
 @[aesop apply safe (rule_sets := [CategoryTheory]), simps]
 def ext {c c' : Cocone F} (φ : c.pt ≅ c'.pt)
     (w : ∀ j, c.ι.app j ≫ φ.hom = c'.ι.app j := by aesop_cat) : c ≅ c' where
@@ -608,7 +606,7 @@ def functoriality : Cocone F ⥤ Cocone (F ⋙ G) where
     { pt := G.obj A.pt
       ι :=
         { app := fun j => G.map (A.ι.app j)
-          naturality := by intros; erw [← G.map_comp]; aesop_cat } }
+          naturality := by intros; erw [← G.map_comp]; simp } }
   map f :=
     { hom := G.map f.hom
       w := by intros; rw [← Functor.map_comp, CoconeMorphism.w] }
@@ -668,7 +666,7 @@ def mapCone (c : Cone F) : Cone (F ⋙ H) :=
 def mapCocone (c : Cocone F) : Cocone (F ⋙ H) :=
   (Cocones.functoriality F H).obj c
 
-/-- Given a cone morphism `c ⟶ c'`, construct a cone morphism on the mapped cones functorially.  -/
+/-- Given a cone morphism `c ⟶ c'`, construct a cone morphism on the mapped cones functorially. -/
 def mapConeMorphism {c c' : Cone F} (f : c ⟶ c') : H.mapCone c ⟶ H.mapCone c' :=
   (Cones.functoriality F H).map f
 
@@ -721,7 +719,7 @@ isomorphic to the cone `H'.mapCone`.
 -/
 @[simps!]
 def postcomposeWhiskerLeftMapCone {H H' : C ⥤ D} (α : H ≅ H') (c : Cone F) :
-    (Cones.postcompose (whiskerLeft F α.hom : _)).obj (mapCone H c) ≅ mapCone H' c :=
+    (Cones.postcompose (whiskerLeft F α.hom :)).obj (mapCone H c) ≅ mapCone H' c :=
   (functorialityCompPostcompose α).app c
 
 /--
@@ -732,7 +730,7 @@ a cone over `G ⋙ H`, and they are both isomorphic.
 @[simps!]
 def mapConePostcompose {α : F ⟶ G} {c} :
     mapCone H ((Cones.postcompose α).obj c) ≅
-      (Cones.postcompose (whiskerRight α H : _)).obj (mapCone H c) :=
+      (Cones.postcompose (whiskerRight α H :)).obj (mapCone H c) :=
   Cones.ext (Iso.refl _)
 
 /-- `mapCone` commutes with `postcomposeEquivalence`
@@ -740,7 +738,7 @@ def mapConePostcompose {α : F ⟶ G} {c} :
 @[simps!]
 def mapConePostcomposeEquivalenceFunctor {α : F ≅ G} {c} :
     mapCone H ((Cones.postcomposeEquivalence α).functor.obj c) ≅
-      (Cones.postcomposeEquivalence (isoWhiskerRight α H : _)).functor.obj (mapCone H c) :=
+      (Cones.postcomposeEquivalence (isoWhiskerRight α H :)).functor.obj (mapCone H c) :=
   Cones.ext (Iso.refl _)
 
 /-- `functoriality F _ ⋙ precompose (whiskerLeft F _)` simplifies to `functoriality F _`. -/
@@ -757,7 +755,7 @@ isomorphic to the cocone `H'.mapCocone`.
 -/
 @[simps!]
 def precomposeWhiskerLeftMapCocone {H H' : C ⥤ D} (α : H ≅ H') (c : Cocone F) :
-    (Cocones.precompose (whiskerLeft F α.inv : _)).obj (mapCocone H c) ≅ mapCocone H' c :=
+    (Cocones.precompose (whiskerLeft F α.inv :)).obj (mapCocone H c) ≅ mapCocone H' c :=
   (functorialityCompPrecompose α).app c
 
 /-- `map_cocone` commutes with `precompose`. In particular, for `F : J ⥤ C`, given a cocone
@@ -767,7 +765,7 @@ ways of producing a cocone over `G ⋙ H`, and they are both isomorphic.
 @[simps!]
 def mapCoconePrecompose {α : F ⟶ G} {c} :
     mapCocone H ((Cocones.precompose α).obj c) ≅
-      (Cocones.precompose (whiskerRight α H : _)).obj (mapCocone H c) :=
+      (Cocones.precompose (whiskerRight α H :)).obj (mapCocone H c) :=
   Cocones.ext (Iso.refl _)
 
 /-- `mapCocone` commutes with `precomposeEquivalence`
@@ -775,7 +773,7 @@ def mapCoconePrecompose {α : F ⟶ G} {c} :
 @[simps!]
 def mapCoconePrecomposeEquivalenceFunctor {α : F ≅ G} {c} :
     mapCocone H ((Cocones.precomposeEquivalence α).functor.obj c) ≅
-      (Cocones.precomposeEquivalence (isoWhiskerRight α H : _)).functor.obj (mapCocone H c) :=
+      (Cocones.precomposeEquivalence (isoWhiskerRight α H :)).functor.obj (mapCocone H c) :=
   Cocones.ext (Iso.refl _)
 
 /-- `mapCone` commutes with `whisker`

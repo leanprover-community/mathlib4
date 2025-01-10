@@ -99,10 +99,10 @@ lemma hasProductsOfShape (J : Type) [Finite J] [HasProductsOfShape J C]
 /-- When `C` has finite products indexed by `J`, `W : MorphismProperty C` contains
 identities and is stable by products indexed by `J`,
 then any localization functor for `W` preserves finite products indexed by `J`. -/
-noncomputable def preservesProductsOfShape (J : Type) [Finite J]
+lemma preservesProductsOfShape (J : Type) [Finite J]
     [HasProductsOfShape J C] (hW : W.IsStableUnderProductsOfShape J) :
     PreservesLimitsOfShape (Discrete J) L where
-  preservesLimit {F} := preservesLimitOfPreservesLimitCone (limit.isLimit F)
+  preservesLimit {F} := preservesLimit_of_preserves_limit_cone (limit.isLimit F)
     (HasProductsOfShapeAux.isLimitMapCone L hW F)
 
 variable [HasFiniteProducts C] [W.IsStableUnderFiniteProducts]
@@ -112,10 +112,11 @@ lemma hasFiniteProducts : HasFiniteProducts D :=
   ⟨fun _ => hasProductsOfShape L W _
     (W.isStableUnderProductsOfShape_of_isStableUnderFiniteProducts _)⟩
 
+include W in
 /-- When `C` has finite products and `W : MorphismProperty C` contains
 identities and is stable by finite products,
 then any localization functor for `W` preserves finite products. -/
-noncomputable def preservesFiniteProducts :
+lemma preservesFiniteProducts :
     PreservesFiniteProducts L where
   preserves J _ := preservesProductsOfShape L W J
       (W.isStableUnderProductsOfShape_of_isStableUnderFiniteProducts _)

@@ -23,7 +23,7 @@ class CanonicallyLinearOrderedSemifield (α : Type*) extends CanonicallyOrderedC
 instance (priority := 100) CanonicallyLinearOrderedSemifield.toLinearOrderedCommGroupWithZero
     [CanonicallyLinearOrderedSemifield α] : LinearOrderedCommGroupWithZero α :=
   { ‹CanonicallyLinearOrderedSemifield α› with
-    mul_le_mul_left := fun a b h c ↦ mul_le_mul_of_nonneg_left h <| zero_le _ }
+    mul_le_mul_left := fun _ _ h _ ↦ mul_le_mul_of_nonneg_left h <| zero_le _ }
 
 -- See note [lower instance priority]
 instance (priority := 100) CanonicallyLinearOrderedSemifield.toCanonicallyLinearOrderedAddCommMonoid

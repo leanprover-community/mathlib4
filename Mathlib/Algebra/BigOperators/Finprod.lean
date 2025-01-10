@@ -5,8 +5,10 @@ Authors: Kexing Ying, Kevin Buzzard, Yury Kudryashov
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.Group.FiniteSupport
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Data.Set.Subsingleton
 
 /-!
@@ -374,11 +376,12 @@ theorem finprod_eq_prod_of_fintype [Fintype α] (f : α → M) : ∏ᶠ i : α, 
 theorem finprod_cond_eq_prod_of_cond_iff (f : α → M) {p : α → Prop} {t : Finset α}
     (h : ∀ {x}, f x ≠ 1 → (p x ↔ x ∈ t)) : (∏ᶠ (i) (_ : p i), f i) = ∏ i ∈ t, f i := by
   set s := { x | p x }
+  change ∏ᶠ (i : α) (_ : i ∈ s), f i = ∏ i ∈ t, f i
   have : mulSupport (s.mulIndicator f) ⊆ t := by
     rw [Set.mulSupport_mulIndicator]
     intro x hx
     exact (h hx.2).1 hx.1
-  erw [finprod_mem_def, finprod_eq_prod_of_mulSupport_subset _ this]
+  rw [finprod_mem_def, finprod_eq_prod_of_mulSupport_subset _ this]
   refine Finset.prod_congr rfl fun x hx => mulIndicator_apply_eq_self.2 fun hxs => ?_
   contrapose! hxs
   exact (h hxs).2 hx
@@ -451,7 +454,7 @@ theorem finprod_mem_eq_one_of_infinite {f : α → M} {s : Set α} (hs : (s ∩ 
 
 @[to_additive]
 theorem finprod_mem_eq_one_of_forall_eq_one {f : α → M} {s : Set α} (h : ∀ x ∈ s, f x = 1) :
-    ∏ᶠ i ∈ s, f i = 1 := by simp (config := { contextual := true }) [h]
+    ∏ᶠ i ∈ s, f i = 1 := by simp +contextual [h]
 
 @[to_additive]
 theorem finprod_mem_inter_mulSupport (f : α → M) (s : Set α) :
@@ -483,7 +486,7 @@ theorem finprod_mem_congr (h₀ : s = t) (h₁ : ∀ x ∈ t, f x = g x) :
 
 @[to_additive]
 theorem finprod_eq_one_of_forall_eq_one {f : α → M} (h : ∀ x, f x = 1) : ∏ᶠ i, f i = 1 := by
-  simp (config := { contextual := true }) [h]
+  simp +contextual [h]
 
 @[to_additive finsum_pos']
 theorem one_lt_finprod' {M : Type*} [OrderedCancelCommMonoid M] {f : ι → M}
@@ -750,7 +753,7 @@ theorem finprod_mem_insert_one (h : f a = 1) : ∏ᶠ i ∈ insert a s, f i = �
   finprod_mem_insert_of_eq_one_if_not_mem fun _ => h
 
 /-- If the multiplicative support of `f` is finite, then for every `x` in the domain of `f`, `f x`
-divides `finprod f`.  -/
+divides `finprod f`. -/
 theorem finprod_mem_dvd {f : α → N} (a : α) (hf : (mulSupport f).Finite) : f a ∣ finprod f := by
   by_cases ha : a ∈ mulSupport f
   · rw [finprod_eq_prod_of_mulSupport_toFinset_subset f hf (Set.Subset.refl _)]
@@ -1011,7 +1014,7 @@ theorem Finset.mulSupport_of_fiberwise_prod_subset_image [DecidableEq β] (s : F
   simp only [Finset.coe_image, Set.mem_image, Finset.mem_coe, Function.support_subset_iff]
   intro b h
   suffices (s.filter fun a : α => g a = b).Nonempty by
-    simpa only [s.fiber_nonempty_iff_mem_image g b, Finset.mem_image, exists_prop]
+    simpa only [fiber_nonempty_iff_mem_image, Finset.mem_image, exists_prop]
   exact Finset.nonempty_of_prod_ne_one h
 
 /-- Note that `b ∈ (s.filter (fun ab => Prod.fst ab = a)).image Prod.snd` iff `(a, b) ∈ s` so

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn
 -/
 import Mathlib.Order.Interval.Set.OrdConnected
+import Mathlib.Order.Interval.Set.WithBotTop
 import Mathlib.Order.Antisymmetrization
 
 /-!
@@ -79,7 +80,7 @@ theorem wcovBy_congr_right (hab : AntisymmRel (· ≤ ·) a b) : c ⩿ a ↔ c �
 
 /-- If `a ≤ b`, then `b` does not cover `a` iff there's an element in between. -/
 theorem not_wcovBy_iff (h : a ≤ b) : ¬a ⩿ b ↔ ∃ c, a < c ∧ c < b := by
-  simp_rw [WCovBy, h, true_and_iff, not_forall, exists_prop, not_not]
+  simp_rw [WCovBy, h, true_and, not_forall, exists_prop, not_not]
 
 instance WCovBy.isRefl : IsRefl α (· ⩿ ·) :=
   ⟨WCovBy.refl⟩
@@ -125,6 +126,19 @@ theorem ofDual_wcovBy_ofDual_iff {a b : αᵒᵈ} : ofDual a ⩿ ofDual b ↔ b 
 alias ⟨_, WCovBy.toDual⟩ := toDual_wcovBy_toDual_iff
 
 alias ⟨_, WCovBy.ofDual⟩ := ofDual_wcovBy_ofDual_iff
+
+theorem OrderEmbedding.wcovBy_of_apply {α β : Type*} [Preorder α] [Preorder β]
+    (f : α ↪o β) {x y : α} (h : f x ⩿ f y) : x ⩿ y := by
+  use f.le_iff_le.1 h.1
+  intro a
+  rw [← f.lt_iff_lt, ← f.lt_iff_lt]
+  apply h.2
+
+theorem OrderIso.map_wcovBy {α β : Type*} [Preorder α] [Preorder β]
+    (f : α ≃o β) {x y : α} : f x ⩿ f y ↔ x ⩿ y := by
+  use f.toOrderEmbedding.wcovBy_of_apply
+  conv_lhs => rw [← f.symm_apply_apply x, ← f.symm_apply_apply y]
+  exact f.symm.toOrderEmbedding.wcovBy_of_apply
 
 end Preorder
 
@@ -194,7 +208,7 @@ theorem CovBy.lt (h : a ⋖ b) : a < b :=
 
 /-- If `a < b`, then `b` does not cover `a` iff there's an element in between. -/
 theorem not_covBy_iff (h : a < b) : ¬a ⋖ b ↔ ∃ c, a < c ∧ c < b := by
-  simp_rw [CovBy, h, true_and_iff, not_forall, exists_prop, not_not]
+  simp_rw [CovBy, h, true_and, not_forall, exists_prop, not_not]
 
 alias ⟨exists_lt_lt_of_not_covBy, _⟩ := not_covBy_iff
 
@@ -312,6 +326,19 @@ theorem apply_covBy_apply_iff {E : Type*} [EquivLike E α β] [OrderIsoClass E �
 theorem covBy_of_eq_or_eq (hab : a < b) (h : ∀ c, a ≤ c → c ≤ b → c = a ∨ c = b) : a ⋖ b :=
   ⟨hab, fun c ha hb => (h c ha.le hb.le).elim ha.ne' hb.ne⟩
 
+theorem OrderEmbedding.covBy_of_apply {α β : Type*} [Preorder α] [Preorder β]
+    (f : α ↪o β) {x y : α} (h : f x ⋖ f y) : x ⋖ y := by
+  use f.lt_iff_lt.1 h.1
+  intro a
+  rw [← f.lt_iff_lt, ← f.lt_iff_lt]
+  apply h.2
+
+theorem OrderIso.map_covBy {α β : Type*} [Preorder α] [Preorder β]
+    (f : α ≃o β) {x y : α} : f x ⋖ f y ↔ x ⋖ y := by
+  use f.toOrderEmbedding.covBy_of_apply
+  conv_lhs => rw [← f.symm_apply_apply x, ← f.symm_apply_apply y]
+  exact f.symm.toOrderEmbedding.covBy_of_apply
+
 end Preorder
 
 section PartialOrder
@@ -384,6 +411,26 @@ theorem CovBy.unique_right (hb : a ⋖ b) (hc : a ⋖ c) : b = c :=
 theorem CovBy.eq_of_between {x : α} (hab : a ⋖ b) (hbc : b ⋖ c) (hax : a < x) (hxc : x < c) :
     x = b :=
   le_antisymm (le_of_not_lt fun h => hbc.2 h hxc) (le_of_not_lt <| hab.2 hax)
+
+theorem covBy_iff_lt_iff_le_left {x y : α} : x ⋖ y ↔ ∀ {z}, z < y ↔ z ≤ x where
+  mp := fun hx _z ↦ ⟨hx.le_of_lt, fun hz ↦ hz.trans_lt hx.lt⟩
+  mpr := fun H ↦ ⟨H.2 le_rfl, fun _z hx hz ↦ (H.1 hz).not_lt hx⟩
+
+theorem covBy_iff_le_iff_lt_left {x y : α} : x ⋖ y ↔ ∀ {z}, z ≤ x ↔ z < y := by
+  simp_rw [covBy_iff_lt_iff_le_left, iff_comm]
+
+theorem covBy_iff_lt_iff_le_right {x y : α} : x ⋖ y ↔ ∀ {z}, x < z ↔ y ≤ z := by
+  trans ∀ {z}, ¬ z ≤ x ↔ ¬ z < y
+  · simp_rw [covBy_iff_le_iff_lt_left, not_iff_not]
+  · simp
+
+theorem covBy_iff_le_iff_lt_right {x y : α} : x ⋖ y ↔ ∀ {z}, y ≤ z ↔ x < z := by
+  simp_rw [covBy_iff_lt_iff_le_right, iff_comm]
+
+alias ⟨CovBy.lt_iff_le_left, _⟩ := covBy_iff_lt_iff_le_left
+alias ⟨CovBy.le_iff_lt_left, _⟩ := covBy_iff_le_iff_lt_left
+alias ⟨CovBy.lt_iff_le_right, _⟩ := covBy_iff_lt_iff_le_right
+alias ⟨CovBy.le_iff_lt_right, _⟩ := covBy_iff_le_iff_lt_right
 
 /-- If `a < b` then there exist `a' > a` and `b' < b` such that `Set.Iio a'` is strictly to the left
 of `Set.Ioi b'`. -/
@@ -522,3 +569,61 @@ theorem covBy_iff : x ⋖ y ↔ x.1 ⋖ y.1 ∧ x.2 = y.2 ∨ x.2 ⋖ y.2 ∧ x.
   exact mk_covBy_mk_iff
 
 end Prod
+
+namespace WithTop
+
+variable [Preorder α] {a b : α}
+
+@[simp, norm_cast] lemma coe_wcovBy_coe : (a : WithTop α) ⩿ b ↔ a ⩿ b :=
+  Set.OrdConnected.apply_wcovBy_apply_iff OrderEmbedding.withTopCoe <| by
+    simp [WithTop.range_coe, ordConnected_Iio]
+
+@[simp, norm_cast] lemma coe_covBy_coe : (a : WithTop α) ⋖ b ↔ a ⋖ b :=
+  Set.OrdConnected.apply_covBy_apply_iff OrderEmbedding.withTopCoe <| by
+    simp [WithTop.range_coe, ordConnected_Iio]
+
+@[simp] lemma coe_covBy_top : (a : WithTop α) ⋖ ⊤ ↔ IsMax a := by
+  simp only [covBy_iff_Ioo_eq, ← image_coe_Ioi, coe_lt_top, image_eq_empty,
+    true_and, Ioi_eq_empty_iff]
+
+@[simp] lemma coe_wcovBy_top : (a : WithTop α) ⩿ ⊤ ↔ IsMax a := by
+  simp only [wcovBy_iff_Ioo_eq, ← image_coe_Ioi, le_top, image_eq_empty, true_and, Ioi_eq_empty_iff]
+
+end WithTop
+
+namespace WithBot
+
+variable [Preorder α] {a b : α}
+
+@[simp, norm_cast] lemma coe_wcovBy_coe : (a : WithBot α) ⩿ b ↔ a ⩿ b :=
+  Set.OrdConnected.apply_wcovBy_apply_iff OrderEmbedding.withBotCoe <| by
+    simp [WithBot.range_coe, ordConnected_Ioi]
+
+@[simp, norm_cast] lemma coe_covBy_coe : (a : WithBot α) ⋖ b ↔ a ⋖ b :=
+  Set.OrdConnected.apply_covBy_apply_iff OrderEmbedding.withBotCoe <| by
+    simp [WithBot.range_coe, ordConnected_Ioi]
+
+@[simp] lemma bot_covBy_coe : ⊥ ⋖ (a : WithBot α) ↔ IsMin a := by
+  simp only [covBy_iff_Ioo_eq, ← image_coe_Iio, bot_lt_coe, image_eq_empty,
+    true_and, Iio_eq_empty_iff]
+
+@[simp] lemma bot_wcovBy_coe : ⊥ ⩿ (a : WithBot α) ↔ IsMin a := by
+  simp only [wcovBy_iff_Ioo_eq, ← image_coe_Iio, bot_le, image_eq_empty, true_and, Iio_eq_empty_iff]
+
+end WithBot
+
+section WellFounded
+
+variable [Preorder α]
+
+lemma exists_covBy_of_wellFoundedLT [wf : WellFoundedLT α] ⦃a : α⦄ (h : ¬ IsMax a) :
+    ∃ a', a ⋖ a' := by
+  rw [not_isMax_iff] at h
+  exact ⟨_, wellFounded_lt.min_mem _ h, fun a' ↦ wf.wf.not_lt_min _ h⟩
+
+lemma exists_covBy_of_wellFoundedGT [wf : WellFoundedGT α] ⦃a : α⦄ (h : ¬ IsMin a) :
+    ∃ a', a' ⋖ a := by
+  rw [not_isMin_iff] at h
+  exact ⟨_, wf.wf.min_mem _ h, fun a' h₁ h₂ ↦ wf.wf.not_lt_min _ h h₂ h₁⟩
+
+end WellFounded

@@ -3,11 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Order.Ring.Rat
+import Mathlib.Algebra.Order.Ring.Unbundled.Nonneg
 import Mathlib.Algebra.Order.Ring.Unbundled.Rat
-import Mathlib.Data.Nat.Cast.Order.Ring
+import Mathlib.Algebra.Ring.Rat
 
 /-!
 # Nonnegative rationals
@@ -15,7 +14,8 @@ import Mathlib.Data.Nat.Cast.Order.Ring
 This file defines the nonnegative rationals as a subtype of `Rat` and provides its basic algebraic
 order structure.
 
-Note that `NNRat` is not declared as a `Field` here. See `Data.NNRat.Lemmas` for that instance.
+Note that `NNRat` is not declared as a `Semifield` here. See `Mathlib.Algebra.Field.Rat` for that
+instance.
 
 We also define an instance `CanLift ℚ ℚ≥0`. This instance can be used by the `lift` tactic to
 replace `x : ℚ` and `hx : 0 ≤ x` in the proof context with `x : ℚ≥0` while replacing all occurrences
@@ -32,6 +32,8 @@ Whenever you state a lemma about the coercion `ℚ≥0 → ℚ`, check that Lean
 `Subtype.val`. Else your lemma will never apply.
 -/
 
+assert_not_exists OrderedCommMonoid
+
 library_note "specialised high priority simp lemma" /--
 It sometimes happens that a `@[simp]` lemma declared early in the library can be proved by `simp`
 using later, more general simp lemmas. In that case, the following reasons might be arguments for
@@ -45,19 +47,32 @@ un``@[simp]``ed):
 
 open Function
 
-deriving instance CanonicallyOrderedCommSemiring for NNRat
-deriving instance CanonicallyLinearOrderedAddCommMonoid for NNRat
+instance Rat.instZeroLEOneClass : ZeroLEOneClass ℚ where
+  zero_le_one := rfl
+
+instance Rat.instPosMulMono : PosMulMono ℚ where
+  elim := fun r p q h => by
+    simp only [mul_comm]
+    simpa [sub_mul, sub_nonneg] using Rat.mul_nonneg (sub_nonneg.2 h) r.2
+
+deriving instance CommSemiring for NNRat
+deriving instance LinearOrder for NNRat
 deriving instance Sub for NNRat
 deriving instance Inhabited for NNRat
 
--- TODO: `deriving instance OrderedSub for NNRat` doesn't work yet, so we add the instance manually
-instance NNRat.instOrderedSub : OrderedSub ℚ≥0 := Nonneg.orderedSub
-
 namespace NNRat
 
-variable {α : Type*} {p q : ℚ≥0}
+variable {p q : ℚ≥0}
+
+instance instNontrivial : Nontrivial ℚ≥0 where exists_pair_ne := ⟨1, 0, by decide⟩
+instance instOrderBot : OrderBot ℚ≥0 where
+  bot := 0
+  bot_le q := q.2
 
 @[simp] lemma val_eq_cast (q : ℚ≥0) : q.1 = q := rfl
+
+instance instCharZero : CharZero ℚ≥0 where
+  cast_injective a b hab := by simpa using congr_arg num hab
 
 instance canLift : CanLift ℚ ℚ≥0 (↑) fun q ↦ 0 ≤ q where
   prf q hq := ⟨⟨q, hq⟩, rfl⟩
@@ -100,8 +115,12 @@ theorem coe_nonneg (q : ℚ≥0) : (0 : ℚ) ≤ q :=
   q.2
 
 @[simp, norm_cast] lemma coe_zero : ((0 : ℚ≥0) : ℚ) = 0 := rfl
+@[simp] lemma num_zero : num 0 = 0 := rfl
+@[simp] lemma den_zero : den 0 = 1 := rfl
 
 @[simp, norm_cast] lemma coe_one : ((1 : ℚ≥0) : ℚ) = 1 := rfl
+@[simp] lemma num_one : num 1 = 1 := rfl
+@[simp] lemma den_one : den 1 = 1 := rfl
 
 @[simp, norm_cast]
 theorem coe_add (p q : ℚ≥0) : ((p + q : ℚ≥0) : ℚ) = p + q :=
@@ -117,8 +136,6 @@ theorem coe_mul (p q : ℚ≥0) : ((p * q : ℚ≥0) : ℚ) = p * q :=
 @[simp] lemma num_pow (q : ℚ≥0) (n : ℕ) : (q ^ n).num = q.num ^ n := by simp [num, Int.natAbs_pow]
 @[simp] lemma den_pow (q : ℚ≥0) (n : ℕ) : (q ^ n).den = q.den ^ n := rfl
 
--- Porting note: `bit0` `bit1` are deprecated, so remove these theorems.
-
 @[simp, norm_cast]
 theorem coe_sub (h : q ≤ p) : ((p - q : ℚ≥0) : ℚ) = p - q :=
   max_eq_left <| le_sub_comm.2 <| by rwa [sub_zero]
@@ -130,11 +147,11 @@ theorem coe_eq_zero : (q : ℚ) = 0 ↔ q = 0 := by norm_cast
 theorem coe_ne_zero : (q : ℚ) ≠ 0 ↔ q ≠ 0 :=
   coe_eq_zero.not
 
-@[norm_cast] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem coe_le_coe : (p : ℚ) ≤ q ↔ p ≤ q :=
   Iff.rfl
 
-@[norm_cast] -- Porting note (#10618): simp can prove this
+@[norm_cast]
 theorem coe_lt_coe : (p : ℚ) < q ↔ p < q :=
   Iff.rfl
 
@@ -155,7 +172,7 @@ theorem toNNRat_coe (q : ℚ≥0) : toNNRat q = q :=
 
 @[simp]
 theorem toNNRat_coe_nat (n : ℕ) : toNNRat n = n :=
-  ext <| by simp only [Nat.cast_nonneg, Rat.coe_toNNRat]; rfl
+  ext <| by simp only [Nat.cast_nonneg', Rat.coe_toNNRat]; rfl
 
 /-- `toNNRat` and `(↑) : ℚ≥0 → ℚ` form a Galois insertion. -/
 protected def gi : GaloisInsertion toNNRat (↑) :=
@@ -171,9 +188,8 @@ def coeHom : ℚ≥0 →+* ℚ where
 
 @[simp, norm_cast] lemma coe_natCast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n := rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem mk_natCast (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ≥0) n :=
+theorem mk_natCast (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), Nat.cast_nonneg' n⟩ : ℚ≥0) n :=
   rfl
 
 @[deprecated (since := "2024-04-05")] alias mk_coe_nat := mk_natCast
@@ -211,6 +227,11 @@ theorem sub_def (p q : ℚ≥0) : p - q = toNNRat (p - q) :=
 @[simp]
 theorem abs_coe (q : ℚ≥0) : |(q : ℚ)| = q :=
   abs_of_nonneg q.2
+
+-- See note [specialised high priority simp lemma]
+@[simp high]
+theorem nonpos_iff_eq_zero (q : ℚ≥0) : q ≤ 0 ↔ q = 0 :=
+  ⟨fun h => le_antisymm h q.2, fun h => h.symm ▸ q.2⟩
 
 end NNRat
 
@@ -272,8 +293,6 @@ theorem toNNRat_lt_iff_lt_coe {p : ℚ≥0} (hq : 0 ≤ q) : toNNRat q < p ↔ q
 theorem lt_toNNRat_iff_coe_lt {q : ℚ≥0} : q < toNNRat p ↔ ↑q < p :=
   NNRat.gi.gc.lt_iff_lt
 
--- Porting note: `bit0` `bit1` are deprecated, so remove these theorems.
-
 theorem toNNRat_mul (hp : 0 ≤ p) : toNNRat (p * q) = toNNRat p * toNNRat q := by
   rcases le_total 0 q with hq | hq
   · ext; simp [toNNRat, hp, hq, max_eq_left, mul_nonneg]
@@ -305,7 +324,8 @@ theorem natAbs_num_coe : (q : ℚ).num.natAbs = q.num := rfl
 @[norm_cast] lemma den_coe : (q : ℚ).den = q.den := rfl
 
 @[simp] lemma num_ne_zero : q.num ≠ 0 ↔ q ≠ 0 := by simp [num]
-@[simp] lemma num_pos : 0 < q.num ↔ 0 < q := by simp [pos_iff_ne_zero]
+@[simp] lemma num_pos : 0 < q.num ↔ 0 < q := by
+  simpa [num, -nonpos_iff_eq_zero] using nonpos_iff_eq_zero _ |>.not.symm
 @[simp] lemma den_pos (q : ℚ≥0) : 0 < q.den := Rat.den_pos _
 @[simp] lemma den_ne_zero (q : ℚ≥0) : q.den ≠ 0 := Rat.den_ne_zero _
 
@@ -315,10 +335,9 @@ lemma coprime_num_den (q : ℚ≥0) : q.num.Coprime q.den := by simpa [num, den]
 @[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
 @[simp, norm_cast] lemma den_natCast (n : ℕ) : den n = 1 := rfl
 
--- See note [no_index around OfNat.ofNat]
-@[simp] lemma num_ofNat (n : ℕ) [n.AtLeastTwo] : num (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+@[simp] lemma num_ofNat (n : ℕ) [n.AtLeastTwo] : num ofNat(n) = OfNat.ofNat n :=
   rfl
-@[simp] lemma den_ofNat (n : ℕ) [n.AtLeastTwo] : den (no_index (OfNat.ofNat n)) = 1 := rfl
+@[simp] lemma den_ofNat (n : ℕ) [n.AtLeastTwo] : den ofNat(n) = 1 := rfl
 
 theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q := by
   refine ext <| Rat.ext ?_ hd
@@ -333,7 +352,7 @@ See also `Rat.divInt` and `mkRat`. -/
 def divNat (n d : ℕ) : ℚ≥0 :=
   ⟨.divInt n d, Rat.divInt_nonneg (Int.ofNat_zero_le n) (Int.ofNat_zero_le d)⟩
 
-variable {n₁ n₂ d₁ d₂ d : ℕ}
+variable {n₁ n₂ d₁ d₂ : ℕ}
 
 @[simp, norm_cast] lemma coe_divNat (n d : ℕ) : (divNat n d : ℚ) = .divInt n d := rfl
 
@@ -387,3 +406,12 @@ theorem le_def {p q : ℚ≥0} : p ≤ q ↔ p.num * q.den ≤ q.num * p.den := 
   rw [← NNRat.coe_le_coe, Rat.le_def]; norm_cast
 
 end NNRat
+
+namespace Mathlib.Tactic.Qify
+
+@[qify_simps] lemma nnratCast_eq (a b : ℚ≥0) : a = b ↔ (a : ℚ) = (b : ℚ) := NNRat.coe_inj.symm
+@[qify_simps] lemma nnratCast_le (a b : ℚ≥0) : a ≤ b ↔ (a : ℚ) ≤ (b : ℚ) := NNRat.coe_le_coe.symm
+@[qify_simps] lemma nnratCast_lt (a b : ℚ≥0) : a < b ↔ (a : ℚ) < (b : ℚ) := NNRat.coe_lt_coe.symm
+@[qify_simps] lemma nnratCast_ne (a b : ℚ≥0) : a ≠ b ↔ (a : ℚ) ≠ (b : ℚ) := NNRat.ne_iff.symm
+
+end Mathlib.Tactic.Qify

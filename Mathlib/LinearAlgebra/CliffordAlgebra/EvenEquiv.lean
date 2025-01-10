@@ -117,7 +117,7 @@ def toEven : CliffordAlgebra Q →ₐ[R] CliffordAlgebra.even (Q' Q) := by
 
 theorem toEven_ι (m : M) : (toEven Q (ι Q m) : CliffordAlgebra (Q' Q)) = e0 Q * v Q m := by
   rw [toEven, CliffordAlgebra.lift_ι_apply]
-  -- Porting note (#10691): was `rw`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11224): was `rw`
   erw [LinearMap.codRestrict_apply]
   rw [LinearMap.coe_comp, Function.comp_apply, LinearMap.mulLeft_apply]
 
@@ -152,13 +152,8 @@ def ofEven : CliffordAlgebra.even (Q' Q) →ₐ[R] CliffordAlgebra Q := by
 
 theorem ofEven_ι (x y : M × R) :
     ofEven Q ((even.ι (Q' Q)).bilin x y) =
-      (ι Q x.1 + algebraMap R _ x.2) * (ι Q y.1 - algebraMap R _ y.2) := by
-  -- Porting note: entire proof was the term-mode `even.lift_ι (Q' Q) _ x y`
-  unfold ofEven
-  lift_lets
-  intro f
-  -- TODO: replacing `?_` with `_` takes way longer?
-  exact @even.lift_ι R (M × R) _ _ _ (Q' Q) _ _ _ ⟨f, ?_, ?_⟩ x y
+      (ι Q x.1 + algebraMap R _ x.2) * (ι Q y.1 - algebraMap R _ y.2) :=
+  even.lift_ι (Q' Q) _ x y
 
 theorem toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=
   even.algHom_ext (Q' Q) <|
@@ -187,7 +182,7 @@ theorem toEven_comp_ofEven : (toEven Q).comp (ofEven Q) = AlgHom.id R _ :=
                 have h2 : -(r₂ • e0 Q * v Q m₁) = v Q m₁ * r₂ • e0 Q := by
                   rw [mul_smul_comm, smul_mul_assoc, ← smul_neg, neg_e0_mul_v]
                 have h3 : -algebraMap R _ (r₁ * r₂) = r₁ • e0 Q * r₂ • e0 Q := by
-                  rw [Algebra.algebraMap_eq_smul_one, smul_mul_smul, e0_mul_e0, smul_neg]
+                  rw [Algebra.algebraMap_eq_smul_one, smul_mul_smul_comm, e0_mul_e0, smul_neg]
                 rw [sub_eq_add_neg, sub_eq_add_neg, h1, h2, h3]
               _ = ι (Q' Q) (m₁, r₁) * ι (Q' Q) (m₂, r₂) := by
                 rw [ι_eq_v_add_smul_e0, ι_eq_v_add_smul_e0, mul_add, add_mul, add_mul, add_assoc]
@@ -233,7 +228,7 @@ def evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) :
     -- Porting note: added `letI`s
     letI : AddCommGroup (even Q') := AddSubgroupClass.toAddCommGroup _
     letI : HasDistribNeg (even Q') := NonUnitalNonAssocRing.toHasDistribNeg
-    { bilin := -(even.ι Q' : _).bilin
+    { bilin := -(even.ι Q' :).bilin
       contract := fun m => by
         simp_rw [LinearMap.neg_apply, EvenHom.contract, h, QuadraticMap.neg_apply, map_neg, neg_neg]
       contract_mid := fun m₁ m₂ m₃ => by
@@ -249,11 +244,7 @@ theorem evenToNeg_ι (Q' : QuadraticForm R M) (h : Q' = -Q) (m₁ m₂ : M) :
 theorem evenToNeg_comp_evenToNeg (Q' : QuadraticForm R M) (h : Q' = -Q) (h' : Q = -Q') :
     (evenToNeg Q' Q h').comp (evenToNeg Q Q' h) = AlgHom.id R _ := by
   ext m₁ m₂ : 4
-  dsimp only [EvenHom.compr₂_bilin, LinearMap.compr₂_apply, AlgHom.toLinearMap_apply,
-    AlgHom.comp_apply, AlgHom.id_apply]
-  rw [evenToNeg_ι]
-  -- Needed to use `RingHom.map_neg` to avoid a timeout and now `erw` #8386
-  erw [RingHom.map_neg, evenToNeg_ι, neg_neg]
+  simp [evenToNeg_ι]
 
 /-- The even subalgebras of the algebras with quadratic form `Q` and `-Q` are isomorphic.
 

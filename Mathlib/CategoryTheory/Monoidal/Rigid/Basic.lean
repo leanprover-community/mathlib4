@@ -3,7 +3,7 @@ Copyright (c) 2021 Jakob von Raumer. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jakob von Raumer
 -/
-import Mathlib.Tactic.CategoryTheory.Coherence
+import Mathlib.Tactic.CategoryTheory.Monoidal.Basic
 import Mathlib.CategoryTheory.Closed.Monoidal
 import Mathlib.Tactic.ApplyFun
 
@@ -113,11 +113,11 @@ lemma evaluation_coevaluation :
   evaluation_coevaluation'
 
 lemma coevaluation_evaluation'' :
-    Y ◁ η_ X Y ⊗≫ ε_ X Y ▷ Y = ⊗𝟙 := by
+    Y ◁ η_ X Y ⊗≫ ε_ X Y ▷ Y = ⊗𝟙.hom := by
   convert coevaluation_evaluation X Y <;> simp [monoidalComp]
 
 lemma evaluation_coevaluation'' :
-    η_ X Y ▷ X ⊗≫ X ◁ ε_ X Y = ⊗𝟙 := by
+    η_ X Y ▷ X ⊗≫ X ◁ ε_ X Y = ⊗𝟙.hom := by
   convert evaluation_coevaluation X Y <;> simp [monoidalComp]
 
 end ExactPairing
@@ -128,8 +128,8 @@ attribute [reassoc (attr := simp)] ExactPairing.evaluation_coevaluation
 instance exactPairingUnit : ExactPairing (𝟙_ C) (𝟙_ C) where
   coevaluation' := (ρ_ _).inv
   evaluation' := (ρ_ _).hom
-  coevaluation_evaluation' := by rw [← id_tensorHom, ← tensorHom_id]; coherence
-  evaluation_coevaluation' := by rw [← id_tensorHom, ← tensorHom_id]; coherence
+  coevaluation_evaluation' := by monoidal_coherence
+  evaluation_coevaluation' := by monoidal_coherence
 
 /-- A class of objects which have a right dual. -/
 class HasRightDual (X : C) where
@@ -204,9 +204,9 @@ theorem rightAdjointMate_comp {X Y Z : C} [HasRightDual X] [HasRightDual Y] {f :
         _ ◁ η_ X (Xᘁ) ≫ _ ◁ (f ⊗ g) ≫ (α_ (Yᘁ) Y Z).inv ≫ ε_ Y (Yᘁ) ▷ _ ≫ (λ_ Z).hom :=
   calc
     _ = 𝟙 _ ⊗≫ (Yᘁ : C) ◁ η_ X Xᘁ ≫ Yᘁ ◁ f ▷ Xᘁ ⊗≫ (ε_ Y Yᘁ ▷ Xᘁ ≫ 𝟙_ C ◁ g) ⊗≫ 𝟙 _ := by
-      dsimp only [rightAdjointMate]; coherence
+      dsimp only [rightAdjointMate]; monoidal
     _ = _ := by
-      rw [← whisker_exchange, tensorHom_def]; coherence
+      rw [← whisker_exchange, tensorHom_def]; monoidal
 
 theorem leftAdjointMate_comp {X Y Z : C} [HasLeftDual X] [HasLeftDual Y] {f : X ⟶ Y}
     {g : (ᘁX) ⟶ Z} :
@@ -215,9 +215,9 @@ theorem leftAdjointMate_comp {X Y Z : C} [HasLeftDual X] [HasLeftDual Y] {f : X 
         η_ (ᘁX : C) X ▷ _ ≫ (g ⊗ f) ▷ _ ≫ (α_ _ _ _).hom ≫ _ ◁ ε_ _ _ ≫ (ρ_ _).hom :=
   calc
     _ = 𝟙 _ ⊗≫ η_ (ᘁX : C) X ▷ (ᘁY) ⊗≫ (ᘁX) ◁ f ▷ (ᘁY) ⊗≫ ((ᘁX) ◁ ε_ (ᘁY) Y ≫ g ▷ 𝟙_ C) ⊗≫ 𝟙 _ := by
-      dsimp only [leftAdjointMate]; coherence
+      dsimp only [leftAdjointMate]; monoidal
     _ = _ := by
-      rw [whisker_exchange, tensorHom_def']; coherence
+      rw [whisker_exchange, tensorHom_def']; monoidal
 
 /-- The composition of right adjoint mates is the adjoint mate of the composition. -/
 @[reassoc]
@@ -231,14 +231,14 @@ theorem comp_rightAdjointMate {X Y Z : C} [HasRightDual X] [HasRightDual Y] [Has
   calc
     _ = 𝟙 _ ⊗≫ (η_ Y Yᘁ ▷ 𝟙_ C ≫ (Y ⊗ Yᘁ) ◁ η_ X Xᘁ) ⊗≫ Y ◁ Yᘁ ◁ f ▷ Xᘁ ⊗≫
         Y ◁ ε_ Y Yᘁ ▷ Xᘁ ⊗≫ g ▷ Xᘁ ⊗≫ 𝟙 _ := by
-      rw [tensorHom_def']; coherence
+      rw [tensorHom_def']; monoidal
     _ = η_ X Xᘁ ⊗≫ (η_ Y Yᘁ ▷ (X ⊗ Xᘁ) ≫ (Y ⊗ Yᘁ) ◁ f ▷ Xᘁ) ⊗≫
         Y ◁ ε_ Y Yᘁ ▷ Xᘁ ⊗≫ g ▷ Xᘁ ⊗≫ 𝟙 _ := by
-      rw [← whisker_exchange]; coherence
+      rw [← whisker_exchange]; monoidal
     _ = η_ X Xᘁ ⊗≫ f ▷ Xᘁ ⊗≫ (η_ Y Yᘁ ▷ Y ⊗≫ Y ◁ ε_ Y Yᘁ) ▷ Xᘁ ⊗≫ g ▷ Xᘁ ⊗≫ 𝟙 _ := by
-      rw [← whisker_exchange]; coherence
+      rw [← whisker_exchange]; monoidal
     _ = η_ X Xᘁ ≫ f ▷ Xᘁ ≫ g ▷ Xᘁ := by
-      rw [evaluation_coevaluation'']; coherence
+      rw [evaluation_coevaluation'']; monoidal
 
 /-- The composition of left adjoint mates is the adjoint mate of the composition. -/
 @[reassoc]
@@ -252,14 +252,14 @@ theorem comp_leftAdjointMate {X Y Z : C} [HasLeftDual X] [HasLeftDual Y] [HasLef
   calc
     _ = 𝟙 _ ⊗≫ ((𝟙_ C) ◁ η_ (ᘁY) Y ≫ η_ (ᘁX) X ▷ ((ᘁY) ⊗ Y)) ⊗≫ (ᘁX) ◁ f ▷ (ᘁY) ▷ Y ⊗≫
         (ᘁX) ◁ ε_ (ᘁY) Y ▷ Y ⊗≫ (ᘁX) ◁ g := by
-      rw [tensorHom_def]; coherence
+      rw [tensorHom_def]; monoidal
     _ = η_ (ᘁX) X ⊗≫ (((ᘁX) ⊗ X) ◁ η_ (ᘁY) Y ≫ ((ᘁX) ◁ f) ▷ ((ᘁY) ⊗ Y)) ⊗≫
         (ᘁX) ◁ ε_ (ᘁY) Y ▷ Y ⊗≫ (ᘁX) ◁ g := by
-      rw [whisker_exchange]; coherence
+      rw [whisker_exchange]; monoidal
     _ = η_ (ᘁX) X ⊗≫ ((ᘁX) ◁ f) ⊗≫ (ᘁX) ◁ (Y ◁ η_ (ᘁY) Y ⊗≫ ε_ (ᘁY) Y ▷ Y) ⊗≫ (ᘁX) ◁ g := by
-      rw [whisker_exchange]; coherence
+      rw [whisker_exchange]; monoidal
     _ = η_ (ᘁX) X ≫ (ᘁX) ◁ f ≫ (ᘁX) ◁ g := by
-      rw [coevaluation_evaluation'']; coherence
+      rw [coevaluation_evaluation'']; monoidal
 
 /-- Given an exact pairing on `Y Y'`,
 we get a bijection on hom-sets `(Y' ⊗ X ⟶ Z) ≃ (X ⟶ Y ⊗ Z)`
@@ -276,19 +276,19 @@ def tensorLeftHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (Y' ⊗ X ⟶ Z) ≃
   left_inv f := by
     calc
       _ = 𝟙 _ ⊗≫ Y' ◁ η_ Y Y' ▷ X ⊗≫ ((Y' ⊗ Y) ◁ f ≫ ε_ Y Y' ▷ Z) ⊗≫ 𝟙 _ := by
-        coherence
+        monoidal
       _ = 𝟙 _ ⊗≫ (Y' ◁ η_ Y Y' ⊗≫ ε_ Y Y' ▷ Y') ▷ X ⊗≫ f := by
-        rw [whisker_exchange]; coherence
+        rw [whisker_exchange]; monoidal
       _ = f := by
-        rw [coevaluation_evaluation'']; coherence
+        rw [coevaluation_evaluation'']; monoidal
   right_inv f := by
     calc
       _ = 𝟙 _ ⊗≫ (η_ Y Y' ▷ X ≫ (Y ⊗ Y') ◁ f) ⊗≫ Y ◁ ε_ Y Y' ▷ Z ⊗≫ 𝟙 _ := by
-        coherence
+        monoidal
       _ = f ⊗≫ (η_ Y Y' ▷ Y ⊗≫ Y ◁ ε_ Y Y') ▷ Z ⊗≫ 𝟙 _ := by
-        rw [← whisker_exchange]; coherence
+        rw [← whisker_exchange]; monoidal
       _ = f := by
-        rw [evaluation_coevaluation'']; coherence
+        rw [evaluation_coevaluation'']; monoidal
 
 /-- Given an exact pairing on `Y Y'`,
 we get a bijection on hom-sets `(X ⊗ Y ⟶ Z) ≃ (X ⟶ Z ⊗ Y')`
@@ -300,19 +300,19 @@ def tensorRightHomEquiv (X Y Y' Z : C) [ExactPairing Y Y'] : (X ⊗ Y ⟶ Z) ≃
   left_inv f := by
     calc
       _ = 𝟙 _ ⊗≫ X ◁ η_ Y Y' ▷ Y ⊗≫ (f ▷ (Y' ⊗ Y) ≫ Z ◁ ε_ Y Y') ⊗≫ 𝟙 _ := by
-        coherence
+        monoidal
       _ = 𝟙 _ ⊗≫ X ◁ (η_ Y Y' ▷ Y ⊗≫ Y ◁ ε_ Y Y') ⊗≫ f := by
-        rw [← whisker_exchange]; coherence
+        rw [← whisker_exchange]; monoidal
       _ = f := by
-        rw [evaluation_coevaluation'']; coherence
+        rw [evaluation_coevaluation'']; monoidal
   right_inv f := by
     calc
       _ = 𝟙 _ ⊗≫ (X ◁ η_ Y Y' ≫ f ▷ (Y ⊗ Y')) ⊗≫ Z ◁ ε_ Y Y' ▷ Y' ⊗≫ 𝟙 _ := by
-        coherence
+        monoidal
       _ = f ⊗≫ Z ◁ (Y' ◁ η_ Y Y' ⊗≫ ε_ Y Y' ▷ Y') ⊗≫ 𝟙 _ := by
-        rw [whisker_exchange]; coherence
+        rw [whisker_exchange]; monoidal
       _ = f := by
-        rw [coevaluation_evaluation'']; coherence
+        rw [coevaluation_evaluation'']; monoidal
 
 theorem tensorLeftHomEquiv_naturality {X Y Y' Z Z' : C} [ExactPairing Y Y'] (f : Y' ⊗ X ⟶ Z)
     (g : Z ⟶ Z') :
@@ -387,10 +387,10 @@ theorem tensorLeftHomEquiv_symm_coevaluation_comp_whiskerLeft {Y Y' Z : C} [Exac
     (f : Y' ⟶ Z) : (tensorLeftHomEquiv _ _ _ _).symm (η_ _ _ ≫ Y ◁ f) = (ρ_ _).hom ≫ f := by
   calc
     _ = Y' ◁ η_ Y Y' ⊗≫ ((Y' ⊗ Y) ◁ f ≫ ε_ Y Y' ▷ Z) ⊗≫ 𝟙 _ := by
-      dsimp [tensorLeftHomEquiv]; coherence
+      dsimp [tensorLeftHomEquiv]; monoidal
     _ = (Y' ◁ η_ Y Y' ⊗≫ ε_ Y Y' ▷ Y') ⊗≫ f := by
-      rw [whisker_exchange]; coherence
-    _ = _ := by rw [coevaluation_evaluation'']; coherence
+      rw [whisker_exchange]; monoidal
+    _ = _ := by rw [coevaluation_evaluation'']; monoidal
 
 @[simp]
 theorem tensorLeftHomEquiv_symm_coevaluation_comp_whiskerRight {X Y : C} [HasRightDual X]
@@ -411,22 +411,22 @@ theorem tensorRightHomEquiv_symm_coevaluation_comp_whiskerRight {Y Y' Z : C} [Ex
     (f : Y ⟶ Z) : (tensorRightHomEquiv _ Y _ _).symm (η_ Y Y' ≫ f ▷ Y') = (λ_ _).hom ≫ f :=
   calc
     _ = η_ Y Y' ▷ Y ⊗≫ (f ▷ (Y' ⊗ Y) ≫ Z ◁ ε_ Y Y') ⊗≫ 𝟙 _ := by
-      dsimp [tensorRightHomEquiv]; coherence
+      dsimp [tensorRightHomEquiv]; monoidal
     _ = (η_ Y Y' ▷ Y ⊗≫ Y ◁ ε_ Y Y') ⊗≫ f := by
-      rw [← whisker_exchange]; coherence
+      rw [← whisker_exchange]; monoidal
     _ = _ := by
-      rw [evaluation_coevaluation'']; coherence
+      rw [evaluation_coevaluation'']; monoidal
 
 @[simp]
 theorem tensorLeftHomEquiv_whiskerLeft_comp_evaluation {Y Z : C} [HasLeftDual Z] (f : Y ⟶ ᘁZ) :
     (tensorLeftHomEquiv _ _ _ _) (Z ◁ f ≫ ε_ _ _) = f ≫ (ρ_ _).inv :=
   calc
     _ = 𝟙 _ ⊗≫ (η_ (ᘁZ : C) Z ▷ Y ≫ ((ᘁZ) ⊗ Z) ◁ f) ⊗≫ (ᘁZ) ◁ ε_ (ᘁZ) Z := by
-      dsimp [tensorLeftHomEquiv]; coherence
+      dsimp [tensorLeftHomEquiv]; monoidal
     _ = f ⊗≫ (η_ (ᘁZ) Z ▷ (ᘁZ) ⊗≫ (ᘁZ) ◁ ε_ (ᘁZ) Z) := by
-      rw [← whisker_exchange]; coherence
+      rw [← whisker_exchange]; monoidal
     _ = _ := by
-      rw [evaluation_coevaluation'']; coherence
+      rw [evaluation_coevaluation'']; monoidal
 
 @[simp]
 theorem tensorLeftHomEquiv_whiskerRight_comp_evaluation {X Y : C} [HasLeftDual X] [HasLeftDual Y]
@@ -445,11 +445,11 @@ theorem tensorRightHomEquiv_whiskerRight_comp_evaluation {X Y : C} [HasRightDual
     (tensorRightHomEquiv _ _ _ _) (f ▷ X ≫ ε_ X (Xᘁ)) = f ≫ (λ_ _).inv :=
   calc
     _ = 𝟙 _ ⊗≫ (Y ◁ η_ X Xᘁ ≫ f ▷ (X ⊗ Xᘁ)) ⊗≫ ε_ X Xᘁ ▷ Xᘁ := by
-      dsimp [tensorRightHomEquiv]; coherence
+      dsimp [tensorRightHomEquiv]; monoidal
     _ = f ⊗≫ (Xᘁ ◁ η_ X Xᘁ ⊗≫ ε_ X Xᘁ ▷ Xᘁ) := by
-      rw [whisker_exchange]; coherence
+      rw [whisker_exchange]; monoidal
     _ = _ := by
-      rw [coevaluation_evaluation'']; coherence
+      rw [coevaluation_evaluation'']; monoidal
 
 -- Next four lemmas passing `fᘁ` or `ᘁf` through (co)evaluations.
 @[reassoc]
@@ -483,28 +483,26 @@ def exactPairingCongrLeft {X X' Y : C} [ExactPairing X' Y] (i : X ≅ X') : Exac
   evaluation_coevaluation' :=
     calc
       _ = η_ X' Y ▷ X ⊗≫ (i.inv ▷ (Y ⊗ X) ≫ X ◁ (Y ◁ i.hom)) ⊗≫ X ◁ ε_ X' Y := by
-        coherence
+        monoidal
       _ = 𝟙 _ ⊗≫ (η_ X' Y ▷ X ≫ (X' ⊗ Y) ◁ i.hom) ⊗≫
           (i.inv ▷ (Y ⊗ X') ≫ X ◁ ε_ X' Y) ⊗≫ 𝟙 _ := by
-        rw [← whisker_exchange]; coherence
+        rw [← whisker_exchange]; monoidal
       _ = 𝟙 _ ⊗≫ i.hom ⊗≫ (η_ X' Y ▷ X' ⊗≫ X' ◁ ε_ X' Y) ⊗≫ i.inv ⊗≫ 𝟙 _ := by
-        rw [← whisker_exchange, ← whisker_exchange]; coherence
+        rw [← whisker_exchange, ← whisker_exchange]; monoidal
       _ = 𝟙 _ ⊗≫ (i.hom ≫ i.inv) ⊗≫ 𝟙 _ := by
-        rw [evaluation_coevaluation'']; coherence
+        rw [evaluation_coevaluation'']; monoidal
       _ = (λ_ X).hom ≫ (ρ_ X).inv := by
         rw [Iso.hom_inv_id]
-        -- coherence failed
-        simp [monoidalComp]
+        monoidal
   coevaluation_evaluation' := by
     calc
       _ = Y ◁ η_ X' Y ≫ Y ◁ (i.inv ≫ i.hom) ▷ Y ⊗≫ ε_ X' Y ▷ Y := by
-        coherence
+        monoidal
       _ = Y ◁ η_ X' Y ⊗≫ ε_ X' Y ▷ Y := by
-        rw [Iso.inv_hom_id]; coherence
+        rw [Iso.inv_hom_id]; monoidal
       _ = _ := by
         rw [coevaluation_evaluation'']
-        -- coherence failed
-        simp [monoidalComp]
+        monoidal
 
 /-- Transport an exact pairing across an isomorphism in the second argument. -/
 def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : ExactPairing X Y where
@@ -513,28 +511,26 @@ def exactPairingCongrRight {X Y Y' : C} [ExactPairing X Y'] (i : Y ≅ Y') : Exa
   evaluation_coevaluation' := by
     calc
       _ = η_ X Y' ▷ X ⊗≫ X ◁ (i.inv ≫ i.hom) ▷ X ≫ X ◁ ε_ X Y' := by
-        coherence
+        monoidal
       _ = η_ X Y' ▷ X ⊗≫ X ◁ ε_ X Y' := by
-        rw [Iso.inv_hom_id]; coherence
+        rw [Iso.inv_hom_id]; monoidal
       _ = _ := by
         rw [evaluation_coevaluation'']
-        -- coherence failed
-        simp [monoidalComp]
+        monoidal
   coevaluation_evaluation' :=
     calc
       _ = Y ◁ η_ X Y' ⊗≫ (Y ◁ (X ◁ i.inv) ≫ i.hom ▷ (X ⊗ Y)) ⊗≫ ε_ X Y' ▷ Y := by
-        coherence
+        monoidal
       _ = 𝟙 _ ⊗≫ (Y ◁ η_ X Y' ≫ i.hom ▷ (X ⊗ Y')) ⊗≫
           ((Y' ⊗ X) ◁ i.inv ≫ ε_ X Y' ▷ Y) ⊗≫ 𝟙 _ := by
-        rw [whisker_exchange]; coherence
+        rw [whisker_exchange]; monoidal
       _ = 𝟙 _ ⊗≫ i.hom ⊗≫ (Y' ◁ η_ X Y' ⊗≫ ε_ X Y' ▷ Y') ⊗≫ i.inv ⊗≫ 𝟙 _ := by
-        rw [whisker_exchange, whisker_exchange]; coherence
+        rw [whisker_exchange, whisker_exchange]; monoidal
       _ = 𝟙 _ ⊗≫ (i.hom ≫ i.inv) ⊗≫ 𝟙 _ := by
-        rw [coevaluation_evaluation'']; coherence
+        rw [coevaluation_evaluation'']; monoidal
       _ = (ρ_ Y).hom ≫ (λ_ Y).inv := by
         rw [Iso.hom_inv_id]
-        -- coherence failed
-        simp [monoidalComp]
+        monoidal
 
 /-- Transport an exact pairing across isomorphisms. -/
 def exactPairingCongr {X X' Y Y' : C} [ExactPairing X' Y'] (i : X ≅ X') (j : Y ≅ Y') :

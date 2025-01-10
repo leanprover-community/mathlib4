@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Equiv
-import Mathlib.Algebra.Module.Opposites
+import Mathlib.Algebra.Module.Opposite
 import Mathlib.Algebra.Ring.Opposite
 
 /-!
@@ -38,7 +38,7 @@ variable [IsScalarTower R S A]
 namespace MulOpposite
 
 instance instAlgebra : Algebra R Aᵐᵒᵖ where
-  toRingHom := (algebraMap R A).toOpposite fun x y => Algebra.commutes _ _
+  toRingHom := (algebraMap R A).toOpposite fun _ _ => Algebra.commutes _ _
   smul_def' c x := unop_injective <| by
     simp only [unop_smul, RingHom.toOpposite_apply, Function.comp_apply, unop_mul, op_mul,
       Algebra.smul_def, Algebra.commutes, op_unop, unop_op]

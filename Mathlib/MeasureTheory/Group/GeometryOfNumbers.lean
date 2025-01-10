@@ -36,7 +36,7 @@ Hermann Minkowski.
 
 namespace MeasureTheory
 
-open ENNReal FiniteDimensional MeasureTheory MeasureTheory.Measure Set Filter
+open ENNReal Module MeasureTheory MeasureTheory.Measure Set Filter
 
 open scoped Pointwise NNReal
 
@@ -57,7 +57,7 @@ theorem exists_pair_mem_lattice_not_disjoint_vadd [AddCommGroup L] [Countable L]
 
 /-- The **Minkowski Convex Body Theorem**. If `s` is a convex symmetric domain of `E` whose volume
 is large enough compared to the covolume of a lattice `L` of `E`, then it contains a non-zero
-lattice point of `L`.  -/
+lattice point of `L`. -/
 theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_lt_measure [NormedAddCommGroup E]
     [NormedSpace ℝ E] [BorelSpace E] [FiniteDimensional ℝ E] [IsAddHaarMeasure μ]
     {L : AddSubgroup E} [Countable L] (fund : IsAddFundamentalDomain L F μ)
@@ -134,7 +134,7 @@ theorem exists_ne_zero_mem_lattice_of_measure_mul_two_pow_le_measure [NormedAddC
     rw [show μ s < _ ↔ 1 * μ s < _ by rw [one_mul]]
     refine (mul_lt_mul_right h_mes (ne_of_lt h_cpt.measure_lt_top)).mpr ?_
     rw [ofReal_pow (NNReal.coe_nonneg _)]
-    refine one_lt_pow ?_ (ne_of_gt finrank_pos)
-    simp [(exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.2.1 n]
+    refine one_lt_pow₀ ?_ (ne_of_gt finrank_pos)
+    simp [u, K, S, Z, (exists_seq_strictAnti_tendsto (0 : ℝ≥0)).choose_spec.2.1 n]
 
 end MeasureTheory

@@ -54,7 +54,7 @@ some lemmas use, e.g., `(z - c)⁻¹ • f z` instead of `f z / (z - c)`.
 
   The case `n = -1`, `|w -c| > R` is not covered by these lemmas. While it is possible to construct
   an explicit primitive, it is easier to apply Cauchy theorem, so we postpone the proof till we have
-  this theorem (see #10000).
+  this theorem (see https://github.com/leanprover-community/mathlib4/pull/10000).
 
 ## Notation
 
@@ -286,7 +286,7 @@ theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
         not_false_iff] using this
     have : x ∈ Ioo (0 : ℝ) 1 := by simpa [x, and_comm] using hθ'
     rw [← zpow_neg_one]
-    refine (zpow_strictAnti this.1 this.2).le_iff_le.2 (Int.lt_add_one_iff.1 ?_); exact hn
+    refine (zpow_right_strictAnti₀ this.1 this.2).le_iff_le.2 (Int.lt_add_one_iff.1 ?_); exact hn
   · rintro (rfl | H)
     exacts [circleIntegrable_zero_radius,
       ((continuousOn_id.sub continuousOn_const).zpow₀ _ fun z hz =>
@@ -362,7 +362,7 @@ theorem norm_two_pi_i_inv_smul_integral_le_of_norm_le_const {f : ℂ → E} {c :
     (hR : 0 ≤ R) (hf : ∀ z ∈ sphere c R, ‖f z‖ ≤ C) :
     ‖(2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), f z‖ ≤ R * C := by
   have : ‖(2 * π * I : ℂ)⁻¹‖ = (2 * π)⁻¹ := by simp [Real.pi_pos.le]
-  rw [norm_smul, this, ← div_eq_inv_mul, div_le_iff Real.two_pi_pos, mul_comm (R * C), ← mul_assoc]
+  rw [norm_smul, this, ← div_eq_inv_mul, div_le_iff₀ Real.two_pi_pos, mul_comm (R * C), ← mul_assoc]
   exact norm_integral_le_of_norm_le_const hR hf
 
 /-- If `f` is continuous on the circle `|z - c| = R`, `R > 0`, the `‖f z‖` is less than or equal to
