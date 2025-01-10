@@ -358,7 +358,7 @@ variable (H K : Subgroup G)
 
 /-- Copy of a subgroup with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
-@[to_additive
+@[to_additive (attr := simps)
       "Copy of an additive subgroup with a new `carrier` equal to the old one.
       Useful to fix definitional equalities"]
 protected def copy (K : Subgroup G) (s : Set G) (hs : s = K) : Subgroup G where
@@ -366,10 +366,6 @@ protected def copy (K : Subgroup G) (s : Set G) (hs : s = K) : Subgroup G where
   one_mem' := hs.symm ▸ K.one_mem'
   mul_mem' := hs.symm ▸ K.mul_mem'
   inv_mem' hx := by simpa [hs] using hx -- Porting note: `▸` didn't work here
-
-@[to_additive (attr := simp)]
-theorem coe_copy (K : Subgroup G) (s : Set G) (hs : s = ↑K) : (K.copy s hs : Set G) = s :=
-  rfl
 
 @[to_additive]
 theorem copy_eq (K : Subgroup G) (s : Set G) (hs : s = ↑K) : K.copy s hs = K :=
