@@ -9,22 +9,23 @@ import Mathlib.Order.Atoms
 
 /-! # Maximal subgroups
 
-A subgroup `IsMaximal` if it is maximal in the collection of
-proper subgroups.
+A subgroup `K` of a group `G` is maximal if it is maximal in the collection of proper subgroups
+of `G`: this is defined as `IsCoatom K`.
 
-We prove a few basic results which are essentially copied from
-those about maximal ideals.
+We prove a few basic results which are essentially copied from those about maximal ideals.
 
 Besides them, we have :
-* `isMaximal_iff` proves that a subgroup K of G is maximal
-if and only  if it is not ⊤ and if for all g ∈ G such that g ∉ K,
-every subgroup containing K and g is ⊤.
+* `Subgroup.isMaximal_iff` proves that a subgroup K of G is maximal if and only  if
+  it is not ⊤ and if for all g ∈ G such that g ∉ K, every subgroup containing K and g is ⊤.
 
-## TODO
+## Remark on implementation
 
-Is it useful to write it in a greater generality?
+While the API is inspired from that for maximal ideals (`Ideal.IsMaximal`),
+it has not been felt necessary to encapsulate this notion as a class,
+and it is just defined as an `abbrev` to `IsCoatom`.
+
 Will we need to write this for all `sub`-structures ?
-
+In fact, the essentially only justification of this file is `Subgroup.isMaximal_iff`.
 -/
 
 
@@ -33,37 +34,30 @@ variable {G : Type*} [Group G]
 namespace Subgroup
 
 /-- A subgroup is maximal if it is maximal in the collection of proper subgroups. -/
-class _root_.AddSubgroup.IsMaximal {G : Type*} [AddGroup G] (K : AddSubgroup G) : Prop where
-/-- An subgroup is maximal if it is maximal in the collection of proper subgroups. -/
-  out : IsCoatom K
-
-/-- A subgroup is maximal if it is maximal in the collection of proper subgroups. -/
 @[to_additive]
-class IsMaximal (K : Subgroup G) : Prop where
-/-- A subgroup is maximal if it is maximal in the collection of proper subgroups. -/
-  out : IsCoatom K
+abbrev IsMaximal (K : Subgroup G) : Prop :=
+  IsCoatom K
 
 @[to_additive]
-theorem isMaximal_def {K : Subgroup G} : K.IsMaximal ↔ IsCoatom K :=
-  ⟨fun h => h.1, fun h => ⟨h⟩⟩
+theorem isMaximal_def {K : Subgroup G} : K.IsMaximal ↔ IsCoatom K := Eq.to_iff rfl
 
 @[to_additive]
-theorem IsMaximal.ne_top {K : Subgroup G} (h : K.IsMaximal) : K ≠ ⊤ :=
-  (isMaximal_def.1 h).1
+theorem IsMaximal.ne_top {K : Subgroup G} (h : K.IsMaximal) : K ≠ ⊤ := h.1
+
+@[to_additive]
+theorem IsMaximal.eq_top_of_lt {K H : Subgroup G} (h : K.IsMaximal) (hH : K < H) : H = ⊤ :=
+    h.2 H hH
 
 @[to_additive]
 theorem isMaximal_iff {K : Subgroup G} :
     K.IsMaximal ↔ K ≠ ⊤ ∧ ∀ (H : Subgroup G) (g), K ≤ H → g ∉ K → g ∈ H → H = ⊤ := by
   constructor
   · intro hK
-    constructor
-    · exact hK.ne_top
-    · intro H g hKH hgK hgH
-      apply (isMaximal_def.1 hK).2
-      rw [lt_iff_le_and_ne]
-      exact ⟨hKH, Ne.symm (ne_of_mem_of_not_mem' hgH hgK)⟩
+    refine ⟨hK.ne_top, fun H g hKH hgK hgH ↦ hK.2 H ?_⟩
+    rw [lt_iff_le_and_ne]
+    exact ⟨hKH, Ne.symm (ne_of_mem_of_not_mem' hgH hgK)⟩
   · rintro ⟨hG, hmax⟩
-    constructor; constructor;
+    constructor
     · assumption
     · intro H hKH
       obtain ⟨g, hgH, hgK⟩ := Set.exists_of_ssubset hKH
@@ -72,6 +66,6 @@ theorem isMaximal_iff {K : Subgroup G} :
 @[to_additive]
 theorem IsMaximal.eq_of_le {K H : Subgroup G} (hK : K.IsMaximal) (hH : H ≠ ⊤) (KH : K ≤ H) :
     K = H :=
-  eq_iff_le_not_lt.2 ⟨KH, fun h => hH (hK.1.2 _ h)⟩
+  eq_iff_le_not_lt.2 ⟨KH, fun h => hH (hK.2 H h)⟩
 
 end Subgroup
