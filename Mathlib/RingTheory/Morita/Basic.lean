@@ -15,7 +15,7 @@ isomorphic rings are Morita equivalent.
 
 # Main definitions
 
-- `MoritaEquivalent R S`: two rings `R` and `S` are Morita equivalent if their module categories
+- `MoritaEquivalence R S`: two rings `R` and `S` are Morita equivalent if their module categories
   are equivalent.
 - `IsMoritaEquivalent R S`: a predicate asserting that `R` and `S` are Morita equivalent.
 
@@ -40,50 +40,45 @@ open CategoryTheory
 /--
 Two rings are Morita equivalent if their module categories are equivalent.
 -/
-structure MoritaEquivalent (R : Type u₁) (S : Type u₂) [Ring R] [Ring S] where
-  /-- the underlying equivalence of category -/
-  eqv : ModuleCat.{v} R ≌ ModuleCat.{v} S
+def MoritaEquivalence (R : Type u₁) (S : Type u₂) [Ring R] [Ring S] :=
+  ModuleCat.{v} R ≌ ModuleCat.{v} S
 
 /--
 Two rings are Morita equivalent if their module categories are equivalent.
 -/
-structure IsMoritaEquivalent (R : Type u₁) (S : Type u₂) [Ring R] [Ring S] : Prop where
-  cond : Nonempty <| MoritaEquivalent.{v} R S
+structure IsMoritaEquivalent (R : Type u₁) [Ring R] (S : Type u₂) [Ring S] : Prop where
+  cond : Nonempty <| MoritaEquivalence.{max u₁ u₂} R S
 
-namespace MoritaEquivalent
+namespace MoritaEquivalence
 
 variable {R : Type u₁} [Ring R] {S : Type u₂} [Ring S] {T : Type u₃} [Ring T]
 
 /--
 Every ring is Morita equivalent to itself.
 -/
-@[refl]
-def refl : MoritaEquivalent R R where
-  eqv := CategoryTheory.Equivalence.refl (C := ModuleCat.{v} R)
+def refl : MoritaEquivalence R R :=
+    CategoryTheory.Equivalence.refl (C := ModuleCat.{v} R)
 
 /--
 If `R` is Morita equivalent to `S`, then `S` is Morita equivalent to `R`.
 -/
-@[symm]
-def symm (e : MoritaEquivalent R S) : MoritaEquivalent S R where
-  eqv := e.eqv.symm
+def symm (e : MoritaEquivalence R S) : MoritaEquivalence S R :=
+    CategoryTheory.Equivalence.symm e
 
 /--
 If `R` is Morita equivalent to `S` and `S` is Morita equivalent to `T`, then `R` is Morita
 equivalent to `T`.
 -/
-@[trans]
-def trans (e : MoritaEquivalent R S) (e' : MoritaEquivalent S T) :
-    MoritaEquivalent R T where
-  eqv := e.eqv.trans e'.eqv
+def trans (e : MoritaEquivalence R S) (e' : MoritaEquivalence S T) : MoritaEquivalence R T :=
+  CategoryTheory.Equivalence.trans e e'
 
 /--
 If `R` is isomorphic to `S` as rings, then `R` is Morita equivalent to `S`.
 -/
-noncomputable def ofRingEquiv (f : R ≃+* S) : MoritaEquivalent R S where
-  eqv := ModuleCat.restrictScalarsEquivalenceOfRingEquiv f.symm
+noncomputable def ofRingEquiv (f : R ≃+* S) : MoritaEquivalence R S :=
+  ModuleCat.restrictScalarsEquivalenceOfRingEquiv f.symm
 
-end MoritaEquivalent
+end MoritaEquivalence
 
 namespace IsMoritaEquivalent
 
@@ -92,12 +87,12 @@ variable {R : Type u₁} [Ring R] {S : Type u₂} [Ring S] {T : Type u₃} [Ring
 lemma refl : IsMoritaEquivalent R R where
   cond := ⟨.refl⟩
 
-lemma symm (h : IsMoritaEquivalent.{v} R S) : IsMoritaEquivalent.{v} S R where
+lemma symm (h : IsMoritaEquivalent R S) : IsMoritaEquivalent S R where
   cond := h.cond.map .symm
 
-lemma trans (h : IsMoritaEquivalent.{v} R S) (h' : IsMoritaEquivalent.{v} S T) :
-    IsMoritaEquivalent.{v} R T where
-  cond := Nonempty.map2 .trans h.cond h'.cond
+lemma trans (h : IsMoritaEquivalent R S) (h' : IsMoritaEquivalent S T) :
+    IsMoritaEquivalent R T where
+  cond := Nonempty.map2 (fun e e' ↦ MoritaEquivalence.trans e e') h.cond h'.cond
 
 lemma of_ringEquiv (f : R ≃+* S) : IsMoritaEquivalent R S where
   cond := ⟨.ofRingEquiv f⟩
