@@ -14,8 +14,8 @@ its quotients by open normal subgroups.
 
 ## Main definitions
 
-* `QuotientOpenNormalSubgroup` : The functor that maps open normal subgroup of a profinite group
-  `P` to the quotient group of it (which is finite, as shown by previous lemmas).
+* `QuotientOpenNormalSubgroup` : The functor from `OpenNormalSubgroup P` to `FiniteGrp`
+  sending `U` to `P ⧸ U`, where `P : ProfiniteGrp`.
 
 * `toLimitQuotientOpenNormalSubgroup` : The continuous homomorphism from a profinite group `P` to
   projective limit of its quotients by open normal subgroups ordered by inclusion.
@@ -59,54 +59,69 @@ def QuotientOpenNormalSubgroup (P : ProfiniteGrp) :
     map_comp f g := (QuotientGroup.map_comp_map
       _ _ _ (.id _) (.id _) (leOfHom f) (leOfHom g)).symm }
 
-/-- The continuous homomorphism from a profinite group `P` to the projective limit of
-its quotients by open normal subgroups ordered by inclusion.-/
-def toLimitQuotientOpenNormalSubgroup (P : ProfiniteGrp.{u}) : P ⟶
+/--The `MonoidHom` from a profinite group `P` to  the projective limit of its quotients by
+open normal subgroups ordered by inclusion.-/
+def toLimitQuotientOpenNormalSubgroup_fun (P : ProfiniteGrp.{u}) : P →*
     limit (QuotientOpenNormalSubgroup P ⋙ forget₂ FiniteGrp ProfiniteGrp) where
-  toFun p := ⟨fun H => QuotientGroup.mk p, fun _ => rfl⟩
+  toFun p := ⟨fun _ => QuotientGroup.mk p, fun _ => rfl⟩
   map_one' := Subtype.val_inj.mp rfl
-  map_mul' x y := Subtype.val_inj.mp rfl
-  continuous_toFun := continuous_induced_rng.mpr (continuous_pi fun H ↦ by
-    dsimp
-    apply Continuous.mk
-    intro s _
-    rw [← (Set.biUnion_preimage_singleton QuotientGroup.mk s)]
-    refine isOpen_iUnion (fun i ↦ isOpen_iUnion (fun _ ↦ ?_))
-    convert IsOpen.leftCoset H.toOpenSubgroup.isOpen' (Quotient.out i)
-    ext x
-    simp only [Set.mem_preimage, Set.mem_singleton_iff]
-    nth_rw 1 [← QuotientGroup.out_eq' i, eq_comm, QuotientGroup.eq]
-    exact Iff.symm (Set.mem_smul_set_iff_inv_smul_mem) )
+  map_mul' _ _ := Subtype.val_inj.mp rfl
 
-theorem toLimitQuotientOpenNormalSubgroup_dense (P : ProfiniteGrp.{u}) : Dense <|
-    Set.range (toLimitQuotientOpenNormalSubgroup P) :=
-  dense_iff_inter_open.mpr fun U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩ => (by
-    simp_rw [← hsv, Set.mem_preimage] at uDefaultSpec
-    rcases (isOpen_pi_iff.mp hsO) _ uDefaultSpec with ⟨J, fJ, hJ1, hJ2⟩
-    let M := iInf (fun (j : J) => j.1.1.1)
-    have hM : M.Normal := Subgroup.normal_iInf_normal fun j => j.1.isNormal'
-    have hMOpen : IsOpen (M : Set P) := by
-      rw [Subgroup.coe_iInf]
-      exact isOpen_iInter_of_finite fun i => i.1.1.isOpen'
-    let m : OpenNormalSubgroup P := { M with isOpen' := hMOpen }
-    rcases QuotientGroup.mk'_surjective M (spc m) with ⟨origin, horigin⟩
-    use (toLimitQuotientOpenNormalSubgroup P).toFun origin
-    refine ⟨?_, origin, rfl⟩
-    rw [← hsv]
-    apply hJ2
-    intro a a_in_J
-    let M_to_Na : m ⟶ a := (iInf_le (fun (j : J) => j.1.1.1) ⟨a, a_in_J⟩).hom
-    rw [← (P.toLimitQuotientOpenNormalSubgroup.toFun origin).property M_to_Na]
-    show (P.QuotientOpenNormalSubgroup.map M_to_Na) (QuotientGroup.mk' M origin) ∈ _
-    rw [horigin]
-    exact Set.mem_of_eq_of_mem (hspc M_to_Na) (hJ1 a a_in_J).2 )
+lemma toLimitQuotientOpenNormalSubgroup_fun_continuous (P : ProfiniteGrp.{u}) :
+    Continuous (toLimitQuotientOpenNormalSubgroup_fun P) := by
+  apply continuous_induced_rng.mpr (continuous_pi _)
+  intro H
+  dsimp only [Functor.comp_obj, CompHausLike.toCompHausLike_obj, CompHausLike.compHausLikeToTop_obj,
+    CompHausLike.coe_of, Functor.comp_map, CompHausLike.toCompHausLike_map,
+    CompHausLike.compHausLikeToTop_map, Set.mem_setOf_eq, toLimitQuotientOpenNormalSubgroup_fun,
+    MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply]
+  apply Continuous.mk
+  intro s _
+  rw [← (Set.biUnion_preimage_singleton QuotientGroup.mk s)]
+  refine isOpen_iUnion (fun i ↦ isOpen_iUnion (fun _ ↦ ?_))
+  convert IsOpen.leftCoset H.toOpenSubgroup.isOpen' (Quotient.out i)
+  ext x
+  simp only [Set.mem_preimage, Set.mem_singleton_iff]
+  nth_rw 1 [← QuotientGroup.out_eq' i, eq_comm, QuotientGroup.eq]
+  exact Iff.symm (Set.mem_smul_set_iff_inv_smul_mem)
+
+/-- The morphism in the category of `ProfiniteGrp` from a profinite group `P` to
+the projective limit of its quotients by open normal subgroups ordered by inclusion.-/
+def toLimitQuotientOpenNormalSubgroup (P : ProfiniteGrp.{u}) : P ⟶
+    limit (QuotientOpenNormalSubgroup P ⋙ forget₂ FiniteGrp ProfiniteGrp) := {
+  toLimitQuotientOpenNormalSubgroup_fun P with
+  continuous_toFun := toLimitQuotientOpenNormalSubgroup_fun_continuous P }
+
+theorem denseRange_toLimitQuotientOpenNormalSubgroup (P : ProfiniteGrp.{u}) :
+    DenseRange (toLimitQuotientOpenNormalSubgroup P) := by
+  apply dense_iff_inter_open.mpr
+  rintro U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩
+  simp_rw [← hsv, Set.mem_preimage] at uDefaultSpec
+  rcases (isOpen_pi_iff.mp hsO) _ uDefaultSpec with ⟨J, fJ, hJ1, hJ2⟩
+  let M := iInf (fun (j : J) => j.1.1.1)
+  have hM : M.Normal := Subgroup.normal_iInf_normal fun j => j.1.isNormal'
+  have hMOpen : IsOpen (M : Set P) := by
+    rw [Subgroup.coe_iInf]
+    exact isOpen_iInter_of_finite fun i => i.1.1.isOpen'
+  let m : OpenNormalSubgroup P := { M with isOpen' := hMOpen }
+  rcases QuotientGroup.mk'_surjective M (spc m) with ⟨origin, horigin⟩
+  use (toLimitQuotientOpenNormalSubgroup P).toFun origin
+  refine ⟨?_, origin, rfl⟩
+  rw [← hsv]
+  apply hJ2
+  intro a a_in_J
+  let M_to_Na : m ⟶ a := (iInf_le (fun (j : J) => j.1.1.1) ⟨a, a_in_J⟩).hom
+  rw [← (P.toLimitQuotientOpenNormalSubgroup.toFun origin).property M_to_Na]
+  show (P.QuotientOpenNormalSubgroup.map M_to_Na) (QuotientGroup.mk' M origin) ∈ _
+  rw [horigin]
+  exact Set.mem_of_eq_of_mem (hspc M_to_Na) (hJ1 a a_in_J).2
 
 theorem toLimitQuotientOpenNormalSubgroup_surjective (P : ProfiniteGrp.{u}) :
     Function.Surjective (toLimitQuotientOpenNormalSubgroup P) := by
   have : IsClosed (Set.range P.toLimitQuotientOpenNormalSubgroup) :=
     P.toLimitQuotientOpenNormalSubgroup.continuous_toFun.isClosedMap.isClosed_range
   rw [← Set.range_eq_univ, ← closure_eq_iff_isClosed.mpr this,
-    Dense.closure_eq <| toLimitQuotientOpenNormalSubgroup_dense P]
+    Dense.closure_eq (denseRange_toLimitQuotientOpenNormalSubgroup P)]
 
 theorem toLimitQuotientOpenNormalSubgroup_injective (P : ProfiniteGrp.{u}) :
     Function.Injective (toLimitQuotientOpenNormalSubgroup P) := by
