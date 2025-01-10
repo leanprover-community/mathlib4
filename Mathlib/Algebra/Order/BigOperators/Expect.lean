@@ -16,14 +16,13 @@ open Function
 open Fintype (card)
 open scoped BigOperators Pointwise NNRat
 
-variable {ι κ α β R : Type*}
+variable {ι α R : Type*}
 
 local notation a " /ℚ " q => (q : ℚ≥0)⁻¹ • a
 
 namespace Finset
 section OrderedAddCommMonoid
-variable [OrderedAddCommMonoid α] [Module ℚ≥0 α] [OrderedAddCommMonoid β] [Module ℚ≥0 β]
-  {s : Finset ι} {f g : ι → α}
+variable [OrderedAddCommMonoid α] [Module ℚ≥0 α] {s : Finset ι} {f g : ι → α}
 
 lemma expect_eq_zero_iff_of_nonneg (hs : s.Nonempty) (hf : ∀ i ∈ s, 0 ≤ f i) :
     𝔼 i ∈ s, f i = 0 ↔ ∀ i ∈ s, f i = 0 := by
@@ -105,7 +104,7 @@ end PosSMulMono
 end OrderedAddCommMonoid
 
 section OrderedCancelAddCommMonoid
-variable [OrderedCancelAddCommMonoid α] [Module ℚ≥0 α] {s : Finset ι} {f g : ι → α}
+variable [OrderedCancelAddCommMonoid α] [Module ℚ≥0 α] {s : Finset ι} {f : ι → α}
 section PosSMulStrictMono
 variable [PosSMulStrictMono ℚ≥0 α]
 
@@ -151,7 +150,7 @@ end Finset
 open Finset
 
 namespace Fintype
-variable [Fintype ι] [Fintype κ]
+variable [Fintype ι]
 
 section OrderedAddCommMonoid
 variable [OrderedAddCommMonoid α] [Module ℚ≥0 α] {f : ι → α}

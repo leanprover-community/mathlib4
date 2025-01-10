@@ -417,7 +417,6 @@ def Conj.map {G : Type*} {H : Type*} [Group G] [Group H] (f : G →* H) : Conj G
 
 Used for Fox n-colorings of knots.
 -/
--- Porting note: Removed nolint
 def Dihedral (n : ℕ) :=
   ZMod n
 

@@ -110,7 +110,7 @@ structure IsInducing (f : X → Y) : Prop where
 @[mk_iff]
 structure IsEmbedding (f : X → Y) extends IsInducing f : Prop where
   /-- A topological embedding is injective. -/
-  inj : Function.Injective f
+  injective : Function.Injective f
 
 @[deprecated (since := "2024-10-26")]
 alias Embedding := IsEmbedding

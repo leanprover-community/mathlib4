@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Combinatorics.SetFamily.Compression.Down
+import Mathlib.Data.Fintype.Powerset
 import Mathlib.Order.Interval.Finset.Nat
 
 /-!
@@ -136,7 +137,7 @@ lemma card_le_card_shatterer (𝒜 : Finset (Finset α)) : #𝒜 ≤ #𝒜.shatt
     rw [mem_memberSubfamily] at hv
     rw [← singleton_subset_iff (a := a), ← hsv] at hv
     exact hv.2 inter_subset_right
-  · refine forall_image.2 fun s hs ↦ mem_shatterer.2 fun t ht ↦ ?_
+  · refine forall_mem_image.2 fun s hs ↦ mem_shatterer.2 fun t ht ↦ ?_
     simp only [mem_inter, mem_shatterer] at hs
     rw [subset_insert_iff] at ht
     by_cases ha : a ∈ t

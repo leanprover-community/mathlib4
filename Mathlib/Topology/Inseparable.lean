@@ -433,17 +433,22 @@ theorem Inseparable.specializes' (h : x ~ᵢ y) : y ⤳ x := h.ge
 theorem Specializes.antisymm (h₁ : x ⤳ y) (h₂ : y ⤳ x) : x ~ᵢ y :=
   le_antisymm h₁ h₂
 
-theorem inseparable_iff_forall_open : (x ~ᵢ y) ↔ ∀ s : Set X, IsOpen s → (x ∈ s ↔ y ∈ s) := by
+theorem inseparable_iff_forall_isOpen : (x ~ᵢ y) ↔ ∀ s : Set X, IsOpen s → (x ∈ s ↔ y ∈ s) := by
   simp only [inseparable_iff_specializes_and, specializes_iff_forall_open, ← forall_and, ← iff_def,
     Iff.comm]
 
+@[deprecated (since := "2024-11-18")] alias
+inseparable_iff_forall_open := inseparable_iff_forall_isOpen
+
 theorem not_inseparable_iff_exists_open :
     ¬(x ~ᵢ y) ↔ ∃ s : Set X, IsOpen s ∧ Xor' (x ∈ s) (y ∈ s) := by
-  simp [inseparable_iff_forall_open, ← xor_iff_not_iff]
+  simp [inseparable_iff_forall_isOpen, ← xor_iff_not_iff]
 
-theorem inseparable_iff_forall_closed : (x ~ᵢ y) ↔ ∀ s : Set X, IsClosed s → (x ∈ s ↔ y ∈ s) := by
+theorem inseparable_iff_forall_isClosed : (x ~ᵢ y) ↔ ∀ s : Set X, IsClosed s → (x ∈ s ↔ y ∈ s) := by
   simp only [inseparable_iff_specializes_and, specializes_iff_forall_closed, ← forall_and, ←
     iff_def]
+@[deprecated (since := "2024-11-18")] alias
+inseparable_iff_forall_closed := inseparable_iff_forall_isClosed
 
 theorem inseparable_iff_mem_closure :
     (x ~ᵢ y) ↔ x ∈ closure ({y} : Set X) ∧ y ∈ closure ({x} : Set X) :=
@@ -497,10 +502,10 @@ nonrec theorem trans (h₁ : x ~ᵢ y) (h₂ : y ~ᵢ z) : x ~ᵢ z := h₁.tran
 theorem nhds_eq (h : x ~ᵢ y) : 𝓝 x = 𝓝 y := h
 
 theorem mem_open_iff (h : x ~ᵢ y) (hs : IsOpen s) : x ∈ s ↔ y ∈ s :=
-  inseparable_iff_forall_open.1 h s hs
+  inseparable_iff_forall_isOpen.1 h s hs
 
 theorem mem_closed_iff (h : x ~ᵢ y) (hs : IsClosed s) : x ∈ s ↔ y ∈ s :=
-  inseparable_iff_forall_closed.1 h s hs
+  inseparable_iff_forall_isClosed.1 h s hs
 
 theorem map_of_continuousAt (h : x ~ᵢ y) (hx : ContinuousAt f x) (hy : ContinuousAt f y) :
     f x ~ᵢ f y :=

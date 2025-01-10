@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Polynomial.Degree.TrailingDegree
 import Mathlib.Algebra.Polynomial.EraseLead
-import Mathlib.Algebra.Polynomial.Eval
 
 /-!
 # Reverse of a univariate polynomial
@@ -20,9 +19,9 @@ coefficients of `f` and `g` do not multiply to zero.
 
 namespace Polynomial
 
-open Polynomial Finsupp Finset
+open Finsupp Finset
 
-open Polynomial
+open scoped Polynomial
 
 section Semiring
 
@@ -143,6 +142,14 @@ theorem reflect_monomial (N n : ℕ) : reflect N ((X : R[X]) ^ n) = X ^ revAt N 
 
 @[simp] lemma reflect_one_X : reflect 1 (X : R[X]) = 1 := by
   simpa using reflect_monomial 1 1 (R := R)
+
+lemma reflect_map {S : Type*} [Semiring S] (f : R →+* S) (p : R[X]) (n : ℕ) :
+    (p.map f).reflect n = (p.reflect n).map f := by
+  ext; simp
+
+@[simp]
+lemma reflect_one (n : ℕ) : (1 : R[X]).reflect n = Polynomial.X ^ n := by
+  rw [← C.map_one, reflect_C, map_one, one_mul]
 
 theorem reflect_mul_induction (cf cg : ℕ) :
     ∀ N O : ℕ,
