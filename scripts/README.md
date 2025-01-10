@@ -56,6 +56,8 @@ to learn about it as well!
   with respect to `master`, and posts a comment on github with the result.
 - `autolabel.lean` is the Lean script in charge of automatically adding a `t-`label on eligible PRs.
   Autolabelling is inferred by which directories the current PR modifies.
+- `update_deprecations.lean`
+  Uses the cache to automatically replace deprecated declarations with the corresponding un-deprecated one.
 
 **Managing nightly-testing and bump branches**
 - `create-adaptation-pr.sh` implements some of the steps in the workflow described at
