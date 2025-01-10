@@ -69,6 +69,7 @@ Q164262:
 
 Q172298:
   title: Lasker–Noether theorem
+  decl: Ideal.isPrimary_decomposition_pairwise_ne_radical
 
 Q174955:
   title: Mihăilescu's theorem
@@ -87,9 +88,13 @@ Q179692:
 
 Q180345X:
   title: Integral root theorem
+  decl: isInteger_of_is_root_of_monic
 
 Q180345:
   title: Rational root theorem
+  decls:
+   - num_dvd_of_is_root
+   - den_dvd_of_is_root
 
 Q182505:
   title: Bayes' theorem
@@ -777,7 +782,9 @@ Q766722:
 
 Q776578:
   title: Artin–Wedderburn theorem
-  # WIP formalisation, but not complete yet (Dec 1, 2024)
+  # using proof_wanted, in Mathlib/RingTheory/SimpleModule.lean
+  statement: isSemisimpleRing_iff_pi_matrix_divisionRing
+  # WIP formalisation, but not complete yet (January 1, 2025)
 
 Q777924:
   title: Tijdeman's theorem
