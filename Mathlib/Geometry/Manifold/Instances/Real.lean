@@ -305,21 +305,21 @@ end Fact.Manifold
 open Fact.Manifold
 
 lemma IccLeftChart_extend_left_eq :
-    ((IccLeftChart x y).extend (𝓡∂ 1)) (Icc.instOrderBotElem.bot) = 0 := by
-  calc ((IccLeftChart x y).extend (𝓡∂ 1)) (Icc.instOrderBotElem.bot)
+    (IccLeftChart x y).extend (𝓡∂ 1) ⊥ = 0 := by
+  calc ((IccLeftChart x y).extend (𝓡∂ 1)) ⊥
     _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by norm_num [IccLeftChart, Icc.coe_bot]
     _ = 0 := rfl
 
 lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
-    (((IccLeftChart x y).extend (𝓡∂ 1)) p) 0 > 0 := by
+    0 < ((IccLeftChart x y).extend (𝓡∂ 1)) p 0 := by
   set lhs := (IccLeftChart x y).extend (𝓡∂ 1) p
   rw [show lhs 0 = p.val - x by rfl]
   norm_num [hp.1]
 
 lemma IccLeftChart_extend_left_mem_frontier :
-    (IccLeftChart x y).extend (𝓡∂ 1) (Icc.instOrderBotElem.bot) ∈ frontier (range (𝓡∂ 1)) := by
-  rw [IccLeftChart_extend_left_eq, frontier_range_modelWithCornersEuclideanHalfSpace]
-  exact rfl
+    (IccLeftChart x y).extend (𝓡∂ 1) ⊥ ∈ frontier (range (𝓡∂ 1)) := by
+  rw [IccLeftChart_extend_left_eq, frontier_range_modelWithCornersEuclideanHalfSpace,
+    mem_setOf, PiLp.zero_apply]
 
 /-- The right chart for the topological space `[x, y]`, defined on `(x,y]` and sending `y` to `0` in
 `EuclideanHalfSpace 1`.
@@ -370,15 +370,15 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     exact (A.comp B).comp continuous_subtype_val
 
 lemma IccRightChart_extend_right_eq :
-    (IccRightChart x y).extend (𝓡∂ 1) (Icc.instOrderTopElem.top) = 0 := by
-  calc ((IccRightChart x y).extend (𝓡∂ 1)) (Icc.instOrderTopElem.top)
+    (IccRightChart x y).extend (𝓡∂ 1) ⊤ = 0 := by
+  calc (IccRightChart x y).extend (𝓡∂ 1) ⊤
     _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by norm_num [IccRightChart, Icc.coe_top]
     _ = 0 := rfl
 
 lemma IccRightChart_extend_right_mem_frontier :
-    (IccRightChart x y).extend (𝓡∂ 1) (Icc.instOrderTopElem.top) ∈ frontier (range (𝓡∂ 1)) := by
-  rw [IccRightChart_extend_right_eq, frontier_range_modelWithCornersEuclideanHalfSpace]
-  exact rfl
+    (IccRightChart x y).extend (𝓡∂ 1) ⊤ ∈ frontier (range (𝓡∂ 1)) := by
+  rw [IccRightChart_extend_right_eq, frontier_range_modelWithCornersEuclideanHalfSpace,
+    mem_setOf, PiLp.zero_apply]
 
 /-- Charted space structure on `[x, y]`, using only two charts taking values in
 `EuclideanHalfSpace 1`.
