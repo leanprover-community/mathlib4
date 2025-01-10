@@ -3,16 +3,15 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
-import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Int
-import Mathlib.Data.List.Lemmas
-import Mathlib.Data.List.Dedup
-import Mathlib.Data.List.Flatten
-import Mathlib.Data.List.Pairwise
+import Mathlib.Algebra.BigOperators.Group.List.Defs
+import Mathlib.Order.RelClasses
+import Mathlib.Data.List.Basic
+import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Perm.Basic
-import Mathlib.Data.List.ProdSigma
-import Mathlib.Data.List.Range
-import Mathlib.Data.List.Rotate
+import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Commute.Defs
+import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Nat.Basic
 
 /-!
 # Sums and products from lists
@@ -21,80 +20,11 @@ This file provides basic results about `List.prod`, `List.sum`, which calculate 
 of elements of a list and `List.alternatingProd`, `List.alternatingSum`, their alternating
 counterparts.
 -/
-
 assert_not_imported Mathlib.Algebra.Order.Group.Nat
 
 variable {ι α β M N P G : Type*}
 
 namespace List
-section Defs
-
-/-- Product of a list.
-
-`List.prod [a, b, c] = ((1 * a) * b) * c` -/
-@[to_additive existing]
-def prod {α} [Mul α] [One α] : List α → α :=
-  foldr (· * ·) 1
-
-/-- The alternating sum of a list. -/
-def alternatingSum {G : Type*} [Zero G] [Add G] [Neg G] : List G → G
-  | [] => 0
-  | g :: [] => g
-  | g :: h :: t => g + -h + alternatingSum t
-
-/-- The alternating product of a list. -/
-@[to_additive existing]
-def alternatingProd {G : Type*} [One G] [Mul G] [Inv G] : List G → G
-  | [] => 1
-  | g :: [] => g
-  | g :: h :: t => g * h⁻¹ * alternatingProd t
-
-end Defs
-
-section Mul
-
-variable [Mul M] [One M] {l : List M} {a : M}
-
-@[to_additive existing, simp]
-theorem prod_nil : ([] : List M).prod = 1 :=
-  rfl
-
-@[to_additive existing, simp]
-theorem prod_cons {a} {l : List M} : (a :: l).prod = a * l.prod := rfl
-
-@[to_additive]
-lemma prod_induction
-    (p : M → Prop) (hom : ∀ a b, p a → p b → p (a * b)) (unit : p 1) (base : ∀ x ∈ l, p x) :
-    p l.prod := by
-  induction l with
-  | nil => simpa
-  | cons a l ih =>
-    rw [List.prod_cons]
-    simp only [mem_cons, forall_eq_or_imp] at base
-    exact hom _ _ (base.1) (ih base.2)
-
-end Mul
-
-section MulOneClass
-
-variable [MulOneClass M] {l : List M} {a : M}
-
-@[to_additive]
-theorem prod_singleton : [a].prod = a :=
-  mul_one a
-
-@[to_additive]
-theorem prod_one_cons : (1 :: l).prod = l.prod := by
-  rw [prod, foldr, one_mul]
-
-@[to_additive]
-theorem prod_map_one {l : List ι} :
-    (l.map fun _ => (1 : M)).prod = 1 := by
-  induction l with
-  | nil => rfl
-  | cons hd tl ih => rw [map_cons, prod_one_cons, ih]
-
-end MulOneClass
 
 section Monoid
 
@@ -125,24 +55,6 @@ theorem prod_flatten {l : List (List M)} : l.flatten.prod = (l.map List.prod).pr
 
 @[deprecated (since := "2024-10-15")] alias prod_join := prod_flatten
 @[deprecated (since := "2024-10-15")] alias sum_join := sum_flatten
-
-@[to_additive]
-theorem prod_eq_foldr {l : List M} : l.prod = foldr (· * ·) 1 l := rfl
-
-@[to_additive (attr := simp)]
-theorem prod_replicate (n : ℕ) (a : M) : (replicate n a).prod = a ^ n := by
-  induction n with
-  | zero => rw [pow_zero, replicate_zero, prod_nil]
-  | succ n ih => rw [replicate_succ, prod_cons, ih, pow_succ']
-
-@[to_additive sum_eq_card_nsmul]
-theorem prod_eq_pow_card (l : List M) (m : M) (h : ∀ x ∈ l, x = m) : l.prod = m ^ l.length := by
-  rw [← prod_replicate, ← List.eq_replicate_iff.mpr ⟨rfl, h⟩]
-
-@[to_additive]
-theorem prod_hom_rel (l : List ι) {r : M → N → Prop} {f : ι → M} {g : ι → N} (h₁ : r 1 1)
-    (h₂ : ∀ ⦃i a b⦄, r a b → r (f i * a) (g i * b)) : r (l.map f).prod (l.map g).prod :=
-  List.recOn l h₁ fun a l hl => by simp only [map_cons, prod_cons, h₂ hl]
 
 @[to_additive]
 theorem rel_prod {R : M → N → Prop} (h : R 1 1) (hf : (R ⇒ R ⇒ R) (· * ·) (· * ·)) :
@@ -182,23 +94,6 @@ theorem prod_map_mul {α : Type*} [CommMonoid α] {l : List ι} {f g : ι → α
 theorem prod_map_hom (L : List ι) (f : ι → M) {G : Type*} [FunLike G M N] [MonoidHomClass G M N]
     (g : G) :
     (L.map (g ∘ f)).prod = g (L.map f).prod := by rw [← prod_hom, map_map]
-
-@[to_additive]
-theorem prod_isUnit : ∀ {L : List M}, (∀ m ∈ L, IsUnit m) → IsUnit L.prod
-  | [], _ => by simp
-  | h :: t, u => by
-    simp only [List.prod_cons]
-    exact IsUnit.mul (u h (mem_cons_self h t)) (prod_isUnit fun m mt => u m (mem_cons_of_mem h mt))
-
-@[to_additive]
-theorem prod_isUnit_iff {α : Type*} [CommMonoid α] {L : List α} :
-    IsUnit L.prod ↔ ∀ m ∈ L, IsUnit m := by
-  refine ⟨fun h => ?_, prod_isUnit⟩
-  induction L with
-  | nil => exact fun m' h' => False.elim (not_mem_nil m' h')
-  | cons m L ih =>
-    rw [prod_cons, IsUnit.mul_iff] at h
-    exact fun m' h' ↦ Or.elim (eq_or_mem_of_mem_cons h') (fun H => H.substr h.1) fun H => ih h.2 _ H
 
 @[to_additive (attr := simp)]
 theorem prod_take_mul_prod_drop (L : List M) (i : ℕ) :
@@ -323,20 +218,6 @@ lemma prod_eq_pow_single [DecidableEq M] (a : M) (h : ∀ a', a' ≠ a → a' �
     l.prod = a ^ l.count a :=
   _root_.trans (by rw [map_id]) (prod_map_eq_pow_single a id h)
 
-/-- If elements of a list commute with each other, then their product does not
-depend on the order of elements. -/
-@[to_additive "If elements of a list additively commute with each other, then their sum does not
-depend on the order of elements."]
-lemma Perm.prod_eq' (h : l₁ ~ l₂) (hc : l₁.Pairwise Commute) : l₁.prod = l₂.prod := by
-  refine h.foldr_eq' ?_ _
-  apply Pairwise.forall_of_forall
-  · intro x y h z
-    exact (h z).symm
-  · intros; rfl
-  · apply hc.imp
-    intro a b h z
-    rw [← mul_assoc, ← mul_assoc, h]
-
 end Monoid
 
 section CommMonoid
@@ -444,15 +325,6 @@ theorem prod_range_div' (n : ℕ) (f : ℕ → G) :
   | zero => exact (div_self' (f 0)).symm
   | succ n h =>
     rw [range_succ, map_append, map_singleton, prod_append, prod_singleton, h, div_mul_div_cancel]
-
-lemma prod_rotate_eq_one_of_prod_eq_one :
-    ∀ {l : List G} (_ : l.prod = 1) (n : ℕ), (l.rotate n).prod = 1
-  | [], _, _ => by simp
-  | a :: l, hl, n => by
-    have : n % List.length (a :: l) ≤ List.length (a :: l) := le_of_lt (Nat.mod_lt _ (by simp))
-    rw [← List.take_append_drop (n % List.length (a :: l)) (a :: l)] at hl
-    rw [← rotate_mod, rotate_eq_drop_append_take this, List.prod_append, mul_eq_one_iff_inv_eq,
-      ← one_mul (List.prod _)⁻¹, ← hl, List.prod_append, mul_assoc, mul_inv_cancel, mul_one]
 
 end Group
 
@@ -582,38 +454,6 @@ lemma sum_int_mod (l : List ℤ) (n : ℤ) : l.sum % n = (l.map (· % n)).sum % 
 lemma prod_int_mod (l : List ℤ) (n : ℤ) : l.prod % n = (l.map (· % n)).prod % n := by
   induction l <;> simp [Int.mul_emod, *]
 
-variable [DecidableEq α]
-
-/-- Summing the count of `x` over a list filtered by some `p` is just `countP` applied to `p` -/
-theorem sum_map_count_dedup_filter_eq_countP (p : α → Bool) (l : List α) :
-    ((l.dedup.filter p).map fun x => l.count x).sum = l.countP p := by
-  induction l with
-  | nil => simp
-  | cons a as h =>
-    simp_rw [List.countP_cons, List.count_cons, List.sum_map_add]
-    congr 1
-    · refine _root_.trans ?_ h
-      by_cases ha : a ∈ as
-      · simp [dedup_cons_of_mem ha]
-      · simp only [dedup_cons_of_not_mem ha, List.filter]
-        match p a with
-        | true => simp only [List.map_cons, List.sum_cons, List.count_eq_zero.2 ha, zero_add]
-        | false => simp only
-    · simp only [beq_iff_eq]
-      by_cases hp : p a
-      · refine _root_.trans (sum_map_eq_nsmul_single a _ fun _ h _ => by simp [h.symm]) ?_
-        simp [hp, count_dedup]
-      · refine _root_.trans (List.sum_eq_zero fun n hn => ?_) (by simp [hp])
-        obtain ⟨a', ha'⟩ := List.mem_map.1 hn
-        split_ifs at ha' with ha
-        · simp only [ha.symm, mem_filter, mem_dedup, find?, mem_cons, true_or, hp,
-            and_false, false_and, reduceCtorEq] at ha'
-        · exact ha'.2.symm
-
-theorem sum_map_count_dedup_eq_length (l : List α) :
-    (l.dedup.map fun x => l.count x).sum = l.length := by
-  simpa using sum_map_count_dedup_filter_eq_countP (fun _ => True) l
-
 end List
 
 section MonoidHom
@@ -637,32 +477,7 @@ end MonoidHom
 
 end MonoidHom
 
-set_option linter.deprecated false in
-@[simp, deprecated "No deprecation message was provided." (since := "2024-10-17")]
-lemma Nat.sum_eq_listSum (l : List ℕ) : Nat.sum l = l.sum := rfl
-
 namespace List
-
-lemma length_sigma {σ : α → Type*} (l₁ : List α) (l₂ : ∀ a, List (σ a)) :
-    length (l₁.sigma l₂) = (l₁.map fun a ↦ length (l₂ a)).sum := by
-  induction' l₁ with x l₁ IH
-  · rfl
-  · simp only [sigma_cons, length_append, length_map, IH, map, sum_cons]
-
-lemma ranges_flatten : ∀ (l : List ℕ), l.ranges.flatten = range l.sum
-  | [] => rfl
-  | a :: l => by simp [ranges, ← map_flatten, ranges_flatten, range_add]
-
-/-- The members of `l.ranges` have no duplicate -/
-theorem ranges_nodup {l s : List ℕ} (hs : s ∈ ranges l) : s.Nodup :=
-  (List.pairwise_flatten.mp <| by rw [ranges_flatten]; exact nodup_range _).1 s hs
-
-@[deprecated (since := "2024-10-15")] alias ranges_join := ranges_flatten
-
-/-- Any entry of any member of `l.ranges` is strictly smaller than `l.sum`. -/
-lemma mem_mem_ranges_iff_lt_sum (l : List ℕ) {n : ℕ} :
-    (∃ s ∈ l.ranges, n ∈ s) ↔ n < l.sum := by
-  rw [← mem_range, ← ranges_flatten, mem_flatten]
 
 @[deprecated (since := "2024-10-16")] alias length_bind := length_flatMap
 
@@ -690,37 +505,10 @@ lemma drop_sum_flatten (L : List (List α)) (i : ℕ) :
 
 @[deprecated (since := "2024-10-15")] alias drop_sum_join := drop_sum_flatten
 
-/-- In a flatten of sublists, taking the slice between the indices `A` and `B - 1` gives back the
-original sublist of index `i` if `A` is the sum of the lengths of sublists of index `< i`, and
-`B` is the sum of the lengths of sublists of index `≤ i`. -/
-lemma drop_take_succ_flatten_eq_getElem (L : List (List α)) (i : Nat) (h : i < L.length) :
-    (L.flatten.take ((L.map length).take (i + 1)).sum).drop ((L.map length).take i).sum = L[i] := by
-  have : (L.map length).take i = ((L.take (i + 1)).map length).take i := by
-    simp [map_take, take_take, Nat.min_eq_left]
-  simp only [this, length_map, take_sum_flatten, drop_sum_flatten,
-    drop_take_succ_eq_cons_getElem, h, flatten, append_nil]
-
-@[deprecated (since := "2024-06-11")]
-alias drop_take_succ_join_eq_getElem := drop_take_succ_flatten_eq_getElem
-
-@[deprecated drop_take_succ_flatten_eq_getElem (since := "2024-06-11")]
-lemma drop_take_succ_join_eq_get (L : List (List α)) (i : Fin L.length) :
-    (L.flatten.take ((L.map length).take (i + 1)).sum).drop
-      ((L.map length).take i).sum = get L i := by
-  rw [drop_take_succ_flatten_eq_getElem _ _ i.2]
-  simp
-
 end List
 
 
 namespace List
-
-/-- If a product of integers is `-1`, then at least one factor must be `-1`. -/
-theorem neg_one_mem_of_prod_eq_neg_one {l : List ℤ} (h : l.prod = -1) : (-1 : ℤ) ∈ l := by
-  obtain ⟨x, h₁, h₂⟩ := exists_mem_ne_one_of_prod_ne_one (ne_of_eq_of_ne h (by decide))
-  exact Or.resolve_left
-    (Int.isUnit_iff.mp (prod_isUnit_iff.mp
-      (h.symm ▸ ⟨⟨-1, -1, by decide, by decide⟩, rfl⟩ : IsUnit l.prod) x h₁)) h₂ ▸ h₁
 
 /-- If all elements in a list are bounded below by `1`, then the length of the list is bounded
 by the sum of the elements. -/
@@ -731,68 +519,4 @@ theorem length_le_sum_of_one_le (L : List ℕ) (h : ∀ i ∈ L, 1 ≤ i) : L.le
     rw [sum_cons, length, add_comm]
     exact Nat.add_le_add (h _ (mem_cons_self _ _)) (IH fun i hi => h i (mem_cons.2 (Or.inr hi)))
 
-theorem dvd_prod [CommMonoid M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.prod := by
-  let ⟨s, t, h⟩ := append_of_mem ha
-  rw [h, prod_append, prod_cons, mul_left_comm]
-  exact dvd_mul_right _ _
-
-theorem Sublist.prod_dvd_prod [CommMonoid M] {l₁ l₂ : List M} (h : l₁ <+ l₂) :
-    l₁.prod ∣ l₂.prod := by
-  obtain ⟨l, hl⟩ := h.exists_perm_append
-  rw [hl.prod_eq, prod_append]
-  exact dvd_mul_right _ _
-
-section Alternating
-
-variable [CommGroup α]
-
-@[to_additive]
-theorem alternatingProd_append :
-    ∀ l₁ l₂ : List α,
-      alternatingProd (l₁ ++ l₂) = alternatingProd l₁ * alternatingProd l₂ ^ (-1 : ℤ) ^ length l₁
-  | [], l₂ => by simp
-  | a :: l₁, l₂ => by
-    simp_rw [cons_append, alternatingProd_cons, alternatingProd_append, length_cons, pow_succ',
-      Int.neg_mul, one_mul, zpow_neg, ← div_eq_mul_inv, div_div]
-
-@[to_additive]
-theorem alternatingProd_reverse :
-    ∀ l : List α, alternatingProd (reverse l) = alternatingProd l ^ (-1 : ℤ) ^ (length l + 1)
-  | [] => by simp only [alternatingProd_nil, one_zpow, reverse_nil]
-  | a :: l => by
-    simp_rw [reverse_cons, alternatingProd_append, alternatingProd_reverse,
-      alternatingProd_singleton, alternatingProd_cons, length_reverse, length, pow_succ',
-      Int.neg_mul, one_mul, zpow_neg, inv_inv]
-    rw [mul_comm, ← div_eq_mul_inv, div_zpow]
-
-end Alternating
-
 end List
-
-open List
-
-namespace MulOpposite
-variable [Monoid M]
-
-lemma op_list_prod : ∀ l : List M, op l.prod = (l.map op).reverse.prod := by
-  intro l; induction l with
-  | nil => rfl
-  | cons x xs ih =>
-    rw [List.prod_cons, List.map_cons, List.reverse_cons', List.prod_concat, op_mul, ih]
-
-lemma unop_list_prod (l : List Mᵐᵒᵖ) : l.prod.unop = (l.map unop).reverse.prod := by
-  rw [← op_inj, op_unop, MulOpposite.op_list_prod, map_reverse, map_map, reverse_reverse,
-    op_comp_unop, map_id]
-
-end MulOpposite
-
-section MonoidHom
-variable [Monoid M] [Monoid N]
-
-/-- A morphism into the opposite monoid acts on the product by acting on the reversed elements. -/
-lemma unop_map_list_prod {F : Type*} [FunLike F M Nᵐᵒᵖ] [MonoidHomClass F M Nᵐᵒᵖ]
-    (f : F) (l : List M) :
-    (f l.prod).unop = (l.map (MulOpposite.unop ∘ f)).reverse.prod := by
-  rw [map_list_prod f l, MulOpposite.unop_list_prod, List.map_map]
-
-end MonoidHom

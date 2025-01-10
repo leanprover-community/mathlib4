@@ -57,6 +57,8 @@ instance addSubmonoidClass : AddSubmonoidClass (Submodule R M) M where
 instance smulMemClass : SMulMemClass (Submodule R M) R M where
   smul_mem {s} c _ h := SubMulAction.smul_mem' s.toSubMulAction c h
 
+initialize_simps_projections Submodule (carrier → coe, as_prefix coe)
+
 @[simp]
 theorem mem_toAddSubmonoid (p : Submodule R M) (x : M) : x ∈ p.toAddSubmonoid ↔ x ∈ p :=
   Iff.rfl
@@ -288,7 +290,7 @@ theorem mem_toAddSubgroup : x ∈ p.toAddSubgroup ↔ x ∈ p :=
   Iff.rfl
 
 theorem toAddSubgroup_injective : Injective (toAddSubgroup : Submodule R M → AddSubgroup M)
-  | _, _, h => SetLike.ext (SetLike.ext_iff.1 h : _)
+  | _, _, h => SetLike.ext (SetLike.ext_iff.1 h :)
 
 @[simp]
 theorem toAddSubgroup_inj : p.toAddSubgroup = p'.toAddSubgroup ↔ p = p' :=
