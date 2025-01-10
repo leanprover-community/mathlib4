@@ -18,7 +18,7 @@ import Mathlib.Data.List.Perm.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Nat.Basic
+import Mathlib.Algebra.Group.Nat.Defs
 
 /-!
 # Sums and products from lists
