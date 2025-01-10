@@ -209,7 +209,7 @@ variable {F} {G : C ⥤ D} [F.CommShift A] [G.CommShift A]
 open Opposite in
 instance commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
     NatTrans.CommShift (OppositeShift.natTrans A τ) A where
-      shift_comm _ := by
+  shift_comm _ := by
     ext
     rw [← cancel_mono (((OppositeShift.functor A F).commShiftIso _ ).inv.app _),
       ← cancel_epi (((OppositeShift.functor A G).commShiftIso _).inv.app _)]
