@@ -20,7 +20,7 @@ categories.
 We then introduce a class `IsTriangulated` for adjunctions: an adjunction `F ⊣ G`
 is called triangulated if both `F` and `G` are triangulated, and if the adjunction
 is compatible with the shifts by `ℤ` on `F` and `G` (in the sense of `Adjunction.CommShift`);
-we prove that this compatible with composition and that the identity adjunction is
+we prove that this is compatible with composition and that the identity adjunction is
 triangulated.
 Thanks to the results above, an adjunction carrying an `Adjunction.CommShift` instance
 is triangulated as soon as one of the adjoint functors is triangulated.
