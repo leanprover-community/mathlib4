@@ -18,18 +18,18 @@ We introduce a typeclass `Nontrivial` formalizing this property.
 Basic results about nontrivial types are in `Mathlib.Logic.Nontrivial.Basic`.
 -/
 
-variable {α : Sort*} {β : Sort*}
+variable {α : Type*} {β : Type*}
 
 /-- Predicate typeclass for expressing that a type is not reduced to a single element. In rings,
 this is equivalent to `0 ≠ 1`. In vector spaces, this is equivalent to positive dimension. -/
-class Nontrivial (α : Sort*) : Prop where
+class Nontrivial (α : Type*) : Prop where
   /-- In a nontrivial type, there exists a pair of distinct terms. -/
   exists_pair_ne : ∃ x y : α, x ≠ y
 
 theorem nontrivial_iff : Nontrivial α ↔ ∃ x y : α, x ≠ y :=
   ⟨fun h ↦ h.exists_pair_ne, fun h ↦ ⟨h⟩⟩
 
-theorem exists_pair_ne (α : Sort*) [Nontrivial α] : ∃ x y : α, x ≠ y :=
+theorem exists_pair_ne (α : Type*) [Nontrivial α] : ∃ x y : α, x ≠ y :=
   Nontrivial.exists_pair_ne
 
 -- See Note [decidable namespace]
@@ -80,11 +80,11 @@ lemma not_subsingleton_iff_nontrivial : ¬ Subsingleton α ↔ Nontrivial α := 
   rw [← not_nontrivial_iff_subsingleton, Classical.not_not]
 
 /-- A type is either a subsingleton or nontrivial. -/
-theorem subsingleton_or_nontrivial (α : Sort*) : Subsingleton α ∨ Nontrivial α := by
+theorem subsingleton_or_nontrivial (α : Type*) : Subsingleton α ∨ Nontrivial α := by
   rw [← not_nontrivial_iff_subsingleton, or_comm]
   exact Classical.em _
 
-theorem false_of_nontrivial_of_subsingleton (α : Sort*) [Nontrivial α] [Subsingleton α] : False :=
+theorem false_of_nontrivial_of_subsingleton (α : Type*) [Nontrivial α] [Subsingleton α] : False :=
   not_nontrivial _ ‹_›
 
 /-- Pullback a `Nontrivial` instance along a surjective function. -/
