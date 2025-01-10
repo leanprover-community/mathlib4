@@ -28,6 +28,8 @@ open NNReal ENNReal MeasureTheory
 
 namespace Real
 
+variable {α : Type*} {_ : MeasurableSpace α} {f : α → ℝ} {μ : MeasureTheory.Measure α}
+
 @[measurability]
 theorem measurable_exp : Measurable exp :=
   continuous_exp.measurable
@@ -37,19 +39,23 @@ theorem measurable_log : Measurable log :=
   measurable_of_measurable_on_compl_singleton 0 <|
     Continuous.measurable <| continuousOn_iff_continuous_restrict.1 continuousOn_log
 
-lemma measurable_of_measurable_exp {α : Type*} {_ : MeasurableSpace α} {f : α → ℝ}
-    (hf : Measurable (fun x ↦ exp (f x))) :
+lemma measurable_of_measurable_exp (hf : Measurable (fun x ↦ exp (f x))) :
     Measurable f := by
   have : f = fun x ↦ log (exp (f x)) := by ext; rw [log_exp]
   rw [this]
   exact measurable_log.comp hf
 
-lemma aemeasurable_of_aemeasurable_exp {α : Type*} {_ : MeasurableSpace α} {f : α → ℝ}
-    {μ : MeasureTheory.Measure α} (hf : AEMeasurable (fun x ↦ exp (f x)) μ) :
+lemma aemeasurable_of_aemeasurable_exp (hf : AEMeasurable (fun x ↦ exp (f x)) μ) :
     AEMeasurable f μ := by
   have : f = fun x ↦ log (exp (f x)) := by ext; rw [log_exp]
   rw [this]
   exact measurable_log.comp_aemeasurable hf
+
+lemma aemeasurable_of_aemeasurable_exp_mul {t : ℝ}
+    (ht : t ≠ 0) (hf : AEMeasurable (fun x ↦ exp (t * f x)) μ) :
+    AEMeasurable f μ := by
+  simpa only [mul_div_cancel_left₀ _ ht]
+    using (aemeasurable_of_aemeasurable_exp hf).div (aemeasurable_const (b := t))
 
 @[measurability]
 theorem measurable_sin : Measurable sin :=

@@ -19,6 +19,8 @@ We deduce that, if `E : C ≌ D` is an equivalence of pretriangulated categories
 TODO: The case of left adjoints.
 -/
 
+assert_not_exists TwoSidedIdeal
+
 namespace CategoryTheory
 
 open Category Limits Preadditive Pretriangulated Adjunction
