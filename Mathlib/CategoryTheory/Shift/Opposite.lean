@@ -137,11 +137,8 @@ The natural transformation `τ`, seen as a natural transformation from `Opposite
 to `OppositeShift.functor G A`..
 -/
 def OppositeShift.natTrans {G : C ⥤ D} (τ : F ⟶ G) :
-    OppositeShift.functor A G ⟶ OppositeShift.functor A F where
-  app X := (NatTrans.op τ).app X
-  naturality X Y f := by
-     dsimp [OppositeShift.functor]
-     rw [← op_comp, ← τ.naturality, op_comp]
+    OppositeShift.functor A G ⟶ OppositeShift.functor A F :=
+  NatTrans.op τ
 
 namespace Functor
 
