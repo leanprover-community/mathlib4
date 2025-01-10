@@ -107,7 +107,7 @@ theorem weight_apply_single (s : σ) (n : N) :
 variable (N) in
 /-- A weight function is nontorsion if its values are not torsion. -/
 class NonTorsionWeight (w : σ → M) : Prop where
-  eq_zero_of_smul_eq_zero {n : N} {s : σ} (h : n • w s = 0)  : n = 0
+  eq_zero_of_smul_eq_zero {n : N} {s : σ} (h : n • w s = 0) : n = 0
 
 variable (N) in
 /-- Without zero divisors, nonzero weight is a `NonTorsionWeight` -/
