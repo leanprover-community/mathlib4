@@ -73,6 +73,8 @@ class ThousandPlusTheorem:
     wikidata: str
     # a human-readable title
     title: str
+    # If a theorem is merely *stated* in mathlib, the name of the declaration
+    statement: Optional[str] = None
     # if a theorem is formalised in mathlib, the archive or counterexamples,
     # the name of the corresponding declaration (optional)
     decl: Optional[str] = None

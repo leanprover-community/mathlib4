@@ -52,7 +52,8 @@ Q132427:
 
 Q132469:
   title: Fermat's Last Theorem
-  # See https://imperialcollegelondon.github.io/FLT/
+  statement: FermatLastTheoremFor
+  # Formalisation of the proof is on-going in https://imperialcollegelondon.github.io/FLT/
 
 Q137164:
   title: Besicovitch covering theorem
