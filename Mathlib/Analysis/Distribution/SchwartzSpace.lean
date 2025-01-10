@@ -943,6 +943,10 @@ def bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemp
   gcongr
   simp
 
+-- TODO: Add `simp` attribute once branches have been merged.
+theorem coeFn_bilinLeftCLM (B : E →L[𝕜] F →L[𝕜] G) {g : D → F} (hg : g.HasTemperateGrowth)
+    (f : 𝓢(D, E)) : ⇑(bilinLeftCLM B hg f) = fun x ↦ B (f x) (g x) := rfl
+
 end Multiplication
 
 section Comp
