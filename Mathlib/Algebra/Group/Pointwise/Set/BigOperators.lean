@@ -71,7 +71,7 @@ theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
         ⟨⟨g, fun hi ↦ hg (Finset.mem_insert_of_mem hi), rfl⟩, rfl⟩⟩
 
 @[to_additive]
-lemma mem_pow_iff_prod {n} {s : Set α} {a : α} :
+lemma mem_pow_iff_prod {n : ℕ} {s : Set α} {a : α} :
     a ∈ s ^ n ↔ ∃ f : Fin n → α, (∀ i, f i ∈ s) ∧ ∏ i, f i = a := by
   simpa using mem_finset_prod (t := .univ) (f := fun _ : Fin n ↦ s) _
 
