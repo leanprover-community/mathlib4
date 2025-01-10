@@ -1168,7 +1168,7 @@ variable {R : Type*}
 
 section LinearOrderedCommRing
 
-variable [LinearOrderedCommRing R] {a : ℍ[R]}
+variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] {a : ℍ[R]}
 
 @[simp]
 theorem normSq_eq_zero : normSq a = 0 ↔ a = 0 := by
@@ -1213,32 +1213,7 @@ end LinearOrderedCommRing
 
 section Field
 
-variable [LinearOrderedField R] (a b : ℍ[R])
-
-@[simps (config := .lemmasOnly)]
-instance instInv : Inv ℍ[R] :=
-  ⟨fun a => (normSq a)⁻¹ • star a⟩
-
-instance instGroupWithZero : GroupWithZero ℍ[R] :=
-  { Quaternion.instNontrivial,
-    (by infer_instance : MonoidWithZero ℍ[R]) with
-    inv := Inv.inv
-    inv_zero := by rw [instInv_inv, star_zero, smul_zero]
-    mul_inv_cancel := fun a ha => by
-      rw [instInv_inv, Algebra.mul_smul_comm (normSq a)⁻¹ a (star a), self_mul_star, smul_coe,
-        inv_mul_cancel₀ (normSq_ne_zero.2 ha), coe_one] }
-
-@[norm_cast, simp]
-theorem coe_inv (x : R) : ((x⁻¹ : R) : ℍ[R]) = (↑x)⁻¹ :=
-  map_inv₀ (algebraMap R ℍ[R]) _
-
-@[norm_cast, simp]
-theorem coe_div (x y : R) : ((x / y : R) : ℍ[R]) = x / y :=
-  map_div₀ (algebraMap R ℍ[R]) x y
-
-@[norm_cast, simp]
-theorem coe_zpow (x : R) (z : ℤ) : ((x ^ z : R) : ℍ[R]) = (x : ℍ[R]) ^ z :=
-  map_zpow₀ (algebraMap R ℍ[R]) x z
+variable [Field R]
 
 instance instNNRatCast : NNRatCast ℍ[R] where nnratCast q := (q : R)
 instance instRatCast : RatCast ℍ[R] where ratCast q := (q : R)
@@ -1269,6 +1244,33 @@ alias rat_cast_imK := ratCast_imK
 
 @[deprecated (since := "2024-04-17")]
 alias coe_rat_cast := coe_ratCast
+
+variable [LinearOrder R] [IsStrictOrderedRing R] (a b : ℍ[R])
+
+@[simps (config := .lemmasOnly)]
+instance instInv : Inv ℍ[R] :=
+  ⟨fun a => (normSq a)⁻¹ • star a⟩
+
+instance instGroupWithZero : GroupWithZero ℍ[R] :=
+  { Quaternion.instNontrivial,
+    (by infer_instance : MonoidWithZero ℍ[R]) with
+    inv := Inv.inv
+    inv_zero := by rw [instInv_inv, star_zero, smul_zero]
+    mul_inv_cancel := fun a ha => by
+      rw [instInv_inv, Algebra.mul_smul_comm (normSq a)⁻¹ a (star a), self_mul_star, smul_coe,
+        inv_mul_cancel₀ (normSq_ne_zero.2 ha), coe_one] }
+
+@[norm_cast, simp]
+theorem coe_inv (x : R) : ((x⁻¹ : R) : ℍ[R]) = (↑x)⁻¹ :=
+  map_inv₀ (algebraMap R ℍ[R]) _
+
+@[norm_cast, simp]
+theorem coe_div (x y : R) : ((x / y : R) : ℍ[R]) = x / y :=
+  map_div₀ (algebraMap R ℍ[R]) x y
+
+@[norm_cast, simp]
+theorem coe_zpow (x : R) (z : ℤ) : ((x ^ z : R) : ℍ[R]) = (x : ℍ[R]) ^ z :=
+  map_zpow₀ (algebraMap R ℍ[R]) x z
 
 instance instDivisionRing : DivisionRing ℍ[R] where
   __ := Quaternion.instGroupWithZero
