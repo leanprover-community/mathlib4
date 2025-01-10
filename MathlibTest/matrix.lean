@@ -153,7 +153,8 @@ example {α : Type _} [CommRing α] {a b c d : α} :
       Fin.default_eq_zero, submatrix_apply, Fin.succ_zero_eq_one, cons_val_one, head_fin_const,
       Fin.sum_univ_succ, Fin.val_zero, pow_zero, one_mul, Fin.zero_succAbove, head_cons,
       Finset.univ_unique, Fin.val_succ, Fin.val_eq_zero, zero_add, pow_one, cons_val_succ, neg_mul,
-      Fin.succ_succAbove_zero, Finset.sum_const, Finset.card_singleton, smul_neg, one_smul]
+      Fin.succ_succAbove_zero, Finset.sum_neg_distrib, Finset.sum_const, Finset.card_singleton,
+      one_smul]
   ring
 
 example {α : Type _} [CommRing α] {a b c d e f g h i : α} :
