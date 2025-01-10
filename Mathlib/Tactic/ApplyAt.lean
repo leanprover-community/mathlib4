@@ -29,14 +29,17 @@ elab "apply" t:term "at" i:ident : tactic => withSynthesize <| withMainContext d
     | throwErrorAt i m!"Identifier {i} not found"
   let (mvs, bis, tp) ← forallMetaTelescopeReducingUntilDefEq (← inferType f) ldecl.type
   let mainGoal ← getMainGoal
-  let mainGoal ← mainGoal.tryClear ldecl.fvarId
   for (m, b) in mvs.zip bis do
     if b.isInstImplicit && !(← m.mvarId!.isAssigned) then
       try m.mvarId!.inferInstance
       catch _ => continue
-  let mainGoal ← mainGoal.assert ldecl.userName tp
-    (← mkAppOptM' f (mvs.pop.push ldecl.toExpr |>.map fun e => some e))
+  let applied ← mkAppOptM' f (mvs.pop.push ldecl.toExpr |>.map fun e => some e)
+  let appliedTy ← inferType applied
+  unless (← isDefEq appliedTy tp) do
+    logError m!"assertion failed: {applied} has type {appliedTy}, expected {tp}"
+  let mainGoal ← mainGoal.assert ldecl.userName appliedTy applied
   let (_, mainGoal) ← mainGoal.intro1P
+  let mainGoal ← mainGoal.tryClear ldecl.fvarId
   replaceMainGoal <| [mainGoal] ++ mvs.pop.toList.map fun e => e.mvarId!
 
 end Mathlib.Tactic

@@ -105,3 +105,17 @@ example (a b : ℝ) (h : -a * b = 0) : a = 0 ∨ b = 0 := by
   apply (congrArg (fun x => x / 1)) at h
   simp at h
   assumption
+
+example (h : True) : True := by
+  have (h : True) : h = h := rfl
+  apply this at h
+  simp at h
+  exact h
+
+example (a : List Nat) (k : Nat) (hk : k < a.length) : True := by
+  have thm (k : Nat) {xs ys : List Nat} (hk: k < xs.length)
+    (h : xs = ys) : xs[k] = ys[k]'(h ▸ hk) := h ▸ rfl
+  have : a = a.map id := by simp
+  apply thm k hk at this
+  simp at this
+  exact this
