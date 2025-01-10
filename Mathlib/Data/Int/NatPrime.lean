@@ -3,7 +3,9 @@ Copyright (c) 2020 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker, Bryan Gin-ge Chen
 -/
-import Mathlib.Algebra.Group.Int
+import Mathlib.Algebra.Group.Int.Even
+import Mathlib.Algebra.Group.Int.Units
+import Mathlib.Algebra.Group.Int.TypeTags
 import Mathlib.Data.Nat.Prime.Basic
 
 /-!

@@ -3,7 +3,9 @@ Copyright (c) 2018 Guy Leroy. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sangwoo Jo (aka Jason), Guy Leroy, Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Group.Int
+import Mathlib.Algebra.Group.Int.Even
+import Mathlib.Algebra.Group.Int.Units
+import Mathlib.Algebra.Group.Int.TypeTags
 import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.Group.Commute.Units
 import Mathlib.Data.Nat.GCD.Basic

@@ -3,7 +3,9 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Group.Int
+import Mathlib.Algebra.Group.Int.Even
+import Mathlib.Algebra.Group.Int.Units
+import Mathlib.Algebra.Group.Int.TypeTags
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.Data.Set.Subsingleton

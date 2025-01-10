@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Action.Opposite
-import Mathlib.Algebra.Group.Int
+import Mathlib.Algebra.Group.Int.Even
+import Mathlib.Algebra.Group.Int.Units
+import Mathlib.Algebra.Group.Int.TypeTags
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Tactic.Common
 

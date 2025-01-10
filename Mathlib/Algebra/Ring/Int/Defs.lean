@@ -4,7 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.CharZero.Defs
-import Mathlib.Algebra.Group.Int
+import Mathlib.Algebra.Group.Int.Even
+import Mathlib.Algebra.Group.Int.Units
+import Mathlib.Algebra.Group.Int.TypeTags
 import Mathlib.Algebra.Ring.Defs
 
 /-!

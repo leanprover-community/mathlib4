@@ -292,11 +292,14 @@ import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.Group.Int
+import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.Group.Int.Even
+import Mathlib.Algebra.Group.Int.TypeTags
+import Mathlib.Algebra.Group.Int.Units
 import Mathlib.Algebra.Group.Invertible.Basic
 import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.Group.MinimalAxioms
-import Mathlib.Algebra.Group.Nat.Basic
+import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.Nat.Even
 import Mathlib.Algebra.Group.Nat.TypeTags
 import Mathlib.Algebra.Group.Nat.Units
