@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Indicator
-import Mathlib.Algebra.Group.Submonoid.Basic
 import Mathlib.Data.Finset.Max
 import Mathlib.Data.Set.Finite.Basic
-import Mathlib.Algebra.Group.TypeTags.Hom
 
 /-!
 # Type of functions with finite support
@@ -81,6 +79,7 @@ This file is a `noncomputable theory` and uses classical logic throughout.
 
 -/
 
+assert_not_exists Submonoid
 
 noncomputable section
 
@@ -1129,50 +1128,6 @@ theorem induction_on_min₂ (f : α →₀ M) (h0 : p 0)
   induction_on_max₂ (α := αᵒᵈ) f h0 ha
 
 end LinearOrder
-
-@[simp]
-theorem add_closure_setOf_eq_single :
-    AddSubmonoid.closure { f : α →₀ M | ∃ a b, f = single a b } = ⊤ :=
-  top_unique fun x _hx =>
-    Finsupp.induction x (AddSubmonoid.zero_mem _) fun a b _f _ha _hb hf =>
-      AddSubmonoid.add_mem _ (AddSubmonoid.subset_closure <| ⟨a, b, rfl⟩) hf
-
-/-- If two additive homomorphisms from `α →₀ M` are equal on each `single a b`,
-then they are equal. -/
-theorem addHom_ext [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
-    (H : ∀ x y, f (single x y) = g (single x y)) : f = g := by
-  refine AddMonoidHom.eq_of_eqOn_denseM add_closure_setOf_eq_single ?_
-  rintro _ ⟨x, y, rfl⟩
-  apply H
-
-/-- If two additive homomorphisms from `α →₀ M` are equal on each `single a b`,
-then they are equal.
-
-We formulate this using equality of `AddMonoidHom`s so that `ext` tactic can apply a type-specific
-extensionality lemma after this one.  E.g., if the fiber `M` is `ℕ` or `ℤ`, then it suffices to
-verify `f (single a 1) = g (single a 1)`. -/
-@[ext high]
-theorem addHom_ext' [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
-    (H : ∀ x, f.comp (singleAddHom x) = g.comp (singleAddHom x)) : f = g :=
-  addHom_ext fun x => DFunLike.congr_fun (H x)
-
-theorem mulHom_ext [MulOneClass N] ⦃f g : Multiplicative (α →₀ M) →* N⦄
-    (H : ∀ x y, f (Multiplicative.ofAdd <| single x y) = g (Multiplicative.ofAdd <| single x y)) :
-    f = g :=
-  MonoidHom.ext <|
-    DFunLike.congr_fun <| by
-      have := @addHom_ext α M (Additive N) _ _
-        (MonoidHom.toAdditive'' f) (MonoidHom.toAdditive'' g) H
-      ext
-      rw [DFunLike.ext_iff] at this
-      apply this
-
-@[ext]
-theorem mulHom_ext' [MulOneClass N] {f g : Multiplicative (α →₀ M) →* N}
-    (H : ∀ x, f.comp (AddMonoidHom.toMultiplicative (singleAddHom x)) =
-              g.comp (AddMonoidHom.toMultiplicative (singleAddHom x))) :
-    f = g :=
-  mulHom_ext fun x => DFunLike.congr_fun (H x)
 
 theorem mapRange_add [AddZeroClass N] {f : M → N} {hf : f 0 = 0}
     (hf' : ∀ x y, f (x + y) = f x + f y) (v₁ v₂ : α →₀ M) :

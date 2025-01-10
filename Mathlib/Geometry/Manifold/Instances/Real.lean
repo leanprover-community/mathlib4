@@ -3,7 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
+import Mathlib.Geometry.Manifold.IsManifold
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
@@ -31,7 +31,7 @@ For instance, if a manifold `M` is boundaryless, smooth and modelled on `Euclide
 and `N` is smooth with boundary modelled on `EuclideanHalfSpace n`, and `f : M → N` is a smooth
 map, then the derivative of `f` can be written simply as `mfderiv (𝓡 m) (𝓡∂ n) f` (as to why the
 model with corners can not be implicit, see the discussion in
-`Geometry.Manifold.SmoothManifoldWithCorners`).
+`Geometry.Manifold.IsManifold`).
 
 ## Implementation notes
 

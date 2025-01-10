@@ -30,7 +30,6 @@ In Lean, we use lattice notation to talk about things involving unions and inter
 
 * `Finset.instUnionFinset`: see "The lattice structure on subsets of finsets"
 * `Finset.instInterFinset`: see "The lattice structure on subsets of finsets"
-* `Finset.instSDiffFinset`: Defines the set difference `s \ t` for finsets `s` and `t`.
 
 ## Tags
 
