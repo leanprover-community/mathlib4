@@ -198,14 +198,14 @@ variable {F} {G : C ⥤ D} [G.CommShift B]
 open Functor in
 instance commShiftPullback (τ : F ⟶ G) [NatTrans.CommShift τ B] :
     NatTrans.CommShift (PullbackShift.natTrans φ τ) A where
-      shift_comm _ := by
-        ext
-        dsimp [PullbackShift.natTrans]
-        simp only [commShiftPullback_iso_eq φ _ _ _ rfl, Iso.trans_hom, isoWhiskerRight_hom,
-          isoWhiskerLeft_hom, Iso.symm_hom, comp_app, comp_obj, whiskerRight_app, whiskerLeft_app,
-          assoc]
-        rw [← τ.naturality_assoc]
-        simp  [← NatTrans.shift_app_comm_assoc]
+  shift_comm _ := by
+    ext
+    dsimp [PullbackShift.natTrans]
+    simp only [commShiftPullback_iso_eq φ _ _ _ rfl, Iso.trans_hom, isoWhiskerRight_hom,
+      isoWhiskerLeft_hom, Iso.symm_hom, comp_app, comp_obj, whiskerRight_app, whiskerLeft_app,
+      assoc]
+    rw [← τ.naturality_assoc]
+    simp  [← NatTrans.shift_app_comm_assoc]
 
 variable (C) in
 /-- The natural isomorphism between the identity of `PullbackShift C φ` and the
