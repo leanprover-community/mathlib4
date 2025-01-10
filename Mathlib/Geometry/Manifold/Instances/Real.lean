@@ -412,26 +412,28 @@ lemma IccManifold.chartAt_of_getop {x y : ℝ} [h : Fact (x < y)] {z : Set.Icc x
 
 lemma IccManifold.isBoundaryPoint_bot : (𝓡∂ 1).IsBoundaryPoint ⊥ := by
   rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt]
-  have : chartAt (EuclideanHalfSpace 1) X = IccLeftChart x y :=
-    IccManifold2.leftCharts (by norm_num [hxy.out])
-  suffices ((IccLeftChart x y).extend (𝓡∂ 1)) X ∈ frontier (range (𝓡∂ 1)) by convert this
+  -- have : chartAt (EuclideanHalfSpace 1) X = IccLeftChart x y :=
+  --   IccManifold2.leftCharts (by norm_num [hxy.out])
+  rw [IccManifold.chartAt_of_neq_top (by norm_num [hxy.out])]
   exact IccLeftChart_boundary
 
-lemma Icc_isBoundaryPoint_right : (𝓡∂ 1).IsBoundaryPoint (Y : Icc x y) := by
+lemma IccManifold.isBoundaryPoint_top : (𝓡∂ 1).IsBoundaryPoint ⊤ := by
   rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt]
-  have : chartAt (EuclideanHalfSpace 1) Y = IccRightChart x y := by
-    apply IccManifold2.rightCharts (by norm_num)
-  suffices ((IccRightChart x y).extend (𝓡∂ 1)) Y ∈ frontier (range (𝓡∂ 1)) by convert this
+  -- have : chartAt (EuclideanHalfSpace 1) Y = IccRightChart x y := by
+  --   apply IccManifold2.rightCharts (by norm_num)
+  -- suffices ((IccRightChart x y).extend (𝓡∂ 1)) Y ∈ frontier (range (𝓡∂ 1)) by convert this
+  rw [IccManifold.chartAt_of_ge_top (by norm_num)]
   exact IccRightChart_boundary
 
 lemma Icc_isInteriorPoint_interior {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
     (𝓡∂ 1).IsInteriorPoint p := by
-  have : chartAt (EuclideanHalfSpace 1) p = IccLeftChart x y := IccManifold2.leftCharts hp.2
-  suffices ((IccLeftChart x y).extend (𝓡∂ 1)) p ∈ interior (range (𝓡∂ 1)) by
-    rw [ModelWithCorners.IsInteriorPoint, extChartAt]
-    convert this
+  -- have : chartAt (EuclideanHalfSpace 1) p = IccLeftChart x y := IccManifold2.leftCharts hp.2
+  -- suffices ((IccLeftChart x y).extend (𝓡∂ 1)) p ∈ interior (range (𝓡∂ 1)) by
+  --   rw [ModelWithCorners.IsInteriorPoint, extChartAt]
+  --   convert this
   rw [interior_range_modelWithCornersEuclideanHalfSpace]
-  apply IccLeftChart_extend_interior_pos hp
+  rw [ModelWithCorners.IsInteriorPoint, extChartAt, IccManifold.chartAt_of_le_top hp.2]
+  exact IccLeftChart_extend_interior_pos hp
 
 lemma boundary_IccManifold : (𝓡∂ 1).boundary (Icc x y) = { X, Y } := by
   ext p
