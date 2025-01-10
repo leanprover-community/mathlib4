@@ -112,6 +112,10 @@ initialize_simps_projections Substructure (carrier → coe)
 theorem mem_carrier {s : L.Substructure M} {x : M} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 
+@[simp]
+theorem mem_coe {s : L.Substructure M} {x : M} : x ∈ (s : Set M) ↔ x ∈ s :=
+  Iff.rfl
+
 /-- Two substructures are equal if they have the same elements. -/
 @[ext]
 theorem ext {S T : L.Substructure M} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
