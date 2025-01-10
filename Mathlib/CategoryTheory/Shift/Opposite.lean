@@ -210,13 +210,13 @@ open Opposite in
 instance commShift_op (τ : F ⟶ G) [NatTrans.CommShift τ A] :
     NatTrans.CommShift (OppositeShift.natTrans A τ) A where
       shift_comm _ := by
-        ext
-        rw [← cancel_mono (((OppositeShift.functor A F).commShiftIso _ ).inv.app _),
-          ← cancel_epi (((OppositeShift.functor A G).commShiftIso _).inv.app _)]
-        dsimp
-        simp only [assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj,
-          Functor.op_obj, comp_id]
-        exact (op_inj_iff _ _).mpr (NatTrans.shift_app_comm τ _ (unop _))
+    ext
+    rw [← cancel_mono (((OppositeShift.functor A F).commShiftIso _ ).inv.app _),
+      ← cancel_epi (((OppositeShift.functor A G).commShiftIso _).inv.app _)]
+    dsimp
+    simp only [assoc, Iso.inv_hom_id_app_assoc, Iso.hom_inv_id_app, Functor.comp_obj,
+      Functor.op_obj, comp_id]
+    exact (op_inj_iff _ _).mpr (NatTrans.shift_app_comm τ _ (unop _))
 
 end NatTrans
 
