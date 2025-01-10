@@ -4,8 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Group.Subgroup.Ker
-import Mathlib.Algebra.Group.Int.Even
-import Mathlib.Algebra.Group.Int.TypeTags
 import Mathlib.Algebra.Group.Int.Units
 import Mathlib.Algebra.BigOperators.Group.List.Basic
 

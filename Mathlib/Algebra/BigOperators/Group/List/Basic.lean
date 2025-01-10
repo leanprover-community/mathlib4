@@ -4,12 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Sébastien Gouëzel, Alex J. Best
 -/
 import Mathlib.Algebra.Divisibility.Basic
-import Mathlib.Algebra.Group.Int.Units
 import Mathlib.Algebra.Group.Hom.Defs
-import Mathlib.Algebra.Group.Opposite
-import Mathlib.Data.List.Dedup
-import Mathlib.Data.List.Flatten
-import Mathlib.Data.List.Pairwise
 import Mathlib.Algebra.BigOperators.Group.List.Defs
 import Mathlib.Order.RelClasses
 import Mathlib.Data.List.Basic
@@ -18,6 +13,7 @@ import Mathlib.Data.List.Perm.Basic
 import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.Commute.Defs
 import Mathlib.Algebra.Group.Nat.Defs
+import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # Sums and products from lists
