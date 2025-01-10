@@ -805,11 +805,21 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] [IsManifold I n 
 /-- The disjoint union of two `C^n` manifolds modelled on `(E, H)`
 is a `C^n` manifold modeled on `(E, H)`. -/
 -- XXX. do I really need the same model twice? or can/should one generalise this?
-instance IsManifold.disjointUnion [Nonempty M] [Nonempty M'] [Nonempty H] :
+instance disjointUnion [Nonempty M] [Nonempty M'] [Nonempty H] :
     IsManifold I n (M ⊕ M') where
-  compatible := sorry
+  compatible {e} e' he he' := by
+    rw [cm.mem_atlas_sum cm'] at he
+    rw [cm.mem_atlas_sum cm'] at he'
+    -- now, distinguish all four cases: two of them are similar each; need two arguments...
+    dsimp
+
+
+
+    sorry
 
 end DisjointUnion
+
+#exit
 
 end IsManifold
 
