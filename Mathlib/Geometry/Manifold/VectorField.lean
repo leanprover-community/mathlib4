@@ -25,7 +25,7 @@ in the model space (through `extChartAt I x`).
 In addition to comprehensive API on these two notions, the main results are the following:
 * `VectorField.mpullback_mlieBracket` states that the pullback of the Lie bracket
   is the Lie bracket of the pullbacks.
-* `VectorField.leibniz_identity_mlieBracket` is the Leibniz
+* `VectorField.leibniz_identity_mlieBracket` is the Leibniz (or Jacobi)
   identity `[U, [V, W]] = [[U, V], W] + [V, [U, W]]`.
 
 All these are given in the `VectorField` namespace because pullbacks, Lie brackets, and so on,
@@ -1426,7 +1426,7 @@ section
 variable [IsManifold I (minSmoothness 𝕜 3) M] [CompleteSpace E]
 
 /-- The Lie bracket of vector fields in manifolds satisfies the Leibniz identity
-`[U, [V, W]] = [[U, V], W] + [V, [U, W]]`. -/
+`[U, [V, W]] = [[U, V], W] + [V, [U, W]]` (also called Jacobi identity). -/
 theorem leibniz_identity_mlieBracketWithin_apply
     {U V W : Π (x : M), TangentSpace I x} {s : Set M} {x : M}
     (hs : UniqueMDiffOn I s) (h's : x ∈ closure (interior s)) (hx : x ∈ s)
@@ -1562,7 +1562,7 @@ theorem leibniz_identity_mlieBracketWithin_apply
   · exact contMDiffWithinAt_vectorSpace_iff_contDiffWithinAt.mp J0W
 
 /-- The Lie bracket of vector fields in manifolds satisfies the Leibniz identity
-`[U, [V, W]] = [[U, V], W] + [V, [U, W]]`. -/
+`[U, [V, W]] = [[U, V], W] + [V, [U, W]]` (also called Jacobi identity). -/
 lemma leibniz_identity_mlieBracket_apply
     {U V W : Π (x : M), TangentSpace I x} {x : M}
     (hU : ContMDiffAt I I.tangent (minSmoothness 𝕜 2) (fun x ↦ (U x : TangentBundle I M)) x)
@@ -1574,7 +1574,7 @@ lemma leibniz_identity_mlieBracket_apply
   exact leibniz_identity_mlieBracketWithin_apply uniqueMDiffOn_univ (by simp) (mem_univ _) hU hV hW
 
 /-- The Lie bracket of vector fields in manifolds satisfies the Leibniz identity
-`[U, [V, W]] = [[U, V], W] + [V, [U, W]]`. -/
+`[U, [V, W]] = [[U, V], W] + [V, [U, W]]` (also called Jacobi identity). -/
 lemma leibniz_identity_mlieBracket
     {U V W : Π (x : M), TangentSpace I x}
     (hU : ContMDiff I I.tangent (minSmoothness 𝕜 2) (fun x ↦ (U x : TangentBundle I M)))
