@@ -136,6 +136,11 @@ theorem Injective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i →
 theorem Injective.comp_left {g : β → γ} (hg : Injective g) : Injective (g ∘ · : (α → β) → α → γ) :=
   .piMap fun _ ↦ hg
 
+theorem injective_comp_left_iff [Nonempty α] {g : β → γ} :
+    Injective (g ∘ · : (α → β) → α → γ) ↔ Injective g :=
+  ⟨fun h b₁ b₂ eq ↦ congr_fun (h (a₁ := fun _ ↦ b₁) (a₂ := fun _ ↦ b₂) <| funext fun _ ↦ eq)
+    (Classical.arbitrary α), (·.comp_left)⟩
+
 theorem injective_of_subsingleton [Subsingleton α] (f : α → β) : Injective f :=
   fun _ _ _ ↦ Subsingleton.elim _ _
 
@@ -222,9 +227,8 @@ protected theorem Surjective.right_cancellable (hf : Surjective f) {g₁ g₂ : 
   hf.injective_comp_right.eq_iff
 
 theorem surjective_of_right_cancellable_Prop (h : ∀ g₁ g₂ : β → Prop, g₁ ∘ f = g₂ ∘ f → g₁ = g₂) :
-    Surjective f := by
-  specialize h (fun y ↦ ∃ x, f x = y) (fun _ ↦ True) (funext fun x ↦ eq_true ⟨_, rfl⟩)
-  intro y; rw [congr_fun h y]; trivial
+    Surjective f :=
+  injective_comp_right_iff_surjective.mp h
 
 theorem bijective_iff_existsUnique (f : α → β) : Bijective f ↔ ∀ b : β, ∃! a : α, f a = b :=
   ⟨fun hf b ↦
@@ -474,6 +478,12 @@ theorem Surjective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i �
 theorem Surjective.comp_left {g : β → γ} (hg : Surjective g) :
     Surjective (g ∘ · : (α → β) → α → γ) :=
   .piMap fun _ ↦ hg
+
+theorem surjective_comp_left_iff [Nonempty α] {g : β → γ} :
+    Surjective (g ∘ · : (α → β) → α → γ) ↔ Surjective g := by
+  refine ⟨fun h c ↦ ?_, (·.comp_left)⟩
+  have ⟨f, hf⟩ := h fun _ ↦ c
+  exact ⟨f (Classical.arbitrary α), congr_fun hf _⟩
 
 theorem Bijective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
     (hf : ∀ i, Bijective (f i)) : Bijective (Pi.map f) :=
