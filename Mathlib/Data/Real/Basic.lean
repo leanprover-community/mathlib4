@@ -350,45 +350,29 @@ protected theorem mul_pos {a b : ℝ} : 0 < a → 0 < b → 0 < a * b := by
   induction' b using Real.ind_mk with b
   simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
 
-instance instStrictOrderedCommRing : StrictOrderedCommRing ℝ where
-  __ := Real.commRing
+instance instNontrivial : Nontrivial ℝ where
   exists_pair_ne := ⟨0, 1, Real.zero_lt_one.ne⟩
+
+instance instZeroLEOneClass : ZeroLEOneClass ℝ where
+  zero_le_one := le_of_lt Real.zero_lt_one
+
+instance instIsOrderedAddMonoid : IsOrderedAddMonoid ℝ where
   add_le_add_left := by
     simp only [le_iff_eq_or_lt]
     rintro a b ⟨rfl, h⟩
     · simp only [lt_self_iff_false, or_false, forall_const]
     · exact fun c => Or.inr ((add_lt_add_iff_left c).2 ‹_›)
-  zero_le_one := le_of_lt Real.zero_lt_one
-  mul_pos a b :=  by
+
+instance instIsStrictOrderedRing : IsStrictOrderedRing ℝ :=
+  .of_mul_pos fun a b ↦ by
     induction' a using Real.ind_mk with a
     induction' b using Real.ind_mk with b
     simpa only [mk_lt, mk_pos, ← mk_mul] using CauSeq.mul_pos
 
-instance strictOrderedRing : StrictOrderedRing ℝ :=
+instance instIsOrderedRing : IsOrderedRing ℝ :=
   inferInstance
 
-instance strictOrderedCommSemiring : StrictOrderedCommSemiring ℝ :=
-  inferInstance
-
-instance strictOrderedSemiring : StrictOrderedSemiring ℝ :=
-  inferInstance
-
-instance orderedRing : OrderedRing ℝ :=
-  inferInstance
-
-instance orderedSemiring : OrderedSemiring ℝ :=
-  inferInstance
-
-instance orderedAddCommGroup : OrderedAddCommGroup ℝ :=
-  inferInstance
-
-instance orderedCancelAddCommMonoid : OrderedCancelAddCommMonoid ℝ :=
-  inferInstance
-
-instance orderedAddCommMonoid : OrderedAddCommMonoid ℝ :=
-  inferInstance
-
-instance nontrivial : Nontrivial ℝ :=
+instance instIsOrderedCancelAddMonoid : IsOrderedCancelAddMonoid ℝ :=
   inferInstance
 
 private irreducible_def sup : ℝ → ℝ → ℝ
@@ -495,14 +479,6 @@ instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
 noncomputable instance linearOrder : LinearOrder ℝ :=
   Lattice.toLinearOrder ℝ
 
-noncomputable instance linearOrderedCommRing : LinearOrderedCommRing ℝ :=
-  { Real.nontrivial, Real.strictOrderedRing, Real.commRing, Real.linearOrder with }
-
--- Extra instances to short-circuit type class resolution
-noncomputable instance : LinearOrderedRing ℝ := by infer_instance
-
-noncomputable instance : LinearOrderedSemiring ℝ := by infer_instance
-
 instance : IsDomain ℝ := IsStrictOrderedRing.isDomain
 
 noncomputable instance instDivInvMonoid : DivInvMonoid ℝ where
@@ -510,8 +486,7 @@ noncomputable instance instDivInvMonoid : DivInvMonoid ℝ where
 lemma ofCauchy_div (f g) : (⟨f / g⟩ : ℝ) = (⟨f⟩ : ℝ) / (⟨g⟩ : ℝ) := by
   simp_rw [div_eq_mul_inv, ofCauchy_mul, ofCauchy_inv]
 
-noncomputable instance instLinearOrderedField : LinearOrderedField ℝ where
-  toLinearOrderedCommRing := linearOrderedCommRing
+noncomputable instance field : Field ℝ where
   mul_inv_cancel := by
     rintro ⟨a⟩ h
     rw [mul_comm]
@@ -529,10 +504,6 @@ noncomputable instance instLinearOrderedField : LinearOrderedField ℝ where
     rw [← ofCauchy_ratCast, Rat.cast_def, ofCauchy_div, ofCauchy_natCast, ofCauchy_intCast]
 
 -- Extra instances to short-circuit type class resolution
-noncomputable instance : LinearOrderedAddCommGroup ℝ := by infer_instance
-
-noncomputable instance field : Field ℝ := by infer_instance
-
 noncomputable instance : DivisionRing ℝ := by infer_instance
 
 noncomputable instance decidableLT (a b : ℝ) : Decidable (a < b) := by infer_instance
