@@ -349,51 +349,32 @@ instance IccManifold (x y : ℝ) [h : Fact (x < y)] :
       simpa only [not_lt] using h'
   chart_mem_atlas z := by by_cases h' : (z : ℝ) < y <;> simp [h']
 
-def IccManifold2 (x y : ℝ) [h : Fact (x < y)] :
-    ChartedSpace (EuclideanHalfSpace 1) (Icc x y) where
-  atlas := {IccLeftChart x y, IccRightChart x y}
-  chartAt z := if z.val < y then IccLeftChart x y else IccRightChart x y
-  mem_chart_source z := by
-    by_cases h' : z.val < y
-    · simp only [h', if_true]
-      exact h'
-    · simp only [h', if_false]
-      apply lt_of_lt_of_le h.out
-      simpa only [not_lt] using h'
-  chart_mem_atlas z := by by_cases h' : (z : ℝ) < y <;> simp [h']
+@[simp]
+lemma IccManifold_chartAt {x y : ℝ} [Fact (x < y)] {z : Set.Icc x y} :
+    chartAt _ z = if z.val < y then IccLeftChart x y else IccRightChart x y := rfl
 
-lemma IccManifold2.leftCharts {x y : ℝ} [h : Fact (x < y)] {z : Set.Icc x y} (h : z.val < y) :
-    (IccManifold2 x y).chartAt z = IccLeftChart x y := by
-  unfold IccManifold2
-  simp_all only [reduceIte]
+lemma IccManifold.chartAt_of_le_top {x y : ℝ} [Fact (x < y)] {z : Set.Icc x y} (h : z.val < y) :
+    chartAt _ z = IccLeftChart x y := by
+  simp [h, IccManifold_chartAt, reduceIte]
 
-lemma IccManifold2.rightCharts {x y : ℝ} [h : Fact (x < y)] {z : Set.Icc x y} (h : z.val ≥ y) :
-    (IccManifold2 x y).chartAt z = IccRightChart x y := by
-  unfold IccManifold2
-  simp_all only [reduceIte, not_lt.mpr h]
+lemma IccManifold.chartAt_of_ge_top {x y : ℝ} [h : Fact (x < y)] {z : Set.Icc x y} (h : z.val ≥ y) :
+    chartAt _ z= IccRightChart x y := by
+  simp only [reduceIte, IccManifold_chartAt, not_lt.mpr h]
 
 lemma Icc_isBoundaryPoint_left : (𝓡∂ 1).IsBoundaryPoint (X : Icc x y) := by
-  rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt]
-  have : chartAt (EuclideanHalfSpace 1) X = IccLeftChart x y :=
-    IccManifold2.leftCharts (by norm_num [hxy.out])
-  suffices ((IccLeftChart x y).extend (𝓡∂ 1)) X ∈ frontier (range (𝓡∂ 1)) by convert this
+  rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt,
+    IccManifold.chartAt_of_le_top (by simp [hxy.out])]
   exact IccLeftChart_boundary
 
 lemma Icc_isBoundaryPoint_right : (𝓡∂ 1).IsBoundaryPoint (Y : Icc x y) := by
-  rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt]
-  have : chartAt (EuclideanHalfSpace 1) Y = IccRightChart x y := by
-    apply IccManifold2.rightCharts (by norm_num)
-  suffices ((IccRightChart x y).extend (𝓡∂ 1)) Y ∈ frontier (range (𝓡∂ 1)) by convert this
+  rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt,
+    IccManifold.chartAt_of_ge_top (by simp [hxy.out])]
   exact IccRightChart_boundary
 
 lemma Icc_isInteriorPoint_interior {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
     (𝓡∂ 1).IsInteriorPoint p := by
-  have : chartAt (EuclideanHalfSpace 1) p = IccLeftChart x y := IccManifold2.leftCharts hp.2
-  suffices ((IccLeftChart x y).extend (𝓡∂ 1)) p ∈ interior (range (𝓡∂ 1)) by
-    rw [ModelWithCorners.IsInteriorPoint, extChartAt]
-    convert this
-  rw [interior_range_modelWithCornersEuclideanHalfSpace]
-  apply IccLeftChart_extend_interior_pos hp
+  simpa [ModelWithCorners.IsInteriorPoint, extChartAt, IccManifold.chartAt_of_le_top hp.2,
+    interior_range_modelWithCornersEuclideanHalfSpace] using IccLeftChart_extend_interior_pos hp
 
 lemma boundary_IccManifold : (𝓡∂ 1).boundary (Icc x y) = { X, Y } := by
   ext p
