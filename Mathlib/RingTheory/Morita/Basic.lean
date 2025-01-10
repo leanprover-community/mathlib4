@@ -20,6 +20,9 @@ isomorphic rings are Morita equivalent.
 ## TODO
 
 - For any ring `R`, `R` and `Matₙ(R)` are Morita equivalent.
+- Morita equivalence in terms of projective generators.
+- Morita equivalence in terms of full idempotents.
+- If `R ≈ S`, then `R` is simple iff `S` is simple.
 
 ## References
 
@@ -51,6 +54,8 @@ lemma refl : IsMoritaEquivalent R R where
 lemma symm (h : IsMoritaEquivalent R S) : IsMoritaEquivalent S R where
   cond := h.cond.map .symm
 
+-- TODO: We have restricted universe here, but if we have more Mortia Equivalence in terms full
+-- idempotents, we could remove the restriction.
 lemma trans {R S T : Type u₁} [Ring R] [Ring S] [Ring T]
     (h : IsMoritaEquivalent R S) (h' : IsMoritaEquivalent S T) :
     IsMoritaEquivalent R T where
