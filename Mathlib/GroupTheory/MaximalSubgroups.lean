@@ -28,7 +28,6 @@ Will we need to write this for all `sub`-structures ?
 In fact, the essentially only justification of this file is `Subgroup.isMaximal_iff`.
 -/
 
-
 variable {G : Type*} [Group G]
 
 namespace Subgroup
@@ -51,18 +50,8 @@ theorem IsMaximal.eq_top_of_lt {K H : Subgroup G} (h : K.IsMaximal) (hH : K < H)
 
 @[to_additive]
 theorem isMaximal_iff {K : Subgroup G} :
-    K.IsMaximal ↔ K ≠ ⊤ ∧ ∀ (H : Subgroup G) (g), K ≤ H → g ∉ K → g ∈ H → H = ⊤ := by
-  constructor
-  · intro hK
-    refine ⟨hK.ne_top, fun H g hKH hgK hgH ↦ hK.2 H ?_⟩
-    rw [lt_iff_le_and_ne]
-    exact ⟨hKH, Ne.symm (ne_of_mem_of_not_mem' hgH hgK)⟩
-  · rintro ⟨hG, hmax⟩
-    constructor
-    · assumption
-    · intro H hKH
-      obtain ⟨g, hgH, hgK⟩ := Set.exists_of_ssubset hKH
-      exact hmax H g (le_of_lt hKH) hgK hgH
+    K.IsMaximal ↔ K ≠ ⊤ ∧ ∀ (H : Subgroup G) (g), K ≤ H → g ∉ K → g ∈ H → H = ⊤ :=
+  SetLike.isCoatom_iff
 
 @[to_additive]
 theorem IsMaximal.eq_of_le {K H : Subgroup G} (hK : K.IsMaximal) (hH : H ≠ ⊤) (KH : K ≤ H) :
