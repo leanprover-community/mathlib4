@@ -33,9 +33,7 @@ The group structure on automorphisms, `LinearEquiv.automorphismGroup`, is provid
 linear equiv, linear equivalences, linear isomorphism, linear isomorphic
 -/
 
-assert_not_exists
-  Field
-  Pi.module
+assert_not_exists Field Pi.module
 
 open Function
 

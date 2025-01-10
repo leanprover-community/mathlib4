@@ -34,9 +34,7 @@ removed.
 
 -- TODO
 -- assert_not_exists OrderedCommMonoid
-assert_not_exists
-  MonoidWithZero
-  MulAction
+assert_not_exists MonoidWithZero MulAction
 
 variable {α β γ : Type*}
 

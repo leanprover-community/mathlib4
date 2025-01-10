@@ -21,9 +21,7 @@ Then we show that the quotient type `Associates` is a monoid
 and prove basic properties of this quotient.
 -/
 
-assert_not_exists
-  OrderedCommMonoid
-  Multiset
+assert_not_exists OrderedCommMonoid Multiset
 
 variable {M : Type*}
 

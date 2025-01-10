@@ -11,9 +11,7 @@ import Mathlib.Algebra.Group.Semiconj.Basic
 
 -/
 
-assert_not_exists
-  MonoidWithZero
-  DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 variable {G : Type*}
 

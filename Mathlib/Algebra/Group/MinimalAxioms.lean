@@ -21,9 +21,7 @@ equalities.
 
 -/
 
-assert_not_exists
-  MonoidWithZero
-  DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 universe u
 

@@ -12,9 +12,7 @@ import Mathlib.Algebra.Ring.Int.Defs
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists
-  DenselyOrdered
-  Set.Subsingleton
+assert_not_exists DenselyOrdered Set.Subsingleton
 
 namespace Int
 

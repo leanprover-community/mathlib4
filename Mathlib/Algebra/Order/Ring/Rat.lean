@@ -20,11 +20,7 @@ here because we need the order on `ℚ` to define `ℚ≥0`, which we itself nee
 rat, rationals, field, ℚ, numerator, denominator, num, denom, order, ordering
 -/
 
-assert_not_exists
-  Field
-  Finset
-  Set.Icc
-  GaloisConnection
+assert_not_exists Field Finset Set.Icc GaloisConnection
 
 namespace Rat
 

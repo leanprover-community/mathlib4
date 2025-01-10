@@ -18,9 +18,7 @@ that were not available in `Algebra/Group/WithOne/Defs`.
 * `WithOne.map`, `WithZero.map`
 -/
 
-assert_not_exists
-  MonoidWithZero
-  DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 universe u v w
 
