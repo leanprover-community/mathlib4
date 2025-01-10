@@ -154,7 +154,7 @@ lemma closure_subset_ground (M : Matroid α) (X : Set α) : M.closure X ⊆ M.E 
   simp_rw [closure_def, inter_assoc, inter_self]
 
 lemma inter_ground_subset_closure (M : Matroid α) (X : Set α) : X ∩ M.E ⊆ M.closure X := by
-  simp_rw [closure_def, subset_sInter_iff]; aesop
+  simp_rw [closure_def, subset_sInter_iff]; simp
 
 lemma mem_closure_iff_forall_mem_flat (X : Set α) (hX : X ⊆ M.E := by aesop_mat) :
     e ∈ M.closure X ↔ ∀ F, M.Flat F → X ⊆ F → e ∈ F := by
@@ -637,7 +637,7 @@ lemma mem_closure_diff_singleton_iff_closure (he : e ∈ X) (heE : e ∈ M.E := 
 end insert
 
 lemma ext_closure {M₁ M₂ : Matroid α} (h : ∀ X, M₁.closure X = M₂.closure X) : M₁ = M₂ :=
-  eq_of_indep_iff_indep_forall (by simpa using h univ)
+  ext_indep (by simpa using h univ)
     (fun _ _ ↦ by simp_rw [indep_iff_forall_closure_diff_ne, h])
 
 
@@ -745,7 +745,7 @@ lemma ext_spanning {M M' : Matroid α} (h : M.E = M'.E)
     refine (em (S ⊆ M.E)).elim (fun hSE ↦ by rw [hsp _ hSE] )
       (fun hSE ↦ iff_of_false (fun h ↦ hSE h.subset_ground)
       (fun h' ↦ hSE (h'.subset_ground.trans h.symm.subset)))
-  rw [← dual_inj, eq_iff_indep_iff_indep_forall, dual_ground, dual_ground, and_iff_right h]
+  rw [← dual_inj, ext_iff_indep, dual_ground, dual_ground, and_iff_right h]
   intro I hIE
   rw [← coindep_def, ← coindep_def, coindep_iff_compl_spanning, coindep_iff_compl_spanning, hsp', h]
 

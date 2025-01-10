@@ -3,7 +3,7 @@ Copyright (c) 2019 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
-import Mathlib.Geometry.Manifold.SmoothManifoldWithCorners
+import Mathlib.Geometry.Manifold.IsManifold
 import Mathlib.Analysis.InnerProductSpace.PiL2
 
 /-!
@@ -31,7 +31,7 @@ For instance, if a manifold `M` is boundaryless, smooth and modelled on `Euclide
 and `N` is smooth with boundary modelled on `EuclideanHalfSpace n`, and `f : M → N` is a smooth
 map, then the derivative of `f` can be written simply as `mfderiv (𝓡 m) (𝓡∂ n) f` (as to why the
 model with corners can not be implicit, see the discussion in
-`Geometry.Manifold.SmoothManifoldWithCorners`).
+`Geometry.Manifold.IsManifold`).
 
 ## Implementation notes
 
@@ -361,12 +361,12 @@ instance IccChartedSpace (x y : ℝ) [h : Fact (x < y)] :
 
 /-- The manifold structure on `[x, y]` is smooth.
 -/
-instance Icc_smoothManifoldWithCorners (x y : ℝ) [Fact (x < y)] :
-    SmoothManifoldWithCorners (𝓡∂ 1) (Icc x y) := by
-  have M : ContDiff ℝ ∞ (show EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
+instance instIsManifoldIcc (x y : ℝ) [Fact (x < y)] {n : WithTop ℕ∞} :
+    IsManifold (𝓡∂ 1) n (Icc x y) := by
+  have M : ContDiff ℝ n (show EuclideanSpace ℝ (Fin 1) → EuclideanSpace ℝ (Fin 1)
       from fun z i => -z i + (y - x)) :=
     contDiff_id.neg.add contDiff_const
-  apply smoothManifoldWithCorners_of_contDiffOn
+  apply isManifold_of_contDiffOn
   intro e e' he he'
   simp only [atlas, mem_singleton_iff, mem_insert_iff] at he he'
   /- We need to check that any composition of two charts gives a `C^∞` function. Each chart can be
@@ -377,35 +377,36 @@ instance Icc_smoothManifoldWithCorners (x y : ℝ) [Fact (x < y)] :
   · -- `e = left chart`, `e' = right chart`
     apply M.contDiffOn.congr
     rintro _ ⟨⟨hz₁, hz₂⟩, ⟨⟨z, hz₀⟩, rfl⟩⟩
-    simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, update_same,
+    simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, update_self,
       max_eq_left, hz₀, lt_sub_iff_add_lt, mfld_simps] at hz₁ hz₂
     rw [min_eq_left hz₁.le, lt_add_iff_pos_left] at hz₂
     ext i
     rw [Subsingleton.elim i 0]
     simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, *, PiLp.add_apply,
-      PiLp.neg_apply, max_eq_left, min_eq_left hz₁.le, update_same, mfld_simps]
+      PiLp.neg_apply, max_eq_left, min_eq_left hz₁.le, update_self, mfld_simps]
     abel
   · -- `e = right chart`, `e' = left chart`
     apply M.contDiffOn.congr
     rintro _ ⟨⟨hz₁, hz₂⟩, ⟨z, hz₀⟩, rfl⟩
     simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, max_lt_iff,
-      update_same, max_eq_left hz₀, mfld_simps] at hz₁ hz₂
+      update_self, max_eq_left hz₀, mfld_simps] at hz₁ hz₂
     rw [lt_sub_comm] at hz₁
     ext i
     rw [Subsingleton.elim i 0]
     simp only [modelWithCornersEuclideanHalfSpace, IccLeftChart, IccRightChart, PiLp.add_apply,
-      PiLp.neg_apply, update_same, max_eq_left, hz₀, hz₁.le, mfld_simps]
+      PiLp.neg_apply, update_self, max_eq_left, hz₀, hz₁.le, mfld_simps]
     abel
   ·-- `e = right chart`, `e' = right chart`
     exact (mem_groupoid_of_pregroupoid.mpr (symm_trans_mem_contDiffGroupoid _)).1
 
 /-! Register the manifold structure on `Icc 0 1`. These are merely special cases of
-`IccChartedSpace` and `Icc_smoothManifoldWithCorners`. -/
+`IccChartedSpace` and `instIsManifoldIcc`. -/
 
 section
 
 instance : ChartedSpace (EuclideanHalfSpace 1) (Icc (0 : ℝ) 1) := by infer_instance
 
-instance : SmoothManifoldWithCorners (𝓡∂ 1) (Icc (0 : ℝ) 1) := by infer_instance
+instance {n : WithTop ℕ∞} : IsManifold (𝓡∂ 1) n (Icc (0 : ℝ) 1) := by
+  infer_instance
 
 end

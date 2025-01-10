@@ -285,8 +285,8 @@ theorem index_dvd_card : H.index ∣ Nat.card G :=
   ⟨Nat.card H, H.index_mul_card.symm⟩
 
 @[to_additive]
-theorem relindex_dvd_card : H.relindex K ∣ Nat.card G :=
-  (H.subgroupOf K).index_dvd_card.trans K.card_subgroup_dvd_card
+theorem relindex_dvd_card : H.relindex K ∣ Nat.card K :=
+  (H.subgroupOf K).index_dvd_card
 
 variable {H K L}
 
@@ -617,12 +617,12 @@ namespace MulAction
 
 variable (G : Type*) {X : Type*} [Group G] [MulAction G X] (x : X)
 
-theorem index_stabilizer :
+@[to_additive] theorem index_stabilizer :
     (stabilizer G x).index = (orbit G x).ncard :=
   (Nat.card_congr (MulAction.orbitEquivQuotientStabilizer G x)).symm.trans
     (Set.Nat.card_coe_set_eq (orbit G x))
 
-theorem index_stabilizer_of_transitive [IsPretransitive G X] :
+@[to_additive] theorem index_stabilizer_of_transitive [IsPretransitive G X] :
     (stabilizer G x).index = Nat.card X := by
   rw [index_stabilizer, orbit_eq_univ, Set.ncard_univ]
 

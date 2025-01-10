@@ -49,12 +49,11 @@ instance one (I : Ideal R) : One (R ⧸ I) :=
   ⟨Submodule.Quotient.mk 1⟩
 
 /-- On `Ideal`s, `Submodule.quotientRel` is a ring congruence. -/
-protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R :=
-  { QuotientAddGroup.con I.toAddSubgroup with
-    mul' := fun {a₁ b₁ a₂ b₂} h₁ h₂ => by
-      rw [Submodule.quotientRel_def] at h₁ h₂ ⊢
-      convert I.add_mem (I.mul_mem_left a₁ h₂) (mul_mem_right b₂ _ h₁) using 1
-      rw [mul_sub, sub_mul, sub_add_sub_cancel] }
+protected def ringCon (I : Ideal R) [I.IsTwoSided] : RingCon R where
+  __ := QuotientAddGroup.con I.toAddSubgroup with
+  mul' {a₁ b₁ a₂ b₂} h₁ h₂ := by
+    rw [Submodule.quotientRel_def] at h₁ h₂ ⊢
+    exact mul_sub_mul_mem I h₁ h₂
 
 instance ring (I : Ideal R) [I.IsTwoSided] : Ring (R ⧸ I) where
   __ : AddCommGroup (R ⧸ I) := inferInstance
@@ -91,7 +90,7 @@ See note [partially-applied ext lemmas]. -/
 @[ext 1100]
 theorem ringHom_ext [NonAssocSemiring S] ⦃f g : R ⧸ I →+* S⦄ (h : f.comp (mk I) = g.comp (mk I)) :
     f = g :=
-  RingHom.ext fun x => Quotient.inductionOn' x <| (RingHom.congr_fun h : _)
+  RingHom.ext fun x => Quotient.inductionOn' x <| (RingHom.congr_fun h :)
 
 instance : Nonempty (R ⧸ I) :=
   ⟨mk I 37⟩

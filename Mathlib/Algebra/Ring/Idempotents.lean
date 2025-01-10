@@ -67,6 +67,14 @@ theorem one_sub {p : R} (h : IsIdempotentElem p) : IsIdempotentElem (1 - p) := b
 theorem one_sub_iff {p : R} : IsIdempotentElem (1 - p) ↔ IsIdempotentElem p :=
   ⟨fun h => sub_sub_cancel 1 p ▸ h.one_sub, IsIdempotentElem.one_sub⟩
 
+@[simp]
+theorem mul_one_sub_self {p : R} (h : IsIdempotentElem p) : p * (1 - p) = 0 := by
+  rw [mul_sub, mul_one, h.eq, sub_self]
+
+@[simp]
+theorem one_sub_mul_self {p : R} (h : IsIdempotentElem p) : (1 - p) * p = 0 := by
+  rw [sub_mul, one_mul, h.eq, sub_self]
+
 theorem add_sub_mul_of_commute {R} [Ring R] {p q : R} (h : Commute p q)
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
     IsIdempotentElem (p + q - p * q) := by
