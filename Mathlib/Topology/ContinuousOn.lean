@@ -1500,7 +1500,7 @@ the preimage of a set neighbourhood of `t` is a set neighbourhood of `s`. -/
 -- See `Continuous.tendsto_nhdsSet` for a special case.
 theorem ContinuousOn.tendsto_nhdsSet {f : α → β} {s s' : Set α} {t : Set β}
     (hf : ContinuousOn f s') (hs' : s' ∈ 𝓝ˢ s) (hst : MapsTo f s t) : Tendsto f (𝓝ˢ s) (𝓝ˢ t) := by
-  obtain ⟨V, hV, hsV, hVs'⟩:= mem_nhdsSet_iff_exists.mp hs'
+  obtain ⟨V, hV, hsV, hVs'⟩ := mem_nhdsSet_iff_exists.mp hs'
   refine ((hasBasis_nhdsSet s).tendsto_iff (hasBasis_nhdsSet t)).mpr fun U hU ↦
     ⟨V ∩ f ⁻¹' U, ?_, fun _ ↦ ?_⟩
   · exact ⟨(hf.mono hVs').isOpen_inter_preimage hV hU.1,

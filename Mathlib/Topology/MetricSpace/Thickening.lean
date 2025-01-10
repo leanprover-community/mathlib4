@@ -643,7 +643,7 @@ open Metric in
 theorem IsCompact.exists_thickening_image_subset
     [PseudoEMetricSpace α] {β : Type*} [PseudoEMetricSpace β]
     {f : α → β} {K : Set α} {U : Set β} (hK : IsCompact K) (ho : IsOpen U)
-    (hf : ∀ x : K, ContinuousAt f x) (hKU : MapsTo f K U) :
+    (hf : ∀ x ∈ K, ContinuousAt f x) (hKU : MapsTo f K U) :
     ∃ ε > 0, ∃ V ∈ 𝓝ˢ K, thickening ε (f '' V) ⊆ U := by
   apply hK.induction_on (p := fun K ↦ ∃ ε > 0, ∃ V ∈ 𝓝ˢ K, thickening ε (f '' V) ⊆ U)
   · use 1, by positivity, ∅, by simp, by simp
@@ -654,20 +654,20 @@ theorem IsCompact.exists_thickening_image_subset
     calc thickening (ε₁ ⊓ ε₂) (f '' V₁) ∪ thickening (ε₁ ⊓ ε₂) (f '' V₂)
       _ ⊆ thickening ε₁ (f '' V₁) ∪ thickening ε₂ (f '' V₂) := by gcongr <;> norm_num
       _ ⊆ U ∪ U := by gcongr
-      _ = U := union_eq_self_of_subset_left fun ⦃a⦄ a ↦ a
+      _ = U := union_self _
   · intro x hx
-    have : {f x} ⊆ U := by rw [@singleton_subset_iff]; exact hKU hx
+    have : {f x} ⊆ U := by rw [singleton_subset_iff]; exact hKU hx
     obtain ⟨δ, hδ, hthick⟩ := (isCompact_singleton (x := f x)).exists_thickening_subset_open ho this
-    let V := f ⁻¹' (thickening (δ / 2) { f x})
+    let V := f ⁻¹' (thickening (δ / 2) {f x})
     have : V ∈ 𝓝 x := by
-      apply hf ⟨x, hx⟩
+      apply hf x hx
       apply isOpen_thickening.mem_nhds
       exact (self_subset_thickening (by positivity) _) rfl
     refine ⟨K ∩ (interior V), inter_mem_nhdsWithin K (interior_mem_nhds.mpr this),
       δ / 2, by positivity, V, by rw [← subset_interior_iff_mem_nhdsSet]; simp, ?_⟩
     calc thickening (δ / 2) (f '' V)
-      _ ⊆ thickening (δ / 2) (thickening (δ / 2) { f x}) :=
+      _ ⊆ thickening (δ / 2) (thickening (δ / 2) {f x}) :=
         thickening_subset_of_subset _ (image_preimage_subset f _)
-      _ ⊆ thickening ((δ / 2) + (δ / 2)) ({ f x}) :=
+      _ ⊆ thickening ((δ / 2) + (δ / 2)) ({f x}) :=
         thickening_thickening_subset (δ / 2) (δ / 2) {f x}
       _ ⊆ U := by simp [hthick]
