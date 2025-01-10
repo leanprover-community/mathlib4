@@ -6,6 +6,7 @@ Authors: Joseph Myers
 import Mathlib.Algebra.Order.Module.Algebra
 import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.Algebra.Ring.Subring.Units
+import Mathlib.Tactic.Positivity.Basic
 
 /-!
 # Rays in modules
@@ -106,7 +107,7 @@ lemma sameRay_nonneg_smul_right (v : M) (h : 0 ≤ a) : SameRay R v (a • v) :=
   · rw [← algebraMap_smul R a v, h, zero_smul]
     exact zero_right _
   · refine Or.inr <| Or.inr ⟨algebraMap S R a, 1, h, by nontriviality R; exact zero_lt_one, ?_⟩
-    rw [algebraMap_smul, one_smul]
+    module
 
 /-- A nonnegative multiple of a vector is in the same ray as that vector. -/
 lemma sameRay_nonneg_smul_left (v : M) (ha : 0 ≤ a) : SameRay R (a • v) v :=
@@ -170,9 +171,8 @@ theorem add_left (hx : SameRay R x z) (hy : SameRay R y z) : SameRay R (x + y) z
   rcases hx.exists_pos hx₀ hz₀ with ⟨rx, rz₁, hrx, hrz₁, Hx⟩
   rcases hy.exists_pos hy₀ hz₀ with ⟨ry, rz₂, hry, hrz₂, Hy⟩
   refine Or.inr (Or.inr ⟨rx * ry, ry * rz₁ + rx * rz₂, mul_pos hrx hry, ?_, ?_⟩)
-  · apply_rules [add_pos, mul_pos]
-  · simp only [mul_smul, smul_add, add_smul, ← Hx, ← Hy]
-    rw [smul_comm]
+  · positivity
+  · convert congr(ry • $Hx + rx • $Hy) using 1 <;> module
 
 /-- If `y` and `z` are on the same ray as `x`, then so is `y + z`. -/
 theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z) :=
@@ -180,7 +180,7 @@ theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z
 
 end SameRay
 
--- Porting note(#5171): removed has_nonempty_instance nolint, no such linter
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed has_nonempty_instance nolint, no such linter
 set_option linter.unusedVariables false in
 /-- Nonzero vectors, as used to define rays. This type depends on an unused argument `R` so that
 `RayVector.Setoid` can be an instance. -/
@@ -188,9 +188,9 @@ set_option linter.unusedVariables false in
 def RayVector (R M : Type*) [Zero M] :=
   { v : M // v ≠ 0 }
 
--- Porting note: Made Coe into CoeOut so it's not dangerous anymore
 instance RayVector.coe [Zero M] : CoeOut (RayVector R M) M where
   coe := Subtype.val
+
 instance {R M : Type*} [Zero M] [Nontrivial M] : Nonempty (RayVector R M) :=
   let ⟨x, hx⟩ := exists_ne (0 : M)
   ⟨⟨x, hx⟩⟩
@@ -200,12 +200,12 @@ variable (R M)
 instance RayVector.Setoid : Setoid (RayVector R M) where
   r x y := SameRay R (x : M) y
   iseqv :=
-    ⟨fun x => SameRay.refl _, fun h => h.symm, by
+    ⟨fun _ => SameRay.refl _, fun h => h.symm, by
       intros x y z hxy hyz
       exact hxy.trans hyz fun hy => (y.2 hy).elim⟩
 
 /-- A ray (equivalence class of nonzero vectors with common positive multiples) in a module. -/
--- Porting note(#5171): removed has_nonempty_instance nolint, no such linter
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed has_nonempty_instance nolint, no such linter
 def Module.Ray :=
   Quotient (RayVector.Setoid R M)
 
@@ -217,7 +217,6 @@ theorem equiv_iff_sameRay {v₁ v₂ : RayVector R M} : v₁ ≈ v₂ ↔ SameRa
 
 variable (R)
 
--- Porting note: Removed `protected` here, not in namespace
 /-- The ray given by a nonzero vector. -/
 def rayOfNeZero (v : M) (h : v ≠ 0) : Module.Ray R M :=
   ⟦⟨v, h⟩⟧
@@ -328,7 +327,7 @@ theorem someVector_ne_zero (x : Module.Ray R M) : x.someVector ≠ 0 :=
 /-- The ray of `someVector`. -/
 @[simp]
 theorem someVector_ray (x : Module.Ray R M) : rayOfNeZero R _ x.someVector_ne_zero = x :=
-  (congr_arg _ (Subtype.coe_eta _ _) : _).trans x.out_eq
+  (congr_arg _ (Subtype.coe_eta _ _) :).trans x.out_eq
 
 end Module.Ray
 
@@ -531,11 +530,11 @@ theorem sameRay_or_sameRay_neg_iff_not_linearIndependent {x y : M} :
       rcases lt_trichotomy (m 1) 0 with (hm1 | hm1 | hm1)
     · refine
         Or.inr (Or.inr (Or.inr ⟨-m 0, -m 1, Left.neg_pos_iff.2 hm0, Left.neg_pos_iff.2 hm1, ?_⟩))
-      rw [neg_smul_neg, neg_smul, hm, neg_neg]
+      linear_combination (norm := module) -hm
     · exfalso
       simp [hm1, hx, hm0.ne] at hm
     · refine Or.inl (Or.inr (Or.inr ⟨-m 0, m 1, Left.neg_pos_iff.2 hm0, hm1, ?_⟩))
-      rw [neg_smul, hm, neg_neg]
+      linear_combination (norm := module) -hm
     · exfalso
       simp [hm0, hy, hm1.ne] at hm
     · rw [Fin.exists_fin_two] at hmne

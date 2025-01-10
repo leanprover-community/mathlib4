@@ -34,7 +34,7 @@ open NNReal ENNReal Topology Set Filter Bornology
 
 universe u v w
 
-variable {ι : Sort*} {α : Type u} {β : Type v}
+variable {ι : Sort*} {α : Type u}
 
 namespace Metric
 
@@ -99,6 +99,7 @@ theorem frontier_thickening_subset (E : Set α) {δ : ℝ} :
     frontier (thickening δ E) ⊆ { x : α | infEdist x E = ENNReal.ofReal δ } :=
   frontier_lt_subset_eq continuous_infEdist continuous_const
 
+open scoped Function in -- required for scoped `on` notation
 theorem frontier_thickening_disjoint (A : Set α) :
     Pairwise (Disjoint on fun r : ℝ => frontier (thickening r A)) := by
   refine (pairwise_disjoint_on _).2 fun r₁ r₂ hr => ?_
@@ -318,12 +319,12 @@ theorem cthickening_mem_nhdsSet (E : Set α) {δ : ℝ} (hδ : 0 < δ) : cthicke
 @[simp]
 theorem thickening_union (δ : ℝ) (s t : Set α) :
     thickening δ (s ∪ t) = thickening δ s ∪ thickening δ t := by
-  simp_rw [thickening, infEdist_union, inf_eq_min, min_lt_iff, setOf_or]
+  simp_rw [thickening, infEdist_union, min_lt_iff, setOf_or]
 
 @[simp]
 theorem cthickening_union (δ : ℝ) (s t : Set α) :
     cthickening δ (s ∪ t) = cthickening δ s ∪ cthickening δ t := by
-  simp_rw [cthickening, infEdist_union, inf_eq_min, min_le_iff, setOf_or]
+  simp_rw [cthickening, infEdist_union, min_le_iff, setOf_or]
 
 @[simp]
 theorem thickening_iUnion (δ : ℝ) (f : ι → Set α) :
@@ -622,6 +623,7 @@ theorem cthickening_cthickening_subset (hε : 0 ≤ ε) (hδ : 0 ≤ δ) (s : Se
   simp_rw [mem_cthickening_iff, ENNReal.ofReal_add hε hδ]
   exact fun hx => infEdist_le_infEdist_cthickening_add.trans (add_le_add_right hx _)
 
+open scoped Function in -- required for scoped `on` notation
 theorem frontier_cthickening_disjoint (A : Set α) :
     Pairwise (Disjoint on fun r : ℝ≥0 => frontier (cthickening r A)) := fun r₁ r₂ hr =>
   ((disjoint_singleton.2 <| by simpa).preimage _).mono (frontier_cthickening_subset _)

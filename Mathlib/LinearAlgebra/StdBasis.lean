@@ -3,10 +3,10 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Matrix.Basis
-import Mathlib.LinearAlgebra.Pi
-import Mathlib.LinearAlgebra.LinearIndependent
 import Mathlib.LinearAlgebra.Basis.Defs
+import Mathlib.LinearAlgebra.Finsupp.SumProd
+import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.LinearAlgebra.Pi
 
 /-!
 # The standard basis
@@ -286,37 +286,3 @@ lemma piEquiv_apply_apply (ι R M : Type*) [Fintype ι] [CommSemiring R]
   rw [← LinearMap.range_eq_top, range_piEquiv]
 
 end Module
-
-namespace Matrix
-
-variable (R : Type*) (m n : Type*) [Fintype m] [Finite n] [Semiring R]
-
-/-- The standard basis of `Matrix m n R`. -/
-noncomputable def stdBasis : Basis (m × n) R (Matrix m n R) :=
-  Basis.reindex (Pi.basis fun _ : m => Pi.basisFun R n) (Equiv.sigmaEquivProd _ _)
-
-variable {n m}
-
-theorem stdBasis_eq_stdBasisMatrix (i : m) (j : n) [DecidableEq m] [DecidableEq n] :
-    stdBasis R m n (i, j) = stdBasisMatrix i j (1 : R) := by
-  -- Porting note: `simp` fails to apply `Pi.basis_apply`
-  ext a b
-  by_cases hi : i = a <;> by_cases hj : j = b
-  · simp only [stdBasis, hi, hj, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
-    StdBasisMatrix.apply_same]
-    erw [Pi.basis_apply]
-    simp
-  · simp only [stdBasis, hi, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
-      hj, and_false, not_false_iff, StdBasisMatrix.apply_of_ne]
-    erw [Pi.basis_apply]
-    simp [hj]
-  · simp only [stdBasis, hj, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
-      hi, and_true, not_false_iff, StdBasisMatrix.apply_of_ne]
-    erw [Pi.basis_apply]
-    simp [hi, hj, Ne.symm hi, Pi.single_eq_of_ne]
-  · simp only [stdBasis, Basis.coe_reindex, comp_apply, Equiv.sigmaEquivProd_symm_apply,
-      hi, hj, and_self, not_false_iff, StdBasisMatrix.apply_of_ne]
-    erw [Pi.basis_apply]
-    simp [hi, hj, Ne.symm hj, Ne.symm hi, Pi.single_eq_of_ne]
-
-end Matrix

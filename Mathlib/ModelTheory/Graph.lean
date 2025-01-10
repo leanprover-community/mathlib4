@@ -21,7 +21,7 @@ This file defines first-order languages, structures, and theories in graph theor
   of the theory of simple graphs.
 -/
 
-universe u v
+universe u
 
 namespace FirstOrder
 
@@ -31,7 +31,7 @@ open FirstOrder
 
 open Structure
 
-variable {α : Type u} {V : Type v} {n : ℕ}
+variable {V : Type u} {n : ℕ}
 
 /-! ### Simple Graphs -/
 

@@ -27,8 +27,7 @@ variable {I : Type u}
 -- The indexing type
 variable {f : I → Type v}
 
--- The family of types already equipped with instances
-variable (x y : ∀ i, f i) (i j : I)
+variable (i : I)
 
 @[to_additive (attr := simp)]
 theorem Set.range_one {α β : Type*} [One β] [Nonempty α] : Set.range (1 : α → β) = {1} :=
@@ -69,9 +68,9 @@ def Pi.mulHom {γ : Type w} [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f
 
 @[to_additive]
 theorem Pi.mulHom_injective {γ : Type w} [Nonempty I] [∀ i, Mul (f i)] [Mul γ] (g : ∀ i, γ →ₙ* f i)
-    (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.mulHom g) := fun x y h =>
+    (hg : ∀ i, Function.Injective (g i)) : Function.Injective (Pi.mulHom g) := fun _ _ h =>
   let ⟨i⟩ := ‹Nonempty I›
-  hg i ((Function.funext_iff.mp h : _) i)
+  hg i ((funext_iff.mp h :) i)
 
 /-- A family of monoid homomorphisms `f a : γ →* β a` defines a monoid homomorphism
 `Pi.monoidHom f : γ →* Π a, β a` given by `Pi.monoidHom f x b = f b x`. -/
@@ -291,7 +290,7 @@ theorem Pi.update_eq_div_mul_mulSingle [∀ i, Group <| f i] (g : ∀ i : I, f i
   ext j
   rcases eq_or_ne i j with (rfl | h)
   · simp
-  · simp [Function.update_noteq h.symm, h]
+  · simp [Function.update_of_ne h.symm, h]
 
 @[to_additive]
 theorem Pi.mulSingle_mul_mulSingle_eq_mulSingle_mul_mulSingle {M : Type*} [CommMonoid M]
@@ -338,7 +337,7 @@ theorem SemiconjBy.pi {x y z : ∀ i, f i} (h : ∀ i, SemiconjBy (x i) (y i) (z
 
 @[to_additive]
 theorem Pi.semiconjBy_iff {x y z : ∀ i, f i} :
-    SemiconjBy x y z ↔ ∀ i, SemiconjBy (x i) (y i) (z i) := Function.funext_iff
+    SemiconjBy x y z ↔ ∀ i, SemiconjBy (x i) (y i) (z i) := funext_iff
 
 @[to_additive]
 theorem Commute.pi {x y : ∀ i, f i} (h : ∀ i, Commute (x i) (y i)) : Commute x y := .pi h

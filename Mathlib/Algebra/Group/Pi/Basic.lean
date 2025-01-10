@@ -4,11 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot, Eric Wieser
 -/
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Data.Prod.Basic
 import Mathlib.Data.Sum.Basic
 import Mathlib.Logic.Unique
 import Mathlib.Tactic.Spread
-import Batteries.Tactic.Classical
 
 /-!
 # Instances and theorems on pi types
@@ -52,12 +50,7 @@ namespace Pi
 instance instOne [∀ i, One <| f i] : One (∀ i : I, f i) :=
   ⟨fun _ => 1⟩
 
-#adaptation_note
-/--
-After https://github.com/leanprover/lean4/pull/4481
-the `simpNF` linter incorrectly claims this lemma can't be applied by `simp`.
--/
-@[to_additive (attr := simp, nolint simpNF)]
+@[to_additive (attr := simp)]
 theorem one_apply [∀ i, One <| f i] : (1 : ∀ i, f i) i = 1 :=
   rfl
 
@@ -267,11 +260,11 @@ def mulSingle (i : I) (x : f i) : ∀ (j : I), f j :=
 
 @[to_additive (attr := simp)]
 theorem mulSingle_eq_same (i : I) (x : f i) : mulSingle i x i = x :=
-  Function.update_same i x _
+  Function.update_self i x _
 
 @[to_additive (attr := simp)]
 theorem mulSingle_eq_of_ne {i i' : I} (h : i' ≠ i) (x : f i) : mulSingle i x i' = 1 :=
-  Function.update_noteq h x _
+  Function.update_of_ne h x _
 
 /-- Abbreviation for `mulSingle_eq_of_ne h.symm`, for ease of use by `simp`. -/
 @[to_additive (attr := simp)
@@ -400,18 +393,6 @@ theorem extend_div [Div γ] (f : α → β) (g₁ g₂ : α → γ) (e₁ e₂ :
 -- However this does not work, and we're not sure why.
 
 end Extend
-
-theorem surjective_pi_map {F : ∀ i, f i → g i} (hF : ∀ i, Surjective (F i)) :
-    Surjective fun x : ∀ i, f i => fun i => F i (x i) := fun y =>
-  ⟨fun i => (hF i (y i)).choose, funext fun i => (hF i (y i)).choose_spec⟩
-
-theorem injective_pi_map {F : ∀ i, f i → g i} (hF : ∀ i, Injective (F i)) :
-    Injective fun x : ∀ i, f i => fun i => F i (x i) :=
-  fun _ _ h => funext fun i => hF i <| (congr_fun h i : _)
-
-theorem bijective_pi_map {F : ∀ i, f i → g i} (hF : ∀ i, Bijective (F i)) :
-    Bijective fun x : ∀ i, f i => fun i => F i (x i) :=
-  ⟨injective_pi_map fun i => (hF i).injective, surjective_pi_map fun i => (hF i).surjective⟩
 
 lemma comp_eq_const_iff (b : β) (f : α → β) {g : β → γ} (hg : Injective g) :
     g ∘ f = Function.const _ (g b) ↔ f = Function.const _ b :=

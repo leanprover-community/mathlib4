@@ -35,7 +35,9 @@ Related to the TODO in the module docstring of `Mathlib.Order.PartialSups`.
 -/
 
 
-variable {α β : Type*}
+variable {α : Type*}
+
+open scoped Function -- required for scoped `on` notation
 
 section GeneralizedBooleanAlgebra
 

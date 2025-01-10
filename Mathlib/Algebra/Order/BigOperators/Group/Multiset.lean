@@ -156,6 +156,20 @@ lemma max_le_of_forall_le {α : Type*} [LinearOrder α] [OrderBot α] (l : Multi
   induction l using Quotient.inductionOn
   simpa using List.max_le_of_forall_le _ _ h
 
+@[to_additive]
+lemma max_prod_le [LinearOrderedCommMonoid α] {s : Multiset ι} {f g : ι → α} :
+    max (s.map f).prod (s.map g).prod ≤ (s.map fun i ↦ max (f i) (g i)).prod := by
+  obtain ⟨l⟩ := s
+  simp_rw [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.prod_coe]
+  apply List.max_prod_le
+
+@[to_additive]
+lemma prod_min_le [LinearOrderedCommMonoid α] {s : Multiset ι} {f g : ι → α} :
+    (s.map fun i ↦ min (f i) (g i)).prod ≤ min (s.map f).prod (s.map g).prod := by
+  obtain ⟨l⟩ := s
+  simp_rw [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.prod_coe]
+  apply List.prod_min_le
+
 lemma abs_sum_le_sum_abs [LinearOrderedAddCommGroup α] {s : Multiset α} :
     |s.sum| ≤ (s.map abs).sum :=
   le_sum_of_subadditive _ abs_zero abs_add s

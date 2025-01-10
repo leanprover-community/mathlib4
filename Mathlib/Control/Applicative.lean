@@ -5,6 +5,7 @@ Authors: Simon Hudon
 -/
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Control.Functor
+import Mathlib.Control.Basic
 
 /-!
 # `applicative` instances
@@ -28,7 +29,7 @@ variable {α β γ σ : Type u}
 
 theorem Applicative.map_seq_map (f : α → β → γ) (g : σ → β) (x : F α) (y : F σ) :
     f <$> x <*> g <$> y = ((· ∘ g) ∘ f) <$> x <*> y := by
-  simp [flip, functor_norm]
+  simp [flip, functor_norm, Function.comp_def]
 
 theorem Applicative.pure_seq_eq_map' (f : α → β) : ((pure f : F (α → β)) <*> ·) = (f <$> ·) := by
   ext; simp [functor_norm]

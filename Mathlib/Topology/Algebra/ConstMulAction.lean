@@ -3,12 +3,14 @@ Copyright (c) 2021 Alex Kontorovich, Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex Kontorovich, Heather Macbeth
 -/
-import Mathlib.Topology.Algebra.Constructions
-import Mathlib.Topology.Homeomorph
-import Mathlib.GroupTheory.GroupAction.Basic
-import Mathlib.Topology.Bases
-import Mathlib.Topology.Support
 import Mathlib.Algebra.Module.ULift
+import Mathlib.Algebra.Order.Group.Synonym
+import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Topology.Algebra.Constructions
+import Mathlib.Topology.Algebra.Support
+import Mathlib.Topology.Bases
+import Mathlib.Topology.Homeomorph
 
 /-!
 # Monoid actions continuous in the second variable
@@ -79,7 +81,7 @@ theorem Filter.Tendsto.const_smul {f : β → α} {l : Filter β} {a : α} (hf :
     (c : M) : Tendsto (fun x => c • f x) l (𝓝 (c • a)) :=
   ((continuous_const_smul _).tendsto _).comp hf
 
-variable [TopologicalSpace β] {f : β → M} {g : β → α} {b : β} {s : Set β}
+variable [TopologicalSpace β] {g : β → α} {b : β} {s : Set β}
 
 @[to_additive]
 nonrec theorem ContinuousWithinAt.const_smul (hg : ContinuousWithinAt g s b) (c : M) :
@@ -142,11 +144,14 @@ theorem Inseparable.const_smul {x y : α} (h : Inseparable x y) (c : M) :
   h.map (continuous_const_smul c)
 
 @[to_additive]
-theorem Inducing.continuousConstSMul {N β : Type*} [SMul N β] [TopologicalSpace β]
-    {g : β → α} (hg : Inducing g) (f : N → M) (hf : ∀ {c : N} {x : β}, g (c • x) = f c • g x) :
+theorem Topology.IsInducing.continuousConstSMul {N β : Type*} [SMul N β] [TopologicalSpace β]
+    {g : β → α} (hg : IsInducing g) (f : N → M) (hf : ∀ {c : N} {x : β}, g (c • x) = f c • g x) :
     ContinuousConstSMul N β where
   continuous_const_smul c := by
     simpa only [Function.comp_def, hf, hg.continuous_iff] using hg.continuous.const_smul (f c)
+
+@[deprecated (since := "2024-10-28")]
+alias Inducing.continuousConstSMul := IsInducing.continuousConstSMul
 
 end SMul
 
@@ -157,7 +162,7 @@ variable [Monoid M] [MulAction M α] [ContinuousConstSMul M α]
 
 @[to_additive]
 instance Units.continuousConstSMul : ContinuousConstSMul Mˣ α where
-  continuous_const_smul m := (continuous_const_smul (m : M) : _)
+  continuous_const_smul m := continuous_const_smul (m : M)
 
 @[to_additive]
 theorem smul_closure_subset (c : M) (s : Set α) : c • closure s ⊆ closure (c • s) :=
@@ -258,11 +263,11 @@ theorem subset_interior_smul_right {s : Set G} {t : Set α} : s • interior t �
 
 @[to_additive (attr := simp)]
 theorem smul_mem_nhds_smul_iff {t : Set α} (g : G) {a : α} : g • t ∈ 𝓝 (g • a) ↔ t ∈ 𝓝 a :=
-  (Homeomorph.smul g).openEmbedding.image_mem_nhds
+  (Homeomorph.smul g).isOpenEmbedding.image_mem_nhds
 
 @[to_additive] alias ⟨_, smul_mem_nhds_smul⟩ := smul_mem_nhds_smul_iff
 
-@[to_additive (attr := deprecated (since := "2024-08-06"))]
+@[to_additive (attr := deprecated "No deprecation message was provided." (since := "2024-08-06"))]
 alias smul_mem_nhds := smul_mem_nhds_smul
 
 @[to_additive (attr := simp)]
@@ -408,7 +413,7 @@ nonrec theorem smul_mem_nhds_smul_iff (hc : IsUnit c) {s : Set α} {a : α} :
 
 end IsUnit
 
--- Porting note (#11215): TODO: use `Set.Nonempty`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: use `Set.Nonempty`
 /-- Class `ProperlyDiscontinuousSMul Γ T` says that the scalar multiplication `(•) : Γ → T → T`
 is properly discontinuous, that is, for any pair of compact sets `K, L` in `T`, only finitely many
 `γ:Γ` move `K` to have nontrivial intersection with `L`.
@@ -451,6 +456,11 @@ theorem isOpenMap_quotient_mk'_mul [ContinuousConstSMul Γ T] :
   rw [isOpen_coinduced, MulAction.quotient_preimage_image_eq_union_mul U]
   exact isOpen_iUnion fun γ => isOpenMap_smul γ U hU
 
+@[to_additive]
+theorem MulAction.isOpenQuotientMap_quotientMk [ContinuousConstSMul Γ T] :
+    IsOpenQuotientMap (Quotient.mk (MulAction.orbitRel Γ T)) :=
+  ⟨Quot.mk_surjective, continuous_quot_mk, isOpenMap_quotient_mk'_mul⟩
+
 /-- The quotient by a discontinuous group action of a locally compact t2 space is t2. -/
 @[to_additive "The quotient by a discontinuous group action of a locally compact t2
 space is t2."]
@@ -464,7 +474,7 @@ instance (priority := 100) t2Space_of_properlyDiscontinuousSMul_of_t2Space [T2Sp
   have f_op : IsOpenMap f := isOpenMap_quotient_mk'_mul
   rintro ⟨x₀⟩ ⟨y₀⟩ (hxy : f x₀ ≠ f y₀)
   show ∃ U ∈ 𝓝 (f x₀), ∃ V ∈ 𝓝 (f y₀), _
-  have hγx₀y₀ : ∀ γ : Γ, γ • x₀ ≠ y₀ := not_exists.mp (mt Quotient.sound hxy.symm : _)
+  have hγx₀y₀ : ∀ γ : Γ, γ • x₀ ≠ y₀ := not_exists.mp (mt Quotient.sound hxy.symm :)
   obtain ⟨K₀, hK₀, K₀_in⟩ := exists_compact_mem_nhds x₀
   obtain ⟨L₀, hL₀, L₀_in⟩ := exists_compact_mem_nhds y₀
   let bad_Γ_set := { γ : Γ | (γ • ·) '' K₀ ∩ L₀ ≠ ∅ }

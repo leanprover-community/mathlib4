@@ -167,10 +167,9 @@ theorem fix_eq_ωSup_of_ωScottContinuous (hc : ωScottContinuous g) : Part.fix 
 
 theorem fix_eq_of_ωScottContinuous (hc : ωScottContinuous g) :
     Part.fix g = g (Part.fix g) := by
-  rw [fix_eq_ωSup_of_ωScottContinuous, hc.map_ωSup]
+  rw [fix_eq_ωSup_of_ωScottContinuous hc, hc.map_ωSup]
   apply le_antisymm
   · apply ωSup_le_ωSup_of_le _
-    exact hc
     intro i
     exists i
     intro x

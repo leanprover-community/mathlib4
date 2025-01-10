@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
 import Mathlib.Topology.Bornology.Basic
-import Mathlib.Topology.Instances.Real
 import Mathlib.Order.LiminfLimsup
+import Mathlib.Topology.Instances.Real
 
 /-!
 # Relating order and metric boundedness

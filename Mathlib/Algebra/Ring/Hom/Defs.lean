@@ -154,7 +154,6 @@ end coe
 section
 
 variable [NonUnitalNonAssocSemiring α] [NonUnitalNonAssocSemiring β]
-variable (f : α →ₙ+* β) {x y : α}
 
 @[ext]
 theorem ext ⦃f g : α →ₙ+* β⦄ : (∀ x, f x = g x) → f = g :=
@@ -226,7 +225,6 @@ theorem coe_comp (g : β →ₙ+* γ) (f : α →ₙ+* β) : ⇑(g.comp f) = g �
 @[simp]
 theorem comp_apply (g : β →ₙ+* γ) (f : α →ₙ+* β) (x : α) : g.comp f x = g (f x) :=
   rfl
-variable (g : β →ₙ+* γ) (f : α →ₙ+* β)
 
 @[simp]
 theorem coe_comp_addMonoidHom (g : β →ₙ+* γ) (f : α →ₙ+* β) :
@@ -261,7 +259,7 @@ instance : MonoidWithZero (α →ₙ+* α) where
   mul := comp
   mul_one := comp_id
   one_mul := id_comp
-  mul_assoc f g h := comp_assoc _ _ _
+  mul_assoc _ _ _ := comp_assoc _ _ _
   zero := 0
   mul_zero := comp_zero
   zero_mul := zero_comp
@@ -332,7 +330,7 @@ class RingHomClass (F : Type*) (α β : outParam Type*)
 
 variable [FunLike F α β]
 
--- Porting note: marked `{}` rather than `[]` to prevent dangerous instances
+-- See note [implicit instance arguments].
 variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} [RingHomClass F α β]
 
 /-- Turn an element of a type `F` satisfying `RingHomClass F α β` into an actual
@@ -442,7 +440,7 @@ end coe
 
 section
 
-variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} (f : α →+* β) {x y : α}
+variable {_ : NonAssocSemiring α} {_ : NonAssocSemiring β} (f : α →+* β)
 
 protected theorem congr_fun {f g : α →+* β} (h : f = g) (x : α) : f x = g x :=
   DFunLike.congr_fun h x
@@ -545,6 +543,9 @@ def id (α : Type*) [NonAssocSemiring α] : α →+* α where
 instance : Inhabited (α →+* α) :=
   ⟨id α⟩
 
+@[simp, norm_cast]
+theorem coe_id : ⇑(RingHom.id α) = _root_.id := rfl
+
 @[simp]
 theorem id_apply (x : α) : RingHom.id α x = x :=
   rfl
@@ -598,9 +599,9 @@ lemma mul_def (f g : α →+* α) : f * g = f.comp g := rfl
 instance instMonoid : Monoid (α →+* α) where
   mul_one := comp_id
   one_mul := id_comp
-  mul_assoc f g h := comp_assoc _ _ _
+  mul_assoc _ _ _ := comp_assoc _ _ _
   npow n f := (npowRec n f).copy f^[n] <| by induction n <;> simp [npowRec, *]
-  npow_succ n f := DFunLike.coe_injective <| Function.iterate_succ _ _
+  npow_succ _ _ := DFunLike.coe_injective <| Function.iterate_succ _ _
 
 @[simp, norm_cast] lemma coe_pow (f : α →+* α) (n : ℕ) : ⇑(f ^ n) = f^[n] := rfl
 
@@ -652,8 +653,7 @@ theorem coe_fn_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β → α) = f :=
   rfl
 
--- Porting note (#10618): `simp` can prove this
--- @[simp]
+@[simp]
 theorem coe_addMonoidHom_mkRingHomOfMulSelfOfTwoNeZero (h h_two h_one) :
     (f.mkRingHomOfMulSelfOfTwoNeZero h h_two h_one : β →+ α) = f := by
   ext

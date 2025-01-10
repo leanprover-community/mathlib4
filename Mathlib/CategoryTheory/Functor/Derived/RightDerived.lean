@@ -117,7 +117,7 @@ lemma rightDerivedNatTrans_app (τ : F ⟶ F') (X : C) :
 @[simp]
 lemma rightDerivedNatTrans_id :
     rightDerivedNatTrans RF RF α α W (𝟙 F) = 𝟙 RF :=
-  rightDerived_ext RF α W _ _ _ (by aesop_cat)
+  rightDerived_ext RF α W _ _ _ (by simp)
 
 variable [RF'.IsRightDerivedFunctor α' W]
 
@@ -125,7 +125,7 @@ variable [RF'.IsRightDerivedFunctor α' W]
 lemma rightDerivedNatTrans_comp (τ : F ⟶ F') (τ' : F' ⟶ F'') :
     rightDerivedNatTrans RF RF' α α' W τ ≫ rightDerivedNatTrans RF' RF'' α' α'' W τ' =
     rightDerivedNatTrans RF RF'' α α'' W (τ ≫ τ') :=
-  rightDerived_ext RF α W _ _ _ (by aesop_cat)
+  rightDerived_ext RF α W _ _ _ (by simp)
 
 /-- The natural isomorphism `RF ≅ RF'` on right derived functors that is
 induced by a natural isomorphism `F ≅ F'`. -/

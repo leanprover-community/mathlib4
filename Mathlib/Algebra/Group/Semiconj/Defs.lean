@@ -6,7 +6,7 @@ Authors: Yury Kudryashov
 -- Some proofs and docs came from mathlib3 `src/algebra/commute.lean` (c) Neil Strickland
 
 import Mathlib.Algebra.Group.Defs
-import Mathlib.Init.Logic
+import Mathlib.Order.Defs.Unbundled
 
 /-!
 # Semiconjugate elements of a semigroup
@@ -116,7 +116,7 @@ end Monoid
 
 section Group
 
-variable [Group G] {a x y : G}
+variable [Group G]
 
 /-- `a` semiconjugates `x` to `a * x * a⁻¹`. -/
 @[to_additive "`a` semiconjugates `x` to `a + x + -a`."]

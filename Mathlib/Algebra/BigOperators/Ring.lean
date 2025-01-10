@@ -6,6 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Algebra.BigOperators.Ring.Multiset
 import Mathlib.Algebra.Field.Defs
+import Mathlib.Data.Finset.Max
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Int.Cast.Lemmas
 
@@ -26,11 +27,11 @@ section AddCommMonoidWithOne
 variable [AddCommMonoidWithOne α]
 
 lemma natCast_card_filter (p) [DecidablePred p] (s : Finset ι) :
-    ((filter p s).card : α) = ∑ a ∈ s, if p a then (1 : α) else 0 := by
+    (#{x ∈ s | p x} : α) = ∑ a ∈ s, if p a then (1 : α) else 0 := by
   rw [sum_ite, sum_const_zero, add_zero, sum_const, nsmul_one]
 
 @[simp] lemma sum_boole (p) [DecidablePred p] (s : Finset ι) :
-    (∑ x ∈ s, if p x then 1 else 0 : α) = (s.filter p).card :=
+    (∑ x ∈ s, if p x then 1 else 0 : α) = #{x ∈ s | p x} :=
   (natCast_card_filter _ _).symm
 
 end AddCommMonoidWithOne
@@ -110,7 +111,7 @@ lemma prod_sum (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → �
     ∏ a ∈ s, ∑ b ∈ t a, f a b = ∑ p ∈ s.pi t, ∏ x ∈ s.attach, f x.1 (p x.1 x.2) := by
   classical
   induction s using Finset.induction with
-  | empty => rw [pi_empty, sum_singleton]; rfl
+  | empty => simp
   | insert ha ih =>
     rename_i a s
     have h₁ : ∀ x ∈ t a, ∀ y ∈ t a, x ≠ y →
@@ -164,11 +165,11 @@ theorem prod_add (f g : ι → α) (s : Finset ι) :
           ∏ a ∈ s.attach, if p a.1 a.2 then f a.1 else g a.1 := prod_sum _ _ _
     _ = ∑ t ∈ s.powerset, (∏ a ∈ t, f a) * ∏ a ∈ s \ t, g a :=
       sum_bij'
-        (fun f _ ↦ s.filter fun a ↦ ∃ h : a ∈ s, f a h)
+        (fun f _ ↦ {a ∈ s | ∃ h : a ∈ s, f a h})
         (fun t _ a _ => a ∈ t)
         (by simp)
         (by simp [Classical.em])
-        (by simp_rw [mem_filter, Function.funext_iff, eq_iff_iff, mem_pi, mem_insert]; tauto)
+        (by simp_rw [mem_filter, funext_iff, eq_iff_iff, mem_pi, mem_insert]; tauto)
         (by simp_rw [Finset.ext_iff, @mem_filter _ _ (id _), mem_powerset]; tauto)
         (fun a _ ↦ by
           simp only [prod_ite, filter_attach', prod_map, Function.Embedding.coeFn_mk,
@@ -179,12 +180,19 @@ theorem prod_add (f g : ι → α) (s : Finset ι) :
 
 end DecidableEq
 
+theorem prod_one_add {f : ι → α} (s : Finset ι) :
+    ∏ i ∈ s, (1 + f i) = ∑ t ∈ s.powerset, ∏ i ∈ t, f i := by
+  classical simp only [add_comm (1 : α), prod_add, prod_const_one, mul_one]
+
+theorem prod_add_one {f : ι → α} (s : Finset ι) :
+    ∏ i ∈ s, (f i + 1) = ∑ t ∈ s.powerset, ∏ i ∈ t, f i := by
+  classical simp only [prod_add, prod_const_one, mul_one]
+
 /-- `∏ i, (f i + g i) = (∏ i, f i) + ∑ i, g i * (∏ j < i, f j + g j) * (∏ j > i, f j)`. -/
 theorem prod_add_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → α) :
     ∏ i ∈ s, (f i + g i) =
       (∏ i ∈ s, f i) +
-        ∑ i ∈ s,
-          g i * (∏ j ∈ s.filter (· < i), (f j + g j)) * ∏ j ∈ s.filter fun j => i < j, f j := by
+        ∑ i ∈ s, g i * (∏ j ∈ s with j < i, (f j + g j)) * ∏ j ∈ s with i < j, f j := by
   refine Finset.induction_on_max s (by simp) ?_
   clear s
   intro a s ha ihs
@@ -202,21 +210,21 @@ theorem prod_add_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → α) :
       mul_left_comm]
     exact mt (fun ha => (mem_filter.1 ha).1) ha'
 
-/-- Summing `a^s.card * b^(n-s.card)` over all finite subsets `s` of a `Finset`
-gives `(a + b)^s.card`. -/
+/-- Summing `a ^ #t * b ^ (n - #t)` over all finite subsets `t` of a finset `s`
+gives `(a + b) ^ #s`. -/
 theorem sum_pow_mul_eq_add_pow (a b : α) (s : Finset ι) :
-    (∑ t ∈ s.powerset, a ^ t.card * b ^ (s.card - t.card)) = (a + b) ^ s.card := by
+    (∑ t ∈ s.powerset, a ^ #t * b ^ (#s - #t)) = (a + b) ^ #s := by
   classical
   rw [← prod_const, prod_add]
   refine Finset.sum_congr rfl fun t ht => ?_
   rw [prod_const, prod_const, ← card_sdiff (mem_powerset.1 ht)]
 
-/-- Summing `a^s.card * b^(n-s.card)` over all finite subsets `s` of a fintype of cardinality `n`
+/-- Summing `a^#s * b^(n-#s)` over all finite subsets `s` of a fintype of cardinality `n`
 gives `(a + b)^n`. The "good" proof involves expanding along all coordinates using the fact that
 `x^n` is multilinear, but multilinear maps are only available now over rings, so we give instead
 a proof reducing to the usual binomial theorem to have a result over semirings. -/
 lemma _root_.Fintype.sum_pow_mul_eq_add_pow (ι : Type*) [Fintype ι] (a b : α) :
-    ∑ s : Finset ι, a ^ s.card * b ^ (Fintype.card ι - s.card) = (a + b) ^ Fintype.card ι :=
+    ∑ s : Finset ι, a ^ #s * b ^ (Fintype.card ι - #s) = (a + b) ^ Fintype.card ι :=
   Finset.sum_pow_mul_eq_add_pow _ _ _
 
 @[norm_cast]
@@ -228,12 +236,17 @@ end CommSemiring
 section CommRing
 variable [CommRing α]
 
+/-- The product of `f i - g i` over all of `s` is the sum over the powerset of `s` of the product of
+`g` over a subset `t` times the product of `f` over the complement of `t` times `(-1) ^ #t`. -/
+lemma prod_sub [DecidableEq ι] (f g : ι → α) (s : Finset ι) :
+    ∏ i ∈ s, (f i - g i) = ∑ t ∈ s.powerset, (-1) ^ #t * (∏ i ∈ s \ t, f i) * ∏ i ∈ t, g i := by
+  simp [sub_eq_neg_add, prod_add, ← prod_const, ← prod_mul_distrib, mul_right_comm]
+
 /-- `∏ i, (f i - g i) = (∏ i, f i) - ∑ i, g i * (∏ j < i, f j - g j) * (∏ j > i, f j)`. -/
 lemma prod_sub_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → α) :
     ∏ i ∈ s, (f i - g i) =
       (∏ i ∈ s, f i) -
-        ∑ i ∈ s,
-          g i * (∏ j ∈ s.filter (· < i), (f j - g j)) * ∏ j ∈ s.filter fun j => i < j, f j := by
+        ∑ i ∈ s, g i * (∏ j ∈ s with j < i, (f j - g j)) * ∏ j ∈ s with i < j, f j := by
   simp only [sub_eq_add_neg]
   convert prod_add_ordered s f fun i => -g i
   simp
@@ -241,7 +254,7 @@ lemma prod_sub_ordered [LinearOrder ι] (s : Finset ι) (f g : ι → α) :
 /-- `∏ i, (1 - f i) = 1 - ∑ i, f i * (∏ j < i, 1 - f j)`. This formula is useful in construction of
 a partition of unity from a collection of “bump” functions. -/
 theorem prod_one_sub_ordered [LinearOrder ι] (s : Finset ι) (f : ι → α) :
-    ∏ i ∈ s, (1 - f i) = 1 - ∑ i ∈ s, f i * ∏ j ∈ s.filter (· < i), (1 - f j) := by
+    ∏ i ∈ s, (1 - f i) = 1 - ∑ i ∈ s, f i * ∏ j ∈ s with j < i, (1 - f j) := by
   rw [prod_sub_ordered]
   simp
 
@@ -260,6 +273,10 @@ end CommRing
 
 section DivisionSemiring
 variable [DivisionSemiring α]
+
+lemma _root_.Multiset.sum_map_div {s : Multiset ι} {f : ι → α} {a : α} :
+    (s.map (fun x ↦ f x / a)).sum = (s.map f).sum / a := by
+  simp only [div_eq_mul_inv, Multiset.sum_map_mul_right]
 
 lemma sum_div (s : Finset ι) (f : ι → α) (a : α) :
     (∑ i ∈ s, f i) / a = ∑ i ∈ s, f i / a := by simp only [div_eq_mul_inv, sum_mul]

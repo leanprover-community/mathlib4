@@ -5,7 +5,7 @@ Authors: Louis Carlin, Mario Carneiro
 -/
 import Mathlib.Algebra.EuclideanDomain.Defs
 import Mathlib.Algebra.Order.Group.Unbundled.Int
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Ring.Int.Defs
 
 /-!
 # Instances for Euclidean domains

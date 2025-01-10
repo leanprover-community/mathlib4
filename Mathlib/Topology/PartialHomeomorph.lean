@@ -49,7 +49,7 @@ variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}
   [TopologicalSpace Z] [TopologicalSpace Z']
 
 /-- Partial homeomorphisms, defined on open subsets of the space -/
--- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 structure PartialHomeomorph (X : Type*) (Y : Type*) [TopologicalSpace X]
   [TopologicalSpace Y] extends PartialEquiv X Y where
   open_source : IsOpen source
@@ -761,7 +761,7 @@ theorem trans_of_set' {s : Set Y} (hs : IsOpen s) :
     e.trans (ofSet s hs) = e.restr (e.source ∩ e ⁻¹' s) := by rw [trans_ofSet, restr_source_inter]
 
 theorem ofSet_trans {s : Set X} (hs : IsOpen s) : (ofSet s hs).trans e = e.restr s :=
-  PartialHomeomorph.ext _ _ (fun x => rfl) (fun x => rfl) <| by simp [hs.interior_eq, inter_comm]
+  PartialHomeomorph.ext _ _ (fun _ => rfl) (fun _ => rfl) <| by simp [hs.interior_eq, inter_comm]
 
 theorem ofSet_trans' {s : Set X} (hs : IsOpen s) :
     (ofSet s hs).trans e = e.restr (e.source ∩ s) := by
@@ -1018,7 +1018,7 @@ theorem continuousWithinAt_iff_continuousWithinAt_comp_left {f : Z → X} {s : S
 neighborhood of the initial point is sent to the source of the partial homeomorphism -/
 theorem continuousAt_iff_continuousAt_comp_left {f : Z → X} {x : Z} (h : f ⁻¹' e.source ∈ 𝓝 x) :
     ContinuousAt f x ↔ ContinuousAt (e ∘ f) x := by
-  have hx : f x ∈ e.source := (mem_of_mem_nhds h : _)
+  have hx : f x ∈ e.source := (mem_of_mem_nhds h :)
   have h' : f ⁻¹' e.source ∈ 𝓝[univ] x := by rwa [nhdsWithin_univ]
   rw [← continuousWithinAt_univ, ← continuousWithinAt_univ,
     e.continuousWithinAt_iff_continuousWithinAt_comp_left hx h']
@@ -1074,7 +1074,7 @@ theorem nhds_eq_comap_inf_principal {x} (hx : x ∈ e.source) :
 /-- If a partial homeomorphism has source and target equal to univ, then it induces a homeomorphism
 between the whole spaces, expressed in this definition. -/
 @[simps (config := mfld_cfg) apply symm_apply]
--- Porting note (#11215): TODO: add a `PartialEquiv` version
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: add a `PartialEquiv` version
 def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' : e.target = univ) :
     X ≃ₜ Y where
   toFun := e
@@ -1092,18 +1092,24 @@ def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' :
   continuous_invFun := by
     simpa only [continuous_iff_continuousOn_univ, h'] using e.continuousOn_symm
 
-theorem openEmbedding_restrict : OpenEmbedding (e.source.restrict e) := by
-  refine openEmbedding_of_continuous_injective_open (e.continuousOn.comp_continuous
+theorem isOpenEmbedding_restrict : IsOpenEmbedding (e.source.restrict e) := by
+  refine .of_continuous_injective_isOpenMap (e.continuousOn.comp_continuous
     continuous_subtype_val Subtype.prop) e.injOn.injective fun V hV ↦ ?_
   rw [Set.restrict_eq, Set.image_comp]
   exact e.isOpen_image_of_subset_source (e.open_source.isOpenMap_subtype_val V hV)
     fun _ ⟨x, _, h⟩ ↦ h ▸ x.2
 
+@[deprecated (since := "2024-10-18")]
+alias openEmbedding_restrict := isOpenEmbedding_restrict
+
 /-- A partial homeomorphism whose source is all of `X` defines an open embedding of `X` into `Y`.
-The converse is also true; see `OpenEmbedding.toPartialHomeomorph`. -/
-theorem to_openEmbedding (h : e.source = Set.univ) : OpenEmbedding e :=
-  e.openEmbedding_restrict.comp
-    ((Homeomorph.setCongr h).trans <| Homeomorph.Set.univ X).symm.openEmbedding
+The converse is also true; see `IsOpenEmbedding.toPartialHomeomorph`. -/
+theorem to_isOpenEmbedding (h : e.source = Set.univ) : IsOpenEmbedding e :=
+  e.isOpenEmbedding_restrict.comp
+    ((Homeomorph.setCongr h).trans <| Homeomorph.Set.univ X).symm.isOpenEmbedding
+
+@[deprecated (since := "2024-10-18")]
+alias to_openEmbedding := to_isOpenEmbedding
 
 end PartialHomeomorph
 
@@ -1156,15 +1162,16 @@ theorem trans_transPartialHomeomorph (e : X ≃ₜ Y) (e' : Y ≃ₜ Z) (f'' : P
 
 end Homeomorph
 
-namespace OpenEmbedding
+namespace Topology.IsOpenEmbedding
 
-variable (f : X → Y) (h : OpenEmbedding f)
+variable (f : X → Y) (h : IsOpenEmbedding f)
 
 /-- An open embedding of `X` into `Y`, with `X` nonempty, defines a partial homeomorphism
-whose source is all of `X`. The converse is also true; see `PartialHomeomorph.to_openEmbedding`. -/
+whose source is all of `X`. The converse is also true; see
+`PartialHomeomorph.to_isOpenEmbedding`. -/
 @[simps! (config := mfld_cfg) apply source target]
 noncomputable def toPartialHomeomorph [Nonempty X] : PartialHomeomorph X Y :=
-  PartialHomeomorph.ofContinuousOpen (h.toEmbedding.inj.injOn.toPartialEquiv f univ)
+  PartialHomeomorph.ofContinuousOpen (h.isEmbedding.injective.injOn.toPartialEquiv f univ)
     h.continuous.continuousOn h.isOpenMap isOpen_univ
 
 variable [Nonempty X]
@@ -1178,7 +1185,7 @@ lemma toPartialHomeomorph_right_inv {x : Y} (hx : x ∈ Set.range f) :
   rw [← congr_fun (h.toPartialHomeomorph_apply f), PartialHomeomorph.right_inv]
   rwa [toPartialHomeomorph_target]
 
-end OpenEmbedding
+end Topology.IsOpenEmbedding
 
 /-! inclusion of an open set in a topological space -/
 namespace TopologicalSpace.Opens
@@ -1191,7 +1198,7 @@ variable (s : Opens X) (hs : Nonempty s)
 /-- The inclusion of an open subset `s` of a space `X` into `X` is a partial homeomorphism from the
 subtype `s` to `X`. -/
 noncomputable def partialHomeomorphSubtypeCoe : PartialHomeomorph s X :=
-  OpenEmbedding.toPartialHomeomorph _ s.2.openEmbedding_subtype_val
+  IsOpenEmbedding.toPartialHomeomorph _ s.2.isOpenEmbedding_subtypeVal
 
 @[simp, mfld_simps]
 theorem partialHomeomorphSubtypeCoe_coe : (s.partialHomeomorphSubtypeCoe hs : s → X) = (↑) :=

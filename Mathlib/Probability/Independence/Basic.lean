@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
 import Mathlib.Probability.Independence.Kernel
+import Mathlib.MeasureTheory.Measure.Prod
 
 /-!
 # Independence of sets of sets and measure spaces (σ-algebras)
@@ -63,6 +64,8 @@ when defining `μ` in the example above, the measurable space used is the last o
 * Williams, David. Probability with martingales. Cambridge university press, 1991.
 Part A, Chapter 4.
 -/
+
+assert_not_exists MeasureTheory.Integrable
 
 open MeasureTheory MeasurableSpace Set
 
@@ -561,6 +564,11 @@ theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Ty
 
 alias ⟨iIndepFun.measure_inter_preimage_eq_mul, _⟩ := iIndepFun_iff_measure_inter_preimage_eq_mul
 
+nonrec lemma iIndepFun.comp {β γ : ι → Type*} {mβ : ∀ i, MeasurableSpace (β i)}
+    {mγ : ∀ i, MeasurableSpace (γ i)} {f : ∀ i, Ω → β i}
+    (h : iIndepFun mβ f μ) (g : ∀ i, β i → γ i) (hg : ∀ i, Measurable (g i)) :
+    iIndepFun mγ (fun i ↦ g i ∘ f i) μ := h.comp _ hg
+
 theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : MeasurableSpace β'}
     [IsZeroOrProbabilityMeasure μ] (hf : Measurable f) (hg : Measurable g) :
     IndepFun f g μ ↔
@@ -714,45 +722,61 @@ theorem iIndepSet.iIndepFun_indicator [Zero β] [One β] {m : MeasurableSpace β
 
 end IndepFun
 
+variable {ι Ω α β : Type*} {mΩ : MeasurableSpace Ω} {mα : MeasurableSpace α}
+  {mβ : MeasurableSpace β} {μ : Measure Ω} {X : ι → Ω → α} {Y : ι → Ω → β} {f : _ → Set Ω}
+  {t : ι → Set β} {s : Finset ι}
+
+/-- The probability of an intersection of preimages conditioning on another intersection factors
+into a product. -/
+lemma cond_iInter [Finite ι] (hY : ∀ i, Measurable (Y i))
+    (hindep : iIndepFun (fun _ ↦ mα.prod mβ) (fun i ω ↦ (X i ω, Y i ω)) μ)
+    (hf : ∀ i ∈ s, MeasurableSet[mα.comap (X i)] (f i))
+    (hy : ∀ i ∉ s, μ (Y i ⁻¹' t i) ≠ 0) (ht : ∀ i, MeasurableSet (t i)) :
+    μ[⋂ i ∈ s, f i | ⋂ i, Y i ⁻¹' t i] = ∏ i ∈ s, μ[f i | Y i in t i] := by
+  have : IsProbabilityMeasure (μ : Measure Ω) := hindep.isProbabilityMeasure
+  classical
+  cases nonempty_fintype ι
+  let g (i' : ι) := if i' ∈ s then Y i' ⁻¹' t i' ∩ f i' else Y i' ⁻¹' t i'
+  calc
+    _ = (μ (⋂ i, Y i ⁻¹' t i))⁻¹ * μ ((⋂ i, Y i ⁻¹' t i) ∩ ⋂ i ∈ s, f i) := by
+      rw [cond_apply]; exact .iInter fun i ↦ hY i (ht i)
+    _ = (μ (⋂ i, Y i ⁻¹' t i))⁻¹ * μ (⋂ i, g i) := by
+      congr
+      calc
+        _ = (⋂ i, Y i ⁻¹' t i) ∩ ⋂ i, if i ∈ s then f i else .univ := by
+          congr
+          simp only [Set.iInter_ite, Set.iInter_univ, Set.inter_univ]
+        _ = ⋂ i, Y i ⁻¹' t i ∩ (if i ∈ s then f i else .univ) := by rw [Set.iInter_inter_distrib]
+        _ = _ := Set.iInter_congr fun i ↦ by by_cases hi : i ∈ s <;> simp [hi, g]
+    _ = (∏ i, μ (Y i ⁻¹' t i))⁻¹ * μ (⋂ i, g i) := by
+      rw [hindep.meas_iInter]
+      exact fun i ↦ ⟨.univ ×ˢ t i, MeasurableSet.univ.prod (ht _), by ext; simp [eq_comm]⟩
+    _ = (∏ i, μ (Y i ⁻¹' t i))⁻¹ * ∏ i, μ (g i) := by
+      rw [hindep.meas_iInter]
+      intro i
+      by_cases hi : i ∈ s <;> simp only [hi, ↓reduceIte, g]
+      · obtain ⟨A, hA, hA'⟩ := hf i hi
+        exact .inter ⟨.univ ×ˢ t i, MeasurableSet.univ.prod (ht _), by ext; simp [eq_comm]⟩
+          ⟨A ×ˢ Set.univ, hA.prod .univ, by ext; simp [← hA']⟩
+      · exact ⟨.univ ×ˢ t i, MeasurableSet.univ.prod (ht _), by ext; simp [eq_comm]⟩
+    _ = ∏ i, (μ (Y i ⁻¹' t i))⁻¹ * μ (g i) := by
+      rw [Finset.prod_mul_distrib, ENNReal.prod_inv_distrib]
+      exact fun _ _ i _ _ ↦ .inr <| measure_ne_top _ _
+    _ = ∏ i, if i ∈ s then μ[f i | Y i ⁻¹' t i] else 1 := by
+      refine Finset.prod_congr rfl fun i _ ↦ ?_
+      by_cases hi : i ∈ s
+      · simp only [hi, ↓reduceIte, g, cond_apply (hY i (ht i))]
+      · simp only [hi, ↓reduceIte, g, ENNReal.inv_mul_cancel (hy i hi) (measure_ne_top μ _)]
+    _ = _ := by simp
+
+lemma iIndepFun.cond [Finite ι] (hY : ∀ i, Measurable (Y i))
+    (hindep : iIndepFun (fun _ ↦ mα.prod mβ) (fun i ω ↦ (X i ω, Y i ω)) μ)
+    (hy : ∀ i, μ (Y i ⁻¹' t i) ≠ 0) (ht : ∀ i, MeasurableSet (t i)) :
+    iIndepFun (fun _ ↦ mα) X μ[|⋂ i, Y i ⁻¹' t i] := by
+  rw [iIndepFun_iff]
+  intro s f hf
+  convert cond_iInter hY hindep hf (fun i _ ↦ hy _) ht using 2 with i hi
+  simpa using cond_iInter hY hindep (fun j hj ↦ hf _ <| Finset.mem_singleton.1 hj ▸ hi)
+    (fun i _ ↦ hy _) ht
+
 end ProbabilityTheory
-
-namespace MeasureTheory
-
-open Filter ProbabilityTheory
-open scoped NNReal Topology
-
-/-- If a nonzero function belongs to `ℒ^p` and is independent of another function, then
-the space is a probability space. -/
-lemma Memℒp.isProbabilityMeasure_of_indepFun
-    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
-    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
-    {F : Type*} [MeasurableSpace F]
-    (f : Ω → E) (g : Ω → F) {p : ℝ≥0∞} (hp : p ≠ 0) (hp' : p ≠ ∞)
-    (hℒp : Memℒp f p μ) (h'f : ¬(∀ᵐ ω ∂μ, f ω = 0)) (hindep : IndepFun f g μ) :
-    IsProbabilityMeasure μ := by
-  obtain ⟨c, c_pos, hc⟩ : ∃ (c : ℝ≥0), 0 < c ∧ 0 < μ {ω | c ≤ ‖f ω‖₊} := by
-    contrapose! h'f
-    have A (c : ℝ≥0) (hc : 0 < c) : ∀ᵐ ω ∂μ, ‖f ω‖₊ < c := by simpa [ae_iff] using h'f c hc
-    obtain ⟨u, -, u_pos, u_lim⟩ : ∃ u, StrictAnti u ∧ (∀ (n : ℕ), 0 < u n)
-      ∧ Tendsto u atTop (𝓝 0) := exists_seq_strictAnti_tendsto (0 : ℝ≥0)
-    filter_upwards [ae_all_iff.2 (fun n ↦ A (u n) (u_pos n))] with ω hω
-    simpa using ge_of_tendsto' u_lim (fun i ↦ (hω i).le)
-  have h'c : μ {ω | c ≤ ‖f ω‖₊} < ∞ := hℒp.meas_ge_lt_top hp hp' c_pos.ne'
-  have := hindep.measure_inter_preimage_eq_mul {x | c ≤ ‖x‖₊} Set.univ
-    (isClosed_le continuous_const continuous_nnnorm).measurableSet MeasurableSet.univ
-  simp only [Set.preimage_setOf_eq, Set.preimage_univ, Set.inter_univ] at this
-  exact ⟨(ENNReal.mul_eq_left hc.ne' h'c.ne).1 this.symm⟩
-
-/-- If a nonzero function is integrable and is independent of another function, then
-the space is a probability space. -/
-lemma Integrable.isProbabilityMeasure_of_indepFun
-    {Ω : Type*} [MeasurableSpace Ω] {μ : Measure Ω}
-    {E : Type*} [NormedAddCommGroup E] [MeasurableSpace E] [BorelSpace E]
-    {F : Type*} [MeasurableSpace F]
-    (f : Ω → E) (g : Ω → F)
-    (hf : Integrable f μ) (h'f : ¬(∀ᵐ ω ∂μ, f ω = 0)) (hindep : IndepFun f g μ) :
-    IsProbabilityMeasure μ :=
-  Memℒp.isProbabilityMeasure_of_indepFun f g one_ne_zero ENNReal.one_ne_top
-    (memℒp_one_iff_integrable.mpr hf) h'f hindep
-
-end MeasureTheory

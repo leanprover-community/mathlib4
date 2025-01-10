@@ -113,12 +113,6 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     rwa [← lie_skew, neg_mem_iff (G := L)]
   have aux₂ : ∀ n ∈ N, ⁅x, n⁆ ∈ N := fun n hn ↦ le_normalizer H (aux₁ _ hn)
   let dx : N →ₗ[R] N := (ad R L x).restrict aux₂
-  #adaptation_note
-  /--
-  After lean4#5020, many instances for Lie algebras and manifolds are no longer found.
-  See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/.2316244.20adaptations.20for.20nightly-2024-08-28/near/466219124
-  -/
-  have : IsArtinian R { x // x ∈ N } := isArtinian_submodule' _
   obtain ⟨k, hk⟩ : ∃ a, ∀ b ≥ a, Codisjoint (LinearMap.ker (dx ^ b)) (LinearMap.range (dx ^ b)) :=
     eventually_atTop.mp <| dx.eventually_codisjoint_ker_pow_range_pow
   specialize hk (k+1) (Nat.le_add_right k 1)
@@ -128,28 +122,29 @@ lemma normalizer_eq_self_of_engel_le [IsArtinian R L]
     apply le_sup_of_le_left
     rw [Submodule.map_le_iff_le_comap]
     intro y hy
-    simp only [Submodule.mem_comap, mem_engel_iff, mem_coe_submodule]
+    simp only [Submodule.mem_comap, mem_engel_iff, mem_toSubmodule]
     use k+1
     clear hk; revert hy
     generalize k+1 = k
     induction k generalizing y with
-    | zero => cases y; intro hy; simp only [pow_zero, LinearMap.one_apply]; exact
-      (AddSubmonoid.mk_eq_zero N.toAddSubmonoid).mp hy
+    | zero =>
+      cases y; intro hy; simp only [pow_zero, LinearMap.one_apply]
+      exact (AddSubmonoid.mk_eq_zero N.toAddSubmonoid).mp hy
     | succ k ih => simp only [pow_succ, LinearMap.mem_ker, LinearMap.mul_apply] at ih ⊢; apply ih
   · rw [← Submodule.map_le_iff_le_comap]
     apply le_sup_of_le_right
     rw [Submodule.map_le_iff_le_comap]
     rintro _ ⟨y, rfl⟩
-    simp only [pow_succ', LinearMap.mul_apply, Submodule.mem_comap, mem_coe_submodule]
+    simp only [pow_succ', LinearMap.mul_apply, Submodule.mem_comap, mem_toSubmodule]
     apply aux₁
-    simp only [Submodule.coeSubtype, SetLike.coe_mem]
+    simp only [Submodule.coe_subtype, SetLike.coe_mem]
 
 /-- A Lie subalgebra of a Noetherian Lie algebra is nilpotent
 if it is contained in the Engel subalgebra of all its elements. -/
 lemma isNilpotent_of_forall_le_engel [IsNoetherian R L]
     (H : LieSubalgebra R L) (h : ∀ x ∈ H, H ≤ engel R x) :
-    LieAlgebra.IsNilpotent R H := by
-  rw [LieAlgebra.isNilpotent_iff_forall]
+    LieRing.IsNilpotent H := by
+  rw [LieAlgebra.isNilpotent_iff_forall (R := R)]
   intro x
   let K : ℕ →o Submodule R H :=
     ⟨fun n ↦ LinearMap.ker ((ad R H x) ^ n), fun m n hmn ↦ ?mono⟩

@@ -35,7 +35,7 @@ theorem hofer {X : Type*} [MetricSpace X] [CompleteSpace X] (x : X) (ε : ℝ) (
       ∃ y, d x' y ≤ ε / 2 ^ k ∧ 2 * ϕ x' < ϕ y := by
     intro k x'
     push_neg at H
-    have := H (ε / 2 ^ k) (by positivity) x' (by simp [ε_pos.le, one_le_two])
+    have := H (ε / 2 ^ k) (by positivity) x' (div_le_self ε_pos.le <| one_le_pow₀ one_le_two)
     simpa [reformulation] using this
   haveI : Nonempty X := ⟨x⟩
   choose! F hF using H

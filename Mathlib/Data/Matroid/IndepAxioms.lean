@@ -3,6 +3,8 @@ Copyright (c) 2023 Peter Nelson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Peter Nelson
 -/
+import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Data.Matroid.Basic
 
 /-!
@@ -82,7 +84,7 @@ for the inverse of `e`).
 
 open Set Matroid
 
-variable {α : Type*} {I B X : Set α}
+variable {α : Type*}
 
 section IndepMatroid
 
@@ -151,7 +153,7 @@ namespace IndepMatroid
       by_contra h; push_neg at h
       obtain ⟨I, e, -, hIe, h⟩ := h
       refine hIe <| indep_compact _ fun J hJss hJfin ↦ ?_
-      exact indep_subset (h (J \ {e}) (by rwa [diff_subset_iff]) (hJfin.diff _)) (by simp)
+      exact indep_subset (h (J \ {e}) (by rwa [diff_subset_iff]) hJfin.diff) (by simp)
   IndepMatroid.mk
   (E := E)
   (Indep := Indep)
@@ -175,7 +177,7 @@ namespace IndepMatroid
       have hchoose : ∀ (b : ↑(B₀ \ I)), ∃ Ib, Ib ⊆ I ∧ Ib.Finite ∧ ¬Indep (insert (b : α) Ib) := by
         rintro ⟨b, hb⟩; exact htofin I b hI (hcon b ⟨hB₀B hb.1, hb.2⟩)
       choose! f hf using hchoose
-      have := (hB₀fin.diff I).to_subtype
+      have : Finite ↑(B₀ \ I) := hB₀fin.diff.to_subtype
       refine ⟨iUnion f ∪ (B₀ ∩ I),
         union_subset (iUnion_subset (fun i ↦ (hf i).1)) inter_subset_right,
         (finite_iUnion fun i ↦ (hf i).2.1).union (hB₀fin.subset inter_subset_left),
@@ -380,7 +382,7 @@ protected def ofFinset [DecidableEq α] (E : Set α) (Indep : Finset α → Prop
     (E := E)
     (Indep := (fun I ↦ (∀ (J : Finset α), (J : Set α) ⊆ I → Indep J)))
     (indep_empty := by simpa [subset_empty_iff])
-    (indep_subset := ( fun I J hJ hIJ K hKI ↦ hJ _ (hKI.trans hIJ) ))
+    (indep_subset := ( fun _ _ hJ hIJ _ hKI ↦ hJ _ (hKI.trans hIJ) ))
     (indep_aug := by
       intro I J hI hIfin hJ hJfin hIJ
       rw [ncard_eq_toFinset_card _ hIfin, ncard_eq_toFinset_card _ hJfin] at hIJ
@@ -388,7 +390,7 @@ protected def ofFinset [DecidableEq α] (E : Set α) (Indep : Finset α → Prop
       simp only [Finite.mem_toFinset] at aug
       obtain ⟨e, heJ, heI, hi⟩ := aug
       exact ⟨e, heJ, heI, fun K hK ↦ indep_subset hi <| Finset.coe_subset.1 (by simpa)⟩ )
-    (indep_compact := fun I h J hJ ↦ h _ hJ J.finite_toSet _ Subset.rfl )
+    (indep_compact := fun _ h J hJ ↦ h _ hJ J.finite_toSet _ Subset.rfl )
     (subset_ground := fun I hI x hxI ↦ by simpa using subset_ground <| hI {x} (by simpa) )
 
 @[simp] theorem ofFinset_E [DecidableEq α] (E : Set α) Indep indep_empty indep_subset indep_aug

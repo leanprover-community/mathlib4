@@ -3,9 +3,9 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Deprecated.Subgroup
+import Mathlib.Algebra.Ring.Subring.Defs
 import Mathlib.Deprecated.Group
-import Mathlib.Algebra.Ring.Subring.Basic
+import Mathlib.Deprecated.Subgroup
 
 /-!
 # Unbundled subrings (deprecated)
@@ -64,8 +64,6 @@ theorem isSubring_set_range {R : Type u} {S : Type v} [Ring R] [Ring S] (f : R �
 
 end RingHom
 
-variable {cR : Type u} [CommRing cR]
-
 theorem IsSubring.inter {S₁ S₂ : Set R} (hS₁ : IsSubring S₁) (hS₂ : IsSubring S₂) :
     IsSubring (S₁ ∩ S₂) :=
   { IsAddSubgroup.inter hS₁.toIsAddSubgroup hS₂.toIsAddSubgroup,
@@ -97,7 +95,8 @@ theorem exists_list_of_mem_closure {a : R} (h : a ∈ closure s) :
     ∃ L : List (List R), (∀ l ∈ L, ∀ x ∈ l, x ∈ s ∨ x = (-1 : R)) ∧ (L.map List.prod).sum = a :=
   AddGroup.InClosure.recOn h
     fun {x} hx ↦ match x, Monoid.exists_list_of_mem_closure hx with
-    | _, ⟨L, h1, rfl⟩ => ⟨[L], List.forall_mem_singleton.2 fun r hr ↦ Or.inl (h1 r hr), zero_add _⟩
+    | _, ⟨L, h1, rfl⟩ =>
+      ⟨[L], List.forall_mem_singleton.2 fun r hr ↦ Or.inl (h1 r hr), List.sum_singleton⟩
     ⟨[], List.forall_mem_nil _, rfl⟩
     fun {b} _ ih ↦ match b, ih with
     | _, ⟨L1, h1, rfl⟩ =>
@@ -180,6 +179,7 @@ theorem closure_subset_iff {s t : Set R} (ht : IsSubring t) : closure s ⊆ t �
   (AddGroup.closure_subset_iff ht.toIsAddSubgroup).trans
     ⟨Set.Subset.trans Monoid.subset_closure, Monoid.closure_subset ht.toIsSubmonoid⟩
 
+@[gcongr]
 theorem closure_mono {s t : Set R} (H : s ⊆ t) : closure s ⊆ closure t :=
   closure_subset closure.isSubring <| Set.Subset.trans H subset_closure
 

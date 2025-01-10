@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2020 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Patrick Massot, Scott Morrison
+Authors: Patrick Massot, Kim Morrison
 -/
 import Mathlib.Algebra.Order.Interval.Set.Instances
 import Mathlib.Order.Interval.Set.ProjIcc
@@ -40,10 +40,10 @@ theorem one_mem : (1 : ℝ) ∈ I :=
   ⟨zero_le_one, le_rfl⟩
 
 theorem mul_mem {x y : ℝ} (hx : x ∈ I) (hy : y ∈ I) : x * y ∈ I :=
-  ⟨mul_nonneg hx.1 hy.1, mul_le_one hx.2 hy.1 hy.2⟩
+  ⟨mul_nonneg hx.1 hy.1, mul_le_one₀ hx.2 hy.1 hy.2⟩
 
 theorem div_mem {x y : ℝ} (hx : 0 ≤ x) (hy : 0 ≤ y) (hxy : x ≤ y) : x / y ∈ I :=
-  ⟨div_nonneg hx hy, div_le_one_of_le hxy hy⟩
+  ⟨div_nonneg hx hy, div_le_one_of_le₀ hxy hy⟩
 
 theorem fract_mem (x : ℝ) : fract x ∈ I :=
   ⟨fract_nonneg _, (fract_lt_one _).le⟩
@@ -60,7 +60,7 @@ instance hasOne : One I :=
 
 instance : ZeroLEOneClass I := ⟨zero_le_one (α := ℝ)⟩
 
-instance : BoundedOrder I := Set.Icc.boundedOrder zero_le_one
+instance : BoundedOrder I := have : Fact ((0 : ℝ) ≤ 1) := ⟨zero_le_one⟩; inferInstance
 
 lemma univ_eq_Icc : (univ : Set I) = Icc (0 : I) (1 : I) := Icc_bot_top.symm
 
@@ -122,8 +122,6 @@ def symmHomeomorph : I ≃ₜ I where
 
 theorem strictAnti_symm : StrictAnti σ := fun _ _ h ↦ sub_lt_sub_left (α := ℝ) h _
 
-@[deprecated (since := "2024-02-27")] alias involutive_symm := symm_involutive
-@[deprecated (since := "2024-02-27")] alias bijective_symm := symm_bijective
 
 @[simp]
 theorem symm_inj {i j : I} : σ i = σ j ↔ i = j := symm_bijective.injective.eq_iff
@@ -209,6 +207,20 @@ theorem mul_pos_mem_iff {a t : ℝ} (ha : 0 < a) : a * t ∈ I ↔ t ∈ Set.Icc
 theorem two_mul_sub_one_mem_iff {t : ℝ} : 2 * t - 1 ∈ I ↔ t ∈ Set.Icc (1 / 2 : ℝ) 1 := by
   constructor <;> rintro ⟨h₁, h₂⟩ <;> constructor <;> linarith
 
+/-- The unit interval as a submonoid of ℝ. -/
+def submonoid : Submonoid ℝ where
+  carrier := unitInterval
+  one_mem' := unitInterval.one_mem
+  mul_mem' := unitInterval.mul_mem
+
+@[simp] theorem coe_unitIntervalSubmonoid : submonoid = unitInterval := rfl
+@[simp] theorem mem_unitIntervalSubmonoid {x} : x ∈ submonoid ↔ x ∈ unitInterval :=
+  Iff.rfl
+
+protected theorem prod_mem {ι : Type*} {t : Finset ι} {f : ι → ℝ}
+    (h : ∀ c ∈ t, f c ∈ unitInterval) :
+    ∏ c ∈ t, f c ∈ unitInterval := _root_.prod_mem (S := unitInterval.submonoid) h
+
 instance : LinearOrderedCommMonoidWithZero I where
   zero_mul i := zero_mul i
   mul_zero i := mul_zero i
@@ -261,8 +273,7 @@ lemma abs_sub_addNSMul_le (hδ : 0 ≤ δ) {t : Icc a b} (n : ℕ)
     (|t - addNSMul h δ n| : α) ≤ δ :=
   calc
     (|t - addNSMul h δ n| : α) = t - addNSMul h δ n            := abs_eq_self.2 <| sub_nonneg.2 ht.1
-    _ ≤ projIcc a b h (a + (n+1) • δ) - addNSMul h δ n :=
-          sub_le_sub_right (b := (↑(projIcc a b h (a + (n + 1) • δ)))) (by exact ht.2) _
+    _ ≤ projIcc a b h (a + (n+1) • δ) - addNSMul h δ n := by apply sub_le_sub_right; exact ht.2
     _ ≤ (|projIcc a b h (a + (n+1) • δ) - addNSMul h δ n| : α) := le_abs_self _
     _ ≤ |a + (n+1) • δ - (a + n • δ)|                          := abs_projIcc_sub_projIcc h
     _ ≤ δ := by
