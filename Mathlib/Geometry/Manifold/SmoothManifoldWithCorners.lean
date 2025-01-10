@@ -743,6 +743,8 @@ instance [IsManifold I 2 M] :
     IsManifold I 1 M :=
   IsManifold.of_le one_le_two
 
+instance [IsManifold I 3 M] : IsManifold I 2 M := IsManifold.of_le (n := 3) (by norm_num)
+
 variable (I n M) in
 /-- The maximal atlas of `M` for the `C^n` manifold with corners structure corresponding to the
 model with corners `I`. -/
