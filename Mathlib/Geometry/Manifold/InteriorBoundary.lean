@@ -257,8 +257,7 @@ lemma interiorPoint_inl (x : M) (hx : I.IsInteriorPoint x) :
     PartialHomeomorph.lift_openEmbedding_target, PartialEquiv.coe_trans, toPartialEquiv_coe,
     PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.lift_openEmbedding_toFun, Function.comp_apply]
   rw [Sum.inl_injective.extend_apply (chartAt H x)]
-  rw [I.isInteriorPoint_iff, extChartAt] at hx
-  exact hx
+  simpa [I.isInteriorPoint_iff, extChartAt] using hx
 
 lemma boundaryPoint_inl (x : M) (hx : I.IsBoundaryPoint x) :
     I.IsBoundaryPoint (@Sum.inl M M' x) := by
@@ -267,8 +266,7 @@ lemma boundaryPoint_inl (x : M) (hx : I.IsBoundaryPoint x) :
     PartialHomeomorph.lift_openEmbedding_target, PartialEquiv.coe_trans, toPartialEquiv_coe,
     PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.lift_openEmbedding_toFun, Function.comp_apply]
   rw [Sum.inl_injective.extend_apply (chartAt H x)]
-  rw [I.isBoundaryPoint_iff, extChartAt] at hx
-  exact hx
+  simpa [I.isBoundaryPoint_iff, extChartAt] using hx
 
 lemma interiorPoint_inr (x : M') (hx : I.IsInteriorPoint x) :
     I.IsInteriorPoint (@Sum.inr M M' x) := by
@@ -277,8 +275,7 @@ lemma interiorPoint_inr (x : M') (hx : I.IsInteriorPoint x) :
     PartialHomeomorph.lift_openEmbedding_target, PartialEquiv.coe_trans, toPartialEquiv_coe,
     PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.lift_openEmbedding_toFun, Function.comp_apply]
   rw [Sum.inr_injective.extend_apply (chartAt H x)]
-  rw [I.isInteriorPoint_iff, extChartAt] at hx
-  exact hx
+  simpa [I.isInteriorPoint_iff, extChartAt] using hx
 
 lemma boundaryPoint_inr (x : M') (hx : I.IsBoundaryPoint x) :
     I.IsBoundaryPoint (@Sum.inr M M' x) := by
@@ -287,8 +284,7 @@ lemma boundaryPoint_inr (x : M') (hx : I.IsBoundaryPoint x) :
     PartialHomeomorph.lift_openEmbedding_target, PartialEquiv.coe_trans, toPartialEquiv_coe,
     PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.lift_openEmbedding_toFun, Function.comp_apply]
   rw [Sum.inr_injective.extend_apply (chartAt H x)]
-  rw [I.isBoundaryPoint_iff, extChartAt] at hx
-  exact hx
+  simpa [I.isBoundaryPoint_iff, extChartAt] using hx
 
 -- TODO: move to a better place, ideally `Init.Data.Sum.Basic` in core
 lemma not_isLeft_and_isRight {α β : Type*} {x : α ⊕ β} : ¬(x.isLeft ∧ x.isRight) := by
@@ -304,7 +300,7 @@ lemma isInteriorPoint_disjointUnion_left {p : M ⊕ M'} (hp : I.IsInteriorPoint 
   constructor
   · rw [ModelWithCorners.interior, mem_setOf]; exact hp
   · rw [ModelWithCorners.boundary, mem_setOf, Sum.eq_left_getLeft_of_isLeft hleft]
-    have aux := isInteriorPoint_or_isBoundaryPoint (I := I) x
+    have := isInteriorPoint_or_isBoundaryPoint (I := I) x
     exact boundaryPoint_inl (M' := M') x (by tauto)
 
 lemma isInteriorPoint_disjointUnion_right {p : M ⊕ M'} (hp : I.IsInteriorPoint p)
@@ -315,7 +311,7 @@ lemma isInteriorPoint_disjointUnion_right {p : M ⊕ M'} (hp : I.IsInteriorPoint
   constructor
   · rw [ModelWithCorners.interior, mem_setOf]; exact hp
   · rw [ModelWithCorners.boundary, mem_setOf, Sum.eq_right_getRight_of_isRight hright]
-    have aux := isInteriorPoint_or_isBoundaryPoint (I := I) x
+    have := isInteriorPoint_or_isBoundaryPoint (I := I) x
     exact boundaryPoint_inr (M' := M') x (by tauto)
 
 lemma interior_disjointUnion :
@@ -359,9 +355,8 @@ lemma boundary_disjointUnion : ModelWithCorners.boundary (I := I) (M ⊕ M') =
 instance boundaryless_disjointUnion
     [hM: BoundarylessManifold I M] [hM': BoundarylessManifold I M'] :
     BoundarylessManifold I (M ⊕ M') := by
-  rw [← Boundaryless.iff_boundary_eq_empty] at hM
-  rw [← Boundaryless.iff_boundary_eq_empty] at hM'
-  simp [← Boundaryless.iff_boundary_eq_empty, boundary_disjointUnion, hM, hM']
+  rw [← Boundaryless.iff_boundary_eq_empty] at hM hM' ⊢
+  simp [boundary_disjointUnion, hM, hM']
 
 end disjointUnion
 
