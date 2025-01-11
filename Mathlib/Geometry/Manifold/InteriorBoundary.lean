@@ -243,7 +243,27 @@ lemma interior_disjointUnion :
     ModelWithCorners.interior (I := I) (M ⊕ M') =
       Sum.inl '' (ModelWithCorners.interior (I := I) M)
       ∪ Sum.inr '' (ModelWithCorners.interior (I := I) M') := by
+  ext p
+  constructor
+  · sorry
   -- TODO! something with interior points
+  intro hp
+  rw [ModelWithCorners.interior, mem_setOf]
+  by_cases h : Sum.isLeft p
+  · let x := Sum.getLeft p h
+    have hp' : p ∈ Sum.inl '' (ModelWithCorners.interior (I := I) M) := by
+      -- should be not-hard from inl and inr arguments...
+      sorry
+    rw [Sum.eq_left_getLeft_of_isLeft h]
+    -- rewrite the definition of interior point; we know the chart at x!
+    rw [I.isInteriorPoint_iff, extChartAt]
+    rw [ChartedSpace.sum_chartAt_inl]
+    rw [PartialHomeomorph.extend_target]
+    dsimp
+
+
+    sorry
+
   sorry
 
 -- TODO: name and move to the right place
