@@ -1376,6 +1376,14 @@ lemma lift_openEmbedding_apply (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding
   apply hf.injective.extend_apply
 
 @[simp]
+lemma lift_openEmbedding_source (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
+    (e.lift_openEmbedding hf).source = f '' e.source := rfl
+
+@[simp]
+lemma lift_openEmbedding_target (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
+    (e.lift_openEmbedding hf).target = e.target := rfl
+
+@[simp]
 lemma lift_openEmbedding_symm (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf).symm = f ∘ e.symm := rfl
 
@@ -1384,18 +1392,16 @@ lemma lift_openEmbedding_symm_source (e : PartialHomeomorph X Z) (hf : IsOpenEmb
     (e.lift_openEmbedding hf).symm.source = e.target := rfl
 
 @[simp]
-lemma lift_openEmbedding_source (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
-    (e.lift_openEmbedding hf).source = f '' e.source := rfl
-
-@[simp]
-lemma lift_openEmbedding_target (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
-    (e.lift_openEmbedding hf).target = e.target := rfl
+lemma lift_openEmbedding_symm_target (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
+    (e.lift_openEmbedding hf).symm.target = f '' e.source := by
+  rw [PartialHomeomorph.symm_target, e.lift_openEmbedding_source]
 
 lemma lift_openEmbedding_trans_apply
     (e e' : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) (z : Z) :
     (e.lift_openEmbedding hf).symm.trans (e'.lift_openEmbedding hf) z = (e.symm.trans e') z := by
   simp [hf.injective.extend_apply e']
 
+@[simp]
 lemma lift_openEmbedding_trans (e e' : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf).symm.trans (e'.lift_openEmbedding hf) = e.symm.trans e' := by
   ext x
