@@ -622,7 +622,6 @@ def functorialityCompFunctoriality (H : D ⥤ E) :
     functoriality F G ⋙ functoriality (F ⋙ G) H ≅ functoriality F (G ⋙ H) :=
   NatIso.ofComponents (fun _ ↦ Iso.refl _) (by simp [functoriality])
 
-
 instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full where
   map_surjective t :=
     ⟨{ hom := G.preimage t.hom
@@ -696,7 +695,6 @@ def mapConeMorphism {c c' : Cone F} (f : c ⟶ c') : H.mapCone c ⟶ H.mapCone c
 functorially. -/
 def mapCoconeMorphism {c c' : Cocone F} (f : c ⟶ c') : H.mapCocone c ⟶ H.mapCocone c' :=
   (Cocones.functoriality F H).map f
-
 
 /-- If `H` is an equivalence, we invert `H.mapCone` and get a cone for `F` from a cone
 for `F ⋙ H`. -/
