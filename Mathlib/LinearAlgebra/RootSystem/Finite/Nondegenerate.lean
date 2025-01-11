@@ -188,7 +188,8 @@ end Field
 
 section LinearOrderedCommRing
 
-variable [LinearOrderedCommRing R] [Module R M] [Module R N] (P : RootPairing ι R M N)
+variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+  [Module R M] [Module R N] (P : RootPairing ι R M N)
 
 instance instIsAnisotropicOfLinearOrderedCommRing : IsAnisotropic P where
   rootForm_root_ne_zero i := (P.rootForm_root_self_pos i).ne'
