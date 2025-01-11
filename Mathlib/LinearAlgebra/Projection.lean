@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.LinearAlgebra.Quotient.Basic
 import Mathlib.LinearAlgebra.Prod
+import Mathlib.Algebra.Ring.Idempotents
 
 /-!
 # Projection to a subspace
@@ -367,12 +368,11 @@ structure IsProj {F : Type*} [FunLike F M M] (f : F) : Prop where
   map_mem : ∀ x, f x ∈ m
   map_id : ∀ x ∈ m, f x = x
 
-theorem isProj_iff_idempotent (f : M →ₗ[S] M) : (∃ p : Submodule S M, IsProj p f) ↔ f ∘ₗ f = f := by
+theorem isProj_iff_idempotent (f : M →ₗ[S] M) :
+    (∃ p : Submodule S M, IsProj p f) ↔ IsIdempotentElem f := by
   constructor
-  · intro h
-    obtain ⟨p, hp⟩ := h
+  · intro ⟨p, hp⟩
     ext x
-    rw [comp_apply]
     exact hp.map_id (f x) (hp.map_mem x)
   · intro h
     use range f
@@ -381,7 +381,7 @@ theorem isProj_iff_idempotent (f : M →ₗ[S] M) : (∃ p : Submodule S M, IsPr
       exact mem_range_self f x
     · intro x hx
       obtain ⟨y, hy⟩ := mem_range.1 hx
-      rw [← hy, ← comp_apply, h]
+      rw [← hy, ← mul_apply, h]
 
 namespace IsProj
 
