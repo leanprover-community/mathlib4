@@ -106,6 +106,7 @@ import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Differentials.Basic
 import Mathlib.Algebra.Category.ModuleCat.Differentials.Presheaf
+import Mathlib.Algebra.Category.ModuleCat.Differentials.Sheaf
 import Mathlib.Algebra.Category.ModuleCat.EnoughInjectives
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Category.ModuleCat.FilteredColimits
@@ -126,6 +127,7 @@ import Mathlib.Algebra.Category.ModuleCat.Presheaf.Free
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Generator
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Monoidal
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafify
@@ -990,6 +992,7 @@ import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 import Mathlib.AlgebraicGeometry.Gluing
 import Mathlib.AlgebraicGeometry.GluingOneHypercover
 import Mathlib.AlgebraicGeometry.Limits
+import Mathlib.AlgebraicGeometry.Modules.Differentials
 import Mathlib.AlgebraicGeometry.Modules.Presheaf
 import Mathlib.AlgebraicGeometry.Modules.Sheaf
 import Mathlib.AlgebraicGeometry.Modules.Tilde
