@@ -529,7 +529,7 @@ def toContinuousMonoidHom (f : U ≃ₜ* V) : ContinuousMonoidHom U V :=
 lemma toContinuousMonoidHom_toMonoidHom (f : U ≃ₜ* V) : f.toContinuousMonoidHom = f.toMonoidHom :=
   rfl
 
-lemma toContinuousMonoidHom_tocontinuousMap (f : U ≃ₜ* V) :
+lemma toContinuousMonoidHom_toContinuousMap (f : U ≃ₜ* V) :
     f.toContinuousMonoidHom = toContinuousMap f :=
   rfl
 
