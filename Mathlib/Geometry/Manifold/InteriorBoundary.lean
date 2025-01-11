@@ -347,13 +347,30 @@ lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
         ∘ Sum.inl ∘ (C.extend I).symm) x = x := by
     intro x ⟨hx1, hx2⟩
     simp [Sum.inl_injective.extend_apply C, C.right_inv hx1, I.right_inv hx2]
-  have aux₂ : (I.symm ⁻¹' C.target ∩ range I) ∈ 𝓝[range I] ((extChartAt I x) x) := by
-    rw [mem_nhdsWithin]
-    simp only [extChartAt, ChartedSpace.sum_chartAt_inl, ]
-    set C := chartAt H x
-    dsimp
 
+  -- can be cleaned up, but works
+  have : (extChartAt I x) x ∈ I.symm ⁻¹' C.target ∩ range I := by
+      simp only [extChartAt, C]
+      dsimp
+      constructor--; swap
+      swap; · exact mem_range_self _
+      rw [mem_preimage]
+      set C := chartAt H x
+      have : C x ∈ C.target := by exact mem_chart_target H x
+      convert this
+      set y := C x
+      apply I.left_inv'
+      rw [I.source_eq]; exact trivial
+
+  have aux₂ : (I.symm ⁻¹' C.target ∩ range I) ∈ 𝓝[range I] ((extChartAt I x) x) := by
+    rw [extChartAt]
+    set C' := chartAt H x
+    rw [← PartialHomeomorph.map_extend_nhds _ (ChartedSpace.mem_chart_source x)]
     sorry
+    -- rw [mem_nhdsWithin_iff_exists_mem_nhds_inter]
+    -- use I.symm ⁻¹' C.target
+    -- constructor; swap; · simp
+    -- sorry -- is I.symm ⁻¹' C.target a nbhd of (extChartAt I x) x? is it open enough?
   apply Filter.mem_of_superset aux₂ aux₁
 
   -- simp only [extChartAt, ChartedSpace.sum_chartAt_inl]
