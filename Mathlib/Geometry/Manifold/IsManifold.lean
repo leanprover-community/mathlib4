@@ -797,6 +797,50 @@ instance prod {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedA
     have h2 := (contDiffGroupoid n I').compatible hf2 hg2
     exact contDiffGroupoid_prod h1 h2
 
+section DisjointUnion
+
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
+  [hM : IsManifold I n M] [hM' : IsManifold I n M']
+  -- {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M''] [IsManifold I n M'']
+
+/-- The disjoint union of two `C^n` manifolds modelled on `(E, H)`
+is a `C^n` manifold modeled on `(E, H)`. -/
+instance disjointUnion [Nonempty M] [Nonempty M'] [Nonempty H] :
+    IsManifold I n (M ⊕ M') where
+  compatible {e} e' he he' := by
+    obtain (⟨f, hf, hef⟩ | ⟨f, hf, hef⟩) := ChartedSpace.mem_atlas_sum he
+    · obtain (⟨f', hf', he'f'⟩ | ⟨f', hf', he'f'⟩) := ChartedSpace.mem_atlas_sum he'
+      · rw [hef, he'f', f.lift_openEmbedding_trans f' (X' := M ⊕ M') IsOpenEmbedding.inl]
+        exact hM.compatible hf hf'
+      · rw [hef, he'f']
+        suffices aux : ((f.lift_openEmbedding IsOpenEmbedding.inl).symm ≫ₕ
+            f'.lift_openEmbedding IsOpenEmbedding.inr).source = ∅ by
+          constructor
+          · intro x ⟨hx, _⟩
+            rw [mem_preimage] at hx
+            simp_all only [mem_empty_iff_false]
+          · intro x ⟨hx, _⟩
+            simp_all [hx]
+        ext x
+        exact ⟨fun ⟨hx₁, hx₂⟩ ↦ by simp_all [hx₂], fun hx ↦ hx.elim⟩
+    · -- Analogous argument to the first case: is there a way to deduplicate?
+      obtain (⟨f', hf', he'f'⟩ | ⟨f', hf', he'f'⟩) := ChartedSpace.mem_atlas_sum he'
+      · rw [hef, he'f']
+        suffices aux : ((f.lift_openEmbedding IsOpenEmbedding.inr).symm ≫ₕ
+            f'.lift_openEmbedding IsOpenEmbedding.inl).source = ∅ by
+          constructor
+          · intro x ⟨hx, _⟩
+            rw [mem_preimage] at hx
+            simp_all only [mem_empty_iff_false]
+          · intro x ⟨hx, _⟩
+            simp_all [hx]
+        ext x
+        exact ⟨fun ⟨hx₁, hx₂⟩ ↦ by simp_all [hx₂], fun hx ↦ hx.elim⟩
+      · rw [hef, he'f', f.lift_openEmbedding_trans f' (X' := M ⊕ M') IsOpenEmbedding.inr]
+        exact hM'.compatible hf hf'
+
+end DisjointUnion
+
 end IsManifold
 
 theorem PartialHomeomorph.isManifold_singleton
