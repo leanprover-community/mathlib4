@@ -3913,6 +3913,7 @@ import Mathlib.NumberTheory.DirichletCharacter.GaussSum
 import Mathlib.NumberTheory.DirichletCharacter.Orthogonality
 import Mathlib.NumberTheory.Divisors
 import Mathlib.NumberTheory.EllipticDivisibilitySequence
+import Mathlib.NumberTheory.EuclidNumbers
 import Mathlib.NumberTheory.EulerProduct.Basic
 import Mathlib.NumberTheory.EulerProduct.DirichletLSeries
 import Mathlib.NumberTheory.EulerProduct.ExpLog
