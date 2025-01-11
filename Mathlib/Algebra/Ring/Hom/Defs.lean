@@ -614,6 +614,14 @@ theorem cancel_left {g : β →+* γ} {f₁ f₂ : α →+* β} (hg : Injective 
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
   ⟨fun h => RingHom.ext fun x => hg <| by rw [← comp_apply, h, comp_apply], fun h => h ▸ rfl⟩
 
+lemma precomp_injective_of_surjective {α β γ : Type*} [NonAssocSemiring α]
+    [NonAssocSemiring β] [NonAssocSemiring γ] (f : α →+* β)
+    (hf : Function.Surjective f) {g₁ g₂ : β →+* γ} (h : g₁.comp f = g₂.comp f) :
+    g₁ = g₂ := by
+  ext s
+  obtain ⟨r, rfl⟩ := hf s
+  simp only [← comp_apply, h]
+
 end RingHom
 
 section Semiring
