@@ -264,6 +264,10 @@ lemma interiorPoint_inr (x : M') (hx : I.IsInteriorPoint x) :
   rw [I.isInteriorPoint_iff, extChartAt] at hx
   exact hx
 
+-- TODO: move to its proper place
+lemma isLeft_xor_isRight {α β : Type*} {x : α ⊕ β} (hx : x.isLeft ∧ x.isRight) : False := by
+  aesop
+
 lemma isInteriorPoint_disjointUnion_left {p : M ⊕ M'} (hp : I.IsInteriorPoint p)
     (hleft : Sum.isLeft p) : I.IsInteriorPoint (Sum.getLeft p hleft) := by
   sorry
@@ -293,21 +297,20 @@ lemma interior_disjointUnion :
       rw [Sum.eq_left_getLeft_of_isLeft h]
       apply interiorPoint_inl x
       have hp : p ∈ Sum.inl '' (ModelWithCorners.interior (I := I) M) := by
-        obtain (want | ⟨y, hy, hxy⟩) := hp
-        · exact want
-        · have : Sum.isRight p := by rw [← hxy]; exact rfl
-          exfalso
-          have : p.isLeft ∧ p.isRight := by tauto
-          -- TODO: no point is left and right at the same time
-          have missing : p.isLeft → ¬p.isRight := sorry
-          sorry
+        obtain (good | ⟨y, hy, hxy⟩) := hp
+        exacts [good, (isLeft_xor_isRight ⟨h, by rw [← hxy]; exact rfl⟩).elim]
       obtain ⟨x', hx', hx'p⟩ := hp
       simp_rw [x_eq, ← hx'p, Sum.getLeft_inl]
       exact hx'
-    · let x := Sum.getRight p (Sum.not_isLeft.mp h)
+    · set x := Sum.getRight p (Sum.not_isLeft.mp h) with x_eq
       rw [Sum.eq_right_getRight_of_isRight (Sum.not_isLeft.mp h)]
       apply interiorPoint_inr x
-      sorry -- TODO: should be like the case above; paste once the above is clean and simple
+      have hp : p ∈ Sum.inr '' (ModelWithCorners.interior (I := I) M') := by
+        obtain (⟨y, hy, hxy⟩ | good) := hp
+        exacts [(isLeft_xor_isRight ⟨by rw [← hxy]; exact rfl, Sum.not_isLeft.mp h⟩).elim, good]
+      obtain ⟨x', hx', hx'p⟩ := hp
+      simp_rw [x_eq, ← hx'p, Sum.getRight_inr]
+      exact hx'
 
 -- TODO: name and move to the right place
 lemma foo {α β : Type*} {s : Set α} {t : Set β} :
@@ -350,7 +353,7 @@ lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
         ext x
         dsimp
         have : I.symm x ∈ I.source := sorry
-        apply I.right_inv' --this-- x
+        apply I.right_inv'
         sorry
     rw [this]; sorry
   apply ContDiffWithinAt.congr this
