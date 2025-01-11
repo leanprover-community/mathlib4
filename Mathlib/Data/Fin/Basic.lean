@@ -68,6 +68,8 @@ This file expands on the development in the core library.
 -/
 
 
+assert_not_exists Monoid Fintype
+
 open Fin Nat Function
 
 /-- Elimination principle for the empty set `Fin 0`, dependent version. -/
