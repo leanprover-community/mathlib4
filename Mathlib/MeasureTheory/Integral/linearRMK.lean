@@ -679,7 +679,7 @@ theorem integral_rieszMeasure_eq [Nonempty X] : ∀ (f : C_c(X, ℝ)),
     nth_rw 2 [mul_comm _ ε']
     rw [mul_div_assoc, div_self (ne_of_gt (add_pos_of_nonneg_of_pos (Nat.cast_nonneg _) one_pos)),
       mul_one]
-    rw [← MeasureTheory.integral_tsupport, htsupporteqErest]
+    rw [← MeasureTheory.setIntegral_tsupport, htsupporteqErest]
     nth_rw 3 [rieszMeasure]
     have : f = f.toFun := by rfl
     rw [this]
