@@ -291,7 +291,7 @@ lemma boundaryPoint_inr (x : M') (hx : I.IsBoundaryPoint x) :
   rw [I.isBoundaryPoint_iff, extChartAt] at hx
   exact hx
 
--- TODO: move to its proper place
+-- TODO: move to a better place, ideally `Init.Data.Sum.Basic` in core
 lemma not_isLeft_and_isRight {α β : Type*} {x : α ⊕ β} : ¬(x.isLeft ∧ x.isRight) := by
   aesop
 
@@ -301,23 +301,23 @@ lemma isInteriorPoint_disjointUnion_left {p : M ⊕ M'} (hp : I.IsInteriorPoint 
     (hleft : Sum.isLeft p) : I.IsInteriorPoint (Sum.getLeft p hleft) := by
   by_contra h
   set x := Sum.getLeft p hleft
-  rw [← mem_empty_iff_false p, ← (disjoint_interior_boundary (I := I) (M := M ⊕ M')).inter_eq]
+  rw [← mem_empty_iff_false p, ← (disjoint_interior_boundary (I := I)).inter_eq]
   constructor
   · rw [ModelWithCorners.interior, mem_setOf]; exact hp
   · rw [ModelWithCorners.boundary, mem_setOf, Sum.eq_left_getLeft_of_isLeft hleft]
     have aux := isInteriorPoint_or_isBoundaryPoint (I := I) x
-    apply boundaryPoint_inl (M' := M') x; tauto
+    exact boundaryPoint_inl (M' := M') x (by tauto)
 
 lemma isInteriorPoint_disjointUnion_right {p : M ⊕ M'} (hp : I.IsInteriorPoint p)
     (hright : Sum.isRight p) : I.IsInteriorPoint (Sum.getRight p hright) := by
   by_contra h
   set x := Sum.getRight p hright
-  rw [← mem_empty_iff_false p, ← (disjoint_interior_boundary (I := I) (M := M ⊕ M')).inter_eq]
+  rw [← mem_empty_iff_false p, ← (disjoint_interior_boundary (I := I)).inter_eq]
   constructor
   · rw [ModelWithCorners.interior, mem_setOf]; exact hp
   · rw [ModelWithCorners.boundary, mem_setOf, Sum.eq_right_getRight_of_isRight hright]
     have aux := isInteriorPoint_or_isBoundaryPoint (I := I) x
-    apply boundaryPoint_inr (M' := M') x; tauto
+    exact boundaryPoint_inr (M' := M') x (by tauto)
 
 lemma interior_disjointUnion :
     ModelWithCorners.interior (I := I) (M ⊕ M') =
@@ -329,12 +329,10 @@ lemma interior_disjointUnion :
     by_cases h : Sum.isLeft p
     · left
       exact ⟨Sum.getLeft p h, isInteriorPoint_disjointUnion_left hp h, Sum.inl_getLeft p h⟩
-    · right
-      exact ⟨Sum.getRight p ((Sum.not_isLeft.mp h)),
-        isInteriorPoint_disjointUnion_right hp (Sum.not_isLeft.mp h),
-        Sum.inr_getRight p (Sum.not_isLeft.mp h)⟩
+    · replace h := Sum.not_isLeft.mp h
+      right
+      exact ⟨Sum.getRight p h, isInteriorPoint_disjointUnion_right hp h, Sum.inr_getRight p h⟩
   · intro hp
-    rw [ModelWithCorners.interior, mem_setOf]
     by_cases h : Sum.isLeft p
     · set x := Sum.getLeft p h with x_eq
       rw [Sum.eq_left_getLeft_of_isLeft h]
@@ -343,8 +341,7 @@ lemma interior_disjointUnion :
         obtain (good | ⟨y, hy, hxy⟩) := hp
         exacts [good, (not_isLeft_and_isRight ⟨h, by rw [← hxy]; exact rfl⟩).elim]
       obtain ⟨x', hx', hx'p⟩ := hp
-      simp_rw [x_eq, ← hx'p, Sum.getLeft_inl]
-      exact hx'
+      simpa [x_eq, ← hx'p, Sum.getLeft_inl]
     · set x := Sum.getRight p (Sum.not_isLeft.mp h) with x_eq
       rw [Sum.eq_right_getRight_of_isRight (Sum.not_isLeft.mp h)]
       apply interiorPoint_inr x
@@ -352,19 +349,12 @@ lemma interior_disjointUnion :
         obtain (⟨y, hy, hxy⟩ | good) := hp
         exacts [(not_isLeft_and_isRight ⟨by rw [← hxy]; exact rfl, Sum.not_isLeft.mp h⟩).elim, good]
       obtain ⟨x', hx', hx'p⟩ := hp
-      simp_rw [x_eq, ← hx'p, Sum.getRight_inr]
-      exact hx'
-
--- TODO: name and move to the right place
-lemma foo {α β : Type*} {s : Set α} {t : Set β} :
-    (Sum.inl '' s ∪ Sum.inr '' t)ᶜ = Sum.inl '' sᶜ ∪ Sum.inr '' tᶜ := by
-  rw [compl_union]
-  aesop
+      simpa [x_eq, ← hx'p, Sum.getRight_inr]
 
 lemma boundary_disjointUnion : ModelWithCorners.boundary (I := I) (M ⊕ M') =
       Sum.inl '' (ModelWithCorners.boundary (I := I) M)
       ∪ Sum.inr '' (ModelWithCorners.boundary (I := I) M') := by
-  simp only [← ModelWithCorners.compl_interior, interior_disjointUnion, foo]
+  simp only [← ModelWithCorners.compl_interior, interior_disjointUnion, inl_compl_union_inr_compl]
 
 /-- If `M` and `M'` are boundaryless, so is their disjoint union `M ⊔ M'`. -/
 instance boundaryless_disjointUnion
