@@ -3,7 +3,10 @@ Copyright (c) 2025 Yunzhou Xie. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Yunzhou Xie
 -/
-import Mathlib.LinearAlgebra.Dimension.Basic
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.Algebra.NoZeroSMulDivisors.Defs
+import Mathlib.Data.Fin.VecNotation
+import Mathlib.Tactic.Ring.Basic
 
 /-!
 # General Quaternion Algebras
@@ -348,12 +351,12 @@ variable [CommRing R]
 
 instance instRing : Ring ℍ[R,c₁,c₂,c₃] where
   __ := inferInstanceAs (AddCommGroupWithOne ℍ[R,c₁,c₂,c₃])
-  left_distrib _ _ _ := by ext <;> simp <;> ring
-  right_distrib _ _ _ := by ext <;> simp <;> ring
+  left_distrib _ _ _ := by ext <;> simp <;> ring1!
+  right_distrib _ _ _ := by ext <;> simp <;> ring1!
   zero_mul _ := by ext <;> simp
   mul_zero _ := by ext <;> simp
   mul_assoc α β γ := by
-    ext <;> simp <;> ring
+    ext <;> simp <;> ring1!
   one_mul _ := by ext <;> simp
   mul_one _ := by ext <;> simp
 
