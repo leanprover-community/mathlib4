@@ -254,6 +254,16 @@ lemma interiorPoint_inl (x : M) (hx : I.IsInteriorPoint x) :
   rw [I.isInteriorPoint_iff, extChartAt] at hx
   exact hx
 
+lemma boundaryPoint_inl (x : M) (hx : I.IsBoundaryPoint x) :
+    I.IsBoundaryPoint (@Sum.inl M M' x) := by
+  rw [I.isBoundaryPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inl]
+  dsimp only [PartialHomeomorph.extend.eq_1, PartialEquiv.trans_target, toPartialEquiv_coe_symm,
+    PartialHomeomorph.lift_openEmbedding_target, PartialEquiv.coe_trans, toPartialEquiv_coe,
+    PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.lift_openEmbedding_toFun, Function.comp_apply]
+  rw [Sum.inl_injective.extend_apply (chartAt H x)]
+  rw [I.isBoundaryPoint_iff, extChartAt] at hx
+  exact hx
+
 lemma interiorPoint_inr (x : M') (hx : I.IsInteriorPoint x) :
     I.IsInteriorPoint (@Sum.inr M M' x) := by
   rw [I.isInteriorPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inr]
@@ -264,17 +274,43 @@ lemma interiorPoint_inr (x : M') (hx : I.IsInteriorPoint x) :
   rw [I.isInteriorPoint_iff, extChartAt] at hx
   exact hx
 
+lemma boundaryPoint_inr (x : M') (hx : I.IsBoundaryPoint x) :
+    I.IsBoundaryPoint (@Sum.inr M M' x) := by
+  rw [I.isBoundaryPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inr]
+  dsimp only [PartialHomeomorph.extend.eq_1, PartialEquiv.trans_target, toPartialEquiv_coe_symm,
+    PartialHomeomorph.lift_openEmbedding_target, PartialEquiv.coe_trans, toPartialEquiv_coe,
+    PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.lift_openEmbedding_toFun, Function.comp_apply]
+  rw [Sum.inr_injective.extend_apply (chartAt H x)]
+  rw [I.isBoundaryPoint_iff, extChartAt] at hx
+  exact hx
+
 -- TODO: move to its proper place
 lemma not_isLeft_and_isRight {α β : Type*} {x : α ⊕ β} : ¬(x.isLeft ∧ x.isRight) := by
   aesop
 
+-- Converse to the previous direction: if `x` were not an interior point,
+-- it had to be a boundary point, hence `p` were a boundary point also, contradiction.
 lemma isInteriorPoint_disjointUnion_left {p : M ⊕ M'} (hp : I.IsInteriorPoint p)
     (hleft : Sum.isLeft p) : I.IsInteriorPoint (Sum.getLeft p hleft) := by
-  sorry
+  by_contra h
+  set x := Sum.getLeft p hleft
+  rw [← mem_empty_iff_false p, ← (disjoint_interior_boundary (I := I) (M := M ⊕ M')).inter_eq]
+  constructor
+  · rw [ModelWithCorners.interior, mem_setOf]; exact hp
+  · rw [ModelWithCorners.boundary, mem_setOf, Sum.eq_left_getLeft_of_isLeft hleft]
+    have aux := isInteriorPoint_or_isBoundaryPoint (I := I) x
+    apply boundaryPoint_inl (M' := M') x; tauto
 
--- similar argument to left lemma
 lemma isInteriorPoint_disjointUnion_right {p : M ⊕ M'} (hp : I.IsInteriorPoint p)
-    (hright : Sum.isRight p) : I.IsInteriorPoint (Sum.getRight p hright) := sorry
+    (hright : Sum.isRight p) : I.IsInteriorPoint (Sum.getRight p hright) := by
+  by_contra h
+  set x := Sum.getRight p hright
+  rw [← mem_empty_iff_false p, ← (disjoint_interior_boundary (I := I) (M := M ⊕ M')).inter_eq]
+  constructor
+  · rw [ModelWithCorners.interior, mem_setOf]; exact hp
+  · rw [ModelWithCorners.boundary, mem_setOf, Sum.eq_right_getRight_of_isRight hright]
+    have aux := isInteriorPoint_or_isBoundaryPoint (I := I) x
+    apply boundaryPoint_inr (M' := M') x; tauto
 
 lemma interior_disjointUnion :
     ModelWithCorners.interior (I := I) (M ⊕ M') =
