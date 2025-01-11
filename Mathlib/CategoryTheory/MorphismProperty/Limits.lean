@@ -241,16 +241,16 @@ def IsStableUnderColimitsOfShape (J : Type*) [Category J] : Prop :=
 
 variable {W}
 
-lemma IsStableUnderLimitsOfShape.lim_map {J : Type*} [Category J]
+lemma IsStableUnderLimitsOfShape.limMap {J : Type*} [Category J]
     (hW : W.IsStableUnderLimitsOfShape J) {X Y : J ⥤ C}
-    (f : X ⟶ Y) [HasLimitsOfShape J C] (hf : W.functorCategory _ f) :
-    W (lim.map f) :=
+    (f : X ⟶ Y) [HasLimit X] [HasLimit Y] (hf : W.functorCategory _ f) :
+    W (limMap f) :=
   hW X Y _ _ (limit.isLimit X) (limit.isLimit Y) f hf
 
-lemma IsStableUnderColimitsOfShape.colim_map {J : Type*} [Category J]
+lemma IsStableUnderColimitsOfShape.colimMap {J : Type*} [Category J]
     (hW : W.IsStableUnderColimitsOfShape J) {X Y : J ⥤ C}
-    (f : X ⟶ Y) [HasColimitsOfShape J C] (hf : W.functorCategory _ f) :
-    W (colim.map f) :=
+    (f : X ⟶ Y) [HasColimit X] [HasColimit Y] (hf : W.functorCategory _ f) :
+    W (colimMap f) :=
   hW X Y _ _ (colimit.isColimit X) (colimit.isColimit Y) f hf
 
 variable (W)
