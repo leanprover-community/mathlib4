@@ -8,19 +8,22 @@ import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Geometry.Manifold.Instances.Sphere
 
 /-!
-# Convert orthogonal smooth `M → 𝕊ⁿ` & `M → ℝⁿ⁺¹` to smooth `M → T𝕊ⁿ`
+# Constructing a smooth map to `T𝕊ⁿ` from its components
+
+This file provides a more convenient way to construct a smooth map `M → T𝕊ⁿ`
+from its components: smooth functions `M → 𝕊ⁿ` and `M → ℝⁿ⁺¹` which are orthogonal in `ℝⁿ`.
 
 ## Main definitions
 
-* `sphereTangentMap` : Convert `f : M → 𝕊ⁿ` & `g : M → ℝⁿ⁺¹` which satisfy `∀ x, ⟪f x, g x⟫_ℝ = 0`
-  to `M → T𝕊ⁿ`.
+* `sphereTangentMap f g` : convert map `f : M → 𝕊ⁿ` and `g : M → ℝⁿ⁺¹`
+  which satisfy `∀ x, ⟪f x, g x⟫_ℝ = 0` to a map `M → T𝕊ⁿ`.
 
 ## Main statements
 
 * `mfderiv_coe_sphere_sphereTangentMap_snd` : Let `ι` be an inclusion map from `T𝕊ⁿ` to `Tℝⁿ⁺¹`,
   then `ι (sphereTangentMap n f g hf x).snd = g x`.
 
-* `contMDiff_sphereTangentMap` : If `f` & `g` are smooth, then `sphereTangentMap n f g hf'` too.
+* `contMDiff_sphereTangentMap` : if `f` and `g` are smooth, then so is `sphereTangentMap n f g hf'`
 
 -/
 
