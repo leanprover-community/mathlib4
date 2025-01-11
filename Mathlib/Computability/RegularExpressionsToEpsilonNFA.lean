@@ -121,7 +121,7 @@ lemma epsilon_accepts : epsilon.toεNFA.accepts = (1 : Language α) := by
   constructor <;> intro h <;> rw [accepts_Path_iff] at *
   · obtain ⟨s₁, s₂, _, _, _, _, h⟩ := h
     substs x s₁ s₂
-    rw [Language.one_def, mem_singleton_iff, reduceOption_eq_nil_replicate_iff]
+    rw [Language.one_def, mem_singleton_iff, reduceOption_eq_nil_iff]
     use 1
     cases' h with _ _ _ _ a _ hs h
     cases a <;> cases hs
@@ -135,7 +135,7 @@ lemma char_accepts (a : α) : (char a).toεNFA.accepts = {[a]} := by
   constructor <;> intro h <;> rw [accepts_Path_iff] at *
   · obtain ⟨s₁, s₂, _, _, _, _, h⟩ := h
     substs x s₁ s₂
-    rw [mem_singleton_iff, reduceOption_eq_singleton_replicate_iff]
+    rw [mem_singleton_iff, reduceOption_eq_singleton_iff]
     use 0, 0
     cases' h with _ _ _ _ a _ hs h
     cases a <;> cases hs
