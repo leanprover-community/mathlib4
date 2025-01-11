@@ -24,7 +24,7 @@ structure of a commutative ring is complete determined by its module category.
 
 -/
 
-universe u
+universe u u'
 
 variable (R : Type u) [Ring R]
 
@@ -82,14 +82,14 @@ def Subring.centerEquivEndIdFunctor : Subring.center R ≃+* End (𝟭 (ModuleCa
 For any two commutative rings `R` and `S`, if the categories of `R`-modules and `S`-modules are
 equivalent, then `R` and `S` are isomorphic as rings.
 -/
-def RingEquiv.ofModuleCatEquiv {R S : Type u} [CommRing R] [CommRing S]
-    (e : ModuleCat.{u} R ≌ ModuleCat.{u} S) : R ≃+* S :=
+def RingEquiv.ofModuleCatEquiv {R : Type u} {S : Type u'} [CommRing R] [CommRing S]
+    (e : ModuleCat.{u} R ≌ ModuleCat.{u'} S) : R ≃+* S :=
   letI : e.functor.Additive := Functor.additive_of_preserves_binary_products e.functor
   let i₁ : R ≃+* (⊤ : Subring R) := Subring.topEquiv.symm
   let i₂ : (⊤ : Subring R) ≃+* Subring.center R := Subring.center_eq_top R ▸ .refl _
   let i₄ : Subring.center S ≃+* (⊤ : Subring S) := Subring.center_eq_top S ▸ .refl _
   let i₅ : (⊤ : Subring S) ≃+* S := Subring.topEquiv
-  let i : End (𝟭 (ModuleCat.{u} R)) ≃+* End (𝟭 (ModuleCat.{u} S)) :=
+  let i : End (𝟭 (ModuleCat.{u} R)) ≃+* End (𝟭 (ModuleCat.{u'} S)) :=
   { toFun f := .of
       { app N :=
           e.counitInv.app N ≫ e.functor.map (f.app (e.inverse.obj N)) ≫
