@@ -21,6 +21,10 @@ import Mathlib.NumberTheory.LSeries.Basic
   `(∑ k ∈ Icc 1 n, ‖f k‖)` are `O(n ^ r)` for some real `0 ≤ r`, then L-series `Lseries f`
   converges at `s : ℂ` for all `s` such that `r < s.re`.
 
+  * `LSeries_eq_mul_integral` : for `f : ℕ → ℂ`, if the partial sums `(∑ k ∈ Icc 1 n, f k)` are
+  `O(n ^ r)` for some real `0 ≤ r` and the L-series `LSeries f` converges at `s : ℂ` with
+  `r < s.re`, then `LSeries f s = s * ∫ t in Set.Ioi 1, (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * t ^ (- (s + 1))`.
+
   * `LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div` : assume that `f : ℕ → ℂ` satifies that
   `(∑ k ∈ Icc 1 n, f k) / n` tends to some complex number `l` when `n → ∞` and that the L-series
   `Lseries f` converges for all `s : ℝ` suchh that `1 < s`. Then `(s - 1) * LSeries f s` tends
@@ -248,15 +252,18 @@ theorem LSeries_eq_mul_integral (f : ℕ → ℂ) {r : ℝ} (hr : 0 ≤ r) {s : 
   · simp_rw [sum_f₀_eq]
   · simpa only [sum_f₀_eq] using hO
 
+theorem LSeries_eq_mul_integral' (f : ℕ → ℂ) {r : ℝ} (hr : 0 ≤ r) {s : ℂ} (hs : r < s.re)
+    (hO : (fun n ↦ ∑ k ∈ Icc 1 n, ‖f k‖) =O[atTop] fun n ↦ (n : ℝ) ^ r) :
+    LSeries f s = s * ∫ t in Set.Ioi (1 : ℝ), (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * t ^ (- (s + 1)) := by
+  refine LSeries_eq_mul_integral _ hr hs (LSeriesSummable_of_sum_norm_bigO hO hr hs) ?_
+  exact IsBigO.trans (isBigO_of_le _ fun _ ↦ (norm_sum_le _ _).trans <| Real.le_norm_self _) hO
+
 theorem LSeries_eq_mul_integral_of_nonneg (f : ℕ → ℝ) {r : ℝ} (hr : 0 ≤ r) {s : ℂ} (hs : r < s.re)
     (hO : (fun n ↦ ∑ k ∈ Icc 1 n, f k) =O[atTop] fun n ↦ (n : ℝ) ^ r) (hf : ∀ n, 0 ≤ f n) :
     LSeries (fun n ↦ f n) s =
-      s * ∫ t in Set.Ioi (1 : ℝ), (∑ k ∈ Icc 1 ⌊t⌋₊, (f k : ℂ)) * t ^ (- (s + 1)) := by
-  refine LSeries_eq_mul_integral _ hr hs ?_ ?_
-  · refine LSeriesSummable_of_sum_norm_bigO (hO.congr_left fun _ ↦ ?_) hr hs
+      s * ∫ t in Set.Ioi (1 : ℝ), (∑ k ∈ Icc 1 ⌊t⌋₊, (f k : ℂ)) * t ^ (- (s + 1)) :=
+  LSeries_eq_mul_integral' _ hr hs <| hO.congr_left fun _ ↦ by
     simp_rw [norm_real, Real.norm_of_nonneg (hf _)]
-  · refine (hO.congr_left fun _ ↦ ?_).of_norm_left
-    rw [← ofReal_sum, norm_real, Real.norm_of_nonneg (Finset.sum_nonneg fun _ _ ↦ (hf _))]
 
 end integralrepresentation
 
