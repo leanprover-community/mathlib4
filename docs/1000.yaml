@@ -2,17 +2,12 @@
 # 1000+ theorems project (https://1000-plus.github.io/).
 # This file and associated infrastructure are work in progress.
 #
-# This file, contains for each theorem in the project,
-# - an entry, labelled by its wikidata entry,
-# - |title|: a human-readable title
-# - (optional) |decl|: if a theorem is formalised in mathlib, the archive or counterexamples,
-#     the name of the corresponding declaration
-# - (optional) |decls|: like |decl|, but a list of declarations
-#     (if one theorem is split into multiple declarations)
-# - (optional) |author|: author(s) of a formalisation
-# - (optional) |date|: date of completion of the first formalisation
-# - (optional) |url|: for external projects, an URL referring to the result
-
+# See yaml_check.py for documentation about the allowed fields in this file.
+# Note that the field names in this file should match the specification of the
+# upstream project, hence should not be changed without due consideration.
+# The structure of this file is checked by `scripts/yaml_check.py` in this repo
+# and by `make_site.py` in the leanprover-community.github.io repo.
+#
 # Current TODOs/unresolved questions:
 # - add infrastructure for updating the information upstream when formalisations are added
 # - perhaps add a wikidata version of the stacks attribute, and generate this file automatically
@@ -115,9 +110,10 @@ Q188745:
 
 Q189136:
   title: Mean value theorem
-  decl: exists_deriv_eq_slope
-  # XXX: other branch found exists_ratio_deriv_eq_ratio_slope,
-  # is about Cauchy's vs Lagrange's Mean Value Theorem, TODO decide!
+  # two versions: Cauchy's vs Lagrange's mean value theorem; the wikipedia article mentions both
+  decls:
+    - exists_deriv_eq_slope
+    - exists_ratio_deriv_eq_ratio_slope
   author: Yury G. Kudryashov
   date: 2019
 
@@ -253,9 +249,9 @@ Q248931:
 
 Q253214:
   title: Heine–Borel theorem
-  # TODO: two versions in mathlib, which one do we want?
-  # decl: Metric.isCompact_iff_isClosed_bounded
-  # decl: FiniteDimensional.proper
+  decls:
+    - Metric.isCompact_iff_isClosed_bounded
+    - FiniteDimensional.proper
 
 Q255996:
   title: Equipartition theorem
@@ -316,7 +312,7 @@ Q288465:
 
 Q303402:
   title: Rank–nullity theorem
-  # TODO: this is also in mathlib, TODO add decl (and mention in overview)
+  decl: LinearMap.rank_range_add_rank_ker
 
 Q318767:
   title: Abel's theorem
@@ -661,7 +657,7 @@ Q670235:
     - UniqueFactorizationMonoid
     - UniqueFactorizationMonoid.factors_unique
   author: Chris Hughes
-  note: "it also has a generalized version, by showing that every Euclidean domain is a unique factorization domain, and showing that the integers form a Euclidean domain."
+  comment: "it also has a generalized version, by showing that every Euclidean domain is a unique factorization domain, and showing that the integers form a Euclidean domain."
 
 Q671663:
   title: Coleman–Mandula theorem
@@ -772,7 +768,7 @@ Q764287:
 
 Q765987:
   title: Heine–Cantor theorem
-  # XXX: does mathlib have this?
+  decl: CompactSpace.uniformContinuous_of_continuous
 
 Q766722:
   title: Liouville's theorem
@@ -829,6 +825,9 @@ Q834211:
 
 Q837506:
   title: Theorem on friends and strangers
+  author: Bhavik Mehta
+  url: https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Small.20Ramsey.20numbers/near/490303695
+  comment: "will enter mathlib in 2024"
 
 Q837551:
   title: Frobenius theorem
@@ -880,7 +879,7 @@ Q853067:
     - Pell.eq_pell
     - Pell.exists_of_not_isSquare
   author: Mario Carneiro (first), Michael Stoll (second)
-  note: "In `pell.eq_pell`, `d` is defined to be `a*a - 1` for an arbitrary `a > 1`."
+  comment: "In `pell.eq_pell`, `d` is defined to be `a*a - 1` for an arbitrary `a > 1`."
 
 Q856032:
   title: CAP theorem
@@ -1038,7 +1037,7 @@ Q966837:
 
 Q967972:
   title: Open mapping theorem
-  # result in complex analysis. TODO does mathlib have this?
+  decl: AnalyticOnNhd.is_constant_or_isOpen
 
 Q973359:
   title: Rado's theorem
@@ -1090,7 +1089,7 @@ Q1037559:
 
 Q1038716:
   title: Identity theorem
-  # complex analysis, holomorphic functions: TODO add decl!
+  decl: AnalyticOnNhd.eqOn_of_preconnected_of_frequently_eq
 
 Q1046232:
   title: Szemerédi's theorem
@@ -1174,7 +1173,9 @@ Q1067156:
 
 Q1067156X:
   title: Bounded convergence theorem
-  # TODO: is this in mathlib already?
+  decls:
+    - MeasureTheory.FiniteMeasure.tendsto_lintegral_nn_of_le_const
+    - MeasureTheory.tendsto_lintegral_nn_filter_of_le_const
 
 Q1068085:
   title: Closed graph theorem
@@ -1296,7 +1297,7 @@ Q1144897:
   title: Brouwer fixed-point theorem
   author: Brendan Seamas Murphy
   url: https://github.com/Shamrock-Frost/BrouwerFixedPoint/blob/master/src/brouwer_fixed_point.lean
-  note: "in Lean 3"
+  comment: "in Lean 3"
 
 Q1146791:
   title: Fermat polygonal number theorem
@@ -1330,9 +1331,9 @@ Q1153441:
 
 Q1153584:
   title: Monotone convergence theorem
-  # TODO: many versions in mathlib, choose one
-  # e.g. integral_tendsto_of_tendsto_of_antitone (Bochner integral)
-  # or lintegral_tendsto_of_tendsto_of_monotone (Lebesgue integral)
+  decls:
+    - MeasureTheory.integral_tendsto_of_tendsto_of_antitone
+    - MeasureTheory.lintegral_tendsto_of_tendsto_of_monotone
 
 Q1166774:
   title: Stone's representation theorem for Boolean algebras
@@ -1355,6 +1356,8 @@ Q1186808:
 
 Q1187646:
   title: Fundamental theorem on homomorphisms
+  # a.k.a. first isomorphism theorem
+  decl: QuotientGroup.quotientKerEquivRange
 
 Q1188048:
   title: Barbier's theorem
@@ -1381,7 +1384,7 @@ Q1191862:
 Q1194053:
   title: Metrization theorems
   decl: TopologicalSpace.metrizableSpace_of_t3_secondCountable
-  # comment: "Urysohn's metrization theorem (only)"
+  comment: "Urysohn's metrization theorem (only)"
 
 Q1196538:
   title: Descartes's theorem
@@ -1439,7 +1442,7 @@ Q1306092:
 Q1306095:
   title: Whitney embedding theorem
   decl: exists_embedding_euclidean_of_compact
-  # comment: "baby version: for compact manifolds; embedding into some *n*"
+  comment: "baby version: for compact manifolds; embedding into some *n*"
 
 Q1307676:
   title: Künneth theorem
@@ -1732,18 +1735,22 @@ Q1809539:
 
 Q1816952:
   title: Schur's lemma
+  decl: CategoryTheory.finrank_endomorphism_simple_eq_one
 
 Q1841237:
   title: Fubini's theorem on differentiation
+  # XXX: does mathib have this already?
 
 Q1855610:
   title: Theorem of de Moivre–Laplace
+  # special case of the central limit theorem: binomial converges to the normal distribution
 
 Q1888583:
   title: Holditch's theorem
 
 Q1893717:
   title: Rice's theorem
+  decl: ComputablePred.rice
 
 Q1896455:
   title: Varignon's theorem
@@ -1783,6 +1790,7 @@ Q1995468:
 
 Q1996305:
   title: Burnside's theorem
+  # an external project proved part of this: TODO mention in this comment
 
 Q2000090:
   title: Art gallery theorem
@@ -1826,6 +1834,7 @@ Q2094241:
 
 Q2096184:
   title: Plancherel theorem
+  # also in undergrad.yml
 
 Q2109761:
   title: Uniformization theorem
@@ -1986,6 +1995,7 @@ Q2379128:
 
 Q2379132:
   title: Going-up and going-down theorems
+  # TODO: does mathlib have these versions? add the right decls!
 
 Q2394548:
   title: Hurewicz theorem
@@ -2004,6 +2014,7 @@ Q2449984X:
 
 Q2471737:
   title: Carathéodory's theorem
+  decl: convexHull_eq_union
 
 Q2473965:
   title: Ugly duckling theorem
@@ -2264,6 +2275,7 @@ Q3527113:
 
 Q3527118:
   title: Mahler's theorem
+  decl: PadicInt.hasSum_mahler
 
 Q3527125:
   title: Monsky's theorem
@@ -2279,9 +2291,11 @@ Q3527155:
 
 Q3527162:
   title: Sophie Germain's theorem
+  # special case of FLT, including all primes less than 100
 
 Q3527166:
   title: Steinhaus theorem
+  # not difficult, but seemingly missing
 
 Q3527171:
   title: Synge's theorem
@@ -2291,12 +2305,15 @@ Q3527185:
 
 Q3527189:
   title: Lattice theorem
+  # a.k.a. third or fourth isomorphism theorem
+  decl: QuotientGroup.quotientQuotientEquivQuotient
 
 Q3527196:
   title: Principal ideal theorem
 
 Q3527205:
   title: Dimension theorem for vector spaces
+  decl: mk_eq_mk_of_basis
 
 Q3527209:
   title: Hasse norm theorem
@@ -2366,6 +2383,7 @@ Q3699212:
 
 Q3711848:
   title: Sobolev embedding theorem
+  # partial progress: Sobolev inequality MeasureTheory.eLpNorm_le_eLpNorm_fderiv_of_eq
 
 Q3757563:
   title: Intercept theorem
@@ -2465,6 +2483,7 @@ Q4454973:
 
 Q4454976:
   title: Liouville's theorem
+  # theorem in conformal mappings
 
 Q4454989:
   title: Meusnier's theorem
@@ -2909,6 +2928,8 @@ Q5436274:
 
 Q5437947:
   title: Fatou–Lebesgue theorem
+  # essentially Fatou's lemma in measure theory: let's count that as well
+  decl: MeasureTheory.lintegral_liminf_le
 
 Q5438320:
   title: Faustman–Ohlin theorem
@@ -3139,6 +3160,7 @@ Q6402928:
 
 Q6403282:
   title: Lagrange's theorem
+  # number theory
 
 Q6407842:
   title: Killing–Hopf theorem
@@ -3154,6 +3176,7 @@ Q6425088:
 
 Q6436753:
   title: Krener's theorem
+  # differential equations
 
 Q6442276:
   title: Kuiper's theorem
@@ -3238,6 +3261,10 @@ Q6749789:
 
 Q6757284:
   title: Marcinkiewicz theorem
+  author: Jim Portegies
+  date: 2024-09-06
+  url: https://github.com/fpvandoorn/carleson/blob/master/Carleson/RealInterpolation.lean
+  # will become part of mathlib; update URL in this case!
 
 Q6760432:
   title: Marginal value theorem
@@ -3265,6 +3292,7 @@ Q6799039:
 
 Q6813106:
   title: Mellin inversion theorem
+  decl: mellin_inversion
 
 Q6859627:
   title: Milliken's tree theorem
@@ -3430,6 +3458,8 @@ Q7308146:
 
 Q7309601:
   title: Whitney–Graustein Theorem
+  # there's an external project, deducing this from sphere-eversion
+  # TODO link statement (proof depends on some sorries about the winding number)
 
 Q7310041:
   title: Reider's theorem
@@ -3442,6 +3472,7 @@ Q7318284:
 
 Q7322366:
   title: Ribet's theorem
+  # part of FLT, right?
 
 Q7323144:
   title: Rice–Shapiro theorem
@@ -3475,6 +3506,7 @@ Q7432872:
 
 Q7432915:
   title: Schroeder–Bernstein theorem for measurable spaces
+  decl: MeasurableEmbedding.schroederBernstein
 
 Q7432918:
   title: Schröder–Bernstein theorems for operator algebras
@@ -3607,7 +3639,7 @@ Q7818977:
 
 Q7820874:
   title: Tonelli's theorem
-  # TODO: this is on mathlib, right?
+  decl: MeasureTheory.lintegral_prod
 
 Q7824894:
   title: Topkis's theorem
@@ -3720,6 +3752,7 @@ Q8081891:
 
 Q9993851:
   title: Lax–Milgram theorem
+  decl: IsCoercive.continuousLinearEquivOfBilin
 
 Q10369454:
   title: Noether's second theorem

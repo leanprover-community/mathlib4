@@ -195,7 +195,7 @@ instance directSum (ι : Type v) (M : ι → Type w) [(i : ι) → AddCommGroup 
     by_cases h₂ : j = i
     · subst j; simp
     · simp [h₂]
-  intro a ha; rw [DirectSum.ext_iff R]; intro i
+  intro a ha; rw [DirectSum.ext_component_iff R]; intro i
   have f := LinearMap.congr_arg (f := (π i)) ha
   erw [LinearMap.congr_fun (h₁ i) a] at f
   rw [(map_zero (π i) : (π i) 0 = (0 : M i))] at f
@@ -243,7 +243,8 @@ theorem iff_characterModule_baer : Flat R M ↔ Module.Baer R (CharacterModule M
   simp_rw [iff_rTensor_injective', Baer, rTensor_injective_iff_lcomp_surjective,
     Surjective, DFunLike.ext_iff, Subtype.forall]; rfl
 
-/-- `CharacterModule M` is an injective module iff `M` is flat. -/
+/-- `CharacterModule M` is an injective module iff `M` is flat.
+See [Lambek_1964] for a self-contained proof. -/
 theorem iff_characterModule_injective [Small.{v} R] :
     Flat R M ↔ Module.Injective R (CharacterModule M) :=
   iff_characterModule_baer.trans Module.Baer.iff_injective

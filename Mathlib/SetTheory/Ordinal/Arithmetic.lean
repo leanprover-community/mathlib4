@@ -2243,10 +2243,9 @@ theorem one_add_natCast (m : ℕ) : 1 + (m : Ordinal) = succ m := by
 @[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias one_add_nat_cast := one_add_natCast
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem one_add_ofNat (m : ℕ) [m.AtLeastTwo] :
-    1 + (no_index (OfNat.ofNat m : Ordinal)) = Order.succ (OfNat.ofNat m : Ordinal) :=
+    1 + (ofNat(m) : Ordinal) = Order.succ (OfNat.ofNat m : Ordinal) :=
   one_add_natCast m
 
 @[simp, norm_cast]
@@ -2334,10 +2333,9 @@ theorem lift_natCast : ∀ n : ℕ, lift.{u, v} n = n
 @[deprecated "No deprecation message was provided."  (since := "2024-04-17")]
 alias lift_nat_cast := lift_natCast
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
-    lift.{u, v} (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+    lift.{u, v} ofNat(n) = OfNat.ofNat n :=
   lift_natCast n
 
 /-! ### Properties of ω -/
