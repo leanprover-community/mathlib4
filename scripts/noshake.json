@@ -452,6 +452,8 @@
   "Mathlib.Algebra.Group.Pi.Basic": ["Batteries.Tactic.Classical"],
   "Mathlib.Algebra.Group.Defs": ["Mathlib.Tactic.OfNat"],
   "Mathlib.Algebra.GeomSum": ["Mathlib.Algebra.Order.BigOperators.Ring.Finset"],
+  "Mathlib.Algebra.ContinuedFractions.Computation.Approximations":
+  ["Mathlib.Algebra.Order.Floor.Basic", "Mathlib.Algebra.Order.Group.Basic"],
   "Mathlib.Algebra.Category.Ring.Basic":
   ["Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso"],
   "Mathlib.Algebra.Category.MonCat.Basic":
