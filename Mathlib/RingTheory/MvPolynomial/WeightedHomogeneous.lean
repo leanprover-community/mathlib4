@@ -6,10 +6,10 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.DirectSum.Decomposition
 import Mathlib.Algebra.GradedMonoid
-import Mathlib.Algebra.MvPolynomial.Eval
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Data.Finsupp.Weight
 import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.Algebra.MvPolynomial.Basic
 
 /-!
 # Weighted homogeneous polynomials
