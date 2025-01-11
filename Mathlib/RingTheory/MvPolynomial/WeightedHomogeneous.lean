@@ -11,7 +11,6 @@ import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Data.Finsupp.Weight
 import Mathlib.RingTheory.GradedAlgebra.Basic
 
-
 /-!
 # Weighted homogeneous polynomials
 
