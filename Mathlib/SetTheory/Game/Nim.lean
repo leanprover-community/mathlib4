@@ -166,7 +166,7 @@ theorem nim_one_moveRight (x) : (nim 1).moveRight x = nim 0 := by simp
 def nimOneRelabelling : nim 1 ≡r star := by
   rw [nim_def]
   refine ⟨?_, ?_, fun i => ?_, fun j => ?_⟩
-  any_goals dsimp; apply Equiv.equivOfUnique
+  any_goals dsimp; apply Equiv.ofUnique
   all_goals simpa [enumIsoToType] using nimZeroRelabelling
 
 theorem nim_one_equiv : nim 1 ≈ star :=

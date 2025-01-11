@@ -671,6 +671,11 @@ def prodUnits : (M × N)ˣ ≃* Mˣ × Nˣ where
     exact ⟨rfl, rfl⟩
   map_mul' := MonoidHom.map_mul _
 
+@[to_additive]
+lemma _root_.Prod.isUnit_iff {x : M × N} : IsUnit x ↔ IsUnit x.1 ∧ IsUnit x.2 where
+  mp h := ⟨(prodUnits h.unit).1.isUnit, (prodUnits h.unit).2.isUnit⟩
+  mpr h := (prodUnits.symm (h.1.unit, h.2.unit)).isUnit
+
 end
 
 end MulEquiv
@@ -692,7 +697,7 @@ def embedProduct (α : Type*) [Monoid α] : αˣ →* α × αᵐᵒᵖ where
 
 @[to_additive]
 theorem embedProduct_injective (α : Type*) [Monoid α] : Function.Injective (embedProduct α) :=
-  fun _ _ h => Units.ext <| (congr_arg Prod.fst h : _)
+  fun _ _ h => Units.ext <| (congr_arg Prod.fst h :)
 
 end Units
 
