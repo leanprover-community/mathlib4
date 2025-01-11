@@ -56,5 +56,5 @@ noncomputable abbrev AlgHom.tensorMopToEnd : (A ⊗[R] Aᵐᵒᵖ) →ₐ[R] Mod
 
 /-- An azumaya algebra is a finitely generated, projective and faithful R-algebra where
   `AlgHom.tensorMopToEnd` is an isomorphism. -/
-class IsAzumaya extends Module.Projective R A, FaithfulSMul R A, Module.Finite R A: Prop where
+class IsAzumaya extends Module.Projective R A, FaithfulSMul R A, Module.Finite R A : Prop where
     bij : Function.Bijective <| AlgHom.tensorMopToEnd R A
