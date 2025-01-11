@@ -218,7 +218,8 @@ theorem HasDerivWithinAt.cpow_const (hf : HasDerivWithinAt f f' s x)
   (Complex.hasStrictDerivAt_cpow_const h0).hasDerivAt.comp_hasDerivWithinAt x hf
 
 /-- Although `fun x => x ^ r` for fixed `r` is *not* complex-differentiable along the negative real
-line, it is still real-differentiable, and the derivative is what one would formally expect. -/
+line, it is still real-differentiable, and the derivative is what one would formally expect.
+See `hasDerivAt_ofReal_cpow_const` for an alternate formulation. -/
 theorem hasDerivAt_ofReal_cpow_const' {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ -1) :
     HasDerivAt (fun y : ℝ => (y : ℂ) ^ (r + 1) / (r + 1)) (x ^ r) x := by
   rw [Ne, ← add_eq_zero_iff_eq_neg, ← Ne] at hr
@@ -264,7 +265,7 @@ theorem hasDerivAt_ofReal_cpow_const' {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r
 
 @[deprecated (since := "2024-12-15")] alias hasDerivAt_ofReal_cpow := hasDerivAt_ofReal_cpow_const'
 
-/-- An alternate statement of `hasDerivAt_ofReal_cpow_const'`. -/
+/-- An alternate formulation of `hasDerivAt_ofReal_cpow_const'`. -/
 theorem hasDerivAt_ofReal_cpow_const {x : ℝ} (hx : x ≠ 0) {r : ℂ} (hr : r ≠ 0) :
     HasDerivAt (fun y : ℝ => (y : ℂ) ^ r) (r * x ^ (r - 1)) x := by
   have := HasDerivAt.const_mul r <| hasDerivAt_ofReal_cpow_const' hx
@@ -296,7 +297,7 @@ theorem isTheta_deriv_ofReal_cpow_const_atTop {c : ℂ} (hc : c ≠ 0) :
     _ =ᶠ[atTop] fun x : ℝ ↦ c * x ^ (c - 1) := by
       filter_upwards [eventually_ne_atTop 0] with x hx using by rw [deriv_ofReal_cpow_const hx hc]
     _ =Θ[atTop] fun x : ℝ ↦ ‖(x : ℂ) ^ (c - 1)‖ :=
-      (Asymptotics.isTheta_of_norm_eventuallyEq' (Eq.eventuallyEq rfl)).const_mul_left hc
+      (Asymptotics.IsTheta.of_norm_eventuallyEq (Eq.eventuallyEq rfl)).const_mul_left hc
     _ =ᶠ[atTop] fun x ↦ x ^ (c.re - 1) := by
       filter_upwards [eventually_gt_atTop 0] with x hx
       rw [norm_eq_abs, abs_cpow_eq_rpow_re_of_pos hx, sub_re, one_re]
