@@ -13,7 +13,6 @@ This file defines a typeclass for lattices `L` that embed nicely into a power se
 in the sense that the closure operation `Set α → L` is adjoint to the embedding. The main purpose
 of this class is to abstract the closure construction common to most algebraic substructures.
 
-
 ## Main definitions
 
 * `SetLikeCompleteLattice` : class for complete lattices that have an embedding into some `Set α`
@@ -29,11 +28,11 @@ of this class is to abstract the closure construction common to most algebraic s
 
 -/
 
+/-
+Typeclass for complete lattices that have an embedding into some `Set α`
+which preserves the order and arbitrary infima.
+-/
 class SetLikeCompleteLattice (L α : Type*) extends CompleteLattice L, SetLike L α where
-  le_def' : le =
-    @LE.le L (@Preorder.toLE L (@PartialOrder.toPreorder L SetLike.instPartialOrder))
-  lt_def' : lt =
-    @LT.lt L (@Preorder.toLT L (@PartialOrder.toPreorder L SetLike.instPartialOrder))
   coe_sInf' (s : Set L) : sInf s = InfSet.sInf (SetLike.coe '' s)
 
 namespace SetLike
@@ -41,12 +40,18 @@ namespace SetLike
 variable {α L : Type*} [SetLikeCompleteLattice L α]
 
 @[simp, norm_cast]
-protected theorem coe_sInf (s : Set L) : ((sInf s : L) : Set α) = ⋂ a ∈ s, ↑a := by
+protected theorem coe_sInf {s : Set L} : ((sInf s : L) : Set α) = ⋂ a ∈ s, ↑a := by
   simpa using SetLikeCompleteLattice.coe_sInf' s
 
 protected theorem mem_sInf {s : Set L} {x : α} : x ∈ sInf s ↔ ∀ a ∈ s, x ∈ a := by
   rw [← SetLike.mem_coe]; simp
 
+theorem le_iff {l m : L} : l ≤ m ↔ SetLike.coe l ⊆ SetLike.coe m := by
+  suffices SetLike.coe (sInf {l, m}) = SetLike.coe l ↔ SetLike.coe l ⊆ SetLike.coe m by
+    simp only [sInf_pair, coe_set_eq, inf_eq_left] at this; exact this
+  simp only [SetLike.coe_sInf]; simp
+
+/- `closure L s` is the least element of `L` containing `s`. -/
 variable (L) in
 def closure (s : Set α) : L := sInf { l | s ⊆ l }
 
@@ -58,9 +63,9 @@ open SetLikeCompleteLattice in
 def gi_closure : GaloisInsertion (closure L) SetLike.coe :=
   GaloisConnection.toGaloisInsertion
     (fun _ _ =>
-      ⟨by rw [le_def']; exact Set.Subset.trans <| fun _ hx => mem_closure.2 fun _ hs => hs hx,
+      ⟨by rw [le_iff]; exact Set.Subset.trans <| fun x hx => mem_closure.2 fun _ hs => hs hx,
       fun h => sInf_le h⟩)
-    fun _ => by rw [le_def']; exact fun _ hx => mem_closure.2 fun _ hs => hs hx
+    fun _ => le_sInf (fun _ => by rw [le_iff]; exact id)
 
 @[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_closure {s : Set α} : s ⊆ closure L s := (gi_closure L).gc.le_u_l s
