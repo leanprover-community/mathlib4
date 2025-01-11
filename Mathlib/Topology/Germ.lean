@@ -65,7 +65,7 @@ def valueRingHom {X E : Type*} [Semiring E] [TopologicalSpace X] {x : X} : Germ 
   { Filter.Germ.valueMulHom, Filter.Germ.valueAddHom with }
 
 /-- The map `Germ (𝓝 x) E → E` as a monotone ring homomorphism -/
-def valueOrderRingHom {X E : Type*} [OrderedSemiring E] [TopologicalSpace X] {x : X} :
+def valueOrderRingHom {X E : Type*} [Semiring E] [PartialOrder E] [TopologicalSpace X] {x : X} :
     Germ (𝓝 x) E →+*o E where
   __ := Filter.Germ.valueRingHom
   monotone' := fun φ ψ ↦
