@@ -34,9 +34,7 @@ longer typecheck. In Lean 4, both types are plain `def`s, so we don't need these
 
 -- Check that we haven't needed to import all the basic lemmas about groups,
 -- by asserting a random sample don't exist here:
-assert_not_exists inv_involutive div_right_inj pow_ite
-
-assert_not_exists MonoidWithZero DenselyOrdered
+assert_not_exists inv_involutive div_right_inj pow_ite MonoidWithZero DenselyOrdered
 
 universe u v w
 
