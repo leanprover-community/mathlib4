@@ -33,22 +33,6 @@ open private stereographic'_neg from Mathlib.Geometry.Manifold.Instances.Sphere
 noncomputable section
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] (v : E)
-
-theorem contDiff_uncurry_stereoInvFunAux : ContDiff ℝ ω (uncurry (stereoInvFunAux (E := E))) := by
-  have h₀ : ContDiff ℝ ω fun p : E × E => ‖p.2‖ ^ 2 := contDiff_norm_sq ℝ |>.comp contDiff_snd
-  have h₁ : ContDiff ℝ ω fun p : E × E => (‖p.2‖ ^ 2 + 4)⁻¹ := by
-    refine (h₀.add contDiff_const).inv ?_
-    intro x
-    nlinarith
-  have h₂ : ContDiff ℝ ω fun p : E × E => (4 : ℝ) • p.2 + (‖p.2‖ ^ 2 - 4) • p.1 := by
-    refine (contDiff_const.smul contDiff_snd).add ?_
-    exact (h₀.sub contDiff_const).smul contDiff_fst
-  exact h₁.smul h₂
-
-theorem coe_sphere_comp_stereoInvFun (hv : ‖v‖ = 1) :
-    ((↑) : ↥(sphere (0 : E) 1) → E) ∘ stereoInvFun hv = stereoInvFunAux v ∘ Subtype.val :=
-  rfl
-
 variable {m : WithTop ℕ∞} {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
 variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ F H}
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I m M]

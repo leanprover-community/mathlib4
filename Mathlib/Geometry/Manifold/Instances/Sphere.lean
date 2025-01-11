@@ -159,16 +159,19 @@ theorem hasFDerivAt_stereoInvFunAux_comp_coe (v : E) :
     hasFDerivAt_stereoInvFunAux v
   refine this.comp (0 : (ℝ ∙ v)ᗮ) (by apply ContinuousLinearMap.hasFDerivAt)
 
-theorem contDiff_stereoInvFunAux : ContDiff ℝ ω (stereoInvFunAux v) := by
-  have h₀ : ContDiff ℝ ω fun w : E => ‖w‖ ^ 2 := contDiff_norm_sq ℝ
-  have h₁ : ContDiff ℝ ω fun w : E => (‖w‖ ^ 2 + 4)⁻¹ := by
+theorem contDiff_uncurry_stereoInvFunAux : ContDiff ℝ ω (uncurry (stereoInvFunAux (E := E))) := by
+  have h₀ : ContDiff ℝ ω fun p : E × E => ‖p.2‖ ^ 2 := contDiff_norm_sq ℝ |>.comp contDiff_snd
+  have h₁ : ContDiff ℝ ω fun p : E × E => (‖p.2‖ ^ 2 + 4)⁻¹ := by
     refine (h₀.add contDiff_const).inv ?_
     intro x
     nlinarith
-  have h₂ : ContDiff ℝ ω fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v := by
-    refine (contDiff_const.smul contDiff_id).add ?_
-    exact (h₀.sub contDiff_const).smul contDiff_const
+  have h₂ : ContDiff ℝ ω fun p : E × E => (4 : ℝ) • p.2 + (‖p.2‖ ^ 2 - 4) • p.1 := by
+    refine (contDiff_const.smul contDiff_snd).add ?_
+    exact (h₀.sub contDiff_const).smul contDiff_fst
   exact h₁.smul h₂
+
+theorem contDiff_stereoInvFunAux : ContDiff ℝ ω (stereoInvFunAux v) :=
+  contDiff_uncurry_stereoInvFunAux.comp (contDiff_prod_mk_right v)
 
 /-- Stereographic projection, reverse direction.  This is a map from the orthogonal complement of a
 unit vector `v` in an inner product space `E` to the unit sphere in `E`. -/
@@ -178,6 +181,10 @@ def stereoInvFun (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) : sphere (0 : E) 1 :=
 @[simp]
 theorem stereoInvFun_apply (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
     (stereoInvFun hv w : E) = (‖w‖ ^ 2 + 4)⁻¹ • ((4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v) :=
+  rfl
+
+theorem coe_sphere_comp_stereoInvFun (hv : ‖v‖ = 1) :
+    ((↑) : ↥(sphere (0 : E) 1) → E) ∘ stereoInvFun hv = stereoInvFunAux v ∘ Subtype.val :=
   rfl
 
 open scoped InnerProductSpace in
