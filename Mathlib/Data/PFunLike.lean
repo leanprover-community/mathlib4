@@ -34,7 +34,9 @@ This typeclass is used in the definition of the homomorphism typeclasses,
 such as `ZeroPHomClass`, `MulPHomClass`, `MonoidPHomClass`...
 -/
 class PFunLike (F : Type*) (α γ β : outParam Type*) [SetLike γ α] where
+/-- Each `f : F` has a domain which is a subset of `α`. -/
 domain : F → γ
+/-- A coercion which sends each `f : F` to the corresponding map `α → β`. -/
 coe : Π (f : F), (domain f) → β
 coe_injective : Π (f g : F), domain f = domain g →
   (∀ (x : domain f) (y : domain g), (x : α) = (y : α) → coe f x = coe g y) → f = g
