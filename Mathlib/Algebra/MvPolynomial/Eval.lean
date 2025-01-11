@@ -9,6 +9,8 @@ import Mathlib.Algebra.MvPolynomial.Basic
 # Multivariate polynomials
 
 This file defines functions for evaluating multivariate polynomials.
+These include generically evaluating a polynomial given a valuation of all its variables,
+and more advanced evaluations that allow one to map the coefficients to different rings.
 
 ### Notation
 
