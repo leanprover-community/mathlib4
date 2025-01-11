@@ -216,7 +216,10 @@ def countHeartbeatsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     elabCommand (← `(command| count_heartbeats in $(⟨stx⟩)))
     msgs := (← get).messages.unreported.toArray.filter (·.severity != .error)
     set s
-  for msg in msgs do logInfo m!"{← msg.toString}"
+  let (ref, declStr) := match stx.find? (·.isOfKind ``Parser.Command.declId) with
+    | some decl => (decl, s!"'{decl[0].getId}' ")
+    | none => (stx, "")
+  for msg in msgs do logInfoAt ref m!"{declStr}{← msg.toString}"
 
 initialize addLinter countHeartbeatsLinter
 
