@@ -110,6 +110,7 @@ for index, entry in hundred.items():
     _thm = HundredTheorem(index, **entry)
   except TypeError as e:
     print(f"error: entry for theorem {index} is invalid: {e}")
+    errors += 1
   # Also verify that the |decl| and |decls| fields are not *both* provided.
   if _thm.decl and _thm.decls:
       print(f"warning: entry for theorem {index} has both a decl and a decls field; "
@@ -121,7 +122,8 @@ for index, entry in hundred.items():
     hundred_decls.append((f'{index} {title}', entry['decl']))
   elif 'decls' in entry:
     if not isinstance(entry['decls'], list):
-      raise ValueError(f"For key {index} ({title}): did you mean `decl` instead of `decls`?")
+      print(f"For key {index} ({title}): did you mean `decl` instead of `decls`?")
+      errors += 1
     hundred_decls = hundred_decls + [(f'{index} {title}', d) for d in entry['decls']]
 
 thousand_decls: List[Tuple[str, str]] = []
@@ -131,6 +133,7 @@ for index, entry in thousand.items():
     _thm = ThousandPlusTheorem(index, **entry)
   except TypeError as e:
     print(f"error: entry for theorem {index} is invalid: {e}")
+    errors += 1
   # Also verify that the |decl| and |decls| fields are not *both* provided.
   if _thm.decl and _thm.decls:
       print(f"warning: entry for theorem {index} has both a decl and a decls field; "
@@ -142,7 +145,8 @@ for index, entry in thousand.items():
     thousand_decls.append((f'{index} {title}', entry['decl']))
   elif 'decls' in entry:
     if not isinstance(entry['decls'], list):
-      raise ValueError(f"For key {index} ({title}): did you mean `decl` instead of `decls`?")
+      print(f"For key {index} ({title}): did you mean `decl` instead of `decls`?")
+      errors += 1
     thousand_decls = thousand_decls + [(f'{index} {title}', d) for d in entry['decls']]
 
 overview_decls = tiered_extract(overview)
@@ -163,4 +167,5 @@ with open('undergrad.json', 'w', encoding='utf8') as f:
   json.dump(undergrad_decls, f)
 
 if errors:
-  sys.exit(errors)
+  # Return an error code of at most 125 so this return value can be used further in shell scripts.
+  sys.exit(min(errors, 125))

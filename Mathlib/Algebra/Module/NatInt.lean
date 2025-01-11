@@ -103,7 +103,7 @@ lemma Nat.cast_smul_eq_nsmul (n : ℕ) (b : M) : (n : R) • b = n • b := by
 
 /-- `nsmul` is equal to any other module structure via a cast. -/
 lemma ofNat_smul_eq_nsmul (n : ℕ) [n.AtLeastTwo] (b : M) :
-    (ofNat(n) : R) • b = OfNat.ofNat n • b := Nat.cast_smul_eq_nsmul ..
+    (ofNat(n) : R) • b = ofNat(n) • b := Nat.cast_smul_eq_nsmul ..
 
 /-- `nsmul` is equal to any other module structure via a cast. -/
 @[deprecated Nat.cast_smul_eq_nsmul (since := "2024-07-23")]

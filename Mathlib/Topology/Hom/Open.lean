@@ -101,7 +101,7 @@ protected def id : α →CO α :=
 instance : Inhabited (α →CO α) :=
   ⟨ContinuousOpenMap.id _⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(ContinuousOpenMap.id α) = id :=
   rfl
 
