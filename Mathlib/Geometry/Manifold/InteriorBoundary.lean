@@ -231,4 +231,40 @@ instance BoundarylessManifold.prod [BoundarylessManifold I M] [BoundarylessManif
 
 end prod
 
+section disjointUnion
+
+variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ∞}
+  [hM : IsManifold I n M] [hM' : IsManifold I n M']
+  [Nonempty M] [Nonempty M'] [Nonempty H]
+
+open Topology
+
+lemma interior_disjointUnion :
+    ModelWithCorners.interior (I := I) (M ⊕ M') =
+      Sum.inl '' (ModelWithCorners.interior (I := I) M)
+      ∪ Sum.inr '' (ModelWithCorners.interior (I := I) M') := by
+  -- TODO! something with interior points
+  sorry
+
+-- TODO: name and move to the right place
+lemma foo {α β : Type*} {s : Set α} {t : Set β} :
+    (Sum.inl '' s ∪ Sum.inr '' t)ᶜ = Sum.inl '' sᶜ ∪ Sum.inr '' tᶜ := by
+  rw [compl_union]
+  aesop
+
+lemma boundary_disjointUnion : ModelWithCorners.boundary (I := I) (M ⊕ M') =
+      Sum.inl '' (ModelWithCorners.boundary (I := I) M)
+      ∪ Sum.inr '' (ModelWithCorners.boundary (I := I) M') := by
+  simp only [← ModelWithCorners.compl_interior, interior_disjointUnion, foo]
+
+/-- If `M` and `M'` are boundaryless, so is their disjoint union `M ⊔ M'`. -/
+instance boundaryless_disjointUnion
+    [hM: BoundarylessManifold I M] [hM': BoundarylessManifold I M'] :
+    BoundarylessManifold I (M ⊕ M') := by
+  rw [← Boundaryless.iff_boundary_eq_empty] at hM
+  rw [← Boundaryless.iff_boundary_eq_empty] at hM'
+  simp [← Boundaryless.iff_boundary_eq_empty, boundary_disjointUnion, hM, hM']
+
+end disjointUnion
+
 end ModelWithCorners

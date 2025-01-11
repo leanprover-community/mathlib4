@@ -818,8 +818,7 @@ lemma ContDiffGroupoid.mem_of_source_eq_empty (f : PartialHomeomorph H H)
 
 /-- The disjoint union of two `C^n` manifolds modelled on `(E, H)`
 is a `C^n` manifold modeled on `(E, H)`. -/
-instance disjointUnion [Nonempty M] [Nonempty M'] [Nonempty H] :
-    IsManifold I n (M ⊕ M') where
+instance disjointUnion [Nonempty M] [Nonempty M'] [Nonempty H] : IsManifold I n (M ⊕ M') where
   compatible {e} e' he he' := by
     obtain (⟨f, hf, hef⟩ | ⟨f, hf, hef⟩) := ChartedSpace.mem_atlas_sum he
     · obtain (⟨f', hf', he'f'⟩ | ⟨f', hf', he'f'⟩) := ChartedSpace.mem_atlas_sum he'
@@ -1719,4 +1718,4 @@ instance : PathConnectedSpace (TangentSpace I x) := inferInstanceAs (PathConnect
 
 end Real
 
-set_option linter.style.longFile 1700
+set_option linter.style.longFile 1900
