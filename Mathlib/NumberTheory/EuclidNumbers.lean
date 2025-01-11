@@ -6,7 +6,9 @@ Authors: Walter Moreira, Joe Stubbs
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.Filter.Basic
 import Mathlib.Order.Bounds.Basic
-import Mathlib.Data.Complex.ExponentialBounds
+import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Order.Star.Basic
+import Mathlib.Analysis.Normed.Field.Lemmas
 
 /-!
 # Euclid Numbers
