@@ -81,6 +81,10 @@ theorem integrableOn_Ioi_rpow_iff {s t : ℝ} (ht : 0 < t) :
     exact Real.rpow_le_rpow_of_exponent_le x_one h
   exact not_IntegrableOn_Ioi_inv this
 
+theorem integrableAtFilter_rpow_atTop {r : ℝ} (hr : r < -1) :
+    IntegrableAtFilter (fun x : ℝ ↦ x ^ r) atTop :=
+  ⟨Set.Ioi 1, Ioi_mem_atTop 1, (integrableOn_Ioi_rpow_iff zero_lt_one).mpr hr⟩
+
 /-- The real power function with any exponent is not integrable on `(0, +∞)`. -/
 theorem not_integrableOn_Ioi_rpow (s : ℝ) : ¬ IntegrableOn (fun x ↦ x ^ s) (Ioi (0 : ℝ)) := by
   intro h
