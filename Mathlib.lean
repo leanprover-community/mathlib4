@@ -607,7 +607,7 @@ import Mathlib.Algebra.MonoidAlgebra.Ideal
 import Mathlib.Algebra.MonoidAlgebra.NoZeroDivisors
 import Mathlib.Algebra.MonoidAlgebra.Support
 import Mathlib.Algebra.MonoidAlgebra.ToDirectSum
-import Mathlib.Algebra.MvPolynomial.Eval
+import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.Algebra.MvPolynomial.Cardinal
 import Mathlib.Algebra.MvPolynomial.Comap
 import Mathlib.Algebra.MvPolynomial.CommRing
@@ -616,6 +616,7 @@ import Mathlib.Algebra.MvPolynomial.Degrees
 import Mathlib.Algebra.MvPolynomial.Derivation
 import Mathlib.Algebra.MvPolynomial.Division
 import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.Algebra.MvPolynomial.Eval
 import Mathlib.Algebra.MvPolynomial.Expand
 import Mathlib.Algebra.MvPolynomial.Funext
 import Mathlib.Algebra.MvPolynomial.Invertible
