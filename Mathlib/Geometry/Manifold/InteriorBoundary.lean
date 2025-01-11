@@ -5,6 +5,7 @@ Authors: Michael Rothgang
 -/
 
 import Mathlib.Geometry.Manifold.IsManifold
+import Mathlib.Geometry.Manifold.ContMDiffMap
 
 /-!
 # Interior and boundary of a manifold
@@ -284,6 +285,44 @@ instance boundaryless_disjointUnion
   rw [← Boundaryless.iff_boundary_eq_empty] at hM
   rw [← Boundaryless.iff_boundary_eq_empty] at hM'
   simp [← Boundaryless.iff_boundary_eq_empty, boundary_disjointUnion, hM, hM']
+
+lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
+  intro x
+  rw [contMDiffAt_iff]
+  refine ⟨continuous_inl.continuousAt, ?_⟩
+  simp only [extChartAt, ChartedSpace.sum_chartAt_inl, PartialHomeomorph.lift_openEmbedding,
+    PartialEquiv.invFun_as_coe, PartialHomeomorph.coe_coe_symm,
+    PartialHomeomorph.extend.eq_1, PartialEquiv.coe_trans]
+  set C := chartAt H x
+  have : ContDiffWithinAt 𝕜 n (I ∘ C ∘ C.symm ∘ I.symm) (range I) (I (C x)) := by
+    -- TODO! idea. near I (C x), C and I have their inverses, so this is locally just id
+    have : C ∘ C.symm = id := by
+      ext x
+      apply C.right_inv'
+      sorry -- is x ∈ C.target?
+    have := calc I ∘ ↑C ∘ ↑C.symm ∘ ↑I.symm
+      _ = I ∘ (C ∘ C.symm) ∘ I.symm := by simp only [Function.comp_assoc]
+      _ = I ∘ id ∘ I.symm := by rw [this]
+      _ = I ∘ I.symm := by simp
+      _ = id := by
+        ext x
+        dsimp
+        have : I.symm x ∈ I.source := sorry
+        apply I.right_inv' --this-- x
+        sorry
+    rw [this]; sorry
+  apply ContDiffWithinAt.congr this
+  · intro y hy
+    dsimp only [Function.comp_apply]
+    congr
+    apply Sum.inl_injective.extend_apply C
+  · dsimp only [Function.comp_apply]
+    congr
+    apply Sum.inl_injective.extend_apply
+
+  -- write in charts at x and inl x; then expand the charts there
+  -- finally, the statement should boil down to lift_openEmbedding being nice...
+
 
 end disjointUnion
 
