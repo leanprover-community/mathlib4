@@ -1052,6 +1052,7 @@ import Mathlib.AlgebraicGeometry.Stalk
 import Mathlib.AlgebraicGeometry.StructureSheaf
 import Mathlib.AlgebraicGeometry.ValuativeCriterion
 import Mathlib.AlgebraicTopology.AlternatingFaceMapComplex
+import Mathlib.AlgebraicTopology.Anodyne
 import Mathlib.AlgebraicTopology.CechNerve
 import Mathlib.AlgebraicTopology.DoldKan.Compatibility
 import Mathlib.AlgebraicTopology.DoldKan.Decomposition
@@ -1079,6 +1080,7 @@ import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+import Mathlib.AlgebraicTopology.KanFibration
 import Mathlib.AlgebraicTopology.MooreComplex
 import Mathlib.AlgebraicTopology.Quasicategory.Basic
 import Mathlib.AlgebraicTopology.Quasicategory.Nerve
@@ -2074,6 +2076,7 @@ import Mathlib.CategoryTheory.MorphismProperty.OverAdjunction
 import Mathlib.CategoryTheory.MorphismProperty.Representable
 import Mathlib.CategoryTheory.MorphismProperty.Retract
 import Mathlib.CategoryTheory.MorphismProperty.TransfiniteComposition
+import Mathlib.CategoryTheory.MorphismProperty.WeakSaturation
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.NatTrans
 import Mathlib.CategoryTheory.Noetherian
