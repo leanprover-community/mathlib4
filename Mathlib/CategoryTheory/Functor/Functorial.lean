@@ -72,6 +72,8 @@ instance functorial_id : Functorial.{v₁, v₁} (id : C → C) where map' f := 
 
 section
 
+attribute [grind] Function.comp
+
 variable {E : Type u₃} [Category.{v₃} E]
 
 -- This is no longer viable as an instance in Lean 3.7,

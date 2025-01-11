@@ -85,6 +85,8 @@ def vcomp (α : NatTrans F G) (β : NatTrans G H) : NatTrans F H where
 theorem vcomp_app (α : NatTrans F G) (β : NatTrans G H) (X : C) :
     (vcomp α β).app X = α.app X ≫ β.app X := rfl
 
+attribute [grind =] vcomp_app
+
 end
 
 /-- The diagram
