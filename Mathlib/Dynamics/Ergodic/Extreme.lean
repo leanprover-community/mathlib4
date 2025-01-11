@@ -19,6 +19,8 @@ variable {α : Type*} {m : MeasurableSpace α} {μ ν : Measure α} {f : α → 
 
 namespace Ergodic
 
+/-- Given a constant `c ≠ ∞`, an extreme point of the set of measures that are invariant under `f`
+and have total mass `c` is an ergodic measure. -/
 theorem of_mem_extremePoints_meas_univ {c : ℝ≥0∞} (hc : c ≠ ∞)
     (h : μ ∈ extremePoints ℝ≥0∞ {ν | MeasurePreserving f ν ν ∧ ν univ = c}) : Ergodic f μ := by
   have hf : MeasurePreserving f μ μ := h.1.1
@@ -54,6 +56,7 @@ theorem of_mem_extremePoints_meas_univ {c : ℝ≥0∞} (hc : c ≠ ∞)
     rw [← hcond] at hs'
     simp [ProbabilityTheory.cond_apply, hsm] at hs'
 
+/-- An extreme point of the set of invariant probability measures is an ergodic measure. -/
 theorem of_mem_extremePoints
     (h : μ ∈ extremePoints ℝ≥0∞ {ν | MeasurePreserving f ν ν ∧ IsProbabilityMeasure ν}) :
     Ergodic f μ :=
