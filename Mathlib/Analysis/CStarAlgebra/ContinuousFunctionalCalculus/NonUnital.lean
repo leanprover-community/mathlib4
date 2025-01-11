@@ -565,7 +565,7 @@ section Order
 
 section Semiring
 
-variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [Nontrivial R]
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [PartialOrder R] [Nontrivial R]
 variable [StarRing R] [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
 variable [∀ (α) [Zero α] [TopologicalSpace α], StarOrderedRing C(α, R)₀]
 variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
@@ -631,7 +631,7 @@ end Semiring
 
 section Ring
 
-variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [Nontrivial R]
+variable {R A : Type*} {p : A → Prop} [CommRing R] [PartialOrder R] [Nontrivial R]
 variable [StarRing R] [MetricSpace R] [TopologicalRing R] [ContinuousStar R]
 variable [∀ (α) [Zero α] [TopologicalSpace α], StarOrderedRing C(α, R)₀]
 variable [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
@@ -649,7 +649,8 @@ lemma cfcₙ_le_iff (f g : R → R) (a : A) (hf : ContinuousOn f (σₙ R a) := 
   rw [cfcₙ_apply f a, cfcₙ_apply g a, cfcₙHom_le_iff (show p a from ha), ContinuousMapZero.le_def]
   simp
 
-lemma cfcₙ_nonpos_iff (f : R → R) (a : A) (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac)
+lemma cfcₙ_nonpos_iff [IsOrderedRing R]
+    (f : R → R) (a : A) (hf : ContinuousOn f (σₙ R a) := by cfc_cont_tac)
     (h0 : f 0 = 0 := by cfc_zero_tac) (ha : p a := by cfc_tac) :
     cfcₙ f a ≤ 0 ↔ ∀ x ∈ σₙ R a, f x ≤ 0 := by
   simp_rw [← neg_nonneg, ← cfcₙ_neg]
