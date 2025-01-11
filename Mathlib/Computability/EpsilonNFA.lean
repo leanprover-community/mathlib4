@@ -212,10 +212,10 @@ theorem evalFrom_Path_iff (s₁ s₂ : σ) (x : List α) :
     constructor
     · intro ⟨n, _⟩
       use List.replicate n none
-      rw [List.reduceOption_replicate_of_none]
+      rw [List.reduceOption_replicate_none]
       trivial
     · intro ⟨_, hx⟩
-      rw [List.reduceOption_eq_nil_replicate_iff] at hx
+      rw [List.reduceOption_eq_nil_iff] at hx
       obtain ⟨⟨_, ⟨⟩⟩, _⟩ := hx
       tauto
   · rw [evalFrom_append_singleton, mem_stepSet_iff]
@@ -228,12 +228,12 @@ theorem evalFrom_Path_iff (s₁ s₂ : σ) (x : List α) :
       obtain ⟨n, _⟩ := h
       use x' ++ some a :: List.replicate n none
       rw [List.reduceOption_append, List.reduceOption_cons_of_some,
-        List.reduceOption_replicate_of_none, Path_append_iff]
+        List.reduceOption_replicate_none, Path_append_iff]
       tauto
     · intro ⟨_, hx, h⟩
       rw [← List.concat_eq_append, List.reduceOption_eq_concat_iff] at hx
       obtain ⟨_, _, ⟨⟩, _, hx₂⟩ := hx
-      rw [List.reduceOption_eq_nil_replicate_iff] at hx₂
+      rw [List.reduceOption_eq_nil_iff] at hx₂
       obtain ⟨_, ⟨⟩⟩ := hx₂
       rw [Path_append_iff] at h
       obtain ⟨t, _, _ | _⟩ := h
