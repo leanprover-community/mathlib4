@@ -7,6 +7,8 @@ Authors: Arthur Paulino
 import Cache.Requests
 import Lean.Elab.ParseImportsFast
 import Batteries.Data.String.Matcher
+import Batteries.Data.List.ArrayMap
+import Batteries.Data.NameSet
 
 def help : String := "Mathlib4 caching CLI
 Usage: cache [COMMAND]
@@ -70,17 +72,6 @@ def curlArgs : List String :=
 def leanTarArgs : List String :=
   ["get", "get!", "miniget", "miniget-", "pack", "pack!", "unpack", "lookup"]
 
--- Copied from ImportGraph/RequiredModules.lean.
-namespace Lean.NameSet
-
-def ofList (l : List Name) : NameSet :=
-  l.foldl (fun s n => s.insert n) {}
-
-def ofArray (a : Array Name) : NameSet :=
-  a.foldl (fun s n => s.insert n) {}
-
-end Lean.NameSet
-
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
   if Lean.versionString == "4.8.0-rc1" && Lean.githash == "b470eb522bfd68ca96938c23f6a1bce79da8a99f" then do
@@ -91,7 +82,7 @@ def main (args : List String) : IO Unit := do
   -- so we can use the cache on `Archive` or `Counterexamples`.
   let extraRoots := match args with
   | [] => #[]
-  | _ :: t => t.toArray.map FilePath.mk
+  | _ :: t => t.toArrayMap FilePath.mk
   if args.isEmpty then
     println help
     Process.exit 0
