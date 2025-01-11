@@ -435,4 +435,58 @@ theorem card_commonNeighbors_top [DecidableEq V] {v w : V} (h : v ≠ w) :
 
 end Finite
 
+section Support
+
+lemma card_support_le [Fintype V] [Fintype G.support] :
+    Fintype.card G.support ≤ Fintype.card V :=
+  Fintype.card_le_of_injective Subtype.val Subtype.val_injective
+
+variable {s : Set V} [DecidablePred (· ∈ s)] [Fintype V] {G : SimpleGraph V} [DecidableRel G.Adj]
+
+instance : DecidablePred (· ∈ G.support) := by
+  unfold support Rel.dom
+  infer_instance
+
+/-- If the support of the simple graph `G` is a subset of the set `s`, then the induced subgraph of
+`s` has the same number of edges as `G`. -/
+theorem card_edgeFinset_induce_of_support_subset (h : G.support ⊆ s) :
+    #(G.induce s).edgeFinset = #G.edgeFinset := by
+  apply Finset.card_bij (fun e _ ↦ e.map (↑))
+  · apply Sym2.ind
+    intro _ _
+    simp
+  · apply Sym2.ind
+    intro _ _ _
+    apply Sym2.ind
+    simp [Subtype.ext_iff]
+  · apply Sym2.ind
+    intro v₁ v₂ hadj
+    rw [mem_edgeFinset, mem_edgeSet] at hadj
+    have hv₁ : v₁ ∈ G.support := G.mem_support.mpr ⟨v₂, hadj⟩
+    have hv₂ : v₂ ∈ G.support := G.mem_support.mpr ⟨v₁, hadj.symm⟩
+    use s(⟨v₁, h hv₁⟩, ⟨v₂, h hv₂⟩)
+    simp [hadj]
+
+theorem card_edgeFinset_induce_support :
+    #(G.induce G.support).edgeFinset = #G.edgeFinset :=
+  card_edgeFinset_induce_of_support_subset subset_rfl
+
+/-- If the support of the simple graph `G` is a subset of the set `s`, then the degree of vertices
+in the induced subgraph of `s` are the same as in `G`. -/
+theorem degree_induce_of_support_subset (h : G.support ⊆ s) (v : s) :
+    (G.induce s).degree v = G.degree v := by
+  simp_rw [←card_neighborFinset_eq_degree]
+  apply Finset.card_bij (fun v _ ↦ ↑v) (by simp) (by simp)
+  intro w hadj
+  rw [mem_neighborFinset] at hadj
+  have hw : w ∈ G.support := G.mem_support.mpr ⟨v, hadj.symm⟩
+  use ⟨w, h hw⟩
+  simp [hadj]
+
+theorem degree_induce_support (v : G.support) :
+    (G.induce G.support).degree v = G.degree v :=
+  degree_induce_of_support_subset subset_rfl v
+
+end Support
+
 end SimpleGraph
