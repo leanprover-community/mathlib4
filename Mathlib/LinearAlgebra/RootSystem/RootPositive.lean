@@ -40,7 +40,8 @@ variable {ι R M N : Type*}
 
 namespace RootPairing
 
-variable [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+variable [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] [AddCommGroup M] [Module R M]
+  [AddCommGroup N] [Module R N]
 
 /-- A Prop-valued class for a bilinear form to be compatible with a root pairing. -/
 class IsRootPositive (P : RootPairing ι R M N) (B : M →ₗ[R] M →ₗ[R] R) : Prop where
@@ -51,6 +52,7 @@ class IsRootPositive (P : RootPairing ι R M N) (B : M →ₗ[R] M →ₗ[R] R) 
 variable {P : RootPairing ι R M N} (B : M →ₗ[R] M →ₗ[R] R) [IsRootPositive P B] (i j : ι)
 include B
 
+omit [IsStrictOrderedRing R] in
 lemma two_mul_apply_root_root :
     2 * B (P.root i) (P.root j) = P.pairing i j * B (P.root j) (P.root j) := by
   rw [two_mul, ← eq_sub_iff_add_eq]
