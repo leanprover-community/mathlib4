@@ -48,7 +48,7 @@ variable (R L : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
 
 variable {R L} in
 theorem HasTrivialRadical.eq_bot_of_isSolvable [HasTrivialRadical R L]
-    (I : LieIdeal R L) [hI : IsSolvable R I] : I = ⊥ :=
+    (I : LieIdeal R L) [hI : IsSolvable I] : I = ⊥ :=
   sSup_eq_bot.mp radical_eq_bot _ hI
 
 @[simp]
@@ -56,19 +56,19 @@ theorem HasTrivialRadical.center_eq_bot [HasTrivialRadical R L] : center R L = �
   HasTrivialRadical.eq_bot_of_isSolvable _
 
 variable {R L} in
-theorem hasTrivialRadical_of_no_solvable_ideals (h : ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥) :
+theorem hasTrivialRadical_of_no_solvable_ideals (h : ∀ I : LieIdeal R L, IsSolvable I → I = ⊥) :
     HasTrivialRadical R L :=
   ⟨sSup_eq_bot.mpr h⟩
 
 theorem hasTrivialRadical_iff_no_solvable_ideals :
-    HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsSolvable R I → I = ⊥ :=
+    HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsSolvable I → I = ⊥ :=
   ⟨@HasTrivialRadical.eq_bot_of_isSolvable _ _ _ _ _, hasTrivialRadical_of_no_solvable_ideals⟩
 
 theorem hasTrivialRadical_iff_no_abelian_ideals :
     HasTrivialRadical R L ↔ ∀ I : LieIdeal R L, IsLieAbelian I → I = ⊥ := by
   rw [hasTrivialRadical_iff_no_solvable_ideals]
   constructor <;> intro h₁ I h₂
-  · exact h₁ _ <| LieAlgebra.ofAbelianIsSolvable R I
+  · exact h₁ _ <| LieAlgebra.ofAbelianIsSolvable I
   · rw [← abelian_of_solvable_ideal_eq_bot_iff]
     exact h₁ _ <| abelian_derivedAbelianOfIdeal I
 
@@ -140,7 +140,7 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
           Submodule.mem_toAddSubmonoid]
         apply add_mem
         -- Now `⁅a, y⁆ ∈ J` since `a ∈ I`, `y ∈ J`, and `J` is an ideal of `I`.
-        · simp only [Submodule.mem_map, LieSubmodule.mem_coeSubmodule, Subtype.exists]
+        · simp only [Submodule.mem_map, LieSubmodule.mem_toSubmodule, Subtype.exists]
           erw [Submodule.coe_subtype]
           simp only [exists_and_right, exists_eq_right, ha, lie_mem_left, exists_true_left]
           exact lie_mem_right R I J ⟨a, ha⟩ y hy
@@ -159,8 +159,8 @@ lemma isSimple_of_isAtom (I : LieIdeal R L) (hI : IsAtom I) : IsSimple R I where
       intro x hx
       suffices x ∈ J → x = 0 from this hx
       have := @this x.1
-      simp only [LieIdeal.incl_coe, LieIdeal.coe_to_lieSubalgebra_to_submodule,
-        LieSubmodule.mem_mk_iff', Submodule.mem_map, LieSubmodule.mem_coeSubmodule, Subtype.exists,
+      simp only [LieIdeal.incl_coe, LieIdeal.toLieSubalgebra_toSubmodule,
+        LieSubmodule.mem_mk_iff', Submodule.mem_map, LieSubmodule.mem_toSubmodule, Subtype.exists,
         LieSubmodule.mem_bot, ZeroMemClass.coe_eq_zero, forall_exists_index, and_imp, J'] at this
       exact fun _ ↦ this (↑x) x.property hx rfl
     -- We need to show that `J = ⊥`.
@@ -318,7 +318,7 @@ to be reductive.
 Note that there is absolutely [no agreement](https://mathoverflow.net/questions/284713/) on what
 the label 'reductive' should mean when the coefficients are not a field of characteristic zero. -/
 theorem abelian_radical_iff_solvable_is_abelian [IsNoetherian R L] :
-    IsLieAbelian (radical R L) ↔ ∀ I : LieIdeal R L, IsSolvable R I → IsLieAbelian I := by
+    IsLieAbelian (radical R L) ↔ ∀ I : LieIdeal R L, IsSolvable I → IsLieAbelian I := by
   constructor
   · rintro h₁ I h₂
     rw [LieIdeal.solvable_iff_le_radical] at h₂

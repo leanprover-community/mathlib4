@@ -116,6 +116,13 @@ theorem IsTensorProduct.inductionOn (h : IsTensorProduct f) {C : M → Prop} (m 
     rw [map_add]
     apply hadd <;> assumption
 
+lemma IsTensorProduct.of_equiv (e : M₁ ⊗[R] M₂ ≃ₗ[R] M) (he : ∀ x y, e (x ⊗ₜ y) = f x y) :
+    IsTensorProduct f := by
+  have : TensorProduct.lift f = e := by
+    ext x y
+    simp [he]
+  simpa [IsTensorProduct, this] using e.bijective
+
 end IsTensorProduct
 
 section IsBaseChange
@@ -225,6 +232,34 @@ theorem IsBaseChange.equiv_tmul (s : S) (m : M) : h.equiv (s ⊗ₜ m) = s • f
 
 theorem IsBaseChange.equiv_symm_apply (m : M) : h.equiv.symm (f m) = 1 ⊗ₜ m := by
   rw [h.equiv.symm_apply_eq, h.equiv_tmul, one_smul]
+
+lemma IsBaseChange.of_equiv (e : S ⊗[R] M ≃ₗ[S] N) (he : ∀ x, e (1 ⊗ₜ x) = f x) :
+    IsBaseChange S f := by
+  apply IsTensorProduct.of_equiv (e.restrictScalars R)
+  intro x y
+  simp [show x ⊗ₜ[R] y = x • (1 ⊗ₜ[R] y) by simp [smul_tmul'], he]
+
+section
+
+variable (A : Type*) [CommSemiring A]
+variable [Algebra R A] [Algebra S A] [IsScalarTower R S A]
+variable [Module S M] [IsScalarTower R S M]
+variable [Module A N] [IsScalarTower S A N] [IsScalarTower R A N]
+
+/-- If `N` is the base change of `M` to `A`, then `N ⊗[R] P` is the base change
+of `M ⊗[R] P` to `A`. This is simply the isomorphism
+`A ⊗[S] (M ⊗[R] P) ≃ₗ[A] (A ⊗[S] M) ⊗[R] P`. -/
+lemma isBaseChange_tensorProduct_map {f : M →ₗ[S] N} (hf : IsBaseChange A f) :
+    IsBaseChange A (AlgebraTensorModule.map f (LinearMap.id (R := R) (M := P))) := by
+  let e : A ⊗[S] M ⊗[R] P ≃ₗ[A] N ⊗[R] P := (AlgebraTensorModule.assoc R S A A M P).symm.trans
+    (AlgebraTensorModule.congr hf.equiv (LinearEquiv.refl R P))
+  refine IsBaseChange.of_equiv e (fun x ↦ ?_)
+  induction' x with m p _ _ h1 h2
+  · simp
+  · simp [e, IsBaseChange.equiv_tmul]
+  · simp [tmul_add, h1, h2]
+
+end
 
 variable (f)
 
@@ -469,7 +504,7 @@ theorem Algebra.pushoutDesc_left [Algebra.IsPushout R S R' S'] {A : Type*} [Semi
 theorem Algebra.lift_algHom_comp_left [Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (H) :
     (Algebra.pushoutDesc S' f g H).comp (toAlgHom R S S') = f :=
-  AlgHom.ext fun x => (Algebra.pushoutDesc_left S' f g H x : _)
+  AlgHom.ext fun x => (Algebra.pushoutDesc_left S' f g H x :)
 
 @[simp]
 theorem Algebra.pushoutDesc_right [Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
@@ -484,7 +519,7 @@ theorem Algebra.pushoutDesc_right [Algebra.IsPushout R S R' S'] {A : Type*} [Sem
 theorem Algebra.lift_algHom_comp_right [Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
     [Algebra R A] (f : S →ₐ[R] A) (g : R' →ₐ[R] A) (H) :
     (Algebra.pushoutDesc S' f g H).comp (toAlgHom R R' S') = g :=
-  AlgHom.ext fun x => (Algebra.pushoutDesc_right S' f g H x : _)
+  AlgHom.ext fun x => (Algebra.pushoutDesc_right S' f g H x :)
 
 @[ext (iff := false)]
 theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type*} [Semiring A]
@@ -497,7 +532,7 @@ theorem Algebra.IsPushout.algHom_ext [H : Algebra.IsPushout R S R' S'] {A : Type
   · intro s s' e
     rw [Algebra.smul_def, map_mul, map_mul, e]
     congr 1
-    exact (AlgHom.congr_fun h₂ s : _)
+    exact (AlgHom.congr_fun h₂ s :)
   · intro s₁ s₂ e₁ e₂
     rw [map_add, map_add, e₁, e₂]
 

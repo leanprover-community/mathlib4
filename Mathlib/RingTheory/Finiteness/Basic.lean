@@ -251,13 +251,13 @@ theorem equiv_iff (e : M ≃ₗ[R] N) : Module.Finite R M ↔ Module.Finite R N 
 
 instance ulift [Module.Finite R M] : Module.Finite R (ULift M) := equiv ULift.moduleEquiv.symm
 
-theorem iff_fg {N : Submodule R M} : Module.Finite R N ↔ N.FG := Module.finite_def.trans (fg_top _)
+theorem iff_fg {N : Submodule R M} : Module.Finite R N ↔ N.FG := Module.finite_def.trans N.fg_top
 
 variable (R M)
 
 instance bot : Module.Finite R (⊥ : Submodule R M) := iff_fg.mpr fg_bot
 
-instance top [Module.Finite R M] : Module.Finite R (⊤ : Submodule R M) := iff_fg.mpr out
+instance top [Module.Finite R M] : Module.Finite R (⊤ : Submodule R M) := iff_fg.mpr fg_top
 
 variable {M}
 

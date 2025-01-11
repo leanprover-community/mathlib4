@@ -502,36 +502,76 @@ section OrderedCommGroup
 variable [TopologicalSpace H] [OrderedCommGroup H] [ContinuousInv H]
 
 @[to_additive]
-theorem tendsto_inv_nhdsWithin_Ioi {a : H} : Tendsto Inv.inv (𝓝[>] a) (𝓝[<] a⁻¹) :=
+theorem tendsto_inv_nhdsGT {a : H} : Tendsto Inv.inv (𝓝[>] a) (𝓝[<] a⁻¹) :=
   (continuous_inv.tendsto a).inf <| by simp [tendsto_principal_principal]
 
+@[deprecated (since := "2024-12-22")]
+alias tendsto_neg_nhdsWithin_Ioi := tendsto_neg_nhdsGT
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_inv_nhdsWithin_Ioi := tendsto_inv_nhdsGT
+
 @[to_additive]
-theorem tendsto_inv_nhdsWithin_Iio {a : H} : Tendsto Inv.inv (𝓝[<] a) (𝓝[>] a⁻¹) :=
+theorem tendsto_inv_nhdsLT {a : H} : Tendsto Inv.inv (𝓝[<] a) (𝓝[>] a⁻¹) :=
   (continuous_inv.tendsto a).inf <| by simp [tendsto_principal_principal]
 
-@[to_additive]
-theorem tendsto_inv_nhdsWithin_Ioi_inv {a : H} : Tendsto Inv.inv (𝓝[>] a⁻¹) (𝓝[<] a) := by
-  simpa only [inv_inv] using @tendsto_inv_nhdsWithin_Ioi _ _ _ _ a⁻¹
+@[deprecated (since := "2024-12-22")]
+alias tendsto_neg_nhdsWithin_Iio := tendsto_neg_nhdsLT
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_inv_nhdsWithin_Iio := tendsto_inv_nhdsLT
 
 @[to_additive]
-theorem tendsto_inv_nhdsWithin_Iio_inv {a : H} : Tendsto Inv.inv (𝓝[<] a⁻¹) (𝓝[>] a) := by
-  simpa only [inv_inv] using @tendsto_inv_nhdsWithin_Iio _ _ _ _ a⁻¹
+theorem tendsto_inv_nhdsGT_inv {a : H} : Tendsto Inv.inv (𝓝[>] a⁻¹) (𝓝[<] a) := by
+  simpa only [inv_inv] using @tendsto_inv_nhdsGT _ _ _ _ a⁻¹
+
+@[deprecated (since := "2024-12-22")]
+alias tendsto_neg_nhdsWithin_Ioi_neg := tendsto_neg_nhdsGT_neg
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_inv_nhdsWithin_Ioi_inv := tendsto_inv_nhdsGT_inv
 
 @[to_additive]
-theorem tendsto_inv_nhdsWithin_Ici {a : H} : Tendsto Inv.inv (𝓝[≥] a) (𝓝[≤] a⁻¹) :=
+theorem tendsto_inv_nhdsLT_inv {a : H} : Tendsto Inv.inv (𝓝[<] a⁻¹) (𝓝[>] a) := by
+  simpa only [inv_inv] using @tendsto_inv_nhdsLT _ _ _ _ a⁻¹
+
+@[deprecated (since := "2024-12-22")]
+alias tendsto_neg_nhdsWithin_Iio_neg := tendsto_neg_nhdsLT_neg
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_inv_nhdsWithin_Iio_inv := tendsto_inv_nhdsLT_inv
+
+@[to_additive]
+theorem tendsto_inv_nhdsGE {a : H} : Tendsto Inv.inv (𝓝[≥] a) (𝓝[≤] a⁻¹) :=
   (continuous_inv.tendsto a).inf <| by simp [tendsto_principal_principal]
 
+@[deprecated (since := "2024-12-22")]
+alias tendsto_neg_nhdsWithin_Ici := tendsto_neg_nhdsGE
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_inv_nhdsWithin_Ici := tendsto_inv_nhdsGE
+
 @[to_additive]
-theorem tendsto_inv_nhdsWithin_Iic {a : H} : Tendsto Inv.inv (𝓝[≤] a) (𝓝[≥] a⁻¹) :=
+theorem tendsto_inv_nhdsLE {a : H} : Tendsto Inv.inv (𝓝[≤] a) (𝓝[≥] a⁻¹) :=
   (continuous_inv.tendsto a).inf <| by simp [tendsto_principal_principal]
 
-@[to_additive]
-theorem tendsto_inv_nhdsWithin_Ici_inv {a : H} : Tendsto Inv.inv (𝓝[≥] a⁻¹) (𝓝[≤] a) := by
-  simpa only [inv_inv] using @tendsto_inv_nhdsWithin_Ici _ _ _ _ a⁻¹
+@[deprecated (since := "2024-12-22")]
+alias tendsto_neg_nhdsWithin_Iic := tendsto_neg_nhdsLE
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_inv_nhdsWithin_Iic := tendsto_inv_nhdsLE
 
 @[to_additive]
-theorem tendsto_inv_nhdsWithin_Iic_inv {a : H} : Tendsto Inv.inv (𝓝[≤] a⁻¹) (𝓝[≥] a) := by
-  simpa only [inv_inv] using @tendsto_inv_nhdsWithin_Iic _ _ _ _ a⁻¹
+theorem tendsto_inv_nhdsGE_inv {a : H} : Tendsto Inv.inv (𝓝[≥] a⁻¹) (𝓝[≤] a) := by
+  simpa only [inv_inv] using @tendsto_inv_nhdsGE _ _ _ _ a⁻¹
+
+@[deprecated (since := "2024-12-22")]
+alias tendsto_neg_nhdsWithin_Ici_neg := tendsto_neg_nhdsGE_neg
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_inv_nhdsWithin_Ici_inv := tendsto_inv_nhdsGE_inv
+
+@[to_additive]
+theorem tendsto_inv_nhdsLE_inv {a : H} : Tendsto Inv.inv (𝓝[≤] a⁻¹) (𝓝[≥] a) := by
+  simpa only [inv_inv] using @tendsto_inv_nhdsLE _ _ _ _ a⁻¹
+
+@[deprecated (since := "2024-12-22")]
+alias tendsto_neg_nhdsWithin_Iic_neg := tendsto_neg_nhdsLE_neg
+@[to_additive existing, deprecated (since := "2024-12-22")]
+alias tendsto_inv_nhdsWithin_Iic_inv := tendsto_inv_nhdsLE_inv
 
 end OrderedCommGroup
 
@@ -771,6 +811,17 @@ theorem continuous_of_continuousAt_one₂ {H M : Type*} [CommMonoid M] [Topologi
     (((hl x).comp tendsto_snd).mul hf)).mono_right (le_of_eq ?_)
   simp only [map_one, mul_one, MonoidHom.one_apply]
 
+@[to_additive]
+lemma TopologicalGroup.isInducing_iff_nhds_one
+    {H : Type*} [Group H] [TopologicalSpace H] [TopologicalGroup H] {f : G →* H} :
+    Topology.IsInducing f ↔ 𝓝 (1 : G) = (𝓝 (1 : H)).comap f := by
+  rw [Topology.isInducing_iff_nhds]
+  refine ⟨(f.map_one ▸ · 1), fun hf x ↦ ?_⟩
+  rw [← nhds_translation_mul_inv, ← nhds_translation_mul_inv (f x), Filter.comap_comap, hf,
+    Filter.comap_comap]
+  congr 1
+  ext; simp
+
 -- TODO: unify with `QuotientGroup.isOpenQuotientMap_mk`
 /-- Let `A` and `B` be topological groups, and let `φ : A → B` be a continuous surjective group
 homomorphism. Assume furthermore that `φ` is a quotient map (i.e., `V ⊆ B`
@@ -957,7 +1008,7 @@ variable [TopologicalSpace α] {f g : α → G} {s : Set α} {x : α}
 
 @[to_additive (attr := continuity, fun_prop) sub]
 theorem Continuous.div' (hf : Continuous f) (hg : Continuous g) : Continuous fun x => f x / g x :=
-  continuous_div'.comp (hf.prod_mk hg : _)
+  continuous_div'.comp (hf.prod_mk hg :)
 
 @[to_additive (attr := continuity) continuous_sub_left]
 lemma continuous_div_left' (a : G) : Continuous (a / ·) := continuous_const.div' continuous_id

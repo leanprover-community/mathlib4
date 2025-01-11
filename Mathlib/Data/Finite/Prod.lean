@@ -14,8 +14,6 @@ import Mathlib.Data.Fintype.Vector
 assert_not_exists OrderedRing
 assert_not_exists MonoidWithZero
 
-open scoped Classical
-
 variable {α β : Type*}
 
 namespace Finite
@@ -38,6 +36,7 @@ end Finite
 
 instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (β a)] :
     Finite (∀ a, β a) := by
+  classical
   haveI := Fintype.ofFinite (PLift α)
   haveI := fun a => Fintype.ofFinite (PLift (β a))
   exact
@@ -45,6 +44,7 @@ instance Pi.finite {α : Sort*} {β : α → Sort*} [Finite α] [∀ a, Finite (
       (Equiv.piCongr Equiv.plift fun _ => Equiv.plift)
 
 instance [Finite α] {n : ℕ} : Finite (Sym α n) := by
+  classical
   haveI := Fintype.ofFinite α
   infer_instance
 
@@ -116,8 +116,6 @@ Some set instances do not appear here since they are consequences of others, for
 
 
 namespace Finite.Set
-
-open scoped Classical
 
 instance finite_prod (s : Set α) (t : Set β) [Finite s] [Finite t] :
     Finite (s ×ˢ t : Set (α × β)) :=
