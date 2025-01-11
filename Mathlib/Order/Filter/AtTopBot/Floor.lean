@@ -3,8 +3,9 @@ Copyright (c) 2022 Yuyang Zhao. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yuyang Zhao
 -/
-import Mathlib.Algebra.Order.Floor
 import Mathlib.Order.Filter.AtTopBot
+import Mathlib.Algebra.Order.Floor.Defs
+import Mathlib.Algebra.Order.Ring.Abs
 
 /-!
 # `a * c ^ n < (n - d)!` holds true for sufficiently large `n`.
