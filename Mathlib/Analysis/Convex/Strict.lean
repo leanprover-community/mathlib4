@@ -28,7 +28,7 @@ open Convex
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜] [TopologicalSpace E] [TopologicalSpace F]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [TopologicalSpace E] [TopologicalSpace F]
 
 section AddCommMonoid
 
@@ -36,15 +36,17 @@ variable [AddCommMonoid E] [AddCommMonoid F]
 
 section SMul
 
-variable (𝕜)
 variable [SMul 𝕜 E] [SMul 𝕜 F] (s : Set E)
 
 /-- A set is strictly convex if the open segment between any two distinct points lies is in its
 interior. This basically means "convex and not flat on the boundary". -/
-def StrictConvex : Prop :=
+@[nolint unusedArguments]
+def StrictConvex (𝕜 : Type*) {E : Type*}
+    [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [TopologicalSpace E]
+    [AddCommMonoid E] [SMul 𝕜 E] (s : Set E) : Prop :=
   s.Pairwise fun x y => ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ interior s
 
-variable {𝕜 s}
+variable {s}
 variable {x y : E} {a b : 𝕜}
 
 theorem strictConvex_iff_openSegment_subset :
@@ -136,8 +138,8 @@ theorem StrictConvex.is_linear_preimage {s : Set F} (hs : StrictConvex 𝕜 s) {
 
 section LinearOrderedCancelAddCommMonoid
 
-variable [TopologicalSpace β] [LinearOrderedCancelAddCommMonoid β] [OrderTopology β] [Module 𝕜 β]
-  [OrderedSMul 𝕜 β]
+variable [TopologicalSpace β] [AddCommMonoid β] [LinearOrder β] [IsOrderedCancelAddMonoid β]
+  [OrderTopology β] [Module 𝕜 β] [OrderedSMul 𝕜 β]
 
 protected theorem Set.OrdConnected.strictConvex {s : Set β} (hs : OrdConnected s) :
     StrictConvex 𝕜 s := by
@@ -239,7 +241,7 @@ end continuous_add
 
 section ContinuousSMul
 
-variable [LinearOrderedField 𝕝] [Module 𝕝 E] [ContinuousConstSMul 𝕝 E]
+variable [Field 𝕝] [Module 𝕝 E] [ContinuousConstSMul 𝕝 E]
   [LinearMap.CompatibleSMul E E 𝕜 𝕝] {s : Set E} {x : E}
 
 theorem StrictConvex.smul (hs : StrictConvex 𝕜 s) (c : 𝕝) : StrictConvex 𝕜 (c • s) := by
@@ -259,7 +261,7 @@ end OrderedSemiring
 
 section OrderedCommSemiring
 
-variable [OrderedCommSemiring 𝕜] [TopologicalSpace E]
+variable [CommSemiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [TopologicalSpace E]
 
 section AddCommGroup
 
@@ -284,7 +286,7 @@ end OrderedCommSemiring
 
 section OrderedRing
 
-variable [OrderedRing 𝕜] [TopologicalSpace E] [TopologicalSpace F]
+variable [Ring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [TopologicalSpace E] [TopologicalSpace F]
 
 section AddCommGroup
 
@@ -347,7 +349,7 @@ end OrderedRing
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜] [TopologicalSpace E]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace E]
 
 section AddCommGroup
 
@@ -380,7 +382,8 @@ Relates `Convex` and `Set.OrdConnected`.
 
 section
 
-variable [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] {s : Set 𝕜}
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
+  {s : Set 𝕜}
 
 /-- A set in a linear ordered field is strictly convex if and only if it is convex. -/
 @[simp]
