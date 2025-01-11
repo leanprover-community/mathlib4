@@ -46,6 +46,11 @@ but add these assumptions later as needed. (Quite a few results still do not req
   we register them as `PartialEquiv`s.
   `extChartAt I x` is the canonical such partial equiv around `x`.
 
+We define a few constructions of smooth manifolds:
+* every empty type is a smooth manifold
+* the product of two smooth manifolds
+* the disjoint union of two manifolds (over the same charted space)
+
 As specific examples of models with corners, we define (in `Geometry.Manifold.Instances.Real`)
 * `modelWithCornersEuclideanHalfSpace n :
   ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n)` for the model space used to
