@@ -530,9 +530,7 @@ protected lemma div_le_self' (m n : ℕ) : m / n ≤ m := by
 lemma two_mul_odd_div_two (hn : n % 2 = 1) : 2 * (n / 2) = n - 1 := by
   conv => rhs; rw [← Nat.mod_add_div n 2, hn, Nat.add_sub_cancel_left]
 
-@[gcongr]
-lemma div_le_div_left (hcb : c ≤ b) (hc : 0 < c) : a / b ≤ a / c :=
-  (Nat.le_div_iff_mul_le hc).2 <| Nat.le_trans (Nat.mul_le_mul_left _ hcb) (div_mul_le_self _ _)
+attribute [gcongr] div_le_div_left
 
 lemma div_eq_self : m / n = m ↔ m = 0 ∨ n = 1 := by
   constructor
