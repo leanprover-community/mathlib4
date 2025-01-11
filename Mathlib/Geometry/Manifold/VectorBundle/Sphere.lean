@@ -40,7 +40,7 @@ variable {m : WithTop ℕ∞} {F : Type*} [NormedAddCommGroup F] [NormedSpace �
 variable {H : Type*} [TopologicalSpace H] {I : ModelWithCorners ℝ F H}
 variable {M : Type*} [TopologicalSpace M] [ChartedSpace H M] [IsManifold I m M]
 
-/-- Convert `f : M → 𝕊ⁿ` & `g : M → ℝⁿ⁺¹` which satisfy `∀ x, ⟪f x, g x⟫_ℝ = 0` to `M → T𝕊ⁿ`. -/
+/-- Convert `f : M → 𝕊ⁿ` and `g : M → ℝⁿ⁺¹` which satisfy `∀ x, ⟪f x, g x⟫_ℝ = 0` to `M → T𝕊ⁿ`. -/
 def sphereTangentMap (n : ℕ) [Fact (finrank ℝ E = n + 1)]
     (f : M → sphere (0 : E) 1) (g : M → E)
     (hf : ∀ x, ⟪(↑(f x) : E), g x⟫_ℝ = 0) (x : M) : TangentBundle (𝓡 n) (sphere (0 : E) 1) :=
@@ -66,21 +66,16 @@ theorem mfderiv_coe_sphere_sphereTangentMap_snd (n : ℕ) [Fact (finrank ℝ E =
     mfderiv (𝓡 n) 𝓘(ℝ, E) ((↑) : sphere (0 : E) 1 → E) (f x) (sphereTangentMap n f g hf x).snd =
       g x := by
   rw [((contMDiff_coe_sphere (f x)).mdifferentiableAt le_top).mfderiv]
-  simp only [writtenInExtChartAt, extChartAt, PartialHomeomorph.extend,
-    PartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_source,
-    PartialHomeomorph.singletonChartedSpace_chartAt_eq, modelWithCornersSelf_partialEquiv,
-    PartialEquiv.trans_refl, PartialEquiv.refl_coe, PartialHomeomorph.coe_coe_symm,
-    CompTriple.comp_eq, modelWithCornersSelf_coe, Set.range_id, PartialHomeomorph.toFun_eq_coe,
-    chartAt, ChartedSpace.chartAt, stereographic'_neg, fderivWithin_univ]
-  simp only [chartAt, ChartedSpace.chartAt, stereographic', coe_neg_sphere, stereographic,
+  simp only [mfld_simps, chartAt, ChartedSpace.chartAt, stereographic'_neg]
+  simp only [
     PartialHomeomorph.coe_trans_symm, PartialHomeomorph.mk_coe_symm, PartialEquiv.coe_symm_mk,
-    Homeomorph.toPartialHomeomorph_symm_apply, LinearIsometryEquiv.toHomeomorph_symm,
+    stereographic', coe_neg_sphere, stereographic,
     LinearIsometryEquiv.coe_toHomeomorph, ← comp_assoc, coe_sphere_comp_stereoInvFun]
   simp only [comp_assoc]
   conv =>
     enter [1, 1]
     tactic =>
-      rw [fderiv_comp]
+      rw [fderivWithin_univ, fderiv_comp]
       · exact contDiff_stereoInvFunAux.contDiffAt.differentiableAt (right_eq_inf.mp rfl)
       · exact
           (((ℝ ∙ (-↑(f x) : E))ᗮ).subtypeL.comp
@@ -111,14 +106,10 @@ private theorem contMDiff_sphereTangentMap_aux {n : ℕ} [Fact (finrank ℝ E = 
   conv =>
     enter [4, x, 1, 2]
     change ⇑(stereographic' n (-p)) ∘ ⇑(stereographic' n (-f x)).symm
-    simp only [stereographic', coe_neg_sphere, stereographic,
-      PartialHomeomorph.coe_trans, Homeomorph.toPartialHomeomorph_apply,
-      LinearIsometryEquiv.coe_toHomeomorph, PartialHomeomorph.mk_coe,
-      PartialHomeomorph.coe_trans_symm, PartialHomeomorph.mk_coe_symm, PartialEquiv.coe_symm_mk,
-      Homeomorph.toPartialHomeomorph_symm_apply, LinearIsometryEquiv.toHomeomorph_symm,
+    simp only [mfld_simps, stereographic', coe_neg_sphere, stereographic,
+      LinearIsometryEquiv.coe_toHomeomorph, LinearIsometryEquiv.toHomeomorph_symm,
       comp_assoc]
-    simp only [← comp_assoc Subtype.val, coe_sphere_comp_stereoInvFun]
-    simp only [← comp_assoc]
+    simp only [← comp_assoc Subtype.val, coe_sphere_comp_stereoInvFun, ← comp_assoc]
     simp only [comp_assoc _ Subtype.val, comp_assoc _ (stereoToFun (-(↑p : E)))]
   conv =>
     tactic =>
@@ -205,8 +196,7 @@ theorem contMDiff_sphereTangentMap {n : ℕ} [Fact (finrank ℝ E = n + 1)]
   rw [contMDiff_iff_target]
   constructor
   · rw [continuous_generateFrom_iff]
-    simp only [FiberBundleCore.localTrivAsPartialEquiv_source, FiberBundleCore.proj,
-      FiberBundleCore.localTrivAsPartialEquiv_coe, Set.iUnion_coe_set, Set.mem_iUnion,
+    simp only [mfld_simps, Set.iUnion_coe_set, Set.mem_iUnion,
       Set.mem_singleton_iff, exists_prop, forall_exists_index, and_imp]
     rintro _ _ ⟨p, rfl⟩ s hs rfl; rcases neg_surjective p with ⟨p, rfl⟩
     rw [Set.preimage_inter]
@@ -215,13 +205,9 @@ theorem contMDiff_sphereTangentMap {n : ℕ} [Fact (finrank ℝ E = n + 1)]
       change
         sphereTangentMap n f g hf' ⁻¹'
           (Bundle.TotalSpace.proj ⁻¹' (chartAt (EuclideanSpace ℝ (Fin n)) p).source)
-    simp only [stereographic'_source, Set.preimage_compl, Set.preimage_preimage,
+    simp only [mfld_simps, stereographic'_source, Set.preimage_compl, Set.preimage_preimage,
       sphereTangentMap_proj, FiberBundleCore.localTriv_apply,
-      VectorBundleCore.toFiberBundleCore_indexAt, tangentBundleCore_indexAt,
-      VectorBundleCore.coe_coordChange, tangentBundleCore_coordChange, PartialHomeomorph.extend,
-      modelWithCornersSelf_partialEquiv, PartialEquiv.trans_refl, PartialHomeomorph.toFun_eq_coe,
-      coe_achart, PartialHomeomorph.coe_coe_symm, modelWithCornersSelf_coe, Set.range_id,
-      fderivWithin_univ]
+      tangentBundleCore_indexAt, tangentBundleCore_coordChange, Set.range_id, fderivWithin_univ]
     refine
       ContinuousOn.isOpen_inter_preimage (ContinuousOn.prod (contMDiff_iff.mp hf).1.continuousOn ?_)
         ((contMDiff_iff.mp hf).1.isOpen_preimage _
@@ -231,25 +217,14 @@ theorem contMDiff_sphereTangentMap {n : ℕ} [Fact (finrank ℝ E = n + 1)]
   · rintro ⟨p, v⟩
     conv =>
       arg 4
-      simp only [extChartAt, PartialHomeomorph.extend, TangentBundle.chartAt,
-        FiberBundleCore.proj, ← TangentBundle.trivializationAt_eq_localTriv,
-        PartialHomeomorph.trans_toPartialEquiv, PartialHomeomorph.prod_toPartialEquiv,
-        PartialHomeomorph.refl_partialEquiv, modelWithCorners_prod_toPartialEquiv,
-        modelWithCornersSelf_partialEquiv, PartialEquiv.refl_prod_refl, PartialEquiv.coe_trans,
-        PartialEquiv.refl_coe, PartialEquiv.prod_coe, PartialHomeomorph.toFun_eq_coe, id_eq,
-        Trivialization.coe_coe, comp_def, TangentBundle.trivializationAt_apply,
-        PartialEquiv.trans_refl, PartialHomeomorph.coe_coe_symm, modelWithCornersSelf_coe,
-        Set.range_id, fderivWithin_univ, CompTriple.comp_eq, sphereTangentMap_proj,
-        chartAt, ChartedSpace.chartAt, stereographic'_neg]
+      simp only [mfld_simps, TangentBundle.chartAt, ← TangentBundle.trivializationAt_eq_localTriv,
+        comp_def, TangentBundle.trivializationAt_apply,
+        fderivWithin_univ, chartAt, ChartedSpace.chartAt, stereographic'_neg]
     conv =>
       arg 5
       tactic =>
         ext x
-        simp only [extChartAt, PartialHomeomorph.extend, modelWithCorners_prod_toPartialEquiv,
-          modelWithCornersSelf_partialEquiv, PartialEquiv.refl_prod_refl, PartialEquiv.trans_source,
-          PartialHomeomorph.toFun_eq_coe, PartialEquiv.refl_source, Set.preimage_univ,
-          Set.inter_univ, Set.mem_preimage, TangentBundle.mem_chart_source_iff,
-          sphereTangentMap_proj]
+        simp only [mfld_simps, sphereTangentMap_proj]
         rw [← Set.mem_preimage]
     apply ContMDiffOn.prod_mk_space
     · rw [contMDiff_iff_target] at hf
