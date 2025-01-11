@@ -37,8 +37,6 @@ variable {ι : Type*} {R : Type*} {M₁ M₂ N₁ N₂ P : Type*} {Mᵢ Nᵢ : �
 
 namespace QuadraticMap
 
-open QuadraticMap
-
 section Prod
 
 section Semiring

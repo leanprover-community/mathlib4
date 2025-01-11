@@ -8,6 +8,7 @@ import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Tactic.Spread
 import Mathlib.Util.AssertExists
+import Mathlib.Tactic.StacksAttribute
 
 /-!
 # Semirings and rings
@@ -106,10 +107,10 @@ as this is a path which is followed all the time in linear algebra where the def
 `σ : R →+* S` depends on the `NonAssocSemiring` structure of `R` and `S` while the module
 definition depends on the `Semiring` structure.
 
-It is not currently possible to adjust priorities by hand (see lean4#2115). Instead, the last
+It is not currently possible to adjust priorities by hand (see https://github.com/leanprover/lean4/issues/2115). Instead, the last
 declared instance is used, so we make sure that `Semiring` is declared after `NonAssocRing`, so
 that `Semiring -> NonAssocSemiring` is tried before `NonAssocRing -> NonAssocSemiring`.
-TODO: clean this once lean4#2115 is fixed
+TODO: clean this once https://github.com/leanprover/lean4/issues/2115 is fixed
 -/
 
 /-- A not-necessarily-unital, not-necessarily-associative semiring. See `CommutatorRing` and the
@@ -399,4 +400,5 @@ is cancellative on both sides. In other words, a nontrivial semiring `R` satisfy
 
 This is implemented as a mixin for `Semiring α`.
 To obtain an integral domain use `[CommRing α] [IsDomain α]`. -/
+@[stacks 09FE]
 class IsDomain (α : Type u) [Semiring α] extends IsCancelMulZero α, Nontrivial α : Prop

@@ -49,15 +49,14 @@ theorem schroeder_bernstein {f : α → β} {g : β → α} (hf : Function.Injec
     { toFun := fun s => (g '' (f '' s)ᶜ)ᶜ
       monotone' := fun s t hst =>
         compl_subset_compl.mpr <| image_subset _ <| compl_subset_compl.mpr <| image_subset _ hst }
-  -- Porting note: dot notation `F.lfp` doesn't work here
-  set s : Set α := OrderHom.lfp F
+  set s : Set α := F.lfp
   have hs : (g '' (f '' s)ᶜ)ᶜ = s := F.map_lfp
   have hns : g '' (f '' s)ᶜ = sᶜ := compl_injective (by simp [hs])
   set g' := invFun g
   have g'g : LeftInverse g' g := leftInverse_invFun hg
   have hg'ns : g' '' sᶜ = (f '' s)ᶜ := by rw [← hns, g'g.image_image]
   set h : α → β := s.piecewise f g'
-  have : Surjective h := by rw [← range_iff_surjective, range_piecewise, hg'ns, union_compl_self]
+  have : Surjective h := by rw [← range_eq_univ, range_piecewise, hg'ns, union_compl_self]
   have : Injective h := by
     refine (injective_piecewise_iff _).2 ⟨hf.injOn, ?_, ?_⟩
     · intro x hx y hy hxy

@@ -27,7 +27,6 @@ initialize funPropAttr : Unit ←
     add   := fun declName _stx attrKind =>
        discard <| MetaM.run do
        let info ← getConstInfo declName
-
        forallTelescope info.type fun _ b => do
          if b.isProp then
            addFunPropDecl declName

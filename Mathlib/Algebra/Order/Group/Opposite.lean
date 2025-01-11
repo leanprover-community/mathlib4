@@ -51,10 +51,10 @@ variable [OrderedAddCommMonoid α]
 instance : OrderedAddCommMonoid αᵐᵒᵖ where
   add_le_add_left a b hab c := add_le_add_left (by simpa) c.unop
 
-@[simp] lemma unop_nonneg {a : αᵐᵒᵖ} : unop a ≤ 0 ↔ a ≤ 0 := .rfl
-@[simp] lemma unop_nonpos {a : αᵐᵒᵖ} : 0 ≤ unop a ↔ 0 ≤ a := .rfl
-@[simp] lemma op_nonneg {a : α} : op a ≤ 0 ↔ a ≤ 0 := .rfl
-@[simp] lemma op_nonpos {a : α} : 0 ≤ op a ↔ 0 ≤ a := .rfl
+@[simp] lemma unop_nonpos {a : αᵐᵒᵖ} : unop a ≤ 0 ↔ a ≤ 0 := .rfl
+@[simp] lemma unop_nonneg {a : αᵐᵒᵖ} : 0 ≤ unop a ↔ 0 ≤ a := .rfl
+@[simp] lemma op_nonpos {a : α} : op a ≤ 0 ↔ a ≤ 0 := .rfl
+@[simp] lemma op_nonneg {a : α} : 0 ≤ op a ↔ 0 ≤ a := .rfl
 
 end OrderedAddCommMonoid
 

@@ -51,6 +51,7 @@ theorem lift_rank_mul_lift_rank :
 $\operatorname{rank}_F(A) = \operatorname{rank}_F(K) * \operatorname{rank}_K(A)$.
 
 This is a simpler version of `lift_rank_mul_lift_rank` with `K` and `A` in the same universe. -/
+@[stacks 09G9]
 theorem rank_mul_rank (A : Type v) [AddCommGroup A]
     [Module K A] [Module F A] [IsScalarTower F K A] [Module.Free K A] :
     Module.rank F K * Module.rank K A = Module.rank F A := by
@@ -164,6 +165,11 @@ variable {M M'}
 
 namespace Module
 
+/-- A free module of rank zero is trivial. -/
+lemma subsingleton_of_rank_zero (h : Module.rank R M = 0) : Subsingleton M := by
+  rw [← Basis.mk_eq_rank'' (Module.Free.chooseBasis R M), Cardinal.mk_eq_zero_iff] at h
+  exact (Module.Free.repr R M).subsingleton
+
 /-- See `rank_lt_aleph0` for the inverse direction without `Module.Free R M`. -/
 lemma rank_lt_aleph0_iff : Module.rank R M < ℵ₀ ↔ Module.Finite R M := by
   rw [Free.rank_eq_card_chooseBasisIndex, mk_lt_aleph0_iff]
@@ -206,7 +212,7 @@ noncomputable def basisUnique (ι : Type*) [Unique ι]
     Basis ι R M :=
   haveI : Module.Finite R M :=
     Module.finite_of_finrank_pos (_root_.zero_lt_one.trans_le h.symm.le)
-  (finBasisOfFinrankEq R M h).reindex (Equiv.equivOfUnique _ _)
+  (finBasisOfFinrankEq R M h).reindex (Equiv.ofUnique _ _)
 
 @[simp]
 theorem basisUnique_repr_eq_zero_iff {ι : Type*} [Unique ι]

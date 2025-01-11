@@ -41,7 +41,7 @@ The `ValuationRing` class is kept to be in sync with the literature.
 
 -/
 
-assert_not_exists DiscreteValuationRing
+assert_not_exists IsDiscreteValuationRing
 
 universe u v w
 
@@ -416,7 +416,7 @@ theorem _root_.Function.Surjective.preValuationRing {R S : Type*} [Mul R] [PreVa
 theorem _root_.Function.Surjective.valuationRing {R S : Type*} [CommRing R] [IsDomain R]
     [ValuationRing R] [CommRing S] [IsDomain S] (f : R →+* S) (hf : Function.Surjective f) :
     ValuationRing S :=
-  have := Function.Surjective.preValuationRing f hf
+  have : PreValuationRing S := Function.Surjective.preValuationRing (R := R) f hf
   .mk
 
 section

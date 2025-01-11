@@ -72,7 +72,7 @@ instance instAlgebra {R A M} [CommSemiring R] [AddCommMonoid M] [CommSemiring A]
   RingQuot.instAlgebra _
 
 -- verify there is no diamond
--- but doesn't work at `reducible_and_instances` #10906
+-- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 example : (Semiring.toNatAlgebra : Algebra ℕ (TensorAlgebra R M)) = instAlgebra := rfl
 
 instance {R S A M} [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [CommSemiring A]
@@ -93,7 +93,7 @@ instance {S : Type*} [CommRing S] [Module S M] : Ring (TensorAlgebra S M) :=
   RingQuot.instRing (Rel S M)
 
 -- verify there is no diamond
--- but doesn't work at `reducible_and_instances` #10906
+-- but doesn't work at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 variable (S M : Type) [CommRing S] [AddCommGroup M] [Module S M] in
 example : (Ring.toIntAlgebra _ : Algebra ℤ (TensorAlgebra S M)) = instAlgebra := rfl
 

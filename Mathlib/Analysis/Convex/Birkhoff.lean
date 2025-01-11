@@ -48,7 +48,7 @@ private lemma exists_perm_eq_zero_implies_eq_zero [Nonempty n] {s : R} (hs : 0 <
   rw [exists_mem_doublyStochastic_eq_smul_iff hs.le] at hM
   let f (i : n) : Finset n := {j | M i j ≠ 0}
   have hf (A : Finset n) : #A ≤ #(A.biUnion f) := by
-    have (i) : ∑ j ∈ f i, M i j = s := by simp [sum_subset (filter_subset _ _), hM.2.1]
+    have (i) : ∑ j ∈ f i, M i j = s := by simp [f, sum_subset (filter_subset _ _), hM.2.1]
     have h₁ : ∑ i ∈ A, ∑ j ∈ f i, M i j = #A * s := by simp [this]
     have h₂ : ∑ i, ∑ j ∈ A.biUnion f, M i j = #(A.biUnion f) * s := by
       simp [sum_comm (t := A.biUnion f), hM.2.2, mul_comm s]
@@ -110,7 +110,7 @@ private lemma doublyStochastic_sum_perm_aux (M : Matrix n n R)
     simp only [sub_apply, smul_apply, PEquiv.toMatrix_apply, Equiv.toPEquiv_apply, Option.mem_def,
       Option.some.injEq, smul_eq_mul, mul_ite, mul_one, mul_zero, sub_nonneg,
       sum_sub_distrib, sum_ite_eq, mem_univ, ↓reduceIte, N]
-    refine ⟨fun i' j => ?_, by simp [hM.2.1], by simp [← σ.eq_symm_apply, hM]⟩
+    refine ⟨fun i' j => ?_, by simp [s', hM.2.1], by simp [s', ← σ.eq_symm_apply, hM]⟩
     split
     case isTrue h => exact (hi' i' (by simp)).trans_eq (by rw [h])
     case isFalse h => exact hM.1 _ _

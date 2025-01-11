@@ -34,45 +34,6 @@ open Opposite
 
 variable {C : Type u₁} [Category.{u₂} C] {I : Type v₁} [Category.{v₂} I]
 
-section LimitOpColimit
-
-/-- The limit of `F.op` is the opposite of `colimit F`. -/
-noncomputable def limitOpIsoOpColimit (F : I ⥤ C) [HasColimit F] :
-    limit F.op ≅ op <| colimit F :=
-  limit.isoLimitCone ⟨(colimit.cocone F).op, (colimit.isColimit F).op⟩
-
-@[reassoc (attr := simp)]
-lemma limitOpIsoOpColimit_inv_comp_π (F : I ⥤ C) [HasColimit F] (i : I) :
-    (limitOpIsoOpColimit F).inv ≫ limit.π F.op ⟨i⟩ = (colimit.ι F i).op := by
-  simp [limitOpIsoOpColimit]
-
-@[reassoc (attr := simp)]
-lemma limitOpIsoOpColimit_hom_comp_ι (F : I ⥤ C) [HasColimit F] (i : I) :
-    (limitOpIsoOpColimit F).hom ≫ (colimit.ι F i).op = limit.π F.op ⟨i⟩ := by
-  rw [← limitOpIsoOpColimit_inv_comp_π, ← Category.assoc, Iso.hom_inv_id, Category.id_comp]
-
-instance (F : Iᵒᵖ ⥤ C) [HasColimit F] : HasLimit F.rightOp where
-  exists_limit := ⟨⟨coneRightOpOfCocone (colimit.cocone F),
-    isLimitConeRightOpOfCocone F (colimit.isColimit F)⟩⟩
-
-/-- `limitOpIsoOpColimit` for contravariant functor. -/
-noncomputable def limitRightOpIsoOpColimit (F : Iᵒᵖ ⥤ C) [HasColimit F] :
-    limit F.rightOp ≅ op <| colimit F :=
-  limit.isoLimitCone ⟨coneRightOpOfCocone (colimit.cocone F),
-    isLimitConeRightOpOfCocone F (colimit.isColimit F)⟩
-
-@[reassoc (attr := simp)]
-lemma limitRightOpIsoOpColimit_inv_comp_π (F : Iᵒᵖ ⥤ C) [HasColimit F] (i : I) :
-    (limitRightOpIsoOpColimit F).inv ≫ limit.π F.rightOp i = (colimit.ι F ⟨i⟩).op := by
-  simp [limitRightOpIsoOpColimit]
-
-@[reassoc (attr := simp)]
-lemma limitRightOpIsoOpColimit_hom_comp_ι (F : Iᵒᵖ ⥤ C) [HasColimit F] (i : I) :
-    (limitRightOpIsoOpColimit F).hom ≫ (colimit.ι F ⟨i⟩).op = limit.π F.rightOp i := by
-  rw [← limitRightOpIsoOpColimit_inv_comp_π, ← Category.assoc, Iso.hom_inv_id, Category.id_comp]
-
-end LimitOpColimit
-
 section HomCocontinuousCovariant
 
 variable (F : I ⥤ C) [HasColimit F]
@@ -181,7 +142,7 @@ of `F` evaluated at `D`. This variant is for contravariant diagrams, see
 noncomputable def colimitCoyonedaHomIsoLimit :
     (colimit (D.rightOp ⋙ coyoneda) ⟶ F) ≅ limit (D ⋙ F ⋙ uliftFunctor.{u₁}) :=
   colimitHomIsoLimitYoneda _ F ≪≫
-    HasLimit.isoOfNatIso (isoWhiskerLeft (D ⋙ Prod.sectl C F) (coyonedaLemma C))
+    HasLimit.isoOfNatIso (isoWhiskerLeft (D ⋙ Prod.sectL C F) (coyonedaLemma C))
 
 @[simp]
 lemma colimitCoyonedaHomIsoLimit_π_apply (f : colimit (D.rightOp ⋙ coyoneda) ⟶ F) (i : I) :
@@ -235,7 +196,7 @@ contravariant version. -/
 noncomputable def colimitYonedaHomIsoLimit :
       (colimit (D.unop ⋙ yoneda) ⟶ F) ≅ limit (D ⋙ F ⋙ uliftFunctor.{u₁}) :=
   colimitHomIsoLimitYoneda _ _ ≪≫
-    HasLimit.isoOfNatIso (isoWhiskerLeft (D ⋙ Prod.sectl _ _) (yonedaLemma C))
+    HasLimit.isoOfNatIso (isoWhiskerLeft (D ⋙ Prod.sectL _ _) (yonedaLemma C))
 
 @[simp]
 lemma colimitYonedaHomIsoLimit_π_apply (f : colimit (D.unop ⋙ yoneda) ⟶ F) (i : Iᵒᵖ) :
@@ -287,7 +248,7 @@ of `F` evaluated at `D`. This variant is for covariant diagrams, see
 noncomputable def colimitCoyonedaHomIsoLimit' :
     (colimit (D.op ⋙ coyoneda) ⟶ F) ≅ limit (D ⋙ F ⋙ uliftFunctor.{u₁}) :=
   colimitHomIsoLimitYoneda' _ F ≪≫
-    HasLimit.isoOfNatIso (isoWhiskerLeft (D ⋙ Prod.sectl C F) (coyonedaLemma C))
+    HasLimit.isoOfNatIso (isoWhiskerLeft (D ⋙ Prod.sectL C F) (coyonedaLemma C))
 
 @[simp]
 lemma colimitCoyonedaHomIsoLimit'_π_apply (f : colimit (D.op ⋙ coyoneda) ⟶ F) (i : I) :
@@ -338,7 +299,7 @@ covariant version. -/
 noncomputable def colimitYonedaHomIsoLimit' :
     (colimit (D.leftOp ⋙ yoneda) ⟶ F) ≅ limit (D ⋙ F ⋙ uliftFunctor.{u₁}) :=
   colimitHomIsoLimitYoneda' _ F ≪≫
-    HasLimit.isoOfNatIso (isoWhiskerLeft (D ⋙ Prod.sectl _ _) (yonedaLemma C))
+    HasLimit.isoOfNatIso (isoWhiskerLeft (D ⋙ Prod.sectL _ _) (yonedaLemma C))
 
 @[simp]
 lemma colimitYonedaHomIsoLimit'_π_apply (f : colimit (D.leftOp ⋙ yoneda) ⟶ F) (i : I) :

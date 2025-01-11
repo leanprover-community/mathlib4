@@ -148,7 +148,9 @@ def evalLE {v : Level} {α : Q(Type v)} (_ : Q(OrderedCommSemiring $α)) {a b : 
     let rxb := NormNum.Result.ofRawRat cb xb hypb
     let NormNum.Result.isTrue pf ← NormNum.evalLE.core lα rz rxb | return .error tooSmall
     pure <| .ok (q(le_add_of_nonneg_left (a := $a) $pf):)
-  | _, _ => return .error notComparable
+  | _, _ =>
+    unless va.eq vb do return .error notComparable
+    pure <| .ok (q(le_refl $a):)
 
 /-- In a commutative semiring, given `Ring.ExSum` objects `va`, `vb` which differ by a positive
 (additive) constant, construct a proof of `$a < $b`, where `a` (resp. `b`) is the expression in the

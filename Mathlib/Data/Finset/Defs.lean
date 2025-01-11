@@ -30,9 +30,6 @@ More information can be found in `Mathlib/Algebra/BigOperators/Group/Finset.lean
 Finsets are directly used to define fintypes in Lean.
 A `Fintype α` instance for a type `α` consists of a universal `Finset α` containing every term of
 `α`, called `univ`. See `Mathlib/Data/Fintype/Basic.lean`.
-There is also `univ'`, the noncomputable partner to `univ`,
-which is defined to be `α` as a finset if `α` is finite,
-and the empty finset otherwise. See `Mathlib/Data/Fintype/Basic.lean`.
 
 `Finset.card`, the size of a finset is defined in `Mathlib/Data/Finset/Card.lean`.
 This is then used to define `Fintype.card`, the size of a type.
@@ -66,7 +63,7 @@ assert_not_exists DirectedSystem
 
 assert_not_exists CompleteLattice
 
-assert_not_exists OrderedCommMonoid
+assert_not_exists Monoid
 
 open Multiset Subtype Function
 
@@ -124,7 +121,7 @@ instance decidableMem [_h : DecidableEq α] (a : α) (s : Finset α) : Decidable
 
 /-! ### set coercion -/
 
--- Porting note (#11445): new definition
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11445): new definition
 /-- Convert a finset to a set in the natural way. -/
 @[coe] def toSet (s : Finset α) : Set α :=
   { a | a ∈ s }
@@ -212,6 +209,8 @@ instance partialOrder : PartialOrder (Finset α) where
   le_refl _ _ := id
   le_trans _ _ _ hst htu _ ha := htu <| hst ha
   le_antisymm _ _ hst hts := ext fun _ => ⟨@hst _, @hts _⟩
+
+theorem subset_of_le : s ≤ t → s ⊆ t := id
 
 instance : IsRefl (Finset α) (· ⊆ ·) :=
   show IsRefl (Finset α) (· ≤ ·) by infer_instance
@@ -354,7 +353,7 @@ theorem sizeOf_lt_sizeOf_of_mem [SizeOf α] {x : α} {s : Finset α} (hx : x ∈
     SizeOf.sizeOf x < SizeOf.sizeOf s := by
   cases s
   dsimp [SizeOf.sizeOf, SizeOf.sizeOf, Multiset.sizeOf]
-  rw [add_comm]
+  rw [Nat.add_comm]
   refine lt_trans ?_ (Nat.lt_succ_self _)
   exact Multiset.sizeOf_lt_sizeOf_of_mem hx
 
@@ -368,16 +367,16 @@ instance decidableDforallFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a �
 
 -- Porting note: In lean3, `decidableDforallFinset` was picked up when decidability of `s ⊆ t` was
 -- needed. In lean4 it seems this is not the case.
-instance instDecidableRelSubset [DecidableEq α] : @DecidableRel (Finset α) (· ⊆ ·) :=
+instance instDecidableRelSubset [DecidableEq α] : DecidableRel (α := Finset α) (· ⊆ ·) :=
   fun _ _ ↦ decidableDforallFinset
 
-instance instDecidableRelSSubset [DecidableEq α] : @DecidableRel (Finset α) (· ⊂ ·) :=
+instance instDecidableRelSSubset [DecidableEq α] : DecidableRel (α := Finset α) (· ⊂ ·) :=
   fun _ _ ↦ instDecidableAnd
 
-instance instDecidableLE [DecidableEq α] : @DecidableRel (Finset α) (· ≤ ·) :=
+instance instDecidableLE [DecidableEq α] : DecidableRel (α := Finset α) (· ≤ ·) :=
   instDecidableRelSubset
 
-instance instDecidableLT [DecidableEq α] : @DecidableRel (Finset α) (· < ·) :=
+instance instDecidableLT [DecidableEq α] : DecidableRel (α := Finset α) (· < ·) :=
   instDecidableRelSSubset
 
 instance decidableDExistsFinset {p : ∀ a ∈ s, Prop} [_hp : ∀ (a) (h : a ∈ s), Decidable (p a h)] :

@@ -28,7 +28,7 @@ to represent this case, `(h : DirectSum.IsInternal A) [SetLike.GradedMonoid A]` 
 needed. In the future there will likely be a data-carrying, constructive, typeclass version of
 `DirectSum.IsInternal` for providing an explicit decomposition function.
 
-When `CompleteLattice.Independent (Set.range A)` (a weaker condition than
+When `iSupIndep (Set.range A)` (a weaker condition than
 `DirectSum.IsInternal A`), these provide a grading of `⨆ i, A i`, and the
 mapping `⨁ i, A i →+ ⨆ i, A i` can be obtained as
 `DirectSum.toAddMonoid (fun i ↦ AddSubmonoid.inclusion <| le_iSup A i)`.
@@ -337,7 +337,7 @@ instance instSemiring : Semiring (A 0) := (subsemiring A).toSemiring
 @[simp, norm_cast] theorem coe_natCast (n : ℕ) : (n : A 0) = (n : R) := rfl
 
 @[simp, norm_cast] theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : A 0) = (OfNat.ofNat n : R) := rfl
+    (ofNat(n) : A 0) = (ofNat(n) : R) := rfl
 
 end Semiring
 

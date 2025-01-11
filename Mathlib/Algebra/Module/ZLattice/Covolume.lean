@@ -3,10 +3,8 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Module.ZLattice.Basic
 import Mathlib.Analysis.BoxIntegral.UnitPartition
 import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
-import Mathlib.MeasureTheory.Measure.Haar.OfBasis
 
 /-!
 # Covolume of ℤ-lattices
@@ -26,24 +24,25 @@ choice of the fundamental domain of `L`.
 * `ZLattice.covolume_eq_det`: if `L` is a lattice in `ℝ^n`, then its covolume is the absolute
 value of the determinant of any `ℤ`-basis of `L`.
 
-* `Zlattice.covolume.tendsto_card_div_pow`: Let `s` be a bounded measurable set of `ι → ℝ`, then
+* `ZLattice.covolume.tendsto_card_div_pow`: Let `s` be a bounded measurable set of `ι → ℝ`, then
 the number of points in `s ∩ n⁻¹ • L` divided by `n ^ card ι` tends to `volume s / covolume L`
-when `n : ℕ` tends to infinity. See also `Zlattice.covolume.tendsto_card_div_pow'` for a version
-for `InnerProductSpace ℝ E` and `Zlattice.covolume.tendsto_card_div_pow''` for the general version.
+when `n : ℕ` tends to infinity. See also `ZLattice.covolume.tendsto_card_div_pow'` for a version
+for `InnerProductSpace ℝ E` and `ZLattice.covolume.tendsto_card_div_pow''` for the general version.
 
-* `Zlattice.covolume.tendsto_card_le_div`: Let `X` be a cone in `ι → ℝ` and let `F : (ι → ℝ) → ℝ`
+* `ZLattice.covolume.tendsto_card_le_div`: Let `X` be a cone in `ι → ℝ` and let `F : (ι → ℝ) → ℝ`
 be a function such that `F (c • x) = c ^ card ι * F x`. Then the number of points `x ∈ X` such that
 `F x ≤ c` divided by `c` tends to `volume {x ∈ X | F x ≤ 1} / covolume L` when `c : ℝ` tends to
-infinity. See also `Zlattice.covolume.tendsto_card_le_div'` for a version for
-`InnerProductSpace ℝ E` and `Zlattice.covolume.tendsto_card_le_div''` for the general version.
+infinity. See also `ZLattice.covolume.tendsto_card_le_div'` for a version for
+`InnerProductSpace ℝ E` and `ZLattice.covolume.tendsto_card_le_div''` for the general version.
 
-## Naming conventions
+## Naming convention
 
-Many of the same results are true in the pi case `E` is `ι → ℝ` and in the case `E` is an
-`InnerProductSpace`. We use the following convention: the plain name is for the pi case, for eg.
-`volume_image_eq_volume_div_covolume`. For the same result in the `InnerProductSpace` case, we add
-a `prime`, for eg. `volume_image_eq_volume_div_covolume'`. When the same result exists in the
-general case, we had two primes, eg. `Zlattice.covolume.tendsto_card_div_pow''`.
+Some results are true in the case where the ambient finite dimensional real vector space is the
+pi-space `ι → ℝ` and in the case where it is an `InnerProductSpace`. We use the following
+convention: the plain name is for the pi case, for eg. `volume_image_eq_volume_div_covolume`. For
+the same result in the `InnerProductSpace` case, we add a `prime`, for eg.
+`volume_image_eq_volume_div_covolume'`. When the same result exists in the
+general case, we had two primes, eg. `covolume.tendsto_card_div_pow''`.
 
 -/
 
@@ -123,7 +122,7 @@ theorem covolume_eq_det_inv {ι : Type*} [Fintype ι] [DecidableEq ι] (L : Subm
     covolume L = |(LinearEquiv.det (b.ofZLatticeBasis ℝ L).equivFun : ℝ)|⁻¹ := by
   rw [covolume_eq_det L b, ← Pi.basisFun_det_apply, show (((↑) : L → _) ∘ ⇑b) =
     (b.ofZLatticeBasis ℝ) by ext; simp, ← Basis.det_inv, ← abs_inv, Units.val_inv_eq_inv_val,
-    IsUnit.unit_spec, Basis.det_basis, LinearEquiv.coe_det]
+    IsUnit.unit_spec, ← Basis.det_basis, LinearEquiv.coe_det]
   rfl
 
 theorem volume_image_eq_volume_div_covolume {ι : Type*} [Fintype ι] [DecidableEq ι]
@@ -134,7 +133,8 @@ theorem volume_image_eq_volume_div_covolume {ι : Type*} [Fintype ι] [Decidable
     covolume_eq_det_inv L b, ENNReal.div_eq_inv_mul, ENNReal.ofReal_inv_of_pos
     (abs_pos.mpr (LinearEquiv.det _).ne_zero), inv_inv, LinearEquiv.coe_det]
 
-/-- Docstring. -/
+/-- A more general version of `ZLattice.volume_image_eq_volume_div_covolume`;
+see the `Naming conventions` section in the introduction. -/
 theorem volume_image_eq_volume_div_covolume' {E : Type*} [NormedAddCommGroup E]
     [InnerProductSpace ℝ E] [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
     (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L] {ι : Type*} [Fintype ι]
@@ -152,7 +152,9 @@ theorem volume_image_eq_volume_div_covolume' {E : Type*} [NormedAddCommGroup E]
     ← volume_image_eq_volume_div_covolume (ZLattice.comap ℝ L f.toLinearMap)
     (b.ofZLatticeComap ℝ L f.toLinearEquiv), Basis.ofZLatticeBasis_comap,
     ← f.image_symm_eq_preimage, ← Set.image_comp]
-  simp
+  simp only [Basis.equivFun_apply, ContinuousLinearEquiv.symm_toLinearEquiv, Basis.map_equivFun,
+    LinearEquiv.symm_symm, Function.comp_apply, LinearEquiv.trans_apply,
+    ContinuousLinearEquiv.coe_toLinearEquiv, ContinuousLinearEquiv.apply_symm_apply]
 
 end Basic
 
@@ -166,22 +168,23 @@ variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 variable {L : Submodule ℤ E} [DiscreteTopology L] [IsZLattice ℝ L]
 variable {ι : Type*} [Fintype ι] (b : Basis ι ℤ L)
 
-/-- Docstring. -/
+/-- A version of `ZLattice.covolume.tendsto_card_div_pow` for the general case;
+see the `Naming convention` section in the introduction. -/
 theorem tendsto_card_div_pow'' [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
     {s : Set E} (hs₁ : IsBounded s) (hs₂ : MeasurableSet s)
     (hs₃ : volume (frontier ((b.ofZLatticeBasis ℝ).equivFun '' s)) = 0):
     Tendsto (fun n : ℕ ↦ (Nat.card (s ∩ (n : ℝ)⁻¹ • L : Set E) : ℝ) / n ^ card ι)
       atTop (𝓝 (volume ((b.ofZLatticeBasis ℝ).equivFun '' s)).toReal) := by
   refine Tendsto.congr' ?_
-    (unitPartition.tendsto_card_div_pow' ((b.ofZLatticeBasis ℝ).equivFun '' s) ?_ ?_ hs₃)
+    (tendsto_card_div_pow_atTop_volume ((b.ofZLatticeBasis ℝ).equivFun '' s) ?_ ?_ hs₃)
   · filter_upwards [eventually_gt_atTop 0] with n hn
     congr
     refine Nat.card_congr <| ((b.ofZLatticeBasis ℝ).equivFun.toEquiv.subtypeEquiv fun x ↦ ?_).symm
     simp_rw [Set.mem_inter_iff, ← b.ofZLatticeBasis_span ℝ, LinearEquiv.coe_toEquiv,
       Basis.equivFun_apply, Set.mem_image, DFunLike.coe_fn_eq, EmbeddingLike.apply_eq_iff_eq,
-      exists_eq_right, and_congr_right_iff, Set.mem_inv_smul_set_iff₀ (by aesop : (n:ℝ) ≠ 0),
-      ← Finsupp.coe_smul, ← LinearEquiv.map_smul, SetLike.mem_coe, Basis.mem_span_iff_repr_mem,
-      Pi.basisFun_repr, implies_true]
+      exists_eq_right, and_congr_right_iff, Set.mem_inv_smul_set_iff₀
+      (mod_cast hn.ne' : (n : ℝ) ≠ 0), ← Finsupp.coe_smul, ← LinearEquiv.map_smul, SetLike.mem_coe,
+      Basis.mem_span_iff_repr_mem, Pi.basisFun_repr, implies_true]
   · rw [← NormedSpace.isVonNBounded_iff ℝ] at hs₁ ⊢
     exact Bornology.IsVonNBounded.image hs₁ ((b.ofZLatticeBasis ℝ).equivFunL : E →L[ℝ] ι → ℝ)
   · exact (b.ofZLatticeBasis ℝ).equivFunL.toHomeomorph.toMeasurableEquiv.measurableSet_image.mpr hs₂
@@ -194,7 +197,8 @@ private theorem tendsto_card_le_div''_aux {X : Set E} (hX : ∀ ⦃x⦄ ⦃r:ℝ
     (inv_pos_of_pos hc).le, inv_pow, inv_mul_le_iff₀ (pow_pos hc _), mul_one, and_congr_left_iff]
   exact fun _ ↦ ⟨fun h ↦ (smul_inv_smul₀ hc.ne' x) ▸ hX h hc, fun h ↦ hX h (inv_pos_of_pos hc)⟩
 
-/-- Docstring. -/
+/-- A version of `ZLattice.covolume.tendsto_card_le_div` for the general case;
+see the `Naming conventions` section in the introduction. -/
 theorem tendsto_card_le_div'' [FiniteDimensional ℝ E] [MeasurableSpace E] [BorelSpace E]
     [Nonempty ι] {X : Set E} (hX : ∀ ⦃x⦄ ⦃r : ℝ⦄, x ∈ X → 0 < r → r • x ∈ X)
     {F : E → ℝ} (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r →  F (r • x) = r ^ card ι * (F x))
@@ -203,22 +207,26 @@ theorem tendsto_card_le_div'' [FiniteDimensional ℝ E] [MeasurableSpace E] [Bor
     Tendsto (fun c : ℝ ↦
       Nat.card ({x ∈ X | F x ≤ c} ∩ L : Set E) / (c : ℝ))
         atTop (𝓝 (volume ((b.ofZLatticeBasis ℝ).equivFun '' {x ∈ X | F x ≤ 1})).toReal) := by
-  have h : (card ι : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr card_ne_zero
-  refine Tendsto.congr' ?_ <| (unitPartition.tendsto_card_div_pow
+
+  refine Tendsto.congr' ?_ <| (tendsto_card_div_pow_atTop_volume'
       ((b.ofZLatticeBasis ℝ).equivFun '' {x ∈ X | F x ≤ 1}) ?_ ?_ h₄ fun x y hx hy ↦ ?_).comp
         (tendsto_rpow_atTop <| inv_pos.mpr
           (Nat.cast_pos.mpr card_pos) : Tendsto (fun x ↦ x ^ (card ι : ℝ)⁻¹) atTop atTop)
   · filter_upwards [eventually_gt_atTop 0] with c hc
+    have aux₁ : (card ι : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr card_ne_zero
+    have aux₂ : 0 < c ^ (card ι : ℝ)⁻¹ := Real.rpow_pos_of_pos hc _
+    have aux₃ : (c ^ (card ι : ℝ)⁻¹)⁻¹ ≠ 0 := inv_ne_zero aux₂.ne'
+    have aux₄ : c ^ (-(card ι : ℝ)⁻¹) ≠ 0 := (Real.rpow_pos_of_pos hc _).ne'
     obtain ⟨hc₁, hc₂⟩ := lt_iff_le_and_ne.mp hc
-    rw [Function.comp_apply, ← Real.rpow_natCast, Real.rpow_inv_rpow hc₁ h, eq_comm]
+    rw [Function.comp_apply, ← Real.rpow_natCast, Real.rpow_inv_rpow hc₁ aux₁, eq_comm]
     congr
     refine Nat.card_congr <| Equiv.subtypeEquiv ((b.ofZLatticeBasis ℝ).equivFun.toEquiv.trans
-          (Equiv.smulRight (a := c ^ (- (card ι : ℝ)⁻¹)) (by aesop))) fun _ ↦ ?_
+          (Equiv.smulRight aux₄)) fun _ ↦ ?_
     rw [Set.mem_inter_iff, Set.mem_inter_iff, Equiv.trans_apply, LinearEquiv.coe_toEquiv,
-      Equiv.smulRight_apply, Real.rpow_neg hc₁, Set.smul_mem_smul_set_iff₀ (by aesop),
-      ← Set.mem_smul_set_iff_inv_smul_mem₀ (by aesop), ← image_smul_set,
-      tendsto_card_le_div''_aux hX h₁ (by positivity), ← Real.rpow_natCast, ← Real.rpow_mul hc₁,
-      inv_mul_cancel₀ h, Real.rpow_one]
+      Equiv.smulRight_apply, Real.rpow_neg hc₁, Set.smul_mem_smul_set_iff₀ aux₃,
+      ← Set.mem_smul_set_iff_inv_smul_mem₀ aux₂.ne', ← image_smul_set,
+      tendsto_card_le_div''_aux hX h₁ aux₂, ← Real.rpow_natCast, ← Real.rpow_mul hc₁,
+      inv_mul_cancel₀ aux₁, Real.rpow_one]
     simp_rw [SetLike.mem_coe, Set.mem_image, EmbeddingLike.apply_eq_iff_eq, exists_eq_right,
       and_congr_right_iff, ← b.ofZLatticeBasis_span ℝ, Basis.mem_span_iff_repr_mem,
       Pi.basisFun_repr, Basis.equivFun_apply, implies_true]
@@ -229,7 +237,7 @@ theorem tendsto_card_le_div'' [FiniteDimensional ℝ E] [MeasurableSpace E] [Bor
     apply Set.image_mono
     rw [tendsto_card_le_div''_aux hX h₁ hx,
       tendsto_card_le_div''_aux hX h₁ (lt_of_lt_of_le hx hy)]
-    exact fun a ⟨ha₁, ha₂⟩ ↦ ⟨ha₁, le_trans ha₂ <| pow_le_pow_left (le_of_lt hx) hy _⟩
+    exact fun a ⟨ha₁, ha₂⟩ ↦ ⟨ha₁, le_trans ha₂ <| pow_le_pow_left₀ (le_of_lt hx) hy _⟩
 
 end General
 
@@ -284,7 +292,8 @@ variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [FiniteDim
   [MeasurableSpace E] [BorelSpace E]
 variable (L : Submodule ℤ E) [DiscreteTopology L] [IsZLattice ℝ L]
 
-/-- Docstring. -/
+/-- A version of `ZLattice.covolume.tendsto_card_div_pow` for the `InnerProductSpace` case;
+see the `Naming convention` section in the introduction. -/
 theorem tendsto_card_div_pow' {s : Set E} (hs₁ : IsBounded s) (hs₂ : MeasurableSet s)
     (hs₃ : volume (frontier s) = 0) :
     Tendsto (fun n : ℕ ↦ (Nat.card (s ∩ (n : ℝ)⁻¹ • L : Set E) : ℝ) / n ^ finrank ℝ E)
@@ -297,7 +306,8 @@ theorem tendsto_card_div_pow' {s : Set E} (hs₁ : IsBounded s) (hs₂ : Measura
   · rw [frontier_equivFun, volume_image_eq_volume_div_covolume', hs₃, ENNReal.zero_div]
     exact NullMeasurableSet.of_null hs₃
 
-/-- Docstring. -/
+/-- A version of `ZLattice.covolume.tendsto_card_le_div` for the `InnerProductSpace` case;
+see the `Naming convention` section in the introduction. -/
 theorem tendsto_card_le_div' [Nontrivial E] {X : Set E} {F : E → ℝ}
     (hX : ∀ ⦃x⦄ ⦃r : ℝ⦄, x ∈ X → 0 < r → r • x ∈ X)
     (h₁ : ∀ x ⦃r : ℝ⦄, 0 ≤ r →  F (r • x) = r ^ finrank ℝ E * (F x))

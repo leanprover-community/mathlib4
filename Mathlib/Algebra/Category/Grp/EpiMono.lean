@@ -88,13 +88,12 @@ theorem mono_iff_injective : Mono f ↔ Function.Injective f :=
 
 namespace SurjectiveOfEpiAuxs
 
-set_option quotPrecheck false in
-local notation "X" => Set.range (· • (f.range : Set B) : B → Set B)
+local notation3 "X" => Set.range (· • (f.range : Set B) : B → Set B)
 
 /-- Define `X'` to be the set of all left cosets with an extra point at "infinity".
 -/
 inductive XWithInfinity
-  | fromCoset : Set.range (· • (f.range : Set B) : B → Set B) → XWithInfinity
+  | fromCoset : X → XWithInfinity
   | infinity : XWithInfinity
 
 open XWithInfinity Equiv.Perm
@@ -222,7 +221,7 @@ The strategy is the following: assuming `epi f`
 -/
 
 
-theorem g_apply_fromCoset (x : B) (y : Set.range (· • (f.range : Set B) : B → Set B)) :
+theorem g_apply_fromCoset (x : B) (y : X) :
     g x (fromCoset y) = fromCoset ⟨x • ↑y,
       by obtain ⟨z, hz⟩ := y.2; exact ⟨x * z, by simp [← hz, smul_smul]⟩⟩ := rfl
 
@@ -384,11 +383,11 @@ instance (G : CommGrp) : CommGroup <| (forget CommGrp).obj G :=
 @[to_additive]
 theorem epi_iff_range_eq_top : Epi f ↔ f.range = ⊤ :=
   ⟨fun _ => range_eq_top_of_epi _, fun hf =>
-    ConcreteCategory.epi_of_surjective _ <| MonoidHom.range_top_iff_surjective.mp hf⟩
+    ConcreteCategory.epi_of_surjective _ <| MonoidHom.range_eq_top.mp hf⟩
 
 @[to_additive]
 theorem epi_iff_surjective : Epi f ↔ Function.Surjective f := by
-  rw [epi_iff_range_eq_top, MonoidHom.range_top_iff_surjective]
+  rw [epi_iff_range_eq_top, MonoidHom.range_eq_top]
 
 @[to_additive AddCommGrp.forget_commGrp_preserves_mono]
 instance forget_commGrp_preserves_mono : (forget CommGrp).PreservesMonomorphisms where
