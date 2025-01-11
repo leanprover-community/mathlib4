@@ -485,7 +485,6 @@ theorem integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
 
 @[simp]
 theorem integral_log : ∫ s in a..b, log s = b * log b - a * log a - b + a := by
-
   -- Simple case one: x is positive, y is zero
   have case₁ {t : ℝ} (ht : 0 < t) : ∫ s in (0)..t, log s = t * log t - t := by
     -- Compute the integral by giving a primitive and considering it limit as x
@@ -528,16 +527,6 @@ theorem integral_log : ∫ s in a..b, log s = b * log b - a * log a - b + a := b
     rw [case₂, case₂]
     ring
   repeat exact intervalIntegrable_log'
-
-@[deprecated "The theorem integral_log proves the result w/o hypothesis." (since := "2025-01-11")]
-theorem integral_log_of_pos (_ : 0 < a) (_ : 0 < b) :
-    ∫ x in a..b, log x = b * log b - a * log a - b + a :=
-  integral_log
-
-@[deprecated "The theorem integral_log proves the result w/o hypothesis." (since := "2025-01-11")]
-theorem integral_log_of_neg (_ : a < 0) (_ : b < 0) :
-    ∫ x in a..b, log x = b * log b - a * log a - b + a :=
-  integral_log
 
 @[simp]
 theorem integral_sin : ∫ x in a..b, sin x = cos a - cos b := by
