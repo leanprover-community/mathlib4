@@ -994,7 +994,8 @@ theorem exists_rat_pow_btwn_rat (hn : n ≠ 0) {x y : ℚ} (h : x < y) (hy : 0 <
   apply_mod_cast exists_rat_pow_btwn_rat_aux hn x y <;> assumption
 
 /-- There is a rational power between any two positive elements of an archimedean ordered field. -/
-theorem exists_rat_pow_btwn {α : Type*} [LinearOrderedField α] [Archimedean α] (hn : n ≠ 0)
+theorem exists_rat_pow_btwn {α : Type*} [Field α] [LinearOrder α] [IsStrictOrderedRing α]
+    [Archimedean α] (hn : n ≠ 0)
     {x y : α} (h : x < y) (hy : 0 < y) : ∃ q : ℚ, 0 < q ∧ x < (q : α) ^ n ∧ (q : α) ^ n < y := by
   obtain ⟨q₂, hx₂, hy₂⟩ := exists_rat_btwn (max_lt h hy)
   obtain ⟨q₁, hx₁, hq₁₂⟩ := exists_rat_btwn hx₂
