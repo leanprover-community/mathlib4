@@ -229,6 +229,22 @@ end
 
 end Products
 
+section BinaryProducts
+
+variable {X₁ X₂ Y₁ Y₂ : C} (f₁ : X₁ ⟶ Y₁) (f₂ : X₂ ⟶ Y₂)
+
+instance [h₁ : Cofibration f₁] [h₂ : Cofibration f₂] : Cofibration (coprod.map f₁ f₂) := by
+  rw [cofibration_iff] at h₁ h₂ ⊢
+  apply (cofibrations_isStableUnderCoproductsOfShape C WalkingPair).colimMap
+  rintro (_ | _) <;> assumption
+
+instance [h₁ : Fibration f₁] [h₂ : Fibration f₂] : Fibration (prod.map f₁ f₂) := by
+  rw [fibration_iff] at h₁ h₂ ⊢
+  apply (fibrations_isStableUnderProductsOfShape C WalkingPair).limMap
+  rintro (_ | _) <;> assumption
+
+end BinaryProducts
+
 section IsMultiplicative
 
 instance : (cofibrations C).IsMultiplicative := by
@@ -263,17 +279,17 @@ instance [hf : WeakEquivalence f] [hg : WeakEquivalence g] : WeakEquivalence (f 
 
 end IsMultiplicative
 
-section
+section IsIso
 
 variable {X Y : C} (f : X ⟶ Y)
 
 instance [IsIso f] : Cofibration f := by
-  have this := (fibrations C).llp_of_isIso f
+  have := (fibrations C).llp_of_isIso f
   rw [fibrations_llp] at this
   simpa only [cofibration_iff] using this.1
 
 instance [IsIso f] : Fibration f := by
-  have this := (cofibrations C).rlp_of_isIso f
+  have := (cofibrations C).rlp_of_isIso f
   rw [cofibrations_rlp] at this
   simpa only [fibration_iff] using this.1
 
@@ -282,7 +298,7 @@ instance [IsIso f] : WeakEquivalence f := by
   rw [weakEquivalence_iff]
   exact MorphismProperty.of_retract (RetractArrow.ofLeftLiftingProperty h.fac) h.hi.2
 
-end
+end IsIso
 
 instance : (weakEquivalences C).IsMultiplicative where
   id_mem _ := by
