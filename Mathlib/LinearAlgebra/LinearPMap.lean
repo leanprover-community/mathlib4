@@ -553,7 +553,6 @@ theorem domain_supSpanSingleton (f : E →ₗ.[K] F) (x : E) (y : F) (hx : x ∉
     (f.supSpanSingleton x y hx).domain = f.domain ⊔ K ∙ x :=
   rfl
 
-@[simp]
 theorem supSpanSingleton_apply_mk (f : E →ₗ.[K] F) (x : E) (y : F) (hx : x ∉ f.domain) (x' : E)
     (hx' : x' ∈ f.domain) (c : K) :
     f.supSpanSingleton x y hx
