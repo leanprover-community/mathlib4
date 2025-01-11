@@ -633,8 +633,7 @@ instance Ideal.uniqueFactorizationMonoid : UniqueFactorizationMonoid (Ideal A) :
           ⟨x * y, Ideal.mul_mem_mul x_mem y_mem,
             mt this.isPrime.mem_or_mem (not_or_intro x_not_mem y_not_mem)⟩⟩, Prime.irreducible⟩ }
 
-instance Ideal.normalizationMonoid : NormalizationMonoid (Ideal A) :=
-  normalizationMonoidOfUniqueUnits
+instance Ideal.normalizationMonoid : NormalizationMonoid (Ideal A) := .ofUniqueUnits
 
 @[simp]
 theorem Ideal.dvd_span_singleton {I : Ideal A} {x : A} : I ∣ Ideal.span {x} ↔ x ∈ I :=
@@ -856,7 +855,7 @@ variable {T : Type*} [CommRing T] [IsDedekindDomain T] {I J : Ideal T}
 open Multiset UniqueFactorizationMonoid Ideal
 
 theorem prod_normalizedFactors_eq_self (hI : I ≠ ⊥) : (normalizedFactors I).prod = I :=
-  associated_iff_eq.1 (normalizedFactors_prod hI)
+  associated_iff_eq.1 (prod_normalizedFactors hI)
 
 theorem count_le_of_ideal_ge [DecidableEq (Ideal T)]
     {I J : Ideal T} (h : I ≤ J) (hI : I ≠ ⊥) (K : Ideal T) :
@@ -1192,7 +1191,7 @@ theorem count_associates_factors_eq [DecidableEq (Ideal R)] [DecidableEq <| Asso
     rw [← Ideal.dvd_iff_le, ← Associates.mk_dvd_mk, Associates.mk_pow]
     simp only [Associates.dvd_eq_le]
     rw [Associates.prime_pow_dvd_iff_le hI hJ']
-  linarith
+  omega
 
 end
 
@@ -1253,8 +1252,7 @@ noncomputable def IsDedekindDomain.quotientEquivPiOfProdEq {ι : Type*} [Fintype
         (hPp.le_of_pow_le hPi)).trans <| Eq.symm <|
           (Ring.DimensionLeOne.prime_le_prime_iff_eq (prime j).ne_zero).mp (hPp.le_of_pow_le hPj)
 
-open scoped Classical
-
+open scoped Classical in
 /-- **Chinese remainder theorem** for a Dedekind domain: `R ⧸ I` factors as `Π i, R ⧸ (P i ^ e i)`,
 where `P i` ranges over the prime factors of `I` and `e i` over the multiplicities. -/
 noncomputable def IsDedekindDomain.quotientEquivPiFactors {I : Ideal R} (hI : I ≠ ⊥) :
@@ -1449,3 +1447,45 @@ theorem count_span_normalizedFactors_eq_of_normUnit {r X : R}
 end NormalizationMonoid
 
 end PID
+
+section primesOverFinset
+
+open UniqueFactorizationMonoid Ideal
+
+open scoped Classical in
+/-- The finite set of all prime factors of the pushforward of `p`. -/
+noncomputable abbrev primesOverFinset {A : Type*} [CommRing A] (p : Ideal A) (B : Type*)
+    [CommRing B] [IsDedekindDomain B] [Algebra A B] : Finset (Ideal B) :=
+  (factors (p.map (algebraMap A B))).toFinset
+
+variable {A : Type*} [CommRing A] {p : Ideal A} (hpb : p ≠ ⊥) [hpm : p.IsMaximal]
+  (B : Type*) [CommRing B] [IsDedekindDomain B] [Algebra A B] [NoZeroSMulDivisors A B]
+
+include hpb in
+theorem coe_primesOverFinset : primesOverFinset p B = primesOver p B := by
+  classical
+  ext P
+  rw [primesOverFinset, factors_eq_normalizedFactors, Finset.mem_coe, Multiset.mem_toFinset]
+  exact (P.mem_normalizedFactors_iff (map_ne_bot_of_ne_bot hpb)).trans <| Iff.intro
+    (fun ⟨hPp, h⟩ => ⟨hPp, ⟨hpm.eq_of_le (comap_ne_top _ hPp.ne_top) (le_comap_of_map_le h)⟩⟩)
+    (fun ⟨hPp, h⟩ => ⟨hPp, map_le_of_le_comap h.1.le⟩)
+
+variable (p) [Algebra.IsIntegral A B]
+
+theorem primesOver_finite : (primesOver p B).Finite := by
+  by_cases hpb : p = ⊥
+  · rw [hpb] at hpm ⊢
+    haveI : IsDomain A := IsDomain.of_bot_isPrime A
+    rw [primesOver_bot A B]
+    exact Set.finite_singleton ⊥
+  · rw [← coe_primesOverFinset hpb B]
+    exact (primesOverFinset p B).finite_toSet
+
+theorem primesOver_ncard_ne_zero : (primesOver p B).ncard ≠ 0 := by
+  rcases exists_ideal_liesOver_maximal_of_isIntegral p B with ⟨P, hPm, hp⟩
+  exact Set.ncard_ne_zero_of_mem ⟨hPm.isPrime, hp⟩ (primesOver_finite p B)
+
+theorem one_le_primesOver_ncard : 1 ≤ (primesOver p B).ncard :=
+  Nat.one_le_iff_ne_zero.mpr (primesOver_ncard_ne_zero p B)
+
+end primesOverFinset

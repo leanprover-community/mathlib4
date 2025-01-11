@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jineon Baek, Seewoo Lee
 -/
 import Mathlib.Algebra.EuclideanDomain.Basic
+import Mathlib.Algebra.Order.Group.Finset
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain.NormalizedFactors
 
@@ -93,10 +94,7 @@ theorem radical_mul_of_isUnit_right {a u : M} (h : IsUnit u) : radical (a * u) =
   radical_eq_of_associated (associated_mul_unit_left _ _ h)
 
 theorem primeFactors_pow (a : M) {n : ℕ} (hn : 0 < n) : primeFactors (a ^ n) = primeFactors a := by
-  simp_rw [primeFactors]
-  simp only [normalizedFactors_pow]
-  rw [Multiset.toFinset_nsmul]
-  exact ne_of_gt hn
+  simp_rw [primeFactors, normalizedFactors_pow, Multiset.toFinset_nsmul _ _ hn.ne']
 
 theorem radical_pow (a : M) {n : Nat} (hn : 0 < n) : radical (a ^ n) = radical a := by
   simp_rw [radical, primeFactors_pow a hn]
@@ -105,7 +103,7 @@ theorem radical_dvd_self (a : M) : radical a ∣ a := by
   by_cases ha : a = 0
   · rw [ha]
     apply dvd_zero
-  · rw [radical, ← Finset.prod_val, ← (normalizedFactors_prod ha).dvd_iff_dvd_right]
+  · rw [radical, ← Finset.prod_val, ← (prod_normalizedFactors ha).dvd_iff_dvd_right]
     apply Multiset.prod_dvd_prod_of_le
     rw [primeFactors, Multiset.toFinset_val]
     apply Multiset.dedup_le
@@ -191,10 +189,8 @@ variable {E : Type*} [EuclideanDomain E] [NormalizationMonoid E] [UniqueFactoriz
 def divRadical (a : E) : E := a / radical a
 
 theorem radical_mul_divRadical (a : E) : radical a * divRadical a = a := by
-  rw [divRadical]
-  rw [← EuclideanDomain.mul_div_assoc]
-  ·refine mul_div_cancel_left₀ _ (radical_ne_zero a)
-  exact radical_dvd_self a
+  rw [divRadical, ← EuclideanDomain.mul_div_assoc _ (radical_dvd_self a),
+    mul_div_cancel_left₀ _ (radical_ne_zero a)]
 
 theorem divRadical_mul_radical (a : E) : divRadical a * radical a = a := by
   rw [mul_comm]

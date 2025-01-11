@@ -993,7 +993,7 @@ theorem liftNC_mul {g_hom : Type*}
     (f : k →+* R) (g : g_hom) (a b : k[G])
     (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g <| Multiplicative.ofAdd y)) :
     liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b :=
-  (MonoidAlgebra.liftNC_mul f g _ _ @h_comm : _)
+  MonoidAlgebra.liftNC_mul f g _ _ @h_comm
 
 end Mul
 
@@ -1013,7 +1013,7 @@ theorem one_def : (1 : k[G]) = single 0 1 :=
 theorem liftNC_one {g_hom : Type*}
     [FunLike g_hom (Multiplicative G) R] [OneHomClass g_hom (Multiplicative G) R]
     (f : k →+* R) (g : g_hom) : liftNC (f : k →+ R) g 1 = 1 :=
-  (MonoidAlgebra.liftNC_one f g : _)
+  MonoidAlgebra.liftNC_one f g
 
 end One
 

@@ -195,9 +195,6 @@ theorem aemeasurable_coe_nnreal_real_iff {f : α → ℝ≥0} {μ : Measure α} 
     AEMeasurable (fun x => f x : α → ℝ) μ ↔ AEMeasurable f μ :=
   ⟨fun h ↦ by simpa only [Real.toNNReal_coe] using h.real_toNNReal, AEMeasurable.coe_nnreal_real⟩
 
-@[deprecated (since := "2024-03-02")]
-alias aEMeasurable_coe_nnreal_real_iff := aemeasurable_coe_nnreal_real_iff
-
 /-- The set of finite `ℝ≥0∞` numbers is `MeasurableEquiv` to `ℝ≥0`. -/
 def MeasurableEquiv.ennrealEquivNNReal : { r : ℝ≥0∞ | r ≠ ∞ } ≃ᵐ ℝ≥0 :=
   ENNReal.neTopHomeomorphNNReal.toMeasurableEquiv
@@ -283,16 +280,10 @@ theorem measurable_of_tendsto' {ι : Type*} {f : ι → α → ℝ≥0∞} {g : 
   show Measurable fun y => liminf (fun n => (f (x n) y : ℝ≥0∞)) atTop
   exact .liminf fun n => hf (x n)
 
-@[deprecated (since := "2024-03-09")] alias
-_root_.measurable_of_tendsto_ennreal' := ENNReal.measurable_of_tendsto'
-
 /-- A sequential limit of measurable `ℝ≥0∞` valued functions is measurable. -/
 theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0∞} {g : α → ℝ≥0∞} (hf : ∀ i, Measurable (f i))
     (lim : Tendsto f atTop (𝓝 g)) : Measurable g :=
   measurable_of_tendsto' atTop hf lim
-
-@[deprecated (since := "2024-03-09")] alias
-_root_.measurable_of_tendsto_ennreal := ENNReal.measurable_of_tendsto
 
 /-- A limit (over a general filter) of a.e.-measurable `ℝ≥0∞` valued functions is
 a.e.-measurable. -/
@@ -453,16 +444,10 @@ theorem measurable_of_tendsto' {ι} {f : ι → α → ℝ≥0} {g : α → ℝ�
   rw [tendsto_pi_nhds] at lim ⊢
   exact fun x => (ENNReal.continuous_coe.tendsto (g x)).comp (lim x)
 
-@[deprecated (since := "2024-03-09")] alias
-_root_.measurable_of_tendsto_nnreal' := NNReal.measurable_of_tendsto'
-
 /-- A sequential limit of measurable `ℝ≥0` valued functions is measurable. -/
 theorem measurable_of_tendsto {f : ℕ → α → ℝ≥0} {g : α → ℝ≥0} (hf : ∀ i, Measurable (f i))
     (lim : Tendsto f atTop (𝓝 g)) : Measurable g :=
   measurable_of_tendsto' atTop hf lim
-
-@[deprecated (since := "2024-03-09")] alias
-_root_.measurable_of_tendsto_nnreal := NNReal.measurable_of_tendsto
 
 end NNReal
 
@@ -584,7 +569,7 @@ lemma tendsto_measure_Icc_nhdsWithin_right (b : ℝ) :
 
 lemma tendsto_measure_Icc [NoAtoms μ] (b : ℝ) :
     Tendsto (fun δ ↦ μ (Icc (b - δ) (b + δ))) (𝓝 (0 : ℝ)) (𝓝 0) := by
-  rw [← nhds_left'_sup_nhds_right, tendsto_sup]
+  rw [← nhdsLT_sup_nhdsGE, tendsto_sup]
   constructor
   · apply tendsto_const_nhds.congr'
     filter_upwards [self_mem_nhdsWithin] with r (hr : r < 0)

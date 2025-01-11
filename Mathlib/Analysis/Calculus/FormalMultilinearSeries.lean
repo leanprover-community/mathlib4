@@ -81,6 +81,10 @@ theorem add_apply (p q : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (p + q) n
 @[simp]
 theorem sub_apply (p q : FormalMultilinearSeries 𝕜 E F) (n : ℕ) : (p - q) n = p n - q n := rfl
 
+@[simp]
+theorem smul_apply [Semiring 𝕜'] [Module 𝕜' F] [ContinuousConstSMul 𝕜' F] [SMulCommClass 𝕜 𝕜' F]
+    (f : FormalMultilinearSeries 𝕜 E F) (n : ℕ) (a : 𝕜') : (a • f) n = a • f n := rfl
+
 @[ext]
 protected theorem ext {p q : FormalMultilinearSeries 𝕜 E F} (h : ∀ n, p n = q n) : p = q :=
   funext h
@@ -178,6 +182,12 @@ function, and building a Taylor series for the function itself. -/
 def unshift (q : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)) (z : F) : FormalMultilinearSeries 𝕜 E F
   | 0 => (continuousMultilinearCurryFin0 𝕜 E F).symm z
   | n + 1 => (continuousMultilinearCurryRightEquiv' 𝕜 n E F).symm (q n)
+
+theorem unshift_shift {p : FormalMultilinearSeries 𝕜 E (E →L[𝕜] F)} {z : F} :
+    (p.unshift z).shift = p := by
+  ext1 n
+  simp [shift, unshift]
+  exact LinearIsometryEquiv.apply_symm_apply (continuousMultilinearCurryRightEquiv' 𝕜 n E F) (p n)
 
 end FormalMultilinearSeries
 

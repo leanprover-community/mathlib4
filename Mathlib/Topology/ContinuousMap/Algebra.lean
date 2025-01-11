@@ -6,8 +6,8 @@ Authors: Kim Morrison, Nicolò Cavalleri
 import Mathlib.Algebra.Algebra.Pi
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Tactic.FieldSimp
-import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.Topology.Algebra.InfiniteSum.Basic
+import Mathlib.Topology.Algebra.Module.LinearMap
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.UniformSpace.CompactConvergence
 
@@ -50,7 +50,7 @@ variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ]
 
 @[to_additive]
 instance instMul [Mul β] [ContinuousMul β] : Mul C(α, β) :=
-  ⟨fun f g => ⟨f * g, continuous_mul.comp (f.continuous.prod_mk g.continuous : _)⟩⟩
+  ⟨fun f g => ⟨f * g, continuous_mul.comp (f.continuous.prod_mk g.continuous :)⟩⟩
 
 @[to_additive (attr := norm_cast, simp)]
 theorem coe_mul [Mul β] [ContinuousMul β] (f g : C(α, β)) : ⇑(f * g) = f * g :=

@@ -106,6 +106,9 @@ theorem sup_const_le : (s.sup fun _ => a) ≤ a :=
 theorem le_sup {b : β} (hb : b ∈ s) : f b ≤ s.sup f :=
   Finset.sup_le_iff.1 le_rfl _ hb
 
+theorem isLUB_sup (s : Finset α) : IsLUB s (sup s id) :=
+  ⟨fun x h => id_eq x ▸ le_sup h, fun _ h => Finset.sup_le h⟩
+
 theorem le_sup_of_le {b : β} (hb : b ∈ s) (h : a ≤ f b) : a ≤ s.sup f := h.trans <| le_sup hb
 
 theorem sup_union [DecidableEq β] : (s₁ ∪ s₂).sup f = s₁.sup f ⊔ s₂.sup f :=
@@ -336,6 +339,9 @@ theorem le_inf_const_le : a ≤ s.inf fun _ => a :=
 
 theorem inf_le {b : β} (hb : b ∈ s) : s.inf f ≤ f b :=
   Finset.le_inf_iff.1 le_rfl _ hb
+
+theorem isGLB_inf (s : Finset α) : IsGLB s (inf s id) :=
+  ⟨fun x h => id_eq x ▸ inf_le h, fun _ h => Finset.le_inf h⟩
 
 theorem inf_le_of_le {b : β} (hb : b ∈ s) (h : f b ≤ a) : s.inf f ≤ a := (inf_le hb).trans h
 
@@ -746,6 +752,10 @@ alias ⟨_, sup'_le⟩ := sup'_le_iff
 theorem le_sup' {b : β} (h : b ∈ s) : f b ≤ s.sup' ⟨b, h⟩ f :=
   (sup'_le_iff ⟨b, h⟩ f).1 le_rfl b h
 
+set_option linter.docPrime false in
+theorem isLUB_sup' {s : Finset α} (hs : s.Nonempty) : IsLUB s (sup' s hs id) :=
+  ⟨fun x h => id_eq x ▸ le_sup' id h, fun _ h => Finset.sup'_le hs id h⟩
+
 theorem le_sup'_of_le {a : α} {b : β} (hb : b ∈ s) (h : a ≤ f b) : a ≤ s.sup' ⟨b, hb⟩ f :=
   h.trans <| le_sup' _ hb
 
@@ -915,6 +925,10 @@ theorem le_inf' {a : α} (hs : ∀ b ∈ s, a ≤ f b) : a ≤ s.inf' H f :=
 
 theorem inf'_le {b : β} (h : b ∈ s) : s.inf' ⟨b, h⟩ f ≤ f b :=
   le_sup' (α := αᵒᵈ) f h
+
+set_option linter.docPrime false in
+theorem isGLB_inf' {s : Finset α} (hs : s.Nonempty) : IsGLB s (inf' s hs id) :=
+  ⟨fun x h => id_eq x ▸ inf'_le id h, fun _ h => Finset.le_inf' hs id h⟩
 
 theorem inf'_le_of_le {a : α} {b : β} (hb : b ∈ s) (h : f b ≤ a) :
     s.inf' ⟨b, hb⟩ f ≤ a := (inf'_le _ hb).trans h

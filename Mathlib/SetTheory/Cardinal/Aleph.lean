@@ -139,9 +139,8 @@ theorem preOmega_natCast (n : ℕ) : preOmega n = n := by
     rw [Nat.cast_lt]
     exact lt_succ n
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem preOmega_ofNat (n : ℕ) [n.AtLeastTwo] : preOmega (no_index (OfNat.ofNat n)) = n :=
+theorem preOmega_ofNat (n : ℕ) [n.AtLeastTwo] : preOmega ofNat(n) = n :=
   preOmega_natCast n
 
 theorem preOmega_le_of_forall_lt {o a : Ordinal} (ha : IsInitial a) (H : ∀ b < o, preOmega b < a) :
@@ -497,6 +496,9 @@ theorem aleph1_eq_lift {c : Cardinal.{u}} : ℵ₁ = lift.{v} c ↔ ℵ₁ = c :
 @[simp]
 theorem lift_eq_aleph1 {c : Cardinal.{u}} : lift.{v} c = ℵ₁ ↔ c = ℵ₁ := by
   simpa using lift_inj (b := ℵ₁)
+
+theorem lt_omega_iff_card_lt {x o : Ordinal} : x < ω_ o ↔ x.card < ℵ_ o := by
+  rw [← (isInitial_omega o).card_lt_card, card_omega]
 
 section deprecated
 

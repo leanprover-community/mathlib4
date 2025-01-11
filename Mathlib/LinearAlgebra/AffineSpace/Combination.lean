@@ -930,8 +930,8 @@ theorem affineCombination_mem_affineSpan [Nontrivial k] {s : Finset ι} {w : ι 
       simp only [w1, Function.const_zero, Finset.sum_update_of_mem hi1, Pi.zero_apply,
           Finset.sum_const_zero, add_zero]
     have hw1s : s.affineCombination k p w1 = p i1 :=
-      s.affineCombination_of_eq_one_of_eq_zero w1 p hi1 (Function.update_same _ _ _) fun _ _ hne =>
-        Function.update_noteq hne _ _
+      s.affineCombination_of_eq_one_of_eq_zero w1 p hi1 (Function.update_self ..) fun _ _ hne =>
+        Function.update_of_ne hne ..
     have hv : s.affineCombination k p w -ᵥ p i1 ∈ (affineSpan k (Set.range p)).direction := by
       rw [direction_affineSpan, ← hw1s, Finset.affineCombination_vsub]
       apply weightedVSub_mem_vectorSpan
@@ -1014,7 +1014,7 @@ theorem eq_affineCombination_of_mem_affineSpan {p1 : P} {p : ι → P}
         add_zero]
     have hw0s : s'.affineCombination k p w0 = p i0 :=
       s'.affineCombination_of_eq_one_of_eq_zero w0 p (Finset.mem_insert_self _ _)
-        (Function.update_same _ _ _) fun _ _ hne => Function.update_noteq hne _ _
+        (Function.update_self ..) fun _ _ hne => Function.update_of_ne hne _ _
     refine ⟨s', w0 + w', ?_, ?_⟩
     · simp [Pi.add_apply, Finset.sum_add_distrib, hw0, h']
     · rw [add_comm, ← Finset.weightedVSub_vadd_affineCombination, hw0s, hs', vsub_vadd]
