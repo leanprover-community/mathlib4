@@ -18,10 +18,10 @@ import Mathlib.NumberTheory.LSeries.Basic
   ## Main results
 
   * `LSeriesSummable_of_sum_norm_bigO`: for `f : ℕ → ℂ`, if the partial sums
-  `(∑ k ∈ Icc 1 n, ‖f k‖)` are `O(n ^ r)` for some real `0 ≤ r`, then L-series `Lseries f`
+  `∑ k ∈ Icc 1 n, ‖f k‖` are `O(n ^ r)` for some real `0 ≤ r`, then L-series `Lseries f`
   converges at `s : ℂ` for all `s` such that `r < s.re`.
 
-  * `LSeries_eq_mul_integral` : for `f : ℕ → ℂ`, if the partial sums `(∑ k ∈ Icc 1 n, f k)` are
+  * `LSeries_eq_mul_integral` : for `f : ℕ → ℂ`, if the partial sums `∑ k ∈ Icc 1 n, f k` are
   `O(n ^ r)` for some real `0 ≤ r` and the L-series `LSeries f` converges at `s : ℂ` with
   `r < s.re`, then `LSeries f s = s * ∫ t in Set.Ioi 1, (∑ k ∈ Icc 1 ⌊t⌋₊, f k) * t ^ (- (s + 1))`.
 
