@@ -8,7 +8,7 @@ import Mathlib.Geometry.Manifold.VectorBundle.Tangent
 import Mathlib.Geometry.Manifold.Instances.Sphere
 
 /-!
-# Convert smooth `M → 𝕊ⁿ` & `M → ℝⁿ⁺¹` to smooth `M → T𝕊ⁿ`
+# Convert orthogonal smooth `M → 𝕊ⁿ` & `M → ℝⁿ⁺¹` to smooth `M → T𝕊ⁿ`
 
 ## Main definitions
 
