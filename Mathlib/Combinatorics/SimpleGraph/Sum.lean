@@ -92,6 +92,33 @@ def Coloring.sumRight (c : (G ⊕g H).Coloring γ) : H.Coloring γ := Coloring.m
   intro u v h
   exact c.valid h
 
+theorem Coloring.sum_sumLeft_eq (cG : G.Coloring γ) (cH : H.Coloring γ) :
+    (cG.sum cH).sumLeft = cG := by
+  unfold sumLeft sum
+  rfl
+
+theorem Coloring.sum_sumRight_eq (cG : G.Coloring γ) (cH : H.Coloring γ) :
+    (cG.sum cH).sumRight = cH := by
+  unfold sumRight sum
+  rfl
+
+theorem Coloring.sumLeft_sum_sumRight_eq (c : (G ⊕g H).Coloring γ) :
+    c.sumLeft.sum c.sumRight = c := by
+  refine RelHom.ext_iff.mpr ?_
+  intro u
+  cases u <;> rfl
+
+/-- Bijection between `(G ⊕g H).Coloring γ` and `(G.Coloring γ) × (H.Coloring γ)` -/
+def Coloring.sumEquiv : (G ⊕g H).Coloring γ ≃ (G.Coloring γ) × (H.Coloring γ) where
+  toFun c := ⟨c.sumLeft, c.sumRight⟩
+  invFun p := p.1.sum p.2
+  left_inv := fun c => by
+    simp
+    exact sumLeft_sum_sumRight_eq c
+  right_inv := fun p => by
+    simp
+    exact rfl
+
 /-- Color `G ⊕g H` with `Fin (n + m)` given a coloring of `G` with `Fin n` and a coloring of `H`
 with `Fin m` -/
 def Coloring.sumFin {n m : ℕ} (cG : G.Coloring (Fin n)) (cH : H.Coloring (Fin m)) :
