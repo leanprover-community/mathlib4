@@ -15,7 +15,7 @@ import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
 -/
 
 assert_not_exists Basis -- See `RingTheory.Ideal.Basis`
-  Submodule.hasQuotient -- See `RingTheory.Ideal.QuotientOperations`
+  Submodule.hasQuotient -- See `RingTheory.Ideal.Quotient.Operations`
 
 universe u v w x
 
