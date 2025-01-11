@@ -65,8 +65,14 @@ instance : InfSet EReal := inferInstanceAs (InfSet (WithBot (WithTop ℝ)))
 instance : CompleteLinearOrder EReal :=
   inferInstanceAs (CompleteLinearOrder (WithBot (WithTop ℝ)))
 
-instance : LinearOrderedAddCommMonoid EReal :=
-  inferInstanceAs (LinearOrderedAddCommMonoid (WithBot (WithTop ℝ)))
+instance : AddCommMonoid EReal :=
+  inferInstanceAs (AddCommMonoid (WithBot (WithTop ℝ)))
+
+instance : LinearOrder EReal :=
+  inferInstanceAs (LinearOrder (WithBot (WithTop ℝ)))
+
+instance : IsOrderedAddMonoid EReal :=
+  inferInstanceAs (IsOrderedAddMonoid (WithBot (WithTop ℝ)))
 
 instance : AddCommMonoidWithOne EReal :=
   inferInstanceAs (AddCommMonoidWithOne (WithBot (WithTop ℝ)))

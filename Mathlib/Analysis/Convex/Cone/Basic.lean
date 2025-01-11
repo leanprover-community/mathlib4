@@ -53,7 +53,7 @@ variable {𝕜 E F G : Type*}
 section Definitions
 
 variable (𝕜 E)
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 
 /-- A convex cone is a subset `s` of a `𝕜`-module such that `a • x + b • y ∈ s` whenever `a, b > 0`
 and `x, y ∈ s`. -/
@@ -69,7 +69,7 @@ namespace ConvexCone
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜] [AddCommMonoid E]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [AddCommMonoid E]
 
 section SMul
 
@@ -80,11 +80,11 @@ instance : SetLike (ConvexCone 𝕜 E) E where
   coe_injective' S T h := by cases S; cases T; congr
 
 @[simp]
-theorem coe_mk {s : Set E} {h₁ h₂} : ↑(@mk 𝕜 _ _ _ _ s h₁ h₂) = s :=
+theorem coe_mk {s : Set E} {h₁ h₂} : ↑(mk (𝕜 := 𝕜) s h₁ h₂) = s :=
   rfl
 
 @[simp]
-theorem mem_mk {s : Set E} {h₁ h₂ x} : x ∈ @mk 𝕜 _ _ _ _ s h₁ h₂ ↔ x ∈ s :=
+theorem mem_mk {s : Set E} {h₁ h₂ x} : x ∈ mk (𝕜 := 𝕜) s h₁ h₂ ↔ x ∈ s :=
   Iff.rfl
 
 /-- Two `ConvexCone`s are equal if they have the same elements. -/
@@ -185,7 +185,7 @@ end SMul
 
 section Module
 
-variable [Module 𝕜 E] (S : ConvexCone 𝕜 E)
+variable [IsOrderedRing 𝕜] [Module 𝕜 E] (S : ConvexCone 𝕜 E)
 
 protected theorem convex : Convex 𝕜 (S : Set E) :=
   convex_iff_forall_pos.2 fun _ hx _ hy _ _ ha hb _ =>
@@ -253,7 +253,7 @@ end OrderedSemiring
 
 section LinearOrderedField
 
-variable [LinearOrderedField 𝕜]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜]
 
 section MulAction
 
@@ -267,7 +267,7 @@ end MulAction
 
 section OrderedAddCommGroup
 
-variable [OrderedAddCommGroup E] [Module 𝕜 E]
+variable [AddCommGroup E] [PartialOrder E] [Module 𝕜 E]
 
 /-- Constructs an ordered module given an `OrderedAddCommGroup`, a cone, and a proof that
 the order relation is the one defined by the cone.
@@ -288,7 +288,7 @@ end LinearOrderedField
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜]
 
 section AddCommMonoid
 
@@ -365,10 +365,12 @@ def toPartialOrder (h₁ : S.Pointed) (h₂ : S.Salient) : PartialOrder E :=
       rw [neg_sub b a] at H
       exact H ba }
 
-/-- A pointed and salient cone defines an `OrderedAddCommGroup`. -/
-def toOrderedAddCommGroup (h₁ : S.Pointed) (h₂ : S.Salient) : OrderedAddCommGroup E :=
-  { toPartialOrder S h₁ h₂, show AddCommGroup E by infer_instance with
-    add_le_add_left := by
+/-- A pointed and salient cone defines an `IsOrderedAddMonoid`. -/
+def toIsOrderedAddMonoid (h₁ : S.Pointed) (h₂ : S.Salient) :
+    let _ := toPartialOrder S h₁ h₂
+    IsOrderedAddMonoid E :=
+  let _ := toPartialOrder S h₁ h₂
+  { add_le_add_left := by
       intro a b hab c
       change c + b - (c + a) ∈ S
       rw [add_sub_add_left_eq_sub]
@@ -432,7 +434,7 @@ namespace Submodule
 
 section OrderedSemiring
 
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜]
 
 section AddCommMonoid
 
@@ -486,7 +488,8 @@ namespace ConvexCone
 
 section PositiveCone
 
-variable (𝕜 E) [OrderedSemiring 𝕜] [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
+variable (𝕜 E) [Semiring 𝕜] [PartialOrder 𝕜]
+  [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
 
 /-- The positive cone is the convex cone formed by the set of nonnegative elements in an ordered
 module.
@@ -553,7 +556,7 @@ end ConvexCone
 
 section ConeFromConvex
 
-variable [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable [Field 𝕜] [LinearOrder 𝕜] [IsStrictOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 namespace Convex
 
