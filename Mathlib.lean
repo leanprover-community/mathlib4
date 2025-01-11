@@ -2833,7 +2833,6 @@ import Mathlib.Data.Num.Bitwise
 import Mathlib.Data.Num.Lemmas
 import Mathlib.Data.Num.Prime
 import Mathlib.Data.One.Defs
-import Mathlib.Data.One.Lemmas
 import Mathlib.Data.Opposite
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Option.Defs
