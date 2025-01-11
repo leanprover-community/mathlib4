@@ -77,7 +77,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
     have := s.add_mem hxp hxn
     rw [add_assoc, add_sub_cancel, ← sub_eq_add_neg, ← AddSubgroupClass.coe_sub] at this
     replace := nonneg _ this
-    rwa [f.map_sub, sub_nonneg] at this
+    rwa [pmap_sub, sub_nonneg] at this
   -- Porting note: removed an unused `have`
   refine ⟨f.supSpanSingleton y (-c) hy, ?_, ?_⟩
   · refine lt_iff_le_not_le.2 ⟨f.left_le_sup _ _, fun H => ?_⟩
@@ -95,7 +95,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
           mul_inv_cancel₀ hr.ne, one_smul, sub_eq_add_neg, neg_smul, neg_neg]
       -- Porting note: added type annotation and `by exact`
       replace : f (r⁻¹ • ⟨x, hx⟩) ≤ c := le_c (r⁻¹ • ⟨x, hx⟩) (by exact this)
-      rwa [← mul_le_mul_left (neg_pos.2 hr), neg_mul, neg_mul, neg_le_neg_iff, f.map_smul,
+      rwa [← mul_le_mul_left (neg_pos.2 hr), neg_mul, neg_mul, neg_le_neg_iff, pmap_smul,
         smul_eq_mul, ← mul_assoc, mul_inv_cancel₀ hr.ne, one_mul] at this
     · subst r
       simp only [zero_smul, add_zero] at hzs ⊢
@@ -105,7 +105,7 @@ theorem step (nonneg : ∀ x : f.domain, (x : E) ∈ s → 0 ≤ f x)
         rwa [← s.smul_mem_iff hr, smul_add, smul_smul, mul_inv_cancel₀ hr.ne', one_smul]
       -- Porting note: added type annotation and `by exact`
       replace : c ≤ f (r⁻¹ • ⟨x, hx⟩) := c_le (r⁻¹ • ⟨x, hx⟩) (by exact this)
-      rwa [← mul_le_mul_left hr, f.map_smul, smul_eq_mul, ← mul_assoc, mul_inv_cancel₀ hr.ne',
+      rwa [← mul_le_mul_left hr, pmap_smul, smul_eq_mul, ← mul_assoc, mul_inv_cancel₀ hr.ne',
         one_mul] at this
 
 theorem exists_top (p : E →ₗ.[ℝ] ℝ) (hp_nonneg : ∀ x : p.domain, (x : E) ∈ s → 0 ≤ p x)
