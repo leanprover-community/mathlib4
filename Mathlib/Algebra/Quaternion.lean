@@ -18,15 +18,17 @@ algebraic structures on `ℍ[R]`.
 
 ## Main definitions
 
-* `QuaternionAlgebra R a b`, `ℍ[R, a, b]` :
-  [quaternion algebra](https://en.wikipedia.org/wiki/Quaternion_algebra) with coefficients `a`, `b`
-* `Quaternion R`, `ℍ[R]` : the space of quaternions, a.k.a. `QuaternionAlgebra R (-1) (-1)`;
+* `QuaternionAlgebra R a b c`, `ℍ[R, a, b, c]` :
+  [quaternion algebra](https://en.wikipedia.org/wiki/Quaternion_algebra) with
+  coefficients `a`, `b`, `c`
+* `Quaternion R`, `ℍ[R]` : the space of quaternions, a.k.a.
+  `QuaternionAlgebra R (-1) (0) (-1)`;
 * `Quaternion.normSq` : square of the norm of a quaternion;
 
 We also define the following algebraic structures on `ℍ[R]`:
 
-* `Ring ℍ[R, a, b]`, `StarRing ℍ[R, a, b]`, and `Algebra R ℍ[R, a, b]` : for any commutative ring
-  `R`;
+* `Ring ℍ[R, a, b, c]`, `StarRing ℍ[R, a, b, c]`, and `Algebra R ℍ[R, a, b, c]` :
+  for any commutative ring `R`;
 * `Ring ℍ[R]`, `StarRing ℍ[R]`, and `Algebra R ℍ[R]` : for any commutative ring `R`;
 * `IsDomain ℍ[R]` : for a linear ordered commutative ring `R`;
 * `DivisionRing ℍ[R]` : for a linear ordered field `R`.
@@ -35,7 +37,7 @@ We also define the following algebraic structures on `ℍ[R]`:
 
 The following notation is available with `open Quaternion` or `open scoped Quaternion`.
 
-* `ℍ[R, c₁, c₂]` : `QuaternionAlgebra R c₁ c₂`
+* `ℍ[R, c₁, c₂, c₃]` : `QuaternionAlgebra R c₁ c₂ c₃`
 * `ℍ[R]` : quaternions over `R`.
 
 ## Implementation notes
@@ -126,7 +128,7 @@ theorem im_imK : a.im.imK = a.imK :=
 theorem im_idem : a.im.im = a.im :=
   rfl
 
-/-- Coercion `R → ℍ[R,c₁,c₂]`. -/
+/-- Coercion `R → ℍ[R,c₁,c₂,c₃]`. -/
 @[coe] def coe (x : R) : ℍ[R,c₁,c₂,c₃] := ⟨x, 0, 0, 0⟩
 
 instance : CoeTC R ℍ[R,c₁,c₂,c₃] := ⟨coe⟩
@@ -488,10 +490,19 @@ instance instRing : Ring ℍ[R,c₁,c₂,c₃] where
 @[norm_cast, simp]
 theorem coe_mul : ((x * y : R) : ℍ[R,c₁,c₂,c₃]) = x * y := by ext <;> simp
 
--- TODO: add weaker `MulAction`, `DistribMulAction`, and `Module` instances (and repeat them
--- for `ℍ[R]`)
+instance [Monoid S] [MulAction S R] : MulAction S ℍ[R,c₁,c₂,c₃] where
+  one_smul _ := by ext <;> simp
+  mul_smul _ _ _ := by ext <;> simp [mul_smul]
+
+instance [Monoid S] [DistribMulAction S R] : DistribMulAction S ℍ[R,c₁,c₂,c₃] where
+  smul_add _ _ _ := by ext <;> simp [smul_add]
+  smul_zero _ := by ext <;> simp [smul_zero]
+
+instance [Semiring S] [Module S R] : Module S ℍ[R,c₁,c₂,c₃] where
+  add_smul _ _ _ := by ext <;> simp [add_smul]
+  zero_smul _ := by ext <;> simp [zero_smul]
+
 instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂,c₃] where
-  smul := (· • ·)
   toFun s := coe (algebraMap S R s)
   map_one' := by simp only [map_one, coe_one]
   map_zero' := by simp only [map_zero, coe_zero]
@@ -584,14 +595,14 @@ theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R,c₁,c�
 -- /-- There is a natural equivalence when swapping the coefficients of a quaternion algebra. -/
 -- @[simps]
 -- def swapEquiv : ℍ[R,c₁,c₂,c₃] ≃ₐ[R] ℍ[R,c₃,c₂,c₁] where
---   toFun t := ⟨t.1, t.3, t.2, -t.4⟩
---   invFun t := ⟨t.1, t.3, t.2, -t.4⟩
+--   toFun t := ⟨t.1, -t.3, t.2, -t.4⟩
+--   invFun t := ⟨t.1, t.3, -t.2, -t.4⟩
 --   left_inv _ := by simp
 --   right_inv _ := by simp
 --   map_mul' _ _ := by
 --     ext
---       <;> simp only [mul_re, mul_imJ, mul_imI, add_left_inj, mul_imK, neg_mul, neg_add_rev,
---                      neg_sub, mk_mul_mk, mul_neg, neg_neg, sub_neg_eq_add]
+--       <;> simp [mul_re, mul_imJ, mul_imI, add_left_inj, mul_imK, neg_mul, neg_add_rev,
+--             neg_sub, mk_mul_mk, mul_neg, neg_neg, sub_neg_eq_add]
 --       <;> sorry
 --   map_add' _ _ := by ext <;> simp [add_comm]
 --   commutes' _ := by simp [algebraMap_eq]

@@ -11,11 +11,11 @@ import Mathlib.Tactic.Ring
 
 ## Main definitions
 
-* `QuaternionAlgebra.Basis A c₁ c₂`: a basis for a subspace of an `R`-algebra `A` that has the
-  same algebra structure as `ℍ[R,c₁,c₂]`.
-* `QuaternionAlgebra.Basis.self R`: the canonical basis for `ℍ[R,c₁,c₂]`.
+* `QuaternionAlgebra.Basis A c₁ c₂ c₃`: a basis for a subspace of an `R`-algebra `A` that has the
+  same algebra structure as `ℍ[R,c₁,c₂,c₃]`.
+* `QuaternionAlgebra.Basis.self R`: the canonical basis for `ℍ[R,c₁,c₂,c₃]`.
 * `QuaternionAlgebra.Basis.compHom b f`: transform a basis `b` by an AlgHom `f`.
-* `QuaternionAlgebra.lift`: Define an `AlgHom` out of `ℍ[R,c₁,c₂]` by its action on the basis
+* `QuaternionAlgebra.lift`: Define an `AlgHom` out of `ℍ[R,c₁,c₂,c₃]` by its action on the basis
   elements `i`, `j`, and `k`. In essence, this is a universal property. Analogous to `Complex.lift`,
   but takes a bundled `QuaternionAlgebra.Basis` instead of just a `Subtype` as the amount of
   data / proves is non-negligible.
@@ -27,8 +27,8 @@ open Quaternion
 namespace QuaternionAlgebra
 
 /-- A quaternion basis contains the information both sufficient and necessary to construct an
-`R`-algebra homomorphism from `ℍ[R,c₁,c₂]` to `A`; or equivalently, a surjective
-`R`-algebra homomorphism from `ℍ[R,c₁,c₂]` to an `R`-subalgebra of `A`.
+`R`-algebra homomorphism from `ℍ[R,c₁,c₂,c₃]` to `A`; or equivalently, a surjective
+`R`-algebra homomorphism from `ℍ[R,c₁,c₂,c₃]` to an `R`-subalgebra of `A`.
 
 Note that for definitional convenience, `k` is provided as a field even though `i_mul_j` fully
 determines it. -/
