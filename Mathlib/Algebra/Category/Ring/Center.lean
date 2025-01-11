@@ -24,7 +24,7 @@ structure of a commutative ring is complete determined by its module category.
 
 -/
 
-universe u u'
+universe u u' v v'
 
 variable (R : Type u) [Ring R]
 
@@ -35,7 +35,7 @@ For any ring `R`, the center of `R` is isomorphic to `End (𝟭 (ModuleCat R))`,
 of the identity functor on the category of `R`-modules.
 -/
 @[simps]
-def Subring.centerEquivEndIdFunctor : Subring.center R ≃+* End (𝟭 (ModuleCat.{u} R)) where
+def Subring.centerEquivEndIdFunctor : Subring.center R ≃+* End (𝟭 (ModuleCat.{max v u} R)) where
   toFun x :=
     { app M := ModuleCat.ofHom
         { toFun := (x.1 • ·)
@@ -49,30 +49,30 @@ def Subring.centerEquivEndIdFunctor : Subring.center R ≃+* End (𝟭 (ModuleCa
     apply NatTrans.ext
     ext M (m : M)
     exact mul_smul x.1 y.1 m
-  invFun f := ⟨f.app (.of R R) |>.hom (1 : R), by
+  invFun f := ⟨f.app (.of R <| ULift R) |>.hom (1 : ULift R) |>.down, by
     rw [Subring.mem_center_iff]
     intro r
-    have := congr($(f.naturality (X := .of R R) (Y := .of R R) (ModuleCat.ofHom
-      { toFun x := x * r
+    have := congr(($(f.naturality (X := .of R <| ULift R) (Y := .of R <| ULift R) (ModuleCat.ofHom
+      { toFun x := x * .up r
         map_add' := by simp [add_mul]
-        map_smul' := by simp [mul_assoc] })).hom (1 : R))
+        map_smul' := by intros; ext; simp [mul_assoc] })).hom (1 : ULift R)).down)
     simp only [Functor.id_obj, Functor.id_map, ModuleCat.hom_comp, LinearMap.coe_comp,
-      LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, one_mul] at this
+      LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, one_mul, ULift.mul_down] at this
     erw [← this]
-    have := (f.app (ModuleCat.of R R)).hom.map_smul r (1 : R)
-    simp only [Functor.id_obj, smul_eq_mul, mul_one] at this
-    rw [this]
-    rfl⟩
+    have := congr($((f.app (ModuleCat.of R <| ULift R)).hom.map_smul r (1 : ULift R)).down)
+    rw [show r • (1 : ULift R) = .up r by ext; simp] at this
+    simp only [Functor.id_obj, ULift.smul_down, smul_eq_mul] at this
+    exact this.symm⟩
   left_inv x := by simp
   right_inv f := by
     apply NatTrans.ext
     ext M (m : M)
     simp only [Functor.id_obj, LinearMap.coe_mk, AddHom.coe_mk]
-    have := congr($(f.naturality (X := .of R R) (Y := .of R M)
+    have := congr($(f.naturality (X := .of R <| ULift R) (Y := .of R M)
       (ModuleCat.ofHom
         { toFun x := x • m
           map_add' := by simp [add_smul]
-          map_smul' x y := by simp [mul_smul] })).hom (1 : R))
+          map_smul' x y := by simp [mul_smul] })).hom (1 : ULift R))
     simp only [ModuleCat.of_coe, Functor.id_obj, Functor.id_map, ModuleCat.hom_comp,
       LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
       one_smul] at this
@@ -83,13 +83,13 @@ For any two commutative rings `R` and `S`, if the categories of `R`-modules and 
 equivalent, then `R` and `S` are isomorphic as rings.
 -/
 def RingEquiv.ofModuleCatEquiv {R : Type u} {S : Type u'} [CommRing R] [CommRing S]
-    (e : ModuleCat.{u} R ≌ ModuleCat.{u'} S) : R ≃+* S :=
+    (e : ModuleCat.{max u v} R ≌ ModuleCat.{max u' v'} S) : R ≃+* S :=
   letI : e.functor.Additive := Functor.additive_of_preserves_binary_products e.functor
   let i₁ : R ≃+* (⊤ : Subring R) := Subring.topEquiv.symm
   let i₂ : (⊤ : Subring R) ≃+* Subring.center R := Subring.center_eq_top R ▸ .refl _
   let i₄ : Subring.center S ≃+* (⊤ : Subring S) := Subring.center_eq_top S ▸ .refl _
   let i₅ : (⊤ : Subring S) ≃+* S := Subring.topEquiv
-  let i : End (𝟭 (ModuleCat.{u} R)) ≃+* End (𝟭 (ModuleCat.{u'} S)) :=
+  let i : End (𝟭 (ModuleCat.{max u v} R)) ≃+* End (𝟭 (ModuleCat.{max u' v'} S)) :=
   { toFun f := .of
       { app N :=
           e.counitInv.app N ≫ e.functor.map (f.app (e.inverse.obj N)) ≫
