@@ -3,7 +3,6 @@ Copyright (c) 2025 Walter Moreira, Joe Stubbs. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Walter Moreira, Joe Stubbs
 -/
-import Mathlib.Tactic
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.Filter.Basic
 import Mathlib.Order.Bounds.Basic
@@ -140,3 +139,5 @@ theorem euclid_coprime {m n : ℕ} (h : m ≠ n) : Nat.Coprime (euclid m) (eucli
   by_cases c : m < n
   · exact euclid_coprime_of_lt c
   · exact Nat.coprime_comm.mp <| euclid_coprime_of_lt <| by omega
+
+end Euclid
