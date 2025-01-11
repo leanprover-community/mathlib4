@@ -335,10 +335,54 @@ lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
   intro x
   rw [contMDiffAt_iff]
   refine ⟨continuous_inl.continuousAt, ?_⟩
-  simp only [extChartAt, ChartedSpace.sum_chartAt_inl, PartialHomeomorph.lift_openEmbedding,
+  apply contDiffWithinAt_id.congr_of_eventuallyEq; swap
+  · simp [ChartedSpace.sum_chartAt_inl]
+    congr
+    apply Sum.inl_injective.extend_apply (chartAt _ x)
+
+  -- key step: fns are eventually equal
+  set C := chartAt H x
+  have aux₁ : ∀ x ∈ I.symm ⁻¹' C.target ∩ range I,
+      (((C.lift_openEmbedding (IsOpenEmbedding.inl (Y := M'))).extend I)
+        ∘ Sum.inl ∘ (C.extend I).symm) x = x := by
+    intro x ⟨hx1, hx2⟩
+    simp [Sum.inl_injective.extend_apply C, C.right_inv hx1, I.right_inv hx2]
+  have aux₂ : (I.symm ⁻¹' C.target ∩ range I) ∈ 𝓝[range I] ((extChartAt I x) x) := by
+    rw [mem_nhdsWithin]
+    simp only [extChartAt, ChartedSpace.sum_chartAt_inl, ]
+    set C := chartAt H x
+    dsimp
+
+    sorry
+  apply Filter.mem_of_superset aux₂ aux₁
+
+  -- simp only [extChartAt, ChartedSpace.sum_chartAt_inl]
+  -- set C := chartAt H x
+  -- use (I.symm ⁻¹' C.target)
+  -- constructor
+  -- · sorry
+  -- · use (range I), by simp
+  --   ext x
+  --   constructor
+  --   · intro hx
+  --     -- rw [mem_setOf] at hx
+  --     dsimp at hx
+  --     rw [Sum.inl_injective.extend_apply C] at hx
+  --     -- probably too strong...
+  --     sorry
+  --   · exact fun hx ↦ asdf x hx
+
+
+  /- simp only [extChartAt, ChartedSpace.sum_chartAt_inl, PartialHomeomorph.lift_openEmbedding,
     PartialEquiv.invFun_as_coe, PartialHomeomorph.coe_coe_symm,
     PartialHomeomorph.extend.eq_1, PartialEquiv.coe_trans]
   set C := chartAt H x
+  -- I is not an issue; C is!
+  have : EqOn (I ∘ I.symm) id (range I) := fun x hx ↦ I.right_inv hx
+  have : EqOn (I ∘ C ∘ C.symm ∘ I.symm) id (range I) := by
+    have : I.symm '' (range I) ⊆ C.target := by
+      intro x' hx'
+      sorry
   have : ContDiffWithinAt 𝕜 n (I ∘ C ∘ C.symm ∘ I.symm) (range I) (I (C x)) := by
     -- TODO! idea. near I (C x), C and I have their inverses, so this is locally just id
     have : C ∘ C.symm = id := by
@@ -363,7 +407,7 @@ lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
     apply Sum.inl_injective.extend_apply C
   · dsimp only [Function.comp_apply]
     congr
-    apply Sum.inl_injective.extend_apply
+    apply Sum.inl_injective.extend_apply -/
 
   -- write in charts at x and inl x; then expand the charts there
   -- finally, the statement should boil down to lift_openEmbedding being nice...
