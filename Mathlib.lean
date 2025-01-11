@@ -295,11 +295,14 @@ import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.Group.Int
+import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.Group.Int.Even
+import Mathlib.Algebra.Group.Int.TypeTags
+import Mathlib.Algebra.Group.Int.Units
 import Mathlib.Algebra.Group.Invertible.Basic
 import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.Group.MinimalAxioms
-import Mathlib.Algebra.Group.Nat.Basic
+import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.Nat.Even
 import Mathlib.Algebra.Group.Nat.TypeTags
 import Mathlib.Algebra.Group.Nat.Units
@@ -2241,6 +2244,7 @@ import Mathlib.CategoryTheory.WithTerminal
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Combinatorics.Additive.AP.Three.Behrend
 import Mathlib.Combinatorics.Additive.AP.Three.Defs
+import Mathlib.Combinatorics.Additive.ApproximateSubgroup
 import Mathlib.Combinatorics.Additive.CauchyDavenport
 import Mathlib.Combinatorics.Additive.Corner.Defs
 import Mathlib.Combinatorics.Additive.Corner.Roth
@@ -5192,6 +5196,7 @@ import Mathlib.Topology.Category.CompHausLike.Limits
 import Mathlib.Topology.Category.CompHausLike.SigmaComparison
 import Mathlib.Topology.Category.CompactlyGenerated
 import Mathlib.Topology.Category.Compactum
+import Mathlib.Topology.Category.DeltaGenerated
 import Mathlib.Topology.Category.FinTopCat
 import Mathlib.Topology.Category.LightProfinite.AsLimit
 import Mathlib.Topology.Category.LightProfinite.Basic
@@ -5546,7 +5551,7 @@ import Mathlib.Util.SleepHeartbeats
 import Mathlib.Util.Superscript
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
-import Mathlib.Util.TermBeta
+import Mathlib.Util.TermReduce
 import Mathlib.Util.TransImports
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
