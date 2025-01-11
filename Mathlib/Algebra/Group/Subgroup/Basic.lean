@@ -414,7 +414,8 @@ def conjugatesOfSet (s : Set G) : Set G :=
   ⋃ a ∈ s, conjugatesOf a
 
 theorem mem_conjugatesOfSet_iff {x : G} : x ∈ conjugatesOfSet s ↔ ∃ a ∈ s, IsConj a x := by
-  erw [Set.mem_iUnion₂]; simp only [conjugatesOf, isConj_iff, Set.mem_setOf_eq, exists_prop]
+  rw [conjugatesOfSet, Set.mem_iUnion₂]
+  simp only [conjugatesOf, isConj_iff, Set.mem_setOf_eq, exists_prop]
 
 theorem subset_conjugatesOfSet : s ⊆ conjugatesOfSet s := fun (x : G) (h : x ∈ s) =>
   mem_conjugatesOfSet_iff.2 ⟨x, h, IsConj.refl _⟩

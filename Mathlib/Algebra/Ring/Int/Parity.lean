@@ -5,6 +5,7 @@ Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Ring.Parity
 import Mathlib.Algebra.Ring.Int.Defs
+import Mathlib.Algebra.Group.Int.Even
 
 /-!
 # Basic parity lemmas for the ring `ℤ`
