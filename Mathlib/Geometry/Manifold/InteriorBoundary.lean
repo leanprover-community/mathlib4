@@ -5,7 +5,6 @@ Authors: Michael Rothgang
 -/
 
 import Mathlib.Geometry.Manifold.IsManifold
-import Mathlib.Geometry.Manifold.ContMDiffMap
 
 /-!
 # Interior and boundary of a manifold
