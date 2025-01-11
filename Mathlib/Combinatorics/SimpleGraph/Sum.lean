@@ -113,10 +113,10 @@ def Coloring.sumEquiv : (G ⊕g H).Coloring γ ≃ (G.Coloring γ) × (H.Colorin
   toFun c := ⟨c.sumLeft, c.sumRight⟩
   invFun p := p.1.sum p.2
   left_inv := fun c => by
-    simp
+    simp only
     exact sumLeft_sum_sumRight_eq c
   right_inv := fun p => by
-    simp
+    simp only
     exact rfl
 
 /-- Color `G ⊕g H` with `Fin (n + m)` given a coloring of `G` with `Fin n` and a coloring of `H`
