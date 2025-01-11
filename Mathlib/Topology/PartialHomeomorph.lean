@@ -1380,6 +1380,10 @@ lemma lift_openEmbedding_symm (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding 
     (e.lift_openEmbedding hf).symm = f ∘ e.symm := rfl
 
 @[simp]
+lemma lift_openEmbedding_symm_source (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
+    (e.lift_openEmbedding hf).symm.source = e.target := rfl
+
+@[simp]
 lemma lift_openEmbedding_source (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf).source = f '' e.source := rfl
 
@@ -1387,13 +1391,20 @@ lemma lift_openEmbedding_source (e : PartialHomeomorph X Z) (hf : IsOpenEmbeddin
 lemma lift_openEmbedding_target (e : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf).target = e.target := rfl
 
--- TODO: shouldn't be hard to prove...
+lemma lift_openEmbedding_trans_apply
+    (e e' : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) (z : Z) :
+    (e.lift_openEmbedding hf).symm.trans (e'.lift_openEmbedding hf) z = (e.symm.trans e') z := by
+  simp [hf.injective.extend_apply e']
+
 lemma lift_openEmbedding_trans (e e' : PartialHomeomorph X Z) (hf : IsOpenEmbedding f) :
     (e.lift_openEmbedding hf).symm.trans (e'.lift_openEmbedding hf) = e.symm.trans e' := by
   ext x
-  · simp [hf.injective.extend_apply e']
+  · exact e.lift_openEmbedding_trans_apply e' hf x
   · simp [hf.injective.extend_apply e]
-  · dsimp
-    sorry
+  · simp_rw [PartialHomeomorph.trans_source, e.lift_openEmbedding_symm_source, e.symm_source,
+      e.lift_openEmbedding_symm, e'.lift_openEmbedding_source]
+    refine ⟨fun ⟨hx, ⟨y, hy, hxy⟩⟩ ↦ ⟨hx, ?_⟩, fun ⟨hx, hx'⟩ ↦ ⟨hx, mem_image_of_mem f hx'⟩⟩
+    rw [mem_preimage]; rw [comp_apply] at hxy
+    exact (hf.injective hxy) ▸ hy
 
 end PartialHomeomorph

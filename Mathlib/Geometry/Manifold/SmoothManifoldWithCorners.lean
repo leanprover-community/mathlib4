@@ -805,7 +805,6 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
 
 /-- The disjoint union of two `C^n` manifolds modelled on `(E, H)`
 is a `C^n` manifold modeled on `(E, H)`. -/
--- XXX. do I really need the same model twice? or can/should one generalise this?
 instance disjointUnion [Nonempty M] [Nonempty M'] [Nonempty H] :
     IsManifold I n (M ⊕ M') where
   compatible {e} e' he he' := by
@@ -814,16 +813,33 @@ instance disjointUnion [Nonempty M] [Nonempty M'] [Nonempty H] :
       · rw [hef, he'f', f.lift_openEmbedding_trans f' (X' := M ⊕ M') IsOpenEmbedding.inl]
         exact hM.compatible hf hf'
       · rw [hef, he'f']
-        sorry -- lift across two different embeddings...
-    · -- analogous argument to the first case: can I deduplicate?
+        suffices aux : ((f.lift_openEmbedding IsOpenEmbedding.inl).symm ≫ₕ
+            f'.lift_openEmbedding IsOpenEmbedding.inr).source = ∅ by
+          constructor
+          · intro x ⟨hx, _⟩
+            rw [mem_preimage] at hx
+            simp_all only [mem_empty_iff_false]
+          · intro x ⟨hx, _⟩
+            simp_all [hx]
+        ext x
+        exact ⟨fun ⟨hx₁, hx₂⟩ ↦ by simp_all [hx₂], fun hx ↦ hx.elim⟩
+    · -- Analogous argument to the first case: is there a way to deduplicate?
       obtain (⟨f', hf', he'f'⟩ | ⟨f', hf', he'f'⟩) := ChartedSpace.mem_atlas_sum he'
-      · sorry
+      · rw [hef, he'f']
+        suffices aux : ((f.lift_openEmbedding IsOpenEmbedding.inr).symm ≫ₕ
+            f'.lift_openEmbedding IsOpenEmbedding.inl).source = ∅ by
+          constructor
+          · intro x ⟨hx, _⟩
+            rw [mem_preimage] at hx
+            simp_all only [mem_empty_iff_false]
+          · intro x ⟨hx, _⟩
+            simp_all [hx]
+        ext x
+        exact ⟨fun ⟨hx₁, hx₂⟩ ↦ by simp_all [hx₂], fun hx ↦ hx.elim⟩
       · rw [hef, he'f', f.lift_openEmbedding_trans f' (X' := M ⊕ M') IsOpenEmbedding.inr]
         exact hM'.compatible hf hf'
 
 end DisjointUnion
-
-#exit
 
 end IsManifold
 
