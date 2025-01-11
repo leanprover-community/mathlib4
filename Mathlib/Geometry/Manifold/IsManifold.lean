@@ -803,6 +803,19 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
   [hM : IsManifold I n M] [hM' : IsManifold I n M']
   -- {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M''] [IsManifold I n M'']
 
+-- TODO: does this generalise to other groupoids? The argument is not *very* specific
+-- to C^n functions, but uses something about the groupoid's property that is not abstract.
+/-- Any change of coordinates with empty source belongs to `contDiffGroupoid`. -/
+lemma ContDiffGroupoid.mem_of_source_eq_empty (f : PartialHomeomorph H H)
+    (hf : f.source = ∅) : f ∈ contDiffGroupoid n I := by
+  constructor
+  · intro x ⟨hx, _⟩
+    rw [mem_preimage] at hx
+    simp_all only [mem_empty_iff_false]
+  · intro x ⟨hx, _⟩
+    have : f.target = ∅ := by simp [← f.image_source_eq_target, hf]
+    simp_all [hx]
+
 /-- The disjoint union of two `C^n` manifolds modelled on `(E, H)`
 is a `C^n` manifold modeled on `(E, H)`. -/
 instance disjointUnion [Nonempty M] [Nonempty M'] [Nonempty H] :
@@ -810,33 +823,19 @@ instance disjointUnion [Nonempty M] [Nonempty M'] [Nonempty H] :
   compatible {e} e' he he' := by
     obtain (⟨f, hf, hef⟩ | ⟨f, hf, hef⟩) := ChartedSpace.mem_atlas_sum he
     · obtain (⟨f', hf', he'f'⟩ | ⟨f', hf', he'f'⟩) := ChartedSpace.mem_atlas_sum he'
-      · rw [hef, he'f', f.lift_openEmbedding_trans f' (X' := M ⊕ M') IsOpenEmbedding.inl]
+      · rw [hef, he'f', f.lift_openEmbedding_trans f' IsOpenEmbedding.inl]
         exact hM.compatible hf hf'
       · rw [hef, he'f']
-        suffices aux : ((f.lift_openEmbedding IsOpenEmbedding.inl).symm ≫ₕ
-            f'.lift_openEmbedding IsOpenEmbedding.inr).source = ∅ by
-          constructor
-          · intro x ⟨hx, _⟩
-            rw [mem_preimage] at hx
-            simp_all only [mem_empty_iff_false]
-          · intro x ⟨hx, _⟩
-            simp_all [hx]
+        apply ContDiffGroupoid.mem_of_source_eq_empty
         ext x
         exact ⟨fun ⟨hx₁, hx₂⟩ ↦ by simp_all [hx₂], fun hx ↦ hx.elim⟩
     · -- Analogous argument to the first case: is there a way to deduplicate?
       obtain (⟨f', hf', he'f'⟩ | ⟨f', hf', he'f'⟩) := ChartedSpace.mem_atlas_sum he'
       · rw [hef, he'f']
-        suffices aux : ((f.lift_openEmbedding IsOpenEmbedding.inr).symm ≫ₕ
-            f'.lift_openEmbedding IsOpenEmbedding.inl).source = ∅ by
-          constructor
-          · intro x ⟨hx, _⟩
-            rw [mem_preimage] at hx
-            simp_all only [mem_empty_iff_false]
-          · intro x ⟨hx, _⟩
-            simp_all [hx]
+        apply ContDiffGroupoid.mem_of_source_eq_empty
         ext x
         exact ⟨fun ⟨hx₁, hx₂⟩ ↦ by simp_all [hx₂], fun hx ↦ hx.elim⟩
-      · rw [hef, he'f', f.lift_openEmbedding_trans f' (X' := M ⊕ M') IsOpenEmbedding.inr]
+      · rw [hef, he'f', f.lift_openEmbedding_trans f' IsOpenEmbedding.inr]
         exact hM'.compatible hf hf'
 
 end DisjointUnion
