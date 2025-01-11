@@ -601,10 +601,11 @@ def castMaxEmbLeft {n m : ℕ} : Fin n ↪ Fin (max n m) := castLEEmb (n.le_max_
 def castMaxEmbRight {n m : ℕ} : Fin m ↪ Fin (max n m) := castLEEmb (n.le_max_right m)
 
 @[simp, norm_cast]
-lemma coe_castMaxEmb {n m : ℕ} : (castMaxEmbLeft : Fin n → Fin (max n m)) = castMaxLeft m := rfl
+lemma coe_castMaxEmbLeft {n m : ℕ} : (castMaxEmbLeft : Fin n → Fin (max n m)) = castMaxLeft m := rfl
 
 @[simp, norm_cast]
-lemma coe_castMax'Emb {n m : ℕ} : (castMaxEmbRight : Fin m → Fin (max n m)) = castMaxRight n := rfl
+lemma coe_castMaxEmbRight {n m : ℕ} : (castMaxEmbRight : Fin m → Fin (max n m)) = castMaxRight n :=
+  rfl
 
 /- The next proof can be golfed a lot using `Fintype.card`.
 It is written this way to define `ENat.card` and `Nat.card` without a `Fintype` dependency

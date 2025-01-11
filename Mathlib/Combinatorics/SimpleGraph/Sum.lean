@@ -107,15 +107,15 @@ theorem Colorable.sum_left {n : ℕ} (h : (G ⊕g H).Colorable n) : G.Colorable 
 theorem Colorable.sum_right {n : ℕ} (h : (G ⊕g H).Colorable n) : H.Colorable n :=
   Nonempty.intro (h.some.sumRight)
 
-theorem ChromaticNumber_left_le_sum : G.chromaticNumber ≤ (G ⊕g H).chromaticNumber := by
+theorem chromaticNumber_left_le_sum : G.chromaticNumber ≤ (G ⊕g H).chromaticNumber := by
   refine chromaticNumber_le_of_forall_imp (fun n h ↦ h.sum_left)
 
-theorem ChromaticNumber_right_le_sum : H.chromaticNumber ≤ (G ⊕g H).chromaticNumber := by
+theorem chromaticNumber_right_le_sum : H.chromaticNumber ≤ (G ⊕g H).chromaticNumber := by
   refine chromaticNumber_le_of_forall_imp (fun n h ↦ h.sum_right)
 
-theorem ChromaticNumber_sum_eq :
+theorem chromaticNumber_sum_eq :
     (G ⊕g H).chromaticNumber = max G.chromaticNumber H.chromaticNumber := by
-  refine eq_max ChromaticNumber_left_le_sum ChromaticNumber_right_le_sum ?_
+  refine eq_max chromaticNumber_left_le_sum chromaticNumber_right_le_sum ?_
   intro n hG hH
   cases n
   · simp
