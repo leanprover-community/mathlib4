@@ -304,11 +304,16 @@ end Fact.Manifold
 
 open Fact.Manifold
 
+lemma missing : (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ = 0 := rfl
+
 lemma IccLeftChart_extend_left_eq :
     (IccLeftChart x y).extend (𝓡∂ 1) ⊥ = 0 := by
   calc ((IccLeftChart x y).extend (𝓡∂ 1)) ⊥
     _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by norm_num [IccLeftChart, Icc.coe_bot]
-    _ = 0 := rfl -- missing API?
+    _ = 0 := missing
+
+lemma missing2 {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
+    (IccLeftChart x y).extend (𝓡∂ 1) p 0 = p.val - x := rfl
 
 lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
     0 < ((IccLeftChart x y).extend (𝓡∂ 1)) p 0 := by
@@ -373,7 +378,7 @@ lemma IccRightChart_extend_right_eq :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ = 0 := by
   calc (IccRightChart x y).extend (𝓡∂ 1) ⊤
     _ = (𝓡∂ 1) ⟨fun _ ↦ 0, by norm_num⟩ := by norm_num [IccRightChart, Icc.coe_top]
-    _ = 0 := rfl -- same missing API?
+    _ = 0 := missing
 
 lemma IccRightChart_extend_right_mem_frontier :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ ∈ frontier (range (𝓡∂ 1)) := by
