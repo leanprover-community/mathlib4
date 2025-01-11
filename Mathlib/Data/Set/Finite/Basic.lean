@@ -42,6 +42,7 @@ assert_not_exists OrderedRing
 assert_not_exists MonoidWithZero
 
 open Set Function
+open scoped symmDiff
 
 universe u v w x
 
@@ -405,8 +406,6 @@ Some set instances do not appear here since they are consequences of others, for
 
 namespace Finite.Set
 
-open scoped Classical
-
 example {s : Set α} [Finite α] : Finite s :=
   inferInstance
 
@@ -419,10 +418,12 @@ example (a : α) : Finite ({a} : Set α) :=
 instance finite_union (s t : Set α) [Finite s] [Finite t] : Finite (s ∪ t : Set α) := by
   cases nonempty_fintype s
   cases nonempty_fintype t
+  classical
   infer_instance
 
 instance finite_sep (s : Set α) (p : α → Prop) [Finite s] : Finite ({ a ∈ s | p a } : Set α) := by
   cases nonempty_fintype s
+  classical
   infer_instance
 
 protected theorem subset (s : Set α) {t : Set α} [Finite s] (h : t ⊆ s) : Finite t := by
@@ -443,6 +444,7 @@ instance finite_insert (a : α) (s : Set α) [Finite s] : Finite (insert a s : S
 
 instance finite_image (s : Set α) (f : α → β) [Finite s] : Finite (f '' s) := by
   cases nonempty_fintype s
+  classical
   infer_instance
 
 end Finite.Set
@@ -460,6 +462,7 @@ after possibly setting up some `Fintype` and classical `Decidable` instances.
 
 
 section SetFiniteConstructors
+variable {s t u : Set α}
 
 @[nontriviality]
 theorem Finite.of_subsingleton [Subsingleton α] (s : Set α) : s.Finite :=
@@ -476,7 +479,7 @@ theorem Finite.subset {s : Set α} (hs : s.Finite) {t : Set α} (ht : t ⊆ s) :
   have := hs.to_subtype
   exact Finite.Set.subset _ ht
 
-theorem Finite.union {s t : Set α} (hs : s.Finite) (ht : t.Finite) : (s ∪ t).Finite := by
+theorem Finite.union (hs : s.Finite) (ht : t.Finite) : (s ∪ t).Finite := by
   rw [Set.Finite] at hs ht
   apply toFinite
 
@@ -505,11 +508,16 @@ theorem Finite.inf_of_right {s : Set α} (h : s.Finite) (t : Set α) : (t ⊓ s)
 protected lemma Infinite.mono {s t : Set α} (h : s ⊆ t) : s.Infinite → t.Infinite :=
   mt fun ht ↦ ht.subset h
 
-theorem Finite.diff {s : Set α} (hs : s.Finite) (t : Set α) : (s \ t).Finite :=
-  hs.subset diff_subset
+theorem Finite.diff (hs : s.Finite) : (s \ t).Finite := hs.subset diff_subset
 
 theorem Finite.of_diff {s t : Set α} (hd : (s \ t).Finite) (ht : t.Finite) : s.Finite :=
   (hd.union ht).subset <| subset_diff_union _ _
+
+lemma Finite.symmDiff (hs : s.Finite) (ht : t.Finite) : (s ∆ t).Finite := hs.diff.union ht.diff
+
+lemma Finite.symmDiff_congr (hst : (s ∆ t).Finite) : (s ∆ u).Finite ↔ (t ∆ u).Finite where
+  mp hsu := (hst.union hsu).subset (symmDiff_comm s t ▸ symmDiff_triangle ..)
+  mpr htu := (hst.union htu).subset (symmDiff_triangle ..)
 
 @[simp]
 theorem finite_empty : (∅ : Set α).Finite :=
