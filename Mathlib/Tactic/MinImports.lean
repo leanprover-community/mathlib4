@@ -7,8 +7,6 @@ import Lean.Elab.DefView
 import Lean.Util.CollectAxioms
 import Mathlib.Init
 import ImportGraph.Imports
-import Lean.Elab.DefView
-import Lean.Util.CollectAxioms
 
 /-! # `#min_imports in` a command to find minimal imports
 
