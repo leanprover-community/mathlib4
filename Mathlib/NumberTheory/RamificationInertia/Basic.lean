@@ -465,7 +465,7 @@ theorem Quotient.algebraMap_quotient_pow_ramificationIdx (x : R) :
 
 /-- If `P` lies over `p`, then `R / p` has a canonical map to `S / P`.
 
-This can't be an instance since the map `f : R → S` is generally not inferrable.
+This can't be an instance since the map `f : R → S` is generally not inferable.
 -/
 def Quotient.algebraQuotientOfRamificationIdxNeZero [hfp : NeZero e] :
     Algebra (R ⧸ p) (S ⧸ P) :=

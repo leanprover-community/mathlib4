@@ -30,6 +30,7 @@ This tactic was ported by Thomas Murrills to Lean 4, and then it was converted t
 extension and made to use kernel reductions by Kyle Miller.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 /-- The Mersenne numbers, 2^p - 1. -/
 def mersenne (p : ℕ) : ℕ :=
@@ -270,14 +271,12 @@ instance : NatCast (X q) where
 
 @[simp] theorem snd_natCast (n : ℕ) : (n : X q).snd = (0 : ZMod q) := rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofNat_fst (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : X q).fst = OfNat.ofNat n :=
+    (ofNat(n) : X q).fst = OfNat.ofNat n :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofNat_snd (n : ℕ) [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n) : X q).snd = 0 :=
+    (ofNat(n) : X q).snd = 0 :=
   rfl
 
 instance : AddGroupWithOne (X q) :=

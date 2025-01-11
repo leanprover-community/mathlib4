@@ -31,7 +31,7 @@ The main new notation is `![a, b]`, which gets expanded to `vecCons a (vecCons b
 
 ## Examples
 
-Examples of usage can be found in the `test/matrix.lean` file.
+Examples of usage can be found in the `MathlibTest/matrix.lean` file.
 -/
 
 

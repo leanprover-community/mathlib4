@@ -96,20 +96,20 @@ def cuspFunction : ℂ → ℂ :=
 
 theorem cuspFunction_eq_of_nonzero {q : ℂ} (hq : q ≠ 0) :
     cuspFunction h f q = f (invQParam h q) :=
-  update_noteq hq ..
+  update_of_ne hq ..
 
 theorem cuspFunction_zero_eq_limUnder_nhds_ne :
     cuspFunction h f 0 = limUnder (𝓝[≠] 0) (cuspFunction h f) := by
-  conv_lhs => simp only [cuspFunction, update_same]
+  conv_lhs => simp only [cuspFunction, update_self]
   refine congr_arg lim (Filter.map_congr <| eventuallyEq_nhdsWithin_of_eqOn fun r hr ↦ ?_)
-  rw [cuspFunction, update_noteq hr]
+  rw [cuspFunction, update_of_ne hr]
 
 variable {f h}
 
 theorem eq_cuspFunction (hh : h ≠ 0) (hf : Periodic f h) (z : ℂ) :
     (cuspFunction h f) (𝕢 h z) = f z := by
   have : (cuspFunction h f) (𝕢 h z) = f (invQParam h (𝕢 h z)) := by
-    rw [cuspFunction, update_noteq, comp_apply]
+    rw [cuspFunction, update_of_ne, comp_apply]
     exact exp_ne_zero _
   obtain ⟨m, hm⟩ := qParam_left_inv_mod_period hh z
   simpa only [this, hm] using hf.int_mul m z
@@ -169,7 +169,7 @@ theorem boundedAtFilter_cuspFunction (hh : 0 < h) (h_bd : BoundedAtFilter I∞ f
 
 theorem cuspFunction_zero_of_zero_at_inf (hh : 0 < h) (h_zer : ZeroAtFilter I∞ f) :
     cuspFunction h f 0 = 0 := by
-  simpa only [cuspFunction, update_same] using (h_zer.comp (invQParam_tendsto hh)).limUnder_eq
+  simpa only [cuspFunction, update_self] using (h_zer.comp (invQParam_tendsto hh)).limUnder_eq
 
 theorem differentiableAt_cuspFunction_zero (hh : 0 < h) (hf : Periodic f h)
     (h_hol : ∀ᶠ z in I∞, DifferentiableAt ℂ f z) (h_bd : BoundedAtFilter I∞ f) :
