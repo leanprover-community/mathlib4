@@ -244,32 +244,49 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ
 
 open Topology
 
+lemma interiorPoint_inl (x : M) (hx : I.IsInteriorPoint x) :
+    I.IsInteriorPoint (@Sum.inl M M' x) := by
+  rw [I.isInteriorPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inl]
+  dsimp only [PartialHomeomorph.extend.eq_1, PartialEquiv.trans_target, toPartialEquiv_coe_symm,
+    PartialHomeomorph.lift_openEmbedding_target, PartialEquiv.coe_trans, toPartialEquiv_coe,
+    PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.lift_openEmbedding_toFun, Function.comp_apply]
+  rw [Sum.inl_injective.extend_apply (chartAt H x)]
+  rw [I.isInteriorPoint_iff, extChartAt] at hx
+  exact hx
+
+lemma interiorPoint_inr (x : M') (hx : I.IsInteriorPoint x) :
+    I.IsInteriorPoint (@Sum.inr M M' x) := by
+  rw [I.isInteriorPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inr]
+  dsimp only [PartialHomeomorph.extend.eq_1, PartialEquiv.trans_target, toPartialEquiv_coe_symm,
+    PartialHomeomorph.lift_openEmbedding_target, PartialEquiv.coe_trans, toPartialEquiv_coe,
+    PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.lift_openEmbedding_toFun, Function.comp_apply]
+  rw [Sum.inr_injective.extend_apply (chartAt H x)]
+  rw [I.isInteriorPoint_iff, extChartAt] at hx
+  exact hx
+
 lemma interior_disjointUnion :
     ModelWithCorners.interior (I := I) (M ⊕ M') =
       Sum.inl '' (ModelWithCorners.interior (I := I) M)
       ∪ Sum.inr '' (ModelWithCorners.interior (I := I) M') := by
   ext p
   constructor
-  · sorry
+  · intro hp
+    sorry
   -- TODO! something with interior points
   intro hp
   rw [ModelWithCorners.interior, mem_setOf]
   by_cases h : Sum.isLeft p
   · let x := Sum.getLeft p h
+    rw [Sum.eq_left_getLeft_of_isLeft h]
+    apply interiorPoint_inl x
     have hp' : p ∈ Sum.inl '' (ModelWithCorners.interior (I := I) M) := by
       -- should be not-hard from inl and inr arguments...
       sorry
-    rw [Sum.eq_left_getLeft_of_isLeft h]
-    -- rewrite the definition of interior point; we know the chart at x!
-    rw [I.isInteriorPoint_iff, extChartAt]
-    rw [ChartedSpace.sum_chartAt_inl]
-    rw [PartialHomeomorph.extend_target]
-    dsimp
-
-
     sorry
-
-  sorry
+  · let x := Sum.getRight p (Sum.not_isLeft.mp h)
+    rw [Sum.eq_right_getRight_of_isRight (Sum.not_isLeft.mp h)]
+    apply interiorPoint_inr x
+    sorry -- TODO: should be like the case above
 
 -- TODO: name and move to the right place
 lemma foo {α β : Type*} {s : Set α} {t : Set β} :

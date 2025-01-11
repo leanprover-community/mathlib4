@@ -801,7 +801,6 @@ section DisjointUnion
 
 variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M']
   [hM : IsManifold I n M] [hM' : IsManifold I n M']
-  -- {M'' : Type*} [TopologicalSpace M''] [ChartedSpace H M''] [IsManifold I n M'']
 
 -- TODO: does this generalise to other groupoids? The argument is not *very* specific
 -- to C^n functions, but uses something about the groupoid's property that is not abstract.
