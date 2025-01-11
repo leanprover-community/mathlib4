@@ -264,6 +264,14 @@ lemma interiorPoint_inr (x : M') (hx : I.IsInteriorPoint x) :
   rw [I.isInteriorPoint_iff, extChartAt] at hx
   exact hx
 
+lemma isInteriorPoint_disjointUnion_left {p : M ⊕ M'} (hp : I.IsInteriorPoint p)
+    (hleft : Sum.isLeft p) : I.IsInteriorPoint (Sum.getLeft p hleft) := by
+  sorry
+
+-- similar argument to left lemma
+lemma isInteriorPoint_disjointUnion_right {p : M ⊕ M'} (hp : I.IsInteriorPoint p)
+    (hright : Sum.isRight p) : I.IsInteriorPoint (Sum.getRight p hright) := sorry
+
 lemma interior_disjointUnion :
     ModelWithCorners.interior (I := I) (M ⊕ M') =
       Sum.inl '' (ModelWithCorners.interior (I := I) M)
@@ -271,22 +279,35 @@ lemma interior_disjointUnion :
   ext p
   constructor
   · intro hp
-    sorry
-  -- TODO! something with interior points
-  intro hp
-  rw [ModelWithCorners.interior, mem_setOf]
-  by_cases h : Sum.isLeft p
-  · let x := Sum.getLeft p h
-    rw [Sum.eq_left_getLeft_of_isLeft h]
-    apply interiorPoint_inl x
-    have hp' : p ∈ Sum.inl '' (ModelWithCorners.interior (I := I) M) := by
-      -- should be not-hard from inl and inr arguments...
-      sorry
-    sorry
-  · let x := Sum.getRight p (Sum.not_isLeft.mp h)
-    rw [Sum.eq_right_getRight_of_isRight (Sum.not_isLeft.mp h)]
-    apply interiorPoint_inr x
-    sorry -- TODO: should be like the case above
+    by_cases h : Sum.isLeft p
+    · left
+      exact ⟨Sum.getLeft p h, isInteriorPoint_disjointUnion_left hp h, Sum.inl_getLeft p h⟩
+    · right
+      exact ⟨Sum.getRight p ((Sum.not_isLeft.mp h)),
+        isInteriorPoint_disjointUnion_right hp (Sum.not_isLeft.mp h),
+        Sum.inr_getRight p (Sum.not_isLeft.mp h)⟩
+  · intro hp
+    rw [ModelWithCorners.interior, mem_setOf]
+    by_cases h : Sum.isLeft p
+    · set x := Sum.getLeft p h with x_eq
+      rw [Sum.eq_left_getLeft_of_isLeft h]
+      apply interiorPoint_inl x
+      have hp : p ∈ Sum.inl '' (ModelWithCorners.interior (I := I) M) := by
+        obtain (want | ⟨y, hy, hxy⟩) := hp
+        · exact want
+        · have : Sum.isRight p := by rw [← hxy]; exact rfl
+          exfalso
+          have : p.isLeft ∧ p.isRight := by tauto
+          -- TODO: no point is left and right at the same time
+          have missing : p.isLeft → ¬p.isRight := sorry
+          sorry
+      obtain ⟨x', hx', hx'p⟩ := hp
+      simp_rw [x_eq, ← hx'p, Sum.getLeft_inl]
+      exact hx'
+    · let x := Sum.getRight p (Sum.not_isLeft.mp h)
+      rw [Sum.eq_right_getRight_of_isRight (Sum.not_isLeft.mp h)]
+      apply interiorPoint_inr x
+      sorry -- TODO: should be like the case above; paste once the above is clean and simple
 
 -- TODO: name and move to the right place
 lemma foo {α β : Type*} {s : Set α} {t : Set β} :
