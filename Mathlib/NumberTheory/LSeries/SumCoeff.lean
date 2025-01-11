@@ -220,7 +220,7 @@ private theorem LSeries_eq_mul_integral_aux {f : ℕ → ℂ} (hf : f 0 = 0) {r 
   simp_rw [← sum₀_f₀_eq hf] at hO
   rw [← integral_mul_left]
   refine tendsto_nhds_unique ((tendsto_add_atTop_iff_nat 1).mpr hS.hasSum.tendsto_sum_nat) ?_
-  simp_rw [Nat.range_succ_Icc_zero, term_def₀ hf]
+  simp_rw [Nat.range_succ_eq_Icc_zero, term_def₀ hf]
   convert tendsto_sum_mul_atTop_nhds_one_sub_integral₀ (f := fun x ↦ (x : ℂ) ^ (-s)) (l := 0)
     ?_ hf h₃ ?_ ?_ ?_ (integrableAtFilter_rpow_atTop h₁)
   · rw [zero_sub, ← integral_neg]
