@@ -868,7 +868,7 @@ section Order
 
 section Semiring
 
-variable {R A : Type*} {p : A → Prop} [OrderedCommSemiring R] [StarRing R]
+variable {R A : Type*} {p : A → Prop} [CommSemiring R] [PartialOrder R] [StarRing R]
 variable [MetricSpace R] [TopologicalSemiring R] [ContinuousStar R]
 variable [∀ (α) [TopologicalSpace α], StarOrderedRing C(α, R)]
 variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
@@ -974,7 +974,7 @@ end NNReal
 
 section Ring
 
-variable {R A : Type*} {p : A → Prop} [OrderedCommRing R] [StarRing R]
+variable {R A : Type*} {p : A → Prop} [CommRing R] [PartialOrder R] [StarRing R]
 variable [MetricSpace R] [TopologicalRing R] [ContinuousStar R]
 variable [∀ (α) [TopologicalSpace α], StarOrderedRing C(α, R)]
 variable [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A] [StarOrderedRing A]
@@ -991,7 +991,8 @@ lemma cfc_le_iff (f g : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) := 
   rw [cfc_apply f a, cfc_apply g a, cfcHom_le_iff (show p a from ha), ContinuousMap.le_def]
   simp
 
-lemma cfc_nonpos_iff (f : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
+lemma cfc_nonpos_iff [IsOrderedRing R]
+    (f : R → R) (a : A) (hf : ContinuousOn f (spectrum R a) := by cfc_cont_tac)
     (ha : p a := by cfc_tac) : cfc f a ≤ 0 ↔ ∀ x ∈ spectrum R a, f x ≤ 0 := by
   simp_rw [← neg_nonneg, ← cfc_neg]
   exact cfc_nonneg_iff (fun x ↦ -f x) a
