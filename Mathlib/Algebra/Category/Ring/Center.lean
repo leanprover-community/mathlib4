@@ -5,9 +5,8 @@ Authors: Jujian Zhang
 -/
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.Algebra.Ring.Subring.Basic
-import Mathlib.RingTheory.Ideal.Span
+import Mathlib.Algebra.Category.ModuleCat.Limits
 
 /-!
 # A categorical description of the center of a ring
