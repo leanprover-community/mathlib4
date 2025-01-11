@@ -56,25 +56,19 @@ lemma linearIndependent_aux (n : ℕ) (hCoeff : ∀ i, (S.elems i).leadingCoeff 
 
 -- TODO: Generalize to any set of polynomials with different degrees
 open scoped Function in
-lemma linearIndependent [hZ : NoZeroDivisors R] : LinearIndependent R S.elems := by
-  refine linearIndependent_iff'.mpr ?_
-  intro s g eqzero i hi
-
-  have hsum := Polynomial.degree_sum_eq_of_disjoint (fun i ↦ g i • S.elems i) s 
+lemma linearIndependent [NoZeroSMulDivisors R R[X]] :
+    LinearIndependent R S.elems := linearIndependent_iff'.mpr <| fun s g eqzero i hi ↦ by
   -- have giregular := isRegular_of_ne_zero' _
-  -- have := Polynomial.degree_smul_of_smul_regular (S.elems i) giregular.left.isSMulRegular
-  have hpairwise : {i | i ∈ s ∧ g i • S.elems i ≠ 0}.Pairwise (Ne on (degree ∘ fun i ↦ g i • S.elems i)) := sorry 
-  specialize hsum hpairwise
+  -- have := degree_smul_of_smul_regular (S.elems i) giregular.left.isSMulRegular
+  have hpairwise :
+      {i | i ∈ s ∧ g i • S.elems i ≠ 0}.Pairwise (Ne on (degree ∘ fun i ↦ g i • S.elems i)) :=
+    sorry 
   by_cases hsupzero : s.sup (fun i ↦ (g i • S.elems i).degree) = ⊥
-  · have := Finset.le_sup hi (f := (fun i ↦ (g i • S.elems i).degree))
-    simp at this
-    rw [hsupzero] at this
-    rw [le_bot_iff] at this
-    exact (smul_eq_zero_iff_left (S.ne_zero i) (c := g i)).mp <| degree_eq_bot.mp this
+  · have le_sup := Finset.le_sup hi (f := (fun i ↦ (g i • S.elems i).degree))
+    exact (smul_eq_zero_iff_left (S.ne_zero i)).mp <| degree_eq_bot.mp (eq_bot_mono le_sup hsupzero)
   · obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S.elems i).degree) = n := exists_eq'
-    rw [hn] at hsum 
-    have hnne : n ≠ ⊥ := Ne.symm (ne_of_ne_of_eq (fun a ↦ hsupzero (id (Eq.symm a))) hn)
-    have := Polynomial.degree_ne_bot.mp <| hsum.trans_ne hnne
+    have hsum := degree_sum_eq_of_disjoint _ s hpairwise |>.trans hn
+    have := degree_ne_bot.mp <| hsum.trans_ne <|.symm (ne_of_ne_of_eq (hsupzero ·.symm) hn)
     contradiction
 
 lemma span (hCoeff : ∀ i, (S.elems i).leadingCoeff = 1) : ⊤ ≤ span R (Set.range S.elems) := by
