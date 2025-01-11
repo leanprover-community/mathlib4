@@ -230,7 +230,8 @@ end CommRing
 
 section LinearOrderedCommRing
 
-variable [Fintype ι] [LinearOrderedCommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N]
+variable [Fintype ι] [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+  [AddCommGroup M] [Module R M] [AddCommGroup N]
   [Module R N] (P : RootPairing ι R M N)
 
 theorem rootForm_self_non_neg (x : M) : 0 ≤ P.RootForm x x :=
