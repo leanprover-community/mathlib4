@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Kim Morrison, Damiano Testa
 -/
 
 import Mathlib.Init
+import Batteries.Data.List.ArrayMap
 import Lean.Util.Path
 
 /-!
@@ -35,7 +36,7 @@ def getAllFiles (git : Bool) (ml : String) : IO (Array System.FilePath) := do
     if git then
       let mlDir := ml.push pathSeparator   -- for example, `Mathlib/`
       let allLean ← IO.Process.run { cmd := "git", args := #["ls-files", mlDir ++ "*.lean"] }
-      return (((allLean.dropRightWhile (· == '\n')).splitOn "\n").map (⟨·⟩)).toArray
+      return (((allLean.dropRightWhile (· == '\n')).splitOn "\n").toArrayMap (⟨·⟩))
     else do
       let all ← walkDir ml
       return all.filter (·.extension == some "lean"))

@@ -3,6 +3,7 @@ Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
+import Batteries.Data.List.ArrayMap
 import Mathlib.Control.Traversable.Lemmas
 import Lean.Elab.Match
 import Lean.Elab.Deriving.Basic
@@ -74,7 +75,7 @@ def mapConstructor (c n : Name) (f α β : Expr) (args₀ : List Expr)
   let args' ← args₁.mapM (fun (y : Bool × Expr) =>
       if y.1 then return mkAppN (.fvar ad) #[α, β, f, y.2]
       else mapField n g.appFn! f α β y.2)
-  mkAppOptM c ((args₀ ++ args').map some).toArray >>= m.assign
+  mkAppOptM c ((args₀ ++ args').toArrayMap some) >>= m.assign
 
 /-- Makes a `match` expression corresponding to the application of `casesOn` like:
 ```lean
@@ -114,7 +115,7 @@ def mkCasesOnMatch (type : Name) (levels : List Level) (params : List Expr) (mot
       if cpats.isEmpty then
         mkFunUnit rhsBody
       else
-        mkLambdaFVars (fields.map Expr.fvar).toArray rhsBody
+        mkLambdaFVars (fields.toArrayMap Expr.fvar) rhsBody
   return mkAppN mres.matcher (motive :: indices ++ [val] ++ rhss).toArray
 
 /-- Get `FVarId`s which is not implementation details in the current context. -/
