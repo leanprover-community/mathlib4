@@ -70,6 +70,11 @@ theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
       exact ⟨g i, hg (is.mem_insert_self _), is.prod g,
         ⟨⟨g, fun hi ↦ hg (Finset.mem_insert_of_mem hi), rfl⟩, rfl⟩⟩
 
+@[to_additive]
+lemma mem_pow_iff_prod {n : ℕ} {s : Set α} {a : α} :
+    a ∈ s ^ n ↔ ∃ f : Fin n → α, (∀ i, f i ∈ s) ∧ ∏ i, f i = a := by
+  simpa using mem_finset_prod (t := .univ) (f := fun _ : Fin n ↦ s) _
+
 /-- A version of `Set.mem_finset_prod` with a simpler RHS for products over a Fintype. -/
 @[to_additive " A version of `Set.mem_finset_sum` with a simpler RHS for sums over a Fintype. "]
 theorem mem_fintype_prod [Fintype ι] (f : ι → Set α) (a : α) :

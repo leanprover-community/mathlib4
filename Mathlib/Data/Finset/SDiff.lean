@@ -9,7 +9,8 @@ import Mathlib.Data.Finset.Lattice.Lemmas
 # Difference of finite sets
 
 ## Main declarations
-* `Finset.instSDiffFinset`: Defines the set difference `s \ t` for finsets `s` and `t`.
+
+* `Finset.instSDiff`: Defines the set difference `s \ t` for finsets `s` and `t`.
 * `Finset.instGeneralizedBooleanAlgebra`: Finsets almost have a boolean algebra structure
 
 ## Tags
@@ -46,7 +47,7 @@ section Sdiff
 variable [DecidableEq α] {s t u v : Finset α} {a b : α}
 
 /-- `s \ t` is the set consisting of the elements of `s` that are not in `t`. -/
-instance : SDiff (Finset α) :=
+instance instSDiff : SDiff (Finset α) :=
   ⟨fun s₁ s₂ => ⟨s₁.1 - s₂.1, nodup_of_le (Multiset.sub_le_self ..) s₁.2⟩⟩
 
 @[simp]
@@ -81,8 +82,13 @@ theorem union_sdiff_of_subset (h : s ⊆ t) : s ∪ t \ s = t :=
 theorem sdiff_union_of_subset {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₂ \ s₁ ∪ s₁ = s₂ :=
   (union_comm _ _).trans (union_sdiff_of_subset h)
 
-lemma inter_sdiff_assoc (s t u : Finset α) : (s ∩ t) \ u = s ∩ (t \ u) := by
-  ext x; simp [and_assoc]
+/-- See also `Finset.sdiff_inter_right_comm`. -/
+lemma inter_sdiff_assoc (s t u : Finset α) : (s ∩ t) \ u = s ∩ (t \ u) := inf_sdiff_assoc ..
+
+/-- See also `Finset.inter_sdiff_assoc`. -/
+lemma sdiff_inter_right_comm (s t u : Finset α) : s \ t ∩ u = (s ∩ u) \ t := sdiff_inf_right_comm ..
+
+lemma inter_sdiff_left_comm (s t u : Finset α) : s ∩ (t \ u) = t ∩ (s \ u) := inf_sdiff_left_comm ..
 
 @[deprecated inter_sdiff_assoc (since := "2024-05-01")]
 theorem inter_sdiff (s t u : Finset α) : s ∩ (t \ u) = (s ∩ t) \ u := (inter_sdiff_assoc _ _ _).symm
