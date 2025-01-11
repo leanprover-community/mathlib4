@@ -22,7 +22,8 @@ variable {𝕜 E F G : Type*}
 local notation3 "𝕜≥0" => {c : 𝕜 // 0 ≤ c}
 
 /-- A pointed cone is a submodule of a module with scalars restricted to being nonnegative. -/
-abbrev PointedCone (𝕜 E) [OrderedSemiring 𝕜] [AddCommMonoid E] [Module 𝕜 E] :=
+abbrev PointedCone (𝕜 E)
+    [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜] [AddCommMonoid E] [Module 𝕜 E] :=
   Submodule {c : 𝕜 // 0 ≤ c} E
 
 namespace PointedCone
@@ -31,7 +32,7 @@ open Function
 
 section Definitions
 
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E]
 
 /-- Every pointed cone is a convex cone. -/
@@ -90,7 +91,7 @@ end Definitions
 
 section Maps
 
-variable [OrderedSemiring 𝕜]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
 variable [AddCommMonoid E] [Module 𝕜 E]
 variable [AddCommMonoid F] [Module 𝕜 F]
 variable [AddCommMonoid G] [Module 𝕜 G]
@@ -157,8 +158,8 @@ end Maps
 section PositiveCone
 
 variable (𝕜 E)
-variable [OrderedSemiring 𝕜]
-variable [OrderedAddCommGroup E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
+variable [Semiring 𝕜] [PartialOrder 𝕜] [IsOrderedRing 𝕜]
+variable [AddCommGroup E] [PartialOrder E] [IsOrderedAddMonoid E] [Module 𝕜 E] [OrderedSMul 𝕜 E]
 
 /-- The positive cone is the pointed cone formed by the set of nonnegative elements in an ordered
 module. -/
