@@ -25,6 +25,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.IsSimpleOrder
 import Mathlib.Algebra.Algebra.Subalgebra.MulOpposite
 import Mathlib.Algebra.Algebra.Subalgebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Order
+import Mathlib.Algebra.Algebra.Subalgebra.Pi
 import Mathlib.Algebra.Algebra.Subalgebra.Pointwise
 import Mathlib.Algebra.Algebra.Subalgebra.Prod
 import Mathlib.Algebra.Algebra.Subalgebra.Rank
@@ -294,11 +295,14 @@ import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Group.Indicator
 import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.Group.Int
+import Mathlib.Algebra.Group.Int.Defs
+import Mathlib.Algebra.Group.Int.Even
+import Mathlib.Algebra.Group.Int.TypeTags
+import Mathlib.Algebra.Group.Int.Units
 import Mathlib.Algebra.Group.Invertible.Basic
 import Mathlib.Algebra.Group.Invertible.Defs
 import Mathlib.Algebra.Group.MinimalAxioms
-import Mathlib.Algebra.Group.Nat.Basic
+import Mathlib.Algebra.Group.Nat.Defs
 import Mathlib.Algebra.Group.Nat.Even
 import Mathlib.Algebra.Group.Nat.TypeTags
 import Mathlib.Algebra.Group.Nat.Units
@@ -2212,6 +2216,7 @@ import Mathlib.CategoryTheory.Subobject.Limits
 import Mathlib.CategoryTheory.Subobject.MonoOver
 import Mathlib.CategoryTheory.Subobject.Types
 import Mathlib.CategoryTheory.Subobject.WellPowered
+import Mathlib.CategoryTheory.Subpresheaf.Basic
 import Mathlib.CategoryTheory.Subterminal
 import Mathlib.CategoryTheory.Sums.Associator
 import Mathlib.CategoryTheory.Sums.Basic
@@ -3074,6 +3079,7 @@ import Mathlib.FieldTheory.Galois.Basic
 import Mathlib.FieldTheory.Galois.GaloisClosure
 import Mathlib.FieldTheory.Galois.Infinite
 import Mathlib.FieldTheory.Galois.Profinite
+import Mathlib.FieldTheory.IntermediateField.Adjoin.Algebra
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Defs
 import Mathlib.FieldTheory.IntermediateField.Algebraic
@@ -4161,6 +4167,7 @@ import Mathlib.Order.Hom.Lattice
 import Mathlib.Order.Hom.Order
 import Mathlib.Order.Hom.Set
 import Mathlib.Order.Ideal
+import Mathlib.Order.Idempotents
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.Interval.Basic
 import Mathlib.Order.Interval.Finset.Basic
@@ -5188,6 +5195,7 @@ import Mathlib.Topology.Category.CompHausLike.Limits
 import Mathlib.Topology.Category.CompHausLike.SigmaComparison
 import Mathlib.Topology.Category.CompactlyGenerated
 import Mathlib.Topology.Category.Compactum
+import Mathlib.Topology.Category.DeltaGenerated
 import Mathlib.Topology.Category.FinTopCat
 import Mathlib.Topology.Category.LightProfinite.AsLimit
 import Mathlib.Topology.Category.LightProfinite.Basic
@@ -5542,7 +5550,7 @@ import Mathlib.Util.SleepHeartbeats
 import Mathlib.Util.Superscript
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
-import Mathlib.Util.TermBeta
+import Mathlib.Util.TermReduce
 import Mathlib.Util.TransImports
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace
