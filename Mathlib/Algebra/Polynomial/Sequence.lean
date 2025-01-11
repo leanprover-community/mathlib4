@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Algebra.Polynomial.Degree.Lemmas
+import Mathlib.Algebra.Ring.Regular
 import Mathlib.LinearAlgebra.Basis.Basic
 import Mathlib.LinearAlgebra.LinearIndependent
 
@@ -8,6 +9,8 @@ import Mathlib.LinearAlgebra.LinearIndependent
 # Polynomial sequences
 
 -/
+
+open Submodule (span)
 
 universe u
 
@@ -34,18 +37,12 @@ structure Sequence [Semiring R] where
   elems : ℕ → R[X]
   degree_eq (i : ℕ) : (elems i).degree = i
 
-/-- A sequence of polynomials such that the polynomial at index `i` has degree `i`. -/
-structure Sequence' {ι : Type*} [CoeOTC ι (WithBot ℕ)] [Semiring R] where
-  elems : ι → R[X]
-  degree_eq (i : ι) : (elems i).degree = ↑i
+open scoped Function in
+lemma Sequence.degree_disjoint [Semiring R] (S : Sequence R) :
+    (Set.range S.elems).Pairwise (Ne on degree) := by
+  sorry
 
-noncomputable def S [Nontrivial R] [Semiring R] : Sequence' R ℕ where
-  elems (i : ℕ) := X ^ i
-  degree_eq (i : ℕ) := by rw [degree_X_pow]; rfl
-
-noncomputable def S_fin [Nontrivial R] [Semiring R] : Sequence' R (Fin 6) where
-  elems (i : Fin 6) := X ^ ↑i
-  degree_eq (i : Fin 6) := by rw [degree_X_pow]; rfl
+lemma Sequence.ne_zero {R} (i : ℕ) [Semiring R] (S : Sequence R) : S.elems i ≠ 0 := sorry
 
 namespace Sequence
 
@@ -57,16 +54,34 @@ lemma linearIndependent_aux (n : ℕ) (hCoeff : ∀ i, (S.elems i).leadingCoeff 
   | zero => exact linearIndependent_empty_type
   | succ n hn => sorry
 
-theorem linearIndependent (hCoeff : ∀ i, (S.elems i).leadingCoeff = 1) :
-    LinearIndependent R S.elems := by
-  apply?
+-- TODO: Generalize to any set of polynomials with different degrees
+open scoped Function in
+lemma linearIndependent [hZ : NoZeroDivisors R] : LinearIndependent R S.elems := by
+  refine linearIndependent_iff'.mpr ?_
+  intro s g eqzero i hi
 
-lemma span (hCoeff : ∀ i, (S.elems i).leadingCoeff = 1) :
-    ⊤ ≤ Submodule.span R (Set.range S.elems) := by
+  have hsum := Polynomial.degree_sum_eq_of_disjoint (fun i ↦ g i • S.elems i) s 
+  -- have giregular := isRegular_of_ne_zero' _
+  -- have := Polynomial.degree_smul_of_smul_regular (S.elems i) giregular.left.isSMulRegular
+  have hpairwise : {i | i ∈ s ∧ g i • S.elems i ≠ 0}.Pairwise (Ne on (degree ∘ fun i ↦ g i • S.elems i)) := sorry 
+  specialize hsum hpairwise
+  by_cases hsupzero : s.sup (fun i ↦ (g i • S.elems i).degree) = ⊥
+  · have := Finset.le_sup hi (f := (fun i ↦ (g i • S.elems i).degree))
+    simp at this
+    rw [hsupzero] at this
+    rw [le_bot_iff] at this
+    exact (smul_eq_zero_iff_left (S.ne_zero i) (c := g i)).mp <| degree_eq_bot.mp this
+  · obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S.elems i).degree) = n := exists_eq'
+    rw [hn] at hsum 
+    have hnne : n ≠ ⊥ := Ne.symm (ne_of_ne_of_eq (fun a ↦ hsupzero (id (Eq.symm a))) hn)
+    have := Polynomial.degree_ne_bot.mp <| hsum.trans_ne hnne
+    contradiction
+
+lemma span (hCoeff : ∀ i, (S.elems i).leadingCoeff = 1) : ⊤ ≤ span R (Set.range S.elems) := by
   sorry
 
 noncomputable def basis (hCoeff : ∀ i, (S.elems i).leadingCoeff = 1) : Basis ℕ R R[X] :=
-  Basis.mk (S.linearIndependent hCoeff) (S.span hCoeff)
+  Basis.mk S.linearIndependent <| S.span hCoeff
 
 end Sequence
 
