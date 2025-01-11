@@ -265,7 +265,7 @@ lemma interiorPoint_inr (x : M') (hx : I.IsInteriorPoint x) :
   exact hx
 
 -- TODO: move to its proper place
-lemma isLeft_xor_isRight {α β : Type*} {x : α ⊕ β} (hx : x.isLeft ∧ x.isRight) : False := by
+lemma not_isLeft_and_isRight {α β : Type*} {x : α ⊕ β} : ¬(x.isLeft ∧ x.isRight) := by
   aesop
 
 lemma isInteriorPoint_disjointUnion_left {p : M ⊕ M'} (hp : I.IsInteriorPoint p)
@@ -298,7 +298,7 @@ lemma interior_disjointUnion :
       apply interiorPoint_inl x
       have hp : p ∈ Sum.inl '' (ModelWithCorners.interior (I := I) M) := by
         obtain (good | ⟨y, hy, hxy⟩) := hp
-        exacts [good, (isLeft_xor_isRight ⟨h, by rw [← hxy]; exact rfl⟩).elim]
+        exacts [good, (not_isLeft_and_isRight ⟨h, by rw [← hxy]; exact rfl⟩).elim]
       obtain ⟨x', hx', hx'p⟩ := hp
       simp_rw [x_eq, ← hx'p, Sum.getLeft_inl]
       exact hx'
@@ -307,7 +307,7 @@ lemma interior_disjointUnion :
       apply interiorPoint_inr x
       have hp : p ∈ Sum.inr '' (ModelWithCorners.interior (I := I) M') := by
         obtain (⟨y, hy, hxy⟩ | good) := hp
-        exacts [(isLeft_xor_isRight ⟨by rw [← hxy]; exact rfl, Sum.not_isLeft.mp h⟩).elim, good]
+        exacts [(not_isLeft_and_isRight ⟨by rw [← hxy]; exact rfl, Sum.not_isLeft.mp h⟩).elim, good]
       obtain ⟨x', hx', hx'p⟩ := hp
       simp_rw [x_eq, ← hx'p, Sum.getRight_inr]
       exact hx'
