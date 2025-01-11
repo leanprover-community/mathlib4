@@ -76,31 +76,108 @@ lemma XX_leading_coeff {f : ℕ → R} {n : ℕ} : (XX f n).leadingCoeff = 1 := 
       rw [XX_inductive, Polynomial.leadingCoeff_mul, h]
       simp only [Polynomial.leadingCoeff_X_sub_C, mul_one]
 
+theorem blah {R M} [Ring R] [AddCommGroup M] [Module R M] {P Q : Set M} (h : P ⊆ Q)
+    : Submodule.span R P ≤ Submodule.span R Q := by
+  intros x hx
+  induction hx using Submodule.span_induction
+  · apply SetLike.mem_of_subset
+    · apply Submodule.subset_span
+    · apply h
+      simp_all only
+  · simp only [Submodule.zero_mem]
+  · apply AddMemClass.add_mem
+    · simp_all only
+    · simp_all only
+  · apply SMulMemClass.smul_mem
+    simp_all only
+
+lemma blahblah {R} {N : ℕ} [CommRing R] {p : R[X]} (hp: p.degree < N)
+    : p ∈ Submodule.span R {X ^ k | k < N}:= by sorry
+
 lemma XX_span {f : ℕ → R} {n : ℕ} : X ^ n ∈ Submodule.span R {XX f k | k ≤ n} := by
   induction n using Nat.strongRec with
   | ind N h =>
-    have : (X ^ N - XX f N).degree < ↑N := by
-      have h0 : (XX f N).degree = ((X : R[X])^N).degree := by
+    induction N with
+    | zero =>
+      have : XX f 0 = 1 := by unfold XX ; simp
+      rw [pow_zero]
+      simp_all only [not_lt_zero', not_isEmpty_of_nonempty, IsEmpty.exists_iff, Set.setOf_true, Submodule.span_univ,
+        Submodule.mem_top, implies_true, nonpos_iff_eq_zero, exists_eq_left, Set.setOf_eq_eq_singleton']
+      apply SetLike.mem_of_subset
+      · apply Submodule.subset_span
+      · simp_all only [Set.mem_singleton_iff]
+    | succ N hN =>
+    have this1 : (X ^ (N + 1) - XX f (N + 1)).degree < ↑(N + 1) := by
+      have h0 : (XX f (N + 1)).degree = ((X : R[X])^(N + 1)).degree := by
         simp only [XX_deg, Polynomial.degree_pow, Polynomial.degree_X, nsmul_eq_mul, mul_one]
-      have h1' : ((X : R[X]) ^ N) ≠ 0 := by
+      have h1' : ((X : R[X]) ^ (N + 1)) ≠ 0 := by
         simp only [ne_eq, pow_eq_zero_iff', Polynomial.X_ne_zero, false_and, not_false_eq_true]
-      have h1 : XX f N ≠ 0 := by
-        cases' N with n
+      have h1 : XX f (N + 1) ≠ 0 := by
+        cases' (N + 1) with n
         · simp only [XX, Finset.range_zero, Finset.prod_empty, ne_eq, one_ne_zero,
           not_false_eq_true]
         · have : 0 < (XX f (n + 1)).degree := by
             simp only [XX_deg, Nat.cast_add, Nat.cast_one]
             exact Nat.cast_add_one_pos n
           exact Polynomial.ne_zero_of_degree_gt (n := 0) this
-      have h2 : (XX f N).leadingCoeff = ((X : R[X]) ^ N).leadingCoeff := by
+      have h2 : (XX f (N + 1)).leadingCoeff = ((X : R[X]) ^ (N + 1)).leadingCoeff := by
         simp only [Polynomial.monic_X_pow, Polynomial.Monic.leadingCoeff, XX_leading_coeff]
       have h3 := Polynomial.degree_sub_lt h0.symm h1' h2.symm
-      have h4 : (X ^ N - XX f N).degree < ↑N := by
+      have h4 : (X ^ (N + 1) - XX f (N + 1)).degree < ↑(N + 1) := by
         simp only [Polynomial.degree_pow, Polynomial.degree_X, nsmul_eq_mul, mul_one] at h3
         exact h3
       exact h4
-    sorry -- Got that we have cancelled the top term after subtracting X^N
-
+    have : ∀ m < (N + 1), Submodule.span R {X ^ k | k ≤ m} ≤ Submodule.span R {XX f k | k ≤ m} := by
+      intro m hm x hx
+      induction hx using Submodule.span_induction
+      · rename_i y hy
+        simp [*] at hy
+        let ⟨n, ⟨hn, hy⟩⟩ := hy
+        rw [←hy]
+        specialize h n (by linarith)
+        have : Submodule.span R {XX f k | k ≤ n} ≤ Submodule.span R {XX f k | k ≤ m} := by
+          apply blah
+          simp only [Set.setOf_subset_setOf, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+          intro a ha
+          use a
+          refine ⟨?_, rfl⟩
+          linarith
+        apply this
+        exact h
+      · simp only [Submodule.zero_mem]
+      · apply AddMemClass.add_mem <;> simp_all only
+      · apply SMulMemClass.smul_mem ; simp_all only
+      -- · rename_i y hy
+      --   simp [*] at hy
+      --   let ⟨n, ⟨hn, hy⟩⟩ := hy
+      --   rw [←hy]
+      --   specialize h n hn
+      --   have : Submodule.span R {XX f k | k ≤ n} ≤ Submodule.span R {XX f k | k < N} := by
+      --     apply blah
+      --     simp only [Set.setOf_subset_setOf, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+      --     intro a ha
+      --     use a
+      --     refine ⟨?_, rfl⟩
+      --     linarith
+      --   apply this
+      --   exact h
+      -- · simp only [Submodule.zero_mem]
+    set D := (X ^ (N + 1) - XX f (N + 1)).degree.unbot' 0
+    specialize this D ?_
+    · cases D
+      · sorry -- change D < ↑(N + 1) at this1
+      · sorry
+    · sorry
+    -- have this2 {m : ℕ} (h : m < N) :
+    --   Submodule.span R {XX f k | k ≤ m } ≤ Submodule.span R {XX f k | k ≤ N } := by
+    --   apply blah
+    --   simp only [Set.setOf_subset_setOf, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
+    --   intro a h
+    --   use a
+    --   refine ⟨?_, rfl⟩
+    --   linarith
+    -- have this3 : (X ^ N - XX f N) ∈ Submodule.span R {X ^ k | k < N} := blahblah this1
+    -- have this4 : Submodule.span R { X ^ k | k < N } ≤
     -- simp only [nonpos_iff_eq_zero, XX, exists_eq_left, Finset.range_zero, Finset.prod_empty,
     -- Set.setOf_eq_eq_singleton', Ideal.submodule_span_eq, Ideal.span_singleton_one, pow_zero,
     -- Submodule.mem_top]
