@@ -79,7 +79,7 @@ elab "assert_exists " n:ident : command => do
 
 /--
 `assert_not_exists d₁ d₂ ... dₙ` is a user command that asserts that the declarations named
-`d₁ d₂ ... dₙ` *does not exist* in the current import scope.
+`d₁ d₂ ... dₙ` *do not exist* in the current import scope.
 
 Be careful to use names (e.g. `Rat`) rather than notations (e.g. `ℚ`).
 
@@ -99,7 +99,7 @@ elab "assert_not_exists " ns:ident+ : command => do
   let env ← getEnv
   let modNames := env.header.moduleNames
   let modData := env.header.moduleData
-  let modDataSize := env.header.moduleData.size
+  let modDataSize := modData.size
   for n in ns do
     let decl ←
       try liftCoreM <| realizeGlobalConstNoOverloadWithInfo n
