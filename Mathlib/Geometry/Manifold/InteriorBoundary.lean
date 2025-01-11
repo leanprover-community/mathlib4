@@ -237,6 +237,10 @@ section disjointUnion
 variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ∞}
   [hM : IsManifold I n M] [hM' : IsManifold I n M']
   [Nonempty M] [Nonempty M'] [Nonempty H]
+  {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
+  {J : Type*} {J : ModelWithCorners 𝕜 E' H'}
+  {N N' : Type*} [TopologicalSpace N] [TopologicalSpace N'] [ChartedSpace H' N] [ChartedSpace H' N']
+  [IsManifold J n N] [IsManifold J n N'] [Nonempty N] [Nonempty N'] [Nonempty H']
 
 open Topology
 
@@ -323,6 +327,20 @@ lemma ContMDiff.inl : ContMDiff I I n (@Sum.inl M M') := by
   -- write in charts at x and inl x; then expand the charts there
   -- finally, the statement should boil down to lift_openEmbedding being nice...
 
+-- TODO: add the analogous argument, once the lemma above is proven
+lemma ContMDiff.inr : ContMDiff I I n (@Sum.inr M M') := by sorry
+
+-- TODO: two more lemmas to prove
+lemma ContMDiff.sum_elim {f : M → N} {g : M' → N}
+    (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.elim f g) := sorry
+
+-- actually, want an iff version here...
+lemma ContMDiff.sum_map {n : ℕ∞} [Nonempty H'] {f : M → N} {g : M' → N'}
+    (hf : ContMDiff I J n f) (hg : ContMDiff I J n g) : ContMDiff I J n (Sum.map f g) := sorry
+
+-- my bordism theory branch has a bunch of corollaries about diffeomorphisms now
+
+lemma ContMDiff.swap : ContMDiff I I n (@Sum.swap M M') := ContMDiff.sum_elim inr inl
 
 end disjointUnion
 
