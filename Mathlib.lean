@@ -2842,6 +2842,7 @@ import Mathlib.Data.Ordmap.Ordnode
 import Mathlib.Data.Ordmap.Ordset
 import Mathlib.Data.PEquiv
 import Mathlib.Data.PFun
+import Mathlib.Data.PFunLike
 import Mathlib.Data.PFunctor.Multivariate.Basic
 import Mathlib.Data.PFunctor.Multivariate.M
 import Mathlib.Data.PFunctor.Multivariate.W

@@ -3,12 +3,15 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Moritz Doll
 -/
+import Mathlib.Algebra.Group.PHom
+import Mathlib.GroupTheory.GroupAction.PHom
 import Mathlib.LinearAlgebra.Prod
 
 /-!
 # Partially defined linear maps
 
 A `LinearPMap R E F` or `E →ₗ.[R] F` is a linear map from a submodule of `E` to `F`.
+We also define a `LinearPMapClass` typeclass for types whose terms are partial linear maps.
 We define a `SemilatticeInf` with `OrderBot` instance on this, and define three operations:
 
 * `mkSpanSingleton` defines a partial linear map defined on the span of a singleton.
@@ -38,19 +41,59 @@ structure LinearPMap (R : Type u) [Ring R] (E : Type v) [AddCommGroup E] [Module
 
 @[inherit_doc] notation:25 E " →ₗ.[" R:25 "] " F:0 => LinearPMap R E F
 
+/-- `SemilinearPMapClass F σ M γ N` asserts `F` is a type of bundled
+partial `σ`-semilinear maps `M → N` whose domains are of type `γ`.
+
+See also `LinearPMapClass F R M γ N` for the case where `σ` is the identity map on `R`.
+
+A map `f` between an `R`-module and an `S`-module over a ring homomorphism `σ : R →+* S`
+is semilinear if it satisfies the two properties `f (x + y) = f x + f y` and
+`f (c • x) = (σ c) • f x`. -/
+class SemilinearPMapClass (F : Type*) {R S : outParam Type*} [Semiring R] [Semiring S]
+    (σ : outParam (R →+* S)) (M γ N : outParam Type*) [SetLike γ M]
+    [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module S N] [PFunLike F M γ N]
+    [AddMemClass γ M] [SMulMemClass γ R M]
+    extends AddPHomClass F M γ N, MulActionPSemiHomClass F σ M γ N
+
+/-- `LinearPMapClass F R M γ N` asserts `F` is a type of bundled partial `R`-linear maps `M → N`
+whose domains are of type `γ`.
+
+This is an abbreviation for `SemilinearPMapClass F (RingHom.id R) M γ N`.
+-/
+abbrev LinearPMapClass (F : Type*) (R M γ N : outParam Type*) [Semiring R] [SetLike γ M]
+    [AddCommMonoid M] [AddCommMonoid N] [Module R M] [Module R N] [PFunLike F M γ N]
+    [AddMemClass γ M] [SMulMemClass γ R M] :=
+  SemilinearPMapClass F (RingHom.id R) M γ N
+
+instance (priority := 100) SemilinearPMapClass.toAddMonoidPHomClass (F : Type*)
+    {R S : outParam Type*} [Semiring R] [Semiring S] (σ : outParam (R →+* S))
+    (M γ N : outParam Type*) [SetLike γ M] [AddCommMonoid M] [AddCommMonoid N] [Module R M]
+    [Module S N] [PFunLike F M γ N] [AddSubmonoidClass γ M] [SMulMemClass γ R M]
+    [SemilinearPMapClass F σ M γ N] :
+    AddMonoidPHomClass F M γ N where
+  pmap_zero f := by
+    rw [← zero_smul R 0, pmap_smulₛₗ, map_zero, zero_smul]
+
 variable {R : Type*} [Ring R] {E : Type*} [AddCommGroup E] [Module R E] {F : Type*}
   [AddCommGroup F] [Module R F] {G : Type*} [AddCommGroup G] [Module R G]
 
 namespace LinearPMap
 
+instance PFunLike : PFunLike (E →ₗ.[R] F) E (Submodule R E) F where
+  domain f := f.domain
+  coe f := f.toFun
+  coe_injective f g hd h := by
+    rcases f with ⟨f_dom, f⟩
+    rcases g with ⟨g_dom, g⟩
+    obtain rfl : f_dom = g_dom := hd
+    obtain rfl : f = g := LinearMap.ext fun x => h x x rfl
+    rfl
+
+instance LinearPMapClass : LinearPMapClass (E →ₗ.[R] F) R E (Submodule R E) F where
+  pmap_add f x y := f.toFun.map_add x y
+  pmap_smulₛₗ f c x := f.toFun.map_smul c x
+
 open Submodule
-
--- Porting note: A new definition underlying a coercion `↑`.
-@[coe]
-def toFun' (f : E →ₗ.[R] F) : f.domain → F := f.toFun
-
-instance : CoeFun (E →ₗ.[R] F) fun f : E →ₗ.[R] F => f.domain → F :=
-  ⟨toFun'⟩
 
 @[simp]
 theorem toFun_eq_coe (f : E →ₗ.[R] F) (x : f.domain) : f.toFun x = f x :=
@@ -65,10 +108,6 @@ theorem ext {f g : E →ₗ.[R] F} (h : f.domain = g.domain)
   obtain rfl : f = g := LinearMap.ext fun x => h' rfl
   rfl
 
-@[simp]
-theorem map_zero (f : E →ₗ.[R] F) : f 0 = 0 :=
-  f.toFun.map_zero
-
 theorem ext_iff {f g : E →ₗ.[R] F} :
     f = g ↔
       ∃ _domain_eq : f.domain = g.domain,
@@ -82,18 +121,6 @@ theorem ext_iff {f g : E →ₗ.[R] F} :
 
 theorem ext' {s : Submodule R E} {f g : s →ₗ[R] F} (h : f = g) : mk s f = mk s g :=
   h ▸ rfl
-
-theorem map_add (f : E →ₗ.[R] F) (x y : f.domain) : f (x + y) = f x + f y :=
-  f.toFun.map_add x y
-
-theorem map_neg (f : E →ₗ.[R] F) (x : f.domain) : f (-x) = -f x :=
-  f.toFun.map_neg x
-
-theorem map_sub (f : E →ₗ.[R] F) (x y : f.domain) : f (x - y) = f x - f y :=
-  f.toFun.map_sub x y
-
-theorem map_smul (f : E →ₗ.[R] F) (c : R) (x : f.domain) : f (c • x) = c • f x :=
-  f.toFun.map_smul c x
 
 @[simp]
 theorem mk_apply (p : Submodule R E) (f : p →ₗ[R] F) (x : p) : mk p f x = f x :=
@@ -200,16 +227,16 @@ theorem eq_of_le_of_domain_eq {f g : E →ₗ.[R] F} (hle : f ≤ g) (heq : f.do
 both `f` and `g` are defined at `x` and `f x = g x` form a submodule. -/
 def eqLocus (f g : E →ₗ.[R] F) : Submodule R E where
   carrier := { x | ∃ (hf : x ∈ f.domain) (hg : x ∈ g.domain), f ⟨x, hf⟩ = g ⟨x, hg⟩ }
-  zero_mem' := ⟨zero_mem _, zero_mem _, f.map_zero.trans g.map_zero.symm⟩
+  zero_mem' := ⟨zero_mem _, zero_mem _, (pmap_zero f).trans (pmap_zero g).symm⟩
   add_mem' := fun {x y} ⟨hfx, hgx, hx⟩ ⟨hfy, hgy, hy⟩ =>
     ⟨add_mem hfx hfy, add_mem hgx hgy, by
-      erw [f.map_add ⟨x, hfx⟩ ⟨y, hfy⟩, g.map_add ⟨x, hgx⟩ ⟨y, hgy⟩, hx, hy]⟩
+      erw [pmap_add f ⟨x, hfx⟩ ⟨y, hfy⟩, pmap_add g ⟨x, hgx⟩ ⟨y, hgy⟩, hx, hy]⟩
   -- Porting note: `by rintro` is required, or error of a free variable happens.
   smul_mem' := by
     rintro c x ⟨hfx, hgx, hx⟩
     exact
       ⟨smul_mem _ c hfx, smul_mem _ c hgx,
-        by erw [f.map_smul c ⟨x, hfx⟩, g.map_smul c ⟨x, hgx⟩, hx]⟩
+        by erw [pmap_smul f c ⟨x, hfx⟩, pmap_smul g c ⟨x, hgx⟩, hx]⟩
 
 instance bot : Bot (E →ₗ.[R] F) :=
   ⟨⟨⊥, 0⟩⟩
@@ -245,7 +272,7 @@ instance orderBot : OrderBot (E →ₗ.[R] F) where
     ⟨bot_le, fun x y h => by
       have hx : x = 0 := Subtype.eq ((mem_bot R).1 x.2)
       have hy : y = 0 := Subtype.eq (h.symm.trans (congr_arg _ hx))
-      rw [hx, hy, map_zero, map_zero]⟩
+      rw [hx, hy, pmap_zero, pmap_zero]⟩
 
 theorem le_of_eqLocus_ge {f g : E →ₗ.[R] F} (H : f.domain ≤ f.eqLocus g) : f ≤ g :=
   suffices f ≤ f ⊓ g from le_trans this inf_le_right
@@ -265,7 +292,7 @@ private theorem sup_aux (f g : E →ₗ.[R] F)
       (_H : (x' : E) + y' = z'), fg z' = f x' + g y' := by
     intro x' y' z' H
     dsimp [fg]
-    rw [add_comm, ← sub_eq_sub_iff_add_eq_add, eq_comm, ← map_sub, ← map_sub]
+    rw [add_comm, ← sub_eq_sub_iff_add_eq_add, eq_comm, ← pmap_sub, ← pmap_sub]
     apply h
     simp only [← eq_sub_iff_add_eq] at hxy
     simp only [AddSubgroupClass.coe_sub, coe_mk, coe_mk, hxy, ← sub_add, ← sub_sub, sub_self,
@@ -273,12 +300,12 @@ private theorem sup_aux (f g : E →ₗ.[R] F)
     apply neg_add_eq_sub
   use { toFun := fg, map_add' := ?_, map_smul' := ?_ }, fg_eq
   · rintro ⟨z₁, hz₁⟩ ⟨z₂, hz₂⟩
-    rw [← add_assoc, add_right_comm (f _), ← map_add, add_assoc, ← map_add]
+    rw [← add_assoc, add_right_comm (f _), ← pmap_add, add_assoc, ← pmap_add]
     apply fg_eq
     simp only [coe_add, coe_mk, ← add_assoc]
     rw [add_right_comm (x _), hxy, add_assoc, hxy, coe_mk, coe_mk]
   · intro c z
-    rw [smul_add, ← map_smul, ← map_smul]
+    rw [smul_add, ← pmap_smul, ← pmap_smul]
     apply fg_eq
     simp only [coe_smul, coe_mk, ← smul_add, hxy, RingHom.id_apply]
 
@@ -303,14 +330,14 @@ theorem sup_apply {f g : E →ₗ.[R] F} (H : ∀ (x : f.domain) (y : g.domain),
 protected theorem left_le_sup (f g : E →ₗ.[R] F)
     (h : ∀ (x : f.domain) (y : g.domain), (x : E) = y → f x = g y) : f ≤ f.sup g h := by
   refine ⟨le_sup_left, fun z₁ z₂ hz => ?_⟩
-  rw [← add_zero (f _), ← g.map_zero]
+  rw [← add_zero (f _), ← pmap_zero g]
   refine (sup_apply h _ _ _ ?_).symm
   simpa
 
 protected theorem right_le_sup (f g : E →ₗ.[R] F)
     (h : ∀ (x : f.domain) (y : g.domain), (x : E) = y → f x = g y) : g ≤ f.sup g h := by
   refine ⟨le_sup_right, fun z₁ z₂ hz => ?_⟩
-  rw [← zero_add (g _), ← f.map_zero]
+  rw [← zero_add (g _), ← pmap_zero f]
   refine (sup_apply h _ _ _ ?_).symm
   simpa
 
@@ -419,11 +446,11 @@ instance instAddZeroClass : AddZeroClass (E →ₗ.[R] F) :=
   ⟨fun f => by
     ext x y hxy
     · simp [add_domain]
-    · simp only [add_apply, hxy, zero_apply, zero_add],
+    · simp only [add_apply, zero_domain, hxy, zero_apply, Subtype.coe_eta, zero_add],
   fun f => by
     ext x y hxy
     · simp [add_domain]
-    · simp only [add_apply, hxy, zero_apply, add_zero]⟩
+    · simp only [add_apply, zero_domain, hxy, Subtype.coe_eta, zero_apply, add_zero]⟩
 
 instance instAddMonoid : AddMonoid (E →ₗ.[R] F) where
   zero_add f := by
@@ -505,6 +532,7 @@ instance instSubtractionCommMonoid : SubtractionCommMonoid (E →ₗ.[R] F) wher
     simp only [inf_coe, neg_domain, Eq.ndrec, Int.ofNat_eq_coe, add_apply, Subtype.coe_eta,
       ← neg_eq_iff_add_eq_zero] at h'
     rw [h', h]
+    rfl
   zsmul := zsmulRec
 
 end Sub
@@ -566,10 +594,10 @@ private theorem sSup_aux (c : Set (E →ₗ.[R] F)) (hc : DirectedOn (· ≤ ·)
     set x' := inclusion hpx.1 ⟨x, (P x).2⟩
     set y' := inclusion hpy.1 ⟨y, (P y).2⟩
     rw [f_eq ⟨p, hpc⟩ x x' rfl, f_eq ⟨p, hpc⟩ y y' rfl, f_eq ⟨p, hpc⟩ (x + y) (x' + y') rfl,
-      map_add]
+      pmap_add]
   · intro c x
     simp only [RingHom.id_apply]
-    rw [f_eq (P x).1 (c • x) (c • ⟨x, (P x).2⟩) rfl, ← map_smul]
+    rw [f_eq (P x).1 (c • x) (c • ⟨x, (P x).2⟩) rfl, ← pmap_smul]
   · intro p hpc
     refine ⟨le_sSup <| Set.mem_image_of_mem domain hpc, fun x y hxy => Eq.symm ?_⟩
     exact f_eq ⟨p, hpc⟩ _ _ hxy.symm
