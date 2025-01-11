@@ -743,6 +743,23 @@ noncomputable def inclusion.fullyFaithful (n : ℕ) :
 theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
 
+/-- Some quick and useful attempts to prove `n ≤ m`. -/
+macro "leq_prefix" : tactic =>
+  `(tactic| first | decide | assumption | apply zero_le | apply le_rfl |
+    transitivity <;> assumption)
+
+/-- A wrapper for `omega` which first makes some quick attempts to prove `n ≤ m`. -/
+macro "leq" : tactic => `(tactic| first | leq_prefix | omega)
+
+/-- The truncated form of the inclusion functor. -/
+def incl (n m : ℕ) (h : n ≤ m := by leq) : Truncated n ⥤ Truncated m where
+  obj a := ⟨a.1, a.2.trans h⟩
+  map := id
+
+/-- For all `n ≤ m`, `inclusion n` factors through `Truncated m`. -/
+lemma incl_comp_inclusion {n m : ℕ} (h : n ≤ m) :
+    incl n m ⋙ inclusion m = inclusion n := rfl
+
 end Truncated
 
 section Concrete

@@ -8,83 +8,46 @@ import Mathlib.AlgebraicTopology.SimplicialSet.Basic
 /-!
 # Paths in simplicial sets
 
-A path in a simplicial set `X` of length `n` is a directed path comprised of `n + 1` 0-simplices
-and `n` 1-simplices, together with identifications between 0-simplices and the sources and targets
-of the 1-simplices.
+A path in a simplicial set `X` of length `n` is a directed path comprised of
+`n + 1` 0-simplices and `n` 1-simplices, together with identifications between
+0-simplices and the sources and targets of the 1-simplices. We define this
+construction first for 1-truncated simplicial sets in `SSet.Truncated.Path₁`.
+A path in a simplicial set `X` is then defined as a 1-truncated path in the
+1-truncation of `X`.
 
-An `n`-simplex has a maximal path, the `spine` of the simplex, which is a path of length `n`.
+An `n`-simplex has a maximal path, the `spine` of the simplex, which is a path
+of length `n`.
 -/
 
 universe v u
 
+open CategoryTheory Simplicial SimplexCategory
+
 namespace SSet
+namespace Truncated
 
-open CategoryTheory
+variable (X : SSet.Truncated.{u} 1)
 
-open Simplicial SimplexCategory
-
-variable (X : SSet.{u})
-
-/-- A path in a simplicial set `X` of length `n` is a directed path of `n` edges.-/
+/-- A path of length `n` in a 1-truncated simplicial set `X` is a directed path
+of `n` edges. -/
 @[ext]
-structure Path (n : ℕ) where
-  /-- A path includes the data of `n+1` 0-simplices in `X`.-/
-  vertex (i : Fin (n + 1)) : X _[0]
+structure Path₁ (n : ℕ) where
+  /-- A path includes the data of `n + 1` 0-simplices in `X`.-/
+  vertex (i : Fin (n + 1)) : X _[0]₁
   /-- A path includes the data of `n` 1-simplices in `X`.-/
-  arrow (i : Fin n) : X _[1]
-  /-- The sources of the 1-simplices in a path are identified with appropriate 0-simplices.-/
-  arrow_src (i : Fin n) : X.δ 1 (arrow i) = vertex i.castSucc
-  /-- The targets of the 1-simplices in a path are identified with appropriate 0-simplices.-/
-  arrow_tgt (i : Fin n) : X.δ 0 (arrow i) = vertex i.succ
+  arrow (i : Fin n) : X _[1]₁
+  /-- The source of a 1-simplex in a path is identified with the source vertex. -/
+  arrow_src (i : Fin n) : X.map (δ 1).op (arrow i) = vertex i.castSucc
+  /-- The target of a 1-simplex in a path is identified with the target vertex. -/
+  arrow_tgt (i : Fin n) : X.map (δ 0).op (arrow i) = vertex i.succ
 
+namespace Path₁
 
-variable {X} in
-/-- For `j + l ≤ n`, a path of length `n` restricts to a path of length `l`, namely the subpath
-spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
-def Path.interval {n : ℕ} (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
-    Path X l where
-  vertex i := f.vertex ⟨j + i, by omega⟩
-  arrow i := f.arrow ⟨j + i, by omega⟩
-  arrow_src i := f.arrow_src ⟨j + i, by omega⟩
-  arrow_tgt i := f.arrow_tgt ⟨j + i, by omega⟩
+variable {X} {n : ℕ}
 
-/-- The spine of an `n`-simplex in `X` is the path of edges of length `n` formed by
-traversing through its vertices in order.-/
-@[simps]
-def spine (n : ℕ) (Δ : X _[n]) : X.Path n where
-  vertex i := X.map (SimplexCategory.const [0] [n] i).op Δ
-  arrow i := X.map (SimplexCategory.mkOfSucc i).op Δ
-  arrow_src i := by
-    dsimp [SimplicialObject.δ]
-    simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-    rw [SimplexCategory.δ_one_mkOfSucc]
-    simp only [len_mk, Fin.coe_castSucc, Fin.coe_eq_castSucc]
-  arrow_tgt i := by
-    dsimp [SimplicialObject.δ]
-    simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-    rw [SimplexCategory.δ_zero_mkOfSucc]
-
-lemma spine_map_vertex {n : ℕ} (x : X _[n]) {m : ℕ} (φ : ([m] : SimplexCategory) ⟶ [n])
-    (i : Fin (m + 1)) :
-    (spine X m (X.map φ.op x)).vertex i = (spine X n x).vertex (φ.toOrderHom i) := by
-  dsimp [spine]
-  rw [← FunctorToTypes.map_comp_apply]
-  rfl
-
-lemma spine_map_subinterval {n : ℕ} (j l : ℕ) (hjl : j + l ≤ n) (Δ : X _[n]) :
-    X.spine l (X.map (subinterval j l (by omega)).op Δ) =
-      (X.spine n Δ).interval j l (by omega) := by
-  ext i
-  · simp only [spine_vertex, Path.interval, ← FunctorToTypes.map_comp_apply, ← op_comp,
-      const_subinterval_eq]
-  · simp only [spine_arrow, Path.interval, ← FunctorToTypes.map_comp_apply, ← op_comp,
-      mkOfSucc_subinterval_eq]
-
-/-- Two paths of the same nonzero length are equal if all of their arrows are equal. -/
+/-- Two paths of length `n + 1` are equal if all of their arrows are equal. -/
 @[ext]
-lemma Path.ext' {n : ℕ} {f g : Path X (n + 1)}
-    (h : ∀ i : Fin (n + 1), f.arrow i = g.arrow i) :
-    f = g := by
+lemma ext' {f g : Path₁ X (n + 1)} (h : ∀ i, f.arrow i = g.arrow i) : f = g := by
   ext j
   · rcases Fin.eq_castSucc_or_eq_last j with ⟨k, hk⟩ | hl
     · rw [hk, ← f.arrow_src k, ← g.arrow_src k, h]
@@ -92,49 +55,182 @@ lemma Path.ext' {n : ℕ} {f g : Path X (n + 1)}
       rw [← f.arrow_tgt (Fin.last n), ← g.arrow_tgt (Fin.last n), h]
   · exact h j
 
-/-- Maps of simplicial sets induce maps of paths in a simplicial set.-/
+/-- For `j + l ≤ n`, a path of length `n` restricts to a path of length `l`, namely
+the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
+def interval (f : Path₁ X n) (j l : ℕ) (h : j + l ≤ n) : Path₁ X l where
+  vertex i := f.vertex ⟨j + i, by omega⟩
+  arrow i := f.arrow ⟨j + i, by omega⟩
+  arrow_src i := f.arrow_src ⟨j + i, by omega⟩
+  arrow_tgt i := f.arrow_tgt ⟨j + i, by omega⟩
+
+variable {X Y : SSet.Truncated.{u} 1} {n : ℕ}
+
+/-- Maps of 1-truncated simplicial sets induce maps of paths. -/
 @[simps]
-def Path.map {X Y : SSet.{u}} {n : ℕ} (f : X.Path n) (σ : X ⟶ Y) : Y.Path n where
-  vertex i := σ.app (Opposite.op [0]) (f.vertex i)
-  arrow i := σ.app (Opposite.op [1]) (f.arrow i)
+def map (f : Path₁ X n) (σ : X ⟶ Y) : Path₁ Y n where
+  vertex i := σ.app _ (f.vertex i)
+  arrow i := σ.app _ (f.arrow i)
   arrow_src i := by
     simp only [← f.arrow_src i]
-    exact congr (σ.naturality (δ 1).op) rfl |>.symm
+    exact congr (σ.naturality _) rfl |>.symm
   arrow_tgt i := by
     simp only [← f.arrow_tgt i]
-    exact congr (σ.naturality (δ 0).op) rfl |>.symm
+    exact congr (σ.naturality _) rfl |>.symm
 
-/-- `Path.map` respects subintervals of paths.-/
-lemma map_interval {X Y : SSet.{u}} {n : ℕ} (f : X.Path n) (σ : X ⟶ Y)
-    (j l : ℕ) (hjl : j + l ≤ n) :
-    (f.map σ).interval j l hjl = (f.interval j l hjl).map σ := rfl
+/-- `Path₁.map` respects subintervals of paths. -/
+lemma map_interval (f : Path₁ X n) (σ : X ⟶ Y) (j l : ℕ) (h : j + l ≤ n) :
+    (f.map σ).interval j l h = (f.interval j l h).map σ := rfl
 
-/-- The spine of the unique non-degenerate `n`-simplex in `Δ[n]`.-/
-def standardSimplex.spineId (n : ℕ) : Path Δ[n] n :=
-  spine Δ[n] n (standardSimplex.id n)
+end Path₁
 
-/-- Any inner horn contains the spine of the unique non-degenerate `n`-simplex
-in `Δ[n]`.-/
+variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
+
+/-- A path of length `m` in an `n + 1`-truncated simplicial set `X` is defined
+by further 1-truncating `X`, then taking the 1-truncated path. -/
+abbrev Path (m : ℕ) := trunc (n + 1) 1 |>.obj X |>.Path₁ m
+
+namespace Path
+
+variable {X} {m : ℕ}
+
+/-- Two paths of length `n + 1` are equal if all of their arrows are equal. -/
+@[ext]
+lemma ext' {f g : Path X (m + 1)} (h : ∀ i, f.arrow i = g.arrow i) : f = g :=
+  Path₁.ext' h
+
+/-- For `j + l ≤ n`, a path of length `n` restricts to a path of length `l`, namely
+the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
+abbrev interval (f : Path X m) (j l : ℕ) (h : j + l ≤ m) : Path X l :=
+  Path₁.interval f j l h
+
+variable {X Y : SSet.Truncated.{u} (n + 1)} {m : ℕ}
+
+/-- Maps of `n + 1`-truncated simplicial sets induce maps of paths. -/
+@[simps!]
+abbrev map (f : Path X m) (σ : X ⟶ Y) : Path Y m :=
+  Path₁.map f <| trunc (n + 1) 1 |>.map σ
+
+/-- `Path.map` respects subintervals of paths. -/
+lemma map_interval (f : Path X m) (σ : X ⟶ Y) (j l : ℕ) (h : j + l ≤ m) :
+    (f.map σ).interval j l h = (f.interval j l h).map σ := rfl
+
+end Path
+
+/-- The spine of an `m`-simplex in `X` is the path of edges of length `m` formed
+by traversing through its vertices in order. -/
+@[simps]
+def spine (m : ℕ) (h : m ≤ n + 1 := by leq) (Δ : X _[m]ₙ₊₁) : Path X m where
+  vertex i := X.map (const [0] [m] i).op Δ
+  arrow i := X.map (mkOfSucc i).op Δ
+  arrow_src i := by
+    erw [← FunctorToTypes.map_comp_apply, ← op_comp (f := (δ 1).op.unop)]
+    simp
+  arrow_tgt i := by
+    erw [← FunctorToTypes.map_comp_apply, ← op_comp (f := (δ 0).op.unop)]
+    simp
+
+/- TODO: fix -/
+lemma spine_map_vertex (m : ℕ) (hm : m ≤ n + 1 := by leq) (Δ : X _[m]ₙ₊₁)
+    (a : ℕ) (ha : a ≤ n + 1 := by leq) (φ : ([a] : SimplexCategory) ⟶ [m])
+    (i : Fin (a + 1)) :
+    (X.spine a ha (X.map φ.op Δ)).vertex i =
+      (X.spine m hm Δ).vertex (φ.toOrderHom i) := by
+  dsimp only [spine_vertex]
+  rw [← FunctorToTypes.map_comp_apply]
+  rfl
+
+lemma spine_map_subinterval (m : ℕ) (h : m ≤ n + 1 := by leq)
+    (j l : ℕ) (hjl : j + l ≤ m) (Δ : X _[m]ₙ₊₁) :
+    X.spine l (by omega) (X.map (subinterval j l hjl).op Δ) =
+      (X.spine m h Δ).interval j l hjl := by
+  ext i
+  · simp only [Path₁.interval, spine_vertex, ← FunctorToTypes.map_comp_apply]
+    erw [← op_comp (C := SimplexCategory)]
+    rw [const_subinterval_eq]
+  · simp only [Path₁.interval, spine_arrow, ← FunctorToTypes.map_comp_apply]
+    erw [← op_comp (C := SimplexCategory)]
+    rw [mkOfSucc_subinterval_eq]
+
+end Truncated
+
+variable (X : SSet.{u})
+
+/-- A path of length `n` in a simplicial set `X` is defined by 1-truncating `X`,
+then taking the 1-truncated path. -/
+abbrev Path (n : ℕ) := truncation 1 |>.obj X |>.Path₁ n
+
+namespace Path
+open Truncated
+
+variable {X} {n : ℕ}
+
+/-- Two paths of length `n + 1` are equal if all of their arrows are equal. -/
+@[ext]
+lemma ext' {f g : Path X (n + 1)} (h : ∀ i, f.arrow i = g.arrow i) : f = g :=
+  Path₁.ext' h
+
+/-- For `j + l ≤ n`, a path of length `n` restricts to a path of length `l`, namely
+the subpath spanned by the vertices `j ≤ i ≤ j + l` and edges `j ≤ i < j + l`. -/
+abbrev interval (f : Path X n) (j l : ℕ) (h : j + l ≤ n) : Path X l :=
+  Path₁.interval f j l h
+
+variable {X Y : SSet.{u}} {n : ℕ}
+
+/-- Maps of `n + 1`-truncated simplicial sets induce maps of paths. -/
+@[simps!]
+abbrev map (f : Path X n) (σ : X ⟶ Y) : Path Y n :=
+  Path₁.map f <| truncation 1 |>.map σ
+
+/-- `Path.map` respects subintervals of paths. -/
+lemma map_interval (f : Path X n) (σ : X ⟶ Y) (j l : ℕ) (h : j + l ≤ n) :
+    (f.map σ).interval j l h = (f.interval j l h).map σ := rfl
+
+end Path
+
+/-- The spine of an `n`-simplex in `X` is the path of edges of length `n` formed
+by traversing in order through the vertices of `X _[n]ₙ₊₁`. -/
+@[simps!]
+abbrev spine (n : ℕ) : X _[n] → Path X n :=
+  truncation (n + 1) |>.obj X |>.spine n
+
+lemma spine_map_vertex {n : ℕ} (Δ : X _[n]) {m : ℕ} (φ : ([m] : SimplexCategory) ⟶ [n])
+    (i : Fin (m + 1)) :
+    (spine X m (X.map φ.op Δ)).vertex i = (spine X n Δ).vertex (φ.toOrderHom i) := by
+  /- #check Truncated.spine_map_vertex ((truncation (n + 1)).obj X) n (by omega) Δ m _ φ i -/
+  dsimp [spine_vertex, truncation, SimplicialObject.truncation]
+  rw [← FunctorToTypes.map_comp_apply]
+  rfl
+
+/-- The spine of the unique non-degenerate `n`-simplex in `Δ[n]`. -/
+def standardSimplex.spineId (n : ℕ) : Path Δ[n] n := spine Δ[n] n (id n)
+
+/-- Any inner horn contains `standardSimplex.spineId`. -/
 @[simps]
 def horn.spineId {n : ℕ} (i : Fin (n + 3))
     (h₀ : 0 < i) (hₙ : i < Fin.last (n + 2)) :
     Path Λ[n + 2, i] (n + 2) where
-  vertex j := ⟨standardSimplex.spineId _ |>.vertex j, (horn.const n i j _).property⟩
+  vertex j := ⟨standardSimplex.spineId _ |>.vertex j, horn.const n i j _ |>.2⟩
   arrow j := ⟨standardSimplex.spineId _ |>.arrow j, by
     let edge := horn.primitiveEdge h₀ hₙ j
-    have ha : (standardSimplex.spineId _).arrow j = edge.val := by
-      dsimp only [edge, standardSimplex.spineId, standardSimplex.id, spine_arrow,
-        mkOfSucc, horn.primitiveEdge, horn.edge, standardSimplex.edge,
-        standardSimplex.map_apply]
-      aesop
-    rw [ha]
-    exact edge.property⟩
+    suffices (standardSimplex.spineId _).arrow j = edge.1 from this ▸ edge.2
+    simp only [edge, SimplicialObject.truncation, Truncated.inclusion,
+      primitiveEdge, standardSimplex.spineId, standardSimplex.edge,
+      standardSimplex.map_apply, spine_arrow, Truncated.incl,
+      fullSubcategoryInclusion.obj, fullSubcategoryInclusion.map,
+      Functor.comp_map, whiskeringLeft_obj_obj, Functor.comp_obj, Functor.op_obj,
+      Functor.op_map, Quiver.Hom.unop_op, ne_eq, edge_coe,
+      EmbeddingLike.apply_eq_iff_eq]
+    apply Hom.ext_one_left <;> rfl⟩
   arrow_src := by
-    simp only [horn, SimplicialObject.δ, Subtype.mk.injEq]
-    exact standardSimplex.spineId _ |>.arrow_src
+    simp only [SimplicialObject.truncation, horn, ne_eq, whiskeringLeft_obj_obj,
+      len_mk, id_eq, Functor.comp_obj, Functor.op_obj, Nat.reduceAdd,
+      Fin.isValue, Functor.comp_map, Functor.op_map, Subtype.mk.injEq]
+    exact standardSimplex.spineId (n + 2) |>.arrow_src
   arrow_tgt := by
-    simp only [horn, SimplicialObject.δ, Subtype.mk.injEq]
-    exact standardSimplex.spineId _ |>.arrow_tgt
+    simp only [SimplicialObject.truncation, horn, ne_eq, whiskeringLeft_obj_obj,
+      len_mk, id_eq, Functor.comp_obj, Functor.op_obj, Nat.reduceAdd,
+      Fin.isValue, Functor.comp_map, Functor.op_map, Subtype.mk.injEq]
+    exact standardSimplex.spineId (n + 2) |>.arrow_tgt
 
 @[simp]
 lemma horn.spineId_map_hornInclusion {n : ℕ} (i : Fin (n + 3))

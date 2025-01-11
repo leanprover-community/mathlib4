@@ -8,6 +8,7 @@ import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Tactic.FinCases
+import Mathlib.Util.Superscript
 
 /-!
 # Simplicial sets
@@ -346,27 +347,55 @@ end Examples
 def Truncated (n : ℕ) :=
   SimplicialObject.Truncated (Type u) n
 
-instance Truncated.largeCategory (n : ℕ) : LargeCategory (Truncated n) := by
+namespace Truncated
+
+instance largeCategory (n : ℕ) : LargeCategory (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
-instance Truncated.hasLimits {n : ℕ} : HasLimits (Truncated n) := by
+instance hasLimits {n : ℕ} : HasLimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
-instance Truncated.hasColimits {n : ℕ} : HasColimits (Truncated n) := by
+instance hasColimits {n : ℕ} : HasColimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
 /-- The ulift functor `SSet.Truncated.{u} ⥤ SSet.Truncated.{max u v}` on truncated
 simplicial sets. -/
-def Truncated.uliftFunctor (k : ℕ) : SSet.Truncated.{u} k ⥤ SSet.Truncated.{max u v} k :=
+def uliftFunctor (k : ℕ) : SSet.Truncated.{u} k ⥤ SSet.Truncated.{max u v} k :=
   (whiskeringRight _ _ _).obj CategoryTheory.uliftFunctor.{v, u}
 
 @[ext]
-lemma Truncated.hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) :
+lemma hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) :
     f = g :=
   NatTrans.ext (funext w)
+
+/-- Further truncation of truncated simplicial sets. -/
+abbrev trunc (n m : ℕ) (h : m ≤ n := by leq) :
+    SSet.Truncated n ⥤ SSet.Truncated m :=
+  SimplicialObject.Truncated.trunc (Type u) n m
+
+/-- A wrapper for `omega` which first makes some quick attempts to prove that
+`[m]` is `n`-truncated (`[m].len ≤ n`). -/
+macro "trunc" : tactic =>
+  `(tactic| first | leq_prefix | simp only [SimplexCategory.len_mk]; omega)
+
+/-- For `X : SSet.Truncated n` and `m ≤ n`, `X _[m]ₙ` is the type of
+`m`-simplices in `X`. -/
+scoped macro:1000 (priority := high)
+  X:term " _[" m:term "]" n:subscript(term) : term =>
+  `(($X : SSet.Truncated $(⟨n.raw[0]⟩)).obj (Opposite.op ⟨SimplexCategory.mk $m,
+    by first | trunc | fail "Failed to prove truncation property."⟩))
+
+/-- For `X : SSet.Truncated n` and `p : m ≤ n`, `X _[m, p]ₙ` is the type of
+`m`-simplices in `X`. -/
+scoped macro:1000 (priority := high)
+  X:term " _[" m:term "," p:term "]" n:subscript(term) : term =>
+  `(($X : SSet.Truncated $(⟨n.raw[0]⟩)).obj
+    (Opposite.op ⟨SimplexCategory.mk $m, $p⟩))
+
+end Truncated
 
 /-- The truncation functor on simplicial sets. -/
 abbrev truncation (n : ℕ) : SSet ⥤ SSet.Truncated n := SimplicialObject.truncation n
@@ -374,6 +403,9 @@ abbrev truncation (n : ℕ) : SSet ⥤ SSet.Truncated n := SimplicialObject.trun
 instance {n} : Inhabited (SSet.Truncated n) :=
   ⟨(truncation n).obj <| Δ[0]⟩
 
+/-- For all `m ≤ n`, `truncation m` factors through `SSet.Truncated n`. -/
+lemma truncation_comp_trunc {n m : ℕ} (h : m ≤ n) :
+    truncation n ⋙ Truncated.trunc n m = truncation m := rfl
 
 open SimplexCategory
 
