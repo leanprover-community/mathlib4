@@ -175,13 +175,36 @@ def ofContinuousMulEquiv {G : ProfiniteGrp.{u}} {H : Type v} [TopologicalSpace H
   .of H
 
 /-- The functor mapping a profinite group to its underlying profinite space. -/
-def profiniteGrpToProfinite : ProfiniteGrp ⥤ Profinite where
-  obj G := G.toProfinite
-  map f := ⟨f, by continuity⟩
+instance : HasForget₂ ProfiniteGrp Profinite where
+  forget₂ := {
+    obj G := G.toProfinite
+    map f := ⟨f, by continuity⟩
+  }
 
-instance : profiniteGrpToProfinite.Faithful := {
+instance : (forget₂ ProfiniteGrp Profinite).Faithful := {
   map_injective := fun {_ _} _ _ h =>
     ConcreteCategory.hom_ext_iff.mpr (congrFun (congrArg ContinuousMap.toFun h)) }
+
+instance : (forget₂ ProfiniteGrp Profinite).ReflectsIsomorphisms := by
+  constructor
+  intro A B f h
+  have : Function.Bijective f := by sorry
+  let g : ContinuousMonoidHom B A := {
+    toMonoidHom := MonoidHom.inverse f
+      (inv ((forget₂ ProfiniteGrp Profinite).map f)).toFun
+      sorry
+      sorry
+    continuous_toFun := (inv ((forget₂ ProfiniteGrp Profinite).map f)).continuous_toFun
+    }
+  use g
+  constructor
+  · ext x
+    simp [g]
+    sorry
+  · sorry
+
+instance : (forget ProfiniteGrp.{u}).ReflectsIsomorphisms :=
+  CategoryTheory.reflectsIsomorphisms_comp (forget₂ ProfiniteGrp Profinite) (forget Profinite)
 
 end ProfiniteGrp
 
@@ -211,15 +234,15 @@ def limitConePtAux : Subgroup (Π j : J, F.obj j) where
   one_mem' := by simp only [Set.mem_setOf_eq, Pi.one_apply, map_one, implies_true]
   inv_mem' h _ _ π := by simp only [Pi.inv_apply, map_inv, h π]
 
-instance : Group (Profinite.limitCone (F ⋙ profiniteGrpToProfinite.{max v u})).pt :=
+instance : Group (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=
   inferInstanceAs (Group (limitConePtAux F))
 
-instance : TopologicalGroup (Profinite.limitCone (F ⋙ profiniteGrpToProfinite.{max v u})).pt :=
+instance : TopologicalGroup (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt :=
   inferInstanceAs (TopologicalGroup (limitConePtAux F))
 
 /-- The explicit limit cone in `ProfiniteGrp`. -/
 abbrev limitCone : Limits.Cone F where
-  pt := ofProfinite (Profinite.limitCone (F ⋙ profiniteGrpToProfinite.{max v u})).pt
+  pt := ofProfinite (Profinite.limitCone (F ⋙ (forget₂ ProfiniteGrp Profinite))).pt
   π :=
   { app := fun j => {
       toFun := fun x => x.1 j
@@ -236,17 +259,17 @@ abbrev limitCone : Limits.Cone F where
 /-- `ProfiniteGrp.limitCone` is a limit cone. -/
 def limitConeIsLimit : Limits.IsLimit (limitCone F) where
   lift cone := {
-    ((Profinite.limitConeIsLimit (F ⋙ profiniteGrpToProfinite)).lift
-      (profiniteGrpToProfinite.mapCone cone)) with
+    ((Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))).lift
+      ((forget₂ ProfiniteGrp Profinite).mapCone cone)) with
     map_one' := Subtype.ext (funext fun j ↦ map_one (cone.π.app j))
     -- TODO: investigate whether it's possible to set up `ext` lemmas for the `TopCat`-related
     -- categories so that `by ext j; exact map_one (cone.π.app j)` works here, similarly below.
     map_mul' := fun _ _ ↦ Subtype.ext (funext fun j ↦ map_mul (cone.π.app j) _ _) }
   uniq cone m h := by
-    apply profiniteGrpToProfinite.map_injective
-    simpa using (Profinite.limitConeIsLimit (F ⋙ profiniteGrpToProfinite)).uniq
-      (profiniteGrpToProfinite.mapCone cone) (profiniteGrpToProfinite.map m)
-      (fun j ↦ congrArg profiniteGrpToProfinite.map (h j))
+    apply (forget₂ ProfiniteGrp Profinite).map_injective
+    simpa using (Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))).uniq
+      ((forget₂ ProfiniteGrp Profinite).mapCone cone) ((forget₂ ProfiniteGrp Profinite).map m)
+      (fun j ↦ congrArg (forget₂ ProfiniteGrp Profinite).map (h j))
 
 instance : Limits.HasLimit F where
   exists_limit := Nonempty.intro
@@ -258,10 +281,10 @@ abbrev limit : ProfiniteGrp := (ProfiniteGrp.limitCone F).pt
 
 end
 
-instance : Limits.PreservesLimits profiniteGrpToProfinite.{u} where
+instance : Limits.PreservesLimits (forget₂ ProfiniteGrp Profinite) where
   preservesLimitsOfShape := {
     preservesLimit := fun {F} ↦ CategoryTheory.Limits.preservesLimit_of_preserves_limit_cone
-      (limitConeIsLimit F) (Profinite.limitConeIsLimit (F ⋙ profiniteGrpToProfinite)) }
+      (limitConeIsLimit F) (Profinite.limitConeIsLimit (F ⋙ (forget₂ ProfiniteGrp Profinite))) }
 
 end ProfiniteGrp
 
