@@ -89,7 +89,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = #s) :
     · simp only [extend_parts, mem_insert, forall_eq_or_imp, and_iff_left hR₁, htn, hn]
       exact ite_eq_or_eq _ _ _
     · exact fun x hx => (card_le_card sdiff_subset).trans (Nat.lt_succ_iff.1 <| h _ hx)
-    simp_rw [extend_parts, filter_insert, htn, m.succ_ne_self.symm.ite_eq_right_iff]
+    simp_rw [extend_parts, filter_insert, htn, n, m.succ_ne_self.symm.ite_eq_right_iff]
     split_ifs with ha
     · rw [hR₃, if_pos ha]
     rw [card_insert_of_not_mem, hR₃, if_neg ha, tsub_add_cancel_of_le]
@@ -180,7 +180,7 @@ theorem card_filter_equitabilise_small (hm : m ≠ 0) :
 theorem card_parts_equitabilise (hm : m ≠ 0) : #(P.equitabilise h).parts = a + b := by
   rw [← filter_true_of_mem fun x => card_eq_of_mem_parts_equitabilise, filter_or,
     card_union_of_disjoint, P.card_filter_equitabilise_small _ hm, P.card_filter_equitabilise_big]
-  -- Porting note (#11187): was `infer_instance`
+  -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11187): was `infer_instance`
   exact disjoint_filter.2 fun x _ h₀ h₁ => Nat.succ_ne_self m <| h₁.symm.trans h₀
 
 theorem card_parts_equitabilise_subset_le :

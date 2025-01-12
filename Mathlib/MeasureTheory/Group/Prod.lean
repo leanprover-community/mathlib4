@@ -34,7 +34,7 @@ Note that this theory only applies in measurable groups, i.e., when multiplicati
 are measurable. This is not the case in general in locally compact groups, or even in compact
 groups, when the topology is not second-countable. For arguments along the same line, but using
 continuous functions instead of measurable sets and working in the general locally compact
-setting, see the file `MeasureTheory.Measure.Haar.Unique.lean`.
+setting, see the file `Mathlib/MeasureTheory/Measure/Haar/Unique.lean`.
 -/
 
 
@@ -263,9 +263,9 @@ theorem ae_measure_preimage_mul_right_lt_top (hμs : μ' s ≠ ∞) :
   apply ae_lt_top (measurable_measure_mul_right ν' sm)
   have h1 := measure_mul_lintegral_eq μ' ν' sm (A⁻¹.indicator 1) (measurable_one.indicator hA.inv)
   rw [lintegral_indicator hA.inv] at h1
-  simp_rw [Pi.one_apply, setLIntegral_one, ← image_inv, indicator_image inv_injective, image_inv,
-    ← indicator_mul_right _ fun x => ν' ((fun y => y * x) ⁻¹' s), Function.comp, Pi.one_apply,
-    mul_one] at h1
+  simp_rw [Pi.one_apply, setLIntegral_one, ← image_inv_eq_inv, indicator_image inv_injective,
+    image_inv_eq_inv, ← indicator_mul_right _ fun x => ν' ((· * x) ⁻¹' s), Function.comp,
+    Pi.one_apply, mul_one] at h1
   rw [← lintegral_indicator hA, ← h1]
   exact ENNReal.mul_ne_top hμs h3A.ne
 
@@ -305,7 +305,7 @@ theorem measure_lintegral_div_measure (sm : MeasurableSet s) (h2s : ν' s ≠ 0)
   simp_rw [measure_mul_lintegral_eq μ' ν' sm g hg, g, inv_inv]
   refine lintegral_congr_ae ?_
   refine (ae_measure_preimage_mul_right_lt_top_of_ne_zero μ' ν' h2s h3s).mono fun x hx => ?_
-  simp_rw [ENNReal.mul_div_cancel' (measure_mul_right_ne_zero ν' h2s _) hx.ne]
+  simp_rw [ENNReal.mul_div_cancel (measure_mul_right_ne_zero ν' h2s _) hx.ne]
 
 @[to_additive]
 theorem measure_mul_measure_eq (s t : Set G) (h2s : ν' s ≠ 0) (h3s : ν' s ≠ ∞) :
@@ -330,7 +330,7 @@ theorem measure_eq_div_smul (h2s : ν' s ≠ 0) (h3s : ν' s ≠ ∞) :
     μ' = (μ' s / ν' s) • ν' := by
   ext1 t -
   rw [smul_apply, smul_eq_mul, mul_comm, ← mul_div_assoc, mul_comm,
-    measure_mul_measure_eq μ' ν' s t h2s h3s, mul_div_assoc, ENNReal.mul_div_cancel' h2s h3s]
+    measure_mul_measure_eq μ' ν' s t h2s h3s, mul_div_assoc, ENNReal.mul_div_cancel h2s h3s]
 
 end SigmaFinite
 

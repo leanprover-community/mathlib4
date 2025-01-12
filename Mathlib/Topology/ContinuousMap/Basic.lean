@@ -71,7 +71,7 @@ variable (α)
 protected def id : C(α, α) where
   toFun := id
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(ContinuousMap.id α) = id :=
   rfl
 
@@ -349,6 +349,11 @@ theorem liftCover_restrict' {s : Set α} {hs : s ∈ A} :
     (liftCover' A F hF hA).restrict s = F s hs := ext <| liftCover_coe' (hF := hF) (hA := hA)
 
 end Gluing
+
+/-- `Set.inclusion` as a bundled continuous map. -/
+def inclusion {s t : Set α} (h : s ⊆ t) : C(s, t) where
+  toFun := Set.inclusion h
+  continuous_toFun := continuous_inclusion h
 
 end ContinuousMap
 

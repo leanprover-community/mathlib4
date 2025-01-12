@@ -3,8 +3,9 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Johannes Hölzl, Kim Morrison, Jens Wagemaker
 -/
-import Mathlib.Algebra.GroupPower.IterateHom
-import Mathlib.Algebra.Polynomial.Eval
+import Mathlib.Algebra.Polynomial.Degree.Domain
+import Mathlib.Algebra.Polynomial.Degree.Support
+import Mathlib.Algebra.Polynomial.Eval.Coeff
 import Mathlib.GroupTheory.GroupAction.Ring
 
 /-!
@@ -146,6 +147,9 @@ theorem iterate_derivative_C_mul (a : R) (p : R[X]) (k : ℕ) :
     derivative^[k] (C a * p) = C a * derivative^[k] p := by
   simp_rw [← smul_eq_C_mul, iterate_derivative_smul]
 
+theorem derivative_C_mul (a : R) (p : R[X]) :
+    derivative (C a * p) = C a * derivative p := iterate_derivative_C_mul _ _ 1
+
 theorem of_mem_support_derivative {p : R[X]} {n : ℕ} (h : n ∈ p.derivative.support) :
     n + 1 ∈ p.support :=
   mem_support_iff.2 fun h1 : p.coeff (n + 1) = 0 =>
@@ -191,7 +195,7 @@ alias derivative_nat_cast := derivative_natCast
 
 @[simp]
 theorem derivative_ofNat (n : ℕ) [n.AtLeastTwo] :
-    derivative (no_index (OfNat.ofNat n) : R[X]) = 0 :=
+    derivative (ofNat(n) : R[X]) = 0 :=
   derivative_natCast
 
 theorem iterate_derivative_eq_zero {p : R[X]} {x : ℕ} (hx : p.natDegree < x) :
@@ -655,6 +659,18 @@ theorem dvd_derivative_iff {P : R[X]} : P ∣ derivative P ↔ derivative P = 0 
   mpr h := by simp [h]
 
 end NoZeroDivisors
+
+section CommSemiringNoZeroDivisors
+
+variable [CommSemiring R] [NoZeroDivisors R]
+
+theorem derivative_pow_eq_zero {n : ℕ} (chn : (n : R) ≠ 0) {a : R[X]} :
+    derivative (a ^ n) = 0 ↔ derivative a = 0 := by
+  nontriviality R
+  rw [← C_ne_zero, C_eq_natCast] at chn
+  simp +contextual [derivative_pow, or_imp, chn]
+
+end CommSemiringNoZeroDivisors
 
 end Derivative
 

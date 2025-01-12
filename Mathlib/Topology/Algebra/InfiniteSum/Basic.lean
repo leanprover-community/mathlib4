@@ -21,12 +21,12 @@ noncomputable section
 
 open Filter Finset Function Topology
 
-variable {α β γ δ : Type*}
+variable {α β γ : Type*}
 
 section HasProd
 
 variable [CommMonoid α] [TopologicalSpace α]
-variable {f g : β → α} {a b : α} {s : Finset β}
+variable {f g : β → α} {a b : α}
 
 /-- Constant one function has product `1` -/
 @[to_additive "Constant zero function has sum `0`"]
@@ -355,7 +355,7 @@ end HasProd
 
 section tprod
 
-variable [CommMonoid α] [TopologicalSpace α] {f g : β → α} {a a₁ a₂ : α}
+variable [CommMonoid α] [TopologicalSpace α] {f g : β → α}
 
 @[to_additive]
 theorem tprod_congr_set_coe (f : β → α) {s t : Set β} (h : s = t) :

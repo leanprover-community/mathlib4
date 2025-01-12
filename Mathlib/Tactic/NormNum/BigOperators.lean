@@ -38,7 +38,7 @@ In particular, we can't use the plugin on sums containing variables.
 
 namespace Mathlib.Meta
 
-open Lean hiding Rat mkRat
+open Lean
 open Meta
 open Qq
 

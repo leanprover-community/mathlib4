@@ -15,7 +15,7 @@ and the `SemilatticeSup (Subobject X)` instance when `[HasImages C] [HasBinaryCo
 -/
 
 
-universe v₁ v₂ u₁ u₂
+universe w v₁ v₂ u₁ u₂
 
 noncomputable section
 
@@ -59,7 +59,7 @@ variable [HasPullbacks C]
 is (isomorphic to) the top object in `MonoOver X`. -/
 def pullbackTop (f : X ⟶ Y) : (pullback f).obj ⊤ ≅ ⊤ :=
   iso_of_both_ways (leTop _)
-    (homMk (pullback.lift f (𝟙 _) (by aesop_cat)) (pullback.lift_snd _ _ _))
+    (homMk (pullback.lift f (𝟙 _) (by simp)) (pullback.lift_snd _ _ _))
 
 /-- There is a morphism from `⊤ : MonoOver A` to the pullback of a monomorphism along itself;
 as the category is thin this is an isomorphism. -/
@@ -499,7 +499,7 @@ end Lattice
 
 section Inf
 
-variable [WellPowered C]
+variable [LocallySmall.{w} C] [WellPowered.{w} C]
 
 /-- The "wide cospan" diagram, with a small indexing type, constructed from a set of subobjects.
 (This is just the diagram of all the subobjects pasted together, but using `WellPowered C`
@@ -527,14 +527,14 @@ def leInfCone {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s
             (by
               rcases j with ⟨-, ⟨g, ⟨m, rfl⟩⟩⟩
               simpa using m))))
-    (by aesop_cat)
+    (by simp)
 
 @[simp]
 theorem leInfCone_π_app_none {A : C} (s : Set (Subobject A)) (f : Subobject A)
     (k : ∀ g ∈ s, f ≤ g) : (leInfCone s f k).π.app none = f.arrow :=
   rfl
 
-variable [HasWidePullbacks.{v₁} C]
+variable [HasWidePullbacks.{w} C]
 
 /-- The limit of `wideCospan s`. (This will be the supremum of the set of subobjects.)
 -/
@@ -572,7 +572,7 @@ theorem sInf_le {A : C} (s : Set (Subobject A)) (f) (hf : f ∈ s) : sInf s ≤ 
     simp only [Category.comp_id, Category.assoc, ← underlyingIso_hom_comp_eq_mk,
       Subobject.arrow_congr, congrArg_mpr_hom_left, Iso.cancel_iso_hom_left]
     convert limit.w (wideCospan s) (WidePullbackShape.Hom.term _)
-    aesop_cat
+    simp
 
 theorem le_sInf {A : C} (s : Set (Subobject A)) (f : Subobject A) (k : ∀ g ∈ s, f ≤ g) :
     f ≤ sInf s := by
@@ -590,7 +590,7 @@ end Inf
 
 section Sup
 
-variable [WellPowered C] [HasCoproducts.{v₁} C]
+variable [LocallySmall.{w} C] [WellPowered.{w} C] [HasCoproducts.{w} C]
 
 /-- The universal morphism out of the coproduct of a set of subobjects,
 after using `[WellPowered C]` to reindex by a small type.
@@ -641,8 +641,8 @@ end Sup
 
 section CompleteLattice
 
-variable [WellPowered C] [HasWidePullbacks.{v₁} C] [HasImages C] [HasCoproducts.{v₁} C]
-  [InitialMonoClass C]
+variable [LocallySmall.{w} C] [WellPowered.{w} C] [HasWidePullbacks.{w} C]
+  [HasImages C] [HasCoproducts.{w} C] [InitialMonoClass C]
 
 attribute [local instance] has_smallest_coproducts_of_hasCoproducts
 

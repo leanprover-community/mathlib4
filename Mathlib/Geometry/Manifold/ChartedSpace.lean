@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Topology.PartialHomeomorph
+import Mathlib.Topology.Connected.PathConnected
 
 /-!
 # Charted spaces
@@ -627,7 +628,7 @@ theorem ChartedSpace.isOpen_iff (s : Set M) :
   simp only [(chartAt H _).isOpen_image_iff_of_subset_source inter_subset_left]
 
 /-- `achart H x` is the chart at `x`, considered as an element of the atlas.
-Especially useful for working with `BasicSmoothVectorBundleCore`. -/
+Especially useful for working with `BasicContMDiffVectorBundleCore`. -/
 def achart (x : M) : atlas H M :=
   ⟨chartAt H x, chart_mem_atlas H x⟩
 
@@ -692,6 +693,23 @@ theorem ChartedSpace.locallyConnectedSpace [LocallyConnectedSpace H] : LocallyCo
         ((e x).open_target.mem_nhds (mem_chart_target H x))).map (e x).symm
   · rintro x s ⟨⟨-, -, hsconn⟩, hssubset⟩
     exact hsconn.isPreconnected.image _ ((e x).continuousOn_symm.mono hssubset)
+
+/-- If a topological space `M` admits an atlas with locally path-connected charts,
+  then `M` itself is locally path-connected. -/
+theorem ChartedSpace.locPathConnectedSpace [LocPathConnectedSpace H] : LocPathConnectedSpace M := by
+  refine ⟨fun x ↦ ⟨fun s ↦ ⟨fun hs ↦ ?_, fun ⟨u, hu⟩ ↦ Filter.mem_of_superset hu.1.1 hu.2⟩⟩⟩
+  let e := chartAt H x
+  let t := s ∩ e.source
+  have ht : t ∈ 𝓝 x := Filter.inter_mem hs (chart_source_mem_nhds _ _)
+  refine ⟨e.symm '' pathComponentIn (e x) (e '' t), ⟨?_, ?_⟩, (?_ : _ ⊆ t).trans inter_subset_left⟩
+  · nth_rewrite 1 [← e.left_inv (mem_chart_source _ _)]
+    apply e.symm.image_mem_nhds (by simp [e])
+    exact pathComponentIn_mem_nhds <| e.image_mem_nhds (mem_chart_source _ _) ht
+  · refine (isPathConnected_pathComponentIn <| mem_image_of_mem e (mem_of_mem_nhds ht)).image' ?_
+    refine e.continuousOn_symm.mono <| subset_trans ?_ e.map_source''
+    exact (pathComponentIn_mono <| image_mono inter_subset_right).trans pathComponentIn_subset
+  · exact (image_mono pathComponentIn_subset).trans
+      (PartialEquiv.symm_image_image_of_subset_source _ inter_subset_right).subset
 
 /-- If `M` is modelled on `H'` and `H'` is itself modelled on `H`, then we can consider `M` as being
 modelled on `H`. -/
@@ -831,6 +849,59 @@ theorem piChartedSpace_chartAt {ι : Type*} [Finite ι] (H : ι → Type*)
     chartAt (H := ModelPi H) f = PartialHomeomorph.pi fun i ↦ chartAt (H i) (f i) :=
   rfl
 
+section sum
+
+variable [TopologicalSpace H] [TopologicalSpace M] [TopologicalSpace M']
+    [cm : ChartedSpace H M] [cm' : ChartedSpace H M'] [Nonempty H] [Nonempty M] [Nonempty M']
+
+/-- The disjoint union of two charted spaces on `H` is a charted space over `H`. -/
+instance ChartedSpace.sum : ChartedSpace H (M ⊕ M') where
+  atlas := ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inl) '' cm.atlas) ∪
+    ((fun e ↦ e.lift_openEmbedding IsOpenEmbedding.inr) '' cm'.atlas)
+  -- At `x : M`, the chart is the chart in `M`; at `x' ∈ M'`, it is the chart in `M'`.
+  chartAt := Sum.elim (fun x ↦ (cm.chartAt x).lift_openEmbedding IsOpenEmbedding.inl)
+    (fun x ↦ (cm'.chartAt x).lift_openEmbedding IsOpenEmbedding.inr)
+  mem_chart_source p := by
+    by_cases h : Sum.isLeft p
+    · let x := Sum.getLeft p h
+      rw [Sum.eq_left_getLeft_of_isLeft h, Sum.elim_inl, lift_openEmbedding_source,
+        ← PartialHomeomorph.lift_openEmbedding_source _ IsOpenEmbedding.inl]
+      use x, cm.mem_chart_source x
+    · have h' : Sum.isRight p := Sum.not_isLeft.mp h
+      let x := Sum.getRight p h'
+      rw [Sum.eq_right_getRight_of_isRight h', Sum.elim_inr, lift_openEmbedding_source,
+        ← PartialHomeomorph.lift_openEmbedding_source _ IsOpenEmbedding.inr]
+      use x, cm'.mem_chart_source x
+  chart_mem_atlas p := by
+    by_cases h : Sum.isLeft p
+    · rw [Sum.eq_left_getLeft_of_isLeft h, Sum.elim_inl]
+      left
+      let x := Sum.getLeft p h
+      use ChartedSpace.chartAt x, cm.chart_mem_atlas x
+    · have h' : Sum.isRight p := Sum.not_isLeft.mp h
+      rw [Sum.eq_right_getRight_of_isRight h', Sum.elim_inr]
+      right
+      let x := Sum.getRight p h'
+      use ChartedSpace.chartAt x, cm'.chart_mem_atlas x
+
+lemma ChartedSpace.sum_chartAt_inl (x : M) :
+    chartAt H (Sum.inl x) = (chartAt H x).lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inl :=
+  rfl
+
+lemma ChartedSpace.sum_chartAt_inr (x' : M') :
+    chartAt H (Sum.inr x') = (chartAt H x').lift_openEmbedding (X' := M ⊕ M') IsOpenEmbedding.inr :=
+  rfl
+
+lemma ChartedSpace.mem_atlas_sum {e : PartialHomeomorph (M ⊕ M') H} (he : e ∈ atlas H (M ⊕ M')) :
+    (∃ f : PartialHomeomorph M H, f ∈ (atlas H M) ∧ e = (f.lift_openEmbedding IsOpenEmbedding.inl))
+    ∨ (∃ f' : PartialHomeomorph M' H, f' ∈ (atlas H M') ∧
+      e = (f'.lift_openEmbedding IsOpenEmbedding.inr)) := by
+    obtain (⟨x, hx, hxe⟩ | ⟨x, hx, hxe⟩) := he
+    · rw [← hxe]; left; use x
+    · rw [← hxe]; right; use x
+
+end sum
+
 end ChartedSpace
 
 /-! ### Constructing a topology from an atlas -/
@@ -840,7 +911,7 @@ end ChartedSpace
 have a topological structure, where the topology would come from the charts. For this, one needs
 charts that are only partial equivalences, and continuity properties for their composition.
 This is formalised in `ChartedSpaceCore`. -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure ChartedSpaceCore (H : Type*) [TopologicalSpace H] (M : Type*) where
   /-- An atlas of charts, which are only `PartialEquiv`s -/
@@ -1051,6 +1122,10 @@ theorem StructureGroupoid.mem_maximalAtlas_of_mem_groupoid {f : PartialHomeomorp
   rintro e (rfl : e = PartialHomeomorph.refl H)
   exact ⟨G.trans (G.symm hf) G.id_mem, G.trans (G.symm G.id_mem) hf⟩
 
+theorem StructureGroupoid.maximalAtlas_mono {G G' : StructureGroupoid H} (h : G ≤ G') :
+    G.maximalAtlas M ⊆ G'.maximalAtlas M :=
+  fun _ he e' he' ↦ ⟨h (he e' he').1, h (he e' he').2⟩
+
 end MaximalAtlas
 
 section Singleton
@@ -1208,7 +1283,7 @@ lemma StructureGroupoid.restriction_in_maximalAtlas {e : PartialHomeomorph M H}
 /-- A `G`-diffeomorphism between two charted spaces is a homeomorphism which, when read in the
 charts, belongs to `G`. We avoid the word diffeomorph as it is too related to the smooth category,
 and use structomorph instead. -/
--- Porting note(#5171): this linter isn't ported yet.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure Structomorph (G : StructureGroupoid H) (M : Type*) (M' : Type*) [TopologicalSpace M]
   [TopologicalSpace M'] [ChartedSpace H M] [ChartedSpace H M'] extends Homeomorph M M' where

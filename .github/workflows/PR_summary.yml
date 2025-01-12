@@ -5,6 +5,7 @@ on:
 
 jobs:
   build:
+    name: "post-or-update-summary-comment"
     runs-on: ubuntu-latest
 
     steps:

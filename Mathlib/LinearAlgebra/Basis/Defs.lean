@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Alexander Bentkamp
 -/
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-import Mathlib.LinearAlgebra.Span
+import Mathlib.LinearAlgebra.Span.Basic
 
 /-!
 # Bases
@@ -53,9 +53,7 @@ basis, bases
 
 -/
 
-assert_not_exists LinearMap.pi
-assert_not_exists LinearIndependent
-assert_not_exists Cardinal
+assert_not_exists LinearMap.pi LinearIndependent Cardinal
 
 noncomputable section
 
@@ -272,7 +270,7 @@ theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f 
     (x : M) (i : ι) : b.repr x i = f x i := by
   let f_i : M →ₗ[R] R :=
     { toFun := fun x => f x i
-      -- Porting note(#12129): additional beta reduction needed
+      -- Porting note (https://github.com/leanprover-community/mathlib4/issues/12129): additional beta reduction needed
       map_add' := fun _ _ => by beta_reduce; rw [hadd, Pi.add_apply]
       map_smul' := fun _ _ => by simp [hsmul, Pi.smul_apply] }
   have : Finsupp.lapply i ∘ₗ ↑b.repr = f_i := by

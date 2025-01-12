@@ -68,6 +68,15 @@ theorem unit_mul_mem_iff_mem {x y : α} (hy : IsUnit y) : y * x ∈ I ↔ x ∈ 
 
 end Ideal
 
+/-- For two elements `m` and `m'` in an `R`-module `M`, the set of elements `r : R` with
+equal scalar product with `m` and `m'` is an ideal of `R`. If `M` is a group, this coincides
+with the kernel of `LinearMap.toSpanSingleton R M (m - m')`. -/
+def Module.eqIdeal (R) {M} [Semiring R] [AddCommMonoid M] [Module R M] (m m' : M) : Ideal R where
+  carrier := {r : R | r • m = r • m'}
+  add_mem' h h' := by simpa [add_smul] using congr($h + $h')
+  zero_mem' := by simp_rw [Set.mem_setOf, zero_smul]
+  smul_mem' _ _ h := by simpa [mul_smul] using congr(_ • $h)
+
 end Semiring
 
 section CommSemiring

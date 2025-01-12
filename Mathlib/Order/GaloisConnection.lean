@@ -204,6 +204,9 @@ theorem u_eq_top {l : α → β} {u : β → α} (gc : GaloisConnection l u) {x}
 theorem u_top [OrderTop β] {l : α → β} {u : β → α} (gc : GaloisConnection l u) : u ⊤ = ⊤ :=
   gc.u_eq_top.2 le_top
 
+theorem u_l_top {l : α → β} {u : β → α} (gc : GaloisConnection l u) : u (l ⊤) = ⊤ :=
+  gc.u_eq_top.mpr le_rfl
+
 end OrderTop
 
 section OrderBot
@@ -215,6 +218,9 @@ theorem l_eq_bot {l : α → β} {u : β → α} (gc : GaloisConnection l u) {x}
 
 theorem l_bot [OrderBot α] {l : α → β} {u : β → α} (gc : GaloisConnection l u) : l ⊥ = ⊥ :=
   gc.dual.u_top
+
+theorem l_u_bot {l : α → β} {u : β → α} (gc : GaloisConnection l u) : l (u ⊥) = ⊥ :=
+  gc.l_eq_bot.mpr le_rfl
 
 end OrderBot
 
@@ -407,7 +413,7 @@ theorem galoisConnection_mul_div {k : ℕ} (h : 0 < k) :
 
 end Nat
 
--- Porting note(#5171): this used to have a `@[nolint has_nonempty_instance]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this used to have a `@[nolint has_nonempty_instance]`
 /-- A Galois insertion is a Galois connection where `l ∘ u = id`. It also contains a constructive
 choice function, to give better definitional equalities when lifting order structures. Dual
 to `GaloisCoinsertion` -/
@@ -606,7 +612,7 @@ end lift
 
 end GaloisInsertion
 
--- Porting note(#5171): this used to have a `@[nolint has_nonempty_instance]`
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this used to have a `@[nolint has_nonempty_instance]`
 /-- A Galois coinsertion is a Galois connection where `u ∘ l = id`. It also contains a constructive
 choice function, to give better definitional equalities when lifting order structures. Dual to
 `GaloisInsertion` -/

@@ -23,10 +23,7 @@ The fact that the real numbers are a (trivial) *-ring has similarly been deferre
 -/
 
 
-assert_not_exists Finset
-assert_not_exists Module
-assert_not_exists Submonoid
-assert_not_exists FloorRing
+assert_not_exists Finset Module Submonoid FloorRing
 
 /-- The type `ℝ` of real numbers constructed as equivalence classes of Cauchy sequences of rational
 numbers. -/
@@ -483,8 +480,6 @@ instance : SemilatticeInf ℝ :=
 instance : SemilatticeSup ℝ :=
   inferInstance
 
-open scoped Classical
-
 instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
   ⟨by
     intros a b
@@ -492,6 +487,7 @@ instance leTotal_R : IsTotal ℝ (· ≤ ·) :=
     induction' b using Real.ind_mk with b
     simpa using le_total a b⟩
 
+open scoped Classical in
 noncomputable instance linearOrder : LinearOrder ℝ :=
   Lattice.toLinearOrder ℝ
 
@@ -584,11 +580,14 @@ lemma mul_add_one_le_add_one_pow {a : ℝ} (ha : 0 ≤ a) (b : ℕ) : a * b + 1 
   induction b generalizing a with
   | zero => simp
   | succ b hb =>
-    rw [Nat.cast_add_one, mul_add, mul_one, add_right_comm, pow_succ, mul_add, mul_one, add_comm]
-    gcongr
-    · rw [le_mul_iff_one_le_left ha']
-      exact (pow_le_pow_left zero_le_one (by simpa using ha'.le) b).trans' (by simp)
-    · exact hb ha'
+    calc
+      a * ↑(b + 1) + 1 = (0 + 1) ^ b * a + (a * b + 1) := by
+        simp [mul_add, add_assoc, add_left_comm]
+      _ ≤ (a + 1) ^ b * a + (a + 1) ^ b := by
+        gcongr
+        · norm_num
+        · exact hb ha'
+      _ = (a + 1) ^ (b + 1) := by simp [pow_succ, mul_add]
 
 end Real
 

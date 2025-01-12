@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
 import Mathlib.Data.Finset.Lattice.Fold
-import Mathlib.Order.Hom.Basic
-import Mathlib.Data.Set.Finite
+import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
+import Mathlib.Order.Hom.Basic
 
 /-!
 # The monotone sequence of partial supremums of a sequence
@@ -133,6 +133,7 @@ lemma disjoint_partialSups_right [DistribLattice α] [OrderBot α] {f : ℕ → 
     Disjoint x (partialSups f n) ↔ ∀ k ≤ n, Disjoint x (f k) :=
   partialSups_iff_forall (Disjoint x) disjoint_sup_right
 
+open scoped Function in -- required for scoped `on` notation
 /- Note this lemma requires a distributive lattice, so is not useful (or true) in situations such as
 submodules. -/
 theorem partialSups_disjoint_of_disjoint [DistribLattice α] [OrderBot α] (f : ℕ → α)

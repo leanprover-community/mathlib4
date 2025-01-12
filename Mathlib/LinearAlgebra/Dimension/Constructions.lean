@@ -3,7 +3,9 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl, Sander Dahmen, Kim Morrison, Chris Hughes, Anne Baanen
 -/
+import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.LinearAlgebra.Dimension.Free
+import Mathlib.LinearAlgebra.Isomorphisms
 
 /-!
 # Rank of various constructions
@@ -55,7 +57,7 @@ theorem LinearIndependent.sum_elim_of_quotient
 theorem LinearIndependent.union_of_quotient
     {M' : Submodule R M} {s : Set M} (hs : s ⊆ M') (hs' : LinearIndependent (ι := s) R Subtype.val)
   {t : Set M} (ht : LinearIndependent (ι := t) R (Submodule.Quotient.mk (p := M') ∘ Subtype.val)) :
-    LinearIndependent (ι := (s ∪ t : _)) R Subtype.val := by
+    LinearIndependent (ι := (s ∪ t :)) R Subtype.val := by
   refine (LinearIndependent.sum_elim_of_quotient (f := Set.embeddingOfSubset s M' hs)
     (of_comp M'.subtype (by simpa using hs')) Subtype.val ht).to_subtype_range' ?_
   simp only [embeddingOfSubset_apply_coe, Sum.elim_range, Subtype.range_val]

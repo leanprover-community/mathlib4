@@ -535,7 +535,7 @@ theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o ^ n) = o
 
 end Ordinal
 
--- Porting note (#11215): TODO: Port this meta code.
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: Port this meta code.
 
 -- namespace Tactic
 
