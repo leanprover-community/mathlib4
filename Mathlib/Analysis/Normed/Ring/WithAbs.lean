@@ -104,54 +104,54 @@ end algebra
 variable (x y : WithAbs v) (r s : R)
 
 @[simp]
-theorem equiv_zero : WithAbs.equiv v 0 = 0 := rfl
+theorem equiv_zero : equiv v 0 = 0 := rfl
 
 @[simp]
-theorem equiv_symm_zero : (WithAbs.equiv v).symm 0 = 0 := rfl
+theorem equiv_symm_zero : (equiv v).symm 0 = 0 := rfl
 
 @[simp]
-theorem equiv_one : (WithAbs.equiv v) 1 = 1 := rfl
+theorem equiv_one : (equiv v) 1 = 1 := rfl
 
 @[simp]
-theorem equiv_symm_one : (WithAbs.equiv v).symm 1 = 1 := rfl
+theorem equiv_symm_one : (equiv v).symm 1 = 1 := rfl
 
 @[simp]
-theorem equiv_add : WithAbs.equiv v (x + y) = WithAbs.equiv v x + WithAbs.equiv v y := rfl
+theorem equiv_add : equiv v (x + y) = equiv v x + equiv v y := rfl
 
 @[simp]
 theorem equiv_symm_add :
-    (WithAbs.equiv v).symm (r + s) = (WithAbs.equiv v).symm r + (WithAbs.equiv v).symm s :=
+    (equiv v).symm (r + s) = (equiv v).symm r + (equiv v).symm s :=
   rfl
 
 @[simp]
-theorem equiv_sub [Ring R] : WithAbs.equiv v (x - y) = WithAbs.equiv v x - WithAbs.equiv v y := rfl
+theorem equiv_sub [Ring R] : equiv v (x - y) = equiv v x - equiv v y := rfl
 
 @[simp]
 theorem equiv_symm_sub [Ring R] :
-    (WithAbs.equiv v).symm (r - s) = (WithAbs.equiv v).symm r - (WithAbs.equiv v).symm s :=
+    (equiv v).symm (r - s) = (equiv v).symm r - (equiv v).symm s :=
   rfl
 
 @[simp]
-theorem equiv_neg [Ring R] : WithAbs.equiv v (-x) = - WithAbs.equiv v x := rfl
+theorem equiv_neg [Ring R] : equiv v (-x) = - equiv v x := rfl
 
 @[simp]
-theorem equiv_symm_neg [Ring R] : (WithAbs.equiv v).symm (-r) = - (WithAbs.equiv v).symm r := rfl
+theorem equiv_symm_neg [Ring R] : (equiv v).symm (-r) = - (equiv v).symm r := rfl
 
 @[simp]
-theorem equiv_mul : WithAbs.equiv v (x * y) = WithAbs.equiv v x * WithAbs.equiv v y := rfl
+theorem equiv_mul : equiv v (x * y) = equiv v x * equiv v y := rfl
 
 @[simp]
 theorem equiv_symm_mul :
-    (WithAbs.equiv v).symm (x * y) = (WithAbs.equiv v).symm x * (WithAbs.equiv v).symm y :=
+    (equiv v).symm (x * y) = (equiv v).symm x * (equiv v).symm y :=
   rfl
 
 @[simp]
 theorem equiv_pow (n : ℕ) :
-    (WithAbs.equiv v) (x ^ n) = (WithAbs.equiv v) x ^ n := rfl
+    (equiv v) (x ^ n) = (equiv v) x ^ n := rfl
 
 @[simp]
 theorem equiv_symm_pow (n : ℕ) :
-    (WithAbs.equiv v).symm (r ^ n) = (WithAbs.equiv v).symm r ^ n := rfl
+    (equiv v).symm (r ^ n) = (equiv v).symm r ^ n := rfl
 
 section zpow
 
@@ -159,11 +159,11 @@ variable {F : Type*} [Field F]
 
 @[simp]
 theorem equiv_zpow (v : AbsoluteValue F ℝ) (x : WithAbs v) (n : ℤ) :
-    (WithAbs.equiv v) (x ^ n) = (WithAbs.equiv v) x ^ n := rfl
+    (equiv v) (x ^ n) = (equiv v) x ^ n := rfl
 
 @[simp]
 theorem equiv_symm_zpow (v : AbsoluteValue F ℝ) (r : F) (n : ℤ) :
-    (WithAbs.equiv v).symm (r ^ n) = (WithAbs.equiv v).symm r ^ n := rfl
+    (equiv v).symm (r ^ n) = (equiv v).symm r ^ n := rfl
 
 end zpow
 
@@ -172,11 +172,11 @@ section module
 variable {R S : Type*} [Ring R] [Ring S] [Module R S] (v : AbsoluteValue S ℝ)
 
 @[simp]
-lemma equiv_smul (c : R) (x : WithAbs v) : WithAbs.equiv v (c • x) = c • WithAbs.equiv v x := rfl
+lemma equiv_smul (c : R) (x : WithAbs v) : equiv v (c • x) = c • equiv v x := rfl
 
 @[simp]
 lemma equiv_symm_smul (c : R) (s : S) :
-    (WithAbs.equiv v).symm (c • s) = c • (WithAbs.equiv v).symm s := rfl
+    (equiv v).symm (c • s) = c • (equiv v).symm s := rfl
 
 end module
 
@@ -186,15 +186,15 @@ variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
 @[simp]
 lemma equiv_apply_algebraMap {v : AbsoluteValue R ℝ} (v' : AbsoluteValue S ℝ) (x : WithAbs v) :
-    WithAbs.equiv v' (algebraMap (WithAbs v) (WithAbs v') x) =
-      algebraMap R S (WithAbs.equiv v x) :=
+    equiv v' (algebraMap (WithAbs v) (WithAbs v') x) =
+      algebraMap R S (equiv v x) :=
   rfl
 
 @[simp]
 lemma equiv_symm_apply_algebraMap {v : AbsoluteValue R ℝ} (v' : AbsoluteValue S ℝ) (x : WithAbs v) :
-    (WithAbs.equiv v').symm (algebraMap R S (WithAbs.equiv v x)) =
+    (equiv v').symm (algebraMap R S (equiv v x)) =
       algebraMap (WithAbs v) (WithAbs v') x := by
-  rw [← WithAbs.equiv_apply_algebraMap v', Equiv.symm_apply_apply]
+  rw [← equiv_apply_algebraMap v', Equiv.symm_apply_apply]
 
 end algebra
 
