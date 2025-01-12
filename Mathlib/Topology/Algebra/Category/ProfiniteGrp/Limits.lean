@@ -17,10 +17,10 @@ its quotients by open normal subgroups.
 * `toFiniteQuotientFunctor` : The functor from `OpenNormalSubgroup P` to `FiniteGrp`
   sending an open normal subgroup `U` to `P ⧸ U`, where `P : ProfiniteGrp`.
 
-* `toLimittoFiniteQuotientFunctor` : The continuous homomorphism from a profinite group `P` to
+* `toLimit` : The continuous homomorphism from a profinite group `P` to
   the projective limit of its quotients by open normal subgroups ordered by inclusion.
 
-* `ContinuousMulEquivLimittoFiniteQuotientFunctor` : The `toLimittoFiniteQuotientFunctor` is a
+* `ContinuousMulEquivLimittoFiniteQuotientFunctor` : The `toLimit` is a
   `ContinuousMulEquiv`
 
 ## Main Statements
@@ -41,8 +41,7 @@ instance (P : ProfiniteGrp) : SmallCategory (OpenNormalSubgroup P) :=
 
 /-- The functor from `OpenNormalSubgroup P` to `FiniteGrp` sending `U` to `P ⧸ U`,
 where `P : ProfiniteGrp`. -/
-def toFiniteQuotientFunctor (P : ProfiniteGrp) :
-    OpenNormalSubgroup P ⥤ FiniteGrp := {
+def toFiniteQuotientFunctor (P : ProfiniteGrp) : OpenNormalSubgroup P ⥤ FiniteGrp := {
     obj := fun H => FiniteGrp.of (P ⧸ H.toSubgroup)
     map := fun fHK => QuotientGroup.map _ _ (.id _) (leOfHom fHK)
     map_id _ := QuotientGroup.map_id _
@@ -51,19 +50,18 @@ def toFiniteQuotientFunctor (P : ProfiniteGrp) :
 
 /--The `MonoidHom` from a profinite group `P` to  the projective limit of its quotients by
 open normal subgroups ordered by inclusion.-/
-def toLimittoFiniteQuotientFunctor_fun (P : ProfiniteGrp.{u}) : P →*
+def toLimit_fun (P : ProfiniteGrp.{u}) : P →*
     limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp) where
   toFun p := ⟨fun _ => QuotientGroup.mk p, fun _ => rfl⟩
   map_one' := Subtype.val_inj.mp rfl
   map_mul' _ _ := Subtype.val_inj.mp rfl
 
-lemma toLimittoFiniteQuotientFunctor_fun_continuous (P : ProfiniteGrp.{u}) :
-    Continuous (toLimittoFiniteQuotientFunctor_fun P) := by
+lemma toLimit_fun_continuous (P : ProfiniteGrp.{u}) : Continuous (toLimit_fun P) := by
   apply continuous_induced_rng.mpr (continuous_pi _)
   intro H
   dsimp only [Functor.comp_obj, CompHausLike.toCompHausLike_obj, CompHausLike.compHausLikeToTop_obj,
     CompHausLike.coe_of, Functor.comp_map, CompHausLike.toCompHausLike_map,
-    CompHausLike.compHausLikeToTop_map, Set.mem_setOf_eq, toLimittoFiniteQuotientFunctor_fun,
+    CompHausLike.compHausLikeToTop_map, Set.mem_setOf_eq, toLimit_fun,
     MonoidHom.coe_mk, OneHom.coe_mk, Function.comp_apply]
   apply Continuous.mk
   intro s _
@@ -77,13 +75,12 @@ lemma toLimittoFiniteQuotientFunctor_fun_continuous (P : ProfiniteGrp.{u}) :
 
 /-- The morphism in the category of `ProfiniteGrp` from a profinite group `P` to
 the projective limit of its quotients by open normal subgroups ordered by inclusion.-/
-def toLimittoFiniteQuotientFunctor (P : ProfiniteGrp.{u}) : P ⟶
+def toLimit (P : ProfiniteGrp.{u}) : P ⟶
     limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp) := {
-  toLimittoFiniteQuotientFunctor_fun P with
-  continuous_toFun := toLimittoFiniteQuotientFunctor_fun_continuous P }
+  toLimit_fun P with
+  continuous_toFun := toLimit_fun_continuous P }
 
-theorem denseRange_toLimittoFiniteQuotientFunctor (P : ProfiniteGrp.{u}) :
-    DenseRange (toLimittoFiniteQuotientFunctor P) := by
+theorem denseRange_toLimit (P : ProfiniteGrp.{u}) : DenseRange (toLimit P) := by
   apply dense_iff_inter_open.mpr
   rintro U ⟨s, hsO, hsv⟩ ⟨⟨spc, hspc⟩, uDefaultSpec⟩
   simp_rw [← hsv, Set.mem_preimage] at uDefaultSpec
@@ -95,27 +92,25 @@ theorem denseRange_toLimittoFiniteQuotientFunctor (P : ProfiniteGrp.{u}) :
     exact isOpen_iInter_of_finite fun i => i.1.1.isOpen'
   let m : OpenNormalSubgroup P := { M with isOpen' := hMOpen }
   rcases QuotientGroup.mk'_surjective M (spc m) with ⟨origin, horigin⟩
-  use (toLimittoFiniteQuotientFunctor P).toFun origin
+  use (toLimit P).toFun origin
   refine ⟨?_, origin, rfl⟩
   rw [← hsv]
   apply hJ2
   intro a a_in_J
   let M_to_Na : m ⟶ a := (iInf_le (fun (j : J) => j.1.1.1) ⟨a, a_in_J⟩).hom
-  rw [← (P.toLimittoFiniteQuotientFunctor.toFun origin).property M_to_Na]
+  rw [← (P.toLimit.toFun origin).property M_to_Na]
   show (P.toFiniteQuotientFunctor.map M_to_Na) (QuotientGroup.mk' M origin) ∈ _
   rw [horigin]
   exact Set.mem_of_eq_of_mem (hspc M_to_Na) (hJ1 a a_in_J).2
 
-theorem toLimittoFiniteQuotientFunctor_surjective (P : ProfiniteGrp.{u}) :
-    Function.Surjective (toLimittoFiniteQuotientFunctor P) := by
-  have : IsClosed (Set.range P.toLimittoFiniteQuotientFunctor) :=
-    P.toLimittoFiniteQuotientFunctor.continuous_toFun.isClosedMap.isClosed_range
+theorem toLimit_surjective (P : ProfiniteGrp.{u}) : Function.Surjective (toLimit P) := by
+  have : IsClosed (Set.range P.toLimit) :=
+    P.toLimit.continuous_toFun.isClosedMap.isClosed_range
   rw [← Set.range_eq_univ, ← closure_eq_iff_isClosed.mpr this,
-    Dense.closure_eq (denseRange_toLimittoFiniteQuotientFunctor P)]
+    Dense.closure_eq (denseRange_toLimit P)]
 
-theorem toLimittoFiniteQuotientFunctor_injective (P : ProfiniteGrp.{u}) :
-    Function.Injective (toLimittoFiniteQuotientFunctor P) := by
-  show Function.Injective (toLimittoFiniteQuotientFunctor P).toMonoidHom
+theorem toLimit_injective (P : ProfiniteGrp.{u}) : Function.Injective (toLimit P) := by
+  show Function.Injective (toLimit P).toMonoidHom
   rw [← MonoidHom.ker_eq_bot_iff, Subgroup.eq_bot_iff_forall]
   intro x h
   by_contra xne1
@@ -128,16 +123,16 @@ its quotients by open normal subgroups -/
 noncomputable def continuousMulEquivLimittoFiniteQuotientFunctor (P : ProfiniteGrp.{u}) :
     P ≃ₜ* (limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp)) := {
   (Continuous.homeoOfEquivCompactToT2 (f := Equiv.ofBijective _
-  ⟨toLimittoFiniteQuotientFunctor_injective P, toLimittoFiniteQuotientFunctor_surjective P⟩)
-    P.toLimittoFiniteQuotientFunctor.continuous_toFun)
+  ⟨toLimit_injective P, toLimit_surjective P⟩)
+    P.toLimit.continuous_toFun)
   with
-  map_mul' := (toLimittoFiniteQuotientFunctor P).map_mul' }
+  map_mul' := (toLimit P).map_mul' }
 
 /-- The isomorphism in the category of profinite group between a profinite group and
 the projective limit of its quotients by open normal subgroups -/
 noncomputable def isoLimittoFiniteQuotientFunctor (P : ProfiniteGrp.{u}) :
     P ≅ (limit (toFiniteQuotientFunctor P ⋙ forget₂ FiniteGrp ProfiniteGrp)) where
-  hom := P.toLimittoFiniteQuotientFunctor
+  hom := P.toLimit
   inv := { (continuousMulEquivLimittoFiniteQuotientFunctor P).symm.toMonoidHom with
     continuous_toFun := (continuousMulEquivLimittoFiniteQuotientFunctor P).continuous_invFun}
   hom_inv_id := by
