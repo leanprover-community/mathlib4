@@ -605,7 +605,7 @@ noncomputable def toNNRealLinear {Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ} (hΛ : ∀ 
 
 @[simp]
 lemma toNNRealLinear_apply {Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ} (hΛ : ∀ f, 0 ≤ f.1 → 0 ≤ Λ f) (f : C_c(α, ℝ≥0)) :
-    toNNRealLinear hΛ f = (Λ (toReal f)) := rfl
+    toNNRealLinear hΛ f = Λ (toReal f) := rfl
 
 lemma eq_toNNRealLinear_nnrealPart_sub {Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ}
     (hΛ : ∀ f, 0 ≤ f.1 → 0 ≤ Λ f) (f : C_c(α, ℝ)) :
