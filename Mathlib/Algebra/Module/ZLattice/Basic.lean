@@ -56,7 +56,7 @@ variable {E ι : Type*}
 
 section NormedLatticeField
 
-variable {K : Type*} [NormedLinearOrderedField K]
+variable {K : Type*} [NormedField K]
 variable [NormedAddCommGroup E] [NormedSpace K E]
 variable (b : Basis ι K E)
 
@@ -73,14 +73,18 @@ theorem smul {c : K} (hc : c ≠ 0) :
   congr!
   rw [Basis.isUnitSMul_apply]
 
+variable [LinearOrder K] [IsStrictOrderedRing K]
+
 /-- The fundamental domain of the ℤ-lattice spanned by `b`. See `ZSpan.isAddFundamentalDomain`
 for the proof that it is a fundamental domain. -/
 def fundamentalDomain : Set E := {m | ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1}
 
+omit [IsStrictOrderedRing K] in
 @[simp]
 theorem mem_fundamentalDomain {m : E} :
     m ∈ fundamentalDomain b ↔ ∀ i, b.repr m i ∈ Set.Ico (0 : K) 1 := Iff.rfl
 
+omit [IsStrictOrderedRing K] in
 theorem map_fundamentalDomain {F : Type*} [NormedAddCommGroup F] [NormedSpace K F] (f : E ≃ₗ[K] F) :
     f '' (fundamentalDomain b) = fundamentalDomain (b.map f) := by
   ext x
@@ -88,6 +92,7 @@ theorem map_fundamentalDomain {F : Type*} [NormedAddCommGroup F] [NormedSpace K 
     show f.symm x = f.toEquiv.symm x by rfl, ← Set.mem_image_equiv]
   rfl
 
+omit [IsStrictOrderedRing K] in
 @[simp]
 theorem fundamentalDomain_reindex {ι' : Type*} (e : ι ≃ ι') :
     fundamentalDomain (b.reindex e) = fundamentalDomain b := by
@@ -423,7 +428,8 @@ theorem _root_.ZSpan.isZLattice {E ι : Type*} [NormedAddCommGroup E] [NormedSpa
 
 section NormedLinearOrderedField
 
-variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
+variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K]
+  [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
 variable [ProperSpace E] (L : Submodule ℤ E) [DiscreteTopology L]
 
@@ -710,7 +716,8 @@ end comap
 
 section NormedLinearOrderedField_comap
 
-variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
+variable (K : Type*) [NormedField K] [LinearOrder K] [IsStrictOrderedRing K] [HasSolidNorm K]
+  [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
   [ProperSpace E]
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace K F]  [FiniteDimensional K F]
