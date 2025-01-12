@@ -218,6 +218,8 @@ instance : SetLike A B where
 theorem le_def {S T : A} : S ≤ T ↔ ∀ ⦃x : B⦄, x ∈ S → x ∈ T := by
   simp [← coe_subset_coe, Set.subset_def]
 
+alias ⟨_, mem_of_le_of_mem⟩ := coe_subset_coe
+
 @[simp, norm_cast] lemma coe_ssubset_coe {S T : A} : (S : Set B) ⊂ T ↔ S < T := by
   rw [ssubset_iff_subset_ne, lt_iff_le_and_ne, coe_subset_coe, SetLike.coe_ne_coe]
 

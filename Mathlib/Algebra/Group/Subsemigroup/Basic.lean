@@ -42,14 +42,6 @@ namespace Subsemigroup
 variable (S : Subsemigroup M)
 
 @[to_additive]
-theorem not_mem_bot {x : M} : x ∉ (⊥ : Subsemigroup M) :=
-  Set.not_mem_empty x
-
-@[to_additive (attr := simp)]
-theorem coe_bot : ((⊥ : Subsemigroup M) : Set M) = ∅ :=
-  rfl
-
-@[to_additive]
 instance : InfSet (Subsemigroup M) :=
   ⟨fun s =>
     { carrier := ⋂ t ∈ s, ↑t
@@ -62,13 +54,24 @@ instance : InfSet (Subsemigroup M) :=
 instance : LatticeSetLike (Subsemigroup M) M where
   __ := OrderedSetLike.toLatticeSetLike (Subsemigroup M) M rfl
   bot := ⊥
-  bot_le := fun s x hx => by exact (not_mem_bot hx).elim
+  bot_le := fun _ _ hx => (Set.not_mem_empty _ hx).elim
   top := ⊤
   le_top := fun _ _ _ => trivial
   inf := (· ⊓ ·)
   le_inf := fun _ _ _ ha hb _ hx => ⟨ha hx, hb hx⟩
   inf_le_left := fun _ _ _ => And.left
   inf_le_right := fun _ _ _ => And.right
+
+@[to_additive]
+abbrev closure : Set M → Subsemigroup M := LatticeSetLike.closure <| Subsemigroup M
+
+@[to_additive]
+theorem not_mem_bot {x : M} : x ∉ (⊥ : Subsemigroup M) :=
+  Set.not_mem_empty x
+
+@[to_additive (attr := simp)]
+theorem coe_bot : ((⊥ : Subsemigroup M) : Set M) = ∅ :=
+  rfl
 
 @[to_additive]
 theorem subsingleton_of_subsingleton [Subsingleton (Subsemigroup M)] : Subsingleton M := by
@@ -82,9 +85,6 @@ instance [hn : Nonempty M] : Nontrivial (Subsemigroup M) :=
       obtain ⟨x⟩ := id hn
       refine absurd (?_ : x ∈ ⊥) not_mem_bot
       simp [h]⟩⟩
-
-@[to_additive]
-abbrev closure : Set M → Subsemigroup M := LatticeSetLike.closure <| Subsemigroup M
 
 variable {S}
 
