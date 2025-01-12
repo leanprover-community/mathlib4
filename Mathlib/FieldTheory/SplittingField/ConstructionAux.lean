@@ -124,24 +124,6 @@ instance SplittingFieldAux.algebra (n : ℕ) {K : Type u} [Field K] (f : K[X]) :
 
 namespace SplittingFieldAux
 
-theorem succ (n : ℕ) (f : K[X]) :
-    SplittingFieldAux (n + 1) f = SplittingFieldAux n f.removeFactor :=
-  rfl
-
-instance algebra''' {n : ℕ} {f : K[X]} :
-    Algebra (AdjoinRoot f.factor) (SplittingFieldAux n f.removeFactor) :=
-  SplittingFieldAux.algebra n _
-
-instance algebra' {n : ℕ} {f : K[X]} : Algebra (AdjoinRoot f.factor) (SplittingFieldAux n.succ f) :=
-  SplittingFieldAux.algebra'''
-
-instance algebra'' {n : ℕ} {f : K[X]} : Algebra K (SplittingFieldAux n f.removeFactor) :=
-  RingHom.toAlgebra (RingHom.comp (algebraMap _ _) (AdjoinRoot.of f.factor))
-
-instance scalar_tower' {n : ℕ} {f : K[X]} :
-    IsScalarTower K (AdjoinRoot f.factor) (SplittingFieldAux n f.removeFactor) :=
-  IsScalarTower.of_algebraMap_eq fun _ => rfl
-
 theorem algebraMap_succ (n : ℕ) (f : K[X]) :
     algebraMap K (SplittingFieldAux (n + 1) f) =
       (algebraMap (AdjoinRoot f.factor) (SplittingFieldAux n f.removeFactor)).comp
@@ -160,39 +142,6 @@ protected theorem splits (n : ℕ) :
     rw [← splits_id_iff_splits, algebraMap_succ, ← map_map, splits_id_iff_splits,
       ← X_sub_C_mul_removeFactor f fun h => by rw [h] at hf; cases hf]
     exact splits_mul _ (splits_X_sub_C _) (ih _ (natDegree_removeFactor' hf))
-
-theorem adjoin_rootSet (n : ℕ) :
-    ∀ {K : Type u} [Field K],
-      ∀ (f : K[X]) (_hfn : f.natDegree = n),
-        Algebra.adjoin K (f.rootSet (SplittingFieldAux n f)) = ⊤ :=
-  Nat.recOn (motive := fun n =>
-    ∀ {K : Type u} [Field K],
-      ∀ (f : K[X]) (_hfn : f.natDegree = n),
-        Algebra.adjoin K (f.rootSet (SplittingFieldAux n f)) = ⊤)
-    n (fun {_} _ _ _hf => Algebra.eq_top_iff.2 fun x => Subalgebra.range_le _ ⟨x, rfl⟩)
-    fun n ih {K} _ f hfn => by
-    have hndf : f.natDegree ≠ 0 := by intro h; rw [h] at hfn; cases hfn
-    have hfn0 : f ≠ 0 := by intro h; rw [h] at hndf; exact hndf rfl
-    have hmf0 : map (algebraMap K (SplittingFieldAux n.succ f)) f ≠ 0 := map_ne_zero hfn0
-    classical
-    rw [rootSet_def, aroots_def]
-    rw [algebraMap_succ, ← map_map, ← X_sub_C_mul_removeFactor _ hndf, Polynomial.map_mul] at hmf0 ⊢
-    -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-    erw [roots_mul hmf0, Polynomial.map_sub, map_X, map_C, roots_X_sub_C, Multiset.toFinset_add,
-      Finset.coe_union, Multiset.toFinset_singleton, Finset.coe_singleton,
-      Algebra.adjoin_union_eq_adjoin_adjoin, ← Set.image_singleton,
-      Algebra.adjoin_algebraMap K (SplittingFieldAux n f.removeFactor),
-      AdjoinRoot.adjoinRoot_eq_top, Algebra.map_top]
-    /- Porting note: was `rw [IsScalarTower.adjoin_range_toAlgHom K (AdjoinRoot f.factor)
-        (SplittingFieldAux n f.removeFactor)]` -/
-    have := IsScalarTower.adjoin_range_toAlgHom K (AdjoinRoot f.factor)
-        (SplittingFieldAux n f.removeFactor)
-        (f.removeFactor.rootSet (SplittingFieldAux n f.removeFactor))
-    refine this.trans ?_
-    rw [ih _ (natDegree_removeFactor' hfn), Subalgebra.restrictScalars_top]
-
-instance (f : K[X]) : IsSplittingField K (SplittingFieldAux f.natDegree f) f :=
-  ⟨SplittingFieldAux.splits _ _ rfl, SplittingFieldAux.adjoin_rootSet _ _ rfl⟩
 
 end SplittingFieldAux
 
