@@ -344,7 +344,7 @@ lemma descSigma_ext_iff {φ : F ⟶ G} {K : HomologicalComplex C c}
     x = y ↔ x.1 = y.1 ∧ (∀ (i j : ι) (_ : c.Rel j i), x.2.hom i j = y.2.hom i j) := by
   constructor
   · rintro rfl
-    tauto
+    grind
   · obtain ⟨x₁, x₂⟩ := x
     obtain ⟨y₁, y₂⟩ := y
     rintro ⟨rfl, h⟩

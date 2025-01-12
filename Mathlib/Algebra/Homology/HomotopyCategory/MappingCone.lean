@@ -157,7 +157,7 @@ lemma ext_to_iff (i j : ℤ) (hij : i + 1 = j) {A : C} (f g : A ⟶ (mappingCone
       f ≫ (snd φ).v i i (add_zero i) = g ≫ (snd φ).v i i (add_zero i) := by
   constructor
   · rintro rfl
-    tauto
+    grind
   · rintro ⟨h₁, h₂⟩
     exact ext_to φ i j hij h₁ h₂
 
@@ -172,7 +172,7 @@ lemma ext_from_iff (i j : ℤ) (hij : j + 1 = i) {A : C} (f g : (mappingCone φ)
       (inr φ).f j ≫ f = (inr φ).f j ≫ g := by
   constructor
   · rintro rfl
-    tauto
+    grind
   · rintro ⟨h₁, h₂⟩
     exact ext_from φ i j hij h₁ h₂
 
@@ -193,7 +193,7 @@ lemma ext_cochain_to_iff (i j : ℤ) (hij : i + 1 = j)
       γ₁.comp (snd φ) (add_zero i) = γ₂.comp (snd φ) (add_zero i) := by
   constructor
   · rintro rfl
-    tauto
+    grind
   · rintro ⟨h₁, h₂⟩
     ext p q hpq
     rw [ext_to_iff φ q (q + 1) rfl]
@@ -211,7 +211,7 @@ lemma ext_cochain_from_iff (i j : ℤ) (hij : i + 1 = j)
           (Cochain.ofHom (inr φ)).comp γ₂ (zero_add j) := by
   constructor
   · rintro rfl
-    tauto
+    grind
   · rintro ⟨h₁, h₂⟩
     ext p q hpq
     rw [ext_from_iff φ (p + 1) p rfl]

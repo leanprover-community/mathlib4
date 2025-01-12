@@ -538,9 +538,9 @@ theorem coequalizer_preimage_image_eq_of_preimage_eq (π : Y ⟶ Z) (e : f ≫ �
     rw [H]
   -- Porting note: tidy was able to fill the structure automatically
   have eqv : _root_.Equivalence fun x y => x ∈ U ↔ y ∈ U :=
-    { refl := by tauto
-      symm := by tauto
-      trans := by tauto }
+    { refl := by grind
+      symm := by grind
+      trans := by grind }
   ext
   constructor
   · rw [←

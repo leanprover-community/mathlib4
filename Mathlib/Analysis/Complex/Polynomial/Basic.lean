@@ -108,11 +108,11 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
   rw [← Finset.card_union_of_disjoint]
   · apply congr_arg Finset.card
     simp_rw [Finset.ext_iff, Finset.mem_union, ha, hb, hc]
-    tauto
+    tauto -- grind forward bug
   · rw [Finset.disjoint_left]
     intro z
     rw [hb, hc]
-    tauto
+    tauto -- grind forward bug
 
 /-- An irreducible polynomial of prime degree with two non-real roots has full Galois group. -/
 theorem galActionHom_bijective_of_prime_degree {p : ℚ[X]} (p_irr : Irreducible p)

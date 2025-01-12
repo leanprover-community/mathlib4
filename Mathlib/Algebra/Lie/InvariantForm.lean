@@ -172,7 +172,7 @@ lemma atomistic : ∀ I : LieIdeal K L, sSup {J : LieIdeal K L | IsAtom J ∧ J 
     rw [← atomistic (J' ⊓ I)]
     apply sSup_le_sSup
     simp only [le_inf_iff, Set.setOf_subset_setOf, and_imp]
-    tauto
+    tauto -- might work with grind offsets module
   suffices J ⊔ J' = ⊤ by rw [← sup_inf_assoc_of_le _ hJI, this, top_inf_eq]
   exact (orthogonal_isCompl Φ hΦ_nondeg hΦ_inv hΦ_refl hL J hJ).codisjoint.eq_top
 termination_by I => finrank K I

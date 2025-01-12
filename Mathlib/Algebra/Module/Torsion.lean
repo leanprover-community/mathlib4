@@ -94,7 +94,7 @@ theorem torsionOf_eq_bot_iff_of_noZeroSMulDivisors [Nontrivial R] [NoZeroSMulDiv
   · rw [contra, torsionOf_zero] at h
     exact bot_ne_top.symm h
   · rw [mem_torsionOf_iff, smul_eq_zero] at hr
-    tauto
+    grind
 
 /-- See also `iSupIndep.linearIndependent` which provides the same conclusion
 but requires the stronger hypothesis `NoZeroSMulDivisors R M`. -/

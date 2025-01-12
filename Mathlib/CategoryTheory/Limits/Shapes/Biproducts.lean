@@ -272,7 +272,7 @@ def whisker {f : J → C} (c : Bicone f) (g : K ≃ J) : Bicone (f ∘ g) where
   ι k := c.ι (g k)
   ι_π k k' := by
     simp only [c.ι_π]
-    split_ifs with h h' h' <;> simp [Equiv.apply_eq_iff_eq g] at h h' <;> tauto
+    split_ifs with h h' h' <;> simp [Equiv.apply_eq_iff_eq g] at h h' <;> grind
 
 /-- Taking the cone of a whiskered bicone results in a cone isomorphic to one gained
 by whiskering the cone and postcomposing with a suitable isomorphism. -/

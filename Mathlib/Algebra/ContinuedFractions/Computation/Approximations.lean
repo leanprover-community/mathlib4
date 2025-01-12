@@ -240,7 +240,7 @@ theorem fib_le_of_contsAux_b :
         have : (0 : K) ≤ gp.b := le_trans zero_le_one one_le_gp_b
         mono
         · norm_num
-        · tauto)
+        · grind)
 
 /-- Shows that the `n`th denominator is greater than or equal to the `n + 1`th fibonacci number,
 that is `Nat.fib (n + 1) ≤ Bₙ`. -/

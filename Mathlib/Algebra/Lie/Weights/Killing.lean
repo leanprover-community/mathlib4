@@ -242,7 +242,7 @@ lemma span_weight_isNonZero_eq_top :
     simpa only [Submodule.span_insert_zero] using Submodule.span_mono this
   rintro - ⟨α, rfl⟩
   simp only [mem_insert_iff, Weight.coe_toLinear_eq_zero_iff, mem_image, mem_setOf_eq]
-  tauto
+  tauto -- grind forward bug
 
 @[simp]
 lemma iInf_ker_weight_eq_bot :

@@ -86,7 +86,7 @@ lemma exists_girth_eq_length :
   refine ⟨by tauto, fun h ↦ ?_⟩
   obtain ⟨_, _, _⟩ := exists_egirth_eq_length.mpr h
   simp_all only [girth, ENat.toNat_coe]
-  tauto
+  grind
 
 @[simp] lemma girth_bot : girth (⊥ : SimpleGraph α) = 0 := by
   simp [girth]

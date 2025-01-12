@@ -212,8 +212,7 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
             rw [Finset.sum_eq_single j]; rotate_left
             · intro b _ hb
               rw [dif_pos rfl, dif_neg, zero_comp]
-              simp only
-              tauto
+              grind
             · intro hj
               simp at hj
             simp only [eqToHom_refl, dite_eq_ite, ite_true, Category.id_comp, ne_eq,
@@ -226,8 +225,7 @@ instance hasFiniteBiproducts : HasFiniteBiproducts (Mat_ C) where
               · subst h
                 simp
               · rw [dif_neg h, dif_neg (Ne.symm h)]
-            · rw [dif_neg h, dif_neg]
-              tauto) }
+            · grind) }
 
 end Mat_
 

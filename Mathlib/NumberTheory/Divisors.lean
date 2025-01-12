@@ -448,8 +448,8 @@ theorem properDivisors_prime_pow {p : ℕ} (pp : p.Prime) (k : ℕ) :
   rw [mem_properDivisors] at this
   rw [this]
   refine ⟨?_, ?_⟩
-  · intro h; rcases h with ⟨j, hj, hap⟩; use j; tauto
-  · tauto
+  · intro h; rcases h with ⟨j, hj, hap⟩; use j; tauto -- will work with grind offsets
+  · grind
 
 @[to_additive (attr := simp)]
 theorem prod_properDivisors_prime_pow {α : Type*} [CommMonoid α] {k p : ℕ} {f : ℕ → α}

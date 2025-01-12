@@ -397,7 +397,7 @@ lemma natLog_le_logb (a b : ℕ) : Nat.log b a ≤ Real.logb b a := by
 @[simp]
 theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨ x = 1 ∨ x = -1 := by
   simp_rw [logb, div_eq_zero_iff, log_eq_zero]
-  tauto
+  tauto -- grind logic puzzle
 
 theorem tendsto_logb_nhdsWithin_zero (hb : 1 < b) :
     Tendsto (logb b) (𝓝[≠] 0) atBot :=

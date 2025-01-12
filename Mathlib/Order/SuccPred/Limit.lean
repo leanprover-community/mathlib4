@@ -230,7 +230,7 @@ theorem isMin_or_mem_range_succ_or_isSuccLimit (a) :
     IsMin a ∨ a ∈ range (succ : α → α) ∨ IsSuccLimit a := by
   rw [IsSuccLimit]
   have := mem_range_succ_or_isSuccPrelimit a
-  tauto
+  grind
 
 theorem isSuccPrelimit_of_succ_lt (H : ∀ a < b, succ a < b) : IsSuccPrelimit b := fun a hab =>
   (H a hab.lt).ne (CovBy.succ_eq hab)

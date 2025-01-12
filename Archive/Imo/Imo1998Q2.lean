@@ -107,7 +107,7 @@ theorem A_fibre_over_contestant (c : C) :
   ext p
   simp only [A, Finset.mem_univ, Finset.mem_filter, Finset.mem_image, exists_prop]
   constructor
-  · rintro ⟨_, h₂⟩; refine ⟨(c, p), ?_⟩; tauto
+  · rintro ⟨_, h₂⟩; refine ⟨(c, p), ?_⟩; grind
   · intro h; aesop
 
 theorem A_fibre_over_contestant_card (c : C) :

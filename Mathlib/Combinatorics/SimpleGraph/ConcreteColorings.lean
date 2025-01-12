@@ -64,13 +64,13 @@ theorem Coloring.even_length_iff_congr {α} {G : SimpleGraph α}
     have : ¬ c u = true ↔ c v = true := by
       rw [← not_iff, ← Bool.eq_iff_iff]
       exact c.valid h
-    tauto
+    tauto -- reported grind logic puzzle
 
 theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
     Odd p.length ↔ (¬c u ↔ c v) := by
   rw [← Nat.not_even_iff_odd, c.even_length_iff_congr p]
-  tauto
+  tauto -- grind logic puzzle?
 
 theorem Walk.three_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u : α} (p : G.Walk u u)
     (hOdd : Odd p.length) : 3 ≤ G.chromaticNumber := Classical.by_contradiction <| by

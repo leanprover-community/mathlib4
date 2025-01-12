@@ -149,7 +149,7 @@ variable (S)
 lemma ShortExact.ab_exact_iff_function_exact :
     S.Exact ↔ Function.Exact S.f S.g := by
   rw [ab_exact_iff_range_eq_ker, AddMonoidHom.exact_iff]
-  tauto
+  grind
 
 end ShortComplex
 

@@ -63,7 +63,7 @@ lemma inter_indicator_one : (s ∩ t).indicator (1 : ι → M₀) = s.indicator 
 lemma indicator_prod_one {t : Set κ} {j : κ} :
     (s ×ˢ t).indicator (1 : ι × κ → M₀) (i, j) = s.indicator 1 i * t.indicator 1 j := by
   simp_rw [indicator, mem_prod_eq]
-  split_ifs with h₀ <;> simp only [Pi.one_apply, mul_one, mul_zero] <;> tauto
+  split_ifs with h₀ <;> simp only [Pi.one_apply, mul_one, mul_zero] <;> grind
 
 variable (M₀) [Nontrivial M₀]
 

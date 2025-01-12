@@ -574,7 +574,7 @@ theorem pushforward_comp {f : Y ⟶ X} {g : Z ⟶ Y} (R : Sieve Z) :
     R.pushforward (g ≫ f) = (R.pushforward g).pushforward f :=
   Sieve.ext fun W h =>
     ⟨fun ⟨f₁, hq, hf₁⟩ => ⟨f₁ ≫ g, by simpa, f₁, rfl, hf₁⟩, fun ⟨y, hy, z, hR, hz⟩ =>
-      ⟨z, by rw [← Category.assoc, hR]; tauto⟩⟩
+      ⟨z, by rw [← Category.assoc, hR]; grind⟩⟩
 
 theorem galoisConnection (f : Y ⟶ X) : GaloisConnection (Sieve.pushforward f) (Sieve.pullback f) :=
   fun _ _ => ⟨fun hR _ g hg => hR _ ⟨g, rfl, hg⟩, fun hS _ _ ⟨h, hg, hh⟩ => hg ▸ hS h hh⟩

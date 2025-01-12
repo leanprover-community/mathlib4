@@ -148,9 +148,11 @@ theorem Hom.ext {a b : SimplexCategory} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g :=
   Hom.ext' _ _
 
+attribute [grind] Monotone
+
 /-- The constant morphism from [0]. -/
 def const (x y : SimplexCategory) (i : Fin (y.len + 1)) : x ⟶ y :=
-  Hom.mk <| ⟨fun _ => i, by tauto⟩
+  Hom.mk <| ⟨fun _ => i, by tauto⟩ -- grind will work with offsets
 
 @[simp]
 lemma const_eq_id : const [0] [0] 0 = 𝟙 _ := by aesop

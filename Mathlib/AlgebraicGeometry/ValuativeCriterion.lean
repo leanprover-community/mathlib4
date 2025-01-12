@@ -328,7 +328,7 @@ lemma IsProper.eq_valuativeCriterion :
   simp_rw [inf_assoc]
   ext X Y f
   show _ ∧ _ ∧ _ ∧ _ ∧ _ ↔ _ ∧ _ ∧ _ ∧ _ ∧ _
-  tauto
+  tauto -- reported grind logic puzzle problem
 
 /-- The **valuative criterion** for proper morphisms. -/
 @[stacks 0BX5]

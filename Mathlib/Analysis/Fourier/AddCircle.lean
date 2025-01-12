@@ -401,7 +401,7 @@ variable (f : C(AddCircle T, ℂ))
 
 theorem fourierCoeff_toLp (n : ℤ) :
     fourierCoeff (toLp (E := ℂ) 2 haarAddCircle ℂ f) n = fourierCoeff f n :=
-  integral_congr_ae (Filter.EventuallyEq.mul (Filter.Eventually.of_forall (by tauto))
+  integral_congr_ae (Filter.EventuallyEq.mul (Filter.Eventually.of_forall (by grind))
     (ContinuousMap.coeFn_toAEEqFun haarAddCircle f))
 
 variable {f}

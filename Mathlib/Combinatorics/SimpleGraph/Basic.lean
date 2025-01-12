@@ -595,7 +595,7 @@ theorem fromEdgeSet_inter (s t : Set (Sym2 V)) :
     fromEdgeSet (s ∩ t) = fromEdgeSet s ⊓ fromEdgeSet t := by
   ext v w
   simp only [fromEdgeSet_adj, Set.mem_inter_iff, Ne, inf_adj]
-  tauto
+  tauto -- grind logic puzzle
 
 @[simp]
 theorem fromEdgeSet_union (s t : Set (Sym2 V)) :
@@ -712,7 +712,7 @@ theorem neighborSet_union_compl_neighborSet_eq (G : SimpleGraph V) (v : V) :
   ext w
   have h := @ne_of_adj _ G
   simp_rw [Set.mem_union, mem_neighborSet, compl_adj, Set.mem_compl_iff, Set.mem_singleton_iff]
-  tauto
+  tauto -- should work by grind
 
 theorem card_neighborSet_union_compl_neighborSet [Fintype V] (G : SimpleGraph V) (v : V)
     [Fintype (G.neighborSet v ∪ Gᶜ.neighborSet v : Set V)] :

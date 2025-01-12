@@ -131,7 +131,7 @@ theorem toNFA_evalFrom_match (M : DFA α σ) (start : σ) (s : List α) :
   · tauto
   · rw [List.foldl, List.foldl,
       show M.toNFA.stepSet {start} a = {M.step start a} by simp [NFA.stepSet] ]
-    tauto
+    grind
 
 @[simp]
 theorem toNFA_correct (M : DFA α σ) : M.toNFA.accepts = M.accepts := by

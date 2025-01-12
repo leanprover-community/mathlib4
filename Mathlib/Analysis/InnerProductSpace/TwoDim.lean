@@ -507,7 +507,7 @@ theorem kahler_eq_zero_iff (x y : E) : o.kahler x y = 0 ↔ x = 0 ∨ y = 0 := b
 
 theorem kahler_ne_zero {x y : E} (hx : x ≠ 0) (hy : y ≠ 0) : o.kahler x y ≠ 0 := by
   apply mt o.eq_zero_or_eq_zero_of_kahler_eq_zero
-  tauto
+  grind
 
 theorem kahler_ne_zero_iff (x y : E) : o.kahler x y ≠ 0 ↔ x ≠ 0 ∧ y ≠ 0 := by
   refine ⟨?_, fun h => o.kahler_ne_zero h.1 h.2⟩

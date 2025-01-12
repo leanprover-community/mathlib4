@@ -49,7 +49,7 @@ inductive DyckStep
   deriving Inhabited, DecidableEq
 
 /-- Named in analogy to `Bool.dichotomy`. -/
-lemma DyckStep.dichotomy (s : DyckStep) : s = U ∨ s = D := by cases s <;> tauto
+lemma DyckStep.dichotomy (s : DyckStep) : s = U ∨ s = D := by cases s <;> grind
 
 open DyckStep
 
@@ -106,7 +106,7 @@ variable (h : p ≠ 0)
 
 /-- The first element of a nonempty Dyck word is `U`. -/
 lemma head_eq_U (p : DyckWord) (h) : p.toList.head h = U := by
-  rcases p with - | s; · tauto
+  rcases p with - | s; · grind
   rw [head_cons]
   by_contra f
   rename_i _ nonneg
@@ -119,12 +119,15 @@ lemma getLast_eq_D (p : DyckWord) (h) : p.toList.getLast h = D := by
   simp_rw [dropLast_eq_take, count_append, count_singleton', ite_true, reduceCtorEq, ite_false] at s
   have := p.count_D_le_count_U (p.toList.length - 1); omega
 
+attribute [grind =] List.head_cons
+attribute [grind =] List.dropLast_cons₂
+
 include h in
 lemma cons_tail_dropLast_concat : U :: p.toList.dropLast.tail ++ [D] = p := by
   have h' := toList_ne_nil.mpr h
   have : p.toList.dropLast.take 1 = [p.toList.head h'] := by
     rcases p with - | ⟨s, ⟨- | ⟨t, r⟩⟩⟩
-    · tauto
+    · grind
     · rename_i bal _
       cases s <;> simp at bal
     · tauto
@@ -198,7 +201,7 @@ def denest (hn : p.IsNested) : DyckWord where
     have l1 : p.toList.take 1 = [p.toList.head h] := by rcases p with - | - <;> tauto
     have l3 : p.toList.length - 1 = p.toList.length - 1 - 1 + 1 := by
       rcases p with - | ⟨s, ⟨- | ⟨t, r⟩⟩⟩
-      · tauto
+      · grind
       · rename_i bal _
         cases s <;> simp at bal
       · tauto
@@ -234,6 +237,8 @@ def semilength : ℕ := p.toList.count U
 
 lemma semilength_eq_count_D : p.semilength = p.toList.count D := by
   rw [← count_U_eq_count_D]; rfl
+
+-- attribute [grind =] beq_self_eq_true decide_true
 
 @[simp]
 lemma two_mul_semilength_eq_length : 2 * p.semilength = p.toList.length := by

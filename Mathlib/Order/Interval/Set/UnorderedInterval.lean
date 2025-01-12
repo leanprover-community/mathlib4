@@ -210,7 +210,7 @@ lemma uIcc_subset_uIcc_iff_le :
 /-- A sort of triangle inequality. -/
 lemma uIcc_subset_uIcc_union_uIcc : [[a, c]] ⊆ [[a, b]] ∪ [[b, c]] := fun x => by
   simp only [mem_uIcc, mem_union]
-  rcases le_total x b with h2 | h2 <;> tauto
+  rcases le_total x b with h2 | h2 <;> tauto -- reported grind bug about synthesis
 
 lemma monotone_or_antitone_iff_uIcc :
     Monotone f ∨ Antitone f ↔ ∀ a b c, c ∈ [[a, b]] → f c ∈ [[f a, f b]] := by
@@ -252,7 +252,7 @@ lemma mem_uIoc : a ∈ Ι b c ↔ b < a ∧ a ≤ c ∨ c < a ∧ a ≤ b := by
 
 lemma not_mem_uIoc : a ∉ Ι b c ↔ a ≤ b ∧ a ≤ c ∨ c < a ∧ b < a := by
   simp only [uIoc_eq_union, mem_union, mem_Ioc, not_lt, ← not_le]
-  tauto
+  tauto -- reported grind bug about synthesis
 
 @[simp] lemma left_mem_uIoc : a ∈ Ι a b ↔ b < a := by simp [mem_uIoc]
 @[simp] lemma right_mem_uIoc : b ∈ Ι a b ↔ a < b := by simp [mem_uIoc]

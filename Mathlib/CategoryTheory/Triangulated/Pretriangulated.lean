@@ -336,12 +336,12 @@ lemma isZero₁_iff : IsZero T.obj₁ ↔ (T.mor₁ = 0 ∧ T.mor₃ = 0) := by
   refine (isZero₂_iff _ (inv_rot_of_distTriang _ hT)).trans ?_
   dsimp
   simp only [neg_eq_zero, IsIso.comp_right_eq_zero, Functor.map_eq_zero_iff]
-  tauto
+  tauto -- grind logic puzzle
 
 lemma isZero₃_iff : IsZero T.obj₃ ↔ (T.mor₂ = 0 ∧ T.mor₃ = 0) := by
   refine (isZero₂_iff _ (rot_of_distTriang _ hT)).trans ?_
   dsimp
-  tauto
+  tauto -- grind logic puzzle
 
 lemma isZero₁_of_isZero₂₃ (h₂ : IsZero T.obj₂) (h₃ : IsZero T.obj₃) : IsZero T.obj₁ := by
   rw [T.isZero₁_iff hT]

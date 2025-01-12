@@ -59,7 +59,7 @@ noncomputable def mkOfSuccNatTransApp (k : J) (hk : k ≤ Order.succ i) :
     φ.natTrans.app ⟨k, Order.le_of_lt_succ (by
       obtain hk | rfl := hk.lt_or_eq
       · exact hk
-      · tauto)⟩
+      · grind)⟩
 
 lemma mkOfSuccNatTransApp_eq_of_le (k : J) (hk : k ≤ i) :
     mkOfSuccNatTransApp hi φ k (hk.trans (Order.le_succ i)) =

@@ -130,9 +130,9 @@ noncomputable instance : Top (ENormedSpace 𝕜 V) :=
         simp only
         split_ifs with hcx hx hx <;> simp only [smul_eq_zero, not_or] at hcx
         · simp only [mul_zero, le_refl]
-        · have : c = 0 := by tauto
+        · have : c = 0 := by grind
           simp [this]
-        · tauto
+        · grind
         · simpa [mul_top'] using hcx.1 }⟩
 
 noncomputable instance : Inhabited (ENormedSpace 𝕜 V) :=

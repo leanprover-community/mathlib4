@@ -538,7 +538,7 @@ theorem isPrimitiveClassified_of_coprime_of_pos (hc : Int.gcd x y = 1) (hzpos : 
   · exact h.isPrimitiveClassified_of_coprime_of_odd_of_pos hc h1.right hzpos
   rw [Int.gcd_comm] at hc
   obtain ⟨m, n, H⟩ := h.symm.isPrimitiveClassified_of_coprime_of_odd_of_pos hc h2.left hzpos
-  use m, n; tauto
+  use m, n; grind
 
 theorem isPrimitiveClassified_of_coprime (hc : Int.gcd x y = 1) : h.IsPrimitiveClassified := by
   by_cases hz : 0 < z

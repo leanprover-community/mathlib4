@@ -162,7 +162,7 @@ lemma ordinaryHypergeometricSeries_eq_zero_iff (n : ℕ) :
     · simp [Nat.factorial_ne_zero] at hn
     all_goals
       obtain ⟨kn, hkn, hn⟩ := (ascPochhammer_eval_eq_zero_iff _ _).1 h
-      exact ⟨kn, hkn, by tauto⟩
+      exact ⟨kn, hkn, by grind⟩
   · obtain ⟨_, h, hn⟩ := zero
     exact ordinaryHypergeometricSeries_eq_zero_of_neg_nat a b c hn h
 

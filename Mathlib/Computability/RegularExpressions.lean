@@ -212,7 +212,7 @@ theorem char_rmatch_iff (a : α) (x : List α) : rmatch (char a) x ↔ x = [a] :
   · rw [rmatch, deriv]
     split_ifs
     · tauto
-    · simp [List.singleton_inj]; tauto
+    · simp [List.singleton_inj]; grind
   · rw [rmatch, rmatch, deriv]
     split_ifs with h
     · simp only [deriv_one, zero_rmatch, cons.injEq, and_false, reduceCtorEq]
@@ -272,6 +272,8 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
           convert hP
           exact h.1
 
+attribute [grind →] List.not_mem_nil
+
 theorem star_rmatch_iff (P : RegularExpression α) :
     ∀ x : List α, (star P).rmatch x ↔ ∃ S : List (List α), x
           = S.flatten ∧ ∀ t ∈ S, t ≠ [] ∧ P.rmatch t :=
@@ -281,7 +283,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
     constructor
     · cases' x with a x
       · intro _h
-        use []; dsimp; tauto
+        use []; dsimp; grind
       · rw [rmatch, deriv, mul_rmatch_iff]
         rintro ⟨t, u, hs, ht, hu⟩
         have hwf : u.length < (List.cons a x).length := by

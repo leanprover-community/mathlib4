@@ -402,6 +402,9 @@ theorem norm_zero : ‖(0 : lp E p)‖ = 0 := by
     have hp' : 1 / p.toReal ≠ 0 := one_div_ne_zero hp.ne'
     simpa [Real.zero_rpow hp.ne'] using Real.zero_rpow hp'
 
+-- #print Pi.zero_apply
+-- attribute [grind =] Pi.zero_apply
+
 theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
   refine ⟨fun h => ?_, by rintro rfl; exact norm_zero⟩
   rcases p.trichotomy with (rfl | rfl | hp)

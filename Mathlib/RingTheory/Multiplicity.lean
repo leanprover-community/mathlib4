@@ -227,7 +227,7 @@ theorem FiniteMultiplicity.not_iff_forall : ¬FiniteMultiplicity a b ↔ ∀ n :
         rw [_root_.pow_zero]
         exact one_dvd _)
       (by simpa [FiniteMultiplicity] using h),
-    by simp [FiniteMultiplicity, multiplicity]; tauto⟩
+    by simp [FiniteMultiplicity, multiplicity]; grind⟩
 
 @[deprecated (since := "2024-11-30")]
 alias multiplicity.Finite.not_iff_forall := FiniteMultiplicity.not_iff_forall

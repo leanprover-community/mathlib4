@@ -305,7 +305,7 @@ private lemma exists_variableChange_of_char_ne_two_or_three
   have ha₆' : E'.a₆ ≠ 0 := fun h ↦ by
     rw [h, zero_pow two_ne_zero, mul_zero, zero_eq_mul,
       pow_eq_zero_iff two_ne_zero, pow_eq_zero_iff three_ne_zero] at heq
-    tauto
+    grind
   obtain ⟨u, hu⟩ := IsSepClosed.exists_pow_nat_eq (E.a₆ / E'.a₆ / (E.a₄ / E'.a₄)) 2
   have hu4 : u ^ 4 = E.a₄ / E'.a₄ := by
     rw [pow_mul u 2 2, hu]

@@ -187,7 +187,7 @@ theorem nontrivial_iff_ne_bot (H : Subgroup G) : Nontrivial H ↔ H ≠ ⊥ := b
 @[to_additive "A subgroup is either the trivial subgroup or nontrivial."]
 theorem bot_or_nontrivial (H : Subgroup G) : H = ⊥ ∨ Nontrivial H := by
   have := nontrivial_iff_ne_bot H
-  tauto
+  grind
 
 /-- A subgroup is either the trivial subgroup or contains a non-identity element. -/
 @[to_additive "A subgroup is either the trivial subgroup or contains a nonzero element."]

@@ -440,8 +440,6 @@ protected lemma div_ne_zero_iff : a / b ≠ 0 ↔ b ≠ 0 ∧ b ≤ a := by simp
 @[simp] protected lemma div_pos_iff : 0 < a / b ↔ 0 < b ∧ b ≤ a := by
   simp [Nat.pos_iff_ne_zero]
 
-protected lemma div_pos (hba : b ≤ a) (hb : 0 < b) : 0 < a / b := Nat.div_pos_iff.2 ⟨hb, hba⟩
-
 lemma lt_mul_of_div_lt (h : a / c < b) (hc : 0 < c) : a < b * c :=
   Nat.lt_of_not_ge <| Nat.not_le_of_gt h ∘ (Nat.le_div_iff_mul_le hc).2
 

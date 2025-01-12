@@ -1017,10 +1017,10 @@ alias CompleteLatticeHom.apply_liminf_iterate := CompleteLatticeHom.apply_liminf
 variable {f g : Filter β} {p q : β → Prop} {u v : β → α}
 
 theorem blimsup_mono (h : ∀ x, p x → q x) : blimsup u f p ≤ blimsup u f q :=
-  sInf_le_sInf fun a ha => ha.mono <| by tauto
+  sInf_le_sInf fun a ha => ha.mono <| by tauto -- reported grind bug about synthesis
 
 theorem bliminf_antitone (h : ∀ x, p x → q x) : bliminf u f q ≤ bliminf u f p :=
-  sSup_le_sSup fun a ha => ha.mono <| by tauto
+  sSup_le_sSup fun a ha => ha.mono <| by tauto -- reported grind bug about synthesis
 
 theorem mono_blimsup' (h : ∀ᶠ x in f, p x → u x ≤ v x) : blimsup u f p ≤ blimsup v f p :=
   sInf_le_sInf fun _ ha => (ha.and h).mono fun _ hx hx' => (hx.2 hx').trans (hx.1 hx')
@@ -1042,7 +1042,7 @@ theorem blimsup_monotone_filter (h : f ≤ g) : blimsup u f p ≤ blimsup u g p 
 
 -- @[simp] -- Porting note: simp_nf linter, lhs simplifies, added _aux versions below
 theorem blimsup_and_le_inf : (blimsup u f fun x => p x ∧ q x) ≤ blimsup u f p ⊓ blimsup u f q :=
-  le_inf (blimsup_mono <| by tauto) (blimsup_mono <| by tauto)
+  le_inf (blimsup_mono <| by grind) (blimsup_mono <| by grind)
 
 @[simp]
 theorem bliminf_sup_le_inf_aux_left :
@@ -1069,7 +1069,7 @@ theorem bliminf_sup_le_and_aux_right : bliminf u f q ≤ bliminf u f fun x => p 
 /-- See also `Filter.blimsup_or_eq_sup`. -/
 -- @[simp] -- Porting note: simp_nf linter, lhs simplifies, added _aux simp versions below
 theorem blimsup_sup_le_or : blimsup u f p ⊔ blimsup u f q ≤ blimsup u f fun x => p x ∨ q x :=
-  sup_le (blimsup_mono <| by tauto) (blimsup_mono <| by tauto)
+  sup_le (blimsup_mono <| by grind) (blimsup_mono <| by grind)
 
 @[simp]
 theorem bliminf_sup_le_or_aux_left : blimsup u f p ≤ blimsup u f fun x => p x ∨ q x :=

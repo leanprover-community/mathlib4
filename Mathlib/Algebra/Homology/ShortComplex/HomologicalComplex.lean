@@ -579,16 +579,16 @@ lemma epi_homologyMap_of_epi_of_not_rel (φ : K ⟶ L) (i : ι)
     [K.HasHomology i] [L.HasHomology i] [Epi (φ.f i)] (hi : ∀ j, ¬ c.Rel i j) :
     Epi (homologyMap φ i) :=
   ((MorphismProperty.epimorphisms C).arrow_mk_iso_iff
-    (Arrow.isoMk (K.isoHomologyι i _ rfl (shape _ _ _ (by tauto)))
-      (L.isoHomologyι i _ rfl (shape _ _ _ (by tauto))))).2
+    (Arrow.isoMk (K.isoHomologyι i _ rfl (shape _ _ _ (by grind)))
+      (L.isoHomologyι i _ rfl (shape _ _ _ (by grind))))).2
       (MorphismProperty.epimorphisms.infer_property (opcyclesMap φ i))
 
 lemma mono_homologyMap_of_mono_of_not_rel (φ : K ⟶ L) (j : ι)
     [K.HasHomology j] [L.HasHomology j] [Mono (φ.f j)] (hj : ∀ i, ¬ c.Rel i j) :
     Mono (homologyMap φ j) :=
   ((MorphismProperty.monomorphisms C).arrow_mk_iso_iff
-    (Arrow.isoMk (K.isoHomologyπ _ j rfl (shape _ _ _ (by tauto)))
-      (L.isoHomologyπ _ j rfl (shape _ _ _ (by tauto))))).1
+    (Arrow.isoMk (K.isoHomologyπ _ j rfl (shape _ _ _ (by grind)))
+      (L.isoHomologyπ _ j rfl (shape _ _ _ (by grind))))).1
       (MorphismProperty.monomorphisms.infer_property (cyclesMap φ j))
 
 end

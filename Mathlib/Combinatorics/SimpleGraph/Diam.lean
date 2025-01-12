@@ -93,7 +93,7 @@ lemma ediam_eq_top_of_not_preconnected (h : ¬G.Preconnected) : G.ediam = ⊤ :=
     exact h <| IsEmpty.forall_iff.mpr trivial
   · apply ediam_eq_top_of_not_connected
     rw [connected_iff]
-    tauto
+    grind
 
 lemma exists_edist_eq_ediam_of_ne_top [Nonempty α] (h : G.ediam ≠ ⊤) :
     ∃ u v, G.edist u v = G.ediam :=
