@@ -75,7 +75,6 @@ lemma FormallyUnramified.map_maximalIdeal [FormallyUnramified R S] :
 
 @[stacks 02FM]
 lemma FormallyUnramified.of_map_maximalIdeal
-    [Module.Finite (ResidueField R) (ResidueField S)]
     [Algebra.IsSeparable (ResidueField R) (ResidueField S)]
     (H : (maximalIdeal R).map (algebraMap R S) = maximalIdeal S) :
     Algebra.FormallyUnramified R S := by
