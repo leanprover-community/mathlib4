@@ -354,7 +354,7 @@ noncomputable def MulDistribMulAction.toMonoidHomZModOfIsCyclic
     rw [← Int.cast_one, ZMod.intCast_eq_intCast_iff, ← hn, ← hg, ← zpow_eq_zpow_iff_modEq, zpow_one,
       ← (MulDistribMulAction.toMonoidHom G 1).map_cyclic.choose_spec,
       MulDistribMulAction.toMonoidHom_apply, one_smul]
-  map_mul' := fun m n ↦ by
+  map_mul' m n := by
     obtain ⟨g, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := G)
     rw [← Int.cast_mul, ZMod.intCast_eq_intCast_iff, ← hn, ← hg, ← zpow_eq_zpow_iff_modEq,
       zpow_mul', ← (MulDistribMulAction.toMonoidHom G m).map_cyclic.choose_spec,
