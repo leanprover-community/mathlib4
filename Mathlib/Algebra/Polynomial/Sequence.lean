@@ -36,26 +36,31 @@ namespace Polynomial
 
 /-- A sequence of polynomials such that the polynomial at index `i` has degree `i`. -/
 structure Sequence [Semiring R] where
-  elems : ℕ → R[X]
-  degree_eq (i : ℕ) : (elems i).degree = i
-
-instance Sequence.elem {R} [Semiring R] : CoeFun (Sequence R) (fun _ ↦  ℕ → R[X]) where
-  coe := Sequence.elems
-
-/-- No polynomial in the sequence is zero. -/
-lemma Sequence.ne_zero {R} (i : ℕ) [Semiring R] (S : Sequence R) : S i ≠ 0 :=
-  degree_ne_bot.mp (by simp [S.degree_eq i])
+  elems' : ℕ → R[X]
+  degree_eq' (i : ℕ) : (elems' i).degree = i
 
 namespace Sequence
 
 variable {R}
 
+/-- Make `S i` mean `S.elems i`. -/
+instance coeFun [Semiring R] : CoeFun (Sequence R) (fun _ ↦  ℕ → R[X]) := ⟨Sequence.elems'⟩
+
 section Semiring
 
 variable [Semiring R] (S : Sequence R) 
 
+@[simp]
+lemma degree_eq (i : ℕ) : (S i).degree = i := S.degree_eq' i
+
+@[simp]
+lemma natDegree_eq (i : ℕ) : (S i).natDegree = i := natDegree_eq_of_degree_eq_some <| S.degree_eq i
+
+/-- No polynomial in the sequence is zero. -/
+lemma ne_zero (i : ℕ) : S i ≠ 0 := degree_ne_bot.mp (by simp [S.degree_eq i])
+
 /-- No two elements in the sequence have the same degree. -/
-lemma degree_ne {i j : ℕ} (h : i ≠ j) : (S i).degree ≠ (S j).degree := by
+lemma degree_ne_degree {i j : ℕ} (h : i ≠ j) : (S i).degree ≠ (S j).degree := by
   simp [S.degree_eq i, S.degree_eq j, h]
 
 end Semiring
@@ -88,7 +93,7 @@ lemma linearIndependent [NoZeroDivisors R] :
         · exact sub_eq_zero.mp hwv'
       have hgx := degree_smul_of_smul_regular (S x) hgxreg
       have hgy := degree_smul_of_smul_regular (S y) hgyreg
-      simpa [hgx, hgy] using S.degree_ne xney
+      simpa [hgx, hgy] using S.degree_ne_degree xney
 
     obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S i).degree) = n := exists_eq'
     have hsum := degree_sum_eq_of_disjoint _ s hpairwise |>.trans hn
@@ -97,7 +102,10 @@ lemma linearIndependent [NoZeroDivisors R] :
 
 /-- A polynomial sequence over `R` spans `R[X]`. -/
 lemma span (hCoeff : ∀ i, (S i).leadingCoeff = 1) : ⊤ ≤ span R (Set.range S) := by
+  intro p
+  induction' hp : p.natDegree using Nat.strong_induction_on with n ih
   sorry
+
 
 /-- Every polynomial sequence is a basis of `R[X]`. -/
 noncomputable def basis [NoZeroDivisors R] (hCoeff : ∀ i, (S i).leadingCoeff = 1) :
