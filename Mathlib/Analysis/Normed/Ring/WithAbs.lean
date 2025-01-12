@@ -119,16 +119,13 @@ theorem equiv_symm_one : (equiv v).symm 1 = 1 := rfl
 theorem equiv_add : equiv v (x + y) = equiv v x + equiv v y := rfl
 
 @[simp]
-theorem equiv_symm_add :
-    (equiv v).symm (r + s) = (equiv v).symm r + (equiv v).symm s :=
-  rfl
+theorem equiv_symm_add : (equiv v).symm (r + s) = (equiv v).symm r + (equiv v).symm s := rfl
 
 @[simp]
 theorem equiv_sub [Ring R] : equiv v (x - y) = equiv v x - equiv v y := rfl
 
 @[simp]
-theorem equiv_symm_sub [Ring R] :
-    (equiv v).symm (r - s) = (equiv v).symm r - (equiv v).symm s :=
+theorem equiv_symm_sub [Ring R] : (equiv v).symm (r - s) = (equiv v).symm r - (equiv v).symm s :=
   rfl
 
 @[simp]
@@ -141,17 +138,13 @@ theorem equiv_symm_neg [Ring R] : (equiv v).symm (-r) = - (equiv v).symm r := rf
 theorem equiv_mul : equiv v (x * y) = equiv v x * equiv v y := rfl
 
 @[simp]
-theorem equiv_symm_mul :
-    (equiv v).symm (x * y) = (equiv v).symm x * (equiv v).symm y :=
-  rfl
+theorem equiv_symm_mul : (equiv v).symm (x * y) = (equiv v).symm x * (equiv v).symm y := rfl
 
 @[simp]
-theorem equiv_pow (n : ℕ) :
-    (equiv v) (x ^ n) = (equiv v) x ^ n := rfl
+theorem equiv_pow (n : ℕ) : (equiv v) (x ^ n) = (equiv v) x ^ n := rfl
 
 @[simp]
-theorem equiv_symm_pow (n : ℕ) :
-    (equiv v).symm (r ^ n) = (equiv v).symm r ^ n := rfl
+theorem equiv_symm_pow (n : ℕ) : (equiv v).symm (r ^ n) = (equiv v).symm r ^ n := rfl
 
 section zpow
 
@@ -175,8 +168,7 @@ variable {R S : Type*} [Ring R] [Ring S] [Module R S] (v : AbsoluteValue S ℝ)
 lemma equiv_smul (c : R) (x : WithAbs v) : equiv v (c • x) = c • equiv v x := rfl
 
 @[simp]
-lemma equiv_symm_smul (c : R) (s : S) :
-    (equiv v).symm (c • s) = c • (equiv v).symm s := rfl
+lemma equiv_symm_smul (c : R) (s : S) : (equiv v).symm (c • s) = c • (equiv v).symm s := rfl
 
 end module
 
@@ -186,14 +178,11 @@ variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
 @[simp]
 lemma equiv_apply_algebraMap {v : AbsoluteValue R ℝ} (v' : AbsoluteValue S ℝ) (x : WithAbs v) :
-    equiv v' (algebraMap (WithAbs v) (WithAbs v') x) =
-      algebraMap R S (equiv v x) :=
-  rfl
+    equiv v' (algebraMap (WithAbs v) (WithAbs v') x) = algebraMap R S (equiv v x) := rfl
 
 @[simp]
 lemma equiv_symm_apply_algebraMap {v : AbsoluteValue R ℝ} (v' : AbsoluteValue S ℝ) (x : WithAbs v) :
-    (equiv v').symm (algebraMap R S (equiv v x)) =
-      algebraMap (WithAbs v) (WithAbs v') x := by
+    (equiv v').symm (algebraMap R S (equiv v x)) = algebraMap (WithAbs v) (WithAbs v') x := by
   rw [← equiv_apply_algebraMap v', Equiv.symm_apply_apply]
 
 end algebra
