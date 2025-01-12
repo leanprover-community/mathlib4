@@ -123,6 +123,15 @@ def ContinuousMap.liftCompactlySupported [CompactSpace α] : C(α, β) ≃ C_c(�
   left_inv _ := rfl
   right_inv _ := rfl
 
+/-- Composition of a continuous function `f` with compact support with another continuous function
+`g` from the left yields another continuous function `g ∘ f` with compact support. -/
+def comp_left {γ : Type*} [TopologicalSpace γ] [Zero γ] {g : C(β, γ)} (f : C_c(α, β))
+    (hg : g 0 = 0) : C_c(α, γ) where
+  toContinuousMap := g.comp f
+  hasCompactSupport' := by
+    simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.coe_comp, ContinuousMap.coe_coe]
+    exact HasCompactSupport.comp_left f.hasCompactSupport' hg
+
 end Basics
 
 /-! ### Algebraic structure
@@ -543,11 +552,7 @@ lemma nnrealPart_apply (f : C_c(α, ℝ)) (x : α) :
 /-- The compactly supported continuous `ℝ≥0`-valued function as a compactly supported `ℝ`-valued
 function. -/
 noncomputable def toReal (f : C_c(α, ℝ≥0)) : C_c(α, ℝ) :=
-  ⟨ContinuousMap.coeNNRealReal.comp f, by
-                                       simp only [ContinuousMap.toFun_eq_coe,
-                                         ContinuousMap.coe_comp,
-                                         ContinuousMap.coeNNRealReal_apply, ContinuousMap.coe_coe]
-                                       apply HasCompactSupport.comp_left f.hasCompactSupport' rfl⟩
+  @f.comp_left _ _ _ _ _ _ _ _ ContinuousMap.coeNNRealReal rfl
 
 @[simp]
 lemma toReal_apply (f : C_c(α, ℝ≥0)) (x : α) :
