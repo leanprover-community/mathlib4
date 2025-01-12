@@ -556,8 +556,7 @@ lemma toReal_apply (f : C_c(α, ℝ≥0)) (x : α) :
 lemma eq_nnrealPart_neg_nnrealPart (f : C_c(α, ℝ)) :
     f = (nnrealPart f).toReal - (nnrealPart (-f)).toReal := by
   ext x
-  simp only [coe_sub, Pi.sub_apply, toReal_apply, nnrealPart_apply, Real.coe_toNNReal', coe_neg,
-    Pi.neg_apply, max_zero_sub_max_neg_zero_eq_self]
+  simp
 
 /-- The compactly supported continuous `ℝ≥0`-valued function as a compactly supported `ℝ`-valued
 function. -/
@@ -570,10 +569,7 @@ noncomputable def LinearMap.toReal : C_c(α, ℝ≥0) →ₗ[ℝ≥0] C_c(α, �
                     exact HasCompactSupport.comp_left f.hasCompactSupport' (by rfl)⟩
   map_add' f g := by
     ext x
-    simp only [CompactlySupportedContinuousMap.coe_mk, ContinuousMap.comp_apply,
-      CompactlySupportedContinuousMap.coe_toContinuousMap, CompactlySupportedContinuousMap.coe_add,
-      Pi.add_apply, ContinuousMap.coeNNRealReal_apply, NNReal.coe_add, ContinuousMap.coe_comp,
-      Function.comp_apply]
+    simp
   map_smul' a f := by
     ext x
     simp only [CompactlySupportedContinuousMap.coe_mk, ContinuousMap.comp_apply,
@@ -581,7 +577,7 @@ noncomputable def LinearMap.toReal : C_c(α, ℝ≥0) →ₗ[ℝ≥0] C_c(α, �
       Pi.smul_apply, smul_eq_mul, ContinuousMap.coeNNRealReal_apply,
       RingHom.id_apply, ContinuousMap.coe_comp, Function.comp_apply]
     rw [NNReal.smul_def, smul_eq_mul]
-    simp only [NNReal.coe_mul]
+    simp
 
 @[simp]
 lemma LinearMap.toReal_apply (f : C_c(α, ℝ≥0)) (x : α) :
@@ -597,9 +593,7 @@ noncomputable def toNNRealLinear {Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ} (hΛ : ∀ 
                     by
                     apply hΛ (LinearMap.toReal f)
                     intro x
-                    simp only [ContinuousMap.toFun_eq_coe, ContinuousMap.zero_apply,
-                      coe_toContinuousMap, LinearMap.toReal_apply, zero_le_coe]
-                    ⟩
+                    simp⟩
   map_add' f g := by
     simp only [map_add]
     exact rfl
@@ -619,8 +613,7 @@ lemma eq_toNNRealLinear_nnrealPart_sub {Λ : C_c(α, ℝ) →ₗ[ℝ] ℝ}
   rw [← LinearMap.map_sub, ← LinearMap.coe_toReal, ← LinearMap.coe_toReal]
   congr
   ext x
-  simp only [coe_sub, Pi.sub_apply, LinearMap.toReal_apply, nnrealPart_apply, Real.coe_toNNReal',
-    coe_neg, Pi.neg_apply, max_zero_sub_max_neg_zero_eq_self]
+  simp
 
 lemma toNNRealLinear_eq_iff {Λ₁ Λ₂ : C_c(α, ℝ) →ₗ[ℝ] ℝ} (hΛ₁ : ∀ f, 0 ≤ f.1 → 0 ≤ Λ₁ f)
     (hΛ₂ : ∀ f, 0 ≤ f.1 → 0 ≤ Λ₂ f) : Λ₁ = Λ₂ ↔ toNNRealLinear hΛ₁ = toNNRealLinear hΛ₂ := by
