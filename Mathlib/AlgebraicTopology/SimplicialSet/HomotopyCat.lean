@@ -34,17 +34,11 @@ category of 2-truncated simplicial sets.
 -/
 
 namespace SSet
+open Truncated SimplexCategory.Truncated
 open CategoryTheory Category Limits Functor Opposite Simplicial Nerve
 universe v u
 
 section
-
-local macro:1000 (priority := high) X:term " _[" n:term "]₂" : term =>
-    `(($X : SSet.Truncated 2).obj (Opposite.op ⟨SimplexCategory.mk $n, by decide⟩))
-
-set_option quotPrecheck false
-local macro:max (priority := high) "[" n:term "]₂" : term =>
-  `((⟨SimplexCategory.mk $n, by decide⟩ : SimplexCategory.Truncated 2))
 
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver with `S _[0]₂` as its underlying
 type. -/
