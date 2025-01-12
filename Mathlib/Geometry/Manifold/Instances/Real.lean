@@ -307,20 +307,20 @@ end Fact.Manifold
 
 open Fact.Manifold
 
-lemma IccLeftChart_extend_left_eq : (IccLeftChart x y).extend (𝓡∂ 1) ⊥ = 0 := by
+lemma IccLeftChart_extend_bot : (IccLeftChart x y).extend (𝓡∂ 1) ⊥ = 0 := by
   norm_num [IccLeftChart, modelWithCornersEuclideanHalfSpace_zero]
 
 lemma iccLeftChart_extend_zero {p : Set.Icc x y} :
     (IccLeftChart x y).extend (𝓡∂ 1) p 0 = p.val - x := rfl
 
 lemma IccLeftChart_extend_interior_pos {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
-    0 < ((IccLeftChart x y).extend (𝓡∂ 1)) p 0 := by
+    0 < (IccLeftChart x y).extend (𝓡∂ 1) p 0 := by
   simp_rw [iccLeftChart_extend_zero]
   norm_num [hp.1]
 
-lemma IccLeftChart_extend_left_mem_frontier :
+lemma IccLeftChart_extend_bot_mem_frontier :
     (IccLeftChart x y).extend (𝓡∂ 1) ⊥ ∈ frontier (range (𝓡∂ 1)) := by
-  rw [IccLeftChart_extend_left_eq, frontier_range_modelWithCornersEuclideanHalfSpace,
+  rw [IccLeftChart_extend_bot, frontier_range_modelWithCornersEuclideanHalfSpace,
     mem_setOf, PiLp.zero_apply]
 
 /-- The right chart for the topological space `[x, y]`, defined on `(x,y]` and sending `y` to `0` in
@@ -371,13 +371,13 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
     have B : Continuous fun z : EuclideanSpace ℝ (Fin 1) => z 0 := continuous_apply 0
     exact (A.comp B).comp continuous_subtype_val
 
-lemma IccRightChart_extend_right_eq :
+lemma IccRightChart_extend_top :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ = 0 := by
   norm_num [IccRightChart, modelWithCornersEuclideanHalfSpace_zero]
 
 lemma IccRightChart_extend_right_mem_frontier :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ ∈ frontier (range (𝓡∂ 1)) := by
-  rw [IccRightChart_extend_right_eq, frontier_range_modelWithCornersEuclideanHalfSpace,
+  rw [IccRightChart_extend_top, frontier_range_modelWithCornersEuclideanHalfSpace,
     mem_setOf, PiLp.zero_apply]
 
 /-- Charted space structure on `[x, y]`, using only two charts taking values in

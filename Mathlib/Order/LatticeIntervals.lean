@@ -194,14 +194,14 @@ variable [Preorder α] [Fact (a ≤ b)]
 instance : OrderBot (Icc a b) :=
   (isLeast_Icc Fact.out).orderBot
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_bot : ↑(⊥ : Icc a b) = a := rfl
 
 /-- `Icc a b` has a top element whenever `a ≤ b`. -/
 instance : OrderTop (Icc a b) :=
   (isGreatest_Icc Fact.out).orderTop
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_top : ↑(⊤ : Icc a b) = b := rfl
 
 /-- `Icc a b` is a `BoundedOrder` whenever `a ≤ b`. -/
