@@ -221,6 +221,7 @@
   "Mathlib.Tactic.Says": ["Batteries.Data.String.Basic"],
   "Mathlib.Tactic.ReduceModChar":
   ["Mathlib.Data.ZMod.Basic", "Mathlib.RingTheory.Polynomial.Basic"],
+  "Mathlib.Tactic.Qify": ["Mathlib.Data.NNRat.Defs"],
   "Mathlib.Tactic.ProxyType": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.ProjectionNotation": ["Lean.Elab.AuxDef"],
   "Mathlib.Tactic.ProdAssoc": ["Mathlib.Logic.Equiv.Defs"],
@@ -436,6 +437,7 @@
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
   "Mathlib.Algebra.Star.Module": ["Mathlib.Algebra.Module.LinearMap.Star"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Defs"],
+  "Mathlib.Algebra.Order.Ring.Nat": ["Mathlib.Algebra.Order.Group.Nat"],
   "Mathlib.Algebra.Order.Quantale": ["Mathlib.Tactic.Variable"],
   "Mathlib.Algebra.Order.CauSeq.Basic": ["Mathlib.Data.Setoid.Basic"],
   "Mathlib.Algebra.MonoidAlgebra.Basic":
@@ -458,8 +460,6 @@
   "Mathlib.Algebra.BigOperators.Group.List": ["Mathlib.Data.List.ProdSigma"],
   "Mathlib.Algebra.Algebra.Subalgebra.Order":
   ["Mathlib.Algebra.Module.Submodule.Order"],
-  "Mathlib.Algebra.Order.Ring.Nat":
-  ["Mathlib.Algebra.Order.Group.Nat"],
   "Batteries.Tactic.OpenPrivate": ["Lean.Parser.Module"],
   "Batteries.Tactic.Omega.OmegaM": ["Batteries.Tactic.Omega.Int"],
   "Batteries.Tactic.Omega.Frontend": ["Batteries.Tactic.Omega.Logic"],
