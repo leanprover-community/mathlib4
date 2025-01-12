@@ -404,7 +404,7 @@ section PartialOrder
 
 /-! ### The partial order in `C_c`
 
-When `β` is equipped with a preorder, `C_c(α, β)` is given the pointwise partial order.
+When `β` is equipped with a partial order, `C_c(α, β)` is given the pointwise partial order.
 -/
 
 variable {β : Type*} [TopologicalSpace β] [Zero β]
