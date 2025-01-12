@@ -37,7 +37,7 @@ variable {α : Type*} [TopologicalSpace α]
 
 -- See note [lower instance priority]
 @[to_additive]
-instance (priority := 100) OrderedCommGroup.to_hasUpperLowerClosure
+instance (priority := 100) IsOrderedMonoid.to_hasUpperLowerClosure
     [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
     [ContinuousConstSMul α α] : HasUpperLowerClosure α where
   isUpperSet_closure s h x y hxy hx :=
