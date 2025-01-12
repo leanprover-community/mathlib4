@@ -83,7 +83,7 @@ theorem norm_le (a : S) {y : ℤ} (hy : ∀ k, abv (bS.repr a k) ≤ y) :
 
 /-- If the `R`-integral element `a : S` has coordinates `< y` with respect to some basis `b`,
 its norm is strictly less than `normBound abv b * y ^ dim S`. -/
-theorem norm_lt {T : Type*} [LinearOrderedRing T] (a : S) {y : T}
+theorem norm_lt {T : Type*} [Ring T] [LinearOrder T] [IsStrictOrderedRing T] (a : S) {y : T}
     (hy : ∀ k, (abv (bS.repr a k) : T) < y) :
     (abv (Algebra.norm R a) : T) < normBound abv bS * y ^ Fintype.card ι := by
   obtain ⟨i⟩ := bS.index_nonempty
