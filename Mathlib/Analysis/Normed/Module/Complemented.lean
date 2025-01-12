@@ -211,12 +211,11 @@ variable {p q}
 -- P is an idempotent where P := idempotentOfClosedCompl p q h hp hq
 lemma is_idempotent_ofClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
     (hq : IsClosed (q : Set E)) :
-    IsIdempotentElem (p.idempotentOfClosedCompl q h hp hq).toLinearMap := by
+    IsIdempotentElem (p.idempotentOfClosedCompl q h hp hq) := by
   ext x
-  rw [LinearMap.mul_apply, ContinuousLinearMap.coe_coe, idempotentOfClosedCompl,
-    ContinuousLinearMap.coe_comp', coe_subtypeL', coe_subtype,
-    coe_continuous_linearProjOfClosedCompl', Function.comp_apply, Function.comp_apply,
-    (linearProjOfIsCompl_idempotent h x)]
+  simp only [idempotentOfClosedCompl, ContinuousLinearMap.coe_mul, ContinuousLinearMap.coe_comp',
+    coe_subtypeL', coe_subtype, coe_continuous_linearProjOfClosedCompl', Function.comp_apply,
+    linearProjOfIsCompl_apply_left]
 
 -- ker P = q where P := idempotentOfClosedCompl p q h hp hq
 lemma ker_idempotentOfClosedCompl (h : IsCompl p q) (hp : IsClosed (p : Set E))
