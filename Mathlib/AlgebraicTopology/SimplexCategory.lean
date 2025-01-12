@@ -5,6 +5,7 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
+import Mathlib.Util.Superscript
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrd
@@ -55,7 +56,7 @@ def mk (n : ℕ) : SimplexCategory :=
   n
 
 /-- the `n`-dimensional simplex can be denoted `[n]` -/
-scoped[Simplicial] notation "[" n "]" => SimplexCategory.mk n
+scoped[Simplicial] notation (priority := high) "[" n "]" => SimplexCategory.mk n
 
 -- TODO: Make `len` irreducible.
 /-- The length of an object of `SimplexCategory`. -/
@@ -750,6 +751,22 @@ macro "leq_prefix" : tactic =>
 
 /-- A wrapper for `omega` which first makes some quick attempts to prove `n ≤ m`. -/
 macro "leq" : tactic => `(tactic| first | leq_prefix | omega)
+
+/-- A wrapper for `omega` which first makes some quick attempts to prove that
+`[m]` is `n`-truncated (`[m].len ≤ n`). -/
+macro "trunc" : tactic =>
+  `(tactic| first | leq_prefix | simp only [SimplexCategory.len_mk]; omega)
+
+/-- For `m ≤ n`, `[m]ₙ` is the `m`-dimensional simplex in `Truncated n`. -/
+scoped macro:max (priority := high) "[" m:term "]" n:subscript(term) : term =>
+  `((⟨SimplexCategory.mk $m,
+    by first | trunc | fail "Failed to prove truncation property."⟩ :
+    SimplexCategory.Truncated $(⟨n.raw[0]⟩)))
+
+/-- For `p : m ≤ n`, `[m, p]ₙ` is the `m`-dimensional simplex in `Truncated n`. -/
+scoped macro:max (priority := high)
+  "[" m:term "," p:term "]" n:subscript(term) : term =>
+  `((⟨SimplexCategory.mk $m, $p⟩ : SimplexCategory.Truncated $(⟨n.raw[0]⟩)))
 
 /-- The truncated form of the inclusion functor. -/
 def incl (n m : ℕ) (h : n ≤ m := by leq) : Truncated n ⥤ Truncated m where

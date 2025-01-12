@@ -376,21 +376,16 @@ abbrev trunc (n m : ℕ) (h : m ≤ n := by leq) :
     SSet.Truncated n ⥤ SSet.Truncated m :=
   SimplicialObject.Truncated.trunc (Type u) n m
 
-/-- A wrapper for `omega` which first makes some quick attempts to prove that
-`[m]` is `n`-truncated (`[m].len ≤ n`). -/
-macro "trunc" : tactic =>
-  `(tactic| first | leq_prefix | simp only [SimplexCategory.len_mk]; omega)
-
 /-- For `X : SSet.Truncated n` and `m ≤ n`, `X _[m]ₙ` is the type of
 `m`-simplices in `X`. -/
-scoped macro:1000 (priority := high)
+scoped macro:max (priority := high)
   X:term " _[" m:term "]" n:subscript(term) : term =>
   `(($X : SSet.Truncated $(⟨n.raw[0]⟩)).obj (Opposite.op ⟨SimplexCategory.mk $m,
     by first | trunc | fail "Failed to prove truncation property."⟩))
 
 /-- For `X : SSet.Truncated n` and `p : m ≤ n`, `X _[m, p]ₙ` is the type of
 `m`-simplices in `X`. -/
-scoped macro:1000 (priority := high)
+scoped macro:max (priority := high)
   X:term " _[" m:term "," p:term "]" n:subscript(term) : term =>
   `(($X : SSet.Truncated $(⟨n.raw[0]⟩)).obj
     (Opposite.op ⟨SimplexCategory.mk $m, $p⟩))
