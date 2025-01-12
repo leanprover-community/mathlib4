@@ -1205,7 +1205,6 @@ theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt₁} (h : q�
 
 /-- The set of all statements in a Turing machine, plus one extra value `none` representing the
 halt state. This is used in the TM1 to TM0 reduction. -/
-
 noncomputable def stmts (M : Λ → Stmt₁) (S : Finset Λ) : Finset (Option Stmt₁) := by
   classical
   exact Finset.insertNone (S.biUnion fun q ↦ stmts₁ (M q))
