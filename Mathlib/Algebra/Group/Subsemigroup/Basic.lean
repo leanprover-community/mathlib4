@@ -75,15 +75,12 @@ theorem coe_iInf {ι : Sort*} {S : ι → Subsemigroup M} : (↑(⨅ i, S i) : S
 /-- subsemigroups of a monoid form a complete lattice. -/
 @[to_additive "The `AddSubsemigroup`s of an `AddMonoid` form a complete lattice."]
 instance : LatticeSetLike (Subsemigroup M) M where
-  __ := OrderedSetLike.toLatticeSetLike (Subsemigroup M) M (by simp)
-  le := (· ≤ ·)
-  lt := (· < ·)
+  __ := OrderedSetLike.toLatticeSetLike (Subsemigroup M) M (fun _ => rfl)
   bot := ⊥
   bot_le := fun _ _ hx => (not_mem_bot hx).elim
   top := ⊤
   le_top := fun _ x _ => mem_top x
   inf := (· ⊓ ·)
-  sInf := InfSet.sInf
   le_inf := fun _ _ _ ha hb _ hx => ⟨ha hx, hb hx⟩
   inf_le_left := fun _ _ _ => And.left
   inf_le_right := fun _ _ _ => And.right
