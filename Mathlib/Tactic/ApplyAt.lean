@@ -33,7 +33,7 @@ elab "apply" t:term "at" i:ident : tactic => withSynthesize <| withMainContext d
     if b.isInstImplicit && !(← m.mvarId!.isAssigned) then
       try m.mvarId!.inferInstance
       catch _ => continue
-  let applied ← mkAppOptM' f (mvs.pop.push ldecl.toExpr |>.map fun e => some e)
+  let applied ← mkAppOptM' f (mvs.pop.push ldecl.toExpr |>.map some)
   let appliedType ← inferType applied
   unless (← isDefEq appliedTy tp) do
     logError m!"assertion failed: {applied} has type {appliedTy}, expected {tp}"
