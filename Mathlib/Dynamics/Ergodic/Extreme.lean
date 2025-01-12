@@ -66,33 +66,29 @@ theorem of_mem_extremePoints
 theorem eq_of_absolutelyContinuous [IsProbabilityMeasure μ] [IsProbabilityMeasure ν]
     (hμ : Ergodic f μ) (hfν : MeasurePreserving f ν ν) (hνμ : ν ≪ μ) : ν = μ := by
   have hfm : Measurable f := hfν.measurable
-  have : ∀ s, MeasurableSet s → ν (f ⁻¹' s \ s) = ν (s \ f ⁻¹' s) := by
+  have H₁ : ∀ s, MeasurableSet s → ν (f ⁻¹' s \ s) = ν (s \ f ⁻¹' s) := by
     intro s hs
     apply measure_diff_symm _ _ (hfν.measure_preimage _) <;>
       first | apply measure_ne_top | measurability
   obtain ⟨ρ, hρm, rfl⟩ : ∃ ρ, Measurable ρ ∧ ν = μ.withDensity ρ :=
     ⟨ν.rnDeriv μ, ν.measurable_rnDeriv μ, .symm <| Measure.withDensity_rnDeriv_eq _ _ hνμ⟩
-  have : ∀ c, f ⁻¹' (ρ ⁻¹' Iio c) =ᵐ[μ] ρ ⁻¹' Iio c := by
+  have H₂ : ∀ c, f ⁻¹' (ρ ⁻¹' Iio c) =ᵐ[μ] ρ ⁻¹' Iio c := by
     intro c
-    specialize this (ρ ⁻¹' Iio c) (by measurability)
-    rw [withDensity_apply, withDensity_apply] at this <;> try measurability
-
-  have : ∀ s, MeasurableSet s → ∫⁻ a in f ⁻¹' s, ρ a ∂μ = ∫⁻ a in s, ρ a ∂μ := by
+    specialize H₁ (ρ ⁻¹' Iio c) (by measurability)
+    rw [withDensity_apply, withDensity_apply] at H₁ <;> try measurability
+  have H₃ : ∀ s, MeasurableSet s → ∫⁻ a in f ⁻¹' s, ρ a ∂μ = ∫⁻ a in s, ρ a ∂μ := by
     intro s hs
     rw [← withDensity_apply, hfν.measure_preimage hs.nullMeasurableSet, withDensity_apply]
     exacts [hs, hfν.measurable hs]
 
   suffices ρ =ᵐ[μ] 1 by rw [withDensity_congr_ae this, withDensity_one]
   set s := {x | ρ x < 1}
-  have hs₀ : μ s = 0 := by
 
 
 theorem eq_smul_of_absolutelyContinuous [IsFiniteMeasure μ] (hμ : Ergodic f μ)
     (hfν : MeasurePreserving f ν ν) (hνμ : ν ≪ μ) : ∃ c : ℝ≥0∞, ν = c • μ := by
   wlog hpμ : IsProbabilityMeasure μ generalizing μ
   ·
-
-
   sorry
 
 end Ergodic
