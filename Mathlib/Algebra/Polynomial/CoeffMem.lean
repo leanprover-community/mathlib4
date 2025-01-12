@@ -5,6 +5,7 @@ Authors: Yaël Dillies, Andrew Yang
 -/
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Polynomial.Div
+import Mathlib.RingTheory.Ideal.Span
 
 /-!
 # Bounding the coefficients of the quotient and remainder of polynomials
@@ -17,7 +18,7 @@ of `q`.
 -/
 
 namespace Polynomial
-variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
+variable {ι R S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
 local notation "deg("p")" => natDegree p
 local notation3 "coeffs("p")" => Set.range (coeff p)
@@ -100,5 +101,13 @@ lemma coeff_divByMonic_mem_pow_natDegree_mul (p q : S[X])
   · refine SetLike.le_def.mp ?_ (coeff_divModByMonicAux_mem_span_pow_mul_span (R := R) p q H i).1
     gcongr <;> exact sup_le (by simpa) (by simpa [Submodule.span_le, Set.range_subset_iff])
   · simp
+
+variable [DecidableEq ι] {i j : ι}
+
+open Function Ideal in
+lemma idealSpan_range_update_divByMonic (hij : i ≠ j) (v : ι → R[X]) (hi : (v i).Monic) :
+    span (Set.range (Function.update v j (v j %ₘ v i))) = span (Set.range v) := by
+  rw [modByMonic_eq_sub_mul_div _ hi, mul_comm, ← smul_eq_mul, Ideal.span, Ideal.span,
+    Submodule.span_range_update_sub_smul hij]
 
 end Polynomial

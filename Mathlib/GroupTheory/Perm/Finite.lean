@@ -63,7 +63,7 @@ theorem perm_inv_on_of_perm_on_finset {s : Finset α} {f : Perm α} (h : ∀ x �
   simp only [inv_apply_self]
 
 theorem perm_inv_mapsTo_of_mapsTo (f : Perm α) {s : Set α} [Finite s] (h : Set.MapsTo f s s) :
-    Set.MapsTo (f⁻¹ : _) s s := by
+    Set.MapsTo (f⁻¹ :) s s := by
   cases nonempty_fintype s
   exact fun x hx =>
     Set.mem_toFinset.mp <|
@@ -73,7 +73,7 @@ theorem perm_inv_mapsTo_of_mapsTo (f : Perm α) {s : Set α} [Finite s] (h : Set
 
 @[simp]
 theorem perm_inv_mapsTo_iff_mapsTo {f : Perm α} {s : Set α} [Finite s] :
-    Set.MapsTo (f⁻¹ : _) s s ↔ Set.MapsTo f s s :=
+    Set.MapsTo (f⁻¹ :) s s ↔ Set.MapsTo f s s :=
   ⟨perm_inv_mapsTo_of_mapsTo f⁻¹, perm_inv_mapsTo_of_mapsTo f⟩
 
 theorem perm_inv_on_of_perm_on_finite {f : Perm α} {p : α → Prop} [Finite { x // p x }]

@@ -67,6 +67,14 @@ theorem one_sub {p : R} (h : IsIdempotentElem p) : IsIdempotentElem (1 - p) := b
 theorem one_sub_iff {p : R} : IsIdempotentElem (1 - p) ↔ IsIdempotentElem p :=
   ⟨fun h => sub_sub_cancel 1 p ▸ h.one_sub, IsIdempotentElem.one_sub⟩
 
+@[simp]
+theorem mul_one_sub_self {p : R} (h : IsIdempotentElem p) : p * (1 - p) = 0 := by
+  rw [mul_sub, mul_one, h.eq, sub_self]
+
+@[simp]
+theorem one_sub_mul_self {p : R} (h : IsIdempotentElem p) : (1 - p) * p = 0 := by
+  rw [sub_mul, one_mul, h.eq, sub_self]
+
 theorem add_sub_mul_of_commute {R} [Ring R] {p q : R} (h : Commute p q)
     (hp : IsIdempotentElem p) (hq : IsIdempotentElem q) :
     IsIdempotentElem (p + q - p * q) := by
@@ -102,6 +110,12 @@ theorem iff_eq_zero_or_one {p : G₀} : IsIdempotentElem p ↔ p = 0 ∨ p = 1 :
 lemma map {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N] {e : M}
     (he : IsIdempotentElem e) (f : F) : IsIdempotentElem (f e) := by
   rw [IsIdempotentElem, ← map_mul, he.eq]
+
+lemma of_mul_add {R} [Semiring R] {e₁ e₂ : R} (mul : e₁ * e₂ = 0) (add : e₁ + e₂ = 1) :
+    IsIdempotentElem e₁ ∧ IsIdempotentElem e₂ := by
+  simp_rw [IsIdempotentElem]; constructor
+  · conv_rhs => rw [← mul_one e₁, ← add, mul_add, mul, add_zero]
+  · conv_rhs => rw [← one_mul e₂, ← add, add_mul, mul, zero_add]
 
 /-! ### Instances on `Subtype IsIdempotentElem` -/
 

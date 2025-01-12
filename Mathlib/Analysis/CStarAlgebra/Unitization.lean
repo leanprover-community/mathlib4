@@ -38,12 +38,8 @@ lemma opNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖ = ‖a‖ := by
     _ ≤ ‖(mul 𝕜 E).flip a‖ * ‖b‖ := by
         simpa only [flip_apply, mul_apply', norm_star] using le_opNorm ((mul 𝕜 E).flip a) (star b)
 
-@[deprecated (since := "2024-02-02")] alias op_norm_mul_flip_apply := opNorm_mul_flip_apply
-
 lemma opNNNorm_mul_flip_apply (a : E) : ‖(mul 𝕜 E).flip a‖₊ = ‖a‖₊ :=
   Subtype.ext (opNorm_mul_flip_apply 𝕜 a)
-
-@[deprecated (since := "2024-02-02")] alias op_nnnorm_mul_flip_apply := opNNNorm_mul_flip_apply
 
 variable (E)
 
