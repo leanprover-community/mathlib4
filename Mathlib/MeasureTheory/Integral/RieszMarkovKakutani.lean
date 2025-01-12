@@ -279,91 +279,32 @@ lemma rieszContent_ne_top {K : Compacts X} : rieszContent Λ K ≠ ⊤ := by
 lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
   intro K
   simp only [rieszContent, le_antisymm_iff, le_iInf_iff, ENNReal.coe_le_coe]
-  constructor
-  · intro K' hK'
-    exact rieszContentAux_mono Λ (Set.Subset.trans hK' interior_subset)
-  · rw [iInf_le_iff]
-    intro b hb
-    rw [rieszContentAux, ENNReal.le_coe_iff]
-    have : b < ⊤ := by
-      obtain ⟨F, hF⟩ := exists_compact_superset K.2
-      exact lt_of_le_of_lt (le_iInf_iff.mp (hb ⟨F, hF.1⟩) hF.2) ENNReal.coe_lt_top
-    use b.toNNReal
-    refine ⟨Eq.symm (ENNReal.coe_toNNReal (ne_of_lt this)), ?_⟩
-    apply NNReal.coe_le_coe.mp
-    simp only [NNReal.coe_le_coe, ← NNReal.coe_le_coe]
-    apply le_iff_forall_pos_le_add.mpr
-    intro ε hε
-    set εnn : ℝ≥0 := ⟨ε, le_of_lt hε⟩
-    have εnneq : ε.toNNReal = εnn := Real.toNNReal_of_nonneg (le_of_lt hε)
-    rw [← NNReal.coe_mk ε (le_of_lt hε), ← NNReal.coe_add, NNReal.coe_le_coe]
-    obtain ⟨f, hfleoneonK, hfle⟩ := exists_lt_rieszContentAux_add_pos Λ K (Real.toNNReal_pos.mpr hε)
-    rw [rieszContentAux, εnneq] at hfle
-    apply le_of_lt (lt_of_le_of_lt _ hfle)
-    rw [← NNReal.coe_le_coe]
-    apply (le_iff_forall_one_lt_le_mul₀ _).mpr
-    · intro α hα
-      have : Λ f * α = Λ (α.toNNReal • f) := by
-        simp only [map_smul, smul_eq_mul, NNReal.coe_mul, Real.coe_toNNReal',
-          max_eq_left <| le_of_lt (lt_of_le_of_lt zero_le_one hα)]
-        exact mul_comm _ _
-      rw [this]
-      set K' := f ⁻¹' Ici α⁻¹.toNNReal with hK'
-      have hKK' : K.carrier ⊆ interior K' := by
-        rw [subset_interior_iff]
-        use f ⁻¹' (Ioi α⁻¹.toNNReal)
-        refine ⟨IsOpen.preimage f.1.2 isOpen_Ioi, ?_, ?_⟩
-        · intro x hx
-          rw [Set.mem_preimage, Set.mem_Ioi]
-          exact lt_of_lt_of_le (Real.toNNReal_lt_one.mpr (inv_lt_one_of_one_lt₀ hα))
-            (hfleoneonK x hx)
-        · rw [hK']
-          intro x hx
-          simp only [mem_preimage, mem_Ioi] at hx
-          simp only [mem_preimage, mem_Ici]
-          exact le_of_lt hx
-      have hK'cp : IsCompact K' := by
-        apply IsCompact.of_isClosed_subset f.2
-        · exact IsClosed.preimage f.1.2 isClosed_Ici
-        · rw [hK']
-          apply Set.Subset.trans _ subset_closure
-          intro x hx
-          simp only [mem_preimage, mem_Ici] at hx
-          simp only [mem_support]
-          apply ne_of_gt
-          rw [Real.toNNReal_inv] at hx
-          exact lt_of_lt_of_le
-            (inv_pos_of_pos (lt_trans zero_lt_one (Real.one_lt_toNNReal.mpr hα))) hx
-      set hb' := hb ⟨K', hK'cp⟩
-      simp only [Compacts.coe_mk, le_iInf_iff] at hb'
-      have hbK' : b ≤ rieszContent Λ ⟨K', hK'cp⟩ := hb' hKK'
-      rw [ENNReal.le_coe_iff] at hbK'
-      obtain ⟨p, hp⟩ := hbK'
-      simp only [hp.1, ENNReal.toNNReal_coe, NNReal.val_eq_coe, map_smul, smul_eq_mul,
-        NNReal.coe_mul, Real.coe_toNNReal', ge_iff_le]
-      apply le_trans (NNReal.GCongr.toReal_le_toReal hp.2)
-      simp only [rieszContent]
-      rw [rieszContentAux, ← Real.coe_toNNReal (α ⊔ 0) (le_max_right α 0), ← NNReal.coe_mul,
-        NNReal.coe_le_coe]
-      apply csInf_le
-      · simp only [OrderBot.bddBelow]
-      · simp only [mem_image, mem_setOf_eq]
-        use α.toNNReal • f
-        refine ⟨?_, ?_⟩
-        · intro x hx
-          simp only [CompactlySupportedContinuousMap.coe_smul, Pi.smul_apply, smul_eq_mul,
-            ← NNReal.coe_le_coe, NNReal.coe_one, NNReal.coe_mul, Real.coe_toNNReal']
-          rw [← left_eq_sup.mpr <| le_of_lt (lt_of_le_of_lt zero_le_one hα), mul_comm]
-          apply (inv_le_iff_one_le_mul₀ (lt_trans zero_lt_one hα)).mp
-          rw [← Set.mem_Ici]
-          simp only [mem_Ici, ge_iff_le]
-          exact Real.toNNReal_le_iff_le_coe.mp hx
-        · simp only [map_smul, smul_eq_mul, mul_eq_mul_right_iff]
-          left
-          rw [Real.toNNReal_eq_toNNReal_iff (le_of_lt (lt_of_le_of_lt zero_le_one hα))
-            (le_max_right α 0), left_eq_sup]
-          exact le_of_lt (lt_of_le_of_lt zero_le_one hα)
-    · exact zero_le (Λ f)
+  refine ⟨fun K' hK' ↦ rieszContentAux_mono Λ (hK'.trans interior_subset), ?_⟩
+  rw [iInf_le_iff]
+  intro b hb
+  rw [rieszContentAux, ENNReal.le_coe_iff]
+  have : b < ⊤ := by
+    obtain ⟨F, hF⟩ := exists_compact_superset K.2
+    exact (le_iInf_iff.mp (hb ⟨F, hF.1⟩) hF.2).trans_lt ENNReal.coe_lt_top
+  refine ⟨b.toNNReal, (ENNReal.coe_toNNReal this.ne).symm, NNReal.coe_le_coe.mp ?_⟩
+  apply le_iff_forall_pos_le_add.mpr
+  intro ε hε
+  lift ε to ℝ≥0 using hε.le
+  obtain ⟨f, hfleoneonK, hfle⟩ := exists_lt_rieszContentAux_add_pos Λ K (Real.toNNReal_pos.mpr hε)
+  rw [rieszContentAux, Real.toNNReal_of_nonneg hε.le, ← NNReal.coe_lt_coe] at hfle
+  refine ((le_iff_forall_one_lt_le_mul₀ (zero_le (Λ f))).mpr fun α hα ↦ ?_).trans hfle.le
+  rw [mul_comm, ← smul_eq_mul, ← map_smul]
+  set K' := f ⁻¹' Ici α⁻¹
+  have hKK' : ↑K ⊆ interior K' :=
+    subset_interior_iff.2 ⟨f ⁻¹' Ioi α⁻¹, isOpen_Ioi.preimage f.1.2,
+      fun x hx ↦ (inv_lt_one_of_one_lt₀ hα).trans_le (hfleoneonK x hx),
+      preimage_mono Ioi_subset_Ici_self⟩
+  have hK'cp : IsCompact K' := .of_isClosed_subset f.2 (isClosed_Ici.preimage f.1.2) fun x hx ↦
+    subset_closure ((inv_pos_of_pos <| zero_lt_one.trans hα).trans_le hx).ne'
+  set hb' := hb ⟨K', hK'cp⟩
+  simp only [Compacts.coe_mk, le_iInf_iff] at hb'
+  exact (ENNReal.toNNReal_mono (by simp) <| hb' hKK').trans <| csInf_le'
+    ⟨α • f, fun x ↦ (inv_le_iff_one_le_mul₀' (zero_lt_one.trans hα)).mp, by simp⟩
 
 end RieszContentRegular
 
