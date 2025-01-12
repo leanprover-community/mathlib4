@@ -150,6 +150,7 @@ protected def flip : RootPairing ι R N M :=
 lemma flip_flip : P.flip.flip = P :=
   rfl
 
+/-- If we interchange the roles of `M` and `N`, we still have a root system. -/
 protected def _root_.RootSystem.flip (P : RootSystem ι R M N) : RootSystem ι R N M :=
   { toRootPairing := P.toRootPairing.flip
     span_root_eq_top := P.span_coroot_eq_top
