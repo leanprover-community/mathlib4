@@ -212,8 +212,6 @@ instance : SetLike A B where
   coe_injective' := fun _ _ h ↦ by
     simpa [le_antisymm_iff, ← OrderedSetLike.coe_subset_coe'] using h
 
-@[simp] lemma coe_eq_setLike_coe : (OrderedSetLike.coe : A → Set B) = SetLike.coe := rfl
-
 @[simp, norm_cast] lemma coe_subset_coe {S T : A} : (S : Set B) ⊆ T ↔ S ≤ T :=
   OrderedSetLike.coe_subset_coe'
 

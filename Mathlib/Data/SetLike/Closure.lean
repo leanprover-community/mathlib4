@@ -52,7 +52,7 @@ that preserves arbitrary infima. -/
 def OrderedSetLike.toLatticeSetLike (L α : Type*) [OrderedSetLike L α] [InfSet L]
     (coe_sInf : ∀ s : Set L, SetLike.coe (sInf s) = sInf (SetLike.coe '' s)) :
     LatticeSetLike L α where
-  __ := (inferInstance : OrderedSetLike L α)
+  __ := ‹OrderedSetLike L α›
   __ := completeLatticeOfInf L fun s =>
       IsGLB.of_image OrderedSetLike.coe_subset_coe (by simpa [coe_sInf] using isGLB_biInf)
   coe_sInf' := coe_sInf
