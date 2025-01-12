@@ -136,7 +136,7 @@ theorem aux_calc (n : ℕ) {m : ℝ} (hm : 2 ≤ m) :
       -- [NB: in this block, I do not follow the brace convention for subgoals -- I wait until
       -- I solve all extraneous goals at once with `exact pow_pos (zero_lt_two.trans_le hm) _`.]
       -- Clear denominators and massage*
-      apply (div_le_div_iff _ _).mpr
+      apply (div_le_div_iff₀ _ _).mpr
       focus
         conv_rhs => rw [one_mul, mul_add, pow_add, mul_one, pow_mul, mul_comm, ← pow_mul]
         -- the second factors coincide, so we prove the inequality of the first factors*

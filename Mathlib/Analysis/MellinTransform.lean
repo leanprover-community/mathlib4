@@ -293,11 +293,10 @@ theorem isBigO_rpow_zero_log_smul [NormedSpace ℝ E] {a b : ℝ} {f : ℝ → E
     (fun t : ℝ => log t • f t) =O[𝓝[>] 0] (· ^ (-b)) := by
   have : log =o[𝓝[>] 0] fun t : ℝ => t ^ (a - b) := by
     refine ((isLittleO_log_rpow_atTop (sub_pos.mpr hab)).neg_left.comp_tendsto
-          tendsto_inv_zero_atTop).congr'
-      (eventually_nhdsWithin_iff.mpr <| Eventually.of_forall fun t ht => ?_)
-      (eventually_nhdsWithin_iff.mpr <| Eventually.of_forall fun t ht => ?_)
-    · simp_rw [Function.comp_apply, ← one_div, log_div one_ne_zero (ne_of_gt ht), Real.log_one,
-        zero_sub, neg_neg]
+          tendsto_inv_nhdsGT_zero).congr'
+      (.of_forall fun t => ?_)
+      (eventually_mem_nhdsWithin.mono fun t ht => ?_)
+    · simp
     · simp_rw [Function.comp_apply, inv_rpow (le_of_lt ht), ← rpow_neg (le_of_lt ht), neg_sub]
   refine (this.isBigO.smul hf).congr' (Eventually.of_forall fun t => by rfl)
       (eventually_nhdsWithin_iff.mpr (Eventually.of_forall fun t ht => ?_))

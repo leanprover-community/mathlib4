@@ -5,6 +5,8 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.List.FinRange
+import Mathlib.Data.Finite.Defs
+import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Finite types
@@ -139,7 +141,7 @@ theorem codisjoint_left : Codisjoint s t ↔ ∀ ⦃a⦄, a ∉ s → a ∈ t :=
   classical simp [codisjoint_iff, eq_univ_iff_forall, or_iff_not_imp_left]
 
 theorem codisjoint_right : Codisjoint s t ↔ ∀ ⦃a⦄, a ∉ t → a ∈ s :=
-  Codisjoint_comm.trans codisjoint_left
+  codisjoint_comm.trans codisjoint_left
 
 instance booleanAlgebra [DecidableEq α] : BooleanAlgebra (Finset α) :=
   GeneralizedBooleanAlgebra.toBooleanAlgebra
@@ -399,6 +401,11 @@ instance decidableEqEquivFintype [DecidableEq β] [Fintype α] : DecidableEq (α
 
 instance decidableEqEmbeddingFintype [DecidableEq β] [Fintype α] : DecidableEq (α ↪ β) := fun a b =>
   decidable_of_iff ((a : α → β) = b) Function.Embedding.coe_injective.eq_iff
+
+@[to_additive]
+instance decidableEqMulEquivFintype {α β : Type*} [DecidableEq β] [Fintype α] [Mul α] [Mul β] :
+    DecidableEq (α ≃* β) :=
+  fun a b => decidable_of_iff ((a : α → β) = b) (Injective.eq_iff DFunLike.coe_injective)
 
 end BundledHoms
 
@@ -770,6 +777,11 @@ instance Fin.fintype (n : ℕ) : Fintype (Fin n) :=
 
 theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, List.nodup_finRange n⟩ :=
   rfl
+
+/-- See also `nonempty_encodable`, `nonempty_denumerable`. -/
+theorem nonempty_fintype (α : Type*) [Finite α] : Nonempty (Fintype α) := by
+  rcases Finite.exists_equiv_fin α with ⟨n, ⟨e⟩⟩
+  exact ⟨.ofEquiv _ e.symm⟩
 
 @[simp] theorem List.toFinset_finRange (n : ℕ) : (List.finRange n).toFinset = Finset.univ := by
   ext; simp

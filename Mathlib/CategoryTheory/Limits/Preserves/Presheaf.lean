@@ -172,9 +172,9 @@ attribute [local instance] PreservesFiniteLimitsOfIsFilteredCostructuredArrowYon
 
 One direction of Proposition 3.3.13 of [Kashiwara2006].
 -/
-noncomputable def preservesFiniteLimitsOfIsFilteredCostructuredArrowYoneda
+lemma preservesFiniteLimits_of_isFiltered_costructuredArrow_yoneda
     [IsFiltered (CostructuredArrow yoneda A)] : PreservesFiniteLimits A where
-  preservesFiniteLimits _ _ _ := ⟨fun {_} => preservesLimitOfIsIsoPost _ _⟩
+  preservesFiniteLimits _ _ _ := ⟨fun {_} => preservesLimit_of_isIso_post _ _⟩
 
 /-- If `C` is a small finitely cocomplete category and `A : Cᵒᵖ ⥤ Type u` is a presheaf, then
 `CostructuredArrow yoneda A` is filtered if and only if `A` preserves finite limits.
@@ -183,7 +183,7 @@ Proposition 3.3.13 of [Kashiwara2006].
 -/
 theorem isFiltered_costructuredArrow_yoneda_iff_nonempty_preservesFiniteLimits :
     IsFiltered (CostructuredArrow yoneda A) ↔ Nonempty (PreservesFiniteLimits A) :=
-  ⟨fun _ => ⟨preservesFiniteLimitsOfIsFilteredCostructuredArrowYoneda A⟩,
+  ⟨fun _ => ⟨preservesFiniteLimits_of_isFiltered_costructuredArrow_yoneda A⟩,
    fun ⟨_⟩ => isFiltered_costructuredArrow_yoneda_of_preservesFiniteLimits A⟩
 
 end CategoryTheory.Limits

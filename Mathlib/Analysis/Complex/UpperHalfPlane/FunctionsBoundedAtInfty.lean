@@ -53,19 +53,22 @@ def zeroAtImInftySubmodule (α : Type*) [NormedField α] : Submodule α (ℍ →
 def boundedAtImInftySubalgebra (α : Type*) [NormedField α] : Subalgebra α (ℍ → α) :=
   boundedFilterSubalgebra _ atImInfty
 
-nonrec theorem IsBoundedAtImInfty.mul {f g : ℍ → ℂ} (hf : IsBoundedAtImInfty f)
-    (hg : IsBoundedAtImInfty g) : IsBoundedAtImInfty (f * g) := by
-  simpa only [Pi.one_apply, mul_one, norm_eq_abs] using hf.mul hg
-
-theorem bounded_mem (f : ℍ → ℂ) :
-    IsBoundedAtImInfty f ↔ ∃ M A : ℝ, ∀ z : ℍ, A ≤ im z → abs (f z) ≤ M := by
+theorem isBoundedAtImInfty_iff {α : Type*} [Norm α] {f : ℍ → α} :
+    IsBoundedAtImInfty f ↔ ∃ M A : ℝ, ∀ z : ℍ, A ≤ im z → ‖f z‖ ≤ M := by
   simp [IsBoundedAtImInfty, BoundedAtFilter, Asymptotics.isBigO_iff, Filter.Eventually,
     atImInfty_mem]
 
-theorem zero_at_im_infty (f : ℍ → ℂ) :
-    IsZeroAtImInfty f ↔ ∀ ε : ℝ, 0 < ε → ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → abs (f z) ≤ ε :=
-  (atImInfty_basis.tendsto_iff Metric.nhds_basis_closedBall).trans <| by
-    simp only [true_and, mem_closedBall_zero_iff]; rfl
+@[deprecated (since := "2024-08-27")] alias _root_.bounded_mem := isBoundedAtImInfty_iff
+
+theorem isZeroAtImInfty_iff {α : Type*} [SeminormedAddGroup α] {f : ℍ → α} :
+    IsZeroAtImInfty f ↔ ∀ ε : ℝ, 0 < ε → ∃ A : ℝ, ∀ z : ℍ, A ≤ im z → ‖f z‖ ≤ ε :=
+  (atImInfty_basis.tendsto_iff Metric.nhds_basis_closedBall).trans <| by simp
+
+@[deprecated (since := "2024-08-27")] alias _root_.zero_at_im_infty := isZeroAtImInfty_iff
+
+theorem IsZeroAtImInfty.isBoundedAtImInfty {α : Type*} [SeminormedAddGroup α] {f : ℍ → α}
+    (hf : IsZeroAtImInfty f) : IsBoundedAtImInfty f :=
+  hf.boundedAtFilter
 
 lemma tendsto_comap_im_ofComplex :
     Tendsto ofComplex (comap Complex.im atTop) atImInfty := by

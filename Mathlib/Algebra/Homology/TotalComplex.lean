@@ -6,6 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.Algebra.Homology.ComplexShapeSigns
 import Mathlib.Algebra.Homology.HomologicalBicomplex
+import Mathlib.Algebra.Module.Basic
 
 /-!
 # The total complex of a bicomplex
@@ -23,6 +24,8 @@ differentials `(K.X p).X q ⟶ (K.X (p + 1)).X q` and `(-1) ^ p` times the verti
 differentials `(K.X p).X q ⟶ (K.X p).X (q + 1)`.
 
 -/
+
+assert_not_exists TwoSidedIdeal
 
 open CategoryTheory Category Limits Preadditive
 

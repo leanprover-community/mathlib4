@@ -47,8 +47,8 @@ nonrec def angle (p1 p2 p3 : P) : ℝ :=
 theorem continuousAt_angle {x : P × P × P} (hx12 : x.1 ≠ x.2.1) (hx32 : x.2.2 ≠ x.2.1) :
     ContinuousAt (fun y : P × P × P => ∠ y.1 y.2.1 y.2.2) x := by
   let f : P × P × P → V × V := fun y => (y.1 -ᵥ y.2.1, y.2.2 -ᵥ y.2.1)
-  have hf1 : (f x).1 ≠ 0 := by simp [hx12]
-  have hf2 : (f x).2 ≠ 0 := by simp [hx32]
+  have hf1 : (f x).1 ≠ 0 := by simp [f, hx12]
+  have hf2 : (f x).2 ≠ 0 := by simp [f, hx32]
   exact (InnerProductGeometry.continuousAt_angle hf1 hf2).comp
     ((continuous_fst.vsub continuous_snd.fst).prod_mk
       (continuous_snd.snd.vsub continuous_snd.fst)).continuousAt
@@ -136,9 +136,6 @@ nonrec theorem angle_le_pi (p1 p2 p3 : P) : ∠ p1 p2 p3 ≤ π :=
 /-- The angle ∠ABA at a point is `0`, unless `A = B`. -/
 theorem angle_self_of_ne (h : p ≠ p₀) : ∠ p p₀ p = 0 := angle_self <| vsub_ne_zero.2 h
 
-@[deprecated (since := "2024-02-14")] alias angle_eq_left := angle_self_left
-@[deprecated (since := "2024-02-14")] alias angle_eq_right := angle_self_right
-@[deprecated (since := "2024-02-14")] alias angle_eq_of_ne := angle_self_of_ne
 
 /-- If the angle ∠ABC at a point is π, the angle ∠BAC is 0. -/
 theorem angle_eq_zero_of_angle_eq_pi_left {p1 p2 p3 : P} (h : ∠ p1 p2 p3 = π) : ∠ p2 p1 p3 = 0 := by

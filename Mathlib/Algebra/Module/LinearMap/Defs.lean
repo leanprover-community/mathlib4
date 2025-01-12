@@ -5,6 +5,8 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
   Frédéric Dupuis, Heather Macbeth
 -/
 import Mathlib.Algebra.Group.Hom.Instances
+import Mathlib.Algebra.Module.NatInt
+import Mathlib.Algebra.Module.RingHom
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.GroupTheory.GroupAction.Hom
 
@@ -425,7 +427,7 @@ theorem restrictScalars_apply (fₗ : M →ₗ[S] M₂) (x) : restrictScalars R 
 
 theorem restrictScalars_injective :
     Function.Injective (restrictScalars R : (M →ₗ[S] M₂) → M →ₗ[R] M₂) := fun _ _ h ↦
-  ext (LinearMap.congr_fun h : _)
+  ext (LinearMap.congr_fun h :)
 
 @[simp]
 theorem restrictScalars_inj (fₗ gₗ : M →ₗ[S] M₂) :
@@ -568,7 +570,7 @@ instance CompatibleSMul.intModule {S : Type*} [Semiring S] [Module S M] [Module 
 
 instance CompatibleSMul.units {R S : Type*} [Monoid R] [MulAction R M] [MulAction R M₂]
     [Semiring S] [Module S M] [Module S M₂] [CompatibleSMul M M₂ R S] : CompatibleSMul M M₂ Rˣ S :=
-  ⟨fun fₗ c x ↦ (CompatibleSMul.map_smul fₗ (c : R) x : _)⟩
+  ⟨fun fₗ c x ↦ (CompatibleSMul.map_smul fₗ (c : R) x :)⟩
 
 end AddCommGroup
 
@@ -594,14 +596,14 @@ variable [Semiring R] [Module R M] [Semiring S] [Module S M₂] [Module R M₃]
 variable {σ : R →+* S}
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
-@[deprecated (since := "2024-11-08")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-08")]
 def toSemilinearMap (fₗ : M →ₑ+[σ.toMonoidHom] M₂) : M →ₛₗ[σ] M₂ :=
   { fₗ with }
 
 instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
-@[deprecated (since := "2024-11-08")]
+@[deprecated "No deprecation message was provided." (since := "2024-11-08")]
 def toLinearMap (fₗ : M →+[R] M₃) : M →ₗ[R] M₃ :=
   { fₗ with }
 

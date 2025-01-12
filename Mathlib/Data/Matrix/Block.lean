@@ -3,6 +3,8 @@ Copyright (c) 2018 Ellen Arlt. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ellen Arlt, Blair Shi, Sean Leather, Mario Carneiro, Johan Commelin
 -/
+import Mathlib.Data.Matrix.Basic
+import Mathlib.Data.Matrix.Composition
 import Mathlib.Data.Matrix.ConjTranspose
 
 /-!
@@ -20,7 +22,6 @@ import Mathlib.Data.Matrix.ConjTranspose
   ring homomorphisms, `Matrix.blockDiagonal'RingHom`.
 * `Matrix.blockDiag'`: extract the blocks from the diagonal of a block diagonal matrix.
 -/
-
 
 variable {l m n o p q : Type*} {m' n' p' : o → Type*}
 variable {R : Type*} {S : Type*} {α : Type*} {β : Type*}
@@ -40,7 +41,7 @@ dimensions. -/
 @[pp_nodot]
 def fromBlocks (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α) (D : Matrix o m α) :
     Matrix (n ⊕ o) (l ⊕ m) α :=
-  of <| Sum.elim (fun i => Sum.elim (A i) (B i)) fun i => Sum.elim (C i) (D i)
+  of <| Sum.elim (fun i => Sum.elim (A i) (B i)) (fun j => Sum.elim (C j) (D j))
 
 @[simp]
 theorem fromBlocks_apply₁₁ (A : Matrix n l α) (B : Matrix n m α) (C : Matrix o l α)
@@ -309,7 +310,7 @@ section Zero
 
 variable [Zero α] [Zero β]
 
-/-- `Matrix.blockDiagonal M` turns a homogenously-indexed collection of matrices
+/-- `Matrix.blockDiagonal M` turns a homogeneously-indexed collection of matrices
 `M : o → Matrix m n α'` into an `m × o`-by-`n × o` block matrix which has the entries of `M` along
 the diagonal and zero elsewhere.
 
@@ -833,3 +834,29 @@ theorem toBlock_mul_eq_add {m n k : Type*} [Fintype n] (p : m → Prop) (q : n �
 end
 
 end Matrix
+
+section Maps
+
+variable {R α β ι : Type*}
+
+lemma Matrix.map_toSquareBlock
+    (f : α → β) {M : Matrix m m α} {ι} {b : m → ι} {i : ι} :
+    (M.map f).toSquareBlock b i = (M.toSquareBlock b i).map f :=
+  submatrix_map _ _ _ _
+
+lemma Matrix.comp_toSquareBlock {b : m → α}
+    (M : Matrix m m (Matrix n n R)) (a : α) :
+    letI equiv := Equiv.prodSubtypeFstEquivSubtypeProd.symm
+    (M.comp m m n n R).toSquareBlock (fun i ↦ b i.1) a =
+      ((M.toSquareBlock b a).comp _ _ n n R).reindex equiv equiv :=
+  rfl
+
+variable [Zero R] [DecidableEq m]
+
+lemma Matrix.comp_diagonal (d) :
+    comp m m n n R (diagonal d) =
+      (blockDiagonal d).reindex (.prodComm ..) (.prodComm ..) := by
+  ext
+  simp [diagonal, blockDiagonal, Matrix.ite_apply]
+
+end Maps

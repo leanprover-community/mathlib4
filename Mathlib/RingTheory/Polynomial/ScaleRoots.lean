@@ -20,8 +20,6 @@ variable {R S A K : Type*}
 
 namespace Polynomial
 
-open Polynomial
-
 section Semiring
 
 variable [Semiring R] [Semiring S]

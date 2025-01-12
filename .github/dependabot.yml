@@ -3,7 +3,8 @@ version: 2  # Specifies the version of the Dependabot configuration file format
 updates:
   # Configuration for dependency updates
   - package-ecosystem: "github-actions"  # Specifies the ecosystem to check for updates
-    directory: "/"  # Specifies the directory to check for dependencies; "/" means the root directory
+    directories: 
+      - "/.github/*" # covers `build.in.yml` as well, which is not in `.github/workflows/` because it shouldn't be run in CI.
     schedule:
       # Check for updates to GitHub Actions every month
       interval: "monthly"

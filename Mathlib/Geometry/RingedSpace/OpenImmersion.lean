@@ -130,7 +130,7 @@ theorem isoRestrict_hom_ofRestrict : (isoRestrict f).hom ≫ Y.ofRestrict _ = f 
   erw [Category.comp_id, comp_c_app, f.c.naturality_assoc, ← X.presheaf.map_comp]
   trans f.c.app x ≫ X.presheaf.map (𝟙 _)
   · congr 1
-  · erw [X.presheaf.map_id, Category.comp_id]
+  · simp
 
 @[reassoc (attr := simp)]
 theorem isoRestrict_inv_ofRestrict : (isoRestrict f).inv ≫ f = Y.ofRestrict _ := by
@@ -156,7 +156,7 @@ instance comp {Z : PresheafedSpace C} (g : Y ⟶ Z) [hg : IsOpenImmersion g] :
     · exact c_iso' g ((opensFunctor f).obj U) (by ext; simp)
     · apply c_iso' f U
       ext1
-      dsimp only [Opens.map_coe, IsOpenMap.functor_obj_coe, comp_base, TopCat.coe_comp]
+      dsimp only [Opens.map_coe, IsOpenMap.coe_functor_obj, comp_base, TopCat.coe_comp]
       rw [Set.image_comp, Set.preimage_image_eq _ hg.base_open.injective]
 
 /-- For an open immersion `f : X ⟶ Y` and an open set `U ⊆ X`, we have the map `X(U) ⟶ Y(U)`. -/
@@ -417,7 +417,7 @@ theorem pullbackConeOfLeftLift_snd :
     erw [← s.pt.presheaf.map_comp, ← s.pt.presheaf.map_comp]
     trans s.snd.c.app x ≫ s.pt.presheaf.map (𝟙 _)
     · congr 1
-    · rw [s.pt.presheaf.map_id]; erw [Category.comp_id]
+    · simp
 
 instance pullbackConeSndIsOpenImmersion : IsOpenImmersion (pullbackConeOfLeft f g).snd := by
   erw [CategoryTheory.Limits.PullbackCone.mk_snd]
@@ -456,8 +456,8 @@ instance pullbackToBaseIsOpenImmersion [IsOpenImmersion g] :
   rw [← limit.w (cospan f g) WalkingCospan.Hom.inl, cospan_map_inl]
   infer_instance
 
-instance forgetPreservesLimitsOfLeft : PreservesLimit (cospan f g) (forget C) :=
-  preservesLimitOfPreservesLimitCone (pullbackConeOfLeftIsLimit f g)
+instance forget_preservesLimitsOfLeft : PreservesLimit (cospan f g) (forget C) :=
+  preservesLimit_of_preserves_limit_cone (pullbackConeOfLeftIsLimit f g)
     (by
       apply (IsLimit.postcomposeHomEquiv (diagramIsoCospan _) _).toFun
       refine (IsLimit.equivIsoLimit ?_).toFun (limit.isLimit (cospan f.base g.base))
@@ -471,8 +471,8 @@ instance forgetPreservesLimitsOfLeft : PreservesLimit (cospan f g) (forget C) :=
       · exact Category.comp_id _
       · exact Category.comp_id _)
 
-instance forgetPreservesLimitsOfRight : PreservesLimit (cospan g f) (forget C) :=
-  preservesPullbackSymmetry (forget C) f g
+instance forget_preservesLimitsOfRight : PreservesLimit (cospan g f) (forget C) :=
+  preservesPullback_symmetry (forget C) f g
 
 theorem pullback_snd_isIso_of_range_subset (H : Set.range g.base ⊆ Set.range f.base) :
     IsIso (pullback.snd f g) := by
@@ -665,18 +665,20 @@ instance forgetCreatesPullbackOfRight : CreatesLimit (cospan g f) forget :=
     (eqToIso (show pullback _ _ = pullback _ _ by congr) ≪≫
       HasLimit.isoOfNatIso (diagramIsoCospan _).symm)
 
-instance sheafedSpaceForgetPreservesOfLeft : PreservesLimit (cospan f g) (SheafedSpace.forget C) :=
-  @Limits.compPreservesLimit _ _ _ _ _ _ (cospan f g) _ _ forget (PresheafedSpace.forget C)
+instance sheafedSpace_forgetPreserves_of_left :
+    PreservesLimit (cospan f g) (SheafedSpace.forget C) :=
+  @Limits.comp_preservesLimit _ _ _ _ _ _ (cospan f g) _ _ forget (PresheafedSpace.forget C)
     inferInstance <| by
       have : PreservesLimit
         (cospan ((cospan f g ⋙ forget).map Hom.inl)
           ((cospan f g ⋙ forget).map Hom.inr)) (PresheafedSpace.forget C) := by
         dsimp
         infer_instance
-      apply preservesLimitOfIsoDiagram _ (diagramIsoCospan _).symm
+      apply preservesLimit_of_iso_diagram _ (diagramIsoCospan _).symm
 
-instance sheafedSpaceForgetPreservesOfRight : PreservesLimit (cospan g f) (SheafedSpace.forget C) :=
-  preservesPullbackSymmetry _ _ _
+instance sheafedSpace_forgetPreserves_of_right :
+    PreservesLimit (cospan g f) (SheafedSpace.forget C) :=
+  preservesPullback_symmetry _ _ _
 
 instance sheafedSpace_hasPullback_of_left : HasPullback f g :=
   hasLimit_of_created (cospan f g) forget
@@ -962,6 +964,7 @@ def pullbackConeOfLeft : PullbackCone f g := by
     rw [PresheafedSpace.stalkMap.comp, PresheafedSpace.stalkMap.comp] at this
     rw [← IsIso.eq_inv_comp] at this
     rw [this]
+    dsimp
     infer_instance
   · exact LocallyRingedSpace.Hom.ext'
         (PresheafedSpace.IsOpenImmersion.pullback_cone_of_left_condition _ _)
@@ -1021,17 +1024,17 @@ instance pullback_to_base_isOpenImmersion [LocallyRingedSpace.IsOpenImmersion g]
   rw [← limit.w (cospan f g) WalkingCospan.Hom.inl, cospan_map_inl]
   infer_instance
 
-instance forgetPreservesPullbackOfLeft :
+instance forget_preservesPullbackOfLeft :
     PreservesLimit (cospan f g) LocallyRingedSpace.forgetToSheafedSpace :=
-  preservesLimitOfPreservesLimitCone (pullbackConeOfLeftIsLimit f g) <| by
+  preservesLimit_of_preserves_limit_cone (pullbackConeOfLeftIsLimit f g) <| by
     apply (isLimitMapConePullbackConeEquiv _ _).symm.toFun
     apply isLimitOfIsLimitPullbackConeMap SheafedSpace.forgetToPresheafedSpace
     exact PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftIsLimit f.1 g.1
 
-instance forgetToPresheafedSpacePreservesPullbackOfLeft :
+instance forgetToPresheafedSpace_preservesPullback_of_left :
     PreservesLimit (cospan f g)
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) :=
-  preservesLimitOfPreservesLimitCone (pullbackConeOfLeftIsLimit f g) <| by
+  preservesLimit_of_preserves_limit_cone (pullbackConeOfLeftIsLimit f g) <| by
     apply (isLimitMapConePullbackConeEquiv _ _).symm.toFun
     exact PresheafedSpace.IsOpenImmersion.pullbackConeOfLeftIsLimit f.1 g.1
 
@@ -1040,7 +1043,7 @@ instance forgetToPresheafedSpacePreservesOpenImmersion :
       ((LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace).map f) :=
   H
 
-instance forgetToTopPreservesPullbackOfLeft :
+instance forgetToTop_preservesPullback_of_left :
     PreservesLimit (cospan f g)
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forget _) := by
   change PreservesLimit _ <|
@@ -1056,35 +1059,35 @@ instance forgetToTopPreservesPullbackOfLeft :
     dsimp; infer_instance
   have : PreservesLimit (cospan f g ⋙ forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace)
       (PresheafedSpace.forget CommRingCat) := by
-    apply preservesLimitOfIsoDiagram _ (diagramIsoCospan _).symm
-  apply Limits.compPreservesLimit
+    apply preservesLimit_of_iso_diagram _ (diagramIsoCospan _).symm
+  apply Limits.comp_preservesLimit
 
-instance forgetReflectsPullbackOfLeft :
+instance forget_reflectsPullback_of_left :
     ReflectsLimit (cospan f g) LocallyRingedSpace.forgetToSheafedSpace :=
-  reflectsLimitOfReflectsIsomorphisms _ _
+  reflectsLimit_of_reflectsIsomorphisms _ _
 
-instance forgetPreservesPullbackOfRight :
+instance forget_preservesPullback_of_right :
     PreservesLimit (cospan g f) LocallyRingedSpace.forgetToSheafedSpace :=
-  preservesPullbackSymmetry _ _ _
+  preservesPullback_symmetry _ _ _
 
-instance forgetToPresheafedSpacePreservesPullbackOfRight :
+instance forgetToPresheafedSpace_preservesPullback_of_right :
     PreservesLimit (cospan g f)
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) :=
-  preservesPullbackSymmetry _ _ _
+  preservesPullback_symmetry _ _ _
 
-instance forgetReflectsPullbackOfRight :
+instance forget_reflectsPullback_of_right :
     ReflectsLimit (cospan g f) LocallyRingedSpace.forgetToSheafedSpace :=
-  reflectsLimitOfReflectsIsomorphisms _ _
+  reflectsLimit_of_reflectsIsomorphisms _ _
 
-instance forgetToPresheafedSpaceReflectsPullbackOfLeft :
+instance forgetToPresheafedSpace_reflectsPullback_of_left :
     ReflectsLimit (cospan f g)
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) :=
-  reflectsLimitOfReflectsIsomorphisms _ _
+  reflectsLimit_of_reflectsIsomorphisms _ _
 
-instance forgetToPresheafedSpaceReflectsPullbackOfRight :
+instance forgetToPresheafedSpace_reflectsPullback_of_right :
     ReflectsLimit (cospan g f)
       (LocallyRingedSpace.forgetToSheafedSpace ⋙ SheafedSpace.forgetToPresheafedSpace) :=
-  reflectsLimitOfReflectsIsomorphisms _ _
+  reflectsLimit_of_reflectsIsomorphisms _ _
 
 theorem pullback_snd_isIso_of_range_subset (H' : Set.range g.base ⊆ Set.range f.base) :
     IsIso (pullback.snd f g) := by
@@ -1204,7 +1207,7 @@ theorem invApp_app (U : Opens X) :
       (eqToHom (by simp [Opens.map, Set.preimage_image_eq _ H.base_open.injective])) :=
   PresheafedSpace.IsOpenImmersion.invApp_app f.1 U
 
-attribute [elementwise] invApp_app
+attribute [elementwise nosimp] invApp_app
 
 @[reassoc (attr := simp)]
 theorem app_invApp (U : Opens Y) :
