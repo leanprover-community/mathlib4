@@ -3,6 +3,7 @@ Copyright (c) 2025 Mitchell Horner. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mitchell Horner
 -/
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Combinatorics.SimpleGraph.Maps
 
