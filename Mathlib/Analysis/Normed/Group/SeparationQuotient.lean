@@ -29,10 +29,6 @@ All the following definitions are in the `SeparationQuotient` namespace. Hence w
 
 * `norm_liftNormedAddGroupHom_le` : `‖liftNormedAddGroupHom f hf‖ ≤ ‖f‖`.
 
-## Implementation details
-
-For any `SeminormedAddCommGroup M`, we define a norm on `SeparationQuotient M` by
-`‖x‖ = ‖mk x‖` using the lift.
 
 -/
 
