@@ -44,12 +44,12 @@ lemma rlp_of_isIso {X Y : C} (f : X ⟶ Y) [IsIso f] :
     T.rlp f :=
   fun _ _ _ _ ↦ inferInstance
 
-lemma llp_isStableUnderRetracts : T.llp.IsStableUnderRetracts where
+instance llp_isStableUnderRetracts : T.llp.IsStableUnderRetracts where
   of_retract h hg _ _ f hf :=
     letI := hg _ hf
     h.leftLiftingProperty f
 
-lemma rlp_isStableUnderRetracts : T.rlp.IsStableUnderRetracts where
+instance rlp_isStableUnderRetracts : T.rlp.IsStableUnderRetracts where
   of_retract h hf _ _ g hg :=
     letI := hf _ hg
     h.rightLiftingProperty g
