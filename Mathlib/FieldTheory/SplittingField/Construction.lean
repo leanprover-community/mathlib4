@@ -44,6 +44,29 @@ namespace SplittingField
 
 variable (f : K[X])
 
+instance commRing : CommRing (SplittingField f) :=
+  inferInstance
+
+instance inhabited : Inhabited (SplittingField f) :=
+  ⟨37⟩
+
+instance algebra : Algebra K (SplittingField f) :=
+  inferInstance
+
+instance algebra' {R : Type*} [CommSemiring R] [Algebra R K] : Algebra R (SplittingField f) :=
+  inferInstance
+
+instance isScalarTower {R : Type*} [CommSemiring R] [Algebra R K] :
+    IsScalarTower R K (SplittingField f) :=
+  f.SplittingField.isScalarTower
+
+instance instGroupWithZero : GroupWithZero (SplittingField f) := inferInstance
+
+instance instField : Field (SplittingField f) := inferInstance
+
+instance instCharZero [CharZero K] : CharZero (SplittingField f) :=
+  inferInstance
+
 instance instCharP (p : ℕ) [CharP K p] : CharP (SplittingField f) p :=
   charP_of_injective_algebraMap (algebraMap K _).injective p
 
