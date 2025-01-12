@@ -168,6 +168,15 @@ theorem eq_algebraMap_or_inv_eq_algebraMap (hv : Integers v O) (x : F) :
   obtain ⟨a, ha⟩ := exists_of_le_one hv h
   exacts [⟨a, Or.inl ha.symm⟩, ⟨a, Or.inr ha.symm⟩]
 
+lemma bijective_algebraMap_of_subsingleton_units_mrange (hv : Integers v O)
+    [Subsingleton (MonoidHom.mrange v)ˣ] :
+    Function.Bijective (algebraMap O F) := by
+  refine ⟨hv.hom_inj, fun x ↦ hv.exists_of_le_one ?_⟩
+  rcases eq_or_ne x 0 with rfl|hx
+  · simp
+  · exact (congr_arg Units.val (Subsingleton.elim (α := (MonoidHom.mrange v)ˣ)
+      ((isUnit_iff_ne_zero.mpr hx).unit.map v.toMonoidHom.mrangeRestrict) 1)).le
+
 lemma isPrincipal_iff_exists_isGreatest (hv : Integers v O) {I : Ideal O} :
     I.IsPrincipal ↔ ∃ x, IsGreatest (v ∘ algebraMap O F '' I) x := by
   constructor <;> rintro ⟨x, hx⟩
