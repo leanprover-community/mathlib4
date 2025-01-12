@@ -530,7 +530,8 @@ private lemma respects_isOpenImmersion_aux
       let f' : (V s).toScheme ⟶ U.ι ⁻¹ᵁ s := f ∣_ U.ι ⁻¹ᵁ s
       have hf' : P f' := IsLocalAtTarget.restrict hf _
       let e : (U.ι ⁻¹ᵁ s).toScheme ≅ s := IsOpenImmersion.isoOfRangeEq ((U.ι ⁻¹ᵁ s).ι ≫ U.ι) s.1.ι
-        (by simpa [Set.range_comp, Set.image_preimage_eq_iff, heq] using le_sSup s.2)
+        (by simpa only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp, Scheme.Opens.range_ι,
+          Opens.map_coe, Set.image_preimage_eq_iff, heq, Opens.coe_sSup] using le_sSup s.2)
       have heq : (V s).ι ≫ f ≫ U.ι = f' ≫ e.hom ≫ s.1.ι := by
         simp only [V, IsOpenImmersion.isoOfRangeEq_hom_fac, f', e, morphismRestrict_ι_assoc]
       rw [heq, ← Category.assoc]
@@ -658,7 +659,7 @@ lemma of_stalkMap (hQ : OfLocalizationPrime Q) (H : ∀ x, Q (f.stalkMap x).hom)
       apply H
     · use Γ(Y, ⊤), Γ(X, ⊤)
   obtain ⟨R, S, rfl, rfl⟩ := hXY
-  obtain ⟨φ, rfl⟩ := Spec.exists_preimage_map f
+  obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   rw [Spec_iff (P := P)]
   apply hQ
   intro P hP
