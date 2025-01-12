@@ -222,7 +222,7 @@ theorem isRightKanExtension :
     (isPointwiseRightKanExtension X segal)
 
 /-- When `X` is `StrictSegal`, `X` is 2-coskeletal. -/
-instance isCoskeletal : SimplicialObject.IsCoskeletal X 2 where
+def isCoskeletal : SimplicialObject.IsCoskeletal X 2 where
   isRightKanExtension := isRightKanExtension X segal
 
 end StrictSegal
