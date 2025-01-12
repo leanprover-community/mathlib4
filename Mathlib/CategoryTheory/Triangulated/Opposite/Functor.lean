@@ -41,7 +41,7 @@ noncomputable scoped instance commShiftFunctorOpInt : F.op.CommShift ℤ :=
 
 variable {F}
 
-noncomputable scoped instance commShiftOpInt_natTrans {G : C ⥤ D} [G.CommShift ℤ] (τ : F ⟶ G)
+noncomputable scoped instance commShift_natTrans_op_int {G : C ⥤ D} [G.CommShift ℤ] (τ : F ⟶ G)
     [NatTrans.CommShift τ ℤ] : NatTrans.CommShift (NatTrans.op τ) ℤ :=
   inferInstanceAs (NatTrans.CommShift (PullbackShift.natTrans
     (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))
