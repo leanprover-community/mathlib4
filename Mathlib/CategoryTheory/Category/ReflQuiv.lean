@@ -204,15 +204,14 @@ theorem adj.unit.component_eq (V : ReflQuiv.{max u v, u}) :
 /-- The counit components are defined using the universal property of the quotient
 from the corresponding counit component for the adjunction between categories and quivers.-/
 @[simps!]
-def adj.counit.app (C : Cat) : Cat.freeRefl.obj (forget.obj C) ⥤ C := by
-  fapply Quotient.lift
-  · exact Quiv.adj.counit.app C
-  · intro x y f g rel
+def adj.counit.app (C : Cat) : Cat.freeRefl.obj (forget.obj C) ⥤ C :=
+  Quotient.lift Cat.FreeReflRel (Quiv.adj.counit.app C) (by
+    intro x y f g rel
     cases rel
     unfold Quiv.adj
     simp only [Adjunction.mkOfHomEquiv_counit_app, Equiv.coe_fn_symm_mk,
       Quiv.lift_map, Prefunctor.mapPath_toPath, composePath_toPath]
-    rfl
+    rfl)
 
 /-- The counit of `ReflQuiv.adj` is closely related to the counit of `Quiv.adj`.-/
 @[simp]
