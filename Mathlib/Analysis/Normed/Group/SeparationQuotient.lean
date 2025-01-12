@@ -77,10 +77,8 @@ noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
 theorem norm_liftNormedAddGroupHom_apply_le (f : NormedAddGroupHom M N)
     (hf : ∀ x, ‖x‖ = 0 → f x = 0) (x : SeparationQuotient M) :
     ‖liftNormedAddGroupHom f hf x‖ ≤ ‖f‖ * ‖x‖ := by
-  obtain ⟨x', hx'⟩ := surjective_mk x
-  rw [← hx']
-  simp only [coe_toAddMonoidHom, lift_mk, norm_mk]
-  exact le_opNorm f x'
+  obtain ⟨x, rfl⟩ := surjective_mk x
+  exact le_opNorm f x
 
 /-- The equivalence between `NormedAddGroupHom M N` vanishing on the inseparable setoid and
 `NormedAddGroupHom (SeparationQuotient M) N`. -/
