@@ -34,7 +34,7 @@ elab "apply" t:term "at" i:ident : tactic => withSynthesize <| withMainContext d
       try m.mvarId!.inferInstance
       catch _ => continue
   let applied ← mkAppOptM' f (mvs.pop.push ldecl.toExpr |>.map fun e => some e)
-  let appliedTy ← inferType applied
+  let appliedType ← inferType applied
   unless (← isDefEq appliedTy tp) do
     logError m!"assertion failed: {applied} has type {appliedTy}, expected {tp}"
   let mainGoal ← mainGoal.assert ldecl.userName appliedTy applied
