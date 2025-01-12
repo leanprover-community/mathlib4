@@ -8,7 +8,7 @@ import Mathlib.Combinatorics.SimpleGraph.Subgraph
 /-!
 # Subgraph isomorphism
 
-This modules defines subgraph isomorphisms for simple graphs.
+This file defines subgraph isomorphisms for simple graphs.
 
 ## Main definitions
 
