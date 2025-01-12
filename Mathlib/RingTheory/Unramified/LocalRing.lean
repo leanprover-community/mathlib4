@@ -146,4 +146,3 @@ lemma isUnramifiedAt_iff_map_eq [EssFiniteType R S]
 end IsUnramifiedAt
 
 end Algebra
-#min_imports
