@@ -730,7 +730,6 @@ instance (n : ℕ) : SmallCategory.{0} (Truncated n) :=
   FullSubcategory.category _
 
 namespace Truncated
-open Mathlib.Tactic (subscriptTerm)
 
 instance {n} : Inhabited (Truncated n) :=
   ⟨⟨[0], by simp⟩⟩
@@ -764,16 +763,17 @@ macro "leq_tac" : tactic =>
 macro "trunc" : tactic =>
   `(tactic| first | leq_tac | dsimp only [SimplexCategory.len_mk]; omega)
 
+open Mathlib.Tactic (subscriptTerm) in
 /-- For `m ≤ n`, `[m]ₙ` is the `m`-dimensional simplex in `Truncated n`. The
 proof `p : m ≤ n` can also be provided using the syntax `[m, p]ₙ`. -/
 scoped syntax:max (name := mkNotation) (priority := high)
   "[" term ("," term)? "]" noWs subscriptTerm : term
 macro_rules
   | `([$m:term]$n:subscript) => `((⟨SimplexCategory.mk $m,
-    by first | trunc | fail "Failed to prove truncation property."⟩ :
-    SimplexCategory.Truncated $n))
-  | `([$m:term, $p:term]$n:subscript) => `((⟨SimplexCategory.mk $m, $p⟩ :
-    SimplexCategory.Truncated $n))
+      by first | trunc | fail "Failed to prove truncation property."⟩ :
+      SimplexCategory.Truncated $n))
+  | `([$m:term, $p:term]$n:subscript) =>
+      `((⟨SimplexCategory.mk $m, $p⟩ : SimplexCategory.Truncated $n))
 
 end Truncated
 

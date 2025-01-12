@@ -222,7 +222,6 @@ instance {n : ℕ} : Category (Truncated C n) := by
 variable {C}
 
 namespace Truncated
-open Mathlib.Tactic (subscriptTerm)
 
 instance {n} {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
     HasLimitsOfShape J (SimplicialObject.Truncated C n) := by
@@ -249,18 +248,19 @@ def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Tr
 
 variable {C}
 
+open Mathlib.Tactic (subscriptTerm) in
 /-- For `X : Truncated n` and `m ≤ n`, `X _[m]ₙ` is the `m`-th term of X. The
 proof `p : m ≤ n` can also be provided using the syntax `X _[m, p]ₙ`. -/
 scoped syntax:max (name := mkNotation) (priority := high)
   term " _[" term ("," term)? "]" noWs subscriptTerm : term
 macro_rules
   | `($X:term _[$m:term]$n:subscript) =>
-    `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
-    (Opposite.op ⟨SimplexCategory.mk $m,
+      `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
+      (Opposite.op ⟨SimplexCategory.mk $m,
     by first | trunc | fail "Failed to prove truncation property."⟩))
   | `($X:term _[$m:term, $p:term]$n:subscript) =>
-    `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
-    (Opposite.op ⟨SimplexCategory.mk $m, $p⟩))
+      `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
+      (Opposite.op ⟨SimplexCategory.mk $m, $p⟩))
 
 end Truncated
 
@@ -670,7 +670,6 @@ instance {n : ℕ} : Category (Truncated C n) := by
 variable {C}
 
 namespace Truncated
-open Mathlib.Tactic (subscriptTerm)
 
 instance {n} {J : Type v} [SmallCategory J] [HasLimitsOfShape J C] :
     HasLimitsOfShape J (CosimplicialObject.Truncated C n) := by
@@ -697,18 +696,19 @@ def whiskering {n} (D : Type*) [Category D] : (C ⥤ D) ⥤ Truncated C n ⥤ Tr
 
 variable {C}
 
+open Mathlib.Tactic (subscriptTerm) in
 /-- For `X : Truncated n` and `m ≤ n`, `X _[m]ₙ` is the `m`-th term of X. The
 proof `p : m ≤ n` can also be provided using the syntax `X _[m, p]ₙ`. -/
 scoped syntax:max (name := mkNotation) (priority := high)
   term " _[" term ("," term)? "]" noWs subscriptTerm : term
 macro_rules
   | `($X:term _[$m:term]$n:subscript) =>
-    `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
-    ⟨SimplexCategory.mk $m,
+      `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
+      ⟨SimplexCategory.mk $m,
     by first | trunc | fail "Failed to prove truncation property."⟩)
   | `($X:term _[$m:term, $p:term]$n:subscript) =>
-    `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
-    ⟨SimplexCategory.mk $m, $p⟩)
+      `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
+      ⟨SimplexCategory.mk $m, $p⟩)
 
 end Truncated
 
