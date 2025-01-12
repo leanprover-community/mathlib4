@@ -260,9 +260,8 @@ theorem Prod.semiconjBy_iff {x y z : M × N} :
     SemiconjBy x y z ↔ SemiconjBy x.1 y.1 z.1 ∧ SemiconjBy x.2 y.2 z.2 := Prod.ext_iff
 
 @[to_additive AddCommute.prod]
-nonrec theorem Commute.prod {x y : M × N}
-    (hm : Commute x.1 y.1) (hn : Commute x.2 y.2) : Commute x y :=
-  .prod hm hn
+theorem Commute.prod {x y : M × N} (hm : Commute x.1 y.1) (hn : Commute x.2 y.2) : Commute x y :=
+  SemiconjBy.prod hm hn
 
 @[to_additive]
 theorem Prod.commute_iff {x y : M × N} :
