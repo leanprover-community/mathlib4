@@ -121,8 +121,7 @@ theorem liftNormedAddGroupHom_normNoninc {N : Type*} [SeminormedAddCommGroup N]
 theorem norm_normedMk_eq_one (h : ∃ x : M, ‖x‖ ≠ 0) :
     ‖normedMk (M := M)‖ = 1 := by
   apply NormedAddGroupHom.opNorm_eq_of_bounds _ zero_le_one
-  · simp only [normedMk_apply, one_mul]
-    exact fun x ↦ Preorder.le_refl ‖SeparationQuotient.mk x‖
+  · simpa only [normedMk_apply, one_mul] using fun _ ↦ le_rfl
   · simp only [ge_iff_le, normedMk_apply]
     intro N _ hle
     obtain ⟨x, hxnn⟩ := h
