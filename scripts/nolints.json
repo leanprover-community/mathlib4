@@ -175,8 +175,6 @@
  ["docBlame", "LinearRecurrence.coeffs"],
  ["docBlame", "LinearRecurrence.order"],
  ["docBlame", "MagmaCat.forget_obj_eq_coe"],
- ["docBlame", "Matrix.«term_⊕ᵥ_»"],
- ["docBlame", "Matrix.«term_⊙_»"],
  ["docBlame", "MaximalSpectrum.asIdeal"],
  ["docBlame", "MeasureTheory.«term_[_|_]»"],
  ["docBlame", "MeasureTheory.«term_→₁[_]_»"],
