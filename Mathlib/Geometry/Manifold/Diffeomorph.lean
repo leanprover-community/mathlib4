@@ -64,7 +64,7 @@ section Defs
 variable (I I' M M' n)
 
 /-- `n`-times continuously differentiable diffeomorphism between `M` and `M'` with respect to `I`
-and `I'`. -/
+and `I'`. Notation `M ≃ₘ^n⟮I, I'⟯ M'` in the Manifold namespace. -/
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): was @[nolint has_nonempty_instance]
 structure Diffeomorph extends M ≃ M' where
   protected contMDiff_toFun : ContMDiff I I' n toEquiv

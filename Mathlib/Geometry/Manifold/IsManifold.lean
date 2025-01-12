@@ -161,7 +161,7 @@ structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Ty
 
 attribute [simp, mfld_simps] ModelWithCorners.source_eq
 
-/-- A vector space is a model with corners. -/
+/-- A vector space is a model with corners, notation `𝓘(𝕜, E)` in the Manifold namespace. -/
 def modelWithCornersSelf (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] : ModelWithCorners 𝕜 E E where
   toPartialEquiv := PartialEquiv.refl E
