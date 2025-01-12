@@ -357,6 +357,9 @@ instance : OrderBot Ordinal where
 theorem bot_eq_zero : (⊥ : Ordinal) = 0 :=
   rfl
 
+instance instIsEmptyIioZero : IsEmpty (Iio (0 : Ordinal)) := by
+  simp [← bot_eq_zero]
+
 @[simp]
 protected theorem le_zero {o : Ordinal} : o ≤ 0 ↔ o = 0 :=
   le_bot_iff
@@ -966,8 +969,12 @@ theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
 alias nat_cast_succ := natCast_succ
 
 instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
-  default := ⟨0, by simp⟩
+  default := ⟨0, zero_lt_one' Ordinal⟩
   uniq a := Subtype.ext <| lt_one_iff_zero.1 a.2
+
+@[simp]
+theorem Iio_one_default_eq : (default : Iio (1 : Ordinal)) = ⟨0, zero_lt_one' Ordinal⟩ :=
+  rfl
 
 instance uniqueToTypeOne : Unique (toType 1) where
   default := enum (α := toType 1) (· < ·) ⟨0, by simp⟩
