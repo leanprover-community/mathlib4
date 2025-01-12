@@ -26,7 +26,7 @@ namespace SSet.StrictSegal
 open SSet.Truncated
 
 /-- Any `StrictSegal` simplicial set is a `Quasicategory`. -/
-def quasicategory {X : SSet.{u}} (segal : StrictSegal X) : Quasicategory X := by
+theorem quasicategory {X : SSet.{u}} (segal : StrictSegal X) : Quasicategory X := by
   apply quasicategory_of_filler X
   intro n i σ₀ h₀ hₙ
   use segal.spineToSimplex <| Path.map (horn.spineId i h₀ hₙ) σ₀

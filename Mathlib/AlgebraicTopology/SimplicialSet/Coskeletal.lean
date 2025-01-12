@@ -215,14 +215,14 @@ noncomputable def isPointwiseRightKanExtension :
     (rightExtensionInclusion X 2).IsPointwiseRightKanExtension :=
   fun Δ => isPointwiseRightKanExtensionAt X segal Δ.unop.len
 
-include segal in
-theorem isRightKanExtension :
+theorem isRightKanExtension (segal : StrictSegal X):
     X.IsRightKanExtension (𝟙 ((inclusion 2).op ⋙ X)) :=
   RightExtension.IsPointwiseRightKanExtension.isRightKanExtension
     (isPointwiseRightKanExtension X segal)
 
 /-- When `X` is `StrictSegal`, `X` is 2-coskeletal. -/
-def isCoskeletal : SimplicialObject.IsCoskeletal X 2 where
+theorem isCoskeletal (segal : StrictSegal X) :
+    SimplicialObject.IsCoskeletal X 2 where
   isRightKanExtension := isRightKanExtension X segal
 
 end StrictSegal
