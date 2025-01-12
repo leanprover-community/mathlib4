@@ -86,22 +86,15 @@ theorem norm_liftNormedAddGroupHom_apply_le (f : NormedAddGroupHom M N)
 def liftNormedAddGroupHom_equiv {N : Type*} [SeminormedAddCommGroup N] :
     {f : NormedAddGroupHom M N // ∀ x, ‖x‖ = 0 → f x = 0} ≃
     NormedAddGroupHom (SeparationQuotient M) N where
-  toFun := fun f => liftNormedAddGroupHom f f.prop
-  invFun := fun g => ⟨g.comp normedMk, by
+  toFun f := liftNormedAddGroupHom f f.prop
+  invFun g := ⟨g.comp normedMk, by
     intro x hx
     rw [← norm_mk, norm_eq_zero] at hx
-    rw [comp_apply, normedMk_apply, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
-      mkAddMonoidHom_apply, hx]
-    exact map_zero g⟩
-  left_inv := by
-    intro f
-    exact rfl
-  right_inv := by
-    intro g
-    simp only
+    simp [hx]⟩
+  left_inv _ := rfl
+  right_inv _ := by
     ext x
-    rcases surjective_mk x with ⟨x, rfl⟩
-    change g.comp normedMk x = _
+    obtain ⟨x, rfl⟩ := surjective_mk x
     rfl
 
 /-- For a norm-continuous group homomorphism `f`, its lift to the separation quotient
