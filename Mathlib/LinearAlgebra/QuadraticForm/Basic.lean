@@ -1123,7 +1123,7 @@ def PosDef (Q₂ : QuadraticMap R₂ M N) : Prop :=
   ∀ x, x ≠ 0 → 0 < Q₂ x
 
 
-theorem PosDef.smul {R} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R]
+theorem PosDef.smul {R} [CommRing R] [LinearOrder R]
     [Module R M] [Module R N] [PosSMulStrictMono R N]
     {Q : QuadraticMap R M N} (h : PosDef Q) {a : R} (a_pos : 0 < a) : PosDef (a • Q) :=
   fun x hx => smul_pos a_pos (h x hx)
@@ -1152,7 +1152,7 @@ theorem PosDef.add [AddLeftStrictMono N]
     PosDef (Q + Q') :=
   fun x hx => add_pos (hQ x hx) (hQ' x hx)
 
-theorem linMulLinSelfPosDef {R} [CommRing R] [LinearOrder R] [IsStrictOrderedRing R] [Module R M]
+theorem linMulLinSelfPosDef {R} [CommRing R] [LinearOrder R] [Module R M]
     [Semiring A] [LinearOrder A] [IsStrictOrderedRing A]
     [ExistsAddOfLE A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] (f : M →ₗ[R] A)
     (hf : LinearMap.ker f = ⊥) : PosDef (linMulLin (A := A) f f) :=

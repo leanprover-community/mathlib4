@@ -99,7 +99,7 @@ theorem isRat_le_false [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [Nont
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da < na * db)) : ¬a ≤ b :=
   not_le_of_lt (isRat_lt_true hb ha h)
 
-theorem isRat_lt_false [Ring α] [LinearOrder α] [IsStrictOrderedRing α] [Nontrivial α]
+theorem isRat_lt_false [Ring α] [LinearOrder α] [IsStrictOrderedRing α]
     {a b : α} {na nb : ℤ} {da db : ℕ}
     (ha : IsRat a na da) (hb : IsRat b nb db) (h : decide (nb * da ≤ na * db)) : ¬a < b :=
   not_lt_of_le (isRat_le_true hb ha h)
