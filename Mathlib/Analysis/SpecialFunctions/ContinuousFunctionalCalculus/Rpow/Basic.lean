@@ -60,6 +60,9 @@ lemma continuous_nnrpow_const (y : ℝ≥0) : Continuous (nnrpow · y) :=
 /- This is a "redeclaration" of the attribute to speed up the proofs in this file. -/
 attribute [fun_prop] continuousOn_rpow_const
 
+lemma monotone_nnrpow_const (y : ℝ≥0) : Monotone (nnrpow · y) :=
+  monotone_rpow_of_nonneg zero_le_coe
+
 end NNReal
 
 namespace CFC
