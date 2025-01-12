@@ -14,10 +14,10 @@ import Mathlib.RingTheory.Unramified.Locus
 ## Main results
 - `Algebra.FormallyUnramified.iff_map_maximalIdeal_eq`:
   Let `R` be a local ring, `A` be a local `R`-algebra essentially of finite type.
-  Then `A/R` is unramified if and only if `κA/κR` is finite separable, and `m_R S = m_S`.
+  Then `A/R` is unramified if and only if `κA/κR` is separable, and `m_R S = m_S`.
 - `Algebra.isUnramifiedAt_iff_map_eq`:
   Let `A` be an essentially of finite type `R`-algebra, `q` be a prime over `p`.
-  Then `A` is unramified at `p` if and only if `κ(q)/κ(p)` is finite separable, and `pS_q = qS_q`.
+  Then `A` is unramified at `p` if and only if `κ(q)/κ(p)` is separable, and `pS_q = qS_q`.
 -/
 
 open IsLocalRing
@@ -98,10 +98,9 @@ lemma FormallyUnramified.of_map_maximalIdeal
 
 lemma FormallyUnramified.iff_map_maximalIdeal_eq :
     Algebra.FormallyUnramified R S ↔
-      Module.Finite (ResidueField R) (ResidueField S) ∧
       Algebra.IsSeparable (ResidueField R) (ResidueField S) ∧
       (maximalIdeal R).map (algebraMap R S) = maximalIdeal S :=
-  ⟨fun _ ↦ ⟨inferInstance, inferInstance, map_maximalIdeal⟩, fun ⟨_, _, e⟩ ↦ of_map_maximalIdeal e⟩
+  ⟨fun _ ↦ ⟨inferInstance, map_maximalIdeal⟩, fun ⟨_, e⟩ ↦ of_map_maximalIdeal e⟩
 
 end IsLocalRing
 
@@ -117,11 +116,10 @@ instance (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] :
   (Ideal.ResidueField.mapₐ p q Ideal.LiesOver.over).toAlgebra
 
 /-- Let `A` be an essentially of finite type `R`-algebra, `q` be a prime over `p`.
-Then `A` is unramified at `p` if and only if `κ(q)/κ(p)` is finite separable, and `pS_q = qS_q`. -/
+Then `A` is unramified at `p` if and only if `κ(q)/κ(p)` is separable, and `pS_q = qS_q`. -/
 lemma isUnramifiedAt_iff_map_eq [EssFiniteType R S]
     (p : Ideal R) [p.IsPrime] (q : Ideal S) [q.IsPrime] [q.LiesOver p] :
     Algebra.IsUnramifiedAt R q ↔
-      Module.Finite p.ResidueField q.ResidueField ∧
       Algebra.IsSeparable p.ResidueField q.ResidueField ∧
       p.map (algebraMap R (Localization.AtPrime q)) = maximalIdeal _ := by
   letI : Algebra (Localization.AtPrime p) (Localization.AtPrime q) :=
