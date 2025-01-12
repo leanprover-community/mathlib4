@@ -15,13 +15,13 @@ of `G`: this is defined as `IsCoatom K`.
 We prove a few basic results which are essentially copied from those about maximal ideals.
 
 Besides them, we have :
-* `Subgroup.isMaximal_iff` proves that a subgroup K of G is maximal if and only  if
-  it is not ⊤ and if for all g ∈ G such that g ∉ K, every subgroup containing K and g is ⊤.
+* `Subgroup.isMaximal_iff` proves that a subgroup `K` of `G` is maximal if and only if
+  it is not `⊤` and if for all `g ∈ G` such that `g ∉ K`, every subgroup containing `K` and `g` is `⊤`.
 
 ## Remark on implementation
 
 While the API is inspired from that for maximal ideals (`Ideal.IsMaximal`),
-it has not been felt necessary to encapsulate this notion as a class,
+it has not been felt necessary to encapsulate the notion of maxiamal subgroup as a class,
 and it is just defined as an `abbrev` to `IsCoatom`.
 
 Will we need to write this for all `sub`-structures ?
