@@ -89,6 +89,14 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
     · exact (Complex.continuousAt_arg hz).continuousWithinAt
     · exact Complex.equivRealProdCLM.symm.continuous.continuousOn
 
+theorem measurable_polarCoord :
+    Measurable (polarCoord) :=
+  Measurable.prod_mk (by fun_prop) Complex.measurableEquivRealProd.symm.measurable.carg
+
+theorem continuous_polarCoord_symm :
+    Continuous (polarCoord.symm) :=
+  Continuous.prod_mk (by fun_prop) (by fun_prop)
+
 /-- The derivative of `polarCoord.symm`, see `hasFDerivAt_polarCoord_symm`. -/
 def fDeriv_polarCoord_symm : ℝ × ℝ → ℝ × ℝ →L[ℝ] ℝ × ℝ :=
   fun p : ℝ × ℝ ↦ (LinearMap.toContinuousLinearMap (Matrix.toLin (Basis.finTwoProd ℝ)
@@ -177,6 +185,14 @@ It is a homeomorphism between `ℂ - ℝ≤0` and `(0, +∞) × (-π, π)`. -/
 protected noncomputable def polarCoord : PartialHomeomorph ℂ (ℝ × ℝ) :=
   equivRealProdCLM.toHomeomorph.transPartialHomeomorph polarCoord
 
+protected theorem measurable_polarCoord :
+    Measurable (Complex.polarCoord) :=
+  measurable_polarCoord.comp Complex.measurableEquivRealProd.measurable
+
+protected theorem continuous_polarCoord_symm :
+    Continuous (Complex.polarCoord.symm) :=
+  equivRealProdCLM.symm.continuous.comp continuous_polarCoord_symm
+
 protected theorem polarCoord_apply (a : ℂ) :
     Complex.polarCoord a = (Complex.abs a, Complex.arg a) := by
   simp_rw [Complex.abs_def, Complex.normSq_apply, ← pow_two]
@@ -213,6 +229,31 @@ protected theorem lintegral_comp_polarCoord_symm (f : ℂ → ℝ≥0∞) :
   rw [← (volume_preserving_equiv_real_prod.symm).lintegral_comp_emb
     measurableEquivRealProd.symm.measurableEmbedding, ← lintegral_comp_polarCoord_symm]
   simp_rw [measurableEquivRealProd_symm_polarCoord_symm_apply]
+
+open scoped ComplexOrder
+
+theorem polarCoord_symm_mem_polarCoord_source_iff {x : ℝ × ℝ} :
+    Complex.polarCoord.symm x ∈ Complex.polarCoord.source ↔
+        x.1 ≠ 0 ∧ (x.1 > 0 → ∀ k : ℤ, π + k * (2 * π) ≠ x.2) ∧
+          (x.1 < 0 →  ∀ k : ℤ, k * (2 * π) ≠ x.2) := by
+  simp_rw (config := {singlePass := true}) [← not_iff_not, Complex.polarCoord_symm_apply,
+    Complex.polarCoord_source, mem_slitPlane_iff_arg, not_and_or, ne_eq, not_not, mul_eq_zero,
+    not_and_or, Classical.not_imp, not_forall, not_not, ofReal_eq_zero, ofReal_cos, ofReal_sin,
+    cos_add_sin_I, exp_ne_zero, or_false]
+  obtain hx | hx | hx := lt_trichotomy x.1 0
+  · simp_rw [hx, hx.ne, not_lt_of_gt hx, false_and, false_or, true_and, or_false]
+    have : (x.1 * cexp (x.2 * I)).arg = π ↔ (cexp (x.2 * I)).arg = 0 := by
+      simp_rw [arg_eq_pi_iff_lt_zero, arg_eq_zero_iff_zero_le, ← coe_algebraMap,
+        RCLike.ofReal_mul_neg_iff, hx, not_lt_of_gt hx, true_and, false_and, or_false,
+        lt_iff_le_and_ne, ne_eq, eq_comm (a := 0) (b := cexp _), exp_ne_zero, not_false_eq_true,
+        and_true]
+    simp_rw [this, arg_exp_mul_I, toIocMod_eq_iff, zero_add, zsmul_eq_mul, eq_comm,
+      and_iff_right_iff_imp]
+    exact fun _ ↦ ⟨neg_neg_iff_pos.mpr Real.pi_pos, by ring_nf; positivity⟩
+  · simp_rw [hx, true_or, or_true]
+  · simp_rw [hx, hx.ne', not_lt_of_gt hx, false_and, or_false, true_and, false_or, arg_real_mul _
+      hx, arg_exp_mul_I, toIocMod_eq_iff, zsmul_eq_mul, eq_comm, and_iff_right_iff_imp]
+    exact fun _ ↦ ⟨Left.neg_lt_self Real.pi_pos, by linarith⟩
 
 end Complex
 
@@ -290,7 +331,7 @@ theorem lintegral_comp_pi_polarCoord_symm (f : (ι → ℝ × ℝ) → ℝ≥0�
   simp_rw [det_fderiv_pi_polarCoord_symm, Finset.abs_prod, ENNReal.ofReal_prod_of_nonneg (fun _ _ ↦
     abs_nonneg _), abs_fst_of_mem_pi_polarCoord_target hx]
 
-protected theorem Complex.lintegral_comp_pi_polarCoord_symm {f : (ι → ℂ) → ℝ≥0∞} :
+protected theorem Complex.lintegral_comp_pi_polarCoord_symm (f : (ι → ℂ) → ℝ≥0∞) :
     ∫⁻ p in (Set.univ.pi fun _ : ι ↦ Complex.polarCoord.target),
       (∏ i, .ofReal (p i).1) * f (fun i ↦ Complex.polarCoord.symm (p i)) = ∫⁻ p, f p := by
   let e := MeasurableEquiv.piCongrRight (fun _ : ι ↦ measurableEquivRealProd.symm)

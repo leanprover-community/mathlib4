@@ -163,11 +163,13 @@ noncomputable section polarCoord
 
 open MeasureTheory MeasureTheory.Measure MeasurableEquiv
 
+local notation "F" K =>
+  ({w : InfinitePlace K // IsReal w} → ℝ) × ({w : InfinitePlace K // IsComplex w} → ℝ × ℝ)
+
 open Classical in
 /-- DOCSTRING -/
 def realProdComplexProdMeasurableEquiv :
-    ({w : InfinitePlace K // IsReal w} → ℝ) × ({w : InfinitePlace K // IsComplex w} → ℝ × ℝ) ≃ᵐ
-       (realSpace K) × ({w : InfinitePlace K // IsComplex w} → ℝ) :=
+    (F K) ≃ᵐ (realSpace K) × ({w : InfinitePlace K // IsComplex w} → ℝ) :=
   MeasurableEquiv.trans (prodCongr (refl _)
       (arrowProdEquivProdArrow ℝ ℝ _)) <|
     MeasurableEquiv.trans prodAssoc.symm <|
@@ -182,18 +184,19 @@ open Classical in
 def realProdComplexProdEquiv :
     ({w : InfinitePlace K // IsReal w} → ℝ) ×
       ({w : InfinitePlace K // IsComplex w} → ℝ × ℝ) ≃ₜ
-        (realSpace K) × ({w : InfinitePlace K // IsComplex w} → ℝ) where
-  __ := realProdComplexProdMeasurableEquiv K
+        (realSpace K) × ({w : InfinitePlace K // IsComplex w} → ℝ) :=
+{ realProdComplexProdMeasurableEquiv K with
   continuous_toFun := by
-    change Continuous fun x ↦ ⟨fun w ↦ if hw : w.IsReal then x.1 ⟨w, hw⟩ else
-      (x.2 ⟨w, not_isReal_iff_isComplex.mp hw⟩).1, fun w ↦ (x.2 w).2⟩
+    change Continuous fun x : F K ↦  (fun w ↦ if hw : w.IsReal then x.1 ⟨w, hw⟩ else
+      (x.2 ⟨w, not_isReal_iff_isComplex.mp hw⟩).1, fun w ↦ (x.2 w).2)
     refine continuous_prod_mk.mpr ⟨continuous_pi_iff.mpr fun w ↦ ?_, by fun_prop⟩
     by_cases hw : IsReal w
     · simp_rw [dif_pos hw]; fun_prop
     · simp_rw [dif_neg hw]; fun_prop
   continuous_invFun := by
-    change Continuous fun x ↦ (fun w ↦ x.1 w.val, fun w ↦ ⟨x.1 w.val, x.2 w⟩)
-    fun_prop
+    change Continuous fun x : (realSpace K) × ({w : InfinitePlace K // IsComplex w} → ℝ) ↦
+      (⟨fun w ↦ x.1 w.val, fun w ↦ ⟨x.1 w.val, x.2 w⟩⟩ : F K)
+    fun_prop }
 
 open Classical in
 theorem volume_preserving_realProdComplexProdEquiv [NumberField K] :
@@ -286,21 +289,23 @@ theorem lintegral_eq_lintegral_polarCoordMixedSpace_symm (f : (mixedSpace K) →
     (hf : Measurable f) :
     ∫⁻ x, f x =
       ∫⁻ x in (polarCoordMixedSpace K).target,
-        (∏ w : {w // IsComplex w}, (x.1 w.val).toNNReal) *
+        (∏ w : {w // IsComplex w}, .ofReal (x.1 w.val)) *
           f ((polarCoordMixedSpace K).symm x) := by
-  have h : Measurable fun x ↦ (∏ w : { w // IsComplex w}, (x.1 w.val).toNNReal) *
-      f ((polarCoordMixedSpace K).symm x) := by
-    refine Measurable.mul ?_ ?_
-    · exact measurable_coe_nnreal_ennreal_iff.mpr <| Finset.measurable_prod _ fun _ _ ↦ by fun_prop
-    · exact hf.comp' (continuous_polarCoordMixedSpace_symm K).measurable
-  rw [← (volume_preserving_realProdComplexProdEquiv K).setLIntegral_comp_preimage
-    (measurableSet_polarCoordMixedSpace_target K) h, volume_eq_prod, volume_eq_prod,
-    lintegral_prod _ hf.aemeasurable]
-  simp_rw [Complex.lintegral_pi_comp_polarCoord_symm _ (hf.comp' measurable_prod_mk_left)]
-  rw [realProdComplexProdEquiv_preimage_target, ← Measure.restrict_prod_eq_univ_prod,
-    lintegral_prod _ (h.comp' (realProdComplexProdEquiv K).measurable).aemeasurable]
-  simp_rw [realProdComplexProdEquiv_apply, polarCoordMixedSpace_symm_apply,
-    dif_pos (Subtype.prop _), dif_neg (not_isReal_iff_isComplex.mpr (Subtype.prop _))]
+  sorry
+  -- have h : Measurable fun x ↦ (∏ w : { w // IsComplex w}, .ofReal (x.1 w.val)) *
+  --     f ((polarCoordMixedSpace K).symm x) := by
+  --   refine Measurable.mul ?_ ?_
+  --   · exact measurable_coe_nnreal_ennreal_iff.mpr <| Finset.measurable_prod _ fun _ _ ↦ by fun_prop
+  --   · exact hf.comp' (continuous_polarCoordMixedSpace_symm K).measurable
+  -- rw [← (volume_preserving_realProdComplexProdEquiv K).setLIntegral_comp_preimage
+  --   (measurableSet_polarCoordMixedSpace_target K) h, volume_eq_prod, volume_eq_prod,
+  --   lintegral_prod _ hf.aemeasurable]
+  -- rw [← (volume_preserving_realProdComplexProdEquiv K).setLIntegral_comp_preimage_emb]
+  -- simp_rw [Complex.lintegral_comp_pi_polarCoord_symm] -- (hf.comp' measurable_prod_mk_left)]
+  -- rw [realProdComplexProdEquiv_preimage_target, ← Measure.restrict_prod_eq_univ_prod,
+  --   lintegral_prod _ (h.comp' (realProdComplexProdEquiv K).measurable).aemeasurable]
+  -- simp_rw [realProdComplexProdEquiv_apply, polarCoordMixedSpace_symm_apply,
+  --   dif_pos (Subtype.prop _), dif_neg (not_isReal_iff_isComplex.mpr (Subtype.prop _))]
 
 end polarCoord
 
@@ -599,11 +604,13 @@ theorem measurable_mapToUnitsPow_symm :
   refine measurable_pi_iff.mpr fun _ ↦ ?_
   split_ifs
   · refine Measurable.pow_const ?_ _
-    exact Measurable.comp' (mixedEmbedding.continuous_norm K).measurable realToMixed.measurable
-  · exact Measurable.eval <|
-      (continuous_equivFun_basis ((Basis.ofZLatticeBasis ℝ (unitLattice K)
-        (basisUnitLattice K)).reindex equivFinRank)).measurable.comp'
-        ((measurable_logMap _).comp' realToMixed.measurable)
+    -- exact Measurable.comp' (mixedEmbedding.continuous_norm K).measurable realToMixed.measurable
+    sorry
+  · -- exact Measurable.eval <|
+    --  (continuous_equivFun_basis ((Basis.ofZLatticeBasis ℝ (unitLattice K)
+    --    (basisUnitLattice K)).reindex equivFinRank)).measurable.comp'
+    --    ((measurable_logMap _).comp' realToMixed.measurable)
+    sorry
 
 variable {K}
 
@@ -1033,9 +1040,10 @@ theorem volume_mapToUnitsPowComplex_set_prod_set {s : Set (InfinitePlace K → �
             (∏ w : {w // IsComplex w}, (x w.val).toNNReal) *
               ((mapToUnitsPow K '' s).indicator 1 x * t.indicator 1 y) := by
       rw [lintegral_lintegral, Measure.prod_restrict, ← polarCoordMixedSpace_target]
-      · refine setLIntegral_congr_fun (measurableSet_polarCoordMixedSpace_target K) ?_
-        filter_upwards with x hx
-        simp_rw [mapToUnitsPowComplex_prod_indicator ht' x hx]
+      · -- refine setLIntegral_congr_fun (measurableSet_polarCoordMixedSpace_target K) ?_
+        -- filter_upwards with x hx
+        -- simp_rw [mapToUnitsPowComplex_prod_indicator ht' x hx]
+        sorry
       · refine Measurable.aemeasurable ?_
         refine Measurable.mul ?_ ?_
         · exact measurable_coe_nnreal_ennreal_iff.mpr <|
@@ -1376,7 +1384,7 @@ theorem volume_normLessThanOnePlus_aux (n : ℕ) :
   classical
   rw [volume_pi, box₁, restrict_pi_pi, lintegral_eq_lmarginal_univ 0,
     lmarginal_erase' _ ?_ (Finset.mem_univ w₀)]
-  · simp_rw [if_true, Function.update_same]
+  · simp_rw [if_true, Function.update_self]
     have : ∫⁻ (xᵢ : ℝ) in Set.Ioc 0 1, ENNReal.ofReal |xᵢ| ^ n = (n + 1 : ENNReal)⁻¹ := by
       convert congr_arg ENNReal.ofReal (integral_pow (a := 0) (b := 1) n)
       · rw [intervalIntegral.integral_of_le zero_le_one]

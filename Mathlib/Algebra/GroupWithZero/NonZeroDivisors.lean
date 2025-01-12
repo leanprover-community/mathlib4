@@ -271,9 +271,6 @@ noncomputable def nonZeroDivisorsEquivUnits : G₀⁰ ≃* G₀ˣ where
   right_inv u := by simp
   map_mul' u v := by simp
 
-lemma isUnit_of_mem_nonZeroDivisors (hx : x ∈ nonZeroDivisors G₀) : IsUnit x :=
-  (nonZeroDivisorsEquivUnits ⟨x, hx⟩).isUnit
-
 end GroupWithZero
 
 section nonZeroSMulDivisors

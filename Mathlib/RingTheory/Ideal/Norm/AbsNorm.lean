@@ -418,6 +418,7 @@ theorem finite_setOf_absNorm_le [CharZero S] (n : ℕ) :
     (⋃ i ∈ Set.Icc 0 n, {I : Ideal S | Ideal.absNorm I = i}) by ext; simp]
   refine Set.Finite.biUnion (Set.finite_Icc 0 n) (fun i _ => Ideal.finite_setOf_absNorm_eq i)
 
+-- This is not the result we want
 theorem card_norm_le_eq_card_norm_le_add_one (n : ℕ) [CharZero S] :
     Nat.card {I : Ideal S // absNorm I ≤ n} =
       Nat.card {I : (Ideal S)⁰ // absNorm (I : Ideal S) ≤ n} + 1 := by

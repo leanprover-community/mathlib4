@@ -3,7 +3,7 @@ Copyright (c) 2024 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.NumberTheory.LSeries.Residue
+import Mathlib.NumberTheory.LSeries.SumCoeff
 import Mathlib.NumberTheory.NumberField.Ideal
 
 /-!
@@ -11,13 +11,27 @@ import Mathlib.NumberTheory.NumberField.Ideal
 
 -/
 
+
+
+section Nat.card
+
+
+variable {α : Type*} (F : α → ℕ)
+
+
+theorem toto (h : ∀ n, {a | F a = n}.Finite) {m n : ℕ} :
+    ∑ k in Finset.Icc m n, Nat.card {a // F a = k} = Nat.card {a // F a ∈ Finset.Icc m n} := by
+
+  sorry
+
+end Nat.card
 variable (K : Type*) [Field K] [NumberField K]
 
 noncomputable section
 
 namespace NumberField
 
-open Filter Ideal NumberField.InfinitePlace NumberField.Units Topology NumberTheory.LSeries
+open Filter Ideal NumberField.InfinitePlace NumberField.Units Topology nonZeroDivisors
 
 open scoped Real
 
@@ -42,29 +56,50 @@ theorem residue_ne_zero : residue K ≠ 0 := (residue_pos K).ne'
 
 theorem dedekindZeta_residue :
     Tendsto (fun s  : ℝ ↦ (s - 1) * dedekindZeta K s) (𝓝[>] 1) (𝓝 (residue K)) := by
-  refine tendsto_mul_of_sum_div_tendsto (residue_pos K) ?_
-  convert (ideal.tendsto_norm_le_div_atop K).comp tendsto_natCast_atTop_atTop with n
-  simp_rw [Function.comp_apply, Nat.cast_le]
-  congr
-  have : ∀ i, Fintype {I : Ideal (𝓞 K) | absNorm I = i} := by
-    intro i
-    refine Set.Finite.fintype ?_
-    exact finite_setOf_absNorm_eq i
-  have : ∀ i, Fintype {I : Ideal (𝓞 K) | absNorm I ≤ i} := by
-    intro i
-    refine Set.Finite.fintype ?_
-    exact finite_setOf_absNorm_le i
-  simp_rw (config := {singlePass := true}) [← Set.coe_setOf, Nat.card_eq_card_toFinset]
-  rw [← Nat.cast_sum, Finset.card_eq_sum_card_fiberwise (t := Finset.range (n + 1))
-    (f := fun I ↦ absNorm I)]
-  · congr! with n hn
-    ext
-    simp only [Set.mem_toFinset, Set.mem_setOf_eq, Finset.mem_filter, iff_and_self]
-    intro h
-    rw [h]
-    exact Finset.mem_range_succ_iff.mp hn
-  · intro x hx
-    simp at hx
-    exact Finset.mem_range_succ_iff.mpr hx
+  classical
+  refine LSeries_tendsto_sub_mul_nhds_one_of_tendsto_sum_div_and_nonneg _ ?_
+    (fun _ ↦ Nat.cast_nonneg _)
+  have : ∀ n, ∑ k ∈ Finset.Icc 1 n, Nat.card {I : Ideal (𝓞 K) // absNorm I = k} =
+      Nat.card {I : (Ideal (𝓞 K))⁰ // absNorm I.1 ≤ n} := by
+    intro n
+    have : Fintype {I : (Ideal (𝓞 K))⁰ | absNorm I.1 ≤ n} := by
+      refine Set.Finite.fintype ?_
+      refine Set.Finite.of_finite_image (f := fun I ↦ I.1) ?_ ?_
+      · refine Set.Finite.subset (finite_setOf_absNorm_le n) ?_
+        simp
+      · exact Set.injOn_subtype_val
+    have : ∀ k, Fintype {I : Ideal (𝓞 K) | absNorm I = k} := by
+      intro k
+      exact (finite_setOf_absNorm_eq k).fintype
+    have : ∀ I ∈ {I : (Ideal (𝓞 K))⁰ | absNorm I.1 ≤ n}.toFinset,
+        absNorm I.1 ∈ Finset.Icc 1 n := by
+      intro I hI
+      simp at hI
+      refine Finset.mem_Icc.mpr ⟨?_, hI⟩
+      exact absNorm_pos_iff_mem_nonZeroDivisors.mpr I.prop
+    rw [← Set.coe_setOf, Nat.card_eq_card_toFinset, Finset.card_eq_sum_card_fiberwise this]
+    refine Finset.sum_congr rfl ?_
+    intro k hk
+    rw [← Set.coe_setOf, Nat.card_eq_card_toFinset]
+    refine (Finset.card_nbij ?_ ?_ ?_ ?_).symm
+    · intro I
+      exact I.1
+    · intro I
+      simp only [Finset.mem_filter, Set.mem_toFinset, Set.mem_setOf_eq, and_imp, imp_self,
+        implies_true]
+    · exact Set.injOn_subtype_val
+    · intro I hI
+      refine ⟨⟨I, ?_⟩, ?_, rfl⟩
+      · rw [← absNorm_ne_zero_iff_mem_nonZeroDivisors]
+        rw [Set.coe_toFinset, Set.mem_setOf] at hI
+        rw [hI]
+        exact (zero_lt_one.trans_le (Finset.mem_Icc.mp hk).1).ne'
+      · rw [Set.coe_toFinset, Set.mem_setOf] at hI
+        simp_rw [Finset.coe_filter, Set.mem_toFinset, Set.mem_setOf_eq, hI, and_true]
+        exact (Finset.mem_Icc.mp hk).2
+  simp_rw [← Nat.cast_sum, this]
+  have := (ideal.tendsto_norm_le_div_atop₀ K).comp tendsto_natCast_atTop_atTop
+  simp_rw [Function.comp_def, Nat.cast_le] at this
+  exact this
 
 end NumberField
