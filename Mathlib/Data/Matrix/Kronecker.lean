@@ -239,7 +239,8 @@ open Matrix
 def kronecker [Mul α] : Matrix l m α → Matrix n p α → Matrix (l × n) (m × p) α :=
   kroneckerMap (· * ·)
 
-@[inherit_doc] scoped[Kronecker] infixl:100 " ⊗ₖ " => Matrix.kroneckerMap (· * ·)
+@[inherit_doc Matrix.kroneckerMap]
+scoped[Kronecker] infixl:100 " ⊗ₖ " => Matrix.kroneckerMap (· * ·)
 
 open Kronecker
 
