@@ -255,11 +255,10 @@ scoped syntax:max (name := mkNotation) (priority := high)
   term " _[" term ("," term)? "]" noWs subscriptTerm : term
 macro_rules
   | `($X:term _[$m:term]$n:subscript) =>
-      `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
-      (Opposite.op ⟨SimplexCategory.mk $m,
-      by first | trunc | fail "Failed to prove truncation property."⟩))
+    `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
+      (Opposite.op ⟨SimplexCategory.mk $m, by trunc⟩))
   | `($X:term _[$m:term, $p:term]$n:subscript) =>
-      `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
+    `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
       (Opposite.op ⟨SimplexCategory.mk $m, $p⟩))
 
 end Truncated
@@ -703,11 +702,10 @@ scoped syntax:max (name := mkNotation) (priority := high)
   term " _[" term ("," term)? "]" noWs subscriptTerm : term
 macro_rules
   | `($X:term _[$m:term]$n:subscript) =>
-      `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
-      ⟨SimplexCategory.mk $m,
-      by first | trunc | fail "Failed to prove truncation property."⟩)
+    `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
+      ⟨SimplexCategory.mk $m, by trunc⟩)
   | `($X:term _[$m:term, $p:term]$n:subscript) =>
-      `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
+    `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
       ⟨SimplexCategory.mk $m, $p⟩)
 
 end Truncated
