@@ -15,10 +15,10 @@ its quotients by open normal subgroups.
 ## Main definitions
 
 * `toFiniteQuotientFunctor` : The functor from `OpenNormalSubgroup P` to `FiniteGrp`
-  sending `U` to `P ⧸ U`, where `P : ProfiniteGrp`.
+  sending an open normal subgroup `U` to `P ⧸ U`, where `P : ProfiniteGrp`.
 
 * `toLimittoFiniteQuotientFunctor` : The continuous homomorphism from a profinite group `P` to
-  projective limit of its quotients by open normal subgroups ordered by inclusion.
+  the projective limit of its quotients by open normal subgroups ordered by inclusion.
 
 * `ContinuousMulEquivLimittoFiniteQuotientFunctor` : The `toLimittoFiniteQuotientFunctor` is a
   `ContinuousMulEquiv`
@@ -26,7 +26,7 @@ its quotients by open normal subgroups.
 ## Main Statements
 
 * `OpenNormalSubgroupSubClopenNhdsOfOne` : For any open neighborhood of `1` there is an
-  open normal subgroup contained within it.
+  open normal subgroup contained in it.
 
 -/
 
