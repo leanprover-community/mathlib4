@@ -383,7 +383,6 @@ variable {f : ℝ → E}
 /-- An even function is interval integrable (with respect to the volume measure)
 on every interval if it is interval integrable (with respect to the volume
 measure) on every interval of the form `0..x`, for positive `x`. -/
-
 theorem intervalIntegrable_of_even
   (h₁f : ∀ x, f x = f (-x))
   (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) :
