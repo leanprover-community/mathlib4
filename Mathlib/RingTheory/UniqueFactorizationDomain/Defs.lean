@@ -19,9 +19,7 @@ import Mathlib.Order.WellFounded
   `Irreducible` is equivalent to `Prime`
 -/
 
-assert_not_exists Field
-assert_not_exists Finsupp
-assert_not_exists Ideal
+assert_not_exists Field Finsupp Ideal
 
 variable {α : Type*}
 

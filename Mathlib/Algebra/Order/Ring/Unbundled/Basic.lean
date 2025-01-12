@@ -113,8 +113,7 @@ TODO: the mixin assumptiosn can be relaxed in most cases
 
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidHom
+assert_not_exists OrderedCommMonoid MonoidHom
 
 open Function
 
