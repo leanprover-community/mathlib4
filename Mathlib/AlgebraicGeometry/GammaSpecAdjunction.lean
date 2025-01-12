@@ -545,8 +545,9 @@ variable (φ) in
   Spec.map_injective (Spec.map_preimage (Spec.map φ))
 
 /-- Useful for replacing `f` by `Spec.map φ` everywhere in proofs. -/
-lemma Spec.exists_preimage_map {R S : CommRingCat} (f : Spec S ⟶ Spec R) :
-    ∃ φ, f = Spec.map φ := by
+lemma Spec.map_surjective {R S : CommRingCat} :
+    Function.Surjective (Spec.map : (R ⟶ S) → _) := by
+  intro f
   use Spec.preimage f
   simp
 

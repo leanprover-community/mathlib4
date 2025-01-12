@@ -691,7 +691,7 @@ lemma stalkMap
     rwa [hQi.arrow_mk_iso_iff
       (Scheme.arrowStalkMapIsoOfInseparable f <| Inseparable.of_eq heq)] at this
   obtain ⟨R, S, rfl, rfl⟩ := hXY
-  obtain ⟨φ, rfl⟩ := Spec.exists_preimage_map f
+  obtain ⟨φ, rfl⟩ := Spec.map_surjective f
   rw [hQi.arrow_mk_iso_iff (Scheme.arrowStalkMapSpecIso φ _)]
   rw [Spec_iff (P := P)] at hf
   apply hQ _ hf
