@@ -564,7 +564,7 @@ end LinearOrderedField
 end Nat
 
 /-- There exists at most one `FloorSemiring` structure on a linear ordered semiring. -/
-theorem subsingleton_floorSemiring {α} [Semiring α] [LinearOrder α] [IsStrictOrderedRing α] :
+theorem subsingleton_floorSemiring {α} [Semiring α] [LinearOrder α] :
     Subsingleton (FloorSemiring α) := by
   refine ⟨fun H₁ H₂ => ?_⟩
   have : H₁.ceil = H₂.ceil := funext fun a => (H₁.gc_ceil.l_unique H₂.gc_ceil) fun n => rfl
@@ -1671,7 +1671,7 @@ theorem natCast_ceil_eq_intCast_ceil (ha : 0 ≤ a) : (⌈a⌉₊ : α) = ⌈a�
 end FloorRingToSemiring
 
 /-- There exists at most one `FloorRing` structure on a given linear ordered ring. -/
-theorem subsingleton_floorRing {α} [Ring α] [LinearOrder α] [IsStrictOrderedRing α] :
+theorem subsingleton_floorRing {α} [Ring α] [LinearOrder α] :
     Subsingleton (FloorRing α) := by
   refine ⟨fun H₁ H₂ => ?_⟩
   have : H₁.floor = H₂.floor :=

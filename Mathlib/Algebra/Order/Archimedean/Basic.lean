@@ -63,13 +63,11 @@ instance OrderDual.instMulArchimedean [CommGroup α] [PartialOrder α] [IsOrdere
     let ⟨n, hn⟩ := MulArchimedean.arch (ofDual x)⁻¹ (inv_lt_one_iff_one_lt.2 hy)
     ⟨n, by rwa [inv_pow, inv_le_inv_iff] at hn⟩⟩
 
-instance Additive.instArchimedean [CommGroup α] [PartialOrder α] [IsOrderedMonoid α]
-    [MulArchimedean α] :
+instance Additive.instArchimedean [CommGroup α] [PartialOrder α] [MulArchimedean α] :
     Archimedean (Additive α) :=
   ⟨fun x _ hy ↦ MulArchimedean.arch x.toMul hy⟩
 
-instance Multiplicative.instMulArchimedean [AddCommGroup α] [PartialOrder α] [IsOrderedAddMonoid α]
-    [Archimedean α] :
+instance Multiplicative.instMulArchimedean [AddCommGroup α] [PartialOrder α] [Archimedean α] :
     MulArchimedean (Multiplicative α) :=
   ⟨fun x _ hy ↦ Archimedean.arch x.toAdd hy⟩
 
@@ -459,7 +457,6 @@ instance (priority := 100) FloorRing.archimedean (α) [Field α] [LinearOrder α
   exact fun x => ⟨⌈x⌉, Int.le_ceil x⟩
 
 @[to_additive]
-instance Units.instMulArchimedean (α) [CommMonoid α] [PartialOrder α] [IsOrderedMonoid α]
-    [MulArchimedean α] :
+instance Units.instMulArchimedean (α) [CommMonoid α] [PartialOrder α] [MulArchimedean α] :
     MulArchimedean αˣ :=
   ⟨fun x {_} h ↦ MulArchimedean.arch x.val h⟩
