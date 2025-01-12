@@ -421,7 +421,7 @@ theorem intervalIntegrable_of_odd
     · exact h₂f t h
   -- Split integral and apply lemma
   intro x y
-  exact IntervalIntegrable.trans (b := 0) (IntervalIntegrable.symm (this x)) (this y)
+exact (this x).symm.trans (b := 0) (this y)
 
 end
 
