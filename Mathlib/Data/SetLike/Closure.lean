@@ -122,7 +122,7 @@ open LatticeSetLike OrderedSetLike in
 def gi_closure : GaloisInsertion (closure L) SetLike.coe :=
   GaloisConnection.toGaloisInsertion
     (fun _ _ =>
-      ⟨fun h => Set.Subset.trans (fun _ hx => mem_closure.2 fun _ hs => hs hx) (coe_subset_coe.2 h),
+      ⟨fun h => Set.Subset.trans (fun _ hx => mem_closure.2 fun _ hs => hs hx) (mem_of_le_of_mem h),
       (sInf_le ·)⟩)
     fun _ => le_sInf (fun _ => coe_subset_coe.1)
 
