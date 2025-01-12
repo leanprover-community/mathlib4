@@ -41,8 +41,11 @@ section Monotone
 
 lemma CompactlySupportedContinuousMap.monotone_of_nnreal {f₁ f₂ : C_c(X, ℝ≥0)} (h : f₁.1 ≤ f₂.1) :
     Λ f₁ ≤ Λ f₂ := by
-  obtain ⟨g, hg⟩ := exist_add_eq f₁ f₂ h
-  simp only [← hg, map_add, le_add_iff_nonneg_right, zero_le]
+  -- TODO currently `C_c(X, ℝ≥0)` has no instance of `LE`, so this cannot be written using
+  -- `Monotone`.
+  obtain ⟨g, hg⟩ := exist_add_eq h
+  rw [← hg]
+  simp
 
 end Monotone
 
@@ -368,7 +371,8 @@ section RieszMeasure
 
 variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
 
-/-- `rieszContent` is promoted to a measure. -/
+/-- `rieszContent` gives a `Content` from `Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0`. Here `rieszContent Λ` is
+promoted to a measure. -/
 def rieszMeasure := (rieszContent Λ).measure
 
 lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x ≤ 1)
@@ -392,7 +396,7 @@ lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : �
 lemma le_rieszMeasure_of_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x ≤ 1) {V : Set X}
     (h : tsupport f ⊆ V) : ENNReal.ofNNReal (Λ f) ≤ (rieszMeasure Λ) V := by
   apply le_trans _ (MeasureTheory.measure_mono h)
-  apply leRieszMeasure_of_isCompact_tsupport_subset Λ hf f.hasCompactSupport
+  apply le_rieszMeasure_of_isCompact_tsupport_subset Λ hf f.hasCompactSupport
   exact subset_rfl
 
 end RieszMeasure
