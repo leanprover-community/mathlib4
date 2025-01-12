@@ -67,11 +67,8 @@ theorem polynomial_comp_attachBound (A : Subalgebra ℝ C(X, ℝ)) (f : A) (g : 
     (g.toContinuousMapOn (Set.Icc (-‖f‖) ‖f‖)).comp (f : C(X, ℝ)).attachBound =
       Polynomial.aeval f g := by
   ext
-  simp only [ContinuousMap.coe_comp, Function.comp_apply, ContinuousMap.attachBound_apply_coe,
-    Polynomial.toContinuousMapOn_apply, Polynomial.aeval_subalgebra_coe,
-    Polynomial.aeval_continuousMap_apply, Polynomial.toContinuousMap_apply]
-  -- This used to be `rw`, but we need `erw` after https://github.com/leanprover/lean4/pull/2644
-  erw [ContinuousMap.attachBound_apply_coe]
+  simp only [Polynomial.aeval_subalgebra_coe, Polynomial.aeval_continuousMap_apply]
+  simp
 
 /-- Given a continuous function `f` in a subalgebra of `C(X, ℝ)`, postcomposing by a polynomial
 gives another function in `A`.
