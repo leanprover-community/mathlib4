@@ -6,21 +6,51 @@ Authors: Salvatore Mercuri
 import Mathlib.Topology.Algebra.Algebra
 
 /-!
-# Topological (sub)algebras
+# Isomorphisms of topological algebras
 
-This file contains an API for `ContinuousAlgEquiv`.
+This file contains an API for `ContinuousAlgEquiv R A B`, the type of
+continuous `R`-algebra isomorphisms with continuous inverses. Here `R` is a
+commutative (semi)ring, and `A` and `B` are `R`-algebras with topologies.
+
+## Main definitions
+
+Let `R` be a commutative semiring and let `A` and `B` be `R`-algebras which
+are also topological spaces.
+
+* `ContinuousAlgEquiv R A B`: the type of continuous `R`-algebra isomorphisms
+  from `A` to `B` with continuous inverses.
+
+## Notations
+
+`A ≃A[R] B` : notation for `ContinuousAlgEquiv R A B`.
+
+## Tags
+
+* continuous, isomorphism, algebra
 -/
 
 open scoped Topology
 
+
+/--
+`ContinuousAlgEquiv R A B`, with notation `A ≃A[R] B`, is the type of bijections
+between the topological `R`-algebras `A` and `B` which are both homeomorphisms
+and `R`-algebra isomorphisms.
+-/
 structure ContinuousAlgEquiv (R A B : Type*) [CommSemiring R]
     [Semiring A] [TopologicalSpace A] [Semiring B] [TopologicalSpace B] [Algebra R A]
     [Algebra R B] extends A ≃ₐ[R] B where
   continuous_toFun : Continuous toFun := by continuity
   continuous_invFun : Continuous invFun := by continuity
 
+@[inherit_doc]
 notation:50 A " ≃A[" R "]" B => ContinuousAlgEquiv R A B
 
+/--
+`ContinuousAlgEquivClass F R A B` states that `F` is a type of topological algebra
+  structure-preserving equivalences. You should extend this class when you
+  extend `ContinuousAlgEquiv`.
+-/
 class ContinuousAlgEquivClass (F : Type*) (R A B : outParam Type*) [CommSemiring R]
     [Semiring A][TopologicalSpace A] [Semiring B] [TopologicalSpace B] [Algebra R A]
     [Algebra R B] [EquivLike F A B] extends AlgEquivClass F R A B : Prop where
@@ -34,6 +64,8 @@ variable {R A B C : Type*}
   [TopologicalSpace B] [Semiring C] [TopologicalSpace C] [Algebra R A] [Algebra R B]
   [Algebra R C]
 
+/-- The natural coercion from a continuous algebra isomorphism to a continuous
+algebra morphism. -/
 @[coe]
 def toContinuousAlgHom (e : A ≃A[R] B) : A →A[R] B where
   __ := e.toAlgHom
@@ -80,6 +112,8 @@ theorem coe_injective : Function.Injective ((↑) : (A ≃A[R] B) → A →A[R] 
 theorem coe_inj {f g : A ≃A[R] B} : (f : A →A[R] B) = g ↔ f = g :=
   coe_injective.eq_iff
 
+/-- The natural map taking a homeomorphism which is also an R-algebra isomorphism
+to the underlying homeomorphism. -/
 def toHomeomorph (e : A ≃A[R] B) : A ≃ₜ B where
   __ := e
   toEquiv := e.toAlgEquiv.toEquiv
@@ -136,6 +170,7 @@ theorem comp_continuous_iff {α : Type*} [TopologicalSpace α] (e : A ≃A[R] B)
 
 variable (R A)
 
+/-- The identity isomorphism as a continuous `R`-algebra equivalence. -/
 @[refl]
 def refl : A ≃A[R] A where
   __ := AlgEquiv.refl
@@ -152,6 +187,8 @@ theorem coe_refl : refl R A = ContinuousAlgHom.id R A := rfl
 theorem coe_refl' : ⇑(refl R A) = id := rfl
 
 variable {R A}
+
+/-- The inverse of a continuous algebra equivalence. -/
 @[symm]
 def symm (e : A ≃A[R] B) : B ≃A[R] A where
   __ := e.toAlgEquiv.symm
@@ -183,6 +220,7 @@ theorem symm_toHomeomorph (e : A ≃A[R] B) : e.symm.toHomeomorph = e.toHomeomor
 theorem symm_map_nhds_eq (e : A ≃A[R] B) (a : A) : Filter.map e.symm (𝓝 (e a)) = 𝓝 a :=
   e.toHomeomorph.symm_map_nhds_eq a
 
+/-- The composition of two continuous algebra equivalences. -/
 @[trans]
 def trans (e₁ : A ≃A[R] B) (e₂ : B ≃A[R] C) : A ≃A[R] C where
   __ := e₁.toAlgEquiv.trans e₂.toAlgEquiv
@@ -204,9 +242,8 @@ theorem symm_trans_apply (e₁ : B ≃A[R] A) (e₂ : C ≃A[R] B) (a : A) :
     (e₂.trans e₁).symm a = e₂.symm (e₁.symm a) :=
   rfl
 
-@[simp]
 theorem comp_coe (e₁ : A ≃A[R] B) (e₂ : B ≃A[R] C) :
-    e₂.toAlgHom.comp e₁.toAlgHom = e₁.trans e₂ :=
+    e₂.toAlgHom.comp e₁.toAlgHom = e₁.trans e₂ := by
   rfl
 
 @[simp high]
@@ -220,11 +257,11 @@ theorem coe_symm_comp_coe (e : A ≃A[R] B) :
   ContinuousAlgHom.ext e.symm_apply_apply
 
 @[simp]
-theorem symm_comp_self (e : A ≃A[R] B) : e.symm.toFun  ∘ e.toFun = id :=
-  funext <| e.symm_apply_apply
+theorem symm_comp_self (e : A ≃A[R] B) : (e.symm : B → A) ∘ e = id := by
+  exact funext <| e.symm_apply_apply
 
 @[simp]
-theorem self_comp_symm (e : A ≃A[R] B) : e.toFun ∘ e.symm.toFun = id :=
+theorem self_comp_symm (e : A ≃A[R] B) : (e : A → B) ∘ e.symm = id :=
   funext <| e.apply_symm_apply
 
 @[simp]
