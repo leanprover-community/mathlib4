@@ -33,7 +33,7 @@ namespace Lp
 
 section Order
 
-variable [NormedLatticeAddCommGroup E]
+variable [NormedAddCommGroup E] [Lattice E]
 
 theorem coeFn_le (f g : Lp E p μ) : f ≤ᵐ[μ] g ↔ f ≤ g := by
   rw [← Subtype.coe_le_coe, ← AEEqFun.coeFn_le]
@@ -45,16 +45,17 @@ theorem coeFn_nonneg (f : Lp E p μ) : 0 ≤ᵐ[μ] f ↔ 0 ≤ f := by
   · rwa [h2]
   · rwa [← h2]
 
-instance instAddLeftMono : AddLeftMono (Lp E p μ) := by
+instance instAddLeftMono [IsOrderedAddMonoid E] : AddLeftMono (Lp E p μ) := by
   refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
   rw [← coeFn_le] at hg₁₂ ⊢
   filter_upwards [coeFn_add f g₁, coeFn_add f g₂, hg₁₂] with _ h1 h2 h3
   rw [h1, h2, Pi.add_apply, Pi.add_apply]
   exact add_le_add le_rfl h3
 
-instance instOrderedAddCommGroup : OrderedAddCommGroup (Lp E p μ) :=
-  { Subtype.partialOrder _, AddSubgroup.toAddCommGroup _ with
-    add_le_add_left := fun _ _ => add_le_add_left }
+instance instIsOrderedAddMonoid [IsOrderedAddMonoid E] : IsOrderedAddMonoid (Lp E p μ) :=
+  { add_le_add_left := fun _ _ => add_le_add_left }
+
+variable [HasSolidNorm E] [IsOrderedAddMonoid E]
 
 theorem _root_.MeasureTheory.Memℒp.sup {f g : α → E} (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
     Memℒp (f ⊔ g) p μ :=
@@ -87,11 +88,9 @@ theorem coeFn_inf (f g : Lp E p μ) : ⇑(f ⊓ g) =ᵐ[μ] ⇑f ⊓ ⇑g :=
 theorem coeFn_abs (f : Lp E p μ) : ⇑|f| =ᵐ[μ] fun x => |f x| :=
   AEEqFun.coeFn_abs _
 
-noncomputable instance instNormedLatticeAddCommGroup [Fact (1 ≤ p)] :
-    NormedLatticeAddCommGroup (Lp E p μ) :=
-  { Lp.instLattice, Lp.instNormedAddCommGroup with
-    add_le_add_left := fun _ _ => add_le_add_left
-    solid := fun f g hfg => by
+instance instHasSolidNorm [Fact (1 ≤ p)] :
+    HasSolidNorm (Lp E p μ) :=
+  { solid := fun f g hfg => by
       rw [← coeFn_le] at hfg
       simp_rw [Lp.norm_def, ENNReal.toReal_le_toReal (Lp.eLpNorm_ne_top f) (Lp.eLpNorm_ne_top g)]
       refine eLpNorm_mono_ae ?_
