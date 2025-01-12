@@ -371,7 +371,7 @@ variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
 /-- `rieszContent` is promoted to a measure. -/
 def rieszMeasure := (rieszContent Λ).measure
 
-lemma leRieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ (x : X), f x ≤ 1)
+lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x ≤ 1)
     {K : Set X} (hK : IsCompact K) (h : tsupport f ⊆ K) : .ofNNReal (Λ f) ≤ rieszMeasure Λ K := by
   rw [← TopologicalSpace.Compacts.coe_mk K hK]
   simp only [rieszMeasure, Content.measure_eq_content_of_regular (rieszContent Λ)
