@@ -59,9 +59,8 @@ variable [Ring R] (S : Sequence R) -- #20480
 
 -- TODO: Generalize to any set of polynomials with different degrees
 open scoped Function in
-lemma linearIndependent [NoZeroSMulDivisors R R[X]] :
+lemma linearIndependent [NoZeroDivisors R] :
     LinearIndependent R S.elems := linearIndependent_iff'.mpr <| fun s g eqzero i hi ↦ by
-  -- have giregular := isRegular_of_ne_zero' _
   -- have := degree_smul_of_smul_regular (S.elems i) giregular.left.isSMulRegular
   by_cases hsupzero : s.sup (fun i ↦ (g i • S.elems i).degree) = ⊥
   · have le_sup := Finset.le_sup hi (f := (fun i ↦ (g i • S.elems i).degree))
@@ -69,10 +68,20 @@ lemma linearIndependent [NoZeroSMulDivisors R R[X]] :
   · have hpairwise :
         {i | i ∈ s ∧ g i • S.elems i ≠ 0}.Pairwise (Ne on (degree ∘ fun i ↦ g i • S.elems i)) := by
       intro x ⟨xmem, hx⟩ y ⟨ymem, hy⟩ xney
-      have hgxleft : IsLeftRegular (g x) := sorry
-      have hgyleft : IsLeftRegular (g y) := sorry
-      have hgx := degree_smul_of_smul_regular (S.elems x) hgxleft.isSMulRegular
-      have hgy := degree_smul_of_smul_regular (S.elems y) hgyleft.isSMulRegular
+      have hgxreg : IsSMulRegular R (g x) := by
+        intro w v hwv
+        have hgwv : g x • (w - v) = 0 := by rw [smul_sub, sub_eq_zero.mpr hwv]
+        cases' mul_eq_zero.mp hgwv with hgx hwv'
+        · exact (hx (by simp [hgx])).elim
+        · exact sub_eq_zero.mp hwv'
+      have hgyreg : IsSMulRegular R (g y) := by
+        intro w v hwv
+        have hgwv : g y • (w - v) = 0 := by rw [smul_sub, sub_eq_zero.mpr hwv]
+        cases' mul_eq_zero.mp hgwv with hgy hwv'
+        · exact (hy (by simp [hgy])).elim
+        · exact sub_eq_zero.mp hwv'
+      have hgx := degree_smul_of_smul_regular (S.elems x) hgxreg
+      have hgy := degree_smul_of_smul_regular (S.elems y) hgyreg
       simpa [hgx, hgy] using S.degree_ne xney
 
     obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S.elems i).degree) = n := exists_eq'
