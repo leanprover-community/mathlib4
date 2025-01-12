@@ -202,8 +202,6 @@ end Functor
 
 namespace NatTrans
 
-attribute [local instance] Functor.commShiftPullback
-
 variable {F} {G : C ⥤ D} [G.CommShift B]
 
 open Functor in
