@@ -93,9 +93,7 @@ instance : CompleteLattice (Subsemigroup M) :=
 instance : LatticeSetLike (Subsemigroup M) M where
   __ := (inferInstance : CompleteLattice (Subsemigroup M))
   __ := (inferInstance : OrderedSetLike (Subsemigroup M) M)
-  coe_sInf' := by
-    rw [show OrderedSetLike.coe = SetLike.coe by rfl]
-    simp
+  coe_sInf' := by simp
 
 @[to_additive]
 abbrev closure : Set M → Subsemigroup M := LatticeSetLike.closure <| Subsemigroup M
