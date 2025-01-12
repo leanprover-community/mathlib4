@@ -107,6 +107,15 @@ lemma disjoint_interior_boundary : Disjoint (I.interior M) (I.boundary M) := by
     ← disjoint_iff_inter_eq_empty.mp (disjoint_interior_frontier (s := range I)), mem_inter_iff]
   exact ⟨h1, h2⟩
 
+lemma isInteriorPoint_iff_not_isBoundaryPoint (x : M) :
+    ¬I.IsBoundaryPoint x ↔ I.IsInteriorPoint x := by
+  refine ⟨by simpa only [or_iff_not_imp_right] using isInteriorPoint_or_isBoundaryPoint x (I := I),
+    ?_⟩
+  by_contra! h
+  rw [← mem_empty_iff_false (extChartAt I x x),
+    ← disjoint_iff_inter_eq_empty.mp (disjoint_interior_frontier (s := range I)), mem_inter_iff]
+  exact h
+
 /-- The boundary is the complement of the interior. -/
 lemma compl_interior : (I.interior M)ᶜ = I.boundary M:= by
   apply compl_unique ?_ I.interior_union_boundary_eq_univ
@@ -296,12 +305,11 @@ lemma isInteriorPoint_disjointUnion_left {p : M ⊕ M'} (hp : I.IsInteriorPoint 
     (hleft : Sum.isLeft p) : I.IsInteriorPoint (Sum.getLeft p hleft) := by
   by_contra h
   set x := Sum.getLeft p hleft
-  rw [← mem_empty_iff_false p, ← (disjoint_interior_boundary (I := I)).inter_eq]
-  constructor
-  · rw [ModelWithCorners.interior, mem_setOf]; exact hp
-  · rw [ModelWithCorners.boundary, mem_setOf, Sum.eq_left_getLeft_of_isLeft hleft]
-    have := isInteriorPoint_or_isBoundaryPoint (I := I) x
-    exact boundaryPoint_inl (M' := M') x (by tauto)
+  rw [← isInteriorPoint_iff_not_isBoundaryPoint x, not_not] at h
+  rw [← isInteriorPoint_iff_not_isBoundaryPoint p] at hp
+  have := boundaryPoint_inl (M' := M') x (by tauto)
+  rw [← Sum.eq_left_getLeft_of_isLeft hleft] at this
+  exact hp this
 
 lemma isInteriorPoint_disjointUnion_right {p : M ⊕ M'} (hp : I.IsInteriorPoint p)
     (hright : Sum.isRight p) : I.IsInteriorPoint (Sum.getRight p hright) := by
