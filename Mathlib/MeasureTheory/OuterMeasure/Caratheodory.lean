@@ -14,7 +14,8 @@ for all sets `t` we have `m t = m (t ∩ s) + m (t \ s)`. This forms a measurabl
 
 ## Main definitions and statements
 
-* `caratheodory` is the Carathéodory-measurable space of an outer measure.
+* `MeasureTheory.OuterMeasure.caratheodory` is the Carathéodory-measurable space
+  of an outer measure.
 
 ## References
 

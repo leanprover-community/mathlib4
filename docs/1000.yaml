@@ -169,6 +169,7 @@ Q193910:
 
 Q194919:
   title: Inverse eigenvalues theorem
+  # i.e. eigenvalue decomposition of a matrix
 
 Q195133:
   title: Wigner–Eckart theorem
@@ -267,9 +268,15 @@ Q256303:
 
 Q257387:
   title: Vitali theorem
+  # i.e. existence of the Vitali set
+  author: Ching-Tsun Chou
+  url: https://github.com/ctchou/my_lean/blob/main/MyLean/NonMeasurable.lean
+  comment: "mathlib4 pull request at https://github.com/leanprover-community/mathlib4/pull/20722"
 
 Q258374:
   title: Carathéodory's theorem
+  decl: MeasureTheory.OuterMeasure.caratheodory
+  comment: Hard to say what exactly is meant.
 
 Q260928:
   title: Jordan curve theorem
@@ -279,6 +286,7 @@ Q266291:
 
 Q268031:
   title: Abel's binomial theorem
+  # presumably not difficult
 
 Q268132:
   title: Gauss–Wantzel theorem
@@ -1312,7 +1320,8 @@ Q1146791:
 
 Q1148215:
   title: Mitchell's embedding theorem
-  # there was a project talking about this; very in progress, I believe. statement exists.
+  # ongoing effort: going slowly; lots of work. see e.g.
+  # https://leanprover.zulipchat.com/#narrow/channel/217875-Is-there-code-for-X.3F/topic/Freyd-Mitchell.20embedding
 
 Q1149022:
   title: Fubini's theorem
