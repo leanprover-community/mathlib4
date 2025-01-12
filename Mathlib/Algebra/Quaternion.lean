@@ -591,7 +591,7 @@ theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R,c₁,c�
   rw [Module.finrank, rank_eq_four, Cardinal.toNat_ofNat]
 
 /-- There is a natural equivalence when swapping the first and third coefficients of a
-  quaternion algebra while `c₂` is 0. -/
+  quaternion algebra if `c₂` is 0. -/
 @[simps]
 def swapEquiv : ℍ[R,c₁,0,c₃] ≃ₐ[R] ℍ[R,c₃,0,c₁] where
   toFun t := ⟨t.1, t.3, t.2, -t.4⟩
