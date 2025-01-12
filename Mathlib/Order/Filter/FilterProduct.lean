@@ -111,7 +111,7 @@ theorem min_def [K : LinearOrder β] (x y : β*) : min x y = map₂ min x y :=
     · rw [min_eq_right h, map₂_coe, coe_eq]
       exact h.mono fun i hi => (min_eq_right hi).symm
 
-theorem abs_def [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β] (x : β*) :
+theorem abs_def [AddCommGroup β] [LinearOrder β] (x : β*) :
     |x| = map abs x :=
   inductionOn x fun _a => rfl
 
@@ -124,7 +124,7 @@ theorem const_min [LinearOrder β] (x y : β) : (↑(min x y : β) : β*) = min 
   rw [min_def, map₂_const]
 
 @[simp]
-theorem const_abs [AddCommGroup β] [LinearOrder β] [IsOrderedAddMonoid β] (x : β) :
+theorem const_abs [AddCommGroup β] [LinearOrder β] (x : β) :
     (↑|x| : β*) = |↑x| := by
   rw [abs_def, map_const]
 

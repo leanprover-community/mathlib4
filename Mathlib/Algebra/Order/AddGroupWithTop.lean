@@ -65,6 +65,7 @@ open Function
 
 namespace LinearOrderedAddCommGroup
 
+@[nolint unusedArguments]
 instance instNeg [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] : Neg (WithTop α) where
   neg := Option.map fun a : α => -a
 
@@ -72,6 +73,7 @@ instance instNeg [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] : Ne
 setting `x - ⊤ = ⊤` and `⊤ - x = ⊤`. This definition is only registered as an instance on linearly
 ordered additive commutative groups, to avoid conflicting with the instance `WithTop.instSub` on
 types with a bottom element. -/
+@[nolint unusedArguments]
 protected def sub [AddCommGroup α] [LinearOrder α] [IsOrderedAddMonoid α] :
     WithTop α → WithTop α → WithTop α
   | _, ⊤ => ⊤

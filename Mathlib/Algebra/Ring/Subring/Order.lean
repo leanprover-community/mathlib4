@@ -37,12 +37,12 @@ instance toIsStrictOrderedRing [Ring R] [PartialOrder R] [IsStrictOrderedRing R]
     (fun _ _ => rfl) (fun _ _ => rfl) fun _ => rfl
 
 /-- The inclusion `S → R` of a subring, as an ordered ring homomorphism. -/
-def orderedSubtype {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R] (s : Subring R) :
+def orderedSubtype {R : Type*} [Ring R] [PartialOrder R] (s : Subring R) :
     s →+*o R where
   __ := s.subtype
   monotone' := fun _ _ h ↦ h
 
-variable {R : Type*} [Ring R] [PartialOrder R] [IsOrderedRing R]
+variable {R : Type*} [Ring R] [PartialOrder R]
 
 lemma orderedSubtype_coe (s : Subring R) : Subring.orderedSubtype s = Subring.subtype s := rfl
 
