@@ -865,7 +865,7 @@ namespace AddSubgroup
 
 variable (A : Type*) [AddCommGroup A] (n : ℤ)
 
-/-- The additive `n`-torsion subgroup for an integer `n`. -/
+/-- The additive `n`-torsion subgroup for an integer `n`, notation `A[n]`. -/
 @[reducible]
 def torsionBy : AddSubgroup A :=
   (Submodule.torsionBy ℤ A n).toAddSubgroup

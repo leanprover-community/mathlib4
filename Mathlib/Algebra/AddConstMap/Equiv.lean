@@ -20,7 +20,8 @@ assert_not_exists Finset
 open Function
 open scoped AddConstMap
 
-/-- An equivalence between `G` and `H` conjugating `(· + a)` to `(· + b)`. -/
+/-- An equivalence between `G` and `H` conjugating `(· + a)` to `(· + b)`,
+notation `G ≃+c[a, b] H`. -/
 structure AddConstEquiv (G H : Type*) [Add G] [Add H] (a : G) (b : H)
   extends G ≃ H, G →+c[a, b] H
 

@@ -605,7 +605,7 @@ def floor : α → ℤ :=
 def ceil : α → ℤ :=
   FloorRing.ceil
 
-/-- `Int.fract a`, the fractional part of `a`, is `a` minus its floor. -/
+/-- `Int.fract a`, denoted `⌈a⌉`, the fractional part of `a`, is `a` minus its floor. -/
 def fract (a : α) : α :=
   a - floor a
 
