@@ -87,8 +87,7 @@ theorem accepts_toDFA : L.toDFA.accepts = L := by
 
 theorem IsRegular.of_finite_range_leftQuotient (h : Set.Finite (Set.range L.leftQuotient)) :
     L.IsRegular :=
-  have ⟨n, ⟨f⟩⟩ := h.exists_equiv_fin
-  ⟨Fin n, Fin.fintype n, DFA.reindex f L.toDFA, by simp⟩
+  Language.isRegular_iff.mpr ⟨_, h.fintype, L.toDFA, by simp⟩
 
 /--
 **Myhill–Nerode theorem**. A language is regular if and only if the set of left quotients is finite.
