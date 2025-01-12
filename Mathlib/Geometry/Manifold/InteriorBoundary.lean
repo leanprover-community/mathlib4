@@ -271,33 +271,23 @@ lemma interiorPoint_inl (x : M) (hx : I.IsInteriorPoint x) :
 lemma boundaryPoint_inl (x : M) (hx : I.IsBoundaryPoint x) :
     I.IsBoundaryPoint (@Sum.inl M M' x) := by
   rw [I.isBoundaryPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inl]
-  dsimp only [PartialHomeomorph.extend.eq_1, PartialEquiv.trans_target, toPartialEquiv_coe_symm,
-    PartialHomeomorph.lift_openEmbedding_target, PartialEquiv.coe_trans, toPartialEquiv_coe,
-    PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.lift_openEmbedding_toFun, Function.comp_apply]
+  dsimp
   rw [Sum.inl_injective.extend_apply (chartAt H x)]
   simpa [I.isBoundaryPoint_iff, extChartAt] using hx
 
 lemma interiorPoint_inr (x : M') (hx : I.IsInteriorPoint x) :
     I.IsInteriorPoint (@Sum.inr M M' x) := by
   rw [I.isInteriorPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inr]
-  dsimp only [PartialHomeomorph.extend.eq_1, PartialEquiv.trans_target, toPartialEquiv_coe_symm,
-    PartialHomeomorph.lift_openEmbedding_target, PartialEquiv.coe_trans, toPartialEquiv_coe,
-    PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.lift_openEmbedding_toFun, Function.comp_apply]
+  dsimp
   rw [Sum.inr_injective.extend_apply (chartAt H x)]
   simpa [I.isInteriorPoint_iff, extChartAt] using hx
 
 lemma boundaryPoint_inr (x : M') (hx : I.IsBoundaryPoint x) :
     I.IsBoundaryPoint (@Sum.inr M M' x) := by
   rw [I.isBoundaryPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inr]
-  dsimp only [PartialHomeomorph.extend.eq_1, PartialEquiv.trans_target, toPartialEquiv_coe_symm,
-    PartialHomeomorph.lift_openEmbedding_target, PartialEquiv.coe_trans, toPartialEquiv_coe,
-    PartialHomeomorph.toFun_eq_coe, PartialHomeomorph.lift_openEmbedding_toFun, Function.comp_apply]
+  dsimp
   rw [Sum.inr_injective.extend_apply (chartAt H x)]
   simpa [I.isBoundaryPoint_iff, extChartAt] using hx
-
--- TODO: move to a better place, ideally `Init.Data.Sum.Basic` in core
-lemma not_isLeft_and_isRight {α β : Type*} {x : α ⊕ β} : ¬(x.isLeft ∧ x.isRight) := by
-  aesop
 
 -- Converse to the previous direction: if `x` were not an interior point,
 -- it had to be a boundary point, hence `p` were a boundary point also, contradiction.
