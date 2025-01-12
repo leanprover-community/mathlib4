@@ -190,6 +190,12 @@ end algebra
 /-- `WithAbs.equiv` as a ring equivalence. -/
 def ringEquiv : WithAbs v ≃+* R := RingEquiv.refl _
 
+lemma equiv_apply_eq_ringEquiv (v : AbsoluteValue R ℝ) (x : WithAbs v) :
+    equiv v x = ringEquiv v x := rfl
+
+lemma equiv_symm_apply_eq_ringEquiv_symm (v : AbsoluteValue R ℝ) (x : R) :
+    (equiv v).symm x = (ringEquiv v).symm x := rfl
+
 /-!
 ### The completion of a field at an absolute value.
 -/
