@@ -30,6 +30,7 @@ This tactic was ported by Thomas Murrills to Lean 4, and then it was converted t
 extension and made to use kernel reductions by Kyle Miller.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 /-- The Mersenne numbers, 2^p - 1. -/
 def mersenne (p : ℕ) : ℕ :=

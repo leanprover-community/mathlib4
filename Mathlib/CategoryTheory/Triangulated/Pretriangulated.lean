@@ -21,6 +21,7 @@ but not necessarily additive categories, as is assumed in some sources.
 TODO: generalise this to n-angulated categories as in https://arxiv.org/abs/1006.4592
 -/
 
+assert_not_exists TwoSidedIdeal
 
 noncomputable section
 
