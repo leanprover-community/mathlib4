@@ -401,8 +401,8 @@ namespace NonUnitalSubsemiring
 theorem closure_subsemigroup_closure (s : Set R) : closure ↑(Subsemigroup.closure s) = closure s :=
   le_antisymm
     (closure_le.mpr fun _ hy =>
-      (Subsemigroup.mem_closure.mp hy) (closure s).toSubsemigroup subset_closure)
-    (closure_mono Subsemigroup.subset_closure)
+      (LatticeSetLike.mem_closure.mp hy) (closure s).toSubsemigroup subset_closure)
+    (closure_mono LatticeSetLike.subset_closure)
 
 /-- The elements of the non-unital subsemiring closure of `M` are exactly the elements of the
 additive closure of a multiplicative subsemigroup `M`. -/
@@ -423,7 +423,7 @@ theorem closure_addSubmonoid_closure {s : Set R} :
   rintro - ⟨H, rfl⟩
   rintro - ⟨J, rfl⟩
   refine (AddSubmonoid.mem_closure.mp (mem_closure_iff.mp hx)) H.toAddSubmonoid fun y hy => ?_
-  refine (Subsemigroup.mem_closure.mp hy) H.toSubsemigroup fun z hz => ?_
+  refine (LatticeSetLike.mem_closure.mp hy) H.toSubsemigroup fun z hz => ?_
   exact (AddSubmonoid.mem_closure.mp hz) H.toAddSubmonoid fun w hw => J hw
 
 /-- An induction principle for closure membership. If `p` holds for `0`, `1`, and all elements
