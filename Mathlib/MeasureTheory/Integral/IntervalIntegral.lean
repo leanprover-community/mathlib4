@@ -404,7 +404,6 @@ theorem intervalIntegrable_of_even
 /-- An odd function is interval integrable (with respect to the volume measure)
 on every interval iff it is interval integrable (with respect to the volume
 measure) on every interval of the form `0..x`, for positive `x`. -/
-
 theorem intervalIntegrable_of_odd
   {f : ℝ → ℝ}
   (h₁f : ∀ x, -f x = f (-x))
