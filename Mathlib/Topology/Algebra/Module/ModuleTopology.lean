@@ -416,15 +416,15 @@ end surjection
 section Prod
 
 variable {R : Type*} [TopologicalSpace R] [Semiring R]
-variable {M : Type*} [AddCommMonoid M] [Module R M] [TopologicalSpace M] [hM : IsModuleTopology R M]
-variable {N : Type*} [AddCommMonoid N] [Module R N] [TopologicalSpace N] [hN : IsModuleTopology R N]
+variable {M : Type*} [AddCommMonoid M] [Module R M] [TopologicalSpace M] [IsModuleTopology R M]
+variable {N : Type*} [AddCommMonoid N] [Module R N] [TopologicalSpace N] [IsModuleTopology R N]
 
 /-- The product of the module topologies for two modules over a topological ring
 is the module topology. -/
-instance prod : IsModuleTopology R (M × N) := by
+instance instProd : IsModuleTopology R (M × N) := by
   constructor
-  haveI : ContinuousAdd M := toContinuousAdd R M
-  haveI : ContinuousAdd N := toContinuousAdd R N
+  have : ContinuousAdd M := toContinuousAdd R M
+  have : ContinuousAdd N := toContinuousAdd R N
   -- In this proof, `M × N` always denotes the product with its *product* topology.
   -- Addition `(M × N)² → M × N` and scalar multiplication `R × (M × N) → M × N`
   -- are continuous for the product topology (by results in the library), so the module topology
@@ -440,7 +440,7 @@ instance prod : IsModuleTopology R (M × N) := by
   let i : M × N → P := id
   -- then we need to show that `i` is continuous.
   rw [← continuous_id_iff_le]
-  change @Continuous (M × N) P (_) τP i
+  change @Continuous (M × N) P instTopologicalSpaceProd τP i
   -- But `i` can be written as (m, n) ↦ (m, 0) + (0, n)
   -- or equivalently as i₁ ∘ pr₁ + i₂ ∘ pr₂, where prᵢ are the projections,
   -- the iⱼ's are linear inclusions M → P and N → P, and the addition is P × P → P.
@@ -457,15 +457,14 @@ end Prod
 
 section Pi
 
-variable {R : Type*} [τR : TopologicalSpace R] [Semiring R]
-
+variable {R : Type*} [TopologicalSpace R] [Semiring R]
 variable {ι : Type*} [Finite ι] {A : ι → Type*} [∀ i, AddCommMonoid (A i)]
   [∀ i, Module R (A i)] [∀ i, TopologicalSpace (A i)]
   [∀ i, IsModuleTopology R (A i)]
 
 /-- The product of the module topologies for a finite family of modules over a topological ring
 is the module topology. -/
-instance pi : IsModuleTopology R (∀ i, A i) := by
+instance instPi : IsModuleTopology R (∀ i, A i) := by
   -- This is an easy induction on the size of the finite type, given the result
   -- for binary products above. We use a "decategorified" induction principle for finite types.
   induction ι using Finite.induction_empty_option
@@ -489,7 +488,7 @@ instance pi : IsModuleTopology R (∀ i, A i) := by
     -- and the product over `Unit` is just a module which is assumed to have the module topology
     have := iso (ContinuousLinearEquiv.piUnique R (fun t ↦ A (e.symm (Sum.inr t)))).symm
     -- so the result follows from the previous lemma (binary products).
-    exact prod
+    infer_instance
 
 end Pi
 
