@@ -48,6 +48,8 @@ instance : WeakEquivalence P.i₁ :=
 
 end
 
+section
+
 variable [HasBinaryCoproduct A A]
 
 noncomputable def i : A ⨿ A ⟶ P.I := coprod.desc P.i₀ P.i₁
@@ -58,11 +60,18 @@ lemma inl_i : coprod.inl ≫ P.i = P.i₀ := by simp [i]
 @[reassoc (attr := simp)]
 lemma inr_i : coprod.inr ≫ P.i = P.i₁ := by simp [i]
 
+@[simps]
 def symm : Precylinder A where
   I := P.I
   i₀ := P.i₁
   i₁ := P.i₀
   σ := P.σ
+
+end
+
+@[simp, reassoc]
+lemma symm_i [HasBinaryCoproducts C] : P.symm.i =
+  (coprod.braiding A A).hom ≫ P.i := by aesop_cat
 
 end Precylinder
 
@@ -75,11 +84,18 @@ namespace Cylinder
 
 attribute [instance] cofibration_i
 
-variable [CategoryWithWeakEquivalences C] [CategoryWithCofibrations C] {A : C}
+def symm [ModelCategory C] {A : C}
+    (P : Cylinder A) : Cylinder A where
+  toPrecylinder := P.toPrecylinder.symm
+  cofibration_i := by
+    dsimp
+    rw [Precylinder.symm_i]
+    infer_instance
 
 section
 
-variable [CategoryWithFibrations C] [HasBinaryCoproduct A A]
+variable [CategoryWithWeakEquivalences C] [CategoryWithCofibrations C] {A : C}
+  [CategoryWithFibrations C] [HasBinaryCoproduct A A]
 
 variable (h : MorphismProperty.MapFactorizationData (cofibrations C) (trivialFibrations C)
     (coprod.desc (𝟙 A) (𝟙 A)))
