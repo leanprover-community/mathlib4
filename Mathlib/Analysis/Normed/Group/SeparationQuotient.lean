@@ -130,9 +130,6 @@ theorem norm_normedMk_eq_one (h : ∃ x : M, ‖x‖ ≠ 0) :
 theorem normedMk_eq_zero (h : ∀ x : M, ‖x‖ = 0) :
     normedMk (M := M) = 0 := by
   ext x
-  simp only [normedMk_apply, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, mkAddMonoidHom_apply,
-    zero_apply]
-  rw [← norm_eq_zero, norm_mk]
-  exact h x
+  simpa [← norm_eq_zero] using h x
 
 end SeparationQuotient
