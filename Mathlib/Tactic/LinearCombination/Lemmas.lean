@@ -3,7 +3,6 @@ Copyright (c) 2022 Abby J. Goldberg. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Abby J. Goldberg, Mario Carneiro, Heather Macbeth
 -/
-import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Module.OrderedSMul
 import Mathlib.Data.Ineq
 
