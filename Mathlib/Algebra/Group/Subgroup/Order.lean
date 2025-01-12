@@ -6,8 +6,8 @@ Authors: Damiano Testa, Ruben Van de Velde
 import Mathlib.Order.Atoms
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Group.Subsemigroup.Operations
-import Mathlib.Algebra.Order.Group.InjSurj
 import Mathlib.Algebra.Order.Group.Unbundled.Abs
+import Mathlib.Algebra.Order.Monoid.Basic
 
 /-!
 # Facts about ordered structures and ordered instances on subgroups

@@ -3,9 +3,10 @@ Copyright (c) 2021 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Yaël Dillies
 -/
+import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Group.Pointwise.Set.Basic
-import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.GroupWithZero.Unbundled.Lemmas
+import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Order.Interval.Set.OrderIso
 

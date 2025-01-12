@@ -5,7 +5,6 @@ Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Asymptotics.Theta
-import Mathlib.Analysis.Normed.Order.Basic
 
 /-!
 # Asymptotic equivalence

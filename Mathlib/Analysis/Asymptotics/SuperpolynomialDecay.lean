@@ -5,7 +5,6 @@ Authors: Devon Tuma
 -/
 import Mathlib.Algebra.Polynomial.Eval.Defs
 import Mathlib.Analysis.Asymptotics.Asymptotics
-import Mathlib.Analysis.Normed.Order.Basic
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 
 /-!

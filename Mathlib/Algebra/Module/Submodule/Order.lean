@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Module.Submodule.Defs
-import Mathlib.Algebra.Order.Group.InjSurj
+import Mathlib.Algebra.Order.Monoid.Basic
 
 /-!
 # Ordered instances on submodules

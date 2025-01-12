@@ -6,7 +6,7 @@ Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Algebra.Order.Field.Rat
+import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SetFamily.Shadow
 
