@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Wanyi He, Huanyu Zheng
 -/
 import Mathlib.Algebra.CharP.Algebra
+import Mathlib.Algebra.Module.Torsion
 /-!
 # Characteristic of the ring of linear Maps
 
@@ -12,7 +13,7 @@ The characteristic of the ring of linear maps is determined by its base ring.
 
 ## Main Results
 
-- `CharP_if` : For a commutative semiring `R` and a `R`-module `M`,
+- `Module.charP_end` : For a commutative semiring `R` and a `R`-module `M`,
   the characteristic of `R` is equal to the characteristic of the `R`-linear
   endomorphisms of `M` when `M` contains an element `x` such that
   `r • x = 0` implies `r = 0`.
@@ -39,8 +40,11 @@ variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
   depends on specific `•`), then the characteristic of `R` is equal to the
   characteristic of the `R`-linear endomorphisms of `M`.-/
 theorem charP_end {p : ℕ} [hchar : CharP R p]
-    (hreduction : ∃ x : M, ∀ r : R, r • x = 0 → r = 0) : CharP (M →ₗ[R] M) p where
+    (htorsion : ∃ x : M, Ideal.torsionOf R M x = ⊥) : CharP (M →ₗ[R] M) p where
   cast_eq_zero_iff' n := by
+    have hreduction : ∃ x : M, ∀ r : R, r • x = 0 → r = 0 :=
+      Exists.casesOn htorsion fun x hx ↦
+        Exists.intro x fun r a ↦ (hx ▸ Ideal.mem_torsionOf_iff x r).mpr a
     have exact : (n : M →ₗ[R] M) = (n : R) • 1 := by
       simp only [Nat.cast_smul_eq_nsmul, nsmul_eq_mul, mul_one]
     rw [exact, LinearMap.ext_iff, ← hchar.1]
