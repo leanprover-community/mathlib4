@@ -37,22 +37,25 @@ structure Sequence [Semiring R] where
   elems : ℕ → R[X]
   degree_eq (i : ℕ) : (elems i).degree = i
 
-open scoped Function in
-lemma Sequence.degree_disjoint [Semiring R] (S : Sequence R) :
-    (Set.range S.elems).Pairwise (Ne on degree) := by
-  sorry
-
 lemma Sequence.ne_zero {R} (i : ℕ) [Semiring R] (S : Sequence R) : S.elems i ≠ 0 := sorry
 
 namespace Sequence
 
-variable {R} [Ring R] (S : Sequence R) -- #20480
+variable {R}
 
-lemma linearIndependent_aux (n : ℕ) (hCoeff : ∀ i, (S.elems i).leadingCoeff = 1) :
-    LinearIndependent R fun ν : Fin n => S.elems ν := by
-  induction n with
-  | zero => exact linearIndependent_empty_type
-  | succ n hn => sorry
+section Semiring
+
+variable [Semiring R] (S : Sequence R) 
+
+/-- No two elements in the sequence have the same degree. -/
+lemma degree_ne {i j : ℕ} (h : i ≠ j) : (S.elems i).degree ≠ (S.elems j).degree := by
+  simp [S.degree_eq i, S.degree_eq j, h]
+
+end Semiring
+
+section Ring
+
+variable [Ring R] (S : Sequence R) -- #20480
 
 -- TODO: Generalize to any set of polynomials with different degrees
 open scoped Function in
@@ -60,22 +63,30 @@ lemma linearIndependent [NoZeroSMulDivisors R R[X]] :
     LinearIndependent R S.elems := linearIndependent_iff'.mpr <| fun s g eqzero i hi ↦ by
   -- have giregular := isRegular_of_ne_zero' _
   -- have := degree_smul_of_smul_regular (S.elems i) giregular.left.isSMulRegular
-  have hpairwise :
-      {i | i ∈ s ∧ g i • S.elems i ≠ 0}.Pairwise (Ne on (degree ∘ fun i ↦ g i • S.elems i)) :=
-    sorry 
   by_cases hsupzero : s.sup (fun i ↦ (g i • S.elems i).degree) = ⊥
   · have le_sup := Finset.le_sup hi (f := (fun i ↦ (g i • S.elems i).degree))
     exact (smul_eq_zero_iff_left (S.ne_zero i)).mp <| degree_eq_bot.mp (eq_bot_mono le_sup hsupzero)
-  · obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S.elems i).degree) = n := exists_eq'
+  · have hpairwise :
+        {i | i ∈ s ∧ g i • S.elems i ≠ 0}.Pairwise (Ne on (degree ∘ fun i ↦ g i • S.elems i)) := by
+      intro x ⟨xmem, hx⟩ y ⟨ymem, hy⟩ xney
+      have hgxleft : IsLeftRegular (g x) := sorry
+      have hgyleft : IsLeftRegular (g y) := sorry
+      have hgx := degree_smul_of_smul_regular (S.elems x) hgxleft.isSMulRegular
+      have hgy := degree_smul_of_smul_regular (S.elems y) hgyleft.isSMulRegular
+      simpa [hgx, hgy] using S.degree_ne xney
+
+    obtain ⟨n, hn⟩ : ∃ n, (s.sup fun i ↦ (g i • S.elems i).degree) = n := exists_eq'
     have hsum := degree_sum_eq_of_disjoint _ s hpairwise |>.trans hn
-    have := degree_ne_bot.mp <| hsum.trans_ne <|.symm (ne_of_ne_of_eq (hsupzero ·.symm) hn)
-    contradiction
+    have := hsum.trans_ne <| (ne_of_ne_of_eq (hsupzero ·.symm) hn).symm
+    exact degree_ne_bot.mp this eqzero |>.elim
 
 lemma span (hCoeff : ∀ i, (S.elems i).leadingCoeff = 1) : ⊤ ≤ span R (Set.range S.elems) := by
   sorry
 
 noncomputable def basis (hCoeff : ∀ i, (S.elems i).leadingCoeff = 1) : Basis ℕ R R[X] :=
   Basis.mk S.linearIndependent <| S.span hCoeff
+
+end Ring
 
 end Sequence
 
