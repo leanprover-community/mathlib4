@@ -342,9 +342,12 @@ lemma IsCyclic.exists_ofOrder_eq_natCard [h : IsCyclic α] : ∃ g : α, orderOf
   rw [← card_zpowers g, (eq_top_iff' (zpowers g)).mpr hg]
   exact Nat.card_congr (Equiv.Set.univ α)
 
-/-- A `MulDistribMulAction` action on a cyclic group of order `n` factors through `ZMod n`. -/
-noncomputable def IsCyclic.toMonoidHom (M G : Type*) [Monoid M] [Group G] [IsCyclic G]
-    [MulDistribMulAction M G] {n : ℕ} (hn : Nat.card G = n) : M →* ZMod n where
+variable (G) in
+/-- A distributive action of a monoid on a finite cyclic group of order `n` factors through an
+action on `ZMod n`. -/
+noncomputable def MulDistribMulAction.toMonoidHomZModOfIsCyclic
+    (M : Type*) [Monoid M] [IsCyclic G] [MulDistribMulAction M G]
+    {n : ℕ} (hn : Nat.card G = n) : M →* ZMod n where
   toFun := fun m ↦ (MulDistribMulAction.toMonoidHom G m).map_cyclic.choose
   map_one' := by
     obtain ⟨g, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := G)
