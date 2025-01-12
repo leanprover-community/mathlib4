@@ -82,7 +82,7 @@ theorem IsClosedMap.restrictPreimage (H : IsClosedMap f) (s : Set β) :
       simpa [isClosed_induced_iff]
   exact fun u hu e => ⟨f '' u, H u hu, by simp [← e, image_restrictPreimage]⟩
 
-@[deprecated (since := "2024-04-02")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-02")]
 theorem Set.restrictPreimage_isClosedMap (s : Set β) (H : IsClosedMap f) :
     IsClosedMap (s.restrictPreimage f) := H.restrictPreimage s
 
@@ -94,7 +94,7 @@ theorem IsOpenMap.restrictPreimage (H : IsOpenMap f) (s : Set β) :
       simpa [isOpen_induced_iff]
   exact fun u hu e => ⟨f '' u, H u hu, by simp [← e, image_restrictPreimage]⟩
 
-@[deprecated (since := "2024-04-02")]
+@[deprecated "No deprecation message was provided." (since := "2024-04-02")]
 theorem Set.restrictPreimage_isOpenMap (s : Set β) (H : IsOpenMap f) :
     IsOpenMap (s.restrictPreimage f) := H.restrictPreimage s
 
@@ -195,7 +195,7 @@ To check that `f` is an embedding it suffices to check that `U i → Y` is an em
 theorem isEmbedding_of_iSup_eq_top_of_preimage_subset_range
     {X Y} [TopologicalSpace X] [TopologicalSpace Y]
     (f : X → Y) (h : Continuous f) {ι : Type*}
-    (U : ι → Opens Y) (hU : Set.range f ⊆ (iSup U : _))
+    (U : ι → Opens Y) (hU : Set.range f ⊆ (iSup U :))
     (V : ι → Type*) [∀ i, TopologicalSpace (V i)]
     (iV : ∀ i, V i → X) (hiV : ∀ i, Continuous (iV i)) (hV : ∀ i, f ⁻¹' U i ⊆ Set.range (iV i))
     (hV' : ∀ i, IsEmbedding (f ∘ iV i)) : IsEmbedding f := by

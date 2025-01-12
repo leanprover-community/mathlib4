@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.Finite.Defs
+import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Finite types
@@ -38,8 +39,7 @@ Types which have a surjection from/an injection to a `Fintype` are themselves fi
 See `Fintype.ofInjective` and `Fintype.ofSurjective`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists MonoidWithZero MulAction
 
 open Function
 
@@ -776,6 +776,11 @@ instance Fin.fintype (n : ℕ) : Fintype (Fin n) :=
 
 theorem Fin.univ_def (n : ℕ) : (univ : Finset (Fin n)) = ⟨List.finRange n, List.nodup_finRange n⟩ :=
   rfl
+
+/-- See also `nonempty_encodable`, `nonempty_denumerable`. -/
+theorem nonempty_fintype (α : Type*) [Finite α] : Nonempty (Fintype α) := by
+  rcases Finite.exists_equiv_fin α with ⟨n, ⟨e⟩⟩
+  exact ⟨.ofEquiv _ e.symm⟩
 
 @[simp] theorem List.toFinset_finRange (n : ℕ) : (List.finRange n).toFinset = Finset.univ := by
   ext; simp

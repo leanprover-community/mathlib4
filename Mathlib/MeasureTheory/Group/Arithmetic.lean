@@ -419,7 +419,7 @@ theorem MeasurableSet.inv {s : Set G} (hs : MeasurableSet s) : MeasurableSet s�
 @[to_additive]
 theorem measurableEmbedding_inv [InvolutiveInv α] [MeasurableInv α] :
     MeasurableEmbedding (Inv.inv (α := α)) :=
-  ⟨inv_injective, measurable_inv, fun s hs ↦ s.image_inv ▸ hs.inv⟩
+  ⟨inv_injective, measurable_inv, fun s hs ↦ s.image_inv_eq_inv ▸ hs.inv⟩
 
 end Inv
 
@@ -662,7 +662,7 @@ instance Units.instMeasurableSpace : MeasurableSpace Mˣ := MeasurableSpace.coma
 
 @[to_additive]
 instance Units.measurableSMul : MeasurableSMul Mˣ β where
-  measurable_const_smul c := (measurable_const_smul (c : M) : _)
+  measurable_const_smul c := measurable_const_smul (c : M)
   measurable_smul_const x :=
     (measurable_smul_const x : Measurable fun c : M => c • x).comp MeasurableSpace.le_map_comap
 

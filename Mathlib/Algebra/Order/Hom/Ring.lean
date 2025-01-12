@@ -33,8 +33,7 @@ making some typeclasses and instances irrelevant.
 ordered ring homomorphism, order homomorphism
 -/
 
-assert_not_exists FloorRing
-assert_not_exists Archimedean
+assert_not_exists FloorRing Archimedean
 
 open Function
 
@@ -219,7 +218,7 @@ protected def id : α →+*o α :=
 instance : Inhabited (α →+*o α) :=
   ⟨OrderRingHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(OrderRingHom.id α) = id :=
   rfl
 

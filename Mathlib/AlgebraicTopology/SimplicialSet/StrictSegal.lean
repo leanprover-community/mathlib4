@@ -5,7 +5,6 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou, Johan Commelin, Nick Ward
 -/
 import Mathlib.AlgebraicTopology.SimplicialSet.Nerve
 import Mathlib.AlgebraicTopology.SimplicialSet.Path
-import Mathlib.AlgebraicTopology.SimplicialSet.Quasicategory
 import Mathlib.CategoryTheory.Functor.KanExtension.Adjunction
 import Mathlib.CategoryTheory.Functor.KanExtension.Basic
 
@@ -20,6 +19,10 @@ Examples of `StrictSegal` simplicial sets are given by nerves of categories.
 
 TODO: Show that these are the only examples: that a `StrictSegal` simplicial set is isomorphic to
 the nerve of its homotopy category.
+
+`StrictSegal` simplicial sets have an important property of being 2-coskeletal which is proven
+in `Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal`.
+
 -/
 
 universe v u
@@ -153,90 +156,13 @@ lemma spine_δ_arrow_eq (f : Path X (n + 1)) {i : Fin n} {j : Fin (n + 2)}
   rw [← FunctorToTypes.map_comp_apply, ← op_comp]
   rw [mkOfSucc_δ_eq h, spineToSimplex_edge]
 
-/-- Any `StrictSegal` simplicial set is a `Quasicategory`. -/
-instance : Quasicategory X := by
-  apply quasicategory_of_filler X
-  intro n i σ₀ h₀ hₙ
-  use spineToSimplex <| Path.map (horn.spineId i h₀ hₙ) σ₀
-  intro j hj
-  apply spineInjective
-  ext k
-  · dsimp only [spineEquiv, spine_arrow, Function.comp_apply, Equiv.coe_fn_mk]
-    rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
-    let ksucc := k.succ.castSucc
-    obtain hlt | hgt | heq : ksucc < j ∨ j < ksucc ∨ j = ksucc := by omega
-    · rw [← spine_arrow, spine_δ_arrow_lt _ hlt]
-      dsimp only [Path.map, spine_arrow, Fin.coe_eq_castSucc]
-      apply congr_arg
-      simp only [horn, horn.spineId, standardSimplex, uliftFunctor, Functor.comp_obj,
-        yoneda_obj_obj, whiskering_obj_obj_map, uliftFunctor_map, yoneda_obj_map,
-        standardSimplex.objEquiv, Equiv.ulift, Equiv.coe_fn_symm_mk,
-        Quiver.Hom.unop_op, horn.face_coe, Subtype.mk.injEq]
-      rw [mkOfSucc_δ_lt hlt]
-      rfl
-    · rw [← spine_arrow, spine_δ_arrow_gt _ hgt]
-      dsimp only [Path.map, spine_arrow, Fin.coe_eq_castSucc]
-      apply congr_arg
-      simp only [horn, horn.spineId, standardSimplex, uliftFunctor, Functor.comp_obj,
-        yoneda_obj_obj, whiskering_obj_obj_map, uliftFunctor_map, yoneda_obj_map,
-        standardSimplex.objEquiv, Equiv.ulift, Equiv.coe_fn_symm_mk,
-        Quiver.Hom.unop_op, horn.face_coe, Subtype.mk.injEq]
-      rw [mkOfSucc_δ_gt hgt]
-      rfl
-    · /- The only inner horn of `Δ[2]` does not contain the diagonal edge. -/
-      have hn0 : n ≠ 0 := by
-        rintro rfl
-        obtain rfl : k = 0 := by omega
-        fin_cases i <;> contradiction
-      /- We construct the triangle in the standard simplex as a 2-simplex in
-      the horn. While the triangle is not contained in the inner horn `Λ[2, 1]`,
-      we can inhabit `Λ[n + 2, i] _[2]` by induction on `n`. -/
-      let triangle : Λ[n + 2, i] _[2] := by
-        cases n with
-        | zero => contradiction
-        | succ _ => exact horn.primitiveTriangle i h₀ hₙ k (by omega)
-      /- The interval spanning from `k` to `k + 2` is equivalently the spine
-      of the triangle with vertices `k`, `k + 1`, and `k + 2`. -/
-      have hi : ((horn.spineId i h₀ hₙ).map σ₀).interval k 2 (by omega) =
-          X.spine 2 (σ₀.app _ triangle) := by
-        ext m
-        dsimp [spine_arrow, Path.interval, Path.map]
-        rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality]
-        apply congr_arg
-        simp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
-          whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj, ne_eq,
-          whiskering_obj_obj_map, uliftFunctor_map, yoneda_obj_map, len_mk,
-          Nat.reduceAdd, Quiver.Hom.unop_op]
-        cases n with
-        | zero => contradiction
-        | succ _ => ext x; fin_cases x <;> fin_cases m <;> rfl
-      rw [← spine_arrow, spine_δ_arrow_eq _ heq, hi]
-      simp only [spineToDiagonal, diagonal, spineToSimplex_spine]
-      rw [← types_comp_apply (σ₀.app _) (X.map _), ← σ₀.naturality, types_comp_apply]
-      apply congr_arg
-      simp only [horn, standardSimplex, uliftFunctor, Functor.comp_obj,
-        whiskering_obj_obj_obj, yoneda_obj_obj, uliftFunctor_obj,
-        uliftFunctor_map, whiskering_obj_obj_map, yoneda_obj_map, horn.face_coe,
-        len_mk, Nat.reduceAdd, Quiver.Hom.unop_op, Subtype.mk.injEq, ULift.up_inj]
-      ext z
-      cases n with
-      | zero => contradiction
-      | succ _ =>
-        fin_cases z <;>
-        · simp only [standardSimplex.objEquiv, uliftFunctor_map, yoneda_obj_map,
-            Quiver.Hom.unop_op, Equiv.ulift_symm_down]
-          rw [mkOfSucc_δ_eq heq]
-          rfl
-
 end StrictSegal
 
 end SSet
 
-namespace Nerve
+namespace CategoryTheory.Nerve
 
 open SSet
-
-variable {C : Type*} [Category C] {n : ℕ}
 
 /-- Simplices in the nerve of categories are uniquely determined by their spine. Indeed, this
 property describes the essential image of the nerve functor.-/
@@ -260,8 +186,4 @@ noncomputable instance strictSegal (C : Type u) [Category.{v} C] : StrictSegal (
     · intro i hi
       apply ComposableArrows.mkOfObjOfMapSucc_map_succ
 
-/-- By virtue of satisfying the `StrictSegal` condition, the nerve of a
-category is a `Quasicategory`. -/
-instance : Quasicategory (nerve C) := inferInstance
-
-end Nerve
+end CategoryTheory.Nerve

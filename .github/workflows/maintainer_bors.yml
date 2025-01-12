@@ -103,7 +103,6 @@ jobs:
 
       - uses: actions/checkout@v4
         with:
-          ref: master
           sparse-checkout: |
             scripts/zulip_emoji_merge_delegate.py
 

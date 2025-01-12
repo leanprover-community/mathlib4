@@ -6,7 +6,7 @@ Authors: Patrick Massot, Johannes Hölzl
 
 import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Group.TypeTags.Finite
-import Mathlib.Algebra.Order.Ring.Finset
+import Mathlib.Algebra.Order.GroupWithZero.Finset
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Analysis.Normed.Group.Rat
@@ -60,7 +60,7 @@ instance Pi.nonUnitalSeminormedRing {π : ι → Type*} [Fintype ι]
               Finset.univ.sup ((fun i => ‖x i‖₊) * fun i => ‖y i‖₊) :=
             Finset.sup_mono_fun fun _ _ => norm_mul_le _ _
           _ ≤ (Finset.univ.sup fun i => ‖x i‖₊) * Finset.univ.sup fun i => ‖y i‖₊ :=
-            Finset.sup_mul_le_mul_sup_of_nonneg _ (fun _ _ => zero_le _) fun _ _ => zero_le _
+            Finset.sup_mul_le_mul_sup_of_nonneg (fun _ _ => zero_le _) fun _ _ => zero_le _
            }
 
 end NonUnitalSeminormedRing
@@ -268,8 +268,8 @@ theorem tendsto_mul_right_cobounded {a : α} (ha : a ≠ 0) :
 
 @[simp]
 lemma inv_cobounded₀ : (cobounded α)⁻¹ = 𝓝[≠] 0 := by
-  rw [← comap_norm_atTop, ← Filter.comap_inv, ← comap_norm_nhdsWithin_Ioi_zero,
-    ← inv_atTop₀, ← Filter.comap_inv]
+  rw [← comap_norm_atTop, ← Filter.comap_inv, ← comap_norm_nhdsGT_zero, ← inv_atTop₀,
+    ← Filter.comap_inv]
   simp only [comap_comap, Function.comp_def, norm_inv]
 
 @[simp]
@@ -319,18 +319,25 @@ example [Monoid β] (φ : β →* α) {x : β} {k : ℕ+} (h : x ^ (k : ℕ) = 1
 @[simp] lemma AddChar.norm_apply {G : Type*} [AddLeftCancelMonoid G] [Finite G] (ψ : AddChar G α)
     (x : G) : ‖ψ x‖ = 1 := (ψ.toMonoidHom.isOfFinOrder <| isOfFinOrder_of_finite _).norm_eq_one
 
-lemma NormedField.tendsto_norm_inverse_nhdsWithin_0_atTop :
-    Tendsto (fun x : α ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
-  (tendsto_inv_zero_atTop.comp tendsto_norm_zero').congr fun x ↦ (norm_inv x).symm
+lemma NormedField.tendsto_norm_inv_nhdsNE_zero_atTop : Tendsto (fun x : α ↦ ‖x⁻¹‖) (𝓝[≠] 0) atTop :=
+  (tendsto_inv_nhdsGT_zero.comp tendsto_norm_nhdsNE_zero).congr fun x ↦ (norm_inv x).symm
 
-lemma NormedField.tendsto_norm_zpow_nhdsWithin_0_atTop {m : ℤ} (hm : m < 0) :
+@[deprecated (since := "2024-12-22")]
+alias NormedField.tendsto_norm_inverse_nhdsWithin_0_atTop :=
+  NormedField.tendsto_norm_inv_nhdsNE_zero_atTop
+
+lemma NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop {m : ℤ} (hm : m < 0) :
     Tendsto (fun x : α ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop := by
   obtain ⟨m, rfl⟩ := neg_surjective m
   rw [neg_lt_zero] at hm
   lift m to ℕ using hm.le
   rw [Int.natCast_pos] at hm
   simp only [norm_pow, zpow_neg, zpow_natCast, ← inv_pow]
-  exact (tendsto_pow_atTop hm.ne').comp NormedField.tendsto_norm_inverse_nhdsWithin_0_atTop
+  exact (tendsto_pow_atTop hm.ne').comp NormedField.tendsto_norm_inv_nhdsNE_zero_atTop
+
+@[deprecated (since := "2024-12-22")]
+alias NormedField.tendsto_norm_zpow_nhdsWithin_0_atTop :=
+  NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop
 
 end NormedDivisionRing
 
@@ -382,7 +389,7 @@ protected lemma continuousAt_zpow : ContinuousAt (fun x ↦ x ^ n) x ↔ x ≠ 0
   contrapose!
   rintro ⟨rfl, hm⟩ hc
   exact not_tendsto_atTop_of_tendsto_nhds (hc.tendsto.mono_left nhdsWithin_le_nhds).norm
-    (tendsto_norm_zpow_nhdsWithin_0_atTop hm)
+    (NormedField.tendsto_norm_zpow_nhdsNE_zero_atTop hm)
 
 @[simp]
 protected lemma continuousAt_inv : ContinuousAt Inv.inv x ↔ x ≠ 0 := by
@@ -429,7 +436,7 @@ lemma NormedField.completeSpace_iff_isComplete_closedBall {K : Type*} [NormedFie
   · exact Metric.isClosed_ball.isComplete
   rcases NormedField.discreteTopology_or_nontriviallyNormedField K with _|⟨_, rfl⟩
   · rwa [completeSpace_iff_isComplete_univ,
-         ← NormedDivisionRing.discreteTopology_unit_closedBall_eq_univ]
+         ← NormedDivisionRing.unitClosedBall_eq_univ_of_discrete]
   refine Metric.complete_of_cauchySeq_tendsto fun u hu ↦ ?_
   obtain ⟨k, hk⟩ := hu.norm_bddAbove
   have kpos : 0 ≤ k := (_root_.norm_nonneg (u 0)).trans (hk (by simp))

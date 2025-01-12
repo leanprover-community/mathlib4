@@ -114,6 +114,67 @@ theorem Ici_mul_Ioi_subset' (a b : α) : Ici a * Ioi b ⊆ Ioi (a * b) := by
 
 end ContravariantLT
 
+section LinearOrderedCommMonoid
+variable [LinearOrderedCommMonoid α] [MulLeftReflectLE α] [ExistsMulOfLE α] {a b c d : α}
+
+-- TODO: Generalise to arbitrary actions using a `smul` version of `MulLeftMono`
+@[to_additive (attr := simp)]
+lemma smul_Icc (a b c : α) : a • Icc b c = Icc (a * b) (a * c) := by
+  ext x
+  constructor
+  · rintro ⟨y, ⟨hby, hyc⟩, rfl⟩
+    exact ⟨mul_le_mul_left' hby _, mul_le_mul_left' hyc _⟩
+  · rintro ⟨habx, hxac⟩
+    obtain ⟨y, hy, rfl⟩ := exists_one_le_mul_of_le habx
+    refine ⟨b * y, ⟨le_mul_of_one_le_right' hy, ?_⟩, (mul_assoc ..).symm⟩
+    rwa [mul_assoc, mul_le_mul_iff_left] at hxac
+
+@[to_additive]
+lemma Icc_mul_Icc (hab : a ≤ b) (hcd : c ≤ d) : Icc a b * Icc c d = Icc (a * c) (b * d) := by
+  refine (Icc_mul_Icc_subset' _ _ _ _).antisymm fun x ⟨hacx, hxbd⟩ ↦ ?_
+  obtain hxbc | hbcx := le_total x (b * c)
+  · obtain ⟨y, hy, rfl⟩ := exists_one_le_mul_of_le hacx
+    refine ⟨a * y, ⟨le_mul_of_one_le_right' hy, ?_⟩, c, left_mem_Icc.2 hcd, mul_right_comm ..⟩
+    rwa [mul_right_comm, mul_le_mul_iff_right] at hxbc
+  · obtain ⟨y, hy, rfl⟩ := exists_one_le_mul_of_le hbcx
+    refine ⟨b, right_mem_Icc.2 hab, c * y, ⟨le_mul_of_one_le_right' hy, ?_⟩, (mul_assoc ..).symm⟩
+    rwa [mul_assoc, mul_le_mul_iff_left] at hxbd
+
+end LinearOrderedCommMonoid
+
+section OrderedCommGroup
+variable [OrderedCommGroup α]
+
+@[to_additive (attr := simp)] lemma inv_Ici (a : α) : (Ici a)⁻¹ = Iic a⁻¹ := ext fun _x ↦ le_inv'
+@[to_additive (attr := simp)] lemma inv_Iic (a : α) : (Iic a)⁻¹ = Ici a⁻¹ := ext fun _x ↦ inv_le'
+@[to_additive (attr := simp)] lemma inv_Ioi (a : α) : (Ioi a)⁻¹ = Iio a⁻¹ := ext fun _x ↦ lt_inv'
+@[to_additive (attr := simp)] lemma inv_Iio (a : α) : (Iio a)⁻¹ = Ioi a⁻¹ := ext fun _x ↦ inv_lt'
+
+@[to_additive (attr := simp)]
+lemma inv_Icc (a b : α) : (Icc a b)⁻¹ = Icc b⁻¹ a⁻¹ := by simp [← Ici_inter_Iic, inter_comm]
+
+@[to_additive (attr := simp)]
+lemma inv_Ico (a b : α) : (Ico a b)⁻¹ = Ioc b⁻¹ a⁻¹ := by
+  simp [← Ici_inter_Iio, ← Ioi_inter_Iic, inter_comm]
+
+@[to_additive (attr := simp)]
+lemma inv_Ioc (a b : α) : (Ioc a b)⁻¹ = Ico b⁻¹ a⁻¹ := by
+  simp [← Ioi_inter_Iic, ← Ici_inter_Iio, inter_comm]
+
+@[to_additive (attr := simp)]
+lemma inv_Ioo (a b : α) : (Ioo a b)⁻¹ = Ioo b⁻¹ a⁻¹ := by simp [← Ioi_inter_Iio, inter_comm]
+
+@[deprecated (since := "2024-11-23")] alias preimage_neg_Ici := neg_Ici
+@[deprecated (since := "2024-11-23")] alias preimage_neg_Iic := neg_Iic
+@[deprecated (since := "2024-11-23")] alias preimage_neg_Ioi := neg_Ioi
+@[deprecated (since := "2024-11-23")] alias preimage_neg_Iio := neg_Iio
+@[deprecated (since := "2024-11-23")] alias preimage_neg_Icc := neg_Icc
+@[deprecated (since := "2024-11-23")] alias preimage_neg_Ico := neg_Ico
+@[deprecated (since := "2024-11-23")] alias preimage_neg_Ioc := neg_Ioc
+@[deprecated (since := "2024-11-23")] alias preimage_neg_Ioo := neg_Ioo
+
+end OrderedCommGroup
+
 section OrderedAddCommGroup
 
 variable [OrderedAddCommGroup α] (a b c : α)
@@ -191,41 +252,6 @@ theorem preimage_add_const_Ioc : (fun x => x + a) ⁻¹' Ioc b c = Ioc (b - a) (
 @[simp]
 theorem preimage_add_const_Ioo : (fun x => x + a) ⁻¹' Ioo b c = Ioo (b - a) (c - a) := by
   simp [← Ioi_inter_Iio]
-
-/-!
-### Preimages under `x ↦ -x`
--/
-
-
-@[simp]
-theorem preimage_neg_Ici : -Ici a = Iic (-a) :=
-  ext fun _x => le_neg
-
-@[simp]
-theorem preimage_neg_Iic : -Iic a = Ici (-a) :=
-  ext fun _x => neg_le
-
-@[simp]
-theorem preimage_neg_Ioi : -Ioi a = Iio (-a) :=
-  ext fun _x => lt_neg
-
-@[simp]
-theorem preimage_neg_Iio : -Iio a = Ioi (-a) :=
-  ext fun _x => neg_lt
-
-@[simp]
-theorem preimage_neg_Icc : -Icc a b = Icc (-b) (-a) := by simp [← Ici_inter_Iic, inter_comm]
-
-@[simp]
-theorem preimage_neg_Ico : -Ico a b = Ioc (-b) (-a) := by
-  simp [← Ici_inter_Iio, ← Ioi_inter_Iic, inter_comm]
-
-@[simp]
-theorem preimage_neg_Ioc : -Ioc a b = Ico (-b) (-a) := by
-  simp [← Ioi_inter_Iic, ← Ici_inter_Iio, inter_comm]
-
-@[simp]
-theorem preimage_neg_Ioo : -Ioo a b = Ioo (-b) (-a) := by simp [← Ioi_inter_Iio, inter_comm]
 
 /-!
 ### Preimages under `x ↦ x - a`
@@ -433,6 +459,15 @@ theorem Iio_add_bij : BijOn (· + a) (Iio b) (Iio (b + a)) :=
 
 end OrderedAddCommGroup
 
+section LinearOrderedCommGroup
+variable [LinearOrderedCommGroup α]
+
+@[to_additive (attr := simp)]
+lemma inv_uIcc (a b : α) : [[a, b]]⁻¹ = [[a⁻¹, b⁻¹]] := by
+  simp only [uIcc, inv_Icc, inv_sup, inv_inf]
+
+end LinearOrderedCommGroup
+
 section LinearOrderedAddCommGroup
 
 variable [LinearOrderedAddCommGroup α] (a b c d : α)
@@ -445,10 +480,9 @@ theorem preimage_const_add_uIcc : (fun x => a + x) ⁻¹' [[b, c]] = [[b - a, c 
 theorem preimage_add_const_uIcc : (fun x => x + a) ⁻¹' [[b, c]] = [[b - a, c - a]] := by
   simpa only [add_comm] using preimage_const_add_uIcc a b c
 
--- TODO: Why is the notation `-[[a, b]]` broken?
-@[simp]
-theorem preimage_neg_uIcc : @Neg.neg (Set α) Set.neg [[a, b]] = [[-a, -b]] := by
-  simp only [← Icc_min_max, preimage_neg_Icc, min_neg_neg, max_neg_neg]
+@[deprecated neg_uIcc (since := "2024-11-23")]
+theorem preimage_neg_uIcc : -[[a, b]] = [[-a, -b]] := by
+  simp only [← Icc_min_max, neg_Icc, min_neg_neg, max_neg_neg]
 
 @[simp]
 theorem preimage_sub_const_uIcc : (fun x => x - a) ⁻¹' [[b, c]] = [[b + a, c + a]] := by
@@ -744,19 +778,27 @@ theorem image_mul_left_Ioc {a : α} (h : 0 < a) (b c : α) :
 /-- The (pre)image under `inv` of `Ioo 0 a` is `Ioi a⁻¹`. -/
 theorem inv_Ioo_0_left {a : α} (ha : 0 < a) : (Ioo 0 a)⁻¹ = Ioi a⁻¹ := by
   ext x
-  exact
-    ⟨fun h => inv_inv x ▸ (inv_lt_inv₀ ha h.1).2 h.2, fun h =>
-      ⟨inv_pos.2 <| (inv_pos.2 ha).trans h,
-        inv_inv a ▸ (inv_lt_inv₀ ((inv_pos.2 ha).trans h)
-          (inv_pos.2 ha)).2 h⟩⟩
+  exact ⟨fun h ↦ inv_lt_of_inv_lt₀ (inv_pos.1 h.1) h.2,
+         fun h ↦ ⟨inv_pos.2 <| (inv_pos.2 ha).trans h, inv_lt_of_inv_lt₀ ha h⟩⟩
 
-theorem inv_Ioi {a : α} (ha : 0 < a) : (Ioi a)⁻¹ = Ioo 0 a⁻¹ := by
+/-- The (pre)image under `inv` of `Ioo a 0` is `Iio a⁻¹`. -/
+theorem inv_Ioo_0_right {a : α} (ha : a < 0) : (Ioo a 0)⁻¹ = Iio a⁻¹ := by
+  ext x
+  refine ⟨fun h ↦ (lt_inv_of_neg (inv_neg''.1 h.2) ha).2 h.1, fun h ↦ ?_⟩
+  have h' := (h.trans (inv_neg''.2 ha))
+  exact ⟨(lt_inv_of_neg ha h').2 h, inv_neg''.2 h'⟩
+
+theorem inv_Ioi₀ {a : α} (ha : 0 < a) : (Ioi a)⁻¹ = Ioo 0 a⁻¹ := by
   rw [inv_eq_iff_eq_inv, inv_Ioo_0_left (inv_pos.2 ha), inv_inv]
+
+theorem inv_Iio₀ {a : α} (ha : a < 0) : (Iio a)⁻¹ = Ioo a⁻¹ 0 := by
+  rw [inv_eq_iff_eq_inv, inv_Ioo_0_right (inv_neg''.2 ha), inv_inv]
 
 theorem image_const_mul_Ioi_zero {k : Type*} [LinearOrderedField k] {x : k} (hx : 0 < x) :
     (fun y => x * y) '' Ioi (0 : k) = Ioi 0 := by
-  erw [(Units.mk0 x hx.ne').mulLeft.image_eq_preimage,
-    preimage_const_mul_Ioi 0 (inv_pos.mpr hx), zero_div]
+  have := (Units.mk0 x hx.ne').mulLeft.image_eq_preimage (Ioi 0)
+  simp at this
+  simp_all
 
 /-!
 ### Images under `x ↦ a * x + b`

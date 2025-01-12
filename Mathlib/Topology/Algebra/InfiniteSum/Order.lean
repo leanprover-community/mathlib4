@@ -302,6 +302,6 @@ end LinearOrderedCommRing
 
 theorem Summable.tendsto_atTop_of_pos [LinearOrderedField α] [TopologicalSpace α] [OrderTopology α]
     {f : ℕ → α} (hf : Summable f⁻¹) (hf' : ∀ n, 0 < f n) : Tendsto f atTop atTop :=
-  inv_inv f ▸ Filter.Tendsto.inv_tendsto_zero <|
+  inv_inv f ▸ Filter.Tendsto.inv_tendsto_nhdsGT_zero <|
     tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hf.tendsto_atTop_zero <|
       Eventually.of_forall fun _ ↦ inv_pos.2 (hf' _)
