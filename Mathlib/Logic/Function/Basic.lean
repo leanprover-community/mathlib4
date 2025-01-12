@@ -138,8 +138,8 @@ theorem Injective.comp_left {g : β → γ} (hg : Injective g) : Injective (g �
 
 theorem injective_comp_left_iff [Nonempty α] {g : β → γ} :
     Injective (g ∘ · : (α → β) → α → γ) ↔ Injective g :=
-  ⟨fun h b₁ b₂ eq ↦ congr_fun (h (a₁ := fun _ ↦ b₁) (a₂ := fun _ ↦ b₂) <| funext fun _ ↦ eq)
-    (Classical.arbitrary α), (·.comp_left)⟩
+  ⟨fun h b₁ b₂ eq ↦ Nonempty.elim ‹_›
+    (congr_fun <| h (a₁ := fun _ ↦ b₁) (a₂ := fun _ ↦ b₂) <| funext fun _ ↦ eq), (·.comp_left)⟩
 
 theorem injective_of_subsingleton [Subsingleton α] (f : α → β) : Injective f :=
   fun _ _ _ ↦ Subsingleton.elim _ _
@@ -481,9 +481,9 @@ theorem Surjective.comp_left {g : β → γ} (hg : Surjective g) :
 
 theorem surjective_comp_left_iff [Nonempty α] {g : β → γ} :
     Surjective (g ∘ · : (α → β) → α → γ) ↔ Surjective g := by
-  refine ⟨fun h c ↦ ?_, (·.comp_left)⟩
+  refine ⟨fun h c ↦ Nonempty.elim ‹_› fun a ↦ ?_, (·.comp_left)⟩
   have ⟨f, hf⟩ := h fun _ ↦ c
-  exact ⟨f (Classical.arbitrary α), congr_fun hf _⟩
+  exact ⟨f a, congr_fun hf _⟩
 
 theorem Bijective.piMap {ι : Sort*} {α β : ι → Sort*} {f : ∀ i, α i → β i}
     (hf : ∀ i, Bijective (f i)) : Bijective (Pi.map f) :=
@@ -682,7 +682,7 @@ theorem extend_apply' (g : α → γ) (e' : β → γ) (b : β) (hb : ¬∃ a, f
   simp [Function.extend_def, hb]
 
 lemma factorsThrough_iff (g : α → γ) [Nonempty γ] : g.FactorsThrough f ↔ ∃ (e : β → γ), g = e ∘ f :=
-⟨fun hf => ⟨extend f g (const β (Classical.arbitrary γ)),
+  ⟨fun hf => ⟨extend f g (const β (Classical.arbitrary γ)),
       funext (fun x => by simp only [comp_apply, hf.extend_apply])⟩,
   fun h _ _ hf => by rw [Classical.choose_spec h, comp_apply, comp_apply, hf]⟩
 
