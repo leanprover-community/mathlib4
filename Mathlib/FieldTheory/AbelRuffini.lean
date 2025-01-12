@@ -67,6 +67,7 @@ theorem gal_isSolvable_tower (p q : F[X]) (hpq : p.Splits (algebraMap F q.Splitt
   let K := p.SplittingField
   let L := q.SplittingField
   haveI : Fact (p.Splits (algebraMap F L)) := ⟨hpq⟩
+  let _ : Algebra K (q.map (algebraMap F K)).SplittingField := IntermediateField.algebra' _
   let ϕ : (L ≃ₐ[K] L) ≃* (q.map (algebraMap F K)).Gal :=
     (IsSplittingField.algEquiv L (q.map (algebraMap F K))).autCongr
   have ϕ_inj : Function.Injective ϕ.toMonoidHom := ϕ.injective
