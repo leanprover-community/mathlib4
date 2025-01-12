@@ -116,8 +116,8 @@ theorem char_orthonormal (V W : FDRep k G) [Simple V] [Simple W] :
     rw [char_iso (FDRep.dualTensorIsoLinHom W.ρ V)]
   -- The average over the group of the character of a representation equals the dimension of the
   -- space of invariants.
-  rw [average_char_eq_finrank_invariants]
-  rw [show (of (linHom W.ρ V.ρ)).ρ = linHom W.ρ V.ρ from FDRep.of_ρ (linHom W.ρ V.ρ)]
+  rw [average_char_eq_finrank_invariants, ← FDRep.endMulEquiv_comp_ρ (of _),
+      FDRep.of_ρ (linHom W.ρ V.ρ)]
   -- The space of invariants of `Hom(W, V)` is the subspace of `G`-equivariant linear maps,
   -- `Hom_G(W, V)`.
   erw [(linHom.invariantsEquivFDRepHom W V).finrank_eq] -- Porting note: Changed `rw` to `erw`

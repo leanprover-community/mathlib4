@@ -62,7 +62,7 @@ namespace Isometry
 section PseudoEmetricIsometry
 
 variable [PseudoEMetricSpace α] [PseudoEMetricSpace β] [PseudoEMetricSpace γ]
-variable {f : α → β} {x y z : α} {s : Set α}
+variable {f : α → β} {x : α}
 
 /-- An isometry preserves edistances. -/
 theorem edist_eq (hf : Isometry f) (x y : α) : edist (f x) (f y) = edist x y :=
@@ -365,7 +365,7 @@ def Simps.apply (h : α ≃ᵢ β) : α → β := h
 def Simps.symm_apply (h : α ≃ᵢ β) : β → α :=
   h.symm
 
-initialize_simps_projections IsometryEquiv (toEquiv_toFun → apply, toEquiv_invFun → symm_apply)
+initialize_simps_projections IsometryEquiv (toFun → apply, invFun → symm_apply)
 
 @[simp]
 theorem symm_symm (h : α ≃ᵢ β) : h.symm.symm = h := rfl

@@ -3,10 +3,10 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison, Joël Riou
 -/
-import Mathlib.Algebra.Group.Int
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.Data.Set.Subsingleton
+import Mathlib.Algebra.Group.Int.Defs
 
 /-!
 # The category of graded objects
@@ -316,7 +316,7 @@ lemma hasMap_of_iso (e : X ≅ Y) (p: I → J) [HasMap X p] : HasMap Y p := fun 
   exact hasColimitOfIso α.symm
 
 section
-variable [X.HasMap p] [Y.HasMap p] [Z.HasMap p]
+variable [X.HasMap p] [Y.HasMap p]
 
 /-- Given `X : GradedObject I C` and `p : I → J`, `X.mapObj p` is the graded object by `J`
 which in degree `j` consists of the coproduct of the `X i` such that `p i = j`. -/

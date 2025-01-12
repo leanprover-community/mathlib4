@@ -117,8 +117,9 @@ def MaybeFunctionData.get (fData : MaybeFunctionData) : MetaM Expr :=
 
 /-- Get `FunctionData` for `f`. -/
 def getFunctionData? (f : Expr)
-    (unfoldPred : Name → Bool := fun _ => false) (cfg : WhnfCoreConfig := {}) :
+    (unfoldPred : Name → Bool := fun _ => false) :
     MetaM MaybeFunctionData := do
+  withConfig (fun cfg => { cfg with zeta := false, zetaDelta := false }) do
 
   let unfold := fun e : Expr => do
     if let .some n := e.getAppFn'.constName? then
@@ -130,7 +131,7 @@ def getFunctionData? (f : Expr)
     | throwError m!"fun_prop bug: function expected, got `{f} : {← inferType f}, \
                     type ctor {(← inferType f).ctorName}"
   withLocalDeclD xName xType fun x => do
-    let fx' := (← Mor.whnfPred (f.beta #[x]).eta unfold cfg) |> headBetaThroughLet
+    let fx' := (← Mor.whnfPred (f.beta #[x]).eta unfold) |> headBetaThroughLet
     let f' ← mkLambdaFVars #[x] fx'
     match fx' with
     | .letE .. => return .letE f'

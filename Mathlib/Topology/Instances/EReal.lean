@@ -7,6 +7,7 @@ import Mathlib.Data.Rat.Encodable
 import Mathlib.Data.Real.EReal
 import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.Order.MonotoneContinuity
+import Mathlib.Topology.Semicontinuous
 
 /-!
 # Topological structure on `EReal`
@@ -278,7 +279,7 @@ theorem continuousAt_add_top_coe (a : ℝ) :
   simp only [ContinuousAt, tendsto_nhds_top_iff_real, top_add_coe]
   refine fun r ↦ ((lt_mem_nhds (coe_lt_top (r - (a - 1)))).prod_nhds
     (lt_mem_nhds <| EReal.coe_lt_coe_iff.2 <| sub_one_lt _)).mono fun _ h ↦ ?_
-  simpa only [← coe_add, sub_add_cancel] using add_lt_add h.1 h.2
+  simpa only [← coe_add, _root_.sub_add_cancel] using add_lt_add h.1 h.2
 
 theorem continuousAt_add_coe_top (a : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, ⊤) := by
@@ -296,7 +297,7 @@ theorem continuousAt_add_bot_coe (a : ℝ) :
   simp only [ContinuousAt, tendsto_nhds_bot_iff_real, bot_add]
   refine fun r ↦ ((gt_mem_nhds (bot_lt_coe (r - (a + 1)))).prod_nhds
     (gt_mem_nhds <| EReal.coe_lt_coe_iff.2 <| lt_add_one _)).mono fun _ h ↦ ?_
-  simpa only [← coe_add, sub_add_cancel] using add_lt_add h.1 h.2
+  simpa only [← coe_add, _root_.sub_add_cancel] using add_lt_add h.1 h.2
 
 theorem continuousAt_add_coe_bot (a : ℝ) :
     ContinuousAt (fun p : EReal × EReal => p.1 + p.2) (a, ⊥) := by
@@ -440,5 +441,13 @@ theorem continuousAt_mul {p : EReal × EReal} (h₁ : p.1 ≠ 0 ∨ p.2 ≠ ⊥)
   · simp only [ne_eq, not_true_eq_false, EReal.coe_eq_zero, false_or] at h₄
     exact continuousAt_mul_top_ne_zero h₄
   · exact continuousAt_mul_top_top
+
+lemma lowerSemicontinuous_add : LowerSemicontinuous fun p : EReal × EReal ↦ p.1 + p.2 := by
+  intro x y
+  by_cases hx₁ : x.1 = ⊥
+  · simp [hx₁]
+  by_cases hx₂ : x.2 = ⊥
+  · simp [hx₂]
+  · exact continuousAt_add (.inr hx₂) (.inl hx₁) |>.lowerSemicontinuousAt _
 
 end EReal

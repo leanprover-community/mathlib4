@@ -5,6 +5,7 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Order.Bounds.Defs
 import Mathlib.Order.Directed
+import Mathlib.Order.BoundedOrder.Monotone
 import Mathlib.Order.Interval.Set.Basic
 
 /-!
