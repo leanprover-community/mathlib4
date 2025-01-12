@@ -322,7 +322,8 @@ theorem condexp_condexp_of_le {m₁ m₂ m0 : MeasurableSpace α} {μ : Measure 
   rw [setIntegral_condexp (hm₁₂.trans hm₂) integrable_condexp hs]
   rw [setIntegral_condexp (hm₁₂.trans hm₂) hf hs, setIntegral_condexp hm₂ hf (hm₁₂ s hs)]
 
-theorem condexp_mono {E} [NormedLatticeAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
+theorem condexp_mono {E} [NormedAddCommGroup E] [Lattice E]
+    [HasSolidNorm E] [IsOrderedAddMonoid E] [CompleteSpace E] [NormedSpace ℝ E]
     [OrderedSMul ℝ E] {f g : α → E} (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     μ[f|m] ≤ᵐ[μ] μ[g|m] := by
   by_cases hm : m ≤ m0
@@ -333,14 +334,16 @@ theorem condexp_mono {E} [NormedLatticeAddCommGroup E] [CompleteSpace E] [Normed
   exact (condexp_ae_eq_condexpL1 hm _).trans_le
     ((condexpL1_mono hf hg hfg).trans_eq (condexp_ae_eq_condexpL1 hm _).symm)
 
-theorem condexp_nonneg {E} [NormedLatticeAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
+theorem condexp_nonneg {E} [NormedAddCommGroup E] [Lattice E]
+    [HasSolidNorm E] [IsOrderedAddMonoid E] [CompleteSpace E] [NormedSpace ℝ E]
     [OrderedSMul ℝ E] {f : α → E} (hf : 0 ≤ᵐ[μ] f) : 0 ≤ᵐ[μ] μ[f|m] := by
   by_cases hfint : Integrable f μ
   · rw [(condexp_zero.symm : (0 : α → E) = μ[0|m])]
     exact condexp_mono (integrable_zero _ _ _) hfint hf
   · rw [condexp_undef hfint]
 
-theorem condexp_nonpos {E} [NormedLatticeAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
+theorem condexp_nonpos {E} [NormedAddCommGroup E] [Lattice E]
+    [HasSolidNorm E] [IsOrderedAddMonoid E] [CompleteSpace E] [NormedSpace ℝ E]
     [OrderedSMul ℝ E] {f : α → E} (hf : f ≤ᵐ[μ] 0) : μ[f|m] ≤ᵐ[μ] 0 := by
   by_cases hfint : Integrable f μ
   · rw [(condexp_zero.symm : (0 : α → E) = μ[0|m])]
