@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: PFR contributors
 -/
 import Mathlib.Algebra.Group.Indicator
-import Mathlib.Topology.ContinuousMap.Basic
+import Mathlib.Topology.ContinuousOn
+import Mathlib.Topology.Clopen
 
 /-!
 # Continuity of indicator functions
@@ -37,25 +38,7 @@ theorem ContinuousOn.continuousAt_mulIndicator (hf : ContinuousOn f (interior s)
   · exact ContinuousAt.congr continuousAt_const <| Filter.eventuallyEq_iff_exists_mem.mpr
       ⟨sᶜ, mem_interior_iff_mem_nhds.mp h, Set.eqOn_mulIndicator'.symm⟩
 
-namespace IsClopen
-
-variable {X Y : Type*} [TopologicalSpace X] [TopologicalSpace Y] [One Y]
-
-/-- The continuous function which is equal to `y` on the clopen set `U` and one elsewhere. -/
-@[to_additive "The continuous function which is equal to `y` on the clopen set `U` and zero
-elsewhere."]
-noncomputable def constMulIndicator {U : Set X} (hU : IsClopen U) (y : Y) : C(X, Y) :=
-  have : frontier U = ∅ := by simp [hU]
-  ⟨U.mulIndicator (fun _ ↦ y), continuous_const.mulIndicator (by simp [this]) ⟩
-
 @[to_additive]
-lemma constMulIndicator_of_mem {U : Set X} (hU : IsClopen U) {y : Y} {x : X} (hx : x ∈ U) :
-    hU.constMulIndicator y x = y :=
-  mulIndicator_of_mem hx (fun _ ↦ y)
-
-@[to_additive]
-lemma constMulIndicator_of_not_mem {U : Set X} (hU : IsClopen U) {y : Y} {x : X} (hx : x ∉ U) :
-    hU.constMulIndicator y x = 1 :=
-  mulIndicator_of_not_mem hx (fun _ ↦ y)
-
-end IsClopen
+lemma IsClopen.continuous_mulIndicator (hs : IsClopen s) (hf : Continuous f) :
+    Continuous (s.mulIndicator f) :=
+  hf.mulIndicator (by simp [isClopen_iff_frontier_eq_empty.mp hs])
