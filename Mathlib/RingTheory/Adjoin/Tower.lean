@@ -60,19 +60,17 @@ section
 
 theorem Algebra.fg_trans' {R S A : Type*} [CommSemiring R] [CommSemiring S] [Semiring A]
     [Algebra R S] [Algebra S A] [Algebra R A] [IsScalarTower R S A] (hRS : (⊤ : Subalgebra R S).FG)
-    (hSA : (⊤ : Subalgebra S A).FG) : (⊤ : Subalgebra R A).FG :=
-  let ⟨s, hs⟩ := hRS
-  let ⟨t, ht⟩ := hSA
-  by
-    classical
-    exact ⟨s.image (algebraMap S A) ∪ t, by
+    (hSA : (⊤ : Subalgebra S A).FG) : (⊤ : Subalgebra R A).FG := by
+  classical
+  rcases hRS with ⟨s, hs⟩
+  rcases hSA with ⟨t, ht⟩
+  exact ⟨s.image (algebraMap S A) ∪ t, by
     rw [Finset.coe_union, Finset.coe_image,
         Algebra.adjoin_algebraMap_image_union_eq_adjoin_adjoin,
         hs, Algebra.adjoin_top, ht, Subalgebra.restrictScalars_top,
         Subalgebra.restrictScalars_top
        ]
     ⟩
-end
 
 section ArtinTate
 
