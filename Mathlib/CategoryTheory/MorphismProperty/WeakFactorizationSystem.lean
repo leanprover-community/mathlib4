@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Joël Riou. All rights reserved.
+Copyright (c) 2025 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
@@ -7,6 +7,15 @@ import Mathlib.CategoryTheory.MorphismProperty.RetractArgument
 
 /-!
 # Weak factorization systems
+
+In this file, we introduce the notion of weak factorization system,
+which is a property of two classes of morphisms `W₁` and `W₂` in
+a category `C`. The type class `IsWeakFactorizationSystem W₁ W₂` asserts
+that`W₁` is exactly `W₂.llp`, `W₂` is exactly `W₁.rlp`,
+and any morphism in `C` can be factored a `i ≫ p` with `W₁ i` and `W₂ p`.
+
+## References
+* https://ncatlab.org/nlab/show/weak+factorization+system
 
 -/
 
