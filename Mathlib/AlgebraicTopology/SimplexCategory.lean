@@ -745,20 +745,19 @@ theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
 
 /-- Some quick and useful attempts to prove `n ≤ m`. -/
-macro "leq_prefix" : tactic =>
+macro "leq_tac" : tactic =>
   `(tactic| first | decide | assumption | apply zero_le | apply le_rfl |
     apply Nat.le_add_left | apply Nat.le_add_right |
-    apply Nat.le_add_right_of_le <;> assumption |
-    apply Nat.add_le_add_right <;> assumption |
-    transitivity <;> assumption)
+    apply Nat.le_add_right_of_le; assumption |
+    apply Nat.add_le_add_right; assumption | transitivity <;> assumption)
 
 /-- A wrapper for `omega` which first makes some quick attempts to prove `n ≤ m`. -/
-macro "leq" : tactic => `(tactic| first | leq_prefix | omega)
+macro "leq" : tactic => `(tactic| first | leq_tac | omega)
 
 /-- A wrapper for `omega` which first makes some quick attempts to prove that
 `[m]` is `n`-truncated (`[m].len ≤ n`). -/
 macro "trunc" : tactic =>
-  `(tactic| first | leq_prefix | dsimp only [SimplexCategory.len_mk]; omega)
+  `(tactic| first | leq_tac | dsimp only [SimplexCategory.len_mk]; omega)
 
 /-- For `m ≤ n`, `[m]ₙ` is the `m`-dimensional simplex in `Truncated n`. -/
 scoped macro:max (priority := high) "[" m:term "]" n:subscript(term) : term =>

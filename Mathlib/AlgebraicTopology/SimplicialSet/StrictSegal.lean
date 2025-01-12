@@ -89,7 +89,7 @@ def spineToDiagonal : Path X m → X _[1]ₙ₊₁ :=
 @[simp]
 theorem spineToSimplex_interval (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
     X.map (subinterval j l hjl).op (segal.spineToSimplex m h f) =
-      segal.spineToSimplex l (by omega) (f.interval j l hjl) := by
+      segal.spineToSimplex l (by leq) (f.interval j l hjl) := by
   apply segal.spineInjective l
   dsimp only [spineEquiv, Equiv.coe_fn_mk]
   rw [spine_spineToSimplex_apply _ l]
@@ -98,7 +98,7 @@ theorem spineToSimplex_interval (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
 
 theorem spineToSimplex_edge (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
     X.map (intervalEdge j l hjl).op (segal.spineToSimplex m h f) =
-      segal.spineToDiagonal l (by omega) (f.interval j l hjl) := by
+      segal.spineToDiagonal l (by leq) (f.interval j l hjl) := by
   dsimp [spineToDiagonal]
   rw [← spineToSimplex_interval (h := h), ← FunctorToTypes.map_comp_apply]
   erw [← op_comp (C := SimplexCategory)]
@@ -174,7 +174,7 @@ lemma spine_δ_arrow_eq {n : ℕ} {X : SSet.Truncated.{u} (n + 2)} (segal : Stri
     {i : Fin m} {j : Fin (m + 2)} (hij : j = i.succ.castSucc) :
     (X.spine m (by leq) (X.map (δ j).op
       (segal.spineToSimplex (m + 1) (by leq) f))).arrow i =
-        segal.spineToDiagonal 2 (by leq) (f.interval i 2 (by omega)) := by
+        segal.spineToDiagonal 2 (by leq) (f.interval i 2 (by leq)) := by
   rw [spine_arrow X m, ← FunctorToTypes.map_comp_apply]
   erw [← op_comp (C := SimplexCategory)]
   rw [mkOfSucc_δ_eq hij, spineToSimplex_edge _ (m + 1)]
@@ -185,7 +185,7 @@ end Truncated
 /-- A simplicial set `X` is `SSet.StrictSegal` if the `n + 1`-truncation of `X`
 is `SSet.Truncated.StrictSegal` for all `n : ℕ`. -/
 abbrev StrictSegal (X : SSet.{u}) :=
-  ∀ n, truncation (n + 1) |>.obj X |>.StrictSegal
+  ∀ n : ℕ, truncation (n + 1) |>.obj X |>.StrictSegal
 
 namespace StrictSegal
 
@@ -235,12 +235,12 @@ abbrev spineToDiagonal (f : Path X n) : X _[1] :=
 @[simp]
 theorem spineToSimplex_interval (f : Path X n) (j l : ℕ) (hjl : j + l ≤  n)  :
     X.map (subinterval j l hjl).op (segal.spineToSimplex f) =
-      (segal n).spineToSimplex l (by omega) (f.interval j l hjl) :=
+      (segal n).spineToSimplex l (by leq) (f.interval j l hjl) :=
   segal n |>.spineToSimplex_interval n _ f j l hjl
 
 theorem spineToSimplex_edge (f : Path X n) (j l : ℕ) (hjl : j + l ≤ n) :
     X.map (intervalEdge j l hjl).op (segal.spineToSimplex f) =
-      (segal n).spineToDiagonal l (by omega) (f.interval j l hjl) :=
+      (segal n).spineToDiagonal l (by leq) (f.interval j l hjl) :=
   segal n |>.spineToSimplex_edge n _ f j l hjl
 
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
@@ -281,7 +281,7 @@ of the `spineToSimplex` that "composes" arrows `i` and `i + 1`. -/
 lemma spine_δ_arrow_eq (f : Path X (n + 1)) {i : Fin n} {j : Fin (n + 2)}
     (h : j = i.succ.castSucc) :
     (X.spine n (X.δ j (segal.spineToSimplex f))).arrow i =
-      (segal (n + 1)).spineToDiagonal 2 (by leq) (f.interval i 2 (by omega)) :=
+      (segal (n + 1)).spineToDiagonal 2 (by leq) (f.interval i 2 (by leq)) :=
   segal (n + 1) |>.spine_δ_arrow_eq n (by leq) f h
 
 end StrictSegal
