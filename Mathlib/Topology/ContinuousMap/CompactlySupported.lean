@@ -400,6 +400,26 @@ instance : StarRing C_c(α, β) :=
 
 end StarRing
 
+section PartialOrder
+
+/-! ### The partial order in `C_c`
+
+When `β` is equipped with a preorder, `C_c(α, β)` is given the pointwise partial order.
+-/
+
+variable {β : Type*} [TopologicalSpace β] [Zero β]
+
+instance partialOrder [PartialOrder β] : PartialOrder C_c(α, β) :=
+  PartialOrder.lift (fun f => f.toFun) (fun f g _ => by aesop)
+
+theorem le_def [PartialOrder β] {f g : C_c(α, β)} : f ≤ g ↔ ∀ a, f a ≤ g a :=
+  Pi.le_def
+
+theorem lt_def [PartialOrder β] {f g : C_c(α, β)} : f < g ↔ (∀ a, f a ≤ g a) ∧ ∃ a, f a < g a :=
+  Pi.lt_def
+
+end PartialOrder
+
 /-! ### `C_c` as a functor
 
 For each `β` with sufficient structure, there is a contravariant functor `C_c(-, β)` from the
