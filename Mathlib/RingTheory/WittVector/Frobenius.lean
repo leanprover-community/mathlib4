@@ -5,7 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.ZMod
 import Mathlib.Data.Nat.Multiplicity
-import Mathlib.FieldTheory.Perfect
+import Mathlib.FieldTheory.Perfect.Basic
 import Mathlib.RingTheory.WittVector.Basic
 import Mathlib.RingTheory.WittVector.IsPoly
 
