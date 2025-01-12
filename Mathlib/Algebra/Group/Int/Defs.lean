@@ -13,8 +13,7 @@ This file contains the additive group and multiplicative monoid instances on the
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists Ring
-assert_not_exists DenselyOrdered
+assert_not_exists Ring DenselyOrdered
 
 open Nat
 
