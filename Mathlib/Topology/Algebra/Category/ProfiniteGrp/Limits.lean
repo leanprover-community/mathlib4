@@ -135,13 +135,29 @@ theorem toLimitQuotientOpenNormalSubgroup_injective (P : ProfiniteGrp.{u}) :
 
 /-- The topological group isomorphism between a profinite group and the projective limit of
 its quotients by open normal subgroups -/
-noncomputable def ContinuousMulEquivLimitQuotientOpenNormalSubgroup (P : ProfiniteGrp.{u}) :
+noncomputable def continuousMulEquivLimitQuotientOpenNormalSubgroup (P : ProfiniteGrp.{u}) :
     P ≃ₜ* (limit (QuotientOpenNormalSubgroup P ⋙ forget₂ FiniteGrp ProfiniteGrp)) := {
   (Continuous.homeoOfEquivCompactToT2 (f := Equiv.ofBijective _
   ⟨toLimitQuotientOpenNormalSubgroup_injective P, toLimitQuotientOpenNormalSubgroup_surjective P⟩)
     P.toLimitQuotientOpenNormalSubgroup.continuous_toFun)
   with
   map_mul' := (toLimitQuotientOpenNormalSubgroup P).map_mul' }
+
+/-- The isomorphism in the category of profinite group between a profinite group and
+the projective limit of its quotients by open normal subgroups -/
+noncomputable def isoLimitQuotientOpenNormalSubgroup (P : ProfiniteGrp.{u}) :
+    P ≅ (limit (QuotientOpenNormalSubgroup P ⋙ forget₂ FiniteGrp ProfiniteGrp)) where
+  hom := P.toLimitQuotientOpenNormalSubgroup
+  inv := { (continuousMulEquivLimitQuotientOpenNormalSubgroup P).symm.toMonoidHom with
+    continuous_toFun := (continuousMulEquivLimitQuotientOpenNormalSubgroup P).continuous_invFun}
+  hom_inv_id := by
+    ext x
+    exact ContinuousMulEquiv.symm_apply_apply
+      (continuousMulEquivLimitQuotientOpenNormalSubgroup P) x
+  inv_hom_id := by
+    ext x
+    exact ContinuousMulEquiv.apply_symm_apply
+      (continuousMulEquivLimitQuotientOpenNormalSubgroup P) x
 
 end
 
