@@ -251,11 +251,13 @@ theorem prime_mul_iff [CancelCommMonoidWithZero M] {x y : M} :
     · exact (associated_mul_unit_left x y hy).symm.prime hx
     · exact (associated_unit_mul_right y x hx).prime hy
 
+attribute [grind =] pow_one
+
 @[simp]
 lemma prime_pow_iff [CancelCommMonoidWithZero M] {p : M} {n : ℕ} :
     Prime (p ^ n) ↔ Prime p ∧ n = 1 := by
   refine ⟨fun hp ↦ ?_, fun ⟨hp, hn⟩ ↦ by simpa [hn]⟩
-  suffices n = 1 by aesop
+  suffices n = 1 by grind
   rcases n with - | n
   · simp at hp
   · rw [Nat.succ.injEq]

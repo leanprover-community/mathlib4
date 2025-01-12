@@ -253,6 +253,7 @@ example (f : ℕ → ℕ) (x : ℕ)
 ``` -/
 elab (name := _root_.Mathlib.Tactic.cc) "cc" cfg:optConfig : tactic => do
   let cfg ← elabCCConfig cfg
+  logWarning "cc"
   withMainContext <| liftMetaFinishingTactic (·.cc cfg)
 
 end Mathlib.Tactic.CC

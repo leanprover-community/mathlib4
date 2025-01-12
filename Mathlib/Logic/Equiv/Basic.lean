@@ -1396,7 +1396,7 @@ theorem swapCore_self (r a : α) : swapCore a a r = r := by
   split_ifs <;> simp [*]
 
 theorem swapCore_swapCore (r a b : α) : swapCore a b (swapCore a b r) = r := by
-  unfold swapCore; split_ifs <;> cc
+  unfold swapCore; split_ifs <;> grind
 
 theorem swapCore_comm (r a b : α) : swapCore a b r = swapCore b a r := by
   unfold swapCore

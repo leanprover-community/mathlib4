@@ -385,6 +385,9 @@ variable {α : Type*}
 section GroupWithZero
 variable [GroupWithZero α] {a b : α} {m n : ℕ}
 
+-- attribute [grind =] pow_zero pow_one
+-- attribute [grind] Nat.coprime_zero_left Nat.coprime_zero_right
+
 protected lemma Commute.pow_eq_pow_iff_of_coprime (hab : Commute a b) (hmn : m.Coprime n) :
     a ^ m = b ^ n ↔ ∃ c, a = c ^ n ∧ b = c ^ m := by
   refine ⟨fun h ↦ ?_, by rintro ⟨c, rfl, rfl⟩; rw [← pow_mul, ← pow_mul']⟩

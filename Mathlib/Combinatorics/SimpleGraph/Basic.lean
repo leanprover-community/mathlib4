@@ -595,7 +595,7 @@ theorem fromEdgeSet_inter (s t : Set (Sym2 V)) :
     fromEdgeSet (s ∩ t) = fromEdgeSet s ⊓ fromEdgeSet t := by
   ext v w
   simp only [fromEdgeSet_adj, Set.mem_inter_iff, Ne, inf_adj]
-  tauto -- grind logic puzzle
+  grind
 
 @[simp]
 theorem fromEdgeSet_union (s t : Set (Sym2 V)) :
