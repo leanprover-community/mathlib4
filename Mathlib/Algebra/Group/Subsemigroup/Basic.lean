@@ -89,12 +89,6 @@ instance : LatticeSetLike (Subsemigroup M) M where
   inf_le_right := fun _ _ _ => And.right
 
 @[to_additive]
-instance : LatticeSetLike (Subsemigroup M) M where
-  __ := (inferInstance : CompleteLattice (Subsemigroup M))
-  __ := (inferInstance : OrderedSetLike (Subsemigroup M) M)
-  coe_sInf' := by simp
-
-@[to_additive]
 abbrev closure : Set M → Subsemigroup M := LatticeSetLike.closure <| Subsemigroup M
 
 @[to_additive]
