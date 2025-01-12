@@ -539,7 +539,9 @@ theorem condexpL1_of_aestronglyMeasurable' (hfm : AEStronglyMeasurable' m f μ)
   rw [condexpL1CLM_of_aestronglyMeasurable']
   exact AEStronglyMeasurable'.congr hfm (Integrable.coeFn_toL1 hfi).symm
 
-theorem condexpL1_mono {E} [NormedLatticeAddCommGroup E] [CompleteSpace E] [NormedSpace ℝ E]
+theorem condexpL1_mono {E}
+    [NormedAddCommGroup E] [Lattice E] [HasSolidNorm E] [IsOrderedAddMonoid E]
+    [CompleteSpace E] [NormedSpace ℝ E]
     [OrderedSMul ℝ E] {f g : α → E} (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
     condexpL1 hm μ f ≤ᵐ[μ] condexpL1 hm μ g := by
   rw [coeFn_le]
