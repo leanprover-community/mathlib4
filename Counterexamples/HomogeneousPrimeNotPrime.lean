@@ -49,10 +49,10 @@ instance Two.instLinearOrder : LinearOrder Two :=
 instance Two.instAddCommMonoid : AddCommMonoid Two :=
   inferInstance
 
-instance : LinearOrderedAddCommMonoid Two :=
-  { Two.instLinearOrder, Two.instAddCommMonoid with
-    add_le_add_left := by
-      delta Two WithZero; decide }
+instance : IsOrderedAddMonoid Two :=
+  { add_le_add_left := by
+      dsimp [Two, WithZero, · ≤ ·]; decide }
+
 section
 
 variable (R : Type*) [CommRing R]
