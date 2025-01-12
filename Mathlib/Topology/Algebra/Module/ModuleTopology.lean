@@ -433,9 +433,9 @@ instance instProd : IsModuleTopology R (M × N) := by
   refine le_antisymm ?_ <| sInf_le ⟨Prod.continuousSMul, Prod.continuousAdd⟩
   -- Or equivalently, if `P` denotes `M × N` with the module topology,
   let P := M × N
-  letI τP : TopologicalSpace P := moduleTopology R P
-  haveI : IsModuleTopology R P := ⟨rfl⟩
-  haveI : ContinuousAdd P := ModuleTopology.continuousAdd R P
+  let τP : TopologicalSpace P := moduleTopology R P
+  have : IsModuleTopology R P := ⟨rfl⟩
+  have : ContinuousAdd P := ModuleTopology.continuousAdd R P
   -- and if `i` denotes the identity map from `M × N` to `P`
   let i : M × N → P := id
   -- then we need to show that `i` is continuous.
