@@ -215,7 +215,7 @@ theorem union_mem_nhds_of_mem_nhdsWithin {b : α}
     {L : Set α} (hL : L ∈ nhdsWithin b I₁)
     {R : Set α} (hR : R ∈ nhdsWithin b I₂) : L ∪ R ∈ nhds b := by
   rw [← nhdsWithin_univ b, h, nhdsWithin_union]
-  exact ⟨mem_of_superset hL (by aesop), mem_of_superset hR (by aesop)⟩
+  exact ⟨mem_of_superset hL (by simp), mem_of_superset hR (by simp)⟩
 
 
 /-- Writing a punctured neighborhood filter as a sup of left and right filters. -/
@@ -1494,3 +1494,31 @@ lemma ContinuousOn.union_continuousAt
   continuousOn_of_forall_continuousAt <| fun _ hx => hx.elim
   (fun h => ContinuousWithinAt.continuousAt (continuousWithinAt hs h) <| IsOpen.mem_nhds s_op h)
   (ht _)
+
+/-- If `f` is continuous on some neighbourhood `s'` of `s` and `f` maps `s` to `t`,
+the preimage of a set neighbourhood of `t` is a set neighbourhood of `s`. -/
+-- See `Continuous.tendsto_nhdsSet` for a special case.
+theorem ContinuousOn.tendsto_nhdsSet {f : α → β} {s s' : Set α} {t : Set β}
+    (hf : ContinuousOn f s') (hs' : s' ∈ 𝓝ˢ s) (hst : MapsTo f s t) : Tendsto f (𝓝ˢ s) (𝓝ˢ t) := by
+  obtain ⟨V, hV, hsV, hVs'⟩ := mem_nhdsSet_iff_exists.mp hs'
+  refine ((hasBasis_nhdsSet s).tendsto_iff (hasBasis_nhdsSet t)).mpr fun U hU ↦
+    ⟨V ∩ f ⁻¹' U, ?_, fun _ ↦ ?_⟩
+  · exact ⟨(hf.mono hVs').isOpen_inter_preimage hV hU.1,
+      subset_inter hsV (hst.mono Subset.rfl hU.2)⟩
+  · intro h
+    rw [← mem_preimage]
+    exact mem_of_mem_inter_right h
+
+/-- Preimage of a set neighborhood of `t` under a continuous map `f` is a set neighborhood of `s`
+provided that `f` maps `s` to `t`. -/
+theorem Continuous.tendsto_nhdsSet {f : α → β} {t : Set β} (hf : Continuous f)
+    (hst : MapsTo f s t) : Tendsto f (𝓝ˢ s) (𝓝ˢ t) :=
+  hf.continuousOn.tendsto_nhdsSet univ_mem hst
+
+lemma Continuous.tendsto_nhdsSet_nhds
+    {b : β} {f : α → β} (h : Continuous f) (h' : EqOn f (fun _ ↦ b) s) :
+    Tendsto f (𝓝ˢ s) (𝓝 b) := by
+  rw [← nhdsSet_singleton]
+  exact h.tendsto_nhdsSet h'
+
+set_option linter.style.longFile 1700
