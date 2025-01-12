@@ -37,7 +37,9 @@ structure Sequence [Semiring R] where
   elems : ℕ → R[X]
   degree_eq (i : ℕ) : (elems i).degree = i
 
-lemma Sequence.ne_zero {R} (i : ℕ) [Semiring R] (S : Sequence R) : S.elems i ≠ 0 := sorry
+/-- No polynomial in the sequence is zero. -/
+lemma Sequence.ne_zero {R} (i : ℕ) [Semiring R] (S : Sequence R) : S.elems i ≠ 0 :=
+  degree_ne_bot.mp (by simp [S.degree_eq i])
 
 namespace Sequence
 
@@ -61,7 +63,6 @@ variable [Ring R] (S : Sequence R) -- #20480
 open scoped Function in
 lemma linearIndependent [NoZeroDivisors R] :
     LinearIndependent R S.elems := linearIndependent_iff'.mpr <| fun s g eqzero i hi ↦ by
-  -- have := degree_smul_of_smul_regular (S.elems i) giregular.left.isSMulRegular
   by_cases hsupzero : s.sup (fun i ↦ (g i • S.elems i).degree) = ⊥
   · have le_sup := Finset.le_sup hi (f := (fun i ↦ (g i • S.elems i).degree))
     exact (smul_eq_zero_iff_left (S.ne_zero i)).mp <| degree_eq_bot.mp (eq_bot_mono le_sup hsupzero)
