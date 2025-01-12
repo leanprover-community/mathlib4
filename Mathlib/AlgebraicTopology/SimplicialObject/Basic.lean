@@ -257,7 +257,7 @@ macro_rules
   | `($X:term _[$m:term]$n:subscript) =>
       `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
       (Opposite.op ⟨SimplexCategory.mk $m,
-    by first | trunc | fail "Failed to prove truncation property."⟩))
+      by first | trunc | fail "Failed to prove truncation property."⟩))
   | `($X:term _[$m:term, $p:term]$n:subscript) =>
       `(($X : CategoryTheory.SimplicialObject.Truncated _ $n).obj
       (Opposite.op ⟨SimplexCategory.mk $m, $p⟩))
@@ -705,7 +705,7 @@ macro_rules
   | `($X:term _[$m:term]$n:subscript) =>
       `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
       ⟨SimplexCategory.mk $m,
-    by first | trunc | fail "Failed to prove truncation property."⟩)
+      by first | trunc | fail "Failed to prove truncation property."⟩)
   | `($X:term _[$m:term, $p:term]$n:subscript) =>
       `(($X : CategoryTheory.CosimplicialObject.Truncated _ $n).obj
       ⟨SimplexCategory.mk $m, $p⟩)
