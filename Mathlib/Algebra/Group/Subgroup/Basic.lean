@@ -853,12 +853,12 @@ instance normal_inf_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : 
 
 @[to_additive]
 theorem normal_iInf_normal {ι : Type*} {a : ι → Subgroup G}
-    (norm : ∀ i : ι , (a i).Normal) : (iInf a).Normal where
-  conj_mem := by
-    intro g g_in_iInf h
-    rw [Subgroup.mem_iInf] at g_in_iInf ⊢
-    intro i
-    exact (norm i).conj_mem g (g_in_iInf i) h
+    (norm : ∀ i : ι , (a i).Normal) : (iInf a).Normal := by
+  constructor
+  intro g g_in_iInf h
+  rw [Subgroup.mem_iInf] at g_in_iInf ⊢
+  intro i
+  exact (norm i).conj_mem g (g_in_iInf i) h
 
 @[to_additive]
 theorem SubgroupNormal.mem_comm {H K : Subgroup G} (hK : H ≤ K) [hN : (H.subgroupOf K).Normal]
