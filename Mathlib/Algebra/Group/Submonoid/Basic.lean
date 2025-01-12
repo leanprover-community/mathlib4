@@ -218,7 +218,7 @@ lemma closure_eq_one_union (s : Set M) :
   apply le_antisymm
   · intro x hx
     induction hx using closure_induction with
-    | mem x hx => exact Or.inr <| Subsemigroup.subset_closure hx
+    | mem x hx => exact Or.inr <| LatticeSetLike.subset_closure hx
     | one => exact Or.inl <| by simp
     | mul x hx y hy hx hy =>
       simp only [singleton_union, mem_insert_iff, SetLike.mem_coe] at hx hy
@@ -227,7 +227,7 @@ lemma closure_eq_one_union (s : Set M) :
       exact Or.inr <| mul_mem hx hy
   · rintro x (hx | hx)
     · exact (show x = 1 by simpa using hx) ▸ one_mem (closure s)
-    · exact Subsemigroup.closure_le.mpr subset_closure hx
+    · exact (LatticeSetLike.closure_le (L := Subsemigroup M)).mpr subset_closure hx
 
 variable (M)
 
