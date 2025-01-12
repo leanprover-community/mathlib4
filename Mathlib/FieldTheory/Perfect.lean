@@ -3,9 +3,10 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.CharP.Basic
+import Mathlib.Algebra.CharP.Reduced
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.Construction
-import Mathlib.Algebra.CharP.Reduced
 
 /-!
 

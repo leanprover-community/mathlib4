@@ -105,8 +105,6 @@ theorem MonoidHom.map_cyclic [h : IsCyclic G] (σ : G →* G) :
   refine ⟨m, fun g => ?_⟩
   obtain ⟨n, rfl⟩ := hG g
   rw [MonoidHom.map_zpow, ← hm, ← zpow_mul, ← zpow_mul']
-@[deprecated (since := "2024-02-21")] alias
-MonoidAddHom.map_add_cyclic := AddMonoidHom.map_addCyclic
 
 @[to_additive]
 lemma isCyclic_iff_exists_orderOf_eq_natCard [Finite α] :
@@ -131,9 +129,6 @@ alias IsAddCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype :=
 theorem isCyclic_of_orderOf_eq_card [Finite α] (x : α) (hx : orderOf x = Nat.card α) :
     IsCyclic α :=
   isCyclic_iff_exists_orderOf_eq_natCard.mpr ⟨x, hx⟩
-
-@[deprecated (since := "2024-02-21")]
-alias isAddCyclic_of_orderOf_eq_card := isAddCyclic_of_addOrderOf_eq_card
 
 @[to_additive]
 theorem Subgroup.eq_bot_or_eq_top_of_prime_card
@@ -324,8 +319,6 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
       rw [Nat.mul_div_cancel_left _ (gcd_pos_of_pos_left _ hn0), gcd_mul_left_left, hm,
         Nat.mul_div_cancel _ hm0]
       exact le_of_dvd hn0 (Nat.gcd_dvd_left _ _)
-@[deprecated (since := "2024-02-21")]
-alias IsAddCyclic.card_pow_eq_one_le := IsAddCyclic.card_nsmul_eq_zero_le
 
 end Classical
 
@@ -478,18 +471,12 @@ theorem isCyclic_of_card_pow_eq_one_le : IsCyclic α :=
   let ⟨x, hx⟩ := this
   isCyclic_of_orderOf_eq_card x (Finset.mem_filter.1 hx).2
 
-@[deprecated (since := "2024-02-21")]
-alias isAddCyclic_of_card_pow_eq_one_le := isAddCyclic_of_card_nsmul_eq_zero_le
-
 end Totient
 
 @[to_additive]
 lemma IsCyclic.card_orderOf_eq_totient [IsCyclic α] [Fintype α] {d : ℕ} (hd : d ∣ Fintype.card α) :
     #{a : α | orderOf a = d} = totient d := by
   classical apply card_orderOf_eq_totient_aux₂ (fun n => IsCyclic.card_pow_eq_one_le) hd
-
-@[deprecated (since := "2024-02-21")]
-alias IsAddCyclic.card_orderOf_eq_totient := IsAddCyclic.card_addOrderOf_eq_totient
 
 /-- A finite group of prime order is simple. -/
 @[to_additive "A finite group of prime order is simple."]
@@ -531,9 +518,6 @@ theorem commutative_of_cyclic_center_quotient [IsCyclic G'] (f : G →* G') (hf 
     _ = y ^ m * y ^ n * y ^ (-m) * (a * (y ^ (-n) * b)) := by simp [mul_assoc]
     _ = y ^ m * y ^ n * y ^ (-m) * (y ^ (-n) * b * a) := by rw [mem_center_iff.1 hb]
     _ = b * a := by group
-
-@[deprecated (since := "2024-02-21")]
-alias commutative_of_add_cyclic_center_quotient := commutative_of_addCyclic_center_quotient
 
 /-- A group is commutative if the quotient by the center is cyclic. -/
 @[to_additive

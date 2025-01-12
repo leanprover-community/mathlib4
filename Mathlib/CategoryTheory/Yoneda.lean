@@ -523,7 +523,7 @@ def yonedaCompUliftFunctorEquiv (F : Cᵒᵖ ⥤ Type max v₁ w) (X : C) :
     dsimp
     rw [Category.comp_id]
     rfl
-  right_inv f := by aesop_cat
+  right_inv f := by simp
 
 /-- The Yoneda lemma asserts that the Yoneda pairing
 `(X : Cᵒᵖ, F : Cᵒᵖ ⥤ Type) ↦ (yoneda.obj (unop X) ⟶ F)`
@@ -705,7 +705,7 @@ def coyonedaCompUliftFunctorEquiv (F : C ⥤ Type max v₁ w) (X : Cᵒᵖ) :
     dsimp
     rw [Category.id_comp]
     rfl
-  right_inv f := by aesop_cat
+  right_inv f := by simp
 
 /-- The Coyoneda lemma asserts that the Coyoneda pairing
 `(X : C, F : C ⥤ Type) ↦ (coyoneda.obj X ⟶ F)`
