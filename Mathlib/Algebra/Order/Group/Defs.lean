@@ -92,6 +92,9 @@ multiplication is monotone. -/
   (since := "2025-01-05")]
 structure LinearOrderedCommGroup (α : Type u) extends OrderedCommGroup α, LinearOrder α
 
+attribute [nolint docBlame]
+  LinearOrderedCommGroup.toLinearOrder LinearOrderedAddCommGroup.toLinearOrder
+
 section LinearOrderedCommGroup
 
 variable [CommGroup α] [LinearOrder α] [IsOrderedMonoid α] {a : α}

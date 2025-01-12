@@ -366,7 +366,7 @@ def toPartialOrder (h₁ : S.Pointed) (h₂ : S.Salient) : PartialOrder E :=
       exact H ba }
 
 /-- A pointed and salient cone defines an `IsOrderedAddMonoid`. -/
-def toIsOrderedAddMonoid (h₁ : S.Pointed) (h₂ : S.Salient) :
+lemma toIsOrderedAddMonoid (h₁ : S.Pointed) (h₂ : S.Salient) :
     let _ := toPartialOrder S h₁ h₂
     IsOrderedAddMonoid E :=
   let _ := toPartialOrder S h₁ h₂

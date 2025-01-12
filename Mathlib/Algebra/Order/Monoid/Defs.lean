@@ -157,6 +157,12 @@ in which multiplication is cancellative and monotone. -/
 structure LinearOrderedCancelCommMonoid (α : Type*) extends OrderedCancelCommMonoid α,
     LinearOrderedCommMonoid α
 
+attribute [nolint docBlame]
+  LinearOrderedAddCommMonoid.toLinearOrder
+  LinearOrderedCancelCommMonoid.toLinearOrderedCommMonoid
+  LinearOrderedCancelAddCommMonoid.toLinearOrderedAddCommMonoid
+  LinearOrderedCommMonoid.toLinearOrder
+
 variable [CommMonoid α] [LinearOrder α] [IsOrderedMonoid α] {a : α}
 
 @[to_additive (attr := simp)]

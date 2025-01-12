@@ -37,6 +37,8 @@ set_option linter.deprecated false in
   (since := "2025-01-05")]
 structure LinearOrderedField (α : Type*) extends LinearOrderedCommRing α, Field α
 
+attribute [nolint docBlame] LinearOrderedSemifield.toSemifield LinearOrderedField.toField
+
 variable [Semifield α] [LinearOrder α] {a b c : α}
 
 /-- Equality holds when `a ≠ 0`. See `mul_inv_cancel`. -/

@@ -346,6 +346,20 @@ monotone and multiplication by a positive number is strictly monotone. -/
   (since := "2025-01-05")]
 structure LinearOrderedCommRing (α : Type u) extends LinearOrderedRing α, CommMonoid α
 
+attribute [nolint docBlame]
+  StrictOrderedSemiring.toOrderedCancelAddCommMonoid
+  StrictOrderedCommSemiring.toCommSemiring
+  LinearOrderedSemiring.toLinearOrderedAddCommMonoid
+  LinearOrderedRing.toLinearOrder
+  OrderedSemiring.toOrderedAddCommMonoid
+  OrderedCommSemiring.toCommSemiring
+  StrictOrderedCommRing.toCommRing
+  OrderedRing.toOrderedAddCommGroup
+  OrderedCommRing.toCommRing
+  StrictOrderedRing.toOrderedAddCommGroup
+  LinearOrderedCommSemiring.toLinearOrderedSemiring
+  LinearOrderedCommRing.toCommMonoid
+
 section OrderedRing
 
 variable [Ring α] [PartialOrder α] [IsOrderedRing α] {a b c : α}

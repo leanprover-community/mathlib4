@@ -69,7 +69,7 @@ variable {S R : Type*} [Ring R] [SetLike S R] (C : S)
 /-- Construct a partially ordered ring by designating a cone in a ring.
 Warning: using this def as a constructor in an instance can lead to diamonds
 due to non-customisable field: `lt`. -/
-abbrev IsOrderedRing.mkOfCone [RingConeClass S R] :
+lemma IsOrderedRing.mkOfCone [RingConeClass S R] :
     let _ : PartialOrder R := .mkOfAddGroupCone C
     IsOrderedRing R :=
   let _ : PartialOrder R := .mkOfAddGroupCone C

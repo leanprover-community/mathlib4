@@ -366,7 +366,7 @@ elements are ≤ 1 and then 1 is the top element.
 -/
 /-- If `0` is the least element in `α`, then `WithZero α` is an ordered `AddCommMonoid`. -/
 -- See note [reducible non-instances]
-protected abbrev isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
+protected lemma isOrderedAddMonoid [AddCommMonoid α] [PartialOrder α] [IsOrderedAddMonoid α]
     (zero_le : ∀ a : α, 0 ≤ a) :
     IsOrderedAddMonoid (WithZero α) :=
   { add_le_add_left := @add_le_add_left _ _ _ (WithZero.addLeftMono zero_le) }
