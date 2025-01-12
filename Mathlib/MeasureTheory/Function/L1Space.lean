@@ -710,17 +710,23 @@ theorem Integrable.sub {f g : α → β} (hf : Integrable f μ) (hg : Integrable
 theorem Integrable.norm {f : α → β} (hf : Integrable f μ) : Integrable (fun a => ‖f a‖) μ :=
   ⟨hf.aestronglyMeasurable.norm, hf.hasFiniteIntegral.norm⟩
 
-theorem Integrable.inf {β} [NormedLatticeAddCommGroup β] {f g : α → β} (hf : Integrable f μ)
+theorem Integrable.inf {β}
+    [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
+    {f g : α → β} (hf : Integrable f μ)
     (hg : Integrable g μ) : Integrable (f ⊓ g) μ := by
   rw [← memℒp_one_iff_integrable] at hf hg ⊢
   exact hf.inf hg
 
-theorem Integrable.sup {β} [NormedLatticeAddCommGroup β] {f g : α → β} (hf : Integrable f μ)
+theorem Integrable.sup {β}
+    [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
+    {f g : α → β} (hf : Integrable f μ)
     (hg : Integrable g μ) : Integrable (f ⊔ g) μ := by
   rw [← memℒp_one_iff_integrable] at hf hg ⊢
   exact hf.sup hg
 
-theorem Integrable.abs {β} [NormedLatticeAddCommGroup β] {f : α → β} (hf : Integrable f μ) :
+theorem Integrable.abs {β}
+    [NormedAddCommGroup β] [Lattice β] [HasSolidNorm β] [IsOrderedAddMonoid β]
+    {f : α → β} (hf : Integrable f μ) :
     Integrable (fun a => |f a|) μ := by
   rw [← memℒp_one_iff_integrable] at hf ⊢
   exact hf.abs
