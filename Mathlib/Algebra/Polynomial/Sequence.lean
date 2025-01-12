@@ -48,9 +48,10 @@ end Semiring
 
 section Ring
 
-variable [Ring R] (S : Sequence R) -- #20480
+variable [Ring R] (S : Sequence R)
 
 open scoped Function in
+/-- Polynomials in a polynomial sequence are linearly independent. -/
 lemma linearIndependent [NoZeroDivisors R] :
     LinearIndependent R S.elems := linearIndependent_iff'.mpr <| fun s g eqzero i hi ↦ by
   by_cases hsupzero : s.sup (fun i ↦ (g i • S.elems i).degree) = ⊥
@@ -80,9 +81,11 @@ lemma linearIndependent [NoZeroDivisors R] :
     have := hsum.trans_ne <| (ne_of_ne_of_eq (hsupzero ·.symm) hn).symm
     exact degree_ne_bot.mp this eqzero |>.elim
 
+/-- A polynomial sequence over `R` spans `R[X]`. -/
 lemma span (hCoeff : ∀ i, (S.elems i).leadingCoeff = 1) : ⊤ ≤ span R (Set.range S.elems) := by
   sorry
 
+/-- Every polynomial sequence is a basis of `R[X]`. -/
 noncomputable def basis [NoZeroDivisors R] (hCoeff : ∀ i, (S.elems i).leadingCoeff = 1) :
     Basis ℕ R R[X] :=
   Basis.mk S.linearIndependent <| S.span hCoeff
