@@ -219,7 +219,7 @@ protected def id : α →+*o α :=
 instance : Inhabited (α →+*o α) :=
   ⟨OrderRingHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(OrderRingHom.id α) = id :=
   rfl
 
