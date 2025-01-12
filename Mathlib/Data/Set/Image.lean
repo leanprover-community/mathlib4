@@ -422,9 +422,19 @@ theorem Nonempty.subset_preimage_const {s : Set α} (hs : Set.Nonempty s) (t : S
     s ⊆ (fun _ => a) ⁻¹' t ↔ a ∈ t := by
   rw [← image_subset_iff, hs.image_const, singleton_subset_iff]
 
+-- Note defeq abuse identifying `preimage` with function composition in the following two proofs.
+
+@[simp]
+theorem preimage_injective : Injective (preimage f) ↔ Surjective f :=
+  injective_comp_right_iff_surjective
+
+@[simp]
+theorem preimage_surjective : Surjective (preimage f) ↔ Injective f :=
+  surjective_comp_right_iff_injective
+
 @[simp]
 theorem preimage_eq_preimage {f : β → α} (hf : Surjective f) : f ⁻¹' s = f ⁻¹' t ↔ s = t :=
-  hf.injective_comp_right.eq_iff
+  (preimage_injective.mpr hf).eq_iff
 
 theorem image_inter_preimage (f : α → β) (s : Set α) (t : Set β) :
     f '' (s ∩ f ⁻¹' t) = f '' s ∩ t := by
@@ -1055,7 +1065,7 @@ theorem Injective.preimage_image (hf : Injective f) (s : Set α) : f ⁻¹' (f '
   preimage_image_eq s hf
 
 theorem Injective.preimage_surjective (hf : Injective f) : Surjective (preimage f) :=
-  hf.surjective_comp_right
+  Set.preimage_surjective.mpr hf
 
 theorem Injective.subsingleton_image_iff (hf : Injective f) {s : Set α} :
     (f '' s).Subsingleton ↔ s.Subsingleton :=
@@ -1277,14 +1287,6 @@ open Function
 section ImagePreimage
 
 variable {α : Type u} {β : Type v} {f : α → β}
-
-@[simp]
-theorem preimage_injective : Injective (preimage f) ↔ Surjective f :=
-  injective_comp_right_iff_surjective
-
-@[simp]
-theorem preimage_surjective : Surjective (preimage f) ↔ Injective f :=
-  surjective_comp_right_iff_injective
 
 @[simp]
 theorem image_surjective : Surjective (image f) ↔ Surjective f := by
