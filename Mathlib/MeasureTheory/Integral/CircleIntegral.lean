@@ -300,11 +300,11 @@ theorem circleIntegrable_sub_inv_iff {c w : ℂ} {R : ℝ} :
 
 variable [NormedSpace ℂ E]
 
-/-- Definition for $\oint_{|z-c|=R} f(z)\,dz$, notation `∮ z in C(c, R), f z`. -/
+/-- Definition for $\oint_{|z-c|=R} f(z)\,dz$ -/
 def circleIntegral (f : ℂ → E) (c : ℂ) (R : ℝ) : E :=
   ∫ θ : ℝ in (0)..2 * π, deriv (circleMap c R) θ • f (circleMap c R θ)
 
-@[inherit_doc]
+/-- `∮ z in C(c, R), f z` is the circle integral $\oint_{|z-c|=R} f(z)\,dz$. -/
 notation3 "∮ "(...)" in ""C("c", "R")"", "r:(scoped f => circleIntegral f c R) => r
 
 theorem circleIntegral_def_Icc (f : ℂ → E) (c : ℂ) (R : ℝ) :
