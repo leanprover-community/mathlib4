@@ -288,7 +288,8 @@ instance : AddCommGroup (PreLp E) := by unfold PreLp; infer_instance
 instance PreLp.unique [IsEmpty α] : Unique (PreLp E) :=
   Pi.uniqueOfIsEmpty E
 
-/-- lp space -/
+/-- lp space
+The `p=∞` case has notation `ℓ^∞(ι, E)` resp. `ℓ^∞(ι)` (for `E = ℝ`) in the `lp` namespace. -/
 def lp (E : α → Type*) [∀ i, NormedAddCommGroup (E i)] (p : ℝ≥0∞) : AddSubgroup (PreLp E) where
   carrier := { f | Memℓp f p }
   zero_mem' := zero_memℓp

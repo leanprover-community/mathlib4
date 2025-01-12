@@ -38,7 +38,9 @@ variable {ι M : Type*} {n : ℕ}
 we have `f J = ∑ Ji ∈ π.boxes, f Ji`. A function is called box additive on subboxes of `I : Box ι`
 if the same property holds for `J ≤ I`. We formalize these two notions in the same definition
 using `I : WithBot (Box ι)`: the value `I = ⊤` corresponds to functions box additive on the whole
-space. -/
+space.
+Notation (in the BoxIntegral namespace) `ι →ᵇᵃ[I] M` for `BoxAdditiveMap ι M I`,
+and `ι →ᵇᵃ M` for `I = ⊤`. -/
 structure BoxAdditiveMap (ι M : Type*) [AddCommMonoid M] (I : WithTop (Box ι)) where
   /-- The function underlying this additive map. -/
   toFun : Box ι → M
@@ -48,7 +50,7 @@ structure BoxAdditiveMap (ι M : Type*) [AddCommMonoid M] (I : WithTop (Box ι))
 
 /-- A function on `Box ι` is called box additive if for every box `J` and a partition `π` of `J`
 we have `f J = ∑ Ji ∈ π.boxes, f Ji`. -/
-scoped notation:25 ι " →ᵇᵃ " M => BoxIntegral.BoxAdditiveMap ι M ⊤
+@[inherit_doc] scoped notation:25 ι " →ᵇᵃ " M => BoxIntegral.BoxAdditiveMap ι M ⊤
 
 @[inherit_doc] scoped notation:25 ι " →ᵇᵃ[" I "] " M => BoxIntegral.BoxAdditiveMap ι M I
 

@@ -50,9 +50,9 @@ section Seminormed
 
 variable [RCLike 𝕜] [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
+@[inherit_doc] local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
-local postfix:90 "†" => starRingEnd _
+@[inherit_doc] local postfix:90 "†" => starRingEnd _
 
 /-- An element `x` of an inner product space `E` induces an element of the dual space `Dual 𝕜 E`,
 the map `fun y => ⟪x, y⟫`; moreover this operation is a conjugate-linear isometric embedding of `E`
