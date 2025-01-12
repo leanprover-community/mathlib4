@@ -462,8 +462,6 @@ end cfc_inr
 
 /-! ### Instances of isometric continuous functional calculi -/
 
-section Instances
-
 section Unital
 
 variable {A : Type*} [CStarAlgebra A]
