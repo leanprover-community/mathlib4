@@ -21,7 +21,7 @@ Besides them, we have :
 ## Remark on implementation
 
 While the API is inspired from that for maximal ideals (`Ideal.IsMaximal`),
-it has not been felt necessary to encapsulate the notion of maxiamal subgroup as a class,
+it has not been felt necessary to encapsulate the notion of maximal subgroup as a class,
 and it is just defined as an `abbrev` to `IsCoatom`.
 
 Will we need to write this for all `sub`-structures ?
