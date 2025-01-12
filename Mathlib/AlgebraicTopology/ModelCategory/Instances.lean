@@ -35,8 +35,42 @@ instance [CategoryWithWeakEquivalences C] [CategoryWithFibrations C]
   dsimp [trivialFibrations]
   infer_instance
 
-variable [CategoryWithWeakEquivalences C] [CategoryWithCofibrations C]
-  [CategoryWithFibrations C]
+variable [CategoryWithWeakEquivalences C]
+
+section HasTwoOutOfThreeProperty
+
+variable [(weakEquivalences C).HasTwoOutOfThreeProperty]
+  {C} {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z)
+
+lemma weakEquivalence_of_postcomp
+    [hg : WeakEquivalence g] [hfg : WeakEquivalence (f ≫ g)] :
+    WeakEquivalence f := by
+  rw [weakEquivalence_iff] at hg hfg ⊢
+  exact of_postcomp _ _ _ hg hfg
+
+lemma weakEquivalence_of_precomp
+    [hf : WeakEquivalence f] [hfg : WeakEquivalence (f ≫ g)] :
+    WeakEquivalence g := by
+  rw [weakEquivalence_iff] at hf hfg ⊢
+  exact of_precomp _ _ _ hf hfg
+
+variable {f g} {fg : X ⟶ Z}
+
+lemma weakEquivalence_of_postcomp_of_fac (fac : f ≫ g = fg)
+    [WeakEquivalence g] [hfg : WeakEquivalence fg] :
+    WeakEquivalence f := by
+  subst fac
+  exact weakEquivalence_of_postcomp f g
+
+lemma weakEquivalence_of_precomp_of_fac (fac : f ≫ g = fg)
+    [WeakEquivalence f] [WeakEquivalence fg] :
+    WeakEquivalence g := by
+  subst fac
+  exact weakEquivalence_of_precomp f g
+
+end HasTwoOutOfThreeProperty
+
+variable [CategoryWithCofibrations C] [CategoryWithFibrations C]
 
 section
 

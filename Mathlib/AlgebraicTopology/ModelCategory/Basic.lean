@@ -16,7 +16,10 @@ import Mathlib.AlgebraicTopology.ModelCategory.Instances
 
 We introduce a typeclass `ModelCategory C` expressing that `C` is equipped with
 classes of morphisms named "fibrations", "cofibrations" and "weak equivalences"
-with satisfy the axioms of (closed) model categories.
+with satisfy the axioms of (closed) model categories as they appear for example
+in *Simplicial Homotopy Theory* by Goerss and Jardine. We also provide an
+alternate constructor `ModelCategory.mk'` which uses a formulation of the axioms
+using weak factorizations systems.
 
 As a given category `C` may have several model category structures, it is advisable
 to define only local instances of `ModelCategory`, or to set these instances on type synonyms.
@@ -89,6 +92,32 @@ section mk'
 
 open MorphismProperty
 
+variable {C} in
+lemma mk'.cm3a_aux [CategoryWithFibrations C]  [CategoryWithCofibrations C]
+    [CategoryWithWeakEquivalences C]
+    [(weakEquivalences C).HasTwoOutOfThreeProperty]
+    [IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C)]
+    [IsWeakFactorizationSystem (cofibrations C) (trivialFibrations C)] {A B X Y : C}
+    {f : A ⟶ B} {w : X ⟶ Y} [Fibration f] [WeakEquivalence w]
+    (h : RetractArrow f w) : WeakEquivalence f := by
+  have hw := factorizationData (trivialCofibrations C) (fibrations C) w
+  have : (trivialFibrations C).IsStableUnderRetracts := by
+    rw [← cofibrations_rlp]
+    infer_instance
+  have sq : CommSq h.r.left hw.i f (hw.p ≫ h.r.right) := ⟨by simp⟩
+  have hf : fibrations C f := by rwa [← fibration_iff]
+  have : HasLiftingProperty hw.i f := hasLiftingProperty_of_wfs _ _ hw.hi hf
+  have : WeakEquivalence hw.i := by simpa only [weakEquivalence_iff] using hw.hi.2
+  have : RetractArrow f hw.p :=
+    { i := Arrow.homMk (h.i.left ≫ hw.i) h.i.right
+      r := Arrow.homMk sq.lift h.r.right }
+  have h' : trivialFibrations C hw.p :=
+    ⟨hw.hp, by simpa only [← weakEquivalence_iff]
+      using weakEquivalence_of_precomp_of_fac hw.fac⟩
+  simpa only [weakEquivalence_iff] using (of_retract this h').2
+
+/-- Constructor for `ModelCategory C` which assumes a formulation of axioms
+using weak factorizations systems. -/
 def mk' [CategoryWithFibrations C]  [CategoryWithCofibrations C]
   [CategoryWithWeakEquivalences C] [HasFiniteLimits C] [HasFiniteColimits C]
   [(weakEquivalences C).HasTwoOutOfThreeProperty]
@@ -96,15 +125,23 @@ def mk' [CategoryWithFibrations C]  [CategoryWithCofibrations C]
   [IsWeakFactorizationSystem (trivialCofibrations C) (fibrations C)] :
     ModelCategory C where
   cm3a := ⟨fun {A B X Y f w h hw} ↦ by
+    rw [← weakEquivalence_iff] at hw
     have hf := factorizationData (trivialCofibrations C) (fibrations C) f
     have : Cofibration hf.i := by
       simpa only [cofibration_iff] using hf.hi.1
     have : WeakEquivalence hf.i := by
       simpa only [weakEquivalence_iff] using hf.hi.2
-    suffices WeakEquivalence hf.p by
-      rw [← hf.fac, ← weakEquivalence_iff]
-      infer_instance
-    sorry⟩
+    let φ : pushout hf.i h.i.left ⟶ Y :=
+      pushout.desc (hf.p ≫ h.i.right) w (by simp)
+    have : Fibration hf.p := by simpa only [fibration_iff] using hf.hp
+    have : WeakEquivalence (pushout.inr _ _ ≫ φ) := by simpa [φ]
+    have := weakEquivalence_of_precomp (pushout.inr _ _) φ
+    have hp : RetractArrow hf.p φ :=
+      { i := Arrow.homMk (pushout.inl _ _) h.i.right
+        r := Arrow.homMk (pushout.desc (𝟙 _) (h.r.left ≫ hf.i) (by simp)) h.r.right }
+    have := mk'.cm3a_aux hp
+    rw [← weakEquivalence_iff, ← hf.fac]
+    infer_instance⟩
   cm3b := by
     rw [← rlp_eq_of_wfs (trivialCofibrations C) (fibrations C)]
     infer_instance
