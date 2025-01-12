@@ -303,12 +303,12 @@ instance IsSemisimpleRing.isCoatomic_submodule [IsSemisimpleRing R] : IsCoatomic
 
 open LinearMap in
 /-- A finite product of semisimple rings is semisimple. -/
-instance {ι} [Finite ι] (R : ι → Type*) [∀ i, Ring (R i)] [∀ i, IsSemisimpleRing (R i)] :
-    IsSemisimpleRing (∀ i, R i) := by
-  letI (i) : Module (∀ i, R i) (R i) := Module.compHom _ (Pi.evalRingHom R i)
+instance {ι} [Finite ι] (R : ι → Type*) [Π i, Ring (R i)] [∀ i, IsSemisimpleRing (R i)] :
+    IsSemisimpleRing (Π i, R i) := by
+  letI (i) : Module (Π i, R i) (R i) := Module.compHom _ (Pi.evalRingHom R i)
   let e (i) : R i →ₛₗ[Pi.evalRingHom R i] R i :=
     { AddMonoidHom.id (R i) with map_smul' := fun _ _ ↦ rfl }
-  have (i) : IsSemisimpleModule (∀ i, R i) (R i) :=
+  have (i) : IsSemisimpleModule (Π i, R i) (R i) :=
     ((e i).isSemisimpleModule_iff_of_bijective Function.bijective_id).mpr inferInstance
   classical
   exact isSemisimpleModule_of_isSemisimpleModule_submodule' (p := (range <| single _ _ ·))
@@ -359,8 +359,8 @@ universe u in
 /-- The existence part of the Artin–Wedderburn theorem. -/
 proof_wanted isSemisimpleRing_iff_pi_matrix_divisionRing {R : Type u} [Ring R] :
     IsSemisimpleRing R ↔
-    ∃ (n : ℕ) (S : Fin n → Type u) (d : Fin n → ℕ) (_ : ∀ i, DivisionRing (S i)),
-      Nonempty (R ≃+* ∀ i, Matrix (Fin (d i)) (Fin (d i)) (S i))
+    ∃ (n : ℕ) (S : Fin n → Type u) (d : Fin n → ℕ) (_ : Π i, DivisionRing (S i)),
+      Nonempty (R ≃+* Π i, Matrix (Fin (d i)) (Fin (d i)) (S i))
 
 variable {ι R}
 

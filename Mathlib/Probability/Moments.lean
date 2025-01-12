@@ -60,9 +60,16 @@ theorem moment_zero (hp : p ≠ 0) : moment 0 p μ = 0 := by
     smul_eq_mul, mul_zero, integral_zero]
 
 @[simp]
+lemma moment_zero_measure : moment X p (0 : Measure Ω) = 0 := by simp [moment]
+
+@[simp]
 theorem centralMoment_zero (hp : p ≠ 0) : centralMoment 0 p μ = 0 := by
   simp only [centralMoment, hp, Pi.zero_apply, integral_const, smul_eq_mul,
     mul_zero, zero_sub, Pi.pow_apply, Pi.neg_apply, neg_zero, zero_pow, Ne, not_false_iff]
+
+@[simp]
+lemma centralMoment_zero_measure : centralMoment X p (0 : Measure Ω) = 0 := by
+  simp [centralMoment]
 
 theorem centralMoment_one' [IsFiniteMeasure μ] (h_int : Integrable X μ) :
     centralMoment X 1 μ = (1 - (μ Set.univ).toReal) * μ[X] := by
@@ -118,7 +125,6 @@ theorem cgf_zero_measure : cgf X (0 : Measure Ω) t = 0 := by
 theorem mgf_const' (c : ℝ) : mgf (fun _ => c) μ t = (μ Set.univ).toReal * exp (t * c) := by
   simp only [mgf, integral_const, smul_eq_mul]
 
--- @[simp] -- Porting note: `simp only` already proves this
 theorem mgf_const (c : ℝ) [IsProbabilityMeasure μ] : mgf (fun _ => c) μ t = exp (t * c) := by
   simp only [mgf_const', measure_univ, ENNReal.one_toReal, one_mul]
 
@@ -139,7 +145,6 @@ theorem cgf_const [IsProbabilityMeasure μ] (c : ℝ) : cgf (fun _ => c) μ t = 
 theorem mgf_zero' : mgf X μ 0 = (μ Set.univ).toReal := by
   simp only [mgf, zero_mul, exp_zero, integral_const, smul_eq_mul, mul_one]
 
--- @[simp] -- Porting note: `simp only` already proves this
 theorem mgf_zero [IsProbabilityMeasure μ] : mgf X μ 0 = 1 := by
   simp only [mgf_zero', measure_univ, ENNReal.one_toReal]
 
@@ -180,6 +185,12 @@ theorem mgf_pos [IsProbabilityMeasure μ] (h_int_X : Integrable (fun ω => exp (
     0 < mgf X μ t :=
   mgf_pos' (IsProbabilityMeasure.ne_zero μ) h_int_X
 
+lemma exp_cgf_of_neZero [hμ : NeZero μ] (hX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
+    exp (cgf X μ t) = mgf X μ t := by rw [cgf, exp_log (mgf_pos' hμ.out hX)]
+
+lemma exp_cgf [IsProbabilityMeasure μ] (hX : Integrable (fun ω ↦ exp (t * X ω)) μ) :
+    exp (cgf X μ t) = mgf X μ t := by rw [cgf, exp_log (mgf_pos hX)]
+
 lemma mgf_id_map (hX : AEMeasurable X μ) : mgf id (μ.map X) = mgf X μ := by
   ext t
   rw [mgf, integral_map hX]
@@ -201,6 +212,8 @@ theorem mgf_const_add (α : ℝ) : mgf (fun ω => α + X ω) μ t = exp (t * α)
 
 theorem mgf_add_const (α : ℝ) : mgf (fun ω => X ω + α) μ t = mgf X μ t *  exp (t * α) := by
   simp only [add_comm, mgf_const_add, mul_comm]
+
+section IndepFun
 
 /-- This is a trivial application of `IndepFun.comp` but it will come up frequently. -/
 theorem IndepFun.exp_mul {X Y : Ω → ℝ} (h_indep : IndepFun X Y μ) (s t : ℝ) :
@@ -302,6 +315,8 @@ theorem iIndepFun.cgf_sum {X : ι → Ω → ℝ}
   · rw [h_indep.mgf_sum h_meas]
   · exact (mgf_pos (h_int j hj)).ne'
 
+end IndepFun
+
 theorem mgf_congr_of_identDistrib
     (X : Ω → ℝ) {Ω' : Type*} {m' : MeasurableSpace Ω'} {μ' : Measure Ω'} (X' : Ω' → ℝ)
     (hident : IdentDistrib X X' μ μ') (t : ℝ) :
@@ -317,6 +332,8 @@ theorem mgf_sum_of_identDistrib
   rw [h_indep.mgf_sum h_meas]
   exact Finset.prod_eq_pow_card fun i hi =>
     mgf_congr_of_identDistrib (X i) (X j) (hident i hi j hj) t
+
+section Chernoff
 
 /-- **Chernoff bound** on the upper tail of a real random variable. -/
 theorem measure_ge_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
@@ -366,6 +383,8 @@ theorem measure_le_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
   refine (measure_le_le_exp_mul_mgf ε ht h_int).trans ?_
   rw [exp_add]
   exact mul_le_mul le_rfl (le_exp_log _) mgf_nonneg (exp_pos _).le
+
+end Chernoff
 
 lemma mgf_dirac {x : ℝ} (hX : μ.map X = .dirac x) (t : ℝ) : mgf X μ t = exp (x * t) := by
   have : IsProbabilityMeasure (μ.map X) := by rw [hX]; infer_instance
