@@ -36,8 +36,9 @@ class LatticeSetLike (L : Type*) (α : outParam Type*)
     extends CompleteLattice L, OrderedSetLike L α where
   coe_sInf' (s : Set L) : coe (sInf s) = InfSet.sInf (coe '' s)
 
-/- Construct a `LatticeSetLike` from an injection `L → Set α` that preserves arbitrary infima. -/
-def SetLike.toLatticeSetLike {α L : Type*} [SetLike L α] [CompleteLattice L]
+/- Construct a `LatticeSetLike` from a complete lattice `L` and an injection `L → Set α`
+that preserves arbitrary infima. -/
+def CompleteLattice.toLatticeSetLike (L α : Type*) [SetLike L α] [CompleteLattice L]
       (coe_sInf : ∀ s : Set L, SetLike.coe (sInf s) = sInf (SetLike.coe '' s)) :
     LatticeSetLike L α where
   coe := SetLike.coe
@@ -45,6 +46,25 @@ def SetLike.toLatticeSetLike {α L : Type*} [SetLike L α] [CompleteLattice L]
   coe_subset_coe' {l m} := by
     suffices SetLike.coe l ⊆ SetLike.coe m ↔ SetLike.coe (sInf {l, m}) = SetLike.coe l by simpa
     rw [coe_sInf]; simp
+
+/- Construct a `LatticeSetLike` from a type `L` and an order-preserving injection `L → Set α`
+that preserves arbitrary infima. -/
+def OrderedSetLike.toLatticeSetLike (L α : Type*) [OrderedSetLike L α] [InfSet L]
+    (coe_sInf : ∀ s : Set L, SetLike.coe (sInf s) = sInf (SetLike.coe '' s)) :
+    LatticeSetLike L α where
+  __ := (inferInstance : OrderedSetLike L α)
+  __ := completeLatticeOfInf L fun s =>
+      IsGLB.of_image OrderedSetLike.coe_subset_coe (by simpa [coe_sInf] using isGLB_biInf)
+  coe_sInf' := coe_sInf
+
+/- Construct a `LatticeSetLike` from a type `L` and an injection `L → Set α`
+that reflects arbitrary intersections. -/
+noncomputable def SetLike.toLatticeSetLike (L α : Type*) [SetLike L α]
+    (exists_sInf : ∀ s : Set L, ∃ l : L, SetLike.coe l = sInf (SetLike.coe '' s)) :
+    LatticeSetLike L α :=
+  let _ := @SetLike.toOrderedSetLike L α _
+  @OrderedSetLike.toLatticeSetLike L α _ (InfSet.mk (Classical.choose <| exists_sInf ·))
+    (Classical.choose_spec <| exists_sInf ·)
 
 namespace LatticeSetLike
 
