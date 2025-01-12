@@ -1,5 +1,7 @@
 import Mathlib.Util.CountHeartbeats
 
+set_option linter.countHeartbeats true
+
 -- sets the `countHeartbeats` linter option to `true`
 #count_heartbeats
 
