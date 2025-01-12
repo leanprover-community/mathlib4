@@ -9,7 +9,7 @@ import Mathlib.Combinatorics.SimpleGraph.Maps
 /-!
 # Delete edges
 
-This modules defines operations deleting the edges of a simple graph and proves theorems in the
+This file defines operations deleting the edges of a simple graph and proves theorems in their
 finite case.
 
 ## Main definitions
