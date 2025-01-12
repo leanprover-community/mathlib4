@@ -40,6 +40,6 @@ elab "apply" t:term "at" i:ident : tactic => withSynthesize <| withMainContext d
   let mainGoal ← mainGoal.assert ldecl.userName appliedTy applied
   let (_, mainGoal) ← mainGoal.intro1P
   let mainGoal ← mainGoal.tryClear ldecl.fvarId
-  replaceMainGoal <| [mainGoal] ++ mvs.pop.toList.map fun e => e.mvarId!
+  replaceMainGoal <| [mainGoal] ++ mvs.pop.toList.map (·.mvarId!)
 
 end Mathlib.Tactic
