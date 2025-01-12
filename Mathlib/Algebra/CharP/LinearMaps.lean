@@ -15,8 +15,7 @@ The characteristic of the ring of linear maps is determined by its base ring.
 
 - `Module.charP_end` : For a commutative semiring `R` and a `R`-module `M`,
   the characteristic of `R` is equal to the characteristic of the `R`-linear
-  endomorphisms of `M` when `M` contains an element `x` such that
-  `r • x = 0` implies `r = 0`.
+  endomorphisms of `M` when `M` contains a non-torsion element `x`.
 
 ## Notations
 
@@ -27,7 +26,7 @@ The characteristic of the ring of linear maps is determined by its base ring.
 
 One can also deduce similar result via `charP_of_injective_ringHom` and
   `R → (M →ₗ[R] M) : r ↦ (fun (x : M) ↦ r • x)`. But this will require stronger condition
-  compared to `CharP_if`.
+  compared to `Module.charP_end`.
 
 -/
 
