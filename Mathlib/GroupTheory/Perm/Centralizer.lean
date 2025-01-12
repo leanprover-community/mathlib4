@@ -59,9 +59,9 @@ preserve the cardinality of the support.
 the range of `Equiv.Perm.OnCycleFactors.toPermHom g`
 is the subgroup `toPermHom_range' g` of `Equiv.Perm g.cycleFactorsFinset`.
 
-This is showed by constructing a right inverse
+This is shown by constructing a right inverse
 `Equiv.Perm.Basis.toCentralizer`, as established by
-`Equiv.Perm.Basis.toCentralizer_rightInverse`.
+`Equiv.Perm.Basis.toPermHom_apply_toCentralizer`.
 
 * `Equiv.Perm.OnCycleFactors.nat_card_range_toPermHom` computes the
 cardinality of `(Equiv.Perm.OnCycleFactors.toPermHom g).range`
@@ -111,15 +111,15 @@ namespace OnCycleFactors
 variable (g)
 
 variable {g} in
-lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset
-    (k : Subgroup.centralizer {g}) (c : g.cycleFactorsFinset) :
-    ConjAct.toConjAct (k : Perm α) • (c : Perm α) ∈ g.cycleFactorsFinset := by
+lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset {k c : Perm α}
+    (k_mem : k ∈ centralizer {g}) (c_mem : c ∈ g.cycleFactorsFinset) :
+    ConjAct.toConjAct k • c ∈ g.cycleFactorsFinset := by
   suffices (g.cycleFactorsFinset : Set (Perm α)) =
-    (ConjAct.toConjAct (k : Perm α)) • (g.cycleFactorsFinset) by
+    (ConjAct.toConjAct k) • g.cycleFactorsFinset by
     rw [← Finset.mem_coe, this]
-    simp only [Set.smul_mem_smul_set_iff, Finset.mem_coe, Finset.coe_mem]
+    simp only [Set.smul_mem_smul_set_iff, Finset.mem_coe, Finset.coe_mem, c_mem]
   have this := cycleFactorsFinset_conj_eq (ConjAct.toConjAct (k : Perm α)) g
-  rw [ConjAct.toConjAct_smul, Subgroup.mem_centralizer_singleton_iff.mp k.prop, mul_assoc] at this
+  rw [ConjAct.toConjAct_smul, mem_centralizer_singleton_iff.mp k_mem, mul_assoc] at this
   simp only [mul_inv_cancel, mul_one] at this
   conv_lhs => rw [this]
   simp only [Finset.coe_smul_finset]
@@ -127,9 +127,9 @@ lemma Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset
 /-- The action by conjugation of `Subgroup.centraliser {g}`
   on the cycles of a given permutation -/
 def Subgroup.Centralizer.cycleFactorsFinset_mulAction :
-    MulAction (Subgroup.centralizer {g}) g.cycleFactorsFinset where
+    MulAction (centralizer {g}) g.cycleFactorsFinset where
   smul k c := ⟨ConjAct.toConjAct (k : Perm α) • (c : Perm α),
-    Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset k c⟩
+    Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset k.prop c.prop⟩
   one_smul c := by
     rw [← Subtype.coe_inj]
     change ConjAct.toConjAct (1 : Perm α) • (c : Perm α) = c
@@ -141,21 +141,27 @@ def Subgroup.Centralizer.cycleFactorsFinset_mulAction :
     simp only [map_mul, mul_smul]
 
 /-- The conjugation action of `Subgroup.centralizer {g}` on `g.cycleFactorsFinset` -/
-scoped instance : MulAction (Subgroup.centralizer {g}) (g.cycleFactorsFinset) :=
+scoped instance : MulAction (centralizer {g}) (g.cycleFactorsFinset) :=
   (Subgroup.Centralizer.cycleFactorsFinset_mulAction g)
 
 /-- The canonical morphism from `Subgroup.centralizer {g}`
   to the group of permutations of `g.cycleFactorsFinset` -/
-def toPermHom := MulAction.toPermHom (Subgroup.centralizer {g}) g.cycleFactorsFinset
+def toPermHom := MulAction.toPermHom (centralizer {g}) g.cycleFactorsFinset
 
-theorem centralizer_smul_def (k : Subgroup.centralizer {g}) (c : g.cycleFactorsFinset) :
-    k • c = ⟨k * c * k⁻¹, Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset k c⟩ :=
+theorem centralizer_smul_def (k : centralizer {g}) (c : g.cycleFactorsFinset) :
+    k • c = ⟨k * c * k⁻¹,
+      Subgroup.Centralizer.toConjAct_smul_mem_cycleFactorsFinset k.prop c.prop⟩ :=
   rfl
 
-theorem toPermHom_apply (k : Subgroup.centralizer {g}) (c :  g.cycleFactorsFinset) :
+@[simp]
+theorem val_centralizer_smul (k : Subgroup.centralizer {g}) (c : g.cycleFactorsFinset) :
+    ((k • c :) : Perm α) = k * c * k⁻¹ :=
+  rfl
+
+theorem toPermHom_apply (k : centralizer {g}) (c : g.cycleFactorsFinset) :
     (toPermHom g k c) = k • c := rfl
 
-theorem coe_toPermHom (k : Subgroup.centralizer {g}) (c :  g.cycleFactorsFinset) :
+theorem coe_toPermHom (k : centralizer {g}) (c : g.cycleFactorsFinset) :
     (toPermHom g k c : Perm α) = k * c * (k : Perm α)⁻¹ := rfl
 
 /-- The range of `Equiv.Perm.OnCycleFactors.toPermHom`.
@@ -165,14 +171,12 @@ def range_toPermHom' : Subgroup (Perm g.cycleFactorsFinset) where
   carrier := {τ | ∀ c, (τ c : Perm α).support.card = (c : Perm α).support.card}
   one_mem' := by
     simp only [Set.mem_setOf_eq, coe_one, id_eq, eq_self_iff_true, imp_true_iff]
-  mul_mem' := by
-    intro σ τ hσ hτ
+  mul_mem' hσ hτ := by
     simp only [Subtype.forall, Set.mem_setOf_eq, coe_mul, Function.comp_apply]
     simp only [Subtype.forall, Set.mem_setOf_eq] at hσ hτ
     intro c hc
     rw [hσ, hτ]
-  inv_mem' := by
-    intro σ hσ
+  inv_mem' hσ := by
     simp only [Subtype.forall, Set.mem_setOf_eq] at hσ ⊢
     intro c hc
     rw [← hσ]
@@ -185,18 +189,15 @@ theorem mem_range_toPermHom'_iff {τ : Perm g.cycleFactorsFinset} :
       ∀ c, (τ c : Perm α).support.card = (c : Perm α).support.card :=
   Iff.rfl
 
+variable (k : centralizer {g})
+
 /-- `k : Subgroup.centralizer {g}` belongs to the kernel of `toPermHom g`
-iff it commutes with each cycle of `g` -/
-theorem mem_ker_toPermHom_iff (k : Subgroup.centralizer {g}) :
-    k ∈ (toPermHom g).ker ↔
-      ∀ c ∈ g.cycleFactorsFinset, Commute (k : Perm α) c := by
-  simp only [toPermHom, MonoidHom.mem_ker, DFunLike.ext_iff]
-  simp only [coe_one, id_eq, Subtype.forall]
-  apply forall₂_congr
-  intro c hc
-  simp only [MulAction.toPermHom_apply, toPerm_apply, ← Subtype.coe_inj,
-    commute_iff_eq, centralizer_smul_def, InvMemClass.coe_inv,
-    mul_inv_eq_iff_eq_mul]
+  iff it commutes with each cycle of `g` -/
+theorem mem_ker_toPermHom_iff :
+    k ∈ (toPermHom g).ker ↔ ∀ c ∈ g.cycleFactorsFinset, Commute (k : Perm α) c := by
+  simp only [toPermHom, MonoidHom.mem_ker, DFunLike.ext_iff, Subtype.forall]
+  refine forall₂_congr (fun _ _ ↦ ?_)
+  simp [← Subtype.coe_inj, commute_iff_eq, mul_inv_eq_iff_eq_mul]
 
 end OnCycleFactors
 
@@ -221,9 +222,9 @@ theorem nonempty (g : Perm α) : Nonempty (Basis g) := by
     IsCycle.nonempty_support (mem_cycleFactorsFinset_iff.mp c.prop).1
   exact ⟨fun c ↦ (this c).choose, fun c ↦ (this c).choose_spec⟩
 
-variable (a : Basis g)
+variable (a : Basis g) (c : g.cycleFactorsFinset)
 
-theorem mem_support_self (c : g.cycleFactorsFinset) :
+theorem mem_support_self :
     a c ∈ (c : Perm α).support := a.mem_support_self' c
 
 theorem injective : Function.Injective a := by
@@ -235,8 +236,7 @@ theorem injective : Function.Injective a := by
   conv_rhs => rw [h]
   simp only [← Perm.mem_support, a.mem_support_self c, a.mem_support_self d, and_self]
 
-theorem cycleOf_eq (c : g.cycleFactorsFinset) :
-    g.cycleOf (a c) = c :=
+theorem cycleOf_eq : g.cycleOf (a c) = c :=
   (cycle_is_cycleOf (a.mem_support_self c) c.prop).symm
 
 theorem sameCycle {x : α} (hx : g.cycleOf x ∈ g.cycleFactorsFinset) :
@@ -246,10 +246,11 @@ theorem sameCycle {x : α} (hx : g.cycleOf x ∈ g.cycleFactorsFinset) :
 variable (τ : range_toPermHom' g)
 
 /-- The function that will provide a right inverse `toCentralizer` to `toPermHom` -/
-noncomputable def newK (x : α) : α :=
+def newK (x : α) : α :=
   if hx : g.cycleOf x ∈ g.cycleFactorsFinset
   then
-    (g ^ (a.sameCycle hx).choose) (a ((τ : Perm g.cycleFactorsFinset) ⟨g.cycleOf x, hx⟩))
+    (g ^ (Nat.find (a.sameCycle hx).exists_nat_pow_eq))
+      (a ((τ : Perm g.cycleFactorsFinset) ⟨g.cycleOf x, hx⟩))
   else x
 
 theorem mem_fixedPoints_or_exists_zpow_eq (x : α) :
@@ -268,12 +269,12 @@ theorem newK_apply_of_cycleOf_mem {x : α} {c : g.cycleFactorsFinset}
     newK a τ x = (g ^ m) (a ((τ  : Perm g.cycleFactorsFinset) c)) := by
   have hx' : c = g.cycleOf x := cycle_is_cycleOf hx (Subtype.prop c)
   have hx'' : g.cycleOf x ∈ g.cycleFactorsFinset := hx' ▸ c.prop
-  set n := (a.sameCycle hx'').choose
-  have hn : (g ^ n) (a c) = x := by
-    rw [← (a.sameCycle hx'').choose_spec]
+  set n := Nat.find (a.sameCycle hx'').exists_nat_pow_eq
+  have hn : (g ^ (n : ℤ)) (a c) = x := by
+    rw [← Nat.find_spec (a.sameCycle hx'').exists_nat_pow_eq, zpow_natCast]
     congr
     rw [← Subtype.coe_inj, hx']
-  suffices newK a τ x = (g ^ n) (a ((τ : Perm g.cycleFactorsFinset) c)) by
+  suffices newK a τ x = (g ^ (n : ℤ)) (a ((τ : Perm g.cycleFactorsFinset) c)) by
     rw [this, IsCycleOn.zpow_apply_eq_zpow_apply
       (isCycleOn_support_of_mem_cycleFactorsFinset ((τ : Perm g.cycleFactorsFinset) c).prop)
       (mem_support_self a ((τ : Perm g.cycleFactorsFinset) c))]
@@ -358,7 +359,7 @@ noncomputable def ofPermHom : range_toPermHom' g →* Perm α where
   map_mul' := fun σ τ ↦ ext fun x ↦ by simp [mul_apply, newK_mul a σ τ x]
 
 theorem ofPermHom_mem_centralizer :
-    a.ofPermHom τ ∈ Subgroup.centralizer {g} := by
+    a.ofPermHom τ ∈ centralizer {g} := by
   rw [mem_centralizer_singleton_iff]
   ext x
   simp only [mul_apply]
@@ -368,33 +369,29 @@ theorem ofPermHom_mem_centralizer :
 we define a right inverse of `Equiv.Perm.OnCycleFactors.toPermHom`,
 on `range_toPermHom' g` -/
 noncomputable def toCentralizer :
-    range_toPermHom' g →* Subgroup.centralizer {g}  where
+    range_toPermHom' g →* centralizer {g}  where
   toFun τ := ⟨ofPermHom a τ, ofPermHom_mem_centralizer a τ⟩
   map_one' := by simp only [map_one, mk_eq_one]
   map_mul' σ τ := by simp only [map_mul, MulMemClass.mk_mul_mk]
 
 theorem toCentralizer_apply (x) : (toCentralizer a τ : Perm α) x = newK a τ x := rfl
 
-variable (c) in
 theorem toCentralizer_equivariant :
     (toCentralizer a τ) • c = (τ : Perm g.cycleFactorsFinset) c := by
-  rw [centralizer_smul_def, ← Subtype.coe_inj]
-  simp only [InvMemClass.coe_inv, mul_inv_eq_iff_eq_mul]
+  simp only [← Subtype.coe_inj, val_centralizer_smul, InvMemClass.coe_inv, mul_inv_eq_iff_eq_mul]
   ext x
-  simp only [mul_apply]
-  change newK a τ ((c : Perm α) x) = ((τ : Perm g.cycleFactorsFinset) c : Perm α) (newK a τ x)
+  simp only [mul_apply, toCentralizer_apply]
   by_cases hx : x ∈ (c : Perm α).support
   · rw [(mem_cycleFactorsFinset_iff.mp c.prop).2 x hx]
     have := newK_commute_zpow_apply a τ x 1
     simp only [zpow_one] at this
-    rw [this]
-    rw [← (mem_cycleFactorsFinset_iff.mp ((τ : Perm g.cycleFactorsFinset) c).prop).2]
+    rw [this, ← (mem_cycleFactorsFinset_iff.mp ((τ : Perm g.cycleFactorsFinset) c).prop).2]
     rw [newK_apply_mem_support_cycle_iff]
     exact hx
   · rw [not_mem_support.mp hx, eq_comm, ← not_mem_support, newK_apply_mem_support_cycle_iff]
     exact hx
 
-theorem toCentralizer_rightInverse :
+theorem toPermHom_apply_toCentralizer :
     (toPermHom g) (toCentralizer a τ) = (τ : Perm g.cycleFactorsFinset) := by
   apply ext
   intro c
@@ -413,7 +410,7 @@ theorem mem_range_toPermHom_iff {τ} : τ ∈ (toPermHom g).range ↔
     rw [coe_toPermHom, Equiv.Perm.support_conj]
     apply Finset.card_map
   · obtain ⟨a⟩ := Basis.nonempty g
-    exact fun hτ ↦ ⟨toCentralizer a ⟨τ, hτ⟩, toCentralizer_rightInverse a ⟨τ, hτ⟩⟩
+    exact fun hτ ↦ ⟨toCentralizer a ⟨τ, hτ⟩, toPermHom_apply_toCentralizer a ⟨τ, hτ⟩⟩
 
 /-- Unapplied variant of `Equiv.Perm.mem_range_toPermHom_iff` -/
 theorem mem_range_toPermHom_iff' {τ} : τ ∈ (toPermHom g).range ↔
@@ -444,9 +441,9 @@ theorem nat_card_range_toPermHom :
     simp only [cycleType_def, Function.comp_apply, Multiset.mem_map, Finset.mem_val]
   simp only [← SetLike.coe_sort_coe, Fintype.card_eq_nat_card]
   congr
-  ext τ
-  erw [mem_range_toPermHom_iff'] -- rw doesn't work
-  simp only [Finset.coe_sort_coe, Set.mem_setOf_eq]
+  ext
+  rw [SetLike.mem_coe, mem_range_toPermHom_iff']
+  simp
 
 section Kernel
 /- Here, we describe the kernel of `g.OnCycleFactors.toPermHom` -/
@@ -542,7 +539,7 @@ theorem θHom_range_eq :
 
 theorem θHom_range_card (g : Equiv.Perm α) :
     Fintype.card (θHom g).range = (Fintype.card α - g.cycleType.sum)! * g.cycleType.prod := by
-  erw [Set.card_range_of_injective (θHom_injective g)]
+  rw [Fintype.card_coeSort_range (θHom_injective g)]
   rw [Fintype.card_prod, Fintype.card_perm, Fintype.card_pi, card_fixedPoints]
   apply congr_arg
   rw [Finset.univ_eq_attach, g.cycleFactorsFinset.prod_attach (fun i ↦ Fintype.card (zpowers i)),
@@ -597,14 +594,14 @@ theorem card_isConj_eq :
 variable (α)
 
 theorem card_of_cycleType_eq_zero_iff {m : Multiset ℕ} :
-    (Finset.univ.filter fun g : Equiv.Perm α => g.cycleType = m).card = 0
-    ↔ ¬ ((m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a)) := by
+    ({g | g.cycleType = m} : Finset (Perm α)).card = 0
+      ↔ ¬ ((m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a)) := by
   rw [Finset.card_eq_zero, Finset.filter_eq_empty_iff,
     ← exists_with_cycleType_iff, not_exists]
   aesop
 
 theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
-    (Finset.univ.filter fun g : Equiv.Perm α => g.cycleType = m).card *
+    ({g | g.cycleType = m} : Finset (Perm α)).card *
         ((Fintype.card α - m.sum)! * m.prod *
           (∏ n in m.toFinset, (m.count n)!)) =
       if (m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a) then (Fintype.card α)! else 0 := by
@@ -621,8 +618,7 @@ theorem card_of_cycleType_mul_eq (m : Multiset ℕ) :
 
 /-- Cardinality of the `Finset` of `Equiv.Perm α` of given `cycleType` -/
 theorem card_of_cycleType (m : Multiset ℕ) :
-    (Finset.univ.filter
-      fun g : Perm α => g.cycleType = m).card =
+    ({g | g.cycleType = m} : Finset (Perm α)).card =
       if m.sum ≤ Fintype.card α ∧ ∀ a ∈ m, 2 ≤ a then
         (Fintype.card α)! /
           ((Fintype.card α - m.sum)! * m.prod * (∏ n in m.toFinset, (m.count n)!))

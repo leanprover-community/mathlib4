@@ -544,8 +544,8 @@ lemma pairwise_commute_of_mem_zpowers :
   f.pairwise_disjoint_of_mem_zpowers.mono
     (fun _ _ ↦ forall₂_imp (fun _ _ h hx hy ↦ (h hx hy).commute))
 
-lemma disjoint_ofSubtype_noncommPiCoprod (u : Perm (Function.fixedPoints ⇑f))
-    (v : (c : { x // x ∈ f.cycleFactorsFinset }) → ↥(Subgroup.zpowers (c : Perm α))) :
+lemma disjoint_ofSubtype_noncommPiCoprod (u : Perm (Function.fixedPoints f))
+    (v : (c : { x // x ∈ f.cycleFactorsFinset }) → (Subgroup.zpowers (c : Perm α))) :
     Disjoint (ofSubtype u) ((Subgroup.noncommPiCoprod f.pairwise_commute_of_mem_zpowers) v) := by
   apply Finset.noncommProd_induction
   · intro a _ b _ h
@@ -558,8 +558,8 @@ lemma disjoint_ofSubtype_noncommPiCoprod (u : Perm (Function.fixedPoints ⇑f))
     exact Disjoint.mono (disjoint_ofSubtype_of_memFixedPoints_self u)
       le_rfl (support_zpowers_of_mem_cycleFactorsFinset_le (v c))
 
-lemma commute_ofSubtype_noncommPiCoprod (u : Perm ↑(Function.fixedPoints ⇑f))
-    (v : (c : { x // x ∈ f.cycleFactorsFinset }) → ↥(Subgroup.zpowers (c : Perm α))) :
+lemma commute_ofSubtype_noncommPiCoprod (u : Perm (Function.fixedPoints f))
+    (v : (c : { x // x ∈ f.cycleFactorsFinset }) → (Subgroup.zpowers (c : Perm α))) :
     Commute (ofSubtype u) ((Subgroup.noncommPiCoprod f.pairwise_commute_of_mem_zpowers) v) :=
   Disjoint.commute (f.disjoint_ofSubtype_noncommPiCoprod u v)
 

@@ -285,4 +285,14 @@ Note: this instance can form a diamond with `Subtype.fintype` or `Subgroup.finty
 instance fintypeRange [Fintype G] [DecidableEq N] (f : G →* N) : Fintype (range f) :=
   Set.fintypeRange f
 
+lemma _root_.Fintype.card_coeSort_mrange {M N : Type*} [Monoid M] [Monoid N] [Fintype M]
+    [DecidableEq N] {f : M →* N} (hf : Function.Injective f) :
+    Fintype.card (mrange f) = Fintype.card M :=
+  Set.card_range_of_injective hf
+
+lemma _root_.Fintype.card_coeSort_range [Fintype G] [DecidableEq N] {f : G →* N}
+    (hf : Function.Injective f) :
+    Fintype.card (range f) = Fintype.card G :=
+  Set.card_range_of_injective hf
+
 end MonoidHom
