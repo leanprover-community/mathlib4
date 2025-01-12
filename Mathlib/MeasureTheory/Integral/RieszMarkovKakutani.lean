@@ -39,7 +39,7 @@ variable (Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0)
 
 section Monotone
 
-lemma CompactlySupportedContinuousMap.monotone_of_nnreal (f₁ f₂ : C_c(X, ℝ≥0)) (h : f₁.1 ≤ f₂.1) :
+lemma CompactlySupportedContinuousMap.monotone_of_nnreal {f₁ f₂ : C_c(X, ℝ≥0)} (h : f₁.1 ≤ f₂.1) :
     Λ f₁ ≤ Λ f₂ := by
   obtain ⟨g, hg⟩ := exist_add_eq f₁ f₂ h
   simp only [← hg, map_add, le_add_iff_nonneg_right, zero_le]
