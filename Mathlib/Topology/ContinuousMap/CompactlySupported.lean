@@ -542,7 +542,7 @@ noncomputable def nnrealPart (f : C_c(α, ℝ)) : C_c(α, ℝ≥0) where
 lemma nnrealPart_apply (f : C_c(α, ℝ)) (x : α) :
     f.nnrealPart x = Real.toNNReal (f x) := rfl
 
-lemma exist_add_eq (f₁ f₂ : C_c(α, ℝ≥0)) (h : f₁.1 ≤ f₂.1)  : ∃ (g : C_c(α, ℝ≥0)), f₁ + g = f₂ := by
+lemma exist_add_eq {f₁ f₂ : C_c(α, ℝ≥0)} (h : f₁.1 ≤ f₂.1)  : ∃ (g : C_c(α, ℝ≥0)), f₁ + g = f₂ := by
   set g_cf := f₂.1 - f₁.1 with hg_cf
   have g_cp : HasCompactSupport g_cf := by
     apply IsCompact.of_isClosed_subset
