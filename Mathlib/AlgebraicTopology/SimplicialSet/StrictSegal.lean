@@ -59,6 +59,8 @@ lemma spineToSimplex_spine_apply (Δ : X _[m]ₙ₊₁) :
     segal.spineToSimplex m h (X.spine m h Δ) = Δ :=
   congr_fun (spineToSimplex_spine segal m) Δ
 
+/-- The fields of `StrictSegal` define an equivalence between `X _[m]ₙ₊₁`
+and `Path X m`. -/
 def spineEquiv : X _[m]ₙ₊₁ ≃ Path X m where
   toFun := spine X m
   invFun := segal.spineToSimplex m
@@ -171,6 +173,8 @@ lemma spine_δ_arrow_eq {n : ℕ} {X : SSet.Truncated.{u} (n + 2)} (segal : Stri
 end StrictSegal
 end Truncated
 
+/-- A simplicial set `X` is `SSet.StrictSegal` if the `n + 1`-truncation of `X`
+is `SSet.Truncated.StrictSegal` for all `n : ℕ`. -/
 abbrev StrictSegal (X : SSet.{u}) :=
   ∀ n, truncation (n + 1) |>.obj X |>.StrictSegal
 
@@ -178,11 +182,14 @@ namespace StrictSegal
 
 variable {X : SSet.{u}} (segal : StrictSegal X) {n : ℕ}
 
+/-- The inverse to `spine X n`. -/
 abbrev spineToSimplex : Path X n → X _[n] := segal n |>.spineToSimplex n
 
+  /-- `spineToSimplex` is a right inverse to `spine X n`. -/
 lemma spine_spineToSimplex : X.spine n ∘ segal.spineToSimplex = id :=
   segal n |>.spine_spineToSimplex n
 
+/-- `spineToSimplex` is a left inverse to `spine X n`. -/
 lemma spineToSimplex_spine : segal.spineToSimplex ∘ X.spine n = id :=
   segal n |>.spineToSimplex_spine n
 
@@ -194,6 +201,8 @@ lemma spineToSimplex_spine_apply (Δ : X _[n]) :
     segal.spineToSimplex (X.spine n Δ) = Δ :=
   segal n |>.spineToSimplex_spine_apply n _ Δ
 
+/-- The fields of `StrictSegal` define an equivalence between `X _[m]`
+and `Path X m`. -/
 abbrev spineEquiv (n : ℕ) : X _[n] ≃ Path X n := segal n |>.spineEquiv n
 
 theorem spineInjective : Function.Injective (segal.spineEquiv n) :=
