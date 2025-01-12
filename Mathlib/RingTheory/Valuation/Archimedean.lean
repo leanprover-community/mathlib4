@@ -38,10 +38,11 @@ lemma wfDvdMonoid_iff_wellFounded_gt_on_v (hv : Integers v O) :
   refine ⟨fun _ ↦ wellFounded_dvdNotUnit.mono ?_, fun h ↦ ⟨h.mono ?_⟩⟩ <;>
   simp [Function.onFun, hv.dvdNotUnit_iff_lt]
 
+open scoped Multiplicative in
 lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ]
     (hv : Integers v O) :
     WellFounded ((· > ·) on (v ∘ algebraMap O F)) ↔
-      Nonempty (MonoidHom.mrange v ≃*o WithZero (Multiplicative ℤ)) := by
+      Nonempty (MonoidHom.mrange v ≃*o ℤₘ₀) := by
   rw [← LinearOrderedCommGroupWithZero.wellFoundedOn_setOf_ge_gt_iff_nonempty_discrete_of_ne_zero
     one_ne_zero, ← Set.wellFoundedOn_range]
   classical
