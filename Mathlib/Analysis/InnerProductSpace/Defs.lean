@@ -191,15 +191,15 @@ section PreInnerProductSpace.Core
 
 variable [AddCommGroup F] [Module 𝕜 F] [c : PreInnerProductSpace.Core 𝕜 F]
 
-local notation "⟪" x ", " y "⟫" => @inner 𝕜 F _ x y
+@[inherit_doc] local notation "⟪" x ", " y "⟫" => @inner 𝕜 F _ x y
 
-local notation "normSqK" => @RCLike.normSq 𝕜 _
+@[inherit_doc] local notation "normSqK" => @RCLike.normSq 𝕜 _
 
-local notation "reK" => @RCLike.re 𝕜 _
+@[inherit_doc] local notation "reK" => @RCLike.re 𝕜 _
 
-local notation "ext_iff" => @RCLike.ext_iff 𝕜 _
+@[inherit_doc] local notation "ext_iff" => @RCLike.ext_iff 𝕜 _
 
-local postfix:90 "†" => starRingEnd _
+@[inherit_doc] local postfix:90 "†" => starRingEnd _
 
 /-- Inner product defined by the `PreInnerProductSpace.Core` structure. We can't reuse
 `PreInnerProductSpace.Core.toInner` because it takes `PreInnerProductSpace.Core` as an explicit
@@ -213,7 +213,7 @@ attribute [local instance] toPreInner'
 def normSq (x : F) :=
   reK ⟪x, x⟫
 
-local notation "normSqF" => @normSq 𝕜 F _ _ _ _
+@[inherit_doc] local notation "normSqF" => @normSq 𝕜 F _ _ _ _
 
 theorem inner_conj_symm (x y : F) : ⟪y, x⟫† = ⟪x, y⟫ :=
   c.conj_symm x y

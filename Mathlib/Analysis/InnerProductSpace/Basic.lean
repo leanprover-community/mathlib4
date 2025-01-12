@@ -45,8 +45,10 @@ open scoped InnerProductSpace
 variable [SeminormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 variable [SeminormedAddCommGroup F] [InnerProductSpace ℝ F]
 
+@[inherit_doc]
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
+@[inherit_doc]
 local postfix:90 "†" => starRingEnd _
 
 export InnerProductSpace (norm_sq_eq_inner)
