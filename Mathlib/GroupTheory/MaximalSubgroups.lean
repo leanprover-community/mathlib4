@@ -16,7 +16,8 @@ We prove a few basic results which are essentially copied from those about maxim
 
 Besides them, we have :
 * `Subgroup.isMaximal_iff` proves that a subgroup `K` of `G` is maximal if and only if
-  it is not `⊤` and if for all `g ∈ G` such that `g ∉ K`, every subgroup containing `K` and `g` is `⊤`.
+  it is not `⊤` and if for all `g ∈ G` such that `g ∉ K`, 
+  every subgroup containing `K` and `g` is `⊤`.
 
 ## Remark on implementation
 
