@@ -8,6 +8,11 @@ import Mathlib.LinearAlgebra.LinearIndependent
 
 # Polynomial sequences
 
+## TODO
+
+* Generalize linear independence of polynomial sequences to arbitrary sets of polynomials
+  which are pairwise different degree.
+
 -/
 
 open Submodule (span)
@@ -45,7 +50,6 @@ section Ring
 
 variable [Ring R] (S : Sequence R) -- #20480
 
--- TODO: Generalize to any set of polynomials with different degrees
 open scoped Function in
 lemma linearIndependent [NoZeroDivisors R] :
     LinearIndependent R S.elems := linearIndependent_iff'.mpr <| fun s g eqzero i hi ↦ by
