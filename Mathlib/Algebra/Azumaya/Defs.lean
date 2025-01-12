@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yunzhou Xie, Jujian Zhang
 -/
 import Mathlib.Algebra.Module.Projective
-import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.Finiteness.Defs
-import Mathlib.Algebra.Algebra.Hom
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-!
 # Azumaya Algebras
