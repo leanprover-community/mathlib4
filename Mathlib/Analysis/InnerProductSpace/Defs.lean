@@ -191,14 +191,18 @@ section PreInnerProductSpace.Core
 
 variable [AddCommGroup F] [Module 𝕜 F] [c : PreInnerProductSpace.Core 𝕜 F]
 
-@[inherit_doc] local notation "⟪" x ", " y "⟫" => @inner 𝕜 F _ x y
+local notation "⟪" x ", " y "⟫" => @inner 𝕜 F _ x y
 
-@[inherit_doc] local notation "normSqK" => @RCLike.normSq 𝕜 _
+/-- Local notation for `RCLike.normSq 𝕜` -/
+local notation "normSqK" => @RCLike.normSq 𝕜 _
 
-@[inherit_doc] local notation "reK" => @RCLike.re 𝕜 _
+/-- Local notation for `RCLike.re 𝕜` -/
+local notation "reK" => @RCLike.re 𝕜 _
 
+/-- Local notation for `RCLike.ext_iff 𝕜` -/
 @[inherit_doc] local notation "ext_iff" => @RCLike.ext_iff 𝕜 _
 
+/-- Local notation for `starRingEnd _` -/
 @[inherit_doc] local postfix:90 "†" => starRingEnd _
 
 /-- Inner product defined by the `PreInnerProductSpace.Core` structure. We can't reuse
