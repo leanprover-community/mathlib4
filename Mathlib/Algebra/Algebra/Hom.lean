@@ -471,6 +471,13 @@ lemma algebraMapSubmonoid_le_comap (f : A →ₐ[R] B) :
   rw [← algebraMapSubmonoid_map_eq M f]
   exact Submonoid.le_comap_map (Algebra.algebraMapSubmonoid A M)
 
+/-- `AlgHom` version of `Module.toModuleEnd` -/
+def Module.toModuleEndAlgHom (R) {S} (M) [CommSemiring R] [AddCommMonoid M] [Module R M]
+    [Semiring S] [Module S M] [Algebra R S] [IsScalarTower R S M] :
+    S →ₐ[R] Module.End R M where
+  __ := Module.toModuleEnd R M
+  commutes' r := by ext; apply algebraMap_smul
+
 end Algebra
 
 namespace MulSemiringAction

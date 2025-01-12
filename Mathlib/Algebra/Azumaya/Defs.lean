@@ -7,7 +7,6 @@ import Mathlib.Algebra.Module.Projective
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.RingTheory.Finiteness.Defs
 import Mathlib.Algebra.Algebra.Hom
-import Mathlib.Algebra.Module.LinearMap.End
 
 /-!
 # Azumaya Algebras
@@ -42,21 +41,14 @@ instance : IsScalarTower R (A ⊗[R] Aᵐᵒᵖ) A where
     | tmul a a' => exact LinearMap.map_smul₂ _ _ _ _
     | add aa' bb' h1 h2 => simp_all [add_smul]
 
-/-- Should be elsewhere? -/
-def Module.toModuleEndAlgHom (R) {S} (M) [CommSemiring R] [AddCommMonoid M] [Module R M]
-    [Semiring S] [Module S M] [Algebra R S] [IsScalarTower R S M] :
-    S →ₐ[R] Module.End R M where
-  __ := toModuleEnd R M
-  commutes' r := by ext; apply algebraMap_smul
-
 /-- The canonical map from `A ⊗[R] Aᵐᵒᵖ` to `Module.End R A` where
   `a ⊗ b` maps to `f : x ↦ a * x * b`-/
 noncomputable abbrev AlgHom.tensorMopToEnd : (A ⊗[R] Aᵐᵒᵖ) →ₐ[R] Module.End R A :=
-  Module.toModuleEndAlgHom R A
+  Algebra.Module.toModuleEndAlgHom R A
 
 lemma AlgHom.tensorMopToEnd_apply (a : A) (b : Aᵐᵒᵖ) (x : A) :
     AlgHom.tensorMopToEnd R A (a ⊗ₜ b) x = a * x * b.unop := by
-  simp only [tensorMopToEnd, Module.toModuleEndAlgHom, coe_mk, Module.toModuleEnd_apply,
+  simp only [tensorMopToEnd, Algebra.Module.toModuleEndAlgHom, coe_mk, Module.toModuleEnd_apply,
     DistribMulAction.toLinearMap_apply]
   change TensorProduct.Algebra.moduleAux _ _ = _
   simp [TensorProduct.Algebra.moduleAux_apply, ← mul_assoc]
