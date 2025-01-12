@@ -18,20 +18,6 @@ variable (R : Type u)
 
 namespace Polynomial
 
-example [Ring R] (p q : R[X]) (h : p.degree < q.degree) (hp : p ≠ 0) :
-    LinearIndependent R ![p, q] := by
-  refine LinearIndependent.pair_iff.mpr fun s t hs ↦ ?_
-  conv_lhs at hs => equals s • p - -t • q => rw [neg_smul, ← (sub_neg_eq_add (s • p) (t • q))]
-  have := degree_sub_eq_right_of_degree_lt h
-  by_contra h'
-  have : s ≠ 0 ∨ t ≠ 0 := by simp [←not_and_or, h']
-  rcases this with hS | hT
-  · have : (s • p).degree = p.degree := by
-      refine degree_smul_of_smul_regular p ?_
-      sorry
-    sorry
-  · sorry
-
 /-- A sequence of polynomials such that the polynomial at index `i` has degree `i`. -/
 structure Sequence [Semiring R] where
   elems : ℕ → R[X]
@@ -93,7 +79,8 @@ lemma linearIndependent [NoZeroDivisors R] :
 lemma span (hCoeff : ∀ i, (S.elems i).leadingCoeff = 1) : ⊤ ≤ span R (Set.range S.elems) := by
   sorry
 
-noncomputable def basis (hCoeff : ∀ i, (S.elems i).leadingCoeff = 1) : Basis ℕ R R[X] :=
+noncomputable def basis [NoZeroDivisors R] (hCoeff : ∀ i, (S.elems i).leadingCoeff = 1) :
+    Basis ℕ R R[X] :=
   Basis.mk S.linearIndependent <| S.span hCoeff
 
 end Ring
