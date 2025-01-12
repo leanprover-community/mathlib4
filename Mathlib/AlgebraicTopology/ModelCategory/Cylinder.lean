@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.AlgebraicTopology.ModelCategory.Basic
+import Mathlib.AlgebraicTopology.ModelCategory.IsFibrant
 
 /-!
 # Cylinders
@@ -16,9 +17,9 @@ open CategoryTheory Limits
 
 namespace HomotopicalAlgebra
 
-variable {C : Type u} [Category.{v} C]
+variable {C : Type u} [Category.{v} C] [ModelCategory C]
 
-structure Precylinder [CategoryWithWeakEquivalences C] (A : C) where
+structure Precylinder (A : C) where
   I : C
   i₀ : A ⟶ I
   i₁ : A ⟶ I
@@ -32,25 +33,13 @@ namespace Precylinder
 attribute [instance] weakEquivalence_σ
 attribute [reassoc (attr := simp)] i₀_σ i₁_σ
 
-variable [CategoryWithWeakEquivalences C]
-  {A : C} (P : Precylinder A)
-
-section
-
-variable [(weakEquivalences C).HasTwoOutOfThreeProperty]
-  [(weakEquivalences C).ContainsIdentities]
+variable {A : C} (P : Precylinder A)
 
 instance : WeakEquivalence P.i₀ :=
   weakEquivalence_of_postcomp_of_fac (P.i₀_σ)
 
 instance : WeakEquivalence P.i₁ :=
   weakEquivalence_of_postcomp_of_fac (P.i₁_σ)
-
-end
-
-section
-
-variable [HasBinaryCoproduct A A]
 
 noncomputable def i : A ⨿ A ⟶ P.I := coprod.desc P.i₀ P.i₁
 
@@ -67,35 +56,40 @@ def symm : Precylinder A where
   i₁ := P.i₀
   σ := P.σ
 
-end
-
 @[simp, reassoc]
 lemma symm_i [HasBinaryCoproducts C] : P.symm.i =
   (coprod.braiding A A).hom ≫ P.i := by aesop_cat
 
 end Precylinder
 
-structure Cylinder [CategoryWithWeakEquivalences C]
-    [CategoryWithCofibrations C] (A : C)
-    [HasBinaryCoproduct A A] extends Precylinder A where
+structure Cylinder (A : C) extends Precylinder A where
   cofibration_i : Cofibration toPrecylinder.i := by infer_instance
 
 namespace Cylinder
 
 attribute [instance] cofibration_i
 
-def symm [ModelCategory C] {A : C}
-    (P : Cylinder A) : Cylinder A where
+variable {A : C}
+
+def symm (P : Cylinder A) : Cylinder A where
   toPrecylinder := P.toPrecylinder.symm
   cofibration_i := by
     dsimp
     rw [Precylinder.symm_i]
     infer_instance
 
-section
+instance [IsCofibrant A] (P : Cylinder A) : Cofibration P.i₀ := by
+  rw [← P.inl_i]
+  infer_instance
 
-variable [CategoryWithWeakEquivalences C] [CategoryWithCofibrations C] {A : C}
-  [CategoryWithFibrations C] [HasBinaryCoproduct A A]
+instance [IsCofibrant A] (P : Cylinder A) : Cofibration P.i₁ := by
+  rw [← P.inr_i]
+  infer_instance
+
+instance [IsCofibrant A] (P : Cylinder A) : IsCofibrant P.I :=
+  isCofibrant_of_cofibration P.i₀
+
+section
 
 variable (h : MorphismProperty.MapFactorizationData (cofibrations C) (trivialFibrations C)
     (coprod.desc (𝟙 A) (𝟙 A)))
@@ -120,7 +114,14 @@ instance : Fibration (ofFactorizationData h).σ := by
   dsimp
   infer_instance
 
+instance [HasTerminal C] [IsFibrant A] [(fibrations C).IsStableUnderComposition] :
+    IsFibrant (ofFactorizationData h).I :=
+  isFibrant_of_fibration (ofFactorizationData h).σ
+
 end
+
+instance : Nonempty (Cylinder A) :=
+  ⟨ofFactorizationData (MorphismProperty.factorizationData _ _ _)⟩
 
 end Cylinder
 
