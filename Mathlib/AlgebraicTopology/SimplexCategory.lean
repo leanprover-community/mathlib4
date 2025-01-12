@@ -5,6 +5,7 @@ Authors: Johan Commelin, Kim Morrison, Adam Topaz
 -/
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.Linarith
+import Mathlib.Util.Superscript
 import Mathlib.CategoryTheory.Skeletal
 import Mathlib.Data.Fintype.Sort
 import Mathlib.Order.Category.NonemptyFinLinOrd
@@ -29,6 +30,13 @@ We provide the following functions to work with these objects:
 3. `SimplexCategory.Hom.mk` makes a morphism out of a monotone map between `Fin`'s.
 4. `SimplexCategory.Hom.toOrderHom` gives the underlying monotone map associated to a
   term of `SimplexCategory.Hom`.
+
+## Notations
+
+* `[n]` denotes the `n`-dimensional simplex.
+* `[m]ₙ` denotes the `m`-dimensional simplex in the `n`-truncated simplex category.
+  The proof `p : m ≤ n` can also be provided using the syntax `[m, p]ₙ`. Access
+  these notations using `open SimplexCategory.Truncated`.
 
 -/
 
@@ -55,7 +63,7 @@ def mk (n : ℕ) : SimplexCategory :=
   n
 
 /-- the `n`-dimensional simplex can be denoted `[n]` -/
-scoped[Simplicial] notation "[" n "]" => SimplexCategory.mk n
+scoped[Simplicial] notation (priority := high) "[" n "]" => SimplexCategory.mk n
 
 -- TODO: Make `len` irreducible.
 /-- The length of an object of `SimplexCategory`. -/
@@ -722,6 +730,7 @@ instance (n : ℕ) : SmallCategory.{0} (Truncated n) :=
   FullSubcategory.category _
 
 namespace Truncated
+open Mathlib.Tactic (subscriptTerm)
 
 instance {n} : Inhabited (Truncated n) :=
   ⟨⟨[0], by simp⟩⟩
@@ -742,6 +751,29 @@ noncomputable def inclusion.fullyFaithful (n : ℕ) :
 @[ext]
 theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
+
+/-- Some quick and useful attempts to prove `m ≤ n`. -/
+macro "leq_tac" : tactic =>
+  `(tactic| first | decide | assumption | apply zero_le | apply le_rfl |
+    apply Nat.le_add_left | apply Nat.le_add_right |
+    apply Nat.le_add_right_of_le; assumption |
+    apply Nat.add_le_add_right; assumption | transitivity <;> assumption)
+
+/-- A wrapper for `omega` which first makes some quick attempts to prove that
+`[m]` is `n`-truncated (`[m].len ≤ n`). -/
+macro "trunc" : tactic =>
+  `(tactic| first | leq_tac | dsimp only [SimplexCategory.len_mk]; omega)
+
+/-- For `m ≤ n`, `[m]ₙ` is the `m`-dimensional simplex in `Truncated n`. The
+proof `p : m ≤ n` can also be provided using the syntax `[m, p]ₙ`. -/
+scoped syntax:max (name := mkNotation) (priority := high)
+  "[" term ("," term)? "]" noWs subscriptTerm : term
+macro_rules
+  | `([$m:term]$n:subscript) => `((⟨SimplexCategory.mk $m,
+    by first | trunc | fail "Failed to prove truncation property."⟩ :
+    SimplexCategory.Truncated $n))
+  | `([$m:term, $p:term]$n:subscript) => `((⟨SimplexCategory.mk $m, $p⟩ :
+    SimplexCategory.Truncated $n))
 
 end Truncated
 

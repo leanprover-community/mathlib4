@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
 
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
+import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.Combinatorics.Quiver.ReflQuiver
 
@@ -35,16 +36,10 @@ category of 2-truncated simplicial sets.
 
 namespace SSet
 open CategoryTheory Category Limits Functor Opposite Simplicial Nerve
+open SimplexCategory.Truncated SimplicialObject.Truncated
 universe v u
 
 section
-
-local macro:1000 (priority := high) X:term " _[" n:term "]₂" : term =>
-    `(($X : SSet.Truncated 2).obj (Opposite.op ⟨SimplexCategory.mk $n, by decide⟩))
-
-set_option quotPrecheck false
-local macro:max (priority := high) "[" n:term "]₂" : term =>
-  `((⟨SimplexCategory.mk $n, by decide⟩ : SimplexCategory.Truncated 2))
 
 /-- A 2-truncated simplicial set `S` has an underlying refl quiver with `S _[0]₂` as its underlying
 type. -/
