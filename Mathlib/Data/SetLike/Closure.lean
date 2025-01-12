@@ -60,11 +60,11 @@ def OrderedSetLike.toLatticeSetLike (L α : Type*) [OrderedSetLike L α] [InfSet
 /- Construct a `LatticeSetLike` from a type `L` and an injection `L → Set α`
 that reflects arbitrary intersections. -/
 noncomputable def SetLike.toLatticeSetLike (L α : Type*) [SetLike L α]
-    (exists_sInf : ∀ s : Set L, ∃ l : L, (l : Set α) = ⋂ m ∈ s, m) :
+    (exists_coe_eq_iInter : ∀ s : Set L, ∃ l : L, (l : Set α) = ⋂ m ∈ s, m) :
     LatticeSetLike L α :=
   let _ := @SetLike.toOrderedSetLike L α _
-  @OrderedSetLike.toLatticeSetLike L α _ (InfSet.mk (Classical.choose <| exists_sInf ·))
-    (Classical.choose_spec <| exists_sInf ·)
+  @OrderedSetLike.toLatticeSetLike L α _ (InfSet.mk (Classical.choose <| exists_coe_eq_iInter ·))
+    (Classical.choose_spec <| exists_coe_eq_iInter ·)
 
 namespace LatticeSetLike
 
