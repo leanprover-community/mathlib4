@@ -70,13 +70,9 @@ noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
   { SeparationQuotient.liftContinuousAddMonoidHom f
       <| eq_of_inseparable f hf with
     bound' := by
-      use ‖f‖
-      intro v
-      obtain ⟨v', hv'⟩ := surjective_mk v
-      rw [← hv']
-      simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
-        liftContinuousAddCommMonoidHom_apply, AddMonoidHom.coe_coe, norm_mk]
-      exact le_opNorm f v'}
+      refine ⟨‖f‖, fun v ↦ ?_⟩
+      obtain ⟨v, rfl⟩ := surjective_mk v
+      exact le_opNorm f v }
 
 theorem norm_liftNormedAddGroupHom_apply_le (f : NormedAddGroupHom M N)
     (hf : ∀ x, ‖x‖ = 0 → f x = 0) (x : SeparationQuotient M) :
