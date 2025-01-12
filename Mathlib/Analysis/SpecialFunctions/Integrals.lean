@@ -509,7 +509,7 @@ theorem integral_log : ∫ s in a..b, log s = b * log b - a * log a - b + a := b
 
   -- Simple case two: y is zero
   have case₂ {t : ℝ} : ∫ s in (0)..t, log s = t * log t - t := by
-    rcases lt_trichotomy t 0 with h|h|h
+    rcases lt_trichotomy t 0 with h | h | h
     · -- If t is negative, use that log is an even function to reduce to the positive case.
       conv => arg 1; arg 1; intro t; rw [← log_neg_eq_log]
       rw [intervalIntegral.integral_comp_neg]
