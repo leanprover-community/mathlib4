@@ -1196,7 +1196,8 @@ theorem eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul {f : α → F} {g : α → G
 alias snorm_le_nnreal_smul_snorm_of_ae_le_mul := eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul
 
 -- TODO: add the whole family of lemmas?
-private theorem le_mul_iff_eq_zero_of_nonneg_of_neg_of_nonneg {α} [LinearOrderedSemiring α]
+private theorem le_mul_iff_eq_zero_of_nonneg_of_neg_of_nonneg {α}
+    [Semiring α] [LinearOrder α] [IsStrictOrderedRing α]
     {a b c : α} (ha : 0 ≤ a) (hb : b < 0) (hc : 0 ≤ c) : a ≤ b * c ↔ a = 0 ∧ c = 0 := by
   constructor
   · intro h
