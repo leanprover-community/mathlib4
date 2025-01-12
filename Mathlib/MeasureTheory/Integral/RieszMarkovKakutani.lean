@@ -313,7 +313,8 @@ section RieszMeasure
 variable [T2Space X] [LocallyCompactSpace X] [MeasurableSpace X] [BorelSpace X]
 
 /-- `rieszContent` gives a `Content` from `Λ : C_c(X, ℝ≥0) →ₗ[ℝ≥0] ℝ≥0`. Here `rieszContent Λ` is
-promoted to a measure. -/
+promoted to a measure. `rieszMeasure` coincides with `(rieszContent Λ).outerMeasure` on any
+measurable set. -/
 def rieszMeasure := (rieszContent Λ).measure
 
 lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x ≤ 1)
