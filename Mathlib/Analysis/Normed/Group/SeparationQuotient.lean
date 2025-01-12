@@ -56,8 +56,8 @@ theorem norm_normedMk_le : ‖normedMk (M := M)‖ ≤ 1 :=
     ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, mkAddMonoidHom_apply, norm_mk, one_mul,
     le_refl]
 
-lemma eq_of_inseparable (f : NormedAddGroupHom M N) (hf : ∀ x, ‖x‖ = 0 → f x = 0) :
-    ∀ x y, Inseparable x y → f x = f y :=
+lemma apply_eq_apply_of_inseparable {F : Type*} [FunLike F M N] [AddMonoidHomClass F M N] (f : F)
+    (hf : ∀ x, ‖x‖ = 0 → f x = 0) : ∀ x y, Inseparable x y → f x = f y :=
   fun x y h ↦ eq_of_sub_eq_zero <| by
     rw [← map_sub]
     rw [Metric.inseparable_iff, dist_eq_norm] at h
@@ -68,7 +68,7 @@ lemma eq_of_inseparable (f : NormedAddGroupHom M N) (hf : ∀ x, ‖x‖ = 0 →
 noncomputable def liftNormedAddGroupHom (f : NormedAddGroupHom M N)
     (hf : ∀ x, ‖x‖ = 0 → f x = 0) : NormedAddGroupHom (SeparationQuotient M) N :=
   { SeparationQuotient.liftContinuousAddMonoidHom f
-      <| eq_of_inseparable f hf with
+      <| apply_eq_apply_of_inseparable f hf with
     bound' := by
       refine ⟨‖f‖, fun v ↦ ?_⟩
       obtain ⟨v, rfl⟩ := surjective_mk v
