@@ -26,10 +26,19 @@ variable (R A : Type u) [CommRing R] [CommRing A] [Algebra R A]
 
 namespace Algebra
 
-/-- `Algebra.unramifiedLocus R A` is the set of primes `p` of `A`
-such that `Aₚ` is formally unramified over `R`. -/
+variable {A} in
+/-- We say that an `R`-algebra `A` is unramified at a prime `q` of `A`
+if `A_q` is formally unramified over `R`.
+
+If `A` is finite over `R` and `q` is lying over `p`, then this is equivalent to
+`κ(q)/κ(p)` being finite separable and `pA_q = qA_q`.
+See `Algebra.isUnramifiedAt_iff_map_eq` in `RingTheory.Unramified.LocalRing` -/
+abbrev IsUnramifiedAt (q : Ideal A) [q.IsPrime] : Prop :=
+  FormallyUnramified R (Localization.AtPrime q)
+
+/-- `Algebra.unramifiedLocus R A` is the set of primes `p` of `A` that are unramified. -/
 def unramifiedLocus : Set (PrimeSpectrum A) :=
-  { p | Algebra.FormallyUnramified R (Localization.AtPrime p.asIdeal) }
+  { p | IsUnramifiedAt R p.asIdeal }
 
 variable {R A}
 

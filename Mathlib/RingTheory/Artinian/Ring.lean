@@ -83,6 +83,12 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
   refine this (mul_mem_mul (mem_span_singleton_self x) ?_)
   rwa [← hn (n + 1) (Nat.le_succ _)]
 
+lemma jacobson_eq_radical (I : Ideal R) : I.jacobson = I.radical := by
+  simp_rw [Ideal.jacobson, Ideal.radical_eq_sInf, IsArtinianRing.isPrime_iff_isMaximal]
+
+theorem isNilpotent_nilradical : IsNilpotent (nilradical R) := by
+  rw [nilradical, ← jacobson_eq_radical]
+  exact isNilpotent_jacobson_bot
 section Localization
 
 variable (S : Submonoid R) (L : Type*) [CommSemiring L] [Algebra R L] [IsLocalization S L]
