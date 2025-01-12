@@ -47,7 +47,7 @@ noncomputable scoped instance commShift_natTrans_op_int {G : C ⥤ D} [G.CommShi
     (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))
       (OppositeShift.natTrans ℤ τ)) ℤ)
 
-noncomputable scoped instance commShiftOpInt_adjunction {G : D ⥤ C} [G.CommShift ℤ] (adj : F ⊣ G)
+noncomputable scoped instance commShift_adjunction_op_int {G : D ⥤ C} [G.CommShift ℤ] (adj : F ⊣ G)
     [Adjunction.CommShift adj ℤ] : Adjunction.CommShift adj.op ℤ := by
   have eq : adj.op = PullbackShift.adjunction
     (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))
