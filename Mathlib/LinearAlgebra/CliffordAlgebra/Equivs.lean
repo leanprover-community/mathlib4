@@ -280,14 +280,10 @@ theorem toQuaternion_star (c : CliffordAlgebra (Q c₁ c₂)) :
     toQuaternion (star c) = star (toQuaternion c) := by
   simp only [CliffordAlgebra.star_def']
   induction c using CliffordAlgebra.induction with
-  | algebraMap r =>
-    simp only [reverse.commutes, AlgHom.commutes, QuaternionAlgebra.coe_algebraMap,
-      QuaternionAlgebra.star_coe]
-  | ι x =>
-    rw [reverse_ι, involute_ι, toQuaternion_ι, map_neg, toQuaternion_ι,
-      QuaternionAlgebra.neg_mk, star_mk, neg_zero]; simp
-  | mul x₁ x₂ hx₁ hx₂ => simp only [reverse.map_mul, map_mul, hx₁, hx₂, star_mul]
-  | add x₁ x₂ hx₁ hx₂ => simp only [reverse.map_add, map_add, hx₁, hx₂, star_add]
+  | algebraMap r => simp
+  | ι x => simp
+  | mul x₁ x₂ hx₁ hx₂ => simp [hx₁, hx₂]
+  | add x₁ x₂ hx₁ hx₂ => simp [hx₁, hx₂]
 
 /-- Map a quaternion into the clifford algebra. -/
 def ofQuaternion : ℍ[R,c₁,0,c₂] →ₐ[R] CliffordAlgebra (Q c₁ c₂) :=

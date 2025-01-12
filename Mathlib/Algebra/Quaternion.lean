@@ -16,8 +16,9 @@ algebraic structures on `ℍ[R]`.
 ## Main definitions
 
 * `QuaternionAlgebra R a b c`, `ℍ[R, a, b, c]` :
-  [quaternion algebra](https://en.wikipedia.org/wiki/Quaternion_algebra) with
-  coefficients `a`, `b`, `c`
+  [Bourbaki, *Algebra I*][bourbaki1989] with coefficients `a`, `b`, `c`
+  (Many other references such as Wikipedia assume charR ≠ 2 therefore one can complete
+  the suqare and WLOG assume $b = 0$.)
 * `Quaternion R`, `ℍ[R]` : the space of quaternions, a.k.a.
   `QuaternionAlgebra R (-1) (0) (-1)`;
 * `Quaternion.normSq` : square of the norm of a quaternion;
@@ -101,7 +102,7 @@ instance [Nontrivial R] : Nontrivial ℍ[R, c₁, c₂, c₃] := (equivTuple c�
 section Zero
 variable [Zero R]
 
-/-- The imaginary part of a quaternion. -/
+/-- The imaginary part of a quaternion (which doesn't behave well unless c₂ = 0). -/
 def im (x : ℍ[R,c₁,c₂,c₃]) : ℍ[R,c₁,c₂,c₃] :=
   ⟨0, x.imI, x.imJ, x.imK⟩
 
@@ -303,9 +304,9 @@ variable [Ring R]
 instance : Mul ℍ[R,c₁,c₂,c₃] :=
   ⟨fun a b =>
     ⟨a.1 * b.1 + c₁ * a.2 * b.2 + c₃ * a.3 * b.3 + c₂ * c₃ * a.3 * b.4 - c₁ * c₃ * a.4 * b.4,
-    a.1 * b.2 + a.2 * b.1 + c₂ * a.2 * b.2 - c₃ * a.3 * b.4 + c₃ * a.4 * b.3,
-    a.1 * b.3 + c₁ * a.2 * b.4 + a.3 * b.1 + c₂ * a.3 * b.2 - c₁ * a.4 * b.2,
-    a.1 * b.4 + a.2 * b.3 + c₂ * a.2 * b.4 - a.3 * b.2 + a.4 * b.1⟩⟩
+      a.1 * b.2 + a.2 * b.1 + c₂ * a.2 * b.2 - c₃ * a.3 * b.4 + c₃ * a.4 * b.3,
+      a.1 * b.3 + c₁ * a.2 * b.4 + a.3 * b.1 + c₂ * a.3 * b.2 - c₁ * a.4 * b.2,
+      a.1 * b.4 + a.2 * b.3 + c₂ * a.2 * b.4 - a.3 * b.2 + a.4 * b.1⟩⟩
 
 @[simp]
 theorem mul_re : (a * b).re = a.1 * b.1 + c₁ * a.2 * b.2 + c₃ * a.3 * b.3 +
@@ -501,10 +502,10 @@ instance [Semiring S] [Module S R] : Module S ℍ[R,c₁,c₂,c₃] where
 
 instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂,c₃] where
   toFun s := coe (algebraMap S R s)
-  map_one' := by simp only [map_one, coe_one]
-  map_zero' := by simp only [map_zero, coe_zero]
-  map_mul' x y := by simp only [map_mul, coe_mul]
-  map_add' x y := by simp only [map_add, coe_add]
+  map_one' := by simp
+  map_zero' := by simp
+  map_mul' x y := by simp
+  map_add' x y := by simp
   smul_def' s x := by ext <;> simp [Algebra.smul_def]
   commutes' s x := by ext <;> simp [Algebra.commutes]
 
@@ -597,11 +598,7 @@ def swapEquiv : ℍ[R,c₁,0,c₃] ≃ₐ[R] ℍ[R,c₃,0,c₁] where
   invFun t := ⟨t.1, t.3, t.2, -t.4⟩
   left_inv _ := by simp
   right_inv _ := by simp
-  map_mul' _ _ := by
-    ext
-      <;> simp [mul_re, mul_imJ, mul_imI, add_left_inj, mul_imK, neg_mul, neg_add_rev,
-            neg_sub, mk_mul_mk, mul_neg, neg_neg, sub_neg_eq_add]
-      <;> linear_combination
+  map_mul' _ _ := by ext <;> simp <;> linear_combination
   map_add' _ _ := by ext <;> simp [add_comm]
   commutes' _ := by simp [algebraMap_eq]
 
@@ -907,15 +904,15 @@ theorem mul_re : (a * b).re = a.re * b.re - a.imI * b.imI - a.imJ * b.imJ - a.im
 
 @[simp]
 theorem mul_imI : (a * b).imI = a.re * b.imI + a.imI * b.re + a.imJ * b.imK - a.imK * b.imJ :=
-  (QuaternionAlgebra.mul_imI a b).trans <| by simp [one_mul, neg_mul, sub_eq_add_neg, neg_neg]
+  (QuaternionAlgebra.mul_imI a b).trans <| by ring
 
 @[simp]
 theorem mul_imJ : (a * b).imJ = a.re * b.imJ - a.imI * b.imK + a.imJ * b.re + a.imK * b.imI :=
-  (QuaternionAlgebra.mul_imJ a b).trans <| by simp [one_mul, neg_mul, sub_eq_add_neg, neg_neg]
+  (QuaternionAlgebra.mul_imJ a b).trans <| by ring
 
 @[simp]
 theorem mul_imK : (a * b).imK = a.re * b.imK + a.imI * b.imJ - a.imJ * b.imI + a.imK * b.re :=
-  (QuaternionAlgebra.mul_imK a b).trans <| by simp [one_mul, neg_mul, sub_eq_add_neg, neg_neg]
+  (QuaternionAlgebra.mul_imK a b).trans <| by ring
 
 @[simp, norm_cast]
 theorem coe_mul : ((x * y : R) : ℍ[R]) = x * y := QuaternionAlgebra.coe_mul x y
