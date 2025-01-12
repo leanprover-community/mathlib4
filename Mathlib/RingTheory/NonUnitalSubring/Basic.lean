@@ -462,7 +462,7 @@ theorem mem_closure_iff {s : Set R} {x} :
     x ∈ closure s ↔ x ∈ AddSubgroup.closure (Subsemigroup.closure s : Set R) :=
   ⟨fun h => by
     induction h using closure_induction with
-    | mem _ hx => exact AddSubgroup.subset_closure (Subsemigroup.subset_closure hx)
+    | mem _ hx => exact AddSubgroup.subset_closure (LatticeSetLike.subset_closure hx)
     | zero => exact zero_mem _
     | add _ _ _ _ hx hy => exact add_mem hx hy
     | neg x _ hx => exact neg_mem hx
