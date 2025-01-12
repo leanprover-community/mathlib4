@@ -90,13 +90,15 @@ instance : CompleteLattice (Subsemigroup M) :=
     inf_le_right := fun _ _ _ => And.right }
 
 @[to_additive]
-instance : SetLikeCompleteLattice (Subsemigroup M) M where
-  le_def' := rfl
-  lt_def' := rfl
-  coe_sInf' := by simp
+instance : LatticeSetLike (Subsemigroup M) M where
+  __ := (inferInstance : CompleteLattice (Subsemigroup M))
+  __ := (inferInstance : OrderedSetLike (Subsemigroup M) M)
+  coe_sInf' := by
+    rw [show OrderedSetLike.coe = SetLike.coe by rfl]
+    simp
 
 @[to_additive]
-abbrev closure : Set M → Subsemigroup M := SetLike.closure <| Subsemigroup M
+abbrev closure : Set M → Subsemigroup M := LatticeSetLike.closure <| Subsemigroup M
 
 @[to_additive]
 theorem mem_closure {x : M} : x ∈ closure s ↔ ∀ S : Subsemigroup M, s ⊆ S → x ∈ S :=
@@ -113,14 +115,13 @@ theorem not_mem_of_not_mem_closure {P : M} (hP : P ∉ closure s) : P ∉ s := f
 
 variable {S}
 
-open Set SetLike
+open Set LatticeSetLike
 
 /-- An induction principle for closure membership. If `p` holds for all elements of `s`, and
 is preserved under multiplication, then `p` holds for all elements of the closure of `s`. -/
 @[to_additive (attr := elab_as_elim) "An induction principle for additive closure membership. If `p`
   holds for all elements of `s`, and is preserved under addition, then `p` holds for all
   elements of the additive closure of `s`."]
-@[to_additive]
 theorem closure_induction {p : (x : M) → x ∈ closure s → Prop}
     (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h))
     (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) {x} (hx : x ∈ closure s) :
@@ -187,7 +188,7 @@ open Subsemigroup
   then they are equal on its additive subsemigroup closure."]
 theorem eqOn_closure {f g : M →ₙ* N} {s : Set M} (h : Set.EqOn f g s) :
     Set.EqOn f g (closure s) :=
-  show closure s ≤ f.eqLocus g from SetLike.closure_le.2 h
+  show closure s ≤ f.eqLocus g from LatticeSetLike.closure_le.2 h
 
 @[to_additive]
 theorem eq_of_eqOn_dense {s : Set M} (hs : closure s = ⊤) {f g : M →ₙ* N} (h : s.EqOn f g) :

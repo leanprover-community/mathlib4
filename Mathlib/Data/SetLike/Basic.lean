@@ -196,7 +196,7 @@ protected theorem eta (x : p) (hx : (x : B) ∈ p) : (⟨x, hx⟩ : p) = x := rf
 
 def toOrderedSetLike : OrderedSetLike A B where
   __ := PartialOrder.lift (SetLike.coe : A → Set B) coe_injective
-  __ := (by assumption : SetLike A B)
+  __ := ‹SetLike A B›
   le := fun H K => ∀ ⦃x⦄, x ∈ H → x ∈ K
   coe_subset_coe' := .rfl
 

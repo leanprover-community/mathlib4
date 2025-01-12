@@ -15,57 +15,64 @@ of this class is to abstract the closure construction common to most algebraic s
 
 ## Main definitions
 
-* `SetLikeCompleteLattice` : class for complete lattices that have an embedding into some `Set α`
-  which preserves the order and arbitrary infima.
+* `LatticeSetLike` : class for complete lattices that have an embedding into some `Set α`
+  which preserves arbitrary infima.
 * `SetLike.closure` : the natural closure operation on `Set α` with respect to a
-  `SetLikeCompleteLattice` embedding; that is, the map from a set to the least lattice element that
+  `LatticeSetLike` embedding; that is, the map from a set to the least lattice element that
   contains it.
 
 ## Main result
 
-* `SetLike.gi_closure` : for a `SetLikeCompleteLattice`, the operations
+* `SetLike.gi_closure` : for a `LatticeSetLike`, the operations
   `SetLike.closure` and `SetLike.coe` (the embedding) form a Galois insertion.
 
 -/
 
 /-
-Typeclass for complete lattices that have an embedding into some `Set α`
+Typeclass for complete lattices `L` with a canonical order-preserving injection into `Set α`
 which preserves the order and arbitrary infima.
 -/
-class SetLikeCompleteLattice (L α : Type*) extends CompleteLattice L, SetLike L α where
-  coe_sInf' (s : Set L) : sInf s = InfSet.sInf (SetLike.coe '' s)
+class LatticeSetLike (L : Type*) (α : outParam Type*)
+    extends CompleteLattice L, OrderedSetLike L α where
+  coe_sInf' (s : Set L) : coe (sInf s) = InfSet.sInf (coe '' s)
 
-namespace SetLike
+/- Construct a `LatticeSetLike` from an injection `L → Set α` that preserves arbitrary infima. -/
+def SetLike.toLatticeSetLike {α L : Type*} [SetLike L α] [CompleteLattice L]
+      (coe_sInf : ∀ s : Set L, SetLike.coe (sInf s) = sInf (SetLike.coe '' s)) :
+    LatticeSetLike L α where
+  coe := SetLike.coe
+  coe_sInf' := coe_sInf
+  coe_subset_coe' {l m} := by
+    suffices SetLike.coe l ⊆ SetLike.coe m ↔ SetLike.coe (sInf {l, m}) = SetLike.coe l by simpa
+    rw [coe_sInf]; simp
 
-variable {α L : Type*} [SetLikeCompleteLattice L α]
+namespace LatticeSetLike
+
+variable {α L : Type*} [LatticeSetLike L α]
 
 @[simp, norm_cast]
 protected theorem coe_sInf {s : Set L} : ((sInf s : L) : Set α) = ⋂ a ∈ s, ↑a := by
-  simpa using SetLikeCompleteLattice.coe_sInf' s
+  simpa using LatticeSetLike.coe_sInf' s
 
 protected theorem mem_sInf {s : Set L} {x : α} : x ∈ sInf s ↔ ∀ a ∈ s, x ∈ a := by
-  rw [← SetLike.mem_coe]; simp
-
-theorem le_iff {l m : L} : l ≤ m ↔ SetLike.coe l ⊆ SetLike.coe m := by
-  suffices SetLike.coe (sInf {l, m}) = SetLike.coe l ↔ SetLike.coe l ⊆ SetLike.coe m by
-    simp only [sInf_pair, coe_set_eq, inf_eq_left] at this; exact this
-  simp only [SetLike.coe_sInf]; simp
+  rw [← SetLike.mem_coe, LatticeSetLike.coe_sInf]; simp
 
 /- `closure L s` is the least element of `L` containing `s`. -/
 variable (L) in
 def closure (s : Set α) : L := sInf { l | s ⊆ l }
 
 theorem mem_closure {s : Set α} {x : α} : x ∈ closure L s ↔ ∀ l : L, s ⊆ l → x ∈ l :=
-  SetLike.mem_sInf
+  LatticeSetLike.mem_sInf
 
 variable (L) in
-open SetLikeCompleteLattice in
+open LatticeSetLike in
 def gi_closure : GaloisInsertion (closure L) SetLike.coe :=
   GaloisConnection.toGaloisInsertion
     (fun _ _ =>
-      ⟨by rw [le_iff]; exact Set.Subset.trans <| fun x hx => mem_closure.2 fun _ hs => hs hx,
-      fun h => sInf_le h⟩)
-    fun _ => le_sInf (fun _ => by rw [le_iff]; exact id)
+      ⟨fun h => Set.Subset.trans (fun _ hx => mem_closure.2 fun _ hs => hs hx)
+                                 (OrderedSetLike.coe_subset_coe.2 h),
+      (sInf_le ·)⟩)
+    fun _ => le_sInf (fun _ => OrderedSetLike.coe_subset_coe.1)
 
 @[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_closure {s : Set α} : s ⊆ closure L s := (gi_closure L).gc.le_u_l s
@@ -111,4 +118,4 @@ theorem iSup_eq_closure {ι : Sort*} (l : ι → L) :
     ⨆ i, l i = closure L (⋃ i, (l i : Set α)) := by
   simp_rw [closure_iUnion, closure_eq]
 
-end SetLike
+end LatticeSetLike
