@@ -359,7 +359,7 @@ theorem bot_eq_zero : (⊥ : Ordinal) = 0 :=
   rfl
 
 instance instIsEmptyIioZero : IsEmpty (Iio (0 : Ordinal)) := by
-  simp
+  simp [← bot_eq_zero]
 
 @[simp]
 protected theorem le_zero {o : Ordinal} : o ≤ 0 ↔ o = 0 :=
