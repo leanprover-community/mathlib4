@@ -332,8 +332,8 @@ lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
           simp only [mem_support]
           apply ne_of_gt
           rw [Real.toNNReal_inv] at hx
-          exact (lt_of_lt_of_le
-            (inv_pos_of_pos (lt_trans zero_lt_one (Real.one_lt_toNNReal.mpr hα))) hx)
+          exact lt_of_lt_of_le
+            (inv_pos_of_pos (lt_trans zero_lt_one (Real.one_lt_toNNReal.mpr hα))) hx
       set hb' := hb ⟨K', hK'cp⟩
       simp only [Compacts.coe_mk, le_iInf_iff] at hb'
       have hbK' : b ≤ rieszContent Λ ⟨K', hK'cp⟩ := hb' hKK'
@@ -353,7 +353,7 @@ lemma contentRegular_rieszContent : (rieszContent Λ).ContentRegular := by
         · intro x hx
           simp only [CompactlySupportedContinuousMap.coe_smul, Pi.smul_apply, smul_eq_mul,
             ← NNReal.coe_le_coe, NNReal.coe_one, NNReal.coe_mul, Real.coe_toNNReal']
-          rw [← (left_eq_sup.mpr <| le_of_lt (lt_of_le_of_lt zero_le_one hα)), mul_comm]
+          rw [← left_eq_sup.mpr <| le_of_lt (lt_of_le_of_lt zero_le_one hα), mul_comm]
           apply (inv_le_iff_one_le_mul₀ (lt_trans zero_lt_one hα)).mp
           rw [← Set.mem_Ici]
           simp only [mem_Ici, ge_iff_le]
@@ -394,7 +394,7 @@ lemma le_rieszMeasure_of_isCompact_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : �
     exact zero_le (g x)
 
 lemma le_rieszMeasure_of_tsupport_subset {f : C_c(X, ℝ≥0)} (hf : ∀ x, f x ≤ 1) {V : Set X}
-    (h : tsupport f ⊆ V) : ENNReal.ofNNReal (Λ f) ≤ (rieszMeasure Λ) V := by
+    (h : tsupport f ⊆ V) : ENNReal.ofNNReal (Λ f) ≤ rieszMeasure Λ V := by
   apply le_trans _ (MeasureTheory.measure_mono h)
   apply le_rieszMeasure_of_isCompact_tsupport_subset Λ hf f.hasCompactSupport
   exact subset_rfl
