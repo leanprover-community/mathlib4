@@ -3,12 +3,9 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Algebra.Equiv
 import Mathlib.Algebra.Star.SelfAdjoint
 import Mathlib.LinearAlgebra.Dimension.StrongRankCondition
-import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.LinearAlgebra.FreeModule.Finite.Basic
-import Mathlib.SetTheory.Cardinal.Arithmetic
 
 /-!
 # Quaternions
@@ -52,7 +49,7 @@ quaternion
 -/
 
 
-/-- Quaternion algebra over a type with fixed coefficients `a, b, c`.
+/-- Quaternion algebra over a type with fixed coefficients where $i^2 = a + bi$ and $j^2 = c$.
 Implemented as a structure with four fields: `re`, `imI`, `imJ`, and `imK`. -/
 @[ext]
 structure QuaternionAlgebra (R : Type*) (a b c : R) where
@@ -592,20 +589,21 @@ theorem rank_eq_four [StrongRankCondition R] : Module.rank R ℍ[R,c₁,c₂,c�
 theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R,c₁,c₂,c₃] = 4 := by
   rw [Module.finrank, rank_eq_four, Cardinal.toNat_ofNat]
 
--- /-- There is a natural equivalence when swapping the coefficients of a quaternion algebra. -/
--- @[simps]
--- def swapEquiv : ℍ[R,c₁,c₂,c₃] ≃ₐ[R] ℍ[R,c₃,c₂,c₁] where
---   toFun t := ⟨t.1, -t.3, t.2, -t.4⟩
---   invFun t := ⟨t.1, t.3, -t.2, -t.4⟩
---   left_inv _ := by simp
---   right_inv _ := by simp
---   map_mul' _ _ := by
---     ext
---       <;> simp [mul_re, mul_imJ, mul_imI, add_left_inj, mul_imK, neg_mul, neg_add_rev,
---             neg_sub, mk_mul_mk, mul_neg, neg_neg, sub_neg_eq_add]
---       <;> sorry
---   map_add' _ _ := by ext <;> simp [add_comm]
---   commutes' _ := by simp [algebraMap_eq]
+/-- There is a natural equivalence when swapping the first and third coefficients of a
+  quaternion algebra while `c₂` is 0. -/
+@[simps]
+def swapEquiv : ℍ[R,c₁,0,c₃] ≃ₐ[R] ℍ[R,c₃,0,c₁] where
+  toFun t := ⟨t.1, t.3, t.2, -t.4⟩
+  invFun t := ⟨t.1, t.3, t.2, -t.4⟩
+  left_inv _ := by simp
+  right_inv _ := by simp
+  map_mul' _ _ := by
+    ext
+      <;> simp [mul_re, mul_imJ, mul_imI, add_left_inj, mul_imK, neg_mul, neg_add_rev,
+            neg_sub, mk_mul_mk, mul_neg, neg_neg, sub_neg_eq_add]
+      <;> linear_combination
+  map_add' _ _ := by ext <;> simp [add_comm]
+  commutes' _ := by simp [algebraMap_eq]
 
 end
 
