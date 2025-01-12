@@ -348,7 +348,7 @@ action on `ZMod n`. -/
 noncomputable def MulDistribMulAction.toMonoidHomZModOfIsCyclic
     (M : Type*) [Monoid M] [IsCyclic G] [MulDistribMulAction M G]
     {n : ℕ} (hn : Nat.card G = n) : M →* ZMod n where
-  toFun := fun m ↦ (MulDistribMulAction.toMonoidHom G m).map_cyclic.choose
+  toFun m := (MulDistribMulAction.toMonoidHom G m).map_cyclic.choose
   map_one' := by
     obtain ⟨g, hg⟩ := IsCyclic.exists_ofOrder_eq_natCard (α := G)
     rw [← Int.cast_one, ZMod.intCast_eq_intCast_iff, ← hn, ← hg, ← zpow_eq_zpow_iff_modEq, zpow_one,
