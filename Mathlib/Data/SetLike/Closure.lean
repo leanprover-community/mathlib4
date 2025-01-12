@@ -39,7 +39,7 @@ class LatticeSetLike (L : Type*) (α : outParam Type*)
 /- Construct a `LatticeSetLike` from a complete lattice `L` and an injection `L → Set α`
 that preserves arbitrary infima. -/
 def CompleteLattice.toLatticeSetLike (L α : Type*) [SetLike L α] [CompleteLattice L]
-      (coe_sInf : ∀ s : Set L, SetLike.coe (sInf s) = ⋂ m ∈ s, m) :
+      (coe_sInf : ∀ {s : Set L}, SetLike.coe (sInf s) = ⋂ m ∈ s, m) :
     LatticeSetLike L α where
   coe := SetLike.coe
   coe_sInf' := by simpa
@@ -50,7 +50,7 @@ def CompleteLattice.toLatticeSetLike (L α : Type*) [SetLike L α] [CompleteLatt
 /- Construct a `LatticeSetLike` from a type `L` and an order-preserving injection `L → Set α`
 that preserves arbitrary infima. -/
 def OrderedSetLike.toLatticeSetLike (L α : Type*) [OrderedSetLike L α] [InfSet L]
-    (coe_sInf : ∀ s : Set L, SetLike.coe (sInf s) = ⋂ m ∈ s, m) :
+    (coe_sInf : ∀ {s : Set L}, SetLike.coe (sInf s) = ⋂ m ∈ s, m) :
     LatticeSetLike L α where
   __ := ‹OrderedSetLike L α›
   __ := completeLatticeOfInf L fun s =>
@@ -60,39 +60,71 @@ def OrderedSetLike.toLatticeSetLike (L α : Type*) [OrderedSetLike L α] [InfSet
 /- Construct a `LatticeSetLike` from a type `L` and an injection `L → Set α`
 that reflects arbitrary intersections. -/
 noncomputable def SetLike.toLatticeSetLike (L α : Type*) [SetLike L α]
-    (exists_coe_eq_iInter : ∀ s : Set L, ∃ l : L, (l : Set α) = ⋂ m ∈ s, m) :
+    (exists_coe_eq_iInter : ∀ {s : Set L}, ∃ l : L, (l : Set α) = ⋂ m ∈ s, m) :
     LatticeSetLike L α :=
   let _ := @SetLike.toOrderedSetLike L α _
-  @OrderedSetLike.toLatticeSetLike L α _ (InfSet.mk (Classical.choose <| exists_coe_eq_iInter ·))
-    (Classical.choose_spec <| exists_coe_eq_iInter ·)
+  @OrderedSetLike.toLatticeSetLike L α _
+    (InfSet.mk fun _ => Classical.choose exists_coe_eq_iInter)
+    (Classical.choose_spec exists_coe_eq_iInter)
 
 namespace LatticeSetLike
 
 variable {α L : Type*} [LatticeSetLike L α]
 
 @[simp, norm_cast]
-protected theorem coe_sInf {s : Set L} : ((sInf s : L) : Set α) = ⋂ a ∈ s, ↑a := by
+theorem coe_sInf {s : Set L} : ((sInf s : L) : Set α) = ⋂ l ∈ s, l := by
   simpa using LatticeSetLike.coe_sInf' s
 
-protected theorem mem_sInf {s : Set L} {x : α} : x ∈ sInf s ↔ ∀ a ∈ s, x ∈ a := by
-  rw [← SetLike.mem_coe, LatticeSetLike.coe_sInf]; simp
+theorem mem_sInf {s : Set L} {x : α} : x ∈ sInf s ↔ ∀ l ∈ s, x ∈ l := by
+  rw [← SetLike.mem_coe]; simp
+
+@[simp, norm_cast]
+theorem coe_iInf {ι : Sort*} {l : ι → L} : (↑(⨅ i, l i) : Set α) = ⋂ i, l i := by simp [iInf]
+
+theorem mem_iInf {ι : Sort*} {l : ι → L} {x : α} : (x ∈ ⨅ i, l i) ↔ ∀ i, x ∈ l i := by
+  rw [← SetLike.mem_coe]; simp
+
+@[simp]
+theorem coe_top : ((⊤ : L) : Set α) = Set.univ := by
+  suffices sInf (∅ : Set L) = (Set.univ : Set α) by simpa only [sInf_empty]
+  rw [coe_sInf]; simp
+
+@[simp]
+theorem mem_top (x : α) : x ∈ (⊤ : L) := by
+  rw [← SetLike.mem_coe]; simp
+
+@[simp]
+theorem coe_inf (l m : L) : ((l ⊓ m : L) : Set α) = (l : Set α) ∩ m := by
+  suffices sInf {l, m} = (l : Set α) ∩ m by simpa
+  rw [coe_sInf]; simp
+
+@[simp]
+theorem mem_inf {l m : L} {x : α} : x ∈ l ⊓ m ↔ x ∈ l ∧ x ∈ m := by
+  rw [← SetLike.mem_coe]; simp
+
+theorem coe_bot : ((⊥ : L) : Set α) = ⋂ l : L, l := by
+  suffices ((sInf (Set.univ) : L) : Set α) = ⋂ l : L, l by simpa
+  rw [coe_sInf]; simp
+
+theorem mem_bot {x : α} : x ∈ (⊥ : L) ↔ ∀ l : L, x ∈ l := by
+  rw [← SetLike.mem_coe, coe_bot]; simp
 
 /- `closure L s` is the least element of `L` containing `s`. -/
 variable (L) in
 def closure (s : Set α) : L := sInf { l | s ⊆ l }
 
-theorem mem_closure {s : Set α} {x : α} : x ∈ closure L s ↔ ∀ l : L, s ⊆ l → x ∈ l :=
-  LatticeSetLike.mem_sInf
+theorem coe_closure {s : Set α} : (closure L s : Set α) = ⋂ l ∈ {m : L | s ⊆ m}, l := coe_sInf
+
+theorem mem_closure {s : Set α} {x : α} : x ∈ closure L s ↔ ∀ l : L, s ⊆ l → x ∈ l := mem_sInf
 
 variable (L) in
-open LatticeSetLike in
+open LatticeSetLike OrderedSetLike in
 def gi_closure : GaloisInsertion (closure L) SetLike.coe :=
   GaloisConnection.toGaloisInsertion
     (fun _ _ =>
-      ⟨fun h => Set.Subset.trans (fun _ hx => mem_closure.2 fun _ hs => hs hx)
-                                 (OrderedSetLike.coe_subset_coe.2 h),
+      ⟨fun h => Set.Subset.trans (fun _ hx => mem_closure.2 fun _ hs => hs hx) (coe_subset_coe.2 h),
       (sInf_le ·)⟩)
-    fun _ => le_sInf (fun _ => OrderedSetLike.coe_subset_coe.1)
+    fun _ => le_sInf (fun _ => coe_subset_coe.1)
 
 @[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_closure {s : Set α} : s ⊆ closure L s := (gi_closure L).gc.le_u_l s
