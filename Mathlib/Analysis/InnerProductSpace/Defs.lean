@@ -200,10 +200,10 @@ local notation "normSqK" => @RCLike.normSq 𝕜 _
 local notation "reK" => @RCLike.re 𝕜 _
 
 /-- Local notation for `RCLike.ext_iff 𝕜` -/
-@[inherit_doc] local notation "ext_iff" => @RCLike.ext_iff 𝕜 _
+local notation "ext_iff" => @RCLike.ext_iff 𝕜 _
 
 /-- Local notation for `starRingEnd _` -/
-@[inherit_doc] local postfix:90 "†" => starRingEnd _
+local postfix:90 "†" => starRingEnd _
 
 /-- Inner product defined by the `PreInnerProductSpace.Core` structure. We can't reuse
 `PreInnerProductSpace.Core.toInner` because it takes `PreInnerProductSpace.Core` as an explicit
@@ -217,7 +217,8 @@ attribute [local instance] toPreInner'
 def normSq (x : F) :=
   reK ⟪x, x⟫
 
-@[inherit_doc] local notation "normSqF" => @normSq 𝕜 F _ _ _ _
+/-- The norm squared function for `PreInnerProductSpace.Core` structure. -/
+local notation "normSqF" => @normSq 𝕜 F _ _ _ _
 
 theorem inner_conj_symm (x y : F) : ⟪y, x⟫† = ⟪x, y⟫ :=
   c.conj_symm x y
