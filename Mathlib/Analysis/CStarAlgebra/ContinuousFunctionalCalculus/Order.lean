@@ -8,6 +8,7 @@ import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
 import Mathlib.Analysis.CStarAlgebra.Unitization
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow
 import Mathlib.Topology.ContinuousMap.StarOrdered
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Isometric
 
 /-! # Facts about star-ordered rings that depend on the continuous functional calculus
 
@@ -479,7 +480,8 @@ section Pow
 
 namespace CStarAlgebra
 
-variable {A : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+variable {A : Type*} {B : Type*} [CStarAlgebra A] [PartialOrder A] [StarOrderedRing A]
+  [NonUnitalCStarAlgebra B] [PartialOrder B] [StarOrderedRing B]
 
 lemma pow_nonneg {a : A} (ha : 0 ≤ a := by cfc_tac) (n : ℕ) : 0 ≤ a ^ n := by
   rw [← cfc_pow_id (R := ℝ≥0) a]
@@ -502,6 +504,29 @@ lemma pow_antitone {a : A} (ha₀ : 0 ≤ a := by cfc_tac) (ha₁ : a ≤ 1) :
   rw [CFC.le_one_iff (R := ℝ) a] at ha₁
   peel ha₁ with x hx _
   exact pow_le_pow_of_le_one (spectrum_nonneg_of_nonneg ha₀ hx) (ha₁ x hx) hnm
+
+lemma _root_.nnnorm_cfc_of_monotoneOn [Nontrivial A] (a : A) (f : ℝ≥0 → ℝ≥0)
+    (hf : MonotoneOn f (spectrum ℝ≥0 a)) (hf₂ : ContinuousOn f (spectrum ℝ≥0 a)) (ha : 0 ≤ a) :
+    ‖cfc f a‖₊ = f ‖a‖₊ := by
+  refine le_antisymm ?_ ?_
+  · refine nnnorm_cfc_nnreal_le fun x hx => ?_
+    refine hf hx (nnnorm_mem_spectrum_of_nonneg ha) <| spectrum.le_nnnorm_of_mem hx
+  · exact apply_le_nnnorm_cfc_nnreal f a (nnnorm_mem_spectrum_of_nonneg ha) hf₂ ha
+
+lemma _root_.nnnorm_cfcₙ_of_monotoneOn [Nontrivial B] (a : B) (f : ℝ≥0 → ℝ≥0)
+    (hf : MonotoneOn f (σₙ ℝ≥0 a)) (hf₂ : ContinuousOn f (σₙ ℝ≥0 a)) (ha : 0 ≤ a)
+    (hf₀ : f 0 = 0) :
+    ‖cfcₙ f a‖₊ = f ‖a‖₊ := by
+  have hmain : Unitization.inr (R := ℂ) (cfcₙ f a) = cfc f (a : Unitization (R := ℂ) B) :=
+    Unitization.nnreal_cfcₙ_eq_cfc_inr _ _ hf₀
+  have h₁ : ‖cfcₙ f a‖₊ = ‖Unitization.inr (R := ℂ) (cfcₙ f a)‖₊ :=
+    Eq.symm (Unitization.nnnorm_inr (cfcₙ f a))
+  have h₂ : ‖a‖₊ = ‖Unitization.inr (R := ℂ) a‖₊ := Eq.symm (Unitization.nnnorm_inr a)
+  rw [h₁, hmain, h₂]
+  refine nnnorm_cfc_of_monotoneOn (Unitization.inr (R := ℂ) a) f ?_ ?_ ?_
+  · rwa [← Unitization.quasispectrum_eq_spectrum_inr' ℝ≥0 ℂ a]
+  · rwa [← Unitization.quasispectrum_eq_spectrum_inr' ℝ≥0 ℂ a]
+  · exact Unitization.inr_nonneg_iff.mpr ha
 
 end CStarAlgebra
 
