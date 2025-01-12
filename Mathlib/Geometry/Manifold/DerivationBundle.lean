@@ -123,7 +123,8 @@ variable {I} {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Ty
   [TopologicalSpace H'] {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M']
   [ChartedSpace H' M']
 
-/-- The heterogeneous differential as a linear map. Instead of taking a function as an argument this
+/-- The heterogeneous differential as a linear map, notation `𝒅ₕ` within the `Manifold` namespace.
+Instead of taking a function as an argument this
 differential takes `h : f x = y`. It is particularly handy to deal with situations where the points
 on where it has to be evaluated are equal but not definitionally equal. -/
 def hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y) :
@@ -143,16 +144,16 @@ def hfdifferential {f : C^∞⟮I, M; I', M'⟯} {x : M} {y : M'} (h : f x = y) 
   map_smul' _ _ := rfl
   map_add' _ _ := rfl
 
-/-- The homogeneous differential as a linear map. -/
+/-- The homogeneous differential as a linear map, notation `𝒅` within the `Manifold` namespace. -/
 def fdifferential (f : C^∞⟮I, M; I', M'⟯) (x : M) :
     PointDerivation I x →ₗ[𝕜] PointDerivation I' (f x) :=
   hfdifferential (rfl : f x = f x)
 
 -- Standard notation for the differential. The abbreviation is `MId`.
-scoped[Manifold] notation "𝒅" => fdifferential
+@[inherit_doc] scoped[Manifold] notation "𝒅" => fdifferential
 
 -- Standard notation for the differential. The abbreviation is `MId`.
-scoped[Manifold] notation "𝒅ₕ" => hfdifferential
+@[inherit_doc] scoped[Manifold] notation "𝒅ₕ" => hfdifferential
 
 @[simp]
 theorem fdifferential_apply (f : C^∞⟮I, M; I', M'⟯) {x : M} (v : PointDerivation I x)

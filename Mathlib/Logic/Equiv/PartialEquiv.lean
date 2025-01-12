@@ -576,7 +576,9 @@ protected def trans' (e' : PartialEquiv β γ) (h : e.target = e'.source) : Part
   right_inv' y hy := by simp [hy, h]
 
 /-- Composing two partial equivs, by restricting to the maximal domain where their composition
-is well defined. -/
+is well defined.
+Within the `Manifold` namespace, there is the notation `e ≫ f` for this.
+-/
 @[trans]
 protected def trans : PartialEquiv α γ :=
   PartialEquiv.trans' (e.symm.restr e'.source).symm (e'.restr e.target) (inter_comm _ _)
