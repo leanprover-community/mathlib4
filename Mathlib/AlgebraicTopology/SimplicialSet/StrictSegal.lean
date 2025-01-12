@@ -104,16 +104,22 @@ theorem spineToSimplex_edge (f : Path X m) (j l : ℕ) (hjl : j + l ≤ m) :
   erw [← op_comp (C := SimplexCategory)]
   rw [diag_subinterval_eq]
 
+end
+
 /- TODO: spineToSimplex_map -/
 
-variable (h : m ≤ n := by leq)
+section
+
+variable {n : ℕ} {X : SSet.Truncated.{u} (n + 1)} (segal : StrictSegal X)
+  (m : ℕ) (h : m ≤ n := by leq)
 
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
 the common vertices will agree with those of the original path `f`. In particular,
 a vertex `i` with `i < j` can be identified with the same vertex in `f`. -/
 lemma spine_δ_vertex_lt (f : Path X (m + 1)) {i : Fin (m + 1)} {j : Fin (m + 2)}
     (hij : i.castSucc < j) :
-    (X.spine m (by omega) (X.map (δ j).op (segal.spineToSimplex (m + 1) (by omega) f))).vertex i =
+    (X.spine m (by leq) (X.map (δ j).op
+      (segal.spineToSimplex (m + 1) (by leq) f))).vertex i =
       f.vertex i.castSucc := by
   rw [spine_vertex X m, ← FunctorToTypes.map_comp_apply]
   erw [← op_comp (C := SimplexCategory)]
@@ -127,7 +133,8 @@ a vertex `i` with `j ≤ i` can be identified with vertex `i + 1` in the origina
 path. -/
 lemma spine_δ_vertex_ge (f : Path X (m + 1)) {i : Fin (m + 1)} {j : Fin (m + 2)}
     (hij : j ≤ i.castSucc) :
-    (X.spine m (by omega) (X.map (δ j).op (segal.spineToSimplex (m + 1) (by omega) f))).vertex i =
+    (X.spine m (by leq) (X.map (δ j).op
+      (segal.spineToSimplex (m + 1) (by leq) f))).vertex i =
       f.vertex i.succ := by
   rw [spine_vertex X m, ← FunctorToTypes.map_comp_apply]
   erw [← op_comp (C := SimplexCategory)]
@@ -141,7 +148,8 @@ the common arrows will agree with those of the original path `f`. In particular,
 an arrow `i` with `i + 1 < j` can be identified with the same arrow in `f`. -/
 lemma spine_δ_arrow_lt (f : Path X (m + 1)) {i : Fin m} {j : Fin (m + 2)}
     (hij : i.succ.castSucc < j) :
-    (X.spine m (by omega) (X.map (δ j).op (segal.spineToSimplex (m + 1) (by omega) f))).arrow i =
+    (X.spine m (by leq) (X.map (δ j).op
+      (segal.spineToSimplex (m + 1) (by leq) f))).arrow i =
       f.arrow i.castSucc := by
   rw [spine_arrow X m, ← FunctorToTypes.map_comp_apply]
   erw [← op_comp (C := SimplexCategory)]
@@ -152,7 +160,8 @@ an arrow `i` with `i + 1 > j` can be identified with arrow `i + 1` in the
 original path. -/
 lemma spine_δ_arrow_gt (f : Path X (m + 1)) {i : Fin m} {j : Fin (m + 2)}
     (hij : j < i.succ.castSucc) :
-    (X.spine m (by omega) (X.map (δ j).op (segal.spineToSimplex (m + 1) (by omega) f))).arrow i =
+    (X.spine m (by leq) (X.map (δ j).op
+      (segal.spineToSimplex (m + 1) (by leq) f))).arrow i =
       f.arrow i.succ := by
   rw [spine_arrow X m, ← FunctorToTypes.map_comp_apply]
   erw [← op_comp (C := SimplexCategory)]
@@ -163,9 +172,9 @@ end
 lemma spine_δ_arrow_eq {n : ℕ} {X : SSet.Truncated.{u} (n + 2)} (segal : StrictSegal X)
     (m : ℕ) (h : m ≤ n + 1 := by leq) (f : Path X (m + 1))
     {i : Fin m} {j : Fin (m + 2)} (hij : j = i.succ.castSucc) :
-    (X.spine m (by omega) (X.map (δ j).op
-      (segal.spineToSimplex (m + 1) (by omega) f))).arrow i =
-        segal.spineToDiagonal 2 (by omega) (f.interval i 2 (by omega)) := by
+    (X.spine m (by leq) (X.map (δ j).op
+      (segal.spineToSimplex (m + 1) (by leq) f))).arrow i =
+        segal.spineToDiagonal 2 (by leq) (f.interval i 2 (by omega)) := by
   rw [spine_arrow X m, ← FunctorToTypes.map_comp_apply]
   erw [← op_comp (C := SimplexCategory)]
   rw [mkOfSucc_δ_eq hij, spineToSimplex_edge _ (m + 1)]
@@ -221,7 +230,7 @@ theorem spineToSimplex_arrow (i : Fin n) (f : Path X n) :
 /-- In the presence of the strict Segal condition, a path of length `n` can be
 "composed" by taking the diagonal edge of the resulting `n`-simplex. -/
 abbrev spineToDiagonal (f : Path X n) : X _[1] :=
-  segal n |>.spineToDiagonal n (by omega) f
+  segal n |>.spineToDiagonal n (by leq) f
 
 @[simp]
 theorem spineToSimplex_interval (f : Path X n) (j l : ℕ) (hjl : j + l ≤  n)  :
@@ -240,7 +249,7 @@ a vertex `i` with `i < j` can be identified with the same vertex in `f`. -/
 lemma spine_δ_vertex_lt (f : Path X (n + 1)) {i : Fin (n + 1)} {j : Fin (n + 2)}
     (h : i.castSucc < j) :
     (X.spine n (X.δ j (segal.spineToSimplex f))).vertex i = f.vertex i.castSucc :=
-  segal (n + 1) |>.spine_δ_vertex_lt n (by omega) f h
+  segal (n + 1) |>.spine_δ_vertex_lt n (by leq) f h
 
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
 a vertex `i` with `i ≥ j` can be identified with vertex `i + 1` in the original
@@ -248,7 +257,7 @@ path. -/
 lemma spine_δ_vertex_ge (f : Path X (n + 1)) {i : Fin (n + 1)} {j : Fin (n + 2)}
     (h : j ≤ i.castSucc) :
     (X.spine n (X.δ j (segal.spineToSimplex f))).vertex i = f.vertex i.succ :=
-  segal (n + 1) |>.spine_δ_vertex_ge n (by omega) f h
+  segal (n + 1) |>.spine_δ_vertex_ge n (by leq) f h
 
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
 the common arrows will agree with those of the original path `f`. In particular,
@@ -256,7 +265,7 @@ an arrow `i` with `i + 1 < j` can be identified with the same arrow in `f`. -/
 lemma spine_δ_arrow_lt (f : Path X (n + 1)) {i : Fin n} {j : Fin (n + 2)}
     (h : i.succ.castSucc < j) :
     (X.spine n (X.δ j (segal.spineToSimplex f))).arrow i = f.arrow i.castSucc :=
-  segal (n + 1) |>.spine_δ_arrow_lt n (by omega) f h
+  segal (n + 1) |>.spine_δ_arrow_lt n (by leq) f h
 
 /-- If we take the path along the spine of the `j`th face of a `spineToSimplex`,
 an arrow `i` with `i + 1 > j` can be identified with arrow `i + 1` in the
@@ -264,7 +273,7 @@ original path. -/
 lemma spine_δ_arrow_gt (f : Path X (n + 1)) {i : Fin n} {j : Fin (n + 2)}
     (h : j < i.succ.castSucc) :
     (X.spine n (X.δ j (segal.spineToSimplex f))).arrow i = f.arrow i.succ :=
-  segal (n + 1) |>.spine_δ_arrow_gt n (by omega) f h
+  segal (n + 1) |>.spine_δ_arrow_gt n (by leq) f h
 
 /-- If we take the path along the spine of a face of a `spineToSimplex`, the
 arrows not contained in the original path can be recovered as the diagonal edge
@@ -272,8 +281,8 @@ of the `spineToSimplex` that "composes" arrows `i` and `i + 1`. -/
 lemma spine_δ_arrow_eq (f : Path X (n + 1)) {i : Fin n} {j : Fin (n + 2)}
     (h : j = i.succ.castSucc) :
     (X.spine n (X.δ j (segal.spineToSimplex f))).arrow i =
-      (segal (n + 1)).spineToDiagonal 2 (by omega) (f.interval i 2 (by omega)) :=
-  segal (n + 1) |>.spine_δ_arrow_eq n (by omega) f h
+      (segal (n + 1)).spineToDiagonal 2 (by leq) (f.interval i 2 (by omega)) :=
+  segal (n + 1) |>.spine_δ_arrow_eq n (by leq) f h
 
 end StrictSegal
 end SSet

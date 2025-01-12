@@ -124,8 +124,7 @@ lemma fac_aux₂ {n : ℕ}
         (by simp only [Fin.mk_le_mk]; omega)) (by rfl)
       let α₀ := strArrowMk₂ (mkOfLe (n := n) ⟨i + k, by omega⟩ ⟨j, by omega⟩
         (by simp only [Fin.mk_le_mk]; omega)) (by simp)
-      let α₁ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by omega⟩ ⟨j, by omega⟩
-        (by simp only [Fin.mk_le_mk]; omega)) (by simp)
+      let α₁ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by omega⟩ ⟨j, by omega⟩ hij) (by simp)
       let α₂ := strArrowMk₂ (mkOfLe (n := n) ⟨i, by omega⟩ ⟨i + k, by omega⟩ (by simp)) (by simp)
       let β₀ : α ⟶ α₀ := StructuredArrow.homMk ((mkOfSucc 1).op) (Quiver.Hom.unop_inj
         (by ext x; fin_cases x <;> rfl))

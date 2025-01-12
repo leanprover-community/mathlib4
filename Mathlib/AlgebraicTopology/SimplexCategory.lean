@@ -747,6 +747,9 @@ theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
 /-- Some quick and useful attempts to prove `n ≤ m`. -/
 macro "leq_prefix" : tactic =>
   `(tactic| first | decide | assumption | apply zero_le | apply le_rfl |
+    apply Nat.le_add_left | apply Nat.le_add_right |
+    apply Nat.le_add_right_of_le <;> assumption |
+    apply Nat.add_le_add_right <;> assumption |
     transitivity <;> assumption)
 
 /-- A wrapper for `omega` which first makes some quick attempts to prove `n ≤ m`. -/
@@ -755,7 +758,7 @@ macro "leq" : tactic => `(tactic| first | leq_prefix | omega)
 /-- A wrapper for `omega` which first makes some quick attempts to prove that
 `[m]` is `n`-truncated (`[m].len ≤ n`). -/
 macro "trunc" : tactic =>
-  `(tactic| first | leq_prefix | simp only [SimplexCategory.len_mk]; omega)
+  `(tactic| first | leq_prefix | dsimp only [SimplexCategory.len_mk]; omega)
 
 /-- For `m ≤ n`, `[m]ₙ` is the `m`-dimensional simplex in `Truncated n`. -/
 scoped macro:max (priority := high) "[" m:term "]" n:subscript(term) : term =>
