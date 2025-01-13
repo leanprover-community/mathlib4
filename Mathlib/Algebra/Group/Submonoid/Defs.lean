@@ -113,7 +113,7 @@ class AddSubmonoidClass (S : Type*) (M : outParam Type*) [AddZeroClass M] [SetLi
 
 attribute [to_additive] Submonoid SubmonoidClass
 
-@[to_additive (attr := aesop unsafe 99% apply (rule_sets := [SetLike]))]
+@[to_additive (attr := aesop unsafe 90% apply (rule_sets := [SetLike]))]
 theorem pow_mem {M A} [Monoid M] [SetLike A M] [SubmonoidClass A M] {S : A} {x : M}
     (hx : x ∈ S) : ∀ n : ℕ, x ^ n ∈ S
   | 0 => by
