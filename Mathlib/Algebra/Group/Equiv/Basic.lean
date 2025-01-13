@@ -565,8 +565,6 @@ for multiplicative maps from a monoid to a commutative monoid.
 @[to_additive (attr := simps apply)
   "An additive analogue of `Equiv.arrowCongr`,
   for additive maps from an additive monoid to a commutative additive monoid."]
--- Porting note: @[simps apply] removed because it was making a lemma which
--- wasn't in simp normal form.
 def monoidHomCongr {M N P Q} [MulOneClass M] [MulOneClass N] [CommMonoid P] [CommMonoid Q]
     (f : M ≃* N) (g : P ≃* Q) : (M →* P) ≃* (N →* Q) where
   toFun h := g.toMonoidHom.comp (h.comp f.symm.toMonoidHom)
@@ -662,15 +660,11 @@ def postcompEquiv {α β : Type*} [Monoid α] [Monoid β] (e : α ≃* β) (γ :
 
 end MonoidHom
 
--- Porting note: we want to add
--- `@[simps (config := .asFn)]`
--- here, but it generates simp lemmas which aren't in simp normal form
--- (they have `toFun` in)
 /-- Given a pair of multiplicative homomorphisms `f`, `g` such that `g.comp f = id` and
 `f.comp g = id`, returns a multiplicative equivalence with `toFun = f` and `invFun = g`. This
 constructor is useful if the underlying type(s) have specialized `ext` lemmas for multiplicative
 homomorphisms. -/
-@[to_additive
+@[to_additive (attr := simps (config := .asFn))
   "Given a pair of additive homomorphisms `f`, `g` such that `g.comp f = id` and
   `f.comp g = id`, returns an additive equivalence with `toFun = f` and `invFun = g`. This
   constructor is useful if the underlying type(s) have specialized `ext` lemmas for additive
@@ -682,20 +676,6 @@ def MulHom.toMulEquiv [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M) (h₁ 
   left_inv := DFunLike.congr_fun h₁
   right_inv := DFunLike.congr_fun h₂
   map_mul' := f.map_mul
-
--- Porting note: the next two lemmas were added manually because `@[simps]` is generating
--- lemmas with `toFun` in
-@[to_additive (attr := simp)]
-theorem MulHom.toMulEquiv_apply [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M)
-    (h₁ : g.comp f = MulHom.id _) (h₂ : f.comp g = MulHom.id _) :
-    ((MulHom.toMulEquiv f g h₁ h₂) : M → N) = f :=
-  rfl
-
-@[to_additive (attr := simp)]
-theorem MulHom.toMulEquiv_symm_apply [Mul M] [Mul N] (f : M →ₙ* N) (g : N →ₙ* M)
-    (h₁ : g.comp f = MulHom.id _) (h₂ : f.comp g = MulHom.id _) :
-    (MulEquiv.symm (MulHom.toMulEquiv f g h₁ h₂) : N → M) = ↑g :=
-  rfl
 
 /-- Given a pair of monoid homomorphisms `f`, `g` such that `g.comp f = id` and `f.comp g = id`,
 returns a multiplicative equivalence with `toFun = f` and `invFun = g`.  This constructor is
