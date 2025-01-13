@@ -22,7 +22,28 @@ the definition of "left homotopies" in model categories.
 
 universe v u
 
-open CategoryTheory Limits
+open CategoryTheory Category Limits
+
+namespace CategoryTheory
+
+lemma IsPushout.of_coprod_inl_with_id {C : Type*} [Category C]
+    {A B : C} (f : A ⟶ B) (X : C) [HasBinaryCoproduct A X]
+    [HasBinaryCoproduct B X] :
+    IsPushout coprod.inl f (coprod.map f (𝟙 X)) coprod.inl where
+  w := by simp
+  isColimit' := ⟨PushoutCocone.isColimitAux' _ (fun s ↦ by
+    refine ⟨coprod.desc s.inr (coprod.inr ≫ s.inl), ?_, ?_, ?_⟩
+    · ext
+      · simp [PushoutCocone.condition]
+      · simp
+    · simp
+    · intro m h₁ h₂
+      dsimp at m h₁ h₂ ⊢
+      ext
+      · simpa using h₂
+      · simp [← h₁])⟩
+
+end CategoryTheory
 
 namespace HomotopicalAlgebra
 
@@ -145,6 +166,38 @@ end
 
 instance : Nonempty (Cylinder A) :=
   ⟨ofFactorizationData (MorphismProperty.factorizationData _ _ _)⟩
+
+/-- The gluing of two cylinders. -/
+@[simps]
+noncomputable def trans [IsCofibrant A] (P P' : Cylinder A) : Cylinder A := by
+  let Q : Precylinder A :=
+    { I := pushout P.i₁ P'.i₀
+      i₀ := P.i₀ ≫ pushout.inl _ _
+      i₁ := P'.i₁ ≫ pushout.inr _ _
+      σ := pushout.desc P.σ P'.σ (by simp)
+      weakEquivalence_σ := by
+        have : WeakEquivalence ((P.i₀ ≫ pushout.inl P.i₁ P'.i₀) ≫
+            pushout.desc P.σ P'.σ (by simp)) := by
+          simp only [assoc, colimit.ι_desc, PushoutCocone.mk_ι_app,
+            Precylinder.i₀_σ]
+          infer_instance
+        apply weakEquivalence_of_precomp (P.i₀ ≫ pushout.inl _ _) }
+  have : Cofibration Q.i := by
+    let ψ : P.I ⨿ A ⟶ Q.I := coprod.desc (pushout.inl _ _) (P'.i₁ ≫ pushout.inr _ _)
+    rw [show Q.i = coprod.map P.i₀ (𝟙 A) ≫ ψ by simp [Precylinder.i, ψ, Q]]
+    have fac : coprod.map P.i₁ (𝟙 A) ≫ ψ = P'.i ≫ pushout.inr _ _ := by
+      ext
+      · simp [ψ, pushout.condition]
+      · simp [ψ]
+    have sq : IsPushout P.i₁ (coprod.inl ≫ P'.i) (coprod.inl ≫ ψ) (pushout.inr _ _) := by
+      simpa [ψ] using IsPushout.of_hasPushout P.i₁ P'.i₀
+    have : Cofibration ψ := by
+      rw [cofibration_iff]
+      exact (cofibrations C).of_isPushout
+        (IsPushout.of_top sq fac (IsPushout.of_coprod_inl_with_id P.i₁ A).flip)
+        (by rw [← cofibration_iff]; infer_instance)
+    infer_instance
+  exact { toPrecylinder := Q }
 
 end Cylinder
 
