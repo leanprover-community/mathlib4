@@ -501,13 +501,15 @@ instance [Semiring S] [Module S R] : Module S ℍ[R,c₁,c₂,c₃] where
   zero_smul _ := by ext <;> simp [zero_smul]
 
 instance [CommSemiring S] [Algebra S R] : Algebra S ℍ[R,c₁,c₂,c₃] where
-  toFun s := coe (algebraMap S R s)
-  map_one' := by simp
-  map_zero' := by simp
-  map_mul' x y := by simp
-  map_add' x y := by simp
-  smul_def' s x := by ext <;> simp [Algebra.smul_def]
+  algebraMap := {
+    toFun s := coe (algebraMap S R s)
+    map_one' := by simp
+    map_mul' := by simp
+    map_zero' := by simp
+    map_add' := by simp
+  }
   commutes' s x := by ext <;> simp [Algebra.commutes]
+  smul_def' s x := by ext <;> simp [Algebra.smul_def]
 
 theorem algebraMap_eq (r : R) : algebraMap R ℍ[R,c₁,c₂,c₃] r = ⟨r, 0, 0, 0⟩ :=
   rfl
