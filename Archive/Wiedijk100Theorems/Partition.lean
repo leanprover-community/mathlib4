@@ -64,8 +64,6 @@ variable {α : Type*}
 
 open Finset
 
-open scoped Classical
-
 /-- The partial product for the generating function for odd partitions.
 TODO: As `m` tends to infinity, this converges (in the `X`-adic topology).
 
@@ -93,9 +91,11 @@ universe u
 variable {ι : Type u}
 
 /-- A convenience constructor for the power series whose coefficients indicate a subset. -/
-def indicatorSeries (α : Type*) [Semiring α] (s : Set ℕ) : PowerSeries α :=
-  PowerSeries.mk fun n => if n ∈ s then 1 else 0
+def indicatorSeries (α : Type*) [Semiring α] (s : Set ℕ) : PowerSeries α := by
+  classical
+  exact PowerSeries.mk fun n => if n ∈ s then 1 else 0
 
+open scoped Classical in
 theorem coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) :
     coeff α n (indicatorSeries _ s) = if n ∈ s then 1 else 0 :=
   coeff_mk _ _
@@ -106,6 +106,7 @@ theorem coeff_indicator_pos (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∈ s) 
 theorem coeff_indicator_neg (s : Set ℕ) [Semiring α] (n : ℕ) (h : n ∉ s) :
     coeff α n (indicatorSeries _ s) = 0 := by rw [coeff_indicator, if_neg h]
 
+open scoped Classical in
 theorem constantCoeff_indicator (s : Set ℕ) [Semiring α] :
     constantCoeff α (indicatorSeries _ s) = if 0 ∈ s then 1 else 0 :=
   rfl
