@@ -233,15 +233,17 @@ Therefore, if we create an instance that always applies, we set the priority of 
 -/
 
 library_note "SetLike Aesop lemmas"/--
-The `aesop` tactic can automatically prove obvious facts about membership of
+The Aesop tactic (`aesop`) can automatically prove obvious facts about membership of
 algebraic substructures such as subgroups and subrings. Certain lemmas, whose conclusion is usually
 that a particular term is a member of a particular substructure, are registered
 as Aesop rules using the `aesop` attribute, according to the following principles:
 - Rules are in the `SetLike` ruleset: (rule_sets := [SetLike])
-- Rules are marked `safe` only if all their hypotheses are trivial. This is to ensure that
+- Apply-style rules with trivial hypotheses are registered as `simp` rules
+  rather than Aesop rules.
+- Apply-style rules with nontrivial hypotheses are marked `unsafe` . This is to ensure that
   applying them remains provability-preserving in the context of more complex membership rules.
-  For instance, `one_mem` is marked `safe`, but `mul_mem` is marked `unsafe`.
-- Rules with simple hypotheses which fail quickly if they aren't provable are given
+  For instance, but `mul_mem` is marked `unsafe`.
+- Apply-style rules with simple hypotheses which fail quickly if they aren't provable are given
   probability 90%. An example is `mul_mem`. This is the same probability Aesop gives to safe rules
   when they generate metavariables.
 - Rules that cause loops (even in the absence of metavariables) are given a priority of 5%.
