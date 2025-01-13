@@ -46,16 +46,6 @@ In the definitions below, we use the following notation:
 * `C a` : the constant polynomial with value `a`
 * `X i` : the degree one monomial corresponding to i; mathematically this might be denoted `Xᵢ`.
 * `coeff s p` : the coefficient of `s` in `p`.
-* `eval₂ (f : R → S₁) (g : σ → S₁) p` : given a semiring homomorphism from `R` to another
-  semiring `S₁`, and a map `σ → S₁`, evaluates `p` at this valuation, returning a term of type `S₁`.
-  Note that `eval₂` can be made using `eval` and `map` (see below), and it has been suggested
-  that sticking to `eval` and `map` might make the code less brittle.
-* `eval (g : σ → R) p` : given a map `σ → R`, evaluates `p` at this valuation,
-  returning a term of type `R`
-* `map (f : R → S₁) p` : returns the multivariate polynomial obtained from `p` by the change of
-  coefficient semiring corresponding to `f`
-* `aeval (g : σ → S₁) p` : evaluates the multivariate polynomial obtained from `p` by the change
-  of coefficient semiring corresponding to `g` (`a` stands for `Algebra`)
 
 ## Implementation notes
 
