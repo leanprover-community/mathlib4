@@ -32,7 +32,7 @@ For any ring `R`, the center of `R` is isomorphic to `End (𝟭 (ModuleCat R))`,
 of the identity functor on the category of `R`-modules.
 -/
 @[simps]
-def Subring.centerEquivEndIdFunctor [Small.{v} R] :
+noncomputable def Subring.centerEquivEndIdFunctor [Small.{v} R] :
     Subring.center R ≃+* End (𝟭 (ModuleCat.{v} R)) where
   toFun x :=
   { app M := ModuleCat.ofHom
