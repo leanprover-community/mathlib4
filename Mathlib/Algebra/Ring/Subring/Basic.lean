@@ -384,6 +384,14 @@ theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
 instance : CommRing (center R) :=
   { inferInstanceAs (CommSemiring (Subsemiring.center R)), (center R).toRing with }
 
+/-- The center of isomorphic nonunital semirings are isomorphic. -/
+@[simps!] def centerCongr (e : R ≃+* S) : center R ≃+* center S :=
+  NonUnitalSubsemiring.centerCongr e
+
+/-- The center of a nonunital semiring is isomorphic to the center of its opposite. -/
+@[simps!] def centerMulOppositeEquiv : center Rᵐᵒᵖ ≃+* center R :=
+  NonUnitalSubsemiring.centerMulOppositeEquiv
+
 end
 
 section DivisionRing

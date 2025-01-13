@@ -10,8 +10,10 @@ import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.GroupWithZero.Center
 import Mathlib.Algebra.Ring.Center
 import Mathlib.Algebra.Ring.Centralizer
+import Mathlib.Algebra.Ring.Opposite
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.Data.Set.Finite.Range
+import Mathlib.GroupTheory.Submonoid.Center
 import Mathlib.GroupTheory.Subsemigroup.Centralizer
 import Mathlib.RingTheory.NonUnitalSubsemiring.Defs
 
@@ -244,6 +246,19 @@ lemma _root_.Set.mem_center_iff_addMonoidHom (a : R) :
       AddMonoidHom.compr₂ .mul (.mulRight a) = .compl₂ .mul (.mulRight a) := by
   rw [Set.mem_center_iff, isMulCentral_iff]
   simp [DFunLike.ext_iff]
+
+variable {R}
+
+/-- The center of isomorphic (not necessarily unital or associative) semirings are isomorphic. -/
+@[simps!] def centerCongr [NonUnitalNonAssocSemiring S] (e : R ≃+* S) : center R ≃+* center S where
+  __ := Subsemigroup.centerCongr e
+  map_add' _ _ := Subtype.ext <| by exact map_add e ..
+
+/-- The center of a (not necessarily unital or associative) semiring
+is isomorphic to the center of its opposite. -/
+@[simps!] def centerMulOppositeEquiv : center Rᵐᵒᵖ ≃+* center R where
+  __ := Subsemigroup.centerMulOppositeEquiv
+  map_add' _ _ := rfl
 
 end NonUnitalNonAssocSemiring
 
