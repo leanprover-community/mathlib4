@@ -358,11 +358,11 @@ theorem star_le_starClosure_toSubalgebra (S : Subalgebra R A) :
     star S ≤ S.starClosure.toSubalgebra := by
   rw [starClosure_toSubalgebra]; simp
 
-@[aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_starClosure (S : Subalgebra R A) : (S : Set A) ⊆ S.starClosure.toSubalgebra :=
   le_starClosure_toSubalgebra _
 
-@[aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem star_subset_starClosure (S : Subalgebra R A) :
     (star S : Set A) ⊆ S.starClosure.toSubalgebra := star_le_starClosure_toSubalgebra _
 
@@ -414,11 +414,11 @@ theorem adjoin_eq_starClosure_adjoin (s : Set A) : adjoin R s = (Algebra.adjoin 
 theorem adjoin_toSubalgebra (s : Set A) :
     (adjoin R s).toSubalgebra = Algebra.adjoin R (s ∪ star s) := rfl
 
-@[aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
   Set.subset_union_left.trans Algebra.subset_adjoin
 
-@[aesop safe 20 apply (rule_sets := [SetLike])]
+@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
   Set.subset_union_right.trans Algebra.subset_adjoin
 
