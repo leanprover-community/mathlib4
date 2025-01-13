@@ -71,6 +71,7 @@ theorem Algebra.fg_trans' {R S A : Type*} [CommSemiring R] [CommSemiring S] [Sem
         Subalgebra.restrictScalars_top
        ]
     ⟩
+end
 
 section ArtinTate
 
