@@ -231,3 +231,25 @@ See also [mathlib#1561](https://github.com/leanprover-community/mathlib/issues/1
 Therefore, if we create an instance that always applies, we set the priority of these instances to
 100 (or something similar, which is below the default value of 1000).
 -/
+
+library_note "SetLike Aesop lemmas"/--
+The `aesop` tactic can automatically prove obvious facts about membership of
+algebraic substructures such as subgroups and subrings. Certain lemmas, whose conclusion is usually
+that a particular term is a member of a particular substructure, are registered
+as Aesop rules using the `aesop` attribute, according to the following principles:
+- Rules are in the `SetLike` ruleset: (rule_sets := [SetLike])
+- Rules are marked `safe` only if all their hypotheses are trivial. This is to ensure that
+  applying them remains provability-preserving in the context of more complex membership rules.
+  For instance, `one_mem` is marked `safe`, but `mul_mem` is marked `unsafe`.
+- Rules with simple hypotheses which fail quickly if they aren't provable are given
+  probability 90%. An example is `mul_mem`. This is the same probability Aesop gives to safe rules
+  when they generate metavariables.
+- Rules that cause loops (even in the absence of metavariables) are given a priority of 5%.
+  An example is `SetLike.mem_of_subset`.
+- Aesop should not be invoking low-priority rules unless it can make no other progress.
+  If common usage patterns cause Aesop to invoke low-priority rules, additional lemmas should be
+  added at a higher priority to cover that case to improve performance and prevent timeouts.
+  For example, `Subring.closure_mem_of_mem` covers a common use case of `SetLike.mem_of_subset`.
+Some examples of the sorts of goals Aesop is set up to close can be found in the file
+MathlibTest/set_like.lean.
+-/
