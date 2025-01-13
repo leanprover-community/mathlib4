@@ -576,7 +576,7 @@ theorem adjoin_le_iff {S : NonUnitalSubalgebra R A} {s : Set A} : adjoin R s ≤
   NonUnitalAlgebra.gc _ _
 
 @[gcongr]
-theorem adjoin_mono (H : s ⊆ t) : adjoin R s ≤ adjoin R t :=
+theorem adjoin_mono {s t : Set A} (H : s ⊆ t) : adjoin R s ≤ adjoin R t :=
   NonUnitalAlgebra.gc.monotone_l H
 
 theorem adjoin_union (s t : Set A) : adjoin R (s ∪ t) = adjoin R s ⊔ adjoin R t :=

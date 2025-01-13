@@ -459,7 +459,7 @@ theorem adjoin_le_iff {S : StarSubalgebra R A} {s : Set A} : adjoin R s ≤ S �
   StarAlgebra.gc _ _
 
 @[gcongr]
-theorem adjoin_mono (H : s ⊆ t) : adjoin R s ≤ adjoin R t :=
+theorem adjoin_mono {s t : Set A} (H : s ⊆ t) : adjoin R s ≤ adjoin R t :=
   StarAlgebra.gc.monotone_l H
 
 @[simp]
