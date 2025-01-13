@@ -768,7 +768,7 @@ namespace Quaternion
 variable {S T R : Type*} [CommRing R] (r x y : R) (a b : ℍ[R])
 
 /-- Coercion `R → ℍ[R]`. -/
-@[coe] abbrev coe : R → ℍ[R] := QuaternionAlgebra.coe
+@[coe] def coe : R → ℍ[R] := QuaternionAlgebra.coe
 
 instance : CoeTC R ℍ[R] := ⟨coe⟩
 
@@ -814,6 +814,8 @@ nonrec def im (x : ℍ[R]) : ℍ[R] := x.im
 @[simp] nonrec theorem sub_self_im : a - a.im = a.re := a.sub_self_im
 
 @[simp] nonrec theorem sub_self_re : a - ↑a.re = a.im := a.sub_self_re
+
+@[simp] lemma coe_eq : QuaternionAlgebra.coe = coe (R := R) := rfl
 
 @[simp, norm_cast]
 theorem coe_re : (x : ℍ[R]).re = x := rfl
