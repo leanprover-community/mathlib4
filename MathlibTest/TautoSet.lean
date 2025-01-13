@@ -31,8 +31,8 @@ example (h1 : A = B) (h2 : B ⊆ C): A ⊆ C := by tauto_set
 example (h1 : A ∩ B = Set.univ) : A = Set.univ := by tauto_set
 example (h1 : A ∪ B = ∅) : A = ∅ := by tauto_set
 
-example (h1 : Aᶜ ⊆ ∅) : A = Set.univ := by tauto_set
-example (h1: Set.univ ⊆ Aᶜ) : A = ∅ := by tauto_set
+example (h: Aᶜ ⊆ ∅) : A = Set.univ := by tauto_set
+example (h: Set.univ ⊆ Aᶜ) : A = ∅ := by tauto_set
 
 example : A ∩ ∅ = ∅ := by tauto_set
 example : A ∪ Set.univ = Set.univ := by tauto_set
