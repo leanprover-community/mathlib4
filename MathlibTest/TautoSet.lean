@@ -130,7 +130,7 @@ example {X Y : Set α} {a : α} (hXY : X ∩ Y = {a}) :
 -- union_subset_union_iff
 example {A B X : Set α} (hAX : Disjoint A X) (hBX : Disjoint B X) :
     A ∪ X ⊆ B ∪ X ↔ A ⊆ B := by
-  constructor
+  constructor <;>
   · intro; tauto_set
   · intro h; tauto_set
 
