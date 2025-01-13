@@ -656,7 +656,7 @@ lemma adjoin_eq_span (s : Set A) : (adjoin R s).toSubmodule = span R (Subsemigro
     | smul r x _ hpx => exact smul_mem _ _ hpx
   · apply span_le.2 _
     show Subsemigroup.closure s ≤ (adjoin R s).toSubsemigroup
-    exact OrderedSetLike.closure_le.2 (subset_adjoin R)
+    exact LatticeSetLike.closure_le.2 (subset_adjoin R)
 
 variable (R A)
 
