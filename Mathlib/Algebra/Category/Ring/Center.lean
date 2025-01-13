@@ -42,11 +42,12 @@ noncomputable def Subring.centerEquivEndIdFunctor [Small.{v} R] :
   invFun f := ⟨(equivShrink R).symm <| f.app (.of R <| Shrink.{v} R) |>.hom (1 : Shrink.{v} R), by
     rw [Subring.mem_center_iff]
     intro r
-    have := congr((equivShrink R).symm ($(f.naturality (X := .of R <| Shrink.{v} R) (Y := .of R <| Shrink.{v} R)
+    have := congr((equivShrink R).symm ($(f.naturality
+      (X := .of R <| Shrink.{v} R) (Y := .of R <| Shrink.{v} R)
       (ModuleCat.ofHom
-      { toFun x := x * equivShrink R r
-        map_add' := by simp [add_mul]
-        map_smul' := by intros; ext; simp [mul_assoc] })).hom (1 : Shrink.{v} R)))
+        { toFun x := x * equivShrink R r
+          map_add' := by simp [add_mul]
+          map_smul' := by intros; ext; simp [mul_assoc] })).hom (1 : Shrink R)))
     simp only [Functor.id_obj, Functor.id_map, ModuleCat.hom_comp, LinearMap.coe_comp,
       LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, one_mul, equivShrink_symm_mul,
       Equiv.symm_apply_apply] at this
