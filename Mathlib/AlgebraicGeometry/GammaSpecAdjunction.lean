@@ -311,7 +311,8 @@ theorem right_triangle (R : CommRingCat) :
   · intro r; apply toOpen_res
 
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `LocallyRingedSpace`. -/
-@[simps]
+-- Porting note: `simps` generates lemmas not in `simp` normal form, so `unit` and `counit` have to
+-- be added manually
 def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} where
   unit := identityToΓSpec
   counit := (NatIso.op SpecΓIdentity).inv
@@ -327,6 +328,12 @@ def locallyRingedSpaceAdjunction : Γ.rightOp ⊣ Spec.toLocallyRingedSpace.{u} 
       Spec.sheafedSpaceObj_presheaf, NatIso.op_inv, NatTrans.op_app, op_unop, SpecΓIdentity_inv_app,
       Spec.toLocallyRingedSpace_map, Quiver.Hom.unop_op]
     exact right_triangle R.unop
+
+lemma locallyRingedSpaceAdjunction_unit :
+    locallyRingedSpaceAdjunction.unit = identityToΓSpec := rfl
+
+lemma locallyRingedSpaceAdjunction_counit :
+    locallyRingedSpaceAdjunction.counit = (NatIso.op SpecΓIdentity.{u}).inv := rfl
 
 @[simp]
 lemma locallyRingedSpaceAdjunction_counit_app (R : CommRingCatᵒᵖ) :
