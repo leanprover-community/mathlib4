@@ -10,7 +10,7 @@ variable {α : Type} {A B C D E : Set α}
 
 
 example (h : B ∪ C ⊆ A ∪ A) : B ⊆ A := by tauto_set
-example (h: B ∩ B ∩ C ⊇ A) : A ⊆ B := by tauto_set
+example (h : B ∩ B ∩ C ⊇ A) : A ⊆ B := by tauto_set
 example (hABC : A ⊆ B ∪ C) (hCD : C ⊆ D): A ⊆ B ∪ D := by tauto_set
 
 example (h : A = Aᶜ) : B = ∅ := by tauto_set
