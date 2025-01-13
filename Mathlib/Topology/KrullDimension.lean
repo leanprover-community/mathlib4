@@ -14,7 +14,6 @@ collection of all its subsets that are closed and irreducible. Unfolding this de
 the length of longest series of closed irreducible subsets ordered by inclusion.
 -/
 
-assert_not_exists Field
 
 open Order TopologicalSpace Topology
 
