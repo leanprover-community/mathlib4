@@ -5,9 +5,9 @@ Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Algebra.Order.Group.Unbundled.Int
 import Mathlib.Algebra.Order.Nonneg.Basic
-import Mathlib.Algebra.Order.Nonneg.Lattice
 import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 import Mathlib.Algebra.Ring.Rat
+import Mathlib.Order.GaloisConnection
 
 /-!
 # Nonnegative rationals
