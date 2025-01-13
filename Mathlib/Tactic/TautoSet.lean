@@ -37,8 +37,6 @@ elab (name := specialize_all) "specialize_all" x:term : tactic => withMainContex
     tauto_set
   ```
 -/
-
-
 macro "tauto_set" : tactic => `(tactic|
   · simp_all only [
       Set.ext_iff, Set.subset_def,
