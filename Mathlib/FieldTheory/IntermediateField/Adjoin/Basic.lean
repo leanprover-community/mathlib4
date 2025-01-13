@@ -114,7 +114,6 @@ instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensio
     (C := fun s _ => FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L))
     _ Set.finite_univ ?_ ?_
   all_goals dsimp
-  · exact Set.finite_univ
   · rw [iSup_emptyset]
     exact (botEquiv K L).symm.toLinearEquiv.finiteDimensional
   · intro _ s _ _ hs
