@@ -152,7 +152,7 @@ noncomputable def completionFunctor : UniformSpaceCat ⥤ CpltSepUniformSpace wh
 /-- The inclusion of a uniform space into its completion. -/
 def completionHom (X : UniformSpaceCat) :
     X ⟶ (forget₂ CpltSepUniformSpace UniformSpaceCat).obj (completionFunctor.obj X) where
-  val := ((↑) : X → Completion X)
+  val := Completion.coe
   property := Completion.uniformContinuous_coe X
 
 @[simp]

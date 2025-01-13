@@ -159,7 +159,7 @@ instance instMetricSpace : MetricSpace (Completion α) :=
       uniformity_dist := Completion.uniformity_dist } _
 
 /-- The embedding of a metric space in its completion is an isometry. -/
-theorem coe_isometry : Isometry ((↑) : α → Completion α) :=
+theorem coe_isometry : Isometry (coe : α → Completion α) :=
   Isometry.of_dist_eq Completion.dist_eq
 
 @[simp]

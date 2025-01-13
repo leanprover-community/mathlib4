@@ -93,9 +93,8 @@ and let `g : β → R` be a function that sums to `b : R`. Then `fun i : α × �
 sums to `a * b`. -/
 theorem HasSum.mul_of_nonarchimedean {f : α → R} {g : β → R} {a b : R} (hf : HasSum f a)
     (hg : HasSum g b) : HasSum (fun i : α × β ↦ f i.1 * g i.2) (a * b) := by
-  rw [← hasSum_iff_hasSum_compl] at *
-  simp only [Function.comp_def, UniformSpace.Completion.toCompl_apply,
-    UniformSpace.Completion.coe_mul]
+  rw [← UniformSpace.Completion.hasSum_coe_comp_iff] at *
+  simp only [Function.comp_def, UniformSpace.Completion.coe_mul]
   exact (hf.mul hg) (hf.summable.mul_of_complete_nonarchimedean hg.summable :)
 
 /-- Let `R` be a nonarchimedean ring. If functions `f : α → R` and `g : β → R` are summable, then

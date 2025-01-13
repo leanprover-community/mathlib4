@@ -209,7 +209,7 @@ theorem eqOn_zero_of_preconnected_of_eventuallyEq_zero {f : E → F} {U : Set E}
     {z₀ : E} (h₀ : z₀ ∈ U) (hfz₀ : f =ᶠ[𝓝 z₀] 0) :
     EqOn f 0 U := by
   let F' := UniformSpace.Completion F
-  set e : F →L[𝕜] F' := UniformSpace.Completion.toComplL
+  set e : F →L[𝕜] F' := UniformSpace.Completion.coeL
   have : AnalyticOnNhd 𝕜 (e ∘ f) U := fun x hx => (e.analyticAt _).comp (hf x hx)
   have A : EqOn (e ∘ f) 0 U := by
     apply eqOn_zero_of_preconnected_of_eventuallyEq_zero_aux this hU h₀

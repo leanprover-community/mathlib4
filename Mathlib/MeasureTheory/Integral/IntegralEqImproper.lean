@@ -693,7 +693,7 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi
     (hderiv : ∀ x ∈ Ioi a, HasDerivAt f (f' x) x)
     (f'int : IntegrableOn f' (Ioi a)) (fint : IntegrableOn f (Ioi a)) :
     Tendsto f atTop (𝓝 0) := by
-  let F : E →L[ℝ] Completion E := Completion.toComplL
+  let F : E →L[ℝ] Completion E := Completion.coeL
   have Fderiv : ∀ x ∈ Ioi a, HasDerivAt (F ∘ f) (F (f' x)) x :=
     fun x hx ↦ F.hasFDerivAt.comp_hasDerivAt _ (hderiv x hx)
   have Fint : IntegrableOn (F ∘ f) (Ioi a) := by apply F.integrable_comp fint
@@ -889,7 +889,7 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Iic
     (hderiv : ∀ x ∈ Iic a, HasDerivAt f (f' x) x)
     (f'int : IntegrableOn f' (Iic a)) (fint : IntegrableOn f (Iic a)) :
     Tendsto f atBot (𝓝 0) := by
-  let F : E →L[ℝ] Completion E := Completion.toComplL
+  let F : E →L[ℝ] Completion E := Completion.coeL
   have Fderiv : ∀ x ∈ Iic a, HasDerivAt (F ∘ f) (F (f' x)) x :=
     fun x hx ↦ F.hasFDerivAt.comp_hasDerivAt _ (hderiv x hx)
   have Fint : IntegrableOn (F ∘ f) (Iic a) := by apply F.integrable_comp fint
@@ -962,7 +962,7 @@ lemma _root_.HasCompactSupport.ennnorm_le_lintegral_Ici_deriv
     {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
     {f : ℝ → F} (hf : ContDiff ℝ 1 f) (h'f : HasCompactSupport f) (x : ℝ) :
     (‖f x‖₊ : ℝ≥0∞) ≤ ∫⁻ y in Iic x, ‖deriv f y‖₊ := by
-  let I : F →L[ℝ] Completion F := Completion.toComplL
+  let I : F →L[ℝ] Completion F := Completion.coeL
   let f' : ℝ → Completion F := I ∘ f
   have hf' : ContDiff ℝ 1 f' := hf.continuousLinearMap_comp I
   have h'f' : HasCompactSupport f' := h'f.comp_left rfl

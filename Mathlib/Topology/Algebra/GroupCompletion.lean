@@ -127,7 +127,7 @@ instance : SubNegMonoid (Completion α) :=
       Completion.induction_on₂ a b
         (isClosed_eq (continuous_map₂ continuous_fst continuous_snd)
           (continuous_map₂ continuous_fst (Completion.continuous_map.comp continuous_snd)))
-        fun a b ↦ mod_cast congr_arg ((↑) : α → Completion α) (sub_eq_add_neg a b)
+        fun a b ↦ mod_cast congr_arg (coe : α → Completion α) (sub_eq_add_neg a b)
     zsmul := (· • ·)
     zsmul_zero' := fun a ↦
       Completion.induction_on a (isClosed_eq continuous_map continuous_const) fun a ↦
@@ -170,20 +170,28 @@ instance {M} [Monoid M] [DistribMulAction M α] [UniformContinuousConstSMul M α
 
 /-- The map from a group to its completion as a group hom. -/
 @[simps]
-def toCompl : α →+ Completion α where
+def coeAddHom : α →+ Completion α where
   toFun := (↑)
   map_add' := coe_add
   map_zero' := coe_zero
 
-theorem continuous_toCompl : Continuous (toCompl : α → Completion α) :=
+@[deprecated (since := "2025-01-05")] alias toCompl := coeAddHom
+
+theorem continuous_coeAddHom : Continuous (coeAddHom : α → Completion α) :=
   continuous_coe α
+
+@[deprecated (since := "2025-01-05")] alias continuous_toCompl := continuous_coeAddHom
 
 variable (α)
 
-theorem isDenseInducing_toCompl : IsDenseInducing (toCompl : α → Completion α) :=
+theorem isDenseInducing_coeAddHom : IsDenseInducing (coeAddHom : α → Completion α) :=
   isDenseInducing_coe
 
+@[deprecated (since := "2025-01-05")] alias isDenseInducing_toCompl := isDenseInducing_coeAddHom
+
 variable {α}
+
+@[simp, norm_cast] theorem coeAddHom_eq_coe : (coeAddHom : α → Completion α) = coe := rfl
 
 end UniformAddGroup
 
@@ -247,7 +255,7 @@ theorem AddMonoidHom.continuous_extension [CompleteSpace β] [T0Space β] (f : �
 
 /-- Completion of a continuous group hom, as a group hom. -/
 def AddMonoidHom.completion (f : α →+ β) (hf : Continuous f) : Completion α →+ Completion β :=
-  (toCompl.comp f).extension (continuous_toCompl.comp hf)
+  (coeAddHom.comp f).extension ((continuous_coe β).comp hf)
 
 @[continuity]
 theorem AddMonoidHom.continuous_completion (f : α →+ β) (hf : Continuous f) :

@@ -98,7 +98,7 @@ theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter
     {k : Set ℝ} (l : Filter ℝ) [NeBot l] [TendstoIxxClass Icc l l]
     (hl : k ∈ l) (hd : ∀ᶠ x in l, DifferentiableAt ℝ f x) (hf : Tendsto (fun x => ‖f x‖) l atTop)
     (hfg : deriv f =O[l] g) : ¬IntegrableOn g k := by
-  let a : E →ₗᵢ[ℝ] UniformSpace.Completion E := UniformSpace.Completion.toComplₗᵢ
+  let a : E →ₗᵢ[ℝ] UniformSpace.Completion E := UniformSpace.Completion.coeₗᵢ
   let f' := a ∘ f
   have h'd : ∀ᶠ x in l, DifferentiableAt ℝ f' x := by
     filter_upwards [hd] with x hx using a.toContinuousLinearMap.differentiableAt.comp x hx

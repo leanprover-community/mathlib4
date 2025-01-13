@@ -34,9 +34,9 @@ The vertical maps in the above diagrams are also normed group homs constructed i
 ## Main definitions and results:
 
 * `NormedAddGroupHom.completion`: see the discussion above.
-* `NormedAddCommGroup.toCompl : NormedAddGroupHom G (completion G)`: the canonical map from
-  `G` to its completion, as a normed group hom
-* `NormedAddGroupHom.completion_toCompl`: the above diagram indeed commutes.
+* `UniformSpace.Completion.coeNormedAddGroupHom : NormedAddGroupHom G (completion G)`:
+  the canonical map from `G` to its completion, as a normed group hom
+* `NormedAddGroupHom.completion_coeNormedAddGroupHom`: the above diagram indeed commutes.
 * `NormedAddGroupHom.norm_completion`: `‖f.completion‖ = ‖f‖`
 * `NormedAddGroupHom.ker_le_ker_completion`: the kernel of `f.completion` contains the image of
   the kernel of `f`.
@@ -121,22 +121,32 @@ theorem NormedAddGroupHom.zero_completion : (0 : NormedAddGroupHom G H).completi
 
 /-- The map from a normed group to its completion, as a normed group hom. -/
 @[simps] -- Porting note: added `@[simps]`
-def NormedAddCommGroup.toCompl : NormedAddGroupHom G (Completion G) where
-  toFun := (↑)
-  map_add' := Completion.toCompl.map_add
+def UniformSpace.Completion.coeNormedAddGroupHom : NormedAddGroupHom G (Completion G) where
+  toFun := coe
+  map_add' := Completion.coeAddHom.map_add
   bound' := ⟨1, by simp [le_refl]⟩
 
-open NormedAddCommGroup
+@[deprecated (since := "2025-01-05")] alias NormedAddCommGroup.toCompl :=
+  Completion.coeNormedAddGroupHom
 
-theorem NormedAddCommGroup.norm_toCompl (x : G) : ‖toCompl x‖ = ‖x‖ :=
-  Completion.norm_coe x
+open NormedAddCommGroup UniformSpace.Completion
 
-theorem NormedAddCommGroup.denseRange_toCompl : DenseRange (toCompl : G → Completion G) :=
-  Completion.isDenseInducing_coe.dense
+@[simp, norm_cast]
+theorem UniformSpace.Completion.coeNormedAddGroupHom_eq_coe :
+  (coeNormedAddGroupHom : NormedAddGroupHom G (Completion G)) = (coe : G → Completion G) := rfl
+
+@[deprecated (since := "2025-01-05")] alias NormedAddCommGroup.norm_toCompl :=
+  Completion.norm_coe
+
+theorem UniformSpace.Completion.denseRange_coeNormedAddGroupHom :
+  DenseRange (coeNormedAddGroupHom : G → Completion G) := Completion.isDenseInducing_coe.dense
+
+@[deprecated (since := "2025-01-05")] alias NormedAddCommGroup.denseRange_toCompl :=
+  Completion.denseRange_coeNormedAddGroupHom
 
 @[simp]
-theorem NormedAddGroupHom.completion_toCompl (f : NormedAddGroupHom G H) :
-    f.completion.comp toCompl = toCompl.comp f := by ext x; simp
+theorem NormedAddGroupHom.completion_coeNormedAddGroupHom (f : NormedAddGroupHom G H) :
+    f.completion.comp coeNormedAddGroupHom = coeNormedAddGroupHom.comp f := by ext x; simp
 
 @[simp]
 theorem NormedAddGroupHom.norm_completion (f : NormedAddGroupHom G H) : ‖f.completion‖ = ‖f‖ :=
@@ -144,13 +154,14 @@ theorem NormedAddGroupHom.norm_completion (f : NormedAddGroupHom G H) : ‖f.com
     simpa using f.completion.le_opNorm x
 
 theorem NormedAddGroupHom.ker_le_ker_completion (f : NormedAddGroupHom G H) :
-    (toCompl.comp <| incl f.ker).range ≤ f.completion.ker := by
+    (coeNormedAddGroupHom.comp <| incl f.ker).range ≤ f.completion.ker := by
   rintro _ ⟨⟨g, h₀ : f g = 0⟩, rfl⟩
   simp [h₀, mem_ker, Completion.coe_zero]
 
 theorem NormedAddGroupHom.ker_completion {f : NormedAddGroupHom G H} {C : ℝ}
     (h : f.SurjectiveOnWith f.range C) :
-    (f.completion.ker : Set <| Completion G) = closure (toCompl.comp <| incl f.ker).range := by
+    (f.completion.ker : Set <| Completion G) =
+      closure (coeNormedAddGroupHom.comp <| incl f.ker).range := by
   refine le_antisymm ?_ (closure_minimal f.ker_le_ker_completion f.completion.isClosed_ker)
   rintro hatg (hatg_in : f.completion hatg = 0)
   rw [SeminormedAddCommGroup.mem_closure_iff]
