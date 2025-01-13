@@ -197,6 +197,9 @@ def equivFunOnFinite [Finite α] : (α →₀ M) ≃ (α → M) where
 theorem equivFunOnFinite_symm_coe {α} [Finite α] (f : α →₀ M) : equivFunOnFinite.symm f = f :=
   equivFunOnFinite.symm_apply_apply f
 
+@[simp]
+lemma coe_equivFunOnFinite_symm {α} [Finite α] (f : α → M) : ⇑(equivFunOnFinite.symm f) = f := rfl
+
 /--
 If `α` has a unique term, the type of finitely supported functions `α →₀ β` is equivalent to `β`.
 -/
