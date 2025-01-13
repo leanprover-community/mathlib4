@@ -129,6 +129,7 @@ noncomputable def continuousMulEquivLimittoFiniteQuotientFunctor (P : ProfiniteG
   with
   map_mul' := (toLimit P).map_mul' }
 
+--TODO : Refactor using `(forget ProfiniteGrp.{u}).ReflectsIsomorphisms` after it is proved.
 /-- The isomorphism in the category of profinite group between a profinite group and
 the projective limit of its quotients by open normal subgroups -/
 noncomputable def isoLimittoFiniteQuotientFunctor (P : ProfiniteGrp.{u}) :

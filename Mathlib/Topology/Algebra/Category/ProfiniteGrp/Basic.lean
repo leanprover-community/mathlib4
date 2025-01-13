@@ -25,6 +25,9 @@ disconnected.
 
 * `ofClosedSubgroup` : A closed subgroup of a profinite group is profinite.
 
+# TODO
+
+* Prove `(forget ProfiniteGrp.{u}).ReflectsIsomorphisms` using `profiniteGrpToProfinite`
 -/
 
 universe u v
@@ -68,6 +71,7 @@ instance : CoeSort ProfiniteGrp (Type u) where
 attribute [instance] group topologicalGroup
     ProfiniteAddGrp.addGroup ProfiniteAddGrp.topologicalAddGroup
 
+--TODO: Refactor into one-field structure as in `AlgebraCat`
 @[to_additive]
 instance : Category ProfiniteGrp where
   Hom A B := ContinuousMonoidHom A B
