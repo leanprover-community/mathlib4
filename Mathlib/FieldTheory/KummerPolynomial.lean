@@ -9,8 +9,9 @@ import Mathlib.RingTheory.Norm.Defs
 # Irreducibility of X ^ p - a
 
 ## Main result
-- `X_pow_sub_C_irreducible_iff_of_prime`:
-  For `n = p` a prime, `X ^ n - C a` is irreducible iff `a` is not a `p`-power.
+- `X_pow_sub_C_irreducible_iff_of_prime`: For `p` prime, `X ^ p - C a` is irreducible iff `a` is not
+  a `p`-power. This is not true for composite `n`. For example, `x^4+4=(x^2-2x+2)(x^2+2x+2)` but
+  `-4` is not a 4th power.
 
 -/
 universe u
