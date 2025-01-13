@@ -87,6 +87,26 @@ noncomputable def integrate (f : ℝ → E → E) (t₀ : ℝ) (x₀ : E) (α : 
 @[simp]
 lemma integrate_apply {x₀ : E} {t : ℝ} : integrate f t₀ x₀ α t = x₀ + ∫ τ in t₀..t, f τ (α τ) := rfl
 
+/-- Given a $C^n$ time-dependent vector field `f` and a $C^n$ curve `α`, the composition `f t (α t)`
+is $C^n$ in `t`. -/
+lemma contDiffOn_comp {n : WithTop ℕ∞}
+    (hf : ContDiffOn ℝ n (uncurry f) (s ×ˢ u))
+    (hα : ContDiffOn ℝ n α s) (hmem : ∀ t ∈ s, α t ∈ u) :
+    ContDiffOn ℝ n (fun t ↦ f t (α t)) s := by
+  have : (fun t ↦ f t (α t)) = (uncurry f) ∘ fun t ↦ (t, α t) := rfl -- should this be a lemma?
+  rw [this]
+  apply hf.comp <| contDiffOn_id.prod hα
+  intro _ ht
+  rw [mem_prod]
+  exact ⟨ht, hmem _ ht⟩
+
+/-- Given a continuous time-dependent vector field `f` and a continuous curve `α`, the composition
+`f t (α t)` is continuous in `t`. -/
+lemma continuousOn_comp
+    (hf : ContinuousOn (uncurry f) (s ×ˢ u)) (hα : ContinuousOn α s) (hmem : ∀ t ∈ s, α t ∈ u) :
+    ContinuousOn (fun t ↦ f t (α t)) s :=
+  contDiffOn_zero.mp <| contDiffOn_comp (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem
+
 end
 
 /-! ## Assumptions of the Picard-Lindelof theorem-/
@@ -131,7 +151,7 @@ variable {E : Type*} [NormedAddCommGroup E]
 
 section
 
-variable {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {r L : ℝ≥0}
+variable {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {a r L : ℝ≥0}
 
 instance : CoeFun (FunSpace t₀ x₀ r L) fun _ ↦ Icc tmin tmax → E := ⟨fun α ↦ α.toFun⟩
 
@@ -178,8 +198,53 @@ instance [CompleteSpace E] : CompleteSpace (FunSpace t₀ x₀ r L) := by
 
 /-- Extend the domain of `α` from `Icc tmin tmax` to `ℝ` such that `α t = α tmin` for all `t ≤ tmin`
 and `α t = α tmax` for all `t ≥ tmax`. -/
-noncomputable def comp_proj (α : FunSpace t₀ x₀ r L) (t : ℝ) : E :=
+noncomputable def compProj (α : FunSpace t₀ x₀ r L) (t : ℝ) : E :=
   α <| projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) t
+
+@[simp]
+lemma compProj_apply {α : FunSpace t₀ x₀ r L} {t : ℝ} :
+    α.compProj t = α (projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) t) := rfl
+
+lemma compProj_subtype {α : FunSpace t₀ x₀ r L} {t : Icc tmin tmax} :
+    α.compProj t = α t := by simp only [compProj_apply, projIcc_val]
+
+@[continuity]
+lemma continuous_compProj (α : FunSpace t₀ x₀ r L) : Continuous α.compProj :=
+  α.continuous.comp continuous_projIcc
+
+/-- The image of a function in `FunSpace` is contained within a closedBall. -/
+protected lemma mem_closedBall
+    {α : FunSpace t₀ x₀ r L} (h : L * max (tmax - t₀) (t₀ - tmin) ≤ a - r) {t : Icc tmin tmax} :
+    α t ∈ closedBall x₀ a := by
+  rw [mem_closedBall, dist_eq_norm]
+  calc
+    ‖α t - x₀‖ ≤ ‖α t - α t₀‖ + ‖α t₀ - x₀‖ := norm_sub_le_norm_sub_add_norm_sub ..
+    _ ≤ L * |t.1 - t₀.1| + r := by
+      apply add_le_add _ <| mem_closedBall_iff_norm.mp α.mem_closedBall₀
+      rw [← dist_eq_norm]
+      exact α.lipschitzWith.dist_le_mul t t₀
+    _ ≤ L * max (tmax - t₀) (t₀ - tmin) + r := by
+      apply add_le_add_right
+      apply mul_le_mul_of_nonneg_left _ L.2
+      exact abs_sub_le_max_sub t.2.1 t.2.2 _
+    _ ≤ a - r + r := add_le_add_right h _
+    _ = a := sub_add_cancel _ _
+
+lemma compProj_mem_closedBall
+    (α : FunSpace t₀ x₀ r L) (h : L * max (tmax - t₀) (t₀ - tmin) ≤ a - r) {t : ℝ} :
+    α.compProj t ∈ closedBall x₀ a := by
+  rw [compProj_apply]
+  exact α.mem_closedBall h
+
+end
+
+section
+
+variable [NormedSpace ℝ E]
+  {f : ℝ → E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ x y : E} {a r L K : ℝ≥0}
+
+
+
 
 end
 
