@@ -22,7 +22,7 @@ We start developing API around this notion.
 
 All these are given in the `VectorField` namespace because pullbacks, Lie brackets, and so on,
 are notions that make sense in a variety of contexts. We also prefix the notions with `m` to
-distinguish the manifold notions from the vector spaces notions.
+distinguish the manifold notions from the vector space notions.
 
 For notions that come naturally in other namespaces for dot notation, we specify `vectorField` in
 the name to lift ambiguities. For instance, the fact that the Lie bracket of two smooth vector
@@ -77,7 +77,7 @@ instance [IsManifold I (minSmoothness 𝕜 2) M] :
 
 namespace VectorField
 
-section
+section Pullback
 
 /-! ### Pullback of vector fields in manifolds -/
 
@@ -130,8 +130,21 @@ lemma mpullbackWithin_neg :
   ext x
   simp [mpullbackWithin_apply]
 
+lemma mpullbackWithin_id {V : Π (x : M), TangentSpace I x} (h : UniqueMDiffWithinAt I s x) :
+    mpullbackWithin I I id V s x = V x := by
+  simp [mpullbackWithin_apply, mfderivWithin_id h]
+
 lemma mpullback_apply :
     mpullback I I' f V x = (mfderiv I I' f x).inverse (V (f x)) := rfl
+
+lemma mpullback_smul_apply :
+    mpullback I I' f (c • V) x = c • mpullback I I' f V x := by
+  simp [mpullback]
+
+lemma mpullback_smul :
+    mpullback I I' f (c • V) = c • mpullback I I' f V := by
+  ext x
+  simp [mpullback_apply]
 
 lemma mpullback_add_apply :
     mpullback I I' f (V + V₁) x = mpullback I I' f V x + mpullback I I' f V₁ x := by
@@ -161,13 +174,22 @@ lemma mpullbackWithin_eq_pullbackWithin {f : E → E'} {V : E' → E'} {s : Set 
   simp only [mpullbackWithin, mfderivWithin_eq_fderivWithin, pullbackWithin]
   rfl
 
+lemma mpullback_eq_pullback {f : E → E'} {V : E' → E'} :
+    mpullback 𝓘(𝕜, E) 𝓘(𝕜, E') f V = pullback 𝕜 f V := by
+  simp only [← mpullbackWithin_univ, ← pullbackWithin_univ, mpullbackWithin_eq_pullbackWithin]
+
 @[simp] lemma mpullback_id {V : Π (x : M), TangentSpace I x} : mpullback I I id V = V := by
   ext x
   simp [mpullback]
 
-/-! ### Regularity of pullback of vector fields -/
+/-! ### Regularity of pullback of vector fields
 
-section
+In this paragraph, we assume that the model space is complete, to ensure that the set of invertible
+linear maps is open and that inversion is a smooth map there. Otherwise, the pullback of vector
+fields could behave wildly, even at points where the derivative of the map is invertible.
+-/
+
+section MDifferentiability
 
 variable [IsManifold I 2 M] [IsManifold I' 2 M'] [CompleteSpace E]
 
@@ -180,7 +202,7 @@ protected lemma _root_.MDifferentiableWithinAt.mpullbackWithin_vectorField_inter
     (hx₀ : x₀ ∈ s) (hs : UniqueMDiffOn I s) (hmn : 2 ≤ n) :
     MDifferentiableWithinAt I I.tangent
       (fun (y : M) ↦ (mpullbackWithin I I' f V s y : TangentBundle I M)) (s ∩ f ⁻¹' t) x₀ := by
-  /- We want to apply the general theorem `MDifferentiableWithinAt.clm_apply_of_inCoordinates`,
+  /- We want to apply the theorem `MDifferentiableWithinAt.clm_apply_of_inCoordinates`,
   stating that applying linear maps to vector fields gives a smooth result when the linear map and
   the vector field are smooth. This theorem is general, we will apply it to
   `b₁ = f`, `b₂ = id`, `v = V ∘ f`, `ϕ = fun x ↦ (mfderivWithin I I' f s x).inverse`-/
@@ -249,8 +271,8 @@ lemma _root_.MDifferentiableWithinAt.mpullbackWithin_vectorField_inter_of_eq
   subst h
   exact hV.mpullbackWithin_vectorField_inter hf hf' hx₀ hs hmn
 
-/-- The pullback of a `C^m` vector field by a `C^n` function with `m + 1 ≤ n` is `C^m`.
-Version on a set. -/
+/-- The pullback of a differentiable vector field by a `C^n` function with `2 ≤ n` is
+differentiable. Version on a set. -/
 protected lemma _root_.MDifferentiableOn.mpullbackWithin_vectorField_inter
     (hV : MDifferentiableOn I' I'.tangent (fun (y : M') ↦ (V y : TangentBundle I' M')) t)
     (hf : ContMDiffOn I I' n f s) (hf' : ∀ x ∈ s ∩ f ⁻¹' t, (mfderivWithin I I' f s x).IsInvertible)
@@ -310,8 +332,8 @@ protected lemma _root_.MDifferentiable.mpullback_vectorField
     MDifferentiable I I.tangent (fun (y : M) ↦ (mpullback I I' f V y : TangentBundle I M)) :=
   fun x ↦ MDifferentiableAt.mpullback_vectorField (hV (f x)) (hf x) (hf' x) hmn
 
-end
+end MDifferentiability
 
-end
+end Pullback
 
 end VectorField
