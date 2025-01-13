@@ -1318,7 +1318,7 @@ def C : 𝕜 →+* α →ᵇ γ where
   map_add' _ _ := ext fun _ => (algebraMap 𝕜 γ).map_add _ _
 
 instance instAlgebra : Algebra 𝕜 (α →ᵇ γ) where
-  toRingHom := C
+  algebraMap := C
   commutes' _ _ := ext fun _ ↦ Algebra.commutes' _ _
   smul_def' _ _ := ext fun _ ↦ Algebra.smul_def' _ _
 
