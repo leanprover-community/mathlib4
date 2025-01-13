@@ -784,7 +784,6 @@ theorem clift_self (h : proj e.1 = γ i) :
   have : proj e ∈ T.baseSet := by simp [h]
   simp [clift, liftCM, ← h, lift_self, this]
 
-@[simp]
 theorem proj_clift : proj (T.clift (e, γ) i) = γ i := by
   simp [clift, liftCM, proj_lift]
 
