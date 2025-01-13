@@ -348,31 +348,14 @@ def starClosure (S : Subalgebra R A) : StarSubalgebra R A where
     rw [← mem_star_iff _ a, star_adjoin_comm, sup_comm]
     simpa using ha
 
+theorem starClosure_coe (S : Subalgebra R A) :
+    (S.starClosure : Set A) = (S ⊔ star S : Subalgebra R A) := rfl
+
+theorem starClosure_mem (S : Subalgebra R A) {x : A} :
+    x ∈ S.starClosure ↔ x ∈ S ⊔ star S := Iff.rfl
+
 theorem starClosure_toSubalgebra (S : Subalgebra R A) :
     S.starClosure.toSubalgebra = S ⊔ star S := rfl
-
-theorem le_starClosure_toSubalgebra (S : Subalgebra R A) : S ≤ S.starClosure.toSubalgebra := by
-  rw [starClosure_toSubalgebra]; simp
-
-theorem star_le_starClosure_toSubalgebra (S : Subalgebra R A) :
-    star S ≤ S.starClosure.toSubalgebra := by
-  rw [starClosure_toSubalgebra]; simp
-
-@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
-theorem subset_starClosure (S : Subalgebra R A) : (S : Set A) ⊆ S.starClosure :=
-  le_starClosure_toSubalgebra _
-
-@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
-theorem star_subset_starClosure (S : Subalgebra R A) : (star S : Set A) ⊆ S.starClosure :=
-  star_le_starClosure_toSubalgebra _
-
-@[aesop unsafe 80% apply (rule_sets := [SetLike])]
-theorem mem_starClosure_of_mem {S : Subalgebra R A} {x : A} (hx : x ∈ S) : x ∈ S.starClosure :=
-  le_starClosure_toSubalgebra _ hx
-
-@[aesop unsafe 80% apply (rule_sets := [SetLike])]
-theorem mem_starClosure_of_star_mem {S : Subalgebra R A} {x : A} (hx : star x ∈ S) :
-    x ∈ S.starClosure := star_le_starClosure_toSubalgebra _ hx
 
 theorem starClosure_le {S₁ : Subalgebra R A} {S₂ : StarSubalgebra R A} (h : S₁ ≤ S₂.toSubalgebra) :
     S₁.starClosure ≤ S₂ :=

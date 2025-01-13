@@ -574,35 +574,17 @@ def starClosure (S : NonUnitalSubalgebra R A) : NonUnitalStarSubalgebra R A wher
     simp only [Set.sup_eq_union, star_adjoin_comm, Set.union_star, coe_star, star_star,
       Set.union_comm]
 
+theorem starClosure_coe (S : NonUnitalSubalgebra R A) :
+    (S.starClosure : Set A) = (S ⊔ star S : NonUnitalSubalgebra R A) := rfl
+
+theorem starClosure_mem (S : NonUnitalSubalgebra R A) {x : A} :
+    x ∈ S.starClosure ↔ x ∈ S ⊔ star S := Iff.rfl
+
 theorem starClosure_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A) :
     S.starClosure.toNonUnitalSubalgebra = S ⊔ star S := rfl
 
 @[deprecated (since := "05-01-2025")] alias
   starClosure_toNonunitalSubalgebra := starClosure_toNonUnitalSubalgebra
-
-theorem le_starClosure_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A) :
-    S ≤ S.starClosure.toNonUnitalSubalgebra := by
-  rw [starClosure_toNonUnitalSubalgebra]; simp
-
-theorem star_le_starClosure_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A) :
-    star S ≤ S.starClosure.toNonUnitalSubalgebra := by
-  rw [starClosure_toNonUnitalSubalgebra]; simp
-
-@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
-theorem subset_starClosure (S : NonUnitalSubalgebra R A) : (S : Set A) ⊆ S.starClosure :=
-  le_starClosure_toNonUnitalSubalgebra _
-
-@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
-theorem star_subset_starClosure (S : NonUnitalSubalgebra R A) : (star S : Set A) ⊆ S.starClosure :=
-  star_le_starClosure_toNonUnitalSubalgebra _
-
-@[aesop unsafe 80% apply (rule_sets := [SetLike])]
-theorem mem_starClosure_of_mem {S : NonUnitalSubalgebra R A} {x : A} (hx : x ∈ S) :
-    x ∈ S.starClosure := le_starClosure_toNonUnitalSubalgebra _ hx
-
-@[aesop unsafe 80% apply (rule_sets := [SetLike])]
-theorem mem_starClosure_of_star_mem {S : NonUnitalSubalgebra R A} {x : A} (hx : star x ∈ S) :
-    x ∈ S.starClosure := star_le_starClosure_toNonUnitalSubalgebra _ hx
 
 theorem starClosure_le {S₁ : NonUnitalSubalgebra R A} {S₂ : NonUnitalStarSubalgebra R A}
     (h : S₁ ≤ S₂.toNonUnitalSubalgebra) : S₁.starClosure ≤ S₂ :=
