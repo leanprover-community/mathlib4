@@ -598,7 +598,7 @@ def swapEquiv : ℍ[R,c₁,0,c₃] ≃ₐ[R] ℍ[R,c₃,0,c₁] where
   invFun t := ⟨t.1, t.3, t.2, -t.4⟩
   left_inv _ := by simp
   right_inv _ := by simp
-  map_mul' _ _ := by ext <;> simp <;> linear_combination
+  map_mul' _ _ := by ext <;> simp <;> ring
   map_add' _ _ := by ext <;> simp [add_comm]
   commutes' _ := by simp [algebraMap_eq]
 
@@ -768,7 +768,7 @@ namespace Quaternion
 variable {S T R : Type*} [CommRing R] (r x y : R) (a b : ℍ[R])
 
 /-- Coercion `R → ℍ[R]`. -/
-@[coe] def coe : R → ℍ[R] := QuaternionAlgebra.coe
+@[coe] abbrev coe : R → ℍ[R] := QuaternionAlgebra.coe
 
 instance : CoeTC R ℍ[R] := ⟨coe⟩
 
@@ -1061,19 +1061,19 @@ theorem finrank_eq_four [StrongRankCondition R] : Module.finrank R ℍ[R] = 4 :=
 @[simp] theorem star_im : (star a).im = -a.im := a.im_star
 
 nonrec theorem self_add_star' : a + star a = ↑(2 * a.re) := by
-  simp [a.self_add_star']; rfl
+  simp [a.self_add_star']
 
 nonrec theorem self_add_star : a + star a = 2 * a.re := by
-  simp [a.self_add_star]; rfl
+  simp [a.self_add_star]
 
 nonrec theorem star_add_self' : star a + a = ↑(2 * a.re) := by
-  simp [a.star_add_self']; rfl
+  simp [a.star_add_self']
 
 nonrec theorem star_add_self : star a + a = 2 * a.re := by
-  simp [a.star_add_self]; rfl
+  simp [a.star_add_self]
 
 nonrec theorem star_eq_two_re_sub : star a = ↑(2 * a.re) - a := by
-  simp [a.star_eq_two_re_sub]; rfl
+  simp [a.star_eq_two_re_sub]
 
 @[simp, norm_cast]
 theorem star_coe : star (x : ℍ[R]) = x :=
