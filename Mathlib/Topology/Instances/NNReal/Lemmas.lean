@@ -9,7 +9,6 @@ import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Topology.MetricSpace.Isometry
 import Mathlib.Topology.Instances.NNReal.Defs
-import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
 # Topology on `ℝ≥0`
