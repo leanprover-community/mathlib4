@@ -273,7 +273,7 @@ end Sylow
 
 variable (G) in
 /-- If `G` is a finite Z-group, then `commutator G` is a Hall subgroup of `G`. -/
-theorem coprime_commutator_index [Finite G] [IsZGroup G] :
+theorem IsZGroup.coprime_commutator_index [Finite G] [IsZGroup G] :
     (Nat.card (commutator G)).Coprime (commutator G).index := by
   suffices h : ∀ p, p.Prime → (¬ p ∣ Nat.card (commutator G) ∨ ¬ p ∣ (commutator G).index) by
     contrapose! h
