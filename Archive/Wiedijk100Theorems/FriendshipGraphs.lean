@@ -38,8 +38,6 @@ be phrased in terms of counting walks.
 
 -/
 
-open scoped Classical
-
 namespace Theorems100
 
 noncomputable section
