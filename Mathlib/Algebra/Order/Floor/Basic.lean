@@ -6,7 +6,7 @@ Authors: Mario Carneiro, Kevin Kappelmann
 import Mathlib.Algebra.Order.Floor.Defs
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Interval.Set.Group
-import Mathlib.Algebra.Group.Int
+import Mathlib.Algebra.Group.Int.Defs
 import Mathlib.Data.Int.Lemmas
 import Mathlib.Data.Nat.Cast.Order.Field
 import Mathlib.Data.Set.Subsingleton
