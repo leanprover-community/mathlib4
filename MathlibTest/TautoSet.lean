@@ -131,7 +131,7 @@ example {X Y : Set α} {a : α} (hXY : X ∩ Y = {a}) :
 example {A B X : Set α} (hAX : Disjoint A X) (hBX : Disjoint B X) :
     A ∪ X ⊆ B ∪ X ↔ A ⊆ B := by
   constructor
-  · intro h; tauto_set
+  · intro; tauto_set
   · intro h; tauto_set
 
 -- symmDiff_eq_alt
