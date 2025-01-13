@@ -334,4 +334,25 @@ def Arrow.isoOfNatIso {C D : Type*} [Category C] [Category D] {F G : C ⥤ D} (e
     (f : Arrow C) : F.mapArrow.obj f ≅ G.mapArrow.obj f :=
   Arrow.isoMk (e.app f.left) (e.app f.right)
 
+variable (T)
+
+/-- `Arrow T` is equivalent to a sigma type. -/
+@[simps!]
+def Arrow.equivSigma :
+    Arrow T ≃ Σ (X Y : T), X ⟶ Y where
+  toFun f := ⟨_, _, f.hom⟩
+  invFun x := Arrow.mk x.2.2
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+/-- The equivalence `Arrow (Discrete S) ≃ S`. -/
+def Arrow.discreteEquiv (S : Type u) : Arrow (Discrete S) ≃ S where
+  toFun f := f.left.as
+  invFun s := Arrow.mk (𝟙 (Discrete.mk s))
+  left_inv := by
+    rintro ⟨⟨_⟩, ⟨_⟩, f⟩
+    obtain rfl := Discrete.eq_of_hom f
+    rfl
+  right_inv _ := rfl
+
 end CategoryTheory
