@@ -15,7 +15,7 @@ namespace Mathlib.Tactic.TautoSet
 open Lean Elab.Tactic
 
 /--
-  `specialize_all x` runs `specialize h x` for all hypotheses `h` where this tactic succeeds.
+`specialize_all x` runs `specialize h x` for all hypotheses `h` where this tactic succeeds.
 -/
 elab (name := specialize_all) "specialize_all" x:term : tactic => withMainContext do
   for h in ← getLCtx do
