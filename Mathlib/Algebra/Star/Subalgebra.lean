@@ -366,11 +366,11 @@ theorem subset_starClosure (S : Subalgebra R A) : (S : Set A) ⊆ S.starClosure.
 theorem star_subset_starClosure (S : Subalgebra R A) :
     (star S : Set A) ⊆ S.starClosure.toSubalgebra := star_le_starClosure_toSubalgebra _
 
-@[aesop unsafe 50% apply (rule_sets := [SetLike])]
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
 theorem mem_starClosure_of_mem {S : Subalgebra R A} {x : A} (hx : x ∈ S) : x ∈ S.starClosure :=
   le_starClosure_toSubalgebra _ hx
 
-@[aesop unsafe 49% apply (rule_sets := [SetLike])]
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
 theorem mem_starClosure_of_star_mem {S : Subalgebra R A} {x : A} (hx : star x ∈ S) :
     x ∈ S.starClosure := star_le_starClosure_toSubalgebra _ hx
 
@@ -422,10 +422,10 @@ theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
 theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
   Set.subset_union_right.trans Algebra.subset_adjoin
 
-@[aesop unsafe 50% apply (rule_sets := [SetLike])]
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
 theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin R s hx
 
-@[aesop unsafe 49% apply (rule_sets := [SetLike])]
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
 theorem mem_adjoin_of_star_mem {s : Set A} {x : A} (hx : star x ∈ s) : x ∈ adjoin R s :=
   star_subset_adjoin R s hx
 

@@ -543,7 +543,7 @@ theorem adjoin_toSubmodule (s : Set A) :
 theorem subset_adjoin {s : Set A} : s ⊆ adjoin R s :=
   NonUnitalSubsemiring.subset_closure.trans Submodule.subset_span
 
-@[aesop unsafe 50% apply (rule_sets := [SetLike])]
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
 theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin R hx
 
 theorem self_mem_adjoin_singleton (x : A) : x ∈ adjoin R ({x} : Set A) :=

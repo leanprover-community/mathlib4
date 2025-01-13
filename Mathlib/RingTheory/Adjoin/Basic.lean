@@ -44,7 +44,7 @@ variable {s t : Set A}
 theorem subset_adjoin : s ⊆ adjoin R s :=
   Algebra.gc.le_u_l s
 
-@[aesop unsafe 50% apply (rule_sets := [SetLike])]
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
 theorem mem_adjoin_of_mem {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin hx
 
 theorem adjoin_le {S : Subalgebra R A} (H : s ⊆ S) : adjoin R s ≤ S :=

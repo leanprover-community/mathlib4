@@ -598,11 +598,11 @@ theorem star_subset_starClosure (S : NonUnitalSubalgebra R A) :
     (star S : Set A) ⊆ S.starClosure.toNonUnitalSubalgebra :=
   star_le_starClosure_toNonUnitalSubalgebra _
 
-@[aesop unsafe 50% apply (rule_sets := [SetLike])]
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
 theorem mem_starClosure_of_mem {S : NonUnitalSubalgebra R A} {x : A} (hx : x ∈ S) :
     x ∈ S.starClosure := le_starClosure_toNonUnitalSubalgebra _ hx
 
-@[aesop unsafe 49% apply (rule_sets := [SetLike])]
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
 theorem mem_starClosure_of_star_mem {S : NonUnitalSubalgebra R A} {x : A} (hx : star x ∈ S) :
     x ∈ S.starClosure := star_le_starClosure_toNonUnitalSubalgebra _ hx
 
@@ -665,10 +665,10 @@ theorem subset_adjoin (s : Set A) : s ⊆ adjoin R s :=
 theorem star_subset_adjoin (s : Set A) : star s ⊆ adjoin R s :=
   Set.subset_union_right.trans <| NonUnitalAlgebra.subset_adjoin R
 
-@[aesop unsafe 50% apply (rule_sets := [SetLike])]
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
 theorem mem_adjoin_of_mem {s : Set A} {x : A} (hx : x ∈ s) : x ∈ adjoin R s := subset_adjoin R s hx
 
-@[aesop unsafe 49% apply (rule_sets := [SetLike])]
+@[aesop unsafe 80% apply (rule_sets := [SetLike])]
 theorem mem_adjoin_of_star_mem {s : Set A} {x : A} (hx : star x ∈ s) : x ∈ adjoin R s :=
   star_subset_adjoin R s hx
 
