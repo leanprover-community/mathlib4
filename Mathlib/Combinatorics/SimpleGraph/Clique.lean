@@ -151,11 +151,11 @@ protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsCl
 
 /-- If a set of vertices `A` is a clique in subgraph of `G` induced by a superset of `A`,
  it's embedding is a clique in `G`. -/
-theorem induce_isClique {S : Subgraph G} {F : Set α} {A : Set F} (iC : (S.induce F).coe.IsClique A) :
+theorem induce_isClique {S : Subgraph G} {F : Set α} {A : Set F} (c : (S.induce F).coe.IsClique A) :
     G.IsClique (Subtype.val <$> A) := by
   simp_all [Set.Pairwise]
   intro a ainF ainA b binF binA anb
-  exact S.adj_sub (iC a ainF ainA b binF binA anb)
+  exact S.adj_sub (c a ainF ainA b binF binA anb)
 
 end Clique
 
