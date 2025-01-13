@@ -41,9 +41,9 @@ elab (name := specialize_all) "specialize_all" x:term : tactic => withMainContex
 
 macro "tauto_set" : tactic => `(tactic|
   · simp_all only [
-      Set.diff_eq, Set.disjoint_iff, Set.symmDiff_def,
       Set.ext_iff, Set.subset_def,
-      Set.mem_union, Set.mem_compl_iff, Set.mem_inter_iff
+      Set.mem_union, Set.mem_compl_iff, Set.mem_inter_iff,
+      Set.symmDiff_def, Set.diff_eq, Set.disjoint_iff
     ]
     try intro x
     try specialize_all x
