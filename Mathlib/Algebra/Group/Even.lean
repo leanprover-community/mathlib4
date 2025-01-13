@@ -97,7 +97,7 @@ lemma IsSquare.one [MulOneClass α] : IsSquare (1 : α) := ⟨1, (mul_one _).sym
 section MonoidHom
 variable [MulOneClass α] [MulOneClass β] [FunLike F α β] [MonoidHomClass F α β]
 
-@[to_additive (attr := aesop unsafe 80% apply)]
+@[to_additive (attr := aesop unsafe 90% apply)]
 lemma IsSquare.map {a : α} (f : F) : IsSquare a → IsSquare (f a) :=
   fun ⟨r, _⟩ => ⟨f r, by simp_all⟩
 
@@ -127,11 +127,11 @@ lemma IsSquare.sq (r : α) : IsSquare (r ^ 2) := ⟨r, pow_two _⟩
 
 @[deprecated (since := "2024-12-27")] alias IsSquare_sq := IsSquare.sq
 
-@[to_additive (attr := aesop unsafe 20% apply)]
+@[to_additive (attr := aesop unsafe 80% apply)]
 lemma IsSquare.pow (n : ℕ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨r, rfl⟩; exact ⟨r ^ n, (Commute.refl _).mul_pow _⟩
 
-@[to_additive (attr := aesop unsafe 80% apply)]
+@[to_additive (attr := aesop unsafe 90% apply)]
 lemma Even.isSquare_pow : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨m, rfl⟩ a; exact ⟨a ^ m, pow_add _ _ _⟩
 
@@ -155,7 +155,7 @@ variable [DivisionMonoid α] {a : α}
 alias ⟨_, IsSquare.inv⟩ := isSquare_inv
 attribute [to_additive] IsSquare.inv
 
-@[to_additive (attr := aesop unsafe 20% apply)]
+@[to_additive (attr := aesop unsafe 80% apply)]
 lemma IsSquare.zpow (n : ℤ) : IsSquare a → IsSquare (a ^ n) := by
   rintro ⟨r, rfl⟩; exact ⟨r ^ n, (Commute.refl _).mul_zpow _⟩
 
@@ -165,7 +165,7 @@ end DivisionMonoid
 lemma IsSquare.div [DivisionCommMonoid α] {a b : α} (ha : IsSquare a) (hb : IsSquare b) :
     IsSquare (a / b) := by rw [div_eq_mul_inv]; exact ha.mul hb.inv
 
-@[to_additive (attr := aesop unsafe 80% apply)]
+@[to_additive (attr := aesop unsafe 90% apply)]
 lemma Even.isSquare_zpow [Group α] {n : ℤ} : Even n → ∀ a : α, IsSquare (a ^ n) := by
   rintro ⟨m, rfl⟩ a; exact ⟨a ^ m, zpow_add _ _ _⟩
 
