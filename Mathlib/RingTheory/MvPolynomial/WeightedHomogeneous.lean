@@ -360,8 +360,8 @@ theorem weightedHomogeneousComponent_eq_zero [SemilatticeSup M] [OrderBot M]
 theorem weightedHomogeneousComponent_finsupp :
     (Function.support fun m => weightedHomogeneousComponent w m φ).Finite := by
   apply Finite.subset ((fun d : σ →₀ ℕ => (weight w) d) '' (φ.support : Set (σ →₀ ℕ))).toFinite
-    exact Finite.subset ((fun d : σ →₀ ℕ => (weight w) d) '' ↑(support φ)).toFinite this
   intro m hm
+  by_contra hm'
   apply hm (weightedHomogeneousComponent_eq_zero' m φ _)
   simpa only [Set.mem_image, not_exists, not_and] using hm'
 
