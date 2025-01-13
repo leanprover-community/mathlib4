@@ -147,8 +147,8 @@ end Algebra
 
 namespace Polynomial
 
-/-- If `S` is the localization of `R` at a submonoid `M`, then `S[X]` is the localization of
-`R[X]` at `M.map Polynomial.C`.
+/-- If `A` is the localization of `R` at a submonoid `S`, then `A[X]` is the localization of
+`R[X]` at `S.map Polynomial.C`.
 
 See also `MvPolynomial.isLocalization` for the multivariate case. -/
 lemma isLocalization {R} [CommRing R] (S : Submonoid R) (A) [CommRing A] [Algebra R A]
