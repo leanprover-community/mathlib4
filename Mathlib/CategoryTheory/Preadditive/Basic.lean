@@ -3,12 +3,12 @@ Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Jakob von Raumer
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Units
 import Mathlib.Algebra.Module.End
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Preadditive categories

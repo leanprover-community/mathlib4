@@ -82,6 +82,8 @@ for the inverse of `e`).
 * `Matroid.ofBaseOfFinite` constructs a `Finite` matroid from its bases.
 -/
 
+assert_not_exists Field
+
 open Set Matroid
 
 variable {α : Type*}
