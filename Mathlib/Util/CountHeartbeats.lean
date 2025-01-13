@@ -195,7 +195,7 @@ open Lean Elab Command
 namespace Mathlib.Linter
 
 /--
-The "countHeartbeats" linter counts the hearbeats of every declaration.
+The "countHeartbeats" linter counts the heartbeats of every declaration.
 
 The effect of the linter is similar to `#count_heartbeats in xxx`, except that it applies
 to all declarations.
