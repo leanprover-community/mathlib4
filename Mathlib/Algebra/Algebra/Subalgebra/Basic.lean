@@ -83,7 +83,7 @@ variable (S : Subalgebra R A)
 instance instSMulMemClass : SMulMemClass (Subalgebra R A) R A where
   smul_mem {S} r x hx := (Algebra.smul_def r x).symm ▸ mul_mem (S.algebraMap_mem' r) hx
 
-@[simp]
+@[simp, aesop safe apply (rule_sets := [SetLike])]
 theorem _root_.algebraMap_mem {S R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
     [SetLike S A] [OneMemClass S A] [SMulMemClass S R A] (s : S) (r : R) :
     algebraMap R A r ∈ s :=
@@ -1156,7 +1156,7 @@ variable {R : Type*} [Ring R]
 def subalgebraOfSubring (S : Subring R) : Subalgebra ℤ R :=
   { S with
     algebraMap_mem' := fun i =>
-      Int.induction_on i (by simpa using S.zero_mem)
+      Int.induction_on i (by simp)
         (fun i ih => by simpa using S.add_mem ih S.one_mem) fun i ih =>
         show ((-i - 1 : ℤ) : R) ∈ S by
           rw [Int.cast_sub, Int.cast_one]

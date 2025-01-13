@@ -69,7 +69,11 @@ export ZeroMemClass (zero_mem)
 
 attribute [to_additive] OneMemClass
 
-attribute [simp] one_mem zero_mem
+/-
+Aesop attribute is for closing goals of the form `?x ∈ s`, allowing Aesop to show
+`[SetLike S M] [Zero/OneMemClass S M] (s : S) → ∃ x : M, x ∈ s`
+-/
+attribute [simp, aesop safe apply (rule_sets := [SetLike])] one_mem zero_mem
 
 section
 

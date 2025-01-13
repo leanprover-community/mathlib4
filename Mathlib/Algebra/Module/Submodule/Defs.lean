@@ -93,7 +93,7 @@ theorem carrier_inj : p.carrier = q.carrier ↔ p = q :=
 equalities. -/
 protected def copy (p : Submodule R M) (s : Set M) (hs : s = ↑p) : Submodule R M where
   carrier := s
-  zero_mem' := by simpa [hs] using p.zero_mem'
+  zero_mem' := by simp [hs]
   add_mem' := hs.symm ▸ p.add_mem'
   smul_mem' := by simpa [hs] using p.smul_mem'
 
