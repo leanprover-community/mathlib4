@@ -228,8 +228,13 @@ scoped[Manifold]
     (modelWithCornersEuclideanHalfSpace n :
       ModelWithCorners ℝ (EuclideanSpace ℝ (Fin n)) (EuclideanHalfSpace n))
 
-lemma modelWithCornersEuclideanHalfSpace_zero {n : ℕ} [NeZero n] :
-    (𝓡∂ n) ⟨fun _ ↦ 0, by norm_num⟩ = 0 := rfl
+instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) where
+  zero :=  ⟨fun _ ↦ 0, by norm_num⟩
+
+instance {n : ℕ} [NeZero n] : Zero (EuclideanQuadrant n) where
+  zero :=  ⟨fun _ ↦ 0, by norm_num⟩
+
+lemma modelWithCornersEuclideanHalfSpace_zero {n : ℕ} [NeZero n] : (𝓡∂ n) 0 = 0 := rfl
 
 lemma range_modelWithCornersEuclideanHalfSpace (n : ℕ) [NeZero n] :
     range (𝓡∂ n) = { y | 0 ≤ y 0 } := range_euclideanHalfSpace n
@@ -309,6 +314,7 @@ open Fact.Manifold
 
 lemma IccLeftChart_extend_bot : (IccLeftChart x y).extend (𝓡∂ 1) ⊥ = 0 := by
   norm_num [IccLeftChart, modelWithCornersEuclideanHalfSpace_zero]
+  congr
 
 lemma iccLeftChart_extend_zero {p : Set.Icc x y} :
     (IccLeftChart x y).extend (𝓡∂ 1) p 0 = p.val - x := rfl
@@ -374,6 +380,7 @@ def IccRightChart (x y : ℝ) [h : Fact (x < y)] :
 lemma IccRightChart_extend_top :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ = 0 := by
   norm_num [IccRightChart, modelWithCornersEuclideanHalfSpace_zero]
+  congr
 
 lemma IccRightChart_extend_right_mem_frontier :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ ∈ frontier (range (𝓡∂ 1)) := by
