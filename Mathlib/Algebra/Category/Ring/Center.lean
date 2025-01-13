@@ -34,61 +34,66 @@ For any ring `R`, the center of `R` is isomorphic to `End (𝟭 (ModuleCat R))`,
 of the identity functor on the category of `R`-modules.
 -/
 @[simps]
-def Subring.centerEquivEndIdFunctor : Subring.center R ≃+* End (𝟭 (ModuleCat.{max v u} R)) where
+def Subring.centerEquivEndIdFunctor [Small.{v} R] :
+    Subring.center R ≃+* End (𝟭 (ModuleCat.{v} R)) where
   toFun x :=
-    { app M := ModuleCat.ofHom
-        { toFun := (x.1 • ·)
-          map_add' := by aesop
-          map_smul' r m := by simp [← mul_smul, Subring.mem_center_iff.1 x.2 r] } }
-  map_add' x y := by
-    apply NatTrans.ext
-    ext M (m : M)
-    exact add_smul x.1 y.1 m
-  map_mul' x y := by
-    apply NatTrans.ext
-    ext M (m : M)
-    exact mul_smul x.1 y.1 m
-  invFun f := ⟨f.app (.of R <| ULift R) |>.hom (1 : ULift R) |>.down, by
+  { app M := ModuleCat.ofHom
+      { toFun := (x.1 • ·)
+        map_add' := by aesop
+        map_smul' r := by simp [← mul_smul, Subring.mem_center_iff.1 x.2 r] } }
+  invFun f := ⟨(equivShrink R).symm <| f.app (.of R <| Shrink.{v} R) |>.hom (1 : Shrink.{v} R), by
     rw [Subring.mem_center_iff]
     intro r
-    have := congr(($(f.naturality (X := .of R <| ULift R) (Y := .of R <| ULift R) (ModuleCat.ofHom
-      { toFun x := x * .up r
+    have := congr((equivShrink R).symm ($(f.naturality (X := .of R <| Shrink.{v} R) (Y := .of R <| Shrink.{v} R)
+      (ModuleCat.ofHom
+      { toFun x := x * equivShrink R r
         map_add' := by simp [add_mul]
-        map_smul' := by intros; ext; simp [mul_assoc] })).hom (1 : ULift R)).down)
+        map_smul' := by intros; ext; simp [mul_assoc] })).hom (1 : Shrink.{v} R)))
     simp only [Functor.id_obj, Functor.id_map, ModuleCat.hom_comp, LinearMap.coe_comp,
-      LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, one_mul, ULift.mul_down] at this
+      LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply, one_mul, equivShrink_symm_mul,
+      Equiv.symm_apply_apply] at this
     erw [← this]
-    have := congr($((f.app (ModuleCat.of R <| ULift R)).hom.map_smul r (1 : ULift R)).down)
-    rw [show r • (1 : ULift R) = .up r by ext; simp] at this
-    simp only [Functor.id_obj, ULift.smul_down, smul_eq_mul] at this
+    have := congr((equivShrink R).symm
+      $((f.app (ModuleCat.of R <| Shrink.{v} R)).hom.map_smul r (1 : Shrink.{v} R)))
+    rw [show r • (1 : Shrink.{v} R) = equivShrink R r by ext; simp] at this
+    simp only [Functor.id_obj, equivShrink_symm_smul, smul_eq_mul] at this
     exact this.symm⟩
-  left_inv x := by simp
+  left_inv _ := by simp
   right_inv f := by
     apply NatTrans.ext
     ext M (m : M)
     simp only [Functor.id_obj, LinearMap.coe_mk, AddHom.coe_mk]
-    have := congr($(f.naturality (X := .of R <| ULift R) (Y := .of R M)
+    have := congr($(f.naturality (X := .of R <| Shrink.{v} R) (Y := .of R M)
       (ModuleCat.ofHom
-        { toFun x := x • m
+        { toFun x := (equivShrink R).symm x • m
           map_add' := by simp [add_smul]
-          map_smul' x y := by simp [mul_smul] })).hom (1 : ULift R))
+          map_smul' x y := by simp [mul_smul] })).hom (1 : Shrink R))
     simp only [ModuleCat.of_coe, Functor.id_obj, Functor.id_map, ModuleCat.hom_comp,
       LinearMap.coe_comp, LinearMap.coe_mk, AddHom.coe_mk, Function.comp_apply,
-      one_smul] at this
+      equivShrink_symm_one, one_smul] at this
     exact this.symm
+  map_mul' x y := by
+    apply NatTrans.ext
+    ext M (m : M)
+    exact mul_smul x.1 y.1 m
+  map_add' x y := by
+    apply NatTrans.ext
+    ext M (m : M)
+    exact add_smul x.1 y.1 m
 
 /--
 For any two commutative rings `R` and `S`, if the categories of `R`-modules and `S`-modules are
 equivalent, then `R` and `S` are isomorphic as rings.
 -/
-def RingEquiv.ofModuleCatEquiv {R : Type u} {S : Type u'} [CommRing R] [CommRing S]
-    (e : ModuleCat.{max u v} R ≌ ModuleCat.{max u' v'} S) : R ≃+* S :=
+noncomputable def RingEquiv.ofModuleCatEquiv {R : Type u} {S : Type u'} [CommRing R] [CommRing S]
+    [Small.{v} R] [Small.{v'} S]
+    (e : ModuleCat.{v} R ≌ ModuleCat.{v'} S) : R ≃+* S :=
   letI : e.functor.Additive := Functor.additive_of_preserves_binary_products e.functor
   let i₁ : R ≃+* (⊤ : Subring R) := Subring.topEquiv.symm
   let i₂ : (⊤ : Subring R) ≃+* Subring.center R := Subring.center_eq_top R ▸ .refl _
   let i₄ : Subring.center S ≃+* (⊤ : Subring S) := Subring.center_eq_top S ▸ .refl _
   let i₅ : (⊤ : Subring S) ≃+* S := Subring.topEquiv
-  let i : End (𝟭 (ModuleCat.{max u v} R)) ≃+* End (𝟭 (ModuleCat.{max u' v'} S)) :=
+  let i : End (𝟭 (ModuleCat.{v} R)) ≃+* End (𝟭 (ModuleCat.{v'} S)) :=
   { toFun f := .of
       { app N :=
           e.counitInv.app N ≫ e.functor.map (f.app (e.inverse.obj N)) ≫
