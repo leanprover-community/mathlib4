@@ -27,18 +27,13 @@ elab "apply" t:term "at" i:ident : tactic => withSynthesize <| withMainContext d
   let f ← elabTermForApply t
   let some ldecl := (← getLCtx).findFromUserName? i.getId
     | throwErrorAt i m!"Identifier {i} not found"
-  let (mvs, bis, tp) ← forallMetaTelescopeReducingUntilDefEq (← inferType f) ldecl.type
-  let mainGoal ← getMainGoal
+  let (mvs, bis, _) ← forallMetaTelescopeReducingUntilDefEq (← inferType f) ldecl.type
   for (m, b) in mvs.zip bis do
     if b.isInstImplicit && !(← m.mvarId!.isAssigned) then
       try m.mvarId!.inferInstance
       catch _ => continue
-  let applied ← mkAppOptM' f (mvs.pop.push ldecl.toExpr |>.map some)
-  let appliedType ← inferType applied
-  unless (← isDefEq appliedTy tp) do
-    logError m!"assertion failed: {applied} has type {appliedTy}, expected {tp}"
-  let mainGoal ← mainGoal.assert ldecl.userName appliedTy applied
-  let (_, mainGoal) ← mainGoal.intro1P
+  let (_, mainGoal) ← (← getMainGoal).note ldecl.userName
+    (← mkAppOptM' f (mvs.pop.push ldecl.toExpr |>.map some))
   let mainGoal ← mainGoal.tryClear ldecl.fvarId
   replaceMainGoal <| [mainGoal] ++ mvs.pop.toList.map (·.mvarId!)
 
