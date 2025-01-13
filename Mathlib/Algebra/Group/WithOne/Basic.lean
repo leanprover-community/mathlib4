@@ -18,8 +18,7 @@ that were not available in `Algebra/Group/WithOne/Defs`.
 * `WithOne.map`, `WithZero.map`
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 universe u v w
 
@@ -73,8 +72,7 @@ variable (f : α →ₙ* β)
 theorem lift_coe (x : α) : lift f x = f x :=
   rfl
 
--- Porting note (#11119): removed `simp` attribute to appease `simpNF` linter.
-@[to_additive]
+@[to_additive (attr := simp)]
 theorem lift_one : lift f 1 = 1 :=
   rfl
 

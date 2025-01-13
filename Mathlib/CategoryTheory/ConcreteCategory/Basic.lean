@@ -34,8 +34,7 @@ related work.
 -/
 
 
-assert_not_exists CategoryTheory.CommSq
-assert_not_exists CategoryTheory.Adjunction
+assert_not_exists CategoryTheory.CommSq CategoryTheory.Adjunction
 
 universe w w' v v' v'' u u' u''
 
@@ -55,7 +54,7 @@ class ConcreteCategory (C : Type u) [Category.{v} C] where
   /-- That functor is faithful -/
   [forget_faithful : forget.Faithful]
 
-attribute [reducible] ConcreteCategory.forget
+attribute [inline, reducible] ConcreteCategory.forget
 attribute [instance] ConcreteCategory.forget_faithful
 
 /-- The forgetful functor from a concrete category to `Type u`. -/

@@ -253,7 +253,7 @@ theorem commute_iff_commute {f g : CircleDeg1Lift} : Commute f g ↔ Function.Co
 `translation (Multiplicative.ofAdd x)`. -/
 def translate : Multiplicative ℝ →* CircleDeg1Liftˣ := MonoidHom.toHomUnits <|
   { toFun := fun x =>
-      ⟨⟨fun y => Multiplicative.toAdd x + y, fun _ _ h => add_le_add_left h _⟩, fun _ =>
+      ⟨⟨fun y => x.toAdd + y, fun _ _ h => add_le_add_left h _⟩, fun _ =>
         (add_assoc _ _ _).symm⟩
     map_one' := ext <| zero_add
     map_mul' := fun _ _ => ext <| add_assoc _ _ }
