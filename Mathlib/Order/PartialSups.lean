@@ -3,10 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Interval.Finset.Nat
-import Mathlib.Algebra.Order.SuccPred
 
 /-!
 # The monotone sequence of partial supremums of a sequence
