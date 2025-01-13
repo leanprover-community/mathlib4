@@ -643,7 +643,7 @@ lemma adjoin_eq_span (s : Set A) : (adjoin R s).toSubmodule = span R (Subsemigro
   apply le_antisymm
   · intro x hx
     induction hx using adjoin_induction with
-    | mem x hx => exact subset_span <| Subsemigroup.subset_closure hx
+    | mem x hx => exact subset_span <| LatticeSetLike.subset_closure hx
     | add x y _ _ hpx hpy => exact add_mem hpx hpy
     | zero => exact zero_mem _
     | mul x y _ _ hpx hpy =>
@@ -656,7 +656,7 @@ lemma adjoin_eq_span (s : Set A) : (adjoin R s).toSubmodule = span R (Subsemigro
     | smul r x _ hpx => exact smul_mem _ _ hpx
   · apply span_le.2 _
     show Subsemigroup.closure s ≤ (adjoin R s).toSubsemigroup
-    exact Subsemigroup.closure_le.2 (subset_adjoin R)
+    exact OrderedSetLike.closure_le.2 (subset_adjoin R)
 
 variable (R A)
 
