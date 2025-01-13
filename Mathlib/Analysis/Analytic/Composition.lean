@@ -534,7 +534,7 @@ giving the main statement in `comp_partialSum`. -/
 power series.
 See also `comp_partialSum`. -/
 def compPartialSumSource (m M N : ℕ) : Finset (Σ n, Fin n → ℕ) :=
-  Finset.sigma (Finset.Ico m M) (fun n : ℕ => Fintype.piFinset fun _i : Fin n => Finset.Ico 1 N : _)
+  Finset.sigma (Finset.Ico m M) (fun n : ℕ => Fintype.piFinset fun _i : Fin n => Finset.Ico 1 N :)
 
 @[simp]
 theorem mem_compPartialSumSource_iff (m M N : ℕ) (i : Σ n, Fin n → ℕ) :
