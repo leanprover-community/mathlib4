@@ -17,4 +17,5 @@ import Counterexamples.Pseudoelement
 import Counterexamples.QuadraticForm
 import Counterexamples.SeminormLatticeNotDistrib
 import Counterexamples.SorgenfreyLine
+import Counterexamples.VitaliSetNotMeasurable
 import Counterexamples.ZeroDivisorsInAddMonoidAlgebras
