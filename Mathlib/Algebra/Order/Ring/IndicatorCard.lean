@@ -12,8 +12,8 @@ import Mathlib.Order.LiminfLimsup
 import Mathlib.SetTheory.Cardinal.Finite
 
 /-!
-# Cardinal and limit of sum of indicators
-This file contains results relating the cardinal of subsets of ℕ and limits,
+# Cardinality and limit of sum of indicators
+This file contains results relating the cardinality of subsets of ℕ and limits,
 limsups of sums of indicators.
 
 ## Tags

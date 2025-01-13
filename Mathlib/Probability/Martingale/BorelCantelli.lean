@@ -3,10 +3,10 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
+import Mathlib.Algebra.Order.Ring.IndicatorCard
 import Mathlib.Probability.Martingale.Centering
 import Mathlib.Probability.Martingale.Convergence
 import Mathlib.Probability.Martingale.OptionalStopping
-import Mathlib.Topology.Algebra.IndicatorCard
 
 /-!
 
