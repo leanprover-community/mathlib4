@@ -5,14 +5,15 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Rat.Encodable
 import Mathlib.Data.Real.EReal
-import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Instances.EReal.Defs
+import Mathlib.Topology.Instances.ENNReal.Lemmas
 import Mathlib.Topology.Order.MonotoneContinuity
 import Mathlib.Topology.Semicontinuous
 
 /-!
 # Topological structure on `EReal`
 
-We endow `EReal` with the order topology, and prove basic properties of this topology.
+We prove basic properties of the topology on `EReal`.
 
 ## Main results
 
@@ -34,18 +35,6 @@ open scoped ENNReal
 variable {α : Type*} [TopologicalSpace α]
 
 namespace EReal
-
-instance : TopologicalSpace EReal := Preorder.topology EReal
-instance : OrderTopology EReal := ⟨rfl⟩
-instance : T5Space EReal := inferInstance
-instance : T2Space EReal := inferInstance
-
-lemma denseRange_ratCast : DenseRange (fun r : ℚ ↦ ((r : ℝ) : EReal)) :=
-  dense_of_exists_between fun _ _ h => exists_range_iff.2 <| exists_rat_btwn_of_lt h
-
-instance : SecondCountableTopology EReal :=
-  have : SeparableSpace EReal := ⟨⟨_, countable_range _, denseRange_ratCast⟩⟩
-  .of_separableSpace_orderTopology _
 
 /-! ### Real coercion -/
 
@@ -369,10 +358,6 @@ theorem continuousAt_add {p : EReal × EReal} (h : p.1 ≠ ⊤ ∨ p.2 ≠ ⊥) 
   · simp at h
   · exact continuousAt_add_top_coe _
   · exact continuousAt_add_top_top
-
-/-! ### Negation -/
-
-instance : ContinuousNeg EReal := ⟨negOrderIso.continuous⟩
 
 /-! ### Continuity of multiplication -/
 
