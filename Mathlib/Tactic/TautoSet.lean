@@ -48,6 +48,10 @@ macro "tauto_set" : tactic => `(tactic|
     <;> tauto
 )
 
+-- verify the two examples in the docstring
+example {α} (A B C D : Set α) (h1 : A ⊆ B) (h2 : C ⊆ D) : C \ B ⊆ D \ A := by tauto_set
+
+example {α} (A B C : Set α) (h1 : A ⊆ B ∪ C) : (A ∩ B) ∪ (A ∩ C) = A := by tauto_set
 
 
 end Mathlib.Tactic.TautoSet
