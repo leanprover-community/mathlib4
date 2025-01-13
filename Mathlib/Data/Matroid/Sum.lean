@@ -185,6 +185,8 @@ end sum'
 
 section disjointSigma
 
+open scoped Function -- required for scoped `on` notation
+
 variable {α ι : Type*} {M : ι → Matroid α}
 
 /-- The sum of an indexed collection of matroids on `α` with pairwise disjoint ground sets,
@@ -275,6 +277,12 @@ def disjointSum (M N : Matroid α) (h : Disjoint M.E N.E) : Matroid α :=
     (M.disjointSum N h).Basis I X ↔ M.Basis (I ∩ M.E) (X ∩ M.E) ∧
       N.Basis (I ∩ N.E) (X ∩ N.E) ∧ I ⊆ X ∧ X ⊆ M.E ∪ N.E := by
   simp [disjointSum, and_assoc]
+
+lemma disjointSum_comm {h} : M.disjointSum N h = N.disjointSum M h.symm := by
+  ext
+  · simp [union_comm]
+  repeat simpa [union_comm] using ⟨fun ⟨m, n, h⟩ ↦ ⟨n, m, M.E.union_comm N.E ▸ h⟩,
+    fun ⟨n, m, h⟩ ↦ ⟨m, n, M.E.union_comm N.E ▸ h⟩⟩
 
 lemma Indep.eq_union_image_of_disjointSum {h I} (hI : (disjointSum M N h).Indep I) :
     ∃ IM IN, M.Indep IM ∧ N.Indep IN ∧ Disjoint IM IN ∧ I = IM ∪ IN := by

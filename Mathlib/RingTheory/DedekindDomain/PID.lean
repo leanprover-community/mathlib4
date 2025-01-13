@@ -110,7 +110,7 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
   let s := hf.toFinset
   haveI := Classical.decEq (Ideal R)
   have coprime : ∀ M ∈ s, ∀ M' ∈ s.erase M, M ⊔ M' = ⊤ := by
-    simp_rw [Finset.mem_erase, hf.mem_toFinset]
+    simp_rw [s, Finset.mem_erase, hf.mem_toFinset]
     rintro M hM M' ⟨hne, hM'⟩
     exact Ideal.IsMaximal.coprime_of_ne hM hM' hne.symm
   have nle : ∀ M ∈ s, ¬⨅ M' ∈ s.erase M, M' ≤ M := fun M hM =>
@@ -210,8 +210,8 @@ theorem IsLocalization.OverPrime.mem_normalizedFactors_of_isPrime [IsDomain S]
       exact (IsLocalization.map_eq (T := Algebra.algebraMapSubmonoid S (primeCompl p))
         (Submonoid.le_comap_map _) x).symm
   obtain ⟨pid, p', ⟨hp'0, hp'p⟩, hpu⟩ :=
-    (DiscreteValuationRing.iff_pid_with_one_nonzero_prime (Localization.AtPrime p)).mp
-      (IsLocalization.AtPrime.discreteValuationRing_of_dedekind_domain R hp0 _)
+    (IsDiscreteValuationRing.iff_pid_with_one_nonzero_prime (Localization.AtPrime p)).mp
+      (IsLocalization.AtPrime.isDiscreteValuationRing_of_dedekind_domain R hp0 _)
   have : IsLocalRing.maximalIdeal (Localization.AtPrime p) ≠ ⊥ := by
     rw [Submodule.ne_bot_iff] at hp0 ⊢
     obtain ⟨x, x_mem, x_ne⟩ := hp0

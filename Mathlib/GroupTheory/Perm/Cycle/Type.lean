@@ -33,7 +33,7 @@ In this file we define the cycle type of a permutation.
 
 namespace Equiv.Perm
 
-open Mathlib (Vector)
+open List (Vector)
 open Equiv List Multiset
 
 variable {α : Type*} [Fintype α]
@@ -394,12 +394,12 @@ section Cauchy
 variable (G : Type*) [Group G] (n : ℕ)
 
 /-- The type of vectors with terms from `G`, length `n`, and product equal to `1:G`. -/
-def vectorsProdEqOne : Set (Vector G n) :=
+def vectorsProdEqOne : Set (List.Vector G n) :=
   { v | v.toList.prod = 1 }
 
 namespace VectorsProdEqOne
 
-theorem mem_iff {n : ℕ} (v : Vector G n) : v ∈ vectorsProdEqOne G n ↔ v.toList.prod = 1 :=
+theorem mem_iff {n : ℕ} (v : List.Vector G n) : v ∈ vectorsProdEqOne G n ↔ v.toList.prod = 1 :=
   Iff.rfl
 
 theorem zero_eq : vectorsProdEqOne G 0 = {Vector.nil} :=
@@ -421,7 +421,7 @@ instance oneUnique : Unique (vectorsProdEqOne G 1) := by
 /-- Given a vector `v` of length `n`, make a vector of length `n + 1` whose product is `1`,
 by appending the inverse of the product of `v`. -/
 @[simps]
-def vectorEquiv : Vector G n ≃ vectorsProdEqOne G (n + 1) where
+def vectorEquiv : List.Vector G n ≃ vectorsProdEqOne G (n + 1) where
   toFun v := ⟨v.toList.prod⁻¹ ::ᵥ v, by
     rw [mem_iff, Vector.toList_cons, List.prod_cons, inv_mul_cancel]⟩
   invFun v := v.1.tail
@@ -436,12 +436,12 @@ def vectorEquiv : Vector G n ≃ vectorsProdEqOne G (n + 1) where
 
 /-- Given a vector `v` of length `n` whose product is 1, make a vector of length `n - 1`,
 by deleting the last entry of `v`. -/
-def equivVector : ∀ n, vectorsProdEqOne G n ≃ Vector G (n - 1)
-  | 0 => (equivOfUnique (vectorsProdEqOne G 0) (vectorsProdEqOne G 1)).trans (vectorEquiv G 0).symm
+def equivVector : ∀ n, vectorsProdEqOne G n ≃ List.Vector G (n - 1)
+  | 0 => (ofUnique (vectorsProdEqOne G 0) (vectorsProdEqOne G 1)).trans (vectorEquiv G 0).symm
   | (n + 1) => (vectorEquiv G n).symm
 
 instance [Fintype G] : Fintype (vectorsProdEqOne G n) :=
-  Fintype.ofEquiv (Vector G (n - 1)) (equivVector G n).symm
+  Fintype.ofEquiv (List.Vector G (n - 1)) (equivVector G n).symm
 
 theorem card [Fintype G] : Fintype.card (vectorsProdEqOne G n) = Fintype.card G ^ (n - 1) :=
   (Fintype.card_congr (equivVector G n)).trans (card_vector (n - 1))

@@ -62,7 +62,7 @@ theorem tfae_of_cycle {a b} {l : List Prop} (h_chain : List.Chain (· → ·) a 
 
 theorem TFAE.out {l} (h : TFAE l) (n₁ n₂) {a b} (h₁ : List.get? l n₁ = some a := by rfl)
     (h₂ : List.get? l n₂ = some b := by rfl) : a ↔ b :=
-  h _ (List.get?_mem h₁) _ (List.get?_mem h₂)
+  h _ (List.mem_of_get? h₁) _ (List.mem_of_get? h₂)
 
 /-- If `P₁ x ↔ ... ↔ Pₙ x` for all `x`, then `(∀ x, P₁ x) ↔ ... ↔ (∀ x, Pₙ x)`.
 Note: in concrete cases, Lean has trouble finding the list `[P₁, ..., Pₙ]` from the list
