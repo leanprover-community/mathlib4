@@ -197,4 +197,88 @@ end FullyFaithful
 
 end Functor
 
+namespace Equivalence
+
+universe uC uC' vC vC' uD uD' vD vD'
+
+variable {C : Type uC} [Category.{vC} C]
+variable {C' : Type uC'} [Category.{vC'} C']
+variable {D : Type uD} [Category.{vD} D]
+variable {D' : Type uD'} [Category.{vD'} D']
+variable {f : C ⥤ D}  {g : C' ⥤ D'}
+variable {e : C ≌ C'} {e' : D ≌ D'}
+
+/--
+Suppose we have categories `C, C', D, D'` such that the diagram of functors
+```
+C ===== f =====> D
+||e            ||e'
+||             ||
+C' ==== g ====> D'
+```
+commutes where `e` and `e'` are equivalence of categories.
+
+Then we have an isomorphism of endomorphism monoids `End f ≃* End g'` and
+-/
+@[simps]
+def endMonoidEquiv
+    (sq₀ : f.comp e'.functor ≅ e.functor.comp g) : End f ≃* End g :=
+  let sq₁ : e.inverse.comp (f.comp e'.functor) ≅ g := sq₀.inverseCompIso
+  let sq₂ : f ≅ e.functor.comp (g.comp e'.inverse) := Iso.isoCompInverse sq₀
+  { toFun α :=
+    { app c :=
+        sq₁.inv.app c ≫
+        e'.functor.map (α.app (e.inverse.obj c)) ≫
+        sq₁.hom.app c
+      naturality c c' h := by
+        simp only [Functor.comp_obj, NatTrans.naturality_assoc, Functor.comp_map, Category.assoc,
+          NatIso.cancel_natIso_inv_left]
+        rw [← sq₁.hom.naturality h, ← Category.assoc, ← e'.functor.map_comp, ← Category.assoc,
+          Functor.comp_map, Functor.comp_map, ← e'.functor.map_comp, ← α.naturality] }
+    invFun α :=
+    { app c := sq₂.hom.app c ≫ e'.inverse.map (α.app (e.functor.obj c)) ≫ sq₂.inv.app c
+      naturality c c' h := by
+        simp only [Functor.comp_obj, NatTrans.naturality_assoc, Functor.comp_map, Category.assoc,
+          NatIso.cancel_natIso_hom_left]
+        rw [← sq₂.inv.naturality h, ← Category.assoc, ← e'.inverse.map_comp, ← Category.assoc,
+          Functor.comp_map, Functor.comp_map, ← e'.inverse.map_comp, ← α.naturality] }
+    left_inv α := NatTrans.ext <| funext fun c ↦ by
+      simp only [Functor.comp_obj, Iso.isoCompInverse_hom_app, Iso.inverseCompIso_inv_app,
+        Iso.inverseCompIso_hom_app, Category.assoc, Functor.map_comp, inv_fun_map, Functor.id_obj,
+        Iso.isoCompInverse_inv_app, sq₂, sq₁]
+      have eq₀ := sq₀.hom.naturality (e.unit.app c)
+      simp only [Functor.id_obj, Functor.comp_obj, Functor.comp_map, sq₁, sq₂] at eq₀
+      slice_lhs 2 4 =>
+        rw [← e'.inverse.map_comp, ← e'.inverse.map_comp, e.counitInv_app_functor c,
+          ← Category.assoc, ← eq₀]
+      simp only [Category.assoc, Iso.hom_inv_id_app, Functor.comp_obj, Category.comp_id,
+        inv_fun_map, Functor.id_obj, NatTrans.naturality, Iso.hom_inv_id_app_assoc, sq₁, sq₂]
+      have eq₁ := sq₀.hom.naturality (e.unitInv.app c)
+      simp only [Functor.comp_obj, Functor.id_obj, Functor.comp_map, sq₁, sq₂] at eq₁
+      slice_lhs 4 6 =>
+        rw [← e'.inverse.map_comp, ← e'.inverse.map_comp, e.counit_app_functor c,
+          ← Category.assoc, ← eq₁]
+      simp only [Category.assoc, Iso.hom_inv_id_app, Functor.comp_obj, Category.comp_id,
+        inv_fun_map, Functor.id_obj, Iso.hom_inv_id_app_assoc, sq₁, sq₂]
+      simp only [← Functor.map_comp, Iso.hom_inv_id_app, Functor.id_obj, Functor.map_id,
+        Category.comp_id, sq₁, sq₂]
+    right_inv α := NatTrans.ext <| funext fun c ↦ by
+      simp only [Functor.comp_obj, Iso.inverseCompIso_inv_app, Iso.isoCompInverse_hom_app,
+        Iso.isoCompInverse_inv_app, Category.assoc, Functor.map_comp, fun_inv_map, Functor.id_obj,
+        counitInv_functor_comp, Category.comp_id, Iso.inv_hom_id_app_assoc, functor_unit_comp_assoc,
+        Iso.inverseCompIso_hom_app, NatTrans.naturality_assoc, sq₁, sq₂]
+      simp only [← Functor.map_comp, Iso.inv_hom_id_app, Functor.id_obj, Functor.map_id,
+        Category.comp_id, sq₁, sq₂]
+    map_mul' α β := by
+      simp only [Functor.comp_obj, Iso.inverseCompIso_inv_app, End.mul_def, NatTrans.comp_app,
+        Functor.map_comp, Iso.inverseCompIso_hom_app, Category.assoc, sq₁, sq₂]
+      refine NatTrans.ext <| funext fun c ↦ show _ = _ ≫ _ from ?_
+      simp only [Category.assoc, sq₁, sq₂]
+      congr 2
+      rw [← e'.functor.map_comp_assoc, ← g.map_comp_assoc, Iso.hom_inv_id_app]
+      simp only [Functor.map_comp, Category.assoc, Functor.comp_obj, Functor.map_id,
+        Category.id_comp, Iso.hom_inv_id_app_assoc, sq₁, sq₂] }
+
+end Equivalence
+
 end CategoryTheory

@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Limits.ExactFunctor
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+import Mathlib.Algebra.Ring.Equiv
 
 /-!
 # Additive Functors
@@ -319,5 +320,41 @@ theorem AdditiveFunctor.ofExact_map {F G : C ⥤ₑ D} (α : F ⟶ G) :
 end Exact
 
 end Preadditive
+
+namespace Equivalence
+
+universe uC vC uC' vC' uD vD uD' vD'
+
+variable {C : Type uC} [Category.{vC} C] [Preadditive C]
+variable {C' : Type uC'} [Category.{vC'} C'] [Preadditive C']
+variable {D : Type uD} [Category.{vD} D] [Preadditive D]
+variable {D' : Type uD'} [Category.{vD'} D'] [Preadditive D']
+variable {f : C ⥤ D}  {g : C' ⥤ D'}
+variable {e : C ≌ C'} {e' : D ≌ D'} [e.functor.Additive] [e'.functor.Additive]
+
+/--
+Suppose we have categories `C, C', D, D'` such that the diagram of functors
+```
+C ===== f =====> D
+||e            ||e'
+||             ||
+C' ==== g ====> D'
+```
+commutes where `e` and `e'` are additive equivalence of categories.
+
+Then we have an isomorphism of endomorphism monoids `End f ≃* End g'` and
+-/
+def endRingEquiv
+    (sq₀ : f.comp e'.functor ≅ e.functor.comp g) : End f ≃+* End g where
+  __ := endMonoidEquiv sq₀
+  map_add' α β := by
+    simp only [MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe]
+    refine NatTrans.ext <| funext fun c ↦ ?_
+    simp only [endMonoidEquiv_apply_app, Functor.comp_obj, Iso.inverseCompIso_inv_app,
+      Iso.inverseCompIso_hom_app, Category.assoc]
+    rw [NatTrans.app_add, NatTrans.app_add]
+    simp
+
+end Equivalence
 
 end CategoryTheory

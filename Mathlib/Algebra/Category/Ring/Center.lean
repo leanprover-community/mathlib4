@@ -39,7 +39,8 @@ noncomputable def Subring.centerEquivEndIdFunctor [Small.{v} R] :
       { toFun := (x.1 • ·)
         map_add' := by aesop
         map_smul' r := by simp [← mul_smul, Subring.mem_center_iff.1 x.2 r] } }
-  invFun f := ⟨(equivShrink R).symm <| f.app (.of R <| Shrink.{v} R) |>.hom (1 : Shrink.{v} R), by
+  invFun f :=
+  ⟨(equivShrink R).symm <| f.app (.of R <| Shrink.{v} R) |>.hom (1 : Shrink.{v} R), by
     rw [Subring.mem_center_iff]
     intro r
     have := congr((equivShrink R).symm ($(f.naturality
@@ -90,52 +91,9 @@ noncomputable def RingEquiv.ofModuleCatEquiv {R : Type u} {S : Type u'} [CommRin
   letI : e.functor.Additive := Functor.additive_of_preserves_binary_products e.functor
   let i₁ : R ≃+* (⊤ : Subring R) := Subring.topEquiv.symm
   let i₂ : (⊤ : Subring R) ≃+* Subring.center R := Subring.center_eq_top R ▸ .refl _
+  let i₃ : End (𝟭 (ModuleCat.{v} R)) ≃+* End (𝟭 (ModuleCat.{v'} S)) :=
+    Equivalence.endRingEquiv (e := e) (e' := e) (by rfl)
   let i₄ : Subring.center S ≃+* (⊤ : Subring S) := Subring.center_eq_top S ▸ .refl _
   let i₅ : (⊤ : Subring S) ≃+* S := Subring.topEquiv
-  let i : End (𝟭 (ModuleCat.{v} R)) ≃+* End (𝟭 (ModuleCat.{v'} S)) :=
-  { toFun f := .of
-      { app N :=
-          e.counitInv.app N ≫ e.functor.map (f.app (e.inverse.obj N)) ≫
-          e.counit.app N
-        naturality M N g := by
-          -- Is `aesop_cat` expected to solve this?
-          have eq :=
-            e.counitInv.app M ≫=
-            congr(e.functor.map $(f.naturality (e.inverse.map g))) =≫
-            e.counit.app N
-          simpa using eq}
-    invFun f := .of
-      { app N := e.unit.app N ≫ e.inverse.map (f.app (e.functor.obj N)) ≫ e.unitInv.app N
-        naturality M N g := by
-          -- Is `aesop_cat` expected to solve this?
-          have eq :=
-            e.unit.app M ≫=
-            congr(e.inverse.map $(f.naturality (e.functor.map g))) =≫
-            e.unitInv.app N
-          simp only [Functor.id_obj, Functor.comp_obj, Functor.id_map, Functor.map_comp,
-            Equivalence.inv_fun_map, Category.assoc, Iso.hom_inv_id_app_assoc,
-            Iso.hom_inv_id_app, Category.comp_id] at eq
-          simpa using eq }
-    left_inv f := by
-      apply NatTrans.ext
-      ext N : 1
-      have eq := f.naturality (e.unit.app N) =≫ e.unitInv.app N
-      simpa [End.of] using eq
-    right_inv f := by
-      apply NatTrans.ext
-      ext N : 1
-      have eq := e.counitInv.app N ≫= f.naturality (e.counit.app N) |>.symm
-      simpa [End.of] using eq
-    map_mul' f g := by
-      apply NatTrans.ext
-      ext N : 1
-      simp only [Functor.id_obj, Functor.comp_obj, End.mul_def, NatTrans.comp_app, Functor.map_comp,
-        Category.assoc]
-      simp [End.of]
-    map_add' f g := by
-      apply NatTrans.ext
-      ext N : 1
-      change _≫ e.functor.map (_ + _) ≫ _  = _ ≫ _ + _ ≫ _
-      simp [Functor.map_add] }
   i₁.trans <| i₂.trans <| (Subring.centerEquivEndIdFunctor R).trans <|
-    i.trans <| (Subring.centerEquivEndIdFunctor S).symm.trans <| i₄.trans i₅
+    i₃.trans <| (Subring.centerEquivEndIdFunctor S).symm.trans <| i₄.trans i₅
