@@ -49,7 +49,7 @@ instance : InfSet (Subsemigroup M) :=
         Set.mem_biInter fun i h =>
           i.mul_mem (by apply Set.mem_iInter₂.1 hx i h) (by apply Set.mem_iInter₂.1 hy i h) }⟩
 
-/-- subsemigroups of a monoid form a complete lattice. -/
+/-- Subsemigroups of a monoid form a complete lattice. -/
 @[to_additive "The `AddSubsemigroup`s of an `AddMonoid` form a complete lattice."]
 instance : LatticeSetLike (Subsemigroup M) M where
   __ := OrderedSetLike.toLatticeSetLike (Subsemigroup M) M rfl
@@ -62,8 +62,9 @@ instance : LatticeSetLike (Subsemigroup M) M where
   inf_le_left := fun _ _ _ => And.left
   inf_le_right := fun _ _ _ => And.right
 
+/-- Alias for the subsemiring closure of a set. -/
 @[to_additive]
-abbrev closure : Set M → Subsemigroup M := LatticeSetLike.closure <| Subsemigroup M
+abbrev closure : Set M → Subsemigroup M := LatticeSetLike.closure (Subsemigroup M)
 
 @[to_additive]
 theorem not_mem_bot {x : M} : x ∉ (⊥ : Subsemigroup M) :=
