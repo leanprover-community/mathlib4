@@ -6,7 +6,6 @@ Authors: Yaël Dillies, Bhavik Mehta
 import Mathlib.Combinatorics.SimpleGraph.Path
 import Mathlib.Combinatorics.SimpleGraph.Operations
 import Mathlib.Data.Finset.Pairwise
-import Mathlib.Data.Set.Functor
 import Mathlib.Data.Fintype.Powerset
 import Mathlib.Data.Nat.Lattice
 
@@ -152,7 +151,7 @@ protected theorem IsClique.finsetMap {f : α ↪ β} {s : Finset α} (h : G.IsCl
 /-- If a set of vertices `A` is a clique in subgraph of `G` induced by a superset of `A`,
  it's embedding is a clique in `G`. -/
 theorem induce_isClique {S : Subgraph G} {F : Set α} {A : Set F} (c : (S.induce F).coe.IsClique A) :
-    G.IsClique (Subtype.val <$> A) := by
+    G.IsClique (Subtype.val '' A) := by
   simp_all [Set.Pairwise]
   intro a ainF ainA b binF binA anb
   exact S.adj_sub (c a ainF ainA b binF binA anb)
