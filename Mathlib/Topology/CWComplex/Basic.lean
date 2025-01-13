@@ -58,15 +58,15 @@ class RelCWComplex.{u} {X : Type u} [TopologicalSpace X] (C : Set X) (D : outPar
   /-- The indexing type of the cells of dimension `n`. -/
   cell (n : ℕ) : Type u
   /-- The characteristic map of the `n`-cell given by the index `i`.
-    This map is a bijection when restricting to `closedBall 0 1`, where we consider (Fin n → ℝ)
+    This map is a bijection when restricting to `ball 0 1`, where we consider `(Fin n → ℝ)`
     endowed with the maximum metric. -/
   map (n : ℕ) (i : cell n) : PartialEquiv (Fin n → ℝ) X
   /-- The source of every charactersitic map of dimension `n` is
-    `(closedBall 0 1 : Set (Fin n → ℝ))`. -/
-  source_eq (n : ℕ) (i : cell n) : (map n i).source = closedBall 0 1
+    `(ball 0 1 : Set (Fin n → ℝ))`. -/
+  source_eq (n : ℕ) (i : cell n) : (map n i).source = ball 0 1
   /-- The characteristic maps are continuous when restricting to `closedBall 0 1`. -/
   continuousOn (n : ℕ) (i : cell n) : ContinuousOn (map n i) (closedBall 0 1)
-  /-- The inverse of the restriction to `closedBall 0 1` is continuous on the image. -/
+  /-- The inverse of the restriction to `ball 0 1` is continuous on the image. -/
   continuousOn_symm (n : ℕ) (i : cell n) : ContinuousOn (map n i).symm (map n i).target
   /-- The open cells are pairwise disjoint. Use `RelCWComplex.pairwiseDisjoint` or
   `RelCWComplex.disjoint_openCell_of_ne` instead. -/
@@ -95,7 +95,7 @@ abbrev ClasCWComplex {X : Type*} [TopologicalSpace X] (C : Set X) := RelCWComple
 /-- A constructor for `ClasCWComplex`. -/
 def ClasCWComplex.mk.{u} {X : Type u} [TopologicalSpace X] (C : Set X)
     (cell : (n : ℕ) → Type u) (map : (n : ℕ)  → (i : cell n) → PartialEquiv (Fin n → ℝ) X)
-    (source_eq : ∀ (n : ℕ) (i : cell n), (map n i).source = closedBall 0 1)
+    (source_eq : ∀ (n : ℕ) (i : cell n), (map n i).source = ball 0 1)
     (continuousOn : ∀ (n : ℕ) (i : cell n), ContinuousOn (map n i) (closedBall 0 1))
     (continuousOn_symm : ∀ (n : ℕ) (i : cell n), ContinuousOn (map n i).symm (map n i).target)
     (pairwiseDisjoint' :
