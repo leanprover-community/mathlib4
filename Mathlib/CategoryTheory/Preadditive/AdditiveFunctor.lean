@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Limits.ExactFunctor
 import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
+import Mathlib.CategoryTheory.Conj
 import Mathlib.Algebra.Ring.Equiv
 
 /-!
@@ -344,16 +345,21 @@ commutes where `e` and `e'` are additive equivalence of categories.
 
 Then we have an isomorphism of endomorphism rings `End f ≃+* End g'` and
 -/
-def endRingEquiv
-    (sq₀ : f.comp e'.functor ≅ e.functor.comp g) : End f ≃+* End g where
+noncomputable def endRingEquiv
+    (sq₀ : e.congrLeft.functor.obj f ≅ e'.congrRight.inverse.obj g) : End f ≃+* End g where
   __ := endMonoidEquiv sq₀
   map_add' α β := by
     simp only [MulEquiv.toEquiv_eq_coe, Equiv.toFun_as_coe, EquivLike.coe_coe]
-    refine NatTrans.ext <| funext fun c ↦ ?_
-    simp only [endMonoidEquiv_apply_app, Functor.comp_obj, Iso.inverseCompIso_inv_app,
-      Iso.inverseCompIso_hom_app, Category.assoc]
-    rw [NatTrans.app_add, NatTrans.app_add]
-    simp
+    refine NatTrans.ext <| funext fun c ↦ show _ = _ + _ from ?_
+    rw [endMonoidEquiv_apply_app, Iso.conj_apply, NatTrans.comp_app, NatTrans.comp_app]
+    erw [Functor.FullyFaithful.mulEquivEnd_apply]
+    rw [whiskeringLeft_obj_map, whiskerLeft_app, NatTrans.app_add]
+    simp only [Functor.comp_obj, Preadditive.add_comp, Preadditive.comp_add, Functor.map_add,
+      Functor.map_comp, Category.assoc, endMonoidEquiv_apply_app, Iso.conj, Iso.homCongr,
+      MulEquiv.coe_mk]
+    rw [← e'.functor.map_comp_assoc, ← e'.functor.map_comp_assoc, ← e'.functor.map_comp_assoc,
+      ← e'.functor.map_comp_assoc, Category.assoc, Category.assoc]
+    rfl
 
 end Equivalence
 

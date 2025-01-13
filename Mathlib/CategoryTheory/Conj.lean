@@ -118,4 +118,36 @@ theorem map_conjAut (F : C ⥤ D) {X Y : C} (α : X ≅ Y) (f : Aut X) :
 -- alternative proof: by simp only [Iso.conjAut_apply, F.mapIso_trans, F.mapIso_symm]
 end Functor
 
+namespace Equivalence
+
+universe uC uC' vC vC' uD uD' vD vD'
+
+variable {C : Type uC} [Category.{vC} C]
+variable {C' : Type uC'} [Category.{vC'} C']
+variable {D : Type uD} [Category.{vD} D]
+variable {D' : Type uD'} [Category.{vD'} D']
+variable {f : C ⥤ D}  {g : C' ⥤ D'}
+variable {e : C ≌ C'} {e' : D ≌ D'}
+
+/--
+Suppose we have categories `C, C', D, D'` such that the diagram of functors
+```
+C ===== f =====> D
+||e            ||e'
+||             ||
+C' ==== g ====> D'
+```
+commutes where `e` and `e'` are equivalence of categories.
+
+Then we have an isomorphism of endomorphism monoids `End f ≃* End g'` and
+-/
+@[simps!]
+noncomputable def endMonoidEquiv
+    (sq₀ : e.congrLeft.functor.obj f ≅ e'.congrRight.inverse.obj g) : End f ≃* End g :=
+      ((e.congrLeft.fullyFaithfulFunctor).mulEquivEnd f).trans <|
+      (CategoryTheory.Iso.conj sq₀).trans
+      ((e'.congrRight.fullyFaithfulInverse).mulEquivEnd g).symm
+
+end Equivalence
+
 end CategoryTheory
