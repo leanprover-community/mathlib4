@@ -542,7 +542,7 @@ theorem AntitoneOn.integrableOn_of_measure_ne_top (hanti : AntitoneOn f s) {a b 
     IntegrableOn f s μ :=
   memℒp_one_iff_integrable.1 (hanti.memℒp_of_measure_ne_top ha hb hs h's)
 
-theorem AntioneOn.integrableOn_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompact s)
+theorem AntitoneOn.integrableOn_isCompact [IsFiniteMeasureOnCompacts μ] (hs : IsCompact s)
     (hanti : AntitoneOn f s) : IntegrableOn f s μ :=
   memℒp_one_iff_integrable.1 (hanti.memℒp_isCompact hs)
 
