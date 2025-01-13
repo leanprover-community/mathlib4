@@ -5,7 +5,6 @@ Authors: Lenny Taelman
 -/
 
 import Mathlib.Tactic.Tauto
-import Mathlib.Data.Set.Basic
 import Mathlib.Data.Set.SymmDiff
 
 /-!
