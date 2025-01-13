@@ -65,6 +65,24 @@ differential equation, dynamical system, initial value problem
 open Function intervalIntegral MeasureTheory Metric Set
 open scoped Nat NNReal Topology
 
+/-! ## Assumptions of the Picard-Lindelof theorem-/
+
+/-- Prop structure holding the assumptions of the Picard-Lindelöf theorem.
+`IsPicardLindelof f t₀ x₀ a r L K` means that the time-dependent vector field `f` satisfies the
+conditions to admit an integral curve `α : ℝ → E` to `f` defined on `Icc tmin tmax` with the
+initial condition `α t₀ = x`, where `‖x - x₀‖ ≤ r`. Note that the initial point `x` is allowed
+to differ from the point `x₀` about which the conditions on `f` are stated. -/
+structure IsPicardLindelof {E : Type*} [NormedAddCommGroup E]
+    (f : ℝ → E → E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) (a r L K : ℝ≥0) : Prop where
+  /-- The vector field at any time is Lipschitz in with constant `K` within a closed ball. -/
+  lipschitzOnWith : ∀ t ∈ Icc tmin tmax, LipschitzOnWith K (f t) (closedBall x₀ a)
+  /-- The vector field is continuous in time within a closed ball. -/
+  continuousOn : ∀ x ∈ closedBall x₀ a, ContinuousOn (f · x) (Icc tmin tmax)
+  /-- `L` is an upper bound of the norm of the vector field. -/
+  norm_le : ∀ t ∈ Icc tmin tmax, ∀ x ∈ closedBall x₀ a, ‖f t x‖ ≤ L
+  /-- The time interval of validity. -/
+  mul_max_le : L * max (tmax - t₀) (t₀ - tmin) ≤ a - r
+
 namespace ODE
 
 /-! ## Integral equation
@@ -111,24 +129,6 @@ lemma continuousOn_comp
   contDiffOn_zero.mp <| contDiffOn_comp (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem
 
 end
-
-/-! ## Assumptions of the Picard-Lindelof theorem-/
-
-/-- Prop structure holding the assumptions of the Picard-Lindelöf theorem.
-`IsPicardLindelof f t₀ x₀ a r L K` means that the time-dependent vector field `f` satisfies the
-conditions to admit an integral curve `α : ℝ → E` to `f` defined on `Icc tmin tmax` with the
-initial condition `α t₀ = x`, where `‖x - x₀‖ ≤ r`. Note that the initial point `x` is allowed
-to differ from the point `x₀` about which the conditions on `f` are stated. -/
-structure IsPicardLindelof {E : Type*} [NormedAddCommGroup E]
-    (f : ℝ → E → E) {tmin tmax : ℝ} (t₀ : Icc tmin tmax) (x₀ : E) (a r L K : ℝ≥0) : Prop where
-  /-- The vector field at any time is Lipschitz in with constant `K` within a closed ball. -/
-  lipschitzOnWith : ∀ t ∈ Icc tmin tmax, LipschitzOnWith K (f t) (closedBall x₀ a)
-  /-- The vector field is continuous in time within a closed ball. -/
-  continuousOn : ∀ x ∈ closedBall x₀ a, ContinuousOn (f · x) (Icc tmin tmax)
-  /-- `L` is an upper bound of the norm of the vector field. -/
-  norm_le : ∀ t ∈ Icc tmin tmax, ∀ x ∈ closedBall x₀ a, ‖f t x‖ ≤ L
-  /-- The time interval of validity. -/
-  mul_max_le : L * max (tmax - t₀) (t₀ - tmin) ≤ a - r
 
 /-! ## Space of Lipschitz functions on a closed interval
 
@@ -378,7 +378,7 @@ lemma exists_contractingWith_iterate_next (hf : IsPicardLindelof f t₀ x₀ a r
 
 /-- The map `next` has a fixed point in the space of curves. This will be used to construct a
 solution `α : ℝ → E` to the ODE. -/
-lemma exists_funSpace_next_eq [CompleteSpace E] (hf : IsPicardLindelof f t₀ x₀ a r L K)
+lemma exists_isFixedPt_next [CompleteSpace E] (hf : IsPicardLindelof f t₀ x₀ a r L K)
     (hx : x ∈ closedBall x₀ r) :
     ∃ α : FunSpace t₀ x₀ r L, IsFixedPt (next hf hx) α :=
   let ⟨_, _, h⟩ := exists_contractingWith_iterate_next hf
@@ -389,3 +389,11 @@ end
 end FunSpace
 
 end ODE
+
+/-! ## Existence of a solution to an ODE -/
+
+namespace IsPicardLindelof
+
+
+
+end IsPicardLindelof
