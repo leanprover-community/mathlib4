@@ -111,6 +111,7 @@ lemma analyticAt_cuspFunction_zero [NeZero n] [ModularFormClass F Γ(n) k] :
     (fun q hq ↦ (differentiableAt_cuspFunction _ _ hq).differentiableWithinAt)
     (by simpa only [ball_zero_eq] using Metric.ball_mem_nhds (0 : ℂ) zero_lt_one)
 
+/-- The `q`-expansion of a level `n` modular form, bundled as a `PowerSeries`. -/
 def qExpansion : PowerSeries ℂ :=
   .mk fun m ↦ (↑m.factorial)⁻¹ * iteratedDeriv m (cuspFunction n f) 0
 
@@ -134,6 +135,7 @@ lemma hasSum_qExpansion [NeZero n] [ModularFormClass F Γ(n) k] (τ : ℍ) :
   simpa only [eq_cuspFunction n f] using
     hasSum_qExpansion_of_abs_lt n f (τ.abs_qParam_lt_one n)
 
+/-- The `q`-expansion of a level `n` modular form, bundled as a `FormalMultilinearSeries`. -/
 def qExpansion_formalMultilinearSeries : FormalMultilinearSeries ℂ ℂ ℂ :=
   fun m ↦ (qExpansion n f).coeff ℂ m • ContinuousMultilinearMap.mkPiAlgebraFin ℂ m _
 
@@ -143,8 +145,7 @@ lemma qExpansion_formalMultilinearSeries_apply_norm (m : ℕ) :
     ← (ContinuousMultilinearMap.piFieldEquiv ℂ (Fin m) ℂ).symm.norm_map]
   simp
 
-lemma qExpansion_formalMultilinearSeries_radius
-    [NeZero n] [ModularFormClass F Γ(n) k] :
+lemma qExpansion_formalMultilinearSeries_radius [NeZero n] [ModularFormClass F Γ(n) k] :
     1 ≤ (qExpansion_formalMultilinearSeries n f).radius := by
   refine le_of_forall_ge_of_dense fun r hr ↦ ?_
   lift r to NNReal using hr.ne_top
@@ -154,6 +155,7 @@ lemma qExpansion_formalMultilinearSeries_radius
   simp_rw [pow_abs, ← Complex.abs_ofReal, ofReal_pow, ← Complex.norm_eq_abs, ← norm_mul]
   exact (hasSum_qExpansion_of_abs_lt n f (q := r) (by simpa using hr)).summable.norm
 
+/-- The `q`-expansion of `f` is an `FPowerSeries` representing `cuspFunction n f`. -/
 lemma hasFPowerSeries_cuspFunction [NeZero n] [ModularFormClass F Γ(n) k] :
     HasFPowerSeriesOnBall (cuspFunction n f) (qExpansion_formalMultilinearSeries n f) 0 1 := by
   refine ⟨qExpansion_formalMultilinearSeries_radius n f, zero_lt_one, fun hy ↦ ?_⟩
