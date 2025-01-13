@@ -1290,10 +1290,9 @@ theorem mk_fin (n : ℕ) : #(Fin n) = n := by simp
 @[simp]
 theorem lift_natCast (n : ℕ) : lift.{u} (n : Cardinal.{v}) = n := by induction n <;> simp [*]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
-    lift.{u} (no_index (OfNat.ofNat n : Cardinal.{v})) = OfNat.ofNat n :=
+    lift.{u} (ofNat(n) : Cardinal.{v}) = OfNat.ofNat n :=
   lift_natCast n
 
 @[simp]
@@ -1302,7 +1301,7 @@ theorem lift_eq_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a = n ↔ a = n 
 
 @[simp]
 theorem lift_eq_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
-    lift.{v} a = (no_index (OfNat.ofNat n)) ↔ a = OfNat.ofNat n :=
+    lift.{v} a = ofNat(n) ↔ a = OfNat.ofNat n :=
   lift_eq_nat_iff
 
 @[simp]
@@ -1320,10 +1319,9 @@ theorem one_eq_lift_iff {a : Cardinal.{u}} :
     (1 : Cardinal) = lift.{v} a ↔ 1 = a := by
   simpa using nat_eq_lift_iff (n := 1)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_eq_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n : Cardinal)) = lift.{v} a ↔ (OfNat.ofNat n : Cardinal) = a :=
+    (ofNat(n) : Cardinal) = lift.{v} a ↔ (OfNat.ofNat n : Cardinal) = a :=
   nat_eq_lift_iff
 
 @[simp]
@@ -1335,10 +1333,9 @@ theorem lift_le_one_iff {a : Cardinal.{u}} :
     lift.{v} a ≤ 1 ↔ a ≤ 1 := by
   simpa using lift_le_nat_iff (n := 1)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem lift_le_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
-    lift.{v} a ≤ (no_index (OfNat.ofNat n)) ↔ a ≤ OfNat.ofNat n :=
+    lift.{v} a ≤ ofNat(n) ↔ a ≤ OfNat.ofNat n :=
   lift_le_nat_iff
 
 @[simp]
@@ -1350,27 +1347,24 @@ theorem one_le_lift_iff {a : Cardinal.{u}} :
     (1 : Cardinal) ≤ lift.{v} a ↔ 1 ≤ a := by
   simpa using nat_le_lift_iff (n := 1)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_le_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n : Cardinal)) ≤ lift.{v} a ↔ (OfNat.ofNat n : Cardinal) ≤ a :=
+    (ofNat(n) : Cardinal) ≤ lift.{v} a ↔ (OfNat.ofNat n : Cardinal) ≤ a :=
   nat_le_lift_iff
 
 @[simp]
 theorem lift_lt_nat_iff {a : Cardinal.{u}} {n : ℕ} : lift.{v} a < n ↔ a < n := by
   rw [← lift_natCast.{v,u}, lift_lt]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem lift_lt_ofNat_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
-    lift.{v} a < (no_index (OfNat.ofNat n)) ↔ a < OfNat.ofNat n :=
+    lift.{v} a < ofNat(n) ↔ a < OfNat.ofNat n :=
   lift_lt_nat_iff
 
 @[simp]
 theorem nat_lt_lift_iff {n : ℕ} {a : Cardinal.{u}} : n < lift.{v} a ↔ n < a := by
   rw [← lift_natCast.{v,u}, lift_lt]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem zero_lt_lift_iff {a : Cardinal.{u}} :
     (0 : Cardinal) < lift.{v} a ↔ 0 < a := by
@@ -1381,10 +1375,9 @@ theorem one_lt_lift_iff {a : Cardinal.{u}} :
     (1 : Cardinal) < lift.{v} a ↔ 1 < a := by
   simpa using nat_lt_lift_iff (n := 1)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_lt_lift_iff {a : Cardinal.{u}} {n : ℕ} [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n : Cardinal)) < lift.{v} a ↔ (OfNat.ofNat n : Cardinal) < a :=
+    (ofNat(n) : Cardinal) < lift.{v} a ↔ (OfNat.ofNat n : Cardinal) < a :=
   nat_lt_lift_iff
 
 theorem lift_mk_fin (n : ℕ) : lift #(Fin n) = n := rfl
@@ -1718,14 +1711,12 @@ theorem nat_mul_aleph0 {n : ℕ} (hn : n ≠ 0) : ↑n * ℵ₀ = ℵ₀ :=
 @[simp]
 theorem aleph0_mul_nat {n : ℕ} (hn : n ≠ 0) : ℵ₀ * n = ℵ₀ := by rw [mul_comm, nat_mul_aleph0 hn]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ofNat_mul_aleph0 {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) * ℵ₀ = ℵ₀ :=
+theorem ofNat_mul_aleph0 {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) * ℵ₀ = ℵ₀ :=
   nat_mul_aleph0 (NeZero.ne n)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem aleph0_mul_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ * no_index (OfNat.ofNat n) = ℵ₀ :=
+theorem aleph0_mul_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ * ofNat(n) = ℵ₀ :=
   aleph0_mul_nat (NeZero.ne n)
 
 @[simp]
@@ -1740,14 +1731,12 @@ theorem aleph0_add_nat (n : ℕ) : ℵ₀ + n = ℵ₀ :=
 @[simp]
 theorem nat_add_aleph0 (n : ℕ) : ↑n + ℵ₀ = ℵ₀ := by rw [add_comm, aleph0_add_nat]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ofNat_add_aleph0 {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) + ℵ₀ = ℵ₀ :=
+theorem ofNat_add_aleph0 {n : ℕ} [Nat.AtLeastTwo n] : ofNat(n) + ℵ₀ = ℵ₀ :=
   nat_add_aleph0 n
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem aleph0_add_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ + no_index (OfNat.ofNat n) = ℵ₀ :=
+theorem aleph0_add_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ + ofNat(n) = ℵ₀ :=
   aleph0_add_nat n
 
 theorem exists_nat_eq_of_le_nat {c : Cardinal} {n : ℕ} (h : c ≤ n) : ∃ m, m ≤ n ∧ c = m := by
@@ -2204,4 +2193,4 @@ end Cardinal
 
 -- end Tactic
 
-set_option linter.style.longFile 2400
+set_option linter.style.longFile 2300

@@ -54,8 +54,7 @@ for the empty set by convention.
 * `ω` is a notation for the first infinite ordinal in the locale `Ordinal`.
 -/
 
-assert_not_exists Module
-assert_not_exists Field
+assert_not_exists Module Field
 
 noncomputable section
 
@@ -357,6 +356,9 @@ instance : OrderBot Ordinal where
 @[simp]
 theorem bot_eq_zero : (⊥ : Ordinal) = 0 :=
   rfl
+
+instance instIsEmptyIioZero : IsEmpty (Iio (0 : Ordinal)) := by
+  simp [← bot_eq_zero]
 
 @[simp]
 protected theorem le_zero {o : Ordinal} : o ≤ 0 ↔ o = 0 :=
@@ -867,10 +869,9 @@ theorem type_sum_lex {α β : Type u} (r : α → α → Prop) (s : β → β �
 theorem card_nat (n : ℕ) : card.{u} n = n := by
   induction n <;> [simp; simp only [card_add, card_one, Nat.cast_succ, *]]
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem card_ofNat (n : ℕ) [n.AtLeastTwo] :
-    card.{u} (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+    card.{u} ofNat(n) = OfNat.ofNat n :=
   card_nat n
 
 instance instAddLeftMono : AddLeftMono Ordinal.{u} where
@@ -968,8 +969,12 @@ theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
 alias nat_cast_succ := natCast_succ
 
 instance uniqueIioOne : Unique (Iio (1 : Ordinal)) where
-  default := ⟨0, by simp⟩
+  default := ⟨0, zero_lt_one' Ordinal⟩
   uniq a := Subtype.ext <| lt_one_iff_zero.1 a.2
+
+@[simp]
+theorem Iio_one_default_eq : (default : Iio (1 : Ordinal)) = ⟨0, zero_lt_one' Ordinal⟩ :=
+  rfl
 
 instance uniqueToTypeOne : Unique (toType 1) where
   default := enum (α := toType 1) (· < ·) ⟨0, by simp⟩
@@ -1211,9 +1216,8 @@ theorem ord_nat (n : ℕ) : ord n = n :=
 @[simp]
 theorem ord_one : ord 1 = 1 := by simpa using ord_nat 1
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
+theorem ord_ofNat (n : ℕ) [n.AtLeastTwo] : ord ofNat(n) = OfNat.ofNat n :=
   ord_nat n
 
 @[simp]
@@ -1378,10 +1382,9 @@ theorem nat_le_card {o} {n : ℕ} : (n : Cardinal) ≤ card o ↔ (n : Ordinal) 
 theorem one_le_card {o} : 1 ≤ card o ↔ 1 ≤ o := by
   simpa using nat_le_card (n := 1)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_le_card {o} {n : ℕ} [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n : Cardinal)) ≤ card o ↔ (OfNat.ofNat n : Ordinal) ≤ o :=
+    (ofNat(n) : Cardinal) ≤ card o ↔ (OfNat.ofNat n : Ordinal) ≤ o :=
   nat_le_card
 
 @[simp]
@@ -1405,20 +1408,18 @@ theorem zero_lt_card {o} : 0 < card o ↔ 0 < o := by
 theorem one_lt_card {o} : 1 < card o ↔ 1 < o := by
   simpa using nat_lt_card (n := 1)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem ofNat_lt_card {o} {n : ℕ} [n.AtLeastTwo] :
-    (no_index (OfNat.ofNat n : Cardinal)) < card o ↔ (OfNat.ofNat n : Ordinal) < o :=
+    (ofNat(n) : Cardinal) < card o ↔ (OfNat.ofNat n : Ordinal) < o :=
   nat_lt_card
 
 @[simp]
 theorem card_lt_nat {o} {n : ℕ} : card o < n ↔ o < n :=
   lt_iff_lt_of_le_iff_le nat_le_card
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem card_lt_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
-    card o < (no_index (OfNat.ofNat n)) ↔ o < OfNat.ofNat n :=
+    card o < ofNat(n) ↔ o < OfNat.ofNat n :=
   card_lt_nat
 
 @[simp]
@@ -1429,10 +1430,9 @@ theorem card_le_nat {o} {n : ℕ} : card o ≤ n ↔ o ≤ n :=
 theorem card_le_one {o} : card o ≤ 1 ↔ o ≤ 1 := by
   simpa using card_le_nat (n := 1)
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem card_le_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
-    card o ≤ (no_index (OfNat.ofNat n)) ↔ o ≤ OfNat.ofNat n :=
+    card o ≤ ofNat(n) ↔ o ≤ OfNat.ofNat n :=
   card_le_nat
 
 @[simp]
@@ -1457,10 +1457,9 @@ theorem lift_down' {a : Cardinal.{u}} {b : Ordinal.{max u v}}
     (h : card.{max u v} b ≤ Cardinal.lift.{v, u} a) : ∃ a', lift.{v, u} a' = b :=
   mem_range_lift_of_card_le h
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem card_eq_ofNat {o} {n : ℕ} [n.AtLeastTwo] :
-    card o = (no_index (OfNat.ofNat n)) ↔ o = OfNat.ofNat n :=
+    card o = ofNat(n) ↔ o = OfNat.ofNat n :=
   card_eq_nat
 
 @[simp]

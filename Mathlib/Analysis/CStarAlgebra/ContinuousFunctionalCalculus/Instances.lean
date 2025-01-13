@@ -611,8 +611,7 @@ end NonnegSpectrumClass
 section RealEqComplex
 
 variable {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [Algebra ℂ A]
-  [ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop)]
-  [UniqueContinuousFunctionalCalculus ℝ A]
+  [ContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop)] [T2Space A]
 
 lemma cfcHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
     cfcHom ha =
@@ -632,9 +631,8 @@ end RealEqComplex
 section RealEqComplexNonUnital
 
 variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [StarRing A] [Module ℂ A]
-  [IsScalarTower ℂ A A] [SMulCommClass ℂ A A]
+  [IsScalarTower ℂ A A] [SMulCommClass ℂ A A] [T2Space A]
   [NonUnitalContinuousFunctionalCalculus ℂ (IsStarNormal : A → Prop)]
-  [UniqueNonUnitalContinuousFunctionalCalculus ℝ A]
 
 lemma cfcₙHom_real_eq_restrict {a : A} (ha : IsSelfAdjoint a) :
     cfcₙHom ha = (ha.quasispectrumRestricts.2).nonUnitalStarAlgHom (cfcₙHom ha.isStarNormal)
@@ -655,9 +653,8 @@ section NNRealEqReal
 open NNReal
 
 variable {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [StarRing A]
-  [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A]
+  [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A] [T2Space A]
   [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
-  [ContinuousFunctionalCalculus ℝ≥0 ((0 : A) ≤ ·)] [UniqueContinuousFunctionalCalculus ℝ A]
   [NonnegSpectrumClass ℝ A]
 
 lemma cfcHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :
@@ -679,9 +676,7 @@ open NNReal
 
 variable {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [StarRing A]
   [StarOrderedRing A] [Module ℝ A] [TopologicalRing A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A]
-  [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
-  [NonUnitalContinuousFunctionalCalculus ℝ≥0 ((0 : A) ≤ ·)]
-  [UniqueNonUnitalContinuousFunctionalCalculus ℝ A]
+  [T2Space A] [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
   [NonnegSpectrumClass ℝ A]
 
 lemma cfcₙHom_nnreal_eq_restrict {a : A} (ha : 0 ≤ a) :

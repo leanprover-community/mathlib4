@@ -80,8 +80,7 @@ localization, ring localization, commutative ring localization, characteristic p
 commutative ring, field of fractions
 -/
 
-assert_not_exists AlgHom
-assert_not_exists Ideal
+assert_not_exists AlgHom Ideal
 
 open Function
 
