@@ -136,12 +136,12 @@ lemma hasSum_qExpansion [NeZero n] [ModularFormClass F Γ(n) k] (τ : ℍ) :
     hasSum_qExpansion_of_abs_lt n f (τ.abs_qParam_lt_one n)
 
 /-- The `q`-expansion of a level `n` modular form, bundled as a `FormalMultilinearSeries`. -/
-def qExpansion_formalMultilinearSeries : FormalMultilinearSeries ℂ ℂ ℂ :=
+def qExpansionFormalMultilinearSeries : FormalMultilinearSeries ℂ ℂ ℂ :=
   fun m ↦ (qExpansion n f).coeff ℂ m • ContinuousMultilinearMap.mkPiAlgebraFin ℂ m _
 
 lemma qExpansion_formalMultilinearSeries_apply_norm (m : ℕ) :
-    ‖qExpansion_formalMultilinearSeries n f m‖ = ‖(qExpansion n f).coeff ℂ m‖ := by
-  rw [qExpansion_formalMultilinearSeries,
+    ‖qExpansionFormalMultilinearSeries n f m‖ = ‖(qExpansion n f).coeff ℂ m‖ := by
+  rw [qExpansionFormalMultilinearSeries,
     ← (ContinuousMultilinearMap.piFieldEquiv ℂ (Fin m) ℂ).symm.norm_map]
   simp
 
@@ -161,7 +161,7 @@ lemma hasFPowerSeries_cuspFunction [NeZero n] [ModularFormClass F Γ(n) k] :
   refine ⟨qExpansion_formalMultilinearSeries_radius n f, zero_lt_one, fun hy ↦ ?_⟩
   rw [EMetric.mem_ball, edist_zero_right, ENNReal.coe_lt_one_iff, ← NNReal.coe_lt_one,
     coe_nnnorm, norm_eq_abs] at hy
-  simpa [qExpansion_formalMultilinearSeries] using hasSum_qExpansion_of_abs_lt n f hy
+  simpa [qExpansionFormalMultilinearSeries] using hasSum_qExpansion_of_abs_lt n f hy
 
 end ModularFormClass
 
