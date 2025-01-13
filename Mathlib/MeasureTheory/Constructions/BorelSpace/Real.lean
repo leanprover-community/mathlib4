@@ -430,6 +430,20 @@ theorem AEMeasurable.coe_ereal_ennreal {f : α → ℝ≥0∞} {μ : Measure α}
     AEMeasurable (fun x => (f x : EReal)) μ :=
   measurable_coe_ennreal_ereal.comp_aemeasurable hf
 
+@[measurability]
+theorem measurable_ereal_toENNReal : Measurable EReal.toENNReal :=
+  EReal.measurable_of_measurable_real (by simpa using ENNReal.measurable_ofReal)
+
+@[measurability, fun_prop]
+theorem Measurable.ereal_toENNReal {f : α → EReal} (hf : Measurable f) :
+    Measurable fun x => (f x).toENNReal :=
+  measurable_ereal_toENNReal.comp hf
+
+@[measurability, fun_prop]
+theorem AEMeasurable.ereal_toENNReal {f : α → EReal} {μ : Measure α} (hf : AEMeasurable f μ) :
+    AEMeasurable (fun x => (f x).toENNReal) μ :=
+  measurable_ereal_toENNReal.comp_aemeasurable hf
+
 namespace NNReal
 
 instance : MeasurableSMul₂ ℝ≥0 ℝ≥0∞ where
