@@ -441,11 +441,11 @@ theorem lambdaSquared_mainSum_eq_diag_quad_form  (w : ℕ → ℝ) :
     apply symm; rw [sum_comm, sum_congr rfl]; intro d1 _; rw[sum_comm];
   case caseC =>
     congr with l
-    simp_rw [← sum_filter, sq, sum_mul, mul_sum, sum_filter_sum, filter_filter]
+    simp_rw [← sum_filter, sq, sum_mul, mul_sum, sum_filter, ite_sum_zero, ← ite_and, dvd_gcd_iff]
     congr with d1
     congr with d2
-    · rw [dvd_gcd_iff, and_comm]
-    · ring
+    congr 1
+    ring
 
 end LambdaSquared
 
