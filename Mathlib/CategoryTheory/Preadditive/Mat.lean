@@ -51,8 +51,6 @@ Ideally this would conveniently interact with both `Mat_` and `Matrix`.
 
 open CategoryTheory CategoryTheory.Preadditive
 
-open scoped Classical
-
 noncomputable section
 
 namespace CategoryTheory
@@ -81,6 +79,7 @@ def Hom (M N : Mat_ C) : Type v₁ :=
 
 namespace Hom
 
+open scoped Classical in
 /-- The identity matrix consists of identity morphisms on the diagonal, and zeros elsewhere. -/
 def id (M : Mat_ C) : Hom M M := fun i j => if h : i = j then eqToHom (congr_arg M.X h) else 0
 
@@ -94,12 +93,17 @@ section
 
 attribute [local simp] Hom.id Hom.comp
 
+
 instance : Category.{v₁} (Mat_ C) where
   Hom := Hom
   id := Hom.id
   comp f g := f.comp g
-  id_comp f := by simp (config := { unfoldPartialApp := true }) [dite_comp]
-  comp_id f := by simp (config := { unfoldPartialApp := true }) [comp_dite]
+  id_comp f := by
+    classical
+    simp (config := { unfoldPartialApp := true }) [dite_comp]
+  comp_id f := by
+    classical
+    simp (config := { unfoldPartialApp := true }) [comp_dite]
   assoc f g h := by
     apply DMatrix.ext
     intros
@@ -110,10 +114,12 @@ instance : Category.{v₁} (Mat_ C) where
 theorem hom_ext {M N : Mat_ C} (f g : M ⟶ N) (H : ∀ i j, f i j = g i j) : f = g :=
   DMatrix.ext_iff.mp H
 
+open scoped Classical in
 theorem id_def (M : Mat_ C) :
     (𝟙 M : Hom M M) = fun i j => if h : i = j then eqToHom (congr_arg M.X h) else 0 :=
   rfl
 
+open scoped Classical in
 theorem id_apply (M : Mat_ C) (i j : M.ι) :
     (𝟙 M : Hom M M) i j = if h : i = j then eqToHom (congr_arg M.X h) else 0 :=
   rfl
@@ -155,6 +161,7 @@ instance : Preadditive (Mat_ C) where
 
 open CategoryTheory.Limits
 
+open scoped Classical in
 /-- We now prove that `Mat_ C` has finite biproducts.
 
 Be warned, however, that `Mat_ C` is not necessarily Krull-Schmidt,
@@ -244,11 +251,13 @@ def mapMat_ (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ Mat_ D where
   obj M := ⟨M.ι, fun i => F.obj (M.X i)⟩
   map f i j := F.map (f i j)
 
+
 /-- The identity functor induces the identity functor on matrix categories.
 -/
 @[simps!]
 def mapMatId : (𝟭 C).mapMat_ ≅ 𝟭 (Mat_ C) :=
   NatIso.ofComponents (fun M => eqToIso (by cases M; rfl)) fun {M N} f => by
+    classical
     ext
     cases M; cases N
     simp [comp_dite, dite_comp]
@@ -259,6 +268,7 @@ def mapMatId : (𝟭 C).mapMat_ ≅ 𝟭 (Mat_ C) :=
 def mapMatComp {E : Type*} [Category.{v₁} E] [Preadditive E] (F : C ⥤ D) [Functor.Additive F]
     (G : D ⥤ E) [Functor.Additive G] : (F ⋙ G).mapMat_ ≅ F.mapMat_ ⋙ G.mapMat_ :=
   NatIso.ofComponents (fun M => eqToIso (by cases M; rfl)) fun {M N} f => by
+    classical
     ext
     cases M; cases N
     simp [comp_dite, dite_comp]
@@ -294,6 +304,7 @@ open CategoryTheory.Limits
 
 variable {C}
 
+open scoped Classical in
 /-- Every object in `Mat_ C` is isomorphic to the biproduct of its summands.
 -/
 @[simps]
@@ -365,6 +376,7 @@ theorem additiveObjIsoBiproduct_naturality (F : Mat_ C ⥤ D) [Functor.Additive 
     F.map f ≫ (additiveObjIsoBiproduct F N).hom =
       (additiveObjIsoBiproduct F M).hom ≫
         biproduct.matrix fun i j => F.map ((embedding C).map (f i j)) := by
+  classical
   ext i : 1
   simp only [Category.assoc, additiveObjIsoBiproduct_hom_π, isoBiproductEmbedding_hom,
     embedding_obj_ι, embedding_obj_X, biproduct.lift_π, biproduct.matrix_π,
@@ -492,6 +504,7 @@ instance (R : Type u) : CoeSort (Mat R) (Type u) :=
 
 open Matrix
 
+open scoped Classical in
 instance (R : Type u) [Semiring R] : Category (Mat R) where
   Hom X Y := Matrix X Y R
   id X := (1 : Matrix X X R)
@@ -510,9 +523,11 @@ theorem hom_ext {X Y : Mat R} (f g : X ⟶ Y) (h : ∀ i j, f i j = g i j) : f =
 
 variable (R)
 
+open scoped Classical in
 theorem id_def (M : Mat R) : 𝟙 M = fun i j => if i = j then 1 else 0 :=
   rfl
 
+open scoped Classical in
 theorem id_apply (M : Mat R) (i j : M) : (𝟙 M : Matrix M M R) i j = if i = j then 1 else 0 :=
   rfl
 
