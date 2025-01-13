@@ -189,6 +189,9 @@ section Tests
   "Mathlib" / "Tactic"/ "Linter" / "Lint.lean",
   "Mathlib" / "Tactic" / "Abel.lean" ] == #["t-linter", "t-meta"]
 
+-- Test targeting a file instead of a directory
+#guard getMatchingLabels #["lake-manifest.json"] == #["dependency-bump"]
+
 /-- Testing function to ensure the labels defined in `mathlibLabels` cover all
 subfolders of `Mathlib/`. -/
 partial def findUncoveredPaths (path : FilePath) (exceptions : Array FilePath := #[]) :
