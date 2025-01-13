@@ -10,6 +10,7 @@ import Mathlib.Algebra.Category.ModuleCat.Subobject
 # The category of abelian groups is well-powered
 -/
 
+assert_not_exists Field
 
 open CategoryTheory
 
