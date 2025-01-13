@@ -669,16 +669,17 @@ theorem finite_option {s : Set (Option α)} : s.Finite ↔ { x : α | some x ∈
     ((h.image some).insert none).subset fun x =>
       x.casesOn (fun _ => Or.inl rfl) fun _ hx => Or.inr <| mem_image_of_mem _ hx⟩
 
-/-- Induction principle for finite sets: To prove a property `C` of a finite set `s`, it's enough
-to prove for the empty set and to prove that `C t → C ({a} ∪ t)` for all `t`.
+/-- Induction principle for finite sets: To prove a property `motive` of a finite set `s`, it's
+enough to prove for the empty set and to prove that `motive t → motive ({a} ∪ t)` for all `t`.
 
-See also `Set.Finite.induction_on` for the version requiring to check `C t → C ({a} ∪ t)` only for
-`t ⊆ s`. -/
+See also `Set.Finite.induction_on` for the version requiring to check `motive t → motive ({a} ∪ t)`
+only for `t ⊆ s`. -/
 @[elab_as_elim]
-theorem Finite.induction_on {C : ∀ s : Set α, s.Finite → Prop} (s : Set α) (hs : s.Finite)
-    (empty : C ∅ finite_empty)
-    (insert : ∀ {a s}, a ∉ s → ∀ hs : Set.Finite s, C s hs → C (insert a s) (hs.insert a)) :
-    C s hs := by
+theorem Finite.induction_on {motive : ∀ s : Set α, s.Finite → Prop} (s : Set α) (hs : s.Finite)
+    (empty : motive ∅ finite_empty)
+    (insert : ∀ {a s}, a ∉ s →
+      ∀ hs : Set.Finite s, motive s hs → motive (insert a s) (hs.insert a)) :
+    motive s hs := by
   lift s to Finset α using id hs
   induction' s using Finset.cons_induction_on with a s ha ih
   · simpa
@@ -690,11 +691,11 @@ to prove for the empty set and to prove that `C t → C ({a} ∪ t)` for all `t 
 This is analogous to `Finset.induction_on'`. See also `Set.Finite.induction_on` for the version
 requiring `C t → C ({a} ∪ t)` for all `t`. -/
 @[elab_as_elim]
-theorem Finite.induction_on_subset {C : ∀ s : Set α, s.Finite → Prop} (s : Set α) (hs : s.Finite)
-    (empty : C ∅ finite_empty)
-    (insert : ∀ {a t}, a ∈ s → ∀ hts : t ⊆ s, a ∉ t → C t (hs.subset hts) →
-      C (insert a t) ((hs.subset hts).insert a)) : C s hs := by
-  refine Set.Finite.induction_on (C := fun t _ => ∀ hts : t ⊆ s, C t (hs.subset hts)) s hs
+theorem Finite.induction_on_subset {motive : ∀ s : Set α, s.Finite → Prop} (s : Set α)
+    (hs : s.Finite) (empty : motive ∅ finite_empty)
+    (insert : ∀ {a t}, a ∈ s → ∀ hts : t ⊆ s, a ∉ t → motive t (hs.subset hts) →
+      motive (insert a t) ((hs.subset hts).insert a)) : motive s hs := by
+  refine Set.Finite.induction_on (motive := fun t _ => ∀ hts : t ⊆ s, motive t (hs.subset hts)) s hs
     (fun _ => empty) ?_ .rfl
   intro a s has _ hCs haS
   rw [insert_subset_iff] at haS
