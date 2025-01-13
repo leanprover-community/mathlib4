@@ -55,7 +55,7 @@ example (h1 : B ⊆ A) (h2 : Set.univ ⊆ B): Set.univ = A := by tauto_set
 
 example (h1 : A ⊆ B) (h2 : C ⊆ D) : C \ B ⊆ D \ A := by tauto_set
 
-example (h1 : Disjoint A B) (h2 : C ⊆ A) : Disjoint C (B \ D) := by tauto_set
+example (hAB : Disjoint A B) (hCA : C ⊆ A) : Disjoint C (B \ D) := by tauto_set
 
 example : Aᶜᶜᶜ = Aᶜ := by tauto_set
 example : Aᶜᶜ = A := by tauto_set
