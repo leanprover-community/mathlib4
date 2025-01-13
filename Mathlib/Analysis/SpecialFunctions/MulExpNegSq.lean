@@ -8,19 +8,21 @@ import Mathlib.Topology.ContinuousMap.Bounded.Basic
 import Mathlib.Topology.MetricSpace.Pseudo.Basic
 
 /-!
-# Definition of mulExpNegMulSq and properties
+# Definition of `mulExpNegMulSq` and properties
 
-#The mapping mulExpNegMulSq transforms a continuous function `g` into another continuous function
+The mapping mulExpNegMulSq transforms a function `g` into another function
 `mulExpNegMulSq g ε : fun x => g x * Real.exp (-ε * g x * g x)`.
 
 ## Main Properties
 
 - `mulExpNegMulSq_bounded`: For fixed `ε > 0`, the mapping `mulExpNegMulSq g ε` is bounded by
   `ε.sqrt⁻¹` uniformly in `g`;
-- `mulExpNegMulSq_abs_le_norm`: For a fixed bounded function `g`, the mapping `mulExpNegMulSq g ε`
-  is bounded by `norm g`, uniformly in `ε ≥ 0`;
-- `mulExpNegMulSq_tendsto`: For fixed continuous function `g`, the mapping `mulExpNegMulSq g ε`
+- `mulExpNegMulSq_tendsto`: For fixed function `g`, the mapping `mulExpNegMulSq g ε`
   converges pointwise to `g` as `ε → 0`;
+- `continuous_mulExpNegMulSq`: If the function `g` is continuous, the function `mulExpNegMulSq g ε`
+  is continuous;
+- `mulExpNegMulSq_abs_le_norm`: For a fixed bounded continuous function `g`, the mapping
+  `mulExpNegMulSq g ε` is bounded by `norm g`, uniformly in `ε ≥ 0`;
 -/
 
 open NNReal ENNReal BoundedContinuousFunction Filter
@@ -81,7 +83,7 @@ theorem mulExpNegSq_deriv_le_one (x : ℝ) : ‖deriv (fun y ↦ y * (-y * y).ex
   simp [← Real.exp_neg (-y), abs_le]
   constructor
   · have twomul_le_exp : 2 * y ≤ y.exp := by
-      apply le_trans _ Real.emul_le_exp
+      apply le_trans _ Real.exp_one_mul_le_exp
       have : 2 ≤ Real.exp 1 := by
         apply le_of_lt (lt_trans _ Real.exp_one_gt_d9)
         norm_num
@@ -104,14 +106,11 @@ section mulExpNegMulSq
 variable {E: Type*}
 
 /--
-`mulExpNegMulSq` transforms a continuous function `g` into another continuous function with useful
+`mulExpNegMulSq` transforms a function `g` into another function with useful
 boundedness and convergence properties.
 -/
 noncomputable
-def mulExpNegMulSq [TopologicalSpace E] {g : E → ℝ} (hg: Continuous g) (ε : ℝ) :
-    ContinuousMap E ℝ where
-  toFun := (fun x => (g x) * (- (ε * (g x) * (g x))).exp)
-  continuous_toFun := by continuity
+def mulExpNegMulSq (g : E → ℝ) (ε : ℝ) : E → ℝ := (fun x => (g x) * (- (ε * (g x) * (g x))).exp)
 
 theorem mulExpNegMulSq_eq_sqrt_mul_mulExpNegSq {g : E → ℝ} {x : E} {ε : ℝ} (hε : ε > 0) :
     (g x) * (Real.exp (- (ε * (g x) * (g x))))
@@ -126,11 +125,9 @@ theorem mulExpNegMulSq_eq_sqrt_mul_mulExpNegSq {g : E → ℝ} {x : E} {ε : ℝ
     rw [← pow_eq_zero_iff (Ne.symm (Nat.zero_ne_add_one 1)), Real.sq_sqrt hε.le] at h
     linarith
 
-variable [TopologicalSpace E]
-
 /-- if `ε > 0`, then `mulExpNegMulSq g` is bounded by `ε.sqrt⁻¹` -/
-theorem mulExpNegMulSq_abs_le {g : E → ℝ} (hg: Continuous g) {ε : ℝ} (hε : ε > 0)
-    (x : E) : abs (mulExpNegMulSq hg ε x) ≤ ε.sqrt⁻¹ := by
+theorem mulExpNegMulSq_abs_le {g : E → ℝ} {ε : ℝ} (hε : ε > 0)
+    (x : E) : abs (mulExpNegMulSq g ε x) ≤ ε.sqrt⁻¹ := by
   simp [mulExpNegMulSq]
   rw [mulExpNegMulSq_eq_sqrt_mul_mulExpNegSq hε, abs_mul,
     abs_of_pos (inv_pos.mpr (Real.sqrt_pos_of_pos hε))]
@@ -138,27 +135,15 @@ theorem mulExpNegMulSq_abs_le {g : E → ℝ} (hg: Continuous g) {ε : ℝ} (hε
   rw [mul_le_mul_left (inv_pos.mpr (Real.sqrt_pos_of_pos hε))]
   exact mulExpNegSq_bounded (ε.sqrt * g x)
 
-theorem mulExpNegMulSq_bounded {g : E → ℝ} (hg: Continuous g) {ε : ℝ} (hε : ε > 0) (x y : E) :
-    dist (mulExpNegMulSq hg ε x) (mulExpNegMulSq hg ε y) ≤ 2 * ε.sqrt⁻¹ := by
-  apply le_trans (dist_triangle (mulExpNegMulSq hg ε x) 0 (mulExpNegMulSq hg ε y))
+theorem mulExpNegMulSq_bounded {g : E → ℝ} {ε : ℝ} (hε : ε > 0) (x y : E) :
+    dist (mulExpNegMulSq g ε x) (mulExpNegMulSq g ε y) ≤ 2 * ε.sqrt⁻¹ := by
+  apply le_trans (dist_triangle (mulExpNegMulSq g ε x) 0 (mulExpNegMulSq g ε y))
   simp only [dist_zero_right, Real.norm_eq_abs, dist_zero_left, two_mul]
-  exact add_le_add (mulExpNegMulSq_abs_le hg hε x) (mulExpNegMulSq_abs_le hg hε y)
+  exact add_le_add (mulExpNegMulSq_abs_le hε x) (mulExpNegMulSq_abs_le hε y)
 
-/--
-For a fixed bounded function `g`, the mapping `mulExpNegMulSq g ε` is bounded by `norm g`,
-uniformly in `ε ≥ 0`.
--/
-theorem mulExpNegMulSq_abs_le_norm (g : BoundedContinuousFunction E ℝ) {ε : ℝ} (hε : ε ≥ 0)
-    (x : E) : abs ((mulExpNegMulSq g.continuous ε) x) ≤ norm g := by
-  simp only [mulExpNegMulSq, ContinuousMap.coe_mk, abs_mul, Real.abs_exp]
-  apply le_trans (mul_le_of_le_one_right (abs_nonneg (g x)) _) (g.norm_coe_le_norm x)
-  rw [Real.exp_le_one_iff, Left.neg_nonpos_iff, mul_assoc]
-  exact mul_nonneg hε (mul_self_nonneg (g x))
-
-theorem mulExpNegMulSq_lipschitz {f g : E → ℝ} (hf: Continuous f) (hg: Continuous g)
-    {ε : ℝ} (hε : ε > 0) (x : E) :
-    dist (mulExpNegMulSq hg ε x) (mulExpNegMulSq hf ε x) ≤ dist (g x) (f x) := by
-  simp only [mulExpNegMulSq, ContinuousMap.coe_mk, ge_iff_le,
+theorem mulExpNegMulSq_lipschitz {f g : E → ℝ} {ε : ℝ} (hε : ε > 0) (x : E) :
+    dist (mulExpNegMulSq g ε x) (mulExpNegMulSq f ε x) ≤ dist (g x) (f x) := by
+  simp only [mulExpNegMulSq, ge_iff_le,
     mulExpNegMulSq_eq_sqrt_mul_mulExpNegSq hε, Real.dist_eq]
   rw [← mul_sub_left_distrib ε.sqrt⁻¹ _ _, abs_mul,
     abs_of_pos (inv_pos_of_pos (Real.sqrt_pos_of_pos hε)), ← one_mul (abs ((g x) - (f x)))]
@@ -172,16 +157,34 @@ theorem mulExpNegMulSq_lipschitz {f g : E → ℝ} (hf: Continuous f) (hg: Conti
   rw [h, ← mul_sub_left_distrib ε.sqrt _ _, abs_mul, abs_of_pos (Real.sqrt_pos_of_pos hε)]
 
 /--
-For fixed continuous function `g`, the mapping `mulExpNegMulSq g ε` converges pointwise to `g`,
-as `ε → 0`
+For fixed function `g`, the mapping `mulExpNegMulSq g ε` converges pointwise to `g`, as `ε → 0`.
 -/
-theorem mulExpNegMulSq_tendsto {g : E → ℝ} (hg: Continuous g) (x : E) :
-    Tendsto (fun ε => mulExpNegMulSq hg ε x) (nhds 0) (nhds (g x)) := by
-  have : g x = (fun ε : ℝ => mulExpNegMulSq hg ε x) 0 := by
-    simp only [mulExpNegMulSq, zero_mul, neg_zero, Real.exp_zero, mul_one, ContinuousMap.coe_mk]
+theorem mulExpNegMulSq_tendsto {g : E → ℝ} (x : E) :
+    Tendsto (fun ε => mulExpNegMulSq g ε x) (nhds 0) (nhds (g x)) := by
+  have : g x = (fun ε : ℝ => mulExpNegMulSq g ε x) 0 := by
+    simp only [mulExpNegMulSq, zero_mul, neg_zero, Real.exp_zero, mul_one]
   rw [this]
   apply Continuous.tendsto
-  simp [mulExpNegMulSq]
   continuity
+
+variable [TopologicalSpace E]
+
+/-- If the function `g` is continuous, the function `mulExpNegMulSq g ε` is continuous. -/
+@[continuity]
+theorem continuous_mulExpNegMulSq {g : E → ℝ} {ε : ℝ} (hg: Continuous g) :
+    Continuous (mulExpNegMulSq g ε) :=
+  Continuous.mul hg (Continuous.rexp (Continuous.neg (Continuous.mul
+      (Continuous.mul continuous_const hg) hg)))
+
+/--
+For a fixed bounded function `g`, the mapping `mulExpNegMulSq g ε` is bounded by `norm g`,
+uniformly in `ε ≥ 0`.
+-/
+theorem mulExpNegMulSq_abs_le_norm (g : BoundedContinuousFunction E ℝ) {ε : ℝ} (hε : ε ≥ 0)
+    (x : E) : abs ((mulExpNegMulSq g ε) x) ≤ norm g := by
+  simp only [mulExpNegMulSq, ContinuousMap.coe_mk, abs_mul, Real.abs_exp]
+  apply le_trans (mul_le_of_le_one_right (abs_nonneg (g x)) _) (g.norm_coe_le_norm x)
+  rw [Real.exp_le_one_iff, Left.neg_nonpos_iff, mul_assoc]
+  exact mul_nonneg hε (mul_self_nonneg (g x))
 
 end mulExpNegMulSq

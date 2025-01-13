@@ -55,7 +55,7 @@ theorem exp_log (hx : 0 < x) : exp (log x) = x := by
   rw [exp_log_eq_abs hx.ne']
   exact abs_of_pos hx
 
-theorem emul_le_exp {x : ℝ} : Real.exp 1 * x ≤ x.exp := by
+theorem exp_one_mul_le_exp {x : ℝ} : Real.exp 1 * x ≤ x.exp := by
   by_cases hx0 : x ≤ 0
   · apply le_trans
         (mul_nonpos_of_nonneg_of_nonpos (Real.exp_pos 1).le hx0) (Real.exp_nonneg x)
