@@ -238,11 +238,10 @@ algebraic substructures such as subgroups and subrings. Certain lemmas, whose co
 that a particular term is a member of a particular substructure, are registered
 as Aesop rules using the `aesop` attribute, according to the following principles:
 - Rules are in the `SetLike` ruleset: (rule_sets := [SetLike])
-- Apply-style rules with trivial hypotheses are registered as `simp` rules
-  rather than Aesop rules.
-- Apply-style rules with nontrivial hypotheses are marked `unsafe` . This is to ensure that
-  applying them remains provability-preserving in the context of more complex membership rules.
-  For instance, but `mul_mem` is marked `unsafe`.
+- Apply-style rules with trivial hypotheses are registered as `simp` rules rather than Aesop rules.
+- Apply-style rules with nontrivial hypotheses are marked `unsafe`. This is because applying them
+  might not be provability-preserving in the context of more complex membership rules.
+  For instance, `mul_mem` is marked `unsafe`.
 - Apply-style rules with simple hypotheses which fail quickly if they aren't provable are given
   probability 90%. An example is `mul_mem`. This is the same probability Aesop gives to safe rules
   when they generate metavariables.
