@@ -204,6 +204,7 @@ variable [PerfectField K]
 
 /-- A perfect field of characteristic `p` (prime) is a perfect ring. -/
 instance toPerfectRing (p : ℕ) [hp : ExpChar K p] : PerfectRing K p := by
+  refine PerfectRing.ofSurjective _ _ fun y ↦ ?_
   rcases hp with _ | hp
   · simp [frobenius]
   rw [← not_forall_not]
