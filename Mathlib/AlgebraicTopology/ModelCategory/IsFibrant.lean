@@ -10,6 +10,10 @@ import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 /-!
 # Fibrant objects in a model category
 
+We introduce abbreviations `IsCofibrant X` and `IsFibrant X` for `X : C`
+when `C` is a model category (or more generally a category equipped
+with cofibrations or fibrations).
+
 -/
 
 open CategoryTheory Limits
@@ -44,6 +48,7 @@ section
 
 variable [CategoryWithCofibrations C] [HasInitial C]
 
+/-- An object `X` is cofibrant if `⊥_ C ⟶ X` is a cofibration. -/
 abbrev IsCofibrant (X : C) : Prop := Cofibration (initial.to X)
 
 lemma isCofibrant_iff (X : C) :
@@ -69,6 +74,7 @@ section
 
 variable [CategoryWithFibrations C] [HasTerminal C]
 
+/-- An object `X` is fibrant if `X ⟶ ⊤_ C` is a fibration. -/
 abbrev IsFibrant (X : C) : Prop := Fibration (terminal.from X)
 
 lemma isFibrant_iff (X : C) :
