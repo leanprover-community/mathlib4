@@ -319,6 +319,8 @@
   "Mathlib.RingTheory.PowerSeries.Basic":
   ["Mathlib.Algebra.CharP.Defs", "Mathlib.Tactic.MoveAdd"],
   "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
+  "Mathlib.RingTheory.MvPowerSeries.Basic":
+  ["Mathlib.Algebra.MvPolynomial.Eval"],
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
   ["Mathlib.Algebra.DirectSum.Internal"],
   "Mathlib.RingTheory.KrullDimension.Basic":

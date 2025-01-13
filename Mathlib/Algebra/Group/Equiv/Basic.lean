@@ -214,19 +214,19 @@ theorem mk_coe (e : M ≃* N) (e' h₁ h₂ h₃) : (⟨⟨e, e', h₁, h₂⟩,
 theorem toEquiv_eq_coe (f : M ≃* N) : f.toEquiv = f :=
   rfl
 
--- Porting note: added, to simplify `f.toMulHom` back to the coercion via `MulHomClass.toMulHom`.
+/-- The `simp`-normal form to turn something into a `MulHom` is via `MulHomClass.toMulHom`. -/
 @[to_additive (attr := simp)]
 theorem toMulHom_eq_coe (f : M ≃* N) : f.toMulHom = ↑f :=
   rfl
 
--- Porting note: `to_fun_eq_coe` no longer needed in Lean4
+@[to_additive]
+theorem toFun_eq_coe (f : M ≃* N) : f.toFun = f := rfl
 
+/-- `simp`-normal form of `toFun_eq_coe`. -/
 @[to_additive (attr := simp)]
 theorem coe_toEquiv (f : M ≃* N) : ⇑(f : M ≃ N) = f := rfl
 
--- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: `MulHom.coe_mk` simplifies `↑f.toMulHom` to `f.toMulHom.toFun`,
--- not `f.toEquiv.toFun`; use higher priority as a workaround
-@[to_additive (attr := simp 1100)]
+@[to_additive (attr := simp)]
 theorem coe_toMulHom {f : M ≃* N} : (f.toMulHom : M → N) = f := rfl
 
 /-- Makes a multiplicative isomorphism from a bijection which preserves multiplication. -/
@@ -300,10 +300,10 @@ lemma symm_map_mul {M N : Type*} [Mul M] [Mul N] (h : M ≃* N) (x y : N) :
 def symm {M N : Type*} [Mul M] [Mul N] (h : M ≃* N) : N ≃* M :=
   ⟨h.toEquiv.symm, h.symm_map_mul⟩
 
-@[to_additive] -- Porting note: no longer a `simp`, see below
+@[to_additive]
 theorem invFun_eq_symm {f : M ≃* N} : f.invFun = f.symm := rfl
--- Porting note: to_additive translated the name incorrectly in mathlib 3.
 
+/-- `simp`-normal form of `invFun_eq_symm`. -/
 @[to_additive (attr := simp)]
 theorem coe_toEquiv_symm (f : M ≃* N) : ((f : M ≃ N).symm : N → M) = f.symm := rfl
 
@@ -312,8 +312,6 @@ theorem equivLike_inv_eq_symm (f : M ≃* N) : EquivLike.inv f = f.symm := rfl
 
 @[to_additive (attr := simp)]
 theorem toEquiv_symm (f : M ≃* N) : (f.symm : N ≃ M) = (f : M ≃ N).symm := rfl
-
--- Porting note: `toEquiv_mk` no longer needed in Lean4
 
 @[to_additive (attr := simp)]
 theorem symm_symm (f : M ≃* N) : f.symm.symm = f := rfl
