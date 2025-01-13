@@ -229,20 +229,15 @@ lemma sum_mul_Ico_le_integral_of_monotone_antitone
     · apply fpos.trans
       apply hf (by simp [hab]) I2
       exact le_trans (mod_cast hi.1) hx.1
-  · rw [IntegrableOn, ← memℒp_one_iff_integrable]
-    apply Memℒp.mono_measure (μ := volume.restrict (Icc (a : ℝ) b))
-    · apply Measure.restrict_mono_set
-      exact Ico_subset_Icc_self
-    apply Memℒp.memℒp_of_exponent_le_of_measure_support_ne_top (s := univ)
-      _ (by simp) (by simp) le_top
-    apply Memℒp.mul_of_top_left
+  · apply Integrable.mono_measure _ (Measure.restrict_mono_set _ Ico_subset_Icc_self)
+    apply Integrable.mul_of_top_left
+    · exact hf.integrableOn_isCompact isCompact_Icc
     · apply AntitoneOn.memℒp_isCompact isCompact_Icc
       intro x hx y hy hxy
       apply hg
       · simpa using hx
       · simpa using hy
       · simpa using hxy
-    · exact hf.memℒp_isCompact isCompact_Icc
 
 lemma integral_le_sum_mul_Ico_of_antitone_monotone
     (hab : a ≤ b) (hf : AntitoneOn f (Icc a b)) (hg : MonotoneOn g (Icc (a - 1) (b - 1)))
@@ -279,17 +274,12 @@ lemma integral_le_sum_mul_Ico_of_antitone_monotone
       apply hg (by simp [hab]) (by simpa using I2) (by simpa using I2.1)
     · apply fpos.trans
       apply hf ⟨mod_cast hi.1, mod_cast hi.2.le⟩ (by simpa using hab) (mod_cast hi.2.le)
-  · rw [IntegrableOn, ← memℒp_one_iff_integrable]
-    apply Memℒp.mono_measure (μ := volume.restrict (Icc (a : ℝ) b))
-    · apply Measure.restrict_mono_set
-      exact Ico_subset_Icc_self
-    apply Memℒp.memℒp_of_exponent_le_of_measure_support_ne_top (s := univ)
-      _ (by simp) (by simp) le_top
-    apply Memℒp.mul_of_top_left
+  · apply Integrable.mono_measure _ (Measure.restrict_mono_set _ Ico_subset_Icc_self)
+    apply Integrable.mul_of_top_left
+    · exact hf.integrableOn_isCompact isCompact_Icc
     · apply MonotoneOn.memℒp_isCompact isCompact_Icc
       intro x hx y hy hxy
       apply hg
       · simpa using hx
       · simpa using hy
       · simpa using hxy
-    · exact hf.memℒp_isCompact isCompact_Icc
