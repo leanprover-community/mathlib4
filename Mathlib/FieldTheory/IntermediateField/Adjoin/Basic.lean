@@ -111,7 +111,7 @@ instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensio
     FiniteDimensional K (⨆ i, t i : IntermediateField K L) := by
   rw [← iSup_univ]
   refine Set.Finite.induction_on
-    (C := fun s _ => FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L))
+    (motive := fun s _ => FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L))
     _ Set.finite_univ ?_ ?_
   all_goals dsimp
   · rw [iSup_emptyset]
