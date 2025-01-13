@@ -79,73 +79,69 @@ example (hAB : A ⊆ B) (hBC : B ⊆ C) (hCD : C ⊆ D) (hDE : D = E) (hEA : E �
 -/
 
 -- setminus_inter_union_eq_union
-example {X Y : Set α} : X \ (X ∩ Y) ∪ Y = X ∪ Y := by tauto_set
+example : A \ (A ∩ B) ∪ B = A ∪ B := by tauto_set
 
 -- sub_parts_eq
-example {A E₁ E₂ : Set α} (hA : A ⊆ E₁ ∪ E₂) : (A ∩ E₁) ∪ (A ∩ E₂) = A := by tauto_set
+example (hA : A ⊆ B ∪ C) : (A ∩ B) ∪ (A ∩ C) = A := by tauto_set
 
 -- elem_notin_set_minus_singleton
-example (a : α) (X : Set α) : a ∉ X \ {a} := by tauto_set
+example (a : α) : a ∉ A \ {a} := by tauto_set
 
 -- sub_union_diff_sub_union
-example {A B C : Set α} (hA : A ⊆ B \ C) : A ⊆ B := by tauto_set
+example (hA : A ⊆ B \ C) : A ⊆ B := by tauto_set
 
 -- singleton_inter_subset_left
-example {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : {a} ⊆ X := by tauto_set
+example (hAB : A ∩ B = {a}) : {a} ⊆ A := by tauto_set
 
 -- singleton_inter_subset_right
-example {X Y : Set α} {a : α} (ha : X ∩ Y = {a}) : {a} ⊆ Y := by tauto_set
+example (hAB : A ∩ B = {a}) : {a} ⊆ B := by tauto_set
 
 -- diff_subset_parent
-example {X₁ X₂ E : Set α} (hX₁E : X₁ ⊆ E) : X₁ \ X₂ ⊆ E := by tauto_set
+example (hAB : A ⊆ C) : A \ B ⊆ C := by tauto_set
 
 -- inter_subset_parent_left
-example {X₁ X₂ E : Set α} (hX₁E : X₁ ⊆ E) : X₁ ∩ X₂ ⊆ E := by tauto_set
+example (hAC : A ⊆ C) : A ∩ B ⊆ C := by tauto_set
 
 -- inter_subset_parent_right
-example {X₁ X₂ E : Set α} (hX₂E : X₂ ⊆ E) : X₁ ∩ X₂ ⊆ E := by tauto_set
+example (hBC : B ⊆ C) : A ∩ B ⊆ C := by tauto_set
 
 -- inter_subset_union
-example {X₁ X₂ : Set α} : X₁ ∩ X₂ ⊆ X₁ ∪ X₂ := by tauto_set
+example : A ∩ B ⊆ A ∪ B := by tauto_set
 
 -- subset_diff_empty_eq
-example {A B : Set α} (hAB : A ⊆ B) (hBA : B \ A = ∅) : A = B := by tauto_set
+example (hAB : A ⊆ B) (hBA : B \ A = ∅) : A = B := by tauto_set
 
 -- Disjoint.ni_of_in
-example {X Y : Set α} {a : α} (hXY : Disjoint X Y) (ha : a ∈ X) :
-    a ∉ Y := by tauto_set
+example (hAB : Disjoint A B) (ha : a ∈ A) : a ∉ B := by tauto_set
 
 -- disjoint_of_singleton_inter_left_wo
-example {X Y : Set α} {a : α} (hXY : X ∩ Y = {a}) :
-    Disjoint (X \ {a}) Y := by tauto_set
+example (hAB : A ∩ B = {a}) : Disjoint (A \ {a}) B := by tauto_set
 
 -- disjoint_of_singleton_inter_right_wo
-example {X Y : Set α} {a : α} (hXY : X ∩ Y = {a}) :
-    Disjoint X (Y \ {a}) := by tauto_set
+example (hAB : A ∩ B = {a}) : Disjoint A (B \ {a}) := by tauto_set
 
 -- disjoint_of_singleton_inter_both_wo
-example {X Y : Set α} {a : α} (hXY : X ∩ Y = {a}) :
-    Disjoint (X \ {a}) (Y \ {a}) := by tauto_set
+example (hAB : A ∩ B = {a}) : Disjoint (A \ {a}) (B \ {a}) := by tauto_set
 
 -- union_subset_union_iff
-example {A B X : Set α} (hAX : Disjoint A X) (hBX : Disjoint B X) :
-    A ∪ X ⊆ B ∪ X ↔ A ⊆ B := by
+example (hAC : Disjoint A C) (hBC : Disjoint B C) :
+    A ∪ C ⊆ B ∪ C ↔ A ⊆ B := by
   constructor <;> (intro; tauto_set)
 
 -- symmDiff_eq_alt
-example (X Y : Set α) : symmDiff X Y = (X ∪ Y) \ (X ∩ Y) := by tauto_set
+example : symmDiff A B = (A ∪ B) \ (A ∩ B) := by tauto_set
 
 -- symmDiff_disjoint_inter
-example (X Y : Set α) : Disjoint (symmDiff X Y) (X ∩ Y) := by tauto_set
+example : Disjoint (symmDiff A B) (A ∩ B) := by tauto_set
 
 -- symmDiff_empty_eq
-example (X : Set α) : symmDiff X ∅ = X := by tauto_set
+example : symmDiff A ∅ = A := by tauto_set
 
 -- empty_symmDiff_eq
-example (X : Set α) : symmDiff ∅ X = X := by tauto_set
+example : symmDiff ∅ A = A := by tauto_set
 
 -- symmDiff_subset_ground_right
-example {X Y E : Set α} (hE : symmDiff X Y ⊆ E) (hX : X ⊆ E) : Y ⊆ E := by tauto_set
+example (hC : symmDiff A B ⊆ C) (hA : A ⊆ C) : B ⊆ C := by tauto_set
 
 -- symmDiff_subset_ground_left
-example {X Y E : Set α} (hE : symmDiff X Y ⊆ E) (hX : Y ⊆ E) : X ⊆ E := by tauto_set
+example (hC : symmDiff A B ⊆ C) (hB : B ⊆ C) : A ⊆ C := by tauto_set
