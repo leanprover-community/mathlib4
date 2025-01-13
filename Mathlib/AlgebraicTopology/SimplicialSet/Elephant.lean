@@ -86,6 +86,25 @@ variable {n : ℕ} (X : SSet.Truncated.{u} (n + 1))
 taking the 1-truncated path. -/
 abbrev Path : ℕ → Type u := trunc (by omega) |>.obj X |>.Path₁
 
+variable {X}
+/-- To show two paths are equal it suffices to check they have the same edges. -/
+theorem Path.ext' {m} {f g : X.Path (m + 1)}
+    (ha : (i : Fin (m + 1)) → f.arrow i = g.arrow i) : f = g := by
+  ext i
+  · revert i
+    apply Fin.cases
+    · have eqf := f.arrow_src 0
+      have eqg := g.arrow_src 0
+      simp at eqf
+      simp at eqg
+      rw [← eqf, ← eqg]
+      exact congrArg (((trunc proof_1).obj X).map (δ 1 : ⟨[0], _⟩ ⟶ ⟨[1], _⟩).op) (ha 0)
+    · intro j
+      rw [← f.arrow_tgt j, ← g.arrow_tgt j]
+      exact congrArg (((trunc proof_1).obj X).map (δ 0 : ⟨[0], _⟩ ⟶ ⟨[1], _⟩).op) (ha j)
+  · exact ha i
+
+variable (X)
 /-- The spine of an `n + 1`-simplex in an `n + 1`-truncated simplicial set `X` is the path of edges
 of length `n + 1` formed by traversing through its vertices in order. -/
 @[simps]
@@ -161,6 +180,18 @@ def spineEquiv {m : ℕ} (hmn : m ≤ n + 1) : X _[m]ₙ₊₁ ≃ Path X m wher
 theorem spineInjective {m : ℕ} (hmn : m ≤ n + 1) : Function.Injective (spineEquiv (X := X) hmn) :=
   Equiv.injective _
 
+/-- Two simplices in a `StrictSegal` truncated simplicial set agree iff their spines agree. -/
+theorem ext' {m : ℕ} (hmn : m ≤ n + 1) (Δ Δ' : X _[m]ₙ₊₁) :
+    X.spine hmn Δ = X.spine hmn Δ' → Δ = Δ' := fun hyp => spineInjective hmn hyp
+
+/-- Two simplices in a `StrictSegal` truncated simplicial set agree iff the 1-simplices along their
+spines agree. -/
+theorem ext'' {m : ℕ} (hmn' : m + 1 ≤ n + 1) (Δ Δ' : X _[m + 1]ₙ₊₁)
+    (hyp : (i : Fin (m + 1)) →
+      (X.map (SimplexCategory.mkOfSucc i : ⟨[1], Nat.le_add_left 1 n⟩ ⟶ ⟨[m + 1], hmn'⟩).op Δ) =
+      (X.map (SimplexCategory.mkOfSucc i : ⟨[1], Nat.le_add_left 1 n⟩ ⟶ ⟨[m + 1], hmn'⟩).op Δ')) :
+    Δ = Δ' := ext' _ _ _ (Path.ext' hyp)
+
 @[simp]
 theorem spineToSimplex_vertex {m : ℕ} (hmn : m ≤ n + 1) (i : Fin (m + 1)) (f : Path X m) :
     X.map (const (SimplexCategory.mk 0) (SimplexCategory.mk m) i).op (spineToSimplex hmn f) =
@@ -168,8 +199,6 @@ theorem spineToSimplex_vertex {m : ℕ} (hmn : m ≤ n + 1) (i : Fin (m + 1)) (f
   rw [← spine_vertex]
   congr
   exact (congrFun (spine_spineToSimplex (X := X) hmn) f)
-
-  -- , spine_spineToSimplex]
 
 @[simp]
 theorem spineToSimplex_arrow {m : ℕ} (hmn : m ≤ n + 1) (i : Fin m) (f : Path X m) :
@@ -182,6 +211,34 @@ theorem spineToSimplex_arrow {m : ℕ} (hmn : m ≤ n + 1) (i : Fin m) (f : Path
 the diagonal edge of the resulting `n`-simplex. -/
 def spineToDiagonal {m : ℕ} (hmn : m ≤ n + 1) (f : Path X m) : X _[1]ₙ₊₁ :=
     X.map ((SimplexCategory.diag m).op) (spineToSimplex hmn f)
+
+
+section
+variable (Y : SSet.Truncated.{u} 2) [StrictSegal Y]
+
+/-- This is similiar to one of the famous Segal maps, except valued in a product rather than a
+pullback.-/
+noncomputable def seagull : Y _[2]₂ ⟶ Y _[1]₂ ⨯ Y _[1]₂ :=
+  prod.lift (Y.map (.op (mkOfSucc 0))) (Y.map (.op (mkOfSucc 1)))
+
+instance : Mono (seagull Y) where
+  right_cancellation {X} (f g : X → Y _[2]₂) eq := by
+    ext x
+    simp [seagull] at eq
+    have eq1 := congr($eq ≫ prod.fst)
+    have eq2 := congr($eq ≫ prod.snd)
+    simp at eq1 eq2
+    replace eq1 := congr_fun eq1 x
+    replace eq2 := congr_fun eq2 x
+    simp at eq1 eq2
+    apply StrictSegal.ext''
+    intro i
+    match i with
+    | 0 => exact eq1
+    | 1 => exact eq2
+
+end
+
 
 end SSet.Truncated.StrictSegal
 
@@ -474,10 +531,9 @@ def toStrictSegal₂.mk {X Y : SSet.Truncated 2} [StrictSegal Y]
     have nat2m (α : (⟨[2], by decide⟩ : SimplexCategory.Truncated 2) ⟶ ⟨[m], hm⟩) :
         OK α := by
       dsimp [OK]
-      sorry
-      -- apply (cancel_mono (nerve₂.seagull _)).1
-      -- simp [nerve₂.seagull]
-      -- congr 1 <;> rw [← map_comp, ← op_comp, ← nat1m, ← nat1m, op_comp, map_comp, assoc]
+      apply (cancel_mono (StrictSegal.seagull Y)).1
+      simp [StrictSegal.seagull]
+      congr 1 <;> rw [← map_comp, ← op_comp, ← nat1m, ← nat1m, op_comp, map_comp, assoc]
     match n with
       | 0 =>
         match m with
