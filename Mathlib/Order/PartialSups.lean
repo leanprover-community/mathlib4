@@ -121,10 +121,10 @@ def partialSups.gi :
   le_l_u f := le_partialSups f
   choice_eq f h := OrderHom.ext _ _ ((le_partialSups f).antisymm h)
 
-lemma Pi.partialSups_apply {ι : Type*} {π : ι → Type*} [(i : ι) → SemilatticeSup (π i)]
+protected lemma Pi.partialSups_apply {ι : Type*} {π : ι → Type*} [(i : ι) → SemilatticeSup (π i)]
     (f : β → (i : ι) → π i) (n : β) (i : ι) :
     partialSups f n i = partialSups (f · i) n := by
-  simp only [_root_.partialSups_apply, Finset.sup'_apply]
+  simp only [partialSups_apply, Finset.sup'_apply]
 
 end Preorder
 
