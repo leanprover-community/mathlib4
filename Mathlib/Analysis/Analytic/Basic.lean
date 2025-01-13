@@ -327,6 +327,21 @@ theorem min_radius_le_radius_add (p q : FormalMultilinearSeries 𝕜 E F) :
 theorem radius_neg (p : FormalMultilinearSeries 𝕜 E F) : (-p).radius = p.radius := by
   simp only [radius, neg_apply, norm_neg]
 
+theorem radius_le_smul {p : FormalMultilinearSeries 𝕜 E F} {c : 𝕜} : p.radius ≤ (c • p).radius := by
+  simp only [radius, smul_apply]
+  refine iSup_mono fun r ↦ iSup_mono' fun C ↦ ⟨‖c‖ * C, iSup_mono' fun h ↦ ?_⟩
+  simp only [le_refl, exists_prop, and_true]
+  intro n
+  rw [norm_smul c (p n), mul_assoc]
+  gcongr
+  exact h n
+
+theorem radius_smul_eq (p : FormalMultilinearSeries 𝕜 E F) {c : 𝕜}
+    (hc : c ≠ 0) : (c • p).radius = p.radius := by
+  apply eq_of_le_of_le _ radius_le_smul
+  conv => rhs; rw [show p = c⁻¹ • (c • p) by simp [smul_smul, inv_mul_cancel₀ hc]]
+  apply radius_le_smul
+
 @[simp]
 theorem radius_shift (p : FormalMultilinearSeries 𝕜 E F) : p.shift.radius = p.radius := by
   simp only [radius, shift, Nat.succ_eq_add_one, ContinuousMultilinearMap.curryRight_norm]
@@ -1119,10 +1134,8 @@ theorem HasFPowerSeriesWithinOnBall.isBigO_image_sub_image_sub_deriv_principal
           ((hasSum_geometric_of_norm_lt_one this).mul_left 2)
     exact hA.norm_le_of_bounded hBL hAB
   suffices L =O[𝓟 (EMetric.ball (x, x) r' ∩ ((insert x s) ×ˢ (insert x s)))]
-      fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ by
-    refine (IsBigO.of_bound 1 (eventually_principal.2 fun y hy => ?_)).trans this
-    rw [one_mul]
-    exact (hL y hy).trans (le_abs_self _)
+      fun y => ‖y - (x, x)‖ * ‖y.1 - y.2‖ from
+    .trans (.of_norm_eventuallyLE (eventually_principal.2 hL)) this
   simp_rw [L, mul_right_comm _ (_ * _)]
   exact (isBigO_refl _ _).const_mul_left _
 

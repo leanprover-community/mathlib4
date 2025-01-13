@@ -469,7 +469,7 @@ attribute [local instance] simpleFunc.module
 /-- If `E` is a normed space, `Lp.simpleFunc E p μ` is a normed space. Not declared as an
 instance as it is (as of writing) used only in the construction of the Bochner integral. -/
 protected theorem boundedSMul [Fact (1 ≤ p)] : BoundedSMul 𝕜 (Lp.simpleFunc E p μ) :=
-  BoundedSMul.of_norm_smul_le fun r f => (norm_smul_le r (f : Lp E p μ) : _)
+  BoundedSMul.of_norm_smul_le fun r f => (norm_smul_le r (f : Lp E p μ) :)
 
 attribute [local instance] simpleFunc.boundedSMul
 

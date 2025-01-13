@@ -230,7 +230,7 @@ theorem natCast_re (n : ℕ) : (n : ℤ√d).re = n :=
   rfl
 
 @[simp]
-theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).re = n :=
+theorem ofNat_re (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℤ√d).re = n :=
   rfl
 
 @[simp]
@@ -238,7 +238,7 @@ theorem natCast_im (n : ℕ) : (n : ℤ√d).im = 0 :=
   rfl
 
 @[simp]
-theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℤ√d).im = 0 :=
+theorem ofNat_im (n : ℕ) [n.AtLeastTwo] : (ofNat(n) : ℤ√d).im = 0 :=
   rfl
 
 theorem natCast_val (n : ℕ) : (n : ℤ√d) = ⟨n, 0⟩ :=

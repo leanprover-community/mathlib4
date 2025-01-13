@@ -5,6 +5,7 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.Algebra.Algebra.Operations
+import Mathlib.Algebra.Algebra.NonUnitalSubalgebra
 
 /-!
 # Subalgebras over Commutative Semiring
@@ -145,6 +146,14 @@ protected theorem prod_mem {R : Type u} {A : Type v} [CommSemiring R] [CommSemir
     (S : Subalgebra R A) {ι : Type w} {t : Finset ι} {f : ι → A} (h : ∀ x ∈ t, f x ∈ S) :
     (∏ x ∈ t, f x) ∈ S :=
   prod_mem h
+
+/-- Turn a `Subalgebra` into a `NonUnitalSubalgebra` by forgetting that it contains `1`. -/
+def toNonUnitalSubalgebra (S : Subalgebra R A) : NonUnitalSubalgebra R A where
+  __ := S
+  smul_mem' r _x hx := S.smul_mem hx r
+
+lemma one_mem_toNonUnitalSubalgebra (S : Subalgebra R A) : (1 : A) ∈ S.toNonUnitalSubalgebra :=
+  S.one_mem
 
 instance {R A : Type*} [CommRing R] [Ring A] [Algebra R A] : SubringClass (Subalgebra R A) A :=
   { Subalgebra.SubsemiringClass with
@@ -520,7 +529,7 @@ theorem coe_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f 
 
 theorem injective_codRestrict (f : A →ₐ[R] B) (S : Subalgebra R B) (hf : ∀ x, f x ∈ S) :
     Function.Injective (f.codRestrict S hf) ↔ Function.Injective f :=
-  ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy : _)⟩
+  ⟨fun H _x _y hxy => H <| Subtype.eq hxy, fun H _x _y hxy => H (congr_arg Subtype.val hxy :)⟩
 
 /-- Restrict the codomain of an `AlgHom` `f` to `f.range`.
 
@@ -819,7 +828,7 @@ noncomputable def botEquivOfInjective (h : Function.Injective (algebraMap R A)) 
     (⊥ : Subalgebra R A) ≃ₐ[R] R :=
   AlgEquiv.symm <|
     AlgEquiv.ofBijective (Algebra.ofId R _)
-      ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy : _), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.eq hx⟩⟩
+      ⟨fun _x _y hxy => h (congr_arg Subtype.val hxy :), fun ⟨_y, x, hx⟩ => ⟨x, Subtype.eq hx⟩⟩
 
 /-- The bottom subalgebra is isomorphic to the field. -/
 @[simps! symm_apply]
@@ -995,7 +1004,7 @@ instance isScalarTower_left [SMul α β] [SMul A α] [SMul A β] [IsScalarTower 
 instance isScalarTower_mid {R S T : Type*} [CommSemiring R] [Semiring S] [AddCommMonoid T]
     [Algebra R S] [Module R T] [Module S T] [IsScalarTower R S T] (S' : Subalgebra R S) :
     IsScalarTower R S' T :=
-  ⟨fun _x y _z => (smul_assoc _ (y : S) _ : _)⟩
+  ⟨fun _x y _z => smul_assoc _ (y : S) _⟩
 
 instance [SMul A α] [FaithfulSMul A α] (S : Subalgebra R A) : FaithfulSMul S α :=
   inferInstanceAs (FaithfulSMul S.toSubsemiring α)
@@ -1245,3 +1254,20 @@ theorem comap_map_eq_self_of_injective
 end Subalgebra
 
 end MapComap
+
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
+
+/-- Turn a non-unital subalgebra containing `1` into a subalgebra. -/
+def NonUnitalSubalgebra.toSubalgebra (S : NonUnitalSubalgebra R A) (h1 : (1 : A) ∈ S) :
+    Subalgebra R A :=
+  { S with
+    one_mem' := h1
+    algebraMap_mem' := fun r =>
+      (Algebra.algebraMap_eq_smul_one (R := R) (A := A) r).symm ▸ SMulMemClass.smul_mem r h1 }
+
+lemma Subalgebra.toNonUnitalSubalgebra_toSubalgebra (S : Subalgebra R A) :
+    S.toNonUnitalSubalgebra.toSubalgebra S.one_mem = S := by cases S; rfl
+
+lemma NonUnitalSubalgebra.toSubalgebra_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A)
+    (h1 : (1 : A) ∈ S) : (NonUnitalSubalgebra.toSubalgebra S h1).toNonUnitalSubalgebra = S := by
+  cases S; rfl
