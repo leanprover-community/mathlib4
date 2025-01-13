@@ -9,7 +9,7 @@ import Mathlib.Topology.Algebra.ClopenNhdofOne
 /-!
 # A profinite group is the projective limit of finite groups
 
-We give the topological group isomorphism between a profinite group and the projective limit of
+We define the topological group isomorphism between a profinite group and the projective limit of
 its quotients by open normal subgroups.
 
 ## Main definitions
