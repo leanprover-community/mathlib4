@@ -71,7 +71,7 @@ instance [IsImmersion f] : IsClosedImmersion f.liftCoborder := by
   have : IsPreimmersion f.liftCoborder := .of_comp f.liftCoborder f.coborderRange.ι
   refine .of_isPreimmersion _ ?_
   convert isClosed_preimage_val_coborder
-  apply Set.image_injective.mpr f.coborderRange.ι.isEmbedding.inj
+  apply Set.image_injective.mpr f.coborderRange.ι.isEmbedding.injective
   rw [← Set.range_comp, ← TopCat.coe_comp, ← Scheme.comp_base, f.liftCoborder_ι]
   exact (Set.image_preimage_eq_of_subset (by simpa using subset_coborder)).symm
 
@@ -136,7 +136,7 @@ theorem of_comp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [IsImmersion g]
     [IsImmersion (f ≫ g)] : IsImmersion f where
   __ := IsPreimmersion.of_comp f g
   isLocallyClosed_range := by
-    rw [← Set.preimage_image_eq (Set.range _) g.isEmbedding.inj]
+    rw [← Set.preimage_image_eq (Set.range _) g.isEmbedding.injective]
     have := (f ≫ g).isLocallyClosed_range.preimage g.base.2
     simpa only [Scheme.comp_coeBase, TopCat.coe_comp, Set.range_comp] using this
 

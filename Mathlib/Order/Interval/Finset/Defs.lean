@@ -590,8 +590,8 @@ noncomputable def LocallyFiniteOrder.ofFiniteIcc (h : ∀ a b : α, (Set.Icc a b
 This is not an instance as it would not be defeq to better instances such as
 `Fin.locallyFiniteOrder`.
 -/
-abbrev Fintype.toLocallyFiniteOrder [Fintype α] [@DecidableRel α (· < ·)]
-    [@DecidableRel α (· ≤ ·)] : LocallyFiniteOrder α where
+abbrev Fintype.toLocallyFiniteOrder [Fintype α] [DecidableRel (α := α) (· < ·)]
+    [DecidableRel (α := α) (· ≤ ·)] : LocallyFiniteOrder α where
   finsetIcc a b := (Set.Icc a b).toFinset
   finsetIco a b := (Set.Ico a b).toFinset
   finsetIoc a b := (Set.Ioc a b).toFinset
@@ -670,7 +670,7 @@ variable [LocallyFiniteOrder α] (a b : α)
 `Finset αᵒᵈ`!) instead of `(Icc b a).map toDual.toEmbedding` as this means the
 following is defeq:
 ```
-lemma this : (Icc (toDual (toDual a)) (toDual (toDual b)) : _) = (Icc a b : _) := rfl
+lemma this : (Icc (toDual (toDual a)) (toDual (toDual b)) :) = (Icc a b :) := rfl
 ```
 -/
 instance OrderDual.instLocallyFiniteOrder : LocallyFiniteOrder αᵒᵈ where
@@ -683,16 +683,16 @@ instance OrderDual.instLocallyFiniteOrder : LocallyFiniteOrder αᵒᵈ where
   finset_mem_Ioc _ _ _ := (mem_Ico (α := α)).trans and_comm
   finset_mem_Ioo _ _ _ := (mem_Ioo (α := α)).trans and_comm
 
-lemma Icc_orderDual_def (a b : αᵒᵈ) :
+lemma Finset.Icc_orderDual_def (a b : αᵒᵈ) :
     Icc a b = (Icc (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
 
-lemma Ico_orderDual_def (a b : αᵒᵈ) :
+lemma Finset.Ico_orderDual_def (a b : αᵒᵈ) :
     Ico a b = (Ioc (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
 
-lemma Ioc_orderDual_def (a b : αᵒᵈ) :
+lemma Finset.Ioc_orderDual_def (a b : αᵒᵈ) :
     Ioc a b = (Ico (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
 
-lemma Ioo_orderDual_def (a b : αᵒᵈ) :
+lemma Finset.Ioo_orderDual_def (a b : αᵒᵈ) :
     Ioo a b = (Ioo (ofDual b) (ofDual a)).map toDual.toEmbedding := map_refl.symm
 
 lemma Finset.Icc_toDual : Icc (toDual a) (toDual b) = (Icc b a).map toDual.toEmbedding :=
@@ -728,7 +728,7 @@ variable [LocallyFiniteOrderTop α]
 /-- Note we define `Iic (toDual a)` as `Ici a` (which has type `Finset α` not `Finset αᵒᵈ`!)
 instead of `(Ici a).map toDual.toEmbedding` as this means the following is defeq:
 ```
-lemma this : (Iic (toDual (toDual a)) : _) = (Iic a : _) := rfl
+lemma this : (Iic (toDual (toDual a)) :) = (Iic a :) := rfl
 ```
 -/
 instance OrderDual.instLocallyFiniteOrderBot : LocallyFiniteOrderBot αᵒᵈ where
@@ -761,7 +761,7 @@ variable [LocallyFiniteOrderBot α]
 /-- Note we define `Ici (toDual a)` as `Iic a` (which has type `Finset α` not `Finset αᵒᵈ`!)
 instead of `(Iic a).map toDual.toEmbedding` as this means the following is defeq:
 ```
-lemma this : (Ici (toDual (toDual a)) : _) = (Ici a : _) := rfl
+lemma this : (Ici (toDual (toDual a)) :) = (Ici a :) := rfl
 ```
 -/
 instance OrderDual.instLocallyFiniteOrderTop : LocallyFiniteOrderTop αᵒᵈ where
@@ -790,7 +790,7 @@ end LocallyFiniteOrderTop
 /-! ### `Prod` -/
 
 section LocallyFiniteOrder
-variable [LocallyFiniteOrder α] [LocallyFiniteOrder β] [@DecidableRel (α × β) (· ≤ ·)]
+variable [LocallyFiniteOrder α] [LocallyFiniteOrder β] [DecidableRel (α := α × β) (· ≤ ·)]
 
 instance Prod.instLocallyFiniteOrder : LocallyFiniteOrder (α × β) :=
   LocallyFiniteOrder.ofIcc' (α × β) (fun x y ↦ Icc x.1 y.1 ×ˢ Icc x.2 y.2) fun a b x => by
@@ -807,7 +807,7 @@ lemma Finset.card_Icc_prod (x y : α × β) : #(Icc x y) = #(Icc x.1 y.1) * #(Ic
 end LocallyFiniteOrder
 
 section LocallyFiniteOrderTop
-variable [LocallyFiniteOrderTop α] [LocallyFiniteOrderTop β] [@DecidableRel (α × β) (· ≤ ·)]
+variable [LocallyFiniteOrderTop α] [LocallyFiniteOrderTop β] [DecidableRel (α := α × β) (· ≤ ·)]
 
 instance Prod.instLocallyFiniteOrderTop : LocallyFiniteOrderTop (α × β) :=
   LocallyFiniteOrderTop.ofIci' (α × β) (fun x => Ici x.1 ×ˢ Ici x.2) fun a x => by
@@ -821,7 +821,7 @@ lemma Finset.card_Ici_prod (x : α × β) : #(Ici x) = #(Ici x.1) * #(Ici x.2) :
 end LocallyFiniteOrderTop
 
 section LocallyFiniteOrderBot
-variable [LocallyFiniteOrderBot α] [LocallyFiniteOrderBot β] [@DecidableRel (α × β) (· ≤ ·)]
+variable [LocallyFiniteOrderBot α] [LocallyFiniteOrderBot β] [DecidableRel (α := α × β) (· ≤ ·)]
 
 instance Prod.instLocallyFiniteOrderBot : LocallyFiniteOrderBot (α × β) :=
   LocallyFiniteOrderBot.ofIic' (α × β) (fun x ↦ Iic x.1 ×ˢ Iic x.2) fun a x ↦ by
@@ -836,7 +836,7 @@ end Preorder
 
 section Lattice
 variable [Lattice α] [Lattice β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
-  [@DecidableRel (α × β) (· ≤ ·)]
+  [DecidableRel (α := α × β) (· ≤ ·)]
 
 lemma Finset.uIcc_prod_def (x y : α × β) : uIcc x y = uIcc x.1 y.1 ×ˢ uIcc x.2 y.2 := rfl
 
@@ -901,7 +901,7 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
           top_le_iff, reduceCtorEq]
     | (a : α), (b : α), (x : α) => by
         simp only [le_eq_subset, Embedding.some, mem_map, mem_Icc, Embedding.coeFn_mk, coe_le_coe]
-        -- This used to be in the above `simp` before leanprover/lean4#2644
+        -- This used to be in the above `simp` before https://github.com/leanprover/lean4/pull/2644
         erw [aux]
   finset_mem_Ico a b x :=
     match a, b, x with
@@ -910,12 +910,12 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | (a : α), ⊤, (x : α) => by
         simp only [Embedding.some, mem_map, mem_Ici, Embedding.coeFn_mk, coe_le_coe, aux,
           coe_lt_top, and_true]
-        -- This used to be in the above `simp` before leanprover/lean4#2644
+        -- This used to be in the above `simp` before https://github.com/leanprover/lean4/pull/2644
         erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some]
     | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, aux]
                                       -- This used to be in the above `simp` before
-                                      -- leanprover/lean4#2644
+                                      -- https://github.com/leanprover/lean4/pull/2644
                                       erw [aux]
   finset_mem_Ioc a b x :=
     match a, b, x with
@@ -923,12 +923,12 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | (a : α), ⊤, ⊤ => by simp [some, insertNone, top]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux]
                                 -- This used to be in the above `simp` before
-                                -- leanprover/lean4#2644
+                                -- https://github.com/leanprover/lean4/pull/2644
                                 erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), (b : α), (x : α) => by simp [some, Embedding.some, insertNone, aux]
                                       -- This used to be in the above `simp` before
-                                      -- leanprover/lean4#2644
+                                      -- https://github.com/leanprover/lean4/pull/2644
                                       erw [aux]
   finset_mem_Ioo a b x :=
     match a, b, x with
@@ -936,13 +936,13 @@ instance locallyFiniteOrder : LocallyFiniteOrder (WithTop α) where
     | (a : α), ⊤, ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), ⊤, (x : α) => by simp [some, Embedding.some, insertNone, aux, top]
                                 -- This used to be in the above `simp` before
-                                -- leanprover/lean4#2644
+                                -- https://github.com/leanprover/lean4/pull/2644
                                 erw [aux]
     | (a : α), (b : α), ⊤ => by simp [some, Embedding.some, insertNone]
     | (a : α), (b : α), (x : α) => by
       simp [some, Embedding.some, insertNone, aux]
       -- This used to be in the above `simp` before
-      -- leanprover/lean4#2644
+      -- https://github.com/leanprover/lean4/pull/2644
       erw [aux]
 
 variable (a b : α)

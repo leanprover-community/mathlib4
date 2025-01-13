@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Joey van Langen, Casper Putz
 -/
 import Mathlib.Data.Int.ModEq
-import Mathlib.Data.Nat.Cast.Defs
+import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Find
 import Mathlib.Data.Nat.Prime.Defs
-import Mathlib.Tactic.NormNum.Basic
 
 /-!
 # Characteristic of semirings
@@ -20,7 +19,7 @@ import Mathlib.Tactic.NormNum.Basic
     prime characteristic `p`)
 -/
 
-assert_not_exists Finset
+assert_not_exists Field Finset
 
 open Set
 
@@ -61,14 +60,12 @@ lemma natCast_eq_natCast' (h : a ≡ b [MOD p]) : (a : R) = b := by
 
 @[simp] lemma cast_eq_zero : (p : R) = 0 := (cast_eq_zero_iff R p p).2 dvd_rfl
 
--- See note [no_index around OfNat.ofNat]
---
 -- TODO: This lemma needs to be `@[simp]` for confluence in the presence of `CharP.cast_eq_zero` and
 -- `Nat.cast_ofNat`, but with `no_index` on its entire LHS, it matches literally every expression so
--- is too expensive. If lean4#2867 is fixed in a performant way, this can be made `@[simp]`.
+-- is too expensive. If https://github.com/leanprover/lean4/issues/2867 is fixed in a performant way, this can be made `@[simp]`.
 --
 -- @[simp]
-lemma ofNat_eq_zero [p.AtLeastTwo] : no_index (OfNat.ofNat p : R) = 0 := cast_eq_zero R p
+lemma ofNat_eq_zero [p.AtLeastTwo] : (ofNat(p) : R) = 0 := cast_eq_zero R p
 
 lemma natCast_eq_natCast_mod (a : ℕ) : (a : R) = a % p :=
   natCast_eq_natCast' R p (Nat.mod_modEq a p).symm
@@ -146,25 +143,27 @@ lemma «exists» : ∃ p, CharP R p :=
             of_not_not (not_not_of_not_imp <| Nat.find_spec (not_forall.1 H)),
             zero_mul]⟩⟩⟩
 
-lemma exists_unique : ∃! p, CharP R p :=
+lemma existsUnique : ∃! p, CharP R p :=
   let ⟨c, H⟩ := CharP.exists R
   ⟨c, H, fun _y H2 => CharP.eq R H2 H⟩
+
+@[deprecated (since := "2024-12-17")] alias exists_unique := existsUnique
 
 end NonAssocSemiring
 end CharP
 
 /-- Noncomputable function that outputs the unique characteristic of a semiring. -/
-noncomputable def ringChar [NonAssocSemiring R] : ℕ := Classical.choose (CharP.exists_unique R)
+noncomputable def ringChar [NonAssocSemiring R] : ℕ := Classical.choose (CharP.existsUnique R)
 
 namespace ringChar
 variable [NonAssocSemiring R]
 
 lemma spec : ∀ x : ℕ, (x : R) = 0 ↔ ringChar R ∣ x := by
-  letI : CharP R (ringChar R) := (Classical.choose_spec (CharP.exists_unique R)).1
+  letI : CharP R (ringChar R) := (Classical.choose_spec (CharP.existsUnique R)).1
   exact CharP.cast_eq_zero_iff R (ringChar R)
 
 lemma eq (p : ℕ) [C : CharP R p] : ringChar R = p :=
-  ((Classical.choose_spec (CharP.exists_unique R)).2 p C).symm
+  ((Classical.choose_spec (CharP.existsUnique R)).2 p C).symm
 
 instance charP : CharP R (ringChar R) :=
   ⟨spec R⟩
@@ -189,19 +188,9 @@ lemma Nat.cast_ringChar : (ringChar R : R) = 0 := by rw [ringChar.spec]
 end ringChar
 
 lemma CharP.neg_one_ne_one [Ring R] (p : ℕ) [CharP R p] [Fact (2 < p)] : (-1 : R) ≠ (1 : R) := by
-  suffices (2 : R) ≠ 0 by
-    intro h
-    symm at h
-    rw [← sub_eq_zero, sub_neg_eq_add] at h
-    norm_num at h
-    exact this h
-    -- Porting note: this could probably be golfed
-  intro h
-  rw [show (2 : R) = (2 : ℕ) by norm_cast] at h
-  have := (CharP.cast_eq_zero_iff R p 2).mp h
-  have := Nat.le_of_dvd (by decide) this
-  rw [fact_iff] at *
-  omega
+  rw [ne_comm, ← sub_ne_zero, sub_neg_eq_add, one_add_one_eq_two, ← Nat.cast_two, Ne,
+    CharP.cast_eq_zero_iff R p 2]
+  exact fun h ↦ (Fact.out : 2 < p).not_le <| Nat.le_of_dvd Nat.zero_lt_two h
 
 namespace CharP
 
@@ -232,7 +221,7 @@ section NoZeroDivisors
 variable [NoZeroDivisors R]
 
 lemma char_is_prime_of_two_le (p : ℕ) [CharP R p] (hp : 2 ≤ p) : Nat.Prime p :=
-  suffices ∀ (d) (_ : d ∣ p), d = 1 ∨ d = p from Nat.prime_def_lt''.mpr ⟨hp, this⟩
+  suffices ∀ (d) (_ : d ∣ p), d = 1 ∨ d = p from Nat.prime_def.mpr ⟨hp, this⟩
   fun (d : ℕ) (hdvd : ∃ e, p = d * e) =>
   let ⟨e, hmul⟩ := hdvd
   have : (p : R) = 0 := (cast_eq_zero_iff R p p).mpr (dvd_refl p)

@@ -34,7 +34,7 @@ variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃] [Module R 
 
 /-- An isometric equivalence between two quadratic spaces `M₁, Q₁` and `M₂, Q₂` over a ring `R`,
 is a linear equivalence between `M₁` and `M₂` that commutes with the quadratic forms. -/
--- Porting note(#5171): linter not ported yet @[nolint has_nonempty_instance]
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): linter not ported yet @[nolint has_nonempty_instance]
 structure IsometryEquiv (Q₁ : QuadraticMap R M₁ N) (Q₂ : QuadraticMap R M₂ N)
     extends M₁ ≃ₗ[R] M₂ where
   map_app' : ∀ m, Q₂ (toFun m) = Q₁ m

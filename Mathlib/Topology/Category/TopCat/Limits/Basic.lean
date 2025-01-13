@@ -23,7 +23,7 @@ noncomputable section
 
 namespace TopCat
 
-variable {J : Type v} [SmallCategory J]
+variable {J : Type v} [Category.{w} J]
 
 local notation "forget" => forget TopCat
 
@@ -100,10 +100,10 @@ def limitConeInfiIsLimit (F : J ⥤ TopCat.{max v u}) : IsLimit (limitConeInfi.{
     continuous_iff_coinduced_le.mpr
       (le_iInf fun j =>
         coinduced_le_iff_le_induced.mp <|
-          (continuous_iff_coinduced_le.mp (s.π.app j).continuous : _))
+          (continuous_iff_coinduced_le.mp (s.π.app j).continuous :))
   · rfl
 
-instance topCat_hasLimitsOfSize : HasLimitsOfSize.{v, v} TopCat.{max v u} where
+instance topCat_hasLimitsOfSize : HasLimitsOfSize.{w, v} TopCat.{max v u} where
   has_limits_of_shape _ :=
     { has_limit := fun F =>
         HasLimit.mk
@@ -113,14 +113,15 @@ instance topCat_hasLimitsOfSize : HasLimitsOfSize.{v, v} TopCat.{max v u} where
 instance topCat_hasLimits : HasLimits TopCat.{u} :=
   TopCat.topCat_hasLimitsOfSize.{u, u}
 
-instance forgetPreservesLimitsOfSize : PreservesLimitsOfSize forget where
+instance forget_preservesLimitsOfSize :
+    PreservesLimitsOfSize.{w, v} (forget : TopCat.{max v u} ⥤ _) where
   preservesLimitsOfShape {_} :=
     { preservesLimit := fun {F} =>
-        preservesLimitOfPreservesLimitCone (limitConeIsLimit.{v,u} F)
+      preservesLimit_of_preserves_limit_cone (limitConeIsLimit.{v,u} F)
           (Types.limitConeIsLimit.{v,u} (F ⋙ forget)) }
 
-instance forgetPreservesLimits : PreservesLimits forget :=
-  TopCat.forgetPreservesLimitsOfSize.{u,u}
+instance forget_preservesLimits : PreservesLimits (forget : TopCat.{u} ⥤ _) :=
+  TopCat.forget_preservesLimitsOfSize.{u, u}
 
 /-- A choice of colimit cocone for a functor `F : J ⥤ TopCat`.
 Generally you should just use `colimit.cocone F`, unless you need the actual definition
@@ -158,10 +159,10 @@ def colimitCoconeIsColimit (F : J ⥤ TopCat.{max v u}) : IsColimit (colimitCoco
     continuous_iff_le_induced.mpr
       (iSup_le fun j =>
         coinduced_le_iff_le_induced.mp <|
-          (continuous_iff_coinduced_le.mp (s.ι.app j).continuous : _))
+          (continuous_iff_coinduced_le.mp (s.ι.app j).continuous :))
   · rfl
 
-instance topCat_hasColimitsOfSize : HasColimitsOfSize.{v,v} TopCat.{max v u} where
+instance topCat_hasColimitsOfSize : HasColimitsOfSize.{w,v} TopCat.{max v u} where
   has_colimits_of_shape _ :=
     { has_colimit := fun F =>
         HasColimit.mk
@@ -171,15 +172,15 @@ instance topCat_hasColimitsOfSize : HasColimitsOfSize.{v,v} TopCat.{max v u} whe
 instance topCat_hasColimits : HasColimits TopCat.{u} :=
   TopCat.topCat_hasColimitsOfSize.{u, u}
 
-instance forgetPreservesColimitsOfSize :
-    PreservesColimitsOfSize.{v, v} forget where
+instance forget_preservesColimitsOfSize :
+    PreservesColimitsOfSize.{w, v} (forget : TopCat.{max u v} ⥤ _) where
   preservesColimitsOfShape :=
     { preservesColimit := fun {F} =>
-        preservesColimitOfPreservesColimitCocone (colimitCoconeIsColimit F)
+        preservesColimit_of_preserves_colimit_cocone (colimitCoconeIsColimit F)
           (Types.TypeMax.colimitCoconeIsColimit (F ⋙ forget)) }
 
-instance forgetPreservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Type u) :=
-  TopCat.forgetPreservesColimitsOfSize.{u, u}
+instance forget_preservesColimits : PreservesColimits (forget : TopCat.{u} ⥤ Type u) :=
+  TopCat.forget_preservesColimitsOfSize.{u, u}
 
 /-- The terminal object of `Top` is `PUnit`. -/
 def isTerminalPUnit : IsTerminal (TopCat.of PUnit.{u + 1}) :=

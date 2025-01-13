@@ -32,8 +32,8 @@ theorem natCast_mem [AddSubmonoidWithOneClass S R] (n : ℕ) : (n : R) ∈ s := 
 
 @[aesop safe apply (rule_sets := [SetLike])]
 lemma ofNat_mem [AddSubmonoidWithOneClass S R] (s : S) (n : ℕ) [n.AtLeastTwo] :
-    no_index (OfNat.ofNat n) ∈ s := by
-  rw [← Nat.cast_eq_ofNat]; exact natCast_mem s n
+    ofNat(n) ∈ s := by
+  rw [← Nat.cast_ofNat]; exact natCast_mem s n
 
 instance (priority := 74) AddSubmonoidWithOneClass.toAddMonoidWithOne
     [AddSubmonoidWithOneClass S R] : AddMonoidWithOne s :=
@@ -137,12 +137,24 @@ instance : SubsemiringClass (Subsemiring R) R where
   one_mem {s} := Submonoid.one_mem' s.toSubmonoid
   mul_mem {s} := Subsemigroup.mul_mem' s.toSubmonoid.toSubsemigroup
 
+initialize_simps_projections Subsemiring (carrier → coe, as_prefix coe)
+
+/-- Turn a `Subsemiring` into a `NonUnitalSubsemiring` by forgetting that it contains `1`. -/
+def toNonUnitalSubsemiring (S : Subsemiring R) : NonUnitalSubsemiring R where __ := S
+
 @[simp]
 theorem mem_toSubmonoid {s : Subsemiring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 
+@[simp]
+lemma mem_toNonUnitalSubsemiring {S : Subsemiring R} {x : R} :
+    x ∈ S.toNonUnitalSubsemiring ↔ x ∈ S := .rfl
+
 theorem mem_carrier {s : Subsemiring R} {x : R} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
+
+@[simp]
+lemma coe_toNonUnitalSubsemiring (S : Subsemiring R) : (S.toNonUnitalSubsemiring : Set R) = S := rfl
 
 /-- Two subsemirings are equal if they have the same elements. -/
 @[ext]
@@ -151,25 +163,36 @@ theorem ext {S T : Subsemiring R} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
 
 /-- Copy of a subsemiring with a new `carrier` equal to the old one. Useful to fix definitional
 equalities. -/
+@[simps coe toSubmonoid]
 protected def copy (S : Subsemiring R) (s : Set R) (hs : s = ↑S) : Subsemiring R :=
   { S.toAddSubmonoid.copy s hs, S.toSubmonoid.copy s hs with carrier := s }
-
-@[simp]
-theorem coe_copy (S : Subsemiring R) (s : Set R) (hs : s = ↑S) : (S.copy s hs : Set R) = s :=
-  rfl
 
 theorem copy_eq (S : Subsemiring R) (s : Set R) (hs : s = ↑S) : S.copy s hs = S :=
   SetLike.coe_injective hs
 
 theorem toSubmonoid_injective : Function.Injective (toSubmonoid : Subsemiring R → Submonoid R)
-  | _, _, h => ext (SetLike.ext_iff.mp h : _)
+  | _, _, h => ext (SetLike.ext_iff.mp h :)
 
 theorem toAddSubmonoid_injective :
     Function.Injective (toAddSubmonoid : Subsemiring R → AddSubmonoid R)
-  | _, _, h => ext (SetLike.ext_iff.mp h : _)
+  | _, _, h => ext (SetLike.ext_iff.mp h :)
+
+lemma toNonUnitalSubsemiring_injective :
+    Function.Injective (toNonUnitalSubsemiring : Subsemiring R → _) :=
+  fun S₁ S₂ h => SetLike.ext'_iff.2 (
+    show (S₁.toNonUnitalSubsemiring : Set R) = S₂ from SetLike.ext'_iff.1 h)
+
+@[simp]
+lemma toNonUnitalSubsemiring_inj {S₁ S₂ : Subsemiring R} :
+    S₁.toNonUnitalSubsemiring = S₂.toNonUnitalSubsemiring ↔ S₁ = S₂ :=
+  toNonUnitalSubsemiring_injective.eq_iff
+
+lemma one_mem_toNonUnitalSubsemiring (S : Subsemiring R) : (1 : R) ∈ S.toNonUnitalSubsemiring :=
+  S.one_mem
 
 /-- Construct a `Subsemiring R` from a set `s`, a submonoid `sm`, and an additive
 submonoid `sa` such that `x ∈ s ↔ x ∈ sm ↔ x ∈ sa`. -/
+@[simps coe]
 protected def mk' (s : Set R) (sm : Submonoid R) (hm : ↑sm = s) (sa : AddSubmonoid R)
     (ha : ↑sa = s) : Subsemiring R where
   carrier := s
@@ -177,11 +200,6 @@ protected def mk' (s : Set R) (sm : Submonoid R) (hm : ↑sm = s) (sa : AddSubmo
   one_mem' := by exact hm ▸ sm.one_mem
   add_mem' {x y} := by simpa only [← ha] using sa.add_mem
   mul_mem' {x y} := by simpa only [← hm] using sm.mul_mem
-
-@[simp]
-theorem coe_mk' {s : Set R} {sm : Submonoid R} (hm : ↑sm = s) {sa : AddSubmonoid R} (ha : ↑sa = s) :
-    (Subsemiring.mk' s sm hm sa ha : Set R) = s :=
-  rfl
 
 @[simp]
 theorem mem_mk' {s : Set R} {sm : Submonoid R} (hm : ↑sm = s) {sa : AddSubmonoid R} (ha : ↑sa = s)
@@ -350,3 +368,15 @@ theorem eqLocusS_same (f : R →+* S) : f.eqLocusS f = ⊤ :=
   SetLike.ext fun _ => eq_self_iff_true _
 
 end RingHom
+
+/-- Turn a non-unital subsemiring containing `1` into a subsemiring. -/
+def NonUnitalSubsemiring.toSubsemiring (S : NonUnitalSubsemiring R) (h1 : 1 ∈ S) :
+    Subsemiring R where
+  __ := S
+  one_mem' := h1
+
+lemma Subsemiring.toNonUnitalSubsemiring_toSubsemiring (S : Subsemiring R) :
+    S.toNonUnitalSubsemiring.toSubsemiring S.one_mem = S := rfl
+
+lemma NonUnitalSubsemiring.toSubsemiring_toNonUnitalSubsemiring (S : NonUnitalSubsemiring R) (h1) :
+    (NonUnitalSubsemiring.toSubsemiring S h1).toNonUnitalSubsemiring = S := rfl

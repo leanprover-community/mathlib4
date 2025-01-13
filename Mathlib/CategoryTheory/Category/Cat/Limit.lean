@@ -67,10 +67,10 @@ instance (F : J ⥤ Cat.{v, v}) : Category (limit (F ⋙ Cat.objects)) where
         ← congr_fun (limit.w (homDiagram Y Z) h) g]
   id_comp _ := by
     apply Types.limit_ext.{v, v}
-    aesop_cat
+    simp
   comp_id _ := by
     apply Types.limit_ext.{v, v}
-    aesop_cat
+    simp
 
 /-- Auxiliary definition: the limit category. -/
 @[simps]
@@ -146,7 +146,7 @@ instance : HasLimits Cat.{v, v} where
 instance : PreservesLimits Cat.objects.{v, v} where
   preservesLimitsOfShape :=
     { preservesLimit := fun {F} =>
-        preservesLimitOfPreservesLimitCone (HasLimits.limitConeIsLimit F)
+        preservesLimit_of_preserves_limit_cone (HasLimits.limitConeIsLimit F)
           (Limits.IsLimit.ofIsoLimit (limit.isLimit (F ⋙ Cat.objects))
             (Cones.ext (by rfl) (by aesop_cat))) }
 

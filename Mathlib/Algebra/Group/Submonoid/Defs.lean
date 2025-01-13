@@ -44,8 +44,7 @@ numbers. `Submonoid` is implemented by extending `Subsemigroup` requiring `one_m
 submonoid, submonoids
 -/
 
-assert_not_exists CompleteLattice
-assert_not_exists MonoidWithZero
+assert_not_exists CompleteLattice MonoidWithZero
 
 variable {M : Type*} {N : Type*}
 
@@ -131,9 +130,8 @@ instance : SubmonoidClass (Submonoid M) M where
   one_mem := Submonoid.one_mem'
   mul_mem {s} := s.mul_mem'
 
-initialize_simps_projections Submonoid (carrier → coe)
-
-initialize_simps_projections AddSubmonoid (carrier → coe)
+initialize_simps_projections Submonoid (carrier → coe, as_prefix coe)
+initialize_simps_projections AddSubmonoid (carrier → coe, as_prefix coe)
 
 @[to_additive (attr := simp)]
 theorem mem_toSubsemigroup {s : Submonoid M} {x : M} : x ∈ s.toSubsemigroup ↔ x ∈ s :=

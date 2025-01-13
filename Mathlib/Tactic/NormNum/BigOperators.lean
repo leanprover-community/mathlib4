@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Floris van Doorn
 -/
 import Mathlib.Tactic.NormNum.Basic
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Data.List.FinRange
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 
 /-!
 # `norm_num` plugin for big operators
@@ -38,7 +38,7 @@ In particular, we can't use the plugin on sums containing variables.
 
 namespace Mathlib.Meta
 
-open Lean hiding Rat mkRat
+open Lean
 open Meta
 open Qq
 

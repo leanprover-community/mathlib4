@@ -3,7 +3,7 @@ Copyright (c) 2024 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Will Sawin
 -/
-import Mathlib.Topology.Algebra.Module.Basic
+import Mathlib.Topology.Algebra.Module.Equiv
 
 /-!
 # A "module topology" for modules over a topological ring
@@ -74,11 +74,20 @@ is isomorphism-invariant.
     `B` are `R`-modules with topologies, if `e` is a topological isomorphism between them,
     and if `A` has the module topology, then `B` has the module topology.
 
+Now say `φ : A →ₗ[R] B` is an `R`-linear map between `R`-modules equipped with
+the module topology.
+
+* `IsModuleTopology.continuous_of_linearMap φ` is the proof that `φ` is automatically
+continuous.
+* `IsModuleTopology.isQuotientMap_of_surjective (hφ : Function.Surjective φ)`
+is the proof that if furthermore `φ` is surjective then it is a quotient map,
+that is, the module topology on `B` is the pushforward of the module topology
+on `A`.
+
 ## TODO
 
-Forthcoming PRs from the FLT repo will show that the module topology on a (binary or finite) product
-of modules is the product of the module topologies, and that the module topology on the quotient
-of a module `M` is the quotient topology when `M` is equipped with the module topology.
+A forthcoming PR from the FLT repo will show that the module topology on a (binary or finite)
+product of modules is the product of the module topologies.
 
 We will also show the slightly more subtle result that if `M`, `N` and `P` are `R`-modules
 equipped with the module topology and if furthermore `M` is finite as an `R`-module,
@@ -198,11 +207,11 @@ theorem iso (e : A ≃L[R] B) : IsModuleTopology R B where
     rw [Set.mem_image]
     constructor
     · rintro ⟨σ, ⟨hσ1, hσ2⟩, rfl⟩
-      exact ⟨continuousSMul_induced g', continuousAdd_induced h'⟩
+      exact ⟨continuousSMul_induced g'.toMulActionHom, continuousAdd_induced h'⟩
     · rintro ⟨h1, h2⟩
       use τ.induced e
       rw [induced_compose]
-      refine ⟨⟨continuousSMul_induced g, continuousAdd_induced h⟩, ?_⟩
+      refine ⟨⟨continuousSMul_induced g.toMulActionHom, continuousAdd_induced h⟩, ?_⟩
       nth_rw 2 [← induced_id (t := τ)]
       simp
 
@@ -261,5 +270,226 @@ instance _root_.TopologicalSemiring.toOppositeIsModuleTopology : IsModuleTopolog
   .iso (MulOpposite.opContinuousLinearEquiv Rᵐᵒᵖ).symm
 
 end MulOpposite
+
+section function
+
+variable {R : Type*} [τR : TopologicalSpace R] [Semiring R]
+variable {A : Type*} [AddCommMonoid A] [Module R A] [aA : TopologicalSpace A] [IsModuleTopology R A]
+variable {B : Type*} [AddCommMonoid B] [Module R B] [aB : TopologicalSpace B]
+    [ContinuousAdd B] [ContinuousSMul R B]
+
+/-- Every `R`-linear map between two topological `R`-modules, where the source has the module
+topology, is continuous. -/
+@[fun_prop, continuity]
+theorem continuous_of_distribMulActionHom (φ : A →+[R] B) : Continuous φ := by
+  -- the proof: We know that `+ : B × B → B` and `• : R × B → B` are continuous for the module
+  -- topology on `B`, and two earlier theorems (`continuousSMul_induced` and
+  -- `continuousAdd_induced`) say that hence `+` and `•` on `A` are continuous if `A`
+  -- is given the topology induced from `φ`. Hence the module topology is finer than
+  -- the induced topology, and so the function is continuous.
+  rw [eq_moduleTopology R A, continuous_iff_le_induced]
+  exact sInf_le <| ⟨continuousSMul_induced (φ.toMulActionHom),
+    continuousAdd_induced φ.toAddMonoidHom⟩
+
+@[fun_prop, continuity]
+theorem continuous_of_linearMap (φ : A →ₗ[R] B) : Continuous φ :=
+  continuous_of_distribMulActionHom φ.toDistribMulActionHom
+
+variable (R) in
+theorem continuous_neg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
+    [IsModuleTopology R C] : Continuous (fun a ↦ -a : C → C) :=
+  haveI : ContinuousAdd C := IsModuleTopology.toContinuousAdd R C
+  continuous_of_linearMap (LinearEquiv.neg R).toLinearMap
+
+variable (R) in
+theorem continuousNeg (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
+    [IsModuleTopology R C] : ContinuousNeg C where
+  continuous_neg := continuous_neg R C
+
+variable (R) in
+theorem topologicalAddGroup (C : Type*) [AddCommGroup C] [Module R C] [TopologicalSpace C]
+    [IsModuleTopology R C] : TopologicalAddGroup C where
+      continuous_add := (IsModuleTopology.toContinuousAdd R C).1
+      continuous_neg := continuous_neg R C
+
+@[fun_prop, continuity]
+theorem continuous_of_ringHom {R A B} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B]
+    [TopologicalSpace R] [TopologicalSpace A] [IsModuleTopology R A] [TopologicalSpace B]
+    [TopologicalSemiring B]
+    (φ : A →+* B) (hφ : Continuous (φ.comp (algebraMap R A))) : Continuous φ := by
+  let inst := Module.compHom B (φ.comp (algebraMap R A))
+  let φ' : A →ₗ[R] B := ⟨φ, fun r m ↦ by simp [Algebra.smul_def]; rfl⟩
+  have : ContinuousSMul R B := ⟨(hφ.comp continuous_fst).mul continuous_snd⟩
+  exact continuous_of_linearMap φ'
+
+end function
+
+section surjection
+
+variable {R : Type*} [τR : TopologicalSpace R] [Ring R]
+variable {A : Type*} [AddCommGroup A] [Module R A] [TopologicalSpace A] [IsModuleTopology R A]
+variable {B : Type*} [AddCommGroup B] [Module R B]
+
+open Topology in
+/-- A linear surjection between modules with the module topology is a quotient map.
+Equivalently, the pushforward of the module topology along a surjective linear map is
+again the module topology. -/
+theorem isQuotientMap_of_surjective [τB : TopologicalSpace B] [IsModuleTopology R B]
+    {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
+    IsQuotientMap φ where
+  surjective := hφ
+  eq_coinduced := by
+    -- We need to prove that the topology on B is coinduced from that on A.
+    -- First tell the typeclass inference system that A and B are topological groups.
+    haveI := topologicalAddGroup R A
+    haveI := topologicalAddGroup R B
+    -- Because φ is linear, it's continuous for the module topologies (by a previous result).
+    have this : Continuous φ := continuous_of_linearMap φ
+    -- So the coinduced topology is finer than the module topology on B.
+    rw [continuous_iff_coinduced_le] at this
+    -- So STP the module topology on B is ≤ the topology coinduced from A
+    refine le_antisymm ?_ this
+    rw [eq_moduleTopology R B]
+    -- Now let's remove B's topology from the typeclass system
+    clear! τB
+    -- and replace it with the coinduced topology (which will be the same, but that's what we're
+    -- trying to prove). This means we don't have to fight with the typeclass system.
+    letI : TopologicalSpace B := .coinduced φ inferInstance
+    -- With this new topology on `B`, φ is a quotient map by definition,
+    -- and hence an open quotient map by a result in the library.
+    have hφo : IsOpenQuotientMap φ := AddMonoidHom.isOpenQuotientMap_of_isQuotientMap ⟨hφ, rfl⟩
+    -- We're trying to prove the module topology on B is ≤ the coinduced topology.
+    -- But recall that the module topology is the Inf of the topologies on B making addition
+    -- and scalar multiplication continuous, so it suffices to prove
+    -- that the coinduced topology on B has these properties.
+    refine sInf_le ⟨?_, ?_⟩
+    · -- In this branch, we prove that `• : R × B → B` is continuous for the coinduced topology.
+      apply ContinuousSMul.mk
+      -- We know that `• : R × A → A` is continuous, by assumption.
+      obtain ⟨hA⟩ : ContinuousSMul R A := inferInstance
+      /- By linearity of φ, this diagram commutes:
+        R × A --(•)--> A
+          |            |
+          |id × φ      |φ
+          |            |
+         \/            \/
+        R × B --(•)--> B
+      -/
+      have hφ2 : (fun p ↦ p.1 • p.2 : R × B → B) ∘ (Prod.map id φ) =
+        φ ∘ (fun p ↦ p.1 • p.2 : R × A → A) := by ext; simp
+      -- Furthermore, the identity from R to R is an open quotient map as is `φ`,
+      -- so the product `id × φ` is an open quotient map, by a result in the library.
+      have hoq : IsOpenQuotientMap (_ : R × A → R × B) := IsOpenQuotientMap.prodMap .id hφo
+      -- This is the left map in the diagram. So by a standard fact about open quotient maps,
+      -- to prove that the bottom map is continuous, it suffices to prove
+      -- that the diagonal map is continuous.
+      rw [← hoq.continuous_comp_iff]
+      -- but the diagonal is the composite of the continuous maps `φ` and `• : R × A → A`
+      rw [hφ2]
+      -- so we're done
+      exact Continuous.comp hφo.continuous hA
+    · /- In this branch we show that addition is continuous for the coinduced topology on `B`.
+        The argument is basically the same, this time using commutativity of
+        A × A --(+)--> A
+          |            |
+          |φ × φ       |φ
+          |            |
+         \/            \/
+        B × B --(+)--> B
+      -/
+      apply ContinuousAdd.mk
+      obtain ⟨hA⟩ := IsModuleTopology.toContinuousAdd R A
+      have hφ2 : (fun p ↦ p.1 + p.2 : B × B → B) ∘ (Prod.map φ φ) =
+        φ ∘ (fun p ↦ p.1 + p.2 : A × A → A) := by ext; simp
+      rw [← (IsOpenQuotientMap.prodMap hφo hφo).continuous_comp_iff, hφ2]
+      exact Continuous.comp hφo.continuous hA
+
+lemma _root_.ModuleTopology.eq_coinduced_of_surjective
+    {φ : A →ₗ[R] B} (hφ : Function.Surjective φ) :
+    moduleTopology R B = TopologicalSpace.coinduced φ inferInstance := by
+  letI : TopologicalSpace B := moduleTopology R B
+  haveI : IsModuleTopology R B := ⟨rfl⟩
+  exact (isQuotientMap_of_surjective hφ).eq_coinduced
+
+end surjection
+
+section Prod
+
+variable {R : Type*} [TopologicalSpace R] [Semiring R]
+variable {M : Type*} [AddCommMonoid M] [Module R M] [TopologicalSpace M] [IsModuleTopology R M]
+variable {N : Type*} [AddCommMonoid N] [Module R N] [TopologicalSpace N] [IsModuleTopology R N]
+
+/-- The product of the module topologies for two modules over a topological ring
+is the module topology. -/
+instance instProd : IsModuleTopology R (M × N) := by
+  constructor
+  have : ContinuousAdd M := toContinuousAdd R M
+  have : ContinuousAdd N := toContinuousAdd R N
+  -- In this proof, `M × N` always denotes the product with its *product* topology.
+  -- Addition `(M × N)² → M × N` and scalar multiplication `R × (M × N) → M × N`
+  -- are continuous for the product topology (by results in the library), so the module topology
+  -- on `M × N` is finer than the product topology (as it's the Inf of such topologies).
+  -- It thus remains to show that the product topology is finer than the module topology.
+  refine le_antisymm ?_ <| sInf_le ⟨Prod.continuousSMul, Prod.continuousAdd⟩
+  -- Or equivalently, if `P` denotes `M × N` with the module topology,
+  let P := M × N
+  let τP : TopologicalSpace P := moduleTopology R P
+  have : IsModuleTopology R P := ⟨rfl⟩
+  have : ContinuousAdd P := ModuleTopology.continuousAdd R P
+  -- and if `i` denotes the identity map from `M × N` to `P`
+  let i : M × N → P := id
+  -- then we need to show that `i` is continuous.
+  rw [← continuous_id_iff_le]
+  change @Continuous (M × N) P instTopologicalSpaceProd τP i
+  -- But `i` can be written as (m, n) ↦ (m, 0) + (0, n)
+  -- or equivalently as i₁ ∘ pr₁ + i₂ ∘ pr₂, where prᵢ are the projections,
+  -- the iⱼ's are linear inclusions M → P and N → P, and the addition is P × P → P.
+  let i₁ : M →ₗ[R] P := LinearMap.inl R M N
+  let i₂ : N →ₗ[R] P := LinearMap.inr R M N
+  rw [show (i : M × N → P) =
+       (fun abcd ↦ abcd.1 + abcd.2 : P × P → P) ∘
+       (fun ab ↦ (i₁ ab.1,i₂ ab.2)) by
+       ext ⟨a, b⟩ <;> aesop]
+  -- and these maps are all continuous, hence `i` is too
+  fun_prop
+
+end Prod
+
+section Pi
+
+variable {R : Type*} [TopologicalSpace R] [Semiring R]
+variable {ι : Type*} [Finite ι] {A : ι → Type*} [∀ i, AddCommMonoid (A i)]
+  [∀ i, Module R (A i)] [∀ i, TopologicalSpace (A i)]
+  [∀ i, IsModuleTopology R (A i)]
+
+/-- The product of the module topologies for a finite family of modules over a topological ring
+is the module topology. -/
+instance instPi : IsModuleTopology R (∀ i, A i) := by
+  -- This is an easy induction on the size of the finite type, given the result
+  -- for binary products above. We use a "decategorified" induction principle for finite types.
+  induction ι using Finite.induction_empty_option
+  · -- invariance under equivalence of the finite type we're taking the product over
+    case of_equiv X Y e _ _ _ _ _ =>
+    exact iso (ContinuousLinearEquiv.piCongrLeft R A e)
+  · -- empty case
+    infer_instance
+  · -- "inductive step" is to check for product over `Option ι` case when known for product over `ι`
+    case h_option ι _ hind _ _ _ _ =>
+    -- `Option ι` is a `Sum` of `ι` and `Unit`
+    let e : Option ι ≃ ι ⊕ Unit := Equiv.optionEquivSumPUnit ι
+    -- so suffices to check for a product of modules over `ι ⊕ Unit`
+    suffices IsModuleTopology R ((i' : ι ⊕ Unit) → A (e.symm i')) from iso (.piCongrLeft R A e.symm)
+    -- but such a product is isomorphic to a binary product
+    -- of (product over `ι`) and (product over `Unit`)
+    suffices IsModuleTopology R
+      (((s : ι) → A (e.symm (Sum.inl s))) × ((t : Unit) → A (e.symm (Sum.inr t)))) from
+      iso (ContinuousLinearEquiv.sumPiEquivProdPi R ι Unit _).symm
+    -- The product over `ι` has the module topology by the inductive hypothesis,
+    -- and the product over `Unit` is just a module which is assumed to have the module topology
+    have := iso (ContinuousLinearEquiv.piUnique R (fun t ↦ A (e.symm (Sum.inr t)))).symm
+    -- so the result follows from the previous lemma (binary products).
+    infer_instance
+
+end Pi
 
 end IsModuleTopology

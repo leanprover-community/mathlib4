@@ -14,7 +14,7 @@ This file defines `Set.sigma`, the indexed sum of sets.
 
 namespace Set
 
-variable {ι ι' : Type*} {α β : ι → Type*} {s s₁ s₂ : Set ι} {t t₁ t₂ : ∀ i, Set (α i)}
+variable {ι ι' : Type*} {α : ι → Type*} {s s₁ s₂ : Set ι} {t t₁ t₂ : ∀ i, Set (α i)}
   {u : Set (Σ i, α i)} {x : Σ i, α i} {i j : ι} {a : α i}
 
 @[simp]

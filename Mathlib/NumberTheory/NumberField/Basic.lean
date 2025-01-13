@@ -177,7 +177,7 @@ end RingOfIntegers
 instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
   (RingOfIntegers.mapRingHom (algebraMap K L)).toAlgebra
 
--- diamond at `reducible_and_instances` #10906
+-- diamond at `reducible_and_instances` https://github.com/leanprover-community/mathlib4/issues/10906
 example : Algebra.id (𝓞 K) = inst_ringOfIntegersAlgebra K K := rfl
 
 namespace RingOfIntegers
@@ -392,6 +392,12 @@ instance numberField : NumberField ℚ where
 /-- The ring of integers of `ℚ` as a number field is just `ℤ`. -/
 noncomputable def ringOfIntegersEquiv : 𝓞 ℚ ≃+* ℤ :=
   RingOfIntegers.equiv ℤ
+
+@[simp]
+theorem coe_ringOfIntegersEquiv (z : 𝓞 ℚ) :
+    (Rat.ringOfIntegersEquiv z : ℚ) = algebraMap (𝓞 ℚ) ℚ z := by
+  obtain ⟨z, rfl⟩ := Rat.ringOfIntegersEquiv.symm.surjective z
+  simp
 
 end Rat
 

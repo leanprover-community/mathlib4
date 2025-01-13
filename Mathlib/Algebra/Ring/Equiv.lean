@@ -38,8 +38,7 @@ Equiv, MulEquiv, AddEquiv, RingEquiv, MulAut, AddAut, RingAut
 -/
 
 -- guard against import creep
-assert_not_exists Field
-assert_not_exists Fintype
+assert_not_exists Field Fintype
 
 variable {F α β R S S' : Type*}
 
@@ -344,12 +343,14 @@ end trans
 section unique
 
 /-- The `RingEquiv` between two semirings with a unique element. -/
-def ringEquivOfUnique {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] : M ≃+* N :=
-  { AddEquiv.addEquivOfUnique, MulEquiv.mulEquivOfUnique with }
+def ofUnique {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] : M ≃+* N :=
+  { AddEquiv.ofUnique, MulEquiv.ofUnique with }
+
+@[deprecated (since := "2024-12-26")] alias ringEquivOfUnique := ofUnique
 
 instance {M N} [Unique M] [Unique N] [Add M] [Mul M] [Add N] [Mul N] :
     Unique (M ≃+* N) where
-  default := ringEquivOfUnique
+  default := .ofUnique
   uniq _ := ext fun _ => Subsingleton.elim _ _
 
 end unique
@@ -417,10 +418,10 @@ protected theorem map_zero : f 0 = 0 :=
 variable {x}
 
 protected theorem map_eq_zero_iff : f x = 0 ↔ x = 0 :=
-  AddEquivClass.map_eq_zero_iff f
+  EmbeddingLike.map_eq_zero_iff
 
 theorem map_ne_zero_iff : f x ≠ 0 ↔ x ≠ 0 :=
-  AddEquivClass.map_ne_zero_iff f
+  EmbeddingLike.map_ne_zero_iff
 
 variable [FunLike F R S]
 
@@ -528,6 +529,14 @@ theorem coe_prodCongr {R R' S S' : Type*} [NonUnitalNonAssocSemiring R]
     ⇑(RingEquiv.prodCongr f g) = Prod.map f g :=
   rfl
 
+/-- This is `Equiv.piOptionEquivProd` as a `RingEquiv`. -/
+@[simps!]
+def piOptionEquivProd {ι : Type*} {R : Option ι → Type*} [Π i, NonUnitalNonAssocSemiring (R i)] :
+    (Π i, R i) ≃+* R none × (Π i, R (some i)) where
+  toEquiv := Equiv.piOptionEquivProd
+  map_add' _ _ := rfl
+  map_mul' _ _ := rfl
+
 end NonUnitalSemiring
 
 section Semiring
@@ -541,10 +550,10 @@ protected theorem map_one : f 1 = 1 :=
 variable {x}
 
 protected theorem map_eq_one_iff : f x = 1 ↔ x = 1 :=
-  MulEquivClass.map_eq_one_iff f
+  EmbeddingLike.map_eq_one_iff
 
 theorem map_ne_one_iff : f x ≠ 1 ↔ x ≠ 1 :=
-  MulEquivClass.map_ne_one_iff f
+  EmbeddingLike.map_ne_one_iff
 
 theorem coe_monoidHom_refl : (RingEquiv.refl R : R →* R) = MonoidHom.id R :=
   rfl

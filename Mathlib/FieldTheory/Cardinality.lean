@@ -6,7 +6,7 @@ Authors: Eric Rodriguez
 import Mathlib.Algebra.Field.ULift
 import Mathlib.Algebra.MvPolynomial.Cardinal
 import Mathlib.Data.Nat.Factorization.PrimePow
-import Mathlib.Data.Rat.Denumerable
+import Mathlib.Data.Rat.Encodable
 import Mathlib.FieldTheory.Finite.GaloisField
 import Mathlib.RingTheory.Localization.Cardinality
 import Mathlib.SetTheory.Cardinal.Divisibility
