@@ -79,7 +79,7 @@ example (hAB : A ⊆ B) (hBC : B ⊆ C) (hCD : C ⊆ D) (hDE : D = E) (hEA : E �
 -/
 
 -- setminus_inter_union_eq_union
-example  {X Y : Set α} : X \ (X ∩ Y) ∪ Y = X ∪ Y := by tauto_set
+example {X Y : Set α} : X \ (X ∩ Y) ∪ Y = X ∪ Y := by tauto_set
 
 -- sub_parts_eq
 example {A E₁ E₂ : Set α} (hA : A ⊆ E₁ ∪ E₂) : (A ∩ E₁) ∪ (A ∩ E₂) = A := by tauto_set
