@@ -80,10 +80,10 @@ instance : Inhabited (EuclideanQuadrant n) :=
   ⟨⟨0, fun _ => le_rfl⟩⟩
 
 instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) where
-  zero :=  ⟨fun _ ↦ 0, by norm_num⟩
+  zero := ⟨fun _ ↦ 0, by norm_num⟩ -- TODO: Yael's comment!
 
 instance {n : ℕ} : Zero (EuclideanQuadrant n) where
-  zero :=  ⟨fun _ ↦ 0, by norm_num⟩
+  zero := ⟨fun _ ↦ 0, by norm_num⟩
 
 @[ext]
 theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = y :=
@@ -384,7 +384,7 @@ lemma IccRightChart_extend_top :
   norm_num [IccRightChart, modelWithCornersEuclideanHalfSpace_zero]
   congr
 
-lemma IccRightChart_extend_right_mem_frontier :
+lemma IccRightChart_extend_top_mem_frontier :
     (IccRightChart x y).extend (𝓡∂ 1) ⊤ ∈ frontier (range (𝓡∂ 1)) := by
   rw [IccRightChart_extend_top, frontier_range_modelWithCornersEuclideanHalfSpace,
     mem_setOf, PiLp.zero_apply]
@@ -420,11 +420,11 @@ lemma iccManifold_chartAt_of_ge_top {x y : ℝ} [h : Fact (x < y)] {z : Set.Icc 
 lemma iccManifold_isBoundaryPoint_bot : (𝓡∂ 1).IsBoundaryPoint (⊥ : Set.Icc x y) := by
   rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt,
     iccManifold_chartAt_of_le_top (by norm_num [hxy.out])]
-  exact IccLeftChart_extend_left_mem_frontier
+  exact IccLeftChart_extend_bot_mem_frontier
 
 lemma iccManifold_isBoundaryPoint_top : (𝓡∂ 1).IsBoundaryPoint (⊤ : Set.Icc x y) := by
   rw [ModelWithCorners.isBoundaryPoint_iff, extChartAt, iccManifold_chartAt_of_ge_top (by norm_num)]
-  exact IccRightChart_extend_right_mem_frontier
+  exact IccRightChart_extend_top_mem_frontier
 
 lemma iccManifold_isInteriorPoint_interior {p : Set.Icc x y} (hp : x < p.val ∧ p.val < y) :
     (𝓡∂ 1).IsInteriorPoint p := by
