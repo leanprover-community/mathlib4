@@ -12,7 +12,7 @@ The function `Accumulate` takes a set `s` and returns `⋃ y ≤ x, s y`.
 -/
 
 
-variable {α β γ : Type*} {s : α → Set β} {t : α → Set γ}
+variable {α β : Type*} {s : α → Set β}
 
 namespace Set
 

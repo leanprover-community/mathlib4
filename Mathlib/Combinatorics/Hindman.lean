@@ -3,7 +3,7 @@ Copyright (c) 2021 David Wärn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Stream.Init
 import Mathlib.Topology.Algebra.Semigroup
 import Mathlib.Topology.StoneCech
@@ -66,8 +66,7 @@ def Ultrafilter.semigroup {M} [Semigroup M] : Semigroup (Ultrafilter M) :=
   { Ultrafilter.mul with
     mul_assoc := fun U V W =>
       Ultrafilter.coe_inj.mp <|
-        -- porting note (#11083): `simp` was slow to typecheck, replaced by `simp_rw`
-        Filter.ext' fun p => by simp_rw [Ultrafilter.eventually_mul, mul_assoc] }
+        Filter.ext' fun p => by simp [Ultrafilter.eventually_mul, mul_assoc] }
 
 attribute [local instance] Ultrafilter.semigroup Ultrafilter.addSemigroup
 

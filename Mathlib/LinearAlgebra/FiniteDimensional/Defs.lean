@@ -3,7 +3,9 @@ Copyright (c) 2019 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Module.Projective
 import Mathlib.FieldTheory.Finiteness
+import Mathlib.RingTheory.Finiteness.Subalgebra
 
 /-!
 # Finite dimensional vector spaces
@@ -103,15 +105,6 @@ instance finiteDimensional_pi' {ι : Type*} [Finite ι] (M : ι → Type*) [∀ 
     [∀ i, Module K (M i)] [∀ i, FiniteDimensional K (M i)] : FiniteDimensional K (∀ i, M i) :=
   Finite.pi
 
-/-- A finite dimensional vector space over a finite field is finite -/
-noncomputable def fintypeOfFintype [Fintype K] [FiniteDimensional K V] : Fintype V :=
-  Module.fintypeOfFintype (@finsetBasis K V _ _ _ (iff_fg.2 inferInstance))
-
-theorem finite_of_finite [Finite K] [FiniteDimensional K V] : Finite V := by
-  cases nonempty_fintype K
-  haveI := fintypeOfFintype K V
-  infer_instance
-
 variable {K V}
 
 /-- If a vector space has a finite basis, then it is finite-dimensional. -/
@@ -167,8 +160,7 @@ end FiniteDimensional
 namespace Module
 
 variable (K V)
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
-  [Module K V₂]
+variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- In a finite-dimensional space, its dimension (seen as a cardinal) coincides with its
 `finrank`. This is a copy of `finrank_eq_rank _ _` which creates easier typeclass searches. -/
@@ -330,20 +322,11 @@ theorem FiniteDimensional.of_rank_eq_nat {n : ℕ} (h : Module.rank K V = n) :
     FiniteDimensional K V :=
   Module.finite_of_rank_eq_nat h
 
-@[deprecated (since := "2024-02-02")]
-alias finiteDimensional_of_rank_eq_nat := FiniteDimensional.of_rank_eq_nat
-
 theorem FiniteDimensional.of_rank_eq_zero (h : Module.rank K V = 0) : FiniteDimensional K V :=
   Module.finite_of_rank_eq_zero h
 
-@[deprecated (since := "2024-02-02")]
-alias finiteDimensional_of_rank_eq_zero := FiniteDimensional.of_rank_eq_zero
-
 theorem FiniteDimensional.of_rank_eq_one (h : Module.rank K V = 1) : FiniteDimensional K V :=
   Module.finite_of_rank_eq_one h
-
-@[deprecated (since := "2024-02-02")]
-alias finiteDimensional_of_rank_eq_one := FiniteDimensional.of_rank_eq_one
 
 variable (K V)
 
@@ -431,9 +414,6 @@ protected theorem finiteDimensional (f : V ≃ₗ[K] V₂) [FiniteDimensional K 
     FiniteDimensional K V₂ :=
   Module.Finite.equiv f
 
-variable {R M M₂ : Type*} [Ring R] [AddCommGroup M] [AddCommGroup M₂]
-variable [Module R M] [Module R M₂]
-
 end LinearEquiv
 
 section
@@ -447,8 +427,7 @@ instance finiteDimensional_finsupp {ι : Type*} [Finite ι] [FiniteDimensional K
 end
 
 namespace Submodule
-variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCommGroup V₂]
-  [Module K V₂]
+variable [DivisionRing K] [AddCommGroup V] [Module K V]
 
 /-- If a submodule is contained in a finite-dimensional
 submodule with the same or smaller dimension, they are equal. -/
@@ -497,7 +476,7 @@ variable [DivisionRing K] [AddCommGroup V] [Module K V] {V₂ : Type v'} [AddCom
 theorem surjective_of_injective [FiniteDimensional K V] {f : V →ₗ[K] V} (hinj : Injective f) :
     Surjective f := by
   have h := rank_range_of_injective _ hinj
-  rw [← finrank_eq_rank, ← finrank_eq_rank, natCast_inj] at h
+  rw [← finrank_eq_rank, ← finrank_eq_rank, Nat.cast_inj] at h
   exact range_eq_top.1 (eq_top_of_finrank_eq h)
 
 /-- The image under an onto linear map of a finite-dimensional space is also finite-dimensional. -/
@@ -536,8 +515,8 @@ theorem mul_eq_one_of_mul_eq_one [FiniteDimensional K V] {f g : V →ₗ[K] V} (
     g * f = 1 := by
   have ginj : Injective g :=
     HasLeftInverse.injective ⟨f, fun x => show (f * g) x = (1 : V →ₗ[K] V) x by rw [hfg]⟩
-  let ⟨i, hi⟩ :=
-    g.exists_rightInverse_of_surjective (range_eq_top.2 (injective_iff_surjective.1 ginj))
+  let ⟨i, hi⟩ := g.exists_rightInverse_of_surjective
+    (range_eq_top.2 (injective_iff_surjective.1 ginj))
   have : f * (g * i) = f * 1 := congr_arg _ hi
   rw [← mul_assoc, hfg, one_mul, mul_one] at this; rwa [← this]
 
@@ -671,18 +650,23 @@ noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [Ring 
     if H : x = 0 then 0 else Classical.choose <| FiniteDimensional.exists_mul_eq_one F H
   mul_inv_cancel x hx := show x * dite _ (h := _) _ _ = _ by
     rw [dif_neg hx]
-    exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx):)
+    exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx) :)
   inv_zero := dif_pos rfl
   nnqsmul := _
-  nnqsmul_def := fun q a => rfl
+  nnqsmul_def := fun _ _ => rfl
   qsmul := _
-  qsmul_def := fun q a => rfl
+  qsmul_def := fun _ _ => rfl
+
+lemma FiniteDimensional.isUnit (F : Type*) {K : Type*} [Field F] [Ring K] [IsDomain K]
+    [Algebra F K] [FiniteDimensional F K] {x : K} (H : x ≠ 0) : IsUnit x :=
+  let _ := divisionRingOfFiniteDimensional F K; H.isUnit
 
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/
 noncomputable def fieldOfFiniteDimensional (F K : Type*) [Field F] [h : CommRing K] [IsDomain K]
     [Algebra F K] [FiniteDimensional F K] : Field K :=
   { divisionRingOfFiniteDimensional F K with
     toCommRing := h }
+
 end
 section DivisionRing
 
@@ -764,17 +748,6 @@ section SubalgebraRank
 open Module
 
 variable {F E : Type*} [Field F] [Ring E] [Algebra F E]
-
-/-
-porting note:
-Some of the lemmas in this section can be made faster by adding these short-cut instances
-```lean4
-instance (S : Subalgebra F E) : AddCommMonoid { x // x ∈ S } := inferInstance
-instance (S : Subalgebra F E) : AddCommGroup { x // x ∈ S } := inferInstance
-```
-However, this approach doesn't scale very well, so we should consider holding off on adding
-them until we have no choice.
--/
 
 /-- A `Subalgebra` is `FiniteDimensional` iff it is `FiniteDimensional` as a submodule. -/
 theorem Subalgebra.finiteDimensional_toSubmodule {S : Subalgebra F E} :

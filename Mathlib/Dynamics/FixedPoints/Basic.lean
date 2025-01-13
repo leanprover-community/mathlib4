@@ -27,7 +27,7 @@ open Equiv
 
 universe u v
 
-variable {α : Type u} {β : Type v} {f fa g : α → α} {x y : α} {fb : β → β} {m n k : ℕ} {e : Perm α}
+variable {α : Type u} {β : Type v} {f fa g : α → α} {x : α} {fb : β → β} {e : Perm α}
 
 namespace Function
 
@@ -35,7 +35,7 @@ open Function (Commute)
 
 /-- Every point is a fixed point of `id`. -/
 theorem isFixedPt_id (x : α) : IsFixedPt id x :=
-  (rfl : _)
+  (rfl :)
 
 namespace IsFixedPt
 

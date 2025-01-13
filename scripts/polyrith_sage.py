@@ -1,10 +1,13 @@
 # This file is part of the `polyrith` tactic in `src/tactic/polyrith.lean`.
 # It interfaces between Lean and the Sage web interface.
 
-import requests
 import json
-import sys
 from os.path import join, dirname
+import sys
+from typing import Dict, Any
+import urllib.error
+import urllib.parse
+import urllib.request
 
 # These functions are used to format the output of Sage for parsing in Lean.
 # They are stored here as a string since they are passed to Sage via the web API.
@@ -59,15 +62,19 @@ class EvaluationError(Exception):
         self.message = message
         super().__init__(self.message)
 
-def parse_response(resp: str) -> str:
+def parse_response(resp: str) -> Dict[str, Any]:
     exp, data = resp.split(';', 1)
     return dict(power=int(exp), coeffs=json.loads(data))
 
 
-def evaluate_in_sage(query: str) -> str:
-    data = {'code': query}
-    headers = {'content-type': 'application/x-www-form-urlencoded'}
-    response = requests.post('https://sagecell.sagemath.org/service', data, headers=headers).json()
+def evaluate_in_sage(query: str) -> Dict[str, Any]:
+    data = urllib.parse.urlencode({'code': query}).encode('utf-8')
+    headers = {'Content-Type': 'application/x-www-form-urlencoded',
+               'User-Agent': 'LeanProver (https://leanprover-community.github.io/)'}
+    req = urllib.request.Request('https://sagecell.sagemath.org/service', data=data, headers=headers)
+    with urllib.request.urlopen(req) as response:
+        response_data = response.read().decode()
+    response = json.loads(response_data)
     if response['success']:
         return parse_response(response.get('stdout'))
     elif 'execute_reply' in response and 'ename' in response['execute_reply'] and 'evalue' in response['execute_reply']:

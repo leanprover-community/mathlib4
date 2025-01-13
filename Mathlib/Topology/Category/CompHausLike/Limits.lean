@@ -34,11 +34,11 @@ which may be useful due to their definitional properties.
   we provide an instance `FinitaryExtensive (CompHausLike P)`.
 -/
 
+open CategoryTheory Limits Topology
+
 namespace CompHausLike
 
 universe w u
-
-open CategoryTheory Limits
 
 attribute [local instance] ConcreteCategory.instFunLike
 
@@ -150,27 +150,33 @@ variable {P : TopCat.{u} → Prop} [HasExplicitFiniteCoproducts.{0} P]
 example : HasFiniteCoproducts (CompHausLike.{u} P) := inferInstance
 
 /-- The inclusion maps into the explicit finite coproduct are open embeddings. -/
-lemma finiteCoproduct.openEmbedding_ι (a : α) :
-    OpenEmbedding (finiteCoproduct.ι X a) :=
-  openEmbedding_sigmaMk (σ := fun a ↦ (X a))
+lemma finiteCoproduct.isOpenEmbedding_ι (a : α) :
+    IsOpenEmbedding (finiteCoproduct.ι X a) :=
+  .sigmaMk (σ := fun a ↦ X a)
+
+@[deprecated (since := "2024-10-18")]
+alias finiteCoproduct.openEmbedding_ι := finiteCoproduct.isOpenEmbedding_ι
 
 /-- The inclusion maps into the abstract finite coproduct are open embeddings. -/
-lemma Sigma.openEmbedding_ι (a : α) :
-    OpenEmbedding (Sigma.ι X a) := by
-  refine OpenEmbedding.of_comp _ (homeoOfIso ((colimit.isColimit _).coconePointUniqueUpToIso
-    (finiteCoproduct.isColimit X))).openEmbedding ?_
-  convert finiteCoproduct.openEmbedding_ι X a
+lemma Sigma.isOpenEmbedding_ι (a : α) :
+    IsOpenEmbedding (Sigma.ι X a) := by
+  refine IsOpenEmbedding.of_comp _ (homeoOfIso ((colimit.isColimit _).coconePointUniqueUpToIso
+    (finiteCoproduct.isColimit X))).isOpenEmbedding ?_
+  convert finiteCoproduct.isOpenEmbedding_ι X a
   ext x
   change (Sigma.ι X a ≫ _) x = _
   simp
+
+@[deprecated (since := "2024-10-18")]
+alias Sigma.openEmbedding_ι := Sigma.isOpenEmbedding_ι
 
 /-- The functor to `TopCat` preserves finite coproducts if they exist. -/
 instance (P) [HasExplicitFiniteCoproducts.{0} P] :
     PreservesFiniteCoproducts (compHausLikeToTop P) := by
   refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
   suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) (compHausLikeToTop P) from
-    preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
-  apply preservesColimitOfPreservesColimitCocone (CompHausLike.finiteCoproduct.isColimit _)
+    preservesColimit_of_iso_diagram _ Discrete.natIsoFunctor.symm
+  apply preservesColimit_of_preserves_colimit_cocone (CompHausLike.finiteCoproduct.isColimit _)
   exact TopCat.sigmaCofanIsColimit _
 
 /-- The functor to another `CompHausLike` preserves finite coproducts if they exist. -/
@@ -179,7 +185,7 @@ noncomputable instance {P' : TopCat.{u} → Prop}
     PreservesFiniteCoproducts (toCompHausLike h) := by
   have : PreservesFiniteCoproducts (toCompHausLike h ⋙ compHausLikeToTop P') :=
     inferInstanceAs (PreservesFiniteCoproducts (compHausLikeToTop _))
-  exact preservesFiniteCoproductsOfReflectsOfPreserves (toCompHausLike h) (compHausLikeToTop P')
+  exact preservesFiniteCoproducts_of_reflects_of_preserves (toCompHausLike h) (compHausLikeToTop P')
 
 end FiniteCoproducts
 
@@ -284,7 +290,7 @@ noncomputable instance : CreatesLimit (cospan f g) (compHausLikeToTop P) := by
 
 /-- The functor to `TopCat` preserves pullbacks. -/
 noncomputable instance : PreservesLimit (cospan f g) (compHausLikeToTop P) :=
-  preservesLimitOfCreatesLimitAndHasLimit _ _
+  preservesLimit_of_createsLimit_and_hasLimit _ _
 
 /-- The functor to another `CompHausLike` preserves pullbacks. -/
 noncomputable instance {P' : TopCat → Prop}
@@ -292,7 +298,7 @@ noncomputable instance {P' : TopCat → Prop}
     PreservesLimit (cospan f g) (toCompHausLike h) := by
   have : PreservesLimit (cospan f g) (toCompHausLike h ⋙ compHausLikeToTop P') :=
     inferInstanceAs (PreservesLimit _ (compHausLikeToTop _))
-  exact preservesLimitOfReflectsOfPreserves (toCompHausLike h) (compHausLikeToTop P')
+  exact preservesLimit_of_reflects_of_preserves (toCompHausLike h) (compHausLikeToTop P')
 
 variable (P) in
 /--
@@ -332,12 +338,12 @@ instance [HasExplicitPullbacksOfInclusions P] : HasPullbacksOfInclusions (CompHa
 
 theorem hasPullbacksOfInclusions
     (hP' : ∀ ⦃X Y B : CompHausLike.{u} P⦄ (f : X ⟶ B) (g : Y ⟶ B)
-      (_ : OpenEmbedding f), HasExplicitPullback f g) :
+      (_ : IsOpenEmbedding f), HasExplicitPullback f g) :
     HasExplicitPullbacksOfInclusions P :=
   { hasProp := by
       intro _ _ _ f
       apply hP'
-      exact Sigma.openEmbedding_ι _ _ }
+      exact Sigma.isOpenEmbedding_ι _ _ }
 
 /-- The functor to `TopCat` preserves pullbacks of inclusions if they exist. -/
 noncomputable instance [HasExplicitPullbacksOfInclusions P] :
@@ -350,7 +356,7 @@ instance [HasExplicitPullbacksOfInclusions P] : FinitaryExtensive (CompHausLike 
   finitaryExtensive_of_preserves_and_reflects (compHausLikeToTop P)
 
 theorem finitaryExtensive (hP' : ∀ ⦃X Y B : CompHausLike.{u} P⦄ (f : X ⟶ B) (g : Y ⟶ B)
-    (_ : OpenEmbedding f), HasExplicitPullback f g) :
+    (_ : IsOpenEmbedding f), HasExplicitPullback f g) :
       FinitaryExtensive (CompHausLike P) :=
   have := hasPullbacksOfInclusions hP'
   finitaryExtensive_of_preserves_and_reflects (compHausLikeToTop P)

@@ -10,6 +10,7 @@ import Mathlib.Data.ZMod.Basic
 # The `ZMod n`-algebra structure on rings whose characteristic divides `n`
 -/
 
+assert_not_exists TwoSidedIdeal
 
 namespace ZMod
 
@@ -32,7 +33,7 @@ abbrev algebra' (h : m ∣ n) : Algebra (ZMod n) R :=
         rcases ZMod.intCast_surjective a with ⟨k, rfl⟩
         show ZMod.castHom h R k * r = r * ZMod.castHom h R k
         rw [map_intCast, Int.cast_comm]
-    smul_def' := fun a r => rfl }
+    smul_def' := fun _ _ => rfl }
 
 end
 

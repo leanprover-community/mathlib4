@@ -24,7 +24,7 @@ Homomorphisms between ordered (semi)rings that respect the ordering.
 ## Implementation notes
 
 This file used to define typeclasses for order-preserving ring homomorphisms and isomorphisms.
-In #10544, we migrated from assumptions like `[FunLike F R S] [OrderRingHomClass F R S]`
+In https://github.com/leanprover-community/mathlib4/pull/10544, we migrated from assumptions like `[FunLike F R S] [OrderRingHomClass F R S]`
 to assumptions like `[FunLike F R S] [OrderHomClass F R S] [RingHomClass F R S]`,
 making some typeclasses and instances irrelevant.
 
@@ -33,8 +33,7 @@ making some typeclasses and instances irrelevant.
 ordered ring homomorphism, order homomorphism
 -/
 
-assert_not_exists FloorRing
-assert_not_exists Archimedean
+assert_not_exists FloorRing Archimedean
 
 open Function
 
@@ -62,7 +61,7 @@ infixl:25 " →+*o " => OrderRingHom
 to
 `[Mul α] [Mul β] [Add α] [Add β] [LE α] [LE β]`
 otherwise the [refl] attribute on `OrderRingIso.refl` complains.
-TODO: change back when `refl` attribute is fixed, github issue #2505 -/
+TODO: change back when `refl` attribute is fixed, github issue https://github.com/leanprover-community/mathlib4/issues/2505 -/
 
 /-- `OrderRingHom α β` is the type of order-preserving semiring isomorphisms between `α` and `β`.
 
@@ -219,7 +218,7 @@ protected def id : α →+*o α :=
 instance : Inhabited (α →+*o α) :=
   ⟨OrderRingHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(OrderRingHom.id α) = id :=
   rfl
 
@@ -295,7 +294,7 @@ namespace OrderRingIso
 
 section LE
 
-variable [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [Mul γ] [Add γ] [LE γ] [Mul δ] [Add δ] [LE δ]
+variable [Mul α] [Add α] [LE α] [Mul β] [Add β] [LE β] [Mul γ] [Add γ] [LE γ]
 
 /-- Reinterpret an ordered ring isomorphism as an order isomorphism. -/
 -- Porting note: Added @[coe] attribute
@@ -426,8 +425,7 @@ end LE
 
 section NonAssocSemiring
 
-variable [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β] [Preorder β] [NonAssocSemiring γ]
-  [Preorder γ]
+variable [NonAssocSemiring α] [Preorder α] [NonAssocSemiring β] [Preorder β]
 
 /-- Reinterpret an ordered ring isomorphism as an ordered ring homomorphism. -/
 def toOrderRingHom (f : α ≃+*o β) : α →+*o β :=
