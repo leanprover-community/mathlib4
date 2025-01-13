@@ -751,6 +751,8 @@ noncomputable def inclusion.fullyFaithful (n : ℕ) :
 theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
 
+section Meta
+
 /-- Some quick and useful attempts to prove `m ≤ n`. -/
 macro "leq_tac" : tactic =>
   `(tactic| first | decide | assumption | apply zero_le | apply le_rfl |
@@ -774,6 +776,30 @@ macro_rules
     `((⟨SimplexCategory.mk $m, by trunc⟩ : SimplexCategory.Truncated $n))
   | `([$m:term, $p:term]$n:subscript) =>
     `((⟨SimplexCategory.mk $m, $p⟩ : SimplexCategory.Truncated $n))
+
+open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Delaborator for the `[m]ₙ` notation. -/
+@[app_delab FullSubcategory.mk]
+def delabMkNotation : Delab :=
+  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 4 do
+    let #[cat, .lam x _ body _, simplex, _] := (← getExpr).getAppArgs | failure
+    -- check that this is a `FullSubcategory` of `SimplexCategory`
+    guard <| cat == Expr.const ``SimplexCategory []
+    guard <| simplex.isAppOfArity ``SimplexCategory.mk 1
+    -- check that the predicate matches `fun x ↦ x.len ≤ n`
+    let_expr LE.le _ _ lhs rhs := body | failure
+    let_expr SimplexCategory.len simplex := lhs | failure
+    guard <| simplex == .bvar 0
+    guard !rhs.hasExprMVar
+    -- if `pp.proofs` is set to `true`, include the proof `p : m ≤ n`
+    let m ← withNaryArg 2 <| withNaryArg 0 delab
+    let n ← withNaryArg 1 <| withBindingBody x <| withNaryArg 3 delab
+    if (← getPPOption getPPProofs) then
+      let p ← withNaryArg 3 delab
+      `([$m, $p]$n)
+    else `([$m]$n)
+
+end Meta
 
 end Truncated
 
