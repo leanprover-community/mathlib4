@@ -380,48 +380,62 @@ section
 
 variable {f : ℝ → E}
 
-/-- An even function is interval integrable (with respect to the volume measure)
-on every interval if it is interval integrable (with respect to the volume
-measure) on every interval of the form `0..x`, for positive `x`. -/
+/-- An even function is interval integrable (with respect to the volume measure) on every interval
+of the form `0..x` if it is interval integrable (with respect to the volume measure) on every
+interval of the form `0..x`, for positive `x`.
+
+See `intervalIntegrable_of_even` for a stronger result.-/
+lemma intervalIntegrable_of_even₀
+  (h₁f : ∀ x, f x = f (-x))
+  (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x)
+  (t : ℝ) :
+  IntervalIntegrable f volume 0 t := by
+  rcases lt_trichotomy t 0 with h | h | h
+  · rw [IntervalIntegrable.iff_comp_neg]
+    conv => arg 1; intro t; rw [← h₁f]
+    simp [h₂f (-t) (by norm_num [h])]
+  · rw [h]
+  · exact h₂f t h
+
+/-- An even function is interval integrable (with respect to the volume measure) on every interval
+if it is interval integrable (with respect to the volume measure) on every interval of the form
+`0..x`, for positive `x`. -/
 theorem intervalIntegrable_of_even
   (h₁f : ∀ x, f x = f (-x))
   (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) :
-  ∀ x y, IntervalIntegrable f volume x y := by
-  -- Lemma: Prove statement first in case where x = 0
-  have : ∀ t, IntervalIntegrable f volume 0 t := by
-    intro t
-    rcases lt_trichotomy t 0 with h|h|h
-    · rw [IntervalIntegrable.iff_comp_neg]
-      conv => arg 1; intro t; rw [← h₁f]
-      simp [h₂f (-t) (by norm_num [h])]
-    · rw [h]
-    · exact h₂f t h
+  ∀ x y, IntervalIntegrable f volume x y :=
   -- Split integral and apply lemma
-  intro x y
-  exact IntervalIntegrable.trans (b := 0) (IntervalIntegrable.symm (this x)) (this y)
+  fun x y ↦ (intervalIntegrable_of_even₀ h₁f h₂f x).symm.trans (b := 0)
+    (intervalIntegrable_of_even₀ h₁f h₂f y)
 
+/-- An odd function is interval integrable (with respect to the volume measure) on every interval
+of the form `0..x` if it is interval integrable (with respect to the volume measure) on every
+interval of the form `0..x`, for positive `x`.
 
-/-- An odd function is interval integrable (with respect to the volume measure)
-on every interval iff it is interval integrable (with respect to the volume
-measure) on every interval of the form `0..x`, for positive `x`. -/
+See `intervalIntegrable_of_odd` for a stronger result.-/
+lemma intervalIntegrable_of_odd₀
+  (h₁f : ∀ x, -f x = f (-x))
+  (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x)
+  (t : ℝ) :
+  IntervalIntegrable f volume 0 t := by
+  rcases lt_trichotomy t 0 with h | h | h
+  · rw [IntervalIntegrable.iff_comp_neg]
+    conv => arg 1; intro t; rw [← h₁f]
+    apply IntervalIntegrable.neg
+    simp [h₂f (-t) (by norm_num [h])]
+  · rw [h]
+  · exact h₂f t h
+
+/-- An odd function is interval integrable (with respect to the volume measure) on every interval
+iff it is interval integrable (with respect to the volume measure) on every interval of the form
+`0..x`, for positive `x`. -/
 theorem intervalIntegrable_of_odd
-  {f : ℝ → ℝ}
   (h₁f : ∀ x, -f x = f (-x))
   (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) :
-  ∀ x y, IntervalIntegrable f volume x y := by
-  -- Lemma: Prove statement first in case where x = 0
-  have : ∀ t, IntervalIntegrable f volume 0 t := by
-    intro t
-    rcases lt_trichotomy t 0 with h|h|h
-    · rw [IntervalIntegrable.iff_comp_neg]
-      conv => arg 1; intro t; rw [← h₁f]
-      apply IntervalIntegrable.neg
-      simp [h₂f (-t) (by norm_num [h])]
-    · rw [h]
-    · exact h₂f t h
+  ∀ x y, IntervalIntegrable f volume x y :=
   -- Split integral and apply lemma
-  intro x y
-exact (this x).symm.trans (b := 0) (this y)
+  fun x y ↦ (intervalIntegrable_of_odd₀ h₁f h₂f x).symm.trans (b := 0)
+    (intervalIntegrable_of_odd₀ h₁f h₂f y)
 
 end
 

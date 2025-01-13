@@ -256,8 +256,7 @@ theorem intervalIntegrable_log' :
   · -- Show integrability on [1…t] by continuity
     apply ContinuousOn.intervalIntegrable
     apply (ContinuousOn.mono Real.continuousOn_log)
-    simp
-    exact Set.not_mem_uIcc_of_lt zero_lt_one hx
+    simpa using Set.not_mem_uIcc_of_lt zero_lt_one hx
 
 @[simp]
 theorem intervalIntegrable_sin : IntervalIntegrable sin μ a b :=
@@ -511,9 +510,8 @@ theorem integral_log : ∫ s in a..b, log s = b * log b - a * log a - b + a := b
   have case₂ {t : ℝ} : ∫ s in (0)..t, log s = t * log t - t := by
     rcases lt_trichotomy t 0 with h | h | h
     · -- If t is negative, use that log is an even function to reduce to the positive case.
-      conv => arg 1; arg 1; intro t; rw [← log_neg_eq_log]
-      rw [intervalIntegral.integral_comp_neg]
-      rw [intervalIntegral.integral_symm]
+      conv => arg 1; arg 1; intro t; rw [← log_neg_eq_log,]
+      rw [intervalIntegral.integral_comp_neg, intervalIntegral.integral_symm]
       simp
       rw [case₁ (Left.neg_pos_iff.mpr h)]
       simp; abel
@@ -523,8 +521,7 @@ theorem integral_log : ∫ s in a..b, log s = b * log b - a * log a - b + a := b
 
   -- General case
   rw [←intervalIntegral.integral_add_adjacent_intervals (b := 0)]
-  · rw [intervalIntegral.integral_symm]
-    rw [case₂, case₂]
+  · rw [intervalIntegral.integral_symm, case₂, case₂]
     ring
   repeat exact intervalIntegrable_log'
 
