@@ -8,7 +8,7 @@ import Mathlib.Analysis.Convex.EGauge
 import Mathlib.Analysis.LocallyConvex.BalancedCoreHull
 import Mathlib.Analysis.Seminorm
 import Mathlib.Tactic.Peel
-import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Asymptotics in a Topological Vector Space

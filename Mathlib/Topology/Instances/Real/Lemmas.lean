@@ -12,11 +12,11 @@ import Mathlib.Topology.Algebra.UniformMulAction
 import Mathlib.Topology.Instances.Int
 import Mathlib.Topology.Order.Bornology
 import Mathlib.Topology.Algebra.UniformGroup.Defs
+import Mathlib.Topology.Instances.Real.Defs
 
 /-!
 # Topological properties of ℝ
 -/
-
 assert_not_exists UniformOnFun
 
 noncomputable section
@@ -27,36 +27,6 @@ open scoped Topology Uniformity Interval
 universe u v w
 
 variable {α : Type u} {β : Type v} {γ : Type w}
-
-instance : NoncompactSpace ℝ := Int.isClosedEmbedding_coe_real.noncompactSpace
-
-theorem Real.uniformContinuous_add : UniformContinuous fun p : ℝ × ℝ => p.1 + p.2 :=
-  Metric.uniformContinuous_iff.2 fun _ε ε0 =>
-    let ⟨δ, δ0, Hδ⟩ := rat_add_continuous_lemma abs ε0
-    ⟨δ, δ0, fun _ _ h =>
-      let ⟨h₁, h₂⟩ := max_lt_iff.1 h
-      Hδ h₁ h₂⟩
-
-theorem Real.uniformContinuous_neg : UniformContinuous (@Neg.neg ℝ _) :=
-  Metric.uniformContinuous_iff.2 fun ε ε0 =>
-    ⟨_, ε0, fun _ _ h => by simpa only [abs_sub_comm, Real.dist_eq, neg_sub_neg] using h⟩
-
-instance : ContinuousStar ℝ := ⟨continuous_id⟩
-
-instance : UniformAddGroup ℝ :=
-  UniformAddGroup.mk' Real.uniformContinuous_add Real.uniformContinuous_neg
-
--- short-circuit type class inference
-instance : TopologicalAddGroup ℝ := by infer_instance
-instance : TopologicalRing ℝ := inferInstance
-instance : TopologicalDivisionRing ℝ := inferInstance
-
-instance : ProperSpace ℝ where
-  isCompact_closedBall x r := by
-    rw [Real.closedBall_eq_Icc]
-    apply isCompact_Icc
-
-instance : SecondCountableTopology ℝ := secondCountable_of_proper
 
 theorem Real.isTopologicalBasis_Ioo_rat :
     @IsTopologicalBasis ℝ _ (⋃ (a : ℚ) (b : ℚ) (_ : a < b), {Ioo (a : ℝ) b}) :=
@@ -73,8 +43,6 @@ theorem Real.isTopologicalBasis_Ioo_rat :
 @[simp]
 theorem Real.cobounded_eq : cobounded ℝ = atBot ⊔ atTop := by
   simp only [← comap_dist_right_atTop (0 : ℝ), Real.dist_eq, sub_zero, comap_abs_atTop]
-
-
 
 /- TODO(Mario): Prove that these are uniform isomorphisms instead of uniform embeddings
 lemma uniform_embedding_add_rat {r : ℚ} : uniform_embedding (fun p : ℚ => p + r) :=
@@ -113,15 +81,6 @@ theorem Real.uniformContinuous_mul (s : Set (ℝ × ℝ)) {r₁ r₂ : ℝ}
 
 -- Porting note: moved `TopologicalRing` instance up
 
-instance Real.instCompleteSpace : CompleteSpace ℝ := by
-  apply complete_of_cauchySeq_tendsto
-  intro u hu
-  let c : CauSeq ℝ abs := ⟨u, Metric.cauchySeq_iff'.1 hu⟩
-  refine ⟨c.lim, fun s h => ?_⟩
-  rcases Metric.mem_nhds_iff.1 h with ⟨ε, ε0, hε⟩
-  have := c.equiv_lim ε ε0
-  simp only [mem_map, mem_atTop_sets, mem_setOf_eq]
-  exact this.imp fun N hN n hn => hε (hN n hn)
 
 theorem Real.totallyBounded_ball (x ε : ℝ) : TotallyBounded (ball x ε) := by
   rw [Real.ball_eq_Ioo]; apply totallyBounded_Ioo
@@ -155,13 +114,6 @@ lemma closure_of_rat_image_le_le_eq {a b : ℚ} (hab : a ≤ b) :
 -/
 
 end
-
-instance instIsOrderBornology : IsOrderBornology ℝ where
-  isBounded_iff_bddBelow_bddAbove s := by
-    refine ⟨fun bdd ↦ ?_, fun h ↦ isBounded_of_bddAbove_of_bddBelow h.2 h.1⟩
-    obtain ⟨r, hr⟩ : ∃ r : ℝ, s ⊆ Icc (-r) r := by
-      simpa [Real.closedBall_eq_Icc] using bdd.subset_closedBall 0
-    exact ⟨bddBelow_Icc.mono hr, bddAbove_Icc.mono hr⟩
 
 section Periodic
 

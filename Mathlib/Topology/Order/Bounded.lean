@@ -5,7 +5,7 @@ Authors: Kalle Kytölä
 -/
 import Mathlib.Topology.Bornology.Basic
 import Mathlib.Order.LiminfLimsup
-import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
 # Relating order and metric boundedness

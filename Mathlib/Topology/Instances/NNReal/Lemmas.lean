@@ -8,27 +8,13 @@ import Mathlib.Topology.Algebra.InfiniteSum.Order
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
 import Mathlib.Topology.ContinuousMap.Basic
 import Mathlib.Topology.MetricSpace.Isometry
-import Mathlib.Topology.Instances.Real
+import Mathlib.Topology.Instances.NNReal.Defs
+import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
 # Topology on `ℝ≥0`
 
-The natural topology on `ℝ≥0` (the one induced from `ℝ`), and a basic API.
-
-## Main definitions
-
-Instances for the following typeclasses are defined:
-
-* `TopologicalSpace ℝ≥0`
-* `TopologicalSemiring ℝ≥0`
-* `SecondCountableTopology ℝ≥0`
-* `OrderTopology ℝ≥0`
-* `ProperSpace ℝ≥0`
-* `ContinuousSub ℝ≥0`
-* `HasContinuousInv₀ ℝ≥0` (continuity of `x⁻¹` away from `0`)
-* `ContinuousSMul ℝ≥0 α` (whenever `α` has a continuous `MulAction ℝ α`)
-
-Everything is inherited from the corresponding structures on the reals.
+The basic lemmas for the natural topology on `ℝ≥0` .
 
 ## Main statements
 
@@ -55,42 +41,12 @@ open Filter Metric Set TopologicalSpace Topology
 
 namespace NNReal
 
-instance : TopologicalSpace ℝ≥0 := inferInstance
-
--- short-circuit type class inference
-instance : TopologicalSemiring ℝ≥0 where
-  toContinuousAdd := continuousAdd_induced toRealHom
-  toContinuousMul := continuousMul_induced toRealHom
-
-instance : SecondCountableTopology ℝ≥0 :=
-  inferInstanceAs (SecondCountableTopology { x : ℝ | 0 ≤ x })
-
-instance : OrderTopology ℝ≥0 :=
-  orderTopology_of_ordConnected (t := Ici 0)
-
-instance : CompleteSpace ℝ≥0 :=
-  isClosed_Ici.completeSpace_coe
-
-instance : ContinuousStar ℝ≥0 where
-  continuous_star := continuous_id
-
--- TODO: generalize this to a broader class of subtypes
-instance : IsOrderBornology ℝ≥0 where
-  isBounded_iff_bddBelow_bddAbove s := by
-    refine ⟨fun bdd ↦ ?_, fun h ↦ isBounded_of_bddAbove_of_bddBelow h.2 h.1⟩
-    obtain ⟨r, hr⟩ : ∃ r : ℝ≥0, s ⊆ Icc 0 r := by
-      obtain ⟨rreal, hrreal⟩ := bdd.subset_closedBall 0
-      use rreal.toNNReal
-      simp only [← NNReal.closedBall_zero_eq_Icc', Real.coe_toNNReal']
-      exact subset_trans hrreal (Metric.closedBall_subset_closedBall (le_max_left rreal 0))
-    exact ⟨bddBelow_Icc.mono hr, bddAbove_Icc.mono hr⟩
+variable {α : Type*}
 
 section coe
 
 lemma isOpen_Ico_zero {x : NNReal} : IsOpen (Set.Ico 0 x) :=
   Ico_bot (a := x) ▸ isOpen_Iio
-
-variable {α : Type*}
 
 open Filter Finset
 
@@ -102,22 +58,10 @@ theorem _root_.continuous_real_toNNReal : Continuous Real.toNNReal :=
 noncomputable def _root_.ContinuousMap.realToNNReal : C(ℝ, ℝ≥0) :=
   .mk Real.toNNReal continuous_real_toNNReal
 
-theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ) :=
-  continuous_subtype_val
-
 lemma _root_.ContinuousOn.ofReal_map_toNNReal {f : ℝ≥0 → ℝ≥0} {s : Set ℝ} {t : Set ℝ≥0}
     (hf : ContinuousOn f t) (h : Set.MapsTo Real.toNNReal s t) :
     ContinuousOn (fun x ↦ f x.toNNReal : ℝ → ℝ) s :=
   continuous_subtype_val.comp_continuousOn <| hf.comp continuous_real_toNNReal.continuousOn h
-
-/-- Embedding of `ℝ≥0` to `ℝ` as a bundled continuous map. -/
-@[simps (config := .asFn)]
-def _root_.ContinuousMap.coeNNRealReal : C(ℝ≥0, ℝ) :=
-  ⟨(↑), continuous_coe⟩
-
-instance ContinuousMap.canLift {X : Type*} [TopologicalSpace X] :
-    CanLift C(X, ℝ) C(X, ℝ≥0) ContinuousMap.coeNNRealReal.comp fun f => ∀ x, 0 ≤ f x where
-  prf f hf := ⟨⟨fun x => ⟨f x, hf x⟩, f.2.subtype_mk _⟩, DFunLike.ext' rfl⟩
 
 @[simp, norm_cast]
 theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {x : ℝ≥0} :
@@ -170,14 +114,6 @@ theorem nhds_zero : 𝓝 (0 : ℝ≥0) = ⨅ (a : ℝ≥0) (_ : a ≠ 0), 𝓟 (
 theorem nhds_zero_basis : (𝓝 (0 : ℝ≥0)).HasBasis (fun a : ℝ≥0 => 0 < a) fun a => Iio a :=
   nhds_bot_basis
 
-instance : ContinuousSub ℝ≥0 :=
-  ⟨((continuous_coe.fst'.sub continuous_coe.snd').max continuous_const).subtype_mk _⟩
-
-instance : HasContinuousInv₀ ℝ≥0 := inferInstance
-
-instance [TopologicalSpace α] [MulAction ℝ α] [ContinuousSMul ℝ α] :
-    ContinuousSMul ℝ≥0 α where
-  continuous_smul := continuous_induced_dom.fst'.smul continuous_snd
 
 @[norm_cast]
 theorem hasSum_coe {f : α → ℝ≥0} {r : ℝ≥0} : HasSum (fun a => (f a : ℝ)) (r : ℝ) ↔ HasSum f r := by
@@ -297,10 +233,5 @@ theorem tendsto_of_antitone {f : ℕ → ℝ≥0} (h_ant : Antitone f) :
   exact ⟨⟨L, hL0⟩, NNReal.tendsto_coe.mp hL⟩
 
 end Monotone
-
-instance instProperSpace : ProperSpace ℝ≥0 where
-  isCompact_closedBall x r := by
-    have emb : IsClosedEmbedding ((↑) : ℝ≥0 → ℝ) := Isometry.isClosedEmbedding fun _ ↦ congrFun rfl
-    exact emb.isCompact_preimage (K := Metric.closedBall x r) (isCompact_closedBall _ _)
 
 end NNReal
