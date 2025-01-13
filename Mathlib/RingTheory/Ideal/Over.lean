@@ -37,32 +37,6 @@ section CommRing
 
 variable {S : Type*} [CommRing S] {f : R →+* S} {I J : Ideal S}
 
-/-- For a prime ideal `p` of `R`, `p` extended to `S` and
-restricted back to `R` is `p` if and only if `p` is the restriction of a prime in `S`. -/
-lemma comap_map_eq_self_iff_of_isPrime (p : Ideal R) [p.IsPrime] :
-    (p.map f).comap f = p ↔ (∃ (q : Ideal S), q.IsPrime ∧ q.comap f = p) := by
-  refine ⟨fun hp ↦ ?_, ?_⟩
-  · let M : Submonoid S := Submonoid.map f p.primeCompl
-    have : (p.map f).map (algebraMap S (Localization M)) ≠ ⊤ := by
-      rw [IsLocalization.map_algebraMap_ne_top_iff_disjoint M, Set.disjoint_left]
-      rintro a ⟨x, (hx : x ∉ p), rfl⟩
-      rwa [← hp] at hx
-    obtain ⟨m, _, hle⟩ := Ideal.exists_le_maximal _ this
-    let q : Ideal S := m.comap (algebraMap S (Localization M))
-    have hd : Disjoint (M : Set S) (q : Set S) :=
-      ((IsLocalization.isPrime_iff_isPrime_disjoint M _ m).mp inferInstance).right
-    refine ⟨q, inferInstance, le_antisymm (fun x (hx : x ∈ f ⁻¹' q) ↦ ?_) ?_⟩
-    · have : x ∉ p.primeCompl := by
-        intro ha
-        apply (Set.disjoint_right.mp hd) hx
-        use x
-        simpa
-      simpa [Ideal.primeCompl] using this
-    · rw [← hp, ← Ideal.map_le_iff_le_comap, Ideal.map_comap_map, ]
-      simpa only [q, ← Ideal.map_le_iff_le_comap]
-  · rintro ⟨q, hq, rfl⟩
-    simp
-
 theorem coeff_zero_mem_comap_of_root_mem_of_eval_mem {r : S} (hr : r ∈ I) {p : R[X]}
     (hp : p.eval₂ f r ∈ I) : p.coeff 0 ∈ I.comap f := by
   rw [← p.divX_mul_X_add, eval₂_add, eval₂_C, eval₂_mul, eval₂_X] at hp

@@ -72,28 +72,6 @@ theorem mem_map_algebraMap_iff {I : Ideal R} {z} : z ∈ Ideal.map (algebraMap R
     rw [← Ideal.unit_mul_mem_iff_mem _ (map_units S s), mul_comm]
     exact h.symm ▸ Ideal.mem_map_of_mem _ a.2
 
-lemma algebraMap_mem_map_algebraMap_iff (I : Ideal R) (x : R) :
-    algebraMap R S x ∈ I.map (algebraMap R S) ↔
-      ∃ m ∈ M, x * m ∈ I := by
-  refine ⟨fun hx ↦ ?_, fun ⟨m, hm, hx⟩ ↦ ?_⟩
-  · rw [IsLocalization.mem_map_algebraMap_iff M] at hx
-    obtain ⟨⟨a, m⟩, hx⟩ := hx
-    rw [← map_mul] at hx
-    obtain ⟨c, hc⟩ := (IsLocalization.eq_iff_exists M S).1 hx
-    refine ⟨c * m, M.mul_mem c.2 m.2, ?_⟩
-    · have : x * (↑c * ↑m) = ↑c * (x * ↑m) := by ring
-      rw [this, hc]
-      exact I.mul_mem_left _ a.2
-  · rw [IsLocalization.mem_map_algebraMap_iff M]
-    use ⟨⟨x * m, hx⟩, ⟨m, hm⟩⟩
-    simp
-
-lemma map_algebraMap_ne_top_iff_disjoint (I : Ideal R) :
-    I.map (algebraMap R S) ≠ ⊤ ↔ Disjoint (M : Set R) (I : Set R) := by
-  simp only [ne_eq, Ideal.eq_top_iff_one, ← map_one (algebraMap R S), not_iff_comm,
-    IsLocalization.algebraMap_mem_map_algebraMap_iff M]
-  simp [Set.disjoint_left]
-
 lemma mk'_mem_map_algebraMap_iff (I : Ideal R) (x : R) (s : M) :
     IsLocalization.mk' S x s ∈ I.map (algebraMap R S) ↔ ∃ s ∈ M, s * x ∈ I := by
   rw [← Ideal.unit_mul_mem_iff_mem _ (IsLocalization.map_units S s), IsLocalization.mk'_spec',
