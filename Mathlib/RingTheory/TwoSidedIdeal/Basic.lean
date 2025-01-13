@@ -146,7 +146,7 @@ def mk' (carrier : Set R)
   ringCon :=
     { r := fun x y ↦ x - y ∈ carrier
       iseqv :=
-      { refl := fun x ↦ by simp
+      { refl := fun x ↦ by simpa using zero_mem
         symm := fun h ↦ by simpa using neg_mem h
         trans := fun {x y z} h1 h2 ↦ by
           simpa only [show x - z = (x - y) + (y - z) by abel] using add_mem h1 h2 }
