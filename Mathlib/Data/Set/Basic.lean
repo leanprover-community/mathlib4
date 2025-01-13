@@ -1936,8 +1936,7 @@ namespace Function
 variable {α β : Type*}
 
 theorem Injective.nonempty_apply_iff {f : Set α → Set β} (hf : Injective f) (h2 : f ∅ = ∅)
-    {s : Set α} :
-    (f s).Nonempty ↔ s.Nonempty := by
+    {s : Set α} : (f s).Nonempty ↔ s.Nonempty := by
   rw [nonempty_iff_ne_empty, ← h2, nonempty_iff_ne_empty, hf.ne_iff]
 
 end Function
