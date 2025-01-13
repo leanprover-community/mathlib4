@@ -446,9 +446,8 @@ theorem nonempty_quotient_iff (s : Setoid α) : Nonempty (Quotient s) ↔ Nonemp
 theorem true_equivalence : @Equivalence α fun _ _ ↦ True :=
   ⟨fun _ ↦ trivial, fun _ ↦ trivial, fun _ _ ↦ trivial⟩
 
-/-- Always-true relation as a `Setoid`.
-
-Note that in later files the preferred spelling is `⊤ : Setoid α`. -/
+/-- Always-true relation as a `Setoid`. -/
+@[deprecated "write this as `⊤ : Setoid α` instead" (since := "2025-01-13")]
 def trueSetoid : Setoid α :=
   ⟨_, true_equivalence⟩
 
@@ -554,7 +553,7 @@ end Squash
   maintain computability. -/
 @[deprecated Squash (since := "2024-11-13")]
 def Trunc.{u} (α : Sort u) : Sort u :=
-  @Quotient α trueSetoid
+  Squash α
 
 namespace Trunc
 set_option linter.deprecated false
