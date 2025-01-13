@@ -54,7 +54,7 @@ instance instRing : Ring (WithAbs v') := inferInstanceAs (Ring R')
 
 instance instInhabited : Inhabited (WithAbs v) := ⟨0⟩
 
-/-- Canonical equivalence between `WithAbs v` and `R`. -/
+/-- The canonical (semiring) equivalence between `WithAbs v` and `R`. -/
 def equiv : WithAbs v ≃+* R := RingEquiv.refl _
 
 instance normedRing : NormedRing (WithAbs v') :=
@@ -91,7 +91,7 @@ theorem equiv_symm_sub :
 @[deprecated "Use map_neg" (since := "2025-01-13"), simp]
 theorem equiv_neg : equiv v' (-x') = - equiv v' x' := rfl
 
-@[deprecated "Use map_nneg" (since := "2025-01-13"), simp]
+@[deprecated "Use map_neg" (since := "2025-01-13"), simp]
 theorem equiv_symm_neg : (equiv v').symm (-r') = - (equiv v').symm r' := rfl
 
 @[deprecated "Use map_mul" (since := "2025-01-13"), simp]
