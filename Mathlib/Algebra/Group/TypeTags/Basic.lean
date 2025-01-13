@@ -29,10 +29,7 @@ This file is similar to `Order.Synonym`.
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
-assert_not_exists MonoidHom
-assert_not_exists Finite
+assert_not_exists MonoidWithZero DenselyOrdered MonoidHom Finite
 
 universe u v
 

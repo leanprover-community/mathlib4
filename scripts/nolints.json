@@ -259,7 +259,6 @@
  ["docBlame", "ProbabilityTheory.«termEVar[_]»"],
  ["docBlame", "ProbabilityTheory.«termVar[_]»"],
  ["docBlame", "ProbabilityTheory.«term_=ₐₛ_»"],
- ["docBlame", "ProbabilityTheory.«term_×ₖ_»"],
  ["docBlame", "ProbabilityTheory.«term_≤ₐₛ_»"],
  ["docBlame", "ProbabilityTheory.«term_⟦_|_⟧»"],
  ["docBlame", "ProbabilityTheory.termℙ"],

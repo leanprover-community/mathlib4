@@ -29,8 +29,7 @@ This file defines square and even elements in a monoid.
 `Mathlib.Algebra.Ring.Parity` for the definition of odd elements.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 open MulOpposite
 

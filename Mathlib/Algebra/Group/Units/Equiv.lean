@@ -10,8 +10,7 @@ import Mathlib.Algebra.Group.Units.Hom
 # Multiplicative and additive equivalence acting on units.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 variable {F α M N G : Type*}
 

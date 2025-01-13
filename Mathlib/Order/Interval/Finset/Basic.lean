@@ -32,8 +32,7 @@ https://github.com/leanprover-community/mathlib/pull/14448#discussion_r906109235
 for some ideas.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists Finset.sum
+assert_not_exists MonoidWithZero Finset.sum
 
 open Function OrderDual
 

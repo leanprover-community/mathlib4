@@ -30,8 +30,7 @@ localization, Ore, non-commutative
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists Ring
+assert_not_exists MonoidWithZero Ring
 
 universe u
 

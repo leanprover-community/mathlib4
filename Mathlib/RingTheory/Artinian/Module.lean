@@ -354,8 +354,7 @@ theorem isArtinian_of_tower (R) {S M} [Semiring R] [Semiring S] [AddCommMonoid M
   ⟨(Submodule.restrictScalarsEmbedding R S M).wellFounded h.wf⟩
 
 -- See `Mathlib.RingTheory.Artinian.Ring`
-assert_not_exists IsLocalization
-assert_not_exists LocalRing
+assert_not_exists IsLocalization LocalRing
 
 /-- A ring is Artinian if it is Artinian as a module over itself.
 

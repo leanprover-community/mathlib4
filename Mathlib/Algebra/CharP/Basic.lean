@@ -19,8 +19,7 @@ imports of `CharP/Lemmas.lean`.
 As such, we can probably reorganize and find a better home for most of these lemmas.
 -/
 
-assert_not_exists Finset
-assert_not_exists TwoSidedIdeal
+assert_not_exists Finset TwoSidedIdeal
 
 open Set
 

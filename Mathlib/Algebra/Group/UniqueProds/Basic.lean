@@ -47,11 +47,7 @@ about the grading type and then a generic statement of the form "look at the coe
 The file `Algebra/MonoidAlgebra/NoZeroDivisors` contains several examples of this use.
 -/
 
-assert_not_exists Cardinal
-assert_not_exists Subsemiring
-assert_not_exists Algebra
-assert_not_exists Submodule
-assert_not_exists StarModule
+assert_not_exists Cardinal Subsemiring Algebra Submodule StarModule
 
 open Finset
 

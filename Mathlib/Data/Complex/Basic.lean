@@ -18,8 +18,7 @@ of characteristic zero. The result that the complex numbers are algebraically cl
 `FieldTheory.AlgebraicClosure`.
 -/
 
-assert_not_exists Multiset
-assert_not_exists Algebra
+assert_not_exists Multiset Algebra
 
 open Set Function
 

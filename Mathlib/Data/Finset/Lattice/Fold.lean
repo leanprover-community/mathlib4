@@ -22,8 +22,7 @@ See also `Mathlib/Order/CompleteLattice/Finset.lean`, which is instead concerned
 lattice or set operations behave when indexed by a finset.
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidWithZero
+assert_not_exists OrderedCommMonoid MonoidWithZero
 
 open Function Multiset OrderDual
 

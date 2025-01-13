@@ -18,10 +18,7 @@ import Mathlib.Tactic.Common
 # Basic properties of lists
 -/
 
-assert_not_exists Set.range
-assert_not_exists GroupWithZero
-assert_not_exists Ring
-assert_not_exists Lattice
+assert_not_exists Set.range GroupWithZero Ring Lattice
 
 open Function
 

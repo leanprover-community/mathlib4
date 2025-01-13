@@ -48,8 +48,7 @@ Similarly, I attempted to just define
 `Multiplicative G = G` leaks through everywhere, and seems impossible to use.
 -/
 
-assert_not_exists NonUnitalAlgHom
-assert_not_exists AlgEquiv
+assert_not_exists NonUnitalAlgHom AlgEquiv
 
 noncomputable section
 
