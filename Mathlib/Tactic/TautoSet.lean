@@ -25,9 +25,10 @@ elab (name := specialize_all) "specialize_all" x:term : tactic => withMainContex
 
 
 /--
-  `tauto_set` attempts to prove tautologies involving hypotheses and goals of the form X ⊆ Y
-  or X = Y, where X, Y are expressions built using ∪, ∩, \, and ᶜ from finitely many variables of
-  type Set α. It also unfolds expressions of the form Disjoint A B and symmDiff A B.
+  `tauto_set` attempts to prove tautologies involving hypotheses and goals of the form `X ⊆ Y`
+  or `X = Y`, where `X`, `Y` are expressions built using ∪, ∩, \, and ᶜ from finitely many
+  variables of type `Set α`. It also unfolds expressions of the form `Disjoint A B` and
+  `symmDiff A B`.
 
   Examples:
   ```lean
