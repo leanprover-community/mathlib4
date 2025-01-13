@@ -21,7 +21,7 @@ Most proofs are adapted from the corresponding proofs on `ℝ≥0∞`.
 
 noncomputable section
 
-open Set Filter Metric TopologicalSpace Topology
+open Set Filter TopologicalSpace Topology
 open scoped ENNReal
 
 variable {α : Type*} [TopologicalSpace α]
