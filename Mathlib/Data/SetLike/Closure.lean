@@ -116,17 +116,17 @@ theorem mem_bot {x : α} : x ∈ (⊥ : L) ↔ ∀ l : L, x ∈ l := by
 
 /- `closure L s` is the least element of `L` containing `s`. -/
 variable (L) in
-def closure (s : Set α) : L := sInf { l | s ⊆ l }
+def closure (s : Set α) : L := sInf {l | s ⊆ l}
 
 theorem coe_closure {s : Set α} : (closure L s : Set α) = ⋂ l ∈ {m : L | s ⊆ m}, l := coe_sInf
 
 theorem mem_closure {s : Set α} {x : α} : x ∈ closure L s ↔ ∀ l : L, s ⊆ l → x ∈ l := mem_sInf
 
+variable (L) in
+open LatticeSetLike OrderedSetLike in
 /--
 `gi_closure` is the Galois insertion formed by the maps `LatticeSetLike.closure` and `SetLike.coe`.
 -/
-variable (L) in
-open LatticeSetLike OrderedSetLike in
 def gi_closure : GaloisInsertion (closure L) SetLike.coe :=
   GaloisConnection.toGaloisInsertion
     (fun _ _ =>
