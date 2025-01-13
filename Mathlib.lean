@@ -761,8 +761,10 @@ import Mathlib.Algebra.Order.Monoid.Unbundled.WithTop
 import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Monoid.WithTop
 import Mathlib.Algebra.Order.Monovary
+import Mathlib.Algebra.Order.Nonneg.Basic
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
+import Mathlib.Algebra.Order.Nonneg.Lattice
 import Mathlib.Algebra.Order.Nonneg.Module
 import Mathlib.Algebra.Order.Nonneg.Ring
 import Mathlib.Algebra.Order.Pi
@@ -787,7 +789,6 @@ import Mathlib.Algebra.Order.Ring.Rat
 import Mathlib.Algebra.Order.Ring.Star
 import Mathlib.Algebra.Order.Ring.Synonym
 import Mathlib.Algebra.Order.Ring.Unbundled.Basic
-import Mathlib.Algebra.Order.Ring.Unbundled.Nonneg
 import Mathlib.Algebra.Order.Ring.Unbundled.Rat
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Star.Basic
