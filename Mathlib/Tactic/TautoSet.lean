@@ -7,7 +7,7 @@ Authors: Lenny Taelman
 import Mathlib.Data.Set.SymmDiff
 
 /-!
-  The `tauto_set` tactic
+# The `tauto_set` tactic
 -/
 
 namespace Mathlib.Tactic.TautoSet
