@@ -3,8 +3,8 @@ Copyright (c) 2024 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.Complex.Periodic
 import Mathlib.Analysis.Complex.TaylorSeries
+import Mathlib.Analysis.Complex.UpperHalfPlane.Exp
 import Mathlib.NumberTheory.ModularForms.Basic
 import Mathlib.NumberTheory.ModularForms.Identities
 import Mathlib.RingTheory.PowerSeries.Basic
@@ -32,24 +32,6 @@ variable {k : ℤ} {F : Type*} [FunLike F ℍ ℂ] {Γ : Subgroup SL(2, ℤ)} (n
 
 local notation "I∞" => comap Complex.im atTop
 local notation "𝕢" => Periodic.qParam
-
-theorem Function.Periodic.im_invQParam_pos_of_abs_lt_one
-    {h : ℝ} (hh : 0 < h) {q : ℂ} (hq : q.abs < 1) (hq_ne : q ≠ 0) :
-    0 < im (Periodic.invQParam h q) :=
-  im_invQParam .. ▸ mul_pos_of_neg_of_neg
-    (div_neg_of_neg_of_pos (neg_lt_zero.mpr hh) Real.two_pi_pos)
-    ((Real.log_neg_iff (abs.pos hq_ne)).mpr hq)
-
-lemma Function.Periodic.abs_qParam_le_of_one_half_le_im {ξ : ℂ} (hξ : 1 / 2 ≤ ξ.im) :
-    ‖𝕢 1 ξ‖ ≤ rexp (-π) := by
-  rwa [Periodic.qParam, ofReal_one, div_one, norm_eq_abs, abs_exp, Real.exp_le_exp,
-    mul_right_comm, mul_I_re, neg_le_neg_iff, ← ofReal_ofNat, ← ofReal_mul, im_ofReal_mul,
-    mul_comm _ π, mul_assoc, le_mul_iff_one_le_right Real.pi_pos, ← div_le_iff₀' two_pos]
-
-theorem UpperHalfPlane.abs_qParam_lt_one (n : ℕ) [NeZero n] (τ : ℍ) : (𝕢 n τ).abs < 1 := by
-  rw [Periodic.abs_qParam, Real.exp_lt_one_iff, neg_mul, coe_im, neg_mul, neg_div, neg_lt_zero,
-    div_pos_iff_of_pos_right (mod_cast Nat.pos_of_ne_zero <| NeZero.ne _)]
-  positivity
 
 namespace SlashInvariantFormClass
 
@@ -146,7 +128,7 @@ lemma qExpansion_formalMultilinearSeries_apply_norm (m : ℕ) :
   simp
 
 lemma qExpansion_formalMultilinearSeries_radius [NeZero n] [ModularFormClass F Γ(n) k] :
-    1 ≤ (qExpansion_formalMultilinearSeries n f).radius := by
+    1 ≤ (qExpansionFormalMultilinearSeries n f).radius := by
   refine le_of_forall_ge_of_dense fun r hr ↦ ?_
   lift r to NNReal using hr.ne_top
   apply FormalMultilinearSeries.le_radius_of_summable
@@ -157,7 +139,7 @@ lemma qExpansion_formalMultilinearSeries_radius [NeZero n] [ModularFormClass F �
 
 /-- The `q`-expansion of `f` is an `FPowerSeries` representing `cuspFunction n f`. -/
 lemma hasFPowerSeries_cuspFunction [NeZero n] [ModularFormClass F Γ(n) k] :
-    HasFPowerSeriesOnBall (cuspFunction n f) (qExpansion_formalMultilinearSeries n f) 0 1 := by
+    HasFPowerSeriesOnBall (cuspFunction n f) (qExpansionFormalMultilinearSeries n f) 0 1 := by
   refine ⟨qExpansion_formalMultilinearSeries_radius n f, zero_lt_one, fun hy ↦ ?_⟩
   rw [EMetric.mem_ball, edist_zero_right, ENNReal.coe_lt_one_iff, ← NNReal.coe_lt_one,
     coe_nnnorm, norm_eq_abs] at hy
