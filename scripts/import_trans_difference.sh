@@ -86,7 +86,7 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
         nums[diff[fil]]++
         # we add "(new file)" next to the modules whose name appears in `newModules`
         # we separate entries with a line break, so that later we can sort the modules
-        # with a each fixed import difference easily
+        # with the same number of import differences easily
         reds[diff[fil]]=sprintf("%s `%s`%s\n", reds[diff[fil]], fil, (fil in newModules)? " (new file)" : "")
       }
     }
@@ -97,7 +97,7 @@ printf '\n\n<details><summary>Import changes for all files</summary>\n\n%s\n\n</
         sorted=""
         split(reds[x], toSort, "\n")
         asort(toSort)
-        for(i in toSort) {sorted=sorted toSort[i] ""}
+        for(i in toSort) {sorted=sorted toSort[i]}
         if (nums[x] <= 2) { printf("|%s|%s|\n", sorted, x) }
         else { printf("|<details><summary>%s files</summary>%s</details>|%s|\n", nums[x], sorted, x) }
       }
