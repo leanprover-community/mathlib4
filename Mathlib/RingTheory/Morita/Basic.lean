@@ -22,6 +22,7 @@ isomorphic rings are Morita equivalent.
 - For any ring `R`, `R` and `Matₙ(R)` are Morita equivalent.
 - Morita equivalence in terms of projective generators.
 - Morita equivalence in terms of full idempotents.
+- Morita equivalence in terms of existence of an invertible bimodule.
 - If `R ≈ S`, then `R` is simple iff `S` is simple.
 
 ## References
