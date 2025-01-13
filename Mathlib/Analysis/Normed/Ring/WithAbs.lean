@@ -30,6 +30,8 @@ open Topology
 
 noncomputable section
 
+section definition
+
 variable {R R' S K : Type*} [Semiring R] [Ring R'] [OrderedSemiring S] [Field K]
 
 /-- Type synonym for a semiring which depends on an absolute value. This is a function that takes
@@ -134,6 +136,8 @@ theorem isUniformInducing_of_comp (h : ∀ x, ‖f x‖ = v x) : IsUniformInduci
   isUniformInducing_iff_uniformSpace.2 <| uniformSpace_comap_eq_of_comp h
 
 end WithAbs
+
+end definition
 
 namespace AbsoluteValue
 
