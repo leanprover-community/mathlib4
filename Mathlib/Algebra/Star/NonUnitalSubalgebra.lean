@@ -589,13 +589,11 @@ theorem star_le_starClosure_toNonUnitalSubalgebra (S : NonUnitalSubalgebra R A) 
   rw [starClosure_toNonUnitalSubalgebra]; simp
 
 @[simp, aesop safe 20 apply (rule_sets := [SetLike])]
-theorem subset_starClosure (S : NonUnitalSubalgebra R A) :
-    (S : Set A) ⊆ S.starClosure.toNonUnitalSubalgebra :=
+theorem subset_starClosure (S : NonUnitalSubalgebra R A) : (S : Set A) ⊆ S.starClosure :=
   le_starClosure_toNonUnitalSubalgebra _
 
 @[simp, aesop safe 20 apply (rule_sets := [SetLike])]
-theorem star_subset_starClosure (S : NonUnitalSubalgebra R A) :
-    (star S : Set A) ⊆ S.starClosure.toNonUnitalSubalgebra :=
+theorem star_subset_starClosure (S : NonUnitalSubalgebra R A) : (star S : Set A) ⊆ S.starClosure :=
   star_le_starClosure_toNonUnitalSubalgebra _
 
 @[aesop unsafe 80% apply (rule_sets := [SetLike])]

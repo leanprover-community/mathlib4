@@ -359,12 +359,12 @@ theorem star_le_starClosure_toSubalgebra (S : Subalgebra R A) :
   rw [starClosure_toSubalgebra]; simp
 
 @[simp, aesop safe 20 apply (rule_sets := [SetLike])]
-theorem subset_starClosure (S : Subalgebra R A) : (S : Set A) ⊆ S.starClosure.toSubalgebra :=
+theorem subset_starClosure (S : Subalgebra R A) : (S : Set A) ⊆ S.starClosure :=
   le_starClosure_toSubalgebra _
 
 @[simp, aesop safe 20 apply (rule_sets := [SetLike])]
-theorem star_subset_starClosure (S : Subalgebra R A) :
-    (star S : Set A) ⊆ S.starClosure.toSubalgebra := star_le_starClosure_toSubalgebra _
+theorem star_subset_starClosure (S : Subalgebra R A) : (star S : Set A) ⊆ S.starClosure :=
+  star_le_starClosure_toSubalgebra _
 
 @[aesop unsafe 80% apply (rule_sets := [SetLike])]
 theorem mem_starClosure_of_mem {S : Subalgebra R A} {x : A} (hx : x ∈ S) : x ∈ S.starClosure :=
