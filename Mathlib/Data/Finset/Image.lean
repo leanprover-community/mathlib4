@@ -31,11 +31,7 @@ choosing between `insert` and `Finset.cons`, or between `Finset.union` and `Fins
 Move the material about `Finset.range` so that the `Mathlib.Algebra.Group.Embedding` import can be
 removed.
 -/
-
--- TODO
--- assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists OrderedCommMonoid MonoidWithZero MulAction
 
 variable {α β γ : Type*}
 
