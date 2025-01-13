@@ -78,12 +78,12 @@ def FractionRing.frobenius : K(p, k) ≃+* K(p, k) :=
   IsFractionRing.ringEquivOfRingEquiv (frobeniusEquiv p k)
 
 /-- The Frobenius automorphism of `k` induces an endomorphism of `K`. For notation purposes.
-Notation `φ(p, k)` in the Isocrystal namespace. -/
+Notation `φ(p, k)` in the `Isocrystal` namespace. -/
 def FractionRing.frobeniusRingHom : K(p, k) →+* K(p, k) :=
   FractionRing.frobenius p k
 
-@[inherit_doc] scoped[Isocrystal]
-notation "φ(" p ", " k ")" => WittVector.FractionRing.frobeniusRingHom p k
+@[inherit_doc]
+scoped[Isocrystal] notation "φ(" p ", " k ")" => WittVector.FractionRing.frobeniusRingHom p k
 
 instance inv_pair₁ : RingHomInvPair φ(p, k) (FractionRing.frobenius p k).symm :=
   RingHomInvPair.of_ringEquiv (FractionRing.frobenius p k)
@@ -128,14 +128,14 @@ variable (V)
 @[inherit_doc] scoped[Isocrystal] notation "Φ(" p ", " k ")" => WittVector.Isocrystal.frobenius p k
 
 /-- A homomorphism between isocrystals respects the Frobenius map.
-Notation `M →ᶠⁱ [p, k]` in the Isocrystal namespace. -/
+Notation `M →ᶠⁱ [p, k]` in the `Isocrystal` namespace. -/
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 structure IsocrystalHom extends V →ₗ[K(p, k)] V₂ where
   frob_equivariant : ∀ x : V, Φ(p, k) (toLinearMap x) = toLinearMap (Φ(p, k) x)
 
 /-- An isomorphism between isocrystals respects the Frobenius map.
 
-Notation `M ≃ᶠⁱ [p, k]` in the Isocrystal namespace. -/
+Notation `M ≃ᶠⁱ [p, k]` in the `Isocrystal` namespace. -/
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 structure IsocrystalEquiv extends V ≃ₗ[K(p, k)] V₂ where
   frob_equivariant : ∀ x : V, Φ(p, k) (toLinearEquiv x) = toLinearEquiv (Φ(p, k) x)
