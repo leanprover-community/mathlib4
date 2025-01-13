@@ -210,8 +210,11 @@ noncomputable def compProj (α : FunSpace t₀ x₀ r L) (t : ℝ) : E :=
 lemma compProj_apply {α : FunSpace t₀ x₀ r L} {t : ℝ} :
     α.compProj t = α (projIcc tmin tmax (le_trans t₀.2.1 t₀.2.2) t) := rfl
 
-lemma compProj_subtype {α : FunSpace t₀ x₀ r L} {t : Icc tmin tmax} :
+lemma compProj_val {α : FunSpace t₀ x₀ r L} {t : Icc tmin tmax} :
     α.compProj t = α t := by simp only [compProj_apply, projIcc_val]
+
+lemma compProj_of_mem {α : FunSpace t₀ x₀ r L} {t : ℝ} (ht : t ∈ Icc tmin tmax) :
+    α.compProj t = α ⟨t, ht⟩ := by rw [compProj_apply, projIcc_of_mem]
 
 @[continuity]
 lemma continuous_compProj (α : FunSpace t₀ x₀ r L) : Continuous α.compProj :=
@@ -330,7 +333,7 @@ lemma dist_iterate_next_apply_le (hf : IsPicardLindelof f t₀ x₀ a r L K)
         -- any tactic for this?
         have ht' : t' ∈ Icc tmin tmax :=
           subset_trans uIoc_subset_uIcc (uIcc_subset_Icc t₀.2 t.2) ht'
-        rw [← dist_eq_norm, compProj_apply, compProj_apply, projIcc_of_mem _ ht']
+        rw [← dist_eq_norm, compProj_of_mem, compProj_of_mem]
         exact dist_comp_iterate_next_le hf hx _ ⟨t', ht'⟩ _ _ (hn _)
       _ ≤ (K * |t.1 - t₀.1|) ^ (n + 1) / (n + 1) ! * dist α β := by
         apply le_of_abs_le
@@ -388,12 +391,158 @@ end
 
 end FunSpace
 
-end ODE
+/-! ## Properties of the integral equation -/
 
-/-! ## Existence of a solution to an ODE -/
+section
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+  {f : ℝ → E → E} {α : ℝ → E} {s : Set ℝ} {u : Set E} {t₀ tmin tmax : ℝ}
+
+-- also works for open sets and `Ici` and `Iic`; generalise?
+/-- If the time-dependent vector field `f` and the curve `α` are continuous, then `f t (α t)` is the
+derivative of `integrate f t₀ x₀ α`. -/
+lemma hasDerivWithinAt_integrate_Icc
+    (ht₀ : t₀ ∈ Icc tmin tmax)
+    (hf : ContinuousOn (uncurry f) ((Icc tmin tmax) ×ˢ u))
+    (hα : ContinuousOn α (Icc tmin tmax))
+    (hmem : ∀ t ∈ Icc tmin tmax, α t ∈ u) (x₀ : E)
+    {t : ℝ} (ht : t ∈ Icc tmin tmax) :
+    HasDerivWithinAt (integrate f t₀ x₀ α) (f t (α t)) (Icc tmin tmax) t := by
+  apply HasDerivWithinAt.const_add
+  have : Fact (t ∈ Icc tmin tmax) := ⟨ht⟩ -- needed to synthesise `FTCFilter` for `Icc`
+  apply intervalIntegral.integral_hasDerivWithinAt_right _ -- need `CompleteSpace E` and `Icc`
+    (continuousOn_comp hf hα hmem |>.stronglyMeasurableAtFilter_nhdsWithin measurableSet_Icc t)
+    (continuousOn_comp hf hα hmem _ ht)
+  apply ContinuousOn.intervalIntegrable
+  apply continuousOn_comp hf hα hmem |>.mono
+  by_cases h : t < t₀
+  · rw [uIcc_of_gt h]
+    exact Icc_subset_Icc ht.1 ht₀.2
+  · rw [uIcc_of_le (not_lt.mp h)]
+    exact Icc_subset_Icc ht₀.1 ht.2
+
+end
+
+end ODE
 
 namespace IsPicardLindelof
 
+/-! ## Properties of `IsPicardLindelof` -/
 
+section
+
+variable {E : Type*} [NormedAddCommGroup E]
+  {f : ℝ → E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ x : E} {a r L K : ℝ≥0}
+
+lemma continuousOn_uncurry (hf : IsPicardLindelof f t₀ x₀ a r L K) :
+    ContinuousOn (uncurry f) ((Icc tmin tmax) ×ˢ (closedBall x₀ a)) :=
+  continuousOn_prod_of_continuousOn_lipschitzOnWith' _ K hf.lipschitzOnWith hf.continuousOn
+
+/-- The special case where the vector field is independent of time. -/
+lemma of_time_independent
+    {f : E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ : E} {a r L K : ℝ≥0}
+    (hb : ∀ x ∈ closedBall x₀ a, ‖f x‖ ≤ L)
+    (hl : LipschitzOnWith K f (closedBall x₀ a))
+    (hm : L * max (tmax - t₀) (t₀ - tmin) ≤ a - r) :
+    (IsPicardLindelof (fun _ ↦ f) t₀ x₀ a r L K) where
+  lipschitzOnWith := fun _ _ ↦ hl
+  continuousOn := fun _ _ ↦ continuousOn_const
+  norm_le := fun _ _ ↦ hb
+  mul_max_le := hm
+
+/-- A time-independent, continuously differentiable ODE satisfies the hypotheses of the
+Picard-Lindelöf theorem. -/
+lemma of_contDiffAt_one [NormedSpace ℝ E]
+    {f : E → E} {x₀ : E} (hf : ContDiffAt ℝ 1 f x₀) (t₀ : ℝ) :
+    ∃ (ε : ℝ) (hε : 0 < ε) (a r L K : ℝ≥0) (_ : 0 < r), IsPicardLindelof (fun _ ↦ f)
+      (tmin := t₀ - ε) (tmax := t₀ + ε) ⟨t₀, (by simp [le_of_lt hε])⟩ x₀ a r L K := by
+  -- obtain ball of radius `a` within area in which f is `K`-lipschitz
+  obtain ⟨K, s, hs, hl⟩ := hf.exists_lipschitzOnWith
+  obtain ⟨a, ha : 0 < a, hss⟩ := Metric.mem_nhds_iff.mp hs
+  set L := K * a + ‖f x₀‖ + 1 with hL
+  have hL0 : 0 < L := by positivity
+  have hb (x : E) (hx : x ∈ closedBall x₀ (a / 2)) : ‖f x‖ ≤ L := by
+    rw [hL]
+    calc
+      ‖f x‖ ≤ ‖f x - f x₀‖ + ‖f x₀‖ := norm_le_norm_sub_add _ _
+      _ ≤ K * ‖x - x₀‖ + ‖f x₀‖ := by
+        apply add_le_add_right
+        rw [← dist_eq_norm, ← dist_eq_norm]
+        apply hl.dist_le_mul x _ x₀ (mem_of_mem_nhds hs)
+        apply subset_trans _ hss hx
+        exact closedBall_subset_ball <| half_lt_self ha -- this is where we need `a / 2`
+      _ ≤ K * a + ‖f x₀‖ := by
+        apply add_le_add_right
+        apply mul_le_mul_of_nonneg_left _ K.2
+        rw [← mem_closedBall_iff_norm]
+        exact closedBall_subset_closedBall (half_le_self (le_of_lt ha)) hx
+      _ ≤ L := le_add_of_nonneg_right zero_le_one
+  let ε := a / L / 2 / 2
+  have hε0 : 0 < ε := by positivity
+  refine ⟨ε, hε0,
+    ⟨a / 2, le_of_lt <| half_pos ha⟩, ⟨a / 2, le_of_lt <| half_pos ha⟩ / 2,
+    ⟨L, le_of_lt hL0⟩, K, half_pos <| half_pos ha, ?_⟩
+  apply of_time_independent hb <|
+    hl.mono <| subset_trans (closedBall_subset_ball (half_lt_self ha)) hss
+  rw [NNReal.coe_mk, add_sub_cancel_left, sub_sub_cancel, max_self, NNReal.coe_div,
+    NNReal.coe_two, NNReal.coe_mk, mul_comm, ← le_div_iff₀ hL0, sub_half, div_right_comm (a / 2),
+    div_right_comm a]
+
+end
+
+/-! ## Existence of a solution to an ODE -/
+
+open ODE
+
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+  {f : ℝ → E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ x : E} {a r L K : ℝ≥0}
+
+/-- Picard-Lindelöf (Cauchy-Lipschitz) theorem, integral form. This version shows the existence of a
+local solution whose initial point `x` may be be different from the centre `x₀` of the closed ball
+within which the properties of the vector field hold. -/
+theorem exists_eq_integrate_eq
+    (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r) :
+    ∃ α : ℝ → E, α t₀ = x ∧ ∀ t ∈ Icc tmin tmax, α t = ODE.integrate f t₀ x α t := by
+  obtain ⟨α, hα⟩ := FunSpace.exists_isFixedPt_next hf hx
+  refine ⟨(FunSpace.next hf hx α).compProj, by simp, fun t ht ↦ ?_⟩
+  rw [FunSpace.compProj_apply, FunSpace.next_apply, hα, projIcc_of_mem _ ht]
+
+/-- Picard-Lindelöf (Cauchy-Lipschitz) theorem, differential form. This version shows the existence
+of a local solution whose initial point `x` may be be different from the centre `x₀` of the closed
+ball within which the properties of the vector field hold. -/
+theorem exists_eq_hasDerivWithinAt
+    (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r) :
+    ∃ α : ℝ → E, α t₀ = x ∧
+      ∀ t ∈ Icc tmin tmax, HasDerivWithinAt α (f t (α t)) (Icc tmin tmax) t := by
+  obtain ⟨α, hα⟩ := FunSpace.exists_isFixedPt_next hf hx
+  refine ⟨α.compProj, by rw [FunSpace.compProj_val, ← hα, FunSpace.next_apply₀], fun t ht ↦ ?_⟩
+  apply hasDerivWithinAt_integrate_Icc t₀.2 hf.continuousOn_uncurry
+    α.continuous_compProj.continuousOn (fun _ ht' ↦ α.compProj_mem_closedBall hf.mul_max_le)
+    x ht |>.congr_of_mem _ ht
+  intro t' ht'
+  nth_rw 1 [← hα]
+  rw [FunSpace.compProj_of_mem ht', FunSpace.next_apply]
+
+/-- Picard-Lindelöf (Cauchy-Lipschitz) theorem, differential form. -/
+theorem exists_eq_hasDerivWithinAt₀
+    (hf : IsPicardLindelof f t₀ x₀ a 0 L K) :
+    ∃ α : ℝ → E, α t₀ = x₀ ∧
+      ∀ t ∈ Icc tmin tmax, HasDerivWithinAt α (f t (α t)) (Icc tmin tmax) t :=
+  exists_eq_hasDerivWithinAt hf (mem_closedBall_self le_rfl)
+
+open Classical in
+/-- Picard-Lindelöf (Cauchy-Lipschitz) theorem, differential form. This version shows the existence
+of a local flow. -/
+theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt (hf : IsPicardLindelof f t₀ x₀ a r L K) :
+    ∃ α : E → ℝ → E, ∀ x ∈ closedBall x₀ r, α x t₀ = x ∧
+      ∀ t ∈ Icc tmin tmax, HasDerivWithinAt (α x) (f t (α x t)) (Icc tmin tmax) t := by
+  have (x) (hx : x ∈ closedBall x₀ r) := exists_eq_hasDerivWithinAt hf hx
+  choose α hα using this
+  set α' := fun (x : E) ↦ if hx : x ∈ closedBall x₀ r then α x hx else 0 with hα'
+  refine ⟨α', fun x hx ↦ ?_⟩
+  have ⟨h1, h2⟩ := hα x hx
+  refine ⟨?_, fun t ht ↦ ?_⟩
+  · simp_rw [hα', dif_pos hx, h1]
+  · simp_rw [hα', dif_pos hx, h2 t ht]
 
 end IsPicardLindelof
