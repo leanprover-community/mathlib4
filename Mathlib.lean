@@ -128,6 +128,7 @@ import Mathlib.Algebra.Category.ModuleCat.Presheaf.Free
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Generator
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Monoidal
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pullback
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Pushforward
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafification
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Sheafify
@@ -1081,6 +1082,8 @@ import Mathlib.AlgebraicTopology.FundamentalGroupoid.InducedMaps
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.PUnit
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.Product
 import Mathlib.AlgebraicTopology.FundamentalGroupoid.SimplyConnected
+import Mathlib.AlgebraicTopology.ModelCategory.Basic
+import Mathlib.AlgebraicTopology.ModelCategory.CategoryWithCofibrations
 import Mathlib.AlgebraicTopology.MooreComplex
 import Mathlib.AlgebraicTopology.Quasicategory.Basic
 import Mathlib.AlgebraicTopology.Quasicategory.Nerve
@@ -2246,6 +2249,7 @@ import Mathlib.CategoryTheory.WithTerminal
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Combinatorics.Additive.AP.Three.Behrend
 import Mathlib.Combinatorics.Additive.AP.Three.Defs
+import Mathlib.Combinatorics.Additive.ApproximateSubgroup
 import Mathlib.Combinatorics.Additive.CauchyDavenport
 import Mathlib.Combinatorics.Additive.Corner.Defs
 import Mathlib.Combinatorics.Additive.Corner.Roth
@@ -2736,6 +2740,7 @@ import Mathlib.Data.Multiset.Antidiagonal
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Bind
 import Mathlib.Data.Multiset.Dedup
+import Mathlib.Data.Multiset.DershowitzManna
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Multiset.Fintype
 import Mathlib.Data.Multiset.Fold
@@ -5552,7 +5557,7 @@ import Mathlib.Util.SleepHeartbeats
 import Mathlib.Util.Superscript
 import Mathlib.Util.SynthesizeUsing
 import Mathlib.Util.Tactic
-import Mathlib.Util.TermBeta
+import Mathlib.Util.TermReduce
 import Mathlib.Util.TransImports
 import Mathlib.Util.WhatsNew
 import Mathlib.Util.WithWeakNamespace

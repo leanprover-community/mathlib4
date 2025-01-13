@@ -19,8 +19,7 @@ This file defines a few basic operations on `Multiset`, notably the monadic bind
 * `Multiset.sigma`: Disjoint sum of multisets in a sigma type.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists MonoidWithZero MulAction
 
 universe v
 
