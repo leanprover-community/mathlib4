@@ -386,7 +386,9 @@ lemma shiftFunctorAdd'_add_zero' (a b : A) (hb : b = 0) (h : a + b = a) :
     isoWhiskerLeft (shiftFunctor C a) (shiftFunctorZero' C b hb).symm := by
   rw [shiftFunctorAdd'_eqToIso a b a a 0 a (by simp [hb]) (by simp) rfl hb,
     shiftFunctorAdd'_add_zero]
-  aesop
+  ext
+  dsimp
+  simp [shiftFunctorZero']
 
 /-- Fake doc string again.-/
 lemma shiftFunctorAdd'_zero_add' (a b : A) (ha : a = 0) (h : a + b = b) :
@@ -394,7 +396,9 @@ lemma shiftFunctorAdd'_zero_add' (a b : A) (ha : a = 0) (h : a + b = b) :
     isoWhiskerRight (shiftFunctorZero' C a ha).symm (shiftFunctor C b) := by
   rw [shiftFunctorAdd'_eqToIso a b b 0 b b (by simp [ha]) (by simp) ha rfl,
     shiftFunctorAdd'_zero_add]
-  aesop
+  ext
+  dsimp
+  simp [shiftFunctorZero', eqToHom_map]
 
 end Shift
 
@@ -474,7 +478,7 @@ lemma shiftEquiv_homEquiv_zero (X Y : C) :
     ((yoneda.obj Y).mapIso ((shiftFunctorZero' C (-0 : A) (by simp)).symm.app X).op ≪≫
     (coyoneda.obj (op X)).mapIso ((shiftFunctorZero C A).symm.app Y)).toEquiv := by
   rw [shiftEquiv_homEquiv_zero' C (0 : A) rfl]
-  simp
+  simp [shiftFunctorZero']
 
 lemma shiftEquiv_homEquiv_zero'_symm_app (a : A) (ha : a = 0) (X Y : C) (u : X ⟶ Y⟦a⟧) :
     ((shiftEquiv C a).symm.toAdjunction.homEquiv X Y).symm u =
@@ -627,59 +631,39 @@ def Functor_iso_to_iso_op : (F ≅ F') ≃ (F'.op ≅ F.op) :=
   Equiv.mk NatIso.op NatIso.removeOp (fun _ ↦ by aesop) (fun _ ↦ by aesop)
 
 lemma natIsoEquiv_compat_op : (Functor_iso_to_iso_op G G').trans
-    ((conjugateIsoEquiv adj.opAdjointOpOfAdjoint adj'.opAdjointOpOfAdjoint).trans
+    ((conjugateIsoEquiv adj.op adj'.op).trans
     (Functor_iso_to_iso_op F' F).symm) = (conjugateIsoEquiv adj adj').symm := by
-  ext _
+  ext
   simp only [Functor_iso_to_iso_op, Equiv.trans_apply, Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk,
     NatIso.removeOp_hom, conjugateIsoEquiv_apply_hom, NatIso.op_hom, NatTrans.removeOp_app,
-    Functor.op_obj, conjugateEquiv_apply_app, opAdjointOpOfAdjoint_unit_app, NatTrans.op_app,
-    Functor.op_map, Quiver.Hom.unop_op, opAdjointOpOfAdjoint_counit_app, unop_comp, Category.assoc,
+    Functor.op_obj, conjugateEquiv_apply_app, op_unit, NatTrans.op_app, Functor.comp_obj,
+    Functor.id_obj, Functor.op_map, Quiver.Hom.unop_op, op_counit, unop_comp, Category.assoc,
     conjugateIsoEquiv_symm_apply_hom, conjugateEquiv_symm_apply_app]
-  rw [opEquiv_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply]
-  simp
 
 variable (A : Type*) [AddGroup A] [HasShift C A] [HasShift D A]
 
 lemma shiftEquiv'_symm_toAdjunction_op (a b : A) (h : a + b = 0) :
-    (shiftEquiv' C a b h).symm.toAdjunction.opAdjointOpOfAdjoint =
+    (shiftEquiv' C a b h).symm.toAdjunction.op =
     (shiftEquiv' (OppositeShift C A) b a
     (by rw [eq_neg_of_add_eq_zero_left h]; simp)).symm.toAdjunction := by
-  ext _
+  ext
   · simp only [Functor.id_obj, Equivalence.symm_inverse, shiftEquiv'_functor,
-    Equivalence.symm_functor, shiftEquiv'_inverse, Functor.comp_obj, Functor.op_obj,
-    opAdjointOpOfAdjoint_unit_app, Equivalence.toAdjunction_counit, id_eq, eq_mpr_eq_cast,
+    Equivalence.symm_functor, shiftEquiv'_inverse, Functor.comp_obj, Functor.op_obj, op_unit,
+    Equivalence.toAdjunction_counit, NatTrans.op_app, id_eq, eq_mpr_eq_cast,
     Equivalence.toAdjunction_unit]
-    rw [opEquiv_apply, opEquiv_symm_apply, shiftEquiv'_symm_unit, shiftEquiv'_symm_counit]
+    rw [shiftEquiv'_symm_unit, shiftEquiv'_symm_counit]
     simp only [unop_id, Functor.map_id, shiftFunctorCompIsoId, Iso.trans_hom, Iso.symm_hom,
       NatTrans.comp_app, Functor.comp_obj, Functor.id_obj, Category.id_comp, op_comp, op_unop,
       Iso.trans_inv, Iso.symm_inv, Functor.op_obj]
     rw [oppositeShiftFunctorAdd'_hom_app, oppositeShiftFunctorZero_inv_app]
-  · simp only [Equivalence.symm_functor, shiftEquiv'_inverse, Equivalence.symm_inverse,
-    shiftEquiv'_functor, Functor.comp_obj, Functor.op_obj, Functor.id_obj,
-    opAdjointOpOfAdjoint_counit_app, Equivalence.toAdjunction_unit, id_eq, eq_mpr_eq_cast,
-    Equivalence.toAdjunction_counit]
-    rw [opEquiv_apply, opEquiv_symm_apply, shiftEquiv'_symm_unit, shiftEquiv'_symm_counit]
-    simp only [shiftFunctorCompIsoId, Iso.trans_inv, Iso.symm_inv, NatTrans.comp_app,
-      Functor.id_obj, Functor.comp_obj, unop_id, Functor.map_id, Category.comp_id, op_comp, op_unop,
-      Iso.trans_hom, Iso.symm_hom, Functor.op_obj]
-    rw [oppositeShiftFunctorAdd'_inv_app, oppositeShiftFunctorZero_hom_app]
 
 lemma shiftEquiv_symm_toAdjunction_op (a : A) :
-    (shiftEquiv C a).symm.toAdjunction.opAdjointOpOfAdjoint =
+    (shiftEquiv C a).symm.toAdjunction.op =
     (shiftEquiv' (OppositeShift C A) (-a) a (by simp)).symm.toAdjunction := by
   rw [shiftEquiv'_symm_toAdjunction_op]
 
-lemma comp_op : (Adjunction.comp adj adj₁).opAdjointOpOfAdjoint =
-    Adjunction.comp adj₁.opAdjointOpOfAdjoint adj.opAdjointOpOfAdjoint := by
-  ext _
-  · simp only [Functor.id_obj, Functor.comp_obj, Functor.op_obj, opAdjointOpOfAdjoint_unit_app,
-    Functor.comp_map, comp_counit_app, comp_unit_app, Functor.op_map]
-    rw [opEquiv_symm_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply, opEquiv_apply]
-    simp
-  · simp only [Functor.comp_obj, Functor.op_obj, Functor.id_obj, opAdjointOpOfAdjoint_counit_app,
-    comp_unit_app, Functor.comp_map, Category.assoc, comp_counit_app, Functor.op_map]
-    rw [opEquiv_apply, opEquiv_apply, opEquiv_symm_apply, opEquiv_symm_apply, opEquiv_symm_apply]
-    simp
+lemma comp_op : (Adjunction.comp adj adj₁).op =
+    Adjunction.comp adj₁.op adj.op := by aesop
 
 end Adjunction
 
@@ -919,7 +903,6 @@ variable {C : Type u} [CategoryTheory.Category.{v, u} C] [CategoryTheory.HasShif
 theorem smul_iso_hom {T₁ T₂ : CategoryTheory.Pretriangulated.Triangle C} (f : T₁ ≅ T₂) (n : ℤˣ) :
     (n • f).hom = n.1 • f.hom := by rw [Preadditive.smul_iso_hom]; rfl
 
-/-
 @[simp]
 theorem smul_hom₁ {T₁ T₂ : CategoryTheory.Pretriangulated.Triangle C} (f : T₁ ⟶ T₂) (n : ℤ) :
     (n • f).hom₁ = n • f.hom₁ := by simp only [instSMulHomTriangle_smul_hom₁]
@@ -931,7 +914,6 @@ theorem smul_hom₂ {T₁ T₂ : CategoryTheory.Pretriangulated.Triangle C} (f :
 @[simp]
 theorem smul_hom₃ {T₁ T₂ : CategoryTheory.Pretriangulated.Triangle C} (f : T₁ ⟶ T₂) (n : ℤ) :
     (n • f).hom₃ = n • f.hom₃ := by simp only [instSMulHomTriangle_smul_hom₃]
--/
 
 end Pretriangulated.TriangleMorphism
 

@@ -1,4 +1,14 @@
+/-
+Copyright (c) 2021 Luke Kershaw. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Luke Kershaw, Joël Riou
+-/
 import Mathlib.CategoryTheory.Triangulated.Filtered.Basic
+
+/-!
+# Filtered Triangulated Categories
+
+-/
 
 namespace CategoryTheory
 
@@ -563,7 +573,7 @@ lemma triangleGELTCommShiftIso_zero :
     triangleGELTCommShiftIso (C := C) n 0 = Functor.CommShift.isoZero (triangleGELT n) ℤ := by
   apply Iso.ext; apply NatTrans.ext; ext1 A
   refine triangle_map_ext' (n - 1) n (by linarith) _ _ ?_ ?_ ?_ ?_ ?_
-  . exact triangleGELT_distinguished _ _
+  · exact triangleGELT_distinguished _ _
   · exact Triangle.shift_distinguished _ (triangleGELT_distinguished _ _) _
   · dsimp; infer_instance
   · dsimp; infer_instance
@@ -602,10 +612,10 @@ lemma triangleGELTCommShiftIso_add (a b : ℤ) :
       Classical.choose_spec (triangleGELTIsoShift_exists n A a), Iso.refl_hom,
       Functor.map_zsmul, zsmul_comp, comp_zsmul, Functor.map_id]
     erw [id_comp]
-    dsimp; simp only [Triangle.shiftFunctorAdd_eq, Triangle.shiftFunctorAdd'_inv_app_hom₂,
-      triangleGELT_obj_obj₂]
+    dsimp
     rw [shiftFunctorAdd'_eq_shiftFunctorAdd, Iso.hom_inv_id_app, Int.negOnePow_add, Units.val_mul,
       smul_smul, mul_comm]
+
 
 noncomputable instance : (triangleGELT (hP := hP) n).CommShift ℤ where
   iso := triangleGELTCommShiftIso n
@@ -622,9 +632,8 @@ noncomputable instance (n : ℤ) : (truncLT (hP := hP) n).CommShift ℤ :=
 lemma truncLT_commShiftIso_hom_app (n a : ℤ) (X : C) :
     ((hP.truncLT n).commShiftIso a).hom.app X = a.negOnePow.1 •
     (triangleGELTIsoShift_exists n X a).choose.hom.hom₃ := by
-  have := (Functor.CommShift.ofIso_compatibility (truncLT_iso_triangleGELT_comp_π₃ n (C := C))
-    ℤ).comm' a
-  apply_fun (fun h ↦ h.app X) at this
+  have := @NatTrans.shift_app_comm _ _ _ _ _ _ _ _ _ _ _ _ _
+    (Functor.CommShift.ofIso_compatibility (truncLT_iso_triangleGELT_comp_π₃ n (C := C)) ℤ) a X
   simp only [Functor.comp_obj, Triangle.π₃_obj, triangleGELT_obj_obj₃,
     truncLT_iso_triangleGELT_comp_π₃, NatTrans.comp_app, whiskerRight_app,
     NatIso.ofComponents_hom_app, Iso.refl_hom, Functor.map_id, comp_id, whiskerLeft_app, id_comp]
@@ -643,9 +652,8 @@ noncomputable instance (n : ℤ) : (truncGE (hP := hP) n).CommShift ℤ :=
 lemma truncGE_commShiftIso_hom_app (n a : ℤ) (X : C) :
     ((hP.truncGE n).commShiftIso a).hom.app X = a.negOnePow.1 •
     (triangleGELTIsoShift_exists n X a).choose.hom.hom₁ := by
-  have := (Functor.CommShift.ofIso_compatibility (truncGE_iso_triangleGELT_comp_π₁ n (C := C))
-    ℤ).comm' a
-  apply_fun (fun h ↦ h.app X) at this
+  have := @NatTrans.shift_app_comm _ _ _ _ _ _ _ _ _ _ _ _ _
+    (Functor.CommShift.ofIso_compatibility (truncGE_iso_triangleGELT_comp_π₁ n (C := C)) ℤ) a X
   simp only [Functor.comp_obj, Triangle.π₁_obj, triangleGELT_obj_obj₁,
     truncGE_iso_triangleGELT_comp_π₁, NatTrans.comp_app, whiskerRight_app,
     NatIso.ofComponents_hom_app, Iso.refl_hom, Functor.map_id, comp_id, whiskerLeft_app, id_comp]
@@ -712,8 +720,7 @@ lemma truncGECommShift_comm (X : C) (n a : ℤ) :
     triangleGELT_obj_obj₂, triangleGELT_obj_obj₃, triangleGELT_obj_mor₁, triangleGELT_obj_mor₂,
     Functor.comp_obj, triangleGELT_obj_mor₃, Triangle.mk_obj₂, Iso.refl_hom, Triangle.mk_obj₁,
     Triangle.mk_mor₁, Linear.comp_units_smul] at this
-  change _ = a.negOnePow.1 • _ at this
-  rw [← this, (triangleGELTIsoShift_exists n X a).choose_spec, Iso.refl_hom]
+  erw [← this, (triangleGELTIsoShift_exists n X a).choose_spec, Iso.refl_hom]
   erw [comp_id]
 
 lemma truncGTCommShift_comm (X : C) (n a : ℤ) :

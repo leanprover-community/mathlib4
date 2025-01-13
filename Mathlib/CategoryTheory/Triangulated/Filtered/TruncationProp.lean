@@ -1,4 +1,14 @@
+/-
+Copyright (c) 2021 Luke Kershaw. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Luke Kershaw, Joël Riou
+-/
 import Mathlib.CategoryTheory.Triangulated.Filtered.TruncationDef
+
+/-!
+# Filtered Triangulated Categories
+
+-/
 
 namespace CategoryTheory
 
@@ -727,10 +737,10 @@ instance (n : ℤ) : Functor.IsTriangulated (hP.Gr'' n) := by
   infer_instance
 
 instance (X : C) (n : ℤ) : IsLE ((Gr'' n).obj X) 0 :=
-  isLE_shift _ n (-n) 0 (add_left_neg _)
+  isLE_shift _ n (-n) 0 (neg_add_cancel _)
 
 instance (X : C) (n : ℤ) : IsGE ((Gr'' n).obj X) 0 :=
-  isGE_shift _ n (-n) 0 (add_left_neg _)
+  isGE_shift _ n (-n) 0 (neg_add_cancel _)
 
 lemma Gr''_obj_mem_core (n : ℤ) (X : C) : hP.core ((Gr'' n).obj X) := by
   rw [mem_core_iff]

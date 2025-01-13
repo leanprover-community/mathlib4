@@ -5,7 +5,7 @@ Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Shift.Adjunction
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
-import Mathlib.CategoryTheory.Shift.CommShift
+
 /-!
 # The pullback of a shift by a monoid morphism
 
