@@ -4,13 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Topology.Order.MonotoneContinuity
-import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Topology.Instances.NNReal.Lemmas
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Order.T5
-import Mathlib.Topology.MetricSpace.Pseudo.Real
-import Mathlib.Topology.Metrizable.Uniformity
+import Mathlib.Topology.Instances.NNReal.Defs
 
 /-!
 # Topology on extended non-negative reals

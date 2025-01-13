@@ -11,8 +11,8 @@ import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Analysis.Normed.Group.Rat
 import Mathlib.Analysis.Normed.Group.Uniform
-import Mathlib.Topology.Instances.NNReal.Lemmas
 import Mathlib.Topology.MetricSpace.DilationEquiv
+import Mathlib.Topology.Instances.NNReal.Defs
 
 /-!
 # Normed fields

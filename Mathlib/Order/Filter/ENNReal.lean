@@ -3,7 +3,7 @@ Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Topology.Instances.ENNReal.Lemmas
+import Mathlib.Topology.Instances.ENNReal.Defs
 
 /-!
 # Order properties of extended non-negative reals

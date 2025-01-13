@@ -5,9 +5,9 @@ Authors: Sébastien Gouëzel
 -/
 import Mathlib.Data.Rat.Encodable
 import Mathlib.Data.Real.EReal
-import Mathlib.Topology.Instances.ENNReal.Lemmas
 import Mathlib.Topology.Order.MonotoneContinuity
-import Mathlib.Topology.Semicontinuous
+import Mathlib.Topology.Order.T5
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Topological structure on `EReal`
