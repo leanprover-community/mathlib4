@@ -18,7 +18,7 @@ algebraic structures on `ℍ[R]`.
 * `QuaternionAlgebra R a b c`, `ℍ[R, a, b, c]` :
   [Bourbaki, *Algebra I*][bourbaki1989] with coefficients `a`, `b`, `c`
   (Many other references such as Wikipedia assume charR ≠ 2 therefore one can complete
-  the suqare and WLOG assume $b = 0$.)
+  the square and WLOG assume $b = 0$.)
 * `Quaternion R`, `ℍ[R]` : the space of quaternions, a.k.a.
   `QuaternionAlgebra R (-1) (0) (-1)`;
 * `Quaternion.normSq` : square of the norm of a quaternion;
