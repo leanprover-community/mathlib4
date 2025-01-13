@@ -79,11 +79,9 @@ instance [NeZero n] : Inhabited (EuclideanHalfSpace n) :=
 instance : Inhabited (EuclideanQuadrant n) :=
   ⟨⟨0, fun _ => le_rfl⟩⟩
 
-instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) where
-  zero := ⟨fun _ ↦ 0, by norm_num⟩ -- TODO: Yael's comment!
+instance {n : ℕ} [NeZero n] : Zero (EuclideanHalfSpace n) := ⟨⟨fun _ ↦ 0, by norm_num⟩⟩
 
-instance {n : ℕ} : Zero (EuclideanQuadrant n) where
-  zero := ⟨fun _ ↦ 0, by norm_num⟩
+instance {n : ℕ} : Zero (EuclideanQuadrant n) := ⟨⟨fun _ ↦ 0, by norm_num⟩⟩
 
 @[ext]
 theorem EuclideanQuadrant.ext (x y : EuclideanQuadrant n) (h : x.1 = y.1) : x = y :=
