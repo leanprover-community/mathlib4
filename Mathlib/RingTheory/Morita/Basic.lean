@@ -55,8 +55,13 @@ lemma refl : IsMoritaEquivalent R R where
 lemma symm (h : IsMoritaEquivalent R S) : IsMoritaEquivalent S R where
   cond := h.cond.map .symm
 
--- TODO: We have restricted universe here, but if we have more Mortia Equivalence in terms full
--- idempotents, we could remove the restriction.
+-- TODO: We have restricted all the rings to the same universe here because of the complication
+-- `max u₁ u₂`, `max u₂ u₃` vs `max u₁ u₃`. But if we once we proved the definition of Mortia
+-- equivalence  is equivalent to the existence of a full idempotent element, we can remove this
+-- restriction in the universe.
+-- Or alternatively, @alreadyone has sketched an argument on how the universe restriction can be
+-- removed via a categorical arguemnt,
+-- see [here](https://github.com/leanprover-community/mathlib4/pull/20640#discussion_r1912189931)
 lemma trans {R S T : Type u₁} [Ring R] [Ring S] [Ring T]
     (h : IsMoritaEquivalent R S) (h' : IsMoritaEquivalent S T) :
     IsMoritaEquivalent R T where
