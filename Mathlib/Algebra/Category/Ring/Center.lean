@@ -3,9 +3,7 @@ Copyright (c) 2025 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
-import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.CategoryTheory.Adjunction.Limits
-import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Algebra.Category.ModuleCat.Limits
 
 /-!
