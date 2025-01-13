@@ -3,7 +3,6 @@ Copyright (c) 2018 . All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Thomas Browning
 -/
-import Mathlib.FieldTheory.Finite.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 
@@ -335,50 +334,6 @@ theorem le_or_disjoint_of_coprime [hp : Fact p.Prime] {P : Subgroup G} (hP : IsP
     exact Nat.eq_one_of_dvd_coprimes h4 (H.relindex_dvd_index_of_normal P)
       (Subgroup.relindex_dvd_card H P)
   · exact disjoint_iff.mpr (Subgroup.inf_eq_bot_of_coprime h4)
-
-/-- If a cyclic `p`-group `G` has an action of a group `K` of coprime order, then the map
-  `K × G → G` defined by `(k, g) ↦ k • g * g⁻¹` is either trivial or surjective. -/
-theorem smul_mul_inv_trivial_or_surjective [IsCyclic G] [Fact p.Prime] (hG : IsPGroup p G)
-    {K : Type*} [Group K] [MulDistribMulAction K G] (hGK : (Nat.card G).Coprime (Nat.card K)) :
-    (∀ g : G, ∀ k : K, k • g * g⁻¹ = 1) ∨ (∀ g : G, ∃ k : K, ∃ q : G, k • q * q⁻¹ = g) := by
-  by_cases hc : Nat.card G = 0
-  · rw [hc, Nat.coprime_zero_left] at hGK
-    have := (Nat.card_eq_one_iff_unique.mp hGK).1
-    refine Or.inl fun p k ↦ ?_
-    rw [Subsingleton.elim k 1, one_smul, mul_inv_cancel]
-  have := Nat.finite_of_card_ne_zero hc
-  let ϕ := MulDistribMulAction.toMonoidHomZModOfIsCyclic G K rfl
-  have h (g : G) (k : K) (n : ℤ) (h : ϕ k - 1 = n) : k • g * g⁻¹ = g ^ n := by
-    rw [sub_eq_iff_eq_add, ← Int.cast_one, ← Int.cast_add] at h
-    rw [MulDistribMulAction.toMonoidHomZModOfIsCyclic_apply rfl k g (n + 1) h,
-      zpow_add_one, mul_inv_cancel_right]
-  replace hG k : ϕ k = 1 ∨ IsUnit (ϕ k - 1) := by
-    obtain ⟨n, hn⟩ := hG.exists_card_eq
-    exact ZMod.eq_one_or_isUnit_sub_one hn (ϕ k)
-      (hGK.symm.coprime_dvd_left ((orderOf_map_dvd ϕ k).trans (orderOf_dvd_natCard k)))
-  rcases forall_or_exists_not (fun k : K ↦ ϕ k = 1) with hϕ | ⟨k, hk⟩
-  · exact Or.inl fun p k ↦ by rw [h p k 0 (by rw [hϕ, sub_self, Int.cast_zero]), zpow_zero]
-  · obtain ⟨⟨u, v, -, hvu⟩, hu : u = ϕ k - 1⟩ := (hG k).resolve_left hk
-    rw [← u.intCast_zmod_cast] at hu hvu
-    rw [← v.intCast_zmod_cast, ← Int.cast_mul, ← Int.cast_one, ZMod.intCast_eq_intCast_iff] at hvu
-    refine Or.inr fun p ↦ zpow_one p ▸ ⟨k, p ^ (v.cast : ℤ), ?_⟩
-    rw [h (p ^ v.cast) k u.cast hu.symm, ← zpow_mul, zpow_eq_zpow_iff_modEq]
-    exact hvu.of_dvd (Int.natCast_dvd_natCast.mpr (orderOf_dvd_natCard p))
-
-/-- If a cyclic `p`-subgroup `P` has a conjugation action of a subgroup `K` of coprime order, then
-  either `⁅K, P⁆ = ⊥` or `⁅K, P⁆ = P`. -/
-theorem commutator_eq_bot_or_commutator_eq_self {P K : Subgroup G} [IsCyclic P] [Fact p.Prime]
-    (hP : IsPGroup p P) (hKP : K ≤ P.normalizer) (hPK : (Nat.card P).Coprime (Nat.card K)) :
-    ⁅K, P⁆ = ⊥ ∨ ⁅K, P⁆ = P := by
-  let _ := MulDistribMulAction.compHom P (P.normalizerMonoidHom.comp (Subgroup.inclusion hKP))
-  refine (smul_mul_inv_trivial_or_surjective hP hPK).imp (fun h ↦ ?_) fun h ↦ ?_
-  · rw [eq_bot_iff, Subgroup.commutator_le]
-    exact fun k hk g hg ↦ Subtype.ext_iff.mp (h ⟨g, hg⟩ ⟨k, hk⟩)
-  · rw [le_antisymm_iff, Subgroup.commutator_le]
-    refine ⟨fun k hk g hg ↦ P.mul_mem ((hKP hk g).mp hg) (P.inv_mem hg), fun g hg ↦ ?_⟩
-    obtain ⟨k, q, hkq⟩ := h ⟨g, hg⟩
-    rw [← Subtype.coe_mk g hg, ← hkq]
-    exact Subgroup.commutator_mem_commutator k.2 q.2
 
 section P2comm
 
