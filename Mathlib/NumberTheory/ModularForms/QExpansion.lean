@@ -4,8 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.Analysis.Complex.Periodic
+import Mathlib.Analysis.Complex.TaylorSeries
 import Mathlib.NumberTheory.ModularForms.Basic
 import Mathlib.NumberTheory.ModularForms.Identities
+import Mathlib.RingTheory.PowerSeries.Basic
 
 /-!
 # q-expansions of modular forms
@@ -43,6 +45,11 @@ lemma Function.Periodic.abs_qParam_le_of_one_half_le_im {ξ : ℂ} (hξ : 1 / 2 
   rwa [Periodic.qParam, ofReal_one, div_one, norm_eq_abs, abs_exp, Real.exp_le_exp,
     mul_right_comm, mul_I_re, neg_le_neg_iff, ← ofReal_ofNat, ← ofReal_mul, im_ofReal_mul,
     mul_comm _ π, mul_assoc, le_mul_iff_one_le_right Real.pi_pos, ← div_le_iff₀' two_pos]
+
+theorem UpperHalfPlane.abs_qParam_lt_one (n : ℕ) [NeZero n] (τ : ℍ) : (𝕢 n τ).abs < 1 := by
+  rw [Periodic.abs_qParam, Real.exp_lt_one_iff, neg_mul, coe_im, neg_mul, neg_div, neg_lt_zero,
+    div_pos_iff_of_pos_right (mod_cast Nat.pos_of_ne_zero <| NeZero.ne _)]
+  positivity
 
 namespace SlashInvariantFormClass
 
@@ -103,6 +110,56 @@ lemma analyticAt_cuspFunction_zero [NeZero n] [ModularFormClass F Γ(n) k] :
   DifferentiableOn.analyticAt
     (fun q hq ↦ (differentiableAt_cuspFunction _ _ hq).differentiableWithinAt)
     (by simpa only [ball_zero_eq] using Metric.ball_mem_nhds (0 : ℂ) zero_lt_one)
+
+def qExpansion : PowerSeries ℂ :=
+  .mk fun m ↦ (↑m.factorial)⁻¹ * iteratedDeriv m (cuspFunction n f) 0
+
+lemma qExpansion_coeff (m : ℕ) :
+    (qExpansion n f).coeff ℂ m = (↑m.factorial)⁻¹ * iteratedDeriv m (cuspFunction n f) 0 := by
+  simp [qExpansion]
+
+lemma hasSum_qExpansion_of_abs_lt [NeZero n] [ModularFormClass F Γ(n) k]
+    {q : ℂ} (hq : q.abs < 1) :
+    HasSum (fun m : ℕ ↦ (qExpansion n f).coeff ℂ m • q ^ m) (cuspFunction n f q) := by
+  simp only [qExpansion_coeff, ← eq_cuspFunction n f]
+  have hdiff : DifferentiableOn ℂ (cuspFunction n f) (Metric.ball 0 1) := by
+    refine fun z hz ↦ (differentiableAt_cuspFunction n f ?_).differentiableWithinAt
+    simpa using hz
+  have qmem : q ∈ Metric.ball 0 1 := by simpa using hq
+  convert hasSum_taylorSeries_on_ball hdiff qmem using 2 with m
+  rw [sub_zero, smul_eq_mul, smul_eq_mul, mul_right_comm, smul_eq_mul, mul_assoc]
+
+lemma hasSum_qExpansion [NeZero n] [ModularFormClass F Γ(n) k] (τ : ℍ) :
+    HasSum (fun m : ℕ ↦ (qExpansion n f).coeff ℂ m • 𝕢 n τ ^ m) (f τ) := by
+  simpa only [eq_cuspFunction n f] using
+    hasSum_qExpansion_of_abs_lt n f (τ.abs_qParam_lt_one n)
+
+def qExpansion_formalMultilinearSeries : FormalMultilinearSeries ℂ ℂ ℂ :=
+  fun m ↦ (qExpansion n f).coeff ℂ m • ContinuousMultilinearMap.mkPiAlgebraFin ℂ m _
+
+lemma qExpansion_formalMultilinearSeries_apply_norm (m : ℕ) :
+    ‖qExpansion_formalMultilinearSeries n f m‖ = ‖(qExpansion n f).coeff ℂ m‖ := by
+  rw [qExpansion_formalMultilinearSeries,
+    ← (ContinuousMultilinearMap.piFieldEquiv ℂ (Fin m) ℂ).symm.norm_map]
+  simp
+
+lemma qExpansion_formalMultilinearSeries_radius
+    [NeZero n] [ModularFormClass F Γ(n) k] :
+    1 ≤ (qExpansion_formalMultilinearSeries n f).radius := by
+  refine le_of_forall_ge_of_dense fun r hr ↦ ?_
+  lift r to NNReal using hr.ne_top
+  apply FormalMultilinearSeries.le_radius_of_summable
+  simp only [qExpansion_formalMultilinearSeries_apply_norm]
+  rw [← r.abs_eq]
+  simp_rw [pow_abs, ← Complex.abs_ofReal, ofReal_pow, ← Complex.norm_eq_abs, ← norm_mul]
+  exact (hasSum_qExpansion_of_abs_lt n f (q := r) (by simpa using hr)).summable.norm
+
+lemma hasFPowerSeries_cuspFunction [NeZero n] [ModularFormClass F Γ(n) k] :
+    HasFPowerSeriesOnBall (cuspFunction n f) (qExpansion_formalMultilinearSeries n f) 0 1 := by
+  refine ⟨qExpansion_formalMultilinearSeries_radius n f, zero_lt_one, fun hy ↦ ?_⟩
+  rw [EMetric.mem_ball, edist_zero_right, ENNReal.coe_lt_one_iff, ← NNReal.coe_lt_one,
+    coe_nnnorm, norm_eq_abs] at hy
+  simpa [qExpansion_formalMultilinearSeries] using hasSum_qExpansion_of_abs_lt n f hy
 
 end ModularFormClass
 
