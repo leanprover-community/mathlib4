@@ -6,7 +6,7 @@ Authors: Lenny Taelman
 
 import Mathlib.Tactic.TautoSet
 
-variable (α : Type) (A B C D E : Set α)
+variable {α : Type} {A B C D E : Set α}
 
 
 example (h : B ∪ C ⊆ A ∪ A) : B ⊆ A := by tauto_set
