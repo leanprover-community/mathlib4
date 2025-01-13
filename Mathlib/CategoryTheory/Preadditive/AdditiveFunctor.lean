@@ -342,7 +342,7 @@ C' ==== g ====> D'
 ```
 commutes where `e` and `e'` are additive equivalence of categories.
 
-Then we have an isomorphism of endomorphism monoids `End f ≃* End g'` and
+Then we have an isomorphism of endomorphism rings `End f ≃+* End g'` and
 -/
 def endRingEquiv
     (sq₀ : f.comp e'.functor ≅ e.functor.comp g) : End f ≃+* End g where
