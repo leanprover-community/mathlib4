@@ -40,7 +40,7 @@ example : A ∪ Set.univ = Set.univ := by tauto_set
 example : ∅ ⊆ A := by tauto_set
 example : A ⊆ Set.univ := by tauto_set
 
-example (h1 : A ⊆ B) (h2: B ⊆ A) : A = B := by tauto_set
+example (hAB : A ⊆ B) (hBA: B ⊆ A) : A = B := by tauto_set
 
 example : A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C) := by tauto_set
 example : A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) := by tauto_set
@@ -51,7 +51,7 @@ example : A ⊆ (A ∪ B) ∪ C := by tauto_set
 example : A ∩ B ⊆ A := by tauto_set
 example : A ⊆ A ∪ B := by tauto_set
 
-example (h1 : B ⊆ A) (h2 : Set.univ ⊆ B): Set.univ = A := by tauto_set
+example (hBA : B ⊆ A) (hB : Set.univ ⊆ B): Set.univ = A := by tauto_set
 
 example (hAB : A ⊆ B) (hCD : C ⊆ D) : C \ B ⊆ D \ A := by tauto_set
 
