@@ -62,14 +62,13 @@ that reflects arbitrary intersections. -/
 noncomputable def SetLike.toLatticeSetLike (L α : Type*) [SetLike L α]
     (exists_coe_eq_iInter : ∀ {s : Set L}, ∃ l : L, (l : Set α) = ⋂ m ∈ s, m) :
     LatticeSetLike L α :=
-  let _ := @SetLike.toOrderedSetLike L α _
-  @OrderedSetLike.toLatticeSetLike L α _
-    (InfSet.mk fun _ => Classical.choose exists_coe_eq_iInter)
+  @OrderedSetLike.toLatticeSetLike L α SetLike.toOrderedSetLike
+    ⟨fun _ => Classical.choose exists_coe_eq_iInter⟩
     (Classical.choose_spec exists_coe_eq_iInter)
 
 namespace LatticeSetLike
 
-variable {α L : Type*} [LatticeSetLike L α]
+variable {L α : Type*} [LatticeSetLike L α]
 
 @[simp, norm_cast]
 theorem coe_sInf {s : Set L} : ((sInf s : L) : Set α) = ⋂ l ∈ s, l := by
