@@ -87,6 +87,9 @@ noncomputable def integrate (f : ℝ → E → E) (t₀ : ℝ) (x₀ : E) (α : 
 @[simp]
 lemma integrate_apply {x₀ : E} {t : ℝ} : integrate f t₀ x₀ α t = x₀ + ∫ τ in t₀..t, f τ (α τ) := rfl
 
+lemma integrate_apply₀ {x₀ : E} : integrate f t₀ x₀ α t₀ = x₀ := by
+  simp only [integrate_apply, integral_same, add_zero]
+
 /-- Given a $C^n$ time-dependent vector field `f` and a $C^n$ curve `α`, the composition `f t (α t)`
 is $C^n$ in `t`. -/
 lemma contDiffOn_comp {n : WithTop ℕ∞}
@@ -103,7 +106,7 @@ lemma contDiffOn_comp {n : WithTop ℕ∞}
 /-- Given a continuous time-dependent vector field `f` and a continuous curve `α`, the composition
 `f t (α t)` is continuous in `t`. -/
 lemma continuousOn_comp
-    (hf : ContinuousOn (uncurry f) (s ×ˢ u)) (hα : ContinuousOn α s) (hmem : ∀ t ∈ s, α t ∈ u) :
+    (hf : ContinuousOn (uncurry f) (s ×ˢ u)) (hα : ContinuousOn α s) (hmem : MapsTo α s u) :
     ContinuousOn (fun t ↦ f t (α t)) s :=
   contDiffOn_zero.mp <| contDiffOn_comp (contDiffOn_zero.mpr hf) (contDiffOn_zero.mpr hα) hmem
 
@@ -243,7 +246,43 @@ section
 variable [NormedSpace ℝ E]
   {f : ℝ → E → E} {tmin tmax : ℝ} {t₀ : Icc tmin tmax} {x₀ x y : E} {a r L K : ℝ≥0}
 
+/-- The integrand in `next` is continuous. -/
+lemma continuousOn_comp_compProj (hf : IsPicardLindelof f t₀ x₀ a r L K) (α : FunSpace t₀ x₀ r L) :
+    ContinuousOn (fun τ ↦ f τ (α.compProj τ)) (Icc tmin tmax) :=
+  continuousOn_comp
+    (continuousOn_prod_of_continuousOn_lipschitzOnWith' (uncurry f) K hf.lipschitzOnWith
+      hf.continuousOn)
+    α.continuous_compProj.continuousOn
+    fun _ _ ↦ α.mem_closedBall hf.mul_max_le
 
+/-- The map on `FunSpace` defined by `integrate`, some `n`-th interate of which will be a
+contracting map -/
+noncomputable def next (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
+    (α : FunSpace t₀ x₀ r L) : FunSpace t₀ x₀ r L where
+  toFun t := integrate f t₀ x α.compProj t
+  lipschitzWith := LipschitzWith.of_dist_le_mul fun t₁ t₂ ↦ by
+    rw [dist_eq_norm, integrate_apply, integrate_apply, add_sub_add_left_eq_sub,
+      integral_interval_sub_left]
+    · rw [Subtype.dist_eq, Real.dist_eq]
+      apply intervalIntegral.norm_integral_le_of_norm_le_const
+      intro t ht
+      have ht : t ∈ Icc tmin tmax := subset_trans uIoc_subset_uIcc (uIcc_subset_Icc t₂.2 t₁.2) ht
+      exact hf.norm_le _ ht _ <| α.mem_closedBall hf.mul_max_le
+    · apply ContinuousOn.intervalIntegrable
+      apply α.continuousOn_comp_compProj hf |>.mono
+      exact uIcc_subset_Icc t₀.2 t₁.2
+    · apply ContinuousOn.intervalIntegrable
+      apply α.continuousOn_comp_compProj hf |>.mono
+      exact uIcc_subset_Icc t₀.2 t₂.2
+  mem_closedBall₀ := by simp [hx]
+
+@[simp]
+lemma next_apply (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
+    (α : FunSpace t₀ x₀ r L) {t : Icc tmin tmax} :
+    next hf hx α t = integrate f t₀ x α.compProj t := rfl
+
+lemma next_apply₀ (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
+    (α : FunSpace t₀ x₀ r L) : next hf hx α t₀ = x := by simp
 
 
 end
