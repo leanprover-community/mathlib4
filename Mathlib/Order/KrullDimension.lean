@@ -59,6 +59,8 @@ in this file would generalize as well. But we don't think it would be useful, so
 Krull dimension of a preorder.
 -/
 
+assert_not_exists Field
+
 namespace Order
 
 section definitions
