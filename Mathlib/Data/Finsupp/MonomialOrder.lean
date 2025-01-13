@@ -152,4 +152,14 @@ theorem MonomialOrder.lex_le_iff [WellFoundedGT σ] {c d : σ →₀ ℕ} :
 theorem MonomialOrder.lex_lt_iff [WellFoundedGT σ] {c d : σ →₀ ℕ} :
     c ≺[lex] d ↔ toLex c < toLex d := Iff.rfl
 
+theorem MonomialOrder.lex_lt_iff_of_unique [Unique σ] {c d : σ →₀ ℕ} :
+    c ≺[lex] d ↔ c default < d default := by
+  simp [MonomialOrder.lex_lt_iff, Finsupp.lex_lt_iff, Unique.exists_iff]
+
+theorem MonomialOrder.lex_le_iff_of_unique [Unique σ] {c d : σ →₀ ℕ} :
+    c ≼[lex] d ↔ c default ≤ d default := by
+  simp only [le_iff_eq_or_lt, EmbeddingLike.apply_eq_iff_eq]
+  apply or_congr _ MonomialOrder.lex_lt_iff_of_unique
+  simp only [Finsupp.ext_iff, Unique.forall_iff]
+
 end Lex
