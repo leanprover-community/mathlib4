@@ -53,7 +53,7 @@ example : A ⊆ A ∪ B := by tauto_set
 
 example (h1 : B ⊆ A) (h2 : Set.univ ⊆ B): Set.univ = A := by tauto_set
 
-example (h1 : A ⊆ B) (h2 : C ⊆ D) : C \ B ⊆ D \ A := by tauto_set
+example (hAB : A ⊆ B) (hCD : C ⊆ D) : C \ B ⊆ D \ A := by tauto_set
 
 example (hAB : Disjoint A B) (hCA : C ⊆ A) : Disjoint C (B \ D) := by tauto_set
 
