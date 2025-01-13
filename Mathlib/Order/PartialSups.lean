@@ -29,7 +29,7 @@ We show this construction gives a Galois insertion between functions `ι → α`
 
 One might dispute whether this sequence should start at `f 0` or `⊥`. We choose the former because:
 * Starting at `⊥` requires... having a bottom element.
-* `fun f i ↦ (Finset.range i).sup f` is already effectively the sequence starting at `⊥`.
+* `fun f i ↦ (Finset.Iio i).sup f` is already effectively the sequence starting at `⊥`.
 * If we started at `⊥` we wouldn't have the Galois insertion. See `partialSups.gi`.
 
 -/
@@ -46,7 +46,7 @@ section Preorder
 
 variable [Preorder ι] [LocallyFiniteOrderBot ι]
 
-/-- The monotone sequence whose value at `n` is the supremum of the `f j` where `j ≤ i`. -/
+/-- The monotone sequence whose value at `i` is the supremum of the `f j` where `j ≤ i`. -/
 def partialSups (f : ι → α) : ι →o α where
   toFun i := (Iic i).sup' nonempty_Iic f
   monotone' _ _ hmn := sup'_mono f (Iic_subset_Iic.mpr hmn) nonempty_Iic
