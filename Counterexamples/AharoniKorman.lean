@@ -68,14 +68,16 @@ lemma Set.Finite.of_finite_fibers {α β : Type*} (f : α → β) {s : Set α}
     (hfibers : ∀ x ∈ f '' s, (s ∩ f ⁻¹' {x}).Finite) : s.Finite :=
   (himage.biUnion hfibers).subset <| fun x ↦ by aesop
 
+lemma Set.IsWF.of_wellFoundedLT {α : Type*} {s : Set α} [LT α] [WellFoundedLT α] : Set.IsWF s :=
+  (Set.isWF_univ_iff.2 wellFounded_lt).mono (Set.subset_univ _)
+
 /--
 If `α` is a linear order with well-founded `<`, then the universe is a partially well-ordered set.
 Note this does not hold without the linearity assumption.
 -/
-lemma univ_isPWO_of_linearOrder {α : Type*} [LinearOrder α] [WellFoundedLT α] :
-    (Set.univ : Set α).IsPWO := by
-  rw [← Set.isWF_iff_isPWO, Set.isWF_univ_iff]
-  exact wellFounded_lt
+lemma Set.IsPWO.of_linearOrder {α : Type*} {s : Set α} [LinearOrder α] [WellFoundedLT α] :
+    s.IsPWO :=
+  IsWF.of_wellFoundedLT.isPWO
 
 open Finset
 
@@ -328,7 +330,7 @@ lemma level_isPWO {n : ℕ} : (level n).IsPWO := by
   rw [level_eq_range, ← Set.image_univ]
   refine Set.IsPWO.image_of_monotone ?_ (embed n).monotone
   rw [← Set.univ_prod_univ]
-  exact Set.IsPWO.prod univ_isPWO_of_linearOrder univ_isPWO_of_linearOrder
+  exact .prod .of_linearOrder .of_linearOrder
 
 /--
 If `A` is a subset of `level n` and is an antichain, then `A` is finite.
@@ -392,7 +394,7 @@ variable {C : Set Hollom}
 lemma no_strictly_decreasing {f : ℕ → ℕ} {n₀ : ℕ} (hf : ∀ n ≥ n₀, f (n + 1) < f n) : False := by
   let g (n : ℕ) : ℕ := f (n₀ + n)
   have hg : StrictAnti g := strictAnti_nat_of_succ_lt fun n ↦ hf (n₀ + n) (by simp)
-  obtain ⟨m, n, h₁, h₂⟩ := univ_isPWO_of_linearOrder g (by simp)
+  obtain ⟨m, n, h₁, h₂⟩ := Set.IsPWO.of_linearOrder (s := Set.univ) g (by simp)
   exact (hg h₁).not_le h₂
 
 lemma triangle_finite (n : ℕ) : {x : ℕ × ℕ | x.1 + x.2 ≤ n}.Finite :=
