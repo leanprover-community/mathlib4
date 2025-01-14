@@ -189,8 +189,8 @@ theorem selbergWeights_diagonalisation (l : ℕ) (hl : l ∈ divisors P) :
       ∑ k ∈ divisors P, if k ^ 2 ≤ y then
             (∑ d ∈ divisors P, if l ∣ d ∧ d ∣ k then (μ d:ℝ) else 0) * g k * S⁻¹
           else 0 := by
-      simp_rw [selbergWeights_eq_dvds_sum, ← sum_filter, mul_sum, sum_mul, sum_filter_sum,
-        filter_filter, sum_filter]
+      simp_rw [selbergWeights_eq_dvds_sum, ← sum_filter, mul_sum, sum_mul, sum_filter, ite_sum_zero,
+        ← ite_and]
       rw [sum_comm]
       congr with d
       simp_rw [← sum_filter]
