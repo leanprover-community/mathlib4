@@ -28,7 +28,6 @@ open Filter ENNReal
 
 open Function (support)
 
-open scoped Classical
 open Topology NNReal ENNReal MeasureTheory
 
 namespace MeasureTheory
@@ -179,21 +178,25 @@ theorem sum_range_measure_preimage_singleton (f : α →ₛ β) (μ : Measure α
   rw [f.sum_measure_preimage_singleton, coe_range, preimage_range]
 
 /-- If-then-else as a `SimpleFunc`. -/
-def piecewise (s : Set α) (hs : MeasurableSet s) (f g : α →ₛ β) : α →ₛ β :=
-  ⟨s.piecewise f g, fun _ =>
+def piecewise (s : Set α) (hs : MeasurableSet s) (f g : α →ₛ β) : α →ₛ β := by
+  classical
+  exact ⟨s.piecewise f g, fun _ =>
     letI : MeasurableSpace β := ⊤
     f.measurable.piecewise hs g.measurable trivial,
     (f.finite_range.union g.finite_range).subset range_ite_subset⟩
 
+open scoped Classical in
 @[simp]
 theorem coe_piecewise {s : Set α} (hs : MeasurableSet s) (f g : α →ₛ β) :
     ⇑(piecewise s hs f g) = s.piecewise f g :=
   rfl
 
+open scoped Classical in
 theorem piecewise_apply {s : Set α} (hs : MeasurableSet s) (f g : α →ₛ β) (a) :
     piecewise s hs f g a = if a ∈ s then f a else g a :=
   rfl
 
+open scoped Classical in
 @[simp]
 theorem piecewise_compl {s : Set α} (hs : MeasurableSet sᶜ) (f g : α →ₛ β) :
     piecewise sᶜ hs f g = piecewise s hs.of_compl g f :=
@@ -207,15 +210,18 @@ theorem piecewise_univ (f g : α →ₛ β) : piecewise univ MeasurableSet.univ 
 theorem piecewise_empty (f g : α →ₛ β) : piecewise ∅ MeasurableSet.empty f g = g :=
   coe_injective <| by simp
 
+
 @[simp]
 theorem piecewise_same (f : α →ₛ β) {s : Set α} (hs : MeasurableSet s) :
-    piecewise s hs f f = f :=
-  coe_injective <| Set.piecewise_same _ _
+    piecewise s hs f f = f := by
+  classical
+  exact coe_injective <| Set.piecewise_same _ _
 
 theorem support_indicator [Zero β] {s : Set α} (hs : MeasurableSet s) (f : α →ₛ β) :
     Function.support (f.piecewise s hs (SimpleFunc.const α 0)) = s ∩ Function.support f :=
   Set.support_indicator
 
+open scoped Classical in
 theorem range_indicator {s : Set α} (hs : MeasurableSet s) (hs_nonempty : s.Nonempty)
     (hs_ne_univ : s ≠ univ) (x y : β) :
     (piecewise s hs (const α x) (const α y)).range = {x, y} := by
@@ -262,12 +268,14 @@ theorem range_map [DecidableEq γ] (g : β → γ) (f : α →ₛ β) : (f.map g
 theorem map_const (g : β → γ) (b : β) : (const α b).map g = const α (g b) :=
   rfl
 
+open scoped Classical in
 theorem map_preimage (f : α →ₛ β) (g : β → γ) (s : Set γ) :
     f.map g ⁻¹' s = f ⁻¹' ↑{b ∈ f.range | g b ∈ s} := by
   simp only [coe_range, sep_mem_eq, coe_map, Finset.coe_filter,
     ← mem_preimage, inter_comm, preimage_inter_range, ← Finset.mem_coe]
   exact preimage_comp
 
+open scoped Classical in
 theorem map_preimage_singleton (f : α →ₛ β) (g : β → γ) (c : γ) :
     f.map g ⁻¹' {c} = f ⁻¹' ↑{b ∈ f.range | g b = c} :=
   map_preimage _ _ _
