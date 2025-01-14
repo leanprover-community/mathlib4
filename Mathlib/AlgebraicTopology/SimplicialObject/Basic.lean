@@ -264,6 +264,7 @@ macro_rules
       (Opposite.op ⟨SimplexCategory.mk $m, $p⟩))
 
 open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Delaborator for the notation `X _[m]ₙ`. -/
 @[app_delab Prefunctor.obj]
 def delabMkNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do
@@ -737,6 +738,7 @@ macro_rules
       ⟨SimplexCategory.mk $m, $p⟩)
 
 open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Delaborator for the notation `X _[m]ₙ`. -/
 @[app_delab Prefunctor.obj]
 def delabMkNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation do

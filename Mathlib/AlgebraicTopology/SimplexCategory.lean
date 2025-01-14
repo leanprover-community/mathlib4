@@ -778,7 +778,7 @@ macro_rules
     `((⟨SimplexCategory.mk $m, $p⟩ : SimplexCategory.Truncated $n))
 
 open Lean PrettyPrinter.Delaborator SubExpr in
-/-- Delaborator for the `[m]ₙ` notation. -/
+/-- Delaborator for the notation `[m]ₙ`. -/
 @[app_delab FullSubcategory.mk]
 def delabMkNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 4 do
