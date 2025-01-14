@@ -212,20 +212,14 @@ theorem covBy_iff {K L : A} :
 /-- Dual variant of `SetLike.covBy_iff` -/
 theorem covBy_iff' {K L : A} :
     K ⋖ L ↔ K < L ∧ ∀ H g, K ≤ H → H ≤ L → g ∉ H → g ∈ L → H = K := by
-  apply and_congr_right
-  intro _
-  apply forall_congr'
-  intro H
-  rw [imp_not_comm]
-  rw [lt_iff_le_not_le, SetLike.not_le_iff_exists, lt_iff_le_not_le, not_and, not_not,
+  refine and_congr_right fun _ ↦ forall_congr' fun H ↦ ?_
+  rw [imp_not_comm, lt_iff_le_not_le, SetLike.not_le_iff_exists, lt_iff_le_not_le, not_and, not_not,
     and_comm (a := _ ≤ _), and_imp, exists_imp]
-  apply forall_congr'
-  intro b
+  refine forall_congr' fun b ↦ ?_
   simp only [← and_imp]
   rw [and_comm (b := K ≤ _), and_comm, and_comm (b:= _ ∈ _), and_assoc]
-  apply imp_congr_right
-  intro h
-  simp only [le_antisymm_iff, h.1, and_true]
+  refine imp_congr_right fun ⟨h, _⟩ ↦ ?_
+  simp only [le_antisymm_iff, h, and_true]
 
 end SetLike
 
