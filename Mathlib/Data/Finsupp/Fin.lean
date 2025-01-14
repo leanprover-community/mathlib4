@@ -64,15 +64,11 @@ theorem removeNth_apply : removeNth p s i = s (p.succAbove i) := rfl
 theorem removeNth_zero : removeNth 0 s = tail s := rfl
 
 @[simp]
-theorem removeNth_last : removeNth (Fin.last n) s = init s := by
-  ext
-  simp only [removeNth, Fin.removeNth_last, equivFunOnFinite_symm_apply_toFun, init]
+theorem removeNth_last : removeNth (Fin.last n) s = init s := by simp [removeNth, init]
 
 /-- Updating the `i`-th entry does not affect removing the `i`-th entry. -/
 @[simp]
-theorem removeNth_update : removeNth p (update s p y) = removeNth p s := by
-  simp only [removeNth, update, coe_mk, EmbeddingLike.apply_eq_iff_eq]
-  convert Fin.removeNth_update p y (⇑s)
+theorem removeNth_update : removeNth p (update s p y) = removeNth p s := by simp [removeNth]
 
 @[simp]
 theorem tail_apply : tail s i = s i.succ := rfl
@@ -87,26 +83,14 @@ theorem tail_update_succ : tail (update s i.succ y) = update (tail s) i y := by 
 theorem init_apply : init s i = s i.castSucc := rfl
 
 @[simp]
-theorem init_update_last : init (update s (Fin.last n) y) = init s := by
-  simp only [init, update, coe_mk, EmbeddingLike.apply_eq_iff_eq]
-  convert Fin.init_update_last (⇑s) y
+theorem init_update_last : init (update s (Fin.last n) y) = init s := by simp [init]
 
 @[simp]
 theorem init_update_castSucc : init (update s i.castSucc y) = update (init s) i y := by
-  ext a
-  have : ⇑(equivFunOnFinite.symm (Fin.init ⇑s)) = Fin.init ⇑s := rfl
-  simp only [init, update, this, coe_mk, equivFunOnFinite_symm_apply_toFun]
-  have : Fin.init (Function.update (⇑s) i.castSucc y) a = Function.update (Fin.init ⇑s) i y a := by
-    simp only [Fin.init_update_castSucc]
-  convert this
+  ext; simp [init]
 
 theorem tail_init_eq_init_tail (s : Fin (n + 2) →₀ M) : tail (init s) = init (tail s) := by
-  simp only [tail, init, EmbeddingLike.apply_eq_iff_eq]
-  have : (⇑(equivFunOnFinite.symm (Fin.init ⇑s)) : Fin (n + 1) → M) = Fin.init ⇑s := rfl
-  rw [this]
-  have : (⇑(equivFunOnFinite.symm (Fin.tail ⇑s)) : Fin (n + 1) → M) = Fin.tail ⇑s := rfl
-  rw [this]
-  convert Fin.tail_init_eq_init_tail (⇑s)
+  simp only [tail, init, coe_equivFunOnFinite_symm, Fin.tail_init_eq_init_tail]
 
 end Remove
 
@@ -151,8 +135,7 @@ theorem cons_tail : cons (t 0) (tail t) = t := by
 
 @[simp]
 theorem init_snoc : init (snoc s y) = s := by
-  have : (⇑(equivFunOnFinite.symm (Fin.snoc (⇑s) y)) : Fin (n + 1) → M) = Fin.snoc ⇑s y := rfl
-  simp only [init, snoc, this, Fin.init_snoc, equivFunOnFinite_symm_coe]
+  simp only [init, snoc, coe_equivFunOnFinite_symm, Fin.init_snoc, equivFunOnFinite_symm_coe]
 
 @[simp]
 theorem snoc_init_self : snoc (init t) (t (Fin.last n)) = t := by
@@ -161,18 +144,12 @@ theorem snoc_init_self : snoc (init t) (t (Fin.last n)) = t := by
 
 @[simp]
 theorem insertNth_removeNth : insertNth p y (removeNth p t) = update t p y := by
-  have : ⇑(equivFunOnFinite.symm (p.removeNth ⇑t)) = p.removeNth ⇑t := rfl
-  simp only [insertNth, removeNth, this, Fin.insertNth_removeNth, update]
-  have : Function.update (⇑t) p y = ⇑(update t p y) := by
-    simp only [update, coe_mk]
-    convert rfl
-  rw [this]
-  simp only [equivFunOnFinite_symm_coe, update]
+  simp [insertNth, removeNth, coe_equivFunOnFinite_symm, Fin.insertNth_removeNth, update]
+  have : Function.update (⇑t) p y = ⇑(update t p y) := by simp only [coe_update]
+  rw [this, equivFunOnFinite_symm_coe, update]
 
 theorem insertNth_self_removeNth : insertNth p (t p) (removeNth p t) = t := by
-  have : ⇑(equivFunOnFinite.symm (p.removeNth ⇑t)) = p.removeNth ⇑t := rfl
-  simp only [insertNth, removeNth, this, Fin.insertNth_removeNth, Function.update_eq_self,
-    equivFunOnFinite_symm_coe]
+  simp [insertNth, removeNth]
 
 @[simp]
 theorem cons_zero_zero : cons 0 (0 : Fin n →₀ M) = 0 := by
