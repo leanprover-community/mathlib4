@@ -108,6 +108,42 @@ instance instMonoidHomClass : MonoidHomClass (ContinuousMonoidHom A B) A B where
 instance instContinuousMapClass : ContinuousMapClass (ContinuousMonoidHom A B) A B where
   map_continuous f := f.continuous_toFun
 
+section
+
+variable {A B : Type*} [Monoid A] [Monoid B] [TopologicalSpace A] [TopologicalSpace B]
+  {F : Type*} [FunLike F A B]
+
+/-- Turn an element of a type `F` satisfying `MonoidHomClass F A B` and `ContinuousMapClass F A B`
+into a`ContinuousMonoidHom`. This is declared as the default coercion from `F` to
+`ContinuousMonoidHom A B`. -/
+@[to_additive (attr := coe) "Turn an element of a type `F` satisfying
+`MonoidHomClass F A B` and `ContinuousMapClass F A B` into a`ContinuousMonoidHom`.
+This is declared as the default coercion from `F` to `ContinuousMonoidHom A B`."]
+def toContinuousMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
+    ContinuousMonoidHom A B :=
+  { MonoidHomClass.toMonoidHom f with }
+
+/--Any type satisfying `MonoidHomClass` and `ContinuousMapClass` can be cast into
+`ContinuousMnoidHom` via `ContinuousMonoidHom.toContinuousMonoidHom`.-/
+@[to_additive "Any type satisfying `AddMonoidHomClass` and `ContinuousMapClass` can be cast into
+`ContinuousAddMonoidHom` via `ContinuousAddMonoidHom.toContinuousAddMonoidHom`."]
+instance [MonoidHomClass F A B] [ContinuousMapClass F A B] : CoeTC F (ContinuousMonoidHom A B) :=
+  ⟨ContinuousMonoidHom.toContinuousMonoidHom⟩
+
+@[to_additive (attr := simp)]
+lemma coe_fun [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
+  ⇑(f : ContinuousMonoidHom A B) = f := rfl
+
+@[to_additive (attr := simp)]
+lemma coe_monoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
+  ((f : ContinuousMonoidHom A B) : A →* B) = f := rfl
+
+@[to_additive (attr := simp)]
+lemma coe_continuousMap [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
+  ((f : ContinuousMonoidHom A B) : C(A, B)) = f := rfl
+
+end
+
 @[to_additive (attr := ext)]
 theorem ext {f g : ContinuousMonoidHom A B} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
@@ -517,21 +553,6 @@ def mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y) : M ≃ₜ* N :=
 set_option linter.docPrime false in -- This is about `ContinuousMulEquiv.mk'`
 @[simp]
 lemma coe_mk' (f : M ≃ₜ N) (h : ∀ x y, f (x * y) = f x * f y)  : ⇑(mk' f h) = f := rfl
-
-variable {U V : Type*} [TopologicalSpace U] [TopologicalSpace V]
-    [Monoid U] [Monoid V]
-
-/--The coercion from `ContinuousMulEquiv` to `ContinuousMonoidHom` induced by `toMonoidHom`-/
-def toContinuousMonoidHom (f : U ≃ₜ* V) : ContinuousMonoidHom U V :=
-{ f.toMonoidHom with
-  continuous_toFun := f.continuous_toFun }
-
-lemma toContinuousMonoidHom_toMonoidHom (f : U ≃ₜ* V) : f.toContinuousMonoidHom = f.toMonoidHom :=
-  rfl
-
-lemma toContinuousMonoidHom_toContinuousMap (f : U ≃ₜ* V) :
-    f.toContinuousMonoidHom = toContinuousMap f :=
-  rfl
 
 end coe
 
