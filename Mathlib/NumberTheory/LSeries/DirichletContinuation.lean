@@ -38,7 +38,7 @@ All definitions and theorems are in the `DirichletCharacter` namespace.
   `completedLFunction χ s = N ^ (s - 1 / 2) * rootNumber χ * completedLFunction χ⁻¹ s`.
 -/
 
-open HurwitzZeta Complex Finset Classical ZMod Filter
+open HurwitzZeta Complex Finset ZMod Filter
 
 open scoped Real Topology
 
@@ -199,8 +199,9 @@ section gammaFactor
 omit [NeZero N] -- not required for these declarations
 
 /-- The Archimedean Gamma factor: `Gammaℝ s` if `χ` is even, and `Gammaℝ (s + 1)` otherwise. -/
-noncomputable def gammaFactor (χ : DirichletCharacter ℂ N) (s : ℂ) :=
-  if χ.Even then Gammaℝ s else Gammaℝ (s + 1)
+noncomputable def gammaFactor (χ : DirichletCharacter ℂ N) (s : ℂ) := by
+  classical
+  exact if χ.Even then Gammaℝ s else Gammaℝ (s + 1)
 
 lemma Even.gammaFactor_def {χ : DirichletCharacter ℂ N} (hχ : χ.Even) (s : ℂ) :
     gammaFactor χ s = Gammaℝ s := by
@@ -263,8 +264,9 @@ Global root number of `χ` (for `χ` primitive; junk otherwise). Defined as
 `gaussSum χ stdAddChar / I ^ a / N ^ (1 / 2)`, where `a = 0` if even, `a = 1` if odd. (The factor
 `1 / I ^ a` is the Archimedean root number.) This is a complex number of absolute value 1.
 -/
-noncomputable def rootNumber (χ : DirichletCharacter ℂ N) : ℂ :=
-  gaussSum χ stdAddChar / I ^ (if χ.Even then 0 else 1) / N ^ (1 / 2 : ℂ)
+noncomputable def rootNumber (χ : DirichletCharacter ℂ N) : ℂ := by
+  classical
+  exact gaussSum χ stdAddChar / I ^ (if χ.Even then 0 else 1) / N ^ (1 / 2 : ℂ)
 
 /-- The root number of the unique Dirichlet character modulo 1 is 1. -/
 lemma rootNumber_modOne (χ : DirichletCharacter ℂ 1) : rootNumber χ = 1 := by
@@ -277,6 +279,7 @@ namespace IsPrimitive
 /-- **Functional equation** for primitive Dirichlet L-functions. -/
 theorem completedLFunction_one_sub {χ : DirichletCharacter ℂ N} (hχ : IsPrimitive χ) (s : ℂ) :
     completedLFunction χ (1 - s) = N ^ (s - 1 / 2) * rootNumber χ * completedLFunction χ⁻¹ s := by
+  classical
   -- First handle special case of Riemann zeta
   rcases eq_or_ne N 1 with rfl | hN
   · simp only [completedLFunction_modOne_eq, completedRiemannZeta_one_sub, Nat.cast_one, one_cpow,
