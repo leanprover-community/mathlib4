@@ -33,6 +33,7 @@ instance : LinearOrderedCommGroupWithZero (MonoidHom.mrange v) where
 
 namespace Valuation.Integers
 
+open scoped Function in
 lemma wfDvdMonoid_iff_wellFounded_gt_on_v (hv : Integers v O) :
     WfDvdMonoid O ↔ WellFounded ((· > ·) on (v ∘ algebraMap O F)) := by
   refine ⟨fun _ ↦ wellFounded_dvdNotUnit.mono ?_, fun h ↦ ⟨h.mono ?_⟩⟩ <;>
