@@ -510,7 +510,7 @@ theorem isWF_iff_isPWO : s.IsWF ↔ s.IsPWO :=
   ⟨IsWF.isPWO, IsPWO.isWF⟩
 
 /--
-If `α` is a linear order with well-founded `<`, then the universe is a partially well-ordered set.
+If `α` is a linear order with well-founded `<`, then any set in it is a partially well-ordered set.
 Note this does not hold without the linearity assumption.
 -/
 lemma IsPWO.of_linearOrder [WellFoundedLT α] : s.IsPWO := IsWF.of_wellFoundedLT.isPWO
