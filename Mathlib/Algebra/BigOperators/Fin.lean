@@ -98,7 +98,7 @@ theorem prod_snoc [CommMonoid β] {n : ℕ} (x : β) (f : Fin n → β) :
 
 @[to_additive (attr := simp)]
 theorem prod_insertNth [CommMonoid β] {n : ℕ} (x : β) (f : Fin n → β) (p : Fin (n + 1)) :
-    ∏ i : Fin (n + 1), insertNth p x f i = x * (∏ i : Fin n, f i) := by
+    ∏ i, insertNth p x f i = x * ∏ i, f i := by
   simp [prod_univ_succAbove (insertNth p x f) p]
 
 @[to_additive sum_univ_one]
