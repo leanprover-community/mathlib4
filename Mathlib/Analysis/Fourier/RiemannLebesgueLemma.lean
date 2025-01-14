@@ -116,7 +116,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
     suffices A = Metric.closedBall (0 : V) (R + 1) by
       rw [this]
       exact Metric.isClosed_ball.measurableSet
-    simp_rw [Metric.closedBall, dist_eq_norm, sub_zero]
+    simp_rw [A, Metric.closedBall, dist_eq_norm, sub_zero]
   obtain ⟨B, hB_pos, hB_vol⟩ : ∃ B : ℝ≥0, 0 < B ∧ volume A ≤ B := by
     have hc : IsCompact A := by
       simpa only [Metric.closedBall, dist_eq_norm, sub_zero] using isCompact_closedBall (0 : V) _

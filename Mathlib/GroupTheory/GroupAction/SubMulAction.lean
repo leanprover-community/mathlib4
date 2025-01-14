@@ -154,7 +154,15 @@ end OfTower
 
 end SetLike
 
+/-- A SubAddAction is a set which is closed under scalar multiplication. -/
+structure SubAddAction (R : Type u) (M : Type v) [VAdd R M] : Type v where
+  /-- The underlying set of a `SubAddAction`. -/
+  carrier : Set M
+  /-- The carrier set is closed under scalar multiplication. -/
+  vadd_mem' : ∀ (c : R) {x : M}, x ∈ carrier → c +ᵥ x ∈ carrier
+
 /-- A SubMulAction is a set which is closed under scalar multiplication. -/
+@[to_additive]
 structure SubMulAction (R : Type u) (M : Type v) [SMul R M] : Type v where
   /-- The underlying set of a `SubMulAction`. -/
   carrier : Set M
@@ -181,7 +189,7 @@ instance : SetLike (SubMulAction R M) M :=
 @[to_additive]
 instance : SMulMemClass (SubMulAction R M) R M where smul_mem := smul_mem' _
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem mem_carrier {p : SubMulAction R M} {x : M} : x ∈ p.carrier ↔ x ∈ (p : Set M) :=
   Iff.rfl
 
@@ -197,7 +205,7 @@ protected def copy (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : SubMulAc
   carrier := s
   smul_mem' := hs.symm ▸ p.smul_mem'
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem coe_copy (p : SubMulAction R M) (s : Set M) (hs : s = ↑p) : (p.copy s hs : Set M) = s :=
   rfl
 
@@ -234,7 +242,7 @@ instance : SMul R p where smul c x := ⟨c • x.1, smul_mem _ c x.2⟩
 
 variable {p}
 
-@[to_additive (attr := norm_cast), simp]
+@[to_additive (attr := norm_cast, simp)]
 theorem val_smul (r : R) (x : p) : (↑(r • x) : M) = r • (x : M) :=
   rfl
 
@@ -248,7 +256,7 @@ protected def subtype : p →[R] M where
   toFun := Subtype.val
   map_smul' := by simp [val_smul]
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem subtype_apply (x : p) : p.subtype x = x :=
   rfl
 
@@ -274,7 +282,7 @@ instance (priority := 75) toMulAction : MulAction R S' :=
 protected def subtype : S' →[R] M where
   toFun := Subtype.val; map_smul' _ _ := rfl
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 protected theorem coeSubtype : (SMulMemClass.subtype S' : S' → M) = Subtype.val :=
   rfl
 
@@ -306,11 +314,11 @@ instance isScalarTower' {S' : Type*} [SMul S' R] [SMul S' S] [SMul S' M] [IsScal
     [IsScalarTower S' S M] : IsScalarTower S' S p where
   smul_assoc s r x := Subtype.ext <| smul_assoc s r (x : M)
 
-@[to_additive (attr := norm_cast), simp]
+@[to_additive (attr := norm_cast, simp)]
 theorem val_smul_of_tower (s : S) (x : p) : ((s • x : p) : M) = s • (x : M) :=
   rfl
 
-@[to_additive, simp]
+@[to_additive (attr := simp)]
 theorem smul_mem_iff' {G} [Group G] [SMul G R] [MulAction G M] [IsScalarTower G R M] (g : G)
     {x : M} : g • x ∈ p ↔ x ∈ p :=
   ⟨fun h => inv_smul_smul g x ▸ p.smul_of_tower_mem g⁻¹ h, p.smul_of_tower_mem g⟩
@@ -386,7 +394,7 @@ lemma orbitRel_of_subMul (p : SubMulAction R M) :
 @[to_additive]
 theorem stabilizer_of_subMul {p : SubMulAction R M} (m : p) :
     MulAction.stabilizer R m = MulAction.stabilizer R (m : M) := by
-  rw [← Subgroup.toSubmonoid_eq]
+  rw [← Subgroup.toSubmonoid_inj]
   exact stabilizer_of_subMul.submonoid m
 
 end MulActionGroup
@@ -481,3 +489,26 @@ lemma inclusion_injective (s : SubMulAction M α) :
   Subtype.val_injective
 
 end SubMulAction
+
+namespace Units
+
+variable (R M : Type*) [Monoid R] [AddCommMonoid M] [DistribMulAction R M]
+
+/-- The non-zero elements of `M` are invariant under the action by the units of `R`. -/
+def nonZeroSubMul : SubMulAction Rˣ M where
+  carrier := { x : M | x ≠ 0 }
+  smul_mem' := by simp [Units.smul_def]
+
+instance : MulAction Rˣ { x : M // x ≠ 0 } :=
+  SubMulAction.mulAction' (nonZeroSubMul R M)
+
+@[simp]
+lemma smul_coe (a : Rˣ) (x : { x : M // x ≠ 0 }) :
+    (a • x).val = a • x.val :=
+  rfl
+
+lemma orbitRel_nonZero_iff (x y : { v : M // v ≠ 0 }) :
+    MulAction.orbitRel Rˣ { v // v ≠ 0 } x y ↔ MulAction.orbitRel Rˣ M x y :=
+  ⟨by rintro ⟨a, rfl⟩; exact ⟨a, by simp⟩, by intro ⟨a, ha⟩; exact ⟨a, by ext; simpa⟩⟩
+
+end Units

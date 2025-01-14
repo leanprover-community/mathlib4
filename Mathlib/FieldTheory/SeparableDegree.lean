@@ -7,7 +7,8 @@ import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.NormalClosure
-import Mathlib.RingTheory.AlgebraicIndependent
+import Mathlib.RingTheory.AlgebraicIndependent.Adjoin
+import Mathlib.RingTheory.AlgebraicIndependent.TranscendenceBasis
 import Mathlib.RingTheory.Polynomial.SeparableDegree
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
 
@@ -591,7 +592,7 @@ theorem eq_X_pow_char_pow_sub_C_pow_of_natSepDegree_eq_one (q : ℕ) [ExpChar F 
   have hD := (h ▸ natSepDegree_le_of_dvd p f hf hm.ne_zero).antisymm <|
     Nat.pos_of_ne_zero <| (natSepDegree_ne_zero_iff _).2 hI.natDegree_pos.ne'
   obtain ⟨n, y, H, hp⟩ := hM.eq_X_pow_char_pow_sub_C_of_natSepDegree_eq_one_of_irreducible q hI hD
-  have hF := multiplicity_finite_of_degree_pos_of_monic (degree_pos_of_irreducible hI) hM hm.ne_zero
+  have hF := finiteMultiplicity_of_degree_pos_of_monic (degree_pos_of_irreducible hI) hM hm.ne_zero
   classical
   have hne := (multiplicity_pos_of_dvd hf).ne'
   refine ⟨_, n, y, hne, H, ?_⟩

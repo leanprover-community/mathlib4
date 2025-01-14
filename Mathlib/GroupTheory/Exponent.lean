@@ -439,7 +439,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
     nth_rw 1 [← pow_one p]
     have : 1 = (Nat.factorization (orderOf (t ^ p ^ k))) p + 1 := by
      rw [hpk', Nat.factorization_div hpk]
-     simp [hp]
+     simp [k, hp]
     rw [this]
     -- Porting note: convert made to_additive complain
     apply Nat.pow_succ_factorization_not_dvd (hG.orderOf_pos <| t ^ p ^ k).ne' hp
