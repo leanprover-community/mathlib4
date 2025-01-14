@@ -128,7 +128,7 @@ lemma hasDerivAt_Gamma_one_half : HasDerivAt Gamma (-√π * (γ + 2 * log 2)) (
   _ = √π * (-2 * γ + deriv (fun s : ℝ ↦ 2 ^ (1 - 2 * s)) (1 / 2) + γ) := by
     congr 3
     change deriv (Gamma ∘ fun s ↦ 2 * s) _ = _
-    rw [deriv.comp, deriv_const_mul, mul_one_div, div_self two_ne_zero, deriv_id''] <;>
+    rw [deriv_comp, deriv_const_mul, mul_one_div, div_self two_ne_zero, deriv_id''] <;>
     dsimp only
     · rw [mul_one, mul_comm, hasDerivAt_Gamma_one.deriv, mul_neg, neg_mul]
     · fun_prop

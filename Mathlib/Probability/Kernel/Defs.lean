@@ -147,7 +147,7 @@ theorem eq_zero_or_isMarkovKernel
 /-- A constant `C : ℝ≥0∞` such that `C < ∞` (`ProbabilityTheory.IsFiniteKernel.bound_lt_top κ`) and
 for all `a : α` and `s : Set β`, `κ a s ≤ C` (`ProbabilityTheory.Kernel.measure_le_bound κ a s`).
 
-Porting note (#11215): TODO: does it make sense to
+Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: does it make sense to
 -- make `ProbabilityTheory.IsFiniteKernel.bound` the least possible bound?
 -- Should it be an `NNReal` number? -/
 noncomputable def IsFiniteKernel.bound (κ : Kernel α β) [h : IsFiniteKernel κ] : ℝ≥0∞ :=
@@ -165,7 +165,7 @@ theorem Kernel.measure_le_bound (κ : Kernel α β) [h : IsFiniteKernel κ] (a :
     κ a s ≤ IsFiniteKernel.bound κ :=
   (measure_mono (Set.subset_univ s)).trans (h.exists_univ_le.choose_spec.2 a)
 
-instance isFiniteKernel_zero (α β : Type*) {mα : MeasurableSpace α} {mβ : MeasurableSpace β} :
+instance isFiniteKernel_zero (α β : Type*) {_ : MeasurableSpace α} {_ : MeasurableSpace β} :
     IsFiniteKernel (0 : Kernel α β) :=
   ⟨⟨0, ENNReal.coe_lt_top, fun _ => by
       simp only [Kernel.zero_apply, Measure.coe_zero, Pi.zero_apply, le_zero_iff]⟩⟩

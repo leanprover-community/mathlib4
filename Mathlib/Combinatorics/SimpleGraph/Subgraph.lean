@@ -118,6 +118,13 @@ protected theorem Adj.snd_mem {H : G.Subgraph} {u v : V} (h : H.Adj u v) : v ∈
 protected theorem Adj.ne {H : G.Subgraph} {u v : V} (h : H.Adj u v) : u ≠ v :=
   h.adj_sub.ne
 
+theorem adj_congr_of_sym2 {H : G.Subgraph} {u v w x : V} (h2 : s(u, v) = s(w, x)) :
+    H.Adj u v ↔ H.Adj w x := by
+  simp only [Sym2.eq, Sym2.rel_iff', Prod.mk.injEq, Prod.swap_prod_mk] at h2
+  cases' h2 with hl hr
+  · rw [hl.1, hl.2]
+  · rw [hr.1, hr.2, Subgraph.adj_comm]
+
 /-- Coercion from `G' : Subgraph G` to a `SimpleGraph G'.verts`. -/
 @[simps]
 protected def coe (G' : Subgraph G) : SimpleGraph G'.verts where
@@ -163,6 +170,9 @@ lemma spanningCoe_le (G' : G.Subgraph) : G'.spanningCoe ≤ G := fun _ _ ↦ G'.
 
 theorem spanningCoe_inj : G₁.spanningCoe = G₂.spanningCoe ↔ G₁.Adj = G₂.Adj := by
   simp [Subgraph.spanningCoe]
+
+lemma mem_of_adj_spanningCoe {v w : V} {s : Set V} (G : SimpleGraph s)
+    (hadj : G.spanningCoe.Adj v w) : v ∈ s := by aesop
 
 /-- `spanningCoe` is equivalent to `coe` for a subgraph that `IsSpanning`. -/
 @[simps]
@@ -265,8 +275,8 @@ theorem copy_eq (G' : Subgraph G) (V'' : Set V) (hV : V'' = G'.verts)
   Subgraph.ext hV hadj
 
 /-- The union of two subgraphs. -/
-instance : Sup G.Subgraph where
-  sup G₁ G₂ :=
+instance : Max G.Subgraph where
+  max G₁ G₂ :=
     { verts := G₁.verts ∪ G₂.verts
       Adj := G₁.Adj ⊔ G₂.Adj
       adj_sub := fun hab => Or.elim hab (fun h => G₁.adj_sub h) fun h => G₂.adj_sub h
@@ -274,8 +284,8 @@ instance : Sup G.Subgraph where
       symm := fun _ _ => Or.imp G₁.adj_symm G₂.adj_symm }
 
 /-- The intersection of two subgraphs. -/
-instance : Inf G.Subgraph where
-  inf G₁ G₂ :=
+instance : Min G.Subgraph where
+  min G₁ G₂ :=
     { verts := G₁.verts ∩ G₂.verts
       Adj := G₁.Adj ⊓ G₂.Adj
       adj_sub := fun hab => G₁.adj_sub hab.1
@@ -434,20 +444,20 @@ def completelyDistribLatticeMinimalAxioms : CompletelyDistribLattice.MinimalAxio
     inf := (· ⊓ ·)
     top := ⊤
     bot := ⊥
-    le_top := fun G' => ⟨Set.subset_univ _, fun a b => G'.adj_sub⟩
-    bot_le := fun G' => ⟨Set.empty_subset _, fun a b => False.elim⟩
+    le_top := fun G' => ⟨Set.subset_univ _, fun _ _ => G'.adj_sub⟩
+    bot_le := fun _ => ⟨Set.empty_subset _, fun _ _ => False.elim⟩
     sSup := sSup
     -- Porting note: needed `apply` here to modify elaboration; previously the term itself was fine.
-    le_sSup := fun s G' hG' => ⟨by apply Set.subset_iUnion₂ G' hG', fun a b hab => ⟨G', hG', hab⟩⟩
+    le_sSup := fun s G' hG' => ⟨by apply Set.subset_iUnion₂ G' hG', fun _ _ hab => ⟨G', hG', hab⟩⟩
     sSup_le := fun s G' hG' =>
-      ⟨Set.iUnion₂_subset fun H hH => (hG' _ hH).1, by
+      ⟨Set.iUnion₂_subset fun _ hH => (hG' _ hH).1, by
         rintro a b ⟨H, hH, hab⟩
         exact (hG' _ hH).2 hab⟩
     sInf := sInf
-    sInf_le := fun s G' hG' => ⟨Set.iInter₂_subset G' hG', fun a b hab => hab.1 hG'⟩
-    le_sInf := fun s G' hG' =>
-      ⟨Set.subset_iInter₂ fun H hH => (hG' _ hH).1, fun a b hab =>
-        ⟨fun H hH => (hG' _ hH).2 hab, G'.adj_sub hab⟩⟩
+    sInf_le := fun _ G' hG' => ⟨Set.iInter₂_subset G' hG', fun _ _ hab => hab.1 hG'⟩
+    le_sInf := fun _ G' hG' =>
+      ⟨Set.subset_iInter₂ fun _ hH => (hG' _ hH).1, fun _ _ hab =>
+        ⟨fun _ hH => (hG' _ hH).2 hab, G'.adj_sub hab⟩⟩
     iInf_iSup_eq := fun f => Subgraph.ext (by simpa using iInf_iSup_eq)
       (by ext; simp [Classical.skolem]) }
 
@@ -635,7 +645,7 @@ theorem comap_monotone {G' : SimpleGraph W} (f : G →g G') : Monotone (Subgraph
     simp only [comap_verts, Set.mem_preimage]
     apply h.1
   · intro v w
-    simp (config := { contextual := true }) only [comap_adj, and_imp, true_and]
+    simp +contextual only [comap_adj, and_imp, true_and]
     intro
     apply h.2
 
@@ -1016,27 +1026,27 @@ theorem coe_deleteEdges_eq (s : Set (Sym2 V)) :
   simp
 
 theorem deleteEdges_le : G'.deleteEdges s ≤ G' := by
-  constructor <;> simp (config := { contextual := true }) [subset_rfl]
+  constructor <;> simp +contextual [subset_rfl]
 
 theorem deleteEdges_le_of_le {s s' : Set (Sym2 V)} (h : s ⊆ s') :
     G'.deleteEdges s' ≤ G'.deleteEdges s := by
-  constructor <;> simp (config := { contextual := true }) only [deleteEdges_verts, deleteEdges_adj,
+  constructor <;> simp +contextual only [deleteEdges_verts, deleteEdges_adj,
     true_and, and_imp, subset_rfl]
   exact fun _ _ _ hs' hs ↦ hs' (h hs)
 
 @[simp]
 theorem deleteEdges_inter_edgeSet_left_eq :
     G'.deleteEdges (G'.edgeSet ∩ s) = G'.deleteEdges s := by
-  ext <;> simp (config := { contextual := true }) [imp_false]
+  ext <;> simp +contextual [imp_false]
 
 @[simp]
 theorem deleteEdges_inter_edgeSet_right_eq :
     G'.deleteEdges (s ∩ G'.edgeSet) = G'.deleteEdges s := by
-  ext <;> simp (config := { contextual := true }) [imp_false]
+  ext <;> simp +contextual [imp_false]
 
 theorem coe_deleteEdges_le : (G'.deleteEdges s).coe ≤ (G'.coe : SimpleGraph G'.verts) := by
   intro v w
-  simp (config := { contextual := true })
+  simp +contextual
 
 theorem spanningCoe_deleteEdges_le (G' : G.Subgraph) (s : Set (Sym2 V)) :
     (G'.deleteEdges s).spanningCoe ≤ G'.spanningCoe :=
@@ -1073,15 +1083,15 @@ variable {G' G'' : G.Subgraph} {s s' : Set V}
 theorem induce_mono (hg : G' ≤ G'') (hs : s ⊆ s') : G'.induce s ≤ G''.induce s' := by
   constructor
   · simp [hs]
-  · simp (config := { contextual := true }) only [induce_adj, and_imp]
+  · simp +contextual only [induce_adj, and_imp]
     intro v w hv hw ha
     exact ⟨hs hv, hs hw, hg.2 ha⟩
 
-@[mono]
+@[gcongr, mono]
 theorem induce_mono_left (hg : G' ≤ G'') : G'.induce s ≤ G''.induce s :=
   induce_mono hg subset_rfl
 
-@[mono]
+@[gcongr, mono]
 theorem induce_mono_right (hs : s ⊆ s') : G'.induce s ≤ G'.induce s' :=
   induce_mono le_rfl hs
 
@@ -1094,7 +1104,7 @@ theorem induce_self_verts : G'.induce G'.verts = G' := by
   ext
   · simp
   · constructor <;>
-      simp (config := { contextual := true }) only [induce_adj, imp_true_iff, and_true]
+      simp +contextual only [induce_adj, imp_true_iff, and_true]
     exact fun ha ↦ ⟨G'.edge_vert ha, G'.edge_vert ha.symm⟩
 
 lemma le_induce_top_verts : G' ≤ (⊤ : G.Subgraph).induce G'.verts :=
@@ -1115,7 +1125,7 @@ lemma le_induce_union_right : G'.induce s' ≤ G'.induce (s ∪ s') := by
 
 theorem singletonSubgraph_eq_induce {v : V} :
     G.singletonSubgraph v = (⊤ : G.Subgraph).induce {v} := by
-  ext <;> simp (config := { contextual := true }) [-Set.bot_eq_empty, Prop.bot_eq_false]
+  ext <;> simp +contextual [-Set.bot_eq_empty, Prop.bot_eq_false]
 
 theorem subgraphOfAdj_eq_induce {v w : V} (hvw : G.Adj v w) :
     G.subgraphOfAdj hvw = (⊤ : G.Subgraph).induce {v, w} := by
@@ -1150,7 +1160,7 @@ theorem deleteVerts_adj {u v : V} :
 @[simp]
 theorem deleteVerts_deleteVerts (s s' : Set V) :
     (G'.deleteVerts s).deleteVerts s' = G'.deleteVerts (s ∪ s') := by
-  ext <;> simp (config := { contextual := true }) [not_or, and_assoc]
+  ext <;> simp +contextual [not_or, and_assoc]
 
 @[simp]
 theorem deleteVerts_empty : G'.deleteVerts ∅ = G' := by
@@ -1159,23 +1169,23 @@ theorem deleteVerts_empty : G'.deleteVerts ∅ = G' := by
 theorem deleteVerts_le : G'.deleteVerts s ≤ G' := by
   constructor <;> simp [Set.diff_subset]
 
-@[mono]
+@[gcongr, mono]
 theorem deleteVerts_mono {G' G'' : G.Subgraph} (h : G' ≤ G'') :
     G'.deleteVerts s ≤ G''.deleteVerts s :=
   induce_mono h (Set.diff_subset_diff_left h.1)
 
-@[mono]
+@[gcongr, mono]
 theorem deleteVerts_anti {s s' : Set V} (h : s ⊆ s') : G'.deleteVerts s' ≤ G'.deleteVerts s :=
   induce_mono (le_refl _) (Set.diff_subset_diff_right h)
 
 @[simp]
 theorem deleteVerts_inter_verts_left_eq : G'.deleteVerts (G'.verts ∩ s) = G'.deleteVerts s := by
-  ext <;> simp (config := { contextual := true }) [imp_false]
+  ext <;> simp +contextual [imp_false]
 
 @[simp]
 theorem deleteVerts_inter_verts_set_right_eq :
     G'.deleteVerts (s ∩ G'.verts) = G'.deleteVerts s := by
-  ext <;> simp (config := { contextual := true }) [imp_false]
+  ext <;> simp +contextual [imp_false]
 
 end DeleteVerts
 

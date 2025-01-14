@@ -100,9 +100,12 @@ instance [SFinite μ] [NeZero μ] : IsProbabilityMeasure μ.toFinite := by
 lemma absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] : μ ≪ μ.toFinite :=
   Measure.ae_le_iff_absolutelyContinuous.mp ae_toFinite.ge
 
-lemma sFiniteSeq_absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] (n : ℕ) :
-    sFiniteSeq μ n ≪ μ.toFinite :=
-  (sFiniteSeq_le μ n).absolutelyContinuous.trans (absolutelyContinuous_toFinite μ)
+lemma sfiniteSeq_absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] (n : ℕ) :
+    sfiniteSeq μ n ≪ μ.toFinite :=
+  (sfiniteSeq_le μ n).absolutelyContinuous.trans (absolutelyContinuous_toFinite μ)
+
+@[deprecated (since := "2024-10-11")]
+alias sFiniteSeq_absolutelyContinuous_toFinite := sfiniteSeq_absolutelyContinuous_toFinite
 
 lemma toFinite_absolutelyContinuous (μ : Measure α) [SFinite μ] : μ.toFinite ≪ μ :=
   Measure.ae_le_iff_absolutelyContinuous.mp ae_toFinite.le
@@ -114,7 +117,7 @@ noncomputable def Measure.densityToFinite (μ : Measure α) [SFinite μ] (a : α
   μ.rnDeriv μ.toFinite a
 
 set_option linter.deprecated false in
-@[deprecated (since := "2024-10-04")]
+@[deprecated "No deprecation message was provided." (since := "2024-10-04")]
 lemma densityToFinite_def (μ : Measure α) [SFinite μ] :
     μ.densityToFinite = μ.rnDeriv μ.toFinite :=
   rfl

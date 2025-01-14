@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémi Bottinelli
 -/
 import Mathlib.CategoryTheory.Groupoid
-import Mathlib.CategoryTheory.PathCategory
+import Mathlib.CategoryTheory.PathCategory.Basic
 
 /-!
 # Free groupoid on a quiver

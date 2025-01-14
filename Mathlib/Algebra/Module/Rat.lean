@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Field.Rat
 import Mathlib.Algebra.Order.Field.Rat
 

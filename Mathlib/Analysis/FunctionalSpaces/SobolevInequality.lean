@@ -334,13 +334,16 @@ theorem lintegral_pow_le_pow_lintegral_fderiv_aux [Fintype ι]
     _ ≤ ∫⁻ xᵢ in Iic (x i), ‖deriv (u ∘ update x i) xᵢ‖₊ := by
         apply le_trans (by simp) (HasCompactSupport.ennnorm_le_lintegral_Ici_deriv _ _ _)
         · exact hu.comp (by convert contDiff_update 1 x i)
-        · exact h2u.comp_closedEmbedding (closedEmbedding_update x i)
+        · exact h2u.comp_isClosedEmbedding (isClosedEmbedding_update x i)
     _ ≤ ∫⁻ xᵢ, (‖fderiv ℝ u (update x i xᵢ)‖₊ : ℝ≥0∞) := ?_
-  gcongr with y; swap
+  gcongr
   · exact Measure.restrict_le_self
+  intro y
+  dsimp
+  gcongr
   -- bound the derivative which appears
   calc ‖deriv (u ∘ update x i) y‖₊ = ‖fderiv ℝ u (update x i y) (deriv (update x i) y)‖₊ := by
-        rw [fderiv.comp_deriv _ (hu.differentiable le_rfl).differentiableAt
+        rw [fderiv_comp_deriv _ (hu.differentiable le_rfl).differentiableAt
           (hasDerivAt_update x i y).differentiableAt]
     _ ≤ ‖fderiv ℝ u (update x i y)‖₊ * ‖deriv (update x i) y‖₊ :=
         ContinuousLinearMap.le_opNNNorm ..
@@ -392,7 +395,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {u : E → F}
   have h2c : μ = c • ((volume : Measure (ι → ℝ)).map e.symm) := isAddLeftInvariant_eq_smul ..
   have h3c : (c : ℝ≥0∞) ≠ 0 := by simp_rw [ne_eq, ENNReal.coe_eq_zero, hc.ne', not_false_eq_true]
   have h0C : C = (c * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p) * (c ^ p)⁻¹ := by
-    simp_rw [C, lintegralPowLePowLIntegralFDerivConst]
+    simp_rw [c, ι, C, e, lintegralPowLePowLIntegralFDerivConst]
   have hC : C * c ^ p = c * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊ ^ p := by
     rw [h0C, inv_mul_cancel_right₀ (NNReal.rpow_pos hc).ne']
   rw [h2c, ENNReal.smul_def, lintegral_smul_measure, lintegral_smul_measure]
@@ -409,7 +412,7 @@ theorem lintegral_pow_le_pow_lintegral_fderiv {u : E → F}
         lintegral_pow_le_pow_lintegral_fderiv_aux hp hv h2v
     _ = (∫⁻ y, ‖(fderiv ℝ u (e.symm y)).comp (fderiv ℝ e.symm y)‖₊) ^ p := by
         congr! with y
-        apply fderiv.comp _ (hu.differentiable le_rfl _)
+        apply fderiv_comp _ (hu.differentiable le_rfl _)
         exact e.symm.differentiableAt
     _ ≤ (∫⁻ y, ‖fderiv ℝ u (e.symm y)‖₊ * ‖(e.symm : (ι → ℝ) →L[ℝ] E)‖₊) ^ p := by
         gcongr with y
@@ -503,7 +506,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner  {u : E → F'}
       rw [← inv_inj, hp']
       field_simp [n', NNReal.conjExponent]
     · norm_cast
-      simp_rw [eLpNormLESNormFDerivOfEqInnerConst]
+      simp_rw [n', n, eLpNormLESNormFDerivOfEqInnerConst]
       field_simp
   -- the case `p > 1`
   let q := Real.conjExponent p
@@ -535,9 +538,9 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner  {u : E → F'}
   by_cases h3u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ = 0
   · rw [eLpNorm_nnreal_eq_lintegral h0p', h3u, ENNReal.zero_rpow_of_pos] <;> positivity
   have h4u : ∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ ≠ ∞ := by
-    refine lintegral_rpow_nnnorm_lt_top_of_eLpNorm'_lt_top (pos_iff_ne_zero.mpr h0p') ?_ |>.ne
-    dsimp only
-    rw [NNReal.val_eq_coe, ← eLpNorm_nnreal_eq_eLpNorm' h0p']
+    refine lintegral_rpow_nnnorm_lt_top_of_eLpNorm'_lt_top
+      ((NNReal.coe_pos.trans pos_iff_ne_zero).mpr h0p') ?_ |>.ne
+    rw [← eLpNorm_nnreal_eq_eLpNorm' h0p']
     exact hu.continuous.memℒp_of_hasCompactSupport (μ := μ) h2u |>.eLpNorm_lt_top
   have h5u : (∫⁻ x, ‖u x‖₊ ^ (p' : ℝ) ∂μ) ^ (1 / q) ≠ 0 :=
     ENNReal.rpow_pos (pos_iff_ne_zero.mpr h3u) h4u |>.ne'
@@ -567,7 +570,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq_inner  {u : E → F'}
         gcongr
         convert ENNReal.lintegral_mul_le_Lp_mul_Lq μ
           (.symm <| .conjExponent <| show 1 < (p : ℝ) from hp) ?_ ?_ using 5
-        · simp_rw [← ENNReal.rpow_mul, ← h3γ]
+        · simp [γ, n, q, ← ENNReal.rpow_mul, ← h3γ]
         · borelize F'
           fun_prop
         · fun_prop
@@ -629,7 +632,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
   have h4v : ∀ x, ‖fderiv ℝ v x‖ ≤ C₂ * ‖fderiv ℝ u x‖ := fun x ↦ calc
     ‖fderiv ℝ v x‖
       = ‖(fderiv ℝ e (u x)).comp (fderiv ℝ u x)‖ := by
-      rw [fderiv.comp x e.differentiableAt (hu.differentiable le_rfl x)]
+      rw [fderiv_comp x e.differentiableAt (hu.differentiable le_rfl x)]
     _ ≤ ‖fderiv ℝ e (u x)‖ * ‖fderiv ℝ u x‖ :=
       (fderiv ℝ e (u x)).opNorm_comp_le (fderiv ℝ u x)
     _ = C₂ * ‖fderiv ℝ u x‖ := by simp_rw [e.fderiv, C₂, coe_nnnorm]
@@ -643,7 +646,7 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_eq [FiniteDimensional ℝ F]
     _ ≤ C₁ * C * (C₂ * eLpNorm (fderiv ℝ u) p μ) := by
       gcongr; exact eLpNorm_le_nnreal_smul_eLpNorm_of_ae_le_mul (Eventually.of_forall h4v) p
     _ = SNormLESNormFDerivOfEqConst F μ p * eLpNorm (fderiv ℝ u) p μ := by
-      simp_rw [SNormLESNormFDerivOfEqConst]
+      simp_rw [C₂, C₁, C, e, SNormLESNormFDerivOfEqConst]
       push_cast
       simp_rw [mul_assoc]
 
@@ -680,7 +683,10 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
   have hp' : p'⁻¹ = p⁻¹ - (finrank ℝ E : ℝ)⁻¹ := by
     rw [inv_inv, NNReal.coe_sub]
     · simp
-    · gcongr
+    · #adaptation_note
+      /-- This should just be `gcongr`, but this is not working as of nightly-2024-11-20.
+      Possibly related to #19262 (since this proof fails at `with_reducible_and_instances`). -/
+      exact inv_anti₀ (by positivity) h2p.le
   have : (q : ℝ≥0∞) ≤ p' := by
     have H : (p' : ℝ)⁻¹ ≤ (↑q)⁻¹ := trans hp' hpq
     norm_cast at H ⊢
@@ -688,7 +694,10 @@ theorem eLpNorm_le_eLpNorm_fderiv_of_le [FiniteDimensional ℝ F]
     · dsimp
       have : 0 < p⁻¹ - (finrank ℝ E : ℝ≥0)⁻¹ := by
         simp only [tsub_pos_iff_lt]
-        gcongr
+        #adaptation_note
+        /-- This should just be `gcongr`, but this is not working as of nightly-2024-11-20.
+        Possibly related to #19262 (since this proof fails at `with_reducible_and_instances`). -/
+        exact inv_strictAnti₀ (by positivity) h2p
       positivity
     · positivity
   set t := (μ s).toNNReal ^ (1 / q - 1 / p' : ℝ)

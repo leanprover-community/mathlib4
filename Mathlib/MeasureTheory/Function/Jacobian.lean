@@ -242,6 +242,8 @@ theorem exists_closed_cover_approximatesLinearOn_of_hasFDerivWithinAt [SecondCou
 
 variable [MeasurableSpace E] [BorelSpace E] (μ : Measure E) [IsAddHaarMeasure μ]
 
+open scoped Function -- required for scoped `on` notation
+
 /-- Assume that a function `f` has a derivative at every point of a set `s`. Then one may
 partition `s` into countably many disjoint relatively measurable sets (i.e., intersections
 of `s` with measurable sets `t n`) on which `f` is well approximated by linear maps `A n`. -/
@@ -883,7 +885,7 @@ theorem addHaar_image_le_lintegral_abs_det_fderiv (hs : MeasurableSet s)
   have u_meas : ∀ n, MeasurableSet (u n) := by
     intro n
     apply MeasurableSet.disjointed fun i => ?_
-    exact measurable_spanningSets μ i
+    exact measurableSet_spanningSets μ i
   have A : s = ⋃ n, s ∩ u n := by
     rw [← inter_iUnion, iUnion_disjointed, iUnion_spanningSets, inter_univ]
   calc
@@ -1035,7 +1037,7 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image (hs : MeasurableSet s)
   have u_meas : ∀ n, MeasurableSet (u n) := by
     intro n
     apply MeasurableSet.disjointed fun i => ?_
-    exact measurable_spanningSets μ i
+    exact measurableSet_spanningSets μ i
   have A : s = ⋃ n, s ∩ u n := by
     rw [← inter_iUnion, iUnion_disjointed, iUnion_spanningSets, inter_univ]
   calc
@@ -1177,8 +1179,9 @@ theorem integral_image_eq_integral_abs_det_fderiv_smul (hs : MeasurableSet s)
   rw [NNReal.smul_def, Real.coe_toNNReal _ (abs_nonneg (f' x).det)]
 
 -- Porting note: move this to `Topology.Algebra.Module.Basic` when port is over
-theorem det_one_smulRight {𝕜 : Type*} [NormedField 𝕜] (v : 𝕜) :
+theorem det_one_smulRight {𝕜 : Type*} [CommRing 𝕜] [TopologicalSpace 𝕜] [ContinuousMul 𝕜] (v : 𝕜) :
     ((1 : 𝕜 →L[𝕜] 𝕜).smulRight v).det = v := by
+  nontriviality 𝕜
   have : (1 : 𝕜 →L[𝕜] 𝕜).smulRight v = v • (1 : 𝕜 →L[𝕜] 𝕜) := by
     ext1
     simp only [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply,

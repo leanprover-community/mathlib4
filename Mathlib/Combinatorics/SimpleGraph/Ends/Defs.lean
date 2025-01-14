@@ -17,7 +17,7 @@ assigning, to each finite set of vertices, the connected components of its compl
 
 universe u
 
-variable {V : Type u} (G : SimpleGraph V) (K L L' M : Set V)
+variable {V : Type u} (G : SimpleGraph V) (K L M : Set V)
 
 namespace SimpleGraph
 

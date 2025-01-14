@@ -76,7 +76,7 @@ theorem convex_iff_pointwise_add_subset :
     (by
       rintro hA a b ha hb hab w ⟨au, ⟨u, hu, rfl⟩, bv, ⟨v, hv, rfl⟩, rfl⟩
       exact hA hu hv ha hb hab)
-    fun h x hx y hy a b ha hb hab => (h ha hb hab) (Set.add_mem_add ⟨_, hx, rfl⟩ ⟨_, hy, rfl⟩)
+    fun h _ hx _ hy _ _ ha hb hab => (h ha hb hab) (Set.add_mem_add ⟨_, hx, rfl⟩ ⟨_, hy, rfl⟩)
 
 alias ⟨Convex.set_combo_subset, _⟩ := convex_iff_pointwise_add_subset
 
@@ -247,15 +247,17 @@ theorem convex_Ici (r : β) : Convex 𝕜 (Ici r) :=
 theorem convex_Icc (r s : β) : Convex 𝕜 (Icc r s) :=
   Ici_inter_Iic.subst ((convex_Ici r).inter <| convex_Iic s)
 
-theorem convex_halfspace_le {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | f w ≤ r } :=
+theorem convex_halfSpace_le {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | f w ≤ r } :=
   (convex_Iic r).is_linear_preimage h
+@[deprecated (since := "2024-11-12")] alias convex_halfspace_le := convex_halfSpace_le
 
-theorem convex_halfspace_ge {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | r ≤ f w } :=
+theorem convex_halfSpace_ge {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | r ≤ f w } :=
   (convex_Ici r).is_linear_preimage h
+@[deprecated (since := "2024-11-12")] alias convex_halfspace_ge := convex_halfSpace_ge
 
 theorem convex_hyperplane {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | f w = r } := by
   simp_rw [le_antisymm_iff]
-  exact (convex_halfspace_le h r).inter (convex_halfspace_ge h r)
+  exact (convex_halfSpace_le h r).inter (convex_halfSpace_ge h r)
 
 end OrderedAddCommMonoid
 
@@ -286,11 +288,13 @@ theorem convex_Ico (r s : β) : Convex 𝕜 (Ico r s) :=
 theorem convex_Ioc (r s : β) : Convex 𝕜 (Ioc r s) :=
   Ioi_inter_Iic.subst ((convex_Ioi r).inter <| convex_Iic s)
 
-theorem convex_halfspace_lt {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | f w < r } :=
+theorem convex_halfSpace_lt {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | f w < r } :=
   (convex_Iio r).is_linear_preimage h
+@[deprecated (since := "2024-11-12")] alias convex_halfspace_lt := convex_halfSpace_lt
 
-theorem convex_halfspace_gt {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | r < f w } :=
+theorem convex_halfSpace_gt {f : E → β} (h : IsLinearMap 𝕜 f) (r : β) : Convex 𝕜 { w | r < f w } :=
   (convex_Ioi r).is_linear_preimage h
+@[deprecated (since := "2024-11-12")] alias convex_halfspace_gt := convex_halfSpace_gt
 
 end OrderedCancelAddCommMonoid
 
@@ -605,7 +609,8 @@ theorem convex_stdSimplex : Convex 𝕜 (stdSimplex 𝕜 ι) := by
 lemma stdSimplex_of_isEmpty_index [IsEmpty ι] [Nontrivial 𝕜] : stdSimplex 𝕜 ι = ∅ :=
   eq_empty_of_forall_not_mem <| by rintro f ⟨-, hf⟩; simp at hf
 
-lemma stdSimplex_unique [Unique ι] : stdSimplex 𝕜 ι = {fun _ ↦ 1} := by
+lemma stdSimplex_unique [Nonempty ι] [Subsingleton ι] : stdSimplex 𝕜 ι = {fun _ ↦ 1} := by
+  cases nonempty_unique ι
   refine eq_singleton_iff_unique_mem.2 ⟨⟨fun _ ↦ zero_le_one, Fintype.sum_unique _⟩, ?_⟩
   rintro f ⟨-, hf⟩
   rw [Fintype.sum_unique] at hf
@@ -654,7 +659,7 @@ def stdSimplexEquivIcc : stdSimplex 𝕜 (Fin 2) ≃ Icc (0 : 𝕜) 1 where
       calc
         (1 : 𝕜) - f.1 0 = f.1 0 + f.1 1 - f.1 0 := by rw [← Fin.sum_univ_two f.1, f.2.2]
         _ = f.1 1 := add_sub_cancel_left _ _
-  right_inv x := Subtype.eq rfl
+  right_inv _ := Subtype.eq rfl
 
 end OrderedRing
 

@@ -17,8 +17,7 @@ This file contains the additive and multiplicative monoid instances on `Fin n`.
 See note [foundational algebra order theory].
 -/
 
-assert_not_exists OrderedCommMonoid
-assert_not_exists MonoidWithZero
+assert_not_exists OrderedCommMonoid MonoidWithZero
 
 open Nat
 
@@ -43,7 +42,7 @@ instance addCommMonoid (n : ℕ) [NeZero n] : AddCommMonoid (Fin n) where
 
 instance instAddMonoidWithOne (n) [NeZero n] : AddMonoidWithOne (Fin n) where
   __ := inferInstanceAs (AddCommMonoid (Fin n))
-  natCast n := Fin.ofNat'' n
+  natCast i := Fin.ofNat' n i
   natCast_zero := rfl
   natCast_succ _ := Fin.ext (add_mod _ _ _)
 

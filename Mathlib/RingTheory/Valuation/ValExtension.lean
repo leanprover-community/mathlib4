@@ -3,6 +3,7 @@ Copyright (c) 2024 Jiedong Jiang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Bichang Lei
 -/
+import Mathlib.RingTheory.SimpleRing.Basic
 import Mathlib.RingTheory.Valuation.Integers
 import Mathlib.Algebra.Group.Units.Hom
 
@@ -111,7 +112,7 @@ theorem ofComapInteger (h : vA.integer.comap (algebraMap K A) = vK.integer) :
 instance instAlgebraInteger : Algebra vR.integer vA.integer where
   smul r a := ⟨r • a,
     Algebra.smul_def r (a : A) ▸ mul_mem ((val_map_le_one_iff vR vA _).mpr r.2) a.2⟩
-  __ := (algebraMap R A).restrict vR.integer vA.integer
+  algebraMap := (algebraMap R A).restrict vR.integer vA.integer
     (by simp [Valuation.mem_integer_iff, val_map_le_one_iff vR vA])
   commutes' _ _ := Subtype.ext (Algebra.commutes _ _)
   smul_def' _ _ := Subtype.ext (Algebra.smul_def _ _)
@@ -143,15 +144,19 @@ theorem algebraMap_injective [IsValExtension vK vA] [Nontrivial A] :
   ext
   apply RingHom.injective (algebraMap K A) h
 
-instance instIsLocalRingHomValuationInteger {S ΓS: Type*} [CommRing S]
+@[instance]
+theorem instIsLocalHomValuationInteger {S ΓS: Type*} [CommRing S]
     [LinearOrderedCommGroupWithZero ΓS]
-    [Algebra R S] [IsLocalRingHom (algebraMap R S)] {vS : Valuation S ΓS}
-    [IsValExtension vR vS] : IsLocalRingHom (algebraMap vR.integer vS.integer) where
+    [Algebra R S] [IsLocalHom (algebraMap R S)] {vS : Valuation S ΓS}
+    [IsValExtension vR vS] : IsLocalHom (algebraMap vR.integer vS.integer) where
   map_nonunit r hr := by
     apply (Valuation.integer.integers (v := vR)).isUnit_of_one
     · exact (isUnit_map_iff (algebraMap R S) _).mp (hr.map (algebraMap _ S))
     · apply (Valuation.integer.integers (v := vS)).one_of_isUnit at hr
       exact (val_map_eq_one_iff vR vS _).mp hr
+
+@[deprecated (since := "2024-10-10")]
+alias instIsLocalRingHomValuationInteger := instIsLocalHomValuationInteger
 
 end integer
 

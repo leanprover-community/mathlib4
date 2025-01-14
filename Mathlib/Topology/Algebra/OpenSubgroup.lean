@@ -3,7 +3,9 @@ Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Nailin Guan
 -/
-import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.Algebra.Module.Submodule.Lattice
+import Mathlib.RingTheory.Ideal.Defs
+import Mathlib.Topology.Algebra.Group.Quotient
 import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.Sets.Opens
 
@@ -169,7 +171,7 @@ theorem toSubgroup_prod (U : OpenSubgroup G) (V : OpenSubgroup H) :
 end
 
 @[to_additive]
-instance instInfOpenSubgroup : Inf (OpenSubgroup G) :=
+instance instInfOpenSubgroup : Min (OpenSubgroup G) :=
   ⟨fun U V ↦ ⟨U ⊓ V, U.isOpen.inter V.isOpen⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -195,7 +197,6 @@ instance instPartialOrderOpenSubgroup : PartialOrder (OpenSubgroup G) := inferIn
 @[to_additive]
 instance instSemilatticeInfOpenSubgroup : SemilatticeInf (OpenSubgroup G) :=
   { SetLike.coe_injective.semilatticeInf ((↑) : OpenSubgroup G → Set G) fun _ _ ↦ rfl with
-    toInf := instInfOpenSubgroup
     toPartialOrder := instPartialOrderOpenSubgroup }
 
 @[to_additive]
@@ -326,7 +327,7 @@ namespace OpenSubgroup
 variable {G : Type*} [Group G] [TopologicalSpace G] [ContinuousMul G]
 
 @[to_additive]
-instance : Sup (OpenSubgroup G) :=
+instance : Max (OpenSubgroup G) :=
   ⟨fun U V ↦ ⟨U ⊔ V, Subgroup.isOpen_mono (le_sup_left : U.1 ≤ U.1 ⊔ V.1) U.isOpen⟩⟩
 
 @[to_additive (attr := simp, norm_cast)]
@@ -425,7 +426,7 @@ instance : Coe (OpenNormalSubgroup G) (Subgroup G) where
 instance instPartialOrderOpenNormalSubgroup : PartialOrder (OpenNormalSubgroup G) := inferInstance
 
 @[to_additive]
-instance instInfOpenNormalSubgroup : Inf (OpenNormalSubgroup G) :=
+instance instInfOpenNormalSubgroup : Min (OpenNormalSubgroup G) :=
   ⟨fun U V ↦ ⟨U.toOpenSubgroup ⊓ V.toOpenSubgroup,
     Subgroup.normal_inf_normal U.toSubgroup V.toSubgroup⟩⟩
 
@@ -434,15 +435,14 @@ instance instSemilatticeInfOpenNormalSubgroup : SemilatticeInf (OpenNormalSubgro
   SetLike.coe_injective.semilatticeInf ((↑) : OpenNormalSubgroup G → Set G) fun _ _ ↦ rfl
 
 @[to_additive]
-instance [ContinuousMul G] : Sup (OpenNormalSubgroup G) :=
+instance [ContinuousMul G] : Max (OpenNormalSubgroup G) :=
   ⟨fun U V ↦ ⟨U.toOpenSubgroup ⊔ V.toOpenSubgroup,
     Subgroup.sup_normal U.toOpenSubgroup.1 V.toOpenSubgroup.1⟩⟩
 
 @[to_additive]
 instance instSemilatticeSupOpenNormalSubgroup [ContinuousMul G] :
     SemilatticeSup (OpenNormalSubgroup G) :=
-  toSubgroup_injective.semilatticeSup
-    (fun (H : OpenNormalSubgroup G) ↦ ↑H.toOpenSubgroup) (fun _ _ ↦ rfl)
+  toSubgroup_injective.semilatticeSup _ (fun _ _ ↦ rfl)
 
 @[to_additive]
 instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) :=
@@ -453,3 +453,110 @@ instance [ContinuousMul G] : Lattice (OpenNormalSubgroup G) :=
 end OpenNormalSubgroup
 
 end
+
+/-!
+# Existence of an open subgroup in any clopen neighborhood of the neutral element
+
+This section proves the lemma `TopologicalGroup.exist_openSubgroup_sub_clopen_nhd_of_one`, which
+states that in a compact topological group, for any clopen neighborhood of 1,
+there exists an open subgroup contained within it.
+-/
+
+open scoped Pointwise
+
+variable {G : Type*} [TopologicalSpace G]
+
+structure TopologicalAddGroup.addNegClosureNhd (T W : Set G) [AddGroup G] : Prop where
+  nhd : T ∈ 𝓝 0
+  neg : -T = T
+  isOpen : IsOpen T
+  add : W + T ⊆ W
+
+/-- For a set `W`, `T` is a neighborhood of `1` which is open, statble under inverse and satisfies
+`T * W ⊆ W`. -/
+@[to_additive
+"For a set `W`, `T` is a neighborhood of `0` which is open, stable under negation and satisfies
+`T + W ⊆ W`. "]
+structure TopologicalGroup.mulInvClosureNhd (T W : Set G) [Group G] : Prop where
+  nhd : T ∈ 𝓝 1
+  inv : T⁻¹ = T
+  isOpen : IsOpen T
+  mul : W * T ⊆ W
+
+namespace TopologicalGroup
+
+variable [Group G] [TopologicalGroup G] [CompactSpace G]
+
+open Set Filter
+
+@[to_additive]
+lemma exist_mul_closure_nhd {W : Set G} (WClopen : IsClopen W) : ∃ T ∈ 𝓝 (1 : G), W * T ⊆ W := by
+  apply WClopen.isClosed.isCompact.induction_on (p := fun S ↦ ∃ T ∈ 𝓝 (1 : G), S * T ⊆ W)
+    ⟨Set.univ ,by simp only [univ_mem, empty_mul, empty_subset, and_self]⟩
+    (fun _ _ huv ⟨T, hT, mem⟩ ↦ ⟨T, hT, (mul_subset_mul_right huv).trans mem⟩)
+    fun U V ⟨T₁, hT₁, mem1⟩ ⟨T₂, hT₂, mem2⟩ ↦ ⟨T₁ ∩ T₂, inter_mem hT₁ hT₂, by
+      rw [union_mul]
+      exact union_subset (mul_subset_mul_left inter_subset_left |>.trans mem1)
+        (mul_subset_mul_left inter_subset_right |>.trans mem2) ⟩
+  intro x memW
+  have : (x, 1) ∈ (fun p ↦ p.1 * p.2) ⁻¹' W := by simp [memW]
+  rcases isOpen_prod_iff.mp (continuous_mul.isOpen_preimage W <| WClopen.2) x 1 this with
+    ⟨U, V, Uopen, Vopen, xmemU, onememV, prodsub⟩
+  have h6 : U * V ⊆ W := mul_subset_iff.mpr (fun _ hx _ hy ↦ prodsub (mk_mem_prod hx hy))
+  exact ⟨U ∩ W, ⟨U, Uopen.mem_nhds xmemU, W, fun _ a ↦ a, rfl⟩,
+    V, IsOpen.mem_nhds Vopen onememV, fun _ a ↦ h6 ((mul_subset_mul_right inter_subset_left) a)⟩
+
+@[to_additive]
+lemma exists_mulInvClosureNhd {W : Set G} (WClopen : IsClopen W) :
+    ∃ T, mulInvClosureNhd T W := by
+  rcases exist_mul_closure_nhd WClopen with ⟨S, Smemnhds, mulclose⟩
+  rcases mem_nhds_iff.mp Smemnhds with ⟨U, UsubS, Uopen, onememU⟩
+  use U ∩ U⁻¹
+  constructor
+  · simp [Uopen.mem_nhds onememU, inv_mem_nhds_one]
+  · simp [inter_comm]
+  · exact Uopen.inter Uopen.inv
+  · exact fun a ha ↦ mulclose (mul_subset_mul_left UsubS (mul_subset_mul_left inter_subset_left ha))
+
+@[to_additive]
+theorem exist_openSubgroup_sub_clopen_nhd_of_one {G : Type*} [Group G] [TopologicalSpace G]
+    [TopologicalGroup G] [CompactSpace G] {W : Set G} (WClopen : IsClopen W) (einW : 1 ∈ W) :
+    ∃ H : OpenSubgroup G, (H : Set G) ⊆ W := by
+  rcases exists_mulInvClosureNhd WClopen with ⟨V, hV⟩
+  let S : Subgroup G := {
+    carrier := ⋃ n , V ^ (n + 1)
+    mul_mem' := fun ha hb ↦ by
+      rcases mem_iUnion.mp ha with ⟨k, hk⟩
+      rcases mem_iUnion.mp hb with ⟨l, hl⟩
+      apply mem_iUnion.mpr
+      use k + 1 + l
+      rw [add_assoc, pow_add]
+      exact Set.mul_mem_mul hk hl
+    one_mem' := by
+      apply mem_iUnion.mpr
+      use 0
+      simp [mem_of_mem_nhds hV.nhd]
+    inv_mem' := fun ha ↦ by
+      rcases mem_iUnion.mp ha with ⟨k, hk⟩
+      apply mem_iUnion.mpr
+      use k
+      rw [← hV.inv]
+      simpa only [inv_pow, Set.mem_inv, inv_inv] using hk }
+  have : IsOpen (⋃ n , V ^ (n + 1)) := by
+    refine isOpen_iUnion (fun n ↦ ?_)
+    rw [pow_succ]
+    exact hV.isOpen.mul_left
+  use ⟨S, this⟩
+  have mulVpow (n : ℕ) : W * V ^ (n + 1) ⊆ W := by
+    induction' n with n ih
+    · simp [hV.mul]
+    · rw [pow_succ, ← mul_assoc]
+      exact (Set.mul_subset_mul_right ih).trans hV.mul
+  have (n : ℕ) : V ^ (n + 1) ⊆ W * V ^ (n + 1) := by
+    intro x xin
+    rw [Set.mem_mul]
+    use 1, einW, x, xin
+    rw [one_mul]
+  apply iUnion_subset fun i _ a ↦ mulVpow i (this i a)
+
+end TopologicalGroup

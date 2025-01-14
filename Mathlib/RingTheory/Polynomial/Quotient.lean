@@ -4,8 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, David Kurniadi Angdinata, Devon Tuma, Riccardo Brasca
 -/
 import Mathlib.Algebra.Polynomial.Div
+import Mathlib.Algebra.Polynomial.Eval.SMul
+import Mathlib.GroupTheory.GroupAction.Ring
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Polynomial.Ideal
 
 /-!
 # Quotients of polynomial rings
@@ -211,10 +214,10 @@ lemma quotientEquivQuotientMvPolynomial_rightInverse (I : Ideal R) :
     Function.RightInverse
       (eval₂ (Ideal.Quotient.lift I
         ((Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R))).comp C)
-          fun i hi => quotient_map_C_eq_zero hi)
+          fun _ hi => quotient_map_C_eq_zero hi)
           fun i => Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R)) (X i))
       (Ideal.Quotient.lift (Ideal.map C I : Ideal (MvPolynomial σ R))
-        (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun a ha => eval₂_C_mk_eq_zero ha) := by
+        (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun _ ha => eval₂_C_mk_eq_zero ha) := by
   intro f
   apply induction_on f
   · intro r
@@ -233,10 +236,10 @@ lemma quotientEquivQuotientMvPolynomial_leftInverse (I : Ideal R) :
     Function.LeftInverse
       (eval₂ (Ideal.Quotient.lift I
         ((Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R))).comp C)
-          fun i hi => quotient_map_C_eq_zero hi)
+          fun _ hi => quotient_map_C_eq_zero hi)
           fun i => Ideal.Quotient.mk (Ideal.map C I : Ideal (MvPolynomial σ R)) (X i))
       (Ideal.Quotient.lift (Ideal.map C I : Ideal (MvPolynomial σ R))
-        (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun a ha => eval₂_C_mk_eq_zero ha) := by
+        (eval₂Hom (C.comp (Ideal.Quotient.mk I)) X) fun _ ha => eval₂_C_mk_eq_zero ha) := by
   intro f
   obtain ⟨f, rfl⟩ := Ideal.Quotient.mk_surjective f
   apply induction_on f

@@ -242,7 +242,7 @@ variable [FiberFunctor F]
 
 /-- `Aut F` is a fundamental group for `F`. -/
 instance : IsFundamentalGroup F (Aut F) where
-  naturality g X Y f x := (FunctorToFintypeCat.naturality F F g.hom f x).symm
+  naturality g _ _ f x := (FunctorToFintypeCat.naturality F F g.hom f x).symm
   transitive_of_isGalois X := FiberFunctor.isPretransitive_of_isConnected F X
   continuous_smul X := continuousSMul_aut_fiber F X
   non_trivial' g h := by

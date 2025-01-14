@@ -476,7 +476,7 @@ instance nsmul : SMul ℕ (NormedAddGroupHom V₁ V₂) where
         let ⟨b, hb⟩ := f.bound'
         ⟨n • b, fun v => by
           rw [Pi.smul_apply, nsmul_eq_mul, mul_assoc]
-          exact (norm_nsmul_le _ _).trans (by gcongr; apply hb)⟩ }
+          exact norm_nsmul_le.trans (by gcongr; apply hb)⟩ }
 
 @[simp]
 theorem coe_nsmul (r : ℕ) (f : NormedAddGroupHom V₁ V₂) : ⇑(r • f) = r • ⇑f :=
@@ -630,7 +630,7 @@ variable {V W V₁ V₂ V₃ : Type*} [SeminormedAddCommGroup V] [SeminormedAddC
 @[simps!]
 def incl (s : AddSubgroup V) : NormedAddGroupHom s V where
   toFun := (Subtype.val : s → V)
-  map_add' v w := AddSubgroup.coe_add _ _ _
+  map_add' _ _ := AddSubgroup.coe_add _ _ _
   bound' := ⟨1, fun v => by rw [one_mul, AddSubgroup.coe_norm]⟩
 
 theorem norm_incl {V' : AddSubgroup V} (x : V') : ‖incl _ x‖ = ‖x‖ :=

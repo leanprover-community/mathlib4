@@ -3,7 +3,7 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
+import Mathlib.Algebra.BigOperators.Group.Finset.Basic
 import Mathlib.Data.Finsupp.Defs
 import Mathlib.Data.Finset.Pairwise
 
@@ -70,6 +70,8 @@ theorem Finset.mem_sup_support_iff [Zero M] {s : Finset (ι →₀ M)} {x : ι} 
     x ∈ s.sup Finsupp.support ↔ ∃ f ∈ s, x ∈ f.support :=
   Multiset.mem_sup_map_support_iff
 
+open scoped Function -- required for scoped `on` notation
+
 theorem List.support_sum_eq [AddMonoid M] (l : List (ι →₀ M))
     (hl : l.Pairwise (_root_.Disjoint on Finsupp.support)) :
     l.sum.support = l.foldr (Finsupp.support · ⊔ ·) ∅ := by
@@ -94,10 +96,9 @@ theorem Multiset.support_sum_eq [AddCommMonoid M] (s : Multiset (ι →₀ M))
   obtain ⟨l, hl, hd⟩ := hs
   suffices a.Pairwise (_root_.Disjoint on Finsupp.support) by
     convert List.support_sum_eq a this
-    · simp only [Multiset.quot_mk_to_coe'', Multiset.sum_coe]
-    · dsimp only [Function.comp_def]
-      simp only [quot_mk_to_coe'', map_coe, sup_coe, Finset.le_eq_subset,
-        Finset.sup_eq_union, Finset.bot_eq_empty, List.foldr_map]
+    dsimp only [Function.comp_def]
+    simp only [quot_mk_to_coe'', map_coe, sup_coe, Finset.le_eq_subset,
+      Finset.sup_eq_union, Finset.bot_eq_empty, List.foldr_map]
   simp only [Multiset.quot_mk_to_coe'', Multiset.map_coe, Multiset.coe_eq_coe] at hl
   exact hl.symm.pairwise hd fun h ↦ _root_.Disjoint.symm h
 

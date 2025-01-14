@@ -3,7 +3,7 @@ Copyright (c) 2019 Neil Strickland. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland
 -/
-import Mathlib.Algebra.BigOperators.Group.Multiset
+import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 import Mathlib.Data.PNat.Prime
 import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Multiset.OrderedMonoid
@@ -224,7 +224,6 @@ theorem factorMultiset_prod (v : PrimeMultiset) : v.prod.factorMultiset = v := b
   rcases v with ⟨l⟩
   --unfold_coes
   dsimp [PrimeMultiset.toNatMultiset]
-  rw [Multiset.prod_coe]
   let l' := l.map (Coe.coe : Nat.Primes → ℕ)
   have : ∀ p : ℕ, p ∈ l' → p.Prime := fun p hp => by
     rcases List.mem_map.mp hp with ⟨⟨_, hp'⟩, ⟨_, h_eq⟩⟩

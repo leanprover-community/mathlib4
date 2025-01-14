@@ -5,6 +5,7 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Ring.Divisibility.Basic
+import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.List.Cycle
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Data.Nat.Prime.Basic
@@ -181,7 +182,7 @@ theorem Semiconj.mapsTo_ptsOfPeriod {g : α → β} (h : Semiconj g fa fb) (n : 
 
 theorem bijOn_ptsOfPeriod (f : α → α) {n : ℕ} (hn : 0 < n) :
     BijOn f (ptsOfPeriod f n) (ptsOfPeriod f n) :=
-  ⟨(Commute.refl f).mapsTo_ptsOfPeriod n, fun x hx y hy hxy => hx.eq_of_apply_eq_same hy hn hxy,
+  ⟨(Commute.refl f).mapsTo_ptsOfPeriod n, fun _ hx _ hy hxy => hx.eq_of_apply_eq_same hy hn hxy,
     fun x hx =>
     ⟨f^[n.pred] x, hx.apply_iterate _, by
       rw [← comp_apply (f := f), comp_iterate_pred_of_pos f hn, hx.eq]⟩⟩
@@ -227,16 +228,16 @@ variable {f}
 theorem Semiconj.mapsTo_periodicPts {g : α → β} (h : Semiconj g fa fb) :
     MapsTo g (periodicPts fa) (periodicPts fb) := fun _ ⟨n, hn, hx⟩ => ⟨n, hn, hx.map h⟩
 
-open scoped Classical
-
 noncomputable section
 
+open scoped Classical in
 /-- Minimal period of a point `x` under an endomorphism `f`. If `x` is not a periodic point of `f`,
 then `minimalPeriod f x = 0`. -/
 def minimalPeriod (f : α → α) (x : α) :=
   if h : x ∈ periodicPts f then Nat.find h else 0
 
 theorem isPeriodicPt_minimalPeriod (f : α → α) (x : α) : IsPeriodicPt f (minimalPeriod f x) x := by
+  classical
   delta minimalPeriod
   split_ifs with hx
   · exact (Nat.find_spec hx).2
@@ -257,6 +258,7 @@ theorem iterate_mod_minimalPeriod_eq : f^[n % minimalPeriod f x] x = f^[n] x :=
   (isPeriodicPt_minimalPeriod f x).iterate_mod_apply n
 
 theorem minimalPeriod_pos_of_mem_periodicPts (hx : x ∈ periodicPts f) : 0 < minimalPeriod f x := by
+  classical
   simp only [minimalPeriod, dif_pos hx, (Nat.find_spec hx).1.lt]
 
 theorem minimalPeriod_eq_zero_of_nmem_periodicPts (hx : x ∉ periodicPts f) :
@@ -275,6 +277,7 @@ theorem minimalPeriod_eq_zero_iff_nmem_periodicPts : minimalPeriod f x = 0 ↔ x
 
 theorem IsPeriodicPt.minimalPeriod_le (hn : 0 < n) (hx : IsPeriodicPt f n x) :
     minimalPeriod f x ≤ n := by
+  classical
   rw [minimalPeriod, dif_pos (mk_mem_periodicPts hn hx)]
   exact Nat.find_min' (mk_mem_periodicPts hn hx) ⟨hn, hx⟩
 

@@ -5,7 +5,7 @@ Authors: Andrew Yang
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.Polynomial.AlgebraMap
-import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.RingTheory.Nilpotent.Defs
 
 /-!
@@ -346,6 +346,7 @@ theorem eq_of_isNilpotent_sub_of_isIdempotentElem {e₁ e₂ : R}
     e₁ = e₂ :=
   eq_of_isNilpotent_sub_of_isIdempotentElem_of_commute he₁ he₂ H (.all _ _)
 
+@[stacks 00J9]
 theorem existsUnique_isIdempotentElem_eq_of_ker_isNilpotent (h : ∀ x ∈ RingHom.ker f, IsNilpotent x)
     (e : S) (he : e ∈ f.range) (he' : IsIdempotentElem e) :
     ∃! e' : R, IsIdempotentElem e' ∧ f e' = e := by
@@ -402,7 +403,7 @@ lemma CompleteOrthogonalIdempotents.bijective_pi (he : CompleteOrthogonalIdempot
   refine ⟨?_, he.1.surjective_pi⟩
   rw [injective_iff_map_eq_zero]
   intro x hx
-  simp [Function.funext_iff, Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton] at hx
+  simp [funext_iff, Ideal.Quotient.eq_zero_iff_mem, Ideal.mem_span_singleton] at hx
   suffices ∀ s : Finset I, (∏ i in s, (1 - e i)) * x = x by
     rw [← this Finset.univ, he.prod_one_sub, zero_mul]
   refine fun s ↦ Finset.induction_on s (by simp) ?_

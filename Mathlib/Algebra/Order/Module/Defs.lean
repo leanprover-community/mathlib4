@@ -3,7 +3,7 @@ Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Module.Defs
+import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.GroupWithZero.Action.Synonym
 import Mathlib.Tactic.GCongr

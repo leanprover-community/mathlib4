@@ -196,6 +196,12 @@ theorem BinaryFan.π_app_left {X Y : C} (s : BinaryFan X Y) : s.π.app ⟨Walkin
 theorem BinaryFan.π_app_right {X Y : C} (s : BinaryFan X Y) : s.π.app ⟨WalkingPair.right⟩ = s.snd :=
   rfl
 
+/-- Constructs an isomorphism of `BinaryFan`s out of an isomorphism of the tips that commutes with
+the projections. -/
+def BinaryFan.ext {A B : C} {c c' : BinaryFan A B} (e : c.pt ≅ c'.pt)
+    (h₁ : c.fst = e.hom ≫ c'.fst) (h₂ : c.snd = e.hom ≫ c'.snd) : c ≅ c' :=
+  Cones.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
+
 /-- A convenient way to show that a binary fan is a limit. -/
 def BinaryFan.IsLimit.mk {X Y : C} (s : BinaryFan X Y)
     (lift : ∀ {T : C} (_ : T ⟶ X) (_ : T ⟶ Y), T ⟶ s.pt)
@@ -210,7 +216,7 @@ def BinaryFan.IsLimit.mk {X Y : C} (s : BinaryFan X Y)
       rintro t (rfl | rfl)
       · exact hl₁ _ _
       · exact hl₂ _ _)
-    fun t m h => uniq _ _ _ (h ⟨WalkingPair.left⟩) (h ⟨WalkingPair.right⟩)
+    fun _ _ h => uniq _ _ _ (h ⟨WalkingPair.left⟩) (h ⟨WalkingPair.right⟩)
 
 theorem BinaryFan.IsLimit.hom_ext {W X Y : C} {s : BinaryFan X Y} (h : IsLimit s) {f g : W ⟶ s.pt}
     (h₁ : f ≫ s.fst = g ≫ s.fst) (h₂ : f ≫ s.snd = g ≫ s.snd) : f = g :=
@@ -224,6 +230,12 @@ abbrev BinaryCofan.inl {X Y : C} (s : BinaryCofan X Y) := s.ι.app ⟨WalkingPai
 
 /-- The second inclusion of a binary cofan. -/
 abbrev BinaryCofan.inr {X Y : C} (s : BinaryCofan X Y) := s.ι.app ⟨WalkingPair.right⟩
+
+/-- Constructs an isomorphism of `BinaryCofan`s out of an isomorphism of the tips that commutes with
+the injections. -/
+def BinaryCofan.ext {A B : C} {c c' : BinaryCofan A B} (e : c.pt ≅ c'.pt)
+    (h₁ : c.inl ≫ e.hom = c'.inl) (h₂ : c.inr ≫ e.hom = c'.inr) : c ≅ c' :=
+  Cocones.ext e (fun j => by rcases j with ⟨⟨⟩⟩ <;> assumption)
 
 @[simp]
 theorem BinaryCofan.ι_app_left {X Y : C} (s : BinaryCofan X Y) :
@@ -247,7 +259,7 @@ def BinaryCofan.IsColimit.mk {X Y : C} (s : BinaryCofan X Y)
       rintro t (rfl | rfl)
       · exact hd₁ _ _
       · exact hd₂ _ _)
-    fun t m h => uniq _ _ _ (h ⟨WalkingPair.left⟩) (h ⟨WalkingPair.right⟩)
+    fun _ _ h => uniq _ _ _ (h ⟨WalkingPair.left⟩) (h ⟨WalkingPair.right⟩)
 
 theorem BinaryCofan.IsColimit.hom_ext {W X Y : C} {s : BinaryCofan X Y} (h : IsColimit s)
     {f g : s.pt ⟶ W} (h₁ : s.inl ≫ f = s.inl ≫ g) (h₂ : s.inr ≫ f = s.inr ≫ g) : f = g :=
@@ -547,13 +559,11 @@ noncomputable abbrev coprod.desc {W X Y : C} [HasBinaryCoproduct X Y]
 noncomputable abbrev codiag (X : C) [HasBinaryCoproduct X X] : X ⨿ X ⟶ X :=
   coprod.desc (𝟙 _) (𝟙 _)
 
--- Porting note (#10618): simp removes as simp can prove this
 @[reassoc]
 theorem prod.lift_fst {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
     prod.lift f g ≫ prod.fst = f :=
   limit.lift_π _ _
 
--- Porting note (#10618): simp removes as simp can prove this
 @[reassoc]
 theorem prod.lift_snd {W X Y : C} [HasBinaryProduct X Y] (f : W ⟶ X) (g : W ⟶ Y) :
     prod.lift f g ≫ prod.snd = g :=
@@ -698,15 +708,15 @@ instance prod.map_mono {C : Type*} [Category C] {W X Y Z : C} (f : W ⟶ Y) (g :
     · rw [← cancel_mono g]
       simpa using congr_arg (fun f => f ≫ prod.snd) h⟩
 
-@[reassoc] -- Porting note (#10618): simp can prove these
+@[reassoc]
 theorem prod.diag_map {X Y : C} (f : X ⟶ Y) [HasBinaryProduct X X] [HasBinaryProduct Y Y] :
     diag X ≫ prod.map f f = f ≫ diag Y := by simp
 
-@[reassoc] -- Porting note (#10618): simp can prove these
+@[reassoc]
 theorem prod.diag_map_fst_snd {X Y : C} [HasBinaryProduct X Y] [HasBinaryProduct (X ⨯ Y) (X ⨯ Y)] :
     diag (X ⨯ Y) ≫ prod.map prod.fst prod.snd = 𝟙 (X ⨯ Y) := by simp
 
-@[reassoc] -- Porting note (#10618): simp can prove these
+@[reassoc]
 theorem prod.diag_map_fst_snd_comp [HasLimitsOfShape (Discrete WalkingPair) C] {X X' Y Y' : C}
     (g : X ⟶ Y) (g' : X' ⟶ Y') :
     diag (X ⨯ X') ≫ prod.map (prod.fst ≫ g) (prod.snd ≫ g') = prod.map g g' := by simp
@@ -1013,7 +1023,7 @@ end
 
 noncomputable section ProdFunctor
 
--- Porting note (#10754): added category instance as it did not propagate
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryProducts C]
 
 /-- The binary product functor. -/
@@ -1021,7 +1031,7 @@ variable {C} [Category.{v} C] [HasBinaryProducts C]
 def prod.functor : C ⥤ C ⥤ C where
   obj X :=
     { obj := fun Y => X ⨯ Y
-      map := fun {Y Z} => prod.map (𝟙 X) }
+      map := fun {_ _} => prod.map (𝟙 X) }
   map f :=
     { app := fun T => prod.map f (𝟙 T) }
 
@@ -1034,7 +1044,7 @@ end ProdFunctor
 
 noncomputable section CoprodFunctor
 
--- Porting note (#10754): added category instance as it did not propagate
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/10754): added category instance as it did not propagate
 variable {C} [Category.{v} C] [HasBinaryCoproducts C]
 
 /-- The binary coproduct functor. -/
@@ -1042,7 +1052,7 @@ variable {C} [Category.{v} C] [HasBinaryCoproducts C]
 def coprod.functor : C ⥤ C ⥤ C where
   obj X :=
     { obj := fun Y => X ⨿ Y
-      map := fun {Y Z} => coprod.map (𝟙 X) }
+      map := fun {_ _} => coprod.map (𝟙 X) }
   map f := { app := fun T => coprod.map f (𝟙 T) }
 
 /-- The coproduct functor can be decomposed. -/

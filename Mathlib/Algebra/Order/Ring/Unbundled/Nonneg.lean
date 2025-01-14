@@ -98,32 +98,30 @@ theorem mk_eq_zero [Zero α] [Preorder α] {x : α} (hx : 0 ≤ x) :
     (⟨x, hx⟩ : { x : α // 0 ≤ x }) = 0 ↔ x = 0 :=
   Subtype.ext_iff
 
-instance add [AddZeroClass α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] :
-    Add { x : α // 0 ≤ x } :=
+instance add [AddZeroClass α] [Preorder α] [AddLeftMono α] : Add { x : α // 0 ≤ x } :=
   ⟨fun x y => ⟨x + y, add_nonneg x.2 y.2⟩⟩
 
 @[simp]
-theorem mk_add_mk [AddZeroClass α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] {x y : α}
+theorem mk_add_mk [AddZeroClass α] [Preorder α] [AddLeftMono α] {x y : α}
     (hx : 0 ≤ x) (hy : 0 ≤ y) :
     (⟨x, hx⟩ : { x : α // 0 ≤ x }) + ⟨y, hy⟩ = ⟨x + y, add_nonneg hx hy⟩ :=
   rfl
 
 @[simp, norm_cast]
-protected theorem coe_add [AddZeroClass α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
+protected theorem coe_add [AddZeroClass α] [Preorder α] [AddLeftMono α]
     (a b : { x : α // 0 ≤ x }) : ((a + b : { x : α // 0 ≤ x }) : α) = a + b :=
   rfl
 
-instance nsmul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] :
-    SMul ℕ { x : α // 0 ≤ x } :=
+instance nsmul [AddMonoid α] [Preorder α] [AddLeftMono α] : SMul ℕ { x : α // 0 ≤ x } :=
   ⟨fun n x => ⟨n • (x : α), nsmul_nonneg x.prop n⟩⟩
 
 @[simp]
-theorem nsmul_mk [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)] (n : ℕ) {x : α}
+theorem nsmul_mk [AddMonoid α] [Preorder α] [AddLeftMono α] (n : ℕ) {x : α}
     (hx : 0 ≤ x) : (n • (⟨x, hx⟩ : { x : α // 0 ≤ x })) = ⟨n • x, nsmul_nonneg hx n⟩ :=
   rfl
 
 @[simp, norm_cast]
-protected theorem coe_nsmul [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
+protected theorem coe_nsmul [AddMonoid α] [Preorder α] [AddLeftMono α]
     (n : ℕ) (a : { x : α // 0 ≤ x }) : ((n • a : { x : α // 0 ≤ x }) : α) = n • (a : α) :=
   rfl
 
@@ -166,7 +164,7 @@ end Mul
 
 section AddMonoid
 
-variable [AddMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
+variable [AddMonoid α] [Preorder α] [AddLeftMono α]
 
 instance addMonoid : AddMonoid { x : α // 0 ≤ x } :=
   Subtype.coe_injective.addMonoid _ Nonneg.coe_zero (fun _ _ => rfl) fun _ _ => rfl
@@ -186,7 +184,7 @@ end AddMonoid
 
 section AddCommMonoid
 
-variable [AddCommMonoid α] [Preorder α] [CovariantClass α α (· + ·) (· ≤ ·)]
+variable [AddCommMonoid α] [Preorder α] [AddLeftMono α]
 
 instance addCommMonoid : AddCommMonoid { x : α // 0 ≤ x } :=
   Subtype.coe_injective.addCommMonoid _ Nonneg.coe_zero (fun _ _ => rfl) (fun _ _ => rfl)
@@ -195,8 +193,7 @@ end AddCommMonoid
 
 section AddMonoidWithOne
 
-variable [AddMonoidWithOne α] [PartialOrder α]
-variable [CovariantClass α α (· + ·) (· ≤ ·)] [ZeroLEOneClass α]
+variable [AddMonoidWithOne α] [PartialOrder α] [AddLeftMono α] [ZeroLEOneClass α]
 
 instance natCast : NatCast { x : α // 0 ≤ x } :=
   ⟨fun n => ⟨n, Nat.cast_nonneg' n⟩⟩
@@ -254,7 +251,7 @@ end Pow
 section Semiring
 
 variable [Semiring α] [PartialOrder α] [ZeroLEOneClass α]
-  [CovariantClass α α (· + ·) (· ≤ ·)] [PosMulMono α]
+  [AddLeftMono α] [PosMulMono α]
 
 instance semiring : Semiring { x : α // 0 ≤ x } :=
   Subtype.coe_injective.semiring _ Nonneg.coe_zero Nonneg.coe_one
@@ -273,17 +270,10 @@ def coeRingHom : { x : α // 0 ≤ x } →+* α :=
 
 end Semiring
 
-section Nontrivial
-
-variable [Semiring α] [PartialOrder α] [ZeroLEOneClass α] [NeZero 1]
-  [CovariantClass α α (· + ·) (· ≤ ·)] [PosMulMono α]
-
-end Nontrivial
-
 section CommSemiring
 
 variable [CommSemiring α] [PartialOrder α] [ZeroLEOneClass α]
-  [CovariantClass α α (· + ·) (· ≤ ·)] [PosMulMono α]
+  [AddLeftMono α] [PosMulMono α]
 
 instance commSemiring : CommSemiring { x : α // 0 ≤ x } :=
   Subtype.coe_injective.commSemiring _ Nonneg.coe_zero Nonneg.coe_one
@@ -334,3 +324,26 @@ theorem mk_sub_mk [Sub α] {x y : α} (hx : 0 ≤ x) (hy : 0 ≤ y) :
 end LinearOrder
 
 end Nonneg
+
+/-- A variant of `BddAbove.range_comp` that assumes that `f` is nonnegative and `g` is monotone on
+  nonnegative values. -/
+lemma BddAbove.range_comp_of_nonneg {α β γ : Type*} [Nonempty α] [Preorder β] [Zero β] [Preorder γ]
+    {f : α → β} {g : β → γ} (hf : BddAbove (range f)) (hf0 : 0 ≤ f)
+    (hg : MonotoneOn g {x : β | 0 ≤ x}) : BddAbove (range (fun x => g (f x))) := by
+  have hg' : BddAbove (g '' (range f)) := by
+    apply hg.map_bddAbove (by rintro x ⟨a, rfl⟩; exact hf0 a)
+    · obtain ⟨b, hb⟩ := hf
+      use b, hb
+      simp only [mem_upperBounds, mem_range, forall_exists_index, forall_apply_eq_imp_iff] at hb
+      exact le_trans (hf0 Classical.ofNonempty) (hb Classical.ofNonempty)
+  change BddAbove (range (g ∘ f))
+  simpa only [Set.range_comp] using hg'
+
+/-- If `u v : α → β` are nonnegative and bounded above, then `u * v` is bounded above. -/
+theorem bddAbove_range_mul {α β : Type*} [Nonempty α] {u v : α → β} [Preorder β] [Zero β] [Mul β]
+    [PosMulMono β] [MulPosMono β] (hu : BddAbove (Set.range u)) (hu0 : 0 ≤ u)
+    (hv : BddAbove (Set.range v)) (hv0 : 0 ≤ v) : BddAbove (Set.range (u * v)) :=
+  letI : Zero (β × β) := ⟨(0, 0)⟩
+  BddAbove.range_comp_of_nonneg (f := fun i ↦ (u i, v i)) (g := fun x ↦ x.1 * x.2)
+    (bddAbove_range_prod.mpr ⟨hu, hv⟩) (fun x ↦ ⟨hu0 x, hv0 x⟩) ((monotone_fst.monotoneOn _).mul
+      (monotone_snd.monotoneOn _) (fun _ hx ↦ hx.1) (fun _ hx ↦ hx.2))

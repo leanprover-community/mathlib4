@@ -186,10 +186,10 @@ theorem dimH_sUnion {S : Set (Set X)} (hS : S.Countable) : dimH (⋃₀ S) = ⨆
 
 @[simp]
 theorem dimH_union (s t : Set X) : dimH (s ∪ t) = max (dimH s) (dimH t) := by
-  rw [union_eq_iUnion, dimH_iUnion, iSup_bool_eq, cond, cond, ENNReal.sup_eq_max]
+  rw [union_eq_iUnion, dimH_iUnion, iSup_bool_eq, cond, cond]
 
 theorem dimH_countable {s : Set X} (hs : s.Countable) : dimH s = 0 :=
-  biUnion_of_singleton s ▸ by simp only [dimH_bUnion hs, dimH_singleton, ENNReal.iSup_zero_eq_zero]
+  biUnion_of_singleton s ▸ by simp only [dimH_bUnion hs, dimH_singleton, ENNReal.iSup_zero]
 
 alias Set.Countable.dimH_zero := dimH_countable
 
@@ -254,7 +254,7 @@ end
 -/
 
 
-variable {C K r : ℝ≥0} {f : X → Y} {s t : Set X}
+variable {C K r : ℝ≥0} {f : X → Y} {s : Set X}
 
 /-- If `f` is a Hölder continuous map with exponent `r > 0`, then `dimH (f '' s) ≤ dimH s / r`. -/
 theorem HolderOnWith.dimH_image_le (h : HolderOnWith C r f s) (hr : 0 < r) :

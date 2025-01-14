@@ -38,7 +38,7 @@ differentiability, norm
 open ContinuousLinearMap Filter NNReal Real Set
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
-variable {n : ℕ∞} {f : E →L[ℝ] ℝ} {x : E} {t : ℝ}
+variable {n : WithTop ℕ∞} {f : E →L[ℝ] ℝ} {x : E} {t : ℝ}
 
 variable (E) in
 theorem not_differentiableAt_norm_zero [Nontrivial E] :
@@ -72,15 +72,15 @@ theorem contDiffAt_norm_smul_iff (ht : t ≠ 0) :
 
 theorem ContDiffAt.contDiffAt_norm_of_smul (h : ContDiffAt ℝ n (‖·‖) (t • x)) :
     ContDiffAt ℝ n (‖·‖) x := by
-  obtain rfl | hn : n = 0 ∨ 1 ≤ n := by
-    rw [← ENat.lt_one_iff_eq_zero]
-    exact lt_or_le ..
-  · rw [contDiffAt_zero]
+  rcases eq_bot_or_bot_lt n with rfl | hn
+  · apply contDiffAt_zero.2
     exact ⟨univ, univ_mem, continuous_norm.continuousOn⟩
+  replace hn : 1 ≤ n := ENat.add_one_natCast_le_withTop_of_lt hn
   obtain rfl | ht := eq_or_ne t 0
   · by_cases hE : Nontrivial E
     · rw [zero_smul] at h
-      exact (mt (ContDiffAt.differentiableAt · hn)) (not_differentiableAt_norm_zero E) h |>.elim
+      exact (mt (ContDiffAt.differentiableAt · (mod_cast hn)))
+        (not_differentiableAt_norm_zero E) h |>.elim
     · rw [not_nontrivial_iff_subsingleton] at hE
       rw [eq_const_of_subsingleton (‖·‖) 0]
       exact contDiffAt_const
@@ -160,7 +160,7 @@ theorem DifferentiableAt.fderiv_norm_self {x : E} (h : DifferentiableAt ℝ (‖
   simp_rw [this]
   rw [deriv_mul_const]
   · conv_lhs => enter [1, 1]; change _root_.abs ∘ (fun t ↦ 1 + t)
-    rw [deriv.comp, deriv_abs, deriv_const_add]
+    rw [deriv_comp, deriv_abs, deriv_const_add]
     · simp
     · exact differentiableAt_abs (by norm_num)
     · exact differentiableAt_id.const_add _

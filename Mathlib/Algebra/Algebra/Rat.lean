@@ -5,6 +5,7 @@ Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.GroupWithZero.Action.Basic
+import Mathlib.Algebra.Module.End
 import Mathlib.Data.Rat.Cast.CharZero
 
 /-!
@@ -48,7 +49,7 @@ variable [DivisionSemiring S] [CharZero S]
 
 instance _root_.DivisionSemiring.toNNRatAlgebra : Algebra ℚ≥0 R where
   smul_def' := smul_def
-  toRingHom := castHom _
+  algebraMap := castHom _
   commutes' := cast_commute
 
 instance _root_.RingHomClass.toLinearMapClassNNRat [FunLike F R S] [RingHomClass F R S] :
@@ -88,7 +89,7 @@ variable [DivisionRing S] [CharZero S]
 
 instance _root_.DivisionRing.toRatAlgebra : Algebra ℚ R where
   smul_def' := smul_def
-  toRingHom := castHom _
+  algebraMap := castHom _
   commutes' := cast_commute
 
 instance _root_.RingHomClass.toLinearMapClassRat [FunLike F R S] [RingHomClass F R S] :

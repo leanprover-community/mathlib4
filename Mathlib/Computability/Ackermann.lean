@@ -175,7 +175,7 @@ theorem lt_ack_right (m n : ℕ) : n < ack m n :=
 
 -- we reorder the arguments to appease the equation compiler
 private theorem ack_strict_mono_left' : ∀ {m₁ m₂} (n), m₁ < m₂ → ack m₁ n < ack m₂ n
-  | m, 0, n => fun h => (not_lt_zero m h).elim
+  | m, 0, _ => fun h => (not_lt_zero m h).elim
   | 0, m + 1, 0 => fun _h => by simpa using one_lt_ack_succ_right m 0
   | 0, m + 1, n + 1 => fun h => by
     rw [ack_zero, ack_succ_succ]
@@ -235,7 +235,7 @@ private theorem sq_le_two_pow_add_one_minus_three (n : ℕ) : n ^ 2 ≤ 2 ^ (n +
         norm_num
         apply succ_le_of_lt
         rw [Nat.pow_succ, mul_comm _ 2, mul_lt_mul_left (zero_lt_two' ℕ)]
-        apply lt_two_pow
+        exact Nat.lt_two_pow_self
       · rw [Nat.pow_succ, Nat.pow_succ]
         linarith [one_le_pow k 2 zero_lt_two]
 
