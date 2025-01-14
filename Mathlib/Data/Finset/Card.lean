@@ -412,23 +412,17 @@ lemma card_le_card_of_injOn (f : α → β) (hf : ∀ a ∈ s, f a ∈ t) (f_inj
     _  ≤ #t           := card_le_card <| image_subset_iff.2 hf
 @[deprecated (since := "2024-06-01")] alias card_le_card_of_inj_on := card_le_card_of_injOn
 
-lemma card_le_card_of_injective {A : Finset α} {B : Finset β} {f : A → B} (hf : f.Injective) :
-    A.card ≤ B.card := by
-  if emptiness : A = ∅ then
-    simp_all
-  else
-    obtain ⟨a₀, ha₀⟩ := nonempty_iff_ne_empty.mpr emptiness
-    clear emptiness
-    classical
+lemma card_le_card_of_injective {f : s → t} (hf : f.Injective) : #s ≤ #t := by
+  rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀⟩
+  · simp
+  · classical
     let f' : α → β := fun a => f (if ha : a ∈ A then ⟨a, ha⟩ else ⟨a₀, ha₀⟩)
-    apply Finset.card_le_card_of_injOn f'
+    apply card_le_card_of_injOn f'
     · aesop
     · intro a₁ ha₁ a₂ ha₂ haa
-      have haa' : f ⟨a₁, ha₁⟩ = f ⟨a₂, ha₂⟩ := by
-        rw [Finset.mem_coe] at ha₁ ha₂
-        simp only [f', ha₁, ha₂] at haa
-        exact Subtype.eq haa
-      simpa using hf haa'
+      rw [mem_coe] at ha₁ ha₂
+      simp only [f', ha₁, ha₂, ↓reduceDIte, ← Subtype.ext_iff] at haa
+      exact Subtype.ext_iff.mp (hf haa)
 
 lemma card_le_card_of_surjOn (f : α → β) (hf : Set.SurjOn f s t) : #t ≤ #s := by
   classical unfold Set.SurjOn at hf; exact (card_le_card (mod_cast hf)).trans card_image_le
