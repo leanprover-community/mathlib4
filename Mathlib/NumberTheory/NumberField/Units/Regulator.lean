@@ -32,11 +32,12 @@ namespace NumberField.Units
 
 variable (K : Type*) [Field K]
 
-open MeasureTheory Classical NumberField.InfinitePlace
+open MeasureTheory NumberField.InfinitePlace
   NumberField NumberField.Units.dirichletUnitTheorem
 
 variable [NumberField K]
 
+open scoped Classical in
 /-- The regulator of a number field `K`. -/
 def regulator : ℝ := ZLattice.covolume (unitLattice K)
 
