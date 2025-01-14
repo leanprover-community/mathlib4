@@ -8,21 +8,11 @@ import Mathlib.Algebra.Ring.Defs
 import Mathlib.Order.Notation
 
 /-!
-# Idempotents
+# Idempotent elements of a ring
 
-This file defines idempotents for an arbitrary multiplication and proves some basic results,
-including:
-
-* `IsIdempotentElem.mul_of_commute`: In a semigroup, the product of two commuting idempotents is
-  an idempotent;
+This file proves result about idempotent elements of a ring, like:
 * `IsIdempotentElem.one_sub_iff`: In a (non-associative) ring, `a` is an idempotent if and only if
-  `1-a` is an idempotent.
-* `IsIdempotentElem.pow_succ_eq`: In a monoid `a ^ (n+1) = a` for `a` an idempotent and `n` a
-  natural number.
-
-## Tags
-
-projection, idempotent
+  `1 - a` is an idempotent.
 -/
 
 variable {R : Type*}

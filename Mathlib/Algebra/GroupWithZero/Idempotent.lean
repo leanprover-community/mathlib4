@@ -7,21 +7,7 @@ import Mathlib.Algebra.Group.Idempotent
 import Mathlib.Algebra.GroupWithZero.Defs
 
 /-!
-# Idempotents
-
-This file defines idempotents for an arbitrary multiplication and proves some basic results,
-including:
-
-* `IsIdempotentElem.mul_of_commute`: In a semigroup, the product of two commuting idempotents is
-  an idempotent;
-* `IsIdempotentElem.one_sub_iff`: In a (non-associative) ring, `p` is an idempotent if and only if
-  `1-p` is an idempotent.
-* `IsIdempotentElem.pow_succ_eq`: In a monoid `p ^ (n+1) = p` for `p` an idempotent and `n` a
-  natural number.
-
-## Tags
-
-projection, idempotent
+# Idempotent elements of a group with zero
 -/
 
 assert_not_exists Ring
