@@ -42,11 +42,12 @@ instance center.isCommutative : (center G).IsCommutative :=
 
 variable {G} in
 /-- The center of isomorphic groups are isomorphic. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!) "The center of isomorphic additive groups are isomorphic."]
 def centerCongr {H} [Group H] (e : G ≃* H) : center G ≃* center H := Submonoid.centerCongr e
 
 /-- The center of a group is isomorphic to the center of its opposite. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+"The center of an additive group is isomorphic to the center of its opposite."]
 def centerMulOppositeEquiv : center Gᵐᵒᵖ ≃* center G := Submonoid.centerMulOppositeEquiv
 
 /-- For a group with zero, the center of the units is the same as the units of the center. -/
