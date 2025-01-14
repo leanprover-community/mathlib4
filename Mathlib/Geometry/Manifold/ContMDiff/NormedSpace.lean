@@ -31,7 +31,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
   [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
   -- declare functions, sets, points and smoothness indices
-  {s : Set M} {x : M} {n : ℕ∞}
+  {s : Set M} {x : M} {n : WithTop ℕ∞}
 
 section Module
 

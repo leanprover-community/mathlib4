@@ -45,8 +45,7 @@ numbers.
 subsemigroup, subsemigroups
 -/
 
-assert_not_exists CompleteLattice
-assert_not_exists MonoidWithZero
+assert_not_exists CompleteLattice MonoidWithZero
 
 variable {M : Type*} {N : Type*}
 

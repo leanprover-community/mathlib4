@@ -53,6 +53,8 @@ the colors.
   * develop API for partial colorings, likely as colorings of subgraphs (`H.coe.Coloring α`)
 -/
 
+assert_not_exists Field
+
 open Fintype Function
 
 universe u v

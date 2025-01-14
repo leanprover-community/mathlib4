@@ -39,9 +39,7 @@ We register the following instances:
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
-assert_not_exists Function.Injective.eq_iff
+assert_not_exists MonoidWithZero DenselyOrdered Function.Injective.eq_iff
 
 universe u v w
 

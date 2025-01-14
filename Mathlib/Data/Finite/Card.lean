@@ -25,6 +25,7 @@ it. We generally put such theorems into the `SetTheory.Cardinal.Finite` module.
 
 -/
 
+assert_not_exists Field
 
 noncomputable section
 

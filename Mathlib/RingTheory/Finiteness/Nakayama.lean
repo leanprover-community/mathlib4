@@ -46,7 +46,7 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRi
     · rw [← span_le, hs]
   clear hin hs
   revert this
-  refine Set.Finite.dinduction_on _ hfs (fun H => ?_) @fun i s _ _ ih H => ?_
+  refine Set.Finite.induction_on _ hfs (fun H => ?_) @fun i s _ _ ih H => ?_
   · rcases H with ⟨r, hr1, hrn, _⟩
     refine ⟨r, hr1, fun n hn => ?_⟩
     specialize hrn hn

@@ -5,6 +5,7 @@ Authors: Jakob von Raumer, Kevin Klinge, Andrew Yang
 -/
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.GroupTheory.OreLocalization.OreSet
+import Mathlib.Tactic.Common
 
 /-!
 
@@ -30,8 +31,7 @@ localization, Ore, non-commutative
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists Ring
+assert_not_exists MonoidWithZero Ring
 
 universe u
 

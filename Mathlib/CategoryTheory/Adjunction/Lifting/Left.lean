@@ -130,7 +130,7 @@ flags `{ z : F.obj (U.obj X) ⟶ R.obj Y // _ }`.
 -/
 set_option linter.unusedVariables false in
 /-- The homset equivalence which helps show that `R` is a right adjoint. -/
-@[simps!] -- Porting note: Originally `@[simps (config := { rhsMd := semireducible })]`
+@[simps!]
 noncomputable def constructLeftAdjointEquiv [∀ X : B, RegularEpi (adj₁.counit.app X)] (Y : A)
     (X : B) : (constructLeftAdjointObj _ _ adj₁ adj₂ X ⟶ Y) ≃ (X ⟶ R.obj Y) :=
   calc

@@ -227,7 +227,7 @@ variable (α)
 protected def id : TopHom α α :=
   ⟨id, rfl⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(TopHom.id α) = id :=
   rfl
 
@@ -400,7 +400,7 @@ variable (α)
 protected def id : BotHom α α :=
   ⟨id, rfl⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(BotHom.id α) = id :=
   rfl
 
@@ -578,7 +578,7 @@ protected def id : BoundedOrderHom α α :=
 instance : Inhabited (BoundedOrderHom α α) :=
   ⟨BoundedOrderHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(BoundedOrderHom.id α) = id :=
   rfl
 

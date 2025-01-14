@@ -223,19 +223,6 @@ instance : (FunctorCategoryEquivalence.functor (V := V) (G := G)).IsEquivalence 
 instance : (FunctorCategoryEquivalence.inverse (V := V) (G := G)).IsEquivalence :=
   (functorCategoryEquivalence V G).isEquivalence_inverse
 
-/-
-porting note: these two lemmas are redundant with the projections created by the @[simps]
-attribute above
-
-theorem functorCategoryEquivalence.functor_def :
-    (functorCategoryEquivalence V G).functor = FunctorCategoryEquivalence.functor :=
-  rfl
-
-theorem functorCategoryEquivalence.inverse_def :
-    (functorCategoryEquivalence V G).inverse = FunctorCategoryEquivalence.inverse :=
-  rfl
--/
-
 end
 
 section Forget

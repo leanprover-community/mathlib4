@@ -8,6 +8,7 @@ import Mathlib.Algebra.Order.Group.Basic
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Logic.Pairwise
+import Mathlib.Tactic.Cases
 
 /-! ### Lemmas about arithmetic operations and intervals. -/
 

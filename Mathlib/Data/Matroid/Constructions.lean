@@ -29,6 +29,8 @@ and then construct the other examples using duality and restriction.
 
 -/
 
+assert_not_exists Field
+
 variable {α : Type*} {M : Matroid α} {E B I X R J : Set α}
 
 namespace Matroid

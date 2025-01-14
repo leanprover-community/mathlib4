@@ -181,17 +181,15 @@ theorem sub_one_pow_totient_lt_cyclotomic_eval {n : ℕ} {q : ℝ} (hn' : 2 ≤ 
     clear_value ζ
     rintro rfl
     linarith [hζ.unique IsPrimitiveRoot.one]
-  have : ¬eval (↑q) (cyclotomic n ℂ) = 0 := by
-    erw [cyclotomic.eval_apply q n (algebraMap ℝ ℂ)]
-    simpa only [Complex.coe_algebraMap, Complex.ofReal_eq_zero] using (cyclotomic_pos' n hq').ne'
+  have : ¬eval (↑q) (cyclotomic n ℂ) = 0 := by simpa using (cyclotomic_pos' n hq').ne'
   suffices Units.mk0 (Real.toNNReal (q - 1)) (by simp [hq']) ^ totient n <
-      Units.mk0 ‖(cyclotomic n ℂ).eval ↑q‖₊ (by simp [this]) by
-    simp only [← Units.val_lt_val, Units.val_pow_eq_pow_val, Units.val_mk0, ← NNReal.coe_lt_coe,
+      Units.mk0 ‖(cyclotomic n ℂ).eval ↑q‖₊ (by simp_all) by
+    simp [← Units.val_lt_val, Units.val_pow_eq_pow_val, Units.val_mk0, ← NNReal.coe_lt_coe,
       hq'.le, Real.toNNReal_lt_toNNReal_iff_of_nonneg, coe_nnnorm, Complex.norm_eq_abs,
       NNReal.coe_pow, Real.coe_toNNReal', max_eq_left, sub_nonneg] at this
     convert this
-    erw [cyclotomic.eval_apply q n (algebraMap ℝ ℂ), eq_comm]
-    simp only [cyclotomic_nonneg n hq'.le, Complex.coe_algebraMap, Complex.abs_ofReal, abs_eq_self]
+    rw [eq_comm]
+    simp [cyclotomic_nonneg n hq'.le]
   simp only [cyclotomic_eq_prod_X_sub_primitiveRoots hζ, eval_prod, eval_C, eval_X, eval_sub,
     nnnorm_prod, Units.mk0_prod]
   convert Finset.prod_lt_prod' (M := NNRealˣ) _ _
@@ -248,17 +246,14 @@ theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ 
       linarith [hζ.unique <| IsPrimitiveRoot.neg_one 0 two_ne_zero.symm]
     · contrapose! hζ₀
       apply Complex.ext <;> simp [hζ₀, h.2]
-  have : ¬eval (↑q) (cyclotomic n ℂ) = 0 := by
-    erw [cyclotomic.eval_apply q n (algebraMap ℝ ℂ)]
-    simp only [Complex.coe_algebraMap, Complex.ofReal_eq_zero]
-    exact (cyclotomic_pos' n hq').ne.symm
-  suffices Units.mk0 ‖(cyclotomic n ℂ).eval ↑q‖₊ (by simp [this]) <
+  have : ¬eval (↑q) (cyclotomic n ℂ) = 0 := by simpa using (cyclotomic_pos' n hq').ne.symm
+  suffices Units.mk0 ‖(cyclotomic n ℂ).eval ↑q‖₊ (by simp_all) <
       Units.mk0 (Real.toNNReal (q + 1)) (by simp; linarith) ^ totient n by
     simp only [← Units.val_lt_val, Units.val_pow_eq_pow_val, Units.val_mk0, ← NNReal.coe_lt_coe,
       hq'.le, Real.toNNReal_lt_toNNReal_iff_of_nonneg, coe_nnnorm, Complex.norm_eq_abs,
       NNReal.coe_pow, Real.coe_toNNReal', max_eq_left, sub_nonneg] at this
     convert this using 2
-    · erw [cyclotomic.eval_apply q n (algebraMap ℝ ℂ), eq_comm]
+    · rw [eq_comm]
       simp [cyclotomic_nonneg n hq'.le]
     rw [eq_comm, max_eq_left_iff]
     linarith

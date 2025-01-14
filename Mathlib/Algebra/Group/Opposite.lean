@@ -14,9 +14,7 @@ import Mathlib.Tactic.Spread
 # Group structures on the multiplicative and additive opposites
 -/
 
-assert_not_exists DenselyOrdered
-assert_not_exists MonoidWithZero
-assert_not_exists Units
+assert_not_exists MonoidWithZero DenselyOrdered Units
 
 variable {α : Type*}
 

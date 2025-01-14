@@ -366,7 +366,7 @@ protected def id : SupHom α α :=
 instance : Inhabited (SupHom α α) :=
   ⟨SupHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(SupHom.id α) = id :=
   rfl
 
@@ -542,7 +542,7 @@ protected def id : InfHom α α :=
 instance : Inhabited (InfHom α α) :=
   ⟨InfHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(InfHom.id α) = id :=
   rfl
 
@@ -727,7 +727,7 @@ protected def id : SupBotHom α α :=
 instance : Inhabited (SupBotHom α α) :=
   ⟨SupBotHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(SupBotHom.id α) = id :=
   rfl
 
@@ -878,7 +878,7 @@ protected def id : InfTopHom α α :=
 instance : Inhabited (InfTopHom α α) :=
   ⟨InfTopHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(InfTopHom.id α) = id :=
   rfl
 
@@ -1023,7 +1023,7 @@ protected def id : LatticeHom α α where
 instance : Inhabited (LatticeHom α α) :=
   ⟨LatticeHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(LatticeHom.id α) = id :=
   rfl
 
@@ -1204,7 +1204,7 @@ protected def id : BoundedLatticeHom α α :=
 instance : Inhabited (BoundedLatticeHom α α) :=
   ⟨BoundedLatticeHom.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(BoundedLatticeHom.id α) = id :=
   rfl
 

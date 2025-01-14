@@ -121,7 +121,7 @@ lemma padic_le_one (p : ℕ) [Fact p.Prime] (n : ℤ) : padic p n ≤ 1 := by
 
 -- ## Step 1: define `p = minimal n s. t. 0 < f n < 1`
 
-variable (hf_nontriv : f ≠ .trivial) (bdd : ∀ n : ℕ, f n ≤ 1)
+variable (hf_nontriv : f.IsNontrivial) (bdd : ∀ n : ℕ, f n ≤ 1)
 
 include hf_nontriv bdd in
 /-- There exists a minimal positive integer with absolute value smaller than 1. -/
@@ -130,11 +130,10 @@ lemma exists_minimal_nat_zero_lt_and_lt_one :
   -- There is a positive integer with absolute value different from one.
   obtain ⟨n, hn1, hn2⟩ : ∃ n : ℕ, n ≠ 0 ∧ f n ≠ 1 := by
     contrapose! hf_nontriv
-    rw [AbsoluteValue.trivial, ← eq_on_nat_iff_eq]
-    intro n
-    rcases eq_or_ne n 0 with rfl | hn0
+    refine (isNontrivial_iff_ne_trivial f).not_left.mpr <| eq_on_nat_iff_eq.mp fun n ↦ ?_
+    rcases eq_or_ne n 0 with rfl | hn
     · simp
-    · simp [hn0, hf_nontriv n hn0]
+    · simp [hf_nontriv, hn]
   set P := {m : ℕ | 0 < f ↑m ∧ f ↑m < 1} -- p is going to be the minimum of this set.
   have hP : P.Nonempty :=
     ⟨n, map_pos_of_ne_zero f (Nat.cast_ne_zero.mpr hn1), lt_of_le_of_ne (bdd n) hn2⟩
@@ -465,7 +464,7 @@ end Archimedean
 
 /-- **Ostrowski's Theorem**: every absolute value (with values in `ℝ`) on `ℚ` is equivalent
 to either the standard absolute value or a `p`-adic absolute value for a prime `p`. -/
-theorem equiv_real_or_padic (f : AbsoluteValue ℚ ℝ) (hf_nontriv : f ≠ .trivial) :
+theorem equiv_real_or_padic (f : AbsoluteValue ℚ ℝ) (hf_nontriv : f.IsNontrivial) :
     f ≈ real ∨ ∃! p, ∃ (_ : Fact p.Prime), f ≈ (padic p) := by
   by_cases bdd : ∀ n : ℕ, f n ≤ 1
   · exact .inr <| equiv_padic_of_bounded hf_nontriv bdd

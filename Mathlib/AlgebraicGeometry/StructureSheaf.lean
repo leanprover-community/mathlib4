@@ -929,7 +929,6 @@ instance isIso_to_global : IsIso (toOpen R ⊤) := by
   infer_instance
 
 /-- The ring isomorphism between the ring `R` and the global sections `Γ(X, 𝒪ₓ)`. -/
--- Porting note: was @[simps (config := { rhsMd := Tactic.Transparency.semireducible })]
 @[simps!]
 def globalSectionsIso : CommRingCat.of R ≅ (structureSheaf R).1.obj (op ⊤) :=
   asIso (toOpen R ⊤)

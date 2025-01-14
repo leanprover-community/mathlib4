@@ -13,8 +13,7 @@ This file proves basic properties of `List.countP` and `List.count`, which count
 elements of a list satisfying a predicate and equal to a given element respectively.
 -/
 
-assert_not_exists Monoid
-assert_not_exists Set.range
+assert_not_exists Monoid Set.range
 
 open Nat
 

@@ -90,6 +90,9 @@ end AddCommGroup
 
 variable [∀ i, AddCommMonoid (β i)]
 
+@[ext] theorem ext {x y : DirectSum ι β} (w : ∀ i, x i = y i) : x = y :=
+  DFunLike.ext _ _ w
+
 @[simp]
 theorem zero_apply (i : ι) : (0 : ⨁ i, β i) i = 0 :=
   rfl

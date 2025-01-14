@@ -331,7 +331,7 @@ nonrec def id : P1 →ᵃ[k] P1 where
   map_vadd' _ _ := rfl
 
 /-- The identity affine map acts as the identity. -/
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(id k P1) = _root_.id :=
   rfl
 

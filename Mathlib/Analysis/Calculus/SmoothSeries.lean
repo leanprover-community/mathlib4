@@ -16,7 +16,7 @@ function in the series is and additionally suitable uniform summable bounds are 
 
 More specifically,
 * `differentiable_tsum` ensures that a series of differentiable functions is differentiable.
-* `contDiff_tsum` ensures that a series of smooth functions is smooth.
+* `contDiff_tsum` ensures that a series of `C^n` functions is `C^n`.
 
 We also give versions of these statements which are localized to a set.
 -/
@@ -183,7 +183,7 @@ theorem deriv_tsum (hu : Summable u) (hg : ∀ n, Differentiable 𝕜 (g n))
 
 /-! ### Higher smoothness -/
 
-/-- Consider a series of smooth functions, with summable uniform bounds on the successive
+/-- Consider a series of `C^n` functions, with summable uniform bounds on the successive
 derivatives. Then the iterated derivative of the sum is the sum of the iterated derivative. -/
 theorem iteratedFDeriv_tsum (hf : ∀ i, ContDiff 𝕜 N (f i))
     (hv : ∀ k : ℕ, (k : ℕ∞) ≤ N → Summable (v k))

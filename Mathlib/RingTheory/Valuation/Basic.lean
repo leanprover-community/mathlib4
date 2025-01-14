@@ -892,8 +892,7 @@ end AddValuation
 
 namespace Valuation
 
-
-variable {Γ₀ : Type*} [Ring R] [LinearOrderedCommMonoidWithZero Γ₀]
+variable {K Γ₀ : Type*} [Ring R] [LinearOrderedCommMonoidWithZero Γ₀]
 
 /-- The `AddValuation` associated to a `Valuation`. -/
 def toAddValuation : Valuation R Γ₀ ≃ AddValuation R (Additive Γ₀)ᵒᵈ :=
@@ -927,5 +926,30 @@ theorem toAddValuation_apply (v : Valuation R Γ₀) (r : R) :
 theorem ofAddValuation_apply (v : AddValuation R (Additive Γ₀)ᵒᵈ) (r : R) :
     ofAddValuation v r = Additive.toMul (OrderDual.ofDual (v r)) :=
   rfl
+
+instance (v : Valuation R Γ₀) : CommMonoidWithZero (MonoidHom.mrange v) where
+  zero := ⟨0, 0, by simp⟩
+  zero_mul := by
+    intro a
+    exact Subtype.ext (zero_mul a.val)
+  mul_zero := by
+    intro a
+    exact Subtype.ext (mul_zero a.val)
+
+@[simp]
+lemma val_mrange_zero (v : Valuation R Γ₀) : ((0 : MonoidHom.mrange v) : Γ₀) = 0 := rfl
+
+instance {Γ₀} [LinearOrderedCommGroupWithZero Γ₀] [DivisionRing K] (v : Valuation K Γ₀) :
+    CommGroupWithZero (MonoidHom.mrange v) where
+  inv := fun x ↦ ⟨x⁻¹, by
+    obtain ⟨y, hy⟩ := x.prop
+    simp_rw [← hy, ← v.map_inv]
+    exact MonoidHom.mem_mrange.mpr ⟨_, rfl⟩⟩
+  exists_pair_ne := ⟨⟨v 0, by simp⟩, ⟨v 1, by simp [- _root_.map_one]⟩, by simp⟩
+  inv_zero := Subtype.ext inv_zero
+  mul_inv_cancel := by
+    rintro ⟨a, ha⟩ h
+    simp only [ne_eq, Subtype.ext_iff] at h
+    simpa using mul_inv_cancel₀ h
 
 end Valuation

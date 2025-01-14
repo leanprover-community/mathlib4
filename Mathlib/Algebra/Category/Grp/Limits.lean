@@ -489,8 +489,6 @@ theorem kernelIsoKer_inv_comp_ι {G H : AddCommGrp.{u}} (f : G ⟶ H) :
   ext
   simp [kernelIsoKer]
 
--- Porting note: explicitly add what to be synthesized under `simps!`, because other lemmas
--- automatically generated is not in normal form
 /-- The categorical kernel inclusion for `f : G ⟶ H`, as an object over `G`,
 agrees with the `AddSubgroup.subtype` map.
 -/

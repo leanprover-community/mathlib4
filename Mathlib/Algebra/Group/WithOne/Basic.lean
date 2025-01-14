@@ -18,8 +18,7 @@ that were not available in `Algebra/Group/WithOne/Defs`.
 * `WithOne.map`, `WithZero.map`
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 universe u v w
 
@@ -111,8 +110,6 @@ theorem map_map (f : α →ₙ* β) (g : β →ₙ* γ) (x) : map g (map f x) = 
 theorem map_comp (f : α →ₙ* β) (g : β →ₙ* γ) : map (g.comp f) = (map g).comp (map f) :=
   MonoidHom.ext fun x => (map_map f g x).symm
 
--- Porting note: this used to have `@[simps apply]` but it was generating lemmas which
--- weren't in simp normal form.
 /-- A version of `Equiv.optionCongr` for `WithOne`. -/
 @[to_additive (attr := simps apply) "A version of `Equiv.optionCongr` for `WithZero`."]
 def _root_.MulEquiv.withOneCongr (e : α ≃* β) : WithOne α ≃* WithOne β :=

@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Kim Morrison
 -/
 import Mathlib.Algebra.Group.Action.Pi
 import Mathlib.Algebra.SMulWithZero
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Finsupp.Single
 
 /-!
 # Scalar multiplication on `Finsupp`

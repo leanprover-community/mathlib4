@@ -73,6 +73,11 @@ lemma aeval_val_relation (i) : aeval P.val (P.relation i) = 0 := by
   rw [← RingHom.mem_ker, ← P.ker_eq_ker_aeval_val, ← P.span_range_relation_eq_ker]
   exact Ideal.subset_span ⟨i, rfl⟩
 
+lemma relation_mem_ker (i : P.rels) : P.relation i ∈ P.ker := by
+  rw [← P.span_range_relation_eq_ker]
+  apply Ideal.subset_span
+  use i
+
 /-- The polynomial algebra wrt a family of generators modulo a family of relations. -/
 protected abbrev Quotient : Type (max w u) := P.Ring ⧸ P.ker
 

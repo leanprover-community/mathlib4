@@ -519,7 +519,7 @@ def powerBasisAux (hf : f ≠ 0) : Basis (Fin f.natDegree) K (AdjoinRoot f) := b
 
 /-- The power basis `1, root f, ..., root f ^ (d - 1)` for `AdjoinRoot f`,
 where `f` is an irreducible polynomial over a field of degree `d`. -/
-@[simps!]  -- Porting note: was `[simps]`
+@[simps!]
 def powerBasis (hf : f ≠ 0) : PowerBasis K (AdjoinRoot f) where
   gen := root f
   dim := f.natDegree

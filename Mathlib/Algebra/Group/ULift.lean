@@ -17,8 +17,7 @@ This file defines instances for group, monoid, semigroup and related structures 
 We also provide `MulEquiv.ulift : ULift R ≃* R` (and its additive analogue).
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 universe u v
 

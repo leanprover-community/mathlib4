@@ -6,7 +6,7 @@ Authors: Christian Merten
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.CategoryTheory.Limits.Shapes.Pullback.CommSq
 import Mathlib.LinearAlgebra.Basis.VectorSpace
-import Mathlib.RingTheory.Flat.FaithfullyFlat
+import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
 
 /-!
 # Results on the category of rings requiring linear algebra

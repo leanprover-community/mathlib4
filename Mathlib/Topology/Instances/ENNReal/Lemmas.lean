@@ -5,7 +5,8 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Topology.Order.MonotoneContinuity
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
-import Mathlib.Topology.Instances.NNReal
+import Mathlib.Topology.Instances.ENNReal.Defs
+import Mathlib.Topology.Instances.NNReal.Lemmas
 import Mathlib.Topology.EMetricSpace.Lipschitz
 import Mathlib.Topology.Metrizable.Basic
 import Mathlib.Topology.Order.T5
@@ -31,28 +32,6 @@ section TopologicalSpace
 
 open TopologicalSpace
 
-/-- Topology on `ℝ≥0∞`.
-
-Note: this is different from the `EMetricSpace` topology. The `EMetricSpace` topology has
-`IsOpen {∞}`, while this topology doesn't have singleton elements. -/
-instance : TopologicalSpace ℝ≥0∞ := Preorder.topology ℝ≥0∞
-
-instance : OrderTopology ℝ≥0∞ := ⟨rfl⟩
-
--- short-circuit type class inference
-instance : T2Space ℝ≥0∞ := inferInstance
-instance : T5Space ℝ≥0∞ := inferInstance
-instance : T4Space ℝ≥0∞ := inferInstance
-
-instance : SecondCountableTopology ℝ≥0∞ :=
-  orderIsoUnitIntervalBirational.toHomeomorph.isEmbedding.secondCountableTopology
-
-instance : MetrizableSpace ENNReal :=
-  orderIsoUnitIntervalBirational.toHomeomorph.isEmbedding.metrizableSpace
-
-theorem isEmbedding_coe : IsEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
-  coe_strictMono.isEmbedding_of_ordConnected <| by rw [range_coe']; exact ordConnected_Iio
-
 @[deprecated (since := "2024-10-26")]
 alias embedding_coe := isEmbedding_coe
 
@@ -62,19 +41,11 @@ theorem isOpen_Ico_zero : IsOpen (Ico 0 b) := by
   rw [ENNReal.Ico_eq_Iio]
   exact isOpen_Iio
 
-theorem isOpenEmbedding_coe : IsOpenEmbedding ((↑) : ℝ≥0 → ℝ≥0∞) :=
-  ⟨isEmbedding_coe, by rw [range_coe']; exact isOpen_Iio⟩
-
 @[deprecated (since := "2024-10-18")]
 alias openEmbedding_coe := isOpenEmbedding_coe
 
 theorem coe_range_mem_nhds : range ((↑) : ℝ≥0 → ℝ≥0∞) ∈ 𝓝 (r : ℝ≥0∞) :=
   IsOpen.mem_nhds isOpenEmbedding_coe.isOpen_range <| mem_range_self _
-
-@[norm_cast]
-theorem tendsto_coe {f : Filter α} {m : α → ℝ≥0} {a : ℝ≥0} :
-    Tendsto (fun a => (m a : ℝ≥0∞)) f (𝓝 ↑a) ↔ Tendsto m f (𝓝 a) :=
-  isEmbedding_coe.tendsto_nhds_iff.symm
 
 @[fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℝ≥0 → ℝ≥0∞) :=
@@ -94,10 +65,6 @@ theorem tendsto_nhds_coe_iff {α : Type*} {l : Filter α} {x : ℝ≥0} {f : ℝ
 theorem continuousAt_coe_iff {α : Type*} [TopologicalSpace α] {x : ℝ≥0} {f : ℝ≥0∞ → α} :
     ContinuousAt f ↑x ↔ ContinuousAt (f ∘ (↑) : ℝ≥0 → α) x :=
   tendsto_nhds_coe_iff
-
-theorem nhds_coe_coe {r p : ℝ≥0} :
-    𝓝 ((r : ℝ≥0∞), (p : ℝ≥0∞)) = (𝓝 (r, p)).map fun p : ℝ≥0 × ℝ≥0 => (↑p.1, ↑p.2) :=
-  ((isOpenEmbedding_coe.prodMap isOpenEmbedding_coe).map_nhds_eq (r, p)).symm
 
 theorem continuous_ofReal : Continuous ENNReal.ofReal :=
   (continuous_coe_iff.2 continuous_id).comp continuous_real_toNNReal
@@ -274,15 +241,6 @@ protected theorem tendsto_nhds_zero {f : Filter α} {u : α → ℝ≥0∞} :
 protected theorem tendsto_atTop [Nonempty β] [SemilatticeSup β] {f : β → ℝ≥0∞} {a : ℝ≥0∞}
     (ha : a ≠ ∞) : Tendsto f atTop (𝓝 a) ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, f n ∈ Icc (a - ε) (a + ε) :=
   .trans (atTop_basis.tendsto_iff (hasBasis_nhds_of_ne_top ha)) (by simp only [true_and]; rfl)
-
-instance : ContinuousAdd ℝ≥0∞ := by
-  refine ⟨continuous_iff_continuousAt.2 ?_⟩
-  rintro ⟨_ | a, b⟩
-  · exact tendsto_nhds_top_mono' continuousAt_fst fun p => le_add_right le_rfl
-  rcases b with (_ | b)
-  · exact tendsto_nhds_top_mono' continuousAt_snd fun p => le_add_left le_rfl
-  simp only [ContinuousAt, some_eq_coe, nhds_coe_coe, ← coe_add, tendsto_map'_iff,
-    Function.comp_def, tendsto_coe, tendsto_add]
 
 protected theorem tendsto_atTop_zero [Nonempty β] [SemilatticeSup β] {f : β → ℝ≥0∞} :
     Tendsto f atTop (𝓝 0) ↔ ∀ ε > 0, ∃ N, ∀ n ≥ N, f n ≤ ε :=
@@ -510,8 +468,6 @@ theorem inv_limsup {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
 theorem inv_liminf {ι : Sort _} {x : ι → ℝ≥0∞} {l : Filter ι} :
     (liminf x l)⁻¹ = limsup (fun i => (x i)⁻¹) l :=
   OrderIso.invENNReal.liminf_apply
-
-instance : ContinuousInv ℝ≥0∞ := ⟨OrderIso.invENNReal.continuous⟩
 
 @[fun_prop]
 protected theorem continuous_zpow : ∀ n : ℤ, Continuous (· ^ n : ℝ≥0∞ → ℝ≥0∞)

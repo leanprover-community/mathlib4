@@ -1136,7 +1136,8 @@ noncomputable def normalizedGCDMonoidOfLCM [NormalizationMonoid α] [DecidableEq
       conv_lhs =>
         congr
         rw [← normalize_lcm a b]
-      erw [← normalize.map_mul, ← Classical.choose_spec (exists_gcd a b), normalize_idem]
+      rw [← normalize_apply, ← normalize.map_mul,
+        ← Classical.choose_spec (exists_gcd a b), normalize_idem]
     lcm_zero_left := fun _ => eq_zero_of_zero_dvd (dvd_lcm_left _ _)
     lcm_zero_right := fun _ => eq_zero_of_zero_dvd (dvd_lcm_right _ _)
     gcd_dvd_left := fun a b => by

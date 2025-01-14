@@ -28,6 +28,8 @@ Since it is not registered as a coercion, the argument about delaboration does n
 set theory, cardinals, extended natural numbers
 -/
 
+assert_not_exists Field
+
 open Function Set
 universe u v
 

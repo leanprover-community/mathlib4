@@ -5,7 +5,7 @@ Authors: Michael Stoll
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Instances.ENNReal.Lemmas
 
 /-!
 # Sums over residue classes

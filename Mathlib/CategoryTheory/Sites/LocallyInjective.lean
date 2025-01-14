@@ -166,7 +166,7 @@ lemma isLocallyInjective_iff_injective_of_separated
     exact (hsep _ (equalizerSieve_mem J φ x y h)).ext (fun _ _ hf => hf)
   · apply isLocallyInjective_of_injective
 
-instance (F : Cᵒᵖ ⥤ Type w) (G : GrothendieckTopology.Subpresheaf F) :
+instance (F : Cᵒᵖ ⥤ Type w) (G : Subpresheaf F) :
     IsLocallyInjective J G.ι :=
   isLocallyInjective_of_injective _ _ (fun X => by
     intro ⟨x, _⟩ ⟨y, _⟩ h
@@ -243,8 +243,8 @@ lemma mono_of_isLocallyInjective [IsLocallyInjective φ] : Mono φ := by
   infer_instance
 
 instance {F G : Sheaf J (Type w)} (f : F ⟶ G) :
-    IsLocallyInjective (GrothendieckTopology.imageSheafι f) := by
-  dsimp [GrothendieckTopology.imageSheafι]
+    IsLocallyInjective (imageSheafι f) := by
+  dsimp [imageSheafι]
   infer_instance
 
 end Sheaf

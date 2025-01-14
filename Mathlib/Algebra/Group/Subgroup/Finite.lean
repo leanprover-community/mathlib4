@@ -17,6 +17,8 @@ This file provides some result on multiplicative and additive subgroups in the f
 subgroup, subgroups
 -/
 
+assert_not_exists Field
+
 variable {G : Type*} [Group G]
 variable {A : Type*} [AddGroup A]
 

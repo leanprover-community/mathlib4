@@ -78,8 +78,8 @@ elab "assert_exists " n:ident : command => do
   let _ ← liftCoreM <| realizeGlobalConstNoOverloadWithInfo n
 
 /--
-`assert_not_exists n` is a user command that asserts that a declaration named `n` *does not exist*
-in the current import scope.
+`assert_not_exists d₁ d₂ ... dₙ` is a user command that asserts that the declarations named
+`d₁ d₂ ... dₙ` *do not exist* in the current import scope.
 
 Be careful to use names (e.g. `Rat`) rather than notations (e.g. `ℚ`).
 
@@ -95,28 +95,32 @@ You should *not* delete the `assert_not_exists` statement without careful discus
 
 `assert_not_exists` statements should generally live at the top of the file, after the module doc.
 -/
-elab "assert_not_exists " n:ident : command => do
-  let decl ←
-    try liftCoreM <| realizeGlobalConstNoOverloadWithInfo n
-    catch _ =>
-      Mathlib.AssertNotExist.addDeclEntry true n.getId (← getMainModule)
-      return
+elab "assert_not_exists " ns:ident+ : command => do
   let env ← getEnv
-  let c ← mkConstWithLevelParams decl
-  let msg ← (do
-    let mut some idx := env.getModuleIdxFor? decl
-      | pure m!"Declaration {c} is defined in this file."
-    let mut msg := m!"Declaration {c} is not allowed to be imported by this file.\n\
-      It is defined in {env.header.moduleNames[idx.toNat]!},"
-    for i in [idx.toNat+1:env.header.moduleData.size] do
-      if env.header.moduleData[i]!.imports.any (·.module == env.header.moduleNames[idx.toNat]!) then
-        idx := i
-        msg := msg ++ m!"\n  which is imported by {env.header.moduleNames[i]!},"
-    pure <| msg ++ m!"\n  which is imported by this file.")
-  throw <| .error n m!"{msg}\n\n\
-    These invariants are maintained by `assert_not_exists` statements, \
-    and exist in order to ensure that \"complicated\" parts of the library \
-    are not accidentally introduced as dependencies of \"simple\" parts of the library."
+  let modNames := env.header.moduleNames
+  let modData := env.header.moduleData
+  let modDataSize := modData.size
+  for n in ns do
+    let decl ←
+      try liftCoreM <| realizeGlobalConstNoOverloadWithInfo n
+      catch _ =>
+        Mathlib.AssertNotExist.addDeclEntry true n.getId (← getMainModule)
+        continue
+    let c ← mkConstWithLevelParams decl
+    let msg ← (do
+      let mut some idx := env.getModuleIdxFor? decl
+        | pure m!"Declaration {c} is defined in this file."
+      let mut msg := m!"Declaration {c} is not allowed to be imported by this file.\n\
+        It is defined in {modNames[idx.toNat]!},"
+      for i in [idx.toNat+1:modDataSize] do
+        if modData[i]!.imports.any (·.module == modNames[idx.toNat]!) then
+          idx := i
+          msg := msg ++ m!"\n  which is imported by {modNames[i]!},"
+      pure <| msg ++ m!"\n  which is imported by this file.")
+    logErrorAt n m!"{msg}\n\n\
+      These invariants are maintained by `assert_not_exists` statements, \
+      and exist in order to ensure that \"complicated\" parts of the library \
+      are not accidentally introduced as dependencies of \"simple\" parts of the library."
 
 /-- `assert_not_imported m₁ m₂ ... mₙ` checks that each one of the modules `m₁ m₂ ... mₙ` is not
 among the transitive imports of the current file.

@@ -46,8 +46,7 @@ Under various conditions, multiplication of infinite matrices makes sense.
 These have not yet been implemented.
 -/
 
-assert_not_exists Algebra
-assert_not_exists Star
+assert_not_exists Algebra Star
 
 universe u u' v w
 
@@ -889,6 +888,24 @@ theorem vecMul_mulVec [Fintype m] [Fintype n] (A : Matrix m n α) (B : Matrix m 
     (A *ᵥ x) ᵥ* B = x ᵥ* (Aᵀ * B) := by rw [← vecMul_vecMul, vecMul_transpose]
 
 end NonUnitalCommSemiring
+
+section Semiring
+
+variable [Semiring R]
+
+lemma mulVec_injective_of_isUnit [Fintype m] [DecidableEq m] {A : Matrix m m R}
+    (ha : IsUnit A) : Function.Injective A.mulVec := by
+  obtain ⟨B, hBl, hBr⟩ := isUnit_iff_exists.mp ha
+  intro x y hxy
+  simpa [hBr] using congrArg B.mulVec hxy
+
+lemma vecMul_injective_of_isUnit [Fintype m] [DecidableEq m] {A : Matrix m m R}
+    (ha : IsUnit A) : Function.Injective A.vecMul := by
+  obtain ⟨B, hBl, hBr⟩ := isUnit_iff_exists.mp ha
+  intro x y hxy
+  simpa [hBl] using congrArg B.vecMul hxy
+
+end Semiring
 
 section CommSemiring
 

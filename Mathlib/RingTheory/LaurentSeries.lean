@@ -12,6 +12,7 @@ import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Trunc
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.Topology.UniformSpace.Cauchy
+import Mathlib.Algebra.Group.Int.TypeTags
 
 /-!
 # Laurent Series

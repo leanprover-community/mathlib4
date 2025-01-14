@@ -5,6 +5,7 @@ Authors: Aaron Anderson
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Algebra.IsPrimePow
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.Order.Interval.Finset.Nat
 
@@ -520,5 +521,11 @@ theorem prod_div_divisors {α : Type*} [CommMonoid α] (n : ℕ) (f : ℕ → α
   · intro x hx y hy h
     rw [mem_divisors] at hx hy
     exact (div_eq_iff_eq_of_dvd_dvd hn hx.1 hy.1).mp h
+
+theorem disjoint_divisors_filter_isPrimePow {a b : ℕ} (hab : a.Coprime b) :
+    Disjoint (a.divisors.filter IsPrimePow) (b.divisors.filter IsPrimePow) := by
+  simp only [Finset.disjoint_left, Finset.mem_filter, and_imp, Nat.mem_divisors, not_and]
+  rintro n han _ha hn hbn _hb -
+  exact hn.ne_one (Nat.eq_one_of_dvd_coprimes hab han hbn)
 
 end Nat

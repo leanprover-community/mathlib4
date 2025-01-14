@@ -7,6 +7,7 @@ import Mathlib.Analysis.Normed.Module.Basic
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.RingTheory.Ideal.Quotient.Operations
 import Mathlib.Topology.MetricSpace.HausdorffDistance
+import Mathlib.Topology.Instances.Real.Lemmas
 
 /-!
 # Quotients of seminormed groups

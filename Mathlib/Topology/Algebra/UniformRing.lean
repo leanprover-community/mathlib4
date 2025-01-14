@@ -191,13 +191,13 @@ theorem map_smul_eq_mul_coe (r : R) :
   · exact isClosed_eq Completion.continuous_map (continuous_mul_left _)
   · simp_rw [map_coe (uniformContinuous_const_smul r) a, Algebra.smul_def, coe_mul]
 
-instance algebra : Algebra R (Completion A) :=
-  { (UniformSpace.Completion.coeRingHom : A →+* Completion A).comp (algebraMap R A) with
-    commutes' := fun r x =>
-      Completion.induction_on x (isClosed_eq (continuous_mul_left _) (continuous_mul_right _))
-        fun a => by
-        simpa only [coe_mul] using congr_arg ((↑) : A → Completion A) (Algebra.commutes r a)
-    smul_def' := fun r x => congr_fun (map_smul_eq_mul_coe A R r) x }
+instance algebra : Algebra R (Completion A) where
+  algebraMap := (UniformSpace.Completion.coeRingHom : A →+* Completion A).comp (algebraMap R A)
+  commutes' := fun r x =>
+    Completion.induction_on x (isClosed_eq (continuous_mul_left _) (continuous_mul_right _))
+      fun a => by
+      simpa only [coe_mul] using congr_arg ((↑) : A → Completion A) (Algebra.commutes r a)
+  smul_def' := fun r x => congr_fun (map_smul_eq_mul_coe A R r) x
 
 theorem algebraMap_def (r : R) :
     algebraMap R (Completion A) r = (algebraMap R A r : Completion A) :=

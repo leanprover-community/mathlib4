@@ -519,17 +519,19 @@ def smash (p q : RelSeries r) (connect : p.last = q.head) : RelSeries r where
     dsimp only
     by_cases h₂ : i.1 + 1 < p.length
     · have h₁ : i.1 < p.length := lt_trans (lt_add_one _) h₂
-      erw [dif_pos h₁, dif_pos h₂]
+      simp only [Fin.coe_castSucc, Fin.val_succ]
+      rw [dif_pos h₁, dif_pos h₂]
       convert p.step ⟨i, h₁⟩ using 1
-    · erw [dif_neg h₂]
+    · simp only [Fin.coe_castSucc, Fin.val_succ]
+      rw [dif_neg h₂]
       by_cases h₁ : i.1 < p.length
-      · erw [dif_pos h₁]
+      · rw [dif_pos h₁]
         have h₃ : p.length = i.1 + 1 := by omega
         convert p.step ⟨i, h₁⟩ using 1
         convert connect.symm
         · aesop
         · congr; aesop
-      · erw [dif_neg h₁]
+      · rw [dif_neg h₁]
         convert q.step ⟨i.1 - p.length, _⟩ using 1
         · congr
           change (i.1 + 1) - _ = _

@@ -515,6 +515,7 @@ protected def gi : GaloisInsertion (@closure R _) SetLike.coe where
 variable {R}
 
 /-- Closure of a `NonUnitalSubring` `S` equals `S`. -/
+@[simp]
 theorem closure_eq (s : NonUnitalSubring R) : closure (s : Set R) = s :=
   (NonUnitalSubring.gi R).l_u_eq s
 

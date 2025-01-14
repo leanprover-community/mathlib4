@@ -62,6 +62,8 @@ We define the restriction order `≤r` to give a `PartialOrder` instance on the 
 reserved for the more mathematically important 'minor' order.
 -/
 
+assert_not_exists Field
+
 open Set
 
 namespace Matroid

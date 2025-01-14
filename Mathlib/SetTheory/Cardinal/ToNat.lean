@@ -13,6 +13,8 @@ sending all infinite cardinals to zero.
 We also prove basic lemmas about this definition.
 -/
 
+assert_not_exists Field
+
 universe u v
 open Function Set
 

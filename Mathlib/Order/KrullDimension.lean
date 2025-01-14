@@ -59,6 +59,8 @@ in this file would generalize as well. But we don't think it would be useful, so
 Krull dimension of a preorder.
 -/
 
+assert_not_exists Field
+
 namespace Order
 
 section definitions
@@ -588,7 +590,8 @@ lemma krullDim_eq_top [InfiniteDimensionalOrder α] :
   | some ⊤, _ => le_refl _
   | some (some m), hm => by
     refine (not_lt_of_le (hm (LTSeries.withLength _ (m + 1))) ?_).elim
-    erw [WithBot.coe_lt_coe, WithTop.coe_lt_coe]
+    rw [WithBot.some_eq_coe, ← WithBot.coe_natCast, WithBot.coe_lt_coe,
+      WithTop.some_eq_coe, ← WithTop.coe_natCast, WithTop.coe_lt_coe]
     simp
 
 @[deprecated (since := "2024-12-22")]

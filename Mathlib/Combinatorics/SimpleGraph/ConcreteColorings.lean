@@ -17,6 +17,8 @@ This file defines colorings for some common graphs
 
 -/
 
+assert_not_exists Field
+
 namespace SimpleGraph
 
 theorem two_le_chromaticNumber_of_adj {α} {G : SimpleGraph α} {u v : α} (hAdj : G.Adj u v) :

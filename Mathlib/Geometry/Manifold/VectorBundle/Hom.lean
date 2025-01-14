@@ -6,9 +6,9 @@ Authors: Floris van Doorn
 import Mathlib.Geometry.Manifold.VectorBundle.Basic
 import Mathlib.Topology.VectorBundle.Hom
 
-/-! # Homs of smooth vector bundles over the same base space
+/-! # Homs of `C^n` vector bundles over the same base space
 
-Here we show that `Bundle.ContinuousLinearMap` is a smooth vector bundle.
+Here we show that `Bundle.ContinuousLinearMap` is a `C^n` vector bundle.
 
 Note that we only do this for bundles of linear maps, not for bundles of arbitrary semilinear maps.
 To do it for semilinear maps, we would need to generalize `ContinuousLinearMap.contMDiff`
@@ -24,7 +24,8 @@ open scoped Manifold Bundle Topology
 
 section
 
-variable {𝕜 B F₁ F₂ M : Type*} {E₁ : B → Type*} {E₂ : B → Type*} [NontriviallyNormedField 𝕜]
+variable {𝕜 B F₁ F₂ M : Type*} {n : WithTop ℕ∞}
+  {E₁ : B → Type*} {E₂ : B → Type*} [NontriviallyNormedField 𝕜]
   [∀ x, AddCommGroup (E₁ x)] [∀ x, Module 𝕜 (E₁ x)] [NormedAddCommGroup F₁] [NormedSpace 𝕜 F₁]
   [TopologicalSpace (TotalSpace F₁ E₁)] [∀ x, TopologicalSpace (E₁ x)] [∀ x, AddCommGroup (E₂ x)]
   [∀ x, Module 𝕜 (E₂ x)] [NormedAddCommGroup F₂] [NormedSpace 𝕜 F₂]
@@ -42,13 +43,14 @@ local notation "LE₁E₂" => TotalSpace (F₁ →L[𝕜] F₂) (Bundle.Continuo
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11083): moved slow parts to separate lemmas
 theorem contMDiffOn_continuousLinearMapCoordChange
-    [SmoothVectorBundle F₁ E₁ IB] [SmoothVectorBundle F₂ E₂ IB] [MemTrivializationAtlas e₁]
-    [MemTrivializationAtlas e₁'] [MemTrivializationAtlas e₂] [MemTrivializationAtlas e₂'] :
-    ContMDiffOn IB 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] F₁ →L[𝕜] F₂) ⊤
+    [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
+    [MemTrivializationAtlas e₁] [MemTrivializationAtlas e₁']
+    [MemTrivializationAtlas e₂] [MemTrivializationAtlas e₂'] :
+    ContMDiffOn IB 𝓘(𝕜, (F₁ →L[𝕜] F₂) →L[𝕜] F₁ →L[𝕜] F₂) n
       (continuousLinearMapCoordChange (RingHom.id 𝕜) e₁ e₁' e₂ e₂')
       (e₁.baseSet ∩ e₂.baseSet ∩ (e₁'.baseSet ∩ e₂'.baseSet)) := by
-  have h₁ := contMDiffOn_coordChangeL (IB := IB) e₁' e₁ (n := ⊤)
-  have h₂ := contMDiffOn_coordChangeL (IB := IB) e₂ e₂' (n := ⊤)
+  have h₁ := contMDiffOn_coordChangeL (IB := IB) e₁' e₁ (n := n)
+  have h₂ := contMDiffOn_coordChangeL (IB := IB) e₂ e₂' (n := n)
   refine (h₁.mono ?_).cle_arrowCongr (h₂.mono ?_) <;> mfld_set_tac
 
 @[deprecated (since := "2024-11-21")]
@@ -73,19 +75,23 @@ theorem contMDiffAt_hom_bundle (f : M → LE₁E₂) {x₀ : M} {n : ℕ∞} :
 @[deprecated (since := "2024-11-21")] alias smoothAt_hom_bundle := contMDiffAt_hom_bundle
 
 
-variable [SmoothVectorBundle F₁ E₁ IB] [SmoothVectorBundle F₂ E₂ IB]
+variable [ContMDiffVectorBundle n F₁ E₁ IB] [ContMDiffVectorBundle n F₂ E₂ IB]
 
-instance Bundle.ContinuousLinearMap.vectorPrebundle.isSmooth :
-    (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).IsSmooth IB where
-  exists_smoothCoordChange := by
+instance Bundle.ContinuousLinearMap.vectorPrebundle.isContMDiff :
+    (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).IsContMDiff IB n where
+  exists_contMDiffCoordChange := by
     rintro _ ⟨e₁, e₂, he₁, he₂, rfl⟩ _ ⟨e₁', e₂', he₁', he₂', rfl⟩
     exact ⟨continuousLinearMapCoordChange (RingHom.id 𝕜) e₁ e₁' e₂ e₂',
       contMDiffOn_continuousLinearMapCoordChange,
       continuousLinearMapCoordChange_apply (RingHom.id 𝕜) e₁ e₁' e₂ e₂'⟩
 
-instance SmoothVectorBundle.continuousLinearMap :
-    SmoothVectorBundle (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂) IB :=
-  (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).smoothVectorBundle IB
+@[deprecated (since := "2025-01-09")]
+alias Bundle.ContinuousLinearMap.vectorPrebundle.isSmooth :=
+  Bundle.ContinuousLinearMap.vectorPrebundle.isContMDiff
+
+instance ContMDiffVectorBundle.continuousLinearMap :
+    ContMDiffVectorBundle n (F₁ →L[𝕜] F₂) (Bundle.ContinuousLinearMap (RingHom.id 𝕜) E₁ E₂) IB :=
+  (Bundle.ContinuousLinearMap.vectorPrebundle (RingHom.id 𝕜) F₁ E₁ F₂ E₂).contMDiffVectorBundle IB
 
 end
 
@@ -111,14 +117,14 @@ variable {𝕜 F₁ F₂ B₁ B₂ M : Type*} {E₁ : B₁ → Type*} {E₂ : B�
   {EM : Type*}
   [NormedAddCommGroup EM] [NormedSpace 𝕜 EM] {HM : Type*} [TopologicalSpace HM]
   {IM : ModelWithCorners 𝕜 EM HM} [TopologicalSpace M] [ChartedSpace HM M]
-  {n : ℕ∞} [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
+  {n : WithTop ℕ∞} [FiberBundle F₁ E₁] [VectorBundle 𝕜 F₁ E₁]
   [FiberBundle F₂ E₂] [VectorBundle 𝕜 F₂ E₂]
   {b₁ : M → B₁} {b₂ : M → B₂} {m₀ : M}
   {ϕ : Π (m : M), E₁ (b₁ m) →L[𝕜] E₂ (b₂ m)} {v : Π (m : M), E₁ (b₁ m)} {s : Set M}
 
-/-- Consider a smooth map `v : M → E₁` to a vector bundle, over a basemap `b₁ : M → B₁`, and
+/-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a basemap `b₁ : M → B₁`, and
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending smoothly
-on `m`, one can apply `ϕ m` to `g m`, and the resulting map is smooth.
+on `m`, one can apply `ϕ m` to `g m`, and the resulting map is `C^n`.
 
 Note that the smoothness of `ϕ` can not be always be stated as smoothness of a map into a manifold,
 as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only make sense when `b₁` and `b₂` are globally
@@ -154,9 +160,9 @@ lemma ContMDiffWithinAt.clm_apply_of_inCoordinates
   congr
   rw [Trivialization.symm_apply_apply_mk (trivializationAt F₁ E₁ (b₁ m₀)) hm (v m)]
 
-/-- Consider a smooth map `v : M → E₁` to a vector bundle, over a basemap `b₁ : M → B₁`, and
+/-- Consider a `C^n` map `v : M → E₁` to a vector bundle, over a basemap `b₁ : M → B₁`, and
 another basemap `b₂ : M → B₂`. Given linear maps `ϕ m : E₁ (b₁ m) → E₂ (b₂ m)` depending smoothly
-on `m`, one can apply `ϕ m` to `g m`, and the resulting map is smooth.
+on `m`, one can apply `ϕ m` to `g m`, and the resulting map is `C^n`.
 
 Note that the smoothness of `ϕ` can not be always be stated as smoothness of a map into a manifold,
 as the pullback bundles `b₁ *ᵖ E₁` and `b₂ *ᵖ E₂` only make sense when `b₁` and `b₂` are globally

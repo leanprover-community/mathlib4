@@ -632,6 +632,9 @@ theorem le_iSup (f : ι → α) (i : ι) : f i ≤ iSup f :=
 theorem iInf_le (f : ι → α) (i : ι) : iInf f ≤ f i :=
   sInf_le ⟨i, rfl⟩
 
+lemma iInf_le_iSup [Nonempty ι] : ⨅ i, f i ≤ ⨆ i, f i :=
+  (iInf_le _ (Classical.arbitrary _)).trans <| le_iSup _ (Classical.arbitrary _)
+
 @[deprecated le_iSup (since := "2024-12-13")]
 theorem le_iSup' (f : ι → α) (i : ι) : f i ≤ iSup f := le_iSup f i
 
@@ -1033,13 +1036,15 @@ lemma Equiv.biInf_comp {ι ι' : Type*} {g : ι' → α} (e : ι ≃ ι') (s : S
     ⨅ i ∈ e.symm '' s, g (e i) = ⨅ i ∈ s, g i :=
   e.biSup_comp s (α := αᵒᵈ)
 
-lemma biInf_le {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s) :
-    ⨅ i ∈ s, f i ≤ f i := by
-  simpa only [iInf_subtype'] using iInf_le (ι := s) (f := f ∘ (↑)) ⟨i, hi⟩
+lemma biInf_le {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s) : ⨅ i ∈ s, f i ≤ f i :=
+  iInf₂_le i hi
 
-lemma le_biSup {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s) :
-    f i ≤ ⨆ i ∈ s, f i :=
+lemma le_biSup {ι : Type*} {s : Set ι} (f : ι → α) {i : ι} (hi : i ∈ s) : f i ≤ ⨆ i ∈ s, f i :=
   biInf_le (α := αᵒᵈ) f hi
+
+lemma biInf_le_biSup {ι : Type*} {s : Set ι} (hs : s.Nonempty) {f : ι → α} :
+    ⨅ i ∈ s, f i ≤ ⨆ i ∈ s, f i :=
+  (biInf_le _ hs.choose_spec).trans <| le_biSup _ hs.choose_spec
 
 /- TODO: here is another example where more flexible pattern matching
    might help.

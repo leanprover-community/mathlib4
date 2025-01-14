@@ -101,6 +101,8 @@ For this reason, `Matroid.map` requires injectivity to be well-defined in genera
 * [J. Oxley, Matroid Theory][oxley2011]
 -/
 
+assert_not_exists Field
+
 open Set Function Set.Notation
 namespace Matroid
 variable {α β : Type*} {f : α → β} {E I : Set α} {M : Matroid α} {N : Matroid β}
