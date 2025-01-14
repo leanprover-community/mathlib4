@@ -7,6 +7,7 @@ import Mathlib.Algebra.Group.Action.Opposite
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.GroupWithZero.Associated
 import Mathlib.Algebra.GroupWithZero.Opposite
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Non-zero divisors and smul-divisors
