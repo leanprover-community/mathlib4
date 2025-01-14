@@ -23,8 +23,6 @@ This file introduces the commuting probability of finite groups.
 
 noncomputable section
 
-open scoped Classical
-
 open Fintype
 
 variable (M : Type*) [Mul M]
@@ -76,6 +74,7 @@ variable {M}
 
 theorem commProb_eq_one_iff [h : Nonempty M] :
     commProb M = 1 ↔ Std.Commutative ((· * ·) : M → M → M) := by
+  classical
   haveI := Fintype.ofFinite M
   rw [commProb, ← Set.coe_setOf, Nat.card_eq_fintype_card, Nat.card_eq_fintype_card]
   rw [div_eq_one_iff_eq, ← Nat.cast_pow, Nat.cast_inj, sq, ← card_prod,
