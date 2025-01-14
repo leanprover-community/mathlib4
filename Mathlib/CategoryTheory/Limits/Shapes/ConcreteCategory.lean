@@ -46,7 +46,7 @@ variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
 variable [ConcreteCategory C FC] {J : Type w} (F : J → C)
   [HasProduct F] [PreservesLimit (Discrete.functor F) (forget C)]
 
-/-- The equivalence `CC (∏ᶜ F) ≃ ∀ j, CC F j` if `F : J → C` is a family of objects
+/-- The equivalence `ToType (∏ᶜ F) ≃ ∀ j, ToType F j` if `F : J → C` is a family of objects
 in a concrete category `C`. -/
 noncomputable def productEquiv : ToType (∏ᶜ F) ≃ ∀ j, ToType (F j) :=
   ((PreservesProduct.iso (forget C) F) ≪≫ (Types.productIso.{w, v}
