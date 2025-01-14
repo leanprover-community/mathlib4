@@ -46,7 +46,7 @@ section semiring
 
 variable [Semiring R] (v : AbsoluteValue R S)
 
-instance instNonTrivial [Nontrivial R] : Nontrivial (WithAbs v) := inferInstanceAs (Nontrivial R)
+instance instNontrivial [Nontrivial R] : Nontrivial (WithAbs v) := inferInstanceAs (Nontrivial R)
 
 instance instUnique [Unique R] : Unique (WithAbs v) := inferInstanceAs (Unique R)
 
