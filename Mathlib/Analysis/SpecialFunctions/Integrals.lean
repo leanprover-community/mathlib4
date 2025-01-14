@@ -485,47 +485,51 @@ theorem integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
   · fun_prop
 
 @[simp]
-theorem integral_log : ∫ s in a..b, log s = b * log b - a * log a - b + a := by
-  -- Simple case one: x is positive, y is zero
-  have case₁ {t : ℝ} (ht : 0 < t) : ∫ s in (0)..t, log s = t * log t - t := by
-    -- Compute the integral by giving a primitive and considering it limit as x
-    -- approaches 0 from the right. The following lines were suggested by Gareth
-    -- Ma on Zulip.
-    rw [integral_eq_sub_of_hasDerivAt_of_tendsto (f := fun x ↦ x * log x - x)
-      (fa := 0) (fb := t * log t - t)]
-    · abel
-    · exact ht
-    · intro s hs
-      norm_num at hs
-      convert (hasDerivAt_mul_log hs.left.ne.symm).sub (hasDerivAt_id s) using 1
-      abel
-    · exact intervalIntegrable_log'
-    · have := tendsto_log_mul_rpow_nhds_zero zero_lt_one
-      simp_rw [rpow_one, mul_comm] at this
-      convert this.sub (tendsto_nhdsWithin_of_tendsto_nhds Filter.tendsto_id)
-      abel
-    · apply tendsto_nhdsWithin_of_tendsto_nhds
-      apply ContinuousAt.tendsto
-      fun_prop
+/-- Helper lemma for `integral_log`: case where `a = 0` and `b` is positive. -/
+lemma integral_log_from_zero_of_pos (ht : 0 < b) : ∫ s in (0)..b, log s = b * log b - b := by
+  -- Compute the integral by giving a primitive and considering it limit as x
+  -- approaches 0 from the right. The following lines were suggested by Gareth
+  -- Ma on Zulip.
+  rw [integral_eq_sub_of_hasDerivAt_of_tendsto (f := fun x ↦ x * log x - x)
+    (fa := 0) (fb := b * log b - b) (hint := intervalIntegrable_log')]
+  · abel
+  · exact ht
+  · intro s ⟨hs, _ ⟩
+    have h := (hasDerivAt_mul_log hs.ne.symm).sub (hasDerivAt_id s)
+    simp only [id_eq, add_sub_cancel_right] at h
+    exact h
+  · have h := tendsto_log_mul_rpow_nhds_zero zero_lt_one
+    simp_rw [rpow_one, mul_comm] at h
+    replace h := h.sub (tendsto_nhdsWithin_of_tendsto_nhds Filter.tendsto_id)
+    simp only [id_eq, sub_self] at h
+    assumption
+  · apply tendsto_nhdsWithin_of_tendsto_nhds
+    apply ContinuousAt.tendsto
+    fun_prop
 
-  -- Simple case two: y is zero
-  have case₂ {t : ℝ} : ∫ s in (0)..t, log s = t * log t - t := by
-    rcases lt_trichotomy t 0 with h | h | h
+/-- Helper lemma for `integral_log`: case where `a = 0`. -/
+lemma integral_log_from_zero {b : ℝ} : ∫ s in (0)..b, log s = b * log b - b := by
+    rcases lt_trichotomy b 0 with h | h | h
     · -- If t is negative, use that log is an even function to reduce to the positive case.
-      conv => arg 1; arg 1; intro t; rw [← log_neg_eq_log,]
-      rw [intervalIntegral.integral_comp_neg, intervalIntegral.integral_symm]
-      simp
-      rw [case₁ (Left.neg_pos_iff.mpr h)]
-      simp; abel
-    · rw [h]; simp
-    · exact case₁ h
-  clear case₁
+      conv => arg 1; arg 1; intro t; rw [← log_neg_eq_log]
+      rw [intervalIntegral.integral_comp_neg, intervalIntegral.integral_symm, neg_zero]
+      rw [integral_log_from_zero_of_pos (Left.neg_pos_iff.mpr h), log_neg_eq_log]
+      ring
+    · simp [h]
+    · exact integral_log_from_zero_of_pos h
 
-  -- General case
-  rw [←intervalIntegral.integral_add_adjacent_intervals (b := 0)]
-  · rw [intervalIntegral.integral_symm, case₂, case₂]
+@[simp]
+theorem integral_log : ∫ s in a..b, log s = b * log b - a * log a - b + a := by
+  rw [← intervalIntegral.integral_add_adjacent_intervals (b := 0)]
+  · rw [intervalIntegral.integral_symm, integral_log_from_zero, integral_log_from_zero]
     ring
-  repeat exact intervalIntegrable_log'
+  all_goals exact intervalIntegrable_log'
+
+@[deprecated (since := "2025-01-12")]
+alias integral_log_of_pos := integral_log
+
+@[deprecated (since := "2025-01-12")]
+alias integral_log_of_neg := integral_log
 
 @[deprecated (since := "2025-01-12")]
 alias integral_log_of_pos := integral_log
