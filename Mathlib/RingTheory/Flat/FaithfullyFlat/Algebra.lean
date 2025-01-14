@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Christian Merten, Yi Song, Sihan Su
 -/
 import Mathlib.RingTheory.Flat.FaithfullyFlat.Basic
-import Mathlib.RingTheory.TensorProduct.Quotient
-import Mathlib.RingTheory.PrimeSpectrum
-import Mathlib.RingTheory.LocalRing.RingHom.Basic
 import Mathlib.RingTheory.Ideal.Over
+import Mathlib.RingTheory.LocalRing.RingHom.Basic
+import Mathlib.RingTheory.PrimeSpectrum
+import Mathlib.RingTheory.TensorProduct.Quotient
 
 /-!
 # Properties of faithfully flat algebras
@@ -23,7 +23,15 @@ Let `B` be a faithfully flat `A`-algebra:
   `A` to `B` is the ideal itself.
 - `Module.FaithfullyFlat.tensorProduct_mk_injective`: The natural map `M →ₗ[A] B ⊗[A] M` is
   injective for any `A`-module `M`.
+- `PrimeSpectrum.specComap_surjective_of_faithfullyFlat`: The map on prime spectra induced by
+  a faithfully flat ring map is surjective. See also
+  `Ideal.exists_isPrime_liesOver_of_faithfullyFlat` for a version stated in terms of
+  `Ideal.LiesOver`.
 
+Conversely, let `B` be a flat `A`-algebra:
+
+- `Module.FaithfullyFlat.of_primeSpectrum_comap_surjective`: `B` is faithfully flat over `A`,
+  if the induced map on prime spectra is surjective.
 - `Module.FaithfullyFlat.of_flat_of_isLocalHom`: flat + local implies faithfully flat
 
 -/
@@ -97,6 +105,14 @@ in `B`. -/
 lemma Ideal.comap_surjective_of_faithfullyFlat [Module.FaithfullyFlat A B] :
     Function.Surjective (Ideal.comap (algebraMap A B)) :=
   fun I ↦ ⟨I.map (algebraMap A B), comap_map_eq_self_of_faithfullyFlat I⟩
+
+/-- If `B` is faithfully flat over `A`, every prime of `A` comes from a prime of `B`. -/
+lemma Ideal.exists_isPrime_liesOver_of_faithfullyFlat [Module.FaithfullyFlat A B]
+    (p : Ideal A) [p.IsPrime] :
+    ∃ (P : Ideal B), P.IsPrime ∧ P.LiesOver p := by
+  obtain ⟨P, _, hP⟩ := (Ideal.comap_map_eq_self_iff_of_isPrime p).mp <|
+    p.comap_map_eq_self_of_faithfullyFlat (B := B)
+  exact ⟨P, inferInstance, ⟨hP.symm⟩⟩
 
 /-- If `B` is a faithfully flat `A`-algebra, the induced map on the prime spectrum is
 surjective. -/
