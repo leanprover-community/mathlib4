@@ -529,6 +529,10 @@ theorem _root_.Function.Injective.injOn_range (h : Injective (g ∘ f)) : InjOn 
   rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ H
   exact congr_arg f (h H)
 
+theorem _root_.Set.InjOn.injective_iff (s : Set β) (h : InjOn g s) (hs : range f ⊆ s) :
+    Injective (g ∘ f) ↔ Injective f :=
+  ⟨(·.of_comp), fun h _ ↦ by aesop⟩
+
 theorem injOn_iff_injective : InjOn f s ↔ Injective (s.restrict f) :=
   ⟨fun H a b h => Subtype.eq <| H a.2 b.2 h, fun H a as b bs h =>
     congr_arg Subtype.val <| @H ⟨a, as⟩ ⟨b, bs⟩ h⟩
@@ -609,6 +613,8 @@ lemma InjOn.image_diff {t : Set α} (h : s.InjOn f) : f '' (s \ t) = f '' s \ f 
 lemma InjOn.image_diff_subset {f : α → β} {t : Set α} (h : InjOn f s) (hst : t ⊆ s) :
     f '' (s \ t) = f '' s \ f '' t := by
   rw [h.image_diff, inter_eq_self_of_subset_right hst]
+
+alias image_diff_of_injOn := InjOn.image_diff_subset
 
 theorem InjOn.imageFactorization_injective (h : InjOn f s) :
     Injective (s.imageFactorization f) :=

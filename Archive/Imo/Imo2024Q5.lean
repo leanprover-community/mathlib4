@@ -302,7 +302,7 @@ lemma Path.tail_induction {motive : Path N → Prop} (ind : ∀ p, motive p.tail
   case cons head tail hi =>
     by_cases h : (p'.cells[1]'p'.one_lt_length_cells).1 = 0
     · refine ind p' ?_
-      simp_rw [Path.tail, if_pos h, List.tail_cons]
+      simp_rw [Path.tail, if_pos h, p', List.tail_cons]
       exact hi _ _ _ _
     · exact base p' h
 

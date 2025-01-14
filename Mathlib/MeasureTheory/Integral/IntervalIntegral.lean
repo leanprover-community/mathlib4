@@ -420,8 +420,12 @@ as `∫ x in Ioc a b, f x ∂μ - ∫ x in Ioc b a, f x ∂μ`. If `a ≤ b`, th
 def intervalIntegral (f : ℝ → E) (a b : ℝ) (μ : Measure ℝ) : E :=
   (∫ x in Ioc a b, f x ∂μ) - ∫ x in Ioc b a, f x ∂μ
 
+@[inherit_doc intervalIntegral]
 notation3"∫ "(...)" in "a".."b", "r:60:(scoped f => f)" ∂"μ:70 => intervalIntegral r a b μ
 
+/-- The interval integral `∫ x in a..b, f x` is defined
+as `∫ x in Ioc a b, f x - ∫ x in Ioc b a, f x`. If `a ≤ b`, then it equals
+`∫ x in Ioc a b, f x`, otherwise it equals `-∫ x in Ioc b a, f x`. -/
 notation3"∫ "(...)" in "a".."b", "r:60:(scoped f => intervalIntegral f a b volume) => r
 
 namespace intervalIntegral
@@ -1066,6 +1070,15 @@ theorem integral_mono_on (h : ∀ x ∈ Icc a b, f x ≤ g x) :
     (∫ u in a..b, f u ∂μ) ≤ ∫ u in a..b, g u ∂μ := by
   let H x hx := h x <| Ioc_subset_Icc_self hx
   simpa only [integral_of_le hab] using setIntegral_mono_on hf.1 hg.1 measurableSet_Ioc H
+
+theorem integral_mono_on_of_le_Ioo [NoAtoms μ] (h : ∀ x ∈ Ioo a b, f x ≤ g x) :
+    (∫ u in a..b, f u ∂μ) ≤ ∫ u in a..b, g u ∂μ := by
+  simp only [integral_of_le hab, integral_Ioc_eq_integral_Ioo]
+  apply setIntegral_mono_on
+  · apply hf.1.mono Ioo_subset_Ioc_self le_rfl
+  · apply hg.1.mono Ioo_subset_Ioc_self le_rfl
+  · exact measurableSet_Ioo
+  · exact h
 
 theorem integral_mono (h : f ≤ g) : (∫ u in a..b, f u ∂μ) ≤ ∫ u in a..b, g u ∂μ :=
   integral_mono_ae hab hf hg <| ae_of_all _ h
