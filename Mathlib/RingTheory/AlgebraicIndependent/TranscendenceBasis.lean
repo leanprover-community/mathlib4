@@ -125,3 +125,36 @@ theorem IsTranscendenceBasis.isAlgebraic_field {F E : Type*} {x : ι → E}
   haveI : IsScalarTower (adjoin F S) (IntermediateField.adjoin F S) E :=
     IsScalarTower.of_algebraMap_eq (congrFun rfl)
   exact Algebra.IsAlgebraic.extendScalars (R := adjoin F S) (Subalgebra.inclusion_injective _)
+
+theorem finite_of_isTranscendenceBasis_of_algebraic_adjoin [DecidableEq ι] [NoZeroDivisors A]
+    (x : ι → A) (y : ι' → A)
+    (hx : Algebra.IsAlgebraic (adjoin R (range x)) A)
+    (hy : AlgebraicIndependent R y) (i : ι') :
+    ∃ j : ι, Algebra.IsAlgebraic (adjoin R (range (Function.update x j (y i)))) A := by
+  obtain ⟨P, hP⟩ := exists_mvPolynomial_of_isAlgebraic_adjoin_range_left (hx.isAlgebraic (y i))
+  obtain ⟨j, hj⟩ : ∃ j, some j ∈ P.vars := by
+    by_contra h
+    have hPC : RingHom.id _ P = ((MvPolynomial.rename (fun _ => none)).toRingHom.comp
+      (MvPolynomial.rename (fun _ => i)).toRingHom) P := by
+      refine MvPolynomial.hom_congr_vars (by ext; simp) ?_ rfl
+      intro i hi _
+      induction i <;> simp_all
+    rw [RingHom.id_apply] at hPC
+    rw [hPC] at hP
+    apply hP.1
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply]
+    rw [algebraicIndependent_iff.1 hy ((MvPolynomial.rename (fun _ => i)) P), map_zero]
+    simpa [Function.comp_def, aeval_rename] using hP.2
+  use j
+  have h1 : Algebra.IsAlgebraic (adjoin R (range x ∪ {y i})) A := by sorry
+  let i1 : Algebra (adjoin R (range (Function.update x j (y i)))) (adjoin R (range x ∪ {y i})) :=
+    RingHom.toAlgebra (Subalgebra.inclusion (Algebra.adjoin_mono (by
+      rintro _ ⟨y, rfl⟩
+      simp [Function.update]
+      split_ifs <;> simp_all))).toRingHom
+  have i2 : IsScalarTower (adjoin R (range (Function.update x j (y i))))
+    (adjoin R (range x ∪ {y i})) A := IsScalarTower.of_algebraMap_eq (fun _ => rfl)
+  have h2 : Algebra.IsAlgebraic (adjoin R (range (Function.update x j (y i))))
+    (adjoin R (range x ∪ {y i})) := by sorry
+  refine IsAlgebraic.trans' (adjoin R (range (Function.update x j (y i))))
+    (S := adjoin R (range x ∪ {y i})) ?_

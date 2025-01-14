@@ -443,6 +443,25 @@ theorem Algebra.IsAlgebraic.tower_bot_of_injective [Algebra.IsAlgebraic R A]
   isAlgebraic x := by
     simpa [isAlgebraic_algebraMap_iff hinj] using isAlgebraic (R := R) (A := A) (algebraMap _ _ x)
 
+theorem exists_mvPolynomial_of_isAlgebraic_adjoin_range_left {ι : Type*} {v : ι → S}
+    {x : S} (h : IsAlgebraic (Algebra.adjoin R (Set.range v)) x) :
+    ∃ P : MvPolynomial (Option ι) R, P ≠ 0 ∧ P.aeval (fun o => o.elim x v) = 0 := by
+  rw [Algebra.adjoin_range_eq_range_aeval, IsAlgebraic, Function.Surjective.exists
+      (Polynomial.map_surjective _ (AlgHom.rangeRestrict_surjective _)),
+      Function.Surjective.exists (MvPolynomial.optionEquivLeft _ _).surjective] at h
+  obtain ⟨P, hP⟩ := h
+  use P
+  refine ⟨by rintro rfl; simp at hP, ?_⟩
+  rw [← hP.2]; clear hP
+  induction P using MvPolynomial.induction_on with
+  | h_C => simp_all [Subalgebra.algebraMap_eq]
+  | h_add => simp_all
+  | h_X p i ih =>
+    induction i with
+    | none => simp_all
+    | some i =>
+      rw [map_mul, ih]; simp [Subalgebra.algebraMap_eq]
+
 end CommRing
 
 section Field
