@@ -275,7 +275,7 @@ theorem kernel.condition : kernel.ι f ≫ f = 0 :=
 
 /-- The kernel built from `kernel.ι f` is limiting. -/
 def kernelIsKernel : IsLimit (Fork.ofι (kernel.ι f) ((kernel.condition f).trans comp_zero.symm)) :=
-  IsLimit.ofIsoLimit (limit.isLimit _) (Fork.ext (Iso.refl _) (by aesop_cat))
+  IsLimit.ofIsoLimit (limit.isLimit _) (Fork.ext (Iso.refl _) (by simp))
 
 /-- Given any morphism `k : W ⟶ X` satisfying `k ≫ f = 0`, `k` factors through `kernel.ι f`
     via `kernel.lift : W ⟶ kernel f`. -/
@@ -425,8 +425,8 @@ instance hasKernel_iso_comp {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [IsIso f] [H
     HasKernel (f ≫ g) where
   exists_limit :=
     ⟨{  cone := KernelFork.ofι (kernel.ι g ≫ inv f) (by simp)
-        isLimit := isLimitAux _ (fun s => kernel.lift _ (s.ι ≫ f) (by aesop_cat))
-            (by aesop_cat) fun s m w => by
+        isLimit := isLimitAux _ (fun s => kernel.lift _ (s.ι ≫ f) (by simp))
+            (by simp) fun s m w => by
           simp_rw [← w]
           symm
           apply equalizer.hom_ext
@@ -751,7 +751,7 @@ lemma colimit_ι_zero_cokernel_desc {C : Type*} [Category C]
     [HasZeroMorphisms C] {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) (h : f ≫ g = 0) [HasCokernel f] :
     colimit.ι (parallelPair f 0) WalkingParallelPair.zero ≫ cokernel.desc f g h = 0 := by
   rw [(colimit.w (parallelPair f 0) WalkingParallelPairHom.left).symm]
-  aesop_cat
+  simp
 
 @[simp]
 theorem cokernel.desc_zero {W : C} {h} : cokernel.desc f (0 : Y ⟶ W) h = 0 := by
@@ -884,7 +884,7 @@ instance hasCokernel_comp_iso {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) [HasCokern
           isColimitAux _
             (fun s =>
               cokernel.desc _ (g ≫ s.π) (by rw [← Category.assoc, CokernelCofork.condition]))
-            (by aesop_cat) fun s m w => by
+            (by simp) fun s m w => by
             simp_rw [← w]
             symm
             apply coequalizer.hom_ext

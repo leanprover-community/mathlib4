@@ -3,7 +3,7 @@ Copyright (c) 2021 Ivan Sadofschi Costa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ivan Sadofschi Costa, Quang Dao
 -/
-import Mathlib.Data.Finsupp.Defs
+import Mathlib.Data.Finsupp.Single
 
 /-!
 # Tuple operations on maps `Fin n →₀ M`
@@ -78,18 +78,10 @@ theorem removeNth_update : removeNth p (update s p y) = removeNth p s := by
 theorem tail_apply : tail s i = s i.succ := rfl
 
 @[simp]
-theorem tail_update_zero : tail (update s 0 y) = tail s := by
-  simp only [tail, update, coe_mk, EmbeddingLike.apply_eq_iff_eq]
-  convert Fin.tail_update_zero (⇑s) y
+theorem tail_update_zero : tail (update s 0 y) = tail s := by simp [tail]
 
 @[simp]
-theorem tail_update_succ : tail (update s i.succ y) = update (tail s) i y := by
-  ext a
-  have : ⇑(equivFunOnFinite.symm (Fin.tail ⇑s)) = Fin.tail ⇑s := rfl
-  simp only [tail, update, this, coe_mk, equivFunOnFinite_symm_apply_toFun]
-  have : Fin.tail (Function.update (⇑s) i.succ y) a = Function.update (Fin.tail ⇑s) i y a := by
-    simp only [Fin.tail_update_succ]
-  convert this
+theorem tail_update_succ : tail (update s i.succ y) = update (tail s) i y := by ext; simp [tail]
 
 @[simp]
 theorem init_apply : init s i = s i.castSucc := rfl

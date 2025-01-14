@@ -61,7 +61,7 @@ lemma _root_.PresheafOfModules.Sheafify.app_eq_of_isLocallyInjective
     (hr₀ : α.app _ r₀ = α.app _ r₀')
     (hm₀ : φ.app _ m₀ = φ.app _ m₀') :
     φ.app _ (r₀ • m₀) = φ.app _ (r₀' • m₀') := by
-  apply hA _ (Presheaf.equalizerSieve (D := RingCat) r₀ r₀' ⊓
+  apply hA _ (Presheaf.equalizerSieve r₀ r₀' ⊓
       Presheaf.equalizerSieve (F := M₀.presheaf) m₀ m₀')
   · apply J.intersection_covering
     · exact Presheaf.equalizerSieve_mem J α _ _ hr₀
@@ -318,7 +318,7 @@ noncomputable def sheafify : SheafOfModules.{v} R where
 def toSheafify : M₀ ⟶ (restrictScalars α).obj (sheafify α φ).val :=
   homMk φ (fun X r₀ m₀ ↦ by
     simpa using (Sheafify.map_smul_eq α φ (α.app _ r₀) (φ.app _ m₀) (𝟙 _)
-      r₀ (by aesop) m₀ (by simp)).symm)
+      r₀ (by simp) m₀ (by simp)).symm)
 
 lemma toSheafify_app_apply (X : Cᵒᵖ) (x : M₀.obj X) :
     ((toSheafify α φ).app X).hom x = φ.app X x := rfl

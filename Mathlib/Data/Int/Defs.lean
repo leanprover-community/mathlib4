@@ -91,9 +91,6 @@ protected theorem ofNat_add_one_out (n : ℕ) : ↑n + (1 : ℤ) = ↑(succ n) :
 
 @[simp] lemma ofNat_eq_natCast (n : ℕ) : Int.ofNat n = n := rfl
 
-@[deprecated ofNat_eq_natCast (since := "2024-03-24")]
-protected lemma natCast_eq_ofNat (n : ℕ) : ↑n = Int.ofNat n := rfl
-
 @[norm_cast] lemma natCast_inj {m n : ℕ} : (m : ℤ) = (n : ℤ) ↔ m = n := ofNat_inj
 
 @[simp, norm_cast] lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
@@ -222,7 +219,7 @@ than `b`, and the `pred` of a number less than `b`. -/
 where
   /-- The positive case of `Int.inductionOn'`. -/
   pos : ∀ n : ℕ, C (b + n)
-  | 0 => cast (by erw [Int.add_zero]) H0
+  | 0 => cast (by simp) H0
   | n+1 => cast (by rw [Int.add_assoc]; rfl) <|
     Hs _ (Int.le_add_of_nonneg_right (ofNat_nonneg _)) (pos n)
 
