@@ -116,6 +116,9 @@ end algebra
 
 /-!
 ### `WithAbs.equiv` preserves the ring structure.
+
+These are deprecated as they are special cases of the generic `map_zero` etc. lemmas
+after `WithAbs.equiv` is defined to be a ring equivalence.
 -/
 
 section equiv_semiring
