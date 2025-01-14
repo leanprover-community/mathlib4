@@ -163,6 +163,7 @@ theorem num_series' [Field α] (i : ℕ) :
 def mkOdd : ℕ ↪ ℕ :=
   ⟨fun i => 2 * i + 1, fun x y h => by linarith⟩
 
+open scoped Classical in
 -- The main workhorse of the partition theorem proof.
 theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ) (hs : ∀ i ∈ s, 0 < i)
     (c : ℕ → Set ℕ) (hc : ∀ i, i ∉ s → 0 ∈ c i) :
