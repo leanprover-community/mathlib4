@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sophie Morel
 -/
 import Mathlib.Algebra.Category.MonCat.Basic
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Algebra.Group.Nat.Hom
 
 /-!
 # The forget functor is corepresentable
