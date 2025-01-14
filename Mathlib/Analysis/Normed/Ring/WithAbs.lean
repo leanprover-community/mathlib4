@@ -92,7 +92,7 @@ instance instModule_left [AddCommGroup R'] [Module R R'] (v : AbsoluteValue R S)
     Module (WithAbs v) R' :=
   inferInstanceAs <| Module R R'
 
-instance instModule_right [Semiring R'] [Module R R'] (v : AbsoluteValue R' ℝ) :
+instance instModule_right [Semiring R'] [Module R R'] (v : AbsoluteValue R' S) :
     Module R (WithAbs v) :=
   inferInstanceAs <| Module R R'
 
