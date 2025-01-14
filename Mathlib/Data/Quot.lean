@@ -453,7 +453,7 @@ def trueSetoid : Setoid α :=
 
 namespace Squash
 
-variable {α β : Type*}
+variable {α β : Sort*}
 
 instance [Inhabited α] : Inhabited (Squash α) :=
   ⟨.mk default⟩
