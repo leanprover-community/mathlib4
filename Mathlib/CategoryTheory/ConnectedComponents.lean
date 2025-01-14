@@ -52,7 +52,7 @@ instance [Inhabited J] : Inhabited (ConnectedComponents J) :=
 /-- Every function from connected components of a category gives a functor to discrete category -/
 def ConnectedComponents.functorToDiscrete   (X : Type*)
     (f : ConnectedComponents J → X) : J ⥤ Discrete X where
-  obj Y :=  Discrete.mk (f (Quotient.mk (Zigzag.setoid _) Y))
+  obj Y := Discrete.mk (f (Quotient.mk (Zigzag.setoid _) Y))
   map g := Discrete.eqToHom (congrArg f (Quotient.sound (Zigzag.of_hom g)))
 
 /-- Every functor to a discrete category gives a function from connected components -/
@@ -66,11 +66,11 @@ def ConnectedComponents.typeToCatHomEquiv (J) [Category J] (X : Type*) :
     (ConnectedComponents J → X) ≃ (J ⥤ Discrete X)   where
   toFun := ConnectedComponents.functorToDiscrete _
   invFun := ConnectedComponents.liftFunctor _
-  left_inv := fun f ↦ funext fun x ↦ by
+  left_inv f := funext fun x ↦ by
     obtain ⟨x, h⟩ := Quotient.exists_rep x
     rw [← h]
     rfl
-  right_inv  := fun fctr ↦
+  right_inv fctr :=
     Functor.hext (fun _ ↦ rfl) (fun c d f ↦
       have : Subsingleton (fctr.obj c ⟶ fctr.obj d) := Discrete.instSubsingletonDiscreteHom _ _
       (Subsingleton.elim (fctr.map f) _).symm.heq)
@@ -82,7 +82,6 @@ def Component (j : ConnectedComponents J) : Type u₁ :=
 instance {j : ConnectedComponents J} : Category (Component j) :=
   FullSubcategory.category _
 
--- Porting note: it was originally @[simps (config := { rhsMd := semireducible })]
 /-- The inclusion functor from a connected component to the whole category. -/
 @[simps!]
 def Component.ι (j : ConnectedComponents J) : Component j ⥤ J :=
@@ -142,7 +141,6 @@ this abbreviation helps guide typeclass search to get the right category instanc
 abbrev inclusion (j : ConnectedComponents J) : Component j ⥤ Decomposed J :=
   Sigma.incl _
 
--- Porting note: it was originally @[simps (config := { rhsMd := semireducible })]
 /-- The forward direction of the equivalence between the decomposed category and the original. -/
 @[simps!]
 def decomposedTo (J : Type u₁) [Category.{v₁} J] : Decomposed J ⥤ J :=
@@ -172,7 +170,6 @@ instance : (decomposedTo J).EssSurj where mem_essImage j := ⟨⟨_, j, rfl⟩, 
 
 instance : (decomposedTo J).IsEquivalence where
 
--- Porting note: it was originally @[simps (config := { rhsMd := semireducible }) Functor]
 /-- This gives that any category is equivalent to a disjoint union of connected categories. -/
 @[simps! functor]
 def decomposedEquiv : Decomposed J ≌ J :=

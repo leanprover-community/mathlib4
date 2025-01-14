@@ -3,6 +3,8 @@ Copyright (c) 2020 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
+
+import Mathlib.Algebra.Category.MonCat.ForgetCorepresentable
 import Mathlib.Algebra.Category.Grp.ForgetCorepresentable
 import Mathlib.Algebra.Category.Grp.Preadditive
 import Mathlib.Algebra.Category.MonCat.Limits
@@ -487,8 +489,6 @@ theorem kernelIsoKer_inv_comp_ι {G H : AddCommGrp.{u}} (f : G ⟶ H) :
   ext
   simp [kernelIsoKer]
 
--- Porting note: explicitly add what to be synthesized under `simps!`, because other lemmas
--- automatically generated is not in normal form
 /-- The categorical kernel inclusion for `f : G ⟶ H`, as an object over `G`,
 agrees with the `AddSubgroup.subtype` map.
 -/

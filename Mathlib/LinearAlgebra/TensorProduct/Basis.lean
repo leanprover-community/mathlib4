@@ -100,13 +100,17 @@ lemma TensorProduct.equivFinsuppOfBasisRight_symm_apply (b : κ →₀ M) :
     (TensorProduct.equivFinsuppOfBasisRight 𝒞).symm b = b.sum fun i m ↦ m ⊗ₜ 𝒞 i :=
   congr($(TensorProduct.equivFinsuppOfBasisRight_symm 𝒞) b)
 
+omit [DecidableEq κ] in
 lemma TensorProduct.sum_tmul_basis_right_injective :
     Function.Injective (Finsupp.lsum R fun i ↦ (TensorProduct.mk R M N).flip (𝒞 i)) :=
+  have := Classical.decEq κ
   (equivFinsuppOfBasisRight_symm (M := M) 𝒞).symm ▸
     (TensorProduct.equivFinsuppOfBasisRight 𝒞).symm.injective
 
+omit [DecidableEq κ] in
 lemma TensorProduct.sum_tmul_basis_right_eq_zero
     (b : κ →₀ M) (h : (b.sum fun i m ↦ m ⊗ₜ[R] 𝒞 i) = 0) : b = 0 :=
+  have := Classical.decEq κ
   (TensorProduct.equivFinsuppOfBasisRight 𝒞).symm.injective (a₂ := 0) <| by simpa
 
 /--
@@ -138,26 +142,32 @@ lemma TensorProduct.equivFinsuppOfBasisLeft_symm_apply (b : ι →₀ N) :
     (TensorProduct.equivFinsuppOfBasisLeft ℬ).symm b = b.sum fun i n ↦ ℬ i ⊗ₜ n :=
   congr($(TensorProduct.equivFinsuppOfBasisLeft_symm ℬ) b)
 
+omit [DecidableEq κ] in
 /-- Elements in `M ⊗ N` can be represented by sum of elements in `M` tensor elements of basis of
 `N`. -/
 lemma TensorProduct.eq_repr_basis_right :
     ∃ b : κ →₀ M, b.sum (fun i m ↦ m ⊗ₜ 𝒞 i) = x := by
-  simpa using (TensorProduct.equivFinsuppOfBasisRight 𝒞).symm.surjective x
+  classical simpa using (TensorProduct.equivFinsuppOfBasisRight 𝒞).symm.surjective x
 
+omit [DecidableEq ι] in
 /-- Elements in `M ⊗ N` can be represented by sum of elements of basis of `M` tensor elements of
   `N`.-/
 lemma TensorProduct.eq_repr_basis_left :
     ∃ (c : ι →₀ N), (c.sum fun i n ↦ ℬ i ⊗ₜ n) = x := by
-  obtain ⟨c, rfl⟩ := (TensorProduct.equivFinsuppOfBasisLeft ℬ).symm.surjective x
+  classical obtain ⟨c, rfl⟩ := (TensorProduct.equivFinsuppOfBasisLeft ℬ).symm.surjective x
   exact ⟨c, (TensorProduct.comm R M N).injective <| by simp [Finsupp.sum]⟩
 
+omit [DecidableEq ι] in
 lemma TensorProduct.sum_tmul_basis_left_injective :
     Function.Injective (Finsupp.lsum R fun i ↦ (TensorProduct.mk R M N) (ℬ i)) :=
+  have := Classical.decEq ι
   (equivFinsuppOfBasisLeft_symm (N := N) ℬ).symm ▸
     (TensorProduct.equivFinsuppOfBasisLeft ℬ).symm.injective
 
+omit [DecidableEq ι] in
 lemma TensorProduct.sum_tmul_basis_left_eq_zero
     (b : ι →₀ N) (h : (b.sum fun i n ↦ ℬ i ⊗ₜ[R] n) = 0) : b = 0 :=
+  have := Classical.decEq ι
   (TensorProduct.equivFinsuppOfBasisLeft ℬ).symm.injective (a₂ := 0) <| by simpa
 
 end
