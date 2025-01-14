@@ -386,17 +386,6 @@ theorem IsBlock.translate (g : G) (hB : IsBlock G B) :
   apply IsBlock.of_subgroup_of_conjugate
   rwa [Subgroup.comap_top]
 
-/-- A translate of a block is a block -/
-theorem _root_.AddAction.IsBlock.translate
-    {G : Type*} [AddGroup G] {X : Type*} [AddAction G X] (B : Set X)
-    (g : G) (hB : AddAction.IsBlock G B) :
-    AddAction.IsBlock G (g +ᵥ B) := by
-  rw [← AddAction.isBlock_top] at hB ⊢
-  rw [← AddSubgroup.map_comap_eq_self_of_surjective (G := G) ?_ ⊤]
-  · apply AddAction.IsBlock.of_addsubgroup_of_conjugate
-    rwa [AddSubgroup.comap_top]
-  · exact (AddAut.conj g).surjective
-
 variable (G) in
 /-- For `SMul G X`, a block system of `X` is a partition of `X` into blocks
   for the action of `G` -/
