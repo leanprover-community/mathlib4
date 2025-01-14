@@ -553,7 +553,7 @@ theorem exists_injOn_iff_injective [Nonempty β] :
     exact ⟨f, injOn_iff_injective.2 hf⟩⟩
 
 theorem injOn_preimage {B : Set (Set β)} (hB : B ⊆ 𝒫 range f) : InjOn (preimage f) B :=
-  fun _ hs _ ht hst => (preimage_eq_preimage' (hB hs) (hB ht)).1 hst
+  fun s hs t ht hst => (preimage_eq_preimage' (@hB s hs) (@hB t ht)).1 hst
 -- Porting note: is there a semi-implicit variable problem with `⊆`?
 
 theorem InjOn.mem_of_mem_image {x} (hf : InjOn f s) (hs : s₁ ⊆ s) (h : x ∈ s) (h₁ : f x ∈ f '' s₁) :
