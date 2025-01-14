@@ -358,12 +358,8 @@ lemma dist_iterate_next_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L
     apply div_le_div_of_nonneg_right _ (Nat.cast_nonneg _)
     apply pow_le_pow_left₀ <| mul_nonneg K.2 (abs_nonneg _)
     exact mul_le_mul_of_nonneg_left (abs_sub_le_max_sub t.2.1 t.2.2 _) K.2
-  · apply mul_nonneg _ dist_nonneg
-    apply div_nonneg _ (Nat.cast_nonneg _)
-    apply pow_nonneg
-    apply mul_nonneg K.2
-    apply le_max_of_le_left
-    exact sub_nonneg_of_le t₀.2.2
+  · have : 0 ≤ max (tmax - t₀) (t₀ - tmin) := le_max_of_le_left <| sub_nonneg_of_le t₀.2.2
+    positivity
 
 /-- Some `n`-th iterate of `next` is a contracting map, and its associated Lipschitz constant is
 independent of the initial point. -/
@@ -372,9 +368,9 @@ lemma exists_contractingWith_iterate_next (hf : IsPicardLindelof f t₀ x₀ a r
       ContractingWith C (next hf hx)^[n] := by
   obtain ⟨n, hn⟩ := FloorSemiring.tendsto_pow_div_factorial_atTop (K * max (tmax - t₀) (t₀ - tmin))
     |>.eventually (gt_mem_nhds zero_lt_one) |>.exists
-  have : (0 : ℝ) ≤ (K * max (tmax - t₀) (t₀ - tmin)) ^ n / n ! :=
-    div_nonneg (pow_nonneg (mul_nonneg K.2 (le_max_iff.2 <| Or.inl <| sub_nonneg.2 t₀.2.2)) _)
-      (Nat.cast_nonneg _)
+  have : (0 : ℝ) ≤ (K * max (tmax - t₀) (t₀ - tmin)) ^ n / n ! := by
+    have : 0 ≤ max (tmax - t₀) (t₀ - tmin) := le_max_of_le_left <| sub_nonneg_of_le t₀.2.2
+    positivity
   refine ⟨n, ⟨_, this⟩, fun x hx ↦ ?_⟩
   exact ⟨hn, LipschitzWith.of_dist_le_mul fun α β ↦ dist_iterate_next_iterate_next_le hf hx α β n⟩
 
