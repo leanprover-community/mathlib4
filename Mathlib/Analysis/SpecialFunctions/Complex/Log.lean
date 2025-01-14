@@ -278,7 +278,7 @@ lemma Real.rexp_tsum_eq_tprod (f : ι → α → ℝ) (hfn : ∀ x n, 0 < f n x)
   congr
   exact funext fun x ↦ exp_log (hfn a x)
 
-lemma Real.summable_cexp_multipliable (f : ι → α → ℝ) (hfn : ∀ x n, 0 < f n x)
+lemma Real.summable_multipliable (f : ι → α → ℝ) (hfn : ∀ x n, 0 < f n x)
     (hf : ∀ x : α, Summable fun n => log (f n x)) (a : α): Multipliable fun b ↦ f b a := by
   have := (Real.HasSum_rexp_HasProd f hfn fun a => (hf a).hasSum) a
   use (∏' n : ι, (f n a))
@@ -295,7 +295,7 @@ lemma Complex.HasSum_cexp_HasProd (f : ι → α → ℂ) (hfn : ∀ x n, f n x 
     exact funext fun x ↦ exp_log (hfn a x)
   rwa [HasProd.tprod_eq this]
 
-lemma Complex.summable_cexp_multipliable (f : ι → α → ℂ) (hfn : ∀ x n, f n x ≠ 0)
+lemma Complex.summable_multipliable (f : ι → α → ℂ) (hfn : ∀ x n, f n x ≠ 0)
     (hf : ∀ x : α, Summable fun n => log (f n x)) (a : α):
       Multipliable fun b ↦ f b a := by
   have := (Complex.HasSum_cexp_HasProd f hfn fun a => (hf a).hasSum) a
