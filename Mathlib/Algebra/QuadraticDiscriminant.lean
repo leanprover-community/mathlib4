@@ -7,7 +7,6 @@ import Mathlib.Order.Filter.AtTopBot.Field
 import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linarith.Frontend
-import Mathlib.Algebra.Polynomial.Roots
 import Mathlib.RingTheory.Polynomial.Vieta
 
 /-!
@@ -28,7 +27,6 @@ This file defines the discriminant of a quadratic and gives the solution to a qu
 - `discrim_le_zero`: if a quadratic is always non-negative, then its discriminant is non-positive.
 - `discrim_le_zero_of_nonpos`, `discrim_lt_zero`, `discrim_lt_zero_of_neg`: versions of this
   statement with other inequalities.
-- `quadratic_factor`: quadratic factors to `a*(x-x1)*(x-x2)` given `x1,x2` as its roots.
 - `quadratic_vieta`, `quadratic_vieta'`: Vieta's formula for quadratic.
 
 ## Tags
