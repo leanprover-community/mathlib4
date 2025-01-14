@@ -92,6 +92,16 @@ def of_coeff (f : Γ → V →ₗ[R] W)
 
 @[deprecated (since := "2024-06-18")] alias _root_.VertexAlg.HetVertexOperator.of_coeff := of_coeff
 
+@[simp]
+theorem add_coeff (A B : HVertexOperator Γ R V W) : (A + B).coeff = A.coeff + B.coeff := by
+  ext
+  simp
+
+@[simp]
+theorem smul_coeff (A : HVertexOperator Γ R V W) (r : R) : (r • A).coeff = r • (A.coeff) := by
+  ext
+  simp
+
 end Coeff
 
 section Products

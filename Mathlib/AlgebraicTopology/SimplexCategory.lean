@@ -231,6 +231,10 @@ def mkOfLe {n} (i j : Fin (n+1)) (h : i ≤ j) : ([1] : SimplexCategory) ⟶ [n]
       | 0, 1, _ => h
   }
 
+@[simp]
+lemma mkOfLe_refl {n} (j : Fin (n + 1)) :
+    mkOfLe j j (by omega) = [1].const [n] j := Hom.ext_one_left _ _
+
 /-- The morphism `[1] ⟶ [n]` that picks out the "diagonal composite" edge-/
 def diag (n : ℕ) : ([1] : SimplexCategory) ⟶ [n] :=
   mkOfLe 0 n (Fin.zero_le _)

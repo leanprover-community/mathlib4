@@ -3,9 +3,10 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard
 -/
-import Mathlib.Algebra.BigOperators.Group.Finset
 import Mathlib.Algebra.Group.Submonoid.Defs
 import Mathlib.Deprecated.Group
+import Mathlib.Data.Set.Lattice
+import Mathlib.Algebra.BigOperators.Group.Finset.Defs
 
 /-!
 # Unbundled submonoids (deprecated)
@@ -184,7 +185,6 @@ theorem IsSubmonoid.pow_mem {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : ∀ {n 
       the `AddSubmonoid`."]
 theorem IsSubmonoid.powers_subset {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : powers a ⊆ s :=
   fun _ ⟨_, hx⟩ => hx ▸ hs.pow_mem h
-@[deprecated (since := "2024-02-21")] alias IsSubmonoid.power_subset := IsSubmonoid.powers_subset
 
 end powers
 

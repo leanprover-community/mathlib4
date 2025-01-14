@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Polynomial.Expand
 import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.RingTheory.Adjoin.Polynomial
 import Mathlib.RingTheory.Algebraic.Defs
 import Mathlib.RingTheory.Polynomial.Tower
 
@@ -31,9 +32,24 @@ theorem is_transcendental_of_subsingleton [Subsingleton R] (x : A) : Transcenden
 
 variable {R}
 
-variable (R) in
+theorem IsAlgebraic.nontrivial {a : A} (h : IsAlgebraic R a) : Nontrivial R := by
+  contrapose! h
+  rw [not_nontrivial_iff_subsingleton] at h
+  apply is_transcendental_of_subsingleton
+
+variable (R A)
+
+theorem Algebra.IsAlgebraic.nontrivial [alg : Algebra.IsAlgebraic R A] : Nontrivial R :=
+  (alg.1 0).nontrivial
+
+instance (priority := low) Algebra.transcendental_of_subsingleton [Subsingleton R] :
+    Algebra.Transcendental R A :=
+  ⟨⟨0, is_transcendental_of_subsingleton R 0⟩⟩
+
 theorem Polynomial.transcendental_X : Transcendental R (X (R := R)) := by
   simp [transcendental_iff]
+
+variable {R A}
 
 theorem IsAlgebraic.of_aeval {r : A} (f : R[X]) (hf : f.natDegree ≠ 0)
     (hf' : f.leadingCoeff ∈ nonZeroDivisors R) (H : IsAlgebraic R (aeval r f)) :
@@ -93,6 +109,17 @@ theorem transcendental_iff_ker_eq_bot {x : A} :
     Transcendental R x ↔ RingHom.ker (aeval (R := R) x) = ⊥ := by
   rw [transcendental_iff_injective, RingHom.injective_iff_ker_eq_bot]
 
+theorem Algebra.isAlgebraic_of_not_injective (h : ¬ Function.Injective (algebraMap R A)) :
+    Algebra.IsAlgebraic R A where
+  isAlgebraic a := isAlgebraic_iff_not_injective.mpr
+    fun inj ↦ h <| by convert inj.comp C_injective; ext; simp
+
+theorem Algebra.injective_of_transcendental [h : Algebra.Transcendental R A] :
+    Function.Injective (algebraMap R A) := by
+  rw [transcendental_iff_not_isAlgebraic] at h
+  contrapose! h
+  exact isAlgebraic_of_not_injective h
+
 end
 
 section zero_ne_one
@@ -128,6 +155,16 @@ theorem isAlgebraic_rat (R : Type u) {A : Type v} [DivisionRing A] [Field R] [Al
 theorem isAlgebraic_of_mem_rootSet {R : Type u} {A : Type v} [Field R] [Field A] [Algebra R A]
     {p : R[X]} {x : A} (hx : x ∈ p.rootSet A) : IsAlgebraic R x :=
   ⟨p, ne_zero_of_mem_rootSet hx, aeval_eq_zero_of_mem_rootSet hx⟩
+
+variable (S) in
+theorem IsLocalization.isAlgebraic [Nontrivial R] (M : Submonoid R) [IsLocalization M S] :
+    Algebra.IsAlgebraic R S where
+  isAlgebraic x := by
+    obtain rfl | hx := eq_or_ne x 0
+    · exact isAlgebraic_zero
+    have ⟨⟨r, m⟩, h⟩ := surj M x
+    refine ⟨C m.1 * X - C r, fun eq ↦ hx ?_, by simpa [sub_eq_zero, mul_comm x] using h⟩
+    rwa [← eq_mk'_iff_mul_eq, show r = 0 by simpa using congr(coeff $eq 0), mk'_zero] at h
 
 open IsScalarTower
 
@@ -195,7 +232,7 @@ theorem IsAlgebraic.of_ringHom_of_comp_eq (halg : IsAlgebraic S (g a))
     (h : RingHom.comp (algebraMap S B) f = RingHom.comp g (algebraMap R A)) :
     IsAlgebraic R a := by
   obtain ⟨p, h1, h2⟩ := halg
-  obtain ⟨q, rfl⟩ := map_surjective f hf p
+  obtain ⟨q, rfl⟩ := map_surjective (f : R →+* S) hf p
   refine ⟨q, fun h' ↦ by simp [h'] at h1, hg ?_⟩
   change aeval ((g : A →+* B) a) _ = 0 at h2
   change (g : A →+* B) _ = _
@@ -318,11 +355,9 @@ instance algebra_isAlgebraic_bot_right [Nontrivial R] :
 end Subalgebra
 
 theorem IsAlgebraic.of_pow {r : A} {n : ℕ} (hn : 0 < n) (ht : IsAlgebraic R (r ^ n)) :
-    IsAlgebraic R r := by
-  obtain ⟨p, p_nonzero, hp⟩ := ht
-  refine ⟨Polynomial.expand _ n p, ?_, ?_⟩
-  · rwa [Polynomial.expand_ne_zero hn]
-  · rwa [Polynomial.expand_aeval n p r]
+    IsAlgebraic R r :=
+  have ⟨p, p_nonzero, hp⟩ := ht
+  ⟨_, by rwa [expand_ne_zero hn], by rwa [expand_aeval n p r]⟩
 
 theorem Transcendental.pow {r : A} (ht : Transcendental R r) {n : ℕ} (hn : 0 < n) :
     Transcendental R (r ^ n) := fun ht' ↦ ht <| ht'.of_pow hn
@@ -449,8 +484,7 @@ section NoZeroSMulDivisors
 
 namespace Algebra.IsAlgebraic
 
-variable [CommRing K] [Field L]
-variable [Algebra K L]
+variable [CommRing K] [Field L] [Algebra K L]
 
 theorem algHom_bijective [NoZeroSMulDivisors K L] [Algebra.IsAlgebraic K L] (f : L →ₐ[K] L) :
     Function.Bijective f := by
@@ -502,41 +536,48 @@ variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
 theorem IsAlgebraic.exists_nonzero_coeff_and_aeval_eq_zero
     {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
-    ∃ (q : Polynomial R), q.coeff 0 ≠ 0 ∧ aeval s q = 0 := by
+    ∃ q : R[X], q.coeff 0 ≠ 0 ∧ aeval s q = 0 := by
   obtain ⟨p, hp0, hp⟩ := hRs
-  obtain ⟨q, hpq, hq⟩ := Polynomial.exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp0 0
+  obtain ⟨q, hpq, hq⟩ := exists_eq_pow_rootMultiplicity_mul_and_not_dvd p hp0 0
   simp only [C_0, sub_zero, X_pow_mul, X_dvd_iff] at hpq hq
   rw [hpq, map_mul, aeval_X_pow] at hp
   exact ⟨q, hq, (nonZeroDivisors S).pow_mem hs (rootMultiplicity 0 p) (aeval s q) hp⟩
 
+theorem IsAlgebraic.exists_nonzero_eq_adjoin_mul
+    {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
+    ∃ᵉ (t ∈ Algebra.adjoin R {s}) (r ≠ (0 : R)), s * t = algebraMap R S r := by
+  have ⟨q, hq0, hq⟩ := hRs.exists_nonzero_coeff_and_aeval_eq_zero hs
+  have ⟨p, hp⟩ := X_dvd_sub_C (p := q)
+  refine ⟨aeval s p, aeval_mem_adjoin_singleton _ _, _, neg_ne_zero.mpr hq0, ?_⟩
+  apply_fun aeval s at hp
+  rwa [map_sub, hq, zero_sub, map_mul, aeval_X, aeval_C, ← map_neg, eq_comm] at hp
+
 theorem IsAlgebraic.exists_nonzero_dvd
     {s : S} (hRs : IsAlgebraic R s) (hs : s ∈ nonZeroDivisors S) :
-    ∃ r : R, r ≠ 0 ∧ s ∣ (algebraMap R S) r := by
+    ∃ r : R, r ≠ 0 ∧ s ∣ algebraMap R S r := by
   obtain ⟨q, hq0, hq⟩ := hRs.exists_nonzero_coeff_and_aeval_eq_zero hs
-  have key := map_dvd (Polynomial.aeval s) (Polynomial.X_dvd_sub_C (p := q))
-  rw [map_sub, hq, zero_sub, dvd_neg, Polynomial.aeval_X, Polynomial.aeval_C] at key
+  have key := map_dvd (aeval s) (X_dvd_sub_C (p := q))
+  rw [map_sub, hq, zero_sub, dvd_neg, aeval_X, aeval_C] at key
   exact ⟨q.coeff 0, hq0, key⟩
 
 /-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
 if `b` is algebraic over `R`. -/
 theorem IsAlgebraic.exists_smul_eq_mul
     (a : S) {b : S} (hRb : IsAlgebraic R b) (hb : b ∈ nonZeroDivisors S) :
-    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c := by
-  obtain ⟨r, hr, s, h⟩ := IsAlgebraic.exists_nonzero_dvd (R := R) (S := S) hRb hb
-  exact ⟨s * a, r, hr, by rw [Algebra.smul_def, h, mul_assoc]⟩
+    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
+  have ⟨r, hr, s, h⟩ := hRb.exists_nonzero_dvd hb
+  ⟨s * a, r, hr, by rw [Algebra.smul_def, h, mul_assoc]⟩
 
 variable (R)
 
 /-- A fraction `(a : S) / (b : S)` can be reduced to `(c : S) / (d : R)`,
 if `b` is algebraic over `R`. -/
-theorem Algebra.IsAlgebraic.exists_smul_eq_mul [IsDomain S] [Algebra.IsAlgebraic R S]
+theorem Algebra.IsAlgebraic.exists_smul_eq_mul [NoZeroDivisors S] [Algebra.IsAlgebraic R S]
     (a : S) {b : S} (hb : b ≠ 0) :
     ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c :=
-  (Algebra.IsAlgebraic.isAlgebraic b).exists_smul_eq_mul a (mem_nonZeroDivisors_iff_ne_zero.mpr hb)
+  (isAlgebraic b).exists_smul_eq_mul a (mem_nonZeroDivisors_of_ne_zero hb)
 
 end
-
-variable {R S : Type*} [CommRing R] [CommRing S]
 
 section Field
 
@@ -601,12 +642,13 @@ end Field
 
 section Infinite
 
-theorem Transcendental.infinite {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
-    [Nontrivial R] {x : A} (hx : Transcendental R x) : Infinite A :=
+variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A] [Nontrivial R]
+
+theorem Transcendental.infinite {x : A} (hx : Transcendental R x) : Infinite A :=
   .of_injective _ (transcendental_iff_injective.mp hx)
 
-theorem Algebra.Transcendental.infinite (R A : Type*) [CommRing R] [Ring A] [Algebra R A]
-    [Nontrivial R] [Algebra.Transcendental R A] : Infinite A :=
+variable (R A) in
+theorem Algebra.Transcendental.infinite [Algebra.Transcendental R A] : Infinite A :=
   have ⟨x, hx⟩ := ‹Algebra.Transcendental R A›
   hx.infinite
 
