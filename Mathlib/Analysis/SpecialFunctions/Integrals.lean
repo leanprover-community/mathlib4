@@ -235,28 +235,30 @@ theorem intervalIntegrable_log (h : (0 : ℝ) ∉ [[a, b]]) : IntervalIntegrable
 interval. See `intervalIntegrable_log` for a version applying to any locally finite measure,
 but with an additional hypothesis on the interval. -/
 @[simp]
-theorem intervalIntegrable_log' :
-  IntervalIntegrable log volume a b := by
+theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
   -- Log is even, so it suffices to consider the case 0 < a and b = 0
-  apply intervalIntegrable_of_even (fun a ↦ Eq.symm (log_neg_eq_log a))
-
+  apply intervalIntegrable_of_even (log_neg_eq_log · |>.symm)
   intro x hx
   -- Split integral
   apply IntervalIntegrable.trans (b := 1)
   · -- Show integrability on [0…1] using non-negativity of the derivative
     rw [← neg_neg log]
     apply IntervalIntegrable.neg
-    apply intervalIntegrable_deriv_of_nonneg
+    apply intervalIntegrable_deriv_of_nonneg (g := fun x ↦ -(x * log x - x))
     · exact (continuous_mul_log.continuousOn.sub continuous_id.continuousOn).neg
-    · intro s hs; norm_num at hs
-      convert ((hasDerivAt_mul_log hs.left.ne.symm).sub (hasDerivAt_id s)).neg using 1
-      norm_num
-    · intro s hs; norm_num at hs; simp
-      exact (log_nonpos_iff hs.left).mpr hs.right.le
+    · intro s ⟨hs, _⟩
+      norm_num at *
+      have h := (hasDerivAt_id s).sub (hasDerivAt_mul_log hs.ne.symm)
+      simp only [id_eq, sub_add_cancel_right] at h
+      exact h
+    · intro s ⟨hs₁, hs₂⟩
+      norm_num at *
+      exact (log_nonpos_iff hs₁).mpr hs₂.le
   · -- Show integrability on [1…t] by continuity
     apply ContinuousOn.intervalIntegrable
-    apply (ContinuousOn.mono Real.continuousOn_log)
-    simpa using Set.not_mem_uIcc_of_lt zero_lt_one hx
+    apply ContinuousOn.mono Real.continuousOn_log
+    apply Set.not_mem_uIcc_of_lt zero_lt_one at hx
+    simpa
 
 @[simp]
 theorem intervalIntegrable_sin : IntervalIntegrable sin μ a b :=
