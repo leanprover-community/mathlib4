@@ -87,8 +87,7 @@ alias _root_.MvPolynomial.weightedDegree_apply := weight_apply
 
 theorem weight_single_index (s : σ) (c : M) (f : σ →₀ N) :
     weight (single s c) f = f s • c := by
-  rw [weight_apply]
-  rw [Finsupp.sum_eq_single s]
+  rw [weight_apply, sum_eq_single s]
   · simp only [single_eq_same]
   · intro i _ hi
     rw [single_eq_of_ne hi.symm, smul_zero]
@@ -97,7 +96,7 @@ theorem weight_single_index (s : σ) (c : M) (f : σ →₀ N) :
 
 theorem weight_single_one_apply (s : σ) (f : σ →₀ N) :
     weight (single s 1) f = f s := by
-  rw [weight_single_apply, smul_eq_mul, mul_one]
+  rw [weight_single_index, smul_eq_mul, mul_one]
 
 theorem weight_single (s : σ) (n : N) :
     weight w (Finsupp.single s n) = n • w s := by
