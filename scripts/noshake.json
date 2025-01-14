@@ -301,7 +301,7 @@
   ["Mathlib.CategoryTheory.Bicategory.Coherence",
    "Mathlib.Tactic.CategoryTheory.BicategoricalComp"],
   "Mathlib.Tactic.CC.Datatypes":
-  ["Mathlib.Lean.Meta.Datatypes"],
+  ["Mathlib.Lean.Meta.CongrTheorems", "Mathlib.Lean.Meta.Datatypes"],
   "Mathlib.Tactic.CC.MkProof":
   ["Mathlib.Tactic.CC.Lemmas"],
   "Mathlib.Tactic.ByContra": ["Batteries.Tactic.Init"],

@@ -6,8 +6,6 @@ Authors: Leonardo de Moura, Miyahara Kō
 import Mathlib.Data.Option.Defs
 import Mathlib.Tactic.CC.MkProof
 
-import ImportGraph
-
 /-!
 # Process when an new equation is added to a congruence closure
 -/
