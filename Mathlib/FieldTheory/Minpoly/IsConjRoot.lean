@@ -5,7 +5,7 @@ Authors: Jiedong Jiang
 -/
 import Mathlib.FieldTheory.Minpoly.Basic
 import Mathlib.FieldTheory.IntermediateField.Adjoin.Basic
-import Mathlib.FieldTheory.Normal
+import Mathlib.FieldTheory.Normal.SplittingField
 
 /-!
 # Conjugate roots

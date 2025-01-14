@@ -5,7 +5,7 @@ Authors: Thomas Browning
 -/
 
 import Mathlib.RingTheory.SimpleRing.Basic
-import Mathlib.FieldTheory.Normal
+import Mathlib.FieldTheory.Normal.SplittingField
 import Mathlib.Order.Closure
 import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 /-!

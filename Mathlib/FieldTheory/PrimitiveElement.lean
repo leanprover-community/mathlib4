@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
 import Mathlib.FieldTheory.IsAlgClosed.Basic
+import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.RingTheory.IntegralDomain
 import Mathlib.RingTheory.Polynomial.UniqueFactorization
 

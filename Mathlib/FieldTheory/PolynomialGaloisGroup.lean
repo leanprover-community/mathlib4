@@ -210,7 +210,7 @@ theorem galActionHom_injective [Fact (p.Splits (algebraMap F E))] :
     Function.Injective (galActionHom p E) := by
   rw [injective_iff_map_eq_one]
   intro ϕ hϕ
-  ext (x hx)
+  ext1 (x hx)
   have key := Equiv.Perm.ext_iff.mp hϕ (rootsEquivRoots p E ⟨x, hx⟩)
   change
     rootsEquivRoots p E (ϕ • (rootsEquivRoots p E).symm (rootsEquivRoots p E ⟨x, hx⟩)) =
@@ -266,7 +266,7 @@ theorem restrictProd_injective : Function.Injective (restrictProd p q) := by
   classical
   simp only [restrictProd, restrictDvd_def] at hfg
   simp only [dif_neg hpq, MonoidHom.prod_apply, Prod.mk.inj_iff] at hfg
-  ext (x hx)
+  ext1 (x hx)
   rw [rootSet_def, aroots_mul hpq] at hx
   cases' Multiset.mem_add.mp (Multiset.mem_toFinset.mp hx) with h h
   · haveI : Fact (p.Splits (algebraMap F (p * q).SplittingField)) :=
@@ -384,10 +384,10 @@ theorem prime_degree_dvd_card [CharZero F] (p_irr : Irreducible p) (p_deg : p.na
   let α : p.SplittingField :=
     rootOfSplits (algebraMap F p.SplittingField) (SplittingField.splits p) hp
   have hα : IsIntegral F α := .of_finite F α
-  use Module.finrank F⟮α⟯ p.SplittingField
+  use Module.finrank ↥F⟮α⟯ p.SplittingField
   suffices (minpoly F α).natDegree = p.natDegree by
     letI _ : AddCommGroup F⟮α⟯ := Ring.toAddCommGroup
-    rw [← Module.finrank_mul_finrank F F⟮α⟯ p.SplittingField,
+    rw [← Module.finrank_mul_finrank F ↥F⟮α⟯ p.SplittingField,
       IntermediateField.adjoin.finrank hα, this]
   suffices minpoly F α ∣ p by
     have key := (minpoly.irreducible hα).dvd_symm p_irr this

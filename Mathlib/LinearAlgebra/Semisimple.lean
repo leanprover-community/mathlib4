@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Module.Torsion
-import Mathlib.FieldTheory.Perfect
+import Mathlib.FieldTheory.Perfect.Basic
 import Mathlib.LinearAlgebra.AnnihilatingPolynomial
 import Mathlib.RingTheory.Artinian.Instances
 import Mathlib.RingTheory.Ideal.Quotient.Nilpotent

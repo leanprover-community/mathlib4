@@ -6,7 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Algebra.CharP.Algebra
 import Mathlib.Data.Multiset.Fintype
 import Mathlib.FieldTheory.IsAlgClosed.Basic
-import Mathlib.FieldTheory.SplittingField.Construction
+import Mathlib.FieldTheory.SplittingField.ConstructionAux
 
 /-!
 # Algebraic Closure
@@ -65,15 +65,15 @@ def finEquivRoots {K} [Field K] [DecidableEq K] {i : k →+* K} {f : Monics k} (
       ← Multiset.card_toEnumFinset, f.2.natDegree_map] at hf
 
 lemma Monics.splits_finsetProd {s : Finset (Monics k)} {f : Monics k} (hf : f ∈ s) :
-    f.1.Splits (algebraMap k (SplittingField (∏ f ∈ s, f.1))) :=
-  (splits_prod_iff _ fun j _ ↦ j.2.ne_zero).1 (SplittingField.splits _) _ hf
+    f.1.Splits (algebraMap k (SplittingFieldAux (∏ f ∈ s, f.1).natDegree (∏ f ∈ s, f.1))) :=
+  (splits_prod_iff _ fun j _ ↦ j.2.ne_zero).1 (SplittingFieldAux.splits _ _ rfl) _ hf
 
 open Classical in
 /-- Given a finite set of monic polynomials, construct an algebra homomorphism
 to the splitting field of the product of the polynomials
 sending indeterminates $X_{f_i}$ to the distinct roots of `f`. -/
 def toSplittingField (s : Finset (Monics k)) :
-    MvPolynomial (Vars k) k →ₐ[k] SplittingField (∏ f ∈ s, f.1) :=
+    MvPolynomial (Vars k) k →ₐ[k] SplittingFieldAux (∏ f ∈ s, f.1).natDegree (∏ f ∈ s, f.1) :=
   MvPolynomial.aeval fun fi ↦
     if hf : fi.1 ∈ s then (finEquivRoots (Monics.splits_finsetProd hf) fi.2).1.1 else 37
 

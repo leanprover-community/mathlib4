@@ -8,7 +8,7 @@ import Mathlib.Algebra.CharP.Pi
 import Mathlib.Algebra.CharP.Quotient
 import Mathlib.Algebra.CharP.Subring
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.FieldTheory.Perfect
+import Mathlib.FieldTheory.Perfect.Basic
 import Mathlib.RingTheory.Valuation.Integers
 
 /-!

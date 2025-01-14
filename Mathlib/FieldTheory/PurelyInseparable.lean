@@ -5,6 +5,7 @@ Authors: Jz Pan
 -/
 import Mathlib.Algebra.CharP.ExpChar
 import Mathlib.Algebra.CharP.IntermediateField
+import Mathlib.FieldTheory.Perfect.SplittingField
 import Mathlib.FieldTheory.SeparableClosure
 
 /-!
