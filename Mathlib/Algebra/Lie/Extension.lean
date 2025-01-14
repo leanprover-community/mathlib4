@@ -7,14 +7,14 @@ import Mathlib.Algebra.Lie.Submodule
 
 /-!
 # Extensions of Lie algebras
-This file defines extensions of Lie algebras. They are implemented as a structure, rather than the
-proposition that a Lie algebra homomorphism is surjective.
+This file defines extensions of Lie algebras, given by short exact sequences of Lie algebra
+homomorphisms. They are implemented in two ways: `IsExtension` is a `Prop`-valued class taking two
+homomorphisms as parameters, and `Extension` is a structure that includes the middle Lie algebra.
 
 ## Main definitions
  * `LieAlgebra.IsExtension`: A `Prop`-valued class characterizing an extension of Lie algebras.
  * `LieAlgebra.Extension`: A bundled structure giving an extension of Lie algebras.
- * `LieAlgebra.ofSurjection`: A way to build an extension from a surjective Lie algebra
-   homomorphism.
+ * `LieAlgebra.IsExtension.extension`: A function that builds the bundled structure from the class.
 
 ## TODO
  * `IsCentral` - central extensions
