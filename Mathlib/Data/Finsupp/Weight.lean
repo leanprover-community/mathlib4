@@ -19,10 +19,10 @@ require to classify these exponents according to their total sum
 
 ## Weight
 
-We fix a type `σ`, a semiring `N`, a `N`-module `M`,
-as well as a function `w : σ → M`. (The important case is `N = ℕ`.)
+We fix a type `σ`, a semiring `R`, an `R`-module `M`,
+as well as a function `w : σ → M`. (The important case is `R = ℕ`.)
 
-- `Finsupp.weight` of a finitely supported function `f : σ →₀ N`
+- `Finsupp.weight` of a finitely supported function `f : σ →₀ R`
 with respect to `w`: it is the sum `∑ (f i) • (w i)`.
 It is an `AddMonoidHom` map defined using `Finsupp.linearCombination`.
 
@@ -50,7 +50,7 @@ there are finitely many `f : σ →₀ ℕ` of bounded weight.
 
 - `Finsupp.le_degree` says that `f s ≤ f.degree`.
 
-- `Finsupp.degree_eq_weight_one` says `f.degree = f.weight 1` when `N` is a semiring.
+- `Finsupp.degree_eq_weight_one` says `f.degree = f.weight 1` when `R` is a semiring.
 This is useful to access the additivity properties of `Finsupp.degree`
 
 - For `Finite σ`, `Finsupp.finite_of_degree_le` proves that
@@ -64,28 +64,28 @@ both `AddCommMonoidHom` or both functions.
 
 -/
 
-variable {σ M N : Type*} [Semiring N] (w : σ → M)
+variable {σ M R : Type*} [Semiring R] (w : σ → M)
 
 namespace Finsupp
 
 section AddCommMonoid
 
-variable [AddCommMonoid M] [Module N M]
-/-- The `weight` of the finitely supported function `f : σ →₀ N`
+variable [AddCommMonoid M] [Module R M]
+/-- The `weight` of the finitely supported function `f : σ →₀ R`
 with respect to `w : σ → M` is the sum `∑(f i)•(w i)`. -/
-noncomputable def weight : (σ →₀ N) →+ M :=
-  (Finsupp.linearCombination N w).toAddMonoidHom
+noncomputable def weight : (σ →₀ R) →+ M :=
+  (Finsupp.linearCombination R w).toAddMonoidHom
 
 @[deprecated weight (since := "2024-07-20")]
 alias _root_.MvPolynomial.weightedDegree := weight
 
-theorem weight_apply (f : σ →₀ N) :
+theorem weight_apply (f : σ →₀ R) :
     weight w f = Finsupp.sum f (fun i c => c • w i) := rfl
 
 @[deprecated weight_apply (since := "2024-07-20")]
 alias _root_.MvPolynomial.weightedDegree_apply := weight_apply
 
-theorem weight_single_index (s : σ) (c : M) (f : σ →₀ N) :
+theorem weight_single_index (s : σ) (c : M) (f : σ →₀ R) :
     weight (single s c) f = f s • c := by
   rw [weight_apply, sum_eq_single s]
   · simp only [single_eq_same]
@@ -94,32 +94,32 @@ theorem weight_single_index (s : σ) (c : M) (f : σ →₀ N) :
   · intro _
     simp only [single_eq_same, zero_smul]
 
-theorem weight_single_one_apply (s : σ) (f : σ →₀ N) :
+theorem weight_single_one_apply (s : σ) (f : σ →₀ R) :
     weight (single s 1) f = f s := by
   rw [weight_single_index, smul_eq_mul, mul_one]
 
-theorem weight_single (s : σ) (n : N) :
-    weight w (Finsupp.single s n) = n • w s := by
+theorem weight_single (s : σ) (r : R) :
+    weight w (Finsupp.single s r) = r • w s := by
   simp only [weight_apply, zero_smul, sum_single_index]
 
-variable (N) in
+variable (R) in
 /-- A weight function is nontorsion if its values are not torsion. -/
 class NonTorsionWeight (w : σ → M) : Prop where
-  eq_zero_of_smul_eq_zero {n : N} {s : σ} (h : n • w s = 0) : n = 0
+  eq_zero_of_smul_eq_zero {r : R} {s : σ} (h : r • w s = 0) : r = 0
 
-variable (N) in
+variable (R) in
 /-- Without zero divisors, nonzero weight is a `NonTorsionWeight` -/
-theorem nonTorsionWeight_of [NoZeroSMulDivisors N M] (hw : ∀ i : σ, w i ≠ 0) :
-    NonTorsionWeight N w where
+theorem nonTorsionWeight_of [NoZeroSMulDivisors R M] (hw : ∀ i : σ, w i ≠ 0) :
+    NonTorsionWeight R w where
   eq_zero_of_smul_eq_zero {n s} h := by
     rw [smul_eq_zero, or_iff_not_imp_right] at h
     exact h (hw s)
 
-variable (N) in
-theorem NonTorsionWeight.ne_zero [Nontrivial N] [NonTorsionWeight N w] (s : σ) :
+variable (R) in
+theorem NonTorsionWeight.ne_zero [Nontrivial R] [NonTorsionWeight R w] (s : σ) :
     w s ≠ 0 := fun h ↦ by
-  rw [← one_smul N (w s)] at h
-  apply zero_ne_one.symm (α := N)
+  rw [← one_smul R (w s)] at h
+  apply zero_ne_one.symm (α := R)
   exact NonTorsionWeight.eq_zero_of_smul_eq_zero h
 
 variable {w} in
@@ -147,7 +147,7 @@ theorem le_weight (w : σ → ℕ) {s : σ} (hs : w s ≠ 0) (f : σ →₀ ℕ)
     apply zero_le
 
 variable [OrderedAddCommMonoid M] (w : σ → M)
-  {N : Type*} [CanonicallyOrderedCommSemiring N] [Module N M]
+  {R : Type*} [CanonicallyOrderedCommSemiring R] [Module R M]
 
 instance : SMulPosMono ℕ M :=
   ⟨fun b hb m m' h ↦ by
@@ -214,20 +214,20 @@ theorem finite_of_nat_weight_le [Finite σ] (w : σ → ℕ) (hw : ∀ x, w x �
 
 end CanonicallyOrderedAddCommMonoid
 
-variable {N : Type*} [AddCommMonoid N]
+variable {R : Type*} [AddCommMonoid R]
 
 /-- The degree of a finsupp function. -/
-def degree (d : σ →₀ N) := ∑ i ∈ d.support, d i
+def degree (d : σ →₀ R) := ∑ i ∈ d.support, d i
 
 @[deprecated degree (since := "2024-07-20")]
 alias _root_.MvPolynomial.degree := degree
 
 @[simp]
-theorem degree_add (a b : σ →₀ N) : (a + b).degree = a.degree + b.degree :=
+theorem degree_add (a b : σ →₀ R) : (a + b).degree = a.degree + b.degree :=
   sum_add_index' (h := fun _ ↦ id) (congrFun rfl) fun _ _ ↦ congrFun rfl
 
 @[simp]
-theorem degree_single (a : σ) (n : N) : (Finsupp.single a n).degree = n := by
+theorem degree_single (a : σ) (r : R) : (Finsupp.single a r).degree = r := by
   rw [degree, Finset.sum_eq_single a]
   · simp only [single_eq_same]
   · intro b _ hba
@@ -237,9 +237,9 @@ theorem degree_single (a : σ) (n : N) : (Finsupp.single a n).degree = n := by
     rw [single_eq_same, ha]
 
 @[simp]
-theorem degree_zero : degree (0 : σ →₀ N) = 0 := by simp [degree]
+theorem degree_zero : degree (0 : σ →₀ R) = 0 := by simp [degree]
 
-lemma degree_eq_zero_iff {N : Type*} [CanonicallyOrderedAddCommMonoid N] (d : σ →₀ N) :
+lemma degree_eq_zero_iff {R : Type*} [CanonicallyOrderedAddCommMonoid R] (d : σ →₀ R) :
     degree d = 0 ↔ d = 0 := by
   simp only [degree, Finset.sum_eq_zero_iff, mem_support_iff, ne_eq, _root_.not_imp_self,
     DFunLike.ext_iff, coe_zero, Pi.zero_apply]
@@ -247,7 +247,7 @@ lemma degree_eq_zero_iff {N : Type*} [CanonicallyOrderedAddCommMonoid N] (d : σ
 @[deprecated degree_eq_zero_iff (since := "2024-07-20")]
 alias _root_.MvPolynomial.degree_eq_zero_iff := degree_eq_zero_iff
 
-theorem le_degree {N : Type*} [CanonicallyOrderedAddCommMonoid N] (s : σ) (f : σ →₀ N) :
+theorem le_degree {R : Type*} [CanonicallyOrderedAddCommMonoid R] (s : σ) (f : σ →₀ R) :
     f s ≤ degree f  := by
   classical
   simp only [degree]
@@ -256,8 +256,8 @@ theorem le_degree {N : Type*} [CanonicallyOrderedAddCommMonoid N] (s : σ) (f : 
   · simp only [not_mem_support_iff] at h
     simp only [h, zero_le]
 
-theorem degree_eq_weight_one {N : Type*} [Semiring N] :
-    degree (N := N) (σ := σ) = weight (fun _ ↦ 1) := by
+theorem degree_eq_weight_one {R : Type*} [Semiring R] :
+    degree (R := R) (σ := σ) = weight (fun _ ↦ 1) := by
   ext d
   simp only [degree, weight_apply, Pi.one_apply, smul_eq_mul, mul_one, Finsupp.sum]
 
