@@ -84,6 +84,14 @@ lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
   -- rw [Ideal.height_eq_primeHeight I, Ideal.height]
   -- The rest of the proof needs additional helper lemmas
 
+theorem Ideal.minimalPrimes_top : (⊤ : Ideal R).minimalPrimes = ∅ := by
+  ext p
+  constructor
+  · intro h
+    exact False.elim (h.1.1.ne_top (top_le_iff.mp h.1.2))
+  · intro h
+    exact False.elim (Set.not_mem_empty p h)
+
 theorem Ideal.minimalPrimes_eq_empty_iff (I : Ideal R) :
     I.minimalPrimes = ∅ ↔ I = ⊤ := by
   constructor
@@ -93,24 +101,12 @@ theorem Ideal.minimalPrimes_eq_empty_iff (I : Ideal R) :
     have ⟨p, hp⟩ := Ideal.exists_minimalPrimes_le hM'
     show p ∈ (∅ : Set (Ideal R))
     rw [← e]; exact hp.1
-  · intro h
-    rw [h]
-    sorry
-    -- exact minimalPrimes_top
-
-theorem Ideal.minimalPrimes_top : (⊤ : Ideal R).minimalPrimes = ∅ := by
-  ext p
-  constructor
-  · intro h
-    have := h.1.1
-    sorry
-    -- exact absurd (Eq.refl ⊤) (this rfl)
-  · intro h
-    exact False.elim (Set.not_mem_empty p h)
+  · intro h; rw [h]
+    exact minimalPrimes_top
 
 theorem Ideal.height_top : (⊤ : Ideal R).height = ⊤ := by
   simp only [height, minimalPrimes_top]
-  sorry
+  rw [iInf₂_eq_top]; intro i hi; exact False.elim hi
 
 theorem Ideal.height_mono {I J : Ideal R} (h : I ≤ J) : I.height ≤ J.height := by
   simp only [height]
