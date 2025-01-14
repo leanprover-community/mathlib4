@@ -108,6 +108,8 @@ instance instAlgebra_left (v : AbsoluteValue R S) : Algebra (WithAbs v) R' :=
 instance instAlgebra_right (v : AbsoluteValue R' S) : Algebra R (WithAbs v) :=
   inferInstanceAs <| Algebra R R'
 
+/-- The canonical algebra isomorphism from an `R`-algebra `R'` with an absolute value `v`
+to `R'`. -/
 def algEquiv (v : AbsoluteValue R' S) : (WithAbs v) ≃ₐ[R] R' := AlgEquiv.refl (A₁ := R')
 
 end algebra
