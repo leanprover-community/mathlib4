@@ -546,7 +546,7 @@ lemma sum_insertNth [AddCommMonoid M] {n : ℕ} (σ : Fin n →₀ M) (i : M) (p
 
 lemma sum_insertNth' [AddCommMonoid M] [AddCommMonoid N] {n : ℕ} (σ : Fin n →₀ M) (i : M)
     (p : Fin (n + 1)) (f : Fin (n+1) → M → N) (h : ∀ x, f x 0 = 0) :
-    (sum (insertNth p i σ) f) = f p i + sum σ (Fin.removeNth p f) := by
+    sum (insertNth p i σ) f = f p i + sum σ (Fin.removeNth p f) := by
   rw [sum_fintype _ _ (fun _ => by apply h), sum_fintype _ _ (fun _ => by apply h)]
   simp_rw [Fin.sum_univ_succAbove _ p, insertNth_apply_same, insertNth_apply_succAbove]
   congr
