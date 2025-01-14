@@ -76,7 +76,7 @@ lemma add_one_le_dim_iff_exists_submodule_rank_eq {R : Type*} {M : Type*} [Field
       LinearIndependent.insert hb.2 (h.symm ▸ hx)⟩
     · rw [h, rank_span_set hb.2]
 
-lemma rankSuprNeTopAddOne {R : Type*} {M : Type*} [Field R] [AddCommGroup M] [Module R M] :
+lemma rank_supr_ne_top_add_one {R : Type*} {M : Type*} [Field R] [AddCommGroup M] [Module R M] :
   (⨆ (p : Submodule R M) (_ : p ≠ ⊤), Module.rank R p + 1) = Module.rank R M := by
   rw [ciSup_subtype''']
   · apply le_antisymm
@@ -95,3 +95,23 @@ lemma rankSuprNeTopAddOne {R : Type*} {M : Type*} [Field R] [AddCommGroup M] [Mo
   · use Module.rank R M + 1
     intro _ _
     exact add_le_add (Submodule.rank_le _) rfl.le
+
+lemma rank_supr_lt_add_one {R : Type*} {M : Type*} [Field R] [AddCommGroup M] [Module R M]
+    (q : Submodule R M) :
+    (⨆ p < q, Module.rank R p + 1) = Module.rank R q := by
+  have this_map : ∀ p : { p : Submodule R q // p ≠ ⊤ }, p.1.map q.subtype < q := by
+    intro ⟨p, hp⟩
+    convert ((Submodule.MapSubtype.orderEmbedding q).strictMono (lt_top_iff_ne_top.mpr hp))
+    exact q.map_subtype_top.symm
+  let equiv : {x // x < q} ≃ {x : Submodule R q // x ≠ ⊤} :=
+  { toFun := fun p => ⟨_, Submodule.comap_subtype_eq_top.not.mpr (not_le_of_lt p.2)⟩
+    invFun := fun p => ⟨p.1.map q.subtype, this_map p⟩
+    left_inv := fun p => Subtype.ext ((Submodule.map_comap_eq _ _).trans (by simpa using p.2.le))
+    right_inv := fun p => by ext; simp }
+  rw [← rank_supr_ne_top_add_one, ciSup_subtype''', ciSup_subtype''']
+  · apply Equiv.iSup_congr equiv
+    rintro ⟨p, hp⟩; congr 1; apply LinearEquiv.rank_eq
+    exact Submodule.comapSubtypeEquivOfLe hp.le
+  · exact ⟨Module.rank R q + 1, fun x _ => by
+      refine add_le_add (Submodule.rank_le x) (le_refl 1)⟩
+  · exact ⟨Module.rank R M + 1, fun x _ => add_le_add (Submodule.rank_le x) (le_refl _)⟩
