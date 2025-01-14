@@ -129,15 +129,15 @@ end lift
 
 section
 
-open scoped Classical
-
-theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) :=
-  fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
-    let f : FreeAbelianGroup α →+ ℤ := lift fun z ↦ if x = z then (1 : ℤ) else 0
-    have hfx1 : f (of x) = 1 := (lift.of _ _).trans <| if_pos rfl
-    have hfy1 : f (of y) = 1 := hoxy ▸ hfx1
-    have hfy0 : f (of y) = 0 := (lift.of _ _).trans <| if_neg hxy
-    one_ne_zero <| hfy1.symm.trans hfy0
+theorem of_injective : Function.Injective (of : α → FreeAbelianGroup α) := by
+  classical
+  exact
+    fun x y hoxy ↦ Classical.by_contradiction fun hxy : x ≠ y ↦
+      let f : FreeAbelianGroup α →+ ℤ := lift fun z ↦ if x = z then (1 : ℤ) else 0
+      have hfx1 : f (of x) = 1 := (lift.of _ _).trans <| if_pos rfl
+      have hfy1 : f (of y) = 1 := hoxy ▸ hfx1
+      have hfy0 : f (of y) = 0 := (lift.of _ _).trans <| if_neg hxy
+      one_ne_zero <| hfy1.symm.trans hfy0
 
 @[simp]
 theorem of_ne_zero (x : α) : of x ≠ 0 := by
