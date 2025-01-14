@@ -11,7 +11,7 @@ import Mathlib.Data.List.Permutation
 
 # Fintype instance for nodup lists
 
-The subtype of `{l : List α // l.nodup}` over a `[Fintype α]`
+The subtype of `{l : List α // l.Nodup}` over a `[Fintype α]`
 admits a `Fintype` instance.
 
 ## Implementation details
