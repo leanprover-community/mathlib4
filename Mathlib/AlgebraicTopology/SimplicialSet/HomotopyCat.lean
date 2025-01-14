@@ -5,6 +5,7 @@ Authors: Mario Carneiro, Emily Riehl, Joël Riou
 -/
 
 import Mathlib.AlgebraicTopology.SimplicialSet.Coskeletal
+import Mathlib.AlgebraicTopology.SimplicialObject.Basic
 import Mathlib.CategoryTheory.Category.ReflQuiv
 import Mathlib.Combinatorics.Quiver.ReflQuiver
 
@@ -36,6 +37,7 @@ category of 2-truncated simplicial sets.
 namespace SSet
 open Truncated SimplexCategory.Truncated
 open CategoryTheory Category Limits Functor Opposite Simplicial Nerve
+open SimplexCategory.Truncated SimplicialObject.Truncated
 universe v u
 
 section

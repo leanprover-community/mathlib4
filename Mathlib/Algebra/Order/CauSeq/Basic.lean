@@ -31,11 +31,7 @@ This is a concrete implementation that is useful for simplicity and computabilit
 sequence, cauchy, abs val, absolute value
 -/
 
-assert_not_exists Finset
-assert_not_exists Module
-assert_not_exists Submonoid
-assert_not_exists FloorRing
-assert_not_exists Module
+assert_not_exists Finset Module Submonoid FloorRing Module
 
 variable {α β : Type*}
 

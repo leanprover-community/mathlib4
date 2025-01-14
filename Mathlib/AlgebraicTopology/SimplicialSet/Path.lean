@@ -21,7 +21,7 @@ of length `n`.
 
 universe v u
 
-open CategoryTheory Simplicial SimplexCategory
+open CategoryTheory Simplicial SimplexCategory SimplicialObject.Truncated
 
 namespace SSet
 namespace Truncated

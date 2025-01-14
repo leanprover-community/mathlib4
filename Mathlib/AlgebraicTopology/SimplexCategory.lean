@@ -31,6 +31,13 @@ We provide the following functions to work with these objects:
 4. `SimplexCategory.Hom.toOrderHom` gives the underlying monotone map associated to a
   term of `SimplexCategory.Hom`.
 
+## Notations
+
+* `[n]` denotes the `n`-dimensional simplex.
+* `[m]ₙ` denotes the `m`-dimensional simplex in the `n`-truncated simplex category.
+  The proof `p : m ≤ n` can also be provided using the syntax `[m, p]ₙ`. Access
+  these notations using `open SimplexCategory.Truncated`.
+
 -/
 
 
@@ -744,31 +751,58 @@ noncomputable def inclusion.fullyFaithful (n : ℕ) :
 theorem Hom.ext {n} {a b : Truncated n} (f g : a ⟶ b) :
     f.toOrderHom = g.toOrderHom → f = g := SimplexCategory.Hom.ext _ _
 
-/-- Some quick and useful attempts to prove `n ≤ m`. -/
+section Meta
+
+/-- Some quick and useful attempts to prove `m ≤ n`. -/
 macro "leq_tac" : tactic =>
   `(tactic| first | decide | assumption | apply zero_le | apply le_rfl |
     apply Nat.le_add_left | apply Nat.le_add_right |
     apply Nat.le_add_right_of_le; assumption |
     apply Nat.add_le_add_right; assumption | transitivity <;> assumption)
 
-/-- A wrapper for `omega` which first makes some quick attempts to prove `n ≤ m`. -/
+/-- A wrapper for `omega` which first makes some quick attempts to prove `m ≤ n`. -/
 macro "leq" : tactic => `(tactic| first | leq_tac | omega)
 
 /-- A wrapper for `omega` which first makes some quick attempts to prove that
 `[m]` is `n`-truncated (`[m].len ≤ n`). -/
 macro "trunc" : tactic =>
-  `(tactic| first | leq_tac | dsimp only [SimplexCategory.len_mk]; omega)
+  `(tactic| first | leq_tac | dsimp only [SimplexCategory.len_mk]; omega |
+    fail "Failed to prove truncation property.")
 
-/-- For `m ≤ n`, `[m]ₙ` is the `m`-dimensional simplex in `Truncated n`. -/
-scoped macro:max (priority := high) "[" m:term "]" n:subscript(term) : term =>
-  `((⟨SimplexCategory.mk $m,
-    by first | trunc | fail "Failed to prove truncation property."⟩ :
-    SimplexCategory.Truncated $(⟨n.raw[0]⟩)))
+open Mathlib.Tactic (subscriptTerm) in
+/-- For `m ≤ n`, `[m]ₙ` is the `m`-dimensional simplex in `Truncated n`. The
+proof `p : m ≤ n` can also be provided using the syntax `[m, p]ₙ`. -/
+scoped syntax:max (name := mkNotation) (priority := high)
+  "[" term ("," term)? "]" noWs subscriptTerm : term
+macro_rules
+  | `([$m:term]$n:subscript) =>
+    `((⟨SimplexCategory.mk $m, by trunc⟩ : SimplexCategory.Truncated $n))
+  | `([$m:term, $p:term]$n:subscript) =>
+    `((⟨SimplexCategory.mk $m, $p⟩ : SimplexCategory.Truncated $n))
 
-/-- For `p : m ≤ n`, `[m, p]ₙ` is the `m`-dimensional simplex in `Truncated n`. -/
-scoped macro:max (priority := high)
-  "[" m:term "," p:term "]" n:subscript(term) : term =>
-  `((⟨SimplexCategory.mk $m, $p⟩ : SimplexCategory.Truncated $(⟨n.raw[0]⟩)))
+open Lean PrettyPrinter.Delaborator SubExpr in
+/-- Delaborator for the notation `[m]ₙ`. -/
+@[app_delab FullSubcategory.mk]
+def delabMkNotation : Delab :=
+  whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 4 do
+    let #[cat, .lam x _ body _, simplex, _] := (← getExpr).getAppArgs | failure
+    -- check that this is a `FullSubcategory` of `SimplexCategory`
+    guard <| cat.isConstOf ``SimplexCategory
+    guard <| simplex.isAppOfArity ``SimplexCategory.mk 1
+    -- check that the predicate matches `fun x ↦ x.len ≤ n`
+    let_expr LE.le _ _ lhs rhs := body | failure
+    let_expr SimplexCategory.len simplex := lhs | failure
+    guard <| simplex == .bvar 0
+    guard !rhs.hasMVar
+    -- if `pp.proofs` is set to `true`, include the proof `p : m ≤ n`
+    let m ← withNaryArg 2 <| withAppArg delab
+    let n ← withNaryArg 1 <| withBindingBody x <| withAppArg delab
+    if (← getPPOption getPPProofs) then
+      let p ← withAppArg delab
+      `([$m, $p]$n)
+    else `([$m]$n)
+
+end Meta
 
 /-- The truncated form of the inclusion functor. -/
 def incl (n m : ℕ) (h : n ≤ m := by leq) : Truncated n ⥤ Truncated m where

@@ -1,0 +1,95 @@
+import Mathlib.AlgebraicTopology.SimplicialObject.Basic
+
+universe u
+
+section Simplicial
+open CategoryTheory.SimplicialObject.Truncated
+
+variable (C : Type u) [CategoryTheory.Category.{v} C] (n : ℕ)
+  (X : CategoryTheory.SimplicialObject.Truncated C n) (m : ℕ) (h : m ≤ n)
+
+#guard_expr X _[m]ₙ = X.obj (Opposite.op ⟨SimplexCategory.mk m, _⟩)
+#guard_expr X _[m, h]ₙ = X.obj (Opposite.op ⟨SimplexCategory.mk m, _⟩)
+
+section delaborator
+
+/-- info: X _[m]ₙ : C -/
+#guard_msgs in #check X _[m]ₙ
+
+section mvars
+set_option pp.mvars false
+
+/-- info: X _[?_]ₙ : C -/
+#guard_msgs in #check X _[?_, ?_]ₙ
+
+/- The delaborator should not fire because the truncation level is a metavariable. -/
+open CategoryTheory.Functor in
+/-- info: (toPrefunctor ?_).obj
+(Opposite.op { obj := SimplexCategory.mk ?_, property := ?_ }) : ?_ -/
+#guard_msgs in #check Prefunctor.obj
+  (toPrefunctor (C := (SimplexCategory.Truncated ?_)ᵒᵖ) ?_)
+  ⟨SimplexCategory.mk ?_, ?_⟩
+
+end mvars
+
+section proofs
+set_option pp.proofs true
+
+/-- info: X _[m,h]ₙ : C -/
+#guard_msgs in #check X _[m]ₙ
+
+/-- info: X _[m,h]ₙ : C -/
+#guard_msgs in #check X _[m, h]ₙ
+
+set_option pp.mvars false in
+/-- info: X _[?_,?_]ₙ : C -/
+#guard_msgs in #check X _[?_, ?_]ₙ
+
+end proofs
+end delaborator
+end Simplicial
+
+section Cosimplicial
+open CategoryTheory.CosimplicialObject.Truncated
+
+variable (C : Type u) [CategoryTheory.Category.{v} C] (n : ℕ)
+  (X : CategoryTheory.CosimplicialObject.Truncated C n) (m : ℕ) (h : m ≤ n)
+
+#guard_expr X _[m]ₙ = X.obj ⟨SimplexCategory.mk m, _⟩
+#guard_expr X _[m, h]ₙ = X.obj ⟨SimplexCategory.mk m, _⟩
+
+section delaborator
+
+/-- info: X _[m]ₙ : C -/
+#guard_msgs in #check X _[m]ₙ
+
+section mvars
+set_option pp.mvars false
+
+/-- info: X _[?_]ₙ : C -/
+#guard_msgs in #check X _[?_, ?_]ₙ
+
+/- The delaborator should not fire because the truncation level is a metavariable. -/
+open CategoryTheory.Functor in
+/-- info: (toPrefunctor ?_).obj { obj := SimplexCategory.mk ?_, property := ?_ } : ?_ -/
+#guard_msgs in #check Prefunctor.obj
+  (toPrefunctor (C := SimplexCategory.Truncated ?_) ?_) ⟨SimplexCategory.mk ?_, ?_⟩
+
+end mvars
+
+section proofs
+set_option pp.proofs true
+
+/-- info: X _[m,h]ₙ : C -/
+#guard_msgs in #check X _[m]ₙ
+
+/-- info: X _[m,h]ₙ : C -/
+#guard_msgs in #check X _[m, h]ₙ
+
+set_option pp.mvars false in
+/-- info: X _[?_,?_]ₙ : C -/
+#guard_msgs in #check X _[?_, ?_]ₙ
+
+end proofs
+end delaborator
+end Cosimplicial
