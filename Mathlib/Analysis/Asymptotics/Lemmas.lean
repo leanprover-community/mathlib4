@@ -3,6 +3,7 @@ Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Yury Kudryashov
 -/
+import Mathlib.Analysis.Asymptotics.Defs
 import Mathlib.Analysis.Normed.Group.Bounded
 import Mathlib.Analysis.Normed.Group.InfiniteSum
 import Mathlib.Analysis.Normed.MulAction
@@ -10,39 +11,8 @@ import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.PartialHomeomorph
 
 /-!
-# Asymptotics
+# Further basic lemmas about asymptotics
 
-We introduce these relations:
-
-* `IsBigOWith c l f g` : "f is big O of g along l with constant c";
-* `f =O[l] g` : "f is big O of g along l";
-* `f =o[l] g` : "f is little o of g along l".
-
-Here `l` is any filter on the domain of `f` and `g`, which are assumed to be the same. The codomains
-of `f` and `g` do not need to be the same; all that is needed that there is a norm associated with
-these types, and it is the norm that is compared asymptotically.
-
-The relation `IsBigOWith c` is introduced to factor out common algebraic arguments in the proofs of
-similar properties of `IsBigO` and `IsLittleO`. Usually proofs outside of this file should use
-`IsBigO` instead.
-
-Often the ranges of `f` and `g` will be the real numbers, in which case the norm is the absolute
-value. In general, we have
-
-  `f =O[l] g ↔ (fun x ↦ ‖f x‖) =O[l] (fun x ↦ ‖g x‖)`,
-
-and similarly for `IsLittleO`. But our setup allows us to use the notions e.g. with functions
-to the integers, rationals, complex numbers, or any normed vector space without mentioning the
-norm explicitly.
-
-If `f` and `g` are functions to a normed field like the reals or complex numbers and `g` is always
-nonzero, we have
-
-  `f =o[l] g ↔ Tendsto (fun x ↦ f x / (g x)) l (𝓝 0)`.
-
-In fact, the right-to-left direction holds without the hypothesis on `g`, and in the other direction
-it suffices to assume that `f` is zero wherever `g` is. (This generalization is useful in defining
-the Fréchet derivative.)
 -/
 
 open Set Topology Filter NNReal
