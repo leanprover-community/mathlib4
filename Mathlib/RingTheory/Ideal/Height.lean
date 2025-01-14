@@ -79,10 +79,25 @@ lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
 lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
   (h : I < J) [I.FiniteHeight] :
   I.height < J.height := by
-  unfold height
+  rw [Ideal.height_eq_primeHeight I, Ideal.height]
+  obtain h := Ideal.nonempty_minimalPrimes J
 
   sorry
   -- rw [Ideal.height_eq_primeHeight I, Ideal.height]
+  /-
+    rw [ideal.height_eq_prime_height I, ideal.height,
+    ← enat.coe_to_nat_eq_self.mpr (ideal.prime_height_ne_top I),
+    with_top.coe_lt_iff_add_one_le, le_infi₂_iff],
+  simp_rw [← with_top.coe_lt_iff_add_one_le, enat.coe_to_nat_eq_self.mpr
+    (ideal.prime_height_ne_top I)],
+  intros K hK,
+  haveI := hK.1.1,
+  cases hn : K.prime_height with n,
+  { rw with_top.none_eq_top, exact ideal.prime_height_lt_top _ },
+  haveI : K.finite_height := ⟨or.inr _⟩,
+  { exact hn ▸ ideal.prime_height_strict_mono (e.trans_le hK.1.2) },
+  { rw [ideal.height_eq_prime_height, hn], exact with_top.coe_ne_top }
+  -/
   sorry -- The rest of the proof needs additional helper lemmas
 
 theorem Ideal.minimalPrimes_eq_empty_iff (I : Ideal R) :

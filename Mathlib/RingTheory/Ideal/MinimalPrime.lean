@@ -70,6 +70,16 @@ theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.mi
     rw [OrderDual.le_toDual]
     exact sInf_le hz
 
+theorem Ideal.nonempty_minimalPrimes (h : I ≠ ⊤) : Nonempty I.minimalPrimes := by
+  obtain ⟨m, hm, hle⟩ := Ideal.exists_le_maximal I h
+  obtain ⟨p, hp, -⟩ := Ideal.exists_minimalPrimes_le hle
+  exact ⟨p, hp⟩
+
+theorem Ideal.eq_bot_of_minimalPrimes_eq_empty (h : I.minimalPrimes = ∅) : I = ⊤ := by
+  by_contra hI
+  obtain ⟨p, hp⟩ := Ideal.nonempty_minimalPrimes hI
+  exact Set.not_mem_empty p (h ▸ hp)
+
 @[simp]
 theorem Ideal.radical_minimalPrimes : I.radical.minimalPrimes = I.minimalPrimes := by
   rw [Ideal.minimalPrimes, Ideal.minimalPrimes]
