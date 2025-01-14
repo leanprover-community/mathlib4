@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Chambert-Loir
 -/
 
-import Mathlib.GroupTheory.MaximalSubgroups
 import Mathlib.GroupTheory.GroupAction.Blocks
 import Mathlib.GroupTheory.GroupAction.Transitive
 import Mathlib.Data.Setoid.Partition
@@ -346,8 +345,8 @@ theorem isPreprimitive_iff_isSimpleOrder_blocks
   iff the stabilizer of any point is a maximal subgroup (Wielandt, th. 7.5)"]
 theorem maximal_stabilizer_iff_preprimitive
     [htGX : IsPretransitive G X] [hnX : Nontrivial X] (a : X) :
-    (stabilizer G a).IsMaximal ↔ IsPreprimitive G X := by
-  rw [isPreprimitive_iff_isSimpleOrder_blocks G a, Subgroup.isMaximal_def,
+    IsCoatom (stabilizer G a) ↔ IsPreprimitive G X := by
+  rw [isPreprimitive_iff_isSimpleOrder_blocks G a,
     ← Set.isSimpleOrder_Ici_iff_isCoatom]
   simp only [isSimpleOrder_iff_isCoatom_bot]
   rw [← OrderIso.isCoatom_iff (block_stabilizerOrderIso G a), OrderIso.map_bot]
@@ -356,7 +355,7 @@ theorem maximal_stabilizer_iff_preprimitive
 @[to_additive "In a preprimitive action, stabilizers are maximal subgroups."]
 theorem hasMaximalStabilizersOfPreprimitive
     [hnX : Nontrivial X] (hpGX : IsPreprimitive G X) (a : X) :
-    (stabilizer G a).IsMaximal := by
+    IsCoatom (stabilizer G a) := by
   haveI : IsPretransitive G X := hpGX.toIsPretransitive
   rw [maximal_stabilizer_iff_preprimitive]
   exact hpGX
