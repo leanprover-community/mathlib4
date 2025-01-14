@@ -118,8 +118,8 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
     intro n; apply measurableSet_generateFrom
     apply mem_image_of_mem; intro j _; dsimp only
     by_cases h : j = i
-    · subst h; rwa [update_same]
-    · rw [update_noteq h]; apply h1t
+    · subst h; rwa [update_self]
+    · rw [update_of_ne h]; apply h1t
   · apply generateFrom_le; rintro _ ⟨s, hs, rfl⟩
     rw [univ_pi_eq_iInter]; apply MeasurableSet.iInter; intro i
     apply @measurable_pi_apply _ _ (fun i => generateFrom (C i))

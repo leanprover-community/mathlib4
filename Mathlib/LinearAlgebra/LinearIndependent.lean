@@ -109,7 +109,7 @@ in case the family of vectors is over a `Set`.
 
 Type hints look like `LinearIndependent fun (v : ↑s) => ↑v` or `LinearIndependent (ι := ↑s) f`,
 depending on whether the family is a lambda expression or not. -/
-@[delab app.LinearIndependent]
+@[app_delab LinearIndependent]
 def delabLinearIndependent : Delab :=
   whenPPOption getPPNotation <|
   whenNotPPOption getPPAnalysisSkip <|
@@ -1354,6 +1354,23 @@ theorem exists_linearIndependent :
   obtain ⟨b, hb₁, -, hb₂, hb₃⟩ :=
     exists_linearIndependent_extension (linearIndependent_empty K V) (Set.empty_subset t)
   exact ⟨b, hb₁, (span_eq_of_le _ hb₂ (Submodule.span_mono hb₁)).symm, hb₃⟩
+
+/-- Indexed version of `exists_linearIndependent`. -/
+lemma exists_linearIndependent' (v : ι → V) :
+    ∃ (κ : Type u') (a : κ → ι), Function.Injective a ∧
+      Submodule.span K (Set.range (v ∘ a)) = Submodule.span K (Set.range v) ∧
+      LinearIndependent K (v ∘ a) := by
+  obtain ⟨t, ht, hsp, hli⟩ := exists_linearIndependent K (Set.range v)
+  choose f hf using ht
+  let s : Set ι := Set.range (fun a : t ↦ f a.property)
+  have hs {i : ι} (hi : i ∈ s) : v i ∈ t := by obtain ⟨a, rfl⟩ := hi; simp [hf]
+  let f' (a : s) : t := ⟨v a.val, hs a.property⟩
+  refine ⟨s, Subtype.val, Subtype.val_injective, hsp.symm ▸ by congr; aesop, ?_⟩
+  · rw [← show Subtype.val ∘ f' = v ∘ Subtype.val by ext; simp]
+    apply hli.comp
+    rintro ⟨i, x, rfl⟩ ⟨j, y, rfl⟩ hij
+    simp only [Subtype.ext_iff, hf] at hij
+    simp [hij]
 
 variable {K t}
 
