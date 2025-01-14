@@ -5,7 +5,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov, Eric W
 -/
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Group.Graph
-import Mathlib.Algebra.Order.SuccPred.PartialSups
+import Mathlib.Algebra.Order.PartialSups
 import Mathlib.Data.Nat.SuccPred
 import Mathlib.LinearAlgebra.Span.Basic
 
