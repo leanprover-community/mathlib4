@@ -131,12 +131,22 @@ theorem finite_of_isTranscendenceBasis_of_algebraic_adjoin [DecidableEq ι] [Non
     (hx : IsTranscendenceBasis R x)
     (hy : AlgebraicIndependent R y) (i : ι') :
     ∃ j : ι, Algebra.IsAlgebraic (adjoin R (range (Function.update x j (y i)))) A := by
-  obtain ⟨P, hP₁, hP₂⟩ := (isAlgebraic_adjoin_range_left_iff rfl).1 (hx.isAlgebraic.1 (y i))
-  obtain ⟨j, hj⟩ : ∃ j, (aeval fun o ↦ o.elim (Polynomial.C (y i))
-      fun k ↦ update (Polynomial.C ∘ x) j Polynomial.X k) P ≠ 0 := by
-    rw [algebraicIndependent_iff] at hy
-    have := hx.1
-    sorry
+  obtain ⟨P, hP⟩ := (isAlgebraic_adjoin_range_left_iff rfl).1 (hx.isAlgebraic.1 (y i))
+  obtain ⟨j, hj⟩ : ∃ j, some j ∈ P.vars := by
+    by_contra h
+    have hPC : RingHom.id _ P = ((MvPolynomial.rename (fun _ => none)).toRingHom.comp
+      (MvPolynomial.rename (fun _ => i)).toRingHom) P := by
+      refine MvPolynomial.hom_congr_vars (by ext; simp) ?_ rfl
+      intro i hi _
+      induction i <;> simp_all
+    rw [RingHom.id_apply] at hPC
+    rw [hPC] at hP
+    have hP0 : P ≠ 0 := by rintro rfl; simp at hP
+    rw [hPC] at hP0 hP
+    apply hP0
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply]
+    rw [algebraicIndependent_iff.1 hy ((MvPolynomial.rename (fun _ => i)) P), map_zero]
+    simpa [Function.comp_def, aeval_rename] using hP.2
   use j
   let M : Subalgebra R A := (aeval (Function.update x j (y i))).range
   let N : Subalgebra R A := (aeval x).range
