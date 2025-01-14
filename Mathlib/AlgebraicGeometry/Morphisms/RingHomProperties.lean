@@ -170,9 +170,16 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso P)
     rwa [IsAffineOpen.appLE_eq_away_map f (isAffineOpen_top Y) U.2,
       ← h₁.is_localization_away_iff] at this
 
+variable {P}
+
+lemma affineLocally_le {Q : ∀ {R S : Type u} [CommRing R] [CommRing S], (R →+* S) → Prop}
+    (hPQ : ∀ {R S : Type u} [CommRing R] [CommRing S] {f : R →+* S}, P f → Q f) :
+    affineLocally P ≤ affineLocally Q :=
+  fun _ _ _ hf U V ↦ hPQ (hf U V)
+
 open RingHom
 
-variable {P} {X Y : Scheme.{u}} {f : X ⟶ Y}
+variable {X Y : Scheme.{u}} {f : X ⟶ Y}
 
 /-- If `P` holds for `f` over affine opens `U₂` of `Y` and `V₂` of `X` and `U₁` (resp. `V₁`) are
 open affine neighborhoods of `x` (resp. `f.base x`), then `P` also holds for `f`
@@ -388,7 +395,7 @@ lemma isLocal_ringHomProperty_of_isLocalAtSource_of_isLocalAtTarget
       (CommRingCat.ofHom f) r)).mp (IsLocalAtTarget.restrict H (basicOpen r))
   · intros R S _ _ f s hs H
     apply IsLocalAtSource.of_openCover (Scheme.affineOpenCoverOfSpanRangeEqTop
-      (R := CommRingCat.of S) (ι := s) (fun i : s ↦ (i : S)) (by simpa)).openCover
+      (fun i : s ↦ (i : S)) (by simpa)).openCover
     intro i
     simp only [CommRingCat.coe_of, Set.setOf_mem_eq, id_eq, eq_mpr_eq_cast,
       Scheme.AffineOpenCover.openCover_obj, Scheme.affineOpenCoverOfSpanRangeEqTop_obj_carrier,

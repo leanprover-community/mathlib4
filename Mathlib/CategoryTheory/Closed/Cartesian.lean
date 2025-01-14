@@ -117,7 +117,7 @@ notation:20 A " ⟹ " B:19 => (exp A).obj B
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for `Prefunctor.obj` -/
-@[delab app.Prefunctor.obj]
+@[app_delab Prefunctor.obj]
 def delabPrefunctorObjExp : Delab := whenPPOption getPPNotation <| withOverApp 6 <| do
   let e ← getExpr
   guard <| e.isAppOfArity' ``Prefunctor.obj 6
