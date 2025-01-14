@@ -525,6 +525,12 @@ theorem integral_log : ∫ s in a..b, log s = b * log b - a * log a - b + a := b
     ring
   repeat exact intervalIntegrable_log'
 
+@[deprecated (since := "2025-01-12")]
+alias integral_log_of_pos := integral_log
+
+@[deprecated (since := "2025-01-12")]
+alias integral_log_of_neg := integral_log
+
 @[simp]
 theorem integral_sin : ∫ x in a..b, sin x = cos a - cos b := by
   rw [integral_deriv_eq_sub' fun x => -cos x]
