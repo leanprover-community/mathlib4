@@ -136,7 +136,10 @@ def typeOfIneqProof (prf : Expr) : MetaM Expr := do
 where the numerals are natively of type `tp`.
 -/
 def mkNegOneLtZeroProof (tp : Expr) : MetaM Expr := do
-  let ⟨.succ u, ~q(Type u), ~q($α)⟩ ← inferTypeQ' tp | throwError m!"{tp} is not a type"
+  -- TODO: pass in `v` rather than partially reproducing the contents of `inferType'`.
+  let .sort u ← whnf (← inferType tp) | throwError "not a type{indentExpr tp}"
+  let some v := (← instantiateLevelMVars u).dec | throwError "not a Type{indentExpr tp}"
+  have α : Q(Type v) := tp
   letI := ← synthInstanceQ q(StrictOrderedRing $α)
   return q(neg_neg_of_pos <| Linarith.zero_lt_one (α := $α))
 
@@ -154,14 +157,6 @@ def addNegEqProofs : List Expr → MetaM (List Expr)
       let tl ← addNegEqProofs tl
       return h::nep::tl
     | _ => return h :: (← addNegEqProofs tl)
-
-/--
-`proveEqZeroUsing tac e` tries to use `tac` to construct a proof of `e = 0`.
--/
-def proveEqZeroUsing (tac : TacticM Unit) (e : Expr) : MetaM Expr := do
-  let ⟨u, α, e⟩ ← inferTypeQ' e
-  let _h : Q(Zero $α) ← synthInstanceQ q(Zero $α)
-  synthesizeUsing' q($e = 0) tac
 
 /-! #### The main method -/
 
@@ -189,7 +184,7 @@ tactic, which is typically `ring`. We prove (2) by folding over the set of hypot
 `transparency : TransparencyMode` controls the transparency level with which atoms are identified.
 -/
 def proveFalseByLinarith (transparency : TransparencyMode) (oracle : CertificateOracle)
-    (discharger : TacticM Unit) : MVarId → List Expr → MetaM Expr
+    (discharger : TacticM Unit) : MVarId → List Expr → MetaM Q(False)
   | _, [] => throwError "no args to linarith"
   | g, l@(h::_) => do
       Lean.Core.checkSystem decl_name%.toString
@@ -225,18 +220,13 @@ def proveFalseByLinarith (transparency : TransparencyMode) (oracle : Certificate
           -- let sm ← instantiateMVars sm
           trace[linarith] "{indentD sm}\nshould be both 0 and negative"
           return (sm, zip)
-      -- we prove that `sm = 0`, typically with `ring`.
-      let sm_eq_zero ← detailTrace "proveEqZeroUsing" <| proveEqZeroUsing discharger sm
-      -- we also prove that `sm < 0`
-      let sm_lt_zero ← detailTrace "mkLTZeroProof" <| mkLTZeroProof zip
-      detailTrace "Linarith.lt_irrefl" do
-        -- this is a contradiction.
-        let ⟨u, α, smq⟩ ← inferTypeQ' sm
-        haveI : Q(StrictOrderedCommRing $α) := ← synthInstanceQ q(StrictOrderedCommRing $α)
-        have h1 : Q($smq = 0) := sm_eq_zero
-        have h2 : Q($smq < 0) := sm_lt_zero
-        have : Q(False) := q(Linarith.lt_irrefl (($h1).symm.trans_lt $h2))
-        return this
+      let ⟨u, α, smq⟩ ← inferTypeQ' sm
+      have : Q(StrictOrderedCommRing $α) := ← synthInstanceQ q(StrictOrderedCommRing $α)
+      let sm_eq_zero : Q($smq = 0) := ← detailTrace "proveEqZeroUsing" <|
+        synthesizeUsing' q($smq = 0) discharger
+      let sm_lt_zero: Q($smq < 0) := ← detailTrace "mkLTZeroProof" <| mkLTZeroProof zip
+      -- this is a contradiction.
+      return q(($sm_eq_zero).not_lt $sm_lt_zero)
 where
   /-- Log `f` under `linarith.detail`, with exception emojis and the provided name. -/
   detailTrace {α} (s : String) (f : MetaM α) : MetaM α :=
