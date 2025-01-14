@@ -48,7 +48,6 @@ integrable, function space, l1
 
 noncomputable section
 
-open scoped Classical
 open Topology ENNReal MeasureTheory NNReal
 
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory
@@ -525,6 +524,7 @@ theorem integrable_zero_measure {_ : MeasurableSpace α} {f : α → β} :
 
 theorem integrable_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → β} {μ : ι → Measure α}
     {s : Finset ι} : Integrable f (∑ i ∈ s, μ i) ↔ ∀ i ∈ s, Integrable f (μ i) := by
+  classical
   induction s using Finset.induction_on <;> simp [*]
 
 theorem Integrable.smul_measure {f : α → β} (h : Integrable f μ) {c : ℝ≥0∞} (hc : c ≠ ∞) :
@@ -555,8 +555,9 @@ theorem Integrable.to_average {f : α → β} (h : Integrable f μ) : Integrable
     simpa
 
 theorem integrable_average [IsFiniteMeasure μ] {f : α → β} :
-    Integrable f ((μ univ)⁻¹ • μ) ↔ Integrable f μ :=
-  (eq_or_ne μ 0).by_cases (fun h => by simp [h]) fun h =>
+    Integrable f ((μ univ)⁻¹ • μ) ↔ Integrable f μ := by
+  classical
+  exact (eq_or_ne μ 0).by_cases (fun h => by simp [h]) fun h =>
     integrable_smul_measure (ENNReal.inv_ne_zero.2 <| measure_ne_top _ _)
       (ENNReal.inv_ne_top.2 <| mt Measure.measure_univ_eq_zero.1 h)
 
