@@ -314,9 +314,37 @@ theorem IsSuccPrelimit.le_iff_forall_le (h : IsSuccPrelimit a) : a ≤ b ↔ ∀
   by_contra! ha
   exact h b ⟨ha, fun c hb hc ↦ (H c hc).not_lt hb⟩
 
+theorem IsSuccLimit.le_iff_forall_le (h : IsSuccLimit a) : a ≤ b ↔ ∀ c < a, c ≤ b :=
+  h.isSuccPrelimit.le_iff_forall_le
+
 theorem IsSuccPrelimit.lt_iff_exists_lt (h : IsSuccPrelimit b) : a < b ↔ ∃ c < b, a < c := by
   rw [← not_iff_not]
   simp [h.le_iff_forall_le]
+
+theorem IsSuccLimit.lt_iff_exists_lt (h : IsSuccLimit b) : a < b ↔ ∃ c < b, a < c :=
+  h.isSuccPrelimit.lt_iff_exists_lt
+
+theorem IsSuccPrelimit.isLUB_Iio (ha : IsSuccPrelimit a) : IsLUB (Iio a) a := by
+  refine ⟨fun _ ↦ le_of_lt, fun b hb ↦ le_of_forall_lt fun c hc ↦ ?_⟩
+  obtain ⟨d, hd, hd'⟩ := ha.lt_iff_exists_lt.1 hc
+  exact hd'.trans_le (hb hd)
+
+theorem IsSuccLimit.isLUB_Iio (ha : IsSuccLimit a) : IsLUB (Iio a) a :=
+  ha.isSuccPrelimit.isLUB_Iio
+
+theorem isLUB_Iio_iff_isSuccPrelimit : IsLUB (Iio a) a ↔ IsSuccPrelimit a := by
+  refine ⟨fun ha b hb ↦ ?_, IsSuccPrelimit.isLUB_Iio⟩
+  rw [hb.Iio_eq] at ha
+  obtain rfl := isLUB_Iic.unique ha
+  cases hb.lt.false
+
+variable [SuccOrder α]
+
+theorem IsSuccPrelimit.le_succ_iff (hb : IsSuccPrelimit b) : b ≤ succ a ↔ b ≤ a :=
+  le_iff_le_iff_lt_iff_lt.2 hb.succ_lt_iff
+
+theorem IsSuccLimit.le_succ_iff (hb : IsSuccLimit b) : b ≤ succ a ↔ b ≤ a :=
+  hb.isSuccPrelimit.le_succ_iff
 
 end LinearOrder
 
@@ -499,6 +527,9 @@ variable [PartialOrder α]
 theorem isPredLimit_iff [OrderTop α] : IsPredLimit a ↔ a ≠ ⊤ ∧ IsPredPrelimit a := by
   rw [IsPredLimit, isMax_iff_eq_top]
 
+theorem IsPredLimit.lt_top [OrderTop α] (h : IsPredLimit a) : a < ⊤ :=
+  h.ne_top.lt_top
+
 variable [PredOrder α]
 
 theorem isPredPrelimit_of_pred_ne (h : ∀ b, pred b ≠ a) : IsPredPrelimit a := fun b hba =>
@@ -594,8 +625,31 @@ variable [LinearOrder α]
 theorem IsPredPrelimit.le_iff_forall_le (h : IsPredPrelimit a) : b ≤ a ↔ ∀ ⦃c⦄, a < c → b ≤ c :=
   h.dual.le_iff_forall_le
 
+theorem IsPredLimit.le_iff_forall_le (h : IsPredLimit a) : b ≤ a ↔ ∀ ⦃c⦄, a < c → b ≤ c :=
+  h.dual.le_iff_forall_le
+
 theorem IsPredPrelimit.lt_iff_exists_lt (h : IsPredPrelimit b) : b < a ↔ ∃ c, b < c ∧ c < a :=
   h.dual.lt_iff_exists_lt
+
+theorem IsPredLimit.lt_iff_exists_lt (h : IsPredLimit b) : b < a ↔ ∃ c, b < c ∧ c < a :=
+  h.dual.lt_iff_exists_lt
+
+theorem IsPredPrelimit.isGLB_Ioi (ha : IsPredPrelimit a) : IsGLB (Ioi a) a :=
+  ha.dual.isLUB_Iio
+
+theorem IsPredLimit.isGLB_Ioi (ha : IsPredLimit a) : IsGLB (Ioi a) a :=
+  ha.dual.isLUB_Iio
+
+theorem isGLB_Ioi_iff_isPredPrelimit : IsGLB (Ioi a) a ↔ IsPredPrelimit a := by
+  simpa using isLUB_Iio_iff_isSuccPrelimit (a := toDual a)
+
+variable [PredOrder α]
+
+theorem IsPredPrelimit.pred_le_iff (hb : IsPredPrelimit b) : pred a ≤ b ↔ a ≤ b :=
+  hb.dual.le_succ_iff
+
+theorem IsPredLimit.pred_le_iff (hb : IsPredLimit b) : pred a ≤ b ↔ a ≤ b :=
+  hb.dual.le_succ_iff
 
 end LinearOrder
 

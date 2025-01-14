@@ -8,7 +8,7 @@ import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.LinearAlgebra.TensorProduct.Pi
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 import Mathlib.RingTheory.AdicCompletion.Exactness
-import Mathlib.RingTheory.Flat.Algebra
+import Mathlib.RingTheory.Flat.Basic
 
 /-!
 
@@ -101,7 +101,7 @@ private lemma piEquivOfFintype_comp_ofTensorProduct_eq :
   ext i j k
   suffices h : (if j = i then 1 else 0) = (if j = i then 1 else 0 : AdicCompletion I R).val k by
     simpa [Pi.single_apply, -smul_eq_mul, -Algebra.id.smul_eq_mul]
-  split <;> simp only [smul_eq_mul, val_zero, val_one]
+  split <;> simp
 
 private lemma ofTensorProduct_eq :
     ofTensorProduct I (ι → R) = (piEquivOfFintype I (ι := ι) (fun _ : ι ↦ R)).symm.toLinearMap ∘ₗ
@@ -375,8 +375,8 @@ lemma tensor_map_id_left_injective_of_injective (hf : Function.Injective f) :
 end
 
 /-- Adic completion of a Noetherian ring `R` is flat over `R`. -/
-instance flat_of_isNoetherian [IsNoetherianRing R] : Algebra.Flat R (AdicCompletion I R) where
-  out := (Module.Flat.iff_lTensor_injective' R (AdicCompletion I R)).mpr <| fun J ↦
+instance flat_of_isNoetherian [IsNoetherianRing R] : Module.Flat R (AdicCompletion I R) :=
+  (Module.Flat.iff_lTensor_injective' R (AdicCompletion I R)).mpr fun J ↦
     tensor_map_id_left_injective_of_injective I (Submodule.injective_subtype J)
 
 end Noetherian

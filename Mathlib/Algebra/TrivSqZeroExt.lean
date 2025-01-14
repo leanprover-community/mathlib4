@@ -875,20 +875,20 @@ variable [Algebra S R] [Module S M] [Module R M] [Module Rᵐᵒᵖ M] [SMulComm
 variable [IsScalarTower S R M] [IsScalarTower S Rᵐᵒᵖ M]
 variable [Module R' M] [Module R'ᵐᵒᵖ M] [IsCentralScalar R' M]
 
-instance algebra' : Algebra S (tsze R M) :=
-  { (TrivSqZeroExt.inlHom R M).comp (algebraMap S R) with
-    smul := (· • ·)
-    commutes' := fun s x =>
-      ext (Algebra.commutes _ _) <|
-        show algebraMap S R s •> x.snd + (0 : M) <• x.fst
-            = x.fst •> (0 : M) + x.snd <• algebraMap S R s by
-          rw [smul_zero, smul_zero, add_zero, zero_add]
-          rw [Algebra.algebraMap_eq_smul_one, MulOpposite.op_smul, op_one, smul_assoc,
-            one_smul, smul_assoc, one_smul]
-    smul_def' := fun s x =>
-      ext (Algebra.smul_def _ _) <|
-        show s • x.snd = algebraMap S R s •> x.snd + (0 : M) <• x.fst by
-          rw [smul_zero, add_zero, algebraMap_smul] }
+instance algebra' : Algebra S (tsze R M) where
+  algebraMap := (TrivSqZeroExt.inlHom R M).comp (algebraMap S R)
+  smul := (· • ·)
+  commutes' := fun s x =>
+    ext (Algebra.commutes _ _) <|
+      show algebraMap S R s •> x.snd + (0 : M) <• x.fst
+          = x.fst •> (0 : M) + x.snd <• algebraMap S R s by
+        rw [smul_zero, smul_zero, add_zero, zero_add]
+        rw [Algebra.algebraMap_eq_smul_one, MulOpposite.op_smul, op_one, smul_assoc,
+          one_smul, smul_assoc, one_smul]
+  smul_def' := fun s x =>
+    ext (Algebra.smul_def _ _) <|
+      show s • x.snd = algebraMap S R s •> x.snd + (0 : M) <• x.fst by
+        rw [smul_zero, add_zero, algebraMap_smul]
 
 -- shortcut instance for the common case
 instance : Algebra R' (tsze R' M) :=

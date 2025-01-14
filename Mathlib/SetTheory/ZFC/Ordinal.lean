@@ -3,6 +3,7 @@ Copyright (c) 2022 Violeta Hernández Palacios. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Violeta Hernández Palacios
 -/
+import Mathlib.Order.GameAdd
 import Mathlib.Order.RelIso.Set
 import Mathlib.SetTheory.ZFC.Basic
 
@@ -12,29 +13,29 @@ import Mathlib.SetTheory.ZFC.Basic
 This file works towards the development of von Neumann ordinals, i.e. transitive sets, well-ordered
 under `∈`.
 
-We currently only have an initial development of transitive sets and ordinals. Further development
-can be found on the Mathlib 3 branch `von_neumann_v2`.
-
 ## Definitions
 
 - `ZFSet.IsTransitive` means that every element of a set is a subset.
-- `ZFSet.IsOrdinal` means that the set is transitive and well-ordered under `∈`.
+- `ZFSet.IsOrdinal` means that the set is transitive and well-ordered under `∈`. We show multiple
+  equivalences to this definition.
 
 ## TODO
 
-- Define von Neumann ordinals and the von Neumann hierarchy.
-- Build correspondences between these notions and those of the standard `Ordinal` type.
+- Define the von Neumann hierarchy.
+- Build correspondences between these set notions and those of the standard `Ordinal` type.
 -/
-
 
 universe u
 
-variable {x y z : ZFSet.{u}}
+variable {x y z w : ZFSet.{u}}
 
 namespace ZFSet
 
+/-! ### Transitive sets -/
 
-/-- A transitive set is one where every element is a subset. -/
+/-- A transitive set is one where every element is a subset.
+
+This is equivalent to being an infinite-open interval in the transitive closure of membership. -/
 def IsTransitive (x : ZFSet) : Prop :=
   ∀ y ∈ x, y ⊆ x
 
@@ -56,11 +57,13 @@ protected theorem IsTransitive.inter (hx : x.IsTransitive) (hy : y.IsTransitive)
   rw [mem_inter] at hz ⊢
   exact ⟨hx.mem_trans hw hz.1, hy.mem_trans hw hz.2⟩
 
+/-- The union of a transitive set is transitive. -/
 protected theorem IsTransitive.sUnion (h : x.IsTransitive) :
     (⋃₀ x : ZFSet).IsTransitive := fun y hy z hz => by
   rcases mem_sUnion.1 hy with ⟨w, hw, hw'⟩
   exact mem_sUnion_of_mem hz (h.mem_trans hw' hw)
 
+/-- The union of transitive sets is transitive. -/
 theorem IsTransitive.sUnion' (H : ∀ y ∈ x, IsTransitive y) :
     (⋃₀ x : ZFSet).IsTransitive := fun y hy z hz => by
   rcases mem_sUnion.1 hy with ⟨w, hw, hw'⟩
@@ -94,8 +97,10 @@ theorem isTransitive_iff_subset_powerset : x.IsTransitive ↔ x ⊆ powerset x :
 
 alias ⟨IsTransitive.subset_powerset, _⟩ := isTransitive_iff_subset_powerset
 
+/-! ### Ordinals -/
+
 /-- A set `x` is a von Neumann ordinal when it's a transitive set, that's transitive under `∈`. We
-will prove that this further implies that `x` is well-ordered under `∈`.
+prove that this further implies that `x` is well-ordered under `∈` in `isOrdinal_iff_isWellOrder`.
 
 The transitivity condition `a ∈ b → b ∈ c → a ∈ c` can be written without assuming `a ∈ x` and
 `b ∈ x`. The lemma `isOrdinal_iff_isTrans` shows this condition is equivalent to the usual one. -/
@@ -116,17 +121,130 @@ theorem mem_trans (h : z.IsOrdinal) : x ∈ y → y ∈ z → x ∈ z :=
 protected theorem isTrans (h : x.IsOrdinal) : IsTrans x.toSet (Subrel (· ∈ ·) _) :=
   ⟨fun _ _ c hab hbc => h.mem_trans' hab hbc c.2⟩
 
-end IsOrdinal
-
 /-- The simplified form of transitivity used within `IsOrdinal` yields an equivalent definition to
 the standard one. -/
-theorem isOrdinal_iff_isTrans :
-    x.IsOrdinal ↔ x.IsTransitive ∧ IsTrans x.toSet (Subrel (· ∈ ·) _) := by
-  use fun h => ⟨h.isTransitive, h.isTrans⟩
-  rintro ⟨h₁, ⟨h₂⟩⟩
-  use h₁
-  intro y z w hyz hzw hwx
-  have hzx := h₁.mem_trans hzw hwx
-  exact h₂ ⟨y, h₁.mem_trans hyz hzx⟩ ⟨z, hzx⟩ ⟨w, hwx⟩ hyz hzw
+theorem _root_.ZFSet.isOrdinal_iff_isTrans :
+    x.IsOrdinal ↔ x.IsTransitive ∧ IsTrans x.toSet (Subrel (· ∈ ·) _) where
+  mp h := ⟨h.isTransitive, h.isTrans⟩
+  mpr := by
+    rintro ⟨h₁, ⟨h₂⟩⟩
+    refine ⟨h₁, fun {y z w} hyz hzw hwx ↦ ?_⟩
+    have hzx := h₁.mem_trans hzw hwx
+    exact h₂ ⟨y, h₁.mem_trans hyz hzx⟩ ⟨z, hzx⟩ ⟨w, hwx⟩ hyz hzw
+
+protected theorem mem (hx : x.IsOrdinal) (hy : y ∈ x) : y.IsOrdinal :=
+  have := hx.isTrans
+  let f : Subrel (· ∈ ·) y.toSet ↪r Subrel (· ∈ ·) x.toSet :=
+    Subrel.inclusionEmbedding (· ∈ ·) (hx.subset_of_mem hy)
+  isOrdinal_iff_isTrans.2 ⟨fun _ hz _ ha ↦ hx.mem_trans' ha hz hy, f.isTrans⟩
+
+/-- An ordinal is a transitive set of transitive sets. -/
+theorem _root_.ZFSet.isOrdinal_iff_forall_mem_isTransitive :
+    x.IsOrdinal ↔ x.IsTransitive ∧ ∀ y ∈ x, y.IsTransitive where
+  mp h := ⟨h.isTransitive, fun _ hy ↦ (h.mem hy).isTransitive⟩
+  mpr := fun ⟨h₁, h₂⟩ ↦ ⟨h₁, fun hyz hzw hwx ↦ (h₂ _ hwx).mem_trans hyz hzw⟩
+
+/-- An ordinal is a transitive set of ordinals. -/
+theorem _root_.ZFSet.isOrdinal_iff_forall_mem_isOrdinal :
+    x.IsOrdinal ↔ x.IsTransitive ∧ ∀ y ∈ x, y.IsOrdinal where
+  mp h := ⟨h.isTransitive, fun _ ↦ h.mem⟩
+  mpr := fun ⟨h₁, h₂⟩ ↦ isOrdinal_iff_forall_mem_isTransitive.2
+    ⟨h₁, fun y hy ↦ (h₂ y hy).isTransitive⟩
+
+theorem subset_iff_eq_or_mem (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ⊆ y ↔ x = y ∨ x ∈ y := by
+  constructor
+  · revert hx hy
+    apply Sym2.GameAdd.induction mem_wf _ x y
+    intro x y IH hx hy hxy
+    by_cases hyx : y ⊆ x
+    · exact Or.inl (subset_antisymm hxy hyx)
+    · obtain ⟨m, hm, hm'⟩ := mem_wf.has_min (y.toSet \ x.toSet) (Set.diff_nonempty.2 hyx)
+      have hmy : m ∈ y := show m ∈ y.toSet from Set.mem_of_mem_diff hm
+      have hmx : m ⊆ x := by
+        intro z hzm
+        by_contra hzx
+        exact hm' _ ⟨hy.mem_trans hzm hmy, hzx⟩ hzm
+      obtain rfl | H := IH m x (Sym2.GameAdd.fst_snd hmy) (hy.mem hmy) hx hmx
+      · exact Or.inr hmy
+      · cases Set.not_mem_of_mem_diff hm H
+  · rintro (rfl | h)
+    · rfl
+    · exact hy.subset_of_mem h
+
+alias ⟨eq_or_mem_of_subset, _⟩ := subset_iff_eq_or_mem
+
+theorem mem_of_subset_of_mem (h : x.IsOrdinal) (hz : z.IsOrdinal) (hx : x ⊆ y) (hy : y ∈ z) :
+    x ∈ z := by
+  obtain rfl | hx := h.eq_or_mem_of_subset (hz.mem hy) hx
+  · exact hy
+  · exact hz.mem_trans hx hy
+
+theorem not_mem_iff_subset (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∉ y ↔ y ⊆ x := by
+  refine ⟨?_, fun hxy hyx ↦ mem_irrefl _ (hxy hyx)⟩
+  revert hx hy
+  apply Sym2.GameAdd.induction mem_wf _ x y
+  intros x y IH hx hy hyx z hzy
+  by_contra hzx
+  exact hyx (mem_of_subset_of_mem hx hy (IH z x (Sym2.GameAdd.fst_snd hzy) (hy.mem hzy) hx hzx) hzy)
+
+theorem not_subset_iff_mem (hx : x.IsOrdinal) (hy : y.IsOrdinal) : ¬ x ⊆ y ↔ y ∈ x := by
+  rw [not_iff_comm, not_mem_iff_subset hy hx]
+
+theorem mem_or_subset (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∈ y ∨ y ⊆ x := by
+  rw [or_iff_not_imp_left, not_mem_iff_subset hx hy]
+  exact id
+
+theorem subset_total (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ⊆ y ∨ y ⊆ x := by
+  obtain h | h := mem_or_subset hx hy
+  · exact Or.inl (hy.subset_of_mem h)
+  · exact Or.inr h
+
+theorem mem_trichotomous (hx : x.IsOrdinal) (hy : y.IsOrdinal) : x ∈ y ∨ x = y ∨ y ∈ x := by
+  rw [eq_comm, ← subset_iff_eq_or_mem hy hx]
+  exact mem_or_subset hx hy
+
+protected theorem isTrichotomous (h : x.IsOrdinal) : IsTrichotomous x.toSet (Subrel (· ∈ ·) _) :=
+  ⟨fun ⟨a, ha⟩ ⟨b, hb⟩ ↦ by simpa using mem_trichotomous (h.mem ha) (h.mem hb)⟩
+
+/-- An ordinal is a transitive set, trichotomous under membership. -/
+theorem _root_.ZFSet.isOrdinal_iff_isTrichotomous :
+    x.IsOrdinal ↔ x.IsTransitive ∧ IsTrichotomous x.toSet (Subrel (· ∈ ·) _) where
+  mp h := ⟨h.isTransitive, h.isTrichotomous⟩
+  mpr := by
+    rintro ⟨h₁, h₂⟩
+    rw [isOrdinal_iff_isTrans]
+    refine ⟨h₁, ⟨@fun y z w hyz hzw ↦ ?_⟩⟩
+    obtain hyw | rfl | hwy := trichotomous_of (Subrel (· ∈ ·) _) y w
+    · exact hyw
+    · cases asymm hyz hzw
+    · cases mem_wf.asymmetric₃ _ _ _ hyz hzw hwy
+
+protected theorem isWellOrder (h : x.IsOrdinal) : IsWellOrder x.toSet (Subrel (· ∈ ·) _) where
+  wf := (Subrel.relEmbedding _ _).wellFounded mem_wf
+  trans := h.isTrans.1
+  trichotomous := h.isTrichotomous.1
+
+/-- An ordinal is a transitive set, well-ordered under membership. -/
+theorem _root_.ZFSet.isOrdinal_iff_isWellOrder : x.IsOrdinal ↔
+    x.IsTransitive ∧ IsWellOrder x.toSet (Subrel (· ∈ ·) _) := by
+  use fun h ↦ ⟨h.isTransitive, h.isWellOrder⟩
+  rintro ⟨h₁, h₂⟩
+  refine isOrdinal_iff_isTrans.2 ⟨h₁, ?_⟩
+  infer_instance
+
+end IsOrdinal
+
+@[simp]
+theorem isOrdinal_empty : IsOrdinal ∅ :=
+  ⟨isTransitive_empty, fun _ _ H ↦ (not_mem_empty _ H).elim⟩
+
+/-- The **Burali-Forti paradox**: ordinals form a proper class. -/
+theorem isOrdinal_not_mem_univ : IsOrdinal ∉ Class.univ.{u} := by
+  rintro ⟨x, hx, -⟩
+  suffices IsOrdinal x by
+    apply Class.mem_irrefl x
+    rwa [Class.coe_mem, hx]
+  refine ⟨fun y hy z hz ↦ ?_, fun hyz hzw hwx ↦ ?_⟩ <;> rw [← Class.coe_apply, hx] at *
+  exacts [hy.mem hz, hwx.mem_trans hyz hzw]
 
 end ZFSet

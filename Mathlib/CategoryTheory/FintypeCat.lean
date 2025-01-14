@@ -21,9 +21,6 @@ are `Fin n` for `n : ℕ`. We prove that the obvious inclusion functor
 We prove that `FintypeCat.Skeleton` is a skeleton of `FintypeCat` in `FintypeCat.isSkeleton`.
 -/
 
-
-open scoped Classical
-
 open CategoryTheory
 
 /-- The category of finite types. -/

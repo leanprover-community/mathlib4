@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Floris van Doorn
 import Mathlib.Geometry.Manifold.MFDeriv.Atlas
 import Mathlib.Geometry.Manifold.MFDeriv.UniqueDifferential
 import Mathlib.Geometry.Manifold.VectorBundle.Tangent
+import Mathlib.Geometry.Manifold.Diffeomorph
 
 /-!
 # Derivatives of maps in the tangent bundle
@@ -21,10 +22,10 @@ open scoped Manifold
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] {H : Type*} [TopologicalSpace H]
   {I : ModelWithCorners 𝕜 E H} {M : Type*} [TopologicalSpace M] [ChartedSpace H M]
-  [SmoothManifoldWithCorners I M]
+  [IsManifold I 1 M]
   {E' : Type*} [NormedAddCommGroup E'] [NormedSpace 𝕜 E'] {H' : Type*} [TopologicalSpace H']
   {I' : ModelWithCorners 𝕜 E' H'} {M' : Type*} [TopologicalSpace M'] [ChartedSpace H' M']
-  [SmoothManifoldWithCorners I' M']
+  [IsManifold I' 1 M']
 
 
 /-- The derivative of the chart at a base point is the chart of the tangent bundle, composed with
@@ -87,3 +88,13 @@ lemma inTangentCoordinates_eq_mfderiv_comp
     · apply mdifferentiableWithinAt_extChartAt_symm
       apply (extChartAt I (f x₀)).map_source
       simpa using hx
+
+open Bundle
+variable (I) in
+/-- The canonical identification between the tangent bundle to the model space and the product,
+as a diffeomorphism -/
+def tangentBundleModelSpaceDiffeomorph (n : ℕ∞) :
+    TangentBundle I H ≃ₘ^n⟮I.tangent, I.prod 𝓘(𝕜, E)⟯ ModelProd H E where
+  __ := TotalSpace.toProd H E
+  contMDiff_toFun := contMDiff_tangentBundleModelSpaceHomeomorph
+  contMDiff_invFun := contMDiff_tangentBundleModelSpaceHomeomorph_symm

@@ -283,10 +283,6 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
   rcases htd i₀ i with ⟨j, hji₀, hji⟩
   exact (htn j).mono (subset_inter hji₀ hji)
 
-@[deprecated (since := "2024-02-28")]
-alias IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed :=
-  IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
-
 /-- Cantor's intersection theorem for `sInter`:
 the intersection of a directed family of nonempty compact closed sets is nonempty. -/
 theorem IsCompact.nonempty_sInter_of_directed_nonempty_isCompact_isClosed
@@ -306,10 +302,6 @@ theorem IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed (t : �
   have : ∀ i, t i ⊆ t 0 := fun i => tmono <| Nat.zero_le i
   have htc : ∀ i, IsCompact (t i) := fun i => ht0.of_isClosed_subset (htcl i) (this i)
   IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed t htd htn htc htcl
-
-@[deprecated (since := "2024-02-28")]
-alias IsCompact.nonempty_iInter_of_sequence_nonempty_compact_closed :=
-  IsCompact.nonempty_iInter_of_sequence_nonempty_isCompact_isClosed
 
 /-- For every open cover of a compact set, there exists a finite subcover. -/
 theorem IsCompact.elim_finite_subcover_image {b : Set ι} {c : ι → Set X} (hs : IsCompact s)
@@ -640,14 +632,6 @@ theorem mem_coclosedCompact_iff :
       closure_minimal (compl_subset_comm.2 hst) htcl
   · exact ⟨closure sᶜ, ⟨isClosed_closure, h⟩, compl_subset_comm.2 subset_closure⟩
 
-@[deprecated mem_coclosedCompact_iff (since := "2024-02-16")]
-theorem mem_coclosedCompact : s ∈ coclosedCompact X ↔ ∃ t, IsClosed t ∧ IsCompact t ∧ tᶜ ⊆ s := by
-  simp only [hasBasis_coclosedCompact.mem_iff, and_assoc]
-
-@[deprecated mem_coclosedCompact_iff (since := "2024-02-16")]
-theorem mem_coclosed_compact' : s ∈ coclosedCompact X ↔ ∃ t, IsClosed t ∧ IsCompact t ∧ sᶜ ⊆ t := by
-  simp only [hasBasis_coclosedCompact.mem_iff, compl_subset_comm, and_assoc]
-
 /-- Complement of a set belongs to `coclosedCompact` if and only if its closure is compact. -/
 theorem compl_mem_coclosedCompact : sᶜ ∈ coclosedCompact X ↔ IsCompact (closure s) := by
   rw [mem_coclosedCompact_iff, compl_compl]
@@ -698,7 +682,7 @@ theorem nhdsSet_prod_le_of_disjoint_cocompact {f : Filter Y} (hs : IsCompact s)
     _ = 𝓝ˢ (s ×ˢ K)         := (hs.nhdsSet_prod_eq hK).symm
     _ ≤ 𝓝ˢ (s ×ˢ Set.univ)  := nhdsSet_mono (prod_mono_right le_top)
 
-theorem prod_nhdsSet_le_of_disjoint_cocompact {f : Filter X} (ht : IsCompact t)
+theorem prod_nhdsSet_le_of_disjoint_cocompact {t : Set Y} {f : Filter X} (ht : IsCompact t)
     (hf : Disjoint f (Filter.cocompact X)) :
     f ×ˢ 𝓝ˢ t ≤ 𝓝ˢ (Set.univ ×ˢ t) := by
   obtain ⟨K, hKf, hK⟩ := (disjoint_cocompact_right f).mp hf
@@ -708,6 +692,16 @@ theorem prod_nhdsSet_le_of_disjoint_cocompact {f : Filter X} (ht : IsCompact t)
     _ ≤ 𝓝ˢ K ×ˢ 𝓝ˢ t       := Filter.prod_mono_left _ principal_le_nhdsSet
     _ = 𝓝ˢ (K ×ˢ t)         := (hK.nhdsSet_prod_eq ht).symm
     _ ≤ 𝓝ˢ (Set.univ ×ˢ t)  := nhdsSet_mono (prod_mono_left le_top)
+
+theorem nhds_prod_le_of_disjoint_cocompact {f : Filter Y} (x : X)
+    (hf : Disjoint f (Filter.cocompact Y)) :
+    𝓝 x ×ˢ f ≤ 𝓝ˢ ({x} ×ˢ Set.univ) := by
+  simpa using nhdsSet_prod_le_of_disjoint_cocompact isCompact_singleton hf
+
+theorem prod_nhds_le_of_disjoint_cocompact {f : Filter X} (y : Y)
+    (hf : Disjoint f (Filter.cocompact X)) :
+    f ×ˢ 𝓝 y ≤ 𝓝ˢ (Set.univ ×ˢ {y}) := by
+  simpa using prod_nhdsSet_le_of_disjoint_cocompact isCompact_singleton hf
 
 /-- If `s` and `t` are compact sets and `n` is an open neighborhood of `s × t`, then there exist
 open neighborhoods `u ⊇ s` and `v ⊇ t` such that `u × v ⊆ n`.
