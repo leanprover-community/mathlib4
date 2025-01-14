@@ -223,6 +223,21 @@ such that `z = f x * (f y)⁻¹`. -/
 noncomputable def lift (hg : Injective g) : K →+* L :=
   IsLocalization.lift fun y : nonZeroDivisors A => isUnit_map_of_injective hg y
 
+theorem lift_unique (hg : Function.Injective g) {f : K →+* L}
+    (hf1 : ∀ x, f (algebraMap A K x) = g x) : IsFractionRing.lift hg = f :=
+  IsLocalization.lift_unique _ hf1
+
+/-- Another version of unique to give two lift maps should be equal -/
+theorem ringHom_ext {f1 f2 : K →+* L}
+    (hf : ∀ x : A, f1 (algebraMap A K x) = f2 (algebraMap A K x)) : f1 = f2 := by
+  ext z
+  obtain ⟨x, y, hy, rfl⟩ := IsFractionRing.div_surjective (A := A) z
+  rw [map_div₀, map_div₀, hf, hf]
+
+theorem injective_comp_algebraMap :
+    Function.Injective fun (f : K →+* L) => f.comp (algebraMap A K) :=
+  fun _ _ h => ringHom_ext (fun x => RingHom.congr_fun h x)
+
 section liftAlgHom
 
 variable [Algebra R A] [Algebra R K] [IsScalarTower R A K] [Algebra R L]
