@@ -371,7 +371,9 @@ lemma add_lt_add_of_lt {a b c d n : ℕ} (h : h(a, b, n) < h(c, d, n)) : a + b <
   change embed n (a, b) < embed n (c, d) at h
   aesop
 
--- Lemma 5.9
+/--
+Any antichain in the Hollom partial order is finite. This corresponds to Lemma 5.9 in the paper.
+-/
 theorem no_infinite_antichain {A : Set Hollom} (hC : IsAntichain (· ≤ ·) A) : A.Finite := by
   let f (x : Hollom) : ℕ := (ofHollom x).2.2
   have (n : ℕ) : A ∩ f ⁻¹' {n} ⊆ level n := fun x ↦ by induction x with | h x => simp [f]
@@ -811,6 +813,10 @@ lemma apply_eq_of_line_eq_aux (f : SpinalMap C) {n xl yl xh yh : ℕ}
         simp only [toHollom_le_toHollom_iff_fixed_right] at h₁l h₁h h₂l h₂h ⊢
         omega
 
+/--
+For two points of `C` in the same level, and two points `(a, b, n)` and `(c, d, n)` between them,
+if `a + b = c + d` then `f (a, b, n) = f (c, d, n)`.
+-/
 theorem apply_eq_of_line_eq (f : SpinalMap C) {n : ℕ} (hC : IsChain (· ≤ ·) C)
     {lo hi : Hollom} (hlo : lo ∈ C ∩ level n) (hhi : hi ∈ C ∩ level n) (hlohi : lo ≤ hi)
     {x y : Hollom} (h : line x = line y)
@@ -1097,7 +1103,7 @@ lemma S_mapsTo_previous (f : SpinalMap C) (hC : IsChain (· ≤ ·) C) (hn : n �
     omega
   omega
 
-open scoped Finset in
+open Finset in
 theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
     (hCn : (C ∩ level n).Finite) (hn : n ≠ 0)
     (h : ∀ x ∈ S n C \ (C ∩ level n), f x ∈ C ∩ level (n - 1)) :
@@ -1120,9 +1126,8 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
     set c := f x with hc
     have hc' : c ∈ C ∩ level (n - 1) := h _ (F_subs hx)
     clear_value c
-    rw [Finset.coe_image, chainBetween, Finset.Ico_self, if_pos (by omega), Finset.empty_union,
-      ← Prod.Icc_map_sectL] at hx
-    simp only [embed_apply, Finset.coe_map, Function.Embedding.sectL_apply, Finset.coe_Icc,
+    rw [coe_image, chainBetween, Ico_self, if_pos (by omega), empty_union, ← Icc_map_sectL] at hx
+    simp only [embed_apply, coe_map, Function.Embedding.sectL_apply, coe_Icc,
       Set.mem_image, Set.mem_Icc, exists_exists_and_eq_and] at hx
     obtain ⟨b, ⟨hab, hba⟩, rfl⟩ := hx
     induction hc'.2 using induction_on_level with | h u v =>
@@ -1146,10 +1151,11 @@ theorem not_S_mapsTo_previous (hC : IsChain (· ≤ ·) C)
       (hC.mono (by simp +contextual [Set.subset_def]))
       (by simp +contextual [Set.subset_def])
   have line_F_mapsTo := line_mapsTo.comp F_mapsTo
-  have := Finset.card_le_card_of_injOn _ line_F_mapsTo (line_inj.comp F_inj F_mapsTo)
+  have := card_le_card_of_injOn _ line_F_mapsTo (line_inj.comp F_inj F_mapsTo)
   simp only [Finset.card_range] at this
   omega
 
+/-- The Hollom partial order has no spinal maps. -/
 theorem no_spinalMap (hC : IsChain (· ≤ ·) C) (f : SpinalMap C) : False := by
   obtain ⟨n, hn, hn'⟩ : ∃ n, n ≠ 0 ∧ (C ∩ Hollom.level n).Finite := by
     obtain ⟨n, hn, hn'⟩ := Filter.frequently_atTop.1 (Hollom.exists_finite_intersection hC) 1
