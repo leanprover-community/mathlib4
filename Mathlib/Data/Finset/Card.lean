@@ -416,12 +416,12 @@ lemma card_le_card_of_injective {f : s → t} (hf : f.Injective) : #s ≤ #t := 
   rcases s.eq_empty_or_nonempty with rfl | ⟨a₀, ha₀⟩
   · simp
   · classical
-    let f' : α → β := fun a => f (if ha : a ∈ A then ⟨a, ha⟩ else ⟨a₀, ha₀⟩)
+    let f' : α → β := fun a => f (if ha : a ∈ s then ⟨a, ha⟩ else ⟨a₀, ha₀⟩)
     apply card_le_card_of_injOn f'
     · aesop
     · intro a₁ ha₁ a₂ ha₂ haa
       rw [mem_coe] at ha₁ ha₂
-      simp only [f', ha₁, ha₂, ↓reduceDIte, ← Subtype.ext_iff] at haa
+      simp only [f', ha₁, ha₂, ← Subtype.ext_iff] at haa
       exact Subtype.ext_iff.mp (hf haa)
 
 lemma card_le_card_of_surjOn (f : α → β) (hf : Set.SurjOn f s t) : #t ≤ #s := by
