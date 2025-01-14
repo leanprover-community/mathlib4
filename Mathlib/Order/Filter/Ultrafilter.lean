@@ -161,7 +161,7 @@ theorem eventually_imp : (∀ᶠ x in f, p x → q x) ↔ (∀ᶠ x in f, p x) �
   simp only [imp_iff_not_or, eventually_or, eventually_not]
 
 theorem finite_sUnion_mem_iff {s : Set (Set α)} (hs : s.Finite) : ⋃₀ s ∈ f ↔ ∃ t ∈ s, t ∈ f :=
-  Finite.induction_on hs (by simp) fun _ _ his => by
+  Finite.induction_on _ hs (by simp) fun _ _ his => by
     simp [union_mem_iff, his, or_and_right, exists_or]
 
 theorem finite_biUnion_mem_iff {is : Set β} {s : β → Set α} (his : is.Finite) :

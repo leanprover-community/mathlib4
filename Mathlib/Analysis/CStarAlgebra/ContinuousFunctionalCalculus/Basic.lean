@@ -369,8 +369,8 @@ def CStarAlgebra.spectralOrder : PartialOrder A where
     simp
   le_antisymm x y hxy hyx := by
     simp only at hxy hyx
-    rw [← Unitization.isSelfAdjoint_inr (R := ℂ), quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ,
-      Unitization.inr_sub ℂ] at hxy hyx
+    rw [← Unitization.isSelfAdjoint_inr (R := ℂ),
+      quasispectrumRestricts_iff_spectrumRestricts_inr' ℂ, Unitization.inr_sub ℂ] at hxy hyx
     rw [← sub_eq_zero]
     apply Unitization.inr_injective (R := ℂ)
     rw [Unitization.inr_zero, Unitization.inr_sub]
