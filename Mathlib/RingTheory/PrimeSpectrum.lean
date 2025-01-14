@@ -601,12 +601,11 @@ and is a homeomorphism when ι is finite. -/
   | ⟨i, p⟩ => (Pi.evalRingHom R i).specComap p
 
 theorem sigmaToPi_injective : (sigmaToPi R).Injective := fun ⟨i, p⟩ ⟨j, q⟩ eq ↦ by
+  classical
   obtain rfl | ne := eq_or_ne i j
   · congr; ext x
-    classical
     simpa using congr_arg (Function.update (0 : ∀ i, R i) i x ∈ ·.asIdeal) eq
   · refine (p.1.ne_top_iff_one.mp p.2.ne_top ?_).elim
-    classical
     have : Function.update (1 : ∀ i, R i) j 0 ∈ (sigmaToPi R ⟨j, q⟩).asIdeal := by simp
     simpa [← eq, Function.update_of_ne ne]
 
