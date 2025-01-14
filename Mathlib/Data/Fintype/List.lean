@@ -3,11 +3,9 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.Finset.Powerset
-import Mathlib.Data.Finset.Disjoint
+import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.List.Permutation
-
 /-!
 
 # Fintype instance for nodup lists
@@ -17,7 +15,7 @@ admits a `Fintype` instance.
 
 ## Implementation details
 To construct the `Fintype` instance, a function lifting a `Multiset α`
-to the `Multiset (List α)` that can construct it is provided.
+to the `Multiset (List α)` is provided.
 This function is applied to the `Finset.powerset` of `Finset.univ`.
 
 -/
@@ -28,7 +26,7 @@ open List
 
 namespace Multiset
 
-/-- The `Multiset` of `l : List α` that, given `m : Multiset α`, have the property `⟦l⟧ = m`.
+/--  Given a `m : Multiset α`, we form the `Multiset` of `l : List α` with the property `⟦l⟧ = m`.
 -/
 def lists : Multiset α → Multiset (List α) := fun s =>
   Quotient.liftOn s (fun l => l.permutations) fun l l' (h : l ~ l') => by
