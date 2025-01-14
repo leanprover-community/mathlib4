@@ -7,6 +7,7 @@ import Mathlib.Algebra.BigOperators.Group.Multiset.Basic
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Group.Submonoid.BigOperators
 import Mathlib.Algebra.GroupWithZero.Associated
+import Mathlib.Algebra.GroupWithZero.Submonoid
 import Mathlib.Order.WellFounded
 
 /-!
