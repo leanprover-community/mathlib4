@@ -300,8 +300,10 @@
   "Mathlib.Tactic.CategoryTheory.BicategoryCoherence":
   ["Mathlib.CategoryTheory.Bicategory.Coherence",
    "Mathlib.Tactic.CategoryTheory.BicategoricalComp"],
+  "Mathlib.Tactic.CC.Datatypes":
+  ["Mathlib.Lean.Meta.Datatypes"],
   "Mathlib.Tactic.CC.MkProof":
-  ["Mathlib.Logic.Basic", "Mathlib.Tactic.CC.Lemmas"],
+  ["Mathlib.Tactic.CC.Lemmas"],
   "Mathlib.Tactic.ByContra": ["Batteries.Tactic.Init"],
   "Mathlib.Tactic.Bound.Init": ["Aesop.Frontend.Command"],
   "Mathlib.Tactic.Bound.Attribute":
