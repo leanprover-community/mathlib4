@@ -41,9 +41,13 @@ open scoped Classical in
 /-- The regulator of a number field `K`. -/
 def regulator : ℝ := ZLattice.covolume (unitLattice K)
 
-theorem regulator_ne_zero : regulator K ≠ 0 := ZLattice.covolume_ne_zero (unitLattice K) volume
+theorem regulator_ne_zero : regulator K ≠ 0 := by
+  classical
+  exact ZLattice.covolume_ne_zero (unitLattice K) volume
 
-theorem regulator_pos : 0 < regulator K := ZLattice.covolume_pos (unitLattice K) volume
+theorem regulator_pos : 0 < regulator K := by
+  classical
+  exact ZLattice.covolume_pos (unitLattice K) volume
 
 #adaptation_note
 /--
@@ -57,6 +61,7 @@ local instance : CommGroup (𝓞 K)ˣ := inferInstance
 -/
 set_option maxSynthPendingDepth 2 -- Note this is active for the remainder of the file.
 
+open scoped Classical in
 theorem regulator_eq_det' (e : {w : InfinitePlace K // w ≠ w₀} ≃ Fin (rank K)) :
     regulator K = |(Matrix.of fun i ↦
       logEmbedding K (Additive.ofMul (fundSystem K (e i)))).det| := by
@@ -64,6 +69,7 @@ theorem regulator_eq_det' (e : {w : InfinitePlace K // w ≠ w₀} ≃ Fin (rank
     (((basisModTorsion K).map (logEmbeddingEquiv K)).reindex e.symm), Basis.coe_reindex,
     Function.comp_def, Basis.map_apply, ← fundSystem_mk, Equiv.symm_symm, logEmbeddingEquiv_apply]
 
+open scoped Classical in
 /-- Let `u : Fin (rank K) → (𝓞 K)ˣ` be a family of units and let `w₁` and `w₂` be two infinite
 places. Then, the two square matrices with entries `(mult w * log w (u i))_i, {w ≠ w_i}`, `i = 1,2`,
 have the same determinant in absolute value. -/
@@ -99,6 +105,7 @@ theorem abs_det_eq_abs_det (u : Fin (rank K) → (𝓞 K)ˣ)
       Units.norm, Rat.cast_one, Real.log_one]
     exact fun _ _ ↦ pow_ne_zero _ <| (map_ne_zero _).mpr (coe_ne_zero _)
 
+open scoped Classical in
 /-- For any infinite place `w'`, the regulator is equal to the absolute value of the determinant
 of the matrix `(mult w * log w (fundSystem K i)))_i, {w ≠ w'}`. -/
 theorem regulator_eq_det (w' : InfinitePlace K) (e : {w // w ≠ w'} ≃ Fin (rank K)) :

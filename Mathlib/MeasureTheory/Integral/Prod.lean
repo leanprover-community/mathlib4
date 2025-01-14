@@ -35,7 +35,7 @@ product measure, Fubini's theorem, Fubini-Tonelli theorem
 
 noncomputable section
 
-open scoped Classical Topology ENNReal MeasureTheory
+open scoped Topology ENNReal MeasureTheory
 
 open Set Function Real ENNReal
 
@@ -70,6 +70,7 @@ variable [NormedSpace ℝ E]
   This version has `f` in curried form. -/
 theorem MeasureTheory.StronglyMeasurable.integral_prod_right [SFinite ν] ⦃f : α → β → E⦄
     (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun x => ∫ y, f x y ∂ν := by
+  classical
   by_cases hE : CompleteSpace E; swap; · simp [integral, hE, stronglyMeasurable_const]
   borelize E
   haveI : SeparableSpace (range (uncurry f) ∪ {0} : Set E) :=
