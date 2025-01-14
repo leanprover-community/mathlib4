@@ -71,6 +71,17 @@ theorem isCaratheodory_union (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodo
     union_diff_left, h₂ (t ∩ s₁)]
   simp [diff_eq, add_assoc]
 
+lemma isCaratheodory_iUnion_finite {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Finite)
+    (h : ∀ i ∈ t, m.IsCaratheodory (s i)) :
+    m.IsCaratheodory (⋃ i ∈ t, s i) := by
+  classical
+  lift t to Finset ι using ht
+  induction t using Finset.induction_on with
+  | empty => simp
+  | @insert i t hi IH =>
+    simp only [Finset.mem_coe, Finset.mem_insert, iUnion_iUnion_eq_or_left] at h ⊢
+    exact m.isCaratheodory_union (h _ <| Or.inl rfl) (IH fun _ hj ↦ h _ <| Or.inr hj)
+
 theorem measure_inter_union (h : s₁ ∩ s₂ ⊆ ∅) (h₁ : IsCaratheodory m s₁) {t : Set α} :
     m (t ∩ (s₁ ∪ s₂)) = m (t ∩ s₁) + m (t ∩ s₂) := by
   rw [h₁, Set.inter_assoc, Set.union_inter_cancel_left, inter_diff_assoc, union_diff_cancel_left h]
@@ -92,19 +103,20 @@ theorem isCaratheodory_inter (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodo
 lemma isCaratheodory_diff (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodory m s₂) :
     IsCaratheodory m (s₁ \ s₂) := m.isCaratheodory_inter h₁ (m.isCaratheodory_compl h₂)
 
-lemma isCaratheodory_partialSups {s : ℕ → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ℕ) :
+lemma isCaratheodory_partialSups {ι : Type*} [PartialOrder ι] [LocallyFiniteOrderBot ι]
+    {s : ι → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ι) :
     m.IsCaratheodory (partialSups s i) := by
-  induction i with
-  | zero => exact h 0
-  | succ i hi => exact partialSups_add_one s i ▸ m.isCaratheodory_union hi (h (i + 1))
+  simpa only [partialSups_apply, Finset.sup'_eq_sup, Finset.sup_set_eq_biUnion, ← Finset.mem_coe,
+    Finset.coe_Iic] using m.isCaratheodory_iUnion_finite (finite_Iic _) (fun j _ ↦ h j)
 
-lemma isCaratheodory_disjointed {s : ℕ → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ℕ) :
+lemma isCaratheodory_disjointed {ι : Type*} [PartialOrder ι] [LocallyFiniteOrderBot ι]
+    {s : ι → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ι) :
     m.IsCaratheodory (disjointed s i) := by
-  induction i with
-  | zero => exact disjointed_zero s ▸ h 0
-  | succ i _ =>
-    rw [disjointed_add_one]
-    exact m.isCaratheodory_diff (h (i + 1)) (m.isCaratheodory_partialSups h i)
+  rw [disjointed_apply]
+  apply isCaratheodory_diff
+  · exact h i
+  · simpa only [Finset.sup_set_eq_biUnion, ← Finset.mem_coe, Finset.coe_Iio] using
+      m.isCaratheodory_iUnion_finite (finite_Iio _) fun j _ ↦ h j
 
 theorem isCaratheodory_sum {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))
     (hd : Pairwise (Disjoint on s)) {t : Set α} :
