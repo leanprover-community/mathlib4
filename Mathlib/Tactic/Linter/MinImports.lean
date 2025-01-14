@@ -88,12 +88,20 @@ def importsBelow (tc : NameMap NameSet) (ms : NameSet) : NameSet :=
   ms.fold (·.append <| tc.findD · default) ms
 
 @[inherit_doc Mathlib.Linter.linter.minImports]
+macro "#import_bumps" : command => `(set_option Elab.async false set_option linter.minImports true)
+
+@[inherit_doc Mathlib.Linter.linter.minImports]
 def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
     unless Linter.getLinterValue linter.minImports (← getOptions) do
       return
     if (← get).messages.hasErrors then
       return
-    if stx == (← `(command| set_option $(mkIdent `linter.minImports) true)) then return
+    if stx == (← `(command| #import_bumps)) then return
+    if stx == (← `(command| set_option $(mkIdent `linter.minImports) true)) then
+      logInfo "Try using '#import_bumps', instead of manually setting the linter option: \
+              the linter works best with linear parsing of the file and '#import_bumps' \
+              also sets the `Elab.async` option to `false`."
+      return
     let env ← getEnv
     -- the first time `minImportsRef` is read, it has `transClosure = none`;
     -- in this case, we set it to be the `transClosure` for the file.
