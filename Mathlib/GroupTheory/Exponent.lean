@@ -47,8 +47,6 @@ universe u
 
 variable {G : Type u}
 
-open scoped Classical
-
 namespace Monoid
 
 section Monoid
@@ -68,8 +66,9 @@ def ExponentExists :=
 @[to_additive
       "The exponent of an additive group is the smallest positive integer `n` such that\n
       `n • g = 0` for all `g ∈ G` if it exists, otherwise it is zero by convention."]
-noncomputable def exponent :=
-  if h : ExponentExists G then Nat.find h else 0
+noncomputable def exponent := by
+  classical
+  exact if h : ExponentExists G then Nat.find h else 0
 
 variable {G}
 
@@ -132,6 +131,7 @@ theorem exponent_eq_zero_iff_forall : exponent G = 0 ↔ ∀ n > 0, ∃ g : G, g
 
 @[to_additive exponent_nsmul_eq_zero]
 theorem pow_exponent_eq_one (g : G) : g ^ exponent G = 1 := by
+  classical
   by_cases h : ExponentExists G
   · simp_rw [exponent, dif_pos h]
     exact (Nat.find_spec h).2 g
@@ -150,6 +150,7 @@ theorem exponent_pos_of_exists (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n =
 
 @[to_additive]
 theorem exponent_min' (n : ℕ) (hpos : 0 < n) (hG : ∀ g : G, g ^ n = 1) : exponent G ≤ n := by
+  classical
   rw [exponent, dif_pos]
   · apply Nat.find_min'
     exact ⟨hpos, hG⟩
@@ -467,6 +468,7 @@ theorem exponent_eq_iSup_orderOf (h : ∀ g : G, 0 < orderOf g) :
     simp_rw [Set.mem_range, exists_exists_eq_and]
     exact ⟨g, hx⟩
 
+open scoped Classical in
 @[to_additive]
 theorem exponent_eq_iSup_orderOf' :
     exponent G = if ∃ g : G, orderOf g = 0 then 0 else ⨆ g : G, orderOf g := by
@@ -541,6 +543,7 @@ open Finset Monoid
 @[to_additive]
 theorem Monoid.exponent_pi_eq_zero {ι : Type*} {M : ι → Type*} [∀ i, Monoid (M i)] {j : ι}
     (hj : exponent (M j) = 0) : exponent ((i : ι) → M i) = 0 := by
+  classical
   rw [@exponent_eq_zero_iff, ExponentExists] at hj ⊢
   push_neg at hj ⊢
   peel hj with n hn _
