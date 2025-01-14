@@ -386,6 +386,91 @@ lemma exists_isFixedPt_next [CompleteSpace E] (hf : IsPicardLindelof f t₀ x₀
   let ⟨_, _, h⟩ := exists_contractingWith_iterate_next hf
   ⟨_, h x hx |>.isFixedPt_fixedPoint_iterate⟩
 
+/-! ## Lipschitz continuity of the solution with respect to the initial condition
+
+The proof relies on the fact that the repeated application of `next` to any curve `α` converges to
+the fixed point of `next`, so it suffices to bound the distance between `α` and `next^[n] α`. Since
+there is some `m : ℕ` such that `next^[m]` is a contracting map, it further suffices to bound the
+distance between `α` and `next^[m]^[n] α`.
+-/
+
+/-- A key step in the base case of `exists_forall_closedBall_funSpace_dist_le_mul` -/
+lemma dist_next_next (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
+    (hy : y ∈ closedBall x₀ r) (α : FunSpace t₀ x₀ r L) :
+    dist (next hf hx α) (next hf hy α) = dist x y := by
+  have : Nonempty (Icc tmin tmax) := ⟨t₀⟩ -- needed for `ciSup_const`
+  rw [← MetricSpace.isometry_induced FunSpace.toContinuousMap FunSpace.toContinuousMap.injective
+    |>.dist_eq, dist_eq_norm, ContinuousMap.norm_eq_iSup_norm]
+  simp_rw [ContinuousMap.sub_apply, toContinuousMap_apply_eq_apply, next_apply, integrate_apply,
+    add_sub_add_right_eq_sub]
+  rw [ciSup_const, dist_eq_norm]
+
+lemma dist_iterate_next_le (hf : IsPicardLindelof f t₀ x₀ a r L K) (hx : x ∈ closedBall x₀ r)
+    (α : FunSpace t₀ x₀ r L) (n : ℕ) :
+    dist α ((next hf hx)^[n] α) ≤
+      (∑ i ∈ Finset.range n, (K * max (tmax - t₀) (t₀ - tmin)) ^ i / i !)
+        * dist α (next hf hx α) := by
+  nth_rw 1 [← iterate_zero_apply (f := next hf hx) (x := α)]
+  rw [Finset.sum_mul]
+  apply dist_le_range_sum_of_dist_le (f := fun i ↦ (next hf hx)^[i] α)
+  intro i hi
+  rw [iterate_succ_apply]
+  exact dist_iterate_next_iterate_next_le hf hx _ _ i
+
+lemma dist_iterate_iterate_next_le_of_lipschitzWith (hf : IsPicardLindelof f t₀ x₀ a r L K)
+    (hx : x ∈ closedBall x₀ r) (α : FunSpace t₀ x₀ r L) {m : ℕ} {C : ℝ≥0}
+    (hm : LipschitzWith C (next hf hx)^[m]) (n : ℕ) :
+    dist α ((next hf hx)^[m]^[n] α) ≤
+      (∑ i ∈ Finset.range m, (K * max (tmax - t₀) (t₀ - tmin)) ^ i / i !) *
+        (∑ i ∈ Finset.range n, (C : ℝ) ^ i) * dist α (next hf hx α) := by
+  nth_rw 1 [← iterate_zero_apply (f := (next hf hx)^[m]) (x := α)]
+  rw [Finset.mul_sum, Finset.sum_mul]
+  apply dist_le_range_sum_of_dist_le (f := fun i ↦ (next hf hx)^[m]^[i] α)
+  intro i hi
+  rw [iterate_succ_apply]
+  apply le_trans <| hm.dist_iterate_succ_le_geometric α i
+  rw [mul_assoc, mul_comm ((C : ℝ) ^ i), ← mul_assoc]
+  apply mul_le_mul_of_nonneg_right _ (pow_nonneg C.2 _)
+  exact dist_iterate_next_le hf hx α m
+
+-- bug in the unused variable linter?
+/-- The pointwise distance between any two integral curves `α` and `β` over their domains is bounded
+by a constant `L'` times the distance between their respective initial points. -/
+lemma exists_forall_closedBall_funSpace_dist_le_mul [CompleteSpace E]
+    (hf : IsPicardLindelof f t₀ x₀ a r L K) :
+    ∃ L' : ℝ≥0, ∀ (x y : E) (hx : x ∈ closedBall x₀ r) (hy : y ∈ closedBall x₀ r)
+      (α β : FunSpace t₀ x₀ r L) (hα : IsFixedPt (next hf hx) α) (hβ : IsFixedPt (next hf hy) β),
+      dist α β ≤ L' * dist x y := by
+  obtain ⟨m, C, h⟩ := exists_contractingWith_iterate_next hf
+  let L' := (∑ i ∈ Finset.range m, (K * max (tmax - t₀) (t₀ - tmin)) ^ i / i !) * (1 - C)⁻¹
+  have hL' : 0 ≤ L' := by
+    apply mul_nonneg _ (NNReal.coe_nonneg _)
+    apply Finset.sum_nonneg'
+    intro
+    apply div_nonneg _ (Nat.cast_nonneg _)
+    apply pow_nonneg
+    apply mul_nonneg K.2
+    apply le_max_of_le_left
+    exact sub_nonneg_of_le t₀.2.2
+  refine ⟨⟨L', hL'⟩, fun x y hx hy α β hα hβ ↦ ?_⟩
+  rw [NNReal.coe_mk]
+  apply le_of_tendsto_of_tendsto' (b := Filter.atTop)
+    (f := fun n ↦ dist α ((next hf hy)^[m]^[n] α))
+    (g := fun n ↦ (∑ i ∈ Finset.range m, (K * max (tmax - t₀) (t₀ - tmin)) ^ i / i !) *
+      (∑ i ∈ Finset.range n, (C : ℝ) ^ i) * dist α (next hf hy α)) _ _
+    (dist_iterate_iterate_next_le_of_lipschitzWith hf hy α (h y hy).2)
+  · change Filter.Tendsto ((dist α ·) ∘ fun n ↦ (next hf hy)^[m]^[n] α) Filter.atTop (𝓝 (dist α β))
+    apply Filter.Tendsto.comp (y := 𝓝 β) (tendsto_const_nhds.dist Filter.tendsto_id)
+    convert h y hy |>.tendsto_iterate_fixedPoint α
+    exact h y hy |>.fixedPoint_unique (hβ.iterate m)
+  · nth_rw 1 [← hα, dist_next_next]
+    apply Filter.Tendsto.mul_const
+    apply Filter.Tendsto.const_mul
+    convert hasSum_geometric_of_lt_one C.2 (h y hy).1 |>.tendsto_sum_nat
+    rw [NNReal.coe_inv]
+    congr
+    rw [NNReal.coe_sub <| le_of_lt (h y hy).1, NNReal.coe_one, NNReal.val_eq_coe]
+
 end
 
 end FunSpace
