@@ -5,18 +5,263 @@ Authors: Arend Mellendijk
 -/
 import Mathlib
 
-open Filter Nat Real
+open Filter Nat Real Finset
+open Asymptotics
 open scoped ArithmeticFunction
 
+theorem ArithmeticFunction.sum_range_mul_zeta
+    {R : Type*} [Semiring R] (f : ArithmeticFunction R) (N : ℕ) :
+    ∑ d in range (N + 1), (f * ζ) d = ∑ d in range (N + 1), (N / d) • f d := by
+  induction N with
+  | zero => simp
+  | succ n h_ind =>
+    rw [Finset.sum_range_succ]
+    simp_rw [Nat.succ_div, add_smul, Finset.sum_add_distrib, h_ind]
+    congr 1
+    · apply Finset.sum_subset
+      · refine range_subset.mpr (le_succ _)
+      · simp only [mem_range, not_lt, nsmul_eq_mul]
+        intro d hd1 hd2
+        obtain rfl : d = n+1 := by omega
+        apply mul_eq_zero_of_left
+        convert cast_zero
+        simp only [Nat.div_eq_zero_iff, AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false,
+          lt_add_iff_pos_right, zero_lt_one, or_true]
+    · simp_rw [boole_smul, ← Finset.sum_filter]
+      rw [Nat.filter_dvd_eq_divisors (add_one_ne_zero n)]
+      exact coe_mul_zeta_apply
+
 theorem log_stirling :
-  Tendsto (fun n => Real.log (n)! - (n * Real.log n - n + Real.log n / 2)) atTop (nhds 0) := by
-  sorry
+  Tendsto (fun n => Real.log (n)!
+    - (n * Real.log n - n + Real.log n / 2 + Real.log π / 2 + Real.log 2 / 2))
+    atTop (nhds 0) := by
+  have :=  Stirling.factorial_isEquivalent_stirling
+  rw [Asymptotics.isEquivalent_iff_tendsto_one ?case] at this
+  case case =>
+    filter_upwards [eventually_ge_atTop 1]
+    intro n hn
+    positivity
+  have tendsto_log_one_zero : Tendsto Real.log (nhds 1) (nhds 0) := by
+    convert ContinuousAt.tendsto ?_
+    · simp only [log_one]
+    · simp only [continuousAt_log_iff, ne_eq, one_ne_zero, not_false_eq_true]
+  apply  (tendsto_log_one_zero.comp this).congr'
+  filter_upwards [eventually_ne_atTop 0]
+  intro n hn
+  have hsqrt_pi : √π ≠ 0 := by
+    simp [Real.pi_nonneg, Real.pi_ne_zero]
+  simp only [ofNat_pos, mul_nonneg_iff_of_pos_left, cast_nonneg, ofNat_nonneg,
+    Function.comp_apply, Pi.div_apply]
+  rw [Real.log_div (by positivity) (by simp [hn, hsqrt_pi])]
+  rw [Real.log_mul (by positivity) (by positivity), Real.log_sqrt (by positivity),
+    Real.log_mul (by positivity) (by positivity), Real.log_mul (by positivity) (by positivity),
+    Real.log_pow, Real.log_div (by positivity) (by positivity)]
+  simp only [log_exp, sub_right_inj]
+  ring
 
--- incorrect, should be prime powers
+theorem multiplicity_factorial
+    {p : ℕ} (hp : Nat.Prime p) {n b : ℕ} (hlog : Nat.log p n < b) :
+    multiplicity p n.factorial = ∑ i ∈ Finset.Ico 1 b, n / p ^ i := by
+  apply multiplicity_eq_of_emultiplicity_eq_some
+  exact Prime.emultiplicity_factorial hp hlog
+
+theorem factorization_factorial
+    {p : ℕ} (hp : Nat.Prime p) {n b : ℕ} (hlog : Nat.log p n < b) :
+    n.factorial.factorization p = ∑ i ∈ Finset.Ico 1 b, n / p ^ i := by
+  rw [← multiplicity_factorial hp hlog]
+  refine Eq.symm (multiplicity_eq_factorization hp (factorial_ne_zero n))
+
+theorem isBigO_pow_right_of_le {a b : ℕ} (h : a ≤ b) :
+    (fun (x:ℝ) ↦ x^a) =O[atTop]  (fun x ↦ x^b) := by
+  refine Eventually.isBigO ?_
+  filter_upwards [Filter.eventually_ge_atTop 1, Filter.eventually_ge_atTop 0]
+  intro x hx hx'
+  simp only [norm_pow, norm_eq_abs, abs_of_nonneg hx']
+  gcongr
+  exact hx
+
+example : (fun _ ↦ 1 : ℝ → ℝ) =O[atTop] (fun x ↦ (x : ℝ)) := by
+  convert isBigO_pow_right_of_le zero_le_one with x
+  simp
+
+
+/- One pain point I'm running into here is finding the right theorems in the library - say I need a
+IsBigO statement but it's phrased as IsLittleO in the library. Things like natCast_atTop also make
+exact? and the like less useful.
+-/
+theorem log_fac_sub_id_mul_log_isBigO_id :
+    (fun n ↦ Real.log (n !) - n * Real.log n) =O[atTop] (fun n ↦ (n:ℝ)) := by
+  have hstirling := log_stirling
+  rw [← Asymptotics.isLittleO_one_iff ℝ] at hstirling
+  have : (fun _ ↦ 1 : ℝ → ℝ) =O[atTop] (fun x ↦ (x : ℝ)) := by
+    convert isBigO_pow_right_of_le zero_le_one with x
+    simp
+  have const_isBigO (c : ℝ) : (fun (_ : ℕ) ↦ c) =O[atTop] (fun (n : ℕ) ↦ (n : ℝ)) := by
+    convert (this.const_mul_left c).natCast_atTop
+    simp only [mul_one]
+  have hlog : Real.log =O[atTop] id := by
+    exact Real.isLittleO_log_id_atTop.isBigO
+  have hlarger := hstirling.isBigO.trans (const_isBigO 1).natCast_atTop
+  have hrfl : (fun (n : ℕ) ↦ (n : ℝ)) =O[atTop] (fun (n : ℕ) ↦ (n : ℝ)) :=
+    Asymptotics.isBigO_refl (α := ℕ) (fun n ↦ (n:ℝ)) atTop
+  convert ((hlarger.sub hrfl).add (const_isBigO (Real.log π / 2 + Real.log 2 / 2))).add
+    (hlog.const_mul_left (1/2) |>.natCast_atTop) using 1
+  ext x
+  ring
+
+
+
+
+
+-- theorem factorial_eq_prod {n : ℕ} :
+--   n ! = ∏ p in primesBelow (n+1), p ^ (
+
+-- This is another general result about convolutions :
+-- ∑ (k <= n), (1*f) k =  ∑ (k <= n), (n/d) * f d
+-- Not currently in mathlib, in PNT+:
+-- https://github.com/AlexKontorovich/PrimeNumberTheoremAnd/blob/fea8d484879ed4697fcbb22cae90d9a127c93fb5/PrimeNumberTheoremAnd/Mathlib/NumberTheory/ArithmeticFunction.lean#L17
+
+
 theorem log_factorial (n : ℕ) :
-  Real.log (n)! = ∑ p ∈ primesBelow n, ↑(n / p) * Real.log p  := by
+  Real.log (n)! = ∑ d ∈ Finset.range (n+1), ↑(n / d) * Λ d := by
+  induction n with
+  | zero => simp
+  | succ n h_ind =>
+    rw [Nat.factorial_succ]
+    push_cast
+    rw [mul_comm, Real.log_mul (by positivity) (by norm_cast)]
+    simp_rw [Nat.succ_div, cast_add, add_mul, Finset.sum_add_distrib, h_ind]
+    congr 1
+    · apply Finset.sum_subset
+      · intro d hd
+        simp at hd ⊢
+        linarith
+      intro d hd hdnin
+      obtain rfl : d = n+1 := by
+        simp_all
+        linarith
+      simp only [_root_.mul_eq_zero, cast_eq_zero, Nat.div_eq_zero_iff,
+        AddLeftCancelMonoid.add_eq_zero, one_ne_zero, and_false, lt_add_iff_pos_right, zero_lt_one,
+        or_true, true_or]
+    · push_cast
+      simp_rw [boole_mul, ← Finset.sum_filter]
+      rw [Nat.filter_dvd_eq_divisors (add_one_ne_zero n)]
+      exact_mod_cast ArithmeticFunction.vonMangoldt_sum.symm
+
+
+
+theorem sum_floor_mul_vonmangoldt (n : ℕ) : ∑ d ∈ Finset.range (n+1), ↑(n / d) * Λ d =
+  n * ∑ d ∈ Finset.range (n+1), Λ d / d + ∑ d ∈ Finset.range (n+1), (↑(n/d) - n/d) * Λ d := by
+  rw [mul_sum, ← sum_add_distrib]
+  congr 1 with d
+  ring
+-- Nat.Prime.emultiplicity_factorial
+-- Nat.multiplicity_eq_factorization
+-- emultiplicity_eq_iff_multiplicity_eq_of_ne_one
+
+
+theorem hpsi_cheby : (fun n => ∑ k ∈ Finset.range (n+1), Λ k) =O[atTop] (fun n ↦ (n:ℝ)) := by
   sorry
 
+theorem floor_approx (x : ℝ) (hx : 0 ≤ x) : |↑((Nat.floor x)) - x| ≤ 1  := by
+  rw [abs_le]
+  refine ⟨by linarith [Nat.lt_floor_add_one x], by linarith [Nat.floor_le hx]⟩
+
+theorem abs_natCast_div_sub_div_le_one {n d : ℕ}: |(↑(n/d) - n/d:ℝ)| ≤ 1 := by
+  rw [← Nat.floor_div_eq_div (α := ℝ)]
+  apply floor_approx
+  positivity
+
+theorem sum_integer_mul_vonMangoldt : (fun n ↦ ∑ d ∈ Finset.range (n+1), (↑(n/d) - n/d) * Λ d)
+    =O[atTop] (fun n ↦ (n : ℝ)) := by
+  calc
+    _ =O[atTop] (fun n ↦ ∑ d ∈ Finset.range (n+1), 1 * Λ d)  := by
+      apply Filter.Eventually.isBigO
+      filter_upwards
+      intro n
+      simp only [norm_eq_abs, eventually_atTop, ge_iff_le]
+      apply (abs_sum_le_sum_abs ..).trans _
+      gcongr with d hd
+      rw [abs_mul, abs_of_nonneg ArithmeticFunction.vonMangoldt_nonneg]
+      gcongr
+      · exact ArithmeticFunction.vonMangoldt_nonneg
+      · exact abs_natCast_div_sub_div_le_one
+    _ =O[atTop] _ := by
+      simp only [one_mul]
+      exact hpsi_cheby
+
+-- n! = ∏ k ≤ n, n.factorization.prod fun p i => p ^ i = ∏ k ≤ n, ∏ p in primesBelow n, p ^ (Nat.factorization k n)
+-- Nat.prod_factorization_eq_prod_primeFactors ()
 theorem sum_cheby_div_id :
-  (fun n : ℕ ↦ (∑ k ≤ n, Λ k / k) - Real.log n) =O[atTop] fun _ ↦ (1:ℝ) := by
+  (fun n : ℕ ↦ (∑ k ∈ Finset.range (n+1), Λ k / k) - Real.log n) =O[atTop] fun _ ↦ (1:ℝ) := by
+  have : (fun n ↦ n * ∑ d in Finset.range (n+1), Λ d / d - n * Real.log n) =O[atTop]
+      (fun n ↦ (n:ℝ)) := by
+    have := log_fac_sub_id_mul_log_isBigO_id
+    simp_rw [log_factorial, sum_floor_mul_vonmangoldt] at this
+    convert this.sub sum_integer_mul_vonMangoldt using 2 with n
+    ring
+  apply this.mul (isBigO_refl (fun (n : ℕ) ↦ (n : ℝ)⁻¹) atTop) |>.congr'
+  · filter_upwards [eventually_gt_atTop 0]
+    intro x hx
+    field_simp
+    ring
+  · filter_upwards [eventually_ne_atTop 0]
+    intro x hx
+    field_simp
+
+@[simp]
+theorem pow_prime_iff (n k : ℕ) : Nat.Prime (n ^ k) ↔ n.Prime ∧ k = 1 := by
+  constructor
+  · intro h
+    obtain rfl := Nat.Prime.eq_one_of_pow h
+    simp_all
+  · simp +contextual
+
+@[simp]
+theorem Nat.Primes.prime (p : Nat.Primes) : Nat.Prime p := p.2
+
+theorem sum_strictPow_convergent : Summable fun (n:{k : ℕ | IsPrimePow k}) ↦
+  if ¬ Nat.Prime n then Λ n / n else 0 := by
+  set f := fun (n:{k : ℕ | IsPrimePow k}) ↦ if ¬ Nat.Prime n then Λ n / n else 0
+  let e := Nat.Primes.prodNatEquiv
+  rw [← Equiv.summable_iff e]
+  have : f ∘ e = fun p ↦ if p.2 = 0 then 0 else Real.log p.1 / p.1 ^ (p.2+1) := by
+    ext ⟨p, k⟩
+    simp +contextual [Set.coe_setOf, Set.mem_setOf_eq, ite_not, Function.comp_apply,
+      Primes.prodNatEquiv_apply, pow_prime_iff, Primes.prime, add_left_eq_self, true_and, cast_pow,
+      f, e, ArithmeticFunction.vonMangoldt_apply_pow, ArithmeticFunction.vonMangoldt_apply_prime]
+  rw [this, summable_prod_of_nonneg]
+  · refine ⟨?_, ?_⟩
+    · intro p
+      simp only [e, f]
+
+      sorry
+
+    sorry
+  · intro p
+    simp only [Pi.zero_apply, e, f]
+    positivity
+
+  -- let ι : Nat.Primes × ℕ → {k : ℕ | IsPrimePow k ∧ ¬ k.Prime} := fun p =>
+  --   ⟨p.1 ^ (p.2 + 2), by
+  --     simp only [Set.mem_setOf_eq]
+  --     constructor
+  --     · refine (isPrimePow_pow_iff (succ_ne_zero _)).mpr ?_
+  --       refine Nat.Prime.isPrimePow ?_
+
+  --       sorry
+
+  --     sorry⟩
+  -- have : ι.Injective := by
+  --   sorry
+  -- set f := fun (n:{k : ℕ | IsPrimePow k ∧ ¬ k.Prime}) ↦ Λ n / n
+  -- let g (p : Nat.Primes × ℕ) : ℝ := Real.log p.1 / p.1 ^ (p.2+2)
+  -- have : f ∘ ι = g  := by
+  --   sorry
+  -- rw [← Function.Injective.summable_iff _ this]
+  -- sorry
+
+theorem mertens_first : (fun n : ℕ ↦ (∑ p ∈ primesBelow (n+1), Real.log p / p) - Real.log n)
+    =O[atTop] (fun _ ↦ (1 : ℝ)) := by
+
   sorry
