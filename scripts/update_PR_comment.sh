@@ -16,7 +16,7 @@ BASH_DOC_MODULE
 
 # If the first two arguments are missing, use the empty string as default value.
 
-# the text of the message that will replace the current one
+# the file containing the text of the message that will replace the current one
 message="${1:-}"
 # the start of the message to locate it among all messages in the PR
 comment_init="${2:-}"
@@ -26,7 +26,10 @@ if [[ -z $PR ]]; then
   echo "Usage: <new_message> <beginning of message> <pr_number>"
   exit 1
 fi
-data=$(jq -n --arg msg "$message" '{"body": $msg}')
+
+# store in a file, to avoid "long arguments" error.
+jq --slurpfile "$message" -n --arg msg '{"body": $msg}' > messageFileAfterJQ.txt
+
 baseURL="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues"
 printf 'Base url: %s\n' "${baseURL}"
 method="POST"
@@ -41,5 +44,5 @@ if [[ -n "$message" ]]; then
         url="${baseURL}/comments/${comment_id}"
         method="PATCH"
     fi
-    curl -s -S -H "Content-Type: application/json" -H "$headers" -X "$method" -d "$data" "$url"
+    curl -s -S -H "Content-Type: application/json" -H "$headers" -X "$method" -d @messageFileAfterJQ.txt "$url"
 fi
