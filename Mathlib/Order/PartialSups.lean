@@ -3,10 +3,10 @@ Copyright (c) 2021 Kim Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Morrison
 -/
-import Mathlib.Algebra.Order.SuccPred
 import Mathlib.Data.Set.Finite.Lattice
 import Mathlib.Order.ConditionallyCompleteLattice.Indexed
 import Mathlib.Order.Interval.Finset.Nat
+import Mathlib.Order.SuccPred.Basic
 
 /-!
 # The monotone sequence of partial supremums of a sequence
@@ -79,7 +79,7 @@ theorem le_partialSups (f : ι → α) :
     f ≤ partialSups f :=
   fun _ => le_partialSups_of_le f le_rfl
 
-theorem partialSups_le (f : ι → α) (i : ι) (a : α) (w : ∀ j, j ≤ i → f j ≤ a) :
+theorem partialSups_le (f : ι → α) (i : ι) (a : α) (w : ∀ j ≤ i, f j ≤ a) :
     partialSups f i ≤ a :=
   partialSups_le_iff.2 w
 
@@ -120,7 +120,7 @@ def partialSups.gi :
   le_l_u f := le_partialSups f
   choice_eq f h := OrderHom.ext _ _ ((le_partialSups f).antisymm h)
 
-protected lemma Pi.partialSups_apply {τ : Type*} {π : τ → Type*} [(t : τ) → SemilatticeSup (π t)]
+protected lemma Pi.partialSups_apply {τ : Type*} {π : τ → Type*} [∀ t, SemilatticeSup (π t)]
     (f : ι → (t : τ) → π t) (i : ι) (t : τ) :
     partialSups f i t = partialSups (f · t) i := by
   simp only [partialSups_apply, Finset.sup'_apply]
@@ -138,11 +138,6 @@ theorem partialSups_succ [LinearOrder ι] [LocallyFiniteOrderBot ι] [SuccOrder 
   constructor
   · exact fun h ↦ (Order.le_succ_iff_eq_or_le.mp h).symm
   · exact fun h ↦ h.elim (le_trans · <| Order.le_succ _) le_of_eq
-
-@[simp]
-lemma partialSups_add_one [Add ι] [One ι] [LinearOrder ι] [LocallyFiniteOrderBot ι] [SuccAddOrder ι]
-    (f : ι → α) (i : ι) : partialSups f (i + 1) = partialSups f i ⊔ f (i + 1) :=
-  Order.succ_eq_add_one i ▸ partialSups_succ f i
 
 @[simp]
 theorem partialSups_bot [PartialOrder ι] [LocallyFiniteOrder ι] [OrderBot ι]
