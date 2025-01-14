@@ -117,17 +117,19 @@ lemma hasSum_qExpansion [NeZero n] [ModularFormClass F Γ(n) k] (τ : ℍ) :
   simpa only [eq_cuspFunction n f] using
     hasSum_qExpansion_of_abs_lt n f (τ.abs_qParam_lt_one n)
 
-/-- The `q`-expansion of a level `n` modular form, bundled as a `FormalMultilinearSeries`. -/
+/-- The `q`-expansion of a level `n` modular form, bundled as a `FormalMultilinearSeries`. 
+TODO: Maybe get rid of this and instead define a general API for converting `PowerSeries` to
+`FormalMultlinearSeries`. -/
 def qExpansionFormalMultilinearSeries : FormalMultilinearSeries ℂ ℂ ℂ :=
   fun m ↦ (qExpansion n f).coeff ℂ m • ContinuousMultilinearMap.mkPiAlgebraFin ℂ m _
 
-lemma qExpansion_formalMultilinearSeries_apply_norm (m : ℕ) :
+lemma qExpansionFormalMultilinearSeries_apply_norm (m : ℕ) :
     ‖qExpansionFormalMultilinearSeries n f m‖ = ‖(qExpansion n f).coeff ℂ m‖ := by
   rw [qExpansionFormalMultilinearSeries,
     ← (ContinuousMultilinearMap.piFieldEquiv ℂ (Fin m) ℂ).symm.norm_map]
   simp
 
-lemma qExpansion_formalMultilinearSeries_radius [NeZero n] [ModularFormClass F Γ(n) k] :
+lemma qExpansionFormalMultilinearSeries_radius [NeZero n] [ModularFormClass F Γ(n) k] :
     1 ≤ (qExpansionFormalMultilinearSeries n f).radius := by
   refine le_of_forall_ge_of_dense fun r hr ↦ ?_
   lift r to NNReal using hr.ne_top
