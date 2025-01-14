@@ -50,8 +50,6 @@ free group, free groupoid, Nielsen-Schreier
 
 noncomputable section
 
-open scoped Classical
-
 universe v u
 
 /- Porting note: ./././Mathport/Syntax/Translate/Command.lean:229:11:unsupported:
@@ -218,6 +216,7 @@ lemma endIsFree : IsFreeGroup (End (root' T)) :=
   IsFreeGroup.ofUniqueLift ((wideSubquiverEquivSetTotal <| wideSubquiverSymmetrify T)ᶜ : Set _)
     (fun e => loopOfHom T (of e.val.hom))
     (by
+      classical
       intro X _ f
       let f' : Labelling (Generators G) X := fun a b e =>
         if h : e ∈ wideSubquiverSymmetrify T a b then 1 else f ⟨⟨a, b, e⟩, h⟩
