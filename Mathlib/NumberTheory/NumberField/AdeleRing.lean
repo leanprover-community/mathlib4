@@ -39,8 +39,6 @@ namespace NumberField
 
 open InfinitePlace AbsoluteValue.Completion InfinitePlace.Completion DedekindDomain IsDedekindDomain
 
-open scoped Classical
-
 variable (K : Type*) [Field K]
 
 /-! ## The infinite adele ring
@@ -76,11 +74,13 @@ theorem algebraMap_apply (x : K) (v : InfinitePlace K) :
 instance locallyCompactSpace [NumberField K] : LocallyCompactSpace (InfiniteAdeleRing K) :=
   Pi.locallyCompactSpace_of_finite
 
+
 /-- The ring isomorphism between the infinite adele ring of a number field and the
 space `ℝ ^ r₁ × ℂ ^ r₂`, where `(r₁, r₂)` is the signature of the number field. -/
 abbrev ringEquiv_mixedSpace :
-    InfiniteAdeleRing K ≃+* mixedEmbedding.mixedSpace K :=
-  RingEquiv.trans
+    InfiniteAdeleRing K ≃+* mixedEmbedding.mixedSpace K := by
+  classical
+  exact RingEquiv.trans
     (RingEquiv.piEquivPiSubtypeProd (fun (v : InfinitePlace K) => IsReal v)
       (fun (v : InfinitePlace K) => v.Completion))
     (RingEquiv.prodCongr
