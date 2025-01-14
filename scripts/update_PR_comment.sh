@@ -41,5 +41,5 @@ if [[ -f "$message" ]]; then
         url="${baseURL}/comments/${comment_id}"
         method="PATCH"
     fi
-    curl -s -S -H "Content-Type: application/json" -H "$headers" -X "$method" -d @messageFileAfterJQ.txt "$url"
+    curl -s -S -H "Content-Type: application/json" -H "$headers" -X "$method" -d @"$message" "$url"
 fi
