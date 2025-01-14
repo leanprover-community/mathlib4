@@ -125,13 +125,13 @@ theorem IsTranscendenceBasis.isAlgebraic_field {F E : Type*} {x : ι → E}
   haveI : IsScalarTower (adjoin F S) (IntermediateField.adjoin F S) E :=
     IsScalarTower.of_algebraMap_eq (congrFun rfl)
   exact Algebra.IsAlgebraic.extendScalars (R := adjoin F S) (Subalgebra.inclusion_injective _)
-
+#print isAlgebraic_adjoin_iff
 theorem finite_of_isTranscendenceBasis_of_algebraic_adjoin [DecidableEq ι] [NoZeroDivisors A]
     (x : ι → A) (y : ι' → A)
     (hx : Algebra.IsAlgebraic (adjoin R (range x)) A)
     (hy : AlgebraicIndependent R y) (i : ι') :
     ∃ j : ι, Algebra.IsAlgebraic (adjoin R (range (Function.update x j (y i)))) A := by
-  obtain ⟨P, hP⟩ := exists_mvPolynomial_of_isAlgebraic_adjoin_range_left (hx.isAlgebraic (y i))
+  obtain ⟨P, hP⟩ := exists_mvPolynomial_of_isAlgebraic_adjoin_range_left.1 (hx.isAlgebraic (y i))
   obtain ⟨j, hj⟩ : ∃ j, some j ∈ P.vars := by
     by_contra h
     have hPC : RingHom.id _ P = ((MvPolynomial.rename (fun _ => none)).toRingHom.comp
@@ -140,21 +140,53 @@ theorem finite_of_isTranscendenceBasis_of_algebraic_adjoin [DecidableEq ι] [NoZ
       intro i hi _
       induction i <;> simp_all
     rw [RingHom.id_apply] at hPC
-    rw [hPC] at hP
-    apply hP.1
+    have hP0 : P ≠ 0 := by rintro rfl; simp at hP
+    rw [hPC] at hP0 hP
+    apply hP0
     simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply]
     rw [algebraicIndependent_iff.1 hy ((MvPolynomial.rename (fun _ => i)) P), map_zero]
     simpa [Function.comp_def, aeval_rename] using hP.2
   use j
-  have h1 : Algebra.IsAlgebraic (adjoin R (range x ∪ {y i})) A := by sorry
-  let i1 : Algebra (adjoin R (range (Function.update x j (y i)))) (adjoin R (range x ∪ {y i})) :=
-    RingHom.toAlgebra (Subalgebra.inclusion (Algebra.adjoin_mono (by
-      rintro _ ⟨y, rfl⟩
-      simp [Function.update]
-      split_ifs <;> simp_all))).toRingHom
-  have i2 : IsScalarTower (adjoin R (range (Function.update x j (y i))))
-    (adjoin R (range x ∪ {y i})) A := IsScalarTower.of_algebraMap_eq (fun _ => rfl)
-  have h2 : Algebra.IsAlgebraic (adjoin R (range (Function.update x j (y i))))
-    (adjoin R (range x ∪ {y i})) := by sorry
-  refine IsAlgebraic.trans' (adjoin R (range (Function.update x j (y i))))
-    (S := adjoin R (range x ∪ {y i})) ?_
+  let M : Subalgebra R A := (aeval (Function.update x j (y i))).range
+  let N : Subalgebra R A := (aeval x).range
+  let O : Subalgebra R A := (aeval (fun o => Option.elim o (y i) x)).range
+  have hMO : M ≤ O := by
+      simp only [M, O]
+      rw [← adjoin_range_eq_range_aeval R, ← adjoin_range_eq_range_aeval R]
+      apply Algebra.adjoin_mono
+      rintro _ ⟨_, rfl⟩
+      simp [Function.update, Option.exists]
+      split_ifs <;> simp_all
+  have hNO : N ≤ O := by
+      simp only [N, O]
+      rw [← adjoin_range_eq_range_aeval R, ← adjoin_range_eq_range_aeval R]
+      apply Algebra.adjoin_mono
+      rintro _ ⟨k, rfl⟩
+      exact Set.mem_range.2 ⟨some k, by simp⟩
+  let i1 : Algebra M O := RingHom.toAlgebra (Subalgebra.inclusion hMO).toRingHom
+  have i2 : IsScalarTower M O A := IsScalarTower.of_algebraMap_eq (fun x => rfl)
+  let i3 : Algebra N O := RingHom.toAlgebra (Subalgebra.inclusion hNO).toRingHom
+  have i4 : IsScalarTower N O A := IsScalarTower.of_algebraMap_eq (fun x => rfl)
+  rw [adjoin_range_eq_range_aeval] at hx ⊢
+  have h1 : Algebra.IsAlgebraic O A :=
+    ⟨fun a => IsAlgebraic.extendScalars
+      (Set.inclusion_injective (by exact hNO))
+      (hx.isAlgebraic a)⟩
+  have hO : O.toSubring = (Algebra.adjoin N {y i}).toSubring := by
+    simp only [N, O, ← adjoin_range_eq_range_aeval, adjoin_eq_ring_closure,
+      Subalgebra.algebraMap_eq, RingHomCompTriple.comp_eq, id.map_eq_id,
+      Subring.closure_union, RingHom.coe_coe, coe_val, N, O, Subtype.range_coe_subtype,
+      SetLike.setOf_mem_eq]
+    rw [← coe_toSubring, Subring.closure_eq, adjoin_eq_ring_closure,
+      Subring.closure_union, Option.range_eq, Set.insert_eq, Subring.closure_union]
+    simp [Function.comp_def, sup_assoc, sup_comm, sup_left_comm]
+  have h2 : Algebra.IsAlgebraic N O := sorry
+  have h2 : Algebra.IsAlgebraic M O := by
+    simp only [M, N]
+    simp only [← adjoin_range_eq_range_aeval]
+    refine ⟨fun a => ?_⟩
+
+    rw [← adjoin_range_eq_range_aeval,
+      exists_mvPolynomial_of_isAlgebraic_adjoin_range_left]
+
+  refine IsAlgebraic.trans' M (S := O) Subtype.val_injective
