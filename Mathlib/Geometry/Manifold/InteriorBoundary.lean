@@ -92,7 +92,7 @@ lemma isBoundaryPoint_iff {x : M} : I.IsBoundaryPoint x ↔ extChartAt I x x ∈
 lemma isInteriorPoint_or_isBoundaryPoint (x : M) : I.IsInteriorPoint x ∨ I.IsBoundaryPoint x := by
   rw [IsInteriorPoint, or_iff_not_imp_left, I.isBoundaryPoint_iff, ← closure_diff_interior,
     I.isClosed_range.closure_eq, mem_diff]
-  exact fun h => ⟨mem_range_self _, h⟩
+  exact fun h ↦ ⟨mem_range_self _, h⟩
 
 /-- A manifold decomposes into interior and boundary. -/
 lemma interior_union_boundary_eq_univ : (I.interior M) ∪ (I.boundary M) = (univ : Set M) :=
@@ -104,22 +104,22 @@ lemma disjoint_interior_boundary : Disjoint (I.interior M) (I.boundary M) := by
   -- Choose some x in the intersection of interior and boundary.
   obtain ⟨x, h1, h2⟩ := not_disjoint_iff.mp h
   rw [← mem_empty_iff_false (extChartAt I x x),
-    ← disjoint_iff_inter_eq_empty.mp (disjoint_interior_frontier (s := range I)), mem_inter_iff]
+    ← disjoint_iff_inter_eq_empty.mp disjoint_interior_frontier, mem_inter_iff]
   exact ⟨h1, h2⟩
 
 lemma isInteriorPoint_iff_not_isBoundaryPoint (x : M) :
-    ¬I.IsBoundaryPoint x ↔ I.IsInteriorPoint x := by
-  refine ⟨by simpa only [or_iff_not_imp_right] using isInteriorPoint_or_isBoundaryPoint x (I := I),
-    ?_⟩
+    I.IsInteriorPoint x ↔ ¬I.IsBoundaryPoint x := by
+  refine ⟨?_,
+    by simpa only [or_iff_not_imp_right] using isInteriorPoint_or_isBoundaryPoint x (I := I)⟩
   by_contra! h
   rw [← mem_empty_iff_false (extChartAt I x x),
-    ← disjoint_iff_inter_eq_empty.mp (disjoint_interior_frontier (s := range I)), mem_inter_iff]
+    ← disjoint_iff_inter_eq_empty.mp disjoint_interior_frontier, mem_inter_iff]
   exact h
 
 /-- The boundary is the complement of the interior. -/
 lemma compl_interior : (I.interior M)ᶜ = I.boundary M:= by
   apply compl_unique ?_ I.interior_union_boundary_eq_univ
-  exact disjoint_iff_inter_eq_empty.mp (I.disjoint_interior_boundary)
+  exact disjoint_iff_inter_eq_empty.mp I.disjoint_interior_boundary
 
 /-- The interior is the complement of the boundary. -/
 lemma compl_boundary : (I.boundary M)ᶜ = I.interior M:= by
@@ -260,7 +260,7 @@ variable {M' : Type*} [TopologicalSpace M'] [ChartedSpace H M'] {n : WithTop ℕ
 open Topology
 
 lemma interiorPoint_inl (x : M) (hx : I.IsInteriorPoint x) :
-    I.IsInteriorPoint (@Sum.inl M M' x) := by
+    I.IsInteriorPoint (.inl x: M ⊕ M') := by
   rw [I.isInteriorPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inl]
   dsimp only [PartialHomeomorph.extend.eq_1, PartialEquiv.trans_target, toPartialEquiv_coe_symm,
     PartialHomeomorph.lift_openEmbedding_target, PartialEquiv.coe_trans, toPartialEquiv_coe,
@@ -269,21 +269,21 @@ lemma interiorPoint_inl (x : M) (hx : I.IsInteriorPoint x) :
   simpa [I.isInteriorPoint_iff, extChartAt] using hx
 
 lemma boundaryPoint_inl (x : M) (hx : I.IsBoundaryPoint x) :
-    I.IsBoundaryPoint (@Sum.inl M M' x) := by
+    I.IsBoundaryPoint (.inl x: M ⊕ M') := by
   rw [I.isBoundaryPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inl]
   dsimp
   rw [Sum.inl_injective.extend_apply (chartAt H x)]
   simpa [I.isBoundaryPoint_iff, extChartAt] using hx
 
 lemma interiorPoint_inr (x : M') (hx : I.IsInteriorPoint x) :
-    I.IsInteriorPoint (@Sum.inr M M' x) := by
+    I.IsInteriorPoint (.inr x : M ⊕ M') := by
   rw [I.isInteriorPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inr]
   dsimp
   rw [Sum.inr_injective.extend_apply (chartAt H x)]
   simpa [I.isInteriorPoint_iff, extChartAt] using hx
 
 lemma boundaryPoint_inr (x : M') (hx : I.IsBoundaryPoint x) :
-    I.IsBoundaryPoint (@Sum.inr M M' x) := by
+    I.IsBoundaryPoint (.inr x : M ⊕ M') := by
   rw [I.isBoundaryPoint_iff, extChartAt, ChartedSpace.sum_chartAt_inr]
   dsimp
   rw [Sum.inr_injective.extend_apply (chartAt H x)]
@@ -295,8 +295,8 @@ lemma isInteriorPoint_disjointUnion_left {p : M ⊕ M'} (hp : I.IsInteriorPoint 
     (hleft : Sum.isLeft p) : I.IsInteriorPoint (Sum.getLeft p hleft) := by
   by_contra h
   set x := Sum.getLeft p hleft
-  rw [← isInteriorPoint_iff_not_isBoundaryPoint x, not_not] at h
-  rw [← isInteriorPoint_iff_not_isBoundaryPoint p] at hp
+  rw [isInteriorPoint_iff_not_isBoundaryPoint x, not_not] at h
+  rw [isInteriorPoint_iff_not_isBoundaryPoint p] at hp
   have := boundaryPoint_inl (M' := M') x (by tauto)
   rw [← Sum.eq_left_getLeft_of_isLeft hleft] at this
   exact hp this
