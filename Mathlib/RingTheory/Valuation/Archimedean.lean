@@ -39,7 +39,7 @@ lemma wfDvdMonoid_iff_wellFounded_gt_on_v (hv : Integers v O) :
   refine ⟨fun _ ↦ wellFounded_dvdNotUnit.mono ?_, fun h ↦ ⟨h.mono ?_⟩⟩ <;>
   simp [Function.onFun, hv.dvdNotUnit_iff_lt]
 
-open scoped Multiplicative in
+open scoped Function Multiplicative in
 lemma wellFounded_gt_on_v_iff_discrete_mrange [Nontrivial (MonoidHom.mrange v)ˣ]
     (hv : Integers v O) :
     WellFounded ((· > ·) on (v ∘ algebraMap O F)) ↔
