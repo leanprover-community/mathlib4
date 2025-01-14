@@ -48,26 +48,82 @@ theorem exists_generator_eq_min_generator_card {p : Submodule R M} (h : p.FG) :
     if and only if there exists a generating function from fin n -/
 lemma minGeneratorCardLeIff_exists {p : Submodule R M} {n : ℕ} :
   p.spanRank ≤ n ↔ ∃ f : Fin n → M, span R (Set.range f) = p := by
+  classical
   constructor
   · intro e
     have h := spanRankNeTop_iff.mp (e.trans_lt (WithTop.coe_lt_top n)).ne
     obtain ⟨f, hf⟩ := exists_generator_eq_min_generator_card h
-    sorry
-    --exact ⟨f, hf⟩
+    let f' : Fin n → M := fun i => if h : i.1 < p.minGeneratorCard then f (Fin.castLT i h) else 0
+    use f'
+    rw [← hf]
+    apply le_antisymm
+    · rw [Submodule.span_le]
+      rintro _ ⟨x, rfl⟩
+      dsimp only [f']
+      split_ifs
+      · apply Submodule.subset_span
+        exact Set.mem_range_self _
+      · exact (span R (Set.range f)).zero_mem
+    · rw [Submodule.span_le]
+      rintro _ ⟨x, rfl⟩
+      dsimp only [f']
+      apply Submodule.subset_span
+      rw [← spanRankNeTop_iff] at h
+      lift p.spanRank to ℕ using h with e' he'
+
+      -- use Fin.castLE e x
+      -- dsimp [f']
+      -- rw [dif_pos x.isLt]
+      -- congr
+      -- ext
+      -- rfl
+
+      -- dsimp only [f']
+      -- #check dif_pos x.isLt
+      -- -- rw [dif_pos x.isLt]
+      -- rw [← spanRankNeTop_iff] at h
+      -- lift p.spanRank to ℕ using h with e' he'
+      -- #check Fin.castLE (ENat.coe_le_coe.mp e)
+      -- #check g (Fin.castLE _ x)
+
+      -- simp [dif_pos x.isLt]
+      -- by_cases ple : n < p.minGeneratorCard
+      -- ·
+      --   sorry
+
+
+      -- use Fin.castLE (ENat.coe_le_coe.mp e)
+
+
+
+      -- use Fin.castLE e x
+      -- dsimp [f']
+      -- rw [dif_pos x.isLt]
+      -- congr
+      -- ext
+      -- rfl
+
+      sorry
+    -- · rintro _ ⟨x, rfl⟩
+    --   apply Submodule.subset_span
+    --   use Fin.castLE e x
+    --   dsimp [f']
+    --   rw [dif_pos x.isLt]
+    --   congr
+    --   ext
+    --   rfl
   · rintro ⟨f, hf⟩
     let s : { s : Set M // s.Finite ∧ span R s = p} :=
       ⟨Set.range f, Set.finite_range f, hf⟩
-    sorry
-    /-calc p.spanRank
-        ≤ s.2.1.toFinset.card := cInf_le (OrderBot.bddBelow _) (Set.mem_range_self _)
-    _ = (Finset.univ.image f).card := by
-        congr! 2
-        ext
-        simp
-    _ ≤ n := by
-        rw [WithTop.coe_le_coe]
-        convert Finset.card_image_le
-        rw [Finset.card_univ, Fintype.card_fin]-/
+    calc p.spanRank
+        ≤ s.2.1.toFinset.card := csInf_le (OrderBot.bddBelow _) (Set.mem_range_self _)
+        _ = (Finset.univ.image f).card := by congr 2; ext; simp; exact Set.mem_range
+        _ ≤ n := by
+          simp [WithTop.coe_le_coe]
+          convert Finset.card_image_le
+          rw [Finset.card_univ, Fintype.card_fin]
+
+
 
 /-- For a finitely generated submodule, get a minimal generating function -/
 noncomputable def minGenerator {p : Submodule R M} (h : p.FG) : Fin p.minGeneratorCard → M :=
@@ -82,8 +138,8 @@ lemma spanMinGeneratorRange {p : Submodule R M} (h : p.FG) :
 lemma minGeneratorMem {p : Submodule R M} (h : p.FG) (i) :
   minGenerator h i ∈ p := by
   have := spanMinGeneratorRange h
-  sorry
-  --rw [← this]
-  --exact subset_span (Set.mem_range_self i)
+  simp_rw [← this]
+  exact subset_span (Set.mem_range_self i)
+
 #min_imports
 end Submodule
