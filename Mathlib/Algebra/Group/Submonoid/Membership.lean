@@ -32,7 +32,6 @@ In this file we prove various facts about membership in a submonoid:
 submonoid, submonoids
 -/
 
-assert_not_exists Ring
 -- We don't need ordered structures to establish basic membership facts for submonoids
 assert_not_exists OrderedSemiring
 
