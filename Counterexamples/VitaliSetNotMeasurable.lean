@@ -22,8 +22,9 @@ open Set Filter Real MeasureTheory
 
 noncomputable section
 
-/-- We first derive the measure theoretic results that we need from
-the more general theorems in Mathlib. -/
+/-- We first enumerate all measure theoretic results that we will need.  We do so
+because we want to make clear exactly which properties of measurability and the volume
+measure are used in the proof of the non-measurability of the Vitali set. -/
 
 example {a b : ℝ} : volume (Icc a b) = ENNReal.ofReal (b - a) :=
   volume_Icc
@@ -32,7 +33,7 @@ lemma volume_mono {s t : Set ℝ} (h : s ⊆ t) : volume s ≤ volume t := by
   exact OuterMeasureClass.measure_mono volume h
 
 lemma measurable_nullmeasurable {s : Set ℝ} (h : MeasurableSet s) : NullMeasurableSet s volume :=
-  MeasurableSet.nullMeasurableSet h
+  h.nullMeasurableSet
 
 lemma measurable_null_nullmeasurable {s t : Set ℝ}
     (hm : NullMeasurableSet s) (hn : volume t = 0) : NullMeasurableSet (s ∪ t) :=
@@ -40,22 +41,21 @@ lemma measurable_null_nullmeasurable {s t : Set ℝ}
 
 lemma nullmeasurable_measurable_null {s : Set ℝ} (h : NullMeasurableSet s volume) :
     ∃ t ⊆ s, MeasurableSet t ∧ volume t = volume s ∧ volume (s \ t) = 0 := by
-  have ⟨t, t_sub_s, t_m, t_eq_s⟩ := NullMeasurableSet.exists_measurable_subset_ae_eq h
+  have ⟨t, t_sub_s, t_m, t_eq_s⟩ := h.exists_measurable_subset_ae_eq
   use t, t_sub_s, t_m
   constructor
   · exact measure_congr t_eq_s
-  · refine ae_le_set.mp ?_
-    exact t_eq_s.symm.le
+  · exact ae_le_set.mp t_eq_s.symm.le
 
-lemma shift_volume (s : Set ℝ) (c : ℝ) : volume ((fun x ↦ x + c)''s) = volume s := by
+lemma shift_volume (s : Set ℝ) (c : ℝ) : volume ((fun x ↦ x + c) '' s) = volume s := by
   simp only [image_add_right, measure_preimage_add_right]
 
 lemma shift_nullmeasurable {s : Set ℝ} (h : NullMeasurableSet s volume) (c : ℝ) :
-    NullMeasurableSet ((fun x ↦ x + c)''s) volume := by
+    NullMeasurableSet ((fun x ↦ x + c) '' s) volume := by
   rcases nullmeasurable_measurable_null h with ⟨t, ts, tm, vs, vt⟩
   rw [← union_diff_cancel ts, image_union]
   refine measurable_null_nullmeasurable ?_ ?_
-  · have : MeasurableSet ((fun x ↦ x + c)''t) := by
+  · have : MeasurableSet ((fun x ↦ x + c) '' t) := by
       apply (MeasurableEmbedding.measurableSet_image ?_).mpr tm
       exact measurableEmbedding_addRight c
     exact measurable_nullmeasurable this
@@ -103,15 +103,14 @@ lemma biUnion_volume {ι : Type*} {I : Set ι} {s : ι → Set ℝ}
   have hm_ti : ∀ i ∈ I, MeasurableSet (t i) := by
     intro i i_I
     exact t_m i i_I
-  have hm_tu : MeasurableSet (⋃ i ∈ I, t i) := by
-    exact MeasurableSet.biUnion hc hm_ti
+  have hm_tu : MeasurableSet (⋃ i ∈ I, t i) :=
+    MeasurableSet.biUnion hc hm_ti
   have h_null : volume (⋃ i ∈ I, (s i \ t i)) = 0 := by
     exact (biUnion_null hc).mpr t_z
   have hv_s : volume (⋃ i ∈ I, s i) = volume (⋃ i ∈ I, t i) := by
     rw [h_st, union_volume_null hm_tu h_null]
   have hd_t : I.PairwiseDisjoint t := by
-    refine PairwiseDisjoint.mono_on hd ?_
-    exact t_s
+    refine PairwiseDisjoint.mono_on hd t_s
   have hv_t : volume (⋃ i ∈ I, t i) = ∑' (i : ↑I), volume (t ↑i) := by
     exact measure_biUnion (μ := volume) hc hd_t hm_ti
   rw [hv_s, hv_t]
@@ -138,8 +137,7 @@ instance vS : Setoid { x : ℝ // x ∈ Icc 0 1 } where
     trans := by
       intro x y z
       simp only [mem_range]
-      rintro ⟨t1, h1⟩
-      rintro ⟨t2, h2⟩
+      rintro ⟨t1, h1⟩ ⟨t2, h2⟩
       use (t1 + t2)
       simp [h1, h2]
   }
@@ -165,7 +163,7 @@ def vitaliSet : Set ℝ := { x : ℝ | ∃ t : vT, ↑(vRep t) = x }
 /-- We now shift the Vitali set using rational numbers in the interval [-1,1]. -/
 def vI : Set ℝ := Icc (-1) 1 ∩ range ((↑) : ℚ → ℝ)
 
-def vitaliSet' (i : ℝ) : Set ℝ := (fun x ↦ x + i)''vitaliSet
+def vitaliSet' (i : ℝ) : Set ℝ := (fun x ↦ x + i) '' vitaliSet
 
 /-- vitaliUnion is the union of all those shifted copies of vitaliSet. -/
 def vitaliUnion : Set ℝ := ⋃ i ∈ vI, vitaliSet' i
@@ -219,8 +217,8 @@ lemma vitaliUnion_lower_bound : Icc 0 1 ⊆ vitaliUnion := by
 
 /-- Therefore, the volume of vitaliUnion is between 1 and 3 (inclusive). -/
 lemma vitaliUnion_volume_range : 1 ≤ volume vitaliUnion ∧ volume vitaliUnion ≤ 3 := by
-  have h1 : MeasureTheory.volume (Icc (0 : ℝ) 1) = 1 := by simp [volume_Icc]
-  have h2 : MeasureTheory.volume (Icc (-1 : ℝ) 2) = 3 := by simp [volume_Icc] ; norm_num
+  have h1 : volume (Icc (0 : ℝ) 1) = 1 := by simp [volume_Icc]
+  have h2 : volume (Icc (-1 : ℝ) 2) = 3 := by simp [volume_Icc] ; norm_num
   constructor
   · rw [← h1]
     exact volume_mono vitaliUnion_lower_bound
