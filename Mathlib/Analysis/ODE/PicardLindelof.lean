@@ -429,36 +429,26 @@ lemma dist_iterate_iterate_next_le_of_lipschitzWith (hf : IsPicardLindelof f t�
   apply mul_le_mul_of_nonneg_right _ (pow_nonneg C.2 _)
   exact dist_iterate_next_le hf hx α m
 
--- bug in the unused variable linter?
 /-- The pointwise distance between any two integral curves `α` and `β` over their domains is bounded
-by a constant `L'` times the distance between their respective initial points. -/
+by a constant `L'` times the distance between their respective initial points. This is the result of
+taking the limit of `dist_iterate_iterate_next_le_of_lipschitzWith` as `n → ∞`. -/
 lemma exists_forall_closedBall_funSpace_dist_le_mul [CompleteSpace E]
     (hf : IsPicardLindelof f t₀ x₀ a r L K) :
     ∃ L' : ℝ≥0, ∀ (x y : E) (hx : x ∈ closedBall x₀ r) (hy : y ∈ closedBall x₀ r)
-      (α β : FunSpace t₀ x₀ r L) (hα : IsFixedPt (next hf hx) α) (hβ : IsFixedPt (next hf hy) β),
+      (α β : FunSpace t₀ x₀ r L) (_ : IsFixedPt (next hf hx) α) (_ : IsFixedPt (next hf hy) β),
       dist α β ≤ L' * dist x y := by
   obtain ⟨m, C, h⟩ := exists_contractingWith_iterate_next hf
   let L' := (∑ i ∈ Finset.range m, (K * max (tmax - t₀) (t₀ - tmin)) ^ i / i !) * (1 - C)⁻¹
   have hL' : 0 ≤ L' := by
-    apply mul_nonneg _ (NNReal.coe_nonneg _)
-    apply Finset.sum_nonneg'
-    intro
-    apply div_nonneg _ (Nat.cast_nonneg _)
-    apply pow_nonneg
-    apply mul_nonneg K.2
-    apply le_max_of_le_left
-    exact sub_nonneg_of_le t₀.2.2
+    have : 0 ≤ max (tmax - t₀) (t₀ - tmin) := le_max_of_le_left <| sub_nonneg_of_le t₀.2.2
+    positivity
   refine ⟨⟨L', hL'⟩, fun x y hx hy α β hα hβ ↦ ?_⟩
   rw [NNReal.coe_mk]
-  apply le_of_tendsto_of_tendsto' (b := Filter.atTop)
-    (f := fun n ↦ dist α ((next hf hy)^[m]^[n] α))
-    (g := fun n ↦ (∑ i ∈ Finset.range m, (K * max (tmax - t₀) (t₀ - tmin)) ^ i / i !) *
-      (∑ i ∈ Finset.range n, (C : ℝ) ^ i) * dist α (next hf hy α)) _ _
-    (dist_iterate_iterate_next_le_of_lipschitzWith hf hy α (h y hy).2)
-  · change Filter.Tendsto ((dist α ·) ∘ fun n ↦ (next hf hy)^[m]^[n] α) Filter.atTop (𝓝 (dist α β))
-    apply Filter.Tendsto.comp (y := 𝓝 β) (tendsto_const_nhds.dist Filter.tendsto_id)
-    convert h y hy |>.tendsto_iterate_fixedPoint α
-    exact h y hy |>.fixedPoint_unique (hβ.iterate m)
+  apply le_of_tendsto_of_tendsto' (b := Filter.atTop) _ _ <|
+    dist_iterate_iterate_next_le_of_lipschitzWith hf hy α (h y hy).2
+  · apply Filter.Tendsto.comp (y := 𝓝 β) (tendsto_const_nhds.dist Filter.tendsto_id)
+    rw [h y hy |>.fixedPoint_unique (hβ.iterate m)]
+    exact h y hy |>.tendsto_iterate_fixedPoint α
   · nth_rw 1 [← hα, dist_next_next]
     apply Filter.Tendsto.mul_const
     apply Filter.Tendsto.const_mul
