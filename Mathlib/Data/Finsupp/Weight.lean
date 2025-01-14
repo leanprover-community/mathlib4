@@ -5,10 +5,9 @@ Authors: Antoine Chambert-Loir, María Inés de Frutos-Fernández
 -/
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Module.Defs
+import Mathlib.Algebra.Order.Ring.Canonical
 import Mathlib.Data.Finsupp.Antidiagonal
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
-
-import Mathlib.Algebra.Order.Ring.Canonical
 
 /-! # weights of Finsupp functions
 
@@ -20,7 +19,7 @@ require to classify these exponents according to their total sum
 
 ## Weight
 
-We fix a type `σ`, a semiring `N`, an `AddCommMonoid M` with `Module N M`,
+We fix a type `σ`, a semiring `N`, a `N`-module `M`,
 as well as a function `w : σ → M`. (The important case is `N = ℕ`.)
 
 - `Finsupp.weight` of a finitely supported function `f : σ →₀ N`
@@ -45,7 +44,7 @@ there are finitely many `f : σ →₀ ℕ` of bounded weight.
 ## Degree
 
 - `Finsupp.degree f` is the sum of all `f s`, for `s ∈ f.support`.
-The present choice is to have it defined as a function.
+  The present choice is to have it defined as a function.
 
 - `Finsupp.degree_eq_zero_iff` says that `f.degree = 0` iff `f = 0`.
 
@@ -86,7 +85,7 @@ theorem weight_apply (f : σ →₀ N) :
 @[deprecated weight_apply (since := "2024-07-20")]
 alias _root_.MvPolynomial.weightedDegree_apply := weight_apply
 
-theorem weight_single_apply (s : σ) (c : M) (f : σ →₀ N) :
+theorem weight_single_index (s : σ) (c : M) (f : σ →₀ N) :
     weight (single s c) f = f s • c := by
   rw [weight_apply]
   rw [Finsupp.sum_eq_single s]
@@ -100,8 +99,8 @@ theorem weight_single_one_apply (s : σ) (f : σ →₀ N) :
     weight (single s 1) f = f s := by
   rw [weight_single_apply, smul_eq_mul, mul_one]
 
-theorem weight_apply_single (s : σ) (n : N) :
-    weight w (Finsupp.single s n) = n • (w s) := by
+theorem weight_single (s : σ) (n : N) :
+    weight w (Finsupp.single s n) = n • w s := by
   simp only [weight_apply, zero_smul, sum_single_index]
 
 variable (N) in
@@ -239,11 +238,7 @@ theorem degree_single (a : σ) (n : N) : (Finsupp.single a n).degree = n := by
     rw [single_eq_same, ha]
 
 @[simp]
-theorem degree_zero : degree (0 : σ →₀ N) = 0 := by
-  simp only [degree]
-  apply Finset.sum_eq_zero
-  intro _ _
-  simp only [coe_zero, Pi.zero_apply]
+theorem degree_zero : degree (0 : σ →₀ N) = 0 := by simp [degree]
 
 lemma degree_eq_zero_iff {N : Type*} [CanonicallyOrderedAddCommMonoid N] (d : σ →₀ N) :
     degree d = 0 ↔ d = 0 := by
