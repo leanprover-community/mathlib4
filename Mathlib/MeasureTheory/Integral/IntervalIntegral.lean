@@ -49,7 +49,6 @@ integral
 
 noncomputable section
 
-open scoped Classical
 open MeasureTheory Set Filter Function
 
 open scoped Classical Topology Filter ENNReal Interval NNReal
