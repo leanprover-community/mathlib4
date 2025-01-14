@@ -239,8 +239,6 @@ lemma not_denselyOrdered_of_isPrincipalIdealRing [IsPrincipalIdealRing O] (hv : 
   obtain ⟨z, rfl⟩ := hv.exists_of_le_one hy₁.le
   exact hy.not_le <| hx ⟨hy₁, mem_range_self _⟩
 
--- TODO: isPrincipalIdealRing_iff_not_denselyOrdered when MulArchimedean
-
 end Integers
 
 end Field
