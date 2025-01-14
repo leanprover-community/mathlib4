@@ -20,30 +20,24 @@ lemma spanRankNeTop_iff {p : Submodule R M} :
   p.spanRank ≠ ⊤ ↔ p.FG := by
   simp [spanRank, Submodule.fg_def]
 
-/- For a finitely generated submodule, there exists a generating function from
-    its minimum generator cardinality -/
 theorem exists_generator_eq_min_generator_card {p : Submodule R M} (h : p.FG) :
   ∃ f : Fin p.minGeneratorCard → M, span R (Set.range f) = p := by
-  obtain ⟨s, hs⟩ := h
+  haveI : Nonempty { s // s.Finite ∧ span R s = p } := by
+    rcases h with ⟨s, hs⟩
+    use s
+    constructor
+    · exact Finset.finite_toSet s
+    · exact hs
+  obtain ⟨⟨s, h₁, h₂⟩, h₃ : h₁.toFinset.card = _⟩ :
+    p.minGeneratorCard ∈ _ := Nat.sInf_mem (Set.range_nonempty _)
+  rw [<- h₃]
+  let f := ((@Fintype.ofFinite s h₁).equivFin).invFun
+  --have temp : h₁.toFinset.card = @Fintype.card (@Set.Elem M s) (Fintype.ofFinite (@Set.Elem M s)) := by
+    sorry
+  --rcases Set.Finite.fin_param h₁ with ⟨n, f, ha, hb⟩
+  --have : n = h₁.toFinset.card := by sorry
+
   sorry
-  /-
-  let s' : { s : Set M // s.Finite ∧ span R s = p} := ⟨s, hs.1, hs.2⟩
-  have nonempty : ∃ x, x ∈ ({ s : { s : Set M // s.Finite ∧ span R s = p} // True } : Set _) := by
-    exists s'
-  obtain ⟨⟨s, h₁, h₂⟩, h₃⟩ := Nat.sInf_mem nonempty
-  have h₅ : h₁.toFinset.card = p.minGeneratorCard := h₃
-  let e₁ := h₁.toFinset.equivFin
-  let e₂ : Fin h₁.toFinset.card ≃ Fin p.minGeneratorCard := by
-    rw [h₅]
-    exact Equiv.refl _
-  let f : Fin p.minGeneratorCard → M := fun i => (e₁.symm (e₂.symm i)).val
-  existsi f
-  rw [← h₂]
-  apply span_eq_span_iff.mpr
-  constructor
-  · sorry  -- Proof of subset relation
-  · sorry  -- Proof of reverse subset relation
-  -/
 
 /-- For a finitely generated submodule, its spanRank is less than or equal to n
     if and only if there exists a generating function from fin n -/
@@ -86,4 +80,5 @@ lemma minGeneratorMem {p : Submodule R M} (h : p.FG) (i) :
   sorry
   --rw [← this]
   --exact subset_span (Set.mem_range_self i)
+#min_imports
 end Submodule
