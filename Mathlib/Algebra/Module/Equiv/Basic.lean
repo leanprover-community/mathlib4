@@ -490,7 +490,9 @@ variable {M₂₁ M₂₂ : Type*} [Semiring R] [AddCommMonoid M₁] [AddCommMon
   [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂] [Module R M₂₁] [Module R M₂₂]
 
 /-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
-additive isomorphism between the two function spaces. -/
+additive isomorphism between the two function spaces.
+
+See also `LinearEquiv.arrowCongr` for the linear version of this isomorphism. -/
 def arrowCongrAddEquiv (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) :
     (M₁ →ₗ[R] M₂₁) ≃+ (M₂ →ₗ[R] M₂₂) where
   toFun f := e₂.comp (f.comp e₁.symm.toLinearMap)
@@ -505,8 +507,10 @@ def arrowCongrAddEquiv (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M�
     ext x
     simp only [map_add, add_apply, Function.comp_apply, coe_comp, coe_coe]
 
-/-- If `M` and `M₂` are linearly isomorphic then the two spaces of linear maps from `M` and `M₂` to
-themselves are additively isomorphic. -/
+/-- If `M` and `M₂` are linearly isomorphic then the endomorphism rings of `M` and `M₂`
+are isomorphic.
+
+See `LinearEquiv.conj` for the linear version of this isomorphism. -/
 def conjRingEquiv (e : M₁ ≃ₗ[R] M₂) : Module.End R M₁ ≃+* Module.End R M₂ where
   __ := arrowCongrAddEquiv e e
   map_mul' _ _ := by ext; simp [arrowCongrAddEquiv]
@@ -525,7 +529,10 @@ def smulOfUnit (a : Rˣ) : M ≃ₗ[R] M :=
   DistribMulAction.toLinearEquiv R M a
 
 /-- A linear isomorphism between the domains and codomains of two spaces of linear maps gives a
-linear isomorphism between the two function spaces. -/
+linear isomorphism between the two function spaces.
+
+See `LinearEquiv.arrowCongrAddEquiv` for the additive version of this isomorphism that works
+over a not necessarily commutative semiring. -/
 def arrowCongr {R M₁ M₂ M₂₁ M₂₂ : Sort _} [CommSemiring R] [AddCommMonoid M₁] [AddCommMonoid M₂]
     [AddCommMonoid M₂₁] [AddCommMonoid M₂₂] [Module R M₁] [Module R M₂] [Module R M₂₁]
     [Module R M₂₂] (e₁ : M₁ ≃ₗ[R] M₂) (e₂ : M₂₁ ≃ₗ[R] M₂₂) : (M₁ →ₗ[R] M₂₁) ≃ₗ[R] M₂ →ₗ[R] M₂₂ where
@@ -566,7 +573,10 @@ def congrRight (f : M₂ ≃ₗ[R] M₃) : (M →ₗ[R] M₂) ≃ₗ[R] M →ₗ
   arrowCongr (LinearEquiv.refl R M) f
 
 /-- If `M` and `M₂` are linearly isomorphic then the two spaces of linear maps from `M` and `M₂` to
-themselves are linearly isomorphic. -/
+themselves are linearly isomorphic.
+
+See `LinearEquiv.conjRingEquiv` for the isomorphism between endomorphism rings,
+which works over a not necessarily commutative semiring. -/
 -- TODO: upgrade to AlgEquiv (but this file currently cannot import AlgEquiv)
 def conj (e : M ≃ₗ[R] M₂) : Module.End R M ≃ₗ[R] Module.End R M₂ :=
   arrowCongr e e
