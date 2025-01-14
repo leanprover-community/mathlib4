@@ -137,7 +137,7 @@ protected def id : SpectralMap α α :=
 instance : Inhabited (SpectralMap α α) :=
   ⟨SpectralMap.id α⟩
 
-@[simp]
+@[simp, norm_cast]
 theorem coe_id : ⇑(SpectralMap.id α) = id :=
   rfl
 

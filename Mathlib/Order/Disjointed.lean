@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yaël Dillies
 -/
+import Mathlib.Algebra.Order.PartialSups
 import Mathlib.Order.PartialSups
 import Mathlib.Order.Interval.Finset.Fin
 import Mathlib.Data.Nat.SuccPred
