@@ -106,8 +106,6 @@ lemma minGeneratorCardLeIff_exists {p : Submodule R M} {n : ℕ} :
           convert Finset.card_image_le
           rw [Finset.card_univ, Fintype.card_fin]
 
-
-
 /-- For a finitely generated submodule, get a minimal generating function -/
 noncomputable def minGenerator {p : Submodule R M} (h : p.FG) : Fin p.minGeneratorCard → M :=
   Classical.choose (exists_generator_eq_min_generator_card h)
@@ -124,5 +122,4 @@ lemma minGeneratorMem {p : Submodule R M} (h : p.FG) (i) :
   simp_rw [← this]
   exact subset_span (Set.mem_range_self i)
 
-#min_imports
 end Submodule
