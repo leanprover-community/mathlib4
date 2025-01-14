@@ -273,7 +273,7 @@ def delabMkNotation : Delab :=
     guard <| f.isAppOfArity ``Functor.toPrefunctor 5
     let_expr Opposite src := src | failure
     let_expr SimplexCategory.Truncated n := src | failure
-    guard !n.hasExprMVar
+    guard !n.hasMVar
     let_expr Opposite.op _ x := x | failure
     let_expr FullSubcategory.mk _ _ simplex _ := x | failure
     guard <| simplex.isAppOfArity ``SimplexCategory.mk 1
@@ -746,7 +746,7 @@ def delabMkNotation : Delab :=
     -- check that f is a functor out of the truncated simplex category
     guard <| f.isAppOfArity ``Functor.toPrefunctor 5
     let_expr SimplexCategory.Truncated n := src | failure
-    guard !n.hasExprMVar
+    guard !n.hasMVar
     let_expr FullSubcategory.mk _ _ simplex _ := x | failure
     guard <| simplex.isAppOfArity ``SimplexCategory.mk 1
     -- if `pp.proofs` is set to `true`, include the proof `p : m ≤ n`

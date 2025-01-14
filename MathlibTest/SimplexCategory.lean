@@ -22,6 +22,20 @@ section delaborator
 /-- info: [1]ₙ ₊ ₁ : CategoryTheory.FullSubcategory fun a => a.len ≤ n + 1 -/
 #guard_msgs in #check [1]ₙ₊₁
 
+section mvars
+set_option pp.mvars false
+
+/-- info: [?_]ₙ : CategoryTheory.FullSubcategory fun a => a.len ≤ n -/
+#guard_msgs in #check [?_, ?_]ₙ
+
+/- The delaborator should not fire because the truncation level is a metavariable. -/
+/-- info: { obj := SimplexCategory.mk ?_, property := ?_ } :
+CategoryTheory.FullSubcategory fun a => a.len ≤ ?_ -/
+#guard_msgs in #check @CategoryTheory.FullSubcategory.mk
+  SimplexCategory (fun a ↦ a.len ≤ ?_) (SimplexCategory.mk ?_) ?_
+
+end mvars
+
 section proofs
 set_option pp.proofs true
 
@@ -30,6 +44,10 @@ set_option pp.proofs true
 
 /-- info: [m,h]ₙ : CategoryTheory.FullSubcategory fun a => a.len ≤ n -/
 #guard_msgs in #check [m, h]ₙ
+
+set_option pp.mvars false in
+/-- info: [?_,?_]ₙ : CategoryTheory.FullSubcategory fun a => a.len ≤ n -/
+#guard_msgs in #check [?_, ?_]ₙ
 
 end proofs
 

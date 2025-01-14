@@ -790,7 +790,7 @@ def delabMkNotation : Delab :=
     let_expr LE.le _ _ lhs rhs := body | failure
     let_expr SimplexCategory.len simplex := lhs | failure
     guard <| simplex == .bvar 0
-    guard !rhs.hasExprMVar
+    guard !rhs.hasMVar
     -- if `pp.proofs` is set to `true`, include the proof `p : m ≤ n`
     let m ← withNaryArg 2 <| withAppArg delab
     let n ← withNaryArg 1 <| withBindingBody x <| withAppArg delab

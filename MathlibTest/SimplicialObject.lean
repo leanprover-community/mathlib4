@@ -16,6 +16,22 @@ section delaborator
 /-- info: X _[m]ₙ : C -/
 #guard_msgs in #check X _[m]ₙ
 
+section mvars
+set_option pp.mvars false
+
+/-- info: X _[?_]ₙ : C -/
+#guard_msgs in #check X _[?_, ?_]ₙ
+
+/- The delaborator should not fire because the truncation level is a metavariable. -/
+open CategoryTheory.Functor in
+/-- info: (toPrefunctor ?_).obj
+(Opposite.op { obj := SimplexCategory.mk ?_, property := ?_ }) : ?_ -/
+#guard_msgs in #check Prefunctor.obj
+  (toPrefunctor (C := (SimplexCategory.Truncated ?_)ᵒᵖ) ?_)
+  ⟨SimplexCategory.mk ?_, ?_⟩
+
+end mvars
+
 section proofs
 set_option pp.proofs true
 
@@ -24,6 +40,10 @@ set_option pp.proofs true
 
 /-- info: X _[m,h]ₙ : C -/
 #guard_msgs in #check X _[m, h]ₙ
+
+set_option pp.mvars false in
+/-- info: X _[?_,?_]ₙ : C -/
+#guard_msgs in #check X _[?_, ?_]ₙ
 
 end proofs
 end delaborator
@@ -43,6 +63,20 @@ section delaborator
 /-- info: X _[m]ₙ : C -/
 #guard_msgs in #check X _[m]ₙ
 
+section mvars
+set_option pp.mvars false
+
+/-- info: X _[?_]ₙ : C -/
+#guard_msgs in #check X _[?_, ?_]ₙ
+
+/- The delaborator should not fire because the truncation level is a metavariable. -/
+open CategoryTheory.Functor in
+/-- info: (toPrefunctor ?_).obj { obj := SimplexCategory.mk ?_, property := ?_ } : ?_ -/
+#guard_msgs in #check Prefunctor.obj
+  (toPrefunctor (C := SimplexCategory.Truncated ?_) ?_) ⟨SimplexCategory.mk ?_, ?_⟩
+
+end mvars
+
 section proofs
 set_option pp.proofs true
 
@@ -51,6 +85,10 @@ set_option pp.proofs true
 
 /-- info: X _[m,h]ₙ : C -/
 #guard_msgs in #check X _[m, h]ₙ
+
+set_option pp.mvars false in
+/-- info: X _[?_,?_]ₙ : C -/
+#guard_msgs in #check X _[?_, ?_]ₙ
 
 end proofs
 end delaborator
