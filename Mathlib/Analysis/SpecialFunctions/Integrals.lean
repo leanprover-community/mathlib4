@@ -484,7 +484,6 @@ theorem integral_exp_mul_complex {c : ℂ} (hc : c ≠ 0) :
   · ring
   · fun_prop
 
-@[simp]
 /-- Helper lemma for `integral_log`: case where `a = 0` and `b` is positive. -/
 lemma integral_log_from_zero_of_pos (ht : 0 < b) : ∫ s in (0)..b, log s = b * log b - b := by
   -- Compute the integral by giving a primitive and considering it limit as x
@@ -524,12 +523,6 @@ theorem integral_log : ∫ s in a..b, log s = b * log b - a * log a - b + a := b
   · rw [intervalIntegral.integral_symm, integral_log_from_zero, integral_log_from_zero]
     ring
   all_goals exact intervalIntegrable_log'
-
-@[deprecated (since := "2025-01-12")]
-alias integral_log_of_pos := integral_log
-
-@[deprecated (since := "2025-01-12")]
-alias integral_log_of_neg := integral_log
 
 @[deprecated (since := "2025-01-12")]
 alias integral_log_of_pos := integral_log
