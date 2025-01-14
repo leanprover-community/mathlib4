@@ -27,13 +27,10 @@ if [[ -z $PR ]]; then
   exit 1
 fi
 
-# store in a file, to avoid "long arguments" error.
-jq --slurpfile "$message" -n --arg msg '{"body": $msg}' > messageFileAfterJQ.txt
-
 baseURL="https://api.github.com/repos/${GITHUB_REPOSITORY}/issues"
 printf 'Base url: %s\n' "${baseURL}"
 method="POST"
-if [[ -n "$message" ]]; then
+if [[ -f "$message" ]]; then
     url="${baseURL}/${PR}/comments"
     printf 'Base url: %s\n' "${url}"
     headers="Authorization: token ${GITHUB_TOKEN}"
