@@ -389,8 +389,8 @@ instance : CommRing (center R) :=
   NonUnitalSubsemiring.centerCongr e
 
 /-- The center of a nonunital semiring is isomorphic to the center of its opposite. -/
-@[simps!] def centerMulOppositeEquiv : center Rᵐᵒᵖ ≃+* center R :=
-  NonUnitalSubsemiring.centerMulOppositeEquiv
+@[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ :=
+  NonUnitalSubsemiring.centerToMulOpposite
 
 end
 

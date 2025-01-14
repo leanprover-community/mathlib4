@@ -48,7 +48,7 @@ def centerCongr {H} [Group H] (e : G ≃* H) : center G ≃* center H := Submono
 /-- The center of a group is isomorphic to the center of its opposite. -/
 @[to_additive (attr := simps!)
 "The center of an additive group is isomorphic to the center of its opposite."]
-def centerMulOppositeEquiv : center Gᵐᵒᵖ ≃* center G := Submonoid.centerMulOppositeEquiv
+def centerToMulOpposite : center G ≃* center Gᵐᵒᵖ := Submonoid.centerToMulOpposite
 
 /-- For a group with zero, the center of the units is the same as the units of the center. -/
 @[simps! apply_val_coe symm_apply_coe_val]
