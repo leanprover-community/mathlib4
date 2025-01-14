@@ -54,7 +54,7 @@ noncomputable section
 
 open Function Set MeasureTheory.OuterMeasure Filter MeasurableSpace Encodable
 
-open scoped Classical Topology ENNReal
+open scoped Topology ENNReal
 
 universe u v
 
@@ -99,6 +99,7 @@ theorem IsCountablySpanning.pi {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCoun
 theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountablySpanning (C i)) :
     (@MeasurableSpace.pi _ _ fun i => generateFrom (C i)) =
     generateFrom (pi univ '' pi univ C) := by
+  classical
   cases nonempty_encodable ι
   apply le_antisymm
   · refine iSup_le ?_; intro i; rw [comap_generateFrom]
@@ -253,11 +254,13 @@ variable [Encodable ι]
 /-- The product measure on an encodable finite type, defined by mapping `Measure.tprod` along the
   equivalence `MeasurableEquiv.piMeasurableEquivTProd`.
   The definition `MeasureTheory.Measure.pi` should be used instead of this one. -/
-def pi' : Measure (∀ i, α i) :=
-  Measure.map (TProd.elim' mem_sortedUniv) (Measure.tprod (sortedUniv ι) μ)
+def pi' : Measure (∀ i, α i) := by
+  classical
+  exact Measure.map (TProd.elim' mem_sortedUniv) (Measure.tprod (sortedUniv ι) μ)
 
 theorem pi'_pi [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) :
     pi' μ (pi univ s) = ∏ i, μ i (s i) := by
+  classical
   rw [pi']
   rw [← MeasurableEquiv.piMeasurableEquivTProd_symm_apply, MeasurableEquiv.map_apply,
     MeasurableEquiv.piMeasurableEquivTProd_symm_apply, elim_preimage_pi, tprod_tprod _ μ, ←
@@ -424,6 +427,7 @@ theorem pi_empty_univ {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
 
 theorem pi_eval_preimage_null {i : ι} {s : Set (α i)} (hs : μ i s = 0) :
     Measure.pi μ (eval i ⁻¹' s) = 0 := by
+  classical
   -- WLOG, `s` is measurable
   rcases exists_measurable_superset_of_null hs with ⟨t, hst, _, hμt⟩
   suffices Measure.pi μ (eval i ⁻¹' t) = 0 from measure_mono_null (preimage_mono hst) this
