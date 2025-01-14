@@ -8,6 +8,7 @@ import Mathlib.Tactic.FieldSimp
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Linarith.Frontend
 import Mathlib.Algebra.Polynomial.Roots
+import Mathlib.RingTheory.Polynomial.Vieta
 
 /-!
 # Quadratic discriminants and roots of a quadratic
@@ -154,43 +155,39 @@ end LinearOrderedField
 
 namespace Polynomial
 
-/-- Quadratic factors to `a*(x-x1)*(x-x2)` given `x1,x2` as its roots. -/
-lemma quadratic_factor {R : Type*} [CommRing R] [IsDomain R] {a b c x1 x2 : R}
-    (hroots : (C a * X ^ 2 + C b * X + C c).roots = {x1, x2}) :
-    C a * X ^ 2 + C b * X + C c = C a * (X - C x1) * (X - C x2) := by
-  let p : R[X] := C a * X ^ 2 + C b * X + C c
-  have hp_natDegree_eq_two : p.natDegree = 2 := by
-    apply le_antisymm
-    · exact natDegree_quadratic_le
-    convert Polynomial.card_roots' p
-    rw [hroots, Multiset.card_pair]
-  have hp_natDegree_eq_roots_card : Multiset.card p.roots = p.natDegree := by
-    rw [hroots, Multiset.card_pair, hp_natDegree_eq_two]
-  convert (C_leadingCoeff_mul_prod_multiset_X_sub_C hp_natDegree_eq_roots_card).symm using 1
-  rw [leadingCoeff, hp_natDegree_eq_two]
-  simpa [p, hroots] using by ac_rfl
+lemma _root_.Multiset.esymm_one_of_pair {R : Type*} [CommSemiring R] (x1 x2 : R) :
+    Multiset.esymm {x1, x2} 1 = x2 + x1 := by
+  simp [Multiset.esymm, Multiset.powersetCard_one]
 
-/-- **Vieta's formula** for quadratic in term of `Polynomial.roots`. -/
+lemma _root_.Multiset.esymm_two_of_pair {R : Type*} [CommSemiring R] (x1 x2 : R) :
+    Multiset.esymm {x1, x2} 2 = x1 * x2 := by
+  simp [Multiset.esymm, Multiset.powersetCard_one]
+
+/-- **Vieta's formula** for quadratic in term of `Polynomial.roots`.
+This is a consequence of `Polynomial.coeff_eq_esymm_roots_of_card`. -/
 lemma quadratic_vieta {R : Type*} [CommRing R] [IsDomain R] {a b c x1 x2 : R}
     (hroots : (C a * X ^ 2 + C b * X + C c).roots = {x1, x2}) :
-    a * (x1 + x2) = -b ∧ a * x1 * x2 = c := by
-  have hp_factor := Polynomial.quadratic_factor hroots
-  have hp_expand : C a * (X - C x1) * (X - C x2) = C a * X ^ 2 + C (-a * (x1 + x2)) * X +
-      C (a * x1 * x2) := by
-    simpa only [C_neg, C_add, C_mul] using by ring
+    b = -a * (x1 + x2) ∧ c = a * x1 * x2 := by
+  let p : R[X] := C a * X ^ 2 + C b * X + C c
+  have hp_natDegree : p.natDegree = 2 := le_antisymm natDegree_quadratic_le
+    (by convert Polynomial.card_roots' p; rw [hroots, Multiset.card_pair])
+  have hp_roots_card : p.roots.card = p.natDegree := by
+    rw [hp_natDegree, hroots, Multiset.card_pair]
+  have hp_coeff2 : p.coeff 2 = a := by simp [p]
   constructor
-  · suffices -a * (x1 + x2) = b by linear_combination -this
-    apply_fun (·.coeff 1) at hp_factor
-    convert hp_factor.symm <;> simp [hp_expand]
-  · suffices a * x1 * x2 = c by linear_combination this
-    apply_fun (·.coeff 0) at hp_factor
-    convert hp_factor.symm <;> simp [hp_expand]
+  · convert coeff_eq_esymm_roots_of_card hp_roots_card (k := 1) (by norm_num [hp_natDegree]) using 1
+    · simp [p]
+    · rw [leadingCoeff, hp_natDegree, hroots, hp_coeff2, Multiset.esymm_one_of_pair]; ring
+  · convert coeff_eq_esymm_roots_of_card hp_roots_card (k := 0) (by norm_num) using 1
+    · simp [p]
+    · rw [leadingCoeff, hp_natDegree, hroots, hp_coeff2, Multiset.esymm_two_of_pair]; ring
 
 /-- **Vieta's formula** for quadratic in term of `Polynomial.roots`. -/
 lemma quadratic_vieta' {R : Type*} [Field R] {a b c x1 x2 : R} (ha : a ≠ 0)
     (hroots : (C a * X ^ 2 + C b * X + C c).roots = {x1, x2}) :
     x1 + x2 = -b / a ∧ x1 * x2 = c / a := by
   refine And.imp ?_ ?_ (quadratic_vieta hroots)
-  all_goals field_simp; intro h; linear_combination h
+  · field_simp; intro h; linear_combination h
+  · field_simp; intro h; linear_combination -h
 
 end Polynomial
