@@ -144,6 +144,8 @@ lemma isChain_union {α : Type*} [Preorder α] {s t : Set α} :
   intro x y
   exact Or.symm
 
+namespace Finset
+
 variable {α β : Type*}
 
 section sectL
@@ -151,16 +153,16 @@ section sectL
 variable [Preorder α] [PartialOrder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
   [DecidableRel (α := α × β) (· ≤ ·)] (a b : α) (c : β)
 
-lemma Prod.Icc_map_sectL : (Icc a b).map (.sectL _ c) = Icc (a, c) (b, c) := by
+lemma Icc_map_sectL : (Icc a b).map (.sectL _ c) = Icc (a, c) (b, c) := by
   aesop (add safe forward [le_antisymm, not_lt_of_le, le_of_lt])
 
-lemma Prod.Ioc_map_sectL : (Ioc a b).map (.sectL _ c) = Ioc (a, c) (b, c) := by
+lemma Ioc_map_sectL : (Ioc a b).map (.sectL _ c) = Ioc (a, c) (b, c) := by
   aesop (add safe forward [le_antisymm, not_lt_of_le, le_of_lt])
 
-lemma Prod.Ico_map_sectL : (Ico a b).map (.sectL _ c) = Ico (a, c) (b, c) := by
+lemma Ico_map_sectL : (Ico a b).map (.sectL _ c) = Ico (a, c) (b, c) := by
   aesop (add safe forward [le_antisymm, not_lt_of_le, le_of_lt])
 
-lemma Prod.Ioo_map_sectL : (Ioo a b).map (.sectL _ c) = Ioo (a, c) (b, c) := by
+lemma Ioo_map_sectL : (Ioo a b).map (.sectL _ c) = Ioo (a, c) (b, c) := by
   aesop (add safe forward [le_antisymm, not_lt_of_le, le_of_lt])
 
 end sectL
@@ -170,19 +172,21 @@ section sectR
 variable [PartialOrder α] [Preorder β] [LocallyFiniteOrder α] [LocallyFiniteOrder β]
   [DecidableRel (α := α × β) (· ≤ ·)] (c : α) (a b : β)
 
-lemma Prod.Icc_map_sectR : (Icc a b).map (.sectR c _) = Icc (c, a) (c, b) := by
+lemma Icc_map_sectR : (Icc a b).map (.sectR c _) = Icc (c, a) (c, b) := by
   aesop (add safe forward [le_antisymm, not_lt_of_le, le_of_lt])
 
-lemma Prod.Ioc_map_sectR : (Ioc a b).map (.sectR c _) = Ioc (c, a) (c, b) := by
+lemma Ioc_map_sectR : (Ioc a b).map (.sectR c _) = Ioc (c, a) (c, b) := by
   aesop (add safe forward [le_antisymm, not_lt_of_le, le_of_lt])
 
-lemma Prod.Ico_map_sectR : (Ico a b).map (.sectR c _) = Ico (c, a) (c, b) := by
+lemma Ico_map_sectR : (Ico a b).map (.sectR c _) = Ico (c, a) (c, b) := by
   aesop (add safe forward [le_antisymm, not_lt_of_le, le_of_lt])
 
-lemma Prod.Ioo_map_sectR : (Ioo a b).map (.sectR c _) = Ioo (c, a) (c, b) := by
+lemma Ioo_map_sectR : (Ioo a b).map (.sectR c _) = Ioo (c, a) (c, b) := by
   aesop (add safe forward [le_antisymm, not_lt_of_le, le_of_lt])
 
 end sectR
+
+end Finset
 
 end to_move
 
@@ -391,51 +395,70 @@ theorem no_infinite_antichain {A : Set Hollom} (hC : IsAntichain (· ≤ ·) A) 
 
 variable {C : Set Hollom}
 
-lemma no_strictly_decreasing {f : ℕ → ℕ} {n₀ : ℕ} (hf : ∀ n ≥ n₀, f (n + 1) < f n) : False := by
+private lemma no_strictly_decreasing {f : ℕ → ℕ} {n₀ : ℕ} (hf : ∀ n ≥ n₀, f (n + 1) < f n) :
+    False := by
   let g (n : ℕ) : ℕ := f (n₀ + n)
   have hg : StrictAnti g := strictAnti_nat_of_succ_lt fun n ↦ hf (n₀ + n) (by simp)
   obtain ⟨m, n, h₁, h₂⟩ := Set.IsPWO.of_linearOrder (s := Set.univ) g (by simp)
   exact (hg h₁).not_le h₂
 
-lemma triangle_finite (n : ℕ) : {x : ℕ × ℕ | x.1 + x.2 ≤ n}.Finite :=
+private lemma triangle_finite (n : ℕ) : {x : ℕ × ℕ | x.1 + x.2 ≤ n}.Finite :=
   (Set.finite_Iic (n, n)).subset <| by aesop
 
 open Filter
 
--- Lemma 5.10
--- every chain has a finite intersection with infinitely many levels
+/--
+Show that every chain in the Hollom partial order has a finite intersection with infinitely many
+levels.
+This corresponds to Lemma 5.10 from the paper.
+-/
 theorem exists_finite_intersection (hC : IsChain (· ≤ ·) C) :
     ∃ᶠ n in atTop, (C ∩ level n).Finite := by
+  -- Begin by assuming `C ∩ level n` is infinite for all `n ≥ n₀`
   rw [frequently_atTop]
   intro n₀
   by_contra! hC'
   simp only [← Set.not_infinite, not_not] at hC'
+  -- Define `m n` to be the smallest value of `min x y` as `(x, y, n)` ranges over `C`.
   let m (n : ℕ) : ℕ := sInf {min (ofHollom x).1 (ofHollom x).2.1 | x ∈ C ∩ level n}
+  -- `m n` is well-defined above `n₀`, since the set in question is nonempty (it's infinite).
   have nonempty_mins (n : ℕ) (hn : n₀ ≤ n) :
       {min (ofHollom x).1 (ofHollom x).2.1 | x ∈ C ∩ level n}.Nonempty :=
     (hC' n hn).nonempty.image _
-  have hm (n : ℕ) (hn : n ≥ n₀) : ∃ u v : ℕ, h(u, v, n) ∈ C ∧ min u v = m n := by
-    simpa [m] using Nat.sInf_mem (nonempty_mins n hn)
+  -- We aim to show that `m n` is strictly decreasing above `n₀`, which is clearly a contradiction.
   suffices ∀ n ≥ n₀, m (n + 1) < m n from no_strictly_decreasing this
   intro n hn
-  obtain ⟨u, v, huv, hmn⟩ := hm n hn
+  -- Take `n ≥ n₀`, and take `u, v` such that `min u v = m n` (which exists by definition).
+  -- We aim to show `m (n + 1) < min u v`
+  obtain ⟨u, v, huv, hmn⟩ : ∃ u v : ℕ, h(u, v, n) ∈ C ∧ min u v = m n := by
+    simpa [m] using Nat.sInf_mem (nonempty_mins n hn)
   rw [← hmn]
+  -- Consider the set of points `{(x, y, z) | x + y ≤ 2 * (u + v)}`.
   let D : Set Hollom := {x | (ofHollom x).1 + (ofHollom x).2.1 ≤ 2 * (u + v)}
+  -- There are infinitely many points in `C ∩ level (n + 1)` that are not in `D`...
   have : ((C ∩ level (n + 1)) \ D).Infinite := by
+    -- ...because there are finitely many points in `C ∩ level (n + 1) ∩ D`...
     have : (C ∩ level (n + 1) ∩ D).Finite := by
+      -- (indeed, `level (n + 1) ∩ D` is finite)
       refine .subset (.image (embed (n + 1)) (triangle_finite (2 * (u + v)))) ?_
       simp +contextual [Set.subset_def, D, embed_apply]
+    -- ...and `C ∩ level (n + 1)` is infinite (by assumption).
     specialize hC' (n + 1) (by omega)
     rw [← (C ∩ level (n + 1)).inter_union_diff D, Set.infinite_union] at hC'
     refine hC'.resolve_left ?_
     simpa using this
-  obtain ⟨⟨x, y, z⟩, hxyz⟩ := this.nonempty.image ofHollom
-  simp only [Set.mem_image_equiv, ofHollom_symm_eq, Set.mem_diff, Set.mem_inter_iff,
-    toHollom_mem_level_iff, Set.mem_setOf_eq, ofHollom_toHollom, not_le, D] at hxyz
-  obtain ⟨⟨h1, rfl⟩, h2⟩ := hxyz
-  obtain h3 | h3 := hC huv h1 (by simp)
-  · have := le_of_toHollom_le_toHollom h3
-    omega
+  -- In fact, we only need it to be nonempty, and find a point.
+  obtain ⟨x, hxy⟩ := this.nonempty
+  induction hxy.1.2 using induction_on_level with | h x y =>
+  simp only [Set.mem_diff, Set.mem_inter_iff, toHollom_mem_level_iff, and_true, Set.mem_setOf_eq,
+    ofHollom_toHollom, not_le, D, m] at hxy
+  -- Take the point `(x, y, n + 1)` in `C` that avoids `D`. As `(u, v, n)` is also in the chain `C`,
+  -- they must be comparable.
+  obtain h3 | h3 := hC.total huv hxy.1
+  -- We cannot have `(u, v, n) ≤ (x, y, n + 1)` by definition of the order.
+  · simpa using le_of_toHollom_le_toHollom h3
+  -- Whereas if `(x, y, n + 1) ≤ (u, v, n)`, as `2 * (u + v) < x + y`, we must have
+  -- `min x y + 1 ≤ min u v`, which finishes the proof.
   · cases h3
     case twice => omega
     case next_add => omega
@@ -443,8 +466,9 @@ theorem exists_finite_intersection (hC : IsChain (· ≤ ·) C) :
       rw [← Nat.add_one_le_iff]
       refine h3.trans' ?_
       simp only [add_le_add_iff_right]
-      exact Nat.sInf_le ⟨_, ⟨h1, by simp⟩, by simp⟩
+      exact Nat.sInf_le ⟨_, ⟨hxy.1, by simp⟩, by simp⟩
 
+/-!  In this section we define spinal maps, and prove important properties about them.  -/
 section SpinalMap
 
 variable {α : Type*} [PartialOrder α] {C : Set α}
@@ -591,7 +615,7 @@ lemma card_chainBetween {a b c d : ℕ} (hac : a ≤ c) (hbd : b ≤ d) :
     #(chainBetween a b c d) = c + d + 1 - (a + b) := by
   rw [chainBetween, if_pos ⟨hac, hbd⟩, card_union_of_disjoint, Finset.card_Icc_prod]
   · simp only [Icc_self, card_singleton, Nat.card_Icc, one_mul]
-    rw [← Prod.Ico_map_sectR, card_map, Nat.card_Ico]
+    rw [← Finset.Ico_map_sectR, card_map, Nat.card_Ico]
     omega
   · rw [disjoint_left]
     simp
@@ -633,6 +657,12 @@ lemma mapsTo_Icc_image (hC : IsChain (· ≤ ·) C) {a b c d n : ℕ}
   exact f.mapsTo_Icc_self hC hab hcd
 
 open Classical Finset in
+/--
+The collection of points between `(xl, yl, n)` and `(xh, yh, n)` that are also in `C` has at least
+`xh + yh + 1 - (xl + yl)` elements.
+In other words, this collection must be a maximal chain relative to the interval it is contained in.
+Note `card_C_inter_Icc_eq` strengthens this to an equality.
+-/
 lemma C_inter_Icc_large (f : SpinalMap C) {n : ℕ} {xl yl xh yh : ℕ}
     (hC : IsChain (· ≤ ·) C)
     (hx : xl ≤ xh) (hy : yl ≤ yh)
@@ -652,6 +682,12 @@ lemma C_inter_Icc_large (f : SpinalMap C) {n : ℕ} {xl yl xh yh : ℕ}
   exact Finset.card_le_card_of_injOn f D_maps f_inj
 
 open Classical Finset in
+/--
+The collection of points between `(xl, yl, n)` and `(xh, yh, n)` that are also in `C` has exactly
+`xh + yh + 1 - (xl + yl)` elements.
+In other words, this collection must be a maximal chain relative to the interval it is contained in.
+Alternatively speaking, it has the same size as any maximal chain in that interval.
+-/
 theorem card_C_inter_Icc_eq (f : SpinalMap C) {n : ℕ} {xl yl xh yh : ℕ}
     (hC : IsChain (· ≤ ·) C)
     (hx : xl ≤ xh) (hy : yl ≤ yh)
