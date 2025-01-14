@@ -6,6 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Data.Finset.Image
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.Finite.Defs
+import Mathlib.Algebra.Group.TypeTags.Basic
 
 /-!
 # Finite types
@@ -38,8 +39,7 @@ Types which have a surjection from/an injection to a `Fintype` are themselves fi
 See `Fintype.ofInjective` and `Fintype.ofSurjective`.
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists MulAction
+assert_not_exists MonoidWithZero MulAction
 
 open Function
 
