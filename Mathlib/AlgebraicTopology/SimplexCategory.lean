@@ -784,7 +784,7 @@ def delabMkNotation : Delab :=
   whenNotPPOption getPPExplicit <| whenPPOption getPPNotation <| withOverApp 4 do
     let #[cat, .lam x _ body _, simplex, _] := (← getExpr).getAppArgs | failure
     -- check that this is a `FullSubcategory` of `SimplexCategory`
-    guard <| cat == Expr.const ``SimplexCategory []
+    guard <| cat.isConstOf ``SimplexCategory
     guard <| simplex.isAppOfArity ``SimplexCategory.mk 1
     -- check that the predicate matches `fun x ↦ x.len ≤ n`
     let_expr LE.le _ _ lhs rhs := body | failure
@@ -792,10 +792,10 @@ def delabMkNotation : Delab :=
     guard <| simplex == .bvar 0
     guard !rhs.hasExprMVar
     -- if `pp.proofs` is set to `true`, include the proof `p : m ≤ n`
-    let m ← withNaryArg 2 <| withNaryArg 0 delab
-    let n ← withNaryArg 1 <| withBindingBody x <| withNaryArg 3 delab
+    let m ← withNaryArg 2 <| withAppArg delab
+    let n ← withNaryArg 1 <| withBindingBody x <| withAppArg delab
     if (← getPPOption getPPProofs) then
-      let p ← withNaryArg 3 delab
+      let p ← withAppArg delab
       `([$m, $p]$n)
     else `([$m]$n)
 
