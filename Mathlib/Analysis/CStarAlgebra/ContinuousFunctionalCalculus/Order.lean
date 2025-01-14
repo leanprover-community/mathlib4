@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
 
-import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Instances
+import Mathlib.Analysis.CStarAlgebra.ContinuousFunctionalCalculus.Basic
 import Mathlib.Analysis.CStarAlgebra.Unitization
 import Mathlib.Analysis.SpecialFunctions.ContinuousFunctionalCalculus.Rpow
 import Mathlib.Topology.ContinuousMap.StarOrdered
@@ -40,9 +40,9 @@ open scoped NNReal CStarAlgebra
 local notation "σₙ" => quasispectrum
 
 theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [StarRing A]
-    [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A]
+    [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A] [T2Space A]
     [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
-    [UniqueContinuousFunctionalCalculus ℝ A] [NonnegSpectrumClass ℝ A] (f g : ℝ≥0 → ℝ≥0)
+    [NonnegSpectrumClass ℝ A] (f g : ℝ≥0 → ℝ≥0)
     (a : A) (hfg : ∀ x ∈ spectrum ℝ≥0 a, g x ≤ f x) (ha : 0 ≤ a := by cfc_tac)
     (hf : ContinuousOn f (spectrum ℝ≥0 a) := by cfc_cont_tac)
     (hg : ContinuousOn g (spectrum ℝ≥0 a) := by cfc_cont_tac) :
@@ -59,8 +59,8 @@ theorem cfc_tsub {A : Type*} [TopologicalSpace A] [Ring A] [PartialOrder A] [Sta
 
 theorem cfcₙ_tsub {A : Type*} [TopologicalSpace A] [NonUnitalRing A] [PartialOrder A] [StarRing A]
     [StarOrderedRing A] [Module ℝ A] [IsScalarTower ℝ A A] [SMulCommClass ℝ A A] [TopologicalRing A]
-    [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
-    [UniqueNonUnitalContinuousFunctionalCalculus ℝ A] [NonnegSpectrumClass ℝ A] (f g : ℝ≥0 → ℝ≥0)
+    [T2Space A] [NonUnitalContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
+    [NonnegSpectrumClass ℝ A] (f g : ℝ≥0 → ℝ≥0)
     (a : A) (hfg : ∀ x ∈ σₙ ℝ≥0 a, g x ≤ f x) (ha : 0 ≤ a := by cfc_tac)
     (hf : ContinuousOn f (σₙ ℝ≥0 a) := by cfc_cont_tac) (hf0 : f 0 = 0 := by cfc_zero_tac)
     (hg : ContinuousOn g (σₙ ℝ≥0 a) := by cfc_cont_tac) (hg0 : g 0 = 0 := by cfc_zero_tac) :
@@ -112,8 +112,7 @@ end Unitization
 However, this theorem still holds for `ℝ≥0` as long as the algebra `A` itself is an `ℝ`-algebra. -/
 lemma cfc_nnreal_le_iff {A : Type*} [TopologicalSpace A] [Ring A] [StarRing A] [PartialOrder A]
     [StarOrderedRing A] [Algebra ℝ A] [TopologicalRing A] [NonnegSpectrumClass ℝ A]
-    [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
-    [UniqueContinuousFunctionalCalculus ℝ A]
+    [T2Space A] [ContinuousFunctionalCalculus ℝ (IsSelfAdjoint : A → Prop)]
     (f : ℝ≥0 → ℝ≥0) (g : ℝ≥0 → ℝ≥0) (a : A)
     (ha_spec : SpectrumRestricts a ContinuousMap.realToNNReal)
     (hf : ContinuousOn f (spectrum ℝ≥0 a) := by cfc_cont_tac)

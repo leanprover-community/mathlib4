@@ -30,7 +30,9 @@ open Topology
 
 noncomputable section
 
-variable {R S K : Type*} [Semiring R] [OrderedSemiring S] [Field K]
+section definition
+
+variable {R R' S K : Type*} [Semiring R] [Ring R'] [OrderedSemiring S] [Field K]
 
 /-- Type synonym for a semiring which depends on an absolute value. This is a function that takes
 an absolute value on a semiring and returns the semiring. We use this to assign and infer instances
@@ -42,10 +44,7 @@ def WithAbs : AbsoluteValue R S → Type _ := fun _ => R
 
 namespace WithAbs
 
-variable (v : AbsoluteValue R ℝ)
-
-/-- The canonical equivalence between `WithAbs v` and `R`. -/
-def equiv : WithAbs v ≃ R := Equiv.refl (WithAbs v)
+variable (v : AbsoluteValue R ℝ) (v' : AbsoluteValue R' ℝ)
 
 instance instNonTrivial [Nontrivial R] : Nontrivial (WithAbs v) := inferInstanceAs (Nontrivial R)
 
@@ -56,14 +55,17 @@ instance instSemiring : Semiring (WithAbs v) := inferInstanceAs (Semiring R)
 instance instCommSemiring [CommSemiring R] : CommSemiring (WithAbs v) :=
   inferInstanceAs (CommSemiring R)
 
-instance instRing [Ring R] : Ring (WithAbs v) := inferInstanceAs (Ring R)
+instance instRing : Ring (WithAbs v') := inferInstanceAs (Ring R')
 
 instance instCommRing [CommRing R] : CommRing (WithAbs v) := inferInstanceAs (CommRing R)
 
 instance instInhabited : Inhabited (WithAbs v) := ⟨0⟩
 
-instance normedRing {R : Type*} [Ring R] (v : AbsoluteValue R ℝ) : NormedRing (WithAbs v) :=
-  v.toNormedRing
+/-- The canonical (semiring) equivalence between `WithAbs v` and `R`. -/
+def equiv : WithAbs v ≃+* R := RingEquiv.refl _
+
+instance normedRing : NormedRing (WithAbs v') :=
+  v'.toNormedRing
 
 instance normedField (v : AbsoluteValue K ℝ) : NormedField (WithAbs v) :=
   v.toNormedField
@@ -100,72 +102,32 @@ end algebra
 /-!
 ### `WithAbs.equiv` preserves the ring structure.
 -/
+variable (x y : WithAbs v) (r s : R) (x' y' : WithAbs v') (r' s' : R')
 
-variable (x y : WithAbs v) (r s : R)
-
-@[simp]
+@[deprecated "Use map_zero" (since := "2025-01-13"), simp]
 theorem equiv_zero : equiv v 0 = 0 := rfl
 
-@[simp]
+@[deprecated "Use map_zero" (since := "2025-01-13"), simp]
 theorem equiv_symm_zero : (equiv v).symm 0 = 0 := rfl
 
-@[simp]
-theorem equiv_one : (equiv v) 1 = 1 := rfl
-
-@[simp]
-theorem equiv_symm_one : (equiv v).symm 1 = 1 := rfl
-
-@[simp]
+@[deprecated "Use map_add" (since := "2025-01-13"), simp]
 theorem equiv_add : equiv v (x + y) = equiv v x + equiv v y := rfl
 
-@[simp]
-theorem equiv_symm_add : (equiv v).symm (r + s) = (equiv v).symm r + (equiv v).symm s := rfl
-
-@[simp]
-theorem equiv_sub [Ring R] : equiv v (x - y) = equiv v x - equiv v y := rfl
-
-@[simp]
-theorem equiv_symm_sub [Ring R] : (equiv v).symm (r - s) = (equiv v).symm r - (equiv v).symm s :=
+@[deprecated "Use map_add" (since := "2025-01-13"), simp]
+theorem equiv_symm_add :
+    (equiv v).symm (r + s) = (equiv v).symm r + (equiv v).symm s :=
   rfl
 
-@[simp]
-theorem equiv_neg [Ring R] : equiv v (-x) = - equiv v x := rfl
+@[deprecated "Use map_sub" (since := "2025-01-13"), simp]
+theorem equiv_sub : equiv v' (x' - y') = equiv v' x' - equiv v' y' := rfl
 
-@[simp]
-theorem equiv_symm_neg [Ring R] : (equiv v).symm (-r) = - (equiv v).symm r := rfl
+@[deprecated "Use map_sub" (since := "2025-01-13"), simp]
+theorem equiv_symm_sub :
+    (equiv v').symm (r' - s') = (equiv v').symm r' - (equiv v').symm s' :=
+  rfl
 
-@[simp]
-theorem equiv_mul : equiv v (x * y) = equiv v x * equiv v y := rfl
-
-@[simp]
-theorem equiv_symm_mul : (equiv v).symm (x * y) = (equiv v).symm x * (equiv v).symm y := rfl
-
-@[simp]
-theorem equiv_pow (n : ℕ) : (equiv v) (x ^ n) = (equiv v) x ^ n := rfl
-
-@[simp]
-theorem equiv_symm_pow (n : ℕ) : (equiv v).symm (r ^ n) = (equiv v).symm r ^ n := rfl
-
-section zpow
-
-variable {F : Type*} [Field F]
-
-@[simp]
-theorem equiv_zpow (v : AbsoluteValue F ℝ) (x : WithAbs v) (n : ℤ) :
-    (equiv v) (x ^ n) = (equiv v) x ^ n := rfl
-
-@[simp]
-theorem equiv_symm_zpow (v : AbsoluteValue F ℝ) (r : F) (n : ℤ) :
-    (equiv v).symm (r ^ n) = (equiv v).symm r ^ n := rfl
-
-end zpow
-
-section module
-
-variable {R S : Type*} [Ring R] [Ring S] [Module R S] (v : AbsoluteValue S ℝ)
-
-@[simp]
-lemma equiv_smul (c : R) (x : WithAbs v) : equiv v (c • x) = c • equiv v x := rfl
+@[deprecated "Use map_neg" (since := "2025-01-13"), simp]
+theorem equiv_neg : equiv v' (-x') = - equiv v' x' := rfl
 
 @[simp]
 lemma equiv_symm_smul (c : R) (s : S) : (equiv v).symm (c • s) = c • (equiv v).symm s := rfl
@@ -176,18 +138,16 @@ section algebra
 
 variable {R S : Type*} [CommRing R] [Ring S] [Algebra R S]
 
-@[simp]
-lemma equiv_apply_algebraMap {v : AbsoluteValue R ℝ} (v' : AbsoluteValue S ℝ) (x : WithAbs v) :
-    equiv v' (algebraMap (WithAbs v) (WithAbs v') x) = algebraMap R S (equiv v x) := rfl
+@[deprecated "Use map_mul" (since := "2025-01-13"), simp]
+theorem equiv_mul : equiv v (x * y) = equiv v x * equiv v y := rfl
 
-@[simp]
-lemma equiv_symm_apply_algebraMap {v : AbsoluteValue R ℝ} (v' : AbsoluteValue S ℝ) (x : WithAbs v) :
-    (equiv v').symm (algebraMap R S (equiv v x)) = algebraMap (WithAbs v) (WithAbs v') x := by
-  rw [← equiv_apply_algebraMap v', Equiv.symm_apply_apply]
-
-end algebra
+@[deprecated "Use map_mul" (since := "2025-01-13"), simp]
+theorem equiv_symm_mul :
+    (equiv v).symm (x * y) = (equiv v).symm x * (equiv v).symm y :=
+  rfl
 
 /-- `WithAbs.equiv` as a ring equivalence. -/
+@[deprecated equiv (since := "2025-01-13")]
 def ringEquiv : WithAbs v ≃+* R := RingEquiv.refl _
 
 lemma equiv_apply_eq_ringEquiv (v : AbsoluteValue R ℝ) (x : WithAbs v) :
@@ -228,6 +188,8 @@ theorem isUniformInducing_of_comp (h : ∀ x, ‖f x‖ = v x) : IsUniformInduci
   isUniformInducing_iff_uniformSpace.2 <| uniformSpace_comap_eq_of_comp h
 
 end WithAbs
+
+end definition
 
 namespace AbsoluteValue
 
