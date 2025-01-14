@@ -271,6 +271,11 @@ instance : (forget₂ ProfiniteGrp Profinite).Faithful := {
 instance : (forget₂ ProfiniteGrp Profinite).ReflectsIsomorphisms := by
   constructor
   intro A B f h
+  let i := asIso ((forget₂ ProfiniteGrp.{u_1} Profinite).map f)
+  let e : A ≃ₜ* B := {
+    CompHausLike.homeoOfIso i with
+    map_mul' := map_mul f.hom}
+
   sorry
 
 instance : (forget ProfiniteGrp.{u}).ReflectsIsomorphisms :=
