@@ -237,7 +237,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
       rw [rmatch, rmatch]
       rwa [Bool.and_eq_true_iff] at h
     · rintro ⟨t, u, h₁, h₂⟩
-      cases' List.append_eq_nil.1 h₁.symm with ht hu
+      cases' List.append_eq_nil_iff.1 h₁.symm with ht hu
       subst ht
       subst hu
       repeat rw [rmatch] at h₂
