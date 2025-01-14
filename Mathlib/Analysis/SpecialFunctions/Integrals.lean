@@ -248,15 +248,13 @@ theorem intervalIntegrable_log' : IntervalIntegrable log volume a b := by
     · exact (continuous_mul_log.continuousOn.sub continuous_id.continuousOn).neg
     · intro s ⟨hs, _⟩
       norm_num at *
-      have h := (hasDerivAt_id s).sub (hasDerivAt_mul_log hs.ne.symm)
-      simp only [id_eq, sub_add_cancel_right] at h
-      exact h
+      simpa using (hasDerivAt_id s).sub (hasDerivAt_mul_log hs.ne.symm)
     · intro s ⟨hs₁, hs₂⟩
       norm_num at *
       exact (log_nonpos_iff hs₁).mpr hs₂.le
   · -- Show integrability on [1…t] by continuity
     apply ContinuousOn.intervalIntegrable
-    apply ContinuousOn.mono Real.continuousOn_log
+    apply Real.continuousOn_log.mono
     apply Set.not_mem_uIcc_of_lt zero_lt_one at hx
     simpa
 
@@ -494,9 +492,7 @@ lemma integral_log_from_zero_of_pos (ht : 0 < b) : ∫ s in (0)..b, log s = b * 
   · abel
   · exact ht
   · intro s ⟨hs, _ ⟩
-    have h := (hasDerivAt_mul_log hs.ne.symm).sub (hasDerivAt_id s)
-    simp only [id_eq, add_sub_cancel_right] at h
-    exact h
+    simpa using (hasDerivAt_mul_log hs.ne.symm).sub (hasDerivAt_id s)
   · have h := tendsto_log_mul_rpow_nhds_zero zero_lt_one
     simp_rw [rpow_one, mul_comm] at h
     replace h := h.sub (tendsto_nhdsWithin_of_tendsto_nhds Filter.tendsto_id)
