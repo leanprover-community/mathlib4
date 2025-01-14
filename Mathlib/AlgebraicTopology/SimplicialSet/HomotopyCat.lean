@@ -35,7 +35,6 @@ category of 2-truncated simplicial sets.
 -/
 
 namespace SSet
-open Truncated SimplexCategory.Truncated
 open CategoryTheory Category Limits Functor Opposite Simplicial Nerve
 open SimplexCategory.Truncated SimplicialObject.Truncated
 universe v u
