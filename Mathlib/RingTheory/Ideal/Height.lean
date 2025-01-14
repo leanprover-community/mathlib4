@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jiedong Jiang, Jingting Wang, Andrew Yang
+-/
 import Mathlib.Order.KrullDimension
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.PrimeSpectrum
@@ -76,26 +81,6 @@ lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
   · exact I.primeHeight_ne_top.lt_top
   · exact h
 
-theorem Ideal.minimalPrimes_top : (⊤ : Ideal R).minimalPrimes = ∅ := by
-  ext p
-  constructor
-  · intro h
-    exact False.elim (h.1.1.ne_top (top_le_iff.mp h.1.2))
-  · intro h
-    exact False.elim (Set.not_mem_empty p h)
-
-theorem Ideal.minimalPrimes_eq_empty_iff (I : Ideal R) :
-    I.minimalPrimes = ∅ ↔ I = ⊤ := by
-  constructor
-  · intro e
-    by_contra h
-    have ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal I h
-    have ⟨p, hp⟩ := Ideal.exists_minimalPrimes_le hM'
-    show p ∈ (∅ : Set (Ideal R))
-    rw [← e]; exact hp.1
-  · intro h; rw [h]
-    exact minimalPrimes_top
-
 theorem Ideal.height_top : (⊤ : Ideal R).height = ⊤ := by
   simp only [height, minimalPrimes_top]
   rw [iInf₂_eq_top]; intro i hi; exact False.elim hi
@@ -116,5 +101,3 @@ lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
     apply le_iInf₂; intro K hK; haveI := hK.1.1
     have : I < K := lt_of_lt_of_le h hK.1.2
     exact Ideal.primeHeight_add_one_le_of_lt this
-
-#min_imports

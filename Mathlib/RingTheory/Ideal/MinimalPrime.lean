@@ -248,3 +248,29 @@ theorem nilpotent_iff_not_unit_of_minimal {x : Localization I.primeCompl} :
   simpa only [← IsLocalRing.mem_maximalIdeal] using nilpotent_iff_mem_maximal_of_minimal hMin
 
 end Localization.AtPrime
+
+section
+
+variable {R : Type*} [CommSemiring R]
+
+theorem Ideal.minimalPrimes_top : (⊤ : Ideal R).minimalPrimes = ∅ := by
+  ext p
+  constructor
+  · intro h
+    exact False.elim (h.1.1.ne_top (top_le_iff.mp h.1.2))
+  · intro h
+    exact False.elim (Set.not_mem_empty p h)
+
+theorem Ideal.minimalPrimes_eq_empty_iff (I : Ideal R) :
+    I.minimalPrimes = ∅ ↔ I = ⊤ := by
+  constructor
+  · intro e
+    by_contra h
+    have ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal I h
+    have ⟨p, hp⟩ := Ideal.exists_minimalPrimes_le hM'
+    show p ∈ (∅ : Set (Ideal R))
+    rw [← e]; exact hp.1
+  · intro h; rw [h]
+    exact Ideal.minimalPrimes_top
+
+end
