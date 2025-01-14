@@ -117,7 +117,7 @@ lemma hasSum_qExpansion [NeZero n] [ModularFormClass F Γ(n) k] (τ : ℍ) :
   simpa only [eq_cuspFunction n f] using
     hasSum_qExpansion_of_abs_lt n f (τ.abs_qParam_lt_one n)
 
-/-- The `q`-expansion of a level `n` modular form, bundled as a `FormalMultilinearSeries`. 
+/-- The `q`-expansion of a level `n` modular form, bundled as a `FormalMultilinearSeries`.
 TODO: Maybe get rid of this and instead define a general API for converting `PowerSeries` to
 `FormalMultlinearSeries`. -/
 def qExpansionFormalMultilinearSeries : FormalMultilinearSeries ℂ ℂ ℂ :=
@@ -134,7 +134,7 @@ lemma qExpansionFormalMultilinearSeries_radius [NeZero n] [ModularFormClass F Γ
   refine le_of_forall_ge_of_dense fun r hr ↦ ?_
   lift r to NNReal using hr.ne_top
   apply FormalMultilinearSeries.le_radius_of_summable
-  simp only [qExpansion_formalMultilinearSeries_apply_norm]
+  simp only [qExpansionFormalMultilinearSeries_apply_norm]
   rw [← r.abs_eq]
   simp_rw [pow_abs, ← Complex.abs_ofReal, ofReal_pow, ← Complex.norm_eq_abs, ← norm_mul]
   exact (hasSum_qExpansion_of_abs_lt n f (q := r) (by simpa using hr)).summable.norm
@@ -142,7 +142,7 @@ lemma qExpansionFormalMultilinearSeries_radius [NeZero n] [ModularFormClass F Γ
 /-- The `q`-expansion of `f` is an `FPowerSeries` representing `cuspFunction n f`. -/
 lemma hasFPowerSeries_cuspFunction [NeZero n] [ModularFormClass F Γ(n) k] :
     HasFPowerSeriesOnBall (cuspFunction n f) (qExpansionFormalMultilinearSeries n f) 0 1 := by
-  refine ⟨qExpansion_formalMultilinearSeries_radius n f, zero_lt_one, fun hy ↦ ?_⟩
+  refine ⟨qExpansionFormalMultilinearSeries_radius n f, zero_lt_one, fun hy ↦ ?_⟩
   rw [EMetric.mem_ball, edist_zero_right, ENNReal.coe_lt_one_iff, ← NNReal.coe_lt_one,
     coe_nnnorm, norm_eq_abs] at hy
   simpa [qExpansionFormalMultilinearSeries] using hasSum_qExpansion_of_abs_lt n f hy
