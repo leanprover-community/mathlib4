@@ -1,3 +1,8 @@
+/-
+Copyright (c) 2025 Andrew Yang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Wanyi He, Jiedong Jiang, Xuchun Li, Jingting Wang, Andrew Yang
+-/
 import Mathlib.RingTheory.Finiteness.Defs
 
 variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
