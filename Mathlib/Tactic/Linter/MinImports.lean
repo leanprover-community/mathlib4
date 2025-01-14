@@ -88,7 +88,11 @@ def importsBelow (tc : NameMap NameSet) (ms : NameSet) : NameSet :=
   ms.fold (·.append <| tc.findD · default) ms
 
 @[inherit_doc Mathlib.Linter.linter.minImports]
-macro "#import_bumps" : command => `(set_option Elab.async false set_option linter.minImports true)
+macro "#import_bumps" : command => `(
+  -- We emit a message to prevent the `#`-command linter from flagging `#import_bumps`.
+  run_cmd logInfo "Counting imports from here."
+  set_option Elab.async false
+  set_option linter.minImports true)
 
 @[inherit_doc Mathlib.Linter.linter.minImports]
 def minImportsLinter : Linter where run := withSetOptionIn fun stx ↦ do
