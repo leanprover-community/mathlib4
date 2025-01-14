@@ -75,8 +75,6 @@ variable {α F F' 𝕜 : Type*} [RCLike 𝕜]
   [NormedAddCommGroup F']
   [NormedSpace 𝕜 F'] [NormedSpace ℝ F'] [CompleteSpace F']
 
-open scoped Classical
-
 variable {m m0 : MeasurableSpace α} {μ : Measure α} {f g : α → F'} {s : Set α}
 
 /-- Conditional expectation of a function. It is defined as 0 if any one of the following conditions
@@ -85,14 +83,16 @@ is true:
 - `μ` is not σ-finite with respect to `m`,
 - `f` is not integrable. -/
 noncomputable irreducible_def condexp (m : MeasurableSpace α) {m0 : MeasurableSpace α}
-    (μ : Measure α) (f : α → F') : α → F' :=
-  if hm : m ≤ m0 then
-    if h : SigmaFinite (μ.trim hm) ∧ Integrable f μ then
-      if StronglyMeasurable[m] f then f
-      else (@aestronglyMeasurable'_condexpL1 _ _ _ _ _ m m0 μ hm h.1 _).mk
-        (@condexpL1 _ _ _ _ _ _ _ hm μ h.1 f)
+    (μ : Measure α) (f : α → F') : α → F' := by
+  classical
+  exact
+    if hm : m ≤ m0 then
+      if h : SigmaFinite (μ.trim hm) ∧ Integrable f μ then
+        if StronglyMeasurable[m] f then f
+        else (@aestronglyMeasurable'_condexpL1 _ _ _ _ _ m m0 μ hm h.1 _).mk
+          (@condexpL1 _ _ _ _ _ _ _ hm μ h.1 f)
+      else 0
     else 0
-  else 0
 
 -- We define notation `μ[f|m]` for the conditional expectation of `f` with respect to `m`.
 scoped notation μ "[" f "|" m "]" => MeasureTheory.condexp m μ f
@@ -102,6 +102,7 @@ theorem condexp_of_not_le (hm_not : ¬m ≤ m0) : μ[f|m] = 0 := by rw [condexp,
 theorem condexp_of_not_sigmaFinite (hm : m ≤ m0) (hμm_not : ¬SigmaFinite (μ.trim hm)) :
     μ[f|m] = 0 := by rw [condexp, dif_pos hm, dif_neg]; push_neg; exact fun h => absurd h hμm_not
 
+open scoped Classical in
 theorem condexp_of_sigmaFinite (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] :
     μ[f|m] =
       if Integrable f μ then
@@ -275,6 +276,7 @@ theorem condexp_add (hf : Integrable f μ) (hg : Integrable g μ) :
 
 theorem condexp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → F'}
     (hf : ∀ i ∈ s, Integrable (f i) μ) : μ[∑ i ∈ s, f i|m] =ᵐ[μ] ∑ i ∈ s, μ[f i|m] := by
+  classical
   induction' s using Finset.induction_on with i s his heq hf
   · rw [Finset.sum_empty, Finset.sum_empty, condexp_zero]
   · rw [Finset.sum_insert his, Finset.sum_insert his]
