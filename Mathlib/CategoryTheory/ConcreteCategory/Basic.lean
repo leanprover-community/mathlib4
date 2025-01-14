@@ -99,7 +99,7 @@ Note that `ConcreteCategory` potentially depends on three independent universe l
 They are specified that order, to avoid unnecessary universe annotations.
 -/
 class ConcreteCategory (C : Type u) [Category.{v} C]
-    (FC : outParam <| C → C → Type*) (CC : outParam <| C → Type w)
+    (FC : outParam <| C → C → Type*) {CC : outParam <| C → Type w}
     [outParam <| ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] where
   /-- Convert a morphism of `C` to a bundled function. -/
   (hom : ∀ {X Y}, (X ⟶ Y) → FC X Y)
@@ -117,19 +117,19 @@ section
 
 variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type w}
 variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
-variable [ConcreteCategory C FC CC]
+variable [ConcreteCategory C FC]
 
 /-- `ToType X` converts the object `X` of the concrete category `C` to a type.
 
 This is an `abbrev` so that instances on `X` (e.g. `Ring`) do not need to be redeclared.
 -/
-abbrev ToType [ConcreteCategory C FC CC] := CC
+abbrev ToType [ConcreteCategory C FC] := CC
 
 /-- `ToHom X Y` is the type of (bundled) functions between objects `X Y : C`.
 
 This is an `abbrev` so that instances (e.g. `RingHomClass`) do not need to be redeclared.
 -/
-abbrev ToHom [ConcreteCategory C FC CC] := FC
+abbrev ToHom [ConcreteCategory C FC] := FC
 
 namespace ConcreteCategory
 
@@ -212,7 +212,7 @@ and not `(forget C).obj X` nor `(forget C).map f`: those should be written
 as `ToType X` and `ConcreteCategory.hom f` respectively.
 -/
 abbrev HasForget.toConcreteCategory [HasForget C] :
-    ConcreteCategory C (· ⟶ ·) _ where
+    ConcreteCategory C (· ⟶ ·) where
   hom f := f
   ofHom f := f
   id_apply := congr_fun ((forget C).map_id _)
@@ -285,7 +285,7 @@ lemma forget₂_comp_apply
     [∀ X Y, FunLike (FC X Y) (cC X) (cC Y)]
     {D : Type u'} [Category.{v'} D] {G : D → D → Type*} {cD : D → Type w}
     [∀ X Y, FunLike (G X Y) (cD X) (cD Y)]
-    [ConcreteCategory C FC cC] [ConcreteCategory D G cD]
+    [ConcreteCategory C FC] [ConcreteCategory D G]
     [HasForget₂ C D] {X Y Z : C}
     (f : X ⟶ Y) (g : Y ⟶ Z) (x : cD ((forget₂ C D).obj X)) :
     ((forget₂ C D).map (f ≫ g) x) =
@@ -347,7 +347,7 @@ def hasForgetToType (C : Type u) [Category.{v} C] [HasForget.{w} C] :
 
 @[simp]
 lemma NatTrans.naturality_apply {C D : Type*} [Category C] [Category D] {G : D → D → Type*}
-    {cD : D → Type w} [∀ X Y, FunLike (G X Y) (cD X) (cD Y)] [ConcreteCategory D G cD]
+    {cD : D → Type w} [∀ X Y, FunLike (G X Y) (cD X) (cD Y)] [ConcreteCategory D G]
     {F G : C ⥤ D} (φ : F ⟶ G) {X Y : C} (f : X ⟶ Y) (x : cD (F.obj X)) :
     φ.app Y (F.map f x) = G.map f (φ.app X x) := by
   simpa only [Functor.map_comp] using congr_fun ((forget D).congr_map (φ.naturality f)) x

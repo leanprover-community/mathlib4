@@ -61,7 +61,7 @@ instance : CoeSort MonCat Type* where
 instance (X : MonCat) : Monoid X := X.str
 
 @[to_additive]
-instance concreteCategory : ConcreteCategory MonCat (fun M N => M →* N) Bundled.α where
+instance concreteCategory : ConcreteCategory MonCat (fun M N => M →* N) where
   hom f := f
   ofHom f := f
 
@@ -164,7 +164,7 @@ instance (X : CommMonCat) : CommMonoid X := X.str
 
 -- Porting note: https://github.com/leanprover-community/mathlib4/issues/5020
 @[to_additive]
-instance concreteCategory : ConcreteCategory CommMonCat (fun M N => M →* N) _ where
+instance concreteCategory : ConcreteCategory CommMonCat (fun M N => M →* N) where
   hom f := f
   ofHom f := f
 

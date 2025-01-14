@@ -34,7 +34,7 @@ namespace CategoryTheory
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
 variable {A : Type u'} [Category.{v'} A] {FA : A → A → Type*} {CA : A → Type w'}
-  [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w'} A FA CA]
+  [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory.{w'} A FA]
 
 namespace Presheaf
 

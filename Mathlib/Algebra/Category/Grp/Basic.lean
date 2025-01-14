@@ -49,7 +49,7 @@ instance : CoeSort Grp Type* where
 instance (X : Grp) : Group X := X.str
 
 @[to_additive]
-instance concreteCategory : ConcreteCategory Grp (fun M N => M →* N) Bundled.α := by
+instance concreteCategory : ConcreteCategory Grp (fun M N => M →* N) := by
   dsimp only [Grp]
   infer_instance
 
@@ -186,7 +186,7 @@ instance : CoeSort CommGrp Type* where
 instance commGroupInstance (X : CommGrp) : CommGroup X := X.str
 
 @[to_additive]
-instance concreteCategory : ConcreteCategory CommGrp (fun G H => G →* H) Bundled.α := by
+instance concreteCategory : ConcreteCategory CommGrp (fun G H => G →* H) := by
   dsimp only [CommGrp]
   infer_instance
 

@@ -31,7 +31,7 @@ variable {D : Type w} [Category.{max v u} D]
 section
 
 variable {FD : D → D → Type*} {CD : D → Type (max v u)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
-variable [ConcreteCategory.{max v u} D FD CD]
+variable [ConcreteCategory.{max v u} D FD]
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/5171): removed @[nolint has_nonempty_instance]
 /-- A concrete version of the multiequalizer, to be used below. -/
@@ -44,7 +44,7 @@ end
 namespace Meq
 
 variable {FD : D → D → Type*} {CD : D → Type (max v u)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
-variable [ConcreteCategory.{max v u} D FD CD]
+variable [ConcreteCategory.{max v u} D FD]
 
 instance {X} (P : Cᵒᵖ ⥤ D) (S : J.Cover X) :
     CoeFun (Meq P S) fun _ => ∀ I : S.Arrow, CD (P.obj (op I.Y)) :=
@@ -129,7 +129,7 @@ namespace Plus
 section Concrete
 
 variable {FD : D → D → Type*} {CD : D → Type (max v u)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
-variable [ConcreteCategory.{max v u} D FD CD]
+variable [ConcreteCategory.{max v u} D FD]
 variable [PreservesLimits (forget D)]
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]

@@ -286,7 +286,7 @@ end
 
 example {D : Type*} [Category.{max v u} D]
   {FD : D → D → Type*} {CD : D → Type (max v u)} [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)]
-  [ConcreteCategory.{max v u} D FD CD] [PreservesLimits (forget D)]
+  [ConcreteCategory.{max v u} D FD] [PreservesLimits (forget D)]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
   [∀ (α β : Type max u v) (fst snd : β → α),

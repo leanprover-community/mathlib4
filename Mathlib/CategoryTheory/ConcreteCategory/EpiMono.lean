@@ -25,8 +25,8 @@ universe w v v' u u'
 
 namespace CategoryTheory
 
-variable {C : Type u} [Category.{v} C] {F : C → C → Type*} {carrier : C → Type w}
-variable [∀ X Y, FunLike (F X Y) (carrier X) (carrier Y)] [ConcreteCategory C F carrier]
+variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type w}
+variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
 
 open Limits MorphismProperty
 
@@ -40,10 +40,10 @@ theorem mono_of_injective {X Y : C} (f : X ⟶ Y) (i : Function.Injective f) :
   (forget C).mono_of_mono_map ((mono_iff_injective ((forget C).map f)).2 i)
 
 instance forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
-    [Category.{v} C] {FC : C → C → Type*} {cC : C → Type w}
-    [∀ X Y, FunLike (FC X Y) (cC X) (cC Y)] [ConcreteCategory C FC cC]
-    [Category.{v'} D] {FD : D → D → Type*} {cD : D → Type w}
-    [∀ X Y, FunLike (FD X Y) (cD X) (cD Y)] [ConcreteCategory D FD cD]
+    [Category.{v} C] {FC : C → C → Type*} {CC : C → Type w}
+    [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
+    [Category.{v'} D] {FD : D → D → Type*} {CD : D → Type w}
+    [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory D FD]
     [HasForget₂ C D] [(forget C).PreservesMonomorphisms] :
     (forget₂ C D).PreservesMonomorphisms :=
   have : (forget₂ C D ⋙ forget D).PreservesMonomorphisms := by
@@ -52,10 +52,10 @@ instance forget₂_preservesMonomorphisms (C : Type u) (D : Type u')
   Functor.preservesMonomorphisms_of_preserves_of_reflects _ (forget D)
 
 instance forget₂_preservesEpimorphisms (C : Type u) (D : Type u')
-    [Category.{v} C] {FC : C → C → Type*} {cC : C → Type w}
-    [∀ X Y, FunLike (FC X Y) (cC X) (cC Y)] [ConcreteCategory C FC cC]
-    [Category.{v'} D] {FD : D → D → Type*} {cD : D → Type w}
-    [∀ X Y, FunLike (FD X Y) (cD X) (cD Y)] [ConcreteCategory D FD cD]
+    [Category.{v} C] {FC : C → C → Type*} {CC : C → Type w}
+    [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC]
+    [Category.{v'} D] {FD : D → D → Type*} {CD : D → Type w}
+    [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory D FD]
     [HasForget₂ C D] [(forget C).PreservesEpimorphisms] :
     (forget₂ C D).PreservesEpimorphisms :=
   have : (forget₂ C D ⋙ forget D).PreservesEpimorphisms := by

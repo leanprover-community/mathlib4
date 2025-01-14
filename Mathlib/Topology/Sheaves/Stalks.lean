@@ -113,15 +113,15 @@ lemma map_germ_eq_Γgerm (F : X.Presheaf C) {U : Opens X} {i : U ⟶ ⊤} (x : X
 variable {FC : C → C → Type*} {CC : C → Type*} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
 
 theorem germ_res_apply (F : X.Presheaf C)
-    {U V : Opens X} (i : U ⟶ V) (x : X) (hx : x ∈ U) [ConcreteCategory C FC CC] (s) :
+    {U V : Opens X} (i : U ⟶ V) (x : X) (hx : x ∈ U) [ConcreteCategory C FC] (s) :
   F.germ U x hx (F.map i.op s) = F.germ V x (i.le hx) s := by rw [← comp_apply, germ_res]
 
 theorem germ_res_apply' (F : X.Presheaf C)
-    {U V : Opens X} (i : op V ⟶ op U) (x : X) (hx : x ∈ U) [ConcreteCategory C FC CC] (s) :
+    {U V : Opens X} (i : op V ⟶ op U) (x : X) (hx : x ∈ U) [ConcreteCategory C FC] (s) :
   F.germ U x hx (F.map i s) = F.germ V x (i.unop.le hx) s := by rw [← comp_apply, germ_res']
 
 lemma Γgerm_res_apply (F : X.Presheaf C)
-    {U : Opens X} {i : U ⟶ ⊤} (x : X) (hx : x ∈ U) [ConcreteCategory C FC CC] (s) :
+    {U : Opens X} {i : U ⟶ ⊤} (x : X) (hx : x ∈ U) [ConcreteCategory C FC] (s) :
   F.germ U x hx (F.map i.op s) = F.Γgerm x s := F.germ_res_apply i x hx s
 
 /-- A morphism from the stalk of `F` at `x` to some object `Y` is completely determined by its
@@ -138,7 +138,7 @@ theorem stalkFunctor_map_germ {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x
     F.germ U x hx ≫ (stalkFunctor C x).map f = f.app (op U) ≫ G.germ U x hx :=
   colimit.ι_map (whiskerLeft (OpenNhds.inclusion x).op f) (op ⟨U, hx⟩)
 
-theorem stalkFunctor_map_germ_apply [ConcreteCategory C FC CC]
+theorem stalkFunctor_map_germ_apply [ConcreteCategory C FC]
     {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x ∈ U) (f : F ⟶ G) (s) :
     (stalkFunctor C x).map f (F.germ U x hx s) = G.germ U x hx (f.app (op U) s) := by
   rw [← comp_apply, ← stalkFunctor_map_germ]
@@ -146,7 +146,7 @@ theorem stalkFunctor_map_germ_apply [ConcreteCategory C FC CC]
 
 -- a variant of `stalkFunctor_map_germ_apply` that makes simpNF happy.
 @[simp]
-theorem stalkFunctor_map_germ_apply' [ConcreteCategory C FC CC]
+theorem stalkFunctor_map_germ_apply' [ConcreteCategory C FC]
     {F G : X.Presheaf C} (U : Opens X) (x : X) (hx : x ∈ U) (f : F ⟶ G) (s) :
     DFunLike.coe (F := FC (F.stalk x) (G.stalk x))
         (ConcreteCategory.hom ((stalkFunctor C x).map f)) (F.germ U x hx s) =
@@ -391,7 +391,7 @@ end stalkSpecializes
 section Concrete
 
 variable {C} {FC : C → C → Type*} {CC : C → Type v} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
-variable [instC : ConcreteCategory.{v} C FC CC]
+variable [instC : ConcreteCategory.{v} C FC]
 
 -- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO: @[ext] attribute only applies to structures or lemmas proving x = y
 -- @[ext]
@@ -522,7 +522,7 @@ end HasForget
 section Concrete
 
 variable {C} {FC : C → C → Type*} {CC : C → Type v} [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)]
-variable [ConcreteCategory.{v} C FC CC] [PreservesFilteredColimits (forget C)] [HasLimits C]
+variable [ConcreteCategory.{v} C FC] [PreservesFilteredColimits (forget C)] [HasLimits C]
 variable [PreservesLimits (forget C)] [(forget C).ReflectsIsomorphisms]
 
 /-- For surjectivity, we are given an arbitrary section `t` and need to find a preimage for it.

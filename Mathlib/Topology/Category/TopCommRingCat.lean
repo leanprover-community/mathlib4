@@ -54,7 +54,7 @@ instance {R S : Type*} [CommRing R] [CommRing S] [TopologicalSpace R] [Topologic
   coe f := f.val
   coe_injective' f g h := by ext x; exact congrFun h x
 
-instance : ConcreteCategory TopCommRingCat.{u} (fun R S => {f : R →+* S // Continuous f}) α where
+instance : ConcreteCategory TopCommRingCat.{u} (fun R S => {f : R →+* S // Continuous f}) where
   hom f := f
   ofHom f := f
 

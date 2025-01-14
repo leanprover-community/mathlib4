@@ -78,7 +78,7 @@ def IsSheaf (P : Cᵒᵖ ⥤ A) : Prop :=
 /-- Condition that a presheaf with values in a concrete category is separated for
 a Grothendieck topology. -/
 def IsSeparated (P : Cᵒᵖ ⥤ A) {FA : A → A → Type*} {CA : A → Type*}
-    [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA CA] : Prop :=
+    [∀ X Y, FunLike (FA X Y) (CA X) (CA Y)] [ConcreteCategory A FA] : Prop :=
   ∀ (X : C) (S : Sieve X) (_ : S ∈ J X) (x y : CA (P.obj (op X))),
     (∀ (Y : C) (f : Y ⟶ X) (_ : S f), P.map f.op x = P.map f.op y) → x = y
 

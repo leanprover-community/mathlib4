@@ -98,15 +98,15 @@ example {X} [CompleteLattice X] (v : Nat → X) (w x y z : X) (e : v 0 = v 1) (_
 
 section restrict
 
-variable {X : TopCat} {C : Type*} [Category C] {F : C → C → Type*} {carrier : C → Type*}
-variable [∀ X Y, FunLike (F X Y) (carrier X) (carrier Y)] [ConcreteCategory C F carrier] 
+variable {X : TopCat} {C : Type*} [Category C] {FC : C → C → Type*} {CC : C → Type*}
+variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory C FC] 
 
 /-- The restriction of a section along an inclusion of open sets.
-For `x : F.obj (op V)`, we provide the notation `x |_ₕ i` (`h` stands for `hom`) for `i : U ⟶ V`,
+For `x : FC.obj (op V)`, we provide the notation `x |_ₕ i` (`h` stands for `hom`) for `i : U ⟶ V`,
 and the notation `x |_ₗ U ⟪i⟫` (`l` stands for `le`) for `i : U ≤ V`.
 -/
-def restrict  {F : X.Presheaf C}
-    {V : Opens X} (x : carrier (F.obj (op V))) {U : Opens X} (h : U ⟶ V) : carrier (F.obj (op U)) :=
+def restrict {F : X.Presheaf C}
+    {V : Opens X} (x : CC (F.obj (op V))) {U : Opens X} (h : U ⟶ V) : CC (F.obj (op U)) :=
   F.map h.op x
 
 /-- restriction of a section along an inclusion -/
@@ -121,9 +121,9 @@ open AlgebraicGeometry
 For `x : F.obj (op V)`, we provide the notation `x |_ U`, where the proof `U ≤ V` is inferred by
 the tactic `Top.presheaf.restrict_tac'` -/
 abbrev restrictOpen {F : X.Presheaf C}
-    {V : Opens X} (x : carrier (F.obj (op V))) (U : Opens X)
+    {V : Opens X} (x : CC (F.obj (op V))) (U : Opens X)
     (e : U ≤ V := by restrict_tac) :
-    carrier (F.obj (op U)) :=
+    CC (F.obj (op U)) :=
   x |_ₗ U ⟪e⟫
 
 /-- restriction of a section to open subset -/
@@ -131,7 +131,7 @@ scoped[AlgebraicGeometry] infixl:80 " |_ " => TopCat.Presheaf.restrictOpen
 
 @[simp]
 theorem restrict_restrict
-    {F : X.Presheaf C} {U V W : Opens X} (e₁ : U ≤ V) (e₂ : V ≤ W) (x : carrier (F.obj (op W))) :
+    {F : X.Presheaf C} {U V W : Opens X} (e₁ : U ≤ V) (e₂ : V ≤ W) (x : CC (F.obj (op W))) :
     x |_ V |_ U = x |_ U := by
   delta restrictOpen restrict
   rw [← comp_apply, ← Functor.map_comp]
@@ -139,7 +139,7 @@ theorem restrict_restrict
 
 @[simp]
 theorem map_restrict
-    {F G : X.Presheaf C} (e : F ⟶ G) {U V : Opens X} (h : U ≤ V) (x : carrier (F.obj (op V))) :
+    {F G : X.Presheaf C} (e : F ⟶ G) {U V : Opens X} (h : U ≤ V) (x : CC (F.obj (op V))) :
     e.app _ (x |_ U) = e.app _ x |_ U := by
   delta restrictOpen restrict
   rw [← comp_apply, NatTrans.naturality, comp_apply]

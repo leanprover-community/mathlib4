@@ -72,7 +72,7 @@ instance category : Category (Bundled c) where
   id_comp _ := by apply 𝒞.hom_ext; simp
 
 /-- A category given by `BundledHom` is a concrete category. -/
-instance concreteCategory : ConcreteCategory.{u} (Bundled c) (fun X Y => hom X.str Y.str) _ where
+instance concreteCategory : ConcreteCategory.{u} (Bundled c) (fun X Y => hom X.str Y.str) where
   hom f := f
   ofHom f := f
   id_apply _ := congrFun (id_toFun 𝒞 _) _

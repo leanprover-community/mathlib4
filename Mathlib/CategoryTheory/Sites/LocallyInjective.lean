@@ -30,7 +30,7 @@ open Opposite Limits
 
 variable {C : Type u} [Category.{v} C]
   {D : Type u'} [Category.{v'} D] {FD : D → D → Type*} {CD : D → Type w}
-  [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{w} D FD CD]
+  [∀ X Y, FunLike (FD X Y) (CD X) (CD Y)] [ConcreteCategory.{w} D FD]
   (J : GrothendieckTopology C)
 
 namespace Presheaf

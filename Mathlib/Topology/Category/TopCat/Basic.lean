@@ -42,8 +42,8 @@ instance topologicalSpaceUnbundled (X : TopCat) : TopologicalSpace X :=
 
 -- Porting note: currently no derive handler for ConcreteCategory
 -- see https://github.com/leanprover-community/mathlib4/issues/5020
-instance concreteCategory : ConcreteCategory TopCat (fun X Y => ContinuousMap X Y) Bundled.α :=
-  inferInstanceAs <| ConcreteCategory (Bundled TopologicalSpace) _ _
+instance concreteCategory : ConcreteCategory TopCat (fun X Y => ContinuousMap X Y) :=
+  inferInstanceAs <| ConcreteCategory (Bundled TopologicalSpace) _
 
 /-- TODO: replace this with a `Hom` structure + `CoeFun` instance -/
 instance funLike (X Y : TopCat) : FunLike (X ⟶ Y) X Y := ContinuousMap.instFunLike

@@ -41,7 +41,7 @@ open TopCat TopCat.Presheaf CategoryTheory CategoryTheory.Limits
 universe v u x
 
 variable {C : Type u} [Category.{v} C] {FC : C → C → Type*} {CC : C → Type v}
-variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{v} C FC CC]
+variable [∀ X Y, FunLike (FC X Y) (CC X) (CC Y)] [ConcreteCategory.{v} C FC]
 
 namespace TopCat
 

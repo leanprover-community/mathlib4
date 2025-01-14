@@ -47,10 +47,10 @@ theorem forall_congr_forget_Type (α : Type u) (p : α → Prop) :
 
 theorem forget_hom_Type (α β : Type u) (f : α ⟶ β) : (forget (Type u)).map f = f := rfl
 
-theorem hom_elementwise {C : Type*} {F : C → C → Type*} {carrier : C → Type*}
-    {instFunLike : ∀ X Y, FunLike (F X Y) (carrier X) (carrier Y)}
-    [Category C] [ConcreteCategory C F carrier]
-    {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : carrier X) : f x = g x := by rw [h]
+theorem hom_elementwise {C : Type*} {FC : C → C → Type*} {CC : C → Type*}
+    {instFunLike : ∀ X Y, FunLike (FC X Y) (CC X) (CC Y)}
+    [Category C] [ConcreteCategory C FC]
+    {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : ToType X) : f x = g x := by rw [h]
 
 theorem hom_elementwise_forget {C : Type*} [Category C] [HasForget C]
     {X Y : C} {f g : X ⟶ Y} (h : f = g) (x : (forget C).obj X) :
