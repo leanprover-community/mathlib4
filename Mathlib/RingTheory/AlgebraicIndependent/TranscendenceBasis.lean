@@ -125,27 +125,18 @@ theorem IsTranscendenceBasis.isAlgebraic_field {F E : Type*} {x : ι → E}
   haveI : IsScalarTower (adjoin F S) (IntermediateField.adjoin F S) E :=
     IsScalarTower.of_algebraMap_eq (congrFun rfl)
   exact Algebra.IsAlgebraic.extendScalars (R := adjoin F S) (Subalgebra.inclusion_injective _)
-#print isAlgebraic_adjoin_iff
-theorem finite_of_isTranscendenceBasis_of_algebraic_adjoin [DecidableEq ι] [NoZeroDivisors A]
-    (x : ι → A) (y : ι' → A)
-    (hx : Algebra.IsAlgebraic (adjoin R (range x)) A)
+
+theorem finite_of_isTranscendenceBasis_of_algebraic_adjoin [DecidableEq ι] [Nontrivial R]
+    [NoZeroDivisors A] (x : ι → A) (y : ι' → A)
+    (hx : IsTranscendenceBasis R x)
     (hy : AlgebraicIndependent R y) (i : ι') :
     ∃ j : ι, Algebra.IsAlgebraic (adjoin R (range (Function.update x j (y i)))) A := by
-  obtain ⟨P, hP⟩ := exists_mvPolynomial_of_isAlgebraic_adjoin_range_left.1 (hx.isAlgebraic (y i))
-  obtain ⟨j, hj⟩ : ∃ j, some j ∈ P.vars := by
-    by_contra h
-    have hPC : RingHom.id _ P = ((MvPolynomial.rename (fun _ => none)).toRingHom.comp
-      (MvPolynomial.rename (fun _ => i)).toRingHom) P := by
-      refine MvPolynomial.hom_congr_vars (by ext; simp) ?_ rfl
-      intro i hi _
-      induction i <;> simp_all
-    rw [RingHom.id_apply] at hPC
-    have hP0 : P ≠ 0 := by rintro rfl; simp at hP
-    rw [hPC] at hP0 hP
-    apply hP0
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_comp, RingHom.coe_coe, comp_apply]
-    rw [algebraicIndependent_iff.1 hy ((MvPolynomial.rename (fun _ => i)) P), map_zero]
-    simpa [Function.comp_def, aeval_rename] using hP.2
+  obtain ⟨P, hP₁, hP₂⟩ := (isAlgebraic_adjoin_range_left_iff rfl).1 (hx.isAlgebraic.1 (y i))
+  obtain ⟨j, hj⟩ : ∃ j, (aeval fun o ↦ o.elim (Polynomial.C (y i))
+      fun k ↦ update (Polynomial.C ∘ x) j Polynomial.X k) P ≠ 0 := by
+    rw [algebraicIndependent_iff] at hy
+    have := hx.1
+    sorry
   use j
   let M : Subalgebra R A := (aeval (Function.update x j (y i))).range
   let N : Subalgebra R A := (aeval x).range
@@ -167,26 +158,60 @@ theorem finite_of_isTranscendenceBasis_of_algebraic_adjoin [DecidableEq ι] [NoZ
   have i2 : IsScalarTower M O A := IsScalarTower.of_algebraMap_eq (fun x => rfl)
   let i3 : Algebra N O := RingHom.toAlgebra (Subalgebra.inclusion hNO).toRingHom
   have i4 : IsScalarTower N O A := IsScalarTower.of_algebraMap_eq (fun x => rfl)
+  let i5 : Algebra M A := RingHom.toAlgebra (Subalgebra.val _).toRingHom
   rw [adjoin_range_eq_range_aeval] at hx ⊢
   have h1 : Algebra.IsAlgebraic O A :=
     ⟨fun a => IsAlgebraic.extendScalars
       (Set.inclusion_injective (by exact hNO))
       (hx.isAlgebraic a)⟩
-  have hO : O.toSubring = (Algebra.adjoin N {y i}).toSubring := by
-    simp only [N, O, ← adjoin_range_eq_range_aeval, adjoin_eq_ring_closure,
-      Subalgebra.algebraMap_eq, RingHomCompTriple.comp_eq, id.map_eq_id,
-      Subring.closure_union, RingHom.coe_coe, coe_val, N, O, Subtype.range_coe_subtype,
-      SetLike.setOf_mem_eq]
-    rw [← coe_toSubring, Subring.closure_eq, adjoin_eq_ring_closure,
-      Subring.closure_union, Option.range_eq, Set.insert_eq, Subring.closure_union]
-    simp [Function.comp_def, sup_assoc, sup_comm, sup_left_comm]
-  have h2 : Algebra.IsAlgebraic N O := sorry
+  let f : O →ₐ[M] A := AlgHom.mk (Subalgebra.val _).toRingHom (fun _ => rfl)
+  have hf : Function.Injective f := Subtype.val_injective
+  have hfr : f.range.restrictScalars R = O := by ext; simp [O, f]
+  have hxjO : x j ∈ O := (AlgHom.mem_range _).2 ⟨MvPolynomial.X (some j), by simp⟩
+  have h : (⊤ : Subalgebra M O) = Algebra.adjoin M {⟨x j, hxjO⟩} :=
+    Subalgebra.map_injective hf <| by
+    simp only [AlgHom.toRingHom_eq_coe, Algebra.map_top, AlgHom.map_adjoin_singleton, AlgHom.coe_mk,
+      RingHom.coe_coe, coe_val, O, M]
+    apply Subalgebra.restrictScalars_injective R
+    rw [restrictScalars_adjoin, adjoin_union, adjoin_eq, hfr]
+    simp only [O, Option.range_eq, ← adjoin_range_eq_range_aeval, Function.comp_def,
+      Set.insert_eq, Algebra.adjoin_union]
+    simp only [← adjoin_union, f]
+    congr 1
+    ext a
+    simp only [Option.elim_none, Option.elim_some, singleton_union, mem_insert_iff, mem_range,
+      AlgHom.toRingHom_eq_coe, AlgHom.coe_mk, RingHom.coe_coe, coe_val, union_singleton, update,
+      eq_rec_constant, dite_eq_ite, O, M, f]
+    by_cases hay : a = y i
+    · subst a; simp only [true_or, ite_eq_left_iff, true_iff, M, O, f]
+      exact Or.inr ⟨j, by simp⟩
+    · by_cases hax : a = x j
+      · subst a; simp
+      · simp only [hay, false_or, hax, M, O, f]
+        refine exists_congr fun k => ?_
+        split_ifs <;> aesop
+  let OM : Subalgebra M A :=
+      { O with algebraMap_mem' := fun r => hMO <| by simp [RingHom.algebraMap_toAlgebra] }
   have h2 : Algebra.IsAlgebraic M O := by
-    simp only [M, N]
-    simp only [← adjoin_range_eq_range_aeval]
     refine ⟨fun a => ?_⟩
-
-    rw [← adjoin_range_eq_range_aeval,
-      exists_mvPolynomial_of_isAlgebraic_adjoin_range_left]
-
+    rw [← isAlgebraic_algHom_iff f hf]
+    simp only [AlgHom.toRingHom_eq_coe, AlgHom.coe_mk, RingHom.coe_coe, coe_val, f]
+    have haT : a ∈ (⊤ : Subalgebra M O) := mem_top
+    erw [← @isAlgebraic_iff_isAlgebraic_val M A _ _ _ OM ⟨a, a.2⟩,
+      ← @isAlgebraic_iff_isAlgebraic_val M O _ _ _ ⊤ ⟨⟨a, a.2⟩, haT⟩]
+    suffices (adjoin M ({⟨x j, hxjO⟩} : Set O)).IsAlgebraic by
+      { rw [← h] at this
+        simp [Subalgebra.IsAlgebraic] at this
+        convert this a a.2
+        cases a; simp }
+    rw [isAlgebraic_adjoin_singleton_iff, isAlgebraic_iff_isAlgebraic_val (R := M) (S := OM)]
+    refine (isAlgebraic_adjoin_range_left_iff (adjoin_range_eq_range_aeval R _).symm).2 ?_
+    use P.rename (fun o : Option ι => o.elim (some j) (Function.update some j none))
+    refine ⟨?_, ?_⟩
+    · convert hj using 1
+      rw [aeval_rename]
+      congr; ext o; cases o <;> simp [update]; split_ifs <;> simp_all
+    · rw [← hP.2, aeval_rename]
+      simp only [comp_def, O, i5, f, M, update]
+      congr; ext o; cases o <;> simp [update]; split_ifs <;> simp_all
   refine IsAlgebraic.trans' M (S := O) Subtype.val_injective

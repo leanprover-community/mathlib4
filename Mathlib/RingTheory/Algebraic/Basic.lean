@@ -443,10 +443,11 @@ theorem Algebra.IsAlgebraic.tower_bot_of_injective [Algebra.IsAlgebraic R A]
   isAlgebraic x := by
     simpa [isAlgebraic_algebraMap_iff hinj] using isAlgebraic (R := R) (A := A) (algebraMap _ _ x)
 
-theorem exists_mvPolynomial_of_isAlgebraic_adjoin_range_left {ι : Type*} {v : ι → S}
-    {x : S} : IsAlgebraic (Algebra.adjoin R (Set.range v)) x ↔
+theorem isAlgebraic_adjoin_range_left_iff {ι : Type*} {v : ι → S} {A : Subalgebra R S}
+    (hA : A = Algebra.adjoin R (Set.range v)) {x : S} : IsAlgebraic A x ↔
     ∃ P : MvPolynomial (Option ι) R, P.aeval (fun o => o.elim X (fun i => C (v i))) ≠ 0 ∧
       P.aeval (fun o => o.elim x v) = 0 := by
+  subst A
   rw [Algebra.adjoin_range_eq_range_aeval, IsAlgebraic, Function.Surjective.exists
       (Polynomial.map_surjective _ (AlgHom.rangeRestrict_surjective _)),
       Function.Surjective.exists (MvPolynomial.optionEquivLeft _ _).surjective]
