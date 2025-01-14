@@ -8,25 +8,23 @@ import Mathlib.RingTheory.PrimeSpectrum
 
 variable {R : Type*} [CommRing R] (I : Ideal R)
 
+open Ideal
+
 /-- The height of a prime ideal is defined as the supremum of the lengths of strictly decreasing
 chains of prime ideals below it. -/
--- noncomputable def Ideal.primeHeight [I.IsPrime] : WithTop ℕ :=
---   Set.chainHeight {J : Ideal R | J.IsPrime ∧ J < I}
-
 noncomputable def Ideal.primeHeight [hI : I.IsPrime] : WithTop ℕ :=
   Order.height (⟨I, hI⟩ : PrimeSpectrum R)
 
 /-- The height of an ideal is defined as the infimum of the heights of minimal prime ideals
 containing it. -/
 noncomputable def Ideal.height : WithTop ℕ :=
-  ⨅ J ∈ I.minimalPrimes, @Ideal.primeHeight _ _ J ‹J ∈ I.minimalPrimes›.1.1
+  ⨅ J ∈ I.minimalPrimes, @Ideal.primeHeight _ _ J (minimalPrimes_isPrime ‹_›)
 
 /-- For a prime ideal, its height equals its prime height. -/
 lemma Ideal.height_eq_primeHeight [I.IsPrime] : I.height = I.primeHeight := by
-  sorry
-  -- unfold height primeHeight
-  -- rw [Ideal.minimalPrimes_eq_subsingleton_self]
-  -- simp
+  unfold height primeHeight
+  simp_rw [Ideal.minimalPrimes_eq_subsingleton_self]
+  simp
 
 /-- An ideal has finite height if it is either the top ideal or its height is not top. -/
 class Ideal.FiniteHeight : Prop where
@@ -64,44 +62,39 @@ lemma Ideal.primeHeight_lt_top (I : Ideal R) [I.FiniteHeight] [h : I.IsPrime] :
   exact Ideal.height_lt_top (by exact h.ne_top)
 
 -- This lemma might need additional theorems for translation
-lemma Ideal.primeHeight_succ [h : I.IsPrime] :
-  I.primeHeight + 1 = Set.chainHeight {J : Ideal R | J.IsPrime ∧ J ≤ I} := by
-  sorry
+-- lemma Ideal.primeHeight_succ [h : I.IsPrime] :
+--   I.primeHeight + 1 = Set.chainHeight {J : Ideal R | J.IsPrime ∧ J ≤ I} := by
+--   convert (Set.chain_height_insert_of_forall_lt _ I _).symm
+--   rw [set.insert_inter_distrib, set.insert_eq_of_mem]
+--     simp
+--     exact h
+--   { intros a ha, exact ha.2 }
 
 
 lemma Ideal.primeHeight_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I ≤ J) :
   I.primeHeight ≤ J.primeHeight := by
   unfold primeHeight
-  sorry
-  -- apply Set.chainHeight_mono
-  -- intro x
-  -- simp only [Set.mem_setOf_eq, and_imp]
-  -- intro h1 h2
-  -- exact ⟨h1, h2.trans_le h⟩
+  gcongr
+  exact h
 
 lemma Ideal.primeHeight_add_one_le_of_lt {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I < J) :
   I.primeHeight + 1 ≤ J.primeHeight := by
-  rw [primeHeight_succ]
-  sorry
-  -- apply Set.chainHeight_mono
-  -- intro x
-  -- simp only [Set.mem_setOf_eq, and_imp]
-  -- intro h1 h2
-  -- exact ⟨h1, lt_of_le_of_lt h2 h⟩
+  unfold primeHeight -- Order.height
+  exact Order.height_add_one_le h
 
 lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
-  (h : I < J) [J.FiniteHeight] :
+  (h : I < J) [I.FiniteHeight] :
   I.primeHeight < J.primeHeight := by
-  have H := Ideal.primeHeight_add_one_le_of_lt h
-  cases hJ : J.primeHeight
-  · exact False.elim (J.primeHeight_ne_top hJ)
-  cases hI : I.primeHeight
-  · sorry -- handling top case
-  · sorry -- completing proof with natural number arithmetic
+  unfold primeHeight
+  gcongr
+  · exact I.primeHeight_ne_top.lt_top
+  · exact h
 
 lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
   (h : I < J) [I.FiniteHeight] :
   I.height < J.height := by
+  unfold height
+  gcongr
   rw [Ideal.height_eq_primeHeight I, Ideal.height]
   sorry -- The rest of the proof needs additional helper lemmas
 
