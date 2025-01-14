@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Thomas Browning, Patrick Lutz
 -/
 import Mathlib.Algebra.Polynomial.Splits
-import Mathlib.FieldTheory.IntermediateField.Algebraic
+import Mathlib.FieldTheory.IntermediateField.Basic
 import Mathlib.FieldTheory.Minpoly.Field
 
 /-!

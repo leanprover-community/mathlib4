@@ -3,7 +3,8 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.FieldTheory.Normal.Basic
+import Mathlib.FieldTheory.Extension
+import Mathlib.FieldTheory.Normal.Defs
 import Mathlib.FieldTheory.Perfect
 import Mathlib.RingTheory.Localization.Integral
 
