@@ -77,7 +77,7 @@ lemma add_one_le_dim_iff_exists_submodule_rank_eq {R : Type*} {M : Type*} [Field
     · rw [h, rank_span_set hb.2]
 
 lemma rankSuprNeTopAddOne {R : Type*} {M : Type*} [Field R] [AddCommGroup M] [Module R M] :
-  (⨆ (p : Submodule R M) (h : p ≠ ⊤), Module.rank R p + 1) = Module.rank R M := by
+  (⨆ (p : Submodule R M) (_ : p ≠ ⊤), Module.rank R p + 1) = Module.rank R M := by
   rw [ciSup_subtype''']
   · apply le_antisymm
     · -- First direction
@@ -85,12 +85,12 @@ lemma rankSuprNeTopAddOne {R : Type*} {M : Type*} [Field R] [AddCommGroup M] [Mo
     · by_cases h : Module.rank R M = 0
       · rw [h]; exact zero_le _
       · obtain ⟨α, hα⟩ := Cardinal.exists_add_one_eq_iff.mpr h
+        obtain ⟨p, hp, rfl⟩ := add_one_le_dim_iff_exists_submodule_rank_eq.mp (show α + 1 ≤ Module.rank R M by rw [hα])
         have hpos : 1 ≤ Module.rank R M := Cardinal.one_le_iff_ne_zero.mpr h
         have : BddAbove (Set.range fun p : {x : Submodule R M // x ≠ ⊤} => Module.rank R p + 1) := by
           use Module.rank R M + 1
           rintro _ ⟨a, rfl⟩
           exact add_le_add (Submodule.rank_le _) rfl.le
-        -- Rest of the proof
         exact hα.symm.le.trans (le_ciSup this ⟨p, hp⟩)
   · use Module.rank R M + 1
     intro _ _
