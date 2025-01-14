@@ -206,7 +206,7 @@ theorem covBy_iff {K L : A} :
   refine forall_congr' fun b ↦ ?_
   simp only [← and_imp]
   rw [and_comm, and_comm (b:= _ ∈ _), and_assoc]
-  refine imp_congr_right fun ⟨_, _, h⟩ ↦ ?_
+  refine imp_congr_right fun ⟨_, h, _⟩ ↦ ?_
   simp only [le_antisymm_iff, h, true_and]
 
 /-- Dual variant of `SetLike.covBy_iff` -/
