@@ -271,10 +271,11 @@ theorem BlockTriangular.det_fintype [DecidableEq α] [Fintype α] [LinearOrder �
   exact det_isEmpty
 
 /-- The property of a matrix being upper triangular. See also `Matrix.det_of_upperTriangular`. -/
-abbrev IsUpperTriangular [LT m] (M : Matrix m m R) := M.BlockTriangular id
+abbrev IsUpperTriangular [LT m] (M : Matrix m m R) : Prop := M.BlockTriangular id
 
 /-- The subtype of upper triangular matrices. -/
-abbrev UpperTriangular (m R) [LT m] [CommRing R] := { M : Matrix m m R // M.IsUpperTriangular }
+abbrev UpperTriangular (m R) [LT m] [CommRing R] : Type _ :=
+  { M : Matrix m m R // M.IsUpperTriangular }
 
 theorem det_of_upperTriangular [LinearOrder m] (h : M.IsUpperTriangular) :
     M.det = ∏ i : m, M i i := by

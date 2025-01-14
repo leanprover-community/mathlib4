@@ -14,11 +14,11 @@ closed field, e.g., `ℂ`, is unitarily similar to an upper triangular matrix.
 ## Main definitions
 
 - `Matrix.schur_triangulation` : a matrix `A : Matrix n n 𝕜` with `𝕜` being algebraically closed can
-be decomposed as `A = U * T * star U` where `U` is unitary and `T` is upper triangular.
+  be decomposed as `A = U * T * star U` where `U` is unitary and `T` is upper triangular.
 - `Matrix.schurTriangulationUnitary` : the unitary matrix `U` as previously stated.
 - `Matrix.schurTriangulation` : the upper triangular matrix `T` as previously stated.
 - Some auxilary definitions are not meant to be used directly, but
-`LinearMap.SchurTriangulationAux.of` contains the main algorithm for the triangulation procedure.
+  `LinearMap.SchurTriangulationAux.of` contains the main algorithm for the triangulation procedure.
 
 -/
 
@@ -104,7 +104,7 @@ end
 /-- **Don't use this definition directly.** Instead, use `Matrix.schurTriangulationBasis`,
 `Matrix.schurTriangulationUnitary`, and `Matrix.schurTriangulation`. See also
 `LinearMap.SchurTriangulationAux.of` and `Matrix.schurTriangulationAux`. -/
-structure SchurTriangulationAux (f : Module.End 𝕜 E) where
+private structure SchurTriangulationAux (f : Module.End 𝕜 E) where
   /-- The dimension of the inner product space `E`. -/
   dim : ℕ
   hdim : Module.finrank 𝕜 E = dim
@@ -147,7 +147,7 @@ variable [IsAlgClosed 𝕜]
 
 /-- **Don't use this definition directly.** This is the key algorithm behind
 `Matrix.schur_triangulation`. -/
-protected noncomputable def SchurTriangulationAux.of {E : Type*} [NormedAddCommGroup E]
+private noncomputable def SchurTriangulationAux.of {E : Type*} [NormedAddCommGroup E]
     [InnerProductSpace 𝕜 E] [FiniteDimensional 𝕜 E] (f : Module.End 𝕜 E) :
     SchurTriangulationAux f :=
   haveI : Decidable (Nontrivial E) := Classical.propDecidable _
@@ -249,7 +249,7 @@ variable [Fintype n] [DecidableEq n] [LinearOrder n] (A : Matrix n n 𝕜)
 `Matrix.schurTriangulationUnitary`, and `Matrix.schurTriangulation` for which this is their
 simultaneous definition. This is `LinearMap.SchurTriangulationAux` adapted for matrices in the
 Euclidean space. -/
-noncomputable def schurTriangulationAux :
+private noncomputable def schurTriangulationAux :
     OrthonormalBasis n 𝕜 (EuclideanSpace 𝕜 n) × UpperTriangular n 𝕜 :=
   let f := toEuclideanLin A
   let ⟨d, hd, b, hut⟩ := LinearMap.SchurTriangulationAux.of f
