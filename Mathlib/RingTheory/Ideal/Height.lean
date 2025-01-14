@@ -1,9 +1,5 @@
-import Mathlib.Order.CompletePartialOrder
-import Mathlib.Order.Height
 import Mathlib.Order.KrullDimension
-import Mathlib.RingTheory.Finiteness.Defs
 import Mathlib.RingTheory.Ideal.MinimalPrime
-import Mathlib.Algebra.Module.MinGeneratorCard
 import Mathlib.RingTheory.PrimeSpectrum
 
 variable {R : Type*} [CommRing R] (I : Ideal R)
@@ -61,16 +57,6 @@ lemma Ideal.primeHeight_lt_top (I : Ideal R) [I.FiniteHeight] [h : I.IsPrime] :
   rw [← I.height_eq_primeHeight]
   exact Ideal.height_lt_top (by exact h.ne_top)
 
--- This lemma might need additional theorems for translation
--- lemma Ideal.primeHeight_succ [h : I.IsPrime] :
---   I.primeHeight + 1 = Set.chainHeight {J : Ideal R | J.IsPrime ∧ J ≤ I} := by
---   convert (Set.chain_height_insert_of_forall_lt _ I _).symm
---   rw [set.insert_inter_distrib, set.insert_eq_of_mem]
---     simp
---     exact h
---   { intros a ha, exact ha.2 }
-
-
 lemma Ideal.primeHeight_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I ≤ J) :
   I.primeHeight ≤ J.primeHeight := by
   unfold primeHeight
@@ -79,7 +65,7 @@ lemma Ideal.primeHeight_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I ≤ 
 
 lemma Ideal.primeHeight_add_one_le_of_lt {I J : Ideal R} [I.IsPrime] [J.IsPrime] (h : I < J) :
   I.primeHeight + 1 ≤ J.primeHeight := by
-  unfold primeHeight -- Order.height
+  unfold primeHeight
   exact Order.height_add_one_le h
 
 lemma Ideal.primeHeight_strict_mono {I J : Ideal R} [I.IsPrime] [J.IsPrime]
@@ -94,8 +80,9 @@ lemma Ideal.height_strict_mono_of_is_prime {I J : Ideal R} [I.IsPrime]
   (h : I < J) [I.FiniteHeight] :
   I.height < J.height := by
   unfold height
-  gcongr
-  rw [Ideal.height_eq_primeHeight I, Ideal.height]
+
+  sorry
+  -- rw [Ideal.height_eq_primeHeight I, Ideal.height]
   sorry -- The rest of the proof needs additional helper lemmas
 
 theorem Ideal.minimalPrimes_eq_empty_iff (I : Ideal R) :
@@ -132,7 +119,7 @@ theorem Ideal.height_mono {I J : Ideal R} (h : I ≤ J) : I.height ≤ J.height 
   intro p hp
   -- obtain ⟨q, hq, e⟩ := Ideal.exists_minimalPrimes_le (h.trans hp)
   sorry
-
+#min_imports
 theorem withTop.supr_add {ι : Sort*} [Nonempty ι]
     (f : ι → WithTop ℕ) (x : WithTop ℕ) :
     ⨆ i, f i + x = (⨆ i, f i) + x := by
