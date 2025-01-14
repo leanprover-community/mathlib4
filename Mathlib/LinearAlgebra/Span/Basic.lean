@@ -9,7 +9,7 @@ import Mathlib.Algebra.Module.Submodule.EqLocus
 import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
-import Mathlib.Algebra.Ring.Idempotents
+import Mathlib.Algebra.Ring.Idempotent
 import Mathlib.Data.Set.Pointwise.SMul
 import Mathlib.LinearAlgebra.Span.Defs
 import Mathlib.Order.CompactlyGenerated.Basic

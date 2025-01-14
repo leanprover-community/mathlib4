@@ -8,7 +8,7 @@ import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.Algebra.Group.Submonoid.MulOpposite
 import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Ring.Idempotents
+import Mathlib.Algebra.Ring.Idempotent
 import Mathlib.Algebra.Ring.Int.Defs
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Nat.Cast.Basic
@@ -32,6 +32,7 @@ In this file we prove various facts about membership in a submonoid:
 submonoid, submonoids
 -/
 
+assert_not_exists Ring
 -- We don't need ordered structures to establish basic membership facts for submonoids
 assert_not_exists OrderedSemiring
 
