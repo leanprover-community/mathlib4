@@ -158,6 +158,9 @@ theorem equiv_symm_sub : (equiv v).symm (r - s) = (equiv v).symm r - (equiv v).s
 @[deprecated map_neg (since := "2025-01-13"), simp]
 theorem equiv_neg : equiv v (-x) = - equiv v x := rfl
 
+@[deprecated map_neg (since := "2025-01-13"), simp]
+theorem equiv_symm_neg : (equiv v).symm (-r) = - (equiv v).symm r := rfl
+
 end equiv_ring
 
 /-!
