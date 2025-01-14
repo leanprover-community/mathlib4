@@ -101,14 +101,30 @@ lemma linearIndependent [NoZeroDivisors R] :
     exact degree_ne_bot.mp this eqzero |>.elim
 
 /-- A polynomial sequence over `R` spans `R[X]`. -/
-lemma span (hCoeff : ∀ i, (S i).leadingCoeff = 1) : ⊤ ≤ span R (Set.range S) := by
-  intro p
-  induction' hp : p.natDegree using Nat.strong_induction_on with n ih
-  sorry
+lemma span (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) : ⊤ ≤ span R (Set.range S) := by
+  intro P _
+  induction' hp : P.natDegree using Nat.strong_induction_on with n ih
+  by_cases h : 0 < P.natDegree
+  · let tail := P - P.leadingCoeff • (S n)
+    have : tail = P.eraseLead := by
+      rw [self_sub_monomial_natDegree_leadingCoeff] at tail
 
+    have hdeg : P'.natDegree < n := by
+      sorry
+    
+    have := ih P'.natDegree hdeg
+    exact ih P'.natDegree hdeg sorry
+  · simp only [not_lt, nonpos_iff_eq_zero] at h
+    rw [h] at hp
+    rw [natDegree_eq_zero] at h
+    obtain ⟨c, hc⟩ := h
+    rw [mem_span_set]
+    sorry
+
+#check 37
 
 /-- Every polynomial sequence is a basis of `R[X]`. -/
-noncomputable def basis [NoZeroDivisors R] (hCoeff : ∀ i, (S i).leadingCoeff = 1) :
+noncomputable def basis [NoZeroDivisors R] (hCoeff : ∀ i, IsUnit (S i).leadingCoeff) :
     Basis ℕ R R[X] :=
   Basis.mk S.linearIndependent <| S.span hCoeff
 
