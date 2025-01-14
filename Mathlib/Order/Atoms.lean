@@ -200,19 +200,14 @@ theorem isCoatom_iff [OrderTop A] {K : A} :
 
 theorem covBy_iff {K L : A} :
     K ⋖ L ↔ K < L ∧ ∀ H g, K ≤ H → H ≤ L → g ∉ K → g ∈ H → H = L := by
-  apply and_congr_right
-  intro _
-  apply forall_congr'
-  intro H
+  refine and_congr_right fun _ ↦ forall_congr' fun H ↦ ?_
   rw [lt_iff_le_not_le, SetLike.not_le_iff_exists, lt_iff_le_not_le, not_and, not_not,
     and_comm (a := _ ≤ _), and_imp, exists_imp]
-  apply forall_congr'
-  intro b
+  refine forall_congr' fun b ↦ ?_
   simp only [← and_imp]
   rw [and_comm, and_comm (b:= _ ∈ _), and_assoc]
-  apply imp_congr_right
-  intro h
-  simp only [le_antisymm_iff, h.2.1, true_and]
+  refine imp_congr_right fun ⟨_, _, h⟩ ↦ ?_
+  simp only [le_antisymm_iff, h, true_and]
 
 /-- Dual variant of `SetLike.covBy_iff` -/
 theorem covBy_iff' {K L : A} :
