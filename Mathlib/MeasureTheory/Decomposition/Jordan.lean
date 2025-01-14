@@ -42,7 +42,7 @@ Jordan decomposition theorem
 
 noncomputable section
 
-open scoped Classical MeasureTheory ENNReal NNReal
+open scoped MeasureTheory ENNReal NNReal
 
 variable {α : Type*} [MeasurableSpace α]
 
@@ -184,7 +184,6 @@ end JordanDecomposition
 
 namespace SignedMeasure
 
-open scoped Classical
 open JordanDecomposition Measure Set VectorMeasure
 
 variable {s : SignedMeasure α}
