@@ -385,11 +385,9 @@ of the form `0..x` if it is interval integrable (with respect to the volume meas
 interval of the form `0..x`, for positive `x`.
 
 See `intervalIntegrable_of_even` for a stronger result.-/
-lemma intervalIntegrable_of_even₀
-  (h₁f : ∀ x, f x = f (-x))
-  (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x)
-  (t : ℝ) :
-  IntervalIntegrable f volume 0 t := by
+lemma intervalIntegrable_of_even₀ (h₁f : ∀ x, f x = f (-x))
+    (h₂f : ∀ x, 0 < x → IntervalIntegrable f volume 0 x) (t : ℝ) :
+    IntervalIntegrable f volume 0 t := by
   rcases lt_trichotomy t 0 with h | h | h
   · rw [IntervalIntegrable.iff_comp_neg]
     conv => arg 1; intro t; rw [← h₁f]
