@@ -23,10 +23,9 @@ noncomputable def Ideal.height : WithTop ℕ :=
 
 /-- For a prime ideal, its height equals its prime height. -/
 lemma Ideal.height_eq_primeHeight [I.IsPrime] : I.height = I.primeHeight := by
-  sorry
-  -- unfold height primeHeight
-  -- rw [Ideal.minimalPrimes_eq_subsingleton_self]
-  -- simp
+  unfold height primeHeight
+  simp_rw [Ideal.minimalPrimes_eq_subsingleton_self]
+  simp
 
 /-- An ideal has finite height if it is either the top ideal or its height is not top. -/
 class Ideal.FiniteHeight : Prop where
