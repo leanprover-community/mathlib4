@@ -1085,27 +1085,52 @@ end BijectionInverse
 
 end Fintype
 
-section Trunc
+section Squash
 
-/-- For `s : Multiset α`, we can lift the existential statement that `∃ x, x ∈ s` to a `Trunc α`.
+/-- For `s : Multiset α`, we can lift the existential statement that `∃ x, x ∈ s` to a `Squash α`.
 -/
-def truncOfMultisetExistsMem {α} (s : Multiset α) : (∃ x, x ∈ s) → Trunc α :=
+def squashOfMultisetExistsMem {α} (s : Multiset α) : (∃ x, x ∈ s) → Squash α :=
   Quotient.recOnSubsingleton s fun l h =>
     match l, h with
     | [], _ => False.elim (by tauto)
-    | a :: _, _ => Trunc.mk a
+    | a :: _, _ => .mk a
 
 /-- A `Nonempty` `Fintype` constructively contains an element.
 -/
-def truncOfNonemptyFintype (α) [Nonempty α] [Fintype α] : Trunc α :=
-  truncOfMultisetExistsMem Finset.univ.val (by simp)
+def squashOfNonemptyFintype (α) [Nonempty α] [Fintype α] : Squash α :=
+  squashOfMultisetExistsMem Finset.univ.val (by simp)
+
+/-- By iterating over the elements of a fintype, we can lift an existential statement `∃ a, P a`
+to `Squash (Σ' a, P a)`, containing data.
+-/
+def squashSigmaOfExists {α} [Fintype α] {P : α → Prop} [DecidablePred P] (h : ∃ a, P a) :
+    Squash (Σ'a, P a) :=
+  @squashOfNonemptyFintype (Σ'a, P a) ((Exists.elim h) fun a ha => ⟨⟨a, ha⟩⟩) _
+
+end Squash
+
+section Trunc
+set_option linter.deprecated false
+
+/-- For `s : Multiset α`, we can lift the existential statement that `∃ x, x ∈ s` to a `Trunc α`.
+-/
+@[deprecated squashOfMultisetExistsMem (since := "2025-01-13")]
+def truncOfMultisetExistsMem {α} (s : Multiset α) : (∃ x, x ∈ s) → Squash α :=
+  squashOfMultisetExistsMem s
+
+/-- A `Nonempty` `Fintype` constructively contains an element.
+-/
+@[deprecated squashOfNonemptyFintype (since := "2025-01-13")]
+def truncOfNonemptyFintype (α) [Nonempty α] [Fintype α] : Squash α :=
+  squashOfNonemptyFintype α
 
 /-- By iterating over the elements of a fintype, we can lift an existential statement `∃ a, P a`
 to `Trunc (Σ' a, P a)`, containing data.
 -/
+@[deprecated squashSigmaOfExists (since := "2025-01-13")]
 def truncSigmaOfExists {α} [Fintype α] {P : α → Prop} [DecidablePred P] (h : ∃ a, P a) :
     Trunc (Σ'a, P a) :=
-  @truncOfNonemptyFintype (Σ'a, P a) ((Exists.elim h) fun a ha => ⟨⟨a, ha⟩⟩) _
+  squashSigmaOfExists h
 
 end Trunc
 

@@ -3,8 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yuyang Zhao
 -/
-import Mathlib.Data.List.Pi
 import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.List.Pi
 
 /-!
 # Quotients of families indexed by a finite type
@@ -186,6 +186,57 @@ lemma finRecOn_mk {C : (∀ i, Quotient (S i)) → Sort*}
 end Fintype
 
 end Quotient
+
+namespace Squash
+variable {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → Sort*} {β : Sort*}
+
+/-- Given a function that for each `i : ι` gives a term of the corresponding
+truncation type, then there is corresponding term in the truncation of the product. -/
+def finChoice (q : ∀ i, Squash (α i)) : Squash (∀ i, α i) :=
+  show Trunc _ from Quotient.map' id (fun _ _ _ => trivial) (Quotient.finChoice (S := fun _ ↦ ⊤) q)
+
+theorem finChoice_eq (f : ∀ i, α i) : (finChoice fun i => Trunc.mk (f i)) = Trunc.mk f :=
+  Subsingleton.elim _ _
+
+/-- Lift a function on `∀ i, α i` to a function on `∀ i, Trunc (α i)`. -/
+def finLiftOn (q : ∀ i, Trunc (α i)) (f : (∀ i, α i) → β) (h : ∀ (a b : ∀ i, α i), f a = f b) : β :=
+  Quotient.finLiftOn q f (fun _ _ _ ↦ h _ _)
+
+@[simp]
+lemma finLiftOn_empty [e : IsEmpty ι] (q : ∀ i, Trunc (α i)) :
+    finLiftOn (β := β) q = fun f _ ↦ f e.elim :=
+  funext₂ fun _ _ ↦ congrFun₂ (Quotient.finLiftOn_empty q) _ _
+
+@[simp]
+lemma finLiftOn_mk (a : ∀ i, α i) :
+    finLiftOn (β := β) (⟦a ·⟧) = fun f _ ↦ f a :=
+  funext₂ fun _ _ ↦ congrFun₂ (Quotient.finLiftOn_mk a) _ _
+
+/-- `Trunc.finChoice` as an equivalence. -/
+@[simps]
+def finChoiceEquiv : (∀ i, Trunc (α i)) ≃ Trunc (∀ i, α i) where
+  toFun := finChoice
+  invFun q i := q.map (· i)
+  left_inv _ := Subsingleton.elim _ _
+  right_inv _ := Subsingleton.elim _ _
+
+/-- Recursion principle for `Trunc`s indexed by a finite type. -/
+@[elab_as_elim]
+def finRecOn {C : (∀ i, Trunc (α i)) → Sort*}
+    (q : ∀ i, Trunc (α i))
+    (f : ∀ a : ∀ i, α i, C (mk <| a ·))
+    (h : ∀ (a b : ∀ i, α i), (Eq.ndrec (f a) (funext fun _ ↦ Trunc.eq _ _)) = f b) :
+    C q :=
+  Quotient.finRecOn q (f ·) (fun _ _ _ ↦ h _ _)
+
+@[simp]
+lemma finRecOn_mk {C : (∀ i, Trunc (α i)) → Sort*}
+    (a : ∀ i, α i) :
+    finRecOn (C := C) (⟦a ·⟧) = fun f _ ↦ f a := by
+  unfold finRecOn
+  simp
+
+end Squash
 
 namespace Trunc
 variable {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → Sort*} {β : Sort*}

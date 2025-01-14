@@ -546,6 +546,7 @@ protected theorem nonempty (q : Squash α) : Nonempty α :=
 
 end Squash
 
+set_option linter.deprecated false in
 /-- `Trunc α` is the quotient of `α` by the always-true relation. This
   is related to the propositional truncation in HoTT, and is similar
   in effect to `Nonempty α`, but unlike `Nonempty α`, `Trunc α` is data,
@@ -553,7 +554,7 @@ end Squash
   maintain computability. -/
 @[deprecated Squash (since := "2024-11-13")]
 def Trunc.{u} (α : Sort u) : Sort u :=
-  Squash α
+  @Quotient α trueSetoid
 
 namespace Trunc
 set_option linter.deprecated false
