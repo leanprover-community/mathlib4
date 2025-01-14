@@ -17,8 +17,26 @@ def spanRank (p : Submodule R M) : WithTop ℕ :=
 
 /-- A submodule's span rank is not top if and only if it is finitely generated -/
 lemma spanRankNeTop_iff {p : Submodule R M} :
-  p.spanRank ≠ ⊤ ↔ p.FG := by
+    p.spanRank ≠ ⊤ ↔ p.FG := by
   simp [spanRank, Submodule.fg_def]
+
+/-- A submodule is finitely generated if and only if there exists a finite set generating it -/
+lemma fg_iff_card_finset_nonempty {p : Submodule R M} :
+  p.FG ↔ Set.Nonempty (Finset.card '' { s : Finset M | span R (s : Set M) = p }) := by
+  exact Set.image_nonempty.symm
+
+/-- A submodule is finitely generated if and only if its spanrank equals its minimum generator cardinality -/
+lemma fg_iff_spanrank_eq {p : Submodule R M} :
+    p.FG ↔ p.spanRank = p.minGeneratorCard := by
+  constructor
+  · intro h
+    haveI : Nonempty { s // s.Finite ∧ span R s = p } := by
+      rwa [nonempty_subtype, ← fg_def]
+    exact (WithTop.coe_iInf (OrderBot.bddBelow
+      (Set.range fun i ↦ (minGeneratorCard.proof_1 p i).toFinset.card))).symm
+  intro e
+  rw [← spanRankNeTop_iff, e]
+  exact WithTop.coe_ne_top
 
 theorem exists_generator_eq_min_generator_card {p : Submodule R M} (h : p.FG) :
   ∃ f : Fin p.minGeneratorCard → M, span R (Set.range f) = p := by
