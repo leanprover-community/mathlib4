@@ -86,5 +86,4 @@ lemma minGeneratorMem {p : Submodule R M} (h : p.FG) (i) :
   sorry
   --rw [← this]
   --exact subset_span (Set.mem_range_self i)
-#min_imports
 end Submodule
