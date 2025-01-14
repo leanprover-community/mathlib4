@@ -224,11 +224,11 @@ open MeasureTheory.Measure MeasureTheory
 
 variable [NumberField K]
 
-open Classical in
+open scoped Classical in
 instance : IsAddHaarMeasure (volume : Measure (mixedSpace K)) :=
   prod.instIsAddHaarMeasure volume volume
 
-open Classical in
+open scoped Classical in
 instance : NoAtoms (volume : Measure (mixedSpace K)) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
   by_cases hw : IsReal w
@@ -239,7 +239,7 @@ instance : NoAtoms (volume : Measure (mixedSpace K)) := by
     exact prod.instNoAtoms_snd
 
 variable {K} in
-open Classical in
+open scoped Classical in
 /-- The set of points in the mixedSpace that are equal to `0` at a fixed (real) place has
 volume zero. -/
 theorem volume_eq_zero (w : {w // IsReal w}) :
@@ -309,10 +309,9 @@ end commMap
 
 noncomputable section norm
 
-open scoped Classical
-
 variable {K}
 
+open scoped Classical in
 /-- The norm at the infinite place `w` of an element of the mixed space. --/
 def normAtPlace (w : InfinitePlace K) : (mixedSpace K) →*₀ ℝ where
   toFun x := if hw : IsReal w then ‖x.1 ⟨w, hw⟩‖ else ‖x.2 ⟨w, not_isReal_iff_isComplex.mp hw⟩‖
@@ -380,6 +379,7 @@ theorem exists_normAtPlace_ne_zero_iff {x : mixedSpace K} :
 
 variable [NumberField K]
 
+open scoped Classical in
 theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
     ‖x‖₊ = univ.sup fun w ↦ ⟨normAtPlace w x, normAtPlace_nonneg w x⟩ := by
   have :
@@ -395,6 +395,7 @@ theorem nnnorm_eq_sup_normAtPlace (x : mixedSpace K) :
   · ext w
     simp [normAtPlace_apply_isComplex w.prop]
 
+open scoped Classical in
 theorem norm_eq_sup'_normAtPlace (x : mixedSpace K) :
     ‖x‖ = univ.sup' univ_nonempty fun w ↦ normAtPlace w x := by
   rw [← coe_nnnorm, nnnorm_eq_sup_normAtPlace, ← sup'_eq_sup univ_nonempty, ← NNReal.val_eq_coe,
@@ -460,8 +461,6 @@ end norm
 
 noncomputable section stdBasis
 
-open scoped Classical
-
 open Complex MeasureTheory MeasureTheory.Measure ZSpan Matrix ComplexConjugate
 
 variable [NumberField K]
@@ -472,8 +471,9 @@ abbrev index := {w : InfinitePlace K // IsReal w} ⊕ ({w : InfinitePlace K // I
 /-- The `ℝ`-basis of the mixed space of `K` formed by the vector equal to `1` at `w` and `0`
 elsewhere for `IsReal w` and by the couple of vectors equal to `1` (resp. `I`) at `w` and `0`
 elsewhere for `IsComplex w`. -/
-def stdBasis : Basis (index K) ℝ (mixedSpace K) :=
-  Basis.prod (Pi.basisFun ℝ _)
+def stdBasis : Basis (index K) ℝ (mixedSpace K) := by
+  classical
+  exact Basis.prod (Pi.basisFun ℝ _)
     (Basis.reindex (Pi.basis fun _ => basisOneI) (Equiv.sigmaEquivProd _ _))
 
 variable {K}
@@ -494,6 +494,7 @@ theorem stdBasis_apply_ofIsComplex_snd (x : mixedSpace K)
 
 variable (K)
 
+open scoped Classical in
 theorem fundamentalDomain_stdBasis :
     fundamentalDomain (stdBasis K) =
         (Set.univ.pi fun _ => Set.Ico 0 1) ×ˢ
@@ -501,6 +502,7 @@ theorem fundamentalDomain_stdBasis :
   ext
   simp [stdBasis, mem_fundamentalDomain, Complex.measurableEquivPi]
 
+open scoped Classical in
 theorem volume_fundamentalDomain_stdBasis :
     volume (fundamentalDomain (stdBasis K)) = 1 := by
   rw [fundamentalDomain_stdBasis, volume_eq_prod, prod_prod, volume_pi, volume_pi, pi_pi, pi_pi,
@@ -512,6 +514,7 @@ theorem volume_fundamentalDomain_stdBasis :
 the unique corresponding embedding `w.embedding`, and the pair `⟨w, 0⟩` (resp. `⟨w, 1⟩`) for a
 complex infinite place `w` to `w.embedding` (resp. `conjugate w.embedding`). -/
 def indexEquiv : (index K) ≃ (K →+* ℂ) := by
+  classical
   refine Equiv.ofBijective (fun c => ?_)
     ((Fintype.bijective_iff_surjective_and_card _).mpr ⟨?_, ?_⟩)
   · cases c with
@@ -547,10 +550,12 @@ variable (K)
 /-- The matrix that gives the representation on `stdBasis` of the image by `commMap` of an
 element `x` of `(K →+* ℂ) → ℂ` fixed by the map `x_φ ↦ conj x_(conjugate φ)`,
 see `stdBasis_repr_eq_matrixToStdBasis_mul`. -/
-def matrixToStdBasis : Matrix (index K) (index K) ℂ :=
-  fromBlocks (diagonal fun _ => 1) 0 0 <| reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _)
+def matrixToStdBasis : Matrix (index K) (index K) ℂ := by
+  classical
+  exact fromBlocks (diagonal fun _ => 1) 0 0 <| reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _)
     (blockDiagonal (fun _ => (2 : ℂ)⁻¹ • !![1, 1; - I, I]))
 
+open scoped Classical in
 theorem det_matrixToStdBasis :
     (matrixToStdBasis K).det = (2⁻¹ * I) ^ nrComplexPlaces K :=
   calc
@@ -563,6 +568,7 @@ theorem det_matrixToStdBasis :
   _ = (2⁻¹ * Complex.I) ^ Fintype.card {w : InfinitePlace K // IsComplex w} := by
       rw [prod_const, Fintype.card]
 
+open scoped Classical in
 /-- Let `x : (K →+* ℂ) → ℂ` such that `x_φ = conj x_(conj φ)` for all `φ : K →+* ℂ`, then the
 representation of `commMap K x` on `stdBasis` is given (up to reindexing) by the product of
 `matrixToStdBasis` by `x`. -/
@@ -656,12 +662,12 @@ instance : DiscreteTopology (mixedEmbedding.integerLattice K) := by
   rw [← span_latticeBasis]
   infer_instance
 
-open Classical in
+open scoped Classical in
 instance : IsZLattice ℝ (mixedEmbedding.integerLattice K) := by
   simp_rw [← span_latticeBasis]
   exact ZSpan.isZLattice (latticeBasis K)
 
-open Classical in
+open scoped Classical in
 theorem fundamentalDomain_integerLattice :
     MeasureTheory.IsAddFundamentalDomain (mixedEmbedding.integerLattice K)
       (ZSpan.fundamentalDomain (latticeBasis K)) := by
@@ -767,12 +773,12 @@ instance : DiscreteTopology (mixedEmbedding.idealLattice K I) := by
   rw [← span_idealLatticeBasis]
   infer_instance
 
-open Classical in
+open scoped Classical in
 instance : IsZLattice ℝ (mixedEmbedding.idealLattice K I) := by
   simp_rw [← span_idealLatticeBasis]
   exact ZSpan.isZLattice (fractionalIdealLatticeBasis K I)
 
-open Classical in
+open scoped Classical in
 theorem fundamentalDomain_idealLattice :
     MeasureTheory.IsAddFundamentalDomain (mixedEmbedding.idealLattice K I)
       (ZSpan.fundamentalDomain (fractionalIdealLatticeBasis K I)) := by
@@ -803,7 +809,7 @@ instance : BorelSpace (euclidean.mixedSpace K) := ⟨rfl⟩
 
 variable [NumberField K]
 
-open Classical in
+open scoped Classical in
 /-- The continuous linear equivalence between the euclidean mixed space and the mixed space. -/
 def toMixed : (euclidean.mixedSpace K) ≃L[ℝ] (mixedSpace K) :=
   (WithLp.linearEquiv _ _ _).toContinuousLinearEquiv
@@ -814,19 +820,19 @@ protected theorem finrank :
     finrank ℝ (euclidean.mixedSpace K) = finrank ℚ K := by
   rw [LinearEquiv.finrank_eq (toMixed K).toLinearEquiv, mixedEmbedding.finrank]
 
-open Classical in
+open scoped Classical in
 /-- An orthonormal basis of the euclidean mixed space. -/
 def stdOrthonormalBasis : OrthonormalBasis (index K) ℝ (euclidean.mixedSpace K) :=
   OrthonormalBasis.prod (EuclideanSpace.basisFun _ ℝ)
     ((Pi.orthonormalBasis fun _ ↦ Complex.orthonormalBasisOneI).reindex (Equiv.sigmaEquivProd _ _))
 
-open Classical in
+open scoped Classical in
 theorem stdOrthonormalBasis_map_eq :
     (euclidean.stdOrthonormalBasis K).toBasis.map (toMixed K).toLinearEquiv =
       mixedEmbedding.stdBasis K := by
   ext <;> rfl
 
-open Classical in
+open scoped Classical in
 theorem volumePreserving_toMixed :
     MeasurePreserving (toMixed K) where
   measurable := (toMixed K).continuous.measurable
@@ -836,13 +842,13 @@ theorem volumePreserving_toMixed :
       ← measure_congr (ZSpan.fundamentalDomain_ae_parallelepiped (stdBasis K) volume),
       volume_fundamentalDomain_stdBasis K]
 
-open Classical in
+open scoped Classical in
 theorem volumePreserving_toMixed_symm :
     MeasurePreserving (toMixed K).symm := by
   have : MeasurePreserving (toMixed K).toHomeomorph.toMeasurableEquiv := volumePreserving_toMixed K
   exact this.symm
 
-open Classical in
+open scoped Classical in
 /-- The image of ring of integers `𝓞 K` in the euclidean mixed space. -/
 protected def integerLattice : Submodule ℤ (euclidean.mixedSpace K) :=
   ZLattice.comap ℝ (mixedEmbedding.integerLattice K) (toMixed K).toLinearMap
@@ -852,7 +858,7 @@ instance : DiscreteTopology (euclidean.integerLattice K) := by
   rw [euclidean.integerLattice]
   infer_instance
 
-open Classical in
+open scoped Classical in
 instance : IsZLattice ℝ (euclidean.integerLattice K) := by
   simp_rw [euclidean.integerLattice]
   infer_instance
@@ -867,7 +873,7 @@ open ContinuousLinearEquiv
 
 variable {K} (s : Set {w : InfinitePlace K // IsReal w})
 
-open Classical in
+open scoped Classical in
 /-- Let `s` be a set of real places, define the continuous linear equiv of the mixed space that
 swaps sign at places in `s` and leaves the rest unchanged. -/
 def negAt :
@@ -902,7 +908,8 @@ theorem negAt_apply_abs_of_isReal (x : mixedSpace K) (w : {w // IsReal w}) :
     |(negAt s x).1 w| = |x.1 w| := by
   by_cases hw : w ∈ s <;> simp [hw]
 
-open MeasureTheory Classical in
+open scoped Classical in
+open MeasureTheory in
 /-- `negAt` preserves the volume . -/
 theorem volume_preserving_negAt [NumberField K] :
     MeasurePreserving (negAt s) := by
@@ -1030,7 +1037,7 @@ open MeasureTheory
 variable [NumberField K]
 
 include hA in
-open Classical in
+open scoped Classical in
 theorem iUnion_negAt_plusPart_ae :
     ⋃ s, negAt s '' (plusPart A) =ᵐ[volume] A := by
   nth_rewrite 2 [← iUnion_negAt_plusPart_union A hA]
@@ -1051,7 +1058,7 @@ theorem measurableSet_negAt_plusPart (hm : MeasurableSet A) :
     MeasurableSet (negAt s '' (plusPart A)) :=
   negAt_preimage s _ ▸ (measurableSet_plusPart hm).preimage (negAt s).continuous.measurable
 
-open Classical in
+open scoped Classical in
 /-- The image of the `plusPart` of `A` by `negAt` have all the same volume as `plusPart A`. -/
 theorem volume_negAt_plusPart (hm : MeasurableSet A) :
     volume (negAt s '' (plusPart A)) = volume (plusPart A) := by
@@ -1059,7 +1066,7 @@ theorem volume_negAt_plusPart (hm : MeasurableSet A) :
     volume_preserving_negAt.measure_preimage (measurableSet_plusPart hm).nullMeasurableSet]
 
 include hA in
-open Classical in
+open scoped Classical in
 /-- If a subset `A` of the `mixedSpace` is symmetric at real places, then its volume is
 `2^ nrRealPlaces K` times the volume of its `plusPart`. -/
 theorem volume_eq_two_pow_mul_volume_plusPart (hm : MeasurableSet A) :
