@@ -132,17 +132,13 @@ theorem equiv_symm_zero : (equiv v).symm 0 = 0 := rfl
 theorem equiv_add : equiv v (x + y) = equiv v x + equiv v y := rfl
 
 @[deprecated map_add (since := "2025-01-13"), simp]
-theorem equiv_symm_add :
-    (equiv v).symm (r + s) = (equiv v).symm r + (equiv v).symm s :=
-  rfl
+theorem equiv_symm_add : (equiv v).symm (r + s) = (equiv v).symm r + (equiv v).symm s := rfl
 
 @[deprecated map_mul (since := "2025-01-13"), simp]
 theorem equiv_mul : equiv v (x * y) = equiv v x * equiv v y := rfl
 
 @[deprecated map_mul (since := "2025-01-13"), simp]
-theorem equiv_symm_mul :
-    (equiv v).symm (x * y) = (equiv v).symm x * (equiv v).symm y :=
-  rfl
+theorem equiv_symm_mul : (equiv v).symm (x * y) = (equiv v).symm x * (equiv v).symm y := rfl
 
 end equiv_semiring
 
@@ -154,9 +150,7 @@ variable [Ring R] (v : AbsoluteValue R S) (x y : WithAbs v) (r s : R)
 theorem equiv_sub : equiv v (x - y) = equiv v x - equiv v y := rfl
 
 @[deprecated map_sub (since := "2025-01-13"), simp]
-theorem equiv_symm_sub :
-    (equiv v).symm (r - s) = (equiv v).symm r - (equiv v).symm s :=
-  rfl
+theorem equiv_symm_sub : (equiv v).symm (r - s) = (equiv v).symm r - (equiv v).symm s := rfl
 
 @[deprecated map_neg (since := "2025-01-13"), simp]
 theorem equiv_neg : equiv v (-x) = - equiv v x := rfl
