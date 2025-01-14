@@ -93,6 +93,13 @@ theorem bilin_symm_ιMulti (h : B.IsSymm) : ∀ v w : Fin k → M, ⟪(ιMulti R
   rw [← h (v j) (w i)]
   simp only [RingHom.id_apply]
 
+theorem bilin_symm (hS : B.IsSymm) : (exteriorPower.BilinForm k B).IsSymm := by
+  intro v w
+  simp only [RingHom.id_apply]
+  --apply Submodule.span_induction₂ (p := fun v w hv hw ↦
+  --  ((exteriorPower.BilinForm k B) v) w = ((exteriorPower.BilinForm k B) w) v)
+  sorry
+
 section overField
 
 variable {K M : Type*} [Field K] [AddCommGroup M] [Module K M]
@@ -101,8 +108,6 @@ variable {I : Type*} [LinearOrder I] [Finite I] (b : Basis I K M)
 variable {k : ℕ}
 
 local notation "⟪" v ", " w "⟫" => exteriorPower.BilinForm k B v w
-
-#check Basis.exteriorPower K k (B.dualBasis hN b)
 
 omit [Finite I] in
 theorem diff_elt_of_neq_subset (s t : Finset I) (hs : s.card = k) (ht : t.card = k)
@@ -145,6 +150,35 @@ theorem exteriorPower_dualBasis (s t : Finset I) (hs : s.card = k) (ht : t.card 
     intro j
     rw [Matrix.of_apply]
     rw [if_neg (hi j)]
+
+theorem exteriorPower_dualBasis' (s t : {a : Finset I // a.card = k}) :
+  ⟪Basis.exteriorPower K k (B.dualBasis hN b) s, Basis.exteriorPower K k b t⟫ =
+  if s = t then 1 else 0 := by
+  rw [exteriorPower_dualBasis]
+  aesop
+
+instance : Fintype { s : Finset I // s.card = k } := sorry
+
+theorem exteriorPower_repr (s : Finset I) (hs : s.card = k) (v : ⋀[K]^k M) :
+  (Basis.exteriorPower K k b).repr v ⟨s, hs⟩ =
+  ⟪Basis.exteriorPower K k (B.dualBasis hN b) ⟨s, hs⟩, v⟫ := by
+  nth_rw 2 [← Basis.sum_repr (Basis.exteriorPower K k b) v]
+  rw [LinearMap.BilinForm.sum_right]
+  simp only [map_smul, smul_eq_mul]
+  simp only [exteriorPower_dualBasis']
+  simp only [mul_ite, mul_one, mul_zero, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
+
+theorem bilinNondegen' (b : Basis I K M) (hN : B.Nondegenerate)
+  (hS : B.IsSymm) :
+  (exteriorPower.BilinForm k B).Nondegenerate := by
+  intro v h
+  rw [← Basis.forall_coord_eq_zero_iff (Basis.exteriorPower K k b)]
+  intro ⟨s, hs⟩
+  simp only [Basis.coord_apply]
+  rw [exteriorPower_repr B hN]
+  rw [← h (((Basis.exteriorPower K k (B.dualBasis hN b)) ⟨s, hs⟩))]
+  rw [← (bilin_symm k B hS) v _]
+  simp only [basis_apply, RingHom.id_apply]
 
 end overField
 
