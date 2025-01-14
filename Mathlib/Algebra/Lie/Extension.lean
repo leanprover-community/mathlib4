@@ -39,14 +39,26 @@ class IsExtension (i : N →ₗ⁅R⁆ L) (p : L →ₗ⁅R⁆ M) : Prop where
   range_eq_top : p.range = ⊤
   exact : i.range = p.ker
 
-/-- A bundled version of `IsExtension`, giving a short exact sequence of Lie algebra homomorphisms
-`0 → N → L → M → 0`. -/
+variable (R N M) in
+/-- The type of all Lie extensions of `M` by `N`.  That is, short exact sequences of `R`-Lie algebra
+homomorphisms `0 → N → L → M → 0` where `R`, `M`, and `N` are fixed. -/
 structure Extension where
+  /-- The middle object in the sequence. -/
+  L : Type*
+  /-- `L` is a Lie ring. -/
+  instLieRing : LieRing L
+  /-- `L` is a Lie algebra over `R`. -/
+  instLieAlgebra : LieAlgebra R L
   /-- The inclusion homomorphism `N →ₗ⁅R⁆ L` -/
   incl : N →ₗ⁅R⁆ L
   /-- The projection homomorphism `L →ₗ⁅R⁆ M` -/
   proj : L →ₗ⁅R⁆ M
   IsExtension : IsExtension incl proj
+
+/-- The bundled `LieAlgebra.Extension` corresponding to `LieAlgebra.IsExtension` -/
+@[simps] def IsExtension.extension {i : N →ₗ⁅R⁆ L} {p : L →ₗ⁅R⁆ M} (h : IsExtension i p) :
+    Extension R N M :=
+  ⟨L, _, _, i, p, h⟩
 
 /-- A surjective Lie algebra homomorphism yields an extension. -/
 theorem isExtension_of_surjective (f : L →ₗ⁅R⁆ M) (hf : Function.Surjective f) :
