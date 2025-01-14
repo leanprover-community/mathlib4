@@ -653,6 +653,19 @@ theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith
     apply ContinuousMap.dist_le_iff_of_nonempty.mp
     exact h x y hx hy (α x hx) (α y hy) (hα x hx) (hα y hy)
 
+/-- Picard-Lindelöf (Cauchy-Lipschitz) theorem, differential form. This version shows the existence
+of a local flow and that it is continuous on its domain as a (partial) map `E × ℝ → E`. -/
+theorem exists_forall_mem_closedBall_eq_hasDerivWithinAt_continuousOn
+    (hf : IsPicardLindelof f t₀ x₀ a r L K) :
+    ∃ α : E × ℝ → E, (∀ x ∈ closedBall x₀ r, α ⟨x, t₀⟩ = x ∧
+      ∀ t ∈ Icc tmin tmax, HasDerivWithinAt (α ⟨x, ·⟩) (f t (α ⟨x, t⟩)) (Icc tmin tmax) t) ∧
+      ContinuousOn α (closedBall x₀ r ×ˢ Icc tmin tmax) := by
+  obtain ⟨α, hα1, L', hα2⟩ := hf.exists_forall_mem_closedBall_eq_hasDerivWithinAt_lipschitzOnWith
+  refine ⟨uncurry α, hα1, ?_⟩
+  apply continuousOn_prod_of_continuousOn_lipschitzOnWith _ L' _ hα2
+  intro x hx t ht
+  exact (hα1 x hx).2 t ht |>.continuousWithinAt
+
 end IsPicardLindelof
 
 /-! ## $C^1$ vector field -/
