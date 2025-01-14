@@ -6,6 +6,7 @@ Authors: Yakov Pechersky
 import Mathlib.Data.Finset.Powerset
 import Mathlib.Data.Fintype.Basic
 import Mathlib.Data.List.Permutation
+
 /-!
 
 # Fintype instance for nodup lists
