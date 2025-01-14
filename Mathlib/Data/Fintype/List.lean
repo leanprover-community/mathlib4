@@ -68,6 +68,7 @@ instance fintypeNodupList [Fintype α] : Fintype { l : List α // l.Nodup } := b
     use ((Finset.univ : Finset α).powerset.toList : (List (Finset α)))
     constructor
     · simp only [Finset.coe_toList]
+      rfl
     · convert Finset.nodup_toList (Finset.univ.powerset : Finset (Finset α))
       ext l
       unfold Nodup
