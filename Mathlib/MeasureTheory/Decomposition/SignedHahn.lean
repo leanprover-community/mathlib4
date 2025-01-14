@@ -37,7 +37,7 @@ Hahn decomposition theorem
 
 noncomputable section
 
-open scoped Classical NNReal ENNReal MeasureTheory
+open scoped NNReal ENNReal MeasureTheory
 
 variable {α β : Type*} [MeasurableSpace α]
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [OrderedAddCommMonoid M]
@@ -101,8 +101,9 @@ private theorem existsNatOneDivLTMeasure_of_not_negative (hi : ¬s ≤[i] 0) :
 
 /-- Given the set `i`, if `i` is not negative, `findExistsOneDivLT s i` is the
 least natural number `n` such that `ExistsOneDivLT s i n`, otherwise, it returns 0. -/
-private def findExistsOneDivLT (s : SignedMeasure α) (i : Set α) : ℕ :=
-  if hi : ¬s ≤[i] 0 then Nat.find (existsNatOneDivLTMeasure_of_not_negative hi) else 0
+private def findExistsOneDivLT (s : SignedMeasure α) (i : Set α) : ℕ := by
+  classical
+  exact if hi : ¬s ≤[i] 0 then Nat.find (existsNatOneDivLTMeasure_of_not_negative hi) else 0
 
 private theorem findExistsOneDivLT_spec (hi : ¬s ≤[i] 0) :
     ExistsOneDivLT s i (findExistsOneDivLT s i) := by
@@ -111,14 +112,16 @@ private theorem findExistsOneDivLT_spec (hi : ¬s ≤[i] 0) :
 
 private theorem findExistsOneDivLT_min (hi : ¬s ≤[i] 0) {m : ℕ}
     (hm : m < findExistsOneDivLT s i) : ¬ExistsOneDivLT s i m := by
+  classical
   rw [findExistsOneDivLT, dif_pos hi] at hm
   exact Nat.find_min _ hm
 
 /-- Given the set `i`, if `i` is not negative, `someExistsOneDivLT` chooses the set
 `k` from `ExistsOneDivLT s i (findExistsOneDivLT s i)`, otherwise, it returns the
 empty set. -/
-private def someExistsOneDivLT (s : SignedMeasure α) (i : Set α) : Set α :=
-  if hi : ¬s ≤[i] 0 then Classical.choose (findExistsOneDivLT_spec hi) else ∅
+private def someExistsOneDivLT (s : SignedMeasure α) (i : Set α) : Set α := by
+  classical
+  exact if hi : ¬s ≤[i] 0 then Classical.choose (findExistsOneDivLT_spec hi) else ∅
 
 private theorem someExistsOneDivLT_spec (hi : ¬s ≤[i] 0) :
     someExistsOneDivLT s i ⊆ i ∧
@@ -221,6 +224,7 @@ private theorem restrictNonposSeq_disjoint : Pairwise (Disjoint on restrictNonpo
 private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ : s i < 0)
     (hn : ¬∀ n : ℕ, ¬s ≤[i \ ⋃ l < n, restrictNonposSeq s i l] 0) :
     ∃ j : Set α, MeasurableSet j ∧ j ⊆ i ∧ s ≤[j] 0 ∧ s j < 0 := by
+  classical
   by_cases h : s ≤[i] 0
   · exact ⟨i, hi₁, Set.Subset.refl _, h, hi₂⟩
   push_neg at hn
