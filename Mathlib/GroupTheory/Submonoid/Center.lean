@@ -132,7 +132,7 @@ section congr
 variable {M} {N : Type*}
 
 /-- The center of isomorphic magmas are isomorphic. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps) "The center of isomorphic additive magmas are isomorphic."]
 def Subsemigroup.centerCongr [Mul M] [Mul N] (e : M ≃* N) : center M ≃* center N where
   toFun r := by refine ⟨e r, ?_, ?_, ?_, ?_⟩ <;>
     (intros; apply e.symm.injective;
@@ -145,12 +145,13 @@ def Subsemigroup.centerCongr [Mul M] [Mul N] (e : M ≃* N) : center M ≃* cent
   map_mul' _ _ := Subtype.ext (map_mul ..)
 
 /-- The center of isomorphic monoids are isomorphic. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!) "The center of isomorphic additive monoids are isomorphic."]
 def Submonoid.centerCongr [MulOneClass M] [MulOneClass N] (e : M ≃* N) : center M ≃* center N :=
   Subsemigroup.centerCongr e
 
 /-- The center of a magma is isomorphic to the center of its opposite. -/
-@[to_additive (attr := simps)]
+@[to_additive (attr := simps)
+"The center of an additive magma is isomorphic to the center of its opposite."]
 def Subsemigroup.centerMulOppositeEquiv [Mul M] : center Mᵐᵒᵖ ≃* center M where
   toFun r := by refine ⟨r.1.unop, ?_, ?_, ?_, ?_⟩ <;>
     (intros; apply MulOpposite.op_injective;
@@ -163,7 +164,8 @@ def Subsemigroup.centerMulOppositeEquiv [Mul M] : center Mᵐᵒᵖ ≃* center 
   map_mul' r _ := Subtype.ext (congr_arg MulOpposite.unop <| r.2.1 _)
 
 /-- The center of a monoid is isomorphic to the center of its opposite. -/
-@[to_additive (attr := simps!)]
+@[to_additive (attr := simps!)
+"The center of an additive monoid is isomorphic to the center of its opposite. "]
 def Submonoid.centerMulOppositeEquiv [MulOneClass M] : center Mᵐᵒᵖ ≃* center M :=
   Subsemigroup.centerMulOppositeEquiv
 
