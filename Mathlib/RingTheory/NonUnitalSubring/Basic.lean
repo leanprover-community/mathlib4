@@ -353,7 +353,7 @@ is isomorphic to the center of its opposite. -/
 @[simps!] def centerToMulOpposite : center R ≃+* center Rᵐᵒᵖ :=
   NonUnitalSubsemiring.centerToMulOpposite
 
-end NonUnitalNonAssocRingp
+end NonUnitalNonAssocRing
 
 section NonUnitalRing
 variable [NonUnitalRing R]
