@@ -25,7 +25,8 @@ lemma fg_iff_card_finset_nonempty {p : Submodule R M} :
   p.FG ↔ Set.Nonempty (Finset.card '' { s : Finset M | span R (s : Set M) = p }) := by
   exact Set.image_nonempty.symm
 
-/-- A submodule is finitely generated if and only if its spanrank equals its minimum generator cardinality -/
+/-- A submodule is finitely generated if and only if
+its spanrank equals its minimum generator cardinality -/
 lemma fg_iff_spanrank_eq {p : Submodule R M} :
     p.FG ↔ p.spanRank = p.minGeneratorCard := by
   constructor
@@ -52,14 +53,15 @@ theorem exists_generator_eq_min_generator_card {p : Submodule R M} (h : p.FG) :
   let f := ((@Fintype.ofFinite s h₁).equivFin).invFun
   letI t1 : Finite (@Set.Elem M s) := h₁
   letI t2 : Fintype (@Set.Elem M s) := h₁.fintype
-  have temp : h₁.toFinset.card = @Fintype.card (@Set.Elem M s) (Fintype.ofFinite (@Set.Elem M s)) := by
-    rw [Set.Finite.card_toFinset h₁]
+  have temp : h₁.toFinset.card = @Fintype.card (@Set.Elem M s)
+    (Fintype.ofFinite (@Set.Elem M s)) := by
+      rw [Set.Finite.card_toFinset h₁]
   let f' := temp ▸ f
   let f' :=  Fintype.equivFinOfCardEq temp.symm
   use Subtype.val ∘ f'.symm
   rw [Set.range_comp, Set.range_eq_univ.mpr]
-  simp_all only [nonempty_subtype, Set.toFinite_toFinset, Set.toFinset_card, Set.image_univ,
-    Subtype.range_coe_subtype, Set.setOf_mem_eq, t2]
+  simp_all only [nonempty_subtype, Set.toFinite_toFinset, Set.toFinset_card,
+    Set.image_univ, Subtype.range_coe_subtype, Set.setOf_mem_eq, t2]
   exact f'.symm.surjective
 
 /-- For a finitely generated submodule, its spanRank is less than or equal to n
@@ -86,50 +88,13 @@ lemma minGeneratorCardLeIff_exists {p : Submodule R M} {n : ℕ} :
       rintro _ ⟨x, rfl⟩
       dsimp only [f']
       apply Submodule.subset_span
-      rw [← spanRankNeTop_iff] at h
-      lift p.spanRank to ℕ using h with e' he'
-
-      -- use Fin.castLE e x
-      -- dsimp [f']
-      -- rw [dif_pos x.isLt]
-      -- congr
-      -- ext
-      -- rfl
-
-      -- dsimp only [f']
-      -- #check dif_pos x.isLt
-      -- -- rw [dif_pos x.isLt]
-      -- rw [← spanRankNeTop_iff] at h
-      -- lift p.spanRank to ℕ using h with e' he'
-      -- #check Fin.castLE (ENat.coe_le_coe.mp e)
-      -- #check g (Fin.castLE _ x)
-
-      -- simp [dif_pos x.isLt]
-      -- by_cases ple : n < p.minGeneratorCard
-      -- ·
-      --   sorry
-
-
-      -- use Fin.castLE (ENat.coe_le_coe.mp e)
-
-
-
-      -- use Fin.castLE e x
-      -- dsimp [f']
-      -- rw [dif_pos x.isLt]
-      -- congr
-      -- ext
-      -- rfl
-
-      sorry
-    -- · rintro _ ⟨x, rfl⟩
-    --   apply Submodule.subset_span
-    --   use Fin.castLE e x
-    --   dsimp [f']
-    --   rw [dif_pos x.isLt]
-    --   congr
-    --   ext
-    --   rfl
+      rw [fg_iff_spanrank_eq] at h
+      have he : (p.minGeneratorCard : WithTop Nat) ≤ n := by rwa [h] at e
+      have he' : p.minGeneratorCard ≤ n := ENat.coe_le_coe.mp he
+      use Fin.castLE (ENat.coe_le_coe.mp he) x
+      dsimp [f']
+      simp only [Fin.is_lt, ↓reduceDIte]
+      rfl
   · rintro ⟨f, hf⟩
     let s : { s : Set M // s.Finite ∧ span R s = p} :=
       ⟨Set.range f, Set.finite_range f, hf⟩
