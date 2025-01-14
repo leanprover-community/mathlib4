@@ -113,16 +113,6 @@ noncomputable instance {α N : Type*} [LinearOrder α] [OrderedCancelAddCommMono
   le_of_add_le_add_left a b c h := by simpa only [add_le_add_iff_left] using h
   add_le_add_left a b h c := by simpa only [add_le_add_iff_left] using h
 
-theorem Finsupp.lex_lt_iff {α N : Type*} [LinearOrder α] [LinearOrder N] [Zero N]
-    {a b : Lex (α →₀ N)} :
-    a < b ↔ ∃ i, (∀ j, j< i → ofLex a j = ofLex b j) ∧ ofLex a i < ofLex b i :=
-    Finsupp.lex_def
-
-theorem Finsupp.lex_le_iff {α N : Type*} [LinearOrder α] [LinearOrder N] [Zero N]
-    {a b : Lex (α →₀ N)} :
-    a ≤ b ↔ a = b ∨ ∃ i, (∀ j, j< i → ofLex a j = ofLex b j) ∧ ofLex a i < ofLex b i := by
-    rw [le_iff_eq_or_lt, Finsupp.lex_lt_iff]
-
 /-- for the lexicographic ordering, X 0 * X 1 < X 0  ^ 2 -/
 example : toLex (Finsupp.single 0 2) > toLex (Finsupp.single 0 1 + Finsupp.single 1 1) := by
   use 0; simp
@@ -154,12 +144,10 @@ theorem MonomialOrder.lex_lt_iff [WellFoundedGT σ] {c d : σ →₀ ℕ} :
 
 theorem MonomialOrder.lex_lt_iff_of_unique [Unique σ] {c d : σ →₀ ℕ} :
     c ≺[lex] d ↔ c default < d default := by
-  simp [MonomialOrder.lex_lt_iff, Finsupp.lex_lt_iff, Unique.exists_iff]
+  simp only [MonomialOrder.lex_lt_iff, Finsupp.lex_lt_iff_of_unique, ofLex_toLex]
 
 theorem MonomialOrder.lex_le_iff_of_unique [Unique σ] {c d : σ →₀ ℕ} :
     c ≼[lex] d ↔ c default ≤ d default := by
-  simp only [le_iff_eq_or_lt, EmbeddingLike.apply_eq_iff_eq]
-  apply or_congr _ MonomialOrder.lex_lt_iff_of_unique
-  simp only [Finsupp.ext_iff, Unique.forall_iff]
+  simp only [MonomialOrder.lex_le_iff, Finsupp.lex_le_iff_of_unique, ofLex_toLex]
 
 end Lex

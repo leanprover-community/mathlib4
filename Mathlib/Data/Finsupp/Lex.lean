@@ -104,6 +104,25 @@ theorem lt_of_forall_lt_of_lt (a b : Lex (α →₀ N)) (i : α) :
     (∀ j < i, ofLex a j = ofLex b j) → ofLex a i < ofLex b i → a < b :=
   fun h1 h2 ↦ ⟨i, h1, h2⟩
 
+theorem lex_lt_iff {a b : Lex (α →₀ N)} :
+    a < b ↔ ∃ i, (∀ j, j< i → ofLex a j = ofLex b j) ∧ ofLex a i < ofLex b i :=
+    Finsupp.lex_def
+
+theorem lex_le_iff {a b : Lex (α →₀ N)} :
+    a ≤ b ↔ a = b ∨ ∃ i, (∀ j, j< i → ofLex a j = ofLex b j) ∧ ofLex a i < ofLex b i := by
+    rw [le_iff_eq_or_lt, Finsupp.lex_lt_iff]
+
+theorem lex_lt_iff_of_unique [Unique α] {a b : Lex (α →₀ N)} :
+    a < b ↔ ofLex a default < ofLex b default := by
+  simp [lex_lt_iff, Unique.exists_iff]
+
+theorem lex_le_iff_of_unique [Unique α] {a b : Lex (α →₀ N)} :
+    a ≤ b ↔ ofLex a default ≤ ofLex b default := by
+  simp only [le_iff_eq_or_lt, EmbeddingLike.apply_eq_iff_eq]
+  apply or_congr _ lex_lt_iff_of_unique
+  conv_lhs => rw [← toLex_ofLex a, ← toLex_ofLex b, toLex_inj]
+  simp only [Finsupp.ext_iff, Unique.forall_iff]
+
 end NHasZero
 
 section Covariants
