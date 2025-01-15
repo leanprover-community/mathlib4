@@ -60,9 +60,6 @@ structure CanonicallyOrderedAddCommMonoid (α : Type*) extends
   /-- For any `a` and `b`, `a ≤ a + b` -/
   protected le_self_add : ∀ a b : α, a ≤ a + b
 
--- see Note [lower instance priority]
-attribute [instance 100] CanonicallyOrderedAddCommMonoid.toOrderBot
-
 set_option linter.existingAttributeWarning false in
 /-- A canonically ordered monoid is an ordered commutative monoid
   in which the ordering coincides with the divisibility relation,
