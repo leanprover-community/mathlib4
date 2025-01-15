@@ -139,8 +139,16 @@ lemma coe_monoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
   ((f : ContinuousMonoidHom A B) : A →* B) = f := rfl
 
 @[to_additive (attr := simp)]
+lemma coe_toMonoidHom [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
+  (f : ContinuousMonoidHom A B).toMonoidHom = f := rfl
+
+@[to_additive (attr := simp)]
 lemma coe_continuousMap [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
   ((f : ContinuousMonoidHom A B) : C(A, B)) = f := rfl
+
+@[to_additive (attr := simp)]
+lemma coe_toContinuousMap [MonoidHomClass F A B] [ContinuousMapClass F A B] (f : F) :
+  (f : ContinuousMonoidHom A B).toContinuousMap = f := rfl
 
 end
 
