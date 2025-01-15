@@ -5,6 +5,7 @@ Authors: Kim Morrison, Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Algebra.Category.Grp.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.ReflectsIso
+import Mathlib.CategoryTheory.Elementwise
 import Mathlib.Algebra.Ring.Equiv
 
 /-!
@@ -56,15 +57,28 @@ variable {R} in
 structure Hom (R S : SemiRingCat) where
   private mk ::
   /-- The underlying ring hom. -/
-  hom : R →+* S
+  hom' : R →+* S
 
 instance : Category SemiRingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
-  comp f g := ⟨g.hom.comp f.hom⟩
+  comp f g := ⟨g.hom'.comp f.hom'⟩
 
-instance {R S : SemiRingCat.{u}} : CoeFun (R ⟶ S) (fun _ ↦ R → S) where
-  coe f := f.hom
+instance : ConcreteCategory.{u} SemiRingCat (fun R S => R →+* S) where
+  hom := Hom.hom'
+  ofHom f := ⟨f⟩
+
+/-- Turn a morphism in `SemiRingCat` back into a `RingHom`. -/
+abbrev Hom.hom {R S : SemiRingCat.{u}} (f : Hom R S) :=
+  ConcreteCategory.hom (C := SemiRingCat) f
+
+/-- Typecheck a `RingHom` as a morphism in `SemiRingCat`. -/
+abbrev ofHom {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) : of R ⟶ of S :=
+  ConcreteCategory.ofHom (C := SemiRingCat) f
+
+/-!
+The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
+-/
 
 @[simp]
 lemma hom_id {R : SemiRingCat} : (𝟙 R : R ⟶ R).hom = RingHom.id R := rfl
@@ -85,10 +99,7 @@ lemma comp_apply {R S T : SemiRingCat} (f : R ⟶ S) (g : S ⟶ T) (r : R) :
 lemma hom_ext {R S : SemiRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
-/-- Typecheck a `RingHom` as a morphism in `SemiRingCat`. -/
-abbrev ofHom {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) : of R ⟶ of S :=
-  ⟨f⟩
-
+@[simp]
 lemma hom_ofHom {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) : (ofHom f).hom = f := rfl
 
 @[simp]
@@ -120,10 +131,6 @@ lemma hom_inv_apply {R S : SemiRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) 
 instance : Inhabited SemiRingCat :=
   ⟨of PUnit⟩
 
-instance : ConcreteCategory.{u} SemiRingCat (fun R S => R →+* S) where
-  hom := Hom.hom
-  ofHom := ofHom
-
 /-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`. -/
 unif_hint forget_obj_eq_coe (R R' : SemiRingCat) where
   R ≟ R' ⊢
@@ -152,8 +159,8 @@ instance hasForgetToAddCommMonCat : HasForget₂ SemiRingCat AddCommMonCat where
 @[simps]
 def _root_.RingEquiv.toSemiRingCatIso {R S : Type u} [Semiring R] [Semiring S] (e : R ≃+* S) :
     of R ≅ of S where
-  hom := ⟨e⟩
-  inv := ⟨e.symm⟩
+  hom := ofHom e
+  inv := ofHom e.symm
 
 instance forgetReflectIsos : (forget SemiRingCat).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
@@ -198,15 +205,28 @@ variable {R} in
 structure Hom (R S : RingCat) where
   private mk ::
   /-- The underlying ring hom. -/
-  hom : R →+* S
+  hom' : R →+* S
 
 instance : Category RingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
-  comp f g := ⟨g.hom.comp f.hom⟩
+  comp f g := ⟨g.hom'.comp f.hom'⟩
 
-instance {R S : RingCat.{u}} : CoeFun (R ⟶ S) (fun _ ↦ R → S) where
-  coe f := f.hom
+instance : ConcreteCategory.{u} RingCat (fun R S => R →+* S) where
+  hom := Hom.hom'
+  ofHom f := ⟨f⟩
+
+/-- Turn a morphism in `RingCat` back into a `RingHom`. -/
+abbrev Hom.hom {R S : RingCat.{u}} (f : Hom R S) :=
+  ConcreteCategory.hom (C := RingCat) f
+
+/-- Typecheck a `RingHom` as a morphism in `RingCat`. -/
+abbrev ofHom {R S : Type u} [Ring R] [Ring S] (f : R →+* S) : of R ⟶ of S :=
+  ConcreteCategory.ofHom (C := RingCat) f
+
+/-!
+The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
+-/
 
 @[simp]
 lemma hom_id {R : RingCat} : (𝟙 R : R ⟶ R).hom = RingHom.id R := rfl
@@ -227,10 +247,7 @@ lemma comp_apply {R S T : RingCat} (f : R ⟶ S) (g : S ⟶ T) (r : R) :
 lemma hom_ext {R S : RingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
-/-- Typecheck a `RingHom` as a morphism in `RingCat`. -/
-abbrev ofHom {R S : Type u} [Ring R] [Ring S] (f : R →+* S) : of R ⟶ of S :=
-  ⟨f⟩
-
+@[simp]
 lemma hom_ofHom {R S : Type u} [Ring R] [Ring S] (f : R →+* S) : (ofHom f).hom = f := rfl
 
 @[simp]
@@ -250,21 +267,13 @@ lemma ofHom_apply {R S : Type u} [Ring R] [Ring S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
 @[simp]
-lemma inv_hom_apply {R S : RingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  rw [← comp_apply]
-  simp
+lemma inv_hom_apply {R S : RingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by simp
 
 @[simp]
-lemma hom_inv_apply {R S : RingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
-  simp
+lemma hom_inv_apply {R S : RingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by simp
 
 instance : Inhabited RingCat :=
   ⟨of PUnit⟩
-
-instance : ConcreteCategory.{u} RingCat (fun R S => R →+* S) where
-  hom := Hom.hom
-  ofHom := ofHom
 
 /-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`.
 
@@ -298,8 +307,8 @@ instance hasForgetToAddCommGrp : HasForget₂ RingCat AddCommGrp where
 @[simps]
 def _root_.RingEquiv.toRingCatIso {R S : Type u} [Ring R] [Ring S] (e : R ≃+* S) :
     of R ≅ of S where
-  hom := ⟨e⟩
-  inv := ⟨e.symm⟩
+  hom := ofHom e
+  inv := ofHom e.symm
 
 instance forgetReflectIsos : (forget RingCat).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
@@ -344,15 +353,30 @@ variable {R} in
 structure Hom (R S : CommSemiRingCat) where
   private mk ::
   /-- The underlying ring hom. -/
-  hom : R →+* S
+  hom' : R →+* S
 
 instance : Category CommSemiRingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
-  comp f g := ⟨g.hom.comp f.hom⟩
+  comp f g := ⟨g.hom'.comp f.hom'⟩
+
+instance : ConcreteCategory.{u} CommSemiRingCat (fun R S => R →+* S) where
+  hom := Hom.hom'
+  ofHom f := ⟨f⟩
+
+abbrev Hom.hom {R S : CommSemiRingCat.{u}} (f : Hom R S) :=
+  ConcreteCategory.hom (C := CommSemiRingCat) f
+
+/-- Typecheck a `RingHom` as a morphism in `CommSemiRingCat`. -/
+abbrev ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) : of R ⟶ of S :=
+  ConcreteCategory.ofHom (C := CommSemiRingCat) f
 
 instance {R S : CommSemiRingCat.{u}} : CoeFun (R ⟶ S) (fun _ ↦ R → S) where
   coe f := f.hom
+
+/-!
+The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
+-/
 
 @[simp]
 lemma hom_id {R : CommSemiRingCat} : (𝟙 R : R ⟶ R).hom = RingHom.id R := rfl
@@ -373,10 +397,7 @@ lemma comp_apply {R S T : CommSemiRingCat} (f : R ⟶ S) (g : S ⟶ T) (r : R) :
 lemma hom_ext {R S : CommSemiRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
-/-- Typecheck a `RingHom` as a morphism in `CommSemiRingCat`. -/
-abbrev ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) : of R ⟶ of S :=
-  ⟨f⟩
-
+@[simp]
 lemma hom_ofHom {R S : Type u} [CommSemiring R] [CommSemiring S] (f : R →+* S) :
   (ofHom f).hom = f := rfl
 
@@ -397,21 +418,13 @@ lemma ofHom_apply {R S : Type u} [CommSemiring R] [CommSemiring S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
 @[simp]
-lemma inv_hom_apply {R S : CommSemiRingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  rw [← comp_apply]
-  simp
+lemma inv_hom_apply {R S : CommSemiRingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by simp
 
 @[simp]
-lemma hom_inv_apply {R S : CommSemiRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
-  simp
+lemma hom_inv_apply {R S : CommSemiRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by simp
 
 instance : Inhabited CommSemiRingCat :=
   ⟨of PUnit⟩
-
-instance : ConcreteCategory.{u} CommSemiRingCat (fun R S => R →+* S) where
-  hom := Hom.hom
-  ofHom := ofHom
 
 /-- This unification hint helps with problems of the form `(forget ?C).obj R =?= carrier R'`. -/
 unif_hint forget_obj_eq_coe (R R' : CommSemiRingCat) where
@@ -443,8 +456,8 @@ instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat where
 def _root_.RingEquiv.toCommSemiRingCatIso
     {R S : Type u} [CommSemiring R] [CommSemiring S] (e : R ≃+* S) :
     of R ≅ of S where
-  hom := ⟨e⟩
-  inv := ⟨e.symm⟩
+  hom := ofHom e
+  inv := ofHom e.symm
 
 instance forgetReflectIsos : (forget CommSemiRingCat).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
@@ -489,15 +502,28 @@ variable {R} in
 structure Hom (R S : CommRingCat) where
   private mk ::
   /-- The underlying ring hom. -/
-  hom : R →+* S
+  hom' : R →+* S
 
 instance : Category CommRingCat where
   Hom R S := Hom R S
   id R := ⟨RingHom.id R⟩
-  comp f g := ⟨g.hom.comp f.hom⟩
+  comp f g := ⟨g.hom'.comp f.hom'⟩
 
-instance {R S : CommRingCat.{u}} : CoeFun (R ⟶ S) (fun _ ↦ R → S) where
-  coe f := f.hom
+instance : ConcreteCategory.{u} CommRingCat (fun R S => R →+* S) where
+  hom := Hom.hom'
+  ofHom f := ⟨f⟩
+
+/-- The underlying ring hom. -/
+abbrev Hom.hom {R S : CommRingCat.{u}} (f : Hom R S) :=
+  ConcreteCategory.hom (C := CommRingCat) f
+
+/-- Typecheck a `RingHom` as a morphism in `CommRingCat`. -/
+abbrev ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : of R ⟶ of S :=
+  ConcreteCategory.ofHom (C := CommRingCat) f
+
+/-!
+The results below duplicate the `ConcreteCategory` simp lemmas, but we can keep them for `dsimp`.
+-/
 
 @[simp]
 lemma hom_id {R : CommRingCat} : (𝟙 R : R ⟶ R).hom = RingHom.id R := rfl
@@ -518,10 +544,7 @@ lemma comp_apply {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) (r : R) :
 lemma hom_ext {R S : CommRingCat} {f g : R ⟶ S} (hf : f.hom = g.hom) : f = g :=
   Hom.ext hf
 
-/-- Typecheck a `RingHom` as a morphism in `CommRingCat`. -/
-abbrev ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) : of R ⟶ of S :=
-  ⟨f⟩
-
+@[simp]
 lemma hom_ofHom {R S : Type u} [CommRing R] [CommRing S] (f : R →+* S) :
   (ofHom f).hom = f := rfl
 
@@ -542,21 +565,13 @@ lemma ofHom_apply {R S : Type u} [CommRing R] [CommRing S]
     (f : R →+* S) (r : R) : ofHom f r = f r := rfl
 
 @[simp]
-lemma inv_hom_apply {R S : CommRingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by
-  rw [← comp_apply]
-  simp
+lemma inv_hom_apply {R S : CommRingCat} (e : R ≅ S) (r : R) : e.inv (e.hom r) = r := by simp
 
 @[simp]
-lemma hom_inv_apply {R S : CommRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by
-  rw [← comp_apply]
-  simp
+lemma hom_inv_apply {R S : CommRingCat} (e : R ≅ S) (s : S) : e.hom (e.inv s) = s := by simp
 
 instance : Inhabited CommRingCat :=
   ⟨of PUnit⟩
-
-instance : ConcreteCategory.{u} CommRingCat (fun R S => R →+* S) where
-  hom := Hom.hom
-  ofHom := ofHom
 
 lemma forget_obj {R : CommRingCat} : (forget CommRingCat).obj R = R := rfl
 
@@ -598,8 +613,8 @@ instance hasForgetToAddCommMonCat : HasForget₂ CommRingCat CommSemiRingCat whe
 def _root_.RingEquiv.toCommRingCatIso
     {R S : Type u} [CommRing R] [CommRing S] (e : R ≃+* S) :
     of R ≅ of S where
-  hom := ⟨e⟩
-  inv := ⟨e.symm⟩
+  hom := ofHom e
+  inv := ofHom e.symm
 
 instance forgetReflectIsos : (forget CommRingCat).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
