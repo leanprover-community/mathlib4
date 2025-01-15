@@ -27,6 +27,8 @@ Let `R` be a commutative ring and `A` and `B` two `R`-algebras.
 
 namespace Subalgebra
 
+open Algebra.TensorProduct
+
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R]
@@ -36,14 +38,14 @@ lemma le_centralizer_iff (S T : Subalgebra R A) : S ≤ centralizer R T ↔ T �
   ⟨fun h t ht _ hs ↦ (h hs t ht).symm, fun h s hs _ ht ↦ (h ht s hs).symm⟩
 
 lemma centralizer_sup (S T : Subalgebra R A) :
-    centralizer R ((S ⊔ T : Subalgebra R A) : Set A) = centralizer R S ⊓ centralizer R T := by
-  refine eq_of_forall_le_iff fun K ↦ ?_
-  simp_rw [le_centralizer_iff, sup_le_iff, le_inf_iff, K.le_centralizer_iff]
+    centralizer R ((S ⊔ T : Subalgebra R A) : Set A) = centralizer R S ⊓ centralizer R T :=
+  eq_of_forall_le_iff fun K ↦ by
+    simp_rw [le_centralizer_iff, sup_le_iff, le_inf_iff, K.le_centralizer_iff]
 
 lemma centralizer_iSup {ι : Sort*} (S : ι → Subalgebra R A) :
-    centralizer R ((⨆ i, S i : Subalgebra R A) : Set A) = ⨅ i, centralizer R (S i) := by
-  refine eq_of_forall_le_iff fun K ↦ ?_
-  simp_rw [le_centralizer_iff, iSup_le_iff, le_iInf_iff, K.le_centralizer_iff]
+    centralizer R ((⨆ i, S i : Subalgebra R A) : Set A) = ⨅ i, centralizer R (S i) :=
+  eq_of_forall_le_iff fun K ↦ by
+    simp_rw [le_centralizer_iff, iSup_le_iff, le_iInf_iff, K.le_centralizer_iff]
 
 end CommSemiring
 
@@ -57,24 +59,27 @@ open Finsupp TensorProduct
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R`-module.
-Then the centralizer of `A ⊆ A ⊗ B` is `C(A) ⊗ B` where `C(A)` is the center of `A`.
+For any subalgebra `S` of `A`, the centralizer of `S ⊆ A ⊗ B` is `C_S(A) ⊗ B` where `C_S(A)` is the
+centralizer of `S` in `A`.
 -/
-lemma centralizer_range_includeLeft_eq_center_tensorProduct [Module.Free R B] :
+lemma centralizer_range_includeLeft_comp_val_eq_center_tensorProduct
+    (S : Subalgebra R A) [Module.Free R B] :
     Subalgebra.centralizer R
-      (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B).range =
-    (Algebra.TensorProduct.map (Subalgebra.center R A).val (AlgHom.id R B)).range := by
+      (Algebra.TensorProduct.includeLeft.comp S.val : S →ₐ[R] A ⊗[R] B).range =
+    (Algebra.TensorProduct.map (Subalgebra.centralizer R (S : Set A)).val
+      (AlgHom.id R B)).range := by
   classical
   ext w
   constructor
   · intro hw
-    rw [Subalgebra.mem_centralizer_iff] at hw
+    rw [mem_centralizer_iff] at hw
     let ℬ := Module.Free.chooseBasis R B
     obtain ⟨b, rfl⟩ := TensorProduct.eq_repr_basis_right ℬ w
     refine Subalgebra.sum_mem _ fun j hj => ⟨⟨b j, ?_⟩ ⊗ₜ[R] ℬ j, by simp⟩
-    rw [Subalgebra.mem_center_iff]
-    intro x
+    rw [Subalgebra.mem_centralizer_iff]
+    intro x hx
     suffices x • b = b.mapRange (fun a ↦ a * x) (by simp) from Finsupp.ext_iff.1 this j
-    specialize hw (x ⊗ₜ[R] 1) ⟨x, rfl⟩
+    specialize hw (x ⊗ₜ[R] 1) ⟨⟨x, hx⟩, rfl⟩
     simp only [Finsupp.sum, Finset.mul_sum, Algebra.TensorProduct.tmul_mul_tmul, one_mul,
       Finset.sum_mul, mul_one] at hw
     refine TensorProduct.sum_tmul_basis_right_injective ℬ ?_
@@ -90,10 +95,53 @@ lemma centralizer_range_includeLeft_eq_center_tensorProduct [Module.Free R B] :
     induction w using TensorProduct.induction_on with
     | zero => simp
     | tmul b c =>
-      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, Algebra.TensorProduct.includeLeft_apply,
-        Algebra.TensorProduct.map_tmul, coe_val, AlgHom.coe_id, id_eq,
-        Algebra.TensorProduct.tmul_mul_tmul, one_mul, mul_one, Subalgebra.mem_center_iff.1 b.2 x]
+      simp only [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, AlgHom.coe_comp, coe_val,
+        Function.comp_apply, includeLeft_apply, Algebra.TensorProduct.map_tmul, AlgHom.coe_id,
+        id_eq, tmul_mul_tmul, Subtype.coe_prop, Subalgebra.mem_centralizer_iff _ |>.1 b.2 x,
+        one_mul, mul_one]
     | add y z hy hz => rw [map_add, mul_add, hy, hz, add_mul]
+
+/--
+Let `R` be a commutative ring and `A, B` be `R`-algebras where `A` is free as `R`-module.
+For any subalgebra `S` of `B`, the centralizer of `S ⊆ A ⊗ B` is `A ⊗ C_S(B)` where `C_S(B)` is the
+centralizer of `S` in `A`.
+-/
+lemma centralizer_range_includeRight_comp_val_eq_center_tensorProduct
+    (S : Subalgebra R B) [Module.Free R A] :
+    Subalgebra.centralizer R
+      (Algebra.TensorProduct.includeRight.comp S.val : S →ₐ[R] A ⊗[R] B).range =
+    (Algebra.TensorProduct.map (AlgHom.id R A)
+      (Subalgebra.centralizer R (S : Set B)).val).range := by
+  have eq1 := centralizer_range_includeLeft_comp_val_eq_center_tensorProduct R B A S
+  apply_fun Subalgebra.comap (Algebra.TensorProduct.comm R A B).toAlgHom at eq1
+  convert eq1
+  · ext x
+    simpa only [AlgHom.coe_range, mem_centralizer_iff, Set.mem_range, forall_exists_index,
+      forall_apply_eq_imp_iff, AlgEquiv.toAlgHom_eq_coe, mem_comap, AlgHom.coe_coe] using
+      ⟨fun h b ↦ (Algebra.TensorProduct.comm R A B).symm.injective <| by aesop, fun h b ↦
+        (Algebra.TensorProduct.comm R A B).injective <| by aesop⟩
+  · ext x
+    simp only [AlgHom.mem_range, AlgEquiv.toAlgHom_eq_coe, mem_comap, AlgHom.coe_coe]
+    constructor
+    · rintro ⟨x, rfl⟩
+      exact ⟨(Algebra.TensorProduct.comm R _ _) x,
+        by rw [Algebra.TensorProduct.comm_comp_map_apply]⟩
+    · rintro ⟨y, hy⟩
+      refine ⟨(Algebra.TensorProduct.comm R _ _) y, (Algebra.TensorProduct.comm R A B).injective ?_⟩
+      rw [← hy, comm_comp_map_apply, ← comm_symm, AlgEquiv.symm_apply_apply]
+
+/--
+Let `R` be a commutative ring and `A, B` be `R`-algebras where `B` is free as `R`-module.
+Then the centralizer of `A ⊆ A ⊗ B` is `C(A) ⊗ B` where `C(A)` is the center of `A`.
+-/
+lemma centralizer_range_includeLeft_eq_center_tensorProduct [Module.Free R B] :
+    Subalgebra.centralizer R
+      (Algebra.TensorProduct.includeLeft : A →ₐ[R] A ⊗[R] B).range =
+    (Algebra.TensorProduct.map (Subalgebra.center R A).val (AlgHom.id R B)).range := by
+  rw [← centralizer_univ, ← Algebra.coe_top (R := R) (A := A),
+    ← centralizer_range_includeLeft_comp_val_eq_center_tensorProduct R A B ⊤]
+  ext
+  simp [includeLeft, includeLeftRingHom, Set.range_comp]
 
 /--
 Let `R` be a commutative ring and `A, B` be `R`-algebras where `A` is free as `R`-module.
@@ -103,25 +151,10 @@ lemma centralizer_range_includeRight_eq_center_tensorProduct [Module.Free R A] :
     Subalgebra.centralizer R
       (Algebra.TensorProduct.includeRight : B →ₐ[R] A ⊗[R] B).range =
     (Algebra.TensorProduct.map (AlgHom.id R A) (center R B).val).range := by
-  have eq1 := centralizer_range_includeLeft_eq_center_tensorProduct R B A
-  apply_fun Subalgebra.comap (Algebra.TensorProduct.comm R A B).toAlgHom at eq1
-  convert eq1
-  · ext x
-    simpa only [AlgHom.coe_range, mem_centralizer_iff, Set.mem_range,
-      Algebra.TensorProduct.includeRight_apply, forall_exists_index, forall_apply_eq_imp_iff,
-      AlgEquiv.toAlgHom_eq_coe, mem_comap, AlgHom.coe_coe,
-      Algebra.TensorProduct.includeLeft_apply] using
-      ⟨fun h b ↦ (Algebra.TensorProduct.comm R A B).symm.injective <| by simpa using h b,
-        fun h b ↦ (Algebra.TensorProduct.comm R A B).injective <| by simpa using h b⟩
-  ext x
-  simp only [AlgHom.mem_range, AlgEquiv.toAlgHom_eq_coe, mem_comap, AlgHom.coe_coe]
-  constructor
-  · rintro ⟨x, rfl⟩
-    exact ⟨(Algebra.TensorProduct.comm R _ _) x, by rw [Algebra.TensorProduct.comm_comp_map_apply]⟩
-  · rintro ⟨y, hy⟩
-    refine ⟨(Algebra.TensorProduct.comm R _ _) y, (Algebra.TensorProduct.comm R A B).injective ?_⟩
-    rw [← hy, Algebra.TensorProduct.comm_comp_map_apply, ← Algebra.TensorProduct.comm_symm,
-      AlgEquiv.symm_apply_apply]
+  rw [← centralizer_univ, ← Algebra.coe_top (R := R) (A := B),
+    ← centralizer_range_includeRight_comp_val_eq_center_tensorProduct R A B ⊤]
+  ext
+  simp [includeRight, includeLeftRingHom, Set.range_comp]
 
 lemma centralizer_tensorProduct_eq_center_tensorProduct_left [Module.Free R B] :
     Subalgebra.centralizer R
