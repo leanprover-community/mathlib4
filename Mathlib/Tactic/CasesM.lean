@@ -89,6 +89,7 @@ def matchPatterns (pats : Array AbstractMVarsResult) (e : Expr) : MetaM Bool := 
   if `type` matches one of the given patterns.
 * `casesm* p` is a more efficient and compact version of `· repeat casesm p`.
   It is more efficient because the pattern is compiled once.
+* `casesm! p` only applies `cases` if the number of resulting subgoals is <= 1.
 
 Example: The following tactic destructs all conjunctions and disjunctions in the current context.
 ```
