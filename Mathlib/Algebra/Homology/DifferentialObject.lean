@@ -92,8 +92,8 @@ def dgoToHomologicalComplex :
         -- Porting note: this `rw` used to be part of the `simp`.
         have : f.f i ≫ Y.d i = X.d i ≫ f.f _ := (congr_fun f.comm i).symm
         rw [reassoc_of% this] }
-  map_id _ := rfl
-  map_comp _ _ := rfl
+  map_id _ := rfl -- the autoparam solves this but it's slower
+  map_comp _ _ := rfl -- the autoparam solves this but it's slower
 
 /-- The functor from homological complexes to differential graded objects.
 -/
