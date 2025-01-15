@@ -249,3 +249,38 @@ theorem Ideal.primeHeight_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRin
   · intro h
     simp_rw [h]
     exact LocalRing.maximalIdeal_primeHeight
+
+
+-- lemma set.chain_height_univ {α : Type*} [preorder α] (s : set α) :
+--   (set.univ : set s).chain_height = s.chain_height :=
+-- begin
+--   conv_rhs { rw [← @subtype.range_coe _ s, ← set.image_univ] },
+--   rw set.chain_height_image,
+--   intros x y, refl,
+-- end
+
+-- lemma order_iso.chain_height_eq {α β : Type*} [preorder α] [preorder β]
+--   (e : α ≃o β) : (set.univ : set α).chain_height = (set.univ : set β).chain_height :=
+-- begin
+--   rw [← set.range_iff_surjective.mpr e.surjective, ← set.image_univ, set.chain_height_image],
+--   exact λ _ _, e.lt_iff_lt.symm
+-- end
+
+-- theorem set.chain_height_univ {α : Type*} [Preorder α] (s : Set α) :
+--   (Set.univ : Set s).chainHeight = s.chainHeight := by
+--   conv_rhs =>
+--     rw [← Subtype.range_val s, ← Set.image_univ]
+--   rw [Set.chainHeight_image]
+--   intro x y
+--   rfl
+
+-- theorem OrderIso.chain_height_eq {α β : Type*} [Preorder α] [Preorder β]
+--   (e : α ≃o β) : (Set.univ : Set α).chainHeight = (Set.univ : Set β).chainHeight := by
+--   rw [← Set.range_iff_surjective.mpr e.surjective, ← Set.image_univ, Set.chainHeight_image]
+--   exact fun _ _ => (e.lt_iff_lt).symm
+
+theorem WithTop.add_injective {n : ℕ∞} (hn : n ≠ ⊤) : Function.Injective (fun a => a + n) := by
+  intro a b e
+  exact le_antisymm
+    ((WithTop.add_le_add_iff_right hn).mp e.le)
+    ((WithTop.add_le_add_iff_right hn).mp e.ge)
