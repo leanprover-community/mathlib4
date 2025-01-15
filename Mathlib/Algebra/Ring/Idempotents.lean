@@ -111,6 +111,12 @@ lemma map {M N F} [Mul M] [Mul N] [FunLike F M N] [MulHomClass F M N] {e : M}
     (he : IsIdempotentElem e) (f : F) : IsIdempotentElem (f e) := by
   rw [IsIdempotentElem, ← map_mul, he.eq]
 
+lemma of_mul_add {R} [Semiring R] {e₁ e₂ : R} (mul : e₁ * e₂ = 0) (add : e₁ + e₂ = 1) :
+    IsIdempotentElem e₁ ∧ IsIdempotentElem e₂ := by
+  simp_rw [IsIdempotentElem]; constructor
+  · conv_rhs => rw [← mul_one e₁, ← add, mul_add, mul, add_zero]
+  · conv_rhs => rw [← one_mul e₂, ← add, add_mul, mul, zero_add]
+
 /-! ### Instances on `Subtype IsIdempotentElem` -/
 
 
