@@ -18,7 +18,7 @@ It is actually unique, as `disjointed_unique` shows.
 
 ## Main declarations
 
-* `disjointed f`: The map sending `i` to `f i \ (⨆ j < i, f j)`. We require the domain to be a
+* `disjointed f`: The map sending `i` to `f i \ (⨆ j < i, f j)`. We require the index type to be a
   `LocallyFiniteOrderBot` to ensure that the supremum is well defined.
 * `partialSups_disjointed`: `disjointed f` has the same partial sups as `f`.
 * `disjoint_disjointed`: The elements of `disjointed f` are pairwise disjoint.
@@ -45,7 +45,7 @@ section GeneralizedBooleanAlgebra
 
 variable [GeneralizedBooleanAlgebra α]
 
-section Preorder -- the *source* is a preorder
+section Preorder -- the *index type* is a preorder
 
 variable [Preorder ι] [LocallyFiniteOrderBot ι]
 
@@ -102,7 +102,7 @@ lemma disjointedRec {f : ι → α} {p : α → Prop} (hdiff : ∀ ⦃t i⦄, p 
 
 end Preorder
 
-section PartialOrder
+section PartialOrder -- the index type is a partial order
 
 variable [PartialOrder ι] [LocallyFiniteOrderBot ι]
 
@@ -179,7 +179,7 @@ theorem disjointed_unique {f d : ι → α} (hdisj : ∀ {i j : ι} (_ : i < j),
 
 end PartialOrder
 
-section LinearOrder
+section LinearOrder -- the index type is a linear order
 
 /-!
 ### Linear orders
@@ -290,7 +290,11 @@ end Set
 
 section Nat
 
-/-! ### Functions on `ℕ` -/
+/-!
+### Functions on `ℕ`
+
+(See also `Mathlib.Algebra.Order.Disjointed` for results with more algebra pre-requsisites.)
+-/
 
 variable [GeneralizedBooleanAlgebra α]
 
