@@ -353,7 +353,7 @@ theorem const (x : σ) : Primrec₂ fun (_ : α) (_ : β) => x :=
   Primrec.const _
 
 protected theorem pair : Primrec₂ (@Prod.mk α β) :=
-  .pair .fst .snd
+  Primrec.pair .fst .snd
 
 theorem left : Primrec₂ fun (a : α) (_ : β) => a :=
   .fst

@@ -235,7 +235,9 @@
    "Mathlib.Data.PNat.Defs"],
   "Mathlib.Tactic.NormNum.Ineq":
   ["Mathlib.Algebra.Order.Field.Defs", "Mathlib.Algebra.Order.Monoid.WithTop"],
-  "Mathlib.Tactic.NormNum.BigOperators": ["Mathlib.Data.List.FinRange"],
+  "Mathlib.Tactic.NormNum.BigOperators":
+  ["Mathlib.Algebra.BigOperators.Group.Finset.Basic",
+   "Mathlib.Data.List.FinRange"],
   "Mathlib.Tactic.Nontriviality.Core": ["Mathlib.Logic.Nontrivial.Basic"],
   "Mathlib.Tactic.NoncommRing": ["Mathlib.Algebra.Group.Action.Defs"],
   "Mathlib.Tactic.MoveAdd":
@@ -247,7 +249,8 @@
   "Mathlib.Tactic.LinearCombination":
   ["Mathlib.Tactic.LinearCombination.Lemmas"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
-  "Mathlib.Tactic.IrreducibleDef": ["Mathlib.Data.Subtype"],
+  "Mathlib.Tactic.IrreducibleDef":
+  ["Mathlib.Data.Subtype", "Mathlib.Util.TermReduce"],
   "Mathlib.Tactic.ITauto": ["Batteries.Tactic.Init", "Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Group": ["Mathlib.Algebra.Group.Commutator"],
   "Mathlib.Tactic.GCongr.Core":
@@ -316,6 +319,8 @@
   "Mathlib.RingTheory.PowerSeries.Basic":
   ["Mathlib.Algebra.CharP.Defs", "Mathlib.Tactic.MoveAdd"],
   "Mathlib.RingTheory.PolynomialAlgebra": ["Mathlib.Data.Matrix.DMatrix"],
+  "Mathlib.RingTheory.MvPowerSeries.Basic":
+  ["Mathlib.Algebra.MvPolynomial.Eval"],
   "Mathlib.RingTheory.MvPolynomial.Homogeneous":
   ["Mathlib.Algebra.DirectSum.Internal"],
   "Mathlib.RingTheory.KrullDimension.Basic":
@@ -394,6 +399,7 @@
   "Mathlib.Data.Int.ConditionallyCompleteOrder":
   ["Mathlib.Order.ConditionallyCompleteLattice.Basic"],
   "Mathlib.Data.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
+  "Mathlib.Data.Finsupp.Notation": ["Mathlib.Data.Finsupp.Single"],
   "Mathlib.Data.Finset.Insert": ["Mathlib.Data.Finset.Attr"],
   "Mathlib.Data.ENat.Lattice": ["Mathlib.Algebra.Group.Action.Defs"],
   "Mathlib.Data.ByteArray": ["Batteries.Data.ByteSubarray"],
@@ -406,6 +412,8 @@
   ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.Combinatorics.SetFamily.AhlswedeZhang":
   ["Mathlib.Algebra.Order.Field.Basic"],
+  "Mathlib.Combinatorics.Additive.ApproximateSubgroup":
+  ["Mathlib.Tactic.Bound"],
   "Mathlib.CategoryTheory.Sites.IsSheafFor":
   ["Mathlib.CategoryTheory.Limits.Shapes.Pullback.Mono"],
   "Mathlib.CategoryTheory.Preadditive.Basic": ["Mathlib.Algebra.Module.End"],
