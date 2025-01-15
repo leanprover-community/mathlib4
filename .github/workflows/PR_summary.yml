@@ -102,5 +102,5 @@ jobs:
         # store in a file, to avoid "long arguments" error.
         printf '%s [%s](%s)%s\n\n%s\n\n---\n\n%s\n\n---\n\n%s\n' "${title}" "$(git rev-parse --short HEAD)" "${hashURL}" "${high_percentages}" "${importCount}" "${declDiff}" "${techDebtVar}" > messageFile.md
 
-        cat messageFile.json
+        cat messageFile.md
         ./scripts/update_PR_comment.sh messageFile.md "${title}" "${PR}"
