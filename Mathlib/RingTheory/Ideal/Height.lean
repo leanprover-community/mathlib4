@@ -3,7 +3,7 @@ Copyright (c) 2025 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jiedong Jiang, Jingting Wang, Andrew Yang
 -/
-import Mathlib.Order.RingKrullDim
+import Mathlib.Order.KrullDimension
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.PrimeSpectrum
 import Mathlib.RingTheory.KrullDimension.Basic
