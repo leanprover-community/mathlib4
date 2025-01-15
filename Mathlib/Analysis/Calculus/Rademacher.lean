@@ -35,7 +35,7 @@ See `LipschitzWith.ae_lineDeriv_sum_eq`.
 is line-differentiable in all these directions and the line derivative is linear. Approximating
 any direction by a direction in `s` and using the fact that `f` is Lipschitz to control the error,
 it follows that `f` is Fréchet-differentiable at these points.
-See `LipschitzWith.hasFderivAt_of_hasLineDerivAt_of_closure`.
+See `LipschitzWith.hasFDerivAt_of_hasLineDerivAt_of_closure`.
 
 ## References
 
@@ -261,7 +261,7 @@ theorem ae_exists_fderiv_of_countable
 a single continuous linear map `L`, then it admits `L` as Fréchet derivative. -/
 -- We redeclare `E` here as we do not need the `[MeasurableSpace E]` instance
 -- available in the rest of the file.
-theorem hasFderivAt_of_hasLineDerivAt_of_closure
+theorem hasFDerivAt_of_hasLineDerivAt_of_closure
     {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [ProperSpace E] {f : E → F}
     (hf : LipschitzWith C f) {s : Set E} (hs : sphere 0 1 ⊆ closure s)
     {L : E →L[ℝ] F} {x : E} (hL : ∀ v ∈ s, HasLineDerivAt ℝ f (L v) x v) :
@@ -325,7 +325,7 @@ theorem ae_differentiableAt_of_real (hf : LipschitzWith C f) :
   have hs : sphere 0 1 ⊆ closure s := by rw [s_dense.closure_eq]; exact subset_univ _
   filter_upwards [hf.ae_exists_fderiv_of_countable s_count]
   rintro x ⟨L, hL⟩
-  exact (hf.hasFderivAt_of_hasLineDerivAt_of_closure hs hL).differentiableAt
+  exact (hf.hasFDerivAt_of_hasLineDerivAt_of_closure hs hL).differentiableAt
 
 end LipschitzWith
 
