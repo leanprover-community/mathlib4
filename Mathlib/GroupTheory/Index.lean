@@ -5,10 +5,9 @@ Authors: Thomas Browning
 -/
 import Mathlib.Algebra.BigOperators.GroupWithZero.Finset
 import Mathlib.Data.Finite.Card
+import Mathlib.Data.Finite.Prod
 import Mathlib.Data.Set.Card
-import Mathlib.GroupTheory.Commutator.Lemmas
 import Mathlib.GroupTheory.Coset.Card
-import Mathlib.GroupTheory.Finiteness
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.GroupTheory.QuotientGroup.Basic
 
@@ -36,6 +35,7 @@ Several theorems proved in this file are known as Lagrange's theorem.
 - `MulAction.index_stabilizer`: the index of the stabilizer is the cardinality of the orbit
 -/
 
+assert_not_exists Field
 
 namespace Subgroup
 
@@ -597,18 +597,6 @@ instance finiteIndex_ker {G' : Type*} [Group G'] (f : G →* G') [Finite f.range
 instance finiteIndex_normalCore [H.FiniteIndex] : H.normalCore.FiniteIndex := by
   rw [normalCore_eq_ker]
   infer_instance
-
-variable (G)
-
-instance finiteIndex_center [Finite (commutatorSet G)] [Group.FG G] : FiniteIndex (center G) := by
-  obtain ⟨S, -, hS⟩ := Group.rank_spec G
-  exact ⟨mt (Finite.card_eq_zero_of_embedding (quotientCenterEmbedding hS)) Finite.card_pos.ne'⟩
-
-theorem index_center_le_pow [Finite (commutatorSet G)] [Group.FG G] :
-    (center G).index ≤ Nat.card (commutatorSet G) ^ Group.rank G := by
-  obtain ⟨S, hS1, hS2⟩ := Group.rank_spec G
-  rw [← hS1, ← Fintype.card_coe, ← Nat.card_eq_fintype_card, ← Finset.coe_sort_coe, ← Nat.card_fun]
-  exact Finite.card_le_of_embedding (quotientCenterEmbedding hS2)
 
 end FiniteIndex
 
