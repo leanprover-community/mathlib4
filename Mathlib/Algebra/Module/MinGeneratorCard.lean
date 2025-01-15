@@ -121,7 +121,6 @@ lemma minGeneratorCardLeIff_exists {p : Submodule R M} {n : ℕ} :
       apply Submodule.subset_span
       rw [fg_iff_spanrank_eq] at h
       have he : (p.minGeneratorCard : WithTop Nat) ≤ n := by rwa [h] at e
-      have he' : p.minGeneratorCard ≤ n := ENat.coe_le_coe.mp he
       use Fin.castLE (ENat.coe_le_coe.mp he) x
       dsimp [f']
       simp only [Fin.is_lt, ↓reduceDIte]
