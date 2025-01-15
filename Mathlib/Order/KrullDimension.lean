@@ -296,7 +296,6 @@ lemma height_add_one_le {a b : α} (hab : a < b) : height a + 1 ≤ height b := 
 lemma coheight_add_one_le {a b : α} (hab : b < a) : coheight a + 1 ≤ coheight b := by
   cases hfin : coheight a with
   | top =>
-    have : b ≤ a := le_of_lt hab
     have : ⊤ ≤ coheight b := by
       rw [← hfin]
       gcongr
