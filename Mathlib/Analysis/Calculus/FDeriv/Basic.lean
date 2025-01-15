@@ -1310,7 +1310,7 @@ theorem differentiableOn_const (c : F) : DifferentiableOn 𝕜 (fun _ => c) s :=
   (differentiable_const _).differentiableOn
 
 @[fun_prop]
-theorem hasFDerivWithinAt_singleton [T1Space E] (f : E → F) (x : E) :
+theorem hasFDerivWithinAt_singleton (f : E → F) (x : E) :
     HasFDerivWithinAt f (0 : E →L[𝕜] F) {x} x := by
   simp_rw [HasFDerivWithinAt, nhdsWithin_singleton, hasFDerivAtFilter_iff_isLittleOTVS,
     IsLittleOTVS, ContinuousLinearMap.zero_apply, sub_zero, Filter.eventually_pure, sub_self]
@@ -1327,11 +1327,11 @@ theorem hasFDerivAt_of_subsingleton [h : Subsingleton E] (f : E → F) (x : E) :
 theorem differentiableOn_empty : DifferentiableOn 𝕜 f ∅ := fun _ => False.elim
 
 @[fun_prop]
-theorem differentiableOn_singleton [T1Space E] : DifferentiableOn 𝕜 f {x} :=
+theorem differentiableOn_singleton : DifferentiableOn 𝕜 f {x} :=
   forall_eq.2 (hasFDerivWithinAt_singleton f x).differentiableWithinAt
 
 @[fun_prop]
-theorem Set.Subsingleton.differentiableOn [T1Space E] (hs : s.Subsingleton) :
+theorem Set.Subsingleton.differentiableOn (hs : s.Subsingleton) :
     DifferentiableOn 𝕜 f s :=
   hs.induction_on differentiableOn_empty fun _ => differentiableOn_singleton
 
