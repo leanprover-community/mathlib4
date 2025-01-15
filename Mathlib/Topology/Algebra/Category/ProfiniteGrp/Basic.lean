@@ -257,6 +257,8 @@ def ofContinuousMulEquiv {G : ProfiniteGrp.{u}} {H : Type v} [TopologicalSpace H
   let _ : TotallyDisconnectedSpace H := Homeomorph.totallyDisconnectedSpace e.toHomeomorph
   .of H
 
+/--Build an isomorphism in the category `ProfiniteGrp` from
+a `ContinuousMulEquiv` between `ProfiniteGrp`s. -/
 def ContinuousMulEquiv.toProfiniteGrpIso {X Y : ProfiniteGrp} (e : X ≃ₜ* Y) : X ≅ Y where
   hom := ⟨e⟩
   inv := ⟨e.symm⟩
