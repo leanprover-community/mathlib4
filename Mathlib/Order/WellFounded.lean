@@ -223,21 +223,21 @@ noncomputable def argmin [Nonempty α] : α :=
   WellFounded.min (InvImage.wf f h.wf) Set.univ Set.univ_nonempty
 
 theorem not_lt_argmin [Nonempty α] (a : α) : ¬f a < f (argmin f) :=
-  WellFounded.not_lt_min (InvImage.wf f h) _ _ (Set.mem_univ a)
+  WellFounded.not_lt_min (InvImage.wf f h.wf) _ _ (Set.mem_univ a)
 
 /-- Given a function `f : α → β` where `β` carries a well-founded `<`, and a non-empty subset `s`
 of `α`, this is an element of `s` whose image under `f` is minimal in the sense of
 `Function.not_lt_argminOn`. -/
 noncomputable def argminOn (s : Set α) (hs : s.Nonempty) : α :=
-  WellFounded.min (InvImage.wf f h) s hs
+  WellFounded.min (InvImage.wf f h.wf) s hs
 
 @[simp]
-theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f h s hs ∈ s :=
+theorem argminOn_mem (s : Set α) (hs : s.Nonempty) : argminOn f s hs ∈ s :=
   WellFounded.min_mem _ _ _
 
 theorem not_lt_argminOn (s : Set α) {a : α} (ha : a ∈ s)
-    (hs : s.Nonempty := Set.nonempty_of_mem ha) : ¬f a < f (argminOn f h s hs) :=
-  WellFounded.not_lt_min (InvImage.wf f h) s hs ha
+    (hs : s.Nonempty := Set.nonempty_of_mem ha) : ¬f a < f (argminOn f s hs) :=
+  WellFounded.not_lt_min (InvImage.wf f h.wf) s hs ha
 
 end LT
 
@@ -245,12 +245,12 @@ section LinearOrder
 
 variable [LinearOrder β] [WellFoundedLT β]
 
-theorem argmin_le (a : α) [Nonempty α] : f (argmin f h) ≤ f a :=
-  not_lt.mp <| not_lt_argmin f h a
+theorem argmin_le (a : α) [Nonempty α] : f (argmin f) ≤ f a :=
+  not_lt.mp <| not_lt_argmin f a
 
 theorem argminOn_le (s : Set α) {a : α} (ha : a ∈ s) (hs : s.Nonempty := Set.nonempty_of_mem ha) :
-    f (argminOn f h s hs) ≤ f a :=
-  not_lt.mp <| not_lt_argminOn f h s ha hs
+    f (argminOn f s hs) ≤ f a :=
+  not_lt.mp <| not_lt_argminOn f s ha hs
 
 end LinearOrder
 
