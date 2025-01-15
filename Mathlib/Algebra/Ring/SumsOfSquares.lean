@@ -5,7 +5,7 @@ Authors: Florent Schaffhauser, Artie Khovanov
 -/
 import Mathlib.Algebra.Group.Subgroup.Even
 import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Ring.Parity
+import Mathlib.Algebra.Ring.Parity -- Algebra.Group.Even doesn't see `IsSumSq 0` as a simp rule
 import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Tactic.ApplyFun
 
