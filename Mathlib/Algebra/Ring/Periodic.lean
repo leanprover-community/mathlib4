@@ -24,7 +24,7 @@ Note that any `c`-antiperiodic function will necessarily also be `2 • c`-perio
 
 period, periodic, periodicity, antiperiodic
 -/
-
+pcommut
 assert_not_exists Field
 
 variable {α β γ : Type*} {f g : α → β} {c c₁ c₂ x : α}
