@@ -217,8 +217,6 @@ end Functor
 
 namespace NatTrans
 
-attribute [local instance] Functor.commShiftOp
-
 variable {F} {G : C ⥤ D} [F.CommShift A] [G.CommShift A]
 
 open Opposite in
@@ -297,8 +295,6 @@ def OppositeShift.adjunction {F} {G : D ⥤ C} (adj : F ⊣ G) :
     rfl
 
 namespace Adjunction
-
-attribute [local instance] Functor.commShiftOp NatTrans.commShift_op
 
 variable {F} {G : D ⥤ C} (adj : F ⊣ G)
 

@@ -15,8 +15,7 @@ This file proves lemmas about the instances defined in `Algebra.Group.Pi.Basic` 
 imports.
 -/
 
-assert_not_exists AddMonoidWithOne
-assert_not_exists MonoidWithZero
+assert_not_exists AddMonoidWithOne MonoidWithZero
 
 universe u v w
 
@@ -339,7 +338,7 @@ theorem Pi.semiconjBy_iff {x y z : ∀ i, f i} :
     SemiconjBy x y z ↔ ∀ i, SemiconjBy (x i) (y i) (z i) := funext_iff
 
 @[to_additive]
-theorem Commute.pi {x y : ∀ i, f i} (h : ∀ i, Commute (x i) (y i)) : Commute x y := .pi h
+theorem Commute.pi {x y : ∀ i, f i} (h : ∀ i, Commute (x i) (y i)) : Commute x y := SemiconjBy.pi h
 
 @[to_additive]
 theorem Pi.commute_iff {x y : ∀ i, f i} : Commute x y ↔ ∀ i, Commute (x i) (y i) := semiconjBy_iff

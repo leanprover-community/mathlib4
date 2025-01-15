@@ -446,11 +446,12 @@ instance homogeneousLocalizationCommRing : CommRing (HomogeneousLocalization �
 instance homogeneousLocalizationAlgebra :
     Algebra (HomogeneousLocalization 𝒜 x) (Localization x) where
   smul p q := p.val * q
-  toFun := val
-  map_one' := val_one
-  map_mul' := val_mul
-  map_zero' := val_zero
-  map_add' := val_add
+  algebraMap :=
+  { toFun := val
+    map_one' := val_one
+    map_mul' := val_mul
+    map_zero' := val_zero
+    map_add' := val_add }
   commutes' _ _ := mul_comm _ _
   smul_def' _ _ := rfl
 
@@ -717,7 +718,7 @@ def awayMapₐ : Away 𝒜 f →ₐ[𝒜 0] Away 𝒜 x where
 /-- This is a convenient constructor for `Away 𝒜 f` when `f` is homogeneous.
 `Away.mk 𝒜 hf n x hx` is the fraction `x / f ^ n`. -/
 protected def Away.mk {d : ι} (hf : f ∈ 𝒜 d) (n : ℕ) (x : A) (hx : x ∈ 𝒜 (n • d)) : Away 𝒜 f :=
-  .mk ⟨n • d, ⟨x, hx⟩, ⟨f ^ n, SetLike.pow_mem_graded n hf⟩, ⟨n, rfl⟩⟩
+  HomogeneousLocalization.mk ⟨n • d, ⟨x, hx⟩, ⟨f ^ n, SetLike.pow_mem_graded n hf⟩, ⟨n, rfl⟩⟩
 
 @[simp]
 lemma Away.val_mk {d : ι} (n : ℕ) (hf : f ∈ 𝒜 d) (x : A) (hx : x ∈ 𝒜 (n • d)) :

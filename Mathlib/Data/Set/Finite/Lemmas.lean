@@ -20,8 +20,7 @@ If your proof has as *result* `Set.Finite`, then it should go to a more specific
 finite sets
 -/
 
-assert_not_exists OrderedRing
-assert_not_exists MonoidWithZero
+assert_not_exists OrderedRing MonoidWithZero
 
 open Set Function
 

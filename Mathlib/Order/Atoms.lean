@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
 import Mathlib.Data.Set.Lattice
+import Mathlib.Data.SetLike.Basic
 import Mathlib.Order.ModularLattice
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.WellFounded
@@ -182,6 +183,45 @@ theorem covBy_top_iff : a ⋖ ⊤ ↔ IsCoatom a :=
   toDual_covBy_toDual_iff.symm.trans bot_covBy_iff
 
 alias ⟨CovBy.isCoatom, IsCoatom.covBy_top⟩ := covBy_top_iff
+
+namespace SetLike
+
+variable {A B : Type*} [SetLike A B]
+
+theorem isAtom_iff [OrderBot A] {K : A} :
+    IsAtom K ↔ K ≠ ⊥ ∧ ∀ H g, H ≤ K → g ∉ H → g ∈ K → H = ⊥ := by
+  simp_rw [IsAtom, lt_iff_le_not_le, SetLike.not_le_iff_exists,
+    and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
+
+theorem isCoatom_iff [OrderTop A] {K : A} :
+    IsCoatom K ↔ K ≠ ⊤ ∧ ∀ H g, K ≤ H → g ∉ K → g ∈ H → H = ⊤ := by
+  simp_rw [IsCoatom, lt_iff_le_not_le, SetLike.not_le_iff_exists,
+    and_comm (a := _ ≤ _), and_imp, exists_imp, ← and_imp, and_comm]
+
+theorem covBy_iff {K L : A} :
+    K ⋖ L ↔ K < L ∧ ∀ H g, K ≤ H → H ≤ L → g ∉ K → g ∈ H → H = L := by
+  refine and_congr_right fun _ ↦ forall_congr' fun H ↦ ?_
+  rw [lt_iff_le_not_le, SetLike.not_le_iff_exists, lt_iff_le_not_le, not_and, not_not,
+    and_comm (a := _ ≤ _), and_imp, exists_imp]
+  refine forall_congr' fun b ↦ ?_
+  simp only [← and_imp]
+  rw [and_comm, and_comm (b:= _ ∈ _), and_assoc]
+  refine imp_congr_right fun ⟨_, h, _⟩ ↦ ?_
+  simp only [le_antisymm_iff, h, true_and]
+
+/-- Dual variant of `SetLike.covBy_iff` -/
+theorem covBy_iff' {K L : A} :
+    K ⋖ L ↔ K < L ∧ ∀ H g, K ≤ H → H ≤ L → g ∉ H → g ∈ L → H = K := by
+  refine and_congr_right fun _ ↦ forall_congr' fun H ↦ ?_
+  rw [imp_not_comm, lt_iff_le_not_le, SetLike.not_le_iff_exists, lt_iff_le_not_le, not_and, not_not,
+    and_comm (a := _ ≤ _), and_imp, exists_imp]
+  refine forall_congr' fun b ↦ ?_
+  simp only [← and_imp]
+  rw [and_comm (b := K ≤ _), and_comm, and_comm (b:= _ ∈ _), and_assoc]
+  refine imp_congr_right fun ⟨h, _⟩ ↦ ?_
+  simp only [le_antisymm_iff, h, and_true]
+
+end SetLike
 
 end PartialOrder
 
