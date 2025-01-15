@@ -82,7 +82,7 @@ theorem RepresentablyFlat.id : RepresentablyFlat (𝟭 C) := inferInstance
 
 theorem RepresentablyCoflat.id : RepresentablyCoflat (𝟭 C) := inferInstance
 
--- this simp lemma causes a max_heartbeta exception
+-- this slow simp lemma causes a maxHeartbeats exception
 attribute [-simp] CostructuredArrow.right_eq_id in
 
 instance RepresentablyFlat.comp (G : D ⥤ E) [RepresentablyFlat F]
