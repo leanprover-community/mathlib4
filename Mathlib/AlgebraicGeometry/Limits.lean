@@ -310,6 +310,35 @@ lemma sigmaMk_mk (i) (x : f i) :
   refine (colimit.isoColimitCocone_ι_inv_assoc ⟨_, TopCat.sigmaCofanIsColimit _⟩ _ _).trans ?_
   exact ι_comp_sigmaComparison Scheme.forgetToTop _ _
 
+lemma isOpenImmersion_sigmaDesc
+    {X : Scheme} (α : ∀ i, f i ⟶ X) [∀ i, IsOpenImmersion (α i)]
+    (hα : Pairwise (Disjoint on (Set.range <| α · |>.base))) :
+    IsOpenImmersion (Sigma.desc α) := by
+  rw [IsOpenImmersion.iff_stalk_iso]
+  constructor
+  · suffices Topology.IsOpenEmbedding ((Sigma.desc α).base ∘ sigmaMk f) by
+      convert this.comp (sigmaMk f).symm.isOpenEmbedding; ext; simp
+    refine .of_continuous_injective_isOpenMap ?_ ?_ ?_
+    · fun_prop
+    · rintro ⟨ix, x⟩ ⟨iy, y⟩ e
+      have : (α ix).base x = (α iy).base y := by
+        simpa [← Scheme.comp_base_apply] using e
+      obtain rfl : ix = iy := by
+        by_contra h
+        exact Set.disjoint_iff_forall_ne.mp (hα h) ⟨x, rfl⟩ ⟨y, this.symm⟩ rfl
+      rw [(α ix).isOpenEmbedding.injective this]
+    · rw [isOpenMap_sigma]
+      intro i
+      simpa [← Scheme.comp_base_apply] using (α i).isOpenEmbedding.isOpenMap
+  · intro x
+    have ⟨y, hy⟩ := (sigmaOpenCover f).covers x
+    rw [← hy]
+    refine IsIso.of_isIso_fac_right (g := ((sigmaOpenCover f).map _).stalkMap y)
+      (h := (X.presheaf.stalkCongr (.of_eq ?_)).hom ≫ (α _).stalkMap _) ?_
+    · simp [← Scheme.comp_base_apply]
+    · simp [← Scheme.stalkMap_comp, Scheme.stalkMap_congr_hom _ _ (Sigma.ι_desc _ _)]
+
+
 variable (X Y : Scheme.{u})
 
 /-- (Implementation Detail)
@@ -493,10 +522,35 @@ noncomputable
 def sigmaSpec (R : ι → CommRingCat) : (∐ fun i ↦ Spec (R i)) ⟶ Spec (.of (Π i, R i)) :=
   Sigma.desc (fun i ↦ Spec.map (CommRingCat.ofHom (Pi.evalRingHom _ i)))
 
-@[simp, reassoc]
+@[reassoc (attr := simp)]
 lemma ι_sigmaSpec (R : ι → CommRingCat) (i) :
     Sigma.ι _ i ≫ sigmaSpec R = Spec.map (CommRingCat.ofHom (Pi.evalRingHom _ i)) :=
   Sigma.ι_desc _ _
+
+instance (i) (R : ι → Type _) [∀ i, CommRing (R i)] :
+    IsOpenImmersion (Spec.map (CommRingCat.ofHom (Pi.evalRingHom (R ·) i))) := by
+  classical
+  letI := (Pi.evalRingHom R i).toAlgebra
+  have : IsLocalization.Away (Function.update (β := R) 0 i 1) (R i) := by
+    apply IsLocalization.away_of_isIdempotentElem_of_mul
+    · ext j; by_cases h : j = i <;> aesop
+    · intro x y
+      constructor
+      · intro e; ext j; by_cases h : j = i <;> aesop
+      · intro e; simpa using congr_fun e i
+    · exact Function.surjective_eval _
+  exact IsOpenImmersion.of_isLocalization (Function.update 0 i 1)
+
+instance (R : ι → CommRingCat) : IsOpenImmersion (sigmaSpec R) := by
+  classical
+  apply isOpenImmersion_sigmaDesc
+  intro ix iy h
+  refine Set.disjoint_iff_forall_ne.mpr ?_
+  rintro _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ e
+  have : DFinsupp.single (β := (R ·)) iy 1 iy ∈ y.asIdeal :=
+    (PrimeSpectrum.ext_iff.mp e).le (x := DFinsupp.single iy 1)
+      (show DFinsupp.single (β := (R ·)) iy 1 ix ∈ x.asIdeal by simp [h.symm])
+  simp [← Ideal.eq_top_iff_one, y.2.ne_top] at this
 
 instance [Finite ι] (R : ι → CommRingCat) : IsIso (sigmaSpec R) := by
   have : sigmaSpec R =
