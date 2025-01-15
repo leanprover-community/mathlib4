@@ -16,6 +16,55 @@ Documentation
 
 open Function
 
+#check Submodule.span_induction
+
+theorem basis_induction {K M I : Type*} [Field K] [AddCommGroup M] [Module K M] (b : Basis I K M)
+  {p : (x : M) → Prop} (mem : ∀ (i : I), p (b i))
+  (zero : p 0)
+  (add : ∀ (x y : M), p x → p y → p (x + y))
+  (smul : ∀ (k : K) (x : M), p x → p (k • x)) (a : M) : p a := by
+  apply Submodule.span_induction (R := K) (p := fun x _ ↦ p x) (s := Set.range b)
+  · simp only [Set.mem_range, forall_exists_index, forall_apply_eq_imp_iff]
+    exact mem
+  · exact zero
+  · simp only [Basis.span_eq, Submodule.mem_top, true_implies]
+    exact add
+  · simp only [Basis.span_eq, Submodule.mem_top, true_implies]
+    exact smul
+  · simp only [Basis.span_eq, Submodule.mem_top]
+
+#check Submodule.span_induction₂
+
+theorem basis_induction₂ {K M I : Type*} [Field K] [AddCommGroup M] [Module K M] (b : Basis I K M)
+  {p : (x y : M) → Prop} (mem_mem : ∀ (i j : I), p (b i) (b j))
+  (zero_left : ∀ (y : M), p 0 y)
+  (zero_right : ∀ (x : M), p x 0)
+  (add_left : ∀ (x y z : M), p x z → p y z → p (x + y) z)
+  (add_right : ∀ (x y z : M), p x y → p x z → p x (y + z))
+  (smul_left : ∀ (k : K) (x y : M), p x y → p (k • x) y)
+  (smul_right : ∀ (k : K) (x y : M), p x y → p x (k • y)) (a c : M) : p a c := by
+  apply Submodule.span_induction₂ (R := K) (p := fun x y _ _ ↦ p x y) (s := Set.range b)
+  · intro x y hx hy
+    simp_all only [Set.mem_range]
+    obtain ⟨w₁, h₁⟩ := hx
+    obtain ⟨w₂, h₂⟩ := hy
+    subst h₂ h₁
+    simp_all only
+  · intro y _
+    simp_all only [Basis.span_eq, Submodule.mem_top]
+  · intro x _
+    simp_all only [Basis.span_eq, Submodule.mem_top]
+  · intro x y z _ _ _ a₁ a₂
+    simp_all only [Basis.span_eq, Submodule.mem_top]
+  · intro x y z _ _ _ a₁ a₂
+    simp_all only [Basis.span_eq, Submodule.mem_top]
+  · intro r x y _ _ a₁
+    simp_all only [Basis.span_eq, Submodule.mem_top]
+  · intro r x y _ _ a₁
+    simp_all only [Basis.span_eq, Submodule.mem_top]
+  · simp_all only [Basis.span_eq, Submodule.mem_top]
+  · simp_all only [Basis.span_eq, Submodule.mem_top]
+
 namespace exteriorPower
 
 variable (R M N : Type*) [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
@@ -93,13 +142,6 @@ theorem bilin_symm_ιMulti (h : B.IsSymm) : ∀ v w : Fin k → M, ⟪(ιMulti R
   rw [← h (v j) (w i)]
   simp only [RingHom.id_apply]
 
-theorem bilin_symm (hS : B.IsSymm) : (exteriorPower.BilinForm k B).IsSymm := by
-  intro v w
-  simp only [RingHom.id_apply]
-  --apply Submodule.span_induction₂ (p := fun v w hv hw ↦
-  --  ((exteriorPower.BilinForm k B) v) w = ((exteriorPower.BilinForm k B) w) v)
-  sorry
-
 section overField
 
 variable {K M : Type*} [Field K] [AddCommGroup M] [Module K M]
@@ -168,6 +210,27 @@ theorem exteriorPower_repr (s : Finset I) (hs : s.card = k) (v : ⋀[K]^k M) :
   simp only [exteriorPower_dualBasis']
   simp only [mul_ite, mul_one, mul_zero, Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte]
 
+#check Basis.exteriorPower K k b
+#check basis_induction₂
+
+theorem bilin_symm (b : Basis I K M) (hS : B.IsSymm) : (exteriorPower.BilinForm k B).IsSymm := by
+  intro v w
+  simp only [RingHom.id_apply]
+  apply basis_induction₂ (b := Basis.exteriorPower K k b) (p := fun x y ↦ ⟪x, y⟫ = ⟪y, x⟫)
+  · intro s t
+    simp only [coe_basis]
+    sorry
+  · simp only [map_zero, LinearMap.zero_apply, implies_true]
+  · simp only [map_zero, LinearMap.zero_apply, implies_true]
+  · intro x y z a a_1
+    simp_all only [map_add, LinearMap.add_apply]
+  · intro x y z a a_1
+    simp_all only [map_add, LinearMap.add_apply]
+  · intro k_1 x y a
+    simp_all only [map_smul, LinearMap.smul_apply, smul_eq_mul]
+  · intro k_1 x y a
+    simp_all only [map_smul, smul_eq_mul, LinearMap.smul_apply]
+
 theorem bilinNondegen' (b : Basis I K M) (hN : B.Nondegenerate)
   (hS : B.IsSymm) :
   (exteriorPower.BilinForm k B).Nondegenerate := by
@@ -177,8 +240,7 @@ theorem bilinNondegen' (b : Basis I K M) (hN : B.Nondegenerate)
   simp only [Basis.coord_apply]
   rw [exteriorPower_repr B hN]
   rw [← h (((Basis.exteriorPower K k (B.dualBasis hN b)) ⟨s, hs⟩))]
-  rw [← (bilin_symm k B hS) v _]
-  simp only [basis_apply, RingHom.id_apply]
+  sorry
 
 end overField
 
