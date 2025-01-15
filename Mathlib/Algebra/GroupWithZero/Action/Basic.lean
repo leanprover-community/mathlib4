@@ -98,31 +98,6 @@ def smulMonoidWithZeroHom [MonoidWithZero M₀] [MulZeroOneClass N₀] [MulActio
     [IsScalarTower M₀ N₀ N₀] [SMulCommClass M₀ N₀ N₀] : M₀ × N₀ →*₀ N₀ :=
   { smulMonoidHom with map_zero' := smul_zero _ }
 
-section MulDistribMulAction
-variable [Group G] [Monoid M] [MulDistribMulAction G M]
-variable (M)
-
-/-- Each element of the group defines a multiplicative monoid isomorphism.
-
-This is a stronger version of `MulAction.toPerm`. -/
-@[simps (config := { simpRhs := true })]
-def MulDistribMulAction.toMulEquiv (x : G) : M ≃* M :=
-  { MulDistribMulAction.toMonoidHom M x, MulAction.toPermHom G M x with }
-
-variable (G)
-
-/-- Each element of the group defines a multiplicative monoid isomorphism.
-
-This is a stronger version of `MulAction.toPermHom`. -/
-@[simps]
-def MulDistribMulAction.toMulAut : G →* MulAut M where
-  toFun := MulDistribMulAction.toMulEquiv M
-  map_one' := MulEquiv.ext (one_smul _)
-  map_mul' _ _ := MulEquiv.ext (mul_smul _ _)
-
-end MulDistribMulAction
-
-
 namespace MulAut
 
 /-- The tautological action by `MulAut M` on `M`.
