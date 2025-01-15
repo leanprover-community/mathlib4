@@ -266,7 +266,7 @@ noncomputable def maxUnifEigenspaceIndex (f : End R M) (μ : R) :=
 lemma genEigenspace_top_eq_maxUnifEigenspaceIndex [h : IsNoetherian R M] (f : End R M) (μ : R) :
     genEigenspace f μ ⊤ = f.genEigenspace μ (maxUnifEigenspaceIndex f μ) := by
   rw [isNoetherian_iff] at h
-  have := WellFounded.iSup_eq_monotonicSequenceLimit h <|
+  have := WellFoundedGT.iSup_eq_monotonicSequenceLimit <|
     (f.genEigenspace μ).comp <| WithTop.coeOrderHom.toOrderHom
   convert this using 1
   simp only [genEigenspace, OrderHom.coe_mk, le_top, iSup_pos, OrderHom.comp_coe,
