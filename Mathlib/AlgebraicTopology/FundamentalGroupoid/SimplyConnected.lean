@@ -49,7 +49,7 @@ variable {X : Type*} [TopologicalSpace X] [SimplyConnectedSpace X]
 
 instance (x y : X) : Subsingleton (Path.Homotopic.Quotient x y) :=
   @Unique.instSubsingleton _ (Nonempty.some (by
-    rw [simply_connected_iff_unique_homotopic] at *; tauto)) -- grind should work here!
+    rw [simply_connected_iff_unique_homotopic] at *; tauto)) -- could `grind` work here? https://lean-fro.zulipchat.com/#narrow/channel/398861-general/topic/grind.20and.20cc/near/493893595
 
 attribute [local instance] Path.Homotopic.setoid
 

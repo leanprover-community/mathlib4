@@ -1017,10 +1017,10 @@ alias CompleteLatticeHom.apply_liminf_iterate := CompleteLatticeHom.apply_liminf
 variable {f g : Filter β} {p q : β → Prop} {u v : β → α}
 
 theorem blimsup_mono (h : ∀ x, p x → q x) : blimsup u f p ≤ blimsup u f q :=
-  sInf_le_sInf fun a ha => ha.mono <| by tauto -- reported grind bug about synthesis
+  sInf_le_sInf fun a ha => ha.mono <| by grind
 
 theorem bliminf_antitone (h : ∀ x, p x → q x) : bliminf u f q ≤ bliminf u f p :=
-  sSup_le_sSup fun a ha => ha.mono <| by tauto -- reported grind bug about synthesis
+  sSup_le_sSup fun a ha => ha.mono <| by grind
 
 theorem mono_blimsup' (h : ∀ᶠ x in f, p x → u x ≤ v x) : blimsup u f p ≤ blimsup v f p :=
   sInf_le_sInf fun _ ha => (ha.and h).mono fun _ hx hx' => (hx.2 hx').trans (hx.1 hx')

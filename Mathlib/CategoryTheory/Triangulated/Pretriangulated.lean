@@ -332,16 +332,29 @@ lemma isZero₂_iff : IsZero T.obj₂ ↔ (T.mor₁ = 0 ∧ T.mor₂ = 0) := by
     obtain ⟨f, hf⟩ := coyoneda_exact₂ T hT (𝟙 _) (by rw [h₂, comp_zero])
     rw [IsZero.iff_id_eq_zero, hf, h₁, comp_zero]
 
+example (P Q : Prop) : P ∧ Q ↔ Q ∧ P := by grind
+example {α} (f : α → Nat) (x y : α) : f x = 0 ∧ f y = 0 ↔ f y = 0 ∧ f x = 0 := by grind
+
+structure S where
+  x : Nat
+  y : Nat
+
+example (s : S) : s.x = 0 ∧ s.y = 0 ↔ s.y = 0 ∧ s.x = 0 := by grind
+
+attribute [grind =] invRotate_obj₁
+attribute [grind =] invRotate_obj₂
+attribute [grind =] invRotate_obj₃
+set_option trace.grind.assert true in
 lemma isZero₁_iff : IsZero T.obj₁ ↔ (T.mor₁ = 0 ∧ T.mor₃ = 0) := by
   refine (isZero₂_iff _ (inv_rot_of_distTriang _ hT)).trans ?_
   dsimp
   simp only [neg_eq_zero, IsIso.comp_right_eq_zero, Functor.map_eq_zero_iff]
-  tauto -- too much case splitting for grind
+  grind
 
 lemma isZero₃_iff : IsZero T.obj₃ ↔ (T.mor₂ = 0 ∧ T.mor₃ = 0) := by
   refine (isZero₂_iff _ (rot_of_distTriang _ hT)).trans ?_
   dsimp
-  tauto -- too much case splitting for grind
+  grind
 
 lemma isZero₁_of_isZero₂₃ (h₂ : IsZero T.obj₂) (h₃ : IsZero T.obj₃) : IsZero T.obj₁ := by
   rw [T.isZero₁_iff hT]

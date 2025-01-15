@@ -66,13 +66,13 @@ theorem Coloring.even_length_iff_congr {α} {G : SimpleGraph α}
     have : ¬ c u = true ↔ c v = true := by
       rw [← not_iff, ← Bool.eq_iff_iff]
       exact c.valid h
-    tauto -- reported grind logic puzzle needs better bool support
+    tauto -- reported grind logic puzzle needs better bool support https://lean-fro.zulipchat.com/#narrow/channel/398861-general/topic/grind.20and.20cc/near/493896841
 
 theorem Coloring.odd_length_iff_not_congr {α} {G : SimpleGraph α}
     (c : G.Coloring Bool) {u v : α} (p : G.Walk u v) :
     Odd p.length ↔ (¬c u ↔ c v) := by
   rw [← Nat.not_even_iff_odd, c.even_length_iff_congr p]
-  tauto -- grind logic puzzle? needs better bool support
+  grind
 
 theorem Walk.three_le_chromaticNumber_of_odd_loop {α} {G : SimpleGraph α} {u : α} (p : G.Walk u u)
     (hOdd : Odd p.length) : 3 ≤ G.chromaticNumber := Classical.by_contradiction <| by

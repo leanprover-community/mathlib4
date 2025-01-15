@@ -56,7 +56,7 @@ instance : (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)).Reflects
       have h₂₀ := h₂ 0
       dsimp at h₁₀ h₂₀
       simp only [id_comp, comp_id] at h₁₀ h₂₀
-      tauto -- grind forward bug
+      grind
     | succ n hn =>
       haveI := hn
       use φ { a := PInfty.f (n + 1) ≫ (inv (N₁.map f)).f.f (n + 1)

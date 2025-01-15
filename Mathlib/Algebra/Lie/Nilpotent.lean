@@ -312,7 +312,7 @@ theorem isNilpotent_toEnd_of_isNilpotent [IsNilpotent L M] (x : L) :
     _root_.IsNilpotent (toEnd R L M x) := by
   change ∃ k, toEnd R L M x ^ k = 0
   have := exists_forall_pow_toEnd_eq_zero R L M
-  tauto -- reported grind forward theorem bug
+  tauto
 
 theorem isNilpotent_toEnd_of_isNilpotent₂ [IsNilpotent L M] (x y : L) :
     _root_.IsNilpotent (toEnd R L M x ∘ₗ toEnd R L M y) := by

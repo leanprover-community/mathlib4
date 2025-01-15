@@ -269,7 +269,7 @@ instance [∀ j, K.HasHomology j] (j' : ι') : (K.extend e).HasHomology j' := by
   by_cases h : ∃ j, e.f j = j'
   · obtain ⟨j, rfl⟩ := h
     infer_instance
-  · have hj := isZero_extend_X K e j' (by tauto) -- reported grind bug
+  · have hj := isZero_extend_X K e j' (by grind)
     exact ShortComplex.HasHomology.mk'
       (ShortComplex.HomologyData.ofZeros _ (hj.eq_of_tgt _ _) (hj.eq_of_src _ _))
 
