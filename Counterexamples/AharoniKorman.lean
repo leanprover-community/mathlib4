@@ -483,10 +483,10 @@ spine.
 -/
 structure SpinalMap (C : Set α) where
   /-- The underlying function of a spinal map. -/
-  (toFun : α → α)
-  (mem' : ∀ x, toFun x ∈ C)
-  (eq_self_of_mem' : ∀ x ∈ C, toFun x = x)
-  (fibre_antichain' : ∀ x, IsAntichain (· ≤ ·) (toFun ⁻¹' {x}))
+  toFun : α → α
+  mem' : ∀ x, toFun x ∈ C
+  eq_self_of_mem' : ∀ x ∈ C, toFun x = x
+  fibre_antichain' : ∀ x, IsAntichain (· ≤ ·) (toFun ⁻¹' {x})
 
 instance : FunLike (SpinalMap C) α α where
   coe := SpinalMap.toFun
