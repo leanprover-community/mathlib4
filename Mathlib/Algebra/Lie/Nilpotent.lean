@@ -173,7 +173,7 @@ theorem eventually_iInf_lowerCentralSeries_eq [IsArtinian R M] :
   have h_wf : WellFoundedGT (LieSubmodule R L M)ᵒᵈ :=
     LieSubmodule.wellFoundedLT_of_isArtinian R L M
   obtain ⟨n, hn : ∀ m, n ≤ m → lowerCentralSeries R L M n = lowerCentralSeries R L M m⟩ :=
-    WellFoundedGT.monotone_chain_condition ⟨_, antitone_lowerCentralSeries R L M⟩
+    h_wf.monotone_chain_condition ⟨_, antitone_lowerCentralSeries R L M⟩
   refine Filter.eventually_atTop.mpr ⟨n, fun l hl ↦ le_antisymm (iInf_le _ _) (le_iInf fun m ↦ ?_)⟩
   rcases le_or_lt l m with h | h
   · rw [← hn _ hl, ← hn _ (hl.trans h)]
