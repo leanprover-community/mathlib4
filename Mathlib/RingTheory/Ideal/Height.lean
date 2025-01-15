@@ -6,6 +6,20 @@ Authors: Jiedong Jiang, Jingting Wang, Andrew Yang
 import Mathlib.Order.KrullDimension
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.PrimeSpectrum
+/-!
+# The Height of an Ideal
+
+In this file, we defined the height of a prime ideal and the height of an ideal.
+
+# Main definitions
+
+* `Ideal.primeHeight` : The height of a prime ideal $\mathfrak{p}$. We defined it as the length of
+the maximum chain of prime ideals whose maximal element is $\mathfrak{p}$ minus 1.
+
+* `Ideal.height` : The height of an ideal. We defined it as the infimum of the primeHeight of the
+minimal prime ideals containing I.
+
+-/
 
 variable {R : Type*} [CommRing R] (I : Ideal R)
 
@@ -13,12 +27,12 @@ open Ideal
 
 /-- The height of a prime ideal is defined as the supremum of the lengths of strictly decreasing
 chains of prime ideals below it. -/
-noncomputable def Ideal.primeHeight [hI : I.IsPrime] : WithTop ℕ :=
+noncomputable def Ideal.primeHeight [hI : I.IsPrime] : ENat :=
   Order.height (⟨I, hI⟩ : PrimeSpectrum R)
 
 /-- The height of an ideal is defined as the infimum of the heights of minimal prime ideals
 containing it. -/
-noncomputable def Ideal.height : WithTop ℕ :=
+noncomputable def Ideal.height : ENat :=
   ⨅ J ∈ I.minimalPrimes, @Ideal.primeHeight _ _ J (minimalPrimes_isPrime ‹_›)
 
 /-- For a prime ideal, its height equals its prime height. -/
