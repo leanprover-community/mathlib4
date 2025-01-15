@@ -142,7 +142,7 @@ theorem cons_injective2 : Function.Injective2 (@cons n α) := fun x₀ y₀ x y 
   ⟨congr_fun h 0, funext fun i ↦ by simpa using congr_fun h (Fin.succ i)⟩
 
 @[simp]
-theorem cons_eq_cons {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ} :
+theorem cons_inj {x₀ y₀ : α 0} {x y : ∀ i : Fin n, α i.succ} :
     cons x₀ x = cons y₀ y ↔ x₀ = y₀ ∧ x = y :=
   cons_injective2.eq_iff
 
