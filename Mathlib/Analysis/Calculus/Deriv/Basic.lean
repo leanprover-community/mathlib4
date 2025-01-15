@@ -222,7 +222,6 @@ theorem differentiableWithinAt_of_derivWithin_ne_zero (h : derivWithin f s x ≠
     DifferentiableWithinAt 𝕜 f s x :=
   not_imp_comm.1 derivWithin_zero_of_not_differentiableWithinAt h
 
-
 theorem derivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : derivWithin f s x = 0 := by
   rw [derivWithin, fderivWithin_zero_of_isolated h, ContinuousLinearMap.zero_apply]
 
@@ -247,7 +246,6 @@ variable {f' f₀' f₁' g' : F}
 variable {x : 𝕜}
 variable {s t : Set 𝕜}
 variable {L L₁ L₂ : Filter 𝕜}
-
 
 theorem UniqueDiffWithinAt.eq_deriv (s : Set 𝕜) (H : UniqueDiffWithinAt 𝕜 s x)
     (h : HasDerivWithinAt f f' s x) (h₁ : HasDerivWithinAt f f₁' s x) : f' = f₁' :=
@@ -422,7 +420,6 @@ variable {f' f₀' f₁' g' : F}
 variable {x : 𝕜}
 variable {s t : Set 𝕜}
 variable {L L₁ L₂ : Filter 𝕜}
-
 
 theorem hasDerivWithinAt_inter' (h : t ∈ 𝓝[s] x) :
     HasDerivWithinAt f f' (s ∩ t) x ↔ HasDerivWithinAt f f' s x :=
@@ -854,7 +851,6 @@ variable {s t : Set 𝕜}
 variable {L L₁ L₂ : Filter 𝕜}
 
 /-! ### Continuity of a function admitting a derivative -/
-
 
 nonrec theorem HasDerivAtFilter.tendsto_nhds (hL : L ≤ 𝓝 x) (h : HasDerivAtFilter f f' x L) :
     Tendsto f L (𝓝 (f x)) :=
