@@ -131,7 +131,7 @@ In an additive commutative monoid with multiplication,
 -/
 @[simp]
 theorem IsSumSq.sum_mul_self [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) (a : ι → R) :
-    IsSumSq (∑ i ∈ I, a i * a i) := IsSumSq.sum (fun _ _ => IsSumSq.mul_self _)
+    IsSumSq (∑ i ∈ I, a i * a i) := .sum fun _ _ => .mul_self _
 
 @[deprecated (since := "2024-12-27")] alias isSumSq_sum_mul_self := IsSumSq.sum_mul_self
 
