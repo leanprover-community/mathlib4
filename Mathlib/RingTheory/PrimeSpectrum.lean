@@ -6,6 +6,7 @@ Authors: Johan Commelin, Filippo A. E. Nuccio, Andrew Yang
 import Mathlib.LinearAlgebra.Finsupp.SumProd
 import Mathlib.RingTheory.Ideal.Prod
 import Mathlib.RingTheory.Localization.Ideal
+import Mathlib.RingTheory.LocalRing.MaximalIdeal.Basic
 import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Noetherian.Basic
 
@@ -413,6 +414,19 @@ instance [IsDomain R] : OrderBot (PrimeSpectrum R) where
 instance {R : Type*} [Field R] : Unique (PrimeSpectrum R) where
   default := ⊥
   uniq x := PrimeSpectrum.ext ((IsSimpleOrder.eq_bot_or_eq_top _).resolve_right x.2.ne_top)
+
+/-- Also see `PrimeSpectrum.isClosed_singleton_iff_isMaximal` -/
+lemma isMax_iff {x : PrimeSpectrum R} :
+    IsMax x ↔ x.asIdeal.IsMaximal := by
+  refine ⟨fun hx ↦ ⟨⟨x.2.ne_top, fun I hI ↦ ?_⟩⟩, fun hx y e ↦ (hx.eq_of_le y.2.ne_top e).ge⟩
+  by_contra e
+  obtain ⟨m, hm, hm'⟩ := Ideal.exists_le_maximal I e
+  exact hx.not_lt (show x < ⟨m, hm.isPrime⟩ from hI.trans_le hm')
+
+/-- The closed point in the prime spectrum of a local ring. -/
+-- See `AlgebraicGeometry.PrimeSpectrum.Basic` for more API
+def _root_.IsLocalRing.closedPoint (R : Type*) [CommSemiring R] [IsLocalRing R] : PrimeSpectrum R :=
+  ⟨IsLocalRing.maximalIdeal R, inferInstance⟩
 
 end Order
 

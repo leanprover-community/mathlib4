@@ -240,8 +240,9 @@ section at_units
 variable (R M)
 
 /-- The localization at a module of units is isomorphic to the ring. -/
-noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
-  refine AlgEquiv.ofBijective (Algebra.ofId R S) ⟨?_, ?_⟩
+lemma bijective_of_at_units (H : M ≤ IsUnit.submonoid R) :
+    Function.Bijective (algebraMap R S) := by
+  refine ⟨?_, ?_⟩
   · intro x y hxy
     obtain ⟨c, eq⟩ := (IsLocalization.eq_iff_exists M S).mp hxy
     obtain ⟨u, hu⟩ := H c.prop
@@ -253,6 +254,10 @@ noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S := by
     dsimp [Algebra.ofId, RingHom.toFun_eq_coe, AlgHom.coe_mks]
     rw [RingHom.map_mul, ← eq, ← hu, mul_assoc, ← RingHom.map_mul]
     simp
+
+/-- The localization at a module of units is isomorphic to the ring. -/
+noncomputable def atUnits (H : M ≤ IsUnit.submonoid R) : R ≃ₐ[R] S :=
+  AlgEquiv.ofBijective (Algebra.ofId R S) (bijective_of_at_units R M H)
 
 end at_units
 
