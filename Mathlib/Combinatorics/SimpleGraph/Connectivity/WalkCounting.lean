@@ -22,6 +22,8 @@ can also be useful as a recursive description of this set when `V` is finite.
 TODO: should this be extended further?
 -/
 
+assert_not_exists Field
+
 open Finset Function
 
 universe u v w
@@ -63,7 +65,7 @@ Note that `u` and `v` may be the same. -/
 @[simps]
 def walkLengthTwoEquivCommonNeighbors (u v : V) :
     {p : G.Walk u v // p.length = 2} ≃ G.commonNeighbors u v where
-  toFun p := ⟨p.val.getVert 1, match p with
+  toFun p := ⟨p.val.snd, match p with
     | ⟨.cons _ (.cons _ .nil), _⟩ => ⟨‹G.Adj u _›, ‹G.Adj _ v›.symm⟩⟩
   invFun w := ⟨w.prop.1.toWalk.concat w.prop.2.symm, rfl⟩
   left_inv | ⟨.cons _ (.cons _ .nil), hp⟩ => by rfl

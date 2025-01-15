@@ -248,16 +248,16 @@ unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢
   forgetToTop.obj X ≟ (X : TopCat)
 
 @[simp]
-theorem id.base (X : Scheme) : (𝟙 X : _).base = 𝟙 _ :=
+theorem id.base (X : Scheme) : (𝟙 X :).base = 𝟙 _ :=
   rfl
 
 @[simp]
 theorem id_app {X : Scheme} (U : X.Opens) :
-    (𝟙 X : _).app U = 𝟙 _ := rfl
+    (𝟙 X :).app U = 𝟙 _ := rfl
 
 @[simp]
 theorem id_appTop {X : Scheme} :
-    (𝟙 X : _).appTop = 𝟙 _ :=
+    (𝟙 X :).appTop = 𝟙 _ :=
   rfl
 
 @[reassoc]
@@ -548,8 +548,7 @@ theorem basicOpen_le : X.basicOpen f ≤ U :=
 
 @[sheaf_restrict]
 lemma basicOpen_restrict (i : V ⟶ U) (f : Γ(X, U)) :
-    -- Help `restrict` to infer which forgetful functor we're taking
-    X.basicOpen (TopCat.Presheaf.restrict (C := CommRingCat) f i) ≤ X.basicOpen f :=
+    X.basicOpen (TopCat.Presheaf.restrict f i) ≤ X.basicOpen f :=
   (Scheme.basicOpen_res _ _ _).trans_le inf_le_right
 
 @[simp]
