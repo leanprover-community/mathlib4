@@ -104,6 +104,8 @@ instance instSetLike : SetLike (NonUnitalStarSubalgebra R A) A where
   coe {s} := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
+instance : OrderedSetLike (NonUnitalStarSubalgebra R A) A := SetLike.toOrderedSetLike
+
 instance instNonUnitalSubsemiringClass :
     NonUnitalSubsemiringClass (NonUnitalStarSubalgebra R A) A where
   add_mem {s} := s.add_mem'
@@ -229,7 +231,7 @@ def toNonUnitalSubalgebra' : NonUnitalStarSubalgebra R A ↪o NonUnitalSubalgebr
   toEmbedding :=
     { toFun := fun S => S.toNonUnitalSubalgebra
       inj' := fun S T h => ext <| by apply SetLike.ext_iff.1 h }
-  map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
+  map_rel_iff' := OrderedSetLike.coe_subset_coe.symm.trans OrderedSetLike.coe_subset_coe
 
 section
 
@@ -426,7 +428,7 @@ theorem range_comp (f : A →⋆ₙₐ[R] B) (g : B →⋆ₙₐ[R] C) :
 
 theorem range_comp_le_range (f : A →⋆ₙₐ[R] B) (g : B →⋆ₙₐ[R] C) :
     NonUnitalStarAlgHom.range (g.comp f) ≤ NonUnitalStarAlgHom.range g :=
-  SetLike.coe_mono (Set.range_comp_subset_range f g)
+  OrderedSetLike.coe_mono (Set.range_comp_subset_range f g)
 
 /-- Restrict the codomain of a non-unital star algebra homomorphism. -/
 def codRestrict (f : F) (S : NonUnitalStarSubalgebra R B) (hf : ∀ x, f x ∈ S) : A →⋆ₙₐ[R] S where
@@ -722,11 +724,11 @@ theorem toNonUnitalSubalgebra_eq_top {S : NonUnitalStarSubalgebra R A} :
   NonUnitalStarSubalgebra.toNonUnitalSubalgebra_injective.eq_iff' top_toNonUnitalSubalgebra
 
 theorem mem_sup_left {S T : NonUnitalStarSubalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T := by
-  rw [← SetLike.le_def]
+  rw [← OrderedSetLike.le_def]
   exact le_sup_left
 
 theorem mem_sup_right {S T : NonUnitalStarSubalgebra R A} : ∀ {x : A}, x ∈ T → x ∈ S ⊔ T := by
-  rw [← SetLike.le_def]
+  rw [← OrderedSetLike.le_def]
   exact le_sup_right
 
 theorem mul_mem_sup {S T : NonUnitalStarSubalgebra R A} {x y : A} (hx : x ∈ S) (hy : y ∈ T) :

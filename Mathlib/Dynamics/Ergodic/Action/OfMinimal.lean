@@ -134,8 +134,8 @@ theorem ergodic_smul_of_denseRange_zpow {g : G} (hg : DenseRange (g ^ · : ℤ �
   borelize G
   refine ⟨measurePreserving_smul _ _, ⟨fun s hsm hs ↦ ?_⟩⟩
   refine aeconst_of_dense_aestabilizer_smul hsm.nullMeasurableSet (hg.mono ?_)
-  rw [← Subgroup.coe_zpowers, SetLike.coe_subset_coe, ← Subgroup.zpowers_inv, Subgroup.zpowers_le,
-    MulAction.mem_aestabilizer, ← preimage_smul, hs]
+  rw [← Subgroup.coe_zpowers, OrderedSetLike.coe_subset_coe, ← Subgroup.zpowers_inv,
+    Subgroup.zpowers_le, MulAction.mem_aestabilizer, ← preimage_smul, hs]
 
  end MulActionGroup
 

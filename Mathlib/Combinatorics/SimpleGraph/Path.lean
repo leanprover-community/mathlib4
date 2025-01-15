@@ -1005,6 +1005,8 @@ instance : SetLike G.ConnectedComponent V where
   coe := ConnectedComponent.supp
   coe_injective' := ConnectedComponent.supp_injective
 
+instance : OrderedSetLike G.ConnectedComponent V := SetLike.toOrderedSetLike
+
 @[simp]
 theorem mem_supp_iff (C : G.ConnectedComponent) (v : V) :
     v ∈ C.supp ↔ G.connectedComponentMk v = C :=

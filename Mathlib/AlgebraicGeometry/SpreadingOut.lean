@@ -171,7 +171,7 @@ instance (priority := 100) [IsLocallyNoetherian X] : X.IsGermInjective := by
   have hs' : (s : Set R) ⊆ J := hs ▸ Ideal.subset_span
   refine ⟨_, (s.attach.prod fun x ↦ f x (hs' x.2)).2, fun x y e hy ↦ ⟨1, ?_⟩⟩
   rw [pow_one, mul_comm, ← smul_eq_mul, ← Submodule.mem_annihilator_span_singleton]
-  refine SetLike.le_def.mp ?_ ((hJ x).mpr ⟨⟨y, hy⟩, e⟩)
+  refine OrderedSetLike.le_def.mp ?_ ((hJ x).mpr ⟨⟨y, hy⟩, e⟩)
   rw [← hs, Ideal.span_le]
   intro i hi
   rw [SetLike.mem_coe, Submodule.mem_annihilator_span_singleton, smul_eq_mul,

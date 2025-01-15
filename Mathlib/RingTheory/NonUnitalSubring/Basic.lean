@@ -300,7 +300,7 @@ theorem sInf_toAddSubgroup (s : Set (NonUnitalSubring R)) :
 /-- `NonUnitalSubring`s of a ring form a complete lattice. -/
 instance : CompleteLattice (NonUnitalSubring R) :=
   { completeLatticeOfInf (NonUnitalSubring R) fun _s =>
-      IsGLB.of_image (@fun _ _ : NonUnitalSubring R => SetLike.coe_subset_coe)
+      IsGLB.of_image (@fun _ _ : NonUnitalSubring R => OrderedSetLike.coe_subset_coe)
         isGLB_biInf with
     bot := ⊥
     bot_le := fun s _x hx => (mem_bot.mp hx).symm ▸ zero_mem s
@@ -462,7 +462,7 @@ theorem mem_closure_iff {s : Set R} {x} :
     x ∈ closure s ↔ x ∈ AddSubgroup.closure (Subsemigroup.closure s : Set R) :=
   ⟨fun h => by
     induction h using closure_induction with
-    | mem _ hx => exact AddSubgroup.subset_closure (Subsemigroup.subset_closure hx)
+    | mem _ hx => exact AddSubgroup.subset_closure (LatticeSetLike.subset_closure hx)
     | zero => exact zero_mem _
     | add _ _ _ _ hx hy => exact add_mem hx hy
     | neg x _ hx => exact neg_mem hx

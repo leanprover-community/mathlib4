@@ -157,6 +157,8 @@ instance : SetLike (Subring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
+instance : OrderedSetLike (Subring R) R := SetLike.toOrderedSetLike
+
 instance : SubringClass (Subring R) R where
   zero_mem s := s.zero_mem'
   add_mem {s} := s.add_mem'

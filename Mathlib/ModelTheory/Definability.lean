@@ -287,6 +287,8 @@ instance instSetLike : SetLike (L.DefinableSet A α) (α → M) where
   coe := Subtype.val
   coe_injective' := Subtype.val_injective
 
+instance : OrderedSetLike (L.DefinableSet A α) (α → M) := SetLike.toOrderedSetLike
+
 instance instTop : Top (L.DefinableSet A α) :=
   ⟨⟨⊤, definable_univ⟩⟩
 

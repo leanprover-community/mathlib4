@@ -133,7 +133,7 @@ theorem cg_iff_empty_or_exists_nat_generating_family {N : L.Substructure M} :
   · intro h
     cases' h with h h
     · refine ⟨∅, countable_empty, closure_eq_of_le (empty_subset _) ?_⟩
-      rw [← SetLike.coe_subset_coe, h]
+      rw [← OrderedSetLike.coe_subset_coe, h]
       exact empty_subset _
     · obtain ⟨f, rfl⟩ := h
       exact ⟨range f, countable_range _, rfl⟩

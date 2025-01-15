@@ -61,11 +61,11 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
   change J ≠ ⊤ at hJ
   rcases IsArtinian.set_has_minimal { J' : Ideal R | J < J' } ⟨⊤, hJ.lt_top⟩ with
     ⟨J', hJJ' : J < J', hJ' : ∀ I, J < I → ¬I < J'⟩
-  rcases SetLike.exists_of_lt hJJ' with ⟨x, hxJ', hxJ⟩
+  rcases OrderedSetLike.exists_of_lt hJJ' with ⟨x, hxJ', hxJ⟩
   obtain rfl : J ⊔ Ideal.span {x} = J' := by
     apply eq_of_le_of_not_lt _ (hJ' (J ⊔ Ideal.span {x}) _)
     · exact sup_le hJJ'.le (span_le.2 (singleton_subset_iff.2 hxJ'))
-    · rw [SetLike.lt_iff_le_and_exists]
+    · rw [OrderedSetLike.lt_iff_le_and_exists]
       exact ⟨le_sup_left, ⟨x, mem_sup_right (mem_span_singleton_self x), hxJ⟩⟩
   have : J ⊔ Jac • Ideal.span {x} ≤ J ⊔ Ideal.span {x} :=
     sup_le_sup_left (smul_le.2 fun _ _ _ => Submodule.smul_mem _ _) _

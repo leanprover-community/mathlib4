@@ -302,6 +302,8 @@ instance : SetLike (Sym2 α) α where
     simp only [mem_iff', eq_self_iff_true] at hx hy hx' hy'
     aesop
 
+instance : OrderedSetLike (Sym2 α) α := SetLike.toOrderedSetLike
+
 @[simp]
 theorem mem_iff_mem {x : α} {z : Sym2 α} : Sym2.Mem x z ↔ x ∈ z :=
   Iff.rfl

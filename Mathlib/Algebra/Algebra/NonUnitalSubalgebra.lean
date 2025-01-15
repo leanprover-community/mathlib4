@@ -64,6 +64,8 @@ instance : SetLike (NonUnitalSubalgebra R A) A where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
+instance : OrderedSetLike (NonUnitalSubalgebra R A) A := SetLike.toOrderedSetLike
+
 instance instNonUnitalSubsemiringClass :
     NonUnitalSubsemiringClass (NonUnitalSubalgebra R A) A where
   add_mem {s} := s.add_mem'
@@ -209,7 +211,7 @@ def toSubmodule' [CommSemiring R] [NonUnitalNonAssocSemiring A] [Module R A] :
   toEmbedding :=
     { toFun := fun S => S.toSubmodule
       inj' := fun S T h => ext <| by apply SetLike.ext_iff.1 h }
-  map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
+  map_rel_iff' := OrderedSetLike.coe_subset_coe.symm.trans OrderedSetLike.coe_subset_coe
 
 /-- The forgetful map from `NonUnitalSubalgebra` to `NonUnitalSubsemiring` as an
 `OrderEmbedding` -/
@@ -218,7 +220,7 @@ def toNonUnitalSubsemiring' [CommSemiring R] [NonUnitalNonAssocSemiring A] [Modu
   toEmbedding :=
     { toFun := fun S => S.toNonUnitalSubsemiring
       inj' := fun S T h => ext <| by apply SetLike.ext_iff.1 h }
-  map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
+  map_rel_iff' := OrderedSetLike.coe_subset_coe.symm.trans OrderedSetLike.coe_subset_coe
 
 /-- The forgetful map from `NonUnitalSubalgebra` to `NonUnitalSubsemiring` as an
 `OrderEmbedding` -/
@@ -227,7 +229,7 @@ def toNonUnitalSubring' [CommRing R] [NonUnitalNonAssocRing A] [Module R A] :
   toEmbedding :=
     { toFun := fun S => S.toNonUnitalSubring
       inj' := fun S T h => ext <| by apply SetLike.ext_iff.1 h }
-  map_rel_iff' := SetLike.coe_subset_coe.symm.trans SetLike.coe_subset_coe
+  map_rel_iff' := OrderedSetLike.coe_subset_coe.symm.trans OrderedSetLike.coe_subset_coe
 
 variable [CommSemiring R]
 variable [NonUnitalNonAssocSemiring A] [NonUnitalNonAssocSemiring B] [NonUnitalNonAssocSemiring C]
@@ -448,7 +450,7 @@ theorem range_comp (f : A →ₙₐ[R] B) (g : B →ₙₐ[R] C) :
 
 theorem range_comp_le_range (f : A →ₙₐ[R] B) (g : B →ₙₐ[R] C) :
     NonUnitalAlgHom.range (g.comp f) ≤ NonUnitalAlgHom.range g :=
-  SetLike.coe_mono (Set.range_comp_subset_range f g)
+  OrderedSetLike.coe_mono (Set.range_comp_subset_range f g)
 
 /-- Restrict the codomain of a non-unital algebra homomorphism. -/
 def codRestrict (f : F) (S : NonUnitalSubalgebra R B) (hf : ∀ x, f x ∈ S) : A →ₙₐ[R] S :=
@@ -641,7 +643,7 @@ lemma adjoin_eq_span (s : Set A) : (adjoin R s).toSubmodule = span R (Subsemigro
   apply le_antisymm
   · intro x hx
     induction hx using adjoin_induction with
-    | mem x hx => exact subset_span <| Subsemigroup.subset_closure hx
+    | mem x hx => exact subset_span <| LatticeSetLike.subset_closure hx
     | add x y _ _ hpx hpy => exact add_mem hpx hpy
     | zero => exact zero_mem _
     | mul x y _ _ hpx hpy =>
@@ -654,7 +656,7 @@ lemma adjoin_eq_span (s : Set A) : (adjoin R s).toSubmodule = span R (Subsemigro
     | smul r x _ hpx => exact smul_mem _ _ hpx
   · apply span_le.2 _
     show Subsemigroup.closure s ≤ (adjoin R s).toSubsemigroup
-    exact Subsemigroup.closure_le.2 (subset_adjoin R)
+    exact LatticeSetLike.closure_le.2 (subset_adjoin R)
 
 variable (R A)
 
@@ -717,11 +719,11 @@ theorem to_subring_eq_top {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
   NonUnitalSubalgebra.toNonUnitalSubring_injective.eq_iff' top_toSubring
 
 theorem mem_sup_left {S T : NonUnitalSubalgebra R A} : ∀ {x : A}, x ∈ S → x ∈ S ⊔ T := by
-  rw [← SetLike.le_def]
+  rw [← OrderedSetLike.le_def]
   exact le_sup_left
 
 theorem mem_sup_right {S T : NonUnitalSubalgebra R A} : ∀ {x : A}, x ∈ T → x ∈ S ⊔ T := by
-  rw [← SetLike.le_def]
+  rw [← OrderedSetLike.le_def]
   exact le_sup_right
 
 theorem mul_mem_sup {S T : NonUnitalSubalgebra R A} {x y : A} (hx : x ∈ S) (hy : y ∈ T) :

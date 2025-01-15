@@ -167,7 +167,8 @@ theorem iInf_le_iff {s : ι → α} : iInf s ≤ a ↔ ∀ b, (∀ i, b ≤ s i)
 theorem sInf_le_sInf_of_forall_exists_le (h : ∀ x ∈ s, ∃ y ∈ t, y ≤ x) : sInf t ≤ sInf s :=
   le_sInf fun x hx ↦ let ⟨_y, hyt, hyx⟩ := h x hx; sInf_le_of_le hyt hyx
 
--- We will generalize this to conditionally complete lattices in `csInf_singleton`.
+-- We will generalize this to conditionally complete lattices in `csInf_singleton`
+@[simp]
 theorem sInf_singleton {a : α} : sInf {a} = a :=
   isGLB_singleton.sInf_eq
 

@@ -126,7 +126,7 @@ variable [Field K] [Fintype K] [Finite σ]
 -- `variable (K σ)` (I don't understand why). They are now explicit, as expected.
 theorem map_restrict_dom_evalₗ : (restrictDegree σ K (Fintype.card K - 1)).map (evalₗ K σ) = ⊤ := by
   cases nonempty_fintype σ
-  refine top_unique (SetLike.le_def.2 fun e _ => mem_map.2 ?_)
+  refine top_unique (OrderedSetLike.le_def.2 fun e _ => mem_map.2 ?_)
   classical
   refine ⟨∑ n : σ → K, e n • indicator n, ?_, ?_⟩
   · exact sum_mem fun c _ => smul_mem _ _ (indicator_mem_restrictDegree _)

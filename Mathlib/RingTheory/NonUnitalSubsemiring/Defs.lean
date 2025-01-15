@@ -90,6 +90,8 @@ instance : SetLike (NonUnitalSubsemiring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+instance : OrderedSetLike (NonUnitalSubsemiring R) R := SetLike.toOrderedSetLike
+
 instance : NonUnitalSubsemiringClass (NonUnitalSubsemiring R) R where
   zero_mem {s} := AddSubmonoid.zero_mem' s.toAddSubmonoid
   add_mem {s} := AddSubsemigroup.add_mem' s.toAddSubmonoid.toAddSubsemigroup

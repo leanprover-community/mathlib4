@@ -74,6 +74,8 @@ instance : SetLike (ConvexCone 𝕜 E) E where
   coe := carrier
   coe_injective' S T h := by cases S; cases T; congr
 
+instance : OrderedSetLike (ConvexCone 𝕜 E) E := SetLike.toOrderedSetLike
+
 @[simp]
 theorem coe_mk {s : Set E} {h₁ h₂} : ↑(@mk 𝕜 _ _ _ _ s h₁ h₂) = s :=
   rfl
@@ -151,7 +153,7 @@ theorem coe_top : ↑(⊤ : ConvexCone 𝕜 E) = (univ : Set E) :=
   rfl
 
 instance : CompleteLattice (ConvexCone 𝕜 E) :=
-  { SetLike.instPartialOrder with
+  { SetLike.toOrderedSetLike with
     le := (· ≤ ·)
     lt := (· < ·)
     bot := ⊥

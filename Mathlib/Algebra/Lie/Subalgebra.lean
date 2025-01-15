@@ -62,6 +62,8 @@ instance : SetLike (LieSubalgebra R L) L where
     congr
     exact SetLike.coe_injective' h
 
+instance : OrderedSetLike (LieSubalgebra R L) L := SetLike.toOrderedSetLike
+
 instance : AddSubgroupClass (LieSubalgebra R L) L where
   add_mem := Submodule.add_mem _
   zero_mem L' := L'.zero_mem'
@@ -668,7 +670,7 @@ theorem span_empty : lieSpan R L (∅ : Set L) = ⊥ :=
 
 @[simp]
 theorem span_univ : lieSpan R L (Set.univ : Set L) = ⊤ :=
-  eq_top_iff.2 <| SetLike.le_def.2 <| subset_lieSpan
+  eq_top_iff.2 <| OrderedSetLike.le_def.2 <| subset_lieSpan
 
 variable {L}
 

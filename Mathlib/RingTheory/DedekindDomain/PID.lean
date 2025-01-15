@@ -119,12 +119,12 @@ theorem FractionalIdeal.isPrincipal.of_finite_maximals_of_inv {A : Type*} [CommR
   have : ∀ M ∈ s, ∃ a ∈ I, ∃ b ∈ I', a * b ∉ IsLocalization.coeSubmodule A M := by
     intro M hM; by_contra! h
     obtain ⟨x, hx, hxM⟩ :=
-      SetLike.exists_of_lt
+      OrderedSetLike.exists_of_lt
         ((IsLocalization.coeSubmodule_strictMono hS (hf.mem_toFinset.1 hM).ne_top.lt_top).trans_eq
           hinv.symm)
     exact hxM (Submodule.mul_le.2 h hx)
   choose! a ha b hb hm using this
-  choose! u hu hum using fun M hM => SetLike.not_le_iff_exists.1 (nle M hM)
+  choose! u hu hum using fun M hM => OrderedSetLike.not_le_iff_exists.1 (nle M hM)
   let v := ∑ M ∈ s, u M • b M
   have hv : v ∈ I' := Submodule.sum_mem _ fun M hM => Submodule.smul_mem _ _ <| hb M hM
   refine

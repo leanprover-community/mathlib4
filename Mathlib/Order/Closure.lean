@@ -447,7 +447,7 @@ end CompleteLattice
 -- Lemmas for `LowerAdjoint ((↑) : α → Set β)`, where `SetLike α β`
 section CoeToSet
 
-variable [SetLike α β] (l : LowerAdjoint ((↑) : α → Set β))
+variable [OrderedSetLike α β] (l : LowerAdjoint ((↑) : α → Set β))
 
 theorem subset_closure (s : Set β) : s ⊆ l s :=
   l.le_closure s

@@ -147,6 +147,8 @@ instance : SetLike (FractionalIdeal S P) P where
   coe I := ↑(I : Submodule R P)
   coe_injective' := SetLike.coe_injective.comp Subtype.coe_injective
 
+instance : OrderedSetLike (FractionalIdeal S P) P := SetLike.toOrderedSetLike
+
 @[simp]
 theorem mem_coe {I : FractionalIdeal S P} {x : P} : x ∈ (I : Submodule R P) ↔ x ∈ I :=
   Iff.rfl
