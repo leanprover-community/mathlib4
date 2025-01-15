@@ -200,26 +200,20 @@ theorem isCoatom_iff [OrderTop A] {K : A} :
 
 theorem covBy_iff {K L : A} :
     K ⋖ L ↔ K < L ∧ ∀ H g, K ≤ H → H ≤ L → g ∉ K → g ∈ H → H = L := by
-  refine and_congr_right fun _ ↦ forall_congr' fun H ↦ ?_
-  rw [lt_iff_le_not_le, SetLike.not_le_iff_exists, lt_iff_le_not_le, not_and, not_not,
-    and_comm (a := _ ≤ _), and_imp, exists_imp]
-  refine forall_congr' fun b ↦ ?_
-  simp only [← and_imp]
-  rw [and_comm, and_comm (b:= _ ∈ _), and_assoc]
-  refine imp_congr_right fun ⟨_, h, _⟩ ↦ ?_
-  simp only [le_antisymm_iff, h, true_and]
+  refine and_congr_right fun _ ↦ forall_congr' fun H ↦ not_iff_not.mp ?_
+  push_neg
+  rw [lt_iff_le_not_le, lt_iff_le_and_ne, and_and_and_comm]
+  simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
+    SetLike.not_le_iff_exists, and_comm, implies_true]
 
 /-- Dual variant of `SetLike.covBy_iff` -/
 theorem covBy_iff' {K L : A} :
     K ⋖ L ↔ K < L ∧ ∀ H g, K ≤ H → H ≤ L → g ∉ H → g ∈ L → H = K := by
-  refine and_congr_right fun _ ↦ forall_congr' fun H ↦ ?_
-  rw [imp_not_comm, lt_iff_le_not_le, SetLike.not_le_iff_exists, lt_iff_le_not_le, not_and, not_not,
-    and_comm (a := _ ≤ _), and_imp, exists_imp]
-  refine forall_congr' fun b ↦ ?_
-  simp only [← and_imp]
-  rw [and_comm (b := K ≤ _), and_comm, and_comm (b:= _ ∈ _), and_assoc]
-  refine imp_congr_right fun ⟨h, _⟩ ↦ ?_
-  simp only [le_antisymm_iff, h, and_true]
+  refine and_congr_right fun _ ↦ forall_congr' fun H ↦ not_iff_not.mp ?_
+  push_neg
+  rw [lt_iff_le_and_ne, lt_iff_le_not_le, and_and_and_comm]
+  simp_rw [exists_and_left, and_assoc, and_congr_right_iff, ← and_assoc, and_comm, exists_and_left,
+    SetLike.not_le_iff_exists, ne_comm, implies_true]
 
 end SetLike
 
