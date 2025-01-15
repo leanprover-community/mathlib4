@@ -106,11 +106,7 @@ sums of squares in `R`.
 theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
     closure {x : R | IsSquare x} = sumSq R := by
   refine closure_eq_of_le (fun x hx ↦ IsSquare.isSumSq hx) (fun x hx ↦ ?_)
-  /- TODO : after Aesop ruleset improvements, change proof to: -/
-  /- induction hx <;> aesop -/
-  induction hx with
-  | zero => apply zero_mem
-  | sq_add a hs ih => exact add_mem (subset_closure (IsSquare.mul_self a)) ih
+  induction hx <;> aesop
 
 @[deprecated (since := "2024-08-09")] alias SquaresAddClosure := AddSubmonoid.closure_isSquare
 
@@ -128,7 +124,7 @@ In an additive commutative monoid with multiplication,
 `∑ i ∈ I, x i`, where each `x i` is a square, is a sum of squares.
 -/
 theorem IsSumSq.sum_isSquare [AddCommMonoid R] [Mul R] {ι : Type*} (I : Finset ι) {x : ι → R}
-    (ha : ∀ i ∈ I, IsSquare <| x i) : IsSumSq (∑ i ∈ I, x i) := by aesop
+    (hx : ∀ i ∈ I, IsSquare <| x i) : IsSumSq (∑ i ∈ I, x i) := by aesop
 
 /--
 In an additive commutative monoid with multiplication,
