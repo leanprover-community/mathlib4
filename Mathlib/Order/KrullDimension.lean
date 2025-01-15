@@ -278,7 +278,6 @@ private lemma height_add_const (a : α) (n : ℕ∞) :
 lemma height_add_one_le {a b : α} (hab : a < b) : height a + 1 ≤ height b := by
   cases hfin : height a with
   | top =>
-    have : a ≤ b := le_of_lt hab
     have : ⊤ ≤ height b := by
       rw [← hfin]
       gcongr
