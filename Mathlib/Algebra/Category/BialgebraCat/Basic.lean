@@ -24,10 +24,13 @@ universe v u
 variable (R : Type u) [CommRing R]
 
 /-- The category of `R`-bialgebras. -/
-structure BialgebraCat extends Bundled Ring.{v} where
-  [instBialgebra : Bialgebra R α]
+structure BialgebraCat where
+  /-- The underlying type. -/
+  carrier : Type v
+  [instRing : Ring carrier]
+  [instBialgebra : Bialgebra R carrier]
 
-attribute [instance] BialgebraCat.instBialgebra
+attribute [instance] BialgebraCat.instBialgebra BialgebraCat.instRing
 
 variable {R}
 
@@ -36,7 +39,7 @@ namespace BialgebraCat
 open Bialgebra
 
 instance : CoeSort (BialgebraCat.{v} R) (Type v) :=
-  ⟨(·.α)⟩
+  ⟨(·.carrier)⟩
 
 variable (R)
 
@@ -44,7 +47,7 @@ variable (R)
 @[simps]
 def of (X : Type v) [Ring X] [Bialgebra R X] :
     BialgebraCat R where
-  instBialgebra := (inferInstance : Bialgebra R X)
+  carrier := X
 
 variable {R}
 
@@ -102,7 +105,7 @@ instance concreteCategory : ConcreteCategory.{v} (BialgebraCat.{v} R) where
 instance hasForgetToAlgebra : HasForget₂ (BialgebraCat R) (AlgebraCat R) where
   forget₂ :=
     { obj := fun X => AlgebraCat.of R X
-      map := fun {X Y} f => (f.toBialgHom : X →ₐ[R] Y) }
+      map := fun {X Y} f => AlgebraCat.ofHom f.toBialgHom }
 
 @[simp]
 theorem forget₂_algebra_obj (X : BialgebraCat R) :
@@ -111,7 +114,7 @@ theorem forget₂_algebra_obj (X : BialgebraCat R) :
 
 @[simp]
 theorem forget₂_algebra_map (X Y : BialgebraCat R) (f : X ⟶ Y) :
-    (forget₂ (BialgebraCat R) (AlgebraCat R)).map f = (f.toBialgHom : X →ₐ[R] Y) :=
+    (forget₂ (BialgebraCat R) (AlgebraCat R)).map f = AlgebraCat.ofHom f.toBialgHom :=
   rfl
 
 instance hasForgetToCoalgebra : HasForget₂ (BialgebraCat R) (CoalgebraCat R) where

@@ -3,7 +3,7 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Topology.ContinuousMap.Bounded
+import Mathlib.Topology.ContinuousMap.Bounded.Star
 import Mathlib.Topology.ContinuousMap.CocompactMap
 
 /-!
@@ -430,7 +430,6 @@ theorem isClosed_range_toBCF : IsClosed (range (toBCF : C₀(α, β) → α →�
       _ < ε := by simpa [add_halves ε] using add_lt_add_right (mem_ball.1 hg) (ε / 2)
   exact ⟨⟨f.toContinuousMap, this⟩, rfl⟩
 
-@[deprecated (since := "2024-03-17")] alias closed_range_toBCF := isClosed_range_toBCF
 
 /-- Continuous functions vanishing at infinity taking values in a complete space form a
 complete space. -/
@@ -467,7 +466,7 @@ variable [SeminormedAddCommGroup β] {𝕜 : Type*} [NormedField 𝕜] [NormedSp
 theorem norm_toBCF_eq_norm {f : C₀(α, β)} : ‖f.toBCF‖ = ‖f‖ :=
   rfl
 
-instance : NormedSpace 𝕜 C₀(α, β) where norm_smul_le k f := (norm_smul_le k f.toBCF : _)
+instance : NormedSpace 𝕜 C₀(α, β) where norm_smul_le k f := (norm_smul_le k f.toBCF :)
 
 end NormedSpace
 
@@ -535,7 +534,7 @@ section NormedStar
 variable [NormedAddCommGroup β] [StarAddMonoid β] [NormedStarGroup β]
 
 instance instNormedStarGroup : NormedStarGroup C₀(α, β) where
-  norm_star f := (norm_star f.toBCF : _)
+  norm_star f := (norm_star f.toBCF :)
 
 end NormedStar
 

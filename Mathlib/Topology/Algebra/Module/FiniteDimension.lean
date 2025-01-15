@@ -8,6 +8,7 @@ import Mathlib.LinearAlgebra.FreeModule.Finite.Matrix
 import Mathlib.Topology.Algebra.Module.Simple
 import Mathlib.Topology.Algebra.Module.Determinant
 import Mathlib.RingTheory.LocalRing.Basic
+import Mathlib.RingTheory.Localization.FractionRing
 
 /-!
 # Finite dimensional topological vector spaces over complete fields
@@ -42,12 +43,11 @@ result follows as `continuous_equivFun_basis`.
 
 -/
 
+open Filter Module Set TopologicalSpace Topology
 
 universe u v w x
 
 noncomputable section
-
-open Filter Module Set TopologicalSpace
 
 section Field
 
@@ -157,7 +157,7 @@ theorem LinearMap.continuous_of_isClosed_ker (l : E →ₗ[𝕜] 𝕜)
     -- Hence, we know that it is equal to the topology induced by the norm.
     have : induced φ.toEquiv.symm inferInstance = hnorm.toUniformSpace.toTopologicalSpace := by
       refine unique_topology_of_t2 (topologicalAddGroup_induced φ.symm.toLinearMap)
-        (continuousSMul_induced φ.symm.toLinearMap) ?_
+        (continuousSMul_induced φ.symm.toMulActionHom) ?_
       -- Porting note: was `rw [t2Space_iff]`
       refine (@t2Space_iff 𝕜 (induced (↑(LinearEquiv.toEquiv φ).symm) inferInstance)).mpr ?_
       exact fun x y hxy =>
@@ -321,7 +321,7 @@ theorem range_toContinuousLinearMap (f : E →ₗ[𝕜] F') :
 /-- A surjective linear map `f` with finite dimensional codomain is an open map. -/
 theorem isOpenMap_of_finiteDimensional (f : F →ₗ[𝕜] E) (hf : Function.Surjective f) :
     IsOpenMap f := by
-  rcases f.exists_rightInverse_of_surjective (LinearMap.range_eq_top.2 hf) with ⟨g, hg⟩
+  obtain ⟨g, hg⟩ := f.exists_rightInverse_of_surjective (LinearMap.range_eq_top.2 hf)
   refine IsOpenMap.of_sections fun x => ⟨fun y => g (y - f x) + x, ?_, ?_, fun y => ?_⟩
   · exact
       ((g.continuous_of_finiteDimensional.comp <| continuous_id.sub continuous_const).add

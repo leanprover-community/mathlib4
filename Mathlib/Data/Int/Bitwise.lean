@@ -128,7 +128,7 @@ theorem bodd_subNatNat (m n : ℕ) : bodd (subNatNat m n) = xor m.bodd n.bodd :=
 
 @[simp]
 theorem bodd_negOfNat (n : ℕ) : bodd (negOfNat n) = n.bodd := by
-  cases n <;> simp (config := {decide := true})
+  cases n <;> simp +decide
   rfl
 
 @[simp]
@@ -231,7 +231,7 @@ theorem testBit_bit_succ (m b) : ∀ n, testBit (bit b n) (Nat.succ m) = testBit
     simp only [bit_negSucc]
     cases b <;> simp only [Bool.not_false, Bool.not_true, Nat.testBit_bit_succ]
 
--- Porting note (#11215): TODO
+-- Porting note (https://github.com/leanprover-community/mathlib4/issues/11215): TODO
 -- private unsafe def bitwise_tac : tactic Unit :=
 --   sorry
 
@@ -309,10 +309,10 @@ theorem bitwise_bit (f : Bool → Bool → Bool) (a m b n) :
   cases' m with m m <;> cases' n with n n <;>
   simp [bitwise, ofNat_eq_coe, bit_coe_nat, natBitwise, Bool.not_false, Bool.not_eq_false',
     bit_negSucc]
-  · by_cases h : f false false <;> simp (config := {decide := true}) [h]
-  · by_cases h : f false true <;> simp (config := {decide := true}) [h]
-  · by_cases h : f true false <;> simp (config := {decide := true}) [h]
-  · by_cases h : f true true <;> simp (config := {decide := true}) [h]
+  · by_cases h : f false false <;> simp +decide [h]
+  · by_cases h : f false true <;> simp +decide [h]
+  · by_cases h : f true false <;> simp +decide [h]
+  · by_cases h : f true true <;> simp +decide [h]
 
 @[simp]
 theorem lor_bit (a m b n) : lor (bit a m) (bit b n) = bit (a || b) (lor m n) := by
@@ -398,8 +398,6 @@ theorem shiftRight_add' : ∀ (m : ℤ) (n k : ℕ), m >>> (n + k : ℤ) = (m >>
       Nat.shiftRight_add]
 
 /-! ### bitwise ops -/
-
-attribute [local simp] Int.zero_div
 
 theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<< (n : ℤ)) <<< k
   | (m : ℕ), n, (k : ℕ) =>

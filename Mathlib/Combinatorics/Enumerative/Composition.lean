@@ -150,7 +150,7 @@ theorem sum_blocksFun : ∑ i, c.blocksFun i = n := by
   conv_rhs => rw [← c.blocks_sum, ← ofFn_blocksFun, sum_ofFn]
 
 theorem blocksFun_mem_blocks (i : Fin c.length) : c.blocksFun i ∈ c.blocks :=
-  get_mem _ _ _
+  get_mem _ _
 
 @[simp]
 theorem one_le_blocks {i : ℕ} (h : i ∈ c.blocks) : 1 ≤ i :=
@@ -158,7 +158,7 @@ theorem one_le_blocks {i : ℕ} (h : i ∈ c.blocks) : 1 ≤ i :=
 
 @[simp]
 theorem one_le_blocks' {i : ℕ} (h : i < c.length) : 1 ≤ c.blocks[i] :=
-  c.one_le_blocks (get_mem (blocks c) i h)
+  c.one_le_blocks (get_mem (blocks c) _)
 
 @[simp]
 theorem blocks_pos' (i : ℕ) (h : i < c.length) : 0 < c.blocks[i] :=
@@ -464,7 +464,7 @@ theorem eq_ones_iff {c : Composition n} : c = ones n ↔ ∀ i ∈ c.blocks, i =
 theorem ne_ones_iff {c : Composition n} : c ≠ ones n ↔ ∃ i ∈ c.blocks, 1 < i := by
   refine (not_congr eq_ones_iff).trans ?_
   have : ∀ j ∈ c.blocks, j = 1 ↔ j ≤ 1 := fun j hj => by simp [le_antisymm_iff, c.one_le_blocks hj]
-  simp (config := { contextual := true }) [this]
+  simp +contextual [this]
 
 theorem eq_ones_iff_length {c : Composition n} : c = ones n ↔ c.length = n := by
   constructor

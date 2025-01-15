@@ -3,9 +3,9 @@ Copyright (c) 2021 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Algebra.Order.Monoid.Unbundled.OrderDual
+import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Big operators on a list in ordered groups
@@ -14,7 +14,7 @@ This file contains the results concerning the interaction of list big operators 
 groups/monoids.
 -/
 
-variable {ι α M N P M₀ G R : Type*}
+variable {ι α M N : Type*}
 
 namespace List
 section Monoid

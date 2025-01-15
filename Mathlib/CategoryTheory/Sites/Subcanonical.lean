@@ -66,7 +66,7 @@ lemma yonedaEquiv_symm_naturality_left {X X' : C} (f : X' ⟶ X) (F : Sheaf J (T
       ((F.val.map f.op) x) := by
   apply J.yonedaEquiv.injective
   simp only [yonedaEquiv_comp, yoneda_obj_obj, yonedaEquiv_symm_app_apply, Equiv.apply_symm_apply]
-  erw [yonedaEquiv_yoneda_map]
+  rw [yonedaEquiv_yoneda_map]
 
 lemma yonedaEquiv_symm_naturality_right (X : C) {F F' : Sheaf J (Type v)} (f : F ⟶ F')
     (x : F.val.obj ⟨X⟩) : J.yonedaEquiv.symm x ≫ f = J.yonedaEquiv.symm (f.val.app ⟨X⟩ x) := by
@@ -155,7 +155,7 @@ lemma yonedaULiftEquiv_symm_naturality_left {X X' : C} (f : X' ⟶ X) (F : Sheaf
       ((F.val.map f.op) x) := by
   apply J.yonedaULiftEquiv.injective
   simp only [yonedaULiftEquiv_comp, Equiv.apply_symm_apply]
-  erw [yonedaULiftEquiv_yonedaULift_map]
+  rw [yonedaULiftEquiv_yonedaULift_map]
   rfl
 
 lemma yonedaULiftEquiv_symm_naturality_right (X : C) {F F' : Sheaf J (Type (max v v'))}

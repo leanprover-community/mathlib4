@@ -18,6 +18,7 @@ represents the rotations of the `n`-gon by `2πi/n`, and `sr i` represents the r
 `n`-gon. `DihedralGroup 0` corresponds to the infinite dihedral group.
 -/
 
+assert_not_exists TwoSidedIdeal
 
 /-- For `n ≠ 0`, `DihedralGroup n` represents the symmetry group of the regular `n`-gon.
 `r i` represents the rotations of the `n`-gon by `2πi/n`, and `sr i` represents the reflections of
@@ -90,6 +91,14 @@ theorem sr_mul_r (i j : ZMod n) : sr i * r j = sr (i + j) :=
 theorem sr_mul_sr (i j : ZMod n) : sr i * sr j = r (j - i) :=
   rfl
 
+@[simp]
+theorem inv_r (i : ZMod n) : (r i)⁻¹ = r (-i) :=
+  rfl
+
+@[simp]
+theorem inv_sr (i : ZMod n) : (sr i)⁻¹ = sr i :=
+  rfl
+
 theorem one_def : (1 : DihedralGroup n) = r 0 :=
   rfl
 
@@ -133,6 +142,10 @@ theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
     congr 1
     norm_cast
     rw [Nat.one_add]
+
+@[simp]
+theorem r_one_zpow (k : ℤ) : (r 1 : DihedralGroup n) ^ k = r k := by
+  cases k <;> simp
 
 -- @[simp] -- Porting note: simp changes the goal to `r 0 = 1`. `r_one_pow_n` is no longer useful.
 theorem r_one_pow_n : r (1 : ZMod n) ^ n = 1 := by

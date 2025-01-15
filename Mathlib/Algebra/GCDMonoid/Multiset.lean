@@ -55,7 +55,7 @@ theorem lcm_add (s₁ s₂ : Multiset α) : (s₁ + s₂).lcm = GCDMonoid.lcm s�
 
 theorem lcm_dvd {s : Multiset α} {a : α} : s.lcm ∣ a ↔ ∀ b ∈ s, b ∣ a :=
   Multiset.induction_on s (by simp)
-    (by simp (config := { contextual := true }) [or_imp, forall_and, lcm_dvd_iff])
+    (by simp +contextual [or_imp, forall_and, lcm_dvd_iff])
 
 theorem dvd_lcm {s : Multiset α} {a : α} (h : a ∈ s) : a ∣ s.lcm :=
   lcm_dvd.1 dvd_rfl _ h
@@ -131,7 +131,7 @@ theorem gcd_add (s₁ s₂ : Multiset α) : (s₁ + s₂).gcd = GCDMonoid.gcd s�
 
 theorem dvd_gcd {s : Multiset α} {a : α} : a ∣ s.gcd ↔ ∀ b ∈ s, a ∣ b :=
   Multiset.induction_on s (by simp)
-    (by simp (config := { contextual := true }) [or_imp, forall_and, dvd_gcd_iff])
+    (by simp +contextual [or_imp, forall_and, dvd_gcd_iff])
 
 theorem gcd_dvd {s : Multiset α} {a : α} (h : a ∈ s) : s.gcd ∣ a :=
   dvd_gcd.1 dvd_rfl _ h

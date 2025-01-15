@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel, Yury Kudryashov
 -/
 import Mathlib.Topology.GDelta.Basic
-import Mathlib.Topology.UniformSpace.Basic
 import Mathlib.Order.Filter.CountableInter
+import Mathlib.Topology.UniformSpace.Basic
 
 /-!
 # `Gδ` sets and uniform spaces
@@ -22,7 +22,7 @@ noncomputable section
 open Topology TopologicalSpace Filter Encodable Set
 open scoped Uniformity
 
-variable {X Y ι : Type*} {ι' : Sort*}
+variable {X Y : Type*}
 
 section IsGδ
 
@@ -50,6 +50,5 @@ theorem IsGδ.setOf_continuousAt [UniformSpace Y] [IsCountablyGenerated (𝓤 Y)
   rintro ⟨s, ⟨hsx, hso⟩, hsU⟩
   filter_upwards [IsOpen.mem_nhds hso hsx] with _ hy using ⟨s, ⟨hy, hso⟩, hsU⟩
 
-@[deprecated (since := "2024-02-15")] alias isGδ_setOf_continuousAt := IsGδ.setOf_continuousAt
 
 end ContinuousAt

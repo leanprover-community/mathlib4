@@ -348,7 +348,7 @@ theorem keys_kreplace (a : α) (b : β a) : ∀ l : List (Sigma β), (kreplace a
   lookmap_map_eq _ _ <| by
     rintro ⟨a₁, b₂⟩ ⟨a₂, b₂⟩
     dsimp
-    split_ifs with h <;> simp (config := { contextual := true }) [h]
+    split_ifs with h <;> simp +contextual [h]
 
 theorem kreplace_nodupKeys (a : α) (b : β a) {l : List (Sigma β)} :
     (kreplace a b l).NodupKeys ↔ l.NodupKeys := by simp [NodupKeys, keys_kreplace]

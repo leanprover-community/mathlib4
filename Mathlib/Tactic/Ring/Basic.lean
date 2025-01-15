@@ -81,6 +81,8 @@ namespace Ring
 
 open Mathlib.Meta Qq NormNum Lean.Meta AtomM
 
+attribute [local instance] monadLiftOptionMetaM
+
 open Lean (MetaM Expr mkRawNatLit)
 
 /-- A shortcut instance for `CommSemiring ℕ` used by ring. -/
@@ -510,9 +512,8 @@ mutual
 partial def ExBase.evalNatCast {a : Q(ℕ)} (va : ExBase sℕ a) : AtomM (Result (ExBase sα) q($a)) :=
   match va with
   | .atom _ => do
-    let a' : Q($α) := q($a)
-    let i ← addAtom a'
-    pure ⟨a', ExBase.atom i, (q(Eq.refl $a') : Expr)⟩
+    let (i, ⟨b', _⟩) ← addAtomQ q($a)
+    pure ⟨b', ExBase.atom i, q(Eq.refl $b')⟩
   | .sum va => do
     let ⟨_, vc, p⟩ ← va.evalNatCast
     pure ⟨_, .sum vc, p⟩
@@ -950,11 +951,11 @@ Evaluates an atom, an expression where `ring` can find no additional structure.
 def evalAtom (e : Q($α)) : AtomM (Result (ExSum sα) e) := do
   let r ← (← read).evalAtom e
   have e' : Q($α) := r.expr
-  let i ← addAtom e'
-  let ve' := (ExBase.atom i (e := e')).toProd (ExProd.mkNat sℕ 1).2 |>.toSum
+  let (i, ⟨a', _⟩) ← addAtomQ e'
+  let ve' := (ExBase.atom i (e := a')).toProd (ExProd.mkNat sℕ 1).2 |>.toSum
   pure ⟨_, ve', match r.proof? with
   | none => (q(atom_pf $e) : Expr)
-  | some (p : Q($e = $e')) => (q(atom_pf' $p) : Expr)⟩
+  | some (p : Q($e = $a')) => (q(atom_pf' $p) : Expr)⟩
 
 theorem inv_mul {R} [DivisionRing R] {a₁ a₂ a₃ b₁ b₃ c}
     (_ : (a₁⁻¹ : R) = b₁) (_ : (a₃⁻¹ : R) = b₃)
@@ -975,9 +976,8 @@ variable (dα : Q(DivisionRing $α))
 
 /-- Applies `⁻¹` to a polynomial to get an atom. -/
 def evalInvAtom (a : Q($α)) : AtomM (Result (ExBase sα) q($a⁻¹)) := do
-  let a' : Q($α) := q($a⁻¹)
-  let i ← addAtom a'
-  pure ⟨a', ExBase.atom i, (q(Eq.refl $a') : Expr)⟩
+  let (i, ⟨b', _⟩) ← addAtomQ q($a⁻¹)
+  pure ⟨b', ExBase.atom i, q(Eq.refl $b')⟩
 
 /-- Inverts a polynomial `va` to get a normalized result polynomial.
 

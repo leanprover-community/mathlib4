@@ -73,8 +73,7 @@ invertible, inverse element, invOf, a half, one half, a third, one third, ½, �
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
+assert_not_exists MonoidWithZero DenselyOrdered
 
 universe u
 
@@ -230,23 +229,23 @@ section
 variable [Monoid α] {a b c : α} [Invertible c]
 
 variable (c) in
-theorem mul_right_inj_of_invertible : a * c = b * c ↔ a = b :=
+theorem mul_left_inj_of_invertible : a * c = b * c ↔ a = b :=
   ⟨fun h => by simpa using congr_arg (· * ⅟c) h, congr_arg (· * _)⟩
 
 variable (c) in
-theorem mul_left_inj_of_invertible : c * a = c * b ↔ a = b :=
+theorem mul_right_inj_of_invertible : c * a = c * b ↔ a = b :=
   ⟨fun h => by simpa using congr_arg (⅟c * ·) h, congr_arg (_ * ·)⟩
 
 theorem invOf_mul_eq_iff_eq_mul_left : ⅟c * a = b ↔ a = c * b := by
-  rw [← mul_left_inj_of_invertible (c := c), mul_invOf_cancel_left]
+  rw [← mul_right_inj_of_invertible (c := c), mul_invOf_cancel_left]
 
 theorem mul_left_eq_iff_eq_invOf_mul : c * a = b ↔ a = ⅟c * b := by
-  rw [← mul_left_inj_of_invertible (c := ⅟c), invOf_mul_cancel_left]
+  rw [← mul_right_inj_of_invertible (c := ⅟c), invOf_mul_cancel_left]
 
 theorem mul_invOf_eq_iff_eq_mul_right : a * ⅟c = b ↔ a = b * c := by
-  rw [← mul_right_inj_of_invertible (c := c), invOf_mul_cancel_right]
+  rw [← mul_left_inj_of_invertible (c := c), invOf_mul_cancel_right]
 
 theorem mul_right_eq_iff_eq_mul_invOf : a * c = b ↔ a = b * ⅟c := by
-  rw [← mul_right_inj_of_invertible (c := ⅟c), mul_invOf_cancel_right]
+  rw [← mul_left_inj_of_invertible (c := ⅟c), mul_invOf_cancel_right]
 
 end

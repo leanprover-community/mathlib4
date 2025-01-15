@@ -93,7 +93,7 @@ theorem card_div_choose_le_card_shadow_div_choose (hr : r ≠ 0)
   · rw [choose_eq_zero_of_lt hr', cast_zero, div_zero]
     exact div_nonneg (cast_nonneg _) (cast_nonneg _)
   replace h𝒜 := card_mul_le_card_shadow_mul h𝒜
-  rw [div_le_div_iff] <;> norm_cast
+  rw [div_le_div_iff₀] <;> norm_cast
   · cases' r with r
     · exact (hr rfl).elim
     rw [tsub_add_eq_add_tsub hr', add_tsub_add_eq_tsub_right] at h𝒜
@@ -211,7 +211,7 @@ end LYM
 
 /-- **Sperner's theorem**. The size of an antichain in `Finset α` is bounded by the size of the
 maximal layer in `Finset α`. This precisely means that `Finset α` is a Sperner order. -/
-theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
+theorem _root_.IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
     (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset α))) :
     #𝒜 ≤ (Fintype.card α).choose (Fintype.card α / 2) := by
   classical

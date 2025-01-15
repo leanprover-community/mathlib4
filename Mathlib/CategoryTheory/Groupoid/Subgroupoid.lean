@@ -194,7 +194,7 @@ instance : Bot (Subgroupoid C) :=
 instance : Inhabited (Subgroupoid C) :=
   ⟨⊤⟩
 
-instance : Inf (Subgroupoid C) :=
+instance : Min (Subgroupoid C) :=
   ⟨fun S T =>
     { arrows := fun c d => S.arrows c d ∩ T.arrows c d
       inv := fun hp ↦ ⟨S.inv hp.1, T.inv hp.2⟩

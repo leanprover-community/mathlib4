@@ -3,9 +3,9 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Yury Kudryashov
 -/
-import Mathlib.Algebra.BigOperators.Group.List
 import Mathlib.Algebra.Group.Action.Defs
-import Mathlib.Algebra.Group.Units.Basic
+import Mathlib.Algebra.Group.Units.Defs
+import Mathlib.Algebra.BigOperators.Group.List.Basic
 
 /-!
 # Free monoid over a given alphabet
@@ -139,6 +139,10 @@ theorem length_eq_one : length a = 1 ↔ ∃ m, a = FreeMonoid.of m :=
 @[to_additive]
 theorem length_eq_two {v : FreeMonoid α} :
     v.length = 2 ↔ ∃ c d, v = FreeMonoid.of c * FreeMonoid.of d := List.length_eq_two
+
+@[to_additive]
+theorem length_eq_three {v : FreeMonoid α} : v.length = 3 ↔ ∃ (a b c : α), v = of a * of b * of c :=
+  List.length_eq_three
 
 @[to_additive (attr := simp)]
 theorem length_mul (a b : FreeMonoid α) : (a * b).length = a.length + b.length :=

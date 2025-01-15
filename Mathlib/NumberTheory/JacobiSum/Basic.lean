@@ -123,7 +123,7 @@ theorem jacobiSum_one_nontrivial {χ : MulChar F R} (hχ : χ ≠ 1) : jacobiSum
   classical
   have : ∑ x ∈ univ \ {0, 1}, ((1 : MulChar F R) x - 1) * (χ (1 - x) - 1) = 0 := by
     apply Finset.sum_eq_zero
-    simp (config := { contextual := true }) only [mem_sdiff, mem_univ, mem_insert, mem_singleton,
+    simp +contextual only [mem_sdiff, mem_univ, mem_insert, mem_singleton,
       not_or, ← isUnit_iff_ne_zero, true_and, MulChar.one_apply, sub_self, zero_mul, and_imp,
       implies_true]
   simp only [jacobiSum_eq_aux, MulChar.sum_one_eq_card_units, MulChar.sum_eq_zero_of_ne_one hχ,

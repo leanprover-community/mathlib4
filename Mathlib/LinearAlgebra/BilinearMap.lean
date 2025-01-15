@@ -3,7 +3,7 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro
 -/
-import Mathlib.Algebra.Module.Submodule.Ker
+import Mathlib.Algebra.Module.Submodule.Equiv
 import Mathlib.Algebra.NoZeroSMulDivisors.Basic
 
 /-!
@@ -19,15 +19,24 @@ commuting actions, and `ρ₁₂ : R →+* R₂` and `σ₁₂ : S →+* S₂`.
 * `LinearMap.mk₂`: a constructor for bilinear maps,
   taking an unbundled function together with proof witnesses of bilinearity
 * `LinearMap.flip`: turns a bilinear map `M × N → P` into `N × M → P`
-* `LinearMap.lcomp` and `LinearMap.llcomp`: composition of linear maps as a bilinear map
-* `LinearMap.compl₂`: composition of a bilinear map `M × N → P` with a linear map `Q → M`
-* `LinearMap.compr₂`: composition of a bilinear map `M × N → P` with a linear map `Q → N`
+* `LinearMap.lflip`: given a linear map from `M` to `N →ₗ[R] P`, i.e., a bilinear map `M → N → P`,
+  change the order of variables and get a linear map from `N` to `M →ₗ[R] P`.
+* `LinearMap.lcomp`: composition of a given linear map `M → N` with a linear map `N → P` as
+  a linear map from `Nₗ →ₗ[R] Pₗ` to `M →ₗ[R] Pₗ`
+* `LinearMap.llcomp`: composition of linear maps as a bilinear map from `(M →ₗ[R] N) × (N →ₗ[R] P)`
+  to `M →ₗ[R] P`
+* `LinearMap.compl₂`: composition of a linear map `Q → N` and a bilinear map `M → N → P` to
+  form a bilinear map `M → Q → P`.
+* `LinearMap.compr₂`: composition of a linear map `P → Q` and a bilinear map `M → N → P` to form a
+  bilinear map `M → N → Q`.
 * `LinearMap.lsmul`: scalar multiplication as a bilinear map `R × M → M`
 
 ## Tags
 
 bilinear
 -/
+
+open Function
 
 namespace LinearMap
 
@@ -106,7 +115,7 @@ def flip (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂] P) : N →ₛₗ[σ₁
   mk₂'ₛₗ σ₁₂ ρ₁₂ (fun n m => f m n) (fun _ _ m => (f m).map_add _ _)
     (fun _ _  m  => (f m).map_smulₛₗ _ _)
     (fun n m₁ m₂ => by simp only [map_add, add_apply])
-    -- Note: #8386 changed `map_smulₛₗ` into `map_smulₛₗ _`.
+    -- Note: https://github.com/leanprover-community/mathlib4/pull/8386 changed `map_smulₛₗ` into `map_smulₛₗ _`.
     -- It looks like we now run out of assignable metavariables.
     (fun c n  m  => by simp only [map_smulₛₗ _, smul_apply])
 
@@ -187,7 +196,7 @@ def restrictScalars₁₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N �
 
 theorem restrictScalars₁₂_injective : Function.Injective
     (LinearMap.restrictScalars₁₂ R' S' : (M →ₗ[R] N →ₗ[S] Pₗ) → (M →ₗ[R'] N →ₗ[S'] Pₗ)) :=
-  fun _ _ h ↦ ext₂ (congr_fun₂ h : _)
+  fun _ _ h ↦ ext₂ (congr_fun₂ h :)
 
 @[simp]
 theorem restrictScalars₁₂_inj {B B' : M →ₗ[R] N →ₗ[S] Pₗ} :
@@ -243,7 +252,8 @@ theorem lflip_apply (m : M) (n : N) : lflip f n m = f m n := rfl
 
 variable (R Pₗ)
 
-/-- Composing a linear map `M → N` and a linear map `N → P` to form a linear map `M → P`. -/
+/-- Composing a given linear map `M → N` with a linear map `N → P` as a linear map from
+`Nₗ →ₗ[R] Pₗ` to `M →ₗ[R] Pₗ`. -/
 def lcomp (f : M →ₗ[R] Nₗ) : (Nₗ →ₗ[R] Pₗ) →ₗ[R] M →ₗ[R] Pₗ :=
   flip <| LinearMap.comp (flip id) f
 
@@ -269,7 +279,7 @@ theorem lcompₛₗ_apply (f : M →ₛₗ[σ₁₂] N) (g : N →ₛₗ[σ₂�
 
 variable (R M Nₗ Pₗ)
 
-/-- Composing a linear map `M → N` and a linear map `N → P` to form a linear map `M → P`. -/
+/-- Composing linear maps as a bilinear map from `(M →ₗ[R] N) × (N →ₗ[R] P)` to `M →ₗ[R] P` -/
 def llcomp : (Nₗ →ₗ[R] Pₗ) →ₗ[R] (M →ₗ[R] Nₗ) →ₗ[R] M →ₗ[R] Pₗ :=
   flip
     { toFun := lcomp R Pₗ
@@ -393,5 +403,37 @@ theorem ker_lsmul [NoZeroSMulDivisors R M] {a : R} (ha : a ≠ 0) :
 end AddCommGroup
 
 end CommRing
+
+open Function
+
+section restrictScalarsRange
+
+variable {R S M N P M' N' P' : Type*}
+  [CommSemiring R] [CommSemiring S] [SMul S R]
+  [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N] [AddCommMonoid P] [Module R P]
+  [Module S M] [Module S N] [Module S P]
+  [IsScalarTower S R M] [IsScalarTower S R N] [IsScalarTower S R P]
+  [AddCommMonoid M'] [Module S M'] [AddCommMonoid N'] [Module S N'] [AddCommMonoid P'] [Module S P']
+  [SMulCommClass R S P]
+
+variable (i : M' →ₗ[S] M) (j : N' →ₗ[S] N) (k : P' →ₗ[S] P) (hk : Injective k)
+  (B : M →ₗ[R] N →ₗ[R] P) (hB : ∀ m n, B (i m) (j n) ∈ LinearMap.range k)
+
+/-- Restrict the scalars, domains, and range of a bilinear map. -/
+noncomputable def restrictScalarsRange :
+    M' →ₗ[S] N' →ₗ[S] P' :=
+  (((LinearMap.restrictScalarsₗ S R _ _ _).comp
+    (B.restrictScalars S)).compl₁₂ i j).codRestrict₂ k hk hB
+
+@[simp] lemma restrictScalarsRange_apply (m : M') (n : N') :
+    k (restrictScalarsRange i j k hk B hB m n) = B (i m) (j n) := by
+  simp [restrictScalarsRange]
+
+@[simp]
+lemma restrictScalarsRange_apply_eq_zero_iff (m : M') (n : N') :
+    restrictScalarsRange i j k hk B hB m n = 0 ↔ B (i m) (j n) = 0 := by
+  rw [← hk.eq_iff, restrictScalarsRange_apply, map_zero]
+
+end restrictScalarsRange
 
 end LinearMap

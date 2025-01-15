@@ -57,7 +57,7 @@ def completion.incl {V : SemiNormedGrp} : V ⟶ completion.obj V where
   map_add' := Completion.coe_add
   bound' := ⟨1, fun v => by simp⟩
 
--- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+-- These lemmas have always been bad (https://github.com/leanprover-community/mathlib4/issues/7657), but https://github.com/leanprover/lean4/pull/2644 made `simp` start noticing
 attribute [nolint simpNF] SemiNormedGrp.completion.incl_apply
 
 theorem completion.norm_incl_eq {V : SemiNormedGrp} {v : V} : ‖completion.incl v‖ = ‖v‖ :=

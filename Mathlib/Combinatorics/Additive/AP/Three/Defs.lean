@@ -43,6 +43,8 @@ the size of the biggest 3AP-free subset of `{0, ..., n - 1}`.
 3AP-free, Salem-Spencer, Roth, arithmetic progression, average, three-free
 -/
 
+assert_not_exists Ideal TwoSidedIdeal
+
 open Finset Function
 open scoped Pointwise
 
@@ -119,7 +121,7 @@ lemma threeGPFree_image (hf : IsMulFreimanIso 2 s t f) (hAs : A ⊆ s) :
     ThreeGPFree (f '' A) ↔ ThreeGPFree A := by
   rw [ThreeGPFree, ThreeGPFree]
   have := (hf.bijOn.injOn.mono hAs).bijOn_image (f := f)
-  simp (config := { contextual := true }) only
+  simp +contextual only
     [((hf.bijOn.injOn.mono hAs).bijOn_image (f := f)).forall,
     hf.mul_eq_mul (hAs _) (hAs _) (hAs _) (hAs _), this.injOn.eq_iff]
 

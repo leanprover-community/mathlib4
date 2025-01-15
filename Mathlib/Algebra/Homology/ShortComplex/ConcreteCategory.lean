@@ -139,10 +139,10 @@ variable (D : SnakeInput C)
 lemma δ_apply (x₃ : D.L₀.X₃) (x₂ : D.L₁.X₂) (x₁ : D.L₂.X₁)
     (h₂ : D.L₁.g x₂ = D.v₀₁.τ₃ x₃) (h₁ : D.L₂.f x₁ = D.v₁₂.τ₂ x₂) :
     D.δ x₃ = D.v₂₃.τ₁ x₁ := by
-  have := (forget₂ C Ab).preservesFiniteLimitsOfPreservesHomology
+  have := (forget₂ C Ab).preservesFiniteLimits_of_preservesHomology
   have : PreservesFiniteLimits (forget C) := by
     have : forget₂ C Ab ⋙ forget Ab = forget C := HasForget₂.forget_comp
-    simpa only [← this] using compPreservesFiniteLimits _ _
+    simpa only [← this] using comp_preservesFiniteLimits _ _
   have eq := congr_fun ((forget C).congr_map D.snd_δ)
     (Limits.Concrete.pullbackMk D.L₁.g D.v₀₁.τ₃ x₂ x₃ h₂)
   have eq₁ := Concrete.pullbackMk_fst D.L₁.g D.v₀₁.τ₃ x₂ x₃ h₂

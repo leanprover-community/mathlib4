@@ -22,11 +22,10 @@ coercions both to `ℝ` and `ℝ≥0∞`. We do not require `0 < K` in the defin
 we do not have a `posreal` type.
 -/
 
+open Bornology Filter Set Topology
+open scoped NNReal ENNReal Uniformity
 
 variable {α β γ : Type*}
-
-open scoped NNReal ENNReal Uniformity Topology
-open Set Filter Bornology
 
 /-- We say that `f : α → β` is `AntilipschitzWith K` if for any two points `x`, `y` we have
 `edist x y ≤ K * edist (f x) (f y)`. -/
@@ -110,7 +109,7 @@ theorem comp {Kg : ℝ≥0} {g : β → γ} (hg : AntilipschitzWith Kg g) {Kf : 
     (hf : AntilipschitzWith Kf f) : AntilipschitzWith (Kf * Kg) (g ∘ f) := fun x y =>
   calc
     edist x y ≤ Kf * edist (f x) (f y) := hf x y
-    _ ≤ Kf * (Kg * edist (g (f x)) (g (f y))) := ENNReal.mul_left_mono (hg _ _)
+    _ ≤ Kf * (Kg * edist (g (f x)) (g (f y))) := mul_left_mono (hg _ _)
     _ = _ := by rw [ENNReal.coe_mul, mul_assoc]; rfl
 
 theorem restrict (hf : AntilipschitzWith K f) (s : Set α) : AntilipschitzWith K (s.restrict f) :=
@@ -122,8 +121,8 @@ theorem codRestrict (hf : AntilipschitzWith K f) {s : Set β} (hs : ∀ x, f x �
 theorem to_rightInvOn' {s : Set α} (hf : AntilipschitzWith K (s.restrict f)) {g : β → α}
     {t : Set β} (g_maps : MapsTo g t s) (g_inv : RightInvOn g f t) :
     LipschitzWith K (t.restrict g) := fun x y => by
-  simpa only [restrict_apply, g_inv x.mem, g_inv y.mem, Subtype.edist_eq, Subtype.coe_mk] using
-    hf ⟨g x, g_maps x.mem⟩ ⟨g y, g_maps y.mem⟩
+  simpa only [restrict_apply, g_inv x.mem, g_inv y.mem, Subtype.edist_mk_mk]
+    using hf ⟨g x, g_maps x.mem⟩ ⟨g y, g_maps y.mem⟩
 
 theorem to_rightInvOn (hf : AntilipschitzWith K f) {g : β → α} {t : Set β} (h : RightInvOn g f t) :
     LipschitzWith K (t.restrict g) :=

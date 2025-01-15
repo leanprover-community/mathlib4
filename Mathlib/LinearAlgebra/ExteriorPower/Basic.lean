@@ -22,7 +22,7 @@ induced by a linear map `f : M →ₗ[R] N`. (See the file `Algebra.Category.Mod
 for the corresponding functor `ModuleCat R ⥤ ModuleCat R`.)
 
 ## Theorems
-* The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`.
+* `exteriorPower.ιMulti_span`: The image of `exteriorPower.ιMulti` spans `⋀[R]^n M`.
 
 * We construct `exteriorPower.alternatingMapLinearEquiv` which
 expresses the universal property of the exterior power as a
@@ -33,14 +33,11 @@ alternating maps and linear maps from the exterior power.
 
 open scoped TensorProduct
 
-universe u v uM uN uN' uN'' uE uF
+universe u
 
-variable (R : Type u) (n : ℕ) {M : Type uM} {N : Type uN} {N' : Type uN'} {N'' : Type uN''}
-  [CommRing R] [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N] [AddCommGroup N']
-  [Module R N'] [AddCommGroup N''] [Module R N'']
-
-variable {K : Type v} {E : Type uE} {F : Type uF} [Field K] [AddCommGroup E] [Module K E]
-  [AddCommGroup F] [Module K F]
+variable (R : Type u) [CommRing R] (n : ℕ) {M N N' : Type*}
+  [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+  [AddCommGroup N'] [Module R N']
 
 namespace exteriorPower
 
@@ -90,11 +87,11 @@ noncomputable def relations (ι : Type*) [DecidableEq ι] (M : Type*)
   G := ι → M
   R := Rels R ι M
   relation r := match r with
-    | .add m i x y => Finsupp.single ((update m i x)) 1 +
-        Finsupp.single ((update m i y)) 1 -
-        Finsupp.single ((update m i (x + y))) 1
-    | .smul m i r x => Finsupp.single ((update m i (r • x))) 1 -
-        r • Finsupp.single ((update m i x)) 1
+    | .add m i x y => Finsupp.single (update m i x) 1 +
+        Finsupp.single (update m i y) 1 -
+        Finsupp.single (update m i (x + y)) 1
+    | .smul m i r x => Finsupp.single (update m i (r • x)) 1 -
+        r • Finsupp.single (update m i x) 1
     | .alt m _ _ _ _ => Finsupp.single m 1
 
 variable {R} in
@@ -195,10 +192,10 @@ lemma alternatingMapLinearEquiv_ιMulti :
     LinearMap.compAlternatingMap_apply, LinearMap.id_coe, id_eq]
 
 /-- If `f` is an alternating map from `M` to `N`,
-`alternatingMapLinearEqui n f` is the corresponding linear map from `⋀[R]^n M` to `N`,
+`alternatingMapLinearEquiv f` is the corresponding linear map from `⋀[R]^n M` to `N`,
 and if `g` is a linear map from `N` to `N'`, then
 the alternating map `g.compAlternatingMap f` from `M` to `N'` corresponds to the linear
-map `g.comp (alternatingMapLinearEquiv n f)` on `⋀[R]^n M`. -/
+map `g.comp (alternatingMapLinearEquiv f)` on `⋀[R]^n M`. -/
 lemma alternatingMapLinearEquiv_comp (g : N →ₗ[R] N') (f : M [⋀^Fin n]→ₗ[R] N) :
     alternatingMapLinearEquiv (g.compAlternatingMap f) = g.comp (alternatingMapLinearEquiv f) := by
   ext
