@@ -181,7 +181,7 @@ In a commutative semiring `R`, `Subsemiring.sumSq R` is the subsemiring of sums 
 -/
 def sumSq : Subsemiring T where
   __ := NonUnitalSubsemiring.sumSq T
-  one_mem' := by simpa using IsSquare.isSumSq IsSquare.one
+  one_mem' := by simpa using IsSquare.one.isSumSq
 
 @[simp] theorem sumSq_toNonUnitalSubsemiring :
     (sumSq T).toNonUnitalSubsemiring = .sumSq T := rfl
