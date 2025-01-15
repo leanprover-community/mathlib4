@@ -222,7 +222,7 @@ lemma measure_le_measure_closure_of_levyProkhorovEDist_eq_zero {μ ν : Measure 
     have aux : Tendsto ENNReal.toReal (𝓝[>] 0) (𝓝[>] 0) := by
       apply tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within (s := Ioi 0) ENNReal.toReal
       · exact tendsto_nhdsWithin_of_tendsto_nhds (continuousAt_toReal zero_ne_top).tendsto
-      · filter_upwards [Ioo_mem_nhdsWithin_Ioi ⟨le_rfl, zero_lt_one⟩] with x hx
+      · filter_upwards [Ioo_mem_nhdsGT zero_lt_one] with x hx
         exact toReal_pos hx.1.ne.symm <| ne_top_of_lt hx.2
     exact (tendsto_measure_thickening h_finite).comp aux
   have obs := Tendsto.add key (tendsto_nhdsWithin_of_tendsto_nhds tendsto_id)

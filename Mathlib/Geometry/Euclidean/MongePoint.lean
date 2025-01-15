@@ -468,12 +468,8 @@ theorem eq_orthocenter_of_forall_mem_altitude {t : Triangle ℝ P} {i₁ i₂ : 
   rw [orthocenter_eq_mongePoint]
   have ha : ∀ i, i₃ ≠ i → p ∈ t.mongePlane i₃ i := by
     intro i hi
-    have hi₁₂ : i₁ = i ∨ i₂ = i := by
-      clear h₁ h₂
-      decide +revert
-    cases' hi₁₂ with hi₁₂ hi₁₂
-    · exact hi₁₂ ▸ h₂
-    · exact hi₁₂ ▸ h₁
+    obtain rfl | rfl : i₁ = i ∨ i₂ = i := by omega
+    all_goals assumption
   exact eq_mongePoint_of_forall_mem_mongePlane ha
 
 /-- The distance from the orthocenter to the reflection of the

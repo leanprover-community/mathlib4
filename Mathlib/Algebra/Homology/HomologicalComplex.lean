@@ -566,7 +566,7 @@ attribute [simp] comm_to_apply
 induces a morphism of arrows of the differentials out of each object.
 -/
 def sqFrom (f : Hom C₁ C₂) (i : ι) : Arrow.mk (C₁.dFrom i) ⟶ Arrow.mk (C₂.dFrom i) :=
-  Arrow.homMk (f.comm_from i)
+  Arrow.homMk _ _ (f.comm_from i)
 
 @[simp]
 theorem sqFrom_left (f : Hom C₁ C₂) (i : ι) : (f.sqFrom i).left = f.f i :=
@@ -589,7 +589,7 @@ theorem sqFrom_comp (f : C₁ ⟶ C₂) (g : C₂ ⟶ C₃) (i : ι) :
 induces a morphism of arrows of the differentials into each object.
 -/
 def sqTo (f : Hom C₁ C₂) (j : ι) : Arrow.mk (C₁.dTo j) ⟶ Arrow.mk (C₂.dTo j) :=
-  Arrow.homMk (f.comm_to j)
+  Arrow.homMk _ _ (f.comm_to j)
 
 @[simp]
 theorem sqTo_left (f : Hom C₁ C₂) (j : ι) : (f.sqTo j).left = f.prev j :=
