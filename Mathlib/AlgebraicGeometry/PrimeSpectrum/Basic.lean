@@ -450,6 +450,11 @@ theorem basicOpen_le_basicOpen_iff (f g : R) :
   rw [← SetLike.coe_subset_coe, basicOpen_eq_zeroLocus_compl, basicOpen_eq_zeroLocus_compl,
     Set.compl_subset_compl, zeroLocus_subset_zeroLocus_singleton_iff]
 
+theorem basicOpen_le_basicOpen_iff_algebraMap_isUnit {f g : R} [Algebra R S]
+    [IsLocalization.Away f S] : basicOpen f ≤ basicOpen g ↔ IsUnit (algebraMap R S g) := by
+  simp_rw [basicOpen_le_basicOpen_iff, Ideal.mem_radical_iff, Ideal.mem_span_singleton,
+    IsLocalization.Away.algebraMap_isUnit_iff f]
+
 theorem basicOpen_mul (f g : R) : basicOpen (f * g) = basicOpen f ⊓ basicOpen g :=
   TopologicalSpace.Opens.ext <| by simp [zeroLocus_singleton_mul]
 
@@ -577,12 +582,10 @@ theorem toPiLocalization_surjective_of_discreteTopology :
   obtain ⟨r, eq, -⟩ := Localization.existsUnique_algebraMap_eq_of_span_eq_top _ span_eq
     (fun a ↦ algE a (x _)) fun a b ↦ by
       obtain rfl | ne := eq_or_ne a b; · rfl
-      have ⟨n, hn⟩ : IsNilpotent (a * b : R) := (basicOpen_eq_bot_iff _).mp <| by
+      have nil : IsNilpotent (a * b : R) := (basicOpen_eq_bot_iff _).mp <| by
         simp_rw [basicOpen_mul, SetLike.ext'_iff, TopologicalSpace.Opens.coe_inf, hf]
         exact bot_unique (fun _ ⟨ha, hb⟩ ↦ ne <| e.symm.injective (ha.symm.trans hb))
-      have := IsLocalization.subsingleton (M := .powers (a * b : R))
-        (S := Localization.Away (a * b : R)) <| hn ▸ ⟨n, rfl⟩
-      apply Subsingleton.elim
+      apply (IsLocalization.subsingleton (M := .powers (a * b : R)) nil).elim
   refine ⟨r, funext fun I ↦ ?_⟩
   have := eq (e I)
   rwa [← AlgEquiv.symm_apply_eq, AlgEquiv.commutes, e.symm_apply_apply] at this
@@ -785,6 +788,20 @@ lemma isCompact_isOpen_iff_ideal {s : Set (PrimeSpectrum R)} :
   exact ⟨fun ⟨s, e⟩ ↦ ⟨.span s, ⟨s, rfl⟩, by simpa using e⟩,
     fun ⟨I, ⟨s, hs⟩, e⟩ ↦ ⟨s, by simpa [hs.symm] using e⟩⟩
 
+lemma basicOpen_eq_zeroLocus_of_mul_add
+    (e f : R) (mul : e * f = 0) (add : e + f = 1) :
+    basicOpen e = zeroLocus {f} := by
+  ext p
+  suffices e ∉ p.asIdeal ↔ f ∈ p.asIdeal by simpa
+  refine ⟨(p.2.mem_or_mem_of_mul_eq_zero mul).resolve_left, fun h₁ h₂ ↦ p.2.1 ?_⟩
+  rw [Ideal.eq_top_iff_one, ← add]
+  exact add_mem h₂ h₁
+
+lemma zeroLocus_eq_basicOpen_of_mul_add
+    (e f : R) (mul : e * f = 0) (add : e + f = 1) :
+    zeroLocus {e} = basicOpen f := by
+  rw [basicOpen_eq_zeroLocus_of_mul_add f e] <;> simp only [mul, add, mul_comm, add_comm]
+
 lemma basicOpen_injOn_isIdempotentElem :
     {e : R | IsIdempotentElem e}.InjOn basicOpen := fun x hx y hy eq ↦ by
   by_contra! ne
@@ -798,14 +815,14 @@ lemma basicOpen_injOn_isIdempotentElem :
   exact ne_of_mem_of_not_mem' (a := ⟨p, prime⟩) nmem
     (not_not.mpr <| p.span_singleton_le_iff_mem.mp le) eq
 
-@[stacks 00EE]
-lemma existsUnique_idempotent_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R)}
-    (hs : IsClopen s) : ∃! e : R, IsIdempotentElem e ∧ s = basicOpen e := by
-  refine existsUnique_of_exists_of_unique ?_ ?_; swap
-  · rintro x y ⟨hx, rfl⟩ ⟨hy, eq⟩
-    exact basicOpen_injOn_isIdempotentElem hx hy (SetLike.ext' eq)
+lemma eq_biUnion_of_isOpen {s : Set (PrimeSpectrum R)} (hs : IsOpen s) :
+    s = ⋃ (r : R) (_ : ↑(basicOpen r) ⊆ s), basicOpen r :=
+  (isTopologicalBasis_basic_opens.open_eq_sUnion' hs).trans <| by aesop
+
+lemma exists_mul_eq_zero_add_eq_one_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R)}
+    (hs : IsClopen s) : ∃ e f : R, e * f = 0 ∧ e + f = 1 ∧ s = basicOpen e ∧ sᶜ = basicOpen f := by
   cases subsingleton_or_nontrivial R
-  · exact ⟨0, Subsingleton.elim _ _, Subsingleton.elim _ _⟩
+  · refine ⟨0, 0, ?_, ?_, ?_, ?_⟩ <;> apply Subsingleton.elim
   obtain ⟨I, hI, hI'⟩ := isCompact_isOpen_iff_ideal.mp ⟨hs.1.isCompact, hs.2⟩
   obtain ⟨J, hJ, hJ'⟩ := isCompact_isOpen_iff_ideal.mp
     ⟨hs.2.isClosed_compl.isCompact, hs.1.isOpen_compl⟩
@@ -826,66 +843,42 @@ lemma existsUnique_idempotent_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R
     · rw [Ideal.span_union, Ideal.span_eq, Ideal.span_eq, ← zeroLocus_empty_iff_eq_top,
         zeroLocus_sup, hI', hJ', Set.compl_inter_self]
   rw [Ideal.eq_top_iff_one, Submodule.mem_sup] at this
-  obtain ⟨x, hx, y, hy, e⟩ := this
-  refine ⟨x, ?_, subset_antisymm ?_ ?_⟩
-  · replace e := congr(x * $e)
-    rwa [mul_add, hn (Ideal.mul_mem_mul hx hy), add_zero, mul_one] at e
-  · rw [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, Set.subset_compl_iff_disjoint_left,
-      Set.disjoint_iff_inter_eq_empty, ← hJ', ← zeroLocus_span,
-      ← zeroLocus_sup, zeroLocus_empty_iff_eq_top,
-      Ideal.eq_top_iff_one, ← e]
-    exact Submodule.add_mem_sup (Ideal.subset_span (Set.mem_singleton _)) (Ideal.pow_le_self hnz hy)
-  · rw [PrimeSpectrum.basicOpen_eq_zeroLocus_compl, Set.compl_subset_comm, ← hI']
-    exact PrimeSpectrum.zeroLocus_anti_mono
-      (Set.singleton_subset_iff.mpr <| Ideal.pow_le_self hnz hx)
+  obtain ⟨x, hx, y, hy, add⟩ := this
+  have mul : x * y = 0 := hn (Ideal.mul_mem_mul hx hy)
+  have : s = basicOpen x := by
+    refine subset_antisymm ?_ ?_
+    · rw [← hJ', basicOpen_eq_zeroLocus_of_mul_add _ _ mul add]
+      exact zeroLocus_anti_mono (Set.singleton_subset_iff.mpr <| Ideal.pow_le_self hnz hy)
+    · rw [basicOpen_eq_zeroLocus_compl, Set.compl_subset_comm, ← hI']
+      exact zeroLocus_anti_mono (Set.singleton_subset_iff.mpr <| Ideal.pow_le_self hnz hx)
+  refine ⟨x, y, mul, add, this, ?_⟩
+  rw [this, basicOpen_eq_zeroLocus_of_mul_add _ _ mul add, basicOpen_eq_zeroLocus_compl]
 
 lemma exists_idempotent_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R)}
     (hs : IsClopen s) : ∃ e : R, IsIdempotentElem e ∧ s = basicOpen e :=
-  (existsUnique_idempotent_basicOpen_eq_of_isClopen hs).exists
+  have ⟨e, _, mul, add, eq, _⟩ := exists_mul_eq_zero_add_eq_one_basicOpen_eq_of_isClopen hs
+  ⟨e, (IsIdempotentElem.of_mul_add mul add).1, eq⟩
+
+@[stacks 00EE]
+lemma existsUnique_idempotent_basicOpen_eq_of_isClopen {s : Set (PrimeSpectrum R)}
+    (hs : IsClopen s) : ∃! e : R, IsIdempotentElem e ∧ s = basicOpen e := by
+  refine existsUnique_of_exists_of_unique (exists_idempotent_basicOpen_eq_of_isClopen hs) ?_
+  rintro x y ⟨hx, rfl⟩ ⟨hy, eq⟩
+  exact basicOpen_injOn_isIdempotentElem hx hy (SetLike.ext' eq)
 
 @[deprecated (since := "2024-11-11")]
 alias exists_idempotent_basicOpen_eq_of_is_clopen := exists_idempotent_basicOpen_eq_of_isClopen
 
-lemma basicOpen_eq_zeroLocus_of_mul_add
-    (e f : R) (mul : e * f = 0) (add : e + f = 1) :
-    basicOpen e = zeroLocus {f} := by
-  ext p
-  suffices e ∉ p.asIdeal ↔ f ∈ p.asIdeal by simpa
-  refine ⟨(p.2.mem_or_mem_of_mul_eq_zero mul).resolve_left, fun h₁ h₂ ↦ p.2.1 ?_⟩
-  rw [Ideal.eq_top_iff_one, ← add]
-  exact add_mem h₂ h₁
-
-lemma zeroLocus_eq_basicOpen_of_mul_add
-    (e f : R) (mul : e * f = 0) (add : e + f = 1) :
-    zeroLocus {e} = basicOpen f := by
-  rw [basicOpen_eq_zeroLocus_of_mul_add f e] <;> simp only [mul, add, mul_comm, add_comm]
-
 open TopologicalSpace.Opens in
 lemma isClopen_iff_mul_add {s : Set (PrimeSpectrum R)} :
     IsClopen s ↔ ∃ e f : R, e * f = 0 ∧ e + f = 1 ∧ s = basicOpen e := by
-  refine ⟨fun h ↦ ?_, ?_⟩; swap
-  · rintro ⟨e, f, mul, add, rfl⟩
-    refine ⟨?_, (basicOpen e).2⟩
-    rw [basicOpen_eq_zeroLocus_of_mul_add e f mul add]
-    exact isClosed_zeroLocus _
-  have ⟨e, he, hs⟩ := exists_idempotent_basicOpen_eq_of_isClopen h
-  have ⟨f, hf, hsc⟩ := exists_idempotent_basicOpen_eq_of_isClopen h.compl
-  have : e * f = 0 := basicOpen_injOn_isIdempotentElem (he.mul hf) .zero <| by
-    rw [basicOpen_mul, basicOpen_zero, SetLike.ext'_iff,
-      coe_inf, ← hs, ← hsc, Set.inter_compl_self, coe_bot]
-  refine ⟨e, f, this, ?_, hs⟩
-  apply basicOpen_injOn_isIdempotentElem _ .one; swap
-  · simp_rw [Set.mem_setOf, IsIdempotentElem,
-      add_mul, mul_add, mul_comm, this, zero_add, add_zero, he.eq, hf.eq]
-  rw [basicOpen_one, SetLike.ext'_iff, basicOpen_eq_zeroLocus_compl, coe_top, ← zeroLocus_span]
-  suffices Ideal.span {e + f} = Ideal.span {e, f} by
-    simp_rw [this, Ideal.span_insert, zeroLocus_sup, zeroLocus_span, Set.compl_inter,
-      ← basicOpen_eq_zeroLocus_compl, ← hs, ← hsc, Set.union_compl_self]
-  refine (Ideal.span_le.mpr ?_).antisymm (Ideal.span_le.mpr ?_)
-  · rintro _ rfl; exact add_mem (Ideal.subset_span (.inl rfl)) (Ideal.subset_span (.inr rfl))
-  simp_rw [Set.pair_subset_iff, SetLike.mem_coe, Ideal.mem_span_singleton]
-  exact ⟨⟨e, by rw [add_mul, he.eq, mul_comm, this, add_zero]⟩,
-    ⟨f, by rw [add_mul, this, zero_add, hf.eq]⟩⟩
+  refine ⟨fun h ↦ ?_, ?_⟩
+  · have ⟨e, f, h⟩ := exists_mul_eq_zero_add_eq_one_basicOpen_eq_of_isClopen h
+    exact ⟨e, f, by simp only [h, and_self]⟩
+  rintro ⟨e, f, mul, add, rfl⟩
+  refine ⟨?_, (basicOpen e).2⟩
+  rw [basicOpen_eq_zeroLocus_of_mul_add e f mul add]
+  exact isClosed_zeroLocus _
 
 lemma isClopen_iff_mul_add_zeroLocus {s : Set (PrimeSpectrum R)} :
     IsClopen s ↔ ∃ e f : R, e * f = 0 ∧ e + f = 1 ∧ s = zeroLocus {e} := by
