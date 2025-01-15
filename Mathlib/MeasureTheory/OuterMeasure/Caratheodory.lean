@@ -71,7 +71,7 @@ theorem isCaratheodory_union (h₁ : IsCaratheodory m s₁) (h₂ : IsCaratheodo
     union_diff_left, h₂ (t ∩ s₁)]
   simp [diff_eq, add_assoc]
 
-lemma IsCaratheodory.biUnion_of_finite {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Finite)
+lemma isCaratheodory_biUnion_of_finite {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Finite)
     (h : ∀ i ∈ t, m.IsCaratheodory (s i)) :
     m.IsCaratheodory (⋃ i ∈ t, s i) := by
   classical
@@ -107,7 +107,7 @@ lemma isCaratheodory_partialSups {ι : Type*} [PartialOrder ι] [LocallyFiniteOr
     {s : ι → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ι) :
     m.IsCaratheodory (partialSups s i) := by
   simpa only [partialSups_apply, Finset.sup'_eq_sup, Finset.sup_set_eq_biUnion, ← Finset.mem_coe,
-    Finset.coe_Iic] using m.isCaratheodory_iUnion_finite (finite_Iic _) (fun j _ ↦ h j)
+    Finset.coe_Iic] using m.isCaratheodory_biUnion_of_finite (finite_Iic _) (fun j _ ↦ h j)
 
 lemma isCaratheodory_disjointed {ι : Type*} [PartialOrder ι] [LocallyFiniteOrderBot ι]
     {s : ι → Set α} (h : ∀ i, m.IsCaratheodory (s i)) (i : ι) :
@@ -116,7 +116,7 @@ lemma isCaratheodory_disjointed {ι : Type*} [PartialOrder ι] [LocallyFiniteOrd
   apply isCaratheodory_diff
   · exact h i
   · simpa only [Finset.sup_set_eq_biUnion, ← Finset.mem_coe, Finset.coe_Iio] using
-      .biUnion_of_finite m (finite_Iio _) fun j _ ↦ h j
+      m.isCaratheodory_biUnion_of_finite (finite_Iio _) fun j _ ↦ h j
 
 theorem isCaratheodory_sum {s : ℕ → Set α} (h : ∀ i, IsCaratheodory m (s i))
     (hd : Pairwise (Disjoint on s)) {t : Set α} :

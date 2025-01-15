@@ -40,9 +40,9 @@ protected lemma Monotone.disjointed_add_one [NoMaxOrder ι]  {f : ι → α} (hf
   exact not_isMax i
 
 end SuccAddOrder
+
 section Nat
 
--- Porting note: `disjointedRec` had a change in universe level.
 /-- A recursion principle for `disjointed`. To construct / define something for `disjointed f i`,
 it's enough to construct / define it for `f n` and to able to extend through diffs.
 
