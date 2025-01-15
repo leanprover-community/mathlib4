@@ -145,13 +145,13 @@ lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
     (I.height : WithBot ENat) ≤ ringKrullDim R := by
   sorry  -- The original uses le_supr₂ which needs to be adapted
 
-instance Ideal.finiteHeightOfFiniteRingKrullDim {I : Ideal R}
-    [FiniteRingKrullDim R] (priority := 90):
-    Ideal.FiniteHeight I := by
+instance Ideal.finiteHeightOfFiniteRingKrullDim (priority := 90) {I : Ideal R}
+    [FiniteRingKrullDim R] : Ideal.FiniteHeight I := by
   rw [Ideal.finiteHeight_iff_lt, or_iff_not_imp_left]
   intro e
   obtain ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal I e
-  refine' (Ideal.height_mono hM').trans_lt _
+  refine (Ideal.height_mono hM').trans_lt ?_
+
   sorry
   -- refine' (lt_of_le_of_lt _ (ringKrullDim_lt_top (R := R)))
   -- apply M.primeHeightLeRingKrullDim
@@ -251,3 +251,64 @@ theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [hI : I.IsP
   -- cases h : krull_dimension R with x,
   -- { exact krull_dimension_ne_top R h },
   -- { rw [← krull_dimension_succ, h] at this, linarith [with_top.coe_le_coe.mp this] }
+  -- have height_strict : I.primeHeight < M.primeHeight := by
+  --   apply lt_of_le_of_ne height_le
+  --   intro h_eq
+  --   apply h'
+  --   sorry -- need a lemma about equality of heights implying equality of ideals
+
+  -- have := lt_of_lt_of_le (WithBot.coe_lt_coe.mpr height_strict) M_height_le
+  -- rw [e] at this
+  -- exact lt_irrefl _ this
+
+
+/-- The prime height of the maximal ideal equals the Krull dimension -/
+theorem LocalRing.maximalIdeal_primeHeight [IsLocalRing R]:
+    (IsLocalRing.maximalIdeal R).primeHeight = ringKrullDim R :=
+  sorry
+
+/-- For a local ring with finite Krull dimension, a prime ideal has height equal to the Krull dimension
+    if and only if it is the maximal ideal -/
+theorem Ideal.primeHeight_eq_ringKrullDim_iff [FiniteRingKrullDim R] [IsLocalRing R] {I : Ideal R}
+    (hI : I.IsPrime) : Ideal.primeHeight I = ringKrullDim R ↔ I = IsLocalRing.maximalIdeal R := by
+  constructor
+  · intro h
+    exact IsLocalRing.eq_maximalIdeal (Ideal.isMaximal_of_primeHeight_eq_ringKrullDim h)
+  · intro h
+    simp_rw [h]
+    exact LocalRing.maximalIdeal_primeHeight
+
+
+-- lemma set.chain_height_univ {α : Type*} [preorder α] (s : set α) :
+--   (set.univ : set s).chain_height = s.chain_height :=
+-- begin
+--   conv_rhs { rw [← @subtype.range_coe _ s, ← set.image_univ] },
+--   rw set.chain_height_image,
+--   intros x y, refl,
+-- end
+
+-- lemma order_iso.chain_height_eq {α β : Type*} [preorder α] [preorder β]
+--   (e : α ≃o β) : (set.univ : set α).chain_height = (set.univ : set β).chain_height :=
+-- begin
+--   rw [← set.range_iff_surjective.mpr e.surjective, ← set.image_univ, set.chain_height_image],
+--   exact λ _ _, e.lt_iff_lt.symm
+-- end
+
+-- theorem set.chain_height_univ {α : Type*} [Preorder α] (s : Set α) :
+--   (Set.univ : Set s).chainHeight = s.chainHeight := by
+--   conv_rhs =>
+--     rw [← Subtype.range_val s, ← Set.image_univ]
+--   rw [Set.chainHeight_image]
+--   intro x y
+--   rfl
+
+-- theorem OrderIso.chain_height_eq {α β : Type*} [Preorder α] [Preorder β]
+--   (e : α ≃o β) : (Set.univ : Set α).chainHeight = (Set.univ : Set β).chainHeight := by
+--   rw [← Set.range_iff_surjective.mpr e.surjective, ← Set.image_univ, Set.chainHeight_image]
+--   exact fun _ _ => (e.lt_iff_lt).symm
+
+theorem WithTop.add_injective {n : ℕ∞} (hn : n ≠ ⊤) : Function.Injective (fun a => a + n) := by
+  intro a b e
+  exact le_antisymm
+    ((WithTop.add_le_add_iff_right hn).mp e.le)
+    ((WithTop.add_le_add_iff_right hn).mp e.ge)
