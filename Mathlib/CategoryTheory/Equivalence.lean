@@ -182,7 +182,7 @@ theorem unit_inverse_comp (e : C ≌ D) (Y : D) :
   slice_lhs 2 3 =>
     erw [← map_comp e.inverse, ← e.counitIso.inv.naturality, (e.counitIso.app _).hom_inv_id,
       map_id]
-  erw [id_comp, (e.unitIso.app _).hom_inv_id]; rfl
+  simp
 
 @[reassoc (attr := simp)]
 theorem inverse_counitInv_comp (e : C ≌ D) (Y : D) :
@@ -292,13 +292,13 @@ def funInvIdAssoc (e : C ≌ D) (F : C ⥤ E) : e.functor ⋙ e.inverse ⋙ F �
 theorem funInvIdAssoc_hom_app (e : C ≌ D) (F : C ⥤ E) (X : C) :
     (funInvIdAssoc e F).hom.app X = F.map (e.unitInv.app X) := by
   dsimp [funInvIdAssoc]
-  aesop_cat
+  simp
 
 @[simp]
 theorem funInvIdAssoc_inv_app (e : C ≌ D) (F : C ⥤ E) (X : C) :
     (funInvIdAssoc e F).inv.app X = F.map (e.unit.app X) := by
   dsimp [funInvIdAssoc]
-  aesop_cat
+  simp
 
 /-- Composing a functor with both functors of an equivalence yields a naturally isomorphic
 functor. -/
@@ -309,13 +309,13 @@ def invFunIdAssoc (e : C ≌ D) (F : D ⥤ E) : e.inverse ⋙ e.functor ⋙ F �
 theorem invFunIdAssoc_hom_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
     (invFunIdAssoc e F).hom.app X = F.map (e.counit.app X) := by
   dsimp [invFunIdAssoc]
-  aesop_cat
+  simp
 
 @[simp]
 theorem invFunIdAssoc_inv_app (e : C ≌ D) (F : D ⥤ E) (X : D) :
     (invFunIdAssoc e F).inv.app X = F.map (e.counitInv.app X) := by
   dsimp [invFunIdAssoc]
-  aesop_cat
+  simp
 
 /-- If `C` is equivalent to `D`, then `C ⥤ E` is equivalent to `D ⥤ E`. -/
 @[simps! functor inverse unitIso counitIso]
@@ -524,7 +524,7 @@ i.e. faithful, full, and essentially surjective. -/
 noncomputable def inv (F : C ⥤ D) [F.IsEquivalence] : D ⥤ C where
   obj X := F.objPreimage X
   map {X Y} f := F.preimage ((F.objObjPreimageIso X).hom ≫ f ≫ (F.objObjPreimageIso Y).inv)
-  map_id X := by apply F.map_injective; aesop_cat
+  map_id X := by apply F.map_injective; simp
   map_comp {X Y Z} f g := by apply F.map_injective; simp
 
 /-- Interpret a functor that is an equivalence as an equivalence.
