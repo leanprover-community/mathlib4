@@ -16,10 +16,12 @@ We show that a modular form of level `Γ(n)` can be written as `τ ↦ F (𝕢 n
 analytic on the open unit disc, and `𝕢 n` is the parameter `τ ↦ exp (2 * I * π * τ / n)`. As an
 application, we show that cusp forms decay exponentially to 0 as `im τ → ∞`.
 
+We also define the `q`-expansion of a modular form, either as a power series or as a
+`FormalMultlinearSeries`, and show that it converges to `f` on the upper half plane.
+
 ## TO DO:
 
 * generalise to handle arbitrary finite-index subgroups (not just `Γ(n)` for some `n`)
-* define the `q`-expansion as a formal power series
 -/
 
 open ModularForm Complex Filter UpperHalfPlane Function
@@ -117,9 +119,12 @@ lemma hasSum_qExpansion [NeZero n] [ModularFormClass F Γ(n) k] (τ : ℍ) :
   simpa only [eq_cuspFunction n f] using
     hasSum_qExpansion_of_abs_lt n f (τ.abs_qParam_lt_one n)
 
-/-- The `q`-expansion of a level `n` modular form, bundled as a `FormalMultilinearSeries`.
+/--
+The `q`-expansion of a level `n` modular form, bundled as a `FormalMultilinearSeries`.
+
 TODO: Maybe get rid of this and instead define a general API for converting `PowerSeries` to
-`FormalMultlinearSeries`. -/
+`FormalMultlinearSeries`.
+-/
 def qExpansionFormalMultilinearSeries : FormalMultilinearSeries ℂ ℂ ℂ :=
   fun m ↦ (qExpansion n f).coeff ℂ m • ContinuousMultilinearMap.mkPiAlgebraFin ℂ m _
 
