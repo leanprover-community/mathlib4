@@ -229,6 +229,12 @@ instance {S} [CommSemiring S] [Algebra R S] [Module S M] [IsScalarTower R S M]
 
 example [Flat R M] [Flat R N] : Flat R (M ⊗[R] N) := inferInstance
 
+theorem linearIndependent_one_tmul {S} [Semiring S] [Algebra R S] [Flat R S] {ι} {v : ι → M}
+    (hv : LinearIndependent R v) : LinearIndependent S ((1 : S) ⊗ₜ[R] v ·) := by
+  classical rw [LinearIndependent, ← LinearMap.coe_restrictScalars R,
+    Finsupp.linearCombination_one_tmul]
+  simpa using lTensor_preserves_injective_linearMap _ hv
+
 variable (p : Submodule R M) (q : Submodule R N)
 
 /-- If p and q are submodules of M and N respectively, and M and q are flat,
