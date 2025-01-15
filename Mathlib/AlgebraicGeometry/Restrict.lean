@@ -233,7 +233,7 @@ theorem Scheme.homOfLE_apply {U V : X.Opens} (e : U ≤ V) (x : U) :
 
 theorem Scheme.ι_image_homOfLE_le_ι_image {U V : X.Opens} (e : U ≤ V) (W : Opens V) :
     U.ι ''ᵁ (X.homOfLE e ⁻¹ᵁ W) ≤ V.ι ''ᵁ W := by
-  simp only [← SetLike.coe_subset_coe, IsOpenMap.functor_obj_coe, Set.image_subset_iff,
+  simp only [← SetLike.coe_subset_coe, IsOpenMap.coe_functor_obj, Set.image_subset_iff,
     Scheme.homOfLE_base, Opens.map_coe, Opens.inclusion'_apply]
   rintro _ h
   exact ⟨_, h, rfl⟩
@@ -260,10 +260,9 @@ instance (X : Scheme.{u}) {U V : X.Opens} (e : U ≤ V) : IsOpenImmersion (X.hom
   delta Scheme.homOfLE
   infer_instance
 
--- Porting note: `simps` can't synthesize `obj_left, obj_hom, mapLeft`
 variable (X) in
 /-- The functor taking open subsets of `X` to open subschemes of `X`. -/
--- @[simps obj_left obj_hom mapLeft]
+@[simps! obj_left obj_hom map_left]
 def Scheme.restrictFunctor : X.Opens ⥤ Over X where
   obj U := Over.mk U.ι
   map {U V} i := Over.homMk (X.homOfLE i.le) (by simp)
@@ -273,16 +272,6 @@ def Scheme.restrictFunctor : X.Opens ⥤ Over X where
   map_comp {U V W} i j := by
     ext1
     exact (X.homOfLE_homOfLE i.le j.le).symm
-
-@[simp] lemma Scheme.restrictFunctor_obj_left (U : X.Opens) :
-  (X.restrictFunctor.obj U).left = U := rfl
-
-@[simp] lemma Scheme.restrictFunctor_obj_hom (U : X.Opens) :
-  (X.restrictFunctor.obj U).hom = U.ι := rfl
-
-@[simp]
-lemma Scheme.restrictFunctor_map_left {U V : X.Opens} (i : U ⟶ V) :
-    (X.restrictFunctor.map i).left = (X.homOfLE i.le) := rfl
 
 @[deprecated (since := "2024-10-20")]
 alias Scheme.restrictFunctor_map_ofRestrict := Scheme.homOfLE_ι
@@ -301,7 +290,7 @@ isomorphic to the structure sheaf. -/
 @[simps!]
 def Scheme.restrictFunctorΓ : X.restrictFunctor.op ⋙ (Over.forget X).op ⋙ Scheme.Γ ≅ X.presheaf :=
   NatIso.ofComponents
-    (fun U => X.presheaf.mapIso ((eqToIso (unop U).isOpenEmbedding_obj_top).symm.op : _))
+    (fun U => X.presheaf.mapIso ((eqToIso (unop U).isOpenEmbedding_obj_top).symm.op :))
     (by
       intro U V i
       dsimp
@@ -595,7 +584,7 @@ def morphismRestrictRestrict {X Y : Scheme.{u}} (f : X ⟶ Y) (U : Y.Opens) (V :
   refine Arrow.isoMk' _ _ ((Scheme.Opens.ι _).isoImage _ ≪≫ Scheme.isoOfEq _ ?_)
     ((Scheme.Opens.ι _).isoImage _) ?_
   · ext x
-    simp only [IsOpenMap.functor_obj_coe, Opens.coe_inclusion',
+    simp only [IsOpenMap.coe_functor_obj, Opens.coe_inclusion',
       Opens.map_coe, Set.mem_image, Set.mem_preimage, SetLike.mem_coe, morphismRestrict_base]
     constructor
     · rintro ⟨⟨a, h₁⟩, h₂, rfl⟩

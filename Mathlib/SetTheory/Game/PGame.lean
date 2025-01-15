@@ -312,10 +312,10 @@ theorem zero_rightMoves : RightMoves 0 = PEmpty :=
   rfl
 
 instance isEmpty_zero_leftMoves : IsEmpty (LeftMoves 0) :=
-  instIsEmptyPEmpty
+  PEmpty.instIsEmpty
 
 instance isEmpty_zero_rightMoves : IsEmpty (RightMoves 0) :=
-  instIsEmptyPEmpty
+  PEmpty.instIsEmpty
 
 instance : Inhabited PGame :=
   ⟨0⟩
@@ -337,10 +337,10 @@ theorem one_rightMoves : RightMoves 1 = PEmpty :=
   rfl
 
 instance uniqueOneLeftMoves : Unique (LeftMoves 1) :=
-  PUnit.unique
+  PUnit.instUnique
 
 instance isEmpty_one_rightMoves : IsEmpty (RightMoves 1) :=
-  instIsEmptyPEmpty
+  PEmpty.instIsEmpty
 
 /-! ### Identity -/
 
@@ -413,6 +413,8 @@ lemma Identical.moveLeft : ∀ {x y}, x ≡ y →
 lemma Identical.moveRight : ∀ {x y}, x ≡ y →
     ∀ i, ∃ j, x.moveRight i ≡ y.moveRight j
   | mk _ _ _ _, mk _ _ _ _, ⟨_, hr⟩, i => hr.1 i
+
+theorem identical_of_eq {x y : PGame} (h : x = y) : x ≡ y := by subst h; rfl
 
 /-- Uses `∈ₗ` and `∈ᵣ` instead of `≡`. -/
 theorem identical_iff' : ∀ {x y : PGame}, x ≡ y ↔
@@ -1308,36 +1310,60 @@ between them. -/
 def toRightMovesNeg {x : PGame} : x.LeftMoves ≃ (-x).RightMoves :=
   Equiv.cast (rightMoves_neg x).symm
 
-theorem moveLeft_neg {x : PGame} (i) : (-x).moveLeft (toLeftMovesNeg i) = -x.moveRight i := by
+@[simp]
+theorem moveLeft_neg {x : PGame} (i) :
+    (-x).moveLeft i = -x.moveRight (toLeftMovesNeg.symm i) := by
   cases x
   rfl
+
+@[deprecated moveLeft_neg (since := "2024-10-30")]
+alias moveLeft_neg' := moveLeft_neg
+
+theorem moveLeft_neg_toLeftMovesNeg {x : PGame} (i) :
+    (-x).moveLeft (toLeftMovesNeg i) = -x.moveRight i := by simp
 
 @[simp]
-theorem moveLeft_neg' {x : PGame} (i) : (-x).moveLeft i = -x.moveRight (toLeftMovesNeg.symm i) := by
-  cases x
-  rfl
-
-theorem moveRight_neg {x : PGame} (i) : (-x).moveRight (toRightMovesNeg i) = -x.moveLeft i := by
-  cases x
-  rfl
-
-@[simp]
-theorem moveRight_neg' {x : PGame} (i) :
+theorem moveRight_neg {x : PGame} (i) :
     (-x).moveRight i = -x.moveLeft (toRightMovesNeg.symm i) := by
   cases x
   rfl
 
+@[deprecated moveRight_neg (since := "2024-10-30")]
+alias moveRight_neg' := moveRight_neg
+
+theorem moveRight_neg_toRightMovesNeg {x : PGame} (i) :
+    (-x).moveRight (toRightMovesNeg i) = -x.moveLeft i := by simp
+
+@[deprecated moveRight_neg (since := "2024-10-30")]
 theorem moveLeft_neg_symm {x : PGame} (i) :
     x.moveLeft (toRightMovesNeg.symm i) = -(-x).moveRight i := by simp
 
+@[deprecated moveRight_neg (since := "2024-10-30")]
 theorem moveLeft_neg_symm' {x : PGame} (i) :
     x.moveLeft i = -(-x).moveRight (toRightMovesNeg i) := by simp
 
+@[deprecated moveLeft_neg (since := "2024-10-30")]
 theorem moveRight_neg_symm {x : PGame} (i) :
     x.moveRight (toLeftMovesNeg.symm i) = -(-x).moveLeft i := by simp
 
+@[deprecated moveLeft_neg (since := "2024-10-30")]
 theorem moveRight_neg_symm' {x : PGame} (i) :
     x.moveRight i = -(-x).moveLeft (toLeftMovesNeg i) := by simp
+
+@[simp] theorem neg_identical_neg_iff : ∀ {x y : PGame.{u}}, -x ≡ -y ↔ x ≡ y
+  | mk xl xr xL xR, mk yl yr yL yR => by
+    rw [neg_def, identical_iff, identical_iff, ← neg_def, and_comm]
+    simp only [neg_def, rightMoves_mk, moveRight_mk, leftMoves_mk, moveLeft_mk]
+    apply and_congr <;>
+    · constructor
+      · conv in (_ ≡ _) => rw [neg_identical_neg_iff]
+        simp only [imp_self]
+      · conv in (_ ≡ _) => rw [← neg_identical_neg_iff]
+        simp only [imp_self]
+termination_by x y => (x, y)
+
+theorem Identical.neg {x y : PGame} : x ≡ y ↔ -x ≡ -y :=
+  neg_identical_neg_iff.symm
 
 /-- If `x` has the same moves as `y`, then `-x` has the same moves as `-y`. -/
 def Relabelling.negCongr : ∀ {x y : PGame}, x ≡r y → -x ≡r -y
@@ -1900,10 +1926,10 @@ theorem star_moveRight (x) : star.moveRight x = 0 :=
   rfl
 
 instance uniqueStarLeftMoves : Unique star.LeftMoves :=
-  PUnit.unique
+  PUnit.instUnique
 
 instance uniqueStarRightMoves : Unique star.RightMoves :=
-  PUnit.unique
+  PUnit.instUnique
 
 theorem zero_lf_star : 0 ⧏ star := by
   rw [zero_lf]
@@ -1924,6 +1950,71 @@ theorem neg_star : -star = star := by simp [star]
 @[simp]
 protected theorem zero_lt_one : (0 : PGame) < 1 :=
   lt_of_le_of_lf (zero_le_of_isEmpty_rightMoves 1) (zero_lf_le.2 ⟨default, le_rfl⟩)
+
+/-- The pre-game `up` -/
+def up : PGame.{u} :=
+  ⟨PUnit, PUnit, fun _ => 0, fun _ => star⟩
+
+@[simp]
+theorem up_leftMoves : up.LeftMoves = PUnit :=
+  rfl
+
+@[simp]
+theorem up_rightMoves : up.RightMoves = PUnit :=
+  rfl
+
+@[simp]
+theorem up_moveLeft (x) : up.moveLeft x = 0 :=
+  rfl
+
+@[simp]
+theorem up_moveRight (x) : up.moveRight x = star :=
+  rfl
+
+@[simp]
+theorem up_neg : 0 < up := by
+  rw [lt_iff_le_and_lf, zero_lf]
+  simp [zero_le_lf, zero_lf_star]
+
+theorem star_fuzzy_up : star ‖ up := by
+  unfold Fuzzy
+  simp only [← PGame.not_le]
+  simp [le_iff_forall_lf]
+
+/-- The pre-game `down` -/
+def down : PGame.{u} :=
+  ⟨PUnit, PUnit, fun _ => star, fun _ => 0⟩
+
+@[simp]
+theorem down_leftMoves : down.LeftMoves = PUnit :=
+  rfl
+
+@[simp]
+theorem down_rightMoves : down.RightMoves = PUnit :=
+  rfl
+
+@[simp]
+theorem down_moveLeft (x) : down.moveLeft x = star :=
+  rfl
+
+@[simp]
+theorem down_moveRight (x) : down.moveRight x = 0 :=
+  rfl
+
+@[simp]
+theorem down_neg : down < 0 := by
+  rw [lt_iff_le_and_lf, lf_zero]
+  simp [le_zero_lf, star_lf_zero]
+
+@[simp]
+theorem neg_down : -down = up := by simp [up, down]
+
+@[simp]
+theorem neg_up : -up = down := by simp [up, down]
+
+theorem star_fuzzy_down : star ‖ down := by
+  rw [← neg_fuzzy_neg_iff, neg_down, neg_star]
+  exact star_fuzzy_up
 
 instance : ZeroLEOneClass PGame :=
   ⟨PGame.zero_lt_one.le⟩

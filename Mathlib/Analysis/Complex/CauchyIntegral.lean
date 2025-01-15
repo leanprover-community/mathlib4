@@ -427,7 +427,7 @@ theorem circleIntegral_sub_inv_smul_of_differentiable_on_off_countable_aux {R : 
   have hne : ∀ z ∈ sphere c R, z ≠ w := fun z hz => ne_of_mem_of_not_mem hz (ne_of_lt hw.1)
   have hFeq : EqOn F (fun z => (z - w)⁻¹ • f z - (z - w)⁻¹ • f w) (sphere c R) := fun z hz ↦
     calc
-      F z = (z - w)⁻¹ • (f z - f w) := update_noteq (hne z hz) _ _
+      F z = (z - w)⁻¹ • (f z - f w) := update_of_ne (hne z hz) ..
       _ = (z - w)⁻¹ • f z - (z - w)⁻¹ • f w := smul_sub _ _ _
   have hc' : ContinuousOn (fun z => (z - w)⁻¹) (sphere c R) :=
     (continuousOn_id.sub continuousOn_const).inv₀ fun z hz => sub_ne_zero.2 <| hne z hz
