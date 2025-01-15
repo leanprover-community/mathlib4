@@ -119,7 +119,8 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem_aux [Finite ι]
     have : P.coroot j ∈ span ℤ (P.coroot '' b.support) := b.coroot_mem_span_int j
     rw [image_eq_range, mem_span_range_iff_exists_fun] at this
     refine this.imp fun f hf ↦ ?_
-    simp_rw [mul_smul, ← Finset.smul_sum, Int.cast_smul_eq_zsmul, hf, root_eq_smul_root_iff.mp hj]
+    simp_rw [mul_smul, ← Finset.smul_sum, Int.cast_smul_eq_zsmul, hf,
+      coroot_eq_smul_coroot_iff.mpr hj]
   use f ⟨i, h⟩
   replace hf : P.coroot i = linearCombination R (fun k : b.support ↦ P.coroot k)
       (t • (linearEquivFunOnFinite R _ _).symm (fun x ↦ (f x : R))) := by
@@ -140,7 +141,7 @@ lemma eq_one_or_neg_one_of_mem_support_of_smul_mem [Finite ι] [CharZero R]
   obtain ⟨s, hs⟩ := IsUnit.exists_left_inv <| isUnit_of_mul_eq_one_right _ t hz
   replace ht : s • P.coroot i ∈ range P.coroot := by
     obtain ⟨j, hj⟩ := ht
-    simpa only [root_eq_smul_root_iff.mp hj, smul_smul, hs, one_smul] using mem_range_self j
+    simpa only [coroot_eq_smul_coroot_iff.mpr hj, smul_smul, hs, one_smul] using mem_range_self j
   obtain ⟨w, hw⟩ := b.flip.eq_one_or_neg_one_of_mem_support_of_smul_mem_aux i h s ht
   have : (z : R) * w = 1 := by
     simpa [mul_mul_mul_comm _ t _ s, mul_comm t s, hs] using congr_arg₂ (· * ·) hz hw

@@ -410,11 +410,11 @@ lemma smul_coroot_eq_of_root_eq_smul [Finite ι] [NoZeroSMulDivisors ℤ N] (i j
   simp [Module.preReflection_apply, coreflection_apply, h, smul_comm _ t, mul_smul]
 
 variable {P} in
-lemma root_eq_smul_root_iff [Finite ι] [NoZeroSMulDivisors ℤ M] [NoZeroSMulDivisors ℤ N]
+@[simp] lemma coroot_eq_smul_coroot_iff [Finite ι] [NoZeroSMulDivisors ℤ M] [NoZeroSMulDivisors ℤ N]
     {i j : ι} {t : R} :
-    P.root j = t • P.root i ↔ P.coroot i = t • P.coroot j :=
-  ⟨fun h ↦ (P.smul_coroot_eq_of_root_eq_smul i j t h).symm,
-    fun h ↦ (P.flip.smul_coroot_eq_of_root_eq_smul j i t h).symm⟩
+    P.coroot i = t • P.coroot j ↔ P.root j = t • P.root i :=
+  ⟨fun h ↦ (P.flip.smul_coroot_eq_of_root_eq_smul j i t h).symm,
+    fun h ↦ (P.smul_coroot_eq_of_root_eq_smul i j t h).symm⟩
 
 /-- The linear span of roots. -/
 abbrev rootSpan := span R (range P.root)
