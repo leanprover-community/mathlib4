@@ -34,10 +34,6 @@ instance : BundledHom @OrderHom where
 
 deriving instance LargeCategory for Preord
 
--- Porting note: probably see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : ConcreteCategory Preord :=
-  BundledHom.concreteCategory _
-
 instance : CoeSort Preord Type* :=
   Bundled.coeSort
 
@@ -54,6 +50,9 @@ instance : Inhabited Preord :=
 
 instance (α : Preord) : Preorder α :=
   α.str
+
+instance : ConcreteCategory Preord (fun X Y => OrderHom X Y) :=
+  BundledHom.concreteCategory _
 
 /-- Constructs an equivalence between preorders from an order isomorphism between them. -/
 @[simps]
