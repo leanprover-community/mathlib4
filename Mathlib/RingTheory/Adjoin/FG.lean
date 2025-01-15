@@ -129,8 +129,6 @@ theorem FG.prod {S : Subalgebra R A} {T : Subalgebra R B} (hS : S.FG) (hT : T.FG
 
 section
 
-
-
 theorem FG.map {S : Subalgebra R A} (f : A →ₐ[R] B) (hs : S.FG) : (S.map f).FG := by
   let ⟨s, hs⟩ := hs
   classical

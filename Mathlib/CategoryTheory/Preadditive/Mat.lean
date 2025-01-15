@@ -93,7 +93,6 @@ section
 
 attribute [local simp] Hom.id Hom.comp
 
-
 instance : Category.{v₁} (Mat_ C) where
   Hom := Hom
   id := Hom.id
@@ -250,7 +249,6 @@ attribute [local simp] Mat_.id_apply eqToHom_map
 def mapMat_ (F : C ⥤ D) [Functor.Additive F] : Mat_ C ⥤ Mat_ D where
   obj M := ⟨M.ι, fun i => F.obj (M.X i)⟩
   map f i j := F.map (f i j)
-
 
 /-- The identity functor induces the identity functor on matrix categories.
 -/

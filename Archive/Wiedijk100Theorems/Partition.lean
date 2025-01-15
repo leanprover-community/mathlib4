@@ -90,10 +90,10 @@ open Finset.HasAntidiagonal
 universe u
 variable {ι : Type u}
 
+open scoped Classical in
 /-- A convenience constructor for the power series whose coefficients indicate a subset. -/
-def indicatorSeries (α : Type*) [Semiring α] (s : Set ℕ) : PowerSeries α := by
-  classical
-  exact PowerSeries.mk fun n => if n ∈ s then 1 else 0
+def indicatorSeries (α : Type*) [Semiring α] (s : Set ℕ) : PowerSeries α :=
+  PowerSeries.mk fun n => if n ∈ s then 1 else 0
 
 open scoped Classical in
 theorem coeff_indicator (s : Set ℕ) [Semiring α] (n : ℕ) :
