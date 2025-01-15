@@ -10,7 +10,6 @@ import Mathlib.Topology.Algebra.Ring.Basic
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.LinearAlgebra.Finsupp.LinearCombination
 import Mathlib.LinearAlgebra.Pi
-import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.LinearAlgebra.Quotient.Defs
 
 /-!

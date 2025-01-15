@@ -141,7 +141,9 @@ theorem coe_fun_injective : @Function.Injective (A₁ ≃ₐ[R] A₂) (A₁ → 
 instance hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) :=
   ⟨AlgEquiv.toRingEquiv⟩
 
--- Porting note: `toFun_eq_coe` no longer needed in Lean4
+@[simp]
+theorem coe_toEquiv : ((e : A₁ ≃ A₂) : A₁ → A₂) = e :=
+  rfl
 
 @[simp]
 theorem toRingEquiv_eq_coe : e.toRingEquiv = e :=
@@ -161,7 +163,6 @@ theorem coe_ringEquiv' : (e.toRingEquiv : A₁ → A₂) = e :=
 theorem coe_ringEquiv_injective : Function.Injective ((↑) : (A₁ ≃ₐ[R] A₂) → A₁ ≃+* A₂) :=
   fun _ _ h => ext <| RingEquiv.congr_fun h
 
--- Porting note: Added [coe] attribute
 /-- Interpret an algebra equivalence as an algebra homomorphism.
 
 This definition is included for symmetry with the other `to*Hom` projections.
@@ -285,7 +286,7 @@ theorem coe_coe_symm_apply_coe_apply {F : Type*} [EquivLike F A₁ A₂] [AlgEqu
     (f : A₁ ≃ₐ[R] A₂).symm (f x) = x :=
   EquivLike.left_inv f x
 
--- Porting note: `simp` normal form of `invFun_eq_symm`
+/-- `simp` normal form of `invFun_eq_symm` -/
 @[simp]
 theorem symm_toEquiv_eq_symm {e : A₁ ≃ₐ[R] A₂} : (e : A₁ ≃ A₂).symm = e.symm :=
   rfl
@@ -359,12 +360,10 @@ end symm
 
 section simps
 
--- Porting note: the default simps projection was `e.toEquiv.toFun`, it should be `FunLike.coe`
 /-- See Note [custom simps projection] -/
 def Simps.apply (e : A₁ ≃ₐ[R] A₂) : A₁ → A₂ :=
   e
 
--- Porting note: the default simps projection was `e.toEquiv`, it should be `EquivLike.toEquiv`
 /-- See Note [custom simps projection] -/
 def Simps.toEquiv (e : A₁ ≃ₐ[R] A₂) : A₁ ≃ A₂ :=
   e
@@ -606,9 +605,7 @@ def ofRingEquiv {f : A₁ ≃+* A₂} (hf : ∀ x, f (algebraMap R A₁ x) = alg
 
 end OfRingEquiv
 
--- Porting note: projections mul & one not found, removed [simps] and added theorems manually
--- @[simps (config := .lemmasOnly) one]
-@[stacks 09HR]
+@[simps (config := .lemmasOnly) one mul, stacks 09HR]
 instance aut : Group (A₁ ≃ₐ[R] A₁) where
   mul ϕ ψ := ψ.trans ϕ
   mul_assoc _ _ _ := rfl
@@ -617,12 +614,6 @@ instance aut : Group (A₁ ≃ₐ[R] A₁) where
   mul_one _ := ext fun _ => rfl
   inv := symm
   inv_mul_cancel ϕ := ext <| symm_apply_apply ϕ
-
-theorem aut_mul (ϕ ψ : A₁ ≃ₐ[R] A₁) : ϕ * ψ = ψ.trans ϕ :=
-  rfl
-
-theorem aut_one : 1 = AlgEquiv.refl (R := R) (A₁ := A₁) :=
-  rfl
 
 @[simp]
 theorem one_apply (x : A₁) : (1 : A₁ ≃ₐ[R] A₁) x = x :=

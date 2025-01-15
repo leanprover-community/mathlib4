@@ -9,6 +9,7 @@ import Mathlib.Algebra.Group.ZeroOne
 import Mathlib.Algebra.Group.Operations
 import Mathlib.Logic.Function.Defs
 import Mathlib.Tactic.Simps.Basic
+import Mathlib.Tactic.OfNat
 import Batteries.Logic
 
 /-!
@@ -38,9 +39,7 @@ We register the following instances:
 
 -/
 
-assert_not_exists MonoidWithZero
-assert_not_exists DenselyOrdered
-assert_not_exists Function.Injective.eq_iff
+assert_not_exists MonoidWithZero DenselyOrdered Function.Injective.eq_iff
 
 universe u v w
 
@@ -409,7 +408,7 @@ the `npow` field when defining multiplicative objects.
 
 /-- Exponentiation by repeated squaring. -/
 @[to_additive "Scalar multiplication by repeated self-addition,
-the additive version of exponentation by repeated squaring."]
+the additive version of exponentiation by repeated squaring."]
 def npowBinRec {M : Type*} [One M] [Mul M] (k : ℕ) : M → M :=
   npowBinRec.go k 1
 where
@@ -885,12 +884,9 @@ theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
     _ = a ^ n * a := congrArg (· * a) (zpow_natCast a n)
     _ = a ^ (n + 1) := (pow_succ _ _).symm
 
-@[deprecated (since := "2024-03-20")] alias zpow_coe_nat := zpow_natCast
-@[deprecated (since := "2024-03-20")] alias coe_nat_zsmul := natCast_zsmul
 
--- See note [no_index around OfNat.ofNat]
 @[to_additive ofNat_zsmul]
-lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (no_index (OfNat.ofNat n) : ℤ) = a ^ OfNat.ofNat n :=
+lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (ofNat(n) : ℤ) = a ^ OfNat.ofNat n :=
   zpow_natCast ..
 
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
