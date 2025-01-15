@@ -591,7 +591,7 @@ theorem snoc_injective2 : Function.Injective2 (@snoc n α) := fun x y xₙ yₙ 
   ⟨funext fun i ↦ by simpa using congr_fun h (castSucc i), by simpa using congr_fun h (last n)⟩
 
 @[simp]
-theorem snoc_eq_snoc {x y : ∀ i : Fin n, α i.castSucc} {xₙ yₙ : α (last n)} :
+theorem snoc_inj {x y : ∀ i : Fin n, α i.castSucc} {xₙ yₙ : α (last n)} :
     snoc x xₙ = snoc y yₙ ↔ x = y ∧ xₙ = yₙ :=
   snoc_injective2.eq_iff
 
