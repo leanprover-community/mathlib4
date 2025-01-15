@@ -22,7 +22,6 @@ derivative
 
 universe u v w
 
-open scoped Classical
 open scoped Topology Filter ENNReal
 
 open Asymptotics Set

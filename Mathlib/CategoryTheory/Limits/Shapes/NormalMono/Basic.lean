@@ -17,7 +17,7 @@ as well as the dual construction for normal epimorphisms. We show equivalences r
 monomorphisms (`CategoryTheory.equivalenceReflectsNormalMono`), and that the pullback of a
 normal monomorphism is normal (`CategoryTheory.normalOfIsPullbackSndOfNormal`).
 
-We also define classes `NormalMonoCategory` and `NormalEpiCategory` for classes in which
+We also define classes `IsNormalMonoCategory` and `IsNormalEpiCategory` for categories in which
 every monomorphism or epimorphism is normal, and deduce that these categories are
 `RegularMonoCategory`s resp. `RegularEpiCategory`s.
 
@@ -114,23 +114,25 @@ section
 variable (C)
 
 /-- A normal mono category is a category in which every monomorphism is normal. -/
-class NormalMonoCategory where
-  normalMonoOfMono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], NormalMono f
+class IsNormalMonoCategory : Prop where
+  normalMonoOfMono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], Nonempty (NormalMono f)
 
-attribute [inherit_doc NormalMonoCategory] NormalMonoCategory.normalMonoOfMono
+attribute [inherit_doc IsNormalMonoCategory] IsNormalMonoCategory.normalMonoOfMono
+
+@[deprecated (since := "2024-11-27")] alias NormalMonoCategory := IsNormalMonoCategory
 
 end
 
 /-- In a category in which every monomorphism is normal, we can express every monomorphism as
     a kernel. This is not an instance because it would create an instance loop. -/
-def normalMonoOfMono [NormalMonoCategory C] (f : X ⟶ Y) [Mono f] : NormalMono f :=
-  NormalMonoCategory.normalMonoOfMono _
+def normalMonoOfMono [IsNormalMonoCategory C] (f : X ⟶ Y) [Mono f] : NormalMono f :=
+  (IsNormalMonoCategory.normalMonoOfMono _).some
 
-instance (priority := 100) regularMonoCategoryOfNormalMonoCategory [NormalMonoCategory C] :
-    RegularMonoCategory C where
-  regularMonoOfMono f _ := by
+instance (priority := 100) regularMonoCategoryOfNormalMonoCategory [IsNormalMonoCategory C] :
+    IsRegularMonoCategory C where
+  regularMonoOfMono f _ := ⟨by
     haveI := normalMonoOfMono f
-    infer_instance
+    infer_instance⟩
 
 end
 
@@ -252,22 +254,24 @@ section
 variable (C)
 
 /-- A normal epi category is a category in which every epimorphism is normal. -/
-class NormalEpiCategory where
-  normalEpiOfEpi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], NormalEpi f
+class IsNormalEpiCategory : Prop where
+  normalEpiOfEpi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], Nonempty (NormalEpi f)
 
-attribute [inherit_doc NormalEpiCategory] NormalEpiCategory.normalEpiOfEpi
+attribute [inherit_doc IsNormalEpiCategory] IsNormalEpiCategory.normalEpiOfEpi
+
+@[deprecated (since := "2024-11-27")] alias NormalEpiCategory := IsNormalEpiCategory
 
 end
 
 /-- In a category in which every epimorphism is normal, we can express every epimorphism as
     a kernel. This is not an instance because it would create an instance loop. -/
-def normalEpiOfEpi [NormalEpiCategory C] (f : X ⟶ Y) [Epi f] : NormalEpi f :=
-  NormalEpiCategory.normalEpiOfEpi _
+def normalEpiOfEpi [IsNormalEpiCategory C] (f : X ⟶ Y) [Epi f] : NormalEpi f :=
+  (IsNormalEpiCategory.normalEpiOfEpi _).some
 
-instance (priority := 100) regularEpiCategoryOfNormalEpiCategory [NormalEpiCategory C] :
-    RegularEpiCategory C where
-  regularEpiOfEpi f _ := by
+instance (priority := 100) regularEpiCategoryOfNormalEpiCategory [IsNormalEpiCategory C] :
+    IsRegularEpiCategory C where
+  regularEpiOfEpi f _ := ⟨by
     haveI := normalEpiOfEpi f
-    infer_instance
+    infer_instance⟩
 
 end CategoryTheory

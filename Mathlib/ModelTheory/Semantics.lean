@@ -323,7 +323,7 @@ theorem realize_iff : (φ.iff ψ).Realize v xs ↔ (φ.Realize v xs ↔ ψ.Reali
   simp only [BoundedFormula.iff, realize_inf, realize_imp, and_imp, ← iff_def]
 
 theorem realize_castLE_of_eq {m n : ℕ} (h : m = n) {h' : m ≤ n} {φ : L.BoundedFormula α m}
-    {v : α → M} {xs : Fin n → M} : (φ.castLE h').Realize v xs ↔ φ.Realize v (xs ∘ cast h) := by
+    {v : α → M} {xs : Fin n → M} : (φ.castLE h').Realize v xs ↔ φ.Realize v (xs ∘ Fin.cast h) := by
   subst h
   simp only [castLE_rfl, cast_refl, OrderIso.coe_refl, Function.comp_id]
 
@@ -422,7 +422,7 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
   induction φ with
   | falsum => rfl
   | equal =>
-    simp only [Realize, freeVarFinset.eq_2]
+    simp only [Realize, restrictFreeVar, freeVarFinset.eq_2]
     rw [realize_restrictVarLeft v' (by simp [hv']), realize_restrictVarLeft v' (by simp [hv'])]
     simp [Function.comp_apply]
   | rel =>
@@ -431,7 +431,7 @@ theorem realize_restrictFreeVar [DecidableEq α] {n : ℕ} {φ : L.BoundedFormul
     rw [realize_restrictVarLeft v' (by simp [hv'])]
     simp [Function.comp_apply]
   | imp _ _ ih1 ih2 =>
-    simp only [Realize, freeVarFinset.eq_4]
+    simp only [Realize, restrictFreeVar, freeVarFinset.eq_4]
     rw [ih1, ih2] <;> simp [hv']
   | all _ ih3 =>
     simp only [restrictFreeVar, Realize]
@@ -769,10 +769,9 @@ theorem realize_exs {φ : L.BoundedFormula α n} {v : α → M} :
 
 @[simp]
 theorem _root_.FirstOrder.Language.Formula.realize_iAlls
-    [Finite γ] {f : α → β ⊕ γ}
-    {φ : L.Formula α} {v : β → M} : (φ.iAlls f).Realize v ↔
-      ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
-  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
+    [Finite β] {φ : L.Formula (α ⊕ β)} {v : α → M} : (φ.iAlls β).Realize v ↔
+      ∀ (i : β → M), φ.Realize (fun a => Sum.elim v i a) := by
+  let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin β))
   rw [Formula.iAlls]
   simp only [Nat.add_zero, realize_alls, realize_relabel, Function.comp_def,
     castAdd_zero, finCongr_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
@@ -787,23 +786,20 @@ theorem _root_.FirstOrder.Language.Formula.realize_iAlls
     exact i.elim0
 
 @[simp]
-theorem realize_iAlls [Finite γ] {f : α → β ⊕ γ}
-    {φ : L.Formula α} {v : β → M} {v' : Fin 0 → M} :
-    BoundedFormula.Realize (φ.iAlls f) v v' ↔
-      ∀ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
+theorem realize_iAlls [Finite β] {φ : L.Formula (α ⊕ β)} {v : α → M} {v' : Fin 0 → M} :
+    BoundedFormula.Realize (φ.iAlls β) v v' ↔
+      ∀ (i : β → M), φ.Realize (fun a => Sum.elim v i a) := by
   rw [← Formula.realize_iAlls, iff_iff_eq]; congr; simp [eq_iff_true_of_subsingleton]
 
 @[simp]
 theorem _root_.FirstOrder.Language.Formula.realize_iExs
-    [Finite γ] {f : α → β ⊕ γ}
-    {φ : L.Formula α} {v : β → M} : (φ.iExs f).Realize v ↔
-      ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
+    [Finite γ] {φ : L.Formula (α ⊕ γ)} {v : α → M} : (φ.iExs γ).Realize v ↔
+      ∃ (i : γ → M), φ.Realize (Sum.elim v i) := by
   let e := Classical.choice (Classical.choose_spec (Finite.exists_equiv_fin γ))
   rw [Formula.iExs]
   simp only [Nat.add_zero, realize_exs, realize_relabel, Function.comp_def,
     castAdd_zero, finCongr_refl, OrderIso.refl_apply, Sum.elim_map, id_eq]
-  rw [← not_iff_not, not_exists, not_exists]
-  refine Equiv.forall_congr ?_ ?_
+  refine Equiv.exists_congr ?_ ?_
   · exact ⟨fun v => v ∘ e, fun v => v ∘ e.symm,
       fun _ => by simp [Function.comp_def],
       fun _ => by simp [Function.comp_def]⟩
@@ -814,10 +810,9 @@ theorem _root_.FirstOrder.Language.Formula.realize_iExs
     exact i.elim0
 
 @[simp]
-theorem realize_iExs [Finite γ] {f : α → β ⊕ γ}
-    {φ : L.Formula α} {v : β → M} {v' : Fin 0 → M} :
-    BoundedFormula.Realize (φ.iExs f) v v' ↔
-      ∃ (i : γ → M), φ.Realize (fun a => Sum.elim v i (f a)) := by
+theorem realize_iExs [Finite γ] {φ : L.Formula (α ⊕ γ)} {v : α → M} {v' : Fin 0 → M} :
+    BoundedFormula.Realize (φ.iExs γ) v v' ↔
+      ∃ (i : γ → M), φ.Realize (Sum.elim v i) := by
   rw [← Formula.realize_iExs, iff_iff_eq]; congr; simp [eq_iff_true_of_subsingleton]
 
 @[simp]
