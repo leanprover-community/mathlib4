@@ -233,3 +233,32 @@ lemma Ideal.primeHeightEqZeroIff {R : Type u} [CommRing R] {I : Ideal R} [I.IsPr
   --   · simpa
   --   intros hJ e
   --   exact not_le_of_lt e (hI.2 ⟨hJ, bot_le⟩ e.le)
+
+theorem Ideal.isMaximal_of_primeHeight_eq_ringKrullDim {I : Ideal R} [hI : I.IsPrime]
+ [h : FiniteRingKrullDimensional R] (e : I.primeHeight = ringKrullDim R) : I.IsMaximal := by
+  sorry
+  -- cases Subsingleton R with
+  -- | mk => exact absurd I.isPrime_proper (Subsingleton.elim _ _)
+
+  -- by_contra h'
+  -- obtain ⟨M, hM, hM'⟩ := Ideal.exists_le_maximal I h'
+
+  -- have IneBot : I ≠ ⊥ := I.isPrime_proper
+  -- have MneBot : M ≠ ⊥ := M.isMaximal_proper
+
+  -- have height_le : I.primeHeight ≤ M.primeHeight := by
+  --   apply Ideal.primeHeight_mono
+  --   exact hM'
+
+  -- have M_height_le : (M.primeHeight : WithBot (WithTop ℕ)) ≤ ringKrullDim R :=
+  --   Ideal.primeHeightLeRingKrullDim
+
+  -- have height_strict : I.primeHeight < M.primeHeight := by
+  --   apply lt_of_le_of_ne height_le
+  --   intro h_eq
+  --   apply h'
+  --   sorry -- need a lemma about equality of heights implying equality of ideals
+
+  -- have := lt_of_lt_of_le (WithBot.coe_lt_coe.mpr height_strict) M_height_le
+  -- rw [e] at this
+  -- exact lt_irrefl _ this
