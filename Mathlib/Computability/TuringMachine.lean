@@ -1203,11 +1203,11 @@ theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt₁} (h : q�
   | halt => subst h; trivial
   | _ _ q IH => rcases h with (rfl | h) <;> [exact hs; exact IH h hs]
 
+open scoped Classical in
 /-- The set of all statements in a Turing machine, plus one extra value `none` representing the
 halt state. This is used in the TM1 to TM0 reduction. -/
-noncomputable def stmts (M : Λ → Stmt₁) (S : Finset Λ) : Finset (Option Stmt₁) := by
-  classical
-  exact Finset.insertNone (S.biUnion fun q ↦ stmts₁ (M q))
+noncomputable def stmts (M : Λ → Stmt₁) (S : Finset Λ) : Finset (Option Stmt₁) :=
+  Finset.insertNone (S.biUnion fun q ↦ stmts₁ (M q))
 
 theorem stmts_trans {M : Λ → Stmt₁} {S : Finset Λ} {q₁ q₂ : Stmt₁} (h₁ : q₁ ∈ stmts₁ q₂) :
     some q₂ ∈ stmts M S → some q₁ ∈ stmts M S := by
@@ -1708,11 +1708,11 @@ noncomputable def writes : Stmt₁ → Finset Λ'₁
   | Stmt.goto _ => ∅
   | Stmt.halt => ∅
 
+open scoped Classical in
 /-- The set of accessible machine states, assuming that the input machine is supported on `S`,
 are the normal states embedded from `S`, plus all write states accessible from these states. -/
-noncomputable def trSupp (S : Finset Λ) : Finset Λ'₁ := by
-  classical
-  exact S.biUnion fun l ↦ insert (Λ'.normal l) (writes (M l))
+noncomputable def trSupp (S : Finset Λ) : Finset Λ'₁ :=
+  S.biUnion fun l ↦ insert (Λ'.normal l) (writes (M l))
 
 open scoped Classical in
 theorem tr_supports [Inhabited Λ] {S : Finset Λ} (ss : Supports M S) :
@@ -2007,10 +2007,10 @@ theorem stmts₁_supportsStmt_mono {S : Finset Λ} {q₁ q₂ : Stmt₂} (h : q�
   | halt => subst h; trivial
   | load _ _ IH | _ _ _ _ IH => rcases h with (rfl | h) <;> [exact hs; exact IH h hs]
 
+open scoped Classical in
 /-- The set of statements accessible from initial set `S` of labels. -/
-noncomputable def stmts (M : Λ → Stmt₂) (S : Finset Λ) : Finset (Option Stmt₂) := by
-  classical
-  exact Finset.insertNone (S.biUnion fun q ↦ stmts₁ (M q))
+noncomputable def stmts (M : Λ → Stmt₂) (S : Finset Λ) : Finset (Option Stmt₂) :=
+  Finset.insertNone (S.biUnion fun q ↦ stmts₁ (M q))
 
 theorem stmts_trans {M : Λ → Stmt₂} {S : Finset Λ} {q₁ q₂ : Stmt₂} (h₁ : q₁ ∈ stmts₁ q₂) :
     some q₂ ∈ stmts M S → some q₁ ∈ stmts M S := by

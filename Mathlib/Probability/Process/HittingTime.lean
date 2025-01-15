@@ -42,17 +42,16 @@ namespace MeasureTheory
 
 variable {Ω β ι : Type*} {m : MeasurableSpace Ω}
 
+open scoped Classical in
 /-- Hitting time: given a stochastic process `u` and a set `s`, `hitting u s n m` is the first time
 `u` is in `s` after time `n` and before time `m` (if `u` does not hit `s` after time `n` and
 before `m` then the hitting time is simply `m`).
 
 The hitting time is a stopping time if the process is adapted and discrete. -/
 noncomputable def hitting [Preorder ι] [InfSet ι] (u : ι → Ω → β)
-  (s : Set β) (n m : ι) : Ω → ι := by
-    classical
-    exact
-      fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s
-               then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m
+    (s : Set β) (n m : ι) : Ω → ι :=
+  fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s
+    then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m
 
 #adaptation_note /-- nightly-2024-03-16: added to replace simp [hitting] -/
 open scoped Classical in
