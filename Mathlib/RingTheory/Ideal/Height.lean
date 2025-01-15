@@ -141,43 +141,12 @@ theorem withTop.supr₂_add {ι : Sort u} {p : ι → Prop} (hs : ∃ i, p i)
   haveI : Nonempty { i // p i } := ⟨⟨_, hs.choose_spec⟩⟩
   sorry
 
-/-- A ring has finite Krull dimension if its Krull dimension is not ⊤ -/
-class FiniteRingKrullDim (R : Type u) [CommRing R] : Prop where
-  ringKrullDim_ne_top : ringKrullDim R ≠ ⊤
-
-variable {R : Type u} [CommRing R]
-
-lemma ringKrullDim_ne_top [h : FiniteRingKrullDim R] :
-  ringKrullDim R ≠ ⊤ :=
-h.ringKrullDim_ne_top
-
-lemma ringKrullDim_lt_top [FiniteRingKrullDim R] :
-  ringKrullDim R < ⊤ := by
-  exact Ne.lt_top (ringKrullDim_ne_top)
-
-lemma finiteRingKrullDimalIffLt :
-  FiniteRingKrullDim R ↔ ringKrullDim R < ⊤ := by
-  constructor
-  · intro h
-    exact ringKrullDim_lt_top
-  · intro h
-    exact ⟨ne_top_of_lt h⟩
-
-lemma ringKrullDim_of_subsingleton [Subsingleton R] :
-  ringKrullDim R = 0 := by
-  sorry
-
-instance (priority := 100) finiteRingKrullDimalOfSubsingleton [Subsingleton R] :
-  FiniteRingKrullDim R := by
-  rw [finiteRingKrullDimalIffLt, ringKrullDim_of_subsingleton]
-  sorry --exact WithTop.top_pos
-
 lemma Ideal.primeHeight_le_ringKrullDim {I : Ideal R} [I.IsPrime] :
     (I.height : WithBot ENat) ≤ ringKrullDim R := by
   sorry  -- The original uses le_supr₂ which needs to be adapted
 
 instance Ideal.finiteHeightOfFiniteRingKrullDim {I : Ideal R}
-    [FiniteRingKrullDim R] (priority := 900):
+    [FiniteRingKrullDim R] (priority := 90):
     Ideal.FiniteHeight I := by
   rw [Ideal.finiteHeight_iff_lt, or_iff_not_imp_left]
   intro e
@@ -187,12 +156,12 @@ instance Ideal.finiteHeightOfFiniteRingKrullDim {I : Ideal R}
   -- refine' (lt_of_le_of_lt _ (ringKrullDim_lt_top (R := R)))
   -- apply M.primeHeightLeRingKrullDim
 
-theorem ringKrullDimSucc [Nontrivial R] :
-    (ringKrullDim R : WithBot ENat) + (1 : ENat) = Order.height {I : Ideal R | I.IsPrime}:= by
-  have h : ∃ I : Ideal R, I.IsPrime := by
-    -- We know such an ideal exists in any nontrivial ring
-    sorry
-  sorry
+-- theorem ringKrullDimSucc [Nontrivial R] :
+--     (ringKrullDim R : WithBot ENat) + (1 : ENat) = Order.height {I : Ideal R | I.IsPrime}:= by
+--   have h : ∃ I : Ideal R, I.IsPrime := by
+--     -- We know such an ideal exists in any nontrivial ring
+--     sorry
+--   sorry
 
 /-- If J has finite height and I ≤ J, then I has finite height -/
 lemma Ideal.finiteHeightOfLe {R : Type u} [CommRing R] {I J : Ideal R}
