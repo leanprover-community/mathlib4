@@ -5,7 +5,7 @@ Authors: Emilie Burgun
 -/
 import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Data.Set.Pointwise.SMul
-import Mathlib.Dynamics.PeriodicPts.Lemmas
+import Mathlib.Dynamics.PeriodicPts.Defs
 import Mathlib.GroupTheory.GroupAction.Defs
 
 /-!
