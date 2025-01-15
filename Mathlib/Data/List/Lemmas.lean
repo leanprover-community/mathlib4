@@ -17,17 +17,10 @@ variable {α β γ : Type*}
 
 namespace List
 
-theorem setOf_mem_empty : { x | x ∈ ([] : List α) } = ∅ := by
-  ext
-  rw [Set.mem_setOf_eq, Set.mem_empty_iff_false, List.mem_nil_iff]
+theorem setOf_mem_empty : { x | x ∈ ([] : List α) } = ∅ := by simp
 
-theorem setOf_mem_eq_empty_iff {l : List α} : { x | x ∈ l } = ∅ ↔ l = [] := by
-  refine ⟨fun h ↦ eq_nil_iff_forall_not_mem.mpr ?_, fun h ↦ ?_⟩
-  · rw [Set.empty_def, Set.setOf_inj] at h
-    rw [h]
-    exact fun _ a ↦ a
-  · subst h
-    exact setOf_mem_empty
+theorem setOf_mem_eq_empty_iff {l : List α} : { x | x ∈ l } = ∅ ↔ l = [] :=
+  Set.eq_empty_iff_forall_not_mem.trans eq_nil_iff_forall_not_mem.symm
 
 set_option linter.deprecated false in
 @[simp, deprecated "No deprecation message was provided." (since := "2024-10-17")]
