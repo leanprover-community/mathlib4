@@ -3,10 +3,10 @@ Copyright (c) 2024 Florent Schaffhauser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Florent Schaffhauser, Artie Khovanov
 -/
-import Mathlib.Algebra.Order.Ring.Basic
-import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Algebra.Group.Subgroup.Even
+import Mathlib.Algebra.Order.Ring.Basic
 import Mathlib.Algebra.Ring.Parity
+import Mathlib.Algebra.Ring.Subsemiring.Basic
 import Mathlib.Tactic.ApplyFun
 
 /-!
@@ -109,7 +109,7 @@ theorem AddSubmonoid.closure_isSquare [AddMonoid R] [Mul R] :
   /- TODO : after Aesop ruleset improvements, change proof to: -/
   /- induction hx <;> aesop -/
   induction hx with
-  | zero => exact zero_mem
+  | zero => apply zero_mem
   | sq_add a hs ih => exact add_mem (subset_closure (IsSquare.mul_self a)) ih
 
 @[deprecated (since := "2024-08-09")] alias SquaresAddClosure := AddSubmonoid.closure_isSquare
