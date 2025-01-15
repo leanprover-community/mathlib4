@@ -205,7 +205,6 @@ lemma alternatingMapLinearEquiv_comp (g : N →ₗ[R] N') (f : M [⋀^Fin n]→�
 /-! Functoriality of the exterior powers. -/
 
 variable (n) in
-
 /-- The linear map between `n`th exterior powers induced by a linear map between the modules. -/
 noncomputable def map (f : M →ₗ[R] N) : ⋀[R]^n M →ₗ[R] ⋀[R]^n N :=
   alternatingMapLinearEquiv ((ιMulti R n).compLinearMap f)
