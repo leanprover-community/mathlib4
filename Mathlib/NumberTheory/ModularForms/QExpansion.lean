@@ -19,9 +19,22 @@ application, we show that cusp forms decay exponentially to 0 as `im τ → ∞`
 We also define the `q`-expansion of a modular form, either as a power series or as a
 `FormalMultlinearSeries`, and show that it converges to `f` on the upper half plane.
 
+## Main definitions and results
+
+* `SlashInvariantFormClass.cuspFunction`: for a level `n` slash-invariant form, this is the function
+  `F` such that `f τ = F (exp (2 * π * I * τ / n))`, extended by a choice of limit at `0`.
+* `ModularFormClass.differentiableAt_cuspFunction`: when `f` is a modular form, its `cuspFunction`
+  is differentiable on the open unit disc (including at `0`).
+* `ModularFormClass.qExpansion`: the `q`-expansion of a modular form (defined as the Taylor series
+  of its `cuspFunction`), bundled as a `PowerSeries`.
+* `ModularFormClass.hasSum_qExpansion`: the `q`-expansion evaluated at `𝕢 n τ` sums to `f τ`, for
+  `τ` in the upper half plane.
+
 ## TO DO:
 
 * generalise to handle arbitrary finite-index subgroups (not just `Γ(n)` for some `n`)
+* define the `q`-expansion map on modular form spaces as a linear map (or even a ring hom from
+  the graded ring of all modular forms?)
 -/
 
 open ModularForm Complex Filter UpperHalfPlane Function
