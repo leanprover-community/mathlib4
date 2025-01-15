@@ -772,7 +772,8 @@ lemma mem_iSup_of_mem {ι : Sort*} {S : ι → Subalgebra R A} (i : ι) {x : A} 
     x ∈ iSup S :=
   le_iSup S i hx
 
-lemma iSup_induction {ι : Sort*} {S : ι → Subalgebra R A} {motive : A → Prop}
+@[elab_as_elim]
+lemma iSup_induction {ι : Sort*} (S : ι → Subalgebra R A) {motive : A → Prop}
     {x : A} (mem : x ∈ iSup S)
     (basic : ∀ i, ∀ a ∈ S i, motive a)
     (zero : motive 0) (one : motive 1)
