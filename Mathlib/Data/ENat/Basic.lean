@@ -3,7 +3,6 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.Order.Ring.WithTop
 import Mathlib.Algebra.Order.Sub.WithTop
 import Mathlib.Data.ENat.Defs
@@ -32,6 +31,8 @@ of `ENat` and `ENNReal` we are using is that all `a` are either absorbing for ad
 for all `b`), or that it's order-cancellable (`a + b ≤ a + c → b ≤ c` for all `b`, `c`), and
 similarly for multiplication.
 -/
+
+assert_not_exists Field
 
 deriving instance Zero, CanonicallyOrderedCommSemiring, Nontrivial,
   LinearOrder, Bot, CanonicallyLinearOrderedAddCommMonoid, Sub,
@@ -104,7 +105,7 @@ def lift (x : ℕ∞) (h : x < ⊤) : ℕ := WithTop.untop x (WithTop.lt_top_iff
 @[simp] theorem lift_zero : lift 0 (WithTop.coe_lt_top 0) = 0 := rfl
 @[simp] theorem lift_one : lift 1 (WithTop.coe_lt_top 1) = 1 := rfl
 @[simp] theorem lift_ofNat (n : ℕ) [n.AtLeastTwo] :
-    lift (no_index (OfNat.ofNat n)) (WithTop.coe_lt_top n) = OfNat.ofNat n := rfl
+    lift ofNat(n) (WithTop.coe_lt_top n) = OfNat.ofNat n := rfl
 
 @[simp] theorem add_lt_top {a b : ℕ∞} : a + b < ⊤ ↔ a < ⊤ ∧ b < ⊤ := WithTop.add_lt_top
 
@@ -145,9 +146,8 @@ theorem toNat_zero : toNat 0 = 0 :=
 theorem toNat_one : toNat 1 = 1 :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] : toNat (no_index (OfNat.ofNat n)) = n :=
+theorem toNat_ofNat (n : ℕ) [n.AtLeastTwo] : toNat ofNat(n) = n :=
   rfl
 
 @[simp]
@@ -164,19 +164,17 @@ theorem recTopCoe_zero {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a)
 theorem recTopCoe_one {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) : @recTopCoe C d f 1 = f 1 :=
   rfl
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
 theorem recTopCoe_ofNat {C : ℕ∞ → Sort*} (d : C ⊤) (f : ∀ a : ℕ, C a) (x : ℕ) [x.AtLeastTwo] :
-    @recTopCoe C d f (no_index (OfNat.ofNat x)) = f (OfNat.ofNat x) :=
+    @recTopCoe C d f ofNat(x) = f (OfNat.ofNat x) :=
   rfl
 
 @[simp]
 theorem top_ne_coe (a : ℕ) : ⊤ ≠ (a : ℕ∞) :=
   nofun
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem top_ne_ofNat (a : ℕ) [a.AtLeastTwo] : ⊤ ≠ (no_index (OfNat.ofNat a : ℕ∞)) :=
+theorem top_ne_ofNat (a : ℕ) [a.AtLeastTwo] : ⊤ ≠ (ofNat(a) : ℕ∞) :=
   nofun
 
 @[simp] lemma top_ne_zero : (⊤ : ℕ∞) ≠ 0 := nofun
@@ -186,9 +184,8 @@ theorem top_ne_ofNat (a : ℕ) [a.AtLeastTwo] : ⊤ ≠ (no_index (OfNat.ofNat a
 theorem coe_ne_top (a : ℕ) : (a : ℕ∞) ≠ ⊤ :=
   nofun
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (no_index (OfNat.ofNat a : ℕ∞)) ≠ ⊤ :=
+theorem ofNat_ne_top (a : ℕ) [a.AtLeastTwo] : (ofNat(a) : ℕ∞) ≠ ⊤ :=
   nofun
 
 @[simp] lemma zero_ne_top : 0 ≠ (⊤ : ℕ∞) := nofun
@@ -202,9 +199,8 @@ theorem top_sub_coe (a : ℕ) : (⊤ : ℕ∞) - a = ⊤ :=
 theorem top_sub_one : (⊤ : ℕ∞) - 1 = ⊤ :=
   top_sub_coe 1
 
--- See note [no_index around OfNat.ofNat]
 @[simp]
-theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - (no_index (OfNat.ofNat a)) = ⊤ :=
+theorem top_sub_ofNat (a : ℕ) [a.AtLeastTwo] : (⊤ : ℕ∞) - ofNat(a) = ⊤ :=
   top_sub_coe a
 
 @[simp]
@@ -382,7 +378,7 @@ theorem map_zero (f : ℕ → α) : map f 0 = f 0 := rfl
 theorem map_one (f : ℕ → α) : map f 1 = f 1 := rfl
 
 @[simp]
-theorem map_ofNat (f : ℕ → α) (n : ℕ) [n.AtLeastTwo] : map f (no_index (OfNat.ofNat n)) = f n := rfl
+theorem map_ofNat (f : ℕ → α) (n : ℕ) [n.AtLeastTwo] : map f ofNat(n) = f n := rfl
 
 @[simp]
 lemma map_eq_top_iff {f : ℕ → α} : map f n = ⊤ ↔ n = ⊤ := WithTop.map_eq_top_iff
@@ -461,3 +457,17 @@ protected def _root_.RingHom.ENatMap {S : Type*} [CanonicallyOrderedCommSemiring
   {MonoidWithZeroHom.ENatMap f.toMonoidWithZeroHom hf, f.toAddMonoidHom.ENatMap with}
 
 end ENat
+
+lemma WithBot.lt_add_one_iff {n : WithBot ℕ∞} {m : ℕ} : n < m + 1 ↔ n ≤ m := by
+  rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
+  cases n
+  · simp only [bot_le, iff_true, WithBot.bot_lt_coe]
+  · rw [WithBot.coe_lt_coe, Nat.cast_add, ENat.coe_one, ENat.lt_add_one_iff (ENat.coe_ne_top _),
+      ← WithBot.coe_le_coe, WithBot.coe_natCast]
+
+lemma WithBot.add_one_le_iff {n : ℕ} {m : WithBot ℕ∞} : n + 1 ≤ m ↔ n < m := by
+  rw [← WithBot.coe_one, ← ENat.coe_one, WithBot.coe_natCast, ← Nat.cast_add, ← WithBot.coe_natCast]
+  cases m
+  · simp
+  · rw [WithBot.coe_le_coe, ENat.coe_add, ENat.coe_one, ENat.add_one_le_iff (ENat.coe_ne_top n),
+      ← WithBot.coe_lt_coe, WithBot.coe_natCast]

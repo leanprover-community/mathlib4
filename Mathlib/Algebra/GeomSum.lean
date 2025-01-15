@@ -312,9 +312,8 @@ protected theorem Commute.mul_geom_sum₂_Ico [Ring α] {x y : α} (h : Commute 
     refine sum_congr rfl fun j j_in => ?_
     rw [← pow_add]
     congr
-    rw [mem_range, Nat.lt_iff_add_one_le, add_comm] at j_in
-    have h' : n - m + (m - (1 + j)) = n - (1 + j) := tsub_add_tsub_cancel hmn j_in
-    rw [← tsub_add_eq_tsub_tsub m, h', ← tsub_add_eq_tsub_tsub]
+    rw [mem_range] at j_in
+    omega
   rw [this]
   simp_rw [pow_mul_comm y (n - m) _]
   simp_rw [← mul_assoc]
@@ -329,10 +328,8 @@ protected theorem Commute.geom_sum₂_succ_eq {α : Type u} [Ring α] {x y : α}
     (h.symm.pow_right _).eq, mul_assoc, ← pow_succ']
   refine sum_congr rfl fun i hi => ?_
   suffices n - 1 - i + 1 = n - i by rw [this]
-  rcases n with - | n
-  · exact absurd (List.mem_range.mp hi) i.not_lt_zero
-  · rw [tsub_add_eq_add_tsub (Nat.le_sub_one_of_lt (List.mem_range.mp hi)),
-      tsub_add_cancel_of_le (Nat.succ_le_iff.mpr n.succ_pos)]
+  rw [Finset.mem_range] at hi
+  omega
 
 theorem geom_sum₂_succ_eq {α : Type u} [CommRing α] (x y : α) {n : ℕ} :
     ∑ i ∈ range (n + 1), x ^ i * y ^ (n - i) =
@@ -430,9 +427,8 @@ theorem Nat.pred_mul_geom_sum_le (a b n : ℕ) :
       rw [tsub_mul, mul_comm, sum_mul, one_mul, sum_range_succ', sum_range_succ, pow_zero,
         Nat.div_one]
     _ ≤ (∑ i ∈ range n, a / b ^ i) + a * b - ((∑ i ∈ range n, a / b ^ i) + a / b ^ n) := by
-      refine tsub_le_tsub_right (add_le_add_right (sum_le_sum fun i _ => ?_) _) _
-      rw [pow_succ', mul_comm b]
-      rw [← Nat.div_div_eq_div_mul]
+      gcongr with i hi
+      rw [pow_succ, ← Nat.div_div_eq_div_mul]
       exact Nat.div_mul_le_self _ _
     _ = a * b - a / b ^ n := add_tsub_add_eq_tsub_left _ _ _
 
