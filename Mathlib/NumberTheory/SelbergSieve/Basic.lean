@@ -367,6 +367,22 @@ theorem lambdaSquared_eq_zero_of_not_le_height (w : ℕ → ℝ) (height : ℝ)
   · rw[mul_comm]
     apply lambdaSquared_eq_zero_of_support_wlog hw hd d2 d1 (Nat.lcm_comm d1 d2 ▸ h) hle
 
+private theorem conv_lambda_sq_larger_sum (f : ℕ → ℕ → ℕ → ℝ) (n : ℕ) :
+    (∑ d in n.divisors,
+        ∑ d1 in d.divisors,
+          ∑ d2 in d.divisors, if d = Nat.lcm d1 d2 then f d1 d2 d else 0) =
+      ∑ d in n.divisors,
+        ∑ d1 in n.divisors,
+          ∑ d2 in n.divisors, if d = Nat.lcm d1 d2 then f d1 d2 d else 0 := by
+  apply sum_congr rfl; intro d hd
+  rw [mem_divisors] at hd
+  simp_rw [←Nat.divisors_filter_dvd_of_dvd hd.2 hd.1, sum_filter, ite_sum_zero, ← ite_and]
+  congr with d1
+  congr with d2
+  congr
+  simp +contextual [← and_assoc, eq_iff_iff, and_iff_right_iff_imp,
+    Nat.dvd_lcm_left, Nat.dvd_lcm_right]
+
 theorem upperMoebius_lambdaSquared (weights : ℕ → ℝ) (hw : weights 1 = 1) :
     UpperMoebius <| lambdaSquared weights := by
   dsimp [UpperMoebius, lambdaSquared]

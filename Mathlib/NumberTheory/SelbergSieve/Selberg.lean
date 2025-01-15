@@ -187,7 +187,7 @@ theorem selbergWeights_diagonalisation (l : ℕ) (hl : l ∈ divisors P) :
   calc
     (∑ d ∈ divisors P, if l ∣ d then ν d * γ d else 0) =
       ∑ k ∈ divisors P, if k ^ 2 ≤ y then
-            (∑ d ∈ divisors P, if l ∣ d ∧ d ∣ k then (μ d:ℝ) else 0) * g k * S⁻¹
+            (∑ d ∈ divisors P, if d ∣ k ∧ l ∣ d then (μ d:ℝ) else 0) * g k * S⁻¹
           else 0 := by
       simp_rw [selbergWeights_eq_dvds_sum, ← sum_filter, mul_sum, sum_mul, sum_filter, ite_sum_zero,
         ← ite_and]
@@ -199,8 +199,11 @@ theorem selbergWeights_diagonalisation (l : ℕ) (hl : l ∈ divisors P) :
       intros; ring
     _ = ∑ x ∈ divisors P, if x = l then if ↑l ^ 2 ≤ y then g l * ↑(μ l) * S⁻¹ else 0 else 0 := by
       apply sum_congr rfl; intro k hk
-      rw [moebius_inv_dvd_lower_bound_real s.prodPrimes_squarefree l _ (dvd_of_mem_divisors hk),
-        ← ite_and, ite_zero_mul, ite_zero_mul, ← ite_and]
+      norm_cast
+      simp_rw [ite_and, ← sum_over_dvd_ite prodPrimes_ne_zero (Nat.dvd_of_mem_divisors hk)]
+      rw [moebius_inv_dvd_lower_bound _ _ (squarefree_of_mem_divisors_prodPrimes hk)]
+      push_cast
+      rw [← ite_and, ite_zero_mul, ite_zero_mul, ← ite_and]
       apply if_ctx_congr _ _ fun _ => rfl
       · rw [and_comm, eq_comm]
         refine and_congr_right (fun heq ↦ ?_)
