@@ -67,6 +67,8 @@ instance : SetLike (ProperCone 𝕜 E) E where
   coe K := K.carrier
   coe_injective' _ _ h := ProperCone.toPointedCone_injective (SetLike.coe_injective h)
 
+instance : OrderedSetLike (ProperCone 𝕜 E) E := SetLike.toOrderedSetLike
+
 @[ext]
 theorem ext {S T : ProperCone 𝕜 E} (h : ∀ x, x ∈ S ↔ x ∈ T) : S = T :=
   SetLike.ext h

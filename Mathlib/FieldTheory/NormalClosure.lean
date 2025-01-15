@@ -99,7 +99,7 @@ lemma isNormalClosure_normalClosure : IsNormalClosure F K (normalClosure F K L) 
   rw [isNormalClosure_iff]; constructor
   · rw [normalClosure_eq_iSup_adjoin_of_splits splits]
     exact fun x ↦ splits_of_splits (splits x) ((IntermediateField.subset_adjoin F _).trans <|
-      SetLike.coe_subset_coe.mpr <| by apply le_iSup _ x)
+      OrderedSetLike.coe_subset_coe.mpr <| by apply le_iSup _ x)
   simp_rw [normalClosure, ← top_le_iff]
   refine fun x _ ↦ ((⨆ f : K →ₐ[F] L, f.fieldRange).val).injective.mem_set_image |>.mp ?_
   rw [AlgHom.toRingHom_eq_coe, RingHom.coe_coe, coe_val, ← IntermediateField.coe_val,

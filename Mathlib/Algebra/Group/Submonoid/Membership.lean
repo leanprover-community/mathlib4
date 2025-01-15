@@ -83,12 +83,12 @@ theorem coe_sSup_of_directedOn {S : Set (Submonoid M)} (Sne : S.Nonempty)
 
 @[to_additive]
 theorem mem_sup_left {S T : Submonoid M} : ∀ {x : M}, x ∈ S → x ∈ S ⊔ T := by
-  rw [← SetLike.le_def]
+  rw [← OrderedSetLike.le_def]
   exact le_sup_left
 
 @[to_additive]
 theorem mem_sup_right {S T : Submonoid M} : ∀ {x : M}, x ∈ T → x ∈ S ⊔ T := by
-  rw [← SetLike.le_def]
+  rw [← OrderedSetLike.le_def]
   exact le_sup_right
 
 @[to_additive]
@@ -98,13 +98,13 @@ theorem mul_mem_sup {S T : Submonoid M} {x y : M} (hx : x ∈ S) (hy : y ∈ T) 
 @[to_additive]
 theorem mem_iSup_of_mem {ι : Sort*} {S : ι → Submonoid M} (i : ι) :
     ∀ {x : M}, x ∈ S i → x ∈ iSup S := by
-  rw [← SetLike.le_def]
+  rw [← OrderedSetLike.le_def]
   exact le_iSup _ _
 
 @[to_additive]
 theorem mem_sSup_of_mem {S : Set (Submonoid M)} {s : Submonoid M} (hs : s ∈ S) :
     ∀ {x : M}, x ∈ s → x ∈ sSup S := by
-  rw [← SetLike.le_def]
+  rw [← OrderedSetLike.le_def]
   exact le_sSup hs
 
 /-- An induction principle for elements of `⨆ i, S i`.

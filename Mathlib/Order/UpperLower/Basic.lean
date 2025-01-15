@@ -426,6 +426,10 @@ instance : SetLike (UpperSet α) α where
   coe := UpperSet.carrier
   coe_injective' s t h := by cases s; cases t; congr
 
+-- We do not add the following instance
+-- instance : OrderedSetLike (UpperSet α) α := SetLike.toOrderedSetLike
+-- because it is the wrong ordering.
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : UpperSet α) : Set α := s
 
@@ -451,6 +455,8 @@ namespace LowerSet
 instance : SetLike (LowerSet α) α where
   coe := LowerSet.carrier
   coe_injective' s t h := by cases s; cases t; congr
+
+instance : OrderedSetLike (LowerSet α) α := SetLike.toOrderedSetLike
 
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : LowerSet α) : Set α := s
@@ -1741,7 +1747,7 @@ theorem prod_self_lt_prod_self : s₁ ×ˢ s₁ < s₂ ×ˢ s₂ ↔ s₁ < s₂
   prod_self_ssubset_prod_self
 
 theorem prod_le_prod_iff : s₁ ×ˢ t₁ ≤ s₂ ×ˢ t₂ ↔ s₁ ≤ s₂ ∧ t₁ ≤ t₂ ∨ s₁ = ⊥ ∨ t₁ = ⊥ :=
-  prod_subset_prod_iff.trans <| by simp
+  prod_subset_prod_iff.trans <| by simp only [coe_eq_empty]; rfl
 
 @[simp]
 theorem prod_eq_bot : s ×ˢ t = ⊥ ↔ s = ⊥ ∨ t = ⊥ := by

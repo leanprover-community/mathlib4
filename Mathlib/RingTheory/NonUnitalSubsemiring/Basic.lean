@@ -196,7 +196,7 @@ theorem sInf_toAddSubmonoid (s : Set (NonUnitalSubsemiring R)) :
 /-- Non-unital subsemirings of a non-unital semiring form a complete lattice. -/
 instance : CompleteLattice (NonUnitalSubsemiring R) :=
   { completeLatticeOfInf (NonUnitalSubsemiring R)
-      fun _ => IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf with
+      fun _ => IsGLB.of_image OrderedSetLike.coe_subset_coe isGLB_biInf with
     bot := ⊥
     bot_le := fun s _ hx => (mem_bot.mp hx).symm ▸ zero_mem s
     top := ⊤

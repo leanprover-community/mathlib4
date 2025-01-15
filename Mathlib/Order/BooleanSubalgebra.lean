@@ -33,6 +33,8 @@ instance instSetLike : SetLike (BooleanSubalgebra α) α where
   coe L := L.carrier
   coe_injective' L M h := by obtain ⟨⟨_, _⟩, _⟩ := L; congr
 
+instance : OrderedSetLike (BooleanSubalgebra α) α := SetLike.toOrderedSetLike
+
 lemma coe_inj : (L : Set α) = M ↔ L = M := SetLike.coe_set_eq
 
 @[simp] lemma supClosed (L : BooleanSubalgebra α) : SupClosed (L : Set α) := L.supClosed'
@@ -223,7 +225,7 @@ instance instCompleteLattice : CompleteLattice (BooleanSubalgebra α) where
   inf_le_left _L _M _a := And.left
   inf_le_right _L _M _a := And.right
   __ := completeLatticeOfInf (BooleanSubalgebra α)
-      fun _s ↦ IsGLB.of_image SetLike.coe_subset_coe isGLB_biInf
+      fun _s ↦ IsGLB.of_image OrderedSetLike.coe_subset_coe isGLB_biInf
 
 instance [IsEmpty α] : Subsingleton (BooleanSubalgebra α) := SetLike.coe_injective.subsingleton
 instance [IsEmpty α] : Unique (BooleanSubalgebra α) := uniqueOfSubsingleton ⊤

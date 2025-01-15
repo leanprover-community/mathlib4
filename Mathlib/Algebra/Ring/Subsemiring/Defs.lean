@@ -131,6 +131,8 @@ instance : SetLike (Subsemiring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+instance : OrderedSetLike (Subsemiring R) R := SetLike.toOrderedSetLike
+
 instance : SubsemiringClass (Subsemiring R) R where
   zero_mem := zero_mem'
   add_mem {s} := AddSubsemigroup.add_mem' s.toAddSubmonoid.toAddSubsemigroup

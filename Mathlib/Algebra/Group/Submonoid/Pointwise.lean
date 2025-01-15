@@ -93,8 +93,8 @@ theorem coe_mul_self_eq (s : Submonoid M) : (s : Set M) * s = s := by
 @[to_additive]
 theorem closure_mul_le (S T : Set M) : closure (S * T) ≤ closure S ⊔ closure T :=
   sInf_le fun _x ⟨_s, hs, _t, ht, hx⟩ => hx ▸
-    (closure S ⊔ closure T).mul_mem (SetLike.le_def.mp le_sup_left <| subset_closure hs)
-      (SetLike.le_def.mp le_sup_right <| subset_closure ht)
+    (closure S ⊔ closure T).mul_mem (OrderedSetLike.le_def.mp le_sup_left <| subset_closure hs)
+      (OrderedSetLike.le_def.mp le_sup_right <| subset_closure ht)
 
 @[to_additive]
 lemma closure_pow_le : ∀ {n}, n ≠ 0 → closure (s ^ n) ≤ closure s
@@ -159,11 +159,11 @@ scoped[Pointwise] attribute [instance] Submonoid.involutiveInv AddSubmonoid.invo
 
 @[to_additive (attr := simp)]
 theorem inv_le_inv (S T : Submonoid G) : S⁻¹ ≤ T⁻¹ ↔ S ≤ T :=
-  SetLike.coe_subset_coe.symm.trans Set.inv_subset_inv
+  OrderedSetLike.coe_subset_coe.symm.trans Set.inv_subset_inv
 
 @[to_additive]
 theorem inv_le (S T : Submonoid G) : S⁻¹ ≤ T ↔ S ≤ T⁻¹ :=
-  SetLike.coe_subset_coe.symm.trans Set.inv_subset
+  OrderedSetLike.coe_subset_coe.symm.trans Set.inv_subset
 
 /-- Pointwise inversion of submonoids as an order isomorphism. -/
 @[to_additive (attr := simps!) "Pointwise negation of additive submonoids as an order isomorphism"]

@@ -60,6 +60,8 @@ instance : SetLike (IntermediateField K L) L :=
     rintro ⟨⟨⟩⟩ ⟨⟨⟩⟩
     simp ⟩
 
+instance : OrderedSetLike (IntermediateField K L) L := SetLike.toOrderedSetLike
+
 protected theorem neg_mem {x : L} (hx : x ∈ S) : -x ∈ S := by
   show -x ∈S.toSubalgebra; simpa
 
@@ -444,7 +446,7 @@ theorem map_map {K L₁ L₂ L₃ : Type*} [Field K] [Field L₁] [Algebra K L�
 
 theorem map_mono (f : L →ₐ[K] L') {S T : IntermediateField K L} (h : S ≤ T) :
     S.map f ≤ T.map f :=
-  SetLike.coe_mono (Set.image_subset f h)
+  OrderedSetLike.coe_mono (Set.image_subset f h)
 
 theorem map_le_iff_le_comap {f : L →ₐ[K] L'}
     {s : IntermediateField K L} {t : IntermediateField K L'} :

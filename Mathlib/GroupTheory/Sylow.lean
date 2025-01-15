@@ -71,6 +71,8 @@ instance : SetLike (Sylow p G) G where
   coe := (↑)
   coe_injective' _ _ h := ext (SetLike.coe_injective h)
 
+instance : OrderedSetLike (Sylow p G) G := SetLike.toOrderedSetLike
+
 instance : SubgroupClass (Sylow p G) G where
   mul_mem := Subgroup.mul_mem _
   one_mem _ := Subgroup.one_mem _
@@ -265,7 +267,7 @@ end Sylow
 
 theorem Subgroup.sylow_mem_fixedPoints_iff (H : Subgroup G) {P : Sylow p G} :
     P ∈ fixedPoints H (Sylow p G) ↔ H ≤ P.normalizer := by
-  simp_rw [SetLike.le_def, ← Sylow.smul_eq_iff_mem_normalizer]; exact Subtype.forall
+  simp_rw [OrderedSetLike.le_def, ← Sylow.smul_eq_iff_mem_normalizer]; exact Subtype.forall
 
 theorem IsPGroup.inf_normalizer_sylow {P : Subgroup G} (hP : IsPGroup p P) (Q : Sylow p G) :
     P ⊓ Q.normalizer = P ⊓ Q :=

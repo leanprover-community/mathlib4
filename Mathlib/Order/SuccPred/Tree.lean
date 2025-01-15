@@ -148,6 +148,8 @@ instance (t : RootedTree) : SetLike (SubRootedTree t) t where
   coe_injective' a₁ a₂ h := by
     simpa only [Set.Ici_inj, ← SubRootedTree.ext_iff] using h
 
+instance (t : RootedTree) : OrderedSetLike (SubRootedTree t) t := SetLike.toOrderedSetLike
+
 lemma SubRootedTree.mem_iff {t : RootedTree} {r : SubRootedTree t} {v : t} :
     v ∈ r ↔ r.root ≤ v := Iff.rfl
 

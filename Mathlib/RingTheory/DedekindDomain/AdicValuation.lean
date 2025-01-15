@@ -270,7 +270,7 @@ theorem intValuation_exists_uniformizer :
     exact
       ⟨v.ne_bot, v.asIdeal, (not_congr Ideal.isUnit_iff).mpr (Ideal.IsPrime.ne_top v.isPrime),
         sq v.asIdeal⟩
-  obtain ⟨π, mem, nmem⟩ := SetLike.exists_of_lt hlt
+  obtain ⟨π, mem, nmem⟩ := OrderedSetLike.exists_of_lt hlt
   have hπ : Associates.mk (Ideal.span {π}) ≠ 0 := by
     rw [Associates.mk_ne_zero']
     intro h

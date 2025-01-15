@@ -200,6 +200,8 @@ instance setLike : SetLike (NonemptyInterval α) α where
   coe s := Icc s.fst s.snd
   coe_injective' := coeHom.injective
 
+instance : OrderedSetLike (NonemptyInterval α) α := SetLike.toOrderedSetLike
+
 @[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
 theorem coe_subset_coe : (s : Set α) ⊆ t ↔ (s : NonemptyInterval α) ≤ t :=
   (@coeHom α _).le_iff_le
@@ -399,6 +401,8 @@ def coeHom : Interval α ↪o Set α :=
 instance setLike : SetLike (Interval α) α where
   coe := coeHom
   coe_injective' := coeHom.injective
+
+instance : OrderedSetLike (Interval α) α := SetLike.toOrderedSetLike
 
 @[norm_cast] -- @[simp, norm_cast] -- Porting note: not in simpNF
 theorem coe_subset_coe : (s : Set α) ⊆ t ↔ s ≤ t :=

@@ -778,15 +778,15 @@ theorem toBasicOpen_surjective (f : R) : Function.Surjective (toBasicOpen R f) :
       (fun i : ι => PrimeSpectrum.basicOpen (h' i)) (fun i => PrimeSpectrum.isOpen_basicOpen)
       -- Here, we need to show that our basic opens actually form a cover of `basicOpen f`
       fun x hx => by rw [Set.mem_iUnion]; exact ⟨⟨x, hx⟩, hxDh' ⟨x, hx⟩⟩
-  simp only [← Opens.coe_iSup, SetLike.coe_subset_coe] at ht_cover'
+  simp only [← Opens.coe_iSup, OrderedSetLike.coe_subset_coe] at ht_cover'
   -- We use the normalization lemma from above to obtain the relation `a i * h j = h i * a j`
   obtain ⟨a, h, iDh, ht_cover, ah_ha, s_eq⟩ :=
     normalize_finite_fraction_representation R (PrimeSpectrum.basicOpen f)
       s t a' h' iDh' ht_cover' s_eq'
   clear s_eq' iDh' hxDh' ht_cover' a' h'
-  -- Porting note: simp with `[← SetLike.coe_subset_coe, Opens.coe_iSup]` does not result in
+  -- Porting note: simp with `[← OrderedSetLike.coe_subset_coe, Opens.coe_iSup]` does not result in
   -- desired form
-  rw [← SetLike.coe_subset_coe, Opens.coe_iSup] at ht_cover
+  rw [← OrderedSetLike.coe_subset_coe, Opens.coe_iSup] at ht_cover
   replace ht_cover : (PrimeSpectrum.basicOpen f : Set <| PrimeSpectrum R) ⊆
       ⋃ (i : ι) (x : i ∈ t), (PrimeSpectrum.basicOpen (h i) : Set _) := by
     convert ht_cover using 2

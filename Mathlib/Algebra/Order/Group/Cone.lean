@@ -51,6 +51,8 @@ instance GroupCone.instSetLike (G : Type*) [CommGroup G] : SetLike (GroupCone G)
   coe C := C.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.ext' h
 
+instance (G : Type*) [CommGroup G] : OrderedSetLike (GroupCone G) G := SetLike.toOrderedSetLike
+
 @[to_additive]
 instance GroupCone.instGroupConeClass (G : Type*) [CommGroup G] :
     GroupConeClass (GroupCone G) G where

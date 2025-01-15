@@ -50,6 +50,8 @@ instance setLike : SetLike (Submodule R M) M where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective' h
 
+instance : OrderedSetLike (Submodule R M) M := SetLike.toOrderedSetLike
+
 instance addSubmonoidClass : AddSubmonoidClass (Submodule R M) M where
   zero_mem _ := AddSubmonoid.zero_mem' _
   add_mem := AddSubsemigroup.add_mem' _

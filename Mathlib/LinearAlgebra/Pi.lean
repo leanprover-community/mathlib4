@@ -91,7 +91,7 @@ theorem proj_pi (f : (i : ι) → M₂ →ₗ[R] φ i) (i : ι) : (proj i).comp 
 theorem iInf_ker_proj : (⨅ i, ker (proj i : ((i : ι) → φ i) →ₗ[R] φ i) :
     Submodule R ((i : ι) → φ i)) = ⊥ :=
   bot_unique <|
-    SetLike.le_def.2 fun a h => by
+    OrderedSetLike.le_def.2 fun a h => by
       simp only [mem_iInf, mem_ker, proj_apply] at h
       exact (mem_bot _).2 (funext fun i => h i)
 
@@ -142,7 +142,7 @@ theorem proj_comp_single_ne (i j : ι) (h : i ≠ j) : (proj i).comp (single R �
 theorem iSup_range_single_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
     ⨆ i ∈ I, range (single R φ i) ≤ ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
   refine iSup_le fun i => iSup_le fun hi => range_le_iff_comap.2 ?_
-  simp only [← ker_comp, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
+  simp only [← ker_comp, eq_top_iff, OrderedSetLike.le_def, mem_ker, comap_iInf, mem_iInf]
   rintro b - j hj
   rw [proj_comp_single_ne R φ j i, zero_apply]
   rintro rfl
@@ -150,7 +150,7 @@ theorem iSup_range_single_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
 
 theorem iInf_ker_proj_le_iSup_range_single {I : Finset ι} {J : Set ι} (hu : Set.univ ⊆ ↑I ∪ J) :
     ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) ≤ ⨆ i ∈ I, range (single R φ i) :=
-  SetLike.le_def.2
+  OrderedSetLike.le_def.2
     (by
       intro b hb
       simp only [mem_iInf, mem_ker, proj_apply] at hb
@@ -184,8 +184,8 @@ theorem disjoint_single_single (I J : Set ι) (h : Disjoint I J) :
   refine
     Disjoint.mono (iSup_range_single_le_iInf_ker_proj _ _ _ _ <| disjoint_compl_right)
       (iSup_range_single_le_iInf_ker_proj _ _ _ _ <| disjoint_compl_right) ?_
-  simp only [disjoint_iff_inf_le, SetLike.le_def, mem_iInf, mem_inf, mem_ker, mem_bot, proj_apply,
-    funext_iff]
+  simp only [disjoint_iff_inf_le, OrderedSetLike.le_def, mem_iInf, mem_inf, mem_ker, mem_bot,
+    proj_apply, funext_iff]
   rintro b ⟨hI, hJ⟩ i
   classical
     by_cases hiI : i ∈ I

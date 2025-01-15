@@ -149,7 +149,7 @@ private theorem fixed_of_fixed1_aux1 [DecidableEq (Ideal B)] :
     rw [Ideal.IsPrime.inf_le' inferInstance]
     rintro ⟨g, hg1, hg2⟩
     exact (Finset.mem_filter.mp hg1).2 (smul_eq_of_smul_le hg2)
-  obtain ⟨b, hbP, hbQ⟩ := SetLike.not_le_iff_exists.mp h1
+  obtain ⟨b, hbP, hbQ⟩ := OrderedSetLike.not_le_iff_exists.mp h1
   replace hbP : ∀ g : G, g • Q ≠ Q → b ∈ g • Q :=
     fun g hg ↦ (Finset.inf_le (Finset.mem_filter.mpr ⟨Finset.mem_univ g, hg⟩) : P ≤ g • Q) hbP
   let f := MulSemiringAction.charpoly G b

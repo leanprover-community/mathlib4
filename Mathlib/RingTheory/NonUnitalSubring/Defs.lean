@@ -114,6 +114,8 @@ instance : SetLike (NonUnitalSubring R) R where
   coe s := s.carrier
   coe_injective' p q h := by cases p; cases q; congr; exact SetLike.coe_injective h
 
+instance : OrderedSetLike (NonUnitalSubring R) R := SetLike.toOrderedSetLike
+
 instance : NonUnitalSubringClass (NonUnitalSubring R) R where
   zero_mem s := s.zero_mem'
   add_mem {s} := s.add_mem'

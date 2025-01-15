@@ -33,6 +33,8 @@ instance : SetLike (ClopenUpperSet α) α where
     obtain ⟨⟨_, _⟩, _⟩ := t
     congr
 
+instance : OrderedSetLike (ClopenUpperSet α) α := SetLike.toOrderedSetLike
+
 /-- See Note [custom simps projection]. -/
 def Simps.coe (s : ClopenUpperSet α) : Set α := s
 

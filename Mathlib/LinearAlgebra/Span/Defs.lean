@@ -246,7 +246,7 @@ theorem span_empty : span R (∅ : Set M) = ⊥ :=
 
 @[simp]
 theorem span_univ : span R (univ : Set M) = ⊤ :=
-  eq_top_iff.2 <| SetLike.le_def.2 <| subset_span
+  eq_top_iff.2 <| OrderedSetLike.le_def.2 <| subset_span
 
 theorem span_union (s t : Set M) : span R (s ∪ t) = span R s ⊔ span R t :=
   (Submodule.gi R M).gc.l_sup
@@ -383,7 +383,8 @@ theorem mem_span_singleton {y : M} : (x ∈ R ∙ y) ↔ ∃ a : R, a • y = x 
     rintro ⟨a, y, rfl⟩; exact smul_mem _ _ (subset_span <| by simp)⟩
 
 theorem le_span_singleton_iff {s : Submodule R M} {v₀ : M} :
-    (s ≤ R ∙ v₀) ↔ ∀ v ∈ s, ∃ r : R, r • v₀ = v := by simp_rw [SetLike.le_def, mem_span_singleton]
+    (s ≤ R ∙ v₀) ↔ ∀ v ∈ s, ∃ r : R, r • v₀ = v :=
+  by simp_rw [OrderedSetLike.le_def, mem_span_singleton]
 
 variable (R)
 

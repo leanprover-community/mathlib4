@@ -439,7 +439,7 @@ theorem span_singleton_mul_le_span_singleton_mul {x y : R} {I J : Ideal R} :
 theorem span_singleton_mul_right_mono [IsDomain R] {x : R} (hx : x ≠ 0) :
     span {x} * I ≤ span {x} * J ↔ I ≤ J := by
   simp_rw [span_singleton_mul_le_span_singleton_mul, mul_right_inj' hx,
-    exists_eq_right', SetLike.le_def]
+    exists_eq_right', OrderedSetLike.le_def]
 
 theorem span_singleton_mul_left_mono [IsDomain R] {x : R} (hx : x ≠ 0) :
     I * span {x} ≤ J * span {x} ↔ I ≤ J := by
@@ -868,7 +868,8 @@ lemma radical_pow : ∀ {n}, n ≠ 0 → radical (I ^ n) = radical I
 
 theorem IsPrime.mul_le {I J P : Ideal R} (hp : IsPrime P) : I * J ≤ P ↔ I ≤ P ∨ J ≤ P := by
   rw [or_comm, Ideal.mul_le]
-  simp_rw [hp.mul_mem_iff_mem_or_mem, SetLike.le_def, ← forall_or_left, or_comm, forall_or_left]
+  simp_rw [hp.mul_mem_iff_mem_or_mem, OrderedSetLike.le_def, ← forall_or_left, or_comm,
+    forall_or_left]
 
 theorem IsPrime.inf_le {I J P : Ideal R} (hp : IsPrime P) : I ⊓ J ≤ P ↔ I ≤ P ∨ J ≤ P :=
   ⟨fun h ↦ hp.mul_le.1 <| mul_le_inf.trans h, fun h ↦ h.elim inf_le_left.trans inf_le_right.trans⟩
