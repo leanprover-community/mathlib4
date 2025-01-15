@@ -30,9 +30,11 @@ variable (L) in
 /-- The *left quotient* of `x` is the set of suffixes `y` such that `x ++ y` is in `L`. -/
 def leftQuotient (x : List α) : Language α := { y | x ++ y ∈ L }
 
+variable (L) in
 @[simp]
 theorem leftQuotient_nil : L.leftQuotient [] = L := rfl
 
+variable (L) in
 theorem leftQuotient_append (x y : List α) :
     L.leftQuotient (x ++ y) = (L.leftQuotient x).leftQuotient y := by
   simp [leftQuotient, Language]
@@ -73,9 +75,11 @@ theorem mem_accept_toDFA (s : Set.range L.leftQuotient) : s ∈ L.toDFA.accept �
 theorem step_toDFA (s : Set.range L.leftQuotient) (a : α) :
     (L.toDFA.step s a).val = s.val.leftQuotient [a] := rfl
 
+variable (L) in
 @[simp]
 theorem start_toDFA : L.toDFA.start.val = L := rfl
 
+variable (L) in
 @[simp]
 theorem accepts_toDFA : L.toDFA.accepts = L := by
   ext x
